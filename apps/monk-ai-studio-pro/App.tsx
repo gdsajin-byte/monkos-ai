@@ -434,16 +434,26 @@ const App: React.FC = () => {
     } finally { setIsGenerating(false); }
   };
 
-  const handleApplyVariation = (category: string) => {
-    const variation = createVariation(category);
+  const handleApplyVariation = (category: string, customPrompt?: string, referenceImage?: string) => {
+    const variation = createVariation(category, customPrompt);
     
-    if (!variation.fixed || !variation.dynamic) return;
+    if (!variation.fixed) return;
     
     // 고정 프롬프트 설정 (정체성 유지)
     setFixedPrompt(variation.fixed);
     
-    // 변주 프롬프트 설정
-    setPrompt(variation.dynamic);
+    // 변주 프롬프트 설정 (커스텀 또는 디폴트)
+    if (customPrompt) {
+      setPrompt(customPrompt);
+    } else {
+      setPrompt(variation.dynamic);
+    }
+    
+    // TODO: referenceImage가 있으면 인페인팅 로직 (향후 구현)
+    if (referenceImage) {
+      console.log(`🎨 Reference image provided for ${category}`);
+      // 향후: 인페인팅 API 호출
+    }
     
     // I2I 모드로 자동 전환
     if (mode !== 'I2I') {
@@ -454,25 +464,25 @@ const App: React.FC = () => {
     setError(null);
     
     // 알림
-    console.log(`🎲 ${category} variation applied`);
+    console.log(`🎲 ${category} variation applied`, customPrompt ? `(custom: ${customPrompt})` : '(default)');
   };
 
   const getActiveButtonText = () => {
     if (language === 'KO') {
       switch(mode) {
-        case 'T2I': return '이마젠 4.0 신규 생성';
-        case 'I2I': return '이마젠 3 Pro 변환 시작';
-        case 'EDIT': return '이마젠 3 Pro 편집 실행';
-        case 'UPSCALE': return '4K 초고해상도 복원';
-        default: return '엔진 가동';
+        case 'T2I': return '신규 생성 시작';
+        case 'I2I': return '변주 실행';
+        case 'EDIT': return '편집 실행';
+        case 'UPSCALE': return '4K 업스케일';
+        default: return '생성 시작';
       }
     }
     switch(mode) {
-      case 'T2I': return 'Imagen 4.0 Synthesize';
-      case 'I2I': return 'Imagen 3 Pro Transform';
-      case 'EDIT': return 'Imagen 3 Pro Neural Edit';
-      case 'UPSCALE': return '4K Master Reconstruction';
-      default: return 'Execute Engine';
+      case 'T2I': return 'Generate New';
+      case 'I2I': return 'Apply Variation';
+      case 'EDIT': return 'Apply Edit';
+      case 'UPSCALE': return '4K Upscale';
+      default: return 'Execute';
     }
   };
 
@@ -549,6 +559,78 @@ const App: React.FC = () => {
                       >
                         <i className={`fa-solid ${isAnalyzing ? 'fa-spinner animate-spin' : 'fa-brain'} text-sm`}></i>
                       </button>
+                      <div className="w-px h-4 bg-white/10"></div>
+                      <button 
+                        onClick={async () => {
+                          const activeUrl = uploadedImage || history.find(h => h.id === activeImageId)?.url;
+                          if (!activeUrl) return;
+                          setIsGenerating(true);
+                          setGenStatus('2K UPSCALING...');
+                          try {
+                            const result = await GeminiService.refineImage('Enhance image quality, increase resolution to 2K', {
+                              aspectRatio,
+                              imageSize: '2K',
+                              inputImage: activeUrl,
+                              mode: 'UPSCALE',
+                              safetyLevel
+                            });
+                            const upscaled = { 
+                              id: Date.now().toString(), 
+                              url: result, 
+                              prompt: '2K Upscale', 
+                              projectId: 'INTERNAL', 
+                              timestamp: Date.now(), 
+                              config: { aspectRatio, imageSize: '2K', mode: 'UPSCALE', model: 'Imagen 3 Pro' } 
+                            };
+                            setHistory(prev => [upscaled, ...prev]);
+                            setActiveImageId(upscaled.id);
+                            addLog('UPSCALE_2K', 'Imagen 3 Pro', 'SUCCESS');
+                          } catch (err: any) {
+                            setError(language === 'KO' ? '업스케일 실패' : 'Upscale failed');
+                            addLog('UPSCALE_2K', 'Imagen 3 Pro', 'ERROR');
+                          } finally { setIsGenerating(false); setGenStatus(''); }
+                        }}
+                        className="p-2 hover:bg-purple-500/20 text-purple-400 rounded-lg transition-all"
+                        title={language === 'KO' ? '2K 업스케일' : '2K Upscale'}
+                      >
+                        <i className="fa-solid fa-arrow-up-right-dots text-sm"></i>
+                      </button>
+                      <button 
+                        onClick={async () => {
+                          const activeUrl = uploadedImage || history.find(h => h.id === activeImageId)?.url;
+                          if (!activeUrl) return;
+                          setIsGenerating(true);
+                          setGenStatus('4K MASTER RECONSTRUCTION...');
+                          try {
+                            const result = await GeminiService.refineImage('Enhance image quality, increase resolution to 4K, maximum detail', {
+                              aspectRatio,
+                              imageSize: '4K',
+                              inputImage: activeUrl,
+                              mode: 'UPSCALE',
+                              safetyLevel
+                            });
+                            const upscaled = { 
+                              id: Date.now().toString(), 
+                              url: result, 
+                              prompt: '4K Upscale', 
+                              projectId: 'INTERNAL', 
+                              timestamp: Date.now(), 
+                              config: { aspectRatio, imageSize: '4K', mode: 'UPSCALE', model: 'Imagen 3 Pro' } 
+                            };
+                            setHistory(prev => [upscaled, ...prev]);
+                            setActiveImageId(upscaled.id);
+                            addLog('UPSCALE_4K', 'Imagen 3 Pro', 'SUCCESS');
+                          } catch (err: any) {
+                            setError(language === 'KO' ? '4K 업스케일 실패' : '4K Upscale failed');
+                            addLog('UPSCALE_4K', 'Imagen 3 Pro', 'ERROR');
+                          } finally { setIsGenerating(false); setGenStatus(''); }
+                        }}
+                        className="p-2 hover:bg-pink-500/20 text-pink-400 rounded-lg transition-all"
+                        title={language === 'KO' ? '4K 업스케일' : '4K Upscale'}
+                      >
+                        <i className="fa-solid fa-maximize text-sm"></i>
+                      </button>
+                      <div className="w-px h-4 bg-white/10"></div>
                       <button 
                         onClick={sendToSource}
                         className="p-2 hover:bg-emerald-500/20 text-emerald-400 rounded-lg transition-all"
@@ -565,9 +647,13 @@ const App: React.FC = () => {
                       </button>
                     </div>
                   )}
-                  <div className="flex items-center gap-2 text-[10px] font-black text-slate-600 uppercase tracking-[0.3em]">
-                    <i className="fa-solid fa-microchip text-blue-500"></i>
-                    <span>{mode === 'T2I' ? 'IMAGEN 4.0 MASTER' : 'IMAGEN 3 PRO (GEMINI)'}</span>
+                  <div className="flex items-center gap-2 text-[8px] font-medium text-slate-700 uppercase tracking-wide">
+                    <span>Engine:</span>
+                    <span className="text-blue-400">Vertex</span>
+                    <span className="text-slate-800">|</span>
+                    <span className="text-slate-600">Anthropic</span>
+                    <span className="text-slate-800">|</span>
+                    <span className="text-purple-500">MonkOS</span>
                   </div>
                 </div>
               </div>

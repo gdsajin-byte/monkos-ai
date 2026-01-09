@@ -1,8 +1,8 @@
 {
-  "name": "MONK AI STUDIO Pro",
-  "short_name": "MONK AI",
-  "id": "com.monk.ai.studio.pro.v4",
-  "description": "Professional Image Synthesis Workstation with Gemini 3 Pro and Imagen 4.0 Core.",
+  "name": "MONKOS IMAGE PRO",
+  "short_name": "MONKOS",
+  "id": "com.monkos.image.pro.v4",
+  "description": "Professional Image Synthesis Workstation. Multi-Engine AI Platform for Model Agency Production.",
   "icons": [
     {
       "src": "https://cdn-icons-png.flaticon.com/512/9431/9431215.png",

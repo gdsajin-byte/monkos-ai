@@ -67,6 +67,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   handleMouseDownResize,
   onApplyVariation,
 }) => {
+  const [showAdvancedPrompts, setShowAdvancedPrompts] = React.useState(false);
   return (
     <aside style={{ width: `${sidebarWidth}px` }} className="bg-[#0a0f1e] border-r border-white/5 p-4 flex flex-col shrink-0 z-20 shadow-2xl overflow-y-auto custom-scrollbar relative">
       <div className="flex flex-col h-full">
@@ -77,10 +78,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </label>
             <div className="grid grid-cols-2 gap-1.5">
               {[
-                {id: 'T2I', label: language === 'KO' ? 'T2I (Imagen 4)' : 'T2I (Imagen 4)', icon: 'fa-wand-sparkles'},
-                {id: 'I2I', label: language === 'KO' ? 'I2I (Imagen 3 Pro)' : 'I2I (Imagen 3 Pro)', icon: 'fa-images'},
-                {id: 'EDIT', label: language === 'KO' ? 'EDIT (Imagen 3 Pro)' : 'EDIT (Imagen 3 Pro)', icon: 'fa-brush'},
-                {id: 'UPSCALE', label: language === 'KO' ? '4K (Imagen 3 Pro)' : '4K (Imagen 3 Pro)', icon: 'fa-maximize'}
+                {id: 'T2I', label: language === 'KO' ? '신규 생성' : 'New Generate', icon: 'fa-wand-sparkles'},
+                {id: 'I2I', label: language === 'KO' ? '변주' : 'Variation', icon: 'fa-images'}
               ].map((m) => (
                 <button 
                   key={m.id} 
@@ -145,33 +144,45 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </div>
           )}
           
-          <PromptSection
-            fixedPrompt={fixedPrompt}
-            prompt={prompt}
-            negativePrompt={negativePrompt}
-            setFixedPrompt={setFixedPrompt}
-            setPrompt={setPrompt}
-            setNegativePrompt={setNegativePrompt}
-            clearFixedPrompt={clearFixedPrompt}
-            clearPrompt={clearPrompt}
-            clearNegativePrompt={clearNegativePrompt}
-            promptLocked={promptLocked}
-            setPromptLocked={setPromptLocked}
-            language={language}
-          />
-          
-          <ControlPanel
-            aspectRatio={aspectRatio}
-            setAspectRatio={setAspectRatio}
-            language={language}
-          />
-
           {mode !== 'T2I' && uploadedImage && (
             <QuickVariations
               onApplyVariation={onApplyVariation}
               language={language}
             />
           )}
+
+          <button
+            onClick={() => setShowAdvancedPrompts(!showAdvancedPrompts)}
+            className="w-full py-2 px-3 bg-slate-800/30 hover:bg-slate-800/50 border border-white/5 rounded-lg text-[8px] font-black text-slate-400 uppercase tracking-wider transition-all flex items-center justify-between"
+          >
+            <span>{language === 'KO' ? '고급 프롬프트' : 'Advanced Prompts'}</span>
+            <i className={`fa-solid fa-chevron-${showAdvancedPrompts ? 'up' : 'down'} text-xs`}></i>
+          </button>
+
+          {showAdvancedPrompts && (
+            <div className="space-y-3 animate-in slide-in-from-top duration-200">
+              <PromptSection
+                fixedPrompt={fixedPrompt}
+                prompt={prompt}
+                negativePrompt={negativePrompt}
+                setFixedPrompt={setFixedPrompt}
+                setPrompt={setPrompt}
+                setNegativePrompt={setNegativePrompt}
+                clearFixedPrompt={clearFixedPrompt}
+                clearPrompt={clearPrompt}
+                clearNegativePrompt={clearNegativePrompt}
+                promptLocked={promptLocked}
+                setPromptLocked={setPromptLocked}
+                language={language}
+              />
+            </div>
+          )}
+          
+          <ControlPanel
+            aspectRatio={aspectRatio}
+            setAspectRatio={setAspectRatio}
+            language={language}
+          />
         </div>
         
         <div className="pt-2 shrink-0">

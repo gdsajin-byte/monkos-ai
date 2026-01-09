@@ -27,8 +27,8 @@ export const Header: React.FC<HeaderProps> = ({ onExport, onToggleLogs, logCount
 
   const t = {
     EN: {
-      title: "MONK AI STUDIO",
-      subtitle: "Master Neural Orchestrator v4.0.1",
+      title: "MONKOS IMAGE PRO",
+      subtitle: "Professional Synthesis Platform v4.0",
       logs: "Logs",
       export: "Export",
       deploy: "Deploy",
@@ -38,8 +38,8 @@ export const Header: React.FC<HeaderProps> = ({ onExport, onToggleLogs, logCount
       close: "Close"
     },
     KO: {
-      title: "몽크 AI 스튜디오",
-      subtitle: "마스터 신경망 오케스트레이터 v4.0.1",
+      title: "MONKOS IMAGE PRO",
+      subtitle: "Professional Synthesis Platform v4.0",
       logs: "로그",
       export: "내보내기",
       deploy: "배포",
