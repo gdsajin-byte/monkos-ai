@@ -1,0 +1,16 @@
+{
+  "name": "monk-imagen-proxy",
+  "version": "1.0.0",
+  "description": "MONK ai_PHOTOLAB - Imagen 3.0 API Proxy",
+  "main": "src/index.js",
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev"
+  },
+  "keywords": ["imagen", "cloudflare", "workers", "ai"],
+  "author": "MONK.kr",
+  "license": "MIT",
+  "devDependencies": {
+    "wrangler": "^3.0.0"
+  }
+}

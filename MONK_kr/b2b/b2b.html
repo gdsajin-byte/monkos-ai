@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B2B BizTrip | MONK STUDIO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        monk: '#FBBF24',
+                        b2b: '#34D399', /* Emerald-400 */
+                        gray: { 900: '#111827' }
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen flex flex-col">
+
+    <header class="sticky top-0 z-50 bg-gray-900/95 backdrop-blur-sm shadow-lg border-b border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 h-20 flex justify-between items-center">
+            <a href="./index.html" class="text-2xl font-black text-white tracking-widest hover:text-b2b transition">MONK STUDIO <span class="text-xs font-normal text-b2b align-top">B2B</span></a>
+            <nav class="hidden md:flex space-x-8">
+                <a href="./index.html" class="text-gray-400 hover:text-white transition">HOME</a>
+                <a href="./monk_studio.html" class="text-gray-400 hover:text-white transition">STUDIO</a>
+                <a href="./gallery.html" class="text-gray-400 hover:text-white transition">GALLERY</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-grow flex flex-col items-center justify-center text-center px-4 py-20 relative">
+        <!-- Background -->
+        <div class="absolute inset-0 z-0">
+            <img src="./images/g3.jpg" onerror="this.onerror=null;this.src='https://placehold.co/1920x1080/111827/34D399?text=B2B+Main';" class="w-full h-full object-cover opacity-20">
+            <div class="absolute inset-0 bg-gradient-to-b from-gray-900/50 via-gray-900/80 to-gray-900"></div>
+        </div>
+
+        <div class="relative z-10 max-w-3xl">
+            <h1 class="text-5xl md:text-7xl font-extrabold text-white mb-6">B2B BizTrip</h1>
+            <p class="text-xl text-gray-300 mb-10">기업 임원 프로필, 단체 촬영, 현장 스케치.<br>비즈니스의 품격을 높이는 출장 촬영 전문 서비스입니다.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 text-left">
+                <div class="bg-gray-800/80 p-6 rounded-xl border border-gray-700">
+                    <i class="fas fa-building text-3xl text-b2b mb-4"></i>
+                    <h3 class="text-xl font-bold mb-2">현장 방문</h3>
+                    <p class="text-gray-400 text-sm">스튜디오 조명을 그대로 사무실로 이동</p>
+                </div>
+                <div class="bg-gray-800/80 p-6 rounded-xl border border-gray-700">
+                    <i class="fas fa-users text-3xl text-b2b mb-4"></i>
+                    <h3 class="text-xl font-bold mb-2">대규모 인원</h3>
+                    <p class="text-gray-400 text-sm">체계적인 시스템으로 신속 처리</p>
+                </div>
+                <div class="bg-gray-800/80 p-6 rounded-xl border border-gray-700">
+                    <i class="fas fa-file-invoice-dollar text-3xl text-b2b mb-4"></i>
+                    <h3 class="text-xl font-bold mb-2">합리적 견적</h3>
+                    <p class="text-gray-400 text-sm">맞춤형 패키지 및 세금계산서 발행</p>
+                </div>
+            </div>
+
+            <a href="https://talk.naver.com/W5UJ45" target="_blank" class="inline-flex items-center px-8 py-4 rounded-full text-lg bg-b2b text-gray-900 font-bold hover:bg-white transition duration-300 shadow-lg">
+                <i class="fas fa-comment-dots mr-2"></i> 기업 촬영 견적 문의 (톡톡)
+            </a>
+        </div>
+    </main>
+
+    <footer class="bg-gray-900 py-8 border-t border-gray-800 text-center text-gray-500 text-sm">
+        <p>&copy; 2025 MONK STUDIO. B2B Division.</p>
+    </footer>
+</body>
+</html>

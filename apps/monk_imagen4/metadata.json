@@ -1,0 +1,19 @@
+{
+  "name": "MONK AI STUDIO Pro",
+  "short_name": "MONK AI",
+  "id": "com.monk.ai.studio.pro.v4",
+  "description": "Professional Image Synthesis Workstation with Gemini 3 Pro and Imagen 4.0 Core.",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/9431/9431215.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "index.html",
+  "display": "standalone",
+  "theme_color": "#0f172a",
+  "background_color": "#0f172a",
+  "requestFramePermissions": []
+}

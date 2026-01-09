@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI PHOTO | SO-SO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        ai: '#60A5FA',
+                        so: '#F472B6',
+                        dark: '#05070A'
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* 모바일 최적화 */
+        .so-glow {
+            box-shadow: 0 0 80px rgba(244, 114, 182, 0.2);
+            animation: pulse-glow 3s ease-in-out infinite;
+        }
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 80px rgba(244, 114, 182, 0.2); }
+            50% { box-shadow: 0 0 120px rgba(244, 114, 182, 0.35); }
+        }
+        .mode-card {
+            transition: all 0.3s;
+        }
+        .mode-card.active {
+            border-color: #F472B6;
+            background: rgba(244, 114, 182, 0.05);
+        }
+        
+        /* 모바일: 카메라 전체화면 */
+        @media (max-width: 768px) {
+            #camera-preview {
+                min-height: 60vh;
+                object-fit: cover;
+            }
+            .mode-card {
+                padding: 1rem !important;
+            }
+            .mode-card h3 {
+                font-size: 0.875rem;
+            }
+        }
+        
+        /* 터치 영역 확대 */
+        @media (hover: none) {
+            button {
+                min-height: 48px;
+                min-width: 48px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-dark text-white min-h-screen flex flex-col">
+
+    <header class="sticky top-0 z-40 bg-dark/90 backdrop-blur-md border-b border-white/5">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
+            <a href="../../../index.html" class="text-2xl font-black tracking-tight">MONK<span class="text-so">.kr</span></a>
+            <div class="flex items-center space-x-6">
+                <a href="../so_so.html" class="text-sm text-gray-400 hover:text-white transition-colors">← Back to SO-SO</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow flex flex-col items-center px-4 md:px-6 py-6 md:py-12">
+        
+        <div class="text-center mb-6 md:mb-12">
+            <div class="flex items-center justify-center gap-2 mb-3">
+                <div class="inline-block px-3 py-1 rounded-full bg-so/10 border border-so/20 text-so text-[10px] md:text-xs font-bold uppercase tracking-widest">
+                    AI PHOTO
+                </div>
+                <div class="inline-block px-3 py-1 rounded-full bg-yellow-500/10 border border-yellow-500/30 text-yellow-500 text-[10px] md:text-xs font-bold uppercase tracking-widest">
+                    BETA
+                </div>
+            </div>
+            <h1 class="text-3xl md:text-5xl lg:text-6xl font-black mb-3 tracking-tight">
+                인물 사진 특화
+            </h1>
+            <p class="text-gray-500 text-xs md:text-sm">증명사진, 프로필, 복원 등 인물 중심의 정밀한 생성</p>
+            <p class="text-yellow-600 text-[10px] md:text-xs mt-2">⚠️ 베타 테스트 중입니다. 실제 처리 기능은 개발 중입니다.</p>
+        </div>
+
+        <!-- Mode Selection -->
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-2 md:gap-3 w-full max-w-6xl mb-6 md:mb-8">
+            <div onclick="selectMode('official')" id="mode-official" class="mode-card active cursor-pointer p-3 md:p-5 rounded-2xl border border-gray-800 bg-gray-900/50 text-center">
+                <i class="fas fa-passport text-xl md:text-2xl text-so mb-2"></i>
+                <h3 class="font-bold mb-1 text-xs md:text-sm">신분증</h3>
+                <p class="text-[9px] md:text-[10px] text-gray-500">여권/면허/민증</p>
+            </div>
+            <div onclick="selectMode('resume')" id="mode-resume" class="mode-card cursor-pointer p-3 md:p-5 rounded-2xl border border-gray-800 bg-gray-900/50 text-center">
+                <i class="fas fa-file-alt text-xl md:text-2xl text-so mb-2"></i>
+                <h3 class="font-bold mb-1 text-xs md:text-sm">이력서/컬러</h3>
+                <p class="text-[9px] md:text-[10px] text-gray-500">자유로운 스타일</p>
+            </div>
+            <div class="mode-card p-3 md:p-5 rounded-2xl border border-gray-800 bg-gray-900/50 text-center opacity-40 cursor-not-allowed">
+                <i class="fas fa-globe text-xl md:text-2xl text-gray-600 mb-2"></i>
+                <h3 class="font-bold mb-1 text-xs md:text-sm text-gray-600">비자</h3>
+                <p class="text-[9px] md:text-[10px] text-gray-600">Coming Soon</p>
+            </div>
+            <div onclick="selectMode('profile')" id="mode-profile" class="mode-card cursor-pointer p-3 md:p-5 rounded-2xl border border-gray-800 bg-gray-900/50 text-center">
+                <i class="fas fa-user-tie text-xl md:text-2xl text-so mb-2"></i>
+                <h3 class="font-bold mb-1 text-xs md:text-sm">프로필</h3>
+                <p class="text-[9px] md:text-[10px] text-gray-500">컨셉 의상/포즈</p>
+            </div>
+            <div onclick="selectMode('restore')" id="mode-restore" class="mode-card cursor-pointer p-3 md:p-5 rounded-2xl border border-gray-800 bg-gray-900/50 text-center">
+                <i class="fas fa-history text-xl md:text-2xl text-so mb-2"></i>
+                <h3 class="font-bold mb-1 text-xs md:text-sm">복원</h3>
+                <p class="text-[9px] md:text-[10px] text-gray-500">오래된 사진</p>
+            </div>
+        </div>
+
+        <!-- Service Card (모바일: 패딩 축소) -->
+        <div class="w-full max-w-3xl so-glow bg-gray-900 border border-so/30 rounded-2xl md:rounded-3xl p-4 md:p-8 lg:p-12">
+            
+            <!-- 이미지 입력 (모드별 다름) -->
+            <div class="mb-8" id="input-section">
+                <!-- 증명사진: 카메라 촬영 -->
+                <div id="camera-section" class="hidden">
+                    <label class="block text-sm font-bold mb-3 text-gray-300">
+                        <i class="fas fa-camera mr-2"></i>카메라로 촬영하기
+                    </label>
+                    <div class="relative border-2 border-so/30 rounded-2xl overflow-hidden bg-black">
+                        <video id="camera-preview" autoplay playsinline class="w-full"></video>
+                        <canvas id="camera-canvas" class="hidden"></canvas>
+                        
+                        <!-- 얼굴 가이드 오버레이 -->
+                        <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                            <div class="w-64 h-80 border-4 border-so/50 rounded-2xl"></div>
+                        </div>
+                        
+                        <!-- 촬영 컨트롤 (모바일: 큰 버튼) -->
+                        <div id="camera-controls" class="absolute bottom-0 left-0 right-0 p-4 md:p-6 bg-gradient-to-t from-black/80 to-transparent flex justify-center gap-3 md:gap-4">
+                            <button onclick="capturePhoto()" class="flex-1 md:flex-none px-6 md:px-8 py-4 md:py-3 bg-so rounded-full text-white font-bold hover:bg-so/80 transition-all text-sm md:text-base">
+                                <i class="fas fa-camera mr-2"></i>촬영
+                            </button>
+                            <button onclick="stopCamera()" class="px-6 py-4 md:py-3 bg-gray-800 rounded-full text-white hover:bg-gray-700 transition-all">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button onclick="startCamera()" id="start-camera-btn" class="w-full mt-4 py-4 bg-gray-800 border border-gray-700 rounded-2xl hover:bg-gray-700 transition-colors">
+                        <i class="fas fa-video mr-2"></i>카메라 시작
+                    </button>
+                </div>
+
+                <!-- 프로필/복원: 파일 업로드 -->
+                <div id="upload-section" class="hidden">
+                    <label class="block text-sm font-bold mb-3 text-gray-300">사진 업로드</label>
+                    <div class="relative border-2 border-dashed border-gray-700 rounded-2xl p-8 text-center hover:border-so/50 transition-colors cursor-pointer" onclick="document.getElementById('image-input').click()">
+                        <input type="file" id="image-input" accept="image/*" class="hidden" onchange="handleImageUpload(event)">
+                        <div id="upload-placeholder">
+                            <i class="fas fa-cloud-upload-alt text-5xl text-gray-600 mb-4"></i>
+                            <p class="text-gray-400 text-sm">클릭하거나 드래그하여 사진을 업로드하세요</p>
+                            <p class="text-gray-600 text-xs mt-2">JPG, PNG 지원 (최대 10MB)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 미리보기 (공통) -->
+                <div id="preview-container" class="hidden mt-6">
+                    <div class="border border-gray-700 rounded-2xl p-4 bg-gray-900/50">
+                        <img id="preview-image" src="" class="max-w-full max-h-64 mx-auto rounded-xl">
+                        <button onclick="clearImage()" class="w-full mt-4 px-4 py-2 bg-gray-800 rounded-lg text-sm hover:bg-gray-700">
+                            <i class="fas fa-redo mr-2"></i>다시 촬영/선택
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 옵션 선택 (모드별로 다름) -->
+            <div id="options-container" class="space-y-4 mb-6"></div>
+
+            <button 
+                onclick="processPhoto()" 
+                id="process-btn"
+                disabled
+                class="w-full py-5 md:py-4 bg-gradient-to-r from-so via-purple-500 to-ai text-white font-black rounded-2xl text-sm md:text-base uppercase tracking-widest hover:shadow-lg hover:shadow-so/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+                <i class="fas fa-magic mr-2"></i>사진 처리하기
+            </button>
+
+            <div id="status" class="text-center mt-4 text-sm text-gray-400"></div>
+        </div>
+
+        <!-- Result -->
+        <div id="result-container" class="w-full max-w-3xl mt-8 hidden">
+            <div class="bg-gray-900 border border-gray-800 rounded-3xl p-6">
+                <img id="generated-image" src="" alt="Generated" class="w-full rounded-2xl">
+                <div class="flex justify-between items-center mt-4">
+                    <span class="text-xs text-gray-500">생성 완료</span>
+                    <button onclick="downloadImage()" class="px-4 py-2 bg-so text-white rounded-lg text-sm font-bold hover:bg-so/80 transition-colors">
+                        <i class="fas fa-download mr-2"></i>다운로드
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="border-t border-white/5 py-8 px-6 text-center text-gray-500 text-xs">
+        <p>© 2026 MONK STUDIO. SO-SO AI PHOTO</p>
+    </footer>
+
+    <script>
+        let currentMode = 'official';
+        let uploadedImage = null;
+        let cameraStream = null;
+        const API_URL = 'https://monk-imagen-proxy.gdsajin.workers.dev'; // 추후 I2I 파이프라인으로 교체
+
+        function selectMode(mode) {
+            currentMode = mode;
+            document.querySelectorAll('.mode-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            document.getElementById('mode-' + mode).classList.add('active');
+            
+            // 이전 입력 초기화
+            clearImage();
+            stopCamera();
+            
+            // 모드별 입력 방식 전환 (신분증/이력서는 카메라 촬영)
+            if (mode === 'official' || mode === 'resume') {
+                document.getElementById('camera-section').classList.remove('hidden');
+                document.getElementById('upload-section').classList.add('hidden');
+            } else {
+                document.getElementById('camera-section').classList.add('hidden');
+                document.getElementById('upload-section').classList.remove('hidden');
+            }
+            
+            renderOptions();
+        }
+
+        // 규격 DB
+        const photoSpecs = {
+            official: {
+                name: "신분증용 (여권/면허/민증)",
+                size: "3.5×4.5cm",
+                faceRatio: "70-80%",
+                background: "순백색",
+                strict: true,
+                rules: [
+                    "✓ 정면 응시 (눈 뜨기)",
+                    "✓ 눈썹 완전히 보여야 함",
+                    "✓ 살짝 미소 가능 (치아 미노출)",
+                    "✓ 안경 제거 필수",
+                    "✓ 이마 완전히 덮으면 안됨",
+                    "✓ 모자/스카프 등 얼굴 라인 가림 금지",
+                    "✓ 그림자 없이",
+                    "✓ 최근 6개월 이내"
+                ]
+            },
+            resume: {
+                name: "이력서/컬러증명",
+                size: "3×4cm",
+                faceRatio: "60-75%",
+                background: "자유 (흰색/회색/컬러)",
+                strict: false,
+                rules: [
+                    "✓ 자연스러운 표정",
+                    "✓ 미소 가능",
+                    "✓ 안경 착용 가능",
+                    "✓ 의상 자유 (깔끔한 복장 권장)",
+                    "✓ 헤어 스타일 자유",
+                    "✓ 배경색 선택 가능"
+                ]
+            },
+            resume: {
+                name: "이력서",
+                size: "30×40mm",
+                faceRatio: "60-70%",
+                background: "자유",
+                rules: [
+                    "✓ 자연스러운 표정",
+                    "✓ 약간의 미소 가능",
+                    "✓ 안경 착용 가능",
+                    "✓ 깔끔한 복장"
+                ]
+            }
+        };
+
+        function renderOptions() {
+            const container = document.getElementById('options-container');
+            
+            if (currentMode === 'official') {
+                const spec = photoSpecs.official;
+                container.innerHTML = `
+                    <div class="bg-gray-950/50 border border-gray-800 rounded-xl p-4 mb-4">
+                        <h4 class="text-sm font-bold text-so mb-3">${spec.name} 규격</h4>
+                        <div class="text-xs text-gray-400 space-y-1 mb-3">
+                            <p><strong>크기:</strong> ${spec.size}</p>
+                            <p><strong>얼굴 비율:</strong> ${spec.faceRatio}</p>
+                            <p><strong>배경:</strong> ${spec.background}</p>
+                        </div>
+                        <div class="text-xs text-gray-300 space-y-1">
+                            ${spec.rules.map(rule => `<p>${rule}</p>`).join('')}
+                        </div>
+                    </div>
+                    <select id="background" class="bg-gray-950 border border-gray-700 rounded-xl px-4 py-3 text-white text-sm focus:border-so focus:outline-none w-full">
+                        <option value="white">순백색 배경</option>
+                    </select>
+                `;
+            } else if (currentMode === 'resume') {
+                const spec = photoSpecs.resume;
+                container.innerHTML = `
+                    <div class="bg-gray-950/50 border border-gray-800 rounded-xl p-4 mb-4">
+                        <h4 class="text-sm font-bold text-so mb-3">${spec.name} 규격</h4>
+                        <div class="text-xs text-gray-400 space-y-1 mb-3">
+                            <p><strong>크기:</strong> ${spec.size}</p>
+                            <p><strong>얼굴 비율:</strong> ${spec.faceRatio}</p>
+                            <p><strong>배경:</strong> ${spec.background}</p>
+                        </div>
+                        <div class="text-xs text-gray-300 space-y-1">
+                            ${spec.rules.map(rule => `<p>${rule}</p>`).join('')}
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="text-xs text-gray-400 mb-2 block">배경색 선택</label>
+                            <select id="background" class="bg-gray-950 border border-gray-700 rounded-xl px-4 py-3 text-white text-sm focus:border-so focus:outline-none w-full">
+                                <option value="white">화이트</option>
+                                <option value="gray">그레이</option>
+                                <option value="blue">블루</option>
+                                <option value="beige">베이지</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-400 mb-2 block">의상 스타일</label>
+                            <select id="outfit-style" class="bg-gray-950 border border-gray-700 rounded-xl px-4 py-3 text-white text-sm focus:border-so focus:outline-none w-full">
+                                <option value="business">비즈니스 정장</option>
+                                <option value="casual-formal">캐주얼 정장</option>
+                                <option value="shirt">셔츠</option>
+                                <option value="natural">자연스럽게</option>
+                            </select>
+                        </div>
+                    </div>
+                `;
+            } else if (currentMode === 'profile') {
+                container.innerHTML = `
+                    <div class="grid grid-cols-2 gap-4">
+                        <select id="outfit" class="bg-gray-950 border border-gray-700 rounded-xl px-4 py-3 text-white text-sm focus:border-so focus:outline-none">
+                            <option value="suit">정장</option>
+                            <option value="business-casual">비즈니스 캐주얼</option>
+                            <option value="casual">캐주얼</option>
+                            <option value="fashion">패션 컨셉</option>
+                        </select>
+                        <select id="pose" class="bg-gray-950 border border-gray-700 rounded-xl px-4 py-3 text-white text-sm focus:border-so focus:outline-none">
+                            <option value="standard">기본 포즈</option>
+                            <option value="confident">자신감 있는</option>
+                            <option value="friendly">친근한</option>
+                            <option value="professional">프로페셔널</option>
+                        </select>
+                    </div>
+                    <select id="background-profile" class="bg-gray-950 border border-gray-700 rounded-xl px-4 py-3 text-white text-sm focus:border-so focus:outline-none">
+                        <option value="studio">스튜디오 배경</option>
+                        <option value="office">오피스 배경</option>
+                        <option value="outdoor">야외 배경</option>
+                        <option value="minimal">미니멀 배경</option>
+                    </select>
+                `;
+            } else if (currentMode === 'restore') {
+                container.innerHTML = `
+                    <div class="space-y-3">
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="checkbox" id="colorize" class="w-5 h-5 rounded">
+                            <span class="text-sm">흑백 → 컬러 변환</span>
+                        </label>
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="checkbox" id="enhance" class="w-5 h-5 rounded" checked>
+                            <span class="text-sm">화질 향상</span>
+                        </label>
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="checkbox" id="repair" class="w-5 h-5 rounded" checked>
+                            <span class="text-sm">손상 부분 복구</span>
+                        </label>
+                    </div>
+                `;
+            }
+        }
+
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (file.size > 10 * 1024 * 1024) {
+                alert('파일 크기는 10MB 이하여야 합니다.');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                uploadedImage = e.target.result;
+                document.getElementById('preview-image').src = uploadedImage;
+                document.getElementById('upload-placeholder').classList.add('hidden');
+                document.getElementById('preview-container').classList.remove('hidden');
+                document.getElementById('process-btn').disabled = false;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function clearImage() {
+            uploadedImage = null;
+            document.getElementById('image-input').value = '';
+            document.getElementById('preview-container').classList.add('hidden');
+            document.getElementById('process-btn').disabled = true;
+        }
+
+        // 카메라 기능
+        async function startCamera() {
+            try {
+                cameraStream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        facingMode: 'user',
+                        width: { ideal: 1280 },
+                        height: { ideal: 1280 }
+                    } 
+                });
+                
+                const video = document.getElementById('camera-preview');
+                video.srcObject = cameraStream;
+                
+                document.getElementById('start-camera-btn').classList.add('hidden');
+                document.getElementById('camera-controls').classList.remove('hidden');
+                
+            } catch (error) {
+                alert('카메라 접근 권한이 필요합니다: ' + error.message);
+            }
+        }
+
+        function stopCamera() {
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                cameraStream = null;
+                document.getElementById('camera-preview').srcObject = null;
+                document.getElementById('start-camera-btn').classList.remove('hidden');
+                document.getElementById('camera-controls').classList.add('hidden');
+            }
+        }
+
+        function capturePhoto() {
+            const video = document.getElementById('camera-preview');
+            const canvas = document.getElementById('camera-canvas');
+            const context = canvas.getContext('2d');
+            
+            // 캔버스 크기 설정
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            
+            // 현재 프레임 캡처
+            context.drawImage(video, 0, 0);
+            
+            // 이미지로 변환
+            uploadedImage = canvas.toDataURL('image/jpeg', 0.95);
+            
+            // 미리보기 표시
+            document.getElementById('preview-image').src = uploadedImage;
+            document.getElementById('preview-container').classList.remove('hidden');
+            document.getElementById('process-btn').disabled = false;
+            
+            // 카메라 중지
+            stopCamera();
+        }
+
+        async function processPhoto() {
+            if (!uploadedImage) {
+                alert('사진을 먼저 업로드해주세요.');
+                return;
+            }
+
+            const status = document.getElementById('status');
+            const btn = document.getElementById('process-btn');
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>처리 중...';
+            status.textContent = 'AI가 사진을 처리하고 있습니다...';
+            status.classList.add('text-so');
+
+            try {
+                // TODO: 실제 I2I 파이프라인 구현 필요
+                // Vertex AI: 얼굴 인식 → 배경 제거 → 규격 적용 → 의상 변경 → 포즈 생성
+                
+                await new Promise(resolve => setTimeout(resolve, 2000)); // 시뮬레이션
+                
+                // 임시: 업로드된 이미지를 결과로 표시 (실제로는 처리된 이미지)
+                document.getElementById('generated-image').src = uploadedImage;
+                document.getElementById('result-container').classList.remove('hidden');
+                status.textContent = '✓ 처리 완료! (데모 모드 - 실제 I2I 파이프라인 연결 필요)';
+                status.classList.add('text-yellow-400');
+
+            } catch (error) {
+                status.textContent = `❌ 오류: ${error.message}`;
+                status.classList.add('text-red-400');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-magic mr-2"></i>사진 처리하기';
+            }
+        }
+
+        function downloadImage() {
+            const img = document.getElementById('generated-image');
+            const link = document.createElement('a');
+            link.href = img.src;
+            link.download = `ai-photo-${currentMode}-${Date.now()}.png`;
+            link.click();
+        }
+
+        // 초기화
+        renderOptions();
+        // 증명사진 모드 기본값
+        document.getElementById('camera-section').classList.remove('hidden');
+    </script>
+
+</body>
+</html>

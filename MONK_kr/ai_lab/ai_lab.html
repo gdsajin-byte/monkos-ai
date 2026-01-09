@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI LAB | MONK STUDIO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        monk: '#FBBF24',
+                        ai: '#60A5FA',
+                        local: '#10B981',
+                        mvp: '#F472B6',
+                        gray: { 950: '#05070A', 900: '#0B0F1A', 800: '#1F2937' }
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .muse-card { transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); cursor: pointer; position: relative; }
+        .muse-card:hover { transform: translateY(-10px) scale(1.02); z-index: 20; }
+        .muse-img { transition: all 0.8s ease; filter: grayscale(100%) brightness(0.3); }
+        .muse-card:hover .muse-img, .active-muse .muse-img { filter: grayscale(0%) brightness(0.8); }
+        .persona-info { opacity: 0; transition: all 0.5s ease; transform: translateY(20px); }
+        .muse-card:hover .persona-info { opacity: 1; transform: translateY(0); }
+        #ssanga-panel { transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+        .panel-open { transform: translateX(0) !important; }
+        @keyframes bounce-subtle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        .btn-enter { animation: bounce-subtle 2s infinite; }
+        main.hidden-on-load { display: none; }
+    </style>
+</head>
+<body class="bg-gray-950 text-gray-100 min-h-screen flex flex-col overflow-x-hidden font-sans">
+
+    <header class="sticky top-0 z-40 bg-gray-950/90 backdrop-blur-md border-b border-gray-800">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
+            <a href="../index.html" class="flex items-center group transition">
+                <span class="text-2xl font-black text-white tracking-tighter">MONK<span class="text-ai">.kr</span></span>
+            </a>
+            <div class="hidden md:flex items-center space-x-6 text-[10px] font-black tracking-widest text-gray-500 uppercase">
+                <span class="flex items-center"><span class="w-2 h-2 bg-ai rounded-full mr-2 animate-pulse"></span> Cloud</span>
+                <span class="flex items-center text-local" id="status-5090"><span class="w-2 h-2 bg-gray-600 rounded-full mr-2"></span> Monkos.ai</span>
+                <button onclick="toggleChatPanel()" class="ml-4 text-local hover:text-white transition-colors" title="Monkos AI 어시스턴트">
+                    <i class="fas fa-robot"></i>
+                </button>
+                <button onclick="resetVisitor()" class="text-gray-600 hover:text-ai transition-colors" title="Reset Visitor Info"><i class="fas fa-redo"></i></button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        <section class="py-20 px-6 text-center">
+            <h1 class="text-5xl md:text-8xl font-black mb-6 text-white tracking-tighter leading-tight">
+                MONKOS AI
+            </h1>
+            <p class="text-lg text-gray-500 font-light max-w-2xl mx-auto">
+                생성형 AI의 무한한 가능성을 경험하세요. 증명사진부터 모델 에이전시까지 모든 것이 한곳에서.
+            </p>
+        </section>
+
+        <section class="max-w-7xl mx-auto px-6 pb-24 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            
+            <!-- 1. 쌍아 (B2B Kiosk Solution) -->
+            <a href="./ssang_a/ssang_a.html" class="group relative rounded-[2.5rem] overflow-hidden aspect-[3/4] shadow-lg cursor-pointer block bg-gray-900 border border-gray-800 hover:border-ai/50 transition-all">
+                <div class="absolute inset-0 bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 opacity-30 group-hover:opacity-50 transition-opacity"></div>
+                <div class="absolute inset-0 flex flex-col items-center justify-center p-8 text-center">
+                    <div class="mb-6 text-5xl">
+                        <i class="fas fa-store text-ai"></i>
+                    </div>
+                    <h3 class="text-3xl font-black text-white mb-3">쌍아</h3>
+                    <p class="text-xs text-gray-300 leading-relaxed mb-6">
+                        소상공인 키오스크 솔루션<br>결제 · 주문 · 회원관리
+                    </p>
+                    <div class="py-2 px-6 bg-ai text-white text-[9px] font-black rounded-full uppercase tracking-widest hover:bg-white hover:text-ai transition-all">B2B Solution</div>
+                </div>
+            </a>
+
+            <!-- 2. AI Photolab -->
+            <a href="./so_so/so_so.html" onclick="sessionStorage.setItem('MONK_AUTH_TOKEN', 'SECURE_GATE_OPEN_so_so')" class="group relative rounded-[2.5rem] overflow-hidden aspect-[3/4] shadow-lg cursor-pointer block bg-gray-900 border border-gray-800 hover:border-ai/50 transition-all">
+                <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=800" alt="AI Photolab" class="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:opacity-60 transition-opacity">
+                <div class="absolute inset-0 bg-gradient-to-t from-gray-950 via-transparent to-transparent"></div>
+                <div class="absolute inset-0 flex flex-col items-center justify-center p-8 text-center">
+                    <div class="mb-6 text-5xl">
+                        <i class="fas fa-camera text-ai"></i>
+                    </div>
+                    <h3 class="text-3xl font-black text-white mb-3">AI Photolab</h3>
+                    <p class="text-xs text-gray-300 leading-relaxed mb-6">
+                        증명사진 · 프로필<br>사진 복원 · 편집
+                    </p>
+                    <div class="py-2 px-6 bg-ai text-white text-[9px] font-black rounded-full uppercase tracking-widest hover:bg-white hover:text-ai transition-all">Enter Lab</div>
+                </div>
+            </a>
+
+            <!-- 3. LookBook 제작 -->
+            <div class="group relative rounded-[2.5rem] overflow-hidden aspect-[3/4] shadow-lg cursor-pointer block bg-gray-900 border border-gray-800 hover:border-ai/50 transition-all">
+                <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=800" alt="LookBook" class="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:opacity-60 transition-opacity">
+                <div class="absolute inset-0 bg-gradient-to-t from-gray-950 via-transparent to-transparent"></div>
+                <div class="absolute inset-0 flex flex-col items-center justify-center p-8 text-center">
+                    <div class="mb-6 text-5xl">
+                        <i class="fas fa-images text-ai"></i>
+                    </div>
+                    <h3 class="text-3xl font-black text-white mb-3">LookBook</h3>
+                    <p class="text-xs text-gray-300 leading-relaxed mb-6">
+                        패션 · 뷰티 룩북<br>자동 편집 및 스타일링
+                    </p>
+                    <div class="py-2 px-6 bg-ai text-white text-[9px] font-black rounded-full uppercase tracking-widest">Coming Soon</div>
+                </div>
+            </div>
+
+            <!-- 4. AI 모델 에이전시 -->
+            <div class="group relative rounded-[2.5rem] overflow-hidden aspect-[3/4] shadow-lg cursor-pointer block bg-gray-900 border border-gray-800 hover:border-ai/50 transition-all">
+                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=800" alt="AI Model Agency" class="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:opacity-60 transition-opacity">
+                <div class="absolute inset-0 bg-gradient-to-t from-gray-950 via-transparent to-transparent"></div>
+                <div class="absolute inset-0 flex flex-col items-center justify-center p-8 text-center">
+                    <div class="mb-6 text-5xl">
+                        <i class="fas fa-star text-ai"></i>
+                    </div>
+                    <h3 class="text-3xl font-black text-white mb-3">AI Model</h3>
+                    <p class="text-xs text-gray-300 leading-relaxed mb-6">
+                        AI 모델 에이전시<br>콘텐츠 제작 · 활용
+                    </p>
+                    <div class="py-2 px-6 bg-ai text-white text-[9px] font-black rounded-full uppercase tracking-widest">Coming Soon</div>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- Visitor Registration Modal -->
+    <div id="visitor-modal" class="fixed inset-0 z-[200] bg-gray-950/90 backdrop-blur-xl flex items-center justify-center hidden opacity-0 transition-opacity duration-500">
+        <div class="w-full max-w-md p-8 bg-gray-900 border border-ai/20 rounded-[2rem] shadow-2xl transform scale-95 transition-transform duration-500" id="visitor-modal-content">
+            <div class="text-center mb-8">
+                <h2 class="text-2xl font-black text-white tracking-tighter mb-2">VISITOR REGISTRATION</h2>
+                <p class="text-xs text-gray-400 uppercase tracking-widest">Monk Studio AI Lab Access Protocol</p>
+            </div>
+            <form id="visitor-form" class="space-y-4" onsubmit="submitVisitorInfo(event)">
+                <div>
+                    <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Name</label>
+                    <input type="text" id="v-name" required class="w-full bg-gray-950 border border-gray-800 rounded-xl px-4 py-3 text-white focus:border-ai focus:outline-none transition-colors text-sm" placeholder="이름을 입력하세요">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Birth Year</label>
+                        <select id="v-age" required class="w-full bg-gray-950 border border-gray-800 rounded-xl px-4 py-3 text-white focus:border-ai focus:outline-none transition-colors text-sm appearance-none cursor-pointer">
+                            <option value="" disabled selected>출생연도</option>
+                            <script>
+                                const currentYear = new Date().getFullYear();
+                                for (let year = currentYear; year >= 1940; year--) {
+                                    document.write(`<option value="${year}">${year}년생</option>`);
+                                }
+                            </script>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Occupation</label>
+                        <select id="v-job" required class="w-full bg-gray-950 border border-gray-800 rounded-xl px-4 py-3 text-white focus:border-ai focus:outline-none transition-colors text-sm appearance-none cursor-pointer">
+                            <option value="" disabled selected>직업 선택</option>
+                            <option value="학생">학생</option>
+                            <option value="직장인">직장인</option>
+                            <option value="개인사업자">개인사업자</option>
+                            <option value="기업">기업</option>
+                            <option value="학원">학원</option>
+                            <option value="병원">병원</option>
+                            <option value="프리랜서">프리랜서</option>
+                            <option value="기타">기타</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Purpose</label>
+                    <select id="v-purpose" required class="w-full bg-gray-950 border border-gray-800 rounded-xl px-4 py-3 text-white focus:border-ai focus:outline-none transition-colors text-sm appearance-none cursor-pointer">
+                        <option value="" disabled selected>방문 목적</option>
+                        <option value="AI 사진관">AI 사진관 (증명/프로필/복원)</option>
+                        <option value="AI Model Agency">AI Model Agency</option>
+                        <option value="AI 이미지 생성">AI 이미지 생성</option>
+                        <option value="포트폴리오 제작">포트폴리오 제작</option>
+                        <option value="상업용 콘텐츠">상업용 콘텐츠</option>
+                        <option value="B2B 제휴 문의">B2B 제휴 문의</option>
+                        <option value="기술 체험">기술 체험</option>
+                        <option value="기타">기타</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full py-4 bg-ai text-white font-black rounded-xl uppercase tracking-widest mt-6 hover:bg-white hover:text-ai transition-all shadow-lg shadow-ai/20">
+                    Access Granted
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="ssanga-panel" class="fixed inset-y-0 right-0 w-full md:w-[600px] bg-gray-950 z-[100] translate-x-full shadow-[-20px_0_50px_rgba(0,0,0,0.5)] flex flex-col border-l border-white/5">
+        <div class="p-8 border-b border-white/5 flex justify-between items-center">
+            <h2 class="text-white font-black text-xs tracking-[0.3em] uppercase">Security Gateway</h2>
+            <button onclick="closeSsanga()" class="text-gray-500 hover:text-white"><i class="fas fa-times text-2xl"></i></button>
+        </div>
+        <div id="dialogue-box" class="flex-grow p-8 overflow-y-auto space-y-8 scrollbar-hide">
+            <div class="bg-white/[0.03] border border-white/5 p-8 rounded-[2.5rem] text-gray-300 leading-relaxed">
+                반갑습니다. 작업을 위해 필요한 엔진 권한을 선택하십시오. <br>보안 등급에 따라 인증 절차가 추가될 수 있습니다.
+            </div>
+        </div>
+    </div>
+
+    <!-- Local LLM Chat Panel -->
+    <div id="llm-chat-panel" class="fixed inset-y-0 right-0 w-full md:w-[500px] bg-gray-950 z-[110] translate-x-full shadow-[-20px_0_50px_rgba(0,0,0,0.5)] flex flex-col border-l border-local/20 transition-transform duration-300">
+        <!-- Header -->
+        <div class="p-6 border-b border-local/10 flex justify-between items-center bg-gray-900/50">
+            <div class="flex items-center space-x-3">
+                <div class="w-2 h-2 bg-local rounded-full animate-pulse"></div>
+                <h2 class="text-white font-black text-sm tracking-tight">Monkos.ai</h2>
+                <span class="text-[10px] text-gray-500 font-mono ml-2" id="llm-model">v1.0</span>
+            </div>
+            <button onclick="toggleChatPanel()" class="text-gray-500 hover:text-white transition-colors"><i class="fas fa-times text-xl"></i></button>
+        </div>
+
+        <!-- Chat Area -->
+        <div id="llm-messages" class="flex-grow overflow-y-auto p-6 space-y-4 scrollbar-hide">
+            <div class="flex justify-start">
+                <div class="bg-gray-800 px-4 py-2 rounded-2xl rounded-tl-sm max-w-xs text-sm text-gray-200">
+                    안녕하세요! Monkos.ai 입니다 🤖✨
+                </div>
+            </div>
+            <div class="flex justify-start">
+                <div class="bg-gray-800/50 px-4 py-2 rounded-2xl rounded-tl-sm max-w-xs text-xs text-gray-400">
+                    <i class="fas fa-cloud mr-2"></i> Powered by Workers AI
+                </div>
+            </div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="p-4 border-t border-local/10 bg-gray-900/50">
+            <div class="flex gap-2">
+                <input 
+                    type="text" 
+                    id="llm-input" 
+                    placeholder="메시지를 입력하세요..." 
+                    class="flex-1 bg-gray-800 border border-gray-700 rounded-2xl px-4 py-2 text-white text-sm focus:border-local focus:outline-none transition-colors"
+                    onkeypress="if(event.key==='Enter') sendLLMMessage()"
+                >
+                <button 
+                    onclick="sendLLMMessage()" 
+                    class="bg-local hover:bg-local/80 text-white rounded-2xl px-4 py-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    id="llm-send-btn"
+                >
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+            <div class="text-[10px] text-gray-500 mt-2 text-center">
+                <span id="llm-connection-status">서버 연결 중...</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============ GEMINI CHAT LOGIC (Cloudflare Workers) ============
+        let llmConnected = false;
+        const GEMINI_API_URL = 'https://monk-gemini-proxy.gdsajin.workers.dev';
+
+        async function checkLLMConnection() {
+            try {
+                // Gemini Workers 헬스체크 (OPTIONS 요청)
+                const response = await fetch(GEMINI_API_URL, {
+                    method: 'OPTIONS',
+                    mode: 'cors'
+                });
+                
+                if (response.ok || response.status === 200) {
+                    llmConnected = true;
+                    document.getElementById('status-5090').innerHTML = '<span class="flex items-center text-local"><span class="w-2 h-2 bg-local rounded-full mr-2 animate-pulse"></span> Monkos Ready</span>';
+                    document.getElementById('llm-connection-status').textContent = '✓ Monkos.ai 연결됨';
+                    document.getElementById('llm-send-btn').disabled = false;
+                    addLLMMessage('bot', '안녕하세요! Monkos.ai 입니다. 무엇을 도와드릴까요? 🤖✨');
+                } else {
+                    throw new Error('Workers not responding');
+                }
+            } catch (error) {
+                // Workers가 아직 배포되지 않았을 수 있음
+                console.warn('Monkos.ai 연결 실패:', error);
+                document.getElementById('status-5090').innerHTML = '<span class="flex items-center"><span class="w-2 h-2 bg-yellow-600 rounded-full mr-2 animate-pulse"></span> Setup Needed</span>';
+                document.getElementById('llm-connection-status').textContent = '⚠️ Workers 배포 필요 (README.md 참고)';
+                document.getElementById('llm-send-btn').disabled = true;
+                addLLMMessage('bot', '⚙️ Cloudflare Workers 배포가 필요합니다. <code>cloudflare-workers/README.md</code>를 참고하세요.');
+            }
+        }
+
+        function toggleChatPanel() {
+            const panel = document.getElementById('llm-chat-panel');
+            if (panel.classList.contains('translate-x-full')) {
+                panel.classList.remove('translate-x-full');
+                document.body.style.overflow = 'hidden';
+            } else {
+                panel.classList.add('translate-x-full');
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        function addLLMMessage(role, content) {
+            const messagesDiv = document.getElementById('llm-messages');
+            const messageEl = document.createElement('div');
+            messageEl.className = role === 'user' ? 'flex justify-end' : 'flex justify-start';
+            
+            const bgClass = role === 'user' 
+                ? 'bg-local/30 border border-local/50 text-white rounded-2xl rounded-br-sm' 
+                : 'bg-gray-800 text-gray-200 rounded-2xl rounded-tl-sm';
+            
+            messageEl.innerHTML = `
+                <div class="${bgClass} px-4 py-2 max-w-xs text-sm break-words">
+                    ${content}
+                </div>
+            `;
+            
+            messagesDiv.appendChild(messageEl);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        async function sendLLMMessage() {
+            const input = document.getElementById('llm-input');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            if (!llmConnected) {
+                addLLMMessage('bot', '⚠️ 서버가 연결되지 않았습니다.');
+                return;
+            }
+
+            // Add user message
+            addLLMMessage('user', message);
+            input.value = '';
+            
+            // Show loading indicator
+            const messagesDiv = document.getElementById('llm-messages');
+            const loadingEl = document.createElement('div');
+            loadingEl.className = 'flex justify-start';
+            loadingEl.id = 'llm-loading';
+            loadingEl.innerHTML = `
+                <div class="bg-gray-800 px-4 py-2 rounded-2xl rounded-tl-sm text-gray-400 text-sm">
+                    <i class="fas fa-spinner fa-spin mr-2"></i>생각 중...
+                </div>
+            `;
+            messagesDiv.appendChild(loadingEl);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+            try {
+                const response = await fetch(GEMINI_API_URL, {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        prompt: message,
+                        model: 'gemini-2.0-flash-exp'
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || `API 오류: ${response.status}`);
+                }
+
+                const data = await response.json();
+                document.getElementById('llm-loading')?.remove();
+                addLLMMessage('bot', data.response || '응답을 생성할 수 없습니다.');
+
+            } catch (error) {
+                document.getElementById('llm-loading')?.remove();
+                addLLMMessage('bot', `❌ 오류: ${error.message}`);
+                console.error('Gemini API Error:', error);
+            }
+        }
+
+        // ============ ORIGINAL AI LAB LOGIC ============
+        function openSsanga() { document.getElementById('ssanga-panel').classList.add('panel-open'); document.body.style.overflow = 'hidden'; }
+        function closeSsanga() { document.getElementById('ssanga-panel').classList.remove('panel-open'); document.body.style.overflow = 'auto'; }
+
+        function startAuth(id) {
+            const box = document.getElementById('dialogue-box');
+            const authDiv = document.createElement('div');
+            authDiv.className = 'pt-6 space-y-4 animate-fade-in';
+            authDiv.innerHTML = `
+                <div class="bg-white/[0.03] p-6 rounded-2xl text-xs text-gray-400 border border-white/5">보안 세션 토큰을 생성합니다...</div>
+                <button onclick="finalize('${id}')" class="w-full py-5 bg-white text-gray-950 rounded-2xl font-black text-[10px] uppercase tracking-widest">인증 완료 및 입장권 발행</button>
+            `;
+            box.appendChild(authDiv);
+            box.scrollTop = box.scrollHeight;
+        }
+
+        function finalize(id) {
+            // 1. 보안 토큰 저장 (폴더명과 일치)
+            sessionStorage.setItem('MONK_AUTH_TOKEN', 'SECURE_GATE_OPEN_' + id);
+            
+            // 2. 메인 카드 업데이트
+            const el = document.getElementById('muse-' + id);
+            el.classList.add('active-muse', 'border-ai/50', 'shadow-[0_0_40px_rgba(96,165,250,0.2)]');
+            el.querySelector('h3').classList.replace('text-white/10', 'text-white');
+            
+            // 3. 실제 물리 경로로 연결되는 입장 버튼 생성
+            const container = el.querySelector('.auth-btn-container');
+            container.innerHTML = `
+                <a href="./${id}/${id}.html" class="btn-enter block w-full py-3 bg-ai text-white text-[10px] font-black rounded-full uppercase tracking-widest mt-4 shadow-lg shadow-ai/20 text-center hover:bg-white hover:text-ai transition-all">
+                    Enter ${id.replace('_','').toUpperCase()} Lab
+                </a>
+            `;
+            
+            setTimeout(() => { closeSsanga(); alert(id.toUpperCase() + ' 실험실 입장 권한이 부여되었습니다.'); }, 500);
+        }
+
+        function checkVisitor() {
+            if (!sessionStorage.getItem('MONK_VISITOR_INFO')) {
+                const modal = document.getElementById('visitor-modal');
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    modal.classList.remove('opacity-0');
+                    document.getElementById('visitor-modal-content').classList.remove('scale-95');
+                    document.getElementById('visitor-modal-content').classList.add('scale-100');
+                }, 10);
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.getElementById('main').classList.remove('hidden-on-load');
+            }
+        }
+
+        function submitVisitorInfo(e) {
+            e.preventDefault();
+            const info = {
+                name: document.getElementById('v-name').value,
+                age: document.getElementById('v-age').value,
+                job: document.getElementById('v-job').value,
+                purpose: document.getElementById('v-purpose').value
+            };
+            sessionStorage.setItem('MONK_VISITOR_INFO', JSON.stringify(info));
+            
+            const modal = document.getElementById('visitor-modal');
+            modal.classList.add('opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.getElementById('main').classList.remove('hidden-on-load');
+                document.body.style.overflow = 'auto';
+            }, 500);
+        }
+
+        function resetVisitor() {
+            sessionStorage.removeItem('MONK_VISITOR_INFO');
+            location.reload();
+        }
+
+        // 비정상 진입으로 튕겨온 경우 처리
+        window.onload = function() {
+            checkVisitor();
+            checkLLMConnection(); // ✅ Local LLM 연결 확인
+            if (new URLSearchParams(window.location.search).get('auth_error') === 'true') {
+                setTimeout(() => {
+                    openSsanga();
+                    const box = document.getElementById('dialogue-box');
+                    box.insertAdjacentHTML('afterbegin', `<div class="bg-red-500/10 border border-red-500/50 p-6 rounded-3xl text-red-400 text-xs mb-6 tracking-tight"><i class="fas fa-exclamation-triangle mr-2"></i> 보안 경고: 비정상 진입이 감지되었습니다. 게이트웨이 인증이 필요합니다.</div>`);
+                }, 500);
+            }
+        };
+        
+        // 초기 방문자 체크 (페이지 로드 전 실행)
+        (function() {
+            if (sessionStorage.getItem('MONK_VISITOR_INFO')) {
+                document.documentElement.style.setProperty('--show-main', 'block');
+            }
+        })();
+    </script>
+</body>
+</html>

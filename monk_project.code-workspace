@@ -1,0 +1,21 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/.git": true,
+      "**/.DS_Store": true,
+      "**/node_modules": true,
+      "**/__pycache__": true
+    },
+    "files.watcherExclude": {
+      "**/node_modules/**": true
+    }
+  },
+  "extensions": {
+    "recommendations": []
+  }
+}

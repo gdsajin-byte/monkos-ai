@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>아카데미 - 준비중 | MONK</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        monk: '#FBBF24',
+                        gray: { 950: '#05070A', 900: '#0B0F1A' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .bg-image {
+            background-image: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&q=80&w=2000');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        .pulse-slow {
+            animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+    </style>
+</head>
+<body class="bg-gray-950 text-white min-h-screen">
+
+    <!-- Background Image with Overlay -->
+    <div class="fixed inset-0 bg-image">
+        <div class="absolute inset-0 bg-gradient-to-b from-gray-950/80 via-gray-950/70 to-gray-950/90"></div>
+    </div>
+
+    <!-- Content -->
+    <div class="relative min-h-screen flex flex-col">
+        
+        <!-- Header -->
+        <header class="p-6 border-b border-white/10">
+            <a href="../index.html" class="inline-flex items-center text-white hover:text-monk transition-colors group font-bold tracking-tight">
+                <span>MONK<span class="text-monk">.kr</span></span>
+            </a>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-grow flex items-center justify-center px-6 py-20">
+            <div class="text-center max-w-3xl">
+                
+                <!-- Icon -->
+                <div class="mb-8 flex justify-center">
+                    <div class="relative">
+                        <div class="absolute inset-0 bg-monk/20 rounded-full blur-2xl animate-pulse"></div>
+                        <svg class="w-24 h-24 text-monk relative" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Title -->
+                <h1 class="text-6xl md:text-7xl font-black tracking-tighter mb-6 italic">
+                    <span class="text-white">MONK</span>
+                    <span class="text-monk">_</span>
+                    <span class="text-white">Academy</span>
+                </h1>
+
+                <!-- Label -->
+                <div class="mb-8">
+                    <span class="inline-block px-6 py-2 bg-monk/10 border border-monk/30 rounded-full text-monk text-xs font-bold tracking-[0.3em] uppercase pulse-slow">
+                        Coming Soon
+                    </span>
+                </div>
+
+                <!-- Description -->
+                <p class="text-2xl md:text-3xl font-light text-gray-300 mb-4">
+                    준비중입니다
+                </p>
+                <p class="text-sm md:text-base text-gray-500 leading-relaxed max-w-xl mx-auto">
+                    AI 활용 교육과 미래 크리에이티브 커리큘럼을 준비하고 있습니다.<br>
+                    곧 여러분을 만나뵙겠습니다.
+                </p>
+
+                <!-- Progress Indicator -->
+                <div class="mt-12 flex justify-center space-x-2">
+                    <div class="w-2 h-2 bg-monk rounded-full animate-pulse"></div>
+                    <div class="w-2 h-2 bg-monk/60 rounded-full animate-pulse" style="animation-delay: 0.2s"></div>
+                    <div class="w-2 h-2 bg-monk/30 rounded-full animate-pulse" style="animation-delay: 0.4s"></div>
+                </div>
+
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="p-8 text-center border-t border-white/5">
+            <p class="text-[9px] font-bold text-gray-700 tracking-[0.5em] uppercase">© 2025 MONK STUDIO. All Rights Reserved.</p>
+        </footer>
+
+    </div>
+
+</body>
+</html>
