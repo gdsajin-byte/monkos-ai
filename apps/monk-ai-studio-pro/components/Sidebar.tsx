@@ -68,6 +68,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onApplyVariation,
 }) => {
   const [showAdvancedPrompts, setShowAdvancedPrompts] = React.useState(false);
+
+  // T2I 모드일 때는 프롬프트 자동으로 펼치기
+  React.useEffect(() => {
+    if (mode === 'T2I') {
+      setShowAdvancedPrompts(true);
+    }
+  }, [mode]);
   return (
     <aside style={{ width: `${sidebarWidth}px` }} className="bg-[#0a0f1e] border-r border-white/5 p-4 flex flex-col shrink-0 z-20 shadow-2xl overflow-y-auto custom-scrollbar relative">
       <div className="flex flex-col h-full">

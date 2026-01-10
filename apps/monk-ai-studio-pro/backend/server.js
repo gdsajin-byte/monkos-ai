@@ -139,9 +139,12 @@ app.post('/api/refine', async (req, res) => {
     });
   } catch (error) {
     console.error('❌ Refinement error:', error.message);
+    console.error('   Full error:', error);
+    console.error('   Stack:', error.stack);
     res.status(500).json({ 
       success: false, 
-      error: error.message 
+      error: error.message,
+      details: error.toString()
     });
   }
 });
