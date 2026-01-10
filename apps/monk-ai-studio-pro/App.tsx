@@ -70,6 +70,7 @@ const App: React.FC = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [genStatus, setGenStatus] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [variationStack, setVariationStack] = useState<string[]>([]);
   
   // Analysis State
   const [analysis, setAnalysis] = useState<{prompt: string, style: string, tags: string[]} | null>(null);
@@ -437,22 +438,22 @@ const App: React.FC = () => {
   const handleApplyVariation = (category: string, customPrompt?: string, referenceImage?: string) => {
     const variation = createVariation(category, customPrompt);
     
-    if (!variation.fixed) return;
+    if (!variation.dynamic) return;
+    
+    // 스택에 추가 (중복 방지)
+    if (!variationStack.includes(category)) {
+      setVariationStack(prev => [...prev, category]);
+    }
     
     // 고정 프롬프트 설정 (정체성 유지)
     setFixedPrompt(variation.fixed);
     
-    // 변주 프롬프트 설정 (커스텀 또는 디폴트)
-    if (customPrompt) {
-      setPrompt(customPrompt);
-    } else {
-      setPrompt(variation.dynamic);
-    }
+    // 메인 프롬프트에 추가 (스택 누적)
+    const currentPrompts = prompt ? prompt.split('. ').filter(Boolean) : [];
+    const newPrompt = customPrompt || variation.dynamic;
     
-    // TODO: referenceImage가 있으면 인페인팅 로직 (향후 구현)
-    if (referenceImage) {
-      console.log(`🎨 Reference image provided for ${category}`);
-      // 향후: 인페인팅 API 호출
+    if (!currentPrompts.includes(newPrompt)) {
+      setPrompt(currentPrompts.concat(newPrompt).join('. '));
     }
     
     // I2I 모드로 자동 전환
@@ -463,8 +464,19 @@ const App: React.FC = () => {
     // 에러 초기화
     setError(null);
     
-    // 알림
-    console.log(`🎲 ${category} variation applied`, customPrompt ? `(custom: ${customPrompt})` : '(default)');
+    console.log(`🎲 ${category} stacked (${variationStack.length + 1}/6)`);
+  };
+  
+  const handleSendToSource = () => {
+    // 변주 스택 실행
+    if (variationStack.length > 0) {
+      console.log(`🚀 Applying ${variationStack.length} variations:`, variationStack);
+      performSynthesis();
+      // 실행 후 스택 초기화
+      setVariationStack([]);
+    } else {
+      sendToSource();
+    }
   };
 
   const getActiveButtonText = () => {
@@ -576,11 +588,14 @@ const App: React.FC = () => {
                         <i className="fa-solid fa-rotate text-sm"></i>
                       </button>
                       <button 
-                        onClick={sendToSource}
-                        className="p-2 hover:bg-emerald-500/20 text-emerald-400 rounded-lg transition-all"
-                        title={language === 'KO' ? '소스로 전송' : 'Send to Source'}
+                        onClick={handleSendToSource}
+                        className={`p-2 rounded-lg transition-all ${(variationStack?.length || 0) > 0 ? 'bg-emerald-600 text-white hover:bg-emerald-500' : 'hover:bg-emerald-500/20 text-emerald-400'}`}
+                        title={language === 'KO' ? `변주 실행 (${variationStack?.length || 0}개 스택)` : `Apply Variations (${variationStack?.length || 0} stacked)`}
                       >
-                        <i className="fa-solid fa-arrows-spin text-sm"></i>
+                        <i className="fa-solid fa-arrow-left text-sm"></i>
+                        {(variationStack?.length || 0) > 0 && (
+                          <span className="ml-1 text-[8px] font-black">{variationStack.length}</span>
+                        )}
                       </button>
                       <div className="w-px h-4 bg-white/10"></div>
                       <button 

@@ -178,13 +178,13 @@ export const QuickVariations: React.FC<QuickVariationsProps> = ({
                     </div>
                   </div>
 
-                  {/* 실행 버튼 */}
+                  {/* 적용 버튼 */}
                   <button
                     onClick={() => handleApply(btn.id)}
                     className={`w-full py-2 bg-${btn.color}-600 hover:bg-${btn.color}-500 text-white rounded-lg text-[9px] font-black uppercase tracking-wider transition-all`}
                   >
-                    <i className="fa-solid fa-bolt mr-1.5"></i>
-                    {language === 'KO' ? '변주 실행' : 'Apply'}
+                    <i className="fa-solid fa-plus mr-1.5"></i>
+                    {language === 'KO' ? '적용' : 'Add'}
                   </button>
                 </div>
               )}

@@ -64,52 +64,8 @@ export const PromptSection: React.FC<PromptSectionProps> = ({
 
   return (
     <div className="flex-1 flex flex-col space-y-3 min-h-[200px]">
-      {/* Fixed Prompt - Top */}
-      <div className="space-y-1.5">
-        <div className="flex items-center justify-between">
-          <label className="text-[8px] font-black text-blue-400 uppercase tracking-widest">
-            {language === 'KO' ? '고정 프롬프트' : 'Fixed Prompt'}
-          </label>
-          <div className="flex items-center gap-1">
-            <div className="relative">
-              <button 
-                onClick={() => setShowPresets(!showPresets)}
-                className="p-1 bg-blue-600/20 text-blue-400 hover:bg-blue-600 hover:text-white rounded-lg transition-all"
-                title={language === 'KO' ? '프리셋 불러오기' : 'Load Preset'}
-              >
-                <i className="fa-solid fa-layer-group text-[9px]"></i>
-              </button>
-              {showPresets && (
-                <div className="absolute top-8 right-0 z-50 bg-slate-900/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl p-2 space-y-1 min-w-[160px]">
-                  {(Object.keys(PRESETS) as Array<keyof typeof PRESETS>).map((key) => (
-                    <button
-                      key={key}
-                      onClick={() => applyPreset(key)}
-                      className="w-full text-left px-3 py-2 text-[10px] font-bold text-slate-300 hover:bg-blue-600/20 hover:text-blue-400 rounded-lg transition-all"
-                    >
-                      {PRESETS[key].name[language]}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-            <button 
-              onClick={clearFixedPrompt}
-              className="p-1 bg-slate-800 text-slate-500 hover:text-red-400 rounded-lg transition-all"
-              title={language === 'KO' ? '초기화' : 'Clear'}
-            >
-              <i className="fa-solid fa-xmark text-[9px]"></i>
-            </button>
-          </div>
-        </div>
-        <textarea 
-          value={fixedPrompt}
-          onChange={(e) => setFixedPrompt(e.target.value)}
-          placeholder={language === 'KO' ? '선택: 배경, 조명, 스타일...' : 'Optional: background, lighting, style...'}
-          className="w-full h-16 px-4 py-2 bg-[#020617] border border-white/5 rounded-xl text-xs text-slate-300 placeholder-slate-700 resize-none focus:border-blue-500/30 focus:outline-none transition-all font-mono leading-relaxed custom-scrollbar"
-        />
-      </div>
-
+      {/* 고정 프롬프트 완전 숨김 - 핵심 노하우 보호 */}
+      
       {/* Main Prompt - Middle (Largest) */}
       <div className="flex-1 flex flex-col space-y-1.5">
         <div className="flex items-center justify-between">
