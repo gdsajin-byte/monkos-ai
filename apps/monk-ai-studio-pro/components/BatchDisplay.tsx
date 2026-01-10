@@ -15,6 +15,7 @@ interface BatchDisplayProps {
   setGenStatus: (status: string) => void;
   addLog: (operation: string, model: string, status: 'SUCCESS' | 'ERROR' | 'PENDING') => void;
   resetInspector: () => void;
+  sourceImage?: string | null;
 }
 
 export const BatchDisplay: React.FC<BatchDisplayProps> = ({
@@ -30,6 +31,7 @@ export const BatchDisplay: React.FC<BatchDisplayProps> = ({
   setGenStatus,
   addLog,
   resetInspector,
+  sourceImage,
 }) => {
   return (
     <div className="grid grid-cols-2 gap-6 max-w-[960px] w-full animate-in fade-in zoom-in duration-500 overflow-y-auto p-4 custom-scrollbar">

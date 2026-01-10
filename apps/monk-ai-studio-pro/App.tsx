@@ -559,89 +559,34 @@ const App: React.FC = () => {
                       >
                         <i className={`fa-solid ${isAnalyzing ? 'fa-spinner animate-spin' : 'fa-brain'} text-sm`}></i>
                       </button>
-                      <div className="w-px h-4 bg-white/10"></div>
                       <button 
-                        onClick={async () => {
-                          const activeUrl = uploadedImage || history.find(h => h.id === activeImageId)?.url;
-                          if (!activeUrl) return;
-                          setIsGenerating(true);
-                          setGenStatus('2K UPSCALING...');
-                          try {
-                            const result = await GeminiService.refineImage('Enhance image quality, increase resolution to 2K', {
-                              aspectRatio,
-                              imageSize: '2K',
-                              inputImage: activeUrl,
-                              mode: 'UPSCALE',
-                              safetyLevel
-                            });
-                            const upscaled = { 
-                              id: Date.now().toString(), 
-                              url: result, 
-                              prompt: '2K Upscale', 
-                              projectId: 'INTERNAL', 
-                              timestamp: Date.now(), 
-                              config: { aspectRatio, imageSize: '2K', mode: 'UPSCALE', model: 'Imagen 3 Pro' } 
-                            };
-                            setHistory(prev => [upscaled, ...prev]);
-                            setActiveImageId(upscaled.id);
-                            addLog('UPSCALE_2K', 'Imagen 3 Pro', 'SUCCESS');
-                          } catch (err: any) {
-                            setError(language === 'KO' ? '업스케일 실패' : 'Upscale failed');
-                            addLog('UPSCALE_2K', 'Imagen 3 Pro', 'ERROR');
-                          } finally { setIsGenerating(false); setGenStatus(''); }
-                        }}
-                        className="p-2 hover:bg-purple-500/20 text-purple-400 rounded-lg transition-all"
-                        title={language === 'KO' ? '2K 업스케일' : '2K Upscale'}
+                        onClick={() => setShowCommentInput(!showCommentInput)}
+                        className="p-2 hover:bg-slate-500/20 text-slate-400 rounded-lg transition-all"
+                        title={language === 'KO' ? '코멘트' : 'Comment'}
                       >
-                        <i className="fa-solid fa-arrow-up-right-dots text-sm"></i>
-                      </button>
-                      <button 
-                        onClick={async () => {
-                          const activeUrl = uploadedImage || history.find(h => h.id === activeImageId)?.url;
-                          if (!activeUrl) return;
-                          setIsGenerating(true);
-                          setGenStatus('4K MASTER RECONSTRUCTION...');
-                          try {
-                            const result = await GeminiService.refineImage('Enhance image quality, increase resolution to 4K, maximum detail', {
-                              aspectRatio,
-                              imageSize: '4K',
-                              inputImage: activeUrl,
-                              mode: 'UPSCALE',
-                              safetyLevel
-                            });
-                            const upscaled = { 
-                              id: Date.now().toString(), 
-                              url: result, 
-                              prompt: '4K Upscale', 
-                              projectId: 'INTERNAL', 
-                              timestamp: Date.now(), 
-                              config: { aspectRatio, imageSize: '4K', mode: 'UPSCALE', model: 'Imagen 3 Pro' } 
-                            };
-                            setHistory(prev => [upscaled, ...prev]);
-                            setActiveImageId(upscaled.id);
-                            addLog('UPSCALE_4K', 'Imagen 3 Pro', 'SUCCESS');
-                          } catch (err: any) {
-                            setError(language === 'KO' ? '4K 업스케일 실패' : '4K Upscale failed');
-                            addLog('UPSCALE_4K', 'Imagen 3 Pro', 'ERROR');
-                          } finally { setIsGenerating(false); setGenStatus(''); }
-                        }}
-                        className="p-2 hover:bg-pink-500/20 text-pink-400 rounded-lg transition-all"
-                        title={language === 'KO' ? '4K 업스케일' : '4K Upscale'}
-                      >
-                        <i className="fa-solid fa-maximize text-sm"></i>
+                        <i className="fa-solid fa-comment text-sm"></i>
                       </button>
                       <div className="w-px h-4 bg-white/10"></div>
+                      <button 
+                        onClick={performSynthesis}
+                        disabled={isGenerating}
+                        className="p-2 hover:bg-indigo-500/20 text-indigo-400 rounded-lg transition-all"
+                        title={language === 'KO' ? '재생성' : 'Regenerate'}
+                      >
+                        <i className="fa-solid fa-rotate text-sm"></i>
+                      </button>
                       <button 
                         onClick={sendToSource}
                         className="p-2 hover:bg-emerald-500/20 text-emerald-400 rounded-lg transition-all"
-                        title={language === 'KO' ? '반복 생성용 전송' : 'Send to Source'}
+                        title={language === 'KO' ? '소스로 전송' : 'Send to Source'}
                       >
                         <i className="fa-solid fa-arrows-spin text-sm"></i>
                       </button>
+                      <div className="w-px h-4 bg-white/10"></div>
                       <button 
                         onClick={downloadActive}
                         className="p-2 hover:bg-blue-500/20 text-blue-400 rounded-lg transition-all"
-                        title={language === 'KO' ? '파일 저장' : 'Save'}
+                        title={language === 'KO' ? '저장' : 'Save'}
                       >
                         <i className="fa-solid fa-download text-sm"></i>
                       </button>
@@ -675,6 +620,7 @@ const App: React.FC = () => {
                         setGenStatus={setGenStatus}
                         addLog={addLog}
                         resetInspector={resetInspector}
+                        sourceImage={uploadedImage}
                       />
                   ) : (
                     <div className="relative w-full h-full flex flex-col items-center justify-center">
