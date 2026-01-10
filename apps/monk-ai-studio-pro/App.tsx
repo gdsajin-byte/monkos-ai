@@ -39,6 +39,10 @@ const DEFAULT_PRESETS = {
 };
 
 const App: React.FC = () => {
+  // 환경변수 기반 기능 제어
+  const SHOW_ANALYSIS = import.meta.env.VITE_SHOW_ANALYSIS !== 'false';
+  const SHOW_COMMENT = import.meta.env.VITE_SHOW_COMMENT !== 'false';
+  
   const [appState, setAppState] = useState<AppState>(AppState.LOADING);
   const [language, setLanguage] = useState<'EN' | 'KO'>('KO');
   const [mode, setMode] = useState<SynthesisMode>('T2I');
@@ -435,7 +439,7 @@ const App: React.FC = () => {
     } finally { setIsGenerating(false); }
   };
 
-  const handleApplyVariation = (category: string, customPrompt?: string, referenceImage?: string) => {
+  const handleApplyVariation = (category: string, customPrompt?: string) => {
     const variation = createVariation(category, customPrompt);
     
     if (!variation.dynamic) return;
@@ -563,40 +567,56 @@ const App: React.FC = () => {
                 <div className="flex items-center gap-4">
                   {viewMode === 'single' && (history.length > 0 || uploadedImage) && (
                     <div className="flex items-center gap-1.5 bg-slate-900/40 p-1 rounded-xl border border-white/5">
-                      <button 
-                        onClick={analyzeImage} 
-                        disabled={isAnalyzing}
-                        className="p-2 hover:bg-amber-500/20 text-amber-400 rounded-lg transition-all"
-                        title={language === 'KO' ? '이미지 정밀 분석' : 'Analyze'}
-                      >
-                        <i className={`fa-solid ${isAnalyzing ? 'fa-spinner animate-spin' : 'fa-brain'} text-sm`}></i>
-                      </button>
-                      <button 
-                        onClick={() => setShowCommentInput(!showCommentInput)}
-                        className="p-2 hover:bg-slate-500/20 text-slate-400 rounded-lg transition-all"
-                        title={language === 'KO' ? '코멘트' : 'Comment'}
-                      >
-                        <i className="fa-solid fa-comment text-sm"></i>
-                      </button>
-                      <div className="w-px h-4 bg-white/10"></div>
-                      <button 
-                        onClick={performSynthesis}
-                        disabled={isGenerating}
-                        className="p-2 hover:bg-indigo-500/20 text-indigo-400 rounded-lg transition-all"
-                        title={language === 'KO' ? '재생성' : 'Regenerate'}
-                      >
-                        <i className="fa-solid fa-rotate text-sm"></i>
-                      </button>
-                      <button 
-                        onClick={handleSendToSource}
-                        className={`p-2 rounded-lg transition-all ${(variationStack?.length || 0) > 0 ? 'bg-emerald-600 text-white hover:bg-emerald-500' : 'hover:bg-emerald-500/20 text-emerald-400'}`}
-                        title={language === 'KO' ? `변주 실행 (${variationStack?.length || 0}개 스택)` : `Apply Variations (${variationStack?.length || 0} stacked)`}
-                      >
-                        <i className="fa-solid fa-arrow-left text-sm"></i>
-                        {(variationStack?.length || 0) > 0 && (
-                          <span className="ml-1 text-[8px] font-black">{variationStack.length}</span>
-                        )}
-                      </button>
+                      {SHOW_ANALYSIS && (
+                        <button 
+                          onClick={analyzeImage} 
+                          disabled={isAnalyzing}
+                          className="p-2 hover:bg-amber-500/20 text-amber-400 rounded-lg transition-all"
+                          title={language === 'KO' ? '이미지 정밀 분석' : 'Analyze'}
+                        >
+                          <i className={`fa-solid ${isAnalyzing ? 'fa-spinner animate-spin' : 'fa-brain'} text-sm`}></i>
+                        </button>
+                      )}
+                      {SHOW_COMMENT && (
+                        <button 
+                          onClick={() => setShowCommentInput(!showCommentInput)}
+                          className="p-2 hover:bg-slate-500/20 text-slate-400 rounded-lg transition-all"
+                          title={language === 'KO' ? '코멘트' : 'Comment'}
+                        >
+                          <i className="fa-solid fa-comment text-sm"></i>
+                        </button>
+                      )}
+                      {(SHOW_ANALYSIS || SHOW_COMMENT) && <div className="w-px h-4 bg-white/10"></div>}
+                      {mode === 'I2I' ? (
+                        <>
+                          <button 
+                            onClick={performSynthesis}
+                            disabled={isGenerating}
+                            className="p-2 hover:bg-indigo-500/20 text-indigo-400 rounded-lg transition-all"
+                            title={language === 'KO' ? '재생성' : 'Regenerate'}
+                          >
+                            <i className="fa-solid fa-rotate text-sm"></i>
+                          </button>
+                          <button 
+                            onClick={handleSendToSource}
+                            className={`p-2 rounded-lg transition-all ${(variationStack?.length || 0) > 0 ? 'bg-emerald-600 text-white hover:bg-emerald-500' : 'hover:bg-emerald-500/20 text-emerald-400'}`}
+                            title={language === 'KO' ? `변주 실행 (${variationStack?.length || 0}개 스택)` : `Apply Variations (${variationStack?.length || 0} stacked)`}
+                          >
+                            <i className="fa-solid fa-arrow-left text-sm"></i>
+                            {(variationStack?.length || 0) > 0 && (
+                              <span className="ml-1 text-[8px] font-black">{variationStack.length}</span>
+                            )}
+                          </button>
+                        </>
+                      ) : (
+                        <button 
+                          onClick={sendToSource}
+                          className="p-2 hover:bg-purple-500/20 text-purple-400 rounded-lg transition-all"
+                          title={language === 'KO' ? '변주 레퍼런스로 전송' : 'Send to Variation'}
+                        >
+                          <i className="fa-solid fa-arrow-right text-sm"></i>
+                        </button>
+                      )}
                       <div className="w-px h-4 bg-white/10"></div>
                       <button 
                         onClick={downloadActive}

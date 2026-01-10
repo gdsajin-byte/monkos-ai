@@ -4,10 +4,16 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --mode atelier",
+    "dev:atelier": "vite --mode atelier",
+    "dev:customer": "vite --mode customer",
     "dev:backend": "cd backend && npm run dev",
-    "dev:full": "concurrently \"npm run dev\" \"npm run dev:backend\" --names \"FRONT,BACK\" --prefix-colors \"cyan,magenta\"",
-    "build": "vite build",
+    "dev:full": "concurrently \"npm run dev:atelier\" \"npm run dev:backend\" --names \"FRONT,BACK\" --prefix-colors \"cyan,magenta\"",
+    "dev:full:atelier": "concurrently \"npm run dev:atelier\" \"npm run dev:backend\" --names \"FRONT,BACK\" --prefix-colors \"cyan,magenta\"",
+    "dev:full:customer": "concurrently \"npm run dev:customer\" \"npm run dev:backend\" --names \"FRONT,BACK\" --prefix-colors \"cyan,magenta\"",
+    "build": "vite build --mode atelier",
+    "build:atelier": "vite build --mode atelier",
+    "build:customer": "vite build --mode customer",
     "preview": "vite preview"
   },
   "dependencies": {

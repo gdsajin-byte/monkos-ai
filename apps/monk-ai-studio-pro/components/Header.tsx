@@ -14,6 +14,11 @@ export const Header: React.FC<HeaderProps> = ({ onExport, onToggleLogs, logCount
   const [isInstalled, setIsInstalled] = useState(false);
   const [showGuide, setShowGuide] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
+  
+  // 환경변수 기반 기능 제어
+  const SHOW_LOGS = import.meta.env.VITE_SHOW_LOGS !== 'false';
+  const SHOW_EXPORT = import.meta.env.VITE_SHOW_EXPORT !== 'false';
+  const SHOW_DEPLOY = import.meta.env.VITE_SHOW_DEPLOY !== 'false';
 
   useEffect(() => {
     if (window.matchMedia('(display-mode: standalone)').matches) setIsInstalled(true);
@@ -86,34 +91,38 @@ export const Header: React.FC<HeaderProps> = ({ onExport, onToggleLogs, logCount
         </div>
         
         <div className="flex items-center space-x-3">
-          <button 
-            onClick={onToggleLogs}
-            className="relative px-4 py-2.5 bg-slate-800 text-slate-400 rounded-xl text-[11px] font-black uppercase tracking-widest hover:text-emerald-400 transition-all active:scale-95"
-          >
-            <i className="fa-solid fa-terminal mr-2"></i>
-            {t.logs}
-            {logCount > 0 && (
-              <span className="absolute -top-1 -right-1 w-4 h-4 bg-emerald-500 text-black text-[8px] flex items-center justify-center rounded-full font-black">
-                {logCount}
-              </span>
-            )}
-          </button>
+          {SHOW_LOGS && (
+            <button 
+              onClick={onToggleLogs}
+              className="relative px-4 py-2.5 bg-slate-800 text-slate-400 rounded-xl text-[11px] font-black uppercase tracking-widest hover:text-emerald-400 transition-all active:scale-95"
+            >
+              <i className="fa-solid fa-terminal mr-2"></i>
+              {t.logs}
+              {logCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-emerald-500 text-black text-[8px] flex items-center justify-center rounded-full font-black">
+                  {logCount}
+                </span>
+              )}
+            </button>
+          )}
 
-          <button 
-            onClick={onExport}
-            disabled={!hasImages}
-            className={`px-5 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all flex items-center space-x-2 active:scale-95 ${
-              hasImages 
-                ? 'bg-blue-600/20 text-blue-400 border border-blue-500/30 hover:bg-blue-600 hover:text-white' 
-                : 'bg-slate-800/50 text-slate-600 border border-slate-700/30 cursor-not-allowed'
-            }`}
-            title={hasImages ? '' : (language === 'KO' ? '내보낼 이미지가 없습니다' : 'No images to export')}
-          >
-            <i className="fa-solid fa-file-export"></i>
-            <span>{t.export}</span>
-          </button>
+          {SHOW_EXPORT && (
+            <button 
+              onClick={onExport}
+              disabled={!hasImages}
+              className={`px-5 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all flex items-center space-x-2 active:scale-95 ${
+                hasImages 
+                  ? 'bg-blue-600/20 text-blue-400 border border-blue-500/30 hover:bg-blue-600 hover:text-white' 
+                  : 'bg-slate-800/50 text-slate-600 border border-slate-700/30 cursor-not-allowed'
+              }`}
+              title={hasImages ? '' : (language === 'KO' ? '내보낼 이미지가 없습니다' : 'No images to export')}
+            >
+              <i className="fa-solid fa-file-export"></i>
+              <span>{t.export}</span>
+            </button>
+          )}
 
-          {!isInstalled && (
+          {SHOW_DEPLOY && !isInstalled && (
             <button 
               onClick={() => setShowGuide(true)}
               className="px-5 py-2.5 bg-white text-slate-950 rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-slate-200 transition-all flex items-center space-x-2 shadow-xl active:scale-95"

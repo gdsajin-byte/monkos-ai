@@ -33,7 +33,7 @@ interface SidebarProps {
   language: 'KO' | 'EN';
   sidebarWidth: number;
   handleMouseDownResize: (e: React.MouseEvent) => void;
-  onApplyVariation: (category: string, customPrompt?: string, referenceImage?: string) => void;
+  onApplyVariation: (category: string, customPrompt?: string) => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -181,6 +181,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 promptLocked={promptLocked}
                 setPromptLocked={setPromptLocked}
                 language={language}
+                showFixedPrompt={mode === 'T2I'}
               />
             </div>
           )}
