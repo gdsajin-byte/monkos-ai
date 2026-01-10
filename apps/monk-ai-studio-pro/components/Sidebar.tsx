@@ -33,7 +33,7 @@ interface SidebarProps {
   language: 'KO' | 'EN';
   sidebarWidth: number;
   handleMouseDownResize: (e: React.MouseEvent) => void;
-  onApplyVariation: (category: string) => void;
+  onApplyVariation: (category: string, customPrompt?: string, referenceImage?: string) => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
