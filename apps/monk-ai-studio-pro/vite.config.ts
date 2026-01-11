@@ -8,7 +8,8 @@ export default defineConfig(({ mode }) => {
       base: './',  // 상대 경로로 빌드
       server: {
         port: 3000,
-        host: '0.0.0.0',
+        host: 'localhost',
+        strictPort: true,
       },
       plugins: [react()],
       define: {
