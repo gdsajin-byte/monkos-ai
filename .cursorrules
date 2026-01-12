@@ -47,6 +47,33 @@ AI LAB은 4개의 독립적인 비즈니스 채널로 구성:
   - 백엔드 OS 역할
   - `/ai_lab/yong_a/` 디렉토리
 
+## 데이터 아키텍처 (5버킷 구조)
+
+### 버킷 구성
+```
+MONK PROJECT (D1 단일 DB)
+├── shared_    ← 공유 (회원, 크레딧, 방문자)
+├── ssanga_    ← 쌍아 (B2B, 챗봇, 예약)
+├── soso_      ← 소소 (이미지 생성, 룩북)
+├── mina_      ← 민아 (AI 모델, 대여)
+└── yonga_     ← 용아 (교육, 강의)
+```
+
+### 네이밍 컨벤션 (필수)
+| 버킷 | 접두사 | 테이블 예시 |
+|------|--------|-------------|
+| 공유 | `shared_` | `shared_users`, `shared_credits`, `shared_visitors` |
+| 쌍아 | `ssanga_` | `ssanga_clients`, `ssanga_bookings`, `ssanga_chatbot_config` |
+| 소소 | `soso_` | `soso_orders`, `soso_results`, `soso_templates` |
+| 민아 | `mina_` | `mina_models`, `mina_rentals`, `mina_portfolios` |
+| 용아 | `yonga_` | `yonga_courses`, `yonga_students`, `yonga_progress` |
+
+### 규칙
+- **DB, 폴더, 코드 전부 동일 네이밍** 사용
+- `monk_`, `data_` 같은 범용어 사용 금지
+- 4뮤즈 체계로 내부 커뮤니케이션 통일
+- 크레딧은 `shared_credits`에서 관리, 모든 뮤즈에서 공유
+
 ## 기술 스택
 
 ### Frontend
