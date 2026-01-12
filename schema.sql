@@ -284,6 +284,164 @@ CREATE INDEX idx_yonga_students_course ON yonga_students(course_id);
 CREATE INDEX idx_yonga_progress_student ON yonga_progress(student_id);
 
 -- ============================================
+-- 💬 챗봇 시스템 (공유 - 섹터별 특화)
+-- ============================================
+
+-- 섹터별 챗봇 설정 (특화 훈련)
+CREATE TABLE IF NOT EXISTS shared_chatbot_prompts (
+    sector TEXT PRIMARY KEY,  -- soso, mina, yonga, ssanga, general
+    display_name TEXT NOT NULL,  -- 표시 이름 (예: "소소 어시스턴트")
+    avatar_url TEXT,  -- 챗봇 아바타 이미지
+    system_prompt TEXT NOT NULL,  -- 시스템 프롬프트 (성격, 역할, 제약)
+    welcome_message TEXT,  -- 첫 인사말
+    fallback_message TEXT,  -- 답변 불가 시 메시지
+    knowledge_base_json TEXT,  -- RAG용 지식 베이스 (JSON)
+    faq_json TEXT,  -- 자주 묻는 질문 [{q, a, keywords}]
+    tone TEXT DEFAULT 'friendly',  -- formal, friendly, professional, casual
+    ai_model TEXT DEFAULT 'workers-ai',  -- workers-ai, gemini-flash, gemini-pro
+    max_tokens INTEGER DEFAULT 1024,
+    temperature REAL DEFAULT 0.7,
+    is_active INTEGER DEFAULT 1,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 챗봇 대화 세션
+CREATE TABLE IF NOT EXISTS shared_chatbot_sessions (
+    id TEXT PRIMARY KEY,
+    sector TEXT NOT NULL,  -- soso, mina, yonga, ssanga
+    user_id TEXT,  -- 회원이면 연결
+    visitor_id TEXT,  -- 비회원이면 방문자 연결
+    session_context_json TEXT,  -- 세션 컨텍스트 (이전 대화 요약 등)
+    message_count INTEGER DEFAULT 0,
+    tokens_used INTEGER DEFAULT 0,
+    started_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    last_message_at DATETIME,
+    ended_at DATETIME,
+    status TEXT DEFAULT 'active',  -- active, idle, closed, escalated
+    escalated_to TEXT,  -- 상담원 에스컬레이션 시 담당자
+    satisfaction_rating INTEGER,  -- 1-5 만족도
+    FOREIGN KEY (user_id) REFERENCES shared_users(id),
+    FOREIGN KEY (visitor_id) REFERENCES shared_visitors(id)
+);
+
+-- 챗봇 메시지 (개별 저장 - 분석/학습용)
+CREATE TABLE IF NOT EXISTS shared_chatbot_messages (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    session_id TEXT NOT NULL,
+    role TEXT NOT NULL,  -- user, assistant, system
+    content TEXT NOT NULL,
+    content_type TEXT DEFAULT 'text',  -- text, image, file, action
+    metadata_json TEXT,  -- 추가 정보 (버튼 클릭, 선택 등)
+    tokens_used INTEGER DEFAULT 0,
+    response_time_ms INTEGER,  -- AI 응답 시간
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (session_id) REFERENCES shared_chatbot_sessions(id)
+);
+
+-- 챗봇 액션 로그 (버튼 클릭, 링크 이동 등)
+CREATE TABLE IF NOT EXISTS shared_chatbot_actions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    session_id TEXT NOT NULL,
+    action_type TEXT NOT NULL,  -- button_click, link_click, form_submit, product_view
+    action_data_json TEXT,  -- 액션 상세 데이터
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (session_id) REFERENCES shared_chatbot_sessions(id)
+);
+
+CREATE INDEX idx_chatbot_sessions_sector ON shared_chatbot_sessions(sector);
+CREATE INDEX idx_chatbot_sessions_user ON shared_chatbot_sessions(user_id);
+CREATE INDEX idx_chatbot_sessions_status ON shared_chatbot_sessions(status);
+CREATE INDEX idx_chatbot_messages_session ON shared_chatbot_messages(session_id);
+CREATE INDEX idx_chatbot_actions_session ON shared_chatbot_actions(session_id);
+
+-- ============================================
+-- 📋 고객 문의 게시판 (공유 - 섹터별)
+-- ============================================
+
+-- 문의 카테고리 설정
+CREATE TABLE IF NOT EXISTS shared_inquiry_categories (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    sector TEXT NOT NULL,  -- soso, mina, yonga, ssanga, general
+    name TEXT NOT NULL,  -- 카테고리명
+    description TEXT,
+    icon TEXT,  -- 아이콘 (이모지 또는 URL)
+    sort_order INTEGER DEFAULT 0,
+    is_active INTEGER DEFAULT 1
+);
+
+-- 고객 문의
+CREATE TABLE IF NOT EXISTS shared_inquiries (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    sector TEXT NOT NULL,  -- soso, mina, yonga, ssanga
+    category_id INTEGER,
+    user_id TEXT,  -- 회원
+    visitor_id TEXT,  -- 비회원
+    -- 작성자 정보 (비회원용)
+    guest_name TEXT,
+    guest_email TEXT,
+    guest_phone TEXT,
+    -- 문의 내용
+    title TEXT NOT NULL,
+    content TEXT NOT NULL,
+    attachments_json TEXT,  -- 첨부파일 [{url, name, size, type}]
+    -- 상태 관리
+    status TEXT DEFAULT 'pending',  -- pending, in_progress, answered, resolved, closed
+    priority TEXT DEFAULT 'normal',  -- low, normal, high, urgent
+    is_public INTEGER DEFAULT 0,  -- 공개/비공개
+    is_pinned INTEGER DEFAULT 0,  -- 상단 고정
+    -- 담당자
+    assigned_to TEXT,  -- 담당 관리자
+    -- 통계
+    view_count INTEGER DEFAULT 0,
+    reply_count INTEGER DEFAULT 0,
+    -- 타임스탬프
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    resolved_at DATETIME,
+    FOREIGN KEY (category_id) REFERENCES shared_inquiry_categories(id),
+    FOREIGN KEY (user_id) REFERENCES shared_users(id),
+    FOREIGN KEY (visitor_id) REFERENCES shared_visitors(id)
+);
+
+-- 문의 답변/댓글
+CREATE TABLE IF NOT EXISTS shared_inquiry_replies (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    inquiry_id INTEGER NOT NULL,
+    parent_id INTEGER,  -- 대댓글용
+    author_type TEXT NOT NULL,  -- admin, ai, user, guest
+    author_id TEXT,  -- 작성자 ID (admin이면 관리자ID, user면 user_id)
+    author_name TEXT,  -- 표시 이름
+    content TEXT NOT NULL,
+    attachments_json TEXT,
+    is_solution INTEGER DEFAULT 0,  -- 채택된 답변
+    is_internal INTEGER DEFAULT 0,  -- 내부 메모 (고객에게 안 보임)
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME,
+    FOREIGN KEY (inquiry_id) REFERENCES shared_inquiries(id),
+    FOREIGN KEY (parent_id) REFERENCES shared_inquiry_replies(id)
+);
+
+-- 문의 히스토리 (상태 변경 추적)
+CREATE TABLE IF NOT EXISTS shared_inquiry_history (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    inquiry_id INTEGER NOT NULL,
+    action TEXT NOT NULL,  -- created, status_changed, assigned, replied, resolved, reopened
+    old_value TEXT,
+    new_value TEXT,
+    actor_type TEXT,  -- admin, system, user
+    actor_id TEXT,
+    note TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (inquiry_id) REFERENCES shared_inquiries(id)
+);
+
+CREATE INDEX idx_inquiries_sector ON shared_inquiries(sector);
+CREATE INDEX idx_inquiries_status ON shared_inquiries(status);
+CREATE INDEX idx_inquiries_user ON shared_inquiries(user_id);
+CREATE INDEX idx_inquiries_created ON shared_inquiries(created_at DESC);
+CREATE INDEX idx_inquiry_replies_inquiry ON shared_inquiry_replies(inquiry_id);
+
+-- ============================================
 -- 📊 통계/로그 (공유)
 -- ============================================
 
@@ -302,3 +460,89 @@ CREATE TABLE IF NOT EXISTS shared_usage_logs (
 
 CREATE INDEX idx_shared_usage_user ON shared_usage_logs(user_id);
 CREATE INDEX idx_shared_usage_timestamp ON shared_usage_logs(timestamp DESC);
+
+-- ============================================
+-- 📦 초기 데이터 (섹터별 챗봇 설정)
+-- ============================================
+
+-- 챗봇 프롬프트 초기 설정
+INSERT OR IGNORE INTO shared_chatbot_prompts (sector, display_name, system_prompt, welcome_message, fallback_message, tone, ai_model) VALUES
+('soso', '소소 어시스턴트', 
+'당신은 MONK.kr AI Photo 서비스 "소소"의 친근한 어시스턴트입니다.
+역할: 증명사진, 프로필 사진, 사진 복원 서비스 안내
+성격: 친근하고 전문적, 사진에 대한 열정
+제약: 가격은 크레딧 기준으로 안내, 타 서비스 비방 금지
+주요 지식: 증명사진 규격, AI 보정 기술, 크레딧 시스템',
+'안녕하세요! 소소입니다 📸 AI 사진 서비스에 대해 무엇이든 물어보세요!',
+'죄송해요, 제가 답변하기 어려운 질문이에요. 고객센터로 문의해 주시겠어요?',
+'friendly', 'workers-ai'),
+
+('mina', '민아 어시스턴트',
+'당신은 MONK.kr AI 모델 에이전시 "민아"의 세련된 어시스턴트입니다.
+역할: AI 모델 소개, 대여 절차 안내, 포트폴리오 상담
+성격: 세련되고 프로페셔널, 패션에 대한 안목
+제약: 모델 저작권 안내 필수, 상업적 사용 시 라이선스 설명
+주요 지식: 모델 카테고리, 대여 가격, 사용 범위',
+'안녕하세요, 민아입니다 ✨ AI 모델 서비스에 대해 안내해 드릴게요.',
+'해당 문의는 담당자 연결이 필요해요. 문의 게시판에 남겨주시면 빠르게 답변드릴게요.',
+'professional', 'workers-ai'),
+
+('yonga', '용아 어시스턴트',
+'당신은 MONK.kr 아카데미 "용아"의 차분한 교육 상담사입니다.
+역할: 강의 안내, 커리큘럼 설명, 수강 상담
+성격: 차분하고 신뢰감 있는, 교육에 대한 진정성
+제약: 수강료는 크레딧 기준, 환불 정책 정확히 안내
+주요 지식: 강의 목록, 난이도, 수강 방법',
+'안녕하세요, 용아입니다 🎓 AI 교육에 관심 가져주셔서 감사해요.',
+'상세한 상담이 필요하시면 문의 게시판에 남겨주세요. 담당자가 답변드릴게요.',
+'formal', 'workers-ai'),
+
+('ssanga', '쌍아 어시스턴트',
+'당신은 MONK.kr B2B 솔루션 "쌍아"의 비즈니스 컨설턴트입니다.
+역할: B2B 패키지 안내, 견적 상담, 기술 지원
+성격: 전문적이고 신뢰감 있는, 비즈니스 파트너십 지향
+제약: 정확한 견적은 상담 후 제공, 고객사 정보 보안 철저
+주요 지식: 패키지 구성, 기능 목록, 도입 절차',
+'안녕하세요, MONKOS Business입니다 🏢 비즈니스 솔루션에 대해 안내해 드릴게요.',
+'상세 견적이나 기술 상담은 전문 상담원 연결이 필요해요. 연락처를 남겨주시면 연락드릴게요.',
+'professional', 'workers-ai'),
+
+('general', 'MONKOS 어시스턴트',
+'당신은 MONK.kr의 통합 안내 어시스턴트 "MONKOS"입니다.
+역할: 서비스 전반 안내, 적절한 섹터로 안내
+성격: 친절하고 명쾌한
+제약: 각 섹터 전문 상담은 해당 챗봇으로 안내
+주요 지식: 4개 섹터 개요, 서비스 맵',
+'안녕하세요! MONKOS입니다 🤖 무엇을 도와드릴까요?',
+'죄송해요, 해당 질문은 전문 상담이 필요해요. 어떤 서비스에 관심 있으신가요?',
+'friendly', 'workers-ai');
+
+-- 문의 카테고리 초기 설정
+INSERT OR IGNORE INTO shared_inquiry_categories (sector, name, description, icon, sort_order) VALUES
+-- 공통
+('general', '일반 문의', '서비스 전반에 대한 일반 문의', '💬', 1),
+('general', '결제/환불', '결제, 크레딧, 환불 관련', '💳', 2),
+('general', '계정/회원', '계정, 로그인, 회원 정보', '👤', 3),
+('general', '기술 지원', '오류, 버그, 기술적 문제', '🔧', 4),
+('general', '제안/피드백', '서비스 개선 제안', '💡', 5),
+
+-- 소소
+('soso', '증명사진', '증명사진 서비스 관련', '📸', 1),
+('soso', '프로필 사진', '프로필, SNS 사진 관련', '🖼️', 2),
+('soso', '사진 복원', '오래된 사진 복원 관련', '🔄', 3),
+('soso', '룩북', '룩북 제작 관련', '📚', 4),
+
+-- 민아
+('mina', '모델 문의', '모델 정보, 포트폴리오', '👗', 1),
+('mina', '대여 문의', '모델 대여 절차, 가격', '📋', 2),
+('mina', '저작권/라이선스', '사용 범위, 저작권', '©️', 3),
+
+-- 용아
+('yonga', '강의 문의', '강의 내용, 커리큘럼', '📖', 1),
+('yonga', '수강 문의', '수강 신청, 진도', '🎯', 2),
+('yonga', '자격증/수료', '수료증, 자격 관련', '🏆', 3),
+
+-- 쌍아
+('ssanga', '도입 문의', '서비스 도입, 견적', '🏢', 1),
+('ssanga', '기술 지원', 'B2B 기술 지원', '⚙️', 2),
+('ssanga', '계약/결제', '계약, 월정액 결제', '📝', 3);
