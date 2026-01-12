@@ -16,7 +16,7 @@ NC='\033[0m'
 # 설정
 TIMESTAMP=$(date +"%Y-%m-%d_%H%M%S")
 SESSION_DATE=$(date +"%Y-%m-%d")
-SAGA_DIR="/Users/jeong-kyushin/developer/monk_project /_saga"
+SAGA_DIR="/Users/jeong-kyushin/developer/monk_project /docs/saga"
 SESSION_LOG="$SAGA_DIR/session_logs/${SESSION_DATE}_session.md"
 
 # 디렉토리 생성
@@ -96,7 +96,7 @@ if [ -f "$MASTER_CONTEXT" ]; then
     echo "" >> "$MASTER_CONTEXT"
     echo "---" >> "$MASTER_CONTEXT"
     echo "## 세션 로그 추가: $SESSION_DATE" >> "$MASTER_CONTEXT"
-    echo "자세한 내용: _saga/session_logs/${SESSION_DATE}_session.md" >> "$MASTER_CONTEXT"
+    echo "자세한 내용: docs/saga/session_logs/${SESSION_DATE}_session.md" >> "$MASTER_CONTEXT"
     echo "타임스탬프: $TIMESTAMP" >> "$MASTER_CONTEXT"
     echo -e "${GREEN}✅ Master Context 업데이트 완료${NC}"
 fi
