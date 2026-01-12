@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LOOKBOOK | SO-SO</title>
+    <title>LOOKBOOK | MONKOS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -12,7 +12,10 @@
                     colors: {
                         ai: '#60A5FA',
                         so: '#F472B6',
-                        dark: '#05070A'
+                        dark: '#05070A',
+                        model: '#F472B6',
+                        bg: '#22D3EE',
+                        typo: '#A78BFA'
                     }
                 }
             }
@@ -20,228 +23,518 @@
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* 데스크톱 최적화 */
-        .so-glow {
-            box-shadow: 0 0 80px rgba(244, 114, 182, 0.2);
-            animation: pulse-glow 3s ease-in-out infinite;
+        .layer-card {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        @keyframes pulse-glow {
-            0%, 100% { box-shadow: 0 0 80px rgba(244, 114, 182, 0.2); }
-            50% { box-shadow: 0 0 120px rgba(244, 114, 182, 0.35); }
+        .layer-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
         }
-        .category-badge {
+        .layer-card.model:hover { border-color: rgba(244, 114, 182, 0.5); }
+        .layer-card.bg:hover { border-color: rgba(34, 211, 238, 0.5); }
+        .layer-card.typo:hover { border-color: rgba(167, 139, 250, 0.5); }
+
+        .template-card {
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s;
+        }
+        .template-card:hover {
+            border-color: rgba(244, 114, 182, 0.3);
+            transform: scale(1.02);
+        }
+
+        .coming-soon-overlay {
+            background: linear-gradient(135deg, rgba(5, 7, 10, 0.9), rgba(5, 7, 10, 0.7));
+            backdrop-filter: blur(4px);
+        }
+
+        .glow-model { box-shadow: 0 0 60px rgba(244, 114, 182, 0.15); }
+        .glow-bg { box-shadow: 0 0 60px rgba(34, 211, 238, 0.15); }
+        .glow-typo { box-shadow: 0 0 60px rgba(167, 139, 250, 0.15); }
+
+        .pulse-dot {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .flow-line {
+            background: linear-gradient(90deg, transparent, rgba(244, 114, 182, 0.3), transparent);
+            animation: flow 3s ease-in-out infinite;
+        }
+        @keyframes flow {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .category-tab {
             transition: all 0.2s;
-            cursor: pointer;
         }
-        .category-badge.active {
-            background: #F472B6;
+        .category-tab.active {
+            background: linear-gradient(135deg, #F472B6, #A78BFA);
             color: white;
         }
-        
-        /* 드래그 앤 드롭 강화 (데스크톱) */
-        @media (min-width: 768px) {
-            .upload-zone {
-                min-height: 300px;
-            }
-            .upload-zone:hover {
-                border-color: #F472B6;
-                background: rgba(244, 114, 182, 0.02);
-            }
-        }
-        
-        /* 2단 레이아웃 (큰 화면) */
-        @media (min-width: 1024px) {
-            .desktop-layout {
-                display: grid;
-                grid-template-columns: 1fr 400px;
-                gap: 2rem;
-            }
+
+        .placeholder-grid {
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 20px 20px;
         }
     </style>
 </head>
-<body class="bg-dark text-white min-h-screen flex flex-col">
+<body class="bg-dark text-white min-h-screen flex flex-col font-sans">
 
-    <header class="sticky top-0 z-40 bg-dark/90 backdrop-blur-md border-b border-white/5">
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-dark/80 backdrop-blur-md border-b border-white/5">
         <div class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
-            <a href="../../../index.html" class="text-2xl font-black tracking-tight">MONK<span class="text-so">.kr</span></a>
+            <a href="../../../index.html" class="text-2xl font-black tracking-tighter">MONK<span class="text-so">.kr</span></a>
             <div class="flex items-center space-x-6">
-                <a href="../so_so.html" class="text-sm text-gray-400 hover:text-white transition-colors">← Back to SO-SO</a>
+                <a href="../so_so.html" class="text-sm text-gray-400 hover:text-white transition-colors">← SO-SO</a>
             </div>
         </div>
     </header>
 
-    <main class="flex-grow px-4 md:px-8 py-8 md:py-16 max-w-7xl mx-auto w-full">
-        
-        <div class="text-center mb-8 md:mb-12">
-            <div class="inline-block px-4 py-1 rounded-full bg-so/10 border border-so/20 text-so text-xs font-bold mb-4 uppercase tracking-widest">
-                LOOKBOOK
+    <main class="flex-grow">
+
+        <!-- Hero Section -->
+        <section class="relative py-16 md:py-24 px-6 text-center border-b border-white/5 overflow-hidden">
+            <!-- Background Effect -->
+            <div class="absolute inset-0 overflow-hidden">
+                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-model/10 via-transparent to-typo/10 rounded-full blur-3xl"></div>
             </div>
-            <h1 class="text-4xl md:text-5xl lg:text-6xl font-black mb-4 tracking-tight">
-                커머스 비주얼
-            </h1>
-            <p class="text-gray-500 text-sm md:text-base">룩북, 상세페이지, 제품 화보 등 고감도 이미지 생성</p>
-        </div>
 
-        <!-- Category Selection -->
-        <div class="flex flex-wrap justify-center gap-2 md:gap-3 mb-8">
-            <span onclick="selectCategory('fashion')" id="cat-fashion" class="category-badge active px-4 md:px-6 py-2 rounded-full bg-gray-800 text-xs md:text-sm font-bold">패션</span>
-            <span onclick="selectCategory('product')" id="cat-product" class="category-badge px-4 md:px-6 py-2 rounded-full bg-gray-800 text-xs md:text-sm font-bold">제품</span>
-            <span onclick="selectCategory('food')" id="cat-food" class="category-badge px-4 md:px-6 py-2 rounded-full bg-gray-800 text-xs md:text-sm font-bold">푸드</span>
-            <span onclick="selectCategory('interior')" id="cat-interior" class="category-badge px-4 md:px-6 py-2 rounded-full bg-gray-800 text-xs md:text-sm font-bold">인테리어</span>
-            <span onclick="selectCategory('beauty')" id="cat-beauty" class="category-badge px-4 md:px-6 py-2 rounded-full bg-gray-800 text-xs md:text-sm font-bold">뷰티</span>
-        </div>
+            <div class="relative z-10 max-w-4xl mx-auto">
+                <div class="flex items-center justify-center gap-2 mb-6">
+                    <span class="px-4 py-1 rounded-full bg-so/10 border border-so/20 text-so text-xs font-bold uppercase tracking-widest">
+                        LOOKBOOK STUDIO
+                    </span>
+                    <span class="px-3 py-1 rounded-full bg-yellow-500/10 border border-yellow-500/30 text-yellow-500 text-xs font-bold uppercase tracking-widest">
+                        BETA
+                    </span>
+                </div>
 
-        <!-- Desktop 2단 레이아웃 -->
-        <div class="desktop-layout">
-            
-            <!-- 업로드 영역 (데스크톱: 왼쪽, 넓게) -->
-            <div class="so-glow bg-gray-900 border border-so/30 rounded-3xl p-6 md:p-8 lg:p-10">
-                <label class="block text-sm font-bold mb-4 text-gray-300">이미지 업로드</label>
-                <div class="upload-zone relative border-2 border-dashed border-gray-700 rounded-2xl p-8 md:p-12 text-center hover:border-so/50 transition-colors cursor-pointer" onclick="document.getElementById('image-input').click()">
-                    <input type="file" id="image-input" accept="image/*" class="hidden" onchange="handleImageUpload(event)">
-                    <div id="upload-placeholder">
-                        <i class="fas fa-cloud-upload-alt text-6xl md:text-7xl text-gray-600 mb-6"></i>
-                        <p class="text-gray-400 text-base md:text-lg font-medium mb-2">드래그하여 이미지 업로드</p>
-                        <p class="text-gray-600 text-sm">또는 클릭하여 파일 선택 (JPG, PNG, 최대 10MB)</p>
+                <h1 class="text-4xl md:text-6xl lg:text-7xl font-black mb-6 tracking-tight">
+                    <span class="text-model">모델</span>
+                    <span class="text-gray-600 mx-2">×</span>
+                    <span class="text-bg">배경</span>
+                    <span class="text-gray-600 mx-2">×</span>
+                    <span class="text-typo">타이포</span>
+                </h1>
+
+                <p class="text-gray-400 text-lg md:text-xl mb-8 max-w-2xl mx-auto leading-relaxed">
+                    세 가지 레이어의 완벽한 조합으로<br>
+                    <span class="text-white font-bold">커머스 비주얼</span>을 생성합니다
+                </p>
+
+                <!-- 3-Layer Icons -->
+                <div class="flex justify-center items-center gap-4 md:gap-8 mb-8">
+                    <div class="text-center">
+                        <div class="w-16 h-16 md:w-20 md:h-20 bg-model/10 border border-model/30 rounded-2xl flex items-center justify-center mb-2">
+                            <i class="fas fa-user text-2xl md:text-3xl text-model"></i>
+                        </div>
+                        <span class="text-[10px] md:text-xs text-gray-500">AI MODEL</span>
+                    </div>
+                    <div class="text-2xl text-gray-600">+</div>
+                    <div class="text-center">
+                        <div class="w-16 h-16 md:w-20 md:h-20 bg-bg/10 border border-bg/30 rounded-2xl flex items-center justify-center mb-2">
+                            <i class="fas fa-image text-2xl md:text-3xl text-bg"></i>
+                        </div>
+                        <span class="text-[10px] md:text-xs text-gray-500">BACKGROUND</span>
+                    </div>
+                    <div class="text-2xl text-gray-600">+</div>
+                    <div class="text-center">
+                        <div class="w-16 h-16 md:w-20 md:h-20 bg-typo/10 border border-typo/30 rounded-2xl flex items-center justify-center mb-2">
+                            <i class="fas fa-font text-2xl md:text-3xl text-typo"></i>
+                        </div>
+                        <span class="text-[10px] md:text-xs text-gray-500">TYPOGRAPHY</span>
+                    </div>
+                    <div class="text-2xl text-gray-600">=</div>
+                    <div class="text-center">
+                        <div class="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-model/20 via-bg/20 to-typo/20 border border-white/20 rounded-2xl flex items-center justify-center mb-2">
+                            <i class="fas fa-magic text-2xl md:text-3xl text-white"></i>
+                        </div>
+                        <span class="text-[10px] md:text-xs text-gray-500">LOOKBOOK</span>
                     </div>
                 </div>
+
+                <p class="text-yellow-600 text-xs">⚠️ 데이터 파이프라인 구축 중 | 일부 기능 제한</p>
+            </div>
+        </section>
+
+        <!-- 3-Layer Selection -->
+        <section class="py-12 md:py-16 px-6">
+            <div class="max-w-6xl mx-auto">
+                <h2 class="text-2xl md:text-3xl font-black text-center mb-4">레이어 선택</h2>
+                <p class="text-gray-500 text-sm text-center mb-10">각 레이어를 선택하여 조합하세요</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+                    <!-- Layer 1: Model -->
+                    <div class="layer-card model glow-model rounded-3xl p-6 relative overflow-hidden">
+                        <div class="absolute top-4 right-4">
+                            <span class="px-2 py-1 bg-model/20 text-model text-[10px] font-bold rounded-full">LAYER 1</span>
+                        </div>
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-12 h-12 bg-model/10 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-user text-xl text-model"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-lg">AI 모델</h3>
+                                <p class="text-xs text-gray-500">민아 에이전시 연동</p>
+                            </div>
+                        </div>
+
+                        <!-- Placeholder Grid -->
+                        <div class="relative placeholder-grid rounded-2xl border border-gray-800 p-4 h-48 flex items-center justify-center">
+                            <div class="coming-soon-overlay absolute inset-0 rounded-2xl flex flex-col items-center justify-center">
+                                <div class="w-10 h-10 bg-model/20 rounded-full flex items-center justify-center mb-3">
+                                    <i class="fas fa-clock text-model"></i>
+                                </div>
+                                <p class="text-sm font-bold text-white mb-1">Coming Soon</p>
+                                <p class="text-[10px] text-gray-500">민아 데이터 연동 예정</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            <span class="px-2 py-1 bg-gray-800 text-[10px] text-gray-400 rounded">패션모델</span>
+                            <span class="px-2 py-1 bg-gray-800 text-[10px] text-gray-400 rounded">뷰티모델</span>
+                            <span class="px-2 py-1 bg-gray-800 text-[10px] text-gray-400 rounded">손모델</span>
+                        </div>
+                    </div>
+
+                    <!-- Layer 2: Background -->
+                    <div class="layer-card bg glow-bg rounded-3xl p-6 relative overflow-hidden">
+                        <div class="absolute top-4 right-4">
+                            <span class="px-2 py-1 bg-bg/20 text-bg text-[10px] font-bold rounded-full">LAYER 2</span>
+                        </div>
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-12 h-12 bg-bg/10 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-image text-xl text-bg"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-lg">배경</h3>
+                                <p class="text-xs text-gray-500">크롤링 + AI 재생성</p>
+                            </div>
+                        </div>
+
+                        <!-- Placeholder Grid -->
+                        <div class="relative placeholder-grid rounded-2xl border border-gray-800 p-4 h-48 flex items-center justify-center">
+                            <div class="coming-soon-overlay absolute inset-0 rounded-2xl flex flex-col items-center justify-center">
+                                <div class="w-10 h-10 bg-bg/20 rounded-full flex items-center justify-center mb-3">
+                                    <i class="fas fa-database text-bg"></i>
+                                </div>
+                                <p class="text-sm font-bold text-white mb-1">데이터 수집 중</p>
+                                <p class="text-[10px] text-gray-500">Pinterest · Unsplash 크롤링</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            <span class="px-2 py-1 bg-gray-800 text-[10px] text-gray-400 rounded">스튜디오</span>
+                            <span class="px-2 py-1 bg-gray-800 text-[10px] text-gray-400 rounded">라이프스타일</span>
+                            <span class="px-2 py-1 bg-gray-800 text-[10px] text-gray-400 rounded">야외</span>
+                        </div>
+                    </div>
+
+                    <!-- Layer 3: Typography -->
+                    <div class="layer-card typo glow-typo rounded-3xl p-6 relative overflow-hidden">
+                        <div class="absolute top-4 right-4">
+                            <span class="px-2 py-1 bg-typo/20 text-typo text-[10px] font-bold rounded-full">LAYER 3</span>
+                        </div>
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-12 h-12 bg-typo/10 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-font text-xl text-typo"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-lg">타이포 & 스타일</h3>
+                                <p class="text-xs text-gray-500">태그 스키마 벡터DB</p>
+                            </div>
+                        </div>
+
+                        <!-- Placeholder Grid -->
+                        <div class="relative placeholder-grid rounded-2xl border border-gray-800 p-4 h-48 flex items-center justify-center">
+                            <div class="coming-soon-overlay absolute inset-0 rounded-2xl flex flex-col items-center justify-center">
+                                <div class="w-10 h-10 bg-typo/20 rounded-full flex items-center justify-center mb-3">
+                                    <i class="fas fa-tags text-typo"></i>
+                                </div>
+                                <p class="text-sm font-bold text-white mb-1">스키마 구축 중</p>
+                                <p class="text-[10px] text-gray-500">MONKOS Pro JSON 연동</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            <span class="px-2 py-1 bg-gray-800 text-[10px] text-gray-400 rounded">미니멀</span>
+                            <span class="px-2 py-1 bg-gray-800 text-[10px] text-gray-400 rounded">럭셔리</span>
+                            <span class="px-2 py-1 bg-gray-800 text-[10px] text-gray-400 rounded">빈티지</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Template Gallery -->
+        <section class="py-12 md:py-16 px-6 border-t border-white/5">
+            <div class="max-w-6xl mx-auto">
+                <h2 class="text-2xl md:text-3xl font-black text-center mb-4">템플릿 갤러리</h2>
+                <p class="text-gray-500 text-sm text-center mb-8">카테고리별 프리셋 템플릿</p>
+
+                <!-- Category Tabs -->
+                <div class="flex flex-wrap justify-center gap-2 mb-10">
+                    <button onclick="selectCategory('fashion')" id="tab-fashion" class="category-tab active px-5 py-2 rounded-full bg-gray-800 text-sm font-bold">
+                        <i class="fas fa-tshirt mr-2"></i>패션
+                    </button>
+                    <button onclick="selectCategory('product')" id="tab-product" class="category-tab px-5 py-2 rounded-full bg-gray-800 text-sm font-bold">
+                        <i class="fas fa-box mr-2"></i>제품
+                    </button>
+                    <button onclick="selectCategory('food')" id="tab-food" class="category-tab px-5 py-2 rounded-full bg-gray-800 text-sm font-bold">
+                        <i class="fas fa-utensils mr-2"></i>푸드
+                    </button>
+                    <button onclick="selectCategory('beauty')" id="tab-beauty" class="category-tab px-5 py-2 rounded-full bg-gray-800 text-sm font-bold">
+                        <i class="fas fa-spa mr-2"></i>뷰티
+                    </button>
+                    <button onclick="selectCategory('interior')" id="tab-interior" class="category-tab px-5 py-2 rounded-full bg-gray-800 text-sm font-bold">
+                        <i class="fas fa-couch mr-2"></i>인테리어
+                    </button>
+                </div>
+
+                <!-- Template Grid -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="template-grid">
+                    <!-- Template placeholders -->
+                    <div class="template-card rounded-2xl overflow-hidden relative group">
+                        <div class="aspect-[3/4] bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
+                            <div class="text-center">
+                                <i class="fas fa-image text-3xl text-gray-700 mb-2"></i>
+                                <p class="text-xs text-gray-600">미니멀 룩북</p>
+                            </div>
+                        </div>
+                        <div class="absolute inset-0 coming-soon-overlay flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <span class="px-3 py-1 bg-so text-white text-xs font-bold rounded-full">Coming Soon</span>
+                        </div>
+                    </div>
+                    <div class="template-card rounded-2xl overflow-hidden relative group">
+                        <div class="aspect-[3/4] bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
+                            <div class="text-center">
+                                <i class="fas fa-image text-3xl text-gray-700 mb-2"></i>
+                                <p class="text-xs text-gray-600">스튜디오 컷</p>
+                            </div>
+                        </div>
+                        <div class="absolute inset-0 coming-soon-overlay flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <span class="px-3 py-1 bg-so text-white text-xs font-bold rounded-full">Coming Soon</span>
+                        </div>
+                    </div>
+                    <div class="template-card rounded-2xl overflow-hidden relative group">
+                        <div class="aspect-[3/4] bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
+                            <div class="text-center">
+                                <i class="fas fa-image text-3xl text-gray-700 mb-2"></i>
+                                <p class="text-xs text-gray-600">라이프스타일</p>
+                            </div>
+                        </div>
+                        <div class="absolute inset-0 coming-soon-overlay flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <span class="px-3 py-1 bg-so text-white text-xs font-bold rounded-full">Coming Soon</span>
+                        </div>
+                    </div>
+                    <div class="template-card rounded-2xl overflow-hidden relative group">
+                        <div class="aspect-[3/4] bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
+                            <div class="text-center">
+                                <i class="fas fa-image text-3xl text-gray-700 mb-2"></i>
+                                <p class="text-xs text-gray-600">상세페이지</p>
+                            </div>
+                        </div>
+                        <div class="absolute inset-0 coming-soon-overlay flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <span class="px-3 py-1 bg-so text-white text-xs font-bold rounded-full">Coming Soon</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Data Pipeline Info -->
+        <section class="py-12 md:py-16 px-6 border-t border-white/5 bg-gray-900/30">
+            <div class="max-w-4xl mx-auto text-center">
+                <h2 class="text-xl md:text-2xl font-black mb-6">데이터 파이프라인</h2>
                 
-                <!-- 미리보기 -->
-                <div id="preview-container" class="hidden mt-6">
-                    <img id="preview-image" src="" class="w-full rounded-2xl border border-gray-700">
-                </div>
-            </div>
-
-            <!-- 옵션 패널 (데스크톱: 오른쪽 사이드바) -->
-            <div>
-                <div class="bg-gray-900 border border-gray-800 rounded-3xl p-6 md:p-8 space-y-6">
-                    <h3 class="text-lg font-bold mb-4">생성 옵션</h3>
+                <div class="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-2 mb-8">
+                    <!-- Step 1 -->
+                    <div class="flex items-center gap-2 px-4 py-2 bg-gray-800 rounded-xl">
+                        <div class="w-8 h-8 bg-bg/20 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-spider text-bg text-sm"></i>
+                        </div>
+                        <span class="text-xs text-gray-300">크롤링</span>
+                    </div>
+                    <i class="fas fa-arrow-right text-gray-600 hidden md:block"></i>
+                    <i class="fas fa-arrow-down text-gray-600 md:hidden"></i>
                     
-                    <div class="space-y-4">
-                        <div>
-                            <label class="text-xs text-gray-400 mb-2 block">프롬프트</label>
-                            <textarea 
-                                id="prompt-input" 
-                                placeholder="화이트 티셔츠, 미니멀한 배경..."
-                                class="w-full h-24 bg-gray-950 border border-gray-700 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:border-so focus:outline-none resize-none text-sm"
-                            ></textarea>
+                    <!-- Step 2 -->
+                    <div class="flex items-center gap-2 px-4 py-2 bg-gray-800 rounded-xl">
+                        <div class="w-8 h-8 bg-model/20 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-robot text-model text-sm"></i>
                         </div>
-
-                        <div>
-                            <label class="text-xs text-gray-400 mb-2 block">무드</label>
-                            <select id="mood" class="w-full bg-gray-950 border border-gray-700 rounded-xl px-4 py-3 text-white text-sm focus:border-so focus:outline-none">
-                                <option value="minimal">미니멀</option>
-                                <option value="luxury">럭셔리</option>
-                                <option value="vintage">빈티지</option>
-                                <option value="modern">모던</option>
-                                <option value="natural">내추럴</option>
-                            </select>
+                        <span class="text-xs text-gray-300">Imagen 재생성</span>
+                    </div>
+                    <i class="fas fa-arrow-right text-gray-600 hidden md:block"></i>
+                    <i class="fas fa-arrow-down text-gray-600 md:hidden"></i>
+                    
+                    <!-- Step 3 -->
+                    <div class="flex items-center gap-2 px-4 py-2 bg-gray-800 rounded-xl">
+                        <div class="w-8 h-8 bg-typo/20 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-tags text-typo text-sm"></i>
                         </div>
-
-                        <div>
-                            <label class="text-xs text-gray-400 mb-2 block">레이아웃</label>
-                            <select id="layout" class="w-full bg-gray-950 border border-gray-700 rounded-xl px-4 py-3 text-white text-sm focus:border-so focus:outline-none">
-                                <option value="center">중앙 배치</option>
-                                <option value="flat">플랫레이</option>
-                                <option value="scene">씬 연출</option>
-                                <option value="detail">디테일샷</option>
-                            </select>
+                        <span class="text-xs text-gray-300">태그 벡터화</span>
+                    </div>
+                    <i class="fas fa-arrow-right text-gray-600 hidden md:block"></i>
+                    <i class="fas fa-arrow-down text-gray-600 md:hidden"></i>
+                    
+                    <!-- Step 4 -->
+                    <div class="flex items-center gap-2 px-4 py-2 bg-gray-800 rounded-xl">
+                        <div class="w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-database text-green-400 text-sm"></i>
                         </div>
+                        <span class="text-xs text-gray-300">템플릿 DB</span>
+                    </div>
+                </div>
 
-                        <div>
-                            <label class="text-xs text-gray-400 mb-2 block">비율</label>
-                            <select id="aspect" class="w-full bg-gray-950 border border-gray-700 rounded-xl px-4 py-3 text-white text-sm focus:border-so focus:outline-none">
-                                <option value="1:1">정사각형 (1:1)</option>
-                                <option value="4:5">세로형 (4:5)</option>
-                                <option value="16:9">와이드 (16:9)</option>
-                                <option value="9:16">모바일 (9:16)</option>
-                            </select>
+                <div class="bg-gray-800/50 border border-gray-700 rounded-2xl p-6 max-w-2xl mx-auto">
+                    <div class="flex items-start gap-4">
+                        <div class="w-12 h-12 bg-yellow-500/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-hard-hat text-yellow-500 text-xl"></i>
                         </div>
-
-                        <div>
-                            <label class="text-xs text-gray-400 mb-2 block">배경</label>
-                            <select id="background" class="w-full bg-gray-950 border border-gray-700 rounded-xl px-4 py-3 text-white text-sm focus:border-so focus:outline-none">
-                                <option value="white">화이트 배경</option>
-                                <option value="studio">스튜디오</option>
-                                <option value="lifestyle">라이프스타일</option>
-                                <option value="transparent">투명 배경</option>
-                            </select>
+                        <div class="text-left">
+                            <h3 class="font-bold mb-2">현재 구축 상태</h3>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-2 h-2 bg-green-400 rounded-full pulse-dot"></span>
+                                    <span class="text-gray-400">MONKOS Pro - 모델 생성 <span class="text-green-400">운영중</span></span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="w-2 h-2 bg-yellow-400 rounded-full pulse-dot"></span>
+                                    <span class="text-gray-400">민아 에이전시 - AI 모델 <span class="text-yellow-400">연동 예정</span></span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="w-2 h-2 bg-gray-600 rounded-full"></span>
+                                    <span class="text-gray-400">배경 데이터 - 크롤링 <span class="text-gray-500">준비중</span></span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="w-2 h-2 bg-gray-600 rounded-full"></span>
+                                    <span class="text-gray-400">태그 스키마 - 벡터DB <span class="text-gray-500">준비중</span></span>
+                                </div>
+                            </div>
                         </div>
                     </div>
-
-                    <button 
-                        onclick="generateLookbook()" 
-                        id="generate-btn"
-                        class="w-full py-4 bg-gradient-to-r from-so via-purple-500 to-ai text-white font-black rounded-2xl uppercase tracking-widest hover:shadow-lg hover:shadow-so/50 transition-all disabled:opacity-50"
-                    >
-                        <i class="fas fa-images mr-2"></i>Generate
-                    </button>
-
-                    <div id="status" class="text-center text-xs text-gray-400"></div>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <!-- Result -->
-        <div id="result-container" class="mt-8 hidden">
-            <div class="bg-gray-900 border border-gray-800 rounded-3xl p-6">
-                <img id="generated-image" src="" alt="Generated" class="w-full rounded-2xl">
-                <div class="flex justify-between items-center mt-4">
-                    <span class="text-xs text-gray-500">생성 완료</span>
-                    <button onclick="downloadImage()" class="px-4 py-2 bg-so text-white rounded-lg text-sm font-bold hover:bg-so/80 transition-colors">
-                        <i class="fas fa-download mr-2"></i>다운로드
-                    </button>
+        <!-- Quick Demo (Existing Feature) -->
+        <section class="py-12 md:py-16 px-6 border-t border-white/5">
+            <div class="max-w-4xl mx-auto">
+                <div class="text-center mb-8">
+                    <span class="px-3 py-1 bg-green-500/10 border border-green-500/30 text-green-400 text-xs font-bold rounded-full mb-4 inline-block">
+                        NOW AVAILABLE
+                    </span>
+                    <h2 class="text-2xl md:text-3xl font-black mb-2">퀵 데모</h2>
+                    <p class="text-gray-500 text-sm">프롬프트 기반 빠른 이미지 생성 (기존 기능)</p>
+                </div>
+
+                <div class="bg-gray-900 border border-gray-800 rounded-3xl p-6 md:p-8">
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <!-- Input -->
+                        <div class="space-y-4">
+                            <div>
+                                <label class="text-xs text-gray-400 mb-2 block">카테고리</label>
+                                <select id="demo-category" class="w-full bg-gray-950 border border-gray-700 rounded-xl px-4 py-3 text-sm focus:border-so outline-none">
+                                    <option value="fashion">패션</option>
+                                    <option value="product">제품</option>
+                                    <option value="food">푸드</option>
+                                    <option value="beauty">뷰티</option>
+                                    <option value="interior">인테리어</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-xs text-gray-400 mb-2 block">프롬프트</label>
+                                <textarea id="demo-prompt" placeholder="화이트 티셔츠, 미니멀 배경..." class="w-full h-24 bg-gray-950 border border-gray-700 rounded-xl px-4 py-3 text-sm focus:border-so outline-none resize-none"></textarea>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="text-xs text-gray-400 mb-2 block">무드</label>
+                                    <select id="demo-mood" class="w-full bg-gray-950 border border-gray-700 rounded-xl px-3 py-2 text-sm focus:border-so outline-none">
+                                        <option value="minimal">미니멀</option>
+                                        <option value="luxury">럭셔리</option>
+                                        <option value="vintage">빈티지</option>
+                                        <option value="modern">모던</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="text-xs text-gray-400 mb-2 block">비율</label>
+                                    <select id="demo-aspect" class="w-full bg-gray-950 border border-gray-700 rounded-xl px-3 py-2 text-sm focus:border-so outline-none">
+                                        <option value="1:1">1:1</option>
+                                        <option value="4:5">4:5</option>
+                                        <option value="16:9">16:9</option>
+                                        <option value="9:16">9:16</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button onclick="generateDemo()" id="demo-btn" class="w-full py-4 bg-gradient-to-r from-so to-typo text-white font-bold rounded-xl hover:shadow-lg hover:shadow-so/30 transition-all">
+                                <i class="fas fa-magic mr-2"></i>Generate
+                            </button>
+                            <p id="demo-status" class="text-center text-xs text-gray-500"></p>
+                        </div>
+
+                        <!-- Output -->
+                        <div class="bg-gray-950 border border-gray-800 rounded-2xl p-4 flex items-center justify-center min-h-[300px]">
+                            <div id="demo-placeholder" class="text-center">
+                                <i class="fas fa-image text-4xl text-gray-700 mb-3"></i>
+                                <p class="text-sm text-gray-600">생성된 이미지가 여기 표시됩니다</p>
+                            </div>
+                            <img id="demo-result" src="" class="hidden w-full rounded-xl">
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
+        </section>
 
     </main>
 
-    <footer class="border-t border-white/5 py-8 px-6 text-center text-gray-500 text-xs">
-        <p>© 2026 MONK STUDIO. SO-SO LOOKBOOK</p>
+    <footer class="border-t border-white/5 py-12 px-6 text-center">
+        <p class="text-gray-600 text-[10px] tracking-[0.3em] uppercase">© 2026 MONK STUDIO. Powered by MONKOS.AI</p>
     </footer>
 
     <script>
-        let currentCategory = 'fashion';
         const IMAGEN_API_URL = 'https://monk-imagen-proxy.gdsajin.workers.dev';
 
         function selectCategory(category) {
-            currentCategory = category;
-            document.querySelectorAll('.category-badge').forEach(badge => {
-                badge.classList.remove('active');
-            });
-            document.getElementById('cat-' + category).classList.add('active');
-
-            const prompts = {
-                'fashion': '화이트 티셔츠, 미니멀한 배경, 자연스러운 조명',
-                'product': '화장품 제품, 깔끔한 배경, 상세 디테일',
-                'food': '플레이팅된 요리, 자연광, 감성적인 분위기',
-                'interior': '모던한 거실, 따뜻한 조명, 심플한 가구',
-                'beauty': '스킨케어 제품, 투명한 질감, 고급스러운 분위기'
-            };
-            document.getElementById('prompt-input').placeholder = `${prompts[category]}...`;
+            document.querySelectorAll('.category-tab').forEach(tab => tab.classList.remove('active'));
+            document.getElementById('tab-' + category).classList.add('active');
+            // 템플릿 갤러리 업데이트 로직 (추후 구현)
         }
 
-        async function generateLookbook() {
-            const prompt = document.getElementById('prompt-input').value.trim();
-            const mood = document.getElementById('mood').value;
-            const layout = document.getElementById('layout').value;
-            const aspect = document.getElementById('aspect').value;
-            const background = document.getElementById('background').value;
-            const status = document.getElementById('status');
-            const btn = document.getElementById('generate-btn');
+        async function generateDemo() {
+            const category = document.getElementById('demo-category').value;
+            const prompt = document.getElementById('demo-prompt').value.trim();
+            const mood = document.getElementById('demo-mood').value;
+            const aspect = document.getElementById('demo-aspect').value;
+            const btn = document.getElementById('demo-btn');
+            const status = document.getElementById('demo-status');
+            const placeholder = document.getElementById('demo-placeholder');
+            const result = document.getElementById('demo-result');
 
             if (!prompt) {
-                status.textContent = '⚠️ 제작할 비주얼을 입력하세요';
+                status.textContent = '⚠️ 프롬프트를 입력하세요';
                 status.classList.add('text-yellow-400');
                 return;
             }
 
-            const enhancedPrompt = `Professional ${currentCategory} photography: ${prompt}, ${mood} mood, ${layout} composition, ${background} background, commercial quality, high-end lookbook style, 8K resolution`;
+            const enhancedPrompt = `Professional ${category} photography: ${prompt}, ${mood} mood, commercial quality, high-end lookbook style, 8K resolution`;
 
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>생성 중...';
-            status.textContent = 'AI가 고감도 비주얼을 생성하고 있습니다...';
+            status.textContent = 'AI가 이미지를 생성하고 있습니다...';
             status.classList.remove('text-yellow-400', 'text-red-400');
             status.classList.add('text-so');
 
@@ -261,9 +554,12 @@
                 const data = await response.json();
                 
                 if (data.imageUrl) {
-                    document.getElementById('generated-image').src = data.imageUrl;
-                    document.getElementById('result-container').classList.remove('hidden');
+                    placeholder.classList.add('hidden');
+                    result.src = data.imageUrl;
+                    result.classList.remove('hidden');
                     status.textContent = '✓ 생성 완료!';
+                    status.classList.remove('text-so');
+                    status.classList.add('text-green-400');
                 } else {
                     throw new Error('이미지 URL을 받지 못했습니다');
                 }
@@ -274,23 +570,9 @@
                 status.classList.add('text-red-400');
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-images mr-2"></i>Generate Lookbook';
+                btn.innerHTML = '<i class="fas fa-magic mr-2"></i>Generate';
             }
         }
-
-        function downloadImage() {
-            const img = document.getElementById('generated-image');
-            const link = document.createElement('a');
-            link.href = img.src;
-            link.download = `lookbook-${currentCategory}-${Date.now()}.png`;
-            link.click();
-        }
-
-        document.getElementById('prompt-input').addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && e.ctrlKey) {
-                generateLookbook();
-            }
-        });
     </script>
 
 </body>

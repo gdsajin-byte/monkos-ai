@@ -3,244 +3,551 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>쌍아 B2B Kiosk Solution | MONK AI LAB</title>
+    <title>MONKOS Business | 소상공인·기업 AI 솔루션</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         body { font-family: 'Inter', sans-serif; }
         .gradient-text { background: linear-gradient(135deg, #60A5FA 0%, #A78BFA 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .card-hover { transition: all 0.3s ease; }
-        .card-hover:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(96, 165, 250, 0.2); }
+        .card-hover:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(96, 165, 250, 0.15); }
+        .hero-glow { 
+            position: absolute; 
+            width: 800px; height: 800px; 
+            background: radial-gradient(circle, rgba(96,165,250,0.12) 0%, transparent 70%); 
+            top: -300px; left: 50%; transform: translateX(-50%); 
+            pointer-events: none;
+        }
+        .service-badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 8px 16px; background: rgba(96,165,250,0.1);
+            border: 1px solid rgba(96,165,250,0.3); border-radius: 9999px;
+            font-size: 13px; color: #93C5FD; transition: all 0.3s;
+        }
+        .service-badge:hover { background: rgba(96,165,250,0.2); border-color: rgba(96,165,250,0.5); }
+        .icon-float { animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        .price-tag { font-feature-settings: 'tnum'; }
+        .section-label {
+            display: inline-block; padding: 6px 16px; 
+            background: rgba(96,165,250,0.1); border: 1px solid rgba(96,165,250,0.3);
+            border-radius: 9999px; font-size: 12px; color: #60A5FA;
+            text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px;
+        }
+        .discount-badge {
+            position: absolute; top: -8px; right: -8px;
+            background: linear-gradient(135deg, #F59E0B, #EF4444);
+            color: white; font-size: 11px; font-weight: bold;
+            padding: 4px 10px; border-radius: 9999px;
+        }
     </style>
 </head>
 <body class="bg-gray-950 text-white">
     
     <!-- Header -->
     <header class="sticky top-0 z-40 bg-gray-950/90 backdrop-blur-md border-b border-gray-800">
-        <div class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
-            <a href="../../index.html" class="text-2xl font-black tracking-tight">MONK<span class="text-blue-400">.kr</span></a>
-            <a href="../ai_lab.html" class="text-sm text-gray-400 hover:text-white transition-colors">← Back to AI LAB</a>
+        <div class="max-w-7xl mx-auto px-6 h-16 flex justify-between items-center">
+            <a href="../../index.html" class="text-xl font-black tracking-tight">MONK<span class="text-blue-400">.kr</span></a>
+            <a href="../ai_lab.html" class="text-sm text-gray-400 hover:text-white transition-colors">← AI LAB</a>
         </div>
     </header>
 
     <main>
         <!-- Hero Section -->
-        <section class="py-24 px-6 text-center border-b border-gray-800">
-            <div class="max-w-4xl mx-auto">
-                <h1 class="text-6xl md:text-7xl font-black mb-6 leading-tight">
-                    <span class="gradient-text">SSANG-A</span><br>
-                    <span class="text-white">1인 창업자 AI 솔루션</span>
+        <section class="relative py-20 px-6 text-center border-b border-gray-800 overflow-hidden">
+            <div class="hero-glow"></div>
+            <div class="max-w-4xl mx-auto relative z-10">
+                <div class="flex justify-center gap-4 mb-6">
+                    <div class="icon-float w-12 h-12 bg-blue-600/20 border border-blue-600/40 rounded-xl flex items-center justify-center" style="animation-delay: 0s;">
+                        <i class="fas fa-globe text-lg text-blue-400"></i>
+                    </div>
+                    <div class="icon-float w-12 h-12 bg-purple-600/20 border border-purple-600/40 rounded-xl flex items-center justify-center" style="animation-delay: 0.3s;">
+                        <i class="fas fa-robot text-lg text-purple-400"></i>
+                    </div>
+                    <div class="icon-float w-12 h-12 bg-emerald-600/20 border border-emerald-600/40 rounded-xl flex items-center justify-center" style="animation-delay: 0.6s;">
+                        <i class="fas fa-credit-card text-lg text-emerald-400"></i>
+                    </div>
+                    <div class="icon-float w-12 h-12 bg-orange-600/20 border border-orange-600/40 rounded-xl flex items-center justify-center" style="animation-delay: 0.9s;">
+                        <i class="fas fa-camera text-lg text-orange-400"></i>
+                    </div>
+                </div>
+
+                <h1 class="text-4xl md:text-6xl font-black mb-3 leading-tight">
+                    <span class="gradient-text">MONKOS</span>
+                    <span class="text-white"> Business</span>
                 </h1>
-                <p class="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-                    개인학원, 헤어샵, 미용실 등 1인 창업자를 위한 AI 챗봇 시스템.<br>
-                    운영 시간을 줄이고 매출은 늘리세요.
+                <p class="text-xs text-gray-500 mb-4 uppercase tracking-[0.3em]">소상공인 · 기업 토탈 솔루션</p>
+                
+                <p class="text-base md:text-lg text-gray-300 mb-6 max-w-xl mx-auto leading-relaxed">
+                    <strong class="text-white">홈페이지 하나</strong>로 비즈니스 전체가 돌아갑니다<br>
+                    <span class="text-gray-400">제작부터 운영까지, 우리가 다 합니다</span>
                 </p>
-                <div class="flex flex-col sm:flex-row justify-center gap-4">
-                    <button onclick="scrollToSection('features')" class="px-8 py-3 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition-all">
-                        솔루션 보기
+
+                <div class="flex flex-wrap justify-center gap-2 mb-8">
+                    <span class="service-badge text-xs"><i class="fas fa-laptop-code"></i> 홈페이지</span>
+                    <span class="service-badge text-xs"><i class="fas fa-comments"></i> AI 챗봇</span>
+                    <span class="service-badge text-xs"><i class="fas fa-calendar-alt"></i> 예약</span>
+                    <span class="service-badge text-xs"><i class="fas fa-credit-card"></i> 결제</span>
+                    <span class="service-badge text-xs"><i class="fas fa-chart-line"></i> 분석</span>
+                </div>
+
+                <div class="flex flex-col sm:flex-row justify-center gap-3">
+                    <button onclick="scrollToSection('packages')" class="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-bold text-sm hover:from-blue-700 hover:to-purple-700 transition-all shadow-lg shadow-blue-600/25">
+                        패키지 보기
                     </button>
-                    <a href="https://talk.naver.com/W5UJ45" target="_blank" class="px-8 py-3 border border-blue-600 text-blue-400 rounded-lg font-bold hover:bg-blue-600/10 transition-all">
-                        문의하기
+                    <a href="https://talk.naver.com/W5UJ45" target="_blank" class="px-6 py-3 bg-gray-900 border border-gray-700 text-gray-300 rounded-xl font-bold text-sm hover:border-blue-600/50 hover:text-white transition-all">
+                        무료 견적 상담
                     </a>
                 </div>
             </div>
         </section>
 
-        <!-- Core Features -->
-        <section id="features" class="py-24 px-6 border-b border-gray-800">
-            <div class="max-w-6xl mx-auto">
-                <h2 class="text-4xl font-black text-center mb-16">핵심 기능</h2>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <!-- Feature 1 -->
-                    <div class="card-hover bg-gray-900 border border-gray-800 rounded-2xl p-8">
-                        <div class="text-4xl mb-4"><i class="fas fa-comments text-blue-400"></i></div>
-                        <h3 class="text-xl font-bold mb-3">24/7 AI 챗봇</h3>
-                        <p class="text-gray-300 text-sm leading-relaxed">
-                            자동으로 고객 문의에 답변. 예약, 환불, 상담까지 자동 처리. 밤새 핸드폰을 안 봐도 됩니다.
-                        </p>
-                    </div>
-
-                    <!-- Feature 2 -->
-                    <div class="card-hover bg-gray-900 border border-gray-800 rounded-2xl p-8">
-                        <div class="text-4xl mb-4"><i class="fas fa-calendar-check text-purple-400"></i></div>
-                        <h3 class="text-xl font-bold mb-3">자동 예약 관리</h3>
-                        <p class="text-gray-300 text-sm leading-relaxed">
-                            고객 예약 자동 정렬. 노쇼 방지 알림. 빈 시간 자동 추천. 예약 관리에 시간을 쓰지 마세요.
-                        </p>
-                    </div>
-
-                    <!-- Feature 3 -->
-                    <div class="card-hover bg-gray-900 border border-gray-800 rounded-2xl p-8">
-                        <div class="text-4xl mb-4"><i class="fas fa-bell text-yellow-400"></i></div>
-                        <h3 class="text-xl font-bold mb-3">자동 알림 & 재방문 유도</h3>
-                        <p class="text-gray-300 text-sm leading-relaxed">
-                            고객이 정기적으로 오도록 자동 알림 발송. 생일, 마지막 방문 이후 자동으로 연락합니다.
-                        </p>
-                    </div>
-
-                    <!-- Feature 4 -->
-                    <div class="card-hover bg-gray-900 border border-gray-800 rounded-2xl p-8">
-                        <div class="text-4xl mb-4"><i class="fas fa-database text-green-400"></i></div>
-                        <h3 class="text-xl font-bold mb-3">고객 데이터 저장</h3>
-                        <p class="text-gray-300 text-sm leading-relaxed">
-                            헤어스타일, 피부 타입, 학생 진도 등 고객 정보 자동 저장. 다음 방문 시 개인화된 서비스 제공.
-                        </p>
-                    </div>
-
-                    <!-- Feature 5 -->
-                    <div class="card-hover bg-gray-900 border border-gray-800 rounded-2xl p-8">
-                        <div class="text-4xl mb-4"><i class="fas fa-credit-card text-emerald-400"></i></div>
-                        <h3 class="text-xl font-bold mb-3">토스페이먼츠 결제</h3>
-                        <p class="text-gray-300 text-sm leading-relaxed">
-                            신용카드, 계좌이체, 간편결제 모두 지원. 매출은 바로 통장으로. 결제 수수료 최소화.
-                        </p>
-                    </div>
-
-                    <!-- Feature 6 -->
-                    <div class="card-hover bg-gray-900 border border-gray-800 rounded-2xl p-8">
-                        <div class="text-4xl mb-4"><i class="fas fa-chart-line text-orange-400"></i></div>
-                        <h3 class="text-xl font-bold mb-3">간단한 매출 분석</h3>
-                        <p class="text-gray-300 text-sm leading-relaxed">
-                            오늘 매출, 인기 서비스, 고객 만족도를 한눈에. 복잡한 통계 없이 필요한 정보만.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Use Cases -->
-        <section class="py-24 px-6 border-b border-gray-800">
-            <div class="max-w-6xl mx-auto">
-                <h2 class="text-4xl font-black text-center mb-16">적용 사례</h2>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div class="bg-gradient-to-br from-blue-600/20 to-purple-600/20 border border-blue-600 rounded-2xl p-8">
-                        <h3 class="text-2xl font-bold mb-4">💇 헤어샵 / 미용실</h3>
-                        <ul class="space-y-2 text-gray-300">
-                            <li>✓ 자동 예약 관리 (밤샘 운영 불필요)</li>
-                            <li>✓ 시술 이력 및 고객 정보 저장</li>
-                            <li>✓ 재방문 알림 자동화</li>
-                            <li>✓ 헤어스타일 AI 상담</li>
-                            <li>✓ 멤버십 관리 및 적립</li>
-                        </ul>
-                    </div>
-
-                    <div class="bg-gradient-to-br from-blue-600/20 to-purple-600/20 border border-blue-600 rounded-2xl p-8">
-                        <h3 class="text-2xl font-bold mb-4">📚 개인학원 / 학원</h3>
-                        <ul class="space-y-2 text-gray-300">
-                            <li>✓ 수강 신청 및 상담 자동화</li>
-                            <li>✓ 결석 알림 및 재등록 안내</li>
-                            <li>✓ 학부모 피드백 수집</li>
-                            <li>✓ 성과 분석 리포트</li>
-                            <li>✓ 월급 관리 및 정산</li>
-                        </ul>
-                    </div>
-
-                    <div class="bg-gray-900 border border-gray-800 rounded-2xl p-8">
-                        <h3 class="text-2xl font-bold mb-4">💅 네일샵 / 피부관리실</h3>
-                        <ul class="space-y-2 text-gray-300">
-                            <li>✓ 시술 이력 자동 저장</li>
-                            <li>✓ 시술 전 상담 자동화</li>
-                            <li>✓ 추천 상품 AI 제안</li>
-                            <li>✓ 고객 만족도 조사</li>
-                            <li>✓ SNS 리뷰 관리</li>
-                        </ul>
-                    </div>
-
-                    <div class="bg-gray-900 border border-gray-800 rounded-2xl p-8">
-                        <h3 class="text-2xl font-bold mb-4">🎵 음악학원 / 악기점</h3>
-                        <ul class="space-y-2 text-gray-300">
-                            <li>✓ 레슨 시간표 자동 관리</li>
-                            <li>✓ 학생 진도 관리</li>
-                            <li>✓ 발표회 안내 자동화</li>
-                            <li>✓ 악기 대여 / 판매 시스템</li>
-                            <li>✓ 월별 정산 자동화</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Pricing -->
-        <section class="py-24 px-6 border-b border-gray-800">
+        <!-- Why Homepage is Core -->
+        <section class="py-16 px-6 border-b border-gray-800 bg-gradient-to-b from-gray-950 to-gray-900/50">
             <div class="max-w-5xl mx-auto">
-                <h2 class="text-4xl font-black text-center mb-16">요금 안내</h2>
-                
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <!-- Solo Starter -->
-                    <div class="bg-gray-900 border border-gray-800 rounded-2xl p-8 hover:border-blue-600/50 transition-all">
-                        <h3 class="text-2xl font-bold mb-2">솔로 스타터</h3>
-                        <p class="text-gray-400 mb-6 text-sm">첫 시작</p>
-                        <div class="text-4xl font-black text-blue-400 mb-6">₩9,900<span class="text-lg text-gray-400">/월</span></div>
-                        <ul class="space-y-2 text-gray-300 text-sm mb-8">
-                            <li>✓ AI 챗봇 (기본)</li>
-                            <li>✓ 예약 관리 (수동)</li>
-                            <li>✓ 고객 정보 저장</li>
-                            <li>✓ 모바일 앱</li>
-                            <li>✓ 이메일 지원</li>
-                            <li>✗ 자동 알림</li>
-                        </ul>
-                        <button class="w-full py-3 border border-blue-600 text-blue-400 rounded-lg font-bold hover:bg-blue-600/10 transition-all">시작하기</button>
-                    </div>
+                <div class="text-center mb-12">
+                    <span class="section-label">Core Value</span>
+                    <h2 class="text-3xl font-black">왜 홈페이지가 핵심인가</h2>
+                </div>
 
-                    <!-- Pro Plan (추천) -->
-                    <div class="bg-gradient-to-br from-blue-600/30 to-purple-600/30 border-2 border-blue-600 rounded-2xl p-8 relative ring-2 ring-blue-600/50">
-                        <div class="absolute -top-4 left-8 bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-1 rounded-full text-xs font-bold">1인 창업자 추천</div>
-                        <h3 class="text-2xl font-bold mb-2">프로 플랜</h3>
-                        <p class="text-gray-300 mb-6 text-sm">성장 단계</p>
-                        <div class="text-4xl font-black text-blue-400 mb-6">₩29,900<span class="text-lg text-gray-400">/월</span></div>
-                        <ul class="space-y-2 text-gray-300 text-sm mb-8">
-                            <li>✓ AI 챗봇 (고급)</li>
-                            <li>✓ 자동 예약 확정</li>
-                            <li>✓ 자동 재방문 알림</li>
-                            <li>✓ 토스페이먼츠 연동</li>
-                            <li>✓ 고객 분석 대시보드</li>
-                            <li>✓ 우선 고객 지원</li>
-                        </ul>
-                        <button class="w-full py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-bold hover:from-blue-700 hover:to-purple-700 transition-all">무료 체험</button>
-                    </div>
-
-                    <!-- Multi Location -->
-                    <div class="bg-gray-900 border border-gray-800 rounded-2xl p-8 hover:border-blue-600/50 transition-all">
-                        <h3 class="text-2xl font-bold mb-2">멀티 로케이션</h3>
-                        <p class="text-gray-400 mb-6 text-sm">확장 단계</p>
-                        <div class="text-4xl font-black text-blue-400 mb-6">₩79,900<span class="text-lg text-gray-400">/월</span></div>
-                        <ul class="space-y-2 text-gray-300 text-sm mb-8">
-                            <li>✓ 2개 이상 위치 관리</li>
-                            <li>✓ 직원 계정 (5명)</li>
-                            <li>✓ 통합 분석 리포트</li>
-                            <li>✓ API 커스터마이징</li>
-                            <li>✓ 전담 매니저</li>
-                            <li>✓ 우선 신기능 제공</li>
-                        </ul>
-                        <button class="w-full py-3 border border-blue-600 text-blue-400 rounded-lg font-bold hover:bg-blue-600/10 transition-all">상담 신청</button>
+                <div class="bg-gray-900 border border-gray-800 rounded-2xl p-8 mb-8">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                        <div>
+                            <h3 class="text-xl font-bold mb-4 text-blue-400">아임웹 vs MONKOS</h3>
+                            <table class="w-full text-sm">
+                                <tr class="border-b border-gray-800">
+                                    <td class="py-3 text-gray-400">제작 방식</td>
+                                    <td class="py-3 text-gray-500">🔧 DIY</td>
+                                    <td class="py-3 text-emerald-400">✨ 대행 제작</td>
+                                </tr>
+                                <tr class="border-b border-gray-800">
+                                    <td class="py-3 text-gray-400">호스팅</td>
+                                    <td class="py-3 text-gray-500">자체 서버</td>
+                                    <td class="py-3 text-emerald-400">⚡ Cloudflare CDN</td>
+                                </tr>
+                                <tr class="border-b border-gray-800">
+                                    <td class="py-3 text-gray-400">AI 챗봇</td>
+                                    <td class="py-3 text-gray-500">외부 연동</td>
+                                    <td class="py-3 text-emerald-400">✅ 기본 탑재</td>
+                                </tr>
+                                <tr class="border-b border-gray-800">
+                                    <td class="py-3 text-gray-400">예약/결제</td>
+                                    <td class="py-3 text-gray-500">추가 비용</td>
+                                    <td class="py-3 text-emerald-400">✅ 통합</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-3 text-gray-400">기술 지원</td>
+                                    <td class="py-3 text-gray-500">셀프</td>
+                                    <td class="py-3 text-emerald-400">✅ 전담 관리</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="bg-gray-950 rounded-xl p-6 border border-gray-800">
+                            <p class="text-gray-400 text-sm mb-4">핵심 차별점</p>
+                            <p class="text-lg mb-2"><span class="text-gray-500">아임웹:</span> "도구 줄게, 니가 만들어"</p>
+                            <p class="text-lg text-blue-400 font-bold"><span class="text-white">MONKOS:</span> "사업에 집중해, 홈페이지는 우리가"</p>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Additional Info -->
-                <div class="mt-12 p-6 bg-gray-900/50 border border-gray-800 rounded-xl">
-                    <p class="text-center text-gray-400 text-sm">
-                        💡 <strong>프로 플랜</strong>은 헤어샵, 개인학원, 미용실 등 1인 창업자를 위해 최적화되었습니다. 
-                        <strong>14일 무료 체험 후 언제든 취소 가능</strong>합니다.
-                    </p>
+                <!-- Cloudflare Benefits -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 text-center">
+                        <i class="fas fa-globe text-2xl text-blue-400 mb-2"></i>
+                        <p class="text-xs text-gray-400">글로벌 CDN</p>
+                        <p class="text-sm font-bold">200+ 도시</p>
+                    </div>
+                    <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 text-center">
+                        <i class="fas fa-shield-alt text-2xl text-emerald-400 mb-2"></i>
+                        <p class="text-xs text-gray-400">보안</p>
+                        <p class="text-sm font-bold">무료 SSL + DDoS</p>
+                    </div>
+                    <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 text-center">
+                        <i class="fas fa-server text-2xl text-purple-400 mb-2"></i>
+                        <p class="text-xs text-gray-400">업타임</p>
+                        <p class="text-sm font-bold">99.99%</p>
+                    </div>
+                    <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 text-center">
+                        <i class="fas fa-bolt text-2xl text-yellow-400 mb-2"></i>
+                        <p class="text-xs text-gray-400">속도</p>
+                        <p class="text-sm font-bold">초고속 로딩</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Service Menu -->
+        <section id="services" class="py-16 px-6 border-b border-gray-800">
+            <div class="max-w-6xl mx-auto">
+                <div class="text-center mb-12">
+                    <span class="section-label">Service Menu</span>
+                    <h2 class="text-3xl font-black">서비스 메뉴</h2>
+                    <p class="text-gray-400 mt-2 text-sm">필요한 서비스만 선택하세요</p>
+                </div>
+
+                <!-- Homepage Production -->
+                <div class="mb-10">
+                    <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                        <i class="fas fa-laptop-code text-blue-400"></i> 홈페이지 제작
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div class="card-hover bg-gray-900 border border-gray-800 rounded-xl p-5">
+                            <p class="text-xs text-gray-500 mb-1">원페이지</p>
+                            <p class="text-sm text-gray-300 mb-3">랜딩페이지 1p</p>
+                            <p class="text-2xl font-black text-blue-400 price-tag">₩290,000</p>
+                            <p class="text-xs text-gray-500 mt-1">작업일 2일</p>
+                        </div>
+                        <div class="card-hover bg-gray-900 border border-gray-800 rounded-xl p-5">
+                            <p class="text-xs text-gray-500 mb-1">스몰</p>
+                            <p class="text-sm text-gray-300 mb-3">3~5페이지</p>
+                            <p class="text-2xl font-black text-blue-400 price-tag">₩490,000</p>
+                            <p class="text-xs text-gray-500 mt-1">작업일 5일</p>
+                        </div>
+                        <div class="card-hover bg-gray-900 border border-blue-600/50 rounded-xl p-5 relative">
+                            <div class="absolute -top-2 -right-2 bg-blue-600 text-xs px-2 py-0.5 rounded-full">인기</div>
+                            <p class="text-xs text-gray-500 mb-1">미디엄</p>
+                            <p class="text-sm text-gray-300 mb-3">6~10페이지</p>
+                            <p class="text-2xl font-black text-blue-400 price-tag">₩890,000</p>
+                            <p class="text-xs text-gray-500 mt-1">작업일 10일</p>
+                        </div>
+                        <div class="card-hover bg-gray-900 border border-gray-800 rounded-xl p-5">
+                            <p class="text-xs text-gray-500 mb-1">라지</p>
+                            <p class="text-sm text-gray-300 mb-3">11페이지+</p>
+                            <p class="text-2xl font-black text-gray-400 price-tag">별도 견적</p>
+                            <p class="text-xs text-gray-500 mt-1">협의</p>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- AI Chatbot -->
+                <div class="mb-10">
+                    <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                        <i class="fas fa-robot text-blue-400"></i> AI 챗봇
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="card-hover bg-gray-900 border border-gray-800 rounded-xl p-5">
+                            <p class="text-sm font-bold mb-1">기본</p>
+                            <p class="text-xs text-gray-400 mb-3">FAQ 자동응답 (룰 기반)</p>
+                            <p class="text-xl font-black text-blue-400 price-tag">₩100,000</p>
+                            <p class="text-xs text-gray-500">월 유지비 무료</p>
+                        </div>
+                        <div class="card-hover bg-gray-900 border border-blue-600/50 rounded-xl p-5 relative">
+                            <div class="absolute -top-2 -right-2 bg-blue-600 text-xs px-2 py-0.5 rounded-full">추천</div>
+                            <p class="text-sm font-bold mb-1">고급</p>
+                            <p class="text-xs text-gray-400 mb-3">AI 자연어 + 예약 연동</p>
+                            <p class="text-xl font-black text-blue-400 price-tag">₩300,000</p>
+                            <p class="text-xs text-gray-500">월 ₩19,900</p>
+                        </div>
+                        <div class="card-hover bg-gray-900 border border-gray-800 rounded-xl p-5">
+                            <p class="text-sm font-bold mb-1">프리미엄</p>
+                            <p class="text-xs text-gray-400 mb-3">풀 커스텀 + 데이터 분석</p>
+                            <p class="text-xl font-black text-blue-400 price-tag">₩500,000</p>
+                            <p class="text-xs text-gray-500">월 ₩49,900</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Visual Contents -->
+                <div class="mb-10">
+                    <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                        <i class="fas fa-image text-orange-400"></i> 비주얼 콘텐츠 
+                        <span class="text-xs bg-orange-600/20 text-orange-400 px-2 py-0.5 rounded-full">MONKOS 고객 할인</span>
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="card-hover bg-gray-900 border border-gray-800 rounded-xl p-5 relative">
+                            <div class="discount-badge">40% OFF</div>
+                            <i class="fas fa-user-circle text-pink-400 text-2xl mb-3"></i>
+                            <p class="text-sm font-bold mb-1">AI 모델 이미지</p>
+                            <p class="text-xs text-gray-400 mb-2">홈페이지/SNS용</p>
+                            <p class="text-xs text-gray-500 line-through">₩50,000/컷</p>
+                            <p class="text-lg font-black text-pink-400 price-tag">₩30,000/컷</p>
+                        </div>
+                        <div class="card-hover bg-gray-900 border border-gray-800 rounded-xl p-5 relative">
+                            <div class="discount-badge">34% OFF</div>
+                            <i class="fas fa-file-image text-purple-400 text-2xl mb-3"></i>
+                            <p class="text-sm font-bold mb-1">AI 상세페이지</p>
+                            <p class="text-xs text-gray-400 mb-2">서비스/상품 소개</p>
+                            <p class="text-xs text-gray-500 line-through">₩150,000</p>
+                            <p class="text-lg font-black text-purple-400 price-tag">₩99,000</p>
+                        </div>
+                        <div class="card-hover bg-gray-900 border border-gray-800 rounded-xl p-5 relative">
+                            <div class="discount-badge">41% OFF</div>
+                            <i class="fas fa-images text-blue-400 text-2xl mb-3"></i>
+                            <p class="text-sm font-bold mb-1">AI 배너 세트</p>
+                            <p class="text-xs text-gray-400 mb-2">SNS/홈페이지 5종</p>
+                            <p class="text-xs text-gray-500 line-through">₩100,000</p>
+                            <p class="text-lg font-black text-blue-400 price-tag">₩59,000</p>
+                        </div>
+                        <div class="card-hover bg-gray-900 border border-gray-800 rounded-xl p-5 relative">
+                            <div class="discount-badge">37% OFF</div>
+                            <i class="fas fa-user-friends text-pink-400 text-2xl mb-3"></i>
+                            <p class="text-sm font-bold mb-1">AI 모델 패키지</p>
+                            <p class="text-xs text-gray-400 mb-2">10컷 다양한 포즈</p>
+                            <p class="text-xs text-gray-500 line-through">₩300,000</p>
+                            <p class="text-lg font-black text-pink-400 price-tag">₩190,000</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Real Photography -->
+                <div class="mb-10">
+                    <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                        <i class="fas fa-camera text-emerald-400"></i> 실사 촬영 
+                        <span class="text-xs text-gray-500 font-normal">(몽크사진관)</span>
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="card-hover bg-gray-900 border border-gray-800 rounded-xl p-5">
+                            <p class="text-sm font-bold mb-1">매장 인테리어</p>
+                            <p class="text-xs text-gray-400 mb-2">10컷 보정, 출장 포함</p>
+                            <p class="text-lg font-black text-emerald-400 price-tag">₩290,000</p>
+                        </div>
+                        <div class="card-hover bg-gray-900 border border-gray-800 rounded-xl p-5">
+                            <p class="text-sm font-bold mb-1">메뉴/상품</p>
+                            <p class="text-xs text-gray-400 mb-2">10품목, 배경 세팅</p>
+                            <p class="text-lg font-black text-emerald-400 price-tag">₩190,000</p>
+                        </div>
+                        <div class="card-hover bg-gray-900 border border-gray-800 rounded-xl p-5">
+                            <p class="text-sm font-bold mb-1">시술/서비스</p>
+                            <p class="text-xs text-gray-400 mb-2">모델 섭외, 과정 촬영</p>
+                            <p class="text-lg font-black text-emerald-400 price-tag">₩390,000</p>
+                        </div>
+                        <div class="card-hover bg-gray-900 border border-gray-800 rounded-xl p-5">
+                            <p class="text-sm font-bold mb-1">대표 프로필</p>
+                            <p class="text-xs text-gray-400 mb-2">프로필 3컷 + 보정</p>
+                            <p class="text-lg font-black text-emerald-400 price-tag">₩150,000</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Design & Marketing -->
+                <div>
+                    <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                        <i class="fas fa-palette text-yellow-400"></i> 디자인 & 마케팅
+                    </h3>
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+                        <div class="card-hover bg-gray-900 border border-gray-800 rounded-xl p-4 text-center">
+                            <p class="text-xs text-gray-300 mb-1">로고 디자인</p>
+                            <p class="text-sm font-bold price-tag">₩290,000</p>
+                        </div>
+                        <div class="card-hover bg-gray-900 border border-gray-800 rounded-xl p-4 text-center">
+                            <p class="text-xs text-gray-300 mb-1">CI/BI 패키지</p>
+                            <p class="text-sm font-bold price-tag">₩590,000</p>
+                        </div>
+                        <div class="card-hover bg-gray-900 border border-gray-800 rounded-xl p-4 text-center">
+                            <p class="text-xs text-gray-300 mb-1">메뉴판</p>
+                            <p class="text-sm font-bold price-tag">₩190,000</p>
+                        </div>
+                        <div class="card-hover bg-gray-900 border border-gray-800 rounded-xl p-4 text-center">
+                            <p class="text-xs text-gray-300 mb-1">SNS 템플릿</p>
+                            <p class="text-sm font-bold price-tag">₩150,000</p>
+                        </div>
+                        <div class="card-hover bg-gray-900 border border-gray-800 rounded-xl p-4 text-center">
+                            <p class="text-xs text-gray-300 mb-1">월 SNS 운영</p>
+                            <p class="text-sm font-bold price-tag">₩290,000<span class="text-xs text-gray-500">/월</span></p>
+                        </div>
+                        <div class="card-hover bg-gray-900 border border-gray-800 rounded-xl p-4 text-center">
+                            <p class="text-xs text-gray-300 mb-1">리뷰 관리</p>
+                            <p class="text-sm font-bold price-tag">₩99,000<span class="text-xs text-gray-500">/월</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bundle Packages -->
+        <section id="packages" class="py-16 px-6 border-b border-gray-800 bg-gradient-to-b from-gray-900/50 to-gray-950">
+            <div class="max-w-5xl mx-auto">
+                <div class="text-center mb-12">
+                    <span class="section-label">Bundle Package</span>
+                    <h2 class="text-3xl font-black">번들 패키지</h2>
+                    <p class="text-gray-400 mt-2 text-sm">묶을수록 저렴해집니다</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Starter Bundle -->
+                    <div class="card-hover bg-gray-900 border border-gray-800 rounded-2xl p-6">
+                        <div class="flex items-center gap-2 mb-4">
+                            <span class="text-2xl">🥉</span>
+                            <div>
+                                <h3 class="text-xl font-bold">스타터</h3>
+                                <p class="text-xs text-gray-400">첫 시작 · 1주</p>
+                            </div>
+                        </div>
+                        <ul class="space-y-2 text-sm text-gray-300 mb-6">
+                            <li class="flex items-center gap-2"><i class="fas fa-check text-emerald-400 text-xs"></i> 홈페이지 5p</li>
+                            <li class="flex items-center gap-2"><i class="fas fa-check text-emerald-400 text-xs"></i> AI 배너 5종</li>
+                            <li class="flex items-center gap-2"><i class="fas fa-check text-emerald-400 text-xs"></i> 기본 챗봇</li>
+                            <li class="flex items-center gap-2 text-gray-500"><i class="fas fa-times text-gray-600 text-xs"></i> 플랫폼 세팅 미포함</li>
+                        </ul>
+                        <div class="border-t border-gray-800 pt-4">
+                            <p class="text-3xl font-black text-blue-400 price-tag">₩490,000</p>
+                            <p class="text-xs text-gray-500">홈페이지만 필요할 때</p>
+                        </div>
+                        <button class="w-full mt-4 py-2.5 border border-blue-600 text-blue-400 rounded-lg text-sm font-bold hover:bg-blue-600/10 transition-all">선택</button>
+                    </div>
+
+                    <!-- Pro Bundle -->
+                    <div class="card-hover bg-gradient-to-br from-blue-600/20 to-purple-600/20 border-2 border-blue-600 rounded-2xl p-6 relative">
+                        <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-1 rounded-full text-xs font-bold">BEST</div>
+                        <div class="flex items-center gap-2 mb-4">
+                            <span class="text-2xl">🥈</span>
+                            <div>
+                                <h3 class="text-xl font-bold">프로</h3>
+                                <p class="text-xs text-gray-300">소상공인 추천 · 2주</p>
+                            </div>
+                        </div>
+                        <ul class="space-y-2 text-sm text-gray-200 mb-6">
+                            <li class="flex items-center gap-2"><i class="fas fa-check text-emerald-400 text-xs"></i> 홈페이지 8p</li>
+                            <li class="flex items-center gap-2"><i class="fas fa-check text-emerald-400 text-xs"></i> AI 챗봇 (고급)</li>
+                            <li class="flex items-center gap-2"><i class="fas fa-check text-emerald-400 text-xs"></i> 매장 촬영 10컷</li>
+                            <li class="flex items-center gap-2"><i class="fas fa-check text-emerald-400 text-xs"></i> 토스페이먼츠 연동</li>
+                            <li class="flex items-center gap-2 text-gray-400"><i class="fas fa-times text-gray-500 text-xs"></i> 네이버 세팅 미포함</li>
+                        </ul>
+                        <div class="border-t border-blue-600/30 pt-4">
+                            <p class="text-3xl font-black text-white price-tag">₩990,000</p>
+                            <p class="text-xs text-gray-400">결제까지 원스톱</p>
+                        </div>
+                        <button class="w-full mt-4 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg text-sm font-bold hover:from-blue-700 hover:to-purple-700 transition-all">선택</button>
+                    </div>
+
+                    <!-- Premium Bundle -->
+                    <div class="card-hover bg-gray-900 border border-yellow-600/50 rounded-2xl p-6 relative">
+                        <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-yellow-600 to-orange-600 px-4 py-1 rounded-full text-xs font-bold">ALL-IN-ONE</div>
+                        <div class="flex items-center gap-2 mb-4">
+                            <span class="text-2xl">🥇</span>
+                            <div>
+                                <h3 class="text-xl font-bold">프리미엄</h3>
+                                <p class="text-xs text-yellow-400">토탈 솔루션 · 3주</p>
+                            </div>
+                        </div>
+                        <ul class="space-y-2 text-sm text-gray-300 mb-6">
+                            <li class="flex items-center gap-2"><i class="fas fa-check text-yellow-400 text-xs"></i> 홈페이지 10p+</li>
+                            <li class="flex items-center gap-2"><i class="fas fa-check text-yellow-400 text-xs"></i> AI 챗봇 (프리미엄)</li>
+                            <li class="flex items-center gap-2"><i class="fas fa-check text-yellow-400 text-xs"></i> 풀 촬영 패키지</li>
+                            <li class="flex items-center gap-2"><i class="fas fa-check text-yellow-400 text-xs"></i> 토스페이먼츠 연동</li>
+                            <li class="flex items-center gap-2"><i class="fas fa-check text-yellow-400 text-xs"></i> <strong class="text-yellow-400">네이버 풀세팅</strong></li>
+                            <li class="flex items-center gap-2 text-xs text-gray-500 pl-5">플레이스 + SEO + 예약 + 톡톡</li>
+                            <li class="flex items-center gap-2"><i class="fas fa-check text-yellow-400 text-xs"></i> CI/BI 패키지</li>
+                        </ul>
+                        <div class="border-t border-yellow-600/30 pt-4">
+                            <p class="text-3xl font-black text-yellow-400 price-tag">₩1,890,000</p>
+                            <p class="text-xs text-gray-400">신경 쓸 거 하나도 없이</p>
+                        </div>
+                        <button class="w-full mt-4 py-2.5 bg-gradient-to-r from-yellow-600 to-orange-600 text-white rounded-lg text-sm font-bold hover:from-yellow-700 hover:to-orange-700 transition-all">선택</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Monthly Plans -->
+        <section class="py-16 px-6 border-b border-gray-800">
+            <div class="max-w-4xl mx-auto">
+                <div class="text-center mb-12">
+                    <span class="section-label">Monthly Care</span>
+                    <h2 class="text-3xl font-black">월 관리 플랜</h2>
+                    <p class="text-gray-400 mt-2 text-sm">제작 후 지속적인 관리</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="card-hover bg-gray-900 border border-gray-800 rounded-2xl p-6 text-center">
+                        <p class="text-sm font-bold mb-2">케어 베이직</p>
+                        <p class="text-3xl font-black text-blue-400 mb-4 price-tag">₩9,900<span class="text-sm text-gray-400">/월</span></p>
+                        <ul class="text-xs text-gray-400 space-y-1 text-left">
+                            <li>✓ Cloudflare 호스팅</li>
+                            <li>✓ 월 1회 백업</li>
+                            <li>✓ 이메일 지원</li>
+                        </ul>
+                    </div>
+                    <div class="card-hover bg-gray-900 border border-blue-600/50 rounded-2xl p-6 text-center relative">
+                        <div class="absolute -top-2 left-1/2 -translate-x-1/2 bg-blue-600 text-xs px-3 py-0.5 rounded-full">인기</div>
+                        <p class="text-sm font-bold mb-2">케어 플러스</p>
+                        <p class="text-3xl font-black text-blue-400 mb-4 price-tag">₩29,900<span class="text-sm text-gray-400">/월</span></p>
+                        <ul class="text-xs text-gray-300 space-y-1 text-left">
+                            <li>✓ 호스팅 + 주 1회 백업</li>
+                            <li>✓ 수정 2건/월</li>
+                            <li>✓ 우선 지원</li>
+                        </ul>
+                    </div>
+                    <div class="card-hover bg-gray-900 border border-gray-800 rounded-2xl p-6 text-center">
+                        <p class="text-sm font-bold mb-2">케어 프리미엄</p>
+                        <p class="text-3xl font-black text-blue-400 mb-4 price-tag">₩99,900<span class="text-sm text-gray-400">/월</span></p>
+                        <ul class="text-xs text-gray-400 space-y-1 text-left">
+                            <li>✓ 무제한 수정</li>
+                            <li>✓ SNS 콘텐츠 4건</li>
+                            <li>✓ 월 리포트</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Use Cases (간소화) -->
+        <section class="py-16 px-6 border-b border-gray-800">
+            <div class="max-w-5xl mx-auto">
+                <div class="text-center mb-12">
+                    <span class="section-label">Use Cases</span>
+                    <h2 class="text-3xl font-black">이런 분들께 추천</h2>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="bg-gray-900 border border-gray-800 rounded-xl p-5 text-center">
+                        <span class="text-3xl mb-3 block">💇</span>
+                        <p class="font-bold text-sm">미용실</p>
+                        <p class="text-xs text-gray-400">헤어샵</p>
+                    </div>
+                    <div class="bg-gray-900 border border-gray-800 rounded-xl p-5 text-center">
+                        <span class="text-3xl mb-3 block">📚</span>
+                        <p class="font-bold text-sm">학원</p>
+                        <p class="text-xs text-gray-400">교습소</p>
+                    </div>
+                    <div class="bg-gray-900 border border-gray-800 rounded-xl p-5 text-center">
+                        <span class="text-3xl mb-3 block">💅</span>
+                        <p class="font-bold text-sm">네일샵</p>
+                        <p class="text-xs text-gray-400">피부관리</p>
+                    </div>
+                    <div class="bg-gray-900 border border-gray-800 rounded-xl p-5 text-center">
+                        <span class="text-3xl mb-3 block">☕</span>
+                        <p class="font-bold text-sm">카페</p>
+                        <p class="text-xs text-gray-400">음식점</p>
+                    </div>
+                    <div class="bg-gray-900 border border-gray-800 rounded-xl p-5 text-center">
+                        <span class="text-3xl mb-3 block">🏋️</span>
+                        <p class="font-bold text-sm">피트니스</p>
+                        <p class="text-xs text-gray-400">PT샵</p>
+                    </div>
+                    <div class="bg-gray-900 border border-gray-800 rounded-xl p-5 text-center">
+                        <span class="text-3xl mb-3 block">🏥</span>
+                        <p class="font-bold text-sm">병원</p>
+                        <p class="text-xs text-gray-400">클리닉</p>
+                    </div>
+                    <div class="bg-gray-900 border border-gray-800 rounded-xl p-5 text-center">
+                        <span class="text-3xl mb-3 block">🎵</span>
+                        <p class="font-bold text-sm">음악학원</p>
+                        <p class="text-xs text-gray-400">악기점</p>
+                    </div>
+                    <div class="bg-gray-900 border border-gray-800 rounded-xl p-5 text-center">
+                        <span class="text-3xl mb-3 block">🛒</span>
+                        <p class="font-bold text-sm">쇼핑몰</p>
+                        <p class="text-xs text-gray-400">온라인 스토어</p>
+                    </div>
                 </div>
             </div>
         </section>
 
         <!-- CTA -->
-        <section class="py-24 px-6 text-center">
+        <section class="py-20 px-6 text-center">
             <div class="max-w-2xl mx-auto">
-                <h2 class="text-4xl font-black mb-6">지금 시작하세요</h2>
-                <p class="text-xl text-gray-300 mb-8">
-                    SSANG-A와 함께 당신의 비즈니스를 한 단계 업그레이드하세요.
+                <h2 class="text-3xl font-black mb-4">무료 견적 상담</h2>
+                <p class="text-gray-300 mb-8">
+                    내 사업에 맞는 솔루션, 정확한 견적을 받아보세요
                 </p>
                 <div class="flex flex-col sm:flex-row justify-center gap-4">
-                    <a href="https://talk.naver.com/W5UJ45" target="_blank" class="px-8 py-3 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition-all">
-                        무료 상담 받기
+                    <a href="https://talk.naver.com/W5UJ45" target="_blank" class="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-bold hover:from-blue-700 hover:to-purple-700 transition-all shadow-lg shadow-blue-600/25">
+                        <i class="fas fa-comment-dots mr-2"></i>네이버톡 상담
                     </a>
-                    <a href="https://m.place.naver.com/place/1454242520/booking" target="_blank" class="px-8 py-3 border border-blue-600 text-blue-400 rounded-lg font-bold hover:bg-blue-600/10 transition-all">
-                        데모 신청
+                    <a href="tel:010-0000-0000" class="px-8 py-4 bg-gray-900 border border-gray-700 text-gray-300 rounded-xl font-bold hover:border-blue-600/50 hover:text-white transition-all">
+                        <i class="fas fa-phone mr-2"></i>전화 상담
                     </a>
                 </div>
             </div>
@@ -248,8 +555,9 @@
     </main>
 
     <!-- Footer -->
-    <footer class="border-t border-gray-800 py-12 px-6 text-center text-gray-400">
-        <p class="text-sm">© 2025 MONK STUDIO. All rights reserved.</p>
+    <footer class="border-t border-gray-800 py-8 px-6 text-center text-gray-500">
+        <p class="text-xs">© 2026 MONK STUDIO. All rights reserved.</p>
+        <p class="text-xs mt-1">Powered by MONKOS.AI</p>
     </footer>
 
     <script>

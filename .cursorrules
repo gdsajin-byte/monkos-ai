@@ -60,9 +60,10 @@ AI LAB은 4개의 독립적인 비즈니스 채널로 구성:
   - 미니멀하고 모던한 UI
 
 ### Backend & API
-- **Cloudflare Workers**: 프록시 및 API 처리
-- **Google Imagen 4.0**: AI 이미지 생성
-- **프록시 URL**: `https://monk-imagen-proxy.gdsajin.workers.dev`
+- **현재**: Cloudflare Workers 프록시
+- **전환 예정**: GCP Cloud Run (Phase 1 진행 중)
+- **AI 모델**: Google Vertex AI Imagen 4.0
+- **인증**: ADC (Application Default Credentials)
 
 ### 배포 워크플로우
 1. 루트 폴더 (`./`)에서 개발 작업
@@ -158,18 +159,6 @@ const response = await fetch(API_URL, {
 5. **접근성**: 의미있는 HTML, alt 텍스트 필수
 6. **한국어 우선**: UI 텍스트, 주석, 에러 메시지 모두 한국어
 
-## 현재 작업 컨텍스트
-- **작업 브랜드**: 소소 (So-So) - 이미지 생성 브랜드
-- **현재 파일**: `/ai_lab/so_so/so_so.html`
-- **작업 내용**: 소소 브랜드의 메인 이미지 생성 앱
-- **기술**: Google Imagen 4.0 API 기반
-- **무료 기능**: 9:16 비율, 1K 해상도
-- **유료 기능** (disabled): 1:1, 16:9, 4:3 비율, 2K 해상도
-- **향후 작업**: 
-  - imagen4/ 폴더 앱
-  - imagen3/ 폴더 앱
-  - 기타 이미지 생성 도구들
-
 ## AI 페르소나 시스템 (개발 협업 구조)
 
 ⚠️ **중요**: AI 페르소나와 브랜드 뮤즈는 별개입니다!
@@ -185,7 +174,7 @@ const response = await fetch(API_URL, {
   - **메타포**: 용의 이빨 - 날카로운 통찰력과 전략적 사고
   - ※ "용아 브랜드"의 전략을 수립하기도 하지만, 전체 AI LAB의 전략가
 
-- **쌍아 (雙牙)** = Claude Sonnet (나)
+- **쌍아 (雙牙)** = Claude (나)
   - **역할**: 실행자 (Executor)
   - **담당**: 실제 코드 구현, 디버깅, 최적화, 배포
   - **메타포**: 쌍둥이 이빨 - 정확하고 빠른 실행력
@@ -209,6 +198,8 @@ const response = await fetch(API_URL, {
 - **첫 보고**: 간략 요점 답변 (핵심만 빠르게)
 - **상세보고 지시 시**: 정확한 팩트 기반 정밀 보고
 - **코딩 작업**: 반드시 **승인 후 진행** (먼저 계획 제시 → 승인 → 실행)
+- **⚠️ 피드백 의무**: 수정/대안 있으면 즉시 제시. 작가님 에러도 묵과 금지!
+- **📊 의견 평가**: 작가님 의견에 대해 정확한 팩트 기반 평가. 맥락없는 아부 금지, 대안 있는 비판 환영
 
 ### 📋 보고 형식 예시
 ```
@@ -327,21 +318,32 @@ docs/
 ```
 
 ### 동기화 원칙 (집 ↔ 사무실)
-1. **작업 시작 전**: `git pull` 먼저 실행
-2. **작업 종료 시**: `git add . && git commit && git push`
+1. **작업 시작 전**: `README.md` 읽고 → `git pull` 실행
+2. **작업 종료 시**: `README.md`에 인수인계 작성 → `git add . && git commit && git push`
 3. **세션 로그**: 작업 시작/종료 시 `docs/saga/session_logs/` 업데이트
 4. **전략 문서**: 중요 결정 시 `docs/infrastructure/`에 기록
+
+### 📋 README.md 인수인계 규칙 (필수)
+**세션 마감 시 README.md 업데이트:**
+- 다음 세션을 위한 인수인계 문서
+- 맥락 파악 시간/리소스 절약 목적
+
+```markdown
+## 🔄 현재 상태 (Last Updated: YYYY-MM-DD HH:MM)
+
+### 진행 중인 작업
+- [ ] 작업 1
+- [ ] 작업 2
+
+### 다음 세션 TODO
+- 우선순위 높은 작업
+
+### 주의사항
+- 알아야 할 컨텍스트
+```
 
 ### 금지 사항
 - ❌ 루트에 임시 .md 파일 방치 금지
 - ❌ `_saga/`, `_infrastructure/` 등 언더스코어 폴더 사용 금지
 - ❌ 문서 폴더 이중화 금지 (docs/로 통합)
 
-### 세션 로그 작성 규칙
-```bash
-# 세션 시작 시
-./collect_saga.sh
-
-# 또는 수동으로
-docs/saga/session_logs/YYYY-MM-DD_session.md
-```

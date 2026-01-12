@@ -2,16 +2,445 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>민아 (min_a) - Ai_model_agency</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>민아 | AI MODEL AGENCY</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        mina: '#EC4899',
+                        dark: '#000000'
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: sans-serif; text-align: center; }
-        a { text-decoration: none; color: black; }
+        * {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+        }
+
+        body {
+            font-family: 'Cormorant Garamond', serif;
+            background: #000;
+            overflow: hidden;
+        }
+
+        .runway-container {
+            position: fixed;
+            inset: 0;
+            background: #000;
+        }
+
+        .model-slide {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .model-slide.active {
+            opacity: 1;
+        }
+
+        .model-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center top;
+        }
+
+        /* 워터마크 - 로고 (얼굴/헤어 영역) */
+        .watermark-logo {
+            position: absolute;
+            top: 18%;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 2.5rem;
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.25);
+            letter-spacing: 0.3em;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .watermark-logo span {
+            color: rgba(236, 72, 153, 0.4);
+        }
+
+        /* 워터마크 - 모델명 (바디 영역) */
+        .watermark-name {
+            position: absolute;
+            top: 50%;
+            left: 8%;
+            transform: translateY(-50%) rotate(-90deg);
+            transform-origin: left center;
+            font-size: 4rem;
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.15);
+            letter-spacing: 0.5em;
+            text-transform: uppercase;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* 미니 헤더 */
+        .mini-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            padding: 1rem 1.5rem;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent);
+        }
+
+        /* 하단 정보 */
+        .bottom-info {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            padding: 2rem 1.5rem;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+        }
+
+        /* 인디케이터 */
+        .indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transition: all 0.3s;
+        }
+
+        .indicator.active {
+            background: #EC4899;
+            width: 24px;
+            border-radius: 4px;
+        }
+
+        /* 진행 바 */
+        .progress-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #EC4899, #F472B6);
+            z-index: 60;
+            transition: width 0.1s linear;
+        }
+
+        /* 컨텍스트 메뉴 방지 */
+        img {
+            pointer-events: none;
+        }
+
+        /* 페이드 효과 */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .fade-in {
+            animation: fadeIn 1s ease-out;
+        }
+
+        /* 모바일 최적화 */
+        @media (max-width: 768px) {
+            .watermark-logo {
+                font-size: 1.8rem;
+                top: 15%;
+            }
+            .watermark-name {
+                font-size: 2.5rem;
+                left: 5%;
+            }
+        }
+
+        /* 반투명 오버레이 패턴 (추가 보호) */
+        .protection-overlay {
+            position: absolute;
+            inset: 0;
+            background: 
+                repeating-linear-gradient(
+                    45deg,
+                    transparent,
+                    transparent 100px,
+                    rgba(0,0,0,0.01) 100px,
+                    rgba(0,0,0,0.01) 200px
+                );
+            pointer-events: none;
+            z-index: 5;
+        }
     </style>
 </head>
-<body>
-    <h1>민아 (min_a) - Ai_model_agency</h1>
-    <p>민아는 패션브랜드이자 모델에이전시 역할의 디렉토리입니다. 직접 생성한 모델등을 전시하고 런웨이등을 펼칩니다.</p>
-    <a href="../ai_lab.html">Back to Main</a>
+<body class="bg-black text-white" oncontextmenu="return false;">
+
+    <!-- Runway Container -->
+    <div class="runway-container" id="runway">
+        <!-- 슬라이드들이 여기에 동적 생성 -->
+    </div>
+
+    <!-- Protection Overlay -->
+    <div class="protection-overlay"></div>
+
+    <!-- 워터마크 - 로고 -->
+    <div class="watermark-logo">
+        MONK<span>.kr</span>
+    </div>
+
+    <!-- 워터마크 - 모델명 -->
+    <div class="watermark-name" id="model-name">
+        DAIN
+    </div>
+
+    <!-- Mini Header -->
+    <header class="mini-header flex justify-between items-center">
+        <a href="../ai_lab.html" class="text-xs text-gray-400 hover:text-white transition-colors">
+            <i class="fas fa-arrow-left mr-2"></i>AI LAB
+        </a>
+        <div class="text-center">
+            <p class="text-[10px] text-mina tracking-[0.3em] uppercase">AI Model Agency</p>
+        </div>
+        <div class="text-xs text-gray-500">
+            <span id="current-index">01</span> / <span id="total-count">00</span>
+        </div>
+    </header>
+
+    <!-- Bottom Info -->
+    <div class="bottom-info">
+        <div class="flex items-end justify-between">
+            <div>
+                <p class="text-[10px] text-gray-500 tracking-[0.2em] uppercase mb-1">MUSE : MIN_A</p>
+                <h2 class="text-2xl font-light tracking-wider" id="display-name">DAIN</h2>
+                <p class="text-xs text-gray-400 mt-1" id="model-spec">Inner Wear Collection</p>
+            </div>
+            <div class="flex gap-2" id="indicators">
+                <!-- 인디케이터 동적 생성 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-bar" id="progress-bar"></div>
+
+    <script>
+        // ============ MODEL DATA ============
+        // Cloudflare Images - Inner Wear Collection
+        const models = {
+            mina: {
+                name: 'MIN_A',
+                nameKr: '민아',
+                spec: 'Inner Wear Collection',
+                images: [
+                    'https://imagedelivery.net/sWFJWbnONRpMSja8jmz-XA/024008ca-ab3d-49bc-8a78-97f79086cf00/public',
+                    'https://imagedelivery.net/sWFJWbnONRpMSja8jmz-XA/ba10df75-04be-4c1f-dbb4-5526d3aed900/public',
+                    'https://imagedelivery.net/sWFJWbnONRpMSja8jmz-XA/bd44bd35-1da3-415e-03ed-f49241f64400/public',
+                    'https://imagedelivery.net/sWFJWbnONRpMSja8jmz-XA/596cc650-2bb4-488d-943f-bb3f49c6be00/public',
+                    'https://imagedelivery.net/sWFJWbnONRpMSja8jmz-XA/132d7168-c27a-431a-6ac5-a25aff367900/public',
+                    'https://imagedelivery.net/sWFJWbnONRpMSja8jmz-XA/2ddec554-314a-434d-67d6-d174bd0ec700/public',
+                    'https://imagedelivery.net/sWFJWbnONRpMSja8jmz-XA/08e10978-1751-4aeb-0ae3-53be73d05300/public',
+                    'https://imagedelivery.net/sWFJWbnONRpMSja8jmz-XA/5d7c5642-0f21-4758-a4ea-ea85f49b8500/public',
+                    'https://imagedelivery.net/sWFJWbnONRpMSja8jmz-XA/485bfc49-549b-40e7-d36f-768e4ae77200/public',
+                    'https://imagedelivery.net/sWFJWbnONRpMSja8jmz-XA/e6f67921-adde-4455-558b-c99f0651cc00/public',
+                    'https://imagedelivery.net/sWFJWbnONRpMSja8jmz-XA/fb284afb-2a32-43a2-c94b-4072be964500/public',
+                    'https://imagedelivery.net/sWFJWbnONRpMSja8jmz-XA/52e4440b-2a31-45ed-952d-cb8550932200/public',
+                    'https://imagedelivery.net/sWFJWbnONRpMSja8jmz-XA/fb76e90a-4675-4bdb-ae04-b9dd21763500/public',
+                    'https://imagedelivery.net/sWFJWbnONRpMSja8jmz-XA/60b97626-c00e-44e8-415f-538420568f00/public',
+                    'https://imagedelivery.net/sWFJWbnONRpMSja8jmz-XA/6f0c7de5-a3b2-4ca7-73a7-c4812d17c800/public',
+                    'https://imagedelivery.net/sWFJWbnONRpMSja8jmz-XA/f506104d-f2a4-4506-050b-4dfa780b9d00/public',
+                    'https://imagedelivery.net/sWFJWbnONRpMSja8jmz-XA/9a5be10d-c82b-41a0-9fce-6d67467c3500/public',
+                    'https://imagedelivery.net/sWFJWbnONRpMSja8jmz-XA/090d99c4-0d2b-43ff-6522-34f57e760a00/public',
+                    'https://imagedelivery.net/sWFJWbnONRpMSja8jmz-XA/56813c9c-5401-4e0a-6c95-3d9c52d31a00/public',
+                    'https://imagedelivery.net/sWFJWbnONRpMSja8jmz-XA/9f1a9a7d-e78e-4d92-e31e-3fdf4b751100/public',
+                    'https://imagedelivery.net/sWFJWbnONRpMSja8jmz-XA/e6d63eff-a021-4c2c-9276-6b306b48be00/public',
+                ]
+            }
+        };
+
+        // ============ STATE ============
+        let currentModelKey = 'dain';
+        let currentIndex = 0;
+        let slideInterval;
+        let progressInterval;
+        const SLIDE_DURATION = 5000; // 5초
+        const PROGRESS_UPDATE = 50; // 50ms
+
+        // ============ FUNCTIONS ============
+        function getAllImages() {
+            const allImages = [];
+            Object.keys(models).forEach(key => {
+                models[key].images.forEach((url, idx) => {
+                    allImages.push({
+                        modelKey: key,
+                        model: models[key],
+                        url: url,
+                        index: idx
+                    });
+                });
+            });
+            return allImages;
+        }
+
+        function initRunway() {
+            const runway = document.getElementById('runway');
+            const indicators = document.getElementById('indicators');
+            const allImages = getAllImages();
+
+            // 슬라이드 생성
+            allImages.forEach((item, idx) => {
+                const slide = document.createElement('div');
+                slide.className = `model-slide ${idx === 0 ? 'active' : ''}`;
+                slide.innerHTML = `<img src="${item.url}" class="model-image" alt="${item.model.name}" draggable="false">`;
+                runway.appendChild(slide);
+
+                // 인디케이터 생성
+                const dot = document.createElement('div');
+                dot.className = `indicator ${idx === 0 ? 'active' : ''}`;
+                dot.onclick = () => goToSlide(idx);
+                indicators.appendChild(dot);
+            });
+
+            // 총 개수 표시
+            document.getElementById('total-count').textContent = String(allImages.length).padStart(2, '0');
+
+            // 첫 슬라이드 정보 표시
+            updateInfo(allImages[0]);
+
+            // 자동 슬라이드 시작
+            startSlideshow();
+        }
+
+        function updateInfo(item) {
+            document.getElementById('model-name').textContent = item.model.name;
+            document.getElementById('display-name').textContent = item.model.name;
+            document.getElementById('model-spec').textContent = item.model.spec;
+            document.getElementById('current-index').textContent = String(currentIndex + 1).padStart(2, '0');
+        }
+
+        function goToSlide(index) {
+            const allImages = getAllImages();
+            const slides = document.querySelectorAll('.model-slide');
+            const indicators = document.querySelectorAll('.indicator');
+
+            // 이전 슬라이드 비활성화
+            slides[currentIndex].classList.remove('active');
+            indicators[currentIndex].classList.remove('active');
+
+            // 새 슬라이드 활성화
+            currentIndex = index;
+            slides[currentIndex].classList.add('active');
+            indicators[currentIndex].classList.add('active');
+
+            // 정보 업데이트
+            updateInfo(allImages[currentIndex]);
+
+            // 타이머 리셋
+            resetProgress();
+        }
+
+        function nextSlide() {
+            const allImages = getAllImages();
+            const nextIndex = (currentIndex + 1) % allImages.length;
+            goToSlide(nextIndex);
+        }
+
+        function startSlideshow() {
+            // 프로그레스 바 시작
+            let progress = 0;
+            const progressBar = document.getElementById('progress-bar');
+
+            progressInterval = setInterval(() => {
+                progress += (PROGRESS_UPDATE / SLIDE_DURATION) * 100;
+                progressBar.style.width = `${progress}%`;
+
+                if (progress >= 100) {
+                    progress = 0;
+                    nextSlide();
+                }
+            }, PROGRESS_UPDATE);
+        }
+
+        function resetProgress() {
+            const progressBar = document.getElementById('progress-bar');
+            progressBar.style.width = '0%';
+            
+            clearInterval(progressInterval);
+            
+            let progress = 0;
+            progressInterval = setInterval(() => {
+                progress += (PROGRESS_UPDATE / SLIDE_DURATION) * 100;
+                progressBar.style.width = `${progress}%`;
+
+                if (progress >= 100) {
+                    progress = 0;
+                    nextSlide();
+                }
+            }, PROGRESS_UPDATE);
+        }
+
+        // ============ TOUCH/SWIPE ============
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            const allImages = getAllImages();
+            const diff = touchStartX - touchEndX;
+
+            if (Math.abs(diff) > 50) {
+                if (diff > 0) {
+                    // 왼쪽 스와이프 - 다음
+                    nextSlide();
+                } else {
+                    // 오른쪽 스와이프 - 이전
+                    const prevIndex = (currentIndex - 1 + allImages.length) % allImages.length;
+                    goToSlide(prevIndex);
+                }
+            }
+        }
+
+        // ============ PROTECTION ============
+        // 우클릭 방지
+        document.addEventListener('contextmenu', e => e.preventDefault());
+
+        // 드래그 방지
+        document.addEventListener('dragstart', e => e.preventDefault());
+
+        // 키보드 단축키 방지 (Ctrl+S, Ctrl+P 등)
+        document.addEventListener('keydown', e => {
+            if (e.ctrlKey && (e.key === 's' || e.key === 'p' || e.key === 'u')) {
+                e.preventDefault();
+            }
+        });
+
+        // ============ INIT ============
+        window.onload = initRunway;
+    </script>
+
 </body>
 </html>
