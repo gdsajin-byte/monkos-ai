@@ -272,8 +272,8 @@ API 호출 시 환경변수(`process.env.GEMINI_API_KEY`)를 사용한다.
 ```
 docs/
 ├── daily_session/           ← ⭐ 일일 대화 전체 기록 (자동 저장)
-│   └── YYYY-MM-DD/          ← 날짜별 폴더
-│       └── YYYYMMDD_HHMMSS.md  ← 시간별 대화 전체 기록
+│   └── YYYY-MM/             ← 월별 폴더 (연 12개)
+│       └── YYYYMMDD_session.md  ← 일별 세션 파일
 │
 ├── saga/                    ← 서사, 대화록, 세션
 │   ├── session_logs/        ← 일일 세션 로그
@@ -289,8 +289,8 @@ docs/
 ### 📝 Daily Session 저장 규칙 (필수)
 **세션당 단일 파일에 매턴 append 방식으로 누적 저장한다:**
 
-1. **저장 위치**: `docs/daily_session/YYYY-MM-DD/`
-2. **파일명**: `YYYYMMDD_session.md` (예: `20260113_session.md`)
+1. **저장 위치**: `docs/daily_session/YYYY-MM/` (월별 폴더)
+2. **파일명**: `YYYYMMDD_session.md` (예: `2026-01/20260113_session.md`)
 3. **저장 방식**: 
    - **매턴**: 로컬 파일에 append (git 미포함)
    - **세션 종료**: git commit & push
