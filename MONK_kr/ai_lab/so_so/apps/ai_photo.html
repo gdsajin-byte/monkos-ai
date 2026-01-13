@@ -264,12 +264,12 @@
         <div class="flex items-center justify-center gap-3 mb-6">
             <div class="flex items-center gap-2">
                 <div class="step-indicator active" id="step-1">1</div>
-                <span class="text-[10px] text-gray-400">상품</span>
+                <span class="text-[10px] text-gray-400">촬영</span>
             </div>
             <div class="w-6 h-px bg-gray-800"></div>
             <div class="flex items-center gap-2">
                 <div class="step-indicator" id="step-2">2</div>
-                <span class="text-[10px] text-gray-400">촬영</span>
+                <span class="text-[10px] text-gray-400">스타일</span>
             </div>
             <div class="w-6 h-px bg-gray-800"></div>
             <div class="flex items-center gap-2">
@@ -278,9 +278,28 @@
             </div>
         </div>
 
-        <!-- STEP 1: Product Selection -->
-        <section id="section-products" class="mb-8">
-            <h2 class="text-lg font-bold mb-4">상품 선택</h2>
+        <!-- STEP 2: Style Selection (촬영 후 표시) -->
+        <section id="section-products" class="hidden mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-bold">스타일 선택</h2>
+                <button onclick="goToCamera()" class="text-xs text-gray-400 hover:text-white">← 다시 촬영</button>
+            </div>
+            
+            <!-- 촬영된 사진 미리보기 -->
+            <div id="captured-preview" class="hidden bg-gray-900 border border-gray-800 rounded-2xl p-4 mb-4">
+                <div class="flex items-center gap-4">
+                    <img id="captured-photo-preview" src="" class="w-20 h-26 object-cover rounded-xl">
+                    <div class="flex-1">
+                        <p class="text-sm font-bold mb-1">촬영 완료!</p>
+                        <p class="text-xs text-gray-400">원하는 스타일을 선택하세요</p>
+                        <div class="flex items-center gap-2 mt-2">
+                            <span class="live-badge px-2 py-0.5 rounded text-white text-[10px] font-bold">
+                                <i class="fas fa-shield-alt mr-1"></i>실시간 검증
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
             
             <div class="space-y-3 mb-6">
                 <!-- 이력서 세트 -->
@@ -379,7 +398,8 @@
         </section>
 
         <!-- STEP 2: Camera Capture -->
-        <section id="section-camera" class="hidden mb-8">
+        <!-- STEP 1: Camera (메인 화면) -->
+        <section id="section-camera" class="mb-8">
             <div class="flex items-center justify-between mb-4">
                 <h2 class="text-lg font-bold">실시간 촬영</h2>
                 <button onclick="goBack()" class="text-xs text-gray-400 hover:text-white">← 상품 선택</button>
@@ -762,8 +782,14 @@
             });
             document.getElementById('product-' + type).classList.add('selected');
 
+            // 촬영 완료 상태면 → 최종 옵션으로
+            // 촬영 전이면 → 카메라로 (기존 흐름)
             setTimeout(() => {
-                showCameraSection();
+                if (capturedImage) {
+                    showFinalOptions();
+                } else {
+                    showCameraSection();
+                }
             }, 200);
         }
 
@@ -889,7 +915,24 @@
         }
 
         function showOptionsSection() {
+            // 촬영 후 → 스타일 선택 화면으로 이동
             document.getElementById('section-camera').classList.add('hidden');
+            document.getElementById('section-products').classList.remove('hidden');
+
+            document.getElementById('step-1').classList.remove('active');
+            document.getElementById('step-2').classList.add('active');
+
+            // 촬영된 사진 미리보기 표시 (스타일 선택 상단에)
+            const previewSection = document.getElementById('captured-preview');
+            if (previewSection) {
+                previewSection.classList.remove('hidden');
+                document.getElementById('captured-photo-preview').src = capturedImage;
+            }
+        }
+        
+        function showFinalOptions() {
+            // 스타일 선택 후 → 최종 옵션 화면
+            document.getElementById('section-products').classList.add('hidden');
             document.getElementById('section-options').classList.remove('hidden');
 
             document.getElementById('step-2').classList.remove('active');
@@ -926,19 +969,31 @@
         }
 
         function goToCamera() {
+            // 스타일 선택 또는 옵션에서 카메라로 돌아가기
+            document.getElementById('section-products').classList.add('hidden');
             document.getElementById('section-options').classList.add('hidden');
             document.getElementById('section-camera').classList.remove('hidden');
             
+            document.getElementById('step-2').classList.remove('active');
             document.getElementById('step-3').classList.remove('active');
-            document.getElementById('step-2').classList.add('active');
+            document.getElementById('step-1').classList.add('active');
             
             capturedImage = null;
             captureTime = null;
+            selectedProduct = null;
+            
+            // 미리보기 숨기기
+            const preview = document.getElementById('captured-preview');
+            if (preview) preview.classList.add('hidden');
+            
             initCamera();
         }
 
         // ==================== Process ====================
-        const API_BASE_URL = 'https://monk-ai-backend-251409703490.asia-northeast3.run.app';
+        // Workers API (MONKOS 로직 적용) - 로컬 테스트용
+        const API_BASE_URL = window.location.hostname === 'localhost' 
+            ? 'http://localhost:3003'  // 로컬 테스트
+            : '';  // 배포시 같은 도메인 /api/photo
 
         async function processPhoto() {
             if (!capturedImage || !selectedProduct) return;
@@ -959,31 +1014,38 @@
             status.textContent = 'AI가 사진을 처리하고 있습니다...';
             status.classList.add('text-so');
 
+            // 스타일 매핑
+            const styleMap = {
+                resume: 'id_photo',
+                color: 'id_photo', 
+                profile: 'profile',
+                id: 'id_photo'
+            };
+
             try {
-                const response = await fetch(`${API_BASE_URL}/api/photo/generate`, {
+                // MONKOS 로직 기반 Workers API 호출
+                const response = await fetch(`${API_BASE_URL}/api/i2i`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        productType: selectedProduct,
                         inputImage: capturedImage,
-                        prompt: buildPrompt(),
+                        style: styleMap[selectedProduct] || 'id_photo',
                         aspectRatio: '3:4',
-                        numberOfImages: product.outputs,
-                        options: getOptions(),
-                        captureTime: captureTime.toISOString() // 실시간 촬영 검증용
+                        preserveIdentity: true  // 정체성 유지 (핵심!)
                     })
                 });
 
                 const data = await response.json();
 
-                if (!response.ok) {
+                if (!data.success) {
                     throw new Error(data.error || '이미지 생성에 실패했습니다.');
                 }
 
-                generatedImages = data.images || [];
+                // 단일 이미지 → 배열로 변환 (UI 호환)
+                generatedImages = [data.image];
                 userCredits -= cost;
                 saveCredits();
-                showResults(data.images);
+                showResults(generatedImages);
 
             } catch (error) {
                 console.error('API Error:', error);
@@ -1102,6 +1164,11 @@
         document.addEventListener('DOMContentLoaded', () => {
             checkDevice();
             loadCredits();
+            
+            // 모바일이면 카메라 자동 시작 (메인 화면)
+            if (isMobile()) {
+                initCamera();
+            }
         });
     </script>
 
