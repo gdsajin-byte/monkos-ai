@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Imagen 3 I2I Test | MONKOS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        ai: '#60A5FA',
+                        so: '#F472B6',
+                        dark: '#030508'
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="manifest" href="data:application/json,{&quot;name&quot;:&quot;Imagen3 Test&quot;,&quot;short_name&quot;:&quot;Imagen3&quot;,&quot;start_url&quot;:&quot;.&quot;,&quot;display&quot;:&quot;standalone&quot;}">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .result-img {
+            max-height: 400px;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body class="bg-dark text-white min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="sticky top-0 z-40 bg-dark/90 backdrop-blur-md border-b border-gray-800">
+        <div class="max-w-lg mx-auto px-4 py-3 flex justify-between items-center">
+            <a href="../../ai_lab.html" class="text-xl font-black">
+                MONK<span class="text-ai">.kr</span>
+            </a>
+            <span class="text-xs px-2 py-1 bg-so/20 text-so rounded-full">Imagen 3 Test</span>
+        </div>
+    </header>
+
+    <main class="flex-grow flex flex-col max-w-lg mx-auto w-full px-4 py-6">
+        
+        <!-- Mode Selection -->
+        <div class="mb-6">
+            <label class="text-sm text-gray-400 mb-2 block">모드 선택</label>
+            <div class="grid grid-cols-2 gap-2">
+                <button onclick="setMode('t2i')" id="btn-t2i" class="px-4 py-3 rounded-xl border border-so bg-so/10 text-so font-bold">
+                    T2I (텍스트→이미지)
+                </button>
+                <button onclick="setMode('i2i')" id="btn-i2i" class="px-4 py-3 rounded-xl border border-gray-700 text-gray-400">
+                    I2I (이미지→이미지)
+                </button>
+            </div>
+        </div>
+
+        <!-- I2I: Image Upload -->
+        <div id="i2i-section" class="hidden mb-6">
+            <label class="text-sm text-gray-400 mb-2 block">원본 이미지</label>
+            <div id="upload-area" class="border-2 border-dashed border-gray-700 rounded-xl p-6 text-center cursor-pointer hover:border-so transition-colors">
+                <input type="file" id="image-input" accept="image/*" class="hidden" onchange="handleImageUpload(event)">
+                <div id="upload-placeholder">
+                    <i class="fas fa-cloud-upload-alt text-4xl text-gray-600 mb-3"></i>
+                    <p class="text-gray-400">이미지를 업로드하세요</p>
+                    <p class="text-xs text-gray-600 mt-1">JPG, PNG (최대 10MB)</p>
+                </div>
+                <div id="upload-preview" class="hidden">
+                    <img id="preview-img" class="max-h-48 mx-auto rounded-lg">
+                    <p class="text-xs text-gray-400 mt-2">클릭하여 변경</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Prompt -->
+        <div class="mb-6">
+            <label class="text-sm text-gray-400 mb-2 block">프롬프트</label>
+            <textarea id="prompt" rows="4" 
+                class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:border-so focus:outline-none resize-none"
+                placeholder="Professional Korean ID photo, formal black suit, white background, studio lighting..."></textarea>
+            
+            <!-- Preset Prompts -->
+            <div class="flex flex-wrap gap-2 mt-2">
+                <button onclick="setPreset('id')" class="text-xs px-3 py-1 bg-gray-800 rounded-full hover:bg-gray-700">
+                    📸 증명사진
+                </button>
+                <button onclick="setPreset('profile')" class="text-xs px-3 py-1 bg-gray-800 rounded-full hover:bg-gray-700">
+                    👔 프로필
+                </button>
+                <button onclick="setPreset('casual')" class="text-xs px-3 py-1 bg-gray-800 rounded-full hover:bg-gray-700">
+                    😊 캐쥬얼
+                </button>
+            </div>
+        </div>
+
+        <!-- Options -->
+        <div class="grid grid-cols-2 gap-4 mb-6">
+            <div>
+                <label class="text-sm text-gray-400 mb-2 block">비율</label>
+                <select id="aspect-ratio" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-white">
+                    <option value="3:4">3:4 (증명사진)</option>
+                    <option value="1:1">1:1 (정사각형)</option>
+                    <option value="4:3">4:3 (가로)</option>
+                    <option value="9:16">9:16 (세로)</option>
+                    <option value="16:9">16:9 (와이드)</option>
+                </select>
+            </div>
+            <div>
+                <label class="text-sm text-gray-400 mb-2 block">생성 수</label>
+                <select id="num-images" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-white">
+                    <option value="1">1장</option>
+                    <option value="2">2장</option>
+                    <option value="4" selected>4장</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Generate Button -->
+        <button onclick="generate()" id="generate-btn" 
+            class="w-full py-4 bg-gradient-to-r from-so to-purple-500 rounded-xl font-bold text-lg mb-6 disabled:opacity-50">
+            <span id="btn-text">🎨 이미지 생성</span>
+            <span id="btn-loading" class="hidden">
+                <i class="fas fa-spinner fa-spin mr-2"></i>생성 중...
+            </span>
+        </button>
+
+        <!-- Status -->
+        <div id="status" class="text-center text-sm text-gray-400 mb-4"></div>
+
+        <!-- Results -->
+        <div id="results" class="hidden">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold">생성 결과</h3>
+                <button onclick="downloadAll()" class="text-xs px-3 py-1 bg-gray-800 rounded-full hover:bg-gray-700">
+                    <i class="fas fa-download mr-1"></i>전체 다운로드
+                </button>
+            </div>
+            <div id="result-grid" class="grid grid-cols-2 gap-3"></div>
+        </div>
+
+        <!-- Error -->
+        <div id="error" class="hidden bg-red-900/30 border border-red-500 rounded-xl p-4 text-red-300 text-sm"></div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-800 py-4 text-center text-xs text-gray-500">
+        Imagen 3 API Test | MONKOS R&D
+    </footer>
+
+    <script>
+        // Cloud Run API URL
+        const API_URL = 'https://monk-ai-backend-251409703490.asia-northeast3.run.app';
+        
+        let currentMode = 't2i';
+        let uploadedImage = null;
+        let generatedImages = [];
+
+        // Preset Prompts
+        const presets = {
+            id: "Professional Korean ID photo, formal black suit, white dress shirt, white background, studio lighting, passport photo style, looking straight at camera, neutral expression, high quality",
+            profile: "Professional business profile photo, modern office background, confident pose, soft lighting, LinkedIn style, high quality portrait",
+            casual: "Casual portrait photo, natural lighting, friendly smile, blurred background, lifestyle photography style"
+        };
+
+        function setMode(mode) {
+            currentMode = mode;
+            document.getElementById('btn-t2i').className = mode === 't2i' 
+                ? 'px-4 py-3 rounded-xl border border-so bg-so/10 text-so font-bold'
+                : 'px-4 py-3 rounded-xl border border-gray-700 text-gray-400';
+            document.getElementById('btn-i2i').className = mode === 'i2i'
+                ? 'px-4 py-3 rounded-xl border border-so bg-so/10 text-so font-bold'
+                : 'px-4 py-3 rounded-xl border border-gray-700 text-gray-400';
+            document.getElementById('i2i-section').classList.toggle('hidden', mode !== 'i2i');
+        }
+
+        function setPreset(type) {
+            document.getElementById('prompt').value = presets[type];
+        }
+
+        // Image Upload
+        document.getElementById('upload-area').addEventListener('click', () => {
+            document.getElementById('image-input').click();
+        });
+
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                uploadedImage = e.target.result;
+                document.getElementById('preview-img').src = uploadedImage;
+                document.getElementById('upload-placeholder').classList.add('hidden');
+                document.getElementById('upload-preview').classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function generate() {
+            const prompt = document.getElementById('prompt').value.trim();
+            if (!prompt) {
+                showError('프롬프트를 입력해주세요');
+                return;
+            }
+
+            if (currentMode === 'i2i' && !uploadedImage) {
+                showError('I2I 모드에서는 이미지를 업로드해주세요');
+                return;
+            }
+
+            const btn = document.getElementById('generate-btn');
+            const btnText = document.getElementById('btn-text');
+            const btnLoading = document.getElementById('btn-loading');
+            const status = document.getElementById('status');
+            const results = document.getElementById('results');
+            const error = document.getElementById('error');
+
+            btn.disabled = true;
+            btnText.classList.add('hidden');
+            btnLoading.classList.remove('hidden');
+            results.classList.add('hidden');
+            error.classList.add('hidden');
+            status.textContent = '🔄 Imagen 3 API 호출 중...';
+
+            try {
+                const aspectRatio = document.getElementById('aspect-ratio').value;
+                const numberOfImages = parseInt(document.getElementById('num-images').value);
+
+                const requestBody = {
+                    prompt: prompt,
+                    aspectRatio: aspectRatio,
+                    numberOfImages: numberOfImages
+                };
+
+                // I2I 모드면 이미지 추가
+                if (currentMode === 'i2i' && uploadedImage) {
+                    requestBody.inputImage = uploadedImage.split(',')[1]; // base64 데이터만
+                    requestBody.mode = 'edit';
+                }
+
+                status.textContent = '🎨 이미지 생성 중... (약 30초 소요)';
+
+                const response = await fetch(`${API_URL}/api/photo/generate`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestBody)
+                });
+
+                if (!response.ok) {
+                    const errData = await response.json();
+                    throw new Error(errData.error || '생성 실패');
+                }
+
+                const data = await response.json();
+                
+                if (data.images && data.images.length > 0) {
+                    generatedImages = data.images.map(img => `data:image/png;base64,${img.imageBytes}`);
+                    showResults();
+                    status.textContent = `✅ ${generatedImages.length}장 생성 완료!`;
+                } else {
+                    throw new Error('이미지가 생성되지 않았습니다');
+                }
+
+            } catch (err) {
+                showError(err.message);
+                status.textContent = '';
+            } finally {
+                btn.disabled = false;
+                btnText.classList.remove('hidden');
+                btnLoading.classList.add('hidden');
+            }
+        }
+
+        function showResults() {
+            const grid = document.getElementById('result-grid');
+            grid.innerHTML = '';
+
+            generatedImages.forEach((img, i) => {
+                const div = document.createElement('div');
+                div.className = 'relative group';
+                div.innerHTML = `
+                    <img src="${img}" class="w-full rounded-xl result-img" alt="Result ${i+1}">
+                    <button onclick="downloadSingle(${i})" 
+                        class="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 px-3 py-1 bg-black/70 rounded-lg text-xs transition-opacity">
+                        <i class="fas fa-download"></i>
+                    </button>
+                `;
+                grid.appendChild(div);
+            });
+
+            document.getElementById('results').classList.remove('hidden');
+        }
+
+        function showError(message) {
+            const error = document.getElementById('error');
+            error.textContent = '❌ ' + message;
+            error.classList.remove('hidden');
+        }
+
+        function downloadSingle(index) {
+            const link = document.createElement('a');
+            link.href = generatedImages[index];
+            link.download = `imagen3_${Date.now()}_${index+1}.png`;
+            link.click();
+        }
+
+        function downloadAll() {
+            generatedImages.forEach((img, i) => {
+                setTimeout(() => downloadSingle(i), i * 500);
+            });
+        }
+
+        // Initialize
+        setPreset('id');
+    </script>
+</body>
+</html>

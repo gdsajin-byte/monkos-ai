@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>AI PHOTO | MONKOS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -77,15 +77,147 @@
             background: #F472B6;
             border-color: #F472B6;
         }
+        
+        /* 카메라 가이드 오버레이 */
+        .camera-guide {
+            position: relative;
+        }
+        .camera-guide::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 180px;
+            height: 240px;
+            border: 3px dashed rgba(244, 114, 182, 0.6);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .camera-guide::after {
+            content: '얼굴을 가이드에 맞춰주세요';
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            white-space: nowrap;
+            z-index: 10;
+        }
+        
+        /* QR 코드 모달 */
+        .qr-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 20px;
+        }
+        
+        /* 실시간 촬영 검증 배지 */
+        .live-badge {
+            background: linear-gradient(135deg, #10B981, #059669);
+            animation: livePulse 1.5s infinite;
+        }
+        @keyframes livePulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            50% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+        }
+        
+        /* 카메라 뷰파인더 */
+        #camera-viewfinder {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            aspect-ratio: 3/4;
+            background: #000;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        #camera-viewfinder video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scaleX(-1); /* 셀피 미러링 */
+        }
+        
+        /* 촬영 버튼 */
+        .capture-btn {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: white;
+            border: 4px solid rgba(244, 114, 182, 0.5);
+            position: relative;
+            transition: all 0.2s;
+        }
+        .capture-btn:active {
+            transform: scale(0.95);
+        }
+        .capture-btn::before {
+            content: '';
+            position: absolute;
+            inset: 6px;
+            background: #F472B6;
+            border-radius: 50%;
+        }
     </style>
 </head>
 <body class="bg-dark text-white min-h-screen flex flex-col">
+
+    <!-- 데스크톱 차단 모달 -->
+    <div id="desktop-block-modal" class="qr-modal hidden">
+        <div class="text-center max-w-sm">
+            <div class="w-20 h-20 bg-so/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-mobile-alt text-so text-4xl"></i>
+            </div>
+            <h2 class="text-2xl font-black mb-3">📱 모바일 전용 서비스</h2>
+            <p class="text-gray-400 mb-6">딥페이크 방지를 위해<br>모바일에서 실시간 촬영만 지원합니다</p>
+            
+            <!-- QR 코드 -->
+            <div class="bg-white p-4 rounded-2xl inline-block mb-6">
+                <img id="qr-code" 
+                     src="https://api.qrserver.com/v1/create-qr-code/?size=192x192&data=https://main.monk-kr.pages.dev/ai_lab/so_so/apps/ai_photo.html" 
+                     alt="QR Code" 
+                     class="w-48 h-48">
+            </div>
+            
+            <p class="text-xs text-gray-500 mb-4">또는 모바일에서 직접 접속:</p>
+            <div class="bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 flex items-center justify-between">
+                <code class="text-so text-xs break-all">monk-kr.pages.dev/ai_lab/so_so/apps/ai_photo</code>
+                <button onclick="copyUrl()" class="text-xs text-gray-400 hover:text-white ml-2">
+                    <i class="fas fa-copy"></i>
+                </button>
+            </div>
+            
+            <div class="mt-8 p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl">
+                <p class="text-xs text-emerald-400">
+                    <i class="fas fa-shield-alt mr-1"></i>
+                    실시간 촬영으로 본인 확인 · 딥페이크 원천 차단
+                </p>
+            </div>
+        </div>
+    </div>
 
     <!-- Header -->
     <header class="sticky top-0 z-50 bg-dark/90 backdrop-blur-md border-b border-white/5">
         <div class="max-w-7xl mx-auto px-4 h-14 flex justify-between items-center">
             <a href="../../../index.html" class="text-xl font-black tracking-tight">MONK<span class="text-so">.kr</span></a>
             <div class="flex items-center gap-4">
+                <!-- 실시간 촬영 배지 -->
+                <div class="live-badge flex items-center gap-1.5 px-2.5 py-1 rounded-full text-white text-[10px] font-bold">
+                    <span class="w-1.5 h-1.5 bg-white rounded-full"></span>
+                    LIVE
+                </div>
                 <!-- 크레딧 표시 -->
                 <div class="flex items-center gap-2 px-3 py-1.5 bg-gray-900 border border-gray-800 rounded-full">
                     <i class="fas fa-coins text-yellow-400 text-sm"></i>
@@ -97,10 +229,10 @@
         </div>
     </header>
 
-    <main class="flex-grow px-4 py-6 max-w-4xl mx-auto w-full">
+    <main id="main-content" class="flex-grow px-4 py-6 max-w-4xl mx-auto w-full">
         
         <!-- Hero -->
-        <div class="text-center mb-8">
+        <div class="text-center mb-6">
             <div class="flex items-center justify-center gap-2 mb-3">
                 <span class="px-3 py-1 rounded-full bg-so/10 border border-so/20 text-so text-[10px] font-bold uppercase tracking-widest">
                     AI PHOTO
@@ -109,27 +241,40 @@
                     🎉 50% OPEN EVENT
                 </span>
             </div>
-            <h1 class="text-3xl md:text-4xl font-black mb-2 tracking-tight">
+            <h1 class="text-2xl font-black mb-2 tracking-tight">
                 AI 증명사진 스튜디오
             </h1>
-            <p class="text-gray-500 text-sm">사진관 퀄리티, AI 가격으로</p>
+            <p class="text-gray-500 text-sm">실시간 촬영 · 딥페이크 방지</p>
+        </div>
+
+        <!-- 보안 안내 배너 -->
+        <div class="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-3 mb-6">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-emerald-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-shield-alt text-emerald-400"></i>
+                </div>
+                <div>
+                    <p class="text-xs font-bold text-emerald-400">실시간 촬영 전용</p>
+                    <p class="text-[10px] text-gray-400">갤러리 업로드 불가 · 본인 확인 · 딥페이크 원천 차단</p>
+                </div>
+            </div>
         </div>
 
         <!-- Step Indicator -->
-        <div class="flex items-center justify-center gap-4 mb-8">
+        <div class="flex items-center justify-center gap-3 mb-6">
             <div class="flex items-center gap-2">
                 <div class="step-indicator active" id="step-1">1</div>
-                <span class="text-xs text-gray-400">상품 선택</span>
+                <span class="text-[10px] text-gray-400">상품</span>
             </div>
-            <div class="w-8 h-px bg-gray-800"></div>
+            <div class="w-6 h-px bg-gray-800"></div>
             <div class="flex items-center gap-2">
                 <div class="step-indicator" id="step-2">2</div>
-                <span class="text-xs text-gray-400">사진 업로드</span>
+                <span class="text-[10px] text-gray-400">촬영</span>
             </div>
-            <div class="w-8 h-px bg-gray-800"></div>
+            <div class="w-6 h-px bg-gray-800"></div>
             <div class="flex items-center gap-2">
                 <div class="step-indicator" id="step-3">3</div>
-                <span class="text-xs text-gray-400">결과 확인</span>
+                <span class="text-[10px] text-gray-400">결과</span>
             </div>
         </div>
 
@@ -137,257 +282,214 @@
         <section id="section-products" class="mb-8">
             <h2 class="text-lg font-bold mb-4">상품 선택</h2>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div class="space-y-3 mb-6">
                 <!-- 이력서 세트 -->
-                <div onclick="selectProduct('resume')" id="product-resume" class="product-card cursor-pointer bg-gray-900 border border-gray-800 rounded-2xl p-5 relative">
+                <div onclick="selectProduct('resume')" id="product-resume" class="product-card cursor-pointer bg-gray-900 border border-gray-800 rounded-2xl p-4 relative">
                     <div class="event-badge absolute -top-2 -right-2 px-2 py-1 rounded-full text-[10px] font-bold">50% OFF</div>
-                    <div class="flex items-start gap-4">
-                        <div class="w-12 h-12 bg-so/10 rounded-xl flex items-center justify-center">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-so/10 rounded-xl flex items-center justify-center flex-shrink-0">
                             <i class="fas fa-file-alt text-so text-xl"></i>
                         </div>
-                        <div class="flex-1">
-                            <h3 class="font-bold mb-1">이력서 세트</h3>
-                            <p class="text-xs text-gray-400 mb-3">정장 2장 + 캐쥬얼 2장 (총 4장)</p>
-                            <div class="flex items-center gap-2">
-                                <span class="text-xs text-gray-500 line-through">150 cr</span>
-                                <span class="credit-badge px-2 py-0.5 rounded text-white text-sm font-bold">75 cr</span>
-                                <span class="text-xs text-gray-500">(₩7,500)</span>
-                            </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="font-bold">이력서 세트</h3>
+                            <p class="text-xs text-gray-400">정장 2 + 캐쥬얼 2 (4장)</p>
                         </div>
-                    </div>
-                    <div class="mt-4 pt-4 border-t border-gray-800">
-                        <div class="flex flex-wrap gap-2">
-                            <span class="text-[10px] px-2 py-1 bg-gray-800 rounded">정장 합성</span>
-                            <span class="text-[10px] px-2 py-1 bg-gray-800 rounded">캐쥬얼 합성</span>
-                            <span class="text-[10px] px-2 py-1 bg-gray-800 rounded">배경 선택</span>
-                            <span class="text-[10px] px-2 py-1 bg-gray-800 rounded">보정 포함</span>
+                        <div class="text-right flex-shrink-0">
+                            <span class="text-xs text-gray-500 line-through">150</span>
+                            <span class="credit-badge px-2 py-0.5 rounded text-white text-sm font-bold ml-1">75 cr</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- 컬러증명 세트 -->
-                <div onclick="selectProduct('color')" id="product-color" class="product-card cursor-pointer bg-gray-900 border border-gray-800 rounded-2xl p-5 relative">
+                <div onclick="selectProduct('color')" id="product-color" class="product-card cursor-pointer bg-gray-900 border border-gray-800 rounded-2xl p-4 relative">
                     <div class="event-badge absolute -top-2 -right-2 px-2 py-1 rounded-full text-[10px] font-bold">50% OFF</div>
-                    <div class="flex items-start gap-4">
-                        <div class="w-12 h-12 bg-purple-500/10 rounded-xl flex items-center justify-center">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-purple-500/10 rounded-xl flex items-center justify-center flex-shrink-0">
                             <i class="fas fa-id-card text-purple-400 text-xl"></i>
                         </div>
-                        <div class="flex-1">
-                            <h3 class="font-bold mb-1">컬러증명 세트</h3>
-                            <p class="text-xs text-gray-400 mb-3">컬러배치 4장 (3×4cm)</p>
-                            <div class="flex items-center gap-2">
-                                <span class="text-xs text-gray-500 line-through">150 cr</span>
-                                <span class="credit-badge px-2 py-0.5 rounded text-white text-sm font-bold">75 cr</span>
-                                <span class="text-xs text-gray-500">(₩7,500)</span>
-                            </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="font-bold">컬러증명 세트</h3>
+                            <p class="text-xs text-gray-400">4색 배경 (4장)</p>
                         </div>
-                    </div>
-                    <div class="mt-4 pt-4 border-t border-gray-800">
-                        <div class="flex flex-wrap gap-2">
-                            <span class="text-[10px] px-2 py-1 bg-gray-800 rounded">배경 제거</span>
-                            <span class="text-[10px] px-2 py-1 bg-gray-800 rounded">컬러 배경</span>
-                            <span class="text-[10px] px-2 py-1 bg-gray-800 rounded">4장 배치</span>
-                            <span class="text-[10px] px-2 py-1 bg-gray-800 rounded">인쇄용 출력</span>
+                        <div class="text-right flex-shrink-0">
+                            <span class="text-xs text-gray-500 line-through">150</span>
+                            <span class="credit-badge px-2 py-0.5 rounded text-white text-sm font-bold ml-1">75 cr</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- 프로필 세트 -->
-                <div onclick="selectProduct('profile')" id="product-profile" class="product-card cursor-pointer bg-gray-900 border border-gray-800 rounded-2xl p-5 relative">
+                <div onclick="selectProduct('profile')" id="product-profile" class="product-card cursor-pointer bg-gray-900 border border-gray-800 rounded-2xl p-4 relative">
                     <div class="event-badge absolute -top-2 -right-2 px-2 py-1 rounded-full text-[10px] font-bold">50% OFF</div>
-                    <div class="flex items-start gap-4">
-                        <div class="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center flex-shrink-0">
                             <i class="fas fa-user-tie text-blue-400 text-xl"></i>
                         </div>
-                        <div class="flex-1">
-                            <h3 class="font-bold mb-1">프로필 세트</h3>
-                            <p class="text-xs text-gray-400 mb-3">비즈니스 2장 + SNS 2장 (총 4장)</p>
-                            <div class="flex items-center gap-2">
-                                <span class="text-xs text-gray-500 line-through">200 cr</span>
-                                <span class="credit-badge px-2 py-0.5 rounded text-white text-sm font-bold">100 cr</span>
-                                <span class="text-xs text-gray-500">(₩10,000)</span>
-                            </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="font-bold">프로필 세트</h3>
+                            <p class="text-xs text-gray-400">비즈니스 2 + SNS 2 (4장)</p>
                         </div>
-                    </div>
-                    <div class="mt-4 pt-4 border-t border-gray-800">
-                        <div class="flex flex-wrap gap-2">
-                            <span class="text-[10px] px-2 py-1 bg-gray-800 rounded">컨셉 의상</span>
-                            <span class="text-[10px] px-2 py-1 bg-gray-800 rounded">스튜디오 배경</span>
-                            <span class="text-[10px] px-2 py-1 bg-gray-800 rounded">포즈 연출</span>
-                            <span class="text-[10px] px-2 py-1 bg-gray-800 rounded">고화질</span>
+                        <div class="text-right flex-shrink-0">
+                            <span class="text-xs text-gray-500 line-through">200</span>
+                            <span class="credit-badge px-2 py-0.5 rounded text-white text-sm font-bold ml-1">100 cr</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- 신분증 세트 -->
-                <div onclick="selectProduct('id')" id="product-id" class="product-card cursor-pointer bg-gray-900 border border-gray-800 rounded-2xl p-5 relative">
+                <div onclick="selectProduct('id')" id="product-id" class="product-card cursor-pointer bg-gray-900 border border-gray-800 rounded-2xl p-4 relative">
                     <div class="event-badge absolute -top-2 -right-2 px-2 py-1 rounded-full text-[10px] font-bold">50% OFF</div>
-                    <div class="flex items-start gap-4">
-                        <div class="w-12 h-12 bg-emerald-500/10 rounded-xl flex items-center justify-center">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-emerald-500/10 rounded-xl flex items-center justify-center flex-shrink-0">
                             <i class="fas fa-id-badge text-emerald-400 text-xl"></i>
                         </div>
-                        <div class="flex-1">
-                            <h3 class="font-bold mb-1">신분증 세트</h3>
-                            <p class="text-xs text-gray-400 mb-3">여권 + 면허 + 민증 (총 3장)</p>
-                            <div class="flex items-center gap-2">
-                                <span class="text-xs text-gray-500 line-through">300 cr</span>
-                                <span class="credit-badge px-2 py-0.5 rounded text-white text-sm font-bold">150 cr</span>
-                                <span class="text-xs text-gray-500">(₩15,000)</span>
-                            </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="font-bold">신분증 세트</h3>
+                            <p class="text-xs text-gray-400">여권 + 면허 + 민증 (3장)</p>
                         </div>
-                    </div>
-                    <div class="mt-4 pt-4 border-t border-gray-800">
-                        <div class="flex flex-wrap gap-2">
-                            <span class="text-[10px] px-2 py-1 bg-gray-800 rounded">여권 규격</span>
-                            <span class="text-[10px] px-2 py-1 bg-gray-800 rounded">면허 규격</span>
-                            <span class="text-[10px] px-2 py-1 bg-gray-800 rounded">주민등록증</span>
-                            <span class="text-[10px] px-2 py-1 bg-gray-800 rounded">규정 준수</span>
+                        <div class="text-right flex-shrink-0">
+                            <span class="text-xs text-gray-500 line-through">300</span>
+                            <span class="credit-badge px-2 py-0.5 rounded text-white text-sm font-bold ml-1">150 cr</span>
                         </div>
                     </div>
                 </div>
-
-                <!-- 장수(영정) -->
-                <div onclick="selectProduct('memorial')" id="product-memorial" class="product-card cursor-pointer bg-gray-900 border border-gray-800 rounded-2xl p-5 relative">
-                    <div class="event-badge absolute -top-2 -right-2 px-2 py-1 rounded-full text-[10px] font-bold">50% OFF</div>
-                    <div class="flex items-start gap-4">
-                        <div class="w-12 h-12 bg-amber-500/10 rounded-xl flex items-center justify-center">
-                            <i class="fas fa-portrait text-amber-400 text-xl"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="font-bold mb-1">장수(영정)</h3>
-                            <p class="text-xs text-gray-400 mb-3">액자 포함 | 택배비 별도</p>
-                            <div class="flex items-center gap-2">
-                                <span class="text-xs text-gray-500 line-through">1,200 cr</span>
-                                <span class="credit-badge px-2 py-0.5 rounded text-white text-sm font-bold">600 cr</span>
-                                <span class="text-xs text-gray-500">(₩60,000)</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mt-4 pt-4 border-t border-gray-800">
-                        <div class="flex flex-wrap gap-2">
-                            <span class="text-[10px] px-2 py-1 bg-gray-800 rounded">한복/정장</span>
-                            <span class="text-[10px] px-2 py-1 bg-gray-800 rounded">액자 포함</span>
-                            <span class="text-[10px] px-2 py-1 bg-gray-800 rounded">고급 인화</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 사진 복원 -->
-                <div onclick="selectProduct('restore')" id="product-restore" class="product-card cursor-pointer bg-gray-900 border border-gray-800 rounded-2xl p-5 relative">
-                    <div class="event-badge absolute -top-2 -right-2 px-2 py-1 rounded-full text-[10px] font-bold">50% OFF</div>
-                    <div class="flex items-start gap-4">
-                        <div class="w-12 h-12 bg-purple-500/10 rounded-xl flex items-center justify-center">
-                            <i class="fas fa-magic text-purple-400 text-xl"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="font-bold mb-1">사진 복원</h3>
-                            <p class="text-xs text-gray-400 mb-3">손상/흑백 사진 AI 복원</p>
-                            <div class="flex items-center gap-2">
-                                <span class="text-xs text-gray-500 line-through">500 cr</span>
-                                <span class="credit-badge px-2 py-0.5 rounded text-white text-sm font-bold">250 cr</span>
-                                <span class="text-xs text-gray-500">(₩25,000)</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mt-4 pt-4 border-t border-gray-800">
-                        <div class="flex flex-wrap gap-2">
-                            <span class="text-[10px] px-2 py-1 bg-gray-800 rounded">영정사진</span>
-                            <span class="text-[10px] px-2 py-1 bg-gray-800 rounded">흑백→컬러</span>
-                            <span class="text-[10px] px-2 py-1 bg-gray-800 rounded">손상 복구</span>
-                            <span class="text-[10px] px-2 py-1 bg-gray-800 rounded">화질 향상</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 고품질 인화/액자 -->
-                <div onclick="selectProduct('print')" id="product-print" class="product-card cursor-pointer bg-gray-900 border border-cyan-500/30 rounded-2xl p-5 relative">
-                    <div class="absolute -top-2 -right-2 px-2 py-1 rounded-full text-[10px] font-bold bg-gradient-to-r from-cyan-500 to-blue-500 text-white">실물배송</div>
-                    <div class="flex items-start gap-4">
-                        <div class="w-12 h-12 bg-cyan-500/10 rounded-xl flex items-center justify-center">
-                            <i class="fas fa-image text-cyan-400 text-xl"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="font-bold mb-1">고품질 인화/액자</h3>
-                            <p class="text-xs text-gray-400 mb-3">몽크사진관 프리미엄 인화</p>
-                            <div class="flex items-center gap-2">
-                                <span class="text-xs text-cyan-400 font-medium">상품별 상이</span>
-                                <span class="text-[10px] text-gray-500">| 택배비 별도</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mt-4 pt-4 border-t border-cyan-500/20">
-                        <div class="flex flex-wrap gap-2">
-                            <span class="text-[10px] px-2 py-1 bg-cyan-500/10 border border-cyan-500/30 rounded text-cyan-400">프리미엄 용지</span>
-                            <span class="text-[10px] px-2 py-1 bg-cyan-500/10 border border-cyan-500/30 rounded text-cyan-400">액자 옵션</span>
-                            <span class="text-[10px] px-2 py-1 bg-cyan-500/10 border border-cyan-500/30 rounded text-cyan-400">2-3일 도착</span>
-                        </div>
-                    </div>
-                </div>
-
             </div>
 
             <!-- Coming Soon -->
-            <h3 class="text-sm font-bold text-gray-500 mb-3">Coming Soon</h3>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <div class="coming-soon opacity-40 bg-gray-900 border border-gray-800 rounded-xl p-4 text-center">
-                    <i class="fas fa-globe text-gray-600 text-xl mb-2"></i>
-                    <p class="text-xs text-gray-600">비자사진</p>
+            <p class="text-xs text-gray-500 mb-2">Coming Soon</p>
+            <div class="grid grid-cols-4 gap-2">
+                <div class="coming-soon opacity-40 bg-gray-900 border border-gray-800 rounded-xl p-3 text-center">
+                    <i class="fas fa-portrait text-gray-600 text-lg"></i>
+                    <p class="text-[9px] text-gray-600 mt-1">장수</p>
                 </div>
-                <div class="coming-soon opacity-40 bg-gray-900 border border-gray-800 rounded-xl p-4 text-center">
-                    <i class="fas fa-baby text-gray-600 text-xl mb-2"></i>
-                    <p class="text-xs text-gray-600">아기 증명</p>
+                <div class="coming-soon opacity-40 bg-gray-900 border border-gray-800 rounded-xl p-3 text-center">
+                    <i class="fas fa-magic text-gray-600 text-lg"></i>
+                    <p class="text-[9px] text-gray-600 mt-1">복원</p>
                 </div>
-                <div class="coming-soon opacity-40 bg-gray-900 border border-gray-800 rounded-xl p-4 text-center">
-                    <i class="fas fa-users text-gray-600 text-xl mb-2"></i>
-                    <p class="text-xs text-gray-600">가족사진</p>
+                <div class="coming-soon opacity-40 bg-gray-900 border border-gray-800 rounded-xl p-3 text-center">
+                    <i class="fas fa-baby text-gray-600 text-lg"></i>
+                    <p class="text-[9px] text-gray-600 mt-1">아기</p>
                 </div>
-                <div class="coming-soon opacity-40 bg-gray-900 border border-gray-800 rounded-xl p-4 text-center">
-                    <i class="fas fa-graduation-cap text-gray-600 text-xl mb-2"></i>
-                    <p class="text-xs text-gray-600">졸업사진</p>
+                <div class="coming-soon opacity-40 bg-gray-900 border border-gray-800 rounded-xl p-3 text-center">
+                    <i class="fas fa-print text-gray-600 text-lg"></i>
+                    <p class="text-[9px] text-gray-600 mt-1">인화</p>
                 </div>
             </div>
         </section>
 
-        <!-- STEP 2: Upload & Options (Hidden initially) -->
-        <section id="section-upload" class="hidden mb-8">
+        <!-- STEP 2: Camera Capture -->
+        <section id="section-camera" class="hidden mb-8">
             <div class="flex items-center justify-between mb-4">
-                <h2 class="text-lg font-bold">사진 업로드</h2>
-                <button onclick="goBack()" class="text-xs text-gray-400 hover:text-white">← 상품 다시 선택</button>
+                <h2 class="text-lg font-bold">실시간 촬영</h2>
+                <button onclick="goBack()" class="text-xs text-gray-400 hover:text-white">← 상품 선택</button>
             </div>
 
             <!-- Selected Product Summary -->
-            <div id="selected-product-summary" class="bg-gray-900 border border-so/30 rounded-xl p-4 mb-6">
+            <div id="selected-product-summary" class="bg-gray-900 border border-so/30 rounded-xl p-3 mb-4">
                 <!-- 동적으로 채워짐 -->
             </div>
 
-            <!-- Upload Area -->
-            <div class="bg-gray-900 border border-gray-800 rounded-2xl p-6 mb-6">
-                <div class="border-2 border-dashed border-gray-700 rounded-xl p-8 text-center hover:border-so/50 transition-colors cursor-pointer" 
-                     onclick="document.getElementById('image-input').click()"
-                     ondrop="handleDrop(event)" ondragover="handleDragOver(event)">
-                    <input type="file" id="image-input" accept="image/*" class="hidden" onchange="handleImageUpload(event)">
-                    <div id="upload-placeholder">
-                        <i class="fas fa-cloud-upload-alt text-4xl text-gray-600 mb-3"></i>
-                        <p class="text-gray-400 text-sm mb-2">클릭하거나 드래그하여 사진 업로드</p>
-                        <p class="text-gray-600 text-xs">얼굴이 잘 보이는 정면 사진 권장</p>
-                        <p class="text-gray-600 text-xs">JPG, PNG (최대 10MB)</p>
+            <!-- Camera View -->
+            <div class="flex flex-col items-center">
+                <div id="camera-viewfinder" class="camera-guide mb-4">
+                    <video id="camera-video" autoplay playsinline muted></video>
+                    <canvas id="camera-canvas" class="hidden"></canvas>
+                </div>
+
+                <!-- 촬영 가이드 -->
+                <div class="text-center mb-4">
+                    <p class="text-xs text-gray-400 mb-2">
+                        <i class="fas fa-lightbulb text-yellow-400 mr-1"></i>
+                        밝은 곳에서 정면을 바라봐 주세요
+                    </p>
+                    <div class="flex justify-center gap-4 text-[10px] text-gray-500">
+                        <span><i class="fas fa-check text-emerald-400 mr-1"></i>정면</span>
+                        <span><i class="fas fa-check text-emerald-400 mr-1"></i>무표정</span>
+                        <span><i class="fas fa-check text-emerald-400 mr-1"></i>안경 제거</span>
                     </div>
-                    <div id="preview-container" class="hidden">
-                        <img id="preview-image" src="" class="max-h-64 mx-auto rounded-xl mb-4">
-                        <button onclick="event.stopPropagation(); clearImage();" class="text-xs text-gray-400 hover:text-so">
-                            <i class="fas fa-redo mr-1"></i>다른 사진 선택
-                        </button>
+                </div>
+
+                <!-- 촬영 버튼 -->
+                <button onclick="capturePhoto()" id="capture-btn" class="capture-btn mb-4">
+                </button>
+                
+                <p class="text-xs text-gray-500">버튼을 눌러 촬영</p>
+            </div>
+
+            <!-- 촬영 후 프리뷰 -->
+            <div id="preview-section" class="hidden">
+                <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4 mb-4">
+                    <div class="flex items-start gap-4">
+                        <img id="preview-image" src="" class="w-32 h-40 object-cover rounded-xl">
+                        <div class="flex-1">
+                            <p class="text-sm font-bold mb-2">촬영 완료!</p>
+                            <p class="text-xs text-gray-400 mb-3">사진이 마음에 드시나요?</p>
+                            <div class="flex gap-2">
+                                <button onclick="retakePhoto()" class="flex-1 py-2 bg-gray-800 text-white text-xs rounded-lg hover:bg-gray-700">
+                                    <i class="fas fa-redo mr-1"></i>다시 촬영
+                                </button>
+                                <button onclick="confirmPhoto()" class="flex-1 py-2 bg-so text-white text-xs rounded-lg hover:bg-so/80">
+                                    <i class="fas fa-check mr-1"></i>이 사진으로
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 촬영 검증 정보 -->
+                <div class="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-3">
+                    <div class="flex items-center gap-2 text-xs text-emerald-400">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>실시간 촬영 검증됨</span>
+                        <span class="text-emerald-300">•</span>
+                        <span id="capture-timestamp" class="text-emerald-300"></span>
                     </div>
                 </div>
             </div>
 
-            <!-- Options (이력서용) -->
+            <!-- 카메라 에러 -->
+            <div id="camera-error" class="hidden text-center py-8">
+                <div class="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-video-slash text-red-400 text-2xl"></i>
+                </div>
+                <p class="text-sm font-bold mb-2">카메라 접근 불가</p>
+                <p class="text-xs text-gray-400 mb-4">카메라 권한을 허용해주세요</p>
+                <button onclick="initCamera()" class="px-4 py-2 bg-so text-white text-sm rounded-lg">
+                    <i class="fas fa-redo mr-1"></i>다시 시도
+                </button>
+            </div>
+        </section>
+
+        <!-- STEP 3: Processing & Options -->
+        <section id="section-options" class="hidden mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-bold">옵션 선택</h2>
+                <button onclick="goToCamera()" class="text-xs text-gray-400 hover:text-white">← 다시 촬영</button>
+            </div>
+
+            <!-- 촬영된 사진 미리보기 -->
+            <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4 mb-4">
+                <div class="flex items-center gap-4">
+                    <img id="confirmed-photo" src="" class="w-20 h-26 object-cover rounded-xl">
+                    <div>
+                        <p class="text-sm font-bold" id="confirmed-product-name">이력서 세트</p>
+                        <p class="text-xs text-gray-400" id="confirmed-product-desc">정장 2 + 캐쥬얼 2</p>
+                        <div class="flex items-center gap-2 mt-2">
+                            <span class="live-badge px-2 py-0.5 rounded text-white text-[10px] font-bold">
+                                <i class="fas fa-shield-alt mr-1"></i>검증됨
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 옵션 (이력서용) -->
             <div id="options-resume" class="hidden space-y-4 mb-6">
-                <h3 class="text-sm font-bold text-gray-400">옵션 선택</h3>
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="text-xs text-gray-500 mb-2 block">정장 스타일</label>
-                        <select id="suit-style" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-sm focus:border-so outline-none">
+                        <select id="suit-style" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2.5 text-sm focus:border-so outline-none">
                             <option value="black-suit">블랙 정장</option>
                             <option value="navy-suit">네이비 정장</option>
                             <option value="gray-suit">그레이 정장</option>
@@ -395,7 +497,7 @@
                     </div>
                     <div>
                         <label class="text-xs text-gray-500 mb-2 block">캐쥬얼 스타일</label>
-                        <select id="casual-style" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-sm focus:border-so outline-none">
+                        <select id="casual-style" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2.5 text-sm focus:border-so outline-none">
                             <option value="white-shirt">화이트 셔츠</option>
                             <option value="blue-shirt">블루 셔츠</option>
                             <option value="knit">니트</option>
@@ -424,43 +526,26 @@
                 </div>
             </div>
 
-            <!-- Options (컬러증명용) -->
+            <!-- 옵션 (컬러증명용) -->
             <div id="options-color" class="hidden space-y-4 mb-6">
-                <h3 class="text-sm font-bold text-gray-400">옵션 선택</h3>
                 <div>
-                    <label class="text-xs text-gray-500 mb-2 block">배경색</label>
-                    <div class="flex gap-3">
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="radio" name="color-bg" value="white" checked class="hidden peer">
-                            <div class="w-8 h-8 rounded-full bg-white border-2 border-gray-600 peer-checked:border-so"></div>
-                            <span class="text-xs">화이트</span>
-                        </label>
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="radio" name="color-bg" value="sky" class="hidden peer">
-                            <div class="w-8 h-8 rounded-full bg-sky-200 border-2 border-gray-600 peer-checked:border-so"></div>
-                            <span class="text-xs">스카이</span>
-                        </label>
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="radio" name="color-bg" value="pink" class="hidden peer">
-                            <div class="w-8 h-8 rounded-full bg-pink-200 border-2 border-gray-600 peer-checked:border-so"></div>
-                            <span class="text-xs">핑크</span>
-                        </label>
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="radio" name="color-bg" value="gray" class="hidden peer">
-                            <div class="w-8 h-8 rounded-full bg-gray-300 border-2 border-gray-600 peer-checked:border-so"></div>
-                            <span class="text-xs">그레이</span>
-                        </label>
+                    <label class="text-xs text-gray-500 mb-2 block">배경색 조합</label>
+                    <p class="text-[10px] text-gray-400 mb-3">4가지 배경색으로 자동 생성됩니다</p>
+                    <div class="flex gap-2">
+                        <div class="w-10 h-10 rounded-lg bg-white border border-gray-600"></div>
+                        <div class="w-10 h-10 rounded-lg bg-sky-200 border border-gray-600"></div>
+                        <div class="w-10 h-10 rounded-lg bg-pink-200 border border-gray-600"></div>
+                        <div class="w-10 h-10 rounded-lg bg-gray-300 border border-gray-600"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- Options (프로필용) -->
+            <!-- 옵션 (프로필용) -->
             <div id="options-profile" class="hidden space-y-4 mb-6">
-                <h3 class="text-sm font-bold text-gray-400">옵션 선택</h3>
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="text-xs text-gray-500 mb-2 block">비즈니스 스타일</label>
-                        <select id="biz-style" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-sm focus:border-so outline-none">
+                        <select id="biz-style" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2.5 text-sm focus:border-so outline-none">
                             <option value="executive">임원 스타일</option>
                             <option value="professional">전문가 스타일</option>
                             <option value="creative">크리에이티브</option>
@@ -468,396 +553,145 @@
                     </div>
                     <div>
                         <label class="text-xs text-gray-500 mb-2 block">SNS 스타일</label>
-                        <select id="sns-style" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-sm focus:border-so outline-none">
+                        <select id="sns-style" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2.5 text-sm focus:border-so outline-none">
                             <option value="natural">내추럴</option>
                             <option value="trendy">트렌디</option>
                             <option value="minimal">미니멀</option>
                         </select>
                     </div>
                 </div>
-                <div>
-                    <label class="text-xs text-gray-500 mb-2 block">배경</label>
-                    <select id="profile-bg" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-sm focus:border-so outline-none">
-                        <option value="studio">스튜디오 (단색)</option>
-                        <option value="office">오피스</option>
-                        <option value="outdoor">야외 자연광</option>
-                        <option value="gradient">그라데이션</option>
-                    </select>
-                </div>
             </div>
 
-            <!-- Options (신분증용) -->
+            <!-- 옵션 (신분증용) -->
             <div id="options-id" class="hidden space-y-4 mb-6">
-                <h3 class="text-sm font-bold text-gray-400">신분증 옵션</h3>
                 <div class="bg-emerald-500/5 border border-emerald-500/20 rounded-xl p-4">
                     <p class="text-xs text-emerald-400 mb-3"><i class="fas fa-check-circle mr-1"></i> 정부 규격 100% 준수</p>
-                    <div class="grid grid-cols-3 gap-3 text-[10px]">
-                        <div class="bg-gray-900 rounded-lg p-3 text-center">
+                    <div class="grid grid-cols-3 gap-2 text-[10px]">
+                        <div class="bg-gray-900 rounded-lg p-2 text-center">
                             <i class="fas fa-passport text-emerald-400 text-lg mb-1"></i>
                             <p class="text-white font-bold">여권</p>
                             <p class="text-gray-500">3.5×4.5cm</p>
                         </div>
-                        <div class="bg-gray-900 rounded-lg p-3 text-center">
+                        <div class="bg-gray-900 rounded-lg p-2 text-center">
                             <i class="fas fa-car text-emerald-400 text-lg mb-1"></i>
                             <p class="text-white font-bold">면허</p>
                             <p class="text-gray-500">3×4cm</p>
                         </div>
-                        <div class="bg-gray-900 rounded-lg p-3 text-center">
+                        <div class="bg-gray-900 rounded-lg p-2 text-center">
                             <i class="fas fa-id-card text-emerald-400 text-lg mb-1"></i>
                             <p class="text-white font-bold">민증</p>
                             <p class="text-gray-500">3.5×4.5cm</p>
                         </div>
                     </div>
                 </div>
-                <div class="bg-yellow-500/5 border border-yellow-500/20 rounded-xl p-3">
-                    <p class="text-[10px] text-yellow-400"><i class="fas fa-exclamation-triangle mr-1"></i> 안경 미착용, 정면 응시, 무표정 필수</p>
-                </div>
             </div>
-
-            <!-- Options (장수/영정용) -->
-            <div id="options-memorial" class="hidden space-y-4 mb-6">
-                <h3 class="text-sm font-bold text-gray-400">장수(영정) 옵션</h3>
-                
-                <div class="bg-amber-500/5 border border-amber-500/20 rounded-xl p-4">
-                    <p class="text-xs text-amber-400 mb-3"><i class="fas fa-portrait mr-1"></i> 장수사진 설정</p>
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="text-[10px] text-gray-500 mb-1 block">의상 스타일</label>
-                            <select id="memorial-outfit" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-xs focus:border-amber-400 outline-none">
-                                <option value="hanbok">한복</option>
-                                <option value="suit">정장</option>
-                                <option value="original">원본 유지</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="text-[10px] text-gray-500 mb-1 block">배경</label>
-                            <select id="memorial-bg" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-xs focus:border-amber-400 outline-none">
-                                <option value="traditional">전통 배경</option>
-                                <option value="nature">자연 배경</option>
-                                <option value="solid">단색 배경</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="mt-3">
-                        <label class="text-[10px] text-gray-500 mb-1 block">액자 스타일</label>
-                        <select id="memorial-frame" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-xs focus:border-amber-400 outline-none">
-                            <option value="wood-dark">원목 (진한색)</option>
-                            <option value="wood-light">원목 (밝은색)</option>
-                            <option value="gold">골드 프레임</option>
-                            <option value="black">블랙 모던</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- 배송 정보 -->
-                <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
-                    <p class="text-xs text-gray-300 mb-3"><i class="fas fa-truck mr-1 text-amber-400"></i> 배송 정보</p>
-                    <div class="space-y-3">
-                        <input type="text" id="memorial-name" placeholder="수령인 이름" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:border-amber-400 outline-none">
-                        <input type="text" id="memorial-phone" placeholder="연락처 (010-0000-0000)" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:border-amber-400 outline-none">
-                        <input type="text" id="memorial-address" placeholder="배송 주소" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:border-amber-400 outline-none">
-                        <input type="text" id="memorial-address2" placeholder="상세 주소 (동/호수)" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:border-amber-400 outline-none">
-                    </div>
-                </div>
-
-                <div class="bg-yellow-500/5 border border-yellow-500/20 rounded-xl p-3">
-                    <p class="text-[10px] text-yellow-400"><i class="fas fa-exclamation-triangle mr-1"></i> 택배비 별도 (3,000원~) | 제작 기간 3-5일</p>
-                </div>
-            </div>
-
-            <!-- Options (사진 복원용) -->
-            <div id="options-restore" class="hidden space-y-4 mb-6">
-                <h3 class="text-sm font-bold text-gray-400">사진 복원 옵션</h3>
-                
-                <div class="bg-purple-500/5 border border-purple-500/20 rounded-xl p-4">
-                    <p class="text-xs text-purple-400 mb-3"><i class="fas fa-magic mr-1"></i> 복원 항목 선택</p>
-                    <div class="space-y-2">
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" id="restore-colorize" checked class="w-4 h-4 rounded border-gray-600 text-purple-500 focus:ring-purple-500">
-                            <span class="text-xs">흑백 → 컬러 변환</span>
-                        </label>
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" id="restore-enhance" checked class="w-4 h-4 rounded border-gray-600 text-purple-500 focus:ring-purple-500">
-                            <span class="text-xs">화질 향상 (AI 업스케일)</span>
-                        </label>
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" id="restore-repair" checked class="w-4 h-4 rounded border-gray-600 text-purple-500 focus:ring-purple-500">
-                            <span class="text-xs">손상/스크래치 복구</span>
-                        </label>
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" id="restore-face" class="w-4 h-4 rounded border-gray-600 text-purple-500 focus:ring-purple-500">
-                            <span class="text-xs">얼굴 선명화</span>
-                        </label>
-                    </div>
-                </div>
-
-                <div class="flex items-center gap-2 text-[10px] text-gray-500">
-                    <i class="fas fa-info-circle text-purple-400"></i>
-                    <span>원본 사진 품질에 따라 복원 결과가 달라질 수 있습니다</span>
-                </div>
-            </div>
-
-            <!-- Options (고품질 인화/액자용) -->
-            <div id="options-print" class="hidden space-y-4 mb-6">
-                <h3 class="text-sm font-bold text-gray-400">인화/액자 옵션</h3>
-                
-                <!-- 몽크사진관 연동 안내 -->
-                <div class="bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border border-cyan-500/30 rounded-xl p-4">
-                    <div class="flex items-center gap-3 mb-3">
-                        <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
-                            <span class="text-lg font-black text-gray-900">M</span>
-                        </div>
-                        <div>
-                            <p class="text-sm font-bold text-white">몽크사진관</p>
-                            <p class="text-[10px] text-gray-400">MONK STUDIO 전문 인화 서비스</p>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-3 gap-2 text-[10px]">
-                        <div class="bg-gray-900/50 rounded-lg p-2 text-center">
-                            <i class="fas fa-medal text-cyan-400 mb-1"></i>
-                            <p class="text-gray-300">프리미엄 용지</p>
-                        </div>
-                        <div class="bg-gray-900/50 rounded-lg p-2 text-center">
-                            <i class="fas fa-palette text-cyan-400 mb-1"></i>
-                            <p class="text-gray-300">색감 보정</p>
-                        </div>
-                        <div class="bg-gray-900/50 rounded-lg p-2 text-center">
-                            <i class="fas fa-frame text-cyan-400 mb-1"></i>
-                            <p class="text-gray-300">액자 옵션</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 인화 타입 선택 -->
-                <div>
-                    <label class="text-xs text-gray-500 mb-2 block">인화 타입</label>
-                    <div class="grid grid-cols-2 gap-2">
-                        <label class="cursor-pointer">
-                            <input type="radio" name="print-type" value="print" checked class="hidden peer">
-                            <div class="p-3 bg-gray-900 border border-gray-700 rounded-xl text-center peer-checked:border-cyan-400 peer-checked:bg-cyan-500/10 transition-all">
-                                <i class="fas fa-print text-cyan-400 mb-1"></i>
-                                <p class="text-sm font-bold">인화만</p>
-                                <p class="text-[10px] text-gray-500">상품별 상이</p>
-                            </div>
-                        </label>
-                        <label class="cursor-pointer">
-                            <input type="radio" name="print-type" value="frame" class="hidden peer">
-                            <div class="p-3 bg-gray-900 border border-gray-700 rounded-xl text-center peer-checked:border-cyan-400 peer-checked:bg-cyan-500/10 transition-all">
-                                <i class="fas fa-image text-cyan-400 mb-1"></i>
-                                <p class="text-sm font-bold">인화 + 액자</p>
-                                <p class="text-[10px] text-gray-500">액자비 별도</p>
-                            </div>
-                        </label>
-                    </div>
-                </div>
-
-                <!-- 인화 사이즈 -->
-                <div>
-                    <label class="text-xs text-gray-500 mb-2 block">인화 사이즈</label>
-                    <select id="print-size" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-sm focus:border-cyan-400 outline-none">
-                        <option value="3x4">증명사진 (3×4cm)</option>
-                        <option value="3.5x4.5">여권용 (3.5×4.5cm)</option>
-                        <option value="4x6">반명함 (4×6cm)</option>
-                        <option value="5x7">명함 (5×7cm)</option>
-                        <option value="8x10">8×10인치 (장수/프로필)</option>
-                        <option value="11x14">11×14인치 (대형)</option>
-                    </select>
-                </div>
-
-                <!-- 인화 수량 -->
-                <div>
-                    <label class="text-xs text-gray-500 mb-2 block">수량</label>
-                    <select id="print-qty" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-sm focus:border-cyan-400 outline-none">
-                        <option value="4">4장</option>
-                        <option value="8">8장</option>
-                        <option value="16">16장</option>
-                        <option value="32">32장</option>
-                    </select>
-                </div>
-
-                <!-- 배송 정보 -->
-                <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
-                    <p class="text-xs text-gray-300 mb-3"><i class="fas fa-truck mr-1 text-cyan-400"></i> 배송 정보</p>
-                    <div class="space-y-3">
-                        <input type="text" id="print-name" placeholder="수령인 이름" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:border-cyan-400 outline-none">
-                        <input type="text" id="print-phone" placeholder="연락처 (010-0000-0000)" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:border-cyan-400 outline-none">
-                        <input type="text" id="print-address" placeholder="배송 주소" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:border-cyan-400 outline-none">
-                        <input type="text" id="print-address2" placeholder="상세 주소 (동/호수)" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:border-cyan-400 outline-none">
-                    </div>
-                </div>
-
-                <!-- 택배비 안내 -->
-                <div class="bg-yellow-500/5 border border-yellow-500/20 rounded-xl p-3">
-                    <p class="text-[10px] text-yellow-400"><i class="fas fa-exclamation-triangle mr-1"></i> 택배비 별도 (3,000원~) | 결제 시 합산</p>
-                </div>
-
-                <div class="flex items-center gap-2 text-[10px] text-gray-500">
-                    <i class="fas fa-info-circle text-cyan-400"></i>
-                    <span>주문 확인 후 2-3일 내 발송 (주말/공휴일 제외)</span>
-                </div>
-            </div>
-
 
             <!-- Process Button -->
-            <button onclick="processPhoto()" id="process-btn" disabled
-                    class="w-full py-4 bg-gradient-to-r from-so via-purple-500 to-ai text-white font-bold rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg hover:shadow-so/30 transition-all">
+            <button onclick="processPhoto()" id="process-btn"
+                    class="w-full py-4 bg-gradient-to-r from-so via-purple-500 to-ai text-white font-bold rounded-xl hover:shadow-lg hover:shadow-so/30 transition-all">
                 <i class="fas fa-magic mr-2"></i>
-                <span id="btn-text">사진 생성하기</span>
+                <span id="btn-text">AI 사진 생성하기</span>
                 <span id="btn-credit" class="ml-2 px-2 py-0.5 bg-white/20 rounded text-xs">75 cr</span>
             </button>
 
             <p id="status" class="text-center mt-3 text-xs text-gray-500"></p>
         </section>
 
-        <!-- STEP 3: Results (Hidden initially) -->
+        <!-- STEP 4: Results -->
         <section id="section-results" class="hidden mb-8">
             <div class="flex items-center justify-between mb-4">
                 <h2 class="text-lg font-bold">생성 결과</h2>
                 <button onclick="resetAll()" class="text-xs text-gray-400 hover:text-white">← 처음으로</button>
             </div>
 
-            <div class="bg-gray-900 border border-gray-800 rounded-2xl p-6">
-                <div id="result-images" class="grid grid-cols-2 gap-4 mb-6">
+            <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4">
+                <div id="result-images" class="grid grid-cols-2 gap-3 mb-4">
                     <!-- 동적으로 생성된 이미지들 -->
                 </div>
                 
-                <div class="flex gap-3">
-                    <button onclick="downloadAll()" class="flex-1 py-3 bg-so text-white font-bold rounded-xl hover:bg-so/80 transition-colors">
+                <div class="flex gap-2">
+                    <button onclick="downloadAll()" class="flex-1 py-3 bg-so text-white font-bold rounded-xl hover:bg-so/80 transition-colors text-sm">
                         <i class="fas fa-download mr-2"></i>전체 다운로드
                     </button>
-                    <button onclick="resetAll()" class="px-6 py-3 bg-gray-800 text-white rounded-xl hover:bg-gray-700 transition-colors">
-                        <i class="fas fa-redo mr-2"></i>다시
+                    <button onclick="resetAll()" class="px-4 py-3 bg-gray-800 text-white rounded-xl hover:bg-gray-700 transition-colors">
+                        <i class="fas fa-redo"></i>
                     </button>
                 </div>
             </div>
         </section>
 
         <!-- Credit Purchase CTA -->
-        <section class="mt-8 bg-gradient-to-r from-so/10 to-purple-500/10 border border-so/20 rounded-2xl p-6">
-            <h3 class="font-bold mb-2 text-center">크레딧 충전</h3>
-            <p class="text-xs text-gray-400 mb-6 text-center">많이 살수록 더 큰 혜택!</p>
+        <section class="mt-6 bg-gradient-to-r from-so/10 to-purple-500/10 border border-so/20 rounded-2xl p-4">
+            <h3 class="font-bold mb-2 text-center text-sm">크레딧 충전</h3>
+            <p class="text-[10px] text-gray-400 mb-4 text-center">많이 살수록 더 큰 혜택!</p>
             
-            <div class="space-y-3">
-                <!-- 스타터 -->
-                <button onclick="buyCredits(100)" class="w-full flex items-center justify-between p-4 bg-gray-900 border border-gray-700 rounded-xl hover:border-gray-600 transition-colors">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-coins text-yellow-400"></i>
-                        </div>
-                        <div class="text-left">
-                            <p class="font-bold">100 cr</p>
-                            <p class="text-[10px] text-gray-500">기본 패키지</p>
-                        </div>
+            <div class="space-y-2">
+                <button onclick="buyCredits(100)" class="w-full flex items-center justify-between p-3 bg-gray-900 border border-gray-700 rounded-xl hover:border-gray-600 transition-colors">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-coins text-yellow-400"></i>
+                        <span class="font-bold text-sm">100 cr</span>
                     </div>
-                    <div class="text-right">
-                        <p class="font-bold">₩10,000</p>
-                    </div>
+                    <span class="font-bold text-sm">₩10,000</span>
                 </button>
 
-                <!-- 베이직 (추천) -->
-                <button onclick="buyCredits(300)" class="w-full flex items-center justify-between p-4 bg-gray-900 border-2 border-so/50 rounded-xl hover:border-so transition-colors relative overflow-hidden">
-                    <div class="absolute top-0 right-0 bg-so text-[9px] font-bold px-2 py-0.5 rounded-bl-lg">추천</div>
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-so/20 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-coins text-so"></i>
-                        </div>
-                        <div class="text-left">
-                            <p class="font-bold">
-                                <span class="text-gray-500 line-through text-sm">300</span>
-                                <span class="text-so mx-1">→</span>
-                                <span class="text-so">330 cr</span>
-                                <span class="text-[10px] text-yellow-400 ml-1">+30 보너스</span>
-                            </p>
-                            <p class="text-[10px] text-gray-500">보너스 + 할인</p>
-                        </div>
+                <button onclick="buyCredits(300)" class="w-full flex items-center justify-between p-3 bg-gray-900 border-2 border-so/50 rounded-xl hover:border-so transition-colors relative">
+                    <div class="absolute -top-2 right-2 bg-so text-[8px] font-bold px-1.5 py-0.5 rounded">추천</div>
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-coins text-so"></i>
+                        <span class="font-bold text-sm text-so">330 cr</span>
+                        <span class="text-[9px] text-yellow-400">+30</span>
                     </div>
                     <div class="text-right">
-                        <p class="text-xs text-gray-500 line-through">₩30,000</p>
-                        <p class="font-bold text-so">₩27,000</p>
+                        <span class="text-[10px] text-gray-500 line-through mr-1">₩30,000</span>
+                        <span class="font-bold text-sm text-so">₩27,000</span>
                     </div>
                 </button>
-
-                <!-- 프로 -->
-                <button onclick="buyCredits(500)" class="w-full flex items-center justify-between p-4 bg-gray-900 border border-gray-700 rounded-xl hover:border-purple-500/50 transition-colors">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-gem text-purple-400"></i>
-                        </div>
-                        <div class="text-left">
-                            <p class="font-bold">
-                                <span class="text-gray-500 line-through text-sm">500</span>
-                                <span class="text-purple-400 mx-1">→</span>
-                                <span class="text-purple-400">600 cr</span>
-                                <span class="text-[10px] text-yellow-400 ml-1">+100 보너스</span>
-                            </p>
-                            <p class="text-[10px] text-gray-500">20% 보너스</p>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-xs text-gray-500 line-through">₩50,000</p>
-                        <p class="font-bold text-purple-400">₩40,000</p>
-                    </div>
-                </button>
-
-                <!-- 프리미엄 -->
-                <button onclick="buyCredits(1000)" class="w-full flex items-center justify-between p-4 bg-gray-900 border border-gray-700 rounded-xl hover:border-yellow-500/50 transition-colors">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-yellow-500/20 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-crown text-yellow-400"></i>
-                        </div>
-                        <div class="text-left">
-                            <p class="font-bold">
-                                <span class="text-gray-500 line-through text-sm">1000</span>
-                                <span class="text-yellow-400 mx-1">→</span>
-                                <span class="text-yellow-400">1,300 cr</span>
-                                <span class="text-[10px] text-yellow-400 ml-1">+300 보너스</span>
-                            </p>
-                            <p class="text-[10px] text-gray-500">30% 보너스 + 최대 할인</p>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-xs text-gray-500 line-through">₩100,000</p>
-                        <p class="font-bold text-yellow-400">₩70,000</p>
-                    </div>
-                </button>
-            </div>
-
-            <!-- 크레딧 사용처 안내 -->
-            <div class="mt-6 pt-5 border-t border-gray-800">
-                <p class="text-center text-xs text-gray-500 mb-3">충전한 크레딧은 MONKOS 전 서비스에서 사용 가능</p>
-                <div class="flex flex-wrap justify-center gap-2">
-                    <span class="px-3 py-1.5 bg-gray-900 border border-gray-800 rounded-full text-[10px] text-gray-400">
-                        <i class="fas fa-camera mr-1 text-so"></i>AI PHOTO
-                    </span>
-                    <span class="px-3 py-1.5 bg-gray-900 border border-gray-800 rounded-full text-[10px] text-gray-400">
-                        <i class="fas fa-tshirt mr-1 text-purple-400"></i>LOOKBOOK
-                    </span>
-                    <span class="px-3 py-1.5 bg-gray-900 border border-gray-800 rounded-full text-[10px] text-gray-400">
-                        <i class="fas fa-user-tie mr-1 text-blue-400"></i>AI MODEL
-                    </span>
-                    <span class="px-3 py-1.5 bg-gray-900 border border-gray-800 rounded-full text-[10px] text-gray-400">
-                        <i class="fas fa-history mr-1 text-emerald-400"></i>사진복원
-                    </span>
-                    <span class="px-3 py-1.5 bg-gray-900 border border-gray-800 rounded-full text-[10px] text-gray-400">
-                        <i class="fas fa-ellipsis-h mr-1"></i>MORE
-                    </span>
-                </div>
             </div>
         </section>
 
     </main>
 
-    <footer class="border-t border-white/5 py-6 px-4 text-center">
-        <p class="text-gray-600 text-[10px] tracking-widest uppercase">© 2026 MONK STUDIO. Powered by MONKOS.AI</p>
+    <footer class="border-t border-white/5 py-4 px-4 text-center">
+        <p class="text-gray-600 text-[9px] tracking-widest uppercase">© 2026 MONK STUDIO. Powered by MONKOS.AI</p>
     </footer>
 
     <script>
-        // State
-        let selectedProduct = null;
-        let uploadedImage = null;
-        let userCredits = 0; // 실제로는 서버에서 가져옴
+        // ==================== 모바일 체크 ====================
+        function isMobile() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        }
 
-        // Product Data
+        function checkDevice() {
+            if (!isMobile()) {
+                document.getElementById('desktop-block-modal').classList.remove('hidden');
+                document.getElementById('main-content').classList.add('hidden');
+                generateQRCode();
+            }
+        }
+
+        function generateQRCode() {
+            // QR 코드는 이미지 태그로 직접 생성됨 (api.qrserver.com)
+            // 현재 페이지 URL로 동적 생성
+            const qrImg = document.getElementById('qr-code');
+            if (qrImg) {
+                qrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=192x192&data=' + encodeURIComponent(window.location.href);
+            }
+        }
+
+        function copyUrl() {
+            navigator.clipboard.writeText(window.location.href);
+            alert('URL이 복사되었습니다!');
+        }
+
+        // ==================== State ====================
+        let selectedProduct = null;
+        let capturedImage = null;
+        let captureTime = null;
+        let userCredits = 0;
+        let cameraStream = null;
+        let generatedImages = [];
+
+        // ==================== Product Data ====================
         const products = {
             resume: {
                 name: '이력서 세트',
@@ -869,11 +703,11 @@
             },
             color: {
                 name: '컬러증명 세트',
-                description: '컬러배치 4장 (3×4cm)',
+                description: '4색 배경 (4장)',
                 price: 150,
                 eventPrice: 75,
                 outputs: 4,
-                labels: ['컬러 1', '컬러 2', '컬러 3', '컬러 4']
+                labels: ['화이트', '스카이', '핑크', '그레이']
             },
             profile: {
                 name: '프로필 세트',
@@ -889,37 +723,11 @@
                 price: 300,
                 eventPrice: 150,
                 outputs: 3,
-                labels: ['여권 (3.5×4.5cm)', '면허 (3×4cm)', '주민등록증 (3.5×4.5cm)']
-            },
-            memorial: {
-                name: '장수(영정)',
-                description: '액자 포함 | 택배비 별도',
-                price: 1200,
-                eventPrice: 600,
-                outputs: 1,
-                labels: ['장수사진 (영정)']
-            },
-            restore: {
-                name: '사진 복원',
-                description: '손상/흑백 사진 AI 복원',
-                price: 500,
-                eventPrice: 250,
-                outputs: 1,
-                labels: ['복원 결과']
-            },
-            print: {
-                name: '고품질 인화/액자',
-                description: '몽크사진관 프리미엄 인화',
-                price: 0, // 상품별 상이
-                eventPrice: 0,
-                outputs: 0, // 별도 처리
-                labels: [],
-                isPrint: true,
-                priceVaries: true
+                labels: ['여권', '면허', '주민등록증']
             }
         };
 
-        // LocalStorage에서 크레딧 로드 (데모용)
+        // ==================== Credits ====================
         function loadCredits() {
             const saved = localStorage.getItem('monkos_credits');
             userCredits = saved ? parseInt(saved) : 0;
@@ -931,123 +739,213 @@
             document.getElementById('user-credits').textContent = userCredits;
         }
 
-        // Product Selection
+        function buyCredits(amount) {
+            const prices = { 100: 10000, 300: 27000, 500: 40000, 1000: 70000 };
+            const bonuses = { 100: 0, 300: 30, 500: 100, 1000: 300 };
+            
+            const total = amount + bonuses[amount];
+            const price = prices[amount];
+            
+            if (confirm(`${total.toLocaleString()} 크레딧을 ₩${price.toLocaleString()}에 구매하시겠습니까?`)) {
+                userCredits += total;
+                saveCredits();
+                alert(`✨ ${total.toLocaleString()} 크레딧이 충전되었습니다!`);
+            }
+        }
+
+        // ==================== Product Selection ====================
         function selectProduct(type) {
             selectedProduct = type;
             
-            // UI 업데이트
             document.querySelectorAll('.product-card').forEach(card => {
                 card.classList.remove('selected');
             });
             document.getElementById('product-' + type).classList.add('selected');
 
-            // 잠시 후 다음 단계로
             setTimeout(() => {
-                showUploadSection();
-            }, 300);
+                showCameraSection();
+            }, 200);
         }
 
-        function showUploadSection() {
+        function showCameraSection() {
             document.getElementById('section-products').classList.add('hidden');
-            document.getElementById('section-upload').classList.remove('hidden');
+            document.getElementById('section-camera').classList.remove('hidden');
             
-            // Step indicator 업데이트
             document.getElementById('step-1').classList.remove('active');
             document.getElementById('step-2').classList.add('active');
 
-            // 선택된 상품 요약 표시
             const product = products[selectedProduct];
             document.getElementById('selected-product-summary').innerHTML = `
                 <div class="flex items-center justify-between">
                     <div>
-                        <h4 class="font-bold">${product.name}</h4>
+                        <h4 class="font-bold text-sm">${product.name}</h4>
                         <p class="text-xs text-gray-400">${product.description}</p>
                     </div>
                     <div class="text-right">
-                        <span class="text-xs text-gray-500 line-through">${product.price} cr</span>
-                        <span class="credit-badge px-2 py-1 rounded text-white text-sm font-bold ml-2">${product.eventPrice} cr</span>
+                        <span class="credit-badge px-2 py-1 rounded text-white text-sm font-bold">${product.eventPrice} cr</span>
                     </div>
                 </div>
             `;
+
+            initCamera();
+        }
+
+        // ==================== Camera ====================
+        async function initCamera() {
+            try {
+                document.getElementById('camera-error').classList.add('hidden');
+                document.getElementById('camera-viewfinder').classList.remove('hidden');
+                document.getElementById('preview-section').classList.add('hidden');
+
+                // 기존 스트림 정리
+                if (cameraStream) {
+                    cameraStream.getTracks().forEach(track => track.stop());
+                }
+
+                // 전면 카메라 요청
+                cameraStream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        facingMode: 'user',
+                        width: { ideal: 720 },
+                        height: { ideal: 960 }
+                    },
+                    audio: false
+                });
+
+                const video = document.getElementById('camera-video');
+                video.srcObject = cameraStream;
+                
+            } catch (error) {
+                console.error('Camera Error:', error);
+                document.getElementById('camera-viewfinder').classList.add('hidden');
+                document.getElementById('camera-error').classList.remove('hidden');
+            }
+        }
+
+        function capturePhoto() {
+            const video = document.getElementById('camera-video');
+            const canvas = document.getElementById('camera-canvas');
+            const ctx = canvas.getContext('2d');
+
+            // 캔버스 크기 설정
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+
+            // 미러링 해제하여 캡처 (저장용)
+            ctx.translate(canvas.width, 0);
+            ctx.scale(-1, 1);
+            ctx.drawImage(video, 0, 0);
+
+            // 이미지 데이터 추출
+            capturedImage = canvas.toDataURL('image/jpeg', 0.9);
+            captureTime = new Date();
+
+            // 프리뷰 표시
+            document.getElementById('preview-image').src = capturedImage;
+            document.getElementById('capture-timestamp').textContent = 
+                captureTime.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+            // UI 전환
+            document.getElementById('camera-viewfinder').classList.add('hidden');
+            document.getElementById('preview-section').classList.remove('hidden');
+
+            // 카메라 일시 정지 (배터리 절약)
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.enabled = false);
+            }
+        }
+
+        function retakePhoto() {
+            capturedImage = null;
+            captureTime = null;
+            
+            document.getElementById('preview-section').classList.add('hidden');
+            document.getElementById('camera-viewfinder').classList.remove('hidden');
+
+            // 카메라 재활성화
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.enabled = true);
+            }
+        }
+
+        function confirmPhoto() {
+            // 실시간 촬영 검증 (10초 이내)
+            const now = new Date();
+            const timeDiff = now - captureTime;
+            
+            if (timeDiff > 60000) { // 1분 초과시
+                alert('촬영 시간이 초과되었습니다. 다시 촬영해주세요.');
+                retakePhoto();
+                return;
+            }
+
+            // 카메라 정지
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                cameraStream = null;
+            }
+
+            showOptionsSection();
+        }
+
+        function showOptionsSection() {
+            document.getElementById('section-camera').classList.add('hidden');
+            document.getElementById('section-options').classList.remove('hidden');
+
+            document.getElementById('step-2').classList.remove('active');
+            document.getElementById('step-3').classList.add('active');
+
+            const product = products[selectedProduct];
+            document.getElementById('confirmed-photo').src = capturedImage;
+            document.getElementById('confirmed-product-name').textContent = product.name;
+            document.getElementById('confirmed-product-desc').textContent = product.description;
+            document.getElementById('btn-credit').textContent = product.eventPrice + ' cr';
 
             // 옵션 표시
             document.getElementById('options-resume').classList.toggle('hidden', selectedProduct !== 'resume');
             document.getElementById('options-color').classList.toggle('hidden', selectedProduct !== 'color');
             document.getElementById('options-profile').classList.toggle('hidden', selectedProduct !== 'profile');
             document.getElementById('options-id').classList.toggle('hidden', selectedProduct !== 'id');
-            document.getElementById('options-memorial').classList.toggle('hidden', selectedProduct !== 'memorial');
-            document.getElementById('options-restore').classList.toggle('hidden', selectedProduct !== 'restore');
-            document.getElementById('options-print').classList.toggle('hidden', selectedProduct !== 'print');
-
-            // 버튼 크레딧 표시
-            document.getElementById('btn-credit').textContent = product.eventPrice + ' cr';
         }
 
+        // ==================== Navigation ====================
         function goBack() {
-            document.getElementById('section-upload').classList.add('hidden');
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                cameraStream = null;
+            }
+
+            document.getElementById('section-camera').classList.add('hidden');
             document.getElementById('section-products').classList.remove('hidden');
             
             document.getElementById('step-2').classList.remove('active');
             document.getElementById('step-1').classList.add('active');
             
-            clearImage();
+            capturedImage = null;
+            captureTime = null;
         }
 
-        // Image Upload
-        function handleImageUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            if (file.size > 10 * 1024 * 1024) {
-                alert('파일 크기는 10MB 이하여야 합니다.');
-                return;
-            }
-
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                uploadedImage = e.target.result;
-                document.getElementById('preview-image').src = uploadedImage;
-                document.getElementById('upload-placeholder').classList.add('hidden');
-                document.getElementById('preview-container').classList.remove('hidden');
-                document.getElementById('process-btn').disabled = false;
-            };
-            reader.readAsDataURL(file);
+        function goToCamera() {
+            document.getElementById('section-options').classList.add('hidden');
+            document.getElementById('section-camera').classList.remove('hidden');
+            
+            document.getElementById('step-3').classList.remove('active');
+            document.getElementById('step-2').classList.add('active');
+            
+            capturedImage = null;
+            captureTime = null;
+            initCamera();
         }
 
-        function handleDragOver(e) {
-            e.preventDefault();
-            e.currentTarget.classList.add('border-so');
-        }
-
-        function handleDrop(e) {
-            e.preventDefault();
-            e.currentTarget.classList.remove('border-so');
-            const file = e.dataTransfer.files[0];
-            if (file && file.type.startsWith('image/')) {
-                document.getElementById('image-input').files = e.dataTransfer.files;
-                handleImageUpload({ target: { files: [file] } });
-            }
-        }
-
-        function clearImage() {
-            uploadedImage = null;
-            document.getElementById('image-input').value = '';
-            document.getElementById('preview-container').classList.add('hidden');
-            document.getElementById('upload-placeholder').classList.remove('hidden');
-            document.getElementById('process-btn').disabled = true;
-        }
-
-        // Cloud Run API URL
+        // ==================== Process ====================
         const API_BASE_URL = 'https://monk-ai-backend-251409703490.asia-northeast3.run.app';
 
-        // Process
         async function processPhoto() {
-            if (!uploadedImage || !selectedProduct) return;
+            if (!capturedImage || !selectedProduct) return;
 
             const product = products[selectedProduct];
             const cost = product.eventPrice;
 
-            // 크레딧 체크
             if (userCredits < cost) {
                 alert(`크레딧이 부족합니다. 필요: ${cost}cr, 보유: ${userCredits}cr`);
                 return;
@@ -1062,19 +960,17 @@
             status.classList.add('text-so');
 
             try {
-                // Cloud Run API 호출
                 const response = await fetch(`${API_BASE_URL}/api/photo/generate`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         productType: selectedProduct,
-                        inputImage: uploadedImage,
+                        inputImage: capturedImage,
                         prompt: buildPrompt(),
                         aspectRatio: '3:4',
                         numberOfImages: product.outputs,
-                        options: getOptions()
+                        options: getOptions(),
+                        captureTime: captureTime.toISOString() // 실시간 촬영 검증용
                     })
                 });
 
@@ -1084,83 +980,64 @@
                     throw new Error(data.error || '이미지 생성에 실패했습니다.');
                 }
 
-                // 생성된 이미지 저장
                 generatedImages = data.images || [];
-
-                // 크레딧 차감
                 userCredits -= cost;
                 saveCredits();
-
-                // 결과 표시
                 showResults(data.images);
 
             } catch (error) {
                 console.error('API Error:', error);
-                status.textContent = '❌ 오류가 발생했습니다: ' + error.message;
+                status.textContent = '❌ 오류: ' + error.message;
                 status.classList.add('text-red-400');
             } finally {
                 btn.disabled = false;
-                document.getElementById('btn-text').textContent = '사진 생성하기';
+                document.getElementById('btn-text').textContent = 'AI 사진 생성하기';
             }
         }
 
-        // 상품별 프롬프트 생성
         function buildPrompt() {
             const prompts = {
                 resume: 'Professional Korean ID photo, formal business attire, clean white background, studio lighting',
                 color: 'Korean ID photo with colored background, professional portrait, studio quality',
-                profile: 'Professional profile photo, modern style, clean background, natural lighting, social media ready',
-                id: 'Official ID photo, passport style, white background, neutral expression, government standard',
-                memorial: 'Traditional Korean portrait, elegant hanbok or formal attire, warm respectful lighting',
-                restore: 'Restore and enhance this old photo, improve quality, fix damages, colorize if needed'
+                profile: 'Professional profile photo, modern style, clean background, natural lighting',
+                id: 'Official ID photo, passport style, white background, neutral expression, government standard'
             };
             return prompts[selectedProduct] || prompts.resume;
         }
 
-        // 옵션 수집
         function getOptions() {
             const options = {};
-            // 각 상품별 옵션 수집 로직
             if (selectedProduct === 'resume') {
-                options.suitStyle = document.querySelector('#options-resume select:first-of-type')?.value;
-                options.casualStyle = document.querySelector('#options-resume select:last-of-type')?.value;
+                options.suitStyle = document.getElementById('suit-style')?.value;
+                options.casualStyle = document.getElementById('casual-style')?.value;
             }
             return options;
         }
 
-        let generatedImages = [];
-
+        // ==================== Results ====================
         function showResults(images) {
-            document.getElementById('section-upload').classList.add('hidden');
+            document.getElementById('section-options').classList.add('hidden');
             document.getElementById('section-results').classList.remove('hidden');
-
-            document.getElementById('step-2').classList.remove('active');
-            document.getElementById('step-3').classList.add('active');
 
             const product = products[selectedProduct];
             const resultContainer = document.getElementById('result-images');
-
-            let html = '';
             const labels = product.labels;
 
-            // 2열 그리드
-            resultContainer.className = 'grid grid-cols-2 gap-4 mb-6';
-
-            // 생성된 이미지 표시
+            let html = '';
             const displayImages = images && images.length > 0 ? images : [];
             
             for (let i = 0; i < displayImages.length; i++) {
                 const img = displayImages[i];
                 const imgSrc = img.imageBytes 
                     ? `data:image/png;base64,${img.imageBytes}` 
-                    : (img.url || uploadedImage);
+                    : (img.url || capturedImage);
                 
                 html += `
                     <div class="relative group">
                         <img src="${imgSrc}" alt="Result ${i+1}" class="w-full rounded-xl">
                         <div class="absolute bottom-2 left-2 right-2 flex justify-between items-center">
-                            <span class="text-[10px] px-2 py-1 bg-black/60 rounded">${labels[i] || '결과 ' + (i+1)}</span>
-                            <button onclick="downloadSingle(${i})" class="opacity-0 group-hover:opacity-100 px-2 py-1 bg-so rounded text-[10px] transition-opacity">
+                            <span class="text-[9px] px-1.5 py-0.5 bg-black/60 rounded">${labels[i] || '결과 ' + (i+1)}</span>
+                            <button onclick="downloadSingle(${i})" class="opacity-0 group-hover:opacity-100 px-1.5 py-0.5 bg-so rounded text-[9px] transition-opacity">
                                 <i class="fas fa-download"></i>
                             </button>
                         </div>
@@ -1168,12 +1045,11 @@
                 `;
             }
 
-            // 이미지가 없으면 안내 메시지
             if (displayImages.length === 0) {
                 html = `
-                    <div class="col-span-2 text-center py-12 text-gray-400">
-                        <i class="fas fa-image text-4xl mb-4"></i>
-                        <p>생성된 이미지가 없습니다.</p>
+                    <div class="col-span-2 text-center py-8 text-gray-400">
+                        <i class="fas fa-image text-3xl mb-3"></i>
+                        <p class="text-sm">생성된 이미지가 없습니다.</p>
                     </div>
                 `;
             }
@@ -1189,7 +1065,10 @@
             document.getElementById('step-1').classList.add('active');
 
             selectedProduct = null;
-            clearImage();
+            capturedImage = null;
+            captureTime = null;
+            generatedImages = [];
+            
             document.querySelectorAll('.product-card').forEach(card => {
                 card.classList.remove('selected');
             });
@@ -1206,8 +1085,6 @@
                 link.href = imgData;
                 link.download = `monkos_${selectedProduct}_${index + 1}.png`;
                 link.click();
-            } else {
-                alert('다운로드할 이미지가 없습니다.');
             }
         }
 
@@ -1216,30 +1093,16 @@
                 alert('다운로드할 이미지가 없습니다.');
                 return;
             }
-            
-            // 각 이미지 순차 다운로드
             generatedImages.forEach((img, index) => {
                 setTimeout(() => downloadSingle(index), index * 500);
             });
         }
 
-        // Credit Purchase (데모)
-        function buyCredits(amount) {
-            const prices = { 100: 10000, 300: 27000, 500: 40000, 1000: 70000 };
-            const bonuses = { 100: 0, 300: 30, 500: 100, 1000: 300 };
-            
-            const total = amount + bonuses[amount];
-            const price = prices[amount];
-            
-            if (confirm(`${total.toLocaleString()} 크레딧을 ₩${price.toLocaleString()}에 구매하시겠습니까?`)) {
-                userCredits += total;
-                saveCredits();
-                alert(`✨ ${total.toLocaleString()} 크레딧이 충전되었습니다!`);
-            }
-        }
-
-        // Initialize
-        loadCredits();
+        // ==================== Initialize ====================
+        document.addEventListener('DOMContentLoaded', () => {
+            checkDevice();
+            loadCredits();
+        });
     </script>
 
 </body>
