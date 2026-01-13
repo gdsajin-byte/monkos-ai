@@ -132,8 +132,54 @@ TAGGING_PROMPT = """
 ```
 """
 
-def tag_image_with_gemini(image_path: str) -> dict:
-    """Gemini Vision으로 이미지 태깅"""
+BG_TAGGING_PROMPT = """
+이 배경 이미지를 AI 모델 합성을 위한 데이터 관점에서 분석하세요. JSON 형식으로 출력하세요.
+
+## 분석 항목
+
+### 1. 공간 카테고리 (category)
+- street, interior, cafe, studio, nature, industrial
+
+### 2. 조명 환경 (lighting)
+- direction: left, right, top, front, back, diffused (빛의 방향)
+- color_temp: warm, cool, neutral (색온도)
+- intensity: hard, soft, ambient (조명 강도)
+- source: sun, window, artificial, neon (주요 광원)
+
+### 3. 카메라/원근 (perspective)
+- angle: eye_level, low_angle, high_angle, bird_eye (카메라 높이)
+- horizon_line: top, middle, bottom (수평선 위치)
+- focal_length: wide, standard, telephoto (예상 화각)
+
+### 4. 깊이감 (depth)
+- foreground_elements: true/false (전경 물체 유무)
+- background_blur: low, medium, high (아웃포커싱 정도)
+- depth_of_field: shallow, deep
+
+### 5. 합성 적합성 (composition_ready)
+- floor_space: true/false (모델이 서 있을 바닥 공간 확보 여부)
+- vanishing_point: [x, y] (소실점 대략적 위치, 0-100 기준)
+- obstacles: [방해물 목록]
+
+### 6. 스타일 무드 (mood)
+- aesthetic: minimal, luxury, vintage, cyberpunk, cozy, professional
+- color_palette: [주요 색상 3가지]
+
+## 출력 형식
+```json
+{
+  "category": "...",
+  "lighting": { ... },
+  "perspective": { ... },
+  "depth": { ... },
+  "composition_ready": { ... },
+  "mood": { ... }
+}
+```
+"""
+
+def tag_image_with_gemini(image_path: str, is_background: bool = False) -> dict:
+    """Gemini Vision으로 이미지 태깅 (인물/배경 구분)"""
     try:
         from google import genai
         from google.genai import types
@@ -142,13 +188,15 @@ def tag_image_with_gemini(image_path: str) -> dict:
         
         base64_data, mime_type = load_image_base64(image_path)
         
+        target_prompt = BG_TAGGING_PROMPT if is_background else TAGGING_PROMPT
+        
         response = client.models.generate_content(
             model='gemini-2.0-flash-exp',
             contents=[
                 types.Content(
                     parts=[
                         types.Part(inline_data=types.Blob(data=base64.b64decode(base64_data), mime_type=mime_type)),
-                        types.Part(text=TAGGING_PROMPT)
+                        types.Part(text=target_prompt)
                     ]
                 )
             ]
@@ -356,8 +404,9 @@ def main():
     if command == 'tag' and len(sys.argv) >= 3:
         # 이미지 태깅
         image_path = sys.argv[2]
-        print(f"이미지 태깅: {image_path}")
-        tags = tag_image_with_gemini(image_path)
+        is_bg = '--bg' in sys.argv
+        print(f"이미지 태깅: {image_path} {'(배경 모드)' if is_bg else ''}")
+        tags = tag_image_with_gemini(image_path, is_background=is_bg)
         if tags:
             print(json.dumps(tags, ensure_ascii=False, indent=2))
     

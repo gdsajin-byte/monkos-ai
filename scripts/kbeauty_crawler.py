@@ -56,6 +56,22 @@ KBEAUTY_KEYWORDS = {
     'lingerie': [
         'asian lingerie model', 'korean underwear fashion',
         'minimal lingerie', 'silk lingerie aesthetic'
+    ],
+    'background_street': [
+        'seoul street photography', 'urban city background', 'gangnam street night',
+        'modern city alleyway', 'minimalist urban architecture'
+    ],
+    'background_interior': [
+        'luxury penthouse interior', 'modern minimalist living room',
+        'aesthetic room background', 'high-end furniture showroom'
+    ],
+    'background_cafe': [
+        'minimalist cafe interior', 'aesthetic coffee shop decor',
+        'industrial cafe background', 'modern bakery interior'
+    ],
+    'background_studio': [
+        'professional photo studio background', 'cyclorama wall studio',
+        'vintage industrial studio interior', 'minimalist photo studio'
     ]
 }
 
@@ -82,6 +98,30 @@ KBEAUTY_KEYWORDS_KR = {
     'lingerie': [
         '란제리 화보', '이너웨어 코디', '브라렛 스타일',
         '슬립원피스', '실크 란제리'
+    ],
+    'bg_street': [
+        '서울 거리 풍경', '청담동 거리', '성수동 거리',
+        '홍대 거리', '한남동 거리', '강남 빌딩 배경',
+        '콘크리트 벽', '도시 야경', '네온사인 거리'
+    ],
+    'bg_interior': [
+        '미니멀 인테리어', '북유럽 인테리어', '화이트톤 인테리어',
+        '모던 거실', '로프트 인테리어', '자연광 인테리어',
+        '럭셔리 펜트하우스', '침실 인테리어', '대리석 인테리어'
+    ],
+    'bg_cafe': [
+        '감성 카페 인테리어', '커피숍 배경', '카페 조명',
+        '빈티지 카페', '모던 카페', '따뜻한 카페',
+        '브런치 카페', '루프탑 카페'
+    ],
+    'bg_studio': [
+        '스튜디오 배경', '화이트 배경', '그레이 배경',
+        '무한 배경', '호라이즌 배경', '단색 배경',
+        '프로페셔널 스튜디오', '사이클로라마'
+    ],
+    'bg_nature': [
+        '자연광 배경', '야외 정원', '한강 공원',
+        '숲속 배경', '꽃밭 배경', '하늘 배경'
     ]
 }
 
