@@ -1037,6 +1037,9 @@
             document.getElementById('process-btn').disabled = true;
         }
 
+        // Cloud Run API URL
+        const API_BASE_URL = 'https://monk-ai-backend-251409703490.asia-northeast3.run.app';
+
         // Process
         async function processPhoto() {
             if (!uploadedImage || !selectedProduct) return;
@@ -1059,23 +1062,40 @@
             status.classList.add('text-so');
 
             try {
-                // TODO: 실제 Cloud Run API 호출
-                // const response = await fetch('https://your-cloud-run-api/process', {
-                //     method: 'POST',
-                //     body: JSON.stringify({ image: uploadedImage, product: selectedProduct, options: getOptions() })
-                // });
+                // Cloud Run API 호출
+                const response = await fetch(`${API_BASE_URL}/api/photo/generate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        productType: selectedProduct,
+                        inputImage: uploadedImage,
+                        prompt: buildPrompt(),
+                        aspectRatio: '3:4',
+                        numberOfImages: product.outputs,
+                        options: getOptions()
+                    })
+                });
 
-                // 시뮬레이션 (2~4초)
-                await new Promise(r => setTimeout(r, 2000 + Math.random() * 2000));
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || '이미지 생성에 실패했습니다.');
+                }
+
+                // 생성된 이미지 저장
+                generatedImages = data.images || [];
 
                 // 크레딧 차감
                 userCredits -= cost;
                 saveCredits();
 
                 // 결과 표시
-                showResults();
+                showResults(data.images);
 
             } catch (error) {
+                console.error('API Error:', error);
                 status.textContent = '❌ 오류가 발생했습니다: ' + error.message;
                 status.classList.add('text-red-400');
             } finally {
@@ -1084,7 +1104,33 @@
             }
         }
 
-        function showResults() {
+        // 상품별 프롬프트 생성
+        function buildPrompt() {
+            const prompts = {
+                resume: 'Professional Korean ID photo, formal business attire, clean white background, studio lighting',
+                color: 'Korean ID photo with colored background, professional portrait, studio quality',
+                profile: 'Professional profile photo, modern style, clean background, natural lighting, social media ready',
+                id: 'Official ID photo, passport style, white background, neutral expression, government standard',
+                memorial: 'Traditional Korean portrait, elegant hanbok or formal attire, warm respectful lighting',
+                restore: 'Restore and enhance this old photo, improve quality, fix damages, colorize if needed'
+            };
+            return prompts[selectedProduct] || prompts.resume;
+        }
+
+        // 옵션 수집
+        function getOptions() {
+            const options = {};
+            // 각 상품별 옵션 수집 로직
+            if (selectedProduct === 'resume') {
+                options.suitStyle = document.querySelector('#options-resume select:first-of-type')?.value;
+                options.casualStyle = document.querySelector('#options-resume select:last-of-type')?.value;
+            }
+            return options;
+        }
+
+        let generatedImages = [];
+
+        function showResults(images) {
             document.getElementById('section-upload').classList.add('hidden');
             document.getElementById('section-results').classList.remove('hidden');
 
@@ -1094,23 +1140,26 @@
             const product = products[selectedProduct];
             const resultContainer = document.getElementById('result-images');
 
-            // 데모: 업로드된 이미지를 결과로 표시 (실제로는 생성된 이미지)
             let html = '';
             const labels = product.labels;
 
-            // 풀패키지는 3열, 나머지는 2열
-            if (selectedProduct === 'full') {
-                resultContainer.className = 'grid grid-cols-3 md:grid-cols-4 gap-3 mb-6';
-            } else {
-                resultContainer.className = 'grid grid-cols-2 gap-4 mb-6';
-            }
+            // 2열 그리드
+            resultContainer.className = 'grid grid-cols-2 gap-4 mb-6';
 
-            for (let i = 0; i < product.outputs; i++) {
+            // 생성된 이미지 표시
+            const displayImages = images && images.length > 0 ? images : [];
+            
+            for (let i = 0; i < displayImages.length; i++) {
+                const img = displayImages[i];
+                const imgSrc = img.imageBytes 
+                    ? `data:image/png;base64,${img.imageBytes}` 
+                    : (img.url || uploadedImage);
+                
                 html += `
                     <div class="relative group">
-                        <img src="${uploadedImage}" alt="Result ${i+1}" class="w-full rounded-xl">
+                        <img src="${imgSrc}" alt="Result ${i+1}" class="w-full rounded-xl">
                         <div class="absolute bottom-2 left-2 right-2 flex justify-between items-center">
-                            <span class="text-[10px] px-2 py-1 bg-black/60 rounded">${labels[i]}</span>
+                            <span class="text-[10px] px-2 py-1 bg-black/60 rounded">${labels[i] || '결과 ' + (i+1)}</span>
                             <button onclick="downloadSingle(${i})" class="opacity-0 group-hover:opacity-100 px-2 py-1 bg-so rounded text-[10px] transition-opacity">
                                 <i class="fas fa-download"></i>
                             </button>
@@ -1118,6 +1167,17 @@
                     </div>
                 `;
             }
+
+            // 이미지가 없으면 안내 메시지
+            if (displayImages.length === 0) {
+                html = `
+                    <div class="col-span-2 text-center py-12 text-gray-400">
+                        <i class="fas fa-image text-4xl mb-4"></i>
+                        <p>생성된 이미지가 없습니다.</p>
+                    </div>
+                `;
+            }
+
             resultContainer.innerHTML = html;
         }
 
@@ -1136,13 +1196,31 @@
         }
 
         function downloadSingle(index) {
-            // TODO: 실제 다운로드 구현
-            alert('다운로드 기능은 곧 제공됩니다.');
+            if (generatedImages[index]) {
+                const img = generatedImages[index];
+                const imgData = img.imageBytes 
+                    ? `data:image/png;base64,${img.imageBytes}` 
+                    : img.url;
+                
+                const link = document.createElement('a');
+                link.href = imgData;
+                link.download = `monkos_${selectedProduct}_${index + 1}.png`;
+                link.click();
+            } else {
+                alert('다운로드할 이미지가 없습니다.');
+            }
         }
 
         function downloadAll() {
-            // TODO: 전체 다운로드 (ZIP)
-            alert('전체 다운로드 기능은 곧 제공됩니다.');
+            if (generatedImages.length === 0) {
+                alert('다운로드할 이미지가 없습니다.');
+                return;
+            }
+            
+            // 각 이미지 순차 다운로드
+            generatedImages.forEach((img, index) => {
+                setTimeout(() => downloadSingle(index), index * 500);
+            });
         }
 
         // Credit Purchase (데모)
