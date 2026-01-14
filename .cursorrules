@@ -74,17 +74,14 @@ MONK PROJECT (D1 단일 DB)
 - 4뮤즈 체계로 내부 커뮤니케이션 통일
 - 크레딧은 `shared_credits`에서 관리, 모든 뮤즈에서 공유
 
-## 기술 스택
+## 기술 스택 및 코딩 규칙
 
 ### Frontend
 - **CSS Framework**: Tailwind CSS (CDN)
 - **아이콘**: Font Awesome 6.0
 - **언어**: 순수 HTML, CSS, JavaScript (프레임워크 미사용)
-- **디자인 스타일**: 
-  - 다크 모드 기본 (bg-gray-950, bg-gray-900)
-  - 그라데이션 (blue → purple → pink)
-  - Glow 효과 및 애니메이션
-  - 미니멀하고 모던한 UI
+- **디자인 스타일**: 다크 모드, 그라데이션, Glow 효과, 미니멀 UI
+- **📖 상세**: `docs/infrastructure/DESIGN_SYSTEM.md` 참조
 
 ### Backend & API
 - **현재**: Cloudflare Workers 프록시
@@ -92,99 +89,21 @@ MONK PROJECT (D1 단일 DB)
 - **AI 모델**: Google Vertex AI Imagen 4.0
 - **인증**: ADC (Application Default Credentials)
 
+### 코딩 규칙
+- 순수 JavaScript, async/await 패턴
+- 네이밍: HTML/CSS (kebab-case), JS (camelCase), 파일 (snake_case)
+- 항상 한국어 우선 (UI, 주석, 에러 메시지)
+- **📖 상세**: `docs/infrastructure/CODING_STANDARDS.md` 참조
+
 ### 배포 워크플로우
 1. 루트 폴더 (`./`)에서 개발 작업
 2. 완료된 파일을 `./[내_버킷_경로]/`로 복사
 3. Cloudflare 서버로 배포
 
-## 디렉토리 구조 규칙
+### 디렉토리 구조 규칙
 - 각 서브 디렉토리마다 디렉토리명과 동일한 HTML 생성
 - 각 디렉토리마다 `images/` 폴더 필수
-- 일관된 네비게이션: `← Back to AI LAB` 등
-
-## 디자인 시스템
-
-### 컬러 팔레트
-```javascript
-colors: {
-  ai: '#60A5FA',      // 메인 AI 블루
-  local: '#10B981',   // 로컬/무료 그린
-  monk: '#FBBF24',    // MONK 브랜드 골드
-  gray: {
-    950: '#05070A',   // 배경
-    900: '#0B0F1A'    // 카드
-  }
-}
-```
-
-### 타이포그래피
-- **제목**: font-black, tracking-tight
-- **브랜드**: `MONK<span class="text-ai">.kr</span>`
-- **그라데이션 텍스트**: `.gradient-text` 클래스 사용
-
-### UI 패턴
-- **헤더**: sticky top-0, backdrop-blur
-- **카드**: rounded-3xl, border, lumina-glow
-- **버튼**: gradient background, hover effects
-- **입력**: bg-gray-950, border-gray-700, focus:border-ai
-
-## 코딩 규칙
-
-### HTML 구조
-```html
-<!-- Header -->
-<header class="sticky top-0 z-40 bg-gray-950/90 backdrop-blur-md">
-  <a href="../../index.html">MONK<span class="text-ai">.kr</span></a>
-</header>
-
-<!-- Main Content -->
-<main class="flex-grow flex flex-col items-center">
-  <!-- 컨텐츠 -->
-</main>
-
-<!-- Footer -->
-<footer class="border-t border-gray-800 py-8">
-  © 2026 MONK STUDIO
-</footer>
-```
-
-### JavaScript 규칙
-- 순수 JavaScript 사용 (라이브러리 미사용)
-- async/await 패턴 사용
-- 에러 핸들링 필수
-- UI 상태 업데이트 (loading, success, error)
-
-### 네이밍 컨벤션
-- HTML/CSS: kebab-case (`prompt-input`, `generate-btn`)
-- JavaScript: camelCase (`generateImage`, `downloadImage`)
-- 파일명: snake_case (한글 가능: `so_so.html`)
-
-## API 통신 패턴
-```javascript
-const response = await fetch(API_URL, {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ prompt, aspectRatio, style })
-});
-```
-
-## 다국어 지원
-```html
-<select id="language">
-  <option value="ko">🇰🇷 한국어</option>
-  <option value="en">🇺🇸 English</option>
-  <option value="ja">🇯🇵 日本語</option>
-  <option value="zh">🇨🇳 中文</option>
-</select>
-```
-
-## 작업 원칙
-1. **일관성**: 기존 디자인 시스템 준수
-2. **반응형**: mobile-first, Tailwind breakpoints 활용
-3. **성능**: CDN 사용, 최적화된 이미지
-4. **UX**: 명확한 피드백, 로딩 상태 표시
-5. **접근성**: 의미있는 HTML, alt 텍스트 필수
-6. **한국어 우선**: UI 텍스트, 주석, 에러 메시지 모두 한국어
+- 일관된 네비게이션 유지
 
 ## AI 페르소나 시스템 (개발 협업 구조)
 
@@ -313,63 +232,102 @@ docs/
     └── 전략 문서
 ```
 
-### 📝 Daily Session 저장 규칙 (필수)
+### 📝 Daily Session 저장 규칙 (필수 - 2026-01-14 확정)
 **세션당 단일 파일에 매턴 append 방식으로 누적 저장한다:**
 
-1. **저장 위치**: `docs/daily_session/YYYY-MM/` (월별 폴더)
-2. **파일명**: `YYYYMMDD_session.md` (예: `2026-01/20260113_session.md`)
-3. **저장 방식**: 
-   - **매턴**: 로컬 파일에 append (git 미포함)
-   - **세션 종료**: git commit & push
-4. **저장 내용**: **한국시간 타임스탬프 + 위치 + Q&A 형식**
+**1. 저장 위치 및 파일명**
+- 위치: `docs/daily_session/YYYY-MM/` (월별 폴더)
+- 파일명: `YYYYMMDD_session.md` (예: `2026-01/20260114_session.md`)
 
-**⚠️ 매 턴 필수 기록 (절대 준수!)**:
-- **타임스탬프**: 한국시간 기준 `[HH:MM]` (예: `[23:45]`)
-- **위치**: 사무실 (iMac) / 집 (Mac Mini) 명시
-- **날짜 자동 판단**: 타임스탬프로 정확한 날짜 파일 선택
-  - 00:00~03:59 → 전날 날짜 파일 (새벽은 전날 연장)
-  - 04:00~23:59 → 해당 날짜 파일
-
+**2. 헤더 필수 정보**
 ```markdown
 # Daily Session Log - YYYY-MM-DD
-**세션**: [위치] - [시간대]
-**작업**: [주요 작업 요약]
 
+**세션**: [위치] ([장비])
+**시작**: YYYY-MM-DD HH:MM
+**종료**: (진행 중) 또는 HH:MM
+**작업**: [주요 작업 한줄 요약]
+```
+
+**위치 표기**:
+- 사무실: `사무실 (iMac)`
+- 집: `집 (Mac Mini)`
+- 원격: `원격 (MacBook)` 등
+
+**3. 타임스탬프 섹션 형식**
+```markdown
+## [HH:MM] 작업 주제
+
+### Q번호: 작가님 질문/지시
+**A번호**: 쌍아 응답
+- 실행 내용
+- 결과
+
+**작가님**: "중요 발언 직접 인용"
+```
+
+**4. 업데이트 방식 (Append Only)**
+- 매 턴마다 로컬 파일에 append (자동 백업)
+- 중복 내용은 맥락 파악하여 통합
+- Q&A 번호는 연속 증가 (Q1, Q2, Q3...)
+- 타임스탬프는 대략 10-30분 단위로 그룹핑
+
+**5. 세션 종료 시 추가 항목**
+```markdown
 ---
 
-## [HH:MM:SS] Q1: [사용자 질문]
-**A1**: [쌍아 응답 요약]
-- 실행: [명령어/코드]
-- 결과: [결과]
-
-## [HH:MM:SS] Q2: [사용자 질문]
-**A2**: [쌍아 응답 요약]
-
-(계속 append...)
-
----
 ## 🎯 세션 핵심 인사이트
-> "작가님 주요 발언/결정"
+> "작가님 주요 발언"
 
 ## ✅ 완료 사항
 - [x] 작업 1
+- [x] 작업 2
 
-## 📌 다음 작업
+## 📌 다음 세션 TODO
 - [ ] 작업 1
+- [ ] 작업 2
+
+---
+
+*세션 종료: YYYY-MM-DD HH:MM*
+*총 작업 시간: X시간*
+*위치: [사무실/집]*
 ```
 
-### 장점
-- 1일 1파일 (관리 용이)
-- 타임스탬프로 시계열 파악
-- 노트북LM 로딩 최적화
-- Git 히스토리 깔끔 (세션당 1커밋)
-- 세션 깨져도 로컬 파일 존재하면 복구 가능
+**6. Git 동기화**
+- 세션 종료 시: `git add . && git commit && git push`
+- 커밋 메시지: `"YYYY-MM-DD 세션 마감: [핵심 성과 한줄 요약]"`
+
+**7. 장점**
+- ✅ 1일 1파일 (관리 용이)
+- ✅ 타임스탬프로 시계열 파악
+- ✅ 위치/장비 정보로 컨텍스트 명확
+- ✅ Append 방식으로 누락 방지
+- ✅ NotebookLM 로딩 최적화
+- ✅ Git 히스토리 깔끔 (세션당 1커밋)
 
 ### 동기화 원칙 (집 ↔ 사무실)
 1. **작업 시작 전**: `README.md` 읽고 → `git pull` 실행
 2. **작업 종료 시**: `README.md`에 인수인계 작성 → `git add . && git commit && git push`
-3. **세션 로그**: 작업 시작/종료 시 `docs/saga/session_logs/` 업데이트
+3. **세션 로그**: 작업 시작/종료 시 `docs/daily_session/` 업데이트
 4. **전략 문서**: 중요 결정 시 `docs/infrastructure/`에 기록
+
+### 💾 멀티 백업 전략 (3중 안전장치)
+1. **Cursor Archive** (1단계, 로컬):
+   - 불안할 때 사이드바에서 Archive 클릭
+   - 즉시 백업 (용량 미미)
+   - 같은 컴퓨터에서만 참조 가능
+   
+2. **세션 로그** (2단계, Git):
+   - `docs/daily_session/YYYYMMDD_session.md`
+   - 타임스탬프 + 맥락 + 실행 결과
+   - 집↔사무실 동기화, 완벽한 복구 가능
+   - 용량: ~15KB/일, 1년에 5MB
+   
+3. **NotebookLM** (3단계, 지식 자산):
+   - 세션 로그 학습
+   - AI가 작가님의 의사결정 패턴 학습
+   - 전체 프로젝트 서사 이해
 
 ### 📋 README.md 인수인계 규칙 (필수)
 **세션 마감 시 README.md 업데이트:**
@@ -393,5 +351,14 @@ docs/
 ### 금지 사항
 - ❌ 루트에 임시 .md 파일 방치 금지
 - ❌ `_saga/`, `_infrastructure/` 등 언더스코어 폴더 사용 금지
-- ❌ 문서 폴더 이중화 금지 (docs/로 통합)
+- ❌ 문서 폴더 이중화 금지 (docs/로 통일)
+
+## 💎 세션 로그의 전략적 가치
+
+세션 로그는 단순 백업이 아닌 **지식 자산화**입니다.
+- 일정 기간 후 → 사업계획서, R&D 계획서 자동 생성
+- 5일 (76KB) → 기술 백서, R&D 초안
+- 1년 (~5MB) → 회사 전체 지식 자산, 디지털 트윈
+
+**📖 상세**: `docs/infrastructure/SESSION_LOG_VALUE.md` 참조
 
