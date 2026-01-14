@@ -74,17 +74,14 @@ MONK PROJECT (D1 단일 DB)
 - 4뮤즈 체계로 내부 커뮤니케이션 통일
 - 크레딧은 `shared_credits`에서 관리, 모든 뮤즈에서 공유
 
-## 기술 스택
+## 기술 스택 및 코딩 규칙
 
 ### Frontend
 - **CSS Framework**: Tailwind CSS (CDN)
 - **아이콘**: Font Awesome 6.0
 - **언어**: 순수 HTML, CSS, JavaScript (프레임워크 미사용)
-- **디자인 스타일**: 
-  - 다크 모드 기본 (bg-gray-950, bg-gray-900)
-  - 그라데이션 (blue → purple → pink)
-  - Glow 효과 및 애니메이션
-  - 미니멀하고 모던한 UI
+- **디자인 스타일**: 다크 모드, 그라데이션, Glow 효과, 미니멀 UI
+- **📖 상세**: `docs/infrastructure/DESIGN_SYSTEM.md` 참조
 
 ### Backend & API
 - **현재**: Cloudflare Workers 프록시
@@ -92,99 +89,21 @@ MONK PROJECT (D1 단일 DB)
 - **AI 모델**: Google Vertex AI Imagen 4.0
 - **인증**: ADC (Application Default Credentials)
 
+### 코딩 규칙
+- 순수 JavaScript, async/await 패턴
+- 네이밍: HTML/CSS (kebab-case), JS (camelCase), 파일 (snake_case)
+- 항상 한국어 우선 (UI, 주석, 에러 메시지)
+- **📖 상세**: `docs/infrastructure/CODING_STANDARDS.md` 참조
+
 ### 배포 워크플로우
 1. 루트 폴더 (`./`)에서 개발 작업
 2. 완료된 파일을 `./[내_버킷_경로]/`로 복사
 3. Cloudflare 서버로 배포
 
-## 디렉토리 구조 규칙
+### 디렉토리 구조 규칙
 - 각 서브 디렉토리마다 디렉토리명과 동일한 HTML 생성
 - 각 디렉토리마다 `images/` 폴더 필수
-- 일관된 네비게이션: `← Back to AI LAB` 등
-
-## 디자인 시스템
-
-### 컬러 팔레트
-```javascript
-colors: {
-  ai: '#60A5FA',      // 메인 AI 블루
-  local: '#10B981',   // 로컬/무료 그린
-  monk: '#FBBF24',    // MONK 브랜드 골드
-  gray: {
-    950: '#05070A',   // 배경
-    900: '#0B0F1A'    // 카드
-  }
-}
-```
-
-### 타이포그래피
-- **제목**: font-black, tracking-tight
-- **브랜드**: `MONK<span class="text-ai">.kr</span>`
-- **그라데이션 텍스트**: `.gradient-text` 클래스 사용
-
-### UI 패턴
-- **헤더**: sticky top-0, backdrop-blur
-- **카드**: rounded-3xl, border, lumina-glow
-- **버튼**: gradient background, hover effects
-- **입력**: bg-gray-950, border-gray-700, focus:border-ai
-
-## 코딩 규칙
-
-### HTML 구조
-```html
-<!-- Header -->
-<header class="sticky top-0 z-40 bg-gray-950/90 backdrop-blur-md">
-  <a href="../../index.html">MONK<span class="text-ai">.kr</span></a>
-</header>
-
-<!-- Main Content -->
-<main class="flex-grow flex flex-col items-center">
-  <!-- 컨텐츠 -->
-</main>
-
-<!-- Footer -->
-<footer class="border-t border-gray-800 py-8">
-  © 2026 MONK STUDIO
-</footer>
-```
-
-### JavaScript 규칙
-- 순수 JavaScript 사용 (라이브러리 미사용)
-- async/await 패턴 사용
-- 에러 핸들링 필수
-- UI 상태 업데이트 (loading, success, error)
-
-### 네이밍 컨벤션
-- HTML/CSS: kebab-case (`prompt-input`, `generate-btn`)
-- JavaScript: camelCase (`generateImage`, `downloadImage`)
-- 파일명: snake_case (한글 가능: `so_so.html`)
-
-## API 통신 패턴
-```javascript
-const response = await fetch(API_URL, {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ prompt, aspectRatio, style })
-});
-```
-
-## 다국어 지원
-```html
-<select id="language">
-  <option value="ko">🇰🇷 한국어</option>
-  <option value="en">🇺🇸 English</option>
-  <option value="ja">🇯🇵 日本語</option>
-  <option value="zh">🇨🇳 中文</option>
-</select>
-```
-
-## 작업 원칙
-1. **일관성**: 기존 디자인 시스템 준수
-2. **반응형**: mobile-first, Tailwind breakpoints 활용
-3. **성능**: CDN 사용, 최적화된 이미지
-4. **UX**: 명확한 피드백, 로딩 상태 표시
-5. **접근성**: 의미있는 HTML, alt 텍스트 필수
-6. **한국어 우선**: UI 텍스트, 주석, 에러 메시지 모두 한국어
+- 일관된 네비게이션 유지
 
 ## AI 페르소나 시스템 (개발 협업 구조)
 
@@ -432,5 +351,14 @@ docs/
 ### 금지 사항
 - ❌ 루트에 임시 .md 파일 방치 금지
 - ❌ `_saga/`, `_infrastructure/` 등 언더스코어 폴더 사용 금지
-- ❌ 문서 폴더 이중화 금지 (docs/로 통합)
+- ❌ 문서 폴더 이중화 금지 (docs/로 통일)
+
+## 💎 세션 로그의 전략적 가치
+
+세션 로그는 단순 백업이 아닌 **지식 자산화**입니다.
+- 일정 기간 후 → 사업계획서, R&D 계획서 자동 생성
+- 5일 (76KB) → 기술 백서, R&D 초안
+- 1년 (~5MB) → 회사 전체 지식 자산, 디지털 트윈
+
+**📖 상세**: `docs/infrastructure/SESSION_LOG_VALUE.md` 참조
 
