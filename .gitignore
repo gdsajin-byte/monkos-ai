@@ -50,6 +50,20 @@ wrangler.toml.backup
 
 # Soul-Sync Architecture
 _saga/raw_chunks/
+
+# K뷰티 크롤링 데이터 (GCS로 이관)
+_saga/kbeauty_sources/
+_saga/BWYA_Academy/강의실(B.W.Y.A)/*.mp3
+_saga/BWYA_Academy/강의실(B.W.Y.A)/**/*.docx
+
+# 크롤링 이미지 (용량 큼)
+*.jpg
+*.jpeg
+*.png
+!MONK_kr/images/*.jpg
+!apps/**/compare.html
+!apps/**/original_*.jpg
+!apps/**/vertex_*.png
 _archive/
 
 # GCS 동기화 (로컬에서만 관리)
