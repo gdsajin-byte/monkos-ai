@@ -47,31 +47,52 @@ AI LAB은 4개의 독립적인 비즈니스 채널로 구성:
   - 백엔드 OS 역할
   - `/ai_lab/yong_a/` 디렉토리
 
-## 데이터 아키텍처 (5버킷 구조)
+## 데이터 아키텍처 (3계층 전략 - 2026-01-15 확정)
 
-### 버킷 구성
+### 3계층 구조
 ```
-MONK PROJECT (D1 단일 DB)
-├── shared_    ← 공유 (회원, 크레딧, 방문자)
-├── ssanga_    ← 쌍아 (B2B, 챗봇, 예약)
-├── soso_      ← 소소 (이미지 생성, 룩북)
-├── mina_      ← 민아 (AI 모델, 대여)
-└── yonga_     ← 용아 (교육, 강의)
+┌─────────────────────────────────────────────────────┐
+│  Git (GitHub)    │  로컬 백업      │  GCS           │
+│  ──────────      │  ──────────    │  ────          │
+│  코드 + 세션로그  │  전체 (누락없이) │  코퍼스 + AI학습│
+│  ~100MB (가볍게)  │  ~6GB          │  ~5GB          │
+└─────────────────────────────────────────────────────┘
 ```
 
-### 네이밍 컨벤션 (필수)
+### GCS 버킷 구조 (`gs://monk-project/`)
+```
+gs://monk-project/
+├── corpus/           ← AI 학습 (Vertex AI RAG)
+│   ├── sessions/     ← 쌍아 세션 로그
+│   ├── gemini/       ← 용아 대화 (15M+)
+│   └── knowledge/    ← 지식 슬라이스
+│
+├── assets/           ← 4 MUSE 자산
+│   ├── soso/sources/ ← K뷰티 크롤링 (2.8GB)
+│   ├── soso/generated/ ← AI 생성 중간물
+│   ├── mina/models/  ← ⭐ 완성된 AI 모델
+│   ├── mina/runway/  ← 민아방 24/7
+│   ├── ssanga/       ← B2B 자산
+│   └── yonga/bwya/   ← BWYA 강의 자료
+│
+├── live/             ← 실시간 작업 (Hot)
+├── archive/          ← 장기 백업 (Cold)
+└── templates/        ← 재사용 템플릿
+```
+**📖 상세**: `docs/infrastructure/GCS_BUCKET_STRUCTURE.md` 참조
+
+### D1 테이블 네이밍 (5버킷)
 | 버킷 | 접두사 | 테이블 예시 |
 |------|--------|-------------|
-| 공유 | `shared_` | `shared_users`, `shared_credits`, `shared_visitors` |
-| 쌍아 | `ssanga_` | `ssanga_clients`, `ssanga_bookings`, `ssanga_chatbot_config` |
-| 소소 | `soso_` | `soso_orders`, `soso_results`, `soso_templates` |
-| 민아 | `mina_` | `mina_models`, `mina_rentals`, `mina_portfolios` |
-| 용아 | `yonga_` | `yonga_courses`, `yonga_students`, `yonga_progress` |
+| 공유 | `shared_` | `shared_users`, `shared_credits` |
+| 쌍아 | `ssanga_` | `ssanga_clients`, `ssanga_bookings` |
+| 소소 | `soso_` | `soso_orders`, `soso_results` |
+| 민아 | `mina_` | `mina_models`, `mina_rentals` |
+| 용아 | `yonga_` | `yonga_courses`, `yonga_students` |
 
 ### 규칙
-- **DB, 폴더, 코드 전부 동일 네이밍** 사용
+- **Git, GCS, D1 전부 동일 네이밍** (4 MUSE 체계)
 - `monk_`, `data_` 같은 범용어 사용 금지
-- 4뮤즈 체계로 내부 커뮤니케이션 통일
 - 크레딧은 `shared_credits`에서 관리, 모든 뮤즈에서 공유
 
 ## 기술 스택 및 코딩 규칙
@@ -264,6 +285,20 @@ docs/
 - 결과
 
 **작가님**: "중요 발언 직접 인용"
+```
+
+**⏰ 타임스탬프 필수 규칙 (절대 준수! - 2026-01-15 확정)**
+```
+⚠️ Y2K 교훈: 작은 시간 오류 → 미래 RAG/학습 시 인과관계 왜곡
+
+✅ 필수: 매 응답 시작 전 반드시 실행
+   date "+%H:%M"
+
+❌ 금지: 추정/기억 기반 시간 기재 절대 금지
+❌ 금지: 이전 타임스탬프에서 +α 계산 금지
+
+📌 원칙: 시스템 시간 = 유일한 진실
+📌 이유: 대화록 = 개발 히스토리 + 학습 데이터 + 법적 증거
 ```
 
 **4. 업데이트 방식 (Append Only)**
