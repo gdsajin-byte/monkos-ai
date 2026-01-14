@@ -390,8 +390,25 @@ docs/
 ### 동기화 원칙 (집 ↔ 사무실)
 1. **작업 시작 전**: `README.md` 읽고 → `git pull` 실행
 2. **작업 종료 시**: `README.md`에 인수인계 작성 → `git add . && git commit && git push`
-3. **세션 로그**: 작업 시작/종료 시 `docs/saga/session_logs/` 업데이트
+3. **세션 로그**: 작업 시작/종료 시 `docs/daily_session/` 업데이트
 4. **전략 문서**: 중요 결정 시 `docs/infrastructure/`에 기록
+
+### 💾 멀티 백업 전략 (3중 안전장치)
+1. **Cursor Archive** (1단계, 로컬):
+   - 불안할 때 사이드바에서 Archive 클릭
+   - 즉시 백업 (용량 미미)
+   - 같은 컴퓨터에서만 참조 가능
+   
+2. **세션 로그** (2단계, Git):
+   - `docs/daily_session/YYYYMMDD_session.md`
+   - 타임스탬프 + 맥락 + 실행 결과
+   - 집↔사무실 동기화, 완벽한 복구 가능
+   - 용량: ~15KB/일, 1년에 5MB
+   
+3. **NotebookLM** (3단계, 지식 자산):
+   - 세션 로그 학습
+   - AI가 작가님의 의사결정 패턴 학습
+   - 전체 프로젝트 서사 이해
 
 ### 📋 README.md 인수인계 규칙 (필수)
 **세션 마감 시 README.md 업데이트:**
