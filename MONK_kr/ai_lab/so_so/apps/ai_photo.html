@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- v2026.01.15.1552 - cache bust -->
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -19,68 +20,151 @@
         }
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- 토스페이먼츠 SDK (테스트 모드) -->
+    <script src="https://js.tosspayments.com/v1/payment"></script>
     <style>
-        * { box-sizing: border-box; }
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background: #030508;
-            color: white;
-            min-height: 100vh;
-            min-height: 100dvh;
-            overflow-x: hidden;
+        body { font-family: 'Inter', sans-serif; }
+        .product-card {
+            transition: all 0.3s ease;
         }
-        
-        /* 전체화면 섹션 */
-        .fullscreen-section {
-            position: fixed;
-            inset: 0;
-            background: #030508;
-            z-index: 100;
-            display: flex;
-            flex-direction: column;
+        .product-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(244, 114, 182, 0.5);
         }
-        
-        /* 카메라 뷰 - 전체화면 */
-        .camera-fullscreen {
-            flex: 1;
+        .product-card.selected {
+            border-color: #F472B6;
+            background: rgba(244, 114, 182, 0.05);
+            box-shadow: 0 0 30px rgba(244, 114, 182, 0.15);
+        }
+        .credit-badge {
+            background: linear-gradient(135deg, #F472B6, #A78BFA);
+        }
+        .event-badge {
+            background: linear-gradient(135deg, #F59E0B, #EF4444);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+        .coming-soon {
             position: relative;
-            background: #000;
             overflow: hidden;
         }
-        .camera-fullscreen video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transform: scaleX(-1);
-        }
-        
-        /* 얼굴 가이드 오버레이 - 크게 (가까이서 촬영 가능) */
-        .face-guide {
+        .coming-soon::after {
+            content: 'COMING SOON';
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 65vw;
-            height: 50vh;
-            max-width: 280px;
-            max-height: 380px;
+            background: rgba(0,0,0,0.8);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 10px;
+            font-weight: bold;
+            letter-spacing: 0.1em;
+        }
+        .step-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(244, 114, 182, 0.1);
+            border: 2px solid rgba(244, 114, 182, 0.3);
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .step-indicator.active {
+            background: #F472B6;
+            border-color: #F472B6;
+        }
+        
+        /* 카메라 가이드 오버레이 */
+        .camera-guide {
+            position: relative;
+        }
+        .camera-guide::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 180px;
+            height: 240px;
             border: 3px dashed rgba(244, 114, 182, 0.6);
             border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
             pointer-events: none;
+            z-index: 10;
+        }
+        .camera-guide::after {
+            content: '얼굴을 가이드에 맞춰주세요';
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            white-space: nowrap;
+            z-index: 10;
         }
         
-        /* 촬영 버튼 - 15% 확대 */
+        /* QR 코드 모달 */
+        .qr-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 20px;
+        }
+        
+        /* 실시간 촬영 검증 배지 */
+        .live-badge {
+            background: linear-gradient(135deg, #10B981, #059669);
+            animation: livePulse 1.5s infinite;
+        }
+        @keyframes livePulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            50% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+        }
+        
+        /* 카메라 뷰파인더 */
+        #camera-viewfinder {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            aspect-ratio: 3/4;
+            background: #000;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        #camera-viewfinder video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scaleX(-1); /* 셀피 미러링 */
+        }
+        
+        /* 촬영 버튼 */
         .capture-btn {
-            width: 92px;
-            height: 92px;
+            width: 72px;
+            height: 72px;
             border-radius: 50%;
             background: white;
-            border: 5px solid rgba(244, 114, 182, 0.5);
+            border: 4px solid rgba(244, 114, 182, 0.5);
             position: relative;
             transition: all 0.2s;
         }
         .capture-btn:active {
-            transform: scale(0.9);
+            transform: scale(0.95);
         }
         .capture-btn::before {
             content: '';
@@ -89,648 +173,785 @@
             background: #F472B6;
             border-radius: 50%;
         }
-        
-        /* 크레딧 배지 */
-        .credit-badge {
-            background: linear-gradient(135deg, #F472B6, #A78BFA);
-        }
-        
-        /* 이벤트 배지 */
-        .event-badge {
-            background: linear-gradient(135deg, #F59E0B, #EF4444);
-        }
-        
-        /* 프로덕트 카드 - 전체화면용, 15% 확대 */
-        .product-card-full {
-            background: linear-gradient(180deg, rgba(30,30,35,1) 0%, rgba(20,20,25,1) 100%);
-            border: 2px solid rgba(255,255,255,0.1);
-            border-radius: 24px;
-            padding: 24px;
-            transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
-        }
-        .product-card-full.selected {
-            border-color: #F472B6;
-            box-shadow: 0 0 40px rgba(244, 114, 182, 0.3);
-        }
-        
-        /* 옵션 버튼 - 15% 확대 */
-        .option-btn {
-            padding: 12px 20px;
-            border: 2px solid rgba(255,255,255,0.2);
-            border-radius: 14px;
-            font-size: 16px;
-            transition: all 0.2s;
-        }
-        .option-btn.selected {
-            border-color: #F472B6;
-            background: rgba(244, 114, 182, 0.1);
-        }
-        
-        /* 컬러 선택 - 15% 확대 */
-        .color-option {
-            width: 46px;
-            height: 46px;
-            border-radius: 50%;
-            border: 3px solid transparent;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .color-option.selected {
-            border-color: #F472B6;
-            transform: scale(1.1);
-        }
-        
-        /* 로딩 애니메이션 */
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        .loading-spinner {
-            animation: spin 1s linear infinite;
-        }
-        
-        /* 프리뷰 이미지 - 15% 확대 */
-        .preview-thumb {
-            width: 140px;
-            height: 185px;
-            object-fit: cover;
-            border-radius: 18px;
-            border: 3px solid rgba(244, 114, 182, 0.5);
-        }
-        
-        /* 전체적인 텍스트 및 버튼 크기 확대 */
-        .text-sm { font-size: 0.95rem !important; }
-        .text-xs { font-size: 0.85rem !important; }
-        .text-lg { font-size: 1.25rem !important; }
-        .text-xl { font-size: 1.4rem !important; }
-        .text-2xl { font-size: 1.75rem !important; }
-        .py-4 { padding-top: 1.15rem !important; padding-bottom: 1.15rem !important; }
-        .py-3 { padding-top: 0.9rem !important; padding-bottom: 0.9rem !important; }
-        .px-3 { padding-left: 0.9rem !important; padding-right: 0.9rem !important; }
-        .gap-4 { gap: 1.15rem !important; }
-        .gap-3 { gap: 0.9rem !important; }
-        .mb-6 { margin-bottom: 1.75rem !important; }
-        .mb-4 { margin-bottom: 1.15rem !important; }
-        .rounded-2xl { border-radius: 1.15rem !important; }
-        .rounded-xl { border-radius: 0.9rem !important; }
     </style>
 </head>
-<body>
+<body class="bg-dark text-white min-h-screen flex flex-col">
 
-    <!-- ==================== 1. 카메라 전체화면 ==================== -->
-    <div id="screen-camera" class="fullscreen-section">
-        <!-- 카메라 뷰 -->
-        <div class="camera-fullscreen">
-            <video id="camera-video" autoplay playsinline muted></video>
-            <canvas id="camera-canvas" class="hidden"></canvas>
-            
-            <!-- 얼굴 가이드 -->
-            <div class="face-guide"></div>
-            
-            <!-- 상단 정보 바 -->
-            <div class="absolute top-0 left-0 right-0 p-4 bg-gradient-to-b from-black/70 to-transparent">
-                <div class="flex justify-between items-center">
-                    <a href="../so_so.html" class="text-white/70 text-sm">
-                        <i class="fas fa-arrow-left mr-1"></i> 닫기
-                    </a>
-                    <div class="flex items-center gap-2 px-3 py-1.5 bg-black/50 rounded-full">
-                        <i class="fas fa-coins text-yellow-400 text-sm"></i>
-                        <span id="header-credits" class="text-sm font-bold">0</span>
-                        <span class="text-xs text-gray-400">cr</span>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- 하단 가이드 -->
-            <div class="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/80 to-transparent">
-                <p class="text-center text-white/80 text-base mb-4">
-                    <i class="fas fa-user text-so mr-2"></i>
-                    정면을 바라보고 가이드에 얼굴을 맞춰주세요
-                </p>
-                <p class="text-center text-white/50 text-sm mb-8">
-                    정면 · 무표정 · 안경 제거 · 머리카락 정리
-                </p>
-                
-                <!-- 촬영 버튼 -->
-                <div class="flex justify-center">
-                    <button onclick="capturePhoto()" id="capture-btn" class="capture-btn"></button>
-                </div>
-            </div>
-        </div>
-        
-        <!-- 카메라 에러 -->
-        <div id="camera-error" class="hidden flex-1 flex items-center justify-center p-8">
-            <div class="text-center">
-                <div class="w-20 h-20 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-video-slash text-red-400 text-3xl"></i>
-                </div>
-                <p class="text-lg font-bold mb-2">카메라 접근 불가</p>
-                <p class="text-sm text-gray-400 mb-6">카메라 권한을 허용해주세요</p>
-                <button onclick="initCamera()" class="px-6 py-3 bg-so text-white font-bold rounded-xl">
-                    <i class="fas fa-redo mr-2"></i>다시 시도
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ==================== 2. 촬영 확인 화면 ==================== -->
-    <div id="screen-preview" class="fullscreen-section hidden">
-        <div class="flex-1 flex flex-col items-center justify-center p-6">
-            <!-- 촬영된 사진 -->
-            <img id="preview-image" src="" class="preview-thumb mb-6">
-            
-            <p class="text-lg font-bold mb-2">이 사진을 사용할까요?</p>
-            <p class="text-sm text-gray-400 mb-8">얼굴이 선명하게 나왔는지 확인해주세요</p>
-            
-            <!-- 버튼 -->
-            <div class="flex gap-4 w-full max-w-sm">
-                <button onclick="retakePhoto()" class="flex-1 py-4 bg-gray-800 text-white font-bold rounded-xl">
-                    <i class="fas fa-redo mr-2"></i>다시 촬영
-                </button>
-                <button onclick="confirmPhoto()" class="flex-1 py-4 bg-so text-white font-bold rounded-xl">
-                    <i class="fas fa-check mr-2"></i>사용하기
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ==================== 3. 상품 선택 화면 ==================== -->
-    <div id="screen-products" class="fullscreen-section hidden">
-        <div class="flex-1 overflow-y-auto p-4 pb-24">
-            <!-- 상단 바 -->
-            <div class="flex justify-between items-center mb-6">
-                <button onclick="goToCamera()" class="text-white/70 text-sm">
-                    <i class="fas fa-arrow-left mr-1"></i> 다시 촬영
-                </button>
-                <div class="flex items-center gap-2">
-                    <img id="thumb-preview" src="" class="w-10 h-12 object-cover rounded-lg border border-so/50">
-                </div>
-            </div>
-            
-            <h1 class="text-2xl font-black text-center mb-2">스타일 선택</h1>
-            <p class="text-sm text-gray-400 text-center mb-6">원하는 사진 유형을 선택하세요</p>
-            
-            <!-- 4종 카드 -->
-            <div class="space-y-4">
-                <!-- 이력서 -->
-                <div onclick="selectProduct('resume')" id="card-resume" class="product-card-full cursor-pointer">
-                    <div class="event-badge absolute -top-1 -right-1 px-2 py-1 rounded-bl-xl rounded-tr-xl text-[10px] font-bold">50% OFF</div>
-                    <div class="flex items-center gap-4">
-                        <div class="w-14 h-14 bg-gradient-to-br from-so/20 to-purple-500/20 rounded-2xl flex items-center justify-center">
-                            <i class="fas fa-file-alt text-so text-2xl"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="font-bold text-lg">이력서 세트</h3>
-                            <p class="text-xs text-gray-400">정장 2장 + 캐쥬얼 2장</p>
-                        </div>
-                        <div class="text-right">
-                            <span class="text-xs text-gray-500 line-through block">150</span>
-                            <span class="credit-badge px-3 py-1 rounded-lg text-white font-bold">75 cr</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 컬러증명 -->
-                <div onclick="selectProduct('color')" id="card-color" class="product-card-full cursor-pointer">
-                    <div class="event-badge absolute -top-1 -right-1 px-2 py-1 rounded-bl-xl rounded-tr-xl text-[10px] font-bold">50% OFF</div>
-                    <div class="flex items-center gap-4">
-                        <div class="w-14 h-14 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-2xl flex items-center justify-center">
-                            <i class="fas fa-id-card text-purple-400 text-2xl"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="font-bold text-lg">컬러증명 세트</h3>
-                            <p class="text-xs text-gray-400">4색 배경 (4장)</p>
-                        </div>
-                        <div class="text-right">
-                            <span class="text-xs text-gray-500 line-through block">150</span>
-                            <span class="credit-badge px-3 py-1 rounded-lg text-white font-bold">75 cr</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 여권사진 -->
-                <div onclick="selectProduct('id')" id="card-id" class="product-card-full cursor-pointer">
-                    <div class="event-badge absolute -top-1 -right-1 px-2 py-1 rounded-bl-xl rounded-tr-xl text-[10px] font-bold">BEST</div>
-                    <div class="flex items-center gap-4">
-                        <div class="w-14 h-14 bg-gradient-to-br from-emerald-500/20 to-teal-500/20 rounded-2xl flex items-center justify-center">
-                            <i class="fas fa-passport text-emerald-400 text-2xl"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="font-bold text-lg">여권사진</h3>
-                            <p class="text-xs text-gray-400">행안부 규격 완벽 적용 (1장)</p>
-                        </div>
-                        <div class="text-right">
-                            <span class="credit-badge px-3 py-1 rounded-lg text-white font-bold">50 cr</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 프로필 -->
-                <div onclick="selectProduct('profile')" id="card-profile" class="product-card-full cursor-pointer">
-                    <div class="event-badge absolute -top-1 -right-1 px-2 py-1 rounded-bl-xl rounded-tr-xl text-[10px] font-bold">50% OFF</div>
-                    <div class="flex items-center gap-4">
-                        <div class="w-14 h-14 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 rounded-2xl flex items-center justify-center">
-                            <i class="fas fa-user-tie text-blue-400 text-2xl"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="font-bold text-lg">프로필 세트</h3>
-                            <p class="text-xs text-gray-400">상반신 2컷 + 니컷 2컷 (4장)</p>
-                        </div>
-                        <div class="text-right">
-                            <span class="text-xs text-gray-500 line-through block">200</span>
-                            <span class="credit-badge px-3 py-1 rounded-lg text-white font-bold">100 cr</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ==================== 4. 옵션 선택 화면 ==================== -->
-    <div id="screen-options" class="fullscreen-section hidden">
-        <div class="flex-1 overflow-y-auto p-4 pb-32">
-            <!-- 상단 바 -->
-            <div class="flex justify-between items-center mb-4">
-                <button onclick="backToProducts()" class="text-white/70 text-sm">
-                    <i class="fas fa-arrow-left mr-1"></i> 스타일 변경
-                </button>
-                <div class="flex items-center gap-2 px-3 py-1.5 bg-gray-900 rounded-full">
-                    <i class="fas fa-coins text-yellow-400 text-sm"></i>
-                    <span id="options-credits" class="text-sm font-bold">0</span>
-                    <span class="text-xs text-gray-400">cr</span>
-                </div>
-            </div>
-            
-            <!-- 선택된 상품 정보 -->
-            <div class="bg-gray-900 rounded-2xl p-4 mb-6">
-                <div class="flex items-center gap-4">
-                    <img id="options-thumb" src="" class="w-16 h-20 object-cover rounded-xl border border-so/30">
-                    <div class="flex-1">
-                        <h2 id="options-product-name" class="font-bold text-lg">이력서 세트</h2>
-                        <p id="options-product-desc" class="text-xs text-gray-400">정장 2장 + 캐쥬얼 2장</p>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- 옵션: 이력서 -->
-            <div id="opts-resume" class="hidden space-y-6">
-                <div>
-                    <p class="text-sm font-bold mb-3"><i class="fas fa-tshirt text-so mr-2"></i>정장 스타일</p>
-                    <div class="flex gap-2 flex-wrap">
-                        <button onclick="selectOption('suit', 'black')" class="option-btn selected" data-opt="suit-black">블랙 정장</button>
-                        <button onclick="selectOption('suit', 'navy')" class="option-btn" data-opt="suit-navy">네이비 정장</button>
-                        <button onclick="selectOption('suit', 'gray')" class="option-btn" data-opt="suit-gray">그레이 정장</button>
-                    </div>
-                </div>
-                <div>
-                    <p class="text-sm font-bold mb-3"><i class="fas fa-user text-so mr-2"></i>캐주얼 스타일</p>
-                    <div class="flex gap-2 flex-wrap">
-                        <button onclick="selectOption('casual', 'white')" class="option-btn selected" data-opt="casual-white">화이트 셔츠</button>
-                        <button onclick="selectOption('casual', 'blue')" class="option-btn" data-opt="casual-blue">블루 셔츠</button>
-                        <button onclick="selectOption('casual', 'knit')" class="option-btn" data-opt="casual-knit">니트</button>
-                    </div>
-                </div>
-                <div>
-                    <p class="text-sm font-bold mb-3"><i class="fas fa-cut text-so mr-2"></i>헤어 스타일</p>
-                    <div class="flex gap-2 flex-wrap">
-                        <button onclick="selectOption('hair', 'natural')" class="option-btn selected" data-opt="hair-natural">현재 스타일</button>
-                        <button onclick="selectOption('hair', 'updo')" class="option-btn" data-opt="hair-updo">올림 머리</button>
-                        <button onclick="selectOption('hair', 'bangs')" class="option-btn" data-opt="hair-bangs">앞머리</button>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- 옵션: 컬러증명 -->
-            <div id="opts-color" class="hidden space-y-6">
-                <div>
-                    <p class="text-sm font-bold mb-3"><i class="fas fa-palette text-so mr-2"></i>배경색 (4색 자동 생성)</p>
-                    <div class="flex gap-3">
-                        <div class="color-option selected bg-white" title="화이트"></div>
-                        <div class="color-option bg-sky-200" title="스카이"></div>
-                        <div class="color-option bg-pink-200" title="핑크"></div>
-                        <div class="color-option bg-gray-300" title="그레이"></div>
-                    </div>
-                    <p class="text-xs text-gray-500 mt-2">4가지 배경색으로 자동 생성됩니다</p>
-                </div>
-            </div>
-            
-            <!-- 옵션: 여권사진 -->
-            <div id="opts-id" class="hidden space-y-4">
-                <div class="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-4">
-                    <p class="text-sm text-emerald-400 font-bold mb-3"><i class="fas fa-passport mr-1"></i> 행안부 여권사진 규격 적용</p>
-                    <div class="space-y-2 text-xs text-gray-300">
-                        <p>✅ 3.5×4.5cm 비율</p>
-                        <p>✅ 순백색 무배경 (무늬/그라데이션 X)</p>
-                        <p>✅ 눈썹 완전 노출</p>
-                        <p>✅ 무표정 (치아 노출 금지)</p>
-                        <p>✅ 정수리~턱 70-80% 비율</p>
-                        <p>✅ 양쪽 귀 노출</p>
-                    </div>
-                </div>
-                
-                <!-- 몽크사진관 연동 -->
-                <div class="bg-gradient-to-r from-so/10 to-purple-500/10 border border-so/30 rounded-xl p-4">
-                    <p class="text-sm text-so font-bold mb-2"><i class="fas fa-print mr-1"></i> 인화물 배송 서비스</p>
-                    <p class="text-xs text-gray-400 mb-3">AI 사진 생성 후 실물 인화물 배송</p>
-                    <div class="flex items-center justify-between bg-gray-900 rounded-lg p-3">
-                        <div>
-                            <p class="text-sm font-bold">여권사진 4매 세트</p>
-                            <p class="text-[10px] text-gray-500">고품질 인화 + 전국 배송</p>
-                        </div>
-                        <span class="credit-badge px-3 py-1 rounded-lg text-white font-bold text-sm">+100 cr</span>
-                    </div>
-                    <p class="text-[10px] text-gray-500 mt-2">* 생성 후 결과 화면에서 신청 가능</p>
-                </div>
-            </div>
-            
-            <!-- 옵션: 프로필 -->
-            <div id="opts-profile" class="hidden space-y-6">
-                <div>
-                    <p class="text-sm font-bold mb-3"><i class="fas fa-briefcase text-so mr-2"></i>비즈니스 스타일</p>
-                    <div class="flex gap-2 flex-wrap">
-                        <button onclick="selectOption('biz', 'executive')" class="option-btn selected" data-opt="biz-executive">임원</button>
-                        <button onclick="selectOption('biz', 'pro')" class="option-btn" data-opt="biz-pro">전문가</button>
-                        <button onclick="selectOption('biz', 'creative')" class="option-btn" data-opt="biz-creative">크리에이티브</button>
-                    </div>
-                </div>
-                <div>
-                    <p class="text-sm font-bold mb-3"><i class="fas fa-camera text-so mr-2"></i>SNS 스타일</p>
-                    <div class="flex gap-2 flex-wrap">
-                        <button onclick="selectOption('sns', 'natural')" class="option-btn selected" data-opt="sns-natural">내추럴</button>
-                        <button onclick="selectOption('sns', 'trendy')" class="option-btn" data-opt="sns-trendy">트렌디</button>
-                        <button onclick="selectOption('sns', 'minimal')" class="option-btn" data-opt="sns-minimal">미니멀</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- 하단 생성 버튼 (고정) -->
-        <div class="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-dark via-dark to-transparent">
-            <button onclick="generatePhotos()" id="generate-btn" class="w-full py-4 bg-gradient-to-r from-so via-purple-500 to-ai text-white font-bold rounded-2xl text-lg">
-                <span id="generate-text"><i class="fas fa-magic mr-2"></i>AI 사진 생성</span>
-                <span id="generate-cost" class="ml-2 px-3 py-1 bg-white/20 rounded-lg">75 cr</span>
-            </button>
-            <p id="generate-status" class="text-center text-xs text-gray-500 mt-2"></p>
-        </div>
-    </div>
-
-    <!-- ==================== 5. 결과 화면 ==================== -->
-    <div id="screen-results" class="fullscreen-section hidden">
-        <div class="flex-1 overflow-y-auto p-4 pb-24">
-            <!-- 상단 바 -->
-            <div class="flex justify-between items-center mb-4">
-                <button onclick="resetAll()" class="text-white/70 text-sm">
-                    <i class="fas fa-home mr-1"></i> 처음으로
-                </button>
-                <div class="flex items-center gap-2 px-3 py-1.5 bg-gray-900 rounded-full">
-                    <i class="fas fa-coins text-yellow-400 text-sm"></i>
-                    <span id="results-credits" class="text-sm font-bold">0</span>
-                    <span class="text-xs text-gray-400">cr</span>
-                </div>
-            </div>
-
-            <h1 class="text-2xl font-black text-center mb-2">생성 완료! 🎉</h1>
-            <p class="text-sm text-gray-400 text-center mb-6">이미지를 길게 눌러 저장하세요</p>
-
-            <!-- 결과 이미지 그리드 -->
-            <div id="result-grid" class="grid grid-cols-2 gap-3 mb-6">
-                <!-- 동적 생성 -->
-            </div>
-
-            <!-- 다운로드 버튼 -->
-            <button onclick="downloadAll()" class="w-full py-4 bg-so text-white font-bold rounded-2xl text-lg mb-3">
-                <i class="fas fa-download mr-2"></i>전체 다운로드
-            </button>
-            
-            <!-- 텔레그램 전송 -->
-            <button onclick="sendToTelegram()" class="w-full py-3 bg-blue-500 text-white font-bold rounded-xl mb-3">
-                <i class="fab fa-telegram mr-2"></i>텔레그램으로 받기
-            </button>
-            
-            <!-- 여권사진 인화 서비스 (조건부 표시) -->
-            <div id="passport-print-option" class="hidden bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-500/30 rounded-xl p-4 mb-3">
-                <div class="flex items-center justify-between mb-3">
-                    <div>
-                        <p class="text-sm font-bold text-emerald-400"><i class="fas fa-print mr-1"></i> 몽크사진관</p>
-                        <p class="text-xs text-gray-400">여권사진 4매 고품질 인화 + 배송</p>
-                    </div>
-                    <span class="credit-badge px-3 py-1 rounded-lg text-white font-bold">100 cr</span>
-                </div>
-                <button onclick="orderPassportPrint()" class="w-full py-3 bg-emerald-500 text-white font-bold rounded-xl">
-                    <i class="fas fa-truck mr-2"></i>인화물 배송 신청
-                </button>
-            </div>
-
-            <button onclick="goToProducts()" class="w-full py-3 bg-gray-800 text-white rounded-xl">
-                <i class="fas fa-plus mr-2"></i>다른 스타일 생성
-            </button>
-        </div>
-    </div>
-
-    <!-- ==================== 6. 결제 화면 ==================== -->
-    <div id="screen-payment" class="fullscreen-section hidden">
-        <div class="flex-1 overflow-y-auto p-4">
-            <!-- 상단 바 -->
-            <div class="flex justify-between items-center mb-6">
-                <button onclick="closePayment()" class="text-white/70 text-sm">
-                    <i class="fas fa-arrow-left mr-1"></i> 돌아가기
-                </button>
-                <span class="text-sm font-bold text-so">크레딧 충전</span>
-            </div>
-            
-            <h1 class="text-2xl font-black text-center mb-2">크레딧 충전</h1>
-            <p class="text-sm text-gray-400 text-center mb-8">더 많이 구매할수록 더 큰 혜택!</p>
-            
-            <!-- 충전 옵션 -->
-            <div class="space-y-3">
-                <div onclick="selectPayment(100)" class="bg-gray-900 border-2 border-gray-700 rounded-2xl p-4 cursor-pointer hover:border-gray-600 transition-all" data-pay="100">
-                    <div class="flex justify-between items-center">
-                        <div class="flex items-center gap-3">
-                            <i class="fas fa-coins text-yellow-400 text-xl"></i>
-                            <span class="font-bold text-lg">100 cr</span>
-                        </div>
-                        <span class="font-bold text-lg">₩10,000</span>
-                    </div>
-                </div>
-                
-                <div onclick="selectPayment(300)" class="bg-gray-900 border-2 border-so rounded-2xl p-4 cursor-pointer relative" data-pay="300">
-                    <div class="absolute -top-2 right-4 bg-so text-xs font-bold px-2 py-0.5 rounded">추천</div>
-                    <div class="flex justify-between items-center">
-                        <div class="flex items-center gap-3">
-                            <i class="fas fa-coins text-so text-xl"></i>
-                            <div>
-                                <span class="font-bold text-lg text-so">330 cr</span>
-                                <span class="text-xs text-yellow-400 ml-1">+30 보너스</span>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <span class="text-xs text-gray-500 line-through mr-2">₩30,000</span>
-                            <span class="font-bold text-lg text-so">₩27,000</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div onclick="selectPayment(500)" class="bg-gray-900 border-2 border-gray-700 rounded-2xl p-4 cursor-pointer hover:border-gray-600 transition-all" data-pay="500">
-                    <div class="flex justify-between items-center">
-                        <div class="flex items-center gap-3">
-                            <i class="fas fa-coins text-purple-400 text-xl"></i>
-                            <div>
-                                <span class="font-bold text-lg">600 cr</span>
-                                <span class="text-xs text-yellow-400 ml-1">+100 보너스</span>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <span class="text-xs text-gray-500 line-through mr-2">₩50,000</span>
-                            <span class="font-bold text-lg">₩40,000</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div onclick="selectPayment(1000)" class="bg-gray-900 border-2 border-gray-700 rounded-2xl p-4 cursor-pointer hover:border-gray-600 transition-all" data-pay="1000">
-                    <div class="flex justify-between items-center">
-                        <div class="flex items-center gap-3">
-                            <i class="fas fa-gem text-blue-400 text-xl"></i>
-                            <div>
-                                <span class="font-bold text-lg">1,300 cr</span>
-                                <span class="text-xs text-yellow-400 ml-1">+300 보너스</span>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <span class="text-xs text-gray-500 line-through mr-2">₩100,000</span>
-                            <span class="font-bold text-lg">₩70,000</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- 결제 버튼 -->
-            <div class="mt-8">
-                <button onclick="processPayment()" id="pay-btn" class="w-full py-4 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold rounded-2xl text-lg">
-                    <i class="fas fa-credit-card mr-2"></i>
-                    <span id="pay-btn-text">결제하기</span>
-                </button>
-                <p class="text-center text-xs text-gray-500 mt-3">
-                    <i class="fas fa-lock mr-1"></i> 토스페이먼츠 안전결제
-                </p>
-            </div>
-            
-            <!-- 테스트 모드 안내 -->
-            <div class="mt-6 bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4">
-                <p class="text-xs text-yellow-400">
-                    <i class="fas fa-flask mr-1"></i>
-                    <strong>테스트 모드</strong>: 실제 결제가 진행되지 않습니다
-                </p>
-            </div>
-        </div>
-    </div>
-
-    <!-- ==================== 데스크톱 차단 모달 ==================== -->
-    <div id="desktop-block" class="fullscreen-section hidden items-center justify-center p-8">
+    <!-- 데스크톱 차단 모달 -->
+    <div id="desktop-block-modal" class="qr-modal hidden">
         <div class="text-center max-w-sm">
             <div class="w-20 h-20 bg-so/20 rounded-full flex items-center justify-center mx-auto mb-6">
                 <i class="fas fa-mobile-alt text-so text-4xl"></i>
             </div>
-            <h2 class="text-2xl font-black mb-3">📱 모바일 전용</h2>
-            <p class="text-gray-400 mb-6">딥페이크 방지를 위해<br>모바일 실시간 촬영만 지원합니다</p>
+            <h2 class="text-2xl font-black mb-3">📱 모바일 전용 서비스</h2>
+            <p class="text-gray-400 mb-6">딥페이크 방지를 위해<br>모바일에서 실시간 촬영만 지원합니다</p>
             
+            <!-- QR 코드 -->
             <div class="bg-white p-4 rounded-2xl inline-block mb-6">
-                <img id="qr-code" src="" alt="QR" class="w-48 h-48">
+                <img id="qr-code" 
+                     src="https://api.qrserver.com/v1/create-qr-code/?size=192x192&data=https://main.monk-kr.pages.dev/ai_lab/so_so/apps/ai_photo.html" 
+                     alt="QR Code" 
+                     class="w-48 h-48">
             </div>
             
-            <p class="text-xs text-gray-500">monk.kr/ai_lab/so_so/apps/ai_photo</p>
+            <p class="text-xs text-gray-500 mb-4">또는 모바일에서 직접 접속:</p>
+            <div class="bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 flex items-center justify-between">
+                <code class="text-so text-xs break-all">monk-kr.pages.dev/ai_lab/so_so/apps/ai_photo</code>
+                <button onclick="copyUrl()" class="text-xs text-gray-400 hover:text-white ml-2">
+                    <i class="fas fa-copy"></i>
+                </button>
+            </div>
+            
+            <div class="mt-8 p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl">
+                <p class="text-xs text-emerald-400">
+                    <i class="fas fa-shield-alt mr-1"></i>
+                    실시간 촬영으로 본인 확인 · 딥페이크 원천 차단
+                </p>
+            </div>
         </div>
     </div>
 
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-dark/90 backdrop-blur-md border-b border-white/5">
+        <div class="max-w-7xl mx-auto px-4 h-14 flex justify-between items-center">
+            <a href="../../../index.html" class="text-xl font-black tracking-tight">MONK<span class="text-so">.kr</span></a>
+            <div class="flex items-center gap-4">
+                <!-- 실시간 촬영 배지 -->
+                <div class="live-badge flex items-center gap-1.5 px-2.5 py-1 rounded-full text-white text-[10px] font-bold">
+                    <span class="w-1.5 h-1.5 bg-white rounded-full"></span>
+                    LIVE
+                </div>
+                <!-- 크레딧 표시 (클릭 시 결제창으로) -->
+                <div onclick="scrollToPayment()" class="flex items-center gap-2 px-3 py-1.5 bg-gray-900 border border-gray-800 rounded-full cursor-pointer hover:border-so/50 transition-colors">
+                    <i class="fas fa-coins text-yellow-400 text-sm"></i>
+                    <span id="user-credits" class="text-sm font-bold">0</span>
+                    <span class="text-xs text-gray-500">cr</span>
+                    <i class="fas fa-plus text-[8px] text-gray-500"></i>
+                </div>
+                <a href="../so_so.html" class="text-xs text-gray-400 hover:text-white">← SO-SO</a>
+            </div>
+        </div>
+    </header>
+
+    <main id="main-content" class="flex-grow px-4 py-6 max-w-4xl mx-auto w-full">
+        
+        <!-- Hero -->
+        <div class="text-center mb-6">
+            <div class="flex items-center justify-center gap-2 mb-3">
+                <span class="px-3 py-1 rounded-full bg-so/10 border border-so/20 text-so text-[10px] font-bold uppercase tracking-widest">
+                    AI PHOTO
+                </span>
+                <span class="px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-[10px] font-bold uppercase tracking-widest">
+                    MONKOS ENGINE
+                </span>
+                <span class="event-badge px-3 py-1 rounded-full text-white text-[10px] font-bold uppercase tracking-widest">
+                    🎉 50% OPEN EVENT
+                </span>
+            </div>
+            <h1 class="text-2xl font-black mb-2 tracking-tight">
+                AI 증명사진 스튜디오
+            </h1>
+            <p class="text-gray-500 text-sm">정체성 유지 · 딥페이크 방지 · 실시간 촬영</p>
+        </div>
+
+        <!-- 보안 안내 배너 -->
+        <div class="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-3 mb-6">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-emerald-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-shield-alt text-emerald-400"></i>
+                </div>
+                <div>
+                    <p class="text-xs font-bold text-emerald-400">실시간 촬영 전용</p>
+                    <p class="text-[10px] text-gray-400">갤러리 업로드 불가 · 본인 확인 · 딥페이크 원천 차단</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step Indicator -->
+        <div class="flex items-center justify-center gap-3 mb-6">
+            <div class="flex items-center gap-2">
+                <div class="step-indicator active" id="step-1">1</div>
+                <span class="text-[10px] text-gray-400">촬영</span>
+            </div>
+            <div class="w-6 h-px bg-gray-800"></div>
+            <div class="flex items-center gap-2">
+                <div class="step-indicator" id="step-2">2</div>
+                <span class="text-[10px] text-gray-400">스타일</span>
+            </div>
+            <div class="w-6 h-px bg-gray-800"></div>
+            <div class="flex items-center gap-2">
+                <div class="step-indicator" id="step-3">3</div>
+                <span class="text-[10px] text-gray-400">결과</span>
+            </div>
+        </div>
+
+        <!-- STEP 2: Style Selection (촬영 후 표시) -->
+        <section id="section-products" class="hidden mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-bold">스타일 선택</h2>
+                <button onclick="goToCamera()" class="text-xs text-gray-400 hover:text-white">← 다시 촬영</button>
+            </div>
+            
+            <!-- 촬영된 사진 미리보기 -->
+            <div id="captured-preview" class="hidden bg-gray-900 border border-gray-800 rounded-2xl p-4 mb-4">
+                <div class="flex items-center gap-4">
+                    <img id="captured-photo-preview" src="" class="w-20 h-26 object-cover rounded-xl">
+                    <div class="flex-1">
+                        <p class="text-sm font-bold mb-1">촬영 완료!</p>
+                        <p class="text-xs text-gray-400">원하는 스타일을 선택하세요</p>
+                        <div class="flex items-center gap-2 mt-2">
+                            <span class="live-badge px-2 py-0.5 rounded text-white text-[10px] font-bold">
+                                <i class="fas fa-shield-alt mr-1"></i>실시간 검증
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="space-y-3 mb-6">
+                <!-- 이력서 세트 -->
+                <div onclick="selectProduct('resume')" id="product-resume" class="product-card cursor-pointer bg-gray-900 border border-gray-800 rounded-2xl p-4 relative">
+                    <div class="event-badge absolute -top-2 -right-2 px-2 py-1 rounded-full text-[10px] font-bold">50% OFF</div>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-so/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-file-alt text-so text-xl"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="font-bold">이력서 세트</h3>
+                            <p class="text-xs text-gray-400">정장 2 + 캐쥬얼 2 (4장)</p>
+                        </div>
+                        <div class="text-right flex-shrink-0">
+                            <span class="text-xs text-gray-500 line-through">150</span>
+                            <span class="credit-badge px-2 py-0.5 rounded text-white text-sm font-bold ml-1">75 cr</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 컬러증명 세트 -->
+                <div onclick="selectProduct('color')" id="product-color" class="product-card cursor-pointer bg-gray-900 border border-gray-800 rounded-2xl p-4 relative">
+                    <div class="event-badge absolute -top-2 -right-2 px-2 py-1 rounded-full text-[10px] font-bold">50% OFF</div>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-purple-500/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-id-card text-purple-400 text-xl"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="font-bold">컬러증명 세트</h3>
+                            <p class="text-xs text-gray-400">4색 배경 (4장)</p>
+                        </div>
+                        <div class="text-right flex-shrink-0">
+                            <span class="text-xs text-gray-500 line-through">150</span>
+                            <span class="credit-badge px-2 py-0.5 rounded text-white text-sm font-bold ml-1">75 cr</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 프로필 세트 -->
+                <div onclick="selectProduct('profile')" id="product-profile" class="product-card cursor-pointer bg-gray-900 border border-gray-800 rounded-2xl p-4 relative">
+                    <div class="event-badge absolute -top-2 -right-2 px-2 py-1 rounded-full text-[10px] font-bold">50% OFF</div>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-user-tie text-blue-400 text-xl"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="font-bold">프로필 세트</h3>
+                            <p class="text-xs text-gray-400">비즈니스 2 + SNS 2 (4장)</p>
+                        </div>
+                        <div class="text-right flex-shrink-0">
+                            <span class="text-xs text-gray-500 line-through">200</span>
+                            <span class="credit-badge px-2 py-0.5 rounded text-white text-sm font-bold ml-1">100 cr</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 신분증 세트 -->
+                <div onclick="selectProduct('id')" id="product-id" class="product-card cursor-pointer bg-gray-900 border border-gray-800 rounded-2xl p-4 relative">
+                    <div class="event-badge absolute -top-2 -right-2 px-2 py-1 rounded-full text-[10px] font-bold">50% OFF</div>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-emerald-500/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-id-badge text-emerald-400 text-xl"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="font-bold">신분증 세트</h3>
+                            <p class="text-xs text-gray-400">여권 + 면허 + 민증 (3장)</p>
+                        </div>
+                        <div class="text-right flex-shrink-0">
+                            <span class="text-xs text-gray-500 line-through">300</span>
+                            <span class="credit-badge px-2 py-0.5 rounded text-white text-sm font-bold ml-1">150 cr</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Coming Soon -->
+            <p class="text-xs text-gray-500 mb-2">Coming Soon</p>
+            <div class="grid grid-cols-4 gap-2">
+                <div class="coming-soon opacity-40 bg-gray-900 border border-gray-800 rounded-xl p-3 text-center">
+                    <i class="fas fa-portrait text-gray-600 text-lg"></i>
+                    <p class="text-[9px] text-gray-600 mt-1">장수</p>
+                </div>
+                <div class="coming-soon opacity-40 bg-gray-900 border border-gray-800 rounded-xl p-3 text-center">
+                    <i class="fas fa-magic text-gray-600 text-lg"></i>
+                    <p class="text-[9px] text-gray-600 mt-1">복원</p>
+                </div>
+                <div class="coming-soon opacity-40 bg-gray-900 border border-gray-800 rounded-xl p-3 text-center">
+                    <i class="fas fa-baby text-gray-600 text-lg"></i>
+                    <p class="text-[9px] text-gray-600 mt-1">아기</p>
+                </div>
+                <div class="coming-soon opacity-40 bg-gray-900 border border-gray-800 rounded-xl p-3 text-center">
+                    <i class="fas fa-print text-gray-600 text-lg"></i>
+                    <p class="text-[9px] text-gray-600 mt-1">인화</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- STEP 1: 촬영 시작 버튼 -->
+        <section id="section-start" class="mb-8">
+            <div class="text-center py-8">
+                <div class="w-24 h-24 bg-so/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-camera text-so text-4xl"></i>
+                </div>
+                <h2 class="text-xl font-bold mb-2">촬영을 시작하세요</h2>
+                <p class="text-sm text-gray-400 mb-6">정면 1컷만 촬영하면 AI가 완벽한 증명사진을 만들어드려요</p>
+                
+                <button onclick="openCameraModal()" class="w-full max-w-xs mx-auto py-4 bg-gradient-to-r from-so to-purple-500 text-white font-bold rounded-2xl text-lg shadow-lg hover:shadow-so/30 transition-all">
+                    <i class="fas fa-camera mr-2"></i>촬영 시작
+                </button>
+                
+                <div class="flex justify-center gap-6 mt-6 text-[11px] text-gray-500">
+                    <span><i class="fas fa-check text-emerald-400 mr-1"></i>정면</span>
+                    <span><i class="fas fa-check text-emerald-400 mr-1"></i>무표정</span>
+                    <span><i class="fas fa-check text-emerald-400 mr-1"></i>안경 제거</span>
+                    <span><i class="fas fa-check text-emerald-400 mr-1"></i>머리카락 정리</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- STEP 3: Processing & Options -->
+        <section id="section-options" class="hidden mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-bold">옵션 선택</h2>
+                <button onclick="goToCamera()" class="text-xs text-gray-400 hover:text-white">← 다시 촬영</button>
+            </div>
+
+            <!-- 촬영된 사진 미리보기 -->
+            <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4 mb-4">
+                <div class="flex items-center gap-4">
+                    <img id="confirmed-photo" src="" class="w-20 h-26 object-cover rounded-xl">
+                    <div>
+                        <p class="text-sm font-bold" id="confirmed-product-name">이력서 세트</p>
+                        <p class="text-xs text-gray-400" id="confirmed-product-desc">정장 2 + 캐쥬얼 2</p>
+                        <div class="flex items-center gap-2 mt-2">
+                            <span class="live-badge px-2 py-0.5 rounded text-white text-[10px] font-bold">
+                                <i class="fas fa-shield-alt mr-1"></i>검증됨
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 옵션 (이력서용) -->
+            <div id="options-resume" class="hidden space-y-4 mb-6">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-xs text-gray-500 mb-2 block">정장 스타일</label>
+                        <select id="suit-style" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2.5 text-sm focus:border-so outline-none">
+                            <option value="black-suit">블랙 정장</option>
+                            <option value="navy-suit">네이비 정장</option>
+                            <option value="gray-suit">그레이 정장</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-500 mb-2 block">캐쥬얼 스타일</label>
+                        <select id="casual-style" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2.5 text-sm focus:border-so outline-none">
+                            <option value="white-shirt">화이트 셔츠</option>
+                            <option value="blue-shirt">블루 셔츠</option>
+                            <option value="knit">니트</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="text-xs text-gray-500 mb-2 block">배경색</label>
+                    <div class="flex gap-3">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="bg-color" value="white" checked class="hidden peer">
+                            <div class="w-8 h-8 rounded-full bg-white border-2 border-gray-600 peer-checked:border-so"></div>
+                            <span class="text-xs">화이트</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="bg-color" value="gray" class="hidden peer">
+                            <div class="w-8 h-8 rounded-full bg-gray-300 border-2 border-gray-600 peer-checked:border-so"></div>
+                            <span class="text-xs">그레이</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="bg-color" value="blue" class="hidden peer">
+                            <div class="w-8 h-8 rounded-full bg-blue-200 border-2 border-gray-600 peer-checked:border-so"></div>
+                            <span class="text-xs">블루</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 옵션 (컬러증명용) -->
+            <div id="options-color" class="hidden space-y-4 mb-6">
+                <div>
+                    <label class="text-xs text-gray-500 mb-2 block">배경색 조합</label>
+                    <p class="text-[10px] text-gray-400 mb-3">4가지 배경색으로 자동 생성됩니다</p>
+                    <div class="flex gap-2">
+                        <div class="w-10 h-10 rounded-lg bg-white border border-gray-600"></div>
+                        <div class="w-10 h-10 rounded-lg bg-sky-200 border border-gray-600"></div>
+                        <div class="w-10 h-10 rounded-lg bg-pink-200 border border-gray-600"></div>
+                        <div class="w-10 h-10 rounded-lg bg-gray-300 border border-gray-600"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 옵션 (프로필용) -->
+            <div id="options-profile" class="hidden space-y-4 mb-6">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-xs text-gray-500 mb-2 block">비즈니스 스타일</label>
+                        <select id="biz-style" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2.5 text-sm focus:border-so outline-none">
+                            <option value="executive">임원 스타일</option>
+                            <option value="professional">전문가 스타일</option>
+                            <option value="creative">크리에이티브</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-500 mb-2 block">SNS 스타일</label>
+                        <select id="sns-style" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2.5 text-sm focus:border-so outline-none">
+                            <option value="natural">내추럴</option>
+                            <option value="trendy">트렌디</option>
+                            <option value="minimal">미니멀</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 옵션 (신분증용) -->
+            <div id="options-id" class="hidden space-y-4 mb-6">
+                <div class="bg-emerald-500/5 border border-emerald-500/20 rounded-xl p-4">
+                    <p class="text-xs text-emerald-400 mb-3"><i class="fas fa-check-circle mr-1"></i> 정부 규격 100% 준수</p>
+                    <div class="grid grid-cols-3 gap-2 text-[10px]">
+                        <div class="bg-gray-900 rounded-lg p-2 text-center">
+                            <i class="fas fa-passport text-emerald-400 text-lg mb-1"></i>
+                            <p class="text-white font-bold">여권</p>
+                            <p class="text-gray-500">3.5×4.5cm</p>
+                        </div>
+                        <div class="bg-gray-900 rounded-lg p-2 text-center">
+                            <i class="fas fa-car text-emerald-400 text-lg mb-1"></i>
+                            <p class="text-white font-bold">면허</p>
+                            <p class="text-gray-500">3×4cm</p>
+                        </div>
+                        <div class="bg-gray-900 rounded-lg p-2 text-center">
+                            <i class="fas fa-id-card text-emerald-400 text-lg mb-1"></i>
+                            <p class="text-white font-bold">민증</p>
+                            <p class="text-gray-500">3.5×4.5cm</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Process Button -->
+            <button onclick="processPhoto()" id="process-btn"
+                    class="w-full py-4 bg-gradient-to-r from-so via-purple-500 to-ai text-white font-bold rounded-xl hover:shadow-lg hover:shadow-so/30 transition-all">
+                <i class="fas fa-magic mr-2"></i>
+                <span id="btn-text">AI 사진 생성하기</span>
+                <span id="btn-credit" class="ml-2 px-2 py-0.5 bg-white/20 rounded text-xs">75 cr</span>
+            </button>
+
+            <p id="status" class="text-center mt-3 text-xs text-gray-500"></p>
+        </section>
+
+        <!-- STEP 4: Results -->
+        <section id="section-results" class="hidden mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-bold">생성 결과</h2>
+                <button onclick="resetAll()" class="text-xs text-gray-400 hover:text-white">← 처음으로</button>
+            </div>
+
+            <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4 relative">
+                <!-- 생성 중 블러 오버레이 -->
+                <div id="generating-overlay" class="hidden absolute inset-0 bg-black/80 backdrop-blur-sm rounded-2xl z-10 flex flex-col items-center justify-center">
+                    <div class="w-16 h-16 border-4 border-so border-t-transparent rounded-full animate-spin mb-4"></div>
+                    <p class="text-so font-bold text-lg mb-1">MONKOS AI</p>
+                    <p class="text-gray-400 text-sm">Generating...</p>
+                    <p id="generating-progress" class="text-gray-500 text-xs mt-2">0 / 4</p>
+                </div>
+                
+                <div id="result-images" class="grid grid-cols-2 gap-3 mb-4">
+                    <!-- 동적으로 생성된 이미지들 -->
+                </div>
+
+                <div class="space-y-2">
+                    <button onclick="shareImages()" class="w-full py-3 bg-so text-white font-bold rounded-xl hover:bg-so/80 transition-colors text-sm">
+                        <i class="fas fa-share-alt mr-2"></i>공유하기
+                    </button>
+                    <button onclick="saveToGallery()" class="w-full py-3 bg-gray-800 text-white rounded-xl hover:bg-gray-700 transition-colors text-sm">
+                        <i class="fas fa-images mr-2"></i>사진첩 저장
+                    </button>
+                    <div class="flex gap-2">
+                        <button onclick="changeStyle()" class="flex-1 py-3 bg-purple-600 text-white rounded-xl hover:bg-purple-500 transition-colors text-sm">
+                            <i class="fas fa-palette mr-2"></i>다른 스타일 생성
+                        </button>
+                        <button onclick="retakeAndReset()" class="flex-1 py-3 bg-gray-700 text-white rounded-xl hover:bg-gray-600 transition-colors text-sm">
+                            <i class="fas fa-camera mr-2"></i>다시 촬영
+                        </button>
+                    </div>
+                </div>
+                
+                <p class="text-center text-[10px] text-gray-500 mt-3">
+                    <i class="fas fa-hand-pointer mr-1"></i>이미지를 길게 눌러 직접 저장/공유할 수 있어요
+                </p>
+            </div>
+        </section>
+
+        <!-- Credit Purchase CTA -->
+        <section class="mt-6 bg-gradient-to-r from-so/10 to-purple-500/10 border border-so/20 rounded-2xl p-4">
+            <div class="bg-yellow-500/20 border border-yellow-500/40 rounded-lg p-2 mb-3">
+                <p class="text-[10px] text-yellow-400 text-center">
+                    <i class="fas fa-flask mr-1"></i>테스트 모드 · 실제 결제 X
+                </p>
+            </div>
+            <h3 class="font-bold mb-2 text-center text-sm">크레딧 충전</h3>
+            <p class="text-[10px] text-gray-400 mb-4 text-center">많이 살수록 더 큰 혜택!</p>
+            
+            <div class="space-y-2">
+                <button onclick="buyCredits(100)" class="w-full flex items-center justify-between p-3 bg-gray-900 border border-gray-700 rounded-xl hover:border-gray-600 transition-colors">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-coins text-yellow-400"></i>
+                        <span class="font-bold text-sm">100 cr</span>
+                    </div>
+                    <span class="font-bold text-sm">₩10,000</span>
+                </button>
+
+                <button onclick="buyCredits(300)" class="w-full flex items-center justify-between p-3 bg-gray-900 border-2 border-so/50 rounded-xl hover:border-so transition-colors relative">
+                    <div class="absolute -top-2 right-2 bg-so text-[8px] font-bold px-1.5 py-0.5 rounded">추천</div>
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-coins text-so"></i>
+                        <span class="font-bold text-sm text-so">330 cr</span>
+                        <span class="text-[9px] text-yellow-400">+30</span>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-[10px] text-gray-500 line-through mr-1">₩30,000</span>
+                        <span class="font-bold text-sm text-so">₩27,000</span>
+                    </div>
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 전체화면 카메라 모달 -->
+    <div id="camera-modal" style="display:none;position:fixed;inset:0;background:#000;z-index:200;flex-direction:column;">
+        <!-- 상단 바 -->
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:1rem;background:rgba(0,0,0,0.5);">
+            <button onclick="closeCameraModal()" style="color:rgba(255,255,255,0.7);font-size:0.875rem;background:none;border:none;cursor:pointer;">
+                <i class="fas fa-times"></i> 취소
+            </button>
+            <span style="color:white;font-size:0.875rem;font-weight:bold;">실시간 촬영</span>
+            <div style="width:4rem;"></div>
+        </div>
+        
+        <!-- 카메라 뷰 -->
+        <div style="flex:1;position:relative;overflow:hidden;">
+            <video id="camera-video" autoplay playsinline muted style="width:100%;height:100%;object-fit:cover;transform:scaleX(-1);"></video>
+            <canvas id="camera-canvas" style="display:none;"></canvas>
+            
+            <!-- 얼굴 가이드 -->
+            <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:65vw;height:50vh;max-width:280px;max-height:380px;border:3px dashed rgba(244,114,182,0.6);border-radius:50% 50% 50% 50% / 60% 60% 40% 40%;pointer-events:none;"></div>
+        </div>
+        
+        <!-- 하단 컨트롤 -->
+        <div style="background:rgba(0,0,0,0.8);padding:1.5rem;padding-bottom:2.5rem;">
+            <div style="text-align:center;margin-bottom:1rem;">
+                <p style="font-size:0.75rem;color:#9ca3af;">정면 · 무표정 · 안경 제거 · 머리카락 정리</p>
+            </div>
+            <div style="display:flex;justify-content:center;">
+                <button onclick="capturePhoto()" style="width:80px;height:80px;border-radius:50%;background:white;border:4px solid rgba(244,114,182,0.5);position:relative;cursor:pointer;">
+                    <div style="position:absolute;inset:8px;background:#F472B6;border-radius:50%;"></div>
+                </button>
+            </div>
+        </div>
+        
+        <!-- 촬영 후 프리뷰 -->
+        <div id="preview-section" style="display:none;position:absolute;inset:0;background:#000;flex-direction:column;">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:1rem;">
+                <button onclick="retakePhoto()" style="color:rgba(255,255,255,0.7);font-size:0.875rem;background:none;border:none;cursor:pointer;">
+                    <i class="fas fa-redo"></i> 다시 촬영
+                </button>
+                <span style="color:white;font-size:0.875rem;font-weight:bold;">촬영 완료</span>
+                <div style="width:4rem;"></div>
+            </div>
+            <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:1rem;">
+                <img id="preview-image" src="" style="max-height:60vh;border-radius:1rem;box-shadow:0 25px 50px -12px rgba(0,0,0,0.25);">
+            </div>
+            <div style="padding:1.5rem;padding-bottom:2.5rem;">
+                <div style="display:flex;align-items:center;justify-content:center;gap:0.5rem;font-size:0.75rem;color:#34d399;margin-bottom:1rem;">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>실시간 촬영 검증됨</span>
+                    <span style="color:#6ee7b7;">•</span>
+                    <span id="capture-timestamp" style="color:#6ee7b7;"></span>
+                </div>
+                <button onclick="confirmPhoto()" style="width:100%;padding:1rem;background:#F472B6;color:white;font-weight:bold;border-radius:1rem;font-size:1.125rem;border:none;cursor:pointer;">
+                    <i class="fas fa-check mr-2"></i>이 사진으로 진행
+                </button>
+            </div>
+        </div>
+        
+        <!-- 카메라 에러 -->
+        <div id="camera-error" style="display:none;position:absolute;inset:0;background:#000;align-items:center;justify-content:center;">
+            <div style="text-align:center;padding:2rem;">
+                <div style="width:5rem;height:5rem;background:rgba(239,68,68,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;">
+                    <i class="fas fa-video-slash" style="color:#f87171;font-size:1.875rem;"></i>
+                </div>
+                <p style="font-size:1.125rem;font-weight:bold;margin-bottom:0.5rem;color:white;">카메라 접근 불가</p>
+                <p style="font-size:0.875rem;color:#9ca3af;margin-bottom:1.5rem;">카메라 권한을 허용해주세요</p>
+                <button onclick="initCamera()" style="padding:0.75rem 1.5rem;background:#F472B6;color:white;border-radius:0.75rem;margin-right:0.5rem;border:none;cursor:pointer;">
+                    <i class="fas fa-redo"></i> 다시 시도
+                </button>
+                <button onclick="closeCameraModal()" style="padding:0.75rem 1.5rem;background:#374151;color:white;border-radius:0.75rem;border:none;cursor:pointer;">
+                    취소
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="border-t border-white/5 py-4 px-4 text-center">
+        <p class="text-gray-600 text-[9px] tracking-widest uppercase">© 2026 MONK STUDIO. Powered by MONKOS Engine</p>
+    </footer>
+
     <script>
-        // ==================== State ====================
-        let capturedImage = null;
-        let captureTime = null;
-        let selectedProduct = null;
-        let selectedOptions = {
-            suit: 'black',
-            casual: 'white',
-            hair: 'natural',
-            biz: 'executive',
-            sns: 'natural'
-        };
-        let userCredits = 0;
-        let cameraStream = null;
-        let generatedImages = [];
-        let selectedPaymentAmount = 300;
-
-        // ==================== Product Data ====================
-        const products = {
-            resume: { name: '이력서 세트', desc: '정장 2장 + 캐쥬얼 2장', price: 75, outputs: 4, labels: ['정장 A', '정장 B', '캐쥬얼 A', '캐쥬얼 B'] },
-            color: { name: '컬러증명 세트', desc: '4색 배경', price: 75, outputs: 4, labels: ['화이트', '스카이', '핑크', '그레이'] },
-            id: { name: '여권사진', desc: '행안부 규격 완벽 적용', price: 50, outputs: 1, labels: ['여권사진'] },
-            profile: { name: '프로필 세트', desc: '상반신 2컷 + 니컷 2컷', price: 100, outputs: 4, labels: ['상반신 A', '상반신 B', '니컷 A', '니컷 B'] }
-        };
-
-        // ==================== Initialization ====================
+        // ==================== 모바일 체크 ====================
         function isMobile() {
             return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         }
 
-        function init() {
-            loadCredits();
-            
+        function checkDevice() {
             if (!isMobile()) {
-                showScreen('desktop-block');
-                document.getElementById('qr-code').src = 'https://api.qrserver.com/v1/create-qr-code/?size=192x192&data=' + encodeURIComponent(window.location.href);
-                return;
+                document.getElementById('desktop-block-modal').classList.remove('hidden');
+                document.getElementById('main-content').classList.add('hidden');
+                generateQRCode();
             }
-            
-            showScreen('camera');
-            initCamera();
         }
 
-        function showScreen(name) {
-            ['camera', 'preview', 'products', 'options', 'results', 'payment', 'desktop-block'].forEach(s => {
-                document.getElementById('screen-' + s)?.classList.add('hidden');
-            });
-            document.getElementById('screen-' + name)?.classList.remove('hidden');
-            
-            // 크레딧 업데이트
-            updateCreditsDisplay();
+        function generateQRCode() {
+            // QR 코드는 이미지 태그로 직접 생성됨 (api.qrserver.com)
+            // 현재 페이지 URL로 동적 생성
+            const qrImg = document.getElementById('qr-code');
+            if (qrImg) {
+                qrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=192x192&data=' + encodeURIComponent(window.location.href);
+            }
         }
+
+        function copyUrl() {
+            navigator.clipboard.writeText(window.location.href);
+            alert('URL이 복사되었습니다!');
+        }
+
+        // ==================== State ====================
+        let selectedProduct = null;
+        let capturedImage = null;
+        let captureTime = null;
+        let userCredits = 0;
+        let cameraStream = null;
+        let generatedImages = [];
+
+        // ==================== Product Data ====================
+        const products = {
+            resume: {
+                name: '이력서 세트',
+                description: '정장 2장 + 캐쥬얼 2장',
+                price: 150,
+                eventPrice: 75,
+                outputs: 4,
+                labels: ['정장 A', '정장 B', '캐쥬얼 A', '캐쥬얼 B']
+            },
+            color: {
+                name: '컬러증명 세트',
+                description: '4색 배경 (4장)',
+                price: 150,
+                eventPrice: 75,
+                outputs: 4,
+                labels: ['화이트', '스카이', '핑크', '그레이']
+            },
+            profile: {
+                name: '프로필 세트',
+                description: '비즈니스 2장 + SNS 2장',
+                price: 200,
+                eventPrice: 100,
+                outputs: 4,
+                labels: ['비즈니스 A', '비즈니스 B', 'SNS A', 'SNS B']
+            },
+            id: {
+                name: '신분증 세트',
+                description: '여권 + 면허 + 민증 (3장)',
+                price: 300,
+                eventPrice: 150,
+                outputs: 3,
+                labels: ['여권', '면허', '주민등록증']
+            }
+        };
 
         // ==================== Credits ====================
         function loadCredits() {
-            userCredits = parseInt(localStorage.getItem('monkos_credits') || '0');
+            const saved = localStorage.getItem('monkos_credits');
+            userCredits = saved ? parseInt(saved) : 0;
+            document.getElementById('user-credits').textContent = userCredits;
         }
 
         function saveCredits() {
             localStorage.setItem('monkos_credits', userCredits);
+            document.getElementById('user-credits').textContent = userCredits;
         }
 
-        function updateCreditsDisplay() {
-            ['header-credits', 'options-credits', 'results-credits'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.textContent = userCredits;
+        // ==================== 토스페이먼츠 (테스트 모드) ====================
+        const TOSS_TEST_CLIENT_KEY = 'test_ck_D5GePWvyJnrK0W0k6q8gLzN97Eoq';
+        let tossPayments = null;
+        
+        function initTossPayments() {
+            try {
+                tossPayments = TossPayments(TOSS_TEST_CLIENT_KEY);
+            } catch (e) {
+                console.error('TossPayments init error:', e);
+            }
+        }
+
+        function buyCredits(amount) {
+            const prices = { 100: 10000, 300: 27000, 500: 40000, 1000: 70000 };
+            const bonuses = { 100: 0, 300: 30, 500: 100, 1000: 300 };
+            const total = amount + bonuses[amount];
+            const price = prices[amount];
+
+            // 테스트 모드 확인
+            const confirmTest = confirm(
+                '⚠️ 테스트 모드 안내\n\n' +
+                `${total.toLocaleString()} 크레딧을 ₩${price.toLocaleString()}에 구매\n\n` +
+                '현재 결제 시스템 테스트 중입니다.\n' +
+                '실제 결제가 진행되지 않습니다.\n\n' +
+                '📌 테스트 카드 정보:\n' +
+                '카드번호: 4330-0000-0000-0002\n' +
+                '유효기간/CVC: 아무거나\n\n' +
+                '⛔ 카카오페이, 네이버페이 등\n' +
+                '간편결제는 절대 사용하지 마세요!\n\n' +
+                '계속하시겠습니까?'
+            );
+            
+            if (!confirmTest) return;
+
+            if (!tossPayments) {
+                initTossPayments();
+            }
+
+            if (!tossPayments) {
+                // 토스 로딩 실패 시 테스트용 크레딧 지급
+                userCredits += total;
+                saveCredits();
+                alert(`✨ [테스트] ${total.toLocaleString()} 크레딧이 충전되었습니다!`);
+                return;
+            }
+
+            const orderId = 'MONK_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            const visitor = getVisitorInfo();
+            const customerName = visitor?.name || '고객';
+
+            try {
+                tossPayments.requestPayment('카드', {
+                    amount: price,
+                    orderId: orderId,
+                    orderName: `[테스트] MONK AI - ${total}cr`,
+                    customerName: customerName,
+                    successUrl: window.location.origin + window.location.pathname + '?payment=success&amount=' + price + '&credits=' + total,
+                    failUrl: window.location.origin + window.location.pathname + '?payment=fail',
+                });
+            } catch (error) {
+                if (error.code !== 'USER_CANCEL') {
+                    console.error('Payment error:', error);
+                    alert('결제 오류: ' + error.message);
+                }
+            }
+        }
+        
+        // 결제 성공 콜백 처리
+        function handlePaymentCallback() {
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('payment') === 'success') {
+                const credits = parseInt(params.get('credits') || '0');
+                if (credits > 0) {
+                    userCredits += credits;
+                    saveCredits();
+                    alert(`✅ 결제 완료!\n${credits} 크레딧이 충전되었습니다.`);
+                }
+                // URL 정리
+                window.history.replaceState({}, '', window.location.pathname);
+            } else if (params.get('payment') === 'fail') {
+                alert('결제가 취소되었거나 실패했습니다.');
+                window.history.replaceState({}, '', window.location.pathname);
+            }
+        }
+
+        // ==================== Product Selection ====================
+        function selectProduct(type) {
+            selectedProduct = type;
+
+            document.querySelectorAll('.product-card').forEach(card => {
+                card.classList.remove('selected');
             });
+            document.getElementById('product-' + type).classList.add('selected');
+
+            // 촬영 완료 상태에서 상품 선택 → 최종 옵션으로
+            setTimeout(() => {
+                showFinalOptions();
+            }, 200);
+        }
+
+        // ==================== Camera Modal ====================
+        function openCameraModal() {
+            document.getElementById('camera-modal').style.display = 'flex';
+            document.getElementById('preview-section').style.display = 'none';
+            document.getElementById('camera-error').style.display = 'none';
+            initCamera();
+        }
+        
+        function closeCameraModal() {
+            document.getElementById('camera-modal').style.display = 'none';
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                cameraStream = null;
+            }
+        }
+
+        function showCameraSection() {
+            // 이전 버전 호환용 - 카메라 모달 열기로 대체
+            openCameraModal();
         }
 
         // ==================== Camera ====================
         async function initCamera() {
             try {
-                document.getElementById('camera-error').classList.add('hidden');
-                document.querySelector('.camera-fullscreen').classList.remove('hidden');
-                
+                document.getElementById('camera-error').style.display = 'none';
+                document.getElementById('preview-section').style.display = 'none';
+
+                // 기존 스트림 정리
                 if (cameraStream) {
-                    cameraStream.getTracks().forEach(t => t.stop());
+                    cameraStream.getTracks().forEach(track => track.stop());
                 }
-                
+
+                // 전면 카메라 요청
                 cameraStream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: 'user', width: { ideal: 720 }, height: { ideal: 960 } },
+                    video: {
+                        facingMode: 'user',
+                        width: { ideal: 720 },
+                        height: { ideal: 960 }
+                    },
                     audio: false
                 });
-                
-                document.getElementById('camera-video').srcObject = cameraStream;
-            } catch (e) {
-                console.error('Camera error:', e);
-                document.querySelector('.camera-fullscreen').classList.add('hidden');
-                document.getElementById('camera-error').classList.remove('hidden');
+
+                const video = document.getElementById('camera-video');
+                video.srcObject = cameraStream;
+
+            } catch (error) {
+                console.error('Camera Error:', error);
+                document.getElementById('camera-error').style.display = 'flex';
             }
         }
 
@@ -738,401 +959,531 @@
             const video = document.getElementById('camera-video');
             const canvas = document.getElementById('camera-canvas');
             const ctx = canvas.getContext('2d');
-            
+
+            // 캔버스 크기 설정
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
-            
+
+            // 미러링 해제하여 캡처 (저장용)
             ctx.translate(canvas.width, 0);
             ctx.scale(-1, 1);
             ctx.drawImage(video, 0, 0);
-            
+
+            // 이미지 데이터 추출
             capturedImage = canvas.toDataURL('image/jpeg', 0.9);
             captureTime = new Date();
-            
+
+            // 프리뷰 표시
             document.getElementById('preview-image').src = capturedImage;
-            
+            document.getElementById('capture-timestamp').textContent =
+                captureTime.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+            // UI 전환 (모달 내 프리뷰 표시)
+            document.getElementById('preview-section').style.display = 'flex';
+
+            // 카메라 일시 정지 (배터리 절약)
             if (cameraStream) {
-                cameraStream.getTracks().forEach(t => t.enabled = false);
+                cameraStream.getTracks().forEach(track => track.enabled = false);
             }
-            
-            showScreen('preview');
         }
 
         function retakePhoto() {
             capturedImage = null;
             captureTime = null;
-            
+
+            document.getElementById('preview-section').style.display = 'none';
+
+            // 카메라 재활성화
             if (cameraStream) {
-                cameraStream.getTracks().forEach(t => t.enabled = true);
+                cameraStream.getTracks().forEach(track => track.enabled = true);
             }
-            
-            showScreen('camera');
         }
 
         function confirmPhoto() {
+            // 실시간 촬영 검증 (1분 이내)
             const now = new Date();
-            if (now - captureTime > 60000) {
+            const timeDiff = now - captureTime;
+
+            if (timeDiff > 60000) { // 1분 초과시
                 alert('촬영 시간이 초과되었습니다. 다시 촬영해주세요.');
                 retakePhoto();
                 return;
             }
-            
+
+            // 카메라 정지
             if (cameraStream) {
-                cameraStream.getTracks().forEach(t => t.stop());
+                cameraStream.getTracks().forEach(track => track.stop());
                 cameraStream = null;
             }
+
+            // 모달 닫기 & 스타일 선택으로 이동
+            closeCameraModal();
+            showStyleSelection();
+        }
+
+        function showStyleSelection() {
+            // 촬영 후 → 스타일 선택 화면으로 이동
+            document.getElementById('section-start').classList.add('hidden');
+            document.getElementById('section-products').classList.remove('hidden');
+
+            document.getElementById('step-1').classList.add('active');
+            document.getElementById('step-2').classList.remove('active');
+
+            // 촬영된 사진 미리보기 표시
+            const previewSection = document.getElementById('captured-preview');
+            if (previewSection) {
+                previewSection.classList.remove('hidden');
+                document.getElementById('captured-photo-preview').src = capturedImage;
+            }
+        }
+        
+        function showFinalOptions() {
+            // 스타일 선택 후 → 최종 옵션 화면
+            document.getElementById('section-products').classList.add('hidden');
+            document.getElementById('section-options').classList.remove('hidden');
+
+            document.getElementById('step-2').classList.remove('active');
+            document.getElementById('step-3').classList.add('active');
+
+            const product = products[selectedProduct];
+            document.getElementById('confirmed-photo').src = capturedImage;
+            document.getElementById('confirmed-product-name').textContent = product.name;
+            document.getElementById('confirmed-product-desc').textContent = product.description;
+            document.getElementById('btn-credit').textContent = product.eventPrice + ' cr';
+
+            // 옵션 표시
+            document.getElementById('options-resume').classList.toggle('hidden', selectedProduct !== 'resume');
+            document.getElementById('options-color').classList.toggle('hidden', selectedProduct !== 'color');
+            document.getElementById('options-profile').classList.toggle('hidden', selectedProduct !== 'profile');
+            document.getElementById('options-id').classList.toggle('hidden', selectedProduct !== 'id');
+        }
+
+        // ==================== Navigation ====================
+        function goBack() {
+            // 스타일 선택에서 시작 화면으로
+            document.getElementById('section-products').classList.add('hidden');
+            document.getElementById('section-start').classList.remove('hidden');
+
+            document.getElementById('step-2').classList.remove('active');
+            document.getElementById('step-1').classList.add('active');
+
+            capturedImage = null;
+            captureTime = null;
             
-            document.getElementById('thumb-preview').src = capturedImage;
-            showScreen('products');
+            const preview = document.getElementById('captured-preview');
+            if (preview) preview.classList.add('hidden');
         }
 
         function goToCamera() {
+            // 다시 촬영하기
             capturedImage = null;
             captureTime = null;
             selectedProduct = null;
-            
-            showScreen('camera');
-            initCamera();
-        }
 
-        // ==================== Product Selection ====================
-        function selectProduct(type) {
-            selectedProduct = type;
-            
-            document.querySelectorAll('[id^="card-"]').forEach(el => el.classList.remove('selected'));
-            document.getElementById('card-' + type)?.classList.add('selected');
-            
-            const product = products[type];
-            document.getElementById('options-thumb').src = capturedImage;
-            document.getElementById('options-product-name').textContent = product.name;
-            document.getElementById('options-product-desc').textContent = product.desc;
-            document.getElementById('generate-cost').textContent = product.price + ' cr';
-            
-            // 옵션 표시
-            ['resume', 'color', 'id', 'profile'].forEach(t => {
-                document.getElementById('opts-' + t)?.classList.add('hidden');
+            document.querySelectorAll('.product-card').forEach(card => {
+                card.classList.remove('selected');
             });
-            document.getElementById('opts-' + type)?.classList.remove('hidden');
-            
-            showScreen('options');
+
+            // 미리보기 숨기기
+            const preview = document.getElementById('captured-preview');
+            if (preview) preview.classList.add('hidden');
+
+            // 카메라 모달 열기
+            openCameraModal();
         }
 
-        function backToProducts() {
-            showScreen('products');
-        }
+        // ==================== Process ====================
+        // MONKOS API (Cloudflare Workers /api/photo)
 
-        function goToProducts() {
-            showScreen('products');
-        }
+        // 스타일 매핑 (Workers API용)
+        const STYLE_MAP = {
+            resume: 'suit',      // 정장
+            color: 'id_photo',   // 증명사진
+            profile: 'profile',  // 프로필
+            id: 'id_photo'       // 신분증
+        };
 
-        // ==================== Options ====================
-        function selectOption(category, value) {
-            selectedOptions[category] = value;
-            
-            document.querySelectorAll(`[data-opt^="${category}-"]`).forEach(btn => {
-                btn.classList.remove('selected');
-            });
-            document.querySelector(`[data-opt="${category}-${value}"]`)?.classList.add('selected');
-        }
-
-        // ==================== Generate ====================
+        // 방문자 정보에서 성별/연령 가져오기
         function getVisitorInfo() {
             try {
                 const saved = sessionStorage.getItem('MONK_VISITOR_INFO') || localStorage.getItem('MONK_VISITOR_INFO');
                 return saved ? JSON.parse(saved) : null;
-            } catch (e) { return null; }
+            } catch (e) {
+                return null;
+            }
         }
 
-        function buildPrompt(type, index) {
+        // 성별/연령 기반 프롬프트 생성 + 앵글 정보
+        function buildPersonalizedPrompt(style, index) {
             const visitor = getVisitorInfo();
-            let gender = 'person', ageDesc = 'adult';
+            
+            // 기본값
+            let gender = 'person';
+            let ageDesc = 'adult';
             
             if (visitor) {
                 gender = visitor.gender === 'M' ? 'Korean man' : 'Korean woman';
-                const ageMap = { '10s': 'young teenager', '20s': 'young adult', '30s': 'adult in 30s', '40s': 'mature adult', '50s': 'mature adult in 50s', '60+': 'senior' };
+                const ageMap = {
+                    '10s': 'young teenager',
+                    '20s': 'young adult in 20s',
+                    '30s': 'adult in 30s',
+                    '40s': 'mature adult in 40s',
+                    '50s': 'mature adult in 50s',
+                    '60+': 'senior adult'
+                };
                 ageDesc = ageMap[visitor.ageGroup] || 'adult';
             }
 
-            // 공통 스튜디오 세팅: 미들하이키, 85mm f/8.0 느낌
-            const studioBase = 'studio middle high-key lighting, 85mm lens f/8.0 look, soft shaping light, professional photography';
-            
-            const prompts = {
+            // 스타일별 세부 프롬프트 (앵글 정보 포함)
+            const stylePrompts = {
                 resume: [
-                    `SAME PERSON from input photo. Professional ID photo of this exact ${ageDesc} ${gender}, wearing formal ${selectedOptions.suit} suit with white dress shirt, pure white seamless background, ${studioBase}, head and shoulders frame, neutral confident expression. Keep identical face.`,
-                    `SAME PERSON from input photo. Professional ID photo of this exact ${ageDesc} ${gender}, wearing navy blue suit with crisp white shirt, pure white seamless background, ${studioBase}, passport style framing, slight natural smile. Preserve same facial features.`,
-                    `SAME PERSON from input photo. Professional portrait of this exact ${ageDesc} ${gender}, wearing ${selectedOptions.casual} casual shirt, light gray seamless background, ${studioBase}, head and shoulders, relaxed approachable expression. Keep exact same face.`,
-                    `SAME PERSON from input photo. Professional portrait of this exact ${ageDesc} ${gender}, smart casual blue shirt, soft gray seamless background, ${studioBase}, friendly natural expression. Maintain identical facial identity.`
+                    `Professional ID photo of ${ageDesc} ${gender}, wearing formal black suit with white dress shirt, clean white background, studio lighting, passport style, front facing`,
+                    `Professional ID photo of ${ageDesc} ${gender}, wearing navy blue suit with white dress shirt, clean white background, studio lighting, front facing`,
+                    `Professional portrait of ${ageDesc} ${gender}, wearing smart casual white shirt, clean gray background, soft studio lighting, front facing`,
+                    `Professional portrait of ${ageDesc} ${gender}, wearing light blue casual shirt, clean gray background, natural lighting, front facing`
                 ],
                 color: [
-                    `SAME PERSON from input photo. Professional ID photo of this exact ${ageDesc} ${gender}, pure white seamless background, ${studioBase}, neutral expression, passport style framing. Keep identical face.`,
-                    `SAME PERSON from input photo. Professional ID photo of this exact ${ageDesc} ${gender}, light sky blue seamless background, ${studioBase}, neutral expression, head and shoulders. Keep same face.`,
-                    `SAME PERSON from input photo. Professional ID photo of this exact ${ageDesc} ${gender}, soft pink seamless background, ${studioBase}, neutral expression, portrait framing. Preserve facial identity.`,
-                    `SAME PERSON from input photo. Professional ID photo of this exact ${ageDesc} ${gender}, light gray seamless background, ${studioBase}, neutral expression, ID photo style. Keep exact same face.`
-                ],
-                id: [
-                    `SAME PERSON from input photo. KOREAN PASSPORT PHOTO STRICT GOVERNMENT STANDARDS: This exact ${ageDesc} ${gender}, exact 3.5x4.5cm ratio frame, pure solid white background with absolutely NO patterns NO gradients NO shadows, both eyebrows must be fully visible and unobstructed, mouth closed NO teeth showing at all, strictly neutral expression with NO smile, face perfectly centered with 70-80% of frame height from top of head crown to bottom of chin, both ears must be visible, looking straight at camera, ${studioBase} with bright even flat high-key lighting and minimal soft shadow shaping for dimension. CRITICAL: Keep identical facial features and exact same face identity from input photo.`
+                    // 정장 2컷
+                    `Professional ID photo of ${ageDesc} ${gender}, wearing formal black suit with white dress shirt, clean pure white background, studio lighting, neutral expression, front facing`,
+                    `Professional ID photo of ${ageDesc} ${gender}, wearing formal navy blue suit with white dress shirt, light sky blue background, studio lighting, neutral expression, front facing`,
+                    // 캐주얼 2컷
+                    `Professional ID photo of ${ageDesc} ${gender}, wearing smart casual white shirt, soft pink background, studio lighting, friendly expression, front facing`,
+                    `Professional ID photo of ${ageDesc} ${gender}, wearing casual light blue shirt, light gray background, studio lighting, natural expression, front facing`
                 ],
                 profile: [
-                    `SAME PERSON from input photo. Professional UPPER BODY portrait of this exact ${ageDesc} ${gender}, slight three-quarter angle view, wearing smart business attire, subtle confident expression, ${studioBase}, soft gray gradient background, chest-up framing. Keep exact same face.`,
-                    `SAME PERSON from input photo. Professional UPPER BODY portrait of this exact ${ageDesc} ${gender}, arms crossed confident pose, business casual blazer, ${studioBase}, clean seamless background, waist-up framing, slight natural smile. Preserve identical facial features.`,
-                    `SAME PERSON from input photo. Modern KNEE-UP portrait of this exact ${ageDesc} ${gender}, relaxed standing pose hands in pockets, smart casual style, ${studioBase}, light gray seamless background, three-quarter body framing, friendly approachable expression. Keep same face identity.`,
-                    `SAME PERSON from input photo. Professional KNEE-UP portrait of this exact ${ageDesc} ${gender}, confident casual pose leaning slightly, trendy business casual outfit, ${studioBase}, soft gradient background, natural warm expression. Maintain exact facial identity.`
+                    // 프로필은 사선 각도로 - 좌/우 측면 촬영 활용
+                    `Executive business portrait of ${ageDesc} ${gender}, professional dark suit, modern office background, three-quarter angle view facing slightly left, confident expression, cinematic lighting`,
+                    `Business portrait of ${ageDesc} ${gender}, smart business casual, neutral background, three-quarter angle view facing slightly right, approachable expression, soft lighting`,
+                    `Modern SNS profile photo of ${ageDesc} ${gender}, casual style, aesthetic blurred background, diagonal angle view, friendly natural smile, warm lighting`,
+                    `Lifestyle portrait of ${ageDesc} ${gender}, natural outdoor setting, soft golden hour lighting, slight side angle, warm genuine expression`
+                ],
+                id: [
+                    `Official passport photo of ${ageDesc} ${gender}, pure white background, neutral expression, government standard, strictly front facing, no smile`,
+                    `Driver license photo of ${ageDesc} ${gender}, light blue background, neutral expression, official format, strictly front facing`,
+                    `National ID card photo of ${ageDesc} ${gender}, pure white background, neutral expression, official standard, strictly front facing`
                 ]
             };
 
-            return prompts[type]?.[index] || prompts.resume[0];
+            const prompts = stylePrompts[style] || stylePrompts.resume;
+            return prompts[index % prompts.length];
         }
+        
 
-        async function generatePhotos() {
+        async function processPhoto() {
             if (!capturedImage || !selectedProduct) return;
-            
+
             const product = products[selectedProduct];
-            const cost = product.price;
-            
+            const cost = product.eventPrice;
+
             if (userCredits < cost) {
-                alert(`크레딧이 부족합니다!\n필요: ${cost}cr / 보유: ${userCredits}cr`);
-                showScreen('payment');
+                alert(`크레딧이 부족합니다. 필요: ${cost}cr, 보유: ${userCredits}cr`);
                 return;
             }
-            
-            const btn = document.getElementById('generate-btn');
-            const status = document.getElementById('generate-status');
-            
+
+            const btn = document.getElementById('process-btn');
+            const status = document.getElementById('status');
+            const numImages = product.outputs || 4;
+
             btn.disabled = true;
-            document.getElementById('generate-text').innerHTML = '<i class="fas fa-spinner loading-spinner mr-2"></i>생성 중...';
+            document.getElementById('btn-text').textContent = '생성 중...';
+
+            // 결과 화면으로 이동 + 블러 오버레이 표시
+            document.getElementById('section-options').classList.add('hidden');
+            document.getElementById('section-results').classList.remove('hidden');
+            document.getElementById('generating-overlay').classList.remove('hidden');
+            document.getElementById('generating-progress').textContent = `0 / ${numImages}`;
             
+            // 결과 그리드 초기화 (빈 플레이스홀더)
+            const resultContainer = document.getElementById('result-images');
+            let placeholderHtml = '';
+            for (let i = 0; i < numImages; i++) {
+                placeholderHtml += `
+                    <div id="result-slot-${i}" class="aspect-[3/4] bg-gray-800 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-image text-gray-600 text-2xl"></i>
+                    </div>
+                `;
+            }
+            resultContainer.innerHTML = placeholderHtml;
+
+            document.getElementById('step-2').classList.remove('active');
+            document.getElementById('step-3').classList.add('active');
+
             try {
-                const results = [];
-                
-                for (let i = 0; i < product.outputs; i++) {
-                    status.textContent = `🎨 ${i + 1}/${product.outputs} 생성 중... (${product.labels[i]})`;
-                    
+                const generatedResults = [];
+
+                // MONKOS 검증 API 호출 (Cloudflare Workers) - 1컷씩 생성
+                for (let i = 0; i < numImages; i++) {
+                    const personalizedPrompt = buildPersonalizedPrompt(selectedProduct, i);
+                    document.getElementById('generating-progress').textContent = `${i} / ${numImages} (${product.labels[i] || ''})`;
+
+                    // ⭐ Cloudflare Workers /api/photo 호출
                     const response = await fetch('/api/photo', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             inputImage: capturedImage,
-                            style: selectedProduct === 'id' ? 'id_photo' : selectedProduct,
-                            prompt: buildPrompt(selectedProduct, i),
-                            aspectRatio: selectedProduct === 'id' ? '3:4' : '3:4',  // 신분증: 여권규격 3.5:4.5 ≈ 3:4
+                            style: STYLE_MAP[selectedProduct] || 'id_photo',
+                            prompt: personalizedPrompt,
+                            aspectRatio: '3:4',
                             preserveIdentity: true
                         })
                     });
-                    
-                    if (!response.ok) throw new Error('생성 실패');
-                    
+
+                    if (!response.ok) {
+                        const errData = await response.json();
+                        throw new Error(errData.error || `이미지 ${i + 1} 생성 실패`);
+                    }
+
                     const data = await response.json();
+
                     if (data.success && data.image) {
-                        results.push({ url: data.image, label: product.labels[i] });
+                        generatedResults.push({ url: data.image });
+                        
+                        // 블러 뒤에서 이미지 표시 (1컷씩 나타남)
+                        const slot = document.getElementById(`result-slot-${i}`);
+                        if (slot) {
+                            slot.innerHTML = `
+                                <div class="relative w-full h-full">
+                                    <img src="${data.image}" alt="Result ${i+1}" class="w-full h-full object-cover rounded-xl">
+                                    <span class="absolute bottom-2 left-2 text-[9px] px-1.5 py-0.5 bg-black/60 rounded">${product.labels[i] || '결과 ' + (i+1)}</span>
+                                </div>
+                            `;
+                        }
+                        document.getElementById('generating-progress').textContent = `${i + 1} / ${numImages}`;
                     }
                 }
-                
-                if (results.length === 0) throw new Error('이미지가 생성되지 않았습니다');
-                
-                generatedImages = results;
+
+                if (generatedResults.length === 0) {
+                    throw new Error('이미지가 생성되지 않았습니다');
+                }
+
+                generatedImages = generatedResults;
                 userCredits -= cost;
                 saveCredits();
                 
-                showResults();
+                // 완료! 블러 제거
+                document.getElementById('generating-overlay').classList.add('hidden');
+                status.textContent = `✅ ${generatedResults.length}장 생성 완료!`;
+
+            } catch (error) {
+                console.error('API Error:', error);
                 
-            } catch (e) {
-                console.error(e);
-                status.textContent = '❌ 오류: ' + e.message;
+                // 에러 시 옵션 화면으로 돌아가기
+                document.getElementById('section-results').classList.add('hidden');
+                document.getElementById('section-options').classList.remove('hidden');
+                document.getElementById('step-3').classList.remove('active');
+                document.getElementById('step-2').classList.add('active');
+                
+                alert('❌ 이미지 생성 오류\n\n' + error.message + '\n\n다시 시도해주세요.');
+                status.textContent = '';
             } finally {
                 btn.disabled = false;
-                document.getElementById('generate-text').innerHTML = '<i class="fas fa-magic mr-2"></i>AI 사진 생성';
+                document.getElementById('btn-text').textContent = 'AI 사진 생성하기';
             }
+        }
+
+        function buildPrompt() {
+            const prompts = {
+                resume: 'Professional Korean ID photo, formal business attire, clean white background, studio lighting',
+                color: 'Korean ID photo with colored background, professional portrait, studio quality',
+                profile: 'Professional profile photo, modern style, clean background, natural lighting',
+                id: 'Official ID photo, passport style, white background, neutral expression, government standard'
+            };
+            return prompts[selectedProduct] || prompts.resume;
+        }
+
+        function getOptions() {
+            const options = {};
+            if (selectedProduct === 'resume') {
+                options.suitStyle = document.getElementById('suit-style')?.value;
+                options.casualStyle = document.getElementById('casual-style')?.value;
+            }
+            return options;
         }
 
         // ==================== Results ====================
-        function showResults() {
-            const grid = document.getElementById('result-grid');
+        function showResults(images) {
+            document.getElementById('section-options').classList.add('hidden');
+            document.getElementById('section-results').classList.remove('hidden');
+
+            const product = products[selectedProduct];
+            const resultContainer = document.getElementById('result-images');
+            const labels = product.labels;
+
+            let html = '';
+            const displayImages = images && images.length > 0 ? images : [];
             
-            // 여권사진은 1컷이므로 크게 표시
-            if (selectedProduct === 'id' && generatedImages.length === 1) {
-                grid.classList.remove('grid-cols-2');
-                grid.classList.add('grid-cols-1', 'max-w-xs', 'mx-auto');
-            } else {
-                grid.classList.add('grid-cols-2');
-                grid.classList.remove('grid-cols-1', 'max-w-xs', 'mx-auto');
-            }
-            
-            grid.innerHTML = generatedImages.map((img, i) => `
-                <div class="relative">
-                    <img src="${img.url}" alt="${img.label}" class="w-full rounded-xl">
-                    <div class="absolute bottom-2 left-2 right-2 flex justify-between items-center">
-                        <span class="text-[10px] px-2 py-0.5 bg-black/60 rounded">${img.label}</span>
-                        <button onclick="downloadSingle(${i})" class="px-2 py-1 bg-so rounded text-[10px]">
-                            <i class="fas fa-download"></i>
-                        </button>
+            for (let i = 0; i < displayImages.length; i++) {
+                const img = displayImages[i];
+                // MONKOS 응답: url (data:image/png;base64,...)
+                const imgSrc = img.url || img.image || img;
+                
+                html += `
+                    <div class="relative group">
+                        <img src="${imgSrc}" alt="Result ${i+1}" class="w-full rounded-xl">
+                        <div class="absolute bottom-2 left-2 right-2 flex justify-between items-center">
+                            <span class="text-[9px] px-1.5 py-0.5 bg-black/60 rounded">${labels[i] || '결과 ' + (i+1)}</span>
+                            <button onclick="downloadSingle(${i})" class="opacity-0 group-hover:opacity-100 px-1.5 py-0.5 bg-so rounded text-[9px] transition-opacity">
+                                <i class="fas fa-download"></i>
+                            </button>
+                        </div>
                     </div>
-                </div>
-            `).join('');
-            
-            // 여권사진일 때만 인화 옵션 표시
-            const printOption = document.getElementById('passport-print-option');
-            if (printOption) {
-                if (selectedProduct === 'id') {
-                    printOption.classList.remove('hidden');
-                } else {
-                    printOption.classList.add('hidden');
-                }
+                `;
             }
 
-            showScreen('results');
+            if (displayImages.length === 0) {
+                html = `
+                    <div class="col-span-2 text-center py-8 text-gray-400">
+                        <i class="fas fa-image text-3xl mb-3"></i>
+                        <p class="text-sm">생성된 이미지가 없습니다.</p>
+                    </div>
+                `;
+            }
+
+            resultContainer.innerHTML = html;
         }
 
+        // 공유하기 (Web Share API)
+        async function shareImages() {
+            if (generatedImages.length === 0) {
+                alert('공유할 이미지가 없습니다.');
+                return;
+            }
+
+            try {
+                // Web Share API 지원 확인
+                if (navigator.share && navigator.canShare) {
+                    const files = [];
+                    
+                    for (let i = 0; i < generatedImages.length; i++) {
+                        const img = generatedImages[i];
+                        const imgData = img.url || img.image || img;
+                        
+                        // Base64를 Blob으로 변환
+                        const response = await fetch(imgData);
+                        const blob = await response.blob();
+                        const file = new File([blob], `MONKOS_${selectedProduct}_${i + 1}.png`, { type: 'image/png' });
+                        files.push(file);
+                    }
+
+                    if (navigator.canShare({ files })) {
+                        await navigator.share({
+                            title: 'MONK AI Photo',
+                            text: 'MONKOS로 생성한 AI 증명사진입니다.',
+                            files: files
+                        });
+                        return;
+                    }
+                }
+                
+                // Web Share API 미지원 시 대안
+                alert('📱 이미지를 길게 눌러서 직접 공유하거나,\n카카오톡/메시지 앱에서 사진첩의 이미지를 선택해 공유해주세요.');
+                
+            } catch (error) {
+                if (error.name !== 'AbortError') {
+                    console.error('Share error:', error);
+                    alert('📱 이미지를 길게 눌러서 직접 공유해주세요.');
+                }
+            }
+        }
+
+        // 사진첩 저장 안내
+        function saveToGallery() {
+            alert('📱 각 이미지를 길게 눌러 "사진에 추가"를 선택하면\n사진첩에 고화질로 저장됩니다.\n\n(모바일에서 가장 깔끔한 저장 방법이에요!)');
+        }
+
+        // 다운로드 함수 (백업용)
         function downloadSingle(index) {
             if (generatedImages[index]) {
+                const img = generatedImages[index];
+                const imgData = img.url || img.image || img;
+
                 const link = document.createElement('a');
-                link.href = generatedImages[index].url;
+                link.href = imgData;
                 link.download = `monkos_${selectedProduct}_${index + 1}.png`;
                 link.click();
             }
         }
 
-        function downloadAll() {
-            generatedImages.forEach((_, i) => {
-                setTimeout(() => downloadSingle(i), i * 500);
-            });
-        }
-        
-        // 텔레그램 전송
-        async function sendToTelegram() {
-            const visitor = getVisitorInfo();
-            
-            // 저장된 chat_id 확인
-            const chatId = localStorage.getItem('telegram_chat_id');
-            
-            if (!chatId) {
-                // 봇 연동 안내
-                const goToBot = confirm('📱 텔레그램 봇 연동이 필요합니다!\n\n@Monk_yonga_bot 에서 /start 후\n다시 시도해주세요.\n\n[확인]을 누르면 텔레그램으로 이동합니다.');
-                if (goToBot) {
-                    window.open('https://t.me/Monk_yonga_bot?start=photo_' + (visitor?.visitor_id || 'guest'), '_blank');
-                }
-                return;
-            }
-            
-            try {
-                const response = await fetch('/api/telegram', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        action: 'send_images',
-                        chat_id: chatId,
-                        images: generatedImages.map(img => img.url),
-                        product: selectedProduct,
-                        visitor_id: visitor?.visitor_id
-                    })
-                });
-                
-                const data = await response.json();
-                if (data.success) {
-                    alert('✅ 텔레그램으로 전송 완료!\n봇에서 이미지를 확인하세요.');
-                } else {
-                    throw new Error(data.error || '전송 실패');
-                }
-            } catch (e) {
-                console.error(e);
-                alert('전송 실패: ' + e.message + '\n\n다운로드 버튼을 이용해주세요.');
+        // 결제창으로 스크롤
+        function scrollToPayment() {
+            const paymentSection = document.querySelector('section.mt-6');
+            if (paymentSection) {
+                paymentSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         }
         
-        // 여권사진 인화 신청
-        async function orderPassportPrint() {
-            if (userCredits < 100) {
-                alert(`크레딧이 부족합니다!\n필요: 100cr / 보유: ${userCredits}cr`);
-                showScreen('payment');
-                return;
-            }
+        // 다른 스타일 생성 (촬영본 유지)
+        function changeStyle() {
+            document.getElementById('section-results').classList.add('hidden');
+            document.getElementById('section-products').classList.remove('hidden');
             
-            const visitor = getVisitorInfo();
-            const address = prompt('배송받을 주소를 입력하세요:\n(예: 서울시 강남구 테헤란로 123, 101동 1001호)');
+            document.getElementById('step-3').classList.remove('active');
+            document.getElementById('step-2').classList.add('active');
             
-            if (!address) {
-                alert('배송 주소가 필요합니다.');
-                return;
-            }
-            
-            const phone = visitor?.phone || prompt('연락처를 입력하세요:');
-            if (!phone) {
-                alert('연락처가 필요합니다.');
-                return;
-            }
-            
-            try {
-                // 인화 주문 API 호출
-                const response = await fetch('/api/print-order', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        product: 'passport_print_4',
-                        images: generatedImages.map(img => img.url),
-                        address: address,
-                        phone: phone,
-                        visitor_id: visitor?.visitor_id,
-                        credits: 100
-                    })
-                });
-                
-                if (response.ok) {
-                    userCredits -= 100;
-                    saveCredits();
-                    updateCreditsDisplay();
-                    alert('✅ 인화 주문이 완료되었습니다!\n\n📦 2-3일 내 배송됩니다.\n문의: 텔레그램 @monkos_bot');
-                } else {
-                    throw new Error('주문 실패');
-                }
-            } catch (e) {
-                // API 미구현시 텔레그램으로 대체
-                alert('📱 인화 서비스 준비중입니다!\n\n텔레그램 @monkos_bot 으로\n[인화신청] + 주소 + 연락처를 보내주세요.\n\n담당자가 확인 후 안내드립니다.');
-            }
-        }
-
-        function resetAll() {
-            capturedImage = null;
-            captureTime = null;
+            // 촬영본은 유지, 선택만 초기화
             selectedProduct = null;
             generatedImages = [];
             
-            showScreen('camera');
-            initCamera();
-        }
-
-        // ==================== Payment ====================
-        function selectPayment(amount) {
-            selectedPaymentAmount = amount;
-            
-            document.querySelectorAll('[data-pay]').forEach(el => {
-                el.classList.remove('border-so');
-                el.classList.add('border-gray-700');
+            document.querySelectorAll('.product-card').forEach(card => {
+                card.classList.remove('selected');
             });
-            document.querySelector(`[data-pay="${amount}"]`)?.classList.remove('border-gray-700');
-            document.querySelector(`[data-pay="${amount}"]`)?.classList.add('border-so');
-        }
-
-        function closePayment() {
-            showScreen('options');
-        }
-
-        async function processPayment() {
-            const amounts = { 100: { price: 10000, bonus: 0 }, 300: { price: 27000, bonus: 30 }, 500: { price: 40000, bonus: 100 }, 1000: { price: 70000, bonus: 300 } };
-            const selected = amounts[selectedPaymentAmount];
-            const total = selectedPaymentAmount + selected.bonus;
             
-            // 토스페이먼츠 테스트 모드 (실제 결제 X)
-            const confirmed = confirm(`[테스트 모드]\n\n${total} 크레딧을 ₩${selected.price.toLocaleString()}에 충전합니다.\n\n※ 실제 결제가 진행되지 않습니다.`);
-            
-            if (confirmed) {
-                userCredits += total;
-                saveCredits();
-                alert(`✨ ${total} 크레딧이 충전되었습니다!`);
-                showScreen('options');
+            // 촬영된 사진 미리보기 표시 유지
+            const previewSection = document.getElementById('captured-preview');
+            if (previewSection && capturedImage) {
+                previewSection.classList.remove('hidden');
+                document.getElementById('captured-photo-preview').src = capturedImage;
             }
         }
+        
+        // 다시 촬영 (완전 초기화)
+        function retakeAndReset() {
+            document.getElementById('section-results').classList.add('hidden');
+            document.getElementById('section-start').classList.remove('hidden');
+            
+            document.getElementById('step-3').classList.remove('active');
+            document.getElementById('step-1').classList.add('active');
+            
+            selectedProduct = null;
+            capturedImage = null;
+            captureTime = null;
+            generatedImages = [];
+            
+            document.querySelectorAll('.product-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            const preview = document.getElementById('captured-preview');
+            if (preview) preview.classList.add('hidden');
+        }
 
-        // ==================== Start ====================
-        document.addEventListener('DOMContentLoaded', init);
+        function resetAll() {
+            document.getElementById('section-results').classList.add('hidden');
+            document.getElementById('section-start').classList.remove('hidden');
+
+            document.getElementById('step-3').classList.remove('active');
+            document.getElementById('step-1').classList.add('active');
+
+            selectedProduct = null;
+            capturedImage = null;
+            captureTime = null;
+            generatedImages = [];
+            
+            document.querySelectorAll('.product-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+        }
+
+        // ==================== Initialize ====================
+        document.addEventListener('DOMContentLoaded', () => {
+            checkDevice();
+            loadCredits();
+            initTossPayments();
+            handlePaymentCallback();
+            // 카메라는 "촬영 시작" 버튼 클릭 시 시작됨
+        });
     </script>
+
 </body>
 </html>
