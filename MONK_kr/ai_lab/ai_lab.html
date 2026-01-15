@@ -560,11 +560,26 @@
             `);
         }
 
+        // 방문목적 → 서비스 경로 매핑
+        const purposeRoutes = {
+            'AI 증명사진': 'so_so/apps/ai_photo.html',
+            'AI 프로필': 'so_so/apps/ai_photo.html',
+            'AI 이미지 생성': 'so_so/so_so.html',
+            '포트폴리오 제작': 'so_so/so_so.html',
+            '상업용 콘텐츠': 'so_so/so_so.html',
+            'B2B 제휴': null, // AI Lab 메인 유지
+            '기술 체험': 'so_so/so_so.html',
+            '기타': null // AI Lab 메인 유지
+        };
+
         async function selectPurpose(purpose) {
             visitorSchema.purpose = purpose;
             addUserMessage(purpose);
             
-            await addBotMessage('준비 완료! 🎉', 500);
+            const targetRoute = purposeRoutes[purpose];
+            const routeText = targetRoute ? `👉 ${purpose} 바로가기!` : '준비 완료! 🎉';
+            
+            await addBotMessage(routeText, 500);
             await addBotMessage('서비스 이용을 위해 동의가 필요해요', 800);
             
             setInputArea(`
@@ -585,7 +600,7 @@
                     
                     <!-- 선택 정보 토글 -->
                     <button onclick="toggleOptionalInfo()" id="optional-toggle" class="w-full text-left text-xs text-gray-500 hover:text-gray-300 py-2 flex items-center gap-2">
-                        <i class="fas fa-chevron-down" id="toggle-icon"></i> 연락처/이름 입력 (선택)
+                        <i class="fas fa-chevron-down" id="toggle-icon"></i> 연락처/이름 입력 시 100cr 지급!
                     </button>
                     <div id="optional-fields" class="hidden space-y-2">
                         <input type="text" id="input-name" placeholder="이름 (선택)" 
@@ -597,7 +612,7 @@
                     </div>
                     
                     <button onclick="finalSubmit()" class="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-xl px-6 py-4 font-black uppercase tracking-widest transition-all shadow-lg shadow-ai/20">
-                        🚀 시작하기
+                        🚀 ${targetRoute ? purpose + ' 시작' : '시작하기'}
                     </button>
                 </div>
             `);
@@ -689,9 +704,20 @@
             
             if (bonusCredits > 0) {
                 await addBotMessage(`<span class="text-yellow-400 font-bold">🎁 오픈 기념 ${bonusCredits} 크레딧 지급!</span>`, 1000);
-                await addBotMessage('<span class="text-xs text-emerald-400">💡 AI 증명사진 1세트 무료 체험 가능!</span>', 1200);
+                await addBotMessage('<span class="text-xs text-emerald-400">💡 AI 증명사진, 프로필, 이미지 생성 등<br>&nbsp;&nbsp;&nbsp;MONK.KR 전체 서비스에서 사용 가능!</span>', 1200);
             } else {
-                await addBotMessage('<span class="text-xs text-gray-400">💡 연락처 입력 시 100 크레딧 지급!</span>', 1000);
+                await addBotMessage('<span class="text-xs text-gray-400">💡 연락처 입력 시 100 크레딧 지급!<br>&nbsp;&nbsp;&nbsp;MONK.KR 전체 서비스 이용 가능</span>', 1000);
+            }
+            
+            // 방문목적에 따라 바로 이동
+            const targetRoute = purposeRoutes[visitorSchema.purpose];
+            if (targetRoute) {
+                await addBotMessage(`<span class="text-so">✨ ${visitorSchema.purpose}(으)로 이동합니다!</span>`, 800);
+                setTimeout(() => {
+                    closeVisitorModal();
+                    window.location.href = targetRoute;
+                }, 1500);
+                return;
             }
             
             setInputArea(`
