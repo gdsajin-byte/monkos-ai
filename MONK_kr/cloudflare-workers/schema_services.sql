@@ -1,5 +1,77 @@
 -- MONK 서비스 맵 트리 데이터베이스
 
+-- ============================================
+-- 0. 방문자 정보 (2026-01-15 추가)
+-- ============================================
+CREATE TABLE IF NOT EXISTS shared_visitors (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    visitor_id TEXT UNIQUE NOT NULL,        -- UUID (클라이언트 생성)
+    country TEXT DEFAULT 'KR',              -- 국가 코드
+    gender TEXT,                            -- M, F
+    age_group TEXT,                         -- 10s, 20s, 30s, 40s, 50s, 60+
+    job TEXT,                               -- 직업군
+    purpose TEXT,                           -- 방문 목적
+    name TEXT,                              -- 이름 (선택)
+    phone TEXT,                             -- 연락처 (선택)
+    email TEXT,                             -- 이메일 (선택)
+    privacy_consent INTEGER DEFAULT 0,      -- 개인정보 동의
+    marketing_consent INTEGER DEFAULT 0,    -- 마케팅 동의
+    user_agent TEXT,                        -- 브라우저 정보
+    ip_address TEXT,                        -- IP (해시 권장)
+    referrer TEXT,                          -- 유입 경로
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    last_visit DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 방문자 인덱스
+CREATE INDEX IF NOT EXISTS idx_visitors_created ON shared_visitors(created_at);
+CREATE INDEX IF NOT EXISTS idx_visitors_country ON shared_visitors(country);
+CREATE INDEX IF NOT EXISTS idx_visitors_gender ON shared_visitors(gender);
+CREATE INDEX IF NOT EXISTS idx_visitors_age ON shared_visitors(age_group);
+
+-- ============================================
+-- 0-2. 결제/거래 정보 (토스페이먼츠 연동용)
+-- ============================================
+CREATE TABLE IF NOT EXISTS transactions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    transaction_id TEXT UNIQUE NOT NULL,    -- 내부 거래 ID
+    visitor_id TEXT NOT NULL,               -- 방문자 FK
+    payment_key TEXT,                       -- 토스페이먼츠 paymentKey
+    order_id TEXT UNIQUE NOT NULL,          -- 주문 ID
+    order_name TEXT,                        -- 주문명 (예: "크레딧 300")
+    amount INTEGER NOT NULL,                -- 결제 금액 (원)
+    credits INTEGER NOT NULL,               -- 지급 크레딧
+    status TEXT DEFAULT 'pending',          -- pending, completed, failed, refunded
+    method TEXT,                            -- CARD, VIRTUAL_ACCOUNT, etc.
+    approved_at DATETIME,                   -- 승인 시간
+    receipt_url TEXT,                       -- 영수증 URL
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (visitor_id) REFERENCES shared_visitors(visitor_id)
+);
+
+-- 거래 인덱스
+CREATE INDEX IF NOT EXISTS idx_transactions_visitor ON transactions(visitor_id);
+CREATE INDEX IF NOT EXISTS idx_transactions_status ON transactions(status);
+CREATE INDEX IF NOT EXISTS idx_transactions_created ON transactions(created_at);
+
+-- ============================================
+-- 0-3. 크레딧 사용 이력
+-- ============================================
+CREATE TABLE IF NOT EXISTS credit_usage (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    visitor_id TEXT NOT NULL,
+    credits_used INTEGER NOT NULL,          -- 사용 크레딧
+    service_type TEXT NOT NULL,             -- resume, color, profile, id
+    result_count INTEGER DEFAULT 1,         -- 생성 이미지 수
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (visitor_id) REFERENCES shared_visitors(visitor_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_usage_visitor ON credit_usage(visitor_id);
+CREATE INDEX IF NOT EXISTS idx_usage_service ON credit_usage(service_type);
+
+-- ============================================
 -- 1. 서비스 카테고리 (최상위)
 CREATE TABLE IF NOT EXISTS service_categories (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

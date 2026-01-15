@@ -382,8 +382,10 @@
         }
 
         // ============ 쌍아 챗봇 스키마 수집 시스템 ============
+        // ⭐ 증명사진 생성을 위한 필수 정보 포함
         const visitorSchema = {
-            country: '', name: '', birthYear: '', job: '', purpose: '',
+            country: '', name: '', gender: '', birthYear: '', ageGroup: '',
+            job: '', purpose: '',
             phone: '', email: '', privacyConsent: false, marketingConsent: false
         };
         let currentStep = 0;
@@ -397,8 +399,22 @@
             { code: 'OTHER', flag: '🌍', name: '기타', lang: 'en' }
         ];
 
-        const jobs = ['학생', '직장인', '개인사업자', '기업', '프리랜서', '크리에이터', '기타'];
-        const purposes = ['AI 사진관', 'AI 이미지 생성', 'AI Model Agency', '포트폴리오 제작', '상업용 콘텐츠', 'B2B 제휴', '기술 체험', '기타'];
+        const genders = [
+            { code: 'M', emoji: '👨', label: '남성' },
+            { code: 'F', emoji: '👩', label: '여성' }
+        ];
+
+        const ageGroups = [
+            { code: '10s', label: '10대', range: '청소년' },
+            { code: '20s', label: '20대', range: '청년' },
+            { code: '30s', label: '30대', range: '청년' },
+            { code: '40s', label: '40대', range: '중년' },
+            { code: '50s', label: '50대', range: '중년' },
+            { code: '60+', label: '60대 이상', range: '장년' }
+        ];
+
+        const jobs = ['학생', '취업준비생', '직장인', '개인사업자', '기업', '프리랜서', '크리에이터', '기타'];
+        const purposes = ['AI 증명사진', 'AI 프로필', 'AI 이미지 생성', '포트폴리오 제작', '상업용 콘텐츠', 'B2B 제휴', '기술 체험', '기타'];
 
         // 국가 자동 감지
         async function detectCountry() {
@@ -451,7 +467,7 @@
             
             await addBotMessage('안녕하세요! 저는 <strong class="text-ai">MONKOS</strong>예요 🤖✨', 300);
             await addBotMessage('MONK AI LAB에 오신 걸 환영해요!', 800);
-            await addBotMessage(`${country.flag} <strong>${country.name}</strong>에서 접속하셨네요! 맞으신가요?`, 1200);
+            await addBotMessage(`${country.flag} <strong>${country.name}</strong>에서 접속하셨네요!`, 1200);
             
             setInputArea(`
                 <div class="flex flex-wrap gap-2 justify-center">
@@ -471,60 +487,52 @@
             visitorSchema.country = code;
             addUserMessage(`${country.flag} ${country.name}`);
             
-            await addBotMessage('좋아요! 이름을 알려주세요 😊', 500);
+            await addBotMessage('성별을 선택해주세요 😊', 500);
+            await addBotMessage('<span class="text-xs text-gray-500">💡 정확한 정보가 AI 결과물 품질을 높여요</span>', 800);
+            
             setInputArea(`
-                <div class="flex gap-2">
-                    <input type="text" id="input-name" placeholder="이름을 입력하세요" 
-                        class="flex-1 bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white text-sm focus:border-ai focus:outline-none"
-                        onkeypress="if(event.key==='Enter') submitName()">
-                    <button onclick="submitName()" class="bg-ai hover:bg-ai/80 text-white rounded-xl px-6 py-3 font-bold transition-colors">
-                        <i class="fas fa-arrow-right"></i>
-                    </button>
+                <div class="flex gap-4 justify-center">
+                    ${genders.map(g => `
+                        <button onclick="selectGender('${g.code}')" 
+                            class="flex-1 max-w-[140px] py-6 bg-gray-800 hover:bg-ai text-gray-300 hover:text-white rounded-2xl text-center font-bold transition-all hover:scale-105">
+                            <div class="text-4xl mb-2">${g.emoji}</div>
+                            <div class="text-sm">${g.label}</div>
+                        </button>
+                    `).join('')}
                 </div>
             `);
-            document.getElementById('input-name').focus();
         }
 
-        async function submitName() {
-            const name = document.getElementById('input-name').value.trim();
-            if (name.length < 2) {
-                await addBotMessage('이름은 2자 이상 입력해주세요! 🙏', 0);
-                return;
-            }
-            visitorSchema.name = name;
-            addUserMessage(name);
+        async function selectGender(code) {
+            const gender = genders.find(g => g.code === code);
+            visitorSchema.gender = code;
+            addUserMessage(`${gender.emoji} ${gender.label}`);
             
-            await addBotMessage(`${name}님, 반가워요! 💫`, 500);
-            await addBotMessage('출생연도를 선택해주세요', 800);
+            await addBotMessage('연령대를 선택해주세요 🎂', 500);
             
-            const currentYear = new Date().getFullYear();
-            let options = '';
-            for (let decade = 2020; decade >= 1950; decade -= 10) {
-                options += `<button onclick="selectDecade(${decade})" class="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-xl text-sm font-bold transition-colors">${decade}~${decade+9}</button>`;
-            }
-            setInputArea(`<div class="flex flex-wrap gap-2 justify-center">${options}</div>`);
-        }
-
-        async function selectDecade(decade) {
-            let options = '';
-            const currentYear = new Date().getFullYear();
-            for (let year = decade + 9; year >= decade; year--) {
-                if (year <= currentYear && year >= 1940) {
-                    options += `<button onclick="selectYear(${year})" class="px-3 py-2 bg-gray-800 hover:bg-ai text-gray-300 hover:text-white rounded-lg text-sm transition-colors">${year}</button>`;
-                }
-            }
             setInputArea(`
-                <div class="text-center mb-2 text-xs text-gray-500">${decade}년대</div>
-                <div class="flex flex-wrap gap-2 justify-center">${options}</div>
-                <button onclick="startChat(); currentStep=0;" class="mt-3 text-xs text-gray-500 hover:text-ai">← 다시 선택</button>
+                <div class="grid grid-cols-3 gap-2">
+                    ${ageGroups.map(a => `
+                        <button onclick="selectAgeGroup('${a.code}')" 
+                            class="px-3 py-4 bg-gray-800 hover:bg-ai text-gray-300 hover:text-white rounded-xl text-sm font-bold transition-colors">
+                            ${a.label}
+                        </button>
+                    `).join('')}
+                </div>
             `);
         }
 
-        async function selectYear(year) {
-            visitorSchema.birthYear = year;
-            addUserMessage(`${year}년생`);
+        async function selectAgeGroup(code) {
+            const ageGroup = ageGroups.find(a => a.code === code);
+            visitorSchema.ageGroup = code;
+            addUserMessage(ageGroup.label);
             
-            await addBotMessage('직업이 어떻게 되세요?', 500);
+            // 연령대에서 대략적인 출생연도 추정
+            const currentYear = new Date().getFullYear();
+            const ageMap = { '10s': 15, '20s': 25, '30s': 35, '40s': 45, '50s': 55, '60+': 65 };
+            visitorSchema.birthYear = currentYear - (ageMap[code] || 30);
+            
+            await addBotMessage('직업군을 선택해주세요 💼', 500);
             setInputArea(`
                 <div class="grid grid-cols-2 gap-2">
                     ${jobs.map(j => `
@@ -556,41 +564,7 @@
             visitorSchema.purpose = purpose;
             addUserMessage(purpose);
             
-            await addBotMessage('거의 다 됐어요! 📱', 500);
-            await addBotMessage('연락처나 이메일을 남겨주시면<br>특별 혜택과 업데이트를 알려드릴게요!<br><span class="text-gray-500 text-xs">(선택사항)</span>', 800);
-            
-            setInputArea(`
-                <div class="space-y-3">
-                    <input type="tel" id="input-phone" placeholder="연락처 (선택)" 
-                        class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white text-sm focus:border-ai focus:outline-none">
-                    <input type="email" id="input-email" placeholder="이메일 (선택)" 
-                        class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white text-sm focus:border-ai focus:outline-none">
-                    <button onclick="submitContact()" class="w-full bg-ai hover:bg-ai/80 text-white rounded-xl px-6 py-3 font-bold transition-colors">
-                        다음 →
-                    </button>
-                    <button onclick="skipContact()" class="w-full text-gray-500 hover:text-gray-300 text-xs py-2">
-                        건너뛰기
-                    </button>
-                </div>
-            `);
-        }
-
-        async function submitContact() {
-            visitorSchema.phone = document.getElementById('input-phone').value.trim();
-            visitorSchema.email = document.getElementById('input-email').value.trim();
-            if (visitorSchema.phone || visitorSchema.email) {
-                addUserMessage(`${visitorSchema.phone || ''} ${visitorSchema.email || ''}`.trim());
-            }
-            await showConsent();
-        }
-
-        async function skipContact() {
-            addUserMessage('건너뛰기');
-            await showConsent();
-        }
-
-        async function showConsent() {
-            await addBotMessage('마지막이에요! 📋', 500);
+            await addBotMessage('준비 완료! 🎉', 500);
             await addBotMessage('서비스 이용을 위해 동의가 필요해요', 800);
             
             setInputArea(`
@@ -608,6 +582,20 @@
                             <strong class="text-gray-500">[선택]</strong> 마케팅 정보 수신에 동의합니다
                         </span>
                     </label>
+                    
+                    <!-- 선택 정보 토글 -->
+                    <button onclick="toggleOptionalInfo()" id="optional-toggle" class="w-full text-left text-xs text-gray-500 hover:text-gray-300 py-2 flex items-center gap-2">
+                        <i class="fas fa-chevron-down" id="toggle-icon"></i> 연락처/이름 입력 (선택)
+                    </button>
+                    <div id="optional-fields" class="hidden space-y-2">
+                        <input type="text" id="input-name" placeholder="이름 (선택)" 
+                            class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white text-sm focus:border-ai focus:outline-none">
+                        <input type="tel" id="input-phone" placeholder="연락처 (선택)" 
+                            class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white text-sm focus:border-ai focus:outline-none">
+                        <input type="email" id="input-email" placeholder="이메일 (선택)" 
+                            class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white text-sm focus:border-ai focus:outline-none">
+                    </div>
+                    
                     <button onclick="finalSubmit()" class="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-xl px-6 py-4 font-black uppercase tracking-widest transition-all shadow-lg shadow-ai/20">
                         🚀 시작하기
                     </button>
@@ -615,8 +603,20 @@
             `);
         }
 
+        function toggleOptionalInfo() {
+            const fields = document.getElementById('optional-fields');
+            const icon = document.getElementById('toggle-icon');
+            if (fields.classList.contains('hidden')) {
+                fields.classList.remove('hidden');
+                icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
+            } else {
+                fields.classList.add('hidden');
+                icon.classList.replace('fa-chevron-up', 'fa-chevron-down');
+            }
+        }
+
         function showPrivacyPolicy() {
-            alert('개인정보 수집·이용 동의\\n\\n수집항목: 이름, 출생연도, 직업, 연락처, 이메일\\n수집목적: 서비스 제공, 고객 관리\\n보유기간: 회원 탈퇴 시까지\\n\\n※ 동의를 거부할 수 있으나, 서비스 이용이 제한됩니다.');
+            alert('개인정보 수집·이용 동의\\n\\n[필수 수집항목]\\n- 성별, 연령대, 직업군, 방문목적\\n\\n[선택 수집항목]\\n- 이름, 연락처, 이메일\\n\\n[수집목적]\\n- AI 서비스 최적화 및 맞춤 결과물 제공\\n- 서비스 개선 및 통계 분석\\n\\n[보유기간]\\n- 수집일로부터 1년\\n- 철회 요청 시 즉시 파기\\n\\n※ 필수 항목에 동의하지 않으면 서비스 이용이 제한됩니다.');
         }
 
         async function finalSubmit() {
@@ -630,13 +630,69 @@
             visitorSchema.marketingConsent = document.getElementById('marketing-consent').checked;
             visitorSchema.registeredAt = new Date().toISOString();
             
+            // 선택 필드 저장
+            const nameInput = document.getElementById('input-name');
+            const phoneInput = document.getElementById('input-phone');
+            const emailInput = document.getElementById('input-email');
+            if (nameInput) visitorSchema.name = nameInput.value.trim();
+            if (phoneInput) visitorSchema.phone = phoneInput.value.trim();
+            if (emailInput) visitorSchema.email = emailInput.value.trim();
+            
+            // visitor_id 생성 (UUID)
+            visitorSchema.visitor_id = visitorSchema.visitor_id || crypto.randomUUID();
+            
             // LocalStorage에 저장 (재방문 시 스킵용)
             localStorage.setItem('MONK_VISITOR_INFO', JSON.stringify(visitorSchema));
             sessionStorage.setItem('MONK_VISITOR_INFO', JSON.stringify(visitorSchema));
             
+            // ⭐ 서버로 데이터 전송 (D1 백업)
+            try {
+                await fetch('/api/visitor', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        visitor_id: visitorSchema.visitor_id,
+                        country: visitorSchema.country,
+                        gender: visitorSchema.gender,
+                        age_group: visitorSchema.ageGroup,
+                        job: visitorSchema.job,
+                        purpose: visitorSchema.purpose,
+                        name: visitorSchema.name,
+                        phone: visitorSchema.phone,
+                        email: visitorSchema.email,
+                        privacy_consent: visitorSchema.privacyConsent,
+                        marketing_consent: visitorSchema.marketingConsent
+                    })
+                });
+                console.log('✅ Visitor data saved to server');
+            } catch (err) {
+                console.warn('⚠️ Server backup failed (offline mode)', err);
+            }
+            
             addUserMessage('동의 완료! 🎉');
-            await addBotMessage(`${visitorSchema.name}님, 환영해요! 🎊`, 500);
-            await addBotMessage('MONK AI LAB의 모든 서비스를 이용하실 수 있어요!', 800);
+            
+            const genderEmoji = visitorSchema.gender === 'M' ? '👨' : '👩';
+            const ageLabel = ageGroups.find(a => a.code === visitorSchema.ageGroup)?.label || '';
+            const greeting = visitorSchema.name ? `${visitorSchema.name}님, ` : '';
+            
+            // ⭐ 오픈 기념 100 크레딧 지급 (연락처 입력 시)
+            let bonusCredits = 0;
+            const hasContact = visitorSchema.name || visitorSchema.phone || visitorSchema.email;
+            if (hasContact) {
+                bonusCredits = 100;
+                const currentCredits = parseInt(localStorage.getItem('monkos_credits') || '0');
+                localStorage.setItem('monkos_credits', currentCredits + bonusCredits);
+            }
+            
+            await addBotMessage(`${greeting}환영해요! 🎊`, 500);
+            await addBotMessage(`${genderEmoji} ${ageLabel} ${visitorSchema.job} - 준비 완료!`, 800);
+            
+            if (bonusCredits > 0) {
+                await addBotMessage(`<span class="text-yellow-400 font-bold">🎁 오픈 기념 ${bonusCredits} 크레딧 지급!</span>`, 1000);
+                await addBotMessage('<span class="text-xs text-emerald-400">💡 AI 증명사진 1세트 무료 체험 가능!</span>', 1200);
+            } else {
+                await addBotMessage('<span class="text-xs text-gray-400">💡 연락처 입력 시 100 크레딧 지급!</span>', 1000);
+            }
             
             setInputArea(`
                 <button onclick="closeVisitorModal()" class="w-full bg-ai hover:bg-white hover:text-ai text-white rounded-xl px-6 py-4 font-black uppercase tracking-widest transition-all">

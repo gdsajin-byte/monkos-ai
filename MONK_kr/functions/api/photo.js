@@ -1,5 +1,6 @@
 // MONK AI Photo API - Cloudflare Workers
 // 기반: apps/imagen3 (MONKOS 검증 로직)
+// ⭐ 핵심: gemini-3-pro-image-preview + BLOCK_NONE = 정체성 유지 성공
 
 // 정체성 유지 프롬프트 (MONKOS에서 검증됨)
 const IDENTITY_PRESERVATION = "CRITICAL INSTRUCTION: Maintain the exact facial features, body proportions, skin tone, facial structure, eye shape, nose, lips, and overall model identity. Preserve the person's unique characteristics completely and precisely.";
@@ -25,7 +26,7 @@ export async function onRequestPost(context) {
   };
 
   try {
-    const { inputImage, style = 'id_photo', aspectRatio = '3:4', preserveIdentity = true } = await request.json();
+    const { inputImage, style = 'id_photo', prompt = '', aspectRatio = '3:4', preserveIdentity = true } = await request.json();
 
     if (!inputImage) {
       return new Response(JSON.stringify({ 
@@ -48,15 +49,17 @@ export async function onRequestPost(context) {
     const mimeType = mimeTypeMatch ? mimeTypeMatch[1] : 'image/png';
     const base64Data = inputImage.includes(',') ? inputImage.split(',')[1] : inputImage;
 
-    // 프롬프트 구성
-    const stylePrompt = STYLE_PROMPTS[style] || STYLE_PROMPTS.id_photo;
+    // 프롬프트 구성 (MONKOS 방식)
+    // 개인화된 프롬프트가 있으면 우선 사용, 없으면 기본 스타일 프롬프트
+    const stylePrompt = prompt || STYLE_PROMPTS[style] || STYLE_PROMPTS.id_photo;
     const instruction = preserveIdentity 
       ? `${IDENTITY_PRESERVATION}\n\n[IMAGE-TO-IMAGE TRANSFORM] ${stylePrompt}`
       : `[IMAGE-TO-IMAGE TRANSFORM] ${stylePrompt}`;
 
-    // Google AI Studio API 호출 (gemini-3-pro-image-preview)
+    // ⭐ Google AI Studio API - gemini-3-pro-image-preview (MONKOS 검증 모델)
+    // NOT gemini-2.0-flash-exp! 정체성 유지 실패함
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image-preview:generateContent?key=${apiKey}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -68,9 +71,11 @@ export async function onRequestPost(context) {
             ]
           }],
           generationConfig: {
-            responseModalities: ["image", "text"],
-            imagenConfig: { aspectRatio }
+            imageConfig: { 
+              aspectRatio: aspectRatio 
+            }
           },
+          // ⭐ BLOCK_NONE - MONKOS 검증 (정체성 유지 핵심)
           safetySettings: [
             { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
             { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
@@ -104,7 +109,7 @@ export async function onRequestPost(context) {
         style,
         aspectRatio,
         identityPreserved: preserveIdentity,
-        model: 'gemini-2.0-flash-exp'
+        model: 'gemini-3-pro-image-preview'  // MONKOS 검증 모델
       }
     }), { headers: corsHeaders });
 

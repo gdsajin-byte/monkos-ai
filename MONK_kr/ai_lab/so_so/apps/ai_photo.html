@@ -237,6 +237,9 @@
                 <span class="px-3 py-1 rounded-full bg-so/10 border border-so/20 text-so text-[10px] font-bold uppercase tracking-widest">
                     AI PHOTO
                 </span>
+                <span class="px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-[10px] font-bold uppercase tracking-widest">
+                    MONKOS ENGINE
+                </span>
                 <span class="event-badge px-3 py-1 rounded-full text-white text-[10px] font-bold uppercase tracking-widest">
                     🎉 50% OPEN EVENT
                 </span>
@@ -244,7 +247,7 @@
             <h1 class="text-2xl font-black mb-2 tracking-tight">
                 AI 증명사진 스튜디오
             </h1>
-            <p class="text-gray-500 text-sm">실시간 촬영 · 딥페이크 방지</p>
+            <p class="text-gray-500 text-sm">gemini-3-pro · 정체성 유지 · 딥페이크 방지</p>
         </div>
 
         <!-- 보안 안내 배너 -->
@@ -397,8 +400,7 @@
             </div>
         </section>
 
-        <!-- STEP 2: Camera Capture -->
-        <!-- STEP 1: Camera (메인 화면) -->
+        <!-- STEP 1: Camera (정면 1컷) -->
         <section id="section-camera" class="mb-8">
             <div class="flex items-center justify-between mb-4">
                 <h2 class="text-lg font-bold">실시간 촬영</h2>
@@ -672,7 +674,7 @@
     </main>
 
     <footer class="border-t border-white/5 py-4 px-4 text-center">
-        <p class="text-gray-600 text-[9px] tracking-widest uppercase">© 2026 MONK STUDIO. Powered by MONKOS.AI</p>
+        <p class="text-gray-600 text-[9px] tracking-widest uppercase">© 2026 MONK STUDIO. Powered by MONKOS Engine (gemini-3-pro-image-preview)</p>
     </footer>
 
     <script>
@@ -887,7 +889,7 @@
             
             document.getElementById('preview-section').classList.add('hidden');
             document.getElementById('camera-viewfinder').classList.remove('hidden');
-
+            
             // 카메라 재활성화
             if (cameraStream) {
                 cameraStream.getTracks().forEach(track => track.enabled = true);
@@ -895,7 +897,7 @@
         }
 
         function confirmPhoto() {
-            // 실시간 촬영 검증 (10초 이내)
+            // 실시간 촬영 검증 (1분 이내)
             const now = new Date();
             const timeDiff = now - captureTime;
             
@@ -922,7 +924,7 @@
             document.getElementById('step-1').classList.remove('active');
             document.getElementById('step-2').classList.add('active');
 
-            // 촬영된 사진 미리보기 표시 (스타일 선택 상단에)
+            // 촬영된 사진 미리보기 표시
             const previewSection = document.getElementById('captured-preview');
             if (previewSection) {
                 previewSection.classList.remove('hidden');
@@ -990,10 +992,80 @@
         }
 
         // ==================== Process ====================
-        // Workers API (MONKOS 로직 적용) - 로컬 테스트용
-        const API_BASE_URL = window.location.hostname === 'localhost' 
-            ? 'http://localhost:3003'  // 로컬 테스트
-            : '';  // 배포시 같은 도메인 /api/photo
+        // ⭐ MONKOS 검증 엔진: gemini-3-pro-image-preview + BLOCK_NONE
+        // Cloudflare Workers /api/photo 사용 (정체성 유지 성공)
+
+        // 스타일 매핑 (Workers API용)
+        const STYLE_MAP = {
+            resume: 'suit',      // 정장
+            color: 'id_photo',   // 증명사진
+            profile: 'profile',  // 프로필
+            id: 'id_photo'       // 신분증
+        };
+
+        // 방문자 정보에서 성별/연령 가져오기
+        function getVisitorInfo() {
+            try {
+                const saved = sessionStorage.getItem('MONK_VISITOR_INFO') || localStorage.getItem('MONK_VISITOR_INFO');
+                return saved ? JSON.parse(saved) : null;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        // 성별/연령 기반 프롬프트 생성 + 앵글 정보
+        function buildPersonalizedPrompt(style, index) {
+            const visitor = getVisitorInfo();
+            
+            // 기본값
+            let gender = 'person';
+            let ageDesc = 'adult';
+            
+            if (visitor) {
+                gender = visitor.gender === 'M' ? 'Korean man' : 'Korean woman';
+                const ageMap = {
+                    '10s': 'young teenager',
+                    '20s': 'young adult in 20s',
+                    '30s': 'adult in 30s',
+                    '40s': 'mature adult in 40s',
+                    '50s': 'mature adult in 50s',
+                    '60+': 'senior adult'
+                };
+                ageDesc = ageMap[visitor.ageGroup] || 'adult';
+            }
+
+            // 스타일별 세부 프롬프트 (앵글 정보 포함)
+            const stylePrompts = {
+                resume: [
+                    `Professional ID photo of ${ageDesc} ${gender}, wearing formal black suit with white dress shirt, clean white background, studio lighting, passport style, front facing`,
+                    `Professional ID photo of ${ageDesc} ${gender}, wearing navy blue suit with white dress shirt, clean white background, studio lighting, front facing`,
+                    `Professional portrait of ${ageDesc} ${gender}, wearing smart casual white shirt, clean gray background, soft studio lighting, front facing`,
+                    `Professional portrait of ${ageDesc} ${gender}, wearing light blue casual shirt, clean gray background, natural lighting, front facing`
+                ],
+                color: [
+                    `Professional ID photo of ${ageDesc} ${gender}, clean pure white background, studio lighting, neutral expression, front facing`,
+                    `Professional ID photo of ${ageDesc} ${gender}, light sky blue background, studio lighting, neutral expression, front facing`,
+                    `Professional ID photo of ${ageDesc} ${gender}, soft pink background, studio lighting, neutral expression, front facing`,
+                    `Professional ID photo of ${ageDesc} ${gender}, light gray background, studio lighting, neutral expression, front facing`
+                ],
+                profile: [
+                    // 프로필은 사선 각도로 - 좌/우 측면 촬영 활용
+                    `Executive business portrait of ${ageDesc} ${gender}, professional dark suit, modern office background, three-quarter angle view facing slightly left, confident expression, cinematic lighting`,
+                    `Business portrait of ${ageDesc} ${gender}, smart business casual, neutral background, three-quarter angle view facing slightly right, approachable expression, soft lighting`,
+                    `Modern SNS profile photo of ${ageDesc} ${gender}, casual style, aesthetic blurred background, diagonal angle view, friendly natural smile, warm lighting`,
+                    `Lifestyle portrait of ${ageDesc} ${gender}, natural outdoor setting, soft golden hour lighting, slight side angle, warm genuine expression`
+                ],
+                id: [
+                    `Official passport photo of ${ageDesc} ${gender}, pure white background, neutral expression, government standard, strictly front facing, no smile`,
+                    `Driver license photo of ${ageDesc} ${gender}, light blue background, neutral expression, official format, strictly front facing`,
+                    `National ID card photo of ${ageDesc} ${gender}, pure white background, neutral expression, official standard, strictly front facing`
+                ]
+            };
+
+            const prompts = stylePrompts[style] || stylePrompts.resume;
+            return prompts[index % prompts.length];
+        }
+        
 
         async function processPhoto() {
             if (!capturedImage || !selectedProduct) return;
@@ -1011,45 +1083,63 @@
 
             btn.disabled = true;
             document.getElementById('btn-text').textContent = '생성 중...';
-            status.textContent = 'AI가 사진을 처리하고 있습니다...';
+            
+            const visitor = getVisitorInfo();
+            const nameText = visitor?.name ? `${visitor.name}님의 ` : '';
+            status.textContent = `🎨 ${nameText}맞춤 사진 생성 중...`;
+            status.classList.remove('text-red-400');
             status.classList.add('text-so');
 
-            // 스타일 매핑
-            const styleMap = {
-                resume: 'id_photo',
-                color: 'id_photo', 
-                profile: 'profile',
-                id: 'id_photo'
-            };
-
             try {
-                // MONKOS 로직 기반 Workers API 호출
-                const response = await fetch(`${API_BASE_URL}/api/i2i`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        inputImage: capturedImage,
-                        style: styleMap[selectedProduct] || 'id_photo',
-                        aspectRatio: '3:4',
-                        preserveIdentity: true  // 정체성 유지 (핵심!)
-                    })
-                });
+                const generatedResults = [];
+                const numImages = product.outputs || 4;
 
-                const data = await response.json();
+                // MONKOS 검증 API 호출 (Cloudflare Workers)
+                for (let i = 0; i < numImages; i++) {
+                    const personalizedPrompt = buildPersonalizedPrompt(selectedProduct, i);
+                    status.textContent = `🎨 ${i + 1}/${numImages} 이미지 생성 중... (${product.labels[i] || ''})`;
 
-                if (!data.success) {
-                    throw new Error(data.error || '이미지 생성에 실패했습니다.');
+                    // ⭐ Cloudflare Workers /api/photo 호출
+                    const response = await fetch('/api/photo', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            inputImage: capturedImage,
+                            style: STYLE_MAP[selectedProduct] || 'id_photo',
+                            prompt: personalizedPrompt,  // 개인화된 프롬프트
+                            aspectRatio: '3:4',
+                            preserveIdentity: true  // 정체성 유지 핵심!
+                        })
+                    });
+
+                    if (!response.ok) {
+                        const errData = await response.json();
+                        throw new Error(errData.error || `이미지 ${i + 1} 생성 실패`);
+                    }
+
+                    const data = await response.json();
+                    
+                    if (data.success && data.image) {
+                        generatedResults.push({
+                            url: data.image
+                        });
+                    }
                 }
 
-                // 단일 이미지 → 배열로 변환 (UI 호환)
-                generatedImages = [data.image];
+                if (generatedResults.length === 0) {
+                    throw new Error('이미지가 생성되지 않았습니다');
+                }
+
+                generatedImages = generatedResults;
                 userCredits -= cost;
                 saveCredits();
                 showResults(generatedImages);
+                status.textContent = `✅ ${generatedResults.length}장 생성 완료!`;
 
             } catch (error) {
-                console.error('API Error:', error);
+                console.error('MONKOS API Error:', error);
                 status.textContent = '❌ 오류: ' + error.message;
+                status.classList.remove('text-so');
                 status.classList.add('text-red-400');
             } finally {
                 btn.disabled = false;
@@ -1090,9 +1180,8 @@
             
             for (let i = 0; i < displayImages.length; i++) {
                 const img = displayImages[i];
-                const imgSrc = img.imageBytes 
-                    ? `data:image/png;base64,${img.imageBytes}` 
-                    : (img.url || capturedImage);
+                // MONKOS 응답: url (data:image/png;base64,...)
+                const imgSrc = img.url || img.image || img;
                 
                 html += `
                     <div class="relative group">
@@ -1119,29 +1208,11 @@
             resultContainer.innerHTML = html;
         }
 
-        function resetAll() {
-            document.getElementById('section-results').classList.add('hidden');
-            document.getElementById('section-products').classList.remove('hidden');
-
-            document.getElementById('step-3').classList.remove('active');
-            document.getElementById('step-1').classList.add('active');
-
-            selectedProduct = null;
-            capturedImage = null;
-            captureTime = null;
-            generatedImages = [];
-            
-            document.querySelectorAll('.product-card').forEach(card => {
-                card.classList.remove('selected');
-            });
-        }
-
+        // 다운로드 함수 (MONKOS 형식)
         function downloadSingle(index) {
             if (generatedImages[index]) {
                 const img = generatedImages[index];
-                const imgData = img.imageBytes 
-                    ? `data:image/png;base64,${img.imageBytes}` 
-                    : img.url;
+                const imgData = img.url || img.image || img;
                 
                 const link = document.createElement('a');
                 link.href = imgData;
@@ -1157,6 +1228,23 @@
             }
             generatedImages.forEach((img, index) => {
                 setTimeout(() => downloadSingle(index), index * 500);
+            });
+        }
+
+        function resetAll() {
+            document.getElementById('section-results').classList.add('hidden');
+            document.getElementById('section-products').classList.remove('hidden');
+
+            document.getElementById('step-3').classList.remove('active');
+            document.getElementById('step-1').classList.add('active');
+
+            selectedProduct = null;
+            capturedImage = null;
+            captureTime = null;
+            generatedImages = [];
+            
+            document.querySelectorAll('.product-card').forEach(card => {
+                card.classList.remove('selected');
             });
         }
 
