@@ -2,8 +2,12 @@
 // 기반: apps/imagen3 (MONKOS 검증 로직)
 // ⭐ 핵심: gemini-3-pro-image-preview + BLOCK_NONE = 정체성 유지 성공
 
-// 정체성 유지 프롬프트 (MONKOS에서 검증됨)
-const IDENTITY_PRESERVATION = "CRITICAL INSTRUCTION: Maintain the exact facial features, body proportions, skin tone, facial structure, eye shape, nose, lips, and overall model identity. Preserve the person's unique characteristics completely and precisely.";
+// 정체성 유지 프롬프트 (MONKOS에서 검증됨) - 2026-01-17 강화
+const IDENTITY_PRESERVATION = `ABSOLUTE RULE #1: DO NOT CHANGE THE PERSON'S FACE.
+Keep the EXACT SAME person from the input image. This is a REAL PERSON's ID photo - their identity MUST be preserved 100%.
+Maintain: exact facial features, face shape, eye shape, nose, lips, skin tone, age appearance, and all unique characteristics.
+ONLY change: clothing, background, lighting, and minor touch-ups.
+DO NOT: make them younger, older, different gender, or different ethnicity. The output must be recognizable as the SAME PERSON.`;
 
 // 스타일별 프롬프트
 const STYLE_PROMPTS = {

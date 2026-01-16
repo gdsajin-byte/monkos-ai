@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- v2026.01.16.0702 - QR modal fix -->
+<!-- v2026.01.17.0001 - 제1원칙: 동일인 유지 강화 -->
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -1209,53 +1209,44 @@
         }
 
         // 성별/연령 기반 프롬프트 생성 + 앵글 정보
+        // ⭐ 2026-01-17: 제1원칙 = 동일인 유지! 성별/연령은 힌트로만
         function buildPersonalizedPrompt(style, index) {
             const visitor = getVisitorInfo();
             
-            // 기본값
-            let gender = 'person';
-            let ageDesc = 'adult';
-            
+            // 힌트 (있으면 참고, 없어도 OK - 얼굴은 무조건 유지)
+            let hint = '';
             if (visitor) {
-                gender = visitor.gender === 'M' ? 'Korean man' : 'Korean woman';
-                const ageMap = {
-                    '10s': 'young teenager',
-                    '20s': 'young adult in 20s',
-                    '30s': 'adult in 30s',
-                    '40s': 'mature adult in 40s',
-                    '50s': 'mature adult in 50s',
-                    '60+': 'senior adult'
-                };
-                ageDesc = ageMap[visitor.ageGroup] || 'adult';
+                const genderHint = visitor.gender === 'M' ? 'male' : 'female';
+                hint = `(hint: ${genderHint})`;
             }
 
-            // 스타일별 세부 프롬프트 (앵글 정보 포함)
+            // ⭐ 핵심: "SAME PERSON" 강제 삽입
+            const SAME_PERSON = "the SAME PERSON from input photo";
+
+            // 스타일별 세부 프롬프트
             const stylePrompts = {
                 resume: [
-                    `Professional ID photo of ${ageDesc} ${gender}, wearing formal black suit with white dress shirt, clean white background, studio lighting, passport style, front facing`,
-                    `Professional ID photo of ${ageDesc} ${gender}, wearing navy blue suit with white dress shirt, clean white background, studio lighting, front facing`,
-                    `Professional portrait of ${ageDesc} ${gender}, wearing smart casual white shirt, clean gray background, soft studio lighting, front facing`,
-                    `Professional portrait of ${ageDesc} ${gender}, wearing light blue casual shirt, clean gray background, natural lighting, front facing`
+                    `Professional ID photo of ${SAME_PERSON} ${hint}, wearing formal black suit with white dress shirt, clean white background, studio lighting, passport style, front facing`,
+                    `Professional ID photo of ${SAME_PERSON} ${hint}, wearing navy blue suit with white dress shirt, clean white background, studio lighting, front facing`,
+                    `Professional portrait of ${SAME_PERSON} ${hint}, wearing smart casual white shirt, clean gray background, soft studio lighting, front facing`,
+                    `Professional portrait of ${SAME_PERSON} ${hint}, wearing light blue casual shirt, clean gray background, natural lighting, front facing`
                 ],
                 color: [
-                    // 정장 2컷
-                    `Professional ID photo of ${ageDesc} ${gender}, wearing formal black suit with white dress shirt, clean pure white background, studio lighting, neutral expression, front facing`,
-                    `Professional ID photo of ${ageDesc} ${gender}, wearing formal navy blue suit with white dress shirt, light sky blue background, studio lighting, neutral expression, front facing`,
-                    // 캐주얼 2컷
-                    `Professional ID photo of ${ageDesc} ${gender}, wearing smart casual white shirt, soft pink background, studio lighting, friendly expression, front facing`,
-                    `Professional ID photo of ${ageDesc} ${gender}, wearing casual light blue shirt, light gray background, studio lighting, natural expression, front facing`
+                    `Professional ID photo of ${SAME_PERSON} ${hint}, wearing formal black suit with white dress shirt, clean pure white background, studio lighting, neutral expression, front facing`,
+                    `Professional ID photo of ${SAME_PERSON} ${hint}, wearing formal navy blue suit with white dress shirt, light sky blue background, studio lighting, neutral expression, front facing`,
+                    `Professional ID photo of ${SAME_PERSON} ${hint}, wearing smart casual white shirt, soft pink background, studio lighting, friendly expression, front facing`,
+                    `Professional ID photo of ${SAME_PERSON} ${hint}, wearing casual light blue shirt, light gray background, studio lighting, natural expression, front facing`
                 ],
                 profile: [
-                    // 프로필은 사선 각도로 - 좌/우 측면 촬영 활용
-                    `Executive business portrait of ${ageDesc} ${gender}, professional dark suit, modern office background, three-quarter angle view facing slightly left, confident expression, cinematic lighting`,
-                    `Business portrait of ${ageDesc} ${gender}, smart business casual, neutral background, three-quarter angle view facing slightly right, approachable expression, soft lighting`,
-                    `Modern SNS profile photo of ${ageDesc} ${gender}, casual style, aesthetic blurred background, diagonal angle view, friendly natural smile, warm lighting`,
-                    `Lifestyle portrait of ${ageDesc} ${gender}, natural outdoor setting, soft golden hour lighting, slight side angle, warm genuine expression`
+                    `Executive business portrait of ${SAME_PERSON} ${hint}, professional dark suit, modern office background, three-quarter angle view, confident expression, cinematic lighting`,
+                    `Business portrait of ${SAME_PERSON} ${hint}, smart business casual, neutral background, three-quarter angle view, approachable expression, soft lighting`,
+                    `Modern SNS profile photo of ${SAME_PERSON} ${hint}, casual style, aesthetic blurred background, diagonal angle view, friendly natural smile, warm lighting`,
+                    `Lifestyle portrait of ${SAME_PERSON} ${hint}, natural outdoor setting, soft golden hour lighting, slight side angle, warm genuine expression`
                 ],
                 id: [
-                    `Official passport photo of ${ageDesc} ${gender}, pure white background, neutral expression, government standard, strictly front facing, no smile`,
-                    `Driver license photo of ${ageDesc} ${gender}, light blue background, neutral expression, official format, strictly front facing`,
-                    `National ID card photo of ${ageDesc} ${gender}, pure white background, neutral expression, official standard, strictly front facing`
+                    `Official passport photo of ${SAME_PERSON} ${hint}, pure white background, neutral expression, government standard, strictly front facing, no smile`,
+                    `Driver license photo of ${SAME_PERSON} ${hint}, light blue background, neutral expression, official format, strictly front facing`,
+                    `National ID card photo of ${SAME_PERSON} ${hint}, pure white background, neutral expression, official standard, strictly front facing`
                 ]
             };
 
