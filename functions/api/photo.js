@@ -44,39 +44,10 @@ export async function onRequestPost(context) {
       }), { status: 500, headers: corsHeaders });
     }
 
-    // Base64 파싱 (안전한 방식)
-    let base64Data;
-    let mimeType = 'image/jpeg';
-    
-    try {
-      if (inputImage.startsWith('data:')) {
-        // data:image/jpeg;base64,/9j/4AAQ... 형식
-        const matches = inputImage.match(/data:([^;]+);base64,(.+)/);
-        if (matches) {
-          mimeType = matches[1];
-          base64Data = matches[2];
-        } else {
-          throw new Error('Invalid data URL format');
-        }
-      } else {
-        // 순수 base64만 있는 경우
-        base64Data = inputImage;
-      }
-      
-      // base64 문자열 정리 (공백, 줄바꿈 제거)
-      base64Data = base64Data.replace(/\s/g, '');
-      
-      // base64 유효성 검증
-      if (!/^[A-Za-z0-9+/]*={0,2}$/.test(base64Data)) {
-        throw new Error('Invalid base64 string');
-      }
-      
-    } catch (parseError) {
-      return new Response(JSON.stringify({ 
-        success: false, 
-        error: 'Base64 이미지 형식이 올바르지 않습니다: ' + parseError.message
-      }), { status: 400, headers: corsHeaders });
-    }
+    // Base64 파싱
+    const mimeTypeMatch = inputImage.match(/data:([^;]+);base64/);
+    const mimeType = mimeTypeMatch ? mimeTypeMatch[1] : 'image/png';
+    const base64Data = inputImage.includes(',') ? inputImage.split(',')[1] : inputImage;
 
     // 프롬프트 구성 (MONKOS 방식)
     // 개인화된 프롬프트가 있으면 우선 사용, 없으면 기본 스타일 프롬프트
@@ -118,7 +89,7 @@ export async function onRequestPost(context) {
     if (!response.ok) {
       const errorText = await response.text();
       console.error('API Error:', errorText);
-      throw new Error(`API 오류 ${response.status}: ${errorText.substring(0, 200)}`);
+      throw new Error(`API 오류: ${response.status}`);
     }
 
     const data = await response.json();
