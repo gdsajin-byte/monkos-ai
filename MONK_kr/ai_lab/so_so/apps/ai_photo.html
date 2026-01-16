@@ -1404,9 +1404,10 @@
                     `Lifestyle portrait of ${SAME_PERSON} ${hint}, natural outdoor setting, soft golden hour lighting, slight side angle, warm genuine expression`
                 ],
                 id: [
-                    `Official passport photo of ${SAME_PERSON} ${hint}, pure white background, neutral expression, government standard, strictly front facing, no smile`,
-                    `Driver license photo of ${SAME_PERSON} ${hint}, light blue background, neutral expression, official format, strictly front facing`,
-                    `National ID card photo of ${SAME_PERSON} ${hint}, pure white background, neutral expression, official standard, strictly front facing`
+                    // 신분증 세트: 모든 배경 흰색 통일 (규정)
+                    `Official passport photo of ${SAME_PERSON} ${hint}, pure white background, neutral expression, government standard 3.5x4.5cm ratio, strictly front facing, no smile, ears visible`,
+                    `Driver license photo of ${SAME_PERSON} ${hint}, pure white background, neutral expression, official format 3x4cm ratio, strictly front facing, ears visible`,
+                    `National ID card photo of ${SAME_PERSON} ${hint}, pure white background, neutral expression, official standard 3.5x4.5cm ratio, strictly front facing, ears visible`
                 ]
             };
 
@@ -1449,6 +1450,25 @@
                     </div>
                 `;
             }
+            
+            // 신분증 세트(3장)일 때: 4번째 슬롯에 몽크사진관 CTA 카드
+            if (selectedProduct === 'id') {
+                placeholderHtml += `
+                    <div id="monk-studio-cta" class="aspect-[3/4] bg-gradient-to-br from-emerald-900/50 to-emerald-700/30 border-2 border-emerald-500/50 border-dashed rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-emerald-400 hover:bg-emerald-800/30 transition-all"
+                         onclick="goToMonkStudio()">
+                        <div class="text-center px-3">
+                            <i class="fas fa-store text-emerald-400 text-3xl mb-3"></i>
+                            <p class="text-emerald-400 font-bold text-sm mb-1">발급 보장</p>
+                            <p class="text-white font-bold text-base mb-2">몽크사진관</p>
+                            <div class="bg-emerald-500/20 rounded-lg px-2 py-1 mb-2">
+                                <p class="text-[10px] text-emerald-300">전문가 후처리 + 인화 배송</p>
+                            </div>
+                            <p class="text-yellow-400 font-bold text-sm">100 cr</p>
+                        </div>
+                    </div>
+                `;
+            }
+            
             resultContainer.innerHTML = placeholderHtml;
 
             document.getElementById('step-2').classList.remove('active');
@@ -1603,6 +1623,24 @@
                 `;
             }
 
+            // 신분증 세트(3장)일 때: 몽크사진관 CTA 카드 추가
+            if (selectedProduct === 'id') {
+                html += `
+                    <div id="monk-studio-cta" class="aspect-[3/4] bg-gradient-to-br from-emerald-900/50 to-emerald-700/30 border-2 border-emerald-500/50 border-dashed rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-emerald-400 hover:bg-emerald-800/30 transition-all"
+                         onclick="goToMonkStudio()">
+                        <div class="text-center px-3">
+                            <i class="fas fa-store text-emerald-400 text-3xl mb-3"></i>
+                            <p class="text-emerald-400 font-bold text-sm mb-1">발급 보장</p>
+                            <p class="text-white font-bold text-base mb-2">몽크사진관</p>
+                            <div class="bg-emerald-500/20 rounded-lg px-2 py-1 mb-2">
+                                <p class="text-[10px] text-emerald-300">전문가 후처리 + 인화 배송</p>
+                            </div>
+                            <p class="text-yellow-400 font-bold text-sm">100 cr</p>
+                        </div>
+                    </div>
+                `;
+            }
+            
             resultContainer.innerHTML = html;
             
             // 핀치줌 방지 이벤트 바인딩
@@ -1922,6 +1960,66 @@
             
             const preview = document.getElementById('captured-preview');
             if (preview) preview.classList.add('hidden');
+        }
+        
+        // ==================== 몽크사진관 연결 (후처리+배송) ====================
+        const STUDIO_COST = 100;  // 후처리 + 인화 + 배송
+        
+        function goToMonkStudio() {
+            if (generatedImages.length === 0) {
+                alert('먼저 사진을 생성해주세요.');
+                return;
+            }
+            
+            if (userCredits < STUDIO_COST) {
+                alert(`❌ 크레딧 부족!\n\n몽크사진관 서비스: ${STUDIO_COST}cr\n현재: ${userCredits}cr`);
+                return;
+            }
+            
+            // 확인 후 결제 및 연결
+            const msg = `📸 몽크사진관 서비스\n\n` +
+                        `✅ AI 생성 사진 전달\n` +
+                        `✅ 전문가 후처리 보정\n` +
+                        `✅ 규격 인화 (여권/면허/민증)\n` +
+                        `✅ 배송 (2~3일 소요)\n\n` +
+                        `💰 ${STUDIO_COST}cr 차감됩니다.\n` +
+                        `현재: ${userCredits}cr → ${userCredits - STUDIO_COST}cr\n\n` +
+                        `진행하시겠습니까?`;
+            
+            if (confirm(msg)) {
+                userCredits -= STUDIO_COST;
+                saveCredits();
+                
+                // 생성된 이미지 데이터를 세션에 저장 (챗봇에서 참조)
+                const studioOrder = {
+                    type: 'id_photo_print',
+                    images: generatedImages.map(img => img.url || img.image || img),
+                    product: 'id',
+                    timestamp: new Date().toISOString(),
+                    visitorId: localStorage.getItem('MONK_VISITOR_ID') || 'anonymous'
+                };
+                sessionStorage.setItem('MONK_STUDIO_ORDER', JSON.stringify(studioOrder));
+                
+                // 몽크사진관 챗봇 페이지로 이동
+                alert('✅ 주문이 접수되었습니다!\n\n몽크사진관 담당자가 확인 후 연락드립니다.\n(챗봇에서 진행 상황을 확인할 수 있습니다)');
+                
+                // TODO: 실제 챗봇 페이지 URL로 변경
+                // window.location.href = '/monk_studio/chatbot.html';
+                
+                // 현재는 알림만 표시
+                const ctaCard = document.getElementById('monk-studio-cta');
+                if (ctaCard) {
+                    ctaCard.innerHTML = `
+                        <div class="text-center px-3">
+                            <i class="fas fa-check-circle text-emerald-400 text-3xl mb-3"></i>
+                            <p class="text-emerald-400 font-bold text-sm mb-1">주문 완료!</p>
+                            <p class="text-white text-xs">담당자 확인 중...</p>
+                        </div>
+                    `;
+                    ctaCard.classList.remove('cursor-pointer', 'hover:border-emerald-400', 'hover:bg-emerald-800/30');
+                    ctaCard.onclick = null;
+                }
+            }
         }
 
         function resetAll() {
