@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- v2026.01.16.2304 - 토너먼트 UX: 풀스크린 프리뷰 + 업셀링 퍼널 -->
+<!-- v2026.01.16.2309 - 워터마크 + 유료 다운로드 + 환불규정 -->
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -230,6 +230,39 @@
         }
         @keyframes slideUp {
             to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* 워터마크 오버레이 */
+        .watermark-overlay {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .watermark-text {
+            position: absolute;
+            font-size: 24px;
+            font-weight: 900;
+            color: rgba(255, 255, 255, 0.15);
+            letter-spacing: 8px;
+            white-space: nowrap;
+            transform: rotate(-35deg);
+            text-transform: uppercase;
+            user-select: none;
+        }
+        .watermark-text:nth-child(1) { top: 15%; left: -10%; }
+        .watermark-text:nth-child(2) { top: 35%; left: 10%; }
+        .watermark-text:nth-child(3) { top: 55%; left: -5%; }
+        .watermark-text:nth-child(4) { top: 75%; left: 15%; }
+        
+        /* 풀스크린 워터마크 (더 크게) */
+        .fullscreen-watermark .watermark-text {
+            font-size: 48px;
+            color: rgba(255, 255, 255, 0.12);
+            letter-spacing: 12px;
         }
     </style>
 </head>
@@ -653,15 +686,9 @@
                 </div>
 
                 <div class="space-y-2">
-                    <button onclick="shareImages()" class="w-full py-3 bg-so text-white font-bold rounded-xl hover:bg-so/80 transition-colors text-sm">
-                        <i class="fas fa-share-alt mr-2"></i>공유하기
-                    </button>
-                    <button onclick="saveToGallery()" class="w-full py-3 bg-gray-800 text-white rounded-xl hover:bg-gray-700 transition-colors text-sm">
-                        <i class="fas fa-images mr-2"></i>사진첩 저장
-                    </button>
                     <div class="flex gap-2">
                         <button onclick="changeStyle()" class="flex-1 py-3 bg-purple-600 text-white rounded-xl hover:bg-purple-500 transition-colors text-sm">
-                            <i class="fas fa-palette mr-2"></i>다른 스타일 생성
+                            <i class="fas fa-palette mr-2"></i>다른 스타일
                         </button>
                         <button onclick="retakeAndReset()" class="flex-1 py-3 bg-gray-700 text-white rounded-xl hover:bg-gray-600 transition-colors text-sm">
                             <i class="fas fa-camera mr-2"></i>다시 촬영
@@ -669,8 +696,11 @@
                     </div>
                 </div>
                 
-                <p class="text-center text-[10px] text-gray-500 mt-3">
-                    <i class="fas fa-hand-pointer mr-1"></i>이미지를 터치하면 저장됩니다
+                <p class="text-center text-[10px] text-gray-400 mt-3">
+                    <i class="fas fa-hand-pointer mr-1"></i>이미지를 터치하여 원본 다운로드
+                </p>
+                <p class="text-center text-[9px] text-gray-600 mt-1">
+                    미리보기에는 워터마크가 포함되어 있습니다
                 </p>
             </div>
         </section>
@@ -792,7 +822,16 @@
             <i class="fas fa-times"></i>
         </button>
         
-        <img id="fullscreen-image" src="" alt="Selected Photo">
+        <div class="relative">
+            <img id="fullscreen-image" src="" alt="Selected Photo">
+            <!-- 풀스크린 워터마크 -->
+            <div class="watermark-overlay fullscreen-watermark" id="fullscreen-watermark">
+                <span class="watermark-text">MONK</span>
+                <span class="watermark-text">MONK</span>
+                <span class="watermark-text">MONK</span>
+                <span class="watermark-text">MONK</span>
+            </div>
+        </div>
         
         <div class="fullscreen-actions">
             <!-- "이게 나예요" 버튼 (토너먼트 선택) -->
@@ -800,26 +839,34 @@
                 <i class="fas fa-heart mr-2"></i>이게 나예요!
             </button>
             
-            <!-- 화질 선택 -->
+            <!-- 화질 선택 (유료만) -->
+            <p class="text-center text-gray-400 text-xs mb-2">워터마크 없는 원본 다운로드</p>
             <div class="grid grid-cols-3 gap-2">
-                <button onclick="downloadWithQuality('1k')" class="py-3 bg-gray-800 text-white rounded-xl text-sm hover:bg-gray-700">
+                <button onclick="downloadWithQuality('1k')" class="py-3 bg-gray-800 border border-gray-700 text-white rounded-xl text-sm hover:bg-gray-700 hover:border-so/50">
                     <div class="font-bold">1K</div>
-                    <div class="text-[10px] text-gray-400">무료</div>
+                    <div class="text-[10px] text-yellow-400">20cr</div>
                 </button>
-                <button onclick="downloadWithQuality('2k')" class="py-3 bg-gray-800 border border-so/50 text-white rounded-xl text-sm hover:bg-gray-700">
+                <button onclick="downloadWithQuality('2k')" class="py-3 bg-gradient-to-br from-so/20 to-purple-500/20 border-2 border-so text-white rounded-xl text-sm hover:from-so/30 hover:to-purple-500/30">
                     <div class="font-bold text-so">2K</div>
-                    <div class="text-[10px] text-so">+20cr</div>
+                    <div class="text-[10px] text-so">30cr ⭐</div>
                 </button>
-                <button onclick="downloadWithQuality('4k')" class="py-3 bg-gray-800 text-white rounded-xl text-sm hover:bg-gray-700">
+                <button onclick="downloadWithQuality('4k')" class="py-3 bg-gray-800 border border-gray-700 text-white rounded-xl text-sm hover:bg-gray-700 hover:border-so/50">
                     <div class="font-bold">4K</div>
-                    <div class="text-[10px] text-gray-400">+30cr</div>
+                    <div class="text-[10px] text-gray-400">50cr</div>
                 </button>
             </div>
             
             <!-- 인화 서비스 -->
             <button onclick="goToPrint()" class="w-full py-3 bg-gray-900 border border-gray-700 text-white rounded-xl text-sm hover:border-so/50">
-                <i class="fas fa-print mr-2 text-so"></i>인화 서비스 <span class="text-gray-500 ml-1">+100cr → 몽크사진관</span>
+                <i class="fas fa-print mr-2 text-so"></i>실물 인화 <span class="text-gray-500 ml-1">+100cr → 몽크사진관</span>
             </button>
+            
+            <!-- 환불 규정 (토스 규격) -->
+            <div class="text-center text-[9px] text-gray-600 mt-2 leading-relaxed">
+                <p>다운로드 완료 시 환불 불가</p>
+                <p>전자상거래법 제17조 제2항 제5호에 따라</p>
+                <p>디지털 콘텐츠는 이용 개시 후 청약철회가 제한됩니다</p>
+            </div>
         </div>
         
         <p class="text-gray-500 text-xs mt-4">배경을 터치하면 닫힙니다</p>
@@ -1501,6 +1548,13 @@
                 html += `
                     <div class="result-card relative cursor-pointer rounded-xl overflow-hidden" onclick="openFullPreview(${i})">
                         <img src="${imgSrc}" alt="Result ${i+1}" class="w-full aspect-[3/4] object-cover">
+                        <!-- 워터마크 오버레이 -->
+                        <div class="watermark-overlay">
+                            <span class="watermark-text">MONK</span>
+                            <span class="watermark-text">MONK</span>
+                            <span class="watermark-text">MONK</span>
+                            <span class="watermark-text">MONK</span>
+                        </div>
                         <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 hover:opacity-100 transition-opacity">
                             <div class="absolute bottom-3 left-3 right-3 flex justify-between items-center">
                                 <span class="text-[10px] px-2 py-1 bg-black/60 rounded-full">${labels[i] || '결과 ' + (i+1)}</span>
@@ -1617,7 +1671,7 @@
             closeFullPreview();
         }
         
-        // 화질별 다운로드
+        // 화질별 다운로드 (유료)
         function downloadWithQuality(quality) {
             if (currentPreviewIndex === null) return;
             
@@ -1625,28 +1679,42 @@
             const imgData = img.url || img.image || img;
             const product = products[selectedProduct];
             
-            // 화질별 크레딧 차감 (2K/4K는 추후 업스케일 API 연동)
-            const costs = { '1k': 0, '2k': 20, '4k': 30 };
+            // 화질별 크레딧 (모두 유료)
+            const costs = { '1k': 20, '2k': 30, '4k': 50 };
             const cost = costs[quality];
             
-            if (cost > 0 && userCredits < cost) {
-                alert(`크레딧이 부족합니다. 필요: ${cost}cr, 보유: ${userCredits}cr`);
+            if (userCredits < cost) {
+                alert(`크레딧이 부족합니다.\n\n필요: ${cost}cr\n보유: ${userCredits}cr\n\n크레딧을 충전해주세요.`);
                 return;
             }
             
-            if (cost > 0) {
-                if (!confirm(`${quality.toUpperCase()} 다운로드에 ${cost}cr이 차감됩니다.\n계속하시겠습니까?`)) return;
-                userCredits -= cost;
-                saveCredits();
-            }
+            // 결제 확인 + 환불 불가 안내
+            const confirmMsg = `${quality.toUpperCase()} 다운로드 (${cost}cr)\n\n` +
+                `⚠️ 다운로드 완료 시 환불이 불가합니다.\n` +
+                `(전자상거래법 제17조 제2항 제5호)\n\n` +
+                `계속하시겠습니까?`;
+            
+            if (!confirm(confirmMsg)) return;
+            
+            // 크레딧 차감
+            userCredits -= cost;
+            saveCredits();
+            
+            // 워터마크 숨기고 다운로드
+            const watermark = document.getElementById('fullscreen-watermark');
+            if (watermark) watermark.style.display = 'none';
             
             // TODO: 2K/4K는 업스케일 API 호출 (현재는 원본 다운로드)
             const link = document.createElement('a');
             link.href = imgData;
-            link.download = `monkos_${selectedProduct}_${product.labels[currentPreviewIndex] || currentPreviewIndex + 1}_${quality}.png`;
+            link.download = `MONK_${selectedProduct}_${product.labels[currentPreviewIndex] || currentPreviewIndex + 1}_${quality}.png`;
             link.click();
             
-            closeFullPreview();
+            // 성공 메시지
+            setTimeout(() => {
+                alert(`✅ 다운로드 완료!\n\n${cost}cr 차감\n남은 크레딧: ${userCredits}cr`);
+                closeFullPreview();
+            }, 500);
         }
         
         // 인화 서비스 → 몽크사진관 연결
