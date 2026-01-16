@@ -923,65 +923,59 @@
             const total = amount + bonuses[amount];
             const price = prices[amount];
 
-            // 테스트 모드 확인
-            const confirmTest = confirm(
-                '⚠️ 테스트 모드 안내\n\n' +
-                `${total.toLocaleString()} 크레딧을 ₩${price.toLocaleString()}에 구매\n\n` +
-                '현재 결제 시스템 테스트 중입니다.\n' +
-                '실제 결제가 진행되지 않습니다.\n\n' +
-                '📌 테스트 카드 정보:\n' +
-                '카드번호: 4330-0000-0000-0002\n' +
-                '유효기간/CVC: 아무거나\n\n' +
-                '⛔ 카카오페이, 네이버페이 등\n' +
-                '간편결제는 절대 사용하지 마세요!\n\n' +
-                '계속하시겠습니까?'
+            // ⚠️ 베타 테스트 기간: 즉시 충전 (토스 결제 생략)
+            const confirmBeta = confirm(
+                `🎁 베타 테스트 기간 무료 충전!\n\n` +
+                `${total.toLocaleString()} 크레딧 충전\n` +
+                `(정가: ₩${price.toLocaleString()})\n\n` +
+                `정식 출시 후 유료 전환 예정입니다.\n\n` +
+                `충전하시겠습니까?`
             );
             
-            if (!confirmTest) return;
+            if (!confirmBeta) return;
 
-            if (!tossPayments) {
-                initTossPayments();
-            }
-
-            if (!tossPayments) {
-                // 토스 로딩 실패 시 테스트용 크레딧 지급
-                userCredits += total;
-                saveCredits();
-                alert(`✨ [테스트] ${total.toLocaleString()} 크레딧이 충전되었습니다!`);
-                return;
-            }
-
-            const orderId = 'MONK_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-            const visitor = getVisitorInfo();
-            const customerName = visitor?.name || '고객';
-
-            try {
-                tossPayments.requestPayment('카드', {
-                    amount: price,
-                    orderId: orderId,
-                    orderName: `[테스트] MONK AI - ${total}cr`,
-                    customerName: customerName,
-                    successUrl: window.location.origin + window.location.pathname + '?payment=success&amount=' + price + '&credits=' + total,
-                    failUrl: window.location.origin + window.location.pathname + '?payment=fail',
-                });
-            } catch (error) {
-                if (error.code !== 'USER_CANCEL') {
-                    console.error('Payment error:', error);
-                    alert('결제 오류: ' + error.message);
-                }
-            }
+            // 즉시 충전!
+            userCredits += total;
+            saveCredits();
+            alert(`✨ ${total.toLocaleString()} 크레딧이 충전되었습니다!\n\n현재 보유: ${userCredits.toLocaleString()}cr`);
         }
         
         // 결제 성공 콜백 처리
-        function handlePaymentCallback() {
+        async function handlePaymentCallback() {
             const params = new URLSearchParams(window.location.search);
             if (params.get('payment') === 'success') {
+                const paymentKey = params.get('paymentKey');
+                const orderId = params.get('orderId');
+                const amount = parseInt(params.get('amount') || '0');
                 const credits = parseInt(params.get('credits') || '0');
+                const token = localStorage.getItem('monk_auth_token');
+                
+                // ⚠️ 테스트 모드: 크레딧 즉시 지급 (API 없이)
                 if (credits > 0) {
                     userCredits += credits;
                     saveCredits();
-                    alert(`✅ 결제 완료!\n${credits} 크레딧이 충전되었습니다.`);
+                    alert(`✅ [테스트] 결제 완료!\n${credits} 크레딧이 충전되었습니다.`);
+                    
+                    // 백그라운드에서 API 호출 시도 (실패해도 OK)
+                    if (paymentKey && orderId && amount > 0 && token) {
+                        fetch('/api/payment', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${token}`
+                            },
+                            body: JSON.stringify({
+                                action: 'confirm',
+                                paymentKey,
+                                orderId,
+                                amount,
+                                userId: currentUser?.id,
+                                credits
+                            })
+                        }).catch(err => console.log('Background API call:', err));
+                    }
                 }
+                
                 // URL 정리
                 window.history.replaceState({}, '', window.location.pathname);
             } else if (params.get('payment') === 'fail') {

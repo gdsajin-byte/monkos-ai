@@ -67,6 +67,10 @@ gs://monk-project/
 │   ├── gemini/       ← 용아 대화 (15M+)
 │   └── knowledge/    ← 지식 슬라이스
 │
+├── shared/           ← 공유 데이터 (전체 시스템)
+│   ├── members/      ← 회원 데이터 (D1 백업)
+│   └── credits/      ← 크레딧 거래 내역
+│
 ├── assets/           ← 4 MUSE 자산
 │   ├── soso/sources/ ← K뷰티 크롤링 (2.8GB)
 │   ├── soso/generated/ ← AI 생성 중간물

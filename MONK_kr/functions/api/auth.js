@@ -80,7 +80,14 @@ export async function onRequestGet(context) {
             const user = await saveUser(env.DB, userInfo);
             
             // 크레딧 초기화 (신규 회원이면)
-            await initCredits(env.DB, user.id);
+            const isNewUser = await initCredits(env.DB, user.id);
+            
+            // GCS 백업 (비동기, 실패해도 가입 프로세스는 계속)
+            if (env.GCS_BACKUP_ENABLED === 'true') {
+                backupUserToGCS(user, isNewUser, env).catch(err => {
+                    console.error('GCS backup failed:', err);
+                });
+            }
             
             // 세션 토큰 생성 (간단한 JWT 대체)
             const token = await generateToken(user, env);
@@ -289,7 +296,7 @@ async function saveUser(db, userInfo) {
             'UPDATE shared_users SET name = ?, email = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?'
         ).bind(name, email, id).run();
         
-        return { ...existing, name, email };
+        return { ...existing, name, email, isNew: false };
     }
     
     // 신규 생성
@@ -297,7 +304,7 @@ async function saveUser(db, userInfo) {
         'INSERT INTO shared_users (id, email, name, provider, provider_id, tier) VALUES (?, ?, ?, ?, ?, ?)'
     ).bind(id, email, name, provider, providerId, 'free').run();
     
-    return { id, email, name, provider, providerId, tier: 'free' };
+    return { id, email, name, provider, providerId, tier: 'free', isNew: true };
 }
 
 async function initCredits(db, userId) {
@@ -306,8 +313,8 @@ async function initCredits(db, userId) {
     ).bind(userId).first();
     
     if (!existing) {
-        // 신규 회원 보너스 크레딧
-        const bonusCredits = 100;
+        // 신규 회원 보너스 크레딧 (AI LAB 전용 200cr)
+        const bonusCredits = 200;
         
         await db.prepare(
             'INSERT INTO shared_credits (user_id, balance) VALUES (?, ?)'
@@ -316,8 +323,12 @@ async function initCredits(db, userId) {
         // 거래 내역 기록
         await db.prepare(
             'INSERT INTO shared_credit_transactions (user_id, amount, type, description) VALUES (?, ?, ?, ?)'
-        ).bind(userId, bonusCredits, 'bonus', '회원가입 보너스').run();
+        ).bind(userId, bonusCredits, 'bonus', '🎁 신규 회원 가입 보너스 (AI LAB 전체 메뉴 사용 가능)').run();
+        
+        return true; // 신규 회원
     }
+    
+    return false; // 기존 회원
 }
 
 async function getCredits(db, userId) {
@@ -405,4 +416,101 @@ function redirectWithError(origin, error) {
         `${origin}/ai_lab/auth-error.html?error=${encodeURIComponent(error)}`,
         302
     );
+}
+
+// ==================== GCS 백업 ====================
+async function backupUserToGCS(user, isNewUser, env) {
+    if (!env.GCP_PROJECT_ID || !env.GCS_BUCKET) {
+        console.log('GCS backup disabled: missing config');
+        return;
+    }
+
+    const date = new Date().toISOString().split('T')[0].replace(/-/g, '');
+    const timestamp = new Date().toISOString();
+    
+    const backupData = {
+        user_id: user.id,
+        email: user.email,
+        name: user.name,
+        provider: user.provider,
+        tier: user.tier,
+        is_new_user: isNewUser,
+        created_at: timestamp,
+        backup_source: 'cloudflare_workers'
+    };
+
+    const fileName = `shared/members/${date.substring(0,6)}/${date}_${user.id}.json`;
+    const gcsUrl = `https://storage.googleapis.com/upload/storage/v1/b/${env.GCS_BUCKET}/o?uploadType=media&name=${encodeURIComponent(fileName)}`;
+
+    try {
+        // GCP Service Account 키로 인증 (환경변수에서)
+        const accessToken = await getGCPAccessToken(env);
+        
+        const response = await fetch(gcsUrl, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(backupData)
+        });
+
+        if (!response.ok) {
+            throw new Error(`GCS upload failed: ${response.status}`);
+        }
+
+        console.log(`✅ GCS backup: ${fileName}`);
+    } catch (error) {
+        console.error('GCS backup error:', error);
+        throw error;
+    }
+}
+
+async function getGCPAccessToken(env) {
+    // Service Account 키 파싱
+    const serviceAccount = JSON.parse(env.GCP_SERVICE_ACCOUNT_KEY);
+    
+    // JWT 생성
+    const header = {
+        alg: 'RS256',
+        typ: 'JWT'
+    };
+    
+    const now = Math.floor(Date.now() / 1000);
+    const payload = {
+        iss: serviceAccount.client_email,
+        scope: 'https://www.googleapis.com/auth/devstorage.read_write',
+        aud: 'https://oauth2.googleapis.com/token',
+        exp: now + 3600,
+        iat: now
+    };
+
+    // JWT 서명 (Cloudflare Workers에서 Web Crypto API 사용)
+    const jwtToken = await signJWT(header, payload, serviceAccount.private_key);
+    
+    // Access Token 요청
+    const response = await fetch('https://oauth2.googleapis.com/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+            grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+            assertion: jwtToken
+        })
+    });
+
+    const data = await response.json();
+    return data.access_token;
+}
+
+async function signJWT(header, payload, privateKey) {
+    // 간단한 JWT 서명 (실제로는 jose 라이브러리 사용 권장)
+    const encoder = new TextEncoder();
+    const headerB64 = btoa(JSON.stringify(header));
+    const payloadB64 = btoa(JSON.stringify(payload));
+    const data = `${headerB64}.${payloadB64}`;
+    
+    // RSA 서명 (간략화 - 실제 구현 필요)
+    // Cloudflare Workers에서는 SubtleCrypto를 사용
+    // 여기서는 placeholder
+    return `${data}.signature`;
 }

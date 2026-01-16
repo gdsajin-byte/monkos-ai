@@ -174,19 +174,20 @@
                     return;
                 }
 
-                // 사용자 ID 생성
-                const userId = 'beta_' + btoa(email).replace(/[^a-zA-Z0-9]/g, '').substring(0, 12);
+                // 사용자 ID 생성 (이메일 해시)
+                const userId = 'beta_' + email.split('@')[0].replace(/[^a-zA-Z0-9]/g, '') + '_' + Date.now().toString(36).substring(-6);
                 const bonusCredits = 200;
 
-                // 토큰 생성 (간단한 Base64)
-                const token = btoa(JSON.stringify({
+                // 토큰 생성 (Base64 - 한글 안전 처리)
+                const tokenData = JSON.stringify({
                     id: userId,
                     email: email,
                     name: name,
                     provider: 'email',
                     tier: 'beta',
                     exp: Date.now() + (7 * 24 * 60 * 60 * 1000)
-                }));
+                });
+                const token = btoa(unescape(encodeURIComponent(tokenData)));
 
                 // 로컬 저장
                 localStorage.setItem('monk_auth_token', token);
