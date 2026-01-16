@@ -1470,9 +1470,13 @@
                         const slot = document.getElementById(`result-slot-${i}`);
                         if (slot) {
                             slot.innerHTML = `
-                                <div class="relative w-full h-full">
-                                    <img src="${data.image}" alt="Result ${i+1}" class="w-full h-full object-cover rounded-xl">
+                                <div class="relative w-full h-full cursor-pointer group" onclick="openFullPreview(${i})">
+                                    <img src="${data.image}" alt="Result ${i+1}" class="w-full h-full object-cover rounded-xl transition-transform duration-200 group-hover:scale-105">
                                     <span class="absolute bottom-2 left-2 text-[9px] px-1.5 py-0.5 bg-black/60 rounded">${product.labels[i] || '결과 ' + (i+1)}</span>
+                                    <!-- 워터마크 오버레이 -->
+                                    <div class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-30">
+                                        <div class="text-white text-lg font-bold transform -rotate-45 select-none">MONK</div>
+                                    </div>
                                 </div>
                             `;
                         }
