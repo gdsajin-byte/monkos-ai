@@ -615,7 +615,7 @@
                 </div>
                 
                 <p class="text-center text-[10px] text-gray-500 mt-3">
-                    <i class="fas fa-hand-pointer mr-1"></i>이미지를 길게 눌러 직접 저장/공유할 수 있어요
+                    <i class="fas fa-hand-pointer mr-1"></i>이미지를 터치하면 저장됩니다
                 </p>
             </div>
         </section>
@@ -1414,13 +1414,13 @@
                 const imgSrc = img.url || img.image || img;
                 
                 html += `
-                    <div class="relative group">
-                        <img src="${imgSrc}" alt="Result ${i+1}" class="w-full rounded-xl">
-                        <div class="absolute bottom-2 left-2 right-2 flex justify-between items-center">
+                    <div class="relative group cursor-pointer" onclick="downloadSingle(${i})">
+                        <img src="${imgSrc}" alt="Result ${i+1}" class="w-full rounded-xl transition-transform duration-200 hover:scale-[1.02] hover:-translate-y-1 active:scale-95">
+                        <div class="absolute bottom-2 left-2 right-2 flex justify-between items-center pointer-events-none">
                             <span class="text-[9px] px-1.5 py-0.5 bg-black/60 rounded">${labels[i] || '결과 ' + (i+1)}</span>
-                            <button onclick="downloadSingle(${i})" class="opacity-0 group-hover:opacity-100 px-1.5 py-0.5 bg-so rounded text-[9px] transition-opacity">
-                                <i class="fas fa-download"></i>
-                            </button>
+                            <span class="px-1.5 py-0.5 bg-so/80 rounded text-[9px]">
+                                <i class="fas fa-download mr-1"></i>터치저장
+                            </span>
                         </div>
                     </div>
                 `;
@@ -1484,7 +1484,7 @@
 
         // 사진첩 저장 안내
         function saveToGallery() {
-            alert('📱 각 이미지를 길게 눌러 "사진에 추가"를 선택하면\n사진첩에 고화질로 저장됩니다.\n\n(모바일에서 가장 깔끔한 저장 방법이에요!)');
+            alert('📱 각 이미지를 터치하면 바로 저장됩니다!');
         }
 
         // 다운로드 함수 (백업용)
