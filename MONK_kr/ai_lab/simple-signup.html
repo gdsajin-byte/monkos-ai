@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<!-- v2026.01.16.1552 - Local Storage 방식 -->
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MONK AI LAB 베타 참여 | MONK.KR</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        ai: '#60A5FA',
+                        so: '#F472B6',
+                        dark: '#030508'
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .glow { box-shadow: 0 0 40px rgba(96, 165, 250, 0.3); }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .float { animation: float 3s ease-in-out infinite; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 text-gray-100 min-h-screen flex items-center justify-center p-4">
+    
+    <div class="max-w-md w-full">
+        <!-- 헤더 -->
+        <div class="text-center mb-8">
+            <div class="inline-block mb-4 float">
+                <i class="fas fa-rocket text-6xl text-ai"></i>
+            </div>
+            <h1 class="text-4xl font-black text-white mb-2">MONK AI LAB</h1>
+            <p class="text-ai font-bold text-sm">Beta Testing Program</p>
+        </div>
+
+        <!-- 메인 카드 -->
+        <div class="bg-gray-900/50 backdrop-blur-lg border-2 border-ai/30 rounded-3xl p-8 glow">
+            
+            <!-- 안내 -->
+            <div class="bg-gradient-to-r from-ai/20 to-so/20 rounded-2xl p-6 mb-6 border border-ai/30">
+                <h2 class="text-xl font-black text-white mb-3">
+                    🎁 베타 참여자 특전
+                </h2>
+                <ul class="space-y-2 text-sm text-gray-300">
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-ai mr-2 mt-1"></i>
+                        <span><strong class="text-white">200 크레딧</strong> 즉시 지급</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-ai mr-2 mt-1"></i>
+                        <span>AI LAB 전체 메뉴 무제한 테스트</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-ai mr-2 mt-1"></i>
+                        <span>정식 출시 시 <strong class="text-so">추가 보너스</strong></span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-ai mr-2 mt-1"></i>
+                        <span>베타 참여자 전용 등급 부여</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- 가입 폼 -->
+            <form id="signup-form" class="space-y-4">
+                <!-- 이메일 -->
+                <div>
+                    <label class="block text-sm font-bold text-gray-400 mb-2">
+                        이메일 <span class="text-red-400">*</span>
+                    </label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        required
+                        placeholder="your@email.com"
+                        class="w-full px-4 py-3 bg-gray-950 border-2 border-gray-700 rounded-xl text-white placeholder-gray-600 focus:border-ai focus:outline-none transition-colors"
+                    >
+                </div>
+
+                <!-- 이름 -->
+                <div>
+                    <label class="block text-sm font-bold text-gray-400 mb-2">
+                        이름 <span class="text-gray-600 text-xs">(선택)</span>
+                    </label>
+                    <input 
+                        type="text" 
+                        id="name" 
+                        placeholder="홍길동"
+                        class="w-full px-4 py-3 bg-gray-950 border-2 border-gray-700 rounded-xl text-white placeholder-gray-600 focus:border-ai focus:outline-none transition-colors"
+                    >
+                </div>
+
+                <!-- 약관 동의 -->
+                <div class="space-y-2 pt-2">
+                    <label class="flex items-start cursor-pointer group">
+                        <input type="checkbox" id="terms" required class="mt-1 mr-3 w-5 h-5 text-ai bg-gray-950 border-gray-700 rounded focus:ring-ai">
+                        <span class="text-sm text-gray-400 group-hover:text-white transition-colors">
+                            <strong class="text-white">서비스 이용약관</strong> 및 <strong class="text-white">개인정보 처리방침</strong>에 동의합니다
+                        </span>
+                    </label>
+                </div>
+
+                <!-- 제출 버튼 -->
+                <button 
+                    type="submit"
+                    id="submit-btn"
+                    class="w-full py-4 bg-gradient-to-r from-ai to-blue-600 text-white font-black rounded-xl hover:scale-105 transition-transform shadow-lg mt-6"
+                >
+                    <i class="fas fa-gift mr-2"></i>
+                    200cr 받고 시작하기
+                </button>
+            </form>
+
+            <!-- 테스트 안내 -->
+            <div class="mt-6 text-center text-xs text-gray-500">
+                <p>⚠️ 테스트 기간 중 무료로 모든 기능을 이용하실 수 있습니다</p>
+                <p class="mt-1">정식 출시 후 유료 전환 예정</p>
+            </div>
+        </div>
+
+        <!-- 푸터 -->
+        <div class="text-center mt-8">
+            <a href="/" class="text-sm text-gray-600 hover:text-ai transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i>
+                홈으로 돌아가기
+            </a>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('signup-form');
+        const submitBtn = document.getElementById('submit-btn');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value.trim();
+            const name = document.getElementById('name').value.trim() || '사용자';
+            const terms = document.getElementById('terms').checked;
+
+            if (!terms) {
+                alert('약관에 동의해주세요');
+                return;
+            }
+
+            // 이메일 유효성 검사
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                alert('올바른 이메일 주소를 입력해주세요');
+                return;
+            }
+
+            // 로딩 상태
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>처리 중...';
+
+            // ⚠️ 베타 기간: 로컬 저장 방식 (서버 없이)
+            try {
+                // 이메일 중복 체크 (로컬)
+                const existingUsers = JSON.parse(localStorage.getItem('monk_beta_users') || '[]');
+                if (existingUsers.includes(email)) {
+                    alert('이미 가입된 이메일입니다.');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-gift mr-2"></i>200cr 받고 시작하기';
+                    return;
+                }
+
+                // 사용자 ID 생성
+                const userId = 'beta_' + btoa(email).replace(/[^a-zA-Z0-9]/g, '').substring(0, 12);
+                const bonusCredits = 200;
+
+                // 토큰 생성 (간단한 Base64)
+                const token = btoa(JSON.stringify({
+                    id: userId,
+                    email: email,
+                    name: name,
+                    provider: 'email',
+                    tier: 'beta',
+                    exp: Date.now() + (7 * 24 * 60 * 60 * 1000)
+                }));
+
+                // 로컬 저장
+                localStorage.setItem('monk_auth_token', token);
+                localStorage.setItem('monk_user', JSON.stringify({
+                    id: userId,
+                    email: email,
+                    name: name,
+                    provider: 'email',
+                    tier: 'beta'
+                }));
+                localStorage.setItem('monkos_credits', bonusCredits);
+
+                // 가입 이메일 기록 (중복 방지)
+                existingUsers.push(email);
+                localStorage.setItem('monk_beta_users', JSON.stringify(existingUsers));
+
+                // 성공 메시지
+                alert(`🎉 환영합니다, ${name}님!\n\n✨ 200 크레딧이 지급되었습니다.\nAI LAB의 모든 기능을 자유롭게 사용해보세요!`);
+
+                // AI LAB으로 이동
+                const redirect = new URLSearchParams(window.location.search).get('redirect') || '/ai_lab/ai_lab.html';
+                window.location.href = redirect;
+
+            } catch (error) {
+                console.error('Signup error:', error);
+                alert('가입 중 오류가 발생했습니다. 다시 시도해주세요.');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-gift mr-2"></i>200cr 받고 시작하기';
+            }
+        });
+    </script>
+</body>
+</html>
