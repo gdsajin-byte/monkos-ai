@@ -264,6 +264,36 @@
             color: rgba(255, 255, 255, 0.12);
             letter-spacing: 12px;
         }
+        
+        /* 결과 카드 - 핀치줌 방지 (확대 후 손 떼면 원복) */
+        .result-thumb {
+            touch-action: pan-x pan-y;  /* 핀치줌은 JS로 제어 */
+            transition: transform 0.3s ease;
+        }
+        .result-thumb.zooming {
+            transition: none;
+        }
+        
+        /* 터치 다운로드 안내 워터마크 */
+        .download-hint {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            background: linear-gradient(135deg, transparent 40%, rgba(0,0,0,0.3) 100%);
+        }
+        .download-hint-text {
+            background: rgba(0,0,0,0.6);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            color: rgba(255,255,255,0.8);
+            backdrop-filter: blur(4px);
+            margin-top: 8px;
+        }
     </style>
 </head>
 <body class="bg-dark text-white min-h-screen flex flex-col">
@@ -1470,15 +1500,28 @@
                         const slot = document.getElementById(`result-slot-${i}`);
                         if (slot) {
                             slot.innerHTML = `
-                                <div class="relative w-full h-full cursor-pointer group" onclick="openFullPreview(${i})">
-                                    <img src="${data.image}" alt="Result ${i+1}" class="w-full h-full object-cover rounded-xl transition-transform duration-200 group-hover:scale-105">
-                                    <span class="absolute bottom-2 left-2 text-[9px] px-1.5 py-0.5 bg-black/60 rounded">${product.labels[i] || '결과 ' + (i+1)}</span>
-                                    <!-- 워터마크 오버레이 -->
-                                    <div class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-30">
-                                        <div class="text-white text-lg font-bold transform -rotate-45 select-none">MONK</div>
+                                <div class="result-thumb relative w-full h-full cursor-pointer group rounded-xl overflow-hidden" 
+                                     onclick="openFullPreview(${i})"
+                                     data-index="${i}">
+                                    <img src="${data.image}" alt="Result ${i+1}" 
+                                         class="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
+                                         draggable="false">
+                                    <span class="absolute bottom-2 left-2 text-[9px] px-1.5 py-0.5 bg-black/60 rounded z-10">${product.labels[i] || '결과 ' + (i+1)}</span>
+                                    
+                                    <!-- 워터마크 + 다운로드 힌트 -->
+                                    <div class="download-hint">
+                                        <div class="watermark-overlay">
+                                            <span class="watermark-text">MONK</span>
+                                            <span class="watermark-text">MONK</span>
+                                        </div>
+                                        <div class="download-hint-text">
+                                            <i class="fas fa-hand-pointer mr-1"></i>터치하여 다운로드
+                                        </div>
                                     </div>
                                 </div>
                             `;
+                            // 핀치줌 방지 이벤트 바인딩
+                            setupPinchGuard(slot.querySelector('.result-thumb'));
                         }
                         document.getElementById('generating-progress').textContent = `${i + 1} / ${numImages}`;
                     }
@@ -1550,21 +1593,22 @@
                 const imgSrc = img.url || img.image || img;
                 
                 html += `
-                    <div class="result-card relative cursor-pointer rounded-xl overflow-hidden" onclick="openFullPreview(${i})">
-                        <img src="${imgSrc}" alt="Result ${i+1}" class="w-full aspect-[3/4] object-cover">
-                        <!-- 워터마크 오버레이 -->
-                        <div class="watermark-overlay">
-                            <span class="watermark-text">MONK</span>
-                            <span class="watermark-text">MONK</span>
-                            <span class="watermark-text">MONK</span>
-                            <span class="watermark-text">MONK</span>
-                        </div>
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 hover:opacity-100 transition-opacity">
-                            <div class="absolute bottom-3 left-3 right-3 flex justify-between items-center">
-                                <span class="text-[10px] px-2 py-1 bg-black/60 rounded-full">${labels[i] || '결과 ' + (i+1)}</span>
-                                <span class="text-[10px] px-2 py-1 bg-so/90 rounded-full">
-                                    <i class="fas fa-expand mr-1"></i>터치
-                                </span>
+                    <div class="result-thumb result-card relative cursor-pointer rounded-xl overflow-hidden group" 
+                         onclick="openFullPreview(${i})"
+                         data-index="${i}">
+                        <img src="${imgSrc}" alt="Result ${i+1}" 
+                             class="w-full aspect-[3/4] object-cover transition-transform duration-200 group-hover:scale-105"
+                             draggable="false">
+                        <span class="absolute bottom-2 left-2 text-[9px] px-1.5 py-0.5 bg-black/60 rounded z-10">${labels[i] || '결과 ' + (i+1)}</span>
+                        
+                        <!-- 워터마크 + 다운로드 힌트 -->
+                        <div class="download-hint">
+                            <div class="watermark-overlay">
+                                <span class="watermark-text">MONK</span>
+                                <span class="watermark-text">MONK</span>
+                            </div>
+                            <div class="download-hint-text">
+                                <i class="fas fa-hand-pointer mr-1"></i>터치하여 다운로드
                             </div>
                         </div>
                     </div>
@@ -1581,6 +1625,11 @@
             }
 
             resultContainer.innerHTML = html;
+            
+            // 핀치줌 방지 이벤트 바인딩
+            resultContainer.querySelectorAll('.result-thumb').forEach(thumb => {
+                setupPinchGuard(thumb);
+            });
         }
 
         // 공유하기 (Web Share API)
@@ -1630,6 +1679,43 @@
         // 사진첩 저장 안내
         function saveToGallery() {
             alert('📱 각 이미지를 터치하면 바로 저장됩니다!');
+        }
+
+        // ==================== 핀치줌 방지 (얌체족 방어) ====================
+        function setupPinchGuard(element) {
+            if (!element) return;
+            
+            let initialDistance = 0;
+            let currentScale = 1;
+            
+            element.addEventListener('touchstart', (e) => {
+                if (e.touches.length === 2) {
+                    initialDistance = getDistance(e.touches[0], e.touches[1]);
+                    element.classList.add('zooming');
+                }
+            }, { passive: true });
+            
+            element.addEventListener('touchmove', (e) => {
+                if (e.touches.length === 2) {
+                    const distance = getDistance(e.touches[0], e.touches[1]);
+                    currentScale = Math.min(2.5, Math.max(1, distance / initialDistance));
+                    element.style.transform = `scale(${currentScale})`;
+                }
+            }, { passive: true });
+            
+            element.addEventListener('touchend', (e) => {
+                // 손 떼면 원복! (얌체족 캡처 방지)
+                element.classList.remove('zooming');
+                element.style.transform = 'scale(1)';
+                currentScale = 1;
+            });
+            
+            // 두 손가락 거리 계산
+            function getDistance(touch1, touch2) {
+                const dx = touch1.clientX - touch2.clientX;
+                const dy = touch1.clientY - touch2.clientY;
+                return Math.sqrt(dx * dx + dy * dy);
+            }
         }
 
         // ==================== 풀스크린 프리뷰 ====================
