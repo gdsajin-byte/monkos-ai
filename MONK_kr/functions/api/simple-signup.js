@@ -113,18 +113,29 @@ async function hashEmail(email) {
 }
 
 async function generateToken(user) {
+    const header = { alg: 'none', typ: 'JWT' };
     const payload = {
         id: user.id,
         email: user.email,
         name: user.name,
         provider: user.provider,
         tier: user.tier,
-        exp: Date.now() + (7 * 24 * 60 * 60 * 1000) // 7일
+        iat: Math.floor(Date.now() / 1000),
+        exp: Math.floor(Date.now() / 1000) + (7 * 24 * 60 * 60) // 7일
     };
     
-    // 간단한 토큰 (MVP)
-    // TODO: jose 라이브러리로 HS256 서명 추가 (Phase 2)
-    const token = btoa(JSON.stringify(payload));
+    // Base64URL 인코딩 (한글 안전)
+    const base64UrlEncode = (obj) => {
+        const str = JSON.stringify(obj);
+        const utf8 = unescape(encodeURIComponent(str));
+        return btoa(utf8)
+            .replace(/\+/g, '-')
+            .replace(/\//g, '_')
+            .replace(/=+$/, '');
+    };
+    
+    // JWT 형식: header.payload.signature
+    const token = `${base64UrlEncode(header)}.${base64UrlEncode(payload)}.`;
     return token;
 }
 
