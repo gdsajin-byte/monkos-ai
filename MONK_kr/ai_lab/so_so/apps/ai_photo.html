@@ -274,26 +274,6 @@
             transition: none;
         }
         
-        /* 터치 다운로드 안내 워터마크 */
-        .download-hint {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            pointer-events: none;
-            background: linear-gradient(135deg, transparent 40%, rgba(0,0,0,0.3) 100%);
-        }
-        .download-hint-text {
-            background: rgba(0,0,0,0.6);
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 11px;
-            color: rgba(255,255,255,0.8);
-            backdrop-filter: blur(4px);
-            margin-top: 8px;
-        }
     </style>
 </head>
 <body class="bg-dark text-white min-h-screen flex flex-col">
@@ -711,26 +691,35 @@
                     <p id="generating-progress" class="text-gray-500 text-xs mt-2">0 / 4</p>
                 </div>
                 
-                <div id="result-images" class="grid grid-cols-2 gap-3 mb-4">
-                    <!-- 동적으로 생성된 이미지들 -->
+                <!-- 4컷 그리드 + 중앙 워터마크 배너 -->
+                <div class="relative">
+                    <div id="result-images" class="grid grid-cols-2 gap-3 mb-4">
+                        <!-- 동적으로 생성된 이미지들 -->
+                    </div>
+                    
+                    <!-- 4컷 중앙에 걸쳐있는 다운로드 힌트 배너 -->
+                    <div id="center-download-banner" class="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
+                        <div class="bg-black/70 backdrop-blur-sm px-6 py-3 rounded-full border border-white/20 shadow-2xl">
+                            <p class="text-white text-sm font-medium">
+                                <i class="fas fa-hand-pointer text-so mr-2"></i>터치하여 다운로드
+                            </p>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="space-y-2">
                     <div class="flex gap-2">
-                        <button onclick="changeStyle()" class="flex-1 py-3 bg-purple-600 text-white rounded-xl hover:bg-purple-500 transition-colors text-sm">
-                            <i class="fas fa-palette mr-2"></i>다른 스타일
+                        <button onclick="regenerateStyle()" class="flex-1 py-3 bg-purple-600 text-white rounded-xl hover:bg-purple-500 transition-colors text-sm">
+                            <i class="fas fa-redo mr-2"></i>재생성 <span id="regen-cost-label" class="text-xs opacity-70">(무료 1회)</span>
                         </button>
-                        <button onclick="retakeAndReset()" class="flex-1 py-3 bg-gray-700 text-white rounded-xl hover:bg-gray-600 transition-colors text-sm">
-                            <i class="fas fa-camera mr-2"></i>다시 촬영
+                        <button onclick="retakePhoto()" class="flex-1 py-3 bg-gray-700 text-white rounded-xl hover:bg-gray-600 transition-colors text-sm">
+                            <i class="fas fa-camera mr-2"></i>재촬영 <span id="retake-cost-label" class="text-xs opacity-70">(무료 1회)</span>
                         </button>
                     </div>
                 </div>
                 
-                <p class="text-center text-[10px] text-gray-400 mt-3">
-                    <i class="fas fa-hand-pointer mr-1"></i>이미지를 터치하여 원본 다운로드
-                </p>
-                <p class="text-center text-[9px] text-gray-600 mt-1">
-                    미리보기에는 워터마크가 포함되어 있습니다
+                <p class="text-center text-[9px] text-gray-500 mt-3">
+                    재생성/재촬영 1회 무료 · 추가 시 50cr
                 </p>
             </div>
         </section>
@@ -1508,15 +1497,10 @@
                                          draggable="false">
                                     <span class="absolute bottom-2 left-2 text-[9px] px-1.5 py-0.5 bg-black/60 rounded z-10">${product.labels[i] || '결과 ' + (i+1)}</span>
                                     
-                                    <!-- 워터마크 + 다운로드 힌트 -->
-                                    <div class="download-hint">
-                                        <div class="watermark-overlay">
-                                            <span class="watermark-text">MONK</span>
-                                            <span class="watermark-text">MONK</span>
-                                        </div>
-                                        <div class="download-hint-text">
-                                            <i class="fas fa-hand-pointer mr-1"></i>터치하여 다운로드
-                                        </div>
+                                    <!-- 워터마크 오버레이 (개별) -->
+                                    <div class="watermark-overlay opacity-40">
+                                        <span class="watermark-text">MONK</span>
+                                        <span class="watermark-text">MONK</span>
                                     </div>
                                 </div>
                             `;
@@ -1601,15 +1585,10 @@
                              draggable="false">
                         <span class="absolute bottom-2 left-2 text-[9px] px-1.5 py-0.5 bg-black/60 rounded z-10">${labels[i] || '결과 ' + (i+1)}</span>
                         
-                        <!-- 워터마크 + 다운로드 힌트 -->
-                        <div class="download-hint">
-                            <div class="watermark-overlay">
-                                <span class="watermark-text">MONK</span>
-                                <span class="watermark-text">MONK</span>
-                            </div>
-                            <div class="download-hint-text">
-                                <i class="fas fa-hand-pointer mr-1"></i>터치하여 다운로드
-                            </div>
+                        <!-- 워터마크 오버레이 (개별) -->
+                        <div class="watermark-overlay opacity-40">
+                            <span class="watermark-text">MONK</span>
+                            <span class="watermark-text">MONK</span>
                         </div>
                     </div>
                 `;
@@ -1841,6 +1820,65 @@
             }
         }
         
+        // ==================== 재생성/재촬영 (무료 1회 정책) ====================
+        let freeRegenUsed = false;  // 재생성 무료 사용 여부
+        let freeRetakeUsed = false; // 재촬영 무료 사용 여부
+        const RETRY_COST = 50;      // 추가 시 50cr
+        
+        function regenerateStyle() {
+            if (!freeRegenUsed) {
+                // 무료 1회
+                freeRegenUsed = true;
+                updateRetryCostLabels();
+                changeStyle();
+            } else {
+                // 50cr 차감
+                if (userCredits < RETRY_COST) {
+                    alert(`❌ 크레딧 부족!\n\n재생성에 ${RETRY_COST}cr이 필요합니다.\n현재: ${userCredits}cr`);
+                    return;
+                }
+                if (confirm(`재생성에 ${RETRY_COST}cr이 차감됩니다.\n\n현재: ${userCredits}cr → ${userCredits - RETRY_COST}cr\n\n진행하시겠습니까?`)) {
+                    userCredits -= RETRY_COST;
+                    saveCredits();
+                    changeStyle();
+                }
+            }
+        }
+        
+        function retakePhoto() {
+            if (!freeRetakeUsed) {
+                // 무료 1회
+                freeRetakeUsed = true;
+                updateRetryCostLabels();
+                retakeAndReset();
+            } else {
+                // 50cr 차감
+                if (userCredits < RETRY_COST) {
+                    alert(`❌ 크레딧 부족!\n\n재촬영에 ${RETRY_COST}cr이 필요합니다.\n현재: ${userCredits}cr`);
+                    return;
+                }
+                if (confirm(`재촬영에 ${RETRY_COST}cr이 차감됩니다.\n\n현재: ${userCredits}cr → ${userCredits - RETRY_COST}cr\n\n진행하시겠습니까?`)) {
+                    userCredits -= RETRY_COST;
+                    saveCredits();
+                    retakeAndReset();
+                }
+            }
+        }
+        
+        function updateRetryCostLabels() {
+            const regenLabel = document.getElementById('regen-cost-label');
+            const retakeLabel = document.getElementById('retake-cost-label');
+            
+            if (regenLabel) {
+                regenLabel.textContent = freeRegenUsed ? `(${RETRY_COST}cr)` : '(무료 1회)';
+                regenLabel.classList.toggle('text-yellow-400', freeRegenUsed);
+            }
+            if (retakeLabel) {
+                retakeLabel.textContent = freeRetakeUsed ? `(${RETRY_COST}cr)` : '(무료 1회)';
+                retakeLabel.classList.toggle('text-yellow-400', freeRetakeUsed);
+            }
+        }
+
         // 다른 스타일 생성 (촬영본 유지)
         function changeStyle() {
             document.getElementById('section-results').classList.add('hidden');
