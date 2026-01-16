@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- v2026.01.16.2309 - 워터마크 + 유료 다운로드 + 환불규정 -->
+<!-- v2026.01.16.2316 - 90% 일치 + 10% 보정 (유연성 + 만족도) -->
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -1350,19 +1350,19 @@
         }
 
         // 성별/연령 기반 프롬프트 생성 + 앵글 정보
-        // ⭐ 2026-01-17: 제1원칙 = 동일인 유지! 성별/연령은 힌트로만
+        // ⭐ 2026-01-16: 90% 일치 + 10% 보정 (유연성 + 만족도)
         function buildPersonalizedPrompt(style, index) {
             const visitor = getVisitorInfo();
             
-            // 힌트 (있으면 참고, 없어도 OK - 얼굴은 무조건 유지)
+            // 힌트 (있으면 참고, 없어도 OK)
             let hint = '';
             if (visitor) {
                 const genderHint = visitor.gender === 'M' ? 'male' : 'female';
                 hint = `(hint: ${genderHint})`;
             }
 
-            // ⭐ 핵심: "SAME PERSON" 강제 삽입
-            const SAME_PERSON = "the SAME PERSON from input photo";
+            // ⭐ 핵심: 90% 동일인 + 10% 보정 (더 예쁘게, 더 좋게)
+            const SAME_PERSON = "the SAME PERSON from input (90% match), with subtle professional enhancement (10% retouching for best look)";
 
             // 스타일별 세부 프롬프트
             const stylePrompts = {

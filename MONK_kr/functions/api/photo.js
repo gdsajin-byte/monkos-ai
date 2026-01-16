@@ -2,12 +2,26 @@
 // 기반: apps/imagen3 (MONKOS 검증 로직)
 // ⭐ 핵심: gemini-3-pro-image-preview + BLOCK_NONE = 정체성 유지 성공
 
-// 정체성 유지 프롬프트 (MONKOS에서 검증됨) - 2026-01-17 강화
-const IDENTITY_PRESERVATION = `ABSOLUTE RULE #1: DO NOT CHANGE THE PERSON'S FACE.
-Keep the EXACT SAME person from the input image. This is a REAL PERSON's ID photo - their identity MUST be preserved 100%.
-Maintain: exact facial features, face shape, eye shape, nose, lips, skin tone, age appearance, and all unique characteristics.
-ONLY change: clothing, background, lighting, and minor touch-ups.
-DO NOT: make them younger, older, different gender, or different ethnicity. The output must be recognizable as the SAME PERSON.`;
+// 정체성 유지 프롬프트 (2026-01-16 최적화: 90% 일치 + 10% 보정)
+const IDENTITY_PRESERVATION = `IDENTITY RULE: 90% SAME PERSON + 10% ENHANCEMENT
+
+PRESERVE (90%):
+- Face shape, eye shape, nose, lips, skin tone
+- Overall facial structure and unique characteristics  
+- The person must be clearly recognizable as the SAME individual
+
+ENHANCE (10% creative freedom):
+- Slightly smoother skin, subtle beauty enhancement
+- Optimal lighting and flattering angles
+- Minor imperfections can be softened
+- Make them look their BEST version (not a different person)
+
+DO NOT:
+- Change gender, ethnicity, or age by more than 2-3 years
+- Alter fundamental facial features
+- Make them unrecognizable
+
+GOAL: "This is ME, but on my best day" - 90% accuracy, 10% professional retouching.`;
 
 // 스타일별 프롬프트
 const STYLE_PROMPTS = {
