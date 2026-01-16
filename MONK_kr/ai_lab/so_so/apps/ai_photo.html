@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- v2026.01.16.1934 - 제1원칙: 동일인 유지 강화 -->
+<!-- v2026.01.16.2304 - 토너먼트 UX: 풀스크린 프리뷰 + 업셀링 퍼널 -->
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -175,6 +175,61 @@
             inset: 6px;
             background: #F472B6;
             border-radius: 50%;
+        }
+        
+        /* 결과 이미지 호버/터치 효과 */
+        .result-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-origin: center;
+        }
+        .result-card:hover, .result-card:focus {
+            transform: scale(1.08) translateY(-8px);
+            z-index: 20;
+            box-shadow: 0 20px 40px rgba(244, 114, 182, 0.3);
+        }
+        .result-card:active {
+            transform: scale(1.02);
+        }
+        
+        /* 풀스크린 프리뷰 모달 */
+        .fullscreen-preview {
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            background: rgba(0, 0, 0, 0.98);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+        .fullscreen-preview.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .fullscreen-preview img {
+            max-width: 90vw;
+            max-height: 70vh;
+            object-fit: contain;
+            border-radius: 16px;
+            box-shadow: 0 25px 80px rgba(244, 114, 182, 0.2);
+        }
+        .fullscreen-actions {
+            margin-top: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+            max-width: 320px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideUp 0.4s 0.2s forwards;
+        }
+        @keyframes slideUp {
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
@@ -729,6 +784,45 @@
                 </button>
             </div>
         </div>
+    </div>
+
+    <!-- 풀스크린 프리뷰 모달 -->
+    <div id="fullscreen-preview" class="fullscreen-preview" onclick="closeFullPreview(event)">
+        <button onclick="closeFullPreview()" class="absolute top-4 right-4 text-white/60 hover:text-white text-2xl">
+            <i class="fas fa-times"></i>
+        </button>
+        
+        <img id="fullscreen-image" src="" alt="Selected Photo">
+        
+        <div class="fullscreen-actions">
+            <!-- "이게 나예요" 버튼 (토너먼트 선택) -->
+            <button onclick="selectAsGolden()" class="w-full py-4 bg-gradient-to-r from-so to-purple-500 text-white font-bold rounded-2xl text-lg">
+                <i class="fas fa-heart mr-2"></i>이게 나예요!
+            </button>
+            
+            <!-- 화질 선택 -->
+            <div class="grid grid-cols-3 gap-2">
+                <button onclick="downloadWithQuality('1k')" class="py-3 bg-gray-800 text-white rounded-xl text-sm hover:bg-gray-700">
+                    <div class="font-bold">1K</div>
+                    <div class="text-[10px] text-gray-400">무료</div>
+                </button>
+                <button onclick="downloadWithQuality('2k')" class="py-3 bg-gray-800 border border-so/50 text-white rounded-xl text-sm hover:bg-gray-700">
+                    <div class="font-bold text-so">2K</div>
+                    <div class="text-[10px] text-so">+20cr</div>
+                </button>
+                <button onclick="downloadWithQuality('4k')" class="py-3 bg-gray-800 text-white rounded-xl text-sm hover:bg-gray-700">
+                    <div class="font-bold">4K</div>
+                    <div class="text-[10px] text-gray-400">+30cr</div>
+                </button>
+            </div>
+            
+            <!-- 인화 서비스 -->
+            <button onclick="goToPrint()" class="w-full py-3 bg-gray-900 border border-gray-700 text-white rounded-xl text-sm hover:border-so/50">
+                <i class="fas fa-print mr-2 text-so"></i>인화 서비스 <span class="text-gray-500 ml-1">+100cr → 몽크사진관</span>
+            </button>
+        </div>
+        
+        <p class="text-gray-500 text-xs mt-4">배경을 터치하면 닫힙니다</p>
     </div>
 
     <footer class="border-t border-white/5 py-4 px-4 text-center">
@@ -1405,13 +1499,15 @@
                 const imgSrc = img.url || img.image || img;
                 
                 html += `
-                    <div class="relative group cursor-pointer" onclick="downloadSingle(${i})">
-                        <img src="${imgSrc}" alt="Result ${i+1}" class="w-full rounded-xl transition-transform duration-200 hover:scale-[1.02] hover:-translate-y-1 active:scale-95">
-                        <div class="absolute bottom-2 left-2 right-2 flex justify-between items-center pointer-events-none">
-                            <span class="text-[9px] px-1.5 py-0.5 bg-black/60 rounded">${labels[i] || '결과 ' + (i+1)}</span>
-                            <span class="px-1.5 py-0.5 bg-so/80 rounded text-[9px]">
-                                <i class="fas fa-download mr-1"></i>터치저장
-                            </span>
+                    <div class="result-card relative cursor-pointer rounded-xl overflow-hidden" onclick="openFullPreview(${i})">
+                        <img src="${imgSrc}" alt="Result ${i+1}" class="w-full aspect-[3/4] object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 hover:opacity-100 transition-opacity">
+                            <div class="absolute bottom-3 left-3 right-3 flex justify-between items-center">
+                                <span class="text-[10px] px-2 py-1 bg-black/60 rounded-full">${labels[i] || '결과 ' + (i+1)}</span>
+                                <span class="text-[10px] px-2 py-1 bg-so/90 rounded-full">
+                                    <i class="fas fa-expand mr-1"></i>터치
+                                </span>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -1478,6 +1574,94 @@
             alert('📱 각 이미지를 터치하면 바로 저장됩니다!');
         }
 
+        // ==================== 풀스크린 프리뷰 ====================
+        let currentPreviewIndex = null;
+        let goldenIndex = null;  // 토너먼트 승자
+        
+        function openFullPreview(index) {
+            currentPreviewIndex = index;
+            const img = generatedImages[index];
+            const imgData = img.url || img.image || img;
+            
+            document.getElementById('fullscreen-image').src = imgData;
+            document.getElementById('fullscreen-preview').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeFullPreview(event) {
+            // 모달 배경 클릭 시에만 닫기 (버튼 클릭은 제외)
+            if (event && event.target !== event.currentTarget) return;
+            
+            document.getElementById('fullscreen-preview').classList.remove('active');
+            document.body.style.overflow = '';
+            currentPreviewIndex = null;
+        }
+        
+        // "이게 나예요" - 토너먼트 승자 선택
+        function selectAsGolden() {
+            if (currentPreviewIndex === null) return;
+            
+            goldenIndex = currentPreviewIndex;
+            const product = products[selectedProduct];
+            
+            // 시각적 피드백
+            alert(`🏆 "${product.labels[goldenIndex]}" 스타일이 선택되었습니다!\n\n이 스타일이 다음 생성의 기준이 됩니다.`);
+            
+            // TODO: 골든 레퍼런스 저장 (D1/R2)
+            console.log('Golden reference selected:', {
+                index: goldenIndex,
+                style: selectedProduct,
+                label: product.labels[goldenIndex]
+            });
+            
+            closeFullPreview();
+        }
+        
+        // 화질별 다운로드
+        function downloadWithQuality(quality) {
+            if (currentPreviewIndex === null) return;
+            
+            const img = generatedImages[currentPreviewIndex];
+            const imgData = img.url || img.image || img;
+            const product = products[selectedProduct];
+            
+            // 화질별 크레딧 차감 (2K/4K는 추후 업스케일 API 연동)
+            const costs = { '1k': 0, '2k': 20, '4k': 30 };
+            const cost = costs[quality];
+            
+            if (cost > 0 && userCredits < cost) {
+                alert(`크레딧이 부족합니다. 필요: ${cost}cr, 보유: ${userCredits}cr`);
+                return;
+            }
+            
+            if (cost > 0) {
+                if (!confirm(`${quality.toUpperCase()} 다운로드에 ${cost}cr이 차감됩니다.\n계속하시겠습니까?`)) return;
+                userCredits -= cost;
+                saveCredits();
+            }
+            
+            // TODO: 2K/4K는 업스케일 API 호출 (현재는 원본 다운로드)
+            const link = document.createElement('a');
+            link.href = imgData;
+            link.download = `monkos_${selectedProduct}_${product.labels[currentPreviewIndex] || currentPreviewIndex + 1}_${quality}.png`;
+            link.click();
+            
+            closeFullPreview();
+        }
+        
+        // 인화 서비스 → 몽크사진관 연결
+        function goToPrint() {
+            if (currentPreviewIndex === null) return;
+            
+            if (userCredits < 100) {
+                alert('인화 서비스는 100cr이 필요합니다.\n크레딧을 충전해주세요.');
+                return;
+            }
+            
+            // TODO: 몽크사진관 연결 페이지로 이동
+            alert('🖨️ 인화 서비스 준비 중입니다.\n\n곧 몽크사진관에서 실물 인화를 받으실 수 있습니다!');
+        }
+        
         // 다운로드 함수 (백업용)
         function downloadSingle(index) {
             if (generatedImages[index]) {
