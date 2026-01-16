@@ -118,7 +118,7 @@ export async function onRequestPost(context) {
     if (!response.ok) {
       const errorText = await response.text();
       console.error('API Error:', errorText);
-      throw new Error(`API 오류: ${response.status}`);
+      throw new Error(`API 오류 ${response.status}: ${errorText.substring(0, 200)}`);
     }
 
     const data = await response.json();
