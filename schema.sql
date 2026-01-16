@@ -26,17 +26,25 @@ CREATE TABLE IF NOT EXISTS shared_visitors (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
--- 회원
+-- 회원 (OAuth 지원)
 CREATE TABLE IF NOT EXISTS shared_users (
-    id TEXT PRIMARY KEY,
-    email TEXT UNIQUE NOT NULL,
+    id TEXT PRIMARY KEY,  -- provider_providerId 형식 (예: kakao_123456)
+    email TEXT,
     name TEXT,
     phone TEXT,
+    provider TEXT,  -- kakao, google, email
+    provider_id TEXT,  -- OAuth provider의 사용자 ID
     tier TEXT DEFAULT 'free',  -- free, basic, pro, premium
     visitor_id TEXT,  -- 방문자에서 전환 시 연결
+    profile_image TEXT,  -- 프로필 이미지 URL
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    last_login DATETIME,
     FOREIGN KEY (visitor_id) REFERENCES shared_visitors(id)
 );
+
+CREATE INDEX IF NOT EXISTS idx_shared_users_email ON shared_users(email);
+CREATE INDEX IF NOT EXISTS idx_shared_users_provider ON shared_users(provider);
 
 -- 크레딧 잔액
 CREATE TABLE IF NOT EXISTS shared_credits (

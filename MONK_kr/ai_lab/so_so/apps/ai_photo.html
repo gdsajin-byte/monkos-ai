@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- v2026.01.15.1552 - cache bust -->
+<!-- v2026.01.16.0702 - QR modal fix -->
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -125,6 +125,9 @@
             z-index: 100;
             padding: 20px;
         }
+        .qr-modal.hidden {
+            display: none !important;
+        }
         
         /* 실시간 촬영 검증 배지 */
         .live-badge {
@@ -188,9 +191,9 @@
             
             <!-- QR 코드 -->
             <div class="bg-white p-4 rounded-2xl inline-block mb-6">
-                <img id="qr-code" 
-                     src="https://api.qrserver.com/v1/create-qr-code/?size=192x192&data=https://main.monk-kr.pages.dev/ai_lab/so_so/apps/ai_photo.html" 
-                     alt="QR Code" 
+                <img id="qr-code"
+                     src=""
+                     alt="QR Code"
                      class="w-48 h-48">
             </div>
             
@@ -228,6 +231,18 @@
                     <span class="text-xs text-gray-500">cr</span>
                     <i class="fas fa-plus text-[8px] text-gray-500"></i>
                 </div>
+                <!-- 로그인/사용자 버튼 (R&D 이후 활성화 예정) -->
+                <!--
+                <div id="auth-btn-container">
+                    <button id="login-btn" onclick="goToLogin()" class="text-xs text-gray-400 hover:text-white px-2 py-1 bg-gray-800 rounded-lg">
+                        <i class="fas fa-user mr-1"></i>로그인
+                    </button>
+                    <div id="user-btn" class="hidden flex items-center gap-1 px-2 py-1 bg-gray-800 rounded-lg cursor-pointer" onclick="toggleUserMenu()">
+                        <i id="user-provider-icon" class="fas fa-user text-so text-xs"></i>
+                        <span id="user-name-display" class="text-xs text-white truncate max-w-[60px]">사용자</span>
+                    </div>
+                </div>
+                -->
                 <a href="../so_so.html" class="text-xs text-gray-400 hover:text-white">← SO-SO</a>
             </div>
         </div>
@@ -792,16 +807,102 @@
             }
         };
 
+        // ==================== Auth ====================
+        let currentUser = null;
+        
+        function checkAuth() {
+            const token = localStorage.getItem('monk_auth_token');
+            const userJson = localStorage.getItem('monk_user');
+            
+            if (token && userJson) {
+                try {
+                    currentUser = JSON.parse(userJson);
+                    showLoggedInState();
+                    // 서버에서 최신 크레딧 조회
+                    fetchUserCredits(token);
+                } catch (e) {
+                    console.error('Auth check error:', e);
+                    showLoggedOutState();
+                }
+            } else {
+                showLoggedOutState();
+            }
+        }
+        
+        function showLoggedInState() {
+            document.getElementById('login-btn').classList.add('hidden');
+            document.getElementById('user-btn').classList.remove('hidden');
+            document.getElementById('user-name-display').textContent = currentUser.name;
+            
+            // 프로바이더 아이콘
+            const icon = document.getElementById('user-provider-icon');
+            if (currentUser.provider === 'kakao') {
+                icon.className = 'fas fa-comment text-yellow-400 text-xs';
+            } else if (currentUser.provider === 'google') {
+                icon.className = 'fab fa-google text-red-400 text-xs';
+            }
+        }
+        
+        function showLoggedOutState() {
+            document.getElementById('login-btn').classList.remove('hidden');
+            document.getElementById('user-btn').classList.add('hidden');
+            currentUser = null;
+        }
+        
+        async function fetchUserCredits(token) {
+            try {
+                const res = await fetch('/api/auth?action=me', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (data.success && data.user) {
+                    userCredits = data.user.credits || 0;
+                    localStorage.setItem('monkos_credits', userCredits);
+                    document.getElementById('user-credits').textContent = userCredits;
+                }
+            } catch (e) {
+                console.error('Fetch credits error:', e);
+            }
+        }
+        
+        function goToLogin() {
+            sessionStorage.setItem('monk_return_url', window.location.href);
+            window.location.href = '/ai_lab/login.html';
+        }
+        
+        function toggleUserMenu() {
+            if (confirm(`${currentUser?.name}님\n\n로그아웃 하시겠습니까?`)) {
+                logout();
+            }
+        }
+        
+        function logout() {
+            localStorage.removeItem('monk_auth_token');
+            localStorage.removeItem('monk_user');
+            currentUser = null;
+            showLoggedOutState();
+        }
+
         // ==================== Credits ====================
         function loadCredits() {
+            // 로컬 스토리지에서 먼저 로드 (캐시)
             const saved = localStorage.getItem('monkos_credits');
             userCredits = saved ? parseInt(saved) : 0;
             document.getElementById('user-credits').textContent = userCredits;
+            
+            // 로그인 상태면 서버에서 최신 조회
+            const token = localStorage.getItem('monk_auth_token');
+            if (token) {
+                fetchUserCredits(token);
+            }
         }
 
         function saveCredits() {
             localStorage.setItem('monkos_credits', userCredits);
             document.getElementById('user-credits').textContent = userCredits;
+            
+            // 로그인 상태면 서버에도 동기화 (추후 구현)
+            // TODO: 서버 크레딧 동기화
         }
 
         // ==================== 토스페이먼츠 (테스트 모드) ====================
@@ -1478,6 +1579,7 @@
         // ==================== Initialize ====================
         document.addEventListener('DOMContentLoaded', () => {
             checkDevice();
+            checkAuth();  // 로그인 상태 확인
             loadCredits();
             initTossPayments();
             handlePaymentCallback();
