@@ -959,11 +959,11 @@
             },
             id: {
                 name: '신분증 세트',
-                description: '여권 + 면허 + 민증 (3장)',
+                description: '여권/면허(동일) + 민증 (3장)',
                 price: 300,
                 eventPrice: 150,
                 outputs: 3,
-                labels: ['여권', '면허', '주민등록증']
+                labels: ['여권', '면허(=여권)', '주민등록증']
             }
         };
 
@@ -1404,11 +1404,14 @@
                     `Lifestyle portrait of ${SAME_PERSON} ${hint}, natural outdoor setting, soft golden hour lighting, slight side angle, warm genuine expression`
                 ],
                 id: [
-                    // 신분증 세트: 모든 배경 흰색 통일, 눈썹 완전 노출 (2026 규정)
-                    // 귀노출 요건 삭제, 눈썹 규제 강화 (헤어라인이 눈썹 위 1cm 이상)
-                    `Official passport photo of ${SAME_PERSON} ${hint}, pure white background, neutral expression, government standard 3.5x4.5cm ratio, strictly front facing, no smile, eyebrows fully visible with hair styled above eyebrows (at least 1cm gap), face outline clearly visible not covered by hair`,
-                    `Driver license photo of ${SAME_PERSON} ${hint}, pure white background, neutral expression, official format 3x4cm ratio, strictly front facing, eyebrows fully visible with hair styled above eyebrows (at least 1cm gap), face outline clearly visible`,
-                    `National ID card photo of ${SAME_PERSON} ${hint}, pure white background, neutral expression, official standard 3.5x4.5cm ratio, strictly front facing, eyebrows fully visible with hair styled above eyebrows (at least 1cm gap), face outline clearly visible`
+                    // 신분증 세트 (2026 규정)
+                    // - 여권/면허/민증 모두 3.5x4.5cm 동일 (2025.12 유예종료)
+                    // - 눈썹 완전 노출 필수 (헤어라인 눈썹 위 1cm 이상)
+                    // - 귀노출 요건 삭제
+                    // - 민증만 정수리~턱 3.2~3.6cm 유연 적용
+                    `Official passport photo of ${SAME_PERSON} ${hint}, pure white background, neutral expression, 3.5x4.5cm standard, strictly front facing, no smile, eyebrows fully visible with hair above eyebrows (1cm gap minimum), face outline clearly visible`,
+                    `Driver license photo of ${SAME_PERSON} ${hint}, pure white background, neutral expression, 3.5x4.5cm standard (same as passport), strictly front facing, no smile, eyebrows fully visible with hair above eyebrows (1cm gap minimum), face outline clearly visible`,
+                    `National ID card photo of ${SAME_PERSON} ${hint}, pure white background, neutral expression, 3.5x4.5cm standard with flexible face ratio, strictly front facing, eyebrows fully visible with hair above eyebrows (1cm gap minimum), face outline clearly visible`
                 ]
             };
 
