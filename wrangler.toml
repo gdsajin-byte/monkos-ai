@@ -1,6 +1,6 @@
-name = "monk-kr"
+name = "monk-project"
+main = "src/index.ts"
 compatibility_date = "2026-01-02"
-pages_build_output_dir = "MONK_kr"
 
 [[d1_databases]]
 binding = "DB"
