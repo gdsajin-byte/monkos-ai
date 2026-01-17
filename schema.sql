@@ -46,6 +46,54 @@ CREATE TABLE IF NOT EXISTS shared_users (
 CREATE INDEX IF NOT EXISTS idx_shared_users_email ON shared_users(email);
 CREATE INDEX IF NOT EXISTS idx_shared_users_provider ON shared_users(provider);
 
+-- 직원 계정 (IMAGE PRO Staff)
+CREATE TABLE IF NOT EXISTS shared_staff (
+    id TEXT PRIMARY KEY,
+    email TEXT UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    name TEXT,
+    role TEXT DEFAULT 'staff',  -- admin, manager, staff
+    department TEXT,  -- dev, design, marketing, sales
+    is_active INTEGER DEFAULT 1,
+    last_login DATETIME,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_shared_staff_email ON shared_staff(email);
+
+-- 엔터프라이즈 계정 (IMAGE PRO Enterprise)
+CREATE TABLE IF NOT EXISTS shared_enterprise (
+    company_code TEXT PRIMARY KEY,  -- ENT-XXXXXX
+    company_name TEXT NOT NULL,
+    access_key_hash TEXT NOT NULL,
+    contact_name TEXT,
+    contact_email TEXT,
+    contact_phone TEXT,
+    plan TEXT DEFAULT 'basic',  -- basic, pro, unlimited
+    monthly_quota INTEGER DEFAULT 100,  -- 월 사용량 한도
+    used_this_month INTEGER DEFAULT 0,
+    contract_start DATE,
+    contract_end DATE,
+    is_active INTEGER DEFAULT 1,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 엔터프라이즈 사용 로그
+CREATE TABLE IF NOT EXISTS shared_enterprise_usage (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    company_code TEXT NOT NULL,
+    action_type TEXT NOT NULL,  -- generate, edit, download
+    credits_used INTEGER DEFAULT 0,
+    metadata_json TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (company_code) REFERENCES shared_enterprise(company_code)
+);
+
+CREATE INDEX IF NOT EXISTS idx_enterprise_usage_company ON shared_enterprise_usage(company_code);
+CREATE INDEX IF NOT EXISTS idx_enterprise_usage_date ON shared_enterprise_usage(created_at DESC);
+
 -- 크레딧 잔액
 CREATE TABLE IF NOT EXISTS shared_credits (
     user_id TEXT PRIMARY KEY,
