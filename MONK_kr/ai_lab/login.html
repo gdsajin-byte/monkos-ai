@@ -109,7 +109,7 @@
         // 이미 로그인되어 있으면 리다이렉트
         const token = localStorage.getItem('monk_auth_token');
         if (token) {
-            const returnUrl = sessionStorage.getItem('monk_return_url') || '/ai_lab/so_so/apps/ai_photo.html';
+            const returnUrl = sessionStorage.getItem('monk_return_url') || '/ai_lab/photolab/';
             window.location.href = returnUrl;
         }
         

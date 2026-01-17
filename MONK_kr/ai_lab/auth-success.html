@@ -108,7 +108,7 @@
         
         function goToService() {
             // 이전 페이지 또는 기본 페이지로 이동
-            const returnUrl = sessionStorage.getItem('monk_return_url') || '/ai_lab/so_so/apps/ai_photo.html';
+            const returnUrl = sessionStorage.getItem('monk_return_url') || '/ai_lab/photolab/';
             sessionStorage.removeItem('monk_return_url');
             window.location.href = returnUrl;
         }

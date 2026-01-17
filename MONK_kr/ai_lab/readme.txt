@@ -1,7 +1,30 @@
-ai_lab 트리는 4 MUSE system 으로 생성된다. 각 방은 기능적인 요소와 자체로 뮤즈로서 페르소나를 가진다.
-전체구조와 마찬가지로 각 서브디렉토리마다 디렉토리 명과 같은 인덱스를 생성하고 images폴더를 함께 생성하여 각 단위에서 이미지를 공급한다.
-ssang_a(쌍아) : [Ai_chatbot] 프론트의 역할을 하는 chatbot이며 고객이 방문시 기본적인 정보를 묻고 스키마를 생성한다. 차후 결제시스템등이 적용되며 각 룸을 소개하는 역할이 부여된다.
-so_so(소소)   : [Ai_Photolab} 주로 이미지, 룩북, 상세페이지, 홈페이지 생성등을 담당하는 챕터이다. 구글 루미나 변형버전등 해당 API와 자체 기획중인 6.3콘솔등이 적용된다.
-min_a(민아)   : [Ai_model_agency] 민아는 패션브랜드이자 모델에이전시 역할의 디렉토리이다. 직접 생성한 모델등을 전시하고 런웨이등을 펼친다. 모델대여,판매,각 모델별 SNS진출등 살아있는 모델로서 진화시킬 비전.
-yong_a(용아)  : [Ai_Academy&B2B]  용아는 백엔드에서 전체를 아우르는 OS의 역할과 ACADEMY, B2B 채널을 담당하는 뮤즈이며 전략실에 해당한다.
-ai_lab 인덱스에 접속하게 되면 4뮤즈 카드가 보이고 각 방의 기능이 펼처진다. 
+# MONKOS AI LAB 서비스 구조 (2026-01-18 개편)
+
+## 브랜드 통일: MONKOS
+현재 모든 사용자 노출 서비스는 'MONKOS' 브랜드로 통일
+
+## 서비스 트리 (외부 - monk.kr)
+사용자가 보는 기능 중심의 직관적 구조
+
+/ai_lab/
+├── ai_lab.html        - MONKOS AI LAB (메인)
+├── photolab/          - MONKOS Photolab (증명사진, 프로필)
+├── lookbook/          - MONKOS LookBook (패션/뷰티 룩북)
+├── model_agency/      - MONKOS Model (AI 모델 에이전시)
+└── business/          - MONKOS Business (B2B 솔루션)
+
+## 기획 엔진 (내부 - 4 MUSE)
+데이터, 로직, 비즈니스 레이어 (GCS, D1 네이밍 유지)
+※ 차후 독립 도메인 분리 가능 (soso.com, mina.kr 등)
+
+- 쌍아(ssang_a): AI Chatbot / 고객 응대 / 결제 시스템
+- 소소(so_so): 이미지 생성 / Imagen API / 룩북
+- 민아(min_a): K-뷰티 모델 에이전시 / AI 모델 자산
+- 용아(yong_a): 전략 / Academy / B2B
+
+## 네이밍 규칙
+| 레이어 | 네이밍 | 예시 |
+|--------|--------|------|
+| 사용자 UI | MONKOS + 기능명 | MONKOS Photolab |
+| GCS 버킷 | 4 MUSE 접두사 | soso/generated/ |
+| D1 테이블 | 4 MUSE 접두사 | soso_orders |

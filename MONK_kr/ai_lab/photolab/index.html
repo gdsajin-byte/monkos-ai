@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AI PHOTO | MONKOS</title>
+    <title>MONKOS Photolab</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -297,7 +297,7 @@
             
             <p class="text-xs text-gray-500 mb-4">또는 모바일에서 직접 접속:</p>
             <div class="bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 flex items-center justify-between">
-                <code class="text-so text-xs break-all">monk-kr.pages.dev/ai_lab/so_so/apps/ai_photo</code>
+                <code class="text-so text-xs break-all">monk-kr.pages.dev/ai_lab/photolab</code>
                 <button onclick="copyUrl()" class="text-xs text-gray-400 hover:text-white ml-2">
                     <i class="fas fa-copy"></i>
                 </button>
@@ -315,7 +315,7 @@
     <!-- Header -->
     <header class="sticky top-0 z-50 bg-dark/90 backdrop-blur-md border-b border-white/5">
         <div class="max-w-7xl mx-auto px-4 h-14 flex justify-between items-center">
-            <a href="../../../index.html" class="text-xl font-black tracking-tight">MONK<span class="text-so">.kr</span></a>
+            <a href="../../index.html" class="text-xl font-black tracking-tight">MONK<span class="text-so">.kr</span></a>
             <div class="flex items-center gap-4">
                 <!-- 실시간 촬영 배지 -->
                 <div class="live-badge flex items-center gap-1.5 px-2.5 py-1 rounded-full text-white text-[10px] font-bold">
@@ -341,7 +341,7 @@
                     </div>
                 </div>
                 -->
-                <a href="../so_so.html" class="text-xs text-gray-400 hover:text-white">← SO-SO</a>
+                <a href="../ai_lab.html" class="text-xs text-gray-400 hover:text-white">← AI LAB</a>
             </div>
         </div>
     </header>
@@ -352,7 +352,7 @@
         <div class="text-center mb-6">
             <div class="flex items-center justify-center gap-2 mb-3">
                 <span class="px-3 py-1 rounded-full bg-so/10 border border-so/20 text-so text-[10px] font-bold uppercase tracking-widest">
-                    AI PHOTO
+                    MONKOS PHOTOLAB
                 </span>
                 <span class="px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-[10px] font-bold uppercase tracking-widest">
                     MONKOS ENGINE
@@ -1678,7 +1678,7 @@
 
                     if (navigator.canShare({ files })) {
                         await navigator.share({
-                            title: 'MONK AI Photo',
+                            title: 'MONKOS Photolab',
                             text: 'MONKOS로 생성한 AI 증명사진입니다.',
                             files: files
                         });

@@ -15,37 +15,46 @@
 - **B2B**: 기업 솔루션
 - **Academy**: 교육 플랫폼
 
-### 2. AI LAB - 4 MUSE 시스템 (4개의 독립 비즈니스 브랜드)
+### 2. AI LAB - 4 MUSE 시스템 (기획 엔진 + 서비스 레이어)
 
-AI LAB은 4개의 독립적인 비즈니스 채널로 구성:
+#### 📐 아키텍처 개념 (2026-01-18 확정)
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  내부 (기획 엔진)              │  외부 (monk.kr 서비스 UI)       │
+│  ─────────────────            │  ─────────────────────         │
+│  4 MUSE 브랜드 체계            │  기능 중심 직관적 트리           │
+│  (데이터, 로직, 비즈니스)       │  (사용자가 보는 서비스)          │
+│                               │                                │
+│  쌍아 → Business Logic        │  /photolab/   (AI Photolab)    │
+│  소소 → Image Generation      │  /lookbook/   (LookBook)       │
+│  민아 → Model Assets          │  /model_agency/ (AI Model)     │
+│  용아 → Strategy/Academy      │  /business/   (MONKOS B2B)     │
+└─────────────────────────────────────────────────────────────────┘
+```
+- **내부**: 4 MUSE 브랜드 = 기획/데이터/비즈니스 엔진 (GCS, D1 네이밍 유지)
+- **외부**: monk.kr = 기능 중심 UI (사용자 친화적 경로명)
+- **확장성**: 각 MUSE는 독립 도메인 분리 가능 (soso.com, mina.kr 등)
 
-- **쌍아(ssang_a)**: AI Chatbot 브랜드
-  - 고객 응대, 정보 수집, 스키마 생성
-  - 각 룸 소개 및 결제 시스템 담당
-  - `/ai_lab/ssang_a/` 디렉토리
-  
-- **소소(so_so)**: 이미지 생성 전문 브랜드 ⭐
-  - 이미지, 룩북, 상세페이지, 홈페이지 생성
-  - **폴더 구조**:
-    - `/ai_lab/so_so/` - 메인 앱 (현재 작업 중)
-    - `/ai_lab/imagen4/` - Imagen 4 전용
-    - `/ai_lab/imagen3/` - Imagen 3 전용
-    - 기타 이미지 생성 앱들...
-  - Google Imagen API 활용
-  - 무료/유료 모델 구분
-  
-- **민아(min_a)**: K-뷰티 모델 에이전시 브랜드
-  - 패션, 헤어 등 K-뷰티 AI 모델 전시
-  - 모델 대여/판매, SNS 진출
-  - AI 런웨이, 모델 포트폴리오
-  - `/ai_lab/min_a/` 디렉토리
-  
-- **용아(yong_a)**: 전략/교육 브랜드
-  - Academy (교육 플랫폼)
-  - B2B (기업 솔루션)
-  - 전략사업부
-  - 백엔드 OS 역할
-  - `/ai_lab/yong_a/` 디렉토리
+#### 🎭 4 MUSE (내부 기획 엔진)
+- **쌍아(ssang_a)**: AI Chatbot / 고객 응대 / 결제 시스템
+- **소소(so_so)**: 이미지 생성 / Imagen API / 룩북
+- **민아(min_a)**: K-뷰티 모델 에이전시 / AI 모델 자산
+- **용아(yong_a)**: 전략 / Academy / B2B
+
+#### 🖥️ monk.kr 서비스 트리 (외부 UI)
+```
+MONK_kr/ai_lab/
+├── ai_lab.html          ← 4개 서비스 카드
+├── photolab/            ← AI Photolab (소소 엔진)
+│   ├── index.html
+│   └── payment-*.html
+├── lookbook/            ← LookBook 제작 (소소 엔진)
+│   └── index.html
+├── model_agency/        ← AI 모델 에이전시 (민아 엔진)
+│   └── index.html
+└── business/            ← MONKOS Business (쌍아+용아 엔진)
+    └── index.html
+```
 
 ## 데이터 아키텍처 (3계층 전략 - 2026-01-15 확정)
 
