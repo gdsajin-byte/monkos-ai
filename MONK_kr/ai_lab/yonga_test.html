@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>용아 챗봇 테스트 | MONK AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Vertex AI Widget -->
+    <script src="https://cloud.google.com/ai/gen-app-builder/client?hl=ko"></script>
+    
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+        }
+        .glow-text {
+            text-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        #searchWidgetTrigger {
+            width: 100%;
+            padding: 16px 20px;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 12px;
+            color: white;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        #searchWidgetTrigger:focus {
+            border-color: rgba(139, 92, 246, 0.8);
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+        }
+        #searchWidgetTrigger::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+    </style>
+</head>
+<body class="text-white">
+    
+    <!-- Header -->
+    <header class="py-6 px-8">
+        <div class="max-w-4xl mx-auto flex items-center justify-between">
+            <a href="../index.html" class="text-gray-400 hover:text-white transition">
+                <i class="fas fa-arrow-left mr-2"></i> AI LAB
+            </a>
+            <span class="text-xs text-gray-500">TEST MODE</span>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto px-8 py-12">
+        
+        <!-- Title -->
+        <div class="text-center mb-12">
+            <div class="text-6xl mb-4">🐉</div>
+            <h1 class="text-4xl font-bold glow-text mb-4">용아 (龍牙)</h1>
+            <p class="text-gray-400 text-lg">MONK 프로젝트 전략 비서 AI</p>
+            <p class="text-purple-400 text-sm mt-2">Powered by Vertex AI RAG</p>
+        </div>
+
+        <!-- Search Widget -->
+        <div class="card rounded-2xl p-8 mb-8">
+            <div class="mb-6">
+                <label class="block text-gray-400 text-sm mb-2">
+                    <i class="fas fa-comment-dots mr-2"></i>용아에게 질문하기
+                </label>
+                
+                <!-- Vertex AI Search Widget -->
+                <gen-search-widget
+                    configId="51669a48-5880-478d-b055-a9034a511503"
+                    triggerId="searchWidgetTrigger">
+                </gen-search-widget>
+                
+                <input 
+                    type="text"
+                    placeholder="예: MONKOS 프로젝트란 무엇인가요?" 
+                    id="searchWidgetTrigger"
+                />
+            </div>
+            
+            <p class="text-gray-500 text-xs text-center">
+                입력 후 Enter 또는 클릭하면 용아가 답변합니다
+            </p>
+        </div>
+
+        <!-- Sample Questions -->
+        <div class="card rounded-2xl p-6">
+            <h3 class="text-gray-400 text-sm mb-4">
+                <i class="fas fa-lightbulb mr-2 text-yellow-400"></i>추천 질문
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <button onclick="askQuestion('쌍아와 용아의 역할은 무엇인가?')" 
+                        class="text-left p-3 rounded-lg bg-white/5 hover:bg-white/10 transition text-sm">
+                    쌍아와 용아의 역할은?
+                </button>
+                <button onclick="askQuestion('AI LAB 구조는 어떻게 되어있나요?')" 
+                        class="text-left p-3 rounded-lg bg-white/5 hover:bg-white/10 transition text-sm">
+                    AI LAB 구조는?
+                </button>
+                <button onclick="askQuestion('4 MUSE 시스템이란?')" 
+                        class="text-left p-3 rounded-lg bg-white/5 hover:bg-white/10 transition text-sm">
+                    4 MUSE 시스템이란?
+                </button>
+                <button onclick="askQuestion('GCS 코퍼스 구조는?')" 
+                        class="text-left p-3 rounded-lg bg-white/5 hover:bg-white/10 transition text-sm">
+                    GCS 코퍼스 구조는?
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center py-8 text-gray-500 text-sm">
+        <p>MONK.kr © 2026 | 용아 RAG Test v1.0</p>
+    </footer>
+
+    <script>
+        function askQuestion(question) {
+            const input = document.getElementById('searchWidgetTrigger');
+            input.value = question;
+            input.focus();
+            // 클릭 이벤트 트리거
+            input.click();
+        }
+    </script>
+
+</body>
+</html>
