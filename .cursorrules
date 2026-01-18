@@ -246,32 +246,41 @@ gs://monk-project/
 ⚠️ 위 정보는 참고용이며, 코드에 하드코딩하지 않는다.
 API 호출 시 환경변수(`process.env.GEMINI_API_KEY`)를 사용한다.
 
-## 📁 문서 관리 규칙 (docs/ 폴더)
+## 📁 문서 관리 규칙 (docs/ 폴더) - 2026-01-19 업데이트
 
-### 폴더 구조
+### 폴더 구조 (corpus 통합)
 ```
 docs/
-├── daily_session/           ← ⭐ 일일 대화 전체 기록 (자동 저장)
-│   └── YYYY-MM/             ← 월별 폴더 (연 12개)
-│       └── YYYYMMDD_session.md  ← 일별 세션 파일
+├── corpus/                  ← ⭐ AI 코퍼스 (GCS 미러링)
+│   ├── sessions/            ← 쌍아+용아 일일 세션
+│   │   └── YYYY-MM/
+│   │       ├── YYYYMMDD_session.md  ← 쌍아 세션
+│   │       └── YYYYMMDD_gemini.md   ← 용아 세션
+│   ├── gemini/              ← 용아 대화 통합본
+│   ├── legacy/              ← 레거시 문서
+│   ├── backup/              ← 백업
+│   └── bwya/                ← BWYA 학습 자료 (예정)
 │
-├── saga/                    ← 서사, 대화록, 세션
-│   ├── session_logs/        ← 일일 세션 로그
-│   ├── realtime_backup/     ← 실시간 대화 백업
-│   └── *.md                 ← 컨텍스트 복구, 여정 기록
-│
-└── infrastructure/          ← 인프라, 전략, 아키텍처
-    ├── 배포 가이드
-    ├── 아키텍처 설계
-    └── 전략 문서
+├── infrastructure/          ← 인프라, 전략, 아키텍처 (GCS 동기화 안함)
+└── rnd_2026/                ← R&D 문서
+```
+
+### GCS 동기화 (2026-01-19 확정)
+```bash
+# 로컬 → GCS 동기화
+gsutil -m rsync -r docs/corpus/ gs://monk-project/corpus/
+
+# 완전 미러링 (GCS 기준)
+gsutil -m rsync -r -d docs/corpus/ gs://monk-project/corpus/
 ```
 
 ### 📝 Daily Session 저장 규칙 (필수 - 2026-01-14 확정)
 **세션당 단일 파일에 매턴 append 방식으로 누적 저장한다:**
 
 **1. 저장 위치 및 파일명**
-- 위치: `docs/daily_session/YYYY-MM/` (월별 폴더)
-- 파일명: `YYYYMMDD_session.md` (예: `2026-01/20260114_session.md`)
+- 위치: `docs/corpus/sessions/YYYY-MM/` (월별 폴더)
+- 파일명: `YYYYMMDD_session.md` (쌍아) / `YYYYMMDD_gemini.md` (용아)
+- 예: `docs/corpus/sessions/2026-01/20260119_session.md`
 
 **2. 헤더 필수 정보**
 ```markdown
@@ -354,11 +363,12 @@ docs/
 - ✅ NotebookLM 로딩 최적화
 - ✅ Git 히스토리 깔끔 (세션당 1커밋)
 
-### 동기화 원칙 (집 ↔ 사무실)
+### 동기화 원칙 (집 ↔ 사무실 ↔ GCS)
 1. **작업 시작 전**: `README.md` 읽고 → `git pull` 실행
 2. **작업 종료 시**: `README.md`에 인수인계 작성 → `git add . && git commit && git push`
-3. **세션 로그**: 작업 시작/종료 시 `docs/daily_session/` 업데이트
-4. **전략 문서**: 중요 결정 시 `docs/infrastructure/`에 기록
+3. **세션 로그**: 작업 시작/종료 시 `docs/corpus/sessions/` 업데이트
+4. **GCS 동기화**: `gsutil -m rsync -r docs/corpus/ gs://monk-project/corpus/`
+5. **전략 문서**: 중요 결정 시 `docs/infrastructure/`에 기록
 
 ### 💾 멀티 백업 전략 (3중 안전장치)
 1. **Cursor Archive** (1단계, 로컬):
@@ -366,11 +376,11 @@ docs/
    - 즉시 백업 (용량 미미)
    - 같은 컴퓨터에서만 참조 가능
    
-2. **세션 로그** (2단계, Git):
-   - `docs/daily_session/YYYYMMDD_session.md`
+2. **세션 로그** (2단계, Git + GCS):
+   - `docs/corpus/sessions/YYYY-MM/YYYYMMDD_session.md`
    - 타임스탬프 + 맥락 + 실행 결과
-   - 집↔사무실 동기화, 완벽한 복구 가능
-   - 용량: ~15KB/일, 1년에 5MB
+   - 집↔사무실 동기화 + GCS 미러링
+   - Vertex AI RAG 자동 학습 연동
    
 3. **NotebookLM** (3단계, 지식 자산):
    - 세션 로그 학습
