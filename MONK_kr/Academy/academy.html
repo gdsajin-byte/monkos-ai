@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>아카데미 - 준비중 | MONK</title>
+    <title>BWYA Academy | MONK.kr</title>
+    <meta name="description" content="BWYA 6대 학문 - AI 시대의 크리에이터 양성 아카데미">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -11,94 +12,464 @@
                 extend: {
                     colors: {
                         monk: '#FBBF24',
-                        gray: { 950: '#05070A', 900: '#0B0F1A' }
+                        ai: '#60A5FA',
+                        purple: '#A78BFA',
+                        pink: '#F472B6',
+                        green: '#34D399',
+                        orange: '#FB923C',
+                        gray: { 950: '#05070A', 900: '#0B0F1A', 800: '#1F2937' }
                     }
                 }
             }
         }
     </script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700;900&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        .bg-image {
-            background-image: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&q=80&w=2000');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
+        body { font-family: 'Noto Sans KR', sans-serif; }
+        .playfair { font-family: 'Playfair Display', serif; }
+        
+        .discipline-card {
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            transform-style: preserve-3d;
         }
-        .pulse-slow {
-            animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        .discipline-card:hover {
+            transform: translateY(-12px) rotateX(5deg);
+        }
+        .discipline-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, transparent 0%, rgba(0,0,0,0.8) 100%);
+            z-index: 1;
+            border-radius: inherit;
+        }
+        
+        .glow-monk { box-shadow: 0 0 60px rgba(251, 191, 36, 0.15); }
+        .glow-ai { box-shadow: 0 0 60px rgba(96, 165, 250, 0.15); }
+        .glow-purple { box-shadow: 0 0 60px rgba(167, 139, 250, 0.15); }
+        .glow-pink { box-shadow: 0 0 60px rgba(244, 114, 182, 0.15); }
+        .glow-green { box-shadow: 0 0 60px rgba(52, 211, 153, 0.15); }
+        .glow-orange { box-shadow: 0 0 60px rgba(251, 146, 60, 0.15); }
+        
+        .float { animation: float 6s ease-in-out infinite; }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .text-gradient {
+            background: linear-gradient(135deg, #FBBF24 0%, #F472B6 50%, #60A5FA 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .bg-mesh {
+            background-image: 
+                radial-gradient(at 40% 20%, rgba(251, 191, 36, 0.1) 0px, transparent 50%),
+                radial-gradient(at 80% 0%, rgba(96, 165, 250, 0.1) 0px, transparent 50%),
+                radial-gradient(at 0% 50%, rgba(167, 139, 250, 0.1) 0px, transparent 50%),
+                radial-gradient(at 80% 50%, rgba(244, 114, 182, 0.05) 0px, transparent 50%),
+                radial-gradient(at 0% 100%, rgba(52, 211, 153, 0.1) 0px, transparent 50%);
+        }
+        
+        .card-shine {
+            position: relative;
+            overflow: hidden;
+        }
+        .card-shine::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to bottom right,
+                rgba(255,255,255,0) 0%,
+                rgba(255,255,255,0.05) 50%,
+                rgba(255,255,255,0) 100%
+            );
+            transform: rotate(30deg);
+            transition: all 0.5s;
+        }
+        .card-shine:hover::after {
+            left: 100%;
         }
     </style>
 </head>
 <body class="bg-gray-950 text-white min-h-screen">
 
-    <!-- Background Image with Overlay -->
-    <div class="fixed inset-0 bg-image">
-        <div class="absolute inset-0 bg-gradient-to-b from-gray-950/80 via-gray-950/70 to-gray-950/90"></div>
-    </div>
+    <!-- Background Mesh -->
+    <div class="fixed inset-0 bg-mesh pointer-events-none"></div>
 
-    <!-- Content -->
-    <div class="relative min-h-screen flex flex-col">
-        
-        <!-- Header -->
-        <header class="p-6 border-b border-white/10">
-            <a href="../index.html" class="inline-flex items-center text-white hover:text-monk transition-colors group font-bold tracking-tight">
-                <span>MONK<span class="text-monk">.kr</span></span>
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-gray-950/80 backdrop-blur-xl border-b border-white/5">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
+            <a href="../index.html" class="flex items-center group">
+                <span class="text-2xl font-black tracking-tighter">
+                    MONK<span class="text-ai">.kr</span>
+                </span>
             </a>
-        </header>
+            <nav class="hidden md:flex items-center space-x-8 text-sm">
+                <a href="#disciplines" class="text-gray-400 hover:text-white transition">6대 학문</a>
+                <a href="#tutor" class="text-gray-400 hover:text-white transition">용아쌤</a>
+                <a href="#path" class="text-gray-400 hover:text-white transition">수강 경로</a>
+                <button class="px-5 py-2.5 bg-monk text-gray-950 rounded-full text-xs font-bold hover:bg-monk/90 transition">
+                    수강 신청
+                </button>
+            </nav>
+        </div>
+    </header>
 
-        <!-- Main Content -->
-        <main class="flex-grow flex items-center justify-center px-6 py-20">
-            <div class="text-center max-w-3xl">
+    <!-- Hero Section -->
+    <section class="relative py-24 px-6 text-center overflow-hidden">
+        <!-- Floating Elements -->
+        <div class="absolute top-20 left-10 w-20 h-20 bg-monk/10 rounded-full blur-2xl float"></div>
+        <div class="absolute bottom-20 right-10 w-32 h-32 bg-ai/10 rounded-full blur-2xl float" style="animation-delay: -2s;"></div>
+        <div class="absolute top-40 right-20 w-16 h-16 bg-purple/10 rounded-full blur-2xl float" style="animation-delay: -4s;"></div>
+        
+        <div class="relative z-10 max-w-4xl mx-auto">
+            <div class="inline-flex items-center px-4 py-2 bg-white/5 border border-white/10 rounded-full mb-8">
+                <span class="w-2 h-2 bg-green rounded-full mr-2 animate-pulse"></span>
+                <span class="text-xs text-gray-400">용아쌤과 함께하는 AI 크리에이터 교육</span>
+            </div>
+            
+            <h1 class="text-6xl md:text-8xl font-black tracking-tighter mb-6">
+                <span class="playfair italic text-gradient">BWYA</span>
+                <span class="block text-white mt-2">Academy</span>
+            </h1>
+            
+            <p class="text-lg md:text-xl text-gray-400 font-light mb-8 leading-relaxed">
+                <span class="text-white font-medium">Beauty With Your Art</span><br>
+                6대 학문으로 완성하는 AI 시대의 크리에이터
+            </p>
+            
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="#disciplines" class="px-8 py-4 bg-white text-gray-950 rounded-full font-bold hover:bg-monk transition-all hover:scale-105">
+                    커리큘럼 보기
+                </a>
+                <a href="#tutor" class="px-8 py-4 bg-white/5 border border-white/20 rounded-full font-medium hover:bg-white/10 transition">
+                    용아쌤 만나기 →
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="py-12 border-y border-white/5">
+        <div class="max-w-5xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            <div>
+                <div class="text-4xl font-black text-monk mb-2">6</div>
+                <div class="text-xs text-gray-500 uppercase tracking-wider">전문 학문</div>
+            </div>
+            <div>
+                <div class="text-4xl font-black text-ai mb-2">53+</div>
+                <div class="text-xs text-gray-500 uppercase tracking-wider">프롬프트 태그</div>
+            </div>
+            <div>
+                <div class="text-4xl font-black text-purple mb-2">2,347</div>
+                <div class="text-xs text-gray-500 uppercase tracking-wider">교육 문단</div>
+            </div>
+            <div>
+                <div class="text-4xl font-black text-pink mb-2">15M+</div>
+                <div class="text-xs text-gray-500 uppercase tracking-wider">학습 토큰</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6 Disciplines Section -->
+    <section id="disciplines" class="py-24 px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <span class="text-xs font-bold tracking-[0.3em] text-monk uppercase">Six Disciplines</span>
+                <h2 class="text-4xl md:text-5xl font-black tracking-tight mt-4">6대 학문</h2>
+                <p class="text-gray-500 mt-4 max-w-2xl mx-auto">AI 크리에이터에게 필요한 모든 지식을 체계적으로 학습합니다</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 
-                <!-- Icon -->
-                <div class="mb-8 flex justify-center">
-                    <div class="relative">
-                        <div class="absolute inset-0 bg-monk/20 rounded-full blur-2xl animate-pulse"></div>
-                        <svg class="w-24 h-24 text-monk relative" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                        </svg>
+                <!-- 제1학문: 사진학 -->
+                <div class="discipline-card card-shine relative bg-gradient-to-br from-gray-900 to-gray-950 rounded-3xl p-8 border border-white/5 glow-monk group cursor-pointer">
+                    <div class="relative z-10">
+                        <div class="w-16 h-16 bg-monk/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-camera text-2xl text-monk"></i>
+                        </div>
+                        <div class="text-monk text-xs font-bold tracking-wider mb-2">제1학문</div>
+                        <h3 class="text-2xl font-black mb-3">사진학</h3>
+                        <p class="text-sm text-gray-400 leading-relaxed mb-6">
+                            조명, 구도, 색감의 예술과 과학<br>
+                            Irving Penn, Peter Lindbergh 거장 연구
+                        </p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-3 py-1 bg-monk/10 text-monk text-xs rounded-full">studio_lighting</span>
+                            <span class="px-3 py-1 bg-monk/10 text-monk text-xs rounded-full">high_key</span>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Title -->
-                <h1 class="text-6xl md:text-7xl font-black tracking-tighter mb-6 italic">
-                    <span class="text-white">MONK</span>
-                    <span class="text-monk">_</span>
-                    <span class="text-white">Academy</span>
-                </h1>
-
-                <!-- Label -->
-                <div class="mb-8">
-                    <span class="inline-block px-6 py-2 bg-monk/10 border border-monk/30 rounded-full text-monk text-xs font-bold tracking-[0.3em] uppercase pulse-slow">
-                        Coming Soon
-                    </span>
+                <!-- 제2학문: 패션학 -->
+                <div class="discipline-card card-shine relative bg-gradient-to-br from-gray-900 to-gray-950 rounded-3xl p-8 border border-white/5 glow-pink group cursor-pointer">
+                    <div class="relative z-10">
+                        <div class="w-16 h-16 bg-pink/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-tshirt text-2xl text-pink"></i>
+                        </div>
+                        <div class="text-pink text-xs font-bold tracking-wider mb-2">제2학문</div>
+                        <h3 class="text-2xl font-black mb-3">패션학</h3>
+                        <p class="text-sm text-gray-400 leading-relaxed mb-6">
+                            소재, 텍스처, 스타일링의 이해<br>
+                            K-뷰티 트렌드와 9-Grid 구성법
+                        </p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-3 py-1 bg-pink/10 text-pink text-xs rounded-full">silk_texture</span>
+                            <span class="px-3 py-1 bg-pink/10 text-pink text-xs rounded-full">9_grid</span>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Description -->
-                <p class="text-2xl md:text-3xl font-light text-gray-300 mb-4">
-                    준비중입니다
-                </p>
-                <p class="text-sm md:text-base text-gray-500 leading-relaxed max-w-xl mx-auto">
-                    AI 활용 교육과 미래 크리에이티브 커리큘럼을 준비하고 있습니다.<br>
-                    곧 여러분을 만나뵙겠습니다.
-                </p>
+                <!-- 제3학문: 헤어조형학 -->
+                <div class="discipline-card card-shine relative bg-gradient-to-br from-gray-900 to-gray-950 rounded-3xl p-8 border border-white/5 glow-purple group cursor-pointer">
+                    <div class="relative z-10">
+                        <div class="w-16 h-16 bg-purple/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-cut text-2xl text-purple"></i>
+                        </div>
+                        <div class="text-purple text-xs font-bold tracking-wider mb-2">제3학문</div>
+                        <h3 class="text-2xl font-black mb-3">헤어조형학</h3>
+                        <p class="text-sm text-gray-400 leading-relaxed mb-6">
+                            볼륨, 컬러, 형태의 조형 원리<br>
+                            K-뷰티 헤어 트렌드 분석
+                        </p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-3 py-1 bg-purple/10 text-purple text-xs rounded-full">balayage</span>
+                            <span class="px-3 py-1 bg-purple/10 text-purple text-xs rounded-full">voluminous</span>
+                        </div>
+                    </div>
+                </div>
 
-                <!-- Progress Indicator -->
-                <div class="mt-12 flex justify-center space-x-2">
-                    <div class="w-2 h-2 bg-monk rounded-full animate-pulse"></div>
-                    <div class="w-2 h-2 bg-monk/60 rounded-full animate-pulse" style="animation-delay: 0.2s"></div>
-                    <div class="w-2 h-2 bg-monk/30 rounded-full animate-pulse" style="animation-delay: 0.4s"></div>
+                <!-- 제4학문: 신체구조학 -->
+                <div class="discipline-card card-shine relative bg-gradient-to-br from-gray-900 to-gray-950 rounded-3xl p-8 border border-white/5 glow-green group cursor-pointer">
+                    <div class="relative z-10">
+                        <div class="w-16 h-16 bg-green/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-person text-2xl text-green"></i>
+                        </div>
+                        <div class="text-green text-xs font-bold tracking-wider mb-2">제4학문</div>
+                        <h3 class="text-2xl font-black mb-3">신체구조학</h3>
+                        <p class="text-sm text-gray-400 leading-relaxed mb-6">
+                            해부학 기반 포즈와 신체 언어<br>
+                            S-curve, 콘트라포스토 원리
+                        </p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-3 py-1 bg-green/10 text-green text-xs rounded-full">s_curve</span>
+                            <span class="px-3 py-1 bg-green/10 text-green text-xs rounded-full">dynamic_flow</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 제5학문: AI 디렉팅학 -->
+                <div class="discipline-card card-shine relative bg-gradient-to-br from-gray-900 to-gray-950 rounded-3xl p-8 border border-white/5 glow-ai group cursor-pointer">
+                    <div class="relative z-10">
+                        <div class="w-16 h-16 bg-ai/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-wand-magic-sparkles text-2xl text-ai"></i>
+                        </div>
+                        <div class="text-ai text-xs font-bold tracking-wider mb-2">제5학문</div>
+                        <h3 class="text-2xl font-black mb-3">AI 디렉팅학</h3>
+                        <p class="text-sm text-gray-400 leading-relaxed mb-6">
+                            AI 도구를 활용한 크리에이티브 연출<br>
+                            Imagen, Midjourney, Veo 마스터
+                        </p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-3 py-1 bg-ai/10 text-ai text-xs rounded-full">photorealistic</span>
+                            <span class="px-3 py-1 bg-ai/10 text-ai text-xs rounded-full">4k_quality</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 제6학문: 언어의 철학 -->
+                <div class="discipline-card card-shine relative bg-gradient-to-br from-gray-900 to-gray-950 rounded-3xl p-8 border border-white/5 glow-orange group cursor-pointer">
+                    <div class="relative z-10">
+                        <div class="w-16 h-16 bg-orange/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-feather-pointed text-2xl text-orange"></i>
+                        </div>
+                        <div class="text-orange text-xs font-bold tracking-wider mb-2">제6학문</div>
+                        <h3 class="text-2xl font-black mb-3">언어의 철학</h3>
+                        <p class="text-sm text-gray-400 leading-relaxed mb-6">
+                            프롬프트 엔지니어링과 커뮤니케이션<br>
+                            메타 프롬프트, 최적화 전략
+                        </p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-3 py-1 bg-orange/10 text-orange text-xs rounded-full">prompt_engineering</span>
+                            <span class="px-3 py-1 bg-orange/10 text-orange text-xs rounded-full">meta</span>
+                        </div>
+                    </div>
                 </div>
 
             </div>
-        </main>
+        </div>
+    </section>
 
-        <!-- Footer -->
-        <footer class="p-8 text-center border-t border-white/5">
-            <p class="text-[9px] font-bold text-gray-700 tracking-[0.5em] uppercase">© 2025 MONK STUDIO. All Rights Reserved.</p>
-        </footer>
+    <!-- Yonga Teacher Section -->
+    <section id="tutor" class="py-24 px-6 bg-gradient-to-b from-transparent via-ai/5 to-transparent">
+        <div class="max-w-6xl mx-auto">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <span class="text-xs font-bold tracking-[0.3em] text-ai uppercase">AI Tutor</span>
+                    <h2 class="text-4xl md:text-5xl font-black tracking-tight mt-4 mb-6">
+                        <span class="text-gradient">용아쌤</span>과<br>함께 배우세요
+                    </h2>
+                    <p class="text-gray-400 leading-relaxed mb-8">
+                        15M+ 토큰의 학습 데이터와 6대 학문 전문 지식을 갖춘 AI 튜터가
+                        여러분의 질문에 맞춤 답변을 제공합니다.
+                    </p>
+                    <ul class="space-y-4">
+                        <li class="flex items-center">
+                            <span class="w-8 h-8 bg-ai/10 rounded-full flex items-center justify-center mr-4">
+                                <i class="fas fa-check text-ai text-sm"></i>
+                            </span>
+                            <span class="text-gray-300">실시간 질의응답 및 피드백</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="w-8 h-8 bg-ai/10 rounded-full flex items-center justify-center mr-4">
+                                <i class="fas fa-check text-ai text-sm"></i>
+                            </span>
+                            <span class="text-gray-300">작품 업로드 → AI 분석 → 개선 제안</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="w-8 h-8 bg-ai/10 rounded-full flex items-center justify-center mr-4">
+                                <i class="fas fa-check text-ai text-sm"></i>
+                            </span>
+                            <span class="text-gray-300">맞춤 프롬프트 생성 및 최적화</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="relative">
+                    <div class="absolute inset-0 bg-ai/20 rounded-3xl blur-3xl"></div>
+                    <div class="relative bg-gray-900/80 backdrop-blur-xl rounded-3xl border border-white/10 p-8">
+                        <div class="flex items-center mb-6">
+                            <div class="w-12 h-12 bg-gradient-to-br from-ai to-purple rounded-full flex items-center justify-center mr-4">
+                                <i class="fas fa-dragon text-white"></i>
+                            </div>
+                            <div>
+                                <div class="font-bold">용아쌤 (龍牙)</div>
+                                <div class="text-xs text-gray-500">BWYA Academy AI Tutor</div>
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="bg-gray-800/50 rounded-2xl p-4">
+                                <p class="text-sm text-gray-400">안녕하세요! 오늘은 어떤 것을 배워볼까요?</p>
+                            </div>
+                            <div class="bg-ai/10 rounded-2xl p-4 ml-8">
+                                <p class="text-sm text-gray-300">스튜디오 조명에서 rim light 사용법 알려주세요</p>
+                            </div>
+                            <div class="bg-gray-800/50 rounded-2xl p-4">
+                                <p class="text-sm text-gray-400">
+                                    좋은 질문이에요! Rim light는 피사체 뒤에서 비추어 
+                                    실루엣을 강조하는 기법입니다. 
+                                    <span class="text-ai">제1학문 사진학</span>의 
+                                    조명 원리를 참고해보세요...
+                                </p>
+                            </div>
+                        </div>
+                        <div class="mt-6 flex">
+                            <input type="text" placeholder="용아쌤에게 질문하세요..." class="flex-1 bg-gray-800 border border-gray-700 rounded-full px-5 py-3 text-sm focus:outline-none focus:border-ai">
+                            <button class="ml-3 w-12 h-12 bg-ai rounded-full flex items-center justify-center hover:bg-ai/80 transition">
+                                <i class="fas fa-paper-plane text-white"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-    </div>
+    <!-- Learning Path Section -->
+    <section id="path" class="py-24 px-6">
+        <div class="max-w-5xl mx-auto">
+            <div class="text-center mb-16">
+                <span class="text-xs font-bold tracking-[0.3em] text-purple uppercase">Learning Path</span>
+                <h2 class="text-4xl md:text-5xl font-black tracking-tight mt-4">수강 경로</h2>
+                <p class="text-gray-500 mt-4">단계별로 체계적인 학습이 가능합니다</p>
+            </div>
+
+            <div class="relative">
+                <!-- Connection Line -->
+                <div class="absolute left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-monk via-ai to-purple hidden md:block"></div>
+
+                <!-- Beginner -->
+                <div class="relative flex flex-col md:flex-row items-center mb-12">
+                    <div class="md:w-1/2 md:pr-12 md:text-right">
+                        <span class="inline-block px-4 py-1 bg-monk/10 text-monk text-xs font-bold rounded-full mb-3">BEGINNER</span>
+                        <h3 class="text-2xl font-bold mb-2">초급 과정</h3>
+                        <p class="text-gray-500 text-sm">프롬프트 기초 → 조명 기초 → AI 이미지 생성 입문</p>
+                    </div>
+                    <div class="w-12 h-12 bg-monk rounded-full flex items-center justify-center z-10 my-4 md:my-0">
+                        <span class="text-gray-950 font-black">1</span>
+                    </div>
+                    <div class="md:w-1/2 md:pl-12"></div>
+                </div>
+
+                <!-- Intermediate -->
+                <div class="relative flex flex-col md:flex-row items-center mb-12">
+                    <div class="md:w-1/2 md:pr-12"></div>
+                    <div class="w-12 h-12 bg-ai rounded-full flex items-center justify-center z-10 my-4 md:my-0">
+                        <span class="text-gray-950 font-black">2</span>
+                    </div>
+                    <div class="md:w-1/2 md:pl-12 md:text-left">
+                        <span class="inline-block px-4 py-1 bg-ai/10 text-ai text-xs font-bold rounded-full mb-3">INTERMEDIATE</span>
+                        <h3 class="text-2xl font-bold mb-2">중급 과정</h3>
+                        <p class="text-gray-500 text-sm">K-뷰티 트렌드 → 스튜디오 라이팅 → 고급 프롬프트</p>
+                    </div>
+                </div>
+
+                <!-- Advanced -->
+                <div class="relative flex flex-col md:flex-row items-center">
+                    <div class="md:w-1/2 md:pr-12 md:text-right">
+                        <span class="inline-block px-4 py-1 bg-purple/10 text-purple text-xs font-bold rounded-full mb-3">ADVANCED</span>
+                        <h3 class="text-2xl font-bold mb-2">고급 과정</h3>
+                        <p class="text-gray-500 text-sm">거장 연구 → 룩북 제작 실무 → 멀티모달 파이프라인</p>
+                    </div>
+                    <div class="w-12 h-12 bg-purple rounded-full flex items-center justify-center z-10 my-4 md:my-0">
+                        <span class="text-white font-black">3</span>
+                    </div>
+                    <div class="md:w-1/2 md:pl-12"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-24 px-6">
+        <div class="max-w-4xl mx-auto text-center">
+            <div class="bg-gradient-to-br from-gray-900 via-gray-900 to-gray-950 rounded-3xl p-12 border border-white/5 relative overflow-hidden">
+                <div class="absolute inset-0 bg-mesh opacity-50"></div>
+                <div class="relative z-10">
+                    <h2 class="text-3xl md:text-4xl font-black mb-4">AI 시대의 크리에이터가 되세요</h2>
+                    <p class="text-gray-400 mb-8">BWYA 6대 학문과 용아쌤의 지도로 전문가로 성장하세요</p>
+                    <div class="flex flex-col sm:flex-row justify-center gap-4">
+                        <button class="px-8 py-4 bg-monk text-gray-950 rounded-full font-bold hover:bg-monk/90 transition-all hover:scale-105">
+                            무료 체험 시작하기
+                        </button>
+                        <button class="px-8 py-4 bg-white/5 border border-white/20 rounded-full font-medium hover:bg-white/10 transition">
+                            커리큘럼 다운로드
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 px-6 border-t border-white/5">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center">
+            <div class="mb-6 md:mb-0">
+                <span class="text-xl font-black">MONK<span class="text-ai">.kr</span></span>
+                <span class="text-gray-600 ml-4 text-sm">BWYA Academy</span>
+            </div>
+            <div class="text-xs text-gray-600">
+                © 2026 MONK STUDIO. All Rights Reserved.
+            </div>
+        </div>
+    </footer>
 
 </body>
 </html>
