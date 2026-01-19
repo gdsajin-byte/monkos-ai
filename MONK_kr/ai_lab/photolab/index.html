@@ -1233,7 +1233,8 @@
             // 미러링 해제하여 캡처 (저장용)
             ctx.translate(canvas.width, 0);
             ctx.scale(-1, 1);
-            ctx.drawImage(video, 0, 0, targetWidth, targetHeight);
+            // 소스 전체(video) → 캔버스 전체(리사이즈된 크기)로 그리기
+            ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight, 0, 0, targetWidth, targetHeight);
 
             // 이미지 데이터 추출 (품질 0.8로 추가 압축)
             capturedImage = canvas.toDataURL('image/jpeg', 0.8);
