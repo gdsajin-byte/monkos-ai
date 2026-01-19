@@ -309,18 +309,27 @@ gsutil -m rsync -r -d docs/corpus/ gs://monk-project/corpus/
 **작가님**: "중요 발언 직접 인용"
 ```
 
-**⏰ 타임스탬프 필수 규칙 (절대 준수! - 2026-01-15 확정)**
+**⏰ 타임스탬프 필수 규칙 (절대 준수! - 2026-01-19 업데이트)**
 ```
 ⚠️ Y2K 교훈: 작은 시간 오류 → 미래 RAG/학습 시 인과관계 왜곡
 
-✅ 필수: 매 응답 시작 전 반드시 실행
+✅ 필수: 매 응답 시작 전 반드시 실행 (all 권한 필수!)
    date "+%H:%M"
+   ※ 샌드박스 환경에서 시간 왜곡 발생 가능 → required_permissions: ["all"] 사용
 
 ❌ 금지: 추정/기억 기반 시간 기재 절대 금지
 ❌ 금지: 이전 타임스탬프에서 +α 계산 금지
+❌ 금지: 샌드박스 제한 환경에서 얻은 시간 사용 금지
 
 📌 원칙: 시스템 시간 = 유일한 진실
 📌 이유: 대화록 = 개발 히스토리 + 학습 데이터 + 법적 증거
+
+🔧 자동화 스크립트:
+   ./scripts/session_append.sh --time      # 현재 시간만 출력
+   ./scripts/session_append.sh -h "제목"   # 타임스탬프 헤더 추가
+   ./scripts/session_append.sh -q "질문"   # Q번호 자동 증가
+   ./scripts/session_append.sh -a "응답"   # A번호 자동 증가
+   ./scripts/session_append.sh --init      # 오늘 세션 초기화
 ```
 
 **4. 업데이트 방식 (Append Only)**
