@@ -1215,17 +1215,28 @@
             const canvas = document.getElementById('camera-canvas');
             const ctx = canvas.getContext('2d');
 
-            // 캔버스 크기 설정
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
+            // ⭐ 이미지 리사이즈 (Pro Max 고해상도 대응)
+            // 최대 720px로 제한하여 API 요청 크기 초과 방지
+            const MAX_SIZE = 720;
+            let targetWidth = video.videoWidth;
+            let targetHeight = video.videoHeight;
+            
+            if (targetWidth > MAX_SIZE || targetHeight > MAX_SIZE) {
+                const ratio = Math.min(MAX_SIZE / targetWidth, MAX_SIZE / targetHeight);
+                targetWidth = Math.round(targetWidth * ratio);
+                targetHeight = Math.round(targetHeight * ratio);
+            }
+            
+            canvas.width = targetWidth;
+            canvas.height = targetHeight;
 
             // 미러링 해제하여 캡처 (저장용)
             ctx.translate(canvas.width, 0);
             ctx.scale(-1, 1);
-            ctx.drawImage(video, 0, 0);
+            ctx.drawImage(video, 0, 0, targetWidth, targetHeight);
 
-            // 이미지 데이터 추출
-            capturedImage = canvas.toDataURL('image/jpeg', 0.9);
+            // 이미지 데이터 추출 (품질 0.8로 추가 압축)
+            capturedImage = canvas.toDataURL('image/jpeg', 0.8);
             captureTime = new Date();
 
             // 프리뷰 표시
