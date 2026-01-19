@@ -7,9 +7,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
-    <!-- Vertex AI Widget -->
-    <script src="https://cloud.google.com/ai/gen-app-builder/client?hl=ko"></script>
-    
     <style>
         body {
             background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
@@ -23,7 +20,7 @@
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
-        #searchWidgetTrigger {
+        .chat-input {
             width: 100%;
             padding: 16px 20px;
             font-size: 16px;
@@ -34,12 +31,24 @@
             outline: none;
             transition: all 0.3s ease;
         }
-        #searchWidgetTrigger:focus {
+        .chat-input:focus {
             border-color: rgba(139, 92, 246, 0.8);
             box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
         }
-        #searchWidgetTrigger::placeholder {
+        .chat-input::placeholder {
             color: rgba(255, 255, 255, 0.5);
+        }
+        .response-box {
+            background: rgba(139, 92, 246, 0.1);
+            border-left: 3px solid rgba(139, 92, 246, 0.5);
+        }
+        .loading {
+            display: inline-block;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
     </style>
 </head>
@@ -51,67 +60,73 @@
             <a href="../index.html" class="text-gray-400 hover:text-white transition">
                 <i class="fas fa-arrow-left mr-2"></i> AI LAB
             </a>
-            <span class="text-xs text-gray-500">TEST MODE</span>
+            <span class="text-xs text-gray-500">RAG TEST v2.0</span>
         </div>
     </header>
 
     <!-- Main Content -->
-    <main class="max-w-4xl mx-auto px-8 py-12">
+    <main class="max-w-4xl mx-auto px-8 py-8">
         
         <!-- Title -->
-        <div class="text-center mb-12">
+        <div class="text-center mb-8">
             <div class="text-6xl mb-4">🐉</div>
             <h1 class="text-4xl font-bold glow-text mb-4">용아 (龍牙)</h1>
             <p class="text-gray-400 text-lg">MONK 프로젝트 전략 비서 AI</p>
-            <p class="text-purple-400 text-sm mt-2">Powered by Vertex AI RAG</p>
+            <p class="text-purple-400 text-sm mt-2">Powered by Vertex AI RAG + Gemini</p>
         </div>
 
-        <!-- Search Widget -->
-        <div class="card rounded-2xl p-8 mb-8">
-            <div class="mb-6">
+        <!-- Chat Interface -->
+        <div class="card rounded-2xl p-6 mb-6">
+            <div class="mb-4">
                 <label class="block text-gray-400 text-sm mb-2">
                     <i class="fas fa-comment-dots mr-2"></i>용아에게 질문하기
                 </label>
                 
-                <!-- Vertex AI Search Widget -->
-                <gen-search-widget
-                    configId="51669a48-5880-478d-b055-a9034a511503"
-                    triggerId="searchWidgetTrigger">
-                </gen-search-widget>
-                
-                <input 
-                    type="text"
-                    placeholder="예: MONKOS 프로젝트란 무엇인가요?" 
-                    id="searchWidgetTrigger"
-                />
+                <div class="flex gap-3">
+                    <input 
+                        type="text"
+                        id="questionInput"
+                        class="chat-input flex-1"
+                        placeholder="예: MONKOS 프로젝트란 무엇인가요?"
+                        onkeypress="if(event.key==='Enter') askYonga()"
+                    />
+                    <button 
+                        onclick="askYonga()"
+                        class="px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-xl transition flex items-center gap-2"
+                    >
+                        <i class="fas fa-paper-plane"></i>
+                        <span class="hidden sm:inline">전송</span>
+                    </button>
+                </div>
             </div>
-            
-            <p class="text-gray-500 text-xs text-center">
-                입력 후 Enter 또는 클릭하면 용아가 답변합니다
-            </p>
+        </div>
+
+        <!-- Response Area -->
+        <div id="responseArea" class="space-y-4">
+            <!-- 응답이 여기에 표시됩니다 -->
         </div>
 
         <!-- Sample Questions -->
-        <div class="card rounded-2xl p-6">
+        <div class="card rounded-2xl p-6 mt-6">
             <h3 class="text-gray-400 text-sm mb-4">
                 <i class="fas fa-lightbulb mr-2 text-yellow-400"></i>추천 질문
             </h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <button onclick="askQuestion('쌍아와 용아의 역할은 무엇인가?')" 
+                <button onclick="setQuestion('쌍아와 용아의 역할은 무엇인가?')" 
                         class="text-left p-3 rounded-lg bg-white/5 hover:bg-white/10 transition text-sm">
-                    쌍아와 용아의 역할은?
+                    🤖 쌍아와 용아의 역할은?
                 </button>
-                <button onclick="askQuestion('AI LAB 구조는 어떻게 되어있나요?')" 
+                <button onclick="setQuestion('AI LAB 구조는 어떻게 되어있나요?')" 
                         class="text-left p-3 rounded-lg bg-white/5 hover:bg-white/10 transition text-sm">
-                    AI LAB 구조는?
+                    🏗️ AI LAB 구조는?
                 </button>
-                <button onclick="askQuestion('4 MUSE 시스템이란?')" 
+                <button onclick="setQuestion('4 MUSE 시스템이란 무엇인가요?')" 
                         class="text-left p-3 rounded-lg bg-white/5 hover:bg-white/10 transition text-sm">
-                    4 MUSE 시스템이란?
+                    🎭 4 MUSE 시스템이란?
                 </button>
-                <button onclick="askQuestion('GCS 코퍼스 구조는?')" 
+                <button onclick="setQuestion('MONKOS 브랜드 통일은 언제 했나요?')" 
                         class="text-left p-3 rounded-lg bg-white/5 hover:bg-white/10 transition text-sm">
-                    GCS 코퍼스 구조는?
+                    📅 MONKOS 브랜드 통일은?
                 </button>
             </div>
         </div>
@@ -120,16 +135,132 @@
 
     <!-- Footer -->
     <footer class="text-center py-8 text-gray-500 text-sm">
-        <p>MONK.kr © 2026 | 용아 RAG Test v1.0</p>
+        <p>MONK.kr © 2026 | 용아 RAG Test v2.0</p>
     </footer>
 
     <script>
-        function askQuestion(question) {
-            const input = document.getElementById('searchWidgetTrigger');
-            input.value = question;
-            input.focus();
-            // 클릭 이벤트 트리거
-            input.click();
+        // API 설정
+        const PROJECT_ID = 'monkos';
+        const ENGINE_ID = 'yonga-chatbot';
+        const LOCATION = 'global';
+        
+        function setQuestion(question) {
+            document.getElementById('questionInput').value = question;
+            document.getElementById('questionInput').focus();
+        }
+
+        async function askYonga() {
+            const input = document.getElementById('questionInput');
+            const question = input.value.trim();
+            
+            if (!question) {
+                alert('질문을 입력해주세요!');
+                return;
+            }
+
+            const responseArea = document.getElementById('responseArea');
+            
+            // 질문 표시
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'card rounded-xl p-4';
+            questionDiv.innerHTML = `
+                <div class="flex items-start gap-3">
+                    <div class="text-2xl">👤</div>
+                    <div>
+                        <div class="text-xs text-gray-500 mb-1">작가님</div>
+                        <div class="text-white">${escapeHtml(question)}</div>
+                    </div>
+                </div>
+            `;
+            responseArea.appendChild(questionDiv);
+
+            // 로딩 표시
+            const loadingDiv = document.createElement('div');
+            loadingDiv.id = 'loading';
+            loadingDiv.className = 'response-box rounded-xl p-4';
+            loadingDiv.innerHTML = `
+                <div class="flex items-start gap-3">
+                    <div class="text-2xl">🐉</div>
+                    <div>
+                        <div class="text-xs text-purple-400 mb-1">용아</div>
+                        <div class="loading text-gray-400">답변을 생성하고 있습니다...</div>
+                    </div>
+                </div>
+            `;
+            responseArea.appendChild(loadingDiv);
+            
+            // 스크롤
+            responseArea.scrollIntoView({ behavior: 'smooth', block: 'end' });
+            
+            input.value = '';
+
+            try {
+                // Vertex AI Search API 호출 (프록시 필요)
+                const response = await fetch('/api/yonga-search', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query: question })
+                });
+
+                const data = await response.json();
+                
+                // 로딩 제거
+                document.getElementById('loading').remove();
+
+                // 응답 표시
+                const answerDiv = document.createElement('div');
+                answerDiv.className = 'response-box rounded-xl p-4';
+                
+                let summaryText = data.summary?.summaryText || '관련 정보를 찾을 수 없습니다.';
+                
+                answerDiv.innerHTML = `
+                    <div class="flex items-start gap-3">
+                        <div class="text-2xl">🐉</div>
+                        <div class="flex-1">
+                            <div class="text-xs text-purple-400 mb-1">용아</div>
+                            <div class="text-white whitespace-pre-wrap">${escapeHtml(summaryText)}</div>
+                            ${data.results?.length ? `
+                                <div class="mt-3 pt-3 border-t border-white/10">
+                                    <div class="text-xs text-gray-500">📚 참조 문서: ${data.results.length}개</div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+                responseArea.appendChild(answerDiv);
+
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('loading').remove();
+                
+                // 에러 시 직접 테스트 안내
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'response-box rounded-xl p-4';
+                errorDiv.innerHTML = `
+                    <div class="flex items-start gap-3">
+                        <div class="text-2xl">🐉</div>
+                        <div>
+                            <div class="text-xs text-purple-400 mb-1">용아</div>
+                            <div class="text-yellow-400">
+                                ⚠️ API 프록시가 설정되지 않았습니다.<br>
+                                <a href="https://console.cloud.google.com/gen-app-builder/engines/yonga-chatbot/preview?project=monkos" 
+                                   target="_blank" class="underline text-purple-400">
+                                   → GCP Console에서 직접 테스트하기
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                responseArea.appendChild(errorDiv);
+            }
+            
+            responseArea.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
     </script>
 
