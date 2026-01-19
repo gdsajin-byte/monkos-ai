@@ -1,0 +1,228 @@
+{
+  "lighting": [
+    {
+      "tag": "light",
+      "count": 41
+    },
+    {
+      "tag": "조명",
+      "count": 35
+    },
+    {
+      "tag": "lighting",
+      "count": 20
+    },
+    {
+      "tag": "빛",
+      "count": 18
+    },
+    {
+      "tag": "그림자",
+      "count": 7
+    },
+    {
+      "tag": "cinematic",
+      "count": 5
+    },
+    {
+      "tag": "shadow",
+      "count": 4
+    },
+    {
+      "tag": "하이라이트",
+      "count": 2
+    },
+    {
+      "tag": "highlight",
+      "count": 2
+    },
+    {
+      "tag": "rim light",
+      "count": 2
+    }
+  ],
+  "texture": [
+    {
+      "tag": "질감",
+      "count": 45
+    },
+    {
+      "tag": "texture",
+      "count": 37
+    },
+    {
+      "tag": "실크",
+      "count": 20
+    },
+    {
+      "tag": "텍스처",
+      "count": 18
+    },
+    {
+      "tag": "소재",
+      "count": 12
+    },
+    {
+      "tag": "면",
+      "count": 12
+    },
+    {
+      "tag": "레이스",
+      "count": 12
+    },
+    {
+      "tag": "silk",
+      "count": 11
+    },
+    {
+      "tag": "sheer",
+      "count": 10
+    },
+    {
+      "tag": "시스루",
+      "count": 8
+    },
+    {
+      "tag": "lace",
+      "count": 6
+    },
+    {
+      "tag": "satin",
+      "count": 4
+    },
+    {
+      "tag": "cotton",
+      "count": 3
+    }
+  ],
+  "pose": [
+    {
+      "tag": "flow",
+      "count": 19
+    },
+    {
+      "tag": "플로우",
+      "count": 11
+    },
+    {
+      "tag": "포즈",
+      "count": 9
+    },
+    {
+      "tag": "pose",
+      "count": 8
+    },
+    {
+      "tag": "movement",
+      "count": 5
+    },
+    {
+      "tag": "자세",
+      "count": 4
+    },
+    {
+      "tag": "dynamic",
+      "count": 3
+    }
+  ],
+  "style": [
+    {
+      "tag": "modern",
+      "count": 3
+    },
+    {
+      "tag": "elegant",
+      "count": 3
+    },
+    {
+      "tag": "모던",
+      "count": 2
+    },
+    {
+      "tag": "빈티지",
+      "count": 2
+    },
+    {
+      "tag": "classic",
+      "count": 2
+    }
+  ],
+  "composition": [
+    {
+      "tag": "grid",
+      "count": 45
+    },
+    {
+      "tag": "프레임",
+      "count": 8
+    },
+    {
+      "tag": "그리드",
+      "count": 4
+    },
+    {
+      "tag": "composition",
+      "count": 4
+    },
+    {
+      "tag": "균형",
+      "count": 3
+    },
+    {
+      "tag": "frame",
+      "count": 2
+    }
+  ],
+  "mood": [
+    {
+      "tag": "감성",
+      "count": 6
+    },
+    {
+      "tag": "시네마틱",
+      "count": 6
+    },
+    {
+      "tag": "cinematic",
+      "count": 5
+    },
+    {
+      "tag": "atmosphere",
+      "count": 5
+    },
+    {
+      "tag": "분위기",
+      "count": 3
+    },
+    {
+      "tag": "몽환적",
+      "count": 2
+    }
+  ],
+  "master": [
+    {
+      "tag": "irving penn",
+      "count": 55
+    },
+    {
+      "tag": "어빙 펜",
+      "count": 23
+    },
+    {
+      "tag": "피터 린드버그",
+      "count": 16
+    },
+    {
+      "tag": "peter lindbergh",
+      "count": 13
+    },
+    {
+      "tag": "댄 윈터스",
+      "count": 13
+    },
+    {
+      "tag": "dan winters",
+      "count": 9
+    }
+  ]
+}
