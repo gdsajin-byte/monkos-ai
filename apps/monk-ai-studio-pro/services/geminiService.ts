@@ -1,7 +1,10 @@
 import { AspectRatio, ImageSize, SafetyLevel, SynthesisMode } from "../types";
 
 // 백엔드 API 엔드포인트
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+// 로컬: http://localhost:3001/api, 배포: /api (Cloudflare Functions)
+const API_BASE = import.meta.env.DEV 
+  ? 'http://localhost:3001/api' 
+  : '/api';
 
 export class GeminiService {
   /**
