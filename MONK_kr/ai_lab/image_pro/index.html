@@ -111,6 +111,17 @@
 
     <script>
         let currentAccessType = 'staff';
+        let authData = null;
+
+        // 인증 데이터 로드
+        async function loadAuthData() {
+            try {
+                const res = await fetch('./auth.json');
+                authData = await res.json();
+            } catch (e) {
+                console.error('인증 데이터 로드 실패:', e);
+            }
+        }
 
         function setAccessType(type) {
             currentAccessType = type;
@@ -132,57 +143,71 @@
             document.getElementById('error-msg').classList.add('hidden');
         }
 
-        function handleLogin(e) {
+        async function handleLogin(e) {
             e.preventDefault();
             const errorMsg = document.getElementById('error-msg');
+            
+            if (!authData) {
+                errorMsg.textContent = '인증 시스템 로딩 중... 잠시 후 다시 시도하세요';
+                errorMsg.classList.remove('hidden');
+                return;
+            }
             
             if (currentAccessType === 'staff') {
                 const staffId = document.getElementById('staff-id').value;
                 const password = document.getElementById('staff-password').value;
                 
-                // Simple validation (실제로는 서버 인증 필요)
-                if (staffId && password) {
-                    // Store auth token
+                // JSON 데이터에서 검증
+                const user = authData.staff.find(u => u.id === staffId && u.pw === password);
+                
+                if (user) {
                     sessionStorage.setItem('MONKOS_IMAGE_PRO_AUTH', JSON.stringify({
                         type: 'staff',
-                        id: staffId,
+                        id: user.id,
+                        name: user.name,
+                        role: user.role,
                         timestamp: Date.now()
                     }));
-                    
-                    // Redirect to IMAGE PRO app
-                    // TODO: 실제 배포 시 경로 수정
-                    window.location.href = '/apps/monk-ai-studio-pro/';
+                    window.location.href = './app/';
                 } else {
-                    errorMsg.textContent = 'Staff ID와 비밀번호를 입력하세요';
+                    errorMsg.textContent = 'Staff ID 또는 비밀번호가 올바르지 않습니다';
                     errorMsg.classList.remove('hidden');
                 }
             } else {
                 const companyCode = document.getElementById('company-code').value;
                 const accessKey = document.getElementById('access-key').value;
                 
-                if (companyCode && accessKey) {
+                // JSON 데이터에서 검증
+                const enterprise = authData.enterprise.find(e => e.code === companyCode && e.key === accessKey);
+                
+                if (enterprise) {
                     sessionStorage.setItem('MONKOS_IMAGE_PRO_AUTH', JSON.stringify({
                         type: 'enterprise',
-                        company: companyCode,
+                        code: enterprise.code,
+                        company: enterprise.company,
+                        credits: enterprise.credits,
                         timestamp: Date.now()
                     }));
-                    
-                    window.location.href = '/apps/monk-ai-studio-pro/';
+                    window.location.href = './app/';
                 } else {
-                    errorMsg.textContent = 'Company Code와 Access Key를 입력하세요';
+                    errorMsg.textContent = 'Company Code 또는 Access Key가 올바르지 않습니다';
                     errorMsg.classList.remove('hidden');
                 }
             }
         }
 
-        // Check existing auth
-        window.onload = function() {
+        // 초기화
+        window.onload = async function() {
+            // 인증 데이터 로드
+            await loadAuthData();
+            
+            // 기존 세션 체크
             const auth = sessionStorage.getItem('MONKOS_IMAGE_PRO_AUTH');
             if (auth) {
-                const authData = JSON.parse(auth);
+                const session = JSON.parse(auth);
                 // 24시간 유효
-                if (Date.now() - authData.timestamp < 24 * 60 * 60 * 1000) {
-                    window.location.href = '/apps/monk-ai-studio-pro/';
+                if (Date.now() - session.timestamp < 24 * 60 * 60 * 1000) {
+                    window.location.href = './app/';
                 }
             }
         };
