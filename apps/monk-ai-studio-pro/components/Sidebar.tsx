@@ -151,6 +151,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </div>
           )}
           
+          {/* 변주 박스: I2I 모드 + 업로드 이미지 있을 때만 */}
           {mode !== 'T2I' && uploadedImage && (
             <QuickVariations
               onApplyVariation={onApplyVariation}

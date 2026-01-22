@@ -552,6 +552,7 @@ const App: React.FC = () => {
               language={language}
               sidebarWidth={sidebarWidth}
               handleMouseDownResize={handleMouseDownResize}
+              history={history}
             />
 
             <section className="flex-1 flex flex-col bg-[#010409] relative p-8">
