@@ -18,7 +18,7 @@ export const Header: React.FC<HeaderProps> = ({ onExport, onToggleLogs, logCount
   // 환경변수 기반 기능 제어
   const SHOW_LOGS = import.meta.env.VITE_SHOW_LOGS !== 'false';
   const SHOW_EXPORT = import.meta.env.VITE_SHOW_EXPORT !== 'false';
-  const SHOW_DEPLOY = import.meta.env.VITE_SHOW_DEPLOY !== 'false';
+  const SHOW_DEPLOY = false; // 임시 감춤 (2026-01-22)
 
   useEffect(() => {
     if (window.matchMedia('(display-mode: standalone)').matches) setIsInstalled(true);
