@@ -8,7 +8,7 @@ const API_BASE = import.meta.env.DEV
 
 export class GeminiService {
   /**
-   * T2I - Powered by Imagen 4.0 (via Backend Proxy)
+   * T2I - Powered by MONKOS Engine (via Backend Proxy)
    */
   static async generateBatch(prompt: string, config: { aspectRatio: AspectRatio; safetyLevel: SafetyLevel; }): Promise<string[]> {
     try {
@@ -44,7 +44,7 @@ export class GeminiService {
   }
 
   /**
-   * I2I, Edit, Upscale - Powered by Imagen 3 Pro (via Backend Proxy)
+   * I2I, Edit, Upscale - Powered by MONKOS Engine (via Backend Proxy)
    */
   static async refineImage(prompt: string, config: { 
     aspectRatio: AspectRatio; 

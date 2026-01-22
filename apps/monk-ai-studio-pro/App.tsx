@@ -397,20 +397,20 @@ const App: React.FC = () => {
     setError(null);
     try {
       if (mode === 'T2I') {
-        setGenStatus('IMAGEN 4.0: SYNTHESIZING...');
+        setGenStatus('MONKOS ENGINE: SYNTHESIZING...');
         const urls = await GeminiService.generateBatch(finalPrompt, { aspectRatio, safetyLevel });
         const newImages = urls.map((url, idx) => ({ 
           id: `${Date.now()}-${idx}`, 
           url, prompt: finalPrompt, projectId: 'INTERNAL', timestamp: Date.now(), 
-          config: { aspectRatio, imageSize: '1K' as ImageSize, mode, model: 'Imagen 4.0' } 
+          config: { aspectRatio, imageSize: '1K' as ImageSize, mode, model: 'MONKOS' } 
         }));
         setCurrentBatch(urls);
         setHistory(prev => [...newImages, ...prev]);
         setActiveImageId(newImages[0].id);
         setViewMode('grid');
-        addLog('T2I_BATCH', 'Imagen 4.0', 'SUCCESS');
+        addLog('T2I_BATCH', 'MONKOS Engine', 'SUCCESS');
       } else {
-        const engineLabel = mode === 'UPSCALE' ? '4K RECONSTRUCTOR' : 'IMAGEN 3 PRO';
+        const engineLabel = mode === 'UPSCALE' ? '4K RECONSTRUCTOR' : 'MONKOS ENGINE';
         setGenStatus(`${engineLabel}: ${mode} ACTIVE...`);
         const resultUrl = await GeminiService.refineImage(
           mode === 'UPSCALE' ? (finalPrompt || 'Enhance image quality') : finalPrompt, 
@@ -424,12 +424,12 @@ const App: React.FC = () => {
         );
         const refinedImg = { 
           id: Date.now().toString(), url: resultUrl, prompt: finalPrompt, projectId: 'INTERNAL', timestamp: Date.now(), 
-          config: { aspectRatio, imageSize: mode === 'UPSCALE' ? '4K' as ImageSize : '2K' as ImageSize, mode, model: 'Imagen 3 Pro' } 
+          config: { aspectRatio, imageSize: mode === 'UPSCALE' ? '4K' as ImageSize : '2K' as ImageSize, mode, model: 'MONKOS' } 
         };
         setHistory(prev => [refinedImg, ...prev]);
         setActiveImageId(refinedImg.id);
         setViewMode('single');
-        addLog(mode, 'Imagen 3 Pro', 'SUCCESS');
+        addLog(mode, 'MONKOS Engine', 'SUCCESS');
       }
       resetInspector();
     } catch (err: any) {
