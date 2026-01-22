@@ -1,4 +1,6 @@
-// Cloudflare Pages Function - Imagen 4.0 T2I (이미지 프로 전용)
+// Cloudflare Pages Function - T2I (gemini-3-pro-image-preview)
+// ⚠️ 임시: Imagen 4.0 REST API deprecated → Gemini 3 Pro로 대체
+// TODO: MONKOS.AI에서 Cloud Run + SDK로 Imagen 4.0 복구 예정
 
 export async function onRequestPost(context) {
   const corsHeaders = {
@@ -28,33 +30,43 @@ export async function onRequestPost(context) {
       }), { status: 400, headers: corsHeaders });
     }
 
-    console.log('📸 [IMAGE PRO] Generating with Imagen 4.0...');
+    console.log('📸 [IMAGE PRO] Generating with Gemini 3 Pro...');
     console.log('   Prompt:', prompt.substring(0, 100) + '...');
 
-    // Imagen 4.0 API 호출 (2026-06-06 신규 모델명)
+    const aspectRatio = config?.aspectRatio || '1:1';
+
+    // Gemini 3 Pro Image Preview - T2I (photolab 검증 방식)
     const geminiResponse = await fetch(
-      'https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-preview-06-06:generateImages',
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image-preview:generateContent?key=${env.GEMINI_API_KEY}`,
       {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-goog-api-key': env.GEMINI_API_KEY
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          prompt: prompt,
-          config: {
-            numberOfImages: 4,
-            aspectRatio: config?.aspectRatio || '1:1',
-            safetyFilterLevel: 'block_low_and_above',
-            personGeneration: 'allow_adult'
-          }
+          contents: [{
+            parts: [
+              { text: prompt }
+            ]
+          }],
+          generationConfig: {
+            responseModalities: ['IMAGE', 'TEXT'],
+            imageConfig: { 
+              aspectRatio: aspectRatio 
+            }
+          },
+          // BLOCK_NONE - photolab 검증 (정체성 유지 핵심)
+          safetySettings: [
+            { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+            { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+            { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
+            { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
+          ]
         })
       }
     );
 
     if (!geminiResponse.ok) {
       const errorText = await geminiResponse.text();
-      console.error('❌ Imagen 4 API error:', errorText);
+      console.error('❌ Gemini API error:', errorText);
       return new Response(JSON.stringify({ 
         success: false, 
         error: 'Image generation failed',
@@ -64,10 +76,16 @@ export async function onRequestPost(context) {
 
     const result = await geminiResponse.json();
 
-    // 응답 형식 변환 (프론트엔드 호환)
-    const images = (result.generatedImages || []).map(img => 
-      `data:image/png;base64,${img.image.imageBytes}`
-    );
+    // 응답에서 이미지 추출 (Gemini generateContent 형식)
+    const images = [];
+    if (result.candidates && result.candidates[0]?.content?.parts) {
+      for (const part of result.candidates[0].content.parts) {
+        if (part.inlineData?.data) {
+          const mimeType = part.inlineData.mimeType || 'image/png';
+          images.push(`data:${mimeType};base64,${part.inlineData.data}`);
+        }
+      }
+    }
 
     console.log('✅ [IMAGE PRO] Generated', images.length, 'images');
 
