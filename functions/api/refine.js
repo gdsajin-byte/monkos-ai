@@ -1,4 +1,5 @@
-// Cloudflare Pages Function - Imagen 3 Pro I2I/Edit/Upscale (이미지 프로 전용)
+// Cloudflare Pages Function - I2I/Edit/Upscale (gemini-3-pro-image-preview)
+// ⚠️ photolab 검증 방식 적용 (2026-01-22)
 
 export async function onRequestPost(context) {
   const corsHeaders = {
@@ -28,7 +29,7 @@ export async function onRequestPost(context) {
       }), { status: 400, headers: corsHeaders });
     }
 
-    console.log('🎨 [IMAGE PRO] Refining with Gemini...');
+    console.log('🎨 [IMAGE PRO] Refining with Gemini 3 Pro...');
     console.log('   Mode:', mode);
 
     // Base64 데이터 추출
@@ -51,31 +52,33 @@ export async function onRequestPost(context) {
         break;
     }
 
-    // Gemini 2.0 Flash API 호출
+    const aspectRatio = config?.aspectRatio || '1:1';
+
+    // Gemini 3 Pro Image Preview - photolab 검증 방식
     const geminiResponse = await fetch(
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent',
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image-preview:generateContent?key=${env.GEMINI_API_KEY}`,
       {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-goog-api-key': env.GEMINI_API_KEY
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           contents: [{
             parts: [
-              { 
-                inlineData: { 
-                  data: base64Data, 
-                  mimeType: mimeType 
-                } 
-              },
+              { inlineData: { mimeType, data: base64Data } },
               { text: instruction }
             ]
           }],
           generationConfig: {
-            responseModalities: ['image', 'text'],
-            responseMimeType: 'image/png'
-          }
+            imageConfig: { 
+              aspectRatio: aspectRatio 
+            }
+          },
+          // BLOCK_NONE - photolab 검증 (정체성 유지 핵심)
+          safetySettings: [
+            { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+            { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+            { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
+            { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
+          ]
         })
       }
     );
@@ -91,18 +94,25 @@ export async function onRequestPost(context) {
     }
 
     const result = await geminiResponse.json();
-    const candidates = result.candidates || [];
-    const parts = candidates[0]?.content?.parts || [];
-    const imagePart = parts.find(p => p.inlineData);
     
-    if (!imagePart || !imagePart.inlineData) {
+    // 응답에서 이미지 추출
+    let resultImage = null;
+    if (result.candidates && result.candidates[0]?.content?.parts) {
+      for (const part of result.candidates[0].content.parts) {
+        if (part.inlineData?.data) {
+          const imgMimeType = part.inlineData.mimeType || 'image/png';
+          resultImage = `data:${imgMimeType};base64,${part.inlineData.data}`;
+          break;
+        }
+      }
+    }
+    
+    if (!resultImage) {
       return new Response(JSON.stringify({ 
         success: false, 
         error: 'No image in response. The model might have declined the request.'
       }), { status: 500, headers: corsHeaders });
     }
-
-    const resultImage = `data:image/png;base64,${imagePart.inlineData.data}`;
 
     console.log('✅ [IMAGE PRO] Image refined successfully');
 
