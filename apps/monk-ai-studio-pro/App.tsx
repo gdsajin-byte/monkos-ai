@@ -619,6 +619,15 @@ const App: React.FC = () => {
                       )}
                       <div className="w-px h-4 bg-white/10"></div>
                       <button 
+                        onClick={() => { setMode('UPSCALE'); performSynthesis(); }}
+                        disabled={isGenerating || !activeImageId}
+                        className="p-2 hover:bg-amber-500/20 text-amber-400 rounded-lg transition-all"
+                        title={language === 'KO' ? '4K 업스케일' : '4K Upscale'}
+                      >
+                        <i className="fa-solid fa-expand text-sm"></i>
+                      </button>
+                      <div className="w-px h-4 bg-white/10"></div>
+                      <button 
                         onClick={downloadActive}
                         className="p-2 hover:bg-blue-500/20 text-blue-400 rounded-lg transition-all"
                         title={language === 'KO' ? '저장' : 'Save'}
