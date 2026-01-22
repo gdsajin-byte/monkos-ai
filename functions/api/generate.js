@@ -31,9 +31,9 @@ export async function onRequestPost(context) {
     console.log('📸 [IMAGE PRO] Generating with Imagen 4.0...');
     console.log('   Prompt:', prompt.substring(0, 100) + '...');
 
-    // Imagen 4.0 API 호출
+    // Imagen 4.0 API 호출 (2026-06-06 신규 모델명)
     const geminiResponse = await fetch(
-      'https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:generateImages',
+      'https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-preview-06-06:generateImages',
       {
         method: 'POST',
         headers: {
