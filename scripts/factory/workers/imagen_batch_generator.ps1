@@ -19,28 +19,11 @@ Write-Host "비율: $AspectRatio, 스타일: $Style" -ForegroundColor Gray
 Write-Host ""
 
 # ============================================================
-# 환경 변수 확인
+# 참고: Cloudflare Worker에서 인증 처리
 # ============================================================
-
-if (!(Test-Path "scripts/factory/.env")) {
-    Write-Host "❌ .env 파일 없음. .env.sample을 복사하여 설정하세요" -ForegroundColor Red
-    exit 1
-}
-
-# .env 로드
-Get-Content "scripts/factory/.env" | ForEach-Object {
-    if ($_ -match "^([^#][^=]+)=(.+)$") {
-        $name = $matches[1].Trim()
-        $value = $matches[2].Trim()
-        Set-Item -Path "env:$name" -Value $value
-    }
-}
-
-if (!$env:GEMINI_API_KEY) {
-    Write-Host "❌ GEMINI_API_KEY 환경변수가 설정되지 않았습니다" -ForegroundColor Red
-    Write-Host "   scripts/factory/.env 파일에 GEMINI_API_KEY를 추가하세요" -ForegroundColor Yellow
-    exit 1
-}
+# GEMINI_API_KEY는 Cloudflare Worker 환경변수에 설정되어 있음
+# 이 스크립트는 Worker 엔드포인트만 호출하면 됨
+# https://monk-imagen-proxy.gdsajin.workers.dev
 
 # ============================================================
 # 출력 디렉토리 생성
