@@ -1,7 +1,103 @@
 /**
- * MONK Imagen 4.0 Proxy - Cloudflare Worker
- * Google AI Studio Imagen 4.0 API 연동
+ * MONK Imagen 4.0 Proxy - Cloudflare Worker (Vertex AI)
+ * Vertex AI Imagen API 연동 - Developer Premier 구독 활용
+ *
+ * 필요한 환경 변수:
+ * - GCP_PROJECT_ID: Google Cloud 프로젝트 ID
+ * - GCP_LOCATION: 리전 (예: us-central1)
+ * - GCP_SERVICE_ACCOUNT_KEY: Service Account JSON (Base64 인코딩)
+ * - GEMINI_API_KEY: Gemini 프롬프트 개선용 (기존 유지)
  */
+
+// JWT 생성 헬퍼 함수 (Service Account 인증)
+async function createJWT(serviceAccountKey) {
+  const serviceAccount = JSON.parse(serviceAccountKey);
+
+  const header = {
+    alg: 'RS256',
+    typ: 'JWT',
+    kid: serviceAccount.private_key_id
+  };
+
+  const now = Math.floor(Date.now() / 1000);
+  const payload = {
+    iss: serviceAccount.client_email,
+    sub: serviceAccount.client_email,
+    aud: 'https://oauth2.googleapis.com/token',
+    iat: now,
+    exp: now + 3600,
+    scope: 'https://www.googleapis.com/auth/cloud-platform'
+  };
+
+  // Base64 URL 인코딩
+  const base64url = (str) => {
+    return btoa(str)
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=/g, '');
+  };
+
+  const encodedHeader = base64url(JSON.stringify(header));
+  const encodedPayload = base64url(JSON.stringify(payload));
+
+  const signatureInput = `${encodedHeader}.${encodedPayload}`;
+
+  // RSA-SHA256 서명
+  const privateKey = await crypto.subtle.importKey(
+    'pkcs8',
+    pemToBinary(serviceAccount.private_key),
+    {
+      name: 'RSASSA-PKCS1-v1_5',
+      hash: 'SHA-256'
+    },
+    false,
+    ['sign']
+  );
+
+  const signature = await crypto.subtle.sign(
+    'RSASSA-PKCS1-v1_5',
+    privateKey,
+    new TextEncoder().encode(signatureInput)
+  );
+
+  const encodedSignature = base64url(String.fromCharCode(...new Uint8Array(signature)));
+
+  return `${signatureInput}.${encodedSignature}`;
+}
+
+// PEM을 바이너리로 변환
+function pemToBinary(pem) {
+  const pemContents = pem
+    .replace('-----BEGIN PRIVATE KEY-----', '')
+    .replace('-----END PRIVATE KEY-----', '')
+    .replace(/\s/g, '');
+
+  const binaryString = atob(pemContents);
+  const bytes = new Uint8Array(binaryString.length);
+  for (let i = 0; i < binaryString.length; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+  return bytes.buffer;
+}
+
+// Access Token 획득
+async function getAccessToken(jwt) {
+  const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+      assertion: jwt
+    })
+  });
+
+  if (!tokenResponse.ok) {
+    throw new Error(`토큰 획득 실패: ${tokenResponse.status}`);
+  }
+
+  const tokenData = await tokenResponse.json();
+  return tokenData.access_token;
+}
 
 export default {
   async fetch(request, env, ctx) {
@@ -23,7 +119,7 @@ export default {
     }
 
     try {
-      const { prompt, aspectRatio = '1:1', style = 'realistic' } = await request.json();
+      const { prompt, aspectRatio = '1:1', style = 'realistic', mode = 't2i' } = await request.json();
 
       if (!prompt) {
         return new Response(JSON.stringify({ error: '프롬프트를 입력하세요' }), {
@@ -32,10 +128,11 @@ export default {
         });
       }
 
-      if (!env.GEMINI_API_KEY) {
-        return new Response(JSON.stringify({ 
-          error: 'API 키가 설정되지 않았습니다',
-          message: 'Cloudflare Dashboard에서 GEMINI_API_KEY를 설정하세요'
+      // 환경 변수 확인
+      if (!env.GCP_PROJECT_ID || !env.GCP_LOCATION || !env.GCP_SERVICE_ACCOUNT_KEY) {
+        return new Response(JSON.stringify({
+          error: 'Vertex AI 설정이 필요합니다',
+          message: 'GCP_PROJECT_ID, GCP_LOCATION, GCP_SERVICE_ACCOUNT_KEY를 설정하세요'
         }), {
           status: 500,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -52,63 +149,74 @@ export default {
 
       const enhancedPrompt = `${prompt}, ${stylePrompts[style] || stylePrompts.realistic}`;
 
-      // Gemini로 프롬프트 개선 (이미지 생성 설명 포함)
-      const geminiResponse = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${env.GEMINI_API_KEY}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{
-              parts: [{
-                text: `이미지 생성 프롬프트를 개선해주세요. 원본: "${enhancedPrompt}". 더 자세하고 시각적인 설명으로 바꿔주세요. 한국어로 200자 이내.`
-              }]
-            }],
-            generationConfig: {
-              temperature: 0.9,
-              maxOutputTokens: 200
-            }
-          })
-        }
-      );
+      // Gemini로 프롬프트 개선 (Google AI Studio API 사용 - 무료)
+      let improvedPrompt = enhancedPrompt;
 
-      if (!geminiResponse.ok) {
-        throw new Error(`Gemini API 오류: ${geminiResponse.status}`);
+      if (env.GEMINI_API_KEY) {
+        try {
+          const geminiResponse = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${env.GEMINI_API_KEY}`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                contents: [{
+                  parts: [{
+                    text: `이미지 생성 프롬프트를 개선해주세요. 원본: "${enhancedPrompt}". 더 자세하고 시각적인 설명으로 바꿔주세요. 한국어로 200자 이내.`
+                  }]
+                }],
+                generationConfig: {
+                  temperature: 0.9,
+                  maxOutputTokens: 200
+                }
+              })
+            }
+          );
+
+          if (geminiResponse.ok) {
+            const geminiData = await geminiResponse.json();
+            improvedPrompt = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || enhancedPrompt;
+          }
+        } catch (err) {
+          console.log('Gemini 개선 실패, 원본 사용:', err.message);
+        }
       }
 
-      const geminiData = await geminiResponse.json();
-      const improvedPrompt = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || enhancedPrompt;
+      // Service Account JWT 생성
+      const serviceAccountKey = atob(env.GCP_SERVICE_ACCOUNT_KEY);
+      const jwt = await createJWT(serviceAccountKey);
+      const accessToken = await getAccessToken(jwt);
 
-      // Google AI Studio Imagen 4.0 호출
-      const imagenResponse = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${env.GEMINI_API_KEY}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            instances: [{
-              prompt: improvedPrompt
-            }],
-            parameters: {
-              sampleCount: 1,
-              aspectRatio: aspectRatio
-            }
-          })
-        }
-      );
+      // Vertex AI Imagen 4.0 호출 (Developer Premier 구독)
+      const vertexEndpoint = `https://${env.GCP_LOCATION}-aiplatform.googleapis.com/v1/projects/${env.GCP_PROJECT_ID}/locations/${env.GCP_LOCATION}/publishers/google/models/imagen-4.0-generate-001:predict`;
+
+      const imagenResponse = await fetch(vertexEndpoint, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          instances: [{
+            prompt: improvedPrompt
+          }],
+          parameters: {
+            sampleCount: 1,
+            aspectRatio: aspectRatio
+          }
+        })
+      });
 
       if (!imagenResponse.ok) {
         const errorText = await imagenResponse.text();
-        throw new Error(`Imagen API 오류 ${imagenResponse.status}: ${errorText}`);
+        throw new Error(`Vertex AI Imagen 오류 ${imagenResponse.status}: ${errorText}`);
       }
 
       const imagenData = await imagenResponse.json();
-      const imageBase64 = imagenData.predictions?.[0]?.bytesBase64Encoded 
-        || imagenData.generatedImages?.[0]?.image?.imageBytes
-        || imagenData.images?.[0]?.imageBytes;
+      const imageBase64 = imagenData.predictions?.[0]?.bytesBase64Encoded;
 
       if (!imageBase64) {
-        console.log('Imagen Response:', JSON.stringify(imagenData));
+        console.log('Vertex AI Response:', JSON.stringify(imagenData));
         throw new Error(`이미지 생성 실패: ${JSON.stringify(imagenData).substring(0, 200)}`);
       }
 
@@ -121,6 +229,8 @@ export default {
         improvedPrompt: improvedPrompt,
         aspectRatio: aspectRatio,
         style: style,
+        mode: mode,
+        api: 'vertex-ai',
         timestamp: new Date().toISOString()
       }), {
         status: 200,
@@ -129,10 +239,11 @@ export default {
 
     } catch (error) {
       console.error('Worker Error:', error);
-      
-      return new Response(JSON.stringify({ 
+
+      return new Response(JSON.stringify({
         error: '서버 오류가 발생했습니다',
-        message: error.message 
+        message: error.message,
+        stack: error.stack
       }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
