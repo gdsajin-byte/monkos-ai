@@ -1,12 +1,15 @@
 /**
- * MONK Imagen 4.0 Proxy - Cloudflare Worker (Vertex AI)
- * Vertex AI Imagen API 연동 - Developer Premier 구독 활용
+ * MONK Imagen Proxy - Cloudflare Worker (Vertex AI)
+ *
+ * 지원 모드:
+ * - t2i: Vertex AI Imagen 4.0 (imagen-4.0-generate-001) - 고화질
+ * - i2i: Vertex AI Gemini 2.5 Flash Image (gemini-2.5-flash-image) - 지능형
  *
  * 필요한 환경 변수:
  * - GCP_PROJECT_ID: Google Cloud 프로젝트 ID
  * - GCP_LOCATION: 리전 (예: us-central1)
- * - GCP_SERVICE_ACCOUNT_KEY: Service Account JSON (Base64 인코딩)
- * - GEMINI_API_KEY: Gemini 프롬프트 개선용 (기존 유지)
+ * - GCP_SERVICE_ACCOUNT_KEY: Service Account JSON Base64
+ * - GEMINI_API_KEY: 프롬프트 개선용 (선택)
  */
 
 // JWT 생성 헬퍼 함수 (Service Account 인증)
@@ -119,10 +122,18 @@ export default {
     }
 
     try {
-      const { prompt, aspectRatio = '1:1', style = 'realistic', mode = 't2i' } = await request.json();
+      const { prompt, aspectRatio = '1:1', style = 'realistic', mode = 't2i', inputImage } = await request.json();
 
       if (!prompt) {
         return new Response(JSON.stringify({ error: '프롬프트를 입력하세요' }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+
+      // i2i 모드에서는 inputImage 필수
+      if (mode === 'i2i' && !inputImage) {
+        return new Response(JSON.stringify({ error: 'i2i 모드에서는 inputImage가 필요합니다' }), {
           status: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         });
@@ -187,37 +198,96 @@ export default {
       const jwt = await createJWT(serviceAccountKey);
       const accessToken = await getAccessToken(jwt);
 
-      // Vertex AI Imagen 4.0 호출 (Developer Premier 구독)
-      const vertexEndpoint = `https://${env.GCP_LOCATION}-aiplatform.googleapis.com/v1/projects/${env.GCP_PROJECT_ID}/locations/${env.GCP_LOCATION}/publishers/google/models/imagen-4.0-generate-001:predict`;
+      let imageBase64;
 
-      const imagenResponse = await fetch(vertexEndpoint, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${accessToken}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          instances: [{
-            prompt: improvedPrompt
-          }],
-          parameters: {
-            sampleCount: 1,
-            aspectRatio: aspectRatio
-          }
-        })
-      });
+      if (mode === 'i2i') {
+        // ========== I2I: Vertex AI (gemini-2.5-flash-image) ==========
+        const geminiEndpoint = `https://${env.GCP_LOCATION}-aiplatform.googleapis.com/v1/projects/${env.GCP_PROJECT_ID}/locations/${env.GCP_LOCATION}/publishers/google/models/gemini-2.5-flash-image:generateContent`;
 
-      if (!imagenResponse.ok) {
-        const errorText = await imagenResponse.text();
-        throw new Error(`Vertex AI Imagen 오류 ${imagenResponse.status}: ${errorText}`);
-      }
+        // inputImage에서 base64 데이터 추출
+        const mimeTypeMatch = inputImage.match(/data:([^;]+);base64/);
+        const mimeType = mimeTypeMatch ? mimeTypeMatch[1] : 'image/png';
+        const base64Data = inputImage.includes(',') ? inputImage.split(',')[1] : inputImage;
 
-      const imagenData = await imagenResponse.json();
-      const imageBase64 = imagenData.predictions?.[0]?.bytesBase64Encoded;
+        // I2I 인스트럭션 생성
+        const i2iInstruction = `[IMAGE-TO-IMAGE TRANSFORM] Using the provided image as a structural and thematic foundation, synthesize a new high-quality image. Maintain the identity and key features of the subject. Prompt: ${improvedPrompt}`;
 
-      if (!imageBase64) {
-        console.log('Vertex AI Response:', JSON.stringify(imagenData));
-        throw new Error(`이미지 생성 실패: ${JSON.stringify(imagenData).substring(0, 200)}`);
+        const geminiResponse = await fetch(geminiEndpoint, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+            'User-Agent': 'MONKOS-ImagePro/1.0',
+            'X-Goog-User-Project': env.GCP_PROJECT_ID
+          },
+          body: JSON.stringify({
+            contents: [{
+              role: 'user',
+              parts: [
+                { inlineData: { data: base64Data, mimeType: mimeType } },
+                { text: i2iInstruction }
+              ]
+            }],
+            generationConfig: {
+              responseModalities: ['IMAGE', 'TEXT'],
+              temperature: 0.8
+            },
+            safetySettings: [
+              { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'OFF' },
+              { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'OFF' },
+              { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'OFF' },
+              { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'OFF' }
+            ]
+          })
+        });
+
+        if (!geminiResponse.ok) {
+          const errorText = await geminiResponse.text();
+          throw new Error(`Vertex AI Gemini 오류 ${geminiResponse.status}: ${errorText}`);
+        }
+
+        const geminiData = await geminiResponse.json();
+        const imagePart = geminiData.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
+        imageBase64 = imagePart?.inlineData?.data;
+
+        if (!imageBase64) {
+          console.log('Gemini I2I Response:', JSON.stringify(geminiData));
+          throw new Error(`I2I 이미지 생성 실패: ${JSON.stringify(geminiData).substring(0, 200)}`);
+        }
+
+      } else {
+        // ========== T2I: Imagen 4.0 (imagen-4.0-generate-001) ==========
+        const imagenEndpoint = `https://${env.GCP_LOCATION}-aiplatform.googleapis.com/v1/projects/${env.GCP_PROJECT_ID}/locations/${env.GCP_LOCATION}/publishers/google/models/imagen-4.0-generate-001:predict`;
+
+        const imagenResponse = await fetch(imagenEndpoint, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            instances: [{
+              prompt: improvedPrompt
+            }],
+            parameters: {
+              sampleCount: 1,
+              aspectRatio: aspectRatio
+            }
+          })
+        });
+
+        if (!imagenResponse.ok) {
+          const errorText = await imagenResponse.text();
+          throw new Error(`Vertex AI Imagen 오류 ${imagenResponse.status}: ${errorText}`);
+        }
+
+        const imagenData = await imagenResponse.json();
+        imageBase64 = imagenData.predictions?.[0]?.bytesBase64Encoded;
+
+        if (!imageBase64) {
+          console.log('Vertex AI Response:', JSON.stringify(imagenData));
+          throw new Error(`이미지 생성 실패: ${JSON.stringify(imagenData).substring(0, 200)}`);
+        }
       }
 
       // Base64 이미지를 data URL로 변환
@@ -230,6 +300,7 @@ export default {
         aspectRatio: aspectRatio,
         style: style,
         mode: mode,
+        model: mode === 'i2i' ? 'gemini-2.5-flash-image' : 'imagen-4.0-generate-001',
         api: 'vertex-ai',
         timestamp: new Date().toISOString()
       }), {
