@@ -68,3 +68,7 @@ _archive/
 
 # GCS 동기화 (로컬에서만 관리)
 soul_sync.sh
+
+# Claude Code 출력
+outputs/
+nul
