@@ -64,7 +64,7 @@
 □ 디스크 용량 확인 (최소 50GB 여유)
 □ 전원 설정: 절전 모드 비활성화
 □ 네트워크 연결 상태 확인
-□ 중간 체크포인트 설정 (학습 작업)
+□ 중간 체크포인트 설정: --save_every_n_steps=500 (필수!)
 □ 모바일 알림 테스트 완료
 ```
 
@@ -273,12 +273,19 @@ POST /command    - 명령 전송
 
 **필수 설정**:
 ```bash
---save_every_n_epochs=1
+# 체크포인트 저장 (steps 단위 - 필수!)
+--save_every_n_steps=500          # 약 2시간마다 저장 (1 step ≈ 15초 기준)
+--save_every_n_epochs=1           # 에포크 완료 시에도 저장
 --save_model_as=safetensors
 --output_dir="C:/AI_Factory/lora_output"
---output_name="monk_epoch"
+--output_name="monk"
 --logging_dir="C:/AI_Factory/lora_logs"
 ```
+
+> **중요**: `--save_every_n_epochs=1`만으로는 부족함!
+> - 1에포크 = 2,430 steps = 10시간+ 소요
+> - 에포크 완료 전 중단 시 체크포인트 없음
+> - **반드시 `--save_every_n_steps` 병행 사용**
 
 **알림 트리거**:
 - 학습 시작 시
@@ -371,6 +378,7 @@ schedule:
 | 날짜 | 작업 유형 | 사고 내용 | 손실 | 원인 | 대책 |
 |------|----------|----------|------|------|------|
 | 2026-01-26 | 모델 학습 | LoRA 10에포크 중단 | 7시간 15분 (1,828 steps) | Windows Update 재시작 | 본 문서 작성, 활성 시간 설정, 체크포인트 필수화 |
+| 2026-01-27 | 모델 학습 | LoRA 1에포크 중단 | 10시간 30분 (1,668 steps, 69%) | 마감 작업 계정 전환 | **`--save_every_n_steps=500` 필수 추가** |
 
 ---
 
@@ -386,5 +394,5 @@ schedule:
 
 ---
 
-*최종 업데이트: 2026-01-26*
+*최종 업데이트: 2026-01-27*
 *작성: 쌍아 (Claude Code CLI)*
