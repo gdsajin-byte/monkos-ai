@@ -15,7 +15,8 @@
       "Bash(wmic:*)",
       "Bash(systeminfo:*)",
       "Bash(date:*)",
-      "Bash(time:*)"
+      "Bash(time:*)",
+      "Bash(tree:*)"
     ]
   }
 }
