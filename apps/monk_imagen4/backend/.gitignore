@@ -1,0 +1,18 @@
+# 환경변수 (API 토큰 등 민감 정보)
+.env
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 로그
+*.log
+logs/
+
+# 임시 파일
+.DS_Store
+*.swp
+*.swo
+*~
