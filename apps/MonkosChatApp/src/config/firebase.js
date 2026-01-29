@@ -18,14 +18,14 @@ import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
 // Firebase configuration
-// TODO: Replace with actual values from Firebase Console
 const firebaseConfig = {
-  apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY || 'YOUR_API_KEY',
+  apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY || 'AIzaSyC4oaxM2aLHpTkph1hKF7WN4avOl0-1LZ0',
   authDomain: 'monkos-3c6e4.firebaseapp.com',
   projectId: 'monkos-3c6e4',
   storageBucket: 'monkos-3c6e4.firebasestorage.app',
   messagingSenderId: '676916736379',
-  appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID || 'YOUR_APP_ID',
+  appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID || '1:676916736379:web:fd1231c0df21927aec4dde',
+  measurementId: 'G-JPZWSJ3323',
 };
 
 // Initialize Firebase
