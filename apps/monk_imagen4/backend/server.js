@@ -1,130 +1,252 @@
+/**
+ * MONKOS Image Engine - Vertex AI Imagen 4 Backend API
+ *
+ * K-뷰티 특화 이미지 생성 백엔드 서비스
+ * - Vertex AI Imagen 4 통합
+ * - ADC (Application Default Credentials) 인증
+ * - GCS 자동 저장
+ * - Cloud Run 최적화
+ */
+
 const express = require('express');
 const cors = require('cors');
-const helmet = require('helmet');
-const morgan = require('morgan');
-const { PredictionServiceClient } = require('@google-cloud/aiplatform').v1;
-const { helpers } = require('@google-cloud/aiplatform');
+const { PredictionServiceClient } = require('@google-cloud/aiplatform');
 const { Storage } = require('@google-cloud/storage');
-
-const path = require('path');
-
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 8080;
+
+// 환경 변수
 const PROJECT_ID = process.env.PROJECT_ID || 'monkos';
 const LOCATION = process.env.LOCATION || 'us-central1';
-const BUCKET_NAME = process.env.BUCKET_NAME || 'monk-ai-images'; 
+const GCS_BUCKET = process.env.GCS_BUCKET || 'monk-ai-images';
 
-// 3-day cut 전략: CSP 해제 (빠른 배포 우선)
-app.use(helmet({ contentSecurityPolicy: false }));
+// Middleware
 app.use(cors());
-app.use(express.json());
-app.use(morgan('combined'));
+app.use(express.json({ limit: '10mb' }));
 
-// Frontend Static Serving
-app.use(express.static(path.join(__dirname, 'public')));
-
-const predictionServiceClient = new PredictionServiceClient({
-  apiEndpoint: `${LOCATION}-aiplatform.googleapis.com`,
+// Vertex AI 클라이언트 초기화 (ADC 자동 사용)
+const predictionClient = new PredictionServiceClient({
+  apiEndpoint: `${LOCATION}-aiplatform.googleapis.com`
 });
+
+// GCS 클라이언트 초기화 (ADC 자동 사용)
 const storage = new Storage();
+const bucket = storage.bucket(GCS_BUCKET);
 
+/**
+ * 헬스 체크 엔드포인트
+ * Cloud Run 로드밸런서 및 모니터링용
+ */
 app.get('/', (req, res) => {
-  res.status(200).send('MONKOS Image Engine is running (Cloud Run + Vertex AI)');
+  res.json({
+    status: 'healthy',
+    message: 'MONKOS Image Engine is running',
+    version: '1.0.0',
+    timestamp: new Date().toISOString(),
+    project: PROJECT_ID,
+    location: LOCATION
+  });
 });
 
+/**
+ * 이미지 생성 API
+ * POST /generate
+ *
+ * Body:
+ * {
+ *   "prompt": "A beautiful Korean woman with elegant makeup",
+ *   "negativePrompt": "blurry, low quality",
+ *   "aspectRatio": "1:1",
+ *   "style": "photography",
+ *   "numberOfImages": 1,
+ *   "saveToGcs": true
+ * }
+ */
 app.post('/generate', async (req, res) => {
-  try {
-    const { prompt, negative_prompt, aspectRatio = '1:1', sampleCount = 1 } = req.body;
+  const startTime = Date.now();
 
+  try {
+    const {
+      prompt,
+      negativePrompt = '',
+      aspectRatio = '1:1',
+      style = 'photography',
+      numberOfImages = 1,
+      saveToGcs = true,
+      seed,
+      guidanceScale = 7.0,
+      safetyFilterLevel = 'block_some'
+    } = req.body;
+
+    // 필수 파라미터 검증
     if (!prompt) {
-      return res.status(400).json({ error: 'Prompt is required' });
+      return res.status(400).json({
+        error: 'prompt is required',
+        code: 'MISSING_PROMPT'
+      });
     }
 
-    // Imagen 3 엔드포인트 (최신)
-    // imagen-3.0-generate-001
-    const endpoint = `projects/${PROJECT_ID}/locations/${LOCATION}/publishers/google/models/imagen-3.0-generate-001`;
+    console.log(`[Generate] Starting image generation...`);
+    console.log(`[Generate] Prompt: ${prompt.substring(0, 100)}...`);
+    console.log(`[Generate] Style: ${style}, Aspect Ratio: ${aspectRatio}`);
 
-    // Imagen 3 파라미터 구조
-    const instanceValue = {
-      prompt: prompt,
+    // Vertex AI Imagen 4 요청 구성
+    const endpoint = `projects/${PROJECT_ID}/locations/${LOCATION}/publishers/google/models/imagen-4.0-generate-001`;
+
+    const instances = [
+      {
+        prompt: prompt,
+        ...(negativePrompt && { negativePrompt }),
+      }
+    ];
+
+    const parameters = {
+      aspectRatio: aspectRatio,
+      numberOfImages: numberOfImages,
+      ...(seed && { seed }),
+      ...(guidanceScale && { guidanceScale }),
+      safetyFilterLevel: safetyFilterLevel,
+      personGeneration: 'allow_all', // K-뷰티 인물 생성 허용
+      outputMimeType: 'image/jpeg',
+      outputCompression: 95
     };
-    // Imagen 3는 negative_prompt 지원 여부가 버전에 따라 다를 수 있으나 일단 포함
-    if (negative_prompt) instanceValue.negative_prompt = negative_prompt;
 
-    const parametersValue = {
-      sampleCount: parseInt(sampleCount),
-      aspectRatio: aspectRatio, // "1:1", "16:9" 등
-      safetyFilterLevel: "block_some",
-      personGeneration: "allow_adult",
-    };
-
-    const request = {
+    // Vertex AI 호출
+    const [response] = await predictionClient.predict({
       endpoint,
-      instances: [helpers.toValue(instanceValue)],
-      parameters: helpers.toValue(parametersValue),
-    };
+      instances,
+      parameters
+    });
 
-    console.log(`Generating image with Imagen 3: ${prompt}`);
-    
-    const [response] = await predictionServiceClient.predict(request);
-    
     if (!response.predictions || response.predictions.length === 0) {
-      throw new Error('No predictions returned from Vertex AI');
+      throw new Error('No images generated');
     }
 
     const results = [];
 
+    // 각 생성된 이미지 처리
     for (let i = 0; i < response.predictions.length; i++) {
       const prediction = response.predictions[i];
-      // Imagen 3 응답 구조
-      const base64Image = prediction.structValue?.fields?.bytesBase64Encoded?.stringValue;
-      
-      if (!base64Image) {
-          console.error("Prediction structure mismatch:", JSON.stringify(prediction));
-          continue;
-      }
+      const imageBytes = prediction.bytesBase64Encoded;
 
-      // GCS 업로드
-      const filename = `generated/${Date.now()}_${i}.png`;
-      const file = storage.bucket(BUCKET_NAME).file(filename);
-      const buffer = Buffer.from(base64Image, 'base64');
-      
-      try {
+      let gcsUrl = null;
+
+      // GCS 저장 (선택적)
+      if (saveToGcs && imageBytes) {
+        const timestamp = Date.now();
+        const filename = `generated/${timestamp}_${i}.jpg`;
+        const file = bucket.file(filename);
+
+        // Base64 디코딩 후 저장
+        const buffer = Buffer.from(imageBytes, 'base64');
         await file.save(buffer, {
-            metadata: { contentType: 'image/png' },
-        });
-        
-        const [url] = await file.getSignedUrl({
-            action: 'read',
-            expires: Date.now() + 60 * 60 * 1000,
+          metadata: {
+            contentType: 'image/jpeg',
+            metadata: {
+              prompt: prompt.substring(0, 500),
+              aspectRatio,
+              style,
+              generatedAt: new Date().toISOString()
+            }
+          }
         });
 
-        results.push({
-            base64: base64Image,
-            gcsUri: `gs://${BUCKET_NAME}/${filename}`,
-            signedUrl: url
-        });
-      } catch (uploadError) {
-          console.error(`GCS Upload Failed: ${uploadError.message}.`);
-          results.push({ base64: base64Image, error: "GCS upload failed" });
+        // Public URL 생성
+        gcsUrl = `https://storage.googleapis.com/${GCS_BUCKET}/${filename}`;
+        console.log(`[Generate] Saved to GCS: ${gcsUrl}`);
       }
+
+      results.push({
+        imageBase64: imageBytes,
+        gcsUrl: gcsUrl,
+        index: i
+      });
     }
 
-    res.json({ success: true, images: results });
+    const duration = Date.now() - startTime;
+    console.log(`[Generate] Completed in ${duration}ms`);
+
+    res.json({
+      success: true,
+      images: results,
+      metadata: {
+        prompt,
+        negativePrompt,
+        aspectRatio,
+        style,
+        numberOfImages,
+        duration: `${duration}ms`,
+        timestamp: new Date().toISOString()
+      }
+    });
 
   } catch (error) {
-    console.error('Error generating image:', error);
-    res.status(500).json({ 
-      error: error.message, 
-      code: error.code,
-      details: error.details,
+    console.error('[Generate] Error:', error);
+
+    res.status(500).json({
+      error: error.message,
+      code: error.code || 'GENERATION_FAILED',
       timestamp: new Date().toISOString()
     });
   }
 });
 
+/**
+ * 배치 생성 API (4장 동시 생성)
+ * POST /batch-generate
+ */
+app.post('/batch-generate', async (req, res) => {
+  try {
+    const { prompt, ...options } = req.body;
+
+    // numberOfImages를 4로 고정
+    const batchRequest = {
+      ...req.body,
+      numberOfImages: 4
+    };
+
+    // /generate 로직 재사용
+    req.body = batchRequest;
+    return app._router.handle(req, res);
+
+  } catch (error) {
+    console.error('[Batch Generate] Error:', error);
+    res.status(500).json({
+      error: error.message,
+      code: 'BATCH_GENERATION_FAILED'
+    });
+  }
+});
+
+/**
+ * 에러 핸들러
+ */
+app.use((err, req, res, next) => {
+  console.error('Unhandled error:', err);
+  res.status(500).json({
+    error: 'Internal server error',
+    message: err.message
+  });
+});
+
+/**
+ * 서버 시작
+ */
 app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
+  console.log('='.repeat(60));
+  console.log('🚀 MONKOS Image Engine Started');
+  console.log('='.repeat(60));
+  console.log(`📍 Port: ${PORT}`);
+  console.log(`🌐 Project: ${PROJECT_ID}`);
+  console.log(`📍 Location: ${LOCATION}`);
+  console.log(`💾 GCS Bucket: ${GCS_BUCKET}`);
+  console.log(`🔐 Auth: ADC (Application Default Credentials)`);
+  console.log('='.repeat(60));
+  console.log('Endpoints:');
+  console.log(`  GET  /              - Health check`);
+  console.log(`  POST /generate      - Generate images`);
+  console.log(`  POST /batch-generate - Generate 4 images`);
+  console.log('='.repeat(60));
 });
