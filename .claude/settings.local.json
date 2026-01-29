@@ -16,7 +16,10 @@
       "Bash(systeminfo:*)",
       "Bash(date:*)",
       "Bash(time:*)",
-      "Bash(tree:*)"
+      "Bash(tree:*)",
+      "Bash(python -c:*)",
+      "Bash(findstr:*)",
+      "Bash(python:*)"
     ]
   }
 }
