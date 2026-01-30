@@ -142,4 +142,42 @@ scripts/monkos/
 
 ---
 
+## PWA 배포 (monkos.ai)
+
+### 현재 구조
+
+- **소스 코드**: `monk_project/apps/MonkosChatApp/`
+- **배포 레포**: `monkos-ai` (별도 레포, Cloudflare Pages 연결)
+- **라이브 URL**: https://monkos.ai
+
+### 배포 명령
+
+```bash
+# 1. monk_project에서 export
+cd apps/MonkosChatApp
+npx expo export --platform web
+
+# 2. monkos-ai 레포로 복사 (별도 레포라면)
+# 또는 monk_project 직접 Cloudflare 연결 권장
+```
+
+### Cloudflare Pages 설정 (monk_project 직접 연결 시)
+
+| 설정 | 값 |
+|------|-----|
+| Repository | gdsajin-byte/monk_project |
+| Root directory | apps/MonkosChatApp |
+| Build command | `npx expo export --platform web` |
+| Output directory | dist |
+
+### PWA 체크리스트
+
+- [x] `app.json` web 섹션 (manifest 설정)
+- [x] `HomeScreen.js` 설치 버튼
+- [x] 아이콘 PNG (192, 512)
+- [x] `dist/` export 완료
+- [ ] Cloudflare 재배포
+
+---
+
 *작성: 2026-01-30*
