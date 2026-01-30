@@ -90,10 +90,10 @@ exports.chat = functions.https.onCall(async (data, context) => {
   }
 
   try {
-    // Build chat history for context
+    // Build chat history for context (support both formats)
     const contents = chatHistory.map(msg => ({
-      role: msg.isUser ? "user" : "model",
-      parts: [{ text: msg.text }]
+      role: msg.role || (msg.isUser ? "user" : "model"),
+      parts: msg.parts || [{ text: msg.text }]
     }));
 
     // Add current message
