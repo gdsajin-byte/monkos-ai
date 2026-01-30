@@ -602,3 +602,87 @@ INSERT OR IGNORE INTO shared_inquiry_categories (sector, name, description, icon
 ('ssanga', '도입 문의', '서비스 도입, 견적', '🏢', 1),
 ('ssanga', '기술 지원', 'B2B 기술 지원', '⚙️', 2),
 ('ssanga', '계약/결제', '계약, 월정액 결제', '📝', 3);
+
+-- ============================================
+-- 👗 SOSO Fashion Intelligence (K-Beauty 특화 - 2026-01-30 추가)
+-- 사진 한 장으로 스타일 분석, 판매처 매칭, 모델 피팅 지원
+-- ============================================
+
+CREATE TABLE IF NOT EXISTS soso_fashion_items (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id TEXT NOT NULL,
+    original_image_url TEXT NOT NULL,   -- 사용자가 찍은 원본 사진 (GCS)
+    detected_item_url TEXT,            -- 누끼/크롭된 아이템 이미지 (GCS)
+    
+    -- 스타일 정의 (Gemini AI 분석 결과)
+    category TEXT,                     -- hair, makeup, top, bottom, dress, accessory
+    style_tags TEXT,                   -- 'K-Street', 'Minimal', 'Old Money' 등
+    color_palette_json TEXT,           -- 주요 색상 HEX 리스트
+    material TEXT,                     -- 소재 정보
+    
+    -- 커머스 연결 (판매처 정보)
+    brand_name TEXT,
+    product_name TEXT,
+    price INTEGER,
+    currency TEXT DEFAULT 'KRW',
+    purchase_url TEXT,
+    mall_name TEXT,
+    
+    -- 가상 피팅 데이터
+    mina_model_id TEXT,                -- 피팅된 민아 모델 ID
+    fitting_result_url TEXT,           -- 피팅 결과 이미지 (GCS)
+    
+    -- 메타데이터
+    confidence_score REAL,
+    metadata_json TEXT,                -- Gemini Raw 분석 데이터
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES shared_users(id),
+    FOREIGN KEY (mina_model_id) REFERENCES mina_models(id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_soso_fashion_user ON soso_fashion_items(user_id);
+CREATE INDEX IF NOT EXISTS idx_soso_fashion_category ON soso_fashion_items(category);
+
+-- ============================================
+-- 👤 MINA Personal Models (개인화 AI 모델 - 2026-01-30 추가)
+-- 사용자가 자신의 사진을 기반으로 생성한 페르소나 모델
+-- ============================================
+
+CREATE TABLE IF NOT EXISTS mina_personal_models (
+    id TEXT PRIMARY KEY,               -- PMO-XXXXXX
+    user_id TEXT NOT NULL,
+    base_face_image_url TEXT,          -- 기준 얼굴 이미지 (GCS)
+    reference_images_json TEXT,        -- 학습/참조용 이미지 리스트 (JSON)
+    
+    -- 개인 특징 데이터 (Gemini/Vertex AI 분석값)
+    face_features_json TEXT,           -- 얼굴형, 이목구비 특징
+    body_type TEXT,                    -- 체형 정보 (Slim, Athletic, etc.)
+    skin_tone TEXT,                    -- 퍼스널 컬러/피부톤
+    
+    status TEXT DEFAULT 'active',      -- active, training, deleted
+    metadata_json TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES shared_users(id)
+);
+
+-- 가상 피팅 및 헤어 시뮬레이션 결과 (통합 관리)
+CREATE TABLE IF NOT EXISTS soso_fitting_results (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id TEXT NOT NULL,
+    item_id INTEGER,                   -- soso_fashion_items ID (연결된 경우)
+    model_type TEXT NOT NULL,          -- 'professional' (MINA), 'personal' (USER)
+    model_id TEXT NOT NULL,            -- mina_models.id 또는 mina_personal_models.id
+    
+    action_type TEXT NOT NULL,         -- 'try_on' (의류), 'hair_style' (헤어), 'makeup' (메이크업)
+    result_image_url TEXT NOT NULL,    -- 최종 생성 이미지 (GCS)
+    
+    prompt_used TEXT,                  -- 생성 시 사용된 프롬프트
+    metadata_json TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES shared_users(id),
+    FOREIGN KEY (item_id) REFERENCES soso_fashion_items(id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_personal_model_user ON mina_personal_models(user_id);
+CREATE INDEX IF NOT EXISTS idx_fitting_result_user ON soso_fitting_results(user_id);
