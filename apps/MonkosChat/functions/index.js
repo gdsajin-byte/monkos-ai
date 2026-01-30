@@ -1,8 +1,24 @@
+require("dotenv").config();
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const { VertexAI } = require("@google-cloud/vertexai");
 
 admin.initializeApp();
+
+// Telegram Bot Configuration
+const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+const WRITER_CHAT_ID = process.env.WRITER_CHAT_ID;
+
+// Helper: Send message to Telegram
+async function sendTelegram(chatId, text) {
+  const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'HTML' })
+  });
+  return response.json();
+}
 
 // Initialize Vertex AI
 const vertexAI = new VertexAI({
@@ -130,5 +146,218 @@ exports.chat = functions.https.onCall(async (data, context) => {
       "internal",
       "Failed to generate AI response."
     );
+  }
+});
+
+// ============================================
+// TELEGRAM INTEGRATION - AI Communication Hub
+// ============================================
+
+// Telegram Webhook - Receive messages from writer
+exports.telegramWebhook = functions.https.onRequest(async (req, res) => {
+  if (req.method !== 'POST') {
+    return res.status(200).send('OK');
+  }
+
+  try {
+    const { message } = req.body;
+    if (!message?.text) {
+      return res.status(200).send('OK');
+    }
+
+    const text = message.text;
+    const chatId = message.chat.id;
+    const db = admin.firestore();
+
+    // Parse commands: /막내, /쌍아, /용아, /철창, /전체
+    const commandMatch = text.match(/^\/(막내|쌍아|용아|철창|전체)\s*(.*)/);
+
+    if (commandMatch) {
+      const target = commandMatch[1];
+      const content = commandMatch[2] || '';
+
+      if (target === '전체') {
+        // Broadcast to all AIs
+        const snapshot = await db.collection('aiStatus').get();
+        let statusMsg = '📊 <b>전체 AI 상태</b>\n\n';
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          const emoji = data.status === 'working' ? '🟢' : data.status === 'waiting' ? '🟡' : '⚪';
+          statusMsg += `${emoji} <b>${doc.id}</b>: ${data.lastActivity || '대기 중'}\n`;
+        });
+        await sendTelegram(chatId, statusMsg || '📊 등록된 AI 없음');
+      } else {
+        // Send command to specific AI
+        await db.collection('commands').doc(target).collection('queue').add({
+          content: content,
+          from: 'writer',
+          status: 'pending',
+          createdAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+        await sendTelegram(chatId, `📤 ${target}에게 전달: ${content || '(명령 없음)'}`);
+      }
+    } else if (text === '/상태' || text === '/status') {
+      // Quick status check
+      await sendTelegram(chatId, '🤖 MONKOS Factory Bot 정상 작동 중');
+    } else {
+      // Unknown command
+      await sendTelegram(chatId,
+        '📋 <b>사용 가능한 명령어</b>\n\n' +
+        '/막내 [명령] - 막내에게 전달\n' +
+        '/쌍아 [명령] - 쌍아에게 전달\n' +
+        '/용아 [명령] - 용아에게 전달\n' +
+        '/철창 [명령] - 철창에게 전달\n' +
+        '/전체 - 전체 상태 확인\n' +
+        '/상태 - 봇 상태 확인'
+      );
+    }
+
+    return res.status(200).send('OK');
+  } catch (error) {
+    console.error('Telegram webhook error:', error);
+    return res.status(200).send('OK');
+  }
+});
+
+// AI → Writer notification (callable from AI sessions)
+exports.notifyWriter = functions.https.onRequest(async (req, res) => {
+  // Allow CORS
+  res.set('Access-Control-Allow-Origin', '*');
+  if (req.method === 'OPTIONS') {
+    res.set('Access-Control-Allow-Methods', 'POST');
+    res.set('Access-Control-Allow-Headers', 'Content-Type');
+    return res.status(204).send('');
+  }
+
+  try {
+    const { aiName, type, content, secret } = req.body;
+
+    // Simple auth check (optional - can add API key later)
+    if (!aiName || !content) {
+      return res.status(400).json({ error: 'aiName and content required' });
+    }
+
+    const emoji = {
+      'complete': '🔔',
+      'error': '🚨',
+      'question': '❓',
+      'critical': '🔥',
+      'waiting': '⏳'
+    }[type] || '📢';
+
+    const message = `${emoji} <b>${aiName}</b>\n상태: ${type || 'info'}\n내용: ${content}`;
+
+    await sendTelegram(WRITER_CHAT_ID, message);
+
+    // Log to Firestore
+    await admin.firestore().collection('notifications').add({
+      aiName,
+      type,
+      content,
+      createdAt: admin.firestore.FieldValue.serverTimestamp()
+    });
+
+    return res.json({ success: true });
+  } catch (error) {
+    console.error('Notify error:', error);
+    return res.status(500).json({ error: error.message });
+  }
+});
+
+// Get pending commands for AI (polling endpoint)
+exports.getCommands = functions.https.onRequest(async (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  if (req.method === 'OPTIONS') {
+    res.set('Access-Control-Allow-Methods', 'GET, POST');
+    res.set('Access-Control-Allow-Headers', 'Content-Type');
+    return res.status(204).send('');
+  }
+
+  try {
+    const { aiName } = req.query;
+    if (!aiName) {
+      return res.status(400).json({ error: 'aiName required' });
+    }
+
+    const db = admin.firestore();
+    const snapshot = await db
+      .collection('commands')
+      .doc(aiName)
+      .collection('queue')
+      .where('status', '==', 'pending')
+      .orderBy('createdAt', 'asc')
+      .limit(10)
+      .get();
+
+    const commands = [];
+    snapshot.forEach(doc => {
+      commands.push({ id: doc.id, ...doc.data() });
+    });
+
+    return res.json({ commands });
+  } catch (error) {
+    console.error('Get commands error:', error);
+    return res.status(500).json({ error: error.message });
+  }
+});
+
+// Mark command as completed
+exports.completeCommand = functions.https.onRequest(async (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  if (req.method === 'OPTIONS') {
+    res.set('Access-Control-Allow-Methods', 'POST');
+    res.set('Access-Control-Allow-Headers', 'Content-Type');
+    return res.status(204).send('');
+  }
+
+  try {
+    const { aiName, commandId, response } = req.body;
+    if (!aiName || !commandId) {
+      return res.status(400).json({ error: 'aiName and commandId required' });
+    }
+
+    await admin.firestore()
+      .collection('commands')
+      .doc(aiName)
+      .collection('queue')
+      .doc(commandId)
+      .update({
+        status: 'completed',
+        response: response || '',
+        completedAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+
+    return res.json({ success: true });
+  } catch (error) {
+    console.error('Complete command error:', error);
+    return res.status(500).json({ error: error.message });
+  }
+});
+
+// Update AI status (heartbeat)
+exports.updateAiStatus = functions.https.onRequest(async (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  if (req.method === 'OPTIONS') {
+    res.set('Access-Control-Allow-Methods', 'POST');
+    res.set('Access-Control-Allow-Headers', 'Content-Type');
+    return res.status(204).send('');
+  }
+
+  try {
+    const { aiName, status, lastActivity } = req.body;
+    if (!aiName) {
+      return res.status(400).json({ error: 'aiName required' });
+    }
+
+    await admin.firestore().collection('aiStatus').doc(aiName).set({
+      status: status || 'active',
+      lastActivity: lastActivity || '',
+      updatedAt: admin.firestore.FieldValue.serverTimestamp()
+    }, { merge: true });
+
+    return res.json({ success: true });
+  } catch (error) {
+    console.error('Update status error:', error);
+    return res.status(500).json({ error: error.message });
   }
 });
