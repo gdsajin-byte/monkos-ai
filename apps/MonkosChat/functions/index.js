@@ -172,8 +172,17 @@ exports.telegramWebhook = functions.https.onRequest(async (req, res) => {
     // Parse commands: /막내, /쌍아, /용아, /철창, /전체
     const commandMatch = text.match(/^\/(막내|쌍아|용아|철창|전체)\s*(.*)/);
 
+    // AI name mapping (한글 → 영문 ID)
+    const aiNameMap = {
+      '막내': 'makne',
+      '쌍아': 'ssanga',
+      '용아': 'yonga',
+      '철창': 'cheolchang'
+    };
+
     if (commandMatch) {
-      const target = commandMatch[1];
+      const targetKr = commandMatch[1];
+      const target = aiNameMap[targetKr] || targetKr;  // 영문 ID로 변환
       const content = commandMatch[2] || '';
 
       if (target === '전체') {
@@ -189,12 +198,13 @@ exports.telegramWebhook = functions.https.onRequest(async (req, res) => {
       } else {
         // Send command to specific AI
         await db.collection('commands').doc(target).collection('queue').add({
-          content: content,
+          command: content,  // night_operator가 기대하는 필드명
+          content: content,  // 호환성
           from: 'writer',
           status: 'pending',
           createdAt: admin.firestore.FieldValue.serverTimestamp()
         });
-        await sendTelegram(chatId, `📤 ${target}에게 전달: ${content || '(명령 없음)'}`);
+        await sendTelegram(chatId, `📤 ${targetKr}(${target})에게 전달: ${content || '(명령 없음)'}`);
       }
     } else if (text === '/상태' || text === '/status') {
       // Quick status check

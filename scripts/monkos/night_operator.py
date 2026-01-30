@@ -25,6 +25,7 @@ sys.stdout.reconfigure(line_buffering=True)
 # === 설정 ===
 AI_NAME = "ssanga"
 PROJECT_DIR = r"c:\Users\smuse73\developer\monk_project"
+CLAUDE_PATH = r"C:\Users\smuse73\AppData\Roaming\npm\claude.cmd"  # 전체 경로
 API_BASE = "https://us-central1-monkos-3c6e4.cloudfunctions.net"
 POLL_INTERVAL = 5  # 초
 
@@ -64,21 +65,51 @@ def complete_command(command_id):
 
 # === Claude 실행 ===
 
+def load_context():
+    """프로젝트 컨텍스트 로드 (.cursorrules)"""
+    try:
+        rules_path = os.path.join(PROJECT_DIR, ".cursorrules")
+        if os.path.exists(rules_path):
+            with open(rules_path, "r", encoding="utf-8") as f:
+                return f.read()[:8000]  # 8KB 제한
+    except Exception as e:
+        print(f"[경고] 컨텍스트 로드 실패: {e}")
+    return ""
+
 def run_claude(command):
     """
     Claude CLI 비대화형 실행
-    claude -p "[명령]" --print
+    옵션 1: claude -c -p "[명령]" --print (마지막 세션 이어서)
+    옵션 2: claude --system-prompt "[규칙]" -p "[명령]" --print
     """
     print(f"\n{'='*60}")
     print(f"[Claude] Running: {command[:60]}...")
     print(f"{'='*60}")
 
     try:
+        # 방법 1: 마지막 세션 이어서 실행 (--continue)
+        # 컨텍스트가 유지되어 프로젝트 상태를 알고 있음
+        args = [CLAUDE_PATH, "-c", "-p", command, "--print"]
+
+        # 만약 -c 실패시 system-prompt로 fallback
+        context = load_context()
+        if context:
+            # 방법 2: system-prompt로 규칙 주입
+            args_fallback = [
+                CLAUDE_PATH,
+                "--system-prompt", context[:4000],  # 시스템 프롬프트 제한
+                "-p", command,
+                "--print"
+            ]
+
+        print(f"[DEBUG] Args: {' '.join(args[:3])}...")
+
         result = subprocess.run(
-            ["claude", "-p", command, "--print"],
+            args,
             cwd=PROJECT_DIR,
             capture_output=True,
             text=True,
+            shell=True,  # Windows에서 .cmd 파일 실행
             timeout=600,  # 10분 타임아웃
             encoding='utf-8',
             errors='replace'
@@ -87,6 +118,21 @@ def run_claude(command):
         output = result.stdout
         if result.returncode != 0:
             output = f"[에러] {result.stderr}\n{result.stdout}"
+
+            # -c 실패시 fallback 시도
+            if context and "no conversation" in result.stderr.lower():
+                print("[INFO] Fallback to --system-prompt mode...")
+                result = subprocess.run(
+                    args_fallback,
+                    cwd=PROJECT_DIR,
+                    capture_output=True,
+                    text=True,
+                    shell=True,
+                    timeout=600,
+                    encoding='utf-8',
+                    errors='replace'
+                )
+                output = result.stdout if result.returncode == 0 else f"[에러] {result.stderr}"
 
         print(output[:500])
         return output
