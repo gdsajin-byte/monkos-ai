@@ -1,12 +1,13 @@
 /**
  * Vertex AI Service for MONKOS Chat
  *
- * This service connects to Google Cloud Vertex AI for LLM responses.
- * Currently configured to use Gemini 2.0 Flash.
- *
- * Note: For production, implement proper server-side API calls
- * to avoid exposing credentials in the mobile app.
+ * This service connects to Firebase Cloud Functions which securely
+ * calls Google Cloud Vertex AI (Gemini 2.0 Flash).
  */
+
+import { getFunctions, httpsCallable, connectFunctionsEmulator } from 'firebase/functions';
+import { auth } from '../config/firebase';
+import { signInAsGuest } from './authService';
 
 const VERTEX_AI_CONFIG = {
   projectId: 'monkos',
@@ -14,45 +15,83 @@ const VERTEX_AI_CONFIG = {
   model: 'gemini-2.0-flash-001',
 };
 
-// System prompt for MONKOS personality
-const SYSTEM_PROMPT = `You are MONKOS, an AI assistant for creative professionals.
-You specialize in:
-- Image generation guidance (Imagen, Stable Diffusion)
-- Korean fashion and beauty industry
-- Creative workflow optimization
-- Technical AI/ML support
+// Initialize Firebase Functions
+const functions = getFunctions();
 
-Respond in Korean (한국어) unless the user writes in English.
-Keep responses concise and helpful.
-Be friendly but professional.`;
+// Uncomment for local development with emulator
+// connectFunctionsEmulator(functions, 'localhost', 5001);
+
+// Get callable function references
+const chatFunction = httpsCallable(functions, 'chat');
+const healthFunction = httpsCallable(functions, 'health');
+
+// Chat history for context
+let chatHistory = [];
 
 /**
- * Send a message to Vertex AI and get a response
+ * Ensure user is authenticated before making API calls
+ * @returns {Promise<object>} - Current user
+ */
+async function ensureAuthenticated() {
+  if (!auth.currentUser) {
+    console.log('No user signed in, signing in anonymously...');
+    await signInAsGuest();
+  }
+  return auth.currentUser;
+}
+
+/**
+ * Send a message to Vertex AI via Firebase Cloud Function
  * @param {string} userMessage - The user's message
  * @returns {Promise<string>} - The AI response
  */
 export async function sendMessage(userMessage) {
-  // TODO: Implement actual Vertex AI API call
-  // For now, return a mock response
+  try {
+    // Ensure user is authenticated
+    await ensureAuthenticated();
 
-  // In production, this should call a Cloud Function or backend API
-  // that securely handles the Vertex AI authentication
+    // Add user message to history
+    chatHistory.push({
+      role: 'user',
+      parts: [{ text: userMessage }],
+    });
 
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      // Mock responses for demo
-      const responses = [
-        '네, 알겠습니다! 어떤 도움이 필요하신가요?',
-        '좋은 질문이네요. 더 자세히 알려주시면 도움을 드릴 수 있어요.',
-        '이미지 생성에 관해서라면, 프롬프트 작성 팁을 알려드릴게요.',
-        '패션 이미지 작업이시군요! 어떤 스타일을 원하시나요?',
-        '네, MONKOS가 도와드리겠습니다!',
-      ];
-      const randomResponse =
-        responses[Math.floor(Math.random() * responses.length)];
-      resolve(randomResponse);
-    }, 1000 + Math.random() * 1000);
-  });
+    // Call the Cloud Function
+    const result = await chatFunction({
+      message: userMessage,
+      chatHistory: chatHistory.slice(-10), // Send last 10 messages for context
+    });
+
+    const response = result.data.response;
+
+    // Add AI response to history
+    chatHistory.push({
+      role: 'model',
+      parts: [{ text: response }],
+    });
+
+    return response;
+  } catch (error) {
+    console.error('Error calling Vertex AI:', error);
+
+    // Provide user-friendly error message
+    if (error.code === 'functions/unauthenticated') {
+      throw new Error('인증이 필요합니다. 다시 시도해주세요.');
+    } else if (error.code === 'functions/unavailable') {
+      throw new Error('서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요.');
+    } else if (error.code === 'functions/internal') {
+      throw new Error('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+    }
+
+    throw error;
+  }
+}
+
+/**
+ * Clear chat history
+ */
+export function clearHistory() {
+  chatHistory = [];
 }
 
 /**
@@ -62,9 +101,7 @@ export async function sendMessage(userMessage) {
  * @returns {Promise<string>} - The generated image URL
  */
 export async function generateImage(prompt, options = {}) {
-  // TODO: Implement Imagen API integration
-  // This would call the image.monkos.ai API or directly to Vertex AI
-
+  // TODO: Implement Imagen API integration via Cloud Function
   const defaultOptions = {
     aspectRatio: '9:16',
     sampleCount: 1,
@@ -72,11 +109,9 @@ export async function generateImage(prompt, options = {}) {
   };
 
   const config = { ...defaultOptions, ...options };
-
-  // Placeholder for actual implementation
   console.log('Image generation requested:', { prompt, config });
 
-  throw new Error('Image generation not yet implemented');
+  throw new Error('이미지 생성 기능은 아직 준비 중입니다.');
 }
 
 /**
@@ -84,13 +119,19 @@ export async function generateImage(prompt, options = {}) {
  * @returns {Promise<boolean>} - Whether the service is healthy
  */
 export async function checkHealth() {
-  // TODO: Implement actual health check
-  return true;
+  try {
+    const result = await healthFunction();
+    return result.data.status === 'ok';
+  } catch (error) {
+    console.error('Health check failed:', error);
+    return false;
+  }
 }
 
 export default {
   sendMessage,
   generateImage,
   checkHealth,
+  clearHistory,
   config: VERTEX_AI_CONFIG,
 };
