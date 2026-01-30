@@ -1,13 +1,56 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
   SafeAreaView,
+  Platform,
 } from 'react-native';
 
 export default function HomeScreen({ navigation }) {
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [showInstallButton, setShowInstallButton] = useState(false);
+
+  useEffect(() => {
+    // PWA 설치 프롬프트 감지 (웹 전용)
+    if (Platform.OS === 'web') {
+      const handler = (e) => {
+        e.preventDefault();
+        setDeferredPrompt(e);
+        setShowInstallButton(true);
+      };
+
+      window.addEventListener('beforeinstallprompt', handler);
+
+      // 이미 설치되어 있는지 확인
+      if (window.matchMedia('(display-mode: standalone)').matches) {
+        setShowInstallButton(false);
+      }
+
+      return () => window.removeEventListener('beforeinstallprompt', handler);
+    }
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) {
+      // iOS Safari의 경우 수동 안내
+      alert(
+        'iOS 사용자:\n1. 공유 버튼을 누르세요\n2. "홈 화면에 추가"를 선택하세요\n\nAndroid 사용자:\n1. 메뉴(⋮)를 누르세요\n2. "홈 화면에 추가"를 선택하세요'
+      );
+      return;
+    }
+
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+
+    if (outcome === 'accepted') {
+      setShowInstallButton(false);
+    }
+
+    setDeferredPrompt(null);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -27,6 +70,15 @@ export default function HomeScreen({ navigation }) {
         >
           <Text style={styles.buttonText}>Start Chat</Text>
         </TouchableOpacity>
+
+        {showInstallButton && Platform.OS === 'web' && (
+          <TouchableOpacity
+            style={styles.installButton}
+            onPress={handleInstallClick}
+          >
+            <Text style={styles.installButtonText}>📱 앱으로 설치하기</Text>
+          </TouchableOpacity>
+        )}
       </View>
 
       <View style={styles.footer}>
@@ -84,6 +136,20 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#ffffff',
     fontSize: 18,
+    fontWeight: '600',
+  },
+  installButton: {
+    backgroundColor: '#10ac84',
+    paddingVertical: 14,
+    paddingHorizontal: 32,
+    borderRadius: 30,
+    marginTop: 20,
+    borderWidth: 2,
+    borderColor: '#0cac78',
+  },
+  installButtonText: {
+    color: '#ffffff',
+    fontSize: 16,
     fontWeight: '600',
   },
   footer: {
