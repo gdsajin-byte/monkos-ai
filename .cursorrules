@@ -429,3 +429,111 @@ gsutil -m rsync -r -d docs/corpus/ gs://monk-project/corpus/
 
 **📖 상세**: `docs/infrastructure/SESSION_LOG_VALUE.md` 참조
 
+## 🤖 MONKOS Factory 자율 운영 가이드라인 (2026-01-30)
+
+### 텔레그램 통신 시스템
+```
+작가님 (텔레그램) ↔ MONKOS Factory Bot ↔ Firebase ↔ AI 세션
+```
+
+**API 엔드포인트**:
+- `https://us-central1-monkos-3c6e4.cloudfunctions.net/notifyWriter` (AI → 작가님)
+- `https://us-central1-monkos-3c6e4.cloudfunctions.net/getCommands?aiName=쌍아` (명령 수신)
+
+**텔레그램 명령어**:
+- `/쌍아 [명령]` - 쌍아에게 전달
+- `/막내 [명령]` - 막내에게 전달
+- `/전체` - 전체 AI 상태 확인
+
+### 🔄 자율 운영 규칙 (작가님 부재 시)
+
+**1. 실패 시 에스컬레이션**
+```
+시도 1-2회: 자체 해결 시도
+시도 3-4회: 다른 방법 탐색
+시도 5회 이상: 작가님에게 알림 후 대기
+
+알림 예시:
+curl -X POST ".../notifyWriter" -d '{
+  "aiName": "ssanga",
+  "type": "error",
+  "content": "5회 시도 실패: [문제 설명]. 판단 필요."
+}'
+```
+
+**2. 자율 실행 가능 범위**
+- ✅ 파일 읽기/쓰기/수정
+- ✅ Git 커밋 (push는 신중히)
+- ✅ npm/pip 패키지 설치
+- ✅ Firebase/GCP 배포
+- ✅ GPU 작업 실행
+- ✅ 테스트 실행
+
+**3. 작가님 승인 필요**
+- ⚠️ 대규모 리팩토링
+- ⚠️ 데이터베이스 스키마 변경
+- ⚠️ 프로덕션 환경 변경
+- ⚠️ 비용 발생 작업 (Cloud Run 등)
+- ⚠️ git push --force, reset --hard
+
+**4. 절대 금지**
+- ❌ rm -rf /*, del /s /q C:\
+- ❌ API 키/비밀번호 하드코딩
+- ❌ 민감 정보 외부 전송
+- ❌ 무한 루프 가능성 있는 스크립트
+
+### 📊 상태 보고 규칙
+
+**자동 보고 (Git hooks)**:
+- 커밋 시: `Git commit: [hash] on [branch]`
+- 푸시 시: `Git push: [branch] -> [remote]`
+
+**수동 보고 트리거**:
+- 작업 완료: `type: "complete"`
+- 에러 발생: `type: "error"`
+- 질문/판단 필요: `type: "question"`
+- 긴급 상황: `type: "critical"`
+- 대기 중: `type: "waiting"`
+
+**PowerShell 스크립트**:
+```powershell
+. .\scripts\monkos\notify.ps1
+monkos-done "배포 완료"
+monkos-error "빌드 실패"
+monkos-ask "A안 vs B안?"
+```
+
+### 🕐 작업 패턴 (작가님 부재 시)
+
+```
+1. 명령 큐 확인 (getCommands API)
+2. 명령 있으면 실행
+3. 완료 시 알림 + 상태 업데이트
+4. 에러 시 5회까지 재시도
+5. 해결 안 되면 알림 후 대기
+6. 다음 명령 확인 (루프)
+```
+
+### 📄 세션 시작 체크리스트 (필수!)
+
+**세션 시작 시 반드시 확인할 것:**
+1. `docs/monkos/work_queue.md` 읽기 - 대기 중인 텔레그램 명령 확인
+2. 작업이 있으면 순서대로 처리
+3. 완료 후 `notifyWriter` API로 결과 알림
+4. 작업 완료 시 `completeCommand` API 호출
+
+```bash
+# 작업 큐 확인
+cat docs/monkos/work_queue.md
+
+# 또는 API로 직접 확인
+curl -s "https://us-central1-monkos-3c6e4.cloudfunctions.net/getCommands?aiName=ssanga"
+```
+
+### 🔄 Queue Sync 데몬 (선택)
+
+퇴근 전 실행하면 Firestore → work_queue.md 자동 동기화:
+```powershell
+node scripts/monkos/queue_sync.js
+```
+

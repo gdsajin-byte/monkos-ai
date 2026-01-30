@@ -1,25 +1,36 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git add:*)",
-      "Bash(단일한 목적에 협업할 수 있는 유일하면서 최고의 방안\"\n- 신정규 대표, 2026-01-24\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
-      "Bash(git config:*)",
-      "Bash(git commit -m \"$\\(cat <<''EOF''\nWindows 세션 마감: 이미지 프로 100컷 생성 준비 완료\n\n## 첫밤 테스트 준비\n- 이미지 프로 로직 분석 완료:\n  * Cloudflare Workers 프록시\n  * Gemini 2.0 프롬프트 개선\n  * Imagen 4.0 API 이미지 생성\n  * Base64 직접 반환\n\n## 생성 파일\n- imagen_batch_generator.ps1 \\(323줄\\)\n  * 100컷 배치 생성\n  * 프롬프트 10가지 변형\n  * GPU 모니터링\n  * 상세 로그 + 개선사항 보고서 자동 생성\n  \n- .env.sample 업데이트\n  * GEMINI_API_KEY 추가\n\n## 코드 개선사항 분석\n⚠️ 문제점:\n- 순차 처리 \\(느림\\)\n- 수동 Rate Limiting\n- 재시도 없음\n- 로컬 저장만\n\n✅ 개선안:\n1. 병렬 처리 \\(속도 5배\\)\n2. 자동 재시도 \\(안정성\\)\n3. GCS 업로드 \\(영구 저장\\)\n4. 동적 프롬프트 \\(다양성\\)\n\n## 실행 준비\n작가님이 GEMINI_API_KEY 설정 후 즉시 실행 가능\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
-      "Bash(git commit -m \"$\\(cat <<''EOF''\n수정: GEMINI_API_KEY 로컬 요구사항 제거\n\nCloudflare Worker에서 이미 API 키를 처리하므로 PowerShell 스크립트는\nWorker 엔드포인트만 호출하면 됨. 불필요한 환경변수 체크 제거.\n\n- imagen_batch_generator.ps1: .env 파일 체크 및 API 키 검증 제거\n- .env.sample: GEMINI_API_KEY 주석 업데이트 \\(로컬에 불필요\\)\n- 세션 로그: Q29 수정 내역 기록\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
-      "Bash(.scriptsfactoryworkersimagen_batch_generator.ps1 -Count 2)",
+      "Bash(git:*)",
+      "Bash(npm:*)",
+      "Bash(npx:*)",
+      "Bash(node:*)",
+      "Bash(python:*)",
       "Bash(pwsh:*)",
-      "Bash(git commit -m \"$\\(cat <<''EOF''\n밤샘 자동화: i2i 헤어스타일 변주 + 오케스트레이터\n\n작가님 퇴근 후 자동 실행되는 밤샘 워크플로우 구축:\n1. t2i 100컷 완료 대기\n2. 베스트 5컷 자동 선정 \\(파일 크기 기준\\)\n3. i2i 헤어스타일 10가지 변주 \\(5×10 = 50장\\)\n4. 시스템 보고서 자동 생성\n\n새 파일:\n- imagen_i2i_hairstyle.ps1: i2i 워커 \\(300줄\\)\n- orchestrator_overnight.ps1: 밤샘 오케스트레이터 \\(230줄\\)\n\n헤어스타일: 2026 트렌드 10가지\n구도: 근접 상반신 \\(헤어 강조\\)\n비율: 1:1, 해상도: 2K\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
-      "Bash(npx wrangler deploy)",
-      "Bash(powershell -Command \"Get-Date -Format ''HH:mm''\")",
       "Bash(powershell:*)",
+      "Bash(curl:*)",
+      "Bash(firebase:*)",
+      "Bash(gcloud:*)",
+      "Bash(nvidia-smi:*)",
       "Bash(wmic:*)",
       "Bash(systeminfo:*)",
-      "Bash(date:*)",
-      "Bash(time:*)",
       "Bash(tree:*)",
-      "Bash(python -c:*)",
-      "Bash(findstr:*)",
-      "Bash(python:*)"
+      "Bash(mkdir:*)",
+      "Bash(cp:*)",
+      "Bash(mv:*)",
+      "Bash(ls:*)",
+      "Bash(dir:*)",
+      "Bash(cat:*)",
+      "Bash(type:*)",
+      "Bash(echo:*)",
+      "Bash(sleep:*)"
+    ],
+    "deny": [
+      "Bash(rm -rf /*)",
+      "Bash(git push --force)",
+      "Bash(git reset --hard)",
+      "Bash(format:*)",
+      "Bash(del /s /q C:*)"
     ]
   }
 }
