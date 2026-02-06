@@ -1,0 +1,16 @@
+{
+  "name": "@monkos/cam",
+  "version": "0.1.0",
+  "description": "MONKOS Camera Module - Capture & WebRTC Streaming",
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "keywords": ["camera", "webrtc", "capture", "monkos"],
+  "author": "MONKOS",
+  "license": "MIT"
+}
