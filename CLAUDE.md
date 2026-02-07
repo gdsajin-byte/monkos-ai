@@ -1,5 +1,14 @@
 # MONK.kr 프로젝트 규칙
 
+## 1규칙: 타임스탬프 (절대 준수)
+
+**매 턴 응답 시작 시 한국시간(KST)을 반드시 명시한다.**
+- 시스템 명령(`powershell Get-Date` 또는 `date`)으로 정확한 시간 취득
+- 시스템 불가 시 웹 검색으로 현재 시간 확인
+- **추정/기억/이전 시간 기반 계산 절대 금지**
+- 형식: `**[YYYY-MM-DD HH:MM KST]**`
+- 이유: 멀티 에이전트 운용 시 시계열 추적 필수, 세션 로그 정합성 보장
+
 ## 프로젝트 개요
 - **이름**: MONK.KR (Total Creative Platform)
 - **비전**: Evolution of Creative Intelligence
