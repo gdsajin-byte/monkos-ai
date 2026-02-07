@@ -23,7 +23,8 @@
       "Bash(cat:*)",
       "Bash(type:*)",
       "Bash(echo:*)",
-      "Bash(sleep:*)"
+      "Bash(sleep:*)",
+      "Bash(/Applications/Tailscale.app/Contents/MacOS/Tailscale status:*)"
     ],
     "deny": [
       "Bash(rm -rf /*)",
