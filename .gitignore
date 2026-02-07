@@ -20,11 +20,13 @@ ehthumbs.db
 Thumbs.db
 
 # IDE
-.vscode/
 .idea/
 *.swp
 *.swo
 *~
+# VSCode user-specific files (프로젝트 설정은 공유)
+.vscode/*.code-workspace
+.vscode/settings.local.json
 
 # Environment
 .env

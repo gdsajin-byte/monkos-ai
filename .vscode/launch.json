@@ -21,20 +21,6 @@
       "runtimeArgs": ["run", "dev"],
       "skipFiles": ["<node_internals>/**"],
       "console": "integratedTerminal"
-    },
-    {
-      "name": "React Native: Debug",
-      "type": "reactnative",
-      "request": "launch",
-      "platform": "ios",
-      "cwd": "${workspaceFolder}/apps/MonkosChatApp"
-    },
-    {
-      "name": "Attach to Node Process",
-      "type": "node",
-      "request": "attach",
-      "port": 9229,
-      "skipFiles": ["<node_internals>/**"]
     }
   ]
 }

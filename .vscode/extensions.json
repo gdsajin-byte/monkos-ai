@@ -1,42 +1,34 @@
 {
   "recommendations": [
-    // 필수 확장
+    // 코드 품질
     "dbaeumer.vscode-eslint",
     "esbenp.prettier-vscode",
-    "ms-vscode.vscode-typescript-next",
 
-    // Git 관련
+    // Git
     "eamodio.gitlens",
     "mhutchie.git-graph",
 
-    // 코드 품질 & 유틸리티
+    // 개발 편의
     "usernamehw.errorlens",
-    "streetsidesoftware.code-spell-checker",
     "aaron-bond.better-comments",
+    "christian-kohler.path-intellisense",
+    "formulahendry.auto-rename-tag",
 
-    // TypeScript/JavaScript
-    "ms-vscode.vscode-typescript-next",
-    "dsznajder.es7-react-js-snippets",
+    // 프론트엔드
+    "ms-vscode.live-server",
+    "bradlc.vscode-tailwindcss",
 
-    // React Native
-    "msjsdiag.vscode-react-native",
-
-    // Docker & Cloud
-    "ms-azuretools.vscode-docker",
+    // 인프라
     "googlecloudtools.cloudcode",
-
-    // 파일 타입 지원
     "redhat.vscode-yaml",
     "tamasfe.even-better-toml",
 
-    // 유용한 도구
-    "christian-kohler.path-intellisense",
-    "ms-vscode.live-server",
-    "formulahendry.auto-rename-tag",
-    "bradlc.vscode-tailwindcss",
-
-    // Claude Code (이미 설치되어 있을 것)
+    // Claude Code
     "anthropic.claude-vscode"
   ],
-  "unwantedRecommendations": []
+  "unwantedRecommendations": [
+    "dsznajder.es7-react-js-snippets",
+    "msjsdiag.vscode-react-native",
+    "ms-azuretools.vscode-docker"
+  ]
 }

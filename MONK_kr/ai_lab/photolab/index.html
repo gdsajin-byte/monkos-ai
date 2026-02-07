@@ -1511,28 +1511,39 @@
                         })
                     });
 
+                    // 개별 실패 시 해당 컷만 스킵 (전체 중단 X)
                     if (!response.ok) {
-                        const errData = await response.json();
-                        throw new Error(errData.error || `이미지 ${i + 1} 생성 실패`);
+                        console.error(`이미지 ${i + 1} 생성 실패:`, response.status);
+                        const slot = document.getElementById(`result-slot-${i}`);
+                        if (slot) {
+                            slot.innerHTML = `
+                                <div class="aspect-[3/4] bg-gray-800/50 rounded-xl flex flex-col items-center justify-center text-gray-500">
+                                    <i class="fas fa-exclamation-triangle text-xl mb-2"></i>
+                                    <span class="text-xs">생성 실패</span>
+                                </div>
+                            `;
+                        }
+                        document.getElementById('generating-progress').textContent = `${i + 1} / ${numImages} (실패)`;
+                        continue;  // 다음 컷으로 진행
                     }
 
                     const data = await response.json();
 
                     if (data.success && data.image) {
-                        generatedResults.push({ url: data.image });
-                        
+                        generatedResults.push({ url: data.image, index: i });
+
                         // 블러 뒤에서 이미지 표시 (1컷씩 나타남)
                         const slot = document.getElementById(`result-slot-${i}`);
                         if (slot) {
                             slot.innerHTML = `
-                                <div class="result-thumb relative w-full h-full cursor-pointer group rounded-xl overflow-hidden" 
-                                     onclick="openFullPreview(${i})"
-                                     data-index="${i}">
-                                    <img src="${data.image}" alt="Result ${i+1}" 
+                                <div class="result-thumb relative w-full h-full cursor-pointer group rounded-xl overflow-hidden"
+                                     onclick="openFullPreview(${generatedResults.length - 1})"
+                                     data-index="${generatedResults.length - 1}">
+                                    <img src="${data.image}" alt="Result ${i+1}"
                                          class="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
                                          draggable="false">
                                     <span class="absolute bottom-2 left-2 text-[9px] px-1.5 py-0.5 bg-black/60 rounded z-10">${product.labels[i] || '결과 ' + (i+1)}</span>
-                                    
+
                                     <!-- 워터마크 오버레이 (개별) -->
                                     <div class="watermark-overlay opacity-40">
                                         <span class="watermark-text">MONK</span>
@@ -1544,6 +1555,18 @@
                             setupPinchGuard(slot.querySelector('.result-thumb'));
                         }
                         document.getElementById('generating-progress').textContent = `${i + 1} / ${numImages}`;
+                    } else {
+                        // API는 성공했지만 이미지가 없는 경우
+                        console.error(`이미지 ${i + 1}: 응답에 이미지 없음`);
+                        const slot = document.getElementById(`result-slot-${i}`);
+                        if (slot) {
+                            slot.innerHTML = `
+                                <div class="aspect-[3/4] bg-gray-800/50 rounded-xl flex flex-col items-center justify-center text-gray-500">
+                                    <i class="fas fa-image text-xl mb-2"></i>
+                                    <span class="text-xs">생성 실패</span>
+                                </div>
+                            `;
+                        }
                     }
                 }
 
@@ -1554,10 +1577,16 @@
                 generatedImages = generatedResults;
                 userCredits -= cost;
                 saveCredits();
-                
+
                 // 완료! 블러 제거
                 document.getElementById('generating-overlay').classList.add('hidden');
-                status.textContent = `✅ ${generatedResults.length}장 생성 완료!`;
+
+                // 부분 성공/완전 성공 메시지
+                if (generatedResults.length === numImages) {
+                    status.textContent = `✅ ${generatedResults.length}장 생성 완료!`;
+                } else {
+                    status.textContent = `⚠️ ${generatedResults.length}/${numImages}장 생성 (일부 실패)`;
+                }
 
             } catch (error) {
                 console.error('API Error:', error);
