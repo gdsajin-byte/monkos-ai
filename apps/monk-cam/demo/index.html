@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>monk-cam Demo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    video { background: #000; border-radius: 12px; }
+  </style>
+</head>
+<body class="min-h-screen bg-gray-900 text-white p-8">
+  <div class="max-w-4xl mx-auto">
+    <h1 class="text-2xl font-bold mb-2">@monkos/cam Demo</h1>
+    <p class="text-gray-400 mb-8">CamCapture 모듈 테스트</p>
+
+    <div class="grid md:grid-cols-2 gap-8">
+      <!-- 카메라 뷰 -->
+      <div>
+        <h2 class="text-sm font-bold text-gray-400 mb-4">카메라 프리뷰</h2>
+        <video id="video" autoplay playsinline muted class="w-full aspect-[3/4] object-cover"></video>
+
+        <div class="flex gap-3 mt-4">
+          <button id="btn-start" onclick="startCamera()"
+            class="flex-1 py-3 bg-blue-600 hover:bg-blue-500 rounded-xl font-bold">
+            카메라 시작
+          </button>
+          <button id="btn-switch" onclick="switchCamera()" disabled
+            class="flex-1 py-3 bg-gray-700 hover:bg-gray-600 rounded-xl font-bold disabled:opacity-50">
+            전환
+          </button>
+          <button id="btn-capture" onclick="capturePhoto()" disabled
+            class="flex-1 py-3 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-bold disabled:opacity-50">
+            캡처
+          </button>
+        </div>
+      </div>
+
+      <!-- 캡처 결과 -->
+      <div>
+        <h2 class="text-sm font-bold text-gray-400 mb-4">캡처 결과</h2>
+        <div id="result-container" class="w-full aspect-[3/4] bg-gray-800 rounded-xl flex items-center justify-center">
+          <span class="text-gray-600">캡처된 이미지가 여기 표시됩니다</span>
+        </div>
+
+        <div id="metadata" class="mt-4 text-xs text-gray-500 font-mono hidden">
+          <!-- 메타데이터 표시 -->
+        </div>
+      </div>
+    </div>
+
+    <!-- 로그 -->
+    <div class="mt-8">
+      <h2 class="text-sm font-bold text-gray-400 mb-4">로그</h2>
+      <div id="log" class="bg-gray-800 rounded-xl p-4 text-xs font-mono text-gray-400 h-32 overflow-auto">
+        [시스템] 준비 완료
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    // CamCapture 클래스 (인라인 버전 - 데모용)
+    class CamCapture {
+      constructor(options = {}) {
+        this.options = {
+          facingMode: 'user',
+          width: 720,
+          height: 960,
+          mirror: true,
+          maxSize: 720,
+          ...options
+        };
+        this.stream = null;
+        this.videoElement = null;
+      }
+
+      async start(videoElement) {
+        this.stop();
+
+        this.stream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            facingMode: this.options.facingMode,
+            width: { ideal: this.options.width },
+            height: { ideal: this.options.height }
+          },
+          audio: false
+        });
+
+        this.videoElement = videoElement;
+        this.videoElement.srcObject = this.stream;
+
+        if (this.options.mirror && this.options.facingMode === 'user') {
+          this.videoElement.style.transform = 'scaleX(-1)';
+        } else {
+          this.videoElement.style.transform = 'none';
+        }
+
+        await this.videoElement.play();
+      }
+
+      capture(quality = 0.92) {
+        if (!this.videoElement || !this.stream) {
+          throw new Error('카메라가 시작되지 않았습니다');
+        }
+
+        const video = this.videoElement;
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        let { videoWidth: w, videoHeight: h } = video;
+        const maxSize = this.options.maxSize || 720;
+
+        if (w > maxSize || h > maxSize) {
+          const ratio = Math.min(maxSize / w, maxSize / h);
+          w = Math.round(w * ratio);
+          h = Math.round(h * ratio);
+        }
+
+        canvas.width = w;
+        canvas.height = h;
+
+        if (this.options.mirror && this.options.facingMode === 'user') {
+          ctx.translate(w, 0);
+          ctx.scale(-1, 1);
+        }
+
+        ctx.drawImage(video, 0, 0, w, h);
+
+        return {
+          dataUrl: canvas.toDataURL('image/jpeg', quality),
+          width: w,
+          height: h,
+          timestamp: Date.now()
+        };
+      }
+
+      stop() {
+        if (this.stream) {
+          this.stream.getTracks().forEach(track => track.stop());
+          this.stream = null;
+        }
+        if (this.videoElement) {
+          this.videoElement.srcObject = null;
+          this.videoElement = null;
+        }
+      }
+
+      async switchCamera() {
+        if (!this.videoElement) return;
+        this.options.facingMode = this.options.facingMode === 'user' ? 'environment' : 'user';
+        await this.start(this.videoElement);
+      }
+
+      get isActive() {
+        return this.stream !== null && this.stream.active;
+      }
+    }
+
+    // 전역 인스턴스
+    window.cam = new CamCapture();
+
+    window.startCamera = async function() {
+      try {
+        const video = document.getElementById('video');
+        await window.cam.start(video);
+
+        document.getElementById('btn-start').textContent = '중지';
+        document.getElementById('btn-start').onclick = stopCamera;
+        document.getElementById('btn-switch').disabled = false;
+        document.getElementById('btn-capture').disabled = false;
+
+        addLog('카메라 시작됨 (facing: ' + window.cam.options.facingMode + ')');
+      } catch (e) {
+        addLog('오류: ' + e.message, 'error');
+      }
+    };
+
+    window.stopCamera = function() {
+      window.cam.stop();
+
+      document.getElementById('btn-start').textContent = '카메라 시작';
+      document.getElementById('btn-start').onclick = startCamera;
+      document.getElementById('btn-switch').disabled = true;
+      document.getElementById('btn-capture').disabled = true;
+
+      addLog('카메라 중지됨');
+    };
+
+    window.switchCamera = async function() {
+      try {
+        await window.cam.switchCamera();
+        addLog('카메라 전환: ' + window.cam.options.facingMode);
+      } catch (e) {
+        addLog('전환 오류: ' + e.message, 'error');
+      }
+    };
+
+    window.capturePhoto = function() {
+      try {
+        const result = window.cam.capture();
+
+        const container = document.getElementById('result-container');
+        container.innerHTML = `<img src="${result.dataUrl}" class="w-full h-full object-cover rounded-xl">`;
+
+        const metadata = document.getElementById('metadata');
+        metadata.classList.remove('hidden');
+        metadata.innerHTML = `
+          크기: ${result.width} x ${result.height}<br>
+          시간: ${new Date(result.timestamp).toLocaleTimeString()}<br>
+          데이터: ${Math.round(result.dataUrl.length / 1024)}KB
+        `;
+
+        addLog(`캡처 완료: ${result.width}x${result.height}`);
+      } catch (e) {
+        addLog('캡처 오류: ' + e.message, 'error');
+      }
+    };
+
+    function addLog(msg, type = 'info') {
+      const log = document.getElementById('log');
+      const time = new Date().toLocaleTimeString();
+      const color = type === 'error' ? 'text-red-400' : 'text-gray-400';
+      log.innerHTML += `<div class="${color}">[${time}] ${msg}</div>`;
+      log.scrollTop = log.scrollHeight;
+    }
+  </script>
+</body>
+</html>
