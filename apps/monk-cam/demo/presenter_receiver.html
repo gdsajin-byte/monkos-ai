@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MONKOS 프레젠테이션 - 수신</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #111; color: #fff;
+            font-family: -apple-system, sans-serif;
+            height: 100vh; display: flex; flex-direction: column;
+        }
+        #status-bar {
+            padding: 10px 16px; background: #1a1a1a;
+            font-size: 13px; border-bottom: 1px solid #333;
+            display: flex; justify-content: space-between;
+        }
+        .indicator {
+            display: inline-block; width: 8px; height: 8px;
+            border-radius: 50%; margin-right: 6px; vertical-align: middle;
+        }
+        .connected { background: #22c55e; }
+        .disconnected { background: #ef4444; }
+        .connecting { background: #f59e0b; }
+        #video-container {
+            flex: 1; position: relative; background: #000;
+            display: flex; align-items: center; justify-content: center;
+        }
+        #remote-video { max-width: 100%; max-height: 100%; object-fit: contain; }
+        #waiting { position: absolute; color: #666; font-size: 18px; }
+        #capture-indicator {
+            position: absolute; top: 16px; left: 16px;
+            background: rgba(239,68,68,0.8); padding: 6px 12px;
+            border-radius: 6px; font-size: 12px; display: none;
+        }
+        #stats-panel {
+            position: absolute; top: 16px; right: 16px;
+            background: rgba(0,0,0,0.8); padding: 10px 14px;
+            border-radius: 8px; font-family: monospace; font-size: 12px; line-height: 1.7;
+        }
+        .stat-label { color: #888; }
+        .stat-value { color: #22c55e; }
+        #ai-response {
+            position: absolute; bottom: 16px; left: 16px; right: 16px;
+            background: rgba(0,0,0,0.85); padding: 12px 16px;
+            border-radius: 10px; border: 1px solid #333;
+            font-size: 14px; line-height: 1.6; max-height: 150px;
+            overflow-y: auto; display: none;
+        }
+        #ai-response .label { color: #f59e0b; font-size: 11px; margin-bottom: 4px; }
+        #bottom-bar {
+            padding: 10px 16px; background: #1a1a1a;
+            font-size: 12px; color: #666; font-family: monospace;
+            max-height: 80px; overflow-y: auto;
+        }
+        canvas { display: none; }
+    </style>
+</head>
+<body>
+    <div id="status-bar">
+        <div>
+            <span class="indicator disconnected" id="ws-dot"></span>
+            <span id="ws-status">연결 중...</span>
+            &nbsp;|&nbsp;
+            <span class="indicator disconnected" id="rtc-dot"></span>
+            <span id="rtc-status">P2P 대기</span>
+            &nbsp;|&nbsp;
+            <span class="indicator disconnected" id="ai-dot"></span>
+            <span id="ai-status">AI 대기</span>
+        </div>
+        <span id="frame-count">프레임: 0</span>
+    </div>
+
+    <div id="video-container">
+        <video id="remote-video" autoplay playsinline muted></video>
+        <div id="waiting">송신자 대기 중...</div>
+        <div id="capture-indicator">캡처 전송 중</div>
+        <div id="stats-panel" style="display:none;">
+            <div><span class="stat-label">해상도: </span><span class="stat-value" id="s-res">-</span></div>
+            <div><span class="stat-label">FPS: </span><span class="stat-value" id="s-fps">-</span></div>
+            <div><span class="stat-label">RTT: </span><span class="stat-value" id="s-rtt">-</span></div>
+            <div><span class="stat-label">캡처: </span><span class="stat-value" id="s-capture">0 / 1초</span></div>
+        </div>
+        <div id="ai-response">
+            <div class="label">AI 코칭</div>
+            <div id="ai-text"></div>
+        </div>
+    </div>
+
+    <div id="bottom-bar" id="log"></div>
+    <canvas id="capture-canvas"></canvas>
+
+    <script>
+        const WS_HOST = location.host;
+        const CAPTURE_INTERVAL_MS = 1000; // 1초에 1프레임 캡처
+        const CAPTURE_WIDTH = 768;
+        const CAPTURE_HEIGHT = 768;
+        const SCENE_CHANGE_THRESHOLD = 0.03; // 3% 변화 시 전송
+
+        let ws = null;
+        let pc = null;
+        const pendingCandidates = [];
+        let captureTimer = null;
+        let framesSent = 0;
+        let prevFrameData = null;
+
+        const remoteVideo = document.getElementById('remote-video');
+        const captureCanvas = document.getElementById('capture-canvas');
+        const captureCtx = captureCanvas.getContext('2d', { willReadFrequently: true });
+        const logEl = document.getElementById('bottom-bar');
+
+        captureCanvas.width = CAPTURE_WIDTH;
+        captureCanvas.height = CAPTURE_HEIGHT;
+
+        function log(msg) {
+            const t = new Date().toLocaleTimeString('ko-KR');
+            logEl.textContent = `[${t}] ${msg}\n` + logEl.textContent;
+        }
+
+        function setStatus(id, cls, text) {
+            document.getElementById(id + '-dot').className = 'indicator ' + cls;
+            document.getElementById(id + '-status').textContent = text;
+        }
+
+        // === 장면 변화 감지 ===
+        function detectSceneChange(currentData, previousData) {
+            if (!previousData) return true;
+            const len = Math.min(currentData.length, previousData.length);
+            let diff = 0;
+            // 10% 샘플링으로 빠르게 비교
+            const step = 40; // RGBA 4바이트 × 10 = 40
+            for (let i = 0; i < len; i += step) {
+                diff += Math.abs(currentData[i] - previousData[i]);
+            }
+            const avgDiff = diff / (len / step) / 255;
+            return avgDiff > SCENE_CHANGE_THRESHOLD;
+        }
+
+        // === 프레임 캡처 + 전송 ===
+        function startCapture() {
+            captureTimer = setInterval(() => {
+                if (remoteVideo.readyState < 2 || !ws || ws.readyState !== 1) return;
+
+                // 비디오 → 캔버스
+                captureCtx.drawImage(remoteVideo, 0, 0, CAPTURE_WIDTH, CAPTURE_HEIGHT);
+                const imageData = captureCtx.getImageData(0, 0, CAPTURE_WIDTH, CAPTURE_HEIGHT);
+
+                // 장면 변화 감지
+                if (!detectSceneChange(imageData.data, prevFrameData)) {
+                    return; // 변화 없으면 스킵
+                }
+                prevFrameData = new Uint8ClampedArray(imageData.data);
+
+                // JPEG로 변환 후 바이너리 전송
+                captureCanvas.toBlob((blob) => {
+                    if (blob && ws.readyState === 1) {
+                        blob.arrayBuffer().then(buf => {
+                            ws.send(buf);
+                            framesSent++;
+                            document.getElementById('frame-count').textContent = `프레임: ${framesSent}`;
+                            document.getElementById('s-capture').textContent = `${framesSent}장 전송`;
+
+                            // 캡처 표시기
+                            const indicator = document.getElementById('capture-indicator');
+                            indicator.style.display = 'block';
+                            setTimeout(() => { indicator.style.display = 'none'; }, 300);
+                        });
+                    }
+                }, 'image/jpeg', 0.7);
+            }, CAPTURE_INTERVAL_MS);
+
+            log(`프레임 캡처 시작 (${CAPTURE_INTERVAL_MS}ms 간격, 장면변화 감지)`);
+        }
+
+        function stopCapture() {
+            if (captureTimer) {
+                clearInterval(captureTimer);
+                captureTimer = null;
+            }
+        }
+
+        // === WebSocket ===
+        function connectWS() {
+            ws = new WebSocket(`wss://${WS_HOST}`);
+            setStatus('ws', 'connecting', '연결 중...');
+
+            ws.onopen = () => {
+                setStatus('ws', 'connected', '연결됨');
+                ws.send(JSON.stringify({ type: 'register', role: 'receiver' }));
+                log('서버 연결됨');
+            };
+
+            ws.onmessage = async (e) => {
+                try {
+                    const raw = (e.data instanceof Blob) ? await e.data.text() : e.data;
+                    const msg = JSON.parse(raw);
+
+                    if (msg.type === 'offer') {
+                        log('Offer 수신 → P2P 연결');
+                        await createAnswer(msg);
+                    } else if (msg.type === 'ice-candidate') {
+                        if (pc && pc.remoteDescription) {
+                            await pc.addIceCandidate(new RTCIceCandidate(msg.candidate));
+                        } else {
+                            pendingCandidates.push(msg.candidate);
+                        }
+                    } else if (msg.type === 'peer-joined') {
+                        log('송신자 접속');
+                    } else if (msg.type === 'ai-coaching') {
+                        // AI 응답 표시 (수신 화면에도)
+                        const aiEl = document.getElementById('ai-response');
+                        document.getElementById('ai-text').textContent = msg.text;
+                        aiEl.style.display = 'block';
+                        setStatus('ai', 'connected', 'AI 응답');
+                        log(`[AI] ${msg.text.substring(0, 50)}`);
+                    }
+                } catch (err) {
+                    log('오류: ' + err.message);
+                }
+            };
+
+            ws.onclose = () => {
+                setStatus('ws', 'disconnected', '끊김');
+                stopCapture();
+                setTimeout(connectWS, 3000);
+            };
+        }
+
+        // === WebRTC ===
+        async function createAnswer(offer) {
+            pc = new RTCPeerConnection({
+                iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+            });
+
+            pc.ontrack = (e) => {
+                log(`트랙 수신: ${e.track.kind}`);
+                remoteVideo.srcObject = e.streams[0];
+                remoteVideo.muted = true;
+                remoteVideo.play().then(() => {
+                    log('영상 재생 시작 → 프레임 캡처 가동');
+                    document.getElementById('waiting').style.display = 'none';
+                    document.getElementById('stats-panel').style.display = 'block';
+                    startCapture();
+                }).catch(err => log('재생 오류: ' + err.message));
+            };
+
+            pc.onicecandidate = (e) => {
+                if (e.candidate && ws.readyState === 1) {
+                    ws.send(JSON.stringify({ type: 'ice-candidate', candidate: e.candidate }));
+                }
+            };
+
+            pc.onconnectionstatechange = () => {
+                const state = pc.connectionState;
+                log(`P2P: ${state}`);
+                if (state === 'connected') {
+                    setStatus('rtc', 'connected', 'P2P 연결됨');
+                } else if (state === 'failed' || state === 'disconnected') {
+                    setStatus('rtc', 'disconnected', 'P2P 끊김');
+                    stopCapture();
+                }
+            };
+
+            setStatus('rtc', 'connecting', 'P2P 연결 중...');
+            try {
+                await pc.setRemoteDescription(new RTCSessionDescription(offer));
+                // 대기 중인 ICE candidates 처리
+                for (const c of pendingCandidates) {
+                    await pc.addIceCandidate(new RTCIceCandidate(c));
+                }
+                pendingCandidates.length = 0;
+                const answer = await pc.createAnswer();
+                await pc.setLocalDescription(answer);
+                ws.send(JSON.stringify(answer));
+                log('Answer 전송');
+            } catch (err) {
+                log('Answer 오류: ' + err.message);
+            }
+
+            // 간단 통계
+            setInterval(async () => {
+                if (!pc) return;
+                const stats = await pc.getStats();
+                stats.forEach(r => {
+                    if (r.type === 'inbound-rtp' && r.kind === 'video') {
+                        if (r.frameWidth) document.getElementById('s-res').textContent = `${r.frameWidth}x${r.frameHeight}`;
+                        if (r.framesPerSecond) document.getElementById('s-fps').textContent = r.framesPerSecond;
+                    }
+                    if (r.type === 'candidate-pair' && r.state === 'succeeded' && r.currentRoundTripTime !== undefined) {
+                        document.getElementById('s-rtt').textContent = `${Math.round(r.currentRoundTripTime * 1000)}ms`;
+                    }
+                });
+            }, 2000);
+        }
+
+        connectWS();
+    </script>
+</body>
+</html>

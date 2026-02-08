@@ -19,6 +19,7 @@
   "author": "MONKOS",
   "license": "MIT",
   "dependencies": {
+    "@google/genai": "^1.40.0",
     "ws": "^8.19.0"
   }
 }
