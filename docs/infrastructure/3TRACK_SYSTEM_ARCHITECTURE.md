@@ -1,52 +1,45 @@
-# 🎯 3-Track 시스템 아키텍처
+# 3-Track 시스템 아키텍처
 
 **프로젝트**: MONK.KR
 **설계**: 쌍아 (Claude) with 신정규 대표
-**날짜**: 2026-01-24
-**핵심 철학**: 모든 대화 세션 기록 → 코퍼스 재구성 → 여러 AI 협업 → 단일 목적 달성
+**최초 설계**: 2026-01-24
+**최종 업데이트**: 2026-02-08 (멀티 에이전트 5인 체계 + 실시간 파이프라인 반영)
 
 ---
 
-## 🏗️ 전체 시스템 구조
+## 전체 시스템 구조
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  TRACK 1: Mac 사무실/집 (대화 코딩)                          │
+│  TRACK 1: Mac (대화 코딩 + 실시간 파이프라인)                  │
 │  ───────────────────────────────────────────────             │
 │                                                             │
-│  🤖 쌍아 (Cursor + Anthropic API)                            │
-│     - 역할: 실행자 (Executor)                                │
-│     - 업무: 일상 개발, 코드 작성, 디버깅                      │
-│     - 특징: 대화 기반 점진적 개발                             │
-│     - 로그: docs/corpus/sessions/YYYYMMDD_session.md         │
-│     - 비용: $240/월 (Cursor $200 + API $40)                 │
+│  [AI 인격 5인 체계]                                          │
+│  쌍아 (VSCode 확장 Opus)  — 코딩 실행자 (메인)               │
+│  막내 (터미널 CLI Opus)   — CLI 실행자                       │
+│  철창이 (웹 Claude)       — 전략 대화 / 브레인스토밍          │
+│  코웍 (Claude Code 코웍)  — 자율 자동화 (Apple Silicon)      │
+│  용아 (Gemini)            — 전략가 / 아키텍처                │
 │                                                             │
-│  🐉 용아 (Gemini Advanced)                                  │
-│     - 역할: 전략가 (Strategist)                              │
-│     - 업무: 전략, 사업계획서, 공고 분석, 문서 작업             │
-│     - 특징: 15M 컨텍스트, PDF/이미지 처리                     │
-│     - 로그: docs/corpus/sessions/YYYYMMDD_gemini.md          │
-│     - 비용: $29/월 (Gemini Advanced)                        │
+│  [실시간 파이프라인]                                          │
+│  WebRTC P2P (Tailscale) → Gemini Live API 코칭              │
+│  Photo Coach (증명사진) / Presentation Assistant              │
+│                                                             │
+│  로그: docs/corpus/sessions/YYYYMMDD_session.md              │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
-                         ↕ Git Sync ↕
+              ↕ Tailscale P2P (RTT 7ms) / Git Sync ↕
 ┌─────────────────────────────────────────────────────────────┐
-│  TRACK 2: Windows RTX 4060 (무인 자동화 공장)                │
+│  TRACK 2: Windows RTX 4060 (GPU 연산 + 자동화 공장)          │
 │  ─────────────────────────────────────────────              │
 │                                                             │
-│  ⚙️ Claude Code CLI (자동화 공장)                            │
-│     - 역할: 무인 작업자 (Background Worker)                  │
-│     - 업무: ComfyUI, 이미지 생성, AI 학습, 배치 작업          │
-│     - 특징: 24/7 가동, GPU 활용, 작가님 손 안 대도 작동        │
-│     - 로그: docs/corpus/factory/YYYYMMDD_factory.md          │
-│     - 비용: $220/월 (Claude Max)                            │
+│  GPU 워크로드:                                               │
+│  - Imagen 3.0 이미지 생성                                    │
+│  - 향후 로컬 LLM (Llama / DeepSeek) — 5090 도입 시 본격화   │
+│  - ComfyUI 워크플로우 자동 실행                               │
+│  - AI 모델 학습 (배치)                                       │
 │                                                             │
-│  워커 시스템:                                                │
-│  - Git Sync Worker (5분 간격)                               │
-│  - ComfyUI Worker (워크플로우 자동 실행)                      │
-│  - Image Factory (배치 이미지 생성)                          │
-│  - AI Trainer (Unsloth LLaMA3/DeepSeek)                    │
-│  - Reporter (시간별/일일 보고)                                │
+│  로그: docs/corpus/factory/YYYYMMDD_factory.md               │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
                          ↕ GCS Sync ↕
@@ -55,324 +48,188 @@
 │  ───────────────────────────────────                        │
 │                                                             │
 │  gs://monk-project/corpus/                                  │
-│  ├── sessions/        ← Mac 대화 세션 (쌍아 + 용아)          │
-│  ├── factory/         ← Windows 공장 로그                    │
+│  ├── sessions/        ← 대화 세션 로그                       │
+│  ├── factory/         ← 공장 로그                            │
 │  └── knowledge/       ← 정제된 지식 슬라이스                  │
 │                                                             │
-│  활용:                                                       │
-│  - Vertex AI RAG 학습                                       │
-│  - NotebookLM 전체 프로젝트 이해                             │
-│  - 사업계획서/R&D 자동 생성                                   │
-│  - 디지털 트윈 (회사 전체 지식 자산)                          │
+│  활용: Vertex AI RAG, NotebookLM, 사업계획서 자동 생성        │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 📊 비용 구조
+## Tailscale 디바이스 네트워크 (2026-02-08 확인)
 
-| Track | AI | 용도 | 월 비용 |
-|-------|-----|------|---------|
-| Mac | 쌍아 (Cursor) | 일상 개발 | $240 |
-| Mac | 용아 (Gemini) | 전략/문서 | $29 |
-| Windows | Claude Code | 자동화 공장 | $220 |
-| **총계** | | | **$489** |
+| 디바이스 | Tailscale IP | OS | 역할 | 가용 인격 |
+|----------|-------------|-----|------|----------|
+| iMac (인텔) | 100.97.103.10 | macOS | 메인 서버, WebRTC 수신 | 쌍아, 막내, 철창이 |
+| 맥미니 (M시리즈) | 100.76.80.99 | macOS | 코웍 전용 (Apple Silicon) | 쌍아, 막내, 철창이, 코웍 |
+| 4060 PC | 100.118.31.62 | Windows | GPU 연산, 자동화 공장 | 쌍아, 막내, 철창이 |
+| iPhone | 100.115.57.53 | iOS | 카메라 입력, 모바일 접근 | 철창이 |
 
----
-
-## 🎭 AI 역할 분담
-
-### **쌍아 (雙牙) = Claude Sonnet 4.5**
-- **메타포**: 쌍둥이 이빨 - 정확하고 빠른 실행력
-- **역할**: 실행자 (Executor)
-- **담당**:
-  - 일상 코드 작성 (90%)
-  - 버그 수정, 디버깅
-  - UI/UX 구현
-  - 소규모 리팩토링
-- **특징**:
-  - 대화 기반 점진적 개발
-  - 빠른 응답 (1-2초)
-  - 작가님과 맥락 완벽 공유
-- **워크스타일**: Mac Cursor 대화 창
+**네트워크 성능 (2026-02-08 벤치마크)**:
+- iMac ↔ 4060: RTT 3ms (P2P 직결)
+- iPhone → iMac WebRTC: RTT 7ms, HD 30fps, 패킷 손실 0%
 
 ---
 
-### **용아 (龍牙) = Gemini 2.0 Flash**
-- **메타포**: 용의 이빨 - 날카로운 통찰력과 전략적 사고
-- **역할**: 전략가 (Strategist)
-- **담당**:
-  - 프로젝트 전략 수립
-  - 사업계획서, R&D 계획서
-  - 공고 분석 (디딤돌, 벤처인증 등)
-  - PDF/이미지 문서 작업
-- **특징**:
-  - 15M 컨텍스트 (초대형 문서 처리)
-  - 멀티모달 (이미지, PDF, 동영상)
-  - 가성비 최고 ($29/월)
-- **워크스타일**: Gemini Advanced 웹
+## AI 인격 체계 (2026-02-08 확정)
+
+### 팀장급 5인
+
+| 인격 | 채널 | 역할 | 세션 저장 |
+|------|------|------|----------|
+| **쌍아** | VSCode 확장 (Opus) | 코딩 실행자 (메인) | 로컬 JSONL |
+| **막내** | 터미널 CLI (Opus) | CLI 실행자 | 로컬 JSONL |
+| **철창이** | 웹 Claude | 전략 대화 / 브레인스토밍 | Anthropic 서버 |
+| **코웍** | Claude Code 코웍 모드 | 자율 자동화 | Apple Silicon 전용 |
+| **용아** | Gemini | 전략가 / 아키텍처 | Gemini 서버 |
+
+### 세션 추적 3축
+
+**누가**(인격) + **언제**(타임스탬프) + **어디서**(디바이스)
+
+### 5090 도입 후 확장 예정
+
+- 실무자급: Llama, DeepSeek 등 로컬 LLM 추가
+- 팀장급이 실무자급 관리
+- 작가님 = 총괄 디렉터
 
 ---
 
-### **공장 (Factory) = Claude Code CLI**
-- **메타포**: 무인 자동화 공장 - 24/7 쉬지 않는 작업자
-- **역할**: 무인 작업자 (Background Worker)
-- **담당**:
-  - ComfyUI 워크플로우 자동 실행
-  - 이미지 배치 생성 (민아방 24/7, K-뷰티 배경)
-  - AI 모델 학습 (Unsloth LLaMA3/DeepSeek)
-  - 모델 검색/테스트 자동화
-  - 정기 보고 (시간별/일일)
-- **특징**:
-  - 작가님 손 안 대도 알아서 작동
-  - GPU 100% 활용 (RTX 4060)
-  - Git 감시 → 자동 실행
-  - Claude Max ($220) 완전 활용
-- **워크스타일**: Windows PowerShell 백그라운드
+## 실시간 파이프라인 (2026-02-08 검증)
 
----
-
-## 🔄 협업 워크플로우
-
-### **시나리오 1: 새 기능 개발 (일상)**
+### Photo Coach (증명사진 AI 코칭)
 
 ```
-작가님 → 쌍아 (Mac Cursor)
-  "AI LAB에 결제 기능 추가해줘"
+iPhone 카메라 → Gemini Live 실시간 코칭 → 촬영
+                                          ↓
+                                   Imagen 3.0 규격 생성
+                                          ↓
+                                   Gemini QC 검증 → 출고
+```
+
+- 코칭 모델: `gemini-2.0-flash-live-preview-04-09` (Vertex AI, us-central1)
+- 생성 모델: `gemini-3-pro-image-preview` (Google AI Studio)
+- QC: 원본 vs 생성물 유사도 비교 (92~95% 확인)
+- 코드: `apps/photo-coach/`
+
+### Presentation Assistant (실시간 발표 보조)
+
+```
+iPhone 카메라 → WebRTC P2P → iMac 수신
+                              ↓ 프레임 캡처 (1fps, 768x768)
+                              ↓ Gemini Live API
+                              ↓ AI 텍스트 응답
+iPhone 오버레이 ← WebSocket ← iMac
+```
+
+- 코드: `apps/monk-cam/demo/`
+- 시그널링: Node.js HTTPS+WSS (iMac 로컬)
+- 비용: P2P 직결 → 전송비 0원
+
+---
+
+## 협업 워크플로우
+
+### 시나리오 1: 실시간 파이프라인 개발 (현재 주력)
+
+```
+작가님 + 철창이 (웹 Claude):
+  전략 브리핑 → 구현 스펙 문서 작성
   ↓
-쌍아: 대화로 요구사항 확인
-  "어떤 결제 수단? Stripe? Toss?"
-  ↓
-작가님: "Toss로"
-  ↓
-쌍아: 코드 작성 → 테스트 → 완료
+쌍아 (VSCode Opus):
+  스펙 기반 코드 구현 → 디버깅 → E2E 테스트
   ↓
 세션 로그 자동 기록
-  docs/corpus/sessions/20260124_session.md
+  docs/corpus/sessions/20260208_session.md
 ```
 
----
-
-### **시나리오 2: 전략 수립 (용아 활용)**
+### 시나리오 2: 전략 수립
 
 ```
-작가님 → 용아 (Gemini Advanced)
-  "벤처인증 신청서 작성해줘"
+작가님 + 철창이 (웹 Claude):
+  브레인스토밍 → 전략 문서 출력
   ↓
-용아: 프로젝트 전체 분석 (15M 컨텍스트)
-  → 신청서 초안 생성
+용아 (Gemini):
+  시장 분석, 경쟁사 조사, 글로벌 전략
   ↓
-작가님: 검토 → 수정 지시
-  ↓
-용아: 최종 완성
-  ↓
-세션 로그 자동 기록
-  docs/corpus/sessions/20260124_gemini.md
+전략 문서 저장
+  docs/corpus/claude_sessions/strategy/
 ```
 
----
-
-### **시나리오 3: 대규모 배치 작업 (공장 활용)**
+### 시나리오 3: GPU 배치 작업
 
 ```
 작가님 (Mac):
-  batch_queue/queue.json 작성
-  - "민아방 룩북 1000장 생성"
+  작업 지시 → Git Push
   ↓
-Git Push
-  ↓
-Windows 공장 (자동):
-  5분 후 Git Pull 감지
-  → Image Factory 자동 실행
-  → GPU로 1000장 생성 (약 3시간)
-  → GCS 업로드
-  → Git Push (완료 보고)
+4060 (자동):
+  Tailscale 경유 감지 → GPU 실행 → 결과 업로드
   ↓
 작가님 (Mac):
   결과 확인 → 승인
-  ↓
-공장 로그 자동 기록
-  docs/corpus/factory/20260124_factory.md
-  docs/corpus/factory/20260124/tasks/images/batch_001.md
 ```
 
 ---
 
-## 📋 세션 로그 시스템
+## 세션 로그 시스템
 
-### **Mac 대화 세션**
-
-```
-docs/corpus/sessions/2026-01/
-├── 20260124_session.md   ← 쌍아 (Cursor)
-│   - 타임스탬프 기반 Q&A
-│   - 작가님 지시 + 쌍아 응답
-│   - 코드 변경 내역
-│   - 의사결정 과정
-│
-└── 20260124_gemini.md    ← 용아 (Gemini)
-    - 전략 대화
-    - 문서 작업 과정
-    - 분석 결과
-```
-
-### **Windows 공장 로그**
+### 로컬 저장 구조
 
 ```
-docs/corpus/factory/2026-01/
-├── 20260124_factory.md         ← 일일 종합 로그
-│   - 시간별 작업 타임라인
-│   - GPU 상태 변화
-│   - 작업 완료/에러
-│
-├── reports/
-│   ├── hourly/                 ← 시간별 보고 (매시간)
-│   │   ├── 20260124_09.md
-│   │   └── 20260124_10.md
-│   └── daily/                  ← 일일 요약 (매일 자정)
-│       └── 20260124_summary.md
-│
-└── tasks/                      ← 작업별 상세 로그
-    ├── comfyui/
-    ├── training/
-    └── images/
+docs/corpus/
+├── sessions/              ← 대화 세션 로그 (시간순 append)
+│   ├── 2026-01/
+│   └── 2026-02/
+│       ├── 20260207_session.md
+│       └── 20260208_session.md
+├── claude_sessions/       ← 웹 Claude (철창이) 아카이브
+│   ├── certifications/
+│   ├── strategy/          ← 전략 문서 (경쟁사 분석, 글로벌 전략 등)
+│   └── templates/
+├── factory/               ← Windows 공장 로그
+├── gemini/                ← 용아 대화 기록
+└── legacy/                ← 레거시 문서 보존
 ```
+
+### Claude Code JSONL 세션
+
+- 저장 경로: `~/.claude/projects/`
+- 자동 기록: 대화 원본 + 툴 기록 + 파일 변경 이력
+- 타임스탬프: UTC 시스템 타임
 
 ---
 
-## 🎯 코퍼스 활용 전략
+## 코퍼스 활용 전략
 
-### **1. 별도 저장, 통합 가능**
-
-```
-각 AI가 독립적으로 로그 생성
-  ↓
-GCS에 모두 업로드
-  ↓
-NotebookLM에서 전체 학습
-  ↓
-통합 지식 자산 완성
-```
-
-### **2. 시계열 분석**
-
-```
-"2026-01-24에 무슨 일이 있었나?"
-  → 쌍아 세션 + 용아 세션 + 공장 로그 통합 조회
-  → 전체 타임라인 재구성
-```
-
-### **3. AI 학습 데이터**
-
-```
-5일 누적 (76KB)
-  → 기술 백서, R&D 초안 자동 생성
-
-1년 누적 (~5MB)
-  → 회사 전체 지식 자산
-  → 디지털 트윈 완성
-  → 사업계획서 자동 생성
-```
+1. **별도 저장, 통합 가능**: 각 AI 독립 로그 → GCS 업로드 → NotebookLM 통합 학습
+2. **시계열 분석**: 날짜별 세션 + 공장 로그 통합 조회 → 타임라인 재구성
+3. **AI 학습 데이터**: 누적 코퍼스 → 사업계획서 자동 생성, 디지털 트윈
 
 ---
 
-## 🚀 즉시 실행 가이드
+## 디바이스 간 통신 구조
 
-### **Mac 설정 (Track 1)**
-
-1. **Anthropic API 키 발급**
-   - https://console.anthropic.com/
-   - API 키 생성 → $50 충전
-
-2. **Cursor 연결**
-   - Settings → AI Models → Anthropic API
-   - API 키 입력
-   - On-Demand 차단 ($0 설정)
-
-3. **세션 로그 자동화**
-   - 이미 설정됨 (.cursorrules)
-   - 매 턴마다 자동 기록
+| 방법 | 역할 | 실시간성 |
+|------|------|---------|
+| **Tailscale + SSH** | 디바이스 간 직접 통신 | 실시간 |
+| **WebRTC P2P** | 영상/오디오 스트리밍 | 실시간 |
+| **Git** | 버전관리 (이력 관리) | 비동기 |
+| MCP SSH (차후) | 에이전트 원격 제어 | 실시간 (성숙 대기) |
 
 ---
 
-### **Windows 설정 (Track 2)**
+## 핵심 원칙
 
-1. **환경 설정**
-   ```powershell
-   cd C:\Users\smuse73\developer\monk_project
-   .\scripts\setup_factory.ps1
-   ```
-
-2. **환경변수 설정**
-   - `scripts/factory/.env.sample` → `.env`
-   - Discord Webhook 설정 (선택)
-
-3. **공장 가동**
-   ```powershell
-   .\scripts\factory\start_factory.ps1
-   ```
-
----
-
-### **GCS 동기화 (Track 3)**
-
-```bash
-# 매일 자정 자동 실행
-gsutil -m rsync -r docs/corpus/ gs://monk-project/corpus/
-```
-
----
-
-## 📊 성공 지표
-
-### **단기 (1주)**
-- ✅ 3-Track 시스템 안정 가동
-- ✅ 세션 로그 누적 (Mac + Windows)
-- ✅ 공장 자동화 정상 작동
-
-### **중기 (1개월)**
-- ✅ 코퍼스 1MB 이상 누적
-- ✅ NotebookLM 학습 완료
-- ✅ 자동 보고서 생성 가능
-
-### **장기 (1년)**
-- ✅ 디지털 트윈 완성
-- ✅ 사업계획서 자동 생성
-- ✅ AI가 회사 전체 이해
-
----
-
-## 🎯 핵심 철학 (다시 강조)
-
-> **"모든 대화 세션을 기록하고 코퍼스로 재구성한다."**
->
-> **"이것이 여러 AI 지능들의 재능을 적재적소에 활용하고**
-> **단일한 목적에 협업할 수 있는 유일하면서 최고의 방안"**
->
-> **- 신정규 대표, 2026-01-24**
-
----
-
-## ⚠️ 중요 원칙
-
-1. **각 AI의 로그는 별도 관리**
-   - Mac 세션 로그 ≠ Windows 공장 로그
-   - 억지로 끼워넣지 않음
-
-2. **모든 로그는 시계열 기반**
-   - 타임스탬프 필수
-   - 시스템 시간 = 유일한 진실
-
-3. **GCS 통합, NotebookLM 학습**
-   - 개별 로그 → GCS 업로드
-   - NotebookLM이 전체 통합 학습
-
-4. **작가님 손 안 대도 작동**
-   - Windows 공장 = 완전 자동화
-   - Mac = 대화 기반 (작가님 컨트롤)
+1. **각 AI의 로그는 별도 관리** — 억지로 끼워넣지 않음
+2. **모든 로그는 시계열 기반** — 타임스탬프 필수, 시스템 시간 = 유일한 진실
+3. **GCS 통합, NotebookLM 학습** — 개별 로그 → GCS → 통합 학습
+4. **Tailscale = 핵심 인프라** — MCP SSH는 차후 성숙 후 도입
+5. **작가님 = 총괄 디렉터** — 대규모 변경은 반드시 승인
 
 ---
 
 *설계: 쌍아 (Claude) with 신정규 대표*
-*3-Track 시스템으로 AI 협업의 새로운 패러다임을 만들다* 🚀
+*3-Track 시스템으로 AI 협업의 새로운 패러다임을 만들다*

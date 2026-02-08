@@ -1,4 +1,4 @@
-# GCS 버킷 구조 (2026-01-15 확정)
+# GCS 버킷 구조 (2026-01-15 확정, 2026-02-08 업데이트)
 
 **버킷명**: `gs://monk-project/`
 **위치**: asia-northeast3 (서울)
@@ -36,11 +36,21 @@ gs://monk-project/
 │
 ├── 📁 corpus/                      # AI 학습 (Vertex AI RAG 소스)
 │   │
-│   ├── sessions/                   # 세션 로그 (쌍아 대화)
-│   │   └── 2026-01/*.md
+│   ├── sessions/                   # 세션 로그 (쌍아/막내 대화)
+│   │   ├── 2026-01/*.md
+│   │   └── 2026-02/*.md
+│   │
+│   ├── claude_sessions/            # 웹 Claude (철창이) 아카이브 (2026-02-08 이관)
+│   │   ├── certifications/         # AI 인증서/자격증
+│   │   ├── strategy/               # 전략 문서 (경쟁사 분석, 글로벌 전략 등)
+│   │   └── templates/              # 템플릿
 │   │
 │   ├── gemini/                     # Gemini 대화 (용아 전략, 15M+)
 │   │   └── yonga_conversations/
+│   │
+│   ├── factory/                    # Windows 공장 로그
+│   │
+│   ├── legacy/                     # 레거시 문서 보존 (Soul Sync, Cursor 등)
 │   │
 │   ├── knowledge/                  # 파싱된 지식 슬라이스
 │   │
@@ -129,8 +139,9 @@ gs://monk-project/
 │                                                                 │
 │  [대화 로그]        [Vertex AI]          [RAG 서비스]            │
 │                                                                 │
-│  corpus/sessions/ →  파싱+임베딩  →  쌍아/용아 챗봇             │
-│  corpus/gemini/      (Corpus)          (실시간 응답)            │
+│  corpus/sessions/  →  파싱+임베딩  →  쌍아/용아 챗봇            │
+│  corpus/claude_sessions/  (Corpus)     (실시간 응답)            │
+│  corpus/gemini/                                                 │
 │                                                                 │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                 │
@@ -268,5 +279,5 @@ Sync: On-demand
 ---
 
 *문서 생성: 2026-01-15 08:13*
-*위치: 집 (Mac Mini)*
 *업데이트: 2026-01-15 - visitor_data/ 추가*
+*업데이트: 2026-02-08 - corpus/ 구조 변경 반영 (claude_sessions/, factory/, legacy/ 추가)*
