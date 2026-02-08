@@ -24,6 +24,7 @@
       "Bash(type:*)",
       "Bash(echo:*)",
       "Bash(sleep:*)",
+      "Bash(ping:*)",
       "Bash(/Applications/Tailscale.app/Contents/MacOS/Tailscale status:*)"
     ],
     "deny": [
