@@ -107,7 +107,35 @@
 - 위치: `docs/corpus/sessions/YYYY-MM/YYYYMMDD_session.md`
 - 1일 1파일, append only, Q&A 번호 연속 증가
 - 타임스탬프 필수 (시스템 시간만 사용, 추정 금지)
-- 상세: `docs/corpus/legacy/cursorrules_20260207.md` 내 Daily Session 규칙 참조
+
+### 헤더 (세션 시작 시 1회)
+```markdown
+# 세션 로그: YYYY-MM-DD (요일)
+
+**환경:** [위치] ([장비] + Claude Code Opus 4.6)
+**시작:** YYYY-MM-DD HH:MM
+```
+
+### 본문 (매 작업 블록)
+```markdown
+### [HH:MM] 작업 주제
+
+**작가님**: "중요 발언 직접 인용"
+- 실행 내용
+- 결과
+```
+
+### 세션 종료 시
+```markdown
+## 완료 사항
+- [x] 작업 1
+
+## TODO
+- [ ] 다음 작업
+
+---
+**세션 종료: HH:MM KST**
+```
 
 ## 파일/폴더 규칙
 
