@@ -10,7 +10,15 @@
     "build": "tsc && vite build",
     "preview": "vite preview"
   },
-  "keywords": ["camera", "webrtc", "capture", "monkos"],
+  "keywords": [
+    "camera",
+    "webrtc",
+    "capture",
+    "monkos"
+  ],
   "author": "MONKOS",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "ws": "^8.19.0"
+  }
 }
