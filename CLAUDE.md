@@ -107,7 +107,7 @@
 - 위치: `docs/corpus/sessions/YYYY-MM/YYYYMMDD_session.md`
 - 1일 1파일, append only, Q&A 번호 연속 증가
 - 타임스탬프 필수 (시스템 시간만 사용, 추정 금지)
-- 상세: `.cursorrules` 내 Daily Session 규칙 참조
+- 상세: `docs/corpus/legacy/cursorrules_20260207.md` 내 Daily Session 규칙 참조
 
 ## 파일/폴더 규칙
 
