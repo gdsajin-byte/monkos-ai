@@ -1,0 +1,14 @@
+{
+  "name": "@monkos/photo-coach",
+  "version": "0.1.0",
+  "description": "MONKOS Photo Coach - AI 촬영 도우미 + Imagen 생성 + QC",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@google/genai": "^1.40.0",
+    "dotenv": "^17.2.4",
+    "ws": "^8.19.0"
+  }
+}
