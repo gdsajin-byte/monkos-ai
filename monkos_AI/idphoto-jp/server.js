@@ -91,6 +91,11 @@ const STYLE_PROMPTS = {
   mynumber: 'Japanese My Number Card photo (マイナンバーカード), white background, no shadows, neutral expression, sharp focus',
 };
 
+const OUTFIT_PROMPTS = {
+  keep: '', // そのまま — 追加指示なし
+  suit: 'OUTFIT CHANGE: Replace the current clothing with a clean, dark navy or charcoal formal business suit with white dress shirt and tie. Keep the person\'s face, hair, and body exactly the same — only change the clothing to professional business attire.',
+};
+
 // === QC プロンプト (日本語) ===
 const QC_INSTRUCTION = `2つの画像を比較してください。
 1枚目：原本（実際の撮影）
@@ -170,11 +175,12 @@ async function createGeminiSession(clientId) {
   }
 }
 
-// === Imagen I2I 生成 (Vertex AI ADC) ===
-async function generatePhoto(inputBase64, style = 'id_photo') {
+// === Imagen I2I 生成 (Google AI Studio API Key) ===
+async function generatePhoto(inputBase64, style = 'id_photo', outfit = 'keep') {
   const base64Data = inputBase64.includes(',') ? inputBase64.split(',')[1] : inputBase64;
   const stylePrompt = STYLE_PROMPTS[style] || STYLE_PROMPTS.id_photo;
-  const instruction = `${IDENTITY_PRESERVATION}\n\n[IMAGE-TO-IMAGE TRANSFORM] ${stylePrompt}`;
+  const outfitPrompt = OUTFIT_PROMPTS[outfit] || '';
+  const instruction = `${IDENTITY_PRESERVATION}\n\n[IMAGE-TO-IMAGE TRANSFORM] ${stylePrompt}${outfitPrompt ? '\n\n' + outfitPrompt : ''}`;
 
   const response = await imagenAI.models.generateContent({
     model: 'gemini-3-pro-image-preview',
@@ -334,10 +340,10 @@ wss.on('connection', async (ws) => {
 
     // Imagen 生成リクエスト
     if (msg.type === 'generate') {
-      log(`[Imagen][${clientId}] 生成リクエスト: style=${msg.style}`);
+      log(`[Imagen][${clientId}] 生成リクエスト: style=${msg.style}, outfit=${msg.outfit || 'keep'}`);
       ws.send(JSON.stringify({ type: 'generate-start' }));
       try {
-        const result = await generatePhoto(msg.image, msg.style);
+        const result = await generatePhoto(msg.image, msg.style, msg.outfit);
         ws.send(JSON.stringify({ type: 'generate-result', image: result }));
         log(`[Imagen][${clientId}] 生成完了`);
       } catch (err) {
