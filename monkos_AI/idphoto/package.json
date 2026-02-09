@@ -1,0 +1,19 @@
+{
+  "name": "@monkos/idphoto",
+  "version": "1.0.0",
+  "description": "MONKOS AI 증명사진 — idphoto.monkos.ai | Gemini Live 코칭 + Imagen 생성 + QC",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "@google/genai": "^1.40.0",
+    "dotenv": "^17.2.4",
+    "express": "^5.1.0",
+    "ws": "^8.19.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

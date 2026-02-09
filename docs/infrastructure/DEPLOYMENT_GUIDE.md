@@ -1,7 +1,7 @@
 # MONK.KR 배포 가이드
 
 **최초 작성**: 2026-01-08
-**최종 업데이트**: 2026-02-08 (Photo Coach, Presentation Assistant 추가)
+**최종 업데이트**: 2026-02-09 (monkos_AI 분리 체계 추가, Photo Coach → idphoto 승격)
 
 ---
 
@@ -12,7 +12,8 @@
 | monk.kr 메인 | `MONK_kr/` | Cloudflare Pages | 배포 완료 |
 | AI Photolab | `MONK_kr/ai_lab/photolab/` | Cloudflare Pages | 배포 완료 |
 | Imagen API | `MONK_kr/functions/api/photo.js` | Cloudflare Workers | 배포 완료 |
-| Photo Coach | `apps/photo-coach/` | 로컬 (iMac) | 개발 완료, 프로덕션 준비 중 |
+| Photo Coach | `apps/photo-coach/` | 로컬 (iMac) | 프로토타입 (공유 앱스) |
+| **MONKOS ID Photo** | **`monkos_AI/idphoto/`** | **GCP Cloud Run** | **개발 중 → idphoto.monkos.ai** |
 | Presentation Assistant | `apps/monk-cam/demo/` | 로컬 (iMac) | 개발 완료, 프로덕션 준비 중 |
 | Monkos Chat | `apps/MonkosChatApp/` | Cloudflare Pages | 배포 완료 |
 
@@ -72,11 +73,10 @@ node server.js
 - Google AI Studio API Key (Imagen 3.0, QC) — `apps/imagen3/backend/.env`
 - SSL 인증서 (자체서명, `apps/monk-cam/demo/cert.pem`)
 
-### 프로덕션 전환 시 필요사항
+### 프로덕션 전환
 
-- [ ] Cloud Run 배포 or Tailscale 공개 경로 설정
-- [ ] SSL 인증서 (Let's Encrypt or Cloudflare 터널)
-- [ ] 환경변수 관리 (API 키 분리)
+Photo Coach는 `monkos_AI/idphoto/`로 승격되어 Cloud Run 배포 체계로 전환됨.
+상세: `monkos_AI/infrastructure/DEPLOY_GUIDE.md`
 
 ---
 
@@ -170,4 +170,4 @@ Cloudflare Pages:
 ---
 
 *최초 작성: 2026-01-08*
-*업데이트: 2026-02-08 — Photo Coach, Presentation Assistant 추가, 구조 반영*
+*업데이트: 2026-02-09 — monkos_AI 분리 체계 추가, Photo Coach → idphoto.monkos.ai 승격*
