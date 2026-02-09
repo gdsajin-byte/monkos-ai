@@ -32,11 +32,89 @@
         .dot-wait { background: #f59e0b; }
         #step-label { font-size: 11px; color: #888; }
 
-        /* カメラエリア */
+        /* === 準備画面 === */
+        #prep-screen {
+            flex: 1; display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            padding: 32px 24px; text-align: center;
+            background: #030508;
+        }
+        #prep-screen.hidden { display: none; }
+        .prep-icon { font-size: 48px; margin-bottom: 20px; }
+        .prep-title {
+            font-size: 22px; font-weight: 700; margin-bottom: 8px;
+        }
+        .prep-sub {
+            font-size: 14px; color: #888; line-height: 1.7; margin-bottom: 32px;
+        }
+
+        .prep-checklist {
+            width: 100%; max-width: 320px; text-align: left;
+            margin-bottom: 32px;
+        }
+        .prep-check-item {
+            display: flex; align-items: flex-start; gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #1a1a1a;
+        }
+        .prep-check-item:last-child { border-bottom: none; }
+        .prep-check-icon {
+            flex-shrink: 0; width: 28px; height: 28px;
+            border-radius: 8px; background: rgba(167,139,250,0.12);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px;
+        }
+        .prep-check-text {
+            font-size: 13px; line-height: 1.5;
+        }
+        .prep-check-text strong {
+            display: block; font-size: 14px; margin-bottom: 2px;
+        }
+        .prep-check-text span { color: #888; }
+
+        /* スタイル選択（準備画面用） */
+        .prep-styles {
+            display: flex; gap: 8px; flex-wrap: wrap;
+            justify-content: center; margin-bottom: 32px;
+        }
+        .prep-style-chip {
+            padding: 10px 18px; border-radius: 12px;
+            background: #111; border: 1.5px solid #222;
+            font-size: 13px; font-weight: 500; color: #aaa;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .prep-style-chip.active {
+            background: rgba(167,139,250,0.15);
+            border-color: #a78bfa; color: #a78bfa;
+        }
+
+        .btn-start {
+            width: 100%; max-width: 320px;
+            padding: 16px; border-radius: 14px;
+            background: linear-gradient(135deg, #a78bfa, #8b5cf6);
+            color: #fff; font-size: 16px; font-weight: 700;
+            border: none; cursor: pointer;
+            box-shadow: 0 4px 24px rgba(167,139,250,0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn-start:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 32px rgba(167,139,250,0.4);
+        }
+        .btn-start:disabled {
+            opacity: 0.4; transform: none;
+            box-shadow: none; cursor: not-allowed;
+        }
+        .prep-note {
+            margin-top: 12px; font-size: 11px; color: #555;
+        }
+
+        /* === カメラエリア === */
         #camera-area {
             flex: 1; position: relative; overflow: hidden;
-            background: #000;
+            background: #000; display: none;
         }
+        #camera-area.active { display: block; }
         #camera-video {
             width: 100%; height: 100%; object-fit: cover;
             transform: scaleX(-1);
@@ -63,26 +141,51 @@
             white-space: nowrap;
         }
 
-        /* コーチングオーバーレイ */
+        /* === コーチングオーバーレイ（強化版） === */
         #coaching-overlay {
-            position: absolute; bottom: 90px; left: 12px; right: 12px;
-            background: rgba(0,0,0,0.88);
-            border: 1px solid rgba(245,158,11,0.4);
-            border-radius: 12px; padding: 12px 16px;
+            position: absolute; bottom: 0; left: 0; right: 0;
+            background: linear-gradient(0deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.8) 70%, transparent 100%);
+            padding: 40px 20px 20px;
             z-index: 10; display: none;
             transition: opacity 0.3s;
         }
+        #coaching-overlay.active { display: block; }
         #coaching-overlay.ready {
+            background: linear-gradient(0deg, rgba(0,40,0,0.95) 0%, rgba(0,30,0,0.8) 70%, transparent 100%);
+        }
+
+        .coaching-inner {
+            background: rgba(0,0,0,0.6);
+            border: 1.5px solid rgba(245,158,11,0.5);
+            border-radius: 16px; padding: 16px 20px;
+            backdrop-filter: blur(10px);
+        }
+        #coaching-overlay.ready .coaching-inner {
             border-color: rgba(34,197,94,0.6);
         }
+
         #coaching-label {
-            font-size: 10px; color: #f59e0b; font-weight: 600;
-            margin-bottom: 4px; letter-spacing: 1px;
+            font-size: 11px; color: #f59e0b; font-weight: 700;
+            margin-bottom: 8px; letter-spacing: 2px;
+            display: flex; align-items: center; gap: 8px;
         }
         #coaching-overlay.ready #coaching-label { color: #22c55e; }
-        #coaching-text { font-size: 15px; line-height: 1.5; }
+        .coaching-pulse {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: #f59e0b;
+            animation: pulse 1.5s infinite;
+        }
+        #coaching-overlay.ready .coaching-pulse { background: #22c55e; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.3); }
+        }
+        #coaching-text {
+            font-size: 18px; font-weight: 600; line-height: 1.5;
+        }
+        #coaching-overlay.ready #coaching-text { color: #22c55e; }
 
-        /* スタイル選択 */
+        /* スタイル選択バー（カメラ画面用） */
         #style-bar {
             position: absolute; top: 12px; left: 12px; right: 12px;
             display: flex; gap: 6px; z-index: 8;
@@ -140,10 +243,11 @@
         /* 下部コントロール */
         #controls {
             padding: 14px 16px; background: #0a0a0a;
-            display: flex; gap: 10px; justify-content: center;
+            display: none; gap: 10px; justify-content: center;
             align-items: center; z-index: 30;
             border-top: 1px solid #1a1a1a;
         }
+        #controls.active { display: flex; }
 
         /* 撮影ボタン */
         #btn-capture {
@@ -191,25 +295,111 @@
             font-size: 9px; color: #444; max-height: 40px;
             overflow-y: auto; font-family: monospace;
         }
+
+        /* デスクトップブロッカー */
+        #desktop-blocker {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: #030508; z-index: 9999;
+            display: none; flex-direction: column;
+            align-items: center; justify-content: center;
+            text-align: center; padding: 32px;
+        }
+        #desktop-blocker.active { display: flex; }
+        #desktop-blocker .icon { font-size: 64px; margin-bottom: 24px; }
+        #desktop-blocker h2 {
+            font-size: 20px; font-weight: 700; margin-bottom: 8px;
+        }
+        #desktop-blocker p {
+            font-size: 14px; color: #888; line-height: 1.6; margin-bottom: 24px;
+        }
+        #desktop-blocker .qr-wrap {
+            background: #fff; padding: 16px; border-radius: 16px;
+            margin-bottom: 16px;
+        }
+        #desktop-blocker .qr-wrap img { width: 180px; height: 180px; }
+        #desktop-blocker .url-text {
+            font-size: 12px; color: #666; font-family: monospace;
+            background: #111; padding: 8px 16px; border-radius: 8px;
+            border: 1px solid #222;
+        }
     </style>
 </head>
 <body>
+    <!-- デスクトップブロッカー -->
+    <div id="desktop-blocker">
+        <div class="icon">📱</div>
+        <h2>スマートフォンでご利用ください</h2>
+        <p>AI証明写真はスマートフォンの<br>フロントカメラで撮影する専用サービスです</p>
+        <div class="qr-wrap">
+            <img id="qr-code" src="" alt="QRコード">
+        </div>
+        <div class="url-text" id="page-url"></div>
+    </div>
+
     <div id="header">
         <div>
             <h1><span class="brand">MONKOS</span> AI証明写真</h1>
-            <span id="step-label">Step 1: AIコーチング</span>
+            <span id="step-label">撮影準備</span>
         </div>
         <div>
             <span class="dot dot-wait" id="ws-dot"></span>
-            <span id="ws-status" style="font-size:11px;">接続中</span>
+            <span id="ws-status" style="font-size:11px;">待機中</span>
         </div>
     </div>
 
+    <!-- === 準備画面 === -->
+    <div id="prep-screen">
+        <div class="prep-icon">📸</div>
+        <div class="prep-title">撮影の準備</div>
+        <p class="prep-sub">
+            AIがリアルタイムで撮影をガイドします。<br>
+            以下を確認してから始めてください。
+        </p>
+
+        <div class="prep-checklist">
+            <div class="prep-check-item">
+                <div class="prep-check-icon">💡</div>
+                <div class="prep-check-text">
+                    <strong>明るい場所で</strong>
+                    <span>顔に均一な照明が当たる場所がベスト</span>
+                </div>
+            </div>
+            <div class="prep-check-item">
+                <div class="prep-check-icon">🖼</div>
+                <div class="prep-check-text">
+                    <strong>背景はシンプルに</strong>
+                    <span>白い壁の前など、無地の背景が理想</span>
+                </div>
+            </div>
+            <div class="prep-check-item">
+                <div class="prep-check-icon">👤</div>
+                <div class="prep-check-text">
+                    <strong>正面を向いて</strong>
+                    <span>帽子を外し、メガネの反射に注意</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- スタイル選択 -->
+        <div class="prep-styles">
+            <div class="prep-style-chip active" data-style="id_photo">証明写真</div>
+            <div class="prep-style-chip" data-style="resume">履歴書</div>
+            <div class="prep-style-chip" data-style="mynumber">マイナンバー</div>
+            <div class="prep-style-chip" data-style="profile">プロフィール</div>
+        </div>
+
+        <button class="btn-start" id="btn-start" onclick="startShooting()">
+            撮影を始める
+        </button>
+        <p class="prep-note">カメラへのアクセスを許可してください</p>
+    </div>
+
+    <!-- === カメラ画面 === -->
     <div id="camera-area">
         <video id="camera-video" autoplay playsinline muted></video>
         <div id="face-guide"></div>
 
-        <!-- スタイル選択バー -->
+        <!-- スタイル選択バー（カメラ上） -->
         <div id="style-bar">
             <div class="style-chip active" data-style="id_photo">証明写真</div>
             <div class="style-chip" data-style="resume">履歴書</div>
@@ -217,9 +407,15 @@
             <div class="style-chip" data-style="profile">プロフィール</div>
         </div>
 
+        <!-- コーチングオーバーレイ（強化版） -->
         <div id="coaching-overlay">
-            <div id="coaching-label">AI コーチング</div>
-            <div id="coaching-text">カメラを正面に向けてください...</div>
+            <div class="coaching-inner">
+                <div id="coaching-label">
+                    <span class="coaching-pulse"></span>
+                    AI コーチング中
+                </div>
+                <div id="coaching-text">姿勢をチェックしています...</div>
+            </div>
         </div>
 
         <!-- 結果オーバーレイ -->
@@ -267,7 +463,7 @@
 
     <script>
         const MAX_CAPTURE_SIZE = 720;
-        const COACHING_DISPLAY_MS = 8000;
+        const COACHING_DISPLAY_MS = 10000;
         const FRAME_INTERVAL_MS = 1000;
         const CAPTURE_SIZE = 512;
 
@@ -278,7 +474,7 @@
         let frameTimer = null;
         let coachingTimeout = null;
         let isReady = false;
-        let currentStep = 1;
+        let currentStep = 0; // 0=準備, 1=コーチング, 2=確認, 3=生成
         let selectedStyle = 'id_photo';
 
         const video = document.getElementById('camera-video');
@@ -290,7 +486,18 @@
             logEl.textContent = `[${t}] ${msg}\n` + logEl.textContent;
         }
 
-        // === スタイル選択 ===
+        // === 準備画面のスタイル選択 ===
+        document.querySelectorAll('.prep-style-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                document.querySelectorAll('.prep-style-chip').forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+                selectedStyle = chip.dataset.style;
+                // カメラ画面のチップも同期
+                syncStyleChips(selectedStyle);
+            });
+        });
+
+        // カメラ画面のスタイル選択
         document.querySelectorAll('.style-chip').forEach(chip => {
             chip.addEventListener('click', () => {
                 document.querySelectorAll('.style-chip').forEach(c => c.classList.remove('active'));
@@ -300,6 +507,36 @@
             });
         });
 
+        function syncStyleChips(style) {
+            document.querySelectorAll('.style-chip').forEach(c => {
+                c.classList.toggle('active', c.dataset.style === style);
+            });
+        }
+
+        // === 撮影開始 ===
+        async function startShooting() {
+            const btn = document.getElementById('btn-start');
+            btn.disabled = true;
+            btn.textContent = 'カメラ起動中...';
+
+            try {
+                await initCamera();
+                // 準備画面 → カメラ画面に切り替え
+                document.getElementById('prep-screen').classList.add('hidden');
+                document.getElementById('camera-area').classList.add('active');
+                document.getElementById('controls').classList.add('active');
+                document.getElementById('step-label').textContent = 'Step 1: AIコーチング';
+                currentStep = 1;
+                connectWS();
+                log('撮影モード開始');
+            } catch (err) {
+                btn.disabled = false;
+                btn.textContent = '撮影を始める';
+                alert('カメラを起動できませんでした。\nカメラへのアクセスを許可してください。');
+                log('カメラ起動失敗: ' + err.message);
+            }
+        }
+
         // === WebSocket ===
         function connectWS() {
             const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
@@ -307,9 +544,11 @@
             setDot('wait', '接続中');
 
             ws.onopen = () => {
-                setDot('on', '接続済み');
+                setDot('on', 'AI接続済み');
                 log('サーバー接続完了');
                 startFrameCapture();
+                // 初回コーチングメッセージ表示
+                showCoaching('カメラの前に正面を向いて座ってください。姿勢をチェックします。');
             };
 
             ws.onmessage = async (e) => {
@@ -337,7 +576,7 @@
             ws.onclose = () => {
                 setDot('off', '切断');
                 stopFrameCapture();
-                setTimeout(connectWS, 3000);
+                if (currentStep >= 1) setTimeout(connectWS, 3000);
             };
         }
 
@@ -348,16 +587,12 @@
 
         // === カメラ ===
         async function initCamera() {
-            try {
-                cameraStream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: 'user', width: { ideal: 720 }, height: { ideal: 960 } },
-                    audio: false,
-                });
-                video.srcObject = cameraStream;
-                log('カメラ初期化完了');
-            } catch (err) {
-                log('カメラエラー: ' + err.message);
-            }
+            cameraStream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: 'user', width: { ideal: 720 }, height: { ideal: 960 } },
+                audio: false,
+            });
+            video.srcObject = cameraStream;
+            log('カメラ初期化完了');
         }
 
         // === フレームキャプチャ → WS送信 ===
@@ -404,29 +639,32 @@
             return (diff / samples / 255) > 0.03;
         }
 
-        // === コーチング表示 ===
+        // === コーチング表示（強化版） ===
         function showCoaching(text) {
             const overlay = document.getElementById('coaching-overlay');
             const textEl = document.getElementById('coaching-text');
+            const labelEl = document.getElementById('coaching-label');
             const btn = document.getElementById('btn-capture');
 
             textEl.textContent = text;
-            overlay.style.display = 'block';
+            overlay.classList.add('active');
 
-            // 日本語の「OK」判定
+            // OK判定
             if (text.includes('いいですね') || text.includes('撮影して') || text.includes('大丈夫') || text.includes('OKです') || text.includes('完璧')) {
                 isReady = true;
                 overlay.classList.add('ready');
                 btn.classList.add('ready');
+                labelEl.innerHTML = '<span class="coaching-pulse"></span> 撮影OK！';
             } else {
                 isReady = false;
                 overlay.classList.remove('ready');
                 btn.classList.remove('ready');
+                labelEl.innerHTML = '<span class="coaching-pulse"></span> AI コーチング中';
             }
 
             if (coachingTimeout) clearTimeout(coachingTimeout);
             coachingTimeout = setTimeout(() => {
-                overlay.style.display = 'none';
+                overlay.classList.remove('active');
             }, COACHING_DISPLAY_MS);
         }
 
@@ -447,7 +685,6 @@
             canvas.width = tw;
             canvas.height = th;
 
-            // ミラーリング解除キャプチャ
             ctx.translate(canvas.width, 0);
             ctx.scale(-1, 1);
             ctx.drawImage(video, 0, 0, vw, vh, 0, 0, tw, th);
@@ -456,6 +693,7 @@
 
             currentStep = 2;
             stopFrameCapture();
+            document.getElementById('coaching-overlay').classList.remove('active');
             document.getElementById('step-label').textContent = 'Step 2: 撮影確認';
             document.getElementById('photo-original').src = capturedImageData;
             document.getElementById('photo-generated-wrap').style.display = 'none';
@@ -579,8 +817,27 @@
             log('保存完了');
         }
 
+        // === モバイル判定 ===
+        function isMobile() {
+            return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+                || (navigator.maxTouchPoints > 0 && window.innerWidth < 1024);
+        }
+
+        function showDesktopBlocker() {
+            const blocker = document.getElementById('desktop-blocker');
+            blocker.classList.add('active');
+            const pageUrl = location.href.replace('localhost:8080', 'idphoto-jp.monkos.ai');
+            document.getElementById('page-url').textContent = pageUrl;
+            document.getElementById('qr-code').src =
+                `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(pageUrl)}&bgcolor=ffffff&color=000000`;
+        }
+
         // === 初期化 ===
-        initCamera().then(() => connectWS());
+        const devMode = new URLSearchParams(location.search).has('dev');
+        if (!isMobile() && !devMode) {
+            showDesktopBlocker();
+        }
+        // モバイル: 準備画面を表示（カメラはまだ起動しない）
     </script>
 </body>
 </html>

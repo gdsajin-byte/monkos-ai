@@ -31,6 +31,19 @@ SERVICE_NAME="monkos-idphoto-jp"
 GCS_BUCKET="monk-ai-images"
 SERVICE_ACCOUNT="monk-image-engine@${PROJECT_ID}.iam.gserviceaccount.com"
 
+# API Key — .env から読み込み (ハードコード禁止)
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+if [ -f "${SCRIPT_DIR}/../.env" ]; then
+  GEMINI_API_KEY=$(grep GEMINI_API_KEY "${SCRIPT_DIR}/../.env" | cut -d'=' -f2)
+elif [ -f "${SCRIPT_DIR}/.env" ]; then
+  GEMINI_API_KEY=$(grep GEMINI_API_KEY "${SCRIPT_DIR}/.env" | cut -d'=' -f2)
+fi
+
+if [ -z "$GEMINI_API_KEY" ]; then
+  echo -e "${RED}エラー: GEMINI_API_KEY が見つかりません${NC}"
+  exit 1
+fi
+
 if [ "$ENV" = "staging" ]; then
   SERVICE_NAME="monkos-idphoto-jp-staging"
 fi
@@ -65,7 +78,7 @@ gcloud run deploy ${SERVICE_NAME} \
   --concurrency 80 \
   --min-instances 0 \
   --max-instances 10 \
-  --set-env-vars "PROJECT_ID=${PROJECT_ID},LOCATION=${REGION},GCS_BUCKET=${GCS_BUCKET}" \
+  --set-env-vars "PROJECT_ID=${PROJECT_ID},LOCATION=${REGION},GCS_BUCKET=${GCS_BUCKET},GEMINI_API_KEY=${GEMINI_API_KEY}" \
   --service-account ${SERVICE_ACCOUNT}
 
 # 4. 결과 출력
