@@ -68,6 +68,9 @@ _saga/BWYA_Academy/강의실(B.W.Y.A)/**/*.docx
 !apps/**/vertex_*.png
 _archive/
 
+# 개인정보 문서 (동의서, 신용정보 등)
+docs/rnd_2026/**/동의서/
+
 # GCS 동기화 (로컬에서만 관리)
 soul_sync.sh
 
