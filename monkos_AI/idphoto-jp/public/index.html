@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AI証明写真 | MONKOS</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #030508; color: #fff;
+            font-family: 'Noto Sans JP', -apple-system, 'Hiragino Kaku Gothic ProN', sans-serif;
+            height: 100dvh; display: flex; flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* ヘッダー */
+        #header {
+            padding: 12px 16px; background: #0a0a0a;
+            display: flex; align-items: center; justify-content: space-between;
+            border-bottom: 1px solid #1a1a1a;
+        }
+        #header h1 { font-size: 15px; font-weight: 700; letter-spacing: 0.5px; }
+        .brand { color: #a78bfa; font-weight: 700; }
+        .dot {
+            display: inline-block; width: 8px; height: 8px;
+            border-radius: 50%; margin-right: 6px; vertical-align: middle;
+        }
+        .dot-on { background: #22c55e; }
+        .dot-off { background: #ef4444; }
+        .dot-wait { background: #f59e0b; }
+        #step-label { font-size: 11px; color: #888; }
+
+        /* カメラエリア */
+        #camera-area {
+            flex: 1; position: relative; overflow: hidden;
+            background: #000;
+        }
+        #camera-video {
+            width: 100%; height: 100%; object-fit: cover;
+            transform: scaleX(-1);
+        }
+
+        /* 顔ガイドオーバーレイ */
+        #face-guide {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none; z-index: 5;
+        }
+        #face-guide::before {
+            content: '';
+            position: absolute;
+            top: 10%; left: 50%; transform: translateX(-50%);
+            width: 180px; height: 240px;
+            border: 2px dashed rgba(167, 139, 250, 0.5);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+        }
+        #face-guide::after {
+            content: 'ここに顔を合わせてください';
+            position: absolute;
+            top: calc(10% + 250px); left: 50%; transform: translateX(-50%);
+            font-size: 11px; color: rgba(167, 139, 250, 0.6);
+            white-space: nowrap;
+        }
+
+        /* コーチングオーバーレイ */
+        #coaching-overlay {
+            position: absolute; bottom: 90px; left: 12px; right: 12px;
+            background: rgba(0,0,0,0.88);
+            border: 1px solid rgba(245,158,11,0.4);
+            border-radius: 12px; padding: 12px 16px;
+            z-index: 10; display: none;
+            transition: opacity 0.3s;
+        }
+        #coaching-overlay.ready {
+            border-color: rgba(34,197,94,0.6);
+        }
+        #coaching-label {
+            font-size: 10px; color: #f59e0b; font-weight: 600;
+            margin-bottom: 4px; letter-spacing: 1px;
+        }
+        #coaching-overlay.ready #coaching-label { color: #22c55e; }
+        #coaching-text { font-size: 15px; line-height: 1.5; }
+
+        /* スタイル選択 */
+        #style-bar {
+            position: absolute; top: 12px; left: 12px; right: 12px;
+            display: flex; gap: 6px; z-index: 8;
+            overflow-x: auto; -webkit-overflow-scrolling: touch;
+        }
+        .style-chip {
+            padding: 6px 14px; border-radius: 20px;
+            background: rgba(0,0,0,0.7); border: 1px solid #333;
+            font-size: 12px; color: #aaa; white-space: nowrap;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .style-chip.active {
+            background: rgba(167,139,250,0.2);
+            border-color: #a78bfa; color: #a78bfa;
+        }
+
+        /* 結果オーバーレイ */
+        #result-overlay {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: #030508; z-index: 20; display: none;
+            flex-direction: column; overflow-y: auto;
+        }
+        #result-overlay.active { display: flex; }
+
+        .result-header {
+            padding: 20px 16px 12px; text-align: center;
+            border-bottom: 1px solid #1a1a1a;
+        }
+        .result-header h2 { font-size: 17px; font-weight: 700; }
+        .result-header p { font-size: 12px; color: #888; margin-top: 4px; }
+
+        .photo-compare {
+            display: flex; gap: 12px; padding: 16px;
+            justify-content: center;
+        }
+        .photo-compare .photo-wrap { text-align: center; }
+        .photo-compare img {
+            width: 140px; height: 187px; object-fit: cover;
+            border-radius: 12px; border: 2px solid #222;
+        }
+        .photo-compare .label {
+            font-size: 10px; color: #888; margin-top: 6px;
+        }
+
+        /* QC バッジ */
+        #qc-badge {
+            margin: 8px 16px; padding: 12px 16px;
+            border-radius: 12px; text-align: center;
+            font-size: 14px; font-weight: 600;
+        }
+        #qc-badge.pass { background: rgba(34,197,94,0.15); color: #22c55e; border: 1px solid rgba(34,197,94,0.3); }
+        #qc-badge.fail { background: rgba(239,68,68,0.15); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
+        #qc-badge.pending { background: rgba(245,158,11,0.15); color: #f59e0b; border: 1px solid rgba(245,158,11,0.3); }
+
+        /* 下部コントロール */
+        #controls {
+            padding: 14px 16px; background: #0a0a0a;
+            display: flex; gap: 10px; justify-content: center;
+            align-items: center; z-index: 30;
+            border-top: 1px solid #1a1a1a;
+        }
+
+        /* 撮影ボタン */
+        #btn-capture {
+            width: 72px; height: 72px; border-radius: 50%;
+            background: #fff; border: 4px solid rgba(167,139,250,0.5);
+            cursor: pointer; position: relative;
+            transition: all 0.3s;
+        }
+        #btn-capture::after {
+            content: ''; position: absolute;
+            top: 6px; left: 6px; right: 6px; bottom: 6px;
+            border-radius: 50%; background: #fff;
+            border: 2px solid #ddd;
+        }
+        #btn-capture.ready {
+            border-color: #22c55e;
+            box-shadow: 0 0 20px rgba(34,197,94,0.4);
+        }
+        #btn-capture.ready::after { border-color: #22c55e; }
+        #btn-capture:disabled { opacity: 0.3; }
+
+        .btn {
+            padding: 10px 20px; border-radius: 10px; border: none;
+            font-size: 14px; font-weight: 600; cursor: pointer;
+            font-family: inherit;
+        }
+        .btn-primary { background: #a78bfa; color: #fff; }
+        .btn-secondary { background: #222; color: #aaa; }
+        .btn-success { background: #22c55e; color: #000; }
+        .btn:disabled { opacity: 0.3; }
+
+        /* ローディングスピナー */
+        .spinner {
+            display: inline-block; width: 20px; height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: #a78bfa;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ログ */
+        #log {
+            padding: 4px 16px; background: #050505;
+            font-size: 9px; color: #444; max-height: 40px;
+            overflow-y: auto; font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div id="header">
+        <div>
+            <h1><span class="brand">MONKOS</span> AI証明写真</h1>
+            <span id="step-label">Step 1: AIコーチング</span>
+        </div>
+        <div>
+            <span class="dot dot-wait" id="ws-dot"></span>
+            <span id="ws-status" style="font-size:11px;">接続中</span>
+        </div>
+    </div>
+
+    <div id="camera-area">
+        <video id="camera-video" autoplay playsinline muted></video>
+        <div id="face-guide"></div>
+
+        <!-- スタイル選択バー -->
+        <div id="style-bar">
+            <div class="style-chip active" data-style="id_photo">証明写真</div>
+            <div class="style-chip" data-style="resume">履歴書</div>
+            <div class="style-chip" data-style="mynumber">マイナンバー</div>
+            <div class="style-chip" data-style="profile">プロフィール</div>
+        </div>
+
+        <div id="coaching-overlay">
+            <div id="coaching-label">AI コーチング</div>
+            <div id="coaching-text">カメラを正面に向けてください...</div>
+        </div>
+
+        <!-- 結果オーバーレイ -->
+        <div id="result-overlay">
+            <div class="result-header">
+                <h2 id="result-title">撮影確認</h2>
+                <p id="result-subtitle">撮影した写真を確認してください</p>
+            </div>
+
+            <div class="photo-compare">
+                <div class="photo-wrap">
+                    <img id="photo-original" src="" alt="原本">
+                    <div class="label">原本</div>
+                </div>
+                <div class="photo-wrap" id="photo-generated-wrap" style="display:none;">
+                    <img id="photo-generated" src="" alt="生成">
+                    <div class="label">AI証明写真</div>
+                </div>
+            </div>
+
+            <div id="qc-badge" class="pending" style="display:none;">検証中...</div>
+
+            <!-- Step 2 ボタン -->
+            <div id="step2-actions" style="display:flex; gap:10px; padding:16px; justify-content:center;">
+                <button class="btn btn-secondary" onclick="retakePhoto()">撮り直す</button>
+                <button class="btn btn-primary" onclick="confirmAndGenerate()">この写真で生成</button>
+            </div>
+
+            <!-- Step 3 ボタン -->
+            <div id="step3-actions" style="display:none; gap:10px; padding:16px; justify-content:center;">
+                <button class="btn btn-secondary" onclick="retakePhoto()">撮り直す</button>
+                <button class="btn btn-secondary" onclick="regenerate()">再生成</button>
+                <button class="btn btn-success" id="btn-download" onclick="downloadResult()" disabled>保存</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="controls">
+        <button id="btn-capture" onclick="capturePhoto()"></button>
+    </div>
+
+    <div id="log"></div>
+
+    <canvas id="capture-canvas" style="display:none;"></canvas>
+
+    <script>
+        const MAX_CAPTURE_SIZE = 720;
+        const COACHING_DISPLAY_MS = 8000;
+        const FRAME_INTERVAL_MS = 1000;
+        const CAPTURE_SIZE = 512;
+
+        let ws = null;
+        let cameraStream = null;
+        let capturedImageData = null;
+        let generatedImageData = null;
+        let frameTimer = null;
+        let coachingTimeout = null;
+        let isReady = false;
+        let currentStep = 1;
+        let selectedStyle = 'id_photo';
+
+        const video = document.getElementById('camera-video');
+        const captureCanvas = document.getElementById('capture-canvas');
+        const logEl = document.getElementById('log');
+
+        function log(msg) {
+            const t = new Date().toLocaleTimeString('ja-JP');
+            logEl.textContent = `[${t}] ${msg}\n` + logEl.textContent;
+        }
+
+        // === スタイル選択 ===
+        document.querySelectorAll('.style-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                document.querySelectorAll('.style-chip').forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+                selectedStyle = chip.dataset.style;
+                log(`スタイル: ${chip.textContent}`);
+            });
+        });
+
+        // === WebSocket ===
+        function connectWS() {
+            const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            ws = new WebSocket(`${protocol}//${location.host}`);
+            setDot('wait', '接続中');
+
+            ws.onopen = () => {
+                setDot('on', '接続済み');
+                log('サーバー接続完了');
+                startFrameCapture();
+            };
+
+            ws.onmessage = async (e) => {
+                let msg;
+                try {
+                    const raw = (e.data instanceof Blob) ? await e.data.text() : e.data;
+                    msg = JSON.parse(raw);
+                } catch { return; }
+
+                if (msg.type === 'ai-coaching') {
+                    showCoaching(msg.text);
+                } else if (msg.type === 'generate-start') {
+                    showStep3Loading();
+                } else if (msg.type === 'generate-result') {
+                    showGeneratedPhoto(msg.image);
+                } else if (msg.type === 'generate-error') {
+                    showGenerateError(msg.error);
+                } else if (msg.type === 'qc-result') {
+                    showQCResult(msg.result);
+                } else if (msg.type === 'qc-error') {
+                    showQCError(msg.error);
+                }
+            };
+
+            ws.onclose = () => {
+                setDot('off', '切断');
+                stopFrameCapture();
+                setTimeout(connectWS, 3000);
+            };
+        }
+
+        function setDot(state, text) {
+            document.getElementById('ws-dot').className = 'dot dot-' + state;
+            document.getElementById('ws-status').textContent = text;
+        }
+
+        // === カメラ ===
+        async function initCamera() {
+            try {
+                cameraStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: 'user', width: { ideal: 720 }, height: { ideal: 960 } },
+                    audio: false,
+                });
+                video.srcObject = cameraStream;
+                log('カメラ初期化完了');
+            } catch (err) {
+                log('カメラエラー: ' + err.message);
+            }
+        }
+
+        // === フレームキャプチャ → WS送信 ===
+        let prevFrameData = null;
+
+        function startFrameCapture() {
+            if (frameTimer) return;
+            frameTimer = setInterval(() => {
+                if (currentStep !== 1 || !ws || ws.readyState !== 1) return;
+                if (video.videoWidth === 0) return;
+
+                captureCanvas.width = CAPTURE_SIZE;
+                captureCanvas.height = CAPTURE_SIZE;
+                const ctx = captureCanvas.getContext('2d');
+
+                const vw = video.videoWidth, vh = video.videoHeight;
+                const cropSize = Math.min(vw, vh);
+                const sx = (vw - cropSize) / 2, sy = (vh - cropSize) / 2;
+                ctx.drawImage(video, sx, sy, cropSize, cropSize, 0, 0, CAPTURE_SIZE, CAPTURE_SIZE);
+
+                const imgData = ctx.getImageData(0, 0, CAPTURE_SIZE, CAPTURE_SIZE);
+                if (prevFrameData && !detectChange(prevFrameData, imgData)) return;
+                prevFrameData = imgData;
+
+                captureCanvas.toBlob((blob) => {
+                    if (blob && ws && ws.readyState === 1) {
+                        blob.arrayBuffer().then(buf => ws.send(buf));
+                    }
+                }, 'image/jpeg', 0.6);
+            }, FRAME_INTERVAL_MS);
+        }
+
+        function stopFrameCapture() {
+            if (frameTimer) { clearInterval(frameTimer); frameTimer = null; }
+        }
+
+        function detectChange(prev, curr) {
+            const d1 = prev.data, d2 = curr.data;
+            let diff = 0, samples = 0;
+            for (let i = 0; i < d1.length; i += 160) {
+                diff += Math.abs(d1[i] - d2[i]);
+                samples++;
+            }
+            return (diff / samples / 255) > 0.03;
+        }
+
+        // === コーチング表示 ===
+        function showCoaching(text) {
+            const overlay = document.getElementById('coaching-overlay');
+            const textEl = document.getElementById('coaching-text');
+            const btn = document.getElementById('btn-capture');
+
+            textEl.textContent = text;
+            overlay.style.display = 'block';
+
+            // 日本語の「OK」判定
+            if (text.includes('いいですね') || text.includes('撮影して') || text.includes('大丈夫') || text.includes('OKです') || text.includes('完璧')) {
+                isReady = true;
+                overlay.classList.add('ready');
+                btn.classList.add('ready');
+            } else {
+                isReady = false;
+                overlay.classList.remove('ready');
+                btn.classList.remove('ready');
+            }
+
+            if (coachingTimeout) clearTimeout(coachingTimeout);
+            coachingTimeout = setTimeout(() => {
+                overlay.style.display = 'none';
+            }, COACHING_DISPLAY_MS);
+        }
+
+        // === Step 2: 撮影 ===
+        function capturePhoto() {
+            if (currentStep !== 1) return;
+
+            const canvas = captureCanvas;
+            const ctx = canvas.getContext('2d');
+            const vw = video.videoWidth, vh = video.videoHeight;
+
+            let tw = vw, th = vh;
+            if (tw > MAX_CAPTURE_SIZE || th > MAX_CAPTURE_SIZE) {
+                const ratio = Math.min(MAX_CAPTURE_SIZE / tw, MAX_CAPTURE_SIZE / th);
+                tw = Math.round(tw * ratio);
+                th = Math.round(th * ratio);
+            }
+            canvas.width = tw;
+            canvas.height = th;
+
+            // ミラーリング解除キャプチャ
+            ctx.translate(canvas.width, 0);
+            ctx.scale(-1, 1);
+            ctx.drawImage(video, 0, 0, vw, vh, 0, 0, tw, th);
+
+            capturedImageData = canvas.toDataURL('image/jpeg', 0.8);
+
+            currentStep = 2;
+            stopFrameCapture();
+            document.getElementById('step-label').textContent = 'Step 2: 撮影確認';
+            document.getElementById('photo-original').src = capturedImageData;
+            document.getElementById('photo-generated-wrap').style.display = 'none';
+            document.getElementById('qc-badge').style.display = 'none';
+            document.getElementById('step2-actions').style.display = 'flex';
+            document.getElementById('step3-actions').style.display = 'none';
+            document.getElementById('result-overlay').classList.add('active');
+            document.getElementById('result-title').textContent = '撮影確認';
+            document.getElementById('result-subtitle').textContent = isReady
+                ? 'AIが撮影OK判定した写真です'
+                : '撮影した写真を確認してください';
+
+            log('撮影完了');
+        }
+
+        function retakePhoto() {
+            currentStep = 1;
+            capturedImageData = null;
+            generatedImageData = null;
+            prevFrameData = null;
+            document.getElementById('step-label').textContent = 'Step 1: AIコーチング';
+            document.getElementById('result-overlay').classList.remove('active');
+            startFrameCapture();
+
+            if (ws && ws.readyState === 1) {
+                ws.send(JSON.stringify({ type: 'restart-coaching' }));
+            }
+            log('撮り直し');
+        }
+
+        // === Step 3: 生成 + QC ===
+        function confirmAndGenerate() {
+            if (!capturedImageData) return;
+
+            currentStep = 3;
+            document.getElementById('step-label').textContent = 'Step 3: AI生成 + QC';
+            document.getElementById('step2-actions').style.display = 'none';
+            document.getElementById('result-title').textContent = '証明写真を生成中...';
+            document.getElementById('result-subtitle').textContent = 'Imagen 3.0が処理中です';
+
+            const base64 = capturedImageData.includes(',') ? capturedImageData.split(',')[1] : capturedImageData;
+
+            ws.send(JSON.stringify({
+                type: 'generate',
+                image: base64,
+                style: selectedStyle,
+            }));
+        }
+
+        function showStep3Loading() {
+            document.getElementById('qc-badge').style.display = 'block';
+            document.getElementById('qc-badge').className = 'pending';
+            document.getElementById('qc-badge').innerHTML = '<span class="spinner"></span> 生成中...';
+        }
+
+        function showGeneratedPhoto(imageData) {
+            generatedImageData = imageData;
+            document.getElementById('photo-generated').src = imageData;
+            document.getElementById('photo-generated-wrap').style.display = 'block';
+            document.getElementById('result-title').textContent = '品質検証中...';
+            document.getElementById('result-subtitle').textContent = 'Gemini QCが原本と比較中';
+            document.getElementById('qc-badge').innerHTML = '<span class="spinner"></span> QC検証中...';
+
+            log('生成完了 → QC開始');
+
+            const origBase64 = capturedImageData.includes(',') ? capturedImageData.split(',')[1] : capturedImageData;
+            const genBase64 = imageData.includes(',') ? imageData.split(',')[1] : imageData;
+
+            ws.send(JSON.stringify({
+                type: 'qc',
+                original: origBase64,
+                generated: genBase64,
+            }));
+        }
+
+        function showQCResult(result) {
+            const badge = document.getElementById('qc-badge');
+            const passed = result.identity === 'PASS' || result.same_person === true;
+            const similarity = result.similarity || '?';
+
+            badge.className = passed ? 'pass' : 'fail';
+            badge.textContent = passed
+                ? `PASS — 類似度 ${similarity}% | ${result.note || result.quality || ''}`
+                : `FAIL — 類似度 ${similarity}% | ${result.note || '撮り直しを推奨'}`;
+
+            document.getElementById('result-title').textContent = passed ? '完了！' : 'QC不合格';
+            document.getElementById('result-subtitle').textContent = passed ? '証明写真が準備できました' : 'もう一度お試しください';
+
+            document.getElementById('step3-actions').style.display = 'flex';
+            document.getElementById('btn-download').disabled = !passed;
+
+            log(`QC: ${passed ? 'PASS' : 'FAIL'} (${similarity}%)`);
+        }
+
+        function showGenerateError(error) {
+            document.getElementById('qc-badge').className = 'fail';
+            document.getElementById('qc-badge').textContent = '生成失敗: ' + error;
+            document.getElementById('result-title').textContent = '生成失敗';
+            document.getElementById('step3-actions').style.display = 'flex';
+            log('生成エラー: ' + error);
+        }
+
+        function showQCError(error) {
+            document.getElementById('qc-badge').className = 'fail';
+            document.getElementById('qc-badge').textContent = 'QC失敗: ' + error;
+            document.getElementById('step3-actions').style.display = 'flex';
+            document.getElementById('btn-download').disabled = false;
+            log('QCエラー: ' + error);
+        }
+
+        function regenerate() {
+            confirmAndGenerate();
+        }
+
+        function downloadResult() {
+            if (!generatedImageData) return;
+            const a = document.createElement('a');
+            a.href = generatedImageData;
+            a.download = `monkos_shoumei_${Date.now()}.png`;
+            a.click();
+            log('保存完了');
+        }
+
+        // === 初期化 ===
+        initCamera().then(() => connectWS());
+    </script>
+</body>
+</html>

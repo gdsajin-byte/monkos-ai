@@ -1,7 +1,10 @@
 #!/bin/bash
 
 ###############################################################################
-# MONKOS ID Photo Service — Cloud Run 배포
+# MONKOS ID Photo JP Service — Cloud Run 배포
+#
+# 일본 시장 특화 AI 증명사진 서비스
+# idphoto-jp.monkos.ai
 #
 # 사용법:
 #   ./deploy.sh [환경]
@@ -24,16 +27,16 @@ ENV=${1:-production}
 # GCP 설정
 PROJECT_ID="monkos"
 REGION="us-central1"
-SERVICE_NAME="monkos-idphoto"
+SERVICE_NAME="monkos-idphoto-jp"
 GCS_BUCKET="monk-ai-images"
 SERVICE_ACCOUNT="monk-image-engine@${PROJECT_ID}.iam.gserviceaccount.com"
 
 if [ "$ENV" = "staging" ]; then
-  SERVICE_NAME="monkos-idphoto-staging"
+  SERVICE_NAME="monkos-idphoto-jp-staging"
 fi
 
 echo -e "${BLUE}========================================${NC}"
-echo -e "${BLUE}MONKOS ID Photo Service 배포${NC}"
+echo -e "${BLUE}MONKOS ID Photo JP Service 배포${NC}"
 echo -e "${BLUE}========================================${NC}"
 echo -e "환경: ${YELLOW}${ENV}${NC}"
 echo -e "프로젝트: ${YELLOW}${PROJECT_ID}${NC}"

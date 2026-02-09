@@ -1,10 +1,10 @@
-# MONKOS ID Photo Service - Cloud Run
-# idphoto.monkos.ai | Gemini Live 코칭 + Imagen 생성 + QC 검증
+# MONKOS ID Photo JP Service - Cloud Run
+# idphoto-jp.monkos.ai | 日本特化 AI 証明写真 (Gemini Live + Imagen + QC)
 
 FROM node:20-slim
 
 LABEL maintainer="MONK.KR"
-LABEL description="MONKOS AI ID Photo Service - idphoto.monkos.ai"
+LABEL description="MONKOS AI ID Photo JP Service - idphoto-jp.monkos.ai"
 
 WORKDIR /app
 

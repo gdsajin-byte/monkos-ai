@@ -18,8 +18,8 @@ MONKOS.AI는 MONK.KR에서 검증된 AI 기술을 **독립 서비스**로 출시
 ```
 apps/ (공유 앱스)          monkos_AI/ (배포 앱스)
  프로토타입/실험    →→→     정식 상품/강화판
- photo-coach       →→→     idphoto/
- (Gemini Live 검증)        (상품화 + Cloud Run 배포)
+ photo-coach       →→→     idphoto-jp/
+ (Gemini Live 검증)        (일본 특화 상품 + Cloud Run 배포)
 ```
 
 공유 앱스(`apps/`)에서 기술 검증 → 배포 앱스(`monkos_AI/`)에서 상품 강화 → Cloud Run 배포
@@ -28,7 +28,8 @@ apps/ (공유 앱스)          monkos_AI/ (배포 앱스)
 
 | 서비스 | 경로 | 도메인 | Cloud Run 서비스명 | 원본 (apps/) | 상태 |
 |--------|------|--------|-------------------|-------------|------|
-| AI 증명사진 | `idphoto/` | idphoto.monkos.ai | `monkos-idphoto` | photo-coach | 개발 중 |
+| Imagen 4 API | — | image.monkos.ai | `monk-image-engine` | monk_imagen4 | 프로덕션 |
+| AI 証明写真 (JP) | `idphoto-jp/` | idphoto-jp.monkos.ai | `monkos-idphoto-jp` | photo-coach | 개발 중 |
 | AI 룩북 | `lookbook/` | lookbook.monkos.ai | — | — | 예정 |
 | AI 모델 | `model/` | model.monkos.ai | — | — | 예정 |
 | 쌍아 챗봇 | `chat/` | chat.monkos.ai | — | — | 예정 |
@@ -42,7 +43,7 @@ monkos_AI/
 │   ├── DEPLOY_GUIDE.md       ← Cloud Run 배포 가이드
 │   └── SERVICE_MAP.md        ← 서비스 맵 + 상태
 │
-├── idphoto/                  ← AI 증명사진 (idphoto.monkos.ai)
+├── idphoto-jp/               ← AI 証明写真 일본 특화 (idphoto-jp.monkos.ai)
 │   ├── server.js
 │   ├── public/index.html
 │   ├── Dockerfile
@@ -74,7 +75,7 @@ monkos_AI는 monk_project 루트의 자원을 참조한다:
 각 서비스 디렉토리에서:
 
 ```bash
-cd monkos_AI/idphoto
+cd monkos_AI/idphoto-jp
 ./deploy.sh              # 프로덕션 배포
 ./deploy.sh staging      # 스테이징 배포
 ```

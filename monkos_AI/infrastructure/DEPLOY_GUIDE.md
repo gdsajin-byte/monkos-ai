@@ -69,13 +69,14 @@ gcloud run services update SERVICE_NAME \
 
 1. Cloud Run 서비스 URL 확인: `gcloud run services describe SERVICE --format='value(status.url)'`
 2. Cloudflare DNS에 CNAME 레코드 추가
-3. 또는 Cloud Run 도메인 매핑: `gcloud run domain-mappings create --service=SERVICE --domain=idphoto.monkos.ai`
+3. 또는 Cloud Run 도메인 매핑: `gcloud run domain-mappings create --service=SERVICE --domain=idphoto-jp.monkos.ai`
 
 ### 서비스별 서브도메인 구조
 
 | 서비스 | 도메인 |
 |--------|--------|
-| AI 증명사진 | idphoto.monkos.ai |
+| Imagen 4 API | image.monkos.ai |
+| AI 証明写真 (JP) | idphoto-jp.monkos.ai |
 | AI 룩북 | lookbook.monkos.ai |
 | AI 모델 | model.monkos.ai |
 | 쌍아 챗봇 | chat.monkos.ai |
@@ -95,7 +96,7 @@ gcloud run services update SERVICE_NAME \
 ## 로컬 개발
 
 ```bash
-cd monkos_AI/idphoto
+cd monkos_AI/idphoto-jp
 npm install
 node server.js
 # → http://localhost:8080

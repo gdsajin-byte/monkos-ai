@@ -1,10 +1,16 @@
 # MONKOS.AI 서비스 맵
 
-## 활성 서비스
+## 프로덕션 서비스
 
 | 서비스 | Cloud Run 서비스명 | 도메인 | 상태 | 기술 스택 |
 |--------|-------------------|--------|------|-----------|
-| AI 증명사진 | `monkos-idphoto` | idphoto.monkos.ai | 개발 중 | Gemini Live + Imagen 3.0 + QC |
+| Imagen 4 API | `monk-image-engine` | image.monkos.ai | 프로덕션 | Vertex AI Imagen 4.0 (T2I) |
+
+## 개발 중 서비스
+
+| 서비스 | Cloud Run 서비스명 | 도메인 | 상태 | 기술 스택 |
+|--------|-------------------|--------|------|-----------|
+| AI 証明写真 (JP) | `monkos-idphoto-jp` | idphoto-jp.monkos.ai | 개발 중 | Gemini Live + Imagen 3.0 + QC |
 
 ## 예정 서비스
 

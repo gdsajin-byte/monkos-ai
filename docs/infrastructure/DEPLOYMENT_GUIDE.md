@@ -1,7 +1,7 @@
 # MONK.KR 배포 가이드
 
 **최초 작성**: 2026-01-08
-**최종 업데이트**: 2026-02-09 (monkos_AI 분리 체계 추가, Photo Coach → idphoto 승격)
+**최종 업데이트**: 2026-02-09 (monkos_AI 분리 체계 추가, Photo Coach → idphoto-jp 승격, 일본 특화)
 
 ---
 
@@ -13,7 +13,7 @@
 | AI Photolab | `MONK_kr/ai_lab/photolab/` | Cloudflare Pages | 배포 완료 |
 | Imagen API | `MONK_kr/functions/api/photo.js` | Cloudflare Workers | 배포 완료 |
 | Photo Coach | `apps/photo-coach/` | 로컬 (iMac) | 프로토타입 (공유 앱스) |
-| **MONKOS ID Photo** | **`monkos_AI/idphoto/`** | **GCP Cloud Run** | **개발 중 → idphoto.monkos.ai** |
+| **MONKOS ID Photo JP** | **`monkos_AI/idphoto-jp/`** | **GCP Cloud Run** | **개발 중 → idphoto-jp.monkos.ai** |
 | Presentation Assistant | `apps/monk-cam/demo/` | 로컬 (iMac) | 개발 완료, 프로덕션 준비 중 |
 | Monkos Chat | `apps/MonkosChatApp/` | Cloudflare Pages | 배포 완료 |
 
@@ -75,7 +75,8 @@ node server.js
 
 ### 프로덕션 전환
 
-Photo Coach는 `monkos_AI/idphoto/`로 승격되어 Cloud Run 배포 체계로 전환됨.
+Photo Coach는 `monkos_AI/idphoto-jp/`로 승격되어 Cloud Run 배포 체계로 전환됨.
+일본 시장 특화 네이티브 일본어 설계. 도메인: `idphoto-jp.monkos.ai`
 상세: `monkos_AI/infrastructure/DEPLOY_GUIDE.md`
 
 ---
@@ -170,4 +171,4 @@ Cloudflare Pages:
 ---
 
 *최초 작성: 2026-01-08*
-*업데이트: 2026-02-09 — monkos_AI 분리 체계 추가, Photo Coach → idphoto.monkos.ai 승격*
+*업데이트: 2026-02-09 — monkos_AI 분리 체계 추가, Photo Coach → idphoto-jp.monkos.ai 승격 (일본 특화)*

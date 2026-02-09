@@ -1,7 +1,7 @@
 {
-  "name": "@monkos/idphoto",
+  "name": "@monkos/idphoto-jp",
   "version": "1.0.0",
-  "description": "MONKOS AI 증명사진 — idphoto.monkos.ai | Gemini Live 코칭 + Imagen 생성 + QC",
+  "description": "MONKOS AI 証明写真 (日本特化) — idphoto-jp.monkos.ai | Gemini Live コーチング + Imagen 生成 + QC",
   "type": "module",
   "scripts": {
     "start": "node server.js",
