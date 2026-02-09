@@ -1,16 +1,14 @@
 {
   "name": "@monkos/idphoto-jp",
   "version": "1.0.0",
-  "description": "MONKOS AI 証明写真 (日本特化) — idphoto-jp.monkos.ai | Gemini Live コーチング + Imagen 生成 + QC",
   "type": "module",
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js"
   },
+  "description": "MONKOS AI 証明写真 (日本特化) — idphoto-jp.monkos.ai | Vertex AI ADC 統一認証",
   "dependencies": {
     "@google/genai": "^1.40.0",
-    "dotenv": "^17.2.4",
-    "express": "^5.1.0",
     "ws": "^8.19.0"
   },
   "engines": {

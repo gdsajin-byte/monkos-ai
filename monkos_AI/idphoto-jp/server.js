@@ -3,16 +3,17 @@
  *
  * 日本市場特化 AI 証明写真サービス
  *   a) Gemini Live コーチング — 撮影前リアルタイムガイド (日本語)
- *   b) Imagen 3.0 生成 — 証明写真変換 (gemini-3-pro-image-preview)
+ *   b) Imagen I2I 生成 — 証明写真変換 (gemini-3-pro-image-preview)
  *   c) Gemini QC — 原本 vs 生成物 類似度検証
  *
+ * 認証: Vertex AI ADC 一本化 (API Key 不要)
  * Cloud Run 配備用 (HTTP — SSL は Cloud Run が処理)
  * ポート: 8080 (Cloud Run デフォルト)
  */
 
 import { createServer } from 'http';
 import { WebSocketServer } from 'ws';
-import { readFileSync, existsSync } from 'fs';
+import { readFileSync } from 'fs';
 import { join, dirname, extname } from 'path';
 import { fileURLToPath } from 'url';
 import { GoogleGenAI } from '@google/genai';
@@ -23,27 +24,20 @@ const PORT = parseInt(process.env.PORT || '8080', 10);
 // === 環境変数 ===
 const PROJECT_ID = process.env.PROJECT_ID || 'monkos';
 const LOCATION = process.env.LOCATION || 'us-central1';
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
 
 function log(msg) {
   const ts = new Date().toISOString();
   console.log(`[${ts}] ${msg}`);
 }
 
-// === Gemini Live API (Vertex AI ADC — コーチング用) ===
-const liveAI = new GoogleGenAI({
+// === Vertex AI ADC 単一クライアント ===
+// Live コーチング + Imagen I2I 生成 + QC 検証 すべて ADC で統一
+const ai = new GoogleGenAI({
   vertexai: true,
   project: PROJECT_ID,
   location: LOCATION,
 });
-
-// === Gemini API Key (Imagen 生成 + QC用) ===
-const imagenAI = GEMINI_API_KEY ? new GoogleGenAI({ apiKey: GEMINI_API_KEY }) : null;
-if (!GEMINI_API_KEY) {
-  log('[警告] GEMINI_API_KEY 未設定 — Imagen 生成/QC 無効');
-} else {
-  log('[Imagen] API Key ロード完了');
-}
+log('[Vertex AI] ADC 単一クライアント初期化 (Live + Imagen + QC)');
 
 // === コーチング システムプロンプト (日本語ネイティブ) ===
 const COACHING_INSTRUCTION = `証明写真撮影アシスタント。カメラフィードの姿勢・表情・照明をリアルタイムチェックします。
@@ -130,7 +124,7 @@ async function createGeminiSession(clientId) {
   }
 
   try {
-    session.gemini = await liveAI.live.connect({
+    session.gemini = await ai.live.connect({
       model: 'gemini-2.0-flash-live-preview-04-09',
       config: {
         responseModalities: ['TEXT'],
@@ -169,15 +163,13 @@ async function createGeminiSession(clientId) {
   }
 }
 
-// === Imagen 3.0 生成 ===
+// === Imagen I2I 生成 (Vertex AI ADC) ===
 async function generatePhoto(inputBase64, style = 'id_photo') {
-  if (!imagenAI) throw new Error('GEMINI_API_KEY 未設定');
-
   const base64Data = inputBase64.includes(',') ? inputBase64.split(',')[1] : inputBase64;
   const stylePrompt = STYLE_PROMPTS[style] || STYLE_PROMPTS.id_photo;
   const instruction = `${IDENTITY_PRESERVATION}\n\n[IMAGE-TO-IMAGE TRANSFORM] ${stylePrompt}`;
 
-  const response = await imagenAI.models.generateContent({
+  const response = await ai.models.generateContent({
     model: 'gemini-3-pro-image-preview',
     contents: {
       parts: [
@@ -186,6 +178,7 @@ async function generatePhoto(inputBase64, style = 'id_photo') {
       ],
     },
     config: {
+      responseModalities: ['TEXT', 'IMAGE'],
       imageConfig: { aspectRatio: '3:4' },
       safetySettings: [
         { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
@@ -202,14 +195,13 @@ async function generatePhoto(inputBase64, style = 'id_photo') {
   return `data:image/png;base64,${part.inlineData.data}`;
 }
 
-// === Gemini QC ===
+// === Gemini QC (Vertex AI ADC) ===
 async function runQC(originalBase64, generatedBase64) {
-  if (!imagenAI) throw new Error('GEMINI_API_KEY 未設定');
 
   const origData = originalBase64.includes(',') ? originalBase64.split(',')[1] : originalBase64;
   const genData = generatedBase64.includes(',') ? generatedBase64.split(',')[1] : generatedBase64;
 
-  const response = await imagenAI.models.generateContent({
+  const response = await ai.models.generateContent({
     model: 'gemini-2.0-flash',
     contents: {
       parts: [
@@ -251,8 +243,10 @@ const httpServer = createServer((req, res) => {
       service: 'monkos-idphoto-jp',
       version: '1.0.0',
       timestamp: new Date().toISOString(),
+      auth: 'Vertex AI ADC',
       geminiLive: 'ready',
-      imagen: GEMINI_API_KEY ? 'active' : 'inactive',
+      imagen: 'active (ADC)',
+      qc: 'active (ADC)',
     }));
     return;
   }
@@ -387,8 +381,9 @@ httpServer.listen(PORT, '0.0.0.0', () => {
   log(`ポート: ${PORT}`);
   log(`プロジェクト: ${PROJECT_ID}`);
   log(`リージョン: ${LOCATION}`);
-  log(`Imagen: ${GEMINI_API_KEY ? 'アクティブ' : '無効 (GEMINI_API_KEY 必要)'}`);
-  log(`認証: ADC (Application Default Credentials)`);
+  log(`認証: Vertex AI ADC (API Key 不要)`);
+  log(`Imagen I2I: アクティブ (gemini-3-pro-image-preview)`);
+  log(`QC: アクティブ (gemini-2.0-flash)`);
   log('='.repeat(60));
   log('エンドポイント:');
   log(`  GET  /health   — ヘルスチェック`);

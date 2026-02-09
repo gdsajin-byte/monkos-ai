@@ -44,23 +44,35 @@ gcloud services enable storage-api.googleapis.com
 3. Cloud Run 배포
 4. URL 출력 + 헬스 체크
 
-## 환경변수
+## 인증
 
-### Cloud Run에 자동 설정되는 변수
+### Vertex AI ADC (Application Default Credentials)
+- Gemini Live, Imagen I2I, QC 전부 **ADC 단일 인증**
+- API Key 불필요 — 서비스 계정 권한만으로 동작
+- 서비스 계정에 `Vertex AI User` 역할 필요
+
+```bash
+# 서비스 계정 권한 확인/추가
+gcloud projects add-iam-policy-binding monkos \
+  --member="serviceAccount:monk-image-engine@monkos.iam.gserviceaccount.com" \
+  --role="roles/aiplatform.user"
+```
+
+### 환경변수 (Cloud Run 자동 설정)
 - `PROJECT_ID` — GCP 프로젝트 ID
 - `LOCATION` — 리전
 - `GCS_BUCKET` — 이미지 저장소
 
-### Secret Manager로 관리하는 변수
-- `GEMINI_API_KEY` — Google AI Studio API Key (Imagen 생성용)
+### Secret Manager (향후 서비스 확장용)
+- `LINE_CHANNEL_SECRET` — LINE Messaging API (챗봇/알림용)
 
 ```bash
-# 시크릿 생성
-echo -n "YOUR_KEY" | gcloud secrets create gemini-api-key --data-file=-
+# LINE 시크릿 등록
+echo -n "CHANNEL_SECRET" | gcloud secrets create line-channel-secret --data-file=-
 
 # Cloud Run에 시크릿 마운트
 gcloud run services update SERVICE_NAME \
-  --set-secrets="GEMINI_API_KEY=gemini-api-key:latest"
+  --set-secrets="LINE_CHANNEL_SECRET=line-channel-secret:latest"
 ```
 
 ## 도메인 매핑
