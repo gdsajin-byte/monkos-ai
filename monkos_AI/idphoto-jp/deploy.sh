@@ -48,6 +48,15 @@ if [ "$ENV" = "staging" ]; then
   SERVICE_NAME="monkos-idphoto-jp-staging"
 fi
 
+# 0. monkos-AI レポへ subtree push (monk_project → monkos-ai)
+REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+echo -e "\n${GREEN}[0/4]${NC} monkos-AI レポへ同期中..."
+cd "${REPO_ROOT}"
+git subtree push --prefix=monkos_AI monkos-ai main 2>/dev/null && \
+  echo -e "${GREEN}  subtree push 完了${NC}" || \
+  echo -e "${YELLOW}  subtree push スキップ (変更なし or リモート未設定)${NC}"
+cd "${SCRIPT_DIR}"
+
 echo -e "${BLUE}========================================${NC}"
 echo -e "${BLUE}MONKOS ID Photo JP Service 배포${NC}"
 echo -e "${BLUE}========================================${NC}"
