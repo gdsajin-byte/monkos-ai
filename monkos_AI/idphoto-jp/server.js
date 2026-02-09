@@ -271,7 +271,7 @@ const httpServer = createServer((req, res) => {
     res.end(JSON.stringify({
       service: 'MONKOS AI 証明写真',
       domain: 'idphoto-jp.monkos.ai',
-      features: ['Gemini Live コーチング', 'Imagen 3.0 生成', 'Gemini QC 検証'],
+      features: ['AIコーチング', 'AI証明写真生成', 'AI品質検証'],
       styles: Object.keys(STYLE_PROMPTS),
     }));
     return;
