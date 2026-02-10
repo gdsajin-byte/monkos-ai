@@ -405,8 +405,9 @@
         #controls {
             padding: 14px 16px; background: #0a0a0a;
             display: none; gap: 10px; justify-content: center;
-            align-items: center; z-index: 30;
+            align-items: center; z-index: 50;
             border-top: 1px solid #1a1a1a;
+            position: relative;
         }
         #controls.active { display: flex; }
 
@@ -1069,6 +1070,9 @@
             document.getElementById('spec-result').classList.remove('active');
             document.getElementById('step-label').textContent = t('step1');
             document.getElementById('result-overlay').classList.remove('active');
+            // 재촬영 시 촬영 버튼 + 로그 재표시
+            document.getElementById('controls').classList.add('active');
+            document.getElementById('log').style.display = 'block';
             startFrameCapture();
 
             if (ws && ws.readyState === 1) {
@@ -1086,6 +1090,9 @@
             document.getElementById('step2-actions').style.display = 'none';
             document.getElementById('result-title').textContent = t('generating');
             document.getElementById('result-subtitle').textContent = t('generatingSub');
+            // 生成開始時に撮影ボタン+ログ非表示
+            document.getElementById('controls').classList.remove('active');
+            document.getElementById('log').style.display = 'none';
 
             const base64 = capturedImageData.includes(',') ? capturedImageData.split(',')[1] : capturedImageData;
 

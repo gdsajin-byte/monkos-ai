@@ -196,9 +196,122 @@ header {
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.gate-login-btn:hover {
+.gate-login-btn:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 6px 30px rgba(0, 0, 0, 0.4);
+}
+
+.gate-login-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* === 동의 체크박스 === */
+.gate-consent {
+  width: 100%;
+  max-width: 360px;
+  margin-bottom: 24px;
+  text-align: left;
+}
+
+.consent-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 12px;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.consent-item input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  accent-color: var(--accent);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.consent-item label {
+  cursor: pointer;
+  line-height: 1.4;
+}
+
+.consent-item .required {
+  color: var(--accent);
+  font-size: 0.8rem;
+  margin-left: 4px;
+}
+
+.consent-item .view-link {
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  text-decoration: underline;
+  cursor: pointer;
+  margin-left: 4px;
+}
+
+.consent-item .view-link:hover {
+  color: var(--accent);
+}
+
+/* === 동의 모달 === */
+.consent-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.consent-modal.active {
+  display: flex;
+}
+
+.consent-modal-content {
+  background: var(--surface);
+  border-radius: 16px;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+.consent-modal-content h3 {
+  font-size: 1.2rem;
+  margin-bottom: 16px;
+  color: var(--text-bright);
+}
+
+.consent-modal-content p,
+.consent-modal-content ul {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--text);
+  margin-bottom: 12px;
+}
+
+.consent-modal-content ul {
+  padding-left: 20px;
+}
+
+.consent-modal-close {
+  display: block;
+  margin: 20px auto 0;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 12px 32px;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
 }
 
 /* === 히어로 === */
@@ -570,7 +683,28 @@ footer a {
   <section class="gate-screen" id="gateScreen">
     <h1 translate="no"><span>MONKOS AI</span></h1>
     <p class="gate-sub" id="gateSub"></p>
-    <button class="gate-login-btn" onclick="googleLogin()">
+
+    <!-- 동의 체크박스 -->
+    <div class="gate-consent">
+      <div class="consent-item">
+        <input type="checkbox" id="consentPrivacy" onchange="updateLoginButton()">
+        <label for="consentPrivacy">
+          <span id="consentPrivacyText">개인정보 수집·이용에 동의합니다</span>
+          <span class="required" id="consentRequired1">(필수)</span>
+          <span class="view-link" onclick="showConsentModal('privacy')" id="viewPrivacy">[내용 보기]</span>
+        </label>
+      </div>
+      <div class="consent-item">
+        <input type="checkbox" id="consentPortrait" onchange="updateLoginButton()">
+        <label for="consentPortrait">
+          <span id="consentPortraitText">초상권 및 이미지 사용에 동의합니다</span>
+          <span class="required" id="consentRequired2">(필수)</span>
+          <span class="view-link" onclick="showConsentModal('portrait')" id="viewPortrait">[내용 보기]</span>
+        </label>
+      </div>
+    </div>
+
+    <button class="gate-login-btn" id="gateLoginBtn" onclick="googleLogin()" disabled>
       <svg viewBox="0 0 24 24" width="24" height="24">
         <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
         <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
@@ -617,6 +751,65 @@ footer a {
       <p>&copy; 2026 <a href="https://monkos.ai">MONKOS.AI</a> — Evolution of Creative Intelligence</p>
     </footer>
   </div><!-- /mainContent -->
+</div>
+
+<!-- 개인정보 동의 모달 -->
+<div class="consent-modal" id="privacyModal">
+  <div class="consent-modal-content">
+    <h3 id="privacyModalTitle">개인정보 수집·이용 동의</h3>
+    <div id="privacyModalContent">
+      <p><strong>1. 수집 항목</strong></p>
+      <ul>
+        <li>Google 계정 정보: 이메일, 이름, 프로필 사진</li>
+        <li>서비스 이용 기록: 접속 시간, 이용 내역</li>
+      </ul>
+      <p><strong>2. 수집 목적</strong></p>
+      <ul>
+        <li>회원 식별 및 서비스 제공</li>
+        <li>서비스 이용 통계 및 개선</li>
+        <li>고객 문의 대응</li>
+      </ul>
+      <p><strong>3. 보유 기간</strong></p>
+      <ul>
+        <li>회원 탈퇴 시까지 또는 관련 법령에 따른 보존 기간</li>
+      </ul>
+      <p><strong>4. 동의 거부권</strong></p>
+      <ul>
+        <li>동의를 거부할 권리가 있으며, 거부 시 서비스 이용이 제한됩니다.</li>
+      </ul>
+    </div>
+    <button class="consent-modal-close" onclick="closeConsentModal('privacy')" id="privacyModalClose">확인</button>
+  </div>
+</div>
+
+<!-- 초상권 동의 모달 -->
+<div class="consent-modal" id="portraitModal">
+  <div class="consent-modal-content">
+    <h3 id="portraitModalTitle">초상권 및 이미지 사용 동의</h3>
+    <div id="portraitModalContent">
+      <p><strong>1. 동의 내용</strong></p>
+      <ul>
+        <li>AI 증명사진 생성을 위한 얼굴 이미지 촬영 및 처리</li>
+        <li>AI 모델을 통한 이미지 변환 및 생성</li>
+      </ul>
+      <p><strong>2. 이미지 처리 방식</strong></p>
+      <ul>
+        <li>업로드된 이미지는 AI 처리 후 즉시 삭제됩니다.</li>
+        <li>생성된 이미지는 서버에 저장되지 않습니다.</li>
+        <li>모든 처리는 Google Cloud Platform에서 안전하게 수행됩니다.</li>
+      </ul>
+      <p><strong>3. 권리 안내</strong></p>
+      <ul>
+        <li>생성된 이미지의 저작권은 이용자에게 있습니다.</li>
+        <li>MONKOS는 이용자의 이미지를 마케팅 등 다른 목적으로 사용하지 않습니다.</li>
+      </ul>
+      <p><strong>4. 동의 거부권</strong></p>
+      <ul>
+        <li>동의를 거부할 권리가 있으며, 거부 시 AI 사진 서비스 이용이 제한됩니다.</li>
+      </ul>
+    </div>
+    <button class="consent-modal-close" onclick="closeConsentModal('portrait')" id="portraitModalClose">확인</button>
+  </div>
 </div>
 
 <!-- 챗봇 FAB -->
@@ -672,6 +865,19 @@ function initGoogleAuth() {
 
 // Google 로그인 버튼 클릭
 function googleLogin() {
+  // 동의 체크 확인
+  const privacy = document.getElementById('consentPrivacy')?.checked;
+  const portrait = document.getElementById('consentPortrait')?.checked;
+  if (!privacy || !portrait) {
+    const alertMsg = {
+      ja: '必須項目に同意してください。',
+      ko: '필수 항목에 동의해 주세요.',
+      en: 'Please agree to the required items.'
+    };
+    alert(alertMsg[lang] || alertMsg.en);
+    return;
+  }
+
   if (typeof google === 'undefined' || !GOOGLE_CLIENT_ID || GOOGLE_CLIENT_ID === '__GOOGLE_CLIENT_ID__') {
     alert('Google 로그인이 아직 설정되지 않았습니다.');
     return;
@@ -796,6 +1002,166 @@ const gateTexts = {
   en: 'Create AI ID photos for free. Sign in with Google to get started.'
 };
 
+// 동의 텍스트 다국어
+const consentTexts = {
+  ja: {
+    privacy: '個人情報の収集・利用に同意します',
+    portrait: '肖像権および画像使用に同意します',
+    required: '(必須)',
+    viewLink: '[内容を見る]',
+    confirm: '確認',
+    privacyTitle: '個人情報の収集・利用同意',
+    portraitTitle: '肖像権および画像使用同意',
+    privacyContent: `
+      <p><strong>1. 収集項目</strong></p>
+      <ul>
+        <li>Googleアカウント情報: メールアドレス、氏名、プロフィール写真</li>
+        <li>サービス利用記録: アクセス時間、利用履歴</li>
+      </ul>
+      <p><strong>2. 収集目的</strong></p>
+      <ul>
+        <li>会員識別およびサービス提供</li>
+        <li>サービス利用統計および改善</li>
+        <li>お問い合わせ対応</li>
+      </ul>
+      <p><strong>3. 保有期間</strong></p>
+      <ul>
+        <li>会員退会時まで、または関連法令による保存期間</li>
+      </ul>
+      <p><strong>4. 同意拒否権</strong></p>
+      <ul>
+        <li>同意を拒否する権利があります。拒否した場合、サービス利用が制限されます。</li>
+      </ul>
+    `,
+    portraitContent: `
+      <p><strong>1. 同意内容</strong></p>
+      <ul>
+        <li>AI証明写真生成のための顔画像の撮影および処理</li>
+        <li>AIモデルによる画像変換および生成</li>
+      </ul>
+      <p><strong>2. 画像処理方式</strong></p>
+      <ul>
+        <li>アップロードされた画像はAI処理後、直ちに削除されます。</li>
+        <li>生成された画像はサーバーに保存されません。</li>
+        <li>すべての処理はGoogle Cloud Platformで安全に行われます。</li>
+      </ul>
+      <p><strong>3. 権利案内</strong></p>
+      <ul>
+        <li>生成された画像の著作権はご利用者にあります。</li>
+        <li>MONKOSはご利用者の画像をマーケティング等の他の目的に使用しません。</li>
+      </ul>
+      <p><strong>4. 同意拒否権</strong></p>
+      <ul>
+        <li>同意を拒否する権利があります。拒否した場合、AI写真サービスの利用が制限されます。</li>
+      </ul>
+    `
+  },
+  ko: {
+    privacy: '개인정보 수집·이용에 동의합니다',
+    portrait: '초상권 및 이미지 사용에 동의합니다',
+    required: '(필수)',
+    viewLink: '[내용 보기]',
+    confirm: '확인',
+    privacyTitle: '개인정보 수집·이용 동의',
+    portraitTitle: '초상권 및 이미지 사용 동의',
+    privacyContent: `
+      <p><strong>1. 수집 항목</strong></p>
+      <ul>
+        <li>Google 계정 정보: 이메일, 이름, 프로필 사진</li>
+        <li>서비스 이용 기록: 접속 시간, 이용 내역</li>
+      </ul>
+      <p><strong>2. 수집 목적</strong></p>
+      <ul>
+        <li>회원 식별 및 서비스 제공</li>
+        <li>서비스 이용 통계 및 개선</li>
+        <li>고객 문의 대응</li>
+      </ul>
+      <p><strong>3. 보유 기간</strong></p>
+      <ul>
+        <li>회원 탈퇴 시까지 또는 관련 법령에 따른 보존 기간</li>
+      </ul>
+      <p><strong>4. 동의 거부권</strong></p>
+      <ul>
+        <li>동의를 거부할 권리가 있으며, 거부 시 서비스 이용이 제한됩니다.</li>
+      </ul>
+    `,
+    portraitContent: `
+      <p><strong>1. 동의 내용</strong></p>
+      <ul>
+        <li>AI 증명사진 생성을 위한 얼굴 이미지 촬영 및 처리</li>
+        <li>AI 모델을 통한 이미지 변환 및 생성</li>
+      </ul>
+      <p><strong>2. 이미지 처리 방식</strong></p>
+      <ul>
+        <li>업로드된 이미지는 AI 처리 후 즉시 삭제됩니다.</li>
+        <li>생성된 이미지는 서버에 저장되지 않습니다.</li>
+        <li>모든 처리는 Google Cloud Platform에서 안전하게 수행됩니다.</li>
+      </ul>
+      <p><strong>3. 권리 안내</strong></p>
+      <ul>
+        <li>생성된 이미지의 저작권은 이용자에게 있습니다.</li>
+        <li>MONKOS는 이용자의 이미지를 마케팅 등 다른 목적으로 사용하지 않습니다.</li>
+      </ul>
+      <p><strong>4. 동의 거부권</strong></p>
+      <ul>
+        <li>동의를 거부할 권리가 있으며, 거부 시 AI 사진 서비스 이용이 제한됩니다.</li>
+      </ul>
+    `
+  },
+  en: {
+    privacy: 'I agree to the collection and use of personal information',
+    portrait: 'I agree to portrait rights and image usage',
+    required: '(Required)',
+    viewLink: '[View Details]',
+    confirm: 'Confirm',
+    privacyTitle: 'Privacy Policy Agreement',
+    portraitTitle: 'Portrait Rights and Image Usage Agreement',
+    privacyContent: `
+      <p><strong>1. Information Collected</strong></p>
+      <ul>
+        <li>Google Account Info: Email, Name, Profile Picture</li>
+        <li>Service Usage Records: Access time, Usage history</li>
+      </ul>
+      <p><strong>2. Purpose of Collection</strong></p>
+      <ul>
+        <li>Member identification and service provision</li>
+        <li>Service usage statistics and improvement</li>
+        <li>Customer inquiry response</li>
+      </ul>
+      <p><strong>3. Retention Period</strong></p>
+      <ul>
+        <li>Until account deletion or as required by applicable law</li>
+      </ul>
+      <p><strong>4. Right to Refuse</strong></p>
+      <ul>
+        <li>You have the right to refuse. If refused, service usage will be restricted.</li>
+      </ul>
+    `,
+    portraitContent: `
+      <p><strong>1. Consent Details</strong></p>
+      <ul>
+        <li>Capturing and processing facial images for AI ID photo generation</li>
+        <li>Image transformation and generation through AI models</li>
+      </ul>
+      <p><strong>2. Image Processing</strong></p>
+      <ul>
+        <li>Uploaded images are immediately deleted after AI processing.</li>
+        <li>Generated images are not stored on servers.</li>
+        <li>All processing is performed securely on Google Cloud Platform.</li>
+      </ul>
+      <p><strong>3. Rights Information</strong></p>
+      <ul>
+        <li>Copyright of generated images belongs to the user.</li>
+        <li>MONKOS does not use your images for marketing or other purposes.</li>
+      </ul>
+      <p><strong>4. Right to Refuse</strong></p>
+      <ul>
+        <li>You have the right to refuse. If refused, AI photo service usage will be restricted.</li>
+      </ul>
+    `
+  }
+};
+
 // === 언어 감지 ===
 function detectLang() {
   const navLang = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
@@ -832,6 +1198,53 @@ document.getElementById('loginText').textContent = loginTexts[lang] || 'Login';
 // 게이트 화면 텍스트 적용
 document.getElementById('gateSub').textContent = gateTexts[lang] || gateTexts.en;
 document.getElementById('gateLoginText').textContent = loginTexts[lang] || 'Start with Google';
+
+// 동의 텍스트 적용
+const ct = consentTexts[lang] || consentTexts.en;
+document.getElementById('consentPrivacyText').textContent = ct.privacy;
+document.getElementById('consentPortraitText').textContent = ct.portrait;
+document.getElementById('consentRequired1').textContent = ct.required;
+document.getElementById('consentRequired2').textContent = ct.required;
+document.getElementById('viewPrivacy').textContent = ct.viewLink;
+document.getElementById('viewPortrait').textContent = ct.viewLink;
+document.getElementById('privacyModalTitle').textContent = ct.privacyTitle;
+document.getElementById('portraitModalTitle').textContent = ct.portraitTitle;
+document.getElementById('privacyModalContent').innerHTML = ct.privacyContent;
+document.getElementById('portraitModalContent').innerHTML = ct.portraitContent;
+document.getElementById('privacyModalClose').textContent = ct.confirm;
+document.getElementById('portraitModalClose').textContent = ct.confirm;
+
+// === 동의 체크박스 기능 ===
+function updateLoginButton() {
+  const privacy = document.getElementById('consentPrivacy').checked;
+  const portrait = document.getElementById('consentPortrait').checked;
+  const loginBtn = document.getElementById('gateLoginBtn');
+  loginBtn.disabled = !(privacy && portrait);
+}
+
+function showConsentModal(type) {
+  if (type === 'privacy') {
+    document.getElementById('privacyModal').classList.add('active');
+  } else if (type === 'portrait') {
+    document.getElementById('portraitModal').classList.add('active');
+  }
+}
+
+function closeConsentModal(type) {
+  if (type === 'privacy') {
+    document.getElementById('privacyModal').classList.remove('active');
+  } else if (type === 'portrait') {
+    document.getElementById('portraitModal').classList.remove('active');
+  }
+}
+
+// 모달 외부 클릭 시 닫기
+document.getElementById('privacyModal').addEventListener('click', (e) => {
+  if (e.target.id === 'privacyModal') closeConsentModal('privacy');
+});
+document.getElementById('portraitModal').addEventListener('click', (e) => {
+  if (e.target.id === 'portraitModal') closeConsentModal('portrait');
+});
 
 // === 챗봇 ===
 const chatFab = document.getElementById('chatFab');
