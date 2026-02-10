@@ -24,6 +24,7 @@ const PORT = parseInt(process.env.PORT || '8080', 10);
 // === 환경변수 ===
 const PROJECT_ID = process.env.PROJECT_ID || 'monkos';
 const LOCATION = process.env.LOCATION || 'us-central1';
+const PORTAL_API_URL = process.env.PORTAL_API_URL || 'https://monkos.ai';
 
 function log(msg) {
   const ts = new Date().toISOString();
@@ -45,6 +46,40 @@ const imagenAI = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 
 log('[Vertex AI] ADC 클라이언트 초기화 (Live + QC)');
 log(`[Google AI Studio] Imagen 클라이언트 초기화 (API Key ${GEMINI_API_KEY ? '설정됨' : '미설정'})`);
+log(`[Portal API] ${PORTAL_API_URL}`);
+
+// === 크레딧 API 헬퍼 ===
+async function useCredits(userId, type) {
+  if (!userId) return { success: false, error: '로그인 필요' };
+
+  try {
+    const response = await fetch(`${PORTAL_API_URL}/api/credits/use`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, type }),
+    });
+    return await response.json();
+  } catch (err) {
+    log(`[Credits] API 호출 실패: ${err.message}`);
+    return { success: false, error: 'Portal API 연결 실패' };
+  }
+}
+
+async function grantShareBonus(userId, platform) {
+  if (!userId) return { success: false, error: '로그인 필요' };
+
+  try {
+    const response = await fetch(`${PORTAL_API_URL}/api/credits/share-bonus`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, platform }),
+    });
+    return await response.json();
+  } catch (err) {
+    log(`[Credits] 공유 보너스 API 호출 실패: ${err.message}`);
+    return { success: false, error: 'Portal API 연결 실패' };
+  }
+}
 
 // === 코칭 시스템 프롬프트 (한국어 네이티브) ===
 const COACHING_INSTRUCTION = `증명사진 촬영 어시스턴트입니다. 카메라 피드의 자세, 표정, 조명을 실시간으로 체크합니다.
@@ -353,18 +388,85 @@ wss.on('connection', async (ws) => {
       msg = JSON.parse(raw);
     } catch { return; }
 
-    // Imagen 생성 요청
+    // Imagen 생성 요청 (크레딧 체크)
     if (msg.type === 'generate') {
-      log(`[Imagen][${clientId}] 생성 요청: style=${msg.style}`);
+      log(`[Imagen][${clientId}] 생성 요청: style=${msg.style}, userId=${msg.userId || 'anonymous'}`);
+
+      // 크레딧 체크 및 차감 (1c)
+      if (msg.userId) {
+        const creditResult = await useCredits(msg.userId, 'generate');
+        if (!creditResult.success) {
+          ws.send(JSON.stringify({
+            type: 'credit-error',
+            error: creditResult.error,
+            credits: creditResult.credits ?? 0,
+            required: 1,
+          }));
+          log(`[Imagen][${clientId}] 크레딧 부족: ${msg.userId}`);
+          return;
+        }
+        log(`[Credits][${clientId}] 생성 차감 완료: ${msg.userId} → ${creditResult.credits}c`);
+      }
+
       ws.send(JSON.stringify({ type: 'generate-start' }));
       try {
         const result = await generatePhoto(msg.image, msg.style);
         ws.send(JSON.stringify({ type: 'generate-result', image: result }));
         log(`[Imagen][${clientId}] 생성 완료`);
       } catch (err) {
+        // 생성 실패 시 크레딧 환불 (TODO: 향후 구현)
         ws.send(JSON.stringify({ type: 'generate-error', error: err.message }));
         log(`[Imagen][${clientId}] 생성 실패: ${err.message}`);
       }
+      return;
+    }
+
+    // 다운로드 크레딧 차감 요청 (10c)
+    if (msg.type === 'use-download-credit') {
+      if (!msg.userId) {
+        ws.send(JSON.stringify({ type: 'credit-error', error: '로그인 필요' }));
+        return;
+      }
+
+      const creditResult = await useCredits(msg.userId, 'download');
+      if (!creditResult.success) {
+        ws.send(JSON.stringify({
+          type: 'credit-error',
+          error: creditResult.error,
+          credits: creditResult.credits ?? 0,
+          required: 10,
+        }));
+        log(`[Download][${clientId}] 크레딧 부족: ${msg.userId}`);
+        return;
+      }
+
+      ws.send(JSON.stringify({
+        type: 'download-credit-ok',
+        credits: creditResult.credits,
+      }));
+      log(`[Credits][${clientId}] 다운로드 차감 완료: ${msg.userId} → ${creditResult.credits}c`);
+      return;
+    }
+
+    // 공유 보너스 요청 (+10c)
+    if (msg.type === 'share-bonus') {
+      if (!msg.userId) {
+        ws.send(JSON.stringify({ type: 'credit-error', error: '로그인 필요' }));
+        return;
+      }
+
+      const bonusResult = await grantShareBonus(msg.userId, msg.platform);
+      if (!bonusResult.success) {
+        ws.send(JSON.stringify({ type: 'share-bonus-error', error: bonusResult.error }));
+        return;
+      }
+
+      ws.send(JSON.stringify({
+        type: 'share-bonus-ok',
+        credits: bonusResult.credits,
+        bonus: bonusResult.bonus,
+      }));
+      log(`[Credits][${clientId}] 공유 보너스 지급: ${msg.userId} +10c → ${bonusResult.credits}c`);
       return;
     }
 

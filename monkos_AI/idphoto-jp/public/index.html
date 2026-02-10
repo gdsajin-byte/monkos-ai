@@ -458,6 +458,49 @@
             overflow-y: auto; font-family: monospace;
         }
 
+        /* クレジット表示 */
+        .credit-badge {
+            display: flex; align-items: center; gap: 4px;
+            background: rgba(167,139,250,0.15);
+            border: 1px solid rgba(167,139,250,0.3);
+            padding: 4px 10px; border-radius: 8px;
+            font-size: 12px; color: #a78bfa; font-weight: 600;
+        }
+        .credit-badge.low { color: #f59e0b; border-color: rgba(245,158,11,0.3); background: rgba(245,158,11,0.1); }
+        .credit-badge.zero { color: #ef4444; border-color: rgba(239,68,68,0.3); background: rgba(239,68,68,0.1); }
+
+        /* クレジット不足モーダル */
+        #credit-modal {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.85); z-index: 200;
+            flex-direction: column; align-items: center;
+            justify-content: center; padding: 24px;
+        }
+        #credit-modal.active { display: flex; }
+        .credit-modal-box {
+            background: #111; border: 1px solid #2a2a2a;
+            border-radius: 20px; padding: 28px 24px;
+            max-width: 340px; text-align: center;
+        }
+        .credit-modal-icon { font-size: 48px; margin-bottom: 16px; }
+        .credit-modal-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+        .credit-modal-desc { font-size: 14px; color: #888; line-height: 1.6; margin-bottom: 20px; }
+        .credit-modal-cost {
+            display: flex; justify-content: center; gap: 20px;
+            margin-bottom: 20px;
+        }
+        .cost-item { text-align: center; }
+        .cost-item .label { font-size: 11px; color: #666; margin-bottom: 4px; }
+        .cost-item .value { font-size: 20px; font-weight: 700; color: #a78bfa; }
+        .cost-item .value.red { color: #ef4444; }
+        .credit-modal-btn {
+            width: 100%; padding: 14px; border-radius: 12px;
+            font-size: 15px; font-weight: 700; cursor: pointer; border: none;
+            margin-bottom: 10px;
+        }
+        .credit-modal-btn.primary { background: linear-gradient(135deg, #a78bfa, #7c3aed); color: #fff; }
+        .credit-modal-btn.secondary { background: #222; color: #888; }
+
         /* デスクトップブロッカー */
         #desktop-blocker {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
@@ -505,10 +548,37 @@
             <span id="step-label">撮影準備</span>
         </div>
         <div style="display:flex; align-items:center; gap:8px;">
+            <div class="credit-badge" id="creditBadge" style="display:none;">
+                <span>💎</span>
+                <span id="creditCount">0</span>c
+            </div>
             <button id="btn-voice" onclick="toggleVoice()" title="音声ON"
                 style="background:none; border:none; font-size:18px; cursor:pointer; padding:4px;">🔊</button>
             <span class="dot dot-wait" id="ws-dot"></span>
             <span id="ws-status" style="font-size:11px;">待機中</span>
+        </div>
+    </div>
+
+    <!-- クレジット不足モーダル -->
+    <div id="credit-modal">
+        <div class="credit-modal-box">
+            <div class="credit-modal-icon">💎</div>
+            <div class="credit-modal-title" id="creditModalTitle">クレジットが不足しています</div>
+            <div class="credit-modal-desc" id="creditModalDesc">
+                この操作にはクレジットが必要です。
+            </div>
+            <div class="credit-modal-cost">
+                <div class="cost-item">
+                    <div class="label">必要</div>
+                    <div class="value" id="creditRequired">10</div>
+                </div>
+                <div class="cost-item">
+                    <div class="label">残高</div>
+                    <div class="value red" id="creditCurrent">0</div>
+                </div>
+            </div>
+            <button class="credit-modal-btn primary" onclick="goToPurchase()">クレジットを購入</button>
+            <button class="credit-modal-btn secondary" onclick="closeCreditModal()">閉じる</button>
         </div>
     </div>
 
@@ -638,19 +708,28 @@
             </div>
             <div class="ty-message">証明写真が完成しました</div>
 
-            <!-- ダウンロードゲート -->
+            <!-- クレジット情報 -->
+            <div class="ty-gate" id="creditInfo" style="display:none;">
+                <div class="ty-gate-title">💎 ダウンロード費用: 10クレジット</div>
+                <div style="text-align:center; padding: 8px 0;">
+                    <div style="font-size: 24px; font-weight: 700; color: #a78bfa;" id="tyCredits">0c</div>
+                    <div style="font-size: 12px; color: #666;">残高</div>
+                </div>
+            </div>
+
+            <!-- ダウンロードゲート (共有でクレジット獲得) -->
             <div class="ty-gate" id="downloadGate">
-                <div class="ty-gate-title">無料ダウンロード条件（1つ選択）</div>
+                <div class="ty-gate-title">💎 共有すると +10クレジット！</div>
                 <div class="ty-gate-options">
                     <label class="ty-gate-option" onclick="selectGateOption('x')">
                         <input type="radio" name="gate" value="x">
                         <span class="ty-gate-icon">𝕏</span>
-                        <span class="ty-gate-label">Xで共有</span>
+                        <span class="ty-gate-label">Xで共有 (+10c)</span>
                     </label>
                     <label class="ty-gate-option" onclick="selectGateOption('instagram')">
                         <input type="radio" name="gate" value="instagram">
                         <span class="ty-gate-icon">📷</span>
-                        <span class="ty-gate-label">Instagramで共有</span>
+                        <span class="ty-gate-label">Instagramで共有 (+10c)</span>
                     </label>
                 </div>
                 <div class="ty-gate-action" id="gateAction" style="display:none;"></div>
@@ -773,6 +852,66 @@
         let selectedStyle = 'id_photo';
         let voiceEnabled = true;
         let jaVoice = null;
+
+        // === クレジットシステム ===
+        const PORTAL_URL = 'https://monkos.ai';
+        const CREDIT_COST = { generate: 1, download: 10 };
+        let userId = null;
+        let userCredits = 0;
+
+        // ログイン状態確認 (localStorageからuserId読み込み)
+        function initCredits() {
+            const stored = localStorage.getItem('monkos_user');
+            if (stored) {
+                try {
+                    const user = JSON.parse(stored);
+                    userId = user.id;
+                    userCredits = user.credits ?? 0;
+                    updateCreditBadge();
+                    log(`ログイン: ${user.email} (${userCredits}c)`);
+                } catch (e) {
+                    log('ユーザー情報パース失敗');
+                }
+            } else {
+                log('未ログイン状態');
+            }
+        }
+
+        function updateCreditBadge() {
+            const badge = document.getElementById('creditBadge');
+            const count = document.getElementById('creditCount');
+            if (userId) {
+                badge.style.display = 'flex';
+                count.textContent = userCredits;
+                badge.classList.remove('low', 'zero');
+                if (userCredits === 0) badge.classList.add('zero');
+                else if (userCredits < 11) badge.classList.add('low');
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        function showCreditModal(required, current, action) {
+            document.getElementById('creditRequired').textContent = required;
+            document.getElementById('creditCurrent').textContent = current;
+            document.getElementById('creditModalTitle').textContent =
+                action === 'download' ? 'ダウンロードにはクレジットが必要です' : '生成にはクレジットが必要です';
+            document.getElementById('creditModalDesc').textContent =
+                action === 'download'
+                    ? '写真をダウンロードするには10クレジットが必要です。シェアすると10クレジットがもらえます！'
+                    : '写真を生成するには1クレジットが必要です。';
+            document.getElementById('credit-modal').classList.add('active');
+        }
+
+        function closeCreditModal() {
+            document.getElementById('credit-modal').classList.remove('active');
+        }
+
+        function goToPurchase() {
+            window.location.href = PORTAL_URL + '?action=purchase';
+        }
+
+        initCredits();
 
         const video = document.getElementById('camera-video');
         const captureCanvas = document.getElementById('capture-canvas');
@@ -920,6 +1059,25 @@
                     showQCResult(msg.result);
                 } else if (msg.type === 'qc-error') {
                     showQCError(msg.error);
+                } else if (msg.type === 'credit-error') {
+                    // クレジット不足
+                    showCreditModal(msg.required, msg.credits, 'generate');
+                    // UI復元
+                    document.getElementById('step2-actions').style.display = 'flex';
+                    document.getElementById('result-title').textContent = t('resultConfirm');
+                    document.getElementById('result-subtitle').textContent = 'クレジットが不足しています';
+                    currentStep = 2;
+                } else if (msg.type === 'download-credit-ok') {
+                    // ダウンロードクレジット消費成功
+                    userCredits = msg.credits;
+                    updateCreditBadge();
+                    proceedDownload();
+                } else if (msg.type === 'share-bonus-ok') {
+                    // シェアボーナス付与成功
+                    userCredits = msg.credits;
+                    updateCreditBadge();
+                    log(`シェアボーナス +${msg.bonus}c → ${msg.credits}c`);
+                    alert(`シェアありがとうございます！${msg.bonus}クレジットが付与されました。`);
                 }
             };
 
@@ -1099,6 +1257,7 @@
                 type: 'generate',
                 image: base64,
                 style: selectedStyle,
+                userId: userId,  // クレジットチェック用
             }));
         }
 
@@ -1328,6 +1487,19 @@
             document.getElementById('thankyou-screen').classList.add('active');
             // 撮影ボタン非表示
             document.getElementById('controls').classList.remove('active');
+
+            // クレジット情報表示 (ログインユーザー)
+            if (userId) {
+                document.getElementById('creditInfo').style.display = 'block';
+                document.getElementById('tyCredits').textContent = userCredits + 'c';
+                // クレジットが十分ならゲートなしで直接ダウンロード可能
+                if (userCredits >= CREDIT_COST.download) {
+                    document.getElementById('downloadGate').style.display = 'none';
+                    document.getElementById('tyDownloadBtn').disabled = false;
+                    gateUnlocked = true;
+                }
+            }
+
             log('Thank Youページ表示');
         }
 
@@ -1374,8 +1546,8 @@
             const url = encodeURIComponent('https://monkos.ai');
             const shareUrl = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
             window.open(shareUrl, '_blank', 'width=600,height=400');
-            // 共有ウィンドウが開いたら許可（信頼ベース）
-            setTimeout(() => unlockDownload('X共有'), 2000);
+            // シェアボーナス要求 (+10c)
+            setTimeout(() => requestShareBonus('x'), 2000);
         }
 
         function shareToInstagram() {
@@ -1384,8 +1556,21 @@
             alert(msg);
             // アプリを開く試み
             window.open('instagram://camera', '_blank');
-            // 信頼ベースで許可
-            setTimeout(() => unlockDownload('Instagram共有'), 3000);
+            // シェアボーナス要求 (+10c)
+            setTimeout(() => requestShareBonus('instagram'), 3000);
+        }
+
+        function requestShareBonus(platform) {
+            if (!userId || !ws || ws.readyState !== 1) {
+                unlockDownload(platform + '共有');
+                return;
+            }
+            ws.send(JSON.stringify({
+                type: 'share-bonus',
+                userId: userId,
+                platform: platform,
+            }));
+            unlockDownload(platform + '共有');
         }
 
         function checkReviewPromise() {
@@ -1409,6 +1594,27 @@
                 alert('無料ダウンロードには条件の選択が必要です');
                 return;
             }
+
+            // ログインユーザー: ダウンロードクレジット消費 (10c)
+            if (userId && ws && ws.readyState === 1) {
+                if (userCredits < CREDIT_COST.download) {
+                    showCreditModal(CREDIT_COST.download, userCredits, 'download');
+                    return;
+                }
+                // サーバーにクレジット消費要求
+                ws.send(JSON.stringify({
+                    type: 'use-download-credit',
+                    userId: userId,
+                }));
+                // サーバー応答(download-credit-ok)でproceedDownload()が呼ばれる
+                return;
+            }
+
+            // 未ログイン: 直接ダウンロード
+            await proceedDownload();
+        }
+
+        async function proceedDownload() {
             await doDownload();
         }
 

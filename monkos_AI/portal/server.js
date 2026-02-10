@@ -211,11 +211,18 @@ const httpServer = createServer(async (req, res) => {
           name: tokenInfo.name,
           picture: tokenInfo.picture,
           lastLogin: new Date().toISOString(),
-          ...(isNewUser ? { createdAt: new Date().toISOString() } : {}),
+          ...(isNewUser ? {
+            createdAt: new Date().toISOString(),
+            credits: 12,  // 가입 보너스 12 크레딧
+          } : {}),
         };
 
         await userRef.set(user, { merge: true });
-        log(`[Auth] ${isNewUser ? '신규 가입' : '로그인'}: ${user.email}`);
+        log(`[Auth] ${isNewUser ? '신규 가입 (12c 지급)' : '로그인'}: ${user.email}`);
+
+        // 현재 크레딧 조회
+        const updatedDoc = await userRef.get();
+        const credits = updatedDoc.data()?.credits ?? 0;
 
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({
@@ -226,10 +233,143 @@ const httpServer = createServer(async (req, res) => {
             email: user.email,
             name: user.name,
             picture: user.picture,
+            credits,
           }
         }));
       } catch (err) {
         log(`[Auth] 에러: ${err.message}`);
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: err.message }));
+      }
+    });
+    return;
+  }
+
+  // === 크레딧 조회 API ===
+  if (req.url?.startsWith('/api/credits') && req.method === 'GET') {
+    const urlParams = new URL(req.url, `http://${req.headers.host}`);
+    const userId = urlParams.searchParams.get('userId');
+
+    if (!userId) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'userId 파라미터 필수' }));
+      return;
+    }
+
+    try {
+      const userRef = usersCollection.doc(userId);
+      const userDoc = await userRef.get();
+
+      if (!userDoc.exists) {
+        res.writeHead(404, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: '사용자 없음' }));
+        return;
+      }
+
+      const credits = userDoc.data()?.credits ?? 0;
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ credits, userId }));
+    } catch (err) {
+      log(`[Credits] 조회 에러: ${err.message}`);
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: err.message }));
+    }
+    return;
+  }
+
+  // === 크레딧 사용 API ===
+  // type: 'generate' (-1c) | 'download' (-10c)
+  if (req.url === '/api/credits/use' && req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', async () => {
+      try {
+        const { userId, type } = JSON.parse(body);
+        if (!userId || !type) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'userId, type 필드 필수' }));
+          return;
+        }
+
+        const cost = type === 'generate' ? 1 : type === 'download' ? 10 : 0;
+        if (cost === 0) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'type은 generate 또는 download' }));
+          return;
+        }
+
+        const userRef = usersCollection.doc(userId);
+
+        // 트랜잭션으로 원자적 차감
+        const result = await firestore.runTransaction(async (tx) => {
+          const userDoc = await tx.get(userRef);
+          if (!userDoc.exists) {
+            throw new Error('사용자 없음');
+          }
+
+          const currentCredits = userDoc.data()?.credits ?? 0;
+          if (currentCredits < cost) {
+            return { success: false, error: '크레딧 부족', credits: currentCredits, required: cost };
+          }
+
+          const newCredits = currentCredits - cost;
+          tx.update(userRef, { credits: newCredits });
+          return { success: true, credits: newCredits, used: cost, type };
+        });
+
+        if (!result.success) {
+          log(`[Credits] 부족: ${userId} (${result.credits}c < ${result.required}c)`);
+          res.writeHead(402, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify(result));
+          return;
+        }
+
+        log(`[Credits] 사용: ${userId} -${cost}c (${type}) → ${result.credits}c`);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(result));
+      } catch (err) {
+        log(`[Credits] 사용 에러: ${err.message}`);
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: err.message }));
+      }
+    });
+    return;
+  }
+
+  // === 공유 보너스 API ===
+  // 공유 조건 달성 시 +10c 지급
+  if (req.url === '/api/credits/share-bonus' && req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', async () => {
+      try {
+        const { userId, platform } = JSON.parse(body);
+        if (!userId) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'userId 필드 필수' }));
+          return;
+        }
+
+        const userRef = usersCollection.doc(userId);
+        const bonus = 10;
+
+        const result = await firestore.runTransaction(async (tx) => {
+          const userDoc = await tx.get(userRef);
+          if (!userDoc.exists) {
+            throw new Error('사용자 없음');
+          }
+
+          const currentCredits = userDoc.data()?.credits ?? 0;
+          const newCredits = currentCredits + bonus;
+          tx.update(userRef, { credits: newCredits });
+          return { success: true, credits: newCredits, bonus, platform };
+        });
+
+        log(`[Credits] 공유 보너스: ${userId} +${bonus}c (${platform || 'unknown'}) → ${result.credits}c`);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(result));
+      } catch (err) {
+        log(`[Credits] 공유 보너스 에러: ${err.message}`);
         res.writeHead(500, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: err.message }));
       }
@@ -296,11 +436,14 @@ httpServer.listen(PORT, '0.0.0.0', () => {
   log(`DB: Firestore`);
   log('='.repeat(60));
   log('엔드포인트:');
-  log('  GET  /health          — 헬스체크');
-  log('  GET  /api/stats       — 가입자 통계');
-  log('  POST /api/auth/google — Google 가입/로그인');
-  log('  POST /api/chat        — Gemini 챗봇');
-  log('  GET  /                — 메인 포털');
+  log('  GET  /health               — 헬스체크');
+  log('  GET  /api/stats            — 가입자 통계');
+  log('  POST /api/auth/google      — Google 가입/로그인 (+12c 보너스)');
+  log('  GET  /api/credits          — 크레딧 조회');
+  log('  POST /api/credits/use      — 크레딧 사용 (generate:-1c, download:-10c)');
+  log('  POST /api/credits/share-bonus — 공유 보너스 (+10c)');
+  log('  POST /api/chat             — Gemini 챗봇');
+  log('  GET  /                     — 메인 포털');
   log(`Google Client ID: ${GOOGLE_CLIENT_ID ? '설정됨' : '미설정'}`);
   log('='.repeat(60));
 });
