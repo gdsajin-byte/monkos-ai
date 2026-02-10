@@ -23,6 +23,10 @@ const PORT = parseInt(process.env.PORT || '8080', 10);
 // === 환경변수 ===
 const PROJECT_ID = process.env.PROJECT_ID || 'monkos';
 const LOCATION = process.env.LOCATION || 'us-central1';
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '933456016842-clagcrpo1juvukjif1m454jq811bd2rq.apps.googleusercontent.com';
+
+// === 사용자 저장소 (인메모리, 프로덕션에서는 D1/Firestore) ===
+const users = new Map();
 
 function log(msg) {
   const ts = new Date().toISOString();
@@ -148,6 +152,61 @@ const httpServer = createServer(async (req, res) => {
     return;
   }
 
+  // === Google 로그인 API ===
+  if (req.url === '/api/auth/google' && req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', async () => {
+      try {
+        const { credential } = JSON.parse(body);
+        if (!credential) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'credential 필드 필수' }));
+          return;
+        }
+
+        // Google 토큰 검증
+        const verifyUrl = `https://oauth2.googleapis.com/tokeninfo?id_token=${credential}`;
+        const verifyRes = await fetch(verifyUrl);
+        const tokenInfo = await verifyRes.json();
+
+        if (tokenInfo.error || tokenInfo.aud !== GOOGLE_CLIENT_ID) {
+          log(`[Auth] 토큰 검증 실패: ${tokenInfo.error || 'aud 불일치'}`);
+          res.writeHead(401, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: '토큰 검증 실패' }));
+          return;
+        }
+
+        // 사용자 정보 저장/업데이트
+        const user = {
+          id: tokenInfo.sub,
+          email: tokenInfo.email,
+          name: tokenInfo.name,
+          picture: tokenInfo.picture,
+          lastLogin: new Date().toISOString(),
+        };
+        users.set(tokenInfo.sub, user);
+        log(`[Auth] 로그인 성공: ${user.email}`);
+
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({
+          success: true,
+          user: {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            picture: user.picture,
+          }
+        }));
+      } catch (err) {
+        log(`[Auth] 에러: ${err.message}`);
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: err.message }));
+      }
+    });
+    return;
+  }
+
   // 챗봇 API
   if (req.url === '/api/chat' && req.method === 'POST') {
     let body = '';
@@ -206,8 +265,10 @@ httpServer.listen(PORT, '0.0.0.0', () => {
   log(`챗봇: gemini-2.0-flash`);
   log('='.repeat(60));
   log('엔드포인트:');
-  log('  GET  /health    — 헬스체크');
-  log('  POST /api/chat  — Gemini 챗봇');
-  log('  GET  /          — 메인 포털');
+  log('  GET  /health          — 헬스체크');
+  log('  POST /api/auth/google — Google 로그인');
+  log('  POST /api/chat        — Gemini 챗봇');
+  log('  GET  /                — 메인 포털');
+  log(`Google Client ID: ${GOOGLE_CLIENT_ID ? '설정됨' : '미설정'}`);
   log('='.repeat(60));
 });

@@ -3,9 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>MONKOS — Image AI Platform</title>
-<meta name="description" content="MONKOS is an image-specialized AI platform. Free AI ID photos powered by Gemini & Imagen.">
+<title>MONKOS AI</title>
+<meta name="description" content="MONKOS is an image-specialized AI platform. Free AI ID photos powered by MONKOS AI.">
 <meta name="theme-color" content="#0f0f23">
+<!-- Google Identity Services -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -65,8 +67,12 @@ body {
 
 /* === 헤더 === */
 header {
-  padding: 24px 0 0;
-  text-align: center;
+  padding: 24px 20px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1000px;
+  margin: 0 auto;
 }
 
 .logo {
@@ -75,6 +81,71 @@ header {
   letter-spacing: 6px;
   color: var(--accent);
   text-transform: uppercase;
+}
+
+/* === 로그인 버튼 === */
+.auth-area {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.login-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: border-color 0.3s;
+}
+
+.login-btn:hover {
+  border-color: var(--accent);
+}
+
+.login-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.user-info {
+  display: none;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-info.logged-in {
+  display: flex;
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+}
+
+.user-name {
+  font-size: 0.85rem;
+  color: var(--text);
+}
+
+.logout-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  font-size: 0.75rem;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.logout-btn:hover {
+  color: var(--text);
 }
 
 /* === 히어로 === */
@@ -189,45 +260,36 @@ header {
   transform: translateY(-1px);
 }
 
-/* === 기술 스택 === */
-.tech-stack {
-  text-align: center;
-  padding: 40px 0;
+/* === 사업자 정보 === */
+.biz-info {
+  padding: 40px 0 20px;
   border-top: 1px solid var(--border);
-  margin-bottom: 40px;
 }
 
-.tech-stack h4 {
-  font-size: 0.85rem;
+.biz-info-inner {
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.biz-info p {
+  font-size: 0.7rem;
   color: var(--text-dim);
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  margin-bottom: 16px;
+  line-height: 1.8;
+  opacity: 0.7;
 }
 
-.tech-tags {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.tech-tag {
-  background: var(--surface);
-  border: 1px solid var(--border);
+.biz-info strong {
   color: var(--text-dim);
-  font-size: 0.8rem;
-  padding: 6px 16px;
-  border-radius: 20px;
+  opacity: 1;
 }
 
 /* === 푸터 === */
 footer {
   text-align: center;
-  padding: 30px 0;
+  padding: 20px 0 30px;
   color: var(--text-dim);
   font-size: 0.8rem;
-  border-top: 1px solid var(--border);
 }
 
 footer a {
@@ -404,8 +466,12 @@ footer a {
 
 /* === 모바일 === */
 @media (max-width: 640px) {
+  header { padding: 16px 16px 0; }
   .hero { padding: 60px 0 30px; }
   .service-card { padding: 24px; }
+  .login-btn { padding: 6px 12px; font-size: 0.8rem; }
+  .login-btn span { display: none; }
+  .user-name { display: none; }
   .chat-panel {
     bottom: 0;
     right: 0;
@@ -427,11 +493,29 @@ footer a {
 <div class="container">
   <header>
     <div class="logo">MONKOS</div>
+    <div class="auth-area">
+      <!-- 로그인 전 -->
+      <button class="login-btn" id="loginBtn" onclick="googleLogin()">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+        </svg>
+        <span id="loginText">Login</span>
+      </button>
+      <!-- 로그인 후 -->
+      <div class="user-info" id="userInfo">
+        <img class="user-avatar" id="userAvatar" src="" alt="">
+        <span class="user-name" id="userName"></span>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+      </div>
+    </div>
   </header>
 
   <!-- 히어로 -->
   <section class="hero">
-    <h1 id="heroTitle">MONKOS — <span>Image AI</span></h1>
+    <h1 id="heroTitle"><span>MONKOS AI</span></h1>
     <p class="hero-sub" id="heroSub"></p>
   </section>
 
@@ -446,14 +530,15 @@ footer a {
     </div>
   </section>
 
-  <!-- 기술 스택 -->
-  <section class="tech-stack">
-    <h4>Powered by</h4>
-    <div class="tech-tags">
-      <span class="tech-tag">Gemini AI</span>
-      <span class="tech-tag">Imagen</span>
-      <span class="tech-tag">Cloud Run</span>
-      <span class="tech-tag">Vertex AI</span>
+  <!-- 사업자 정보 -->
+  <section class="biz-info">
+    <div class="biz-info-inner">
+      <p>
+        <strong>상호명:</strong> 몽크스튜디오 | <strong>대표:</strong> 신정규<br>
+        <strong>사업자등록번호:</strong> 636-15-00574 | <strong>통신판매업:</strong> 신고 준비 중<br>
+        <strong>주소:</strong> 경기도 하남시 미사강변동로 95 B1029<br>
+        <strong>전화:</strong> 031-791-5030 | <strong>이메일:</strong> gdsajin@gmail.com
+      </p>
     </div>
   </section>
 
@@ -483,12 +568,104 @@ footer a {
 </div>
 
 <script>
+// === Google OAuth 설정 ===
+const GOOGLE_CLIENT_ID = '933456016842-clagcrpo1juvukjif1m454jq811bd2rq.apps.googleusercontent.com';
+
+let currentUser = null;
+
+// Google 로그인 초기화
+function initGoogleAuth() {
+  if (typeof google === 'undefined' || !GOOGLE_CLIENT_ID || GOOGLE_CLIENT_ID === '__GOOGLE_CLIENT_ID__') {
+    console.log('[Auth] Google Client ID 미설정');
+    return;
+  }
+
+  google.accounts.id.initialize({
+    client_id: GOOGLE_CLIENT_ID,
+    callback: handleGoogleCallback,
+    auto_select: true,
+  });
+
+  // 저장된 세션 복원
+  const saved = localStorage.getItem('monkos_user');
+  if (saved) {
+    try {
+      currentUser = JSON.parse(saved);
+      updateAuthUI();
+    } catch (e) {
+      localStorage.removeItem('monkos_user');
+    }
+  }
+}
+
+// Google 로그인 버튼 클릭
+function googleLogin() {
+  if (typeof google === 'undefined' || !GOOGLE_CLIENT_ID || GOOGLE_CLIENT_ID === '__GOOGLE_CLIENT_ID__') {
+    alert('Google 로그인이 아직 설정되지 않았습니다.');
+    return;
+  }
+  google.accounts.id.prompt();
+}
+
+// Google 콜백 처리
+async function handleGoogleCallback(response) {
+  try {
+    const res = await fetch('/api/auth/google', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ credential: response.credential }),
+    });
+    const data = await res.json();
+
+    if (data.success && data.user) {
+      currentUser = data.user;
+      localStorage.setItem('monkos_user', JSON.stringify(currentUser));
+      updateAuthUI();
+    } else {
+      console.error('[Auth] 로그인 실패:', data.error);
+    }
+  } catch (err) {
+    console.error('[Auth] 에러:', err);
+  }
+}
+
+// 로그아웃
+function logout() {
+  currentUser = null;
+  localStorage.removeItem('monkos_user');
+  updateAuthUI();
+  if (typeof google !== 'undefined') {
+    google.accounts.id.disableAutoSelect();
+  }
+}
+
+// UI 업데이트
+function updateAuthUI() {
+  const loginBtn = document.getElementById('loginBtn');
+  const userInfo = document.getElementById('userInfo');
+  const userAvatar = document.getElementById('userAvatar');
+  const userName = document.getElementById('userName');
+
+  if (currentUser) {
+    loginBtn.style.display = 'none';
+    userInfo.classList.add('logged-in');
+    userAvatar.src = currentUser.picture || '';
+    userName.textContent = currentUser.name || currentUser.email;
+  } else {
+    loginBtn.style.display = 'flex';
+    userInfo.classList.remove('logged-in');
+  }
+}
+
+// 페이지 로드 시 초기화
+window.addEventListener('load', initGoogleAuth);
+
 // === i18n (하드코딩 3개 언어) ===
 const i18n = {
   ja: {
-    heroSub: 'MONKOSはイメージ専門AIプラットフォームです。最新のGoogle AIで、プロ品質の証明写真を無料で作成できます。',
+    heroSub: 'MONKOSはイメージ専門AIプラットフォームです。プロ品質の証明写真を無料で作成できます。',
     serviceTitle: 'AI証明写真',
-    serviceDesc: 'AIコーチングで完璧な撮影 → Imagen AIで証明写真に変換。パスポート・履歴書・マイナンバーカード対応。',
+    serviceDesc: 'AIコーチングで完璧な撮影 → AIで証明写真に変換。パスポート・履歴書・マイナンバーカード対応。',
     features: ['AIリアルタイムコーチング', 'プロ品質の自動変換', 'パスポート・履歴書対応', '完全無料・登録不要'],
     ctaText: '無料で始める',
     ctaUrl: 'https://idphoto-jp.monkos.ai/app',
@@ -496,9 +673,9 @@ const i18n = {
     chatWelcome: 'こんにちは！MONKOSです。AI証明写真サービスについて何でも聞いてください。',
   },
   ko: {
-    heroSub: 'MONKOS는 이미지 전문 AI 플랫폼입니다. 최신 Google AI로 프로 품질의 증명사진을 무료로 만들어 보세요.',
+    heroSub: 'MONKOS는 이미지 전문 AI 플랫폼입니다. 프로 품질의 증명사진을 무료로 만들어 보세요.',
     serviceTitle: 'AI 증명사진',
-    serviceDesc: 'AI 코칭으로 완벽한 촬영 → Imagen AI로 증명사진 변환. 여권, 이력서, 비자 사진 대응.',
+    serviceDesc: 'AI 코칭으로 완벽한 촬영 → AI로 증명사진 변환. 여권, 이력서, 비자 사진 대응.',
     features: ['AI 실시간 코칭', '프로 품질 자동 변환', '여권/이력서/비자 대응', '완전 무료, 가입 불필요'],
     ctaText: '무료로 시작하기',
     ctaUrl: 'https://idphoto-kr.monkos.ai/app',
@@ -506,16 +683,20 @@ const i18n = {
     chatWelcome: '안녕하세요! MONKOS입니다. AI 증명사진 서비스에 대해 무엇이든 물어보세요.',
   },
   en: {
-    heroSub: 'MONKOS is an image-specialized AI platform. Create professional ID photos for free with the latest Google AI.',
+    heroSub: 'MONKOS is an image-specialized AI platform. Create professional ID photos for free.',
     serviceTitle: 'AI ID Photo',
-    serviceDesc: 'AI coaching for perfect shots → Imagen AI transforms into ID photos. Passport, resume, and visa photos supported.',
+    serviceDesc: 'AI coaching for perfect shots → AI transforms into ID photos. Passport, resume, and visa photos supported.',
     features: ['AI real-time coaching', 'Pro-quality auto conversion', 'Passport / resume / visa ready', 'Completely free, no sign-up'],
     ctaText: 'Start for Free',
     ctaUrl: 'https://idphoto-jp.monkos.ai/app',
     chatPlaceholder: 'Type your question...',
     chatWelcome: 'Hi! I\'m MONKOS. Ask me anything about our AI ID photo service.',
+    login: 'Login',
   },
 };
+
+// 로그인 텍스트 다국어
+const loginTexts = { ja: 'ログイン', ko: '로그인', en: 'Login' };
 
 // === 언어 감지 ===
 function detectLang() {
@@ -548,6 +729,7 @@ ctaBtn.textContent = t.ctaText;
 ctaBtn.href = t.ctaUrl;
 
 document.getElementById('chatInput').placeholder = t.chatPlaceholder;
+document.getElementById('loginText').textContent = loginTexts[lang] || 'Login';
 
 // === 챗봇 ===
 const chatFab = document.getElementById('chatFab');
