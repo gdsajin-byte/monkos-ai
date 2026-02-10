@@ -302,6 +302,54 @@
             color: #fff; border: none; border-radius: 14px;
             font-size: 16px; font-weight: 700; cursor: pointer;
         }
+        .ty-download-btn:disabled {
+            background: #333; color: #666; cursor: not-allowed;
+        }
+        /* 다운로드 게이트 */
+        .ty-gate {
+            width: 100%; max-width: 320px;
+            background: #111; border: 1px solid #2a2a2a;
+            border-radius: 14px; padding: 16px;
+        }
+        .ty-gate-title {
+            font-size: 13px; color: #a78bfa; font-weight: 600;
+            text-align: center; margin-bottom: 14px;
+        }
+        .ty-gate-options {
+            display: flex; flex-direction: column; gap: 10px;
+        }
+        .ty-gate-option {
+            display: flex; align-items: center; gap: 12px;
+            padding: 12px 14px; background: #1a1a1a;
+            border: 1px solid #333; border-radius: 10px;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .ty-gate-option:hover { border-color: #a78bfa; }
+        .ty-gate-option input { display: none; }
+        .ty-gate-option.selected {
+            border-color: #a78bfa;
+            background: rgba(167,139,250,0.1);
+        }
+        .ty-gate-icon { font-size: 20px; }
+        .ty-gate-label { font-size: 14px; color: #ddd; }
+        .ty-gate-action {
+            margin-top: 14px; text-align: center;
+        }
+        .ty-gate-action-btn {
+            width: 100%; padding: 12px;
+            background: #1a1a1a; border: 1px solid #a78bfa;
+            color: #a78bfa; border-radius: 10px;
+            font-size: 14px; font-weight: 600; cursor: pointer;
+        }
+        .ty-gate-action-btn:hover { background: rgba(167,139,250,0.1); }
+        .ty-gate-checkbox {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px; background: #1a1a1a; border-radius: 8px;
+        }
+        .ty-gate-checkbox input[type="checkbox"] {
+            width: 20px; height: 20px; accent-color: #a78bfa;
+        }
+        .ty-gate-checkbox label { font-size: 13px; color: #ccc; cursor: pointer; }
         .ty-funnel-section {
             width: 100%; max-width: 320px; margin-top: 8px;
         }
@@ -565,7 +613,26 @@
                 <img id="ty-photo" src="" alt="증명사진">
             </div>
             <div class="ty-message">증명사진이 완성되었습니다</div>
-            <button class="ty-download-btn" onclick="doDownload()">
+
+            <!-- 다운로드 게이트 -->
+            <div class="ty-gate" id="downloadGate">
+                <div class="ty-gate-title">무료 다운로드 조건 (1개 선택)</div>
+                <div class="ty-gate-options">
+                    <label class="ty-gate-option" onclick="selectGateOption('x')">
+                        <input type="radio" name="gate" value="x">
+                        <span class="ty-gate-icon">𝕏</span>
+                        <span class="ty-gate-label">X에 공유</span>
+                    </label>
+                    <label class="ty-gate-option" onclick="selectGateOption('instagram')">
+                        <input type="radio" name="gate" value="instagram">
+                        <span class="ty-gate-icon">📷</span>
+                        <span class="ty-gate-label">Instagram에 공유</span>
+                    </label>
+                </div>
+                <div class="ty-gate-action" id="gateAction" style="display:none;"></div>
+            </div>
+
+            <button class="ty-download-btn" id="tyDownloadBtn" onclick="doGatedDownload()" disabled>
                 📥 사진 다운로드
             </button>
             <div class="ty-funnel-section">
@@ -1045,6 +1112,9 @@
 
             document.getElementById('step3-actions').style.display = 'flex';
             document.getElementById('btn-download').disabled = !passed;
+            // 생성 완료 시 촬영 버튼과 로그 숨김
+            document.getElementById('controls').classList.remove('active');
+            document.getElementById('log').style.display = 'none';
 
             if (passed) {
                 document.getElementById('step-label').textContent = t('resultDone');
@@ -1058,6 +1128,8 @@
             document.getElementById('qc-badge').textContent = t('genFail') + ': ' + error;
             document.getElementById('result-title').textContent = t('genFail');
             document.getElementById('step3-actions').style.display = 'flex';
+            document.getElementById('controls').classList.remove('active');
+            document.getElementById('log').style.display = 'none';
             log('생성 에러: ' + error);
         }
 
@@ -1066,6 +1138,8 @@
             document.getElementById('qc-badge').textContent = 'QC: ' + error;
             document.getElementById('step3-actions').style.display = 'flex';
             document.getElementById('btn-download').disabled = false;
+            document.getElementById('controls').classList.remove('active');
+            document.getElementById('log').style.display = 'none';
             log('QC 에러: ' + error);
         }
 
@@ -1221,7 +1295,90 @@
             cleanupSession();
             document.getElementById('ty-photo').src = generatedImageData;
             document.getElementById('thankyou-screen').classList.add('active');
+            // 촬영 버튼 숨김
+            document.getElementById('controls').classList.remove('active');
             log('Thank You 페이지 표시');
+        }
+
+        // === 다운로드 게이트 ===
+        let gateUnlocked = false;
+        let selectedGate = null;
+
+        function selectGateOption(option) {
+            selectedGate = option;
+            // 선택 상태 업데이트
+            document.querySelectorAll('.ty-gate-option').forEach(el => {
+                el.classList.toggle('selected', el.querySelector('input').value === option);
+            });
+            // 액션 영역 표시
+            const actionDiv = document.getElementById('gateAction');
+            actionDiv.style.display = 'block';
+
+            if (option === 'x') {
+                actionDiv.innerHTML = `
+                    <button class="ty-gate-action-btn" onclick="shareToX()">
+                        𝕏 X에 공유하기
+                    </button>
+                    <p style="font-size:11px;color:#666;margin-top:8px;">공유 후 다운로드할 수 있습니다</p>
+                `;
+            } else if (option === 'instagram') {
+                actionDiv.innerHTML = `
+                    <button class="ty-gate-action-btn" onclick="shareToInstagram()">
+                        📷 Instagram에 공유하기
+                    </button>
+                    <p style="font-size:11px;color:#666;margin-top:8px;">공유 후 다운로드할 수 있습니다</p>
+                `;
+            } else if (option === 'review') {
+                actionDiv.innerHTML = `
+                    <div class="ty-gate-checkbox">
+                        <input type="checkbox" id="reviewPromise" onchange="checkReviewPromise()">
+                        <label for="reviewPromise">Google 리뷰를 작성하겠습니다</label>
+                    </div>
+                `;
+            }
+        }
+
+        function shareToX() {
+            const text = encodeURIComponent('MONKOS로 AI 증명사진을 만들었어요! 무료로 프로 품질의 증명사진을 만들 수 있습니다✨ #MONKOS #AI증명사진');
+            const url = encodeURIComponent('https://monkos.ai');
+            const shareUrl = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
+            window.open(shareUrl, '_blank', 'width=600,height=400');
+            // 공유 창이 열리면 허용 (신뢰 기반)
+            setTimeout(() => unlockDownload('X 공유'), 2000);
+        }
+
+        function shareToInstagram() {
+            // Instagram은 웹에서 직접 공유 불가, 앱으로 유도
+            const msg = 'Instagram 앱에서 스토리에 공유해주세요.\n\n@monkos.ai 를 태그해주세요.';
+            alert(msg);
+            // 앱 열기 시도
+            window.open('instagram://camera', '_blank');
+            // 신뢰 기반으로 허용
+            setTimeout(() => unlockDownload('Instagram 공유'), 3000);
+        }
+
+        function checkReviewPromise() {
+            const checked = document.getElementById('reviewPromise').checked;
+            if (checked) {
+                unlockDownload('리뷰 약속');
+            } else {
+                gateUnlocked = false;
+                document.getElementById('tyDownloadBtn').disabled = true;
+            }
+        }
+
+        function unlockDownload(method) {
+            gateUnlocked = true;
+            document.getElementById('tyDownloadBtn').disabled = false;
+            log('게이트 해제: ' + method);
+        }
+
+        async function doGatedDownload() {
+            if (!gateUnlocked) {
+                alert('무료 다운로드를 위해 조건을 선택해주세요');
+                return;
+            }
+            await doDownload();
         }
 
         async function doDownload() {

@@ -326,6 +326,54 @@
             color: #fff; border: none; border-radius: 14px;
             font-size: 16px; font-weight: 700; cursor: pointer;
         }
+        .ty-download-btn:disabled {
+            background: #333; color: #666; cursor: not-allowed;
+        }
+        /* ダウンロードゲート */
+        .ty-gate {
+            width: 100%; max-width: 320px;
+            background: #111; border: 1px solid #2a2a2a;
+            border-radius: 14px; padding: 16px;
+        }
+        .ty-gate-title {
+            font-size: 13px; color: #a78bfa; font-weight: 600;
+            text-align: center; margin-bottom: 14px;
+        }
+        .ty-gate-options {
+            display: flex; flex-direction: column; gap: 10px;
+        }
+        .ty-gate-option {
+            display: flex; align-items: center; gap: 12px;
+            padding: 12px 14px; background: #1a1a1a;
+            border: 1px solid #333; border-radius: 10px;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .ty-gate-option:hover { border-color: #a78bfa; }
+        .ty-gate-option input { display: none; }
+        .ty-gate-option.selected {
+            border-color: #a78bfa;
+            background: rgba(167,139,250,0.1);
+        }
+        .ty-gate-icon { font-size: 20px; }
+        .ty-gate-label { font-size: 14px; color: #ddd; }
+        .ty-gate-action {
+            margin-top: 14px; text-align: center;
+        }
+        .ty-gate-action-btn {
+            width: 100%; padding: 12px;
+            background: #1a1a1a; border: 1px solid #a78bfa;
+            color: #a78bfa; border-radius: 10px;
+            font-size: 14px; font-weight: 600; cursor: pointer;
+        }
+        .ty-gate-action-btn:hover { background: rgba(167,139,250,0.1); }
+        .ty-gate-checkbox {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px; background: #1a1a1a; border-radius: 8px;
+        }
+        .ty-gate-checkbox input[type="checkbox"] {
+            width: 20px; height: 20px; accent-color: #a78bfa;
+        }
+        .ty-gate-checkbox label { font-size: 13px; color: #ccc; cursor: pointer; }
         .ty-funnel-section {
             width: 100%; max-width: 320px; margin-top: 8px;
         }
@@ -589,7 +637,26 @@
                 <img id="ty-photo" src="" alt="証明写真">
             </div>
             <div class="ty-message">証明写真が完成しました</div>
-            <button class="ty-download-btn" onclick="doDownload()">
+
+            <!-- ダウンロードゲート -->
+            <div class="ty-gate" id="downloadGate">
+                <div class="ty-gate-title">無料ダウンロード条件（1つ選択）</div>
+                <div class="ty-gate-options">
+                    <label class="ty-gate-option" onclick="selectGateOption('x')">
+                        <input type="radio" name="gate" value="x">
+                        <span class="ty-gate-icon">𝕏</span>
+                        <span class="ty-gate-label">Xで共有</span>
+                    </label>
+                    <label class="ty-gate-option" onclick="selectGateOption('instagram')">
+                        <input type="radio" name="gate" value="instagram">
+                        <span class="ty-gate-icon">📷</span>
+                        <span class="ty-gate-label">Instagramで共有</span>
+                    </label>
+                </div>
+                <div class="ty-gate-action" id="gateAction" style="display:none;"></div>
+            </div>
+
+            <button class="ty-download-btn" id="tyDownloadBtn" onclick="doGatedDownload()" disabled>
                 📥 写真をダウンロード
             </button>
             <div class="ty-funnel-section">
@@ -1070,6 +1137,9 @@
 
             document.getElementById('step3-actions').style.display = 'flex';
             document.getElementById('btn-download').disabled = !passed;
+            // 生成完了時に撮影ボタンとログを非表示
+            document.getElementById('controls').classList.remove('active');
+            document.getElementById('log').style.display = 'none';
 
             if (passed) {
                 document.getElementById('step-label').textContent = t('resultDone');
@@ -1083,6 +1153,8 @@
             document.getElementById('qc-badge').textContent = t('genFail') + ': ' + error;
             document.getElementById('result-title').textContent = t('genFail');
             document.getElementById('step3-actions').style.display = 'flex';
+            document.getElementById('controls').classList.remove('active');
+            document.getElementById('log').style.display = 'none';
             log('生成エラー: ' + error);
         }
 
@@ -1091,6 +1163,8 @@
             document.getElementById('qc-badge').textContent = 'QC: ' + error;
             document.getElementById('step3-actions').style.display = 'flex';
             document.getElementById('btn-download').disabled = false;
+            document.getElementById('controls').classList.remove('active');
+            document.getElementById('log').style.display = 'none';
             log('QCエラー: ' + error);
         }
 
@@ -1246,7 +1320,90 @@
             cleanupSession();
             document.getElementById('ty-photo').src = generatedImageData;
             document.getElementById('thankyou-screen').classList.add('active');
+            // 撮影ボタン非表示
+            document.getElementById('controls').classList.remove('active');
             log('Thank Youページ表示');
+        }
+
+        // === ダウンロードゲート ===
+        let gateUnlocked = false;
+        let selectedGate = null;
+
+        function selectGateOption(option) {
+            selectedGate = option;
+            // 選択状態更新
+            document.querySelectorAll('.ty-gate-option').forEach(el => {
+                el.classList.toggle('selected', el.querySelector('input').value === option);
+            });
+            // アクションエリア表示
+            const actionDiv = document.getElementById('gateAction');
+            actionDiv.style.display = 'block';
+
+            if (option === 'x') {
+                actionDiv.innerHTML = `
+                    <button class="ty-gate-action-btn" onclick="shareToX()">
+                        𝕏 Xで共有する
+                    </button>
+                    <p style="font-size:11px;color:#666;margin-top:8px;">共有後、ダウンロードできます</p>
+                `;
+            } else if (option === 'instagram') {
+                actionDiv.innerHTML = `
+                    <button class="ty-gate-action-btn" onclick="shareToInstagram()">
+                        📷 Instagramで共有する
+                    </button>
+                    <p style="font-size:11px;color:#666;margin-top:8px;">共有後、ダウンロードできます</p>
+                `;
+            } else if (option === 'review') {
+                actionDiv.innerHTML = `
+                    <div class="ty-gate-checkbox">
+                        <input type="checkbox" id="reviewPromise" onchange="checkReviewPromise()">
+                        <label for="reviewPromise">Googleレビューを書くことを約束します</label>
+                    </div>
+                `;
+            }
+        }
+
+        function shareToX() {
+            const text = encodeURIComponent('MONKOSでAI証明写真を作成しました！無料でプロ品質の証明写真が作れます✨ #MONKOS #AI証明写真');
+            const url = encodeURIComponent('https://monkos.ai');
+            const shareUrl = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
+            window.open(shareUrl, '_blank', 'width=600,height=400');
+            // 共有ウィンドウが開いたら許可（信頼ベース）
+            setTimeout(() => unlockDownload('X共有'), 2000);
+        }
+
+        function shareToInstagram() {
+            // Instagramはウェブから直接共有できないのでアプリへ誘導
+            const msg = 'Instagramアプリでストーリーに共有してください。\n\n@monkos.ai をタグ付けしてください。';
+            alert(msg);
+            // アプリを開く試み
+            window.open('instagram://camera', '_blank');
+            // 信頼ベースで許可
+            setTimeout(() => unlockDownload('Instagram共有'), 3000);
+        }
+
+        function checkReviewPromise() {
+            const checked = document.getElementById('reviewPromise').checked;
+            if (checked) {
+                unlockDownload('レビュー約束');
+            } else {
+                gateUnlocked = false;
+                document.getElementById('tyDownloadBtn').disabled = true;
+            }
+        }
+
+        function unlockDownload(method) {
+            gateUnlocked = true;
+            document.getElementById('tyDownloadBtn').disabled = false;
+            log('ゲート解除: ' + method);
+        }
+
+        async function doGatedDownload() {
+            if (!gateUnlocked) {
+                alert('無料ダウンロードには条件の選択が必要です');
+                return;
+            }
+            await doDownload();
         }
 
         async function doDownload() {

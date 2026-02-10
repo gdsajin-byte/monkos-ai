@@ -16,6 +16,7 @@ import { readFileSync } from 'fs';
 import { join, dirname, extname } from 'path';
 import { fileURLToPath } from 'url';
 import { GoogleGenAI } from '@google/genai';
+import { Firestore } from '@google-cloud/firestore';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PORT = parseInt(process.env.PORT || '8080', 10);
@@ -25,8 +26,11 @@ const PROJECT_ID = process.env.PROJECT_ID || 'monkos';
 const LOCATION = process.env.LOCATION || 'us-central1';
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '933456016842-clagcrpo1juvukjif1m454jq811bd2rq.apps.googleusercontent.com';
 
-// === 사용자 저장소 (인메모리, 프로덕션에서는 D1/Firestore) ===
-const users = new Map();
+// === Firestore 초기화 ===
+const firestore = new Firestore({
+  projectId: PROJECT_ID,
+});
+const usersCollection = firestore.collection('users');
 
 function log(msg) {
   const ts = new Date().toISOString();
@@ -152,6 +156,24 @@ const httpServer = createServer(async (req, res) => {
     return;
   }
 
+  // === 가입자 통계 API ===
+  if (req.url === '/api/stats' && req.method === 'GET') {
+    try {
+      const snapshot = await usersCollection.count().get();
+      const totalUsers = snapshot.data().count;
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({
+        totalUsers,
+        timestamp: new Date().toISOString(),
+      }));
+    } catch (err) {
+      log(`[Stats] 에러: ${err.message}`);
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: err.message }));
+    }
+    return;
+  }
+
   // === Google 로그인 API ===
   if (req.url === '/api/auth/google' && req.method === 'POST') {
     let body = '';
@@ -177,6 +199,11 @@ const httpServer = createServer(async (req, res) => {
           return;
         }
 
+        // Firestore에서 기존 사용자 확인
+        const userRef = usersCollection.doc(tokenInfo.sub);
+        const userDoc = await userRef.get();
+        const isNewUser = !userDoc.exists;
+
         // 사용자 정보 저장/업데이트
         const user = {
           id: tokenInfo.sub,
@@ -184,13 +211,16 @@ const httpServer = createServer(async (req, res) => {
           name: tokenInfo.name,
           picture: tokenInfo.picture,
           lastLogin: new Date().toISOString(),
+          ...(isNewUser ? { createdAt: new Date().toISOString() } : {}),
         };
-        users.set(tokenInfo.sub, user);
-        log(`[Auth] 로그인 성공: ${user.email}`);
+
+        await userRef.set(user, { merge: true });
+        log(`[Auth] ${isNewUser ? '신규 가입' : '로그인'}: ${user.email}`);
 
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({
           success: true,
+          isNewUser,
           user: {
             id: user.id,
             email: user.email,
@@ -263,10 +293,12 @@ httpServer.listen(PORT, '0.0.0.0', () => {
   log(`리전: ${LOCATION}`);
   log(`인증: Vertex AI ADC`);
   log(`챗봇: gemini-2.0-flash`);
+  log(`DB: Firestore`);
   log('='.repeat(60));
   log('엔드포인트:');
   log('  GET  /health          — 헬스체크');
-  log('  POST /api/auth/google — Google 로그인');
+  log('  GET  /api/stats       — 가입자 통계');
+  log('  POST /api/auth/google — Google 가입/로그인');
   log('  POST /api/chat        — Gemini 챗봇');
   log('  GET  /                — 메인 포털');
   log(`Google Client ID: ${GOOGLE_CLIENT_ID ? '설정됨' : '미설정'}`);
