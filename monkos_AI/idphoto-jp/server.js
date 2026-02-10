@@ -66,6 +66,13 @@ const COACHING_INSTRUCTION = `証明写真撮影アシスタント。カメラ�
 // === Imagen プロンプト ===
 const IDENTITY_PRESERVATION = `IDENTITY RULE: 90% SAME PERSON + 10% ENHANCEMENT
 
+POSE (CRITICAL):
+- MUST be perfectly front-facing, looking directly at the camera
+- NO semi-profile, no side angles, no 3/4 view
+- Head straight, eyes looking directly at the lens
+- Both ears should be equally visible
+- Symmetric face positioning
+
 PRESERVE (90%):
 - Face shape, eye shape, nose, lips, skin tone
 - Overall facial structure and unique characteristics
@@ -73,22 +80,23 @@ PRESERVE (90%):
 
 ENHANCE (10% creative freedom):
 - Slightly smoother skin, subtle beauty enhancement
-- Optimal lighting and flattering angles
+- Optimal lighting (even, no harsh shadows)
 - Minor imperfections can be softened
 - Make them look their BEST version (not a different person)
 
 DO NOT:
+- Generate side angles or semi-profile poses
 - Change gender, ethnicity, or age by more than 2-3 years
 - Alter fundamental facial features
 - Make them unrecognizable
 
-GOAL: "This is ME, but on my best day" - 90% accuracy, 10% professional retouching.`;
+GOAL: "This is ME, but on my best day" - perfectly front-facing, 90% accuracy, 10% professional retouching.`;
 
 const STYLE_PROMPTS = {
-  id_photo: 'Professional ID photo, studio lighting, formal white background, sharp focus, passport-style portrait',
-  resume: 'Professional resume photo for Japanese job application (履歴書), clean white background, business formal attire, 3:4 ratio, approachable expression',
-  profile: 'Professional business profile photo, soft studio lighting, neutral background, confident expression',
-  mynumber: 'Japanese My Number Card photo (マイナンバーカード), white background, no shadows, neutral expression, sharp focus',
+  id_photo: 'Professional ID photo, perfectly front-facing looking directly at camera, studio lighting, formal white background, sharp focus, passport-style portrait, head straight, symmetric',
+  resume: 'Professional resume photo for Japanese job application (履歴書), perfectly front-facing looking directly at camera, clean white background, business formal attire, 3:4 ratio, approachable expression',
+  profile: 'Professional business profile photo, perfectly front-facing looking directly at camera, soft studio lighting, neutral background, confident expression',
+  mynumber: 'Japanese My Number Card photo (マイナンバーカード), perfectly front-facing looking directly at camera, white background, no shadows, neutral expression, sharp focus',
 };
 
 const OUTFIT_PROMPTS = {
