@@ -64,15 +64,18 @@ const COACHING_INSTRUCTION = `証明写真撮影アシスタント。カメラ�
 - 例: 「あごを少し上げてください」「左の照明が強いです、少し右に移動してください」`;
 
 // === Imagen プロンプト ===
-const IDENTITY_PRESERVATION = `LIGHTING OVERRIDE (HIGHEST PRIORITY — IGNORE lighting from input image):
-- DISCARD all lighting, shadows, and color cast from the source photo
-- Apply ONLY this studio setup: single large softbox directly above-front (centered, 45° overhead)
-- Result must look like a professional photo studio with flat, even illumination
+const IDENTITY_PRESERVATION = `LIGHTING (HIGHEST PRIORITY — override all lighting from input):
+- Flat, even studio illumination from directly above-front (centered, 45° overhead)
 - BOTH sides of face equally lit — zero shadow on cheeks, forehead, or neck
 - Only shadow allowed: very soft, small shadow directly under chin
 - f/8 uniform sharpness, 5500K daylight white balance
-- Pure white background (#FFFFFF), evenly lit, no falloff or gradient
 - ABSOLUTELY NO: rembrandt lighting, side light, rim light, split light, dramatic shadows, warm/cool color shifts
+
+BACKGROUND & SCENE (STRICT):
+- Pure white background (#FFFFFF), evenly lit, no falloff or gradient
+- ONLY the person in the frame — nothing else visible
+- NO props, NO equipment, NO lighting gear, NO softbox, NO reflector, NO studio objects
+- NO text, NO watermark, NO border, NO frame
 
 IDENTITY RULE: 90% SAME PERSON + 10% ENHANCEMENT
 
