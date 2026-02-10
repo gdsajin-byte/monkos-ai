@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>MONKOS — Image AI Platform</title>
+<meta name="description" content="MONKOS is an image-specialized AI platform. Free AI ID photos powered by Gemini & Imagen.">
+<meta name="theme-color" content="#0f0f23">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0f0f23;
+  --surface: #1a1a2e;
+  --surface2: #16213e;
+  --accent: #a78bfa;
+  --accent2: #818cf8;
+  --text: #e2e8f0;
+  --text-dim: #94a3b8;
+  --text-bright: #f8fafc;
+  --border: #2d2d5e;
+  --success: #34d399;
+  --card-bg: rgba(26, 26, 46, 0.8);
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* === 배경 애니메이션 === */
+.bg-grid {
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(167, 139, 250, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(167, 139, 250, 0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  z-index: 0;
+}
+
+.bg-glow {
+  position: fixed;
+  top: -200px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 800px;
+  height: 600px;
+  background: radial-gradient(ellipse, rgba(167, 139, 250, 0.08) 0%, transparent 70%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* === 레이아웃 === */
+.container {
+  position: relative;
+  z-index: 1;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* === 헤더 === */
+header {
+  padding: 24px 0 0;
+  text-align: center;
+}
+
+.logo {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 6px;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+
+/* === 히어로 === */
+.hero {
+  text-align: center;
+  padding: 80px 0 40px;
+}
+
+.hero h1 {
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  font-weight: 800;
+  color: var(--text-bright);
+  line-height: 1.2;
+  margin-bottom: 16px;
+}
+
+.hero h1 span {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-sub {
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
+  color: var(--text-dim);
+  max-width: 600px;
+  margin: 0 auto 40px;
+  line-height: 1.6;
+}
+
+/* === 서비스 카드 === */
+.services {
+  display: grid;
+  gap: 20px;
+  margin-bottom: 60px;
+}
+
+.service-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px;
+  backdrop-filter: blur(10px);
+  transition: border-color 0.3s, transform 0.3s;
+}
+
+.service-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.service-badge {
+  display: inline-block;
+  background: rgba(52, 211, 153, 0.15);
+  color: var(--success);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 16px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.service-card h3 {
+  font-size: 1.4rem;
+  color: var(--text-bright);
+  margin-bottom: 12px;
+}
+
+.service-card p {
+  color: var(--text-dim);
+  line-height: 1.6;
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+}
+
+.service-features {
+  list-style: none;
+  margin-bottom: 24px;
+}
+
+.service-features li {
+  color: var(--text-dim);
+  padding: 6px 0;
+  font-size: 0.9rem;
+}
+
+.service-features li::before {
+  content: '  ';
+  color: var(--accent);
+  margin-right: 8px;
+}
+
+.cta-btn {
+  display: inline-block;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 14px 36px;
+  border: none;
+  border-radius: 12px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.cta-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+/* === 기술 스택 === */
+.tech-stack {
+  text-align: center;
+  padding: 40px 0;
+  border-top: 1px solid var(--border);
+  margin-bottom: 40px;
+}
+
+.tech-stack h4 {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.tech-tags {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.tech-tag {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  padding: 6px 16px;
+  border-radius: 20px;
+}
+
+/* === 푸터 === */
+footer {
+  text-align: center;
+  padding: 30px 0;
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  border-top: 1px solid var(--border);
+}
+
+footer a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+/* === 챗봇 위젯 === */
+.chat-fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border: none;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(167, 139, 250, 0.4);
+  z-index: 1000;
+  transition: transform 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chat-fab:hover { transform: scale(1.1); }
+
+.chat-panel {
+  position: fixed;
+  bottom: 92px;
+  right: 24px;
+  width: min(380px, calc(100vw - 48px));
+  max-height: 500px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.chat-panel.open {
+  display: flex;
+}
+
+.chat-header {
+  padding: 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.chat-header-dot {
+  width: 10px;
+  height: 10px;
+  background: var(--success);
+  border-radius: 50%;
+}
+
+.chat-header-title {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--text-bright);
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 200px;
+  max-height: 340px;
+}
+
+.chat-msg {
+  max-width: 85%;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.chat-msg.bot {
+  background: var(--surface2);
+  color: var(--text);
+  align-self: flex-start;
+  border-bottom-left-radius: 4px;
+}
+
+.chat-msg.user {
+  background: var(--accent);
+  color: #fff;
+  align-self: flex-end;
+  border-bottom-right-radius: 4px;
+}
+
+.chat-msg a {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.chat-msg.user a {
+  color: #e0d4ff;
+}
+
+.chat-input-wrap {
+  padding: 12px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 8px;
+}
+
+.chat-input {
+  flex: 1;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.chat-input:focus { border-color: var(--accent); }
+
+.chat-send {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.chat-send:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* === 타이핑 인디케이터 === */
+.typing-indicator {
+  display: flex;
+  gap: 4px;
+  padding: 10px 14px;
+  align-self: flex-start;
+}
+
+.typing-indicator span {
+  width: 8px;
+  height: 8px;
+  background: var(--text-dim);
+  border-radius: 50%;
+  animation: bounce 1.4s ease-in-out infinite;
+}
+
+.typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+.typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes bounce {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-6px); }
+}
+
+/* === 모바일 === */
+@media (max-width: 640px) {
+  .hero { padding: 60px 0 30px; }
+  .service-card { padding: 24px; }
+  .chat-panel {
+    bottom: 0;
+    right: 0;
+    width: 100vw;
+    max-height: 70vh;
+    border-radius: 16px 16px 0 0;
+  }
+  .chat-fab {
+    bottom: 16px;
+    right: 16px;
+  }
+}
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+
+<div class="container">
+  <header>
+    <div class="logo">MONKOS</div>
+  </header>
+
+  <!-- 히어로 -->
+  <section class="hero">
+    <h1 id="heroTitle">MONKOS — <span>Image AI</span></h1>
+    <p class="hero-sub" id="heroSub"></p>
+  </section>
+
+  <!-- 서비스 카드 -->
+  <section class="services">
+    <div class="service-card">
+      <div class="service-badge" id="badgeFree">FREE</div>
+      <h3 id="serviceTitle"></h3>
+      <p id="serviceDesc"></p>
+      <ul class="service-features" id="serviceFeatures"></ul>
+      <a class="cta-btn" id="ctaBtn" href="#"></a>
+    </div>
+  </section>
+
+  <!-- 기술 스택 -->
+  <section class="tech-stack">
+    <h4>Powered by</h4>
+    <div class="tech-tags">
+      <span class="tech-tag">Gemini AI</span>
+      <span class="tech-tag">Imagen</span>
+      <span class="tech-tag">Cloud Run</span>
+      <span class="tech-tag">Vertex AI</span>
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; 2026 <a href="https://monk.kr">MONK.KR</a> — Evolution of Creative Intelligence</p>
+  </footer>
+</div>
+
+<!-- 챗봇 FAB -->
+<button class="chat-fab" id="chatFab" aria-label="Chat">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+  </svg>
+</button>
+
+<!-- 챗봇 패널 -->
+<div class="chat-panel" id="chatPanel">
+  <div class="chat-header">
+    <div class="chat-header-dot"></div>
+    <div class="chat-header-title">MONKOS AI</div>
+  </div>
+  <div class="chat-messages" id="chatMessages"></div>
+  <div class="chat-input-wrap">
+    <input class="chat-input" id="chatInput" placeholder="" autocomplete="off">
+    <button class="chat-send" id="chatSend">Send</button>
+  </div>
+</div>
+
+<script>
+// === i18n (하드코딩 3개 언어) ===
+const i18n = {
+  ja: {
+    heroSub: 'MONKOSはイメージ専門AIプラットフォームです。最新のGoogle AIで、プロ品質の証明写真を無料で作成できます。',
+    serviceTitle: 'AI証明写真',
+    serviceDesc: 'AIコーチングで完璧な撮影 → Imagen AIで証明写真に変換。パスポート・履歴書・マイナンバーカード対応。',
+    features: ['AIリアルタイムコーチング', 'プロ品質の自動変換', 'パスポート・履歴書対応', '完全無料・登録不要'],
+    ctaText: '無料で始める',
+    ctaUrl: 'https://idphoto-jp.monkos.ai/app',
+    chatPlaceholder: '質問を入力...',
+    chatWelcome: 'こんにちは！MONKOSです。AI証明写真サービスについて何でも聞いてください。',
+  },
+  ko: {
+    heroSub: 'MONKOS는 이미지 전문 AI 플랫폼입니다. 최신 Google AI로 프로 품질의 증명사진을 무료로 만들어 보세요.',
+    serviceTitle: 'AI 증명사진',
+    serviceDesc: 'AI 코칭으로 완벽한 촬영 → Imagen AI로 증명사진 변환. 여권, 이력서, 비자 사진 대응.',
+    features: ['AI 실시간 코칭', '프로 품질 자동 변환', '여권/이력서/비자 대응', '완전 무료, 가입 불필요'],
+    ctaText: '무료로 시작하기',
+    ctaUrl: 'https://idphoto-kr.monkos.ai/app',
+    chatPlaceholder: '질문을 입력하세요...',
+    chatWelcome: '안녕하세요! MONKOS입니다. AI 증명사진 서비스에 대해 무엇이든 물어보세요.',
+  },
+  en: {
+    heroSub: 'MONKOS is an image-specialized AI platform. Create professional ID photos for free with the latest Google AI.',
+    serviceTitle: 'AI ID Photo',
+    serviceDesc: 'AI coaching for perfect shots → Imagen AI transforms into ID photos. Passport, resume, and visa photos supported.',
+    features: ['AI real-time coaching', 'Pro-quality auto conversion', 'Passport / resume / visa ready', 'Completely free, no sign-up'],
+    ctaText: 'Start for Free',
+    ctaUrl: 'https://idphoto-jp.monkos.ai/app',
+    chatPlaceholder: 'Type your question...',
+    chatWelcome: 'Hi! I\'m MONKOS. Ask me anything about our AI ID photo service.',
+  },
+};
+
+// === 언어 감지 ===
+function detectLang() {
+  const navLang = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
+  if (navLang.startsWith('ja')) return 'ja';
+  if (navLang.startsWith('ko')) return 'ko';
+  return 'en';
+}
+
+const lang = detectLang();
+const t = i18n[lang];
+
+// HTML lang 속성 업데이트
+document.documentElement.lang = lang;
+
+// === UI 적용 ===
+document.getElementById('heroSub').textContent = t.heroSub;
+document.getElementById('serviceTitle').textContent = t.serviceTitle;
+document.getElementById('serviceDesc').textContent = t.serviceDesc;
+
+const featuresList = document.getElementById('serviceFeatures');
+t.features.forEach(f => {
+  const li = document.createElement('li');
+  li.textContent = f;
+  featuresList.appendChild(li);
+});
+
+const ctaBtn = document.getElementById('ctaBtn');
+ctaBtn.textContent = t.ctaText;
+ctaBtn.href = t.ctaUrl;
+
+document.getElementById('chatInput').placeholder = t.chatPlaceholder;
+
+// === 챗봇 ===
+const chatFab = document.getElementById('chatFab');
+const chatPanel = document.getElementById('chatPanel');
+const chatMessages = document.getElementById('chatMessages');
+const chatInput = document.getElementById('chatInput');
+const chatSend = document.getElementById('chatSend');
+
+let chatOpen = false;
+let sessionId = `s_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+let isLoading = false;
+
+chatFab.addEventListener('click', () => {
+  chatOpen = !chatOpen;
+  chatPanel.classList.toggle('open', chatOpen);
+  if (chatOpen) {
+    // 첫 오픈 시 환영 메시지
+    if (chatMessages.children.length === 0) {
+      addMessage(t.chatWelcome, 'bot');
+    }
+    chatInput.focus();
+  }
+});
+
+function addMessage(text, type) {
+  const div = document.createElement('div');
+  div.className = `chat-msg ${type}`;
+  // 링크 자동 변환
+  div.innerHTML = text.replace(
+    /(https?:\/\/[^\s<]+)/g,
+    '<a href="$1" target="_blank" rel="noopener">$1</a>'
+  );
+  chatMessages.appendChild(div);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function showTyping() {
+  const div = document.createElement('div');
+  div.className = 'typing-indicator';
+  div.id = 'typingIndicator';
+  div.innerHTML = '<span></span><span></span><span></span>';
+  chatMessages.appendChild(div);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function hideTyping() {
+  const el = document.getElementById('typingIndicator');
+  if (el) el.remove();
+}
+
+async function sendMessage() {
+  const msg = chatInput.value.trim();
+  if (!msg || isLoading) return;
+
+  addMessage(msg, 'user');
+  chatInput.value = '';
+  isLoading = true;
+  chatSend.disabled = true;
+  showTyping();
+
+  try {
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: msg, sessionId, lang }),
+    });
+    const data = await res.json();
+    hideTyping();
+
+    if (data.reply) {
+      addMessage(data.reply, 'bot');
+      sessionId = data.sessionId || sessionId;
+    } else if (data.error) {
+      addMessage('Error: ' + data.error, 'bot');
+    }
+  } catch (err) {
+    hideTyping();
+    addMessage('Connection error. Please try again.', 'bot');
+  }
+
+  isLoading = false;
+  chatSend.disabled = false;
+  chatInput.focus();
+}
+
+chatSend.addEventListener('click', sendMessage);
+chatInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.isComposing) sendMessage();
+});
+</script>
+</body>
+</html>

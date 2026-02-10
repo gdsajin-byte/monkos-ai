@@ -1,0 +1,16 @@
+{
+  "name": "@monkos/portal",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "description": "MONKOS AI Portal — monkos.ai | Gemini 2.0 챗봇 + 국가별 서비스 분기",
+  "dependencies": {
+    "@google/genai": "^1.40.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

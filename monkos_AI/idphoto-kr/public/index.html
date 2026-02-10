@@ -1,0 +1,1265 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AI 증명사진 | MONKOS</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #030508; color: #fff;
+            font-family: 'Noto Sans KR', -apple-system, 'Apple SD Gothic Neo', sans-serif;
+            height: 100dvh; display: flex; flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* 헤더 */
+        #header {
+            padding: 12px 16px; background: #0a0a0a;
+            display: flex; align-items: center; justify-content: space-between;
+            border-bottom: 1px solid #1a1a1a;
+        }
+        #header h1 { font-size: 15px; font-weight: 700; letter-spacing: 0.5px; }
+        .brand { color: #a78bfa; font-weight: 700; }
+        .dot {
+            display: inline-block; width: 8px; height: 8px;
+            border-radius: 50%; margin-right: 6px; vertical-align: middle;
+        }
+        .dot-on { background: #22c55e; }
+        .dot-off { background: #ef4444; }
+        .dot-wait { background: #f59e0b; }
+        #step-label { font-size: 11px; color: #888; }
+
+        /* === 준비 화면 === */
+        #prep-screen {
+            flex: 1; display: flex; flex-direction: column;
+            align-items: center; justify-content: flex-start;
+            padding: 24px 24px 40px; text-align: center;
+            background: #030508;
+            overflow-y: auto; -webkit-overflow-scrolling: touch;
+        }
+        #prep-screen.hidden { display: none; }
+        .prep-icon { font-size: 48px; margin-bottom: 20px; }
+        .prep-title {
+            font-size: 22px; font-weight: 700; margin-bottom: 8px;
+        }
+        .prep-sub {
+            font-size: 14px; color: #888; line-height: 1.7; margin-bottom: 32px;
+        }
+
+        .prep-checklist {
+            width: 100%; max-width: 320px; text-align: left;
+            margin-bottom: 32px;
+        }
+        .prep-check-item {
+            display: flex; align-items: flex-start; gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #1a1a1a;
+        }
+        .prep-check-item:last-child { border-bottom: none; }
+        .prep-check-icon {
+            flex-shrink: 0; width: 28px; height: 28px;
+            border-radius: 8px; background: rgba(167,139,250,0.12);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px;
+        }
+        .prep-check-text {
+            font-size: 13px; line-height: 1.5;
+        }
+        .prep-check-text strong {
+            display: block; font-size: 14px; margin-bottom: 2px;
+        }
+        .prep-check-text span { color: #888; }
+
+        /* 스타일 선택 (준비 화면) */
+        .prep-styles {
+            display: flex; gap: 8px; flex-wrap: wrap;
+            justify-content: center; margin-bottom: 24px;
+        }
+        .prep-style-chip {
+            padding: 10px 18px; border-radius: 12px;
+            background: #111; border: 1.5px solid #222;
+            font-size: 13px; font-weight: 500; color: #aaa;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .prep-style-chip.active {
+            background: rgba(167,139,250,0.15);
+            border-color: #a78bfa; color: #a78bfa;
+        }
+
+        .btn-start {
+            width: 100%; max-width: 320px;
+            padding: 16px; border-radius: 14px;
+            background: linear-gradient(135deg, #a78bfa, #8b5cf6);
+            color: #fff; font-size: 16px; font-weight: 700;
+            border: none; cursor: pointer;
+            box-shadow: 0 4px 24px rgba(167,139,250,0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn-start:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 32px rgba(167,139,250,0.4);
+        }
+        .btn-start:disabled {
+            opacity: 0.4; transform: none;
+            box-shadow: none; cursor: not-allowed;
+        }
+        .prep-note {
+            margin-top: 12px; font-size: 11px; color: #555;
+        }
+
+        /* === 카메라 영역 === */
+        #camera-area {
+            flex: 1; position: relative; overflow: hidden;
+            background: #000; display: none;
+        }
+        #camera-area.active { display: block; }
+        #camera-video {
+            width: 100%; height: 100%; object-fit: cover;
+            transform: scaleX(-1);
+        }
+
+        /* 얼굴 가이드 오버레이 */
+        #face-guide {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none; z-index: 5;
+        }
+        #face-guide::before {
+            content: '';
+            position: absolute;
+            top: 20%; left: 50%; transform: translateX(-50%);
+            width: 180px; height: 240px;
+            border: 2px dashed rgba(167, 139, 250, 0.5);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+        }
+        #face-guide::after {
+            content: attr(data-guide-text);
+            position: absolute;
+            top: calc(20% + 250px); left: 50%; transform: translateX(-50%);
+            font-size: 11px; color: rgba(167, 139, 250, 0.6);
+            white-space: nowrap;
+        }
+
+        /* === 코칭 오버레이 === */
+        #coaching-overlay {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            background: linear-gradient(0deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.8) 70%, transparent 100%);
+            padding: 40px 20px 20px;
+            z-index: 10; display: none;
+            transition: opacity 0.3s;
+        }
+        #coaching-overlay.active { display: block; }
+        #coaching-overlay.ready {
+            background: linear-gradient(0deg, rgba(0,40,0,0.95) 0%, rgba(0,30,0,0.8) 70%, transparent 100%);
+        }
+
+        .coaching-inner {
+            background: rgba(0,0,0,0.6);
+            border: 1.5px solid rgba(245,158,11,0.5);
+            border-radius: 16px; padding: 16px 20px;
+            backdrop-filter: blur(10px);
+        }
+        #coaching-overlay.ready .coaching-inner {
+            border-color: rgba(34,197,94,0.6);
+        }
+
+        #coaching-label {
+            font-size: 11px; color: #f59e0b; font-weight: 700;
+            margin-bottom: 8px; letter-spacing: 2px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        #coaching-overlay.ready #coaching-label { color: #22c55e; }
+        .coaching-pulse {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: #f59e0b;
+            animation: pulse 1.5s infinite;
+        }
+        #coaching-overlay.ready .coaching-pulse { background: #22c55e; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.3); }
+        }
+        #coaching-text {
+            font-size: 18px; font-weight: 600; line-height: 1.5;
+        }
+        #coaching-overlay.ready #coaching-text { color: #22c55e; }
+
+        /* 스타일 선택 바 (카메라 화면) */
+        #style-bar {
+            position: absolute; top: 12px; left: 12px; right: 12px;
+            display: flex; gap: 6px; z-index: 8;
+            overflow-x: auto; -webkit-overflow-scrolling: touch;
+        }
+        .style-chip {
+            padding: 6px 14px; border-radius: 20px;
+            background: rgba(0,0,0,0.7); border: 1px solid #333;
+            font-size: 12px; color: #aaa; white-space: nowrap;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .style-chip.active {
+            background: rgba(167,139,250,0.2);
+            border-color: #a78bfa; color: #a78bfa;
+        }
+
+        /* 결과 오버레이 */
+        #result-overlay {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: #030508; z-index: 20; display: none;
+            flex-direction: column; overflow-y: auto;
+        }
+        #result-overlay.active { display: flex; }
+
+        .result-header {
+            padding: 20px 16px 12px; text-align: center;
+            border-bottom: 1px solid #1a1a1a;
+        }
+        .result-header h2 { font-size: 17px; font-weight: 700; }
+        .result-header p { font-size: 12px; color: #888; margin-top: 4px; }
+
+        .photo-compare {
+            display: flex; gap: 12px; padding: 16px;
+            justify-content: center;
+        }
+        .photo-compare .photo-wrap { text-align: center; }
+        .photo-compare img {
+            width: 140px; height: 187px; object-fit: cover;
+            border-radius: 12px; border: 2px solid #222;
+        }
+        .photo-compare .label {
+            font-size: 10px; color: #888; margin-top: 6px;
+        }
+
+        /* QC 배지 */
+        #qc-badge {
+            margin: 8px 16px; padding: 12px 16px;
+            border-radius: 12px; text-align: center;
+            font-size: 14px; font-weight: 600;
+        }
+        #qc-badge.pass { background: rgba(34,197,94,0.15); color: #22c55e; border: 1px solid rgba(34,197,94,0.3); }
+        #qc-badge.fail { background: rgba(239,68,68,0.15); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
+        #qc-badge.pending { background: rgba(245,158,11,0.15); color: #f59e0b; border: 1px solid rgba(245,158,11,0.3); }
+
+        /* 규격 크롭 결과 */
+        #spec-result {
+            display: none; padding: 16px;
+            text-align: center;
+        }
+        #spec-result.active { display: block; }
+        .spec-title {
+            font-size: 14px; font-weight: 700; color: #a78bfa;
+            margin-bottom: 12px;
+        }
+        .spec-photo-wrap {
+            display: inline-block; position: relative;
+            background: #fff; padding: 4px;
+            border-radius: 8px; border: 2px solid #a78bfa;
+        }
+        .spec-photo-wrap img {
+            display: block; border-radius: 4px;
+        }
+        .spec-info {
+            margin-top: 12px; display: flex; gap: 8px;
+            justify-content: center; flex-wrap: wrap;
+        }
+        .spec-tag {
+            padding: 4px 10px; border-radius: 6px;
+            background: #111; border: 1px solid #222;
+            font-size: 11px; color: #888;
+        }
+        .spec-tag strong { color: #ccc; }
+
+        /* Thank You 페이지 */
+        #thankyou-screen {
+            display: none; position: fixed; inset: 0;
+            background: #030508; z-index: 100;
+            flex-direction: column; overflow-y: auto;
+        }
+        #thankyou-screen.active { display: flex; }
+        .ty-header {
+            padding: 16px; text-align: center;
+            font-size: 16px; font-weight: 700;
+            border-bottom: 1px solid #1a1a1a;
+        }
+        .ty-body {
+            flex: 1; padding: 24px 16px; display: flex;
+            flex-direction: column; align-items: center; gap: 20px;
+        }
+        .ty-preview {
+            background: #fff; padding: 6px; border-radius: 12px;
+            box-shadow: 0 4px 24px rgba(167,139,250,0.2);
+        }
+        .ty-preview img {
+            display: block; width: 160px; height: auto; border-radius: 8px;
+        }
+        .ty-message {
+            font-size: 18px; font-weight: 700; color: #a78bfa;
+        }
+        .ty-download-btn {
+            width: 100%; max-width: 320px; padding: 16px;
+            background: linear-gradient(135deg, #a78bfa, #7c3aed);
+            color: #fff; border: none; border-radius: 14px;
+            font-size: 16px; font-weight: 700; cursor: pointer;
+        }
+        .ty-funnel-section {
+            width: 100%; max-width: 320px; margin-top: 8px;
+        }
+        .ty-funnel-title {
+            font-size: 13px; color: #666; margin-bottom: 10px;
+            text-align: center;
+        }
+        .ty-funnel-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 14px; background: #111; border: 1px solid #222;
+            border-radius: 12px; margin-bottom: 8px;
+        }
+        .ty-funnel-item.disabled { opacity: 0.5; }
+        .ty-funnel-icon { font-size: 24px; flex-shrink: 0; }
+        .ty-funnel-name { font-size: 14px; font-weight: 600; color: #ddd; }
+        .ty-funnel-desc { font-size: 11px; color: #888; margin-top: 2px; }
+        .ty-funnel-badge {
+            margin-left: auto; font-size: 10px; color: #666;
+            background: #1a1a1a; padding: 3px 8px; border-radius: 6px;
+            white-space: nowrap;
+        }
+        .ty-retake-btn {
+            background: none; border: 1px solid #333; color: #888;
+            padding: 12px 24px; border-radius: 10px; font-size: 13px;
+            cursor: pointer; margin-top: 8px;
+        }
+
+        /* 하단 컨트롤 */
+        #controls {
+            padding: 14px 16px; background: #0a0a0a;
+            display: none; gap: 10px; justify-content: center;
+            align-items: center; z-index: 30;
+            border-top: 1px solid #1a1a1a;
+        }
+        #controls.active { display: flex; }
+
+        /* 촬영 버튼 */
+        #btn-capture {
+            width: 72px; height: 72px; border-radius: 50%;
+            background: #fff; border: 4px solid rgba(167,139,250,0.5);
+            cursor: pointer; position: relative;
+            transition: all 0.3s;
+        }
+        #btn-capture::after {
+            content: ''; position: absolute;
+            top: 6px; left: 6px; right: 6px; bottom: 6px;
+            border-radius: 50%; background: #fff;
+            border: 2px solid #ddd;
+        }
+        #btn-capture.ready {
+            border-color: #22c55e;
+            box-shadow: 0 0 20px rgba(34,197,94,0.4);
+        }
+        #btn-capture.ready::after { border-color: #22c55e; }
+        #btn-capture:disabled { opacity: 0.3; }
+
+        .btn {
+            padding: 10px 20px; border-radius: 10px; border: none;
+            font-size: 14px; font-weight: 600; cursor: pointer;
+            font-family: inherit;
+        }
+        .btn-primary { background: #a78bfa; color: #fff; }
+        .btn-secondary { background: #222; color: #aaa; }
+        .btn-success { background: #22c55e; color: #000; }
+        .btn:disabled { opacity: 0.3; }
+
+        /* 로딩 스피너 */
+        .spinner {
+            display: inline-block; width: 20px; height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: #a78bfa;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* 로그 */
+        #log {
+            padding: 4px 16px; background: #050505;
+            font-size: 9px; color: #444; max-height: 40px;
+            overflow-y: auto; font-family: monospace;
+        }
+
+        /* 데스크탑 차단 */
+        #desktop-blocker {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: #030508; z-index: 9999;
+            display: none; flex-direction: column;
+            align-items: center; justify-content: center;
+            text-align: center; padding: 32px;
+        }
+        #desktop-blocker.active { display: flex; }
+        #desktop-blocker .icon { font-size: 64px; margin-bottom: 24px; }
+        #desktop-blocker h2 {
+            font-size: 20px; font-weight: 700; margin-bottom: 8px;
+        }
+        #desktop-blocker p {
+            font-size: 14px; color: #888; line-height: 1.6; margin-bottom: 24px;
+        }
+        #desktop-blocker .qr-wrap {
+            background: #fff; padding: 16px; border-radius: 16px;
+            margin-bottom: 16px;
+        }
+        #desktop-blocker .qr-wrap img { width: 180px; height: 180px; }
+        #desktop-blocker .url-text {
+            font-size: 12px; color: #666; font-family: monospace;
+            background: #111; padding: 8px 16px; border-radius: 8px;
+            border: 1px solid #222;
+        }
+
+    </style>
+</head>
+<body>
+    <!-- 데스크탑 차단 -->
+    <div id="desktop-blocker">
+        <div class="icon">📱</div>
+        <h2>스마트폰에서 이용해 주세요</h2>
+        <p>AI 증명사진은 스마트폰의<br>전면 카메라로 촬영하는 전용 서비스입니다</p>
+        <div class="qr-wrap">
+            <img id="qr-code" src="" alt="QR코드">
+        </div>
+        <div class="url-text" id="page-url"></div>
+    </div>
+
+    <div id="header">
+        <div>
+            <h1><span class="brand">MONKOS</span> <span>AI 증명사진</span></h1>
+            <span id="step-label">촬영 준비</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+            <button id="btn-voice" onclick="toggleVoice()" title="음성 ON"
+                style="background:none; border:none; font-size:18px; cursor:pointer; padding:4px;">🔊</button>
+            <span class="dot dot-wait" id="ws-dot"></span>
+            <span id="ws-status" style="font-size:11px;">대기 중</span>
+        </div>
+    </div>
+
+    <!-- === 준비 화면 === -->
+    <div id="prep-screen">
+        <div class="prep-icon">📸</div>
+        <div class="prep-title">촬영 준비</div>
+        <p class="prep-sub">
+            AI가 실시간으로 촬영을 가이드합니다.<br>
+            아래 사항을 확인한 후 시작해 주세요.
+        </p>
+
+        <div class="prep-checklist">
+            <div class="prep-check-item">
+                <div class="prep-check-icon">💡</div>
+                <div class="prep-check-text">
+                    <strong>밝은 장소에서</strong>
+                    <span>얼굴에 균일하게 조명이 비치는 곳이 베스트</span>
+                </div>
+            </div>
+            <div class="prep-check-item">
+                <div class="prep-check-icon">🖼</div>
+                <div class="prep-check-text">
+                    <strong>배경은 심플하게</strong>
+                    <span>흰 벽 앞 등 무지 배경이 이상적</span>
+                </div>
+            </div>
+            <div class="prep-check-item">
+                <div class="prep-check-icon">👤</div>
+                <div class="prep-check-text">
+                    <strong>정면을 바라보며</strong>
+                    <span>모자를 벗고, 안경 반사에 주의</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 스타일 선택 -->
+        <div class="prep-styles">
+            <div class="prep-style-chip active" data-style="id_photo">여권/증명사진</div>
+            <div class="prep-style-chip" data-style="resume">이력서</div>
+        </div>
+
+        <button class="btn-start" id="btn-start" onclick="startShooting()">
+            촬영 시작하기
+        </button>
+        <p class="prep-note">카메라 접근을 허용해 주세요</p>
+    </div>
+
+    <!-- === 카메라 화면 === -->
+    <div id="camera-area">
+        <video id="camera-video" autoplay playsinline muted></video>
+        <div id="face-guide" data-guide-text="여기에 얼굴을 맞춰주세요"></div>
+
+        <!-- 스타일 선택 바 (카메라 위) -->
+        <div id="style-bar">
+            <div class="style-chip active" data-style="id_photo">여권/증명사진</div>
+            <div class="style-chip" data-style="resume">이력서</div>
+        </div>
+
+        <!-- 코칭 오버레이 -->
+        <div id="coaching-overlay">
+            <div class="coaching-inner">
+                <div id="coaching-label">
+                    <span class="coaching-pulse"></span>
+                    <span>AI 코칭 중</span>
+                </div>
+                <div id="coaching-text">자세를 체크하고 있습니다...</div>
+            </div>
+        </div>
+
+        <!-- 결과 오버레이 -->
+        <div id="result-overlay">
+            <div class="result-header">
+                <h2 id="result-title">촬영 확인</h2>
+                <p id="result-subtitle">촬영한 사진을 확인해 주세요</p>
+            </div>
+
+            <div class="photo-compare">
+                <div class="photo-wrap">
+                    <img id="photo-original" src="" alt="원본">
+                    <div class="label">원본</div>
+                </div>
+                <div class="photo-wrap" id="photo-generated-wrap" style="display:none;">
+                    <img id="photo-generated" src="" alt="생성">
+                    <div class="label">AI 증명사진</div>
+                </div>
+            </div>
+
+            <div id="qc-badge" class="pending" style="display:none;">검증 중...</div>
+
+            <!-- 규격 크롭 결과 -->
+            <div id="spec-result">
+                <div class="spec-title">클로즈업 완료</div>
+                <div class="spec-photo-wrap">
+                    <img id="spec-photo" src="" alt="규격 사진">
+                </div>
+                <div class="spec-info">
+                    <span class="spec-tag"><strong id="spec-name">-</strong></span>
+                    <span class="spec-tag" id="spec-size">-</span>
+                    <span class="spec-tag">300dpi</span>
+                    <span class="spec-tag" id="spec-px">-</span>
+                </div>
+            </div>
+
+            <!-- Step 2 버튼 -->
+            <div id="step2-actions" style="display:flex; gap:10px; padding:16px; justify-content:center;">
+                <button class="btn btn-secondary" onclick="retakePhoto()">다시 찍기</button>
+                <button class="btn btn-primary" onclick="confirmAndGenerate()">이 사진으로 생성</button>
+            </div>
+
+            <!-- Step 3 버튼 -->
+            <div id="step3-actions" style="display:none; gap:10px; padding:16px; justify-content:center; flex-wrap:wrap;">
+                <button class="btn btn-secondary" onclick="retakePhoto()">다시 찍기</button>
+                <button class="btn btn-secondary" onclick="regenerate()">재생성</button>
+                <button class="btn btn-success" id="btn-download" onclick="downloadResult()" disabled>저장</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Thank You 페이지 -->
+    <div id="thankyou-screen">
+        <div class="ty-header">
+            <span class="brand">MONKOS</span> AI 증명사진
+        </div>
+        <div class="ty-body">
+            <div class="ty-preview">
+                <img id="ty-photo" src="" alt="증명사진">
+            </div>
+            <div class="ty-message">증명사진이 완성되었습니다</div>
+            <button class="ty-download-btn" onclick="doDownload()">
+                📥 사진 다운로드
+            </button>
+            <div class="ty-funnel-section">
+                <div class="ty-funnel-title">옵션 서비스</div>
+                <div class="ty-funnel-item disabled">
+                    <span class="ty-funnel-icon">🛂</span>
+                    <div>
+                        <div class="ty-funnel-name">여권 규격 크롭</div>
+                        <div class="ty-funnel-desc">35x45mm / ICAO 준수 / 300dpi</div>
+                    </div>
+                    <span class="ty-funnel-badge">준비 중</span>
+                </div>
+                <div class="ty-funnel-item disabled">
+                    <span class="ty-funnel-icon">📄</span>
+                    <div>
+                        <div class="ty-funnel-name">이력서 규격 크롭</div>
+                        <div class="ty-funnel-desc">30x40mm / 한국 이력서 표준</div>
+                    </div>
+                    <span class="ty-funnel-badge">준비 중</span>
+                </div>
+                <div class="ty-funnel-item disabled">
+                    <span class="ty-funnel-icon">✈️</span>
+                    <div>
+                        <div class="ty-funnel-name">비자 규격 크롭</div>
+                        <div class="ty-funnel-desc">각국 비자 규격 대응</div>
+                    </div>
+                    <span class="ty-funnel-badge">준비 중</span>
+                </div>
+            </div>
+            <button class="ty-retake-btn" onclick="location.reload()">다시 촬영하기</button>
+        </div>
+    </div>
+
+    <div id="controls">
+        <button id="btn-capture" onclick="capturePhoto()"></button>
+    </div>
+
+    <div id="log"></div>
+
+    <canvas id="capture-canvas" style="display:none;"></canvas>
+
+    <script>
+        const MAX_CAPTURE_SIZE = 720;
+        const COACHING_DISPLAY_MS = 10000;
+        const FRAME_INTERVAL_MS = 1000;
+        const CAPTURE_SIZE = 512;
+
+        // === 텍스트 상수 (한국어 고정) ===
+        const TX = {
+            stepReady: '촬영 준비',
+            waiting: '대기 중',
+            connecting: '연결 중',
+            connected: 'AI 연결됨',
+            disconnected: '연결 끊김',
+            faceGuide: '여기에 얼굴을 맞춰주세요',
+            coachingReady: '촬영 OK!',
+            coachingInit: '카메라 앞에 정면을 바라보고 앉아주세요. 자세를 체크합니다.',
+            coachingCheck: '자세를 체크하고 있습니다...',
+            btnStarting: '카메라 시작 중...',
+            step1: 'Step 1: AI 코칭',
+            step2: 'Step 2: 촬영 확인',
+            step3: 'Step 3: AI 생성 + QC',
+            step4: 'Step 4: 클로즈업',
+            resultConfirm: '촬영 확인',
+            resultConfirmSub: '촬영한 사진을 확인해 주세요',
+            resultAIOK: 'AI가 촬영 OK 판정한 사진입니다',
+            generating: '증명사진 생성 중...',
+            generatingSub: 'MONKOS가 처리 중입니다',
+            genLoading: '생성 중...',
+            qcChecking: 'QC 검증 중...',
+            qcVerifying: '품질 검증 중...',
+            qcVerifyingSub: '품질을 검증하고 있습니다',
+            resultDone: '완료!',
+            resultDoneSub: '증명사진이 준비되었습니다',
+            resultFail: 'QC 불합격',
+            resultFailSub: '다시 시도해 주세요',
+            retakeRecommend: '재촬영 권장',
+            genFail: '생성 실패',
+            specDone: '클로즈업 완료',
+            cameraError: '카메라를 시작할 수 없습니다.\n카메라 접근을 허용해 주세요.',
+        };
+        function t(key) { return TX[key] || key; }
+
+        // === 규격 테이블 (mm 기준, 300dpi 출력) ===
+        const DPI = 300;
+        function mmToPx(mm) { return Math.round(mm / 25.4 * DPI); }
+
+        const PHOTO_SPECS = {
+            id_photo: {
+                name: '여권/증명사진 (35x45mm)',
+                widthMM: 35, heightMM: 45,
+                faceTopMM: 7,
+                faceLenMM: 27,
+            },
+            resume: {
+                name: '이력서 (30x40mm)',
+                widthMM: 30, heightMM: 40,
+                faceTopMM: 6,
+                faceLenMM: 24,
+            },
+        };
+
+        let croppedImageData = null;
+        let mediapipeFaceDetector = null;
+
+        let ws = null;
+        let cameraStream = null;
+        let capturedImageData = null;
+        let generatedImageData = null;
+        let frameTimer = null;
+        let coachingTimeout = null;
+        let isReady = false;
+        let currentStep = 0; // 0=준비, 1=코칭, 2=확인, 3=생성
+        let selectedStyle = 'id_photo';
+        let voiceEnabled = true;
+        let koVoice = null;
+
+        const video = document.getElementById('camera-video');
+        const captureCanvas = document.getElementById('capture-canvas');
+        const logEl = document.getElementById('log');
+
+        function log(msg) {
+            const t = new Date().toLocaleTimeString('ko-KR');
+            logEl.textContent = `[${t}] ${msg}\n` + logEl.textContent;
+        }
+
+        // === MediaPipe Face Detection 초기화 (백그라운드) ===
+        async function initMediaPipe() {
+            try {
+                const vision = await import('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/vision_bundle.mjs');
+                const filesetResolver = await vision.FilesetResolver.forVisionTasks(
+                    'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm'
+                );
+                mediapipeFaceDetector = await vision.FaceDetector.createFromOptions(filesetResolver, {
+                    baseOptions: {
+                        modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/latest/blaze_face_short_range.tflite',
+                    },
+                    runningMode: 'IMAGE',
+                });
+                log('MediaPipe 얼굴 검출: 준비 완료');
+            } catch (e) {
+                log('MediaPipe 초기화 스킵: ' + e.message);
+            }
+        }
+        initMediaPipe();
+
+        // === 음성 가이드 (Web Speech API) ===
+        function initVoice() {
+            const voices = speechSynthesis.getVoices();
+            koVoice = voices.find(v => v.name.includes('Yuna'))
+                   || voices.find(v => v.lang.startsWith('ko'));
+            if (koVoice) log(`음성 가이드: ${koVoice.name}`);
+        }
+        speechSynthesis.onvoiceschanged = initVoice;
+        initVoice();
+
+        function speakKo(text) {
+            if (!voiceEnabled || !('speechSynthesis' in window)) return;
+            speechSynthesis.cancel();
+            const u = new SpeechSynthesisUtterance(text);
+            u.lang = 'ko-KR';
+            u.rate = 1.1;
+            u.pitch = 1.05;
+            if (koVoice) u.voice = koVoice;
+            speechSynthesis.speak(u);
+        }
+
+        function toggleVoice() {
+            voiceEnabled = !voiceEnabled;
+            const btn = document.getElementById('btn-voice');
+            btn.textContent = voiceEnabled ? '🔊' : '🔇';
+            btn.title = voiceEnabled ? '음성 ON' : '음성 OFF';
+            log(`음성 가이드: ${voiceEnabled ? 'ON' : 'OFF'}`);
+        }
+
+        // === 준비 화면 스타일 선택 ===
+        document.querySelectorAll('.prep-style-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                document.querySelectorAll('.prep-style-chip').forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+                selectedStyle = chip.dataset.style;
+                syncStyleChips(selectedStyle);
+            });
+        });
+
+        document.querySelectorAll('.style-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                document.querySelectorAll('.style-chip').forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+                selectedStyle = chip.dataset.style;
+                log(`스타일: ${chip.textContent}`);
+            });
+        });
+
+        function syncStyleChips(style) {
+            document.querySelectorAll('.style-chip').forEach(c => {
+                c.classList.toggle('active', c.dataset.style === style);
+            });
+        }
+
+        // === 촬영 시작 ===
+        async function startShooting() {
+            // iOS Safari: user gesture 내에서 speechSynthesis를 한 번 호출해야 이후 동작
+            if ('speechSynthesis' in window) {
+                const warmup = new SpeechSynthesisUtterance('');
+                warmup.volume = 0;
+                speechSynthesis.speak(warmup);
+            }
+
+            const btn = document.getElementById('btn-start');
+            btn.disabled = true;
+            btn.textContent = t('btnStarting');
+
+            try {
+                await initCamera();
+                document.getElementById('prep-screen').classList.add('hidden');
+                document.getElementById('camera-area').classList.add('active');
+                document.getElementById('controls').classList.add('active');
+                document.getElementById('step-label').textContent = t('step1');
+                currentStep = 1;
+                connectWS();
+                log('촬영 모드 시작');
+            } catch (err) {
+                btn.disabled = false;
+                btn.textContent = '촬영 시작하기';
+                alert(t('cameraError'));
+                log('카메라 시작 실패: ' + err.message);
+            }
+        }
+
+        // === WebSocket ===
+        function connectWS() {
+            const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            ws = new WebSocket(`${protocol}//${location.host}`);
+            setDot('wait', t('connecting'));
+
+            ws.onopen = () => {
+                setDot('on', t('connected'));
+                log('서버 연결 완료');
+                startFrameCapture();
+                showCoaching(t('coachingInit'));
+            };
+
+            ws.onmessage = async (e) => {
+                let msg;
+                try {
+                    const raw = (e.data instanceof Blob) ? await e.data.text() : e.data;
+                    msg = JSON.parse(raw);
+                } catch { return; }
+
+                if (msg.type === 'ai-coaching') {
+                    showCoaching(msg.text);
+                } else if (msg.type === 'generate-start') {
+                    showStep3Loading();
+                } else if (msg.type === 'generate-result') {
+                    showGeneratedPhoto(msg.image);
+                } else if (msg.type === 'generate-error') {
+                    showGenerateError(msg.error);
+                } else if (msg.type === 'qc-result') {
+                    showQCResult(msg.result);
+                } else if (msg.type === 'qc-error') {
+                    showQCError(msg.error);
+                }
+            };
+
+            ws.onclose = () => {
+                setDot('off', t('disconnected'));
+                stopFrameCapture();
+                if (currentStep >= 1) setTimeout(connectWS, 3000);
+            };
+        }
+
+        function setDot(state, text) {
+            document.getElementById('ws-dot').className = 'dot dot-' + state;
+            document.getElementById('ws-status').textContent = text;
+        }
+
+        // === 카메라 ===
+        async function initCamera() {
+            cameraStream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: 'user', width: { ideal: 720 }, height: { ideal: 960 } },
+                audio: false,
+            });
+            video.srcObject = cameraStream;
+            log('카메라 초기화 완료');
+        }
+
+        // === 프레임 캡처 → WS 전송 ===
+        let prevFrameData = null;
+
+        function startFrameCapture() {
+            if (frameTimer) return;
+            frameTimer = setInterval(() => {
+                if (currentStep !== 1 || !ws || ws.readyState !== 1) return;
+                if (video.videoWidth === 0) return;
+
+                captureCanvas.width = CAPTURE_SIZE;
+                captureCanvas.height = CAPTURE_SIZE;
+                const ctx = captureCanvas.getContext('2d');
+
+                const vw = video.videoWidth, vh = video.videoHeight;
+                const cropSize = Math.min(vw, vh);
+                const sx = (vw - cropSize) / 2, sy = (vh - cropSize) / 2;
+                ctx.drawImage(video, sx, sy, cropSize, cropSize, 0, 0, CAPTURE_SIZE, CAPTURE_SIZE);
+
+                const imgData = ctx.getImageData(0, 0, CAPTURE_SIZE, CAPTURE_SIZE);
+                if (prevFrameData && !detectChange(prevFrameData, imgData)) return;
+                prevFrameData = imgData;
+
+                captureCanvas.toBlob((blob) => {
+                    if (blob && ws && ws.readyState === 1) {
+                        blob.arrayBuffer().then(buf => ws.send(buf));
+                    }
+                }, 'image/jpeg', 0.6);
+            }, FRAME_INTERVAL_MS);
+        }
+
+        function stopFrameCapture() {
+            if (frameTimer) { clearInterval(frameTimer); frameTimer = null; }
+        }
+
+        function detectChange(prev, curr) {
+            const d1 = prev.data, d2 = curr.data;
+            let diff = 0, samples = 0;
+            for (let i = 0; i < d1.length; i += 160) {
+                diff += Math.abs(d1[i] - d2[i]);
+                samples++;
+            }
+            return (diff / samples / 255) > 0.03;
+        }
+
+        // === 코칭 표시 ===
+        function showCoaching(text) {
+            const overlay = document.getElementById('coaching-overlay');
+            const textEl = document.getElementById('coaching-text');
+            const labelEl = document.getElementById('coaching-label');
+            const btn = document.getElementById('btn-capture');
+
+            textEl.textContent = text;
+            overlay.classList.add('active');
+
+            speakKo(text);
+
+            if (text.includes('좋습니다') || text.includes('촬영해') || text.includes('괜찮') || text.includes('OK') || text.includes('완벽')) {
+                isReady = true;
+                overlay.classList.add('ready');
+                btn.classList.add('ready');
+                labelEl.innerHTML = `<span class="coaching-pulse"></span> ${t('coachingReady')}`;
+            } else {
+                isReady = false;
+                overlay.classList.remove('ready');
+                btn.classList.remove('ready');
+                labelEl.innerHTML = `<span class="coaching-pulse"></span> AI 코칭 중`;
+            }
+
+            if (coachingTimeout) clearTimeout(coachingTimeout);
+            coachingTimeout = setTimeout(() => {
+                overlay.classList.remove('active');
+            }, COACHING_DISPLAY_MS);
+        }
+
+        // === Step 2: 촬영 ===
+        function capturePhoto() {
+            if (currentStep !== 1) return;
+
+            const canvas = captureCanvas;
+            const ctx = canvas.getContext('2d');
+            const vw = video.videoWidth, vh = video.videoHeight;
+
+            let tw = vw, th = vh;
+            if (tw > MAX_CAPTURE_SIZE || th > MAX_CAPTURE_SIZE) {
+                const ratio = Math.min(MAX_CAPTURE_SIZE / tw, MAX_CAPTURE_SIZE / th);
+                tw = Math.round(tw * ratio);
+                th = Math.round(th * ratio);
+            }
+            canvas.width = tw;
+            canvas.height = th;
+
+            ctx.translate(canvas.width, 0);
+            ctx.scale(-1, 1);
+            ctx.drawImage(video, 0, 0, vw, vh, 0, 0, tw, th);
+
+            capturedImageData = canvas.toDataURL('image/jpeg', 0.8);
+
+            currentStep = 2;
+            stopFrameCapture();
+            document.getElementById('coaching-overlay').classList.remove('active');
+            document.getElementById('step-label').textContent = t('step2');
+            document.getElementById('photo-original').src = capturedImageData;
+            document.getElementById('photo-generated-wrap').style.display = 'none';
+            document.getElementById('qc-badge').style.display = 'none';
+            document.getElementById('step2-actions').style.display = 'flex';
+            document.getElementById('step3-actions').style.display = 'none';
+            document.getElementById('result-overlay').classList.add('active');
+            document.getElementById('result-title').textContent = t('resultConfirm');
+            document.getElementById('result-subtitle').textContent = isReady
+                ? t('resultAIOK')
+                : t('resultConfirmSub');
+
+            log('촬영 완료');
+        }
+
+        function retakePhoto() {
+            currentStep = 1;
+            capturedImageData = null;
+            generatedImageData = null;
+            croppedImageData = null;
+            prevFrameData = null;
+            document.getElementById('spec-result').classList.remove('active');
+            document.getElementById('step-label').textContent = t('step1');
+            document.getElementById('result-overlay').classList.remove('active');
+            startFrameCapture();
+
+            if (ws && ws.readyState === 1) {
+                ws.send(JSON.stringify({ type: 'restart-coaching' }));
+            }
+            log('재촬영');
+        }
+
+        // === Step 3: 생성 + QC ===
+        function confirmAndGenerate() {
+            if (!capturedImageData) return;
+
+            currentStep = 3;
+            document.getElementById('step-label').textContent = t('step3');
+            document.getElementById('step2-actions').style.display = 'none';
+            document.getElementById('result-title').textContent = t('generating');
+            document.getElementById('result-subtitle').textContent = t('generatingSub');
+
+            const base64 = capturedImageData.includes(',') ? capturedImageData.split(',')[1] : capturedImageData;
+
+            ws.send(JSON.stringify({
+                type: 'generate',
+                image: base64,
+                style: selectedStyle,
+            }));
+        }
+
+        function showStep3Loading() {
+            document.getElementById('qc-badge').style.display = 'block';
+            document.getElementById('qc-badge').className = 'pending';
+            document.getElementById('qc-badge').innerHTML = `<span class="spinner"></span> ${t('genLoading')}`;
+        }
+
+        function showGeneratedPhoto(imageData) {
+            generatedImageData = imageData;
+            document.getElementById('photo-generated').src = imageData;
+            document.getElementById('photo-generated-wrap').style.display = 'block';
+            document.getElementById('result-title').textContent = t('qcVerifying');
+            document.getElementById('result-subtitle').textContent = t('qcVerifyingSub');
+            document.getElementById('qc-badge').innerHTML = `<span class="spinner"></span> ${t('qcChecking')}`;
+
+            log('생성 완료 → QC 시작');
+
+            const origBase64 = capturedImageData.includes(',') ? capturedImageData.split(',')[1] : capturedImageData;
+            const genBase64 = imageData.includes(',') ? imageData.split(',')[1] : imageData;
+
+            ws.send(JSON.stringify({
+                type: 'qc',
+                original: origBase64,
+                generated: genBase64,
+            }));
+        }
+
+        function showQCResult(result) {
+            const badge = document.getElementById('qc-badge');
+            const passed = result.identity === 'PASS' || result.same_person === true;
+            const similarity = result.similarity || '?';
+
+            badge.className = passed ? 'pass' : 'fail';
+            badge.textContent = passed
+                ? `PASS — ${similarity}% | ${result.note || result.quality || ''}`
+                : `FAIL — ${similarity}% | ${result.note || t('retakeRecommend')}`;
+
+            document.getElementById('result-title').textContent = passed ? t('resultDone') : t('resultFail');
+            document.getElementById('result-subtitle').textContent = passed ? t('resultDoneSub') : t('resultFailSub');
+
+            document.getElementById('step3-actions').style.display = 'flex';
+            document.getElementById('btn-download').disabled = !passed;
+
+            if (passed) {
+                document.getElementById('step-label').textContent = t('resultDone');
+            }
+
+            log(`QC: ${passed ? 'PASS' : 'FAIL'} (${similarity}%)`);
+        }
+
+        function showGenerateError(error) {
+            document.getElementById('qc-badge').className = 'fail';
+            document.getElementById('qc-badge').textContent = t('genFail') + ': ' + error;
+            document.getElementById('result-title').textContent = t('genFail');
+            document.getElementById('step3-actions').style.display = 'flex';
+            log('생성 에러: ' + error);
+        }
+
+        function showQCError(error) {
+            document.getElementById('qc-badge').className = 'fail';
+            document.getElementById('qc-badge').textContent = 'QC: ' + error;
+            document.getElementById('step3-actions').style.display = 'flex';
+            document.getElementById('btn-download').disabled = false;
+            log('QC 에러: ' + error);
+        }
+
+        function regenerate() {
+            confirmAndGenerate();
+        }
+
+        // === 규격 크롭 엔진 ===
+        async function cropToSpec(imageDataUrl, style) {
+            const spec = PHOTO_SPECS[style] || PHOTO_SPECS.id_photo;
+            const outputW = mmToPx(spec.widthMM);
+            const outputH = mmToPx(spec.heightMM);
+
+            const img = new Image();
+            img.src = imageDataUrl;
+            await new Promise((resolve, reject) => {
+                img.onload = resolve;
+                img.onerror = reject;
+            });
+
+            let faceBox = null;
+            let detectMethod = '';
+
+            if (!faceBox && mediapipeFaceDetector) {
+                try {
+                    const result = mediapipeFaceDetector.detect(img);
+                    if (result.detections.length > 0) {
+                        const bbox = result.detections[0].boundingBox;
+                        faceBox = {
+                            x: bbox.originX,
+                            y: bbox.originY,
+                            width: bbox.width,
+                            height: bbox.height,
+                        };
+                        detectMethod = 'MediaPipe';
+                    }
+                } catch (e) {
+                    log('MediaPipe 검출 에러: ' + e.message);
+                }
+            }
+
+            if (!faceBox && 'FaceDetector' in window) {
+                try {
+                    const detector = new FaceDetector();
+                    const faces = await detector.detect(img);
+                    if (faces.length > 0) {
+                        faceBox = faces[0].boundingBox;
+                        detectMethod = 'Chrome API';
+                    }
+                } catch (e) {
+                    log('Chrome FaceDetector: ' + e.message);
+                }
+            }
+
+            if (!faceBox) {
+                const estW = img.width * 0.45;
+                const estH = img.height * 0.50;
+                faceBox = {
+                    x: (img.width - estW) / 2,
+                    y: img.height * 0.06,
+                    width: estW,
+                    height: estH,
+                };
+                detectMethod = '휴리스틱';
+            }
+
+            log(`얼굴 검출[${detectMethod}]: ${Math.round(faceBox.width)}x${Math.round(faceBox.height)}px`);
+
+            const faceTop = faceBox.y;
+            const faceCenterX = faceBox.x + faceBox.width / 2;
+            const faceHeight = faceBox.height;
+
+            const pxPerMM = faceHeight / spec.faceLenMM;
+
+            const srcW = spec.widthMM * pxPerMM;
+            const srcH = spec.heightMM * pxPerMM;
+
+            const srcY = faceTop - (spec.faceTopMM * pxPerMM);
+            const srcX = faceCenterX - srcW / 2;
+
+            const clampedX = Math.max(0, Math.min(srcX, img.width - srcW));
+            const clampedY = Math.max(0, Math.min(srcY, img.height - srcH));
+
+            const canvas = document.createElement('canvas');
+            canvas.width = outputW;
+            canvas.height = outputH;
+            const ctx = canvas.getContext('2d');
+
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, outputW, outputH);
+
+            ctx.drawImage(img, clampedX, clampedY, srcW, srcH, 0, 0, outputW, outputH);
+
+            const dataUrl = canvas.toDataURL('image/png');
+            log(`규격 크롭: ${outputW}x${outputH}px (${spec.widthMM}x${spec.heightMM}mm @${DPI}dpi)`);
+
+            return {
+                dataUrl,
+                spec,
+                outputW,
+                outputH,
+            };
+        }
+
+        async function showSpecResult() {
+            try {
+                const result = await cropToSpec(generatedImageData, selectedStyle);
+                croppedImageData = result.dataUrl;
+
+                const specPhoto = document.getElementById('spec-photo');
+                const displayH = 200;
+                const displayW = Math.round(displayH * result.outputW / result.outputH);
+                specPhoto.src = result.dataUrl;
+                specPhoto.style.width = displayW + 'px';
+                specPhoto.style.height = displayH + 'px';
+
+                document.getElementById('spec-name').textContent = result.spec.name;
+                document.getElementById('spec-size').textContent = `${result.spec.widthMM}x${result.spec.heightMM}mm`;
+                document.getElementById('spec-px').textContent = `${result.outputW}x${result.outputH}px`;
+                document.getElementById('spec-result').classList.add('active');
+            } catch (e) {
+                log('규격 크롭 실패: ' + e.message);
+            }
+        }
+
+        // data:image/* → JPEG data URL 변환
+        function toJpegDataUrl(dataUrl, quality = 0.92) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = () => {
+                    const c = document.createElement('canvas');
+                    c.width = img.width;
+                    c.height = img.height;
+                    const ctx = c.getContext('2d');
+                    ctx.fillStyle = '#fff';
+                    ctx.fillRect(0, 0, c.width, c.height);
+                    ctx.drawImage(img, 0, 0);
+                    resolve(c.toDataURL('image/jpeg', quality));
+                };
+                img.src = dataUrl;
+            });
+        }
+
+        function cleanupSession() {
+            if (frameTimer) { clearInterval(frameTimer); frameTimer = null; }
+            if (ws) { try { ws.close(); } catch(e) {} ws = null; }
+            if (cameraStream) { cameraStream.getTracks().forEach(t => t.stop()); cameraStream = null; }
+            if ('speechSynthesis' in window) speechSynthesis.cancel();
+        }
+
+        async function downloadResult() {
+            if (!generatedImageData) return;
+            cleanupSession();
+            document.getElementById('ty-photo').src = generatedImageData;
+            document.getElementById('thankyou-screen').classList.add('active');
+            log('Thank You 페이지 표시');
+        }
+
+        async function doDownload() {
+            if (!generatedImageData) return;
+            const jpegUrl = await toJpegDataUrl(generatedImageData, 0.92);
+            const a = document.createElement('a');
+            a.href = jpegUrl;
+            a.download = `monkos_photo_${Date.now()}.jpg`;
+            a.click();
+            // 토스트
+            const msg = document.createElement('div');
+            msg.textContent = '사진이 저장되었습니다';
+            msg.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.85);color:#fff;padding:12px 24px;border-radius:12px;font-size:14px;z-index:9999;';
+            document.body.appendChild(msg);
+            setTimeout(() => msg.remove(), 3000);
+            log('JPEG 저장 완료');
+        }
+
+        // === 모바일 판정 ===
+        function isMobile() {
+            return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+                || (navigator.maxTouchPoints > 0 && window.innerWidth < 1024);
+        }
+
+        function showDesktopBlocker() {
+            const blocker = document.getElementById('desktop-blocker');
+            blocker.classList.add('active');
+            const pageUrl = location.href.replace('localhost:8080', 'idphoto-kr.monkos.ai');
+            document.getElementById('page-url').textContent = pageUrl;
+            document.getElementById('qr-code').src =
+                `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(pageUrl)}&bgcolor=ffffff&color=000000`;
+        }
+
+        // === 초기화 ===
+        const devMode = new URLSearchParams(location.search).has('dev');
+        if (!isMobile() && !devMode) {
+            showDesktopBlocker();
+        }
+    </script>
+</body>
+</html>

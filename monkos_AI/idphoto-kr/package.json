@@ -1,0 +1,17 @@
+{
+  "name": "@monkos/idphoto-kr",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "description": "MONKOS AI 증명사진 (한국 특화) — idphoto-kr.monkos.ai | Vertex AI ADC 통합 인증",
+  "dependencies": {
+    "@google/genai": "^1.40.0",
+    "ws": "^8.19.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
