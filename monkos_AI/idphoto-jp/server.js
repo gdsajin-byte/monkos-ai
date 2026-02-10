@@ -64,7 +64,17 @@ const COACHING_INSTRUCTION = `証明写真撮影アシスタント。カメラ�
 - 例: 「あごを少し上げてください」「左の照明が強いです、少し右に移動してください」`;
 
 // === Imagen プロンプト ===
-const IDENTITY_PRESERVATION = `IDENTITY RULE: 90% SAME PERSON + 10% ENHANCEMENT
+const IDENTITY_PRESERVATION = `LIGHTING OVERRIDE (HIGHEST PRIORITY — IGNORE lighting from input image):
+- DISCARD all lighting, shadows, and color cast from the source photo
+- Apply ONLY this studio setup: single large softbox directly above-front (centered, 45° overhead)
+- Result must look like a professional photo studio with flat, even illumination
+- BOTH sides of face equally lit — zero shadow on cheeks, forehead, or neck
+- Only shadow allowed: very soft, small shadow directly under chin
+- f/8 uniform sharpness, 5500K daylight white balance
+- Pure white background (#FFFFFF), evenly lit, no falloff or gradient
+- ABSOLUTELY NO: rembrandt lighting, side light, rim light, split light, dramatic shadows, warm/cool color shifts
+
+IDENTITY RULE: 90% SAME PERSON + 10% ENHANCEMENT
 
 POSE (CRITICAL):
 - MUST be perfectly front-facing, looking directly at the camera
@@ -80,29 +90,25 @@ PRESERVE (90%):
 
 ENHANCE (10% creative freedom):
 - Slightly smoother skin, subtle beauty enhancement
-- Optimal lighting (even, no harsh shadows)
 - Minor imperfections can be softened
 - Make them look their BEST version (not a different person)
 
 DO NOT:
+- Use side lighting, rim lighting, or any dramatic lighting setup
 - Generate side angles or semi-profile poses
 - Change gender, ethnicity, or age by more than 2-3 years
 - Alter fundamental facial features
 - Make them unrecognizable
 
-GOAL: "This is ME, but on my best day" - perfectly front-facing, 90% accuracy, 10% professional retouching.`;
+GOAL: "This is ME, but on my best day" - perfectly front-facing, studio flat lighting, 90% accuracy, 10% professional retouching.`;
 
 const STYLE_PROMPTS = {
-  id_photo: 'Professional ID photo, perfectly front-facing looking directly at camera, studio lighting, formal white background, sharp focus, passport-style portrait, head straight, symmetric',
-  resume: 'Professional resume photo for Japanese job application (履歴書), perfectly front-facing looking directly at camera, clean white background, business formal attire, 3:4 ratio, approachable expression',
-  profile: 'Professional business profile photo, perfectly front-facing looking directly at camera, soft studio lighting, neutral background, confident expression',
-  mynumber: 'Japanese My Number Card photo (マイナンバーカード), perfectly front-facing looking directly at camera, white background, no shadows, neutral expression, sharp focus',
+  id_photo: 'Professional passport/ID photo, perfectly front-facing looking directly at camera, formal white background, sharp focus, head straight, symmetric composition',
+  resume: 'Professional resume photo for Japanese job application (履歴書), perfectly front-facing looking directly at camera, clean white background, business formal attire, 3:4 ratio, approachable yet professional expression',
 };
 
-const OUTFIT_PROMPTS = {
-  keep: '', // そのまま — 追加指示なし
-  suit: 'OUTFIT CHANGE: Replace the current clothing with a clean, dark navy or charcoal formal business suit with white dress shirt and tie. Keep the person\'s face, hair, and body exactly the same — only change the clothing to professional business attire.',
-};
+// 衣装: スーツ固定 (将来ファネルで選択肢追加)
+const OUTFIT_PROMPT = 'OUTFIT: Always dress the person in a clean, dark navy or charcoal formal business suit with white dress shirt and subtle tie. Keep the person\'s face, hair, and body exactly the same — only ensure professional business attire.';
 
 // === QC プロンプト (日本語) ===
 const QC_INSTRUCTION = `2つの画像を比較してください。
@@ -184,11 +190,10 @@ async function createGeminiSession(clientId) {
 }
 
 // === Imagen I2I 生成 (Google AI Studio API Key) ===
-async function generatePhoto(inputBase64, style = 'id_photo', outfit = 'keep') {
+async function generatePhoto(inputBase64, style = 'id_photo') {
   const base64Data = inputBase64.includes(',') ? inputBase64.split(',')[1] : inputBase64;
   const stylePrompt = STYLE_PROMPTS[style] || STYLE_PROMPTS.id_photo;
-  const outfitPrompt = OUTFIT_PROMPTS[outfit] || '';
-  const instruction = `${IDENTITY_PRESERVATION}\n\n[IMAGE-TO-IMAGE TRANSFORM] ${stylePrompt}${outfitPrompt ? '\n\n' + outfitPrompt : ''}`;
+  const instruction = `${IDENTITY_PRESERVATION}\n\n[IMAGE-TO-IMAGE TRANSFORM] ${stylePrompt}\n\n${OUTFIT_PROMPT}`;
 
   const response = await imagenAI.models.generateContent({
     model: 'gemini-3-pro-image-preview',
@@ -348,10 +353,10 @@ wss.on('connection', async (ws) => {
 
     // Imagen 生成リクエスト
     if (msg.type === 'generate') {
-      log(`[Imagen][${clientId}] 生成リクエスト: style=${msg.style}, outfit=${msg.outfit || 'keep'}`);
+      log(`[Imagen][${clientId}] 生成リクエスト: style=${msg.style}`);
       ws.send(JSON.stringify({ type: 'generate-start' }));
       try {
-        const result = await generatePhoto(msg.image, msg.style, msg.outfit);
+        const result = await generatePhoto(msg.image, msg.style);
         ws.send(JSON.stringify({ type: 'generate-result', image: result }));
         log(`[Imagen][${clientId}] 生成完了`);
       } catch (err) {
