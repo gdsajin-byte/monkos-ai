@@ -843,7 +843,7 @@
             disconnected: '연결 끊김',
             faceGuide: '여기에 얼굴을 맞춰주세요',
             coachingReady: '촬영 OK!',
-            coachingInit: '카메라 앞에 정면을 바라보고 앉아주세요. 자세를 체크합니다.',
+            coachingInit: '안녕하세요! MONKOS AI 코치입니다. 정면을 바라봐 주시면 자세와 조명을 체크해 드릴게요!',
             coachingCheck: '자세를 체크하고 있습니다...',
             btnStarting: '카메라 시작 중...',
             step1: 'Step 1: AI 코칭',
@@ -1252,6 +1252,7 @@
                     userCredits = msg.credits;
                     updateCreditBadge();
                 } else if (msg.type === 'ai-coaching') {
+                    if (currentStep !== 1) return; // 촬영 중에만 코칭 표시
                     showCoaching(msg.text);
                 } else if (msg.type === 'generate-start') {
                     showStep3Loading();
@@ -1407,6 +1408,11 @@
 
             currentStep = 2;
             stopFrameCapture();
+            // 코칭 세션 중지 (TTS + Gemini Live)
+            if (ws && ws.readyState === 1) {
+                ws.send(JSON.stringify({ type: 'stop-coaching' }));
+            }
+            if ('speechSynthesis' in window) speechSynthesis.cancel();
             document.getElementById('coaching-overlay').classList.remove('active');
             document.getElementById('step-label').textContent = t('step2');
             document.getElementById('photo-original').src = capturedImageData;
