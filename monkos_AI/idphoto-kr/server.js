@@ -161,8 +161,23 @@ const STYLE_PROMPTS = {
   resume: 'Professional resume photo for Korean job application (이력서), perfectly front-facing looking directly at camera, clean white background, business formal attire, 3:4 ratio, approachable yet professional expression',
 };
 
-// 의상: 수트 고정 (향후 퍼널에서 선택지 추가)
-const OUTFIT_PROMPT = 'OUTFIT: Always dress the person in a clean, dark navy or charcoal formal business suit with white dress shirt and subtle tie. Keep the person\'s face, hair, and body exactly the same — only ensure professional business attire.';
+// 성별/연령별 의상 프롬프트
+function getOutfitPrompt(gender, age) {
+  const genderLabel = gender === 'female' ? 'female/woman' : 'male/man';
+  const ageMap = {
+    child: { label: 'young child (under 12)', outfit: gender === 'female'
+      ? 'a clean white polo shirt or simple blouse, age-appropriate and neat'
+      : 'a clean white polo shirt or simple dress shirt, age-appropriate and neat' },
+    teen: { label: 'teenager (13-18)', outfit: gender === 'female'
+      ? 'a neat school-style blouse or simple formal top, age-appropriate'
+      : 'a clean dress shirt with or without tie, age-appropriate' },
+    adult: { label: 'adult', outfit: gender === 'female'
+      ? 'a professional blouse or women\'s business jacket, formal and clean'
+      : 'a clean, dark navy or charcoal formal business suit with white dress shirt and subtle tie' },
+  };
+  const info = ageMap[age] || ageMap.adult;
+  return `SUBJECT: This person is a ${genderLabel}, ${info.label}. OUTFIT: Dress this person in ${info.outfit}. Keep the person's face, hair, and body exactly the same — only ensure appropriate attire. DO NOT change the person's apparent gender or age.`;
+}
 
 // === QC 프롬프트 (한국어) ===
 const QC_INSTRUCTION = `2개의 이미지를 비교해 주세요.
@@ -244,10 +259,11 @@ async function createGeminiSession(clientId) {
 }
 
 // === Imagen I2I 생성 (Google AI Studio API Key) ===
-async function generatePhoto(inputBase64, style = 'id_photo') {
+async function generatePhoto(inputBase64, style = 'id_photo', gender = 'male', age = 'adult') {
   const base64Data = inputBase64.includes(',') ? inputBase64.split(',')[1] : inputBase64;
   const stylePrompt = STYLE_PROMPTS[style] || STYLE_PROMPTS.id_photo;
-  const instruction = `${IDENTITY_PRESERVATION}\n\n[IMAGE-TO-IMAGE TRANSFORM] ${stylePrompt}\n\n${OUTFIT_PROMPT}`;
+  const outfitPrompt = getOutfitPrompt(gender, age);
+  const instruction = `${IDENTITY_PRESERVATION}\n\n[IMAGE-TO-IMAGE TRANSFORM] ${stylePrompt}\n\n${outfitPrompt}`;
 
   const response = await imagenAI.models.generateContent({
     model: 'gemini-3-pro-image-preview',
@@ -407,7 +423,7 @@ wss.on('connection', async (ws) => {
 
     // Imagen 생성 요청 (크레딧 체크)
     if (msg.type === 'generate') {
-      log(`[Imagen][${clientId}] 생성 요청: style=${msg.style}, userId=${msg.userId || 'anonymous'}`);
+      log(`[Imagen][${clientId}] 생성 요청: style=${msg.style}, gender=${msg.gender || 'male'}, age=${msg.age || 'adult'}, userId=${msg.userId || 'anonymous'}`);
 
       // 크레딧 체크 및 차감 (1c)
       if (msg.userId) {
@@ -428,7 +444,7 @@ wss.on('connection', async (ws) => {
 
       ws.send(JSON.stringify({ type: 'generate-start' }));
       try {
-        const result = await generatePhoto(msg.image, msg.style);
+        const result = await generatePhoto(msg.image, msg.style, msg.gender, msg.age);
         ws.send(JSON.stringify({ type: 'generate-result', image: result }));
         log(`[Imagen][${clientId}] 생성 완료`);
       } catch (err) {

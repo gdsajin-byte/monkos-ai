@@ -73,6 +73,28 @@
         }
         .prep-check-text span { color: #888; }
 
+        /* 성별/연령 선택 */
+        .prep-profile {
+            display: flex; gap: 16px; justify-content: center;
+            margin-bottom: 16px; flex-wrap: wrap;
+        }
+        .prep-profile-group {
+            display: flex; gap: 6px; align-items: center;
+        }
+        .prep-profile-label {
+            font-size: 12px; color: #888; margin-right: 4px;
+        }
+        .prep-profile-chip {
+            padding: 7px 14px; border-radius: 10px;
+            background: #111; border: 1.5px solid #222;
+            font-size: 12px; font-weight: 500; color: #aaa;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .prep-profile-chip.active {
+            background: rgba(167,139,250,0.15);
+            border-color: #a78bfa; color: #a78bfa;
+        }
+
         /* 스타일 선택 (준비 화면) */
         .prep-styles {
             display: flex; gap: 8px; flex-wrap: wrap;
@@ -270,7 +292,7 @@
         }
         .spec-tag strong { color: #ccc; }
 
-        /* Thank You 페이지 */
+        /* 미리보기 모드 */
         #thankyou-screen {
             display: none; position: fixed; inset: 0;
             background: #030508; z-index: 100;
@@ -278,134 +300,63 @@
         }
         #thankyou-screen.active { display: flex; }
         .ty-header {
-            padding: 16px; text-align: center;
-            font-size: 16px; font-weight: 700;
+            padding: 12px 16px; text-align: center;
+            font-size: 15px; font-weight: 700;
             border-bottom: 1px solid #1a1a1a;
+            position: relative;
+        }
+        .ty-close-btn {
+            position: absolute; right: 16px; top: 50%;
+            transform: translateY(-50%);
+            background: none; border: none; color: #888;
+            font-size: 18px; cursor: pointer; padding: 4px 8px;
         }
         .ty-body {
-            flex: 1; padding: 24px 16px; display: flex;
-            flex-direction: column; align-items: center; gap: 20px;
+            flex: 1; padding: 20px 16px; display: flex;
+            flex-direction: column; align-items: center; gap: 16px;
         }
         .ty-preview {
             background: #fff; padding: 6px; border-radius: 12px;
             box-shadow: 0 4px 24px rgba(167,139,250,0.2);
         }
         .ty-preview img {
-            display: block; width: 160px; height: auto; border-radius: 8px;
+            display: block; width: 200px; height: auto; border-radius: 8px;
         }
-        .ty-message {
-            font-size: 18px; font-weight: 700; color: #a78bfa;
-        }
-        .ty-download-btn {
-            width: 100%; max-width: 320px; padding: 16px;
-            background: linear-gradient(135deg, #a78bfa, #7c3aed);
-            color: #fff; border: none; border-radius: 14px;
-            font-size: 16px; font-weight: 700; cursor: pointer;
-        }
-        .ty-download-btn:disabled {
-            background: #333; color: #666; cursor: not-allowed;
-        }
-        /* 다운로드 게이트 */
-        .ty-gate {
+        .ty-actions {
             width: 100%; max-width: 320px;
-            background: #111; border: 1px solid #2a2a2a;
-            border-radius: 14px; padding: 16px;
-        }
-        .ty-gate-title {
-            font-size: 13px; color: #a78bfa; font-weight: 600;
-            text-align: center; margin-bottom: 14px;
-        }
-        .ty-gate-options {
             display: flex; flex-direction: column; gap: 10px;
         }
-        .ty-gate-option {
-            display: flex; align-items: center; gap: 12px;
-            padding: 12px 14px; background: #1a1a1a;
-            border: 1px solid #333; border-radius: 10px;
-            cursor: pointer; transition: all 0.2s;
+        .ty-save-btn {
+            width: 100%; padding: 14px;
+            background: linear-gradient(135deg, #a78bfa, #7c3aed);
+            color: #fff; border: none; border-radius: 12px;
+            font-size: 15px; font-weight: 700; cursor: pointer;
         }
-        .ty-gate-option:hover { border-color: #a78bfa; }
-        .ty-gate-option input { display: none; }
-        .ty-gate-option.selected {
-            border-color: #a78bfa;
-            background: rgba(167,139,250,0.1);
+        .ty-save-btn:disabled {
+            background: #333; color: #666; cursor: not-allowed;
         }
-        .ty-gate-icon { font-size: 20px; }
-        .ty-gate-label { font-size: 14px; color: #ddd; }
-        .ty-gate-action {
-            margin-top: 14px; text-align: center;
+        .ty-share-row {
+            display: flex; gap: 8px;
         }
-        .ty-gate-action-btn {
-            width: 100%; padding: 12px;
-            background: #1a1a1a; border: 1px solid #a78bfa;
+        .ty-share-btn {
+            flex: 1; padding: 10px;
+            background: #1a1a2e; border: 1px solid #2d2d5e;
             color: #a78bfa; border-radius: 10px;
-            font-size: 14px; font-weight: 600; cursor: pointer;
+            font-size: 12px; font-weight: 600; cursor: pointer;
         }
-        .ty-gate-action-btn:hover { background: rgba(167,139,250,0.1); }
-        .ty-gate-checkbox {
-            display: flex; align-items: center; gap: 10px;
-            padding: 10px; background: #1a1a1a; border-radius: 8px;
+        .ty-share-btn:hover { border-color: #a78bfa; }
+        .ty-credit-msg {
+            text-align: center; font-size: 12px; color: #888;
         }
-        .ty-gate-checkbox input[type="checkbox"] {
-            width: 20px; height: 20px; accent-color: #a78bfa;
+        .ty-nav {
+            display: flex; gap: 8px; width: 100%; max-width: 320px;
         }
-        .ty-gate-checkbox label { font-size: 13px; color: #ccc; cursor: pointer; }
-        .ty-funnel-section {
-            width: 100%; max-width: 320px; margin-top: 8px;
+        .ty-nav button {
+            flex: 1; padding: 10px; background: #111;
+            border: 1px solid #2a2a2a; border-radius: 10px;
+            color: #aaa; font-size: 13px; cursor: pointer;
         }
-        .ty-funnel-title {
-            font-size: 13px; color: #666; margin-bottom: 10px;
-            text-align: center;
-        }
-        .ty-funnel-item {
-            display: flex; align-items: center; gap: 12px;
-            padding: 14px; background: #111; border: 1px solid #222;
-            border-radius: 12px; margin-bottom: 8px;
-        }
-        .ty-funnel-item.disabled { opacity: 0.5; }
-        .ty-funnel-icon { font-size: 24px; flex-shrink: 0; }
-        .ty-funnel-name { font-size: 14px; font-weight: 600; color: #ddd; }
-        .ty-funnel-desc { font-size: 11px; color: #888; margin-top: 2px; }
-        .ty-funnel-badge {
-            margin-left: auto; font-size: 10px; color: #666;
-            background: #1a1a1a; padding: 3px 8px; border-radius: 6px;
-            white-space: nowrap;
-        }
-        .ty-retake-btn {
-            background: none; border: 1px solid #333; color: #888;
-            padding: 12px 24px; border-radius: 10px; font-size: 13px;
-            cursor: pointer; margin-top: 8px;
-        }
-        .ty-post-download {
-            display: none; width: 100%; max-width: 320px;
-            flex-direction: column; gap: 10px; margin-top: 16px;
-        }
-        .ty-post-download.active { display: flex; }
-        .ty-post-download .ty-credit-used {
-            text-align: center; font-size: 13px; color: #a78bfa;
-            padding: 8px 0; font-weight: 600;
-        }
-        .ty-post-nav {
-            display: flex; gap: 10px;
-        }
-        .ty-post-nav button {
-            flex: 1; padding: 12px 8px; border-radius: 10px;
-            font-size: 13px; font-weight: 600; cursor: pointer;
-            border: 1px solid #333; background: #111; color: #ccc;
-            transition: all 0.2s;
-        }
-        .ty-post-nav button:hover { border-color: #a78bfa; color: #fff; }
-        .ty-event-btn {
-            width: 100%; padding: 14px; border-radius: 12px;
-            background: linear-gradient(135deg, #f59e0b, #ef4444);
-            color: #fff; border: none; font-size: 14px; font-weight: 700;
-            cursor: pointer; transition: opacity 0.2s;
-        }
-        .ty-event-btn:hover { opacity: 0.9; }
-        @keyframes pulse {
-            0%, 100% { border-color: #333; }
-            50% { border-color: #a78bfa; box-shadow: 0 0 12px rgba(167,139,250,0.3); }
-        }
+        .ty-nav button:hover { border-color: #a78bfa; color: #fff; }
 
         /* 하단 컨트롤 */
         #controls {
@@ -654,6 +605,21 @@
             </div>
         </div>
 
+        <!-- 성별/연령 선택 -->
+        <div class="prep-profile">
+            <div class="prep-profile-group">
+                <span class="prep-profile-label">성별</span>
+                <div class="prep-profile-chip active" data-gender="male">남성</div>
+                <div class="prep-profile-chip" data-gender="female">여성</div>
+            </div>
+            <div class="prep-profile-group">
+                <span class="prep-profile-label">연령</span>
+                <div class="prep-profile-chip" data-age="child">유아~12세</div>
+                <div class="prep-profile-chip" data-age="teen">13~18세</div>
+                <div class="prep-profile-chip active" data-age="adult">19세 이상</div>
+            </div>
+        </div>
+
         <!-- 스타일 선택 -->
         <div class="prep-styles">
             <div class="prep-style-chip active" data-style="id_photo">여권/증명사진</div>
@@ -731,91 +697,36 @@
             <!-- Step 3 버튼 -->
             <div id="step3-actions" style="display:none; gap:10px; padding:16px; justify-content:center; flex-wrap:wrap;">
                 <button class="btn btn-secondary" onclick="retakePhoto()">다시 찍기</button>
-                <button class="btn btn-success" id="btn-download" onclick="downloadResult()" disabled>저장</button>
+                <button class="btn btn-success" id="btn-download" onclick="downloadResult()" disabled>📥 다운로드 (10c)</button>
             </div>
         </div>
     </div>
 
-    <!-- Thank You 페이지 -->
+    <!-- 미리보기 모드 -->
     <div id="thankyou-screen">
         <div class="ty-header">
             <span class="brand">MONKOS</span> AI 증명사진
+            <button class="ty-close-btn" onclick="location.reload()">✕</button>
         </div>
         <div class="ty-body">
             <div class="ty-preview">
                 <img id="ty-photo" src="" alt="증명사진">
             </div>
-            <div class="ty-message">증명사진이 완성되었습니다</div>
 
-            <!-- 크레딧 정보 -->
-            <div class="ty-gate" id="creditInfo" style="display:none;">
-                <div class="ty-gate-title">💎 다운로드 비용: 10 크레딧</div>
-                <div style="text-align:center; padding: 8px 0;">
-                    <div style="font-size: 24px; font-weight: 700; color: #a78bfa;" id="tyCredits">0c</div>
-                    <div style="font-size: 12px; color: #666;">보유 크레딧</div>
-                </div>
-            </div>
-
-            <!-- 다운로드 게이트 (공유로 크레딧 획득) -->
-            <div class="ty-gate" id="downloadGate">
-                <div class="ty-gate-title">💎 공유하면 +10 크레딧!</div>
-                <div class="ty-gate-options">
-                    <label class="ty-gate-option" onclick="selectGateOption('x')">
-                        <input type="radio" name="gate" value="x">
-                        <span class="ty-gate-icon">𝕏</span>
-                        <span class="ty-gate-label">X에 공유 (+10c)</span>
-                    </label>
-                    <label class="ty-gate-option" onclick="selectGateOption('instagram')">
-                        <input type="radio" name="gate" value="instagram">
-                        <span class="ty-gate-icon">📷</span>
-                        <span class="ty-gate-label">Instagram에 공유 (+10c)</span>
-                    </label>
-                </div>
-                <div class="ty-gate-action" id="gateAction" style="display:none;"></div>
-            </div>
-
-            <button class="ty-download-btn" id="tyDownloadBtn" onclick="doGatedDownload()" disabled>
-                📥 사진 다운로드
-            </button>
-            <div class="ty-funnel-section">
-                <div class="ty-funnel-title">옵션 서비스</div>
-                <div class="ty-funnel-item disabled">
-                    <span class="ty-funnel-icon">🛂</span>
-                    <div>
-                        <div class="ty-funnel-name">여권 규격 크롭</div>
-                        <div class="ty-funnel-desc">35x45mm / ICAO 준수 / 300dpi</div>
-                    </div>
-                    <span class="ty-funnel-badge">준비 중</span>
-                </div>
-                <div class="ty-funnel-item disabled">
-                    <span class="ty-funnel-icon">📄</span>
-                    <div>
-                        <div class="ty-funnel-name">이력서 규격 크롭</div>
-                        <div class="ty-funnel-desc">30x40mm / 한국 이력서 표준</div>
-                    </div>
-                    <span class="ty-funnel-badge">준비 중</span>
-                </div>
-                <div class="ty-funnel-item disabled">
-                    <span class="ty-funnel-icon">✈️</span>
-                    <div>
-                        <div class="ty-funnel-name">비자 규격 크롭</div>
-                        <div class="ty-funnel-desc">각국 비자 규격 대응</div>
-                    </div>
-                    <span class="ty-funnel-badge">준비 중</span>
-                </div>
-            </div>
-            <button class="ty-retake-btn" id="tyRetakeBtn" onclick="location.reload()">다시 촬영하기</button>
-
-            <!-- 다운로드 완료 후 액션 -->
-            <div class="ty-post-download" id="postDownload">
-                <div class="ty-credit-used" id="postCreditMsg"></div>
-                <div class="ty-post-nav">
-                    <button onclick="location.href='/'">🏠 메인</button>
-                    <button onclick="location.reload()">📸 추가 촬영</button>
-                </div>
-                <button class="ty-event-btn" onclick="showEventModal()">
-                    🎁 SNS 공유하고 10크레딧 받기
+            <div class="ty-actions">
+                <button class="ty-save-btn" id="tySaveBtn" onclick="saveToPhotos()">
+                    📲 사진 저장
                 </button>
+                <div class="ty-share-row">
+                    <button class="ty-share-btn" onclick="shareToX()">𝕏 공유 (+10c)</button>
+                    <button class="ty-share-btn" onclick="shareToInstagram()">📷 IG공유 (+10c)</button>
+                </div>
+                <div class="ty-credit-msg" id="postCreditMsg"></div>
+            </div>
+
+            <div class="ty-nav">
+                <button onclick="location.href='/'">🏠 메인</button>
+                <button onclick="location.reload()">📸 추가 촬영</button>
             </div>
         </div>
     </div>
@@ -901,6 +812,8 @@
         let isReady = false;
         let currentStep = 0; // 0=준비, 1=코칭, 2=확인, 3=생성
         let selectedStyle = 'id_photo';
+        let selectedGender = 'male';
+        let selectedAge = 'adult';
         let voiceEnabled = true;
         let koVoice = null;
 
@@ -1173,6 +1086,22 @@
             log(`음성 가이드: ${voiceEnabled ? 'ON' : 'OFF'}`);
         }
 
+        // === 준비 화면 성별/연령 선택 ===
+        document.querySelectorAll('[data-gender]').forEach(chip => {
+            chip.addEventListener('click', () => {
+                document.querySelectorAll('[data-gender]').forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+                selectedGender = chip.dataset.gender;
+            });
+        });
+        document.querySelectorAll('[data-age]').forEach(chip => {
+            chip.addEventListener('click', () => {
+                document.querySelectorAll('[data-age]').forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+                selectedAge = chip.dataset.age;
+            });
+        });
+
         // === 준비 화면 스타일 선택 ===
         document.querySelectorAll('.prep-style-chip').forEach(chip => {
             chip.addEventListener('click', () => {
@@ -1278,12 +1207,15 @@
                     updateCreditBadge();
                     proceedDownload();
                 } else if (msg.type === 'share-bonus-ok') {
-                    // 공유 보너스 지급 성공 → 다운로드 해금
                     userCredits = msg.credits;
                     updateCreditBadge();
-                    unlockDownload('공유 보너스');
+                    document.getElementById('postCreditMsg').textContent =
+                        `🎁 +${msg.bonus}c 보너스 · 잔여 ${msg.credits}c`;
+                    disableShareButtons();
                     log(`공유 보너스 +${msg.bonus}c → ${msg.credits}c`);
-                    alert(`공유 감사합니다! ${msg.bonus} 크레딧이 지급되었습니다.`);
+                } else if (msg.type === 'share-bonus-error') {
+                    document.getElementById('postCreditMsg').textContent = msg.error || '보너스 수령 완료';
+                    disableShareButtons();
                 }
             };
 
@@ -1468,6 +1400,8 @@
                 type: 'generate',
                 image: base64,
                 style: selectedStyle,
+                gender: selectedGender,
+                age: selectedAge,
                 userId: userId,  // 크레딧 체크용
             }));
         }
@@ -1691,122 +1625,10 @@
             if ('speechSynthesis' in window) speechSynthesis.cancel();
         }
 
+        let downloadCompleted = false;
+
         async function downloadResult() {
             if (!generatedImageData) return;
-            // cleanupSession()은 페이지 리로드 시 호출 (WS 유지 필요)
-            document.getElementById('ty-photo').src = generatedImageData;
-            document.getElementById('thankyou-screen').classList.add('active');
-            // 촬영 버튼 숨김
-            document.getElementById('controls').classList.remove('active');
-
-            // 크레딧 정보 표시 (로그인 사용자)
-            if (userId) {
-                document.getElementById('creditInfo').style.display = 'block';
-                document.getElementById('tyCredits').textContent = userCredits + 'c';
-                // 크레딧이 충분하면 게이트 없이 바로 다운로드 가능
-                if (userCredits >= CREDIT_COST.download) {
-                    document.getElementById('downloadGate').style.display = 'none';
-                    document.getElementById('tyDownloadBtn').disabled = false;
-                    gateUnlocked = true;
-                }
-            }
-
-            log('Thank You 페이지 표시');
-        }
-
-        // === 다운로드 게이트 ===
-        let gateUnlocked = false;
-        let selectedGate = null;
-
-        function selectGateOption(option) {
-            selectedGate = option;
-            // 선택 상태 업데이트
-            document.querySelectorAll('.ty-gate-option').forEach(el => {
-                el.classList.toggle('selected', el.querySelector('input').value === option);
-            });
-            // 액션 영역 표시
-            const actionDiv = document.getElementById('gateAction');
-            actionDiv.style.display = 'block';
-
-            if (option === 'x') {
-                actionDiv.innerHTML = `
-                    <button class="ty-gate-action-btn" onclick="shareToX()">
-                        𝕏 X에 공유하기
-                    </button>
-                    <p style="font-size:11px;color:#666;margin-top:8px;">공유 후 다운로드할 수 있습니다</p>
-                `;
-            } else if (option === 'instagram') {
-                actionDiv.innerHTML = `
-                    <button class="ty-gate-action-btn" onclick="shareToInstagram()">
-                        📷 Instagram에 공유하기
-                    </button>
-                    <p style="font-size:11px;color:#666;margin-top:8px;">공유 후 다운로드할 수 있습니다</p>
-                `;
-            } else if (option === 'review') {
-                actionDiv.innerHTML = `
-                    <div class="ty-gate-checkbox">
-                        <input type="checkbox" id="reviewPromise" onchange="checkReviewPromise()">
-                        <label for="reviewPromise">Google 리뷰를 작성하겠습니다</label>
-                    </div>
-                `;
-            }
-        }
-
-        function shareToX() {
-            const text = encodeURIComponent('MONKOS로 AI 증명사진을 만들었어요! 무료로 프로 품질의 증명사진을 만들 수 있습니다✨ #MONKOS #AI증명사진');
-            const url = encodeURIComponent('https://monkos.ai');
-            const shareUrl = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
-            window.open(shareUrl, '_blank', 'width=600,height=400');
-            // 공유 보너스 요청 (+10c)
-            setTimeout(() => requestShareBonus('x'), 2000);
-        }
-
-        function shareToInstagram() {
-            // Instagram은 웹에서 직접 공유 불가, 앱으로 유도
-            const msg = 'Instagram 앱에서 스토리에 공유해주세요.\n\n@monkos.ai 를 태그해주세요.';
-            alert(msg);
-            // 앱 열기 시도
-            window.open('instagram://camera', '_blank');
-            // 공유 보너스 요청 (+10c)
-            setTimeout(() => requestShareBonus('instagram'), 3000);
-        }
-
-        function requestShareBonus(platform) {
-            if (!userId || !ws || ws.readyState !== 1) {
-                // 비로그인 또는 WS 끊김 시 바로 해제
-                unlockDownload(platform + ' 공유');
-                return;
-            }
-            // 서버 응답(share-bonus-ok) 핸들러에서 unlockDownload 호출
-            ws.send(JSON.stringify({
-                type: 'share-bonus',
-                userId: userId,
-                platform: platform,
-            }));
-        }
-
-        function checkReviewPromise() {
-            const checked = document.getElementById('reviewPromise').checked;
-            if (checked) {
-                unlockDownload('리뷰 약속');
-            } else {
-                gateUnlocked = false;
-                document.getElementById('tyDownloadBtn').disabled = true;
-            }
-        }
-
-        function unlockDownload(method) {
-            gateUnlocked = true;
-            document.getElementById('tyDownloadBtn').disabled = false;
-            log('게이트 해제: ' + method);
-        }
-
-        async function doGatedDownload() {
-            if (downloadCompleted) return;
-            if (!gateUnlocked) {
-                alert('무료 다운로드를 위해 조건을 선택해주세요');
-                return;
-            }
 
             // 로그인 사용자: 다운로드 크레딧 차감 (10c)
             if (userId && ws && ws.readyState === 1) {
@@ -1814,62 +1636,79 @@
                     showCreditModal(CREDIT_COST.download, userCredits, 'download');
                     return;
                 }
-                // 서버에 크레딧 차감 요청
-                ws.send(JSON.stringify({
-                    type: 'use-download-credit',
-                    userId: userId,
-                }));
+                ws.send(JSON.stringify({ type: 'use-download-credit', userId: userId }));
                 // 서버 응답(download-credit-ok)에서 proceedDownload() 호출
                 return;
             }
 
-            // 비로그인: 바로 다운로드
-            await proceedDownload();
+            // 비로그인: 바로 미리보기
+            showPreview();
         }
 
-        async function proceedDownload() {
-            await doDownload();
+        function proceedDownload() {
+            showPreview();
         }
 
-        let downloadCompleted = false;
+        function showPreview() {
+            document.getElementById('ty-photo').src = generatedImageData;
+            document.getElementById('thankyou-screen').classList.add('active');
+            document.getElementById('controls').classList.remove('active');
+            document.getElementById('postCreditMsg').textContent =
+                userId ? `💎 10c 사용 · 잔여 ${userCredits}c` : '';
+            log('미리보기 모드 표시');
+        }
 
-        async function doDownload() {
+        async function saveToPhotos() {
             if (!generatedImageData) return;
             const jpegUrl = await toJpegDataUrl(generatedImageData, 0.92);
+
+            // navigator.share 지원 시 (iOS Safari 등)
+            if (navigator.share && navigator.canShare) {
+                try {
+                    const res = await fetch(jpegUrl);
+                    const blob = await res.blob();
+                    const file = new File([blob], `monkos_photo_${Date.now()}.jpg`, { type: 'image/jpeg' });
+                    if (navigator.canShare({ files: [file] })) {
+                        await navigator.share({ files: [file], title: 'MONKOS AI 증명사진' });
+                        log('사진 공유 완료');
+                        return;
+                    }
+                } catch (e) {
+                    if (e.name === 'AbortError') return; // 사용자 취소
+                }
+            }
+
+            // 폴백: 직접 다운로드
             const a = document.createElement('a');
             a.href = jpegUrl;
             a.download = `monkos_photo_${Date.now()}.jpg`;
             a.click();
-
-            downloadCompleted = true;
-
-            // 다운로드 버튼 비활성화 + 완료 표시
-            const dlBtn = document.getElementById('tyDownloadBtn');
-            dlBtn.disabled = true;
-            dlBtn.textContent = '✅ 다운로드 완료';
-            dlBtn.style.background = '#1a1a2e';
-            dlBtn.style.color = '#a78bfa';
-            dlBtn.style.border = '1px solid #a78bfa';
-
-            // 기존 "다시 촬영하기" 숨김
-            document.getElementById('tyRetakeBtn').style.display = 'none';
-
-            // 포스트 다운로드 영역 표시
-            const postDl = document.getElementById('postDownload');
-            postDl.classList.add('active');
-            document.getElementById('postCreditMsg').textContent =
-                userId ? `💎 10크레딧 사용 · 잔여 ${userCredits}c` : '';
-
             log('JPEG 저장 완료');
         }
 
-        function showEventModal() {
-            // 이미 공유 게이트가 있으므로 스크롤 이동
-            const gate = document.getElementById('downloadGate');
-            gate.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            gate.style.animation = 'none';
-            gate.offsetHeight; // reflow
-            gate.style.animation = 'pulse 0.5s ease 2';
+        function shareToX() {
+            const text = encodeURIComponent('MONKOS로 AI 증명사진을 만들었어요! #MONKOS #AI증명사진');
+            const url = encodeURIComponent('https://monkos.ai');
+            window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank', 'width=600,height=400');
+            requestShareBonus('x');
+        }
+
+        function shareToInstagram() {
+            window.open('https://www.instagram.com/', '_blank');
+            requestShareBonus('instagram');
+        }
+
+        function requestShareBonus(platform) {
+            if (!userId || !ws || ws.readyState !== 1) return;
+            ws.send(JSON.stringify({ type: 'share-bonus', userId, platform }));
+        }
+
+        function disableShareButtons() {
+            document.querySelectorAll('.ty-share-btn').forEach(btn => {
+                btn.disabled = true;
+                btn.style.opacity = '0.5';
+                btn.textContent = btn.textContent.replace(/\(\+10c\)/, '(완료)');
+            });
         }
 
         // === 모바일 판정 ===

@@ -73,6 +73,28 @@
         }
         .prep-check-text span { color: #888; }
 
+        /* 性別・年齢選択 */
+        .prep-profile {
+            display: flex; gap: 16px; justify-content: center;
+            margin-bottom: 16px; flex-wrap: wrap;
+        }
+        .prep-profile-group {
+            display: flex; gap: 6px; align-items: center;
+        }
+        .prep-profile-label {
+            font-size: 12px; color: #888; margin-right: 4px;
+        }
+        .prep-profile-chip {
+            padding: 7px 14px; border-radius: 10px;
+            background: #111; border: 1.5px solid #222;
+            font-size: 12px; font-weight: 500; color: #aaa;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .prep-profile-chip.active {
+            background: rgba(167,139,250,0.15);
+            border-color: #a78bfa; color: #a78bfa;
+        }
+
         /* スタイル選択（準備画面用） */
         .prep-styles {
             display: flex; gap: 8px; flex-wrap: wrap;
@@ -294,7 +316,7 @@
         }
         .spec-tag strong { color: #ccc; }
 
-        /* Thank You ページ */
+        /* 미리보기 모드 */
         #thankyou-screen {
             display: none; position: fixed; inset: 0;
             background: #030508; z-index: 100;
@@ -302,134 +324,63 @@
         }
         #thankyou-screen.active { display: flex; }
         .ty-header {
-            padding: 16px; text-align: center;
-            font-size: 16px; font-weight: 700;
+            padding: 12px 16px; text-align: center;
+            font-size: 15px; font-weight: 700;
             border-bottom: 1px solid #1a1a1a;
+            position: relative;
+        }
+        .ty-close-btn {
+            position: absolute; right: 16px; top: 50%;
+            transform: translateY(-50%);
+            background: none; border: none; color: #888;
+            font-size: 18px; cursor: pointer; padding: 4px 8px;
         }
         .ty-body {
-            flex: 1; padding: 24px 16px; display: flex;
-            flex-direction: column; align-items: center; gap: 20px;
+            flex: 1; padding: 20px 16px; display: flex;
+            flex-direction: column; align-items: center; gap: 16px;
         }
         .ty-preview {
             background: #fff; padding: 6px; border-radius: 12px;
             box-shadow: 0 4px 24px rgba(167,139,250,0.2);
         }
         .ty-preview img {
-            display: block; width: 160px; height: auto; border-radius: 8px;
+            display: block; width: 200px; height: auto; border-radius: 8px;
         }
-        .ty-message {
-            font-size: 18px; font-weight: 700; color: #a78bfa;
-        }
-        .ty-download-btn {
-            width: 100%; max-width: 320px; padding: 16px;
-            background: linear-gradient(135deg, #a78bfa, #7c3aed);
-            color: #fff; border: none; border-radius: 14px;
-            font-size: 16px; font-weight: 700; cursor: pointer;
-        }
-        .ty-download-btn:disabled {
-            background: #333; color: #666; cursor: not-allowed;
-        }
-        /* ダウンロードゲート */
-        .ty-gate {
+        .ty-actions {
             width: 100%; max-width: 320px;
-            background: #111; border: 1px solid #2a2a2a;
-            border-radius: 14px; padding: 16px;
-        }
-        .ty-gate-title {
-            font-size: 13px; color: #a78bfa; font-weight: 600;
-            text-align: center; margin-bottom: 14px;
-        }
-        .ty-gate-options {
             display: flex; flex-direction: column; gap: 10px;
         }
-        .ty-gate-option {
-            display: flex; align-items: center; gap: 12px;
-            padding: 12px 14px; background: #1a1a1a;
-            border: 1px solid #333; border-radius: 10px;
-            cursor: pointer; transition: all 0.2s;
+        .ty-save-btn {
+            width: 100%; padding: 14px;
+            background: linear-gradient(135deg, #a78bfa, #7c3aed);
+            color: #fff; border: none; border-radius: 12px;
+            font-size: 15px; font-weight: 700; cursor: pointer;
         }
-        .ty-gate-option:hover { border-color: #a78bfa; }
-        .ty-gate-option input { display: none; }
-        .ty-gate-option.selected {
-            border-color: #a78bfa;
-            background: rgba(167,139,250,0.1);
+        .ty-save-btn:disabled {
+            background: #333; color: #666; cursor: not-allowed;
         }
-        .ty-gate-icon { font-size: 20px; }
-        .ty-gate-label { font-size: 14px; color: #ddd; }
-        .ty-gate-action {
-            margin-top: 14px; text-align: center;
+        .ty-share-row {
+            display: flex; gap: 8px;
         }
-        .ty-gate-action-btn {
-            width: 100%; padding: 12px;
-            background: #1a1a1a; border: 1px solid #a78bfa;
+        .ty-share-btn {
+            flex: 1; padding: 10px;
+            background: #1a1a2e; border: 1px solid #2d2d5e;
             color: #a78bfa; border-radius: 10px;
-            font-size: 14px; font-weight: 600; cursor: pointer;
+            font-size: 12px; font-weight: 600; cursor: pointer;
         }
-        .ty-gate-action-btn:hover { background: rgba(167,139,250,0.1); }
-        .ty-gate-checkbox {
-            display: flex; align-items: center; gap: 10px;
-            padding: 10px; background: #1a1a1a; border-radius: 8px;
+        .ty-share-btn:hover { border-color: #a78bfa; }
+        .ty-credit-msg {
+            text-align: center; font-size: 12px; color: #888;
         }
-        .ty-gate-checkbox input[type="checkbox"] {
-            width: 20px; height: 20px; accent-color: #a78bfa;
+        .ty-nav {
+            display: flex; gap: 8px; width: 100%; max-width: 320px;
         }
-        .ty-gate-checkbox label { font-size: 13px; color: #ccc; cursor: pointer; }
-        .ty-funnel-section {
-            width: 100%; max-width: 320px; margin-top: 8px;
+        .ty-nav button {
+            flex: 1; padding: 10px; background: #111;
+            border: 1px solid #2a2a2a; border-radius: 10px;
+            color: #aaa; font-size: 13px; cursor: pointer;
         }
-        .ty-funnel-title {
-            font-size: 13px; color: #666; margin-bottom: 10px;
-            text-align: center;
-        }
-        .ty-funnel-item {
-            display: flex; align-items: center; gap: 12px;
-            padding: 14px; background: #111; border: 1px solid #222;
-            border-radius: 12px; margin-bottom: 8px;
-        }
-        .ty-funnel-item.disabled { opacity: 0.5; }
-        .ty-funnel-icon { font-size: 24px; flex-shrink: 0; }
-        .ty-funnel-name { font-size: 14px; font-weight: 600; color: #ddd; }
-        .ty-funnel-desc { font-size: 11px; color: #888; margin-top: 2px; }
-        .ty-funnel-badge {
-            margin-left: auto; font-size: 10px; color: #666;
-            background: #1a1a1a; padding: 3px 8px; border-radius: 6px;
-            white-space: nowrap;
-        }
-        .ty-retake-btn {
-            background: none; border: 1px solid #333; color: #888;
-            padding: 12px 24px; border-radius: 10px; font-size: 13px;
-            cursor: pointer; margin-top: 8px;
-        }
-        .ty-post-download {
-            display: none; width: 100%; max-width: 320px;
-            flex-direction: column; gap: 10px; margin-top: 16px;
-        }
-        .ty-post-download.active { display: flex; }
-        .ty-post-download .ty-credit-used {
-            text-align: center; font-size: 13px; color: #a78bfa;
-            padding: 8px 0; font-weight: 600;
-        }
-        .ty-post-nav {
-            display: flex; gap: 10px;
-        }
-        .ty-post-nav button {
-            flex: 1; padding: 12px 8px; border-radius: 10px;
-            font-size: 13px; font-weight: 600; cursor: pointer;
-            border: 1px solid #333; background: #111; color: #ccc;
-            transition: all 0.2s;
-        }
-        .ty-post-nav button:hover { border-color: #a78bfa; color: #fff; }
-        .ty-event-btn {
-            width: 100%; padding: 14px; border-radius: 12px;
-            background: linear-gradient(135deg, #f59e0b, #ef4444);
-            color: #fff; border: none; font-size: 14px; font-weight: 700;
-            cursor: pointer; transition: opacity 0.2s;
-        }
-        .ty-event-btn:hover { opacity: 0.9; }
-        @keyframes pulse {
-            0%, 100% { border-color: #333; }
-            50% { border-color: #a78bfa; box-shadow: 0 0 12px rgba(167,139,250,0.3); }
-        }
+        .ty-nav button:hover { border-color: #a78bfa; color: #fff; }
 
         /* 下部コントロール */
         #controls {
@@ -677,6 +628,21 @@
             </div>
         </div>
 
+        <!-- 性別・年齢選択 -->
+        <div class="prep-profile">
+            <div class="prep-profile-group">
+                <span class="prep-profile-label">性別</span>
+                <div class="prep-profile-chip active" data-gender="male">男性</div>
+                <div class="prep-profile-chip" data-gender="female">女性</div>
+            </div>
+            <div class="prep-profile-group">
+                <span class="prep-profile-label">年齢</span>
+                <div class="prep-profile-chip" data-age="child">幼児~12歳</div>
+                <div class="prep-profile-chip" data-age="teen">13~18歳</div>
+                <div class="prep-profile-chip active" data-age="adult">19歳以上</div>
+            </div>
+        </div>
+
         <!-- スタイル選択 -->
         <div class="prep-styles">
             <div class="prep-style-chip active" data-style="id_photo">パスポート・証明写真</div>
@@ -754,91 +720,36 @@
             <!-- Step 3 ボタン -->
             <div id="step3-actions" style="display:none; gap:10px; padding:16px; justify-content:center; flex-wrap:wrap;">
                 <button class="btn btn-secondary" onclick="retakePhoto()">撮り直す</button>
-                <button class="btn btn-success" id="btn-download" onclick="downloadResult()" disabled>保存</button>
+                <button class="btn btn-success" id="btn-download" onclick="downloadResult()" disabled>📥 ダウンロード (10c)</button>
             </div>
         </div>
     </div>
 
-    <!-- Thank You ページ -->
+    <!-- 미리보기 모드 -->
     <div id="thankyou-screen">
         <div class="ty-header">
             <span class="brand">MONKOS</span> AI証明写真
+            <button class="ty-close-btn" onclick="location.reload()">✕</button>
         </div>
         <div class="ty-body">
             <div class="ty-preview">
                 <img id="ty-photo" src="" alt="証明写真">
             </div>
-            <div class="ty-message">証明写真が完成しました</div>
 
-            <!-- クレジット情報 -->
-            <div class="ty-gate" id="creditInfo" style="display:none;">
-                <div class="ty-gate-title">💎 ダウンロード費用: 10クレジット</div>
-                <div style="text-align:center; padding: 8px 0;">
-                    <div style="font-size: 24px; font-weight: 700; color: #a78bfa;" id="tyCredits">0c</div>
-                    <div style="font-size: 12px; color: #666;">残高</div>
-                </div>
-            </div>
-
-            <!-- ダウンロードゲート (共有でクレジット獲得) -->
-            <div class="ty-gate" id="downloadGate">
-                <div class="ty-gate-title">💎 共有すると +10クレジット！</div>
-                <div class="ty-gate-options">
-                    <label class="ty-gate-option" onclick="selectGateOption('x')">
-                        <input type="radio" name="gate" value="x">
-                        <span class="ty-gate-icon">𝕏</span>
-                        <span class="ty-gate-label">Xで共有 (+10c)</span>
-                    </label>
-                    <label class="ty-gate-option" onclick="selectGateOption('instagram')">
-                        <input type="radio" name="gate" value="instagram">
-                        <span class="ty-gate-icon">📷</span>
-                        <span class="ty-gate-label">Instagramで共有 (+10c)</span>
-                    </label>
-                </div>
-                <div class="ty-gate-action" id="gateAction" style="display:none;"></div>
-            </div>
-
-            <button class="ty-download-btn" id="tyDownloadBtn" onclick="doGatedDownload()" disabled>
-                📥 写真をダウンロード
-            </button>
-            <div class="ty-funnel-section">
-                <div class="ty-funnel-title">オプションサービス</div>
-                <div class="ty-funnel-item disabled">
-                    <span class="ty-funnel-icon">🛂</span>
-                    <div>
-                        <div class="ty-funnel-name">パスポート規格クロップ</div>
-                        <div class="ty-funnel-desc">35×45mm / ICAO準拠 / 300dpi</div>
-                    </div>
-                    <span class="ty-funnel-badge">準備中</span>
-                </div>
-                <div class="ty-funnel-item disabled">
-                    <span class="ty-funnel-icon">📄</span>
-                    <div>
-                        <div class="ty-funnel-name">履歴書規格クロップ</div>
-                        <div class="ty-funnel-desc">30×40mm / 日本履歴書標準</div>
-                    </div>
-                    <span class="ty-funnel-badge">準備中</span>
-                </div>
-                <div class="ty-funnel-item disabled">
-                    <span class="ty-funnel-icon">✈️</span>
-                    <div>
-                        <div class="ty-funnel-name">ビザ規格クロップ</div>
-                        <div class="ty-funnel-desc">各国ビザ規格に対応</div>
-                    </div>
-                    <span class="ty-funnel-badge">準備中</span>
-                </div>
-            </div>
-            <button class="ty-retake-btn" id="tyRetakeBtn" onclick="location.reload()">もう一度撮影する</button>
-
-            <!-- ダウンロード完了後アクション -->
-            <div class="ty-post-download" id="postDownload">
-                <div class="ty-credit-used" id="postCreditMsg"></div>
-                <div class="ty-post-nav">
-                    <button onclick="location.href='/'">🏠 メイン</button>
-                    <button onclick="location.reload()">📸 追加撮影</button>
-                </div>
-                <button class="ty-event-btn" onclick="showEventModal()">
-                    🎁 SNS共有で10クレジットもらう
+            <div class="ty-actions">
+                <button class="ty-save-btn" id="tySaveBtn" onclick="saveToPhotos()">
+                    📲 写真に保存
                 </button>
+                <div class="ty-share-row">
+                    <button class="ty-share-btn" onclick="shareToX()">𝕏 共有 (+10c)</button>
+                    <button class="ty-share-btn" onclick="shareToInstagram()">📷 IG共有 (+10c)</button>
+                </div>
+                <div class="ty-credit-msg" id="postCreditMsg"></div>
+            </div>
+
+            <div class="ty-nav">
+                <button onclick="location.href='/'">🏠 メイン</button>
+                <button onclick="location.reload()">📸 追加撮影</button>
             </div>
         </div>
     </div>
@@ -924,6 +835,8 @@
         let isReady = false;
         let currentStep = 0; // 0=準備, 1=コーチング, 2=確認, 3=生成
         let selectedStyle = 'id_photo';
+        let selectedGender = 'male';
+        let selectedAge = 'adult';
         let voiceEnabled = true;
         let jaVoice = null;
 
@@ -1136,6 +1049,22 @@
             log(`音声ガイド: ${voiceEnabled ? 'ON' : 'OFF'}`);
         }
 
+        // === 準備画面の性別・年齢選択 ===
+        document.querySelectorAll('[data-gender]').forEach(chip => {
+            chip.addEventListener('click', () => {
+                document.querySelectorAll('[data-gender]').forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+                selectedGender = chip.dataset.gender;
+            });
+        });
+        document.querySelectorAll('[data-age]').forEach(chip => {
+            chip.addEventListener('click', () => {
+                document.querySelectorAll('[data-age]').forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+                selectedAge = chip.dataset.age;
+            });
+        });
+
         // === 準備画面のスタイル選択 ===
         document.querySelectorAll('.prep-style-chip').forEach(chip => {
             chip.addEventListener('click', () => {
@@ -1241,12 +1170,15 @@
                     updateCreditBadge();
                     proceedDownload();
                 } else if (msg.type === 'share-bonus-ok') {
-                    // シェアボーナス付与成功 → ダウンロード解除
                     userCredits = msg.credits;
                     updateCreditBadge();
-                    unlockDownload('シェアボーナス');
+                    document.getElementById('postCreditMsg').textContent =
+                        `🎁 +${msg.bonus}c ボーナス · 残り ${msg.credits}c`;
+                    disableShareButtons();
                     log(`シェアボーナス +${msg.bonus}c → ${msg.credits}c`);
-                    alert(`シェアありがとうございます！${msg.bonus}クレジットが付与されました。`);
+                } else if (msg.type === 'share-bonus-error') {
+                    document.getElementById('postCreditMsg').textContent = msg.error || 'ボーナス済み';
+                    disableShareButtons();
                 }
             };
 
@@ -1431,6 +1363,8 @@
                 type: 'generate',
                 image: base64,
                 style: selectedStyle,
+                gender: selectedGender,
+                age: selectedAge,
                 userId: userId,  // クレジットチェック用
             }));
         }
@@ -1654,122 +1588,10 @@
             if ('speechSynthesis' in window) speechSynthesis.cancel();
         }
 
+        let downloadCompleted = false;
+
         async function downloadResult() {
             if (!generatedImageData) return;
-            // cleanupSession()はページリロード時に呼ぶ（WS維持必要）
-            document.getElementById('ty-photo').src = generatedImageData;
-            document.getElementById('thankyou-screen').classList.add('active');
-            // 撮影ボタン非表示
-            document.getElementById('controls').classList.remove('active');
-
-            // クレジット情報表示 (ログインユーザー)
-            if (userId) {
-                document.getElementById('creditInfo').style.display = 'block';
-                document.getElementById('tyCredits').textContent = userCredits + 'c';
-                // クレジットが十分ならゲートなしで直接ダウンロード可能
-                if (userCredits >= CREDIT_COST.download) {
-                    document.getElementById('downloadGate').style.display = 'none';
-                    document.getElementById('tyDownloadBtn').disabled = false;
-                    gateUnlocked = true;
-                }
-            }
-
-            log('Thank Youページ表示');
-        }
-
-        // === ダウンロードゲート ===
-        let gateUnlocked = false;
-        let selectedGate = null;
-
-        function selectGateOption(option) {
-            selectedGate = option;
-            // 選択状態更新
-            document.querySelectorAll('.ty-gate-option').forEach(el => {
-                el.classList.toggle('selected', el.querySelector('input').value === option);
-            });
-            // アクションエリア表示
-            const actionDiv = document.getElementById('gateAction');
-            actionDiv.style.display = 'block';
-
-            if (option === 'x') {
-                actionDiv.innerHTML = `
-                    <button class="ty-gate-action-btn" onclick="shareToX()">
-                        𝕏 Xで共有する
-                    </button>
-                    <p style="font-size:11px;color:#666;margin-top:8px;">共有後、ダウンロードできます</p>
-                `;
-            } else if (option === 'instagram') {
-                actionDiv.innerHTML = `
-                    <button class="ty-gate-action-btn" onclick="shareToInstagram()">
-                        📷 Instagramで共有する
-                    </button>
-                    <p style="font-size:11px;color:#666;margin-top:8px;">共有後、ダウンロードできます</p>
-                `;
-            } else if (option === 'review') {
-                actionDiv.innerHTML = `
-                    <div class="ty-gate-checkbox">
-                        <input type="checkbox" id="reviewPromise" onchange="checkReviewPromise()">
-                        <label for="reviewPromise">Googleレビューを書くことを約束します</label>
-                    </div>
-                `;
-            }
-        }
-
-        function shareToX() {
-            const text = encodeURIComponent('MONKOSでAI証明写真を作成しました！無料でプロ品質の証明写真が作れます✨ #MONKOS #AI証明写真');
-            const url = encodeURIComponent('https://monkos.ai');
-            const shareUrl = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
-            window.open(shareUrl, '_blank', 'width=600,height=400');
-            // シェアボーナス要求 (+10c)
-            setTimeout(() => requestShareBonus('x'), 2000);
-        }
-
-        function shareToInstagram() {
-            // Instagramはウェブから直接共有できないのでアプリへ誘導
-            const msg = 'Instagramアプリでストーリーに共有してください。\n\n@monkos.ai をタグ付けしてください。';
-            alert(msg);
-            // アプリを開く試み
-            window.open('instagram://camera', '_blank');
-            // シェアボーナス要求 (+10c)
-            setTimeout(() => requestShareBonus('instagram'), 3000);
-        }
-
-        function requestShareBonus(platform) {
-            if (!userId || !ws || ws.readyState !== 1) {
-                // 未ログインまたはWS切断時は即解除
-                unlockDownload(platform + '共有');
-                return;
-            }
-            // サーバー応答(share-bonus-ok)ハンドラでunlockDownload呼び出し
-            ws.send(JSON.stringify({
-                type: 'share-bonus',
-                userId: userId,
-                platform: platform,
-            }));
-        }
-
-        function checkReviewPromise() {
-            const checked = document.getElementById('reviewPromise').checked;
-            if (checked) {
-                unlockDownload('レビュー約束');
-            } else {
-                gateUnlocked = false;
-                document.getElementById('tyDownloadBtn').disabled = true;
-            }
-        }
-
-        function unlockDownload(method) {
-            gateUnlocked = true;
-            document.getElementById('tyDownloadBtn').disabled = false;
-            log('ゲート解除: ' + method);
-        }
-
-        async function doGatedDownload() {
-            if (downloadCompleted) return;
-            if (!gateUnlocked) {
-                alert('無料ダウンロードには条件の選択が必要です');
-                return;
-            }
 
             // ログインユーザー: ダウンロードクレジット消費 (10c)
             if (userId && ws && ws.readyState === 1) {
@@ -1777,61 +1599,79 @@
                     showCreditModal(CREDIT_COST.download, userCredits, 'download');
                     return;
                 }
-                // サーバーにクレジット消費要求
-                ws.send(JSON.stringify({
-                    type: 'use-download-credit',
-                    userId: userId,
-                }));
+                ws.send(JSON.stringify({ type: 'use-download-credit', userId: userId }));
                 // サーバー応答(download-credit-ok)でproceedDownload()が呼ばれる
                 return;
             }
 
-            // 未ログイン: 直接ダウンロード
-            await proceedDownload();
+            // 未ログイン: 直接プレビュー表示
+            showPreview();
         }
 
-        async function proceedDownload() {
-            await doDownload();
+        function proceedDownload() {
+            showPreview();
         }
 
-        let downloadCompleted = false;
+        function showPreview() {
+            document.getElementById('ty-photo').src = generatedImageData;
+            document.getElementById('thankyou-screen').classList.add('active');
+            document.getElementById('controls').classList.remove('active');
+            document.getElementById('postCreditMsg').textContent =
+                userId ? `💎 10c 使用 · 残り ${userCredits}c` : '';
+            log('プレビューモード表示');
+        }
 
-        async function doDownload() {
+        async function saveToPhotos() {
             if (!generatedImageData) return;
             const jpegUrl = await toJpegDataUrl(generatedImageData, 0.92);
+
+            // navigator.share対応 (iOS Safari等)
+            if (navigator.share && navigator.canShare) {
+                try {
+                    const res = await fetch(jpegUrl);
+                    const blob = await res.blob();
+                    const file = new File([blob], `monkos_photo_${Date.now()}.jpg`, { type: 'image/jpeg' });
+                    if (navigator.canShare({ files: [file] })) {
+                        await navigator.share({ files: [file], title: 'MONKOS AI証明写真' });
+                        log('写真共有完了');
+                        return;
+                    }
+                } catch (e) {
+                    if (e.name === 'AbortError') return; // ユーザーキャンセル
+                }
+            }
+
+            // フォールバック: 直接ダウンロード
             const a = document.createElement('a');
             a.href = jpegUrl;
             a.download = `monkos_photo_${Date.now()}.jpg`;
             a.click();
-
-            downloadCompleted = true;
-
-            // ダウンロードボタン無効化 + 完了表示
-            const dlBtn = document.getElementById('tyDownloadBtn');
-            dlBtn.disabled = true;
-            dlBtn.textContent = '✅ ダウンロード完了';
-            dlBtn.style.background = '#1a1a2e';
-            dlBtn.style.color = '#a78bfa';
-            dlBtn.style.border = '1px solid #a78bfa';
-
-            // 既存「もう一度撮影」非表示
-            document.getElementById('tyRetakeBtn').style.display = 'none';
-
-            // ポストダウンロードエリア表示
-            const postDl = document.getElementById('postDownload');
-            postDl.classList.add('active');
-            document.getElementById('postCreditMsg').textContent =
-                userId ? `💎 10クレジット使用 · 残り ${userCredits}c` : '';
-
             log('JPEG保存完了');
         }
 
-        function showEventModal() {
-            const gate = document.getElementById('downloadGate');
-            gate.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            gate.style.animation = 'none';
-            gate.offsetHeight;
-            gate.style.animation = 'pulse 0.5s ease 2';
+        function shareToX() {
+            const text = encodeURIComponent('MONKOSでAI証明写真を作成しました！ #MONKOS #AI証明写真');
+            const url = encodeURIComponent('https://monkos.ai');
+            window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank', 'width=600,height=400');
+            requestShareBonus('x');
+        }
+
+        function shareToInstagram() {
+            window.open('https://www.instagram.com/', '_blank');
+            requestShareBonus('instagram');
+        }
+
+        function requestShareBonus(platform) {
+            if (!userId || !ws || ws.readyState !== 1) return;
+            ws.send(JSON.stringify({ type: 'share-bonus', userId, platform }));
+        }
+
+        function disableShareButtons() {
+            document.querySelectorAll('.ty-share-btn').forEach(btn => {
+                btn.disabled = true;
+                btn.style.opacity = '0.5';
+                btn.textContent = btn.textContent.replace(/\(\+10c\)/, '(済)');
+            });
         }
 
         // === モバイル判定 ===

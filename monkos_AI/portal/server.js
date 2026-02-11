@@ -89,9 +89,16 @@ const SYSTEM_PROMPT = `あなたはMONKOS AIの公式アシスタント「モン
 - 毎日先着30名: アンケート回答で12クレジット無料（正午リセット）
 - 生成: 1回 = 1クレジット消費
 - ダウンロード: 1回 = 10クレジット消費
-- SNS共有ボーナス: X共有 or Googleレビュー → 10クレジット獲得
+- SNS共有ボーナス: SNSで共有 or Googleレビュー → 10クレジット獲得
 - クレジット購入: 10c/$10 | 30c/$25（おすすめ） | 50c/$40
 - 決済: Lemon Squeezy経由（クレジットカード、PayPal、Apple Pay、Google Pay）
+
+[SNS共有ボーナス案内 — 言語別に切り替えること]
+- 日本語ユーザー → X(Twitter)での共有を優先案内
+  「撮った写真をXでシェアすると10クレジットもらえます！」
+- 韓国語ユーザー → Instagramでの共有を優先案内
+  「촬영한 사진을 인스타그램에 공유하면 10크레딧을 받을 수 있어요!」
+- 英語ユーザー → X or Instagram どちらでもOKと案内
 
 [法的ページ]
 - 利用規約: https://monkos.ai/terms.html
@@ -110,6 +117,7 @@ const SYSTEM_PROMPT = `あなたはMONKOS AIの公式アシスタント「モン
 [応答ルール]
 - ユーザーの言語に合わせて応答（日本語/韓国語/英語）
 - 簡潔で親しみやすいトーン（3文以内）
+- SNS案内は必ず言語に合わせて切り替える（日本語→X、韓国語→Instagram）
 - 問い合わせ先: gdsajin@gmail.com`;
 
 // === 대화 히스토리 (인메모리, 세션별) ===
@@ -401,11 +409,24 @@ const httpServer = createServer(async (req, res) => {
             throw new Error('사용자 없음');
           }
 
-          const currentCredits = userDoc.data()?.credits ?? 0;
+          const data = userDoc.data();
+          if (data.shareBonusClaimed) {
+            const currentCredits = data.credits ?? 0;
+            return { success: false, error: '이미 공유 보너스를 받았습니다', credits: currentCredits, alreadyClaimed: true };
+          }
+
+          const currentCredits = data.credits ?? 0;
           const newCredits = currentCredits + bonus;
-          tx.update(userRef, { credits: newCredits });
+          tx.update(userRef, { credits: newCredits, shareBonusClaimed: true });
           return { success: true, credits: newCredits, bonus, platform };
         });
+
+        if (!result.success) {
+          log(`[Credits] 공유 보너스 중복: ${userId} (이미 수령)`);
+          res.writeHead(409, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify(result));
+          return;
+        }
 
         log(`[Credits] 공유 보너스: ${userId} +${bonus}c (${platform || 'unknown'}) → ${result.credits}c`);
         res.writeHead(200, { 'Content-Type': 'application/json' });
