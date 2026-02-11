@@ -400,6 +400,36 @@
             padding: 12px 24px; border-radius: 10px; font-size: 13px;
             cursor: pointer; margin-top: 8px;
         }
+        .ty-post-download {
+            display: none; width: 100%; max-width: 320px;
+            flex-direction: column; gap: 10px; margin-top: 16px;
+        }
+        .ty-post-download.active { display: flex; }
+        .ty-post-download .ty-credit-used {
+            text-align: center; font-size: 13px; color: #a78bfa;
+            padding: 8px 0; font-weight: 600;
+        }
+        .ty-post-nav {
+            display: flex; gap: 10px;
+        }
+        .ty-post-nav button {
+            flex: 1; padding: 12px 8px; border-radius: 10px;
+            font-size: 13px; font-weight: 600; cursor: pointer;
+            border: 1px solid #333; background: #111; color: #ccc;
+            transition: all 0.2s;
+        }
+        .ty-post-nav button:hover { border-color: #a78bfa; color: #fff; }
+        .ty-event-btn {
+            width: 100%; padding: 14px; border-radius: 12px;
+            background: linear-gradient(135deg, #f59e0b, #ef4444);
+            color: #fff; border: none; font-size: 14px; font-weight: 700;
+            cursor: pointer; transition: opacity 0.2s;
+        }
+        .ty-event-btn:hover { opacity: 0.9; }
+        @keyframes pulse {
+            0%, 100% { border-color: #333; }
+            50% { border-color: #a78bfa; box-shadow: 0 0 12px rgba(167,139,250,0.3); }
+        }
 
         /* 下部コントロール */
         #controls {
@@ -797,7 +827,19 @@
                     <span class="ty-funnel-badge">準備中</span>
                 </div>
             </div>
-            <button class="ty-retake-btn" onclick="location.reload()">もう一度撮影する</button>
+            <button class="ty-retake-btn" id="tyRetakeBtn" onclick="location.reload()">もう一度撮影する</button>
+
+            <!-- ダウンロード完了後アクション -->
+            <div class="ty-post-download" id="postDownload">
+                <div class="ty-credit-used" id="postCreditMsg"></div>
+                <div class="ty-post-nav">
+                    <button onclick="location.href='/'">🏠 メイン</button>
+                    <button onclick="location.reload()">📸 追加撮影</button>
+                </div>
+                <button class="ty-event-btn" onclick="showEventModal()">
+                    🎁 SNS共有で10クレジットもらう
+                </button>
+            </div>
         </div>
     </div>
 
@@ -1004,6 +1046,8 @@
             }
             const stored = localStorage.getItem('monkos_user');
             const email = stored ? (JSON.parse(stored).email || '') : '';
+            // ポップアップブロック回避: クリック同期フロー内でウィンドウを開く
+            const win = window.open('about:blank', '_blank');
             try {
                 const res = await fetch(PORTAL_URL + '/api/checkout', {
                     method: 'POST',
@@ -1016,11 +1060,13 @@
                 });
                 const data = await res.json();
                 if (data.url) {
-                    window.open(data.url, '_blank');
+                    win.location.href = data.url;
                 } else {
+                    if (win) win.close();
                     alert('チェックアウトページの作成に失敗しました');
                 }
             } catch (err) {
+                if (win) win.close();
                 alert('決済接続エラー: ' + err.message);
             }
         }
@@ -1165,7 +1211,11 @@
                     msg = JSON.parse(raw);
                 } catch { return; }
 
-                if (msg.type === 'ai-coaching') {
+                if (msg.type === 'credit-update') {
+                    userCredits = msg.credits;
+                    updateCreditBadge();
+                } else if (msg.type === 'ai-coaching') {
+                    if (currentStep !== 1) return; // 撮影中のみコーチング表示
                     showCoaching(msg.text);
                 } else if (msg.type === 'generate-start') {
                     showStep3Loading();
@@ -1321,6 +1371,11 @@
 
             currentStep = 2;
             stopFrameCapture();
+            // コーチングセッション停止（TTS + Gemini Live）
+            if (ws && ws.readyState === 1) {
+                ws.send(JSON.stringify({ type: 'stop-coaching' }));
+            }
+            if ('speechSynthesis' in window) speechSynthesis.cancel();
             document.getElementById('coaching-overlay').classList.remove('active');
             document.getElementById('step-label').textContent = t('step2');
             document.getElementById('photo-original').src = capturedImageData;
@@ -1710,6 +1765,7 @@
         }
 
         async function doGatedDownload() {
+            if (downloadCompleted) return;
             if (!gateUnlocked) {
                 alert('無料ダウンロードには条件の選択が必要です');
                 return;
@@ -1738,6 +1794,8 @@
             await doDownload();
         }
 
+        let downloadCompleted = false;
+
         async function doDownload() {
             if (!generatedImageData) return;
             const jpegUrl = await toJpegDataUrl(generatedImageData, 0.92);
@@ -1745,13 +1803,35 @@
             a.href = jpegUrl;
             a.download = `monkos_photo_${Date.now()}.jpg`;
             a.click();
-            // トースト
-            const msg = document.createElement('div');
-            msg.textContent = '写真アプリに保存されました';
-            msg.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.85);color:#fff;padding:12px 24px;border-radius:12px;font-size:14px;z-index:9999;';
-            document.body.appendChild(msg);
-            setTimeout(() => msg.remove(), 3000);
+
+            downloadCompleted = true;
+
+            // ダウンロードボタン無効化 + 完了表示
+            const dlBtn = document.getElementById('tyDownloadBtn');
+            dlBtn.disabled = true;
+            dlBtn.textContent = '✅ ダウンロード完了';
+            dlBtn.style.background = '#1a1a2e';
+            dlBtn.style.color = '#a78bfa';
+            dlBtn.style.border = '1px solid #a78bfa';
+
+            // 既存「もう一度撮影」非表示
+            document.getElementById('tyRetakeBtn').style.display = 'none';
+
+            // ポストダウンロードエリア表示
+            const postDl = document.getElementById('postDownload');
+            postDl.classList.add('active');
+            document.getElementById('postCreditMsg').textContent =
+                userId ? `💎 10クレジット使用 · 残り ${userCredits}c` : '';
+
             log('JPEG保存完了');
+        }
+
+        function showEventModal() {
+            const gate = document.getElementById('downloadGate');
+            gate.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            gate.style.animation = 'none';
+            gate.offsetHeight;
+            gate.style.animation = 'pulse 0.5s ease 2';
         }
 
         // === モバイル判定 ===

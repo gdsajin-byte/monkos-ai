@@ -345,10 +345,11 @@ const httpServer = createServer((req, res) => {
 
   // 정적 파일 배포
   // / → 랜딩페이지, /app → 촬영 앱 UI
+  const urlPath = req.url.split('?')[0];
   let filePath;
-  if (req.url === '/') filePath = '/landing.html';
-  else if (req.url === '/app') filePath = '/index.html';
-  else filePath = req.url;
+  if (urlPath === '/') filePath = '/landing.html';
+  else if (urlPath === '/app') filePath = '/index.html';
+  else filePath = urlPath;
   const fullPath = join(__dirname, 'public', filePath);
   const ext = extname(filePath);
 
@@ -422,6 +423,7 @@ wss.on('connection', async (ws) => {
           return;
         }
         log(`[Credits][${clientId}] 생성 차감 완료: ${msg.userId} → ${creditResult.credits}c`);
+        ws.send(JSON.stringify({ type: 'credit-update', credits: creditResult.credits }));
       }
 
       ws.send(JSON.stringify({ type: 'generate-start' }));
@@ -503,6 +505,21 @@ wss.on('connection', async (ws) => {
         ws.send(JSON.stringify({ type: 'qc-error', error: err.message }));
         log(`[QC][${clientId}] 검증 실패: ${err.message}`);
       }
+      return;
+    }
+
+    // 코칭 세션 중지 (촬영 완료 시)
+    if (msg.type === 'stop-coaching') {
+      log(`[코칭][${clientId}] 세션 중지`);
+      if (session.gemini) {
+        try { session.gemini.close(); } catch {}
+        session.gemini = null;
+      }
+      if (session.bufferFlushTimer) {
+        clearTimeout(session.bufferFlushTimer);
+        session.bufferFlushTimer = null;
+      }
+      session.responseBuffer = '';
       return;
     }
 

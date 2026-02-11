@@ -27,16 +27,26 @@ const PROJECT_ID = process.env.PROJECT_ID || 'monkos';
 const LOCATION = process.env.LOCATION || 'us-central1';
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '933456016842-clagcrpo1juvukjif1m454jq811bd2rq.apps.googleusercontent.com';
 
-// === Lemon Squeezy ===
+// === Lemon Squeezy (JP/글로벌) ===
 const LEMONSQUEEZY_API_KEY = process.env.LEMONSQUEEZY_API_KEY || '';
 const LEMONSQUEEZY_WEBHOOK_SECRET = process.env.LEMONSQUEEZY_WEBHOOK_SECRET || '';
 const LEMONSQUEEZY_STORE_ID = '290457';
 
-// Variant ID → 크레딧 매핑
+// === 토스페이먼츠 (KR 전용) ===
+const TOSS_SECRET_KEY = process.env.TOSS_SECRET_KEY || '';
+
+// Variant ID → 크레딧 매핑 (Lemon Squeezy)
 const VARIANT_CREDITS = {
   '1297524': 10,  // MONKOS 10 Credits — $10
   '1297532': 30,  // MONKOS 30 Credits — $25
   '1297531': 50,  // MONKOS 50 Credits — $40
+};
+
+// 토스 금액(KRW) → 크레딧 매핑
+const TOSS_AMOUNT_CREDITS = {
+  12900: 10,   // 10 크레딧 — ₩12,900
+  29900: 30,   // 30 크레딧 — ₩29,900
+  45900: 50,   // 50 크레딧 — ₩45,900
 };
 
 // === Firestore 초기화 ===
@@ -60,28 +70,47 @@ const ai = new GoogleGenAI({
 log('[Vertex AI] ADC 클라이언트 초기화 (Gemini 2.0 Flash 챗봇)');
 
 // === 챗봇 시스템 프롬프트 ===
-const SYSTEM_PROMPT = `あなたはMONKOSの公式AIアシスタントです。MONKOSはイメージ専門AIプラットフォームです。
+const SYSTEM_PROMPT = `あなたはMONKOS AIの公式アシスタント「モンコス」です。
 
 [MONKOSについて]
-- イメージ/写真に特化したAIサービスプラットフォーム
-- 現在のサービス: AI証明写真（無料）
-- 技術: Gemini AI + Imagen（Google最新AI）
-- ブランド: MONK.KR（韓国発のクリエイティブAIプラットフォーム）
+- MONK STUDIO が運営するAI写真プラットフォーム
+- 技術: Gemini AI + Imagen（Google最新AI）によるリアルタイムコーチング＆高品質証明写真生成
+- サイト: https://monkos.ai
 
-[サービス案内]
-- AI証明写真（日本語）: https://idphoto-jp.monkos.ai/app
-  - 完全無料、AIコーチング付き、プロ品質
-  - パスポート、履歴書、マイナンバーカード対応
-- 韓国語サービス: 準備中
-- その他: 英語対応予定
+[サービス一覧]
+1. AI証明写真（日本語）: https://idphoto-jp.monkos.ai/app
+   - AIリアルタイム撮影コーチング → AI写真生成 → AI品質検証(QC)
+   - パスポート、履歴書、マイナンバーカード対応
+2. AI증명사진（韓国語）: https://idphoto-kr.monkos.ai/app
+   - AI 실시간 촬영 코칭 → AI 사진 생성 → AI 품질 검증(QC)
+   - 여권, 이력서, 주민등록증 대응
+
+[クレジットシステム]
+- 毎日先着30名: アンケート回答で12クレジット無料（正午リセット）
+- 生成: 1回 = 1クレジット消費
+- ダウンロード: 1回 = 10クレジット消費
+- SNS共有ボーナス: X共有 or Googleレビュー → 10クレジット獲得
+- クレジット購入: 10c/$10 | 30c/$25（おすすめ） | 50c/$40
+- 決済: Lemon Squeezy経由（クレジットカード、PayPal、Apple Pay、Google Pay）
+
+[法的ページ]
+- 利用規約: https://monkos.ai/terms.html
+- プライバシーポリシー: https://monkos.ai/privacy.html
+- 返金ポリシー: https://monkos.ai/refund.html
+- 返金条件: 購入後7日以内・完全未使用 → 全額返金 / 1回でも使用 → 返金不可
+
+[応答ポリシー — 3段階]
+1. MONKOSサービス関連（証明写真、クレジット、料金、使い方、QC等）
+   → 積極的・丁寧に案内。具体的なURL・手順を提示。
+2. 写真・画像の一般質問（撮影テクニック、構図、照明、レタッチ等）
+   → 親切に回答しつつ「MONKOSならAIが自動でやってくれますよ！」と自然に誘導。
+3. 無関係な質問（天気、料理、雑談、プログラミング等）
+   → 「すみません、私はMONKOS AI写真の専門アシスタントです😊 写真のことならお任せください！」と丁寧にお断り。
 
 [応答ルール]
 - ユーザーの言語に合わせて応答（日本語/韓国語/英語）
-- 簡潔で親しみやすいトーン
-- MONKOSサービスの案内を自然に行う
-- 証明写真サービスを積極的に推薦
-- 技術的な質問にも対応可能
-- 3文以内で回答`;
+- 簡潔で親しみやすいトーン（3文以内）
+- 問い合わせ先: gdsajin@gmail.com`;
 
 // === 대화 히스토리 (인메모리, 세션별) ===
 const chatHistories = new Map();
@@ -226,12 +255,12 @@ const httpServer = createServer(async (req, res) => {
           lastLogin: new Date().toISOString(),
           ...(isNewUser ? {
             createdAt: new Date().toISOString(),
-            credits: 12,  // 가입 보너스 12 크레딧
+            credits: 0,  // 가입 시 0c (설문 이벤트로 지급)
           } : {}),
         };
 
         await userRef.set(user, { merge: true });
-        log(`[Auth] ${isNewUser ? '신규 가입 (12c 지급)' : '로그인'}: ${user.email}`);
+        log(`[Auth] ${isNewUser ? '신규 가입 (0c)' : '로그인'}: ${user.email}`);
 
         // 현재 크레딧 조회
         const updatedDoc = await userRef.get();
@@ -383,6 +412,132 @@ const httpServer = createServer(async (req, res) => {
         res.end(JSON.stringify(result));
       } catch (err) {
         log(`[Credits] 공유 보너스 에러: ${err.message}`);
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: err.message }));
+      }
+    });
+    return;
+  }
+
+  // === 설문 이벤트: 일일 선착순 30명 12c 지급 ===
+  const SURVEY_DAILY_LIMIT = 30;
+  const SURVEY_BONUS = 12;
+
+  // 오늘 날짜 키 (KST 정오 기준)
+  function getSurveyDateKey() {
+    const now = new Date();
+    const kst = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+    // 정오 이전이면 전날 키
+    if (kst.getUTCHours() < 3) { // UTC 3시 = KST 정오
+      kst.setUTCDate(kst.getUTCDate() - 1);
+    }
+    return kst.toISOString().slice(0, 10); // YYYY-MM-DD
+  }
+
+  // 설문 상태 조회
+  if (req.url?.startsWith('/api/survey/status') && req.method === 'GET') {
+    try {
+      const dateKey = getSurveyDateKey();
+      const docRef = firestore.collection('daily_survey').doc(dateKey);
+      const doc = await docRef.get();
+      const count = doc.exists ? (doc.data()?.count ?? 0) : 0;
+      const remaining = Math.max(0, SURVEY_DAILY_LIMIT - count);
+
+      // 로그인 유저가 이미 참여했는지 확인
+      const urlParams = new URL(req.url, `http://${req.headers.host}`);
+      const userId = urlParams.searchParams.get('userId');
+      let alreadyDone = false;
+      if (userId && doc.exists) {
+        const participants = doc.data()?.participants || [];
+        alreadyDone = participants.includes(userId);
+      }
+
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ remaining, total: SURVEY_DAILY_LIMIT, count, alreadyDone, dateKey }));
+    } catch (err) {
+      log(`[Survey] 상태 조회 에러: ${err.message}`);
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: err.message }));
+    }
+    return;
+  }
+
+  // 설문 제출 + 크레딧 지급
+  if (req.url === '/api/survey' && req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', async () => {
+      try {
+        const { userId, answers } = JSON.parse(body);
+        if (!userId || !answers) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'userId, answers 필수' }));
+          return;
+        }
+
+        const dateKey = getSurveyDateKey();
+        const docRef = firestore.collection('daily_survey').doc(dateKey);
+        const userRef = usersCollection.doc(userId);
+
+        const result = await firestore.runTransaction(async (tx) => {
+          const surveyDoc = await tx.get(docRef);
+          const surveyData = surveyDoc.exists ? surveyDoc.data() : { count: 0, participants: [] };
+          const count = surveyData.count ?? 0;
+          const participants = surveyData.participants || [];
+
+          // 이미 참여했는지 체크
+          if (participants.includes(userId)) {
+            return { success: false, error: '이미 참여하셨습니다', alreadyDone: true };
+          }
+
+          // 선착순 마감 체크
+          if (count >= SURVEY_DAILY_LIMIT) {
+            return { success: false, error: '오늘 선착순 마감', soldOut: true };
+          }
+
+          // 유저 크레딧 추가
+          const userDoc = await tx.get(userRef);
+          if (!userDoc.exists) {
+            return { success: false, error: '사용자 없음' };
+          }
+          const currentCredits = userDoc.data()?.credits ?? 0;
+          const newCredits = currentCredits + SURVEY_BONUS;
+          tx.update(userRef, { credits: newCredits, surveyCompleted: dateKey });
+
+          // 카운터 업데이트
+          tx.set(docRef, {
+            count: count + 1,
+            participants: [...participants, userId],
+            updatedAt: new Date().toISOString(),
+          }, { merge: true });
+
+          // 설문 응답 저장
+          const surveyRef = firestore.collection('survey_responses').doc(`${dateKey}_${userId}`);
+          tx.set(surveyRef, {
+            userId,
+            answers,
+            dateKey,
+            createdAt: new Date().toISOString(),
+          });
+
+          return {
+            success: true,
+            credits: newCredits,
+            bonus: SURVEY_BONUS,
+            remaining: SURVEY_DAILY_LIMIT - count - 1,
+          };
+        });
+
+        if (result.success) {
+          log(`[Survey] 설문 완료: ${userId} +${SURVEY_BONUS}c → ${result.credits}c (잔여 ${result.remaining}명)`);
+        } else {
+          log(`[Survey] 거부: ${userId} — ${result.error}`);
+        }
+
+        res.writeHead(result.success ? 200 : 409, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(result));
+      } catch (err) {
+        log(`[Survey] 에러: ${err.message}`);
         res.writeHead(500, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: err.message }));
       }
@@ -687,6 +842,79 @@ const httpServer = createServer(async (req, res) => {
     return;
   }
 
+  // === 토스페이먼츠 결제 확인 (KR 전용) ===
+  if (req.url === '/api/payments/toss/confirm' && req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', async () => {
+      try {
+        const { paymentKey, orderId, amount, userId } = JSON.parse(body);
+        if (!paymentKey || !orderId || !amount || !userId) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'paymentKey, orderId, amount, userId 필수' }));
+          return;
+        }
+
+        const credits = TOSS_AMOUNT_CREDITS[amount];
+        if (!credits) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: `유효하지 않은 결제 금액: ${amount}` }));
+          return;
+        }
+
+        // 토스 API로 결제 승인
+        const secretKey = TOSS_SECRET_KEY;
+        const authHeader = 'Basic ' + Buffer.from(secretKey + ':').toString('base64');
+
+        const tossRes = await fetch('https://api.tosspayments.com/v1/payments/confirm', {
+          method: 'POST',
+          headers: {
+            'Authorization': authHeader,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ paymentKey, orderId, amount }),
+        });
+
+        const tossData = await tossRes.json();
+
+        if (!tossRes.ok) {
+          log(`[Toss] 결제 승인 실패: ${tossData.code} - ${tossData.message}`);
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: tossData.message || '결제 승인 실패' }));
+          return;
+        }
+
+        // Firestore 크레딧 추가
+        const userRef = usersCollection.doc(userId);
+        const result = await firestore.runTransaction(async (tx) => {
+          const userDoc = await tx.get(userRef);
+          if (!userDoc.exists) throw new Error('사용자 없음');
+          const current = userDoc.data()?.credits ?? 0;
+          const newCredits = current + credits;
+          tx.update(userRef, {
+            credits: newCredits,
+            lastPurchase: new Date().toISOString(),
+          });
+          return newCredits;
+        });
+
+        log(`[Toss] 결제 완료: ${userId} +${credits}c (₩${amount}, orderId: ${orderId})`);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({
+          success: true,
+          credits: result,
+          creditsAdded: credits,
+          orderId,
+        }));
+      } catch (err) {
+        log(`[Toss] 에러: ${err.message}`);
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: err.message }));
+      }
+    });
+    return;
+  }
+
   // 챗봇 API
   if (req.url === '/api/chat' && req.method === 'POST') {
     let body = '';
@@ -755,11 +983,15 @@ httpServer.listen(PORT, '0.0.0.0', () => {
   log('  POST /api/credits/share-bonus — 공유 보너스 (+10c)');
   log('  POST /api/auth/token       — 크로스 도메인 토큰 생성');
   log('  GET  /api/auth/verify      — 토큰 검증');
-  log('  POST /api/checkout         — Lemon Squeezy 체크아웃 생성');
-  log('  POST /api/webhooks/lemonsqueezy — 결제 웹훅');
+  log('  POST /api/checkout         — Lemon Squeezy 체크아웃 (JP/글로벌)');
+  log('  POST /api/webhooks/lemonsqueezy — LS 결제 웹훅');
+  log('  POST /api/payments/toss/confirm — 토스페이먼츠 결제 확인 (KR)');
+  log('  GET  /api/survey/status    — 설문 이벤트 상태');
+  log('  POST /api/survey           — 설문 제출 (+12c, 일일 30명)');
   log('  POST /api/chat             — Gemini 챗봇');
   log('  GET  /                     — 메인 포털');
   log(`Google Client ID: ${GOOGLE_CLIENT_ID ? '설정됨' : '미설정'}`);
   log(`Lemon Squeezy: ${LEMONSQUEEZY_API_KEY ? '설정됨' : '미설정'}`);
+  log(`Toss Payments: ${TOSS_SECRET_KEY ? '설정됨' : '미설정'}`);
   log('='.repeat(60));
 });

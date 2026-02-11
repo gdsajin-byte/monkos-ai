@@ -346,10 +346,11 @@ const httpServer = createServer((req, res) => {
 
   // 静的ファイル配信
   // / → ランディングページ, /app → 撮影アプリUI
+  const urlPath = req.url.split('?')[0];
   let filePath;
-  if (req.url === '/') filePath = '/landing.html';
-  else if (req.url === '/app') filePath = '/index.html';
-  else filePath = req.url;
+  if (urlPath === '/') filePath = '/landing.html';
+  else if (urlPath === '/app') filePath = '/index.html';
+  else filePath = urlPath;
   const fullPath = join(__dirname, 'public', filePath);
   const ext = extname(filePath);
 
@@ -423,6 +424,7 @@ wss.on('connection', async (ws) => {
           return;
         }
         log(`[Credits][${clientId}] 生成消費完了: ${msg.userId} → ${creditResult.credits}c`);
+        ws.send(JSON.stringify({ type: 'credit-update', credits: creditResult.credits }));
       }
 
       ws.send(JSON.stringify({ type: 'generate-start' }));
@@ -504,6 +506,21 @@ wss.on('connection', async (ws) => {
         ws.send(JSON.stringify({ type: 'qc-error', error: err.message }));
         log(`[QC][${clientId}] 検証失敗: ${err.message}`);
       }
+      return;
+    }
+
+    // コーチング停止（撮影完了時）
+    if (msg.type === 'stop-coaching') {
+      log(`[コーチング][${clientId}] セッション停止`);
+      if (session.gemini) {
+        try { session.gemini.close(); } catch {}
+        session.gemini = null;
+      }
+      if (session.bufferFlushTimer) {
+        clearTimeout(session.bufferFlushTimer);
+        session.bufferFlushTimer = null;
+      }
+      session.responseBuffer = '';
       return;
     }
 
