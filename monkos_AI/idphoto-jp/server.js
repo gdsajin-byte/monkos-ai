@@ -65,6 +65,22 @@ async function useCredits(userId, type) {
   }
 }
 
+async function refundCredits(userId, type) {
+  if (!userId) return { success: false, error: 'ログインが必要です' };
+
+  try {
+    const response = await fetch(`${PORTAL_API_URL}/api/credits/refund`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, type }),
+    });
+    return await response.json();
+  } catch (err) {
+    log(`[Credits] 返金API呼び出し失敗: ${err.message}`);
+    return { success: false, error: 'Portal API接続失敗' };
+  }
+}
+
 async function grantShareBonus(userId, platform) {
   if (!userId) return { success: false, error: 'ログインが必要です' };
 
@@ -415,7 +431,13 @@ wss.on('connection', async (ws) => {
         ws.send(JSON.stringify({ type: 'generate-result', image: result }));
         log(`[Imagen][${clientId}] 生成完了`);
       } catch (err) {
-        // 生成失敗時のクレジット返金 (TODO: 将来実装)
+        // 生成失敗時のクレジット返金 (1c)
+        if (msg.userId) {
+          const refund = await refundCredits(msg.userId, 'generate');
+          if (refund.success) {
+            log(`[Credits][${clientId}] 生成失敗返金: ${msg.userId} +1c → ${refund.credits}c`);
+          }
+        }
         ws.send(JSON.stringify({ type: 'generate-error', error: err.message }));
         log(`[Imagen][${clientId}] 生成失敗: ${err.message}`);
       }

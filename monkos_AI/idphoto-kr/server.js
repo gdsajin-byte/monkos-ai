@@ -65,6 +65,22 @@ async function useCredits(userId, type) {
   }
 }
 
+async function refundCredits(userId, type) {
+  if (!userId) return { success: false, error: '로그인 필요' };
+
+  try {
+    const response = await fetch(`${PORTAL_API_URL}/api/credits/refund`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, type }),
+    });
+    return await response.json();
+  } catch (err) {
+    log(`[Credits] 환불 API 호출 실패: ${err.message}`);
+    return { success: false, error: 'Portal API 연결 실패' };
+  }
+}
+
 async function grantShareBonus(userId, platform) {
   if (!userId) return { success: false, error: '로그인 필요' };
 
@@ -414,7 +430,13 @@ wss.on('connection', async (ws) => {
         ws.send(JSON.stringify({ type: 'generate-result', image: result }));
         log(`[Imagen][${clientId}] 생성 완료`);
       } catch (err) {
-        // 생성 실패 시 크레딧 환불 (TODO: 향후 구현)
+        // 생성 실패 시 크레딧 환불 (1c)
+        if (msg.userId) {
+          const refund = await refundCredits(msg.userId, 'generate');
+          if (refund.success) {
+            log(`[Credits][${clientId}] 생성 실패 환불: ${msg.userId} +1c → ${refund.credits}c`);
+          }
+        }
         ws.send(JSON.stringify({ type: 'generate-error', error: err.message }));
         log(`[Imagen][${clientId}] 생성 실패: ${err.message}`);
       }

@@ -748,6 +748,11 @@ footer a {
   </section>
 
     <footer translate="no">
+      <p style="margin-bottom:8px;">
+        <a href="/privacy.html">Privacy Policy</a> &nbsp;|&nbsp;
+        <a href="/terms.html">Terms of Service</a> &nbsp;|&nbsp;
+        <a href="/refund.html">Refund Policy</a>
+      </p>
       <p>&copy; 2026 <a href="https://monkos.ai">MONKOS.AI</a> — Evolution of Creative Intelligence</p>
     </footer>
   </div><!-- /mainContent -->
@@ -1191,6 +1196,30 @@ t.features.forEach(f => {
 const ctaBtn = document.getElementById('ctaBtn');
 ctaBtn.textContent = t.ctaText;
 ctaBtn.href = t.ctaUrl;
+
+// CTA 클릭 시 로그인 상태면 토큰 파라미터 추가
+ctaBtn.addEventListener('click', async (e) => {
+  if (!currentUser?.id) return; // 비로그인 시 기본 URL 이동
+  e.preventDefault();
+  try {
+    const res = await fetch('/api/auth/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: currentUser.id }),
+    });
+    const data = await res.json();
+    if (data.token) {
+      const url = new URL(t.ctaUrl);
+      url.searchParams.set('uid', currentUser.id);
+      url.searchParams.set('token', data.token);
+      window.location.href = url.toString();
+    } else {
+      window.location.href = t.ctaUrl;
+    }
+  } catch {
+    window.location.href = t.ctaUrl;
+  }
+});
 
 document.getElementById('chatInput').placeholder = t.chatPlaceholder;
 document.getElementById('loginText').textContent = loginTexts[lang] || 'Login';

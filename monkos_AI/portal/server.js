@@ -15,6 +15,7 @@ import { createServer } from 'http';
 import { readFileSync } from 'fs';
 import { join, dirname, extname } from 'path';
 import { fileURLToPath } from 'url';
+import { createHmac } from 'crypto';
 import { GoogleGenAI } from '@google/genai';
 import { Firestore } from '@google-cloud/firestore';
 
@@ -25,6 +26,18 @@ const PORT = parseInt(process.env.PORT || '8080', 10);
 const PROJECT_ID = process.env.PROJECT_ID || 'monkos';
 const LOCATION = process.env.LOCATION || 'us-central1';
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '933456016842-clagcrpo1juvukjif1m454jq811bd2rq.apps.googleusercontent.com';
+
+// === Lemon Squeezy ===
+const LEMONSQUEEZY_API_KEY = process.env.LEMONSQUEEZY_API_KEY || '';
+const LEMONSQUEEZY_WEBHOOK_SECRET = process.env.LEMONSQUEEZY_WEBHOOK_SECRET || '';
+const LEMONSQUEEZY_STORE_ID = '290457';
+
+// Variant ID → 크레딧 매핑
+const VARIANT_CREDITS = {
+  '1297524': 10,  // MONKOS 10 Credits — $10
+  '1297532': 30,  // MONKOS 30 Credits — $25
+  '1297531': 50,  // MONKOS 50 Credits — $40
+};
 
 // === Firestore 초기화 ===
 const firestore = new Firestore({
@@ -377,6 +390,303 @@ const httpServer = createServer(async (req, res) => {
     return;
   }
 
+  // === 크레딧 환불 API ===
+  // 생성 실패 등으로 차감된 크레딧을 환불
+  if (req.url === '/api/credits/refund' && req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', async () => {
+      try {
+        const { userId, type } = JSON.parse(body);
+        if (!userId || !type) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'userId, type 필드 필수' }));
+          return;
+        }
+
+        const refund = type === 'generate' ? 1 : type === 'download' ? 10 : 0;
+        if (refund === 0) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'type은 generate 또는 download' }));
+          return;
+        }
+
+        const userRef = usersCollection.doc(userId);
+        const result = await firestore.runTransaction(async (tx) => {
+          const userDoc = await tx.get(userRef);
+          if (!userDoc.exists) throw new Error('사용자 없음');
+          const current = userDoc.data()?.credits ?? 0;
+          const newCredits = current + refund;
+          tx.update(userRef, { credits: newCredits });
+          return { success: true, credits: newCredits, refunded: refund, type };
+        });
+
+        log(`[Credits] 환불: ${userId} +${refund}c (${type}) → ${result.credits}c`);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(result));
+      } catch (err) {
+        log(`[Credits] 환불 에러: ${err.message}`);
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: err.message }));
+      }
+    });
+    return;
+  }
+
+  // === 크로스 도메인 인증 토큰 생성 ===
+  if (req.url === '/api/auth/token' && req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', async () => {
+      try {
+        const { userId } = JSON.parse(body);
+        if (!userId) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'userId 필수' }));
+          return;
+        }
+
+        // 5분 만료 HMAC 토큰
+        const expires = Date.now() + 5 * 60 * 1000;
+        const payload = `${userId}:${expires}`;
+        const secret = LEMONSQUEEZY_WEBHOOK_SECRET || 'monkos-default-secret';
+        const hmac = createHmac('sha256', secret);
+        hmac.update(payload);
+        const sig = hmac.digest('hex');
+        const token = Buffer.from(`${payload}:${sig}`).toString('base64url');
+
+        log(`[Auth] 토큰 생성: ${userId} (만료: ${new Date(expires).toISOString()})`);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ token, expires }));
+      } catch (err) {
+        log(`[Auth] 토큰 생성 에러: ${err.message}`);
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: err.message }));
+      }
+    });
+    return;
+  }
+
+  // === 크로스 도메인 인증 토큰 검증 ===
+  if (req.url?.startsWith('/api/auth/verify') && req.method === 'GET') {
+    const urlParams = new URL(req.url, `http://${req.headers.host}`);
+    const token = urlParams.searchParams.get('token');
+
+    if (!token) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'token 파라미터 필수' }));
+      return;
+    }
+
+    try {
+      const decoded = Buffer.from(token, 'base64url').toString();
+      const parts = decoded.split(':');
+      if (parts.length !== 3) throw new Error('토큰 형식 오류');
+
+      const [userId, expiresStr, sig] = parts;
+      const expires = parseInt(expiresStr, 10);
+
+      // 만료 체크
+      if (Date.now() > expires) {
+        res.writeHead(401, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: '토큰 만료' }));
+        return;
+      }
+
+      // 서명 검증
+      const secret = LEMONSQUEEZY_WEBHOOK_SECRET || 'monkos-default-secret';
+      const hmac = createHmac('sha256', secret);
+      hmac.update(`${userId}:${expiresStr}`);
+      const expectedSig = hmac.digest('hex');
+
+      if (sig !== expectedSig) {
+        res.writeHead(401, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: '토큰 검증 실패' }));
+        return;
+      }
+
+      // Firestore에서 사용자 정보 조회
+      const userRef = usersCollection.doc(userId);
+      const userDoc = await userRef.get();
+      if (!userDoc.exists) {
+        res.writeHead(404, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: '사용자 없음' }));
+        return;
+      }
+
+      const userData = userDoc.data();
+      log(`[Auth] 토큰 검증 성공: ${userId}`);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({
+        success: true,
+        user: {
+          id: userId,
+          email: userData.email,
+          name: userData.name,
+          picture: userData.picture,
+          credits: userData.credits ?? 0,
+        }
+      }));
+    } catch (err) {
+      log(`[Auth] 토큰 검증 에러: ${err.message}`);
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: err.message }));
+    }
+    return;
+  }
+
+  // === Lemon Squeezy 체크아웃 URL 생성 ===
+  if (req.url === '/api/checkout' && req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', async () => {
+      try {
+        const { variantId, userId, email } = JSON.parse(body);
+        if (!variantId || !userId) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'variantId, userId 필수' }));
+          return;
+        }
+
+        const checkoutRes = await fetch('https://api.lemonsqueezy.com/v1/checkouts', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${LEMONSQUEEZY_API_KEY}`,
+            'Accept': 'application/vnd.api+json',
+            'Content-Type': 'application/vnd.api+json',
+          },
+          body: JSON.stringify({
+            data: {
+              type: 'checkouts',
+              attributes: {
+                checkout_data: {
+                  custom: { user_id: userId },
+                  email: email || undefined,
+                },
+              },
+              relationships: {
+                store: { data: { type: 'stores', id: LEMONSQUEEZY_STORE_ID } },
+                variant: { data: { type: 'variants', id: String(variantId) } },
+              },
+            },
+          }),
+        });
+
+        const checkoutData = await checkoutRes.json();
+
+        if (!checkoutRes.ok) {
+          log(`[Checkout] 에러: ${JSON.stringify(checkoutData)}`);
+          res.writeHead(500, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: '체크아웃 생성 실패' }));
+          return;
+        }
+
+        const checkoutUrl = checkoutData.data?.attributes?.url;
+        log(`[Checkout] 생성: ${userId} → variant ${variantId}`);
+
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ url: checkoutUrl }));
+      } catch (err) {
+        log(`[Checkout] 에러: ${err.message}`);
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: err.message }));
+      }
+    });
+    return;
+  }
+
+  // === Lemon Squeezy 웹훅 ===
+  if (req.url === '/api/webhooks/lemonsqueezy' && req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', async () => {
+      try {
+        // 서명 검증
+        const signature = req.headers['x-signature'];
+        if (LEMONSQUEEZY_WEBHOOK_SECRET && signature) {
+          const hmac = createHmac('sha256', LEMONSQUEEZY_WEBHOOK_SECRET);
+          hmac.update(body);
+          const digest = hmac.digest('hex');
+          if (digest !== signature) {
+            log('[Webhook] 서명 검증 실패');
+            res.writeHead(401, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: '서명 불일치' }));
+            return;
+          }
+        }
+
+        const payload = JSON.parse(body);
+        const eventName = payload.meta?.event_name;
+        log(`[Webhook] 이벤트: ${eventName}`);
+
+        // 주문 완료 → 크레딧 지급
+        if (eventName === 'order_created') {
+          const attrs = payload.data?.attributes;
+          const userId = payload.meta?.custom_data?.user_id;
+          const variantId = attrs?.first_order_item?.variant_id?.toString();
+          const credits = VARIANT_CREDITS[variantId] || 0;
+
+          if (!userId || credits === 0) {
+            log(`[Webhook] 크레딧 지급 불가: userId=${userId}, variantId=${variantId}`);
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ received: true, action: 'skipped' }));
+            return;
+          }
+
+          // Firestore 크레딧 추가
+          const userRef = usersCollection.doc(userId);
+          await firestore.runTransaction(async (tx) => {
+            const userDoc = await tx.get(userRef);
+            if (!userDoc.exists) {
+              log(`[Webhook] 사용자 없음: ${userId}`);
+              return;
+            }
+            const current = userDoc.data()?.credits ?? 0;
+            tx.update(userRef, {
+              credits: current + credits,
+              lastPurchase: new Date().toISOString(),
+            });
+          });
+
+          log(`[Webhook] 크레딧 지급: ${userId} +${credits}c (variant ${variantId}, $${attrs?.total_formatted || '?'})`);
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ received: true, action: 'credits_added', credits }));
+          return;
+        }
+
+        // 환불 → 크레딧 회수
+        if (eventName === 'order_refunded') {
+          const userId = payload.meta?.custom_data?.user_id;
+          const variantId = payload.data?.attributes?.first_order_item?.variant_id?.toString();
+          const credits = VARIANT_CREDITS[variantId] || 0;
+
+          if (userId && credits > 0) {
+            const userRef = usersCollection.doc(userId);
+            await firestore.runTransaction(async (tx) => {
+              const userDoc = await tx.get(userRef);
+              if (!userDoc.exists) return;
+              const current = userDoc.data()?.credits ?? 0;
+              tx.update(userRef, { credits: Math.max(0, current - credits) });
+            });
+            log(`[Webhook] 환불 크레딧 회수: ${userId} -${credits}c`);
+          }
+
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ received: true, action: 'credits_revoked' }));
+          return;
+        }
+
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ received: true }));
+      } catch (err) {
+        log(`[Webhook] 에러: ${err.message}`);
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: err.message }));
+      }
+    });
+    return;
+  }
+
   // 챗봇 API
   if (req.url === '/api/chat' && req.method === 'POST') {
     let body = '';
@@ -441,9 +751,15 @@ httpServer.listen(PORT, '0.0.0.0', () => {
   log('  POST /api/auth/google      — Google 가입/로그인 (+12c 보너스)');
   log('  GET  /api/credits          — 크레딧 조회');
   log('  POST /api/credits/use      — 크레딧 사용 (generate:-1c, download:-10c)');
+  log('  POST /api/credits/refund   — 크레딧 환불');
   log('  POST /api/credits/share-bonus — 공유 보너스 (+10c)');
+  log('  POST /api/auth/token       — 크로스 도메인 토큰 생성');
+  log('  GET  /api/auth/verify      — 토큰 검증');
+  log('  POST /api/checkout         — Lemon Squeezy 체크아웃 생성');
+  log('  POST /api/webhooks/lemonsqueezy — 결제 웹훅');
   log('  POST /api/chat             — Gemini 챗봇');
   log('  GET  /                     — 메인 포털');
   log(`Google Client ID: ${GOOGLE_CLIENT_ID ? '설정됨' : '미설정'}`);
+  log(`Lemon Squeezy: ${LEMONSQUEEZY_API_KEY ? '설정됨' : '미설정'}`);
   log('='.repeat(60));
 });

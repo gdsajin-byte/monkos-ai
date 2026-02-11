@@ -476,6 +476,22 @@
         }
         .credit-modal-btn.primary { background: linear-gradient(135deg, #a78bfa, #7c3aed); color: #fff; }
         .credit-modal-btn.secondary { background: #222; color: #888; }
+        .credit-packages { display: flex; gap: 10px; margin-bottom: 16px; width: 100%; }
+        .credit-pkg {
+            flex: 1; padding: 14px 8px; border-radius: 12px; border: 1px solid #333;
+            background: #1a1a1a; cursor: pointer; text-align: center; position: relative;
+            transition: border-color 0.2s, transform 0.2s;
+        }
+        .credit-pkg:hover { border-color: #a78bfa; transform: translateY(-2px); }
+        .credit-pkg.popular { border-color: #a78bfa; background: linear-gradient(135deg, rgba(167,139,250,0.1), rgba(124,58,237,0.1)); }
+        .pkg-badge {
+            position: absolute; top: -8px; left: 50%; transform: translateX(-50%);
+            background: #a78bfa; color: #fff; font-size: 9px; font-weight: 700;
+            padding: 2px 8px; border-radius: 4px;
+        }
+        .pkg-credits { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+        .pkg-price { font-size: 14px; color: #a78bfa; font-weight: 600; }
+        .pkg-save { font-size: 10px; color: #f59e0b; margin-top: 4px; }
 
         /* 데스크탑 차단 */
         #desktop-blocker {
@@ -553,7 +569,23 @@
                     <div class="value red" id="creditCurrent">0</div>
                 </div>
             </div>
-            <button class="credit-modal-btn primary" onclick="goToPurchase()">크레딧 구매하기</button>
+            <div class="credit-packages">
+                <button class="credit-pkg" onclick="buyCredits('1297524')">
+                    <div class="pkg-credits">10c</div>
+                    <div class="pkg-price">$10</div>
+                </button>
+                <button class="credit-pkg popular" onclick="buyCredits('1297532')">
+                    <div class="pkg-badge">BEST</div>
+                    <div class="pkg-credits">30c</div>
+                    <div class="pkg-price">$25</div>
+                    <div class="pkg-save">17% 할인</div>
+                </button>
+                <button class="credit-pkg" onclick="buyCredits('1297531')">
+                    <div class="pkg-credits">50c</div>
+                    <div class="pkg-price">$40</div>
+                    <div class="pkg-save">20% 할인</div>
+                </button>
+            </div>
             <button class="credit-modal-btn secondary" onclick="closeCreditModal()">닫기</button>
         </div>
     </div>
@@ -835,6 +867,60 @@
         let userId = null;
         let userCredits = 0;
 
+        // URL 토큰 자동 로그인 (Portal → idphoto 이동 시)
+        async function initFromUrlToken() {
+            const params = new URLSearchParams(location.search);
+            const uid = params.get('uid');
+            const token = params.get('token');
+            if (!uid || !token) return false;
+
+            try {
+                const res = await fetch(PORTAL_URL + '/api/auth/verify?token=' + encodeURIComponent(token));
+                const data = await res.json();
+                if (data.success && data.user) {
+                    localStorage.setItem('monkos_user', JSON.stringify(data.user));
+                    // URL 정리 (토큰 파라미터 제거)
+                    const cleanUrl = location.pathname;
+                    history.replaceState(null, '', cleanUrl);
+                    log(`토큰 로그인 성공: ${data.user.email}`);
+                    return true;
+                }
+            } catch (err) {
+                log('토큰 검증 실패: ' + err.message);
+            }
+            return false;
+        }
+
+        // Portal API에서 최신 크레딧 조회
+        async function fetchLatestCredits() {
+            if (!userId) return;
+            try {
+                const res = await fetch(PORTAL_URL + '/api/credits?userId=' + encodeURIComponent(userId));
+                const data = await res.json();
+                if (data.credits !== undefined) {
+                    userCredits = data.credits;
+                    updateCreditBadge();
+                    // localStorage 동기화
+                    const stored = localStorage.getItem('monkos_user');
+                    if (stored) {
+                        const user = JSON.parse(stored);
+                        user.credits = userCredits;
+                        localStorage.setItem('monkos_user', JSON.stringify(user));
+                    }
+                    log(`크레딧 갱신: ${userCredits}c`);
+                }
+            } catch (err) {
+                log('크레딧 조회 실패: ' + err.message);
+            }
+        }
+
+        // 탭 복귀 시 크레딧 재조회 (결제 후 돌아올 때)
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible' && userId) {
+                fetchLatestCredits();
+            }
+        });
+
         // 로그인 상태 확인 (localStorage에서 userId 읽기)
         function initCredits() {
             const stored = localStorage.getItem('monkos_user');
@@ -884,10 +970,43 @@
         }
 
         function goToPurchase() {
-            window.location.href = PORTAL_URL + '?action=purchase';
+            // 크레딧 모달 내 패키지 버튼으로 대체됨
+            document.getElementById('credit-modal').classList.add('active');
         }
 
-        initCredits();
+        async function buyCredits(variantId) {
+            if (!userId) {
+                alert('로그인이 필요합니다');
+                return;
+            }
+            const stored = localStorage.getItem('monkos_user');
+            const email = stored ? (JSON.parse(stored).email || '') : '';
+            try {
+                const res = await fetch(PORTAL_URL + '/api/checkout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        variantId,
+                        userId: userId,
+                        email: email,
+                    }),
+                });
+                const data = await res.json();
+                if (data.url) {
+                    window.open(data.url, '_blank');
+                } else {
+                    alert('결제 페이지 생성 실패');
+                }
+            } catch (err) {
+                alert('결제 연결 오류: ' + err.message);
+            }
+        }
+
+        // 초기화: URL 토큰 → localStorage → 크레딧
+        (async () => {
+            await initFromUrlToken();
+            initCredits();
+        })();
 
         const video = document.getElementById('camera-video');
         const captureCanvas = document.getElementById('capture-canvas');
@@ -1048,9 +1167,10 @@
                     updateCreditBadge();
                     proceedDownload();
                 } else if (msg.type === 'share-bonus-ok') {
-                    // 공유 보너스 지급 성공
+                    // 공유 보너스 지급 성공 → 다운로드 해금
                     userCredits = msg.credits;
                     updateCreditBadge();
+                    unlockDownload('공유 보너스');
                     log(`공유 보너스 +${msg.bonus}c → ${msg.credits}c`);
                     alert(`공유 감사합니다! ${msg.bonus} 크레딧이 지급되었습니다.`);
                 }
@@ -1457,7 +1577,7 @@
 
         async function downloadResult() {
             if (!generatedImageData) return;
-            cleanupSession();
+            // cleanupSession()은 페이지 리로드 시 호출 (WS 유지 필요)
             document.getElementById('ty-photo').src = generatedImageData;
             document.getElementById('thankyou-screen').classList.add('active');
             // 촬영 버튼 숨김
@@ -1537,15 +1657,16 @@
 
         function requestShareBonus(platform) {
             if (!userId || !ws || ws.readyState !== 1) {
+                // 비로그인 또는 WS 끊김 시 바로 해제
                 unlockDownload(platform + ' 공유');
                 return;
             }
+            // 서버 응답(share-bonus-ok) 핸들러에서 unlockDownload 호출
             ws.send(JSON.stringify({
                 type: 'share-bonus',
                 userId: userId,
                 platform: platform,
             }));
-            unlockDownload(platform + ' 공유');
         }
 
         function checkReviewPromise() {

@@ -500,6 +500,22 @@
         }
         .credit-modal-btn.primary { background: linear-gradient(135deg, #a78bfa, #7c3aed); color: #fff; }
         .credit-modal-btn.secondary { background: #222; color: #888; }
+        .credit-packages { display: flex; gap: 10px; margin-bottom: 16px; width: 100%; }
+        .credit-pkg {
+            flex: 1; padding: 14px 8px; border-radius: 12px; border: 1px solid #333;
+            background: #1a1a1a; cursor: pointer; text-align: center; position: relative;
+            transition: border-color 0.2s, transform 0.2s;
+        }
+        .credit-pkg:hover { border-color: #a78bfa; transform: translateY(-2px); }
+        .credit-pkg.popular { border-color: #a78bfa; background: linear-gradient(135deg, rgba(167,139,250,0.1), rgba(124,58,237,0.1)); }
+        .pkg-badge {
+            position: absolute; top: -8px; left: 50%; transform: translateX(-50%);
+            background: #a78bfa; color: #fff; font-size: 9px; font-weight: 700;
+            padding: 2px 8px; border-radius: 4px;
+        }
+        .pkg-credits { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+        .pkg-price { font-size: 14px; color: #a78bfa; font-weight: 600; }
+        .pkg-save { font-size: 10px; color: #f59e0b; margin-top: 4px; }
 
         /* デスクトップブロッカー */
         #desktop-blocker {
@@ -577,7 +593,23 @@
                     <div class="value red" id="creditCurrent">0</div>
                 </div>
             </div>
-            <button class="credit-modal-btn primary" onclick="goToPurchase()">クレジットを購入</button>
+            <div class="credit-packages">
+                <button class="credit-pkg" onclick="buyCredits('1297524')">
+                    <div class="pkg-credits">10c</div>
+                    <div class="pkg-price">$10</div>
+                </button>
+                <button class="credit-pkg popular" onclick="buyCredits('1297532')">
+                    <div class="pkg-badge">BEST</div>
+                    <div class="pkg-credits">30c</div>
+                    <div class="pkg-price">$25</div>
+                    <div class="pkg-save">17% OFF</div>
+                </button>
+                <button class="credit-pkg" onclick="buyCredits('1297531')">
+                    <div class="pkg-credits">50c</div>
+                    <div class="pkg-price">$40</div>
+                    <div class="pkg-save">20% OFF</div>
+                </button>
+            </div>
             <button class="credit-modal-btn secondary" onclick="closeCreditModal()">閉じる</button>
         </div>
     </div>
@@ -859,6 +891,60 @@
         let userId = null;
         let userCredits = 0;
 
+        // URLトークン自動ログイン（Portal → idphoto遷移時）
+        async function initFromUrlToken() {
+            const params = new URLSearchParams(location.search);
+            const uid = params.get('uid');
+            const token = params.get('token');
+            if (!uid || !token) return false;
+
+            try {
+                const res = await fetch(PORTAL_URL + '/api/auth/verify?token=' + encodeURIComponent(token));
+                const data = await res.json();
+                if (data.success && data.user) {
+                    localStorage.setItem('monkos_user', JSON.stringify(data.user));
+                    // URLクリーンアップ（トークンパラメータ除去）
+                    const cleanUrl = location.pathname;
+                    history.replaceState(null, '', cleanUrl);
+                    log(`トークンログイン成功: ${data.user.email}`);
+                    return true;
+                }
+            } catch (err) {
+                log('トークン検証失敗: ' + err.message);
+            }
+            return false;
+        }
+
+        // Portal APIから最新クレジット取得
+        async function fetchLatestCredits() {
+            if (!userId) return;
+            try {
+                const res = await fetch(PORTAL_URL + '/api/credits?userId=' + encodeURIComponent(userId));
+                const data = await res.json();
+                if (data.credits !== undefined) {
+                    userCredits = data.credits;
+                    updateCreditBadge();
+                    // localStorage同期
+                    const stored = localStorage.getItem('monkos_user');
+                    if (stored) {
+                        const user = JSON.parse(stored);
+                        user.credits = userCredits;
+                        localStorage.setItem('monkos_user', JSON.stringify(user));
+                    }
+                    log(`クレジット更新: ${userCredits}c`);
+                }
+            } catch (err) {
+                log('クレジット取得失敗: ' + err.message);
+            }
+        }
+
+        // タブ復帰時にクレジット再取得（決済後の戻り時）
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible' && userId) {
+                fetchLatestCredits();
+            }
+        });
+
         // ログイン状態確認 (localStorageからuserId読み込み)
         function initCredits() {
             const stored = localStorage.getItem('monkos_user');
@@ -908,10 +994,42 @@
         }
 
         function goToPurchase() {
-            window.location.href = PORTAL_URL + '?action=purchase';
+            document.getElementById('credit-modal').classList.add('active');
         }
 
-        initCredits();
+        async function buyCredits(variantId) {
+            if (!userId) {
+                alert('ログインが必要です');
+                return;
+            }
+            const stored = localStorage.getItem('monkos_user');
+            const email = stored ? (JSON.parse(stored).email || '') : '';
+            try {
+                const res = await fetch(PORTAL_URL + '/api/checkout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        variantId,
+                        userId: userId,
+                        email: email,
+                    }),
+                });
+                const data = await res.json();
+                if (data.url) {
+                    window.open(data.url, '_blank');
+                } else {
+                    alert('チェックアウトページの作成に失敗しました');
+                }
+            } catch (err) {
+                alert('決済接続エラー: ' + err.message);
+            }
+        }
+
+        // 初期化: URLトークン → localStorage → クレジット
+        (async () => {
+            await initFromUrlToken();
+            initCredits();
+        })();
 
         const video = document.getElementById('camera-video');
         const captureCanvas = document.getElementById('capture-canvas');
@@ -1073,9 +1191,10 @@
                     updateCreditBadge();
                     proceedDownload();
                 } else if (msg.type === 'share-bonus-ok') {
-                    // シェアボーナス付与成功
+                    // シェアボーナス付与成功 → ダウンロード解除
                     userCredits = msg.credits;
                     updateCreditBadge();
+                    unlockDownload('シェアボーナス');
                     log(`シェアボーナス +${msg.bonus}c → ${msg.credits}c`);
                     alert(`シェアありがとうございます！${msg.bonus}クレジットが付与されました。`);
                 }
@@ -1482,7 +1601,7 @@
 
         async function downloadResult() {
             if (!generatedImageData) return;
-            cleanupSession();
+            // cleanupSession()はページリロード時に呼ぶ（WS維持必要）
             document.getElementById('ty-photo').src = generatedImageData;
             document.getElementById('thankyou-screen').classList.add('active');
             // 撮影ボタン非表示
@@ -1562,15 +1681,16 @@
 
         function requestShareBonus(platform) {
             if (!userId || !ws || ws.readyState !== 1) {
+                // 未ログインまたはWS切断時は即解除
                 unlockDownload(platform + '共有');
                 return;
             }
+            // サーバー応答(share-bonus-ok)ハンドラでunlockDownload呼び出し
             ws.send(JSON.stringify({
                 type: 'share-bonus',
                 userId: userId,
                 platform: platform,
             }));
-            unlockDownload(platform + '共有');
         }
 
         function checkReviewPromise() {
