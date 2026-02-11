@@ -94,6 +94,21 @@
             background: rgba(167,139,250,0.15);
             border-color: #a78bfa; color: #a78bfa;
         }
+        .prep-profile-hint {
+            font-size: 14px; color: #ff7b54; margin-bottom: 16px;
+            text-align: center; font-weight: 600;
+        }
+        .btn-home {
+            position: absolute; top: 16px; right: 16px;
+            padding: 8px 14px; border-radius: 8px;
+            background: rgba(255,255,255,0.05);
+            color: #888; font-size: 12px; font-weight: 500;
+            border: 1px solid #333; cursor: pointer;
+            transition: all 0.2s; z-index: 10;
+        }
+        .btn-home:hover {
+            background: rgba(255,255,255,0.1); color: #aaa; border-color: #444;
+        }
 
         /* スタイル選択（準備画面用） */
         .prep-styles {
@@ -597,6 +612,7 @@
 
     <!-- === 準備画面 === -->
     <div id="prep-screen">
+        <button class="btn-home" onclick="location.href='https://monkos.ai'">🏠 メイン</button>
         <div class="prep-icon">📸</div>
         <div class="prep-title">撮影の準備</div>
         <p class="prep-sub">
@@ -629,17 +645,18 @@
         </div>
 
         <!-- 性別・年齢選択 -->
+        <p class="prep-profile-hint">正確なAI生成のため、性別と年齢を選択してください</p>
         <div class="prep-profile">
             <div class="prep-profile-group">
                 <span class="prep-profile-label">性別</span>
-                <div class="prep-profile-chip active" data-gender="male">男性</div>
+                <div class="prep-profile-chip" data-gender="male">男性</div>
                 <div class="prep-profile-chip" data-gender="female">女性</div>
             </div>
             <div class="prep-profile-group">
                 <span class="prep-profile-label">年齢</span>
                 <div class="prep-profile-chip" data-age="child">幼児~12歳</div>
                 <div class="prep-profile-chip" data-age="teen">13~18歳</div>
-                <div class="prep-profile-chip active" data-age="adult">19歳以上</div>
+                <div class="prep-profile-chip" data-age="adult">19歳以上</div>
             </div>
         </div>
 
@@ -649,7 +666,7 @@
             <div class="prep-style-chip" data-style="resume">履歴書</div>
         </div>
 
-        <button class="btn-start" id="btn-start" onclick="startShooting()">
+        <button class="btn-start" id="btn-start" onclick="startShooting()" disabled>
             撮影を始める
         </button>
         <p class="prep-note">カメラへのアクセスを許可してください</p>
@@ -835,8 +852,8 @@
         let isReady = false;
         let currentStep = 0; // 0=準備, 1=コーチング, 2=確認, 3=生成
         let selectedStyle = 'id_photo';
-        let selectedGender = 'male';
-        let selectedAge = 'adult';
+        let selectedGender = null;
+        let selectedAge = null;
         let voiceEnabled = true;
         let jaVoice = null;
 
@@ -1050,11 +1067,16 @@
         }
 
         // === 準備画面の性別・年齢選択 ===
+        function checkProfileComplete() {
+            const btn = document.getElementById('btn-start');
+            btn.disabled = !(selectedGender && selectedAge);
+        }
         document.querySelectorAll('[data-gender]').forEach(chip => {
             chip.addEventListener('click', () => {
                 document.querySelectorAll('[data-gender]').forEach(c => c.classList.remove('active'));
                 chip.classList.add('active');
                 selectedGender = chip.dataset.gender;
+                checkProfileComplete();
             });
         });
         document.querySelectorAll('[data-age]').forEach(chip => {
@@ -1062,6 +1084,7 @@
                 document.querySelectorAll('[data-age]').forEach(c => c.classList.remove('active'));
                 chip.classList.add('active');
                 selectedAge = chip.dataset.age;
+                checkProfileComplete();
             });
         });
 

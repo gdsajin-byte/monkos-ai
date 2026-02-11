@@ -94,6 +94,21 @@
             background: rgba(167,139,250,0.15);
             border-color: #a78bfa; color: #a78bfa;
         }
+        .prep-profile-hint {
+            font-size: 14px; color: #ff7b54; margin-bottom: 16px;
+            text-align: center; font-weight: 600;
+        }
+        .btn-home {
+            position: absolute; top: 16px; right: 16px;
+            padding: 8px 14px; border-radius: 8px;
+            background: rgba(255,255,255,0.05);
+            color: #888; font-size: 12px; font-weight: 500;
+            border: 1px solid #333; cursor: pointer;
+            transition: all 0.2s; z-index: 10;
+        }
+        .btn-home:hover {
+            background: rgba(255,255,255,0.1); color: #aaa; border-color: #444;
+        }
 
         /* 스타일 선택 (준비 화면) */
         .prep-styles {
@@ -574,6 +589,7 @@
 
     <!-- === 준비 화면 === -->
     <div id="prep-screen">
+        <button class="btn-home" onclick="location.href='https://monkos.ai'">🏠 메인</button>
         <div class="prep-icon">📸</div>
         <div class="prep-title">촬영 준비</div>
         <p class="prep-sub">
@@ -606,17 +622,18 @@
         </div>
 
         <!-- 성별/연령 선택 -->
+        <p class="prep-profile-hint">정확한 AI 생성을 위해 성별과 연령대를 선택해주세요</p>
         <div class="prep-profile">
             <div class="prep-profile-group">
                 <span class="prep-profile-label">성별</span>
-                <div class="prep-profile-chip active" data-gender="male">남성</div>
+                <div class="prep-profile-chip" data-gender="male">남성</div>
                 <div class="prep-profile-chip" data-gender="female">여성</div>
             </div>
             <div class="prep-profile-group">
                 <span class="prep-profile-label">연령</span>
                 <div class="prep-profile-chip" data-age="child">유아~12세</div>
                 <div class="prep-profile-chip" data-age="teen">13~18세</div>
-                <div class="prep-profile-chip active" data-age="adult">19세 이상</div>
+                <div class="prep-profile-chip" data-age="adult">19세 이상</div>
             </div>
         </div>
 
@@ -626,7 +643,7 @@
             <div class="prep-style-chip" data-style="resume">이력서</div>
         </div>
 
-        <button class="btn-start" id="btn-start" onclick="startShooting()">
+        <button class="btn-start" id="btn-start" onclick="startShooting()" disabled>
             촬영 시작하기
         </button>
         <p class="prep-note">카메라 접근을 허용해 주세요</p>
@@ -812,8 +829,8 @@
         let isReady = false;
         let currentStep = 0; // 0=준비, 1=코칭, 2=확인, 3=생성
         let selectedStyle = 'id_photo';
-        let selectedGender = 'male';
-        let selectedAge = 'adult';
+        let selectedGender = null;
+        let selectedAge = null;
         let voiceEnabled = true;
         let koVoice = null;
 
@@ -1087,11 +1104,16 @@
         }
 
         // === 준비 화면 성별/연령 선택 ===
+        function checkProfileComplete() {
+            const btn = document.getElementById('btn-start');
+            btn.disabled = !(selectedGender && selectedAge);
+        }
         document.querySelectorAll('[data-gender]').forEach(chip => {
             chip.addEventListener('click', () => {
                 document.querySelectorAll('[data-gender]').forEach(c => c.classList.remove('active'));
                 chip.classList.add('active');
                 selectedGender = chip.dataset.gender;
+                checkProfileComplete();
             });
         });
         document.querySelectorAll('[data-age]').forEach(chip => {
@@ -1099,6 +1121,7 @@
                 document.querySelectorAll('[data-age]').forEach(c => c.classList.remove('active'));
                 chip.classList.add('active');
                 selectedAge = chip.dataset.age;
+                checkProfileComplete();
             });
         });
 

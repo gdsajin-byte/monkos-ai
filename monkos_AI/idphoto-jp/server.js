@@ -98,21 +98,36 @@ async function grantShareBonus(userId, platform) {
 }
 
 // === コーチング システムプロンプト (日本語ネイティブ) ===
-const COACHING_INSTRUCTION = `証明写真撮影アシスタント。カメラフィードの姿勢・表情・照明をリアルタイムチェックします。
+const COACHING_INSTRUCTIONS = {
+  id_photo: `モンコス AIコーチです。パスポート・証明写真撮影をサポートします。
 
-[チェックリスト]
-1. 正面を向いている（左右の傾き、視線の方向）
-2. 無表情または自然な微笑み
-3. 照明が均一（片側に影がない）
-4. 背景がきれい（単色推奨）
-5. 髪が整っている、メガネの反射がない
-6. 肩が水平、頭上に適切な余白
+[チェック順序]
+1. 正面を向く（傾き、視線）
+2. 照明均一（顔に影がない）
+3. 表情（無表情または自然な微笑み）
+4. 眉毛が見える（前髪で隠さない）
+5. フェイスラインが見える（髪で覆わない）
 
 [応答ルール]
-- 日本語1文で回答
-- すべてのチェック通過 → 「いいですね！今撮影してください」
-- 問題がある場合 → 最も重要な1つだけ具体的に修正案内
-- 例: 「あごを少し上げてください」「左の照明が強いです、少し右に移動してください」`;
+- 日本語1文、15文字以内
+- 問題は1つだけ指摘
+- ポジティブ表現：「〜すれば完璧です」
+- 完璧なら：「いいですね！今撮影してください」`,
+
+  resume: `モンコス AIコーチです。履歴書写真撮影をサポートします。
+
+[チェック順序]
+1. 正面を向く（傾き、視線）
+2. 照明均一（顔に影がない）
+3. 表情（自然で親しみやすい微笑み）
+4. 姿勢（背筋を伸ばし、肩を平行に）
+
+[応答ルール]
+- 日本語1文、15文字以内
+- 問題は1つだけ指摘
+- ポジティブ表現：「〜すれば完璧です」
+- 完璧なら：「いいですね！今撮影してください」`,
+};
 
 // === Imagen プロンプト ===
 const IDENTITY_PRESERVATION = `LIGHTING (HIGHEST PRIORITY — override all lighting from input):
@@ -158,11 +173,11 @@ GOAL: "This is ME, but on my best day" - perfectly front-facing, studio flat lig
 
 const STYLE_PROMPTS = {
   id_photo: 'Professional passport/ID photo, perfectly front-facing looking directly at camera, formal white background, sharp focus, head straight, symmetric composition',
-  resume: 'Professional resume photo for Japanese job application (履歴書), perfectly front-facing looking directly at camera, clean white background, business formal attire, 3:4 ratio, approachable yet professional expression',
+  resume: 'Professional resume photo for Japanese job application (履歴書), perfectly front-facing looking directly at camera, clean white background, Japanese recruit suit (リクルートスーツ), 3:4 ratio, approachable yet professional expression',
 };
 
 // 性別・年齢別の衣装プロンプト
-function getOutfitPrompt(gender, age) {
+function getOutfitPrompt(gender, age, style = 'id_photo') {
   const genderLabel = gender === 'female' ? 'female/woman' : 'male/man';
   const ageMap = {
     child: { label: 'young child (under 12)', outfit: gender === 'female'
@@ -171,9 +186,13 @@ function getOutfitPrompt(gender, age) {
     teen: { label: 'teenager (13-18)', outfit: gender === 'female'
       ? 'a neat school-style blouse or simple formal top, age-appropriate'
       : 'a clean dress shirt with or without tie, age-appropriate' },
-    adult: { label: 'adult', outfit: gender === 'female'
-      ? 'a professional blouse or women\'s business jacket, formal and clean'
-      : 'a clean, dark navy or charcoal formal business suit with white dress shirt and subtle tie' },
+    adult: { label: 'adult', outfit: style === 'resume'
+      ? (gender === 'female'
+        ? 'a white plain blouse with regular collar under solid black recruit suit (リクルートスーツ), simple and clean, no frills or lace'
+        : 'a solid black recruit suit (リクルートスーツ) with white dress shirt and blue regimental stripe necktie')
+      : (gender === 'female'
+        ? 'a professional blouse or women\'s business jacket, formal and clean'
+        : 'a clean, dark navy or charcoal formal business suit with white dress shirt and subtle tie') },
   };
   const info = ageMap[age] || ageMap.adult;
   return `SUBJECT: This person is a ${genderLabel}, ${info.label}. OUTFIT: Dress this person in ${info.outfit}. Keep the person's face, hair, and body exactly the same — only ensure appropriate attire. DO NOT change the person's apparent gender or age.`;
@@ -196,7 +215,7 @@ const QC_INSTRUCTION = `2つの画像を比較してください。
 // === クライアントセッション管理 ===
 const sessions = new Map();
 
-async function connectGeminiLive(session, clientId) {
+async function connectGeminiLive(session, clientId, style = 'id_photo') {
   function flushBuffer() {
     if (session.responseBuffer.trim() && session.ws?.readyState === 1) {
       session.ws.send(JSON.stringify({
@@ -215,7 +234,7 @@ async function connectGeminiLive(session, clientId) {
       model: 'gemini-2.0-flash-live-preview-04-09',
       config: {
         responseModalities: ['TEXT'],
-        systemInstruction: { parts: [{ text: COACHING_INSTRUCTION }] },
+        systemInstruction: { parts: [{ text: COACHING_INSTRUCTIONS[style] || COACHING_INSTRUCTIONS.id_photo }] },
       },
       callbacks: {
         onopen: () => log(`[Gemini Live][${clientId}] 接続完了`),
@@ -252,7 +271,7 @@ async function connectGeminiLive(session, clientId) {
 async function generatePhoto(inputBase64, style = 'id_photo', gender = 'male', age = 'adult') {
   const base64Data = inputBase64.includes(',') ? inputBase64.split(',')[1] : inputBase64;
   const stylePrompt = STYLE_PROMPTS[style] || STYLE_PROMPTS.id_photo;
-  const outfitPrompt = getOutfitPrompt(gender, age);
+  const outfitPrompt = getOutfitPrompt(gender, age, style);
   const instruction = `${IDENTITY_PRESERVATION}\n\n[IMAGE-TO-IMAGE TRANSFORM] ${stylePrompt}\n\n${outfitPrompt}`;
 
   const response = await imagenAI.models.generateContent({
@@ -379,7 +398,7 @@ wss.on('connection', async (ws) => {
   log(`[WS][${clientId}] クライアント接続`);
 
   // セッション（Gemini Liveは初回フレーム受信時に遅延生成）
-  const session = { gemini: null, frameCount: 0, responseBuffer: '', bufferFlushTimer: null, ws };
+  const session = { gemini: null, frameCount: 0, responseBuffer: '', bufferFlushTimer: null, ws, photoStyle: 'id_photo' };
   sessions.set(clientId, session);
 
   ws.on('message', async (data, isBinary) => {
@@ -387,8 +406,8 @@ wss.on('connection', async (ws) => {
     if (isBinary) {
       // 初回フレームでGemini Liveセッション遅延生成
       if (!session.gemini) {
-        await connectGeminiLive(session, clientId);
-        log(`[コーチング][${clientId}] Gemini Liveセッション遅延生成`);
+        await connectGeminiLive(session, clientId, session.photoStyle);
+        log(`[コーチング][${clientId}] Gemini Liveセッション遅延生成 (style=${session.photoStyle})`);
       }
       try {
         const base64 = Buffer.from(data).toString('base64');
@@ -414,6 +433,13 @@ wss.on('connection', async (ws) => {
       const raw = Buffer.isBuffer(data) ? data.toString() : data;
       msg = JSON.parse(raw);
     } catch { return; }
+
+    // スタイル設定（コーチング開始前にクライアントから受信）
+    if (msg.type === 'set-style') {
+      session.photoStyle = msg.style === 'resume' ? 'resume' : 'id_photo';
+      log(`[スタイル][${clientId}] ${session.photoStyle}`);
+      return;
+    }
 
     // Imagen 生成リクエスト（クレジットチェック）
     if (msg.type === 'generate') {
@@ -541,7 +567,7 @@ wss.on('connection', async (ws) => {
         try { session.gemini.close(); } catch {}
         session.gemini = null;
       }
-      await connectGeminiLive(session, clientId);
+      await connectGeminiLive(session, clientId, session.photoStyle);
       return;
     }
   });

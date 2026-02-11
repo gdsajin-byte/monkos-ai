@@ -98,21 +98,36 @@ async function grantShareBonus(userId, platform) {
 }
 
 // === 코칭 시스템 프롬프트 (한국어 네이티브) ===
-const COACHING_INSTRUCTION = `증명사진 촬영 어시스턴트입니다. 카메라 피드의 자세, 표정, 조명을 실시간으로 체크합니다.
+const COACHING_INSTRUCTIONS = {
+  id_photo: `몽코스 AI 코치입니다. 여권/증명사진 촬영을 도와드립니다.
 
-[체크리스트]
-1. 정면을 바라보고 있는지 (좌우 기울기, 시선 방향)
-2. 무표정 또는 자연스러운 미소
-3. 조명이 균일한지 (한쪽에 그림자가 없는지)
-4. 배경이 깔끔한지 (단색 추천)
-5. 머리카락이 정돈되어 있는지, 안경 반사가 없는지
-6. 어깨가 수평인지, 머리 위에 적절한 여백이 있는지
+[체크 순서]
+1. 정면 응시 (고개 기울기, 시선)
+2. 조명 균일 (얼굴에 그림자 없이)
+3. 표정 (무표정 또는 자연스러운 미소)
+4. 눈썹이 보이는지 (앞머리로 가리면 안됨)
+5. 얼굴 라인이 드러나는지 (헤어로 덮으면 안됨)
 
 [응답 규칙]
-- 한국어 1문장으로 답변
-- 모든 체크 통과 → "좋습니다! 지금 촬영해 주세요"
-- 문제가 있을 경우 → 가장 중요한 1가지만 구체적으로 수정 안내
-- 예: "턱을 살짝 올려주세요", "왼쪽 조명이 강합니다, 조금 오른쪽으로 이동해 주세요"`;
+- 한국어 1문장, 15자 이내
+- 문제시 1가지만 지적
+- 긍정 표현: "~하면 완벽해요"
+- 완벽하면: "좋아요! 지금 촬영하세요"`,
+
+  resume: `몽코스 AI 코치입니다. 이력서 사진 촬영을 도와드립니다.
+
+[체크 순서]
+1. 정면 응시 (고개 기울기, 시선)
+2. 조명 균일 (얼굴에 그림자 없이)
+3. 표정 (자연스럽고 호감가는 미소)
+4. 자세 (허리 펴고, 어깨 수평)
+
+[응답 규칙]
+- 한국어 1문장, 15자 이내
+- 문제시 1가지만 지적
+- 긍정 표현: "~하면 완벽해요"
+- 완벽하면: "좋아요! 지금 촬영하세요"`,
+};
 
 // === Imagen 프롬프트 ===
 const IDENTITY_PRESERVATION = `LIGHTING (HIGHEST PRIORITY — override all lighting from input):
@@ -196,7 +211,7 @@ const QC_INSTRUCTION = `2개의 이미지를 비교해 주세요.
 // === 클라이언트 세션 관리 ===
 const sessions = new Map();
 
-async function connectGeminiLive(session, clientId) {
+async function connectGeminiLive(session, clientId, style = 'id_photo') {
   function flushBuffer() {
     if (session.responseBuffer.trim() && session.ws?.readyState === 1) {
       session.ws.send(JSON.stringify({
@@ -215,7 +230,7 @@ async function connectGeminiLive(session, clientId) {
       model: 'gemini-2.0-flash-live-preview-04-09',
       config: {
         responseModalities: ['TEXT'],
-        systemInstruction: { parts: [{ text: COACHING_INSTRUCTION }] },
+        systemInstruction: { parts: [{ text: COACHING_INSTRUCTIONS[style] || COACHING_INSTRUCTIONS.id_photo }] },
       },
       callbacks: {
         onopen: () => log(`[Gemini Live][${clientId}] 연결 완료`),
@@ -378,7 +393,7 @@ wss.on('connection', async (ws) => {
   log(`[WS][${clientId}] 클라이언트 연결`);
 
   // 세션 (Gemini Live는 첫 프레임 수신 시 지연 생성)
-  const session = { gemini: null, frameCount: 0, responseBuffer: '', bufferFlushTimer: null, ws };
+  const session = { gemini: null, frameCount: 0, responseBuffer: '', bufferFlushTimer: null, ws, photoStyle: 'id_photo' };
   sessions.set(clientId, session);
 
   ws.on('message', async (data, isBinary) => {
@@ -386,8 +401,8 @@ wss.on('connection', async (ws) => {
     if (isBinary) {
       // 첫 프레임에서 Gemini Live 세션 지연 생성
       if (!session.gemini) {
-        await connectGeminiLive(session, clientId);
-        log(`[코칭][${clientId}] Gemini Live 세션 지연 생성`);
+        await connectGeminiLive(session, clientId, session.photoStyle);
+        log(`[코칭][${clientId}] Gemini Live 세션 지연 생성 (style=${session.photoStyle})`);
       }
       try {
         const base64 = Buffer.from(data).toString('base64');
@@ -413,6 +428,13 @@ wss.on('connection', async (ws) => {
       const raw = Buffer.isBuffer(data) ? data.toString() : data;
       msg = JSON.parse(raw);
     } catch { return; }
+
+    // 스타일 설정 (코칭 시작 전 클라이언트에서 수신)
+    if (msg.type === 'set-style') {
+      session.photoStyle = msg.style === 'resume' ? 'resume' : 'id_photo';
+      log(`[스타일][${clientId}] ${session.photoStyle}`);
+      return;
+    }
 
     // Imagen 생성 요청 (크레딧 체크)
     if (msg.type === 'generate') {
@@ -540,7 +562,7 @@ wss.on('connection', async (ws) => {
         try { session.gemini.close(); } catch {}
         session.gemini = null;
       }
-      await connectGeminiLive(session, clientId);
+      await connectGeminiLive(session, clientId, session.photoStyle);
       return;
     }
   });
