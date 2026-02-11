@@ -1107,6 +1107,53 @@ const httpServer = createServer(async (req, res) => {
     return;
   }
 
+  // === Telegram CS 웹훅 ===
+  if (req.url === '/api/webhook/telegram' && req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', async () => {
+      try {
+        const update = JSON.parse(body);
+        const msg = update.message;
+        if (!msg || !msg.text) {
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ ok: true }));
+          return;
+        }
+
+        const chatId = msg.chat.id;
+        const username = msg.from?.username || msg.from?.first_name || '';
+        const text = msg.text.trim();
+
+        log(`[Telegram] ${username}(${chatId}): ${text.substring(0, 100)}`);
+
+        // /start 커맨드 → 환영 메시지
+        if (text === '/start') {
+          const welcome = `MONKOS AI サポートへようこそ！🎉\nご質問やお困りのことがあれば、お気軽にメッセージをどうぞ。\n\nMONKOS AI 고객지원에 오신 것을 환영합니다!\n궁금한 점이 있으시면 편하게 메시지를 보내주세요.\n\nWelcome to MONKOS AI Support!\nFeel free to send us a message with any questions.`;
+          await sendTelegramMessage(chatId, welcome);
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ ok: true }));
+          return;
+        }
+
+        // Gemini CS 응답 생성
+        const reply = await chatWithGeminiCS(chatId, text);
+        await sendTelegramMessage(chatId, reply || 'すみません、少々お待ちください。');
+
+        // Firestore 로깅 (비동기, 응답 차단 안 함)
+        logCsConversation(chatId, username, text, reply).catch(() => {});
+
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: true }));
+      } catch (err) {
+        log(`[Telegram] 웹훅 에러: ${err.message}`);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: true }));
+      }
+    });
+    return;
+  }
+
   // 정적 파일
   let filePath = req.url === '/' ? '/index.html' : req.url;
   // 쿼리스트링 제거
@@ -1152,9 +1199,11 @@ httpServer.listen(PORT, '0.0.0.0', () => {
   log('  GET  /api/survey/status    — 설문 이벤트 상태');
   log('  POST /api/survey           — 설문 제출 (+12c, 일일 30명)');
   log('  POST /api/chat             — Gemini 챗봇');
+  log('  POST /api/webhook/telegram — Telegram CS봇');
   log('  GET  /                     — 메인 포털');
   log(`Google Client ID: ${GOOGLE_CLIENT_ID ? '설정됨' : '미설정'}`);
   log(`Lemon Squeezy: ${LEMONSQUEEZY_API_KEY ? '설정됨' : '미설정'}`);
   log(`Toss Payments: ${TOSS_SECRET_KEY ? '설정됨' : '미설정'}`);
+  log(`Telegram Bot: ${TELEGRAM_BOT_TOKEN ? '설정됨' : '미설정'}`);
   log('='.repeat(60));
 });
