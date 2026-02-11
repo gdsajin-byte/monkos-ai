@@ -196,15 +196,7 @@ const QC_INSTRUCTION = `2つの画像を比較してください。
 // === クライアントセッション管理 ===
 const sessions = new Map();
 
-async function createGeminiSession(clientId) {
-  const session = {
-    gemini: null,
-    frameCount: 0,
-    responseBuffer: '',
-    bufferFlushTimer: null,
-    ws: null,
-  };
-
+async function connectGeminiLive(session, clientId) {
   function flushBuffer() {
     if (session.responseBuffer.trim() && session.ws?.readyState === 1) {
       session.ws.send(JSON.stringify({
@@ -251,10 +243,8 @@ async function createGeminiSession(clientId) {
       },
     });
     log(`[Gemini Live][${clientId}] セッション初期化完了`);
-    return session;
   } catch (err) {
     log(`[Gemini Live][${clientId}] セッション失敗: ${err.message}`);
-    return session;
   }
 }
 
@@ -388,15 +378,18 @@ wss.on('connection', async (ws) => {
   const clientId = `c${++clientCounter}`;
   log(`[WS][${clientId}] クライアント接続`);
 
-  // セッション作成
-  const session = await createGeminiSession(clientId);
-  session.ws = ws;
+  // セッション（Gemini Liveは初回フレーム受信時に遅延生成）
+  const session = { gemini: null, frameCount: 0, responseBuffer: '', bufferFlushTimer: null, ws };
   sessions.set(clientId, session);
 
   ws.on('message', async (data, isBinary) => {
     // バイナリ = JPEG フレーム → Gemini Live コーチング
     if (isBinary) {
-      if (!session.gemini) return;
+      // 初回フレームでGemini Liveセッション遅延生成
+      if (!session.gemini) {
+        await connectGeminiLive(session, clientId);
+        log(`[コーチング][${clientId}] Gemini Liveセッション遅延生成`);
+      }
       try {
         const base64 = Buffer.from(data).toString('base64');
         await session.gemini.sendRealtimeInput({
@@ -546,10 +539,9 @@ wss.on('connection', async (ws) => {
       session.frameCount = 0;
       if (session.gemini) {
         try { session.gemini.close(); } catch {}
+        session.gemini = null;
       }
-      const newSession = await createGeminiSession(clientId);
-      newSession.ws = ws;
-      session.gemini = newSession.gemini;
+      await connectGeminiLive(session, clientId);
       return;
     }
   });

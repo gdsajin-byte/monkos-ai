@@ -35,6 +35,9 @@ const LEMONSQUEEZY_STORE_ID = '290457';
 // === 토스페이먼츠 (KR 전용) ===
 const TOSS_SECRET_KEY = process.env.TOSS_SECRET_KEY || '';
 
+// === Telegram CS Bot (@monkos_support_bot) ===
+const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '';
+
 // Variant ID → 크레딧 매핑 (Lemon Squeezy)
 const VARIANT_CREDITS = {
   '1297524': 10,  // MONKOS 10 Credits — $10
@@ -118,7 +121,146 @@ const SYSTEM_PROMPT = `あなたはMONKOS AIの公式アシスタント「モン
 - ユーザーの言語に合わせて応答（日本語/韓国語/英語）
 - 簡潔で親しみやすいトーン（3文以内）
 - SNS案内は必ず言語に合わせて切り替える（日本語→X、韓国語→Instagram）
-- 問い合わせ先: gdsajin@gmail.com`;
+- 問い合わせ先: gdsajin@gmail.com / 電話: 010-7217-2060（自動応答→チャットボット案内）
+- 電話での問い合わせがあった場合は「お電話よりもこのチャットの方が早くお答えできます！」と案内`;
+
+// === Telegram CS 전용 시스템 프롬프트 ===
+const CS_SYSTEM_PROMPT = `あなたはMONKOS AIのカスタマーサポート担当「MONKOS Support」です。
+Telegramを通じてお客様対応を行います。
+
+[対応方針]
+- プロフェッショナルかつ正確に対応
+- ポリシーに基づいた回答（曖昧な約束は禁止）
+- 解決できない場合はメールエスカレーション案内
+
+[サービス情報]
+- AI証明写真サービス: https://idphoto-jp.monkos.ai/app (日本語) / https://idphoto-kr.monkos.ai/app (한국어)
+- ポータル: https://monkos.ai
+
+[クレジットシステム]
+- 生成: 1回 = 1クレジット
+- ダウンロード: 1回 = 10クレジット
+- SNS共有ボーナス: 10クレジット
+- 購入: 10c/$10 | 30c/$25 | 50c/$40
+
+[返金ポリシー — 厳守]
+- 購入後7日以内 + 完全未使用 → 全額返金
+- 1回でも使用 → 返金不可（デジタルコンテンツ特性）
+- システム障害による消費 → 自動復旧（返金ではなくクレジット復旧）
+- 返金申請: gdsajin@gmail.com へメール（購入メール、購入日、理由を記載）
+
+[よくある問い合わせ]
+1. 「クレジットが反映されない」→ 少々お待ちください。決済処理に数分かかる場合があります。解決しない場合はメールでお問い合わせください。
+2. 「写真の品質が悪い」→ 正面・明るい照明で再撮影をお勧めします。AIコーチの指示に従ってください。
+3. 「返金したい」→ 上記返金ポリシーを案内。条件を満たす場合はメールで申請を案内。
+4. 「ログインできない」→ Googleアカウントでのログインのみ対応。ブラウザのキャッシュクリアを案内。
+
+[エスカレーション]
+以下の場合はメール対応を案内:
+- 返金申請 → gdsajin@gmail.com
+- アカウント削除 → gdsajin@gmail.com
+- 決済トラブル → gdsajin@gmail.com
+- 「担当者に直接話したい場合は gdsajin@gmail.com までご連絡ください」
+
+[応答ルール]
+- ユーザーの言語に合わせて応答（日本語/韓国語/英語）
+- 簡潔かつ丁寧（5文以内）
+- 感情的なクレームには共感を示しつつ、ポリシーを明確に伝える
+- 無関係な質問は丁寧にお断り`;
+
+// === Telegram API ヘルパー ===
+const TELEGRAM_API = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}`;
+
+async function sendTelegramMessage(chatId, text) {
+  try {
+    await fetch(`${TELEGRAM_API}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'Markdown' }),
+    });
+  } catch (err) {
+    log(`[Telegram] 메시지 전송 실패: ${err.message}`);
+  }
+}
+
+// === Telegram CS 대화 (Gemini 2.0 Flash, CS 프롬프트) ===
+const csHistories = new Map();
+const CS_HISTORY_TTL = 60 * 60 * 1000; // 1시간
+
+function cleanupCsHistories() {
+  const now = Date.now();
+  for (const [key, val] of csHistories) {
+    if (now - val.lastAccess > CS_HISTORY_TTL) csHistories.delete(key);
+  }
+}
+setInterval(cleanupCsHistories, 10 * 60 * 1000);
+
+async function chatWithGeminiCS(chatId, userMessage) {
+  let history = csHistories.get(chatId);
+  if (!history) {
+    history = { messages: [], lastAccess: Date.now() };
+    csHistories.set(chatId, history);
+  }
+  history.lastAccess = Date.now();
+
+  history.messages.push({ role: 'user', parts: [{ text: userMessage }] });
+
+  if (history.messages.length > 20) {
+    history.messages = history.messages.slice(-20);
+  }
+
+  const response = await ai.models.generateContent({
+    model: 'gemini-2.0-flash',
+    contents: history.messages,
+    config: {
+      systemInstruction: CS_SYSTEM_PROMPT,
+      maxOutputTokens: 500,
+      temperature: 0.5,
+    },
+  });
+
+  const text = response.candidates?.[0]?.content?.parts?.[0]?.text || '';
+  history.messages.push({ role: 'model', parts: [{ text }] });
+
+  return text;
+}
+
+// === Firestore CS 대화 로깅 ===
+const csCollection = firestore.collection('cs_conversations');
+
+async function logCsConversation(chatId, username, userMessage, botReply) {
+  try {
+    const docId = `tg_${chatId}`;
+    const docRef = csCollection.doc(docId);
+    const doc = await docRef.get();
+
+    const entry = {
+      role: 'user', text: userMessage, ts: new Date().toISOString(),
+    };
+    const replyEntry = {
+      role: 'assistant', text: botReply, ts: new Date().toISOString(),
+    };
+
+    if (doc.exists) {
+      const data = doc.data();
+      const messages = data.messages || [];
+      messages.push(entry, replyEntry);
+      await docRef.update({ messages, updatedAt: new Date().toISOString() });
+    } else {
+      await docRef.set({
+        chatId,
+        username: username || '',
+        channel: 'telegram',
+        messages: [entry, replyEntry],
+        status: 'open',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      });
+    }
+  } catch (err) {
+    log(`[CS Log] 저장 실패: ${err.message}`);
+  }
+}
 
 // === 대화 히스토리 (인메모리, 세션별) ===
 const chatHistories = new Map();
