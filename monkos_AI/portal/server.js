@@ -129,9 +129,18 @@ const CS_SYSTEM_PROMPT = `あなたはMONKOS AIのカスタマーサポート担
 Telegramを通じてお客様対応を行います。
 
 [対応方針]
-- プロフェッショナルかつ正確に対応
-- ポリシーに基づいた回答（曖昧な約束は禁止）
+- 常に丁寧で礼儀正しく、温かみのある対応を心がける
+- ポリシーに基づいた正確な回答（曖昧な約束は禁止）
 - 解決できない場合はメールエスカレーション案内
+- 知らないこと・不確実なことは正直に「確認が必要です」と伝え、推測で回答しない
+- MONKOSサービスと無関係な質問には丁寧にお断りする
+
+[文化的配慮 — 厳守]
+- 日本語: 最高レベルの敬語（丁寧語・尊敬語）を使用。直接的な拒否を避け、クッション言葉を活用（「恐れ入りますが」「申し訳ございませんが」「ご不便をおかけし」）
+- 한국어: 존댓말(합쇼체) 사용. 공감 표현 후 안내 ("불편을 드려 정말 죄송합니다", "도움이 필요하신 부분을 안내해 드리겠습니다")
+- English: Professional and warm tone. Use "I'd be happy to help", "I understand your concern", "Thank you for reaching out"
+- 中文: 使用礼貌用语（"您好"、"非常抱歉"、"感谢您的耐心"）
+- すべての言語で: 顧客の感情を尊重し、文化的に失礼な表現を絶対に使わない
 
 [サービス情報]
 - AI証明写真サービス: https://idphoto-jp.monkos.ai/app (日本語) / https://idphoto-kr.monkos.ai/app (한국어)
@@ -163,10 +172,53 @@ Telegramを通じてお客様対応を行います。
 - 「担当者に直接話したい場合は gdsajin@gmail.com までご連絡ください」
 
 [応答ルール]
-- ユーザーの言語に合わせて応答（日本語/韓国語/英語）
+- 必ずユーザーが使った言語で応答すること（日本語/韓国語/英語/中国語/その他すべて）
+- 参考知識が韓国語でも、必ずユーザーの言語に翻訳して応答
+- [参考知識]が提供された場合、その情報を優先的に活用して回答
 - 簡潔かつ丁寧（5文以内）
-- 感情的なクレームには共感を示しつつ、ポリシーを明確に伝える
-- 無関係な質問は丁寧にお断り`;
+- 感情的なクレームには必ず共感を先に示し、その後ポリシーを丁寧に伝える
+- MONKOSサービスと無関係な質問は丁寧にお断り（例:「申し訳ございませんが、当サービスに関するご質問のみ承っております」）
+- 法的判断・法的助言は絶対にしない（「法律の専門家にご相談ください」と案内）
+- 確信が持てない情報は回答せず、メール(gdsajin@gmail.com)での確認を案内`;
+
+// === CS 지식 RAG (Firestore cs_knowledge) ===
+const csKnowledgeCollection = firestore.collection('cs_knowledge');
+let csKnowledgeCache = [];
+let csCacheLastUpdate = 0;
+const CS_CACHE_TTL = 10 * 60 * 1000; // 10분 캐시
+
+async function loadCsKnowledge() {
+  const now = Date.now();
+  if (csKnowledgeCache.length > 0 && now - csCacheLastUpdate < CS_CACHE_TTL) {
+    return csKnowledgeCache;
+  }
+  try {
+    const snapshot = await csKnowledgeCollection.get();
+    csKnowledgeCache = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    csCacheLastUpdate = now;
+    log(`[RAG] 지식 로드 완료: ${csKnowledgeCache.length}건`);
+  } catch (err) {
+    log(`[RAG] 지식 로드 실패: ${err.message}`);
+  }
+  return csKnowledgeCache;
+}
+
+function searchCsKnowledge(query) {
+  const q = query.toLowerCase();
+  const scored = csKnowledgeCache.map(doc => {
+    let score = 0;
+    const keywords = doc.keywords || [];
+    for (const kw of keywords) {
+      if (q.includes(kw.toLowerCase())) score += 10;
+    }
+    const title = (doc.title || '').toLowerCase();
+    const content = (doc.content || '').toLowerCase();
+    if (q.split(/\s+/).some(w => title.includes(w))) score += 5;
+    if (q.split(/\s+/).some(w => content.includes(w))) score += 2;
+    return { ...doc, score };
+  });
+  return scored.filter(d => d.score > 0).sort((a, b) => b.score - a.score).slice(0, 3);
+}
 
 // === Telegram API ヘルパー ===
 const TELEGRAM_API = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}`;
@@ -203,17 +255,29 @@ async function chatWithGeminiCS(chatId, userMessage) {
   }
   history.lastAccess = Date.now();
 
+  // RAG: 지식 로드 + 관련 문서 검색
+  await loadCsKnowledge();
+  const ragDocs = searchCsKnowledge(userMessage);
+  let ragContext = '';
+  if (ragDocs.length > 0) {
+    ragContext = '\n\n[참고 지식]\n' + ragDocs.map(d =>
+      `【${d.title}】\n${d.content}`
+    ).join('\n\n');
+  }
+
   history.messages.push({ role: 'user', parts: [{ text: userMessage }] });
 
   if (history.messages.length > 20) {
     history.messages = history.messages.slice(-20);
   }
 
+  const systemPrompt = CS_SYSTEM_PROMPT + ragContext;
+
   const response = await ai.models.generateContent({
     model: 'gemini-2.0-flash',
     contents: history.messages,
     config: {
-      systemInstruction: CS_SYSTEM_PROMPT,
+      systemInstruction: systemPrompt,
       maxOutputTokens: 500,
       temperature: 0.5,
     },
@@ -262,9 +326,10 @@ async function logCsConversation(chatId, username, userMessage, botReply) {
   }
 }
 
-// === 대화 히스토리 (인메모리, 세션별) ===
+// === 대화 히스토리 (인메모리 + Firestore 영속화) ===
 const chatHistories = new Map();
 const HISTORY_TTL = 30 * 60 * 1000; // 30분
+const chatLogsCollection = firestore.collection('chat_conversations');
 
 function cleanupHistories() {
   const now = Date.now();
@@ -274,11 +339,65 @@ function cleanupHistories() {
 }
 setInterval(cleanupHistories, 5 * 60 * 1000);
 
+// Firestore에서 이전 대화 맥락 복원
+async function loadChatHistory(sessionId) {
+  try {
+    const docRef = chatLogsCollection.doc(sessionId);
+    const doc = await docRef.get();
+    if (doc.exists) {
+      const data = doc.data();
+      const messages = (data.messages || []).slice(-20).map(m => ({
+        role: m.role === 'assistant' ? 'model' : m.role,
+        parts: [{ text: m.text }],
+      }));
+      return { messages, lastAccess: Date.now() };
+    }
+  } catch (err) {
+    log(`[Chat Log] 복원 실패: ${err.message}`);
+  }
+  return null;
+}
+
+// Firestore에 포털 챗봇 대화 저장
+async function logChatConversation(sessionId, userMessage, botReply) {
+  try {
+    const docRef = chatLogsCollection.doc(sessionId);
+    const doc = await docRef.get();
+
+    const entry = { role: 'user', text: userMessage, ts: new Date().toISOString() };
+    const replyEntry = { role: 'assistant', text: botReply, ts: new Date().toISOString() };
+
+    if (doc.exists) {
+      const data = doc.data();
+      const messages = data.messages || [];
+      messages.push(entry, replyEntry);
+      // 최근 40건만 보관 (20턴)
+      const trimmed = messages.slice(-40);
+      await docRef.update({ messages: trimmed, updatedAt: new Date().toISOString() });
+    } else {
+      await docRef.set({
+        sessionId,
+        channel: 'web',
+        messages: [entry, replyEntry],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      });
+    }
+  } catch (err) {
+    log(`[Chat Log] 저장 실패: ${err.message}`);
+  }
+}
+
 // === Gemini 챗봇 API ===
 async function chatWithGemini(sessionId, userMessage, lang = 'ja') {
   let history = chatHistories.get(sessionId);
+
+  // 인메모리에 없으면 Firestore에서 복원 시도
   if (!history) {
-    history = { messages: [], lastAccess: Date.now() };
+    history = await loadChatHistory(sessionId);
+    if (!history) {
+      history = { messages: [], lastAccess: Date.now() };
+    }
     chatHistories.set(sessionId, history);
   }
   history.lastAccess = Date.now();
@@ -286,7 +405,7 @@ async function chatWithGemini(sessionId, userMessage, lang = 'ja') {
   // 히스토리에 유저 메시지 추가
   history.messages.push({ role: 'user', parts: [{ text: userMessage }] });
 
-  // 최근 10개만 유지
+  // 최근 20개만 유지
   if (history.messages.length > 20) {
     history.messages = history.messages.slice(-20);
   }
@@ -306,6 +425,9 @@ async function chatWithGemini(sessionId, userMessage, lang = 'ja') {
   // 히스토리에 응답 추가
   history.messages.push({ role: 'model', parts: [{ text }] });
 
+  // Firestore에 비동기 저장
+  logChatConversation(sessionId, userMessage, text).catch(() => {});
+
   return text;
 }
 
@@ -319,6 +441,8 @@ const MIME_TYPES = {
   '.jpg': 'image/jpeg',
   '.svg': 'image/svg+xml',
   '.ico': 'image/x-icon',
+  '.txt': 'text/plain; charset=utf-8',
+  '.xml': 'application/xml; charset=utf-8',
 };
 
 // === HTTP 서버 ===
@@ -401,7 +525,11 @@ const httpServer = createServer(async (req, res) => {
           id: tokenInfo.sub,
           email: tokenInfo.email,
           name: tokenInfo.name,
+          givenName: tokenInfo.given_name || '',
+          familyName: tokenInfo.family_name || '',
           picture: tokenInfo.picture,
+          locale: tokenInfo.locale || '',
+          emailVerified: tokenInfo.email_verified === 'true',
           lastLogin: new Date().toISOString(),
           ...(isNewUser ? {
             createdAt: new Date().toISOString(),
