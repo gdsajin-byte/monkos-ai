@@ -17,6 +17,7 @@ import { readFileSync } from 'fs';
 import { join, dirname, extname } from 'path';
 import { fileURLToPath } from 'url';
 import { GoogleGenAI } from '@google/genai';
+import sharp from 'sharp';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PORT = parseInt(process.env.PORT || '8080', 10);
@@ -264,8 +265,19 @@ async function connectGeminiLive(session, clientId, style = 'id_photo') {
 }
 
 // === Imagen I2I 생성 (Google AI Studio API Key) ===
+async function compressImage(base64Input, maxSize = 720, quality = 70) {
+  const raw = base64Input.includes(',') ? base64Input.split(',')[1] : base64Input;
+  const buf = Buffer.from(raw, 'base64');
+  const resized = await sharp(buf)
+    .resize(maxSize, maxSize, { fit: 'inside', withoutEnlargement: true })
+    .jpeg({ quality })
+    .toBuffer();
+  log(`[압축] ${(buf.length / 1024).toFixed(0)}KB → ${(resized.length / 1024).toFixed(0)}KB`);
+  return resized.toString('base64');
+}
+
 async function generatePhoto(inputBase64, style = 'id_photo', gender = 'male', age = 'adult') {
-  const base64Data = inputBase64.includes(',') ? inputBase64.split(',')[1] : inputBase64;
+  const base64Data = await compressImage(inputBase64, 720, 70);
   const stylePrompt = STYLE_PROMPTS[style] || STYLE_PROMPTS.id_photo;
   const outfitPrompt = getOutfitPrompt(gender, age);
   const instruction = `${IDENTITY_PRESERVATION}\n\n[IMAGE-TO-IMAGE TRANSFORM] ${stylePrompt}\n\n${outfitPrompt}`;
@@ -298,8 +310,8 @@ async function generatePhoto(inputBase64, style = 'id_photo', gender = 'male', a
 
 // === Gemini QC (Vertex AI ADC) ===
 async function runQC(originalBase64, generatedBase64) {
-  const origData = originalBase64.includes(',') ? originalBase64.split(',')[1] : originalBase64;
-  const genData = generatedBase64.includes(',') ? generatedBase64.split(',')[1] : generatedBase64;
+  const origData = await compressImage(originalBase64, 512, 60);
+  const genData = await compressImage(generatedBase64, 512, 60);
 
   const response = await ai.models.generateContent({
     model: 'gemini-2.0-flash',

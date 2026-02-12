@@ -50,8 +50,7 @@
 }
 </script>
 
-<!-- Google Identity Services -->
-<script src="https://accounts.google.com/gsi/client" async defer></script>
+<!-- Google Identity Services (동적 로딩) -->
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -1018,11 +1017,63 @@ footer a {
 const GOOGLE_CLIENT_ID = '933456016842-clagcrpo1juvukjif1m454jq811bd2rq.apps.googleusercontent.com';
 
 let currentUser = null;
+let gisLoaded = false;
+let gisLoadRetries = 0;
+const GIS_MAX_RETRIES = 3;
+
+// GIS 스크립트 동적 로딩
+function loadGIS() {
+  return new Promise((resolve, reject) => {
+    if (typeof google !== 'undefined' && google.accounts) {
+      gisLoaded = true;
+      resolve();
+      return;
+    }
+    const script = document.createElement('script');
+    script.src = 'https://accounts.google.com/gsi/client';
+    script.onload = () => {
+      console.log('[Auth] GIS 스크립트 로드 완료');
+      gisLoaded = true;
+      resolve();
+    };
+    script.onerror = () => {
+      console.warn('[Auth] GIS 스크립트 로드 실패 (시도 ' + (gisLoadRetries + 1) + '/' + GIS_MAX_RETRIES + ')');
+      reject(new Error('GIS load failed'));
+    };
+    document.head.appendChild(script);
+  });
+}
+
+// GIS 로드 + 재시도
+async function loadGISWithRetry() {
+  for (let i = 0; i < GIS_MAX_RETRIES; i++) {
+    try {
+      gisLoadRetries = i;
+      await loadGIS();
+      return true;
+    } catch (e) {
+      if (i < GIS_MAX_RETRIES - 1) {
+        await new Promise(r => setTimeout(r, 1000 * (i + 1)));
+      }
+    }
+  }
+  console.error('[Auth] GIS 스크립트 로드 최종 실패');
+  return false;
+}
 
 // Google 로그인 초기화
-function initGoogleAuth() {
-  if (typeof google === 'undefined' || !GOOGLE_CLIENT_ID || GOOGLE_CLIENT_ID === '__GOOGLE_CLIENT_ID__') {
+async function initGoogleAuth() {
+  if (!GOOGLE_CLIENT_ID || GOOGLE_CLIENT_ID === '__GOOGLE_CLIENT_ID__') {
     console.log('[Auth] Google Client ID 미설정');
+    return;
+  }
+
+  if (!gisLoaded) {
+    await loadGISWithRetry();
+  }
+
+  if (typeof google === 'undefined' || !google.accounts) {
+    console.warn('[Auth] GIS 사용 불가 — 로그인 기능 제한');
     return;
   }
 
@@ -1045,7 +1096,7 @@ function initGoogleAuth() {
 }
 
 // Google 로그인 버튼 클릭
-function googleLogin() {
+async function googleLogin() {
   // 동의 체크 확인
   const privacy = document.getElementById('consentPrivacy')?.checked;
   const portrait = document.getElementById('consentPortrait')?.checked;
@@ -1059,10 +1110,33 @@ function googleLogin() {
     return;
   }
 
-  if (typeof google === 'undefined' || !GOOGLE_CLIENT_ID || GOOGLE_CLIENT_ID === '__GOOGLE_CLIENT_ID__') {
-    alert('Google 로그인이 아직 설정되지 않았습니다.');
-    return;
+  // GIS 미로드 시 재시도
+  if (typeof google === 'undefined' || !google.accounts) {
+    const loginBtn = document.querySelector('.gate-login-btn');
+    const origText = loginBtn ? loginBtn.textContent : '';
+    if (loginBtn) loginBtn.textContent = '로딩 중...';
+
+    const loaded = await loadGISWithRetry();
+    if (loaded) {
+      google.accounts.id.initialize({
+        client_id: GOOGLE_CLIENT_ID,
+        callback: handleGoogleCallback,
+        auto_select: false,
+      });
+    }
+    if (loginBtn) loginBtn.textContent = origText;
+
+    if (!loaded) {
+      const errMsg = {
+        ja: 'Googleログインを読み込めませんでした。広告ブロッカーを無効にするか、ページを再読み込みしてください。',
+        ko: 'Google 로그인을 불러올 수 없습니다. 광고 차단기를 끄거나 페이지를 새로고침해 주세요.',
+        en: 'Could not load Google Sign-In. Please disable ad blockers or reload the page.'
+      };
+      alert(errMsg[lang] || errMsg.en);
+      return;
+    }
   }
+
   google.accounts.id.prompt();
 }
 

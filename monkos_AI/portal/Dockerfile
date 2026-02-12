@@ -1,6 +1,16 @@
 # MONKOS Portal - Cloud Run
 # monkos.ai | AI 메인 포털 (Gemini 2.0 챗봇 + 국가별 분기)
 
+# Stage 1: JS 난독화 (빌드 전용)
+FROM node:20-slim AS builder
+
+WORKDIR /build
+COPY public/ ./public/
+COPY obfuscate.mjs ./
+RUN npm install javascript-obfuscator && \
+    node obfuscate.mjs
+
+# Stage 2: 런타임
 FROM node:20-slim
 
 LABEL maintainer="MONK.KR"
@@ -14,7 +24,7 @@ RUN npm install --only=production && \
     npm cache clean --force
 
 COPY server.js ./
-COPY public/ ./public/
+COPY --from=builder /build/public ./public/
 
 ENV NODE_ENV=production
 ENV PORT=8080

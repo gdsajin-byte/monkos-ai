@@ -9,6 +9,7 @@
   "description": "MONKOS AI 증명사진 (한국 특화) — idphoto-kr.monkos.ai | Vertex AI ADC 통합 인증",
   "dependencies": {
     "@google/genai": "^1.40.0",
+    "sharp": "^0.33.0",
     "ws": "^8.19.0"
   },
   "engines": {

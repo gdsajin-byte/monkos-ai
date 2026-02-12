@@ -1,6 +1,16 @@
 # MONKOS ID Photo KR Service - Cloud Run
 # idphoto-kr.monkos.ai | 한국 특화 AI 증명사진 (Gemini Live + Imagen + QC)
 
+# Stage 1: JS 난독화 (빌드 전용)
+FROM node:20-slim AS builder
+
+WORKDIR /build
+COPY public/ ./public/
+COPY obfuscate.mjs ./
+RUN npm install javascript-obfuscator && \
+    node obfuscate.mjs
+
+# Stage 2: 런타임
 FROM node:20-slim
 
 LABEL maintainer="MONK.KR"
@@ -14,7 +24,7 @@ RUN npm install --only=production && \
     npm cache clean --force
 
 COPY server.js ./
-COPY public/ ./public/
+COPY --from=builder /build/public ./public/
 
 ENV NODE_ENV=production
 ENV PORT=8080
