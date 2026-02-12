@@ -15,7 +15,7 @@ import { createServer } from 'http';
 import { readFileSync } from 'fs';
 import { join, dirname, extname } from 'path';
 import { fileURLToPath } from 'url';
-import { createHmac } from 'crypto';
+import { createHmac, randomBytes } from 'crypto';
 import { GoogleGenAI } from '@google/genai';
 import { Firestore } from '@google-cloud/firestore';
 
@@ -37,6 +37,16 @@ const TOSS_SECRET_KEY = process.env.TOSS_SECRET_KEY || '';
 
 // === Telegram CS Bot (@monkos_support_bot) ===
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '';
+
+// === 카카오 로그인 (KR) ===
+const KAKAO_REST_API_KEY = process.env.KAKAO_REST_API_KEY || '';
+const KAKAO_REDIRECT_URI = process.env.KAKAO_REDIRECT_URI || 'https://monkos.ai/auth/kakao/callback';
+
+// === LINE 로그인 (JP) ===
+const LINE_CHANNEL_ID = process.env.LINE_CHANNEL_ID || '';
+const LINE_CHANNEL_SECRET = process.env.LINE_CHANNEL_SECRET || '';
+const LINE_REDIRECT_URI = process.env.LINE_REDIRECT_URI || 'https://monkos.ai/auth/line/callback';
+const pendingLineStates = new Map();
 
 // Variant ID → 크레딧 매핑 (Lemon Squeezy)
 const VARIANT_CREDITS = {
@@ -486,6 +496,212 @@ const httpServer = createServer(async (req, res) => {
       log(`[Stats] 에러: ${err.message}`);
       res.writeHead(500, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: err.message }));
+    }
+    return;
+  }
+
+  // === 카카오 OAuth (KR) ===
+  if (req.url === '/auth/kakao') {
+    const authUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_REST_API_KEY}&redirect_uri=${encodeURIComponent(KAKAO_REDIRECT_URI)}&response_type=code`;
+    res.writeHead(302, { Location: authUrl });
+    res.end();
+    return;
+  }
+
+  if (req.url?.startsWith('/auth/kakao/callback')) {
+    const url = new URL(req.url, `http://${req.headers.host}`);
+    const code = url.searchParams.get('code');
+    const error = url.searchParams.get('error');
+
+    if (error || !code) {
+      res.writeHead(302, { Location: '/' });
+      res.end();
+      return;
+    }
+
+    try {
+      const tokenRes = await fetch('https://kauth.kakao.com/oauth/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          grant_type: 'authorization_code',
+          client_id: KAKAO_REST_API_KEY,
+          redirect_uri: KAKAO_REDIRECT_URI,
+          code,
+        }),
+      });
+      const tokenData = await tokenRes.json();
+      if (!tokenData.access_token) throw new Error('토큰 발급 실패');
+
+      const userRes = await fetch('https://kapi.kakao.com/v2/user/me', {
+        headers: { Authorization: `Bearer ${tokenData.access_token}` },
+      });
+      const userData = await userRes.json();
+
+      const kakaoId = String(userData.id);
+      const nickname = userData.kakao_account?.profile?.nickname || '';
+      const email = userData.kakao_account?.email || '';
+      const profileImage = userData.kakao_account?.profile?.profile_image_url || '';
+      const docId = `kakao_${kakaoId}`;
+
+      const userRef = usersCollection.doc(docId);
+      const userDoc = await userRef.get();
+
+      if (!userDoc.exists) {
+        await userRef.set({
+          provider: 'kakao',
+          providerId: kakaoId,
+          name: nickname,
+          email,
+          picture: profileImage,
+          credits: 0,
+          createdAt: new Date().toISOString(),
+          lastLogin: new Date().toISOString(),
+        });
+        log(`[Kakao] 신규 가입: ${docId} (${nickname})`);
+      } else {
+        await userRef.update({
+          name: nickname,
+          picture: profileImage,
+          lastLogin: new Date().toISOString(),
+        });
+        log(`[Kakao] 로그인: ${docId}`);
+      }
+
+      const finalDoc = await userRef.get();
+      const finalData = finalDoc.data();
+      const userObj = JSON.stringify({
+        id: docId,
+        name: nickname,
+        email,
+        picture: profileImage,
+        provider: 'kakao',
+        credits: finalData.credits ?? 0,
+      });
+
+      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+      res.end(`<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body><script>
+localStorage.setItem('monkos_user', ${JSON.stringify(userObj)});
+location.href = '/';
+</script></body></html>`);
+    } catch (err) {
+      log(`[Kakao] OAuth 에러: ${err.message}`);
+      res.writeHead(302, { Location: '/?error=kakao_auth_failed' });
+      res.end();
+    }
+    return;
+  }
+
+  // === LINE OAuth (JP) ===
+  if (req.url === '/auth/line') {
+    const state = randomBytes(16).toString('hex');
+    pendingLineStates.set(state, Date.now());
+    for (const [k, v] of pendingLineStates) {
+      if (Date.now() - v > 10 * 60 * 1000) pendingLineStates.delete(k);
+    }
+    const authUrl = `https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=${LINE_CHANNEL_ID}&redirect_uri=${encodeURIComponent(LINE_REDIRECT_URI)}&state=${state}&scope=profile%20openid%20email`;
+    res.writeHead(302, { Location: authUrl });
+    res.end();
+    return;
+  }
+
+  if (req.url?.startsWith('/auth/line/callback')) {
+    const url = new URL(req.url, `http://${req.headers.host}`);
+    const code = url.searchParams.get('code');
+    const state = url.searchParams.get('state');
+    const error = url.searchParams.get('error');
+
+    if (error || !code) {
+      res.writeHead(302, { Location: '/' });
+      res.end();
+      return;
+    }
+
+    if (!state || !pendingLineStates.has(state)) {
+      log('[LINE] state 검증 실패 (CSRF)');
+      res.writeHead(302, { Location: '/?error=invalid_state' });
+      res.end();
+      return;
+    }
+    pendingLineStates.delete(state);
+
+    try {
+      const tokenRes = await fetch('https://api.line.me/oauth2/v2.1/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          grant_type: 'authorization_code',
+          code,
+          redirect_uri: LINE_REDIRECT_URI,
+          client_id: LINE_CHANNEL_ID,
+          client_secret: LINE_CHANNEL_SECRET,
+        }),
+      });
+      const tokenData = await tokenRes.json();
+      if (!tokenData.access_token) throw new Error('トークン発行失敗');
+
+      const profileRes = await fetch('https://api.line.me/v2/profile', {
+        headers: { Authorization: `Bearer ${tokenData.access_token}` },
+      });
+      const profileData = await profileRes.json();
+
+      let email = '';
+      if (tokenData.id_token) {
+        try {
+          const payload = JSON.parse(Buffer.from(tokenData.id_token.split('.')[1], 'base64').toString());
+          email = payload.email || '';
+        } catch {}
+      }
+
+      const lineUserId = profileData.userId;
+      const displayName = profileData.displayName || '';
+      const pictureUrl = profileData.pictureUrl || '';
+      const docId = `line_${lineUserId}`;
+
+      const userRef = usersCollection.doc(docId);
+      const userDoc = await userRef.get();
+
+      if (!userDoc.exists) {
+        await userRef.set({
+          provider: 'line',
+          providerId: lineUserId,
+          name: displayName,
+          email,
+          picture: pictureUrl,
+          credits: 0,
+          createdAt: new Date().toISOString(),
+          lastLogin: new Date().toISOString(),
+        });
+        log(`[LINE] 신규 가입: ${docId} (${displayName})`);
+      } else {
+        await userRef.update({
+          name: displayName,
+          picture: pictureUrl,
+          lastLogin: new Date().toISOString(),
+        });
+        log(`[LINE] 로그인: ${docId}`);
+      }
+
+      const finalDoc = await userRef.get();
+      const finalData = finalDoc.data();
+      const userObj = JSON.stringify({
+        id: docId,
+        name: displayName,
+        email,
+        picture: pictureUrl,
+        provider: 'line',
+        credits: finalData.credits ?? 0,
+      });
+
+      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+      res.end(`<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body><script>
+localStorage.setItem('monkos_user', ${JSON.stringify(userObj)});
+location.href = '/';
+</script></body></html>`);
+    } catch (err) {
+      log(`[LINE] OAuth 에러: ${err.message}`);
+      res.writeHead(302, { Location: '/?error=line_auth_failed' });
+      res.end();
     }
     return;
   }
@@ -1314,7 +1530,11 @@ httpServer.listen(PORT, '0.0.0.0', () => {
   log('엔드포인트:');
   log('  GET  /health               — 헬스체크');
   log('  GET  /api/stats            — 가입자 통계');
-  log('  POST /api/auth/google      — Google 가입/로그인 (+12c 보너스)');
+  log('  GET  /auth/kakao           — 카카오 로그인 (KR)');
+  log('  GET  /auth/kakao/callback  — 카카오 콜백');
+  log('  GET  /auth/line            — LINE 로그인 (JP)');
+  log('  GET  /auth/line/callback   — LINE 콜백');
+  log('  POST /api/auth/google      — Google 가입/로그인');
   log('  GET  /api/credits          — 크레딧 조회');
   log('  POST /api/credits/use      — 크레딧 사용 (generate:-1c, download:-10c)');
   log('  POST /api/credits/refund   — 크레딧 환불');
@@ -1333,5 +1553,7 @@ httpServer.listen(PORT, '0.0.0.0', () => {
   log(`Lemon Squeezy: ${LEMONSQUEEZY_API_KEY ? '설정됨' : '미설정'}`);
   log(`Toss Payments: ${TOSS_SECRET_KEY ? '설정됨' : '미설정'}`);
   log(`Telegram Bot: ${TELEGRAM_BOT_TOKEN ? '설정됨' : '미설정'}`);
+  log(`Kakao Login: ${KAKAO_REST_API_KEY ? '설정됨' : '미설정'}`);
+  log(`LINE Login: ${LINE_CHANNEL_ID ? '설정됨' : '미설정'}`);
   log('='.repeat(60));
 });

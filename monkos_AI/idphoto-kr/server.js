@@ -347,7 +347,7 @@ const MIME_TYPES = {
   '.ico': 'image/x-icon',
 };
 
-const httpServer = createServer((req, res) => {
+const httpServer = createServer(async (req, res) => {
   // 헬스체크
   if (req.url === '/health') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -602,10 +602,10 @@ httpServer.listen(PORT, '0.0.0.0', () => {
   log(`QC: 활성 (gemini-2.0-flash)`);
   log('='.repeat(60));
   log('엔드포인트:');
-  log('  GET  /health   — 헬스체크');
-  log('  GET  /api/info — 서비스 정보');
-  log('  GET  /         — 랜딩페이지');
-  log('  GET  /app      — 촬영 앱');
-  log('  WS   /         — WebSocket (코칭/생성/QC)');
+  log('  GET  /health              — 헬스체크');
+  log('  GET  /api/info            — 서비스 정보');
+  log('  GET  /                    — 랜딩페이지');
+  log('  GET  /app                 — 촬영 앱');
+  log('  WS   /                    — WebSocket (코칭/생성/QC)');
   log('='.repeat(60));
 });
