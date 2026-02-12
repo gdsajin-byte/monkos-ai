@@ -291,8 +291,12 @@
 <!-- ナビバー -->
 <nav>
     <span class="nav-brand">MONKOS</span>
+    <span id="teamSwitch" style="display:none;">
+        <a href="https://idphoto-kr.monkos.ai?team=1" style="padding:6px 14px;border-radius:20px;background:#1a1a2e;border:1px solid #2d2d5e;color:#a78bfa;font-size:12px;font-weight:600;text-decoration:none;">🇰🇷 KR版</a>
+    </span>
     <a href="/app" class="nav-cta">今すぐ撮影</a>
 </nav>
+<script>if(new URLSearchParams(location.search).has('team'))document.getElementById('teamSwitch').style.display='';</script>
 
 <!-- ヒーロー -->
 <section id="hero">

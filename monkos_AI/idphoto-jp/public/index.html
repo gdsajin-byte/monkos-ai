@@ -408,7 +408,7 @@
             box-shadow: 0 4px 24px rgba(167,139,250,0.2);
         }
         .ty-preview img {
-            display: block; width: 200px; height: auto; border-radius: 8px;
+            display: block; width: 280px; max-width: 70vw; height: auto; border-radius: 8px;
         }
         .ty-actions {
             width: 100%; max-width: 320px;
@@ -423,16 +423,95 @@
         .ty-save-btn:disabled {
             background: #333; color: #666; cursor: not-allowed;
         }
-        .ty-share-row {
+        .ty-complete-msg {
+            font-size: 22px; font-weight: 800; color: #34d399;
+            text-align: center; margin-bottom: 8px;
+            animation: fadeInUp 0.5s ease;
+        }
+        .ty-save-guide {
+            text-align: center; padding: 10px 16px;
+            background: rgba(250, 204, 21, 0.1);
+            border: 1px solid rgba(250, 204, 21, 0.3);
+            border-radius: 10px; margin-bottom: 4px;
+        }
+        .ty-save-guide p {
+            font-size: 15px; font-weight: 700; color: #facc15; margin: 0 0 4px;
+        }
+        .ty-save-guide .pulse-hand {
+            display: inline-block; font-size: 22px;
+            animation: pulseHand 1.5s ease-in-out infinite;
+        }
+        .ty-save-guide .sub {
+            font-size: 11px; color: #94a3b8;
+        }
+        @keyframes pulseHand {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.3); opacity: 0.7; }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .ty-share-section {
+            margin-top: 16px; padding: 12px;
+            background: rgba(167, 139, 250, 0.1);
+            border-radius: 12px; border: 1px solid rgba(167, 139, 250, 0.3);
+        }
+        .ty-share-title {
+            font-size: 13px; color: #a78bfa; text-align: center;
+            margin-bottom: 10px; font-weight: 600;
+        }
+        .ty-services {
+            margin-top: 12px;
+        }
+        .ty-services-title {
+            font-size: 12px; color: #94a3b8; text-align: center;
+            margin-bottom: 8px;
+        }
+        .ty-services-row {
             display: flex; gap: 8px;
         }
-        .ty-share-btn {
+        .ty-service-btn {
             flex: 1; padding: 10px;
             background: #1a1a2e; border: 1px solid #2d2d5e;
-            color: #a78bfa; border-radius: 10px;
+            color: #e2e8f0; border-radius: 10px;
             font-size: 12px; font-weight: 600; cursor: pointer;
+            transition: border-color 0.2s;
         }
-        .ty-share-btn:hover { border-color: #a78bfa; }
+        .ty-service-btn:hover {
+            border-color: #a78bfa;
+        }
+        .ty-event-steps {
+            text-align: left; margin-bottom: 12px;
+        }
+        .ty-step {
+            font-size: 12px; color: #cbd5e1; padding: 4px 0;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .step-num {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 20px; height: 20px; border-radius: 50%;
+            background: #a78bfa; color: #0f0f23; font-size: 11px;
+            font-weight: 700; flex-shrink: 0;
+        }
+        .ty-tg-btn {
+            display: block; width: 100%; padding: 12px;
+            background: linear-gradient(135deg, #0088cc, #229ED9);
+            color: #fff; border-radius: 10px; border: none;
+            font-size: 14px; font-weight: 700; cursor: pointer;
+            text-align: center; text-decoration: none;
+            transition: opacity 0.2s;
+        }
+        .ty-tg-btn:hover { opacity: 0.9; }
+        .tg-icon { font-size: 16px; }
+        .ty-tg-sub {
+            font-size: 10px; color: #64748b; text-align: center;
+            margin-top: 6px;
+        }
+        .ty-tg-btn.claimed {
+            background: #1e293b; color: #64748b;
+            pointer-events: none;
+        }
         .ty-credit-msg {
             text-align: center; font-size: 12px; color: #888;
         }
@@ -714,6 +793,8 @@
     <!-- === 準備画面 === -->
     <div id="prep-screen">
         <button class="btn-home" onclick="location.href='https://monkos.ai'">🏠 メイン</button>
+        <a id="teamLangSwitch" href="https://idphoto-kr.monkos.ai/app?team=1" style="display:none;position:absolute;top:12px;right:16px;padding:6px 14px;border-radius:20px;background:#1a1a2e;border:1px solid #2d2d5e;color:#a78bfa;font-size:12px;font-weight:600;text-decoration:none;z-index:60;">🇰🇷 KR版</a>
+        <script>if(new URLSearchParams(location.search).has('team'))document.getElementById('teamLangSwitch').style.display='';</script>
         <div class="prep-icon">📸</div>
         <div class="prep-title">撮影の準備</div>
         <p class="prep-sub">
@@ -876,19 +957,41 @@
             </div>
 
             <div class="ty-actions">
-                <button class="ty-save-btn" id="tySaveBtn" onclick="saveToPhotos()">
-                    📲 写真に保存
-                </button>
-                <div class="ty-share-row">
-                    <button class="ty-share-btn" onclick="shareToX()">𝕏 共有 (+10c)</button>
-                    <button class="ty-share-btn" onclick="shareToInstagram()">📷 IG共有 (+10c)</button>
+                <div class="ty-save-guide" id="tySaveGuide">
+                    <p><span class="pulse-hand">👆</span> 写真を長押しして保存！</p>
+                    <span class="sub">長押し → 「写真に保存」をタップ</span>
                 </div>
+                <div class="ty-complete-msg" id="tyCompleteMsg" style="display:none;">✅ ダウンロード完了！ありがとうございます 🎉</div>
                 <div class="ty-credit-msg" id="postCreditMsg"></div>
+
+                <div class="ty-share-section">
+                    <p class="ty-share-title">🎁 SNSシェアで10クレジットGET!</p>
+                    <div class="ty-event-steps">
+                        <div class="ty-step"><span class="step-num">1</span> この画面をスクショ📸</div>
+                        <div class="ty-step"><span class="step-num">2</span> SNSに投稿 (リンク・メンション必須)</div>
+                        <div class="ty-step"><span class="step-num">3</span> テレグラムでスクショを送信！</div>
+                    </div>
+                    <a id="tgEventLink" class="ty-tg-btn" href="#" target="_blank" onclick="openTelegram()">
+                        <span class="tg-icon">✈️</span> テレグラムで10c受け取る
+                    </a>
+                    <p class="ty-tg-sub">Telegramで友達追加 → スクショ送信 → 即時10c付与!</p>
+                </div>
+
+                <div class="ty-services">
+                    <p class="ty-services-title">📐 もっと活用する</p>
+                    <div class="ty-services-row">
+                        <button class="ty-service-btn" onclick="saveToPhotos()">📲 再保存</button>
+                        <button class="ty-service-btn" onclick="location.href='/app'">📸 追加撮影</button>
+                    </div>
+                    <div class="ty-services-row" style="margin-top:8px;">
+                        <button class="ty-service-btn" onclick="alert('近日公開予定です')">✂️ 用途別クロップ</button>
+                        <button class="ty-service-btn" onclick="alert('近日公開予定です')">🎨 背景変更</button>
+                    </div>
+                </div>
             </div>
 
             <div class="ty-nav">
                 <button onclick="location.href='/'">🏠 メイン</button>
-                <button onclick="location.href='/app'">📸 追加撮影</button>
             </div>
         </div>
     </div>
@@ -996,7 +1099,7 @@
                 const res = await fetch(PORTAL_URL + '/api/auth/verify?token=' + encodeURIComponent(token));
                 const data = await res.json();
                 if (data.success && data.user) {
-                    localStorage.setItem('monkos_user', JSON.stringify(data.user));
+                    sessionStorage.setItem('monkos_user', JSON.stringify(data.user));
                     // URLクリーンアップ（トークンパラメータ除去）
                     const cleanUrl = location.pathname;
                     history.replaceState(null, '', cleanUrl);
@@ -1019,11 +1122,11 @@
                     userCredits = data.credits;
                     updateCreditBadge();
                     // localStorage同期
-                    const stored = localStorage.getItem('monkos_user');
+                    const stored = sessionStorage.getItem('monkos_user');
                     if (stored) {
                         const user = JSON.parse(stored);
                         user.credits = userCredits;
-                        localStorage.setItem('monkos_user', JSON.stringify(user));
+                        sessionStorage.setItem('monkos_user', JSON.stringify(user));
                     }
                     log(`クレジット更新: ${userCredits}c`);
                 }
@@ -1041,7 +1144,7 @@
 
         // ログイン状態確認 (localStorageからuserId読み込み)
         function initCredits() {
-            const stored = localStorage.getItem('monkos_user');
+            const stored = sessionStorage.getItem('monkos_user');
             if (stored) {
                 try {
                     const user = JSON.parse(stored);
@@ -1096,7 +1199,7 @@
                 alert('ログインが必要です');
                 return;
             }
-            const stored = localStorage.getItem('monkos_user');
+            const stored = sessionStorage.getItem('monkos_user');
             const email = stored ? (JSON.parse(stored).email || '') : '';
             // ポップアップブロック回避: クリック同期フロー内でウィンドウを開く
             const win = window.open('about:blank', '_blank');
@@ -1135,7 +1238,7 @@
         }
 
         function logoutUser() {
-            localStorage.removeItem('monkos_user');
+            sessionStorage.removeItem('monkos_user');
             userId = null;
             userCredits = 0;
             updateCreditBadge();
@@ -1149,7 +1252,7 @@
             if (userId) {
                 loginButtons.style.display = 'none';
                 userInfoBar.style.display = 'flex';
-                const stored = localStorage.getItem('monkos_user');
+                const stored = sessionStorage.getItem('monkos_user');
                 if (stored) {
                     const user = JSON.parse(stored);
                     document.getElementById('userAvatar').src = user.picture || '';
@@ -1798,11 +1901,31 @@
         }
 
         function showPreview() {
-            document.getElementById('ty-photo').src = generatedImageData;
+            // JPEG変換してimg srcに設定 (長押し保存用)
+            toJpegDataUrl(generatedImageData, 0.92).then(jpegUrl => {
+                document.getElementById('ty-photo').src = jpegUrl;
+            });
             document.getElementById('thankyou-screen').classList.add('active');
             document.getElementById('controls').classList.remove('active');
+            // 保存ガイド表示、完了メッセージ非表示
+            document.getElementById('tySaveGuide').style.display = '';
+            document.getElementById('tyCompleteMsg').style.display = 'none';
             document.getElementById('postCreditMsg').textContent =
                 userId ? `💎 10c 使用 · 残り ${userCredits}c` : '';
+
+            // 長押し保存検知: contextmenuイベント or visibilitychange
+            const tyPhoto = document.getElementById('ty-photo');
+            const onSaved = () => {
+                document.getElementById('tySaveGuide').style.display = 'none';
+                document.getElementById('tyCompleteMsg').style.display = '';
+                tyPhoto.removeEventListener('contextmenu', onSaved);
+                document.removeEventListener('visibilitychange', onVisChange);
+            };
+            const onVisChange = () => {
+                if (document.hidden) onSaved(); // 共有シート等でアプリ切替時
+            };
+            tyPhoto.addEventListener('contextmenu', onSaved);
+            document.addEventListener('visibilitychange', onVisChange);
             log('プレビューモード表示');
         }
 
@@ -1834,29 +1957,21 @@
             log('JPEG保存完了');
         }
 
-        function shareToX() {
-            const text = encodeURIComponent('MONKOSでAI証明写真を作成しました！ #MONKOS #AI証明写真');
-            const url = encodeURIComponent('https://monkos.ai');
-            window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank', 'width=600,height=400');
-            requestShareBonus('x');
-        }
-
-        function shareToInstagram() {
-            window.open('https://www.instagram.com/', '_blank');
-            requestShareBonus('instagram');
-        }
-
-        function requestShareBonus(platform) {
-            if (!userId || !ws || ws.readyState !== 1) return;
-            ws.send(JSON.stringify({ type: 'share-bonus', userId, platform }));
+        function openTelegram() {
+            const uid = userId || 'guest';
+            const link = `https://t.me/monkos_support_bot?start=${encodeURIComponent(uid)}`;
+            document.getElementById('tgEventLink').href = link;
+            window.open(link, '_blank');
+            log('テレグラムイベントリンク開封');
         }
 
         function disableShareButtons() {
-            document.querySelectorAll('.ty-share-btn').forEach(btn => {
-                btn.disabled = true;
-                btn.style.opacity = '0.5';
-                btn.textContent = btn.textContent.replace(/\(\+10c\)/, '(済)');
-            });
+            const btn = document.getElementById('tgEventLink');
+            if (btn) {
+                btn.classList.add('claimed');
+                btn.textContent = '✅ ボーナス受取済み';
+                btn.onclick = null;
+            }
         }
 
         // === モバイル判定 ===

@@ -341,6 +341,11 @@ const MIME_TYPES = {
 };
 
 const httpServer = createServer(async (req, res) => {
+  // セキュリティヘッダー
+  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+
   // ヘルスチェック
   if (req.url === '/health') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
