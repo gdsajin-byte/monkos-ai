@@ -47,7 +47,13 @@
       "Bash(ln:*)",
       "Bash(open:*)",
       "Bash(do echo \"=== $file ===\")",
-      "Bash(while read file)"
+      "Bash(while read file)",
+      "Bash(chmod:*)",
+      "Bash(./deploy.sh:*)",
+      "Bash(CF_TOKEN=\"uMOYAGUSW0IchIvojy_f8DfuzhkW6ItmkxLeDE5s53Y.3VdddXriHtCVk6Au_3iU_dQsPzZlueYpZZSul_CYw48\")",
+      "Bash(bash:*)",
+      "Bash(LSKEY='eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiI5NGQ1OWNlZi1kYmI4LTRlYTUtYjE3OC1kMjU0MGZjZDY5MTkiLCJqdGkiOiJmNTJiYmMyNWUwZjkyNDZmYzVhM2ViZmI1NDA4YWIxOWRmZTFkMmY4OThhMDliYzcxNjBlZmFkZjJlNzAxM2VhNWRlMTEyOWIwMTgyNDcwYiIsImlhdCI6MTc3MDc4NzIxMS4yMTE0NjUsIm5iZiI6MTc3MDc4NzIxMS4yMTE0NjcsImV4cCI6MTc4NjQwNjQwMC4wMzM0NjksInN1YiI6IjY0OTc4MzIiLCJzY29wZXMiOltdfQ.g8v58Z_jfce38Chi2x8L59kUQkdbvv5BEXAJCnDw_SI2QgryIRgnUB-gpTXCpXiqptNja0b-BFnNbhCoANRESVKg1aVuSSPW1v4CWixZGg_zvGl6u2moIhCRcI0UvXjbNUh1N7lTIBaaqqxG6x1Xe9bEnAfIzeeyPyLm70nkoQbSLrZUN1eheM-N-8oNFCAQwlw6hYn9Si4CRUIQDPiZUJOVrZBBSba_6RX6NOdIVr6WBfapeOcjzBjDaBJTyIsvoiV7p8P5fUKzU1TzPX7DzeQygoX1DH72IKmx-mPMF9HYMN3r4bKUrXgQRdM1OzBlKoV18PCYlhF6NPLYtR2J1uAnK8Wjq0G9aCLybE5GXN7-Wv8RG4IpQ81_5NLGSqRInI_mCXG-uoPULRIfSaE02xC-YvqLWQchZBW3WkTpNUNK8vP8fEq0ieUtCSAE63Gq-hIZw0Z6Lk7zv-4nmXMm6Iw1z8FnBbOMzsfupEnIajSLeAm1yHIGgDvRXwiO5bE5CRwP-2LkbD8IxMkq_M4h8DCbUhAM6pVH7BE7596EZi4xOi7bLNlrC9iRSRYObXWeY-c1BLfzqZF4MYTzI6ajKA6_JdCP9Bi00FHgqmQub6OIGLk4U12figsGHGoQ4bMOb6IHfZKDUtI6al5UYqNWWSHhH_zeoxv0HdldvGceWL8')",
+      "WebFetch(domain:monkos-ai.lemonsqueezy.com)"
     ],
     "deny": [
       "Bash(rm -rf /*)",
