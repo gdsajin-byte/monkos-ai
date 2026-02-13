@@ -244,7 +244,7 @@
             transition: border-color 0.3s;
         }
         #face-guide.ready::before {
-            border-color: rgba(34, 197, 94, 0.85);
+            border-color: rgba(34, 197, 94, 0.9) !important;
         }
         #face-guide::after {
             content: attr(data-guide-text);
@@ -255,7 +255,7 @@
             transition: color 0.3s;
         }
         #face-guide.ready::after {
-            color: rgba(34, 197, 94, 0.9);
+            color: rgba(34, 197, 94, 0.95) !important;
         }
 
         /* === 코칭 오버레이 === */
@@ -1628,7 +1628,7 @@
             speakKo(text);
 
             const faceGuide = document.getElementById('face-guide');
-            if (text.includes('좋습니다') || text.includes('촬영해') || text.includes('괜찮') || text.includes('OK') || text.includes('완벽')) {
+            if (text.includes('좋') || text.includes('찍') || text.includes('괜찮') || text.includes('OK') || text.includes('완벽') || text.includes('지금')) {
                 isReady = true;
                 overlay.classList.add('ready');
                 btn.classList.add('ready');
