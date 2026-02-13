@@ -535,20 +535,22 @@ const httpServer = createServer(async (req, res) => {
     }
 
     try {
+      const tokenBody = {
+        grant_type: 'authorization_code',
+        client_id: KAKAO_REST_API_KEY,
+        redirect_uri: KAKAO_REDIRECT_URI,
+        code,
+        ...(process.env.KAKAO_CLIENT_SECRET ? { client_secret: process.env.KAKAO_CLIENT_SECRET } : {}),
+      };
+      log(`[Kakao] 토큰 요청: client_id=${KAKAO_REST_API_KEY}, secret=${process.env.KAKAO_CLIENT_SECRET ? 'YES(' + process.env.KAKAO_CLIENT_SECRET + ')' : 'NO'}, redirect=${KAKAO_REDIRECT_URI}, code=${code}`);
       const tokenRes = await fetch('https://kauth.kakao.com/oauth/token', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({
-          grant_type: 'authorization_code',
-          client_id: KAKAO_REST_API_KEY,
-          redirect_uri: KAKAO_REDIRECT_URI,
-          code,
-          ...(process.env.KAKAO_CLIENT_SECRET ? { client_secret: process.env.KAKAO_CLIENT_SECRET } : {}),
-        }),
+        body: new URLSearchParams(tokenBody),
       });
       const tokenData = await tokenRes.json();
       if (!tokenData.access_token) {
-        log(`[Kakao] 토큰 응답: ${JSON.stringify(tokenData)}`);
+        log(`[Kakao] 토큰 실패 응답: ${JSON.stringify(tokenData)}`);
         throw new Error(`토큰 발급 실패: ${tokenData.error || tokenData.error_code || 'unknown'} - ${tokenData.error_description || ''}`);
       }
 
@@ -600,7 +602,7 @@ const httpServer = createServer(async (req, res) => {
 
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
       res.end(`<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body><script>
-localStorage.setItem('monkos_user', ${JSON.stringify(userObj)});
+sessionStorage.setItem('monkos_user', ${JSON.stringify(userObj)});
 location.href = '/';
 </script></body></html>`);
     } catch (err) {
@@ -714,7 +716,7 @@ location.href = '/';
 
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
       res.end(`<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body><script>
-localStorage.setItem('monkos_user', ${JSON.stringify(userObj)});
+sessionStorage.setItem('monkos_user', ${JSON.stringify(userObj)});
 location.href = '/';
 </script></body></html>`);
     } catch (err) {
@@ -731,23 +733,48 @@ location.href = '/';
     req.on('data', chunk => { body += chunk; });
     req.on('end', async () => {
       try {
-        const { credential } = JSON.parse(body);
-        if (!credential) {
+        const { credential, access_token } = JSON.parse(body);
+        if (!credential && !access_token) {
           res.writeHead(400, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({ error: 'credential 필드 필수' }));
+          res.end(JSON.stringify({ error: 'credential 또는 access_token 필수' }));
           return;
         }
 
-        // Google 토큰 검증
-        const verifyUrl = `https://oauth2.googleapis.com/tokeninfo?id_token=${credential}`;
-        const verifyRes = await fetch(verifyUrl);
-        const tokenInfo = await verifyRes.json();
+        let tokenInfo;
 
-        if (tokenInfo.error || tokenInfo.aud !== GOOGLE_CLIENT_ID) {
-          log(`[Auth] 토큰 검증 실패: ${tokenInfo.error || 'aud 불일치'}`);
-          res.writeHead(401, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({ error: '토큰 검증 실패' }));
-          return;
+        if (credential) {
+          // 방법1: GIS One Tap id_token 검증
+          const verifyUrl = `https://oauth2.googleapis.com/tokeninfo?id_token=${credential}`;
+          const verifyRes = await fetch(verifyUrl);
+          tokenInfo = await verifyRes.json();
+          if (tokenInfo.error || tokenInfo.aud !== GOOGLE_CLIENT_ID) {
+            log(`[Auth] id_token 검증 실패: ${tokenInfo.error || 'aud 불일치'}`);
+            res.writeHead(401, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: '토큰 검증 실패' }));
+            return;
+          }
+        } else {
+          // 방법2: OAuth 팝업 access_token → userinfo 조회
+          const userInfoRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+            headers: { Authorization: `Bearer ${access_token}` },
+          });
+          const userInfo = await userInfoRes.json();
+          if (userInfo.error || !userInfo.sub) {
+            log(`[Auth] access_token 검증 실패: ${userInfo.error || 'sub 없음'}`);
+            res.writeHead(401, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: '토큰 검증 실패' }));
+            return;
+          }
+          tokenInfo = {
+            sub: userInfo.sub,
+            email: userInfo.email,
+            name: userInfo.name,
+            given_name: userInfo.given_name || '',
+            family_name: userInfo.family_name || '',
+            picture: userInfo.picture,
+            locale: userInfo.locale || '',
+            email_verified: String(userInfo.email_verified),
+          };
         }
 
         // Firestore에서 기존 사용자 확인
@@ -768,7 +795,7 @@ location.href = '/';
           lastLogin: new Date().toISOString(),
           ...(isNewUser ? {
             createdAt: new Date().toISOString(),
-            credits: 0,  // 가입 시 0c (설문 이벤트로 지급)
+            credits: 0,
           } : {}),
         };
 

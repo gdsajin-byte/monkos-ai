@@ -3,21 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>MONKOS AI | 無料AI証明写真・パスポート写真・履歴書写真</title>
-<meta name="description" content="AIリアルタイムコーチングで完璧な証明写真を撮影。パスポート・ビザ・履歴書・就活写真対応。無料で高品質AI証明写真を生成。">
+<title>MONKOS AI | AI証明写真・パスポート写真・履歴書写真</title>
+<meta name="description" content="AIリアルタイムコーチングで完璧な証明写真を撮影。パスポート・ビザ・履歴書・就活写真対応。高品質AI証明写真を生成。">
 <meta name="theme-color" content="#0f0f23">
 
 <!-- OG Tags -->
-<meta property="og:title" content="MONKOS AI | 無料AI証明写真">
-<meta property="og:description" content="AIコーチが撮影をリアルタイムガイド。証明写真・パスポート写真・履歴書写真を無料で撮影。">
+<meta property="og:title" content="MONKOS AI | AI証明写真">
+<meta property="og:description" content="AIコーチが撮影をリアルタイムガイド。証明写真・パスポート写真・履歴書写真を撮影。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://monkos.ai">
 <meta property="og:site_name" content="MONKOS AI">
 <meta property="og:locale" content="ja_JP">
 <meta property="og:locale:alternate" content="ko_KR">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="MONKOS AI | 無料AI証明写真">
-<meta name="twitter:description" content="AIコーチが撮影をリアルタイムガイド。証明写真を無料で撮影。">
+<meta name="twitter:title" content="MONKOS AI | AI証明写真">
+<meta name="twitter:description" content="AIコーチが撮影をリアルタイムガイド。AI証明写真を撮影。">
 
 <!-- Canonical & Hreflang -->
 <link rel="canonical" href="https://monkos.ai/">
@@ -34,13 +34,7 @@
   "url": "https://monkos.ai",
   "applicationCategory": "PhotographyApplication",
   "operatingSystem": "Web",
-  "inLanguage": ["ja", "ko"],
-  "offers": {
-    "@type": "Offer",
-    "price": "0",
-    "priceCurrency": "JPY",
-    "description": "無料AI証明写真撮影"
-  },
+  "inLanguage": ["ja", "ko", "en"],
   "description": "AIリアルタイムコーチングで完璧な証明写真を撮影。パスポート・ビザ・履歴書・就活写真対応。",
   "provider": {
     "@type": "Organization",
@@ -126,34 +120,50 @@ header {
   text-transform: uppercase;
 }
 
-/* === 로그인 버튼 === */
+/* === 헤더 챗봇 버튼 === */
 .auth-area {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-.login-btn {
+.header-chat-btn {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  color: var(--text);
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border: none;
+  color: #fff;
   padding: 8px 16px;
-  border-radius: 8px;
+  border-radius: 20px;
   font-size: 0.85rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: border-color 0.3s;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 12px rgba(167, 139, 250, 0.3);
 }
 
-.login-btn:hover {
-  border-color: var(--accent);
+.header-chat-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(167, 139, 250, 0.5);
 }
 
-.login-btn svg {
-  width: 18px;
-  height: 18px;
+.header-chat-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.header-chat-btn .chat-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--success);
+  border-radius: 50%;
+  animation: chatPulse 2s ease-in-out infinite;
+}
+
+@keyframes chatPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
 }
 
 .user-info {
@@ -196,10 +206,18 @@ header {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  min-height: 70vh;
+  justify-content: space-between;
+  min-height: calc(100vh - 60px);
   text-align: center;
-  padding: 40px 20px;
+  padding: 40px 20px 120px;
+}
+
+.gate-top {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .gate-screen h1 {
@@ -219,20 +237,35 @@ header {
   font-size: clamp(1rem, 2.5vw, 1.25rem);
   color: var(--text-dim);
   max-width: 500px;
-  margin-bottom: 40px;
+  margin-bottom: 0;
   line-height: 1.6;
+}
+
+/* === 게이트 하단 (동의 + 로그인) === */
+.gate-bottom {
+  width: 100%;
+  max-width: 360px;
+}
+
+.gate-login-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
 }
 
 .gate-login-btn {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 12px;
+  width: 100%;
   background: #fff;
   color: #333;
   border: none;
-  padding: 14px 32px;
+  padding: 14px 0;
   border-radius: 12px;
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
@@ -249,7 +282,7 @@ header {
   cursor: not-allowed;
   transform: none;
 }
-.gate-login-buttons { display: flex; flex-direction: column; gap: 10px; align-items: center; width: 100%; }
+
 .gate-login-kakao { background: #FEE500; color: #3C1E1E; }
 .gate-login-kakao:hover:not(:disabled) { box-shadow: 0 6px 30px rgba(254, 229, 0, 0.3); }
 .gate-login-line { background: #06C755; color: #fff; }
@@ -587,35 +620,13 @@ footer a {
   text-decoration: none;
 }
 
-/* === 챗봇 위젯 === */
-.chat-fab {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  width: 56px;
-  height: 56px;
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
-  border: none;
-  border-radius: 50%;
-  color: #fff;
-  font-size: 24px;
-  cursor: pointer;
-  box-shadow: 0 4px 20px rgba(167, 139, 250, 0.4);
-  z-index: 1000;
-  transition: transform 0.3s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.chat-fab:hover { transform: scale(1.1); }
-
+/* === 챗봇 패널 === */
 .chat-panel {
   position: fixed;
-  bottom: 92px;
+  top: 60px;
   right: 24px;
   width: min(380px, calc(100vw - 48px));
-  max-height: 500px;
+  max-height: calc(100vh - 140px);
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 16px;
@@ -754,13 +765,45 @@ footer a {
   30% { transform: translateY(-6px); }
 }
 
+/* === 언어 선택 === */
+.lang-selector {
+  display: flex;
+  gap: 2px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 2px;
+}
+
+.lang-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.5px;
+}
+
+.lang-btn:hover {
+  color: var(--text);
+}
+
+.lang-btn.active {
+  background: var(--accent);
+  color: #fff;
+}
+
 /* === 모바일 === */
 @media (max-width: 640px) {
   header { padding: 16px 16px 0; }
   .hero { padding: 60px 0 30px; }
   .service-card { padding: 24px; }
-  .login-btn { padding: 6px 12px; font-size: 0.8rem; }
-  .login-btn span { display: none; }
+  .header-chat-btn { padding: 6px 12px; font-size: 0.8rem; }
+  .header-chat-btn span:not(.chat-dot) { display: none; }
   .user-name { display: none; }
   .chat-panel {
     bottom: 0;
@@ -768,10 +811,6 @@ footer a {
     width: 100vw;
     max-height: 70vh;
     border-radius: 16px 16px 0 0;
-  }
-  .chat-fab {
-    bottom: 16px;
-    right: 16px;
   }
 }
 </style>
@@ -783,16 +822,19 @@ footer a {
 <div class="container">
   <header>
     <div class="logo" translate="no">MONKOS</div>
+    <div class="lang-selector">
+      <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" data-lang="ko" onclick="setLang('ko')">KR</button>
+      <button class="lang-btn" data-lang="ja" onclick="setLang('ja')">JP</button>
+    </div>
     <div class="auth-area">
-      <!-- 로그인 전 -->
-      <button class="login-btn" id="loginBtn" onclick="googleLogin()">
-        <svg viewBox="0 0 24 24" fill="currentColor">
-          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+      <!-- 챗봇 버튼 (헤더) -->
+      <button class="header-chat-btn" id="headerChatBtn">
+        <span class="chat-dot"></span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
         </svg>
-        <span id="loginText">Login</span>
+        <span id="headerChatLabel">Chat</span>
       </button>
       <!-- 로그인 후 -->
       <div class="user-info" id="userInfo">
@@ -805,49 +847,51 @@ footer a {
 
   <!-- 입구컷: 게이트 화면 (로그인 전) -->
   <section class="gate-screen" id="gateScreen">
-    <h1 translate="no"><span>MONKOS AI</span></h1>
-    <p class="gate-sub" id="gateSub"></p>
-
-    <!-- 동의 체크박스 -->
-    <div class="gate-consent">
-      <div class="consent-item">
-        <input type="checkbox" id="consentPrivacy" onchange="updateLoginButton()">
-        <label for="consentPrivacy">
-          <span id="consentPrivacyText">개인정보 수집·이용에 동의합니다</span>
-          <span class="required" id="consentRequired1">(필수)</span>
-          <span class="view-link" onclick="showConsentModal('privacy')" id="viewPrivacy">[내용 보기]</span>
-        </label>
-      </div>
-      <div class="consent-item">
-        <input type="checkbox" id="consentPortrait" onchange="updateLoginButton()">
-        <label for="consentPortrait">
-          <span id="consentPortraitText">초상권 및 이미지 사용에 동의합니다</span>
-          <span class="required" id="consentRequired2">(필수)</span>
-          <span class="view-link" onclick="showConsentModal('portrait')" id="viewPortrait">[내용 보기]</span>
-        </label>
-      </div>
+    <div class="gate-top">
+      <h1 translate="no"><span>MONKOS AI</span></h1>
+      <p class="gate-sub" id="gateSub"></p>
     </div>
 
-    <div class="gate-login-buttons">
-      <button class="gate-login-btn" id="gateLoginBtn" onclick="googleLogin()" disabled>
-        <svg viewBox="0 0 24 24" width="24" height="24">
-          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-        </svg>
-        <span id="gateLoginText">Google로 시작</span>
-      </button>
-      <!-- 카카오 로그인 (ko) -->
-      <button class="gate-login-btn gate-login-kakao" id="gateKakaoBtn" onclick="loginKakao()" style="display:none;" disabled>
-        <svg viewBox="0 0 24 24" width="24" height="24"><path d="M12 3C6.48 3 2 6.36 2 10.5c0 2.67 1.74 5.01 4.36 6.33-.14.53-.9 3.4-.93 3.6 0 0-.02.16.08.22.1.06.22.01.22.01.29-.04 3.37-2.2 3.9-2.57.76.11 1.55.16 2.37.16 5.52 0 10-3.36 10-7.5S17.52 3 12 3z" fill="#3C1E1E"/></svg>
-        <span>카카오로 시작</span>
-      </button>
-      <!-- LINE 로그인 (ja) -->
-      <button class="gate-login-btn gate-login-line" id="gateLineBtn" onclick="loginLine()" style="display:none;" disabled>
-        <svg viewBox="0 0 24 24" width="24" height="24"><path d="M12 2C6.48 2 2 5.83 2 10.5c0 4.08 3.39 7.5 7.96 8.33.31.07.73.2.84.47.1.24.06.62.03.87l-.14.82c-.04.24-.19.94.82.51s5.46-3.21 7.44-5.5C21.23 13.37 22 11.98 22 10.5 22 5.83 17.52 2 12 2z" fill="#fff"/><path d="M8.53 8.8H7.65v3.4h.88V8.8zm5.14 0h-.88v2.02L11.1 8.8h-1v3.4h.88V10.2l1.7 2h.99V8.8zm-3.3 2.53H9.24V8.8h-.88v3.4h1.99v-.87h.02zm5.83-1.67c0-.47-.38-.86-.86-.86h-1.7v3.4h.88v-1.2h.52l.6 1.2h1l-.7-1.3c.16-.18.26-.42.26-.68v-.56z" fill="#06C755"/></svg>
-        <span>LINEで始める</span>
-      </button>
+    <div class="gate-bottom">
+      <!-- 동의 체크박스 -->
+      <div class="gate-consent">
+        <div class="consent-item">
+          <input type="checkbox" id="consentPrivacy" onchange="updateLoginButton()">
+          <label for="consentPrivacy">
+            <span id="consentPrivacyText">개인정보 수집·이용에 동의합니다</span>
+            <span class="required" id="consentRequired1">(필수)</span>
+            <span class="view-link" onclick="showConsentModal('privacy')" id="viewPrivacy">[내용 보기]</span>
+          </label>
+        </div>
+        <div class="consent-item">
+          <input type="checkbox" id="consentPortrait" onchange="updateLoginButton()">
+          <label for="consentPortrait">
+            <span id="consentPortraitText">초상권 및 이미지 사용에 동의합니다</span>
+            <span class="required" id="consentRequired2">(필수)</span>
+            <span class="view-link" onclick="showConsentModal('portrait')" id="viewPortrait">[내용 보기]</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="gate-login-buttons">
+        <button class="gate-login-btn" id="gateLoginBtn" onclick="googleLogin()" disabled>
+          <svg viewBox="0 0 24 24" width="20" height="20">
+            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+          </svg>
+          <span id="gateLoginText">Google</span>
+        </button>
+        <button class="gate-login-btn gate-login-line" id="gateLineBtn" onclick="loginLine()" disabled>
+          <svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 2C6.48 2 2 5.83 2 10.5c0 4.08 3.39 7.5 7.96 8.33.31.07.73.2.84.47.1.24.06.62.03.87l-.14.82c-.04.24-.19.94.82.51s5.46-3.21 7.44-5.5C21.23 13.37 22 11.98 22 10.5 22 5.83 17.52 2 12 2z" fill="#fff"/><path d="M8.53 8.8H7.65v3.4h.88V8.8zm5.14 0h-.88v2.02L11.1 8.8h-1v3.4h.88V10.2l1.7 2h.99V8.8zm-3.3 2.53H9.24V8.8h-.88v3.4h1.99v-.87h.02zm5.83-1.67c0-.47-.38-.86-.86-.86h-1.7v3.4h.88v-1.2h.52l.6 1.2h1l-.7-1.3c.16-.18.26-.42.26-.68v-.56z" fill="#06C755"/></svg>
+          <span>LINE</span>
+        </button>
+        <button class="gate-login-btn gate-login-kakao" id="gateKakaoBtn" onclick="loginKakao()" disabled>
+          <svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 3C6.48 3 2 6.36 2 10.5c0 2.67 1.74 5.01 4.36 6.33-.14.53-.9 3.4-.93 3.6 0 0-.02.16.08.22.1.06.22.01.22.01.29-.04 3.37-2.2 3.9-2.57.76.11 1.55.16 2.37.16 5.52 0 10-3.36 10-7.5S17.52 3 12 3z" fill="#3C1E1E"/></svg>
+          <span>Kakao</span>
+        </button>
+      </div>
     </div>
   </section>
 
@@ -1009,12 +1053,7 @@ footer a {
   </div>
 </div>
 
-<!-- 챗봇 FAB -->
-<button class="chat-fab" id="chatFab" aria-label="Chat">
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-  </svg>
-</button>
+<!-- 챗봇 FAB 제거 — 헤더 챗봇 버튼으로 이동 -->
 
 <!-- 챗봇 패널 -->
 <div class="chat-panel" id="chatPanel">
@@ -1124,7 +1163,7 @@ function loginLine() {
   location.href = '/auth/line';
 }
 
-// Google 로그인 버튼 클릭
+// Google 로그인 버튼 클릭 (OAuth 팝업 — One Tap 쿨다운 회피)
 async function googleLogin() {
   // 동의 체크 확인
   const privacy = document.getElementById('consentPrivacy')?.checked;
@@ -1146,15 +1185,6 @@ async function googleLogin() {
     if (loginBtn) loginBtn.textContent = '로딩 중...';
 
     const loaded = await loadGISWithRetry();
-    if (loaded) {
-      google.accounts.id.initialize({
-        client_id: GOOGLE_CLIENT_ID,
-        callback: handleGoogleCallback,
-        auto_select: false,
-        cancel_on_tap_outside: false,
-        itp_support: true,
-      });
-    }
     if (loginBtn) loginBtn.textContent = origText;
 
     if (!loaded) {
@@ -1168,7 +1198,40 @@ async function googleLogin() {
     }
   }
 
-  google.accounts.id.prompt();
+  // OAuth 팝업 (One Tap 대신 — 쿨다운/쿠키 제한 없음)
+  if (google.accounts.oauth2) {
+    const tokenClient = google.accounts.oauth2.initTokenClient({
+      client_id: GOOGLE_CLIENT_ID,
+      scope: 'openid email profile',
+      callback: handleGoogleTokenCallback,
+    });
+    tokenClient.requestAccessToken();
+  } else {
+    google.accounts.id.prompt();
+  }
+}
+
+// OAuth 팝업 콜백 (access_token 방식)
+async function handleGoogleTokenCallback(tokenResponse) {
+  if (tokenResponse.error) {
+    console.error('[Auth] OAuth error:', tokenResponse.error);
+    return;
+  }
+  try {
+    const res = await fetch('/api/auth/google', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ access_token: tokenResponse.access_token }),
+    });
+    const data = await res.json();
+    if (data.success && data.user) {
+      currentUser = data.user;
+      sessionStorage.setItem('monkos_user', JSON.stringify(currentUser));
+      updateAuthUI();
+    }
+  } catch (err) {
+    console.error('[Auth] Google login error:', err);
+  }
 }
 
 // Google 콜백 처리
@@ -1214,7 +1277,6 @@ function logout() {
 
 // UI 업데이트
 function updateAuthUI() {
-  const loginBtn = document.getElementById('loginBtn');
   const userInfo = document.getElementById('userInfo');
   const userAvatar = document.getElementById('userAvatar');
   const userName = document.getElementById('userName');
@@ -1222,7 +1284,6 @@ function updateAuthUI() {
   const mainContent = document.getElementById('mainContent');
 
   if (currentUser) {
-    loginBtn.style.display = 'none';
     userInfo.classList.add('logged-in');
     userAvatar.src = currentUser.picture || '';
     userName.textContent = currentUser.name || currentUser.email;
@@ -1232,7 +1293,6 @@ function updateAuthUI() {
     if (mainContent) mainContent.style.display = 'block';
     loadEventStatus();
   } else {
-    loginBtn.style.display = 'flex';
     userInfo.classList.remove('logged-in');
     // 입구컷: 게이트 화면만 표시
     document.body.classList.remove('logged-in');
@@ -1250,7 +1310,7 @@ const i18n = {
     heroSub: 'AI証明写真プラットフォーム',
     serviceTitle: 'AI証明写真',
     serviceDesc: 'AIコーチングで完璧な撮影 → AIで証明写真に変換。パスポート・履歴書対応。',
-    features: ['AIリアルタイムコーチング', 'プロ品質の自動変換', 'パスポート・履歴書対応', 'Googleで簡単登録'],
+    features: ['AIリアルタイムコーチング', 'プロ品質の自動変換', 'パスポート・履歴書対応', 'SNS簡単ログイン'],
     ctaText: '証明写真を撮る',
     ctaUrl: 'https://idphoto-jp.monkos.ai/app',
     chatPlaceholder: '質問を入力...',
@@ -1266,7 +1326,7 @@ const i18n = {
     heroSub: 'AI 증명사진 플랫폼',
     serviceTitle: 'AI 증명사진',
     serviceDesc: 'AI 코칭으로 완벽한 촬영 → AI로 증명사진 변환. 증명사진, 이력서 대응.',
-    features: ['AI 실시간 코칭', '프로 품질 자동 변환', '증명사진/이력서 대응', 'Google 간편 가입'],
+    features: ['AI 실시간 코칭', '프로 품질 자동 변환', '증명사진/이력서 대응', 'SNS 간편 로그인'],
     ctaText: '증명사진 촬영하기',
     ctaUrl: 'https://idphoto-kr.monkos.ai/app',
     chatPlaceholder: '질문을 입력하세요...',
@@ -1282,7 +1342,7 @@ const i18n = {
     heroSub: 'AI ID Photo Platform',
     serviceTitle: 'AI ID Photo',
     serviceDesc: 'AI coaching for perfect shots → AI transforms into ID photos. ID photo and resume supported.',
-    features: ['AI real-time coaching', 'Pro-quality auto conversion', 'ID photo / resume ready', 'Easy Google sign-up'],
+    features: ['AI real-time coaching', 'Pro-quality auto conversion', 'ID photo / resume ready', 'Easy SNS login'],
     ctaText: 'Take ID Photo',
     ctaUrl: 'https://idphoto-jp.monkos.ai/app',
     chatPlaceholder: 'Type your question...',
@@ -1297,14 +1357,11 @@ const i18n = {
   },
 };
 
-// 로그인 텍스트 다국어
-const loginTexts = { ja: 'Googleで始める', ko: 'Google로 시작', en: 'Start with Google' };
-
 // 게이트 화면 텍스트
 const gateTexts = {
-  ja: 'AI証明写真を無料で作成。Googleアカウントでログインして始めましょう。',
-  ko: 'AI 증명사진을 무료로 만들어 보세요. Google 계정으로 로그인하고 시작하세요.',
-  en: 'Create AI ID photos for free. Sign in with Google to get started.'
+  ja: 'AIコーチングで完璧な証明写真を撮影。ログインして始めましょう。',
+  ko: 'AI 코칭으로 완벽한 증명사진을 촬영하세요. 로그인하고 시작하세요.',
+  en: 'Take perfect ID photos with AI coaching. Sign in to get started.'
 };
 
 // 동의 텍스트 다국어
@@ -1475,27 +1532,11 @@ function detectLang() {
   return 'en';
 }
 
-const lang = detectLang();
-const t = i18n[lang];
+let lang = localStorage.getItem('monkos_lang') || detectLang();
+let t = i18n[lang];
 
-// HTML lang 속성 업데이트
-document.documentElement.lang = lang;
-
-// === UI 적용 ===
-document.getElementById('heroSub').textContent = t.heroSub;
-document.getElementById('serviceTitle').textContent = t.serviceTitle;
-document.getElementById('serviceDesc').textContent = t.serviceDesc;
-
-const featuresList = document.getElementById('serviceFeatures');
-t.features.forEach(f => {
-  const li = document.createElement('li');
-  li.textContent = f;
-  featuresList.appendChild(li);
-});
-
+// === CTA 클릭 이벤트 ===
 const ctaBtn = document.getElementById('ctaBtn');
-ctaBtn.textContent = t.ctaText;
-ctaBtn.href = t.ctaUrl;
 
 // CTA 클릭 시 로그인 상태면 토큰 파라미터 추가
 ctaBtn.addEventListener('click', async (e) => {
@@ -1521,34 +1562,7 @@ ctaBtn.addEventListener('click', async (e) => {
   }
 });
 
-document.getElementById('chatInput').placeholder = t.chatPlaceholder;
-document.getElementById('loginText').textContent = loginTexts[lang] || 'Login';
-
-// 게이트 화면 텍스트 적용
-document.getElementById('gateSub').textContent = gateTexts[lang] || gateTexts.en;
-document.getElementById('gateLoginText').textContent = loginTexts[lang] || 'Start with Google';
-
-// 언어별 소셜 로그인 버튼 표시
-if (lang === 'ko') {
-  document.getElementById('gateKakaoBtn').style.display = 'flex';
-} else if (lang === 'ja') {
-  document.getElementById('gateLineBtn').style.display = 'flex';
-}
-
-// 동의 텍스트 적용
-const ct = consentTexts[lang] || consentTexts.en;
-document.getElementById('consentPrivacyText').textContent = ct.privacy;
-document.getElementById('consentPortraitText').textContent = ct.portrait;
-document.getElementById('consentRequired1').textContent = ct.required;
-document.getElementById('consentRequired2').textContent = ct.required;
-document.getElementById('viewPrivacy').textContent = ct.viewLink;
-document.getElementById('viewPortrait').textContent = ct.viewLink;
-document.getElementById('privacyModalTitle').textContent = ct.privacyTitle;
-document.getElementById('portraitModalTitle').textContent = ct.portraitTitle;
-document.getElementById('privacyModalContent').innerHTML = ct.privacyContent;
-document.getElementById('portraitModalContent').innerHTML = ct.portraitContent;
-document.getElementById('privacyModalClose').textContent = ct.confirm;
-document.getElementById('portraitModalClose').textContent = ct.confirm;
+// (i18n 초기 적용은 applyLang()에서 처리)
 
 // === 동의 체크박스 기능 ===
 function updateLoginButton() {
@@ -1586,8 +1600,70 @@ document.getElementById('portraitModal').addEventListener('click', (e) => {
   if (e.target.id === 'portraitModal') closeConsentModal('portrait');
 });
 
+// === 언어 전환 ===
+function applyLang() {
+  t = i18n[lang];
+  document.documentElement.lang = lang;
+
+  // 헤더 언어 버튼 활성화
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.lang === lang);
+  });
+
+  // 게이트 화면
+  document.getElementById('gateSub').textContent = gateTexts[lang] || gateTexts.en;
+
+  // 히어로
+  document.getElementById('heroSub').textContent = t.heroSub;
+  document.getElementById('serviceTitle').textContent = t.serviceTitle;
+  document.getElementById('serviceDesc').textContent = t.serviceDesc;
+
+  // 서비스 피처 리스트
+  const feats = document.getElementById('serviceFeatures');
+  feats.innerHTML = '';
+  t.features.forEach(f => {
+    const li = document.createElement('li');
+    li.textContent = f;
+    feats.appendChild(li);
+  });
+
+  // CTA 버튼
+  const cta = document.getElementById('ctaBtn');
+  cta.textContent = t.ctaText;
+  cta.href = t.ctaUrl;
+
+  // 동의 텍스트
+  const ct = consentTexts[lang] || consentTexts.en;
+  document.getElementById('consentPrivacyText').textContent = ct.privacy;
+  document.getElementById('consentPortraitText').textContent = ct.portrait;
+  document.getElementById('consentRequired1').textContent = ct.required;
+  document.getElementById('consentRequired2').textContent = ct.required;
+  document.getElementById('viewPrivacy').textContent = ct.viewLink;
+  document.getElementById('viewPortrait').textContent = ct.viewLink;
+  document.getElementById('privacyModalTitle').textContent = ct.privacyTitle;
+  document.getElementById('portraitModalTitle').textContent = ct.portraitTitle;
+  document.getElementById('privacyModalContent').innerHTML = ct.privacyContent;
+  document.getElementById('portraitModalContent').innerHTML = ct.portraitContent;
+  document.getElementById('privacyModalClose').textContent = ct.confirm;
+  document.getElementById('portraitModalClose').textContent = ct.confirm;
+
+  // 챗봇
+  document.getElementById('chatInput').placeholder = t.chatPlaceholder;
+  const chatLabels = { ja: 'チャット', ko: '채팅', en: 'Chat' };
+  document.getElementById('headerChatLabel').textContent = chatLabels[lang] || 'Chat';
+}
+
+function setLang(newLang) {
+  lang = newLang;
+  localStorage.setItem('monkos_lang', lang);
+  applyLang();
+}
+
+// 초기 언어 적용
+applyLang();
+
 // === 챗봇 ===
-const chatFab = document.getElementById('chatFab');
+const headerChatBtn = document.getElementById('headerChatBtn');
 const chatPanel = document.getElementById('chatPanel');
 const chatMessages = document.getElementById('chatMessages');
 const chatInput = document.getElementById('chatInput');
@@ -1597,7 +1673,7 @@ let chatOpen = false;
 let sessionId = `s_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
 let isLoading = false;
 
-chatFab.addEventListener('click', () => {
+headerChatBtn.addEventListener('click', () => {
   chatOpen = !chatOpen;
   chatPanel.classList.toggle('open', chatOpen);
   if (chatOpen) {
@@ -1782,5 +1858,10 @@ async function submitSurvey() {
   }
 }
 </script>
+
+<footer style="position:fixed; bottom:0; left:0; right:0; text-align:center; padding:10px 16px; font-size:0.6rem; color:#64748b; background:rgba(15,15,35,0.95); z-index:10; line-height:1.6; border-top:1px solid rgba(100,116,139,0.2);" translate="no">
+  <span>MONK STUDIO | CEO: JeongKyu Shin | Reg. 636-15-00574</span><br>
+  <a href="/privacy.html" style="color:#64748b;">Privacy</a> &middot; <a href="/terms.html" style="color:#64748b;">Terms</a> &middot; <a href="/refund.html" style="color:#64748b;">Refund</a> &middot; <span>&copy; 2026 MONKOS.AI</span>
+</footer>
 </body>
 </html>
