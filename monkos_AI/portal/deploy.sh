@@ -23,6 +23,13 @@ NC='\033[0m'
 
 ENV=${1:-production}
 
+# .env 로드
+ENV_FILE="$(cd "$(dirname "$0")/.." && pwd)/.env"
+if [ -f "$ENV_FILE" ]; then
+  export $(grep -v '^#' "$ENV_FILE" | xargs)
+  echo -e "${GREEN}.env 로드 완료${NC}"
+fi
+
 # GCP 설정
 PROJECT_ID="monkos"
 REGION="us-central1"
@@ -73,7 +80,7 @@ gcloud run deploy ${SERVICE_NAME} \
   --concurrency 100 \
   --min-instances 0 \
   --max-instances 5 \
-  --set-env-vars "PROJECT_ID=${PROJECT_ID},LOCATION=${REGION}" \
+  --set-env-vars "PROJECT_ID=${PROJECT_ID},LOCATION=${REGION},KAKAO_REST_API_KEY=${KAKAO_REST_API_KEY},KAKAO_REDIRECT_URI=${KAKAO_REDIRECT_URI},KAKAO_CLIENT_SECRET=${KAKAO_CLIENT_SECRET}" \
   --service-account ${SERVICE_ACCOUNT}
 
 # 4. 결과 출력

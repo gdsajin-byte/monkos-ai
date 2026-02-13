@@ -543,10 +543,14 @@ const httpServer = createServer(async (req, res) => {
           client_id: KAKAO_REST_API_KEY,
           redirect_uri: KAKAO_REDIRECT_URI,
           code,
+          ...(process.env.KAKAO_CLIENT_SECRET ? { client_secret: process.env.KAKAO_CLIENT_SECRET } : {}),
         }),
       });
       const tokenData = await tokenRes.json();
-      if (!tokenData.access_token) throw new Error('토큰 발급 실패');
+      if (!tokenData.access_token) {
+        log(`[Kakao] 토큰 응답: ${JSON.stringify(tokenData)}`);
+        throw new Error(`토큰 발급 실패: ${tokenData.error || tokenData.error_code || 'unknown'} - ${tokenData.error_description || ''}`);
+      }
 
       const userRes = await fetch('https://kapi.kakao.com/v2/user/me', {
         headers: { Authorization: `Bearer ${tokenData.access_token}` },
