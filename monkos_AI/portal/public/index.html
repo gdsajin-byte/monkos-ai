@@ -902,28 +902,71 @@ footer a {
   align-items: center;
 }
 
-.lang-btn {
+.lang-selector {
+  position: relative;
+}
+
+.lang-globe-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  color: var(--text-dim);
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.lang-globe-btn:hover {
+  border-color: var(--border-hover);
+  color: var(--text);
+}
+
+.lang-globe-arrow {
+  font-size: 0.7rem;
+}
+
+.lang-dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  min-width: 140px;
+  z-index: 100;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+
+.lang-dropdown.open {
+  display: block;
+}
+
+.lang-dropdown-item {
+  display: block;
+  width: 100%;
   background: transparent;
   border: none;
-  padding: 4px 6px;
-  border-radius: 6px;
-  font-size: 1rem;
+  padding: 10px 14px;
+  color: var(--text);
+  font-size: 0.85rem;
   cursor: pointer;
-  transition: all 0.2s;
-  opacity: 0.45;
-  filter: grayscale(1);
-  line-height: 1;
+  text-align: left;
+  transition: background 0.15s;
 }
 
-.lang-btn:hover {
-  opacity: 0.7;
-  filter: grayscale(0.3);
+.lang-dropdown-item:hover {
+  background: rgba(167,139,250,0.1);
 }
 
-.lang-btn.active {
-  opacity: 1;
-  filter: grayscale(0);
-  background: rgba(167,139,250,0.12);
+.lang-dropdown-item.active {
+  color: var(--accent);
+  background: rgba(167,139,250,0.08);
 }
 
 /* === 모바일 === */
@@ -954,10 +997,13 @@ footer a {
 <div class="container">
   <header>
     <img class="logo-icon" src="/monkos-icon.svg" alt="MONKOS" width="28" height="28">
-    <div class="lang-selector">
-      <button class="lang-btn" data-lang="en" onclick="setLang('en')">🇺🇸</button>
-      <button class="lang-btn" data-lang="ko" onclick="setLang('ko')">🇰🇷</button>
-      <button class="lang-btn" data-lang="ja" onclick="setLang('ja')">🇯🇵</button>
+    <div class="lang-selector" id="langSelector">
+      <button class="lang-globe-btn" id="langGlobeBtn" onclick="toggleLangDropdown()">🌐 <span class="lang-globe-arrow">▾</span></button>
+      <div class="lang-dropdown" id="langDropdown">
+        <button class="lang-dropdown-item" data-lang="ja" onclick="setLang('ja')">🇯🇵 日本語</button>
+        <button class="lang-dropdown-item" data-lang="en" onclick="setLang('en')">🇺🇸 English</button>
+        <button class="lang-dropdown-item" data-lang="ko" onclick="setLang('ko')">🇰🇷 한국어</button>
+      </div>
     </div>
     <div class="auth-area">
       <!-- 크레딧 (로그인 후) -->
@@ -1210,18 +1256,8 @@ footer a {
   <div class="consent-modal-content" style="max-width:360px; text-align:center;">
     <h3 style="margin-bottom:6px;">💎 <span id="shopTitle">Credit Shop</span></h3>
     <p style="font-size:0.8rem; color:var(--text-dim); margin-bottom:18px;" id="shopCurrentLabel">Current: <strong id="shopCurrentCredits">0</strong>c</p>
-    <div style="display:flex; flex-direction:column; gap:10px;">
-      <button onclick="buyCredits('1297524','$10')" style="display:flex; justify-content:space-between; align-items:center; background:var(--bg); border:1px solid var(--border); color:var(--text); padding:14px 18px; border-radius:12px; font-size:0.95rem; cursor:pointer;">
-        <span>💎 10 Credits</span><span style="color:var(--accent); font-weight:700;">$10</span>
-      </button>
-      <button onclick="buyCredits('1297532','$25')" style="display:flex; justify-content:space-between; align-items:center; background:linear-gradient(135deg, rgba(167,139,250,0.1), rgba(129,140,248,0.1)); border:1px solid var(--accent); color:var(--text); padding:14px 18px; border-radius:12px; font-size:0.95rem; cursor:pointer;">
-        <span>💎 30 Credits</span><span style="color:var(--accent); font-weight:700;">$25 <small style="color:var(--success);">BEST</small></span>
-      </button>
-      <button onclick="buyCredits('1297531','$40')" style="display:flex; justify-content:space-between; align-items:center; background:var(--bg); border:1px solid var(--border); color:var(--text); padding:14px 18px; border-radius:12px; font-size:0.95rem; cursor:pointer;">
-        <span>💎 50 Credits</span><span style="color:var(--accent); font-weight:700;">$40</span>
-      </button>
-    </div>
-    <button class="consent-modal-close" onclick="closeCreditShop()" style="margin-top:16px;">Close</button>
+    <div id="shopItems" style="display:flex; flex-direction:column; gap:10px;"></div>
+    <button class="consent-modal-close" onclick="closeCreditShop()" style="margin-top:16px;" id="shopCloseBtn">Close</button>
   </div>
 </div>
 
@@ -1496,6 +1532,7 @@ document.addEventListener('click', (e) => {
 function openCreditShop() {
   const modal = document.getElementById('creditShopModal');
   document.getElementById('shopCurrentCredits').textContent = currentUser?.credits ?? 0;
+  renderShopItems();
   if (modal) modal.classList.add('active');
 }
 
@@ -1504,10 +1541,58 @@ function closeCreditShop() {
   if (modal) modal.classList.remove('active');
 }
 
-async function buyCredits(variantId, amount) {
+// region 기반 샵 아이템 렌더링
+function renderShopItems() {
+  const container = document.getElementById('shopItems');
+  const titleEl = document.getElementById('shopTitle');
+  const labelEl = document.getElementById('shopCurrentLabel');
+  const closeBtn = document.getElementById('shopCloseBtn');
+  const credits = currentUser?.credits ?? 0;
+
+  const btnStyle = 'display:flex; justify-content:space-between; align-items:center; background:var(--bg); border:1px solid var(--border); color:var(--text); padding:14px 18px; border-radius:12px; font-size:0.95rem; cursor:pointer;';
+  const bestStyle = 'display:flex; justify-content:space-between; align-items:center; background:linear-gradient(135deg, rgba(167,139,250,0.1), rgba(129,140,248,0.1)); border:1px solid var(--accent); color:var(--text); padding:14px 18px; border-radius:12px; font-size:0.95rem; cursor:pointer;';
+
+  if (region === 'kr') {
+    titleEl.textContent = '크레딧 충전';
+    labelEl.innerHTML = `현재: <strong>${credits}</strong>c`;
+    closeBtn.textContent = '닫기';
+    container.innerHTML = `
+      <button onclick="buyToss(12900)" style="${btnStyle}">
+        <span>💎 10 크레딧</span><span style="color:var(--accent); font-weight:700;">₩12,900</span>
+      </button>
+      <button onclick="buyToss(29900)" style="${bestStyle}">
+        <span>💎 30 크레딧</span><span style="color:var(--accent); font-weight:700;">₩29,900 <small style="color:var(--success);">BEST</small></span>
+      </button>
+      <button onclick="buyToss(45900)" style="${btnStyle}">
+        <span>💎 50 크레딧</span><span style="color:var(--accent); font-weight:700;">₩45,900</span>
+      </button>
+    `;
+  } else {
+    titleEl.textContent = (lang === 'ja') ? 'クレジットショップ' : 'Credit Shop';
+    labelEl.innerHTML = (lang === 'ja')
+      ? `現在: <strong>${credits}</strong>c`
+      : `Current: <strong>${credits}</strong>c`;
+    closeBtn.textContent = (lang === 'ja') ? '閉じる' : 'Close';
+    container.innerHTML = `
+      <button onclick="buyCreditsLS('1297524','$10')" style="${btnStyle}">
+        <span>💎 10 Credits</span><span style="color:var(--accent); font-weight:700;">$10</span>
+      </button>
+      <button onclick="buyCreditsLS('1297532','$25')" style="${bestStyle}">
+        <span>💎 30 Credits</span><span style="color:var(--accent); font-weight:700;">$25 <small style="color:var(--success);">BEST</small></span>
+      </button>
+      <button onclick="buyCreditsLS('1297531','$40')" style="${btnStyle}">
+        <span>💎 50 Credits</span><span style="color:var(--accent); font-weight:700;">$40</span>
+      </button>
+    `;
+  }
+}
+
+// Lemon Squeezy 결제 (글로벌)
+async function buyCreditsLS(variantId, amount) {
   if (!currentUser?.id) return;
-  const btn = event.target;
+  const btn = event.target.closest('button');
   btn.disabled = true;
+  const origText = btn.innerHTML;
   btn.textContent = '...';
   try {
     const res = await fetch('/api/checkout', {
@@ -1523,7 +1608,64 @@ async function buyCredits(variantId, amount) {
     console.error('[Checkout] error:', err);
   }
   btn.disabled = false;
-  btn.textContent = amount;
+  btn.innerHTML = origText;
+}
+
+// === 토스페이먼츠 결제 (KR 전용) ===
+let tossPayments = null;
+
+function loadTossSDK() {
+  return new Promise((resolve, reject) => {
+    if (window.TossPayments) { resolve(); return; }
+    const script = document.createElement('script');
+    script.src = 'https://js.tosspayments.com/v2/standard';
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error('토스 SDK 로드 실패'));
+    document.head.appendChild(script);
+  });
+}
+
+async function buyToss(amount) {
+  if (!currentUser?.id) return;
+  const btn = event.target.closest('button');
+  btn.disabled = true;
+  const origText = btn.innerHTML;
+  btn.textContent = '결제 준비 중...';
+
+  try {
+    await loadTossSDK();
+
+    // 클라이언트 키 (테스트/라이브 구분은 서버측 시크릿 키로)
+    const clientKey = 'test_ck_D5GePWvyJnrK0W0k6q8gmeYook48';
+    if (!tossPayments) {
+      tossPayments = TossPayments(clientKey);
+    }
+
+    const creditsMap = { 12900: 10, 29900: 30, 45900: 50 };
+    const credits = creditsMap[amount] || 0;
+    const orderId = `monkos_${currentUser.id.slice(0, 8)}_${Date.now()}`;
+
+    const payment = tossPayments.payment({ customerKey: currentUser.id });
+    await payment.requestPayment({
+      method: 'CARD',
+      amount: { currency: 'KRW', value: amount },
+      orderId,
+      orderName: `MONKOS ${credits} 크레딧`,
+      customerEmail: currentUser.email || '',
+      customerName: currentUser.name || '',
+      successUrl: `${window.location.origin}/toss-success?userId=${encodeURIComponent(currentUser.id)}`,
+      failUrl: `${window.location.origin}/toss-fail`,
+    });
+  } catch (err) {
+    if (err.code === 'USER_CANCEL') {
+      console.log('[Toss] 사용자 결제 취소');
+    } else {
+      console.error('[Toss] 결제 에러:', err);
+      alert('결제 처리 중 오류가 발생했습니다. 다시 시도해 주세요.');
+    }
+  }
+  btn.disabled = false;
+  btn.innerHTML = origText;
 }
 
 // 페이지 로드 시 초기화
@@ -1751,24 +1893,43 @@ const consentTexts = {
   }
 };
 
+// === 지역 감지 (KR vs 글로벌) ===
+function detectRegion() {
+  const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const navLang = (navigator.language || '').toLowerCase();
+  if (tz === 'Asia/Seoul' || navLang.startsWith('ko')) return 'kr';
+  return 'global';
+}
+
+const region = localStorage.getItem('monkos_region') || detectRegion();
+localStorage.setItem('monkos_region', region);
+
 // === 언어 감지 ===
 function detectLang() {
+  if (region === 'kr') return 'ko';
   const navLang = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
   if (navLang.startsWith('ja')) return 'ja';
-  if (navLang.startsWith('ko')) return 'ko';
   return 'en';
 }
 
-let lang = localStorage.getItem('monkos_lang') || detectLang();
+let lang = (region === 'kr') ? 'ko' : (localStorage.getItem('monkos_lang') || detectLang());
 let t = i18n[lang];
 
 // === CTA 클릭 이벤트 ===
 const ctaBtn = document.getElementById('ctaBtn');
 
+// region 기반 CTA URL 헬퍼
+function getCtaUrl() {
+  return (region === 'kr')
+    ? 'https://idphoto-kr.monkos.ai/app'
+    : 'https://idphoto-jp.monkos.ai/app';
+}
+
 // CTA 클릭 시 로그인 상태면 토큰 파라미터 추가
 ctaBtn.addEventListener('click', async (e) => {
   if (!currentUser?.id) return; // 비로그인 시 기본 URL 이동
   e.preventDefault();
+  const targetUrl = getCtaUrl();
   try {
     const res = await fetch('/api/auth/token', {
       method: 'POST',
@@ -1777,15 +1938,15 @@ ctaBtn.addEventListener('click', async (e) => {
     });
     const data = await res.json();
     if (data.token) {
-      const url = new URL(t.ctaUrl);
+      const url = new URL(targetUrl);
       url.searchParams.set('uid', currentUser.id);
       url.searchParams.set('token', data.token);
       window.location.href = url.toString();
     } else {
-      window.location.href = t.ctaUrl;
+      window.location.href = targetUrl;
     }
   } catch {
-    window.location.href = t.ctaUrl;
+    window.location.href = targetUrl;
   }
 });
 
@@ -1832,10 +1993,16 @@ function applyLang() {
   t = i18n[lang];
   document.documentElement.lang = lang;
 
-  // 헤더 언어 버튼 활성화
-  document.querySelectorAll('.lang-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.lang === lang);
-  });
+  // 헤더 언어 선택기 (KR 트랙: 숨김, 글로벌: 드롭다운)
+  const langSel = document.getElementById('langSelector');
+  if (region === 'kr') {
+    langSel.style.display = 'none';
+  } else {
+    langSel.style.display = 'block';
+    document.querySelectorAll('.lang-dropdown-item').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.lang === lang);
+    });
+  }
 
   // 게이트 화면
   document.getElementById('gateSub').innerHTML = (gateTexts[lang] || gateTexts.en).replace(/\n/g, '<br>');
@@ -1854,10 +2021,13 @@ function applyLang() {
     feats.appendChild(li);
   });
 
-  // CTA 버튼
+  // CTA 버튼 (region 기반 URL 분기)
   const cta = document.getElementById('ctaBtn');
   cta.textContent = t.ctaText;
-  cta.href = t.ctaUrl;
+  const ctaUrl = (region === 'kr')
+    ? 'https://idphoto-kr.monkos.ai/app'
+    : 'https://idphoto-jp.monkos.ai/app';
+  cta.href = ctaUrl;
 
   // 동의 텍스트
   const ct = consentTexts[lang] || consentTexts.en;
@@ -1882,7 +2052,23 @@ function setLang(newLang) {
   lang = newLang;
   localStorage.setItem('monkos_lang', lang);
   applyLang();
+  closeLangDropdown();
 }
+
+// 🌐 드롭다운 토글
+function toggleLangDropdown() {
+  document.getElementById('langDropdown').classList.toggle('open');
+}
+
+function closeLangDropdown() {
+  document.getElementById('langDropdown').classList.remove('open');
+}
+
+// 드롭다운 외부 클릭 닫기
+document.addEventListener('click', (e) => {
+  const sel = document.getElementById('langSelector');
+  if (sel && !sel.contains(e.target)) closeLangDropdown();
+});
 
 // 초기 언어 적용
 applyLang();

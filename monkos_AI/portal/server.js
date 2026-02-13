@@ -1617,6 +1617,62 @@ location.href = '/';
     return;
   }
 
+  // === 토스 결제 성공 리다이렉트 (프론트에서 confirm 처리) ===
+  if (req.url.startsWith('/toss-success')) {
+    const params = new URL(req.url, `http://${req.headers.host}`).searchParams;
+    const esc = (s) => (s || '').replace(/[&<>"'`]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#x27;','`':'&#x60;'}[c]));
+    const paymentKey = esc(params.get('paymentKey'));
+    const orderId = esc(params.get('orderId'));
+    const amount = parseInt(params.get('amount')) || 0;
+    const userId = esc(params.get('userId'));
+
+    const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>결제 확인 중...</title>
+<style>body{background:#0a0a1a;color:#e2e8f0;font-family:sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0}
+.box{text-align:center;padding:40px}.spinner{width:40px;height:40px;border:3px solid rgba(167,139,250,0.2);border-top-color:#a78bfa;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 20px}
+@keyframes spin{to{transform:rotate(360deg)}}.msg{font-size:1.1rem;margin-bottom:8px}.sub{color:#8892a8;font-size:0.85rem}
+.ok{color:#34d399;font-size:1.2rem}.err{color:#f87171;font-size:1rem}</style></head>
+<body><div class="box" id="box"><div class="spinner"></div><div class="msg">결제 확인 중...</div><div class="sub">잠시만 기다려 주세요</div></div>
+<script>
+(async()=>{
+  const box=document.getElementById('box');
+  try{
+    const res=await fetch('/api/payments/toss/confirm',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({paymentKey:'${paymentKey}',orderId:'${orderId}',amount:${amount},userId:'${userId}'})});
+    const data=await res.json();
+    if(data.success){
+      box.innerHTML='<div class="ok">\\u2705 결제 완료!</div><div class="msg" style="margin-top:12px">'+data.creditsAdded+' 크레딧이 추가되었습니다</div><div class="sub">현재 잔액: '+data.credits+'c</div><div class="sub" style="margin-top:16px"><a href="/" style="color:#a78bfa">포털로 돌아가기</a></div>';
+    }else{
+      box.innerHTML='<div class="err">결제 확인 실패</div><div class="sub" style="margin-top:8px">'+(data.error||'알 수 없는 오류')+'</div><div class="sub" style="margin-top:16px"><a href="/" style="color:#a78bfa">포털로 돌아가기</a></div>';
+    }
+  }catch(e){
+    box.innerHTML='<div class="err">네트워크 오류</div><div class="sub" style="margin-top:8px">'+e.message+'</div><div class="sub" style="margin-top:16px"><a href="/" style="color:#a78bfa">포털로 돌아가기</a></div>';
+  }
+})();
+</script></body></html>`;
+
+    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+    res.end(html);
+    return;
+  }
+
+  // === 토스 결제 실패 리다이렉트 ===
+  if (req.url.startsWith('/toss-fail')) {
+    const params = new URL(req.url, `http://${req.headers.host}`).searchParams;
+    const escFail = (s) => (s || '').replace(/[&<>"'`]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#x27;','`':'&#x60;'}[c]));
+    const message = escFail(params.get('message')) || '결제가 취소되었습니다';
+
+    const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>결제 실패</title>
+<style>body{background:#0a0a1a;color:#e2e8f0;font-family:sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0}
+.box{text-align:center;padding:40px}.err{color:#f87171;font-size:1.2rem;margin-bottom:12px}.sub{color:#8892a8;font-size:0.85rem}</style></head>
+<body><div class="box"><div class="err">결제 실패</div><div class="sub">${message}</div><div class="sub" style="margin-top:16px"><a href="/" style="color:#a78bfa">포털로 돌아가기</a></div></div></body></html>`;
+
+    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+    res.end(html);
+    return;
+  }
+
   // 정적 파일
   let filePath = req.url === '/' ? '/index.html' : req.url;
   // 쿼리스트링 제거
@@ -1663,6 +1719,8 @@ httpServer.listen(PORT, '0.0.0.0', () => {
   log('  POST /api/checkout         — Lemon Squeezy 체크아웃 (JP/글로벌)');
   log('  POST /api/webhooks/lemonsqueezy — LS 결제 웹훅');
   log('  POST /api/payments/toss/confirm — 토스페이먼츠 결제 확인 (KR)');
+  log('  GET  /toss-success         — 토스 결제 성공 리다이렉트');
+  log('  GET  /toss-fail            — 토스 결제 실패 리다이렉트');
   log('  GET  /api/survey/status    — 설문 이벤트 상태');
   log('  POST /api/survey           — 설문 제출 (+12c, 일일 30명)');
   log('  POST /api/chat             — Gemini 챗봇');
