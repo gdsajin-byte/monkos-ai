@@ -49,17 +49,20 @@
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
-  --bg: #0f0f23;
-  --surface: #1a1a2e;
-  --surface2: #16213e;
+  --bg: #0a0a1a;
+  --surface: #141428;
+  --surface2: #1a1a35;
   --accent: #a78bfa;
   --accent2: #818cf8;
+  --accent3: #c084fc;
   --text: #e2e8f0;
-  --text-dim: #94a3b8;
+  --text-dim: #8892a8;
   --text-bright: #f8fafc;
-  --border: #2d2d5e;
+  --border: rgba(167, 139, 250, 0.12);
+  --border-hover: rgba(167, 139, 250, 0.3);
   --success: #34d399;
-  --card-bg: rgba(26, 26, 46, 0.8);
+  --card-bg: rgba(20, 20, 40, 0.7);
+  --glow: rgba(167, 139, 250, 0.06);
 }
 
 body {
@@ -88,7 +91,18 @@ body {
   transform: translateX(-50%);
   width: 800px;
   height: 600px;
-  background: radial-gradient(ellipse, rgba(167, 139, 250, 0.08) 0%, transparent 70%);
+  background: radial-gradient(ellipse, rgba(167, 139, 250, 0.1) 0%, rgba(129, 140, 248, 0.04) 40%, transparent 70%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.bg-glow-2 {
+  position: fixed;
+  bottom: -300px;
+  right: -200px;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(ellipse, rgba(192, 132, 252, 0.06) 0%, transparent 70%);
   z-index: 0;
   pointer-events: none;
 }
@@ -104,101 +118,136 @@ body {
 
 /* === 헤더 === */
 header {
-  padding: 24px 20px 0;
+  padding: 16px 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   max-width: 1000px;
   margin: 0 auto;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(10, 10, 26, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
 }
 
-.logo {
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: 6px;
-  color: var(--accent);
-  text-transform: uppercase;
+.logo-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  flex-shrink: 0;
 }
 
-/* === 헤더 챗봇 버튼 === */
+/* === 헤더 우측 영역 === */
 .auth-area {
   display: flex;
   align-items: center;
-  gap: 12px;
-}
-
-.header-chat-btn {
-  display: flex;
-  align-items: center;
   gap: 8px;
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
-  border: none;
-  color: #fff;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-  box-shadow: 0 2px 12px rgba(167, 139, 250, 0.3);
 }
 
-.header-chat-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 20px rgba(167, 139, 250, 0.5);
-}
-
-.header-chat-btn svg {
-  width: 16px;
-  height: 16px;
-}
-
-.header-chat-btn .chat-dot {
-  width: 6px;
-  height: 6px;
-  background: var(--success);
-  border-radius: 50%;
-  animation: chatPulse 2s ease-in-out infinite;
-}
-
-@keyframes chatPulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
-}
-
-.user-info {
+/* 크레딧 버튼 */
+.credit-btn {
   display: none;
   align-items: center;
-  gap: 10px;
+  gap: 5px;
+  background: rgba(167, 139, 250, 0.08);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
 }
 
-.user-info.logged-in {
-  display: flex;
+.credit-btn:hover {
+  border-color: var(--border-hover);
+  background: rgba(167, 139, 250, 0.14);
 }
 
-.user-avatar {
-  width: 32px;
-  height: 32px;
+.credit-diamond {
+  font-size: 14px;
+}
+
+.credit-count {
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+/* SNS provider 아이콘 */
+.provider-badge {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  position: relative;
+}
+
+.provider-badge img {
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   border: 2px solid var(--accent);
 }
 
-.user-name {
-  font-size: 0.85rem;
-  color: var(--text);
+.provider-badge svg {
+  width: 20px;
+  height: 20px;
 }
 
-.logout-btn {
-  background: transparent;
-  border: none;
+.provider-badge.google { background: #fff; }
+.provider-badge.line { background: #06C755; }
+.provider-badge.kakao { background: #FEE500; }
+
+/* 로그아웃 팝오버 */
+.logout-popover {
+  display: none;
+  position: absolute;
+  top: 36px;
+  right: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 8px 0;
+  min-width: 140px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  z-index: 100;
+}
+
+.logout-popover.open { display: block; }
+
+.logout-popover-name {
+  padding: 6px 14px;
+  font-size: 0.8rem;
   color: var(--text-dim);
-  font-size: 0.75rem;
-  cursor: pointer;
-  padding: 4px 8px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.logout-btn:hover {
+.logout-popover-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
   color: var(--text);
+  padding: 8px 14px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.logout-popover-btn:hover {
+  background: rgba(167,139,250,0.1);
+  color: var(--accent);
 }
 
 /* === 입구컷 게이트 화면 === */
@@ -207,9 +256,9 @@ header {
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  min-height: calc(100vh - 60px);
+  min-height: calc(100vh - 56px);
   text-align: center;
-  padding: 40px 20px 120px;
+  padding: 40px 20px 100px;
 }
 
 .gate-top {
@@ -264,29 +313,29 @@ header {
   color: #333;
   border: none;
   padding: 14px 0;
-  border-radius: 12px;
-  font-size: 1rem;
+  border-radius: 14px;
+  font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .gate-login-btn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 6px 30px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
 }
 
 .gate-login-btn:disabled {
-  opacity: 0.5;
+  opacity: 0.35;
   cursor: not-allowed;
   transform: none;
 }
 
 .gate-login-kakao { background: #FEE500; color: #3C1E1E; }
-.gate-login-kakao:hover:not(:disabled) { box-shadow: 0 6px 30px rgba(254, 229, 0, 0.3); }
+.gate-login-kakao:hover:not(:disabled) { box-shadow: 0 4px 24px rgba(254, 229, 0, 0.25); }
 .gate-login-line { background: #06C755; color: #fff; }
-.gate-login-line:hover:not(:disabled) { box-shadow: 0 6px 30px rgba(6, 199, 85, 0.3); }
+.gate-login-line:hover:not(:disabled) { box-shadow: 0 4px 24px rgba(6, 199, 85, 0.25); }
 
 /* === 동의 체크박스 === */
 .gate-consent {
@@ -398,121 +447,179 @@ header {
 /* === 히어로 === */
 .hero {
   text-align: center;
-  padding: 32px 0 12px;
+  padding: 48px 0 24px;
+  position: relative;
 }
 
 .hero h1 {
-  font-size: clamp(2rem, 6vw, 3.5rem);
+  font-size: clamp(2.2rem, 7vw, 3.8rem);
   font-weight: 800;
   color: var(--text-bright);
-  line-height: 1.2;
+  line-height: 1.15;
   margin-bottom: 16px;
+  letter-spacing: -0.02em;
 }
 
 .hero h1 span {
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  background: linear-gradient(135deg, var(--accent), var(--accent2), var(--accent3));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .hero-sub {
-  font-size: clamp(0.85rem, 2vw, 1rem);
+  font-size: clamp(0.9rem, 2vw, 1.05rem);
   color: var(--text-dim);
-  max-width: 600px;
-  margin: 0 auto 16px;
-  line-height: 1.5;
+  max-width: 500px;
+  margin: 0 auto 20px;
+  line-height: 1.6;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(167, 139, 250, 0.1);
+  border: 1px solid var(--border);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  color: var(--accent);
+  font-weight: 600;
+  margin-bottom: 16px;
+  letter-spacing: 0.5px;
+}
+
+.hero-badge::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  background: var(--success);
+  border-radius: 50%;
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
 }
 
 /* === 서비스 카드 === */
 .services {
   display: grid;
   gap: 16px;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
 
 .service-card {
   background: var(--card-bg);
   border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 20px 24px;
-  backdrop-filter: blur(10px);
-  transition: border-color 0.3s, transform 0.3s;
+  border-radius: 20px;
+  padding: 28px;
+  backdrop-filter: blur(12px);
+  transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.service-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent3));
+  opacity: 0.6;
 }
 
 .service-card:hover {
-  border-color: var(--accent);
-  transform: translateY(-2px);
+  border-color: var(--border-hover);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 32px rgba(167, 139, 250, 0.1);
 }
 
 .service-badge {
-  display: inline-block;
-  background: rgba(52, 211, 153, 0.15);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(52, 211, 153, 0.1);
   color: var(--success);
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
-  padding: 3px 10px;
+  padding: 4px 12px;
   border-radius: 20px;
-  margin-bottom: 8px;
-  letter-spacing: 1px;
+  margin-bottom: 12px;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
 }
 
 .service-card h3 {
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   color: var(--text-bright);
-  margin-bottom: 8px;
+  margin-bottom: 6px;
+  font-weight: 700;
 }
 
 .service-card p {
-  display: none;
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  margin-bottom: 16px;
+  line-height: 1.5;
 }
 
 .service-features {
   list-style: none;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
   display: flex;
   flex-wrap: wrap;
-  gap: 4px 12px;
+  gap: 8px;
 }
 
 .service-features li {
-  color: var(--text-dim);
-  padding: 2px 0;
-  font-size: 0.8rem;
+  color: var(--text);
+  padding: 5px 12px;
+  font-size: 0.78rem;
+  background: rgba(167, 139, 250, 0.08);
+  border-radius: 8px;
+  border: 1px solid rgba(167, 139, 250, 0.1);
 }
 
 .service-features li::before {
-  content: '  ';
+  content: '✓ ';
   color: var(--accent);
-  margin-right: 8px;
+  font-weight: 700;
 }
 
 .cta-btn {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   background: linear-gradient(135deg, var(--accent), var(--accent2));
   color: #fff;
   font-size: 0.95rem;
   font-weight: 700;
-  padding: 12px 28px;
+  padding: 14px 32px;
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
   text-decoration: none;
   cursor: pointer;
-  transition: opacity 0.3s, transform 0.3s;
+  transition: all 0.3s;
+  box-shadow: 0 4px 16px rgba(167, 139, 250, 0.25);
 }
 
 .cta-btn:hover {
-  opacity: 0.9;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(167, 139, 250, 0.35);
 }
 
 /* === 이벤트 카드 === */
 .event-card {
-  background: linear-gradient(135deg, rgba(245,158,11,0.1), rgba(239,68,68,0.1));
-  border: 1px solid rgba(245,158,11,0.3);
-  border-radius: 16px;
-  padding: 18px 20px;
+  background: linear-gradient(135deg, rgba(245,158,11,0.08), rgba(239,68,68,0.06));
+  border: 1px solid rgba(245,158,11,0.2);
+  border-radius: 20px;
+  padding: 24px;
   text-align: center;
   margin-bottom: 20px;
   position: relative;
@@ -585,8 +692,9 @@ header {
 
 /* === 사업자 정보 === */
 .biz-info {
-  padding: 40px 0 20px;
+  padding: 32px 0 20px;
   border-top: 1px solid var(--border);
+  margin-top: 8px;
 }
 
 .biz-info-inner {
@@ -610,7 +718,7 @@ header {
 /* === 푸터 === */
 footer {
   text-align: center;
-  padding: 20px 0 30px;
+  padding: 16px 0 60px;
   color: var(--text-dim);
   font-size: 0.8rem;
 }
@@ -619,6 +727,28 @@ footer a {
   color: var(--accent);
   text-decoration: none;
 }
+
+/* === 챗봇 FAB === */
+.chat-fab {
+  position: fixed;
+  bottom: 68px;
+  right: 24px;
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border: none;
+  border-radius: 50%;
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(167, 139, 250, 0.4);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s;
+}
+
+.chat-fab:hover { transform: scale(1.1); }
 
 /* === 챗봇 패널 === */
 .chat-panel {
@@ -769,48 +899,49 @@ footer a {
 .lang-selector {
   display: flex;
   gap: 2px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 2px;
+  align-items: center;
 }
 
 .lang-btn {
   background: transparent;
   border: none;
-  color: var(--text-dim);
-  padding: 5px 10px;
+  padding: 4px 6px;
   border-radius: 6px;
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-size: 1rem;
   cursor: pointer;
   transition: all 0.2s;
-  letter-spacing: 0.5px;
+  opacity: 0.45;
+  filter: grayscale(1);
+  line-height: 1;
 }
 
 .lang-btn:hover {
-  color: var(--text);
+  opacity: 0.7;
+  filter: grayscale(0.3);
 }
 
 .lang-btn.active {
-  background: var(--accent);
-  color: #fff;
+  opacity: 1;
+  filter: grayscale(0);
+  background: rgba(167,139,250,0.12);
 }
 
 /* === 모바일 === */
 @media (max-width: 640px) {
-  header { padding: 16px 16px 0; }
-  .hero { padding: 60px 0 30px; }
-  .service-card { padding: 24px; }
-  .header-chat-btn { padding: 6px 12px; font-size: 0.8rem; }
-  .header-chat-btn span:not(.chat-dot) { display: none; }
-  .user-name { display: none; }
+  header { padding: 12px 16px; }
+  .hero { padding: 36px 0 20px; }
+  .hero h1 { font-size: clamp(1.8rem, 8vw, 2.8rem); }
+  .service-card { padding: 22px; }
+  .service-features { gap: 6px; }
+  .credit-btn { padding: 5px 10px; font-size: 0.78rem; }
+  .chat-fab { bottom: 58px; right: 16px; width: 40px; height: 40px; }
   .chat-panel {
     bottom: 0;
     right: 0;
     width: 100vw;
     max-height: 70vh;
     border-radius: 16px 16px 0 0;
+    top: auto;
   }
 }
 </style>
@@ -818,29 +949,29 @@ footer a {
 <body>
 <div class="bg-grid"></div>
 <div class="bg-glow"></div>
+<div class="bg-glow-2"></div>
 
 <div class="container">
   <header>
-    <div class="logo" translate="no">MONKOS</div>
+    <img class="logo-icon" src="/monkos-icon.svg" alt="MONKOS" width="28" height="28">
     <div class="lang-selector">
-      <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
-      <button class="lang-btn" data-lang="ko" onclick="setLang('ko')">KR</button>
-      <button class="lang-btn" data-lang="ja" onclick="setLang('ja')">JP</button>
+      <button class="lang-btn" data-lang="en" onclick="setLang('en')">🇺🇸</button>
+      <button class="lang-btn" data-lang="ko" onclick="setLang('ko')">🇰🇷</button>
+      <button class="lang-btn" data-lang="ja" onclick="setLang('ja')">🇯🇵</button>
     </div>
     <div class="auth-area">
-      <!-- 챗봇 버튼 (헤더) -->
-      <button class="header-chat-btn" id="headerChatBtn">
-        <span class="chat-dot"></span>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-        </svg>
-        <span id="headerChatLabel">Chat</span>
+      <!-- 크레딧 (로그인 후) -->
+      <button class="credit-btn" id="creditBtn" onclick="openCreditShop()">
+        <span class="credit-diamond">💎</span>
+        <span class="credit-count" id="creditCount">0</span>
       </button>
-      <!-- 로그인 후 -->
-      <div class="user-info" id="userInfo">
-        <img class="user-avatar" id="userAvatar" src="" alt="">
-        <span class="user-name" id="userName"></span>
-        <button class="logout-btn" onclick="logout()">Logout</button>
+      <!-- SNS provider 아이콘 (로그인 후) -->
+      <div class="provider-badge" id="providerBadge" onclick="toggleLogoutPopover()">
+        <div id="providerIconInner"></div>
+        <div class="logout-popover" id="logoutPopover">
+          <div class="logout-popover-name" id="popoverName"></div>
+          <button class="logout-popover-btn" onclick="logout()">Logout</button>
+        </div>
       </div>
     </div>
   </header>
@@ -899,6 +1030,7 @@ footer a {
   <div id="mainContent" style="display: none;">
     <!-- 히어로 -->
     <section class="hero">
+      <div class="hero-badge" id="heroBadge">LIVE SERVICE</div>
       <h1 id="heroTitle" translate="no"><span>MONKOS AI</span></h1>
       <p class="hero-sub" id="heroSub"></p>
     </section>
@@ -1053,7 +1185,12 @@ footer a {
   </div>
 </div>
 
-<!-- 챗봇 FAB 제거 — 헤더 챗봇 버튼으로 이동 -->
+<!-- 챗봇 FAB -->
+<button class="chat-fab" id="chatFab" aria-label="Chat">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+  </svg>
+</button>
 
 <!-- 챗봇 패널 -->
 <div class="chat-panel" id="chatPanel">
@@ -1065,6 +1202,26 @@ footer a {
   <div class="chat-input-wrap">
     <input class="chat-input" id="chatInput" placeholder="" autocomplete="off">
     <button class="chat-send" id="chatSend">Send</button>
+  </div>
+</div>
+
+<!-- 크레딧 충전 모달 -->
+<div class="consent-modal" id="creditShopModal">
+  <div class="consent-modal-content" style="max-width:360px; text-align:center;">
+    <h3 style="margin-bottom:6px;">💎 <span id="shopTitle">Credit Shop</span></h3>
+    <p style="font-size:0.8rem; color:var(--text-dim); margin-bottom:18px;" id="shopCurrentLabel">Current: <strong id="shopCurrentCredits">0</strong>c</p>
+    <div style="display:flex; flex-direction:column; gap:10px;">
+      <button onclick="buyCredits('1297524','$10')" style="display:flex; justify-content:space-between; align-items:center; background:var(--bg); border:1px solid var(--border); color:var(--text); padding:14px 18px; border-radius:12px; font-size:0.95rem; cursor:pointer;">
+        <span>💎 10 Credits</span><span style="color:var(--accent); font-weight:700;">$10</span>
+      </button>
+      <button onclick="buyCredits('1297532','$25')" style="display:flex; justify-content:space-between; align-items:center; background:linear-gradient(135deg, rgba(167,139,250,0.1), rgba(129,140,248,0.1)); border:1px solid var(--accent); color:var(--text); padding:14px 18px; border-radius:12px; font-size:0.95rem; cursor:pointer;">
+        <span>💎 30 Credits</span><span style="color:var(--accent); font-weight:700;">$25 <small style="color:var(--success);">BEST</small></span>
+      </button>
+      <button onclick="buyCredits('1297531','$40')" style="display:flex; justify-content:space-between; align-items:center; background:var(--bg); border:1px solid var(--border); color:var(--text); padding:14px 18px; border-radius:12px; font-size:0.95rem; cursor:pointer;">
+        <span>💎 50 Credits</span><span style="color:var(--accent); font-weight:700;">$40</span>
+      </button>
+    </div>
+    <button class="consent-modal-close" onclick="closeCreditShop()" style="margin-top:16px;">Close</button>
   </div>
 </div>
 
@@ -1117,31 +1274,8 @@ async function loadGISWithRetry() {
   return false;
 }
 
-// Google 로그인 초기화
-async function initGoogleAuth() {
-  if (!GOOGLE_CLIENT_ID || GOOGLE_CLIENT_ID === '__GOOGLE_CLIENT_ID__') {
-    console.log('[Auth] Google Client ID 미설정');
-    return;
-  }
-
-  if (!gisLoaded) {
-    await loadGISWithRetry();
-  }
-
-  if (typeof google === 'undefined' || !google.accounts) {
-    console.warn('[Auth] GIS 사용 불가 — 로그인 기능 제한');
-    return;
-  }
-
-  google.accounts.id.initialize({
-    client_id: GOOGLE_CLIENT_ID,
-    callback: handleGoogleCallback,
-    auto_select: false,           // 삼성 브라우저 호환성: 자동선택 끄기
-    cancel_on_tap_outside: false, // 쿨다운 방지: 외부 클릭 시 취소 안 함
-    itp_support: true,            // Safari ITP + 삼성 브라우저 지원
-  });
-
-  // 저장된 세션 복원
+// 세션 복원 (GIS와 무관하게 즉시 실행)
+function restoreSession() {
   const saved = sessionStorage.getItem('monkos_user');
   if (saved) {
     try {
@@ -1151,6 +1285,30 @@ async function initGoogleAuth() {
       sessionStorage.removeItem('monkos_user');
     }
   }
+}
+
+// Google 로그인 초기화 (GIS만 담당)
+async function initGoogleAuth() {
+  if (!GOOGLE_CLIENT_ID || GOOGLE_CLIENT_ID === '__GOOGLE_CLIENT_ID__') {
+    return;
+  }
+
+  if (!gisLoaded) {
+    await loadGISWithRetry();
+  }
+
+  if (typeof google === 'undefined' || !google.accounts) {
+    console.warn('[Auth] GIS 사용 불가 — Google 로그인 제한');
+    return;
+  }
+
+  google.accounts.id.initialize({
+    client_id: GOOGLE_CLIENT_ID,
+    callback: handleGoogleCallback,
+    auto_select: false,
+    cancel_on_tap_outside: false,
+    itp_support: true,
+  });
 }
 
 // 카카오 로그인
@@ -1277,31 +1435,100 @@ function logout() {
 
 // UI 업데이트
 function updateAuthUI() {
-  const userInfo = document.getElementById('userInfo');
-  const userAvatar = document.getElementById('userAvatar');
-  const userName = document.getElementById('userName');
+  const creditBtn = document.getElementById('creditBtn');
+  const creditCount = document.getElementById('creditCount');
+  const providerBadge = document.getElementById('providerBadge');
+  const providerIconInner = document.getElementById('providerIconInner');
+  const popoverName = document.getElementById('popoverName');
   const gateScreen = document.getElementById('gateScreen');
   const mainContent = document.getElementById('mainContent');
 
   if (currentUser) {
-    userInfo.classList.add('logged-in');
-    userAvatar.src = currentUser.picture || '';
-    userName.textContent = currentUser.name || currentUser.email;
-    // 입구컷 해제: 전체 콘텐츠 표시
+    // 크레딧 표시
+    creditBtn.style.display = 'flex';
+    creditCount.textContent = currentUser.credits ?? 0;
+
+    // SNS provider 아이콘
+    providerBadge.style.display = 'flex';
+    providerBadge.className = 'provider-badge ' + (currentUser.provider || 'google');
+    popoverName.textContent = currentUser.name || currentUser.email || '';
+
+    if (currentUser.picture) {
+      providerIconInner.innerHTML = `<img src="${currentUser.picture}" alt="">`;
+    } else if (currentUser.provider === 'line') {
+      providerIconInner.innerHTML = `<svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 2C6.48 2 2 5.83 2 10.5c0 4.08 3.39 7.5 7.96 8.33.31.07.73.2.84.47.1.24.06.62.03.87l-.14.82c-.04.24-.19.94.82.51s5.46-3.21 7.44-5.5C21.23 13.37 22 11.98 22 10.5 22 5.83 17.52 2 12 2z" fill="#fff"/></svg>`;
+    } else if (currentUser.provider === 'kakao') {
+      providerIconInner.innerHTML = `<svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 3C6.48 3 2 6.36 2 10.5c0 2.67 1.74 5.01 4.36 6.33-.14.53-.9 3.4-.93 3.6 0 0-.02.16.08.22.1.06.22.01.22.01.29-.04 3.37-2.2 3.9-2.57.76.11 1.55.16 2.37.16 5.52 0 10-3.36 10-7.5S17.52 3 12 3z" fill="#3C1E1E"/></svg>`;
+    } else {
+      providerIconInner.innerHTML = `<svg viewBox="0 0 24 24" width="20" height="20"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>`;
+    }
+
+    // 입구컷 해제
     document.body.classList.add('logged-in');
     if (gateScreen) gateScreen.style.display = 'none';
     if (mainContent) mainContent.style.display = 'block';
     loadEventStatus();
   } else {
-    userInfo.classList.remove('logged-in');
-    // 입구컷: 게이트 화면만 표시
+    creditBtn.style.display = 'none';
+    providerBadge.style.display = 'none';
     document.body.classList.remove('logged-in');
     if (gateScreen) gateScreen.style.display = 'flex';
     if (mainContent) mainContent.style.display = 'none';
   }
 }
 
+// 로그아웃 팝오버
+function toggleLogoutPopover() {
+  const pop = document.getElementById('logoutPopover');
+  pop.classList.toggle('open');
+}
+
+// 팝오버 외부 클릭 닫기
+document.addEventListener('click', (e) => {
+  const badge = document.getElementById('providerBadge');
+  const pop = document.getElementById('logoutPopover');
+  if (badge && !badge.contains(e.target)) {
+    pop.classList.remove('open');
+  }
+});
+
+// 크레딧 충전 모달
+function openCreditShop() {
+  const modal = document.getElementById('creditShopModal');
+  document.getElementById('shopCurrentCredits').textContent = currentUser?.credits ?? 0;
+  if (modal) modal.classList.add('active');
+}
+
+function closeCreditShop() {
+  const modal = document.getElementById('creditShopModal');
+  if (modal) modal.classList.remove('active');
+}
+
+async function buyCredits(variantId, amount) {
+  if (!currentUser?.id) return;
+  const btn = event.target;
+  btn.disabled = true;
+  btn.textContent = '...';
+  try {
+    const res = await fetch('/api/checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ variantId, userId: currentUser.id, email: currentUser.email }),
+    });
+    const data = await res.json();
+    if (data.url) {
+      window.open(data.url, '_blank');
+    }
+  } catch (err) {
+    console.error('[Checkout] error:', err);
+  }
+  btn.disabled = false;
+  btn.textContent = amount;
+}
+
 // 페이지 로드 시 초기화
+// 세션 즉시 복원 (LINE/카카오 로그인 포함) → GIS는 비동기 로드
+restoreSession();
 window.addEventListener('load', initGoogleAuth);
 
 // === i18n (하드코딩 3개 언어) ===
@@ -1310,7 +1537,7 @@ const i18n = {
     heroSub: 'AI証明写真プラットフォーム',
     serviceTitle: 'AI証明写真',
     serviceDesc: 'AIコーチングで完璧な撮影 → AIで証明写真に変換。パスポート・履歴書対応。',
-    features: ['AIリアルタイムコーチング', 'プロ品質の自動変換', 'パスポート・履歴書対応', 'SNS簡単ログイン'],
+    features: ['AIリアルタイムコーチング', 'プロ品質の自動変換', 'パスポート・履歴書対応'],
     ctaText: '証明写真を撮る',
     ctaUrl: 'https://idphoto-jp.monkos.ai/app',
     chatPlaceholder: '質問を入力...',
@@ -1326,7 +1553,7 @@ const i18n = {
     heroSub: 'AI 증명사진 플랫폼',
     serviceTitle: 'AI 증명사진',
     serviceDesc: 'AI 코칭으로 완벽한 촬영 → AI로 증명사진 변환. 증명사진, 이력서 대응.',
-    features: ['AI 실시간 코칭', '프로 품질 자동 변환', '증명사진/이력서 대응', 'SNS 간편 로그인'],
+    features: ['AI 실시간 코칭', '프로 품질 자동 변환', '증명사진/이력서 대응'],
     ctaText: '증명사진 촬영하기',
     ctaUrl: 'https://idphoto-kr.monkos.ai/app',
     chatPlaceholder: '질문을 입력하세요...',
@@ -1342,7 +1569,7 @@ const i18n = {
     heroSub: 'AI ID Photo Platform',
     serviceTitle: 'AI ID Photo',
     serviceDesc: 'AI coaching for perfect shots → AI transforms into ID photos. ID photo and resume supported.',
-    features: ['AI real-time coaching', 'Pro-quality auto conversion', 'ID photo / resume ready', 'Easy SNS login'],
+    features: ['AI real-time coaching', 'Pro-quality auto conversion', 'ID photo / resume ready'],
     ctaText: 'Take ID Photo',
     ctaUrl: 'https://idphoto-jp.monkos.ai/app',
     chatPlaceholder: 'Type your question...',
@@ -1359,9 +1586,9 @@ const i18n = {
 
 // 게이트 화면 텍스트
 const gateTexts = {
-  ja: 'AIコーチングで完璧な証明写真を撮影。ログインして始めましょう。',
-  ko: 'AI 코칭으로 완벽한 증명사진을 촬영하세요. 로그인하고 시작하세요.',
-  en: 'Take perfect ID photos with AI coaching. Sign in to get started.'
+  ja: 'AIがリアルタイムで撮影をコーチング。\nプロ品質の証明写真をその場で。',
+  ko: 'AI가 실시간으로 촬영을 코칭합니다.\n프로 품질 증명사진을 바로 완성하세요.',
+  en: 'AI coaches your shot in real-time.\nGet pro-quality ID photos instantly.'
 };
 
 // 동의 텍스트 다국어
@@ -1611,7 +1838,7 @@ function applyLang() {
   });
 
   // 게이트 화면
-  document.getElementById('gateSub').textContent = gateTexts[lang] || gateTexts.en;
+  document.getElementById('gateSub').innerHTML = (gateTexts[lang] || gateTexts.en).replace(/\n/g, '<br>');
 
   // 히어로
   document.getElementById('heroSub').textContent = t.heroSub;
@@ -1649,8 +1876,6 @@ function applyLang() {
 
   // 챗봇
   document.getElementById('chatInput').placeholder = t.chatPlaceholder;
-  const chatLabels = { ja: 'チャット', ko: '채팅', en: 'Chat' };
-  document.getElementById('headerChatLabel').textContent = chatLabels[lang] || 'Chat';
 }
 
 function setLang(newLang) {
@@ -1663,7 +1888,7 @@ function setLang(newLang) {
 applyLang();
 
 // === 챗봇 ===
-const headerChatBtn = document.getElementById('headerChatBtn');
+const chatFab = document.getElementById('chatFab');
 const chatPanel = document.getElementById('chatPanel');
 const chatMessages = document.getElementById('chatMessages');
 const chatInput = document.getElementById('chatInput');
@@ -1673,7 +1898,7 @@ let chatOpen = false;
 let sessionId = `s_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
 let isLoading = false;
 
-headerChatBtn.addEventListener('click', () => {
+chatFab.addEventListener('click', () => {
   chatOpen = !chatOpen;
   chatPanel.classList.toggle('open', chatOpen);
   if (chatOpen) {
@@ -1859,9 +2084,8 @@ async function submitSurvey() {
 }
 </script>
 
-<footer style="position:fixed; bottom:0; left:0; right:0; text-align:center; padding:10px 16px; font-size:0.6rem; color:#64748b; background:rgba(15,15,35,0.95); z-index:10; line-height:1.6; border-top:1px solid rgba(100,116,139,0.2);" translate="no">
-  <span>MONK STUDIO | CEO: JeongKyu Shin | Reg. 636-15-00574</span><br>
-  <a href="/privacy.html" style="color:#64748b;">Privacy</a> &middot; <a href="/terms.html" style="color:#64748b;">Terms</a> &middot; <a href="/refund.html" style="color:#64748b;">Refund</a> &middot; <span>&copy; 2026 MONKOS.AI</span>
+<footer style="position:fixed; bottom:0; left:0; right:0; text-align:center; padding:8px 16px; font-size:0.6rem; color:#64748b; background:rgba(10,10,26,0.92); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); z-index:10; line-height:1.5; border-top:1px solid rgba(167,139,250,0.08);" translate="no">
+  <a href="/privacy.html" style="color:#8892a8;">Privacy</a> &middot; <a href="/terms.html" style="color:#8892a8;">Terms</a> &middot; <a href="/refund.html" style="color:#8892a8;">Refund</a> &middot; <span>&copy; 2026 MONKOS.AI</span>
 </footer>
 </body>
 </html>
