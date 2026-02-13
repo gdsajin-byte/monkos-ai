@@ -205,6 +205,8 @@
             border: none; cursor: pointer;
             box-shadow: 0 4px 24px rgba(167,139,250,0.3);
             transition: transform 0.2s, box-shadow 0.2s;
+            position: sticky; bottom: 24px;
+            margin-top: auto;
         }
         .btn-start:hover {
             transform: translateY(-1px);
@@ -800,8 +802,6 @@
     <!-- === 준비 화면 === -->
     <div id="prep-screen">
         <button class="btn-home" onclick="location.href='https://monkos.ai'">🏠 메인</button>
-        <a id="teamLangSwitch" href="https://idphoto-jp.monkos.ai/app?team=1" style="display:none;position:absolute;top:12px;right:16px;padding:6px 14px;border-radius:20px;background:#1a1a2e;border:1px solid #2d2d5e;color:#a78bfa;font-size:12px;font-weight:600;text-decoration:none;z-index:60;">🇯🇵 JP版</a>
-        <script>if(new URLSearchParams(location.search).has('team'))document.getElementById('teamLangSwitch').style.display='';</script>
         <div class="prep-icon">📸</div>
         <div class="prep-title">촬영 준비</div>
         <p class="prep-sub">
@@ -930,7 +930,7 @@
             <!-- Step 2 버튼 -->
             <div id="step2-actions" style="display:flex; gap:10px; padding:16px; justify-content:center;">
                 <button class="btn btn-secondary" onclick="retakePhoto()">다시 찍기</button>
-                <button class="btn btn-primary" onclick="confirmAndGenerate()">이 사진으로 생성</button>
+                <button class="btn btn-primary" onclick="confirmAndGenerate()">이 사진으로 생성 <span style="opacity:0.7;font-size:13px">(1c)</span></button>
             </div>
 
             <!-- Step 3 버튼 -->

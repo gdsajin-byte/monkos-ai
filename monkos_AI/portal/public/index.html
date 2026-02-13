@@ -969,6 +969,35 @@ footer a {
   background: rgba(167,139,250,0.08);
 }
 
+/* === 리전 선택 버튼 === */
+.region-selector {
+  display: flex;
+  gap: 4px;
+  margin-right: 8px;
+}
+
+.region-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  color: var(--text-dim);
+  transition: all 0.2s;
+}
+
+.region-btn:hover {
+  border-color: var(--border-hover);
+  color: var(--text);
+}
+
+.region-btn.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(167,139,250,0.1);
+}
+
 /* === 모바일 === */
 @media (max-width: 640px) {
   header { padding: 12px 16px; }
@@ -997,6 +1026,10 @@ footer a {
 <div class="container">
   <header>
     <img class="logo-icon" src="/monkos-icon.svg" alt="MONKOS" width="28" height="28">
+    <div class="region-selector" id="regionSelector">
+      <button class="region-btn" data-region="kr" onclick="setRegion('kr')">🇰🇷</button>
+      <button class="region-btn" data-region="global" onclick="setRegion('global')">🇯🇵</button>
+    </div>
     <div class="lang-selector" id="langSelector">
       <button class="lang-globe-btn" id="langGlobeBtn" onclick="toggleLangDropdown()">🌐 <span class="lang-globe-arrow">▾</span></button>
       <div class="lang-dropdown" id="langDropdown">
@@ -1901,8 +1934,43 @@ function detectRegion() {
   return 'global';
 }
 
-const region = localStorage.getItem('monkos_region') || detectRegion();
-localStorage.setItem('monkos_region', region);
+// 쿠키 헬퍼 함수
+function getCookie(name) {
+  const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+  return match ? match[2] : null;
+}
+
+function setCookie(name, value) {
+  document.cookie = `${name}=${value};domain=.monkos.ai;path=/;max-age=31536000;SameSite=Lax`;
+}
+
+let region = getCookie('monkos_region');
+// 쿠키 없을 때만 자동 감지 + 저장
+if (!region) {
+  region = detectRegion();
+  setCookie('monkos_region', region);
+}
+
+// 리전 버튼 활성화 상태 업데이트
+function updateRegionButtons() {
+  document.querySelectorAll('.region-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.region === region);
+  });
+}
+
+// 리전 변경 함수 (window에 노출 - 난독화 후에도 onclick에서 접근 가능)
+window.setRegion = function(newRegion) {
+  region = newRegion;
+  setCookie('monkos_region', region);
+  updateRegionButtons();
+  // KR이면 언어도 ko로 고정
+  if (region === 'kr') {
+    setLang('ko');
+  }
+};
+
+// 초기 버튼 상태 설정
+updateRegionButtons();
 
 // === 언어 감지 ===
 function detectLang() {
