@@ -728,7 +728,17 @@ location.href = '/';
       });
 
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-      res.end(`<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body><script>
+      res.end(`<!DOCTYPE html><html><head><meta charset="UTF-8">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0f0f23;display:flex;justify-content:center;align-items:center;height:100vh;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+.logo{font-size:clamp(2rem,8vw,3rem);font-weight:800;background:linear-gradient(90deg,#a78bfa,#818cf8,#c084fc,#a78bfa);background-size:200% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmer 2s linear infinite}
+@keyframes shimmer{0%{background-position:100% 0}100%{background-position:-100% 0}}
+.sub{color:#64748b;margin-top:12px;font-size:0.9rem}
+</style>
+</head><body>
+<div style="text-align:center"><div class="logo">MONKOS AI</div><div class="sub">ログイン中...</div></div>
+<script>
 sessionStorage.setItem('monkos_user', ${JSON.stringify(userObj)});
 location.href = '/';
 </script></body></html>`);
