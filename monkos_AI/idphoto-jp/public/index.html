@@ -239,17 +239,25 @@
         #face-guide::before {
             content: '';
             position: absolute;
-            top: 20%; left: 50%; transform: translateX(-50%);
-            width: 180px; height: 240px;
-            border: 2px dashed rgba(167, 139, 250, 0.5);
+            top: 18%; left: 50%; transform: translateX(-50%);
+            width: 190px; height: 250px;
+            border: 2.5px dashed rgba(250, 204, 21, 0.85);
             border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            transition: border-color 0.3s;
+        }
+        #face-guide.ready::before {
+            border-color: rgba(34, 197, 94, 0.9) !important;
         }
         #face-guide::after {
             content: attr(data-guide-text);
             position: absolute;
-            top: calc(20% + 250px); left: 50%; transform: translateX(-50%);
-            font-size: 11px; color: rgba(167, 139, 250, 0.6);
+            top: calc(18% + 260px); left: 50%; transform: translateX(-50%);
+            font-size: 12px; color: rgba(250, 204, 21, 0.9);
             white-space: nowrap;
+            transition: color 0.3s;
+        }
+        #face-guide.ready::after {
+            color: rgba(34, 197, 94, 0.95) !important;
         }
 
         /* === コーチングオーバーレイ（強化版） === */
@@ -1163,9 +1171,11 @@
         function updateCreditBadge() {
             const badge = document.getElementById('creditBadge');
             const count = document.getElementById('creditCount');
+            const display = document.getElementById('userCreditsDisplay');
             if (userId) {
                 badge.style.display = 'flex';
                 count.textContent = userCredits;
+                if (display) display.textContent = `${userCredits}c`;
                 badge.classList.remove('low', 'zero');
                 if (userCredits === 0) badge.classList.add('zero');
                 else if (userCredits < 11) badge.classList.add('low');
@@ -1548,15 +1558,18 @@
 
             speakJa(text);
 
+            const faceGuide = document.getElementById('face-guide');
             if (text.includes('いいですね') || text.includes('撮影して') || text.includes('大丈夫') || text.includes('OKです') || text.includes('完璧')) {
                 isReady = true;
                 overlay.classList.add('ready');
                 btn.classList.add('ready');
+                faceGuide.classList.add('ready');
                 labelEl.innerHTML = `<span class="coaching-pulse"></span> ${t('coachingReady')}`;
             } else {
                 isReady = false;
                 overlay.classList.remove('ready');
                 btn.classList.remove('ready');
+                faceGuide.classList.remove('ready');
                 labelEl.innerHTML = `<span class="coaching-pulse"></span> ${t('coachingLabel')}`;
             }
 
@@ -1959,7 +1972,7 @@
 
         function openTelegram() {
             const uid = userId || 'guest';
-            const link = `https://t.me/monkos_support_bot?start=${encodeURIComponent(uid)}`;
+            const link = `https://t.me/monkos_event_bot?start=${encodeURIComponent(uid)}`;
             document.getElementById('tgEventLink').href = link;
             window.open(link, '_blank');
             log('テレグラムイベントリンク開封');

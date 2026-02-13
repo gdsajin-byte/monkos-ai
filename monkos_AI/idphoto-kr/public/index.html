@@ -237,17 +237,25 @@
         #face-guide::before {
             content: '';
             position: absolute;
-            top: 15%; left: 50%; transform: translateX(-50%);
-            width: 220px; height: 290px;
-            border: 2.5px dashed rgba(255, 255, 255, 0.85);
+            top: 18%; left: 50%; transform: translateX(-50%);
+            width: 190px; height: 250px;
+            border: 2.5px dashed rgba(250, 204, 21, 0.85);
             border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            transition: border-color 0.3s;
+        }
+        #face-guide.ready::before {
+            border-color: rgba(34, 197, 94, 0.85);
         }
         #face-guide::after {
             content: attr(data-guide-text);
             position: absolute;
-            top: calc(15% + 300px); left: 50%; transform: translateX(-50%);
-            font-size: 13px; color: rgba(255, 255, 255, 0.9);
+            top: calc(18% + 260px); left: 50%; transform: translateX(-50%);
+            font-size: 12px; color: rgba(250, 204, 21, 0.9);
             white-space: nowrap;
+            transition: color 0.3s;
+        }
+        #face-guide.ready::after {
+            color: rgba(34, 197, 94, 0.9);
         }
 
         /* === 코칭 오버레이 === */
@@ -1153,9 +1161,11 @@
         function updateCreditBadge() {
             const badge = document.getElementById('creditBadge');
             const count = document.getElementById('creditCount');
+            const display = document.getElementById('userCreditsDisplay');
             if (userId) {
                 badge.style.display = 'flex';
                 count.textContent = userCredits;
+                if (display) display.textContent = `${userCredits}c`;
                 badge.classList.remove('low', 'zero');
                 if (userCredits === 0) badge.classList.add('zero');
                 else if (userCredits < 11) badge.classList.add('low');
@@ -1617,15 +1627,18 @@
 
             speakKo(text);
 
+            const faceGuide = document.getElementById('face-guide');
             if (text.includes('좋습니다') || text.includes('촬영해') || text.includes('괜찮') || text.includes('OK') || text.includes('완벽')) {
                 isReady = true;
                 overlay.classList.add('ready');
                 btn.classList.add('ready');
+                faceGuide.classList.add('ready');
                 labelEl.innerHTML = `<span class="coaching-pulse"></span> ${t('coachingReady')}`;
             } else {
                 isReady = false;
                 overlay.classList.remove('ready');
                 btn.classList.remove('ready');
+                faceGuide.classList.remove('ready');
                 labelEl.innerHTML = `<span class="coaching-pulse"></span> AI 코칭 중`;
             }
 
@@ -2028,7 +2041,7 @@
 
         function openTelegram() {
             const uid = userId || 'guest';
-            const link = `https://t.me/monkos_support_bot?start=${encodeURIComponent(uid)}`;
+            const link = `https://t.me/monkos_event_bot?start=${encodeURIComponent(uid)}`;
             document.getElementById('tgEventLink').href = link;
             window.open(link, '_blank');
             log('텔레그램 이벤트 링크 오픈');

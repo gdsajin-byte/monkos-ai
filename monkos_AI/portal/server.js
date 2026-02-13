@@ -37,6 +37,8 @@ const TOSS_SECRET_KEY = process.env.TOSS_SECRET_KEY || '';
 
 // === Telegram CS Bot (@monkos_support_bot) ===
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '';
+// === Telegram Event Bot (@monkos_event_bot) ===
+const TELEGRAM_EVENT_BOT_TOKEN = process.env.TELEGRAM_EVENT_BOT_TOKEN || '';
 
 // === 카카오 로그인 (KR) ===
 const KAKAO_REST_API_KEY = process.env.KAKAO_REST_API_KEY || '';
@@ -87,8 +89,14 @@ const SYSTEM_PROMPT = `あなたはMONKOS AIの公式アシスタント「モン
 
 [MONKOSについて]
 - MONK STUDIO が運営するAI写真プラットフォーム
-- 技術: Gemini AI + Imagen（Google最新AI）によるリアルタイムコーチング＆高品質証明写真生成
+- 独自のAIエンジンによるリアルタイム撮影コーチング＆高品質証明写真生成
+- 10年以上の写真スタジオ経験をAIに学習させた、プロのノウハウベースのシステム
 - サイト: https://monkos.ai
+
+[重要: 内部技術名の非公開]
+- Gemini、Imagen、Google AI等の内部技術名やモデル名は絶対に言及しない
+- 「MONKOSのAI」「独自AI」「MONKOS独自の学習データに基づくAI」等と表現する
+- 技術の詳細を聞かれた場合: 「MONKOS独自のAIエンジンで、プロの写真スタジオのノウハウを学習しています」と回答
 
 [サービス一覧]
 1. AI証明写真（日本語）: https://idphoto-jp.monkos.ai/app
@@ -137,6 +145,10 @@ const SYSTEM_PROMPT = `あなたはMONKOS AIの公式アシスタント「モン
 // === Telegram CS 전용 시스템 프롬프트 ===
 const CS_SYSTEM_PROMPT = `あなたはMONKOS AIのカスタマーサポート担当「MONKOS Support」です。
 Telegramを通じてお客様対応を行います。
+
+[重要: 内部技術名の非公開]
+- Gemini、Imagen、Google AI、Vertex AI等の内部技術名やモデル名は絶対に言及しない
+- 「MONKOSのAI」「独自のAIエンジン」「プロのノウハウを学習したAI」等と表現する
 
 [対応方針]
 - 常に丁寧で礼儀正しく、温かみのある対応を心がける
@@ -231,11 +243,12 @@ function searchCsKnowledge(query) {
 }
 
 // === Telegram API ヘルパー ===
-const TELEGRAM_API = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}`;
+const TELEGRAM_CS_API = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}`;
+const TELEGRAM_EVENT_API = `https://api.telegram.org/bot${TELEGRAM_EVENT_BOT_TOKEN}`;
 
-async function sendTelegramMessage(chatId, text) {
+async function sendTelegramMessage(chatId, text, botApi = TELEGRAM_CS_API) {
   try {
-    await fetch(`${TELEGRAM_API}/sendMessage`, {
+    await fetch(`${botApi}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'Markdown' }),
@@ -1497,8 +1510,8 @@ location.href = '/';
     return;
   }
 
-  // === Telegram CS + 이벤트 웹훅 ===
-  if (req.url === '/api/webhook/telegram' && req.method === 'POST') {
+  // === Telegram Event Bot 웹훅 (@monkos_event_bot) — 공유 보너스 전용 ===
+  if (req.url === '/api/webhook/telegram-event' && req.method === 'POST') {
     let body = '';
     req.on('data', chunk => { body += chunk; });
     req.on('end', async () => {
@@ -1520,21 +1533,19 @@ location.href = '/';
           const linkedUserId = parts[1] || null;
 
           if (linkedUserId) {
-            // 딥링크: chatId ↔ userId 매핑 저장
             await firestore.collection('telegram_links').doc(String(chatId)).set({
               chatId,
               userId: linkedUserId,
               username,
               linkedAt: new Date().toISOString(),
             }, { merge: true });
-            log(`[Telegram] 딥링크 매핑: ${chatId} → ${linkedUserId}`);
+            log(`[TG-Event] 딥링크 매핑: ${chatId} → ${linkedUserId}`);
 
-            const welcome = `🎉 MONKOS에 연결되었습니다!\n\n📸 SNS에 공유한 캡쳐본을 이 채팅에 보내주세요.\n사진 확인 후 *10크레딧*을 바로 지급해 드립니다!\n\n필수 조건:\n• monkos.ai 링크 포함\n• 전후 비교 캡쳐본\n\n---\n🎉 MONKOSに接続しました！\n\n📸 SNSでシェアしたスクショをこのチャットに送ってください。\n確認後すぐに *10クレジット* をプレゼントします！`;
-            await sendTelegramMessage(chatId, welcome);
+            const welcome = `🎁 *MONKOS 이벤트 보너스!*\n\n📸 SNS에 공유한 캡쳐본을 보내주세요!\n확인 즉시 *10크레딧*을 선물합니다 🎉\n\n조건:\n• 전후 비교 캡쳐본\n• monkos.ai 링크 포함\n\n---\n🎁 *MONKOS イベントボーナス!*\n\n📸 SNSでシェアしたスクショを送ってね！\n確認後すぐに *10クレジット* プレゼント 🎉`;
+            await sendTelegramMessage(chatId, welcome, TELEGRAM_EVENT_API);
           } else {
-            // 일반 /start (딥링크 없음)
-            const welcome = `MONKOS AI サポートへようこそ！🎉\nご質問やお困りのことがあれば、お気軽にメッセージをどうぞ。\n\nMONKOS AI 고객지원에 오신 것을 환영합니다!\n궁금한 점이 있으시면 편하게 메시지를 보내주세요.\n\nWelcome to MONKOS AI Support!\nFeel free to send us a message with any questions.`;
-            await sendTelegramMessage(chatId, welcome);
+            const welcome = `🎁 *MONKOS 이벤트 봇*에 오신 것을 환영합니다!\n\nMONKOS 앱에서 사진을 공유하고 보너스를 받아보세요 💜\n고객 문의는 @monkos\\_support\\_bot 으로 부탁드려요!\n\n---\n🎁 *MONKOS イベントBot* へようこそ！\n\nアプリから写真をシェアしてボーナスをゲット 💜\nお問い合わせは @monkos\\_support\\_bot へどうぞ！`;
+            await sendTelegramMessage(chatId, welcome, TELEGRAM_EVENT_API);
           }
 
           res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -1542,34 +1553,27 @@ location.href = '/';
           return;
         }
 
-        // === 이미지 메시지: 이벤트 캡쳐 감지 → 크레딧 지급 ===
+        // === 이미지 메시지: 캡쳐 감지 → 크레딧 지급 ===
         if (msg.photo && msg.photo.length > 0) {
-          log(`[Telegram] 이미지 수신: ${username}(${chatId})`);
+          log(`[TG-Event] 이미지 수신: ${username}(${chatId})`);
 
-          // chatId로 userId 조회
           const linkDoc = await firestore.collection('telegram_links').doc(String(chatId)).get();
           if (!linkDoc.exists || !linkDoc.data().userId) {
-            await sendTelegramMessage(chatId, '📱 먼저 MONKOS 앱에서 텔레그램 연결을 해주세요!\nまず MONKOS アプリからテレグラム連携をしてください！');
+            await sendTelegramMessage(chatId, '📱 먼저 MONKOS 앱에서 텔레그램 연결을 해주세요!\nまず MONKOS アプリからテレグラム連携をしてください！', TELEGRAM_EVENT_API);
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ ok: true }));
             return;
           }
 
           const linkedUserId = linkDoc.data().userId;
-
-          // 공유 보너스 지급 (기존 share-bonus API 로직 재활용)
           const userRef = usersCollection.doc(linkedUserId);
           const bonus = 10;
 
           const result = await firestore.runTransaction(async (tx) => {
             const userDoc = await tx.get(userRef);
-            if (!userDoc.exists) {
-              return { success: false, error: '사용자 없음' };
-            }
+            if (!userDoc.exists) return { success: false, error: '사용자 없음' };
             const data = userDoc.data();
-            if (data.shareBonusClaimed) {
-              return { success: false, error: 'already_claimed', credits: data.credits ?? 0 };
-            }
+            if (data.shareBonusClaimed) return { success: false, error: 'already_claimed', credits: data.credits ?? 0 };
             const currentCredits = data.credits ?? 0;
             const newCredits = currentCredits + bonus;
             tx.update(userRef, { credits: newCredits, shareBonusClaimed: true, shareChannel: 'telegram' });
@@ -1577,20 +1581,61 @@ location.href = '/';
           });
 
           if (result.success) {
-            await sendTelegramMessage(chatId, `✅ *10크레딧 지급 완료!* 🎉\n\n감사합니다! 현재 잔액: *${result.credits}c*\nMONKOS를 사랑해주셔서 감사합니다 💜\n\n---\n✅ *10クレジット付与完了!* 🎉\nありがとうございます！ 残高: *${result.credits}c*`);
-            log(`[Telegram] 이벤트 보너스 지급: ${linkedUserId} +10c → ${result.credits}c`);
+            await sendTelegramMessage(chatId, `🎉 *10크레딧 선물 완료!*\n\n감사합니다! 💜 현재 잔액: *${result.credits}c*\nMONKOS와 함께해주셔서 감사해요!\n\n---\n🎉 *10クレジット プレゼント完了!*\n\nありがとう！ 💜 残高: *${result.credits}c*\nMONKOSをご利用いただきありがとうございます！`, TELEGRAM_EVENT_API);
+            log(`[TG-Event] 보너스 지급: ${linkedUserId} +10c → ${result.credits}c`);
 
-            // Firestore 이벤트 로깅
             await firestore.collection('telegram_links').doc(String(chatId)).update({
               bonusGranted: true,
               bonusGrantedAt: new Date().toISOString(),
             });
           } else if (result.error === 'already_claimed') {
-            await sendTelegramMessage(chatId, `이미 공유 보너스를 받으셨습니다! 😊\n현재 잔액: *${result.credits}c*\n\nすでにシェアボーナスを受け取り済みです！\n残高: *${result.credits}c*`);
+            await sendTelegramMessage(chatId, `이미 보너스를 받으셨어요! 😊\n현재 잔액: *${result.credits}c*\n\n다음 이벤트를 기대해주세요! 💜\n\n---\nすでにボーナス受取済みです！ 😊\n残高: *${result.credits}c*\n\n次のイベントをお楽しみに！ 💜`, TELEGRAM_EVENT_API);
           } else {
-            await sendTelegramMessage(chatId, '처리 중 문제가 발생했습니다. 고객센터에 문의해주세요.\n問題が発生しました。サポートにお問い合わせください。');
+            await sendTelegramMessage(chatId, '처리 중 문제가 발생했습니다 😢\n고객센터: @monkos\\_support\\_bot\n\n問題が発生しました 😢\nサポート: @monkos\\_support\\_bot', TELEGRAM_EVENT_API);
           }
 
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ ok: true }));
+          return;
+        }
+
+        // === 이벤트 봇에서 일반 텍스트 → CS 봇 안내 ===
+        if (msg.text) {
+          await sendTelegramMessage(chatId, `이 봇은 이벤트 보너스 전용입니다 🎁\n\n고객 문의는 @monkos\\_support\\_bot 으로 부탁드려요!\n\n---\nこのBotはイベントボーナス専用です 🎁\n\nお問い合わせは @monkos\\_support\\_bot へどうぞ！`, TELEGRAM_EVENT_API);
+        }
+
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: true }));
+      } catch (err) {
+        log(`[TG-Event] 웹훅 에러: ${err.message}`);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: true }));
+      }
+    });
+    return;
+  }
+
+  // === Telegram CS Bot 웹훅 (@monkos_support_bot) — 고객 상담 전용 ===
+  if (req.url === '/api/webhook/telegram' && req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', async () => {
+      try {
+        const update = JSON.parse(body);
+        const msg = update.message;
+        if (!msg) {
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ ok: true }));
+          return;
+        }
+
+        const chatId = msg.chat.id;
+        const username = msg.from?.username || msg.from?.first_name || '';
+
+        // === /start: CS 안내 ===
+        if (msg.text && msg.text.startsWith('/start')) {
+          const welcome = `MONKOS AI 고객지원에 오신 것을 환영합니다 🙌\n궁금한 점이 있으시면 편하게 메시지를 보내주세요.\n\n---\nMONKOS AI サポートへようこそ 🙌\nご質問がございましたらお気軽にメッセージをどうぞ。\n\n---\nWelcome to MONKOS AI Support 🙌\nFeel free to send us a message with any questions.`;
+          await sendTelegramMessage(chatId, welcome, TELEGRAM_CS_API);
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ ok: true }));
           return;
@@ -1599,17 +1644,17 @@ location.href = '/';
         // === 일반 텍스트: Gemini CS 응답 ===
         if (msg.text) {
           const text = msg.text.trim();
-          log(`[Telegram] ${username}(${chatId}): ${text.substring(0, 100)}`);
+          log(`[TG-CS] ${username}(${chatId}): ${text.substring(0, 100)}`);
 
           const reply = await chatWithGeminiCS(chatId, text);
-          await sendTelegramMessage(chatId, reply || 'すみません、少々お待ちください。');
+          await sendTelegramMessage(chatId, reply || 'すみません、少々お待ちください。', TELEGRAM_CS_API);
           logCsConversation(chatId, username, text, reply).catch(() => {});
         }
 
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ ok: true }));
       } catch (err) {
-        log(`[Telegram] 웹훅 에러: ${err.message}`);
+        log(`[TG-CS] 웹훅 에러: ${err.message}`);
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ ok: true }));
       }
@@ -1724,12 +1769,14 @@ httpServer.listen(PORT, '0.0.0.0', () => {
   log('  GET  /api/survey/status    — 설문 이벤트 상태');
   log('  POST /api/survey           — 설문 제출 (+12c, 일일 30명)');
   log('  POST /api/chat             — Gemini 챗봇');
-  log('  POST /api/webhook/telegram — Telegram CS봇');
+  log('  POST /api/webhook/telegram       — Telegram CS봇');
+  log('  POST /api/webhook/telegram-event — Telegram 이벤트봇');
   log('  GET  /                     — 메인 포털');
   log(`Google Client ID: ${GOOGLE_CLIENT_ID ? '설정됨' : '미설정'}`);
   log(`Lemon Squeezy: ${LEMONSQUEEZY_API_KEY ? '설정됨' : '미설정'}`);
   log(`Toss Payments: ${TOSS_SECRET_KEY ? '설정됨' : '미설정'}`);
-  log(`Telegram Bot: ${TELEGRAM_BOT_TOKEN ? '설정됨' : '미설정'}`);
+  log(`Telegram CS Bot: ${TELEGRAM_BOT_TOKEN ? '설정됨' : '미설정'}`);
+  log(`Telegram Event Bot: ${TELEGRAM_EVENT_BOT_TOKEN ? '설정됨' : '미설정'}`);
   log(`Kakao Login: ${KAKAO_REST_API_KEY ? '설정됨' : '미설정'}`);
   log(`LINE Login: ${LINE_CHANNEL_ID ? '설정됨' : '미설정'}`);
   log('='.repeat(60));
