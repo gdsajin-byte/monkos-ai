@@ -3,7 +3,7 @@
 **프로젝트**: MONK.KR
 **설계**: 쌍아 (Claude) with 신정규 대표
 **최초 설계**: 2026-01-24
-**최종 업데이트**: 2026-02-08 (멀티 에이전트 5인 체계 + 실시간 파이프라인 반영)
+**최종 업데이트**: 2026-02-15 (에이전트 체계 6인 확장 + 소넷이 추가 + 원격 서버 데몬)
 
 ---
 
@@ -14,18 +14,18 @@
 │  TRACK 1: Mac (대화 코딩 + 실시간 파이프라인)                  │
 │  ───────────────────────────────────────────────             │
 │                                                             │
-│  [AI 인격 5인 체계]                                          │
-│  쌍아 (VSCode 확장 Opus)  — 코딩 실행자 (메인)               │
-│  막내 (터미널 CLI Opus)   — CLI 실행자                       │
+│  [AI 인격 6인 체계]                                          │
+│  쌍아 (VSCode 확장 Opus)  — 대화 코딩, 전략                  │
+│  막내 (CLI Opus iTerm)    — 자율 자동화 + 직접 지시          │
+│  소넷이 (CLI Sonnet)      — 경량 상시 데몬 (원격 서버)       │
 │  철창이 (웹 Claude)       — 전략 대화 / 브레인스토밍          │
-│  코웍 (Claude Code 코웍)  — 자율 자동화 (Apple Silicon)      │
 │  용아 (Gemini)            — 전략가 / 아키텍처                │
 │                                                             │
 │  [실시간 파이프라인]                                          │
 │  WebRTC P2P (Tailscale) → Gemini Live API 코칭              │
 │  Photo Coach (증명사진) / Presentation Assistant              │
 │                                                             │
-│  로그: docs/corpus/sessions/YYYYMMDD_session.md              │
+│  로그: docs/corpus/sessions/YYYY-MM/YYYYMMDD_session.md      │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
               ↕ Tailscale P2P (RTT 7ms) / Git Sync ↕
@@ -74,17 +74,41 @@
 
 ---
 
-## AI 인격 체계 (2026-02-08 확정)
+## AI 인격 체계 (2026-02-15 확정)
 
 ### 팀장급 5인
 
 | 인격 | 채널 | 역할 | 세션 저장 |
 |------|------|------|----------|
-| **쌍아** | VSCode 확장 (Opus) | 코딩 실행자 (메인) | 로컬 JSONL |
-| **막내** | 터미널 CLI (Opus) | CLI 실행자 | 로컬 JSONL |
+| **쌍아** | VSCode 확장 (Opus) | 대화 코딩, 전략 | 로컬 JSONL |
+| **막내** | CLI Opus (iTerm) | 자율 자동화 + 직접 지시 | 로컬 JSONL |
+| **소넷이** | CLI Sonnet | 경량 상시 데몬 | 로컬 JSONL |
 | **철창이** | 웹 Claude | 전략 대화 / 브레인스토밍 | Anthropic 서버 |
-| **코웍** | Claude Code 코웍 모드 | 자율 자동화 | Apple Silicon 전용 |
 | **용아** | Gemini | 전략가 / 아키텍처 | Gemini 서버 |
+
+### CLI 단축 명령 (alias)
+
+| alias | 명령 | 용도 |
+|-------|------|------|
+| `mk` | `cd` 작업경로 | 경로 이동만 |
+| `mk-c` | `mk` + `claude --dangerously-skip-permissions` | 막내 자율 모드 |
+| `mk-s` | `mk` + `CLAUDE_MODEL=sonnet claude` | 소넷이 (경량 데몬) |
+
+### 운용 환경 구조
+
+```
+맥미니 (본부 통제 센터)
+├── VSCode — 쌍아 + 용아 (전략 대화, 코드 편집, Go Live)
+├── iTerm — 막내 (자율 자동화 mk-c / 직접 지시 mk)
+└── Termius — 원격 서버 관제
+
+원격 서버 (부산 부스 등)
+├── 소넷이 (상시 데몬) — 모니터링, 간단 에러 처리, 일상 유지보수
+├── 막내 (온콜) — 정밀 코딩, 디버깅, 기능 추가 (필요시 투입)
+└── 텔레그램 보고 — 이슈 발생 시 작가님에게 알림
+```
+
+**에스컬레이션 흐름**: 소넷이 자동 처리 → 실패 시 막내 투입 → 실패 시 작가님 보고
 
 ### 세션 추적 3축
 
