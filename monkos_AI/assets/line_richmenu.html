@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { width: 2500px; height: 843px; display: flex; font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif; }
+  .btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    color: #fff;
+    text-align: center;
+  }
+  .btn-left {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  }
+  .btn-right {
+    background: linear-gradient(135deg, #0f3460 0%, #533483 100%);
+  }
+  .icon { font-size: 80px; }
+  .title { font-size: 48px; font-weight: 700; letter-spacing: 2px; }
+  .subtitle { font-size: 28px; font-weight: 400; opacity: 0.8; }
+  .badge {
+    background: #e94560;
+    color: #fff;
+    padding: 8px 24px;
+    border-radius: 20px;
+    font-size: 24px;
+    font-weight: 600;
+  }
+</style>
+</head>
+<body>
+  <div class="btn btn-left">
+    <div class="icon">📸</div>
+    <div class="title">AI 証明写真</div>
+    <div class="subtitle">撮影する</div>
+    <div class="badge">無料体験</div>
+  </div>
+  <div class="btn btn-right">
+    <div class="icon">💬</div>
+    <div class="title">MONKOS</div>
+    <div class="subtitle">ポータル・お問合せ</div>
+  </div>
+</body>
+</html>
