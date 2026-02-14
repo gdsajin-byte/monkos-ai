@@ -199,23 +199,42 @@ function getOutfitPrompt(gender, age, style = 'id_photo') {
   return `SUBJECT: This person is a ${genderLabel}, ${info.label}. OUTFIT: Dress this person in ${info.outfit}. Keep the person's face, hair, and body exactly the same — only ensure appropriate attire. DO NOT change the person's apparent gender or age.`;
 }
 
-// === QC 프롬프트 (한국어 — bounding box 포함) ===
-const QC_INSTRUCTION = `2개의 이미지를 비교하고, 2번째 이미지(증명사진)의 구도를 분석해 주세요.
+// === QC 프롬프트 (한국어 — bounding box + 성별/연령/보정 체크) ===
+function buildQCInstruction(gender, age) {
+  const genderText = gender === 'male' ? '남성' : '여성';
+  const ageMap = { child: '유아~12세', teen: '13~18세', adult: '19세 이상' };
+  const ageText = ageMap[age] || '미지정';
+
+  return `2개의 이미지를 비교하고, 2번째 이미지(증명사진)의 품질을 종합 분석해 주세요.
 1번째: 원본 (실제 촬영)
 2번째: AI 생성물 (증명사진)
+사용자 설정: 성별=${genderText}, 연령대=${ageText}
 
-[판정 기준]
+[판정 기준 — 모두 체크 필수]
 1. 동일 인물인가? (얼굴 구조, 눈/코/입 비율)
 2. 유사도 % (0-100)
 3. 아이덴티티 유지 (PASS/FAIL)
-4. 증명사진 품질 (조명, 배경, 구도)
-5. 2번째 이미지에서 얼굴의 bounding box 좌표 [ymin, xmin, ymax, xmax] (0-1000 정규화)
+4. 성별 일치: 원본 인물의 외형 성별과 생성물이 일치하는가? (설정과 무관하게 원본 기준 판단)
+5. 연령대 일치: 원본 인물의 외형 나이대와 생성물이 일치하는가? (아이→어른, 어른→아이 변환 감지)
+6. 과도한 보정: 헤어스타일 대폭 변경, 피부 과보정, 얼굴 윤곽 변형, 눈크기 변경 등 부자연스러운 변형이 있는가?
+7. 증명사진 품질 (조명, 배경, 구도)
+8. 2번째 이미지에서 얼굴의 bounding box 좌표 [ymin, xmin, ymax, xmax] (0-1000 정규화)
+
+[FAIL 조건 — 하나라도 해당되면 identity를 FAIL로 판정]
+- 성별 외형이 원본과 다르게 변환됨
+- 연령대가 원본과 크게 달라짐 (10세 이상 차이 추정)
+- 얼굴 윤곽, 눈크기, 코 형태 등이 원본과 다르게 변형됨
+- 헤어스타일이 원본과 완전히 다름 (정돈 수준은 허용)
+- similarity 70% 미만
 
 [응답 형식 — JSON만 출력]
 {
   "same_person": true,
   "similarity": 85,
   "identity": "PASS",
+  "gender_match": true,
+  "age_match": true,
+  "over_retouched": false,
   "quality": "GOOD",
   "face_box": [180, 220, 650, 780],
   "face_ratio": 0.35,
@@ -227,6 +246,7 @@ const QC_INSTRUCTION = `2개의 이미지를 비교하고, 2번째 이미지(증
 face_ratio = 얼굴 높이 / 전체 이미지 높이 (0.25~0.45 적합)
 face_center_x = 얼굴 중심 x좌표 (500 근처면 중앙 정렬, ±50 허용)
 head_top_margin = 머리 정수리에서 이미지 상단까지 여백 (40~150 적합)`;
+}
 
 // === 클라이언트 세션 관리 ===
 const sessions = new Map();
@@ -330,13 +350,14 @@ async function generatePhoto(inputBase64, style = 'id_photo', gender = 'male', a
 // === Gemini QC (Vertex AI ADC) — 3 Flash → 2.0 Flash 폴백 ===
 const QC_MODELS = ['gemini-3-flash-preview', 'gemini-2.0-flash'];
 
-async function runQC(originalBase64, generatedBase64) {
+async function runQC(originalBase64, generatedBase64, gender = 'male', age = 'adult') {
   const origData = await compressImage(originalBase64, 512, 60);
   const genData = await compressImage(generatedBase64, 512, 60);
+  const qcInstruction = buildQCInstruction(gender, age);
 
   for (const model of QC_MODELS) {
     try {
-      log(`[QC] 모델 시도: ${model}`);
+      log(`[QC] 모델 시도: ${model} (gender=${gender}, age=${age})`);
       const response = await ai.models.generateContent({
         model,
         contents: [{
@@ -344,7 +365,7 @@ async function runQC(originalBase64, generatedBase64) {
           parts: [
             { inlineData: { mimeType: 'image/jpeg', data: origData } },
             { inlineData: { mimeType: 'image/png', data: genData } },
-            { text: QC_INSTRUCTION },
+            { text: qcInstruction },
           ],
         }],
         config: {
@@ -558,7 +579,7 @@ const httpServer = createServer(async (req, res) => {
     try {
       const body = await parseBody(req);
       if (!body.original || !body.generated) return jsonResponse(res, 400, { error: '원본/생성물 필요' });
-      const result = await runQC(body.original, body.generated);
+      const result = await runQC(body.original, body.generated, body.gender, body.age);
       jsonResponse(res, 200, result);
     } catch (err) {
       log(`[API][qc] 에러: ${err.message}`);

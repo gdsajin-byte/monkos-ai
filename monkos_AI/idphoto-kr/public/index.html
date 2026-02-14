@@ -1792,6 +1792,8 @@
                     const qcResult = await apiPost('/api/qc', {
                         original: origBase64,
                         generated: genBase64,
+                        gender: selectedGender,
+                        age: selectedAge,
                     });
                     showQCResult(qcResult);
                     log(`QC: ${JSON.stringify(qcResult).substring(0, 100)}`);

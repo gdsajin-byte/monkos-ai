@@ -199,22 +199,42 @@ function getOutfitPrompt(gender, age, style = 'id_photo') {
 }
 
 // === QC プロンプト (日本語 — bounding box 含む) ===
-const QC_INSTRUCTION = `2つの画像を比較し、2枚目（証明写真）の構図を分析してください。
+// === QCプロンプト（日本語 — bounding box + 性別/年齢/補正チェック）===
+function buildQCInstruction(gender, age) {
+  const genderText = gender === 'male' ? '男性' : '女性';
+  const ageMap = { child: '幼児〜12歳', teen: '13〜18歳', adult: '19歳以上' };
+  const ageText = ageMap[age] || '未指定';
+
+  return `2つの画像を比較し、2枚目（証明写真）の品質を総合分析してください。
 1枚目：原本（実際の撮影）
 2枚目：AI生成物（証明写真）
+ユーザー設定：性別=${genderText}、年齢層=${ageText}
 
-[判定基準]
+[判定基準 — すべてチェック必須]
 1. 同一人物か？（顔の構造、目/鼻/口の比率）
 2. 類似度 %（0-100）
 3. アイデンティティ維持（PASS/FAIL）
-4. 証明写真品質（照明、背景、構図）
-5. 2枚目の画像で顔のbounding box座標 [ymin, xmin, ymax, xmax]（0-1000正規化）
+4. 性別一致：原本の外見上の性別と生成物が一致するか？（設定に関係なく原本基準で判断）
+5. 年齢層一致：原本の外見年齢と生成物が一致するか？（子供→大人、大人→子供の変換を検出）
+6. 過度な補正：ヘアスタイルの大幅変更、肌の過度な補正、顔の輪郭変形、目の大きさ変更など不自然な変形があるか？
+7. 証明写真品質（照明、背景、構図）
+8. 2枚目の画像で顔のbounding box座標 [ymin, xmin, ymax, xmax]（0-1000正規化）
+
+[FAIL条件 — 一つでも該当すればidentityをFAILと判定]
+- 性別の外見が原本と異なるように変換された
+- 年齢層が原本と大きく異なる（10歳以上の差と推定）
+- 顔の輪郭、目の大きさ、鼻の形態が原本と異なるように変形
+- ヘアスタイルが原本と完全に異なる（整える程度は許容）
+- similarity 70%未満
 
 [応答形式 — JSONのみ出力]
 {
   "same_person": true,
   "similarity": 85,
   "identity": "PASS",
+  "gender_match": true,
+  "age_match": true,
+  "over_retouched": false,
   "quality": "GOOD",
   "face_box": [180, 220, 650, 780],
   "face_ratio": 0.35,
@@ -226,6 +246,7 @@ const QC_INSTRUCTION = `2つの画像を比較し、2枚目（証明写真）の
 face_ratio = 顔の高さ / 画像全体の高さ（0.25〜0.45が適切）
 face_center_x = 顔の中心x座標（500付近で中央揃え、±50許容）
 head_top_margin = 頭頂部から画像上端までの余白（40〜150が適切）`;
+}
 
 // === クライアントセッション管理 ===
 const sessions = new Map();
@@ -318,13 +339,14 @@ async function generatePhoto(inputBase64, style = 'id_photo', gender = 'male', a
 // === Gemini QC (Vertex AI ADC) — 3 Flash → 2.0 Flash フォールバック ===
 const QC_MODELS = ['gemini-3-flash-preview', 'gemini-2.0-flash'];
 
-async function runQC(originalBase64, generatedBase64) {
+async function runQC(originalBase64, generatedBase64, gender = 'male', age = 'adult') {
   const origData = originalBase64.includes(',') ? originalBase64.split(',')[1] : originalBase64;
   const genData = generatedBase64.includes(',') ? generatedBase64.split(',')[1] : generatedBase64;
+  const qcInstruction = buildQCInstruction(gender, age);
 
   for (const model of QC_MODELS) {
     try {
-      log(`[QC] モデル試行: ${model}`);
+      log(`[QC] モデル試行: ${model} (gender=${gender}, age=${age})`);
       const response = await ai.models.generateContent({
         model,
         contents: [{
@@ -332,7 +354,7 @@ async function runQC(originalBase64, generatedBase64) {
           parts: [
             { inlineData: { mimeType: 'image/jpeg', data: origData } },
             { inlineData: { mimeType: 'image/png', data: genData } },
-            { text: QC_INSTRUCTION },
+            { text: qcInstruction },
           ],
         }],
         config: {
@@ -544,7 +566,7 @@ const httpServer = createServer(async (req, res) => {
     try {
       const body = await parseBody(req);
       if (!body.original || !body.generated) return jsonResponse(res, 400, { error: '原本/生成物が必要です' });
-      const result = await runQC(body.original, body.generated);
+      const result = await runQC(body.original, body.generated, body.gender, body.age);
       jsonResponse(res, 200, result);
     } catch (err) {
       log(`[API][qc] エラー: ${err.message}`);
