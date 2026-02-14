@@ -138,6 +138,9 @@
             background: #111; border: 1.5px solid #222;
             font-size: 12px; font-weight: 500; color: #aaa;
             cursor: pointer; transition: all 0.2s;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none; -webkit-user-select: none;
         }
         .prep-profile-chip.active {
             background: rgba(167,139,250,0.15);
@@ -169,6 +172,9 @@
             background: #111; border: 1.5px solid #222;
             font-size: 13px; font-weight: 500; color: #aaa;
             cursor: pointer; transition: all 0.2s;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none; -webkit-user-select: none;
         }
         .prep-style-chip.active {
             background: rgba(167,139,250,0.15);
@@ -860,21 +866,21 @@
         <div class="prep-profile">
             <div class="prep-profile-group">
                 <span class="prep-profile-label">性別</span>
-                <div class="prep-profile-chip" data-gender="male">男性</div>
-                <div class="prep-profile-chip" data-gender="female">女性</div>
+                <div class="prep-profile-chip" data-gender="male" role="button" tabindex="0">男性</div>
+                <div class="prep-profile-chip" data-gender="female" role="button" tabindex="0">女性</div>
             </div>
             <div class="prep-profile-group">
                 <span class="prep-profile-label">年齢</span>
-                <div class="prep-profile-chip" data-age="child">幼児~12歳</div>
-                <div class="prep-profile-chip" data-age="teen">13~18歳</div>
-                <div class="prep-profile-chip" data-age="adult">19歳以上</div>
+                <div class="prep-profile-chip" data-age="child" role="button" tabindex="0">幼児~12歳</div>
+                <div class="prep-profile-chip" data-age="teen" role="button" tabindex="0">13~18歳</div>
+                <div class="prep-profile-chip" data-age="adult" role="button" tabindex="0">19歳以上</div>
             </div>
         </div>
 
         <!-- スタイル選択 -->
         <div class="prep-styles">
-            <div class="prep-style-chip active" data-style="id_photo">パスポート・証明写真</div>
-            <div class="prep-style-chip" data-style="resume">履歴書</div>
+            <div class="prep-style-chip active" data-style="id_photo" role="button" tabindex="0">パスポート・証明写真</div>
+            <div class="prep-style-chip" data-style="resume" role="button" tabindex="0">履歴書</div>
         </div>
 
         <button class="btn-start" id="btn-start" onclick="startShooting()" disabled>
@@ -1243,8 +1249,15 @@
 
         function loginGoogle() {
             // Portal Google OAuth経由
+            // Samsung Internet互換: アンカークリック方式でリダイレクト（ポップアップブロック回避）
             const returnUrl = encodeURIComponent(location.origin + '/app');
-            location.href = PORTAL_URL + '/auth/google?returnTo=' + returnUrl;
+            const url = PORTAL_URL + '/auth/google?returnTo=' + returnUrl;
+            const a = document.createElement('a');
+            a.href = url;
+            a.style.display = 'none';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
         }
 
         function logoutUser() {
@@ -1346,8 +1359,22 @@
             const btn = document.getElementById('btn-start');
             btn.disabled = !(selectedGender && selectedAge);
         }
+        // Galaxy/Samsung Internet タッチイベントヘルパー (click + touchend 同時発火防止)
+        function addTouchClickHandler(el, handler) {
+            let touchHandled = false;
+            el.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                touchHandled = true;
+                handler();
+                setTimeout(() => { touchHandled = false; }, 300);
+            }, { passive: false });
+            el.addEventListener('click', () => {
+                if (!touchHandled) handler();
+            });
+        }
+
         document.querySelectorAll('[data-gender]').forEach(chip => {
-            chip.addEventListener('click', () => {
+            addTouchClickHandler(chip, () => {
                 document.querySelectorAll('[data-gender]').forEach(c => c.classList.remove('active'));
                 chip.classList.add('active');
                 selectedGender = chip.dataset.gender;
@@ -1355,7 +1382,7 @@
             });
         });
         document.querySelectorAll('[data-age]').forEach(chip => {
-            chip.addEventListener('click', () => {
+            addTouchClickHandler(chip, () => {
                 document.querySelectorAll('[data-age]').forEach(c => c.classList.remove('active'));
                 chip.classList.add('active');
                 selectedAge = chip.dataset.age;
@@ -1365,7 +1392,7 @@
 
         // === 準備画面のスタイル選択 ===
         document.querySelectorAll('.prep-style-chip').forEach(chip => {
-            chip.addEventListener('click', () => {
+            addTouchClickHandler(chip, () => {
                 document.querySelectorAll('.prep-style-chip').forEach(c => c.classList.remove('active'));
                 chip.classList.add('active');
                 selectedStyle = chip.dataset.style;
