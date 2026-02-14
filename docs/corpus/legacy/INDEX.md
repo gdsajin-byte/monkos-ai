@@ -50,7 +50,7 @@ Claude Code 전환 후 대부분 불필요하나, 설계 이력 참조용으로 
 | `CONTEXT_RECOVERY_REPORT_2026-01-08.md` | 6KB | 참조 가능 | 복구 리포트 |
 | `RECOVERED_CONTEXT_2026-01-08.md` | 35KB | 폐기 | 복구된 컨텍스트 |
 | `REBOOT_BACKUP_20260111.md` | 4KB | 폐기 | 리붓 백업 |
-| `monk_master_context.txt` | **15MB** | 삭제 검토 | 거대 컨텍스트 덤프 |
+| `monk_master_context.txt` | **15MB** | **삭제됨** | GCS 보관, 요약본 `MONK_MASTER_CONTEXT_SUMMARY.md` 참조 |
 
 **결론**: `monk_master_context.txt`는 15MB로 Git에 부담. 삭제 또는 GCS 이동 권장.
 
