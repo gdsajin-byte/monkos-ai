@@ -26,9 +26,21 @@ const PROJECT_ID = process.env.PROJECT_ID || 'monkos';
 const LOCATION = process.env.LOCATION || 'us-central1';
 const PORTAL_API_URL = process.env.PORTAL_API_URL || 'https://monkos.ai';
 
-function log(msg) {
-  const ts = new Date().toISOString();
-  console.log(`[${ts}] ${msg}`);
+/**
+ * 構造化ロギング (Cloud Logging 互換)
+ */
+function log(msg, severity = 'INFO', meta = {}) {
+  const entry = {
+    severity,
+    message: msg,
+    timestamp: new Date().toISOString(),
+    ...meta
+  };
+  if (process.env.K_SERVICE) {
+    console.log(JSON.stringify(entry));
+  } else {
+    console.log(`[${entry.timestamp}] [${severity}] ${msg}`, meta.error || '');
+  }
 }
 
 // === ハイブリッド認証 ===

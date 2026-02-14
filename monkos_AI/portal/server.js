@@ -70,9 +70,26 @@ const firestore = new Firestore({
 });
 const usersCollection = firestore.collection('users');
 
-function log(msg) {
-  const ts = new Date().toISOString();
-  console.log(`[${ts}] ${msg}`);
+/**
+ * 구조화된 로깅 (Cloud Logging 호환)
+ * @param {string} msg - 로그 메시지
+ * @param {'INFO'|'WARNING'|'ERROR'} severity - 심각도
+ * @param {Object} meta - 추가 메타데이터
+ */
+function log(msg, severity = 'INFO', meta = {}) {
+  const entry = {
+    severity,
+    message: msg,
+    timestamp: new Date().toISOString(),
+    ...meta
+  };
+  // Cloud Run 환경: JSON 출력 → Cloud Logging 자동 파싱
+  // 로컬 환경: 읽기 쉬운 포맷
+  if (process.env.K_SERVICE) {
+    console.log(JSON.stringify(entry));
+  } else {
+    console.log(`[${entry.timestamp}] [${severity}] ${msg}`, meta.error || '');
+  }
 }
 
 // === Vertex AI ADC ===
@@ -771,7 +788,7 @@ location.href = '/';
           const verifyRes = await fetch(verifyUrl);
           tokenInfo = await verifyRes.json();
           if (tokenInfo.error || tokenInfo.aud !== GOOGLE_CLIENT_ID) {
-            log(`[Auth] id_token 검증 실패: ${tokenInfo.error || 'aud 불일치'}`);
+            log(`[Auth] id_token 검증 실패: ${tokenInfo.error || 'aud 불일치'}`, 'WARNING');
             res.writeHead(401, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ error: '토큰 검증 실패' }));
             return;
@@ -783,7 +800,7 @@ location.href = '/';
           });
           const userInfo = await userInfoRes.json();
           if (userInfo.error || !userInfo.sub) {
-            log(`[Auth] access_token 검증 실패: ${userInfo.error || 'sub 없음'}`);
+            log(`[Auth] access_token 검증 실패: ${userInfo.error || 'sub 없음'}`, 'WARNING');
             res.writeHead(401, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ error: '토큰 검증 실패' }));
             return;
@@ -1306,7 +1323,7 @@ location.href = '/';
         const checkoutData = await checkoutRes.json();
 
         if (!checkoutRes.ok) {
-          log(`[Checkout] 에러: ${JSON.stringify(checkoutData)}`);
+          log(`[Checkout] 에러: ${JSON.stringify(checkoutData)}`, 'ERROR');
           res.writeHead(500, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ error: '체크아웃 생성 실패' }));
           return;
@@ -1318,7 +1335,7 @@ location.href = '/';
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ url: checkoutUrl }));
       } catch (err) {
-        log(`[Checkout] 에러: ${err.message}`);
+        log(`[Checkout] 에러: ${err.message}`, 'ERROR', { error: err.stack });
         res.writeHead(500, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: err.message }));
       }
@@ -1410,7 +1427,7 @@ location.href = '/';
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ received: true }));
       } catch (err) {
-        log(`[Webhook] 에러: ${err.message}`);
+        log(`[Webhook] 에러: ${err.message}`, 'ERROR', { error: err.stack });
         res.writeHead(500, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: err.message }));
       }
@@ -1454,7 +1471,7 @@ location.href = '/';
         const tossData = await tossRes.json();
 
         if (!tossRes.ok) {
-          log(`[Toss] 결제 승인 실패: ${tossData.code} - ${tossData.message}`);
+          log(`[Toss] 결제 승인 실패: ${tossData.code} - ${tossData.message}`, 'ERROR', { userId, amount, orderId });
           res.writeHead(400, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ error: tossData.message || '결제 승인 실패' }));
           return;
@@ -1483,7 +1500,7 @@ location.href = '/';
           orderId,
         }));
       } catch (err) {
-        log(`[Toss] 에러: ${err.message}`);
+        log(`[Toss] 에러: ${err.message}`, 'ERROR', { error: err.stack });
         res.writeHead(500, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: err.message }));
       }

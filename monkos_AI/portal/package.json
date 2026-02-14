@@ -4,12 +4,17 @@
   "type": "module",
   "scripts": {
     "start": "node server.js",
-    "dev": "node server.js"
+    "dev": "node server.js",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch"
   },
   "description": "MONKOS AI Portal — monkos.ai | Gemini 2.0 챗봇 + 국가별 서비스 분기",
   "dependencies": {
     "@google-cloud/firestore": "^7.11.6",
     "@google/genai": "^1.40.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
   },
   "engines": {
     "node": ">=20.0.0"

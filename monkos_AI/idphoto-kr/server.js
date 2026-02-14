@@ -27,9 +27,21 @@ const PROJECT_ID = process.env.PROJECT_ID || 'monkos';
 const LOCATION = process.env.LOCATION || 'us-central1';
 const PORTAL_API_URL = process.env.PORTAL_API_URL || 'https://monkos.ai';
 
-function log(msg) {
-  const ts = new Date().toISOString();
-  console.log(`[${ts}] ${msg}`);
+/**
+ * 구조화된 로깅 (Cloud Logging 호환)
+ */
+function log(msg, severity = 'INFO', meta = {}) {
+  const entry = {
+    severity,
+    message: msg,
+    timestamp: new Date().toISOString(),
+    ...meta
+  };
+  if (process.env.K_SERVICE) {
+    console.log(JSON.stringify(entry));
+  } else {
+    console.log(`[${entry.timestamp}] [${severity}] ${msg}`, meta.error || '');
+  }
 }
 
 // === 하이브리드 인증 ===
