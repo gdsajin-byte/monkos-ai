@@ -33,6 +33,7 @@
             50% { box-shadow: 0 0 120px rgba(96, 165, 250, 0.5); }
         }
     </style>
+    <script src="../../config.js"></script>
 </head>
 <body class="bg-gray-950 text-white min-h-screen flex flex-col">
 
@@ -143,7 +144,7 @@
     </footer>
 
     <script>
-        const IMAGEN_API_URL = 'https://monk-imagen-proxy.gdsajin.workers.dev';
+        const IMAGEN_API_URL = window.MONK_CONFIG?.API?.IMAGEN_PROXY || 'https://monk-imagen-proxy.gdsajin.workers.dev';
         
         async function generateImage() {
             const prompt = document.getElementById('prompt-input').value.trim();

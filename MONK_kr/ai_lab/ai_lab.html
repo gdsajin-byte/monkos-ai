@@ -65,6 +65,7 @@
         @keyframes fade-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade-in { animation: fade-in 0.3s ease-out forwards; }
     </style>
+    <script src="../config.js"></script>
 </head>
 <body class="bg-gray-950 text-gray-100 min-h-screen flex flex-col overflow-x-hidden font-sans">
 
@@ -316,7 +317,7 @@
     <script>
         // ============ GEMINI CHAT LOGIC (Cloudflare Workers) ============
         let llmConnected = false;
-        const GEMINI_API_URL = 'https://monk-gemini-proxy.gdsajin.workers.dev';
+        const GEMINI_API_URL = window.MONK_CONFIG?.API?.GEMINI_PROXY || 'https://monk-gemini-proxy.gdsajin.workers.dev';
 
         async function checkLLMConnection() {
             try {

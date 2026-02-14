@@ -95,6 +95,7 @@
         }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
     </style>
+    <script src="config.js"></script>
 </head>
 <body class="bg-gray-950 text-white min-h-screen flex flex-col font-sans overflow-x-hidden">
 
@@ -309,7 +310,7 @@
     <script>
         // ============ GEMINI CHAT LOGIC ============
         let llmConnected = false;
-        const GEMINI_API_URL = 'https://monk-gemini-proxy.gdsajin.workers.dev';
+        const GEMINI_API_URL = window.MONK_CONFIG?.API?.GEMINI_PROXY || 'https://monk-gemini-proxy.gdsajin.workers.dev';
 
         async function checkLLMConnection() {
             try {

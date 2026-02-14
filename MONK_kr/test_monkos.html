@@ -37,6 +37,7 @@
             50% { opacity: 0.6; }
         }
     </style>
+    <script src="config.js"></script>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
     
@@ -143,7 +144,7 @@
         document.getElementById('tester-id').textContent = testerId;
 
         // API 설정
-        const API_URL = 'https://monk-chatbot.gdsajin.workers.dev/chat';
+        const API_URL = (window.MONK_CONFIG?.API?.CHATBOT || 'https://monk-chatbot.gdsajin.workers.dev') + '/chat';
         
         let conversationHistory = [];
 

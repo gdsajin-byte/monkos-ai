@@ -101,6 +101,7 @@
             background-size: 20px 20px;
         }
     </style>
+    <script src="../../config.js"></script>
 </head>
 <body class="bg-dark text-white min-h-screen flex flex-col font-sans">
 
@@ -519,7 +520,7 @@
     </footer>
 
     <script>
-        const IMAGEN_API_URL = 'https://monk-imagen-proxy.gdsajin.workers.dev';
+        const IMAGEN_API_URL = window.MONK_CONFIG?.API?.IMAGEN_PROXY || 'https://monk-imagen-proxy.gdsajin.workers.dev';
 
         function selectCategory(category) {
             document.querySelectorAll('.category-tab').forEach(tab => tab.classList.remove('active'));
