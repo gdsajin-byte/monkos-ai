@@ -35,7 +35,7 @@ Claude Code 전환 후 대부분 불필요하나, 설계 이력 참조용으로 
 |------|------|------|------|
 | `CURSOR_AI_COLLABORATION_GUIDE.md` | 25KB | 폐기 | Cursor 협업 가이드 |
 | `CURSOR_BACKUP_STRATEGY.md` | 8KB | 폐기 | 백업 전략 |
-| `cursorrules_20260207.md` | 20KB | 폐기 | .cursorrules 백업 |
+| `20260207_cursorrules.md` | 20KB | 폐기 | .cursorrules 백업 |
 | `cursorignore_20260207.txt` | 1KB | 폐기 | .cursorignore 백업 |
 | `cursor_session_20260108_evening.txt` | 9KB | 폐기 | 세션 로그 |
 
@@ -47,9 +47,9 @@ Claude Code 전환 후 대부분 불필요하나, 설계 이력 참조용으로 
 
 | 파일 | 크기 | 상태 | 설명 |
 |------|------|------|------|
-| `CONTEXT_RECOVERY_REPORT_2026-01-08.md` | 6KB | 참조 가능 | 복구 리포트 |
-| `RECOVERED_CONTEXT_2026-01-08.md` | 35KB | 폐기 | 복구된 컨텍스트 |
-| `REBOOT_BACKUP_20260111.md` | 4KB | 폐기 | 리붓 백업 |
+| `20260108_CONTEXT_RECOVERY_REPORT.md` | 6KB | 참조 가능 | 복구 리포트 |
+| `20260108_RECOVERED_CONTEXT.md` | 35KB | 폐기 | 복구된 컨텍스트 |
+| `20260111_REBOOT_BACKUP.md` | 4KB | 폐기 | 리붓 백업 |
 | `monk_master_context.txt` | **15MB** | **삭제됨** | GCS 보관, 요약본 `MONK_MASTER_CONTEXT_SUMMARY.md` 참조 |
 
 **결론**: `monk_master_context.txt`는 15MB로 Git에 부담. 삭제 또는 GCS 이동 권장.
@@ -64,7 +64,7 @@ Claude Code 전환 후 대부분 불필요하나, 설계 이력 참조용으로 
 | `ARCHIVE_INVENTORY.md` | 12KB | 참조 가능 | 아카이브 목록 |
 | `CURRENT_STATUS.md` | 5KB | 폐기 | 구 상태 (2026-01) |
 | `PROJECT_COMPLETION_REPORT.md` | 11KB | 참조 가능 | 완료 보고서 |
-| `FINAL_DECISION_20260112.md` | 10KB | 참조 가능 | 최종 결정 기록 |
+| `20260112_FINAL_DECISION.md` | 10KB | 참조 가능 | 최종 결정 기록 |
 | `FINAL_STRATEGY_GPU.md` | 5KB | 참조 가능 | GPU 전략 |
 | `REVIEW_SSANGA_RESPONSE.md` | 6KB | 폐기 | 쌍아 응답 리뷰 |
 
