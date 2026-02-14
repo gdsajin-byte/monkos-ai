@@ -756,8 +756,8 @@
             </div>
             <button id="btn-voice" onclick="toggleVoice()" title="音声ON"
                 style="background:none; border:none; font-size:18px; cursor:pointer; padding:4px;">🔊</button>
-            <span class="dot dot-wait" id="ws-dot"></span>
-            <span id="ws-status" style="font-size:11px;">待機中</span>
+            <span class="dot dot-wait" id="ws-dot" style="display:none;"></span>
+            <span id="ws-status" style="display:none;">待機中</span>
         </div>
     </div>
 
@@ -1418,15 +1418,17 @@
             }
         }
 
-        // === WebSocket ===
+        // === WebSocket (コーチング専用 — 撮影室 Step 1 のみ) ===
         function connectWS() {
+            if (ws && ws.readyState <= 1) return;
             const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
             ws = new WebSocket(`${protocol}//${location.host}`);
             setDot('wait', t('connecting'));
 
             ws.onopen = () => {
                 setDot('on', t('connected'));
-                log('サーバー接続完了');
+                log('コーチングセッション接続');
+                ws.send(JSON.stringify({ type: 'set-style', style: selectedStyle }));
                 startFrameCapture();
                 showCoaching(t('coachingInit'));
             };
@@ -1438,58 +1440,45 @@
                     msg = JSON.parse(raw);
                 } catch { return; }
 
-                if (msg.type === 'credit-update') {
-                    userCredits = msg.credits;
-                    updateCreditBadge();
-                } else if (msg.type === 'ai-coaching') {
-                    if (currentStep !== 1) return; // 撮影中のみコーチング表示
+                // コーチングメッセージのみ処理
+                if (msg.type === 'ai-coaching') {
+                    if (currentStep !== 1) return;
                     showCoaching(msg.text);
-                } else if (msg.type === 'generate-start') {
-                    showStep3Loading();
-                } else if (msg.type === 'generate-result') {
-                    showGeneratedPhoto(msg.image);
-                } else if (msg.type === 'generate-error') {
-                    showGenerateError(msg.error);
-                } else if (msg.type === 'qc-result') {
-                    showQCResult(msg.result);
-                } else if (msg.type === 'qc-error') {
-                    showQCError(msg.error);
-                } else if (msg.type === 'credit-error') {
-                    // クレジット不足
-                    showCreditModal(msg.required, msg.credits, 'generate');
-                    // UI復元
-                    document.getElementById('step2-actions').style.display = 'flex';
-                    document.getElementById('result-title').textContent = t('resultConfirm');
-                    document.getElementById('result-subtitle').textContent = 'クレジットが不足しています';
-                    currentStep = 2;
-                } else if (msg.type === 'download-credit-ok') {
-                    // ダウンロードクレジット消費成功
-                    userCredits = msg.credits;
-                    updateCreditBadge();
-                    proceedDownload();
-                } else if (msg.type === 'share-bonus-ok') {
-                    userCredits = msg.credits;
-                    updateCreditBadge();
-                    document.getElementById('postCreditMsg').textContent =
-                        `🎁 +${msg.bonus}c ボーナス · 残り ${msg.credits}c`;
-                    disableShareButtons();
-                    log(`シェアボーナス +${msg.bonus}c → ${msg.credits}c`);
-                } else if (msg.type === 'share-bonus-error') {
-                    document.getElementById('postCreditMsg').textContent = msg.error || 'ボーナス済み';
-                    disableShareButtons();
                 }
             };
 
             ws.onclose = () => {
                 setDot('off', t('disconnected'));
                 stopFrameCapture();
-                if (currentStep >= 1) setTimeout(connectWS, 3000);
+                // 撮影室(Step 1)のみ自動再接続
+                if (currentStep === 1) setTimeout(connectWS, 3000);
             };
         }
 
-        function setDot(state, text) {
-            document.getElementById('ws-dot').className = 'dot dot-' + state;
-            document.getElementById('ws-status').textContent = text;
+        function disconnectWS() {
+            if (ws) {
+                try { ws.send(JSON.stringify({ type: 'stop-coaching' })); } catch {}
+                try { ws.close(); } catch {}
+                ws = null;
+            }
+            stopFrameCapture();
+            setDot('off', '');
+        }
+
+        // === REST API 呼び出しヘルパー ===
+        async function apiPost(endpoint, body) {
+            const res = await fetch(endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body),
+            });
+            const data = await res.json();
+            if (!res.ok) throw { status: res.status, ...data };
+            return data;
+        }
+
+        function setDot(state) {
+            document.getElementById('btn-voice').style.display = (state === 'on') ? '' : 'none';
         }
 
         // === カメラ ===
@@ -1603,11 +1592,8 @@
             capturedImageData = canvas.toDataURL('image/jpeg', 0.8);
 
             currentStep = 2;
-            stopFrameCapture();
-            // コーチングセッション停止（TTS + Gemini Live）
-            if (ws && ws.readyState === 1) {
-                ws.send(JSON.stringify({ type: 'stop-coaching' }));
-            }
+            // コーチングセッション終了（WS切断 + TTS停止）
+            disconnectWS();
             if ('speechSynthesis' in window) speechSynthesis.cancel();
             document.getElementById('coaching-overlay').classList.remove('active');
             document.getElementById('step-label').textContent = t('step2');
@@ -1634,66 +1620,96 @@
             document.getElementById('spec-result').classList.remove('active');
             document.getElementById('step-label').textContent = t('step1');
             document.getElementById('result-overlay').classList.remove('active');
-            // 재촬영 시 촬영 버튼 + 로그 재표시
+            // 撮り直し時に撮影ボタン + ログ再表示
             document.getElementById('controls').classList.add('active');
             document.getElementById('log').style.display = 'block';
-            startFrameCapture();
-
-            if (ws && ws.readyState === 1) {
-                ws.send(JSON.stringify({ type: 'restart-coaching' }));
-            }
+            // コーチングWS再接続
+            connectWS();
             log('撮り直し');
         }
 
-        // === Step 3: 生成 + QC ===
-        function confirmAndGenerate() {
+        // === Step 2.5: 事前分析 → Step 3: 生成 + QC ===
+        async function confirmAndGenerate() {
             if (!capturedImageData) return;
-
-            currentStep = 3;
-            document.getElementById('step-label').textContent = t('step3');
-            document.getElementById('step2-actions').style.display = 'none';
-            document.getElementById('result-title').textContent = t('generating');
-            document.getElementById('result-subtitle').textContent = t('generatingSub');
-            // 生成開始時に撮影ボタン+ログ非表示
-            document.getElementById('controls').classList.remove('active');
-            document.getElementById('log').style.display = 'none';
 
             const base64 = capturedImageData.includes(',') ? capturedImageData.split(',')[1] : capturedImageData;
 
-            ws.send(JSON.stringify({
-                type: 'generate',
-                image: base64,
-                style: selectedStyle,
-                gender: selectedGender,
-                age: selectedAge,
-                userId: userId,  // クレジットチェック用
-            }));
-        }
-
-        function showStep3Loading() {
+            // 事前分析: 撮影写真の適合性チェック
+            document.getElementById('step2-actions').style.display = 'none';
+            document.getElementById('result-title').textContent = '写真分析中...';
+            document.getElementById('result-subtitle').textContent = 'AIが撮影写真を検査しています';
             document.getElementById('qc-badge').style.display = 'block';
             document.getElementById('qc-badge').className = 'pending';
+            document.getElementById('qc-badge').innerHTML = `<span class="spinner"></span> 事前分析中`;
+
+            try {
+                const preCheck = await apiPost('/api/pre-check', { image: base64 });
+                log(`事前分析: ${preCheck.score}点 ${preCheck.suitable ? 'OK' : 'NG'}`);
+
+                if (!preCheck.suitable) {
+                    document.getElementById('qc-badge').className = 'fail';
+                    document.getElementById('qc-badge').textContent = `事前分析: ${preCheck.score}点 — ${preCheck.suggestion || '撮り直しをお勧めします'}`;
+                    document.getElementById('result-title').textContent = '撮り直しをお勧めします';
+                    document.getElementById('result-subtitle').textContent = preCheck.suggestion || '撮影環境を改善してください';
+                    document.getElementById('step2-actions').style.display = 'flex';
+                    return;
+                }
+
+                document.getElementById('qc-badge').innerHTML = `<span class="spinner"></span> 事前分析 OK (${preCheck.score}点) → 生成開始`;
+            } catch (err) {
+                log('事前分析スキップ: ' + (err.error || err.message));
+            }
+
+            // 生成段階
+            currentStep = 3;
+            document.getElementById('step-label').textContent = t('step3');
+            document.getElementById('result-title').textContent = t('generating');
+            document.getElementById('result-subtitle').textContent = t('generatingSub');
+            document.getElementById('controls').classList.remove('active');
+            document.getElementById('log').style.display = 'none';
             document.getElementById('qc-badge').innerHTML = `<span class="spinner"></span> ${t('genLoading')}`;
-        }
 
-        function showGeneratedPhoto(imageData) {
-            generatedImageData = imageData;
-            document.getElementById('photo-generated').src = imageData;
-            document.getElementById('photo-generated-wrap').style.display = 'block';
-            document.getElementById('result-title').textContent = t('qcVerifying');
-            document.getElementById('result-subtitle').textContent = t('qcVerifyingSub');
-            document.getElementById('qc-badge').innerHTML = `<span class="spinner"></span> ${t('qcChecking')}`;
+            try {
+                const genResult = await apiPost('/api/generate', {
+                    image: base64,
+                    style: selectedStyle,
+                    gender: selectedGender,
+                    age: selectedAge,
+                    userId: userId,
+                });
 
-            log('生成完了 → QC開始');
+                generatedImageData = genResult.image;
+                document.getElementById('photo-generated').src = genResult.image;
+                document.getElementById('photo-generated-wrap').style.display = 'block';
+                document.getElementById('result-title').textContent = t('qcVerifying');
+                document.getElementById('result-subtitle').textContent = t('qcVerifyingSub');
+                document.getElementById('qc-badge').innerHTML = `<span class="spinner"></span> ${t('qcChecking')}`;
+                log('生成完了 → QC開始');
 
-            const origBase64 = capturedImageData.includes(',') ? capturedImageData.split(',')[1] : capturedImageData;
-            const genBase64 = imageData.includes(',') ? imageData.split(',')[1] : imageData;
+                const origBase64 = capturedImageData.includes(',') ? capturedImageData.split(',')[1] : capturedImageData;
+                const genBase64 = genResult.image.includes(',') ? genResult.image.split(',')[1] : genResult.image;
 
-            ws.send(JSON.stringify({
-                type: 'qc',
-                original: origBase64,
-                generated: genBase64,
-            }));
+                try {
+                    const qcResult = await apiPost('/api/qc', {
+                        original: origBase64,
+                        generated: genBase64,
+                    });
+                    showQCResult(qcResult);
+                    log(`QC: ${JSON.stringify(qcResult).substring(0, 100)}`);
+                } catch (qcErr) {
+                    showQCError(qcErr.error || qcErr.message || 'QC失敗');
+                }
+            } catch (err) {
+                if (err.status === 402) {
+                    showCreditModal(err.required || 1, err.credits || 0, 'generate');
+                    document.getElementById('step2-actions').style.display = 'flex';
+                    document.getElementById('result-title').textContent = t('resultConfirm');
+                    document.getElementById('result-subtitle').textContent = 'クレジットが不足しています';
+                    currentStep = 2;
+                } else {
+                    showGenerateError(err.error || err.message || '生成失敗');
+                }
+            }
         }
 
         function showQCResult(result) {
@@ -1883,8 +1899,7 @@
         }
 
         function cleanupSession() {
-            if (frameTimer) { clearInterval(frameTimer); frameTimer = null; }
-            if (ws) { try { ws.close(); } catch(e) {} ws = null; }
+            disconnectWS();
             if (cameraStream) { cameraStream.getTracks().forEach(t => t.stop()); cameraStream = null; }
             if ('speechSynthesis' in window) speechSynthesis.cancel();
         }
@@ -1895,13 +1910,23 @@
             if (!generatedImageData) return;
 
             // ログインユーザー: ダウンロードクレジット消費 (10c)
-            if (userId && ws && ws.readyState === 1) {
+            if (userId) {
                 if (userCredits < CREDIT_COST.download) {
                     showCreditModal(CREDIT_COST.download, userCredits, 'download');
                     return;
                 }
-                ws.send(JSON.stringify({ type: 'use-download-credit', userId: userId }));
-                // サーバー応答(download-credit-ok)でproceedDownload()が呼ばれる
+                try {
+                    const result = await apiPost('/api/credit/use', { userId, type: 'download' });
+                    userCredits = result.credits;
+                    updateCreditBadge();
+                    proceedDownload();
+                } catch (err) {
+                    if (err.status === 402) {
+                        showCreditModal(CREDIT_COST.download, err.credits || 0, 'download');
+                    } else {
+                        log('ダウンロードクレジットエラー: ' + (err.error || err.message));
+                    }
+                }
                 return;
             }
 

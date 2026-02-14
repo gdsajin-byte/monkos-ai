@@ -198,8 +198,8 @@ function getOutfitPrompt(gender, age, style = 'id_photo') {
   return `SUBJECT: This person is a ${genderLabel}, ${info.label}. OUTFIT: Dress this person in ${info.outfit}. Keep the person's face, hair, and body exactly the same — only ensure appropriate attire. DO NOT change the person's apparent gender or age.`;
 }
 
-// === QC プロンプト (日本語) ===
-const QC_INSTRUCTION = `2つの画像を比較してください。
+// === QC プロンプト (日本語 — bounding box 含む) ===
+const QC_INSTRUCTION = `2つの画像を比較し、2枚目（証明写真）の構図を分析してください。
 1枚目：原本（実際の撮影）
 2枚目：AI生成物（証明写真）
 
@@ -208,9 +208,24 @@ const QC_INSTRUCTION = `2つの画像を比較してください。
 2. 類似度 %（0-100）
 3. アイデンティティ維持（PASS/FAIL）
 4. 証明写真品質（照明、背景、構図）
+5. 2枚目の画像で顔のbounding box座標 [ymin, xmin, ymax, xmax]（0-1000正規化）
 
-[応答形式 — JSON]
-{ "same_person": true/false, "similarity": 85, "identity": "PASS", "quality": "GOOD", "note": "一行コメント" }`;
+[応答形式 — JSONのみ出力]
+{
+  "same_person": true,
+  "similarity": 85,
+  "identity": "PASS",
+  "quality": "GOOD",
+  "face_box": [180, 220, 650, 780],
+  "face_ratio": 0.35,
+  "face_center_x": 500,
+  "head_top_margin": 80,
+  "note": "一行コメント"
+}
+
+face_ratio = 顔の高さ / 画像全体の高さ（0.25〜0.45が適切）
+face_center_x = 顔の中心x座標（500付近で中央揃え、±50許容）
+head_top_margin = 頭頂部から画像上端までの余白（40〜150が適切）`;
 
 // === クライアントセッション管理 ===
 const sessions = new Map();
@@ -300,35 +315,114 @@ async function generatePhoto(inputBase64, style = 'id_photo', gender = 'male', a
   return `data:image/png;base64,${part.inlineData.data}`;
 }
 
-// === Gemini QC (Vertex AI ADC) ===
-async function runQC(originalBase64, generatedBase64) {
+// === Gemini QC (Vertex AI ADC) — 3 Flash → 2.0 Flash フォールバック ===
+const QC_MODELS = ['gemini-3-flash-preview', 'gemini-2.0-flash'];
 
+async function runQC(originalBase64, generatedBase64) {
   const origData = originalBase64.includes(',') ? originalBase64.split(',')[1] : originalBase64;
   const genData = generatedBase64.includes(',') ? generatedBase64.split(',')[1] : generatedBase64;
 
-  const response = await ai.models.generateContent({
-    model: 'gemini-2.0-flash',
-    contents: [{
-      role: 'user',
-      parts: [
-        { inlineData: { mimeType: 'image/jpeg', data: origData } },
-        { inlineData: { mimeType: 'image/png', data: genData } },
-        { text: QC_INSTRUCTION },
-      ],
-    }],
-  });
+  for (const model of QC_MODELS) {
+    try {
+      log(`[QC] モデル試行: ${model}`);
+      const response = await ai.models.generateContent({
+        model,
+        contents: [{
+          role: 'user',
+          parts: [
+            { inlineData: { mimeType: 'image/jpeg', data: origData } },
+            { inlineData: { mimeType: 'image/png', data: genData } },
+            { text: QC_INSTRUCTION },
+          ],
+        }],
+        config: {
+          responseMimeType: 'application/json',
+          temperature: 0.3,
+        },
+      });
 
-  const text = response.candidates?.[0]?.content?.parts?.[0]?.text || '';
-  log(`[QC] 応答: ${text.substring(0, 200)}`);
+      const text = response.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      log(`[QC][${model}] 応答: ${text.substring(0, 300)}`);
 
-  try {
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
-    if (jsonMatch) return JSON.parse(jsonMatch[0]);
-  } catch { /* パース失敗時は原文返却 */ }
-  return { raw: text };
+      try {
+        const jsonMatch = text.match(/\{[\s\S]*\}/);
+        if (jsonMatch) return JSON.parse(jsonMatch[0]);
+      } catch { /* JSONパース失敗 → 次のモデル */ }
+      return { raw: text };
+    } catch (err) {
+      log(`[QC][${model}] 失敗: ${err.message} → フォールバック`);
+      if (model === QC_MODELS[QC_MODELS.length - 1]) {
+        return { identity: 'ERROR', note: `QC全体失敗: ${err.message}` };
+      }
+    }
+  }
 }
 
-// === HTTP サーバー (静的ファイル + ヘルスチェック) ===
+// === 事前分析 (Gemini 3 Flash — 撮影写真の適合性チェック) ===
+const PRE_CHECK_INSTRUCTION = `この写真が証明写真の原本として適切かどうか分析してください。
+
+[チェック項目]
+1. 顔検出：顔が1つ明確に見えるか？
+2. 正面性：正面を向いているか？（左右の傾き、頭の上下）
+3. 照明：顔に強い影や逆光がないか？
+4. 鮮明度：ブレなく鮮明か？
+5. 顔サイズ：フレーム対比で顔が十分大きいか？（最小20%）
+6. 表情：無表情または自然な微笑みか？
+7. 目：目を閉じていないか？
+
+[応答形式 — JSONのみ出力]
+{
+  "suitable": true,
+  "score": 85,
+  "face_detected": true,
+  "issues": [],
+  "suggestion": "一行アドバイス"
+}
+
+suitable: 証明写真生成可能かどうか (true/false)
+score: 総合点数 (0-100, 70以上ならsuitable=true)
+issues: 問題リスト (空配列なら問題なし)
+suggestion: ユーザーに表示する一行日本語アドバイス`;
+
+async function runPreCheck(imageBase64) {
+  const data = imageBase64.includes(',') ? imageBase64.split(',')[1] : imageBase64;
+
+  for (const model of QC_MODELS) {
+    try {
+      log(`[事前分析] モデル試行: ${model}`);
+      const response = await ai.models.generateContent({
+        model,
+        contents: [{
+          role: 'user',
+          parts: [
+            { inlineData: { mimeType: 'image/jpeg', data } },
+            { text: PRE_CHECK_INSTRUCTION },
+          ],
+        }],
+        config: {
+          responseMimeType: 'application/json',
+          temperature: 0.2,
+        },
+      });
+
+      const text = response.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      log(`[事前分析][${model}] 応答: ${text.substring(0, 300)}`);
+
+      try {
+        const jsonMatch = text.match(/\{[\s\S]*\}/);
+        if (jsonMatch) return JSON.parse(jsonMatch[0]);
+      } catch { /* JSONパース失敗 → 次のモデル */ }
+      return { suitable: true, score: 0, raw: text };
+    } catch (err) {
+      log(`[事前分析][${model}] 失敗: ${err.message} → フォールバック`);
+      if (model === QC_MODELS[QC_MODELS.length - 1]) {
+        return { suitable: true, score: 0, note: `分析失敗: ${err.message}` };
+      }
+    }
+  }
+}
+
+// === HTTP サーバー (静的ファイル + APIエンドポイント) ===
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
   '.js': 'application/javascript; charset=utf-8',
@@ -340,43 +434,155 @@ const MIME_TYPES = {
   '.ico': 'image/x-icon',
 };
 
+// POST bodyパーサー (JSON)
+function parseBody(req) {
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    req.on('data', c => chunks.push(c));
+    req.on('end', () => {
+      try { resolve(JSON.parse(Buffer.concat(chunks).toString())); }
+      catch (e) { reject(e); }
+    });
+    req.on('error', reject);
+  });
+}
+
+function jsonResponse(res, status, data) {
+  res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8' });
+  res.end(JSON.stringify(data));
+}
+
 const httpServer = createServer(async (req, res) => {
   // セキュリティヘッダー
   res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'DENY');
 
+  const urlPath = req.url.split('?')[0];
+
   // ヘルスチェック
-  if (req.url === '/health') {
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({
+  if (urlPath === '/health') {
+    jsonResponse(res, 200, {
       status: 'healthy',
       service: 'monkos-idphoto-jp',
-      version: '1.0.0',
+      version: '2.0.0',
       timestamp: new Date().toISOString(),
       auth: 'Hybrid (ADC + API Key)',
       geminiLive: 'ready (ADC)',
       imagen: GEMINI_API_KEY ? 'active (API Key)' : 'NO API KEY',
-      qc: 'active (ADC)',
-    }));
+      qc: 'active (gemini-3-flash-preview → 2.0-flash フォールバック)',
+      preCheck: 'active (gemini-3-flash-preview)',
+    });
     return;
   }
 
   // API 情報
-  if (req.url === '/api/info') {
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({
+  if (urlPath === '/api/info') {
+    jsonResponse(res, 200, {
       service: 'MONKOS AI 証明写真',
       domain: 'idphoto-jp.monkos.ai',
-      features: ['AIコーチング', 'AI証明写真生成', 'AI品質検証'],
+      features: ['AIコーチング (WS)', 'AI事前分析', 'AI証明写真生成', 'AI品質検証'],
       styles: Object.keys(STYLE_PROMPTS),
-    }));
+    });
+    return;
+  }
+
+  // === REST APIエンドポイント ===
+
+  // POST /api/pre-check — 撮影写真の適合性分析
+  if (urlPath === '/api/pre-check' && req.method === 'POST') {
+    try {
+      const body = await parseBody(req);
+      if (!body.image) return jsonResponse(res, 400, { error: '画像が必要です' });
+      const result = await runPreCheck(body.image);
+      jsonResponse(res, 200, result);
+    } catch (err) {
+      log(`[API][pre-check] エラー: ${err.message}`);
+      jsonResponse(res, 500, { error: err.message });
+    }
+    return;
+  }
+
+  // POST /api/generate — Imagen I2I 生成 (クレジットチェック含む)
+  if (urlPath === '/api/generate' && req.method === 'POST') {
+    let bodyUserId = null;
+    try {
+      const body = await parseBody(req);
+      bodyUserId = body.userId;
+      if (!body.image) return jsonResponse(res, 400, { error: '画像が必要です' });
+
+      if (body.userId) {
+        const creditResult = await useCredits(body.userId, 'generate');
+        if (!creditResult.success) {
+          return jsonResponse(res, 402, {
+            error: creditResult.error,
+            credits: creditResult.credits ?? 0,
+            required: 1,
+          });
+        }
+        log(`[Credits] 生成消費: ${body.userId} → ${creditResult.credits}c`);
+      }
+
+      log(`[Imagen] 生成リクエスト: style=${body.style}, gender=${body.gender || 'male'}, age=${body.age || 'adult'}`);
+      const image = await generatePhoto(body.image, body.style, body.gender, body.age);
+      jsonResponse(res, 200, { image });
+    } catch (err) {
+      log(`[API][generate] エラー: ${err.message}`);
+      if (bodyUserId) {
+        try {
+          const refund = await refundCredits(bodyUserId, 'generate');
+          if (refund.success) log(`[Credits] 生成失敗返金: ${bodyUserId}`);
+        } catch {}
+      }
+      jsonResponse(res, 500, { error: err.message });
+    }
+    return;
+  }
+
+  // POST /api/qc — QC検証
+  if (urlPath === '/api/qc' && req.method === 'POST') {
+    try {
+      const body = await parseBody(req);
+      if (!body.original || !body.generated) return jsonResponse(res, 400, { error: '原本/生成物が必要です' });
+      const result = await runQC(body.original, body.generated);
+      jsonResponse(res, 200, result);
+    } catch (err) {
+      log(`[API][qc] エラー: ${err.message}`);
+      jsonResponse(res, 500, { error: err.message });
+    }
+    return;
+  }
+
+  // POST /api/credit/use — クレジット消費
+  if (urlPath === '/api/credit/use' && req.method === 'POST') {
+    try {
+      const body = await parseBody(req);
+      if (!body.userId) return jsonResponse(res, 400, { error: 'ログインが必要です' });
+      const result = await useCredits(body.userId, body.type || 'download');
+      jsonResponse(res, result.success ? 200 : 402, result);
+    } catch (err) {
+      log(`[API][credit/use] エラー: ${err.message}`);
+      jsonResponse(res, 500, { error: err.message });
+    }
+    return;
+  }
+
+  // POST /api/credit/share-bonus — シェアボーナス
+  if (urlPath === '/api/credit/share-bonus' && req.method === 'POST') {
+    try {
+      const body = await parseBody(req);
+      if (!body.userId) return jsonResponse(res, 400, { error: 'ログインが必要です' });
+      const result = await grantShareBonus(body.userId, body.platform);
+      jsonResponse(res, result.success ? 200 : 400, result);
+    } catch (err) {
+      log(`[API][credit/share-bonus] エラー: ${err.message}`);
+      jsonResponse(res, 500, { error: err.message });
+    }
     return;
   }
 
   // 静的ファイル配信
   // / → ランディングページ, /app → 撮影アプリUI
-  const urlPath = req.url.split('?')[0];
   let filePath;
   if (urlPath === '/') filePath = '/landing.html';
   else if (urlPath === '/app') filePath = '/index.html';
@@ -394,25 +600,23 @@ const httpServer = createServer(async (req, res) => {
   }
 });
 
-// === WebSocket ===
+// === WebSocket (コーチング専用 — 撮影室 Step 1 でのみ接続) ===
 const wss = new WebSocketServer({ server: httpServer });
 let clientCounter = 0;
 
 wss.on('connection', async (ws) => {
   const clientId = `c${++clientCounter}`;
-  log(`[WS][${clientId}] クライアント接続`);
+  log(`[WS][${clientId}] コーチングセッション接続`);
 
-  // セッション（Gemini Liveは初回フレーム受信時に遅延生成）
   const session = { gemini: null, frameCount: 0, responseBuffer: '', bufferFlushTimer: null, ws, photoStyle: 'id_photo' };
   sessions.set(clientId, session);
 
   ws.on('message', async (data, isBinary) => {
     // バイナリ = JPEG フレーム → Gemini Live コーチング
     if (isBinary) {
-      // 初回フレームでGemini Liveセッション遅延生成
       if (!session.gemini) {
         await connectGeminiLive(session, clientId, session.photoStyle);
-        log(`[コーチング][${clientId}] Gemini Liveセッション遅延生成 (style=${session.photoStyle})`);
+        log(`[コーチング][${clientId}] Gemini Live 遅延生成 (style=${session.photoStyle})`);
       }
       try {
         const base64 = Buffer.from(data).toString('base64');
@@ -432,124 +636,19 @@ wss.on('connection', async (ws) => {
       return;
     }
 
-    // テキスト = JSON コマンド
+    // テキスト = JSON コマンド（コーチング関連のみ）
     let msg;
     try {
       const raw = Buffer.isBuffer(data) ? data.toString() : data;
       msg = JSON.parse(raw);
     } catch { return; }
 
-    // スタイル設定（コーチング開始前にクライアントから受信）
     if (msg.type === 'set-style') {
       session.photoStyle = msg.style === 'resume' ? 'resume' : 'id_photo';
       log(`[スタイル][${clientId}] ${session.photoStyle}`);
       return;
     }
 
-    // Imagen 生成リクエスト（クレジットチェック）
-    if (msg.type === 'generate') {
-      log(`[Imagen][${clientId}] 生成リクエスト: style=${msg.style}, gender=${msg.gender || 'male'}, age=${msg.age || 'adult'}, userId=${msg.userId || 'anonymous'}`);
-
-      // クレジットチェック・消費 (1c)
-      if (msg.userId) {
-        const creditResult = await useCredits(msg.userId, 'generate');
-        if (!creditResult.success) {
-          ws.send(JSON.stringify({
-            type: 'credit-error',
-            error: creditResult.error,
-            credits: creditResult.credits ?? 0,
-            required: 1,
-          }));
-          log(`[Imagen][${clientId}] クレジット不足: ${msg.userId}`);
-          return;
-        }
-        log(`[Credits][${clientId}] 生成消費完了: ${msg.userId} → ${creditResult.credits}c`);
-        ws.send(JSON.stringify({ type: 'credit-update', credits: creditResult.credits }));
-      }
-
-      ws.send(JSON.stringify({ type: 'generate-start' }));
-      try {
-        const result = await generatePhoto(msg.image, msg.style, msg.gender, msg.age);
-        ws.send(JSON.stringify({ type: 'generate-result', image: result }));
-        log(`[Imagen][${clientId}] 生成完了`);
-      } catch (err) {
-        // 生成失敗時のクレジット返金 (1c)
-        if (msg.userId) {
-          const refund = await refundCredits(msg.userId, 'generate');
-          if (refund.success) {
-            log(`[Credits][${clientId}] 生成失敗返金: ${msg.userId} +1c → ${refund.credits}c`);
-          }
-        }
-        ws.send(JSON.stringify({ type: 'generate-error', error: err.message }));
-        log(`[Imagen][${clientId}] 生成失敗: ${err.message}`);
-      }
-      return;
-    }
-
-    // ダウンロードクレジット消費リクエスト (10c)
-    if (msg.type === 'use-download-credit') {
-      if (!msg.userId) {
-        ws.send(JSON.stringify({ type: 'credit-error', error: 'ログインが必要です' }));
-        return;
-      }
-
-      const creditResult = await useCredits(msg.userId, 'download');
-      if (!creditResult.success) {
-        ws.send(JSON.stringify({
-          type: 'credit-error',
-          error: creditResult.error,
-          credits: creditResult.credits ?? 0,
-          required: 10,
-        }));
-        log(`[Download][${clientId}] クレジット不足: ${msg.userId}`);
-        return;
-      }
-
-      ws.send(JSON.stringify({
-        type: 'download-credit-ok',
-        credits: creditResult.credits,
-      }));
-      log(`[Credits][${clientId}] ダウンロード消費完了: ${msg.userId} → ${creditResult.credits}c`);
-      return;
-    }
-
-    // シェアボーナスリクエスト (+10c)
-    if (msg.type === 'share-bonus') {
-      if (!msg.userId) {
-        ws.send(JSON.stringify({ type: 'credit-error', error: 'ログインが必要です' }));
-        return;
-      }
-
-      const bonusResult = await grantShareBonus(msg.userId, msg.platform);
-      if (!bonusResult.success) {
-        ws.send(JSON.stringify({ type: 'share-bonus-error', error: bonusResult.error }));
-        return;
-      }
-
-      ws.send(JSON.stringify({
-        type: 'share-bonus-ok',
-        credits: bonusResult.credits,
-        bonus: bonusResult.bonus,
-      }));
-      log(`[Credits][${clientId}] シェアボーナス付与: ${msg.userId} +10c → ${bonusResult.credits}c`);
-      return;
-    }
-
-    // QC リクエスト
-    if (msg.type === 'qc') {
-      log(`[QC][${clientId}] 検証リクエスト`);
-      try {
-        const result = await runQC(msg.original, msg.generated);
-        ws.send(JSON.stringify({ type: 'qc-result', result }));
-        log(`[QC][${clientId}] 判定: ${JSON.stringify(result).substring(0, 100)}`);
-      } catch (err) {
-        ws.send(JSON.stringify({ type: 'qc-error', error: err.message }));
-        log(`[QC][${clientId}] 検証失敗: ${err.message}`);
-      }
-      return;
-    }
-
-    // コーチング停止（撮影完了時）
     if (msg.type === 'stop-coaching') {
       log(`[コーチング][${clientId}] セッション停止`);
       if (session.gemini) {
@@ -564,7 +663,6 @@ wss.on('connection', async (ws) => {
       return;
     }
 
-    // コーチングセッション再起動
     if (msg.type === 'restart-coaching') {
       log(`[コーチング][${clientId}] セッション再起動`);
       session.frameCount = 0;
@@ -578,7 +676,7 @@ wss.on('connection', async (ws) => {
   });
 
   ws.on('close', () => {
-    log(`[WS][${clientId}] クライアント切断`);
+    log(`[WS][${clientId}] コーチングセッション切断`);
     if (session.gemini) {
       try { session.gemini.close(); } catch {}
     }
@@ -597,13 +695,19 @@ httpServer.listen(PORT, '0.0.0.0', () => {
   log(`リージョン: ${LOCATION}`);
   log(`認証: ハイブリッド (ADC + API Key)`);
   log(`Imagen I2I: アクティブ (gemini-3-pro-image-preview, API Key)`);
-  log(`QC: アクティブ (gemini-2.0-flash)`);
+  log(`QC: アクティブ (gemini-3-flash-preview → 2.0-flash フォールバック)`);
+  log(`事前分析: アクティブ (gemini-3-flash-preview)`);
   log('='.repeat(60));
   log('エンドポイント:');
-  log(`  GET  /health             — ヘルスチェック`);
-  log(`  GET  /api/info           — サービス情報`);
-  log(`  GET  /                   — ランディングページ`);
-  log(`  GET  /app                — 撮影アプリ`);
-  log(`  WS   /                   — WebSocket (コーチング/生成/QC)`);
+  log('  GET  /health              — ヘルスチェック');
+  log('  GET  /api/info            — サービス情報');
+  log('  POST /api/pre-check       — 事前分析 (撮影適合性)');
+  log('  POST /api/generate        — Imagen I2I 生成');
+  log('  POST /api/qc              — QC 検証');
+  log('  POST /api/credit/use      — クレジット消費');
+  log('  POST /api/credit/share-bonus — シェアボーナス');
+  log('  GET  /                    — ランディングページ');
+  log('  GET  /app                 — 撮影アプリ');
+  log('  WS   /                    — WebSocket (コーチング専用)');
   log('='.repeat(60));
 });
