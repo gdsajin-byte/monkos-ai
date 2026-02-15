@@ -383,6 +383,31 @@
     <a href="/app" class="nav-cta">지금 촬영하기</a>
 </nav>
 
+<!-- 인앱 브라우저 안내 배너 -->
+<div id="inapp-banner" style="display:none; background:#ff6b35; color:#fff; text-align:center; padding:12px 16px; font-size:14px; font-weight:600; line-height:1.5;">
+    ⚠️ Google 로그인이 필요한 서비스입니다.<br>
+    <strong>Chrome</strong> 또는 <strong>Safari</strong>에서 열어주세요.
+    <div style="margin-top:8px;">
+        <button onclick="openExternal()" style="background:#fff; color:#ff6b35; border:none; padding:8px 20px; border-radius:20px; font-size:14px; font-weight:700; cursor:pointer;">외부 브라우저로 열기</button>
+    </div>
+</div>
+<script>
+(function(){
+    var ua = navigator.userAgent || '';
+    if (/KAKAOTALK|NAVER|FBAN|FBAV|Instagram|Line\/|Twitter|Snapchat|DaumApps/i.test(ua)) {
+        document.getElementById('inapp-banner').style.display = 'block';
+    }
+})();
+function openExternal() {
+    var url = location.href;
+    if (/Android/i.test(navigator.userAgent)) {
+        location.href = 'intent://' + url.replace(/^https?:\/\//, '') + '#Intent;scheme=https;package=com.android.chrome;end';
+    } else {
+        location.href = url;
+    }
+}
+</script>
+
 <!-- 히어로 -->
 <section id="hero">
     <div class="hero-badge">Powered by MONKOS AI</div>

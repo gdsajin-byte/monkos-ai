@@ -738,6 +738,29 @@
     <script src="https://js.tosspayments.com/v2/standard"></script>
 </head>
 <body>
+    <!-- 인앱 브라우저 안내 배너 -->
+    <div id="inapp-banner" style="display:none; background:#ff6b35; color:#fff; text-align:center; padding:10px 16px; font-size:13px; font-weight:600; line-height:1.4; position:fixed; top:0; left:0; right:0; z-index:9999;">
+        ⚠️ Google 로그인이 필요합니다. <strong>Chrome/Safari</strong>에서 열어주세요.
+        <button onclick="openExternal()" style="background:#fff; color:#ff6b35; border:none; padding:4px 12px; border-radius:12px; font-size:12px; font-weight:700; margin-left:8px; cursor:pointer;">열기</button>
+    </div>
+    <script>
+    (function(){
+        var ua = navigator.userAgent || '';
+        if (/KAKAOTALK|NAVER|FBAN|FBAV|Instagram|Line\/|Twitter|Snapchat|DaumApps/i.test(ua)) {
+            document.getElementById('inapp-banner').style.display = 'block';
+            document.body.style.paddingTop = '40px';
+        }
+    })();
+    function openExternal() {
+        var url = location.href;
+        if (/Android/i.test(navigator.userAgent)) {
+            location.href = 'intent://' + url.replace(/^https?:\/\//, '') + '#Intent;scheme=https;package=com.android.chrome;end';
+        } else {
+            location.href = url;
+        }
+    }
+    </script>
+
     <!-- 데스크탑 차단 -->
     <div id="desktop-blocker">
         <div class="icon">📱</div>
@@ -1295,9 +1318,34 @@
             location.href = '/auth/kakao';
         }
 
+        function isInAppBrowser() {
+            const ua = navigator.userAgent || '';
+            return /NAVER|KAKAOTALK|FBAN|FBAV|Instagram|Line\/|Twitter|Snapchat|DaumApps/i.test(ua);
+        }
+
+        function openInExternalBrowser(url) {
+            const isAndroid = /Android/i.test(navigator.userAgent);
+            if (isAndroid) {
+                // Android: intent:// 로 크롬 열기
+                const intentUrl = 'intent://' + url.replace(/^https?:\/\//, '') +
+                    '#Intent;scheme=https;package=com.android.chrome;end';
+                location.href = intentUrl;
+            } else {
+                // iOS: Safari로 열기 시도
+                location.href = url;
+            }
+        }
+
         function loginGoogle() {
+            // 인앱 브라우저 감지 → 외부 브라우저로 유도
+            if (isInAppBrowser()) {
+                const currentUrl = location.href;
+                if (confirm('Google 로그인은 크롬 또는 사파리에서만 가능합니다.\n\n외부 브라우저로 이동할까요?')) {
+                    openInExternalBrowser(currentUrl);
+                }
+                return;
+            }
             // Portal Google OAuth 경유
-            // 삼성 인터넷 호환: 앵커 클릭 방식으로 리다이렉트 (팝업 차단 우회)
             const returnUrl = encodeURIComponent(location.origin + '/app');
             const url = PORTAL_URL + '/auth/google?returnTo=' + returnUrl;
             const a = document.createElement('a');

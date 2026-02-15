@@ -384,6 +384,31 @@
     <a href="/app" class="nav-cta">今すぐ撮影</a>
 </nav>
 
+<!-- インアプリブラウザ案内バナー -->
+<div id="inapp-banner" style="display:none; background:#ff6b35; color:#fff; text-align:center; padding:12px 16px; font-size:14px; font-weight:600; line-height:1.5;">
+    ⚠️ Googleログインが必要なサービスです。<br>
+    <strong>Chrome</strong> または <strong>Safari</strong> で開いてください。
+    <div style="margin-top:8px;">
+        <button onclick="openExternal()" style="background:#fff; color:#ff6b35; border:none; padding:8px 20px; border-radius:20px; font-size:14px; font-weight:700; cursor:pointer;">外部ブラウザで開く</button>
+    </div>
+</div>
+<script>
+(function(){
+    var ua = navigator.userAgent || '';
+    if (/KAKAOTALK|NAVER|FBAN|FBAV|Instagram|Line\/|Twitter|Snapchat|DaumApps/i.test(ua)) {
+        document.getElementById('inapp-banner').style.display = 'block';
+    }
+})();
+function openExternal() {
+    var url = location.href;
+    if (/Android/i.test(navigator.userAgent)) {
+        location.href = 'intent://' + url.replace(/^https?:\/\//, '') + '#Intent;scheme=https;package=com.android.chrome;end';
+    } else {
+        location.href = url;
+    }
+}
+</script>
+
 <!-- ヒーロー -->
 <section id="hero">
     <div class="hero-badge">Powered by MONKOS AI</div>

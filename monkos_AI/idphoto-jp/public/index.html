@@ -739,6 +739,29 @@
     </style>
 </head>
 <body>
+    <!-- インアプリブラウザ案内バナー -->
+    <div id="inapp-banner" style="display:none; background:#ff6b35; color:#fff; text-align:center; padding:10px 16px; font-size:13px; font-weight:600; line-height:1.4; position:fixed; top:0; left:0; right:0; z-index:9999;">
+        ⚠️ Googleログインが必要です。<strong>Chrome/Safari</strong>で開いてください。
+        <button onclick="openExternal()" style="background:#fff; color:#ff6b35; border:none; padding:4px 12px; border-radius:12px; font-size:12px; font-weight:700; margin-left:8px; cursor:pointer;">開く</button>
+    </div>
+    <script>
+    (function(){
+        var ua = navigator.userAgent || '';
+        if (/KAKAOTALK|NAVER|FBAN|FBAV|Instagram|Line\/|Twitter|Snapchat|DaumApps/i.test(ua)) {
+            document.getElementById('inapp-banner').style.display = 'block';
+            document.body.style.paddingTop = '40px';
+        }
+    })();
+    function openExternal() {
+        var url = location.href;
+        if (/Android/i.test(navigator.userAgent)) {
+            location.href = 'intent://' + url.replace(/^https?:\/\//, '') + '#Intent;scheme=https;package=com.android.chrome;end';
+        } else {
+            location.href = url;
+        }
+    }
+    </script>
+
     <!-- デスクトップブロッカー -->
     <div id="desktop-blocker">
         <div class="icon">📱</div>
@@ -1247,9 +1270,32 @@
             location.href = '/auth/line';
         }
 
+        function isInAppBrowser() {
+            const ua = navigator.userAgent || '';
+            return /NAVER|KAKAOTALK|FBAN|FBAV|Instagram|Line\/|Twitter|Snapchat|DaumApps/i.test(ua);
+        }
+
+        function openInExternalBrowser(url) {
+            const isAndroid = /Android/i.test(navigator.userAgent);
+            if (isAndroid) {
+                const intentUrl = 'intent://' + url.replace(/^https?:\/\//, '') +
+                    '#Intent;scheme=https;package=com.android.chrome;end';
+                location.href = intentUrl;
+            } else {
+                location.href = url;
+            }
+        }
+
         function loginGoogle() {
+            // インアプリブラウザ検知 → 外部ブラウザへ誘導
+            if (isInAppBrowser()) {
+                const currentUrl = location.href;
+                if (confirm('Googleログインは Chrome または Safari でのみ利用できます。\n\n外部ブラウザで開きますか？')) {
+                    openInExternalBrowser(currentUrl);
+                }
+                return;
+            }
             // Portal Google OAuth経由
-            // Samsung Internet互換: アンカークリック方式でリダイレクト（ポップアップブロック回避）
             const returnUrl = encodeURIComponent(location.origin + '/app');
             const url = PORTAL_URL + '/auth/google?returnTo=' + returnUrl;
             const a = document.createElement('a');
