@@ -497,6 +497,8 @@ const httpServer = createServer(async (req, res) => {
     'https://monkos.ai',
     'https://idphoto-jp.monkos.ai',
     'https://idphoto-kr.monkos.ai',
+    'https://monkos-idphoto-jp-933456016842.us-central1.run.app',
+    'https://monkos-idphoto-kr-933456016842.us-central1.run.app',
     'http://localhost:8080',
     'http://localhost:3000',
   ];
