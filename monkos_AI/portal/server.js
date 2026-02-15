@@ -50,6 +50,23 @@ const LINE_CHANNEL_SECRET = process.env.LINE_CHANNEL_SECRET || '';
 const LINE_REDIRECT_URI = process.env.LINE_REDIRECT_URI || 'https://monkos.ai/auth/line/callback';
 const pendingLineStates = new Map();
 
+// === D1 거래 원장 (monk.kr Pages Function) ===
+const TX_API_URL = process.env.TX_API_URL || 'https://monk.kr/api/tx';
+const TX_API_KEY = process.env.TX_API_KEY || '';
+
+/**
+ * D1 거래 원장에 비동기 기록 (fire-and-forget)
+ * 실패해도 Firestore 크레딧 작업에 영향 없음
+ */
+function logTransaction({ userId, amount, type, service = 'portal', provider = 'system', balanceAfter, description, referenceId, metadata }) {
+  if (!TX_API_KEY) return;
+  fetch(TX_API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-API-Key': TX_API_KEY },
+    body: JSON.stringify({ userId, amount, type, service, provider, balanceAfter, description, referenceId, metadata }),
+  }).catch(err => log(`[TX] 원장 기록 실패: ${err.message}`, 'WARNING'));
+}
+
 // Variant ID → 크레딧 매핑 (Lemon Squeezy)
 const VARIANT_CREDITS = {
   '1297524': 10,  // MONKOS 10 Credits — $10
@@ -949,6 +966,7 @@ location.href = '/';
         }
 
         log(`[Credits] 사용: ${userId} -${cost}c (${type}) → ${result.credits}c`);
+        logTransaction({ userId, amount: -cost, type: 'use', provider: 'system', balanceAfter: result.credits, description: `${type} 사용 (-${cost}c)` });
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify(result));
       } catch (err) {
@@ -1003,6 +1021,7 @@ location.href = '/';
         }
 
         log(`[Credits] 공유 보너스: ${userId} +${bonus}c (${platform || 'unknown'}) → ${result.credits}c`);
+        logTransaction({ userId, amount: bonus, type: 'bonus', provider: 'share', balanceAfter: result.credits, description: `공유 보너스 (${platform || 'unknown'})` });
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify(result));
       } catch (err) {
@@ -1125,6 +1144,7 @@ location.href = '/';
 
         if (result.success) {
           log(`[Survey] 설문 완료: ${userId} +${SURVEY_BONUS}c → ${result.credits}c (잔여 ${result.remaining}명)`);
+          logTransaction({ userId, amount: SURVEY_BONUS, type: 'bonus', provider: 'survey', balanceAfter: result.credits, description: `설문 보너스 (+${SURVEY_BONUS}c)` });
         } else {
           log(`[Survey] 거부: ${userId} — ${result.error}`);
         }
@@ -1172,6 +1192,7 @@ location.href = '/';
         });
 
         log(`[Credits] 환불: ${userId} +${refund}c (${type}) → ${result.credits}c`);
+        logTransaction({ userId, amount: refund, type: 'refund', provider: 'system', balanceAfter: result.credits, description: `${type} 환불 (+${refund}c)` });
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify(result));
       } catch (err) {
@@ -1385,20 +1406,25 @@ location.href = '/';
 
           // Firestore 크레딧 추가
           const userRef = usersCollection.doc(userId);
-          await firestore.runTransaction(async (tx) => {
+          const newBalance = await firestore.runTransaction(async (tx) => {
             const userDoc = await tx.get(userRef);
             if (!userDoc.exists) {
               log(`[Webhook] 사용자 없음: ${userId}`);
-              return;
+              return null;
             }
             const current = userDoc.data()?.credits ?? 0;
+            const updated = current + credits;
             tx.update(userRef, {
-              credits: current + credits,
+              credits: updated,
               lastPurchase: new Date().toISOString(),
             });
+            return updated;
           });
 
           log(`[Webhook] 크레딧 지급: ${userId} +${credits}c (variant ${variantId}, $${attrs?.total_formatted || '?'})`);
+          if (newBalance !== null) {
+            logTransaction({ userId, amount: credits, type: 'charge', provider: 'lemon', balanceAfter: newBalance, description: `Lemon 결제 (+${credits}c)`, referenceId: variantId, metadata: { total: attrs?.total_formatted } });
+          }
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ received: true, action: 'credits_added', credits }));
           return;
@@ -1412,13 +1438,18 @@ location.href = '/';
 
           if (userId && credits > 0) {
             const userRef = usersCollection.doc(userId);
-            await firestore.runTransaction(async (tx) => {
+            const newBalance = await firestore.runTransaction(async (tx) => {
               const userDoc = await tx.get(userRef);
-              if (!userDoc.exists) return;
+              if (!userDoc.exists) return null;
               const current = userDoc.data()?.credits ?? 0;
-              tx.update(userRef, { credits: Math.max(0, current - credits) });
+              const updated = Math.max(0, current - credits);
+              tx.update(userRef, { credits: updated });
+              return updated;
             });
             log(`[Webhook] 환불 크레딧 회수: ${userId} -${credits}c`);
+            if (newBalance !== null) {
+              logTransaction({ userId, amount: -credits, type: 'refund', provider: 'lemon', balanceAfter: newBalance, description: `Lemon 환불 (-${credits}c)`, referenceId: variantId });
+            }
           }
 
           res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -1494,6 +1525,7 @@ location.href = '/';
         });
 
         log(`[Toss] 결제 완료: ${userId} +${credits}c (₩${amount}, orderId: ${orderId})`);
+        logTransaction({ userId, amount: credits, type: 'charge', provider: 'toss', balanceAfter: result, description: `토스 결제 (+${credits}c, ₩${amount})`, referenceId: orderId, metadata: { paymentKey, amount } });
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({
           success: true,
