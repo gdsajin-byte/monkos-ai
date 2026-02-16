@@ -251,6 +251,13 @@ docs/
 - `rm -rf`, `git push --force`, `git reset --hard` → 절대 금지
 - API 키 하드코딩, 민감 정보 외부 전송 → 절대 금지
 
+### 배포 규칙 (절대 준수)
+- **`gcloud run deploy` 직접 실행 절대 금지** → 반드시 `./deploy.sh dev` 또는 `./deploy.sh prod` 사용
+- `gcloud builds submit` 단독 실행 금지 → deploy.sh가 빌드+배포를 일괄 처리
+- **prod 배포는 main 브랜치에서만** (deploy.sh가 자동 체크)
+- develop 브랜치 작업 → `./deploy.sh dev` → dev 서비스에서 테스트 → main 머지 → `./deploy.sh prod`
+- 랜딩페이지(landing.html)는 삭제됨 — `/` 접속 시 포털(monkos.ai)로 리다이렉트
+
 ## 참조 문서
 
 - 아키텍처: `docs/infrastructure/3TRACK_SYSTEM_ARCHITECTURE.md`

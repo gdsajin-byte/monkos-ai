@@ -528,6 +528,63 @@
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        @keyframes tyScreenIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        #thankyou-screen.active {
+            display: flex;
+            animation: tyScreenIn 0.3s ease-out;
+        }
+        @keyframes photoGlow {
+            0% { box-shadow: 0 4px 24px rgba(167,139,250,0.2); }
+            50% { box-shadow: 0 4px 40px rgba(167,139,250,0.5); }
+            100% { box-shadow: 0 4px 24px rgba(167,139,250,0.2); }
+        }
+        .ty-preview.glow {
+            animation: photoGlow 1.5s ease;
+        }
+        @keyframes scaleBounce {
+            0% { transform: scale(0); opacity: 0; }
+            60% { transform: scale(1.15); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes checkCircleDraw {
+            to { stroke-dashoffset: 0; }
+        }
+        @keyframes checkMarkDraw {
+            to { stroke-dashoffset: 0; }
+        }
+        @keyframes confettiDrop {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(80px) rotate(360deg); opacity: 0; }
+        }
+        .ty-check-svg {
+            width: 56px; height: 56px; margin: 0 auto 8px;
+        }
+        .ty-check-svg .circle {
+            fill: none; stroke: #34d399; stroke-width: 2;
+            stroke-dasharray: 157; stroke-dashoffset: 157;
+            animation: checkCircleDraw 0.4s ease forwards;
+        }
+        .ty-check-svg .check {
+            fill: none; stroke: #34d399; stroke-width: 3;
+            stroke-linecap: round; stroke-linejoin: round;
+            stroke-dasharray: 30; stroke-dashoffset: 30;
+            animation: checkMarkDraw 0.3s 0.35s ease forwards;
+        }
+        .ty-complete-text {
+            font-size: 20px; font-weight: 800; color: #34d399;
+            animation: scaleBounce 0.4s 0.5s ease both;
+        }
+        .confetti-container {
+            position: relative; height: 0; overflow: visible;
+            display: flex; justify-content: center;
+        }
+        .confetti-dot {
+            position: absolute; width: 6px; height: 6px; border-radius: 50%;
+            animation: confettiDrop 1s ease-out forwards;
+        }
         .ty-share-section {
             margin-top: 16px; padding: 12px;
             background: rgba(167, 139, 250, 0.1);
@@ -1064,7 +1121,14 @@
                     <p><span class="pulse-hand">👆</span> 写真を長押しして保存！</p>
                     <span class="sub">長押し → 「写真に保存」をタップ</span>
                 </div>
-                <div class="ty-complete-msg" id="tyCompleteMsg" style="display:none;">✅ ダウンロード完了！ありがとうございます 🎉</div>
+                <div id="tyCompleteMsg" style="display:none; text-align:center;">
+                    <div class="confetti-container" id="confettiContainer"></div>
+                    <svg class="ty-check-svg" viewBox="0 0 52 52">
+                        <circle class="circle" cx="26" cy="26" r="25"/>
+                        <path class="check" d="M14 27l7 7 16-16"/>
+                    </svg>
+                    <div class="ty-complete-text">保存完了！</div>
+                </div>
                 <div class="ty-credit-msg" id="postCreditMsg"></div>
 
                 <div class="ty-share-section">
@@ -2089,9 +2153,16 @@
         async function downloadResult() {
             if (!generatedImageData) return;
 
+            const btn = document.getElementById('btn-download');
+            const originalText = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = '処理中...';
+
             // ログインユーザー: ダウンロードクレジット消費 (10c)
             if (userId) {
                 if (userCredits < CREDIT_COST.download) {
+                    btn.disabled = false;
+                    btn.textContent = originalText;
                     showCreditModal(CREDIT_COST.download, userCredits, 'download');
                     return;
                 }
@@ -2101,6 +2172,8 @@
                     updateCreditBadge();
                     proceedDownload();
                 } catch (err) {
+                    btn.disabled = false;
+                    btn.textContent = originalText;
                     if (err.status === 402) {
                         showCreditModal(CREDIT_COST.download, err.credits || 0, 'download');
                     } else {
@@ -2119,38 +2192,41 @@
         }
 
         function showPreview() {
-            // JPEG変換してimg srcに設定 (長押し保存用)
-            toJpegDataUrl(generatedImageData, 0.92).then(jpegUrl => {
-                document.getElementById('ty-photo').src = jpegUrl;
-            });
             document.getElementById('thankyou-screen').classList.add('active');
             document.getElementById('controls').classList.remove('active');
-            // 保存ガイド表示、完了メッセージ非表示
-            document.getElementById('tySaveGuide').style.display = '';
-            document.getElementById('tyCompleteMsg').style.display = 'none';
+            document.querySelector('.ty-preview').classList.add('glow');
+
+            // 共有セクション初期非表示 (シーケンス用)
+            const shareSection = document.querySelector('.ty-share-section');
+            if (shareSection) shareSection.style.opacity = '0';
+
             document.getElementById('postCreditMsg').textContent =
                 userId ? `💎 10c 使用 · 残り ${userCredits}c` : '';
 
-            // 長押し保存検知: contextmenuイベント or visibilitychange
-            const tyPhoto = document.getElementById('ty-photo');
-            const onSaved = () => {
-                document.getElementById('tySaveGuide').style.display = 'none';
-                document.getElementById('tyCompleteMsg').style.display = '';
-                tyPhoto.removeEventListener('contextmenu', onSaved);
-                document.removeEventListener('visibilitychange', onVisChange);
-            };
-            const onVisChange = () => {
-                if (document.hidden) onSaved(); // 共有シート等でアプリ切替時
-            };
-            tyPhoto.addEventListener('contextmenu', onSaved);
-            document.addEventListener('visibilitychange', onVisChange);
+            // JPEG変換後に自動保存試行
+            toJpegDataUrl(generatedImageData, 0.92).then(async jpegUrl => {
+                document.getElementById('ty-photo').src = jpegUrl;
+
+                // 自動保存試行
+                let saved = false;
+                try {
+                    saved = await autoSave(jpegUrl);
+                } catch (e) {
+                    saved = false;
+                }
+
+                if (saved) {
+                    showComplete();
+                } else {
+                    // フォールバック: 長押しガイド
+                    showSaveGuide();
+                }
+            });
+
             log('プレビューモード表示');
         }
 
-        async function saveToPhotos() {
-            if (!generatedImageData) return;
-            const jpegUrl = await toJpegDataUrl(generatedImageData, 0.92);
-
+        async function autoSave(jpegUrl) {
             // navigator.share対応 (iOS Safari等)
             if (navigator.share && navigator.canShare) {
                 try {
@@ -2158,21 +2234,77 @@
                     const blob = await res.blob();
                     const file = new File([blob], `monkos_photo_${Date.now()}.jpg`, { type: 'image/jpeg' });
                     if (navigator.canShare({ files: [file] })) {
-                        await navigator.share({ files: [file], title: 'MONKOS AI証明写真' });
-                        log('写真共有完了');
-                        return;
+                        await navigator.share({ files: [file], title: 'MONKOS AI 証明写真' });
+                        return true;
                     }
                 } catch (e) {
-                    if (e.name === 'AbortError') return; // ユーザーキャンセル
+                    if (e.name === 'AbortError') return false;
                 }
             }
 
-            // フォールバック: 直接ダウンロード
-            const a = document.createElement('a');
-            a.href = jpegUrl;
-            a.download = `monkos_photo_${Date.now()}.jpg`;
-            a.click();
-            log('JPEG保存完了');
+            // フォールバック: <a download>自動クリック (デスクトップ/Android)
+            try {
+                const a = document.createElement('a');
+                a.href = jpegUrl;
+                a.download = `monkos_photo_${Date.now()}.jpg`;
+                a.click();
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
+
+        function showSaveGuide() {
+            document.getElementById('tySaveGuide').style.display = '';
+            document.getElementById('tyCompleteMsg').style.display = 'none';
+
+            const tyPhoto = document.getElementById('ty-photo');
+            const onSaved = () => {
+                showComplete();
+                tyPhoto.removeEventListener('contextmenu', onSaved);
+                document.removeEventListener('visibilitychange', onVisChange);
+            };
+            const onVisChange = () => {
+                if (document.hidden) onSaved();
+            };
+            tyPhoto.addEventListener('contextmenu', onSaved);
+            document.addEventListener('visibilitychange', onVisChange);
+        }
+
+        function showComplete() {
+            document.getElementById('tySaveGuide').style.display = 'none';
+            const completeMsg = document.getElementById('tyCompleteMsg');
+            completeMsg.style.display = '';
+
+            // コンフェティ生成
+            const container = document.getElementById('confettiContainer');
+            container.innerHTML = '';
+            const colors = ['#a78bfa', '#34d399', '#facc15', '#f472b6', '#60a5fa', '#fb923c'];
+            for (let i = 0; i < 8; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'confetti-dot';
+                dot.style.background = colors[i % colors.length];
+                dot.style.left = `${(i - 4) * 18}px`;
+                dot.style.animationDelay = `${i * 0.08}s`;
+                dot.style.animationDuration = `${0.8 + Math.random() * 0.6}s`;
+                container.appendChild(dot);
+            }
+
+            // 1.2秒後にコンフェティ削除 + 共有セクションfadeIn
+            setTimeout(() => {
+                container.innerHTML = '';
+                const shareSection = document.querySelector('.ty-share-section');
+                if (shareSection) {
+                    shareSection.style.opacity = '1';
+                    shareSection.style.animation = 'fadeInUp 0.4s ease';
+                }
+            }, 1200);
+        }
+
+        async function saveToPhotos() {
+            if (!generatedImageData) return;
+            const jpegUrl = await toJpegDataUrl(generatedImageData, 0.92);
+            await autoSave(jpegUrl);
         }
 
         function openTelegram() {

@@ -629,10 +629,14 @@ const httpServer = createServer(async (req, res) => {
   }
 
   // 정적 파일 배포
-  // / → 랜딩페이지, /app → 촬영 앱 UI
+  // / → 포털 리다이렉트, /app → 촬영 앱 UI
+  if (urlPath === '/') {
+    res.writeHead(302, { 'Location': 'https://monkos.ai' });
+    res.end();
+    return;
+  }
   let filePath;
-  if (urlPath === '/') filePath = '/landing.html';
-  else if (urlPath === '/app') filePath = '/index.html';
+  if (urlPath === '/app') filePath = '/index.html';
   else filePath = urlPath;
   const fullPath = join(__dirname, 'public', filePath);
   const ext = extname(filePath);
