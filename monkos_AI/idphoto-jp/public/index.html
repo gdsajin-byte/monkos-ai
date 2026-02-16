@@ -462,7 +462,6 @@
             background: #030508; z-index: 100;
             flex-direction: column; overflow-y: auto;
         }
-        #thankyou-screen.active { display: flex; }
         .ty-header {
             padding: 12px 16px; text-align: center;
             font-size: 15px; font-weight: 700;
@@ -2227,7 +2226,7 @@
         }
 
         async function autoSave(jpegUrl) {
-            // navigator.share対応 (iOS Safari等)
+            // 1. Web Share API (iOS Safari等)
             if (navigator.share && navigator.canShare) {
                 try {
                     const res = await fetch(jpegUrl);
@@ -2242,7 +2241,12 @@
                 }
             }
 
-            // フォールバック: <a download>自動クリック (デスクトップ/Android)
+            // 2. <a download> — iOSではdata URLダウンロード不可 → スキップ
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+                          (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+            if (isIOS) return false;
+
+            // 3. デスクトップ/Android: <a download>自動クリック
             try {
                 const a = document.createElement('a');
                 a.href = jpegUrl;
@@ -2257,6 +2261,15 @@
         function showSaveGuide() {
             document.getElementById('tySaveGuide').style.display = '';
             document.getElementById('tyCompleteMsg').style.display = 'none';
+
+            // 共有セクション: 2秒後に表示 (保存待機中でもアクセス可能にする)
+            setTimeout(() => {
+                const shareSection = document.querySelector('.ty-share-section');
+                if (shareSection && shareSection.style.opacity === '0') {
+                    shareSection.style.opacity = '1';
+                    shareSection.style.animation = 'fadeInUp 0.4s ease';
+                }
+            }, 2000);
 
             const tyPhoto = document.getElementById('ty-photo');
             const onSaved = () => {
