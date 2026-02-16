@@ -150,16 +150,9 @@
             font-size: 14px; color: #ff7b54; margin-bottom: 16px;
             text-align: center; font-weight: 600;
         }
-        .btn-home {
-            position: absolute; top: 16px; right: 16px;
-            padding: 8px 14px; border-radius: 8px;
-            background: rgba(255,255,255,0.05);
-            color: #888; font-size: 12px; font-weight: 500;
-            border: 1px solid #333; cursor: pointer;
-            transition: all 0.2s; z-index: 10;
-        }
-        .btn-home:hover {
-            background: rgba(255,255,255,0.1); color: #aaa; border-color: #444;
+        /* ヘッダーホバー時に戻るボタン表示 */
+        #header:hover #btn-back {
+            opacity: 1;
         }
 
         /* スタイル選択（準備画面用） */
@@ -366,6 +359,73 @@
         #qc-badge.pass { background: rgba(34,197,94,0.15); color: #22c55e; border: 1px solid rgba(34,197,94,0.3); }
         #qc-badge.fail { background: rgba(239,68,68,0.15); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
         #qc-badge.pending { background: rgba(245,158,11,0.15); color: #f59e0b; border: 1px solid rgba(245,158,11,0.3); }
+
+        /* QC コンシェルジュチャット */
+        .qc-chat {
+            margin: 16px 0;
+            background: #0a0a0a;
+            border: 1px solid #1a1a1a;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        .qc-chat-header {
+            padding: 12px 16px;
+            background: linear-gradient(135deg, rgba(167,139,250,0.1), rgba(139,92,246,0.05));
+            border-bottom: 1px solid #1a1a1a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .qc-chat-icon { font-size: 18px; }
+        .qc-chat-title { font-size: 13px; font-weight: 600; color: #a78bfa; }
+        .qc-chat-messages {
+            padding: 12px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .qc-msg {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            animation: qc-msg-in 0.3s ease-out;
+        }
+        @keyframes qc-msg-in {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .qc-msg-avatar {
+            width: 32px; height: 32px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #a78bfa, #8b5cf6);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px; flex-shrink: 0;
+        }
+        .qc-msg-bubble {
+            flex: 1; padding: 12px 14px;
+            border-radius: 14px; border-top-left-radius: 4px;
+            font-size: 14px; line-height: 1.6;
+        }
+        .qc-msg-bubble.pass {
+            background: rgba(34,197,94,0.12);
+            border: 1px solid rgba(34,197,94,0.25);
+        }
+        .qc-msg-bubble.fail {
+            background: rgba(239,68,68,0.12);
+            border: 1px solid rgba(239,68,68,0.25);
+        }
+        .qc-msg-bubble .qc-status { font-weight: 700; }
+        .qc-msg-bubble.pass .qc-status { color: #22c55e; }
+        .qc-msg-bubble.fail .qc-status { color: #ef4444; }
+        .qc-tags { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; }
+        .qc-tag {
+            padding: 4px 10px; border-radius: 8px;
+            background: rgba(255,255,255,0.06);
+            font-size: 11px; color: #888;
+        }
+        .qc-tag.good { color: #22c55e; background: rgba(34,197,94,0.1); }
+        .qc-tag.warn { color: #f59e0b; background: rgba(245,158,11,0.1); }
+        .qc-tag.bad { color: #ef4444; background: rgba(239,68,68,0.1); }
 
         /* 規格クロップ結果 */
         #spec-result {
@@ -775,18 +835,16 @@
 
     <div id="header">
         <div>
+            <button id="btn-back" onclick="history.back()"
+                style="background:none; border:none; color:#555; font-size:11px; cursor:pointer; padding:0 0 2px 0; opacity:0; transition:opacity 0.2s; display:block;">
+                ← 戻る
+            </button>
             <h1><span class="brand">MONKOS</span> <span>AI証明写真</span></h1>
-            <span id="step-label">撮影準備</span>
         </div>
         <div style="display:flex; align-items:center; gap:8px;">
-            <div class="credit-badge" id="creditBadge" style="display:none;">
-                <span>💎</span>
-                <span id="creditCount">0</span>c
-            </div>
+            <span id="headerCredits" style="display:none; color:#a78bfa; font-weight:600; font-size:13px;">💎 0</span>
             <button id="btn-voice" onclick="toggleVoice()" title="音声ON"
                 style="background:none; border:none; font-size:18px; cursor:pointer; padding:4px;">🔊</button>
-            <span class="dot dot-wait" id="ws-dot" style="display:none;"></span>
-            <span id="ws-status" style="display:none;">待機中</span>
         </div>
     </div>
 
@@ -831,7 +889,6 @@
 
     <!-- === 準備画面 === -->
     <div id="prep-screen">
-        <button class="btn-home" onclick="location.href='https://monkos.ai'">🏠 メイン</button>
         <div class="prep-icon">📸</div>
         <div class="prep-title">撮影の準備</div>
         <p class="prep-sub">
@@ -965,6 +1022,15 @@
                     <span class="spec-tag" id="spec-size">-</span>
                     <span class="spec-tag">300dpi</span>
                     <span class="spec-tag" id="spec-px">-</span>
+                </div>
+
+                <!-- QC コンシェルジュチャット -->
+                <div id="qc-chat" class="qc-chat" style="display:none;">
+                    <div class="qc-chat-header">
+                        <span class="qc-chat-icon">🤖</span>
+                        <span class="qc-chat-title">AI検査結果</span>
+                    </div>
+                    <div class="qc-chat-messages" id="qc-chat-messages"></div>
                 </div>
             </div>
 
@@ -1198,18 +1264,9 @@
         }
 
         function updateCreditBadge() {
-            const badge = document.getElementById('creditBadge');
-            const count = document.getElementById('creditCount');
-            const display = document.getElementById('userCreditsDisplay');
-            if (userId) {
-                badge.style.display = 'flex';
-                count.textContent = userCredits;
-                if (display) display.textContent = `${userCredits}c`;
-                badge.classList.remove('low', 'zero');
-                if (userCredits === 0) badge.classList.add('zero');
-                else if (userCredits < 11) badge.classList.add('low');
-            } else {
-                badge.style.display = 'none';
+            const headerCredits = document.getElementById('headerCredits');
+            if (userId && headerCredits) {
+                headerCredits.textContent = '💎 ' + userCredits;
             }
         }
 
@@ -1316,21 +1373,17 @@
         }
 
         function updateLoginUI() {
-            const loginButtons = document.getElementById('loginButtons');
-            const userInfoBar = document.getElementById('userInfoBar');
+            const loginSection = document.getElementById('loginSection');
+            const headerCredits = document.getElementById('headerCredits');
             if (userId) {
-                loginButtons.style.display = 'none';
-                userInfoBar.style.display = 'flex';
-                const stored = sessionStorage.getItem('monkos_user');
-                if (stored) {
-                    const user = JSON.parse(stored);
-                    document.getElementById('userAvatar').src = user.picture || '';
-                    document.getElementById('userName').textContent = user.name || user.email || '';
-                    document.getElementById('userCreditsDisplay').textContent = `${userCredits}c`;
-                }
+                // ログイン状態: 中央ログインセクション非表示、ヘッダーにクレジット表示
+                loginSection.style.display = 'none';
+                headerCredits.style.display = 'inline';
+                headerCredits.textContent = '💎 ' + userCredits;
             } else {
-                loginButtons.style.display = 'flex';
-                userInfoBar.style.display = 'none';
+                // 非ログイン状態: ログインボタン表示、ヘッダークレジット非表示
+                loginSection.style.display = 'block';
+                headerCredits.style.display = 'none';
             }
         }
 
@@ -1787,15 +1840,67 @@
             }
         }
 
+        // QC チャットメッセージ生成
+        function addQCChatMessage(result, passed, similarity) {
+            const container = document.getElementById('qc-chat-messages');
+            container.innerHTML = '';
+            document.getElementById('qc-chat').style.display = 'block';
+
+            const mainHtml = passed ? generatePassMessage(result, similarity) : generateFailMessage(result, similarity);
+            container.appendChild(createQCBubble(mainHtml, passed, '🤖'));
+
+            if (!passed) {
+                setTimeout(() => {
+                    container.appendChild(createQCBubble(generateFailGuide(result), passed, '💡'));
+                }, 300);
+            }
+        }
+
+        function createQCBubble(html, passed, icon) {
+            const div = document.createElement('div');
+            div.className = 'qc-msg';
+            div.innerHTML = `<div class="qc-msg-avatar">${icon}</div><div class="qc-msg-bubble ${passed ? 'pass' : 'fail'}">${html}</div>`;
+            return div;
+        }
+
+        function generatePassMessage(result, similarity) {
+            const qual = similarity >= 90 ? '完璧です！' : similarity >= 80 ? '自然に補正されました。' : '規格を満たしています。';
+            return `<span class="qc-status">検査完了！</span><br>${qual}
+                <div class="qc-tags">
+                    <span class="qc-tag ${similarity >= 80 ? 'good' : 'warn'}">類似度 ${similarity}%</span>
+                    <span class="qc-tag good">${result.quality || '品質良好'}</span>
+                </div>`;
+        }
+
+        function generateFailMessage(result, similarity) {
+            let reason = '原本との類似度が低いです。';
+            let tag = `類似度 ${similarity}%`;
+            if (result.gender_match === false) { reason = '外見が原本と異なって変換されました。'; tag = '性別外見不一致'; }
+            else if (result.age_match === false) { reason = '年齢層が原本と大きく異なって見えます。'; tag = '年齢層不一致'; }
+            else if (result.over_retouched === true) { reason = '顔が過度に補正されました。'; tag = '過補正検出'; }
+            return `<span class="qc-status">再撮影推奨</span><br>${reason}
+                <div class="qc-tags"><span class="qc-tag bad">${tag}</span></div>`;
+        }
+
+        function generateFailGuide(result) {
+            if (result.gender_match === false || result.age_match === false) {
+                return '<strong>撮影ヒント</strong><br>• 自然光の下で正面を向いてください<br>• 顔に影ができないようにしてください';
+            }
+            if (result.over_retouched === true) {
+                return '<strong>撮影ヒント</strong><br>• カメラレンズをきれいに拭いてください<br>• 画質の良い環境で撮影してください';
+            }
+            return '<strong>撮影ヒント</strong><br>• 明るい場所で正面を向いてください<br>• 「撮り直す」を押して再撮影してください';
+        }
+
         function showQCResult(result) {
-            const badge = document.getElementById('qc-badge');
             const passed = result.identity === 'PASS' || result.same_person === true;
             const similarity = result.similarity || '?';
 
-            badge.className = passed ? 'pass' : 'fail';
-            badge.textContent = passed
-                ? `PASS — ${similarity}% | ${result.note || result.quality || ''}`
-                : `FAIL — ${similarity}% | ${result.note || t('retakeRecommend')}`;
+            // 既存バッジを非表示
+            document.getElementById('qc-badge').style.display = 'none';
+
+            // チャットにメッセージ追加
+            addQCChatMessage(result, passed, similarity);
 
             document.getElementById('result-title').textContent = passed ? t('resultDone') : t('resultFail');
             document.getElementById('result-subtitle').textContent = passed ? t('resultDoneSub') : t('resultFailSub');
