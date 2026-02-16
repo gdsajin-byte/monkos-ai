@@ -616,10 +616,14 @@ const httpServer = createServer(async (req, res) => {
   }
 
   // 静的ファイル配信
-  // / → ランディングページ, /app → 撮影アプリUI
+  // / → ポータルリダイレクト, /app → 撮影アプリUI
+  if (urlPath === '/') {
+    res.writeHead(302, { 'Location': 'https://monkos.ai' });
+    res.end();
+    return;
+  }
   let filePath;
-  if (urlPath === '/') filePath = '/landing.html';
-  else if (urlPath === '/app') filePath = '/index.html';
+  if (urlPath === '/app') filePath = '/index.html';
   else filePath = urlPath;
   const fullPath = join(__dirname, 'public', filePath);
   const ext = extname(filePath);
