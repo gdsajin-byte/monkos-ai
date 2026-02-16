@@ -259,3 +259,4 @@ docs/
 - GCS 구조: `docs/infrastructure/GCS_BUCKET_STRUCTURE.md`
 - 세션 가치: `docs/infrastructure/SESSION_LOG_VALUE.md`
 - 배포 가이드: `docs/infrastructure/DEPLOYMENT_GUIDE.md`
+- **기술명세서: `docs/infrastructure/MONKOS_AI_TECHNICAL_SPEC.md`** ← 인프라/파이프라인/장애 이력 총괄. 변경 시 반드시 갱신
