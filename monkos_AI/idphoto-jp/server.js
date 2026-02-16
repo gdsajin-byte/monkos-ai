@@ -616,9 +616,9 @@ const httpServer = createServer(async (req, res) => {
   }
 
   // 静的ファイル配信
-  // / → ポータルリダイレクト, /app → 撮影アプリUI
+  // / → アプリへリダイレクト, /app → 撮影アプリUI
   if (urlPath === '/') {
-    res.writeHead(302, { 'Location': 'https://monkos.ai' });
+    res.writeHead(302, { 'Location': '/app' });
     res.end();
     return;
   }

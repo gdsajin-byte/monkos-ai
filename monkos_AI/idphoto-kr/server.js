@@ -629,9 +629,9 @@ const httpServer = createServer(async (req, res) => {
   }
 
   // 정적 파일 배포
-  // / → 포털 리다이렉트, /app → 촬영 앱 UI
+  // / → 앱으로 리다이렉트, /app → 촬영 앱 UI
   if (urlPath === '/') {
-    res.writeHead(302, { 'Location': 'https://monkos.ai' });
+    res.writeHead(302, { 'Location': '/app' });
     res.end();
     return;
   }
