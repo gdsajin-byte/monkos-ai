@@ -7,11 +7,11 @@
 # idphoto-kr.monkos.ai
 #
 # 사용법:
-#   ./deploy.sh [환경]
+#   ./deploy.sh [dev|prod]
 #
 # 환경:
-#   production (기본값)
-#   staging
+#   dev   → dev 서비스에 배포 (테스트)
+#   prod  → production 서비스에 배포 (실서비스)
 ###############################################################################
 
 set -e
@@ -22,17 +22,30 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
-ENV=${1:-production}
+ENV=${1:-""}
+
+# 인자 필수
+if [ -z "$ENV" ]; then
+  echo -e "${RED}사용법: ./deploy.sh [dev|prod]${NC}"
+  echo -e "  dev   → dev 서비스에 배포 (테스트)"
+  echo -e "  prod  → production 서비스에 배포 (실서비스)"
+  exit 1
+fi
+
+# 유효한 환경값 체크
+if [ "$ENV" != "dev" ] && [ "$ENV" != "prod" ]; then
+  echo -e "${RED}에러: 환경은 'dev' 또는 'prod'만 가능합니다${NC}"
+  exit 1
+fi
 
 # GCP 설정
 PROJECT_ID="monkos"
 REGION="us-central1"
-SERVICE_NAME="monkos-idphoto-kr"
 GCS_BUCKET="monk-ai-images"
 SERVICE_ACCOUNT="monk-image-engine@${PROJECT_ID}.iam.gserviceaccount.com"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 # API Key — .env에서 읽기 (하드코딩 금지)
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 if [ -f "${SCRIPT_DIR}/../.env" ]; then
   GEMINI_API_KEY=$(grep GEMINI_API_KEY "${SCRIPT_DIR}/../.env" | cut -d'=' -f2)
 elif [ -f "${SCRIPT_DIR}/.env" ]; then
@@ -44,18 +57,31 @@ if [ -z "$GEMINI_API_KEY" ]; then
   exit 1
 fi
 
-if [ "$ENV" = "staging" ]; then
-  SERVICE_NAME="monkos-idphoto-kr-staging"
-fi
+# 환경별 설정
+if [ "$ENV" = "dev" ]; then
+  SERVICE_NAME="monkos-idphoto-kr-dev"
+  MEMORY="512Mi"
+  CPU="1"
+  MAX_INSTANCES="2"
+elif [ "$ENV" = "prod" ]; then
+  SERVICE_NAME="monkos-idphoto-kr"
+  MEMORY="2Gi"
+  CPU="2"
+  MAX_INSTANCES="10"
 
-# 0. monkos-AI 레포 subtree push
-REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
-echo -e "\n${GREEN}[0/4]${NC} monkos-AI 레포 동기화 중..."
-cd "${REPO_ROOT}"
-git subtree push --prefix=monkos_AI monkos-ai main 2>/dev/null && \
-  echo -e "${GREEN}  subtree push 완료${NC}" || \
-  echo -e "${YELLOW}  subtree push 스킵 (변경 없음 or 리모트 미설정)${NC}"
-cd "${SCRIPT_DIR}"
+  # 브랜치 안전장치
+  CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
+  if [ "$CURRENT_BRANCH" != "main" ]; then
+    echo -e "${RED}production 배포는 main 브랜치에서만 가능합니다 (현재: ${CURRENT_BRANCH})${NC}"
+    exit 1
+  fi
+  echo -e "${YELLOW}⚠ PRODUCTION 배포입니다. 계속하시겠습니까? (y/N)${NC}"
+  read -r confirm
+  if [ "$confirm" != "y" ]; then
+    echo "취소됨"
+    exit 0
+  fi
+fi
 
 echo -e "${BLUE}========================================${NC}"
 echo -e "${BLUE}MONKOS ID Photo KR Service 배포${NC}"
@@ -64,33 +90,34 @@ echo -e "환경: ${YELLOW}${ENV}${NC}"
 echo -e "프로젝트: ${YELLOW}${PROJECT_ID}${NC}"
 echo -e "리전: ${YELLOW}${REGION}${NC}"
 echo -e "서비스: ${YELLOW}${SERVICE_NAME}${NC}"
+echo -e "리소스: ${YELLOW}${MEMORY} / ${CPU} CPU / max ${MAX_INSTANCES}${NC}"
 echo -e "${BLUE}========================================${NC}"
 
 # 1. GCP 프로젝트 설정
-echo -e "\n${GREEN}[1/4]${NC} GCP 프로젝트 설정..."
+echo -e "\n${GREEN}[1/3]${NC} GCP 프로젝트 설정..."
 gcloud config set project ${PROJECT_ID}
 
 # 2. Docker 이미지 빌드
-echo -e "\n${GREEN}[2/4]${NC} Docker 이미지 빌드 중..."
+echo -e "\n${GREEN}[2/3]${NC} Docker 이미지 빌드 중..."
 gcloud builds submit --tag gcr.io/${PROJECT_ID}/${SERVICE_NAME}
 
 # 3. Cloud Run 배포
-echo -e "\n${GREEN}[3/4]${NC} Cloud Run 배포 중..."
+echo -e "\n${GREEN}[3/3]${NC} Cloud Run 배포 중..."
 gcloud run deploy ${SERVICE_NAME} \
   --image gcr.io/${PROJECT_ID}/${SERVICE_NAME} \
   --platform managed \
   --region ${REGION} \
   --allow-unauthenticated \
-  --memory 2Gi \
-  --cpu 2 \
+  --memory ${MEMORY} \
+  --cpu ${CPU} \
   --timeout 300 \
   --concurrency 80 \
   --min-instances 0 \
-  --max-instances 10 \
+  --max-instances ${MAX_INSTANCES} \
   --set-env-vars "PROJECT_ID=${PROJECT_ID},LOCATION=${REGION},GCS_BUCKET=${GCS_BUCKET},GEMINI_API_KEY=${GEMINI_API_KEY}" \
   --service-account ${SERVICE_ACCOUNT}
 
-# 4. 결과 출력
+# 결과 출력
 SERVICE_URL=$(gcloud run services describe ${SERVICE_NAME} --region ${REGION} --format 'value(status.url)')
 
 echo -e "\n${BLUE}========================================${NC}"

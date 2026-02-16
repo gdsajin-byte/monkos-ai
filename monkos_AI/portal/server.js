@@ -509,13 +509,20 @@ const httpServer = createServer(async (req, res) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'DENY');
 
-  // CORS — 화이트리스트 (보안 패치 2026-02-13)
+  // CORS — 화이트리스트 (보안 패치 2026-02-13, dev 추가 2026-02-16)
   const ALLOWED_ORIGINS = [
+    // production
     'https://monkos.ai',
     'https://idphoto-jp.monkos.ai',
     'https://idphoto-kr.monkos.ai',
+    // Cloud Run 직접 URL (production)
     'https://monkos-idphoto-jp-933456016842.us-central1.run.app',
     'https://monkos-idphoto-kr-933456016842.us-central1.run.app',
+    // Cloud Run 직접 URL (dev)
+    'https://monkos-idphoto-jp-dev-933456016842.us-central1.run.app',
+    'https://monkos-idphoto-kr-dev-933456016842.us-central1.run.app',
+    'https://monkos-portal-dev-933456016842.us-central1.run.app',
+    // localhost
     'http://localhost:8080',
     'http://localhost:3000',
   ];
