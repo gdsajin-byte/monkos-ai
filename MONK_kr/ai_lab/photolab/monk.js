@@ -294,8 +294,10 @@ const Monk = (() => {
         isProcessing = true;
         try {
           const result = await run(name, input);
-          // 결과는 agent의 onResult로 전달됨 (agent에서 처리)
-          loops[name]._lastResult = result;
+          // Agent가 등록한 콜백이 있으면 직접 호출
+          if (agentCallbacks[name]) {
+            agentCallbacks[name](result);
+          }
         } catch (err) {
           // 에러는 onError에서 처리됨
         } finally {
@@ -596,27 +598,21 @@ const Monk = (() => {
     if (type === 'rest') {
       const onResult = (callback) => {
         resultCallback = callback;
+        // REST용 콜백을 agentCallbacks에 등록
+        pipeInstance._agentCallbacks[endpoint] = (result) => {
+          if (resultCallback) resultCallback(result);
+        };
       };
 
       const start = (inputFn) => {
         pipeInstance.startLoop(endpoint, interval, inputFn);
-        // 루프 결과를 콜백으로 전달
-        const checkResult = setInterval(() => {
-          const loop = pipeInstance._loops[endpoint];
-          if (loop?._lastResult) {
-            if (resultCallback) resultCallback(loop._lastResult);
-            loop._lastResult = null;
-          }
-        }, 100);
-        pipeInstance._loops[endpoint]._resultChecker = checkResult;
+        // polling 제거 — Pipe가 직접 콜백 호출
       };
 
       const stop = () => {
-        const loop = pipeInstance._loops[endpoint];
-        if (loop?._resultChecker) {
-          clearInterval(loop._resultChecker);
-        }
         pipeInstance.stopLoop(endpoint);
+        // 콜백 정리
+        delete pipeInstance._agentCallbacks[endpoint];
       };
 
       return { onResult, start, stop, name };
