@@ -1,5 +1,5 @@
-// Cloudflare Pages Function — photolab API 프록시
-// monk.kr/ai_lab/photolab/api/* → idphoto-kr.monkos.ai/api/*
+// Cloudflare Pages Function — idphoto API 프록시
+// monk.kr/api/idphoto/* → idphoto-kr.monkos.ai/api/*
 
 const TARGET = 'https://idphoto-kr.monkos.ai';
 
@@ -17,9 +17,9 @@ export async function onRequest(context) {
     });
   }
 
-  // /ai_lab/photolab/api/generate → /api/generate
+  // /api/idphoto/generate → /api/generate
   const url = new URL(request.url);
-  const apiPath = url.pathname.replace('/ai_lab/photolab', '');
+  const apiPath = url.pathname.replace('/api/idphoto', '/api');
   const targetUrl = `${TARGET}${apiPath}${url.search}`;
 
   try {

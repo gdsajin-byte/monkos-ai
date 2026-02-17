@@ -7,7 +7,7 @@
 export const API = {
   PORTAL_URL: 'https://monkos.ai',
   // photolab API: CF Pages Function 프록시 경유 → idphoto-kr.monkos.ai
-  PHOTOLAB_API: '/ai_lab/photolab',
+  PHOTOLAB_API: '/api/idphoto',
 };
 
 // 크레딧 비용
