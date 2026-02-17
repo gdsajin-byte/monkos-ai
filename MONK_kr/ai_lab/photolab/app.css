@@ -274,9 +274,9 @@ body {
     border-color: #a78bfa; color: #a78bfa;
 }
 
-/* 결과 오버레이 */
+/* 결과 화면 */
 #result-overlay {
-    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
     background: #030508; z-index: 20; display: none;
     flex-direction: column; overflow-y: auto;
 }
