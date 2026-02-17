@@ -182,6 +182,7 @@ const Monk = (() => {
       }
 
       const url = baseUrl + def.path;
+      console.log('[DEBUG-PIPE] fetch URL:', url, '| baseUrl:', baseUrl, '| path:', def.path);
       const res = await fetch(url, {
         method: def.type.toUpperCase(),
         headers: { 'Content-Type': 'application/json' },

@@ -3,12 +3,12 @@
  * monk.js 프레임워크 위에서 동작하는 비즈니스 로직
  */
 
-import Monk from './monk.js';
+import Monk from './monk.js?v=20260218';
 import {
   API, CREDIT_COST, TOSS_CLIENT_KEY, PHOTO_SPECS, TX, t,
   MAX_CAPTURE_SIZE, COACHING_DISPLAY_MS, FRAME_INTERVAL_MS, CAPTURE_SIZE,
   DPI, mmToPx
-} from './config.js';
+} from './config.js?v=20260218';
 
 // ─── 1. Store 초기화 ───
 const store = Monk.store({
