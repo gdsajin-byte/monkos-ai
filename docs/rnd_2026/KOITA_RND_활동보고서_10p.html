@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MONK.KR 연구개발 활동 보고서 (요약본)</title>
+    <style>
+        :root {
+            --primary: #1a1a2e;
+            --secondary: #16213e;
+            --accent: #e94560;
+            --bg: #f8f9fa;
+            --card-bg: #ffffff;
+            --text: #2d3436;
+            --text-light: #636e72;
+            --border: #e1e8ed;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 40px 30px;
+            border-radius: 16px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+
+        .header .subtitle {
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+
+        .header-meta {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 15px;
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        .section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+        }
+
+        .section h2 {
+            font-size: 1.3rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent);
+        }
+
+        .section h3 {
+            font-size: 1.05rem;
+            color: var(--secondary);
+            margin: 20px 0 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section h3::before {
+            content: '';
+            width: 3px;
+            height: 16px;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0;
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        tr:nth-child(even) { background: var(--bg); }
+
+        .code-block {
+            background: var(--primary);
+            color: #a8dadc;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            line-height: 1.5;
+            margin: 12px 0;
+            overflow-x: auto;
+        }
+
+        .diagram {
+            background: #f1f3f4;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            line-height: 1.4;
+            margin: 12px 0;
+            border: 1px solid var(--border);
+        }
+
+        .highlight {
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+            border-left: 3px solid #f39c12;
+            padding: 12px 15px;
+            border-radius: 0 8px 8px 0;
+            margin: 12px 0;
+            font-size: 0.9rem;
+        }
+
+        .insight {
+            background: linear-gradient(135deg, #d4edda, #c3e6cb);
+            border-left: 3px solid #28a745;
+            padding: 12px 15px;
+            border-radius: 0 8px 8px 0;
+            margin: 12px 0;
+            font-size: 0.9rem;
+        }
+
+        .warning {
+            background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+            border-left: 3px solid #dc3545;
+            padding: 12px 15px;
+            border-radius: 0 8px 8px 0;
+            margin: 12px 0;
+            font-size: 0.9rem;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            background: var(--accent);
+            color: white;
+            border-radius: 12px;
+            font-size: 0.7rem;
+        }
+
+        .tag.green { background: #28a745; }
+        .tag.blue { background: #007bff; }
+        .tag.yellow { background: #ffc107; color: #333; }
+        .tag.gray { background: #6c757d; }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 12px 0;
+        }
+
+        .card {
+            background: var(--bg);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .card h4 {
+            color: var(--accent);
+            font-size: 0.95rem;
+            margin-bottom: 10px;
+        }
+
+        ul {
+            margin: 8px 0;
+            padding-left: 20px;
+        }
+
+        li { margin: 4px 0; font-size: 0.9rem; }
+
+        .footer {
+            text-align: center;
+            padding: 25px;
+            color: var(--text-light);
+            font-size: 0.85rem;
+        }
+
+        @media print {
+            .section { break-inside: avoid; page-break-inside: avoid; }
+            body { font-size: 11pt; }
+        }
+
+        @media (max-width: 600px) {
+            .header { padding: 25px 15px; }
+            .header h1 { font-size: 1.4rem; }
+            .section { padding: 18px; }
+            .header-meta { flex-direction: column; gap: 5px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>MONK.KR 연구개발 활동 보고서</h1>
+            <div class="subtitle">요약본 (10p)</div>
+            <div class="header-meta">
+                <span>2025.12 ~ 2026.02</span>
+                <span>작성: 2026.02.17</span>
+                <span>MONK.KR R&D</span>
+            </div>
+        </header>
+
+        <!-- Section 1 -->
+        <section class="section">
+            <h2>1. 연구소 개요 및 조직</h2>
+
+            <h3>기관 정보</h3>
+            <table>
+                <tr><th>항목</th><th>내용</th></tr>
+                <tr><td>연구소명</td><td>MONK.KR 연구개발 전담부서</td></tr>
+                <tr><td>도메인</td><td>monk.kr</td></tr>
+                <tr><td>연구 비전</td><td>Evolution of Creative Intelligence</td></tr>
+                <tr><td>핵심 사업</td><td>AI 기반 K-뷰티 이미지 생성 플랫폼</td></tr>
+            </table>
+
+            <h3>연구 조직</h3>
+            <table>
+                <tr><th>역할</th><th>담당</th><th>전문 분야</th></tr>
+                <tr><td>총괄책임자</td><td>신정규 대표</td><td>AI 아키텍처, 품질 관리</td></tr>
+                <tr><td>연구전담인력</td><td>한송이 연구원</td><td>K-뷰티 도메인, RLHF</td></tr>
+            </table>
+
+            <div class="highlight">
+                <strong>한송이 연구원:</strong> 미용교육학 석사 / 향장생물학 박사과정 — K-뷰티 에셋 큐레이션, RLHF 휴먼 검수자
+            </div>
+
+            <div class="insight">
+                <strong>AI 협업:</strong> Claude Opus 4.5/4.6 (코드) + Gemini 3 Pro (전략) + Llama 3.2 (현장 데몬)
+            </div>
+        </section>
+
+        <!-- Section 2 -->
+        <section class="section">
+            <h2>2. 핵심 연구 분야</h2>
+
+            <h3>BWYA 6대 학문 체계</h3>
+            <div class="insight">
+                <strong>BWYA (Become Who You Are)</strong>: 니체 철학 기반 AI 시대 크리에이터 양성 학문 체계
+            </div>
+            <table>
+                <tr><th>학문</th><th>영역</th><th>핵심 태그</th></tr>
+                <tr><td>제1학문</td><td>사진학</td><td>조명, 구도, 색감</td></tr>
+                <tr><td>제2학문</td><td>패션학</td><td>소재, 텍스처, 레이어드</td></tr>
+                <tr><td>제3학문</td><td>헤어조형학</td><td>볼륨, 컬러, 형태</td></tr>
+                <tr><td>제4학문</td><td>신체구조학</td><td>포즈, 바디라인</td></tr>
+                <tr><td>제5학문</td><td>AI 디렉팅학</td><td>Imagen, FLUX</td></tr>
+                <tr><td>제6학문</td><td>언어의 철학</td><td>프롬프트 엔지니어링</td></tr>
+            </table>
+            <p style="font-size: 0.85rem; color: var(--text-light);">코퍼스: 48개 문서, 2,347 문단, 206,131자, 53개 프롬프트 태그</p>
+
+            <h3>레이어드 아키텍팅</h3>
+            <div class="diagram">
+[패션 레이어]                    [헤어 레이어]
+Layer 0: 이너웨어               Base: 두상+피부톤
+    ↓                              ↓
+Layer 1: 캐미솔                 Structure: 레이어드컷
+    ↓                              ↓
+Layer 2: 블라우스               Volume: 에어리/슬릭
+    ↓                              ↓
+Layer 3: 자켓                   Texture: 웨이브/C컬
+= 콰이엇 럭셔리                 = K-뷰티 스타일링
+            </div>
+
+            <div class="highlight">
+                <strong>핵심:</strong> 기초(Layer 0)부터 설계해야 비즈니스급 품질 달성 — 누구나 "예쁜 모델"은 가능, 브랜드 코드+레이어 구조는 진입장벽
+            </div>
+
+            <h3>학문-실무-마케팅-교육 순환</h3>
+            <div class="insight">
+                학문(BWYA) → 실무(생산) → 마케팅(상업화) → 교육(전파) → 학문... <strong>무한 순환</strong><br>
+                <small>순환 효과: 프롬프트 정밀도↑, 스타일 재현↑, ML 고도화↑</small>
+            </div>
+        </section>
+
+        <!-- Section 3 -->
+        <section class="section">
+            <h2>3. 기술적 차별화</h2>
+
+            <h3>빅테크 세이프가드 정면돌파</h3>
+            <div class="warning">
+                <strong>과제:</strong> 상용 모델(Gemini/Imagen)로 정체성 유지 전신 이너웨어 생성
+            </div>
+            <div class="insight">
+                <strong>발견:</strong> Identity Preservation <strong>90:10 비율</strong> 최적화<br>
+                <small>100% 동일 요구 → 세이프가드 발동 / 90% 정체성 + 10% 자유도 = 최적값 (실전 검증)</small>
+            </div>
+
+            <h3>K-뷰티 데이터 스키마</h3>
+            <table>
+                <tr><th>Layer</th><th>카테고리</th><th>태깅</th></tr>
+                <tr><td>Face</td><td>헤어스타일</td><td>style, length, texture, volume</td></tr>
+                <tr><td>Face</td><td>메이크업</td><td>eye, lip, blush, brow</td></tr>
+                <tr><td>Body</td><td>이너웨어</td><td>type, material, coverage</td></tr>
+                <tr><td>Body</td><td>패션룩</td><td>style, silhouette, season</td></tr>
+            </table>
+        </section>
+
+        <!-- Section 4 -->
+        <section class="section">
+            <h2>4. 월별 연구 활동</h2>
+
+            <h3>2025년 12월</h3>
+            <table>
+                <tr><th>주차</th><th>핵심 작업</th><th>성과</th></tr>
+                <tr><td>1주</td><td>플랫폼 기반 구축</td><td>monk.kr 개설, 4 MUSE 체계</td></tr>
+                <tr><td>2주</td><td>BWYA 학문 체계</td><td>6대 학문 설계, 9-Grid</td></tr>
+                <tr><td>3주</td><td>이너웨어 전략</td><td>레이어드 아키텍팅 설계</td></tr>
+                <tr><td>4주</td><td>코퍼스 축적</td><td>15MB 마스터 코퍼스</td></tr>
+            </table>
+
+            <h3>2026년 1월</h3>
+            <table>
+                <tr><th>주차</th><th>핵심 작업</th><th>성과</th></tr>
+                <tr><td>1주</td><td>AI 협업 체계</td><td>AI LAB 프론트엔드, 민아방 런웨이</td></tr>
+                <tr><td style="background:#fff3cd;"><strong>2주</strong></td><td style="background:#fff3cd;"><strong>⭐ 핵심 발견</strong></td><td style="background:#fff3cd;"><strong>90:10 비율 발견, BWYA 48문서 분석</strong></td></tr>
+                <tr><td>3주</td><td>디딤돌 R&D</td><td>IRIS 제출, 한송이 영입</td></tr>
+                <tr><td>4주</td><td>배포 + LoRA</td><td>Image Engine 배포, 4060 파이프라인</td></tr>
+            </table>
+
+            <h3>2026년 2월</h3>
+            <table>
+                <tr><th>주차</th><th>핵심 작업</th><th>성과</th></tr>
+                <tr><td>1주</td><td>멀티 디바이스</td><td>Tailscale P2P, SSH 직접 통신</td></tr>
+                <tr><td>2주</td><td>QC 강화</td><td>실시간 코칭, REST API v2.0.0</td></tr>
+                <tr><td>3주</td><td>시스템 정비</td><td>dev/prod 2-Track, 아카이브 데몬</td></tr>
+            </table>
+        </section>
+
+        <!-- Section 5 -->
+        <section class="section">
+            <h2>5. ML 테스트 프로세스</h2>
+
+            <div class="highlight">
+                <strong>"벤치마크 숫자 안 믿는다"</strong> — 4~5개 모델 직접 테스트 후 도입/탈락 결정
+            </div>
+
+            <h3>LLM 대조 테스트</h3>
+            <table>
+                <tr><th>모델</th><th>한국어</th><th>키오스크</th><th>판정</th></tr>
+                <tr><td>Llama 3.2 (7B)</td><td>△</td><td>✅ 경량</td><td><span class="tag green">채택</span></td></tr>
+                <tr><td>DeepSeek (67B)</td><td>✅</td><td>△ 무거움</td><td><span class="tag yellow">대기</span></td></tr>
+                <tr><td>Gemma 2 / Qwen</td><td>△~✅</td><td>△~✅</td><td><span class="tag gray">보류</span></td></tr>
+            </table>
+
+            <h3>Image 모델 테스트</h3>
+            <table>
+                <tr><th>모델</th><th>정체성</th><th>아티팩팅</th><th>판정</th></tr>
+                <tr><td>SD 1.5</td><td>❌</td><td>❌</td><td><span class="tag" style="background:#dc3545">낙제</span></td></tr>
+                <tr><td>SDXL</td><td>△</td><td>△</td><td><span class="tag yellow">조건부</span></td></tr>
+                <tr><td>FLUX.1</td><td>✅</td><td>✅</td><td><span class="tag blue">유망</span></td></tr>
+                <tr><td>Imagen 3 I2I</td><td>✅✅</td><td>✅✅</td><td><span class="tag green">채택</span></td></tr>
+            </table>
+
+            <h3>4060 한계 실증</h3>
+            <div class="grid-2">
+                <div class="card">
+                    <h4>✅ 가능</h4>
+                    <ul>
+                        <li>SDXL 추론</li>
+                        <li>Llama 7B (4bit)</li>
+                        <li>소규모 LoRA</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h4>❌ OOM</h4>
+                    <ul>
+                        <li>FLUX 추론</li>
+                        <li>7B+ 파인튜닝</li>
+                        <li>SDXL 풀 튜닝</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="warning">
+                <strong>결론:</strong> 테스트 가능, MLOps 불가 → <strong>5090 필요</strong>
+            </div>
+        </section>
+
+        <!-- Section 6 -->
+        <section class="section">
+            <h2>6. 인프라 전략</h2>
+
+            <h3>5090 도입 필요성</h3>
+            <table>
+                <tr><th>항목</th><th>4060 (현재)</th><th>5090 (목표)</th></tr>
+                <tr><td>VRAM</td><td>8GB</td><td><strong>32GB</strong></td></tr>
+                <tr><td>파인튜닝</td><td>2B~3B</td><td><strong>7B~35B</strong></td></tr>
+                <tr><td>추론</td><td>7B (양자화)</td><td><strong>70B+</strong></td></tr>
+            </table>
+
+            <div class="warning">
+                <strong>비즈니스 필수 논거:</strong><br>
+                현재: Sonnet 데몬 (Claude Max 구독) / 납품: 부스 100개 × API = 월 $10,000~30,000<br>
+                <strong>→ 70B 자체 모델 = API $0 = 비즈니스 생존 조건</strong>
+            </div>
+
+            <h3>M5 + eGPU 하이브리드</h3>
+            <div class="insight">
+                <strong>2024.12:</strong> Thunderbolt 5 + NVIDIA eGPU 공식 지원 (80Gbps)<br>
+                M5 (크리에이티브) + 5090 eGPU (연산) = Mac 생태계 + NVIDIA 연산력 동시 확보
+            </div>
+
+            <h3>로컬/클라우드 50:50</h3>
+            <div class="grid-2">
+                <div class="card">
+                    <h4>내가 쓰는 것</h4>
+                    <p>클라우드 최강 (Gemini, Claude) — R&D 벤치마크</p>
+                </div>
+                <div class="card">
+                    <h4>실제 납품</h4>
+                    <p>자체 파인튜닝 — API $0, 독립 비즈니스</p>
+                </div>
+            </div>
+            <div class="warning">
+                <strong>"로컬 없는 클라우드 = 남의 집 장사 = 납품 불가"</strong>
+            </div>
+
+            <h3>소형 특화 지능</h3>
+            <div class="insight">
+                ❌ "모든 것을 잘 아는 LLM" (빅테크 영역)<br>
+                ✅ <strong>"K-뷰티 특화, BWYA 기반, 7B~70B 자체 모델"</strong> = 우리 경쟁력
+            </div>
+        </section>
+
+        <!-- Section 7 -->
+        <section class="section">
+            <h2>7. 향후 계획</h2>
+
+            <h3>2026년 로드맵</h3>
+            <table>
+                <tr><th>분기</th><th>목표</th><th>상세</th></tr>
+                <tr><td>Q1</td><td>QC 시스템</td><td>자동 검수 파이프라인</td></tr>
+                <tr><td>Q2</td><td>5090 도입</td><td>70B 파인튜닝 환경</td></tr>
+                <tr><td>Q3</td><td>M5 + eGPU</td><td>TB5 하이브리드</td></tr>
+                <tr><td>Q4</td><td>자체 모델</td><td>MONKOS 브랜드 오픈소스</td></tr>
+            </table>
+
+            <h3>2027년 목표</h3>
+            <ul>
+                <li>무인 촬영 부스 프랜차이즈</li>
+                <li>Academy 플랫폼 정식 오픈</li>
+                <li>B2B AI 모델 라이선싱</li>
+            </ul>
+        </section>
+
+        <!-- Appendix -->
+        <section class="section">
+            <h2>부록: 연구 기록 현황</h2>
+
+            <table>
+                <tr><th>항목</th><th>수량</th></tr>
+                <tr><td>일일 세션 로그</td><td>38일분 (~450KB)</td></tr>
+                <tr><td>Git 커밋</td><td>200+ 건</td></tr>
+                <tr><td>배포 서비스</td><td>4개 운영 중</td></tr>
+                <tr><td>BWYA 코퍼스</td><td>206,131자</td></tr>
+                <tr><td>용아 대화</td><td>15MB+</td></tr>
+            </table>
+
+            <div class="insight">
+                <strong>배포:</strong> monkos.ai, idphoto-kr.monkos.ai, idphoto-jp.monkos.ai, image.monkos.ai
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>작성: 2026-02-17 06:05 KST | MONK.KR 연구개발 전담부서 | v1.0.0 (요약본)</p>
+        </footer>
+    </div>
+</body>
+</html>
