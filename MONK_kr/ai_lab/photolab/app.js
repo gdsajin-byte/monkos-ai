@@ -127,6 +127,7 @@ const screens = Monk.screens({
   camera: {
     el: '#camera-area',
     async enter() {
+      console.log('[DEBUG] camera.enter() called', new Error().stack);
       store.step = 1;
       store.stepLabel = TX.step1;
       store.coaching = { text: TX.coachingCheck, ready: false, active: true };
@@ -404,6 +405,7 @@ async function confirmAndGenerate() {
 
   try {
     const preCheck = await pipe.run('precheck', { image: base64 });
+    console.log('[DEBUG] precheck 결과:', JSON.stringify(preCheck));
     Monk.log(`사전분석: ${preCheck.score}점 ${preCheck.suitable ? 'OK' : 'NG'}`);
 
     if (!preCheck.suitable) {
@@ -417,6 +419,7 @@ async function confirmAndGenerate() {
 
     store.qcBadgeText = `사전분석 OK (${preCheck.score}점) → 생성 시작`;
   } catch (err) {
+    console.log('[DEBUG] precheck 에러:', JSON.stringify(err, null, 2));
     Monk.log('사전분석 스킵: ' + (err.error || err.message));
     // 사전분석 실패 시 생성 진행
   }
@@ -427,6 +430,15 @@ async function confirmAndGenerate() {
   store.resultTitle = TX.generating;
   store.resultSubtitle = TX.generatingSub;
   store.qcBadgeText = TX.genLoading;
+
+  console.log('[DEBUG] generate 요청:', {
+    imageLength: base64.length,
+    imagePrefix: base64.substring(0, 30),
+    style: store.style,
+    gender: store.gender,
+    age: store.age,
+    userId: store.user.id,
+  });
 
   try {
     const genResult = await pipe.run('generate', {
@@ -460,6 +472,7 @@ async function confirmAndGenerate() {
       showQCError(qcErr.error || qcErr.message || 'QC 실패');
     }
   } catch (err) {
+    console.log('[DEBUG] generate 에러:', JSON.stringify(err, null, 2));
     if (err.status === 402) {
       showCreditModal(err.required || 1, err.credits || 0, 'generate');
       store.showStep2Actions = true;
@@ -502,7 +515,10 @@ function showGenerateError(error) {
   store.qcBadgeText = TX.genFail + ': ' + error;
   store.qcPassed = false;
   store.resultTitle = TX.genFail;
-  store.showStep3Actions = true;
+  store.resultSubtitle = error;
+  store.showStep3Actions = false;  // 다운로드 버튼 숨김
+  store.showStep2Actions = true;   // 재촬영/재시도 버튼 표시
+  store.step = 2;                  // step 2로 복귀 (촬영 확인)
   Monk.log('생성 에러: ' + error);
 }
 

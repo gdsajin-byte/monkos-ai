@@ -205,6 +205,7 @@ const Monk = (() => {
 
     // WebSocket 연결
     const connect = (name) => {
+      console.log('[DEBUG] WS connect called:', name, new Error().stack);
       const def = defs[name];
       if (!def || def.type !== 'ws') {
         log(`Pipe "${name}" is not a WebSocket endpoint`);
@@ -236,6 +237,12 @@ const Monk = (() => {
       };
 
       ws.onclose = () => {
+        console.log('[DEBUG] WS onclose:', {
+          name,
+          intentionalClose: ws._intentionalClose,
+          reconnectConfig: !!def.reconnect,
+          reconnectCount: ws._reconnectCount || 0,
+        });
         log(`WS[${name}] 종료`);
         wsConnections[name] = null;
         if (def.onClose) def.onClose();
@@ -244,6 +251,7 @@ const Monk = (() => {
         if (def.reconnect && !ws._intentionalClose) {
           const { delay = 3000, max = 5 } = def.reconnect;
           ws._reconnectCount = (ws._reconnectCount || 0) + 1;
+          console.log('[DEBUG] WS reconnect triggered:', { name, count: ws._reconnectCount, max });
           if (ws._reconnectCount <= max) {
             setTimeout(() => connect(name), delay);
           }
