@@ -240,8 +240,8 @@ const Monk = (() => {
         wsConnections[name] = null;
         if (def.onClose) def.onClose();
 
-        // 자동 재연결
-        if (def.reconnect) {
+        // 자동 재연결 (의도적 종료 시 생략)
+        if (def.reconnect && !ws._intentionalClose) {
           const { delay = 3000, max = 5 } = def.reconnect;
           ws._reconnectCount = (ws._reconnectCount || 0) + 1;
           if (ws._reconnectCount <= max) {
@@ -272,10 +272,11 @@ const Monk = (() => {
       ws.send(data);
     };
 
-    // WebSocket 연결 해제
+    // WebSocket 연결 해제 (reconnect 방지)
     const disconnect = (name) => {
       const ws = wsConnections[name];
       if (ws) {
+        ws._intentionalClose = true;
         try { ws.close(); } catch {}
         wsConnections[name] = null;
       }
