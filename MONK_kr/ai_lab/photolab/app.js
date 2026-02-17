@@ -99,7 +99,7 @@ const pipe = Monk.pipe({
     reconnect: { delay: 3000, max: 5 },
   },
 }, {
-  baseUrl: API.PORTAL_URL,
+  baseUrl: API.PHOTOLAB_API,
   onCreditShort: (err) => showCreditModal(err.required || 1, err.credits || 0, 'generate'),
   onError: (name, err) => Monk.log(`API 에러[${name}]: ${err.error || err.message}`),
 });
