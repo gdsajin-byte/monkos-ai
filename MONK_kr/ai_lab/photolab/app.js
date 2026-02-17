@@ -143,7 +143,7 @@ const screens = Monk.screens({
           const array = new Uint8Array(binary.length);
           for (let i = 0; i < binary.length; i++) array[i] = binary.charCodeAt(i);
           const blob = new Blob([array], { type: 'image/jpeg' });
-          pipe._ws.coaching?.send(blob);
+          pipe.sendRaw('coaching', blob);
         }
       });
 
@@ -166,12 +166,8 @@ const screens = Monk.screens({
   },
   thankyou: {
     el: '#thankyou-screen',
-    async enter() {
-      // JPEG 변환 후 표시
-      if (store.generated) {
-        const jpegUrl = await media.toJpeg(store.generated, 0.92);
-        store.cropped = jpegUrl;
-      }
+    enter() {
+      // cropped는 showPreview()에서 이미 설정됨
       store.postCreditMsg = store.user.id
         ? `💎 10c 사용 · 잔여 ${store.user.credits}c`
         : '';
@@ -550,6 +546,22 @@ async function downloadResult() {
 }
 
 async function showPreview() {
+  // 규격 크롭 실행
+  if (store.generated && store.style) {
+    const spec = PHOTO_SPECS[store.style];
+    try {
+      const cropResult = await media.crop(store.generated, spec);
+      store.cropped = cropResult.dataUrl;
+      store.specName = spec.name;
+      store.specSize = `${spec.widthMM}×${spec.heightMM}mm`;
+      store.specPx = `${cropResult.outputW}×${cropResult.outputH}px`;
+      Monk.log(`규격 크롭: ${spec.name}`);
+    } catch (e) {
+      Monk.log('규격 크롭 실패: ' + e.message);
+      // 크롭 실패 시 원본 JPEG 변환으로 폴백
+      store.cropped = await media.toJpeg(store.generated, 0.92);
+    }
+  }
   await screens.go('thankyou');
   Monk.log('미리보기 모드 표시');
 }

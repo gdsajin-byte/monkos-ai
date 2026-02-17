@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>00079 코드 플로우차트 — idphoto-kr 모놀리스 분석</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, 'Apple SD Gothic Neo', sans-serif;
+            background: #0a0a0f; color: #e0e0e0;
+            padding: 24px; line-height: 1.6;
+        }
+        h1 { font-size: 22px; color: #a78bfa; margin-bottom: 4px; }
+        .subtitle { font-size: 12px; color: #666; margin-bottom: 32px; }
+        h2 { font-size: 16px; color: #60a5fa; margin: 32px 0 12px; padding-bottom: 6px; border-bottom: 1px solid #222; }
+        h3 { font-size: 13px; color: #f59e0b; margin: 20px 0 8px; }
+
+        /* 플로우 컨테이너 */
+        .flow { display: flex; flex-direction: column; gap: 2px; margin: 16px 0; }
+        .flow-row { display: flex; align-items: stretch; gap: 8px; }
+
+        /* 스텝 박스 */
+        .step {
+            padding: 12px 16px; border-radius: 10px;
+            border: 1.5px solid #222; background: #111;
+            flex: 1; min-width: 0; position: relative;
+        }
+        .step-name { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+        .step-desc { font-size: 11px; color: #888; }
+        .step-funcs { font-size: 10px; color: #555; margin-top: 6px; font-family: monospace; }
+        .step-dom { font-size: 10px; color: #444; margin-top: 3px; }
+
+        /* 화살표 */
+        .arrow {
+            text-align: center; padding: 4px 0; color: #444;
+            font-size: 14px; user-select: none;
+        }
+        .arrow-branch { color: #f59e0b; font-size: 11px; }
+
+        /* 색상 코드 */
+        .step.prep { border-color: rgba(167,139,250,0.4); }
+        .step.prep .step-name { color: #a78bfa; }
+        .step.camera { border-color: rgba(34,197,94,0.4); }
+        .step.camera .step-name { color: #22c55e; }
+        .step.ws { border-color: rgba(96,165,250,0.4); }
+        .step.ws .step-name { color: #60a5fa; }
+        .step.gen { border-color: rgba(244,114,182,0.4); }
+        .step.gen .step-name { color: #f472b6; }
+        .step.dl { border-color: rgba(250,204,21,0.4); }
+        .step.dl .step-name { color: #facc15; }
+        .step.auth { border-color: rgba(239,68,68,0.4); }
+        .step.auth .step-name { color: #ef4444; }
+        .step.credit { border-color: rgba(245,158,11,0.4); }
+        .step.credit .step-name { color: #f59e0b; }
+
+        /* 모듈 매핑 */
+        .module-map {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 8px; margin: 12px 0;
+        }
+        .module {
+            padding: 10px 14px; border-radius: 8px;
+            background: #0d0d15; border: 1px solid #1a1a2a;
+        }
+        .module-name { font-size: 12px; font-weight: 700; }
+        .module-funcs { font-size: 10px; color: #666; margin-top: 4px; }
+        .module-lines { font-size: 10px; color: #444; margin-top: 2px; }
+
+        /* 범례 */
+        .legend {
+            display: flex; flex-wrap: wrap; gap: 12px;
+            margin: 16px 0; padding: 12px;
+            background: #0d0d15; border-radius: 8px;
+        }
+        .legend-item {
+            display: flex; align-items: center; gap: 6px;
+            font-size: 11px;
+        }
+        .legend-dot {
+            width: 10px; height: 10px; border-radius: 3px;
+        }
+
+        /* 통계 */
+        .stats {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 8px; margin: 16px 0;
+        }
+        .stat {
+            padding: 12px; background: #111;
+            border: 1px solid #222; border-radius: 8px;
+            text-align: center;
+        }
+        .stat-num { font-size: 24px; font-weight: 800; color: #a78bfa; }
+        .stat-label { font-size: 10px; color: #666; margin-top: 2px; }
+
+        .dep-arrow { color: #333; font-size: 10px; }
+        .section { margin-bottom: 40px; }
+
+        /* 서버 API */
+        .api-list { font-size: 11px; }
+        .api-item {
+            display: flex; gap: 8px; padding: 6px 0;
+            border-bottom: 1px solid #1a1a1a;
+        }
+        .api-method {
+            font-weight: 700; font-family: monospace;
+            min-width: 40px;
+        }
+        .api-method.ws { color: #60a5fa; }
+        .api-method.post { color: #22c55e; }
+        .api-method.get { color: #f59e0b; }
+        .api-path { color: #ccc; font-family: monospace; min-width: 160px; }
+        .api-desc { color: #666; }
+    </style>
+</head>
+<body>
+
+<h1>00079 코드 플로우차트</h1>
+<p class="subtitle">idphoto-kr index.html (2,187줄) — 모놀리스 구조 분석 | 리팩토링 모듈 분해용</p>
+
+<!-- 통계 -->
+<div class="stats">
+    <div class="stat"><div class="stat-num">2,187</div><div class="stat-label">줄 (HTML+CSS+JS)</div></div>
+    <div class="stat"><div class="stat-num">56</div><div class="stat-label">함수</div></div>
+    <div class="stat"><div class="stat-num">~737</div><div class="stat-label">CSS (줄 57~737)</div></div>
+    <div class="stat"><div class="stat-num">~1,155</div><div class="stat-label">JS (줄 1032~2187)</div></div>
+</div>
+
+<!-- 범례 -->
+<div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#a78bfa;"></div> 준비화면 (Prep)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#ef4444;"></div> 인증 (Auth)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#22c55e;"></div> 카메라 (Camera)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#60a5fa;"></div> WebSocket/코칭 (WS)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#f472b6;"></div> 생성/QC (Generate)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#facc15;"></div> 다운로드 (Download)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#f59e0b;"></div> 크레딧 (Credits)</div>
+</div>
+
+<!-- ============ 메인 플로우 ============ -->
+<div class="section">
+<h2>1. 사용자 플로우 (메인 파이프라인)</h2>
+
+<div class="flow">
+    <!-- 초기화 -->
+    <div class="step auth">
+        <div class="step-name">⓪ 초기화 (페이지 로드)</div>
+        <div class="step-desc">인앱 브라우저 감지 → 데스크탑 차단 → 토스 결제 콜백 → URL 토큰 로그인 → 크레딧 초기화 → 로그인 UI</div>
+        <div class="step-funcs">IIFE() → initFromTossResult() → initFromUrlToken() → initCredits() → updateLoginUI() → isMobile() → showDesktopBlocker()</div>
+        <div class="step-dom">DOM: #inapp-banner, #desktop-blocker, #qr-code, #loginButtons, #userInfoBar</div>
+    </div>
+
+    <div class="arrow">▼</div>
+
+    <!-- Step 0: 준비 -->
+    <div class="step prep">
+        <div class="step-name">① 준비화면 (prep-screen)</div>
+        <div class="step-desc">용도 선택 (여권/이력서) → 성별 선택 → 연령 선택 → 확인 메시지 → [촬영 시작] 버튼 활성화</div>
+        <div class="step-funcs">addTouchClickHandler() → checkProfileComplete() → updateConfirmMessage() → syncStyleChips()</div>
+        <div class="step-dom">DOM: #prep-screen, .prep-style-option, .prep-profile-chip, #btn-start, #prep-confirm</div>
+    </div>
+
+    <div class="arrow">▼ startShooting()</div>
+
+    <!-- Step 1: 카메라 + 코칭 -->
+    <div class="flow-row">
+        <div class="step camera" style="flex:1;">
+            <div class="step-name">② 카메라 (Step 1)</div>
+            <div class="step-desc">getUserMedia → 전면 카메라 스트림 → 얼굴 가이드 오버레이 → 스타일 칩 바</div>
+            <div class="step-funcs">initCamera() → getUserMedia({video: {facingMode:'user', ideal:720}})</div>
+            <div class="step-dom">DOM: #camera-area, #camera-video, #face-guide, #style-bar, #controls</div>
+        </div>
+        <div class="step ws" style="flex:1;">
+            <div class="step-name">② AI 코칭 (WebSocket)</div>
+            <div class="step-desc">WS 연결 → set-style 전송 → 1초 간격 프레임 전송 → 코칭 텍스트 수신 → TTS 음성 출력 → ready 판정</div>
+            <div class="step-funcs">connectWS() → startFrameCapture() → detectChange() → showCoaching() → speakKo()</div>
+            <div class="step-dom">DOM: #coaching-overlay, #coaching-text, #coaching-label, #btn-capture, #btn-voice</div>
+        </div>
+    </div>
+
+    <div class="arrow">▼ capturePhoto() — 촬영 버튼 또는 AI ready 판정 시</div>
+
+    <!-- Step 2: 확인 -->
+    <div class="step prep">
+        <div class="step-name">③ 촬영 확인 (Step 2)</div>
+        <div class="step-desc">캡처 프레임 → Canvas → JPEG 변환 → 원본 사진 표시 → [다시 찍기] / [이 사진으로 생성 (1c)]</div>
+        <div class="step-funcs">capturePhoto() — canvas.toDataURL('image/jpeg', 0.8)</div>
+        <div class="step-dom">DOM: #result-overlay, #photo-original, #step2-actions</div>
+    </div>
+
+    <div class="arrow">
+        ▼ confirmAndGenerate()
+        <div class="arrow-branch">← retakePhoto() → ②로 복귀</div>
+    </div>
+
+    <!-- Step 3: 생성 + QC -->
+    <div class="step gen">
+        <div class="step-name">④ AI 생성 + QC (Step 3)</div>
+        <div class="step-desc">
+            사전분석 (POST /api/precheck) → Imagen 생성 (POST /api/generate) → QC 검증 (POST /api/qc) → 규격 크롭 (cropToSpec)
+        </div>
+        <div class="step-funcs">confirmAndGenerate() → apiPost('/api/precheck') → apiPost('/api/generate') → apiPost('/api/qc') → showQCResult() → showSpecResult() → cropToSpec()</div>
+        <div class="step-dom">DOM: #photo-generated, #qc-badge, #spec-result, #spec-photo, #btn-download, #step3-actions</div>
+    </div>
+
+    <div class="arrow">
+        ▼ downloadResult()
+        <div class="arrow-branch">← retakePhoto() → ②로 복귀</div>
+        <div class="arrow-branch">← regenerate() → ④ 재시도</div>
+    </div>
+
+    <!-- Step 4: 다운로드 -->
+    <div class="step dl">
+        <div class="step-name">⑤ 다운로드 / 미리보기 (Step 4)</div>
+        <div class="step-desc">
+            크레딧 확인 (10c) → 차감 API → JPEG 변환 → 미리보기 화면 → 길게 눌러 저장 / 재저장 / SNS 공유 이벤트
+        </div>
+        <div class="step-funcs">downloadResult() → proceedDownload() → showPreview() → saveToPhotos() → openTelegram()</div>
+        <div class="step-dom">DOM: #thankyou-screen, #ty-photo, #tySaveGuide, #tyCompleteMsg, #postCreditMsg, #tgEventLink</div>
+    </div>
+</div>
+</div>
+
+<!-- ============ 서버 API ============ -->
+<div class="section">
+<h2>2. 서버 API 엔드포인트 (server.js 연동)</h2>
+
+<div class="api-list">
+    <div class="api-item">
+        <span class="api-method ws">WS</span>
+        <span class="api-path">wss://{host}</span>
+        <span class="api-desc">Gemini 2.0 Live — 실시간 코칭 (프레임 전송 → 코칭 텍스트 수신)</span>
+    </div>
+    <div class="api-item">
+        <span class="api-method post">POST</span>
+        <span class="api-path">/api/precheck</span>
+        <span class="api-desc">Gemini 3 Flash — 사전 분석 (촬영 품질 판정)</span>
+    </div>
+    <div class="api-item">
+        <span class="api-method post">POST</span>
+        <span class="api-path">/api/generate</span>
+        <span class="api-desc">Imagen NB3 Pro I2I — 증명사진 생성 (base64 이미지 → base64 결과)</span>
+    </div>
+    <div class="api-item">
+        <span class="api-method post">POST</span>
+        <span class="api-path">/api/qc</span>
+        <span class="api-desc">Gemini 3 Flash — QC 검증 (원본 vs 생성물 비교)</span>
+    </div>
+    <div class="api-item">
+        <span class="api-method get">GET</span>
+        <span class="api-path">/health</span>
+        <span class="api-desc">헬스 체크 (Gemini/Imagen/QC 상태)</span>
+    </div>
+    <div class="api-item">
+        <span class="api-method get">GET</span>
+        <span class="api-path">{PORTAL}/api/credits</span>
+        <span class="api-desc">monkos.ai — 크레딧 잔액 조회</span>
+    </div>
+    <div class="api-item">
+        <span class="api-method post">POST</span>
+        <span class="api-path">{PORTAL}/api/credits/use</span>
+        <span class="api-desc">monkos.ai — 크레딧 차감 (생성 1c, 다운로드 10c)</span>
+    </div>
+    <div class="api-item">
+        <span class="api-method post">POST</span>
+        <span class="api-path">{PORTAL}/api/credits/refund</span>
+        <span class="api-desc">monkos.ai — 크레딧 환불 (생성 실패 시)</span>
+    </div>
+    <div class="api-item">
+        <span class="api-method get">GET</span>
+        <span class="api-path">{PORTAL}/auth/kakao</span>
+        <span class="api-desc">monkos.ai — 카카오 OAuth 리다이렉트</span>
+    </div>
+    <div class="api-item">
+        <span class="api-method get">GET</span>
+        <span class="api-path">{PORTAL}/auth/google</span>
+        <span class="api-desc">monkos.ai — Google OAuth 리다이렉트</span>
+    </div>
+</div>
+</div>
+
+<!-- ============ 모듈 분해 매핑 ============ -->
+<div class="section">
+<h2>3. 리팩토링 모듈 분해 매핑 (Plan B)</h2>
+<p style="font-size:11px; color:#666; margin-bottom:12px;">00079 함수 → 목표 파일 대응표. 각 모듈은 1책임 원칙.</p>
+
+<div class="module-map">
+    <div class="module" style="border-color:rgba(167,139,250,0.3);">
+        <div class="module-name" style="color:#a78bfa;">js/config.js</div>
+        <div class="module-funcs">TX{}, PHOTO_SPECS{}, DPI, CREDIT_COST, PORTAL_URL, TOSS_CLIENT_KEY</div>
+        <div class="module-lines">상수/설정값만. 의존: 없음</div>
+    </div>
+    <div class="module" style="border-color:rgba(239,68,68,0.3);">
+        <div class="module-name" style="color:#ef4444;">js/auth.js</div>
+        <div class="module-funcs">initFromUrlToken, loginKakao, loginGoogle, logoutUser, updateLoginUI, isInAppBrowser, openInExternalBrowser</div>
+        <div class="module-lines">7개 함수. 의존: config.js</div>
+    </div>
+    <div class="module" style="border-color:rgba(22,163,74,0.3);">
+        <div class="module-name" style="color:#22c55e;">js/camera.js</div>
+        <div class="module-funcs">initCamera, capturePhoto, retakePhoto, cleanupSession</div>
+        <div class="module-lines">4개 함수 (핵심 위험). 의존: config.js</div>
+    </div>
+    <div class="module" style="border-color:rgba(96,165,250,0.3);">
+        <div class="module-name" style="color:#60a5fa;">js/voice-agent.js</div>
+        <div class="module-funcs">connectWS, disconnectWS, startFrameCapture, stopFrameCapture, detectChange, showCoaching, setDot, initVoice, speakKo, toggleVoice</div>
+        <div class="module-lines">10개 함수. 의존: config.js, camera.js</div>
+    </div>
+    <div class="module" style="border-color:rgba(244,114,182,0.3);">
+        <div class="module-name" style="color:#f472b6;">js/generate.js</div>
+        <div class="module-funcs">confirmAndGenerate, showQCResult, showGenerateError, showQCError, regenerate, cropToSpec, showSpecResult, initMediaPipe</div>
+        <div class="module-lines">8개 함수. 의존: config.js, auth.js, camera.js</div>
+    </div>
+    <div class="module" style="border-color:rgba(250,204,21,0.3);">
+        <div class="module-name" style="color:#facc15;">js/download.js</div>
+        <div class="module-funcs">downloadResult, proceedDownload, showPreview, saveToPhotos, openTelegram, disableShareButtons, toJpegDataUrl</div>
+        <div class="module-lines">7개 함수. 의존: config.js, auth.js</div>
+    </div>
+    <div class="module" style="border-color:rgba(245,158,11,0.3);">
+        <div class="module-name" style="color:#f59e0b;">js/credits.js</div>
+        <div class="module-funcs">initCredits, fetchLatestCredits, updateCreditBadge, showCreditModal, closeCreditModal, goToPurchase, buyCreditsKR, initFromTossResult</div>
+        <div class="module-lines">8개 함수. 의존: config.js, auth.js</div>
+    </div>
+    <div class="module" style="border-color:rgba(167,139,250,0.3);">
+        <div class="module-name" style="color:#c4b5fd;">js/ui.js</div>
+        <div class="module-funcs">checkProfileComplete, updateConfirmMessage, syncStyleChips, startShooting, addTouchClickHandler, isMobile, showDesktopBlocker, log</div>
+        <div class="module-lines">8개 함수. 의존: config.js, camera.js</div>
+    </div>
+    <div class="module" style="border-color:rgba(255,255,255,0.2);">
+        <div class="module-name" style="color:#fff;">js/app.js (진입점)</div>
+        <div class="module-funcs">모듈 import → 초기화 시퀀스 실행 → 이벤트 바인딩 → 전역 에러 핸들링</div>
+        <div class="module-lines">init: config → auth → credits → ui → camera → voice</div>
+    </div>
+    <div class="module" style="border-color:rgba(255,255,255,0.1);">
+        <div class="module-name" style="color:#888;">css/app.css</div>
+        <div class="module-funcs">줄 57~737 전체 CSS 추출</div>
+        <div class="module-lines">~680줄. 순서: 공통 → prep → camera → coaching → result → thankyou → controls → credit</div>
+    </div>
+</div>
+</div>
+
+<!-- ============ 전역 변수 ============ -->
+<div class="section">
+<h2>4. 전역 상태 변수 (window.monkos로 네임스페이스화 대상)</h2>
+
+<div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; font-size:11px;">
+    <div style="padding:8px; background:#111; border-radius:6px;">
+        <strong style="color:#22c55e;">카메라</strong><br>
+        <code>ws</code> — WebSocket 인스턴스<br>
+        <code>cameraStream</code> — MediaStream<br>
+        <code>frameTimer</code> — 프레임 캡처 타이머<br>
+        <code>capturedImageData</code> — 촬영 원본
+    </div>
+    <div style="padding:8px; background:#111; border-radius:6px;">
+        <strong style="color:#f472b6;">생성</strong><br>
+        <code>generatedImageData</code> — AI 생성 결과<br>
+        <code>croppedImageData</code> — 규격 크롭 결과<br>
+        <code>mediapipeFaceDetector</code> — 얼굴 검출기
+    </div>
+    <div style="padding:8px; background:#111; border-radius:6px;">
+        <strong style="color:#a78bfa;">UI 상태</strong><br>
+        <code>currentStep</code> — 0:준비 1:코칭 2:확인 3:생성<br>
+        <code>isReady</code> — AI 촬영 OK 판정<br>
+        <code>coachingTimeout</code> — 코칭 표시 타이머
+    </div>
+    <div style="padding:8px; background:#111; border-radius:6px;">
+        <strong style="color:#ef4444;">인증</strong><br>
+        <code>userId</code> — 로그인 유저 ID<br>
+        <code>userCredits</code> — 보유 크레딧
+    </div>
+    <div style="padding:8px; background:#111; border-radius:6px;">
+        <strong style="color:#f59e0b;">선택</strong><br>
+        <code>selectedStyle</code> — id_photo / resume<br>
+        <code>selectedGender</code> — male / female<br>
+        <code>selectedAge</code> — child / teen / adult
+    </div>
+    <div style="padding:8px; background:#111; border-radius:6px;">
+        <strong style="color:#60a5fa;">음성</strong><br>
+        <code>voiceEnabled</code> — TTS ON/OFF<br>
+        <code>koVoice</code> — 한국어 음성 객체
+    </div>
+</div>
+</div>
+
+<!-- ============ 의존성 그래프 ============ -->
+<div class="section">
+<h2>5. 모듈 간 의존성 방향 (단방향 원칙)</h2>
+
+<pre style="font-size:12px; color:#888; background:#0d0d15; padding:16px; border-radius:8px; overflow-x:auto; border:1px solid #1a1a2a;">
+<span style="color:#888;">config.js</span> ← 의존 없음 (순수 상수)
+   ↑
+<span style="color:#ef4444;">auth.js</span> ← config
+   ↑
+<span style="color:#f59e0b;">credits.js</span> ← config, auth
+   ↑
+<span style="color:#c4b5fd;">ui.js</span> ← config
+   ↑
+<span style="color:#22c55e;">camera.js</span> ← config
+   ↑
+<span style="color:#60a5fa;">voice-agent.js</span> ← config, camera (프레임 소스)
+   ↑
+<span style="color:#f472b6;">generate.js</span> ← config, auth, camera (캡처 이미지), voice-agent (코칭 중단)
+   ↑
+<span style="color:#facc15;">download.js</span> ← config, auth, credits (차감)
+   ↑
+<span style="color:#fff;">app.js</span> ← 전체 import + 초기화 오케스트레이션
+</pre>
+</div>
+
+<!-- ============ DOM 화면 전환 ============ -->
+<div class="section">
+<h2>6. 화면 전환 (DOM 표시/숨김)</h2>
+
+<div style="font-size:11px; display:grid; grid-template-columns:repeat(5,1fr); gap:6px;">
+    <div style="padding:10px; background:rgba(167,139,250,0.1); border:1px solid rgba(167,139,250,0.3); border-radius:8px; text-align:center;">
+        <strong style="color:#a78bfa;">준비</strong><br>
+        #prep-screen<br>
+        <span style="color:#555;">display: flex</span>
+    </div>
+    <div style="padding:10px; background:rgba(34,197,94,0.1); border:1px solid rgba(34,197,94,0.3); border-radius:8px; text-align:center;">
+        <strong style="color:#22c55e;">카메라</strong><br>
+        #camera-area<br>
+        #controls<br>
+        <span style="color:#555;">.active 클래스</span>
+    </div>
+    <div style="padding:10px; background:rgba(96,165,250,0.1); border:1px solid rgba(96,165,250,0.3); border-radius:8px; text-align:center;">
+        <strong style="color:#60a5fa;">결과</strong><br>
+        #result-overlay<br>
+        <span style="color:#555;">.active 클래스</span>
+    </div>
+    <div style="padding:10px; background:rgba(244,114,182,0.1); border:1px solid rgba(244,114,182,0.3); border-radius:8px; text-align:center;">
+        <strong style="color:#f472b6;">QC/규격</strong><br>
+        #qc-badge<br>
+        #spec-result<br>
+        <span style="color:#555;">.active 클래스</span>
+    </div>
+    <div style="padding:10px; background:rgba(250,204,21,0.1); border:1px solid rgba(250,204,21,0.3); border-radius:8px; text-align:center;">
+        <strong style="color:#facc15;">미리보기</strong><br>
+        #thankyou-screen<br>
+        <span style="color:#555;">.active (fixed)</span>
+    </div>
+</div>
+
+<div style="margin-top:12px; font-size:11px; color:#555;">
+    전환 패턴: <code>prep-screen.hidden=true</code> → <code>camera-area.active</code> → <code>result-overlay.active</code> → <code>thankyou-screen.active</code>
+    <br>복귀: <code>retakePhoto()</code>는 result-overlay 해제 → camera-area 유지
+    <br>전체 리셋: <code>location.reload()</code> (thankyou 닫기 버튼)
+</div>
+</div>
+
+<!-- ============ 위험 지점 ============ -->
+<div class="section">
+<h2>7. 리팩토링 주의 지점</h2>
+
+<div style="font-size:12px;">
+    <div style="padding:10px; margin:6px 0; background:rgba(239,68,68,0.1); border-left:3px solid #ef4444; border-radius:0 8px 8px 0;">
+        <strong style="color:#ef4444;">CRITICAL: camera.js</strong> — getUserMedia + 스트림 관리가 카메라 충돌의 핵심. 00079 코드 그대로 추출, 한 글자도 바꾸지 말 것.
+    </div>
+    <div style="padding:10px; margin:6px 0; background:rgba(245,158,11,0.1); border-left:3px solid #f59e0b; border-radius:0 8px 8px 0;">
+        <strong style="color:#f59e0b;">HIGH: voice-agent.js</strong> — WebSocket 연결/해제 타이밍이 카메라와 결합. connectWS()의 onopen에서 startFrameCapture() 호출 → camera.js와 강결합.
+    </div>
+    <div style="padding:10px; margin:6px 0; background:rgba(245,158,11,0.1); border-left:3px solid #f59e0b; border-radius:0 8px 8px 0;">
+        <strong style="color:#f59e0b;">HIGH: 전역 변수</strong> — capturedImageData, generatedImageData 등이 모듈 간 공유됨. window.monkos 네임스페이스로 명시적 관리 필수.
+    </div>
+    <div style="padding:10px; margin:6px 0; background:rgba(96,165,250,0.1); border-left:3px solid #60a5fa; border-radius:0 8px 8px 0;">
+        <strong style="color:#60a5fa;">MEDIUM: generate.js</strong> — confirmAndGenerate()가 200줄 대형 함수. 사전분석→생성→QC→크롭이 순차 체이닝. 분리 시 async/await 체인 유지 필수.
+    </div>
+    <div style="padding:10px; margin:6px 0; background:rgba(167,139,250,0.1); border-left:3px solid #a78bfa; border-radius:0 8px 8px 0;">
+        <strong style="color:#a78bfa;">LOW: DOM ID 참조</strong> — 56개 함수가 직접 getElementById 호출. 모듈화 시 DOM 참조를 각 모듈 상단에서 캐싱하거나, ui.js에서 중앙 관리.
+    </div>
+</div>
+</div>
+
+<footer style="margin-top:40px; padding:16px 0; border-top:1px solid #222; font-size:10px; color:#444; text-align:center;">
+    00079 (커밋 93581f3) 기준 | 생성: 2026-02-17 쌍아 | 용도: 리팩토링 모듈 분해 참조
+</footer>
+
+</body>
+</html>

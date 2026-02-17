@@ -265,6 +265,13 @@ const Monk = (() => {
       ws.send(typeof data === 'string' ? data : JSON.stringify(data));
     };
 
+    // WebSocket 바이너리 전송 (Blob/ArrayBuffer)
+    const sendRaw = (name, data) => {
+      const ws = wsConnections[name];
+      if (!ws || ws.readyState !== 1) return;
+      ws.send(data);
+    };
+
     // WebSocket 연결 해제
     const disconnect = (name) => {
       const ws = wsConnections[name];
@@ -317,6 +324,7 @@ const Monk = (() => {
       run,
       connect,
       send,
+      sendRaw,
       disconnect,
       isConnected,
       startLoop,
