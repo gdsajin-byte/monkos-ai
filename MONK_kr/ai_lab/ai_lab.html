@@ -820,6 +820,12 @@
         }
 
         function closeVisitorModal() {
+            // 챗봇 스킵 시에도 게스트 정보 저장 (재진입 방지)
+            if (!localStorage.getItem('MONK_VISITOR_INFO')) {
+                const guest = { name: 'Guest', country: 'KR', gender: '', age: '', skipped: true };
+                localStorage.setItem('MONK_VISITOR_INFO', JSON.stringify(guest));
+                sessionStorage.setItem('MONK_VISITOR_INFO', JSON.stringify(guest));
+            }
             const modal = document.getElementById('visitor-modal');
             modal.classList.add('opacity-0');
             setTimeout(() => {
