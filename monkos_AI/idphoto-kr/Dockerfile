@@ -19,7 +19,7 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm install --only=production && \
+RUN npm ci --omit=dev && \
     npm cache clean --force
 
 COPY server.js ./
