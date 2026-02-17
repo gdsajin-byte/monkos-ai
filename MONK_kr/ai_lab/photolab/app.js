@@ -753,19 +753,6 @@ document.addEventListener('visibilitychange', () => {
   }
 });
 
-function loginKakao() {
-  window.location.href = `${API.PORTAL_URL}/auth/kakao?redirect=${encodeURIComponent(window.location.href)}`;
-}
-
-function loginGoogle() {
-  window.location.href = `${API.PORTAL_URL}/auth/google?redirect=${encodeURIComponent(window.location.href)}`;
-}
-
-function logoutUser() {
-  sessionStorage.removeItem('monkos_user');
-  store.user = { id: null, email: null, name: null, credits: 0, avatar: '' };
-  Monk.log('로그아웃');
-}
 
 // ─── 16. 기타 유틸리티 ───
 function openExternal() {
@@ -813,9 +800,6 @@ Object.assign(window, {
   buyCreditsKR,
   closeCreditModal,
   toggleVoice,
-  loginKakao,
-  loginGoogle,
-  logoutUser,
   openExternal,
   openTelegram,
 });
