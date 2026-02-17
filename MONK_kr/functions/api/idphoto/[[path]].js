@@ -3,20 +3,7 @@
 
 const TARGET = 'https://idphoto-kr.monkos.ai';
 
-export async function onRequest(context) {
-  const { request } = context;
-
-  // CORS preflight
-  if (request.method === 'OPTIONS') {
-    return new Response(null, {
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type',
-      },
-    });
-  }
-
+async function proxy(request) {
   // /api/idphoto/generate → /api/generate
   const url = new URL(request.url);
   const apiPath = url.pathname.replace('/api/idphoto', '/api');
@@ -48,4 +35,25 @@ export async function onRequest(context) {
       },
     });
   }
+}
+
+// POST
+export async function onRequestPost(context) {
+  return proxy(context.request);
+}
+
+// GET
+export async function onRequestGet(context) {
+  return proxy(context.request);
+}
+
+// OPTIONS (CORS preflight)
+export async function onRequestOptions() {
+  return new Response(null, {
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+    },
+  });
 }
