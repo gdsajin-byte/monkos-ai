@@ -14,8 +14,8 @@ const files = readdirSync(PUBLIC_DIR)
 
 const options = {
   compact: true,
-  controlFlowFlattening: true,
-  controlFlowFlatteningThreshold: 0.4,
+  controlFlowFlattening: false,
+  // controlFlowFlatteningThreshold: 0.4,  // CFG 비활성화로 불필요
   deadCodeInjection: false,
   stringArray: true,
   stringArrayThreshold: 0.5,

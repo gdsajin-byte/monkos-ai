@@ -18,13 +18,18 @@
     "ms-vscode.live-server",
     "bradlc.vscode-tailwindcss",
 
+    // 캔버스 디스플레이 (Markdown + Mermaid)
+    "bierner.markdown-mermaid",
+    "bpruber.mermaid-markdown-syntax-highlighting",
+
     // 인프라
     "googlecloudtools.cloudcode",
     "redhat.vscode-yaml",
     "tamasfe.even-better-toml",
 
-    // Claude Code
-    "anthropic.claude-vscode"
+    // AI 협업
+    "anthropic.claude-vscode",
+    "google.geminicodeassist"
   ],
   "unwantedRecommendations": [
     "dsznajder.es7-react-js-snippets",

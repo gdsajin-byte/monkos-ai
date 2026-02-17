@@ -36,6 +36,7 @@ Thumbs.db
 # Secrets / Credentials
 client_secret*.json
 **/client_secret*.json
+**/credentials.json
 
 # Logs
 *.log

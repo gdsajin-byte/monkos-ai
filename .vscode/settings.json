@@ -111,6 +111,23 @@
     "javascript": "javascript"
   },
 
+  // ─── Markdown Preview (캔버스 디스플레이) ───
+  "markdown.preview.scrollPreviewWithEditor": true,
+  "markdown.preview.scrollEditorWithPreview": true,
+  "markdown.preview.breaks": true,
+  "markdown.preview.openMarkdownLinks": "inPreview",
+
+  // ─── Simple Browser (HTML 라이브 프리뷰) ───
+  // Cmd+Shift+P → "Simple Browser: Show" 로 에디터 탭에서 열기
+  // Live Server 확장과 병행 사용
+
+  // ─── 캔버스 레이아웃 ───
+  // 좌 사이드: 쌍아 (Claude Code) — 채팅 + 터미널
+  // 중앙 에디터: 코드/프리뷰/브라우저 (무한 분할 + 탭)
+  // 우 사이드: 용아 (Gemini) & Explorer (스위치)
+  "workbench.sideBar.location": "left",
+  "workbench.panel.defaultLocation": "bottom",
+
   // ─── Claude 관련 ───
   "claude.autoScroll": true,
   "workbench.editor.autoLockGroups": {
