@@ -1,9 +1,10 @@
 # MONKOS AI 증명사진 서비스 — 기술명세서
 
-**버전:** v1.0
-**작성일:** 2026-02-16
+**버전:** v1.1
+**작성일:** 2026-02-16 (v1.0) → 2026-02-18 (v1.1 갱신)
 **작성:** 쌍아 (Claude Code Opus 4.6)
 **대상 독자:** 인프라 엔지니어, 기술 실사관
+**갱신 의무:** 인프라, 파이프라인, 배포, 장애 발생 시 반드시 갱신
 
 ---
 
@@ -388,7 +389,7 @@ GCP 크레딧: 250만원 잔액 (2026-02 기준, 무료 티어가 커버하여 �
 
 ---
 
-## 13. 현재 상태 요약 (02/16 기준)
+## 13. 현재 상태 요약 (02/18 기준)
 
 ### 완료
 
@@ -399,16 +400,21 @@ GCP 크레딧: 250만원 잔액 (2026-02 기준, 무료 티어가 커버하여 �
 - [x] Telegram CS봇
 - [x] Cloudflare CDN + WAF
 - [x] dev/prod 2-track 배포 라인
-- [x] dev 서비스 최초 배포 완료 (monkos-idphoto-kr-dev)
-- [x] 배포 워크플로우 확정 (별도 빌드 방식)
 - [x] 고아 Cloud Run 서비스 정리 완료
+- [x] monk.js 프레임워크 코어 v1 (Screen/Store/Pipe/Media/Agent)
+- [x] monk.kr photolab 앱 계층 v1 (app.js/config.js/index.html/app.css)
+- [x] CF Pages Function 프록시 3개 (precheck/generate/qc)
+- [x] 00079 의존성 핀 고정 (카메라 오류는 코드 원인 확정)
 
 ### 미완료
 
+- [ ] main 머지 → monk.kr 프로덕션 배포 (develop 대기 중)
+- [ ] 모바일 E2E 재테스트 (프록시 동작 확인)
+- [ ] creditUse 프록시 (다운로드 크레딧)
+- [ ] QC 결과 미표시 원인 (서버 로그 미확보)
 - [ ] GA4 설치 + 전환율 데이터 수집
-- [ ] Face Mesh 정밀 크롭 (퍼널 유료)
-- [ ] QC 컨시어지 챗창 (Phase 2, stash 상태)
-- [ ] Gemini 2.5 Live 코칭 (시도→실패→2.0 롤백, 재시도 대기)
+- [ ] KR/JP 공유 코어 분리 (설계서 완료, 구현 대기)
+- [ ] AI 에이전트 2분할 vision/voice (설계서 완료, 구현 대기)
 
 ---
 
@@ -458,3 +464,100 @@ GCP 크레딧: 250만원 잔액 (2026-02 기준, 무료 티어가 커버하여 �
 ### portal
 
 위 외에: KAKAO_REST_API_KEY, KAKAO_REDIRECT_URI, KAKAO_CLIENT_SECRET, TELEGRAM_BOT_TOKEN, TELEGRAM_EVENT_BOT_TOKEN, TOSS_SECRET_KEY, LEMONSQUEEZY_API_KEY, LEMONSQUEEZY_WEBHOOK_SECRET, LINE_CHANNEL_ID, LINE_CHANNEL_SECRET, TX_API_KEY, TX_API_URL
+
+---
+
+## 부록 D: 2/17~2/18 갱신 — monk.kr photolab + 리팩토링 전환
+
+### D-1. 전략 전환 (02/17)
+
+**카메라 충돌 근본 원인 확정:**
+- 의존성 핀 고정 배포(00086) → 여전히 카메라 오류 → **코드 자체가 원인**
+- 모놀리스(index.html 2,437줄) 사이드 이펙트 추적 불가
+- Plan B 전환: monk.js 프레임워크 분해 리팩토링
+
+**작업 경로 전환:**
+- 기존: `monkos_AI/idphoto-kr/` (Cloud Run 직접 서빙)
+- 전환: `MONK_kr/ai_lab/photolab/` (Cloudflare Pages, 프록시 경유)
+- 이유: "몽크에서 개발해서 몽코스로 독립시키는" 기초 개념 복귀
+
+### D-2. monk.kr photolab 클라이언트 구조
+
+```
+MONK_kr/ai_lab/photolab/
+├── index.html    (293줄) — HTML + data-bind 속성
+├── monk.js       (660줄) — 프레임워크 코어 (Screen/Store/Pipe/Media/Agent)
+├── app.js        (810줄) — 비즈니스 로직
+├── config.js      (86줄) — 상수/설정/API 경로
+├── app.css       (633줄) — 스타일
+└── test.html              — 단위 테스트
+```
+
+**monk.js 5 모듈:**
+
+| 모듈 | 역할 | 핵심 API |
+|------|------|----------|
+| Screen | 화면 상태 머신 | `screens.go(name)`, enter/exit 생명주기 |
+| Store | Proxy 반응형 상태 + DOM 바인딩 | `store.속성 = 값` → data-bind/show/hide/class 갱신 |
+| Pipe | REST/WS 통신 | `pipe.run(name, data)`, `pipe.connect(name)` |
+| Media | 카메라/캡처/크롭 | `media.start()`, `media.capture()`, `media.crop(spec)` |
+| Agent | Vision/Voice AI 래퍼 | `vision.start(inputFn)`, `vision.onResult(cb)` |
+
+### D-3. CF Pages Function 프록시
+
+**배포 = Git Push** (main 브랜치 → monk.kr 프로덕션)
+
+| 파일 | 엔드포인트 | 프록시 대상 |
+|------|-----------|------------|
+| `functions/api/idphoto-precheck.js` | POST `/api/idphoto-precheck` | `idphoto-kr.monkos.ai/api/pre-check` |
+| `functions/api/idphoto-generate.js` | POST `/api/idphoto-generate` | `idphoto-kr.monkos.ai/api/generate` |
+| `functions/api/idphoto-qc.js` | POST `/api/idphoto-qc` | `idphoto-kr.monkos.ai/api/qc` |
+
+**WS 코칭:** CF Function 프록시 불가 → 직접 연결 `wss://idphoto-kr.monkos.ai/`
+
+**CF Pages Function 제약사항 (실전 발견):**
+1. 정적 디렉토리와 겹치는 경로에 Function 배치 불가 (405)
+2. catch-all `[[path]]` 패턴 POST 미작동
+3. 해결: 개별 파일 분리, `onRequestPost`/`onRequestOptions` export
+
+### D-4. 추가 장애 기록
+
+**5-6. 핀 고정 배포 실패 (02/17)**
+
+| 항목 | 내용 |
+|------|------|
+| 증상 | 의존성 핀 고정 후에도 카메라 오류 |
+| 원인 | 코드 변경분(250줄) 자체가 원인. 의존성 아님 |
+| 해결 | 00079로 재롤백. Plan B(모듈 분해) 전환 |
+| 교훈 | 모놀리스 한계. 작은 변경도 전체 장애 유발 가능 |
+
+**5-7. CF Pages Function 라우팅 실패 (02/18)**
+
+| 항목 | 내용 |
+|------|------|
+| 증상 | 프록시 Function이 405 반환 (실행 안 됨) |
+| 원인 | catch-all `[[path]].js` POST 미작동 + 정적 자산 우선 서빙 |
+| 해결 | 개별 파일(`idphoto-precheck.js` 등) 3개로 분리 |
+| 교훈 | CF Pages Function은 개별 파일 + 메서드별 export가 안전 |
+
+### D-5. 프로덕션 현황 (02/18 시점)
+
+**Cloud Run (idphoto-kr):**
+- 활성 리비전: 00079-tpk (100% 트래픽, 안정)
+- 알려진 이슈: QC 결과 미표시
+
+**Cloudflare Pages (monk.kr):**
+- photolab 코드: develop에 8커밋 대기 (main 머지 진행 중)
+
+### D-6. 참조 문서 (추가)
+
+| 문서 | 내용 |
+|------|------|
+| `MONK_PHOTO_STUDIO_ARCHITECTURE.md` | 몽크사진관 서비스 전략 + 4카드 구조 |
+| `SHARED_CORE_SEPARATION_PLAN.md` | KR/JP 공유 코어 분리 설계 |
+| `SPEC_PLANB_idphoto_refactoring.md` | Plan B 리팩토링 전체 기술명세 |
+
+---
+
+*v1.0: 2026-02-16 (쌍아)*
+*v1.1: 2026-02-18 — monk.kr photolab 전환, CF Function 프록시, 장애 추가 (쌍아)*

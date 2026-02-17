@@ -6,8 +6,10 @@
 // API 설정
 export const API = {
   PORTAL_URL: 'https://monkos.ai',
-  // photolab API: CF Pages Function 프록시 경유 → idphoto-kr.monkos.ai
-  PHOTOLAB_API: '/api/idphoto',
+  // photolab API: CF Pages Function 개별 프록시 경유 → idphoto-kr.monkos.ai
+  PRECHECK: '/api/idphoto-precheck',
+  GENERATE: '/api/idphoto-generate',
+  QC: '/api/idphoto-qc',
 };
 
 // 크레딧 비용

@@ -70,9 +70,9 @@ const store = Monk.store({
 
 // ─── 2. Pipe 설정 ───
 const pipe = Monk.pipe({
-  precheck: { type: 'post', path: '/pre-check' },
-  generate: { type: 'post', path: '/generate' },
-  qc: { type: 'post', path: '/qc' },
+  precheck: { type: 'post', path: API.PRECHECK },
+  generate: { type: 'post', path: API.GENERATE },
+  qc: { type: 'post', path: API.QC },
   creditUse: { type: 'post', path: '/credit/use' },
   coaching: {
     type: 'ws',
@@ -99,7 +99,7 @@ const pipe = Monk.pipe({
     reconnect: { delay: 3000, max: 5 },
   },
 }, {
-  baseUrl: API.PHOTOLAB_API,
+  baseUrl: '',
   onCreditShort: (err) => showCreditModal(err.required || 1, err.credits || 0, 'generate'),
   onError: (name, err) => Monk.log(`API 에러[${name}]: ${err.error || err.message}`),
 });
