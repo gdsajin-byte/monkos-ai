@@ -509,7 +509,9 @@
         // 국가 자동 감지
         async function detectCountry() {
             try {
-                const res = await fetch('https://ipapi.co/json/', { timeout: 3000 });
+                const controller = new AbortController();
+                setTimeout(() => controller.abort(), 3000);
+                const res = await fetch('https://ipapi.co/json/', { signal: controller.signal });
                 const data = await res.json();
                 const found = countries.find(c => c.code === data.country_code);
                 if (found) detectedCountry = found.code;
