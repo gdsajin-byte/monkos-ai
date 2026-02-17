@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>결제 완료 | MONK</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background: #030508; color: white; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+    </style>
+</head>
+<body>
+    <div class="text-center p-8">
+        <div id="loading" class="mb-6">
+            <div class="w-16 h-16 border-4 border-pink-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p class="text-lg">결제 처리 중...</p>
+        </div>
+        
+        <div id="success" class="hidden">
+            <div class="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-10 h-10 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+            </div>
+            <h1 class="text-2xl font-bold mb-2">결제 완료! 🎉</h1>
+            <p id="credit-info" class="text-gray-400 mb-6">크레딧이 충전되었습니다</p>
+            <button onclick="goBack()" class="px-8 py-3 bg-pink-500 text-white font-bold rounded-xl">
+                돌아가기
+            </button>
+        </div>
+        
+        <div id="error" class="hidden">
+            <div class="w-20 h-20 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-10 h-10 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </div>
+            <h1 class="text-2xl font-bold mb-2">결제 처리 실패</h1>
+            <p id="error-msg" class="text-gray-400 mb-6"></p>
+            <button onclick="goBack()" class="px-8 py-3 bg-gray-700 text-white font-bold rounded-xl">
+                돌아가기
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const paymentKey = urlParams.get('paymentKey');
+        const orderId = urlParams.get('orderId');
+        const amount = parseInt(urlParams.get('amount') || '0');
+        
+        const creditMap = { 10000: 100, 27000: 330, 40000: 600, 70000: 1300 };
+        
+        async function confirmPayment() {
+            if (!paymentKey || !orderId || !amount) {
+                showError('결제 정보가 올바르지 않습니다.');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/payment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'confirm',
+                        paymentKey,
+                        orderId,
+                        amount
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    const credits = creditMap[amount] || 0;
+                    
+                    // 크레딧 저장
+                    const currentCredits = parseInt(localStorage.getItem('monkos_credits') || '0');
+                    localStorage.setItem('monkos_credits', currentCredits + credits);
+                    
+                    showSuccess(credits);
+                } else {
+                    showError(data.error || '결제 승인에 실패했습니다.');
+                }
+            } catch (e) {
+                console.error(e);
+                showError('서버 오류가 발생했습니다.');
+            }
+        }
+        
+        function showSuccess(credits) {
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('success').classList.remove('hidden');
+            document.getElementById('credit-info').textContent = `${credits} 크레딧이 충전되었습니다!`;
+        }
+        
+        function showError(msg) {
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('error').classList.remove('hidden');
+            document.getElementById('error-msg').textContent = msg;
+        }
+        
+        function goBack() {
+            window.location.href = 'ai_photo.html';
+        }
+        
+        // 페이지 로드 시 결제 승인
+        confirmPayment();
+    </script>
+</body>
+</html>
