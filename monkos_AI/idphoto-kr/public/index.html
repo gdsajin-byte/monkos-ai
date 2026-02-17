@@ -1744,7 +1744,7 @@
         // === 카메라 ===
         async function initCamera() {
             cameraStream = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: 'user', width: { ideal: 720 }, height: { ideal: 960 } },
+                video: { facingMode: 'user', width: { ideal: 1024, max: 1280 }, height: { ideal: 1024, max: 1280 } },
                 audio: false,
             });
             video.srcObject = cameraStream;
@@ -1849,7 +1849,7 @@
             ctx.scale(-1, 1);
             ctx.drawImage(video, 0, 0, vw, vh, 0, 0, tw, th);
 
-            capturedImageData = canvas.toDataURL('image/jpeg', 0.8);
+            capturedImageData = canvas.toDataURL('image/jpeg', 0.85);
 
             currentStep = 2;
             // 코칭 세션 종료 (WS 닫기 + TTS 중지)

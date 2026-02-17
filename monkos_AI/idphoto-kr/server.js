@@ -17,7 +17,6 @@ import { readFileSync } from 'fs';
 import { join, dirname, extname } from 'path';
 import { fileURLToPath } from 'url';
 import { GoogleGenAI } from '@google/genai';
-import sharp from 'sharp';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PORT = parseInt(process.env.PORT || '8080', 10);
@@ -316,19 +315,13 @@ async function connectGeminiLive(session, clientId, style = 'id_photo') {
 }
 
 // === Imagen I2I 생성 (Google AI Studio API Key) ===
-async function compressImage(base64Input, maxSize = 720, quality = 70) {
-  const raw = base64Input.includes(',') ? base64Input.split(',')[1] : base64Input;
-  const buf = Buffer.from(raw, 'base64');
-  const resized = await sharp(buf)
-    .resize(maxSize, maxSize, { fit: 'inside', withoutEnlargement: true })
-    .jpeg({ quality })
-    .toBuffer();
-  log(`[압축] ${(buf.length / 1024).toFixed(0)}KB → ${(resized.length / 1024).toFixed(0)}KB`);
-  return resized.toString('base64');
+// base64 데이터 URL에서 순수 base64 추출
+function extractBase64(base64Input) {
+  return base64Input.includes(',') ? base64Input.split(',')[1] : base64Input;
 }
 
 async function generatePhoto(inputBase64, style = 'id_photo', gender = 'male', age = 'adult') {
-  const base64Data = await compressImage(inputBase64, 720, 70);
+  const base64Data = extractBase64(inputBase64);
   const stylePrompt = STYLE_PROMPTS[style] || STYLE_PROMPTS.id_photo;
   const outfitPrompt = getOutfitPrompt(gender, age, style);
   const instruction = `${IDENTITY_PRESERVATION}\n\n[IMAGE-TO-IMAGE TRANSFORM] ${stylePrompt}\n\n${outfitPrompt}`;
@@ -363,8 +356,8 @@ async function generatePhoto(inputBase64, style = 'id_photo', gender = 'male', a
 const QC_MODELS = ['gemini-3-flash-preview', 'gemini-2.0-flash'];
 
 async function runQC(originalBase64, generatedBase64, gender = 'male', age = 'adult') {
-  const origData = await compressImage(originalBase64, 512, 60);
-  const genData = await compressImage(generatedBase64, 512, 60);
+  const origData = extractBase64(originalBase64);
+  const genData = extractBase64(generatedBase64);
   const qcInstruction = buildQCInstruction(gender, age);
 
   for (const model of QC_MODELS) {
@@ -430,7 +423,7 @@ issues: 문제 목록 (빈 배열이면 문제 없음)
 suggestion: 사용자에게 보여줄 한줄 한국어 조언`;
 
 async function runPreCheck(imageBase64) {
-  const data = await compressImage(imageBase64, 512, 60);
+  const data = extractBase64(imageBase64);
 
   for (const model of QC_MODELS) {
     try {
@@ -555,6 +548,13 @@ const httpServer = createServer(async (req, res) => {
       const body = await parseBody(req);
       bodyUserId = body.userId;
       if (!body.image) return jsonResponse(res, 400, { error: '이미지 필요' });
+
+      // 이미지 사이즈 검증 (2MB 상한)
+      const base64Raw = extractBase64(body.image);
+      const imageSize = Math.ceil(base64Raw.length * 0.75);
+      if (imageSize > 2 * 1024 * 1024) {
+        return jsonResponse(res, 400, { error: '이미지 크기가 2MB를 초과합니다' });
+      }
 
       // 크레딧 체크 및 차감
       if (body.userId) {
