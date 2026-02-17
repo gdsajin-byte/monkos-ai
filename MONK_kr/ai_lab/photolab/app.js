@@ -70,10 +70,10 @@ const store = Monk.store({
 
 // ─── 2. Pipe 설정 ───
 const pipe = Monk.pipe({
-  precheck: { type: 'post', path: '/api/pre-check' },
-  generate: { type: 'post', path: '/api/generate' },
-  qc: { type: 'post', path: '/api/qc' },
-  creditUse: { type: 'post', path: '/api/credit/use' },
+  precheck: { type: 'post', path: '/pre-check' },
+  generate: { type: 'post', path: '/generate' },
+  qc: { type: 'post', path: '/qc' },
+  creditUse: { type: 'post', path: '/credit/use' },
   coaching: {
     type: 'ws',
     url: () => {
