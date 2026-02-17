@@ -6,8 +6,8 @@
 // API 설정
 export const API = {
   PORTAL_URL: 'https://monkos.ai',
-  // MONK_kr은 정적 배포이므로, API는 monkos 서버를 직접 호출
-  // TODO: Workers 프록시 전환 시 변경
+  // photolab API: CF Pages Function 프록시 경유 → idphoto-kr.monkos.ai
+  PHOTOLAB_API: '/ai_lab/photolab',
 };
 
 // 크레딧 비용
