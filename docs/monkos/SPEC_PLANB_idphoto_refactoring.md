@@ -61,7 +61,7 @@ monkos_AI/idphoto-kr/
   └── 공유/이벤트
 ```
 
-## 3. 목표 구조 (컴포넌트 분해)
+## 3. 목표 구조 (컴포넌트 분해 + AI 에이전트 분리)
 
 ```
 monkos_AI/idphoto-kr/
@@ -74,7 +74,8 @@ monkos_AI/idphoto-kr/
 │   │   ├── app.js         (진입점 — 초기화, 라우팅)
 │   │   ├── auth.js        (Google/카카오 인증, 세션)
 │   │   ├── camera.js      (getUserMedia, 스트림, 캡처, 가이드라인)
-│   │   ├── ws.js          (WebSocket 연결, Gemini Live 메시지 처리)
+│   │   ├── vision-agent.js (Agentic Vision — 화면 캡처 분석, 상황 판단)
+│   │   ├── voice-agent.js  (Voice Agent — 비전 판단 수신 → 음성 코칭 출력)
 │   │   ├── generate.js    (Imagen REST 요청, QC 표시)
 │   │   ├── download.js    (저장, autoSave, showComplete, confetti)
 │   │   ├── credits.js     (크레딧 표시, 차감, 공유보너스)
@@ -86,13 +87,60 @@ monkos_AI/idphoto-kr/
 └── Dockerfile
 ```
 
+### 핵심 아키텍처 변경: AI 에이전트 2분할
+
+기존 `ws.js` (Gemini 2.0 Live 단일 WebSocket)를 **2개 독립 에이전트**로 분리:
+
+```
+[현재 — 단일 모델 충돌 구조]
+Gemini 2.0 Live (WebSocket)
+├── 화면 캡처 분석 (비전)    ← 충돌 원인
+├── 코칭 음성 출력 (TTS)
+└── 실시간 판단 (에이전트)
+
+[목표 — 역할 분리 구조]
+┌─────────────────────────────────────┐
+│  vision-agent.js (Agentic Vision)   │
+│  모델: Gemini 3 Flash (REST)         │
+│  입력: 카메라 프레임 캡처 (주기적)     │
+│  처리: 자세/표정/조명/구도 분석        │
+│  출력: JSON 판단 데이터               │
+│  특성: 독립 호출, 상태 비보존          │
+└──────────┬──────────────────────────┘
+           │ 판단 데이터 (JSON)
+           ▼
+┌─────────────────────────────────────┐
+│  voice-agent.js (Voice Agent)       │
+│  모델: Gemini 2.0 Live (WebSocket)   │
+│  입력: 비전 판단 JSON + 대화 맥락     │
+│  처리: 판단 종합 → 자연어 생성         │
+│  출력: 음성 스트림 (TTS)              │
+│  특성: 상시 연결, 대화 맥락 보존       │
+└─────────────────────────────────────┘
+```
+
+**분리 이유:**
+1. **충돌 해소** — 2.0 Live가 비전+TTS+판단을 동시 수행하면서 세션 경합 발생
+2. **정밀도 향상** — 비전 분석은 3 Flash(최신 비전 모델)가 2.0 Live보다 정확
+3. **안정성** — 비전 REST 실패 시 음성은 계속 작동, 음성 끊겨도 비전은 계속 분석
+4. **범용 패턴** — 어떤 앱이든 비전+음성 조합으로 재사용 가능
+
+**범용 확장 비전:**
+```
+[증명사진] vision: 자세/표정 → voice: 촬영 코칭
+[뷰티]     vision: 피부/메이크업 → voice: 뷰티 조언
+[인테리어] vision: 공간/가구 → voice: 배치 제안
+[교육]     vision: 학생 표정/집중도 → voice: 학습 가이드
+```
+
 ### 분해 원칙
 
 1. **00079 기준 코드로 시작** — 현재 코드(X), 00079 작동 코드(O)를 베이스로 분해
-2. **기능 변경 제로** — 분해만, 새 기능 추가 없음
+2. **기능 변경 제로** — 분해만, 새 기능 추가 없음 (Phase 2까지)
 3. **1파일 1책임** — 각 JS 파일은 하나의 도메인만 담당
 4. **전역 최소화** — `window.monkos = {}` 네임스페이스로 공유 상태 관리
-5. **의존 방향 단방향** — config ← auth ← camera ← ws ← generate ← download
+5. **의존 방향 단방향** — config ← auth ← camera ← vision-agent ← voice-agent ← generate ← download
+6. **AI 에이전트 독립성** — vision-agent와 voice-agent는 서로 직접 호출하지 않고, 이벤트/콜백으로만 통신
 
 ## 4. 파일별 상세 명세
 
@@ -120,19 +168,44 @@ DOM: video, canvas, cameraScreen, guideOverlay
 핵심 주의: 이 파일이 카메라 오류의 핵심 — 00079 코드 그대로 추출
 ```
 
-### 4-4. ws.js
+### 4-4. vision-agent.js (Agentic Vision)
 ```
-역할: WebSocket 연결 (Gemini Live), 코칭 메시지 수신/표시
-exports: connectWS(), disconnectWS(), sendFrame(), onCoachingMessage()
-의존: config.js, camera.js (프레임 전송)
+역할: 카메라 프레임을 주기적으로 캡처하여 AI 비전 모델로 분석
+모델: Gemini 3 Flash (REST, Vertex AI ADC)
+입력: camera.js에서 캡처한 프레임 (base64)
+출력: 판단 JSON { pose, expression, lighting, composition, score, suggestion }
+동작:
+  - 촬영 중 N초 간격으로 프레임 캡처 → REST 분석 요청
+  - 결과를 voice-agent에 이벤트로 전달
+  - QC/사전분석도 이 에이전트가 담당 (동일 비전 파이프라인)
+exports: initVision(), analyzeFrame(), getLastAnalysis(), onAnalysisResult(callback)
+의존: config.js, camera.js (프레임 소스)
+DOM: 없음 (순수 데이터 레이어)
+서버 엔드포인트: POST /api/analyze (신규), POST /api/qc, POST /api/precheck
+```
+
+### 4-5. voice-agent.js (Voice Agent)
+```
+역할: 비전 판단 + 대화 맥락을 종합하여 음성으로 사용자 안내
+모델: Gemini 2.0 Live (WebSocket, Vertex AI ADC)
+입력: vision-agent의 판단 JSON + 사용자 상호작용 맥락
+출력: 음성 스트림 (TTS) + 텍스트 코칭 메시지
+동작:
+  - WebSocket 상시 연결 (촬영 시작 시 open, 종료 시 close)
+  - vision-agent로부터 분석 결과 수신 → 자연어 코칭 생성 → 음성 출력
+  - 비전 없이도 독립 작동 가능 (인사, 안내 등 기본 대화)
+exports: initVoice(), connectLive(), disconnectLive(), speakCoaching(), toggleVoice()
+의존: config.js, vision-agent.js (판단 데이터 수신)
 DOM: coachingBubble, voiceButton
 ```
 
-### 4-5. generate.js
+### 4-6. generate.js
 ```
 역할: Imagen REST API 호출, QC 결과 수신/표시
+모델: Gemini 3 Pro Image (AI Studio API Key) — 이미지 생성
+QC: vision-agent.js에 위임 (generate.js는 결과 표시만)
 exports: requestGenerate(), displayQCResult()
-의존: config.js, auth.js (크레딧), camera.js (캡처 이미지)
+의존: config.js, auth.js (크레딧), camera.js (캡처 이미지), vision-agent.js (QC)
 DOM: resultScreen, qcBadge, qcChat, specResult
 ```
 
@@ -164,7 +237,7 @@ DOM: prepScreen, cameraScreen, resultScreen, thankyouScreen
 ```
 역할: 모듈 초기화, 이벤트 바인딩, 전역 에러 핸들링
 imports: 위 모든 모듈
-실행순서: config → auth → ui → camera → ws → (사용자 상호작용)
+실행순서: config → auth → ui → camera → vision-agent → voice-agent → (사용자 상호작용)
 ```
 
 ### 4-10. index.html
@@ -200,10 +273,19 @@ git show 93581f3:monkos_AI/idphoto-kr/server.js > /tmp/server_00079.js
 - autoSave/showComplete → download.js
 - **각 기능을 개별 커밋으로, 매 커밋 후 배포 테스트**
 
-### Phase 4: 신규 기능
+### Phase 4: AI 에이전트 분리
+- 기존 ws.js(통합 Live) → vision-agent.js + voice-agent.js 분리
+- vision-agent: REST 기반 프레임 분석 (Gemini 3 Flash)
+- voice-agent: WebSocket Live 코칭 (Gemini 2.0 Live)
+- 에이전트 간 통신: 이벤트/콜백 패턴 (직접 호출 금지)
+- QC/사전분석을 vision-agent 파이프라인으로 통합
+- **이 Phase가 카메라 충돌 근본 해결의 핵심**
+
+### Phase 5: 신규 기능 + 확장
 - Thank you 로직 강화
 - 챗 활성화
 - JP 동기화
+- 범용 vision+voice 패턴 코어 라이브러리화
 
 ## 6. 서버 변경 사항
 
