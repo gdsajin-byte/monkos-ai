@@ -31,9 +31,10 @@ const MIME = {
 };
 
 const httpsServer = createServer(sslOptions, (req, res) => {
-    const fileName = req.url === '/' ? '/receiver.html'
-                   : req.url === '/mirror' ? '/mirror_launcher.html'
-                   : req.url;
+    const urlPath = req.url.split('?')[0]; // 쿼리스트링 제거
+    const fileName = urlPath === '/' ? '/receiver.html'
+                   : urlPath === '/mirror' ? '/mirror_launcher.html'
+                   : urlPath;
     const filePath = join(__dirname, fileName);
     const ext = fileName.substring(fileName.lastIndexOf('.'));
 

@@ -430,6 +430,7 @@
 
         // --- WebSocket 시그널링 ---
         function connectSignaling() {
+            if (ws && ws.readyState <= 1) return; // 이미 연결 중이면 중복 방지
             ws = new WebSocket(`wss://${WS_HOST}`);
             setStatus('ws', 'connecting', '시그널링 연결 중...');
 
@@ -589,6 +590,16 @@
             document.querySelectorAll('#quality-group .option-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             sendCommand({ type: 'set-quality', quality: parseFloat(btn.dataset.quality) });
+        });
+
+        // --- 포그라운드 복귀 시 즉시 재연결 (Safari 백그라운드 suspension 대응) ---
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                if (!ws || ws.readyState > 1) {
+                    log('포그라운드 복귀 → 즉시 재연결');
+                    connectSignaling();
+                }
+            }
         });
 
         // --- 초기화 ---
