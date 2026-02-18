@@ -80,7 +80,7 @@ export const pipe = Monk.pipe({
   precheck: { type: 'post', path: API.PRECHECK },
   generate: { type: 'post', path: API.GENERATE },
   qc: { type: 'post', path: API.QC },
-  creditUse: { type: 'post', path: '/credit/use' },
+  creditUse: { type: 'post', path: API.CREDIT_USE },
 }, {
   baseUrl: '',
   onCreditShort: (err) => showCreditModal(err.required || 1, err.credits || 0, 'generate'),

@@ -1,11 +1,11 @@
 /**
  * camera.js — 촬영실 전용 로직
- * 카메라 + AI 코칭(스텁) + 촬영 → sessionStorage 저장 → 분석실 이동
+ * 카메라 + AI 코칭 (REST ~2fps) + 촬영 → sessionStorage 저장 → 분석실 이동
  */
 
 import {
-  store, pipe, Monk, TX,
-  sharedInit, saveSessionData, loadSessionData,
+  store, Monk, TX, API,
+  sharedInit, saveSessionData,
   MAX_CAPTURE_SIZE, FRAME_INTERVAL_MS, COACHING_DISPLAY_MS
 } from './shared.js';
 
@@ -59,21 +59,17 @@ function toggleVoice() {
 // ─── 코칭 표시 ───
 let coachingTimeout = null;
 
-function showCoaching(text) {
-  store.coaching = {
-    text,
-    ready: text.includes('OK') || text.includes('좋아요') || text.includes('완벽'),
-    active: true,
-  };
+function showCoaching(text, ready = false) {
+  store.coaching = { text, ready, active: true };
 
   const btnCapture = document.querySelector('#btn-capture');
-  if (btnCapture) btnCapture.classList.toggle('ready', store.coaching.ready);
+  if (btnCapture) btnCapture.classList.toggle('ready', ready);
 
   const faceGuide = document.querySelector('#face-guide');
-  if (faceGuide) faceGuide.classList.toggle('ready', store.coaching.ready);
+  if (faceGuide) faceGuide.classList.toggle('ready', ready);
 
   const overlay = document.querySelector('#coaching-overlay');
-  if (overlay) overlay.classList.toggle('ready', store.coaching.ready);
+  if (overlay) overlay.classList.toggle('ready', ready);
 
   speakKo(text);
 
@@ -85,21 +81,78 @@ function showCoaching(text) {
   }, COACHING_DISPLAY_MS);
 }
 
-// ─── 코칭 루프 (REST 스텁 — 실제 구현은 별도 태스크) ───
+// ─── 모션 감지 ───
+let previousFrameLen = 0;
+const MOTION_THRESHOLD = 0.03; // 3% 변화
+
+function detectMotion(dataUrl) {
+  const len = dataUrl.length;
+  if (previousFrameLen === 0) {
+    previousFrameLen = len;
+    return true; // 첫 프레임은 항상 전송
+  }
+  const diff = Math.abs(len - previousFrameLen) / Math.max(previousFrameLen, 1);
+  previousFrameLen = len;
+  return diff > MOTION_THRESHOLD;
+}
+
+// ─── 코칭 REST 루프 (백프레셔 안전) ───
+let coachingActive = false;
 let coachingTimer = null;
 
+async function sendCoachingFrame(dataUrl) {
+  const base64 = dataUrl.includes(',') ? dataUrl.split(',')[1] : dataUrl;
+  try {
+    const res = await fetch(API.COACHING, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image: base64, style: store.style || 'id_photo' }),
+    });
+    if (!res.ok) {
+      Monk.log(`코칭 응답 에러: ${res.status}`);
+      return;
+    }
+    const data = await res.json();
+    if (data.text && store.step === 1) {
+      showCoaching(data.text, data.ready);
+    }
+  } catch (err) {
+    Monk.log('코칭 요청 실패: ' + err.message);
+  }
+}
+
 function startCoachingLoop() {
-  // TODO: REST 코칭 구현 시 이 스텁을 교체
-  // setInterval → 프레임 캡처 → POST /api/idphoto-coaching → 응답 텍스트 → showCoaching
-  Monk.log('코칭 스텁: REST 코칭은 별도 태스크에서 구현 예정');
+  coachingActive = true;
   showCoaching(TX.coachingInit);
+  Monk.log('코칭 루프 시작 (REST ~2fps)');
+
+  let isProcessing = false;
+
+  coachingTimer = setInterval(async () => {
+    if (!coachingActive || isProcessing || store.step !== 1) return;
+
+    const frame = media.capture();
+    if (!frame) return;
+
+    // 모션 감지: 변화 없으면 스킵
+    if (!detectMotion(frame)) return;
+
+    isProcessing = true;
+    try {
+      await sendCoachingFrame(frame);
+    } finally {
+      isProcessing = false;
+    }
+  }, FRAME_INTERVAL_MS);
 }
 
 function stopCoachingLoop() {
+  coachingActive = false;
   if (coachingTimer) {
     clearInterval(coachingTimer);
     coachingTimer = null;
   }
+  previousFrameLen = 0;
   if ('speechSynthesis' in window) speechSynthesis.cancel();
   store.coaching = { text: '', ready: false, active: false };
 }
@@ -182,7 +235,7 @@ async function init() {
   try {
     await media.start();
 
-    // 코칭 시작 (스텁)
+    // AI 코칭 루프 시작
     startCoachingLoop();
 
     // 컨트롤 표시
