@@ -26,10 +26,14 @@ const MIME = {
     '.html': 'text/html; charset=utf-8',
     '.js': 'application/javascript',
     '.css': 'text/css',
+    '.json': 'application/json',
+    '.png': 'image/png',
 };
 
 const httpsServer = createServer(sslOptions, (req, res) => {
-    const fileName = req.url === '/' ? '/receiver.html' : req.url;
+    const fileName = req.url === '/' ? '/receiver.html'
+                   : req.url === '/mirror' ? '/mirror_launcher.html'
+                   : req.url;
     const filePath = join(__dirname, fileName);
     const ext = fileName.substring(fileName.lastIndexOf('.'));
 
@@ -47,6 +51,14 @@ const httpsServer = createServer(sslOptions, (req, res) => {
 const wss = new WebSocketServer({ server: httpsServer });
 const clients = new Map();
 
+// 역할 페어링 맵 (sender↔receiver, mirror-sender↔mirror-receiver)
+const ROLE_PAIRS = {
+    'sender': 'receiver',
+    'receiver': 'sender',
+    'mirror-sender': 'mirror-receiver',
+    'mirror-receiver': 'mirror-sender',
+};
+
 wss.on('connection', (ws) => {
     let role = null;
 
@@ -58,19 +70,24 @@ wss.on('connection', (ws) => {
             clients.set(role, ws);
             console.log(`[등록] ${role} 연결됨 (현재: ${[...clients.keys()].join(', ')})`);
 
-            const target = role === 'sender' ? 'receiver' : 'sender';
-            const targetWs = clients.get(target);
-            if (targetWs && targetWs.readyState === 1) {
-                targetWs.send(JSON.stringify({ type: 'peer-joined', role }));
+            const target = ROLE_PAIRS[role];
+            if (target) {
+                const targetWs = clients.get(target);
+                if (targetWs && targetWs.readyState === 1) {
+                    targetWs.send(JSON.stringify({ type: 'peer-joined', role }));
+                    ws.send(JSON.stringify({ type: 'peer-joined', role: target }));
+                }
             }
             return;
         }
 
-        const target = role === 'sender' ? 'receiver' : 'sender';
-        const targetWs = clients.get(target);
-        if (targetWs && targetWs.readyState === 1) {
-            targetWs.send(data);
-            console.log(`[중계] ${role} → ${target}: ${msg.type}`);
+        const target = ROLE_PAIRS[role];
+        if (target) {
+            const targetWs = clients.get(target);
+            if (targetWs && targetWs.readyState === 1) {
+                targetWs.send(data);
+                console.log(`[중계] ${role} → ${target}: ${msg.type}`);
+            }
         }
     });
 
@@ -87,6 +104,10 @@ httpsServer.listen(PORT, '0.0.0.0', () => {
     console.log(`\n=== 접속 안내 ===`);
     console.log(`iMac 수신: https://localhost:${PORT}/receiver.html`);
     console.log(`iPhone 송신: https://100.97.103.10:${PORT}/sender.html`);
+    console.log(`--- 미러링 ---`);
+    console.log(`iMac 콘솔: https://localhost:${PORT}/mirror_console.html`);
+    console.log(`iPhone 런처: https://100.97.103.10:${PORT}/mirror`);
+    console.log(`iPhone 주입: <script src="https://100.97.103.10:${PORT}/mirror_client.js"><\/script>`);
     console.log(`================\n`);
     console.log(`※ 자체서명 인증서 사용 — 브라우저 경고 시 "고급 → 계속" 클릭`);
 });
