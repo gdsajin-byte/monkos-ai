@@ -165,6 +165,9 @@ async function init() {
     c.classList.toggle('active', c.dataset.style === store.style);
   });
 
+  // 카메라 화면 활성화
+  document.querySelector('#camera-area')?.classList.add('active');
+
   store.step = 1;
   store.stepLabel = TX.step1;
   store.coaching = { text: TX.coachingCheck, ready: false, active: true };
