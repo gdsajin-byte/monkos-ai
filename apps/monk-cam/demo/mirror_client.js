@@ -25,7 +25,7 @@
     let pc = null;
     let dc = null; // DataChannel
     let captureTimer = null;
-    let fps = 2;
+    let fps = 0; // 0 = 멈춤 (원샷 캡쳐만)
     let quality = 0.6;
     let isCapturing = false;
     let localStream = null; // 카메라 스트림
@@ -169,9 +169,13 @@
         });
 
         dc.onopen = () => {
-            console.log('[Mirror] DataChannel 열림 → 캡쳐 시작');
-            setBadgeStatus('on', `MIRROR ${fps}fps`);
-            startCapture();
+            console.log('[Mirror] DataChannel 열림');
+            if (fps > 0) {
+                setBadgeStatus('on', `MIRROR ${fps}fps`);
+                startCapture();
+            } else {
+                setBadgeStatus('on', 'MIRROR 대기');
+            }
         };
 
         dc.onclose = () => {
@@ -194,7 +198,7 @@
         pc.onconnectionstatechange = () => {
             console.log('[Mirror] P2P 상태:', pc.connectionState);
             if (pc.connectionState === 'connected') {
-                setBadgeStatus('on', `MIRROR ${fps}fps`);
+                setBadgeStatus('on', fps > 0 ? `MIRROR ${fps}fps` : 'MIRROR 대기');
             } else if (pc.connectionState === 'failed' || pc.connectionState === 'disconnected') {
                 setBadgeStatus('off', 'MIRROR P2P 끊김');
                 stopCapture();
@@ -315,8 +319,16 @@
                     captureAndSend(true);
                     break;
                 case 'set-fps':
-                    fps = Math.max(0.5, Math.min(5, cmd.fps || 2));
-                    setBadgeStatus('on', `MIRROR ${fps}fps`);
+                    fps = Math.max(0, Math.min(5, cmd.fps != null ? cmd.fps : 2));
+                    if (fps === 0) {
+                        stopCapture();
+                        setBadgeStatus('on', 'MIRROR 대기');
+                    } else {
+                        setBadgeStatus('on', `MIRROR ${fps}fps`);
+                        if (dc && dc.readyState === 'open' && !isCapturing) {
+                            startCapture();
+                        }
+                    }
                     console.log('[Mirror] FPS 변경:', fps);
                     break;
                 case 'set-quality':
