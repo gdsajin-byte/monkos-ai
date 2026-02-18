@@ -29,7 +29,9 @@ const MIME = {
 };
 
 const httpsServer = createServer(sslOptions, (req, res) => {
-    const fileName = req.url === '/' ? '/receiver.html' : req.url;
+    const fileName = req.url === '/' ? '/receiver.html'
+                   : req.url === '/mirror' ? '/mirror_launcher.html'
+                   : req.url;
     const filePath = join(__dirname, fileName);
     const ext = fileName.substring(fileName.lastIndexOf('.'));
 
@@ -71,6 +73,7 @@ wss.on('connection', (ws) => {
                 const targetWs = clients.get(target);
                 if (targetWs && targetWs.readyState === 1) {
                     targetWs.send(JSON.stringify({ type: 'peer-joined', role }));
+                    ws.send(JSON.stringify({ type: 'peer-joined', role: target }));
                 }
             }
             return;
@@ -101,6 +104,7 @@ httpsServer.listen(PORT, '0.0.0.0', () => {
     console.log(`iPhone 송신: https://100.97.103.10:${PORT}/sender.html`);
     console.log(`--- 미러링 ---`);
     console.log(`iMac 콘솔: https://localhost:${PORT}/mirror_console.html`);
+    console.log(`iPhone 런처: https://100.97.103.10:${PORT}/mirror`);
     console.log(`iPhone 주입: <script src="https://100.97.103.10:${PORT}/mirror_client.js"><\/script>`);
     console.log(`================\n`);
     console.log(`※ 자체서명 인증서 사용 — 브라우저 경고 시 "고급 → 계속" 클릭`);

@@ -401,6 +401,20 @@
             }
         }
 
+        // --- 상태 초기화 (재연결 시) ---
+        function resetState() {
+            if (dc) { try { dc.close(); } catch {} dc = null; }
+            if (pc) { try { pc.close(); } catch {} pc = null; }
+            if (elapsedTimer) { clearInterval(elapsedTimer); elapsedTimer = null; }
+            if (fpsTimer) { clearInterval(fpsTimer); fpsTimer = null; }
+            connectedTime = null;
+            fpsCounter = 0;
+            lastFrameTs = 0;
+            chunkBuffers = {};
+            setStatus('rtc', 'disconnected', 'DataChannel 대기');
+            document.getElementById('elapsed').textContent = '--:--';
+        }
+
         // --- WebSocket 시그널링 ---
         function connectSignaling() {
             ws = new WebSocket(`wss://${WS_HOST}`);
@@ -434,14 +448,19 @@
 
             ws.onclose = () => {
                 setStatus('ws', 'disconnected', '시그널링 끊김');
+                resetState();
                 log('시그널링 끊김 — 3초 후 재연결');
                 setTimeout(connectSignaling, 3000);
+            };
+
+            ws.onerror = () => {
+                log('WebSocket 오류');
             };
         }
 
         // --- WebRTC Answer ---
         async function createAnswer(offer) {
-            if (pc) { pc.close(); }
+            resetState();
 
             pc = new RTCPeerConnection({
                 iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]

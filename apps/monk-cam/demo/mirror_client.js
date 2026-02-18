@@ -30,6 +30,7 @@
     let isCapturing = false;
     let localStream = null; // 카메라 스트림
     let facingMode = 'environment';
+    let html2canvasLoaded = false;
 
     // --- html2canvas 동적 로드 ---
     function loadHtml2Canvas() {
@@ -99,6 +100,13 @@
         if (txt) txt.textContent = text;
     }
 
+    // --- 기존 P2P 정리 ---
+    function cleanupPeerConnection() {
+        stopCapture();
+        if (dc) { try { dc.close(); } catch {} dc = null; }
+        if (pc) { try { pc.close(); } catch {} pc = null; }
+    }
+
     // --- WebSocket 시그널링 ---
     function connectSignaling() {
         setBadgeStatus('connecting', 'MIRROR 연결 중...');
@@ -117,10 +125,13 @@
 
                 if (msg.type === 'peer-joined') {
                     console.log('[Mirror] 콘솔 접속 감지 → P2P 시작');
+                    cleanupPeerConnection();
                     startPeerConnection();
                 } else if (msg.type === 'answer') {
-                    await pc.setRemoteDescription(new RTCSessionDescription(msg));
-                    console.log('[Mirror] Answer 수신');
+                    if (pc) {
+                        await pc.setRemoteDescription(new RTCSessionDescription(msg));
+                        console.log('[Mirror] Answer 수신');
+                    }
                 } else if (msg.type === 'ice-candidate') {
                     if (pc && pc.remoteDescription) {
                         await pc.addIceCandidate(new RTCIceCandidate(msg.candidate));
@@ -134,14 +145,18 @@
         ws.onclose = () => {
             setBadgeStatus('off', 'MIRROR 끊김');
             console.log('[Mirror] 시그널링 끊김 — 5초 후 재연결');
-            stopCapture();
+            cleanupPeerConnection();
             setTimeout(connectSignaling, 5000);
+        };
+
+        ws.onerror = () => {
+            console.error('[Mirror] WebSocket 오류');
         };
     }
 
     // --- WebRTC P2P + DataChannel ---
     function startPeerConnection() {
-        if (pc) { pc.close(); pc = null; }
+        cleanupPeerConnection();
 
         pc = new RTCPeerConnection({
             iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
@@ -211,6 +226,7 @@
 
     async function captureAndSend(highQuality) {
         if (!dc || dc.readyState !== 'open') return;
+        if (!html2canvasLoaded || !window.html2canvas) return;
 
         try {
             // html2canvas 미러 뱃지 제외
@@ -377,15 +393,17 @@
 
     // --- 초기화 ---
     async function init() {
+        createBadge();
+
         try {
             await loadHtml2Canvas();
+            html2canvasLoaded = true;
             console.log('[Mirror] html2canvas 로드 완료');
         } catch (err) {
-            console.error('[Mirror] html2canvas 로드 실패:', err);
-            return;
+            console.error('[Mirror] html2canvas 로드 실패 — 캡쳐 불가, 연결은 계속');
+            setBadgeStatus('connecting', 'MIRROR (캡쳐 불가)');
         }
 
-        createBadge();
         connectSignaling();
     }
 
