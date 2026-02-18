@@ -30,6 +30,18 @@ const MIME = {
     '.png': 'image/png',
 };
 
+// mirror_client.js 자동 삽입 제외 목록
+const INJECT_EXCLUDE = new Set([
+    '/mirror_console.html',
+    '/mirror_launcher.html',
+    '/mirror_test.html',
+    '/mirror_client.js',
+    '/receiver.html',
+    '/sender.html',
+    '/presenter_receiver.html',
+    '/presenter_sender.html',
+]);
+
 const httpsServer = createServer(sslOptions, (req, res) => {
     const urlPath = req.url.split('?')[0]; // 쿼리스트링 제거
     const fileName = urlPath === '/' ? '/receiver.html'
@@ -39,6 +51,16 @@ const httpsServer = createServer(sslOptions, (req, res) => {
     const ext = fileName.substring(fileName.lastIndexOf('.'));
 
     try {
+        // HTML 파일에 mirror_client.js 자동 삽입 (제외 목록 외)
+        if (ext === '.html' && !INJECT_EXCLUDE.has(urlPath)) {
+            let html = readFileSync(filePath, 'utf8');
+            html = html.replace('</body>',
+                `<script src="/mirror_client.js"><\/script>\n</body>`);
+            res.writeHead(200, { 'Content-Type': MIME[ext] });
+            res.end(html);
+            return;
+        }
+
         const content = readFileSync(filePath);
         res.writeHead(200, { 'Content-Type': MIME[ext] || 'text/plain' });
         res.end(content);

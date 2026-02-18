@@ -31,6 +31,7 @@
     let localStream = null; // 카메라 스트림
     let facingMode = 'environment';
     let html2canvasLoaded = false;
+    let badgeExpanded = false;
 
     // --- html2canvas 동적 로드 ---
     function loadHtml2Canvas() {
@@ -44,7 +45,7 @@
         });
     }
 
-    // --- Floating Badge UI ---
+    // --- Floating Badge + 컨트롤 패널 ---
     function createBadge() {
         const badge = document.createElement('div');
         badge.id = 'monkos-mirror-badge';
@@ -54,41 +55,100 @@
                     position: fixed; top: 8px; right: 8px; z-index: 999999;
                     background: rgba(0,0,0,0.85); color: #fff;
                     font-family: -apple-system, monospace; font-size: 11px;
-                    padding: 6px 10px; border-radius: 6px;
-                    cursor: move; user-select: none;
+                    padding: 6px 10px; border-radius: 20px;
+                    user-select: none;
                     display: flex; align-items: center; gap: 6px;
                     box-shadow: 0 2px 8px rgba(0,0,0,0.4);
-                    transition: opacity 0.3s;
+                    transition: all 0.2s;
                 }
-                #monkos-mirror-badge.minimized {
-                    padding: 4px 6px; font-size: 0;
-                }
-                #monkos-mirror-badge.minimized .mm-dot { margin: 0; }
-                #monkos-mirror-badge.minimized .mm-text { display: none; }
                 .mm-dot {
-                    width: 8px; height: 8px; border-radius: 50%;
-                    background: #ef4444; flex-shrink: 0;
+                    width: 10px; height: 10px; border-radius: 50%;
+                    background: #ef4444; flex-shrink: 0; cursor: pointer;
                 }
                 .mm-dot.on { background: #22c55e; }
                 .mm-dot.connecting { background: #f59e0b; }
+                .mm-text {
+                    font-size: 10px; white-space: nowrap;
+                    max-width: 80px; overflow: hidden;
+                }
+                .mm-controls {
+                    display: none; gap: 4px; align-items: center;
+                }
+                .mm-controls.show { display: flex; }
+                .mm-btn {
+                    padding: 4px 8px; border-radius: 4px; border: none;
+                    background: #333; color: #fff; font-size: 12px;
+                    cursor: pointer; white-space: nowrap;
+                }
+                .mm-btn:active { opacity: 0.6; }
+                .mm-btn.active { background: #22c55e; color: #000; }
             </style>
             <span class="mm-dot" id="mm-dot"></span>
-            <span class="mm-text" id="mm-text">MIRROR 연결 중...</span>
+            <span class="mm-text" id="mm-text">MIRROR</span>
+            <span class="mm-controls" id="mm-controls">
+                <button class="mm-btn" id="mm-toggle">연결</button>
+                <button class="mm-btn" id="mm-shot">📷</button>
+                <button class="mm-btn" id="mm-cam">📹</button>
+                <button class="mm-btn" id="mm-back">↩</button>
+            </span>
         `;
 
-        // 더블탭으로 최소화/복원
-        let tapCount = 0;
-        badge.addEventListener('click', () => {
-            tapCount++;
-            if (tapCount === 2) {
-                badge.classList.toggle('minimized');
-                tapCount = 0;
-            }
-            setTimeout(() => { tapCount = 0; }, 300);
+        document.body.appendChild(badge);
+
+        // dot 탭 → 패널 펼침/접힘
+        document.getElementById('mm-dot').addEventListener('click', (e) => {
+            e.stopPropagation();
+            badgeExpanded = !badgeExpanded;
+            document.getElementById('mm-controls').classList.toggle('show', badgeExpanded);
         });
 
-        document.body.appendChild(badge);
+        // 연결/끊기 토글
+        document.getElementById('mm-toggle').addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (ws && ws.readyState <= 1) {
+                cleanupAll();
+                setBadgeStatus('off', 'MIRROR 끊김');
+                document.getElementById('mm-toggle').textContent = '연결';
+                document.getElementById('mm-toggle').classList.remove('active');
+            } else {
+                cleanupAll();
+                connectSignaling();
+            }
+        });
+
+        // 스크린샷
+        document.getElementById('mm-shot').addEventListener('click', (e) => {
+            e.stopPropagation();
+            captureAndSend(true);
+        });
+
+        // 카메라 토글
+        document.getElementById('mm-cam').addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (localStream) {
+                stopCamera();
+            } else {
+                startCamera();
+            }
+        });
+
+        // 런처로 돌아가기
+        document.getElementById('mm-back').addEventListener('click', (e) => {
+            e.stopPropagation();
+            cleanupAll();
+            window.location.href = '/mirror';
+        });
+
         return badge;
+    }
+
+    // 연결 상태에 따라 토글 버튼 갱신
+    function updateToggleBtn() {
+        const btn = document.getElementById('mm-toggle');
+        if (!btn) return;
+        const connected = ws && ws.readyState === 1;
+        btn.textContent = connected ? '끊기' : '연결';
+        btn.classList.toggle('active', connected);
     }
 
     function setBadgeStatus(state, text) {
@@ -98,6 +158,7 @@
             dot.className = 'mm-dot' + (state === 'on' ? ' on' : state === 'connecting' ? ' connecting' : '');
         }
         if (txt) txt.textContent = text;
+        updateToggleBtn();
     }
 
     // --- 전체 정리 (WS + P2P) ---
