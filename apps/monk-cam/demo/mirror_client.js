@@ -144,9 +144,9 @@
 
         ws.onclose = () => {
             setBadgeStatus('off', 'MIRROR 끊김');
-            console.log('[Mirror] 시그널링 끊김 — 2초 후 재연결');
+            console.log('[Mirror] 시그널링 끊김 — 1초 후 재연결');
             cleanupPeerConnection();
-            setTimeout(connectSignaling, 2000);
+            setTimeout(connectSignaling, 1000);
         };
 
         ws.onerror = () => {
@@ -202,13 +202,13 @@
             } else if (pc.connectionState === 'failed' || pc.connectionState === 'disconnected') {
                 setBadgeStatus('connecting', 'MIRROR 재연결...');
                 stopCapture();
-                // WS 살아있으면 2초 후 P2P 재시도
+                // WS 살아있으면 1초 후 P2P 재시도
                 if (ws && ws.readyState === 1) {
                     setTimeout(() => {
                         console.log('[Mirror] P2P 재연결 시도');
                         cleanupPeerConnection();
                         startPeerConnection();
-                    }, 2000);
+                    }, 1000);
                 }
             }
         };

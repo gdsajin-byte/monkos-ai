@@ -457,8 +457,8 @@
             ws.onclose = () => {
                 setStatus('ws', 'disconnected', '시그널링 끊김');
                 resetState();
-                log('시그널링 끊김 — 2초 후 재연결');
-                setTimeout(connectSignaling, 2000);
+                log('시그널링 끊김 — 1초 후 재연결');
+                setTimeout(connectSignaling, 1000);
             };
 
             ws.onerror = () => {
