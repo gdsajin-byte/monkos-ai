@@ -26,6 +26,8 @@ const MIME = {
     '.html': 'text/html; charset=utf-8',
     '.js': 'application/javascript',
     '.css': 'text/css',
+    '.json': 'application/json',
+    '.png': 'image/png',
 };
 
 const httpsServer = createServer(sslOptions, (req, res) => {
