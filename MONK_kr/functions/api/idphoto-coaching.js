@@ -77,7 +77,7 @@ export async function onRequestPost(context) {
     if (!geminiRes.ok) {
       const errText = await geminiRes.text();
       console.error('Gemini API 에러:', geminiRes.status, errText);
-      return jsonResponse({ error: 'AI 응답 실패', status: geminiRes.status }, 502);
+      return jsonResponse({ error: 'AI 응답 실패', status: geminiRes.status }, 500);
     }
 
     const geminiData = await geminiRes.json();
