@@ -304,6 +304,13 @@ export async function sharedInit() {
   if (savedGender) store.gender = savedGender;
   if (savedAge) store.age = savedAge;
 
+  // Store 초기값 → DOM 동기화
+  // monk.js Store는 초기값에 대해 DOM 업데이트를 안 하므로
+  // 전체 키를 재할당하여 data-show/data-bind/data-class 동기화
+  for (const key of Object.keys(store)) {
+    store[key] = store[key];
+  }
+
   Monk.log('공통 초기화 완료');
 }
 
