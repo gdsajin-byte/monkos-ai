@@ -226,19 +226,27 @@
         };
     }
 
-    // --- 페이지 가시성 전환 (온디맨드 핵심) ---
+    // --- 페이지 가시성 전환 ---
+    // sender는 백그라운드에서도 WS/P2P 유지 (iMac에서 보는 동안 iPhone은 백그라운드)
+    // 캡쳐만 일시정지하여 배터리/CPU 절약
     document.addEventListener('visibilitychange', () => {
         if (document.visibilityState === 'visible') {
-            // 포그라운드 복귀 → 연결 안 되어있으면 클린 스타트
+            // 포그라운드 복귀 → 연결 끊겼으면 재연결
             if (!ws || ws.readyState > 1) {
                 console.log('[Mirror] 포그라운드 복귀 → 재연결');
                 cleanupAll();
                 connectSignaling();
+            } else if (dc && dc.readyState === 'open' && fps > 0 && !isCapturing) {
+                // 연결 유지 중 → 캡쳐 재개
+                console.log('[Mirror] 포그라운드 복귀 → 캡쳐 재개');
+                startCapture();
             }
         } else {
-            // 백그라운드 진입 → 리소스 전부 반환
-            console.log('[Mirror] 백그라운드 → 리소스 반환');
-            cleanupAll();
+            // 백그라운드 → 캡쳐만 멈춤 (WS/P2P 유지)
+            if (isCapturing) {
+                console.log('[Mirror] 백그라운드 → 캡쳐 일시정지 (연결 유지)');
+                stopCapture();
+            }
         }
     });
 

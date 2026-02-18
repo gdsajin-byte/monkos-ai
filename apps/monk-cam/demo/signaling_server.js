@@ -31,15 +31,10 @@ const MIME = {
 };
 
 // mirror_client.js 자동 삽입 제외 목록
+// mirror 시스템 페이지만 제외 (대상 페이지는 모두 주입)
 const INJECT_EXCLUDE = new Set([
     '/mirror_console.html',
     '/mirror_launcher.html',
-    '/mirror_test.html',
-    '/mirror_client.js',
-    '/receiver.html',
-    '/sender.html',
-    '/presenter_receiver.html',
-    '/presenter_sender.html',
 ]);
 
 const httpsServer = createServer(sslOptions, (req, res) => {
