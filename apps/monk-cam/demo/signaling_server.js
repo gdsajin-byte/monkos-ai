@@ -95,6 +95,15 @@ wss.on('connection', (ws) => {
         if (role) {
             clients.delete(role);
             console.log(`[해제] ${role} 연결 해제`);
+
+            // 상대에게 끊김 알림
+            const target = ROLE_PAIRS[role];
+            if (target) {
+                const targetWs = clients.get(target);
+                if (targetWs && targetWs.readyState === 1) {
+                    targetWs.send(JSON.stringify({ type: 'peer-left', role }));
+                }
+            }
         }
     });
 });

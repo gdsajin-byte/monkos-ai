@@ -259,6 +259,7 @@
         let lastFrameTs = 0;
         let screenshotCount = 0;
         let chunkBuffers = {};    // 청크 조립용 버퍼
+        let pendingCandidates = []; // ICE candidate 버퍼
 
         const mirrorImg = document.getElementById('mirror-img');
         const waitingEl = document.getElementById('waiting');
@@ -412,6 +413,7 @@
             fpsCounter = 0;
             lastFrameTs = 0;
             chunkBuffers = {};
+            pendingCandidates = [];
             setStatus('rtc', 'disconnected', 'DataChannel 대기');
             document.getElementById('elapsed').textContent = '--:--';
         }
@@ -438,9 +440,14 @@
                     } else if (msg.type === 'ice-candidate') {
                         if (pc && pc.remoteDescription) {
                             await pc.addIceCandidate(new RTCIceCandidate(msg.candidate));
+                        } else {
+                            pendingCandidates.push(msg.candidate);
                         }
                     } else if (msg.type === 'peer-joined') {
                         log('미러 송신자 접속 감지');
+                    } else if (msg.type === 'peer-left') {
+                        log('미러 송신자 끊김 — 재연결 대기');
+                        resetState();
                     }
                 } catch (err) {
                     log('오류: ' + err.message);
@@ -450,8 +457,8 @@
             ws.onclose = () => {
                 setStatus('ws', 'disconnected', '시그널링 끊김');
                 resetState();
-                log('시그널링 끊김 — 3초 후 재연결');
-                setTimeout(connectSignaling, 3000);
+                log('시그널링 끊김 — 2초 후 재연결');
+                setTimeout(connectSignaling, 2000);
             };
 
             ws.onerror = () => {
@@ -527,6 +534,12 @@
             await pc.setLocalDescription(answer);
             ws.send(JSON.stringify(answer));
             log('Answer 전송');
+
+            // 보류된 ICE candidate 처리
+            for (const c of pendingCandidates) {
+                await pc.addIceCandidate(new RTCIceCandidate(c));
+            }
+            pendingCandidates = [];
         }
 
         // --- 버튼 이벤트 ---
