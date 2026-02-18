@@ -403,6 +403,16 @@
             }
         }
 
+        // --- 대기 화면 복원 ---
+        function showWaiting() {
+            waitingEl.style.display = '';
+            mirrorImg.src = '';
+            document.getElementById('s-fps').textContent = '-';
+            document.getElementById('s-latency').textContent = '-';
+            document.getElementById('s-resolution').textContent = '-';
+            document.getElementById('s-size').textContent = '-';
+        }
+
         // --- 상태 초기화 (재연결 시) ---
         function resetState() {
             if (dc) { try { dc.close(); } catch {} dc = null; }
@@ -446,8 +456,9 @@
                     } else if (msg.type === 'peer-joined') {
                         log('미러 송신자 접속 감지');
                     } else if (msg.type === 'peer-left') {
-                        log('미러 송신자 끊김 — 재연결 대기');
+                        log('미러 송신자 끊김 — 재접속 대기');
                         resetState();
+                        showWaiting();
                     }
                 } catch (err) {
                     log('오류: ' + err.message);
@@ -505,10 +516,11 @@
                 };
 
                 dc.onclose = () => {
-                    log('DataChannel 닫힘');
+                    log('DataChannel 닫힘 — 재접속 대기');
                     setStatus('rtc', 'disconnected', 'DataChannel 끊김');
                     if (elapsedTimer) clearInterval(elapsedTimer);
                     if (fpsTimer) clearInterval(fpsTimer);
+                    showWaiting();
                 };
             };
 
@@ -523,7 +535,9 @@
                 if (pc.connectionState === 'connected') {
                     setStatus('rtc', 'connected', 'P2P 연결됨');
                 } else if (pc.connectionState === 'failed' || pc.connectionState === 'disconnected') {
-                    setStatus('rtc', 'disconnected', 'P2P 끊김');
+                    // 온디맨드: 정리만, 재연결 안 함 (클라이언트가 재접속하면 새 Offer 수신)
+                    setStatus('rtc', 'disconnected', 'P2P 끊김 — 재접속 대기');
+                    showWaiting();
                 }
             };
 

@@ -100,15 +100,25 @@
         if (txt) txt.textContent = text;
     }
 
-    // --- 기존 P2P 정리 ---
+    // --- 전체 정리 (WS + P2P) ---
+    function cleanupAll() {
+        stopCapture();
+        if (dc) { try { dc.close(); } catch {} dc = null; }
+        if (pc) { try { pc.close(); } catch {} pc = null; }
+        if (ws) { try { ws.close(); } catch {} ws = null; }
+    }
+
+    // --- P2P만 정리 ---
     function cleanupPeerConnection() {
         stopCapture();
         if (dc) { try { dc.close(); } catch {} dc = null; }
         if (pc) { try { pc.close(); } catch {} pc = null; }
     }
 
-    // --- WebSocket 시그널링 ---
+    // --- WebSocket 시그널링 (1회 연결, 자동 재연결 없음) ---
     function connectSignaling() {
+        if (ws && ws.readyState <= 1) return; // 이미 연결 중이면 무시
+
         setBadgeStatus('connecting', 'MIRROR 연결 중...');
         ws = new WebSocket(WS_URL);
 
@@ -143,16 +153,33 @@
         };
 
         ws.onclose = () => {
-            setBadgeStatus('off', 'MIRROR 끊김');
-            console.log('[Mirror] 시그널링 끊김 — 1초 후 재연결');
+            console.log('[Mirror] 시그널링 끊김');
             cleanupPeerConnection();
-            setTimeout(connectSignaling, 1000);
+            setBadgeStatus('off', 'MIRROR 끊김');
+            ws = null;
+            // 재연결 안 함 — foreground 복귀 시 자동 재연결
         };
 
         ws.onerror = () => {
             console.error('[Mirror] WebSocket 오류');
         };
     }
+
+    // --- 페이지 가시성 전환 (온디맨드 핵심) ---
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+            // 포그라운드 복귀 → 연결 안 되어있으면 클린 스타트
+            if (!ws || ws.readyState > 1) {
+                console.log('[Mirror] 포그라운드 복귀 → 재연결');
+                cleanupAll();
+                connectSignaling();
+            }
+        } else {
+            // 백그라운드 진입 → 리소스 전부 반환
+            console.log('[Mirror] 백그라운드 → 리소스 반환');
+            cleanupAll();
+        }
+    });
 
     // --- WebRTC P2P + DataChannel ---
     function startPeerConnection() {
@@ -200,16 +227,11 @@
             if (pc.connectionState === 'connected') {
                 setBadgeStatus('on', fps > 0 ? `MIRROR ${fps}fps` : 'MIRROR 대기');
             } else if (pc.connectionState === 'failed' || pc.connectionState === 'disconnected') {
-                setBadgeStatus('connecting', 'MIRROR 재연결...');
+                // 온디맨드: 재연결 안 함 — 정리만 수행
+                console.log('[Mirror] P2P 끊김 → 정리 (재연결 안 함)');
                 stopCapture();
-                // WS 살아있으면 1초 후 P2P 재시도
-                if (ws && ws.readyState === 1) {
-                    setTimeout(() => {
-                        console.log('[Mirror] P2P 재연결 시도');
-                        cleanupPeerConnection();
-                        startPeerConnection();
-                    }, 1000);
-                }
+                cleanupPeerConnection();
+                setBadgeStatus('off', 'MIRROR P2P 끊김');
             }
         };
 
