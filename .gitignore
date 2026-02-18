@@ -82,3 +82,6 @@ soul_sync.sh
 # Claude Code 출력
 outputs/
 nul
+
+# iPhone 캡쳐 (로컬 전용)
+iphone_capture/
