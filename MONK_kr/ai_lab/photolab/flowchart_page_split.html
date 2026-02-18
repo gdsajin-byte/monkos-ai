@@ -554,7 +554,7 @@
         <span class="api-page">촬영실</span>
         <span class="api-method post">POST</span>
         <span class="api-path">/api/idphoto-coaching</span>
-        <span class="api-desc">Gemini 3 Flash — REST 코칭 (프레임 분석 → 텍스트 피드백)</span>
+        <span class="api-desc">Gemini 3 Flash — REST 코칭 <strong style="color:#22c55e;">(CF Function → Gemini 직접, 서버 경유 안 함)</strong></span>
     </div>
     <div class="api-item">
         <span class="api-page">분석실</span>
@@ -600,10 +600,10 @@
     </div>
 </div>
 
-<div style="margin-top: 12px; padding: 10px; background: rgba(245,158,11,0.05); border: 1px solid rgba(245,158,11,0.2); border-radius: 8px; font-size: 11px;">
-    <strong style="color: #f59e0b;">CF Pages Function 추가 필요:</strong>
-    <code>/api/idphoto-coaching</code> (신규 — 촬영실 REST 코칭 프록시),
-    <code>/api/credit-use</code> (현재 부재 — 크레딧 차감 프록시)
+<div style="margin-top: 12px; padding: 10px; background: rgba(34,197,94,0.05); border: 1px solid rgba(34,197,94,0.2); border-radius: 8px; font-size: 11px;">
+    <strong style="color: #22c55e;">✅ API 라우팅 확정:</strong>
+    <code>/api/idphoto-coaching</code> → CF Function에서 <strong>Gemini API 직접 호출</strong> (서버 경유 안 함, API 키는 CF 환경변수),
+    <code>/api/credit-use</code> → CF Function에서 monkos.ai 포탈 프록시
 </div>
 </div>
 
@@ -645,8 +645,8 @@
 ├── <span class="file">idphoto-precheck.js</span>  <span class="comment">← 기존: → idphoto-kr.monkos.ai/api/pre-check</span>
 ├── <span class="file">idphoto-generate.js</span>  <span class="comment">← 기존: → idphoto-kr.monkos.ai/api/generate</span>
 ├── <span class="file">idphoto-qc.js</span>        <span class="comment">← 기존: → idphoto-kr.monkos.ai/api/qc</span>
-├── <span class="shared">idphoto-coaching.js</span>  <span class="comment">← 신규 필요: → idphoto-kr.monkos.ai/api/coaching (REST 코칭)</span>
-└── <span class="shared">credit-use.js</span>        <span class="comment">← 신규 필요: → monkos.ai/api/credits/use (크레딧 차감 프록시)</span>
+├── <span class="shared">idphoto-coaching.js</span>  <span class="comment">← 신규: → <strong>Gemini API 직접 호출</strong> (서버 경유 안 함, API 키=CF 환경변수)</span>
+└── <span class="shared">credit-use.js</span>        <span class="comment">← 신규: → monkos.ai/api/credits/use (포탈 프록시)</span>
 </pre>
 </div>
 
@@ -846,32 +846,72 @@
 <div class="section">
 <h2>F. 서버 영향도 요약</h2>
 
-<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin: 16px 0;">
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 16px 0;">
     <div style="padding: 12px; background: rgba(34,197,94,0.05); border: 1px solid rgba(34,197,94,0.2); border-radius: 8px;">
-        <div style="font-size: 12px; font-weight: 700; color: #22c55e; margin-bottom: 8px;">변경 없음</div>
+        <div style="font-size: 12px; font-weight: 700; color: #22c55e; margin-bottom: 8px;">서버 변경 없음 (★0원칙 준수)</div>
         <div style="font-size: 11px; color: #888;">
-            idphoto-kr.monkos.ai (Cloud Run)<br>
-            monkos.ai (Portal)<br>
-            기존 CF Functions 3개<br>
-            CORS 설정
-        </div>
-    </div>
-    <div style="padding: 12px; background: rgba(245,158,11,0.05); border: 1px solid rgba(245,158,11,0.2); border-radius: 8px;">
-        <div style="font-size: 12px; font-weight: 700; color: #f59e0b; margin-bottom: 8px;">서버 추가 필요</div>
-        <div style="font-size: 11px; color: #888;">
-            /api/coaching 엔드포인트<br>
-            (idphoto-kr server.js)<br>
-            <span style="color: #f59e0b;">⏳ 쌍아/작가님 판단</span>
+            idphoto-kr.monkos.ai (Cloud Run) — 변경 없음<br>
+            monkos.ai (Portal) — 변경 없음<br>
+            기존 CF Functions 3개 — 변경 없음<br>
+            CORS 설정 — 변경 없음
         </div>
     </div>
     <div style="padding: 12px; background: rgba(96,165,250,0.05); border: 1px solid rgba(96,165,250,0.2); border-radius: 8px;">
-        <div style="font-size: 12px; font-weight: 700; color: #60a5fa; margin-bottom: 8px;">CF Function 추가</div>
+        <div style="font-size: 12px; font-weight: 700; color: #60a5fa; margin-bottom: 8px;">CF Function 신규 추가 (2개)</div>
         <div style="font-size: 11px; color: #888;">
-            idphoto-coaching.js (프록시)<br>
-            credit-use.js (프록시)<br>
-            <span style="color: #60a5fa;">클라이언트 작업 범위</span>
+            <code>idphoto-coaching.js</code> — <strong style="color:#22c55e;">Gemini API 직접 호출</strong> (서버 경유 안 함)<br>
+            <code>credit-use.js</code> — monkos.ai 포탈 프록시<br>
+            <span style="color: #60a5fa;">클라이언트 작업 범위 (MONK_kr/functions/api/)</span>
         </div>
     </div>
+</div>
+
+<!-- API 라우팅 확정 테이블 -->
+<h3>API 라우팅 확정 (2/18 작가님 승인)</h3>
+<table class="data-table">
+    <thead>
+        <tr>
+            <th>엔드포인트</th>
+            <th>처리 위치</th>
+            <th>경유</th>
+            <th>이유</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>/api/idphoto-coaching</code></td>
+            <td style="color:#22c55e; font-weight:700;">CF Function → Gemini API 직접</td>
+            <td>서버 경유 안 함</td>
+            <td>서버에 없고 ★0원칙 동결</td>
+        </tr>
+        <tr>
+            <td><code>/api/idphoto-precheck</code></td>
+            <td>CF Function → idphoto-kr 프록시</td>
+            <td>기존 서버 경유</td>
+            <td>이미 서버에 있음</td>
+        </tr>
+        <tr>
+            <td><code>/api/idphoto-generate</code></td>
+            <td>CF Function → idphoto-kr 프록시</td>
+            <td>기존 서버 경유</td>
+            <td>이미 서버에 있음</td>
+        </tr>
+        <tr>
+            <td><code>/api/idphoto-qc</code></td>
+            <td>CF Function → idphoto-kr 프록시</td>
+            <td>기존 서버 경유</td>
+            <td>이미 서버에 있음</td>
+        </tr>
+        <tr>
+            <td><code>/api/credit-use</code></td>
+            <td>CF Function → monkos.ai 프록시</td>
+            <td>포탈 경유</td>
+            <td>포탈 API</td>
+        </tr>
+    </tbody>
+</table>
+<div style="font-size: 10px; color: #555; margin-top: 8px;">
+    코칭용 Gemini API 키: CF Pages 환경변수로 관리 (클라이언트 비노출, wrangler.toml의 [vars] 또는 대시보드 설정)
 </div>
 </div>
 
