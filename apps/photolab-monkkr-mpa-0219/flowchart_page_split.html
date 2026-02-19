@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>photolab 페이지 분리 플로우차트 — 5페이지 + REST 코칭 아키텍처</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, 'Apple SD Gothic Neo', sans-serif;
+            background: #0a0a0f; color: #e0e0e0;
+            padding: 24px; line-height: 1.6;
+        }
+        h1 { font-size: 22px; color: #a78bfa; margin-bottom: 4px; }
+        .subtitle { font-size: 12px; color: #666; margin-bottom: 32px; }
+        h2 { font-size: 16px; color: #60a5fa; margin: 32px 0 12px; padding-bottom: 6px; border-bottom: 1px solid #222; }
+        h3 { font-size: 13px; color: #f59e0b; margin: 20px 0 8px; }
+
+        /* 플로우 컨테이너 */
+        .flow { display: flex; flex-direction: column; gap: 2px; margin: 16px 0; }
+        .flow-row { display: flex; align-items: stretch; gap: 8px; }
+
+        /* 스텝 박스 */
+        .step {
+            padding: 12px 16px; border-radius: 10px;
+            border: 1.5px solid #222; background: #111;
+            flex: 1; min-width: 0; position: relative;
+        }
+        .step-name { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+        .step-desc { font-size: 11px; color: #888; }
+        .step-funcs { font-size: 10px; color: #555; margin-top: 6px; font-family: monospace; }
+        .step-data { font-size: 10px; color: #444; margin-top: 3px; }
+        .step-badge {
+            display: inline-block; font-size: 9px; font-weight: 700;
+            padding: 2px 8px; border-radius: 4px; margin-top: 6px;
+        }
+
+        /* 화살표 */
+        .arrow {
+            text-align: center; padding: 4px 0; color: #444;
+            font-size: 14px; user-select: none;
+        }
+        .arrow-label { font-size: 11px; color: #666; }
+        .arrow-branch { color: #f59e0b; font-size: 11px; }
+        .arrow-data { color: #22c55e; font-size: 10px; font-family: monospace; }
+
+        /* 색상 코드 — 페이지별 */
+        .step.prep { border-color: rgba(167,139,250,0.4); }
+        .step.prep .step-name { color: #a78bfa; }
+        .step.camera { border-color: rgba(34,197,94,0.4); }
+        .step.camera .step-name { color: #22c55e; }
+        .step.analysis { border-color: rgba(244,114,182,0.4); }
+        .step.analysis .step-name { color: #f472b6; }
+        .step.pickup { border-color: rgba(250,204,21,0.4); }
+        .step.pickup .step-name { color: #facc15; }
+        .step.option { border-color: rgba(96,165,250,0.4); }
+        .step.option .step-name { color: #60a5fa; }
+
+        /* 엔진 색상 */
+        .step.engine-gemini { border-color: rgba(34,197,94,0.4); }
+        .step.engine-gemini .step-name { color: #22c55e; }
+        .step.engine-imagen { border-color: rgba(244,114,182,0.4); }
+        .step.engine-imagen .step-name { color: #f472b6; }
+        .step.engine-portal { border-color: rgba(245,158,11,0.4); }
+        .step.engine-portal .step-name { color: #f59e0b; }
+
+        /* 기타 */
+        .step.auth { border-color: rgba(239,68,68,0.4); }
+        .step.auth .step-name { color: #ef4444; }
+        .step.shared { border-color: rgba(255,255,255,0.2); }
+        .step.shared .step-name { color: #ccc; }
+
+        /* 통계 */
+        .stats {
+            display: grid; grid-template-columns: repeat(5, 1fr);
+            gap: 8px; margin: 16px 0;
+        }
+        .stat {
+            padding: 12px; background: #111;
+            border: 1px solid #222; border-radius: 8px;
+            text-align: center;
+        }
+        .stat-num { font-size: 24px; font-weight: 800; color: #a78bfa; }
+        .stat-label { font-size: 10px; color: #666; margin-top: 2px; }
+
+        /* 범례 */
+        .legend {
+            display: flex; flex-wrap: wrap; gap: 12px;
+            margin: 16px 0; padding: 12px;
+            background: #0d0d15; border-radius: 8px;
+        }
+        .legend-item {
+            display: flex; align-items: center; gap: 6px;
+            font-size: 11px;
+        }
+        .legend-dot {
+            width: 10px; height: 10px; border-radius: 3px;
+        }
+
+        /* 파일 구조 */
+        .file-tree {
+            font-size: 11px; font-family: monospace;
+            background: #0d0d15; padding: 16px;
+            border-radius: 8px; border: 1px solid #1a1a2a;
+        }
+        .file-tree .dir { color: #60a5fa; }
+        .file-tree .file { color: #ccc; }
+        .file-tree .comment { color: #555; }
+        .file-tree .shared { color: #f59e0b; }
+        .file-tree .page { color: #22c55e; }
+
+        /* 데이터 흐름 표 */
+        .data-table {
+            width: 100%; border-collapse: collapse;
+            font-size: 11px; margin: 12px 0;
+        }
+        .data-table th {
+            background: #111; padding: 8px 12px;
+            text-align: left; border: 1px solid #222;
+            color: #888; font-weight: 600;
+        }
+        .data-table td {
+            padding: 8px 12px; border: 1px solid #1a1a1a;
+            color: #ccc;
+        }
+        .data-table code {
+            background: #0d0d15; padding: 2px 6px;
+            border-radius: 3px; font-size: 10px;
+        }
+
+        /* API 리스트 */
+        .api-list { font-size: 11px; }
+        .api-item {
+            display: flex; gap: 8px; padding: 6px 0;
+            border-bottom: 1px solid #1a1a1a;
+        }
+        .api-method {
+            font-weight: 700; font-family: monospace;
+            min-width: 40px;
+        }
+        .api-method.post { color: #22c55e; }
+        .api-method.get { color: #f59e0b; }
+        .api-path { color: #ccc; font-family: monospace; min-width: 200px; }
+        .api-desc { color: #666; }
+        .api-page { color: #a78bfa; font-size: 10px; min-width: 60px; }
+
+        .section { margin-bottom: 40px; }
+
+        /* 변경사항 표시 */
+        .change-badge {
+            display: inline-block; font-size: 9px; font-weight: 700;
+            padding: 2px 8px; border-radius: 4px;
+            background: rgba(239,68,68,0.15); color: #ef4444;
+            border: 1px solid rgba(239,68,68,0.3);
+        }
+        .new-badge {
+            display: inline-block; font-size: 9px; font-weight: 700;
+            padding: 2px 8px; border-radius: 4px;
+            background: rgba(34,197,94,0.15); color: #22c55e;
+            border: 1px solid rgba(34,197,94,0.3);
+        }
+
+        /* 비교 박스 */
+        .compare {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 12px; margin: 12px 0;
+        }
+        .compare-box {
+            padding: 12px; border-radius: 8px;
+            font-size: 11px;
+        }
+        .compare-old {
+            background: rgba(239,68,68,0.05);
+            border: 1px solid rgba(239,68,68,0.2);
+        }
+        .compare-old .compare-label { color: #ef4444; font-weight: 700; margin-bottom: 6px; }
+        .compare-new {
+            background: rgba(34,197,94,0.05);
+            border: 1px solid rgba(34,197,94,0.2);
+        }
+        .compare-new .compare-label { color: #22c55e; font-weight: 700; margin-bottom: 6px; }
+    </style>
+</head>
+<body>
+
+<h1>photolab 페이지 분리 플로우차트</h1>
+<p class="subtitle">5페이지 MPA + REST 코칭 아키텍처 | 00079 → 페이지 분리 설계 | WebSocket 제거</p>
+
+<!-- ============ 핵심 변경사항 ============ -->
+<div class="section">
+<h2>0. 핵심 아키텍처 변경 (00079 대비)</h2>
+
+<div class="compare">
+    <div class="compare-box compare-old">
+        <div class="compare-label">00079 (기존)</div>
+        <div>SPA 단일 페이지 (index.html 2,187줄)</div>
+        <div>Screen 모듈 화면 전환 (JS .active 토글)</div>
+        <div>코칭: Gemini 2.0 Flash Live <strong>WebSocket 스트리밍</strong></div>
+        <div>소켓 점유 충돌 → 카메라 충돌 8회 연속 원인</div>
+        <div>monk.js 5모듈: Screen + Store + Pipe(REST+WS) + Media + Agent</div>
+    </div>
+    <div class="compare-box compare-new">
+        <div class="compare-label">페이지 분리 (신규)</div>
+        <div>MPA 5페이지 (각 페이지 독립 HTML)</div>
+        <div>페이지 이동 = 브라우저 네비게이션 (location.href)</div>
+        <div>코칭: Gemini 3 Flash <strong>REST ~3fps</strong> + Web Speech TTS</div>
+        <div>WebSocket 제거 → 소켓 충돌 원천 소멸</div>
+        <div>monk.js 3모듈: Store + Pipe(REST only) + Media</div>
+    </div>
+</div>
+
+<div style="margin: 12px 0; padding: 12px; background: rgba(34,197,94,0.05); border: 1px solid rgba(34,197,94,0.2); border-radius: 8px; font-size: 11px;">
+    <strong style="color: #22c55e;">엔진 통일:</strong> 코칭 / 프리체크 / QC 전부 <code>Gemini 3 Flash REST</code> — 프롬프트만 분기.
+    Imagen NB3 Pro는 생성 전용 (1회).
+</div>
+</div>
+
+<!-- ============ 통계 ============ -->
+<div class="stats">
+    <div class="stat"><div class="stat-num">5</div><div class="stat-label">독립 페이지</div></div>
+    <div class="stat"><div class="stat-num">0</div><div class="stat-label">WebSocket</div></div>
+    <div class="stat"><div class="stat-num">3</div><div class="stat-label">monk.js 모듈</div></div>
+    <div class="stat"><div class="stat-num">1</div><div class="stat-label">AI 엔진 (REST)</div></div>
+    <div class="stat"><div class="stat-num">~8</div><div class="stat-label">JS 파일</div></div>
+</div>
+
+<!-- ============ 범례 ============ -->
+<div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#a78bfa;"></div> 준비실 (index.html)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#22c55e;"></div> 촬영실 (camera.html)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#f472b6;"></div> 분석실 (result.html)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#facc15;"></div> 수령처 (thankyou.html)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#60a5fa;"></div> 옵션 N (options.html)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#ef4444;"></div> 공통 (shared.js)</div>
+</div>
+
+<!-- ============ A. 전체 페이지 흐름도 ============ -->
+<div class="section">
+<h2>A. 전체 페이지 흐름도</h2>
+
+<div class="flow">
+    <!-- 공통 초기화 -->
+    <div class="step auth">
+        <div class="step-name">공통 초기화 (매 페이지 로드 시)</div>
+        <div class="step-desc">인앱 브라우저 감지 → 데스크탑 차단 → URL 토큰 인증 → sessionStorage에서 user 로드 → 토스 결제 콜백 처리 → 크레딧 갱신</div>
+        <div class="step-funcs">shared.js → init(): checkInappBrowser() → initFromUrlToken() → initCredits() → initFromTossResult() → fetchLatestCredits()</div>
+        <div class="step-data">공통 HTML: #header, #inapp-banner, #desktop-blocker, #credit-modal</div>
+    </div>
+
+    <div class="arrow">▼</div>
+
+    <!-- 준비실 -->
+    <div class="step prep">
+        <div class="step-name">① 준비실 — index.html</div>
+        <div class="step-desc">스타일 선택 (여권/이력서) → 성별 선택 → 연령 선택 → 확인 멘트 → [촬영 시작] 버튼</div>
+        <div class="step-funcs">prep.js → selectStyle(), selectGender(), selectAge(), checkProfileComplete(), startShooting()</div>
+        <div class="step-data">AI 호출: 없음 | DOM: #prep-screen</div>
+    </div>
+
+    <div class="arrow">
+        ▼ <span class="arrow-label">location.href = 'camera.html'</span>
+        <div class="arrow-data">→ sessionStorage: monkos_style, monkos_gender, monkos_age</div>
+    </div>
+
+    <!-- 촬영실 -->
+    <div class="step camera">
+        <div class="step-name">② 촬영실 — camera.html</div>
+        <div class="step-desc">카메라 시작 → AI 코칭 루프 (3fps: 캡처→REST→TTS) → 촬영 버튼 → 원본 캡처 → 저장</div>
+        <div class="step-funcs">camera.js → media.start(), startCoachingLoop(), capturePhoto(), speakKo()</div>
+        <div class="step-data">AI 호출: Gemini 3 Flash REST (~3fps 코칭) | DOM: #camera-area, #coaching-overlay, #controls</div>
+        <span class="new-badge">REST 코칭 (WS 제거)</span>
+    </div>
+
+    <div class="arrow">
+        ▼ <span class="arrow-label">location.href = 'result.html'</span>
+        <div class="arrow-data">→ sessionStorage: monkos_captured (base64 JPEG)</div>
+    </div>
+
+    <!-- 분석실 -->
+    <div class="step analysis">
+        <div class="step-name">③ 분석실 — result.html</div>
+        <div class="step-desc">원본 표시 → 프리체크 → 생성 (Imagen) → QC → 결제(크레딧 차감) → 규격 크롭 → 완료</div>
+        <div class="step-funcs">result.js → showOriginal(), runPrecheck(), runGenerate(), runQC(), payAndCrop()</div>
+        <div class="step-data">AI 호출: Gemini 3 Flash (프리체크+QC) + Imagen NB3 Pro (생성) + Portal API (크레딧) | DOM: #result-area</div>
+        <span class="new-badge">결제까지 한 방에서</span>
+    </div>
+
+    <div class="arrow">
+        ▼ <span class="arrow-label">location.href = 'thankyou.html'</span>
+        <div class="arrow-data">→ sessionStorage: monkos_cropped (base64 PNG)</div>
+        <div class="arrow-branch">← 재촬영: location.href = 'camera.html' (분석실→촬영실)</div>
+    </div>
+
+    <!-- 수령처 -->
+    <div class="step pickup">
+        <div class="step-name">④ 수령처 — thankyou.html</div>
+        <div class="step-desc">크롭 사진 표시 → 갤러리 저장 (navigator.share / &lt;a download&gt;) → SNS 공유</div>
+        <div class="step-funcs">thankyou.js → displayPhoto(), saveToPhotos(), shareSNS()</div>
+        <div class="step-data">AI 호출: 없음 | DOM: #thankyou-screen</div>
+    </div>
+
+    <div class="arrow">
+        ▼ <span class="arrow-label">location.href = 'options.html' 또는 직접 이동</span>
+    </div>
+
+    <!-- 옵션 N -->
+    <div class="step option">
+        <div class="step-name">⑤ 옵션 N — options.html (열린 구조)</div>
+        <div class="step-desc">추가 촬영 → 준비실/촬영실 | 이벤트 (텔레그램) → 외부 | 포털 홈 → monk.kr/monkos.ai</div>
+        <div class="step-funcs">options.js → goToPrep(), goToCamera(), openTelegram(), goToPortal()</div>
+        <div class="step-data">AI 호출: 없음 | 열린 구조 — 향후 서비스 카드 추가 가능</div>
+        <span class="new-badge">신규 페이지</span>
+    </div>
+</div>
+
+<!-- 재촬영 루프 표시 -->
+<div style="margin: 16px 0; padding: 12px; background: #111; border: 1px solid #222; border-radius: 8px; font-size: 11px;">
+    <strong style="color: #f59e0b;">재촬영 루프:</strong>
+    <div style="margin-top: 6px; font-family: monospace; color: #888;">
+        분석실(result.html) — 프리체크 FAIL 또는 사용자 "다시 찍기" → location.href = 'camera.html'<br>
+        촬영실(camera.html) — sessionStorage에서 style/gender/age 읽기 (준비실 건너뜀)<br>
+        촬영실 → 분석실 → (반복 가능)
+    </div>
+</div>
+</div>
+
+<!-- ============ B. 각 페이지 내부 상세 흐름 ============ -->
+<div class="section">
+<h2>B. 각 페이지 내부 상세 흐름</h2>
+
+<!-- B-1: 준비실 -->
+<h3>B-1. 준비실 (index.html + prep.js)</h3>
+<div class="flow">
+    <div class="step prep">
+        <div class="step-name">페이지 로드</div>
+        <div class="step-desc">shared.js 공통 초기화 실행 (인증, 크레딧, 인앱 감지, 데스크탑 차단)</div>
+    </div>
+    <div class="arrow">▼</div>
+    <div class="step prep">
+        <div class="step-name">용도 선택</div>
+        <div class="step-desc">여권/신분증 (id_photo) | 취업/컬러증명 (resume) → store.style 설정</div>
+        <div class="step-funcs">selectStyle(style) → .prep-style-option.active 토글</div>
+    </div>
+    <div class="arrow">▼</div>
+    <div class="step prep">
+        <div class="step-name">성별 + 연령 선택</div>
+        <div class="step-desc">성별: male/female | 연령: child/teen/adult → store.gender, store.age 설정</div>
+        <div class="step-funcs">selectGender(), selectAge() → .prep-profile-chip.active 토글</div>
+    </div>
+    <div class="arrow">▼</div>
+    <div class="step prep">
+        <div class="step-name">프로필 완성 확인</div>
+        <div class="step-desc">style + gender + age 모두 선택 시 → 확인 멘트 표시 + [촬영 시작] 버튼 활성화</div>
+        <div class="step-funcs">checkProfileComplete() → updateConfirmMessage() → btn-start.disabled = false</div>
+    </div>
+    <div class="arrow">▼</div>
+    <div class="step prep">
+        <div class="step-name">촬영실 이동</div>
+        <div class="step-desc">sessionStorage에 style/gender/age 저장 → camera.html로 이동</div>
+        <div class="step-funcs">startShooting() → sessionStorage.setItem('monkos_style', ...) → location.href = 'camera.html'</div>
+    </div>
+</div>
+<div style="font-size: 10px; color: #555; margin-top: 4px;">
+    출력 데이터: <code>monkos_style</code>, <code>monkos_gender</code>, <code>monkos_age</code> → sessionStorage
+</div>
+
+<!-- B-2: 촬영실 -->
+<h3>B-2. 촬영실 (camera.html + camera.js)</h3>
+<div class="flow">
+    <div class="step camera">
+        <div class="step-name">페이지 로드 + 데이터 복원</div>
+        <div class="step-desc">shared.js 초기화 + sessionStorage에서 style/gender/age 읽기</div>
+        <div class="step-funcs">sessionStorage.getItem('monkos_style') 등</div>
+    </div>
+    <div class="arrow">▼</div>
+    <div class="step camera">
+        <div class="step-name">카메라 시작</div>
+        <div class="step-desc">getUserMedia({facingMode:'user', ideal:720}) → video 스트림 → 얼굴 가이드 오버레이</div>
+        <div class="step-funcs">media.start() → videoEl.srcObject = stream</div>
+    </div>
+    <div class="arrow">▼</div>
+    <div class="step camera" style="border-color: rgba(34,197,94,0.6);">
+        <div class="step-name">AI 코칭 루프 <span class="new-badge">REST 3fps</span></div>
+        <div class="step-desc">
+            setInterval(~333ms) → 프레임 캡처 (JPEG base64) → POST /api/idphoto-coaching → 응답 텍스트 → TTS 음성 출력<br>
+            <strong>변화 감지 시에만 피드백</strong> — 매 프레임 말하지 않음, 이전 응답과 다를 때만 TTS 재생<br>
+            ready 판정 시: 촬영 버튼 녹색 + "촬영 OK!" 안내
+        </div>
+        <div class="step-funcs">
+            startCoachingLoop() → setInterval → media.capture() → pipe.run('coaching', {image, style, gender, age}) → showCoaching(text) → speakKo(text)
+        </div>
+    </div>
+    <div class="arrow">▼ <span class="arrow-label">촬영 버튼 클릭 (수동 또는 AI ready 시)</span></div>
+    <div class="step camera">
+        <div class="step-name">촬영 + 코칭 중지</div>
+        <div class="step-desc">코칭 루프 clearInterval → TTS 중지 → 고해상도 캡처 → sessionStorage 저장</div>
+        <div class="step-funcs">capturePhoto() → stopCoachingLoop() → media.capture() → sessionStorage.setItem('monkos_captured', base64)</div>
+    </div>
+    <div class="arrow">▼</div>
+    <div class="step camera">
+        <div class="step-name">분석실 이동</div>
+        <div class="step-funcs">location.href = 'result.html'</div>
+    </div>
+</div>
+<div style="font-size: 10px; color: #555; margin-top: 4px;">
+    입력: <code>monkos_style</code>, <code>monkos_gender</code>, <code>monkos_age</code> ← sessionStorage<br>
+    출력: <code>monkos_captured</code> (base64 JPEG, ~100KB) → sessionStorage
+</div>
+
+<!-- B-3: 분석실 -->
+<h3>B-3. 분석실 (result.html + result.js)</h3>
+<div class="flow">
+    <div class="step analysis">
+        <div class="step-name">페이지 로드 + 데이터 복원</div>
+        <div class="step-desc">shared.js 초기화 + sessionStorage에서 captured/style/gender/age 읽기 → 원본 사진 표시</div>
+        <div class="step-funcs">loadSessionData() → img.src = monkos_captured</div>
+    </div>
+    <div class="arrow">▼ <span class="arrow-label">자동 진행 (또는 사용자 확인 후)</span></div>
+    <div class="step analysis">
+        <div class="step-name">프리체크 (Gemini 3 Flash REST)</div>
+        <div class="step-desc">촬영본 품질 판정: 조명, 각도, 해상도, 배경 → score + suitable 판정</div>
+        <div class="step-funcs">pipe.run('precheck', {image: base64}) → Gemini 3 Flash</div>
+    </div>
+    <div class="arrow">
+        ▼ <span class="arrow-label">suitable === true</span>
+        <div class="arrow-branch">← suitable === false → 재촬영 권유 → location.href = 'camera.html'</div>
+    </div>
+    <div class="step analysis">
+        <div class="step-name">AI 증명사진 생성 (Imagen NB3 Pro REST)</div>
+        <div class="step-desc">원본 base64 + style/gender/age → Imagen I2I → 생성 결과 base64</div>
+        <div class="step-funcs">pipe.run('generate', {image, style, gender, age, userId}) → 크레딧 -1c 자동 차감</div>
+    </div>
+    <div class="arrow">▼</div>
+    <div class="step analysis">
+        <div class="step-name">QC 검증 (Gemini 3 Flash REST)</div>
+        <div class="step-desc">원본 vs 생성물 비교 → identity PASS/FAIL + similarity % + 품질 노트</div>
+        <div class="step-funcs">pipe.run('qc', {original, generated, gender, age}) → Gemini 3 Flash</div>
+    </div>
+    <div class="arrow">
+        ▼ <span class="arrow-label">QC PASS</span>
+        <div class="arrow-branch">← QC FAIL → 재생성 or 재촬영 선택</div>
+    </div>
+    <div class="step analysis" style="border-color: rgba(245,158,11,0.4);">
+        <div class="step-name" style="color: #f59e0b;">다운로드 결제 (크레딧 차감)</div>
+        <div class="step-desc">크레딧 확인 (10c 필요) → 부족 시 결제 모달 → 충분 시 차감 API → 규격 크롭</div>
+        <div class="step-funcs">checkCredits(10) → pipe.run('creditUse', {userId, type:'download'}) → media.crop(generated, spec)</div>
+        <span class="new-badge">분석실에 통합</span>
+    </div>
+    <div class="arrow">▼</div>
+    <div class="step analysis">
+        <div class="step-name">수령처 이동</div>
+        <div class="step-desc">cropped base64를 sessionStorage에 저장 → thankyou.html로 이동</div>
+        <div class="step-funcs">sessionStorage.setItem('monkos_cropped', dataUrl) → location.href = 'thankyou.html'</div>
+    </div>
+</div>
+<div style="font-size: 10px; color: #555; margin-top: 4px;">
+    입력: <code>monkos_captured</code>, <code>monkos_style</code>, <code>monkos_gender</code>, <code>monkos_age</code>, <code>monkos_user</code> ← sessionStorage<br>
+    출력: <code>monkos_cropped</code> (base64 PNG, ~80KB) → sessionStorage
+</div>
+
+<!-- B-4: 수령처 -->
+<h3>B-4. 수령처 (thankyou.html + thankyou.js)</h3>
+<div class="flow">
+    <div class="step pickup">
+        <div class="step-name">페이지 로드 + 사진 표시</div>
+        <div class="step-desc">sessionStorage에서 monkos_cropped 읽기 → 규격 크롭 사진 표시 + 크레딧 잔여 표시</div>
+        <div class="step-funcs">img.src = sessionStorage.getItem('monkos_cropped')</div>
+    </div>
+    <div class="arrow">▼</div>
+    <div class="step pickup">
+        <div class="step-name">갤러리 저장</div>
+        <div class="step-desc">
+            1순위: navigator.share({files: [File]}) — iOS/Android 네이티브 공유시트<br>
+            2순위: &lt;a download&gt; — 직접 다운로드 폴백<br>
+            길게 눌러 저장 가이드 표시 (모바일)
+        </div>
+        <div class="step-funcs">saveToPhotos() → media.toJpeg(cropped) → navigator.share() || a.click()</div>
+    </div>
+    <div class="arrow">▼</div>
+    <div class="step pickup">
+        <div class="step-name">SNS 공유</div>
+        <div class="step-desc">캡쳐 안내 → SNS 공유 가이드 → 텔레그램 이벤트 (10c 보너스)</div>
+        <div class="step-funcs">openTelegram() → t.me/monkos_event_bot?start={uid}</div>
+    </div>
+    <div class="arrow">▼</div>
+    <div class="step pickup">
+        <div class="step-name">옵션 N으로 이동</div>
+        <div class="step-funcs">location.href = 'options.html' 또는 버튼별 직접 이동</div>
+    </div>
+</div>
+
+<!-- B-5: 옵션 N -->
+<h3>B-5. 옵션 N (options.html + options.js)</h3>
+<div class="flow">
+    <div class="step option">
+        <div class="step-name">서비스 카드 목록 (열린 구조)</div>
+        <div class="step-desc">
+            <strong>추가 촬영</strong> → index.html (준비실) 또는 camera.html (촬영실, 설정 유지)<br>
+            <strong>텔레그램 이벤트</strong> → 외부 링크 (t.me/monkos_event_bot)<br>
+            <strong>포털 홈</strong> → monk.kr 또는 monkos.ai<br>
+            <strong>(향후)</strong> 용도별 크롭, 배경 교체, 인화 주문 등 서비스 카드 추가 가능
+        </div>
+    </div>
+</div>
+<div style="font-size: 10px; color: #555; margin-top: 4px;">
+    열린 구조 — 옵션 카드는 향후 독립적으로 추가/제거 가능. 수령처와 통합 운용도 가능.
+</div>
+</div>
+
+<!-- ============ C. 엔진 호출 맵 ============ -->
+<div class="section">
+<h2>C. 엔진 호출 맵</h2>
+
+<div style="margin-bottom: 16px; font-size: 11px; color: #888;">
+    모든 AI 호출이 REST. WebSocket 0개. 엔진은 2종: Gemini 3 Flash (분석) + Imagen NB3 Pro (생성).
+</div>
+
+<!-- 페이지별 엔진 매핑 -->
+<div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 16px 0;">
+    <div style="padding: 12px; background: rgba(167,139,250,0.05); border: 1px solid rgba(167,139,250,0.2); border-radius: 8px; text-align: center;">
+        <div style="font-size: 12px; font-weight: 700; color: #a78bfa; margin-bottom: 8px;">준비실</div>
+        <div style="font-size: 11px; color: #555;">AI 호출 없음</div>
+    </div>
+    <div style="padding: 12px; background: rgba(34,197,94,0.05); border: 1px solid rgba(34,197,94,0.2); border-radius: 8px; text-align: center;">
+        <div style="font-size: 12px; font-weight: 700; color: #22c55e; margin-bottom: 8px;">촬영실</div>
+        <div style="font-size: 11px; color: #22c55e;">Gemini 3 Flash</div>
+        <div style="font-size: 10px; color: #666;">코칭 (~3fps)</div>
+        <div style="font-size: 10px; color: #444; margin-top: 4px;">REST POST 반복</div>
+    </div>
+    <div style="padding: 12px; background: rgba(244,114,182,0.05); border: 1px solid rgba(244,114,182,0.2); border-radius: 8px; text-align: center;">
+        <div style="font-size: 12px; font-weight: 700; color: #f472b6; margin-bottom: 8px;">분석실</div>
+        <div style="font-size: 11px; color: #22c55e;">Gemini 3 Flash</div>
+        <div style="font-size: 10px; color: #666;">프리체크 (1회)</div>
+        <div style="font-size: 10px; color: #666;">QC (1회)</div>
+        <div style="font-size: 11px; color: #f472b6; margin-top: 4px;">Imagen NB3 Pro</div>
+        <div style="font-size: 10px; color: #666;">생성 (1회)</div>
+        <div style="font-size: 11px; color: #f59e0b; margin-top: 4px;">Portal API</div>
+        <div style="font-size: 10px; color: #666;">크레딧 차감</div>
+    </div>
+    <div style="padding: 12px; background: rgba(250,204,21,0.05); border: 1px solid rgba(250,204,21,0.2); border-radius: 8px; text-align: center;">
+        <div style="font-size: 12px; font-weight: 700; color: #facc15; margin-bottom: 8px;">수령처</div>
+        <div style="font-size: 11px; color: #555;">AI 호출 없음</div>
+    </div>
+    <div style="padding: 12px; background: rgba(96,165,250,0.05); border: 1px solid rgba(96,165,250,0.2); border-radius: 8px; text-align: center;">
+        <div style="font-size: 12px; font-weight: 700; color: #60a5fa; margin-bottom: 8px;">옵션 N</div>
+        <div style="font-size: 11px; color: #555;">AI 호출 없음</div>
+    </div>
+</div>
+
+<!-- 상세 API 엔드포인트 -->
+<h3>엔드포인트 상세</h3>
+<div class="api-list">
+    <div class="api-item">
+        <span class="api-page">촬영실</span>
+        <span class="api-method post">POST</span>
+        <span class="api-path">/api/idphoto-coaching</span>
+        <span class="api-desc">Gemini 3 Flash — REST 코칭 <strong style="color:#22c55e;">(CF Function → Gemini 직접, 서버 경유 안 함)</strong></span>
+    </div>
+    <div class="api-item">
+        <span class="api-page">분석실</span>
+        <span class="api-method post">POST</span>
+        <span class="api-path">/api/idphoto-precheck</span>
+        <span class="api-desc">Gemini 3 Flash — 사전분석 (촬영 품질 판정, score + suitable)</span>
+    </div>
+    <div class="api-item">
+        <span class="api-page">분석실</span>
+        <span class="api-method post">POST</span>
+        <span class="api-path">/api/idphoto-generate</span>
+        <span class="api-desc">Imagen NB3 Pro I2I — 증명사진 생성 (base64 → base64, 크레딧 -1c)</span>
+    </div>
+    <div class="api-item">
+        <span class="api-page">분석실</span>
+        <span class="api-method post">POST</span>
+        <span class="api-path">/api/idphoto-qc</span>
+        <span class="api-desc">Gemini 3 Flash — QC 검증 (원본 vs 생성물 비교)</span>
+    </div>
+    <div class="api-item">
+        <span class="api-page">분석실</span>
+        <span class="api-method post">POST</span>
+        <span class="api-path">/api/credit-use</span>
+        <span class="api-desc">Portal API 프록시 — 다운로드 크레딧 차감 (-10c)</span>
+    </div>
+    <div class="api-item">
+        <span class="api-page">공통</span>
+        <span class="api-method get">GET</span>
+        <span class="api-path">{PORTAL}/api/credits</span>
+        <span class="api-desc">monkos.ai — 크레딧 잔액 조회</span>
+    </div>
+    <div class="api-item">
+        <span class="api-page">공통</span>
+        <span class="api-method get">GET</span>
+        <span class="api-path">{PORTAL}/api/auth/verify</span>
+        <span class="api-desc">monkos.ai — URL 토큰 인증 검증</span>
+    </div>
+    <div class="api-item">
+        <span class="api-page">공통</span>
+        <span class="api-method post">POST</span>
+        <span class="api-path">{PORTAL}/api/payment/confirm</span>
+        <span class="api-desc">monkos.ai — 토스 결제 확인</span>
+    </div>
+</div>
+
+<div style="margin-top: 12px; padding: 10px; background: rgba(34,197,94,0.05); border: 1px solid rgba(34,197,94,0.2); border-radius: 8px; font-size: 11px;">
+    <strong style="color: #22c55e;">✅ API 라우팅 확정:</strong>
+    <code>/api/idphoto-coaching</code> → CF Function에서 <strong>Gemini API 직접 호출</strong> (서버 경유 안 함, API 키는 CF 환경변수),
+    <code>/api/credit-use</code> → CF Function에서 monkos.ai 포탈 프록시
+</div>
+</div>
+
+<!-- ============ D. 파일 구조도 ============ -->
+<div class="section">
+<h2>D. 파일 구조도</h2>
+
+<div class="file-tree">
+<pre>
+<span class="dir">MONK_kr/ai_lab/photolab/</span>
+│
+├── <span class="page">index.html</span>          <span class="comment">← 준비실 (진입점, 스타일/성별/연령 선택)</span>
+├── <span class="page">camera.html</span>         <span class="comment">← 촬영실 (카메라 + REST 코칭)</span>
+├── <span class="page">result.html</span>         <span class="comment">← 분석실 (프리체크→생성→QC→결제→크롭)</span>
+├── <span class="page">thankyou.html</span>       <span class="comment">← 수령처 (미리보기 + 갤러리 저장 + SNS 공유)</span>
+├── <span class="page">options.html</span>        <span class="comment">← 옵션 N (추가 촬영, 이벤트, 포털 홈 등)</span>
+│
+├── <span class="shared">shared.js</span>            <span class="comment">← 공통 로직 (인증, 크레딧, 결제, 유틸리티, Store 초기화)</span>
+├── <span class="file">prep.js</span>              <span class="comment">← 준비실 전용 (스타일/성별/연령 선택, 프로필 완성 체크)</span>
+├── <span class="file">camera.js</span>            <span class="comment">← 촬영실 전용 (카메라, REST 코칭 루프, TTS, 캡처)</span>
+├── <span class="file">result.js</span>            <span class="comment">← 분석실 전용 (프리체크, 생성, QC, 결제, 규격 크롭)</span>
+├── <span class="file">thankyou.js</span>          <span class="comment">← 수령처 전용 (사진 표시, 저장, 공유)</span>
+├── <span class="file">options.js</span>           <span class="comment">← 옵션 N 전용 (서비스 카드 네비게이션)</span>
+│
+├── <span class="shared">monk.js</span>              <span class="comment">← 프레임워크 (Store + Pipe REST + Media) — Screen/WS 제거</span>
+├── <span class="shared">config.js</span>            <span class="comment">← 설정 (API 경로, 상수, 규격 테이블, TX 텍스트)</span>
+├── <span class="shared">app.css</span>              <span class="comment">← 스타일 (공통 + 페이지별 — 단일 유지 또는 분리 가능)</span>
+│
+├── <span class="comment">flowchart_00079.html</span>       <span class="comment">← 참조: 00079 모놀리스 플로우차트</span>
+├── <span class="comment">flowchart_page_split.html</span>  <span class="comment">← 이 문서</span>
+├── <span class="comment">framework_design.html</span>      <span class="comment">← 참조: MONK.js 프레임워크 설계</span>
+├── <span class="comment">PAGE_SPLIT_ANALYSIS.md</span>     <span class="comment">← 참조: 페이지 분리 분석 보고서</span>
+│
+└── <span class="comment">(레거시)</span>
+    ├── <span class="comment">index_00079.html</span>   <span class="comment">← 00079 원본 모놀리스 (5000줄, 참조용)</span>
+    └── <span class="comment">app.js (현재)</span>      <span class="comment">← 현재 SPA 로직 (분리 후 각 페이지 JS로 해체)</span>
+
+<span class="dir">MONK_kr/functions/api/</span>        <span class="comment">← CF Pages Function 프록시</span>
+├── <span class="file">idphoto-precheck.js</span>  <span class="comment">← 기존: → idphoto-kr.monkos.ai/api/pre-check</span>
+├── <span class="file">idphoto-generate.js</span>  <span class="comment">← 기존: → idphoto-kr.monkos.ai/api/generate</span>
+├── <span class="file">idphoto-qc.js</span>        <span class="comment">← 기존: → idphoto-kr.monkos.ai/api/qc</span>
+├── <span class="shared">idphoto-coaching.js</span>  <span class="comment">← 신규: → <strong>Gemini API 직접 호출</strong> (서버 경유 안 함, API 키=CF 환경변수)</span>
+└── <span class="shared">credit-use.js</span>        <span class="comment">← 신규: → monkos.ai/api/credits/use (포탈 프록시)</span>
+</pre>
+</div>
+
+<!-- 공유 자원 vs 전용 자원 -->
+<h3>공유 자원 vs 페이지 전용 자원</h3>
+<table class="data-table">
+    <thead>
+        <tr>
+            <th>자원</th>
+            <th>준비실</th>
+            <th>촬영실</th>
+            <th>분석실</th>
+            <th>수령처</th>
+            <th>옵션N</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>shared.js</code></td>
+            <td style="color:#22c55e;">O</td>
+            <td style="color:#22c55e;">O</td>
+            <td style="color:#22c55e;">O</td>
+            <td style="color:#22c55e;">O</td>
+            <td style="color:#22c55e;">O</td>
+        </tr>
+        <tr>
+            <td><code>monk.js</code> Store</td>
+            <td style="color:#22c55e;">O</td>
+            <td style="color:#22c55e;">O</td>
+            <td style="color:#22c55e;">O</td>
+            <td style="color:#22c55e;">O</td>
+            <td style="color:#22c55e;">O</td>
+        </tr>
+        <tr>
+            <td><code>monk.js</code> Pipe REST</td>
+            <td style="color:#555;">-</td>
+            <td style="color:#22c55e;">O</td>
+            <td style="color:#22c55e;">O</td>
+            <td style="color:#555;">-</td>
+            <td style="color:#555;">-</td>
+        </tr>
+        <tr>
+            <td><code>monk.js</code> Media (카메라)</td>
+            <td style="color:#555;">-</td>
+            <td style="color:#22c55e;">O</td>
+            <td style="color:#555;">-</td>
+            <td style="color:#555;">-</td>
+            <td style="color:#555;">-</td>
+        </tr>
+        <tr>
+            <td><code>monk.js</code> Media (crop/toJpeg)</td>
+            <td style="color:#555;">-</td>
+            <td style="color:#555;">-</td>
+            <td style="color:#22c55e;">O</td>
+            <td style="color:#22c55e;">O</td>
+            <td style="color:#555;">-</td>
+        </tr>
+        <tr>
+            <td><code>config.js</code></td>
+            <td style="color:#22c55e;">O</td>
+            <td style="color:#22c55e;">O</td>
+            <td style="color:#22c55e;">O</td>
+            <td style="color:#22c55e;">O</td>
+            <td style="color:#22c55e;">O</td>
+        </tr>
+        <tr>
+            <td><code>app.css</code></td>
+            <td style="color:#22c55e;">O</td>
+            <td style="color:#22c55e;">O</td>
+            <td style="color:#22c55e;">O</td>
+            <td style="color:#22c55e;">O</td>
+            <td style="color:#22c55e;">O</td>
+        </tr>
+        <tr>
+            <td>토스 SDK</td>
+            <td style="color:#555;">-</td>
+            <td style="color:#555;">-</td>
+            <td style="color:#22c55e;">O</td>
+            <td style="color:#555;">-</td>
+            <td style="color:#555;">-</td>
+        </tr>
+        <tr>
+            <td>MediaPipe (얼굴검출)</td>
+            <td style="color:#555;">-</td>
+            <td style="color:#555;">-</td>
+            <td style="color:#22c55e;">O</td>
+            <td style="color:#555;">-</td>
+            <td style="color:#555;">-</td>
+        </tr>
+        <tr>
+            <td>Web Speech API</td>
+            <td style="color:#555;">-</td>
+            <td style="color:#22c55e;">O</td>
+            <td style="color:#555;">-</td>
+            <td style="color:#555;">-</td>
+            <td style="color:#555;">-</td>
+        </tr>
+    </tbody>
+</table>
+
+<!-- monk.js 모듈 변경 -->
+<h3>monk.js 모듈 변경사항</h3>
+<div class="compare">
+    <div class="compare-box compare-old">
+        <div class="compare-label">현재 monk.js (5모듈)</div>
+        <div>Screen — 화면 상태 머신</div>
+        <div>Store — Proxy 반응형 상태 + DOM 바인딩</div>
+        <div>Pipe — REST + <strong>WebSocket</strong></div>
+        <div>Media — 카메라 + 얼굴검출 + 크롭</div>
+        <div>Agent — AI 에이전트 래퍼</div>
+    </div>
+    <div class="compare-box compare-new">
+        <div class="compare-label">분리 후 monk.js (3모듈)</div>
+        <div><s style="color:#555;">Screen — 제거 (MPA로 불필요)</s></div>
+        <div>Store — 유지 (페이지 내 DOM 바인딩)</div>
+        <div>Pipe — REST only (<strong>WS 코드 제거</strong>)</div>
+        <div>Media — 유지 (카메라 + 크롭)</div>
+        <div><s style="color:#555;">Agent — 제거 (REST 코칭으로 단순화)</s></div>
+    </div>
+</div>
+</div>
+
+<!-- ============ 데이터 흐름 ============ -->
+<div class="section">
+<h2>E. sessionStorage 데이터 흐름</h2>
+
+<table class="data-table">
+    <thead>
+        <tr>
+            <th>키</th>
+            <th>타입</th>
+            <th>크기</th>
+            <th>생산</th>
+            <th>소비</th>
+            <th>비고</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>monkos_user</code></td>
+            <td>JSON</td>
+            <td>~200B</td>
+            <td>준비실 (인증)</td>
+            <td>전체</td>
+            <td>기존 사용 중 (변경 없음)</td>
+        </tr>
+        <tr>
+            <td><code>monkos_style</code></td>
+            <td>string</td>
+            <td>~10B</td>
+            <td>준비실</td>
+            <td>촬영실, 분석실</td>
+            <td>'id_photo' | 'resume'</td>
+        </tr>
+        <tr>
+            <td><code>monkos_gender</code></td>
+            <td>string</td>
+            <td>~6B</td>
+            <td>준비실</td>
+            <td>촬영실, 분석실</td>
+            <td>'male' | 'female'</td>
+        </tr>
+        <tr>
+            <td><code>monkos_age</code></td>
+            <td>string</td>
+            <td>~5B</td>
+            <td>준비실</td>
+            <td>촬영실, 분석실</td>
+            <td>'child' | 'teen' | 'adult'</td>
+        </tr>
+        <tr>
+            <td><code>monkos_captured</code></td>
+            <td>base64</td>
+            <td>~100KB</td>
+            <td>촬영실</td>
+            <td>분석실</td>
+            <td>JPEG, 720px, quality 0.8</td>
+        </tr>
+        <tr>
+            <td><code>monkos_cropped</code></td>
+            <td>base64</td>
+            <td>~80KB</td>
+            <td>분석실</td>
+            <td>수령처</td>
+            <td>PNG, 300dpi 규격 크롭</td>
+        </tr>
+    </tbody>
+</table>
+
+<div style="font-size: 11px; color: #888; margin-top: 8px;">
+    합계 ~200KB — sessionStorage 5MB 제한 대비 충분한 여유.
+    정리 시점: 옵션 N에서 "추가 촬영" 시 captured/cropped 클리어.
+</div>
+</div>
+
+<!-- ============ 서버 영향도 ============ -->
+<div class="section">
+<h2>F. 서버 영향도 요약</h2>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 16px 0;">
+    <div style="padding: 12px; background: rgba(34,197,94,0.05); border: 1px solid rgba(34,197,94,0.2); border-radius: 8px;">
+        <div style="font-size: 12px; font-weight: 700; color: #22c55e; margin-bottom: 8px;">서버 변경 없음 (★0원칙 준수)</div>
+        <div style="font-size: 11px; color: #888;">
+            idphoto-kr.monkos.ai (Cloud Run) — 변경 없음<br>
+            monkos.ai (Portal) — 변경 없음<br>
+            기존 CF Functions 3개 — 변경 없음<br>
+            CORS 설정 — 변경 없음
+        </div>
+    </div>
+    <div style="padding: 12px; background: rgba(96,165,250,0.05); border: 1px solid rgba(96,165,250,0.2); border-radius: 8px;">
+        <div style="font-size: 12px; font-weight: 700; color: #60a5fa; margin-bottom: 8px;">CF Function 신규 추가 (2개)</div>
+        <div style="font-size: 11px; color: #888;">
+            <code>idphoto-coaching.js</code> — <strong style="color:#22c55e;">Gemini API 직접 호출</strong> (서버 경유 안 함)<br>
+            <code>credit-use.js</code> — monkos.ai 포탈 프록시<br>
+            <span style="color: #60a5fa;">클라이언트 작업 범위 (MONK_kr/functions/api/)</span>
+        </div>
+    </div>
+</div>
+
+<!-- API 라우팅 확정 테이블 -->
+<h3>API 라우팅 확정 (2/18 작가님 승인)</h3>
+<table class="data-table">
+    <thead>
+        <tr>
+            <th>엔드포인트</th>
+            <th>처리 위치</th>
+            <th>경유</th>
+            <th>이유</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>/api/idphoto-coaching</code></td>
+            <td style="color:#22c55e; font-weight:700;">CF Function → Gemini API 직접</td>
+            <td>서버 경유 안 함</td>
+            <td>서버에 없고 ★0원칙 동결</td>
+        </tr>
+        <tr>
+            <td><code>/api/idphoto-precheck</code></td>
+            <td>CF Function → idphoto-kr 프록시</td>
+            <td>기존 서버 경유</td>
+            <td>이미 서버에 있음</td>
+        </tr>
+        <tr>
+            <td><code>/api/idphoto-generate</code></td>
+            <td>CF Function → idphoto-kr 프록시</td>
+            <td>기존 서버 경유</td>
+            <td>이미 서버에 있음</td>
+        </tr>
+        <tr>
+            <td><code>/api/idphoto-qc</code></td>
+            <td>CF Function → idphoto-kr 프록시</td>
+            <td>기존 서버 경유</td>
+            <td>이미 서버에 있음</td>
+        </tr>
+        <tr>
+            <td><code>/api/credit-use</code></td>
+            <td>CF Function → monkos.ai 프록시</td>
+            <td>포탈 경유</td>
+            <td>포탈 API</td>
+        </tr>
+    </tbody>
+</table>
+<div style="font-size: 10px; color: #555; margin-top: 8px;">
+    코칭용 Gemini API 키: CF Pages 환경변수로 관리 (클라이언트 비노출, wrangler.toml의 [vars] 또는 대시보드 설정)
+</div>
+</div>
+
+<footer style="margin-top: 40px; padding: 16px 0; border-top: 1px solid #222; font-size: 10px; color: #444; text-align: center;">
+    00079 (93581f3) → 페이지 분리 설계 | 생성: 2026-02-18 막내1 (지시: 쌍아) | 기반: PAGE_SPLIT_ANALYSIS.md
+</footer>
+
+</body>
+</html>
