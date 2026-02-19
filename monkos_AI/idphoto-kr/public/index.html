@@ -358,73 +358,6 @@
         #qc-badge.fail { background: rgba(239,68,68,0.15); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
         #qc-badge.pending { background: rgba(245,158,11,0.15); color: #f59e0b; border: 1px solid rgba(245,158,11,0.3); }
 
-        /* QC 컨시어지 챗창 */
-        .qc-chat {
-            margin: 16px 0;
-            background: #0a0a0a;
-            border: 1px solid #1a1a1a;
-            border-radius: 16px;
-            overflow: hidden;
-        }
-        .qc-chat-header {
-            padding: 12px 16px;
-            background: linear-gradient(135deg, rgba(167,139,250,0.1), rgba(139,92,246,0.05));
-            border-bottom: 1px solid #1a1a1a;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .qc-chat-icon { font-size: 18px; }
-        .qc-chat-title { font-size: 13px; font-weight: 600; color: #a78bfa; }
-        .qc-chat-messages {
-            padding: 12px 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .qc-msg {
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            animation: qc-msg-in 0.3s ease-out;
-        }
-        @keyframes qc-msg-in {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .qc-msg-avatar {
-            width: 32px; height: 32px;
-            border-radius: 10px;
-            background: linear-gradient(135deg, #a78bfa, #8b5cf6);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 14px; flex-shrink: 0;
-        }
-        .qc-msg-bubble {
-            flex: 1; padding: 12px 14px;
-            border-radius: 14px; border-top-left-radius: 4px;
-            font-size: 14px; line-height: 1.6;
-        }
-        .qc-msg-bubble.pass {
-            background: rgba(34,197,94,0.12);
-            border: 1px solid rgba(34,197,94,0.25);
-        }
-        .qc-msg-bubble.fail {
-            background: rgba(239,68,68,0.12);
-            border: 1px solid rgba(239,68,68,0.25);
-        }
-        .qc-msg-bubble .qc-status { font-weight: 700; }
-        .qc-msg-bubble.pass .qc-status { color: #22c55e; }
-        .qc-msg-bubble.fail .qc-status { color: #ef4444; }
-        .qc-tags { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; }
-        .qc-tag {
-            padding: 4px 10px; border-radius: 8px;
-            background: rgba(255,255,255,0.06);
-            font-size: 11px; color: #888;
-        }
-        .qc-tag.good { color: #22c55e; background: rgba(34,197,94,0.1); }
-        .qc-tag.warn { color: #f59e0b; background: rgba(245,158,11,0.1); }
-        .qc-tag.bad { color: #ef4444; background: rgba(239,68,68,0.1); }
-
         /* 규격 크롭 결과 */
         #spec-result {
             display: none; padding: 16px;
@@ -1049,14 +982,6 @@
                     <span class="spec-tag" id="spec-px">-</span>
                 </div>
 
-                <!-- QC 컨시어지 챗창 -->
-                <div id="qc-chat" class="qc-chat" style="display:none;">
-                    <div class="qc-chat-header">
-                        <span class="qc-chat-icon">🤖</span>
-                        <span class="qc-chat-title">AI 검수 결과</span>
-                    </div>
-                    <div class="qc-chat-messages" id="qc-chat-messages"></div>
-                </div>
             </div>
 
             <!-- Step 2 버튼 -->
@@ -1159,7 +1084,7 @@
             btnStarting: '카메라 시작 중...',
             step1: 'Step 1: AI 코칭',
             step2: 'Step 2: 촬영 확인',
-            step3: 'Step 3: AI 생성 + QC',
+            step3: 'Step 3: AI 생성',
             step4: 'Step 4: 클로즈업',
             resultConfirm: '촬영 확인',
             resultConfirmSub: '촬영한 사진을 확인해 주세요',
@@ -1167,13 +1092,8 @@
             generating: '증명사진 생성 중...',
             generatingSub: 'MONKOS가 처리 중입니다',
             genLoading: '생성 중...',
-            qcChecking: 'QC 검증 중...',
-            qcVerifying: '품질 검증 중...',
-            qcVerifyingSub: '품질을 검증하고 있습니다',
             resultDone: '완료!',
             resultDoneSub: '증명사진이 준비되었습니다',
-            resultFail: 'QC 불합격',
-            resultFailSub: '다시 시도해 주세요',
             retakeRecommend: '재촬영 권장',
             genFail: '생성 실패',
             specDone: '클로즈업 완료',
@@ -1896,7 +1816,7 @@
             log('재촬영');
         }
 
-        // === Step 2.5: 사전분석 → Step 3: 생성 + QC ===
+        // === Step 2.5: 사전분석 → Step 3: 생성 ===
         async function confirmAndGenerate() {
             if (!capturedImageData) return;
 
@@ -1948,30 +1868,19 @@
                     userId: userId,
                 });
 
-                // 생성 성공 → QC 시작
+                // 생성 성공 → 바로 결과 표시 + 다운로드 활성화
                 generatedImageData = genResult.image;
                 document.getElementById('photo-generated').src = genResult.image;
                 document.getElementById('photo-generated-wrap').style.display = 'block';
-                document.getElementById('result-title').textContent = t('qcVerifying');
-                document.getElementById('result-subtitle').textContent = t('qcVerifyingSub');
-                document.getElementById('qc-badge').innerHTML = `<span class="spinner"></span> ${t('qcChecking')}`;
-                log('생성 완료 → QC 시작');
-
-                const origBase64 = capturedImageData.includes(',') ? capturedImageData.split(',')[1] : capturedImageData;
-                const genBase64 = genResult.image.includes(',') ? genResult.image.split(',')[1] : genResult.image;
-
-                try {
-                    const qcResult = await apiPost('/api/qc', {
-                        original: origBase64,
-                        generated: genBase64,
-                        gender: selectedGender,
-                        age: selectedAge,
-                    });
-                    showQCResult(qcResult);
-                    log(`QC: ${JSON.stringify(qcResult).substring(0, 100)}`);
-                } catch (qcErr) {
-                    showQCError(qcErr.error || qcErr.message || 'QC 실패');
-                }
+                document.getElementById('qc-badge').style.display = 'none';
+                document.getElementById('result-title').textContent = t('resultDone');
+                document.getElementById('result-subtitle').textContent = t('resultDoneSub');
+                document.getElementById('step3-actions').style.display = 'flex';
+                document.getElementById('btn-download').disabled = false;
+                document.getElementById('controls').classList.remove('active');
+                document.getElementById('log').style.display = 'none';
+                document.getElementById('step-label').textContent = t('resultDone');
+                log('생성 완료');
             } catch (err) {
                 if (err.status === 402) {
                     // 크레딧 부족
@@ -1986,84 +1895,6 @@
             }
         }
 
-        // QC 챗창 메시지 생성
-        function addQCChatMessage(result, passed, similarity) {
-            const container = document.getElementById('qc-chat-messages');
-            container.innerHTML = '';
-            document.getElementById('qc-chat').style.display = 'block';
-
-            const mainHtml = passed ? generatePassMessage(result, similarity) : generateFailMessage(result, similarity);
-            container.appendChild(createQCBubble(mainHtml, passed, '🤖'));
-
-            if (!passed) {
-                setTimeout(() => {
-                    container.appendChild(createQCBubble(generateFailGuide(result), passed, '💡'));
-                }, 300);
-            }
-        }
-
-        function createQCBubble(html, passed, icon) {
-            const div = document.createElement('div');
-            div.className = 'qc-msg';
-            div.innerHTML = `<div class="qc-msg-avatar">${icon}</div><div class="qc-msg-bubble ${passed ? 'pass' : 'fail'}">${html}</div>`;
-            return div;
-        }
-
-        function generatePassMessage(result, similarity) {
-            const qual = similarity >= 90 ? '완벽합니다!' : similarity >= 80 ? '자연스럽게 보정되었어요.' : '규격을 충족했습니다.';
-            return `<span class="qc-status">검수 완료!</span><br>${qual}
-                <div class="qc-tags">
-                    <span class="qc-tag ${similarity >= 80 ? 'good' : 'warn'}">유사도 ${similarity}%</span>
-                    <span class="qc-tag good">${result.quality || '품질 양호'}</span>
-                </div>`;
-        }
-
-        function generateFailMessage(result, similarity) {
-            let reason = '원본과 유사도가 낮습니다.';
-            let tag = `유사도 ${similarity}%`;
-            if (result.gender_match === false) { reason = '외형이 원본과 다르게 변환되었습니다.'; tag = '성별 외형 불일치'; }
-            else if (result.age_match === false) { reason = '연령대가 원본과 크게 달라 보입니다.'; tag = '연령대 불일치'; }
-            else if (result.over_retouched === true) { reason = '얼굴이 과하게 보정되었습니다.'; tag = '과보정 감지'; }
-            return `<span class="qc-status">재촬영 권장</span><br>${reason}
-                <div class="qc-tags"><span class="qc-tag bad">${tag}</span></div>`;
-        }
-
-        function generateFailGuide(result) {
-            if (result.gender_match === false || result.age_match === false) {
-                return '<strong>촬영 팁</strong><br>• 자연광에서 정면을 바라봐 주세요<br>• 얼굴에 그림자가 지지 않게 해주세요';
-            }
-            if (result.over_retouched === true) {
-                return '<strong>촬영 팁</strong><br>• 카메라 렌즈를 깨끗이 닦아주세요<br>• 화질이 좋은 환경에서 촬영해 주세요';
-            }
-            return '<strong>촬영 팁</strong><br>• 밝은 곳에서 정면을 바라봐 주세요<br>• "다시 찍기"를 눌러 재촬영하세요';
-        }
-
-        function showQCResult(result) {
-            const passed = result.identity === 'PASS' || result.same_person === true;
-            const similarity = result.similarity || '?';
-
-            // 기존 배지 숨김
-            document.getElementById('qc-badge').style.display = 'none';
-
-            // 챗창에 메시지 추가
-            addQCChatMessage(result, passed, similarity);
-
-            document.getElementById('result-title').textContent = passed ? t('resultDone') : t('resultFail');
-            document.getElementById('result-subtitle').textContent = passed ? t('resultDoneSub') : t('resultFailSub');
-
-            document.getElementById('step3-actions').style.display = 'flex';
-            document.getElementById('btn-download').disabled = !passed;
-            // 생성 완료 시 촬영 버튼과 로그 숨김
-            document.getElementById('controls').classList.remove('active');
-            document.getElementById('log').style.display = 'none';
-
-            if (passed) {
-                document.getElementById('step-label').textContent = t('resultDone');
-            }
-
-            log(`QC: ${passed ? 'PASS' : 'FAIL'} (${similarity}%)`);
-        }
-
         function showGenerateError(error) {
             document.getElementById('qc-badge').className = 'fail';
             document.getElementById('qc-badge').textContent = t('genFail') + ': ' + error;
@@ -2072,16 +1903,6 @@
             document.getElementById('controls').classList.remove('active');
             document.getElementById('log').style.display = 'none';
             log('생성 에러: ' + error);
-        }
-
-        function showQCError(error) {
-            document.getElementById('qc-badge').className = 'fail';
-            document.getElementById('qc-badge').textContent = 'QC: ' + error;
-            document.getElementById('step3-actions').style.display = 'flex';
-            document.getElementById('btn-download').disabled = false;
-            document.getElementById('controls').classList.remove('active');
-            document.getElementById('log').style.display = 'none';
-            log('QC 에러: ' + error);
         }
 
         function regenerate() {
