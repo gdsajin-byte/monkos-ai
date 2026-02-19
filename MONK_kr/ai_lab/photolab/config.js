@@ -18,7 +18,7 @@ export const API = {
 // 크레딧 비용
 export const CREDIT_COST = {
   generate: 1,
-  download: 10,
+  download: 8,
 };
 
 // 토스페이먼츠 (KR 전용)
