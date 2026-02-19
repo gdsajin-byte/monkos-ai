@@ -14,9 +14,9 @@ const documents = [
     title: '크레딧 시스템 안내',
     content: `MONKOS는 크레딧 기반으로 운영됩니다.
 - AI 증명사진 생성: 1크레딧 소모
-- 고화질 다운로드: 10크레딧 소모
-- SNS 공유 보너스: 10크레딧 지급 (1회 한정)
-- 신규 가입 시 무료 크레딧 30개 지급
+- 고화질 다운로드: 8크레딧 소모
+- SNS 공유 보너스: SNS 공유 또는 Google 리뷰 작성 시 10크레딧 지급 (1회 한정)
+- 매일 선착순 30명 크레딧 무료 충전 이벤트 중: 10크레딧 무료 지급 (정오 리셋)
 크레딧은 구매 후 환불 조건을 충족하면 환불 가능합니다.`,
     keywords: ['크레딧', 'credit', 'クレジット', '포인트', 'point', '생성', '다운로드', '공유', '보너스', '무료'],
     category: 'billing',
@@ -25,12 +25,13 @@ const documents = [
     id: 'credit_purchase',
     title: '크레딧 구매 방법',
     content: `크레딧 구매 옵션:
-- 10크레딧: $10 (USD)
-- 30크레딧: $25 (USD) — 17% 할인
+- 1크레딧: $1 (USD) — 소액 결제 가능
+- 10크레딧: $9 (USD) — 10% 할인
+- 30크레딧: $25 (USD) — 17% 할인 (추천)
 - 50크레딧: $40 (USD) — 20% 할인
-결제 방법: Lemon Squeezy (글로벌 카드 결제)
-한국 사용자: Toss Payments (카드/계좌이체)
-결제 후 즉시 크레딧이 반영됩니다. 반영이 안 될 경우 몇 분 대기 후 새로고침 해주세요.`,
+결제 방법: Lemon Squeezy (글로벌 카드 결제) 또는 한국 사용자: Toss Payments (카드/계좌이체)
+결제 후 즉시 크레딧이 반영됩니다. 반영이 안 될 경우 몇 분 대기 후 새로고침 해주세요.
+참고: 매일 선착순 30명에게 10크레딧을 무료 충전해 드리고 있습니다!`,
     keywords: ['구매', 'purchase', '購入', '결제', 'payment', '支払い', '가격', 'price', '料金', 'toss', 'lemon'],
     category: 'billing',
   },
@@ -41,8 +42,8 @@ const documents = [
 - 구매 후 7일 이내 + 크레딧 완전 미사용 → 전액 환불
 - 1회라도 사용한 경우 → 환불 불가 (디지털 콘텐츠 특성)
 - 시스템 장애로 크레딧이 소모된 경우 → 환불이 아닌 크레딧 자동 복구
-환불 신청: gdsajin@gmail.com 으로 이메일 (구매 이메일, 구매일, 사유 기재)
-처리 기간: 영업일 기준 3~5일`,
+환불 신청: info@monkos.ai 으로 이메일 (구매 이메일, 구매일, 사유 기재)
+처리 기간: 신청 후 5영업일 이내 심사, 환불 결정일로부터 3영업일 이내 처리`,
     keywords: ['환불', 'refund', '返金', '취소', 'cancel', 'キャンセル', '돈', 'money', '반환'],
     category: 'billing',
   },
@@ -63,14 +64,14 @@ const documents = [
   {
     id: 'login_issue',
     title: '로그인 문제 해결',
-    content: `MONKOS는 Google 계정 로그인만 지원합니다.
+    content: `MONKOS는 카카오, LINE, Google 계정으로 로그인할 수 있습니다.
 로그인이 안 될 경우:
 1. 브라우저 캐시/쿠키 삭제 후 재시도
 2. 시크릿/프라이빗 모드에서 시도
 3. 다른 브라우저(Chrome 권장)에서 시도
 4. 팝업 차단이 해제되어 있는지 확인
-5. 위 방법으로 해결 안 될 경우 gdsajin@gmail.com 으로 문의`,
-    keywords: ['로그인', 'login', 'ログイン', '접속', '계정', 'account', 'アカウント', 'google', '구글'],
+5. 위 방법으로 해결 안 될 경우 info@monkos.ai 으로 문의`,
+    keywords: ['로그인', 'login', 'ログイン', '접속', '계정', 'account', 'アカウント', 'google', '구글', '카카오', 'kakao', 'line', 'ライン'],
     category: 'technical',
   },
   {
@@ -80,7 +81,7 @@ const documents = [
 - 포털 (메인): https://monkos.ai
 - AI 증명사진 (일본어): https://idphoto-jp.monkos.ai/app
 - AI 증명사진 (한국어): https://idphoto-kr.monkos.ai/app
-- 고객지원 이메일: gdsajin@gmail.com
+- 고객지원 이메일: info@monkos.ai
 - 텔레그램 CS: @monkos_support_bot`,
     keywords: ['url', 'link', 'リンク', '링크', '주소', 'address', 'サイト', '사이트', 'website'],
     category: 'general',
@@ -89,7 +90,7 @@ const documents = [
     id: 'account_deletion',
     title: '계정 삭제 요청',
     content: `계정 삭제를 원하시면:
-- gdsajin@gmail.com 으로 이메일 요청
+- info@monkos.ai 으로 이메일 요청
 - 제목: "계정 삭제 요청"
 - 내용: 가입 시 사용한 Google 이메일 주소 기재
 - 처리 기간: 영업일 기준 5~7일
