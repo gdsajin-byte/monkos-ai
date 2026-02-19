@@ -8,7 +8,7 @@
 set -e
 
 # 설정
-PROJECT_DIR="/Users/developer/monk_project "
+PROJECT_DIR="/Users/developer/monk_project"
 WRANGLER_DIR="$PROJECT_DIR/MONK_kr"
 GCS_BUCKET="gs://monk-project/visitor_data/visitors"
 DATE=$(date +%Y-%m-%d)

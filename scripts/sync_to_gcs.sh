@@ -7,7 +7,7 @@ set -e
 # 설정
 PROJECT_ID="gen-lang-client-0105707468"
 BUCKET_NAME="monk-ai-images"  # 기존 버킷 활용
-LOCAL_BASE="/Users/developer/monk_project /_saga"
+LOCAL_BASE="/Users/developer/monk_project/_saga"
 GCS_BASE="gs://${BUCKET_NAME}/raw_data"  # 하위 폴더 사용
 
 echo "🚀 =========================================="
