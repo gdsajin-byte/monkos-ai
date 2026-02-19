@@ -96,12 +96,11 @@ export async function onRequestPost(context) {
         body: JSON.stringify({
           contents: [{
             parts: [
-              { inlineData: { mimeType: 'image/png', data: base64Data } },
+              { inlineData: { mimeType: 'image/jpeg', data: base64Data } },
               { text: instruction },
             ],
           }],
           generationConfig: {
-            responseModalities: ['TEXT', 'IMAGE'],
             imageConfig: { aspectRatio: '3:4' },
           },
           safetySettings: [
