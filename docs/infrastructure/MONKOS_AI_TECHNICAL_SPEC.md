@@ -315,6 +315,28 @@ ln -s MONK_kr/functions functions
 **원인:** idgen.js에 `responseModalities: ['TEXT', 'IMAGE']` 포함 — photo.js(동작)에는 없음
 **해결:** responseModalities 제거 + mimeType `'image/jpeg'`로 변경
 
+### 6-5. 2/19 장애 A — monk.kr photo.js 불능
+
+**원인:** `234c914` (CF Workers 자체 엔진 구현) → Functions 번들 전체 깨짐
+- 신규 Functions 파일(idgen.js, precheck.js, qc.js)이 빌드/런타임을 깨뜨려 photo.js 포함 전체 Functions 불능
+- CF Pages 자동배포가 main 머지 시 프로덕션 직격
+- **롤백 대상:** `fe2ad97`
+
+### 6-6. 2/19 장애 B — idphoto-kr 카메라 비활성 (79 망령 3차)
+
+**원인:** `27a91eb` (토스 SDK 스캐폴딩) + `3a83eec` (OAuth 이동) → index.html 수정 → 카메라 초기화 로직 사이드이펙트
+- 1차: 2/16 — 4연속 실패
+- 2차: 2/17 — 8연속 실패
+- 3차: 2/19 — 토스 SDK + OAuth 수정 → 카메라 깨짐
+- **영향:** dev 배포만 (prod는 별도 deploy.sh prod 필요)
+- **근본 원인:** 쌍아 0원칙 위반 지시서 — monkos_AI/idphoto-kr/ 수정 금지였으나 수정 지시
+
+### CF Pages 자동배포 주의사항
+
+- monk.kr (CF Pages)는 develop/main push 시 자동배포
+- MONK_kr/functions/api/ 파일 추가/삭제 시 Functions 번들 전체 영향
+- 신규 Functions 파일은 반드시 Preview 배포에서 검증 후 main 머지
+
 ---
 
 ## 7. 프로덕션 현황 (2026-02-19 기준)
