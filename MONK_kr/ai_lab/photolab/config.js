@@ -6,10 +6,10 @@
 // API 설정
 export const API = {
   PORTAL_URL: 'https://monkos.ai',
-  // photolab API: CF Pages Function 개별 프록시 경유 → idphoto-kr.monkos.ai
-  PRECHECK: '/api/idphoto-precheck',
-  GENERATE: '/api/idphoto-generate',
-  QC: '/api/idphoto-qc',
+  // photolab API: CF Workers 자체 엔진 (Gemini API 직접 호출)
+  PRECHECK: '/api/precheck',
+  GENERATE: '/api/idgen',
+  QC: '/api/qc',
   CREDIT_USE: '/api/idphoto-credit-use',
   // 코칭: CF Function → Gemini REST 직접 (서버 경유 안 함)
   COACHING: '/api/idphoto-coaching',
