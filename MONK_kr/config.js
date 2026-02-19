@@ -17,7 +17,7 @@ window.MONK_CONFIG = {
 
     // 결제 (토스페이먼츠)
     PAYMENT: {
-        TOSS_CLIENT_KEY: 'live_ck_OyL0qZ4G1VODAxdNWDkroWb2MQYg',
+        TOSS_CLIENT_KEY: '', // TODO: monkos 정식 연동 후 설정
         TOSS_SDK_URL: 'https://js.tosspayments.com/v1/payment'
     },
 

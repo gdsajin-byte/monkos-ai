@@ -1,9 +1,9 @@
 // MONK 토스페이먼츠 결제 API
 // 테스트 모드: 실제 결제 X, 결제 플로우 테스트만
 
-// 토스페이먼츠 테스트 키 (공개 가능)
-const TOSS_TEST_CLIENT_KEY = 'test_ck_D5GePWvyJnrK0W0k6q8gLzN97Eoq';
-const TOSS_TEST_SECRET_KEY = 'test_sk_zXLkKEypNArWmo50nX3lmeaxYG5R';
+// TODO: env.TOSS_SECRET_KEY로 전환 예정 (monkos 정식 연동 시)
+const TOSS_TEST_CLIENT_KEY = '';
+const TOSS_TEST_SECRET_KEY = '';
 
 export async function onRequestPost(context) {
     const { request, env } = context;
