@@ -259,6 +259,7 @@
         let lastFrameTs = 0;
         let screenshotCount = 0;
         let chunkBuffers = {};    // 청크 조립용 버퍼
+        let pendingCandidates = []; // ICE candidate 버퍼
 
         const mirrorImg = document.getElementById('mirror-img');
         const waitingEl = document.getElementById('waiting');
@@ -402,6 +403,16 @@
             }
         }
 
+        // --- 대기 화면 복원 ---
+        function showWaiting() {
+            waitingEl.style.display = '';
+            mirrorImg.src = '';
+            document.getElementById('s-fps').textContent = '-';
+            document.getElementById('s-latency').textContent = '-';
+            document.getElementById('s-resolution').textContent = '-';
+            document.getElementById('s-size').textContent = '-';
+        }
+
         // --- 상태 초기화 (재연결 시) ---
         function resetState() {
             if (dc) { try { dc.close(); } catch {} dc = null; }
@@ -412,12 +423,14 @@
             fpsCounter = 0;
             lastFrameTs = 0;
             chunkBuffers = {};
+            pendingCandidates = [];
             setStatus('rtc', 'disconnected', 'DataChannel 대기');
             document.getElementById('elapsed').textContent = '--:--';
         }
 
         // --- WebSocket 시그널링 ---
         function connectSignaling() {
+            if (ws && ws.readyState <= 1) return; // 이미 연결 중이면 중복 방지
             ws = new WebSocket(`wss://${WS_HOST}`);
             setStatus('ws', 'connecting', '시그널링 연결 중...');
 
@@ -438,9 +451,15 @@
                     } else if (msg.type === 'ice-candidate') {
                         if (pc && pc.remoteDescription) {
                             await pc.addIceCandidate(new RTCIceCandidate(msg.candidate));
+                        } else {
+                            pendingCandidates.push(msg.candidate);
                         }
                     } else if (msg.type === 'peer-joined') {
                         log('미러 송신자 접속 감지');
+                    } else if (msg.type === 'peer-left') {
+                        log('미러 송신자 끊김 — 재접속 대기');
+                        resetState();
+                        showWaiting();
                     }
                 } catch (err) {
                     log('오류: ' + err.message);
@@ -450,8 +469,8 @@
             ws.onclose = () => {
                 setStatus('ws', 'disconnected', '시그널링 끊김');
                 resetState();
-                log('시그널링 끊김 — 3초 후 재연결');
-                setTimeout(connectSignaling, 3000);
+                log('시그널링 끊김 — 1초 후 재연결');
+                setTimeout(connectSignaling, 1000);
             };
 
             ws.onerror = () => {
@@ -498,10 +517,11 @@
                 };
 
                 dc.onclose = () => {
-                    log('DataChannel 닫힘');
+                    log('DataChannel 닫힘 — 재접속 대기');
                     setStatus('rtc', 'disconnected', 'DataChannel 끊김');
                     if (elapsedTimer) clearInterval(elapsedTimer);
                     if (fpsTimer) clearInterval(fpsTimer);
+                    showWaiting();
                 };
             };
 
@@ -516,7 +536,9 @@
                 if (pc.connectionState === 'connected') {
                     setStatus('rtc', 'connected', 'P2P 연결됨');
                 } else if (pc.connectionState === 'failed' || pc.connectionState === 'disconnected') {
-                    setStatus('rtc', 'disconnected', 'P2P 끊김');
+                    // 온디맨드: 정리만, 재연결 안 함 (클라이언트가 재접속하면 새 Offer 수신)
+                    setStatus('rtc', 'disconnected', 'P2P 끊김 — 재접속 대기');
+                    showWaiting();
                 }
             };
 
@@ -527,6 +549,12 @@
             await pc.setLocalDescription(answer);
             ws.send(JSON.stringify(answer));
             log('Answer 전송');
+
+            // 보류된 ICE candidate 처리
+            for (const c of pendingCandidates) {
+                await pc.addIceCandidate(new RTCIceCandidate(c));
+            }
+            pendingCandidates = [];
         }
 
         // --- 버튼 이벤트 ---
@@ -562,6 +590,16 @@
             document.querySelectorAll('#quality-group .option-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             sendCommand({ type: 'set-quality', quality: parseFloat(btn.dataset.quality) });
+        });
+
+        // --- 포그라운드 복귀 시 즉시 재연결 (Safari 백그라운드 suspension 대응) ---
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                if (!ws || ws.readyState > 1) {
+                    log('포그라운드 복귀 → 즉시 재연결');
+                    connectSignaling();
+                }
+            }
         });
 
         // --- 초기화 ---

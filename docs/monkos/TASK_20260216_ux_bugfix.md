@@ -44,36 +44,37 @@ iOS Safari에서 `<a download>`는 data URL에 대해 **아무 동작도 안 하
 
 ```javascript
 async function autoSave(jpegUrl) {
-    // 1. Web Share API (iOS Safari 등)
-    if (navigator.share && navigator.canShare) {
-        try {
-            const res = await fetch(jpegUrl);
-            const blob = await res.blob();
-            const file = new File([blob], `monkos_photo_${Date.now()}.jpg`, { type: 'image/jpeg' });
-            if (navigator.canShare({ files: [file] })) {
-                await navigator.share({ files: [file], title: 'MONKOS AI 증명사진' });
-                return true;
-            }
-        } catch (e) {
-            if (e.name === 'AbortError') return false;
-        }
-    }
-
-    // 2. <a download> — iOS에서는 data URL 다운로드 불가 → 스킵
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-                  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-    if (isIOS) return false;
-
-    // 3. 데스크탑/Android: <a download> 자동 클릭
+  // 1. Web Share API (iOS Safari 등)
+  if (navigator.share && navigator.canShare) {
     try {
-        const a = document.createElement('a');
-        a.href = jpegUrl;
-        a.download = `monkos_photo_${Date.now()}.jpg`;
-        a.click();
+      const res = await fetch(jpegUrl);
+      const blob = await res.blob();
+      const file = new File([blob], `monkos_photo_${Date.now()}.jpg`, { type: 'image/jpeg' });
+      if (navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: 'MONKOS AI 증명사진' });
         return true;
+      }
     } catch (e) {
-        return false;
+      if (e.name === 'AbortError') return false;
     }
+  }
+
+  // 2. <a download> — iOS에서는 data URL 다운로드 불가 → 스킵
+  const isIOS =
+    /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  if (isIOS) return false;
+
+  // 3. 데스크탑/Android: <a download> 자동 클릭
+  try {
+    const a = document.createElement('a');
+    a.href = jpegUrl;
+    a.download = `monkos_photo_${Date.now()}.jpg`;
+    a.click();
+    return true;
+  } catch (e) {
+    return false;
+  }
 }
 ```
 
@@ -110,29 +111,29 @@ async function autoSave(jpegUrl) {
 
 ```javascript
 function showSaveGuide() {
-    document.getElementById('tySaveGuide').style.display = '';
-    document.getElementById('tyCompleteMsg').style.display = 'none';
+  document.getElementById('tySaveGuide').style.display = '';
+  document.getElementById('tyCompleteMsg').style.display = 'none';
 
-    // 공유 섹션: 2초 후 표시 (저장 대기 중에도 접근 가능하도록)
-    setTimeout(() => {
-        const shareSection = document.querySelector('.ty-share-section');
-        if (shareSection && shareSection.style.opacity === '0') {
-            shareSection.style.opacity = '1';
-            shareSection.style.animation = 'fadeInUp 0.4s ease';
-        }
-    }, 2000);
+  // 공유 섹션: 2초 후 표시 (저장 대기 중에도 접근 가능하도록)
+  setTimeout(() => {
+    const shareSection = document.querySelector('.ty-share-section');
+    if (shareSection && shareSection.style.opacity === '0') {
+      shareSection.style.opacity = '1';
+      shareSection.style.animation = 'fadeInUp 0.4s ease';
+    }
+  }, 2000);
 
-    const tyPhoto = document.getElementById('ty-photo');
-    const onSaved = () => {
-        showComplete();
-        tyPhoto.removeEventListener('contextmenu', onSaved);
-        document.removeEventListener('visibilitychange', onVisChange);
-    };
-    const onVisChange = () => {
-        if (document.hidden) onSaved();
-    };
-    tyPhoto.addEventListener('contextmenu', onSaved);
-    document.addEventListener('visibilitychange', onVisChange);
+  const tyPhoto = document.getElementById('ty-photo');
+  const onSaved = () => {
+    showComplete();
+    tyPhoto.removeEventListener('contextmenu', onSaved);
+    document.removeEventListener('visibilitychange', onVisChange);
+  };
+  const onVisChange = () => {
+    if (document.hidden) onSaved();
+  };
+  tyPhoto.addEventListener('contextmenu', onSaved);
+  document.addEventListener('visibilitychange', onVisChange);
 }
 ```
 
@@ -148,6 +149,7 @@ function showSaveGuide() {
 ### 원인
 
 `#thankyou-screen.active`가 2군데에서 선언됨:
+
 - **KR line 463** / **JP line 465**: `#thankyou-screen.active { display: flex; }`
 - **KR line 533~536** / **JP line 535~538**: `#thankyou-screen.active { display: flex; animation: tyScreenIn 0.3s ease-out; }`
 
@@ -156,19 +158,23 @@ function showSaveGuide() {
 ### 수정
 
 **KR line 463** — 아래 1줄 삭제:
+
 ```css
 /* 삭제 대상 */
-#thankyou-screen.active { display: flex; }
+#thankyou-screen.active {
+  display: flex;
+}
 ```
 
 **JP line 465** — 동일하게 삭제.
 
 나머지 (line 533~536 / 535~538) 유지:
+
 ```css
 /* 이것만 남김 */
 #thankyou-screen.active {
-    display: flex;
-    animation: tyScreenIn 0.3s ease-out;
+  display: flex;
+  animation: tyScreenIn 0.3s ease-out;
 }
 ```
 
@@ -201,6 +207,7 @@ function showSaveGuide() {
 ---
 
 ## 커밋 메시지
+
 ```
 UX 버그 수정: iOS 거짓 완료 + 공유 섹션 숨김 + CSS 중복 정리
 ```

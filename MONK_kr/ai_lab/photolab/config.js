@@ -6,10 +6,13 @@
 // API 설정
 export const API = {
   PORTAL_URL: 'https://monkos.ai',
-  // photolab API: CF Pages Function 개별 프록시 경유 → idphoto-kr.monkos.ai
-  PRECHECK: '/api/idphoto-precheck',
-  GENERATE: '/api/idphoto-generate',
-  QC: '/api/idphoto-qc',
+  // photolab API: CF Workers 자체 엔진 (Gemini API 직접 호출)
+  PRECHECK: '/api/precheck',
+  GENERATE: '/api/idgen',
+  QC: '/api/qc',
+  CREDIT_USE: '/api/idphoto-credit-use',
+  // 코칭: CF Function → Gemini REST 직접 (서버 경유 안 함)
+  COACHING: '/api/idphoto-coaching',
 };
 
 // 크레딧 비용
@@ -24,7 +27,7 @@ export const TOSS_CLIENT_KEY = 'test_ck_6bJXmgo28eBJk12vvDAW3LAnGKWx';
 // 캡처 설정
 export const MAX_CAPTURE_SIZE = 720;
 export const COACHING_DISPLAY_MS = 10000;
-export const FRAME_INTERVAL_MS = 1000;
+export const FRAME_INTERVAL_MS = 500;
 export const CAPTURE_SIZE = 512;
 
 // DPI 및 변환 함수

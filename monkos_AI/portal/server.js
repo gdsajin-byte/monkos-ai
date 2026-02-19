@@ -237,6 +237,27 @@ Telegramを通じてお客様対応を行います。
 - 法的判断・法的助言は絶対にしない（「法律の専門家にご相談ください」と案内）
 - 確信が持てない情報は回答せず、メール(gdsajin@gmail.com)での確認を案内`;
 
+// === 촬영 준비 코치 시스템 프롬프트 ===
+const PREP_SYSTEM_PROMPT = `당신은 MONKOS AI의 촬영 준비 코치입니다.
+증명사진 촬영을 위한 준비 과정(용도 선택, 의상, 헤어, 표정 등)을 안내합니다.
+
+[역할]
+- 사용자가 촬영 목적(여권/이력서/학생증 등)을 선택하도록 안내
+- 선택한 용도에 맞는 의상, 헤어스타일, 표정, 배경 가이드 제공
+- 한국/일본 증명사진 규격 차이 안내 가능
+- 촬영 팁(조명, 각도, 눈 위치) 제공
+
+[대화 스타일]
+- 친절하고 간결한 코치 톤 (3문 이내)
+- 사용자 언어에 맞춰 응답 (한국어/일본어/영어)
+- 선택지를 제시할 때는 번호로 안내
+- 촬영과 무관한 질문은 부드럽게 거절
+
+[중요]
+- Gemini, Google AI 등 내부 기술명 언급 금지
+- "MONKOS AI" 또는 "AI 코치"로만 표현
+- 법률/환불 관련은 [참고 지식]에서 정확히 안내`;
+
 // === CS 지식 RAG (Firestore cs_knowledge) ===
 const csKnowledgeCollection = firestore.collection('cs_knowledge');
 let csKnowledgeCache = [];
@@ -304,47 +325,6 @@ function cleanupCsHistories() {
 }
 setInterval(cleanupCsHistories, 10 * 60 * 1000);
 
-async function chatWithGeminiCS(chatId, userMessage) {
-  let history = csHistories.get(chatId);
-  if (!history) {
-    history = { messages: [], lastAccess: Date.now() };
-    csHistories.set(chatId, history);
-  }
-  history.lastAccess = Date.now();
-
-  // RAG: 지식 로드 + 관련 문서 검색
-  await loadCsKnowledge();
-  const ragDocs = searchCsKnowledge(userMessage);
-  let ragContext = '';
-  if (ragDocs.length > 0) {
-    ragContext = '\n\n[참고 지식]\n' + ragDocs.map(d =>
-      `【${d.title}】\n${d.content}`
-    ).join('\n\n');
-  }
-
-  history.messages.push({ role: 'user', parts: [{ text: userMessage }] });
-
-  if (history.messages.length > 20) {
-    history.messages = history.messages.slice(-20);
-  }
-
-  const systemPrompt = CS_SYSTEM_PROMPT + ragContext;
-
-  const response = await ai.models.generateContent({
-    model: 'gemini-2.0-flash',
-    contents: history.messages,
-    config: {
-      systemInstruction: systemPrompt,
-      maxOutputTokens: 500,
-      temperature: 0.5,
-    },
-  });
-
-  const text = response.candidates?.[0]?.content?.parts?.[0]?.text || '';
-  history.messages.push({ role: 'model', parts: [{ text }] });
-
-  return text;
-}
 
 // === Firestore CS 대화 로깅 ===
 const csCollection = firestore.collection('cs_conversations');
@@ -396,6 +376,37 @@ function cleanupHistories() {
 }
 setInterval(cleanupHistories, 5 * 60 * 1000);
 
+// === 채널 설정 ===
+const CHANNEL_CONFIG = {
+  web: {
+    systemPrompt: SYSTEM_PROMPT,
+    temperature: 0.7,
+    maxOutputTokens: 300,
+    historyMap: chatHistories,
+    historyTTL: 30 * 60 * 1000,
+    maxHistory: 20,
+    logCollection: 'chat_conversations',
+  },
+  telegram: {
+    systemPrompt: CS_SYSTEM_PROMPT,
+    temperature: 0.5,
+    maxOutputTokens: 500,
+    historyMap: csHistories,
+    historyTTL: 60 * 60 * 1000,
+    maxHistory: 20,
+    logCollection: 'cs_conversations',
+  },
+  prep: {
+    systemPrompt: PREP_SYSTEM_PROMPT,
+    temperature: 0.6,
+    maxOutputTokens: 400,
+    historyMap: new Map(),
+    historyTTL: 30 * 60 * 1000,
+    maxHistory: 20,
+    logCollection: 'prep_conversations',
+  },
+};
+
 // Firestore에서 이전 대화 맥락 복원
 async function loadChatHistory(sessionId) {
   try {
@@ -445,45 +456,61 @@ async function logChatConversation(sessionId, userMessage, botReply) {
   }
 }
 
-// === Gemini 챗봇 API ===
-async function chatWithGemini(sessionId, userMessage, lang = 'ja') {
-  let history = chatHistories.get(sessionId);
+// === 통합 챗봇 API ===
+async function chatWithMonkos(channel, chatId, userMessage) {
+  const config = CHANNEL_CONFIG[channel];
+  if (!config) throw new Error(`Unknown channel: ${channel}`);
 
-  // 인메모리에 없으면 Firestore에서 복원 시도
+  // 히스토리 관리
+  let history = config.historyMap.get(chatId);
   if (!history) {
-    history = await loadChatHistory(sessionId);
+    // web 채널만 Firestore 복원 시도 (기존 로직 유지)
+    if (channel === 'web') {
+      history = await loadChatHistory(chatId);
+    }
     if (!history) {
       history = { messages: [], lastAccess: Date.now() };
     }
-    chatHistories.set(sessionId, history);
+    config.historyMap.set(chatId, history);
   }
   history.lastAccess = Date.now();
 
+  // RAG: 전 채널 공통
+  await loadCsKnowledge();
+  const ragDocs = searchCsKnowledge(userMessage);
+  let ragContext = '';
+  if (ragDocs.length > 0) {
+    ragContext = '\n\n[참고 지식]\n' + ragDocs.map(d =>
+      `【${d.title}】\n${d.content}`
+    ).join('\n\n');
+  }
+
   // 히스토리에 유저 메시지 추가
   history.messages.push({ role: 'user', parts: [{ text: userMessage }] });
-
-  // 최근 20개만 유지
-  if (history.messages.length > 20) {
-    history.messages = history.messages.slice(-20);
+  if (history.messages.length > config.maxHistory) {
+    history.messages = history.messages.slice(-config.maxHistory);
   }
+
+  // 시스템 프롬프트 + RAG 컨텍스트
+  const systemPrompt = config.systemPrompt + ragContext;
 
   const response = await ai.models.generateContent({
     model: 'gemini-2.0-flash',
     contents: history.messages,
     config: {
-      systemInstruction: SYSTEM_PROMPT,
-      maxOutputTokens: 300,
-      temperature: 0.7,
+      systemInstruction: systemPrompt,
+      maxOutputTokens: config.maxOutputTokens,
+      temperature: config.temperature,
     },
   });
 
   const text = response.candidates?.[0]?.content?.parts?.[0]?.text || '';
-
-  // 히스토리에 응답 추가
   history.messages.push({ role: 'model', parts: [{ text }] });
 
-  // Firestore에 비동기 저장
-  logChatConversation(sessionId, userMessage, text).catch(() => {});
+  // 비동기 로깅 (채널별 Firestore 컬렉션)
+  if (channel === 'web') {
+    logChatConversation(chatId, userMessage, text).catch(() => {});
+  }
 
   return text;
 }
@@ -1564,7 +1591,7 @@ location.href = '/';
         const sid = sessionId || `anon_${Date.now()}`;
         log(`[Chat][${sid}] ${message.substring(0, 100)}`);
 
-        const reply = await chatWithGemini(sid, message, lang);
+        const reply = await chatWithMonkos('web', sid, message);
         log(`[Chat][${sid}] → ${reply.substring(0, 100)}`);
 
         res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -1714,7 +1741,7 @@ location.href = '/';
           const text = msg.text.trim();
           log(`[TG-CS] ${username}(${chatId}): ${text.substring(0, 100)}`);
 
-          const reply = await chatWithGeminiCS(chatId, text);
+          const reply = await chatWithMonkos('telegram', chatId, text);
           await sendTelegramMessage(chatId, reply || 'すみません、少々お待ちください。', TELEGRAM_CS_API);
           logCsConversation(chatId, username, text, reply).catch(() => {});
         }

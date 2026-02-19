@@ -30,14 +30,32 @@ const MIME = {
     '.png': 'image/png',
 };
 
+// mirror_client.js 자동 삽입 제외 목록
+// mirror 시스템 페이지만 제외 (대상 페이지는 모두 주입)
+const INJECT_EXCLUDE = new Set([
+    '/mirror_console.html',
+    '/mirror_launcher.html',
+]);
+
 const httpsServer = createServer(sslOptions, (req, res) => {
-    const fileName = req.url === '/' ? '/receiver.html'
-                   : req.url === '/mirror' ? '/mirror_launcher.html'
-                   : req.url;
+    const urlPath = req.url.split('?')[0]; // 쿼리스트링 제거
+    const fileName = urlPath === '/' ? '/receiver.html'
+                   : urlPath === '/mirror' ? '/mirror_launcher.html'
+                   : urlPath;
     const filePath = join(__dirname, fileName);
     const ext = fileName.substring(fileName.lastIndexOf('.'));
 
     try {
+        // HTML 파일에 mirror_client.js 자동 삽입 (제외 목록 외)
+        if (ext === '.html' && !INJECT_EXCLUDE.has(urlPath)) {
+            let html = readFileSync(filePath, 'utf8');
+            html = html.replace('</body>',
+                `<script src="/mirror_client.js"><\/script>\n</body>`);
+            res.writeHead(200, { 'Content-Type': MIME[ext] });
+            res.end(html);
+            return;
+        }
+
         const content = readFileSync(filePath);
         res.writeHead(200, { 'Content-Type': MIME[ext] || 'text/plain' });
         res.end(content);
@@ -95,6 +113,15 @@ wss.on('connection', (ws) => {
         if (role) {
             clients.delete(role);
             console.log(`[해제] ${role} 연결 해제`);
+
+            // 상대에게 끊김 알림
+            const target = ROLE_PAIRS[role];
+            if (target) {
+                const targetWs = clients.get(target);
+                if (targetWs && targetWs.readyState === 1) {
+                    targetWs.send(JSON.stringify({ type: 'peer-left', role }));
+                }
+            }
         }
     });
 });

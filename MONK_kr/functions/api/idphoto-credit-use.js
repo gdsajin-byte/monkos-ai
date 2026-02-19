@@ -1,5 +1,6 @@
-// CF Pages Function — idphoto QC 프록시
-const TARGET = 'https://idphoto-kr.monkos.ai/api/qc';
+// CF Pages Function — idphoto credit-use 프록시
+// 다운로드 크레딧 차감: monk.kr → idphoto-kr.monkos.ai → monkos.ai 포탈
+const TARGET = 'https://idphoto-kr.monkos.ai/api/credit/use';
 
 export async function onRequestPost(context) {
   try {
