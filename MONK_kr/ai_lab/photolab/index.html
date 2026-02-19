@@ -157,24 +157,27 @@ header {
 }
 .service-features li::before { content: '\2713 '; color: var(--accent); font-weight: 700; }
 
-/* === 가격 정보 === */
-.pricing {
-  display: grid; gap: 12px; margin-bottom: 20px;
+/* === 가격 행 (서비스 카드 내부) === */
+.price-row {
+  display: flex; gap: 10px; margin: 16px 0 20px;
 }
-.price-card {
-  background: var(--card-bg); border: 1px solid var(--border);
-  border-radius: 16px; padding: 20px;
-  display: flex; justify-content: space-between; align-items: center;
+.price-item {
+  flex: 1; text-align: center;
+  background: rgba(167, 139, 250, 0.06);
+  border: 1px solid rgba(167, 139, 250, 0.1);
+  border-radius: 12px; padding: 12px 8px;
 }
-.price-card .label { font-size: 0.9rem; color: var(--text); font-weight: 600; }
-.price-card .desc { font-size: 0.75rem; color: var(--text-dim); margin-top: 2px; }
-.price-card .cost {
-  font-size: 1.1rem; font-weight: 800; color: var(--accent);
-  white-space: nowrap;
+.price-item .amount {
+  font-size: 1.2rem; font-weight: 800; color: var(--accent);
 }
-.price-card .cost .sub {
-  font-size: 0.7rem; font-weight: 400; color: var(--text-dim);
+.price-item .label {
+  font-size: 0.72rem; color: var(--text-dim); margin-top: 2px;
 }
+.price-total {
+  text-align: center; font-size: 0.8rem; color: var(--text-dim);
+  margin-bottom: 20px;
+}
+.price-total strong { color: var(--text); }
 
 /* === CTA 버튼 === */
 .cta-btn {
@@ -186,7 +189,6 @@ header {
   text-decoration: none; cursor: pointer;
   transition: all 0.3s;
   box-shadow: 0 4px 16px rgba(167, 139, 250, 0.25);
-  margin-bottom: 20px;
 }
 .cta-btn:hover {
   transform: translateY(-2px);
@@ -256,7 +258,7 @@ footer a { color: var(--accent); text-decoration: none; }
     <p class="hero-sub">AI 실시간 코칭으로 완벽한 증명사진을 촬영하세요.<br>여권, 비자, 이력서, 취업사진을 지원합니다.</p>
   </section>
 
-  <!-- 서비스 카드 -->
+  <!-- 서비스 카드 (가격 + CTA 통합) -->
   <section class="services">
     <div class="service-card">
       <div class="service-badge">AI POWERED</div>
@@ -269,31 +271,20 @@ footer a { color: var(--accent); text-decoration: none; }
         <li>자연스러운 보정</li>
         <li>즉시 다운로드</li>
       </ul>
+      <div class="price-row">
+        <div class="price-item">
+          <div class="amount">1c</div>
+          <div class="label">AI 생성 (₩1,500)</div>
+        </div>
+        <div class="price-item">
+          <div class="amount">8c</div>
+          <div class="label">다운로드 (₩12,000)</div>
+        </div>
+      </div>
+      <div class="price-total">1장 완성 <strong>9c (₩13,500)</strong></div>
+      <a class="cta-btn" href="prep.html">촬영 시작하기 &rarr;</a>
     </div>
   </section>
-
-  <!-- 가격 정보 -->
-  <section class="pricing">
-    <div class="price-card">
-      <div>
-        <div class="label">AI 생성</div>
-        <div class="desc">촬영 + AI 코칭 + 증명사진 생성</div>
-      </div>
-      <div class="cost">1c <span class="sub">(~200원)</span></div>
-    </div>
-    <div class="price-card">
-      <div>
-        <div class="label">다운로드</div>
-        <div class="desc">고해상도 규격 크롭 + 저장</div>
-      </div>
-      <div class="cost">8c <span class="sub">(~1,600원)</span></div>
-    </div>
-  </section>
-
-  <!-- CTA -->
-  <a class="cta-btn" href="prep.html">
-    촬영 시작하기 &rarr;
-  </a>
 
   <!-- 이벤트 카드 (가입 10c) -->
   <section class="services">
@@ -301,7 +292,7 @@ footer a { color: var(--accent); text-decoration: none; }
       <div class="event-card-inner">
         <div class="event-emoji">🎁</div>
         <div class="event-title">회원가입하면 10크레딧 무료!</div>
-        <div class="event-desc">Google 계정으로 간편 가입하면<br>10크레딧(~2,000원 상당)을 즉시 지급합니다.</div>
+        <div class="event-desc">Google 계정으로 간편 가입하면<br>10크레딧(₩15,000 상당)을 즉시 지급합니다.</div>
         <a class="event-btn" href="https://monkos.ai">가입하고 10c 받기</a>
       </div>
     </div>
