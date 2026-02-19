@@ -287,52 +287,18 @@ docs/
 > 막내 = `claude --dangerously-skip-permissions` (mk-c)
 > 권한이 열려있을수록 규율이 중요하다. 아래를 절대 준수.
 
-### ★ 0원칙: 작업 경로 + 배포라인 (최우선 — 2/17 확정)
-
-> **idphoto 리팩토링은 반드시 `MONK_kr/` 폴더에서 진행한다.**
-> **monkos_AI/idphoto-kr/ 는 프로덕션 동결 코드다. 수정/배포 절대 금지.**
-
-```
-[리팩토링 작업 경로]
-  MONK_kr/ai_lab/photolab/     ← 여기서만 코드 수정
-  배포: wrangler pages deploy   ← Cloudflare Pages (정적 배포)
-  테스트: https://monk.kr/ai_lab/photolab/
-
-[프로덕션 동결 — 손대지 마라]
-  monkos_AI/idphoto-kr/        ← 00079 코드. 수정 금지
-  idphoto-kr.monkos.ai         ← 00079-tpk 서빙 중. 배포 금지
-```
-
-| 명령 | 허용 | 비고 |
-|------|------|------|
-| `MONK_kr/` 내 파일 수정 | ✅ 자유 | 리팩토링 작업장 |
-| `wrangler pages deploy` | ✅ 자유 | monk.kr 배포 (정적) |
-| `monkos_AI/idphoto-kr/` 수정 | ❌ **절대 금지** | 프로덕션 동결 |
-| `./deploy.sh dev` (idphoto) | ❌ **금지** | 별도 지시 있을 때만 |
-| `./deploy.sh prod` (idphoto) | ❌ **금지** | 별도 지시 있을 때만 |
-| `gcloud run deploy` | ❌ **금지** | 별도 지시 있을 때만 |
-| `gcloud builds submit` | ❌ **금지** | 별도 지시 있을 때만 |
-
-**경위:** 2/16~17 이틀간 monkos_AI/idphoto-kr 직접 수정 → Cloud Run 배포 → 카메라 충돌 8회 연속. 근본 원인은 모놀리스 사이드이펙트. 해결책: MONK.kr 배포라인에서 리팩토링 후 완성본만 MONKOS로 이관.
-
-**MONKOS Cloud Run 작업(클론 서버 등)은 작가님/쌍아의 별도 지시서가 있을 때만 진행.**
-
-### 0-1. 배포 규칙 (절대 준수)
-
-**develop → dev 배포 OK. prod 배포 절대 금지.**
-**(단, idphoto 관련은 0원칙이 우선 — MONK_kr/ 경로에서 작업)**
+### 배포 규칙
 
 | 명령 | 허용 | 조건 |
 |------|------|------|
-| `./deploy.sh dev` | ✅ 허용 | develop 브랜치, idphoto 외 서비스만 |
+| `./deploy.sh dev` | ✅ 허용 | develop 브랜치 |
 | `./deploy.sh prod` | ❌ 금지 | 작가님/쌍아만 실행 |
 | `gcloud run deploy` 직접 | ❌ 금지 | 반드시 deploy.sh 경유 |
 | `gcloud builds submit` 단독 | ❌ 금지 | deploy.sh가 일괄 처리 |
+| `wrangler pages deploy` | ✅ 자유 | monk.kr 배포 (정적) |
 
 - **dev 배포 후 반드시 동작 확인** → 완료 보고에 결과 명시
 - prod 배포가 필요한 경우 `⏳ 대기: prod 배포 필요` 명시
-- **2/16 교훈: develop 코드를 prod에 직배포 → 카메라 충돌 4연속**
-- **2/17 교훈: 모놀리스 직접 수정 → 8회 배포 전패. 경로를 바꿔라.**
 
 ### 1. 작업 흐름
 
@@ -340,39 +306,6 @@ docs/
 지시서 수령 → 코드 읽기 → 수정 → 로컬 검증 → 세션로그 → 커밋 → push → 완료 보고
                                                                          ↑ 여기까지
                                                          prod 배포는 막내 범위 밖
-```
-
-### 1-1. 작업 마감 프로토콜 (절대 준수)
-
-**모든 막내는 작업 완료 시 아래 3단계를 반드시 실행한다.**
-
-**STEP 1: 세션 로그 작성**
-```
-docs/corpus/sessions/YYYY-MM/YYYYMMDD_session.md (append)
-```
-- 작업 내용, 변경 파일, 발견사항을 세션 로그 형식에 맞춰 기록
-- 타임스탬프 필수
-
-**STEP 2: 커밋 + 푸시**
-```bash
-git add <변경파일> <세션로그>
-git commit -m "[접두사] 작업 요약"
-git push origin develop
-```
-
-**STEP 3: 완료 보고 발신**
-- 2규칙 형식 준수 (📁 변경 파일, 🔀 커밋 필수)
-- 작가님이 이 보고를 쌍아에게 전달 → 쌍아 검토 → 배포 판단
-
-**전체 파이프라인:**
-```
-막내 작업 → 세션로그 → 커밋 → 푸시 → 완료 보고
-    ↓
-작가님이 보고를 쌍아에게 전달
-    ↓
-쌍아 최종 검토 → 배포 승인/거부
-    ↓
-배포 (쌍아 실행) → 결과 확인 → 백업
 ```
 
 ### 2. 브랜치 규칙
@@ -386,22 +319,22 @@ git push origin develop
 
 | 분류 | 금지 항목 |
 |------|-----------|
-| **경로** | `monkos_AI/idphoto-kr/` 수정 (0원칙 — 프로덕션 동결) |
 | **파괴** | `rm -rf`, `git push --force`, `git reset --hard`, `git clean -f` |
-| **배포** | `./deploy.sh prod`, `gcloud run deploy` 직접 실행, main 브랜치 배포 (0원칙 + 0-1항 참조) |
+| **배포** | `./deploy.sh prod`, `gcloud run deploy` 직접 실행, main 브랜치 배포 |
 | **보안** | API 키 하드코딩, 민감 정보 생성/추측, `.env` 수정 |
 | **구조** | DB 스키마 변경, 프로덕션 환경변수 변경, `wrangler.toml` 수정 |
 | **범위** | 지시서 범위 밖 기능 추가, 지시 없는 리팩토링 |
 
 ### 4. 자유 작업 범위
 
-- **`MONK_kr/` 내 프론트엔드 코드 수정** (리팩토링 작업장)
-- JS/CSS/HTML 파일 생성·수정·분리 (`MONK_kr/ai_lab/photolab/` 중심)
+- `MONK_kr/` 내 프론트엔드 코드 수정
+- `monkos_AI/` 내 코드 수정 (주의: 배포는 deploy.sh 경유)
+- JS/CSS/HTML 파일 생성·수정·분리
 - 테스트 코드 작성·실행
 - `git add`, `git commit`, `git push origin develop`
 - `wrangler pages deploy` (monk.kr 배포)
 - 로컬 `node`, `npm` 실행 (서버 기동 테스트 등)
-- `./deploy.sh dev` (idphoto 외 서비스, develop 브랜치에서만)
+- `./deploy.sh dev` (develop 브랜치에서만)
 
 ### 5. 에스컬레이션
 
@@ -437,4 +370,3 @@ git push origin develop
 - GCS 구조: `docs/infrastructure/GCS_BUCKET_STRUCTURE.md`
 - 세션 가치: `docs/infrastructure/SESSION_LOG_VALUE.md`
 - 배포 가이드: `docs/infrastructure/DEPLOYMENT_GUIDE.md`
-- **기술명세서: `docs/infrastructure/MONKOS_AI_TECHNICAL_SPEC.md`** ← 인프라/파이프라인/장애 이력 총괄. 변경 시 반드시 갱신
