@@ -111,17 +111,20 @@ MONKOS.ai (AI 실행 엔진 — GCP Cloud Run)
 - **커밋 + 푸시 = 배포** — 막내가 develop 푸시하면 프리뷰 자동 배포
 - **main 머지 = 프로덕션 배포** — 쌍아/작가님만 실행
 
-### 3-2. CF Pages Functions (프록시)
+### 3-2. CF Pages Functions (자체 엔진)
 
 `MONK_kr/functions/` 디렉토리의 JS 파일이 서버리스 함수로 자동 배포.
 
-**현재 등록된 프록시 (idphoto):**
+> **중요: 루트 `functions/` → `MONK_kr/functions/` symlink 통일 (2/19)**
+> wrangler는 CWD의 `functions/`를 참조하므로 symlink으로 정본 통일.
 
-| 파일 | 엔드포인트 | 프록시 대상 |
-|------|-----------|------------|
-| `functions/api/idphoto-precheck.js` | POST `/api/idphoto-precheck` | `idphoto-kr.monkos.ai/api/pre-check` |
-| `functions/api/idphoto-generate.js` | POST `/api/idphoto-generate` | `idphoto-kr.monkos.ai/api/generate` |
-| `functions/api/idphoto-qc.js` | POST `/api/idphoto-qc` | `idphoto-kr.monkos.ai/api/qc` |
+**증명사진 자체 엔진 (2/19 구축 — Cloud Run 프록시 제거):**
+
+| 파일 | 엔드포인트 | 모델 | 역할 |
+|------|-----------|------|------|
+| `functions/api/precheck.js` | POST `/api/precheck` | Gemini 2.0 Flash | 촬영본 사전분석 |
+| `functions/api/idgen.js` | POST `/api/idgen` | Gemini 3 Pro Image Preview | I2I 증명사진 생성 |
+| `functions/api/qc.js` | POST `/api/qc` | Gemini 2.0 Flash | 원본 vs 생성물 QC |
 
 **기존 Functions:**
 
@@ -132,12 +135,14 @@ MONKOS.ai (AI 실행 엔진 — GCP Cloud Run)
 | `functions/api/analyze.js` | 이미지 분석 |
 | `functions/api/auth.js` | 인증 |
 | `functions/api/payment.js` | 결제 |
+| `functions/api/idphoto-coaching.js` | 코칭 프록시 (WS → Cloud Run) |
+| `functions/api/idphoto-credit-use.js` | 크레딧 차감 |
 
-**CF Pages Function 제약사항 (2/18 E2E 테스트에서 발견):**
-1. **정적 자산 우선**: 정적 디렉토리와 겹치는 경로에 Function 배치 불가 (405 반환)
-2. **catch-all `[[path]]` 미작동**: POST 요청에서 catch-all 라우팅 작동 안 함
-3. **해결책**: 개별 파일로 분리 (`idphoto-precheck.js`, `idphoto-generate.js`, `idphoto-qc.js`)
-4. **export 패턴**: `onRequestPost`/`onRequestOptions` (메서드별 export 필수)
+**CF Pages Function 주의사항:**
+1. **export 패턴**: `onRequestPost`/`onRequestOptions` (메서드별 export 필수)
+2. **functions/ 경로**: wrangler는 CWD 기준 `functions/` 참조. `MONK_kr/functions/`에 파일 추가하면 symlink 통해 자동 반영
+3. **API Key**: `env.GEMINI_API_KEY` (CF Pages Secrets에 설정)
+4. **idgen 주의**: `responseModalities` 사용 금지 (photo.js 패턴 준수), mimeType은 `'image/jpeg'`
 
 ### 3-3. GCP Cloud Run (monkos.ai)
 
@@ -281,28 +286,48 @@ wss://idphoto-kr.monkos.ai/
 - 모놀리스(2,437줄) 사이드 이펙트 추적 불가
 - Plan B 전환 결정 (monk.js 프레임워크 분해)
 
-### 6-3. 2/18 CF Pages Function 라우팅 실패
+### 6-3. 2/18~19 CF Pages Function 405 — 근본 원인 해소
 
-**원인:** catch-all `[[path]].js` 패턴이 POST에서 작동 안 함
-**시도:**
-1. `functions/ai_lab/photolab/api/[[path]].js` → 405 (정적자산 우선)
-2. `functions/api/idphoto/[[path]].js` → 405
-3. onRequest → onRequestPost 분리 → 405
-**해결:** 개별 파일(`idphoto-precheck.js` 등)로 전환
+**증상:** 신규 추가한 Functions(precheck/idgen/qc) 전부 405, 기존 photo.js만 동작
+
+**시도 (2/18):**
+1. `functions/api/idphoto/[[path]].js` → 405
+2. 개별 파일로 분리 (`idphoto-precheck.js` 등) → 405
+3. 프록시 제거 → 자체 엔진 구축 → 405 (동일)
+
+**근본 원인 (2/19 발견):**
+- 루트 `functions/api/` (11파일)와 `MONK_kr/functions/api/` (16파일) 이중 구조
+- `wrangler pages deploy MONK_kr/`는 정적 파일만 `MONK_kr/`에서 가져오고, Functions는 CWD(프로젝트 루트)의 `functions/`를 참조
+- 신규 파일은 `MONK_kr/functions/api/`에만 존재 → 배포에 포함되지 않음
+
+**해결:**
+```bash
+rm -rf functions/
+ln -s MONK_kr/functions functions
+```
+→ symlink 통일. `MONK_kr/functions/`가 유일한 정본.
+
+**교훈:** 반복 우회(파일 복사)가 아닌 근원 해결(symlink 통일)이 정답
+
+### 6-4. 2/19 idgen 생성 실패 — responseModalities
+
+**증상:** "The string did not match the expected pattern"
+**원인:** idgen.js에 `responseModalities: ['TEXT', 'IMAGE']` 포함 — photo.js(동작)에는 없음
+**해결:** responseModalities 제거 + mimeType `'image/jpeg'`로 변경
 
 ---
 
-## 7. 프로덕션 현황 (2026-02-18 기준)
+## 7. 프로덕션 현황 (2026-02-19 기준)
 
-### Cloud Run (idphoto-kr)
-- **활성 리비전:** 00079-tpk (100% 트래픽)
-- **상태:** 안정 (카메라/코칭/생성/다운로드 정상)
-- **알려진 이슈:** QC 결과 미표시 (서버 로그 미확보, 리팩토링에서 해결 예정)
+### Cloud Run
+- **idphoto-kr:** 00079-tpk (100% 트래픽, 프로덕션 동결)
+- **monkos-portal:** 00073-rdm (chatWithMonkos 통합 엔진, RAG 전 채널 공유)
 
 ### Cloudflare Pages (monk.kr)
-- **photolab:** develop 브랜치에 7커밋 대기 중 (main 미머지)
-- **미반영 변경:** OAuth 제거, 검은화면 수정, WS 재연결 수정, API 프록시 3개
-- **미완료:** creditUse 프록시, E2E 통합 테스트
+- **photolab:** prod 배포 완료 (E2E 테스트 통과)
+- **자체 엔진:** precheck/idgen/qc — Gemini API 직접 호출 (Cloud Run 프록시 제거)
+- **symlink:** `functions/` → `MONK_kr/functions/` (이중 구조 해소)
+- **wrangler:** 4.66.0
 
 ---
 
@@ -310,10 +335,9 @@ wss://idphoto-kr.monkos.ai/
 
 | 과제 | 우선순위 | 상태 |
 |------|---------|------|
-| main 머지 → monk.kr 프로덕션 배포 | 높음 | develop 대기 |
-| 모바일 E2E 재테스트 (프록시 동작 확인) | 높음 | main 배포 후 |
+| 준비실 키오스크 퍼널 UI | 높음 | 설계서 완료, 구현 대기 |
+| monkos.ai 챗봇 RAG 테스트 | 중간 | prod 배포 완료, 테스트 대기 |
 | creditUse 프록시 (다운로드 크레딧) | 중간 | 미착수 |
-| QC 결과 미표시 원인 | 중간 | 서버 로그 미확보 |
 | KR/JP 공유 코어 분리 | 낮음 (장기) | 설계서 작성 완료 |
 | AI 에이전트 2분할 (vision/voice) | 낮음 (장기) | 설계서 작성 완료 |
 
