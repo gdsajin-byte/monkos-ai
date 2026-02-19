@@ -631,8 +631,9 @@ const httpServer = createServer(async (req, res) => {
   // 정적 파일 배포
   // / → 앱으로 리다이렉트, /app → 촬영 앱 UI
   if (urlPath === '/') {
-    res.writeHead(302, { 'Location': '/app' });
-    res.end();
+    const content = readFileSync(join(__dirname, 'public', 'landing.html'));
+    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+    res.end(content);
     return;
   }
   let filePath;

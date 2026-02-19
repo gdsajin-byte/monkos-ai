@@ -183,6 +183,18 @@ header {
   align-items: center;
   gap: 8px;
 }
+.header-login-btn {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: #fff;
+  border: none;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.header-login-btn:hover { opacity: 0.85; }
 
 /* 크레딧 버튼 */
 .credit-btn {
@@ -1092,6 +1104,8 @@ footer a {
       </div>
     </div>
     <div class="auth-area">
+      <!-- 로그인 버튼 (비로그인 시) -->
+      <button class="header-login-btn" id="headerLoginBtn" onclick="googleLogin()">로그인</button>
       <!-- 크레딧 (로그인 후) -->
       <button class="credit-btn" id="creditBtn" onclick="openCreditShop()">
         <span class="credit-diamond">💎</span>
@@ -1108,58 +1122,10 @@ footer a {
     </div>
   </header>
 
-  <!-- 입구컷: 게이트 화면 (로그인 전) -->
-  <section class="gate-screen" id="gateScreen">
-    <div class="gate-top">
-      <h1 translate="no"><span>MONKOS AI</span></h1>
-      <p class="gate-sub" id="gateSub"></p>
-    </div>
+  <!-- 게이트 화면 제거: OAuth 벽 없이 mainContent 바로 노출 -->
 
-    <div class="gate-bottom">
-      <!-- 동의 체크박스 -->
-      <div class="gate-consent">
-        <div class="consent-item">
-          <input type="checkbox" id="consentPrivacy" onchange="updateLoginButton()">
-          <label for="consentPrivacy">
-            <span id="consentPrivacyText">개인정보 수집·이용에 동의합니다</span>
-            <span class="required" id="consentRequired1">(필수)</span>
-            <span class="view-link" onclick="showConsentModal('privacy')" id="viewPrivacy">[내용 보기]</span>
-          </label>
-        </div>
-        <div class="consent-item">
-          <input type="checkbox" id="consentPortrait" onchange="updateLoginButton()">
-          <label for="consentPortrait">
-            <span id="consentPortraitText">초상권 및 이미지 사용에 동의합니다</span>
-            <span class="required" id="consentRequired2">(필수)</span>
-            <span class="view-link" onclick="showConsentModal('portrait')" id="viewPortrait">[내용 보기]</span>
-          </label>
-        </div>
-      </div>
-
-      <div class="gate-login-buttons">
-        <button class="gate-login-btn" id="gateLoginBtn" onclick="googleLogin()" disabled>
-          <svg viewBox="0 0 24 24" width="20" height="20">
-            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-          </svg>
-          <span id="gateLoginText">Google</span>
-        </button>
-        <button class="gate-login-btn gate-login-line" id="gateLineBtn" onclick="loginLine()" disabled>
-          <svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 2C6.48 2 2 5.83 2 10.5c0 4.08 3.39 7.5 7.96 8.33.31.07.73.2.84.47.1.24.06.62.03.87l-.14.82c-.04.24-.19.94.82.51s5.46-3.21 7.44-5.5C21.23 13.37 22 11.98 22 10.5 22 5.83 17.52 2 12 2z" fill="#fff"/><path d="M8.53 8.8H7.65v3.4h.88V8.8zm5.14 0h-.88v2.02L11.1 8.8h-1v3.4h.88V10.2l1.7 2h.99V8.8zm-3.3 2.53H9.24V8.8h-.88v3.4h1.99v-.87h.02zm5.83-1.67c0-.47-.38-.86-.86-.86h-1.7v3.4h.88v-1.2h.52l.6 1.2h1l-.7-1.3c.16-.18.26-.42.26-.68v-.56z" fill="#06C755"/></svg>
-          <span>LINE</span>
-        </button>
-        <button class="gate-login-btn gate-login-kakao" id="gateKakaoBtn" onclick="loginKakao()" disabled>
-          <svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 3C6.48 3 2 6.36 2 10.5c0 2.67 1.74 5.01 4.36 6.33-.14.53-.9 3.4-.93 3.6 0 0-.02.16.08.22.1.06.22.01.22.01.29-.04 3.37-2.2 3.9-2.57.76.11 1.55.16 2.37.16 5.52 0 10-3.36 10-7.5S17.52 3 12 3z" fill="#3C1E1E"/></svg>
-          <span>Kakao</span>
-        </button>
-      </div>
-    </div>
-  </section>
-
-  <!-- 메인 콘텐츠 (로그인 후) -->
-  <div id="mainContent" style="display: none;">
+  <!-- 메인 콘텐츠 (비로그인에서도 표시) -->
+  <div id="mainContent">
     <!-- 히어로 -->
     <section class="hero">
       <div class="hero-badge" id="heroBadge">LIVE SERVICE</div>
@@ -1443,19 +1409,6 @@ function loginLine() {
 
 // Google 로그인 버튼 클릭 (OAuth 팝업 — One Tap 쿨다운 회피)
 async function googleLogin() {
-  // 동의 체크 확인
-  const privacy = document.getElementById('consentPrivacy')?.checked;
-  const portrait = document.getElementById('consentPortrait')?.checked;
-  if (!privacy || !portrait) {
-    const alertMsg = {
-      ja: '必須項目に同意してください。',
-      ko: '필수 항목에 동의해 주세요.',
-      en: 'Please agree to the required items.'
-    };
-    alert(alertMsg[lang] || alertMsg.en);
-    return;
-  }
-
   // GIS 미로드 시 재시도
   if (typeof google === 'undefined' || !google.accounts) {
     const loginBtn = document.querySelector('.gate-login-btn');
@@ -1560,8 +1513,7 @@ function updateAuthUI() {
   const providerBadge = document.getElementById('providerBadge');
   const providerIconInner = document.getElementById('providerIconInner');
   const popoverName = document.getElementById('popoverName');
-  const gateScreen = document.getElementById('gateScreen');
-  const mainContent = document.getElementById('mainContent');
+  const headerLoginBtn = document.getElementById('headerLoginBtn');
 
   if (currentUser) {
     // 크레딧 표시
@@ -1583,17 +1535,16 @@ function updateAuthUI() {
       providerIconInner.innerHTML = `<svg viewBox="0 0 24 24" width="20" height="20"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>`;
     }
 
-    // 입구컷 해제
+    // 로그인 상태: 헤더 로그인 버튼 숨김
     document.body.classList.add('logged-in');
-    if (gateScreen) gateScreen.style.display = 'none';
-    if (mainContent) mainContent.style.display = 'block';
+    if (headerLoginBtn) headerLoginBtn.style.display = 'none';
     loadEventStatus();
   } else {
     creditBtn.style.display = 'none';
     providerBadge.style.display = 'none';
     document.body.classList.remove('logged-in');
-    if (gateScreen) gateScreen.style.display = 'flex';
-    if (mainContent) mainContent.style.display = 'none';
+    // 비로그인 상태: 헤더에 로그인 버튼 표시, mainContent는 그대로 노출
+    if (headerLoginBtn) headerLoginBtn.style.display = 'block';
   }
 }
 
@@ -2071,17 +2022,7 @@ ctaBtn.addEventListener('click', async (e) => {
 
 // (i18n 초기 적용은 applyLang()에서 처리)
 
-// === 동의 체크박스 기능 ===
-function updateLoginButton() {
-  const privacy = document.getElementById('consentPrivacy').checked;
-  const portrait = document.getElementById('consentPortrait').checked;
-  const agreed = privacy && portrait;
-  document.getElementById('gateLoginBtn').disabled = !agreed;
-  const kakaoBtn = document.getElementById('gateKakaoBtn');
-  const lineBtn = document.getElementById('gateLineBtn');
-  if (kakaoBtn) kakaoBtn.disabled = !agreed;
-  if (lineBtn) lineBtn.disabled = !agreed;
-}
+
 
 function showConsentModal(type) {
   if (type === 'privacy') {
@@ -2123,9 +2064,6 @@ function applyLang() {
     });
   }
 
-  // 게이트 화면
-  document.getElementById('gateSub').innerHTML = (gateTexts[lang] || gateTexts.en).replace(/\n/g, '<br>');
-
   // 히어로
   document.getElementById('heroSub').textContent = t.heroSub;
   document.getElementById('serviceTitle').textContent = t.serviceTitle;
@@ -2148,14 +2086,8 @@ function applyLang() {
     : 'https://idphoto-jp.monkos.ai/app';
   cta.href = ctaUrl;
 
-  // 동의 텍스트
+  // 동의 모달 텍스트 (게이트 제거 후에도 모달은 유지)
   const ct = consentTexts[lang] || consentTexts.en;
-  document.getElementById('consentPrivacyText').textContent = ct.privacy;
-  document.getElementById('consentPortraitText').textContent = ct.portrait;
-  document.getElementById('consentRequired1').textContent = ct.required;
-  document.getElementById('consentRequired2').textContent = ct.required;
-  document.getElementById('viewPrivacy').textContent = ct.viewLink;
-  document.getElementById('viewPortrait').textContent = ct.viewLink;
   document.getElementById('privacyModalTitle').textContent = ct.privacyTitle;
   document.getElementById('portraitModalTitle').textContent = ct.portraitTitle;
   document.getElementById('privacyModalContent').innerHTML = ct.privacyContent;
