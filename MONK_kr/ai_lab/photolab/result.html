@@ -122,7 +122,7 @@
             </div>
         </div>
 
-        <div id="qc-badge" data-bind="qcBadgeText" data-class="qcPassed:pass" data-show="qcResult">검증 중...</div>
+        <div id="status-badge" data-bind="statusText" data-show="statusText" style="padding:8px 16px; border-radius:12px; font-size:13px; text-align:center; color:var(--text-dim,#8892a8); background:rgba(167,139,250,0.08); margin:0 16px;"></div>
 
         <!-- 규격 크롭 결과 -->
         <div id="spec-result" data-class="cropped:active">
@@ -147,7 +147,7 @@
         <!-- Step 3 버튼 -->
         <div id="step3-actions" data-show="showStep3Actions" style="display:none; gap:10px; padding:16px; justify-content:center; flex-wrap:wrap;">
             <button class="btn btn-secondary" onclick="retakePhoto()">다시 찍기</button>
-            <button class="btn btn-success" id="btn-download" onclick="downloadResult()">📥 다운로드 (10c)</button>
+            <button class="btn btn-success" id="btn-download" onclick="downloadResult()">📥 다운로드 (8c)</button>
         </div>
     </div>
 

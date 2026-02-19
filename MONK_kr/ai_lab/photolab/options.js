@@ -8,7 +8,7 @@ import { store, Monk, sharedInit, clearSessionImages } from './shared.js';
 // ─── 네비게이션 ───
 function goToPrep() {
   clearSessionImages();
-  location.href = 'index.html';
+  location.href = 'prep.html';
 }
 
 function goToCamera() {
