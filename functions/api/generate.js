@@ -64,10 +64,10 @@ export async function onRequestPost(context) {
 
     const result = await geminiResponse.json();
 
-    // 응답 형식 변환 (프론트엔드 호환)
-    const images = (result.generatedImages || []).map(img => 
-      `data:image/png;base64,${img.image.imageBytes}`
-    );
+    // 응답 형식 변환 (:predict → predictions[].bytesBase64Encoded)
+    const images = (result.predictions || [])
+      .filter(p => p.bytesBase64Encoded)
+      .map(p => `data:image/png;base64,${p.bytesBase64Encoded}`);
 
     console.log('✅ [IMAGE PRO] Generated', images.length, 'images');
 
