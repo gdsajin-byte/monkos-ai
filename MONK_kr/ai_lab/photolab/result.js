@@ -94,8 +94,15 @@ async function confirmAndGenerate() {
     const genResult = await pipe.run('generate', {
       image: base64,
       style: store.style,
+      purpose: loadSessionData('purpose'),
       gender: store.gender,
       age: store.age,
+      clothing: loadSessionData('clothing'),
+      clothingColor: loadSessionData('clothingColor'),
+      tie: loadSessionData('tie'),
+      hair: loadSessionData('hair'),
+      background: loadSessionData('background'),
+      expression: loadSessionData('expression'),
       userId: store.user.id,
     });
 

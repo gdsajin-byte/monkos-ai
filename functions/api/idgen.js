@@ -1,5 +1,5 @@
 // CF Workers — 증명사진 I2I 생성 (Gemini Pro 직접 호출)
-// 프록시 제거, 자체 엔진. photo.js 패턴 + idphoto-kr 프롬프트
+// 9필드 퍼널 반영 동적 프롬프트
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -8,7 +8,7 @@ const CORS = {
   'Content-Type': 'application/json',
 };
 
-// 정체성 유지 프롬프트 (photo.js L6~L24)
+// 정체성 유지 프롬프트
 const IDENTITY_PRESERVATION = `IDENTITY RULE: 90% SAME PERSON + 10% ENHANCEMENT
 
 PRESERVE (90%):
@@ -29,32 +29,128 @@ DO NOT:
 
 GOAL: "This is ME, but on my best day" - perfectly front-facing, studio flat lighting, 90% accuracy, 10% professional retouching.`;
 
-// 스타일 프롬프트 (idphoto-kr/server.js L186~189)
-const STYLE_PROMPTS = {
-  id_photo: 'Professional passport/ID photo, perfectly front-facing looking directly at camera, formal white background, sharp focus, head straight, symmetric composition',
-  resume: 'Professional resume photo for Korean job application (이력서), perfectly front-facing looking directly at camera, clean white background, business formal attire, 3:4 ratio, approachable yet professional expression',
+// ─── 배경색 프롬프트 ───
+const BG_PROMPTS = {
+  white:  'pure white (#FFFFFF) background',
+  blue:   'soft blue (#4A90D9) studio background',
+  gray:   'neutral gray (#9CA3AF) studio background',
+  beige:  'warm beige (#D4B896) studio background',
+  pink:   'soft pink (#F5A0B8) studio background',
+  yellow: 'warm yellow (#FBBF24) studio background',
 };
 
-// 성별/연령별 의상 프롬프트 (idphoto-kr/server.js L192~211)
-function getOutfitPrompt(gender, age, style = 'id_photo') {
+// ─── 의상 프롬프트 ───
+const CLOTHING_PROMPTS = {
+  as_is: null, // 그대로 — 의상 지시 없음
+  suit: 'formal business suit',
+  shirt: 'clean dress shirt',
+  casual: 'smart casual top',
+  uniform: 'neat school uniform',
+};
+
+const CLOTHING_COLOR_PROMPTS = {
+  black: 'black',
+  navy: 'dark navy',
+  charcoal: 'charcoal gray',
+  white: 'white',
+  beige: 'beige',
+  wine: 'wine/burgundy',
+  pastel: 'soft pastel-toned',
+};
+
+const TIE_PROMPTS = {
+  none: null,
+  solid_navy: 'solid navy tie',
+  solid_wine: 'solid wine/burgundy tie',
+  stripe_blue: 'blue striped tie',
+  stripe_navy: 'navy striped tie',
+  stripe_wine: 'wine striped regimental tie',
+};
+
+// ─── 표정 프롬프트 ───
+const EXPRESSION_PROMPTS = {
+  gentle_smile: 'gentle, subtle smile',
+  neutral: 'neutral, composed expression',
+  natural_smile: 'natural, friendly smile',
+  bright_smile: 'bright, confident smile',
+};
+
+// ─── 헤어 프롬프트 ───
+const HAIR_PROMPTS = {
+  as_is: null,
+  tidy: 'neatly groomed hair',
+  up: 'hair tied up neatly',
+  down: 'hair down, well-groomed',
+};
+
+// ─── 용도별 베이스 프롬프트 ───
+const PURPOSE_PROMPTS = {
+  passport: 'Professional passport/ID photo, perfectly front-facing looking directly at camera, sharp focus, head straight, symmetric composition, forehead and eyebrows must be visible',
+  student_id: 'Student ID photo, perfectly front-facing, clean and neat appearance, symmetric composition',
+  employee_id: 'Professional corporate ID photo, perfectly front-facing, business-appropriate appearance, symmetric composition',
+  resume: 'Professional resume photo for job application, perfectly front-facing looking directly at camera, business formal, 3:4 ratio, approachable yet professional',
+  color_portrait: 'Professional color portrait photo, perfectly front-facing, studio lighting, clean and polished look',
+};
+
+// ─── 동적 프롬프트 빌더 ───
+function buildPrompt(body) {
+  const { style, purpose, gender, age, clothing, clothingColor, tie, hair, background, expression } = body;
+
+  const parts = [];
+
+  // 1. 용도 베이스
+  const purposePrompt = PURPOSE_PROMPTS[purpose] || PURPOSE_PROMPTS[style === 'id_photo' ? 'passport' : 'resume'];
+  parts.push(`[STYLE] ${purposePrompt}`);
+
+  // 2. 배경
+  const bgPrompt = BG_PROMPTS[background] || BG_PROMPTS.white;
+  parts.push(`[BACKGROUND] ${bgPrompt}`);
+
+  // 3. 피사체 정보
   const genderLabel = gender === 'female' ? 'female/woman' : 'male/man';
-  const ageMap = {
-    child: { label: 'young child (under 12)', outfit: gender === 'female'
-      ? 'a clean white polo shirt or simple blouse, age-appropriate and neat'
-      : 'a clean white polo shirt or simple dress shirt, age-appropriate and neat' },
-    teen: { label: 'teenager (13-18)', outfit: gender === 'female'
-      ? 'a neat school-style blouse or simple formal top, age-appropriate'
-      : 'a clean dress shirt with or without tie, age-appropriate' },
-    adult: { label: 'adult', outfit: style === 'resume'
-      ? (gender === 'female'
-        ? 'a clean white blouse with regular collar under dark navy or black business jacket, simple and professional, no frills'
-        : 'a dark navy or black formal business suit with white dress shirt and solid-color subtle tie, clean and professional')
-      : (gender === 'female'
-        ? 'a professional blouse or women\'s business jacket, formal and clean'
-        : 'a clean, dark navy or charcoal formal business suit with white dress shirt and subtle tie') },
-  };
-  const info = ageMap[age] || ageMap.adult;
-  return `SUBJECT: This person is a ${genderLabel}, ${info.label}. OUTFIT: Dress this person in ${info.outfit}. Keep the person's face, hair, and body exactly the same — only ensure appropriate attire. DO NOT change the person's apparent gender or age.`;
+  const ageLabels = { child: 'young child (under 12)', teen: 'teenager (13-18)', adult: 'adult' };
+  parts.push(`[SUBJECT] This person is a ${genderLabel}, ${ageLabels[age] || 'adult'}.`);
+
+  // 4. 의상
+  if (clothing && clothing !== 'as_is') {
+    const clothBase = CLOTHING_PROMPTS[clothing] || clothing;
+    const colorMod = clothingColor ? (CLOTHING_COLOR_PROMPTS[clothingColor] || clothingColor) : '';
+    const outfitDesc = colorMod ? `${colorMod} ${clothBase}` : clothBase;
+
+    let outfitLine = `[OUTFIT] Dress this person in ${outfitDesc}.`;
+
+    // 여성 셔츠 → 블라우스
+    if (gender === 'female' && clothing === 'shirt') {
+      outfitLine = `[OUTFIT] Dress this person in a ${colorMod ? colorMod + ' ' : ''}clean blouse, simple and professional.`;
+    }
+
+    // 넥타이 (남성 + 정장/셔츠)
+    if (tie && tie !== 'none' && gender === 'male') {
+      const tieDesc = TIE_PROMPTS[tie];
+      if (tieDesc) outfitLine += ` With ${tieDesc}.`;
+    }
+
+    parts.push(outfitLine);
+  } else {
+    parts.push('[OUTFIT] Keep current clothing as-is. Only ensure it looks neat and tidy.');
+  }
+
+  // 5. 헤어
+  if (hair && hair !== 'as_is') {
+    const hairDesc = HAIR_PROMPTS[hair];
+    if (hairDesc) parts.push(`[HAIR] ${hairDesc}`);
+  }
+
+  // 6. 표정
+  if (expression) {
+    const exprDesc = EXPRESSION_PROMPTS[expression];
+    if (exprDesc) parts.push(`[EXPRESSION] ${exprDesc}`);
+  }
+
+  // 7. 공통 제약
+  parts.push('[CONSTRAINT] Keep the person\'s face and body exactly the same — only apply the specified styling. DO NOT change apparent gender or age.');
+
+  return `${IDENTITY_PRESERVATION}\n\n[IMAGE-TO-IMAGE TRANSFORM]\n${parts.join('\n')}`;
 }
 
 export async function onRequestPost(context) {
@@ -67,7 +163,7 @@ export async function onRequestPost(context) {
     }
 
     const body = await request.json();
-    const { image, style = 'id_photo', gender = 'male', age = 'adult' } = body;
+    const { image } = body;
 
     if (!image) {
       return new Response(JSON.stringify({ error: '이미지가 필요합니다' }), { status: 400, headers: CORS });
@@ -82,10 +178,8 @@ export async function onRequestPost(context) {
       return new Response(JSON.stringify({ error: '이미지가 너무 큽니다 (2MB 이하)' }), { status: 400, headers: CORS });
     }
 
-    // 프롬프트 조립
-    const stylePrompt = STYLE_PROMPTS[style] || STYLE_PROMPTS.id_photo;
-    const outfitPrompt = getOutfitPrompt(gender, age, style);
-    const instruction = `${IDENTITY_PRESERVATION}\n\n[IMAGE-TO-IMAGE TRANSFORM] ${stylePrompt}\n\n${outfitPrompt}`;
+    // 9필드 동적 프롬프트
+    const instruction = buildPrompt(body);
 
     // Gemini 3 Pro Image Preview (I2I 생성)
     const response = await fetch(
