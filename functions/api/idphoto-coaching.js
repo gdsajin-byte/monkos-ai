@@ -102,12 +102,12 @@ export async function onRequestPost(context) {
         'x-goog-api-key': apiKey,
       },
       body: JSON.stringify({
-        system_instruction: {
+        systemInstruction: {
           parts: [{ text: instruction }],
         },
         contents: [{
           parts: [
-            { inline_data: { mime_type: 'image/jpeg', data: image } },
+            { inlineData: { mimeType: 'image/jpeg', data: image } },
             { text: '이 사진의 자세, 조명, 표정을 체크해주세요.' },
           ],
         }],
@@ -122,7 +122,7 @@ export async function onRequestPost(context) {
       const errText = await geminiRes.text();
       console.error('Gemini API 에러:', geminiRes.status, errText);
       // 모델 전환 실패 시 빈 응답 반환 (코칭 루프 중단하지 않음)
-      return jsonResponse({ text: '', ready: false });
+      return jsonResponse({ text: '', ready: false, error: `Gemini ${geminiRes.status}` });
     }
 
     const geminiData = await geminiRes.json();

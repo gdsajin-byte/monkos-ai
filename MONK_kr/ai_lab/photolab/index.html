@@ -116,6 +116,14 @@ header {
   padding: 0 24px 28px;
   text-align: center;
 }
+.hero-pretitle {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(226, 232, 240, 0.75);
+  margin-bottom: 6px;
+  letter-spacing: 0.3px;
+}
 .hero h1 {
   font-size: clamp(2rem, 7vw, 2.8rem);
   font-weight: 800; color: var(--text-bright);
@@ -382,8 +390,9 @@ footer a { color: var(--accent); text-decoration: none; }
     <div class="hero-overlay"></div>
     <div class="hero-content">
       <div class="hero-badge">LIVE SERVICE</div>
+      <div class="hero-pretitle">20년 사진작가가 만든</div>
       <h1><span>AI 증명사진</span></h1>
-      <p class="hero-sub">AI가 자세, 표정, 조명을 실시간 코칭.<br>스마트폰 하나로 사진관 품질을 완성합니다.</p>
+      <p class="hero-sub">딥페이크를 원천차단하는 실시간 셀카 시스템.<br>AI가 촬영하고 검수하여 스튜디오 수준을 완성합니다.</p>
       <a class="hero-cta" href="prep.html">촬영 시작하기 &rarr;</a>
     </div>
   </section>
@@ -391,11 +400,11 @@ footer a { color: var(--accent); text-decoration: none; }
   <!-- 샘플 쇼케이스 -->
   <section class="showcase fade-in">
     <div class="section-divider"></div>
-    <h2 class="section-title">다양한 용도의 증명사진</h2>
+    <h2 class="section-title">스튜디오 수준의 증명사진</h2>
     <div class="showcase-grid">
       <div class="showcase-card">
         <img src="https://storage.googleapis.com/monk-ai-images/ads/20260220_191245_%E1%84%89%E1%85%A9%E1%86%BC%E1%84%92%E1%85%A8%E1%84%80%E1%85%AD%E1%84%83%E1%85%A1%E1%86%B1%E1%84%8B%E1%85%B3%E1%86%AB.jpg" alt="이력서 증명사진" loading="lazy" decoding="async">
-        <div class="showcase-label">이력서</div>
+        <div class="showcase-label">이력서 / 취업</div>
       </div>
       <div class="showcase-card">
         <img src="https://storage.googleapis.com/monk-ai-images/ads/20260220_191258_%E1%84%92%E1%85%A1%E1%86%A8%E1%84%89%E1%85%A2%E1%86%BC%E1%84%8C%E1%85%B3%E1%86%BC%E1%84%86%E1%85%A9%E1%84%83%E1%85%A6%E1%86%AF_(2).jpg" alt="학생증 증명사진" loading="lazy" decoding="async">
@@ -409,14 +418,6 @@ footer a { color: var(--accent); text-decoration: none; }
         <img src="https://storage.googleapis.com/monk-ai-images/ads/20260220_184127_auto_test.jpg" alt="여권 증명사진" loading="lazy" decoding="async">
         <div class="showcase-label">여권</div>
       </div>
-      <div class="showcase-card">
-        <img src="https://storage.googleapis.com/monk-ai-images/ads/20260220_183842_test_ad.jpg" alt="비자 증명사진" loading="lazy" decoding="async">
-        <div class="showcase-label">비자</div>
-      </div>
-      <div class="showcase-card">
-        <img src="https://storage.googleapis.com/monk-ai-images/ads/1771578266121_0.jpg" alt="취업 증명사진" loading="lazy" decoding="async">
-        <div class="showcase-label">취업사진</div>
-      </div>
     </div>
   </section>
 
@@ -427,17 +428,17 @@ footer a { color: var(--accent); text-decoration: none; }
     <div class="features-grid">
       <div class="feature-item">
         <div class="feature-icon">
-          <svg viewBox="0 0 24 24"><path d="M15 10l-4 4l6 6l4 -16l-18 7l7 2"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0-6 0"/><path d="M5 7h1a2 2 0 0 0 2-2a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1a2 2 0 0 0 2 2h1a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2"/></svg>
         </div>
-        <h4>AI 코칭</h4>
-        <p>자세, 표정, 조명<br>실시간 가이드</p>
+        <h4>실시간 셀카</h4>
+        <p>본인 직접 촬영<br>딥페이크 원천차단</p>
       </div>
       <div class="feature-item">
         <div class="feature-icon">
-          <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 12h16M12 4v16"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M9 11l3 3l8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg>
         </div>
-        <h4>규격 자동</h4>
-        <p>여권, 비자, 이력서<br>규격 자동 적용</p>
+        <h4>AI 촬영 & 검수</h4>
+        <p>AI가 코칭하고<br>결과물까지 검수</p>
       </div>
       <div class="feature-item">
         <div class="feature-icon">

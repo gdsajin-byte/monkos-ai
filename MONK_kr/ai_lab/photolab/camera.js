@@ -5,7 +5,7 @@
 
 import {
   store, Monk, TX, API,
-  sharedInit, saveSessionData, loadSessionData,
+  sharedInit, saveSessionData, loadSessionData, navigateTo,
   MAX_CAPTURE_SIZE, FRAME_INTERVAL_MS, COACHING_DISPLAY_MS
 } from './shared.js';
 
@@ -120,12 +120,17 @@ async function sendCoachingFrame(dataUrl) {
       }),
     });
     if (!res.ok) {
-      Monk.log(`코칭 응답 에러: ${res.status}`);
+      const errBody = await res.text().catch(() => '');
+      Monk.log(`코칭 응답 에러: ${res.status} ${errBody.slice(0, 100)}`);
       return;
     }
     const data = await res.json();
-    if (data.text && store.step === 1) {
-      showCoaching(data.text, data.ready);
+    if (store.step === 1) {
+      if (data.text) {
+        showCoaching(data.text, data.ready);
+      } else if (data.error) {
+        Monk.log(`코칭 API 에러: ${data.error}`);
+      }
     }
   } catch (err) {
     Monk.log('코칭 요청 실패: ' + err.message);
@@ -193,7 +198,7 @@ function capturePhoto() {
   Monk.log('촬영 완료 → 분석실 이동');
 
   // 분석실로 이동
-  location.href = 'result.html';
+  navigateTo('result.html');
 }
 
 // ─── 선택 요약 뱃지 ───
@@ -237,7 +242,7 @@ async function init() {
   // 필수값 체크 (style은 sharedInit()에서 복원됨, purpose는 별도)
   if (!store.style || !purpose) {
     Monk.log('선택 데이터 없음 → 준비실로 이동');
-    location.href = 'prep.html';
+    navigateTo('prep.html');
     return;
   }
 
