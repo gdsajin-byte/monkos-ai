@@ -31,19 +31,19 @@ export async function onRequestPost(context) {
     console.log('📸 [IMAGE PRO] Generating with Imagen 4.0...');
     console.log('   Prompt:', prompt.substring(0, 100) + '...');
 
-    // Imagen 4.0 API 호출
+    // Imagen 4.0 API 호출 (:predict 엔드포인트)
+    const apiKey = env.GEMINI_API_KEY;
     const geminiResponse = await fetch(
-      'https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:generateImages',
+      `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`,
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-goog-api-key': env.GEMINI_API_KEY
         },
         body: JSON.stringify({
-          prompt: prompt,
-          config: {
-            numberOfImages: 4,
+          instances: [{ prompt: prompt }],
+          parameters: {
+            sampleCount: 4,
             aspectRatio: config?.aspectRatio || '1:1',
             safetyFilterLevel: 'block_low_and_above',
             personGeneration: 'allow_adult'
