@@ -30,7 +30,9 @@ export async function onRequestPost(context) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         prompt: prompt,
-        aspectRatio: config?.aspectRatio || '1:1'
+        aspectRatio: config?.aspectRatio || '1:1',
+        safetyFilterLevel: 'block_none',
+        personGeneration: 'allow_all'
       })
     });
 
@@ -55,7 +57,7 @@ export async function onRequestPost(context) {
 
     // 응답 변환: engine { images: [{ base64 }] } → 프론트 { images: ["data:..."] }
     const images = (result.images || []).map(img =>
-      typeof img === 'string' ? img : `data:image/png;base64,${img.base64}`
+      typeof img === 'string' ? img : `data:image/jpeg;base64,${img.imageBase64 || img.base64}`
     );
 
     console.log('✅ [IMAGE PRO] Generated', images.length, 'images via Vertex AI');
