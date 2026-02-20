@@ -127,6 +127,12 @@
         </div>
     </div>
 
+    <!-- 로딩 상태 (JS 초기화 전 즉시 표시) -->
+    <div id="page-loading" style="position:fixed; inset:0; background:#030508; z-index:100; display:flex; align-items:center; justify-content:center; flex-direction:column;">
+        <div style="width:32px; height:32px; border:3px solid rgba(167,139,250,0.3); border-top-color:#a78bfa; border-radius:50%; animation:spin 0.8s linear infinite;"></div>
+        <div style="color:#666; font-size:13px; margin-top:16px;">카메라 준비 중...</div>
+    </div>
+
     <!-- === 카메라 화면 === -->
     <div id="camera-area">
         <video id="camera-video" autoplay playsinline muted></video>

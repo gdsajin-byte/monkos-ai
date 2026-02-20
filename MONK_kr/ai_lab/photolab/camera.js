@@ -22,6 +22,7 @@ const media = Monk.media({
 
 // ─── 음성 가이드 ───
 let koVoice = null;
+let ttsActivated = false;
 
 function initVoice() {
   const voices = speechSynthesis.getVoices();
@@ -34,6 +35,19 @@ if ('speechSynthesis' in window) {
   speechSynthesis.onvoiceschanged = initVoice;
   initVoice();
 }
+
+// iOS Safari: speechSynthesis는 첫 호출이 user gesture 내에서 이뤄져야 함
+// 페이지 첫 터치/클릭 시 TTS 활성화
+function activateTTS() {
+  if (ttsActivated || !('speechSynthesis' in window)) return;
+  ttsActivated = true;
+  const warmup = new SpeechSynthesisUtterance('');
+  warmup.volume = 0;
+  speechSynthesis.speak(warmup);
+  Monk.log('TTS 활성화 (user gesture)');
+}
+document.addEventListener('touchstart', activateTTS, { once: true });
+document.addEventListener('click', activateTTS, { once: true });
 
 function speakKo(text) {
   if (!store.voiceEnabled || !('speechSynthesis' in window)) return;
@@ -241,6 +255,7 @@ async function init() {
 
   // 필수값 체크 (style은 sharedInit()에서 복원됨, purpose는 별도)
   if (!store.style || !purpose) {
+    document.querySelector('#page-loading')?.remove();
     Monk.log('선택 데이터 없음 → 준비실로 이동');
     navigateTo('prep.html');
     return;
@@ -258,19 +273,13 @@ async function init() {
   // 선택 요약 뱃지 렌더링
   renderSelectionSummary();
 
-  // 카메라 화면 활성화
+  // 로딩 상태 제거 + 카메라 화면 활성화
+  document.querySelector('#page-loading')?.remove();
   document.querySelector('#camera-area')?.classList.add('active');
 
   store.step = 1;
   store.stepLabel = TX.step1;
   store.coaching = { text: TX.coachingCheck, ready: false, active: true };
-
-  // iOS Safari: user gesture 내에서 speechSynthesis 초기화
-  if ('speechSynthesis' in window) {
-    const warmup = new SpeechSynthesisUtterance('');
-    warmup.volume = 0;
-    speechSynthesis.speak(warmup);
-  }
 
   try {
     await media.start();

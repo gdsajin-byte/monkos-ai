@@ -204,7 +204,14 @@ Object.assign(window, {
 
 // ─── 초기화 ───
 async function init() {
-  await sharedInit();
+  try {
+    await sharedInit();
+  } catch (err) {
+    Monk.log('sharedInit 에러: ' + err.message);
+  }
+
+  // 로딩 상태 제거
+  document.querySelector('#page-loading')?.remove();
 
   // 결과 화면 활성화
   const resultArea = document.querySelector('#result-overlay');
