@@ -1,10 +1,10 @@
 /**
  * result.js — 분석실 전용 로직
- * 프리체크 → 생성 → QC → 결제 → 규격 크롭 → 수령처 이동
+ * 프리체크 → 생성 → 결제 → 규격 크롭 → 수령처 이동
  */
 
 import {
-  store, pipe, Monk, TX, PHOTO_SPECS, CREDIT_COST, API,
+  store, pipe, Monk, TX, PHOTO_SPECS, CREDIT_COST,
   sharedInit, showCreditModal, saveSessionData, loadSessionData
 } from './shared.js';
 
@@ -33,7 +33,7 @@ function showOriginal() {
   store.showStep2Actions = true;
   store.showStep3Actions = false;
   store.generated = null;
-  store.qcResult = null;
+  store.statusText = '';
 
   // 원본 이미지 표시
   const imgEl = document.querySelector('#photo-original');
@@ -47,15 +47,14 @@ function retakePhoto() {
   store.captured = null;
   store.generated = null;
   store.cropped = null;
-  store.qcResult = null;
-  store.qcPassed = false;
+  store.statusText = '';
   store.showStep2Actions = false;
   store.showStep3Actions = false;
 
   location.href = 'camera.html';
 }
 
-// ─── 생성 + QC 파이프라인 ───
+// ─── 생성 파이프라인 (QC 제거됨) ───
 async function confirmAndGenerate() {
   if (!store.captured) return;
 
@@ -65,23 +64,21 @@ async function confirmAndGenerate() {
   store.showStep2Actions = false;
   store.resultTitle = '사진 분석 중...';
   store.resultSubtitle = 'AI가 촬영본을 검수하고 있습니다';
-  store.qcBadgeText = '사전분석 중...';
-  store.qcResult = { pending: true };
+  store.statusText = '사전분석 중...';
 
   try {
     const preCheck = await pipe.run('precheck', { image: base64 });
     Monk.log(`사전분석: ${preCheck.score}점 ${preCheck.suitable ? 'OK' : 'NG'}`);
 
     if (!preCheck.suitable) {
-      store.qcBadgeText = `사전분석: ${preCheck.score}점 — ${preCheck.suggestion || '재촬영을 권장합니다'}`;
-      store.qcPassed = false;
+      store.statusText = `사전분석: ${preCheck.score}점 — ${preCheck.suggestion || '재촬영을 권장합니다'}`;
       store.resultTitle = '재촬영을 권장합니다';
       store.resultSubtitle = preCheck.suggestion || '촬영 환경을 개선해 주세요';
       store.showStep2Actions = true;
       return;
     }
 
-    store.qcBadgeText = `사전분석 OK (${preCheck.score}점) → 생성 시작`;
+    store.statusText = `사전분석 OK (${preCheck.score}점) → 생성 시작`;
   } catch (err) {
     Monk.log('사전분석 스킵: ' + (err.error || err.message));
   }
@@ -91,7 +88,7 @@ async function confirmAndGenerate() {
   store.stepLabel = TX.step3;
   store.resultTitle = TX.generating;
   store.resultSubtitle = TX.generatingSub;
-  store.qcBadgeText = TX.genLoading;
+  store.statusText = TX.genLoading;
 
   try {
     const genResult = await pipe.run('generate', {
@@ -103,30 +100,23 @@ async function confirmAndGenerate() {
     });
 
     store.generated = genResult.image;
-    store.resultTitle = TX.qcVerifying;
-    store.resultSubtitle = TX.qcVerifyingSub;
-    store.qcBadgeText = TX.qcChecking;
-    Monk.log('생성 완료 → QC 시작');
+    Monk.log('생성 완료');
 
     // 생성된 이미지 표시
     const genImg = document.querySelector('#photo-generated');
     if (genImg) genImg.src = genResult.image;
 
-    // QC
-    const origBase64 = store.captured.includes(',') ? store.captured.split(',')[1] : store.captured;
-    const genBase64 = genResult.image.includes(',') ? genResult.image.split(',')[1] : genResult.image;
+    // 바로 결과 표시 + 다운로드 활성화
+    store.statusText = TX.resultDone;
+    store.resultTitle = TX.resultDone;
+    store.resultSubtitle = TX.resultDoneSub;
+    store.stepLabel = TX.resultDone;
+    store.showStep3Actions = true;
+    store.showStep2Actions = false;
 
-    try {
-      const qcResult = await pipe.run('qc', {
-        original: origBase64,
-        generated: genBase64,
-        gender: store.gender,
-        age: store.age,
-      });
-      showQCResult(qcResult);
-    } catch (qcErr) {
-      showQCError(qcErr.error || qcErr.message || 'QC 실패');
-    }
+    const btnDownload = document.querySelector('#btn-download');
+    if (btnDownload) btnDownload.disabled = false;
+
   } catch (err) {
     if (err.status === 402) {
       showCreditModal(err.required || 1, err.credits || 0, 'generate');
@@ -140,47 +130,14 @@ async function confirmAndGenerate() {
   }
 }
 
-function showQCResult(result) {
-  const passed = result.identity === 'PASS' || result.same_person === true;
-  const similarity = result.similarity || '?';
-
-  store.qcResult = result;
-  store.qcPassed = passed;
-  store.qcBadgeText = passed
-    ? `PASS — ${similarity}% | ${result.note || result.quality || ''}`
-    : `FAIL — ${similarity}% | ${result.note || TX.retakeRecommend}`;
-
-  store.resultTitle = passed ? TX.resultDone : TX.resultFail;
-  store.resultSubtitle = passed ? TX.resultDoneSub : TX.resultFailSub;
-  store.showStep3Actions = true;
-  store.showStep2Actions = false;
-
-  if (passed) store.stepLabel = TX.resultDone;
-
-  const btnDownload = document.querySelector('#btn-download');
-  if (btnDownload) btnDownload.disabled = !passed;
-
-  Monk.log(`QC: ${passed ? 'PASS' : 'FAIL'} (${similarity}%)`);
-}
-
 function showGenerateError(error) {
-  store.qcBadgeText = TX.genFail + ': ' + error;
-  store.qcPassed = false;
+  store.statusText = TX.genFail + ': ' + error;
   store.resultTitle = TX.genFail;
   store.resultSubtitle = error;
   store.showStep3Actions = false;
   store.showStep2Actions = true;
   store.step = 2;
   Monk.log('생성 에러: ' + error);
-}
-
-function showQCError(error) {
-  store.qcBadgeText = 'QC: ' + error;
-  store.qcPassed = false;
-  store.showStep3Actions = true;
-  const btnDownload = document.querySelector('#btn-download');
-  if (btnDownload) btnDownload.disabled = false;
-  Monk.log('QC 에러: ' + error);
 }
 
 // ─── 다운로드 (결제 + 크롭 → 수령처 이동) ───

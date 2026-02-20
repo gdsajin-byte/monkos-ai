@@ -209,7 +209,7 @@ async function init() {
   // sessionStorage에서 선택 데이터 확인
   if (!store.style || !store.gender || !store.age) {
     Monk.log('선택 데이터 없음 → 준비실로 이동');
-    location.href = 'index.html';
+    location.href = 'prep.html';
     return;
   }
 

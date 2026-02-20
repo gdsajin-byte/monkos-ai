@@ -40,12 +40,9 @@ export const store = Monk.store({
 
   // 코칭
   coaching: { text: TX.coachingCheck, ready: false, active: false },
-  wsConnected: false,
 
-  // QC
-  qcResult: null,
-  qcPassed: false,
-  qcBadgeText: '',
+  // 상태 텍스트 (사전분석/생성 진행)
+  statusText: '',
 
   // 결과 화면
   resultTitle: TX.resultConfirm,
@@ -79,7 +76,6 @@ export const store = Monk.store({
 export const pipe = Monk.pipe({
   precheck: { type: 'post', path: API.PRECHECK },
   generate: { type: 'post', path: API.GENERATE },
-  qc: { type: 'post', path: API.QC },
   creditUse: { type: 'post', path: API.CREDIT_USE },
 }, {
   baseUrl: '',
@@ -94,7 +90,7 @@ export function showCreditModal(required, current, action) {
     ? '다운로드에 크레딧이 필요합니다'
     : '생성에 크레딧이 필요합니다';
   store.creditModalDesc = action === 'download'
-    ? '사진을 다운로드하려면 10 크레딧이 필요합니다. 공유하면 10 크레딧을 받을 수 있습니다!'
+    ? '사진을 다운로드하려면 8 크레딧이 필요합니다.'
     : '사진을 생성하려면 1 크레딧이 필요합니다.';
   store.creditModalOpen = true;
 }

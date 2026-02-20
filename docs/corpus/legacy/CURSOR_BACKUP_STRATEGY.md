@@ -117,7 +117,7 @@ nohup ~/cursor_screenshot_backup.sh > ~/screenshot_backup.log 2>&1 &
 
 ### 로컬 폴더 구조:
 ```
-~/developer/monk_project /_saga/
+~/developer/monk_project/_saga/
 ├── session_logs/                 # 1층: 맥락 요약
 │   └── 2026-01-08_session.md
 ├── realtime_backup/              # 2층: DB 자동 백업

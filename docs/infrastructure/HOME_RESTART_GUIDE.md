@@ -92,7 +92,7 @@ _saga/HOME_RESTART_GUIDE.md
 
 ```bash
 # 1. 프록시 폴더로 이동
-cd "/Users/jeong-kyushin/developer/monk_project /MONK_kr/cloudflare-workers/vertex-ai-proxy"
+cd "/Users/jeong-kyushin/developer/monk_project/MONK_kr/cloudflare-workers/vertex-ai-proxy"
 
 # 2. 로그 확인
 npx wrangler tail monk-vertex-proxy
@@ -132,7 +132,7 @@ https://console.cloud.google.com/gen-app-builder/engines
 
 **현재 코드 위치:**
 ```
-/Users/jeong-kyushin/developer/monk_project /MONK_kr/cloudflare-workers/vertex-ai-proxy/src/index.js
+/Users/jeong-kyushin/developer/monk_project/MONK_kr/cloudflare-workers/vertex-ai-proxy/src/index.js
 ```
 
 **현재 엔드포인트:**
@@ -173,7 +173,7 @@ gs://monk-project-soul/saga/
 
 ### 로컬
 ```
-~/developer/monk_project /_saga/
+~/developer/monk_project/_saga/
 ├── YONGA_CONNECTION_GUIDE.md
 ├── DEPLOYMENT_STEPS.md
 └── session_logs/

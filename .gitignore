@@ -37,6 +37,10 @@ client_secret*.json
 **/client_secret*.json
 **/credentials.json
 
+# Service Account Keys
+serviceAccountKey.json
+**/serviceAccountKey.json
+
 # Logs
 *.log
 logs/

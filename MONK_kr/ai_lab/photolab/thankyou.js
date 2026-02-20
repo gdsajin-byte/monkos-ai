@@ -17,7 +17,7 @@ function displayPhoto() {
   const cropped = loadSessionData('cropped');
   if (!cropped) {
     Monk.log('크롭 데이터 없음 → 준비실로 이동');
-    location.href = 'index.html';
+    location.href = 'prep.html';
     return;
   }
 
