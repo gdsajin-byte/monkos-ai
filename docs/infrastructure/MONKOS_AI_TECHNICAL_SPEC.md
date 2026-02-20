@@ -113,10 +113,10 @@ MONKOS.ai (AI 실행 엔진 — GCP Cloud Run)
 
 ### 3-2. CF Pages Functions (자체 엔진)
 
-`MONK_kr/functions/` 디렉토리의 JS 파일이 서버리스 함수로 자동 배포.
+루트 `functions/` 디렉토리의 JS 파일이 서버리스 함수로 자동 배포.
 
-> **중요: 루트 `functions/` → `MONK_kr/functions/` symlink 통일 (2/19)**
-> wrangler는 CWD의 `functions/`를 참조하므로 symlink으로 정본 통일.
+> **정본: 루트 `functions/`** (실제 디렉토리, 2/20 정상화)
+> wrangler는 CWD의 `functions/`를 참조. `MONK_kr/functions/`는 제거됨.
 
 **증명사진 자체 엔진 (2/19 구축 — Cloud Run 프록시 제거):**
 
@@ -140,7 +140,7 @@ MONKOS.ai (AI 실행 엔진 — GCP Cloud Run)
 
 **CF Pages Function 주의사항:**
 1. **export 패턴**: `onRequestPost`/`onRequestOptions` (메서드별 export 필수)
-2. **functions/ 경로**: wrangler는 CWD 기준 `functions/` 참조. `MONK_kr/functions/`에 파일 추가하면 symlink 통해 자동 반영
+2. **functions/ 경로**: wrangler는 CWD 기준 `functions/` 참조. 루트 `functions/api/`에 직접 추가
 3. **API Key**: `env.GEMINI_API_KEY` (CF Pages Secrets에 설정)
 4. **idgen 주의**: `responseModalities` 사용 금지 (photo.js 패턴 준수), mimeType은 `'image/jpeg'`
 
@@ -300,14 +300,12 @@ wss://idphoto-kr.monkos.ai/
 - `wrangler pages deploy MONK_kr/`는 정적 파일만 `MONK_kr/`에서 가져오고, Functions는 CWD(프로젝트 루트)의 `functions/`를 참조
 - 신규 파일은 `MONK_kr/functions/api/`에만 존재 → 배포에 포함되지 않음
 
-**해결:**
-```bash
-rm -rf functions/
-ln -s MONK_kr/functions functions
-```
-→ symlink 통일. `MONK_kr/functions/`가 유일한 정본.
+**해결 (2/19 symlink → 2/20 최종 정상화):**
+- 2/19: symlink 시도 → wrangler가 symlink 미추적 + /tmp 우회 배포 시 Functions 전멸
+- 2/20: 루트 `functions/`를 실제 디렉토리로 확정, `MONK_kr/functions/` 제거
+- **정본: 루트 `functions/`** (실제 디렉토리)
 
-**교훈:** 반복 우회(파일 복사)가 아닌 근원 해결(symlink 통일)이 정답
+**교훈:** symlink도 우회책이었다. 정본을 wrangler가 직접 참조하는 위치(루트)에 두는 것이 근원 해결
 
 ### 6-4. 2/19 idgen 생성 실패 — responseModalities
 
@@ -333,9 +331,9 @@ ln -s MONK_kr/functions functions
 
 ### CF Pages 자동배포 주의사항
 
-- monk.kr (CF Pages)는 develop/main push 시 자동배포
-- MONK_kr/functions/api/ 파일 추가/삭제 시 Functions 번들 전체 영향
-- 신규 Functions 파일은 반드시 Preview 배포에서 검증 후 main 머지
+- monk.kr (CF Pages) 자동배포 OFF (2/20). 수동 `wrangler pages deploy`만 허용
+- 루트 `functions/api/` 파일 추가/삭제 시 Functions 번들 전체 영향
+- 신규 Functions 파일은 반드시 Preview 배포에서 검증 후 Production 배포
 
 ---
 
@@ -348,7 +346,7 @@ ln -s MONK_kr/functions functions
 ### Cloudflare Pages (monk.kr)
 - **photolab:** prod 배포 완료 (E2E 테스트 통과)
 - **자체 엔진:** precheck/idgen/qc — Gemini API 직접 호출 (Cloud Run 프록시 제거)
-- **symlink:** `functions/` → `MONK_kr/functions/` (이중 구조 해소)
+- **정본:** 루트 `functions/` (실제 디렉토리, 이중 구조 제거 완료 2/20)
 - **wrangler:** 4.66.0
 
 ---

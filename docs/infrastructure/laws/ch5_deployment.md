@@ -10,10 +10,9 @@
 - **자동빌드 OFF.** Git push = 코드 저장만. **배포 ≠ push.**
 - 배포 = `wrangler pages deploy` **수동 실행만** 허용.
 - Production = `--branch main`, Preview = 미지정.
-- **표준 명령**: `cd /tmp && npx wrangler pages deploy /tmp/monk-kr-deploy --project-name monk-kr --branch main --commit-dirty=true`
-- symlink: `ln -sfn` 으로 MONK_kr 경로 연결.
-- 정본: `MONK_kr/functions/` (루트 `functions/`는 symlink).
-- `wrangler`는 CWD의 `functions/`를 참조 (배포 디렉토리 내가 아님).
+- **표준 명령**: `npx wrangler pages deploy MONK_kr/ --project-name monk-kr --branch main --commit-dirty=true`
+- CWD = 프로젝트 루트에서 실행 (wrangler가 CWD의 `functions/`를 참조).
+- 정본: **루트 `functions/`** (실제 디렉토리). `MONK_kr/functions/`는 없음 (2/20 제거).
 
 > 근거: 2026-02-20 자동빌드 OFF 결정. develop→main 56커밋 격차.
 > 작가님 원문: "깃을 훅킹하는 자동프로덕션이 푸시할때마다 혼돈을 초래하고 있다" (02-20)

@@ -249,7 +249,7 @@ M1/iMac ←──mailbox_watcher.sh (30초 폴링)──→ M2 (와이프)
 | `wrangler pages deploy MONK_kr/ --project-name monk-kr --branch main` | Production | monk.kr |
 | `wrangler pages deploy MONK_kr/ --project-name monk-kr` | Preview | *.monk-kr.pages.dev |
 
-- **정본**: `MONK_kr/functions/` (루트 `functions/`는 symlink)
+- **정본**: 루트 `functions/` (실제 디렉토리). `MONK_kr/functions/`는 없음 (2/20 제거)
 - **API Key**: `env.GEMINI_API_KEY` (CF Pages Secrets)
 - **자동빌드**: OFF (2026-02-20 변경, 멀티에이전트 통제 불가 대응)
 

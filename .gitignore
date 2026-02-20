@@ -55,6 +55,8 @@ logs/
 # Cloudflare
 .wrangler/
 wrangler.toml.backup
+_worker.bundle
+_functions_backup_*
 
 # Mac
 *.icloud
