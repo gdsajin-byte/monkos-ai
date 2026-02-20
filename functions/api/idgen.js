@@ -210,7 +210,10 @@ export async function onRequestPost(context) {
     if (!response.ok) {
       const errorText = await response.text();
       console.error('Gemini API 오류:', errorText);
-      throw new Error(`API 오류: ${response.status}`);
+      // 에러 상세를 클라이언트에 전달 (디버깅용)
+      let detail = '';
+      try { detail = JSON.parse(errorText)?.error?.message || errorText.substring(0, 200); } catch { detail = errorText.substring(0, 200); }
+      throw new Error(`API ${response.status}: ${detail}`);
     }
 
     const data = await response.json();
