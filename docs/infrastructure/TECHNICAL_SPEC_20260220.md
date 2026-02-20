@@ -15,15 +15,12 @@
 - 자동빌드 OFF, **수동 배포만** (`wrangler pages deploy`)
 - 변경 이유: 멀티 에이전트 환경에서 push = 배포 통제 불가
 
-### Production 배포 명령
+### Production 배포 명령 (2/20 오후 정정)
 ```bash
-cd /tmp && npx wrangler pages deploy /tmp/monk-kr-deploy --project-name monk-kr --branch main --commit-dirty=true
+npx wrangler pages deploy MONK_kr/ --project-name monk-kr --branch main --commit-dirty=true
 ```
-
-### symlink 설정
-```bash
-ln -sfn "/Users/developer/monk_project/MONK_kr" /tmp/monk-kr-deploy
-```
+- 프로젝트 루트에서 직접 실행 (symlink/tmp 우회 폐기)
+- wrangler는 CWD의 `functions/`를 참조 → `/tmp` 우회 시 Functions 누락
 
 ### 환경 매핑
 | 옵션 | 환경 | 도메인 |
@@ -89,12 +86,137 @@ mv "/Users/developer/monk_project " "/Users/developer/monk_project"
 
 ---
 
-## 4. CLAUDE.md 체계화 (예정)
+## 4. CLAUDE.md 체계화 (완료)
 
-### 현재 상태
-- 헌법(불변 원칙) / 법률(운용 규칙) / 규정(세부 절차)이 CLAUDE.md 한 파일에 혼재
-- 파일 길이 증가로 에이전트 컨텍스트 부담 가중
+- 헌법(CLAUDE.md 핵심) / 법률(별도 `laws/` 8장) 분리 완료
+- 373줄 → 137줄 압축
 
-### 과제
-- 3계층 분리: 헌법(CLAUDE.md 핵심) / 법률(별도 파일) / 규정(별도 파일)
-- 다음 세션 착수 예정
+---
+
+## 5. functions/ 정본 구조 정상화
+
+### 문제
+- `functions/` (symlink) → `MONK_kr/functions/` (실체) 이중 구조
+- wrangler가 symlink 미추적 → 빌드 시 `.wrangler/tmp` 경로 오류
+- `/tmp` 우회 배포 시 CWD에 `functions/` 없음 → **Functions 전멸 (모든 API 405)**
+
+### 해결
+```bash
+# symlink 제거, 실체 디렉토리로 교체
+mv functions functions_symlink_backup
+cp -r MONK_kr/functions/ functions/
+```
+
+### 정본 구조 (확정)
+```
+monk_project/
+├── functions/          ← 정본 (실제 디렉토리, wrangler가 참조)
+│   └── api/
+│       ├── generate.js    — Imagen 4 T2I
+│       ├── refine.js      — NB3 I2I/Edit/Upscale
+│       ├── analyze.js     — Gemini Flash 이미지 분석
+│       ├── photo.js       — NB3 I2I (증명사진)
+│       ├── idgen.js       — NB3 I2I (증명사진 생성)
+│       ├── precheck.js    — Gemini Flash 사전분석
+│       ├── qc.js          — Gemini Flash QC
+│       └── ... (auth, payment, telegram 등)
+└── MONK_kr/            ← 정적 에셋만 (functions/ 없음)
+```
+
+### 관련 커밋
+- `46cd14d` — functions/ 정본 구조 정상화
+
+---
+
+## 6. image_pro 모델 정상화 (Google API 변경 대응)
+
+### 배경
+- monk.kr/ai_lab/image_pro 전체 API 장애 (2026-02-19~20)
+- 원인 1: functions/ 배포 누락 (§5에서 해결)
+- 원인 2: Google이 모델/엔드포인트를 변경 → 기존 코드 파괴
+
+### Google API 변경 내역
+
+| 파일 | 변경 전 (장애) | 변경 후 (복구) | 변경 유형 |
+|------|---------------|---------------|-----------|
+| `generate.js` | `imagen-4.0-generate-001:generateImages` | `imagen-4.0-generate-001:predict` | 엔드포인트 변경 |
+| `generate.js` | `{ prompt, config: { numberOfImages } }` | `{ instances: [{ prompt }], parameters: { sampleCount } }` | 요청 구조 변경 |
+| `generate.js` | `generatedImages[].image.imageBytes` | `predictions[].bytesBase64Encoded` | 응답 구조 변경 |
+| `analyze.js` | `gemini-2.0-flash-exp` | `gemini-2.0-flash` | 모델 폐기 |
+| `refine.js` | `gemini-2.0-flash-exp` + `responseModalities` | `gemini-3-pro-image-preview` (NB3) | 모델 교체 + 설정 제거 |
+
+### Imagen 4 `:predict` 엔드포인트 상세
+
+```javascript
+// 엔드포인트
+`https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`
+
+// 요청 (Vertex AI 스타일)
+{
+  instances: [{ prompt: "..." }],
+  parameters: {
+    sampleCount: 4,
+    aspectRatio: "1:1",
+    safetyFilterLevel: "block_low_and_above",
+    personGeneration: "allow_adult"
+  }
+}
+
+// 응답
+{
+  predictions: [
+    { bytesBase64Encoded: "BASE64...", mimeType: "image/png" }
+  ]
+}
+```
+
+### NB3 I2I (refine.js) 정본 패턴
+
+```javascript
+// photo.js 패턴 준수 (증명사진 I2I와 동일)
+`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image-preview:generateContent?key=${apiKey}`
+
+// 요청: contents + inlineData (responseModalities 사용 금지)
+// 응답: candidates[0].content.parts.find(p => p.inlineData).inlineData.data
+```
+
+### API 인증 통일
+
+| 방식 | 적용 | 비고 |
+|------|------|------|
+| Query param `?key=` | generate, refine | `:predict` / NB3 정본 패턴 |
+| Header `x-goog-api-key` | analyze | Flash 텍스트 분석 |
+| CF Pages Secret | 전체 | `env.GEMINI_API_KEY` |
+
+### Google 모델 변경 패턴 (교훈)
+
+```
+Phase 1: Vertex AI ADC 무료 개방 → 개발자 유입
+Phase 2: 모델명/엔드포인트 변경 (기존 코드 파괴)
+Phase 3: API Key 종량제 전용 이전 (Google AI Studio)
+Phase 4: Vertex AI에는 구 버전만 잔류
+```
+
+- **대응 원칙**: 장애 발생 시 Google AI Studio에서 현재 동작 모델명/엔드포인트 확인 → 코드 갱신
+- **금지**: 폐기 모델을 다른 모델로 조용히 교체 (원인 보고 없는 우회 금지 — 헌법 제10조)
+
+### 가동 확인 (2026-02-20 13:20 KST)
+
+| API | 모델 | 상태 |
+|-----|------|------|
+| `/api/generate` | Imagen 4 (`:predict`) | ✅ T2I 정상 |
+| `/api/refine` | NB3 (`gemini-3-pro-image-preview`) | ✅ I2I 정상 |
+| `/api/analyze` | Flash (`gemini-2.0-flash`) | ✅ 분석 정상 |
+| `/api/photo` | NB3 | ✅ 기존 정상 |
+| `/api/idgen` | NB3 | ✅ 기존 정상 |
+| `/api/precheck` | Flash | ✅ 기존 정상 |
+| `/api/qc` | Flash | ✅ 기존 정상 |
+
+### 관련 커밋
+- `4dad3c7` — analyze/refine 폐기 모델 교체
+- `8590a08` — generate.js 엔드포인트 :generateImages → :predict
+- `dd458d6` — generate.js 응답 파싱 predictions[].bytesBase64Encoded
+
+### Git 설정 정정
+- iMac git config 미설정 → 호스트명 자동 생성값 사용 (`Jeong-Kyu Shin`)
+- 정정: `gdsajin-byte <gdsajin@gmail.com>` (글로벌 설정 완료)
