@@ -113,7 +113,8 @@ export async function onRequestPost(context) {
         }],
         generationConfig: {
           temperature: 0.3,
-          maxOutputTokens: 50,
+          maxOutputTokens: 200,
+          thinkingConfig: { thinkingBudget: 0 },
         },
       }),
     });
