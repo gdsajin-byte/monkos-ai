@@ -377,6 +377,118 @@ function cleanupHistories() {
 }
 setInterval(cleanupHistories, 5 * 60 * 1000);
 
+// === 코칭 프롬프트 (CF idphoto-coaching.js에서 이식) ===
+const COACHING_INSTRUCTIONS = {
+  id_photo: `몽코스 AI 코치입니다. 여권/증명사진 촬영을 도와드립니다.
+
+[체크 순서]
+1. 정면 응시 (고개 기울기, 시선)
+2. 조명 균일 (얼굴에 그림자 없이)
+3. 표정 (무표정 또는 자연스러운 미소)
+4. 눈썹이 보이는지 (앞머리로 가리면 안됨)
+5. 얼굴 라인이 드러나는지 (헤어로 덮으면 안됨)
+
+[응답 규칙]
+- 한국어 1문장, 15자 이내
+- 문제시 1가지만 지적
+- 긍정 표현: "~하면 완벽해요"
+- 완벽하면: "좋아요! 지금 촬영하세요"`,
+
+  resume: `몽코스 AI 코치입니다. 이력서 사진 촬영을 도와드립니다.
+
+[체크 순서]
+1. 정면 응시 (고개 기울기, 시선)
+2. 조명 균일 (얼굴에 그림자 없이)
+3. 표정 (자연스럽고 호감가는 미소)
+4. 자세 (허리 펴고, 어깨 수평)
+
+[응답 규칙]
+- 한국어 1문장, 15자 이내
+- 문제시 1가지만 지적
+- 긍정 표현: "~하면 완벽해요"
+- 완벽하면: "좋아요! 지금 촬영하세요"`,
+};
+
+const READY_KEYWORDS = ['좋아요', '완벽', '촬영하세요', 'OK', '좋습니다', '잘 맞', '훌륭', '지금'];
+
+function buildCoachingPrompt(body) {
+  const { style, purpose, gender, age, clothing, clothingColor, tie, hair, expression } = body;
+  const base = COACHING_INSTRUCTIONS[style] || COACHING_INSTRUCTIONS.id_photo;
+  const context = [];
+
+  if (clothing && clothing !== 'as_is') {
+    const clothingNames = { suit: '정장', shirt: '셔츠/블라우스', casual: '캐주얼', uniform: '교복' };
+    context.push(`사용자 의상: ${clothingNames[clothing] || clothing}`);
+    if (clothingColor) {
+      const colorNames = { black: '검정', navy: '네이비', charcoal: '차콜', white: '흰색', beige: '베이지', wine: '와인', pastel: '파스텔' };
+      context.push(`의상 컬러: ${colorNames[clothingColor] || clothingColor}`);
+    }
+  }
+  if (tie && tie !== 'none' && gender === 'male') {
+    const tieNames = { solid_navy: '무지 네이비', solid_wine: '무지 와인', stripe_blue: '스트라이프 블루', stripe_navy: '스트라이프 네이비', stripe_wine: '스트라이프 와인' };
+    context.push(`넥타이: ${tieNames[tie] || '착용 예정'}`);
+  }
+  if (hair && hair !== 'as_is') {
+    const hairNames = { tidy: '정돈', up: '올림머리', down: '내림머리' };
+    context.push(`헤어 스타일: ${hairNames[hair] || hair}`);
+  }
+  if (expression) {
+    const exprNames = { gentle_smile: '잔잔한 미소', neutral: '무표정', natural_smile: '자연스러운 미소', bright_smile: '밝은 미소' };
+    context.push(`목표 표정: ${exprNames[expression] || expression}`);
+  }
+  if (context.length === 0) return base;
+  return base + `\n\n[사용자 설정]\n${context.join('\n')}\n\n위 설정을 참고하여 촬영 전 코칭해 주세요. 의상이나 표정에 대한 구체적인 조언도 가능합니다.`;
+}
+
+// === QC 프롬프트 (CF qc.js에서 이식) ===
+function buildQCInstruction(gender, age) {
+  const genderText = gender === 'male' ? '남성' : '여성';
+  const ageMap = { child: '유아~12세', teen: '13~18세', adult: '19세 이상' };
+  const ageText = ageMap[age] || '미지정';
+
+  return `2개의 이미지를 비교하고, 2번째 이미지(증명사진)의 품질을 종합 분석해 주세요.
+1번째: 원본 (실제 촬영)
+2번째: AI 생성물 (증명사진)
+사용자 설정: 성별=${genderText}, 연령대=${ageText}
+
+[판정 기준 — 모두 체크 필수]
+1. 동일 인물인가? (얼굴 구조, 눈/코/입 비율)
+2. 유사도 % (0-100)
+3. 아이덴티티 유지 (PASS/FAIL)
+4. 성별 일치: 원본 인물의 외형 성별과 생성물이 일치하는가?
+5. 연령대 일치: 원본 인물의 외형 나이대와 생성물이 일치하는가?
+6. 과도한 보정: 헤어스타일 대폭 변경, 피부 과보정, 얼굴 윤곽 변형, 눈크기 변경 등
+7. 증명사진 품질 (조명, 배경, 구도)
+8. 2번째 이미지에서 얼굴의 bounding box 좌표 [ymin, xmin, ymax, xmax] (0-1000 정규화)
+
+[FAIL 조건 — 하나라도 해당되면 identity를 FAIL로 판정]
+- 성별 외형이 원본과 다르게 변환됨
+- 연령대가 원본과 크게 달라짐 (10세 이상 차이 추정)
+- 얼굴 윤곽, 눈크기, 코 형태 등이 원본과 다르게 변형됨
+- 헤어스타일이 원본과 완전히 다름 (정돈 수준은 허용)
+- similarity 70% 미만
+
+[응답 형식 — JSON만 출력]
+{
+  "same_person": true,
+  "similarity": 85,
+  "identity": "PASS",
+  "gender_match": true,
+  "age_match": true,
+  "over_retouched": false,
+  "quality": "GOOD",
+  "face_box": [180, 220, 650, 780],
+  "face_ratio": 0.35,
+  "face_center_x": 500,
+  "head_top_margin": 80,
+  "note": "한줄 코멘트"
+}
+
+face_ratio = 얼굴 높이 / 전체 이미지 높이 (0.25~0.45 적합)
+face_center_x = 얼굴 중심 x좌표 (500 근처면 중앙 정렬, ±50 허용)
+head_top_margin = 머리 정수리에서 이미지 상단까지 여백 (40~150 적합)`;
+}
+
 // === 채널 설정 ===
 const CHANNEL_CONFIG = {
   web: {
@@ -405,6 +517,23 @@ const CHANNEL_CONFIG = {
     historyTTL: 30 * 60 * 1000,
     maxHistory: 20,
     logCollection: 'prep_conversations',
+  },
+  coaching: {
+    systemPrompt: COACHING_INSTRUCTIONS.id_photo,
+    temperature: 0.3,
+    maxOutputTokens: 50,
+    stateless: true,
+    historyMap: null,
+    logCollection: null,
+  },
+  qc: {
+    systemPrompt: '',  // buildQCInstruction()로 동적 생성
+    temperature: 0.2,
+    maxOutputTokens: 300,
+    stateless: true,
+    historyMap: null,
+    logCollection: 'qc_results',
+    responseMimeType: 'application/json',
   },
 };
 
@@ -458,14 +587,37 @@ async function logChatConversation(sessionId, userMessage, botReply) {
 }
 
 // === 통합 챗봇 API ===
-async function chatWithMonkos(channel, chatId, userMessage) {
+async function chatWithMonkos(channel, chatId, userMessage, options = {}) {
   const config = CHANNEL_CONFIG[channel];
   if (!config) throw new Error(`Unknown channel: ${channel}`);
 
-  // 히스토리 관리
+  // 시스템 프롬프트: 오버라이드 > 채널 기본
+  const basePrompt = options.systemPromptOverride || config.systemPrompt;
+
+  // --- stateless 채널 (coaching/qc): 히스토리 없이 단발 요청 ---
+  if (config.stateless) {
+    const parts = [];
+    if (options.image) parts.push({ inlineData: { mimeType: 'image/jpeg', data: options.image } });
+    if (options.image2) parts.push({ inlineData: { mimeType: 'image/jpeg', data: options.image2 } });
+    parts.push({ text: userMessage });
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.0-flash',
+      contents: [{ role: 'user', parts }],
+      config: {
+        systemInstruction: basePrompt,
+        maxOutputTokens: config.maxOutputTokens,
+        temperature: config.temperature,
+        ...(config.responseMimeType && { responseMimeType: config.responseMimeType }),
+      },
+    });
+
+    return response.candidates?.[0]?.content?.parts?.[0]?.text || '';
+  }
+
+  // --- stateful 채널 (web/telegram/prep): 기존 히스토리 로직 ---
   let history = config.historyMap.get(chatId);
   if (!history) {
-    // web 채널만 Firestore 복원 시도 (기존 로직 유지)
     if (channel === 'web') {
       history = await loadChatHistory(chatId);
     }
@@ -476,7 +628,7 @@ async function chatWithMonkos(channel, chatId, userMessage) {
   }
   history.lastAccess = Date.now();
 
-  // RAG: 전 채널 공통
+  // RAG: stateful 채널 공통
   await loadCsKnowledge();
   const ragDocs = searchCsKnowledge(userMessage);
   let ragContext = '';
@@ -492,8 +644,7 @@ async function chatWithMonkos(channel, chatId, userMessage) {
     history.messages = history.messages.slice(-config.maxHistory);
   }
 
-  // 시스템 프롬프트 + RAG 컨텍스트
-  const systemPrompt = config.systemPrompt + ragContext;
+  const systemPrompt = basePrompt + ragContext;
 
   const response = await ai.models.generateContent({
     model: 'gemini-2.0-flash',
@@ -550,6 +701,8 @@ const httpServer = createServer(async (req, res) => {
     'https://monkos-idphoto-jp-dev-933456016842.us-central1.run.app',
     'https://monkos-idphoto-kr-dev-933456016842.us-central1.run.app',
     'https://monkos-portal-dev-933456016842.us-central1.run.app',
+    // monk.kr (MPA photolab → monkos.ai 코칭/QC)
+    'https://monk.kr',
     // localhost
     'http://localhost:8080',
     'http://localhost:3000',
@@ -1606,6 +1759,81 @@ location.href = '/';
     return;
   }
 
+  // === AI 코칭 API (photolab MPA → monkos.ai) ===
+  if (req.url === '/api/coaching' && req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', async () => {
+      try {
+        const { image, style, purpose, gender, age, clothing, clothingColor, tie, hair, expression } = JSON.parse(body);
+        if (!image) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'image 필수' }));
+          return;
+        }
+
+        const fields = { style, purpose, gender, age, clothing, clothingColor, tie, hair, expression };
+        const prompt = buildCoachingPrompt(fields);
+
+        const text = await chatWithMonkos('coaching', 'coaching', '이 사진의 자세, 조명, 표정을 체크해주세요.', {
+          image,
+          systemPromptOverride: prompt,
+        });
+
+        const ready = READY_KEYWORDS.some(kw => text.includes(kw));
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ text, ready }));
+      } catch (err) {
+        log(`[Coaching] 에러: ${err.message}`, 'ERROR');
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ text: '', ready: false }));
+      }
+    });
+    return;
+  }
+
+  // === AI QC API (photolab MPA → monkos.ai) ===
+  if (req.url === '/api/qc' && req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', async () => {
+      try {
+        const { original, generated, gender = 'male', age = 'adult', style } = JSON.parse(body);
+        if (!original || !generated) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'original, generated 필수' }));
+          return;
+        }
+
+        // data: prefix 제거
+        const origBase64 = original.includes(',') ? original.split(',')[1] : original;
+        const genBase64 = generated.includes(',') ? generated.split(',')[1] : generated;
+
+        const qcPrompt = buildQCInstruction(gender, age);
+
+        const text = await chatWithMonkos('qc', 'qc', 'QC 판정해주세요.', {
+          image: origBase64,
+          image2: genBase64,
+          systemPromptOverride: qcPrompt,
+        });
+
+        try {
+          const result = JSON.parse(text);
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify(result));
+        } catch {
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ identity: 'ERROR', raw: text }));
+        }
+      } catch (err) {
+        log(`[QC] 에러: ${err.message}`, 'ERROR');
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: err.message }));
+      }
+    });
+    return;
+  }
+
   // === Telegram Event Bot 웹훅 (@monkos_event_bot) — 공유 보너스 전용 ===
   if (req.url === '/api/webhook/telegram-event' && req.method === 'POST') {
     let body = '';
@@ -1865,6 +2093,8 @@ httpServer.listen(PORT, '0.0.0.0', () => {
   log('  GET  /api/survey/status    — 설문 이벤트 상태');
   log('  POST /api/survey           — 설문 제출 (+12c, 일일 30명)');
   log('  POST /api/chat             — Gemini 챗봇');
+  log('  POST /api/coaching         — AI 코칭 (멀티모달)');
+  log('  POST /api/qc               — AI QC 품질검수 (멀티모달)');
   log('  POST /api/webhook/telegram       — Telegram CS봇');
   log('  POST /api/webhook/telegram-event — Telegram 이벤트봇');
   log('  GET  /                     — 메인 포털');

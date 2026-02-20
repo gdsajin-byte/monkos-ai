@@ -10,8 +10,9 @@ export const API = {
   PRECHECK: '/api/precheck',
   GENERATE: '/api/idgen',
   CREDIT_USE: '/api/idphoto-credit-use',
-  // 코칭: CF Functions 자체 완결 (monkos 이관 시 Cloud Run 클론)
-  COACHING: '/api/idphoto-coaching',
+  // 코칭/QC: monkos.ai 포탈 통합 챗봇 엔진 경유
+  COACHING: 'https://monkos.ai/api/coaching',
+  QC: 'https://monkos.ai/api/qc',
 };
 
 // 크레딧 비용
