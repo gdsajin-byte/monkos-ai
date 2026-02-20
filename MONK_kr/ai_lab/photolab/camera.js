@@ -5,7 +5,7 @@
 
 import {
   store, Monk, TX, API,
-  sharedInit, saveSessionData,
+  sharedInit, saveSessionData, loadSessionData,
   MAX_CAPTURE_SIZE, FRAME_INTERVAL_MS, COACHING_DISPLAY_MS
 } from './shared.js';
 
@@ -106,7 +106,18 @@ async function sendCoachingFrame(dataUrl) {
     const res = await fetch(API.COACHING, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ image: base64, style: store.style || 'id_photo' }),
+      body: JSON.stringify({
+        image: base64,
+        style: store.style || 'id_photo',
+        purpose: store.purpose,
+        gender: store.gender,
+        age: store.age,
+        clothing: store.clothing,
+        clothingColor: store.clothingColor,
+        tie: store.tie,
+        hair: store.hair,
+        expression: store.expression,
+      }),
     });
     if (!res.ok) {
       Monk.log(`코칭 응답 에러: ${res.status}`);
@@ -157,16 +168,6 @@ function stopCoachingLoop() {
   store.coaching = { text: '', ready: false, active: false };
 }
 
-// ─── 스타일 변경 (카메라 중) ───
-function selectStyleInCamera(style) {
-  store.style = style;
-  document.querySelectorAll('.style-chip').forEach(c => {
-    c.classList.toggle('active', c.dataset.style === style);
-  });
-  saveSessionData('style', style);
-  Monk.log(`스타일 변경: ${style}`);
-}
-
 // ─── 촬영 ───
 function capturePhoto() {
   if (store.step !== 1) return;
@@ -195,9 +196,25 @@ function capturePhoto() {
   location.href = 'result.html';
 }
 
+// ─── 선택 요약 뱃지 ───
+const PURPOSE_LABELS = {
+  passport: '여권', student_id: '학생증', employee_id: '사원증',
+  resume: '이력서', color_portrait: '컬러증명',
+};
+
+function renderSelectionSummary() {
+  const summaryEl = document.querySelector('#selection-summary');
+  if (!summaryEl) return;
+
+  const labels = [];
+  labels.push(PURPOSE_LABELS[store.purpose] || store.style || '');
+  if (store.gender === 'male') labels.push('남성');
+  else if (store.gender === 'female') labels.push('여성');
+  summaryEl.textContent = labels.filter(Boolean).join(' · ');
+}
+
 // ─── window 노출 ───
 Object.assign(window, {
-  selectStyleInCamera,
   capturePhoto,
   toggleVoice,
 });
@@ -206,17 +223,35 @@ Object.assign(window, {
 async function init() {
   await sharedInit();
 
-  // sessionStorage에서 선택 데이터 확인
-  if (!store.style || !store.gender || !store.age) {
+  // ── 퍼널 9필드 로딩 ──
+  const purpose = loadSessionData('purpose');
+  const age = loadSessionData('age');
+  const gender = loadSessionData('gender');
+  const clothing = loadSessionData('clothing');
+  const clothingColor = loadSessionData('clothingColor');
+  const tie = loadSessionData('tie');
+  const hair = loadSessionData('hair');
+  const background = loadSessionData('background');
+  const expression = loadSessionData('expression');
+
+  // 필수값 체크 (style은 sharedInit()에서 복원됨, purpose는 별도)
+  if (!store.style || !purpose) {
     Monk.log('선택 데이터 없음 → 준비실로 이동');
     location.href = 'prep.html';
     return;
   }
 
-  // 스타일 칩 동기화
-  document.querySelectorAll('.style-chip').forEach(c => {
-    c.classList.toggle('active', c.dataset.style === store.style);
-  });
+  // store에 9필드 세팅
+  store.purpose = purpose;
+  store.clothing = clothing;
+  store.clothingColor = clothingColor;
+  store.tie = tie;
+  store.hair = hair;
+  store.background = background;
+  store.expression = expression;
+
+  // 선택 요약 뱃지 렌더링
+  renderSelectionSummary();
 
   // 카메라 화면 활성화
   document.querySelector('#camera-area')?.classList.add('active');
