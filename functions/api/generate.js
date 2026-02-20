@@ -1,4 +1,6 @@
 // Cloudflare Pages Function - Imagen 4.0 T2I (이미지 프로 전용)
+// → monk-image-engine (Cloud Run + Vertex AI ADC) 프록시
+// BLOCK_NONE은 Vertex AI ADC에서만 안정 동작
 
 export async function onRequestPost(context) {
   const corsHeaders = {
@@ -9,67 +11,54 @@ export async function onRequestPost(context) {
   };
 
   try {
-    const { request, env } = context;
-    
-    if (!env.GEMINI_API_KEY) {
-      return new Response(JSON.stringify({ 
-        success: false, 
-        error: 'API key not configured' 
-      }), { status: 500, headers: corsHeaders });
-    }
-
-    const body = await request.json();
+    const body = await context.request.json();
     const { prompt, config } = body;
 
     if (!prompt) {
-      return new Response(JSON.stringify({ 
-        success: false, 
-        error: 'Prompt is required' 
+      return new Response(JSON.stringify({
+        success: false,
+        error: 'Prompt is required'
       }), { status: 400, headers: corsHeaders });
     }
 
-    console.log('📸 [IMAGE PRO] Generating with Imagen 4.0...');
+    console.log('📸 [IMAGE PRO] Generating via monk-image-engine (Vertex AI)...');
     console.log('   Prompt:', prompt.substring(0, 100) + '...');
 
-    // Imagen 4.0 API 호출 (:predict 엔드포인트)
-    const apiKey = env.GEMINI_API_KEY;
-    const geminiResponse = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          instances: [{ prompt: prompt }],
-          parameters: {
-            sampleCount: 1,
-            aspectRatio: config?.aspectRatio || '1:1',
-            safetyFilterLevel: 'block_none',
-            personGeneration: 'allow_adult'
-          }
-        })
-      }
-    );
+    // monk-image-engine (Cloud Run + Vertex AI ADC + block_none)
+    const engineResponse = await fetch('https://image.monkos.ai/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        prompt: prompt,
+        aspectRatio: config?.aspectRatio || '1:1'
+      })
+    });
 
-    if (!geminiResponse.ok) {
-      const errorText = await geminiResponse.text();
-      console.error('❌ Imagen 4 API error:', errorText);
-      return new Response(JSON.stringify({ 
-        success: false, 
+    if (!engineResponse.ok) {
+      const errorText = await engineResponse.text();
+      console.error('❌ monk-image-engine error:', errorText);
+      return new Response(JSON.stringify({
+        success: false,
         error: 'Image generation failed',
         details: errorText
-      }), { status: geminiResponse.status, headers: corsHeaders });
+      }), { status: engineResponse.status, headers: corsHeaders });
     }
 
-    const result = await geminiResponse.json();
+    const result = await engineResponse.json();
 
-    // 응답 형식 변환 (:predict → predictions[].bytesBase64Encoded)
-    const images = (result.predictions || [])
-      .filter(p => p.bytesBase64Encoded)
-      .map(p => `data:image/png;base64,${p.bytesBase64Encoded}`);
+    if (!result.success) {
+      return new Response(JSON.stringify({
+        success: false,
+        error: result.error || 'Generation failed'
+      }), { status: 500, headers: corsHeaders });
+    }
 
-    console.log('✅ [IMAGE PRO] Generated', images.length, 'images');
+    // 응답 변환: engine { images: [{ base64 }] } → 프론트 { images: ["data:..."] }
+    const images = (result.images || []).map(img =>
+      typeof img === 'string' ? img : `data:image/png;base64,${img.base64}`
+    );
+
+    console.log('✅ [IMAGE PRO] Generated', images.length, 'images via Vertex AI');
 
     return new Response(JSON.stringify({
       success: true,
@@ -78,9 +67,9 @@ export async function onRequestPost(context) {
 
   } catch (error) {
     console.error('❌ [IMAGE PRO] Generate error:', error.message);
-    return new Response(JSON.stringify({ 
-      success: false, 
-      error: error.message 
+    return new Response(JSON.stringify({
+      success: false,
+      error: error.message
     }), { status: 500, headers: corsHeaders });
   }
 }
