@@ -43,7 +43,7 @@ export async function onRequestPost(context) {
         body: JSON.stringify({
           instances: [{ prompt: prompt }],
           parameters: {
-            sampleCount: 4,
+            sampleCount: 1,
             aspectRatio: config?.aspectRatio || '1:1',
             safetyFilterLevel: 'block_low_and_above',
             personGeneration: 'allow_adult'
