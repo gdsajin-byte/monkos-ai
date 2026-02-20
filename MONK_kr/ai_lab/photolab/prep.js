@@ -143,12 +143,12 @@ const DEFAULTS = {
     clothing: 'as_is', hair: 'as_is', background: 'white', expression: 'gentle_smile',
   },
   student_id: {
-    clothing: 'as_is', hair: 'as_is', expression: 'gentle_smile',
+    clothing: 'as_is', hair: 'as_is', background: 'white', expression: 'gentle_smile',
   },
   employee_id: {
     _gender: {
-      male:   { clothing: 'suit', clothingColor: 'navy', tie: 'stripe_navy', hair: 'as_is', expression: 'gentle_smile' },
-      female: { clothing: 'as_is', hair: 'as_is', expression: 'gentle_smile' },
+      male:   { clothing: 'suit', clothingColor: 'navy', tie: 'stripe_navy', hair: 'as_is', background: 'white', expression: 'gentle_smile' },
+      female: { clothing: 'as_is', hair: 'as_is', background: 'white', expression: 'gentle_smile' },
     },
   },
   resume: {
@@ -189,6 +189,13 @@ function getFilteredOptions(key) {
 
   if (key === 'age')        return all.filter(o => (AGE_FILTER[p] || []).includes(o.val));
   if (key === 'clothing')   return all.filter(o => (CLOTHING_FILTER[p] || []).includes(o.val));
+  if (key === 'clothingColor') {
+    // 여권/신분증: 흰색 배경 고정 → 의상 흰색 불가
+    if (['passport', 'student_id'].includes(p)) {
+      return all.filter(o => o.val !== 'white');
+    }
+    return all;
+  }
   if (key === 'background') return all.filter(o => (BG_FILTER[p] || []).includes(o.val));
   if (key === 'expression') return all.filter(o => (EXPR_FILTER[p] || []).includes(o.val));
   return all;
@@ -242,9 +249,9 @@ function shouldSkip(stepNum) {
     return selections.gender !== 'male' || !['suit', 'shirt'].includes(selections.clothing);
   }
 
-  // STEP 8 (background): 여권이면 흰색 고정 → 스킵
+  // STEP 8 (background): 여권/신분증은 흰색 고정 → 스킵
   if (key === 'background') {
-    if (selections.purpose === 'passport') {
+    if (['passport', 'student_id', 'employee_id'].includes(selections.purpose)) {
       selections.background = 'white';
       return true;
     }
@@ -289,8 +296,8 @@ function clearSelectionsAfter(stepNum) {
 // ─── 비권장 체크 ───
 
 function isWarning(key, val) {
-  if (key === 'clothingColor' && selections.purpose === 'passport') {
-    return ['white', 'beige', 'pastel'].includes(val);
+  if (key === 'clothingColor' && ['passport', 'student_id'].includes(selections.purpose)) {
+    return ['beige', 'pastel'].includes(val);
   }
   return false;
 }
@@ -430,7 +437,7 @@ function renderFinal() {
     </div>
   `).join('');
 
-  const noteText = selections.purpose === 'passport'
+  const noteText = ['passport', 'student_id'].includes(selections.purpose)
     ? '눈썹 · 이마가 보이도록 준비해 주세요'
     : '헤어와 의상을 깔끔하게 정돈해 주세요';
 

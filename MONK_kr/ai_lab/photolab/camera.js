@@ -57,15 +57,18 @@ document.addEventListener('click', activateTTS, { once: true });
 
 function speakKo(text) {
   if (!store.voiceEnabled || !('speechSynthesis' in window)) return;
-  // 한국어 음성 미확보 시 발화 안 함 (일본어 등 엉뚱한 음성 방지)
   if (!koVoice) return;
+  // 이전 발화 즉시 중단 + 새 텍스트만 발화
   speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = 'ko-KR';
-  u.rate = 1.1;
-  u.pitch = 1.05;
-  u.voice = koVoice;
-  speechSynthesis.speak(u);
+  // cancel 후 약간의 딜레이 필요 (브라우저별 차이)
+  setTimeout(() => {
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'ko-KR';
+    u.rate = 1.15;
+    u.pitch = 1.05;
+    u.voice = koVoice;
+    speechSynthesis.speak(u);
+  }, 50);
 }
 
 function toggleVoice() {
@@ -118,79 +121,78 @@ function detectMotion(dataUrl) {
   return diff > MOTION_THRESHOLD;
 }
 
-// ─── 코칭 REST 루프 (백프레셔 안전) ───
+// ─── 코칭 REST 루프 (순차 실행 — 항상 최신 프레임) ───
 let coachingActive = false;
-let coachingTimer = null;
+let coachingGen = 0; // TTS 세대 카운터 (stale 방지)
 
-async function sendCoachingFrame(dataUrl) {
-  const base64 = dataUrl.includes(',') ? dataUrl.split(',')[1] : dataUrl;
-  try {
-    const res = await fetch(API.COACHING, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        image: base64,
-        style: store.style || 'id_photo',
-        purpose: store.purpose,
-        gender: store.gender,
-        age: store.age,
-        clothing: store.clothing,
-        clothingColor: store.clothingColor,
-        tie: store.tie,
-        hair: store.hair,
-        expression: store.expression,
-      }),
-    });
-    if (!res.ok) {
-      const errBody = await res.text().catch(() => '');
-      Monk.log(`코칭 응답 에러: ${res.status} ${errBody.slice(0, 100)}`);
-      return;
+async function coachingLoop() {
+  Monk.log('코칭 루프 시작 (순차)');
+  showCoaching(TX.coachingInit);
+
+  while (coachingActive && store.step === 1) {
+    // 1. 최신 프레임 캡처 (항상 "지금" 상태)
+    const frame = media.capture();
+    if (!frame) {
+      await sleep(300);
+      continue;
     }
-    const data = await res.json();
-    if (store.step === 1) {
-      if (data.text) {
-        showCoaching(data.text, data.ready);
-      } else if (data.error) {
-        Monk.log(`코칭 API 에러: ${data.error}`);
+
+    const base64 = frame.includes(',') ? frame.split(',')[1] : frame;
+    const gen = ++coachingGen;
+
+    try {
+      const res = await fetch(API.COACHING, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          image: base64,
+          style: store.style || 'id_photo',
+          purpose: store.purpose,
+          gender: store.gender,
+          age: store.age,
+          clothing: store.clothing,
+          clothingColor: store.clothingColor,
+          tie: store.tie,
+          hair: store.hair,
+          expression: store.expression,
+        }),
+      });
+
+      // 응답 도착 시 이미 다음 세대면 버림 (stale)
+      if (gen !== coachingGen || !coachingActive) continue;
+
+      if (!res.ok) {
+        Monk.log(`코칭 에러: ${res.status}`);
+        await sleep(1000);
+        continue;
       }
+
+      const data = await res.json();
+      if (gen !== coachingGen || !coachingActive) continue;
+
+      if (store.step === 1 && data.text) {
+        showCoaching(data.text, data.ready);
+      }
+    } catch (err) {
+      Monk.log('코칭 실패: ' + err.message);
+      await sleep(1000);
     }
-  } catch (err) {
-    Monk.log('코칭 요청 실패: ' + err.message);
+
+    // 2. 다음 프레임까지 짧은 대기 (API 응답 직후 바로 다음 캡처)
+    await sleep(300);
   }
 }
 
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
 function startCoachingLoop() {
   coachingActive = true;
-  showCoaching(TX.coachingInit);
-  Monk.log('코칭 루프 시작 (REST ~2fps)');
-
-  let isProcessing = false;
-
-  coachingTimer = setInterval(async () => {
-    if (!coachingActive || isProcessing || store.step !== 1) return;
-
-    const frame = media.capture();
-    if (!frame) return;
-
-    // 모션 감지: 변화 없으면 스킵
-    if (!detectMotion(frame)) return;
-
-    isProcessing = true;
-    try {
-      await sendCoachingFrame(frame);
-    } finally {
-      isProcessing = false;
-    }
-  }, FRAME_INTERVAL_MS);
+  coachingLoop(); // fire-and-forget
 }
 
 function stopCoachingLoop() {
   coachingActive = false;
-  if (coachingTimer) {
-    clearInterval(coachingTimer);
-    coachingTimer = null;
-  }
-  previousFrameLen = 0;
+  coachingGen++; // 진행 중인 응답 무효화
   if ('speechSynthesis' in window) speechSynthesis.cancel();
   store.coaching = { text: '', ready: false, active: false };
 }
@@ -289,6 +291,7 @@ async function init() {
 
   store.step = 1;
   store.stepLabel = TX.step1;
+  store.voiceEnabled = true;
   store.coaching = { text: TX.coachingCheck, ready: false, active: true };
 
   try {

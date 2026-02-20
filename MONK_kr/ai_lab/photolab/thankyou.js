@@ -76,6 +76,7 @@ function openTelegram() {
 Object.assign(window, {
   saveToPhotos,
   openTelegram,
+  navigateTo,
 });
 
 // ─── 초기화 ───
