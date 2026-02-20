@@ -10,7 +10,7 @@ export const API = {
   PRECHECK: '/api/precheck',
   GENERATE: '/api/idgen',
   CREDIT_USE: '/api/idphoto-credit-use',
-  // 코칭: CF Function → Gemini REST 직접 (서버 경유 안 함)
+  // 코칭: CF Functions 자체 완결 (monkos 이관 시 Cloud Run 클론)
   COACHING: '/api/idphoto-coaching',
 };
 

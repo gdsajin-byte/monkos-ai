@@ -28,7 +28,13 @@ function initVoice() {
   const voices = speechSynthesis.getVoices();
   koVoice = voices.find(v => v.name.includes('Yuna'))
          || voices.find(v => v.lang.startsWith('ko'));
-  if (koVoice) Monk.log(`음성 가이드: ${koVoice.name}`);
+  if (koVoice) {
+    Monk.log(`음성 가이드: ${koVoice.name}`);
+    // 음성 로딩이 늦어 첫 인사를 못했으면 지금 발화
+    if (store.coaching?.text && store.coaching.active) {
+      speakKo(store.coaching.text);
+    }
+  }
 }
 
 if ('speechSynthesis' in window) {
@@ -51,12 +57,14 @@ document.addEventListener('click', activateTTS, { once: true });
 
 function speakKo(text) {
   if (!store.voiceEnabled || !('speechSynthesis' in window)) return;
+  // 한국어 음성 미확보 시 발화 안 함 (일본어 등 엉뚱한 음성 방지)
+  if (!koVoice) return;
   speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
   u.lang = 'ko-KR';
   u.rate = 1.1;
   u.pitch = 1.05;
-  if (koVoice) u.voice = koVoice;
+  u.voice = koVoice;
   speechSynthesis.speak(u);
 }
 
