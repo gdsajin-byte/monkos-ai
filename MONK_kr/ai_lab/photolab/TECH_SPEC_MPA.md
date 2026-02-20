@@ -1,135 +1,227 @@
-# photolab MPA 전환 기술명세
+# photolab 기술명세
 
-**작성**: [2026-02-18 22:43 KST] M1/막내1
-**베이스라인**: SPA (index.html + app.js + monk.js) → 00079 코드
-**현재 상태**: MPA 5페이지 구조 — 1차 전환 완료, 실기기 플로우 검증 통과
+**최종 갱신**: [2026-02-20 17:34 KST] M1/막내1
+**URL**: `https://monk.kr/ai_lab/photolab/`
+**플랫폼**: Cloudflare Pages (monk-kr)
+**프레임워크**: monk.js (자체) — Store + Pipe(REST) + Media
 
 ---
 
-## 1. 아키텍처 변경 요약
+## 1. 아키텍처
 
-| 항목 | SPA (before) | MPA (after) |
-|------|-------------|-------------|
-| 화면 전환 | `Screen.go()` (JS 상태 머신) | `location.href` (페이지 이동) |
-| 엔트리 | `app.js` 1파일 (829줄) | `shared.js` + 5개 페이지 JS |
-| HTML | `index.html` 1파일 (293줄) | 5개 HTML (공통 요소 복사) |
-| 데이터 전달 | JS 변수 (메모리) | `sessionStorage` (`monkos_` prefix) |
-| 코칭 | WebSocket (Gemini Live) | 스텁 (REST 코칭 별도 태스크) |
-| monk.js | Screen + Store + Pipe(WS+REST) + Media | Store + Pipe(REST) + Media (Screen/WS 미사용, 코드 잔류) |
+MPA 6페이지 구조. SPA(app.js)에서 전환 완료 (2026-02-18).
 
-## 2. 파일 구조
+| 항목 | 설명 |
+|------|------|
+| 화면 전환 | `location.href` (페이지 이동) |
+| 데이터 전달 | `sessionStorage` (`monkos_` prefix) |
+| API 호출 | CF Pages Functions → Gemini API 직접 호출 |
+| 코칭 | REST ~2fps (CF Function → Gemini Flash) |
+| 결제 | 토스페이먼츠 (KR 전용, 크레딧 충전) |
+| 인증 | monkos.ai 포털 토큰 기반 (`?uid=&token=`) |
+| 모바일 전용 | 데스크톱 차단 (`?dev`로 우회) |
+
+## 2. 페이지 흐름
+
+```
+index.html (LP/가격)
+    ↓ CTA 클릭
+prep.html (준비실: 용도/성별/연령 선택)
+    ↓ 촬영 시작
+camera.html (촬영실: 카메라 + AI 코칭)
+    ↓ 촬영
+result.html (분석실: 사전분석 → 생성 → 다운로드)
+    ↓ 다운로드 (크레딧 차감 + 규격 크롭)
+thankyou.html (수령처: 사진 저장 + SNS 이벤트)
+    ↓
+options.html (네비: 새로 촬영 / 추가 촬영 / 이벤트 / 포털)
+```
+
+## 3. 파일 구조
 
 ```
 MONK_kr/ai_lab/photolab/
-├── index.html          ← 준비실 (스타일/성별/연령 선택)
-├── camera.html         ← 촬영실 (카메라 + 코칭 스텁)
-├── result.html         ← 분석실 (생성 + QC + 다운로드)
-├── thankyou.html       ← 수령처 (크롭 사진 표시 + 저장)
+├── index.html          ← LP (가격표 + 이벤트 + 사업자 정보)
+├── prep.html           ← 준비실 (용도/성별/연령 선택)
+├── camera.html         ← 촬영실 (카메라 + AI 코칭 REST)
+├── result.html         ← 분석실 (사전분석 → 생성 → 다운로드)
+├── thankyou.html       ← 수령처 (크롭 사진 표시 + 갤러리 저장)
 ├── options.html        ← 옵션N (네비게이션 카드)
 │
-├── shared.js           ← 공통 로직 (Store, Pipe REST, 인증, 크레딧, 결제)
+├── shared.js           ← 공통 (Store, Pipe REST, 인증, 크레딧, 결제, 유틸)
 ├── prep.js             ← 준비실 JS
-├── camera.js           ← 촬영실 JS
-├── result.js           ← 분석실 JS
-├── thankyou.js         ← 수령처 JS
-├── options.js          ← 옵션N JS
+├── camera.js           ← 촬영실 JS (코칭 루프 + 모션 감지 + TTS)
+├── result.js           ← 분석실 JS (파이프라인 + 크롭)
+├── thankyou.js         ← 수령처 JS (갤러리 저장 + 텔레그램)
+├── options.js          ← 옵션N JS (네비게이션)
 │
-├── monk.js             ← 프레임워크 (변경 없음)
-├── config.js           ← 설정 + 상수 (변경 없음)
-├── app.css             ← 스타일 (변경 없음, 전 페이지 공유)
+├── config.js           ← API 경로 + 상수 + 규격 테이블
+├── monk.js             ← 프레임워크 (Store + Pipe + Media)
+├── app.css             ← 전 페이지 공유 스타일
 │
-├── app.js              ← SPA 원본 (잔류 — 삭제 보류)
-├── index_spa_backup.html  ← SPA 백업
-├── app_spa_backup.js      ← SPA 백업
-└── monk_spa_backup.js     ← SPA 백업
+├── _backup_20260217/   ← MPA 전환 전 백업
+├── _legacy/            ← 레거시 HTML
+│
+├── app.js                  ← [잔류] SPA 원본
+├── app_spa_backup.js       ← [잔류] SPA 백업
+├── monk_spa_backup.js      ← [잔류] SPA 백업
+├── index_spa_backup.html   ← [잔류] SPA 백업
+├── index_00079.html        ← [잔류] SPA 원본 (94KB)
+│
+├── PAGE_SPLIT_ANALYSIS.md  ← [참조] MPA 분할 분석
+├── TECH_SPEC_MPA.md        ← [본 문서]
+├── flowchart_00079.html    ← [참조] SPA 플로차트
+├── flowchart_page_split.html ← [참조] MPA 플로차트
+├── framework_design.html   ← [참조] monk.js 설계
+└── test.html               ← [참조] 테스트
 ```
 
-## 3. 페이지별 책임
+## 4. 페이지별 책임
 
-### index.html + prep.js (준비실)
-- 스타일 선택 (id_photo / resume)
-- 성별/연령 선택
-- 프로필 완성도 체크 → 촬영 시작 버튼 활성화
-- sessionStorage에 선택 데이터 저장 → `camera.html` 이동
+### index.html (LP — JS 없음)
+- 히어로 + 서비스 소개 + 기능 목록
+- 가격: 생성 1c(₩1,500) + 다운로드 8c(₩12,000) = 1장 9c(₩13,500)
+- 이벤트: 가입 시 10c 무료 (→ monkos.ai)
+- 사업자 정보 + 법적 링크 (Privacy/Terms/Refund → monkos.ai)
+- CTA → `prep.html` 이동
+
+### prep.html + prep.js (준비실)
+- 용도 선택: `id_photo` (여권/신분증) / `resume` (취업/컬러증명)
+- 성별: `male` / `female`
+- 연령: `child` (유아~12세) / `teen` (13~18세) / `adult` (19세+)
+- 3개 모두 선택 시 확인 멘트 표시 + 버튼 활성화
+- `saveSessionData()` → `camera.html` 이동
 
 ### camera.html + camera.js (촬영실)
-- `Monk.media()` 카메라 시작 (전면 카메라, 미러링)
-- 얼굴 가이드 오버레이 + 코칭 오버레이
-- **코칭: 스텁** (`startCoachingLoop()` → 초기 인사만 표시)
-- 음성 TTS (Web Speech API — `speechSynthesis`)
-- 촬영 → sessionStorage에 `captured` 저장 → `result.html` 이동
+- `Monk.media()` 카메라 시작 (전면, 미러링, faceDetection)
+- 얼굴 가이드 오버레이 + 스타일 변경 바
+- **AI 코칭 REST 루프** (~2fps, 백프레셔 안전):
+  - `FRAME_INTERVAL_MS` (500ms) 간격으로 프레임 캡처
+  - 모션 감지 (3% 변화 임계) → 변화 없으면 스킵
+  - `POST /api/idphoto-coaching` → `{ text, ready }` 응답
+  - ready=true 시 촬영 버튼 + 가이드 `ready` 클래스
+- **음성 TTS**: Web Speech API (`speechSynthesis`), 한국어 Yuna 우선
+- 촬영 → `saveSessionData('captured')` → `result.html` 이동
+- 선택 데이터 없으면 `prep.html`로 리다이렉트
 
 ### result.html + result.js (분석실)
-- 원본 이미지 표시 (sessionStorage에서 로드)
-- **파이프라인**: 사전분석(precheck) → AI 생성(generate) → QC 검증
-- 생성 실패/크레딧 부족 시 에러 처리 + 크레딧 모달
-- QC PASS → 다운로드 버튼 활성화
-- 다운로드: 크레딧 차감 → 규격 크롭 → sessionStorage에 `cropped` 저장 → `thankyou.html` 이동
+- sessionStorage에서 `captured` 로드 → 원본 표시
+- **파이프라인** (QC 단계 제거됨):
+  1. **사전분석** (`pipe.run('precheck')`) → score + suitable 판정
+     - NG 시: 재촬영 권장 메시지 + Step2 버튼
+  2. **AI 생성** (`pipe.run('generate')`) → 생성 이미지 반환
+     - 402 시: 크레딧 모달
+     - 에러 시: 에러 메시지 + Step2 버튼
+  3. **다운로드** → 크레딧 차감 (`pipe.run('creditUse')`) → 규격 크롭 (`media.crop()`) → `thankyou.html` 이동
+- 비로그인: 크레딧 차감 없이 바로 크롭 → 수령처
 
 ### thankyou.html + thankyou.js (수령처)
-- 크롭된 증명사진 표시
-- 갤러리 저장 (`navigator.share` 또는 `<a download>` 폴백)
-- 텔레그램 이벤트 링크
-- 추가 촬영 → `camera.html` / 새로 촬영 → `index.html`
+- sessionStorage에서 `cropped` 로드 → 사진 표시
+- **갤러리 저장**: `navigator.share` (파일 공유) → 미지원 시 `<a download>` 폴백
+- **SNS 이벤트**: 화면 캡쳐 → SNS 공유 → 텔레그램 전송 → 10c 지급
+- 추가 활용: 다시 저장, 추가 촬영, 용도별 크롭(미출시), 배경 교체(미출시)
+- 크롭 데이터 없으면 `prep.html`로 리다이렉트
 
 ### options.html + options.js (옵션N)
-- 네비게이션 카드: 새로 촬영, 추가 촬영, 이벤트, 포털
-- `clearSessionImages()` 후 이동
+- 새로 촬영 (`clearSessionImages()` → `prep.html`)
+- 추가 촬영 (`clearSessionImages()` → `camera.html`, 설정 유지)
+- 이벤트 참여 (텔레그램 봇)
+- MONK 포털 (`monk.kr`)
 
-## 4. 데이터 흐름
+## 5. sessionStorage 데이터 흐름
 
 ```
-[sessionStorage]
-
-prep.js                 camera.js               result.js               thankyou.js
-─────────              ──────────              ──────────              ────────────
-style ────save──→       ←──load── style         ←──load── style
-gender ───save──→       ←──load── gender        ←──load── gender
-age ──────save──→       ←──load── age           ←──load── age
-                        captured ──save──→       ←──load── captured
-                                                 cropped ──save──→      ←──load── cropped
+키                    prep.js    camera.js    result.js    thankyou.js
+─────────────────    ────────   ──────────   ──────────   ───────────
+monkos_style         save →     ← load       ← load
+monkos_gender        save →     ← load       ← load
+monkos_age           save →     ← load       ← load
+monkos_captured                 save →       ← load
+monkos_cropped                               save →      ← load
+monkos_user          (인증 시 shared.js에서 관리)
 ```
 
-**키 명명**: `monkos_style`, `monkos_gender`, `monkos_age`, `monkos_captured`, `monkos_cropped`
-**용량**: captured ~100KB (JPEG 0.8), cropped ~50KB → 합계 ~200KB (sessionStorage 5MB 한도 내)
+**용량**: captured ~100KB (JPEG 0.8), cropped ~50KB → 합계 ~200KB (5MB 한도 내)
 
-## 5. API 경로 (변경 없음)
+## 6. API 경로
 
-| 엔드포인트 | CF Function | 백엔드 |
-|-----------|-------------|--------|
-| `/api/idphoto-precheck` | `functions/api/idphoto-precheck.js` | `idphoto-kr.monkos.ai/api/precheck` |
-| `/api/idphoto-generate` | `functions/api/idphoto-generate.js` | `idphoto-kr.monkos.ai/api/generate` |
-| `/api/idphoto-qc` | `functions/api/idphoto-qc.js` | `idphoto-kr.monkos.ai/api/qc` |
-| `/credit/use` | **미구현** | `monkos.ai/api/credits/use` |
+모든 API는 CF Pages Functions (루트 `functions/`) → Gemini API 직접 호출.
+Cloud Run(idphoto-kr) 프록시 아님.
 
-## 6. 알려진 이슈 (TODO)
+| config.js 키 | 엔드포인트 | CF Function | 백엔드 |
+|--------------|-----------|-------------|--------|
+| `PRECHECK` | `/api/precheck` | `functions/api/precheck.js` | Gemini Flash (사전분석) |
+| `GENERATE` | `/api/idgen` | `functions/api/idgen.js` | Gemini 3 Pro Image (I2I 생성) |
+| `COACHING` | `/api/idphoto-coaching` | `functions/api/idphoto-coaching.js` | Gemini Flash (코칭) |
+| `CREDIT_USE` | `/api/idphoto-credit-use` | `functions/api/idphoto-credit-use.js` | monkos.ai 크레딧 API |
+| (shared.js) | `/api/payment/confirm` | — | monkos.ai 결제 확인 |
+| (shared.js) | `/api/auth/verify` | — | monkos.ai 토큰 검증 |
+| (shared.js) | `/api/credits` | — | monkos.ai 크레딧 조회 |
 
-| # | 이슈 | 심각도 | 설명 |
-|---|------|--------|------|
-| 1 | 코칭 미구현 | 중 | REST ~3fps 코칭 별도 태스크. 현재 스텁(초기 인사만) |
-| 2 | `/credit/use` CF Function 없음 | 중 | 다운로드 크레딧 차감 프록시 미구현 |
-| 3 | 생성 지연 체감 | 저 | Cloud Run 콜드스타트 + Imagen 처리 (~30초). 프로그레스 UI 개선 필요 |
-| 4 | Store 초기 DOM 동기화 | 완료 | `sharedInit()`에서 전체 키 재할당으로 해결 |
-| 5 | `#camera-area` .active 누락 | 완료 | camera.js init에서 직접 추가로 해결 |
-| 6 | app.js/SPA 잔류 파일 | 저 | 검증 완료 후 삭제 판단 |
-| 7 | 코칭 CF Function 미구현 | 중 | `/api/idphoto-coaching` → Gemini API 직접 호출 구조 |
-| 8 | app.css 미분할 | 저 | 전 페이지 공유 중. 페이지별 분할은 후순위 |
+**주의사항**:
+- `idgen.js`: `responseModalities` 사용 금지 (에러 발생). `photo.js` 패턴 준수
+- API Key: `env.GEMINI_API_KEY` (CF Pages Secrets)
 
-## 7. 실기기 검증 결과 (2026-02-18)
+## 7. 공통 컴포넌트 (HTML 중복)
 
-| 단계 | 결과 | 비고 |
-|------|------|------|
-| 준비실 → 촬영실 | OK | sessionStorage 전달 정상 |
-| 카메라 작동 | OK | 전면 카메라 + 미러링 |
-| 코칭 표시 | 스텁 | 초기 인사만 (REST 코칭 미구현) |
-| 촬영 → 분석실 | OK | captured 이미지 전달 정상 |
-| AI 생성 | OK | 지연 있음 (콜드스타트) |
-| QC 표시 | OK | 배지 + 점수 표출 |
-| 다운로드 버튼 | OK | QC PASS 시 활성화 |
-| 수령처 이동 | OK | 크롭 이미지 표시 |
+아래 요소가 prep/camera/result/thankyou/options 5개 HTML에 동일하게 포함:
 
-## 8. 배포 정보
+| 컴포넌트 | 역할 |
+|---------|------|
+| `#inapp-banner` | 인앱 브라우저 경고 (`data-show="inappBrowser"`) |
+| `#desktop-blocker` | 데스크톱 차단 + QR 코드 (`data-class="desktopBlocked:active"`) |
+| `#header` | 브랜드 + step-label + 크레딧 배지 |
+| `#credit-modal` | 크레딧 부족 모달 (3단계 패키지: 10c/30c/50c) |
+| `<link href="app.css">` | 공통 스타일시트 |
+| `<script src="tosspayments">` | 토스페이먼츠 SDK |
+| `#log` | 디버그 로그 |
 
-- **배포 경로**: `wrangler pages deploy . --project-name=monk-kr --branch=main`
-- **테스트 URL**: `https://monk.kr/ai_lab/photolab/`
-- **데스크탑 우회**: URL에 `?dev` 파라미터 추가
+## 8. 설정값 (config.js)
+
+| 상수 | 값 | 용도 |
+|------|-----|------|
+| `CREDIT_COST.generate` | 1 | 생성 크레딧 |
+| `CREDIT_COST.download` | 8 | 다운로드 크레딧 |
+| `MAX_CAPTURE_SIZE` | 720 | 캡처 최대 해상도 |
+| `CAPTURE_SIZE` | 512 | 코칭 프레임 크기 |
+| `FRAME_INTERVAL_MS` | 500 | 코칭 프레임 간격 (ms) |
+| `COACHING_DISPLAY_MS` | 10000 | 코칭 텍스트 표시 시간 (ms) |
+| `DPI` | 300 | 출력 DPI |
+
+### 규격 테이블 (PHOTO_SPECS)
+
+| 키 | 이름 | 크기 | 얼굴 상단 | 얼굴 길이 |
+|----|------|------|----------|----------|
+| `id_photo` | 여권/증명사진 | 35×45mm | 7mm | 27mm |
+| `resume` | 이력서 | 30×40mm | 6mm | 24mm |
+
+## 9. 배포
+
+```bash
+# CWD = monk_project (루트 functions/ 참조)
+wrangler pages deploy MONK_kr/ --project-name=monk-kr --branch=main
+```
+
+- **프로덕션**: `https://monk.kr/ai_lab/photolab/`
+- **데스크톱 테스트**: `?dev` 파라미터 추가
+- **CF Functions 정본**: 루트 `functions/` (실제 디렉토리)
+
+## 10. 알려진 이슈
+
+| # | 이슈 | 상태 | 설명 |
+|---|------|------|------|
+| 1 | 생성 지연 체감 | 미해결 | Gemini I2I ~15-30초. 프로그레스 UI 개선 필요 |
+| 2 | SPA 잔류 파일 | 미해결 | `app.js`, `*_spa_backup.*`, `index_00079.html` — 정리 보류 |
+| 3 | app.css 미분할 | 미해결 | 전 페이지가 공유. 페이지별 분할은 후순위 |
+| 4 | HTML 공통 요소 중복 | 미해결 | 헤더/모달/배너 5개 HTML에 복사. SSI 불가(정적 호스팅) |
+| 5 | TOSS_CLIENT_KEY 미설정 | 미해결 | 결제 미연동 (빈 문자열) |
+| 6 | 용도별 크롭/배경 교체 | 미출시 | thankyou.html에 버튼만 존재 (`alert('곧 출시 예정')`) |
+
+## 11. 변경 이력
+
+| 날짜 | 변경 |
+|------|------|
+| 2026-02-18 | SPA → MPA 전환 완료. 5페이지 + shared.js 구조 |
+| 2026-02-19 | index.html LP 분리 (가격표 + 이벤트). prep.html 준비실 독립 |
+| 2026-02-20 | 코칭 REST 실동작 (CF Function). API 경로 CF 자체 엔진으로 전환 |
+| 2026-02-20 | 기술명세 현행화 (본 문서) |
