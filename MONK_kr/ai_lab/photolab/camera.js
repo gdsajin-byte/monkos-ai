@@ -259,7 +259,6 @@ async function init() {
 
   // 필수값 체크 (style은 sharedInit()에서 복원됨, purpose는 별도)
   if (!store.style || !purpose) {
-    document.querySelector('#page-loading')?.remove();
     Monk.log('선택 데이터 없음 → 준비실로 이동');
     navigateTo('prep.html');
     return;
@@ -277,8 +276,7 @@ async function init() {
   // 선택 요약 뱃지 렌더링
   renderSelectionSummary();
 
-  // 로딩 상태 제거 + 카메라 화면 활성화
-  document.querySelector('#page-loading')?.remove();
+  // 카메라 화면 활성화
   document.querySelector('#camera-area')?.classList.add('active');
 
   store.step = 1;
