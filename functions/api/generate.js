@@ -12,7 +12,7 @@ export async function onRequestPost(context) {
 
   try {
     const body = await context.request.json();
-    const { prompt, config } = body;
+    const { prompt, config, model } = body;
 
     if (!prompt) {
       return new Response(JSON.stringify({
@@ -30,6 +30,7 @@ export async function onRequestPost(context) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         prompt: prompt,
+        model: model || 'fast',
         aspectRatio: config?.aspectRatio || '1:1',
         safetyFilterLevel: 'block_none',
         personGeneration: 'allow_all'
