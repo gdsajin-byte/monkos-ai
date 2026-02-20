@@ -45,7 +45,7 @@ export async function onRequestPost(context) {
           parameters: {
             sampleCount: 1,
             aspectRatio: config?.aspectRatio || '1:1',
-            safetyFilterLevel: 'block_low_and_above',
+            safetyFilterLevel: 'block_none',
             personGeneration: 'allow_adult'
           }
         })
