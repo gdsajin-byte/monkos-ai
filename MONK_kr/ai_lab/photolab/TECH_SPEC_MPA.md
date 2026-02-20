@@ -1,6 +1,6 @@
 # photolab 기술명세
 
-**최종 갱신**: [2026-02-21 07:37 KST] M1/쌍아
+**최종 갱신**: [2026-02-21 08:51 KST] Mac Mini/막내2
 **URL**: `https://monk.kr/ai_lab/photolab/`
 **플랫폼**: Cloudflare Pages (monk-kr)
 **프레임워크**: monk.js (자체) — Store + Pipe(REST) + Media
@@ -103,12 +103,14 @@ MONK_kr/ai_lab/photolab/
 - 얼굴 가이드 오버레이 + 선택 요약 뱃지 (#selection-summary)
 - sessionStorage에서 **9필드 로딩**: purpose, age, gender, clothing, clothingColor, tie, hair, background, expression
 - 필수값 체크: `store.style` + `purpose` 없으면 `prep.html` 리다이렉트
-- **AI 코칭 REST 루프** (~2fps, 백프레셔 안전):
-  - `FRAME_INTERVAL_MS` (500ms) 간격으로 프레임 캡처
-  - 모션 감지 (3% 변화 임계) → 변화 없으면 스킵
+- **AI 코칭 순차 루프** (응답 완료 → 300ms → 최신 프레임):
+  - 순차 while 루프 (setInterval 폐기) — 항상 "지금" 프레임 분석
+  - `coachingGen` 세대 카운터로 stale 응답 폐기
   - `POST /api/idphoto-coaching` → base64 이미지 + 9필드 전송 → `{ text, ready }` 응답
   - ready=true 시 촬영 버튼 + 가이드 `ready` 클래스
 - **음성 TTS**: Web Speech API (`speechSynthesis`), 한국어 Yuna 우선, `ko` 폴백
+  - `store.voiceEnabled = true` 기본값 (음성 ON 초기화)
+  - cancel 후 50ms 딜레이 → 새 발화 (싱크 보장)
 - 촬영 → `saveSessionData('captured')` → `result.html` 이동
 
 ### result.html + result.js (분석실)
@@ -182,8 +184,8 @@ MONK (monk.kr)                  MONKOS (monkos.ai)
 | config.js 키 | 엔드포인트 | CF Function | 백엔드 | 모델 |
 |--------------|-----------|-------------|--------|------|
 | `PRECHECK` | `/api/precheck` | `functions/api/precheck.js` | Gemini API 직접 | `gemini-2.0-flash` |
-| `GENERATE` | `/api/idgen` | `functions/api/idgen.js` | Gemini API 직접 | `gemini-3-pro-image-preview` (I2I) |
-| `COACHING` | `/api/idphoto-coaching` | `functions/api/idphoto-coaching.js` | Gemini API 직접 | `gemini-2.5-flash` |
+| `GENERATE` | `/api/idgen` | `functions/api/idgen.js` | Gemini API 직접 | `gemini-3-pro-image-preview` (I2I, 9필드 동적 프롬프트) |
+| `COACHING` | `/api/idphoto-coaching` | `functions/api/idphoto-coaching.js` | Gemini API 직접 | `gemini-2.5-flash` (thinkingBudget:0) |
 | `CREDIT_USE` | `/api/idphoto-credit-use` | `functions/api/idphoto-credit-use.js` | monkos.ai 프록시 | — |
 
 **비고**:
@@ -201,16 +203,21 @@ MONK (monk.kr)                  MONKOS (monkos.ai)
 ### 6-4. CF Functions 코칭 상세 (idphoto-coaching.js)
 
 ```
-[camera.js] 500ms 간격 프레임 캡처
-    ↓ 모션 감지 (3% 변화 임계)
-    ↓ 백프레셔 안전 (이전 요청 완료 전 스킵)
+[camera.js] 순차 while 루프 (응답 완료 → 300ms → 최신 프레임 캡처)
+    ↓ coachingGen 세대 카운터 (stale 응답 폐기)
 [CF Function] POST /api/idphoto-coaching
     ↓ 9필드 동적 프롬프트 빌더 (buildCoachingPrompt)
     ↓ Gemini 2.5 Flash REST API (thinkingBudget: 0)
     ↓ READY 키워드 판정
 [camera.js] { text: "고개를 들어주세요", ready: false }
-    ↓ 코칭 오버레이 표시 + TTS 발화
+    ↓ 코칭 오버레이 표시 + TTS 발화 (cancel + 50ms 딜레이)
 ```
+
+**코칭 루프 설계 원칙** (2026-02-21 확정):
+- setInterval 방식 폐기 → 순차 while 루프 채택
+- **항상 최신 프레임**: 응답 완료 후 "지금" 상태 캡처 (2초 전 분석 방지)
+- **stale 응답 폐기**: `coachingGen` 카운터로 대기 중 stop/재시작 시 구응답 무시
+- **TTS 싱크**: `speechSynthesis.cancel()` 후 50ms 딜레이 → 새 발화 (브라우저 cancel 처리 대기)
 
 **프롬프트 분기**:
 - `id_photo`: 정면 응시, 조명, 표정, 눈썹, 얼굴 라인 체크 (5항목)
@@ -224,6 +231,33 @@ MONK (monk.kr)                  MONKOS (monkos.ai)
 - `idgen.js`: `responseModalities` 사용 금지 (에러 발생). `photo.js` 패턴 준수
 - API Key: `env.GEMINI_API_KEY` (CF Pages Secrets, `wrangler pages secret put`)
 - `gemini-2.5-flash`는 thinking 모드 기본 ON → `thinkingConfig: { thinkingBudget: 0 }` 필수
+
+### 6-5. CF Functions 생성 상세 (idgen.js — 동적 프롬프트 빌더)
+
+```
+[result.js] confirmAndGenerate()
+    ↓ 9필드 전체 전송 (purpose, clothing, clothingColor, tie, hair, background, expression + style, gender, age)
+[CF Function] POST /api/idgen
+    ↓ buildPrompt(body) — 동적 프롬프트 조립
+    ↓ Gemini 3 Pro Image Preview (I2I)
+[result.js] { image: "data:image/png;base64,..." }
+```
+
+**프롬프트 구조** (고정값 + 동적값 샌드위치):
+```
+IDENTITY_PRESERVATION          ← 고정 (90:10 + 정면 + 정체성)
+
+[IMAGE-TO-IMAGE TRANSFORM]
+[STYLE] PURPOSE_PROMPTS[용도]  ← 고정 (perfectly front-facing 포함)
+[BACKGROUND] BG_PROMPTS[배경]  ← 동적 (퍼널)
+[SUBJECT] 성별/연령             ← 동적 (퍼널)
+[OUTFIT] 의상+색상+넥타이       ← 동적 (퍼널, 여성 셔츠→블라우스 분기)
+[HAIR] 헤어                    ← 동적 (퍼널)
+[EXPRESSION] 표정              ← 동적 (퍼널)
+[CONSTRAINT] 변경 금지          ← 고정 (성별/연령/얼굴 변경 금지)
+```
+
+**룩업 테이블**: `BG_PROMPTS`, `CLOTHING_PROMPTS`, `CLOTHING_COLOR_PROMPTS`, `TIE_PROMPTS`, `EXPRESSION_PROMPTS`, `HAIR_PROMPTS`, `PURPOSE_PROMPTS`
 
 ## 7. 공통 컴포넌트 (HTML 중복)
 
@@ -247,7 +281,7 @@ MONK (monk.kr)                  MONKOS (monkos.ai)
 | `CREDIT_COST.download` | 8 | 다운로드 크레딧 |
 | `MAX_CAPTURE_SIZE` | 720 | 캡처 최대 해상도 |
 | `CAPTURE_SIZE` | 512 | 코칭 프레임 크기 |
-| `FRAME_INTERVAL_MS` | 500 | 코칭 프레임 간격 (ms) |
+| `FRAME_INTERVAL_MS` | 500 | (미사용, 순차 루프 전환) |
 | `COACHING_DISPLAY_MS` | 10000 | 코칭 텍스트 표시 시간 (ms) |
 | `DPI` | 300 | 출력 DPI |
 
@@ -279,7 +313,7 @@ wrangler pages deploy MONK_kr/ --project-name=monk-kr --branch=main
 | 4 | HTML 공통 요소 중복 | 미해결 | 헤더/모달/배너 5개 HTML에 복사. SSI 불가(정적 호스팅) |
 | 5 | TOSS_CLIENT_KEY 미설정 | 미해결 | 결제 미연동 (빈 문자열) |
 | 6 | 용도별 크롭/배경 교체 | 미출시 | thankyou.html에 버튼만 존재 (`alert('곧 출시 예정')`) |
-| 7 | TTS 일본어 음성 | 미해결 | `koVoice=null` 시 브라우저 기본 음성 사용 → 일본어 발화. camera.js `speakKo()` 가드 필요 |
+| 7 | TTS 일본어 음성 | 해결 | `koVoice=null` 시 발화 차단 (가드 적용). `voiceEnabled=true` 기본값 설정 |
 | 8 | ai_lab.html 인사 모달 | 미해결 | 포토랩 진입 전 인사 음성 출력. 원인 조사 필요 (작가님 판단 대기) |
 | 9 | 포탈 server.js 원복 필요 | 미해결 | 막내3이 추가한 코칭/QC 코드 236줄 제거 필요 (배포라인 교차 금지 원칙) |
 
@@ -323,3 +357,8 @@ monkos.ai (Cloud Run)
 | 2026-02-21 | **배포라인 교차 금지 원칙** 확립. 포탈 코칭/QC 코드 원복 결정 |
 | 2026-02-21 | monkos 이관 전략 추가. CF Functions → Cloud Run 클론 방식 확정 |
 | 2026-02-21 | 기술명세 갱신 (본 문서) |
+| 2026-02-21 | idgen.js 동적 프롬프트 빌더 전환 (하드코딩 → 9필드 buildPrompt) |
+| 2026-02-21 | result.js 9필드 전체 전송 (purpose, clothing, clothingColor, tie, hair, background, expression 추가) |
+| 2026-02-21 | 코칭 루프 setInterval → 순차 while 루프 전환 (stale 응답 방지) |
+| 2026-02-21 | 모션 감지 제거 + voiceEnabled=true 초기화 + TTS cancel 딜레이 |
+| 2026-02-21 | idgen.js 에러 핸들링 개선 (Gemini API 에러 상세 클라이언트 전달) |
