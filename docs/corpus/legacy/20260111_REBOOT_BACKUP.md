@@ -4,7 +4,7 @@
 
 ### 프로젝트 위치
 ```
-/Users/jeong-kyushin/developer/monk_project /apps/monk-ai-studio-pro
+/Users/jeong-kyushin/developer/monk_project/apps/monk-ai-studio-pro
 ```
 
 ### 작동 중인 파일들
@@ -57,7 +57,7 @@ AIzaSyAMT8pvdZcH3034xQT4dCoHv6KTf2eHDow
 
 ### 1단계: Backend 시작
 ```bash
-cd "/Users/jeong-kyushin/developer/monk_project /apps/monk-ai-studio-pro/backend"
+cd "/Users/jeong-kyushin/developer/monk_project/apps/monk-ai-studio-pro/backend"
 node server.js
 ```
 
@@ -67,7 +67,7 @@ node server.js
 
 ### 2단계: Frontend 시작 (새 터미널)
 ```bash
-cd "/Users/jeong-kyushin/developer/monk_project /apps/monk-ai-studio-pro"
+cd "/Users/jeong-kyushin/developer/monk_project/apps/monk-ai-studio-pro"
 npm run dev
 ```
 

@@ -60,7 +60,7 @@ tags: [docs, infra, rename, 세션마감]
 - 커밋: `b02930b`, `cc628a0`
 
 ### A-3. 경로 공백 문제 및 해결
-- 문제: `/Users/developer/monk_project /` (후행 공백)
+- 문제: `/Users/developer/monk_project/` (후행 공백)
 - 영향: wrangler tmp 경로 해석 실패, CLI 도구 파싱 오류
 - 해결: mv로 공백 제거 + Claude projects dir rename
 - 상세: `TASK_20260220_path_space_removal.md` Phase 1~3 참조

@@ -181,7 +181,7 @@ https://console.cloud.google.com/gen-app-builder/engines
 ### 4단계: 코드 수정 및 재배포 (5분)
 
 ```bash
-cd "/Users/jeong-kyushin/developer/monk_project /MONK_kr/cloudflare-workers/vertex-ai-proxy"
+cd "/Users/jeong-kyushin/developer/monk_project/MONK_kr/cloudflare-workers/vertex-ai-proxy"
 
 # 코드 수정 (필요시)
 # src/index.js
@@ -239,7 +239,7 @@ https://aistudio.google.com/
 
 ### 로컬
 ```
-~/developer/monk_project /_saga/
+~/developer/monk_project/_saga/
 ├── HOME_RESTART_GUIDE.md         (전체 가이드)
 ├── RESUME_SESSION.md             (이 파일!)
 ├── YONGA_CONNECTION_GUIDE.md     (연결 가이드)
@@ -298,13 +298,13 @@ curl -X POST https://monk-vertex-proxy.gdsajin.workers.dev \
 
 ### 로그 확인
 ```bash
-cd "/Users/jeong-kyushin/developer/monk_project /MONK_kr/cloudflare-workers/vertex-ai-proxy"
+cd "/Users/jeong-kyushin/developer/monk_project/MONK_kr/cloudflare-workers/vertex-ai-proxy"
 npx wrangler tail monk-vertex-proxy
 ```
 
 ### 재배포
 ```bash
-cd "/Users/jeong-kyushin/developer/monk_project /MONK_kr/cloudflare-workers/vertex-ai-proxy"
+cd "/Users/jeong-kyushin/developer/monk_project/MONK_kr/cloudflare-workers/vertex-ai-proxy"
 npx wrangler deploy
 ```
 

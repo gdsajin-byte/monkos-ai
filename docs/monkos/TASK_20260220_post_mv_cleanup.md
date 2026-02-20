@@ -33,7 +33,7 @@ tags: [infra, cleanup, symlink, docs, memory]
 
 현재 상태:
 ```
-/tmp/monk-kr-deploy → /Users/developer/monk_project /MONK_kr  (구 경로, 공백 포함 → 깨져있음)
+/tmp/monk-kr-deploy → /Users/developer/monk_project/MONK_kr  (구 경로, 공백 포함 → 깨져있음)
 ```
 
 실행:
@@ -99,7 +99,7 @@ ls ~/.claude/projects/ | grep monk
 - 관련 커밋: `b02930b`, `cc628a0`
 
 ### 3-3. 경로 공백 제거 완료
-- 문제: `/Users/developer/monk_project /` (후행 공백)
+- 문제: `/Users/developer/monk_project/` (후행 공백)
 - 해결: mv → `/Users/developer/monk_project/`
 - 기능성 파일 수정: `scripts/sync_visitors_to_gcs.sh`, `scripts/sync_to_gcs.sh`, `package-lock.json`
 - Claude projects dir: 자연 생성 확인 → 구 dir 삭제

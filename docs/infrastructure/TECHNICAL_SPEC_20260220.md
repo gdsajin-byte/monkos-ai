@@ -67,7 +67,7 @@ options.html → 옵션 (추가 촬영 / 이벤트 / 포털 복귀)
 
 ### 문제
 ```
-/Users/developer/monk_project /   ← 후행 공백 (mv 시점 불명, Finder/자동화 추정)
+/Users/developer/monk_project/   ← 후행 공백 (mv 시점 불명, Finder/자동화 추정)
 ```
 
 ### 해결

@@ -50,7 +50,7 @@
 
 ### 로컬
 ```
-/Users/jeong-kyushin/developer/monk_project /_saga/
+/Users/jeong-kyushin/developer/monk_project/_saga/
 ├── RECOVERED_CONTEXT_2026-01-08.md
 └── CONTEXT_RECOVERY_REPORT_2026-01-08.md (이 파일)
 ```

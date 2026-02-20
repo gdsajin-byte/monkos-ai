@@ -45,7 +45,7 @@ monk_master_context.txt (15 MB)
 ```
 
 **위치:**
-- 로컬: `/Users/jeong-kyushin/developer/monk_project /monk_master_context.txt`
+- 로컬: `/Users/jeong-kyushin/developer/monk_project/monk_master_context.txt`
 - GCS: `gs://monk-project-soul/saga/monk_master_context_20260108_122002.txt`
 - Vertex AI: `young_a_test` 앱에 업로드 완료
 
@@ -68,7 +68,7 @@ _saga/raw_chunks/
 ```
 
 **위치:**
-- 로컬: `/Users/jeong-kyushin/developer/monk_project /_saga/raw_chunks/`
+- 로컬: `/Users/jeong-kyushin/developer/monk_project/_saga/raw_chunks/`
 - GCS: `gs://monk-project-soul/saga/raw_chunks/`
 
 **활용 방안:**
@@ -143,7 +143,7 @@ PROJECT_COMPLETION_REPORT.md (11 KB) ⭐ 최종 보고서
 ```
 
 **위치:**
-- 로컬: `/Users/jeong-kyushin/developer/monk_project /*.md`
+- 로컬: `/Users/jeong-kyushin/developer/monk_project/*.md`
 - GCS: `gs://monk-project-soul/live/*.md`
 - 완료 보고서: `gs://monk-project-soul/saga/PROJECT_COMPLETION_REPORT.md`
 

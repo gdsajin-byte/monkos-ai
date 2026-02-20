@@ -16,7 +16,7 @@ NC='\033[0m'
 # 설정
 TIMESTAMP=$(date +"%Y-%m-%d_%H%M%S")
 SESSION_DATE=$(date +"%Y-%m-%d")
-SAGA_DIR="/Users/jeong-kyushin/developer/monk_project /docs/saga"
+SAGA_DIR="/Users/jeong-kyushin/developer/monk_project/docs/saga"
 SESSION_LOG="$SAGA_DIR/session_logs/${SESSION_DATE}_session.md"
 
 # 디렉토리 생성
@@ -91,7 +91,7 @@ else
 fi
 
 # monk_master_context.txt에 간단한 참조 추가
-MASTER_CONTEXT="/Users/jeong-kyushin/developer/monk_project /monk_master_context.txt"
+MASTER_CONTEXT="/Users/jeong-kyushin/developer/monk_project/monk_master_context.txt"
 if [ -f "$MASTER_CONTEXT" ]; then
     echo "" >> "$MASTER_CONTEXT"
     echo "---" >> "$MASTER_CONTEXT"

@@ -41,7 +41,7 @@
 
 **Tool Result**:
 ```
-{"directoryTreeRoot":{"absPath":"/Users/jeong-kyushin/developer/monk_project /MONK_kr","childrenDirs":[{"absPath":"/Users/jeong-kyushin/developer/monk_project /MONK_kr/Academy","childrenFiles":[{"name":"academy.html"}],"childrenWereProcessed":true,"fullSubtreeExtensionCounts":{".html":1},"numFiles":1},{"absPath":"/Users/jeong-kyushin/developer/monk_project /MONK_kr/ai_lab","childrenDirs":[{"absPath":"/Users/jeong-kyushin/developer/monk_project /MONK_kr/ai_lab/images","childrenWereProcessed":true... (truncated)
+{"directoryTreeRoot":{"absPath":"/Users/jeong-kyushin/developer/monk_project/MONK_kr","childrenDirs":[{"absPath":"/Users/jeong-kyushin/developer/monk_project/MONK_kr/Academy","childrenFiles":[{"name":"academy.html"}],"childrenWereProcessed":true,"fullSubtreeExtensionCounts":{".html":1},"numFiles":1},{"absPath":"/Users/jeong-kyushin/developer/monk_project/MONK_kr/ai_lab","childrenDirs":[{"absPath":"/Users/jeong-kyushin/developer/monk_project/MONK_kr/ai_lab/images","childrenWereProcessed":true... (truncated)
 ```
 
 ---
@@ -142,7 +142,7 @@ open MONK_kr/index.html
 
 **Tool Result**:
 ```
-{"directoryTreeRoot":{"absPath":"/Users/jeong-kyushin/developer/monk_project /_saga","childrenDirs":[{"absPath":"/Users/jeong-kyushin/developer/monk_project /_saga/raw_chunks","childrenWereProcessed":true},{"absPath":"/Users/jeong-kyushin/developer/monk_project /_saga/session_logs","childrenFiles":[{"name":"2026-01-08_session.md"}],"childrenWereProcessed":true,"fullSubtreeExtensionCounts":{".md":1},"numFiles":1}],"childrenWereProcessed":true,"fullSubtreeExtensionCounts":{".md":1},"numFiles":1}}
+{"directoryTreeRoot":{"absPath":"/Users/jeong-kyushin/developer/monk_project/_saga","childrenDirs":[{"absPath":"/Users/jeong-kyushin/developer/monk_project/_saga/raw_chunks","childrenWereProcessed":true},{"absPath":"/Users/jeong-kyushin/developer/monk_project/_saga/session_logs","childrenFiles":[{"name":"2026-01-08_session.md"}],"childrenWereProcessed":true,"fullSubtreeExtensionCounts":{".md":1},"numFiles":1}],"childrenWereProcessed":true,"fullSubtreeExtensionCounts":{".md":1},"numFiles":1}}
 ```
 
 ---
@@ -155,7 +155,7 @@ open MONK_kr/index.html
 
 **Tool Result**:
 ```
-{"directoryTreeRoot":{"absPath":"/Users/jeong-kyushin/developer/monk_project /_saga/raw_chunks","childrenWereProcessed":true}}
+{"directoryTreeRoot":{"absPath":"/Users/jeong-kyushin/developer/monk_project/_saga/raw_chunks","childrenWereProcessed":true}}
 ```
 
 ---

@@ -24,7 +24,7 @@ tags: [infra, path, root-cause, 전수조사]
 
 프로젝트 루트 경로에 **후행 공백(trailing space)** 존재:
 ```
-현재: /Users/developer/monk_project /    ← 끝에 공백 1칸
+현재: /Users/developer/monk_project/    ← 끝에 공백 1칸
 목표: /Users/developer/monk_project/     ← 공백 제거
 ```
 
@@ -42,10 +42,10 @@ tags: [infra, path, root-cause, 전수조사]
 #### 1-1. 현재 경로 참조 전수 스캔
 ```bash
 # 프로젝트 내부에서 절대 경로 참조하는 곳
-grep -r "monk_project " . --include="*.js" --include="*.json" --include="*.toml" --include="*.yaml" --include="*.yml" --include="*.sh" --include="*.md" -l
+grep -r "monk_project" . --include="*.js" --include="*.json" --include="*.toml" --include="*.yaml" --include="*.yml" --include="*.sh" --include="*.md" -l
 
 # 숨김 파일 포함
-grep -r "monk_project " .git/config .gitmodules 2>/dev/null
+grep -r "monk_project" .git/config .gitmodules 2>/dev/null
 
 # wrangler 설정
 cat wrangler.toml
@@ -93,7 +93,7 @@ ls -la /Users/developer/ | cat -A | grep monk
 
 | 참조 위치 | 파일/설정 | 현재 값 | 수정 필요 | 위험도 |
 |-----------|----------|---------|----------|--------|
-| (예시) .git/config | core.worktree | /Users/developer/monk_project / | Yes | Low |
+| (예시) .git/config | core.worktree | /Users/developer/monk_project/ | Yes | Low |
 | ... | ... | ... | ... | ... |
 
 ### Phase 3: 실행 계획 수립
@@ -138,8 +138,8 @@ ls -la /Users/developer/ | cat -A | grep monk
 | 파일 | 라인 | 현재 값 | 비고 |
 |------|------|---------|------|
 | `scripts/sync_visitors_to_gcs.sh` | :11 | `PROJECT_DIR="/Users/developer/monk_project "` | ✅ 수정 완료 |
-| `scripts/sync_to_gcs.sh` | :10 | `LOCAL_BASE="/Users/developer/monk_project /_saga"` | ✅ 수정 완료 |
-| `package-lock.json` | :2 | `"name": "monk_project "` | ✅ 수정 완료 |
+| `scripts/sync_to_gcs.sh` | :10 | `LOCAL_BASE="/Users/developer/monk_project/_saga"` | ✅ 수정 완료 |
+| `package-lock.json` | :2 | `"name": "monk_project"` | ✅ 수정 완료 |
 
 **레거시 (과거 유저 경로 — 이미 사용 안 됨):**
 | 파일 | 라인 | 비고 |
