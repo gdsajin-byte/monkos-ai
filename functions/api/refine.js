@@ -72,6 +72,9 @@ export async function onRequestPost(context) {
               { text: instruction }
             ]
           }],
+          generationConfig: {
+            imageConfig: {}
+          },
           // BLOCK_NONE — photo.js 정본 패턴 (핫키)
           safetySettings: [
             { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
