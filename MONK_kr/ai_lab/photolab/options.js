@@ -3,18 +3,18 @@
  * 추가 촬영 / 이벤트 / 포털 홈 등 네비게이션
  */
 
-import { store, Monk, sharedInit, clearSessionImages } from './shared.js';
+import { store, Monk, sharedInit, clearSessionImages, navigateTo } from './shared.js';
 
 // ─── 네비게이션 ───
 function goToPrep() {
   clearSessionImages();
-  location.href = 'prep.html';
+  navigateTo('prep.html');
 }
 
 function goToCamera() {
   clearSessionImages();
   // 설정(style/gender/age)은 유지 → 촬영실 직행
-  location.href = 'camera.html';
+  navigateTo('camera.html');
 }
 
 function goToPortal() {

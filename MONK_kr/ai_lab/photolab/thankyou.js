@@ -3,7 +3,7 @@
  * 크롭 사진 표시 + 갤러리 저장 + SNS 공유
  */
 
-import { store, Monk, sharedInit, loadSessionData } from './shared.js';
+import { store, Monk, sharedInit, loadSessionData, navigateTo } from './shared.js';
 
 // ─── Media 생성 (toJpeg 전용) ───
 const media = Monk.media({
@@ -17,7 +17,7 @@ function displayPhoto() {
   const cropped = loadSessionData('cropped');
   if (!cropped) {
     Monk.log('크롭 데이터 없음 → 준비실로 이동');
-    location.href = 'prep.html';
+    navigateTo('prep.html');
     return;
   }
 

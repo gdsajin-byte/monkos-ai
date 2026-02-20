@@ -279,6 +279,23 @@ export function clearSessionImages() {
   sessionStorage.removeItem('monkos_cropped');
 }
 
+// ─── 페이지 이동 (?dev 전파) ───
+export function navigateTo(url) {
+  const devMode = new URLSearchParams(location.search).has('dev');
+  location.href = devMode ? `${url}?dev` : url;
+}
+
+// ─── 디버그: sessionStorage 상태 출력 ───
+export function debugSessionKeys() {
+  const keys = Object.keys(sessionStorage).filter(k => k.startsWith('monkos_'));
+  const summary = keys.map(k => {
+    const v = sessionStorage.getItem(k);
+    const short = v && v.length > 40 ? v.slice(0, 40) + '...' : v;
+    return `${k.replace('monkos_', '')}=${short}`;
+  }).join(', ');
+  Monk.log(`[DEBUG] sessionStorage (${keys.length}): ${summary}`);
+}
+
 // ─── 공통 초기화 ───
 export async function sharedInit() {
   checkInappBrowser();
@@ -307,6 +324,7 @@ export async function sharedInit() {
     store[key] = store[key];
   }
 
+  debugSessionKeys();
   Monk.log('공통 초기화 완료');
 }
 

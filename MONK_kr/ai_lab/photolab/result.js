@@ -5,7 +5,7 @@
 
 import {
   store, pipe, Monk, TX, PHOTO_SPECS, CREDIT_COST,
-  sharedInit, showCreditModal, saveSessionData, loadSessionData
+  sharedInit, showCreditModal, saveSessionData, loadSessionData, navigateTo
 } from './shared.js';
 
 // ─── Media 생성 (crop/toJpeg 전용 — 카메라 불필요) ───
@@ -21,7 +21,7 @@ function showOriginal() {
   const captured = loadSessionData('captured');
   if (!captured) {
     Monk.log('촬영 데이터 없음 → 촬영실로 이동');
-    location.href = 'camera.html';
+    navigateTo('camera.html');
     return;
   }
 
@@ -51,7 +51,7 @@ function retakePhoto() {
   store.showStep2Actions = false;
   store.showStep3Actions = false;
 
-  location.href = 'camera.html';
+  navigateTo('camera.html');
 }
 
 // ─── 생성 파이프라인 (QC 제거됨) ───
@@ -192,7 +192,7 @@ async function cropAndGoToThankyou() {
   }
 
   Monk.log('수령처로 이동');
-  location.href = 'thankyou.html';
+  navigateTo('thankyou.html');
 }
 
 // ─── window 노출 ───
