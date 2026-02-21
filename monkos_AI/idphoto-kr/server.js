@@ -10,10 +10,10 @@
  * 포트: 8080 (Cloud Run 기본)
  */
 
-import { createServer } from 'http';
+import express from 'express';
+import cors from 'cors';
 import { WebSocketServer } from 'ws';
-import { readFileSync } from 'fs';
-import { join, dirname, extname } from 'path';
+import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { GoogleGenAI } from '@google/genai';
 
@@ -140,28 +140,8 @@ const COACHING_INSTRUCTIONS = {
 - 완벽하면: "좋아요! 지금 촬영하세요"`,
 };
 
-// === Imagen 프롬프트 ===
-const IDENTITY_PRESERVATION = `LIGHTING (HIGHEST PRIORITY — override all lighting from input):
-- Flat, even studio illumination from directly above-front (centered, 45° overhead)
-- BOTH sides of face equally lit — zero shadow on cheeks, forehead, or neck
-- Only shadow allowed: very soft, small shadow directly under chin
-- f/8 uniform sharpness, 5500K daylight white balance
-- ABSOLUTELY NO: rembrandt lighting, side light, rim light, split light, dramatic shadows, warm/cool color shifts
-
-BACKGROUND & SCENE (STRICT):
-- Pure white background (#FFFFFF), evenly lit, no falloff or gradient
-- ONLY the person in the frame — nothing else visible
-- NO props, NO equipment, NO lighting gear, NO softbox, NO reflector, NO studio objects
-- NO text, NO watermark, NO border, NO frame
-
-IDENTITY RULE: 90% SAME PERSON + 10% ENHANCEMENT
-
-POSE (CRITICAL):
-- MUST be perfectly front-facing, looking directly at the camera
-- NO semi-profile, no side angles, no 3/4 view
-- Head straight, eyes looking directly at the lens
-- Both ears should be equally visible
-- Symmetric face positioning
+// === Imagen 프롬프트 (CF idgen.js 정본) ===
+const IDENTITY_PRESERVATION = `IDENTITY RULE: 90% SAME PERSON + 10% ENHANCEMENT
 
 PRESERVE (90%):
 - Face shape, eye shape, nose, lips, skin tone
@@ -170,24 +150,24 @@ PRESERVE (90%):
 
 ENHANCE (10% creative freedom):
 - Slightly smoother skin, subtle beauty enhancement
+- Optimal lighting and flattering angles
 - Minor imperfections can be softened
 - Make them look their BEST version (not a different person)
 
 DO NOT:
-- Use side lighting, rim lighting, or any dramatic lighting setup
-- Generate side angles or semi-profile poses
 - Change gender, ethnicity, or age by more than 2-3 years
 - Alter fundamental facial features
 - Make them unrecognizable
 
 GOAL: "This is ME, but on my best day" - perfectly front-facing, studio flat lighting, 90% accuracy, 10% professional retouching.`;
 
+// SPA 호환용 스타일 프롬프트 (기존 /api/generate)
 const STYLE_PROMPTS = {
   id_photo: 'Professional passport/ID photo, perfectly front-facing looking directly at camera, formal white background, sharp focus, head straight, symmetric composition',
   resume: 'Professional resume photo for Korean job application (이력서), perfectly front-facing looking directly at camera, clean white background, business formal attire, 3:4 ratio, approachable yet professional expression',
 };
 
-// 성별/연령별 의상 프롬프트
+// SPA 호환용 성별/연령별 의상 프롬프트 (기존 /api/generate)
 function getOutfitPrompt(gender, age, style = 'id_photo') {
   const genderLabel = gender === 'female' ? 'female/woman' : 'male/man';
   const ageMap = {
@@ -207,6 +187,174 @@ function getOutfitPrompt(gender, age, style = 'id_photo') {
   };
   const info = ageMap[age] || ageMap.adult;
   return `SUBJECT: This person is a ${genderLabel}, ${info.label}. OUTFIT: Dress this person in ${info.outfit}. Keep the person's face, hair, and body exactly the same — only ensure appropriate attire. DO NOT change the person's apparent gender or age.`;
+}
+
+// === 9필드 퍼널 — CF idgen.js 정본 이식 ===
+const BG_PROMPTS = {
+  white:  'pure white (#FFFFFF) background',
+  blue:   'soft blue (#4A90D9) studio background',
+  gray:   'neutral gray (#9CA3AF) studio background',
+  beige:  'warm beige (#D4B896) studio background',
+  pink:   'soft pink (#F5A0B8) studio background',
+  yellow: 'warm yellow (#FBBF24) studio background',
+};
+
+const CLOTHING_PROMPTS = {
+  as_is: null,
+  suit: 'formal business suit',
+  shirt: 'clean dress shirt',
+  casual: 'smart casual top',
+  uniform: 'neat school uniform',
+};
+
+const CLOTHING_COLOR_PROMPTS = {
+  black: 'black',
+  navy: 'dark navy',
+  charcoal: 'charcoal gray',
+  white: 'white',
+  beige: 'beige',
+  wine: 'wine/burgundy',
+  pastel: 'soft pastel-toned',
+};
+
+const TIE_PROMPTS = {
+  none: null,
+  solid_navy: 'solid navy tie',
+  solid_wine: 'solid wine/burgundy tie',
+  stripe_blue: 'blue striped tie',
+  stripe_navy: 'navy striped tie',
+  stripe_wine: 'wine striped regimental tie',
+};
+
+const EXPRESSION_PROMPTS = {
+  gentle_smile: 'gentle, subtle smile',
+  neutral: 'neutral, composed expression',
+  natural_smile: 'natural, friendly smile',
+  bright_smile: 'bright, confident smile',
+};
+
+const HAIR_PROMPTS = {
+  as_is: null,
+  tidy: 'neatly groomed hair',
+  up: 'hair tied up neatly',
+  down: 'hair down, well-groomed',
+};
+
+const PURPOSE_PROMPTS = {
+  passport: 'Professional passport/ID photo, perfectly front-facing looking directly at camera, sharp focus, head straight, symmetric composition, forehead and eyebrows must be visible',
+  student_id: 'Student ID photo, perfectly front-facing, clean and neat appearance, symmetric composition',
+  employee_id: 'Professional corporate ID photo, perfectly front-facing, business-appropriate appearance, symmetric composition',
+  resume: 'Professional resume photo for job application, perfectly front-facing looking directly at camera, business formal, 3:4 ratio, approachable yet professional',
+  color_portrait: 'Professional color portrait photo, perfectly front-facing, studio lighting, clean and polished look',
+};
+
+function buildPrompt(body) {
+  const { style, purpose, gender, age, clothing, clothingColor, tie, hair, background, expression } = body;
+
+  const parts = [];
+
+  // 1. 용도 베이스
+  const purposePrompt = PURPOSE_PROMPTS[purpose] || PURPOSE_PROMPTS[style === 'id_photo' ? 'passport' : 'resume'];
+  parts.push(`[STYLE] ${purposePrompt}`);
+
+  // 2. 배경
+  const bgPrompt = BG_PROMPTS[background] || BG_PROMPTS.white;
+  parts.push(`[BACKGROUND] ${bgPrompt}`);
+
+  // 3. 피사체 정보
+  const genderLabel = gender === 'female' ? 'female/woman' : 'male/man';
+  const ageLabels = { child: 'young child (under 12)', teen: 'teenager (13-18)', adult: 'adult' };
+  parts.push(`[SUBJECT] This person is a ${genderLabel}, ${ageLabels[age] || 'adult'}.`);
+
+  // 4. 의상
+  if (clothing && clothing !== 'as_is') {
+    const clothBase = CLOTHING_PROMPTS[clothing] || clothing;
+    const colorMod = clothingColor ? (CLOTHING_COLOR_PROMPTS[clothingColor] || clothingColor) : '';
+    const outfitDesc = colorMod ? `${colorMod} ${clothBase}` : clothBase;
+
+    let outfitLine = `[OUTFIT] Dress this person in ${outfitDesc}.`;
+
+    // 여성 셔츠 → 블라우스
+    if (gender === 'female' && clothing === 'shirt') {
+      outfitLine = `[OUTFIT] Dress this person in a ${colorMod ? colorMod + ' ' : ''}clean blouse, simple and professional.`;
+    }
+
+    // 넥타이 (남성 + 정장/셔츠)
+    if (tie && tie !== 'none' && gender === 'male') {
+      const tieDesc = TIE_PROMPTS[tie];
+      if (tieDesc) outfitLine += ` With ${tieDesc}.`;
+    }
+
+    parts.push(outfitLine);
+  } else {
+    parts.push('[OUTFIT] Keep current clothing as-is. Only ensure it looks neat and tidy.');
+  }
+
+  // 5. 헤어
+  if (hair && hair !== 'as_is') {
+    const hairDesc = HAIR_PROMPTS[hair];
+    if (hairDesc) parts.push(`[HAIR] ${hairDesc}`);
+  }
+
+  // 6. 표정
+  if (expression) {
+    const exprDesc = EXPRESSION_PROMPTS[expression];
+    if (exprDesc) parts.push(`[EXPRESSION] ${exprDesc}`);
+  }
+
+  // 7. 공통 제약
+  parts.push('[CONSTRAINT] Keep the person\'s face and body exactly the same — only apply the specified styling. DO NOT change apparent gender or age.');
+
+  return `${IDENTITY_PRESERVATION}\n\n[IMAGE-TO-IMAGE TRANSFORM]\n${parts.join('\n')}`;
+}
+
+// === QC 프롬프트 빌더 (CF qc.js 정본 이식) ===
+function buildQCInstruction(gender, age) {
+  const genderText = gender === 'male' ? '남성' : '여성';
+  const ageMap = { child: '유아~12세', teen: '13~18세', adult: '19세 이상' };
+  const ageText = ageMap[age] || '미지정';
+
+  return `2개의 이미지를 비교하고, 2번째 이미지(증명사진)의 품질을 종합 분석해 주세요.
+1번째: 원본 (실제 촬영)
+2번째: AI 생성물 (증명사진)
+사용자 설정: 성별=${genderText}, 연령대=${ageText}
+
+[판정 기준 — 모두 체크 필수]
+1. 동일 인물인가? (얼굴 구조, 눈/코/입 비율)
+2. 유사도 % (0-100)
+3. 아이덴티티 유지 (PASS/FAIL)
+4. 성별 일치: 원본 인물의 외형 성별과 생성물이 일치하는가? (설정과 무관하게 원본 기준 판단)
+5. 연령대 일치: 원본 인물의 외형 나이대와 생성물이 일치하는가? (아이→어른, 어른→아이 변환 감지)
+6. 과도한 보정: 헤어스타일 대폭 변경, 피부 과보정, 얼굴 윤곽 변형, 눈크기 변경 등 부자연스러운 변형이 있는가?
+7. 증명사진 품질 (조명, 배경, 구도)
+8. 2번째 이미지에서 얼굴의 bounding box 좌표 [ymin, xmin, ymax, xmax] (0-1000 정규화)
+
+[FAIL 조건 — 하나라도 해당되면 identity를 FAIL로 판정]
+- 성별 외형이 원본과 다르게 변환됨
+- 연령대가 원본과 크게 달라짐 (10세 이상 차이 추정)
+- 얼굴 윤곽, 눈크기, 코 형태 등이 원본과 다르게 변형됨
+- 헤어스타일이 원본과 완전히 다름 (정돈 수준은 허용)
+- similarity 70% 미만
+
+[응답 형식 — JSON만 출력]
+{
+  "same_person": true,
+  "similarity": 85,
+  "identity": "PASS",
+  "gender_match": true,
+  "age_match": true,
+  "over_retouched": false,
+  "quality": "GOOD",
+  "face_box": [180, 220, 650, 780],
+  "face_ratio": 0.35,
+  "face_center_x": 500,
+  "head_top_margin": 80,
+  "note": "한줄 코멘트"
+}
+
+face_ratio = 얼굴 높이 / 전체 이미지 높이 (0.25~0.45 적합)
+face_center_x = 얼굴 중심 x좌표 (500 근처면 중앙 정렬, ±50 허용)
+head_top_margin = 머리 정수리에서 이미지 상단까지 여백 (40~150 적합)`;
 }
 
 // === 클라이언트 세션 관리 ===
@@ -264,8 +412,7 @@ async function connectGeminiLive(session, clientId, style = 'id_photo') {
   }
 }
 
-// === Imagen I2I 생성 (Google AI Studio API Key) ===
-// base64 데이터 URL에서 순수 base64 추출
+// === Imagen I2I 생성 (SPA 호환 — Google AI Studio SDK) ===
 function extractBase64(base64Input) {
   return base64Input.includes(',') ? base64Input.split(',')[1] : base64Input;
 }
@@ -302,7 +449,7 @@ async function generatePhoto(inputBase64, style = 'id_photo', gender = 'male', a
   return `data:image/png;base64,${part.inlineData.data}`;
 }
 
-// === 사전분석 (Gemini 2.0 Flash — 촬영본 적합성 검사) ===
+// === 사전분석 (SPA 호환 — Gemini 2.0 Flash via Vertex AI ADC) ===
 const PRE_CHECK_INSTRUCTION = `이 사진이 증명사진 원본으로 적합한지 분석해 주세요.
 
 [체크 항목]
@@ -363,184 +510,304 @@ async function runPreCheck(imageBase64) {
   }
 }
 
-// === HTTP 서버 (정적 파일 + API 엔드포인트) ===
-const MIME_TYPES = {
-  '.html': 'text/html; charset=utf-8',
-  '.js': 'application/javascript; charset=utf-8',
-  '.css': 'text/css; charset=utf-8',
-  '.json': 'application/json; charset=utf-8',
-  '.png': 'image/png',
-  '.jpg': 'image/jpeg',
-  '.svg': 'image/svg+xml',
-  '.ico': 'image/x-icon',
-};
+// =============================================
+// Express 앱
+// =============================================
+const app = express();
+app.use(cors());
+app.use(express.json({ limit: '10mb' }));
 
-// POST body 파서 (JSON)
-function parseBody(req) {
-  return new Promise((resolve, reject) => {
-    const chunks = [];
-    req.on('data', c => chunks.push(c));
-    req.on('end', () => {
-      try { resolve(JSON.parse(Buffer.concat(chunks).toString())); }
-      catch (e) { reject(e); }
-    });
-    req.on('error', reject);
+// 보안 헤더
+app.use((req, res, next) => {
+  res.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  res.set('X-Content-Type-Options', 'nosniff');
+  res.set('X-Frame-Options', 'DENY');
+  next();
+});
+
+// === API 라우트 ===
+
+// 헬스체크
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'healthy',
+    service: 'monkos-idphoto-kr',
+    version: '3.0.0',
+    timestamp: new Date().toISOString(),
+    auth: 'Hybrid (ADC + API Key)',
+    geminiLive: 'ready (ADC)',
+    imagen: GEMINI_API_KEY ? 'active (API Key)' : 'NO API KEY',
+    preCheck: 'active (gemini-2.0-flash)',
   });
-}
+});
 
-function jsonResponse(res, status, data) {
-  res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8' });
-  res.end(JSON.stringify(data));
-}
+// 서비스 정보
+app.get('/api/info', (req, res) => {
+  res.json({
+    service: 'MONKOS AI 증명사진',
+    domain: 'idphoto-kr.monkos.ai',
+    features: ['AI 코칭 (WS)', 'AI 사전분석', 'AI 증명사진 생성', 'AI QC 검증'],
+    styles: Object.keys(STYLE_PROMPTS),
+  });
+});
 
-const httpServer = createServer(async (req, res) => {
-  // 보안 헤더
-  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
-  res.setHeader('X-Content-Type-Options', 'nosniff');
-  res.setHeader('X-Frame-Options', 'DENY');
-
-  const urlPath = req.url.split('?')[0];
-
-  // 헬스체크
-  if (urlPath === '/health') {
-    jsonResponse(res, 200, {
-      status: 'healthy',
-      service: 'monkos-idphoto-kr',
-      version: '2.0.0',
-      timestamp: new Date().toISOString(),
-      auth: 'Hybrid (ADC + API Key)',
-      geminiLive: 'ready (ADC)',
-      imagen: GEMINI_API_KEY ? 'active (API Key)' : 'NO API KEY',
-      preCheck: 'active (gemini-2.0-flash)',
-    });
-    return;
-  }
-
-  // API 정보
-  if (urlPath === '/api/info') {
-    jsonResponse(res, 200, {
-      service: 'MONKOS AI 증명사진',
-      domain: 'idphoto-kr.monkos.ai',
-      features: ['AI 코칭 (WS)', 'AI 사전분석', 'AI 증명사진 생성'],
-      styles: Object.keys(STYLE_PROMPTS),
-    });
-    return;
-  }
-
-  // === REST API 엔드포인트 ===
-
-  // POST /api/pre-check — 촬영본 적합성 분석
-  if (urlPath === '/api/pre-check' && req.method === 'POST') {
-    try {
-      const body = await parseBody(req);
-      if (!body.image) return jsonResponse(res, 400, { error: '이미지 필요' });
-      const result = await runPreCheck(body.image);
-      jsonResponse(res, 200, result);
-    } catch (err) {
-      log(`[API][pre-check] 에러: ${err.message}`);
-      jsonResponse(res, 500, { error: err.message });
-    }
-    return;
-  }
-
-  // POST /api/generate — Imagen I2I 생성 (크레딧 체크 포함)
-  if (urlPath === '/api/generate' && req.method === 'POST') {
-    let bodyUserId = null;
-    try {
-      const body = await parseBody(req);
-      bodyUserId = body.userId;
-      if (!body.image) return jsonResponse(res, 400, { error: '이미지 필요' });
-
-      // 이미지 사이즈 검증 (2MB 상한)
-      const base64Raw = extractBase64(body.image);
-      const imageSize = Math.ceil(base64Raw.length * 0.75);
-      if (imageSize > 2 * 1024 * 1024) {
-        return jsonResponse(res, 400, { error: '이미지 크기가 2MB를 초과합니다' });
-      }
-
-      // 크레딧 체크 및 차감
-      if (body.userId) {
-        const creditResult = await useCredits(body.userId, 'generate');
-        if (!creditResult.success) {
-          return jsonResponse(res, 402, {
-            error: creditResult.error,
-            credits: creditResult.credits ?? 0,
-            required: 1,
-          });
-        }
-        log(`[Credits] 생성 차감: ${body.userId} → ${creditResult.credits}c`);
-      }
-
-      log(`[Imagen] 생성 요청: style=${body.style}, gender=${body.gender || 'male'}, age=${body.age || 'adult'}`);
-      const image = await generatePhoto(body.image, body.style, body.gender, body.age);
-      jsonResponse(res, 200, { image });
-    } catch (err) {
-      log(`[API][generate] 에러: ${err.message}`);
-      // 생성 실패 시 크레딧 환불
-      if (bodyUserId) {
-        try {
-          const refund = await refundCredits(bodyUserId, 'generate');
-          if (refund.success) log(`[Credits] 생성 실패 환불: ${bodyUserId}`);
-        } catch {}
-      }
-      jsonResponse(res, 500, { error: err.message });
-    }
-    return;
-  }
-
-  // POST /api/credit/use — 크레딧 차감 (다운로드 등)
-  if (urlPath === '/api/credit/use' && req.method === 'POST') {
-    try {
-      const body = await parseBody(req);
-      if (!body.userId) return jsonResponse(res, 400, { error: '로그인 필요' });
-      const result = await useCredits(body.userId, body.type || 'download');
-      jsonResponse(res, result.success ? 200 : 402, result);
-    } catch (err) {
-      log(`[API][credit/use] 에러: ${err.message}`);
-      jsonResponse(res, 500, { error: err.message });
-    }
-    return;
-  }
-
-  // POST /api/credit/share-bonus — 공유 보너스
-  if (urlPath === '/api/credit/share-bonus' && req.method === 'POST') {
-    try {
-      const body = await parseBody(req);
-      if (!body.userId) return jsonResponse(res, 400, { error: '로그인 필요' });
-      const result = await grantShareBonus(body.userId, body.platform);
-      jsonResponse(res, result.success ? 200 : 400, result);
-    } catch (err) {
-      log(`[API][credit/share-bonus] 에러: ${err.message}`);
-      jsonResponse(res, 500, { error: err.message });
-    }
-    return;
-  }
-
-  // 정적 파일 배포
-  // / → 앱으로 리다이렉트, /app → 촬영 앱 UI
-  if (urlPath === '/') {
-    const content = readFileSync(join(__dirname, 'public', 'landing.html'));
-    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-    res.end(content);
-    return;
-  }
-  let filePath;
-  if (urlPath === '/app') filePath = '/index.html';
-  else filePath = urlPath;
-  const fullPath = join(__dirname, 'public', filePath);
-  const ext = extname(filePath);
-
+// 사전분석 — SPA 호환 (하이픈, Vertex AI ADC)
+app.post('/api/pre-check', async (req, res) => {
   try {
-    const content = readFileSync(fullPath);
-    res.writeHead(200, { 'Content-Type': MIME_TYPES[ext] || 'application/octet-stream' });
-    res.end(content);
-  } catch {
-    res.writeHead(404, { 'Content-Type': 'text/plain' });
-    res.end('Not Found');
+    if (!req.body.image) return res.status(400).json({ error: '이미지 필요' });
+    const result = await runPreCheck(req.body.image);
+    res.json(result);
+  } catch (err) {
+    log(`[API][pre-check] 에러: ${err.message}`, 'ERROR');
+    res.status(500).json({ error: err.message });
   }
 });
 
-// === WebSocket (코칭 전용 — 촬영실 Step 1에서만 연결) ===
+// 사전분석 — MPA용 (연결, Vertex AI ADC)
+app.post('/api/precheck', async (req, res) => {
+  try {
+    if (!req.body.image) return res.status(400).json({ error: '이미지가 필요합니다' });
+    const result = await runPreCheck(req.body.image);
+    res.json(result);
+  } catch (err) {
+    log(`[API][precheck] 에러: ${err.message}`, 'ERROR');
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// I2I 생성 — SPA 호환 (SDK, 크레딧 체크 포함)
+app.post('/api/generate', async (req, res) => {
+  let bodyUserId = null;
+  try {
+    const body = req.body;
+    bodyUserId = body.userId;
+    if (!body.image) return res.status(400).json({ error: '이미지 필요' });
+
+    // 이미지 사이즈 검증 (2MB 상한)
+    const base64Raw = extractBase64(body.image);
+    const imageSize = Math.ceil(base64Raw.length * 0.75);
+    if (imageSize > 2 * 1024 * 1024) {
+      return res.status(400).json({ error: '이미지 크기가 2MB를 초과합니다' });
+    }
+
+    // 크레딧 체크 및 차감
+    if (body.userId) {
+      const creditResult = await useCredits(body.userId, 'generate');
+      if (!creditResult.success) {
+        return res.status(402).json({
+          error: creditResult.error,
+          credits: creditResult.credits ?? 0,
+          required: 1,
+        });
+      }
+      log(`[Credits] 생성 차감: ${body.userId} → ${creditResult.credits}c`);
+    }
+
+    log(`[Imagen] 생성 요청: style=${body.style}, gender=${body.gender || 'male'}, age=${body.age || 'adult'}`);
+    const image = await generatePhoto(body.image, body.style, body.gender, body.age);
+    res.json({ image });
+  } catch (err) {
+    log(`[API][generate] 에러: ${err.message}`, 'ERROR');
+    // 생성 실패 시 크레딧 환불
+    if (bodyUserId) {
+      try {
+        const refund = await refundCredits(bodyUserId, 'generate');
+        if (refund.success) log(`[Credits] 생성 실패 환불: ${bodyUserId}`);
+      } catch {}
+    }
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// I2I 생성 — MPA용 (9필드 CF 정본, raw fetch, 크레딧 체크 포함)
+app.post('/api/idgen', async (req, res) => {
+  let bodyUserId = null;
+  try {
+    const apiKey = GEMINI_API_KEY;
+    if (!apiKey) return res.status(500).json({ error: 'API 키 미설정' });
+
+    const body = req.body;
+    const { image, userId } = body;
+    bodyUserId = userId;
+    if (!image) return res.status(400).json({ error: '이미지가 필요합니다' });
+
+    const base64Data = image.includes(',') ? image.split(',')[1] : image;
+    const byteLength = Math.ceil(base64Data.length * 3 / 4);
+    log(`[idgen] 입력 이미지: base64=${base64Data.length}chars, bytes=${byteLength}, KB=${(byteLength/1024).toFixed(1)}`);
+    if (byteLength > 2 * 1024 * 1024) {
+      return res.status(400).json({ error: '이미지가 너무 큽니다 (2MB 이하)' });
+    }
+
+    // 크레딧 차감
+    if (userId) {
+      const creditResult = await useCredits(userId, 'generate');
+      if (!creditResult.success) {
+        return res.status(402).json({
+          error: creditResult.error,
+          credits: creditResult.credits ?? 0,
+          required: 1,
+        });
+      }
+      log(`[Credits] idgen 차감: ${userId} → ${creditResult.credits}c`);
+    }
+
+    const instruction = buildPrompt(body);
+
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image-preview:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [
+            { inlineData: { mimeType: 'image/jpeg', data: base64Data } },
+            { text: instruction },
+          ]}],
+          generationConfig: { imageConfig: { aspectRatio: '3:4' } },
+          safetySettings: [
+            { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
+            { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
+            { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
+            { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
+          ],
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      let detail = '';
+      try { detail = JSON.parse(errorText)?.error?.message || errorText.substring(0, 200); } catch { detail = errorText.substring(0, 200); }
+      // 생성 실패 시 크레딧 환불
+      if (bodyUserId) await refundCredits(bodyUserId, 'generate');
+      throw new Error(`API ${response.status}: ${detail}`);
+    }
+
+    const data = await response.json();
+    const imagePart = data.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
+    if (!imagePart?.inlineData) {
+      if (bodyUserId) await refundCredits(bodyUserId, 'generate');
+      throw new Error('이미지 생성 실패: 응답에 이미지가 없습니다');
+    }
+
+    res.json({ image: `data:image/png;base64,${imagePart.inlineData.data}` });
+  } catch (err) {
+    log(`[API][idgen] 에러: ${err.message}`, 'ERROR');
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// QC 검증 — MPA용 (Vertex AI ADC)
+app.post('/api/qc', async (req, res) => {
+  try {
+    const { original, generated, gender = 'male', age = 'adult' } = req.body;
+    if (!original || !generated) {
+      return res.status(400).json({ error: '원본과 생성 이미지 모두 필요합니다' });
+    }
+
+    const origBase64 = original.includes(',') ? original.split(',')[1] : original;
+    const genBase64 = generated.includes(',') ? generated.split(',')[1] : generated;
+
+    const instruction = buildQCInstruction(gender, age);
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.0-flash',
+      contents: [{ role: 'user', parts: [
+        { inlineData: { mimeType: 'image/png', data: origBase64 } },
+        { inlineData: { mimeType: 'image/png', data: genBase64 } },
+        { text: instruction },
+      ]}],
+      config: {
+        responseMimeType: 'application/json',
+        temperature: 0.3,
+      },
+    });
+
+    const text = response.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    let result;
+    try {
+      const jsonMatch = text.match(/\{[\s\S]*\}/);
+      if (jsonMatch) result = JSON.parse(jsonMatch[0]);
+      else result = { identity: 'ERROR', note: 'QC 분석 파싱 실패' };
+    } catch {
+      result = { identity: 'ERROR', note: 'QC 분석 파싱 실패' };
+    }
+
+    res.json(result);
+  } catch (err) {
+    log(`[API][qc] 에러: ${err.message}`, 'ERROR');
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 크레딧 차감
+app.post('/api/credit/use', async (req, res) => {
+  try {
+    if (!req.body.userId) return res.status(400).json({ error: '로그인 필요' });
+    const result = await useCredits(req.body.userId, req.body.type || 'download');
+    res.status(result.success ? 200 : 402).json(result);
+  } catch (err) {
+    log(`[API][credit/use] 에러: ${err.message}`, 'ERROR');
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 공유 보너스
+app.post('/api/credit/share-bonus', async (req, res) => {
+  try {
+    if (!req.body.userId) return res.status(400).json({ error: '로그인 필요' });
+    const result = await grantShareBonus(req.body.userId, req.body.platform);
+    res.status(result.success ? 200 : 400).json(result);
+  } catch (err) {
+    log(`[API][credit/share-bonus] 에러: ${err.message}`, 'ERROR');
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// === 페이지 라우트 (MPA) ===
+app.get('/', (req, res) => res.sendFile(join(__dirname, 'public/landing.html')));
+app.get('/app', (req, res) => res.sendFile(join(__dirname, 'public/index.html')));
+app.get('/prep', (req, res) => res.sendFile(join(__dirname, 'public/prep.html')));
+app.get('/camera', (req, res) => res.sendFile(join(__dirname, 'public/camera.html')));
+app.get('/result', (req, res) => res.sendFile(join(__dirname, 'public/result.html')));
+app.get('/thankyou', (req, res) => res.sendFile(join(__dirname, 'public/thankyou.html')));
+
+// 정적 파일 서빙
+app.use(express.static(join(__dirname, 'public')));
+
+// === 서버 시작 + WebSocket ===
+const httpServer = app.listen(PORT, '0.0.0.0', () => {
+  log('='.repeat(60));
+  log('MONKOS AI 증명사진 (KR) — Express 서버 시작');
+  log('='.repeat(60));
+  log(`포트: ${PORT}`);
+  log(`프로젝트: ${PROJECT_ID}`);
+  log(`리전: ${LOCATION}`);
+  log(`인증: 하이브리드 (ADC + API Key)`);
+  log(`Imagen I2I: 활성 (gemini-3-pro-image-preview, API Key)`);
+  log(`사전분석: 활성 (gemini-2.0-flash)`);
+  log('='.repeat(60));
+  log('엔드포인트:');
+  log('  GET  /health              — 헬스체크');
+  log('  GET  /api/info            — 서비스 정보');
+  log('  POST /api/pre-check       — 사전분석 (SPA)');
+  log('  POST /api/precheck        — 사전분석 (MPA)');
+  log('  POST /api/generate        — Imagen I2I (SPA)');
+  log('  POST /api/idgen           — Imagen I2I (MPA, 9필드)');
+  log('  POST /api/qc              — QC 검증 (MPA)');
+  log('  POST /api/credit/use      — 크레딧 차감');
+  log('  POST /api/credit/share-bonus — 공유 보너스');
+  log('  GET  /                    — 랜딩페이지');
+  log('  GET  /app                 — 촬영 앱 (SPA)');
+  log('  GET  /prep                — 준비 (MPA)');
+  log('  GET  /camera              — 촬영 (MPA)');
+  log('  GET  /result              — 결과 (MPA)');
+  log('  GET  /thankyou            — 수령 (MPA)');
+  log('  WS   /                    — WebSocket (코칭 전용)');
+  log('='.repeat(60));
+});
+
+// === WebSocket (코칭 전용 — 촬영실에서만 연결) ===
 const wss = new WebSocketServer({ server: httpServer });
 let clientCounter = 0;
 
@@ -623,29 +890,4 @@ wss.on('connection', async (ws) => {
     if (session.bufferFlushTimer) clearTimeout(session.bufferFlushTimer);
     sessions.delete(clientId);
   });
-});
-
-// === 서버 시작 ===
-httpServer.listen(PORT, '0.0.0.0', () => {
-  log('='.repeat(60));
-  log('MONKOS AI 증명사진 (KR) — 서버 시작');
-  log('='.repeat(60));
-  log(`포트: ${PORT}`);
-  log(`프로젝트: ${PROJECT_ID}`);
-  log(`리전: ${LOCATION}`);
-  log(`인증: 하이브리드 (ADC + API Key)`);
-  log(`Imagen I2I: 활성 (gemini-3-pro-image-preview, API Key)`);
-  log(`사전분석: 활성 (gemini-2.0-flash)`);
-  log('='.repeat(60));
-  log('엔드포인트:');
-  log('  GET  /health              — 헬스체크');
-  log('  GET  /api/info            — 서비스 정보');
-  log('  POST /api/pre-check       — 사전분석 (촬영본 적합성)');
-  log('  POST /api/generate        — Imagen I2I 생성');
-  log('  POST /api/credit/use      — 크레딧 차감');
-  log('  POST /api/credit/share-bonus — 공유 보너스');
-  log('  GET  /                    — 랜딩페이지');
-  log('  GET  /app                 — 촬영 앱');
-  log('  WS   /                    — WebSocket (코칭 전용)');
-  log('='.repeat(60));
 });
