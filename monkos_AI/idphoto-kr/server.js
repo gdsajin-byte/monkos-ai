@@ -765,7 +765,7 @@ app.post('/api/credit/share-bonus', async (req, res) => {
 });
 
 // === 페이지 라우트 (MPA) ===
-app.get('/', (req, res) => res.sendFile(join(__dirname, 'public/landing.html')));
+app.get('/', (req, res) => res.sendFile(join(__dirname, 'public/index.html')));
 app.get('/app', (req, res) => res.sendFile(join(__dirname, 'public/index.html')));
 app.get('/prep', (req, res) => res.sendFile(join(__dirname, 'public/prep.html')));
 app.get('/camera', (req, res) => res.sendFile(join(__dirname, 'public/camera.html')));
