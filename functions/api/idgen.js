@@ -174,6 +174,7 @@ export async function onRequestPost(context) {
 
     // 이미지 크기 검증 (2MB 상한)
     const byteLength = Math.ceil(base64Data.length * 3 / 4);
+    console.log(`[idgen] 입력 이미지: base64=${base64Data.length}chars, bytes=${byteLength}, KB=${(byteLength/1024).toFixed(1)}`);
     if (byteLength > 2 * 1024 * 1024) {
       return new Response(JSON.stringify({ error: '이미지가 너무 큽니다 (2MB 이하)' }), { status: 400, headers: CORS });
     }
