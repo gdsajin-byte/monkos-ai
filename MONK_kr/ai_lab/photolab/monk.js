@@ -386,7 +386,7 @@ const Monk = (() => {
     // 카메라 시작
     const start = async () => {
       stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'user', width: { ideal: maxSize }, height: { ideal: maxSize * 4/3 } },
+        video: { facingMode: 'user', width: { ideal: maxSize, max: 720 }, height: { ideal: maxSize * 4/3, max: 960 } },
         audio: false,
       });
       videoEl.srcObject = stream;
