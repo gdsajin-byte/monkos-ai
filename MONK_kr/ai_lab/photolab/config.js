@@ -43,7 +43,7 @@ export const TX = {
   disconnected: '연결 끊김',
   faceGuide: '여기에 얼굴을 맞춰주세요',
   coachingReady: '촬영 OK!',
-  coachingInit: '안녕하세요! 몽코스 AI 코치입니다. 정면을 바라봐 주시면 자세와 조명을 체크해 드릴게요!',
+  coachingInit: '자세와 조명을 체크하고 있습니다...',
   coachingCheck: '자세를 체크하고 있습니다...',
   btnStarting: '카메라 시작 중...',
   step1: 'Step 1: AI 코칭',

@@ -126,14 +126,14 @@ let coachingActive = false;
 let coachingGen = 0; // TTS 세대 카운터 (stale 방지)
 
 async function coachingLoop() {
-  Monk.log('코칭 루프 시작 (순차)');
-  showCoaching(TX.coachingInit);
+  Monk.log('코칭 루프 시작 (0.5fps)');
+  showCoaching(TX.coachingCheck);
 
   while (coachingActive && store.step === 1) {
-    // 1. 최신 프레임 캡처 (항상 "지금" 상태)
+    // 1. 최신 프레임 캡처
     const frame = media.capture();
     if (!frame) {
-      await sleep(300);
+      await sleep(500);
       continue;
     }
 
@@ -163,7 +163,7 @@ async function coachingLoop() {
 
       if (!res.ok) {
         Monk.log(`코칭 에러: ${res.status}`);
-        await sleep(1000);
+        await sleep(2000);
         continue;
       }
 
@@ -175,11 +175,11 @@ async function coachingLoop() {
       }
     } catch (err) {
       Monk.log('코칭 실패: ' + err.message);
-      await sleep(1000);
+      await sleep(2000);
     }
 
-    // 2. 다음 프레임까지 짧은 대기 (API 응답 직후 바로 다음 캡처)
-    await sleep(300);
+    // 2. 2초 간격 (0.5fps — 뷰파인더 체감 속도)
+    await sleep(2000);
   }
 }
 
