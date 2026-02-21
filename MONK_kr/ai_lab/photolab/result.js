@@ -185,76 +185,6 @@ async function generateWatermarkPreview(imageDataUrl) {
   });
 }
 
-// ─── 비교 카드 저장 ───
-function loadImage(src) {
-  return new Promise((resolve) => {
-    const img = new Image();
-    img.onload = () => resolve(img);
-    img.src = src;
-  });
-}
-
-async function saveCompareCard() {
-  if (!store.captured || !store.generated) return;
-
-  const canvas = document.createElement('canvas');
-  const ctx = canvas.getContext('2d');
-
-  const [imgOrig, imgGen] = await Promise.all([
-    loadImage(store.captured),
-    loadImage(store.generated),
-  ]);
-
-  const cardW = 720;
-  const imgW = (cardW - 48) / 2;
-  const imgH = imgW * (imgOrig.height / imgOrig.width);
-  const brandH = 48;
-  const cardH = 32 + imgH + 24 + brandH + 16;
-
-  canvas.width = cardW;
-  canvas.height = cardH;
-
-  // 배경
-  ctx.fillStyle = '#0a0e17';
-  ctx.beginPath();
-  ctx.roundRect(0, 0, cardW, cardH, 16);
-  ctx.fill();
-
-  // 원본
-  ctx.drawImage(imgOrig, 16, 24, imgW, imgH);
-  // 생성
-  ctx.drawImage(imgGen, 16 + imgW + 16, 24, imgW, imgH);
-
-  // 라벨
-  ctx.fillStyle = '#8892a8';
-  ctx.font = '13px sans-serif';
-  ctx.textAlign = 'center';
-  ctx.fillText('원본', 16 + imgW / 2, 24 + imgH + 16);
-  ctx.fillText('AI 증명사진', 16 + imgW + 16 + imgW / 2, 24 + imgH + 16);
-
-  // 브랜딩 바
-  ctx.fillStyle = 'rgba(167,139,250,0.1)';
-  ctx.fillRect(0, cardH - brandH, cardW, brandH);
-  ctx.fillStyle = '#a78bfa';
-  ctx.font = 'bold 14px sans-serif';
-  ctx.textAlign = 'center';
-  ctx.fillText('✨ MONKOS AI 증명사진   monkos.ai', cardW / 2, cardH - brandH / 2 + 5);
-
-  // 저장
-  canvas.toBlob(async (blob) => {
-    const file = new File([blob], `monkos_compare_${Date.now()}.jpg`, { type: 'image/jpeg' });
-    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-      await navigator.share({ files: [file], title: 'MONKOS AI 증명사진' });
-    } else {
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = file.name;
-      a.click();
-    }
-    Monk.log('비교 카드 저장 완료');
-  }, 'image/jpeg', 0.92);
-}
-
 // ─── 다운로드 (결제 + 크롭 → 수령처 이동) ───
 async function downloadResult() {
   if (!store.generated) return;
@@ -310,12 +240,20 @@ async function cropAndGoToThankyou() {
   navigateTo('thankyou.html');
 }
 
+// ─── 텔레그램 이벤트 ───
+function openTelegram() {
+  const uid = store.user.id || 'guest';
+  const link = `https://t.me/monkos_event_bot?start=${encodeURIComponent(uid)}`;
+  window.open(link, '_blank');
+  Monk.log('텔레그램 이벤트 링크 오픈');
+}
+
 // ─── window 노출 ───
 Object.assign(window, {
   retakePhoto,
   confirmAndGenerate,
   downloadResult,
-  saveCompareCard,
+  openTelegram,
 });
 
 // ─── 초기화 ───
