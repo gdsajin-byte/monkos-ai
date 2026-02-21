@@ -220,3 +220,126 @@ Phase 4: Vertex AI에는 구 버전만 잔류
 ### Git 설정 정정
 - iMac git config 미설정 → 호스트명 자동 생성값 사용 (`Jeong-Kyu Shin`)
 - 정정: `gdsajin-byte <gdsajin@gmail.com>` (글로벌 설정 완료)
+
+---
+
+## 7. Gemini API 지역 제한 + CF Function 엣지 라우팅 이슈 (2026-02-21 발견)
+
+### 현상
+- `gemini-3-pro-image-preview` (idgen) + `gemini-2.5-flash` (coaching) 호출 시
+- `API 400: User location is not supported for the API use.` 에러
+- **LG U+ 셀룰러에서만 재현**, Wi-Fi(KT)에서는 전 기기 통과
+
+### 원인 구조
+
+```
+[성공 경로 — Cloud Run]
+클라이언트(어떤 네트워크든)
+  → monkos.ai (Cloud Run, us-central1)
+  → Gemini API (미국 IP로 호출)
+  → ✅ 통과
+
+[실패 경로 — CF Function]
+클라이언트(LG U+ 셀룰러)
+  → monk.kr (CF Pages)
+  → /api/idgen (CF Function, 엣지 실행)
+  → Gemini API (엣지 IP로 호출)
+  → ❌ Google이 해당 CF PoP IP 대역 차단
+
+[성공 경로 — CF Function + Wi-Fi]
+클라이언트(KT Wi-Fi)
+  → monk.kr (CF Pages)
+  → /api/idgen (CF Function, 엣지 실행)
+  → Gemini API (다른 엣지 IP로 호출)
+  → ✅ 통과 (이 PoP은 차단 대상 아님)
+```
+
+### 핵심 발견
+
+1. **CF Workers/Pages Function의 fetch는 엣지(PoP)에서 실행**됨
+2. 클라이언트 네트워크(통신사)에 따라 **CF 엣지 라우팅이 달라짐**
+3. Google이 특정 CF PoP의 outbound IP 대역을 `User location not supported`로 차단
+4. **동일 코드, 동일 API Key라도 네트워크에 따라 성공/실패 갈림**
+5. X-Forwarded-For 헤더 조작으로는 해결 불가 (CF 내부 라우팅 문제)
+
+### 테스트 매트릭스 (2026-02-21 실측)
+
+| 기기 | 네트워크 | CF Function | Cloud Run |
+|------|---------|-------------|-----------|
+| iPhone 17 Pro | Wi-Fi (KT) | ✅ | ✅ |
+| iPhone Pro Max | Wi-Fi (KT) | ✅ | ✅ |
+| 삼성 갤럭시 | Wi-Fi (KT) | ✅ | ✅ |
+| 삼성 갤럭시 (삼성인터넷) | Wi-Fi (KT) | ✅ | ✅ |
+| iPhone Pro Max | 셀룰러 (LG U+) | ❌ 400 | ✅ |
+
+### 대응
+
+- **현재**: Wi-Fi 환경은 전 기기/전 브라우저 통과. LG U+ 셀룰러는 극소수 케이스
+- **근본 해결**: photolab 코드가 monkos.ai(Cloud Run us-central1)로 이전되면 자연소멸
+- **Cloud Run은 항상 미국 서버에서 Gemini 호출** → 통신사/클라이언트 IP 무관
+
+### Google 정책 패턴 (업데이트)
+
+기존 MEMORY 기록:
+> Google 패턴: 최신 모델을 Vertex AI ADC에서 빼고 API Key(종량제)로 유도
+
+추가 발견:
+> **API Key 직접 호출도 지역 제한 존재** — 특정 IP 대역(CF PoP 등)에서 차단
+> 에러 메시지 `User location is not supported`는 실제로 IP 기반 GeoIP 차단
+> Cloud Run/GCE 등 Google 인프라 내부에서 호출하면 우회됨
+
+---
+
+## 8. 캡처 파이프라인 최적화 (2026-02-21)
+
+### getUserMedia — Safari iOS 하드캡 확인
+
+| 항목 | 사실 |
+|------|------|
+| Safari iOS getUserMedia | **720p 하드캡** (기기 카메라 해상도 무관) |
+| `max` constraint | Safari iOS에서는 사실상 무의미 (이미 720p 캡) |
+| `ideal` constraint | 참고값, Safari가 반드시 존중하지 않음 |
+
+출처: [Apple Developer Forums](https://developer.apple.com/forums/thread/113532), [WebKit Bug #179994](https://bugs.webkit.org/show_bug.cgi?id=179994)
+
+### 변경 내역
+
+| 항목 | Before | After | 이유 |
+|------|--------|-------|------|
+| MAX_CAPTURE_SIZE | 720 | **512** | 입력 토큰 절감 |
+| captureQuality | 0.8 | **0.6** | JPEG 용량 ~40% 감소 |
+| getUserMedia max | 없음 | **720×960** | 안전장치 (안드로이드용) |
+| 코칭 인사 | 자동 발화 | **제거** | iOS TTS user gesture 필수 위반 |
+| 코칭 fps | ~3fps (300ms) | **0.5fps (2000ms)** | API 부하 1/6, 뷰파인더 체감 속도 |
+
+### 2/17 getUserMedia max 구현 이력
+
+```
+487f89f  sharp 삭제 + getUserMedia ideal:1024 max:1280 적용
+    ↓ (같은 날)
+b1e1664  카메라 오류 발생 → 720×960 원복 (격리 테스트)
+    ↓ (이후)
+MPA 분리 시 720 기준으로 새로 작성 → max 재적용 안 됨
+    ↓ (2/21)
+512px + max:720 + 0.6 quality로 재확정
+```
+
+---
+
+## 9. iOS Safari TTS 제한사항 (2026-02-21 확인)
+
+### 현상
+- iOS Safari: 코칭 음성(TTS) 미출력
+- Android(삼성인터넷 포함): 정상 출력
+
+### 원인
+- iOS Safari의 `speechSynthesis.speak()`은 **user gesture(터치/클릭) 컨텍스트 내에서만** 첫 호출 허용
+- `camera.html` 진입 → `init()` → `coachingLoop()` → `speakKo()` 자동 호출
+- 페이지 이동 시 이전 페이지의 gesture가 리셋됨 → 새 페이지에서 gesture 없이 발화 시도 → 차단
+- 이후 모든 TTS도 연쇄 차단
+
+### 대응
+- 코칭 인사(자동 발화) 제거
+- 첫 코칭 표시: 텍스트만 표시 (`TX.coachingCheck`)
+- TTS는 사용자가 화면 터치 후 활성화 (`activateTTS` 리스너 유지)
+- 이후 코칭 응답부터 음성 출력 가능
