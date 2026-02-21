@@ -1,0 +1,6 @@
+# photolab JS — 개발 중 캐시 비활성화
+/ai_lab/photolab/*.js
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/ai_lab/photolab/*.css
+  Cache-Control: no-cache, no-store, must-revalidate

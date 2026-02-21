@@ -5,7 +5,7 @@
 
 import {
   store, pipe, Monk, TX, PHOTO_SPECS, CREDIT_COST,
-  sharedInit, showCreditModal, saveSessionData, loadSessionData
+  sharedInit, showCreditModal, saveSessionData, loadSessionData, navigateTo
 } from './shared.js';
 
 // ─── Media 생성 (crop/toJpeg 전용 — 카메라 불필요) ───
@@ -21,7 +21,7 @@ function showOriginal() {
   const captured = loadSessionData('captured');
   if (!captured) {
     Monk.log('촬영 데이터 없음 → 촬영실로 이동');
-    location.href = 'camera.html';
+    navigateTo('camera.html');
     return;
   }
 
@@ -51,7 +51,7 @@ function retakePhoto() {
   store.showStep2Actions = false;
   store.showStep3Actions = false;
 
-  location.href = 'camera.html';
+  navigateTo('camera.html');
 }
 
 // ─── 생성 파이프라인 (QC 제거됨) ───
@@ -94,8 +94,15 @@ async function confirmAndGenerate() {
     const genResult = await pipe.run('generate', {
       image: base64,
       style: store.style,
+      purpose: loadSessionData('purpose'),
       gender: store.gender,
       age: store.age,
+      clothing: loadSessionData('clothing'),
+      clothingColor: loadSessionData('clothingColor'),
+      tie: loadSessionData('tie'),
+      hair: loadSessionData('hair'),
+      background: loadSessionData('background'),
+      expression: loadSessionData('expression'),
       userId: store.user.id,
     });
 
@@ -192,7 +199,7 @@ async function cropAndGoToThankyou() {
   }
 
   Monk.log('수령처로 이동');
-  location.href = 'thankyou.html';
+  navigateTo('thankyou.html');
 }
 
 // ─── window 노출 ───
@@ -204,7 +211,14 @@ Object.assign(window, {
 
 // ─── 초기화 ───
 async function init() {
-  await sharedInit();
+  try {
+    await sharedInit();
+  } catch (err) {
+    Monk.log('sharedInit 에러: ' + err.message);
+  }
+
+  // 로딩 상태 제거
+  document.querySelector('#page-loading')?.remove();
 
   // 결과 화면 활성화
   const resultArea = document.querySelector('#result-overlay');

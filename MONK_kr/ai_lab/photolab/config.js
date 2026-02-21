@@ -10,8 +10,9 @@ export const API = {
   PRECHECK: '/api/precheck',
   GENERATE: '/api/idgen',
   CREDIT_USE: '/api/idphoto-credit-use',
-  // 코칭: CF Function → Gemini REST 직접 (서버 경유 안 함)
-  COACHING: '/api/idphoto-coaching',
+  // 코칭/QC: monkos.ai 포탈 통합 챗봇 엔진 경유
+  COACHING: 'https://monkos.ai/api/coaching',
+  QC: 'https://monkos.ai/api/qc',
 };
 
 // 크레딧 비용

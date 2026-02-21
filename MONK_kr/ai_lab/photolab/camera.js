@@ -5,7 +5,7 @@
 
 import {
   store, Monk, TX, API,
-  sharedInit, saveSessionData,
+  sharedInit, saveSessionData, loadSessionData, navigateTo,
   MAX_CAPTURE_SIZE, FRAME_INTERVAL_MS, COACHING_DISPLAY_MS
 } from './shared.js';
 
@@ -22,12 +22,19 @@ const media = Monk.media({
 
 // ─── 음성 가이드 ───
 let koVoice = null;
+let ttsActivated = false;
 
 function initVoice() {
   const voices = speechSynthesis.getVoices();
   koVoice = voices.find(v => v.name.includes('Yuna'))
          || voices.find(v => v.lang.startsWith('ko'));
-  if (koVoice) Monk.log(`음성 가이드: ${koVoice.name}`);
+  if (koVoice) {
+    Monk.log(`음성 가이드: ${koVoice.name}`);
+    // 음성 로딩이 늦어 첫 인사를 못했으면 지금 발화
+    if (store.coaching?.text && store.coaching.active) {
+      speakKo(store.coaching.text);
+    }
+  }
 }
 
 if ('speechSynthesis' in window) {
@@ -35,15 +42,33 @@ if ('speechSynthesis' in window) {
   initVoice();
 }
 
+// iOS Safari: speechSynthesis는 첫 호출이 user gesture 내에서 이뤄져야 함
+// 페이지 첫 터치/클릭 시 TTS 활성화
+function activateTTS() {
+  if (ttsActivated || !('speechSynthesis' in window)) return;
+  ttsActivated = true;
+  const warmup = new SpeechSynthesisUtterance('');
+  warmup.volume = 0;
+  speechSynthesis.speak(warmup);
+  Monk.log('TTS 활성화 (user gesture)');
+}
+document.addEventListener('touchstart', activateTTS, { once: true });
+document.addEventListener('click', activateTTS, { once: true });
+
 function speakKo(text) {
   if (!store.voiceEnabled || !('speechSynthesis' in window)) return;
+  if (!koVoice) return;
+  // 이전 발화 즉시 중단 + 새 텍스트만 발화
   speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = 'ko-KR';
-  u.rate = 1.1;
-  u.pitch = 1.05;
-  if (koVoice) u.voice = koVoice;
-  speechSynthesis.speak(u);
+  // cancel 후 약간의 딜레이 필요 (브라우저별 차이)
+  setTimeout(() => {
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'ko-KR';
+    u.rate = 1.15;
+    u.pitch = 1.05;
+    u.voice = koVoice;
+    speechSynthesis.speak(u);
+  }, 50);
 }
 
 function toggleVoice() {
@@ -96,75 +121,80 @@ function detectMotion(dataUrl) {
   return diff > MOTION_THRESHOLD;
 }
 
-// ─── 코칭 REST 루프 (백프레셔 안전) ───
+// ─── 코칭 REST 루프 (순차 실행 — 항상 최신 프레임) ───
 let coachingActive = false;
-let coachingTimer = null;
+let coachingGen = 0; // TTS 세대 카운터 (stale 방지)
 
-async function sendCoachingFrame(dataUrl) {
-  const base64 = dataUrl.includes(',') ? dataUrl.split(',')[1] : dataUrl;
-  try {
-    const res = await fetch(API.COACHING, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ image: base64, style: store.style || 'id_photo' }),
-    });
-    if (!res.ok) {
-      Monk.log(`코칭 응답 에러: ${res.status}`);
-      return;
+async function coachingLoop() {
+  Monk.log('코칭 루프 시작 (순차)');
+  showCoaching(TX.coachingInit);
+
+  while (coachingActive && store.step === 1) {
+    // 1. 최신 프레임 캡처 (항상 "지금" 상태)
+    const frame = media.capture();
+    if (!frame) {
+      await sleep(300);
+      continue;
     }
-    const data = await res.json();
-    if (data.text && store.step === 1) {
-      showCoaching(data.text, data.ready);
+
+    const base64 = frame.includes(',') ? frame.split(',')[1] : frame;
+    const gen = ++coachingGen;
+
+    try {
+      const res = await fetch(API.COACHING, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          image: base64,
+          style: store.style || 'id_photo',
+          purpose: store.purpose,
+          gender: store.gender,
+          age: store.age,
+          clothing: store.clothing,
+          clothingColor: store.clothingColor,
+          tie: store.tie,
+          hair: store.hair,
+          expression: store.expression,
+        }),
+      });
+
+      // 응답 도착 시 이미 다음 세대면 버림 (stale)
+      if (gen !== coachingGen || !coachingActive) continue;
+
+      if (!res.ok) {
+        Monk.log(`코칭 에러: ${res.status}`);
+        await sleep(1000);
+        continue;
+      }
+
+      const data = await res.json();
+      if (gen !== coachingGen || !coachingActive) continue;
+
+      if (store.step === 1 && data.text) {
+        showCoaching(data.text, data.ready);
+      }
+    } catch (err) {
+      Monk.log('코칭 실패: ' + err.message);
+      await sleep(1000);
     }
-  } catch (err) {
-    Monk.log('코칭 요청 실패: ' + err.message);
+
+    // 2. 다음 프레임까지 짧은 대기 (API 응답 직후 바로 다음 캡처)
+    await sleep(300);
   }
 }
 
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
 function startCoachingLoop() {
   coachingActive = true;
-  showCoaching(TX.coachingInit);
-  Monk.log('코칭 루프 시작 (REST ~2fps)');
-
-  let isProcessing = false;
-
-  coachingTimer = setInterval(async () => {
-    if (!coachingActive || isProcessing || store.step !== 1) return;
-
-    const frame = media.capture();
-    if (!frame) return;
-
-    // 모션 감지: 변화 없으면 스킵
-    if (!detectMotion(frame)) return;
-
-    isProcessing = true;
-    try {
-      await sendCoachingFrame(frame);
-    } finally {
-      isProcessing = false;
-    }
-  }, FRAME_INTERVAL_MS);
+  coachingLoop(); // fire-and-forget
 }
 
 function stopCoachingLoop() {
   coachingActive = false;
-  if (coachingTimer) {
-    clearInterval(coachingTimer);
-    coachingTimer = null;
-  }
-  previousFrameLen = 0;
+  coachingGen++; // 진행 중인 응답 무효화
   if ('speechSynthesis' in window) speechSynthesis.cancel();
   store.coaching = { text: '', ready: false, active: false };
-}
-
-// ─── 스타일 변경 (카메라 중) ───
-function selectStyleInCamera(style) {
-  store.style = style;
-  document.querySelectorAll('.style-chip').forEach(c => {
-    c.classList.toggle('active', c.dataset.style === style);
-  });
-  saveSessionData('style', style);
-  Monk.log(`스타일 변경: ${style}`);
 }
 
 // ─── 촬영 ───
@@ -192,45 +222,77 @@ function capturePhoto() {
   Monk.log('촬영 완료 → 분석실 이동');
 
   // 분석실로 이동
-  location.href = 'result.html';
+  navigateTo('result.html');
+}
+
+// ─── 선택 요약 뱃지 ───
+const PURPOSE_LABELS = {
+  passport: '여권', student_id: '학생증', employee_id: '사원증',
+  resume: '이력서', color_portrait: '컬러증명',
+};
+
+function renderSelectionSummary() {
+  const summaryEl = document.querySelector('#selection-summary');
+  if (!summaryEl) return;
+
+  const labels = [];
+  labels.push(PURPOSE_LABELS[store.purpose] || store.style || '');
+  if (store.gender === 'male') labels.push('남성');
+  else if (store.gender === 'female') labels.push('여성');
+  summaryEl.textContent = labels.filter(Boolean).join(' · ');
 }
 
 // ─── window 노출 ───
 Object.assign(window, {
-  selectStyleInCamera,
   capturePhoto,
   toggleVoice,
 });
 
 // ─── 초기화 ───
 async function init() {
-  await sharedInit();
+  try {
+    await sharedInit();
+  } catch (err) {
+    Monk.log('sharedInit 에러: ' + err.message);
+  }
 
-  // sessionStorage에서 선택 데이터 확인
-  if (!store.style || !store.gender || !store.age) {
+  // ── 퍼널 9필드 로딩 ──
+  const purpose = loadSessionData('purpose');
+  const age = loadSessionData('age');
+  const gender = loadSessionData('gender');
+  const clothing = loadSessionData('clothing');
+  const clothingColor = loadSessionData('clothingColor');
+  const tie = loadSessionData('tie');
+  const hair = loadSessionData('hair');
+  const background = loadSessionData('background');
+  const expression = loadSessionData('expression');
+
+  // 필수값 체크 (style은 sharedInit()에서 복원됨, purpose는 별도)
+  if (!store.style || !purpose) {
     Monk.log('선택 데이터 없음 → 준비실로 이동');
-    location.href = 'prep.html';
+    navigateTo('prep.html');
     return;
   }
 
-  // 스타일 칩 동기화
-  document.querySelectorAll('.style-chip').forEach(c => {
-    c.classList.toggle('active', c.dataset.style === store.style);
-  });
+  // store에 9필드 세팅
+  store.purpose = purpose;
+  store.clothing = clothing;
+  store.clothingColor = clothingColor;
+  store.tie = tie;
+  store.hair = hair;
+  store.background = background;
+  store.expression = expression;
+
+  // 선택 요약 뱃지 렌더링
+  renderSelectionSummary();
 
   // 카메라 화면 활성화
   document.querySelector('#camera-area')?.classList.add('active');
 
   store.step = 1;
   store.stepLabel = TX.step1;
+  store.voiceEnabled = true;
   store.coaching = { text: TX.coachingCheck, ready: false, active: true };
-
-  // iOS Safari: user gesture 내에서 speechSynthesis 초기화
-  if ('speechSynthesis' in window) {
-    const warmup = new SpeechSynthesisUtterance('');
-    warmup.volume = 0;
-    speechSynthesis.speak(warmup);
-  }
 
   try {
     await media.start();

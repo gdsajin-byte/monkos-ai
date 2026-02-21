@@ -30,6 +30,27 @@
     <!-- 스타일시트 -->
     <link rel="stylesheet" href="app.css">
 
+    <!-- 촬영실 전용 스타일 (app.css 수정 금지) -->
+    <style>
+        #selection-summary {
+            position: absolute;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.6);
+            color: #fff;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 14px;
+            border-radius: 20px;
+            z-index: 5;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            white-space: nowrap;
+            pointer-events: none;
+        }
+    </style>
+
     <!-- 토스페이먼츠 -->
     <script src="https://js.tosspayments.com/v2/standard"></script>
 </head>
@@ -111,11 +132,8 @@
         <video id="camera-video" autoplay playsinline muted></video>
         <div id="face-guide" data-guide-text="여기에 얼굴을 맞춰주세요" data-class="coaching.ready:ready"></div>
 
-        <!-- 스타일 선택 바 (카메라 위) -->
-        <div id="style-bar">
-            <div class="style-chip" data-style="id_photo" onclick="selectStyleInCamera('id_photo')">여권/신분증</div>
-            <div class="style-chip" data-style="resume" onclick="selectStyleInCamera('resume')">취업/컬러증명</div>
-        </div>
+        <!-- 선택 요약 뱃지 (읽기 전용, 카메라 위 상단) -->
+        <div id="selection-summary"></div>
 
         <!-- 코칭 오버레이 -->
         <div id="coaching-overlay" data-class="coaching.active:active">
@@ -138,6 +156,6 @@
     <div id="log"></div>
 
     <!-- 앱 스크립트 -->
-    <script type="module" src="camera.js"></script>
+    <script type="module" src="camera.js?v=20260221c"></script>
 </body>
 </html>

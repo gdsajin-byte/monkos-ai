@@ -2,7 +2,7 @@
 // 서버(idphoto-kr) 경유 없이 CF → Gemini API 직접
 // GEMINI_API_KEY: CF Pages 환경변수 (wrangler pages secret put)
 
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
 
 const COACHING_INSTRUCTIONS = {
   id_photo: `몽코스 AI 코치입니다. 여권/증명사진 촬영을 도와드립니다.
@@ -38,6 +38,47 @@ const COACHING_INSTRUCTIONS = {
 // 긍정 키워드 (ready 판정용 — 서버 사이드)
 const READY_KEYWORDS = ['좋아요', '완벽', '촬영하세요', 'OK', '좋습니다', '잘 맞', '훌륭', '지금'];
 
+// ─── 동적 프롬프트 빌더 (9필드 활용) ───
+function buildCoachingPrompt(body) {
+  const { style, purpose, gender, age, clothing, clothingColor, tie, hair, expression } = body;
+
+  const base = COACHING_INSTRUCTIONS[style] || COACHING_INSTRUCTIONS.id_photo;
+
+  // 9필드 컨텍스트 추가
+  const context = [];
+
+  if (clothing && clothing !== 'as_is') {
+    const clothingNames = { suit: '정장', shirt: '셔츠/블라우스', casual: '캐주얼', uniform: '교복' };
+    context.push(`사용자 의상: ${clothingNames[clothing] || clothing}`);
+    if (clothingColor) {
+      const colorNames = { black: '검정', navy: '네이비', charcoal: '차콜', white: '흰색', beige: '베이지', wine: '와인', pastel: '파스텔' };
+      context.push(`의상 컬러: ${colorNames[clothingColor] || clothingColor}`);
+    }
+  }
+
+  if (tie && tie !== 'none' && gender === 'male') {
+    const tieNames = {
+      solid_navy: '무지 네이비', solid_wine: '무지 와인',
+      stripe_blue: '스트라이프 블루', stripe_navy: '스트라이프 네이비', stripe_wine: '스트라이프 와인',
+    };
+    context.push(`넥타이: ${tieNames[tie] || '착용 예정'}`);
+  }
+
+  if (hair && hair !== 'as_is') {
+    const hairNames = { tidy: '정돈', up: '올림머리', down: '내림머리' };
+    context.push(`헤어 스타일: ${hairNames[hair] || hair}`);
+  }
+
+  if (expression) {
+    const exprNames = { gentle_smile: '잔잔한 미소', neutral: '무표정', natural_smile: '자연스러운 미소', bright_smile: '밝은 미소' };
+    context.push(`목표 표정: ${exprNames[expression] || expression}`);
+  }
+
+  if (context.length === 0) return base;
+
+  return base + `\n\n[사용자 설정]\n${context.join('\n')}\n\n위 설정을 참고하여 촬영 전 코칭해 주세요. 의상이나 표정에 대한 구체적인 조언도 가능합니다.`;
+}
+
 export async function onRequestPost(context) {
   const apiKey = context.env.GEMINI_API_KEY;
   if (!apiKey) {
@@ -46,30 +87,34 @@ export async function onRequestPost(context) {
 
   try {
     const body = await context.request.json();
-    const { image, style } = body;
+    const { image } = body;
 
     if (!image) {
       return jsonResponse({ error: 'image 필수' }, 400);
     }
 
-    const instruction = COACHING_INSTRUCTIONS[style] || COACHING_INSTRUCTIONS.id_photo;
+    const instruction = buildCoachingPrompt(body);
 
-    const geminiRes = await fetch(`${GEMINI_API_URL}?key=${apiKey}`, {
+    const geminiRes = await fetch(GEMINI_API_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-goog-api-key': apiKey,
+      },
       body: JSON.stringify({
-        system_instruction: {
+        systemInstruction: {
           parts: [{ text: instruction }],
         },
         contents: [{
           parts: [
-            { inline_data: { mime_type: 'image/jpeg', data: image } },
+            { inlineData: { mimeType: 'image/jpeg', data: image } },
             { text: '이 사진의 자세, 조명, 표정을 체크해주세요.' },
           ],
         }],
         generationConfig: {
           temperature: 0.3,
-          maxOutputTokens: 50,
+          maxOutputTokens: 200,
+          thinkingConfig: { thinkingBudget: 0 },
         },
       }),
     });
@@ -77,7 +122,8 @@ export async function onRequestPost(context) {
     if (!geminiRes.ok) {
       const errText = await geminiRes.text();
       console.error('Gemini API 에러:', geminiRes.status, errText);
-      return jsonResponse({ error: 'AI 응답 실패', status: geminiRes.status }, 500);
+      // 모델 전환 실패 시 빈 응답 반환 (코칭 루프 중단하지 않음)
+      return jsonResponse({ text: '', ready: false, error: `Gemini ${geminiRes.status}` });
     }
 
     const geminiData = await geminiRes.json();
@@ -88,7 +134,7 @@ export async function onRequestPost(context) {
 
   } catch (err) {
     console.error('Coaching function 에러:', err);
-    return jsonResponse({ error: err.message }, 500);
+    return jsonResponse({ text: '', ready: false });
   }
 }
 

@@ -89,28 +89,62 @@ header {
 
 /* === 히어로 === */
 .hero {
-  text-align: center; padding: 48px 0 24px; position: relative;
+  position: relative;
+  overflow: hidden;
+  border-radius: 0 0 20px 20px;
+  margin: 0 -20px 8px;
+}
+.hero-bg {
+  width: 100%;
+  height: 380px;
+  object-fit: cover;
+  object-position: top;
+  display: block;
+}
+.hero-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(10, 10, 26, 0.15) 0%,
+    rgba(10, 10, 26, 0.4) 50%,
+    rgba(10, 10, 26, 0.92) 100%
+  );
+}
+.hero-content {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 0 24px 28px;
+  text-align: center;
+}
+.hero-pretitle {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(226, 232, 240, 0.75);
+  margin-bottom: 6px;
+  letter-spacing: 0.3px;
 }
 .hero h1 {
-  font-size: clamp(2.2rem, 7vw, 3.2rem);
+  font-size: clamp(2rem, 7vw, 2.8rem);
   font-weight: 800; color: var(--text-bright);
-  line-height: 1.15; margin-bottom: 16px; letter-spacing: -0.02em;
+  line-height: 1.15; margin-bottom: 8px; letter-spacing: -0.02em;
 }
 .hero h1 span {
   background: linear-gradient(135deg, var(--accent), var(--accent2), var(--accent3));
   -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
 }
 .hero-sub {
-  font-size: clamp(0.9rem, 2vw, 1.05rem);
-  color: var(--text-dim); max-width: 500px;
-  margin: 0 auto 20px; line-height: 1.6;
+  font-size: 0.85rem;
+  color: rgba(226, 232, 240, 0.85);
+  margin: 0 auto 16px; line-height: 1.5;
 }
 .hero-badge {
   display: inline-flex; align-items: center; gap: 6px;
-  background: rgba(167, 139, 250, 0.1); border: 1px solid var(--border);
+  background: rgba(167, 139, 250, 0.15); border: 1px solid rgba(167, 139, 250, 0.25);
   padding: 6px 14px; border-radius: 20px;
   font-size: 0.75rem; color: var(--accent); font-weight: 600;
-  margin-bottom: 16px; letter-spacing: 0.5px;
+  margin-bottom: 12px; letter-spacing: 0.5px;
+  backdrop-filter: blur(8px);
 }
 .hero-badge::before {
   content: ''; width: 6px; height: 6px;
@@ -118,46 +152,134 @@ header {
   animation: pulse-dot 2s ease-in-out infinite;
 }
 @keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-
-/* === 서비스 카드 === */
-.services { display: grid; gap: 16px; margin-bottom: 20px; }
-.service-card {
-  background: var(--card-bg); border: 1px solid var(--border);
-  border-radius: 20px; padding: 28px;
-  backdrop-filter: blur(12px);
-  transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
-  position: relative; overflow: hidden;
+.hero-cta {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: #fff; font-size: 1rem; font-weight: 700;
+  padding: 14px 36px; border: none; border-radius: 14px;
+  text-decoration: none; cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 16px rgba(167, 139, 250, 0.3);
 }
-.service-card::before {
+.hero-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(167, 139, 250, 0.4);
+}
+
+/* === 섹션 공통 === */
+.section-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-bright);
+  margin-bottom: 16px;
+  text-align: center;
+}
+.section-divider {
+  width: 40px; height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--accent3));
+  margin: 0 auto 16px;
+  border-radius: 1px;
+}
+
+/* === 쇼케이스 === */
+.showcase {
+  padding: 32px 0 8px;
+}
+.showcase-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.showcase-card {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  transition: border-color 0.3s;
+}
+.showcase-card:active {
+  border-color: var(--border-hover);
+}
+.showcase-card img {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  display: block;
+}
+.showcase-label {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 24px 8px 10px;
+  background: linear-gradient(transparent, rgba(10, 10, 26, 0.9));
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-bright);
+  text-align: center;
+  letter-spacing: 0.3px;
+}
+
+/* === 기능 소개 === */
+.features {
+  padding: 24px 0;
+}
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.feature-item {
+  text-align: center;
+  padding: 20px 6px 16px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  backdrop-filter: blur(12px);
+}
+.feature-icon {
+  width: 40px; height: 40px;
+  margin: 0 auto 10px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(167, 139, 250, 0.1);
+  border-radius: 12px;
+}
+.feature-icon svg {
+  width: 20px; height: 20px;
+  stroke: var(--accent);
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.feature-item h4 {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-bright);
+  margin-bottom: 4px;
+}
+.feature-item p {
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  line-height: 1.4;
+}
+
+/* === 가격 + CTA === */
+.pricing {
+  padding: 8px 0 20px;
+}
+.pricing-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 28px;
+  backdrop-filter: blur(12px);
+  position: relative;
+  overflow: hidden;
+}
+.pricing-card::before {
   content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
   background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent3));
   opacity: 0.6;
 }
-.service-badge {
-  display: inline-flex; align-items: center; gap: 6px;
-  background: rgba(52, 211, 153, 0.1); color: var(--success);
-  font-size: 10px; font-weight: 700; padding: 4px 12px;
-  border-radius: 20px; margin-bottom: 12px; letter-spacing: 1.5px;
-  text-transform: uppercase;
-}
-.service-card h3 {
-  font-size: 1.3rem; color: var(--text-bright); margin-bottom: 6px; font-weight: 700;
-}
-.service-card p {
-  display: block; font-size: 0.85rem; color: var(--text-dim);
-  margin-bottom: 16px; line-height: 1.5;
-}
-.service-features {
-  list-style: none; margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 8px;
-}
-.service-features li {
-  color: var(--text); padding: 5px 12px; font-size: 0.78rem;
-  background: rgba(167, 139, 250, 0.08); border-radius: 8px;
-  border: 1px solid rgba(167, 139, 250, 0.1);
-}
-.service-features li::before { content: '\2713 '; color: var(--accent); font-weight: 700; }
-
-/* === 가격 행 (서비스 카드 내부) === */
 .price-row {
   display: flex; gap: 10px; margin: 16px 0 20px;
 }
@@ -178,8 +300,6 @@ header {
   margin-bottom: 20px;
 }
 .price-total strong { color: var(--text); }
-
-/* === CTA 버튼 === */
 .cta-btn {
   display: flex; align-items: center; justify-content: center; gap: 8px;
   width: 100%;
@@ -196,11 +316,12 @@ header {
 }
 
 /* === 이벤트 카드 === */
+.event-section { padding-bottom: 20px; }
 .event-card {
   background: linear-gradient(135deg, rgba(245,158,11,0.08), rgba(239,68,68,0.06));
   border: 1px solid rgba(245,158,11,0.2);
   border-radius: 20px; padding: 24px; text-align: center;
-  margin-bottom: 20px; position: relative; overflow: hidden;
+  position: relative; overflow: hidden;
 }
 .event-card::before {
   content: ''; position: absolute; top: -50%; left: -50%;
@@ -219,6 +340,7 @@ header {
   color: #fff; border: none; padding: 12px 32px;
   border-radius: 12px; font-size: 0.95rem; font-weight: 700;
   cursor: pointer; transition: opacity 0.3s, transform 0.3s;
+  text-decoration: none;
 }
 .event-btn:hover { opacity: 0.9; transform: translateY(-1px); }
 
@@ -236,6 +358,17 @@ footer {
   color: var(--text-dim); font-size: 0.8rem;
 }
 footer a { color: var(--accent); text-decoration: none; }
+
+/* === 페이드인 애니메이션 === */
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
 </style>
 </head>
 <body>
@@ -253,46 +386,96 @@ footer a { color: var(--accent); text-decoration: none; }
 
   <!-- 히어로 -->
   <section class="hero">
-    <div class="hero-badge">LIVE SERVICE</div>
-    <h1><span>AI 증명사진</span></h1>
-    <p class="hero-sub">AI 실시간 코칭으로 완벽한 증명사진을 촬영하세요.<br>여권, 비자, 이력서, 취업사진을 지원합니다.</p>
+    <img class="hero-bg" src="https://storage.googleapis.com/monk-ai-images/ads/20260220_191245_%E1%84%89%E1%85%A9%E1%86%BC%E1%84%92%E1%85%A8%E1%84%80%E1%85%AD%E1%84%83%E1%85%A1%E1%86%B1%E1%84%8B%E1%85%B3%E1%86%AB.jpg" alt="AI 증명사진" decoding="async">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <div class="hero-badge">LIVE SERVICE</div>
+      <div class="hero-pretitle">20년 사진작가가 만든</div>
+      <h1><span>AI 증명사진</span></h1>
+      <p class="hero-sub">딥페이크를 원천차단하는 실시간 셀카 시스템.<br>AI가 촬영하고 검수하여 스튜디오 수준을 완성합니다.</p>
+      <a class="hero-cta" href="prep.html">촬영 시작하기 &rarr;</a>
+    </div>
   </section>
 
-  <!-- 서비스 카드 (가격 + CTA 통합) -->
-  <section class="services">
-    <div class="service-card">
-      <div class="service-badge">AI POWERED</div>
-      <h3>AI 증명사진 촬영</h3>
-      <p>스마트폰 하나로 사진관 품질의 증명사진을 만드세요.<br>AI 코치가 자세, 조명, 표정을 실시간 가이드합니다.</p>
-      <ul class="service-features">
-        <li>실시간 AI 코칭</li>
-        <li>여권/비자 규격</li>
-        <li>이력서/취업 규격</li>
-        <li>자연스러운 보정</li>
-        <li>즉시 다운로드</li>
-      </ul>
+  <!-- 샘플 쇼케이스 -->
+  <section class="showcase fade-in">
+    <div class="section-divider"></div>
+    <h2 class="section-title">스튜디오 수준의 증명사진</h2>
+    <div class="showcase-grid">
+      <div class="showcase-card">
+        <img src="https://storage.googleapis.com/monk-ai-images/ads/20260220_191245_%E1%84%89%E1%85%A9%E1%86%BC%E1%84%92%E1%85%A8%E1%84%80%E1%85%AD%E1%84%83%E1%85%A1%E1%86%B1%E1%84%8B%E1%85%B3%E1%86%AB.jpg" alt="이력서 증명사진" loading="lazy" decoding="async">
+        <div class="showcase-label">이력서 / 취업</div>
+      </div>
+      <div class="showcase-card">
+        <img src="https://storage.googleapis.com/monk-ai-images/ads/20260220_191258_%E1%84%92%E1%85%A1%E1%86%A8%E1%84%89%E1%85%A2%E1%86%BC%E1%84%8C%E1%85%B3%E1%86%BC%E1%84%86%E1%85%A9%E1%84%83%E1%85%A6%E1%86%AF_(2).jpg" alt="학생증 증명사진" loading="lazy" decoding="async">
+        <div class="showcase-label">학생증</div>
+      </div>
+      <div class="showcase-card">
+        <img src="https://storage.googleapis.com/monk-ai-images/ads/20260220_191208_%E1%84%8B%E1%85%A7%E1%84%8C%E1%85%A1%E1%84%8C%E1%85%B3%E1%86%BC%E1%84%86%E1%85%A7%E1%86%BC%E1%84%8E%E1%85%B3%E1%86%A8%E1%84%86%E1%85%A7%E1%86%AB.jpg" alt="컬러 증명사진" loading="lazy" decoding="async">
+        <div class="showcase-label">컬러증명</div>
+      </div>
+      <div class="showcase-card">
+        <img src="https://storage.googleapis.com/monk-ai-images/ads/20260220_184127_auto_test.jpg" alt="여권 증명사진" loading="lazy" decoding="async">
+        <div class="showcase-label">여권</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 기능 소개 -->
+  <section class="features fade-in">
+    <div class="section-divider"></div>
+    <h2 class="section-title">이렇게 만들어집니다</h2>
+    <div class="features-grid">
+      <div class="feature-item">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0-6 0"/><path d="M5 7h1a2 2 0 0 0 2-2a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1a2 2 0 0 0 2 2h1a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2"/></svg>
+        </div>
+        <h4>실시간 셀카</h4>
+        <p>본인 직접 촬영<br>딥페이크 원천차단</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><path d="M9 11l3 3l8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg>
+        </div>
+        <h4>AI 촬영 & 검수</h4>
+        <p>AI가 코칭하고<br>결과물까지 검수</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/><path d="M7 11l5 5l5-5"/><path d="M12 4v12"/></svg>
+        </div>
+        <h4>즉시 다운로드</h4>
+        <p>생성 즉시<br>고화질 저장</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 가격 + CTA -->
+  <section class="pricing fade-in">
+    <div class="pricing-card">
+      <h3 class="section-title" style="margin-bottom:4px;">합리적인 가격</h3>
       <div class="price-row">
         <div class="price-item">
           <div class="amount">1c</div>
-          <div class="label">AI 생성 (₩1,500)</div>
+          <div class="label">AI 생성 (&#8361;1,500)</div>
         </div>
         <div class="price-item">
           <div class="amount">8c</div>
-          <div class="label">다운로드 (₩12,000)</div>
+          <div class="label">다운로드 (&#8361;12,000)</div>
         </div>
       </div>
-      <div class="price-total">1장 완성 <strong>9c (₩13,500)</strong></div>
+      <div class="price-total">1장 완성 <strong>9c (&#8361;13,500)</strong></div>
       <a class="cta-btn" href="prep.html">촬영 시작하기 &rarr;</a>
     </div>
   </section>
 
-  <!-- 이벤트 카드 (가입 10c) -->
-  <section class="services">
+  <!-- 이벤트 카드 -->
+  <section class="event-section fade-in">
     <div class="event-card">
       <div class="event-card-inner">
         <div class="event-emoji">🎁</div>
         <div class="event-title">회원가입하면 10크레딧 무료!</div>
-        <div class="event-desc">Google 계정으로 간편 가입하면<br>10크레딧(₩15,000 상당)을 즉시 지급합니다.</div>
+        <div class="event-desc">Google 계정으로 간편 가입하면<br>10크레딧(&#8361;15,000 상당)을 즉시 지급합니다.</div>
         <a class="event-btn" href="https://monkos.ai">가입하고 10c 받기</a>
       </div>
     </div>
@@ -320,5 +503,23 @@ footer a { color: var(--accent); text-decoration: none; }
     <p>&copy; 2026 <a href="https://monkos.ai">MONKOS.AI</a> &mdash; Evolution of Creative Intelligence</p>
   </footer>
 </div>
+
+<script>
+(function() {
+  var observer = new IntersectionObserver(function(entries) {
+    for (var j = 0; j < entries.length; j++) {
+      if (entries[j].isIntersecting) {
+        entries[j].target.classList.add('visible');
+        observer.unobserve(entries[j].target);
+      }
+    }
+  }, { threshold: 0.1 });
+
+  var fadeEls = document.querySelectorAll('.fade-in');
+  for (var k = 0; k < fadeEls.length; k++) {
+    observer.observe(fadeEls[k]);
+  }
+})();
+</script>
 </body>
 </html>

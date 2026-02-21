@@ -1,23 +1,69 @@
-# MONK_kr 프로젝트
+# MONK_kr — monk.kr 본진 포털
 
-이 문서는 MONK_kr 웹사이트의 개발 및 배포 워크플로우를 설명합니다.
+> Cloudflare Pages 정적 호스팅 | 도메인: **monk.kr**
 
-## 개발 및 배포 워크플로우
+## 배포
 
-이 프로젝트는 개발 환경과 실제 서버에 배포될 파일을 분리하기 위해 두 개의 폴더 구조를 사용합니다.
+```bash
+wrangler pages deploy MONK_kr/ --project-name=monk-kr
+```
 
-### 1. 개발 작업 공간 (Development Workspace)
+- **Pages Functions**: 루트 `functions/api/` 자동 포함 (별도 README 참조)
+- **브랜치 제한 없음** (정적 사이트)
+- wrangler 4.66.0+
 
-*   **경로**: `./` (프로젝트의 최상위 루트 폴더)
-*   **용도**: 모든 코드 수정, 신규 에셋 추가 등 실제 개발 작업은 이 메인 폴더에서 진행합니다.
+## 핵심 구조
 
-### 2. 배포 폴더 (Deployment Folder)
+```
+MONK_kr/
+├── index.html              ← 메인 포털
+├── config.js               ← API 엔드포인트 설정
+├── ai_lab/
+│   └── photolab/           ← AI 증명사진 앱 (MPA 분할)
+│       ├── index.html      ← 앱 진입점
+│       ├── prep.html/js    ← 촬영 전 코칭
+│       ├── camera.html/js  ← 카메라 촬영
+│       ├── result.html/js  ← 결과 + 다운로드
+│       ├── thankyou.html/js← 감사 페이지 (무료/유료 게이트)
+│       ├── app.js/css      ← 핵심 로직
+│       ├── shared.js       ← 공유 유틸
+│       └── config.js       ← photolab 설정
+├── Academy/                ← 아카데미
+├── b2b/                    ← B2B
+├── monk_studio/            ← 스튜디오
+├── robots.txt
+└── sitemap.xml
+```
 
-*   **경로**: `./[내_버킷_경로]/`
-*   **용도**: 개발이 완료된 후, 서버에 올라갈 최종 파일들을 담는 공간입니다.
+## 환경변수 (CF Pages Secrets)
 
-### 3. 배포 절차
+| 변수 | 용도 |
+|------|------|
+| `GEMINI_API_KEY` | Gemini API (photo, idgen, precheck, qc, coaching) |
+| `KAKAO_CLIENT_ID` | 카카오 OAuth |
+| `KAKAO_CLIENT_SECRET` | 카카오 OAuth |
+| `GOOGLE_CLIENT_ID` | 구글 OAuth |
+| `GOOGLE_CLIENT_SECRET` | 구글 OAuth |
+| `TELEGRAM_BOT_TOKEN` | 텔레그램 봇 |
+| `ADMIN_CHAT_ID` | 관리자 알림 채팅방 |
+| `TOSS_SECRET_KEY` | 토스페이먼츠 결제 |
+| `TX_API_KEY` | 거래 관리 API |
 
-1.  메인 작업 공간에서 개발 및 테스트를 완료합니다.
-2.  완료된 최종 파일들을 `./[내_버킷_경로]/` 폴더 안으로 복사하여 배포할 상태를 준비합니다.
-3.  `./[내_버킷_경로]/` 폴더의 내용물을 Cloudflare 서버로 업로드하여 배포를 완료합니다.
+D1 바인딩: `DB` → `monk-db` (wrangler.toml)
+
+## 외부 연동
+
+| 서비스 | 용도 | 설정 위치 |
+|--------|------|-----------|
+| Gemini 3 Pro | I2I 증명사진 생성 | functions/api/idgen.js |
+| Gemini 2.0 Flash | 사전분석/QC/코칭 | functions/api/precheck,qc,coaching |
+| 카카오/구글 OAuth | 사용자 인증 | functions/api/auth.js |
+| 토스페이먼츠 | 결제 | functions/api/payment.js |
+| 텔레그램 | 봇 알림 | functions/api/telegram*.js |
+| Cloudflare D1 | 사용자/거래/방문자 DB | functions/api/tx,visitor,simple-signup |
+
+## 주의사항
+
+- `config.js` 내 API 엔드포인트 URL 변경 시 전체 영향
+- `wrangler.toml` 수정 금지 (법률 제7장 3조)
+- photolab 내 `_backup_*/`, `_legacy/` 폴더는 건드리지 않음

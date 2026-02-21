@@ -51,31 +51,37 @@ export async function onRequestPost(context) {
         break;
     }
 
-    // Gemini 2.0 Flash API 호출
+    // Gemini 3 Pro Image Preview (NB3) — I2I 정본 모델 (photo.js 패턴 준수)
+    const apiKey = env.GEMINI_API_KEY;
     const geminiResponse = await fetch(
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent',
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image-preview:generateContent?key=${apiKey}`,
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-goog-api-key': env.GEMINI_API_KEY
         },
         body: JSON.stringify({
           contents: [{
             parts: [
-              { 
-                inlineData: { 
-                  data: base64Data, 
-                  mimeType: mimeType 
-                } 
+              {
+                inlineData: {
+                  data: base64Data,
+                  mimeType: mimeType
+                }
               },
               { text: instruction }
             ]
           }],
           generationConfig: {
-            responseModalities: ['image', 'text'],
-            responseMimeType: 'image/png'
-          }
+            imageConfig: {}
+          },
+          // BLOCK_NONE — photo.js 정본 패턴 (핫키)
+          safetySettings: [
+            { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+            { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+            { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
+            { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
+          ],
         })
       }
     );
