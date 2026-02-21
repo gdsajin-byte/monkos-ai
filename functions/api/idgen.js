@@ -187,7 +187,11 @@ export async function onRequestPost(context) {
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image-preview:generateContent?key=${apiKey}`,
       {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Forwarded-For': '',
+          'X-Real-IP': '',
+        },
         body: JSON.stringify({
           contents: [{
             parts: [
