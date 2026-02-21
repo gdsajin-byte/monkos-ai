@@ -14,7 +14,7 @@ const media = Monk.media({
   video: '#camera-video',
   canvas: '#capture-canvas',
   maxSize: MAX_CAPTURE_SIZE,
-  captureQuality: 0.8,
+  captureQuality: 0.6,
   frameInterval: FRAME_INTERVAL_MS,
   faceDetection: true,
   mirror: true,

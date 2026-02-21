@@ -25,7 +25,7 @@ export const CREDIT_COST = {
 export const TOSS_CLIENT_KEY = ''; // TODO: monkos 정식 연동 후 설정
 
 // 캡처 설정
-export const MAX_CAPTURE_SIZE = 720;
+export const MAX_CAPTURE_SIZE = 512;
 export const COACHING_DISPLAY_MS = 10000;
 export const FRAME_INTERVAL_MS = 500;
 export const CAPTURE_SIZE = 512;
