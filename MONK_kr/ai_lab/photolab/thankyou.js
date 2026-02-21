@@ -3,7 +3,36 @@
  * 크롭 사진 표시 + 갤러리 저장 + SNS 공유
  */
 
-import { store, Monk, sharedInit, loadSessionData, navigateTo } from './shared.js';
+import { store, Monk, PHOTO_SPECS, sharedInit, loadSessionData, navigateTo } from './shared.js';
+
+// ─── 용도별 활용 가이드 ───
+
+const USAGE_GUIDE = {
+  passport: [
+    '여권 신청 (온라인/오프라인)',
+    '주민등록증 / 운전면허증',
+    '비자 신청',
+  ],
+  student_id: [
+    '학생증 발급',
+    '수험표 사진',
+  ],
+  employee_id: [
+    '사원증 발급',
+    '출입카드 사진',
+    '사내 프로필',
+  ],
+  resume: [
+    '이력서 / 자기소개서',
+    '입사지원 온라인 프로필',
+    'LinkedIn / 포트폴리오',
+  ],
+  color_portrait: [
+    'SNS 프로필',
+    '블로그 / 포트폴리오',
+    '명함 사진',
+  ],
+};
 
 // ─── Media 생성 (toJpeg 전용) ───
 const media = Monk.media({
@@ -32,7 +61,48 @@ function displayPhoto() {
     ? `💎 10c 사용 · 잔여 ${store.user.credits}c`
     : '';
 
+  displaySpecInfo();
+  displayUsageGuide();
+
   Monk.log('수령처 사진 표시 완료');
+}
+
+// ─── 규격 정보 표시 ───
+
+function displaySpecInfo() {
+  const style = loadSessionData('style');
+  const specInfoEl = document.getElementById('spec-info');
+  if (!specInfoEl || !style) return;
+
+  const spec = PHOTO_SPECS[style];
+  if (!spec) return;
+
+  specInfoEl.innerHTML = `
+    <div style="font-weight:600; color:#a78bfa;">${spec.name}</div>
+    <div style="color:#8892a8; font-size:13px; margin-top:4px;">
+      ${spec.widthMM}×${spec.heightMM}mm · 300dpi
+    </div>
+  `;
+  specInfoEl.style.display = 'block';
+}
+
+// ─── 활용 가이드 표시 ───
+
+function displayUsageGuide() {
+  const purpose = loadSessionData('purpose');
+  const listEl = document.getElementById('usage-list');
+  const guideEl = document.getElementById('usage-guide');
+  if (!listEl || !guideEl) return;
+
+  const items = USAGE_GUIDE[purpose];
+  if (!items) {
+    guideEl.style.display = 'none';
+    return;
+  }
+
+  listEl.innerHTML = items.map(item =>
+    `<div style="padding:2px 0;">· ${item}</div>`
+  ).join('');
 }
 
 // ─── 갤러리 저장 ───
