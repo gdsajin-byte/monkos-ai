@@ -5,7 +5,7 @@
 
 import {
   store, Monk, TX, API,
-  sharedInit, saveSessionData, loadSessionData, navigateTo,
+  sharedInit, saveSessionData, loadSessionData, navigateTo, showDesktopBlocker,
   MAX_CAPTURE_SIZE, FRAME_INTERVAL_MS, COACHING_DISPLAY_MS
 } from './shared.js';
 
@@ -249,6 +249,13 @@ async function init() {
     await sharedInit();
   } catch (err) {
     Monk.log('sharedInit 에러: ' + err.message);
+  }
+
+  // ── 데스크톱 차단 (카메라가 필요한 이 페이지에서만) ──
+  const devMode = new URLSearchParams(location.search).has('dev');
+  if (!Monk.isMobile() && !devMode) {
+    showDesktopBlocker();
+    return;
   }
 
   // ── 퍼널 9필드 로딩 ──

@@ -234,7 +234,7 @@ async function confirmAndGenerate() {
   } catch (err) {
     hideGenOverlay();
     if (err.status === 402) {
-      showCreditModal(err.required || 1, err.credits || 0, 'generate');
+      showCreditModal(err.required || 10, err.credits || 0, 'generate');
       store.showStep2Actions = true;
       store.resultTitle = TX.resultConfirm;
       store.resultSubtitle = '크레딧이 부족합니다';
