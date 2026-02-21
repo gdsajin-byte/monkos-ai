@@ -115,6 +115,22 @@
                 <img id="ty-photo" data-bind-src="cropped" src="" alt="증명사진">
             </div>
 
+            <!-- 규격 정보 -->
+            <div id="spec-info" style="display:none; text-align:center; padding:8px 16px;"></div>
+
+            <!-- 활용 가이드 -->
+            <div id="usage-guide" style="
+                margin:12px 16px; padding:12px 16px;
+                background:rgba(167,139,250,0.05);
+                border:1px solid rgba(167,139,250,0.1);
+                border-radius:12px; font-size:13px; color:#8892a8;
+            ">
+                <div style="font-weight:600; color:#c4b5fd; margin-bottom:6px;">
+                    💡 이 사진은 아래 용도에 바로 사용할 수 있습니다
+                </div>
+                <div id="usage-list"></div>
+            </div>
+
             <div class="ty-actions">
                 <div class="ty-save-guide" id="tySaveGuide">
                     <p><span class="pulse-hand">👆</span> 사진을 길게 눌러 저장하세요!</p>
@@ -126,14 +142,14 @@
                 <div class="ty-share-section">
                     <p class="ty-share-title">🎁 SNS 공유하고 10크레딧 받기!</p>
                     <div class="ty-event-steps">
-                        <div class="ty-step"><span class="step-num">1</span> 이 화면을 캡쳐하세요 📸</div>
+                        <div class="ty-step"><span class="step-num">1</span> 이 화면을 캡처하세요 📸</div>
                         <div class="ty-step"><span class="step-num">2</span> SNS에 올리기 (링크·멘션 필수)</div>
-                        <div class="ty-step"><span class="step-num">3</span> 텔레그램으로 캡쳐 보내기!</div>
+                        <div class="ty-step"><span class="step-num">3</span> 텔레그램으로 캡처 보내기!</div>
                     </div>
                     <a id="tgEventLink" class="ty-tg-btn" href="#" target="_blank" onclick="openTelegram()">
                         <span class="tg-icon">✈️</span> 텔레그램으로 10c 받기
                     </a>
-                    <p class="ty-tg-sub">텔레그램 친구추가 → 캡쳐 전송 → 즉시 10c 지급!</p>
+                    <p class="ty-tg-sub">텔레그램 친구추가 → 캡처 전송 → 즉시 10c 지급!</p>
                 </div>
 
                 <div class="ty-services">

@@ -776,3 +776,28 @@ body {
     background: #111; padding: 8px 16px; border-radius: 8px;
     border: 1px solid #222;
 }
+
+/* ─── 챗봇 버블 ─── */
+.chat-bubble {
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  margin-bottom: 8px;
+  max-width: 85%;
+  word-break: break-word;
+}
+.chat-bubble.bot {
+  background: rgba(167, 139, 250, 0.1);
+  color: #c4b5fd;
+  align-self: flex-start;
+}
+.chat-bubble.user {
+  background: #a78bfa;
+  color: #fff;
+  margin-left: auto;
+}
+#chat-messages {
+  display: flex;
+  flex-direction: column;
+}
