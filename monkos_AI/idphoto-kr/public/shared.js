@@ -80,6 +80,7 @@ export const pipe = Monk.pipe({
   precheck: { type: 'post', path: API.PRECHECK },
   generate: { type: 'post', path: API.GENERATE },
   creditUse: { type: 'post', path: API.CREDIT_USE },
+  coaching: { type: 'ws', url: '' },  // WebSocket — url은 camera.js에서 동적 생성
 }, {
   baseUrl: '',
   onCreditShort: (err) => showCreditModal(err.required || 1, err.credits || 0, 'generate'),

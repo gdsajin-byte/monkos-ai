@@ -1,6 +1,6 @@
 /**
  * camera.js — 촬영실 전용 로직
- * 카메라 + AI 코칭 (REST ~2fps) + 촬영 → sessionStorage 저장 → 분석실 이동
+ * 카메라 + AI 코칭 (WebSocket + Gemini Live) + 촬영 → sessionStorage 저장 → 분석실 이동
  */
 
 import {
@@ -58,17 +58,17 @@ document.addEventListener('click', activateTTS, { once: true });
 function speakKo(text) {
   if (!store.voiceEnabled || !('speechSynthesis' in window)) return;
   if (!koVoice) return;
-  // 이전 발화 즉시 중단 + 새 텍스트만 발화
+  // iOS Safari: cancel() 후 바로 speak()하면 씹힘 → 100ms 딜레이
   speechSynthesis.cancel();
-  // cancel 후 약간의 딜레이 필요 (브라우저별 차이)
   setTimeout(() => {
+    if (speechSynthesis.speaking) return; // 이전 발화가 아직 안 끝났으면 스킵
     const u = new SpeechSynthesisUtterance(text);
     u.lang = 'ko-KR';
     u.rate = 1.15;
     u.pitch = 1.05;
     u.voice = koVoice;
     speechSynthesis.speak(u);
-  }, 50);
+  }, 100);
 }
 
 function toggleVoice() {
@@ -106,95 +106,90 @@ function showCoaching(text, ready = false) {
   }, COACHING_DISPLAY_MS);
 }
 
-// ─── 모션 감지 ───
-let previousFrameLen = 0;
-const MOTION_THRESHOLD = 0.03; // 3% 변화
+// ─── WebSocket 코칭 ───
+let wsCoaching = null;
+let frameTimer = null;
 
-function detectMotion(dataUrl) {
-  const len = dataUrl.length;
-  if (previousFrameLen === 0) {
-    previousFrameLen = len;
-    return true; // 첫 프레임은 항상 전송
-  }
-  const diff = Math.abs(len - previousFrameLen) / Math.max(previousFrameLen, 1);
-  previousFrameLen = len;
-  return diff > MOTION_THRESHOLD;
+function getWsUrl() {
+  const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+  return `${proto}//${location.host}`;
 }
 
-// ─── 코칭 REST 루프 (순차 실행 — 항상 최신 프레임) ───
-let coachingActive = false;
-let coachingGen = 0; // TTS 세대 카운터 (stale 방지)
+function startCoachingWS() {
+  const wsUrl = getWsUrl();
+  wsCoaching = new WebSocket(wsUrl);
 
-async function coachingLoop() {
-  Monk.log('코칭 루프 시작 (0.5fps)');
-  showCoaching(TX.coachingCheck);
+  wsCoaching.onopen = () => {
+    Monk.log('코칭 WS 연결');
+    wsCoaching.send(JSON.stringify({
+      type: 'set-style',
+      style: store.style || 'id_photo',
+    }));
+    startFrameLoop();
+  };
 
-  while (coachingActive && store.step === 1) {
-    // 1. 최신 프레임 캡처
-    const frame = media.capture();
-    if (!frame) {
-      await sleep(500);
-      continue;
+  wsCoaching.onmessage = (event) => {
+    try {
+      const msg = JSON.parse(event.data);
+      if (msg.type === 'ai-coaching' && msg.text) {
+        showCoaching(msg.text, msg.text.includes('좋') || msg.text.includes('지금') || msg.text.includes('촬영'));
+      }
+    } catch (e) {
+      Monk.log('코칭 메시지 파싱 실패: ' + e.message);
     }
+  };
+
+  wsCoaching.onerror = () => {
+    Monk.log('코칭 WS 에러');
+  };
+
+  wsCoaching.onclose = () => {
+    Monk.log('코칭 WS 종료');
+    stopFrameLoop();
+  };
+}
+
+function startFrameLoop() {
+  stopFrameLoop();
+  frameTimer = setInterval(() => {
+    if (!wsCoaching || wsCoaching.readyState !== WebSocket.OPEN) return;
+
+    const frame = media.capture();
+    if (!frame) return;
 
     const base64 = frame.includes(',') ? frame.split(',')[1] : frame;
-    const gen = ++coachingGen;
+    const binary = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
+    wsCoaching.send(binary.buffer);
+  }, FRAME_INTERVAL_MS);
+}
 
-    try {
-      const res = await fetch(API.COACHING, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          image: base64,
-          style: store.style || 'id_photo',
-          purpose: store.purpose,
-          gender: store.gender,
-          age: store.age,
-          clothing: store.clothing,
-          clothingColor: store.clothingColor,
-          tie: store.tie,
-          hair: store.hair,
-          expression: store.expression,
-        }),
-      });
-
-      // 응답 도착 시 이미 다음 세대면 버림 (stale)
-      if (gen !== coachingGen || !coachingActive) continue;
-
-      if (!res.ok) {
-        Monk.log(`코칭 에러: ${res.status}`);
-        await sleep(2000);
-        continue;
-      }
-
-      const data = await res.json();
-      if (gen !== coachingGen || !coachingActive) continue;
-
-      if (store.step === 1 && data.text) {
-        showCoaching(data.text, data.ready);
-      }
-    } catch (err) {
-      Monk.log('코칭 실패: ' + err.message);
-      await sleep(2000);
-    }
-
-    // 2. 2초 간격 (0.5fps — 뷰파인더 체감 속도)
-    await sleep(2000);
+function stopFrameLoop() {
+  if (frameTimer) {
+    clearInterval(frameTimer);
+    frameTimer = null;
   }
 }
 
-function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+function stopCoachingWS() {
+  if (wsCoaching) {
+    if (wsCoaching.readyState === WebSocket.OPEN) {
+      wsCoaching.send(JSON.stringify({ type: 'stop-coaching' }));
+    }
+    wsCoaching.close();
+    wsCoaching = null;
+  }
+  stopFrameLoop();
+  if ('speechSynthesis' in window) speechSynthesis.cancel();
+  store.coaching = { text: '', ready: false, active: false };
+}
 
 function startCoachingLoop() {
-  coachingActive = true;
-  coachingLoop(); // fire-and-forget
+  showCoaching(TX.coachingCheck);
+  startCoachingWS();
 }
 
 function stopCoachingLoop() {
-  coachingActive = false;
-  coachingGen++; // 진행 중인 응답 무효화
-  if ('speechSynthesis' in window) speechSynthesis.cancel();
-  store.coaching = { text: '', ready: false, active: false };
+  stopCoachingWS();
 }
 
 // ─── 촬영 ───
