@@ -16,6 +16,99 @@ const media = Monk.media({
   faceDetection: true,
 });
 
+// ─── 광고 킷 상수 ───
+const AD_MANIFEST_URL = 'https://storage.googleapis.com/monk-ai-images/ads/manifest.json';
+const MIN_DISPLAY_TIME = 10000; // 최소 10초 표시
+
+let adImages = [];
+let adTimer = null;
+let adIndex = 0;
+
+// ─── 광고 manifest 로드 ───
+async function loadAdManifest() {
+  try {
+    const res = await fetch(AD_MANIFEST_URL);
+    const data = await res.json();
+    adImages = data.images || [];
+    Monk.log(`광고 manifest 로드: ${adImages.length}장`);
+  } catch (e) {
+    Monk.log('광고 manifest 로드 실패: ' + e.message);
+  }
+}
+
+// ─── 오버레이 표시 + 광고 로테이션 시작 ───
+function showGenOverlay() {
+  const overlay = document.getElementById('gen-overlay');
+  if (overlay) overlay.style.display = 'flex';
+
+  // 프로그레스 바 시작
+  const progress = document.getElementById('gen-progress');
+  if (progress) {
+    progress.style.width = '0%';
+    progress.style.transition = 'width 0.5s ease';
+    // 10초에 걸쳐 90%까지 서서히 채움
+    setTimeout(() => { progress.style.transition = 'width 10s ease-out'; progress.style.width = '90%'; }, 100);
+  }
+
+  // 광고 이미지 로테이션
+  if (adImages.length > 0) {
+    adIndex = 0;
+    showAdImage(adIndex);
+    adTimer = setInterval(() => {
+      adIndex = (adIndex + 1) % adImages.length;
+      showAdImage(adIndex);
+    }, 6000);
+  }
+}
+
+function showAdImage(index) {
+  const img = document.getElementById('gen-ad-img');
+  if (!img || !adImages[index]) return;
+  img.style.opacity = '0';
+  setTimeout(() => {
+    img.src = adImages[index];
+    img.style.opacity = '1';
+  }, 400);
+}
+
+// ─── 카운트다운 → 결과 공개 ───
+function startCountdown(callback) {
+  const countdown = document.getElementById('gen-countdown');
+  const countNum = document.getElementById('gen-count-num');
+  if (!countdown || !countNum) { callback(); return; }
+
+  // 프로그레스 바 100%
+  const progress = document.getElementById('gen-progress');
+  if (progress) { progress.style.transition = 'width 0.5s ease'; progress.style.width = '100%'; }
+
+  countdown.style.display = 'flex';
+
+  let count = 3;
+  countNum.textContent = count;
+
+  const interval = setInterval(() => {
+    count--;
+    if (count > 0) {
+      countNum.textContent = count;
+    } else {
+      clearInterval(interval);
+      countNum.textContent = '✨';
+      setTimeout(() => {
+        hideGenOverlay();
+        callback();
+      }, 500);
+    }
+  }, 1000);
+}
+
+function hideGenOverlay() {
+  if (adTimer) { clearInterval(adTimer); adTimer = null; }
+  const overlay = document.getElementById('gen-overlay');
+  if (overlay) overlay.style.display = 'none';
+  const countdown = document.getElementById('gen-countdown');
+  if (countdown) countdown.style.display = 'none';
+}
+
 // ─── 원본 표시 ───
 function showOriginal() {
   const captured = loadSessionData('captured');
@@ -86,9 +179,10 @@ async function confirmAndGenerate() {
   // 생성 단계
   store.step = 3;
   store.stepLabel = TX.step3;
-  store.resultTitle = TX.generating;
-  store.resultSubtitle = TX.generatingSub;
-  store.statusText = TX.genLoading;
+
+  // 오버레이 표시
+  showGenOverlay();
+  const genStartTime = Date.now();
 
   try {
     const genResult = await pipe.run('generate', {
@@ -109,28 +203,36 @@ async function confirmAndGenerate() {
     store.generated = genResult.image;
     Monk.log('생성 완료');
 
-    // 생성된 이미지 표시
-    const genImg = document.querySelector('#photo-generated');
-    if (genImg) genImg.src = genResult.image;
+    // 최소 대기 시간 보장
+    const elapsed = Date.now() - genStartTime;
+    const remaining = Math.max(0, MIN_DISPLAY_TIME - elapsed);
 
-    // 바로 결과 표시 + 다운로드 활성화
-    store.statusText = TX.resultDone;
-    store.resultTitle = TX.resultDone;
-    store.resultSubtitle = TX.resultDoneSub;
-    store.stepLabel = TX.resultDone;
-    store.showStep3Actions = true;
-    store.showStep2Actions = false;
+    await new Promise(resolve => setTimeout(resolve, remaining));
 
-    const btnDownload = document.querySelector('#btn-download');
-    if (btnDownload) btnDownload.disabled = false;
+    // 카운트다운 → 결과 공개
+    startCountdown(() => {
+      // 생성된 이미지 표시
+      const genImg = document.querySelector('#photo-generated');
+      if (genImg) genImg.src = genResult.image;
 
-    // 워터마크 프리뷰 생성
-    const watermarked = await generateWatermarkPreview(genResult.image);
-    if (watermarked) {
-      store.watermarkPreview = watermarked;
-    }
+      store.statusText = TX.resultDone;
+      store.resultTitle = TX.resultDone;
+      store.resultSubtitle = TX.resultDoneSub;
+      store.stepLabel = TX.resultDone;
+      store.showStep3Actions = true;
+      store.showStep2Actions = false;
+
+      const btnDownload = document.querySelector('#btn-download');
+      if (btnDownload) btnDownload.disabled = false;
+
+      // 워터마크 프리뷰 생성
+      generateWatermarkPreview(genResult.image).then(watermarked => {
+        if (watermarked) store.watermarkPreview = watermarked;
+      });
+    });
 
   } catch (err) {
+    hideGenOverlay();
     if (err.status === 402) {
       showCreditModal(err.required || 1, err.credits || 0, 'generate');
       store.showStep2Actions = true;
@@ -270,6 +372,9 @@ async function init() {
   // 결과 화면 활성화
   const resultArea = document.querySelector('#result-overlay');
   if (resultArea) resultArea.classList.add('active');
+
+  // 광고 manifest 프리로드
+  loadAdManifest();
 
   // 원본 표시
   showOriginal();
