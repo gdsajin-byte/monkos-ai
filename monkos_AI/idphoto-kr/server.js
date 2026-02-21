@@ -597,7 +597,7 @@ app.post('/api/generate', async (req, res) => {
         return res.status(402).json({
           error: creditResult.error,
           credits: creditResult.credits ?? 0,
-          required: 1,
+          required: 10,
         });
       }
       log(`[Credits] 생성 차감: ${body.userId} → ${creditResult.credits}c`);
@@ -645,7 +645,7 @@ app.post('/api/idgen', async (req, res) => {
         return res.status(402).json({
           error: creditResult.error,
           credits: creditResult.credits ?? 0,
-          required: 1,
+          required: 10,
         });
       }
       log(`[Credits] idgen 차감: ${userId} → ${creditResult.credits}c`);

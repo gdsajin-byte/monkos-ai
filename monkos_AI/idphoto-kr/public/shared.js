@@ -83,7 +83,7 @@ export const pipe = Monk.pipe({
   coaching: { type: 'ws', url: '' },  // WebSocket — url은 camera.js에서 동적 생성
 }, {
   baseUrl: '',
-  onCreditShort: (err) => showCreditModal(err.required || 1, err.credits || 0, 'generate'),
+  onCreditShort: (err) => showCreditModal(err.required || 10, err.credits || 0, 'generate'),
   onError: (name, err) => Monk.log(`API 에러[${name}]: ${err.error || err.message}`),
 });
 
@@ -94,8 +94,8 @@ export function showCreditModal(required, current, action) {
     ? '다운로드에 크레딧이 필요합니다'
     : '생성에 크레딧이 필요합니다';
   store.creditModalDesc = action === 'download'
-    ? '사진을 다운로드하려면 8 크레딧이 필요합니다.'
-    : '사진을 생성하려면 1 크레딧이 필요합니다.';
+    ? '사진을 다운로드하려면 70 크레딧이 필요합니다.'
+    : '사진을 생성하려면 10 크레딧이 필요합니다.';
   store.creditModalOpen = true;
 }
 
@@ -306,12 +306,6 @@ export async function sharedInit() {
   await initFromUrlToken();
   initCredits();
   await initFromTossResult();
-
-  // 데스크톱 차단 (dev 모드 시 비활성화)
-  const devMode = new URLSearchParams(location.search).has('dev');
-  if (!Monk.isMobile() && !devMode) {
-    showDesktopBlocker();
-  }
 
   // sessionStorage에서 선택 데이터 복원
   const savedStyle = loadSessionData('style');

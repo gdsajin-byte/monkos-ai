@@ -74,11 +74,12 @@ const VARIANT_CREDITS = {
   '1297531': 50,  // MONKOS 50 Credits — $40
 };
 
-// 토스 금액(KRW) → 크레딧 매핑
+// 토스 금액(KRW) → 크레딧 매핑 (v2: 1c = $0.10 ≈ ₩145)
 const TOSS_AMOUNT_CREDITS = {
-  12900: 10,   // 10 크레딧 — ₩12,900
-  29900: 30,   // 30 크레딧 — ₩29,900
-  45900: 50,   // 50 크레딧 — ₩45,900
+  1450: 10,    // 기본 10c — ₩1,450 (정가)
+  13050: 100,  // 스탠다드 100c — ₩13,050 (10% 할인)
+  34800: 300,  // 프리미엄 300c — ₩34,800 (20% 할인)
+  50750: 500,  // 프로 500c — ₩50,750 (30% 할인)
 };
 
 // === Firestore 초기화 ===
@@ -812,11 +813,11 @@ const httpServer = createServer(async (req, res) => {
           name: nickname,
           email,
           picture: profileImage,
-          credits: 0,
+          credits: 80,
           createdAt: new Date().toISOString(),
           lastLogin: new Date().toISOString(),
         });
-        log(`[Kakao] 신규 가입: ${docId} (${nickname})`);
+        log(`[Kakao] 신규 가입: ${docId} (${nickname}) +80c 보너스`);
       } else {
         await userRef.update({
           name: nickname,
@@ -926,11 +927,11 @@ location.href = '/';
           name: displayName,
           email,
           picture: pictureUrl,
-          credits: 0,
+          credits: 80,
           createdAt: new Date().toISOString(),
           lastLogin: new Date().toISOString(),
         });
-        log(`[LINE] 신규 가입: ${docId} (${displayName})`);
+        log(`[LINE] 신규 가입: ${docId} (${displayName}) +80c 보너스`);
       } else {
         await userRef.update({
           name: displayName,
@@ -1042,12 +1043,12 @@ location.href = '/';
           lastLogin: new Date().toISOString(),
           ...(isNewUser ? {
             createdAt: new Date().toISOString(),
-            credits: 0,
+            credits: 80,
           } : {}),
         };
 
         await userRef.set(user, { merge: true });
-        log(`[Auth] ${isNewUser ? '신규 가입 (0c)' : '로그인'}: ${user.email}`);
+        log(`[Auth] ${isNewUser ? '신규 가입 (+80c 보너스)' : '로그인'}: ${user.email}`);
 
         // 현재 크레딧 조회
         const updatedDoc = await userRef.get();
@@ -1097,7 +1098,7 @@ location.href = '/';
 
       const credits = userDoc.data()?.credits ?? 0;
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ credits, userId }));
+      res.end(JSON.stringify({ credits, userId, unit: '$0.10/c', krwRate: 145 }));
     } catch (err) {
       log(`[Credits] 조회 에러: ${err.message}`);
       res.writeHead(500, { 'Content-Type': 'application/json' });
@@ -1107,7 +1108,7 @@ location.href = '/';
   }
 
   // === 크레딧 사용 API ===
-  // type: 'generate' (-1c) | 'download' (-10c)
+  // type: 'generate' (-10c) | 'download' (-70c)
   if (req.url === '/api/credits/use' && req.method === 'POST') {
     let body = '';
     req.on('data', chunk => { body += chunk; });
@@ -1120,7 +1121,7 @@ location.href = '/';
           return;
         }
 
-        const cost = type === 'generate' ? 1 : type === 'download' ? 10 : 0;
+        const cost = type === 'generate' ? 10 : type === 'download' ? 70 : 0;
         if (cost === 0) {
           res.writeHead(400, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ error: 'type은 generate 또는 download' }));
@@ -1362,7 +1363,7 @@ location.href = '/';
           return;
         }
 
-        const refund = type === 'generate' ? 1 : type === 'download' ? 10 : 0;
+        const refund = type === 'generate' ? 10 : type === 'download' ? 70 : 0;
         if (refund === 0) {
           res.writeHead(400, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ error: 'type은 generate 또는 download' }));
@@ -1669,11 +1670,18 @@ location.href = '/';
           return;
         }
 
-        const credits = TOSS_AMOUNT_CREDITS[amount];
+        let credits = TOSS_AMOUNT_CREDITS[amount];
+
+        // 맞춤 충전: 패키지 매핑에 없으면 정가(₩145/c) 기준 10c 배수 검증
         if (!credits) {
-          res.writeHead(400, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({ error: `유효하지 않은 결제 금액: ${amount}` }));
-          return;
+          const customCredits = amount / 145;
+          if (customCredits >= 10 && Number.isInteger(customCredits) && customCredits % 10 === 0) {
+            credits = customCredits;
+          } else {
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: `유효하지 않은 결제 금액: ${amount} (패키지 또는 ₩145 × 10c 배수만 가능)` }));
+            return;
+          }
         }
 
         // 토스 API로 결제 승인
@@ -2080,7 +2088,7 @@ httpServer.listen(PORT, '0.0.0.0', () => {
   log('  GET  /auth/line/callback   — LINE 콜백');
   log('  POST /api/auth/google      — Google 가입/로그인');
   log('  GET  /api/credits          — 크레딧 조회');
-  log('  POST /api/credits/use      — 크레딧 사용 (generate:-1c, download:-10c)');
+  log('  POST /api/credits/use      — 크레딧 사용 (generate:-10c, download:-70c)');
   log('  POST /api/credits/refund   — 크레딧 환불');
   log('  POST /api/credits/share-bonus — 공유 보너스 (+10c)');
   log('  POST /api/auth/token       — 크로스 도메인 토큰 생성');
