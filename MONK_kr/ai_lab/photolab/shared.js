@@ -62,6 +62,9 @@ export const store = Monk.store({
   creditRequired: 10,
   creditLow: false,
 
+  // 워터마크 프리뷰
+  watermarkPreview: null,
+
   // 기타
   voiceEnabled: true,
   desktopBlocked: false,

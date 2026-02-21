@@ -124,6 +124,12 @@ async function confirmAndGenerate() {
     const btnDownload = document.querySelector('#btn-download');
     if (btnDownload) btnDownload.disabled = false;
 
+    // 워터마크 프리뷰 생성
+    const watermarked = await generateWatermarkPreview(genResult.image);
+    if (watermarked) {
+      store.watermarkPreview = watermarked;
+    }
+
   } catch (err) {
     if (err.status === 402) {
       showCreditModal(err.required || 1, err.credits || 0, 'generate');
@@ -145,6 +151,108 @@ function showGenerateError(error) {
   store.showStep2Actions = true;
   store.step = 2;
   Monk.log('생성 에러: ' + error);
+}
+
+// ─── 워터마크 프리뷰 생성 ───
+async function generateWatermarkPreview(imageDataUrl) {
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  const img = new Image();
+
+  return new Promise((resolve) => {
+    img.onload = () => {
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.drawImage(img, 0, 0);
+
+      // 워터마크: 대각선 반복 MONKOS 텍스트
+      ctx.save();
+      ctx.globalAlpha = 0.15;
+      ctx.fillStyle = '#ffffff';
+      ctx.font = `bold ${Math.max(img.width / 8, 24)}px sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.translate(canvas.width / 2, canvas.height / 2);
+      ctx.rotate(-Math.PI / 6);
+
+      for (let y = -canvas.height; y < canvas.height * 2; y += img.height / 4) {
+        ctx.fillText('MONKOS', 0, y);
+      }
+      ctx.restore();
+
+      resolve(canvas.toDataURL('image/jpeg', 0.85));
+    };
+    img.src = imageDataUrl;
+  });
+}
+
+// ─── 비교 카드 저장 ───
+function loadImage(src) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.src = src;
+  });
+}
+
+async function saveCompareCard() {
+  if (!store.captured || !store.generated) return;
+
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+
+  const [imgOrig, imgGen] = await Promise.all([
+    loadImage(store.captured),
+    loadImage(store.generated),
+  ]);
+
+  const cardW = 720;
+  const imgW = (cardW - 48) / 2;
+  const imgH = imgW * (imgOrig.height / imgOrig.width);
+  const brandH = 48;
+  const cardH = 32 + imgH + 24 + brandH + 16;
+
+  canvas.width = cardW;
+  canvas.height = cardH;
+
+  // 배경
+  ctx.fillStyle = '#0a0e17';
+  ctx.beginPath();
+  ctx.roundRect(0, 0, cardW, cardH, 16);
+  ctx.fill();
+
+  // 원본
+  ctx.drawImage(imgOrig, 16, 24, imgW, imgH);
+  // 생성
+  ctx.drawImage(imgGen, 16 + imgW + 16, 24, imgW, imgH);
+
+  // 라벨
+  ctx.fillStyle = '#8892a8';
+  ctx.font = '13px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('원본', 16 + imgW / 2, 24 + imgH + 16);
+  ctx.fillText('AI 증명사진', 16 + imgW + 16 + imgW / 2, 24 + imgH + 16);
+
+  // 브랜딩 바
+  ctx.fillStyle = 'rgba(167,139,250,0.1)';
+  ctx.fillRect(0, cardH - brandH, cardW, brandH);
+  ctx.fillStyle = '#a78bfa';
+  ctx.font = 'bold 14px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('✨ MONKOS AI 증명사진   monkos.ai', cardW / 2, cardH - brandH / 2 + 5);
+
+  // 저장
+  canvas.toBlob(async (blob) => {
+    const file = new File([blob], `monkos_compare_${Date.now()}.jpg`, { type: 'image/jpeg' });
+    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({ files: [file], title: 'MONKOS AI 증명사진' });
+    } else {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = file.name;
+      a.click();
+    }
+    Monk.log('비교 카드 저장 완료');
+  }, 'image/jpeg', 0.92);
 }
 
 // ─── 다운로드 (결제 + 크롭 → 수령처 이동) ───
@@ -207,6 +315,7 @@ Object.assign(window, {
   retakePhoto,
   confirmAndGenerate,
   downloadResult,
+  saveCompareCard,
 });
 
 // ─── 초기화 ───

@@ -30,6 +30,29 @@
     <!-- 스타일시트 -->
     <link rel="stylesheet" href="app.css">
 
+    <!-- result 전용 스타일 -->
+    <style>
+        .photo-compare {
+            background: rgba(167,139,250,0.04);
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+            padding: 16px 12px 8px;
+            margin: 0 12px;
+        }
+        .compare-brand {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 10px 0 6px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #a78bfa;
+            letter-spacing: 0.5px;
+        }
+        .compare-brand .dot { opacity: 0.4; }
+    </style>
+
     <!-- 토스페이먼츠 -->
     <script src="https://js.tosspayments.com/v2/standard"></script>
 </head>
@@ -127,6 +150,9 @@
                 <img id="photo-generated" data-bind-src="generated" src="" alt="생성">
                 <div class="label">AI 증명사진</div>
             </div>
+            <div class="compare-brand" data-show="generated">
+                ✨ MONKOS AI 증명사진 <span class="dot">·</span> monkos.ai
+            </div>
         </div>
 
         <div id="status-badge" data-bind="statusText" data-show="statusText" style="padding:8px 16px; border-radius:12px; font-size:13px; text-align:center; color:var(--text-dim,#8892a8); background:rgba(167,139,250,0.08); margin:0 16px;"></div>
@@ -151,10 +177,25 @@
             <button class="btn btn-primary" onclick="confirmAndGenerate()">이 사진으로 생성 <span style="opacity:0.7;font-size:13px">(1c)</span></button>
         </div>
 
+        <!-- 워터마크 프리뷰 -->
+        <div id="watermark-preview" data-show="watermarkPreview" style="display:none; padding:16px; text-align:center;">
+            <div style="font-size:14px; font-weight:600; color:#a78bfa; margin-bottom:8px;">
+                다운로드 프리뷰
+            </div>
+            <div style="display:inline-block; border-radius:8px; overflow:hidden; border:1px solid rgba(167,139,250,0.2);">
+                <img id="watermark-img" data-bind-src="watermarkPreview" src="" alt="프리뷰"
+                     style="max-width:240px; display:block;">
+            </div>
+            <div style="margin-top:8px; font-size:12px; color:#8892a8;">
+                ✨ 다운로드 시 워터마크 없는 고화질 원본이 제공됩니다
+            </div>
+        </div>
+
         <!-- Step 3 버튼 -->
         <div id="step3-actions" data-show="showStep3Actions" style="display:none; gap:10px; padding:16px; justify-content:center; flex-wrap:wrap;">
             <button class="btn btn-secondary" onclick="retakePhoto()">다시 찍기</button>
-            <button class="btn btn-success" id="btn-download" onclick="downloadResult()">📥 다운로드 (8c)</button>
+            <button class="btn btn-success" id="btn-download" onclick="downloadResult()">📥 고화질 다운로드 (8c)</button>
+            <button class="btn btn-secondary" onclick="saveCompareCard()" style="width:100%;">📋 비교 카드 저장</button>
         </div>
     </div>
 
