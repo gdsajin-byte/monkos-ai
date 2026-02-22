@@ -11,10 +11,17 @@
 | 계층 | 성격 | 변경 권한 | 위반 시 |
 |------|------|----------|---------|
 | **헌법** (본 문서 11조) | 불변 원칙 | 작가님 개헌만 | 조항 인용 → 영향 경고 → 승인 대기 |
-| **법률** (인덱스 8장 30조) | 운용 규칙 | 작가님 승인 | 조항 인용 → [예외] 기록 |
+| **법률** (인덱스 8장 34조) | 운용 규칙 | 작가님 승인 | 조항 인용 → [예외] 기록 |
 | **규정** (MEMORY.md 등) | 기술 상세 | 에이전트 자율 | 변경 보고 → MEMORY 갱신 |
 
 ## 에이전트 대응 프로토콜
+
+### 사전 적합성 검토 (모든 지시 수령 시)
+- 지시서 수령 또는 작가님 직접 지시 시, **실행 전** 헌법·법률·기능 적합성 검토 필수.
+- 문제 소지 발견 시: 조항 인용 + 영향 범위 보고 → 작가님 승인 후 실행.
+- 이 의무는 작가님 직접 지시에도 적용 — 의도치 않은 연쇄 영향을 사전 차단.
+- 산출물 경로·문서 유형이 ch4 3조·4조에 부합하는지 검토 포함.
+> 근거: 2026-02-22 — "지시서가 하달되거나 내가 직접 지시하더라도 기존 헌법체계나 기능상 실질상 문제의 소지가 있을시 반드시 체크할것"
 
 ### 헌법 충돌 시
 1. "**헌법 제N조 [조항명]**과 충돌합니다" — 조항 인용
@@ -114,7 +121,7 @@
 | 제1장 | 에이전트 체계 | [ch1_agent_system.md](docs/infrastructure/laws/ch1_agent_system.md) | 4조 |
 | 제2장 | 코딩 규칙 | [ch2_coding.md](docs/infrastructure/laws/ch2_coding.md) | 5조 |
 | 제3장 | 세션 로그 | [ch3_session_log.md](docs/infrastructure/laws/ch3_session_log.md) | 3조 |
-| 제4장 | 문서/폴더 구조 | [ch4_docs_structure.md](docs/infrastructure/laws/ch4_docs_structure.md) | 2조 |
+| 제4장 | 문서/폴더 구조 | [ch4_docs_structure.md](docs/infrastructure/laws/ch4_docs_structure.md) | 4조 |
 | 제5장 | 배포 규칙 | [ch5_deployment.md](docs/infrastructure/laws/ch5_deployment.md) | 4조 |
 | 제6장 | 브랜치/커밋 | [ch6_git.md](docs/infrastructure/laws/ch6_git.md) | 4조 |
 | 제7장 | 막내 행동 강령 | [ch7_makne_code.md](docs/infrastructure/laws/ch7_makne_code.md) | 5조 |
