@@ -54,13 +54,13 @@ docs/
 
 1. **루트에 임시 .md 파일 방치 금지.**
 2. **언더스코어 폴더 사용 금지.** (`_archive/` 예외)
-3. **문서 정본 이중화 금지.** 동일 문서가 docs/와 monkos-ops/ 양쪽에 정본으로 존재할 수 없다.
-4. **세션 로그 이중화 금지.** 정본: `monkos-ops/06_로그/sessions/`. `docs/corpus/sessions/`는 읽기전용 아카이브. 신규 세션 로그는 정본에만 생성.
+3. **문서 정본 이중화 금지.** 동일 문서가 docs/와 monkos-ops/ 양쪽에 정본으로 존재할 수 없다. 번호 폴더(01~06)에서 부서 폴더(ops/tech/contents/marketing)로 이관된 파일은 부서 폴더를 정본으로 한다. 번호 폴더의 .gitkeep은 이중화에 해당하지 않는다.
+4. **세션 로그 이중화 금지.** 정본: `monkos-ops/ops/sessions/`. `docs/corpus/sessions/`는 읽기전용 아카이브. 신규 세션 로그는 정본에만 생성.
 5. **지시서(TASK_*) docs/monkos/ 루트 직접 배치 금지.** 반드시 `tasks/YYYY-MM/` 하위에 배치.
 6. **.DS_Store, 바이너리 파일 docs/ 배치 금지.** `.gitignore`에 등록.
 7. **README.md 미보유 폴더 방치 금지.** 폴더 생성 시 README.md 동시 생성 의무.
 
-> 근거: 2026-01~02-08 초기 규칙, 02-22 이중화 해소 + README 의무화
+> 근거: 2026-01~02-08 초기 규칙, 02-22 이중화 해소 + README 의무화, 02-23 과도기 명확화 + 정본 경로 갱신
 > 위반 시: 임시 파일 누적, 폴더 혼재 → 에이전트 탐색 실패, 문서 중복 생성.
 > 상위 헌법: 제3조
 
@@ -178,3 +178,58 @@ docs/
 > 근거: 2026-02-22 통합 스키마 제정 — 신규 편입 시 법적 근거 부재
 > 위반 시: 비정규 요소 편입 → 스키마 오염, 자동 분류 파괴
 > 상위 헌법: 제3조
+
+---
+
+### 7조: YAML Frontmatter 규격
+
+헌법 제13조에 따라, 모든 공식 문서에 YAML frontmatter를 필수 기재한다.
+
+**적용 범위**:
+- governance/constitution/petitions/*.md
+- docs/monkos/ 하위 전 유형 (tasks, reports, incidents, designs, specs)
+- monkos-ops/ 하위 TASK_*, REPORT_*, PETITION_* 파일
+
+**적용 제외**:
+- 법률 파일 (governance/laws/ch*.md) — 법률은 그 자체가 규격
+- 세션 로그 — ch3 2조(형식) 준용
+- README.md — type: department-readme 권장, 필수 아님
+- 기존 파일 — 신규 생성분부터 적용 (헌법 제13조 소급 방지)
+
+#### 공통 필수 필드 (전 타입)
+
+| 필드 | 타입 | 규칙 | 예시 |
+|------|------|------|------|
+| `type` | enum | 하단 허용값 | `task` |
+| `id` | string | 파일명(확장자 제외)과 동일 | `TASK_20260223_막내6_ch4개정안` |
+| `date` | string | `YYYY-MM-DD HH:MM KST` (헌법 제1조) | `2026-02-23 04:10 KST` |
+| `status` | enum | pending / in_progress / completed / archived / blocked | `pending` |
+
+**type 허용값**: task, report, spec, incident, design, sprint, petition
+
+#### 타입별 추가 필수 필드
+
+| 타입 | 필수 | 선택 |
+|------|------|------|
+| task | `from`, `to`, `priority`(P0~P3) | `depends_on`, `tags` |
+| report | `from`, `to`, `task_id`, `result`(success/partial/fail) | `tags` |
+| petition | `from`, `to`, `category`, `procedure` | `tags` |
+| spec | `service`(ch4 5조 약칭), `from` | `version`, `tags` |
+| incident | `service`, `severity`(critical/major/minor) | `resolved_at`, `tags` |
+| design | `from`, `feature` | `tags` |
+| sprint | `range`, `from` | `tags` |
+
+#### 검증 규칙
+
+- `from`/`to`: ch1 1조 에이전트 테이블의 이름만 허용
+- `priority`: P0(긴급) > P1(높음) > P2(보통) > P3(낮음)
+- `service`: ch4 5조 레지스트리 약칭만 허용
+- `id`와 파일명 불일치 시: 파일명이 우선 (id 보정 대상)
+
+#### 긴급 예외 (헌법 제13조 준용)
+
+긴급 장애 대응(INCIDENT) 시: `type`, `date`만으로 허용. 24시간 내 전 필드 보정.
+
+> 근거: 2026-02-23 법률 개정 — 헌법 제13조 실효화. YAML = 법과 코드의 접점, 자동 집행의 물리 계층
+> 위반 시: 자동 분류 불가, 데몬 파싱 실패, 문서 관리 수동 의존
+> 상위 헌법: 제13조
