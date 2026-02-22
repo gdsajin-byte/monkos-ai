@@ -4,9 +4,9 @@
 
 INTERVAL=30
 PROJECT_DIR="$HOME/developer/monk_project"
-TEAMS_DIR="$PROJECT_DIR/teams"
+TEAMS_DIR="$PROJECT_DIR/monkos-ops/05_공유"
 KKU_INBOX="$TEAMS_DIR/kku/inbox"
-LOG_FILE="$TEAMS_DIR/mailbox.log"
+LOG_FILE="$PROJECT_DIR/monkos-ops/06_로그/orchestration/mailbox.log"
 REMOTE_HOST="100.93.220.17"
 REMOTE_USER="mac"
 REMOTE_PASS="1234"

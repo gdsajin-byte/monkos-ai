@@ -703,41 +703,6 @@ header {
 .event-btn:hover { opacity: 0.9; transform: translateY(-1px); }
 .event-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
-/* === 설문 모달 === */
-.survey-modal {
-  display: none; position: fixed; inset: 0;
-  background: rgba(0,0,0,0.8); z-index: 9999;
-  justify-content: center; align-items: center; padding: 20px;
-}
-.survey-modal.active { display: flex; }
-.survey-box {
-  background: var(--surface); border-radius: 16px;
-  max-width: 440px; width: 100%; padding: 28px;
-  max-height: 85vh; overflow-y: auto;
-}
-.survey-header { text-align: center; margin-bottom: 20px; }
-.survey-header h3 { font-size: 1.2rem; color: #f59e0b; margin-bottom: 4px; }
-.survey-header p { font-size: 0.8rem; color: var(--text-dim); }
-.survey-q { margin-bottom: 18px; }
-.survey-q label { display: block; font-size: 0.85rem; color: var(--text); margin-bottom: 8px; font-weight: 600; }
-.survey-q select, .survey-q input[type="text"] {
-  width: 100%; padding: 10px 12px;
-  background: var(--bg); border: 1px solid var(--border);
-  color: var(--text); border-radius: 8px; font-size: 0.85rem;
-}
-.survey-q select:focus, .survey-q input:focus { border-color: var(--accent); outline: none; }
-.survey-submit {
-  width: 100%; padding: 14px;
-  background: linear-gradient(135deg, #f59e0b, #ef4444);
-  color: #fff; border: none; border-radius: 12px;
-  font-size: 1rem; font-weight: 700; cursor: pointer;
-  margin-top: 8px;
-}
-.survey-submit:disabled { opacity: 0.5; cursor: not-allowed; }
-.survey-close {
-  display: block; margin: 12px auto 0; background: none;
-  border: none; color: var(--text-dim); font-size: 0.8rem; cursor: pointer;
-}
 
 /* === 사업자 정보 === */
 .biz-info {
@@ -1144,15 +1109,15 @@ footer a {
     </div>
   </section>
 
-  <!-- 이벤트 카드 -->
+  <!-- 텔레그램 보너스 카드 -->
   <section class="services" id="eventSection" style="display:none;">
     <div class="event-card">
       <div class="event-card-inner">
-        <div class="event-emoji">🎁</div>
-        <div class="event-title" id="eventTitle">매일 선착순 30명! 12크레딧 무료</div>
-        <div class="event-desc" id="eventDesc">간단한 설문에 참여하면 12크레딧($12 상당)을 즉시 지급합니다.</div>
-        <div class="event-remaining" id="eventRemaining">잔여 30/30명</div><br>
-        <button class="event-btn" id="eventBtn" onclick="openSurvey()">설문 참여하고 12c 받기</button>
+        <div class="event-emoji">✈️</div>
+        <div class="event-title" id="eventTitle">텔레그램 친구 추가하고 30크레딧 받기!</div>
+        <div class="event-desc" id="eventDesc">@monkos_support_bot을 친구 추가하면 30크레딧을 즉시 지급합니다.</div>
+        <div class="event-remaining" id="eventRemaining"></div><br>
+        <button class="event-btn" id="eventBtn" onclick="claimTelegramBonus()">텔레그램 친구 추가 → 30c 받기</button>
       </div>
     </div>
   </section>
@@ -1240,48 +1205,6 @@ footer a {
   </div>
 </div>
 
-<!-- 설문 모달 -->
-<div class="survey-modal" id="surveyModal">
-  <div class="survey-box">
-    <div class="survey-header">
-      <h3>🎁 <span id="surveyModalTitle">설문 참여하고 12크레딧 받기</span></h3>
-      <p id="surveyModalSub">30초면 완료! 답변해 주시면 바로 지급됩니다.</p>
-    </div>
-    <div class="survey-q">
-      <label id="sq1Label">Q1. 어떤 용도로 증명사진이 필요하세요?</label>
-      <select id="sq1">
-        <option value="">선택해 주세요</option>
-        <option value="passport_visa">여권/비자</option>
-        <option value="resume">이력서/취업</option>
-        <option value="license">자격증/면허증</option>
-        <option value="school">학교/학원</option>
-        <option value="other">기타</option>
-      </select>
-    </div>
-    <div class="survey-q">
-      <label id="sq2Label">Q2. 기존에 증명사진을 어떻게 찍으셨나요?</label>
-      <select id="sq2">
-        <option value="">선택해 주세요</option>
-        <option value="studio">사진관 방문</option>
-        <option value="self">셀프 촬영 (앱/직접)</option>
-        <option value="booth">무인 사진기 (포토부스)</option>
-        <option value="first_time">처음 찍어봄</option>
-      </select>
-    </div>
-    <div class="survey-q">
-      <label id="sq3Label">Q3. MONKOS를 어떻게 알게 되셨나요?</label>
-      <select id="sq3">
-        <option value="">선택해 주세요</option>
-        <option value="search">검색 (Google/Naver)</option>
-        <option value="sns">SNS (X/Instagram)</option>
-        <option value="friend">지인 추천</option>
-        <option value="other">기타</option>
-      </select>
-    </div>
-    <button class="survey-submit" id="surveySubmitBtn" onclick="submitSurvey()">제출하고 12크레딧 받기</button>
-    <button class="survey-close" onclick="closeSurvey()">닫기</button>
-  </div>
-</div>
 
 <!-- 챗봇 FAB -->
 <button class="chat-fab" id="chatFab" aria-label="Chat" style="display:none">
@@ -1730,12 +1653,10 @@ const i18n = {
     ctaUrl: 'https://idphoto-jp.monkos.ai/app',
     chatPlaceholder: '質問を入力...',
     chatWelcome: 'こんにちは！MONKOSです。AI証明写真サービスについて何でも聞いてください。',
-    eventTitle: '毎日先着30名！12クレジット無料',
-    eventDesc: '簡単なアンケートに回答すると12クレジット（$12相当）を即時支給します。',
-    eventBtn: 'アンケートに答えて12c もらう',
-    eventRemaining: '残り {n}/30名',
-    eventSoldout: '本日終了！明日正午にリセットされます',
-    eventDone: '参加済み！クレジットは支給済みです',
+    eventTitle: 'Telegramで友達追加して30クレジットGET！',
+    eventDesc: '@monkos_support_botを友達追加すると30クレジットを即時支給します。',
+    eventBtn: 'Telegram友達追加 → 30c GET',
+    eventDone: 'ボーナス受取済み！',
   },
   ko: {
     heroSub: 'AI 증명사진 플랫폼',
@@ -1746,12 +1667,10 @@ const i18n = {
     ctaUrl: 'https://idphoto-kr.monkos.ai/app',
     chatPlaceholder: '질문을 입력하세요...',
     chatWelcome: '안녕하세요! MONKOS입니다. AI 증명사진 서비스에 대해 무엇이든 물어보세요.',
-    eventTitle: '매일 선착순 30명! 12크레딧 무료',
-    eventDesc: '간단한 설문에 참여하면 12크레딧($12 상당)을 즉시 지급합니다.',
-    eventBtn: '설문 참여하고 12c 받기',
-    eventRemaining: '잔여 {n}/30명',
-    eventSoldout: '오늘 마감! 내일 정오에 리셋됩니다',
-    eventDone: '참여 완료! 크레딧이 지급되었습니다',
+    eventTitle: '텔레그램 친구 추가하고 30크레딧 받기!',
+    eventDesc: '@monkos_support_bot을 친구 추가하면 30크레딧을 즉시 지급합니다.',
+    eventBtn: '텔레그램 친구 추가 → 30c 받기',
+    eventDone: '보너스 수령 완료!',
   },
   en: {
     heroSub: 'AI ID Photo Platform',
@@ -1763,12 +1682,10 @@ const i18n = {
     chatPlaceholder: 'Type your question...',
     chatWelcome: 'Hi! I\'m MONKOS. Ask me anything about our AI ID photo service.',
     login: 'Login',
-    eventTitle: 'First 30 daily! 12 credits free',
-    eventDesc: 'Complete a quick survey and get 12 credits ($12 value) instantly.',
-    eventBtn: 'Take survey & get 12c',
-    eventRemaining: '{n}/30 spots left',
-    eventSoldout: 'Sold out today! Resets at noon tomorrow',
-    eventDone: 'Already done! Credits have been granted',
+    eventTitle: 'Add us on Telegram & get 30 credits!',
+    eventDesc: 'Add @monkos_support_bot as friend and get 30 credits instantly.',
+    eventBtn: 'Add on Telegram → get 30c',
+    eventDone: 'Bonus claimed!',
   },
 };
 
@@ -2239,11 +2156,11 @@ chatInput.addEventListener('keydown', (e) => {
   if (e.key === 'Enter' && !e.isComposing) sendMessage();
 });
 
-// === 이벤트 카드 + 설문 ===
+// === 텔레그램 보너스 ===
 async function loadEventStatus() {
   if (!currentUser?.id) return;
   try {
-    const res = await fetch(`/api/survey/status?userId=${encodeURIComponent(currentUser.id)}`);
+    const res = await fetch(`/api/telegram-bonus/status?userId=${encodeURIComponent(currentUser.id)}`);
     const data = await res.json();
     const section = document.getElementById('eventSection');
     const titleEl = document.getElementById('eventTitle');
@@ -2251,21 +2168,15 @@ async function loadEventStatus() {
     const remainEl = document.getElementById('eventRemaining');
     const btnEl = document.getElementById('eventBtn');
 
-    titleEl.textContent = t.eventTitle || t.eventTitle;
-    descEl.innerHTML = t.eventDesc || '';
-    btnEl.textContent = t.eventBtn || '';
+    titleEl.textContent = t.eventTitle || '';
+    descEl.textContent = t.eventDesc || '';
+    remainEl.textContent = '';
 
-    if (data.alreadyDone) {
-      remainEl.textContent = t.eventDone || 'Done';
-      remainEl.classList.add('soldout');
+    if (data.claimed) {
       btnEl.disabled = true;
       btnEl.textContent = '✅ ' + (t.eventDone || 'Done');
-    } else if (data.remaining <= 0) {
-      remainEl.textContent = t.eventSoldout || 'Sold out';
-      remainEl.classList.add('soldout');
-      btnEl.disabled = true;
     } else {
-      remainEl.textContent = (t.eventRemaining || '{n}/30').replace('{n}', data.remaining);
+      btnEl.textContent = t.eventBtn || '';
     }
 
     section.style.display = 'block';
@@ -2274,75 +2185,72 @@ async function loadEventStatus() {
   }
 }
 
-function openSurvey() {
-  document.getElementById('surveyModal').classList.add('active');
-}
+let bonusPolling = null;
 
-function closeSurvey() {
-  document.getElementById('surveyModal').classList.remove('active');
-}
-
-// 모달 외부 클릭 닫기
-document.getElementById('surveyModal').addEventListener('click', (e) => {
-  if (e.target.id === 'surveyModal') closeSurvey();
-});
-
-async function submitSurvey() {
-  const q1 = document.getElementById('sq1').value;
-  const q2 = document.getElementById('sq2').value;
-  const q3 = document.getElementById('sq3').value;
-  if (!q1 || !q2 || !q3) {
-    const alertMsg = { ja: '必須項目を選択してください', ko: '필수 항목을 선택해 주세요', en: 'Please select all required fields' };
-    alert(alertMsg[lang] || alertMsg.en);
-    return;
-  }
-
+async function claimTelegramBonus() {
   if (!currentUser?.id) {
     alert('로그인이 필요합니다');
     return;
   }
 
-  const btn = document.getElementById('surveySubmitBtn');
+  const btn = document.getElementById('eventBtn');
   btn.disabled = true;
   btn.textContent = '...';
 
   try {
-    const res = await fetch('/api/survey', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        userId: currentUser.id,
-        answers: { purpose: q1, method: q2, referral: q3 },
-      }),
-    });
+    const res = await fetch(`/api/telegram-bonus/generate?userId=${encodeURIComponent(currentUser.id)}`);
     const data = await res.json();
 
-    if (data.success) {
-      currentUser.credits = data.credits;
-      sessionStorage.setItem('monkos_user', JSON.stringify(currentUser));
-      closeSurvey();
+    if (data.alreadyClaimed) {
+      btn.textContent = '✅ ' + (t.eventDone || 'Done');
+      return;
+    }
 
-      const successMsg = {
-        ja: `🎉 ${data.bonus}クレジットが支給されました！（残高: ${data.credits}c）`,
-        ko: `🎉 ${data.bonus}크레딧이 지급되었습니다! (잔액: ${data.credits}c)`,
-        en: `🎉 ${data.bonus} credits granted! (Balance: ${data.credits}c)`,
-      };
-      alert(successMsg[lang] || successMsg.en);
-      loadEventStatus();
-    } else {
-      const errMsg = data.soldOut
-        ? { ja: '本日の先着枠が終了しました', ko: '오늘 선착순이 마감되었습니다', en: 'Today\'s spots are filled' }
-        : data.alreadyDone
-        ? { ja: '既に参加済みです', ko: '이미 참여하셨습니다', en: 'Already participated' }
-        : { ja: data.error, ko: data.error, en: data.error };
-      alert(errMsg[lang] || errMsg.en);
-      btn.disabled = false;
-      btn.textContent = t.eventBtn || 'Submit';
+    if (data.deepLink) {
+      window.open(data.deepLink, '_blank');
+
+      // 안내 표시
+      const descEl = document.getElementById('eventDesc');
+      const waitMsg = { ja: 'Telegramで「スタート」をタップしたらこのページに戻ってください...', ko: '텔레그램에서 "시작"을 누른 후 이 페이지로 돌아오세요...', en: 'Tap "Start" in Telegram, then come back here...' };
+      descEl.textContent = waitMsg[lang] || waitMsg.en;
+      btn.textContent = '⏳';
+
+      // 5초 간격 폴링 (최대 2분)
+      let attempts = 0;
+      bonusPolling = setInterval(async () => {
+        attempts++;
+        if (attempts > 24) {
+          clearInterval(bonusPolling);
+          btn.disabled = false;
+          btn.textContent = t.eventBtn || '';
+          return;
+        }
+        try {
+          const check = await fetch(`/api/telegram-bonus/status?userId=${encodeURIComponent(currentUser.id)}`);
+          const status = await check.json();
+          if (status.claimed) {
+            clearInterval(bonusPolling);
+            btn.textContent = '✅ ' + (t.eventDone || 'Done');
+            descEl.textContent = t.eventDesc || '';
+
+            const successMsg = { ja: `🎉 30クレジットが支給されました！`, ko: `🎉 30크레딧이 지급되었습니다!`, en: `🎉 30 credits granted!` };
+            alert(successMsg[lang] || successMsg.en);
+
+            // 크레딧 갱신
+            const userRes = await fetch(`/api/user?userId=${encodeURIComponent(currentUser.id)}`);
+            if (userRes.ok) {
+              const userData = await userRes.json();
+              currentUser.credits = userData.credits;
+              sessionStorage.setItem('monkos_user', JSON.stringify(currentUser));
+            }
+          }
+        } catch (e) {}
+      }, 5000);
     }
   } catch (err) {
     alert('오류: ' + err.message);
     btn.disabled = false;
-    btn.textContent = t.eventBtn || 'Submit';
+    btn.textContent = t.eventBtn || '';
   }
 }
 </script>

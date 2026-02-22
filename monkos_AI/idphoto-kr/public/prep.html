@@ -73,20 +73,25 @@
                 </div>
             </div>
             <div class="credit-packages">
-                <button class="credit-pkg" onclick="buyCreditsKR(12900, 10)">
+                <button class="credit-pkg" onclick="buyCreditsKR(1450, 10)">
                     <div class="pkg-credits">10c</div>
-                    <div class="pkg-price">₩12,900</div>
+                    <div class="pkg-price">₩1,450</div>
                 </button>
-                <button class="credit-pkg popular" onclick="buyCreditsKR(29900, 30)">
+                <button class="credit-pkg" onclick="buyCreditsKR(13050, 100)">
+                    <div class="pkg-credits">100c</div>
+                    <div class="pkg-price">₩13,050</div>
+                    <div class="pkg-save">10% 할인</div>
+                </button>
+                <button class="credit-pkg popular" onclick="buyCreditsKR(34800, 300)">
                     <div class="pkg-badge">BEST</div>
-                    <div class="pkg-credits">30c</div>
-                    <div class="pkg-price">₩29,900</div>
-                    <div class="pkg-save">23% 할인</div>
+                    <div class="pkg-credits">300c</div>
+                    <div class="pkg-price">₩34,800</div>
+                    <div class="pkg-save">20% 할인</div>
                 </button>
-                <button class="credit-pkg" onclick="buyCreditsKR(45900, 50)">
-                    <div class="pkg-credits">50c</div>
-                    <div class="pkg-price">₩45,900</div>
-                    <div class="pkg-save">29% 할인</div>
+                <button class="credit-pkg" onclick="buyCreditsKR(50750, 500)">
+                    <div class="pkg-credits">500c</div>
+                    <div class="pkg-price">₩50,750</div>
+                    <div class="pkg-save">30% 할인</div>
                 </button>
             </div>
             <button class="credit-modal-btn secondary" onclick="closeCreditModal()">닫기</button>
@@ -103,46 +108,6 @@
         <div class="kiosk-body" id="kiosk-body"></div>
         <div class="kiosk-footer">카메라 접근을 허용해 주세요</div>
 
-        <!-- 챗봇 플로팅 버튼 -->
-        <button id="chat-fab" onclick="toggleChat()" style="
-            position:fixed; bottom:24px; right:16px; z-index:50;
-            width:52px; height:52px; border-radius:50%; border:none;
-            background:linear-gradient(135deg, #a78bfa, #7c3aed);
-            color:#fff; font-size:24px; cursor:pointer;
-            box-shadow:0 4px 16px rgba(167,139,250,0.4);
-            display:flex; align-items:center; justify-content:center;
-        ">💬</button>
-
-        <!-- 챗봇 패널 -->
-        <div id="chat-panel" style="
-            display:none; position:fixed; bottom:88px; right:16px; left:16px; z-index:50;
-            max-width:360px; margin-left:auto;
-            background:#0d1117; border:1px solid rgba(167,139,250,0.2);
-            border-radius:16px; overflow:hidden;
-            box-shadow:0 8px 32px rgba(0,0,0,0.5);
-            max-height:60vh; flex-direction:column;
-        ">
-            <!-- 헤더 -->
-            <div style="padding:12px 16px; background:rgba(167,139,250,0.08); display:flex; justify-content:space-between; align-items:center;">
-                <span style="font-weight:600; color:#a78bfa; font-size:14px;">MONKOS 준비실 코치</span>
-                <button onclick="toggleChat()" style="background:none; border:none; color:#8892a8; font-size:18px; cursor:pointer;">✕</button>
-            </div>
-
-            <!-- 메시지 영역 -->
-            <div id="chat-messages" style="flex:1; overflow-y:auto; padding:12px 16px; min-height:200px; max-height:40vh;">
-                <div class="chat-bubble bot">
-                    안녕하세요! 촬영 준비에 궁금한 점이 있으시면 물어보세요 😊
-                </div>
-            </div>
-
-            <!-- 입력 영역 -->
-            <div style="padding:8px 12px; border-top:1px solid rgba(167,139,250,0.1); display:flex; gap:8px;">
-                <input id="chat-input" type="text" placeholder="메시지 입력..."
-                       style="flex:1; background:#1a1f2e; border:1px solid rgba(167,139,250,0.15); border-radius:8px; padding:8px 12px; color:#fff; font-size:14px; outline:none;"
-                       onkeydown="if(event.key==='Enter')sendChat()">
-                <button onclick="sendChat()" style="background:#a78bfa; border:none; border-radius:8px; padding:8px 14px; color:#fff; font-weight:600; font-size:14px; cursor:pointer;">전송</button>
-            </div>
-        </div>
     </div>
 
     <div id="log"></div>
