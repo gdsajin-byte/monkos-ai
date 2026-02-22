@@ -2,7 +2,7 @@
 
 ## 개요
 
-개발(MONK_kr, monkos_AI)과 병렬로 운영되는 마케팅/컨텐츠 자동화 인프라.
+마케팅/컨텐츠 자동화 인프라. 전략 문서는 `monkos-ops/`로 이전 완료.
 
 ## 폴더 구조
 
@@ -11,13 +11,16 @@ marketing/
 ├── n8n/              # n8n 워크플로우 설정
 │   ├── docker-compose.yml
 │   └── workflows/    # 워크플로우 백업 (JSON)
-├── content/          # 생성된 컨텐츠 저장
-│   ├── blog/
-│   ├── instagram/
-│   └── youtube/
-├── scripts/          # 자동화 스크립트
-└── docs/             # 마케팅 전략 문서
+└── README.md
 ```
+
+## 이전 완료 문서
+
+| 기존 경로 | 이전 위치 |
+|-----------|----------|
+| `docs/CHANNEL_STRATEGY.md` | `monkos-ops/05_공유/han/reference/channel_strategy.md` |
+| `docs/CONTENT_STRATEGY.md` | `monkos-ops/05_공유/han/reference/content_strategy.md` |
+| `docs/MARKETING_INFRA_SPEC.md` | `monkos-ops/03_개발/specs/infrastructure/marketing_infra.md` |
 
 ## 핵심 도구
 
@@ -27,54 +30,6 @@ marketing/
 | **Gemini 2.0** | 컨텐츠 생성 | ~5,000원/월 |
 | **Buffer** | 백업 스케줄러 | 무료 (3채널) |
 
-## 자동화 파이프라인
-
-```
-[콘텐츠 시드]
-    │
-    ▼
-[Gemini 2.0 — 컨텐츠 생성]
-    │
-    ├──→ X (일본어/영어)
-    ├──→ Instagram (캡션 + 해시태그)
-    ├──→ LINE VOOM (정중체)
-    ├──→ Tistory/Naver 블로그 (SEO)
-    └──→ YouTube Shorts 스크립트
-    │
-    ▼
-[n8n — 플랫폼별 자동 발행]
-    │
-    ▼
-[Google Sheets — 성과 로깅]
-```
-
-## 채널 목록
-
-### 한국 (4개)
-- 네이버 블로그 (네이버 SEO)
-- 인스타그램
-- 유튜브 쇼츠
-- 틱톡
-
-### 일본/글로벌 (5개)
-- X (일본 핵심)
-- Tistory (구글 SEO)
-- 인스타그램
-- 유튜브 쇼츠
-- 틱톡
-
-**상세**: `docs/CHANNEL_STRATEGY.md`
-
-## 운영 일정
-
-| 요일 | 작업 | 소요 시간 |
-|------|------|-----------|
-| 월 | 주간 콘텐츠 시드 7개 입력 | 30분 |
-| 화~금 | 트렌드 알림 승인 | 5분/일 |
-| 토 | X 인게이지먼트 | 30분 |
-| 일 | 주간 성과 리뷰 | 15분 |
-| **합계** | | **~3시간/주** |
-
 ## 시작하기
 
 1. n8n 설치: `cd n8n && docker-compose up -d`
@@ -83,4 +38,4 @@ marketing/
 
 ---
 
-*마지막 업데이트: 2026-02-18*
+*마지막 업데이트: 2026-02-22*
