@@ -595,44 +595,7 @@ function startShooting() {
 Object.assign(window, {
   kioskSelect, kioskNext, kioskBack, kioskReset,
   kioskJumpTo, kioskSkipGender, startShooting,
-  toggleChat, sendChat,
 });
-
-// ─── 챗봇 UI (껍데기 — API 미연결) ───
-
-function toggleChat() {
-  const panel = document.getElementById('chat-panel');
-  if (!panel) return;
-  const isOpen = panel.style.display === 'flex';
-  panel.style.display = isOpen ? 'none' : 'flex';
-}
-
-function sendChat() {
-  const input = document.getElementById('chat-input');
-  const messages = document.getElementById('chat-messages');
-  if (!input || !messages || !input.value.trim()) return;
-
-  const text = input.value.trim();
-  input.value = '';
-
-  // 사용자 메시지
-  const userBubble = document.createElement('div');
-  userBubble.className = 'chat-bubble user';
-  userBubble.textContent = text;
-  messages.appendChild(userBubble);
-
-  // 봇 응답 (placeholder — API 연결 전)
-  setTimeout(() => {
-    const botBubble = document.createElement('div');
-    botBubble.className = 'chat-bubble bot';
-    botBubble.textContent = '준비실 코치 기능은 곧 연결됩니다! 촬영 준비를 먼저 진행해 주세요 😊';
-    messages.appendChild(botBubble);
-    messages.scrollTop = messages.scrollHeight;
-  }, 500);
-
-  messages.scrollTop = messages.scrollHeight;
-  Monk.log('챗봇 메시지: ' + text);
-}
 
 // ─── 초기화 ───
 
