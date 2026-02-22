@@ -175,6 +175,7 @@ monkos-ops/는 4부서 체제로 재편 중이며, 과도기에는 번호 폴더
 | 지시서 | `docs/monkos/tasks/` | — | docs가 정본 |
 | 보고서 | `docs/monkos/reports/` | — | docs가 정본 |
 | 팀 공유 | `monkos-ops/marketing/` | — | marketing 전용 |
+| 에셋 레지스트리 | `docs/infrastructure/ASSET_REGISTRY.md` | — | 전 저장소 통합 인덱스 |
 
 **원칙**:
 - 정본은 **하나만** 존재한다. 참조본은 읽기전용(수정 금지).
@@ -251,7 +252,17 @@ monkos-ops/는 4부서 체제로 재편 중이며, 과도기에는 번호 폴더
 3. 대상 폴더 지정
 4. ch4 7조 YAML 규격 — type 허용값에 등록 + 타입별 필수 필드 정의
 
-> 근거: 2026-02-22 통합 스키마 제정 — 신규 편입 시 법적 근거 부재, 02-23 디바이스 물리확인 + governance 폴더 편입 + YAML 연동
+**6. 에셋 편입**
+1. 에셋 카테고리 판정: CODE / BIN / DATA / SEC / GOV / OPS / LEGACY
+2. 저장소 배정:
+   - 코드/문서 → Git
+   - 바이너리/미디어 → GCS 또는 R2
+   - DB 레코드 → D1 또는 Firestore
+   - 시크릿 → 환경변수 (절대 Git 금지, 헌법 6조)
+3. `docs/infrastructure/ASSET_REGISTRY.md` 해당 카테고리 테이블에 행 추가
+4. 상세 문서 해당 시 참조 링크 기재 (GCS_BUCKET_STRUCTURE.md 등)
+
+> 근거: 2026-02-22 통합 스키마 제정 — 신규 편입 시 법적 근거 부재, 02-23 디바이스 물리확인 + governance 폴더 편입 + YAML 연동 + 에셋 편입 절차 신설
 > 위반 시: 비정규 요소 편입 → 스키마 오염, 자동 분류 파괴
 > 상위 헌법: 제3조
 
