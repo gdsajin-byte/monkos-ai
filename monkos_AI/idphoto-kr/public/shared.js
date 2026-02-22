@@ -109,6 +109,13 @@ export async function buyCreditsKR(amount, credits) {
     alert('로그인이 필요합니다');
     return;
   }
+
+  // 토스 심사 중 — 클라이언트 키 없으면 안내 후 리턴
+  if (!TOSS_CLIENT_KEY) {
+    alert('결제 시스템 준비 중입니다.\n곧 이용 가능합니다!');
+    return;
+  }
+
   closeCreditModal();
 
   const orderId = `MONKOS_${store.user.id.slice(0, 8)}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
