@@ -141,7 +141,7 @@
 | 제1장 | 에이전트 체계 | [ch1_agent_system.md](governance/laws/ch1_agent_system.md) | 5조 |
 | 제2장 | 코딩 규칙 | [ch2_coding.md](governance/laws/ch2_coding.md) | 5조 |
 | 제3장 | 세션 로그 | [ch3_session_log.md](governance/laws/ch3_session_log.md) | 3조 |
-| 제4장 | 문서/폴더 구조 | [ch4_docs_structure.md](governance/laws/ch4_docs_structure.md) | 6조 |
+| 제4장 | 문서/폴더 구조 | [ch4_docs_structure.md](governance/laws/ch4_docs_structure.md) | 7조 |
 | 제5장 | 배포 규칙 | [ch5_deployment.md](governance/laws/ch5_deployment.md) | 4조 |
 | 제6장 | 브랜치/커밋 | [ch6_git.md](governance/laws/ch6_git.md) | 4조 |
 | 제7장 | 막내 행동 강령 | [ch7_makne_code.md](governance/laws/ch7_makne_code.md) | 5조 |
