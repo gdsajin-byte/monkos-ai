@@ -145,15 +145,15 @@ const SYSTEM_PROMPT = `あなたはMONKOS AIの公式アシスタント「モン
 - 毎日先着30名: 10クレジット無料プレゼント中（毎日正午12:00リセット）
 - 生成: 1回 = 1クレジット消費
 - ダウンロード: 1回 = 8クレジット消費
-- SNS共有ボーナス: SNSで共有 or Googleレビュー → 10クレジット獲得
+- SNS共有ボーナス: SNSで共有 or Googleレビュー → 100クレジット獲得
 - クレジット購入: 1c/$1 | 10c/$9（10%OFF） | 30c/$25（17%OFF・おすすめ） | 50c/$40（20%OFF）
 - 決済: Lemon Squeezy経由（クレジットカード、PayPal、Apple Pay、Google Pay）
 
 [SNS共有ボーナス案内 — 言語別に切り替えること]
 - 日本語ユーザー → X(Twitter)での共有を優先案内
-  「撮った写真をXでシェアすると10クレジットもらえます！」
+  「撮った写真をXでシェアすると100クレジットもらえます！」
 - 韓国語ユーザー → Instagramでの共有を優先案内
-  「촬영한 사진을 인스타그램에 공유하면 10크레딧을 받을 수 있어요!」
+  「촬영한 사진을 인스타그램에 공유하면 100크레딧을 받을 수 있어요!」
 - 英語ユーザー → X or Instagram どちらでもOKと案内
 
 [法的ページ]
@@ -207,7 +207,7 @@ Telegramを通じてお客様対応を行います。
 - 毎日先着30名: 10クレジット無料プレゼント中（毎日正午12:00リセット）
 - 生成: 1回 = 1クレジット
 - ダウンロード: 1回 = 8クレジット
-- SNS共有ボーナス: 10クレジット
+- SNS共有ボーナス: 100クレジット
 - 購入: 1クレジットから購入可能 — 1c/$1 | 10c/$9 | 30c/$25 | 50c/$40
 
 [返金ポリシー — 厳守]
@@ -1168,7 +1168,7 @@ location.href = '/';
   }
 
   // === 공유 보너스 API ===
-  // 공유 조건 달성 시 +10c 지급
+  // 공유 조건 달성 시 +100c 지급
   if (req.url === '/api/credits/share-bonus' && req.method === 'POST') {
     let body = '';
     req.on('data', chunk => { body += chunk; });
@@ -1182,7 +1182,7 @@ location.href = '/';
         }
 
         const userRef = usersCollection.doc(userId);
-        const bonus = 10;
+        const bonus = 100;
 
         const result = await firestore.runTransaction(async (tx) => {
           const userDoc = await tx.get(userRef);
@@ -1873,7 +1873,7 @@ location.href = '/';
             }, { merge: true });
             log(`[TG-Event] 딥링크 매핑: ${chatId} → ${linkedUserId}`);
 
-            const welcome = `🎁 *MONKOS 이벤트 보너스!*\n\n📸 SNS에 공유한 캡쳐본을 보내주세요!\n확인 즉시 *10크레딧*을 선물합니다 🎉\n\n조건:\n• 전후 비교 캡쳐본\n• monkos.ai 링크 포함\n\n---\n🎁 *MONKOS イベントボーナス!*\n\n📸 SNSでシェアしたスクショを送ってね！\n確認後すぐに *10クレジット* プレゼント 🎉`;
+            const welcome = `🎁 *MONKOS 이벤트 보너스!*\n\n📸 SNS에 공유한 캡쳐본을 보내주세요!\n확인 즉시 *100크레딧*을 선물합니다 🎉\n\n조건:\n• 전후 비교 캡쳐본\n• monkos.ai 링크 포함\n\n---\n🎁 *MONKOS イベントボーナス!*\n\n📸 SNSでシェアしたスクショを送ってね！\n確認後すぐに *100クレジット* プレゼント 🎉`;
             await sendTelegramMessage(chatId, welcome, TELEGRAM_EVENT_API);
           } else {
             const welcome = `🎁 *MONKOS 이벤트 봇*에 오신 것을 환영합니다!\n\nMONKOS 앱에서 사진을 공유하고 보너스를 받아보세요 💜\n고객 문의는 @monkos\\_support\\_bot 으로 부탁드려요!\n\n---\n🎁 *MONKOS イベントBot* へようこそ！\n\nアプリから写真をシェアしてボーナスをゲット 💜\nお問い合わせは @monkos\\_support\\_bot へどうぞ！`;
@@ -1899,7 +1899,7 @@ location.href = '/';
 
           const linkedUserId = linkDoc.data().userId;
           const userRef = usersCollection.doc(linkedUserId);
-          const bonus = 10;
+          const bonus = 100;
 
           const result = await firestore.runTransaction(async (tx) => {
             const userDoc = await tx.get(userRef);
@@ -1913,8 +1913,8 @@ location.href = '/';
           });
 
           if (result.success) {
-            await sendTelegramMessage(chatId, `🎉 *10크레딧 선물 완료!*\n\n감사합니다! 💜 현재 잔액: *${result.credits}c*\nMONKOS와 함께해주셔서 감사해요!\n\n---\n🎉 *10クレジット プレゼント完了!*\n\nありがとう！ 💜 残高: *${result.credits}c*\nMONKOSをご利用いただきありがとうございます！`, TELEGRAM_EVENT_API);
-            log(`[TG-Event] 보너스 지급: ${linkedUserId} +10c → ${result.credits}c`);
+            await sendTelegramMessage(chatId, `🎉 *100크레딧 선물 완료!*\n\n감사합니다! 💜 현재 잔액: *${result.credits}c*\nMONKOS와 함께해주셔서 감사해요!\n\n---\n🎉 *100クレジット プレゼント完了!*\n\nありがとう！ 💜 残高: *${result.credits}c*\nMONKOSをご利用いただきありがとうございます！`, TELEGRAM_EVENT_API);
+            log(`[TG-Event] 보너스 지급: ${linkedUserId} +100c → ${result.credits}c`);
 
             await firestore.collection('telegram_links').doc(String(chatId)).update({
               bonusGranted: true,
@@ -2090,7 +2090,7 @@ httpServer.listen(PORT, '0.0.0.0', () => {
   log('  GET  /api/credits          — 크레딧 조회');
   log('  POST /api/credits/use      — 크레딧 사용 (generate:-10c, download:-70c)');
   log('  POST /api/credits/refund   — 크레딧 환불');
-  log('  POST /api/credits/share-bonus — 공유 보너스 (+10c)');
+  log('  POST /api/credits/share-bonus — 공유 보너스 (+100c)');
   log('  POST /api/auth/token       — 크로스 도메인 토큰 생성');
   log('  GET  /api/auth/verify      — 토큰 검증');
   log('  POST /api/checkout         — Lemon Squeezy 체크아웃 (JP/글로벌)');
