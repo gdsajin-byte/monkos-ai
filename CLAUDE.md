@@ -10,7 +10,7 @@
 
 | 계층 | 성격 | 변경 권한 | 위반 시 |
 |------|------|----------|---------|
-| **헌법** (본 문서 11조) | 불변 원칙 | 5인 만장일치 (개정 절차) | 조항 인용 → 영향 경고 → 승인 대기 |
+| **헌법** (본 문서 13조) | 불변 원칙 | 5인 만장일치 (개정 절차) | 조항 인용 → 영향 경고 → 승인 대기 |
 | **법률** (인덱스 8장 34조) | 운용 규칙 | 쌍아+작가님 합의 (개정 절차) | 조항 인용 → [예외] 기록 |
 | **규정** (MEMORY.md 등) | 기술 상세 | 에이전트 자율 | 변경 보고 → MEMORY 갱신 |
 
@@ -45,11 +45,11 @@
 
 - **법률 개정**: 쌍아+작가님 합의 (막내 2명↑ 영향평가 필수). 통과 시 특별법 지위.
 - **헌법 개정**: 삼권 심사(입법/행정/사법) + 5인 만장일치. 하위 법률 정비 근거 필수.
-- 전조문: [amendment.md](docs/infrastructure/constitution/amendment.md)
+- 전조문: [amendment.md](governance/constitution/amendment.md)
 
 ---
 
-## 헌법 — 제1조~제11조
+## 헌법 — 제1조~제13조
 
 > 불변 원칙. 개정 시 상기 헌법 개정 절차 준수. 위반 시 하위 법률 전체에 연쇄 영향.
 
@@ -118,6 +118,18 @@
 > 근거: 01-24 — "좋다! 잘 배웠구나." / 02-14 — "챗봇 래그쪽은 최대한 보수적으로"
 > 위반 시: 법적 리스크, 브랜드 신뢰도 치명적 손상
 
+### 제12조: 개정 청구권
+- 모든 구성원(작가님·에이전트·팀원)은 법률·헌법의 개정을 청구할 수 있다
+- 법률 개정: 쌍아+작가님 합의로 의결
+- 헌법 개정: 삼권 심사 + 전원 만장일치로 의결
+- 절차 상세: governance/constitution/amendment.md
+
+### 제13조: 문서 규격 준수
+- 모든 공식 문서는 법률 제4장이 정한 파일 네이밍 규칙과 YAML frontmatter를 준수한다
+- 본 조항은 발효일 이후 신규 생성 문서부터 적용한다
+- 긴급 장애 대응(INCIDENT) 시: 최소 필드(type, date)만으로 허용. 24시간 내 보정
+- 네이밍 패턴, YAML 필수 필드, 배치 경로의 상세: 법률 제4장
+
 ---
 
 ## 법률 인덱스
@@ -126,14 +138,14 @@
 
 | 장 | 제목 | 파일 | 조 수 |
 |----|------|------|------|
-| 제1장 | 에이전트 체계 | [ch1_agent_system.md](docs/infrastructure/laws/ch1_agent_system.md) | 5조 |
-| 제2장 | 코딩 규칙 | [ch2_coding.md](docs/infrastructure/laws/ch2_coding.md) | 5조 |
-| 제3장 | 세션 로그 | [ch3_session_log.md](docs/infrastructure/laws/ch3_session_log.md) | 3조 |
-| 제4장 | 문서/폴더 구조 | [ch4_docs_structure.md](docs/infrastructure/laws/ch4_docs_structure.md) | 6조 |
-| 제5장 | 배포 규칙 | [ch5_deployment.md](docs/infrastructure/laws/ch5_deployment.md) | 4조 |
-| 제6장 | 브랜치/커밋 | [ch6_git.md](docs/infrastructure/laws/ch6_git.md) | 4조 |
-| 제7장 | 막내 행동 강령 | [ch7_makne_code.md](docs/infrastructure/laws/ch7_makne_code.md) | 5조 |
-| 제8장 | 브랜딩/마케팅 | [ch8_branding.md](docs/infrastructure/laws/ch8_branding.md) | 3조 |
+| 제1장 | 에이전트 체계 | [ch1_agent_system.md](governance/laws/ch1_agent_system.md) | 5조 |
+| 제2장 | 코딩 규칙 | [ch2_coding.md](governance/laws/ch2_coding.md) | 5조 |
+| 제3장 | 세션 로그 | [ch3_session_log.md](governance/laws/ch3_session_log.md) | 3조 |
+| 제4장 | 문서/폴더 구조 | [ch4_docs_structure.md](governance/laws/ch4_docs_structure.md) | 6조 |
+| 제5장 | 배포 규칙 | [ch5_deployment.md](governance/laws/ch5_deployment.md) | 4조 |
+| 제6장 | 브랜치/커밋 | [ch6_git.md](governance/laws/ch6_git.md) | 4조 |
+| 제7장 | 막내 행동 강령 | [ch7_makne_code.md](governance/laws/ch7_makne_code.md) | 5조 |
+| 제8장 | 브랜딩/마케팅 | [ch8_branding.md](governance/laws/ch8_branding.md) | 3조 |
 
 ---
 
