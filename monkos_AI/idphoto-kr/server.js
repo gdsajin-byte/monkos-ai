@@ -432,7 +432,6 @@ async function generatePhoto(inputBase64, style = 'id_photo', gender = 'male', a
       ],
     },
     config: {
-      responseModalities: ['TEXT', 'IMAGE'],
       imageConfig: { aspectRatio: '3:4' },
       safetySettings: [
         { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
