@@ -39,6 +39,10 @@ const TOSS_SECRET_KEY = process.env.TOSS_SECRET_KEY || '';
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '';
 // === Telegram Event Bot (@monkos_event_bot) ===
 const TELEGRAM_EVENT_BOT_TOKEN = process.env.TELEGRAM_EVENT_BOT_TOKEN || '';
+// === Telegram Team Bot (@monkos_team_bot) ===
+const TELEGRAM_TEAM_BOT_TOKEN = process.env.TELEGRAM_TEAM_BOT_TOKEN || '';
+const TEAM_CHAT_ID = process.env.TEAM_CHAT_ID || '';
+const TEAM_NOTIFY_SECRET = process.env.TEAM_NOTIFY_SECRET || 'monkos-internal';
 
 // === 카카오 로그인 (KR) ===
 const KAKAO_REST_API_KEY = process.env.KAKAO_REST_API_KEY || '';
@@ -302,6 +306,7 @@ function searchCsKnowledge(query) {
 // === Telegram API ヘルパー ===
 const TELEGRAM_CS_API = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}`;
 const TELEGRAM_EVENT_API = `https://api.telegram.org/bot${TELEGRAM_EVENT_BOT_TOKEN}`;
+const TELEGRAM_TEAM_API = `https://api.telegram.org/bot${TELEGRAM_TEAM_BOT_TOKEN}`;
 
 async function sendTelegramMessage(chatId, text, botApi = TELEGRAM_CS_API) {
   try {
@@ -1947,6 +1952,102 @@ location.href = '/';
     return;
   }
 
+  // === Telegram Team Bot 웹훅 (@monkos_team_bot) — 팀 협업 전용 ===
+  if (req.url === '/api/webhook/telegram-team' && req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', async () => {
+      try {
+        const update = JSON.parse(body);
+        const msg = update.message;
+        if (!msg || !msg.text) {
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ ok: true }));
+          return;
+        }
+
+        const chatId = msg.chat.id;
+        const username = msg.from?.username || msg.from?.first_name || '알수없음';
+        const displayName = msg.from?.first_name || username;
+        const text = msg.text.trim();
+
+        // /report — 보고서 제출
+        if (text.startsWith('/report')) {
+          const content = text.replace(/^\/report\s*/, '').trim();
+          if (!content) {
+            await sendTelegramMessage(chatId, '사용법: /report [보고 내용]', TELEGRAM_TEAM_API);
+          } else {
+            await firestore.collection('team_reports').add({
+              author: displayName,
+              authorUsername: username,
+              chatId,
+              content,
+              timestamp: new Date().toISOString(),
+              category: 'auto'
+            });
+            const now = new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' });
+            await sendTelegramMessage(chatId, `✅ 보고서 접수 — ${displayName} (${now})`, TELEGRAM_TEAM_API);
+          }
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ ok: true }));
+          return;
+        }
+
+        // /status — 서비스 상태
+        if (text === '/status') {
+          let statusMsg = '📊 MONKOS 서비스 상태\n━━━━━━━━━━━━━━\n';
+          const services = [
+            { name: 'portal', url: 'https://monkos-portal-4jeplpqpua-uc.a.run.app/health' },
+            { name: 'idphoto-kr', url: 'https://monkos-idphoto-kr-4jeplpqpua-uc.a.run.app/health' },
+            { name: 'idphoto-jp', url: 'https://monkos-idphoto-jp-4jeplpqpua-uc.a.run.app/health' }
+          ];
+          for (const svc of services) {
+            try {
+              const r = await fetch(svc.url, { signal: AbortSignal.timeout(5000) });
+              const ok = r.ok;
+              statusMsg += `${ok ? '🟢' : '🔴'} ${svc.name}: ${ok ? '정상' : '이상'}\n`;
+            } catch {
+              statusMsg += `🔴 ${svc.name}: 응답없음\n`;
+            }
+          }
+          // 오늘 보고서 수
+          try {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const snap = await firestore.collection('team_reports')
+              .where('timestamp', '>=', today.toISOString())
+              .get();
+            statusMsg += `━━━━━━━━━━━━━━\n최근 보고서: ${snap.size}건 (오늘)`;
+          } catch {
+            statusMsg += '━━━━━━━━━━━━━━';
+          }
+          await sendTelegramMessage(chatId, statusMsg, TELEGRAM_TEAM_API);
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ ok: true }));
+          return;
+        }
+
+        // /help — 도움말
+        if (text === '/help' || text === '/start') {
+          const helpMsg = '🤖 MONK TeamChat 봇\n━━━━━━━━━━━━━━\n/report [내용] — 보고서 제출\n/status — 서비스 상태 확인\n/help — 이 도움말';
+          await sendTelegramMessage(chatId, helpMsg, TELEGRAM_TEAM_API);
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ ok: true }));
+          return;
+        }
+
+        // 일반 메시지 — 그룹 대화 간섭 안 함 (무시)
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: true }));
+      } catch (err) {
+        log(`[TG-TEAM] 웹훅 에러: ${err.message}`);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: true }));
+      }
+    });
+    return;
+  }
+
   // === Telegram CS Bot 웹훅 (@monkos_support_bot) — 고객 상담 전용 ===
   if (req.url === '/api/webhook/telegram' && req.method === 'POST') {
     let body = '';
@@ -1989,6 +2090,48 @@ location.href = '/';
         log(`[TG-CS] 웹훅 에러: ${err.message}`);
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ ok: true }));
+      }
+    });
+    return;
+  }
+
+  // === Team 알림 API — 에이전트 → 그룹 알림 ===
+  if (req.url === '/api/team/notify' && req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', async () => {
+      try {
+        // 간단 인증
+        const secret = req.headers['x-team-secret'] || '';
+        if (secret !== TEAM_NOTIFY_SECRET) {
+          res.writeHead(403, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'Forbidden' }));
+          return;
+        }
+
+        const { message, sender } = JSON.parse(body);
+        if (!message) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'message required' }));
+          return;
+        }
+
+        if (!TEAM_CHAT_ID) {
+          log(`[TG-TEAM] 알림 스킵 (TEAM_CHAT_ID 미설정): ${message}`);
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ ok: true, skipped: true }));
+          return;
+        }
+
+        const formatted = sender ? `[${sender}] ${message}` : message;
+        await sendTelegramMessage(TEAM_CHAT_ID, formatted, TELEGRAM_TEAM_API);
+
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: true }));
+      } catch (err) {
+        log(`[TG-TEAM] 알림 에러: ${err.message}`);
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: err.message }));
       }
     });
     return;
@@ -2105,12 +2248,16 @@ httpServer.listen(PORT, '0.0.0.0', () => {
   log('  POST /api/qc               — AI QC 품질검수 (멀티모달)');
   log('  POST /api/webhook/telegram       — Telegram CS봇');
   log('  POST /api/webhook/telegram-event — Telegram 이벤트봇');
+  log('  POST /api/webhook/telegram-team  — Telegram 팀봇');
+  log('  POST /api/team/notify            — 팀 그룹 알림 API');
   log('  GET  /                     — 메인 포털');
   log(`Google Client ID: ${GOOGLE_CLIENT_ID ? '설정됨' : '미설정'}`);
   log(`Lemon Squeezy: ${LEMONSQUEEZY_API_KEY ? '설정됨' : '미설정'}`);
   log(`Toss Payments: ${TOSS_SECRET_KEY ? '설정됨' : '미설정'}`);
   log(`Telegram CS Bot: ${TELEGRAM_BOT_TOKEN ? '설정됨' : '미설정'}`);
   log(`Telegram Event Bot: ${TELEGRAM_EVENT_BOT_TOKEN ? '설정됨' : '미설정'}`);
+  log(`Telegram Team Bot: ${TELEGRAM_TEAM_BOT_TOKEN ? '설정됨' : '미설정'}`);
+  log(`Team Chat ID: ${TEAM_CHAT_ID ? '설정됨' : '미설정'}`);
   log(`Kakao Login: ${KAKAO_REST_API_KEY ? '설정됨' : '미설정'}`);
   log(`LINE Login: ${LINE_CHANNEL_ID ? '설정됨' : '미설정'}`);
   log('='.repeat(60));
