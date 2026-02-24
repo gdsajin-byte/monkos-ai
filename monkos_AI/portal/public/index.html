@@ -569,95 +569,121 @@ header {
 
 @media (min-width: 641px) {
   .services.card-grid { grid-template-columns: 1fr 1fr; }
+  .services.card-grid .service-card:first-child {
+    grid-column: 1 / -1;
+    min-height: 280px;
+  }
 }
 
 .service-card {
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 28px;
-  backdrop-filter: blur(12px);
-  transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
   position: relative;
   overflow: hidden;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.08);
+  min-height: 240px;
+  transition: transform 0.4s, box-shadow 0.4s, border-color 0.3s;
+  cursor: pointer;
 }
 
-.service-card::before {
-  content: '';
+/* 카드 배경 이미지 */
+.service-card .card-bg-img {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent3));
-  opacity: 0.6;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.7s ease;
 }
 
-/* LIVE 카드 */
+.service-card:hover .card-bg-img {
+  transform: scale(1.1);
+}
+
+/* 카드 오버레이 (이미지 위 색상 레이어) */
+.service-card .card-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+/* LIVE 카드 — 보라 오버레이 */
+.service-card.live .card-overlay {
+  background: linear-gradient(160deg, rgba(167,139,250,0.5) 0%, rgba(10,10,30,0.75) 70%);
+}
+.service-card.live {
+  border-color: rgba(167,139,250,0.3);
+}
 .service-card.live:hover {
-  border-color: var(--border-hover);
-  transform: translateY(-4px);
-  box-shadow: 0 8px 32px rgba(167, 139, 250, 0.15);
+  transform: translateY(-6px);
+  box-shadow: 0 16px 48px rgba(167,139,250,0.3);
+  border-color: rgba(167,139,250,0.5);
 }
 
-/* COMING SOON 카드 */
+/* COMING SOON — 블루 (AI Models) */
+.service-card.color-blue .card-overlay {
+  background: linear-gradient(160deg, rgba(96,165,250,0.45) 0%, rgba(10,10,30,0.8) 70%);
+}
+.service-card.color-blue { border-color: rgba(96,165,250,0.15); }
+
+/* COMING SOON — 에메랄드 (AI Academy) */
+.service-card.color-emerald .card-overlay {
+  background: linear-gradient(160deg, rgba(52,211,153,0.4) 0%, rgba(10,10,30,0.8) 70%);
+}
+.service-card.color-emerald { border-color: rgba(52,211,153,0.15); }
+
+/* COMING SOON 공통 */
+.service-card.coming-soon .card-bg-img {
+  filter: grayscale(0.3) brightness(0.55);
+}
+.service-card.coming-soon:hover .card-bg-img {
+  transform: none;
+}
 .service-card.coming-soon {
-  opacity: 0.55;
-  pointer-events: none;
+  cursor: default;
 }
 
-.service-card.coming-soon::before {
-  opacity: 0.3;
+/* 카드 내부 컨텐츠 */
+.card-inner {
+  position: relative;
+  z-index: 2;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 240px;
+}
+@media (min-width: 641px) {
+  .service-card:first-child .card-inner { min-height: 280px; }
 }
 
-.service-card.coming-soon .card-inner {
-  filter: blur(1.5px);
-}
-
-/* 카드별 포인트 색상 */
-.service-card.color-blue::before { background: linear-gradient(90deg, var(--blue), #818cf8); }
-.service-card.color-emerald::before { background: linear-gradient(90deg, var(--emerald), #6ee7b7); }
-.service-card.color-gold::before { background: linear-gradient(90deg, var(--gold), #fbbf24); }
-
-/* COMING SOON 배지 오버레이 */
+/* COMING SOON 배지 */
 .coming-soon-overlay {
   position: absolute;
   inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2;
+  z-index: 3;
 }
 
 .coming-soon-badge {
-  background: rgba(10, 10, 26, 0.75);
-  border: 1px solid var(--border-hover);
-  color: var(--text-bright);
-  font-size: 0.75rem;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff;
+  font-size: 0.85rem;
   font-weight: 800;
-  letter-spacing: 2px;
-  padding: 8px 20px;
-  border-radius: 8px;
+  letter-spacing: 3px;
+  padding: 12px 32px;
+  border-radius: 10px;
   text-transform: uppercase;
-}
-
-/* 카드 배경 그라디언트 */
-.service-card.color-blue { background: linear-gradient(135deg, rgba(96,165,250,0.06), var(--card-bg)); }
-.service-card.color-emerald { background: linear-gradient(135deg, rgba(52,211,153,0.06), var(--card-bg)); }
-.service-card.color-gold { background: linear-gradient(135deg, rgba(245,158,11,0.06), var(--card-bg)); }
-
-.service-card:hover {
-  border-color: var(--border-hover);
-  transform: translateY(-3px);
-  box-shadow: 0 8px 32px rgba(167, 139, 250, 0.1);
 }
 
 .service-badge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: rgba(52, 211, 153, 0.1);
-  color: var(--success);
   font-size: 10px;
   font-weight: 700;
   padding: 4px 12px;
@@ -667,19 +693,36 @@ header {
   text-transform: uppercase;
 }
 
+.service-badge.badge-live {
+  background: rgba(52, 211, 153, 0.15);
+  color: var(--success);
+}
+
+.service-badge.badge-blue {
+  background: rgba(96,165,250,0.15);
+  color: var(--blue);
+}
+
+.service-badge.badge-emerald {
+  background: rgba(52,211,153,0.15);
+  color: var(--emerald);
+}
+
 .service-card h3 {
-  font-size: 1.3rem;
-  color: var(--text-bright);
+  font-size: 1.5rem;
+  color: #fff;
   margin-bottom: 6px;
-  font-weight: 700;
+  font-weight: 800;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.4);
 }
 
 .service-card p {
   display: block;
-  font-size: 0.85rem;
-  color: var(--text-dim);
+  font-size: 0.88rem;
+  color: rgba(255,255,255,0.75);
   margin-bottom: 16px;
   line-height: 1.5;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.3);
 }
 
 .service-features {
@@ -691,17 +734,18 @@ header {
 }
 
 .service-features li {
-  color: var(--text);
+  color: #fff;
   padding: 5px 12px;
   font-size: 0.78rem;
-  background: rgba(167, 139, 250, 0.08);
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(4px);
   border-radius: 8px;
-  border: 1px solid rgba(167, 139, 250, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .service-features li::before {
   content: '✓ ';
-  color: var(--accent);
+  color: var(--success);
   font-weight: 700;
 }
 
@@ -833,7 +877,9 @@ footer a {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   z-index: 999;
 }
 
@@ -846,10 +892,13 @@ footer a {
   right: 24px;
   width: min(380px, calc(100vw - 48px));
   max-height: calc(100vh - 140px);
-  background: var(--chat-bg);
-  border: 1px solid var(--chat-border);
+  background: linear-gradient(180deg, #1e1e3a 0%, #161630 100%);
+  border: 1.5px solid rgba(167, 139, 250, 0.35);
   border-radius: 16px;
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6), 0 0 60px rgba(167, 139, 250, 0.08);
+  box-shadow:
+    0 8px 40px rgba(0, 0, 0, 0.7),
+    0 0 80px rgba(167, 139, 250, 0.15),
+    inset 0 1px 0 rgba(167, 139, 250, 0.1);
   z-index: 1000;
   display: none;
   flex-direction: column;
@@ -862,11 +911,11 @@ footer a {
 
 .chat-header {
   padding: 16px;
-  border-bottom: 1px solid var(--chat-border);
+  border-bottom: 1px solid rgba(167, 139, 250, 0.2);
   display: flex;
   align-items: center;
   gap: 10px;
-  background: linear-gradient(135deg, rgba(167, 139, 250, 0.12), rgba(129, 140, 248, 0.08));
+  background: linear-gradient(135deg, rgba(167, 139, 250, 0.2) 0%, rgba(129, 140, 248, 0.12) 50%, rgba(192, 132, 252, 0.08) 100%);
 }
 
 .chat-header-dot {
@@ -904,6 +953,7 @@ footer a {
   gap: 12px;
   min-height: 200px;
   max-height: 340px;
+  background: rgba(12, 12, 28, 0.6);
 }
 
 .chat-msg {
@@ -940,9 +990,10 @@ footer a {
 
 .chat-input-wrap {
   padding: 12px;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid rgba(167, 139, 250, 0.15);
   display: flex;
   gap: 8px;
+  background: rgba(20, 20, 42, 0.9);
 }
 
 .chat-input {
@@ -1117,6 +1168,7 @@ footer a {
     max-height: 70vh;
     border-radius: 16px 16px 0 0;
     top: auto;
+    border-bottom: none;
   }
 }
 </style>
@@ -1178,41 +1230,37 @@ footer a {
     <section class="services card-grid">
       <!-- 1. AI 증명사진 (LIVE) -->
       <div class="service-card live">
+        <img class="card-bg-img" src="https://images.unsplash.com/photo-1542038784456-1ea8e935640e?auto=format&fit=crop&q=80&w=800" alt="AI ID Photo" loading="lazy">
+        <div class="card-overlay"></div>
         <div class="card-inner">
-          <div class="service-badge" id="badgeFree">LIVE</div>
+          <div class="service-badge badge-live">LIVE</div>
           <h3 id="serviceTitle"></h3>
           <p id="serviceDesc"></p>
           <ul class="service-features" id="serviceFeatures"></ul>
           <a class="cta-btn" id="ctaBtn" href="#"></a>
         </div>
       </div>
-      <!-- 2. AI Image Pro (COMING SOON) -->
+      <!-- 2. AI Models (COMING SOON) -->
       <div class="service-card coming-soon color-blue">
+        <img class="card-bg-img" src="https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?auto=format&fit=crop&q=80&w=800" alt="AI Models" loading="lazy">
+        <div class="card-overlay"></div>
         <div class="card-inner">
-          <div class="service-badge" style="background:rgba(96,165,250,0.1);color:var(--blue)">IMAGE PRO</div>
+          <div class="service-badge badge-blue">AI MODELS</div>
           <h3 id="card2Title"></h3>
           <p id="card2Desc"></p>
           <ul class="service-features" id="card2Features"></ul>
         </div>
         <div class="coming-soon-overlay"><div class="coming-soon-badge">Coming Soon</div></div>
       </div>
-      <!-- 3. AI Studio (COMING SOON) -->
+      <!-- 3. AI Academy (COMING SOON) -->
       <div class="service-card coming-soon color-emerald">
+        <img class="card-bg-img" src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=800" alt="AI Academy" loading="lazy">
+        <div class="card-overlay"></div>
         <div class="card-inner">
-          <div class="service-badge" style="background:rgba(52,211,153,0.1);color:var(--emerald)">STUDIO</div>
+          <div class="service-badge badge-emerald">ACADEMY</div>
           <h3 id="card3Title"></h3>
           <p id="card3Desc"></p>
           <ul class="service-features" id="card3Features"></ul>
-        </div>
-        <div class="coming-soon-overlay"><div class="coming-soon-badge">Coming Soon</div></div>
-      </div>
-      <!-- 4. AI Business (COMING SOON) -->
-      <div class="service-card coming-soon color-gold">
-        <div class="card-inner">
-          <div class="service-badge" style="background:rgba(245,158,11,0.1);color:var(--gold)">BUSINESS</div>
-          <h3 id="card4Title"></h3>
-          <p id="card4Desc"></p>
-          <ul class="service-features" id="card4Features"></ul>
         </div>
         <div class="coming-soon-overlay"><div class="coming-soon-badge">Coming Soon</div></div>
       </div>
@@ -1763,15 +1811,12 @@ const i18n = {
     features: ['AIリアルタイムコーチング', 'プロ品質の自動変換', 'パスポート・履歴書対応'],
     ctaText: '証明写真を撮る',
     ctaUrl: 'https://idphoto-jp.monkos.ai/app',
-    card2Title: 'AI Image Pro',
-    card2Desc: 'プロ品質の写真編集・リタッチ・背景変更をAIで瞬時に。',
-    card2Features: ['AI写真編集', '背景自動変更', 'プロ品質出力'],
-    card3Title: 'AI Studio',
-    card3Desc: 'AI撮影スタジオ。プロフィール・商品写真をスマホで。',
-    card3Features: ['AIプロフィール', '商品写真', 'スタジオ品質'],
-    card4Title: 'AI Business',
-    card4Desc: '企業向けAIソリューション。大量処理・API連携。',
-    card4Features: ['一括処理', 'API連携', 'カスタマイズ'],
+    card2Title: 'AI Models',
+    card2Desc: 'MONKOS AIモデル。最先端のAI画像生成・編集モデルをまもなく公開。',
+    card2Features: ['AI画像生成', 'スタイル変換', 'プロ品質出力'],
+    card3Title: 'AI Academy',
+    card3Desc: 'AI活用スキルを体系的に学ぶ。クリエイター向けAI教育プラットフォーム。',
+    card3Features: ['AI活用講座', '実践ワークショップ', 'クリエイター育成'],
     chatPlaceholder: '質問を入力...',
     chatWelcome: 'こんにちは！MONKOSです。サービスについて何でも聞いてください。',
     eventTitle: 'Telegramで友達追加して30クレジットGET！',
@@ -1786,15 +1831,12 @@ const i18n = {
     features: ['AI 실시간 코칭', '프로 품질 자동 변환', '증명사진/이력서 대응'],
     ctaText: '증명사진 촬영하기',
     ctaUrl: 'https://idphoto-kr.monkos.ai/app',
-    card2Title: 'AI Image Pro',
-    card2Desc: '프로 품질 사진 편집·리터칭·배경 변경을 AI로 즉시.',
-    card2Features: ['AI 사진 편집', '배경 자동 변경', '프로 품질 출력'],
-    card3Title: 'AI Studio',
-    card3Desc: 'AI 촬영 스튜디오. 프로필·상품 사진을 스마트폰으로.',
-    card3Features: ['AI 프로필', '상품 사진', '스튜디오 품질'],
-    card4Title: 'AI Business',
-    card4Desc: '기업용 AI 솔루션. 대량 처리·API 연동.',
-    card4Features: ['일괄 처리', 'API 연동', '맞춤 설정'],
+    card2Title: 'AI Models',
+    card2Desc: 'MONKOS AI 모델. 최첨단 AI 이미지 생성·편집 모델을 곧 공개합니다.',
+    card2Features: ['AI 이미지 생성', '스타일 변환', '프로 품질 출력'],
+    card3Title: 'AI Academy',
+    card3Desc: 'AI 활용 스킬을 체계적으로 학습. 크리에이터를 위한 AI 교육 플랫폼.',
+    card3Features: ['AI 활용 강좌', '실전 워크숍', '크리에이터 육성'],
     chatPlaceholder: '질문을 입력하세요...',
     chatWelcome: '안녕하세요! MONKOS입니다. 서비스에 대해 무엇이든 물어보세요.',
     eventTitle: '텔레그램 친구 추가하고 30크레딧 받기!',
@@ -1809,15 +1851,12 @@ const i18n = {
     features: ['AI real-time coaching', 'Pro-quality auto conversion', 'ID photo / resume ready'],
     ctaText: 'Take ID Photo',
     ctaUrl: 'https://idphoto-jp.monkos.ai/app',
-    card2Title: 'AI Image Pro',
-    card2Desc: 'Pro-quality photo editing, retouching & background change with AI.',
-    card2Features: ['AI photo editing', 'Auto background change', 'Pro-quality output'],
-    card3Title: 'AI Studio',
-    card3Desc: 'AI photo studio. Profile & product photos from your phone.',
-    card3Features: ['AI profiles', 'Product photos', 'Studio quality'],
-    card4Title: 'AI Business',
-    card4Desc: 'Enterprise AI solutions. Batch processing & API integration.',
-    card4Features: ['Batch processing', 'API integration', 'Customization'],
+    card2Title: 'AI Models',
+    card2Desc: 'MONKOS AI Models. Cutting-edge AI image generation & editing models coming soon.',
+    card2Features: ['AI image generation', 'Style transfer', 'Pro-quality output'],
+    card3Title: 'AI Academy',
+    card3Desc: 'Learn AI skills systematically. AI education platform for creators.',
+    card3Features: ['AI courses', 'Hands-on workshops', 'Creator training'],
     chatPlaceholder: 'Type your question...',
     chatWelcome: 'Hi! I\'m MONKOS. Ask me anything about our services.',
     login: 'Login',
@@ -2157,7 +2196,6 @@ function applyLang() {
   const cards = [
     { n: 2, title: t.card2Title, desc: t.card2Desc, feats: t.card2Features },
     { n: 3, title: t.card3Title, desc: t.card3Desc, feats: t.card3Features },
-    { n: 4, title: t.card4Title, desc: t.card4Desc, feats: t.card4Features },
   ];
   cards.forEach(c => {
     document.getElementById(`card${c.n}Title`).textContent = c.title;
