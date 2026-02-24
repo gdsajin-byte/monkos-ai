@@ -21,7 +21,7 @@ export const CREDIT_COST = {
 };
 
 // 토스페이먼츠 (KR 전용)
-export const TOSS_CLIENT_KEY = ''; // TODO: monkos 정식 연동 후 설정
+export const TOSS_CLIENT_KEY = 'test_ck_D5GePWvyJnrK0W0k6q8gLzN97Eoq'; // 테스트키 (심사용 임시)
 
 // 캡처 설정
 export const MAX_CAPTURE_SIZE = 512;
