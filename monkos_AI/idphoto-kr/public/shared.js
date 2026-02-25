@@ -163,7 +163,7 @@ export async function initFromTossResult() {
     if (!paymentKey || !orderId || !amount) return;
 
     try {
-      const res = await fetch(`${API.PORTAL_URL}/api/payment/confirm`, {
+      const res = await fetch(`${API.PORTAL_URL}/api/payments/toss/confirm`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ paymentKey, orderId, amount: Number(amount), userId: store.user.id }),
@@ -171,6 +171,12 @@ export async function initFromTossResult() {
       const data = await res.json();
       if (data.success) {
         store.user = { ...store.user, credits: data.credits };
+        const stored = localStorage.getItem('monkos_user');
+        if (stored) {
+          const user = JSON.parse(stored);
+          user.credits = data.credits;
+          localStorage.setItem('monkos_user', JSON.stringify(user));
+        }
         Monk.log(`결제 완료: ${data.credits}c`);
         alert(`결제가 완료되었습니다!\n현재 크레딧: ${data.credits}c`);
       } else {
