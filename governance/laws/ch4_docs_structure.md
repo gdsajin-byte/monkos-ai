@@ -115,7 +115,7 @@ monkos-ops/는 4부서 체제로 재편 중이며, 과도기에는 번호 폴더
 
 파일명에서 타입/날짜/에이전트를 자동 추출 가능하도록 표준화한다.
 
-**패턴 규격 (12종)**:
+**패턴 규격 (13종)**:
 
 | # | 패턴 | 대상 폴더 | 예시 |
 |---|------|----------|------|
@@ -131,6 +131,7 @@ monkos-ops/는 4부서 체제로 재편 중이며, 과도기에는 번호 폴더
 | 10 | `PETITION_YYYYMMDD_{agent}_{topic}.md` | `governance/constitution/petitions/` | `PETITION_20260222_막내6_법체계자동집행기반.md` |
 | 11 | `ORDER_YYYYMMDD_{topic}.md` | `monkos-ops/ops/orders/` | `ORDER_20260223_KOMOJU전수조사.md` |
 | 12 | `RESEARCH_YYYYMMDD_{topic}_{detail}.md` | `monkos-ops/ops/agenda/` | `RESEARCH_20260223_긴급대행절차_선택지.md` |
+| 13 | `COMPLETION_YYYYMMDD_막내N_{HHMMSS}.md` | `monkos-ops/ops/reports/` | `COMPLETION_20260225_막내1_150900.md` |
 
 **표기 규칙**:
 - 에이전트명: `쌍아`, `막내3`, `소넷이`, `한`, `꾸` 등 (디바이스 접두어 불포함)
@@ -140,7 +141,7 @@ monkos-ops/는 4부서 체제로 재편 중이며, 과도기에는 번호 폴더
 **적용 범위**:
 - docs/monkos/ 하위 전 유형
 - governance/constitution/petitions/
-- monkos-ops/ 하위 TASK_*, REPORT_*, PETITION_*, ORDER_*, RESEARCH_*
+- monkos-ops/ 하위 TASK_*, REPORT_*, PETITION_*, ORDER_*, RESEARCH_*, COMPLETION_*
 
 **적용 제외**:
 - docs/infrastructure/ — 원천 아카이브(보물창고). 기존 네이밍 유지, 3조 관할 밖.
@@ -151,7 +152,7 @@ monkos-ops/는 4부서 체제로 재편 중이며, 과도기에는 번호 폴더
 - 접두사 미보유 기존 파일은 내용 확인 후 적절한 유형 접두사를 부여하거나, 해당 유형이 없으면 ch4 6조 5항 절차로 신규 유형을 등록한다.
 - 정비 시한: 강제 없음. 해당 파일을 수정하는 시점에 함께 정비한다.
 
-> 근거: 2026-02-22 문서 인벤토리 조사 — 준수율 62.7%, 자동 분류 불가 판정, 02-23 PETITION 등록 + 적용 범위 명시, 02-23 ORDER/RESEARCH 유형 등록 (막내A 전수조사 + 막내B 개정안 기반)
+> 근거: 2026-02-22 문서 인벤토리 조사 — 준수율 62.7%, 자동 분류 불가 판정, 02-23 PETITION 등록 + 적용 범위 명시, 02-23 ORDER/RESEARCH 유형 등록 (막내A 전수조사 + 막내B 개정안 기반), 02-25 COMPLETION 유형 등록 (PETITION_20260225, 막내5·6 검수 통과, 작가님 승인)
 > 위반 시: 패턴 미매칭 → 자동 분류 실패, 에이전트 탐색 비용 증가.
 > 상위 헌법: 제3조
 
@@ -178,6 +179,7 @@ monkos-ops/는 4부서 체제로 재편 중이며, 과도기에는 번호 폴더
 | 보고서 | `docs/monkos/reports/` | — | docs가 정본 |
 | 오더 (ORDER) | `monkos-ops/ops/orders/` | — | ops가 정본. 작가님 의지 |
 | 리서치 (RESEARCH) | `monkos-ops/ops/agenda/` | — | 어젠다 연계 |
+| 완료 보고 (COMPLETION) | `monkos-ops/ops/reports/` | — | 막내 완료 보고 전용 |
 | 팀 공유 | `monkos-ops/marketing/` | — | marketing 전용 |
 | 에셋 레지스트리 | `docs/infrastructure/ASSET_REGISTRY.md` | — | 전 저장소 통합 인덱스 |
 
@@ -187,7 +189,7 @@ monkos-ops/는 4부서 체제로 재편 중이며, 과도기에는 번호 폴더
 - 번호 폴더(01_전략~06_로그)는 레거시다. 신규 문서는 4부서 경로에 생성한다.
 - 번호 폴더 → 4부서 이관이 완료되면 번호 폴더를 삭제하고 본 테이블을 갱신한다.
 
-> 근거: 2026-02-22 — 세션 로그/전략 문서 이중화 발견, ops 중심 운영체제 확정, 02-23 governance 개헌 + ops 4부서 재편
+> 근거: 2026-02-22 — 세션 로그/전략 문서 이중화 발견, ops 중심 운영체제 확정, 02-23 governance 개헌 + ops 4부서 재편, 02-25 COMPLETION 정본 등록 (PETITION_20260225, 막내5·6 검수 통과, 작가님 승인)
 > 작가님 원문: "옵스는 운영체제 독스는 참고문헌체제" / "두개가 되면 혼선이 되니" (02-22)
 > 위반 시: 정본 불명 → 에이전트가 구버전 참조, 데이터 불일치.
 > 상위 헌법: 제3조
@@ -279,7 +281,7 @@ monkos-ops/는 4부서 체제로 재편 중이며, 과도기에는 번호 폴더
 **적용 범위**:
 - governance/constitution/petitions/*.md
 - docs/monkos/ 하위 전 유형 (tasks, reports, incidents, designs, specs)
-- monkos-ops/ 하위 TASK_*, REPORT_*, PETITION_*, ORDER_*, RESEARCH_* 파일
+- monkos-ops/ 하위 TASK_*, REPORT_*, PETITION_*, ORDER_*, RESEARCH_*, COMPLETION_* 파일
 
 **적용 제외**:
 - 법률 파일 (governance/laws/ch*.md) — 법률은 그 자체가 규격
@@ -296,7 +298,7 @@ monkos-ops/는 4부서 체제로 재편 중이며, 과도기에는 번호 폴더
 | `date` | string | `YYYY-MM-DD HH:MM KST` (헌법 제1조) | `2026-02-23 04:10 KST` |
 | `status` | enum | pending / in_progress / completed / archived / blocked | `pending` |
 
-**type 허용값**: task, report, spec, incident, design, sprint, petition, order, research
+**type 허용값**: task, report, spec, incident, design, sprint, petition, order, research, completion
 
 #### 타입별 추가 필수 필드
 
@@ -311,6 +313,7 @@ monkos-ops/는 4부서 체제로 재편 중이며, 과도기에는 번호 폴더
 | sprint | `range`, `from` | `tags` |
 | order | `from`, `to`, `priority`(P0~P3) | `deadline`, `tags` |
 | research | `from`, `to`, `order_ref` | `category`, `tags` |
+| completion | `from`, `to`, `order`, `commit`, `branch` | `time`, `tags` |
 
 #### 검증 규칙
 
@@ -323,6 +326,6 @@ monkos-ops/는 4부서 체제로 재편 중이며, 과도기에는 번호 폴더
 
 긴급 장애 대응(INCIDENT) 시: `type`, `date`만으로 허용. 24시간 내 전 필드 보정.
 
-> 근거: 2026-02-23 법률 개정 — 헌법 제13조 실효화. YAML = 법과 코드의 접점, 자동 집행의 물리 계층
+> 근거: 2026-02-23 법률 개정 — 헌법 제13조 실효화. YAML = 법과 코드의 접점, 자동 집행의 물리 계층, 02-25 completion 유형 등록 (PETITION_20260225, 막내5·6 검수 통과, 작가님 승인)
 > 위반 시: 자동 분류 불가, 데몬 파싱 실패, 문서 관리 수동 의존
 > 상위 헌법: 제13조
