@@ -149,6 +149,7 @@ const VARIANT_CREDITS = {
 // 토스 금액(KRW) → 크레딧 매핑 (v2: 1c = $0.10 ≈ ₩145)
 const TOSS_AMOUNT_CREDITS = {
   1450: 10,    // 기본 10c — ₩1,450 (정가)
+  11600: 80,   // 단건 1장: 생성 10c + 다운로드 70c = 80c — ₩11,600
   13050: 100,  // 스탠다드 100c — ₩13,050 (10% 할인)
   34800: 300,  // 프리미엄 300c — ₩34,800 (20% 할인)
   50750: 500,  // 프로 500c — ₩50,750 (30% 할인)
@@ -159,6 +160,16 @@ const firestore = new Firestore({
   projectId: PROJECT_ID,
 });
 const usersCollection = firestore.collection('users');
+
+// === 비로그인 직접결제 토큰 (in-memory, 5분 TTL) ===
+const directTokens = new Map();
+const DIRECT_TOKEN_TTL = 5 * 60 * 1000; // 5분
+setInterval(() => {
+  const now = Date.now();
+  for (const [token, data] of directTokens) {
+    if (now - data.created > DIRECT_TOKEN_TTL) directTokens.delete(token);
+  }
+}, 60 * 1000); // 1분마다 정리
 
 /**
  * 구조화된 로깅 (Cloud Logging 호환)
@@ -1497,6 +1508,82 @@ location.href = '/';
     return;
   }
 
+  // === 이벤트 크레딧 지급 API ===
+  // signup_bonus: +30c, sns_share: +40c, photo_consent: +40c (sns_share/photo_consent 택1)
+  if (req.url === '/api/credits/event' && req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', async () => {
+      try {
+        const { userId, eventType, eventData } = JSON.parse(body);
+        if (!userId || !eventType) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'userId, eventType 필수' }));
+          return;
+        }
+
+        const EVENT_CREDITS = {
+          signup_bonus: 30,
+          sns_share: 40,
+          photo_consent: 40,
+        };
+
+        const granted = EVENT_CREDITS[eventType];
+        if (!granted) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'eventType은 signup_bonus, sns_share, photo_consent 중 하나' }));
+          return;
+        }
+
+        const userRef = usersCollection.doc(userId);
+
+        const result = await firestore.runTransaction(async (tx) => {
+          const userDoc = await tx.get(userRef);
+          if (!userDoc.exists) throw new Error('사용자 없음');
+
+          const data = userDoc.data();
+          const events = data.events || {};
+
+          // 중복 체크
+          if (events[eventType]) {
+            return { success: false, error: '이미 지급된 이벤트', credits: data.credits ?? 0, alreadyClaimed: true };
+          }
+
+          // sns_share / photo_consent 택1 체크
+          if ((eventType === 'sns_share' && events.photo_consent) ||
+              (eventType === 'photo_consent' && events.sns_share)) {
+            return { success: false, error: 'sns_share와 photo_consent는 택1입니다', credits: data.credits ?? 0, alreadyClaimed: true };
+          }
+
+          const currentCredits = data.credits ?? 0;
+          const newCredits = currentCredits + granted;
+          tx.update(userRef, {
+            credits: newCredits,
+            [`events.${eventType}`]: new Date().toISOString(),
+          });
+          return { success: true, credits: newCredits, granted, eventType };
+        });
+
+        if (!result.success) {
+          log(`[Event] 중복 지급 시도: ${userId} ${eventType} (${result.error})`);
+          res.writeHead(409, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify(result));
+          return;
+        }
+
+        log(`[Event] 크레딧 지급: ${userId} +${granted}c (${eventType}) → ${result.credits}c`);
+        logTransaction({ userId, amount: granted, type: 'event', provider: 'system', balanceAfter: result.credits, description: `${eventType} (+${granted}c)` });
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(result));
+      } catch (err) {
+        log(`[Event] 에러: ${err.message}`, 'ERROR');
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: err.message }));
+      }
+    });
+    return;
+  }
+
   // === 크로스 도메인 인증 토큰 생성 ===
   if (req.url === '/api/auth/token' && req.method === 'POST') {
     let body = '';
@@ -1900,6 +1987,97 @@ location.href = '/';
         res.end(JSON.stringify({ error: err.message }));
       }
     });
+    return;
+  }
+
+  // === 비로그인 직접결제 (토스) ===
+  if (req.url === '/api/payments/toss/direct' && req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', async () => {
+      try {
+        const { paymentKey, orderId, amount } = JSON.parse(body);
+        if (!paymentKey || !orderId || !amount) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'paymentKey, orderId, amount 필수' }));
+          return;
+        }
+
+        // 토스 API 결제 승인
+        const secretKey = TOSS_SECRET_KEY;
+        const authHeader = 'Basic ' + Buffer.from(secretKey + ':').toString('base64');
+
+        const tossRes = await fetch('https://api.tosspayments.com/v1/payments/confirm', {
+          method: 'POST',
+          headers: {
+            'Authorization': authHeader,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ paymentKey, orderId, amount }),
+        });
+
+        const tossData = await tossRes.json();
+
+        if (!tossRes.ok) {
+          log(`[Toss-Direct] 결제 승인 실패: ${tossData.code} - ${tossData.message}`, 'ERROR', { amount, orderId });
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: tossData.message || '결제 승인 실패' }));
+          return;
+        }
+
+        // 일회용 다운로드 토큰 생성
+        const downloadToken = randomBytes(32).toString('hex');
+        directTokens.set(downloadToken, { created: Date.now(), orderId, amount });
+
+        // 결제 기록 로깅 (Firestore payments/ 컬렉션)
+        try {
+          await firestore.collection('payments').add({
+            type: 'direct',
+            orderId,
+            amount,
+            paymentKey,
+            downloadToken,
+            createdAt: new Date().toISOString(),
+          });
+        } catch (logErr) {
+          log(`[Toss-Direct] 결제 로그 저장 실패: ${logErr.message}`, 'WARNING');
+        }
+
+        log(`[Toss-Direct] 결제 완료: orderId=${orderId}, ₩${amount} → token 발급`);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: true, downloadToken }));
+      } catch (err) {
+        log(`[Toss-Direct] 에러: ${err.message}`, 'ERROR', { error: err.stack });
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: err.message }));
+      }
+    });
+    return;
+  }
+
+  // === 비로그인 직접결제 다운로드 검증 ===
+  if (req.url?.startsWith('/api/download/direct') && req.method === 'GET') {
+    const urlParams = new URL(req.url, `http://${req.headers.host}`);
+    const token = urlParams.searchParams.get('token');
+
+    if (!token) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ success: false, error: '토큰 필수' }));
+      return;
+    }
+
+    const tokenData = directTokens.get(token);
+    if (!tokenData) {
+      res.writeHead(404, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ success: false, error: '만료된 토큰' }));
+      return;
+    }
+
+    // 토큰 삭제 (1회용)
+    directTokens.delete(token);
+    log(`[Direct-Download] 토큰 사용: orderId=${tokenData.orderId}`);
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ success: true }));
     return;
   }
 
@@ -2453,6 +2631,9 @@ httpServer.listen(PORT, '0.0.0.0', () => {
   log('  POST /api/checkout         — Lemon Squeezy 체크아웃 (JP/글로벌)');
   log('  POST /api/webhooks/lemonsqueezy — LS 결제 웹훅');
   log('  POST /api/payments/toss/confirm — 토스페이먼츠 결제 확인 (KR)');
+  log('  POST /api/payments/toss/direct — 비로그인 직접결제 (KR)');
+  log('  GET  /api/download/direct     — 비로그인 다운로드 토큰 검증');
+  log('  POST /api/credits/event       — 이벤트 크레딧 (signup +30c, share/consent +40c)');
   log('  GET  /toss-success         — 토스 결제 성공 리다이렉트');
   log('  GET  /toss-fail            — 토스 결제 실패 리다이렉트');
   log('  GET  /api/telegram-bonus/generate — 텔레그램 보너스 코드 생성');
