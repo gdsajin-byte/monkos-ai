@@ -5,7 +5,8 @@
 
 import {
   store, pipe, Monk, TX, PHOTO_SPECS, CREDIT_COST,
-  sharedInit, showCreditModal, saveSessionData, loadSessionData, navigateTo
+  sharedInit, showCreditModal, saveSessionData, loadSessionData, navigateTo,
+  buyCreditsKR, TOSS_CLIENT_KEY, API, fetchLatestCredits, closeCreditModal
 } from './shared.js';
 
 // ─── Media 생성 (crop/toJpeg 전용 — 카메라 불필요) ───
@@ -23,6 +24,386 @@ const MIN_DISPLAY_TIME = 10000; // 최소 10초 표시
 let adImages = [];
 let adTimer = null;
 let adIndex = 0;
+
+// ─── 게이트 스타일 ───
+const GATE_CSS = `
+.gate-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;display:flex;align-items:flex-end;justify-content:center}
+.gate-card{background:#fff;border-radius:20px 20px 0 0;padding:28px 20px 32px;width:100%;max-width:420px;position:relative;animation:gateUp .3s ease}
+@keyframes gateUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.gate-close{position:absolute;top:12px;right:16px;background:none;border:none;font-size:24px;cursor:pointer;color:#888}
+.gate-title{font-size:18px;font-weight:700;text-align:center;margin-bottom:16px}
+.gate-badge{background:#FFF3E0;color:#E65100;padding:8px 12px;border-radius:8px;font-size:14px;font-weight:600;text-align:center;margin-bottom:16px}
+.gate-checklist{margin-bottom:12px}
+.gate-check{display:flex;align-items:center;gap:8px;padding:8px 0;font-size:14px;color:#444}
+.gate-check.done{color:#2E7D32}
+.gate-check .icon{font-size:16px;width:20px}
+.gate-check .credit{margin-left:auto;font-weight:600;color:#1976D2}
+.gate-progress{text-align:center;font-size:15px;font-weight:600;padding:8px 0 16px;color:#333}
+.gate-btn{display:block;width:100%;padding:14px;border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;margin-bottom:10px}
+.gate-btn-kakao{background:#FEE500;color:#000}
+.gate-btn-kakao:hover{background:#FDD835}
+.gate-btn-pay{background:#f5f5f5;color:#333;border:1px solid #ddd}
+.gate-btn-pay:hover{background:#eee}
+.gate-btn-share{background:#0088cc;color:#fff}
+.gate-btn-share:hover{background:#0077b3}
+.gate-btn-consent{background:#E8F5E9;color:#2E7D32;border:1px solid #C8E6C9}
+.gate-btn-consent:hover{background:#C8E6C9}
+.gate-btn:disabled{opacity:.5;cursor:not-allowed}
+.gate-divider{display:flex;align-items:center;margin:12px 0}
+.gate-divider::before,.gate-divider::after{content:'';flex:1;border-bottom:1px solid #eee}
+.gate-divider span{padding:0 12px;color:#999;font-size:13px}
+.gate-login-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;display:flex;align-items:center;justify-content:center}
+.gate-login-card{background:#fff;border-radius:16px;padding:28px 20px;width:90%;max-width:340px;text-align:center}
+.gate-login-msg{font-size:15px;color:#333;margin-bottom:20px;white-space:pre-line}
+`;
+
+// ─── 게이트 상태 ───
+let gateCredits = 0;
+
+function injectGateStyles() {
+  if (document.getElementById('gate-styles')) return;
+  const el = document.createElement('style');
+  el.id = 'gate-styles';
+  el.textContent = GATE_CSS;
+  document.head.appendChild(el);
+}
+
+// ─── 다운로드 게이트 팝업 ───
+function showDownloadGatePopup() {
+  injectGateStyles();
+  // 기존 팝업 제거
+  const old = document.getElementById('download-gate');
+  if (old) old.remove();
+
+  gateCredits = 0;
+
+  const overlay = document.createElement('div');
+  overlay.id = 'download-gate';
+  overlay.className = 'gate-overlay';
+  overlay.innerHTML = `
+    <div class="gate-card">
+      <button class="gate-close" onclick="closeDownloadGatePopup()">&times;</button>
+      <h2 class="gate-title">로그인이 필요한 서비스입니다</h2>
+      <div class="gate-badge">가입 이벤트 — 첫 1장 무료!</div>
+      <div class="gate-checklist">
+        <div class="gate-check" id="gate-ck-login">
+          <span class="icon">☐</span>
+          <span>카카오 로그인</span>
+          <span class="credit">30c 증정</span>
+        </div>
+        <div class="gate-check" id="gate-ck-event" style="opacity:.4">
+          <span class="icon">☐</span>
+          <span>SNS 공유 또는 전후사진 동의</span>
+          <span class="credit">+40c</span>
+        </div>
+      </div>
+      <div class="gate-progress" id="gate-progress">
+        = <span id="gate-progress-num">0</span>c / 70c
+      </div>
+      <div id="gate-phase1">
+        <button class="gate-btn gate-btn-kakao" onclick="startKakaoLogin()">카카오 로그인으로 무료 받기</button>
+        <div class="gate-divider"><span>또는</span></div>
+        <button class="gate-btn gate-btn-pay" onclick="buyDirectKR()">바로 결제 ₩10,150</button>
+      </div>
+      <div id="gate-phase2" style="display:none">
+        <button class="gate-btn gate-btn-share" onclick="doShareTelegram()">텔레그램 공유로 +40c 받기</button>
+        <div class="gate-divider"><span>또는</span></div>
+        <button class="gate-btn gate-btn-consent" onclick="doPhotoConsent()">전후사진 활용 동의 +40c</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  Monk.log('다운로드 게이트 팝업 표시');
+}
+
+function closeDownloadGatePopup() {
+  const el = document.getElementById('download-gate');
+  if (el) el.remove();
+}
+
+function updateGateUI(credits) {
+  gateCredits = credits;
+  const num = document.getElementById('gate-progress-num');
+  if (num) num.textContent = credits;
+
+  if (credits >= 70) {
+    // 70c 달성 — 자동 다운로드 진행
+    closeDownloadGatePopup();
+    Monk.log(`게이트 달성: ${credits}c → 다운로드 진행`);
+    proceedDownloadAfterGate();
+  }
+}
+
+async function proceedDownloadAfterGate() {
+  // 로그인 후 크레딧 최신화
+  await fetchLatestCredits();
+
+  if (store.user.credits < CREDIT_COST.download) {
+    // 이벤트 크레딧으로도 부족하면 충전 모달
+    if (typeof window.showChargeModal === 'function') {
+      window.showChargeModal();
+    } else {
+      showCreditModal(CREDIT_COST.download, store.user.credits, 'download');
+    }
+    return;
+  }
+
+  try {
+    const result = await pipe.run('creditUse', { userId: store.user.id, type: 'download' });
+    store.user = { ...store.user, credits: result.credits };
+    await cropAndGoToThankyou();
+  } catch (err) {
+    if (err.status === 402) {
+      if (typeof window.showChargeModal === 'function') {
+        window.showChargeModal();
+      } else {
+        showCreditModal(CREDIT_COST.download, err.credits || 0, 'download');
+      }
+    } else {
+      Monk.log('다운로드 크레딧 에러: ' + (err.error || err.message));
+    }
+  }
+}
+
+// ─── 카카오 로그인 (팝업 + postMessage) ───
+function startKakaoLogin() {
+  const popup = window.open(
+    `${API.PORTAL_URL}/auth/kakao?popup=1&redirect_app=idphoto-kr`,
+    'kakao-login', 'width=500,height=600'
+  );
+  if (!popup) {
+    window.location.href = `${API.PORTAL_URL}/auth/kakao`;
+    return;
+  }
+
+  function handler(e) {
+    if (e.origin !== API.PORTAL_URL) return;
+    if (e.data && e.data.type === 'auth-success') {
+      window.removeEventListener('message', handler);
+      // 유저 데이터 저장
+      localStorage.setItem('monkos_user', JSON.stringify(e.data.user));
+      if (e.data.token) localStorage.setItem('monkos_token', e.data.token);
+      // store 갱신
+      const u = e.data.user;
+      store.user = {
+        id: u.id, email: u.email, name: u.name,
+        credits: u.credits ?? 0, avatar: u.picture || '',
+      };
+      Monk.log(`로그인 성공: ${u.email || u.name} (${store.user.credits}c)`);
+      onKakaoLoginSuccess();
+    }
+  }
+  window.addEventListener('message', handler);
+  setTimeout(() => window.removeEventListener('message', handler), 180000);
+}
+
+async function onKakaoLoginSuccess() {
+  // 체크리스트 UI 업데이트
+  const ckLogin = document.getElementById('gate-ck-login');
+  if (ckLogin) {
+    ckLogin.classList.add('done');
+    ckLogin.querySelector('.icon').textContent = '✅';
+  }
+
+  // 가입 보너스 30c 요청
+  try {
+    const res = await fetch(`${API.PORTAL_URL}/api/credits/event`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: store.user.id, eventType: 'signup_bonus' }),
+    });
+    const data = await res.json();
+    if (data.success) {
+      store.user = { ...store.user, credits: data.credits ?? store.user.credits };
+      updateGateUI(30);
+      Monk.log('가입 보너스 30c 지급');
+    } else {
+      // 이미 받은 경우 등 — 현재 크레딧으로 진행
+      updateGateUI(Math.min(store.user.credits, 30));
+      Monk.log('가입 보너스: ' + (data.error || '이미 수령'));
+    }
+  } catch (err) {
+    Monk.log('가입 보너스 요청 실패: ' + err.message);
+    updateGateUI(0);
+  }
+
+  // Phase 2 표시 (이벤트 선택)
+  const phase1 = document.getElementById('gate-phase1');
+  const phase2 = document.getElementById('gate-phase2');
+  if (phase1) phase1.style.display = 'none';
+  if (phase2) phase2.style.display = 'block';
+
+  const ckEvent = document.getElementById('gate-ck-event');
+  if (ckEvent) ckEvent.style.opacity = '1';
+}
+
+// ─── 이벤트 크레딧 요청 ───
+async function requestEventCredit(eventType) {
+  try {
+    const res = await fetch(`${API.PORTAL_URL}/api/credits/event`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: store.user.id, eventType }),
+    });
+    const data = await res.json();
+    if (data.success) {
+      store.user = { ...store.user, credits: data.credits ?? store.user.credits };
+      return true;
+    }
+    Monk.log(`이벤트 크레딧 실패: ${data.error || eventType}`);
+    return false;
+  } catch (err) {
+    Monk.log(`이벤트 크레딧 에러: ${err.message}`);
+    return false;
+  }
+}
+
+// ─── 텔레그램 공유 ───
+async function shareTelegram() {
+  const text = 'AI 증명사진 만들어봤어요! #MONKOS #AI증명사진';
+  const url = 'https://idphoto-kr.monkos.ai';
+  window.open(
+    `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`,
+    '_blank'
+  );
+  return true;
+}
+
+async function doShareTelegram() {
+  await shareTelegram();
+  // 공유 창 열림 = 공유 완료 간주
+  const ok = await requestEventCredit('sns_share');
+  if (ok) {
+    const ck = document.getElementById('gate-ck-event');
+    if (ck) { ck.classList.add('done'); ck.querySelector('.icon').textContent = '✅'; }
+    updateGateUI(gateCredits + 40);
+    Monk.log('텔레그램 공유 보너스 40c');
+  }
+}
+
+async function doPhotoConsent() {
+  const ok = await requestEventCredit('photo_consent');
+  if (ok) {
+    const ck = document.getElementById('gate-ck-event');
+    if (ck) { ck.classList.add('done'); ck.querySelector('.icon').textContent = '✅'; }
+    updateGateUI(gateCredits + 40);
+    Monk.log('전후사진 동의 보너스 40c');
+  }
+}
+
+// ─── 바로 결제 (비로그인 단건) ───
+async function buyDirectKR() {
+  closeDownloadGatePopup();
+
+  if (!TOSS_CLIENT_KEY) {
+    alert('결제 시스템 준비 중입니다.\n곧 이용 가능합니다!');
+    return;
+  }
+
+  const orderId = `DIRECT_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+
+  try {
+    const tossPayments = TossPayments(TOSS_CLIENT_KEY);
+    const payment = tossPayments.payment({ customerKey: `GUEST_${orderId}` });
+
+    await payment.requestPayment({
+      method: 'CARD',
+      amount: { currency: 'KRW', value: 10150 },
+      orderId,
+      orderName: 'MONKOS AI 증명사진 1장',
+      successUrl: `${window.location.origin}${window.location.pathname}?toss=direct`,
+      failUrl: `${window.location.origin}${window.location.pathname}?toss=fail`,
+    });
+  } catch (err) {
+    if (err.code !== 'PAY_PROCESS_CANCELED' && err.code !== 'USER_CANCEL') {
+      alert('결제 오류: ' + (err.message || err.code));
+    }
+  }
+}
+
+// ─── 바로 결제 리다이렉트 처리 ───
+async function initDirectPaymentResult() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('toss') !== 'direct') return;
+
+  const paymentKey = params.get('paymentKey');
+  const orderId = params.get('orderId');
+  const amount = params.get('amount');
+  history.replaceState({}, '', window.location.pathname);
+
+  if (!paymentKey || !orderId || !amount) return;
+
+  try {
+    const res = await fetch(`${API.PORTAL_URL}/api/payments/toss/direct`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ paymentKey, orderId, amount: Number(amount) }),
+    });
+    const data = await res.json();
+    if (data.success && data.downloadToken) {
+      Monk.log('단건 결제 완료 — 다운로드 진행');
+      await cropAndGoToThankyou();
+    } else {
+      alert('결제 확인 실패: ' + (data.error || ''));
+    }
+  } catch (err) {
+    Monk.log('단건 결제 확인 에러: ' + err.message);
+    alert('결제 확인 중 오류가 발생했습니다.');
+  }
+}
+
+// ─── 로그인 필요 모달 (생성 2회차 차단용) ───
+function showLoginRequiredModal(message) {
+  injectGateStyles();
+  const old = document.getElementById('login-required-modal');
+  if (old) old.remove();
+
+  const overlay = document.createElement('div');
+  overlay.id = 'login-required-modal';
+  overlay.className = 'gate-login-overlay';
+  overlay.innerHTML = `
+    <div class="gate-login-card">
+      <p class="gate-login-msg">${message}</p>
+      <button class="gate-btn gate-btn-kakao" onclick="startKakaoLoginSimple()">카카오 로그인</button>
+      <button class="gate-btn gate-btn-pay" style="margin-top:8px" onclick="closeLoginRequiredModal()">닫기</button>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+}
+
+function closeLoginRequiredModal() {
+  const el = document.getElementById('login-required-modal');
+  if (el) el.remove();
+}
+
+function startKakaoLoginSimple() {
+  closeLoginRequiredModal();
+  const popup = window.open(
+    `${API.PORTAL_URL}/auth/kakao?popup=1&redirect_app=idphoto-kr`,
+    'kakao-login', 'width=500,height=600'
+  );
+  if (!popup) {
+    window.location.href = `${API.PORTAL_URL}/auth/kakao`;
+    return;
+  }
+
+  function handler(e) {
+    if (e.origin !== API.PORTAL_URL) return;
+    if (e.data && e.data.type === 'auth-success') {
+      window.removeEventListener('message', handler);
+      localStorage.setItem('monkos_user', JSON.stringify(e.data.user));
+      if (e.data.token) localStorage.setItem('monkos_token', e.data.token);
+      const u = e.data.user;
+      store.user = {
+        id: u.id, email: u.email, name: u.name,
+        credits: u.credits ?? 0, avatar: u.picture || '',
+      };
+      Monk.log(`로그인 성공: ${u.email || u.name} (${store.user.credits}c)`);
+    }
+  }
+  window.addEventListener('message', handler);
+  setTimeout(() => window.removeEventListener('message', handler), 180000);
+}
 
 // ─── 광고 manifest 로드 ───
 async function loadAdManifest() {
@@ -151,6 +532,15 @@ function retakePhoto() {
 async function confirmAndGenerate() {
   if (!store.captured) return;
 
+  // 비로그인 1회 생성 제한
+  if (!store.user.id) {
+    if (localStorage.getItem('monkos_free_gen')) {
+      showLoginRequiredModal('무료 체험을 사용하셨습니다.\n로그인 후 이용해주세요.');
+      return;
+    }
+    localStorage.setItem('monkos_free_gen', Date.now().toString());
+  }
+
   const base64 = store.captured.includes(',') ? store.captured.split(',')[1] : store.captured;
 
   // 사전분석
@@ -234,7 +624,11 @@ async function confirmAndGenerate() {
   } catch (err) {
     hideGenOverlay();
     if (err.status === 402) {
-      showCreditModal(err.required || 10, err.credits || 0, 'generate');
+      if (typeof window.showChargeModal === 'function') {
+        window.showChargeModal();
+      } else {
+        showCreditModal(err.required || 10, err.credits || 0, 'generate');
+      }
       store.showStep2Actions = true;
       store.resultTitle = TX.resultConfirm;
       store.resultSubtitle = '크레딧이 부족합니다';
@@ -291,29 +685,38 @@ async function generateWatermarkPreview(imageDataUrl) {
 async function downloadResult() {
   if (!store.generated) return;
 
-  // 로그인 사용자: 다운로드 크레딧 차감
-  if (store.user.id) {
-    if (store.user.credits < CREDIT_COST.download) {
-      showCreditModal(CREDIT_COST.download, store.user.credits, 'download');
-      return;
-    }
+  // 비로그인 → 게이트 팝업
+  if (!store.user.id) {
+    showDownloadGatePopup();
+    return;
+  }
 
-    try {
-      const result = await pipe.run('creditUse', { userId: store.user.id, type: 'download' });
-      store.user = { ...store.user, credits: result.credits };
-      await cropAndGoToThankyou();
-    } catch (err) {
-      if (err.status === 402) {
-        showCreditModal(CREDIT_COST.download, err.credits || 0, 'download');
-      } else {
-        Monk.log('다운로드 크레딧 에러: ' + (err.error || err.message));
-      }
+  // 로그인 사용자: 잔액 부족 → 충전 모달
+  if (store.user.credits < CREDIT_COST.download) {
+    if (typeof window.showChargeModal === 'function') {
+      window.showChargeModal();
+    } else {
+      showCreditModal(CREDIT_COST.download, store.user.credits, 'download');
     }
     return;
   }
 
-  // 비로그인: 바로 크롭 → 수령처
-  await cropAndGoToThankyou();
+  // 크레딧 차감 → 수령처
+  try {
+    const result = await pipe.run('creditUse', { userId: store.user.id, type: 'download' });
+    store.user = { ...store.user, credits: result.credits };
+    await cropAndGoToThankyou();
+  } catch (err) {
+    if (err.status === 402) {
+      if (typeof window.showChargeModal === 'function') {
+        window.showChargeModal();
+      } else {
+        showCreditModal(CREDIT_COST.download, err.credits || 0, 'download');
+      }
+    } else {
+      Monk.log('다운로드 크레딧 에러: ' + (err.error || err.message));
+    }
+  }
 }
 
 async function cropAndGoToThankyou() {
@@ -356,6 +759,17 @@ Object.assign(window, {
   confirmAndGenerate,
   downloadResult,
   openTelegram,
+  // 게이트 팝업
+  showDownloadGatePopup,
+  closeDownloadGatePopup,
+  startKakaoLogin,
+  startKakaoLoginSimple,
+  doShareTelegram,
+  doPhotoConsent,
+  buyDirectKR,
+  showLoginRequiredModal,
+  closeLoginRequiredModal,
+  shareTelegram,
 });
 
 // ─── 초기화 ───
@@ -372,6 +786,9 @@ async function init() {
   // 결과 화면 활성화
   const resultArea = document.querySelector('#result-overlay');
   if (resultArea) resultArea.classList.add('active');
+
+  // 단건 결제 리다이렉트 처리
+  await initDirectPaymentResult();
 
   // 광고 manifest 프리로드
   loadAdManifest();
