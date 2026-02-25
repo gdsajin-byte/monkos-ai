@@ -3,6 +3,9 @@
  * 00079 라인 1033~1091에서 추출
  */
 
+// Google OAuth (헌법 6조: config.js 집중 관리)
+export const GOOGLE_CLIENT_ID = '933456016842-clagcrpo1juvukjif1m454jq811bd2rq.apps.googleusercontent.com';
+
 // API 설정
 export const API = {
   PORTAL_URL: 'https://monkos.ai',

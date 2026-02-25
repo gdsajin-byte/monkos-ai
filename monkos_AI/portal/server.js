@@ -54,6 +54,74 @@ const LINE_CHANNEL_SECRET = process.env.LINE_CHANNEL_SECRET || '';
 const LINE_REDIRECT_URI = process.env.LINE_REDIRECT_URI || 'https://monkos.ai/auth/line/callback';
 const pendingLineStates = new Map();
 
+// === 팝업 OAuth 허용 오리진 ===
+const ALLOWED_POPUP_ORIGINS = [
+  'https://idphoto-kr.monkos.ai',
+  'https://idphoto-jp.monkos.ai',
+  'https://monkos.ai',
+];
+
+/**
+ * JSON을 <script> 태그 내에 안전하게 삽입하기 위한 이스케이프
+ * </script> 인젝션 방지
+ */
+function safeJsonForScript(obj) {
+  return JSON.stringify(obj).replace(/</g, '\\u003c').replace(/>/g, '\\u003e');
+}
+
+/**
+ * HMAC 토큰 생성 (크로스 도메인 인증용)
+ * @param {string} userId - 사용자 ID
+ * @param {number} ttlMs - 만료 시간 (밀리초)
+ * @returns {{ token: string, expires: number }}
+ */
+function generateAuthToken(userId, ttlMs = 5 * 60 * 1000) {
+  const expires = Date.now() + ttlMs;
+  const payload = `${userId}:${expires}`;
+  const secret = LEMONSQUEEZY_WEBHOOK_SECRET || 'monkos-default-secret';
+  const hmac = createHmac('sha256', secret);
+  hmac.update(payload);
+  const sig = hmac.digest('hex');
+  const token = Buffer.from(`${payload}:${sig}`).toString('base64url');
+  return { token, expires };
+}
+
+/**
+ * HMAC 토큰 검증
+ * @param {string} token - 검증할 토큰
+ * @param {{ allowExpired?: boolean, maxAgeMs?: number }} opts - 옵션
+ * @returns {{ userId: string, expires: number } | null}
+ */
+function verifyAuthToken(token, opts = {}) {
+  try {
+    const decoded = Buffer.from(token, 'base64url').toString();
+    const parts = decoded.split(':');
+    if (parts.length !== 3) return null;
+
+    const [userId, expiresStr, sig] = parts;
+    const expires = parseInt(expiresStr, 10);
+
+    // 서명 검증
+    const secret = LEMONSQUEEZY_WEBHOOK_SECRET || 'monkos-default-secret';
+    const hmac = createHmac('sha256', secret);
+    hmac.update(`${userId}:${expiresStr}`);
+    const expectedSig = hmac.digest('hex');
+    if (sig !== expectedSig) return null;
+
+    // 만료 검증
+    if (!opts.allowExpired && Date.now() > expires) return null;
+    if (opts.allowExpired && opts.maxAgeMs) {
+      const createdAt = expires - (opts.maxAgeMs > 30 * 24 * 60 * 60 * 1000 ? opts.maxAgeMs : 5 * 60 * 1000);
+      // maxAgeMs 이상 오래된 토큰은 거부
+      if (Date.now() - expires > opts.maxAgeMs) return null;
+    }
+
+    return { userId, expires };
+  } catch {
+    return null;
+  }
+}
+
 // === D1 거래 원장 (monk.kr Pages Function) ===
 const TX_API_URL = process.env.TX_API_URL || 'https://monk.kr/api/tx';
 const TX_API_KEY = process.env.TX_API_KEY || '';
@@ -721,6 +789,7 @@ const httpServer = createServer(async (req, res) => {
   const origin = req.headers.origin;
   if (ALLOWED_ORIGINS.includes(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
   }
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
@@ -764,8 +833,14 @@ const httpServer = createServer(async (req, res) => {
   }
 
   // === 카카오 OAuth (KR) ===
-  if (req.url === '/auth/kakao') {
-    const authUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_REST_API_KEY}&redirect_uri=${encodeURIComponent(KAKAO_REDIRECT_URI)}&response_type=code`;
+  if (req.url === '/auth/kakao' || req.url?.startsWith('/auth/kakao?')) {
+    const parsedUrl = new URL(req.url, `http://${req.headers.host}`);
+    const popup = parsedUrl.searchParams.get('popup') === '1';
+    const redirectApp = parsedUrl.searchParams.get('redirect_app') || '';
+
+    // state에 popup 정보 인코딩
+    const state = Buffer.from(JSON.stringify({ popup, redirectApp })).toString('base64url');
+    const authUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_REST_API_KEY}&redirect_uri=${encodeURIComponent(KAKAO_REDIRECT_URI)}&response_type=code&state=${state}`;
     res.writeHead(302, { Location: authUrl });
     res.end();
     return;
@@ -839,20 +914,56 @@ const httpServer = createServer(async (req, res) => {
 
       const finalDoc = await userRef.get();
       const finalData = finalDoc.data();
-      const userObj = JSON.stringify({
+      const userInfo = {
         id: docId,
         name: nickname,
         email,
         picture: profileImage,
         provider: 'kakao',
         credits: finalData.credits ?? 0,
-      });
+      };
 
-      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-      res.end(`<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body><script>
+      // state에서 popup 정보 추출
+      let popupMode = false;
+      let redirectApp = '';
+      const stateParam = url.searchParams.get('state');
+      if (stateParam) {
+        try {
+          const stateData = JSON.parse(Buffer.from(stateParam, 'base64url').toString());
+          popupMode = stateData.popup === true;
+          redirectApp = stateData.redirectApp || '';
+        } catch {}
+      }
+
+      if (popupMode) {
+        // 팝업 모드: postMessage로 부모 윈도우에 전달 후 자동 닫힘
+        const targetOrigin = ALLOWED_POPUP_ORIGINS.includes(redirectApp)
+          ? redirectApp
+          : 'https://monkos.ai';
+        const { token } = generateAuthToken(docId, 30 * 24 * 60 * 60 * 1000); // 30일
+
+        res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+        res.end(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>로그인 완료</title></head><body><script>
+(function() {
+  var data = { type: 'auth-success', user: ${safeJsonForScript(userInfo)}, token: ${safeJsonForScript(token)} };
+  if (window.opener) {
+    window.opener.postMessage(data, ${safeJsonForScript(targetOrigin)});
+    window.close();
+  } else {
+    sessionStorage.setItem('monkos_user', JSON.stringify(data.user));
+    location.href = '/';
+  }
+})();
+</script></body></html>`);
+      } else {
+        // 기존 리다이렉트 방식 (비팝업)
+        const userObj = JSON.stringify(userInfo);
+        res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+        res.end(`<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body><script>
 sessionStorage.setItem('monkos_user', ${JSON.stringify(userObj)});
 location.href = '/';
 </script></body></html>`);
+      }
     } catch (err) {
       log(`[Kakao] OAuth 에러: ${err.message}`);
       res.writeHead(302, { Location: '/?error=kakao_auth_failed' });
@@ -862,9 +973,17 @@ location.href = '/';
   }
 
   // === LINE OAuth (JP) ===
-  if (req.url === '/auth/line') {
-    const state = randomBytes(16).toString('hex');
-    pendingLineStates.set(state, Date.now());
+  if (req.url === '/auth/line' || req.url?.startsWith('/auth/line?')) {
+    const parsedUrl = new URL(req.url, `http://${req.headers.host}`);
+    const popup = parsedUrl.searchParams.get('popup') === '1';
+    const redirectApp = parsedUrl.searchParams.get('redirect_app') || '';
+
+    const csrf = randomBytes(16).toString('hex');
+    // CSRF 토큰 + popup 정보를 state에 합성
+    const stateObj = { csrf, popup, redirectApp };
+    const state = Buffer.from(JSON.stringify(stateObj)).toString('base64url');
+
+    pendingLineStates.set(csrf, Date.now());
     for (const [k, v] of pendingLineStates) {
       if (Date.now() - v > 10 * 60 * 1000) pendingLineStates.delete(k);
     }
@@ -886,13 +1005,22 @@ location.href = '/';
       return;
     }
 
-    if (!state || !pendingLineStates.has(state)) {
+    // state에서 CSRF 토큰 + popup 정보 추출
+    let lineStateData = { csrf: state, popup: false, redirectApp: '' };
+    try {
+      lineStateData = JSON.parse(Buffer.from(state, 'base64url').toString());
+    } catch {
+      // 레거시 state (plain hex) — 하위 호환
+      lineStateData = { csrf: state, popup: false, redirectApp: '' };
+    }
+
+    if (!lineStateData.csrf || !pendingLineStates.has(lineStateData.csrf)) {
       log('[LINE] state 검증 실패 (CSRF)');
       res.writeHead(302, { Location: '/?error=invalid_state' });
       res.end();
       return;
     }
-    pendingLineStates.delete(state);
+    pendingLineStates.delete(lineStateData.csrf);
 
     try {
       const tokenRes = await fetch('https://api.line.me/oauth2/v2.1/token', {
@@ -953,17 +1081,40 @@ location.href = '/';
 
       const finalDoc = await userRef.get();
       const finalData = finalDoc.data();
-      const userObj = JSON.stringify({
+      const userInfo = {
         id: docId,
         name: displayName,
         email,
         picture: pictureUrl,
         provider: 'line',
         credits: finalData.credits ?? 0,
-      });
+      };
 
-      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-      res.end(`<!DOCTYPE html><html><head><meta charset="UTF-8">
+      if (lineStateData.popup) {
+        // 팝업 모드: postMessage로 부모 윈도우에 전달 후 자동 닫힘
+        const targetOrigin = ALLOWED_POPUP_ORIGINS.includes(lineStateData.redirectApp)
+          ? lineStateData.redirectApp
+          : 'https://monkos.ai';
+        const { token } = generateAuthToken(docId, 30 * 24 * 60 * 60 * 1000); // 30일
+
+        res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+        res.end(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ログイン完了</title></head><body><script>
+(function() {
+  var data = { type: 'auth-success', user: ${safeJsonForScript(userInfo)}, token: ${safeJsonForScript(token)} };
+  if (window.opener) {
+    window.opener.postMessage(data, ${safeJsonForScript(targetOrigin)});
+    window.close();
+  } else {
+    sessionStorage.setItem('monkos_user', JSON.stringify(data.user));
+    location.href = '/';
+  }
+})();
+</script></body></html>`);
+      } else {
+        // 기존 리다이렉트 방식 (비팝업)
+        const userObj = JSON.stringify(userInfo);
+        res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+        res.end(`<!DOCTYPE html><html><head><meta charset="UTF-8">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:#0f0f23;display:flex;justify-content:center;align-items:center;height:100vh;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
@@ -977,6 +1128,7 @@ body{background:#0f0f23;display:flex;justify-content:center;align-items:center;h
 sessionStorage.setItem('monkos_user', ${JSON.stringify(userObj)});
 location.href = '/';
 </script></body></html>`);
+      }
     } catch (err) {
       log(`[LINE] OAuth 에러: ${err.message}`);
       res.writeHead(302, { Location: '/?error=line_auth_failed' });
@@ -1444,6 +1596,67 @@ location.href = '/';
       res.writeHead(401, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: err.message }));
     }
+    return;
+  }
+
+  // === 토큰 갱신 API (장기 세션용) ===
+  if (req.url === '/api/auth/refresh' && req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', async () => {
+      try {
+        const { token } = JSON.parse(body);
+        if (!token) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ success: false, error: 'token 필수' }));
+          return;
+        }
+
+        // 만료 허용 검증 (30일 이내)
+        const decoded = verifyAuthToken(token, {
+          allowExpired: true,
+          maxAgeMs: 30 * 24 * 60 * 60 * 1000,
+        });
+        if (!decoded) {
+          res.writeHead(401, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ success: false, error: 'invalid_token' }));
+          return;
+        }
+
+        // Firestore에서 사용자 존재 확인
+        const userRef = usersCollection.doc(decoded.userId);
+        const userDoc = await userRef.get();
+        if (!userDoc.exists) {
+          res.writeHead(404, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ success: false, error: 'user_not_found' }));
+          return;
+        }
+
+        // 새 토큰 발급 (30일 만료)
+        const userData = userDoc.data();
+        const newToken = generateAuthToken(decoded.userId, 30 * 24 * 60 * 60 * 1000);
+
+        log(`[Auth] 토큰 갱신: ${decoded.userId}`);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({
+          success: true,
+          token: newToken.token,
+          expires: newToken.expires,
+          user: {
+            id: decoded.userId,
+            name: userData.name || '',
+            email: userData.email || '',
+            picture: userData.picture || '',
+            credits: userData.credits ?? 0,
+            provider: userData.provider || '',
+          },
+        }));
+      } catch (err) {
+        log(`[Auth] 토큰 갱신 에러: ${err.message}`);
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: false, error: err.message }));
+      }
+    });
     return;
   }
 
@@ -2236,6 +2449,7 @@ httpServer.listen(PORT, '0.0.0.0', () => {
   log('  POST /api/credits/share-bonus — 공유 보너스 (+100c)');
   log('  POST /api/auth/token       — 크로스 도메인 토큰 생성');
   log('  GET  /api/auth/verify      — 토큰 검증');
+  log('  POST /api/auth/refresh     — 토큰 갱신 (30일, 장기 세션용)');
   log('  POST /api/checkout         — Lemon Squeezy 체크아웃 (JP/글로벌)');
   log('  POST /api/webhooks/lemonsqueezy — LS 결제 웹훅');
   log('  POST /api/payments/toss/confirm — 토스페이먼츠 결제 확인 (KR)');
