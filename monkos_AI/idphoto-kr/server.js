@@ -648,6 +648,8 @@ app.post('/api/idgen', async (req, res) => {
         });
       }
       log(`[Credits] idgen 차감: ${userId} → ${creditResult.credits}c`);
+    } else {
+      log(`[FREE-GEN] ip=${req.headers['x-forwarded-for'] || req.ip} t=${Date.now()}`);
     }
 
     const instruction = buildPrompt(body);
