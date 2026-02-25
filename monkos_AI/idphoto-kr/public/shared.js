@@ -7,14 +7,14 @@ import Monk from './monk.js';
 import {
   API, CREDIT_COST, TOSS_CLIENT_KEY, PHOTO_SPECS, TX, t,
   MAX_CAPTURE_SIZE, COACHING_DISPLAY_MS, FRAME_INTERVAL_MS, CAPTURE_SIZE,
-  DPI, mmToPx
+  DPI, mmToPx, GOOGLE_CLIENT_ID
 } from './config.js';
 
 // Re-export for page JS convenience
 export {
   Monk, API, CREDIT_COST, TOSS_CLIENT_KEY, PHOTO_SPECS, TX, t,
   MAX_CAPTURE_SIZE, COACHING_DISPLAY_MS, FRAME_INTERVAL_MS, CAPTURE_SIZE,
-  DPI, mmToPx
+  DPI, mmToPx, GOOGLE_CLIENT_ID
 };
 
 // ─── Store 초기화 ───
@@ -193,7 +193,7 @@ export async function initFromUrlToken() {
     const res = await fetch(`${API.PORTAL_URL}/api/auth/verify?token=${encodeURIComponent(token)}`);
     const data = await res.json();
     if (data.success && data.user) {
-      sessionStorage.setItem('monkos_user', JSON.stringify(data.user));
+      localStorage.setItem('monkos_user', JSON.stringify(data.user));
       history.replaceState(null, '', location.pathname);
       Monk.log(`토큰 로그인 성공: ${data.user.email}`);
       return true;
@@ -205,7 +205,7 @@ export async function initFromUrlToken() {
 }
 
 export function initCredits() {
-  const stored = sessionStorage.getItem('monkos_user');
+  const stored = localStorage.getItem('monkos_user');
   if (stored) {
     try {
       const user = JSON.parse(stored);
@@ -232,11 +232,11 @@ export async function fetchLatestCredits() {
     const data = await res.json();
     if (data.credits !== undefined) {
       store.user = { ...store.user, credits: data.credits };
-      const stored = sessionStorage.getItem('monkos_user');
+      const stored = localStorage.getItem('monkos_user');
       if (stored) {
         const user = JSON.parse(stored);
         user.credits = data.credits;
-        sessionStorage.setItem('monkos_user', JSON.stringify(user));
+        localStorage.setItem('monkos_user', JSON.stringify(user));
       }
       Monk.log(`크레딧 갱신: ${data.credits}c`);
     }
@@ -251,6 +251,37 @@ document.addEventListener('visibilitychange', () => {
     fetchLatestCredits();
   }
 });
+
+// ─── 토큰 만료 체크 ───
+export function checkTokenExpiry() {
+  const token = localStorage.getItem('monkos_token');
+  if (!token) return;
+  try {
+    const parts = token.split('.');
+    if (parts.length >= 2) {
+      const payload = JSON.parse(atob(parts[1]));
+      if (payload.exp && payload.exp * 1000 < Date.now()) {
+        localStorage.removeItem('monkos_user');
+        localStorage.removeItem('monkos_token');
+      }
+    }
+  } catch (e) {
+    localStorage.removeItem('monkos_user');
+    localStorage.removeItem('monkos_token');
+  }
+}
+
+// ─── 다운로드 게이트 ───
+export function downloadGate() {
+  if (!store.user.id) {
+    return 'login-required';
+  }
+  if (!store.user.credits || store.user.credits < CREDIT_COST.download) {
+    showCreditModal(CREDIT_COST.download, store.user.credits || 0, 'download');
+    return 'credit-short';
+  }
+  return 'ok';
+}
 
 // ─── 유틸리티 ───
 export function openExternal() {
@@ -310,6 +341,7 @@ export function debugSessionKeys() {
 // ─── 공통 초기화 ───
 export async function sharedInit() {
   checkInappBrowser();
+  checkTokenExpiry();
   await initFromUrlToken();
   initCredits();
   await initFromTossResult();
@@ -338,4 +370,5 @@ Object.assign(window, {
   buyCreditsKR,
   closeCreditModal,
   openExternal,
+  downloadGate,
 });
