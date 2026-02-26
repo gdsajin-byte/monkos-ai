@@ -1045,7 +1045,8 @@ function doGoogleLogin(clientId) {
 
 function handleGoogleTokenCallback(tokenResponse) {
   if (tokenResponse.error) return;
-  fetch('https://monkos.ai/api/auth/google', {
+  var portalUrl = window.MONKOS_PORTAL_URL || 'https://monkos.ai';
+  fetch(portalUrl + '/api/auth/google', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ access_token: tokenResponse.access_token }),
@@ -1070,26 +1071,26 @@ function handleGoogleTokenCallback(tokenResponse) {
 function loginKakao() {
   closeLoginModal();
   var popup = window.open(
-    'https://monkos.ai/auth/kakao?popup=1&redirect_app=idphoto-kr',
+    (window.MONKOS_PORTAL_URL || 'https://monkos.ai') + '/auth/kakao?popup=1&redirect_app=idphoto-kr',
     'kakao-login', 'width=500,height=600'
   );
-  if (!popup) { location.href = 'https://monkos.ai/auth/kakao'; return; }
+  if (!popup) { location.href = (window.MONKOS_PORTAL_URL || 'https://monkos.ai') + '/auth/kakao'; return; }
   listenAuthMessage();
 }
 
 function loginLine() {
   closeLoginModal();
   var popup = window.open(
-    'https://monkos.ai/auth/line?popup=1&redirect_app=idphoto-kr',
+    (window.MONKOS_PORTAL_URL || 'https://monkos.ai') + '/auth/line?popup=1&redirect_app=idphoto-kr',
     'line-login', 'width=500,height=600'
   );
-  if (!popup) { location.href = 'https://monkos.ai/auth/line'; return; }
+  if (!popup) { location.href = (window.MONKOS_PORTAL_URL || 'https://monkos.ai') + '/auth/line'; return; }
   listenAuthMessage();
 }
 
 function listenAuthMessage() {
   function handler(e) {
-    if (e.origin !== 'https://monkos.ai') return;
+    if (e.origin !== (window.MONKOS_PORTAL_URL || 'https://monkos.ai')) return;
     if (e.data && e.data.type === 'auth-success') {
       localStorage.setItem('monkos_user', JSON.stringify(e.data.user));
       if (e.data.token) localStorage.setItem('monkos_token', e.data.token);
@@ -1109,7 +1110,7 @@ function downloadGate() {
     var user = JSON.parse(raw);
     if (!user.credits || user.credits < 70) {
       showToast('크레딧이 부족합니다. 충전 후 다운로드하세요.', 'warning');
-      setTimeout(function() { location.href = 'https://monkos.ai/credits?from=' + encodeURIComponent(location.href); }, 1500);
+      setTimeout(function() { location.href = (window.MONKOS_PORTAL_URL || 'https://monkos.ai') + '/credits?from=' + encodeURIComponent(location.href); }, 1500);
       return false;
     }
     return true;
@@ -1154,7 +1155,7 @@ function sendMessage() {
   msgs.appendChild(typing);
   msgs.scrollTop = msgs.scrollHeight;
 
-  fetch('https://monkos.ai/api/chat', {
+  fetch((window.MONKOS_PORTAL_URL || 'https://monkos.ai') + '/api/chat', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ message: text, sessionId: chatSessionId, lang: 'ko' })
@@ -1180,8 +1181,9 @@ function addMessage(text, role) {
 }
 </script>
 <script type="module">
-import { GOOGLE_CLIENT_ID } from './config.js';
+import { GOOGLE_CLIENT_ID, API } from './config.js';
 window.MONKOS_GOOGLE_CLIENT_ID = GOOGLE_CLIENT_ID;
+window.MONKOS_PORTAL_URL = API.PORTAL_URL;
 </script>
 </body>
 </html>

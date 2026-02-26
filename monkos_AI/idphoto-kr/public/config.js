@@ -6,9 +6,10 @@
 // Google OAuth (헌법 6조: config.js 집중 관리)
 export const GOOGLE_CLIENT_ID = '933456016842-clagcrpo1juvukjif1m454jq811bd2rq.apps.googleusercontent.com';
 
-// API 설정
+// API 설정 — hostname 기반 환경 자동 분기
+const IS_DEV = typeof location !== 'undefined' && location.hostname.includes('-dev-');
 export const API = {
-  PORTAL_URL: 'https://monkos.ai',
+  PORTAL_URL: IS_DEV ? 'https://monkos-portal-dev-4jeplpqpua-uc.a.run.app' : 'https://monkos.ai',
   // Cloud Run 자체 서빙 (상대경로)
   PRECHECK: '/api/precheck',
   GENERATE: '/api/idgen',

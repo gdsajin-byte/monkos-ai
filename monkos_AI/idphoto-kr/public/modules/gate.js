@@ -392,14 +392,24 @@ function _showLoginRequired(message) {
   overlay.innerHTML = `
     <div class="gate-login-card">
       <p class="gate-login-msg">${message}</p>
-      <button class="gate-btn gate-btn-kakao" id="gate-login-simple-btn">카카오 로그인</button>
+      <button class="gate-btn gate-btn-google" id="gate-login-google-btn" style="background:#fff;color:#333;border:1px solid #ddd;">Google 로그인</button>
+      <button class="gate-btn gate-btn-kakao" id="gate-login-kakao-btn" style="margin-top:8px;">카카오 로그인</button>
+      <button class="gate-btn gate-btn-line" id="gate-login-line-btn" style="margin-top:8px;background:#06C755;color:#fff;">LINE 로그인</button>
       <button class="gate-btn gate-btn-pay" style="margin-top:8px" id="gate-login-close-btn">닫기</button>
     </div>
   `;
 
-  overlay.querySelector('#gate-login-simple-btn').addEventListener('click', () => {
+  overlay.querySelector('#gate-login-google-btn').addEventListener('click', () => {
+    _closeLoginRequired();
+    if (typeof window.loginGoogle === 'function') window.loginGoogle();
+  });
+  overlay.querySelector('#gate-login-kakao-btn').addEventListener('click', () => {
     _closeLoginRequired();
     _startKakaoLoginSimple();
+  });
+  overlay.querySelector('#gate-login-line-btn').addEventListener('click', () => {
+    _closeLoginRequired();
+    _startLineLoginSimple();
   });
   overlay.querySelector('#gate-login-close-btn').addEventListener('click', _closeLoginRequired);
 
@@ -433,6 +443,34 @@ function _startKakaoLoginSimple() {
         credits: u.credits ?? 0, avatar: u.picture || '',
       };
       Monk.log(`로그인 성공: ${u.email || u.name} (${store.user.credits}c)`);
+    }
+  }
+  window.addEventListener('message', handler);
+  setTimeout(() => window.removeEventListener('message', handler), 180000);
+}
+
+function _startLineLoginSimple() {
+  const popup = window.open(
+    `${API.PORTAL_URL}/auth/line?popup=1&redirect_app=idphoto-kr`,
+    'line-login', 'width=500,height=600'
+  );
+  if (!popup) {
+    window.location.href = `${API.PORTAL_URL}/auth/line`;
+    return;
+  }
+
+  function handler(e) {
+    if (e.origin !== API.PORTAL_URL) return;
+    if (e.data && e.data.type === 'auth-success') {
+      window.removeEventListener('message', handler);
+      localStorage.setItem('monkos_user', JSON.stringify(e.data.user));
+      if (e.data.token) localStorage.setItem('monkos_token', e.data.token);
+      const u = e.data.user;
+      store.user = {
+        id: u.id, email: u.email, name: u.name,
+        credits: u.credits ?? 0, avatar: u.picture || '',
+      };
+      Monk.log(`LINE 로그인 성공: ${u.email || u.name} (${store.user.credits}c)`);
     }
   }
   window.addEventListener('message', handler);

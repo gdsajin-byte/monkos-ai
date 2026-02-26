@@ -790,10 +790,12 @@ const httpServer = createServer(async (req, res) => {
     // Cloud Run 직접 URL (production)
     'https://monkos-idphoto-jp-933456016842.us-central1.run.app',
     'https://monkos-idphoto-kr-933456016842.us-central1.run.app',
-    // Cloud Run 직접 URL (dev)
+    // Cloud Run 직접 URL (dev) — 신형 + 구형 URL 양쪽
     'https://monkos-idphoto-jp-dev-933456016842.us-central1.run.app',
     'https://monkos-idphoto-kr-dev-933456016842.us-central1.run.app',
     'https://monkos-portal-dev-933456016842.us-central1.run.app',
+    'https://monkos-idphoto-kr-dev-4jeplpqpua-uc.a.run.app',
+    'https://monkos-portal-dev-4jeplpqpua-uc.a.run.app',
     // monk.kr (MPA photolab → monkos.ai 코칭/QC)
     'https://monk.kr',
     // localhost
@@ -854,7 +856,8 @@ const httpServer = createServer(async (req, res) => {
 
     // state에 popup 정보 인코딩
     const state = Buffer.from(JSON.stringify({ popup, redirectApp })).toString('base64url');
-    const authUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_REST_API_KEY}&redirect_uri=${encodeURIComponent(KAKAO_REDIRECT_URI)}&response_type=code&scope=plusfriends&state=${state}`;
+    const effectiveRedirect = `https://${req.headers.host}/auth/kakao/callback`;
+    const authUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_REST_API_KEY}&redirect_uri=${encodeURIComponent(effectiveRedirect)}&response_type=code&scope=plusfriends&state=${state}`;
     res.writeHead(302, { Location: authUrl });
     res.end();
     return;
@@ -872,10 +875,11 @@ const httpServer = createServer(async (req, res) => {
     }
 
     try {
+      const effectiveRedirect = `https://${req.headers.host}/auth/kakao/callback`;
       const tokenBody = {
         grant_type: 'authorization_code',
         client_id: KAKAO_REST_API_KEY,
-        redirect_uri: KAKAO_REDIRECT_URI,
+        redirect_uri: effectiveRedirect,
         code,
         ...(process.env.KAKAO_CLIENT_SECRET ? { client_secret: process.env.KAKAO_CLIENT_SECRET } : {}),
       };
@@ -1003,7 +1007,8 @@ location.href = '/';
     for (const [k, v] of pendingLineStates) {
       if (Date.now() - v > 10 * 60 * 1000) pendingLineStates.delete(k);
     }
-    const authUrl = `https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=${LINE_CHANNEL_ID}&redirect_uri=${encodeURIComponent(LINE_REDIRECT_URI)}&state=${state}&scope=profile%20openid%20email`;
+    const effectiveLineRedirect = `https://${req.headers.host}/auth/line/callback`;
+    const authUrl = `https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=${LINE_CHANNEL_ID}&redirect_uri=${encodeURIComponent(effectiveLineRedirect)}&state=${state}&scope=profile%20openid%20email`;
     res.writeHead(302, { Location: authUrl });
     res.end();
     return;
@@ -1045,7 +1050,7 @@ location.href = '/';
         body: new URLSearchParams({
           grant_type: 'authorization_code',
           code,
-          redirect_uri: LINE_REDIRECT_URI,
+          redirect_uri: `https://${req.headers.host}/auth/line/callback`,
           client_id: LINE_CHANNEL_ID,
           client_secret: LINE_CHANNEL_SECRET,
         }),
