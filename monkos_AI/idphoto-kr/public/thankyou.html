@@ -26,9 +26,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@700&display=swap" rel="stylesheet">
 
     <!-- 스타일시트 -->
     <link rel="stylesheet" href="app.css">
+    <link rel="stylesheet" href="cr-coin.css">
 
     <!-- 토스페이먼츠 -->
     <script src="https://js.tosspayments.com/v2/standard"></script>
@@ -47,9 +49,19 @@
             <span id="step-label" data-bind="stepLabel">수령처</span>
         </div>
         <div style="display:flex; align-items:center; gap:8px;">
-            <div class="credit-badge" id="creditBadge" data-show="user.id" data-class="creditLow:low">
-                <span>💎</span>
-                <span data-bind="user.credits">0</span>c
+            <div class="header-balance" id="creditBadge" data-show="user.id">
+                <div class="header-coin-wrap">
+                    <div class="header-sparkle"></div>
+                    <div class="header-sparkle"></div>
+                    <div class="header-coin">
+                        <div class="header-coin-face">
+                            <div class="header-shimmer"></div>
+                            <span class="cr-sym">Cr</span>
+                        </div>
+                    </div>
+                </div>
+                <span class="balance-amount" data-bind="user.credits">0</span>
+                <span class="balance-unit">Cr</span>
             </div>
         </div>
     </div>
