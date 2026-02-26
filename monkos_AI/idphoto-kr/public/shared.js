@@ -398,8 +398,12 @@ export async function sharedInit() {
  * @param {string} tag    - 태그 (예: 'EVENT')
  */
 export function showEventCard(title, amount, subtitle, tag = 'EVENT') {
-  const container = document.querySelector('.event-container');
-  if (!container) return;
+  let container = document.querySelector('.event-container');
+  if (!container) {
+    container = document.createElement('div');
+    container.className = 'event-container';
+    document.body.appendChild(container);
+  }
 
   const card = document.createElement('div');
   card.className = 'event-card';

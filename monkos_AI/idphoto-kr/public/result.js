@@ -7,7 +7,8 @@
 import {
   store, pipe, Monk, TX, PHOTO_SPECS, CREDIT_COST,
   sharedInit, showCreditModal, saveSessionData, loadSessionData, navigateTo,
-  buyCreditsKR, TOSS_CLIENT_KEY, API, fetchLatestCredits, closeCreditModal
+  buyCreditsKR, TOSS_CLIENT_KEY, API, fetchLatestCredits, closeCreditModal,
+  showThankYou
 } from './shared.js';
 
 import { GateModule } from './modules/gate.js';
@@ -318,6 +319,7 @@ async function doDownload() {
   try {
     const result = await pipe.run('creditUse', { userId: store.user.id, type: 'download' });
     store.user = { ...store.user, credits: result.credits };
+    showThankYou('', 'MONKOS AI 증명사진 다운로드 완료');
     await cropAndShowPostDownload();
   } catch (err) {
     if (err.status === 402) {
@@ -355,7 +357,7 @@ async function cropAndShowPostDownload() {
   store.resultTitle = '다운로드 완료!';
   store.resultSubtitle = 'MONKOS AI 증명사진이 준비되었습니다';
 
-  // 포스트 다운로드 영역에 모듈 마운트 (배치 순서 엄수: 프리미엄→미션→충전)
+  // 포스트 다운로드 영역에 모듈 마운트 (배치 순서: 미션→충전→프리미엄)
   const mount = document.getElementById('post-download-mount');
   if (mount) {
     // 저장 버튼 (모듈이 아닌 메인 흐름)
@@ -368,13 +370,13 @@ async function cropAndShowPostDownload() {
     mount.appendChild(saveDiv);
     saveDiv.querySelector('#btn-save-gallery').addEventListener('click', saveToGallery);
 
-    // ① 프리미엄 (위)
-    PremiumModule.mount(mount);
-    // ② 미션 (아래)
+    // ① 미션 (100c) — 즉각 행동 유도
     store.showMission = !!store.user.id;
     MissionModule.mount(mount);
-    // ③ 충전 (최하단)
+    // ② 충전 — 결제 전환
     ChargeModule.mountInline(mount);
+    // ③ 프리미엄 — Coming Soon 축소 표시
+    PremiumModule.mount(mount);
   }
 
   Monk.log('포스트 다운로드 화면 표시');

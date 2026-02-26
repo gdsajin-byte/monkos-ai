@@ -26,6 +26,10 @@ export const CREDIT_COST = {
 // 토스페이먼츠 (KR 전용)
 export const TOSS_CLIENT_KEY = 'test_ck_D5GePWvyJnrK0W0k6q8gLzN97Eoq'; // 테스트키 (심사용 임시)
 
+// 카카오 채널 (헌법 6조: config.js 집중 관리 — 값 미설정 시 SDK 호출 스킵)
+export const KAKAO_JS_KEY = '';
+export const KAKAO_CHANNEL_ID = '';
+
 // 캡처 설정
 export const MAX_CAPTURE_SIZE = 512;
 export const COACHING_DISPLAY_MS = 10000;

@@ -49,6 +49,7 @@ const TEAM_NOTIFY_SECRET = process.env.TEAM_NOTIFY_SECRET || 'monkos-internal';
 // === 카카오 로그인 (KR) ===
 const KAKAO_REST_API_KEY = process.env.KAKAO_REST_API_KEY || '';
 const KAKAO_REDIRECT_URI = process.env.KAKAO_REDIRECT_URI || 'https://monkos.ai/auth/kakao/callback';
+const KAKAO_CHANNEL_ID = process.env.KAKAO_CHANNEL_ID || '';
 
 // === LINE 로그인 (JP) ===
 const LINE_CHANNEL_ID = process.env.LINE_CHANNEL_ID || '';
@@ -853,7 +854,7 @@ const httpServer = createServer(async (req, res) => {
 
     // state에 popup 정보 인코딩
     const state = Buffer.from(JSON.stringify({ popup, redirectApp })).toString('base64url');
-    const authUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_REST_API_KEY}&redirect_uri=${encodeURIComponent(KAKAO_REDIRECT_URI)}&response_type=code&state=${state}`;
+    const authUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_REST_API_KEY}&redirect_uri=${encodeURIComponent(KAKAO_REDIRECT_URI)}&response_type=code&scope=plusfriends&state=${state}`;
     res.writeHead(302, { Location: authUrl });
     res.end();
     return;
@@ -912,6 +913,7 @@ const httpServer = createServer(async (req, res) => {
           email,
           picture: profileImage,
           credits: 80,
+          kakaoAccessToken: tokenData.access_token,
           createdAt: new Date().toISOString(),
           lastLogin: new Date().toISOString(),
         });
@@ -920,6 +922,7 @@ const httpServer = createServer(async (req, res) => {
         await userRef.update({
           name: nickname,
           picture: profileImage,
+          kakaoAccessToken: tokenData.access_token,
           lastLogin: new Date().toISOString(),
         });
         log(`[Kakao] 로그인: ${docId}`);
@@ -1378,10 +1381,11 @@ location.href = '/';
           return;
         }
 
-        // 이미 telegram_join 이벤트를 받았는지 체크
-        if (userDoc.data()?.events?.telegram_join) {
+        // 이미 telegram_join 또는 kakao_channel_add 이벤트를 받았는지 체크 (택1)
+        const userEvents = userDoc.data()?.events || {};
+        if (userEvents.telegram_join || userEvents.kakao_channel_add) {
           res.writeHead(409, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({ error: '이미 텔레그램 가입 보너스를 수령했습니다', alreadyClaimed: true }));
+          res.end(JSON.stringify({ error: '이미 채널 보너스를 수령했습니다 (텔레그램/카카오 택1)', alreadyClaimed: true }));
           return;
         }
 
@@ -1469,6 +1473,11 @@ location.href = '/';
         await userRef.update({
           snsConsentSigned: true,
           snsConsentAt: timestamp || new Date().toISOString(),
+          snsConsentVersion: 'v2',
+          snsConsentPlatforms: ['instagram', 'telegram_channel', 'x', 'youtube'],
+          snsConsentDuration: '동의 철회 시까지',
+          snsConsentWithdrawMethod: '고객센터 문의 (텔레그램 @monkos_support_bot)',
+          snsConsentImageType: 'watermark_preview',
         });
 
         log(`[Consent] SNS 동의: ${userId}`);
@@ -1609,13 +1618,80 @@ location.href = '/';
         const EVENT_CREDITS = {
           signup_bonus: 30,
           telegram_join: 40,
+          kakao_channel_add: 40,
+          mission_complete: 100,
         };
 
         const granted = EVENT_CREDITS[eventType];
         if (!granted) {
           res.writeHead(400, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({ error: 'eventType은 signup_bonus, telegram_join 중 하나' }));
+          res.end(JSON.stringify({ error: 'eventType은 signup_bonus, telegram_join, kakao_channel_add, mission_complete 중 하나' }));
           return;
+        }
+
+        // 택1 검증: kakao_channel_add와 telegram_join은 둘 다 수령 불가
+        if (eventType === 'kakao_channel_add' || eventType === 'telegram_join') {
+          const preCheckDoc = await usersCollection.doc(userId).get();
+          if (preCheckDoc.exists) {
+            const preEvents = preCheckDoc.data()?.events || {};
+            if (preEvents.kakao_channel_add || preEvents.telegram_join) {
+              res.writeHead(409, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({ error: '카카오 채널 / 텔레그램 채널 보너스는 택1입니다. 이미 수령했습니다.', alreadyClaimed: true }));
+              return;
+            }
+          }
+        }
+
+        // kakao_channel_add: 카카오 채널 친구추가 relation 검증
+        if (eventType === 'kakao_channel_add') {
+          if (!KAKAO_CHANNEL_ID) {
+            res.writeHead(500, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: '카카오 채널 설정 미완료 (KAKAO_CHANNEL_ID)' }));
+            return;
+          }
+
+          const kakaoUserDoc = await usersCollection.doc(userId).get();
+          if (!kakaoUserDoc.exists) {
+            res.writeHead(404, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: '사용자 없음' }));
+            return;
+          }
+          const kakaoAccessToken = kakaoUserDoc.data()?.kakaoAccessToken;
+          if (!kakaoAccessToken) {
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: '카카오 로그인이 필요합니다. 먼저 카카오로 로그인해주세요.' }));
+            return;
+          }
+
+          try {
+            const channelRes = await fetch('https://kapi.kakao.com/v2/api/talk/channels', {
+              headers: { Authorization: `Bearer ${kakaoAccessToken}` },
+            });
+            const channelData = await channelRes.json();
+
+            if (channelData.code && channelData.code < 0) {
+              log(`[Event] 카카오 채널 API 에러: ${JSON.stringify(channelData)}`, 'ERROR');
+              res.writeHead(400, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({ error: '카카오 토큰이 만료되었습니다. 다시 로그인해주세요.', kakaoError: channelData.msg }));
+              return;
+            }
+
+            const channels = channelData.channels || [];
+            const monkosChannel = channels.find(ch => String(ch.channel_public_id) === KAKAO_CHANNEL_ID || String(ch.channel_id) === KAKAO_CHANNEL_ID);
+
+            if (!monkosChannel || monkosChannel.relation !== 'ADDED') {
+              log(`[Event] 카카오 채널 미추가: ${userId} relation=${monkosChannel?.relation || 'NOT_FOUND'}`);
+              res.writeHead(400, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({ error: 'MONKOS 카카오 채널을 친구추가 해주세요.', relation: monkosChannel?.relation || 'NOT_FOUND' }));
+              return;
+            }
+            log(`[Event] 카카오 채널 추가 확인: ${userId} relation=${monkosChannel.relation}`);
+          } catch (chErr) {
+            log(`[Event] 카카오 채널 검증 에러: ${chErr.message}`, 'ERROR');
+            res.writeHead(500, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: '카카오 채널 확인 중 오류' }));
+            return;
+          }
         }
 
         // telegram_join: getChatMember로 채널 가입 검증
@@ -1672,6 +1748,14 @@ location.href = '/';
           // 중복 체크
           if (events[eventType]) {
             return { success: false, error: '이미 지급된 이벤트', credits: data.credits ?? 0, alreadyClaimed: true };
+          }
+
+          // 택1 체크 (트랜잭션 내 race condition 방지)
+          if (eventType === 'kakao_channel_add' && events.telegram_join) {
+            return { success: false, error: '텔레그램 채널 보너스를 이미 수령했습니다 (택1)', credits: data.credits ?? 0, alreadyClaimed: true };
+          }
+          if (eventType === 'telegram_join' && events.kakao_channel_add) {
+            return { success: false, error: '카카오 채널 보너스를 이미 수령했습니다 (택1)', credits: data.credits ?? 0, alreadyClaimed: true };
           }
 
           const currentCredits = data.credits ?? 0;
@@ -2441,12 +2525,23 @@ location.href = '/';
           const linkData = linkDoc.data();
           const linkedUserId = linkData.userId;
 
+          // 동의서 서명 여부 확인 (v3: 미서명 시 이미지 수신 거부)
+          const userDoc = await usersCollection.doc(linkedUserId).get();
+          if (!userDoc.exists || !userDoc.data()?.snsConsentSigned) {
+            await sendTelegramMessage(chatId, '⚠️ SNS 활용 동의서를 먼저 서명해주세요.\nMONKOS 웹에서 동의서 서명 후 다시 사진을 보내주세요.\n\n---\n⚠️ まずSNS活用同意書にご署名ください。\nMONKOSウェブで同意書に署名してから、もう一度写真を送ってください。', TELEGRAM_EVENT_API);
+            log(`[TG-Mission] 동의서 미서명 → 이미지 거부: ${linkedUserId}`);
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ ok: true }));
+            return;
+          }
+
           // 미션 이미지 수신 처리 — 이미지 파일 ID 저장 + 플래그 설정
           const fileId = msg.photo[msg.photo.length - 1].file_id;
           await usersCollection.doc(linkedUserId).update({
             missionImageReceived: true,
             missionImageFileId: fileId,
             missionImageAt: new Date().toISOString(),
+            missionImageType: 'user_upload',
           });
 
           // telegram_links 업데이트
@@ -2794,7 +2889,7 @@ httpServer.listen(PORT, '0.0.0.0', () => {
   log('  POST /api/payments/toss/confirm — 토스페이먼츠 결제 확인 (KR)');
   log('  POST /api/payments/toss/direct — 비로그인 직접결제 (KR)');
   log('  GET  /api/download/direct     — 비로그인 다운로드 토큰 검증');
-  log('  POST /api/credits/event       — 이벤트 크레딧 (signup +30c, telegram_join +40c)');
+  log('  POST /api/credits/event       — 이벤트 크레딧 (signup +30c, telegram_join/kakao_channel_add +40c 택1, mission_complete +100c)');
   log('  GET  /toss-success         — 토스 결제 성공 리다이렉트');
   log('  GET  /toss-fail            — 토스 결제 실패 리다이렉트');
   log('  [DEP] /api/credits/share-bonus    — deprecated');
@@ -2816,6 +2911,7 @@ httpServer.listen(PORT, '0.0.0.0', () => {
   log(`Telegram Channel: ${TELEGRAM_CHANNEL_ID || '미설정'}`);
   log(`Team Chat ID: ${TEAM_CHAT_ID ? '설정됨' : '미설정'}`);
   log(`Kakao Login: ${KAKAO_REST_API_KEY ? '설정됨' : '미설정'}`);
+  log(`Kakao Channel: ${KAKAO_CHANNEL_ID || '미설정'}`);
   log(`LINE Login: ${LINE_CHANNEL_ID ? '설정됨' : '미설정'}`);
   log('='.repeat(60));
 });
