@@ -58,7 +58,7 @@ function displayPhoto() {
 
   // 크레딧 잔여 메시지
   store.postCreditMsg = store.user.id
-    ? `💎 10c 사용 · 잔여 ${store.user.credits}c`
+    ? `10 Cr 사용 · 잔여 ${store.user.credits} Cr`
     : '';
 
   displaySpecInfo();
