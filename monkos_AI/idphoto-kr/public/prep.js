@@ -81,6 +81,7 @@ const OPTIONS = {
     { val: 'yellow', title: '옐로우', color: '#fbbf24' },
   ],
   expression: [
+    { val: 'as_is',         icon: '🙂', title: '그대로' },
     { val: 'gentle_smile',  icon: '😊', title: '잔잔한 미소' },
     { val: 'neutral',       icon: '😐', title: '무표정' },
     { val: 'natural_smile', icon: '😄', title: '자연스러운 미소' },
@@ -115,11 +116,11 @@ const BG_FILTER = {
 };
 
 const EXPR_FILTER = {
-  passport:       ['gentle_smile', 'neutral'],
-  student_id:     ['gentle_smile', 'neutral', 'natural_smile', 'bright_smile'],
-  employee_id:    ['gentle_smile', 'neutral', 'natural_smile', 'bright_smile'],
-  resume:         ['gentle_smile', 'neutral', 'natural_smile', 'bright_smile'],
-  color_portrait: ['gentle_smile', 'neutral', 'natural_smile', 'bright_smile'],
+  passport:       ['as_is', 'gentle_smile', 'neutral'],
+  student_id:     ['as_is', 'gentle_smile', 'neutral', 'natural_smile', 'bright_smile'],
+  employee_id:    ['as_is', 'gentle_smile', 'neutral', 'natural_smile', 'bright_smile'],
+  resume:         ['as_is', 'gentle_smile', 'neutral', 'natural_smile', 'bright_smile'],
+  color_portrait: ['as_is', 'gentle_smile', 'neutral', 'natural_smile', 'bright_smile'],
 };
 
 // ─── 스텝 메타 ───
@@ -188,11 +189,28 @@ function getFilteredOptions(key) {
   const all = OPTIONS[key] || [];
 
   if (key === 'age')        return all.filter(o => (AGE_FILTER[p] || []).includes(o.val));
-  if (key === 'clothing')   return all.filter(o => (CLOTHING_FILTER[p] || []).includes(o.val));
+  if (key === 'clothing') {
+    let filtered = all.filter(o => (CLOTHING_FILTER[p] || []).includes(o.val));
+    // 연령 후필터: baby/preschool → as_is만 허용
+    if (['baby', 'preschool'].includes(selections.age)) {
+      filtered = filtered.filter(o => o.val === 'as_is');
+    }
+    return filtered;
+  }
   if (key === 'clothingColor') {
     // 여권/신분증: 흰색 배경 고정 → 의상 흰색 불가
     if (['passport', 'student_id'].includes(p)) {
       return all.filter(o => o.val !== 'white');
+    }
+    return all;
+  }
+  if (key === 'hair') {
+    // 연령별 헤어 필터
+    if (selections.age === 'baby') {
+      return all.filter(o => o.val === 'as_is');
+    }
+    if (selections.age === 'preschool') {
+      return all.filter(o => ['as_is', 'tidy'].includes(o.val));
     }
     return all;
   }
@@ -244,8 +262,9 @@ function shouldSkip(stepNum) {
     return selections.clothing === 'as_is' || !selections.clothing;
   }
 
-  // STEP 6 (tie): 남성 + (정장 or 셔츠)가 아니면 스킵
+  // STEP 6 (tie): baby/preschool 무조건 스킵, 그 외 남성 + (정장 or 셔츠)가 아니면 스킵
   if (key === 'tie') {
+    if (['baby', 'preschool'].includes(selections.age)) return true;
     return selections.gender !== 'male' || !['suit', 'shirt'].includes(selections.clothing);
   }
 
