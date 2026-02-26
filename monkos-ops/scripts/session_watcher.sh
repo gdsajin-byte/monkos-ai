@@ -7,7 +7,7 @@ set -euo pipefail
 
 # === 경로 설정 ===
 PROJECT_DIR="$HOME/developer/monk_project"
-SESSIONS_DIR="$PROJECT_DIR/docs/corpus/sessions"
+SESSIONS_DIR="$PROJECT_DIR/monkos-ops/06_로그/sessions"
 MEMORY_BASE="$HOME/.claude/projects/-Users-jeong-kyushin-developer-monk-project/memory/sonnet"
 README_PATH="$MEMORY_BASE/README.md"
 LOG_FILE="$MEMORY_BASE/watcher.log"

@@ -26,9 +26,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@700&display=swap" rel="stylesheet">
 
     <!-- 스타일시트 -->
     <link rel="stylesheet" href="app.css">
+    <link rel="stylesheet" href="cr-coin.css">
 
     <!-- 토스페이먼츠 -->
     <script src="https://js.tosspayments.com/v2/standard"></script>
@@ -47,9 +49,19 @@
             <span id="step-label" data-bind="stepLabel">수령처</span>
         </div>
         <div style="display:flex; align-items:center; gap:8px;">
-            <div class="credit-badge" id="creditBadge" data-show="user.id" data-class="creditLow:low">
-                <span>💎</span>
-                <span data-bind="user.credits">0</span>c
+            <div class="header-balance" id="creditBadge" data-show="user.id">
+                <div class="header-coin-wrap">
+                    <div class="header-sparkle"></div>
+                    <div class="header-sparkle"></div>
+                    <div class="header-coin">
+                        <div class="header-coin-face">
+                            <div class="header-shimmer"></div>
+                            <span class="cr-sym">Cr</span>
+                        </div>
+                    </div>
+                </div>
+                <span class="balance-amount" data-bind="user.credits">0</span>
+                <span class="balance-unit">Cr</span>
             </div>
         </div>
     </div>
@@ -73,20 +85,25 @@
                 </div>
             </div>
             <div class="credit-packages">
-                <button class="credit-pkg" onclick="buyCreditsKR(12900, 10)">
+                <button class="credit-pkg" onclick="buyCreditsKR(1450, 10)">
                     <div class="pkg-credits">10c</div>
-                    <div class="pkg-price">₩12,900</div>
+                    <div class="pkg-price">₩1,450</div>
                 </button>
-                <button class="credit-pkg popular" onclick="buyCreditsKR(29900, 30)">
+                <button class="credit-pkg" onclick="buyCreditsKR(13050, 100)">
+                    <div class="pkg-credits">100c</div>
+                    <div class="pkg-price">₩13,050</div>
+                    <div class="pkg-save">10% 할인</div>
+                </button>
+                <button class="credit-pkg popular" onclick="buyCreditsKR(34800, 300)">
                     <div class="pkg-badge">BEST</div>
-                    <div class="pkg-credits">30c</div>
-                    <div class="pkg-price">₩29,900</div>
-                    <div class="pkg-save">23% 할인</div>
+                    <div class="pkg-credits">300c</div>
+                    <div class="pkg-price">₩34,800</div>
+                    <div class="pkg-save">20% 할인</div>
                 </button>
-                <button class="credit-pkg" onclick="buyCreditsKR(45900, 50)">
-                    <div class="pkg-credits">50c</div>
-                    <div class="pkg-price">₩45,900</div>
-                    <div class="pkg-save">29% 할인</div>
+                <button class="credit-pkg" onclick="buyCreditsKR(50750, 500)">
+                    <div class="pkg-credits">500c</div>
+                    <div class="pkg-price">₩50,750</div>
+                    <div class="pkg-save">30% 할인</div>
                 </button>
             </div>
             <button class="credit-modal-btn secondary" onclick="closeCreditModal()">닫기</button>
@@ -129,16 +146,15 @@
                 <div class="ty-credit-msg" data-bind="postCreditMsg"></div>
 
                 <div class="ty-share-section">
-                    <p class="ty-share-title">🎁 SNS 공유하고 10크레딧 받기!</p>
+                    <p class="ty-share-title">📸 만족하셨나요?</p>
                     <div class="ty-event-steps">
-                        <div class="ty-step"><span class="step-num">1</span> 이 화면을 캡처하세요 📸</div>
-                        <div class="ty-step"><span class="step-num">2</span> SNS에 올리기 (링크·멘션 필수)</div>
-                        <div class="ty-step"><span class="step-num">3</span> 텔레그램으로 캡처 보내기!</div>
+                        <div class="ty-step"><span class="step-num">1</span> 추가 촬영이 필요하면 아래 버튼!</div>
+                        <div class="ty-step"><span class="step-num">2</span> 문의사항은 텔레그램으로 연락주세요</div>
                     </div>
-                    <a id="tgEventLink" class="ty-tg-btn" href="#" target="_blank" onclick="openTelegram()">
-                        <span class="tg-icon">✈️</span> 텔레그램으로 10c 받기
+                    <a id="tgEventLink" class="ty-tg-btn" href="https://t.me/monkos_support_bot" target="_blank" rel="noopener">
+                        <span class="tg-icon">✈️</span> 텔레그램 고객지원
                     </a>
-                    <p class="ty-tg-sub">텔레그램 친구추가 → 캡처 전송 → 즉시 10c 지급!</p>
+                    <p class="ty-tg-sub">궁금한 점이 있으면 언제든 문의하세요!</p>
                 </div>
 
                 <div class="ty-services">

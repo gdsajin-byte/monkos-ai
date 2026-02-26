@@ -432,7 +432,6 @@ async function generatePhoto(inputBase64, style = 'id_photo', gender = 'male', a
       ],
     },
     config: {
-      responseModalities: ['TEXT', 'IMAGE'],
       imageConfig: { aspectRatio: '3:4' },
       safetySettings: [
         { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
@@ -649,6 +648,8 @@ app.post('/api/idgen', async (req, res) => {
         });
       }
       log(`[Credits] idgen 차감: ${userId} → ${creditResult.credits}c`);
+    } else {
+      log(`[FREE-GEN] ip=${req.headers['x-forwarded-for'] || req.ip} t=${Date.now()}`);
     }
 
     const instruction = buildPrompt(body);

@@ -26,9 +26,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@700&display=swap" rel="stylesheet">
 
     <!-- 스타일시트 -->
     <link rel="stylesheet" href="app.css">
+    <link rel="stylesheet" href="cr-coin.css">
 
     <!-- result 전용 스타일 -->
     <style>
@@ -101,9 +103,19 @@
             <span id="step-label" data-bind="stepLabel">촬영 확인</span>
         </div>
         <div style="display:flex; align-items:center; gap:8px;">
-            <div class="credit-badge" id="creditBadge" data-show="user.id" data-class="creditLow:low">
-                <span>💎</span>
-                <span data-bind="user.credits">0</span>c
+            <div class="header-balance" id="creditBadge" data-show="user.id">
+                <div class="header-coin-wrap">
+                    <div class="header-sparkle"></div>
+                    <div class="header-sparkle"></div>
+                    <div class="header-coin">
+                        <div class="header-coin-face">
+                            <div class="header-shimmer"></div>
+                            <span class="cr-sym">Cr</span>
+                        </div>
+                    </div>
+                </div>
+                <span class="balance-amount" data-bind="user.credits">0</span>
+                <span class="balance-unit">Cr</span>
             </div>
         </div>
     </div>
@@ -127,20 +139,25 @@
                 </div>
             </div>
             <div class="credit-packages">
-                <button class="credit-pkg" onclick="buyCreditsKR(12900, 10)">
+                <button class="credit-pkg" onclick="buyCreditsKR(1450, 10)">
                     <div class="pkg-credits">10c</div>
-                    <div class="pkg-price">₩12,900</div>
+                    <div class="pkg-price">₩1,450</div>
                 </button>
-                <button class="credit-pkg popular" onclick="buyCreditsKR(29900, 30)">
+                <button class="credit-pkg" onclick="buyCreditsKR(13050, 100)">
+                    <div class="pkg-credits">100c</div>
+                    <div class="pkg-price">₩13,050</div>
+                    <div class="pkg-save">10% 할인</div>
+                </button>
+                <button class="credit-pkg popular" onclick="buyCreditsKR(34800, 300)">
                     <div class="pkg-badge">BEST</div>
-                    <div class="pkg-credits">30c</div>
-                    <div class="pkg-price">₩29,900</div>
-                    <div class="pkg-save">23% 할인</div>
+                    <div class="pkg-credits">300c</div>
+                    <div class="pkg-price">₩34,800</div>
+                    <div class="pkg-save">20% 할인</div>
                 </button>
-                <button class="credit-pkg" onclick="buyCreditsKR(45900, 50)">
-                    <div class="pkg-credits">50c</div>
-                    <div class="pkg-price">₩45,900</div>
-                    <div class="pkg-save">29% 할인</div>
+                <button class="credit-pkg" onclick="buyCreditsKR(50750, 500)">
+                    <div class="pkg-credits">500c</div>
+                    <div class="pkg-price">₩50,750</div>
+                    <div class="pkg-save">30% 할인</div>
                 </button>
             </div>
             <button class="credit-modal-btn secondary" onclick="closeCreditModal()">닫기</button>
@@ -267,20 +284,23 @@
             <button class="btn btn-success" id="btn-download" onclick="downloadResult()" style="flex:2;">📥 고화질 다운로드 (70c)</button>
         </div>
 
-        <!-- SNS 공유 이벤트 -->
-        <div id="sns-event" data-show="showStep3Actions" style="display:none; margin:0 16px 16px; padding:14px 16px; background:rgba(167,139,250,0.06); border:1px solid rgba(167,139,250,0.12); border-radius:14px; text-align:center;">
-            <div style="font-size:14px; font-weight:700; color:#c4b5fd; margin-bottom:6px;">📸 이 화면을 캡처해서 SNS에 공유하세요!</div>
-            <div style="font-size:12px; color:#8892a8; line-height:1.6;">
-                인스타·X·블로그에 공유 + 텔레그램으로 캡처 전송<br>
-                → <strong style="color:#a78bfa;">100크레딧 즉시 지급!</strong>
-            </div>
-            <a href="#" onclick="openTelegram(); return false;" style="display:inline-block; margin-top:10px; padding:8px 20px; background:linear-gradient(135deg,#a78bfa,#7c3aed); color:#fff; border-radius:10px; font-size:13px; font-weight:600; text-decoration:none;">
-                ✈️ 텔레그램으로 100c 받기
-            </a>
-        </div>
+        <!-- 게이트 팝업 마운트 -->
+        <div id="gate-mount"></div>
+
+        <!-- 포스트 다운로드 마운트 (프리미엄→미션→충전 순서로 모듈이 append) -->
+        <div id="post-download-mount" data-show="downloadComplete" style="display:none; padding:0 16px 16px;"></div>
+
+        <!-- 충전 모달 마운트 -->
+        <div id="charge-mount"></div>
+
+        <!-- 이벤트 알림 마운트 -->
+        <div id="event-notification-mount"></div>
     </div>
 
     <div id="log"></div>
+
+    <!-- Cr 이벤트 카드 컨테이너 -->
+    <div class="event-container" style="position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:9998;width:380px;max-width:calc(100vw - 32px);"></div>
 
     <!-- 앱 스크립트 -->
     <script type="module" src="result.js?v=migration01"></script>

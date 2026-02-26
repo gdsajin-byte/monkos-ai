@@ -3,9 +3,13 @@
  * 00079 라인 1033~1091에서 추출
  */
 
-// API 설정
+// Google OAuth (헌법 6조: config.js 집중 관리)
+export const GOOGLE_CLIENT_ID = '933456016842-clagcrpo1juvukjif1m454jq811bd2rq.apps.googleusercontent.com';
+
+// API 설정 — hostname 기반 환경 자동 분기
+const IS_DEV = typeof location !== 'undefined' && location.hostname.includes('-dev-');
 export const API = {
-  PORTAL_URL: 'https://monkos.ai',
+  PORTAL_URL: IS_DEV ? 'https://monkos-portal-dev-4jeplpqpua-uc.a.run.app' : 'https://monkos.ai',
   // Cloud Run 자체 서빙 (상대경로)
   PRECHECK: '/api/precheck',
   GENERATE: '/api/idgen',
@@ -21,7 +25,11 @@ export const CREDIT_COST = {
 };
 
 // 토스페이먼츠 (KR 전용)
-export const TOSS_CLIENT_KEY = ''; // TODO: monkos 정식 연동 후 설정
+export const TOSS_CLIENT_KEY = 'test_ck_D5GePWvyJnrK0W0k6q8gLzN97Eoq'; // 테스트키 (심사용 임시)
+
+// 카카오 채널 (헌법 6조: config.js 집중 관리 — 값 미설정 시 SDK 호출 스킵)
+export const KAKAO_JS_KEY = '';
+export const KAKAO_CHANNEL_ID = '';
 
 // 캡처 설정
 export const MAX_CAPTURE_SIZE = 512;

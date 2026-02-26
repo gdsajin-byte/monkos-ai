@@ -62,7 +62,13 @@
   --border-hover: rgba(167, 139, 250, 0.3);
   --success: #34d399;
   --card-bg: rgba(20, 20, 40, 0.7);
+  --card-bg-hover: rgba(30, 30, 55, 0.8);
   --glow: rgba(167, 139, 250, 0.06);
+  --blue: #60A5FA;
+  --emerald: #34d399;
+  --gold: #f59e0b;
+  --chat-bg: rgba(15, 15, 35, 0.98);
+  --chat-border: rgba(167, 139, 250, 0.25);
 }
 
 body {
@@ -556,44 +562,128 @@ header {
 /* === 서비스 카드 === */
 .services {
   display: grid;
+  grid-template-columns: 1fr;
   gap: 16px;
   margin-bottom: 20px;
 }
 
+@media (min-width: 641px) {
+  .services.card-grid { grid-template-columns: 1fr 1fr; }
+  .services.card-grid .service-card:first-child {
+    grid-column: 1 / -1;
+    min-height: 280px;
+  }
+}
+
 .service-card {
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 28px;
-  backdrop-filter: blur(12px);
-  transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
   position: relative;
   overflow: hidden;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.08);
+  min-height: 240px;
+  transition: transform 0.4s, box-shadow 0.4s, border-color 0.3s;
+  cursor: pointer;
 }
 
-.service-card::before {
-  content: '';
+/* 카드 배경 이미지 */
+.service-card .card-bg-img {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent3));
-  opacity: 0.6;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.7s ease;
 }
 
-.service-card:hover {
-  border-color: var(--border-hover);
-  transform: translateY(-3px);
-  box-shadow: 0 8px 32px rgba(167, 139, 250, 0.1);
+.service-card:hover .card-bg-img {
+  transform: scale(1.1);
+}
+
+/* 카드 오버레이 (이미지 위 색상 레이어) */
+.service-card .card-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+/* LIVE 카드 — 보라 오버레이 */
+.service-card.live .card-overlay {
+  background: linear-gradient(160deg, rgba(167,139,250,0.5) 0%, rgba(10,10,30,0.75) 70%);
+}
+.service-card.live {
+  border-color: rgba(167,139,250,0.3);
+}
+.service-card.live:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 48px rgba(167,139,250,0.3);
+  border-color: rgba(167,139,250,0.5);
+}
+
+/* COMING SOON — 블루 (AI Models) */
+.service-card.color-blue .card-overlay {
+  background: linear-gradient(160deg, rgba(96,165,250,0.45) 0%, rgba(10,10,30,0.8) 70%);
+}
+.service-card.color-blue { border-color: rgba(96,165,250,0.15); }
+
+/* COMING SOON — 에메랄드 (AI Academy) */
+.service-card.color-emerald .card-overlay {
+  background: linear-gradient(160deg, rgba(52,211,153,0.4) 0%, rgba(10,10,30,0.8) 70%);
+}
+.service-card.color-emerald { border-color: rgba(52,211,153,0.15); }
+
+/* COMING SOON 공통 */
+.service-card.coming-soon .card-bg-img {
+  filter: grayscale(0.3) brightness(0.55);
+}
+.service-card.coming-soon:hover .card-bg-img {
+  transform: none;
+}
+.service-card.coming-soon {
+  cursor: default;
+}
+
+/* 카드 내부 컨텐츠 */
+.card-inner {
+  position: relative;
+  z-index: 2;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 240px;
+}
+@media (min-width: 641px) {
+  .service-card:first-child .card-inner { min-height: 280px; }
+}
+
+/* COMING SOON 배지 */
+.coming-soon-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+}
+
+.coming-soon-badge {
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 3px;
+  padding: 12px 32px;
+  border-radius: 10px;
+  text-transform: uppercase;
 }
 
 .service-badge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: rgba(52, 211, 153, 0.1);
-  color: var(--success);
   font-size: 10px;
   font-weight: 700;
   padding: 4px 12px;
@@ -603,19 +693,36 @@ header {
   text-transform: uppercase;
 }
 
+.service-badge.badge-live {
+  background: rgba(52, 211, 153, 0.15);
+  color: var(--success);
+}
+
+.service-badge.badge-blue {
+  background: rgba(96,165,250,0.15);
+  color: var(--blue);
+}
+
+.service-badge.badge-emerald {
+  background: rgba(52,211,153,0.15);
+  color: var(--emerald);
+}
+
 .service-card h3 {
-  font-size: 1.3rem;
-  color: var(--text-bright);
+  font-size: 1.5rem;
+  color: #fff;
   margin-bottom: 6px;
-  font-weight: 700;
+  font-weight: 800;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.4);
 }
 
 .service-card p {
   display: block;
-  font-size: 0.85rem;
-  color: var(--text-dim);
+  font-size: 0.88rem;
+  color: rgba(255,255,255,0.75);
   margin-bottom: 16px;
   line-height: 1.5;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.3);
 }
 
 .service-features {
@@ -627,17 +734,18 @@ header {
 }
 
 .service-features li {
-  color: var(--text);
+  color: #fff;
   padding: 5px 12px;
   font-size: 0.78rem;
-  background: rgba(167, 139, 250, 0.08);
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(4px);
   border-radius: 8px;
-  border: 1px solid rgba(167, 139, 250, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .service-features li::before {
   content: '✓ ';
-  color: var(--accent);
+  color: var(--success);
   font-weight: 700;
 }
 
@@ -703,41 +811,6 @@ header {
 .event-btn:hover { opacity: 0.9; transform: translateY(-1px); }
 .event-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
-/* === 설문 모달 === */
-.survey-modal {
-  display: none; position: fixed; inset: 0;
-  background: rgba(0,0,0,0.8); z-index: 9999;
-  justify-content: center; align-items: center; padding: 20px;
-}
-.survey-modal.active { display: flex; }
-.survey-box {
-  background: var(--surface); border-radius: 16px;
-  max-width: 440px; width: 100%; padding: 28px;
-  max-height: 85vh; overflow-y: auto;
-}
-.survey-header { text-align: center; margin-bottom: 20px; }
-.survey-header h3 { font-size: 1.2rem; color: #f59e0b; margin-bottom: 4px; }
-.survey-header p { font-size: 0.8rem; color: var(--text-dim); }
-.survey-q { margin-bottom: 18px; }
-.survey-q label { display: block; font-size: 0.85rem; color: var(--text); margin-bottom: 8px; font-weight: 600; }
-.survey-q select, .survey-q input[type="text"] {
-  width: 100%; padding: 10px 12px;
-  background: var(--bg); border: 1px solid var(--border);
-  color: var(--text); border-radius: 8px; font-size: 0.85rem;
-}
-.survey-q select:focus, .survey-q input:focus { border-color: var(--accent); outline: none; }
-.survey-submit {
-  width: 100%; padding: 14px;
-  background: linear-gradient(135deg, #f59e0b, #ef4444);
-  color: #fff; border: none; border-radius: 12px;
-  font-size: 1rem; font-weight: 700; cursor: pointer;
-  margin-top: 8px;
-}
-.survey-submit:disabled { opacity: 0.5; cursor: not-allowed; }
-.survey-close {
-  display: block; margin: 12px auto 0; background: none;
-  border: none; color: var(--text-dim); font-size: 0.8rem; cursor: pointer;
-}
 
 /* === 사업자 정보 === */
 .biz-info {
@@ -799,6 +872,19 @@ footer a {
 
 .chat-fab:hover { transform: scale(1.1); }
 
+/* === 챗봇 백드롭 === */
+.chat-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 999;
+}
+
+.chat-backdrop.open { display: block; }
+
 /* === 챗봇 패널 === */
 .chat-panel {
   position: fixed;
@@ -806,10 +892,13 @@ footer a {
   right: 24px;
   width: min(380px, calc(100vw - 48px));
   max-height: calc(100vh - 140px);
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: linear-gradient(180deg, #1e1e3a 0%, #161630 100%);
+  border: 1.5px solid rgba(167, 139, 250, 0.35);
   border-radius: 16px;
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+  box-shadow:
+    0 8px 40px rgba(0, 0, 0, 0.7),
+    0 0 80px rgba(167, 139, 250, 0.15),
+    inset 0 1px 0 rgba(167, 139, 250, 0.1);
   z-index: 1000;
   display: none;
   flex-direction: column;
@@ -822,10 +911,11 @@ footer a {
 
 .chat-header {
   padding: 16px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid rgba(167, 139, 250, 0.2);
   display: flex;
   align-items: center;
   gap: 10px;
+  background: linear-gradient(135deg, rgba(167, 139, 250, 0.2) 0%, rgba(129, 140, 248, 0.12) 50%, rgba(192, 132, 252, 0.08) 100%);
 }
 
 .chat-header-dot {
@@ -863,6 +953,7 @@ footer a {
   gap: 12px;
   min-height: 200px;
   max-height: 340px;
+  background: rgba(12, 12, 28, 0.6);
 }
 
 .chat-msg {
@@ -899,9 +990,10 @@ footer a {
 
 .chat-input-wrap {
   padding: 12px;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid rgba(167, 139, 250, 0.15);
   display: flex;
   gap: 8px;
+  background: rgba(20, 20, 42, 0.9);
 }
 
 .chat-input {
@@ -1076,6 +1168,7 @@ footer a {
     max-height: 70vh;
     border-radius: 16px 16px 0 0;
     top: auto;
+    border-bottom: none;
   }
 }
 </style>
@@ -1105,7 +1198,7 @@ footer a {
     </div>
     <div class="auth-area">
       <!-- 로그인 버튼 (비로그인 시) -->
-      <button class="header-login-btn" id="headerLoginBtn" onclick="googleLogin()">로그인</button>
+      <button class="header-login-btn" id="headerLoginBtn" onclick="headerLogin()">로그인</button>
       <!-- 크레딧 (로그인 후) -->
       <button class="credit-btn" id="creditBtn" onclick="openCreditShop()">
         <span class="credit-diamond">💎</span>
@@ -1133,29 +1226,45 @@ footer a {
       <p class="hero-sub" id="heroSub"></p>
     </section>
 
-    <!-- 서비스 카드 -->
-    <section class="services">
-    <div class="service-card">
-      <div class="service-badge" id="badgeFree">AI POWERED</div>
-      <h3 id="serviceTitle"></h3>
-      <p id="serviceDesc"></p>
-      <ul class="service-features" id="serviceFeatures"></ul>
-      <a class="cta-btn" id="ctaBtn" href="#"></a>
-    </div>
-  </section>
-
-  <!-- 이벤트 카드 -->
-  <section class="services" id="eventSection" style="display:none;">
-    <div class="event-card">
-      <div class="event-card-inner">
-        <div class="event-emoji">🎁</div>
-        <div class="event-title" id="eventTitle">매일 선착순 30명! 12크레딧 무료</div>
-        <div class="event-desc" id="eventDesc">간단한 설문에 참여하면 12크레딧($12 상당)을 즉시 지급합니다.</div>
-        <div class="event-remaining" id="eventRemaining">잔여 30/30명</div><br>
-        <button class="event-btn" id="eventBtn" onclick="openSurvey()">설문 참여하고 12c 받기</button>
+    <!-- 서비스 카드 그리드 -->
+    <section class="services card-grid">
+      <!-- 1. AI 증명사진 (LIVE) -->
+      <div class="service-card live">
+        <img class="card-bg-img" src="https://images.unsplash.com/photo-1542038784456-1ea8e935640e?auto=format&fit=crop&q=80&w=800" alt="AI ID Photo" loading="lazy">
+        <div class="card-overlay"></div>
+        <div class="card-inner">
+          <div class="service-badge badge-live">LIVE</div>
+          <h3 id="serviceTitle"></h3>
+          <p id="serviceDesc"></p>
+          <ul class="service-features" id="serviceFeatures"></ul>
+          <a class="cta-btn" id="ctaBtn" href="#"></a>
+        </div>
       </div>
-    </div>
-  </section>
+      <!-- 2. AI Models (COMING SOON) -->
+      <div class="service-card coming-soon color-blue">
+        <img class="card-bg-img" src="https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?auto=format&fit=crop&q=80&w=800" alt="AI Models" loading="lazy">
+        <div class="card-overlay"></div>
+        <div class="card-inner">
+          <div class="service-badge badge-blue">AI MODELS</div>
+          <h3 id="card2Title"></h3>
+          <p id="card2Desc"></p>
+          <ul class="service-features" id="card2Features"></ul>
+        </div>
+        <div class="coming-soon-overlay"><div class="coming-soon-badge">Coming Soon</div></div>
+      </div>
+      <!-- 3. AI Academy (COMING SOON) -->
+      <div class="service-card coming-soon color-emerald">
+        <img class="card-bg-img" src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=800" alt="AI Academy" loading="lazy">
+        <div class="card-overlay"></div>
+        <div class="card-inner">
+          <div class="service-badge badge-emerald">ACADEMY</div>
+          <h3 id="card3Title"></h3>
+          <p id="card3Desc"></p>
+          <ul class="service-features" id="card3Features"></ul>
+        </div>
+        <div class="coming-soon-overlay"><div class="coming-soon-badge">Coming Soon</div></div>
+      </div>
+    </section>
 
   <!-- 사업자 정보 -->
   <section class="biz-info" translate="no">
@@ -1240,52 +1349,13 @@ footer a {
   </div>
 </div>
 
-<!-- 설문 모달 -->
-<div class="survey-modal" id="surveyModal">
-  <div class="survey-box">
-    <div class="survey-header">
-      <h3>🎁 <span id="surveyModalTitle">설문 참여하고 12크레딧 받기</span></h3>
-      <p id="surveyModalSub">30초면 완료! 답변해 주시면 바로 지급됩니다.</p>
-    </div>
-    <div class="survey-q">
-      <label id="sq1Label">Q1. 어떤 용도로 증명사진이 필요하세요?</label>
-      <select id="sq1">
-        <option value="">선택해 주세요</option>
-        <option value="passport_visa">여권/비자</option>
-        <option value="resume">이력서/취업</option>
-        <option value="license">자격증/면허증</option>
-        <option value="school">학교/학원</option>
-        <option value="other">기타</option>
-      </select>
-    </div>
-    <div class="survey-q">
-      <label id="sq2Label">Q2. 기존에 증명사진을 어떻게 찍으셨나요?</label>
-      <select id="sq2">
-        <option value="">선택해 주세요</option>
-        <option value="studio">사진관 방문</option>
-        <option value="self">셀프 촬영 (앱/직접)</option>
-        <option value="booth">무인 사진기 (포토부스)</option>
-        <option value="first_time">처음 찍어봄</option>
-      </select>
-    </div>
-    <div class="survey-q">
-      <label id="sq3Label">Q3. MONKOS를 어떻게 알게 되셨나요?</label>
-      <select id="sq3">
-        <option value="">선택해 주세요</option>
-        <option value="search">검색 (Google/Naver)</option>
-        <option value="sns">SNS (X/Instagram)</option>
-        <option value="friend">지인 추천</option>
-        <option value="other">기타</option>
-      </select>
-    </div>
-    <button class="survey-submit" id="surveySubmitBtn" onclick="submitSurvey()">제출하고 12크레딧 받기</button>
-    <button class="survey-close" onclick="closeSurvey()">닫기</button>
-  </div>
-</div>
 
 <!-- 챗봇 FAB -->
 <button class="chat-fab" id="chatFab" aria-label="Chat" style="display:none">
 </button>
+
+<!-- 챗봇 백드롭 -->
+<div class="chat-backdrop" id="chatBackdrop" onclick="toggleChat()"></div>
 
 <!-- 챗봇 패널 -->
 <div class="chat-panel" id="chatPanel">
@@ -1308,6 +1378,24 @@ footer a {
     <p style="font-size:0.8rem; color:var(--text-dim); margin-bottom:18px;" id="shopCurrentLabel">Current: <strong id="shopCurrentCredits">0</strong>c</p>
     <div id="shopItems" style="display:flex; flex-direction:column; gap:10px;"></div>
     <button class="consent-modal-close" onclick="closeCreditShop()" style="margin-top:16px;" id="shopCloseBtn">Close</button>
+  </div>
+</div>
+
+<!-- KR 로그인 선택 모달 -->
+<div class="consent-modal" id="loginModal">
+  <div class="consent-modal-content" style="max-width:340px; text-align:center;">
+    <h3 id="loginModalTitle">로그인</h3>
+    <div class="gate-login-buttons" style="margin-top:16px;">
+      <button class="gate-login-btn" onclick="googleLogin(); closeLoginModal();">
+        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59a14.5 14.5 0 0 1 0-9.18l-7.98-6.19a24.014 24.014 0 0 0 0 21.56l7.98-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+        <span id="loginGoogleText">Google로 로그인</span>
+      </button>
+      <button class="gate-login-btn gate-login-kakao" onclick="loginKakao(); closeLoginModal();">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#3C1E1E" d="M12 3C6.48 3 2 6.36 2 10.5c0 2.67 1.74 5.02 4.38 6.39l-1.12 4.11c-.1.37.32.66.64.44l4.84-3.2c.41.04.83.06 1.26.06 5.52 0 10-3.36 10-7.5S17.52 3 12 3z"/></svg>
+        <span id="loginKakaoText">카카오로 로그인</span>
+      </button>
+    </div>
+    <button class="consent-modal-close" onclick="closeLoginModal()" style="margin-top:16px;" id="loginModalClose">닫기</button>
   </div>
 </div>
 
@@ -1405,6 +1493,19 @@ function loginKakao() {
 // LINE 로그인
 function loginLine() {
   location.href = '/auth/line';
+}
+
+// 헤더 로그인 — KR: 선택 팝업, 글로벌: Google 바로
+function headerLogin() {
+  if (region === 'kr') {
+    document.getElementById('loginModal').classList.add('active');
+  } else {
+    googleLogin();
+  }
+}
+
+function closeLoginModal() {
+  document.getElementById('loginModal').classList.remove('active');
 }
 
 // Google 로그인 버튼 클릭 (OAuth 팝업 — One Tap 쿨다운 회피)
@@ -1538,7 +1639,6 @@ function updateAuthUI() {
     // 로그인 상태: 헤더 로그인 버튼 숨김
     document.body.classList.add('logged-in');
     if (headerLoginBtn) headerLoginBtn.style.display = 'none';
-    loadEventStatus();
   } else {
     creditBtn.style.display = 'none';
     providerBadge.style.display = 'none';
@@ -1722,53 +1822,76 @@ window.addEventListener('load', initGoogleAuth);
 // === i18n (하드코딩 3개 언어) ===
 const i18n = {
   ja: {
-    heroSub: 'AI証明写真プラットフォーム',
+    heroSub: 'AIクリエイティブプラットフォーム',
     serviceTitle: 'AI証明写真',
     serviceDesc: 'AIコーチングで完璧な撮影 → AIで証明写真に変換。パスポート・履歴書対応。',
     features: ['AIリアルタイムコーチング', 'プロ品質の自動変換', 'パスポート・履歴書対応'],
     ctaText: '証明写真を撮る',
     ctaUrl: 'https://idphoto-jp.monkos.ai/app',
+    card2Title: 'AI Models',
+    card2Desc: 'MONKOS AIモデル。最先端のAI画像生成・編集モデルをまもなく公開。',
+    card2Features: ['AI画像生成', 'スタイル変換', 'プロ品質出力'],
+    card3Title: 'AI Academy',
+    card3Desc: 'AI活用スキルを体系的に学ぶ。クリエイター向けAI教育プラットフォーム。',
+    card3Features: ['AI活用講座', '実践ワークショップ', 'クリエイター育成'],
     chatPlaceholder: '質問を入力...',
-    chatWelcome: 'こんにちは！MONKOSです。AI証明写真サービスについて何でも聞いてください。',
-    eventTitle: '毎日先着30名！12クレジット無料',
-    eventDesc: '簡単なアンケートに回答すると12クレジット（$12相当）を即時支給します。',
-    eventBtn: 'アンケートに答えて12c もらう',
-    eventRemaining: '残り {n}/30名',
-    eventSoldout: '本日終了！明日正午にリセットされます',
-    eventDone: '参加済み！クレジットは支給済みです',
+    chatWelcome: 'こんにちは！MONKOSです。サービスについて何でも聞いてください。',
+    eventTitle: 'Telegramで友達追加して30クレジットGET！',
+    eventDesc: '@monkos_support_botを友達追加すると30クレジットを即時支給します。',
+    eventBtn: 'Telegram友達追加 → 30c GET',
+    eventDone: 'ボーナス受取済み！',
+    login: 'ログイン',
+    loginGoogle: 'Googleでログイン',
+    loginKakao: 'カカオでログイン',
+    loginClose: '閉じる',
   },
   ko: {
-    heroSub: 'AI 증명사진 플랫폼',
+    heroSub: 'AI 크리에이티브 플랫폼',
     serviceTitle: 'AI 증명사진',
     serviceDesc: 'AI 코칭으로 완벽한 촬영 → AI로 증명사진 변환. 증명사진, 이력서 대응.',
     features: ['AI 실시간 코칭', '프로 품질 자동 변환', '증명사진/이력서 대응'],
     ctaText: '증명사진 촬영하기',
     ctaUrl: 'https://idphoto-kr.monkos.ai/app',
+    card2Title: 'AI Models',
+    card2Desc: 'MONKOS AI 모델. 최첨단 AI 이미지 생성·편집 모델을 곧 공개합니다.',
+    card2Features: ['AI 이미지 생성', '스타일 변환', '프로 품질 출력'],
+    card3Title: 'AI Academy',
+    card3Desc: 'AI 활용 스킬을 체계적으로 학습. 크리에이터를 위한 AI 교육 플랫폼.',
+    card3Features: ['AI 활용 강좌', '실전 워크숍', '크리에이터 육성'],
     chatPlaceholder: '질문을 입력하세요...',
-    chatWelcome: '안녕하세요! MONKOS입니다. AI 증명사진 서비스에 대해 무엇이든 물어보세요.',
-    eventTitle: '매일 선착순 30명! 12크레딧 무료',
-    eventDesc: '간단한 설문에 참여하면 12크레딧($12 상당)을 즉시 지급합니다.',
-    eventBtn: '설문 참여하고 12c 받기',
-    eventRemaining: '잔여 {n}/30명',
-    eventSoldout: '오늘 마감! 내일 정오에 리셋됩니다',
-    eventDone: '참여 완료! 크레딧이 지급되었습니다',
+    chatWelcome: '안녕하세요! MONKOS입니다. 서비스에 대해 무엇이든 물어보세요.',
+    eventTitle: '텔레그램 친구 추가하고 30크레딧 받기!',
+    eventDesc: '@monkos_support_bot을 친구 추가하면 30크레딧을 즉시 지급합니다.',
+    eventBtn: '텔레그램 친구 추가 → 30c 받기',
+    eventDone: '보너스 수령 완료!',
+    login: '로그인',
+    loginGoogle: 'Google로 로그인',
+    loginKakao: '카카오로 로그인',
+    loginClose: '닫기',
   },
   en: {
-    heroSub: 'AI ID Photo Platform',
+    heroSub: 'AI Creative Platform',
     serviceTitle: 'AI ID Photo',
     serviceDesc: 'AI coaching for perfect shots → AI transforms into ID photos. ID photo and resume supported.',
     features: ['AI real-time coaching', 'Pro-quality auto conversion', 'ID photo / resume ready'],
     ctaText: 'Take ID Photo',
     ctaUrl: 'https://idphoto-jp.monkos.ai/app',
+    card2Title: 'AI Models',
+    card2Desc: 'MONKOS AI Models. Cutting-edge AI image generation & editing models coming soon.',
+    card2Features: ['AI image generation', 'Style transfer', 'Pro-quality output'],
+    card3Title: 'AI Academy',
+    card3Desc: 'Learn AI skills systematically. AI education platform for creators.',
+    card3Features: ['AI courses', 'Hands-on workshops', 'Creator training'],
     chatPlaceholder: 'Type your question...',
-    chatWelcome: 'Hi! I\'m MONKOS. Ask me anything about our AI ID photo service.',
+    chatWelcome: 'Hi! I\'m MONKOS. Ask me anything about our services.',
     login: 'Login',
-    eventTitle: 'First 30 daily! 12 credits free',
-    eventDesc: 'Complete a quick survey and get 12 credits ($12 value) instantly.',
-    eventBtn: 'Take survey & get 12c',
-    eventRemaining: '{n}/30 spots left',
-    eventSoldout: 'Sold out today! Resets at noon tomorrow',
-    eventDone: 'Already done! Credits have been granted',
+    loginGoogle: 'Login with Google',
+    loginKakao: 'Login with Kakao',
+    loginClose: 'Close',
+    eventTitle: 'Add us on Telegram & get 30 credits!',
+    eventDesc: 'Add @monkos_support_bot as friend and get 30 credits instantly.',
+    eventBtn: 'Add on Telegram → get 30c',
+    eventDone: 'Bonus claimed!',
   },
 };
 
@@ -2097,6 +2220,19 @@ function applyLang() {
     : 'https://idphoto-jp.monkos.ai/app';
   cta.href = ctaUrl;
 
+  // COMING SOON 카드 텍스트
+  const cards = [
+    { n: 2, title: t.card2Title, desc: t.card2Desc, feats: t.card2Features },
+    { n: 3, title: t.card3Title, desc: t.card3Desc, feats: t.card3Features },
+  ];
+  cards.forEach(c => {
+    document.getElementById(`card${c.n}Title`).textContent = c.title;
+    document.getElementById(`card${c.n}Desc`).textContent = c.desc;
+    const fl = document.getElementById(`card${c.n}Features`);
+    fl.innerHTML = '';
+    c.feats.forEach(f => { const li = document.createElement('li'); li.textContent = f; fl.appendChild(li); });
+  });
+
   // 동의 모달 텍스트 (게이트 제거 후에도 모달은 유지)
   const ct = consentTexts[lang] || consentTexts.en;
   document.getElementById('privacyModalTitle').textContent = ct.privacyTitle;
@@ -2108,6 +2244,13 @@ function applyLang() {
 
   // 챗봇
   document.getElementById('chatInput').placeholder = t.chatPlaceholder;
+
+  // 로그인 모달 + 헤더 로그인 버튼 텍스트
+  document.getElementById('headerLoginBtn').textContent = t.login;
+  document.getElementById('loginModalTitle').textContent = t.login;
+  document.getElementById('loginGoogleText').textContent = t.loginGoogle;
+  document.getElementById('loginKakaoText').textContent = t.loginKakao;
+  document.getElementById('loginModalClose').textContent = t.loginClose;
 }
 
 function setLang(newLang) {
@@ -2152,9 +2295,9 @@ let isLoading = false;
 function toggleChat() {
   chatOpen = !chatOpen;
   chatPanel.classList.toggle('open', chatOpen);
+  document.getElementById('chatBackdrop').classList.toggle('open', chatOpen);
   if (chatOpen) {
     logoBubble.classList.add('hide');
-    // 첫 오픈 시 환영 메시지
     if (chatMessages.children.length === 0) {
       addMessage(t.chatWelcome, 'bot');
     }
@@ -2167,6 +2310,7 @@ function toggleChat() {
 function closeChat() {
   chatOpen = false;
   chatPanel.classList.remove('open');
+  document.getElementById('chatBackdrop').classList.remove('open');
   logoBubble.classList.remove('hide');
 }
 
@@ -2239,112 +2383,7 @@ chatInput.addEventListener('keydown', (e) => {
   if (e.key === 'Enter' && !e.isComposing) sendMessage();
 });
 
-// === 이벤트 카드 + 설문 ===
-async function loadEventStatus() {
-  if (!currentUser?.id) return;
-  try {
-    const res = await fetch(`/api/survey/status?userId=${encodeURIComponent(currentUser.id)}`);
-    const data = await res.json();
-    const section = document.getElementById('eventSection');
-    const titleEl = document.getElementById('eventTitle');
-    const descEl = document.getElementById('eventDesc');
-    const remainEl = document.getElementById('eventRemaining');
-    const btnEl = document.getElementById('eventBtn');
-
-    titleEl.textContent = t.eventTitle || t.eventTitle;
-    descEl.innerHTML = t.eventDesc || '';
-    btnEl.textContent = t.eventBtn || '';
-
-    if (data.alreadyDone) {
-      remainEl.textContent = t.eventDone || 'Done';
-      remainEl.classList.add('soldout');
-      btnEl.disabled = true;
-      btnEl.textContent = '✅ ' + (t.eventDone || 'Done');
-    } else if (data.remaining <= 0) {
-      remainEl.textContent = t.eventSoldout || 'Sold out';
-      remainEl.classList.add('soldout');
-      btnEl.disabled = true;
-    } else {
-      remainEl.textContent = (t.eventRemaining || '{n}/30').replace('{n}', data.remaining);
-    }
-
-    section.style.display = 'block';
-  } catch (err) {
-    console.error('[Event] 상태 로드 실패:', err);
-  }
-}
-
-function openSurvey() {
-  document.getElementById('surveyModal').classList.add('active');
-}
-
-function closeSurvey() {
-  document.getElementById('surveyModal').classList.remove('active');
-}
-
-// 모달 외부 클릭 닫기
-document.getElementById('surveyModal').addEventListener('click', (e) => {
-  if (e.target.id === 'surveyModal') closeSurvey();
-});
-
-async function submitSurvey() {
-  const q1 = document.getElementById('sq1').value;
-  const q2 = document.getElementById('sq2').value;
-  const q3 = document.getElementById('sq3').value;
-  if (!q1 || !q2 || !q3) {
-    const alertMsg = { ja: '必須項目を選択してください', ko: '필수 항목을 선택해 주세요', en: 'Please select all required fields' };
-    alert(alertMsg[lang] || alertMsg.en);
-    return;
-  }
-
-  if (!currentUser?.id) {
-    alert('로그인이 필요합니다');
-    return;
-  }
-
-  const btn = document.getElementById('surveySubmitBtn');
-  btn.disabled = true;
-  btn.textContent = '...';
-
-  try {
-    const res = await fetch('/api/survey', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        userId: currentUser.id,
-        answers: { purpose: q1, method: q2, referral: q3 },
-      }),
-    });
-    const data = await res.json();
-
-    if (data.success) {
-      currentUser.credits = data.credits;
-      sessionStorage.setItem('monkos_user', JSON.stringify(currentUser));
-      closeSurvey();
-
-      const successMsg = {
-        ja: `🎉 ${data.bonus}クレジットが支給されました！（残高: ${data.credits}c）`,
-        ko: `🎉 ${data.bonus}크레딧이 지급되었습니다! (잔액: ${data.credits}c)`,
-        en: `🎉 ${data.bonus} credits granted! (Balance: ${data.credits}c)`,
-      };
-      alert(successMsg[lang] || successMsg.en);
-      loadEventStatus();
-    } else {
-      const errMsg = data.soldOut
-        ? { ja: '本日の先着枠が終了しました', ko: '오늘 선착순이 마감되었습니다', en: 'Today\'s spots are filled' }
-        : data.alreadyDone
-        ? { ja: '既に参加済みです', ko: '이미 참여하셨습니다', en: 'Already participated' }
-        : { ja: data.error, ko: data.error, en: data.error };
-      alert(errMsg[lang] || errMsg.en);
-      btn.disabled = false;
-      btn.textContent = t.eventBtn || 'Submit';
-    }
-  } catch (err) {
-    alert('오류: ' + err.message);
-    btn.disabled = false;
-    btn.textContent = t.eventBtn || 'Submit';
-  }
-}
+// === 텔레그램 보너스 (v2에서 제거됨 — CS봇 30c 폐지) ===
 </script>
 
 <footer style="position:fixed; bottom:0; left:0; right:0; text-align:center; padding:8px 16px; font-size:0.6rem; color:#64748b; background:rgba(10,10,26,0.92); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); z-index:10; line-height:1.5; border-top:1px solid rgba(167,139,250,0.08);" translate="no">

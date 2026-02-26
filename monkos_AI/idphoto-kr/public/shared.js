@@ -7,14 +7,14 @@ import Monk from './monk.js';
 import {
   API, CREDIT_COST, TOSS_CLIENT_KEY, PHOTO_SPECS, TX, t,
   MAX_CAPTURE_SIZE, COACHING_DISPLAY_MS, FRAME_INTERVAL_MS, CAPTURE_SIZE,
-  DPI, mmToPx
+  DPI, mmToPx, GOOGLE_CLIENT_ID
 } from './config.js';
 
 // Re-export for page JS convenience
 export {
   Monk, API, CREDIT_COST, TOSS_CLIENT_KEY, PHOTO_SPECS, TX, t,
   MAX_CAPTURE_SIZE, COACHING_DISPLAY_MS, FRAME_INTERVAL_MS, CAPTURE_SIZE,
-  DPI, mmToPx
+  DPI, mmToPx, GOOGLE_CLIENT_ID
 };
 
 // ─── Store 초기화 ───
@@ -73,6 +73,10 @@ export const store = Monk.store({
   postCreditMsg: '',
   pageUrl: '',
   qrCodeUrl: '',
+
+  // 포스트 다운로드 (크레딧 게이트 v2)
+  showMission: false,
+  missionConsentDone: false,
 });
 
 // ─── Pipe 설정 (REST only) ───
@@ -103,12 +107,25 @@ export function closeCreditModal() {
   store.creditModalOpen = false;
 }
 
+// ─── 충전 모달 (→ modules/charge.js 위임) ───
+export async function showChargeModal() {
+  const { ChargeModule } = await import('./modules/charge.js');
+  ChargeModule.show();
+}
+
 // ─── 결제 (토스) ───
 export async function buyCreditsKR(amount, credits) {
   if (!store.user.id) {
     alert('로그인이 필요합니다');
     return;
   }
+
+  // 토스 심사 중 — 클라이언트 키 없으면 안내 후 리턴
+  if (!TOSS_CLIENT_KEY) {
+    alert('결제 시스템 준비 중입니다.\n곧 이용 가능합니다!');
+    return;
+  }
+
   closeCreditModal();
 
   const orderId = `MONKOS_${store.user.id.slice(0, 8)}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
@@ -156,7 +173,7 @@ export async function initFromTossResult() {
     if (!paymentKey || !orderId || !amount) return;
 
     try {
-      const res = await fetch(`${API.PORTAL_URL}/api/payment/confirm`, {
+      const res = await fetch(`${API.PORTAL_URL}/api/payments/toss/confirm`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ paymentKey, orderId, amount: Number(amount), userId: store.user.id }),
@@ -164,6 +181,12 @@ export async function initFromTossResult() {
       const data = await res.json();
       if (data.success) {
         store.user = { ...store.user, credits: data.credits };
+        const stored = localStorage.getItem('monkos_user');
+        if (stored) {
+          const user = JSON.parse(stored);
+          user.credits = data.credits;
+          localStorage.setItem('monkos_user', JSON.stringify(user));
+        }
         Monk.log(`결제 완료: ${data.credits}c`);
         alert(`결제가 완료되었습니다!\n현재 크레딧: ${data.credits}c`);
       } else {
@@ -186,7 +209,7 @@ export async function initFromUrlToken() {
     const res = await fetch(`${API.PORTAL_URL}/api/auth/verify?token=${encodeURIComponent(token)}`);
     const data = await res.json();
     if (data.success && data.user) {
-      sessionStorage.setItem('monkos_user', JSON.stringify(data.user));
+      localStorage.setItem('monkos_user', JSON.stringify(data.user));
       history.replaceState(null, '', location.pathname);
       Monk.log(`토큰 로그인 성공: ${data.user.email}`);
       return true;
@@ -198,7 +221,7 @@ export async function initFromUrlToken() {
 }
 
 export function initCredits() {
-  const stored = sessionStorage.getItem('monkos_user');
+  const stored = localStorage.getItem('monkos_user');
   if (stored) {
     try {
       const user = JSON.parse(stored);
@@ -225,11 +248,11 @@ export async function fetchLatestCredits() {
     const data = await res.json();
     if (data.credits !== undefined) {
       store.user = { ...store.user, credits: data.credits };
-      const stored = sessionStorage.getItem('monkos_user');
+      const stored = localStorage.getItem('monkos_user');
       if (stored) {
         const user = JSON.parse(stored);
         user.credits = data.credits;
-        sessionStorage.setItem('monkos_user', JSON.stringify(user));
+        localStorage.setItem('monkos_user', JSON.stringify(user));
       }
       Monk.log(`크레딧 갱신: ${data.credits}c`);
     }
@@ -244,6 +267,37 @@ document.addEventListener('visibilitychange', () => {
     fetchLatestCredits();
   }
 });
+
+// ─── 토큰 만료 체크 ───
+export function checkTokenExpiry() {
+  const token = localStorage.getItem('monkos_token');
+  if (!token) return;
+  try {
+    const parts = token.split('.');
+    if (parts.length >= 2) {
+      const payload = JSON.parse(atob(parts[1]));
+      if (payload.exp && payload.exp * 1000 < Date.now()) {
+        localStorage.removeItem('monkos_user');
+        localStorage.removeItem('monkos_token');
+      }
+    }
+  } catch (e) {
+    localStorage.removeItem('monkos_user');
+    localStorage.removeItem('monkos_token');
+  }
+}
+
+// ─── 다운로드 게이트 ───
+export function downloadGate() {
+  if (!store.user.id) {
+    return 'login-required';
+  }
+  if (!store.user.credits || store.user.credits < CREDIT_COST.download) {
+    showCreditModal(CREDIT_COST.download, store.user.credits || 0, 'download');
+    return 'credit-short';
+  }
+  return 'ok';
+}
 
 // ─── 유틸리티 ───
 export function openExternal() {
@@ -303,6 +357,7 @@ export function debugSessionKeys() {
 // ─── 공통 초기화 ───
 export async function sharedInit() {
   checkInappBrowser();
+  checkTokenExpiry();
   await initFromUrlToken();
   initCredits();
   await initFromTossResult();
@@ -322,13 +377,104 @@ export async function sharedInit() {
     store[key] = store[key];
   }
 
+  // 헤더 크레딧 → 충전샵 연결
+  const creditBadge = document.getElementById('creditBadge');
+  if (creditBadge) {
+    creditBadge.style.cursor = 'pointer';
+    creditBadge.addEventListener('click', () => showChargeModal());
+  }
+
   debugSessionKeys();
   Monk.log('공통 초기화 완료');
+}
+
+// ─── Cr 모션 컴포넌트 ───
+
+/**
+ * showEventCard — ② 이벤트 카드 + 3D Flip 알림
+ * @param {string} title  - 카드 제목 (예: '카카오 로그인 완료')
+ * @param {string} amount - 금액 표시 (예: '+30 Cr')
+ * @param {string} subtitle - 부제 (예: '가입 이벤트')
+ * @param {string} tag    - 태그 (예: 'EVENT')
+ */
+export function showEventCard(title, amount, subtitle, tag = 'EVENT') {
+  let container = document.querySelector('.event-container');
+  if (!container) {
+    container = document.createElement('div');
+    container.className = 'event-container';
+    document.body.appendChild(container);
+  }
+
+  const card = document.createElement('div');
+  card.className = 'event-card';
+  card.innerHTML = `
+    <div class="event-coin-wrap">
+      <div class="event-glow-ring"></div>
+      <div class="flip-particle"></div>
+      <div class="flip-particle"></div>
+      <div class="flip-particle"></div>
+      <div class="flip-particle"></div>
+      <div class="flip-particle"></div>
+      <div class="event-coin">
+        <div class="event-coin-face"><span class="cr-sym">Cr</span></div>
+        <div class="event-coin-back"><span class="m-mark">M</span></div>
+      </div>
+    </div>
+    <div class="event-text">
+      <div class="event-title">${title} <span class="event-amount">${amount}</span></div>
+      <div class="event-sub">${subtitle}</div>
+    </div>
+    <div class="event-tag">${tag}</div>
+  `;
+  container.appendChild(card);
+  setTimeout(() => card.remove(), 4500);
+}
+
+/**
+ * showThankYou — ④ Big Flip + Burst 축하 오버레이
+ * @param {string} amount  - 금액 표시 (예: '+100 Cr')
+ * @param {string} message - 메시지 (예: '텔레그램 미션을 완료했습니다')
+ */
+export function showThankYou(amount, message = 'MONKOS 크립이 적립되었습니다') {
+  const overlay = document.createElement('div');
+  overlay.className = 'thankyou-overlay';
+  overlay.innerHTML = `
+    <div class="thankyou-stage">
+      <div class="thankyou-coin-area">
+        <div class="thankyou-glow"></div>
+        <div class="burst-ring">
+          <div class="burst-ray"></div>
+          <div class="burst-ray"></div>
+          <div class="burst-ray"></div>
+          <div class="burst-ray"></div>
+          <div class="burst-ray"></div>
+          <div class="burst-ray"></div>
+          <div class="burst-ray"></div>
+          <div class="burst-ray"></div>
+        </div>
+        <div class="thankyou-coin">
+          <div class="thankyou-face"><span class="cr-big">Cr</span></div>
+          <div class="thankyou-back"><span class="m-big">M</span></div>
+        </div>
+      </div>
+      <div class="thankyou-text">
+        <span class="big">Thank You!</span>
+        <span class="amount">${amount}</span>
+        <span class="sub">${message}</span>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  setTimeout(() => overlay.remove(), 5000);
 }
 
 // ─── window 노출 (공통 onclick 함수) ───
 Object.assign(window, {
   buyCreditsKR,
   closeCreditModal,
+  showChargeModal,
   openExternal,
+  downloadGate,
+  showEventCard,
+  showThankYou,
 });

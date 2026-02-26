@@ -35,8 +35,20 @@ idphoto-kr/
 ├── package.json
 ├── .env                ← 환경변수 (Git 추적 안 됨)
 └── public/
-    ├── index.html      ← 촬영 앱 (/app)
-    ├── landing.html    ← 랜딩 페이지 (/)
+    ├── index.html      ← 랜딩 페이지 (/)
+    ├── prep.html       ← 준비실 (/prep)
+    ├── camera.html     ← 촬영실 (/camera)
+    ├── result.html     ← 분석실 (/result)
+    ├── thankyou.html   ← 수령처 (/thankyou)
+    ├── app.css         ← 공통 스타일
+    ├── monk.js         ← 프레임워크 코어
+    ├── config.js       ← 환경설정
+    ├── shared.js       ← 공통 로직
+    ├── prep.js         ← 준비실 로직
+    ├── camera.js       ← 촬영실 로직
+    ├── result.js       ← 분석실 로직
+    ├── thankyou.js     ← 수령처 로직
+    ├── options.js      ← 옵션 로직
     ├── privacy.html    ← 개인정보처리방침
     ├── terms.html      ← 이용약관
     ├── refund.html     ← 환불 정책
@@ -60,8 +72,12 @@ idphoto-kr/
 
 | 경로 | 페이지 |
 |------|--------|
-| `/` | 랜딩 페이지 (landing.html) |
+| `/` | 랜딩 페이지 (index.html) |
 | `/app` | 촬영 앱 (index.html) |
+| `/prep` | 준비실 (prep.html) |
+| `/camera` | 촬영실 (camera.html) |
+| `/result` | 분석실 (result.html) |
+| `/thankyou` | 수령처 (thankyou.html) |
 | `/health` | 헬스체크 |
 
 ## 주의사항
