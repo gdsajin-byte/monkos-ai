@@ -34,6 +34,13 @@
 
     <!-- result 전용 스타일 -->
     <style>
+        /* 비교컷 이미지 보호 — 길게 누르기/우클릭 저장 차단 */
+        #photo-generated, #spec-photo {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+            pointer-events: none;
+        }
         .photo-compare {
             background: rgba(167,139,250,0.04);
             border-radius: 16px;
