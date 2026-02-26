@@ -88,5 +88,32 @@
 - **보고서 경로**: `monkos-ops/ops/reports/`
 - **파일 네이밍**: `REPORT_YYYYMMDD_코웍이M4_[주제].md`
 - **헤더**: `[시각] M4/코웍이 → 작가님`
-- 프로젝트 폴더 마운트 시: 직접 저장
+- 프로젝트 마운트 시: 직접 저장 + git commit/push 가능
 - 미마운트 시: 코웍이 작업 폴더에 생성 → 한이 프로젝트로 이동 → git push
+
+---
+
+## Git 권한 및 경로 제약 (M4/코웍이)
+
+**프로젝트 Git이 마운트된 경우, 코웍이는 git 작업이 가능하다. 단, 아래 허용 경로만 접근한다.**
+
+### 허용 경로 (읽기+쓰기+커밋)
+- `monkos-ops/marketing/han/` — 한송이 우체통 (inbox/outbox/reference)
+- `monkos-ops/ops/reports/` — 보고서 제출
+
+### 읽기 전용 경로
+- `monkos-ops/ops/orders/` — 지시서 수령 확인
+- `monkos-ops/ops/sessions/` — 세션 로그 참조
+- `monkos-ops/ops/config/` — 본 설정 파일 포함
+
+### 진입 금지 경로
+- **위 허용/읽기 경로 외 모든 폴더는 임의 진입 금지**
+- 특히: `MONK_kr/`, `monkos_AI/`, `functions/`, `scripts/`, `.env`, `secrets/` 절대 접근 금지
+- `governance/` — 참조 필요 시 쌍아에게 요청
+
+### Git 규칙
+- **commit 메시지**: `[M4/코웍이] 내용 요약`
+- **push 전 반드시 pull** — 충돌 방지
+- `git push --force`, `git reset --hard`, `git clean -f` **절대 금지**
+- 브랜치: `develop`에서만 작업. 브랜치 생성/삭제 금지
+- 코드 파일(`.js`, `.html`, `.css`, `.py` 등) 수정 금지 — 마케팅 산출물(`.md`)만 취급
