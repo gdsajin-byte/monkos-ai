@@ -73,6 +73,10 @@ export const store = Monk.store({
   postCreditMsg: '',
   pageUrl: '',
   qrCodeUrl: '',
+
+  // 포스트 다운로드 (크레딧 게이트 v2)
+  showMission: false,
+  missionConsentDone: false,
 });
 
 // ─── Pipe 설정 (REST only) ───

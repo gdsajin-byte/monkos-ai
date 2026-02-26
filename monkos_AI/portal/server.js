@@ -42,6 +42,8 @@ const TELEGRAM_EVENT_BOT_TOKEN = process.env.TELEGRAM_EVENT_BOT_TOKEN || '';
 // === Telegram Team Bot (@monkos_team_bot) ===
 const TELEGRAM_TEAM_BOT_TOKEN = process.env.TELEGRAM_TEAM_BOT_TOKEN || '';
 const TEAM_CHAT_ID = process.env.TEAM_CHAT_ID || '';
+// === Telegram 채널 (게이트 가입 검증용) ===
+const TELEGRAM_CHANNEL_ID = process.env.TELEGRAM_CHANNEL_ID || '';
 const TEAM_NOTIFY_SECRET = process.env.TEAM_NOTIFY_SECRET || 'monkos-internal';
 
 // === 카카오 로그인 (KR) ===
@@ -1340,54 +1342,63 @@ location.href = '/';
     return;
   }
 
-  // === 공유 보너스 API ===
-  // 공유 조건 달성 시 +100c 지급
+  // === [DEPRECATED] 공유 보너스 API — v2에서 제거 (2026-02-26) ===
   if (req.url === '/api/credits/share-bonus' && req.method === 'POST') {
+    log('[Credits] share-bonus 호출 시도 (deprecated)');
+    res.writeHead(404, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: '이 엔드포인트는 더 이상 사용되지 않습니다' }));
+    return;
+  }
+
+  // === [DEPRECATED] 텔레그램 보너스 API — v2에서 제거 (2026-02-26) ===
+  if (req.url?.startsWith('/api/telegram-bonus/') && (req.method === 'GET' || req.method === 'POST')) {
+    log(`[TG-Bonus] deprecated 호출: ${req.url}`);
+    res.writeHead(404, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: '이 엔드포인트는 더 이상 사용되지 않습니다' }));
+    return;
+  }
+
+  // === 텔레그램 게이트 코드 생성 API (v2) ===
+  if (req.url === '/api/telegram/gate-code' && req.method === 'POST') {
     let body = '';
     req.on('data', chunk => { body += chunk; });
     req.on('end', async () => {
       try {
-        const { userId, platform } = JSON.parse(body);
+        const { userId } = JSON.parse(body);
         if (!userId) {
           res.writeHead(400, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({ error: 'userId 필드 필수' }));
+          res.end(JSON.stringify({ error: 'userId 필수' }));
           return;
         }
 
-        const userRef = usersCollection.doc(userId);
-        const bonus = 100;
+        const userDoc = await usersCollection.doc(userId).get();
+        if (!userDoc.exists) {
+          res.writeHead(404, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: '사용자 없음' }));
+          return;
+        }
 
-        const result = await firestore.runTransaction(async (tx) => {
-          const userDoc = await tx.get(userRef);
-          if (!userDoc.exists) {
-            throw new Error('사용자 없음');
-          }
+        // 이미 telegram_join 이벤트를 받았는지 체크
+        if (userDoc.data()?.events?.telegram_join) {
+          res.writeHead(409, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: '이미 텔레그램 가입 보너스를 수령했습니다', alreadyClaimed: true }));
+          return;
+        }
 
-          const data = userDoc.data();
-          if (data.shareBonusClaimed) {
-            const currentCredits = data.credits ?? 0;
-            return { success: false, error: '이미 공유 보너스를 받았습니다', credits: currentCredits, alreadyClaimed: true };
-          }
-
-          const currentCredits = data.credits ?? 0;
-          const newCredits = currentCredits + bonus;
-          tx.update(userRef, { credits: newCredits, shareBonusClaimed: true });
-          return { success: true, credits: newCredits, bonus, platform };
+        const code = randomBytes(6).toString('hex').toUpperCase();
+        await firestore.collection('telegramGateCodes').doc(code).set({
+          userId,
+          type: 'gate',
+          createdAt: new Date().toISOString(),
+          used: false,
         });
 
-        if (!result.success) {
-          log(`[Credits] 공유 보너스 중복: ${userId} (이미 수령)`);
-          res.writeHead(409, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify(result));
-          return;
-        }
-
-        log(`[Credits] 공유 보너스: ${userId} +${bonus}c (${platform || 'unknown'}) → ${result.credits}c`);
-        logTransaction({ userId, amount: bonus, type: 'bonus', provider: 'share', balanceAfter: result.credits, description: `공유 보너스 (${platform || 'unknown'})` });
+        const deeplink = `https://t.me/monkos_event_bot?start=GATE_${code}`;
+        log(`[TG-Gate] 코드 생성: ${userId} → ${code}`);
         res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify(result));
+        res.end(JSON.stringify({ deeplink, code }));
       } catch (err) {
-        log(`[Credits] 공유 보너스 에러: ${err.message}`);
+        log(`[TG-Gate] 생성 에러: ${err.message}`);
         res.writeHead(500, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: err.message }));
       }
@@ -1395,72 +1406,145 @@ location.href = '/';
     return;
   }
 
-  // === 텔레그램 보너스: support_bot 친추 30c 지급 ===
-  const TELEGRAM_BONUS = 30;
+  // === 텔레그램 미션 코드 생성 API (v2) ===
+  if (req.url === '/api/telegram/mission-code' && req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', async () => {
+      try {
+        const { userId } = JSON.parse(body);
+        if (!userId) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'userId 필수' }));
+          return;
+        }
 
-  // 보너스 코드 생성
-  if (req.url?.startsWith('/api/telegram-bonus/generate') && req.method === 'GET') {
-    try {
-      const urlParams = new URL(req.url, `http://${req.headers.host}`);
-      const userId = urlParams.searchParams.get('userId');
-      if (!userId) {
-        res.writeHead(400, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: 'userId 필수' }));
-        return;
+        const code = randomBytes(6).toString('hex').toUpperCase();
+        await firestore.collection('telegramGateCodes').doc(code).set({
+          userId,
+          type: 'mission',
+          createdAt: new Date().toISOString(),
+          used: false,
+        });
+
+        const deeplink = `https://t.me/monkos_event_bot?start=MISSION_${code}`;
+        log(`[TG-Mission] 코드 생성: ${userId} → ${code}`);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ deeplink, code }));
+      } catch (err) {
+        log(`[TG-Mission] 생성 에러: ${err.message}`);
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: err.message }));
       }
-
-      // 이미 보너스 받았는지 체크
-      const userDoc = await usersCollection.doc(userId).get();
-      if (!userDoc.exists) {
-        res.writeHead(404, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: '사용자 없음' }));
-        return;
-      }
-      if (userDoc.data()?.telegramBonusClaimed) {
-        res.writeHead(409, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: '이미 수령함', alreadyClaimed: true }));
-        return;
-      }
-
-      // 8자리 랜덤 코드 생성
-      const code = randomBytes(4).toString('hex').toUpperCase();
-      await firestore.collection('telegram_bonus_codes').doc(code).set({
-        userId,
-        createdAt: new Date().toISOString(),
-        claimed: false,
-      });
-
-      const deepLink = `https://t.me/monkos_support_bot?start=bonus_${code}`;
-      log(`[TG-Bonus] 코드 생성: ${userId} → ${code}`);
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ code, deepLink }));
-    } catch (err) {
-      log(`[TG-Bonus] 생성 에러: ${err.message}`);
-      res.writeHead(500, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: err.message }));
-    }
+    });
     return;
   }
 
-  // 보너스 상태 확인
-  if (req.url?.startsWith('/api/telegram-bonus/status') && req.method === 'GET') {
-    try {
-      const urlParams = new URL(req.url, `http://${req.headers.host}`);
-      const userId = urlParams.searchParams.get('userId');
-      if (!userId) {
-        res.writeHead(400, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: 'userId 필수' }));
-        return;
-      }
+  // === SNS 활용 동의서 저장 API (v2) ===
+  if (req.url === '/api/consent/sns' && req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', async () => {
+      try {
+        const { userId, agreed, timestamp } = JSON.parse(body);
+        if (!userId) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'userId 필수' }));
+          return;
+        }
+        if (!agreed) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'agreed 필드가 true여야 합니다' }));
+          return;
+        }
 
-      const userDoc = await usersCollection.doc(userId).get();
-      const claimed = userDoc.exists && !!userDoc.data()?.telegramBonusClaimed;
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ claimed }));
-    } catch (err) {
-      res.writeHead(500, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: err.message }));
-    }
+        const userRef = usersCollection.doc(userId);
+        const userDoc = await userRef.get();
+        if (!userDoc.exists) {
+          res.writeHead(404, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: '사용자 없음' }));
+          return;
+        }
+
+        await userRef.update({
+          snsConsentSigned: true,
+          snsConsentAt: timestamp || new Date().toISOString(),
+        });
+
+        log(`[Consent] SNS 동의: ${userId}`);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: true }));
+      } catch (err) {
+        log(`[Consent] 에러: ${err.message}`);
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: err.message }));
+      }
+    });
+    return;
+  }
+
+  // === 100c 미션 완료 API (v2) ===
+  if (req.url === '/api/credits/mission-complete' && req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', async () => {
+      try {
+        const { userId } = JSON.parse(body);
+        if (!userId) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'userId 필수' }));
+          return;
+        }
+
+        const userRef = usersCollection.doc(userId);
+
+        const result = await firestore.runTransaction(async (tx) => {
+          const userDoc = await tx.get(userRef);
+          if (!userDoc.exists) throw new Error('사용자 없음');
+
+          const data = userDoc.data();
+
+          // 중복 방지
+          if (data.missionBonusClaimed) {
+            return { success: false, error: '이미 미션 보너스를 수령했습니다', credits: data.credits ?? 0 };
+          }
+
+          // 조건 확인
+          const missing = [];
+          if (!data.snsConsentSigned) missing.push('consent');
+          if (!data.missionImageReceived) missing.push('image');
+          if (missing.length > 0) {
+            return { success: false, error: '미션 조건 미충족', missing, credits: data.credits ?? 0 };
+          }
+
+          const currentCredits = data.credits ?? 0;
+          const newCredits = currentCredits + 100;
+          tx.update(userRef, {
+            credits: newCredits,
+            missionBonusClaimed: true,
+            missionBonusAt: new Date().toISOString(),
+          });
+          return { success: true, credits: newCredits, credited: 100 };
+        });
+
+        if (!result.success) {
+          const status = result.missing ? 400 : 409;
+          log(`[Mission] 미완료: ${userId} (${result.error})`);
+          res.writeHead(status, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify(result));
+          return;
+        }
+
+        log(`[Mission] 100c 지급: ${userId} → ${result.credits}c`);
+        logTransaction({ userId, amount: 100, type: 'event', provider: 'mission', balanceAfter: result.credits, description: '100c 미션 완료' });
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(result));
+      } catch (err) {
+        log(`[Mission] 에러: ${err.message}`, 'ERROR');
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: err.message }));
+      }
+    });
     return;
   }
 
@@ -1524,15 +1608,56 @@ location.href = '/';
 
         const EVENT_CREDITS = {
           signup_bonus: 30,
-          sns_share: 40,
-          photo_consent: 40,
+          telegram_join: 40,
         };
 
         const granted = EVENT_CREDITS[eventType];
         if (!granted) {
           res.writeHead(400, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({ error: 'eventType은 signup_bonus, sns_share, photo_consent 중 하나' }));
+          res.end(JSON.stringify({ error: 'eventType은 signup_bonus, telegram_join 중 하나' }));
           return;
+        }
+
+        // telegram_join: getChatMember로 채널 가입 검증
+        if (eventType === 'telegram_join') {
+          if (!TELEGRAM_CHANNEL_ID || !TELEGRAM_EVENT_BOT_TOKEN) {
+            res.writeHead(500, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: '텔레그램 채널 설정 미완료' }));
+            return;
+          }
+
+          // userId → telegramId 조회 (봇이 GATE_ 딥링크로 매핑 저장)
+          const userDoc = await usersCollection.doc(userId).get();
+          if (!userDoc.exists) {
+            res.writeHead(404, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: '사용자 없음' }));
+            return;
+          }
+          const telegramId = userDoc.data()?.telegramId;
+          if (!telegramId) {
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: '텔레그램 연동이 필요합니다. 먼저 봇 딥링크를 통해 연동해주세요.' }));
+            return;
+          }
+
+          // getChatMember 호출
+          try {
+            const cmRes = await fetch(`${TELEGRAM_EVENT_API}/getChatMember?chat_id=${encodeURIComponent(TELEGRAM_CHANNEL_ID)}&user_id=${telegramId}`);
+            const cmData = await cmRes.json();
+            const status = cmData.result?.status;
+            if (!['member', 'administrator', 'creator'].includes(status)) {
+              log(`[Event] 채널 미가입: ${userId} telegramId=${telegramId} status=${status}`);
+              res.writeHead(400, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({ error: '채널에 가입되지 않았습니다. 채널 가입 후 다시 시도해주세요.', status }));
+              return;
+            }
+            log(`[Event] 채널 가입 확인: ${userId} telegramId=${telegramId} status=${status}`);
+          } catch (cmErr) {
+            log(`[Event] getChatMember 에러: ${cmErr.message}`, 'ERROR');
+            res.writeHead(500, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: '텔레그램 채널 가입 확인 중 오류' }));
+            return;
+          }
         }
 
         const userRef = usersCollection.doc(userId);
@@ -1547,12 +1672,6 @@ location.href = '/';
           // 중복 체크
           if (events[eventType]) {
             return { success: false, error: '이미 지급된 이벤트', credits: data.credits ?? 0, alreadyClaimed: true };
-          }
-
-          // sns_share / photo_consent 택1 체크
-          if ((eventType === 'sns_share' && events.photo_consent) ||
-              (eventType === 'photo_consent' && events.sns_share)) {
-            return { success: false, error: 'sns_share와 photo_consent는 택1입니다', credits: data.credits ?? 0, alreadyClaimed: true };
           }
 
           const currentCredits = data.credits ?? 0;
@@ -2202,33 +2321,112 @@ location.href = '/';
         const chatId = msg.chat.id;
         const username = msg.from?.username || msg.from?.first_name || '';
 
-        // === /start 딥링크: userId 매핑 ===
+        // === /start 딥링크 (v2: GATE_ / MISSION_ / 일반) ===
         if (msg.text && msg.text.startsWith('/start')) {
           const parts = msg.text.trim().split(' ');
-          const linkedUserId = parts[1] || null;
+          const param = parts[1] || '';
+          const telegramId = msg.from?.id;
 
-          if (linkedUserId) {
-            await firestore.collection('telegram_links').doc(String(chatId)).set({
-              chatId,
-              userId: linkedUserId,
-              username,
-              linkedAt: new Date().toISOString(),
-            }, { merge: true });
-            log(`[TG-Event] 딥링크 매핑: ${chatId} → ${linkedUserId}`);
+          // --- GATE_{code}: 게이트 Phase2 — userId ↔ telegramId 매핑 + 채널 가입 유도 ---
+          if (param.startsWith('GATE_')) {
+            const code = param.replace('GATE_', '');
+            try {
+              const codeRef = firestore.collection('telegramGateCodes').doc(code);
+              const codeDoc = await codeRef.get();
 
-            const welcome = `🎁 *MONKOS 이벤트 보너스!*\n\n📸 SNS에 공유한 캡쳐본을 보내주세요!\n확인 즉시 *100크레딧*을 선물합니다 🎉\n\n조건:\n• 전후 비교 캡쳐본\n• monkos.ai 링크 포함\n\n---\n🎁 *MONKOS イベントボーナス!*\n\n📸 SNSでシェアしたスクショを送ってね！\n確認後すぐに *100クレジット* プレゼント 🎉`;
-            await sendTelegramMessage(chatId, welcome, TELEGRAM_EVENT_API);
-          } else {
-            const welcome = `🎁 *MONKOS 이벤트 봇*에 오신 것을 환영합니다!\n\nMONKOS 앱에서 사진을 공유하고 보너스를 받아보세요 💜\n고객 문의는 @monkos\\_support\\_bot 으로 부탁드려요!\n\n---\n🎁 *MONKOS イベントBot* へようこそ！\n\nアプリから写真をシェアしてボーナスをゲット 💜\nお問い合わせは @monkos\\_support\\_bot へどうぞ！`;
-            await sendTelegramMessage(chatId, welcome, TELEGRAM_EVENT_API);
+              if (!codeDoc.exists || codeDoc.data().type !== 'gate') {
+                await sendTelegramMessage(chatId, '유효하지 않은 코드입니다.', TELEGRAM_EVENT_API);
+              } else if (codeDoc.data().used) {
+                await sendTelegramMessage(chatId, '이미 처리된 코드입니다.', TELEGRAM_EVENT_API);
+              } else {
+                const userId = codeDoc.data().userId;
+
+                // userId ↔ telegramId 매핑 저장
+                await usersCollection.doc(userId).update({
+                  telegramId: String(telegramId),
+                  telegramChatId: String(chatId),
+                  telegramUsername: username,
+                  telegramLinkedAt: new Date().toISOString(),
+                });
+
+                // telegram_links에도 저장 (역방향 조회용)
+                await firestore.collection('telegram_links').doc(String(chatId)).set({
+                  chatId,
+                  userId,
+                  telegramId: String(telegramId),
+                  username,
+                  linkedAt: new Date().toISOString(),
+                  type: 'gate',
+                }, { merge: true });
+
+                // 코드 사용 처리
+                await codeRef.update({ used: true, usedAt: new Date().toISOString(), chatId: String(chatId), telegramId: String(telegramId) });
+
+                log(`[TG-Gate] 매핑 완료: ${userId} ↔ ${telegramId} (${username})`);
+
+                // 채널 가입 유도 메시지
+                const channelLink = TELEGRAM_CHANNEL_ID ? `https://t.me/${TELEGRAM_CHANNEL_ID.replace('@', '')}` : 'https://t.me/MonkosChannel';
+                await sendTelegramMessage(chatId, `MONKOS 채널에 가입해주세요! 💜\n\n채널 가입 후 웹으로 돌아가서 "가입 확인" 버튼을 눌러주세요.\n\n[채널 가입하기](${channelLink})`, TELEGRAM_EVENT_API);
+              }
+            } catch (err) {
+              log(`[TG-Gate] 에러: ${err.message}`);
+              await sendTelegramMessage(chatId, '처리 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.', TELEGRAM_EVENT_API);
+            }
+
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ ok: true }));
+            return;
           }
+
+          // --- MISSION_{code}: 100c 미션 — 이미지 수신 대기 모드 진입 ---
+          if (param.startsWith('MISSION_')) {
+            const code = param.replace('MISSION_', '');
+            try {
+              const codeRef = firestore.collection('telegramGateCodes').doc(code);
+              const codeDoc = await codeRef.get();
+
+              if (!codeDoc.exists || codeDoc.data().type !== 'mission') {
+                await sendTelegramMessage(chatId, '유효하지 않은 미션 코드입니다.', TELEGRAM_EVENT_API);
+              } else {
+                const userId = codeDoc.data().userId;
+
+                // 미션 수신 대기 모드 설정
+                await firestore.collection('telegram_links').doc(String(chatId)).set({
+                  chatId,
+                  userId,
+                  telegramId: String(telegramId),
+                  username,
+                  missionPending: true,
+                  missionCode: code,
+                  linkedAt: new Date().toISOString(),
+                  type: 'mission',
+                }, { merge: true });
+
+                await codeRef.update({ used: true, usedAt: new Date().toISOString(), chatId: String(chatId) });
+
+                log(`[TG-Mission] 미션 대기: ${userId} (chatId: ${chatId})`);
+                await sendTelegramMessage(chatId, '증명사진 결과물을 보내주세요! 📸\n\n캡쳐본이나 다운받은 사진을 이 채팅에 보내주시면 됩니다.\n\n---\n証明写真の結果を送ってください！ 📸', TELEGRAM_EVENT_API);
+              }
+            } catch (err) {
+              log(`[TG-Mission] 에러: ${err.message}`);
+              await sendTelegramMessage(chatId, '처리 중 오류가 발생했습니다.', TELEGRAM_EVENT_API);
+            }
+
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ ok: true }));
+            return;
+          }
+
+          // --- 일반 /start (파라미터 없음 또는 레거시) ---
+          const welcome = `🎁 *MONKOS 이벤트 봇*에 오신 것을 환영합니다!\n\nMONKOS 앱에서 이벤트에 참여하고 보너스를 받아보세요 💜\n고객 문의는 @monkos\\_support\\_bot 으로 부탁드려요!\n\n---\n🎁 *MONKOS イベントBot* へようこそ！\n\nイベントに参加してボーナスをゲット 💜\nお問い合わせは @monkos\\_support\\_bot へどうぞ！`;
+          await sendTelegramMessage(chatId, welcome, TELEGRAM_EVENT_API);
 
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ ok: true }));
           return;
         }
 
-        // === 이미지 메시지: 캡쳐 감지 → 크레딧 지급 ===
+        // === 이미지 메시지: 미션 이미지 수신 처리 (v2) ===
         if (msg.photo && msg.photo.length > 0) {
           log(`[TG-Event] 이미지 수신: ${username}(${chatId})`);
 
@@ -2240,43 +2438,35 @@ location.href = '/';
             return;
           }
 
-          const linkedUserId = linkDoc.data().userId;
-          const userRef = usersCollection.doc(linkedUserId);
-          const bonus = 100;
+          const linkData = linkDoc.data();
+          const linkedUserId = linkData.userId;
 
-          const result = await firestore.runTransaction(async (tx) => {
-            const userDoc = await tx.get(userRef);
-            if (!userDoc.exists) return { success: false, error: '사용자 없음' };
-            const data = userDoc.data();
-            if (data.shareBonusClaimed) return { success: false, error: 'already_claimed', credits: data.credits ?? 0 };
-            const currentCredits = data.credits ?? 0;
-            const newCredits = currentCredits + bonus;
-            tx.update(userRef, { credits: newCredits, shareBonusClaimed: true, shareChannel: 'telegram' });
-            return { success: true, credits: newCredits };
+          // 미션 이미지 수신 처리 — 이미지 파일 ID 저장 + 플래그 설정
+          const fileId = msg.photo[msg.photo.length - 1].file_id;
+          await usersCollection.doc(linkedUserId).update({
+            missionImageReceived: true,
+            missionImageFileId: fileId,
+            missionImageAt: new Date().toISOString(),
           });
 
-          if (result.success) {
-            await sendTelegramMessage(chatId, `🎉 *100크레딧 선물 완료!*\n\n감사합니다! 💜 현재 잔액: *${result.credits}c*\nMONKOS와 함께해주셔서 감사해요!\n\n---\n🎉 *100クレジット プレゼント完了!*\n\nありがとう！ 💜 残高: *${result.credits}c*\nMONKOSをご利用いただきありがとうございます！`, TELEGRAM_EVENT_API);
-            log(`[TG-Event] 보너스 지급: ${linkedUserId} +100c → ${result.credits}c`);
+          // telegram_links 업데이트
+          await firestore.collection('telegram_links').doc(String(chatId)).update({
+            missionPending: false,
+            missionImageReceived: true,
+            missionImageAt: new Date().toISOString(),
+          });
 
-            await firestore.collection('telegram_links').doc(String(chatId)).update({
-              bonusGranted: true,
-              bonusGrantedAt: new Date().toISOString(),
-            });
-          } else if (result.error === 'already_claimed') {
-            await sendTelegramMessage(chatId, `이미 보너스를 받으셨어요! 😊\n현재 잔액: *${result.credits}c*\n\n다음 이벤트를 기대해주세요! 💜\n\n---\nすでにボーナス受取済みです！ 😊\n残高: *${result.credits}c*\n\n次のイベントをお楽しみに！ 💜`, TELEGRAM_EVENT_API);
-          } else {
-            await sendTelegramMessage(chatId, '처리 중 문제가 발생했습니다 😢\n고객센터: @monkos\\_support\\_bot\n\n問題が発生しました 😢\nサポート: @monkos\\_support\\_bot', TELEGRAM_EVENT_API);
-          }
+          log(`[TG-Mission] 이미지 수신 완료: ${linkedUserId} (fileId: ${fileId})`);
+          await sendTelegramMessage(chatId, '사진을 받았습니다! 감사합니다 💜\n\nMONKOS 웹으로 돌아가서 "미션 완료 확인" 버튼을 눌러주세요.\n\n---\n写真を受け取りました！ ありがとう 💜\n\nMONKOS ウェブに戻って「ミッション完了確認」ボタンを押してください。', TELEGRAM_EVENT_API);
 
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ ok: true }));
           return;
         }
 
-        // === 이벤트 봇에서 일반 텍스트 → CS 봇 안내 ===
+        // === 이벤트 봇에서 일반 텍스트 → 안내 ===
         if (msg.text) {
-          await sendTelegramMessage(chatId, `이 봇은 이벤트 보너스 전용입니다 🎁\n\n고객 문의는 @monkos\\_support\\_bot 으로 부탁드려요!\n\n---\nこのBotはイベントボーナス専用です 🎁\n\nお問い合わせは @monkos\\_support\\_bot へどうぞ！`, TELEGRAM_EVENT_API);
+          await sendTelegramMessage(chatId, `이 봇은 MONKOS 이벤트 전용입니다 🎁\n\n고객 문의는 @monkos\\_support\\_bot 으로 부탁드려요!\n\n---\nこのBotはイベント専用です 🎁\n\nお問い合わせは @monkos\\_support\\_bot へどうぞ！`, TELEGRAM_EVENT_API);
         }
 
         res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -2408,50 +2598,9 @@ location.href = '/';
           const parts = msg.text.split(' ');
           const param = parts[1] || '';
 
-          // 텔레그램 보너스 딥링크 처리
+          // [DEPRECATED] bonus_ 딥링크 — v2에서 제거 (2026-02-26)
           if (param.startsWith('bonus_')) {
-            const code = param.replace('bonus_', '');
-            try {
-              const codeRef = firestore.collection('telegram_bonus_codes').doc(code);
-              const codeDoc = await codeRef.get();
-
-              if (!codeDoc.exists) {
-                await sendTelegramMessage(chatId, '❌ 유효하지 않은 코드입니다.', TELEGRAM_CS_API);
-              } else if (codeDoc.data().claimed) {
-                await sendTelegramMessage(chatId, '이미 처리된 코드입니다.', TELEGRAM_CS_API);
-              } else {
-                const userId = codeDoc.data().userId;
-                const userRef = usersCollection.doc(userId);
-
-                const result = await firestore.runTransaction(async (tx) => {
-                  const userDoc = await tx.get(userRef);
-                  if (!userDoc.exists) return { success: false, error: '사용자 없음' };
-                  if (userDoc.data()?.telegramBonusClaimed) return { success: false, error: '이미 수령' };
-
-                  const currentCredits = userDoc.data()?.credits ?? 0;
-                  const newCredits = currentCredits + TELEGRAM_BONUS;
-                  tx.update(userRef, {
-                    credits: newCredits,
-                    telegramBonusClaimed: true,
-                    telegramChatId: String(chatId),
-                    telegramBonusAt: new Date().toISOString(),
-                  });
-                  tx.update(codeRef, { claimed: true, claimedAt: new Date().toISOString(), chatId: String(chatId) });
-                  return { success: true, credits: newCredits };
-                });
-
-                if (result.success) {
-                  log(`[TG-Bonus] 지급 완료: ${userId} +${TELEGRAM_BONUS}c → ${result.credits}c (chatId: ${chatId})`);
-                  logTransaction({ userId, amount: TELEGRAM_BONUS, type: 'bonus', provider: 'telegram', balanceAfter: result.credits, description: `텔레그램 보너스 (+${TELEGRAM_BONUS}c)` });
-                  await sendTelegramMessage(chatId, `🎉 ${TELEGRAM_BONUS}크레딧이 지급되었습니다!\n잔액: ${result.credits}c\n\nMONKOS 사이트로 돌아가세요.`, TELEGRAM_CS_API);
-                } else {
-                  await sendTelegramMessage(chatId, result.error === '이미 수령' ? '이미 보너스를 받으셨습니다.' : '처리 중 오류가 발생했습니다.', TELEGRAM_CS_API);
-                }
-              }
-            } catch (err) {
-              log(`[TG-Bonus] 딥링크 에러: ${err.message}`);
-              await sendTelegramMessage(chatId, '처리 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.', TELEGRAM_CS_API);
-            }
+            await sendTelegramMessage(chatId, '이 보너스는 종료되었습니다.\nMONKOS 앱에서 새로운 이벤트를 확인해주세요! 💜', TELEGRAM_CS_API);
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ ok: true }));
             return;
@@ -2633,7 +2782,10 @@ httpServer.listen(PORT, '0.0.0.0', () => {
   log('  GET  /api/credits          — 크레딧 조회');
   log('  POST /api/credits/use      — 크레딧 사용 (generate:-10c, download:-70c)');
   log('  POST /api/credits/refund   — 크레딧 환불');
-  log('  POST /api/credits/share-bonus — 공유 보너스 (+100c)');
+  log('  POST /api/telegram/gate-code  — 텔레그램 게이트 코드 생성 (v2)');
+  log('  POST /api/telegram/mission-code — 텔레그램 미션 코드 생성 (v2)');
+  log('  POST /api/consent/sns         — SNS 활용 동의서 저장 (v2)');
+  log('  POST /api/credits/mission-complete — 100c 미션 완료 (v2)');
   log('  POST /api/auth/token       — 크로스 도메인 토큰 생성');
   log('  GET  /api/auth/verify      — 토큰 검증');
   log('  POST /api/auth/refresh     — 토큰 갱신 (30일, 장기 세션용)');
@@ -2642,11 +2794,11 @@ httpServer.listen(PORT, '0.0.0.0', () => {
   log('  POST /api/payments/toss/confirm — 토스페이먼츠 결제 확인 (KR)');
   log('  POST /api/payments/toss/direct — 비로그인 직접결제 (KR)');
   log('  GET  /api/download/direct     — 비로그인 다운로드 토큰 검증');
-  log('  POST /api/credits/event       — 이벤트 크레딧 (signup +30c, share/consent +40c)');
+  log('  POST /api/credits/event       — 이벤트 크레딧 (signup +30c, telegram_join +40c)');
   log('  GET  /toss-success         — 토스 결제 성공 리다이렉트');
   log('  GET  /toss-fail            — 토스 결제 실패 리다이렉트');
-  log('  GET  /api/telegram-bonus/generate — 텔레그램 보너스 코드 생성');
-  log('  GET  /api/telegram-bonus/status   — 텔레그램 보너스 상태 확인');
+  log('  [DEP] /api/credits/share-bonus    — deprecated');
+  log('  [DEP] /api/telegram-bonus/*       — deprecated');
   log('  POST /api/chat             — Gemini 챗봇');
   log('  POST /api/coaching         — AI 코칭 (멀티모달)');
   log('  POST /api/qc               — AI QC 품질검수 (멀티모달)');
@@ -2661,6 +2813,7 @@ httpServer.listen(PORT, '0.0.0.0', () => {
   log(`Telegram CS Bot: ${TELEGRAM_BOT_TOKEN ? '설정됨' : '미설정'}`);
   log(`Telegram Event Bot: ${TELEGRAM_EVENT_BOT_TOKEN ? '설정됨' : '미설정'}`);
   log(`Telegram Team Bot: ${TELEGRAM_TEAM_BOT_TOKEN ? '설정됨' : '미설정'}`);
+  log(`Telegram Channel: ${TELEGRAM_CHANNEL_ID || '미설정'}`);
   log(`Team Chat ID: ${TEAM_CHAT_ID ? '설정됨' : '미설정'}`);
   log(`Kakao Login: ${KAKAO_REST_API_KEY ? '설정됨' : '미설정'}`);
   log(`LINE Login: ${LINE_CHANNEL_ID ? '설정됨' : '미설정'}`);

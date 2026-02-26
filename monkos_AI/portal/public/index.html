@@ -1266,19 +1266,6 @@ footer a {
       </div>
     </section>
 
-  <!-- 텔레그램 보너스 카드 -->
-  <section class="services" id="eventSection" style="display:none;">
-    <div class="event-card">
-      <div class="event-card-inner">
-        <div class="event-emoji">✈️</div>
-        <div class="event-title" id="eventTitle">텔레그램 친구 추가하고 30크레딧 받기!</div>
-        <div class="event-desc" id="eventDesc">@monkos_support_bot을 친구 추가하면 30크레딧을 즉시 지급합니다.</div>
-        <div class="event-remaining" id="eventRemaining"></div><br>
-        <button class="event-btn" id="eventBtn" onclick="claimTelegramBonus()">텔레그램 친구 추가 → 30c 받기</button>
-      </div>
-    </div>
-  </section>
-
   <!-- 사업자 정보 -->
   <section class="biz-info" translate="no">
     <div class="biz-info-inner">
@@ -1652,7 +1639,6 @@ function updateAuthUI() {
     // 로그인 상태: 헤더 로그인 버튼 숨김
     document.body.classList.add('logged-in');
     if (headerLoginBtn) headerLoginBtn.style.display = 'none';
-    loadEventStatus();
   } else {
     creditBtn.style.display = 'none';
     providerBadge.style.display = 'none';
@@ -2397,103 +2383,7 @@ chatInput.addEventListener('keydown', (e) => {
   if (e.key === 'Enter' && !e.isComposing) sendMessage();
 });
 
-// === 텔레그램 보너스 ===
-async function loadEventStatus() {
-  if (!currentUser?.id) return;
-  try {
-    const res = await fetch(`/api/telegram-bonus/status?userId=${encodeURIComponent(currentUser.id)}`);
-    const data = await res.json();
-    const section = document.getElementById('eventSection');
-    const titleEl = document.getElementById('eventTitle');
-    const descEl = document.getElementById('eventDesc');
-    const remainEl = document.getElementById('eventRemaining');
-    const btnEl = document.getElementById('eventBtn');
-
-    titleEl.textContent = t.eventTitle || '';
-    descEl.textContent = t.eventDesc || '';
-    remainEl.textContent = '';
-
-    if (data.claimed) {
-      btnEl.disabled = true;
-      btnEl.textContent = '✅ ' + (t.eventDone || 'Done');
-    } else {
-      btnEl.textContent = t.eventBtn || '';
-    }
-
-    section.style.display = 'block';
-  } catch (err) {
-    console.error('[Event] 상태 로드 실패:', err);
-  }
-}
-
-let bonusPolling = null;
-
-async function claimTelegramBonus() {
-  if (!currentUser?.id) {
-    alert('로그인이 필요합니다');
-    return;
-  }
-
-  const btn = document.getElementById('eventBtn');
-  btn.disabled = true;
-  btn.textContent = '...';
-
-  try {
-    const res = await fetch(`/api/telegram-bonus/generate?userId=${encodeURIComponent(currentUser.id)}`);
-    const data = await res.json();
-
-    if (data.alreadyClaimed) {
-      btn.textContent = '✅ ' + (t.eventDone || 'Done');
-      return;
-    }
-
-    if (data.deepLink) {
-      window.open(data.deepLink, '_blank');
-
-      // 안내 표시
-      const descEl = document.getElementById('eventDesc');
-      const waitMsg = { ja: 'Telegramで「スタート」をタップしたらこのページに戻ってください...', ko: '텔레그램에서 "시작"을 누른 후 이 페이지로 돌아오세요...', en: 'Tap "Start" in Telegram, then come back here...' };
-      descEl.textContent = waitMsg[lang] || waitMsg.en;
-      btn.textContent = '⏳';
-
-      // 5초 간격 폴링 (최대 2분)
-      let attempts = 0;
-      bonusPolling = setInterval(async () => {
-        attempts++;
-        if (attempts > 24) {
-          clearInterval(bonusPolling);
-          btn.disabled = false;
-          btn.textContent = t.eventBtn || '';
-          return;
-        }
-        try {
-          const check = await fetch(`/api/telegram-bonus/status?userId=${encodeURIComponent(currentUser.id)}`);
-          const status = await check.json();
-          if (status.claimed) {
-            clearInterval(bonusPolling);
-            btn.textContent = '✅ ' + (t.eventDone || 'Done');
-            descEl.textContent = t.eventDesc || '';
-
-            const successMsg = { ja: `🎉 30クレジットが支給されました！`, ko: `🎉 30크레딧이 지급되었습니다!`, en: `🎉 30 credits granted!` };
-            alert(successMsg[lang] || successMsg.en);
-
-            // 크레딧 갱신
-            const userRes = await fetch(`/api/user?userId=${encodeURIComponent(currentUser.id)}`);
-            if (userRes.ok) {
-              const userData = await userRes.json();
-              currentUser.credits = userData.credits;
-              sessionStorage.setItem('monkos_user', JSON.stringify(currentUser));
-            }
-          }
-        } catch (e) {}
-      }, 5000);
-    }
-  } catch (err) {
-    alert('오류: ' + err.message);
-    btn.disabled = false;
-    btn.textContent = t.eventBtn || '';
-  }
-}
+// === 텔레그램 보너스 (v2에서 제거됨 — CS봇 30c 폐지) ===
 </script>
 
 <footer style="position:fixed; bottom:0; left:0; right:0; text-align:center; padding:8px 16px; font-size:0.6rem; color:#64748b; background:rgba(10,10,26,0.92); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); z-index:10; line-height:1.5; border-top:1px solid rgba(167,139,250,0.08);" translate="no">

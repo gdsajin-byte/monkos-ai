@@ -93,7 +93,7 @@ function showDownloadGatePopup() {
         </div>
         <div class="gate-check" id="gate-ck-event" style="opacity:.4">
           <span class="icon">☐</span>
-          <span>SNS 공유 또는 전후사진 동의</span>
+          <span>텔레그램 채널 가입</span>
           <span class="credit">+40c</span>
         </div>
       </div>
@@ -106,9 +106,16 @@ function showDownloadGatePopup() {
         <button class="gate-btn gate-btn-pay" onclick="buyDirectKR()">바로 결제 ₩10,150</button>
       </div>
       <div id="gate-phase2" style="display:none">
-        <button class="gate-btn gate-btn-share" onclick="doShareTelegram()">텔레그램 공유로 +40c 받기</button>
+        <div style="text-align:center;margin-bottom:12px;font-size:14px;color:#666;line-height:1.5;">
+          MONKOS 텔레그램 채널에 가입하면<br>40c를 드립니다!
+        </div>
+        <button class="gate-btn gate-btn-share" onclick="handleTelegramJoin()">📱 텔레그램 채널 가입하기</button>
+        <div id="gate-tg-verify-hint" style="display:none;text-align:center;margin:8px 0;font-size:13px;color:#888;">
+          가입 후 아래 버튼을 눌러주세요
+        </div>
+        <button class="gate-btn gate-btn-consent" id="gate-verify-tg" onclick="verifyTelegramJoin()" style="display:none">가입 확인하기</button>
         <div class="gate-divider"><span>또는</span></div>
-        <button class="gate-btn gate-btn-consent" onclick="doPhotoConsent()">전후사진 활용 동의 +40c</button>
+        <button class="gate-btn gate-btn-pay" onclick="buyDirectKR()">바로 결제하기 ₩10,150</button>
       </div>
     </div>
   `;
@@ -151,7 +158,7 @@ async function proceedDownloadAfterGate() {
   try {
     const result = await pipe.run('creditUse', { userId: store.user.id, type: 'download' });
     store.user = { ...store.user, credits: result.credits };
-    await cropAndGoToThankyou();
+    await cropAndShowPostDownload();
   } catch (err) {
     if (err.status === 402) {
       if (typeof window.showChargeModal === 'function') {
@@ -258,36 +265,40 @@ async function requestEventCredit(eventType) {
   }
 }
 
-// ─── 텔레그램 공유 ───
-async function shareTelegram() {
-  const text = 'AI 증명사진 만들어봤어요! #MONKOS #AI증명사진';
-  const url = 'https://idphoto-kr.monkos.ai';
-  window.open(
-    `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`,
-    '_blank'
-  );
-  return true;
-}
-
-async function doShareTelegram() {
-  await shareTelegram();
-  // 공유 창 열림 = 공유 완료 간주
-  const ok = await requestEventCredit('sns_share');
-  if (ok) {
-    const ck = document.getElementById('gate-ck-event');
-    if (ck) { ck.classList.add('done'); ck.querySelector('.icon').textContent = '✅'; }
-    updateGateUI(gateCredits + 40);
-    Monk.log('텔레그램 공유 보너스 40c');
+// ─── 텔레그램 채널 가입 (게이트 Phase 2) ───
+async function handleTelegramJoin() {
+  if (!store.user.id) return;
+  try {
+    const res = await fetch(`${API.PORTAL_URL}/api/telegram/gate-code`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: store.user.id, type: 'gate' }),
+    });
+    const data = await res.json();
+    if (data.deeplink) {
+      window.open(data.deeplink, '_blank');
+      // 가입 확인 버튼 + 안내 표시
+      const verifyBtn = document.getElementById('gate-verify-tg');
+      const hint = document.getElementById('gate-tg-verify-hint');
+      if (verifyBtn) verifyBtn.style.display = 'block';
+      if (hint) hint.style.display = 'block';
+      Monk.log('텔레그램 채널 가입 딥링크 오픈');
+    }
+  } catch (err) {
+    Monk.log('텔레그램 딥링크 에러: ' + err.message);
+    alert('텔레그램 연결 중 오류가 발생했습니다.');
   }
 }
 
-async function doPhotoConsent() {
-  const ok = await requestEventCredit('photo_consent');
+async function verifyTelegramJoin() {
+  const ok = await requestEventCredit('telegram_join');
   if (ok) {
     const ck = document.getElementById('gate-ck-event');
     if (ck) { ck.classList.add('done'); ck.querySelector('.icon').textContent = '✅'; }
     updateGateUI(gateCredits + 40);
-    Monk.log('전후사진 동의 보너스 40c');
+    Monk.log('텔레그램 채널 가입 검증 성공 +40c');
+  } else {
+    alert('채널 가입이 확인되지 않습니다.\n가입 후 다시 시도해주세요.');
   }
 }
 
@@ -342,7 +353,7 @@ async function initDirectPaymentResult() {
     const data = await res.json();
     if (data.success && data.downloadToken) {
       Monk.log('단건 결제 완료 — 다운로드 진행');
-      await cropAndGoToThankyou();
+      await cropAndShowPostDownload();
     } else {
       alert('결제 확인 실패: ' + (data.error || ''));
     }
@@ -591,6 +602,7 @@ async function confirmAndGenerate() {
     });
 
     store.generated = genResult.image;
+    try { sessionStorage.setItem('monkos_generated', genResult.image); } catch(e) {}
     Monk.log('생성 완료');
 
     // 최소 대기 시간 보장
@@ -705,7 +717,7 @@ async function downloadResult() {
   try {
     const result = await pipe.run('creditUse', { userId: store.user.id, type: 'download' });
     store.user = { ...store.user, credits: result.credits };
-    await cropAndGoToThankyou();
+    await cropAndShowPostDownload();
   } catch (err) {
     if (err.status === 402) {
       if (typeof window.showChargeModal === 'function') {
@@ -719,7 +731,7 @@ async function downloadResult() {
   }
 }
 
-async function cropAndGoToThankyou() {
+async function cropAndShowPostDownload() {
   // 규격 크롭 실행
   if (store.generated && store.style) {
     const spec = PHOTO_SPECS[store.style];
@@ -736,21 +748,127 @@ async function cropAndGoToThankyou() {
     }
   }
 
-  // sessionStorage에 저장
+  // sessionStorage에 저장 (thankyou.html 호환)
   if (store.cropped) {
     saveSessionData('cropped', store.cropped);
   }
 
-  Monk.log('수령처로 이동');
-  navigateTo('thankyou.html');
+  // 포스트 다운로드 상태로 전환
+  store.downloadComplete = true;
+  store.showStep3Actions = false;
+  store.resultTitle = '다운로드 완료!';
+  store.resultSubtitle = 'MONKOS AI 증명사진이 준비되었습니다';
+
+  // 100c 미션 표시 여부 (로그인 + 다운로드 완료)
+  store.showMission = !!store.user.id;
+
+  Monk.log('포스트 다운로드 화면 표시');
 }
 
-// ─── 텔레그램 이벤트 ───
-function openTelegram() {
-  const uid = store.user.id || 'guest';
-  const link = `https://t.me/monkos_event_bot?start=${encodeURIComponent(uid)}`;
-  window.open(link, '_blank');
-  Monk.log('텔레그램 이벤트 링크 오픈');
+// ─── 갤러리 저장 ───
+async function saveToGallery() {
+  const imgData = store.cropped || store.generated;
+  if (!imgData) return;
+
+  const jpegUrl = await media.toJpeg(imgData, 0.92);
+
+  if (navigator.share && navigator.canShare) {
+    try {
+      const res = await fetch(jpegUrl);
+      const blob = await res.blob();
+      const file = new File([blob], `monkos_photo_${Date.now()}.jpg`, { type: 'image/jpeg' });
+      if (navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: 'MONKOS AI 증명사진' });
+        Monk.log('사진 공유 완료');
+        return;
+      }
+    } catch (e) {
+      if (e.name === 'AbortError') return;
+    }
+  }
+
+  const a = document.createElement('a');
+  a.href = jpegUrl;
+  a.download = `monkos_photo_${Date.now()}.jpg`;
+  a.click();
+  Monk.log('JPEG 저장 완료');
+}
+
+// ─── 100c 미션 ───
+async function submitSnsConsent() {
+  const checkbox = document.getElementById('mission-consent-check');
+  if (!checkbox || !checkbox.checked) {
+    alert('동의에 체크해주세요.');
+    return;
+  }
+  if (!store.user.id) return;
+
+  try {
+    const res = await fetch(`${API.PORTAL_URL}/api/consent/sns`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: store.user.id, agreed: true }),
+    });
+    const data = await res.json();
+    if (data.success) {
+      store.missionConsentDone = true;
+      const btn = document.getElementById('btn-consent-submit');
+      if (btn) { btn.disabled = true; btn.textContent = '✅ 동의 완료됨'; btn.style.opacity = '0.6'; }
+      checkbox.disabled = true;
+      Monk.log('SNS 활용 동의 완료');
+    } else {
+      alert(data.error || '동의 처리 중 문제가 발생했습니다.');
+    }
+  } catch (err) {
+    Monk.log('동의서 제출 에러: ' + err.message);
+    alert('동의 처리 중 오류가 발생했습니다.');
+  }
+}
+
+async function openMissionBot() {
+  if (!store.user.id) return;
+
+  try {
+    const res = await fetch(`${API.PORTAL_URL}/api/telegram/gate-code`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: store.user.id, type: 'mission' }),
+    });
+    const data = await res.json();
+    if (data.deeplink) {
+      window.open(data.deeplink, '_blank');
+      Monk.log('미션 텔레그램 봇 오픈');
+    } else {
+      alert(data.error || '텔레그램 연결 중 오류가 발생했습니다.');
+    }
+  } catch (err) {
+    Monk.log('미션 봇 딥링크 에러: ' + err.message);
+    alert('텔레그램 연결 중 오류가 발생했습니다.');
+  }
+}
+
+async function verifyMission() {
+  if (!store.user.id) return;
+
+  try {
+    const res = await fetch(`${API.PORTAL_URL}/api/credits/mission-complete`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: store.user.id }),
+    });
+    const data = await res.json();
+    if (data.success) {
+      store.user = { ...store.user, credits: data.credits ?? store.user.credits };
+      store.showMission = false;
+      Monk.log(`미션 완료! +100c → ${data.credits}c`);
+      alert(`🎉 미션 완료! 100c가 지급되었습니다.\n현재 잔액: ${data.credits}c`);
+    } else {
+      alert(data.error || '미션 조건을 확인해주세요.\n- SNS 활용 동의서 서명\n- 텔레그램으로 캡쳐 전송');
+    }
+  } catch (err) {
+    Monk.log('미션 확인 에러: ' + err.message);
+    alert('미션 확인 중 오류가 발생했습니다.');
+  }
 }
 
 // ─── window 노출 ───
@@ -758,18 +876,21 @@ Object.assign(window, {
   retakePhoto,
   confirmAndGenerate,
   downloadResult,
-  openTelegram,
   // 게이트 팝업
   showDownloadGatePopup,
   closeDownloadGatePopup,
   startKakaoLogin,
   startKakaoLoginSimple,
-  doShareTelegram,
-  doPhotoConsent,
+  handleTelegramJoin,
+  verifyTelegramJoin,
   buyDirectKR,
   showLoginRequiredModal,
   closeLoginRequiredModal,
-  shareTelegram,
+  // 포스트 다운로드 (100c 미션)
+  saveToGallery,
+  submitSnsConsent,
+  openMissionBot,
+  verifyMission,
 });
 
 // ─── 초기화 ───
@@ -792,6 +913,15 @@ async function init() {
 
   // 광고 manifest 프리로드
   loadAdManifest();
+
+  // sessionStorage에서 생성 이미지 복원 (토스 리다이렉트 후 복귀용)
+  if (!store.generated) {
+    const savedGen = sessionStorage.getItem('monkos_generated');
+    if (savedGen) {
+      store.generated = savedGen;
+      Monk.log('생성 이미지 sessionStorage에서 복원');
+    }
+  }
 
   // 원본 표시
   showOriginal();
