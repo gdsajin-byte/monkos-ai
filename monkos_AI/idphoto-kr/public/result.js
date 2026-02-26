@@ -19,6 +19,10 @@ import { PremiumModule } from './modules/premium.js';
 // ─── 원본 격리: 풀 원본은 모듈 스코프 private 변수에만 보관 ───
 let _fullOriginal = null;
 
+// ─── 규격 탭 상태 ───
+const _specCache = {};   // { id_photo: dataUrl, resume: dataUrl }
+let _currentSpec = null;
+
 // ─── Media 생성 (crop/toJpeg 전용 — 카메라 불필요) ───
 const media = Monk.media({
   video: null,
@@ -218,12 +222,22 @@ async function confirmAndGenerate() {
     _fullOriginal = genResult.image;
     Monk.log('생성 완료');
 
-    // 워터마크 버전 생성 (비교컷 표시용)
+    // 워터마크 버전 생성
     const watermarked = await generateWatermarkPreview(genResult.image);
 
-    // store/sessionStorage에는 워터마크 버전만 저장
-    store.generated = watermarked;
-    try { sessionStorage.setItem('monkos_generated', watermarked); } catch(e) {}
+    // 크롭 워터마크 생성 (프리뷰용 — 크롭본 중심 UX)
+    const spec = PHOTO_SPECS[store.style];
+    let croppedWatermark = watermarked;
+    try {
+      const cropResult = await media.crop(watermarked, spec);
+      croppedWatermark = cropResult.dataUrl;
+    } catch (e) {
+      Monk.log('프리뷰 크롭 실패, 풀 워터마크 사용');
+    }
+
+    // store/sessionStorage에는 크롭 워터마크 버전 저장
+    store.generated = croppedWatermark;
+    try { sessionStorage.setItem('monkos_generated', croppedWatermark); } catch(e) {}
 
     const elapsed = Date.now() - genStartTime;
     const remaining = Math.max(0, MIN_DISPLAY_TIME - elapsed);
@@ -231,9 +245,13 @@ async function confirmAndGenerate() {
     await new Promise(resolve => setTimeout(resolve, remaining));
 
     startCountdown(() => {
-      // 비교컷 이미지도 워터마크 버전으로 표시
+      // 비교컷: 원본 vs 크롭 워터마크
       const genImg = document.querySelector('#photo-generated');
-      if (genImg) genImg.src = watermarked;
+      if (genImg) genImg.src = croppedWatermark;
+
+      // 비교컷 레이블을 규격명으로 변경
+      const label = document.querySelector('#photo-generated-wrap .label');
+      if (label) label.textContent = spec.name;
 
       store.statusText = TX.resultDone;
       store.resultTitle = TX.resultDone;
@@ -245,8 +263,8 @@ async function confirmAndGenerate() {
       const btnDownload = document.querySelector('#btn-download');
       if (btnDownload) btnDownload.disabled = false;
 
-      // 워터마크 프리뷰는 이미 생성된 버전 사용
-      store.watermarkPreview = watermarked;
+      // 워터마크 프리뷰도 크롭 버전
+      store.watermarkPreview = croppedWatermark;
     });
 
   } catch (err) {
@@ -363,6 +381,11 @@ async function cropAndShowPostDownload() {
       store.specName = spec.name;
       store.specSize = `${spec.widthMM}×${spec.heightMM}mm`;
       store.specPx = `${cropResult.outputW}×${cropResult.outputH}px`;
+
+      // 캐시에 저장
+      _specCache[store.style] = cropResult.dataUrl;
+      _currentSpec = store.style;
+
       Monk.log(`규격 크롭: ${spec.name}`);
     } catch (e) {
       Monk.log('규격 크롭 실패: ' + e.message);
@@ -370,33 +393,30 @@ async function cropAndShowPostDownload() {
     }
   }
 
-  if (store.cropped) {
-    saveSessionData('cropped', store.cropped);
-  }
+  if (store.cropped) saveSessionData('cropped', store.cropped);
 
-  // 포스트 다운로드 상태로 전환
+  // 포스트 다운로드 상태 전환
   store.downloadComplete = true;
   store.showStep3Actions = false;
   store.resultTitle = '다운로드 완료!';
   store.resultSubtitle = 'MONKOS AI 증명사진이 준비되었습니다';
 
-  // 비교컷 숨김 (다운로드 완료 후 불필요)
+  // 비교컷·워터마크·뱃지 숨김
   const compare = document.querySelector('.photo-compare');
   if (compare) compare.style.display = 'none';
-
-  // 워터마크 프리뷰 숨김 (결제 완료 후 불필요)
   store.watermarkPreview = null;
   const wmPreview = document.getElementById('watermark-preview');
   if (wmPreview) wmPreview.style.display = 'none';
-
-  // 상태 뱃지 숨김
   const statusBadge = document.getElementById('status-badge');
   if (statusBadge) statusBadge.style.display = 'none';
 
-  // 포스트 다운로드 영역에 모듈 마운트 (배치 순서: 미션→충전→프리미엄)
+  // 규격 탭 표시
+  showSpecTab();
+
+  // 포스트 다운로드 영역에 모듈 마운트
   const mount = document.getElementById('post-download-mount');
   if (mount) {
-    // 저장 버튼 (모듈이 아닌 메인 흐름)
+    // 갤러리 저장 버튼
     const saveDiv = document.createElement('div');
     saveDiv.style.cssText = 'text-align:center;margin-bottom:16px;';
     saveDiv.innerHTML = `
@@ -405,6 +425,17 @@ async function cropAndShowPostDownload() {
     `;
     mount.appendChild(saveDiv);
     saveDiv.querySelector('#btn-save-gallery').addEventListener('click', saveToGallery);
+
+    // 풀 원본 다운로드 버튼
+    const fullDiv = document.createElement('div');
+    fullDiv.style.cssText = 'text-align:center;margin:16px 0;';
+    fullDiv.innerHTML = `
+      <button class="btn btn-outline" id="btn-full-original" onclick="downloadFullOriginal()" style="width:100%;padding:14px;font-size:15px;background:rgba(167,139,250,0.05);border:1px solid rgba(167,139,250,0.3);color:#c4b5fd;border-radius:12px;cursor:pointer;">
+        🖼️ AI 원본 고화질 다운로드 <span style="opacity:0.7;font-size:13px">(20 Cr)</span>
+      </button>
+      <div style="margin-top:6px;font-size:11px;color:#8892a8;">크롭 전 풀사이즈 원본 · 보정앱 활용 가능</div>
+    `;
+    mount.appendChild(fullDiv);
 
     // ① 미션 (100c) — 즉각 행동 유도
     store.showMission = !!store.user.id;
@@ -416,6 +447,162 @@ async function cropAndShowPostDownload() {
   }
 
   Monk.log('포스트 다운로드 화면 표시');
+}
+
+// ─── 규격 탭 ───
+function showSpecTab() {
+  const tab = document.getElementById('spec-tab');
+  if (!tab) return;
+  tab.style.display = 'block';
+  updateSpecButtons();
+}
+
+function updateSpecButtons() {
+  const SPEC_DESC = {
+    id_photo: '여권, 운전면허, 신분증',
+    resume: '이력서, 사원증, 학생증, 컬러증명',
+  };
+
+  ['id_photo', 'resume'].forEach(key => {
+    const btn = document.getElementById(`btn-spec-${key}`);
+    if (!btn) return;
+
+    const isActive = (key === _currentSpec);
+    const isUnlocked = !!_specCache[key];
+
+    btn.classList.toggle('active', isActive);
+    btn.classList.toggle('locked', !isUnlocked && !isActive);
+
+    const span = btn.querySelector('span');
+    if (span && !isUnlocked && !isActive) {
+      span.textContent = key === 'id_photo' ? '3.5×4.5cm · 10 Cr' : '3×4cm · 10 Cr';
+    } else if (span && (isActive || isUnlocked)) {
+      span.textContent = key === 'id_photo' ? '3.5×4.5cm' : '3×4cm';
+    }
+  });
+
+  const desc = document.getElementById('spec-tab-desc');
+  if (desc && _currentSpec) {
+    desc.textContent = SPEC_DESC[_currentSpec];
+  }
+}
+
+async function selectSpec(specKey) {
+  if (specKey === _currentSpec) return;
+
+  // 캐시 히트 → 무과금 전환
+  if (_specCache[specKey]) {
+    switchToSpec(specKey);
+    return;
+  }
+
+  // 크레딧 확인
+  if (!store.user.id) return;
+  if (store.user.credits < CREDIT_COST.extraCrop) {
+    ChargeModule.show();
+    return;
+  }
+
+  try {
+    const result = await pipe.run('creditUse', { userId: store.user.id, type: 'extra_crop' });
+    store.user = { ...store.user, credits: result.credits };
+
+    const spec = PHOTO_SPECS[specKey];
+    const cropResult = await media.crop(store.generated, spec);
+    _specCache[specKey] = cropResult.dataUrl;
+
+    switchToSpec(specKey);
+    Monk.log(`추가 규격 크롭: ${spec.name} (10c)`);
+  } catch (err) {
+    if (err.status === 402) ChargeModule.show();
+    else Monk.log('추가 크롭 에러: ' + (err.error || err.message));
+  }
+}
+
+function switchToSpec(specKey) {
+  const spec = PHOTO_SPECS[specKey];
+  _currentSpec = specKey;
+
+  store.cropped = _specCache[specKey];
+  store.specName = spec.name;
+  store.specSize = `${spec.widthMM}×${spec.heightMM}mm`;
+
+  if (_specCache[specKey]) saveSessionData('cropped', _specCache[specKey]);
+  updateSpecButtons();
+}
+
+// ─── 풀 원본 유료 다운로드 ───
+async function downloadFullOriginal() {
+  if (!_fullOriginal) {
+    Monk.log('풀 원본 없음');
+    return;
+  }
+
+  if (!store.user.id) return;
+  if (store.user.credits < CREDIT_COST.fullOriginal) {
+    ChargeModule.show();
+    return;
+  }
+
+  try {
+    const result = await pipe.run('creditUse', { userId: store.user.id, type: 'full_original' });
+    store.user = { ...store.user, credits: result.credits };
+
+    // 풀 원본 다운로드 트리거
+    const jpegUrl = await media.toJpeg(_fullOriginal, 0.95);
+    const a = document.createElement('a');
+    a.href = jpegUrl;
+    a.download = 'MONKOS_AI_Original.jpg';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    // 버튼 상태 변경 → 재다운로드 가능 (추가 과금 없음)
+    const btn = document.getElementById('btn-full-original');
+    if (btn) {
+      btn.innerHTML = '🖼️ AI 원본 다시 저장하기';
+      btn.onclick = () => redownloadFullOriginal(jpegUrl);
+    }
+
+    // 별도 앱 안내 배너 표시
+    showStudioBanner();
+
+    Monk.log('풀 원본 다운로드 완료 (20c)');
+  } catch (err) {
+    if (err.status === 402) ChargeModule.show();
+    else Monk.log('풀 원본 에러: ' + (err.error || err.message));
+  }
+}
+
+function redownloadFullOriginal(jpegUrl) {
+  const a = document.createElement('a');
+  a.href = jpegUrl;
+  a.download = 'MONKOS_AI_Original.jpg';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+function showStudioBanner() {
+  const mount = document.getElementById('post-download-mount');
+  if (!mount) return;
+
+  const banner = document.createElement('div');
+  banner.style.cssText = 'margin:16px 0;padding:16px;background:linear-gradient(135deg,rgba(167,139,250,0.08),rgba(99,102,241,0.08));border:1px solid rgba(167,139,250,0.15);border-radius:16px;text-align:center;';
+  banner.innerHTML = `
+    <div style="font-size:14px;font-weight:700;color:#c4b5fd;margin-bottom:6px;">📐 MONKOS Studio</div>
+    <div style="font-size:12px;color:#8892a8;line-height:1.5;">
+      원본으로 다양한 규격 크롭 · 보정 · 인화배송<br>
+      <span style="color:#a78bfa;">Coming Soon</span>
+    </div>
+  `;
+
+  const fullBtn = document.getElementById('btn-full-original')?.parentElement;
+  if (fullBtn && fullBtn.nextSibling) {
+    mount.insertBefore(banner, fullBtn.nextSibling);
+  } else {
+    mount.appendChild(banner);
+  }
 }
 
 // ─── 갤러리 저장 ───
@@ -452,6 +639,8 @@ Object.assign(window, {
   retakePhoto,
   confirmAndGenerate,
   downloadResult,
+  selectSpec,
+  downloadFullOriginal,
 });
 
 // ─── 초기화 ───

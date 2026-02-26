@@ -41,6 +41,27 @@
             user-select: none;
             pointer-events: none;
         }
+        /* 규격 탭 */
+        .spec-tab-btn {
+            background: rgba(167,139,250,0.08);
+            border: 1px solid rgba(167,139,250,0.2);
+            color: #c4b5fd;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            flex: 1;
+            max-width: 160px;
+            transition: all 0.2s;
+        }
+        .spec-tab-btn.active {
+            background: rgba(167,139,250,0.2);
+            border-color: #a78bfa;
+        }
+        .spec-tab-btn.locked {
+            opacity: 0.5;
+        }
         .photo-compare {
             background: rgba(167,139,250,0.04);
             border-radius: 16px;
@@ -221,6 +242,19 @@
                 <span class="spec-tag">300dpi</span>
                 <span class="spec-tag" data-bind="specPx">-</span>
             </div>
+        </div>
+
+        <!-- 규격 선택 탭 (포스트 다운로드 시 표시) -->
+        <div id="spec-tab" style="display:none; padding:12px 16px;">
+            <div style="display:flex; gap:8px; justify-content:center; margin-bottom:8px;">
+                <button class="btn spec-tab-btn" id="btn-spec-id_photo" onclick="selectSpec('id_photo')">
+                    여권규격 <span style="display:block;font-size:11px;opacity:0.7;">3.5×4.5cm</span>
+                </button>
+                <button class="btn spec-tab-btn" id="btn-spec-resume" onclick="selectSpec('resume')">
+                    반명함 <span style="display:block;font-size:11px;opacity:0.7;">3×4cm</span>
+                </button>
+            </div>
+            <div id="spec-tab-desc" style="text-align:center; font-size:12px; color:#8892a8;"></div>
         </div>
 
         <!-- Step 2 버튼 -->
