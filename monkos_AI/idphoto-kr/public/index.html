@@ -18,6 +18,14 @@
 <link rel="icon" href="/monkos-icon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="https://monkos.ai/apple-touch-icon.png">
 
+<!-- 폰트 -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@700&display=swap" rel="stylesheet">
+
+<!-- Cr 코인 모션 -->
+<link rel="stylesheet" href="cr-coin.css">
+
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -439,18 +447,6 @@ footer a { color: var(--accent); text-decoration: none; }
   cursor: pointer; transition: opacity 0.2s;
 }
 .header-login-btn:hover { opacity: 0.85; }
-.credit-btn {
-  display: none; align-items: center; gap: 5px;
-  background: rgba(167, 139, 250, 0.08);
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 6px 14px; border-radius: 20px;
-  font-size: 0.85rem; font-weight: 700;
-  cursor: pointer; transition: all 0.2s;
-}
-.credit-btn:hover { border-color: var(--border-hover); background: rgba(167, 139, 250, 0.14); }
-.credit-diamond { font-size: 14px; }
-.credit-count { color: var(--accent); font-variant-numeric: tabular-nums; }
 .provider-badge {
   display: none; align-items: center; justify-content: center;
   width: 28px; height: 28px; border-radius: 50%;
@@ -630,19 +626,6 @@ footer a { color: var(--accent); text-decoration: none; }
 }
 .login-oauth-btn.line:hover { background: #05B34A; }
 
-/* === 크레딧 0 강조 === */
-.credit-btn.credit-empty {
-  background: #FF6B35;
-  border-color: #FF6B35;
-  color: #fff;
-  animation: pulse-subtle 2s infinite;
-}
-.credit-btn.credit-empty .credit-count { color: #fff; }
-@keyframes pulse-subtle {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.8; }
-}
-
 /* === 토스트 === */
 .toast-container {
   position: fixed; bottom: 80px; left: 50%;
@@ -690,9 +673,20 @@ footer a { color: var(--accent); text-decoration: none; }
     </div>
     <div class="auth-area" id="authArea">
       <button class="header-login-btn" id="loginBtn" onclick="openLoginModal()">로그인</button>
-      <button class="credit-btn" id="creditBtn" style="display:none;" onclick="location.href='https://monkos.ai/credits?from='+encodeURIComponent(location.href)">
-        <span class="credit-diamond">💎</span><span class="credit-count" id="creditCount">0</span>
-      </button>
+      <div class="header-balance" id="creditBtn" style="display:none;" onclick="location.href='https://monkos.ai/credits?from='+encodeURIComponent(location.href)">
+        <div class="header-coin-wrap">
+          <div class="header-sparkle"></div>
+          <div class="header-sparkle"></div>
+          <div class="header-coin">
+            <div class="header-coin-face">
+              <div class="header-shimmer"></div>
+              <span class="cr-sym">Cr</span>
+            </div>
+          </div>
+        </div>
+        <span class="balance-amount" id="creditCount">0</span>
+        <span class="balance-unit">Cr</span>
+      </div>
     </div>
   </header>
 
@@ -953,11 +947,6 @@ function updateAuthUI() {
     if (creditBtn) {
       creditBtn.style.display = 'flex';
       creditCount.textContent = user.credits != null ? user.credits : '0';
-      if (!user.credits || user.credits <= 0) {
-        creditBtn.classList.add('credit-empty');
-      } else {
-        creditBtn.classList.remove('credit-empty');
-      }
     }
   } catch(e) {}
 }
