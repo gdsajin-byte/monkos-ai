@@ -380,6 +380,19 @@ async function cropAndShowPostDownload() {
   store.resultTitle = '다운로드 완료!';
   store.resultSubtitle = 'MONKOS AI 증명사진이 준비되었습니다';
 
+  // 비교컷 숨김 (다운로드 완료 후 불필요)
+  const compare = document.querySelector('.photo-compare');
+  if (compare) compare.style.display = 'none';
+
+  // 워터마크 프리뷰 숨김 (결제 완료 후 불필요)
+  store.watermarkPreview = null;
+  const wmPreview = document.getElementById('watermark-preview');
+  if (wmPreview) wmPreview.style.display = 'none';
+
+  // 상태 뱃지 숨김
+  const statusBadge = document.getElementById('status-badge');
+  if (statusBadge) statusBadge.style.display = 'none';
+
   // 포스트 다운로드 영역에 모듈 마운트 (배치 순서: 미션→충전→프리미엄)
   const mount = document.getElementById('post-download-mount');
   if (mount) {
