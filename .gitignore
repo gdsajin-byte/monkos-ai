@@ -90,3 +90,6 @@ nul
 
 # iPhone 캡쳐 (로컬 전용)
 iphone_capture/
+
+# Local device memory (디바이스별 로컬 전용)
+MEMORY.md
