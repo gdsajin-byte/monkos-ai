@@ -1304,10 +1304,11 @@ location.href = '/';
           return;
         }
 
-        const cost = type === 'generate' ? 10 : type === 'download' ? 70 : 0;
+        const COST_MAP = { generate: 10, download: 70, extra_crop: 10, full_original: 20 };
+        const cost = COST_MAP[type] || 0;
         if (cost === 0) {
           res.writeHead(400, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({ error: 'type은 generate 또는 download' }));
+          res.end(JSON.stringify({ error: '유효하지 않은 type' }));
           return;
         }
 
@@ -1576,10 +1577,11 @@ location.href = '/';
           return;
         }
 
-        const refund = type === 'generate' ? 10 : type === 'download' ? 70 : 0;
+        const REFUND_MAP = { generate: 10, download: 70, extra_crop: 10, full_original: 20 };
+        const refund = REFUND_MAP[type] || 0;
         if (refund === 0) {
           res.writeHead(400, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({ error: 'type은 generate 또는 download' }));
+          res.end(JSON.stringify({ error: '유효하지 않은 type' }));
           return;
         }
 
