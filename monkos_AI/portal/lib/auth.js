@@ -6,7 +6,7 @@ import {
   GOOGLE_CLIENT_ID, KAKAO_REST_API_KEY, KAKAO_REDIRECT_URI,
   LINE_CHANNEL_ID, LINE_CHANNEL_SECRET,
   LEMONSQUEEZY_WEBHOOK_SECRET, ALLOWED_POPUP_ORIGINS,
-  pendingLineStates, createHmac, randomBytes
+  pendingLineStates, createHmac, randomBytes, authSecret
 } from './shared/config.js';
 
 // === 카카오 OAuth (KR) — /auth/kakao ===
@@ -455,8 +455,7 @@ export async function handleAuthToken(req, res) {
       // 5분 만료 HMAC 토큰
       const expires = Date.now() + 5 * 60 * 1000;
       const payload = `${userId}:${expires}`;
-      const secret = LEMONSQUEEZY_WEBHOOK_SECRET || 'monkos-default-secret';
-      const hmac = createHmac('sha256', secret);
+      const hmac = createHmac('sha256', authSecret);
       hmac.update(payload);
       const sig = hmac.digest('hex');
       const token = Buffer.from(`${payload}:${sig}`).toString('base64url');
@@ -498,9 +497,8 @@ export async function handleAuthVerify(req, res) {
       return;
     }
 
-    // 서명 검증
-    const secret = LEMONSQUEEZY_WEBHOOK_SECRET || 'monkos-default-secret';
-    const hmac = createHmac('sha256', secret);
+    // 서명 검증 (authSecret 사용)
+    const hmac = createHmac('sha256', authSecret);
     hmac.update(`${userId}:${expiresStr}`);
     const expectedSig = hmac.digest('hex');
 
@@ -641,4 +639,14 @@ export async function handleVerifyCookie(req, res) {
     res.writeHead(500, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: err.message }));
   }
+}
+
+// === 로그아웃 — POST /api/auth/logout ===
+export async function handleLogout(req, res) {
+  res.setHeader('Set-Cookie',
+    'monkos_session=; Domain=.monkos.ai; Path=/; Secure; HttpOnly; SameSite=Lax; Max-Age=0'
+  );
+  log('[Auth] 로그아웃 — 세션 쿠키 삭제');
+  res.writeHead(200, { 'Content-Type': 'application/json' });
+  res.end(JSON.stringify({ success: true }));
 }

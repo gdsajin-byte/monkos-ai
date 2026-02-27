@@ -21,7 +21,7 @@ import {
 } from './lib/shared/config.js';
 
 // === 핸들러 모듈 ===
-import { handleKakaoAuth, handleKakaoCallback, handleLineAuth, handleLineCallback, handleGoogleAuth, handleAuthToken, handleAuthVerify, handleAuthRefresh, handleVerifyCookie } from './lib/auth.js';
+import { handleKakaoAuth, handleKakaoCallback, handleLineAuth, handleLineCallback, handleGoogleAuth, handleAuthToken, handleAuthVerify, handleAuthRefresh, handleVerifyCookie, handleLogout } from './lib/auth.js';
 import { handleCreditsGet, handleCreditsUse, handleCreditsRefund } from './lib/credits.js';
 import { handleCheckout, handleLemonSqueezyWebhook, handleTossConfirm, handleTossDirect, handleDownloadDirect, handleTossSuccess, handleTossFail } from './lib/payments.js';
 import { handleTelegramGateCode, handleTelegramMissionCode, handleConsentSns, handleMissionComplete, handleCreditsEvent } from './lib/events.js';
@@ -102,6 +102,7 @@ const httpServer = createServer(async (req, res) => {
   if (urlPath === '/api/auth/verify' && req.method === 'GET') return handleAuthVerify(req, res);
   if (urlPath === '/api/auth/verify-cookie' && req.method === 'GET') return handleVerifyCookie(req, res);
   if (urlPath === '/api/auth/refresh' && req.method === 'POST') return handleAuthRefresh(req, res);
+  if (urlPath === '/api/auth/logout' && req.method === 'POST') return handleLogout(req, res);
 
   // === 크레딧 ===
   if (req.url?.startsWith('/api/credits') && req.method === 'GET' && urlPath === '/api/credits') return handleCreditsGet(req, res);

@@ -2,10 +2,11 @@
  * MONKOS Portal — 공통 인프라 (환경변수 + 싱글톤 + 유틸)
  *
  * 모든 모듈이 이 파일에서 import.
- * LEMONSQUEEZY_WEBHOOK_SECRET: 결제 웹훅 서명 + HMAC 인증 토큰 이중 용도 (주의)
+ * LEMONSQUEEZY_WEBHOOK_SECRET: 결제 웹훅 서명 전용
+ * AUTH_SECRET: 인증 토큰 서명 전용 (미설정 시 LEMONSQUEEZY_WEBHOOK_SECRET 폴백)
  */
 
-import { createHmac, randomBytes } from 'crypto';
+import { createHmac, randomBytes, timingSafeEqual } from 'crypto';
 import { GoogleGenAI } from '@google/genai';
 import { Firestore } from '@google-cloud/firestore';
 
@@ -19,6 +20,13 @@ export const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '933456016842-cl
 export const LEMONSQUEEZY_API_KEY = process.env.LEMONSQUEEZY_API_KEY || '';
 export const LEMONSQUEEZY_WEBHOOK_SECRET = process.env.LEMONSQUEEZY_WEBHOOK_SECRET || '';
 export const LEMONSQUEEZY_STORE_ID = '290457';
+
+// 인증 토큰 서명 (결제 시크릿과 분리)
+export const AUTH_SECRET = process.env.AUTH_SECRET || '';
+if (!AUTH_SECRET) {
+  console.warn('[AUTH] ⚠️ AUTH_SECRET 환경변수 미설정 — 프로덕션에서는 반드시 설정 필요');
+}
+const authSecret = AUTH_SECRET || LEMONSQUEEZY_WEBHOOK_SECRET || 'monkos-default-secret';
 
 // 토스페이먼츠 (KR)
 export const TOSS_SECRET_KEY = process.env.TOSS_SECRET_KEY || '';
@@ -149,8 +157,7 @@ export function safeJsonForScript(obj) {
 export function generateAuthToken(userId, ttlMs = 5 * 60 * 1000) {
   const expires = Date.now() + ttlMs;
   const payload = `${userId}:${expires}`;
-  const secret = LEMONSQUEEZY_WEBHOOK_SECRET || 'monkos-default-secret';
-  const hmac = createHmac('sha256', secret);
+  const hmac = createHmac('sha256', authSecret);
   hmac.update(payload);
   const sig = hmac.digest('hex');
   const token = Buffer.from(`${payload}:${sig}`).toString('base64url');
@@ -166,11 +173,14 @@ export function verifyAuthToken(token, opts = {}) {
     const [userId, expiresStr, sig] = parts;
     const expires = parseInt(expiresStr, 10);
 
-    const secret = LEMONSQUEEZY_WEBHOOK_SECRET || 'monkos-default-secret';
-    const hmac = createHmac('sha256', secret);
+    const hmac = createHmac('sha256', authSecret);
     hmac.update(`${userId}:${expiresStr}`);
     const expectedSig = hmac.digest('hex');
-    if (sig !== expectedSig) return null;
+
+    // timingSafeEqual로 타이밍 공격 방지
+    const sigBuf = Buffer.from(sig, 'hex');
+    const expectedBuf = Buffer.from(expectedSig, 'hex');
+    if (sigBuf.length !== expectedBuf.length || !timingSafeEqual(sigBuf, expectedBuf)) return null;
 
     if (!opts.allowExpired && Date.now() > expires) return null;
     if (opts.allowExpired && opts.maxAgeMs) {
@@ -232,7 +242,7 @@ export function parseCookies(cookieHeader) {
   return cookies;
 }
 
-// === randomBytes re-export ===
-export { createHmac, randomBytes };
+// === crypto re-export ===
+export { createHmac, randomBytes, authSecret };
 
 log('[Vertex AI] ADC 클라이언트 초기화 (Gemini 2.0 Flash 챗봇)');
