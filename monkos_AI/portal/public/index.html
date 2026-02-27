@@ -1448,17 +1448,25 @@ async function loadGISWithRetry() {
   return false;
 }
 
-// 세션 복원 (GIS와 무관하게 즉시 실행)
-function restoreSession() {
-  const saved = sessionStorage.getItem('monkos_user');
-  if (saved) {
-    try {
-      currentUser = JSON.parse(saved);
-      updateAuthUI();
-    } catch (e) {
-      sessionStorage.removeItem('monkos_user');
+// 세션 복원 — 쿠키 기반 (verify-cookie API)
+async function restoreSession() {
+  try {
+    const res = await fetch('/api/auth/verify-cookie', {
+      credentials: 'include',
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.user?.id) {
+        currentUser = data.user;
+        updateAuthUI();
+        return;
+      }
     }
+  } catch (e) {
+    console.log('세션 복원 실패');
   }
+  currentUser = null;
+  updateAuthUI();
 }
 
 // Google 로그인 초기화 (GIS만 담당)
@@ -1558,7 +1566,6 @@ async function handleGoogleTokenCallback(tokenResponse) {
     const data = await res.json();
     if (data.success && data.user) {
       currentUser = data.user;
-      sessionStorage.setItem('monkos_user', JSON.stringify(currentUser));
       updateAuthUI();
     }
   } catch (err) {
@@ -1578,7 +1585,6 @@ async function handleGoogleCallback(response) {
 
     if (data.success && data.user) {
       currentUser = data.user;
-      sessionStorage.setItem('monkos_user', JSON.stringify(currentUser));
       updateAuthUI();
       // 신규 가입자 환영 메시지
       if (data.isNewUser) {
