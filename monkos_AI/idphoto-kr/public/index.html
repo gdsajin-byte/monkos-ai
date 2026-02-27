@@ -926,7 +926,7 @@ function closeLoginModal() {
 
 /* === 인증 상태 UI 갱신 (3상태) === */
 function updateAuthUI() {
-  var raw = localStorage.getItem('monkos_user');
+  var raw = sessionStorage.getItem('monkos_user');
   var loginBtn = document.getElementById('loginBtn');
   var creditBtn = document.getElementById('creditBtn');
   var creditCount = document.getElementById('creditCount');
@@ -953,20 +953,20 @@ function updateAuthUI() {
 
 /* === 토큰 만료 체크 === */
 function checkTokenExpiry() {
-  var token = localStorage.getItem('monkos_token');
+  var token = sessionStorage.getItem('monkos_token');
   if (!token) return;
   try {
     var parts = token.split('.');
     if (parts.length >= 2) {
       var payload = JSON.parse(atob(parts[1]));
       if (payload.exp && payload.exp * 1000 < Date.now()) {
-        localStorage.removeItem('monkos_user');
-        localStorage.removeItem('monkos_token');
+        sessionStorage.removeItem('monkos_user');
+        sessionStorage.removeItem('monkos_token');
       }
     }
   } catch(e) {
-    localStorage.removeItem('monkos_user');
-    localStorage.removeItem('monkos_token');
+    sessionStorage.removeItem('monkos_user');
+    sessionStorage.removeItem('monkos_token');
   }
 }
 
@@ -1043,8 +1043,8 @@ function handleGoogleTokenCallback(tokenResponse) {
   .then(function(res) { return res.json(); })
   .then(function(data) {
     if (data.success && data.user) {
-      localStorage.setItem('monkos_user', JSON.stringify(data.user));
-      if (data.token) localStorage.setItem('monkos_token', data.token);
+      sessionStorage.setItem('monkos_user', JSON.stringify(data.user));
+      if (data.token) sessionStorage.setItem('monkos_token', data.token);
       updateAuthUI();
       if (data.isNewUser) {
         showToast((data.user.name || '') + '님, MONKOS에 오신 것을 환영합니다!', 'info');
@@ -1081,8 +1081,8 @@ function listenAuthMessage() {
   function handler(e) {
     if (e.origin !== (window.MONKOS_PORTAL_URL || 'https://monkos.ai')) return;
     if (e.data && e.data.type === 'auth-success') {
-      localStorage.setItem('monkos_user', JSON.stringify(e.data.user));
-      if (e.data.token) localStorage.setItem('monkos_token', e.data.token);
+      sessionStorage.setItem('monkos_user', JSON.stringify(e.data.user));
+      if (e.data.token) sessionStorage.setItem('monkos_token', e.data.token);
       updateAuthUI();
       window.removeEventListener('message', handler);
     }
@@ -1093,7 +1093,7 @@ function listenAuthMessage() {
 
 /* === 다운로드 게이트 === */
 function downloadGate() {
-  var raw = localStorage.getItem('monkos_user');
+  var raw = sessionStorage.getItem('monkos_user');
   if (!raw) { openLoginModal(); return false; }
   try {
     var user = JSON.parse(raw);
