@@ -1603,10 +1603,17 @@ async function handleGoogleCallback(response) {
   }
 }
 
-// 로그아웃
-function logout() {
+// 로그아웃 — 쿠키 삭제 (서버 측 Max-Age=0)
+async function logout() {
+  try {
+    await fetch('/api/auth/logout', {
+      method: 'POST',
+      credentials: 'include',
+    });
+  } catch (e) {
+    console.log('로그아웃 API 호출 실패');
+  }
   currentUser = null;
-  sessionStorage.removeItem('monkos_user');
   updateAuthUI();
   if (typeof google !== 'undefined') {
     google.accounts.id.disableAutoSelect();
