@@ -148,7 +148,7 @@ Track 3 (GCS)      → 코퍼스 통합 → 지식 자산화
 | 4060 PC (Windows) | 100.118.31.62 | 쌍아, 막내, 철창이 |
 | iPhone | 100.115.57.53 | 철창이 |
 
-상세: [3TRACK_SYSTEM_ARCHITECTURE.md](docs/infrastructure/3TRACK_SYSTEM_ARCHITECTURE.md)
+상세: [3TRACK_SYSTEM_ARCHITECTURE.md](docs/infrastructure/architecture/3TRACK_SYSTEM_ARCHITECTURE.md)
 
 ---
 

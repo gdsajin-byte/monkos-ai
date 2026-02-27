@@ -221,6 +221,17 @@ export async function parseJsonBody(req) {
   return JSON.parse(raw);
 }
 
+// === Cookie 파싱 유틸 ===
+export function parseCookies(cookieHeader) {
+  const cookies = {};
+  if (!cookieHeader) return cookies;
+  cookieHeader.split(';').forEach(pair => {
+    const [key, ...vals] = pair.trim().split('=');
+    if (key) cookies[key.trim()] = vals.join('=').trim();
+  });
+  return cookies;
+}
+
 // === randomBytes re-export ===
 export { createHmac, randomBytes };
 

@@ -220,25 +220,54 @@ export async function initFromUrlToken() {
   return false;
 }
 
-export function initCredits() {
+export async function initCredits() {
+  // 1차: sessionStorage 확인 (기존 로직 유지)
   const stored = sessionStorage.getItem('monkos_user');
   if (stored) {
     try {
       const user = JSON.parse(stored);
-      store.user = {
-        id: user.id,
-        email: user.email,
-        name: user.name || user.email?.split('@')[0] || '',
-        credits: user.credits ?? 0,
-        avatar: user.avatar || user.picture || '',
-      };
-      Monk.log(`로그인: ${user.email} (${store.user.credits}c)`);
+      if (user.id) {
+        store.user = {
+          id: user.id,
+          email: user.email,
+          name: user.name || user.email?.split('@')[0] || '',
+          credits: user.credits ?? 0,
+          avatar: user.avatar || user.picture || '',
+        };
+        Monk.log(`로그인: ${user.email} (${store.user.credits}c)`);
+        fetchLatestCredits();
+        return;
+      }
     } catch (e) {
       Monk.log('사용자 정보 파싱 실패');
     }
-  } else {
-    Monk.log('비로그인 상태');
   }
+
+  // 2차: 쿠키 세션 복원 시도 (크로스도메인 지원)
+  try {
+    const res = await fetch(`${API.PORTAL_URL}/api/auth/verify-cookie`, {
+      credentials: 'include',
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.user?.id) {
+        store.user = {
+          id: data.user.id,
+          email: data.user.email,
+          name: data.user.name || '',
+          credits: data.user.credits ?? 0,
+          avatar: data.user.picture || '',
+        };
+        sessionStorage.setItem('monkos_user', JSON.stringify(data.user));
+        Monk.log(`쿠키 세션 복원: ${data.user.email} (${data.user.credits}c)`);
+        return;
+      }
+    }
+  } catch (e) {
+    Monk.log('쿠키 세션 복원 실패 (무시)');
+  }
+
+  Monk.log('비로그인 상태');
 }
 
 export async function fetchLatestCredits() {
@@ -359,7 +388,7 @@ export async function sharedInit() {
   checkInappBrowser();
   checkTokenExpiry();
   await initFromUrlToken();
-  initCredits();
+  await initCredits();
   await initFromTossResult();
 
   // sessionStorage에서 선택 데이터 복원

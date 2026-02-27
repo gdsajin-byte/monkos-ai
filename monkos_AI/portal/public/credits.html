@@ -425,7 +425,8 @@ function handleTossResult() {
 function isSafeReturnUrl(url) {
   try {
     var u = new URL(url, window.location.origin);
-    var allowed = ['monkos.ai', 'www.monkos.ai', 'monk.kr', 'www.monk.kr'];
+    var allowed = ['monkos.ai', 'www.monkos.ai', 'monk.kr', 'www.monk.kr',
+                   'idphoto-kr.monkos.ai', 'idphoto-jp.monkos.ai'];
     if (u.hostname === 'localhost' || u.hostname === '127.0.0.1') return true;
     return allowed.indexOf(u.hostname) !== -1 && (u.protocol === 'https:' || u.protocol === 'http:');
   } catch(e) { return false; }

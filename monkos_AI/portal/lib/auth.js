@@ -2,7 +2,7 @@
 
 import {
   usersCollection, log, safeJsonForScript,
-  generateAuthToken, verifyAuthToken, parseJsonBody,
+  generateAuthToken, verifyAuthToken, parseCookies, parseJsonBody,
   GOOGLE_CLIENT_ID, KAKAO_REST_API_KEY, KAKAO_REDIRECT_URI,
   LINE_CHANNEL_ID, LINE_CHANNEL_SECRET,
   LEMONSQUEEZY_WEBHOOK_SECRET, ALLOWED_POPUP_ORIGINS,
@@ -123,6 +123,10 @@ export async function handleKakaoCallback(req, res) {
         : 'https://monkos.ai';
       const { token } = generateAuthToken(docId, 30 * 24 * 60 * 60 * 1000); // 30일
 
+      // 크로스도메인 세션 쿠키 세팅
+      res.setHeader('Set-Cookie',
+        `monkos_session=${token}; Domain=.monkos.ai; Path=/; Secure; HttpOnly; SameSite=Lax; Max-Age=2592000`
+      );
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
       res.end(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>로그인 완료</title></head><body><script>
 (function() {
@@ -138,6 +142,11 @@ export async function handleKakaoCallback(req, res) {
 </script></body></html>`);
     } else {
       // 기존 리다이렉트 방식 (비팝업)
+      const { token: sessionToken } = generateAuthToken(docId, 30 * 24 * 60 * 60 * 1000);
+      // 크로스도메인 세션 쿠키 세팅
+      res.setHeader('Set-Cookie',
+        `monkos_session=${sessionToken}; Domain=.monkos.ai; Path=/; Secure; HttpOnly; SameSite=Lax; Max-Age=2592000`
+      );
       const userObj = JSON.stringify(userInfo);
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
       res.end(`<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body><script>
@@ -278,6 +287,10 @@ export async function handleLineCallback(req, res) {
         : 'https://monkos.ai';
       const { token } = generateAuthToken(docId, 30 * 24 * 60 * 60 * 1000); // 30일
 
+      // 크로스도메인 세션 쿠키 세팅
+      res.setHeader('Set-Cookie',
+        `monkos_session=${token}; Domain=.monkos.ai; Path=/; Secure; HttpOnly; SameSite=Lax; Max-Age=2592000`
+      );
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
       res.end(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ログイン完了</title></head><body><script>
 (function() {
@@ -293,6 +306,11 @@ export async function handleLineCallback(req, res) {
 </script></body></html>`);
     } else {
       // 기존 리다이렉트 방식 (비팝업)
+      const { token: sessionToken } = generateAuthToken(docId, 30 * 24 * 60 * 60 * 1000);
+      // 크로스도메인 세션 쿠키 세팅
+      res.setHeader('Set-Cookie',
+        `monkos_session=${sessionToken}; Domain=.monkos.ai; Path=/; Secure; HttpOnly; SameSite=Lax; Max-Age=2592000`
+      );
       const userObj = JSON.stringify(userInfo);
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
       res.end(`<!DOCTYPE html><html><head><meta charset="UTF-8">
@@ -396,6 +414,11 @@ export async function handleGoogleAuth(req, res) {
       const updatedDoc = await userRef.get();
       const credits = updatedDoc.data()?.credits ?? 0;
 
+      // 크로스도메인 세션 쿠키 세팅
+      const { token: sessionToken } = generateAuthToken(user.id, 30 * 24 * 60 * 60 * 1000);
+      res.setHeader('Set-Cookie',
+        `monkos_session=${sessionToken}; Domain=.monkos.ai; Path=/; Secure; HttpOnly; SameSite=Lax; Max-Age=2592000`
+      );
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({
         success: true,
@@ -574,4 +597,48 @@ export async function handleAuthRefresh(req, res) {
       res.end(JSON.stringify({ success: false, error: err.message }));
     }
   });
+}
+
+// === 쿠키 기반 세션 검증 — /api/auth/verify-cookie (GET) ===
+export async function handleVerifyCookie(req, res) {
+  const cookies = parseCookies(req.headers.cookie || '');
+  const token = cookies['monkos_session'];
+
+  if (!token) {
+    res.writeHead(401, { 'Content-Type': 'application/json' });
+    return res.end(JSON.stringify({ error: 'no session' }));
+  }
+
+  const result = verifyAuthToken(token);
+  if (!result) {
+    // 만료된 쿠키 삭제
+    res.setHeader('Set-Cookie',
+      'monkos_session=; Domain=.monkos.ai; Path=/; Max-Age=0');
+    res.writeHead(401, { 'Content-Type': 'application/json' });
+    return res.end(JSON.stringify({ error: 'invalid token' }));
+  }
+
+  try {
+    const userDoc = await usersCollection.doc(result.userId).get();
+    if (!userDoc.exists) {
+      res.writeHead(404, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ error: 'user not found' }));
+    }
+
+    const userData = userDoc.data();
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({
+      user: {
+        id: result.userId,
+        email: userData.email,
+        name: userData.name,
+        picture: userData.picture,
+        credits: userData.credits ?? 0,
+      }
+    }));
+  } catch (err) {
+    log(`[Auth] verify-cookie 에러: ${err.message}`);
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: err.message }));
+  }
 }
