@@ -2,7 +2,7 @@
 
 **분석일**: 2026-02-20
 **분석 도구**: Google NotebookLM
-**입력 소스**: `docs/infrastructure/OPERATIONS_OVERVIEW_20260220.md`
+**입력 소스**: `docs/infrastructure/architecture/OPERATIONS_OVERVIEW_20260220.md`
 **용도**: R&D 활동증빙 / 이의제기 근거 자료
 
 ---

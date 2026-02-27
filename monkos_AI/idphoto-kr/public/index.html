@@ -924,49 +924,24 @@ function closeLoginModal() {
   document.getElementById('loginModal').classList.remove('active');
 }
 
-/* === 인증 상태 UI 갱신 (3상태) === */
-function updateAuthUI() {
-  var raw = sessionStorage.getItem('monkos_user');
+/* === 인증 상태 (쿠키 기반) === */
+var _user = null;
+
+function updateAuthUI(user) {
+  if (user !== undefined) _user = user;
   var loginBtn = document.getElementById('loginBtn');
   var creditBtn = document.getElementById('creditBtn');
   var creditCount = document.getElementById('creditCount');
 
-  if (!raw) {
+  if (!_user || (!_user.id && !_user.uid)) {
     if (loginBtn) loginBtn.style.display = 'block';
     if (creditBtn) creditBtn.style.display = 'none';
     return;
   }
-  try {
-    var user = JSON.parse(raw);
-    if (!user || (!user.id && !user.uid)) {
-      if (loginBtn) loginBtn.style.display = 'block';
-      if (creditBtn) creditBtn.style.display = 'none';
-      return;
-    }
-    if (loginBtn) loginBtn.style.display = 'none';
-    if (creditBtn) {
-      creditBtn.style.display = 'flex';
-      creditCount.textContent = user.credits != null ? user.credits : '0';
-    }
-  } catch(e) {}
-}
-
-/* === 토큰 만료 체크 === */
-function checkTokenExpiry() {
-  var token = sessionStorage.getItem('monkos_token');
-  if (!token) return;
-  try {
-    var parts = token.split('.');
-    if (parts.length >= 2) {
-      var payload = JSON.parse(atob(parts[1]));
-      if (payload.exp && payload.exp * 1000 < Date.now()) {
-        sessionStorage.removeItem('monkos_user');
-        sessionStorage.removeItem('monkos_token');
-      }
-    }
-  } catch(e) {
-    sessionStorage.removeItem('monkos_user');
-    sessionStorage.removeItem('monkos_token');
+  if (loginBtn) loginBtn.style.display = 'none';
+  if (creditBtn) {
+    creditBtn.style.display = 'flex';
+    creditCount.textContent = _user.credits != null ? _user.credits : '0';
   }
 }
 
@@ -1043,9 +1018,7 @@ function handleGoogleTokenCallback(tokenResponse) {
   .then(function(res) { return res.json(); })
   .then(function(data) {
     if (data.success && data.user) {
-      sessionStorage.setItem('monkos_user', JSON.stringify(data.user));
-      if (data.token) sessionStorage.setItem('monkos_token', data.token);
-      updateAuthUI();
+      updateAuthUI(data.user);
       if (data.isNewUser) {
         showToast((data.user.name || '') + '님, MONKOS에 오신 것을 환영합니다!', 'info');
       }
@@ -1060,20 +1033,20 @@ function handleGoogleTokenCallback(tokenResponse) {
 function loginKakao() {
   closeLoginModal();
   var popup = window.open(
-    (window.MONKOS_PORTAL_URL || 'https://monkos.ai') + '/auth/kakao?popup=1&redirect_app=idphoto-kr',
+    (window.MONKOS_PORTAL_URL || 'https://monkos.ai') + '/auth/kakao?popup=1&redirect_app=' + encodeURIComponent(window.location.origin),
     'kakao-login', 'width=500,height=600'
   );
-  if (!popup) { location.href = (window.MONKOS_PORTAL_URL || 'https://monkos.ai') + '/auth/kakao'; return; }
+  if (!popup) { location.href = (window.MONKOS_PORTAL_URL || 'https://monkos.ai') + '/auth/kakao?redirect_app=' + encodeURIComponent(window.location.origin); return; }
   listenAuthMessage();
 }
 
 function loginLine() {
   closeLoginModal();
   var popup = window.open(
-    (window.MONKOS_PORTAL_URL || 'https://monkos.ai') + '/auth/line?popup=1&redirect_app=idphoto-kr',
+    (window.MONKOS_PORTAL_URL || 'https://monkos.ai') + '/auth/line?popup=1&redirect_app=' + encodeURIComponent(window.location.origin),
     'line-login', 'width=500,height=600'
   );
-  if (!popup) { location.href = (window.MONKOS_PORTAL_URL || 'https://monkos.ai') + '/auth/line'; return; }
+  if (!popup) { location.href = (window.MONKOS_PORTAL_URL || 'https://monkos.ai') + '/auth/line?redirect_app=' + encodeURIComponent(window.location.origin); return; }
   listenAuthMessage();
 }
 
@@ -1081,9 +1054,7 @@ function listenAuthMessage() {
   function handler(e) {
     if (e.origin !== (window.MONKOS_PORTAL_URL || 'https://monkos.ai')) return;
     if (e.data && e.data.type === 'auth-success') {
-      sessionStorage.setItem('monkos_user', JSON.stringify(e.data.user));
-      if (e.data.token) sessionStorage.setItem('monkos_token', e.data.token);
-      updateAuthUI();
+      updateAuthUI(e.data.user);
       window.removeEventListener('message', handler);
     }
   }
@@ -1093,22 +1064,27 @@ function listenAuthMessage() {
 
 /* === 다운로드 게이트 === */
 function downloadGate() {
-  var raw = sessionStorage.getItem('monkos_user');
-  if (!raw) { openLoginModal(); return false; }
-  try {
-    var user = JSON.parse(raw);
-    if (!user.credits || user.credits < 70) {
-      showToast('크레딧이 부족합니다. 충전 후 다운로드하세요.', 'warning');
-      setTimeout(function() { location.href = (window.MONKOS_PORTAL_URL || 'https://monkos.ai') + '/credits?from=' + encodeURIComponent(location.href); }, 1500);
-      return false;
-    }
-    return true;
-  } catch(e) { openLoginModal(); return false; }
+  if (!_user || !_user.id) { openLoginModal(); return false; }
+  if (!_user.credits || _user.credits < 70) {
+    showToast('크레딧이 부족합니다. 충전 후 다운로드하세요.', 'warning');
+    setTimeout(function() { location.href = (window.MONKOS_PORTAL_URL || 'https://monkos.ai') + '/credits?from=' + encodeURIComponent(location.href); }, 1500);
+    return false;
+  }
+  return true;
 }
 
-/* === 페이지 초기화 === */
-checkTokenExpiry();
-updateAuthUI();
+/* === 페이지 초기화 — 쿠키 인증 복원 === */
+(function() {
+  var portalUrl = window.MONKOS_PORTAL_URL || 'https://monkos.ai';
+  fetch(portalUrl + '/api/auth/verify-cookie', { credentials: 'include' })
+    .then(function(res) { return res.ok ? res.json() : null; })
+    .then(function(data) {
+      if (data && data.user && data.user.id) {
+        updateAuthUI(data.user);
+      }
+    })
+    .catch(function() {});
+})();
 
 /* === 챗봇 === */
 var chatOpen = false;

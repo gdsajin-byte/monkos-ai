@@ -99,8 +99,6 @@ function _startKakaoLogin() {
     if (e.origin !== API.PORTAL_URL) return;
     if (e.data && e.data.type === 'auth-success') {
       window.removeEventListener('message', handler);
-      sessionStorage.setItem('monkos_user', JSON.stringify(e.data.user));
-      if (e.data.token) sessionStorage.setItem('monkos_token', e.data.token);
       const u = e.data.user;
       store.user = {
         id: u.id, email: u.email, name: u.name,
@@ -330,11 +328,9 @@ async function _buyDirect() {
 
   try {
     const tossPayments = TossPayments(TOSS_CLIENT_KEY);
-    const payment = tossPayments.payment({ customerKey: `GUEST_${orderId}` });
 
-    await payment.requestPayment({
-      method: 'CARD',
-      amount: { currency: 'KRW', value: 10150 },
+    await tossPayments.requestPayment('카드', {
+      amount: 10150,
       orderId,
       orderName: 'MONKOS AI 증명사진 1장',
       successUrl: `${window.location.origin}${window.location.pathname}?toss=direct`,
@@ -435,8 +431,6 @@ function _startKakaoLoginSimple() {
     if (e.origin !== API.PORTAL_URL) return;
     if (e.data && e.data.type === 'auth-success') {
       window.removeEventListener('message', handler);
-      sessionStorage.setItem('monkos_user', JSON.stringify(e.data.user));
-      if (e.data.token) sessionStorage.setItem('monkos_token', e.data.token);
       const u = e.data.user;
       store.user = {
         id: u.id, email: u.email, name: u.name,
@@ -463,8 +457,6 @@ function _startLineLoginSimple() {
     if (e.origin !== API.PORTAL_URL) return;
     if (e.data && e.data.type === 'auth-success') {
       window.removeEventListener('message', handler);
-      sessionStorage.setItem('monkos_user', JSON.stringify(e.data.user));
-      if (e.data.token) sessionStorage.setItem('monkos_token', e.data.token);
       const u = e.data.user;
       store.user = {
         id: u.id, email: u.email, name: u.name,

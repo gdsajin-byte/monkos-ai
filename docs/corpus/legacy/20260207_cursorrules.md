@@ -92,7 +92,7 @@ gs://monk-project/
 ├── archive/          ← 장기 백업 (Cold)
 └── templates/        ← 재사용 템플릿
 ```
-**📖 상세**: `docs/infrastructure/GCS_BUCKET_STRUCTURE.md` 참조
+**📖 상세**: `docs/infrastructure/deployment/GCS_BUCKET_STRUCTURE.md` 참조
 
 ### D1 테이블 네이밍 (5버킷)
 | 버킷 | 접두사 | 테이블 예시 |
@@ -115,7 +115,7 @@ gs://monk-project/
 - **아이콘**: Font Awesome 6.0
 - **언어**: 순수 HTML, CSS, JavaScript (프레임워크 미사용)
 - **디자인 스타일**: 다크 모드, 그라데이션, Glow 효과, 미니멀 UI
-- **📖 상세**: `docs/infrastructure/DESIGN_SYSTEM.md` 참조
+- **📖 상세**: `docs/infrastructure/guides/DESIGN_SYSTEM.md` 참조
 
 ### Backend & API
 - **현재**: Cloudflare Workers 프록시
@@ -127,7 +127,7 @@ gs://monk-project/
 - 순수 JavaScript, async/await 패턴
 - 네이밍: HTML/CSS (kebab-case), JS (camelCase), 파일 (snake_case)
 - 항상 한국어 우선 (UI, 주석, 에러 메시지)
-- **📖 상세**: `docs/infrastructure/CODING_STANDARDS.md` 참조
+- **📖 상세**: `docs/infrastructure/guides/CODING_STANDARDS.md` 참조
 
 ### 배포 워크플로우
 1. 루트 폴더 (`./`)에서 개발 작업
@@ -427,7 +427,7 @@ gsutil -m rsync -r -d docs/corpus/ gs://monk-project/corpus/
 - 5일 (76KB) → 기술 백서, R&D 초안
 - 1년 (~5MB) → 회사 전체 지식 자산, 디지털 트윈
 
-**📖 상세**: `docs/infrastructure/SESSION_LOG_VALUE.md` 참조
+**📖 상세**: `docs/infrastructure/guides/SESSION_LOG_VALUE.md` 참조
 
 ## 🤖 MONKOS Factory 자율 운영 가이드라인 (2026-01-30)
 

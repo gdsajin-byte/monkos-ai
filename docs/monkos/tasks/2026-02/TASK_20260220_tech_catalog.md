@@ -204,7 +204,7 @@ docs/
 
 ## 산출물
 
-파일: `docs/infrastructure/FULL_DOCS_AUDIT_AND_TECH_CATALOG.md`
+파일: `docs/infrastructure/audit/FULL_DOCS_AUDIT_AND_TECH_CATALOG.md`
 
 ### 포함 내용
 1. **전수 조사 결과표** — 프로젝트 전체 .md 파일 목록 + 6분류 + 현재 위치 + 적정 위치

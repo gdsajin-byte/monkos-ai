@@ -158,7 +158,7 @@ Phase 1~3 결과를 종합하여, 헌법/법률에 편입할 **통신 규칙 초
 
 ## 산출물
 
-파일: `docs/infrastructure/COMMS_PROTOCOL_DRAFT_v1.md`
+파일: `docs/infrastructure/audit/COMMS_PROTOCOL_DRAFT_v1.md`
 
 ### 포함 내용
 1. **현행 통신 규칙 추출표** — CLAUDE.md + 기타 파일에서 추출한 모든 통신 관련 규칙

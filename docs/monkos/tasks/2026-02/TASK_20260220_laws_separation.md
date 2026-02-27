@@ -30,9 +30,9 @@ CLAUDE.md 거버넌스 재구성의 일환으로, **법률 7장 27조 + 신규 1
 
 반드시 아래 2건을 읽고 작업할 것:
 
-1. `docs/infrastructure/MONK_ARTICLES_DRAFT_v1.md` — 법률 7장 27조 전문 (§II)
-2. `docs/infrastructure/MONK_GOVERNANCE_DESIGN_v1.md` — 법률 각 장 상세 텍스트 (§1-5)
-3. `docs/infrastructure/COMMS_PROTOCOL_DRAFT_v1.md` — 통신 규칙 기안 (제8장 근거)
+1. `docs/infrastructure/audit/MONK_ARTICLES_DRAFT_v1.md` — 법률 7장 27조 전문 (§II)
+2. `docs/infrastructure/audit/MONK_GOVERNANCE_DESIGN_v1.md` — 법률 각 장 상세 텍스트 (§1-5)
+3. `docs/infrastructure/audit/COMMS_PROTOCOL_DRAFT_v1.md` — 통신 규칙 기안 (제8장 근거)
 
 ## 작업 내용
 

@@ -24,6 +24,7 @@ RUN npm install --only=production && \
     npm cache clean --force
 
 COPY server.js ./
+COPY lib/ ./lib/
 COPY --from=builder /build/public ./public/
 
 ENV NODE_ENV=production

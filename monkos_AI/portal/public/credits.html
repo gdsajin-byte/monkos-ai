@@ -6,7 +6,7 @@
 <title>크레딧 충전 | MONKOS AI</title>
 <meta name="description" content="MONKOS AI 크레딧을 충전하고 AI 증명사진 서비스를 이용하세요.">
 <script src="https://accounts.google.com/gsi/client" async defer></script>
-<script src="https://js.tosspayments.com/v2/standard"></script>
+<script src="https://js.tosspayments.com/v1/payment"></script>
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 :root {
@@ -188,7 +188,7 @@ footer { text-align: center; padding: 40px 0 20px; border-top: 1px solid rgba(16
 
 <script>
 // === 설정 ===
-var TOSS_CLIENT_KEY = 'test_ck_D5GePWvyJnrK0W0k6q8gLzN97Eoq';
+var TOSS_CLIENT_KEY = 'test_ck_6bJXmgo28eBJk12vvDAW3LAnGKWx';
 var GOOGLE_CLIENT_ID = '933456016842-clagcrpo1juvukjif1m454jq811bd2rq.apps.googleusercontent.com';
 
 var PACKAGES = [
@@ -204,7 +204,7 @@ var currentUser = null;
 var returnUrl = null;
 
 // === 초기화 ===
-window.addEventListener('DOMContentLoaded', function() {
+window.addEventListener('DOMContentLoaded', async function() {
   // from 파라미터 → sessionStorage 보존 (Toss 리다이렉트 생존)
   var params = new URLSearchParams(window.location.search);
   var from = params.get('from');
@@ -214,7 +214,7 @@ window.addEventListener('DOMContentLoaded', function() {
   returnUrl = sessionStorage.getItem('monkos_credits_from') || null;
 
   renderPackages();
-  checkAuth();
+  await checkAuth();
   handleTossResult();
 });
 
@@ -253,18 +253,22 @@ function renderPackages() {
 }
 
 // === 인증 ===
-function checkAuth() {
-  var raw = localStorage.getItem('monkos_user');
-  if (raw) {
-    try {
-      var user = JSON.parse(raw);
-      if (user.id) {
-        currentUser = user;
-        showLoggedIn(user);
-        fetchBalance(user.id);
+async function checkAuth() {
+  try {
+    var res = await fetch('/api/auth/verify-cookie', {
+      credentials: 'include',
+    });
+    if (res.ok) {
+      var data = await res.json();
+      if (data.user && data.user.id) {
+        currentUser = data.user;
+        showLoggedIn(data.user);
+        fetchBalance(data.user.id);
         return;
       }
-    } catch(e) {}
+    }
+  } catch (e) {
+    console.log('인증 실패');
   }
   showLogin();
 }
@@ -288,7 +292,6 @@ function fetchBalance(userId) {
         document.getElementById('balanceCount').textContent = data.credits;
         if (currentUser) {
           currentUser.credits = data.credits;
-          localStorage.setItem('monkos_user', JSON.stringify(currentUser));
         }
       }
     })
@@ -310,7 +313,6 @@ function googleLogin() {
       .then(function(data) {
         if (data.success && data.user) {
           currentUser = data.user;
-          localStorage.setItem('monkos_user', JSON.stringify(data.user));
           showLoggedIn(data.user);
           document.getElementById('balanceCount').textContent = data.user.credits || 0;
           if (data.isNewUser) {
@@ -341,11 +343,9 @@ function startPayment() {
 
   try {
     var tossPayments = TossPayments(TOSS_CLIENT_KEY);
-    var payment = tossPayments.payment({ customerKey: currentUser.id });
 
-    payment.requestPayment({
-      method: 'CARD',
-      amount: { currency: 'KRW', value: pkg.amount },
+    tossPayments.requestPayment('카드', {
+      amount: pkg.amount,
       orderId: orderId,
       orderName: 'MONKOS ' + pkg.credits + ' 크레딧',
       successUrl: window.location.origin + '/credits?toss=success',
@@ -385,9 +385,7 @@ function handleTossResult() {
     showLoading(true);
     history.replaceState({}, '', '/credits');
 
-    var raw = localStorage.getItem('monkos_user');
-    var userId = '';
-    if (raw) { try { userId = JSON.parse(raw).id || ''; } catch(e) {} }
+    var userId = (currentUser && currentUser.id) ? currentUser.id : '';
 
     fetch('/api/payments/toss/confirm', {
       method: 'POST',
@@ -406,7 +404,6 @@ function handleTossResult() {
         document.getElementById('balanceCount').textContent = data.credits || 0;
         if (currentUser) {
           currentUser.credits = data.credits;
-          localStorage.setItem('monkos_user', JSON.stringify(currentUser));
         }
         showToast('+' + (data.creditsAdded || '') + 'c 충전 완료!', 'success');
         returnToService();
@@ -425,7 +422,8 @@ function handleTossResult() {
 function isSafeReturnUrl(url) {
   try {
     var u = new URL(url, window.location.origin);
-    var allowed = ['monkos.ai', 'www.monkos.ai', 'monk.kr', 'www.monk.kr'];
+    var allowed = ['monkos.ai', 'www.monkos.ai', 'monk.kr', 'www.monk.kr',
+                   'idphoto-kr.monkos.ai', 'idphoto-jp.monkos.ai'];
     if (u.hostname === 'localhost' || u.hostname === '127.0.0.1') return true;
     return allowed.indexOf(u.hostname) !== -1 && (u.protocol === 'https:' || u.protocol === 'http:');
   } catch(e) { return false; }

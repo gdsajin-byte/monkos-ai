@@ -1,0 +1,30 @@
+#,서비스명,개발사/운영사,국가,설립/런칭,플랫폼,누적다운로드,iOS평점,Android평점,리뷰수합산,유형,핵심AI기술,가격대(KRW환산),AI품질검사,출처
+1,인핸즈(Enhanz),비공개,한국,2024~2025[추정],Web,N/A,N/A,N/A,N/A,Web SaaS,"생성형AI 의상/헤어합성",20000~24000원,N/A,enhanz.io
+2,셀프증명(찍스/Zzixx),(주)디지털포토,한국,2000(회사)/2022(앱),iOS/Android/Web,200000+,4.5,4.2,1753+,"앱+인화배송","AI배경제거/왜곡보정",2500~3000원,No,zzixx.com
+3,캐럿AI(CARAT),(주)패러닷,한국,2021,iOS/Android/Web,3000000+,4.8,4.7,210000+,범용AI앱,"생성형AI 프로필",6000원(30장),No,carat.im
+4,픽미(PicMe),PICME(개인사업),한국,2021[추정],iOS/Android,N/A,4.8,N/A,2320+,"앱+인화배송","AI배경제거",N/A(앱내결제),No,picme.kr
+5,취업사진앱(Culeap),Yuki Minami(개인),한국,2025[추정],iOS,N/A,N/A,N/A,0,iOS앱,"AI정장합성/피부보정",5300원($3.99),No,photo.culeap.net
+6,셀프증명(美颜证件照),润娟邹(개인),중국,2018[추정],iOS,N/A,4.7,N/A,5900+,iOS앱,"AI누끼/미용보정/의상합성",1100~47000원,No,App Store
+7,LEETA ID Photo,LEETA TECHNOLOGY PTE.LTD,싱가포르/중국,2022,iOS/Android/Web,500000+[추정],4.4,4.5[추정],12700+,앱+Web,"AI누끼/의상합성/미용보정",1400~4000원,No,leeta.app
+8,증명사진앱(siranet),siranet GK,일본,2019[추정],iOS/Android,10000000+,4.6,4.6,179000+,앱(무료),"기본 얼굴감지/크롭",무료(편의점30엔),No,App Store/Google Play
+9,증명사진Pro,尚达杨(개인),중국,2019[추정],iOS,N/A,4.8,N/A,10855+,iOS앱,"기본크롭/리사이즈",N/A,No,App Store
+10,PhotoAiD,PhotoAiD S.A.,폴란드,2012,iOS/Android/Web/키오스크,30000000+,4.43,N/A,11375+(Trustpilot),"앱+Web+키오스크","AI배경제거/크롭/검증+전문가리뷰",23000원($16.95),Yes(AI+Human),photoaid.com
+11,Passport Photo(VS),Vitalij Schaefer/Codenia,독일/스위스,2014[추정],iOS/Android,3000000+,4.8,N/A,19021+,앱,"기본배경제거/크롭",2700원($1.99),No,App Store
+12,PhotoDirector,CyberLink Corp.,대만,1996(회사)/2014(앱),iOS/Android/Desktop,78000000+,4.48,4.09,907500+,범용편집앱,"AI배경제거/리터칭/생성AI",55000~89000원/년,No,cyberlink.com
+13,Image Size,Vitalij Schaefer/Codenia,독일/스위스,2013[추정],iOS/Android,1000000+,4.7,N/A,102835+,리사이저앱,최소(리사이즈만),무료(광고)~34000원(PRO),No,App Store
+14,Visafoto,비공개,미국[추정],2013,Web/iOS/Android,500000+사진처리,4.4(Trustpilot),N/A,649+(Trustpilot),Web+앱,"AI배경제거/크기조정/눈위치정렬",12200원($9),Yes(99.7%보증),visafoto.com
+15,Smartphone iD,Smartphone iD SAS,프랑스,2017[추정],iOS/Android/Web,수백만[추정],4.6[추정],N/A,533(Trustpilot),앱+Web,"AI실시간가이드/배경제거+전문가검증",15000원(~$11),Yes(AI+Human),smartphone-id.com
+16,Snap2Pass,Snap2Pass Inc.,미국(CA),N/A,iOS/Web/B2B API,500000+,4.8,N/A,2757(SaaSworthy),앱+B2B API,"ML규격검증/ICAO자동체크",6800원($4.99),Yes(99.8%),snap2pass.com
+17,PhotoGov,PhotoGov,미국(NY),N/A,Web/B2B API,N/A(웹),4.5(Trustpilot),N/A,1398(Trustpilot),Web+B2B API,"AI배경제거/규격자동검증",무료~13500원/월($9.90),Yes(100%ICAO),photogov.net
+18,Andronepal,Andronepal,네팔,2014,Android,17000000+,4.53,4.53,140000+,Android앱,"기본배경제거",무료(광고),No,Google Play
+19,パシャット(Pashatto),DNP/FUJIFILM관련,일본,N/A,iOS/Android,430만프린트,4.0+[추정],N/A,N/A,앱+인화배송,"기본보정/배경설정",1400~2800원(150~300엔),No,App Store JP
+20,履歴書カメラ,Recruit Co.Ltd.,일본,N/A,iOS/Android,1000000+[추정],4.0+[추정],N/A,N/A,앱(완전무료),"피부보정/다크서클제거",무료,No,Google Play
+21,最美证件照,Chengdu PinGuo Technology,중국,N/A,iOS/Android,수백만[추정],4.0+[추정],N/A,N/A,앱,"Camera360 AI보정/의상합성",무료~6000원,Yes[추정],Tencent Store
+22,智能证件照,Wuxi Leqi Technology,중국,N/A,iOS/Android/Web,2억+유저,N/A,N/A,N/A,앱+Web,"AI정밀누끼/뷰티/의상합성",무료~5000원,Yes,Xiaomi Store
+23,HivisionIDPhotos,Zeyi Lin/SwanLab,중국(오픈소스),N/A,Self-hosted/API,1200000+유저,N/A,N/A,GitHub 20.7K stars,오픈소스,"경량AI matting(MODNet/BiRefNet)",무료(Apache2.0),No,GitHub
+24,Cutout.Pro,LibAI Team,홍콩/중국,2018,Web/API,N/A(웹),N/A,N/A,N/A,Web+API,"AI배경제거/사진향상",무료~6800원/월,No,cutout.pro
+25,BeautyPlus,Pixocial(Meitu자회사),싱가포르/중국,N/A,iOS/Android,수억[추정],4.5+[추정],N/A,N/A,뷰티앱,"Meitu AI뷰티엔진",5600원(600엔),No,beautyplus.com
+26,PicWish(佐糖),Shenzhen Wangxu Technology,중국,2010,Web/iOS/Android/Desktop,N/A,N/A,N/A,N/A,올인원이미지+B2B API,"AI누끼3초/배경교체",무료~구독,No,picwish.cn
+27,Photo-Me(ME Group),ME Group International plc,영국,1963,키오스크(47500+대),연1200만이용,N/A,N/A,N/A,B2B키오스크,"바이오메트릭검증/얼굴정렬",17200~22300원(GBP10~13),Yes,photo-me.uk
+28,인생네컷/증명네컷,엘케이벤쳐스,한국,2017,키오스크(1000+매장),월190만방문,N/A,N/A,N/A,B2B키오스크,"AR프레임/기본보정",4000~6000원,No,life4cuts.com
+29,PixCake(像素蛋糕),Xiamen Zhengjing Technology,중국,N/A,Desktop(Win/Mac),수만사진관,N/A,N/A,N/A,B2B사진관솔루션,"픽셀레벨AI정밀보정/의상교체",56000~3530000원,N/A,pixcakeai.com

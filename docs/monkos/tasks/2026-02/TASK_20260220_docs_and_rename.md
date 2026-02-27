@@ -37,7 +37,7 @@ tags: [docs, infra, rename, 세션마감]
 
 ## Step A: 기술명세 작성
 
-파일: `docs/infrastructure/TECHNICAL_SPEC_20260220.md`
+파일: `docs/infrastructure/architecture/TECHNICAL_SPEC_20260220.md`
 
 아래 내용을 포함하여 작성:
 
@@ -102,7 +102,7 @@ tags: [docs, infra, rename, 세션마감]
 ## Step C: 커밋 + 푸시
 
 ```bash
-git add docs/infrastructure/TECHNICAL_SPEC_20260220.md docs/corpus/sessions/2026-02/20260220_session.md docs/monkos/TASK_20260220_docs_and_rename.md
+git add docs/infrastructure/architecture/TECHNICAL_SPEC_20260220.md docs/corpus/sessions/2026-02/20260220_session.md docs/monkos/TASK_20260220_docs_and_rename.md
 git commit -m "[docs] 0220 기술명세 + 세션로그 업데이트 — 배포체계 변경 + MPA 현황 + 경로공백 계획"
 git push origin develop
 ```

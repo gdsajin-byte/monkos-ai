@@ -49,8 +49,8 @@ tags: [law-system, codify, articles, constitution]
 ### Step 1: 참조 문서 읽기
 
 반드시 아래 3개를 먼저 읽고 시작:
-1. `docs/infrastructure/LAW_AUDIT_SESSION_CHRONICLE.md` — 네 이전 조사 결과
-2. `docs/infrastructure/LAW_AUDIT_DOCUMENT_ANALYSIS.md` — 막내2 조사 결과
+1. `docs/infrastructure/audit/LAW_AUDIT_SESSION_CHRONICLE.md` — 네 이전 조사 결과
+2. `docs/infrastructure/audit/LAW_AUDIT_DOCUMENT_ANALYSIS.md` — 막내2 조사 결과
 3. `CLAUDE.md` — 현행 규칙 (372줄)
 
 ### Step 2: 헌법 조항 작성
@@ -134,7 +134,7 @@ tags: [law-system, codify, articles, constitution]
 
 ## 산출물
 
-파일: `docs/infrastructure/MONK_ARTICLES_DRAFT_v1.md`
+파일: `docs/infrastructure/audit/MONK_ARTICLES_DRAFT_v1.md`
 
 ### 포함 내용
 1. 헌법 조항 (제1조~제N조) — 각각 근거 + 위반 시 영향 + 예외 여부

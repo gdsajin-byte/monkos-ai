@@ -132,11 +132,9 @@ export async function buyCreditsKR(amount, credits) {
 
   try {
     const tossPayments = TossPayments(TOSS_CLIENT_KEY);
-    const payment = tossPayments.payment({ customerKey: store.user.id });
 
-    await payment.requestPayment({
-      method: 'CARD',
-      amount: { currency: 'KRW', value: amount },
+    await tossPayments.requestPayment('카드', {
+      amount: amount,
       orderId: orderId,
       orderName: `MONKOS ${credits} 크레딧`,
       successUrl: `${window.location.origin}${window.location.pathname}?toss=success`,
@@ -181,12 +179,6 @@ export async function initFromTossResult() {
       const data = await res.json();
       if (data.success) {
         store.user = { ...store.user, credits: data.credits };
-        const stored = sessionStorage.getItem('monkos_user');
-        if (stored) {
-          const user = JSON.parse(stored);
-          user.credits = data.credits;
-          sessionStorage.setItem('monkos_user', JSON.stringify(user));
-        }
         Monk.log(`결제 완료: ${data.credits}c`);
         alert(`결제가 완료되었습니다!\n현재 크레딧: ${data.credits}c`);
       } else {
@@ -220,41 +212,42 @@ export async function initFromUrlToken() {
   return false;
 }
 
-export function initCredits() {
-  const stored = sessionStorage.getItem('monkos_user');
-  if (stored) {
-    try {
-      const user = JSON.parse(stored);
-      store.user = {
-        id: user.id,
-        email: user.email,
-        name: user.name || user.email?.split('@')[0] || '',
-        credits: user.credits ?? 0,
-        avatar: user.avatar || user.picture || '',
-      };
-      Monk.log(`로그인: ${user.email} (${store.user.credits}c)`);
-    } catch (e) {
-      Monk.log('사용자 정보 파싱 실패');
+export async function initCredits() {
+  try {
+    const res = await fetch(`${API.PORTAL_URL}/api/auth/verify-cookie`, {
+      credentials: 'include',
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.user?.id) {
+        store.user = {
+          id: data.user.id,
+          email: data.user.email,
+          name: data.user.name || '',
+          credits: data.user.credits ?? 0,
+          avatar: data.user.picture || '',
+        };
+        Monk.log(`쿠키 인증: ${data.user.email} (${data.user.credits}c)`);
+        return;
+      }
     }
-  } else {
-    Monk.log('비로그인 상태');
+  } catch (e) {
+    Monk.log('쿠키 인증 실패');
   }
+  store.user = null;
+  Monk.log('비로그인 상태');
 }
 
 export async function fetchLatestCredits() {
-  if (!store.user.id) return;
+  if (!store.user?.id) return;
   try {
-    const res = await fetch(`${API.PORTAL_URL}/api/credits?userId=${encodeURIComponent(store.user.id)}`);
-    const data = await res.json();
-    if (data.credits !== undefined) {
-      store.user = { ...store.user, credits: data.credits };
-      const stored = sessionStorage.getItem('monkos_user');
-      if (stored) {
-        const user = JSON.parse(stored);
-        user.credits = data.credits;
-        sessionStorage.setItem('monkos_user', JSON.stringify(user));
-      }
-      Monk.log(`크레딧 갱신: ${data.credits}c`);
+    const res = await fetch(`${API.PORTAL_URL}/api/credits?userId=${encodeURIComponent(store.user.id)}`, {
+      credentials: 'include',
+    });
+    if (res.ok) {
+      const data = await res.json();
+      store.user.credits = data.credits ?? store.user.credits;
+      Monk.log(`크레딧 갱신: ${store.user.credits}c`);
     }
   } catch (err) {
     Monk.log('크레딧 조회 실패: ' + err.message);
@@ -267,25 +260,6 @@ document.addEventListener('visibilitychange', () => {
     fetchLatestCredits();
   }
 });
-
-// ─── 토큰 만료 체크 ───
-export function checkTokenExpiry() {
-  const token = sessionStorage.getItem('monkos_token');
-  if (!token) return;
-  try {
-    const parts = token.split('.');
-    if (parts.length >= 2) {
-      const payload = JSON.parse(atob(parts[1]));
-      if (payload.exp && payload.exp * 1000 < Date.now()) {
-        sessionStorage.removeItem('monkos_user');
-        sessionStorage.removeItem('monkos_token');
-      }
-    }
-  } catch (e) {
-    sessionStorage.removeItem('monkos_user');
-    sessionStorage.removeItem('monkos_token');
-  }
-}
 
 // ─── 다운로드 게이트 ───
 export function downloadGate() {
@@ -357,9 +331,8 @@ export function debugSessionKeys() {
 // ─── 공통 초기화 ───
 export async function sharedInit() {
   checkInappBrowser();
-  checkTokenExpiry();
   await initFromUrlToken();
-  initCredits();
+  await initCredits();
   await initFromTossResult();
 
   // sessionStorage에서 선택 데이터 복원

@@ -217,6 +217,24 @@ Git에는 경로만 남기고, 바이너리 에셋은 외부 저장소에 보관
 
 ---
 
+## 문서 자산 카테고리 인덱스
+
+> 2026-02-27 문서자산통합 Phase 2에서 추가. docs/infrastructure/ 하위 분류 현황.
+
+| 카테고리 | 경로 | 파일 수 | README |
+|---------|------|---------|--------|
+| architecture | docs/infrastructure/architecture/ | 10 | ✅ |
+| deployment | docs/infrastructure/deployment/ | 11 | ✅ |
+| ai-models | docs/infrastructure/ai-models/ | 13 | ✅ |
+| strategy | docs/infrastructure/strategy/ | 13 | ✅ |
+| guides | docs/infrastructure/guides/ | 13 | ✅ |
+| audit | docs/infrastructure/audit/ | 7 | ✅ |
+| history | docs/infrastructure/history/ | 4 | ✅ |
+
+**전체 문서 지도**: [docs/DOCUMENT_ATLAS.md](../DOCUMENT_ATLAS.md)
+
+---
+
 > 신설: 2026-02-23 작가님+쌍아 합의
 > 근거: Git 85.4MB 중 PDF 58MB(68%) 비효율 발견 + 전 저장소 통합 인덱스 부재
 > 원칙: "에셋은 컨텐츠 상위 개념. 깃에는 경로만 남기고 에셋은 GCS에 보관한다"
