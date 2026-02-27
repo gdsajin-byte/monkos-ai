@@ -156,7 +156,7 @@ const CHANNEL_CONFIG = {
     responseMimeType: 'application/json',
   },
   kakao: {
-    systemPrompt: SYSTEM_PROMPT,
+    systemPrompt: SYSTEM_PROMPT + '\n\n[중요] 이 채널은 카카오톡입니다. 반드시 한국어로만 응답하세요.',
     temperature: 0.7,
     maxOutputTokens: 300,
     historyMap: chatHistories,
