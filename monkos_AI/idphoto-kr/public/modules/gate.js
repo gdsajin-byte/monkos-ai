@@ -99,8 +99,6 @@ function _startKakaoLogin() {
     if (e.origin !== API.PORTAL_URL) return;
     if (e.data && e.data.type === 'auth-success') {
       window.removeEventListener('message', handler);
-      sessionStorage.setItem('monkos_user', JSON.stringify(e.data.user));
-      if (e.data.token) sessionStorage.setItem('monkos_token', e.data.token);
       const u = e.data.user;
       store.user = {
         id: u.id, email: u.email, name: u.name,
@@ -433,8 +431,6 @@ function _startKakaoLoginSimple() {
     if (e.origin !== API.PORTAL_URL) return;
     if (e.data && e.data.type === 'auth-success') {
       window.removeEventListener('message', handler);
-      sessionStorage.setItem('monkos_user', JSON.stringify(e.data.user));
-      if (e.data.token) sessionStorage.setItem('monkos_token', e.data.token);
       const u = e.data.user;
       store.user = {
         id: u.id, email: u.email, name: u.name,
@@ -461,8 +457,6 @@ function _startLineLoginSimple() {
     if (e.origin !== API.PORTAL_URL) return;
     if (e.data && e.data.type === 'auth-success') {
       window.removeEventListener('message', handler);
-      sessionStorage.setItem('monkos_user', JSON.stringify(e.data.user));
-      if (e.data.token) sessionStorage.setItem('monkos_token', e.data.token);
       const u = e.data.user;
       store.user = {
         id: u.id, email: u.email, name: u.name,
