@@ -333,8 +333,8 @@ AI 이미지 생성(I2I)에서 **원본 인물의 정체성 보존이 최우선*
 - 한국어 우선 (UI, 주석, 에러, 커밋). Tailwind CSS 클래스 우선.
 
 #### 2조: 상세
-- 코딩 표준: `docs/infrastructure/CODING_STANDARDS.md`
-- 디자인 시스템: `docs/infrastructure/DESIGN_SYSTEM.md`
+- 코딩 표준: `docs/infrastructure/guides/CODING_STANDARDS.md`
+- 디자인 시스템: `docs/infrastructure/guides/DESIGN_SYSTEM.md`
 ```
 
 **현행 대응**: CLAUDE.md L207-215 (그대로, 참조 경로 유지)
@@ -491,10 +491,10 @@ docs/
 | 규정 | 파일 | 로딩 |
 |------|------|------|
 | **프로젝트 지식** | MEMORY.md | 매 세션 자동 |
-| **총괄 기술명세** | `docs/infrastructure/MONKOS_AI_TECHNICAL_SPEC.md` | 수동 읽기 |
-| **코딩 표준** | `docs/infrastructure/CODING_STANDARDS.md` | 수동 읽기 |
-| **디자인 시스템** | `docs/infrastructure/DESIGN_SYSTEM.md` | 수동 읽기 |
-| **GCS 구조** | `docs/infrastructure/GCS_BUCKET_STRUCTURE.md` | 수동 읽기 |
+| **총괄 기술명세** | `docs/infrastructure/architecture/MONKOS_AI_TECHNICAL_SPEC.md` | 수동 읽기 |
+| **코딩 표준** | `docs/infrastructure/guides/CODING_STANDARDS.md` | 수동 읽기 |
+| **디자인 시스템** | `docs/infrastructure/guides/DESIGN_SYSTEM.md` | 수동 읽기 |
+| **GCS 구조** | `docs/infrastructure/deployment/GCS_BUCKET_STRUCTURE.md` | 수동 읽기 |
 
 규정 내용이 변경되면 해당 파일만 갱신한다. 본 문서(헌법·법률)는 수정하지 않는다.
 ```

@@ -32,7 +32,7 @@ M1의 MEMORY.md는 이미 233줄 → 69줄로 압축 완료되었으나 (MEMORY_
 
 ## 필수 참조 문서 (실행 전 반드시 읽을 것)
 
-1. `docs/infrastructure/CONTEXT_ARCHITECTURE.md` — §4 유입 규칙이 핵심
+1. `docs/infrastructure/guides/CONTEXT_ARCHITECTURE.md` — §4 유입 규칙이 핵심
 2. `monkos-ops/ops/MEMORY_CHANGELOG_M1.md` — M1 압축 선례 (삭제/유지 판단 근거)
 3. 현재 iMac MEMORY.md — `~/.claude/projects/-Users-jeong-kyushin-developer-monk-project/memory/MEMORY.md`
 

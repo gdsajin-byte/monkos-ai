@@ -5,7 +5,7 @@
 
 ## 참조
 
-- `docs/infrastructure/BWYA_ACADEMY_INDEX.md` — 기존 아카데미 인덱스
+- `docs/infrastructure/ai-models/BWYA_ACADEMY_INDEX.md` — 기존 아카데미 인덱스
 - `01_전략/philosophy/PHILOSOPHY.md` — 교육 커리큘럼 소재
 
 ## 향후 계획

@@ -261,16 +261,16 @@ MEMORY.md (~180줄)                    ← 규정: 매 세션 자동 로딩 (현
 
 ### 필수 (전 에이전트)
 - **운용 규칙**: `docs/infrastructure/OPERATION_RULES.md` ← 법률 계층
-- **기술명세**: `docs/infrastructure/MONKOS_AI_TECHNICAL_SPEC.md`
+- **기술명세**: `docs/infrastructure/architecture/MONKOS_AI_TECHNICAL_SPEC.md`
 
 ### 코딩 관련
-- 코딩 표준: `docs/infrastructure/CODING_STANDARDS.md`
-- 디자인 시스템: `docs/infrastructure/DESIGN_SYSTEM.md`
+- 코딩 표준: `docs/infrastructure/guides/CODING_STANDARDS.md`
+- 디자인 시스템: `docs/infrastructure/guides/DESIGN_SYSTEM.md`
 
 ### 인프라 관련
-- 아키텍처: `docs/infrastructure/3TRACK_SYSTEM_ARCHITECTURE.md`
-- GCS 구조: `docs/infrastructure/GCS_BUCKET_STRUCTURE.md`
-- 배포 가이드: `docs/infrastructure/MONKOS_AI_TECHNICAL_SPEC.md` §3 (배포 체계)
+- 아키텍처: `docs/infrastructure/architecture/3TRACK_SYSTEM_ARCHITECTURE.md`
+- GCS 구조: `docs/infrastructure/deployment/GCS_BUCKET_STRUCTURE.md`
+- 배포 가이드: `docs/infrastructure/architecture/MONKOS_AI_TECHNICAL_SPEC.md` §3 (배포 체계)
 ```
 
 ---

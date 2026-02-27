@@ -33,10 +33,10 @@ CLAUDE.md를 **헌법 + 인덱스** 구조로 재구성한다.
 
 반드시 아래 4건을 읽고 작업할 것:
 
-1. `docs/infrastructure/MONK_ARTICLES_DRAFT_v1.md` — 헌법 11조 전문 + 법률 7장 27조 + 규정 35항
-2. `docs/infrastructure/MONK_GOVERNANCE_DESIGN_v1.md` — 재구성 골격 + 대응 프로토콜 + 매핑표
-3. `docs/infrastructure/LAW_AUDIT_SESSION_CHRONICLE.md` — 세션 연대기 (근거 데이터)
-4. `docs/infrastructure/LAW_AUDIT_DOCUMENT_ANALYSIS.md` — 문서 해부 (분류 근거)
+1. `docs/infrastructure/audit/MONK_ARTICLES_DRAFT_v1.md` — 헌법 11조 전문 + 법률 7장 27조 + 규정 35항
+2. `docs/infrastructure/audit/MONK_GOVERNANCE_DESIGN_v1.md` — 재구성 골격 + 대응 프로토콜 + 매핑표
+3. `docs/infrastructure/audit/LAW_AUDIT_SESSION_CHRONICLE.md` — 세션 연대기 (근거 데이터)
+4. `docs/infrastructure/audit/LAW_AUDIT_DOCUMENT_ANALYSIS.md` — 문서 해부 (분류 근거)
 
 ## 작업 내용
 

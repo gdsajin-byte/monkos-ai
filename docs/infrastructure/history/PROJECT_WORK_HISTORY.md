@@ -85,7 +85,7 @@
 - **RESULT**: ✅ 보고서 작성
   - 심각 2건, 높음 3건, 중간 4건, 낮음 2건
   - 현재 보안 수준: 40%
-  - 문서: `docs/infrastructure/SECURITY_AUDIT_REPORT.md`
+  - 문서: `docs/infrastructure/deployment/SECURITY_AUDIT_REPORT.md`
 
 ---
 
@@ -193,7 +193,7 @@
 - **RESULT**: ❌ 비권장 (4.25/10)
   - VASP 등록 필수 (한국 5억+, 일본 3억엔+)
   - 대안: 멤버십 NFT 또는 크레딧 선물 기능
-  - 문서: `docs/infrastructure/CREDIT_NFT_FEASIBILITY_REPORT.md`
+  - 문서: `docs/infrastructure/strategy/CREDIT_NFT_FEASIBILITY_REPORT.md`
 
 ---
 
@@ -227,7 +227,7 @@
   - 실시간 번역 채팅 (JP↔KR↔EN)
   - 시간제 크레딧 과금
 - **RESULT**: ⏸️ 기획 완료
-  - 문서: `docs/infrastructure/REMOTE_RETOUCH_APP_PROPOSAL.md`
+  - 문서: `docs/infrastructure/strategy/REMOTE_RETOUCH_APP_PROPOSAL.md`
 
 ---
 

@@ -320,9 +320,9 @@ status: completed
 | 규정 | 정본 | 로딩 |
 |------|------|------|
 | 프로젝트 지식 | MEMORY.md | 매 세션 자동 |
-| 코딩 표준 | [CODING_STANDARDS.md](docs/infrastructure/CODING_STANDARDS.md) | 수동 |
-| 디자인 시스템 | [DESIGN_SYSTEM.md](docs/infrastructure/DESIGN_SYSTEM.md) | 수동 |
-| GCS 구조 | [GCS_BUCKET_STRUCTURE.md](docs/infrastructure/GCS_BUCKET_STRUCTURE.md) | 수동 |
+| 코딩 표준 | [CODING_STANDARDS.md](docs/infrastructure/guides/CODING_STANDARDS.md) | 수동 |
+| 디자인 시스템 | [DESIGN_SYSTEM.md](docs/infrastructure/guides/DESIGN_SYSTEM.md) | 수동 |
+| GCS 구조 | [GCS_BUCKET_STRUCTURE.md](docs/infrastructure/deployment/GCS_BUCKET_STRUCTURE.md) | 수동 |
 
 ## 디바이스 맵
 
@@ -562,7 +562,7 @@ L3 CLAUDE.md 배치 여부는 다음 3가지 조건으로 판정한다:
 
 ## 코딩 규칙
 - **스택**: Vanilla HTML + CSS + JavaScript (프레임워크/번들러 없음)
-- **스타일**: 디자인 시스템 참조 → `docs/infrastructure/DESIGN_SYSTEM.md`
+- **스타일**: 디자인 시스템 참조 → `docs/infrastructure/guides/DESIGN_SYSTEM.md`
 - **인코딩**: UTF-8, 한국어 기본
 
 ## 주의사항

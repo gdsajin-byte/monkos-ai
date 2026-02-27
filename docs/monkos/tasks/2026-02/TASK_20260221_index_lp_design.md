@@ -176,7 +176,7 @@ https://storage.googleapis.com/monk-ai-images/ads/1771578266121_0.jpg
 
 - **현재 구현**: `MONK_kr/ai_lab/photolab/index.html` (인라인 CSS, JS 없음)
 - **GCS 매니페스트 API**: `functions/api/ads.js` (참고용, LP에서는 미사용)
-- **디자인 시스템**: `docs/infrastructure/DESIGN_SYSTEM.md` (참고)
+- **디자인 시스템**: `docs/infrastructure/guides/DESIGN_SYSTEM.md` (참고)
 
 ---
 

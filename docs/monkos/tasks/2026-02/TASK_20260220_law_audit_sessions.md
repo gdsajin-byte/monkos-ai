@@ -113,7 +113,7 @@ docs/corpus/sessions/2026-02/20260220_session.md
 
 ## 산출물
 
-파일: `docs/infrastructure/LAW_AUDIT_SESSION_CHRONICLE.md`
+파일: `docs/infrastructure/audit/LAW_AUDIT_SESSION_CHRONICLE.md`
 
 ### 형식
 

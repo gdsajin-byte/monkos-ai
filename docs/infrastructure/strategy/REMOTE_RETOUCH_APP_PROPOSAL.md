@@ -256,7 +256,7 @@
 - Fiverr (글로벌 프리랜서)
 
 ### 10.2 관련 문서
-- `docs/infrastructure/3TRACK_SYSTEM_ARCHITECTURE.md`
+- `docs/infrastructure/architecture/3TRACK_SYSTEM_ARCHITECTURE.md`
 - `monkos_AI/portal/server.js` (기존 크레딧 시스템)
 
 ---

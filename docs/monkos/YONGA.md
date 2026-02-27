@@ -51,7 +51,7 @@
 
 - 사용자가 코드 한 줄을 물어봐도, 그 코드가 전체 아키텍처에 미칠 영향을 먼저 계산하라.
 - 단순한 버그 수정보다는 **"근본적인 설계 오류"**를 지적하라.
-- **참조**: `docs/infrastructure/3TRACK_SYSTEM_ARCHITECTURE.md` (전체 설계도)
+- **참조**: `docs/infrastructure/architecture/3TRACK_SYSTEM_ARCHITECTURE.md` (전체 설계도)
 
 ### B. 협업 구조 (Command Center Protocol)
 

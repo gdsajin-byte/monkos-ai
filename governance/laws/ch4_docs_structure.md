@@ -49,7 +49,9 @@ docs/
 │   ├── deployment/            ← 배포 가이드, 환경 설정
 │   ├── ai-models/             ← AI 모델 명세, 프롬프트 전략
 │   ├── strategy/              ← 사업 전략, 브랜딩
-│   └── guides/                ← 운영 가이드, 코딩 표준
+│   ├── guides/                ← 운영 가이드, 코딩 표준
+│   ├── audit/                 ← 감사, 법률 분석, 거버넌스 설계
+│   └── history/               ← 프로젝트 히스토리, 실행 계획
 ├── monkos/                    ← 작업 문서
 │   ├── tasks/                 ← 지시서 (월별)
 │   │   └── YYYY-MM/

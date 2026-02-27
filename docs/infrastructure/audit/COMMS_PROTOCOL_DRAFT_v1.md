@@ -447,8 +447,8 @@ tags: [태그1, 태그2]
 | `CLAUDE.md` L1-26, L60-108, L174-205, L232-265, L303-357 | 통신 규칙 정의 | **현행** |
 | `docs/monkos/TELEGRAM_DEPLOY_GUIDE.md` | 텔레그램 봇 배포 가이드 | **현행** (4060 기준) |
 | `docs/corpus/factory/telegram_ai_communication_strategy.md` | 텔레그램 통신 비전 + 아키텍처 | **현행** (01-28 철창 설계) |
-| `docs/infrastructure/OVERNIGHT_AUTOMATION_RULES.md` | 야간 자동화 + 디스코드 알림 | **부분 구식** (디스코드 미연결) |
-| `docs/infrastructure/3TRACK_SYSTEM_ARCHITECTURE.md` | 디바이스 간 통신 구조 | **현행** |
+| `docs/infrastructure/guides/OVERNIGHT_AUTOMATION_RULES.md` | 야간 자동화 + 디스코드 알림 | **부분 구식** (디스코드 미연결) |
+| `docs/infrastructure/architecture/3TRACK_SYSTEM_ARCHITECTURE.md` | 디바이스 간 통신 구조 | **현행** |
 | `scripts/monkos/night_operator.py` | 텔레그램 폴링 오퍼레이터 | **구식** (Windows 경로) |
 | `scripts/monkos/command_bridge.js` | Firestore 실시간 리스너 | **구식** (Windows 경로) |
 | `scripts/monkos/command_bridge_simple.js` | 간이 커맨드 브릿지 | **구식** |

@@ -76,7 +76,7 @@ ls ~/.claude/projects/ | grep monk
 
 ## Step 3: 기술명세 작성
 
-파일: `docs/infrastructure/TECHNICAL_SPEC_20260220.md`
+파일: `docs/infrastructure/architecture/TECHNICAL_SPEC_20260220.md`
 
 이전 지시서(TASK_20260220_docs_and_rename.md) Step A가 미실행 상태.
 아래 내용을 포함하여 작성:
@@ -180,7 +180,7 @@ mv 20260216_session.md docs/corpus/sessions/2026-02/
 ### 6-2. 커밋 + 푸시
 
 ```bash
-git add docs/infrastructure/TECHNICAL_SPEC_20260220.md \
+git add docs/infrastructure/architecture/TECHNICAL_SPEC_20260220.md \
         docs/corpus/sessions/2026-02/20260220_session.md \
         docs/monkos/TASK_20260220_docs_and_rename.md \
         docs/monkos/TASK_20260220_post_mv_cleanup.md \
