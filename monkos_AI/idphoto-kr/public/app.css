@@ -408,7 +408,7 @@ body {
 #result-overlay {
     position: fixed; top: 0; left: 0; right: 0; bottom: 0;
     background: #030508; z-index: 20; display: none;
-    flex-direction: column; overflow-y: auto;
+    flex-direction: column; overflow-y: auto; overflow-x: hidden;
 }
 #result-overlay.active { display: flex; }
 
@@ -475,7 +475,7 @@ body {
 #thankyou-screen {
     display: none; position: fixed; inset: 0;
     background: #030508; z-index: 100;
-    flex-direction: column; overflow-y: auto;
+    flex-direction: column; overflow-y: auto; overflow-x: hidden;
 }
 #thankyou-screen.active { display: flex; }
 .ty-header {
