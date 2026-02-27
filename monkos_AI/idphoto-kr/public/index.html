@@ -1060,20 +1060,20 @@ function handleGoogleTokenCallback(tokenResponse) {
 function loginKakao() {
   closeLoginModal();
   var popup = window.open(
-    (window.MONKOS_PORTAL_URL || 'https://monkos.ai') + '/auth/kakao?popup=1&redirect_app=idphoto-kr',
+    (window.MONKOS_PORTAL_URL || 'https://monkos.ai') + '/auth/kakao?popup=1&redirect_app=' + encodeURIComponent(window.location.origin),
     'kakao-login', 'width=500,height=600'
   );
-  if (!popup) { location.href = (window.MONKOS_PORTAL_URL || 'https://monkos.ai') + '/auth/kakao'; return; }
+  if (!popup) { location.href = (window.MONKOS_PORTAL_URL || 'https://monkos.ai') + '/auth/kakao?redirect_app=' + encodeURIComponent(window.location.origin); return; }
   listenAuthMessage();
 }
 
 function loginLine() {
   closeLoginModal();
   var popup = window.open(
-    (window.MONKOS_PORTAL_URL || 'https://monkos.ai') + '/auth/line?popup=1&redirect_app=idphoto-kr',
+    (window.MONKOS_PORTAL_URL || 'https://monkos.ai') + '/auth/line?popup=1&redirect_app=' + encodeURIComponent(window.location.origin),
     'line-login', 'width=500,height=600'
   );
-  if (!popup) { location.href = (window.MONKOS_PORTAL_URL || 'https://monkos.ai') + '/auth/line'; return; }
+  if (!popup) { location.href = (window.MONKOS_PORTAL_URL || 'https://monkos.ai') + '/auth/line?redirect_app=' + encodeURIComponent(window.location.origin); return; }
   listenAuthMessage();
 }
 
