@@ -181,11 +181,11 @@ export async function initFromTossResult() {
       const data = await res.json();
       if (data.success) {
         store.user = { ...store.user, credits: data.credits };
-        const stored = localStorage.getItem('monkos_user');
+        const stored = sessionStorage.getItem('monkos_user');
         if (stored) {
           const user = JSON.parse(stored);
           user.credits = data.credits;
-          localStorage.setItem('monkos_user', JSON.stringify(user));
+          sessionStorage.setItem('monkos_user', JSON.stringify(user));
         }
         Monk.log(`결제 완료: ${data.credits}c`);
         alert(`결제가 완료되었습니다!\n현재 크레딧: ${data.credits}c`);
@@ -209,7 +209,7 @@ export async function initFromUrlToken() {
     const res = await fetch(`${API.PORTAL_URL}/api/auth/verify?token=${encodeURIComponent(token)}`);
     const data = await res.json();
     if (data.success && data.user) {
-      localStorage.setItem('monkos_user', JSON.stringify(data.user));
+      sessionStorage.setItem('monkos_user', JSON.stringify(data.user));
       history.replaceState(null, '', location.pathname);
       Monk.log(`토큰 로그인 성공: ${data.user.email}`);
       return true;
@@ -221,7 +221,7 @@ export async function initFromUrlToken() {
 }
 
 export function initCredits() {
-  const stored = localStorage.getItem('monkos_user');
+  const stored = sessionStorage.getItem('monkos_user');
   if (stored) {
     try {
       const user = JSON.parse(stored);
@@ -248,11 +248,11 @@ export async function fetchLatestCredits() {
     const data = await res.json();
     if (data.credits !== undefined) {
       store.user = { ...store.user, credits: data.credits };
-      const stored = localStorage.getItem('monkos_user');
+      const stored = sessionStorage.getItem('monkos_user');
       if (stored) {
         const user = JSON.parse(stored);
         user.credits = data.credits;
-        localStorage.setItem('monkos_user', JSON.stringify(user));
+        sessionStorage.setItem('monkos_user', JSON.stringify(user));
       }
       Monk.log(`크레딧 갱신: ${data.credits}c`);
     }
@@ -270,20 +270,20 @@ document.addEventListener('visibilitychange', () => {
 
 // ─── 토큰 만료 체크 ───
 export function checkTokenExpiry() {
-  const token = localStorage.getItem('monkos_token');
+  const token = sessionStorage.getItem('monkos_token');
   if (!token) return;
   try {
     const parts = token.split('.');
     if (parts.length >= 2) {
       const payload = JSON.parse(atob(parts[1]));
       if (payload.exp && payload.exp * 1000 < Date.now()) {
-        localStorage.removeItem('monkos_user');
-        localStorage.removeItem('monkos_token');
+        sessionStorage.removeItem('monkos_user');
+        sessionStorage.removeItem('monkos_token');
       }
     }
   } catch (e) {
-    localStorage.removeItem('monkos_user');
-    localStorage.removeItem('monkos_token');
+    sessionStorage.removeItem('monkos_user');
+    sessionStorage.removeItem('monkos_token');
   }
 }
 
