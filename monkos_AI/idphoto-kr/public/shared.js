@@ -132,11 +132,9 @@ export async function buyCreditsKR(amount, credits) {
 
   try {
     const tossPayments = TossPayments(TOSS_CLIENT_KEY);
-    const payment = tossPayments.payment({ customerKey: store.user.id });
 
-    await payment.requestPayment({
-      method: 'CARD',
-      amount: { currency: 'KRW', value: amount },
+    await tossPayments.requestPayment('카드', {
+      amount: amount,
       orderId: orderId,
       orderName: `MONKOS ${credits} 크레딧`,
       successUrl: `${window.location.origin}${window.location.pathname}?toss=success`,

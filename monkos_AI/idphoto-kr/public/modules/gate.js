@@ -330,11 +330,9 @@ async function _buyDirect() {
 
   try {
     const tossPayments = TossPayments(TOSS_CLIENT_KEY);
-    const payment = tossPayments.payment({ customerKey: `GUEST_${orderId}` });
 
-    await payment.requestPayment({
-      method: 'CARD',
-      amount: { currency: 'KRW', value: 10150 },
+    await tossPayments.requestPayment('카드', {
+      amount: 10150,
       orderId,
       orderName: 'MONKOS AI 증명사진 1장',
       successUrl: `${window.location.origin}${window.location.pathname}?toss=direct`,
