@@ -49,8 +49,8 @@ export const LINE_CHANNEL_ID = process.env.LINE_CHANNEL_ID || '';
 export const LINE_CHANNEL_SECRET = process.env.LINE_CHANNEL_SECRET || '';
 export const LINE_REDIRECT_URI = process.env.LINE_REDIRECT_URI || 'https://monkos.ai/auth/line/callback';
 
-// D1 거래 원장
-export const TX_API_URL = process.env.TX_API_URL || 'https://monk.kr/api/tx';
+// D1 거래 원장 (CF Workers tx.js 제거됨 — 환경변수 미설정 시 비활성)
+export const TX_API_URL = process.env.TX_API_URL || '';
 export const TX_API_KEY = process.env.TX_API_KEY || '';
 
 // === Firestore 초기화 ===
