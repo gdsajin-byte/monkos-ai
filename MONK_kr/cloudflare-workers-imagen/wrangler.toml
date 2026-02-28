@@ -1,8 +1,0 @@
-name = "monk-imagen-proxy"
-main = "src/index.js"
-compatibility_date = "2024-01-01"
-
-[vars]
-# Gemini API 키는 Cloudflare Dashboard에서 환경변수로 설정
-# Gemini 챗봇과 동일한 키 사용
-# GEMINI_API_KEY = "your-api-key-here"
