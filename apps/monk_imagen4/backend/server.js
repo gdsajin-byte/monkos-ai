@@ -170,7 +170,7 @@ app.post('/generate', async (req, res) => {
 
     res.json({
       success: true,
-      images: results,
+      images: results.map(r => r.gcsUrl || `data:image/jpeg;base64,${r.imageBase64}`),
       metadata: {
         prompt,
         negativePrompt,
