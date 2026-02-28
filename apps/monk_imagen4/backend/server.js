@@ -77,7 +77,7 @@ app.post('/generate', async (req, res) => {
       aspectRatio,
       style = 'photography',
       numberOfImages = 1,
-      saveToGcs = true,
+      saveToGcs = false,
       seed,
       guidanceScale = 7.0,
       safetyFilterLevel = 'block_none',
@@ -182,7 +182,7 @@ app.post('/generate', async (req, res) => {
 
     res.json({
       success: true,
-      images: results.map(r => r.gcsUrl || `data:image/jpeg;base64,${r.imageBase64}`),
+      images: results.map(r => `data:image/jpeg;base64,${r.imageBase64}`),
       metadata: {
         prompt,
         model: modelId,
