@@ -161,11 +161,16 @@ function retakePhoto() {
 async function confirmAndGenerate() {
   if (!store.captured) return;
 
-  // 비로그인 1회 생성 제한
+  // 비로그인 1회 생성 제한 (24시간 만료)
   if (!store.user.id) {
-    if (localStorage.getItem('monkos_free_gen')) {
-      GateModule.showLoginRequired('무료 체험을 사용하셨습니다.\n로그인 후 이용해주세요.');
-      return;
+    const freeGen = localStorage.getItem('monkos_free_gen');
+    if (freeGen) {
+      const elapsed = Date.now() - Number(freeGen);
+      if (elapsed < 86400000) {
+        GateModule.showLoginRequired('무료 체험을 사용하셨습니다.\n로그인 후 이용해주세요.');
+        return;
+      }
+      localStorage.removeItem('monkos_free_gen');
     }
     localStorage.setItem('monkos_free_gen', Date.now().toString());
   }
