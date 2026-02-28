@@ -1,16 +1,14 @@
 /**
- * MONKOS Image Engine - Vertex AI Imagen 4 Backend API
+ * MONKOS Image Engine - Gemini API Backend
  *
  * K-뷰티 특화 이미지 생성 백엔드 서비스
- * - Vertex AI Imagen 4 통합
- * - ADC (Application Default Credentials) 인증
+ * - Gemini API 직접 호출 (HTTP fetch)
  * - GCS 자동 저장
  * - Cloud Run 최적화
  */
 
 const express = require('express');
 const cors = require('cors');
-const { PredictionServiceClient } = require('@google-cloud/aiplatform');
 const { Storage } = require('@google-cloud/storage');
 require('dotenv').config();
 
@@ -19,18 +17,12 @@ const PORT = process.env.PORT || 8080;
 
 // 환경 변수
 const PROJECT_ID = process.env.PROJECT_ID || 'monkos';
-const LOCATION = process.env.LOCATION || 'us-central1';
 const GCS_BUCKET = process.env.GCS_BUCKET || 'monk-ai-images';
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
 
 // Middleware
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
-
-// Vertex AI 클라이언트 초기화 (ADC 자동 사용)
-const predictionClient = new PredictionServiceClient({
-  apiEndpoint: `${LOCATION}-aiplatform.googleapis.com`
-});
 
 // GCS 클라이언트 초기화 (ADC 자동 사용)
 const storage = new Storage();
@@ -44,16 +36,16 @@ app.get('/health', (req, res) => {
   res.json({
     status: 'healthy',
     message: 'MONKOS Image Engine is running',
-    version: '2.0.0',
+    version: '2.1.0',
     timestamp: new Date().toISOString(),
-    project: PROJECT_ID,
-    location: LOCATION
+    project: PROJECT_ID
   });
 });
 
 /**
  * 이미지 생성 API
  * POST /generate
+ * 모델: Gemini 3 Pro Image Preview (HTTP fetch)
  *
  * Body:
  * {
@@ -69,19 +61,19 @@ app.post('/generate', async (req, res) => {
   const startTime = Date.now();
 
   try {
+    if (!GEMINI_API_KEY) {
+      return res.status(500).json({ error: 'GEMINI_API_KEY not configured', code: 'MISSING_API_KEY' });
+    }
+
     const {
       prompt,
       negativePrompt = '',
       aspectRatio = '1:1',
       style = 'photography',
       numberOfImages = 1,
-      saveToGcs = true,
-      seed,
-      guidanceScale = 7.0,
-      safetyFilterLevel = 'block_some'
+      saveToGcs = true
     } = req.body;
 
-    // 필수 파라미터 검증
     if (!prompt) {
       return res.status(400).json({
         error: 'prompt is required',
@@ -93,45 +85,54 @@ app.post('/generate', async (req, res) => {
     console.log(`[Generate] Prompt: ${prompt.substring(0, 100)}...`);
     console.log(`[Generate] Style: ${style}, Aspect Ratio: ${aspectRatio}`);
 
-    // Vertex AI Imagen 4 요청 구성
-    const endpoint = `projects/${PROJECT_ID}/locations/${LOCATION}/publishers/google/models/imagen-4.0-generate-001`;
-
-    const instances = [
-      {
-        prompt: prompt,
-        ...(negativePrompt && { negativePrompt }),
-      }
-    ];
-
-    const parameters = {
-      aspectRatio: aspectRatio,
-      numberOfImages: numberOfImages,
-      ...(seed && { seed }),
-      ...(guidanceScale && { guidanceScale }),
-      safetyFilterLevel: safetyFilterLevel,
-      personGeneration: 'allow_all', // K-뷰티 인물 생성 허용
-      outputMimeType: 'image/jpeg',
-      outputCompression: 95
-    };
-
-    // Vertex AI 호출
-    const [response] = await predictionClient.predict({
-      endpoint,
-      instances,
-      parameters
-    });
-
-    if (!response.predictions || response.predictions.length === 0) {
-      throw new Error('No images generated');
-    }
+    // 프롬프트 구성
+    const fullPrompt = [
+      `[HIGH-QUALITY IMAGE GENERATION]`,
+      `Style: ${style}, Aspect Ratio: ${aspectRatio}`,
+      negativePrompt ? `Avoid: ${negativePrompt}` : '',
+      `Prompt: ${prompt}`
+    ].filter(Boolean).join('\n');
 
     const results = [];
 
-    // 각 생성된 이미지 처리
-    for (let i = 0; i < response.predictions.length; i++) {
-      const prediction = response.predictions[i];
-      const imageBytes = prediction.bytesBase64Encoded;
+    // Gemini API는 이미지 1장씩 생성 — numberOfImages만큼 반복
+    for (let i = 0; i < numberOfImages; i++) {
+      const geminiResponse = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image-preview:generateContent?key=${GEMINI_API_KEY}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{
+              parts: [{ text: fullPrompt }]
+            }],
+            generationConfig: { imageConfig: {} },
+            safetySettings: [
+              { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
+              { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
+              { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
+              { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' }
+            ],
+          })
+        }
+      );
 
+      if (!geminiResponse.ok) {
+        const errorText = await geminiResponse.text();
+        console.error(`[Generate] Gemini API error (image ${i}):`, errorText);
+        throw new Error(`Gemini API error: ${geminiResponse.status}`);
+      }
+
+      const result = await geminiResponse.json();
+      const parts = result.candidates?.[0]?.content?.parts || [];
+      const imagePart = parts.find(p => p.inlineData);
+
+      if (!imagePart?.inlineData) {
+        console.error(`[Generate] No image in response (image ${i})`);
+        throw new Error('No image generated. The model might have declined the request.');
+      }
+
+      const imageBytes = imagePart.inlineData.data;
       let gcsUrl = null;
 
       // GCS 저장 (선택적)
@@ -140,7 +141,6 @@ app.post('/generate', async (req, res) => {
         const filename = `generated/${timestamp}_${i}.jpg`;
         const file = bucket.file(filename);
 
-        // Base64 디코딩 후 저장
         const buffer = Buffer.from(imageBytes, 'base64');
         await file.save(buffer, {
           metadata: {
@@ -154,7 +154,6 @@ app.post('/generate', async (req, res) => {
           }
         });
 
-        // Public URL 생성
         gcsUrl = `https://storage.googleapis.com/${GCS_BUCKET}/${filename}`;
         console.log(`[Generate] Saved to GCS: ${gcsUrl}`);
       }
@@ -188,7 +187,7 @@ app.post('/generate', async (req, res) => {
 
     res.status(500).json({
       error: error.message,
-      code: error.code || 'GENERATION_FAILED',
+      code: 'GENERATION_FAILED',
       timestamp: new Date().toISOString()
     });
   }
@@ -482,17 +481,14 @@ app.listen(PORT, () => {
   console.log('='.repeat(60));
   console.log('🚀 MONKOS Image Engine Started');
   console.log('='.repeat(60));
-  console.log(`📍 Port: ${PORT}`);
-  console.log(`🌐 Project: ${PROJECT_ID}`);
-  console.log(`📍 Location: ${LOCATION}`);
-  console.log(`💾 GCS Bucket: ${GCS_BUCKET}`);
-  console.log(`🔐 Auth: ADC (Application Default Credentials)`);
-  console.log('='.repeat(60));
-  console.log(`🔑 Gemini API Key: ${GEMINI_API_KEY ? 'configured' : 'NOT SET'}`);
+  console.log(`Port: ${PORT}`);
+  console.log(`Project: ${PROJECT_ID}`);
+  console.log(`GCS Bucket: ${GCS_BUCKET}`);
+  console.log(`Gemini API Key: ${GEMINI_API_KEY ? 'configured' : 'NOT SET'}`);
   console.log('='.repeat(60));
   console.log('Endpoints:');
   console.log(`  GET  /health        - Health check`);
-  console.log(`  POST /generate      - Generate images (Vertex AI Imagen 4)`);
+  console.log(`  POST /generate      - Generate images (Gemini API)`);
   console.log(`  POST /batch-generate - Generate 4 images`);
   console.log(`  POST /refine        - I2I / Edit / Upscale (Gemini)`);
   console.log(`  POST /analyze       - Image analysis (Gemini)`);

@@ -5,7 +5,7 @@ FROM node:20-slim
 
 # 메타데이터
 LABEL maintainer="MONK.KR"
-LABEL description="MONKOS Image Engine - Vertex AI Imagen 4 Backend"
+LABEL description="MONKOS Image Engine - Gemini API Backend"
 
 # 작업 디렉토리 설정
 WORKDIR /app
