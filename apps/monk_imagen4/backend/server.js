@@ -10,7 +10,7 @@
 
 const express = require('express');
 const cors = require('cors');
-const { PredictionServiceClient } = require('@google-cloud/aiplatform');
+const { PredictionServiceClient, helpers } = require('@google-cloud/aiplatform');
 const { Storage } = require('@google-cloud/storage');
 require('dotenv').config();
 
@@ -71,15 +71,21 @@ app.post('/generate', async (req, res) => {
   try {
     const {
       prompt,
+      model = 'fast',
+      config,
       negativePrompt = '',
-      aspectRatio = '1:1',
+      aspectRatio,
       style = 'photography',
       numberOfImages = 1,
       saveToGcs = true,
       seed,
       guidanceScale = 7.0,
-      safetyFilterLevel = 'block_some'
+      safetyFilterLevel = 'block_none',
+      personGeneration = 'allow_all'
     } = req.body;
+
+    // config에서도 aspectRatio 수신 (프론트엔드 호환)
+    const finalAspectRatio = aspectRatio || config?.aspectRatio || '1:1';
 
     // 필수 파라미터 검증
     if (!prompt) {
@@ -89,12 +95,17 @@ app.post('/generate', async (req, res) => {
       });
     }
 
-    console.log(`[Generate] Starting image generation...`);
+    // model → Vertex AI 모델 ID 매핑
+    const modelId = model === 'ultra'
+      ? 'imagen-4.0-ultra-generate-001'
+      : 'imagen-4.0-fast-generate-001';
+
+    console.log(`[Generate] Model: ${modelId} (${model})`);
     console.log(`[Generate] Prompt: ${prompt.substring(0, 100)}...`);
-    console.log(`[Generate] Style: ${style}, Aspect Ratio: ${aspectRatio}`);
+    console.log(`[Generate] Aspect Ratio: ${finalAspectRatio}`);
 
     // Vertex AI Imagen 4 요청 구성
-    const endpoint = `projects/${PROJECT_ID}/locations/${LOCATION}/publishers/google/models/imagen-4.0-generate-001`;
+    const endpoint = `projects/${PROJECT_ID}/locations/${LOCATION}/publishers/google/models/${modelId}`;
 
     const instances = [
       {
@@ -104,21 +115,21 @@ app.post('/generate', async (req, res) => {
     ];
 
     const parameters = {
-      aspectRatio: aspectRatio,
-      numberOfImages: numberOfImages,
+      aspectRatio: finalAspectRatio,
+      sampleCount: numberOfImages,
       ...(seed && { seed }),
       ...(guidanceScale && { guidanceScale }),
       safetyFilterLevel: safetyFilterLevel,
-      personGeneration: 'allow_all', // K-뷰티 인물 생성 허용
+      personGeneration: personGeneration,
       outputMimeType: 'image/jpeg',
       outputCompression: 95
     };
 
-    // Vertex AI 호출
+    // Vertex AI 호출 (protobuf Value 변환 필수)
     const [response] = await predictionClient.predict({
       endpoint,
-      instances,
-      parameters
+      instances: instances.map(i => helpers.toValue(i)),
+      parameters: helpers.toValue(parameters)
     });
 
     if (!response.predictions || response.predictions.length === 0) {
@@ -129,7 +140,7 @@ app.post('/generate', async (req, res) => {
 
     // 각 생성된 이미지 처리
     for (let i = 0; i < response.predictions.length; i++) {
-      const prediction = response.predictions[i];
+      const prediction = helpers.fromValue(response.predictions[i]);
       const imageBytes = prediction.bytesBase64Encoded;
 
       let gcsUrl = null;
@@ -174,9 +185,8 @@ app.post('/generate', async (req, res) => {
       images: results.map(r => r.gcsUrl || `data:image/jpeg;base64,${r.imageBase64}`),
       metadata: {
         prompt,
-        negativePrompt,
-        aspectRatio,
-        style,
+        model: modelId,
+        aspectRatio: finalAspectRatio,
         numberOfImages,
         duration: `${duration}ms`,
         timestamp: new Date().toISOString()
