@@ -8,7 +8,7 @@ import { store, Monk, TOSS_CLIENT_KEY, closeCreditModal, buyCreditsKR } from '..
 
 // ─── 충전 옵션 ───
 const CHARGE_OPTIONS = [
-  { label: '📸 1장 구매', amount: 11600, credits: 80, desc: '생성+다운로드 1회분', recommended: true },
+  { label: '📸 다운로드 1장', amount: 10150, credits: 70, desc: '다운로드 1회분', recommended: true },
   { label: '10c', amount: 1450, credits: 10, desc: '' },
   { label: '100c', amount: 13050, credits: 100, desc: '10% 할인' },
   { label: '300c', amount: 34800, credits: 300, desc: '20% 할인' },
@@ -30,8 +30,8 @@ function _buildModal() {
       <span style="position:absolute;top:-8px;right:12px;background:#a78bfa;color:#fff;font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:8px;">추천</span>
       <input type="radio" name="co" value="0" checked style="accent-color:#a78bfa;width:18px;height:18px;flex-shrink:0;">
       <div>
-        <div style="font-size:1rem;font-weight:700;color:#f8fafc;">📸 1장 구매 &nbsp;<span style="color:#a78bfa;">₩11,600</span></div>
-        <div style="font-size:0.8rem;color:#8892a8;margin-top:2px;">생성+다운로드 1회분</div>
+        <div style="font-size:1rem;font-weight:700;color:#f8fafc;">📸 다운로드 1장 &nbsp;<span style="color:#a78bfa;">₩10,150</span></div>
+        <div style="font-size:0.8rem;color:#8892a8;margin-top:2px;">다운로드 1회분</div>
       </div>
     </label>
 

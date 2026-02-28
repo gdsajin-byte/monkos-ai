@@ -78,6 +78,7 @@ export const VARIANT_CREDITS = {
 
 export const TOSS_AMOUNT_CREDITS = {
   1450: 10,
+  10150: 70,
   11600: 80,
   13050: 100,
   34800: 300,

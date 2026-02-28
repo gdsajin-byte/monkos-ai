@@ -346,6 +346,7 @@ async function downloadResult() {
 
   // 잔액 부족 → 충전 모달
   if (store.user.credits < CREDIT_COST.download) {
+    sessionStorage.setItem('monkos_pending_action', 'download');
     ChargeModule.show();
     return;
   }
@@ -695,8 +696,43 @@ async function init() {
     img.addEventListener('contextmenu', e => e.preventDefault());
   });
 
-  // 원본 표시
-  showOriginal();
+  // === 생성 이미지 존재 시 결과 화면 복원 (토스 충전 후 복귀) ===
+  if (store.generated) {
+    // 원본도 표시 (비교컷용)
+    const captured = loadSessionData('captured');
+    if (captured) {
+      store.captured = captured;
+      const imgEl = document.querySelector('#photo-original');
+      if (imgEl) imgEl.src = captured;
+    }
+
+    const genImg = document.querySelector('#photo-generated');
+    if (genImg) genImg.src = store.generated;
+
+    store.step = 3;
+    store.stepLabel = TX.resultDone;
+    store.resultTitle = TX.resultDone;
+    store.resultSubtitle = TX.resultDoneSub;
+    store.showStep3Actions = true;
+    store.showStep2Actions = false;
+    store.watermarkPreview = store.generated;
+
+    const btnDownload = document.querySelector('#btn-download');
+    if (btnDownload) btnDownload.disabled = false;
+
+    Monk.log('생성 결과 복원 (토스 충전 후 복귀)');
+
+    // 충전 목적이 다운로드였으면 자동 진행
+    const pendingAction = sessionStorage.getItem('monkos_pending_action');
+    if (pendingAction === 'download' && store.user.credits >= CREDIT_COST.download) {
+      sessionStorage.removeItem('monkos_pending_action');
+      setTimeout(() => downloadResult(), 300);
+    } else {
+      sessionStorage.removeItem('monkos_pending_action');
+    }
+  } else {
+    showOriginal();
+  }
 
   Monk.log('분석실 초기화 완료');
 }
