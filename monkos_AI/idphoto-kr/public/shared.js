@@ -234,7 +234,7 @@ export async function initCredits() {
   } catch (e) {
     Monk.log('쿠키 인증 실패');
   }
-  store.user = null;
+  store.user = { id: null, email: null, name: null, credits: 0, avatar: '' };
   Monk.log('비로그인 상태');
 }
 
