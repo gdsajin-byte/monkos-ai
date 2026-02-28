@@ -1013,6 +1013,7 @@ function handleGoogleTokenCallback(tokenResponse) {
   fetch(portalUrl + '/api/auth/google', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
     body: JSON.stringify({ access_token: tokenResponse.access_token }),
   })
   .then(function(res) { return res.json(); })

@@ -198,7 +198,9 @@ export async function initFromUrlToken() {
   if (!uid || !token) return false;
 
   try {
-    const res = await fetch(`${API.PORTAL_URL}/api/auth/verify?token=${encodeURIComponent(token)}`);
+    const res = await fetch(`${API.PORTAL_URL}/api/auth/verify?token=${encodeURIComponent(token)}`, {
+      credentials: 'include',
+    });
     const data = await res.json();
     if (data.success && data.user) {
       history.replaceState(null, '', location.pathname);
