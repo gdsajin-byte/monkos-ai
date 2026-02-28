@@ -154,7 +154,7 @@
             </a>
 
             <!-- 4. MONKOS IMAGE PRO (Internal / Enterprise) -->
-            <a href="https://image.monkos.ai" id="image-pro-card" class="group relative rounded-[2.5rem] overflow-hidden aspect-[3/4] shadow-lg cursor-pointer block bg-gray-900 border border-yellow-500/30 hover:border-yellow-400/60 transition-all">
+            <a href="./image_pro/" id="image-pro-card" class="group relative rounded-[2.5rem] overflow-hidden aspect-[3/4] shadow-lg cursor-pointer block bg-gray-900 border border-yellow-500/30 hover:border-yellow-400/60 transition-all">
                 <div class="absolute inset-0 bg-gradient-to-br from-yellow-600/20 via-orange-600/20 to-red-600/20 opacity-50 group-hover:opacity-70 transition-opacity"></div>
                 <div class="absolute top-4 right-4 px-2 py-1 bg-yellow-500/20 border border-yellow-500/50 rounded-full">
                     <span class="text-[8px] text-yellow-400 font-bold uppercase tracking-wider">Enterprise</span>
@@ -605,11 +605,11 @@
             `);
         }
 
-        // 방문목적 → 서비스 경로 매핑 (monkos.ai 전환)
+        // 방문목적 → 서비스 경로 매핑 (분리 원칙: photolab→monkos.ai, image_pro→자체)
         const purposeRoutes = {
             'AI 증명사진': 'https://idphoto-kr.monkos.ai',
             'AI 프로필': 'https://idphoto-kr.monkos.ai',
-            'AI 이미지 생성': 'https://image.monkos.ai',
+            'AI 이미지 생성': '/ai_lab/image_pro/',
             '포트폴리오 제작': '/ai_lab/lookbook/',
             '상업용 콘텐츠': '/ai_lab/lookbook/',
             'B2B 제휴': null, // AI Lab 메인 유지
