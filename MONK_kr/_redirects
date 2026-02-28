@@ -1,0 +1,3 @@
+/ai_lab/photolab/*  https://idphoto-kr.monkos.ai/:splat  301
+/ai_lab/image_pro/* https://image.monkos.ai/:splat       301
+/api/*              https://monkos.ai/api/:splat          301

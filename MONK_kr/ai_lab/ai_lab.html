@@ -70,43 +70,6 @@
 <body class="bg-gray-950 text-gray-100 min-h-screen flex flex-col overflow-x-hidden font-sans">
 
     <!-- 로그인 필수 모달 -->
-    <div id="login-guard-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
-        <div class="bg-gray-900 border-2 border-ai/30 rounded-3xl p-8 max-w-md mx-4 text-center shadow-2xl">
-            <div class="mb-6">
-                <i class="fas fa-shield-alt text-6xl text-ai mb-4"></i>
-                <h2 class="text-3xl font-black text-white mb-2">MONK AI LAB</h2>
-                <p class="text-gray-400 text-sm">Evolution of Creative Intelligence</p>
-            </div>
-            
-            <div class="bg-gray-950/50 rounded-2xl p-6 mb-6 border border-gray-800">
-                <p class="text-lg text-white font-bold mb-3">
-                    AI LAB은 회원 전용 서비스입니다
-                </p>
-                <p class="text-sm text-gray-400 leading-relaxed mb-4">
-                    간단한 가입 후 AI LAB의 모든 기능을 이용하실 수 있습니다
-                </p>
-                
-                <div class="bg-gradient-to-r from-ai/20 to-mvp/20 rounded-xl p-4 border border-ai/30">
-                    <p class="text-xs font-black text-ai mb-2">🎁 베타 참여자 혜택</p>
-                    <p class="text-2xl font-black text-white">200 CREDITS</p>
-                    <p class="text-xs text-gray-400 mt-1">AI LAB 모든 메뉴에서 사용 가능</p>
-                </div>
-            </div>
-            
-            <div class="space-y-3">
-                <button onclick="goToSimpleSignup()" class="w-full py-4 bg-gradient-to-r from-ai to-blue-600 text-white font-black rounded-xl hover:scale-105 transition-transform shadow-lg">
-                    <i class="fas fa-gift mr-2"></i>
-                    200cr 받고 시작하기
-                </button>
-                <p class="text-xs text-gray-500">
-                    이메일만으로 30초 만에 가입
-                </p>
-                <button onclick="goBack()" class="w-full py-3 bg-gray-800 text-gray-400 font-bold rounded-xl hover:bg-gray-700 transition-colors">
-                    <i class="fas fa-arrow-left mr-2"></i>
-                    홈으로 돌아가기
-                </button>
-            </div>
-        </div>
     </div>
 
     <header class="sticky top-0 z-40 bg-gray-950/90 backdrop-blur-md border-b border-gray-800">
@@ -116,21 +79,11 @@
             </a>
             <div class="hidden md:flex items-center space-x-6 text-[10px] font-black tracking-widest text-gray-500 uppercase">
                 <span class="flex items-center"><span class="w-2 h-2 bg-ai rounded-full mr-2 animate-pulse"></span> Cloud</span>
-                <span class="flex items-center text-local" id="status-5090"><span class="w-2 h-2 bg-gray-600 rounded-full mr-2"></span> Monkos.ai</span>
                 
-                <!-- 로그인/사용자 정보 -->
-                <div id="auth-section">
-                    <button id="login-btn" onclick="goToLogin()" class="text-ai hover:text-white transition-colors">
-                        <i class="fas fa-user-circle mr-1"></i> 로그인
-                    </button>
-                    <div id="user-info" class="hidden flex items-center space-x-2">
-                        <span id="user-name" class="text-white"></span>
-                        <span id="user-credits" class="text-ai font-black"></span>
-                        <button onclick="logout()" class="text-gray-600 hover:text-ai" title="로그아웃">
-                            <i class="fas fa-sign-out-alt"></i>
-                        </button>
-                    </div>
-                </div>
+                <\!-- 로그인 — monkos.ai portal로 이관 -->
+                <a href="https://monkos.ai/portal" class="text-ai hover:text-white transition-colors">
+                    <i class="fas fa-user-circle mr-1"></i> My Page
+                </a>
                 
                 <button onclick="toggleChatPanel()" class="ml-4 text-local hover:text-white transition-colors" title="Monkos AI 어시스턴트">
                     <i class="fas fa-robot"></i>
@@ -153,7 +106,7 @@
         <section class="max-w-7xl mx-auto px-6 pb-24 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             
             <!-- 1. MONKOS Photolab -->
-            <a href="./photolab/" class="group relative rounded-[2.5rem] overflow-hidden aspect-[3/4] shadow-lg cursor-pointer block bg-gray-900 border border-gray-800 hover:border-ai/50 transition-all">
+            <a href="https://idphoto-kr.monkos.ai" class="group relative rounded-[2.5rem] overflow-hidden aspect-[3/4] shadow-lg cursor-pointer block bg-gray-900 border border-gray-800 hover:border-ai/50 transition-all">
                 <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=800" alt="MONKOS Photolab" class="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:opacity-60 transition-opacity">
                 <div class="absolute inset-0 bg-gradient-to-t from-gray-950 via-transparent to-transparent"></div>
                 <div class="absolute inset-0 flex flex-col items-center justify-center p-8 text-center">
@@ -201,7 +154,7 @@
             </a>
 
             <!-- 4. MONKOS IMAGE PRO (Internal / Enterprise) -->
-            <a href="./image_pro/" id="image-pro-card" class="group relative rounded-[2.5rem] overflow-hidden aspect-[3/4] shadow-lg cursor-pointer block bg-gray-900 border border-yellow-500/30 hover:border-yellow-400/60 transition-all">
+            <a href="https://image.monkos.ai" id="image-pro-card" class="group relative rounded-[2.5rem] overflow-hidden aspect-[3/4] shadow-lg cursor-pointer block bg-gray-900 border border-yellow-500/30 hover:border-yellow-400/60 transition-all">
                 <div class="absolute inset-0 bg-gradient-to-br from-yellow-600/20 via-orange-600/20 to-red-600/20 opacity-50 group-hover:opacity-70 transition-opacity"></div>
                 <div class="absolute top-4 right-4 px-2 py-1 bg-yellow-500/20 border border-yellow-500/50 rounded-full">
                     <span class="text-[8px] text-yellow-400 font-bold uppercase tracking-wider">Enterprise</span>
@@ -652,15 +605,15 @@
             `);
         }
 
-        // 방문목적 → 서비스 경로 매핑 (절대경로)
+        // 방문목적 → 서비스 경로 매핑 (monkos.ai 전환)
         const purposeRoutes = {
-            'AI 증명사진': '/ai_lab/photolab/',
-            'AI 프로필': '/ai_lab/photolab/',
-            'AI 이미지 생성': '/ai_lab/photolab/',
+            'AI 증명사진': 'https://idphoto-kr.monkos.ai',
+            'AI 프로필': 'https://idphoto-kr.monkos.ai',
+            'AI 이미지 생성': 'https://image.monkos.ai',
             '포트폴리오 제작': '/ai_lab/lookbook/',
             '상업용 콘텐츠': '/ai_lab/lookbook/',
             'B2B 제휴': null, // AI Lab 메인 유지
-            '기술 체험': '/ai_lab/photolab/',
+            '기술 체험': 'https://idphoto-kr.monkos.ai',
             '기타': null // AI Lab 메인 유지
         };
 
@@ -752,29 +705,7 @@
             localStorage.setItem('MONK_VISITOR_INFO', JSON.stringify(visitorSchema));
             sessionStorage.setItem('MONK_VISITOR_INFO', JSON.stringify(visitorSchema));
             
-            // ⭐ 서버로 데이터 전송 (D1 백업)
-            try {
-                await fetch('/api/visitor', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        visitor_id: visitorSchema.visitor_id,
-                        country: visitorSchema.country,
-                        gender: visitorSchema.gender,
-                        age_group: visitorSchema.ageGroup,
-                        job: visitorSchema.job,
-                        purpose: visitorSchema.purpose,
-                        name: visitorSchema.name,
-                        phone: visitorSchema.phone,
-                        email: visitorSchema.email,
-                        privacy_consent: visitorSchema.privacyConsent,
-                        marketing_consent: visitorSchema.marketingConsent
-                    })
-                });
-                console.log('✅ Visitor data saved to server');
-            } catch (err) {
-                console.warn('⚠️ Server backup failed (offline mode)', err);
-            }
+
             
             addUserMessage('동의 완료! 🎉');
             
@@ -787,8 +718,6 @@
             const hasContact = visitorSchema.name || visitorSchema.phone || visitorSchema.email;
             if (hasContact) {
                 bonusCredits = 100;
-                const currentCredits = parseInt(localStorage.getItem('monkos_credits') || '0');
-                localStorage.setItem('monkos_credits', currentCredits + bonusCredits);
             }
             
             await addBotMessage(`${greeting}환영해요! 🎊`, 500);
@@ -880,75 +809,6 @@
             }
         })();
 
-        // ==================== 로그인 가드 시스템 ====================
-        function checkAuth() {
-            const token = localStorage.getItem('monk_auth_token');
-            const userJson = localStorage.getItem('monk_user');
-            
-            if (token && userJson) {
-                try {
-                    const user = JSON.parse(userJson);
-                    showLoggedIn(user);
-                    hideLoginGuard();
-                    fetchUserCredits(token);
-                } catch (e) {
-                    console.error('Auth error:', e);
-                    showLoginGuard();
-                }
-            } else {
-                showLoginGuard();
-            }
-        }
-
-        function showLoginGuard() {
-            document.getElementById('login-guard-modal').classList.remove('hidden');
-        }
-
-        function hideLoginGuard() {
-            document.getElementById('login-guard-modal').classList.add('hidden');
-        }
-
-        function showLoggedIn(user) {
-            document.getElementById('login-btn').classList.add('hidden');
-            document.getElementById('user-info').classList.remove('hidden');
-            document.getElementById('user-name').textContent = user.name;
-        }
-
-        async function fetchUserCredits(token) {
-            try {
-                const res = await fetch('/api/auth?action=me', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const data = await res.json();
-                if (data.success && data.user) {
-                    const credits = data.user.credits || 0;
-                    document.getElementById('user-credits').textContent = `${credits}cr`;
-                }
-            } catch (e) {
-                console.error('Fetch credits error:', e);
-            }
-        }
-
-        function goToLogin() {
-            window.location.href = '/ai_lab/login.html?redirect=' + encodeURIComponent(window.location.pathname);
-        }
-
-        function goToSimpleSignup() {
-            window.location.href = '/ai_lab/simple-signup.html?redirect=' + encodeURIComponent(window.location.pathname);
-        }
-
-        function goBack() {
-            window.location.href = '/';
-        }
-
-        function logout() {
-            localStorage.removeItem('monk_auth_token');
-            localStorage.removeItem('monk_user');
-            window.location.reload();
-        }
-
-        // 페이지 로드 시 인증 확인
-        window.addEventListener('DOMContentLoaded', checkAuth);
     </script>
 </body>
 </html>

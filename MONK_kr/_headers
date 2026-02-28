@@ -1,6 +1,2 @@
-# photolab JS — 개발 중 캐시 비활성화
-/ai_lab/photolab/*.js
-  Cache-Control: no-cache, no-store, must-revalidate
-
-/ai_lab/photolab/*.css
-  Cache-Control: no-cache, no-store, must-revalidate
+# CF Pages custom headers
+# photolab/ 및 image_pro/ 경로는 monkos.ai로 301 리다이렉트됨 (_redirects 참고)
