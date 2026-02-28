@@ -204,7 +204,7 @@ var currentUser = null;
 var returnUrl = null;
 
 // === 초기화 ===
-window.addEventListener('DOMContentLoaded', function() {
+window.addEventListener('DOMContentLoaded', async function() {
   // from 파라미터 → sessionStorage 보존 (Toss 리다이렉트 생존)
   var params = new URLSearchParams(window.location.search);
   var from = params.get('from');
@@ -214,7 +214,7 @@ window.addEventListener('DOMContentLoaded', function() {
   returnUrl = sessionStorage.getItem('monkos_credits_from') || null;
 
   renderPackages();
-  checkAuth();
+  await checkAuth();
   handleTossResult();
 });
 
@@ -253,18 +253,22 @@ function renderPackages() {
 }
 
 // === 인증 ===
-function checkAuth() {
-  var raw = localStorage.getItem('monkos_user');
-  if (raw) {
-    try {
-      var user = JSON.parse(raw);
-      if (user.id) {
-        currentUser = user;
-        showLoggedIn(user);
-        fetchBalance(user.id);
+async function checkAuth() {
+  try {
+    var res = await fetch('/api/auth/verify-cookie', {
+      credentials: 'include',
+    });
+    if (res.ok) {
+      var data = await res.json();
+      if (data.user && data.user.id) {
+        currentUser = data.user;
+        showLoggedIn(data.user);
+        fetchBalance(data.user.id);
         return;
       }
-    } catch(e) {}
+    }
+  } catch (e) {
+    console.log('인증 실패');
   }
   showLogin();
 }
@@ -288,7 +292,6 @@ function fetchBalance(userId) {
         document.getElementById('balanceCount').textContent = data.credits;
         if (currentUser) {
           currentUser.credits = data.credits;
-          localStorage.setItem('monkos_user', JSON.stringify(currentUser));
         }
       }
     })
@@ -310,7 +313,6 @@ function googleLogin() {
       .then(function(data) {
         if (data.success && data.user) {
           currentUser = data.user;
-          localStorage.setItem('monkos_user', JSON.stringify(data.user));
           showLoggedIn(data.user);
           document.getElementById('balanceCount').textContent = data.user.credits || 0;
           if (data.isNewUser) {
@@ -383,9 +385,7 @@ function handleTossResult() {
     showLoading(true);
     history.replaceState({}, '', '/credits');
 
-    var raw = localStorage.getItem('monkos_user');
-    var userId = '';
-    if (raw) { try { userId = JSON.parse(raw).id || ''; } catch(e) {} }
+    var userId = (currentUser && currentUser.id) ? currentUser.id : '';
 
     fetch('/api/payments/toss/confirm', {
       method: 'POST',
@@ -404,7 +404,6 @@ function handleTossResult() {
         document.getElementById('balanceCount').textContent = data.credits || 0;
         if (currentUser) {
           currentUser.credits = data.credits;
-          localStorage.setItem('monkos_user', JSON.stringify(currentUser));
         }
         showToast('+' + (data.creditsAdded || '') + 'c 충전 완료!', 'success');
         returnToService();
