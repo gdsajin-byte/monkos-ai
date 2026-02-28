@@ -73,6 +73,7 @@ gcloud run deploy ${SERVICE_NAME} \
   --min-instances 0 \
   --max-instances 10 \
   --set-env-vars "PROJECT_ID=${PROJECT_ID},LOCATION=${REGION},GCS_BUCKET=${GCS_BUCKET}" \
+  --update-secrets "GEMINI_API_KEY=GEMINI_API_KEY:latest" \
   --service-account monk-image-engine@${PROJECT_ID}.iam.gserviceaccount.com
 
 # 5. 배포 정보 출력
@@ -86,6 +87,9 @@ echo -e "${BLUE}========================================${NC}"
 echo -e "서비스 URL: ${YELLOW}${SERVICE_URL}${NC}"
 echo -e "헬스 체크: ${YELLOW}${SERVICE_URL}/${NC}"
 echo -e "이미지 생성: ${YELLOW}${SERVICE_URL}/generate${NC}"
+echo -e "리파인:     ${YELLOW}${SERVICE_URL}/refine${NC}"
+echo -e "분석:       ${YELLOW}${SERVICE_URL}/analyze${NC}"
+echo -e "번역:       ${YELLOW}${SERVICE_URL}/translate${NC}"
 echo -e "${BLUE}========================================${NC}"
 
 # 테스트 요청 예시
