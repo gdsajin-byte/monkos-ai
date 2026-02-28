@@ -9,7 +9,7 @@
  */
 
 import { store, Monk, API, TOSS_CLIENT_KEY, fetchLatestCredits, CREDIT_COST, showEventCard } from '../shared.js';
-import { KAKAO_JS_KEY, KAKAO_CHANNEL_ID } from '../config.js';
+import { KAKAO_JS_KEY, KAKAO_CHANNEL_ID, GOOGLE_CLIENT_ID } from '../config.js';
 
 // ─── 스타일 ───
 const GATE_CSS = `
@@ -397,15 +397,55 @@ function _showLoginRequired(message) {
 
   overlay.querySelector('#gate-login-google-btn').addEventListener('click', () => {
     _closeLoginRequired();
-    if (typeof window.loginGoogle === 'function') window.loginGoogle();
+    _startGoogleLoginSimple();
   });
   overlay.querySelector('#gate-login-kakao-btn').addEventListener('click', () => {
+    // iOS Safari: window.open MUST happen before DOM removal (user gesture context)
+    const popup = window.open('about:blank', 'kakao-login', 'width=500,height=600');
     _closeLoginRequired();
-    _startKakaoLoginSimple();
+    if (!popup) {
+      window.location.href = `${API.PORTAL_URL}/auth/kakao`;
+      return;
+    }
+    popup.location.href = `${API.PORTAL_URL}/auth/kakao?popup=1&redirect_app=idphoto-kr`;
+    function handler(e) {
+      if (e.origin !== API.PORTAL_URL) return;
+      if (e.data && e.data.type === 'auth-success') {
+        window.removeEventListener('message', handler);
+        const u = e.data.user;
+        store.user = {
+          id: u.id, email: u.email, name: u.name,
+          credits: u.credits ?? 0, avatar: u.picture || '',
+        };
+        Monk.log(`로그인 성공: ${u.email || u.name} (${store.user.credits}c)`);
+      }
+    }
+    window.addEventListener('message', handler);
+    setTimeout(() => window.removeEventListener('message', handler), 180000);
   });
   overlay.querySelector('#gate-login-line-btn').addEventListener('click', () => {
+    // iOS Safari: window.open MUST happen before DOM removal (user gesture context)
+    const popup = window.open('about:blank', 'line-login', 'width=500,height=600');
     _closeLoginRequired();
-    _startLineLoginSimple();
+    if (!popup) {
+      window.location.href = `${API.PORTAL_URL}/auth/line`;
+      return;
+    }
+    popup.location.href = `${API.PORTAL_URL}/auth/line?popup=1&redirect_app=idphoto-kr`;
+    function handler(e) {
+      if (e.origin !== API.PORTAL_URL) return;
+      if (e.data && e.data.type === 'auth-success') {
+        window.removeEventListener('message', handler);
+        const u = e.data.user;
+        store.user = {
+          id: u.id, email: u.email, name: u.name,
+          credits: u.credits ?? 0, avatar: u.picture || '',
+        };
+        Monk.log(`LINE 로그인 성공: ${u.email || u.name} (${store.user.credits}c)`);
+      }
+    }
+    window.addEventListener('message', handler);
+    setTimeout(() => window.removeEventListener('message', handler), 180000);
   });
   overlay.querySelector('#gate-login-close-btn').addEventListener('click', _closeLoginRequired);
 
@@ -467,6 +507,52 @@ function _startLineLoginSimple() {
   }
   window.addEventListener('message', handler);
   setTimeout(() => window.removeEventListener('message', handler), 180000);
+}
+
+// ─── Google 로그인 (GIS — MPA 페이지용) ───
+function _startGoogleLoginSimple() {
+  if (!GOOGLE_CLIENT_ID) {
+    Monk.log('Google Client ID 미설정');
+    return;
+  }
+
+  function doLogin() {
+    const tokenClient = google.accounts.oauth2.initTokenClient({
+      client_id: GOOGLE_CLIENT_ID,
+      scope: 'openid email profile',
+      callback: async (tokenResponse) => {
+        if (tokenResponse.error) return;
+        try {
+          const res = await fetch(`${API.PORTAL_URL}/api/auth/google`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ access_token: tokenResponse.access_token }),
+          });
+          const data = await res.json();
+          if (data.success && data.user) {
+            store.user = {
+              id: data.user.id, email: data.user.email, name: data.user.name,
+              credits: data.user.credits ?? 0, avatar: data.user.picture || '',
+            };
+            Monk.log(`Google 로그인 성공: ${data.user.email} (${store.user.credits}c)`);
+          }
+        } catch (err) {
+          Monk.log('Google 로그인 에러: ' + err.message);
+        }
+      },
+    });
+    tokenClient.requestAccessToken();
+  }
+
+  if (typeof google !== 'undefined' && google.accounts?.oauth2) {
+    doLogin();
+  } else {
+    const script = document.createElement('script');
+    script.src = 'https://accounts.google.com/gsi/client';
+    script.onload = () => doLogin();
+    script.onerror = () => Monk.log('Google Identity Services 로드 실패');
+    document.head.appendChild(script);
+  }
 }
 
 // ─── 게이트 달성 후 다운로드 진행 ───

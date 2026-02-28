@@ -773,8 +773,16 @@ app.get('/camera', (req, res) => res.sendFile(join(__dirname, 'public/camera.htm
 app.get('/result', (req, res) => res.sendFile(join(__dirname, 'public/result.html')));
 app.get('/thankyou', (req, res) => res.sendFile(join(__dirname, 'public/thankyou.html')));
 
-// 정적 파일 서빙
-app.use(express.static(join(__dirname, 'public')));
+// 정적 파일 서빙 (JS/CSS 캐시 방지 — 모바일 브라우저 강제 갱신)
+app.use(express.static(join(__dirname, 'public'), {
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('.js') || filePath.endsWith('.css')) {
+      res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.set('Pragma', 'no-cache');
+      res.set('Expires', '0');
+    }
+  }
+}));
 
 // === 서버 시작 + WebSocket ===
 const httpServer = app.listen(PORT, '0.0.0.0', () => {
