@@ -526,6 +526,7 @@ function _startGoogleLoginSimple() {
           const res = await fetch(`${API.PORTAL_URL}/api/auth/google`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify({ access_token: tokenResponse.access_token }),
           });
           const data = await res.json();
