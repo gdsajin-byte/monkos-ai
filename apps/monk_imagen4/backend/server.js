@@ -40,7 +40,7 @@ const bucket = storage.bucket(GCS_BUCKET);
  * 헬스 체크 엔드포인트
  * Cloud Run 로드밸런서 및 모니터링용
  */
-app.get('/', (req, res) => {
+app.get('/health', (req, res) => {
   res.json({
     status: 'healthy',
     message: 'MONKOS Image Engine is running',
@@ -454,6 +454,17 @@ app.post('/translate', async (req, res) => {
 });
 
 /**
+ * 정적 파일 서빙 (API 라우트 뒤에 배치)
+ */
+const path = require('path');
+app.use(express.static(path.join(__dirname, 'public')));
+
+// SPA fallback — API가 아닌 GET 요청은 index.html로
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+/**
  * 에러 핸들러
  */
 app.use((err, req, res, next) => {
@@ -480,7 +491,7 @@ app.listen(PORT, () => {
   console.log(`🔑 Gemini API Key: ${GEMINI_API_KEY ? 'configured' : 'NOT SET'}`);
   console.log('='.repeat(60));
   console.log('Endpoints:');
-  console.log(`  GET  /              - Health check`);
+  console.log(`  GET  /health        - Health check`);
   console.log(`  POST /generate      - Generate images (Vertex AI Imagen 4)`);
   console.log(`  POST /batch-generate - Generate 4 images`);
   console.log(`  POST /refine        - I2I / Edit / Upscale (Gemini)`);

@@ -19,6 +19,7 @@ RUN npm install --only=production && \
 
 # 소스 코드 복사
 COPY server.js ./
+COPY public ./public
 
 # 환경 변수 설정
 ENV NODE_ENV=production
@@ -29,7 +30,7 @@ EXPOSE 8080
 
 # 헬스 체크 (Cloud Run 로드밸런서용)
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:8080/', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
+  CMD node -e "require('http').get('http://localhost:8080/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
 
 # 서버 시작
 CMD ["node", "server.js"]
