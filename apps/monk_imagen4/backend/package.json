@@ -1,14 +1,15 @@
 {
   "name": "monk-image-engine",
   "version": "1.0.0",
-  "description": "MONKOS Image Engine - Gemini API Backend",
+  "description": "MONKOS Image Engine - Vertex AI Imagen 4 Backend API",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js"
   },
   "keywords": [
-    "gemini",
+    "vertex-ai",
+    "imagen",
     "k-beauty",
     "image-generation"
   ],
@@ -17,6 +18,7 @@
   "dependencies": {
     "express": "^4.18.2",
     "cors": "^2.8.5",
+    "@google-cloud/aiplatform": "^3.22.0",
     "@google-cloud/storage": "^7.7.0",
     "dotenv": "^16.3.1"
   },
