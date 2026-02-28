@@ -201,7 +201,6 @@ export async function initFromUrlToken() {
     const res = await fetch(`${API.PORTAL_URL}/api/auth/verify?token=${encodeURIComponent(token)}`);
     const data = await res.json();
     if (data.success && data.user) {
-      sessionStorage.setItem('monkos_user', JSON.stringify(data.user));
       history.replaceState(null, '', location.pathname);
       Monk.log(`토큰 로그인 성공: ${data.user.email}`);
       return true;
@@ -227,6 +226,7 @@ export async function initCredits() {
           credits: data.user.credits ?? 0,
           avatar: data.user.picture || '',
         };
+        localStorage.removeItem('monkos_free_gen');
         Monk.log(`쿠키 인증: ${data.user.email} (${data.user.credits}c)`);
         return;
       }
