@@ -224,6 +224,23 @@ export async function handleTossConfirm(req, res) {
     });
 
     log(`[Toss] 결제 완료: ${userId} +${credits}c (₩${amount}, orderId: ${orderId})`);
+
+    // 결제 상세 Firestore payments 컬렉션 기록
+    try {
+      await firestore.collection('payments').add({
+        type: 'toss_confirm',
+        userId,
+        orderId,
+        amount,
+        paymentKey,
+        creditsAdded: credits,
+        balanceAfter: result,
+        createdAt: new Date().toISOString(),
+      });
+    } catch (logErr) {
+      log(`[Toss] 결제 로그 저장 실패: ${logErr.message}`, 'WARNING');
+    }
+
     logTransaction({ userId, amount: credits, type: 'charge', provider: 'toss', balanceAfter: result, description: `토스 결제 (+${credits}c, ₩${amount})`, referenceId: orderId, metadata: { paymentKey, amount } });
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({

@@ -194,14 +194,24 @@ export function verifyAuthToken(token, opts = {}) {
   }
 }
 
-// === D1 거래 원장 로깅 ===
-export function logTransaction({ userId, amount, type, service = 'portal', provider = 'system', balanceAfter, description, referenceId, metadata }) {
-  if (!TX_API_KEY) return;
-  fetch(TX_API_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'X-API-Key': TX_API_KEY },
-    body: JSON.stringify({ userId, amount, type, service, provider, balanceAfter, description, referenceId, metadata }),
-  }).catch(err => log(`[TX] 원장 기록 실패: ${err.message}`, 'WARNING'));
+// === 거래 원장 로깅 (Firestore transactions 컬렉션) ===
+export async function logTransaction({ userId, amount, type, service = 'portal', provider = 'system', balanceAfter, description, referenceId, metadata }) {
+  try {
+    await firestore.collection('transactions').add({
+      userId,
+      amount,
+      type,
+      service,
+      provider,
+      balanceAfter,
+      description,
+      referenceId: referenceId || null,
+      metadata: metadata || {},
+      createdAt: new Date().toISOString(),
+    });
+  } catch (err) {
+    log(`[TX] 원장 기록 실패: ${err.message}`, 'WARNING');
+  }
 }
 
 // === Telegram 메시지 전송 ===

@@ -77,12 +77,12 @@ export async function handleKakaoCallback(req, res) {
         name: nickname,
         email,
         picture: profileImage,
-        credits: 80,
+        credits: 10,
         kakaoAccessToken: tokenData.access_token,
         createdAt: new Date().toISOString(),
         lastLogin: new Date().toISOString(),
       });
-      log(`[Kakao] 신규 가입: ${docId} (${nickname}) +80c 보너스`);
+      log(`[Kakao] 신규 가입: ${docId} (${nickname}) +10c 보너스`);
     } else {
       await userRef.update({
         name: nickname,
@@ -255,11 +255,11 @@ export async function handleLineCallback(req, res) {
         name: displayName,
         email,
         picture: pictureUrl,
-        credits: 80,
+        credits: 10,
         createdAt: new Date().toISOString(),
         lastLogin: new Date().toISOString(),
       });
-      log(`[LINE] 신규 가입: ${docId} (${displayName}) +80c 보너스`);
+      log(`[LINE] 신규 가입: ${docId} (${displayName}) +10c 보너스`);
     } else {
       await userRef.update({
         name: displayName,
@@ -393,6 +393,7 @@ export async function handleGoogleAuth(req, res) {
       // 사용자 정보 저장/업데이트
       const user = {
         id: tokenInfo.sub,
+        provider: 'google',
         email: tokenInfo.email,
         name: tokenInfo.name,
         givenName: tokenInfo.given_name || '',
@@ -403,12 +404,12 @@ export async function handleGoogleAuth(req, res) {
         lastLogin: new Date().toISOString(),
         ...(isNewUser ? {
           createdAt: new Date().toISOString(),
-          credits: 80,
+          credits: 10,
         } : {}),
       };
 
       await userRef.set(user, { merge: true });
-      log(`[Auth] ${isNewUser ? '신규 가입 (+80c 보너스)' : '로그인'}: ${user.email}`);
+      log(`[Auth] ${isNewUser ? '신규 가입 (+10c 보너스)' : '로그인'}: ${user.email}`);
 
       // 현재 크레딧 조회
       const updatedDoc = await userRef.get();
