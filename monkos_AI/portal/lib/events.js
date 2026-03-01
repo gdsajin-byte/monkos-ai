@@ -204,12 +204,13 @@ export async function handleCreditsEvent(req, res) {
       telegram_join: 40,
       kakao_channel_add: 40,
       mission_complete: 100,
+      sns_share: 100,
     };
 
     const granted = EVENT_CREDITS[eventType];
     if (!granted) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: 'eventType은 signup_bonus, telegram_join, kakao_channel_add, mission_complete 중 하나' }));
+      res.end(JSON.stringify({ error: 'eventType은 signup_bonus, telegram_join, kakao_channel_add, mission_complete, sns_share 중 하나' }));
       return;
     }
 

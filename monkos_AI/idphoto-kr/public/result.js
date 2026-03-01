@@ -336,11 +336,9 @@ async function downloadResult() {
     try { sessionStorage.setItem('_mo_p', _fullOriginal); } catch(e) {}
   }
 
-  // 비로그인 → 게이트 팝업
+  // 비로그인 → 직결제 (₩9,900)
   if (!store.user.id) {
-    GateModule.show({
-      onComplete: () => doDownload(),
-    });
+    GateModule.buyDirect();
     return;
   }
 
@@ -443,9 +441,43 @@ async function cropAndShowPostDownload() {
     `;
     mount.appendChild(fullDiv);
 
-    // ① 미션 (100c) — 즉각 행동 유도
-    store.showMission = !!store.user.id;
-    MissionModule.mount(mount);
+    // ① SNS 공유 이벤트 (100c) — 텔레그램 공유
+    if (store.user.id) {
+      const eventDiv = document.createElement('div');
+      eventDiv.style.cssText = 'margin-bottom:12px;';
+      eventDiv.innerHTML = `
+        <div style="padding:16px;background:linear-gradient(135deg,rgba(167,139,250,0.08),rgba(124,58,237,0.06));border:1.5px solid rgba(167,139,250,0.2);border-radius:14px;">
+          <div style="font-size:15px;font-weight:700;color:#c4b5fd;margin-bottom:8px;">🎁 SNS 공유 이벤트</div>
+          <div style="font-size:13px;color:#8892a8;line-height:1.6;margin-bottom:14px;">
+            결과물을 SNS에 공유하고 <strong style="color:#a78bfa;">100c 받기!</strong>
+          </div>
+          <button id="btn-sns-event" style="width:100%;padding:12px;background:#0088cc;color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;">
+            📱 텔레그램으로 공유하고 100c 받기
+          </button>
+        </div>
+      `;
+      eventDiv.querySelector('#btn-sns-event').addEventListener('click', async () => {
+        try {
+          const res = await fetch(`${API.PORTAL_URL}/api/credits/event`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId: store.user.id, eventType: 'sns_share' }),
+          });
+          const data = await res.json();
+          if (data.success) {
+            store.user = { ...store.user, credits: data.credits ?? store.user.credits };
+            showThankYou('+100 Cr', 'SNS 공유 이벤트 완료');
+            eventDiv.querySelector('#btn-sns-event').disabled = true;
+            eventDiv.querySelector('#btn-sns-event').textContent = '✅ 이벤트 완료';
+          } else {
+            alert(data.error || '이미 참여한 이벤트입니다.');
+          }
+        } catch (err) {
+          alert('이벤트 처리 중 오류가 발생했습니다.');
+        }
+      });
+      mount.appendChild(eventDiv);
+    }
     // ② 충전 — 결제 전환
     ChargeModule.mountInline(mount);
     // ③ 프리미엄 — Coming Soon 축소 표시

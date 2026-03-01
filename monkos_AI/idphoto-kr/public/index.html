@@ -772,26 +772,23 @@ footer a { color: var(--accent); text-decoration: none; }
       </div>
       <div class="price-total">1장 완성 <strong>80c</strong></div>
 
-      <div class="pkg-grid">
-        <div class="pkg-item">
-          <div class="pkg-credits">10c</div>
-          <div class="pkg-price">₩1,450</div>
+      <div class="pkg-grid" style="grid-template-columns:1fr;gap:10px;max-width:360px;margin:0 auto;">
+        <div class="pkg-item" style="position:relative;border:2px solid #a78bfa;background:linear-gradient(135deg,rgba(167,139,250,0.15),rgba(124,58,237,0.1));">
+          <span style="position:absolute;top:-8px;right:12px;background:#a78bfa;color:#fff;font-size:0.6rem;font-weight:700;padding:2px 8px;border-radius:8px;">추천</span>
+          <div class="pkg-credits">증명사진 1장</div>
+          <div class="pkg-price"><span style="text-decoration:line-through;color:#666;font-size:0.75rem;">₩10,150</span> <span style="color:#a78bfa;font-weight:700;">₩9,900</span></div>
+          <div class="pkg-save" style="color:#34d399;">+10c 보너스 → 총 80c</div>
         </div>
         <div class="pkg-item">
-          <div class="pkg-credits">100c</div>
-          <div class="pkg-price">₩13,050</div>
-          <div class="pkg-save">10% 할인</div>
+          <div class="pkg-credits">증명사진 2장</div>
+          <div class="pkg-price"><span style="text-decoration:line-through;color:#666;font-size:0.75rem;">₩20,300</span> <span style="color:#a78bfa;font-weight:700;">₩18,900</span></div>
+          <div class="pkg-save" style="color:#34d399;">+20c 보너스 → 총 160c</div>
         </div>
-        <div class="pkg-item popular">
-          <div class="pkg-badge">BEST</div>
-          <div class="pkg-credits">300c</div>
-          <div class="pkg-price">₩34,800</div>
-          <div class="pkg-save">20% 할인</div>
-        </div>
-        <div class="pkg-item">
-          <div class="pkg-credits">500c</div>
-          <div class="pkg-price">₩50,750</div>
-          <div class="pkg-save">30% 할인</div>
+        <div class="pkg-item popular" style="position:relative;border:1.5px solid rgba(245,158,11,0.3);background:linear-gradient(135deg,rgba(245,158,11,0.08),rgba(20,20,40,0.7));">
+          <div class="pkg-badge" style="background:#f59e0b;">★ BEST</div>
+          <div class="pkg-credits">증명사진 4장 + 풀샷</div>
+          <div class="pkg-price"><span style="text-decoration:line-through;color:#666;font-size:0.75rem;">₩40,600</span> <span style="color:#a78bfa;font-weight:700;">₩34,900</span></div>
+          <div class="pkg-save" style="color:#34d399;">+60c 보너스 → 총 340c</div>
         </div>
       </div>
 

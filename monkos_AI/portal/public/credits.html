@@ -174,7 +174,7 @@ footer { text-align: center; padding: 40px 0 20px; border-top: 1px solid rgba(16
       <ul>
         <li>AI 증명사진 1장 = 생성 10c + 다운로드 70c = 80c</li>
         <li>크레딧 1c = ₩145 (부가세 포함)</li>
-        <li>신규 가입 시 80c (1장분) 무료 지급</li>
+        <li>신규 가입 시 10c 무료 지급 (AI 생성 1회 체험)</li>
         <li>충전한 크레딧은 MONKOS 전 서비스에서 사용 가능</li>
         <li>환불 정책은 <a href="/refund.html">여기</a>를 확인하세요</li>
       </ul>
@@ -192,11 +192,9 @@ var TOSS_CLIENT_KEY = 'test_ck_6bJXmgo28eBJk12vvDAW3LAnGKWx';
 var GOOGLE_CLIENT_ID = '933456016842-clagcrpo1juvukjif1m454jq811bd2rq.apps.googleusercontent.com';
 
 var PACKAGES = [
-  { label: '📸 1장 구매', amount: 11600, credits: 80, desc: '생성+다운로드 1회분', recommended: true },
-  { label: '10c', amount: 1450, credits: 10, desc: '' },
-  { label: '100c', amount: 13050, credits: 100, desc: '10% 할인', discount: true },
-  { label: '300c', amount: 34800, credits: 300, desc: '20% 할인', discount: true },
-  { label: '500c', amount: 50750, credits: 500, desc: '30% 할인', discount: true },
+  { label: '증명사진 1장', amount: 9900, credits: 80, desc: '생성 + 다운로드 1회', bonus: '+10c 보너스', originalAmount: 10150, recommended: true },
+  { label: '증명사진 2장', amount: 18900, credits: 160, desc: '보너스 20c 포함', bonus: '+20c 보너스', originalAmount: 20300 },
+  { label: '증명사진 4장 + 풀샷', amount: 34900, credits: 340, desc: '보너스 60c + 풀샷 원본 1회 무료', bonus: '+60c 보너스', originalAmount: 40600, best: true },
 ];
 
 var selectedIdx = 0;
@@ -227,17 +225,21 @@ function renderPackages() {
     var sel = i === 0 ? ' selected' : '';
     var chk = i === 0 ? ' checked' : '';
     var badge = p.recommended ? '<span class="pkg-badge">추천</span>' : '';
-    var disc = p.discount ? '<span class="pkg-discount">(' + p.desc + ')</span>' : '';
-    var descHtml = (!p.discount && p.desc) ? '<div class="pkg-desc">' + p.desc + '</div>' : '';
+    if (p.best) badge = '<span class="pkg-badge" style="background:#f59e0b;">★ BEST</span>';
+    var priceHtml = p.originalAmount
+      ? '<span style="text-decoration:line-through;color:#666;font-size:0.75rem;">₩' + p.originalAmount.toLocaleString() + '</span> <span class="pkg-price">₩' + p.amount.toLocaleString() + '</span>'
+      : '<span class="pkg-price">₩' + p.amount.toLocaleString() + '</span>';
+    var bonusHtml = p.bonus ? '<div style="font-size:0.72rem;color:#34d399;margin-top:3px;">' + p.bonus + '</div>' : '';
+    var descHtml = p.desc ? '<div class="pkg-desc">' + p.desc + '</div>' : '';
     html += '<label class="pkg' + sel + '" data-idx="' + i + '">' +
       badge +
       '<input type="radio" name="pkg" value="' + i + '"' + chk + '>' +
       '<div style="flex:1;">' +
         '<div class="pkg-info">' +
           '<span class="pkg-name">' + p.label + '</span>' +
-          '<span class="pkg-price">₩' + p.amount.toLocaleString() + ' ' + disc + '</span>' +
+          '<span>' + priceHtml + '</span>' +
         '</div>' +
-        descHtml +
+        descHtml + bonusHtml +
       '</div>' +
     '</label>';
   }
@@ -316,7 +318,7 @@ function googleLogin() {
           showLoggedIn(data.user);
           document.getElementById('balanceCount').textContent = data.user.credits || 0;
           if (data.isNewUser) {
-            showToast('가입 완료! 80c 보너스가 지급되었습니다', 'success');
+            showToast('가입 완료! 10c 보너스가 지급되었습니다', 'success');
           }
         }
       })
