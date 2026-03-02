@@ -215,8 +215,6 @@ function renderStylePage() {
   // passport 강제
   if (bgLocked) store.bgColor = PASSPORT_FORCED_BG;
 
-  openAccordion = null;
-
   let html = `<div class="prep-page-inner">
     <div class="prep-label">STEP 3</div>
     <h2 class="prep-question">스타일을 선택해 주세요</h2>
@@ -446,7 +444,6 @@ function handleStyleClick(e) {
         store.tiePattern = 'solid';
       }
     }
-    renderStylePage();
     openAccordion = 'clothing';
     renderStylePage();
     return;
@@ -456,7 +453,6 @@ function handleStyleClick(e) {
     store.tieColor = val;
     if (val === 'notie') store.tiePattern = '';
     else if (!store.tiePattern) store.tiePattern = 'solid';
-    renderStylePage();
     openAccordion = 'clothing';
     renderStylePage();
     return;
