@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#030508">
+    <meta name="format-detection" content="telephone=no">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>MONKOS AI 증명사진 — 충전</title>
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="MONKOS AI 증명사진">
+    <meta property="og:description" content="AI 코칭과 함께 완벽한 증명사진을 촬영하세요">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://monkos.ai/og-image.png">
+
+    <!-- 파비콘 -->
+    <link rel="icon" type="image/png" sizes="32x32" href="https://monkos.ai/favicon-32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://monkos.ai/apple-touch-icon.png">
+
+    <!-- 폰트 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@700&display=swap" rel="stylesheet">
+
+    <!-- 스타일시트 -->
+    <link rel="stylesheet" href="app.css">
+    <link rel="stylesheet" href="cr-coin.css">
+
+    <!-- 토스페이먼츠 -->
+    <script src="https://js.tosspayments.com/v1/payment"></script>
+</head>
+<body>
+    <!-- 인앱 브라우저 안내 배너 -->
+    <div id="inapp-banner" data-show="inappBrowser" style="display:none; background:#ff6b35; color:#fff; text-align:center; padding:10px 16px; font-size:13px; font-weight:600; line-height:1.4; position:fixed; top:0; left:0; right:0; z-index:9999;">
+        ⚠️ Google 로그인이 필요합니다. <strong>Chrome/Safari</strong>에서 열어주세요.
+        <button onclick="openExternal()" style="background:#fff; color:#ff6b35; border:none; padding:4px 12px; border-radius:12px; font-size:12px; font-weight:700; margin-left:8px; cursor:pointer;">열기</button>
+    </div>
+
+    <!-- 헤더 -->
+    <div id="header">
+        <div>
+            <h1><span class="brand">MONKOS</span> <span>AI 증명사진</span></h1>
+            <span id="step-label">크레딧 충전</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+            <div class="header-balance" id="creditBadge" data-show="user.id">
+                <div class="header-coin-wrap">
+                    <div class="header-sparkle"></div>
+                    <div class="header-sparkle"></div>
+                    <div class="header-coin">
+                        <div class="header-coin-face">
+                            <div class="header-shimmer"></div>
+                            <span class="cr-sym">Cr</span>
+                        </div>
+                    </div>
+                </div>
+                <span class="balance-amount" data-bind="user.credits">0</span>
+                <span class="balance-unit">Cr</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 충전 페이지 본문 -->
+    <div style="padding:16px 16px max(24px,env(safe-area-inset-bottom)); max-width:480px; margin:0 auto;">
+
+        <!-- 현재 잔액 -->
+        <div style="text-align:center; margin:20px 0 24px;">
+            <div style="font-size:13px; color:#8892a8; margin-bottom:6px;">현재 잔액</div>
+            <div style="font-size:2rem; font-weight:800; color:#f8fafc;">
+                <span data-bind="user.credits">0</span><span style="font-size:1rem; color:#a78bfa; margin-left:4px;">c</span>
+            </div>
+            <div style="font-size:11px; color:#666; margin-top:8px;">10c = ₩1,450 · 생성 10c · 다운로드 70c · 1회 = 80c</div>
+        </div>
+
+        <!-- 패키지 카드 3종 -->
+
+        <!-- 추천: 증명사진 1장 -->
+        <label id="pkg-0" style="display:flex; align-items:center; gap:12px; padding:16px; border:2px solid #a78bfa; background:linear-gradient(135deg,rgba(167,139,250,0.2),rgba(124,58,237,0.15)); border-radius:14px; cursor:pointer; margin-bottom:8px; position:relative;">
+            <span style="position:absolute; top:-8px; right:12px; background:#a78bfa; color:#fff; font-size:0.65rem; font-weight:700; padding:2px 8px; border-radius:8px;">추천</span>
+            <input type="radio" name="charge-pkg" value="0" checked style="accent-color:#a78bfa; width:18px; height:18px; flex-shrink:0;">
+            <div>
+                <div style="font-size:1rem; font-weight:700; color:#f8fafc;">📸 증명사진 1장 &nbsp;<span style="color:#a78bfa;">₩9,900</span></div>
+                <div style="font-size:0.8rem; color:#8892a8; margin-top:2px;">생성 + 다운로드 1회 <span style="color:#34d399;">(보너스 +10c)</span></div>
+            </div>
+        </label>
+
+        <!-- 스탠다드: 증명사진 2장 -->
+        <label id="pkg-1" style="display:flex; align-items:center; gap:10px; padding:14px 16px; border:1px solid rgba(167,139,250,0.12); background:rgba(20,20,40,0.7); border-radius:10px; cursor:pointer; margin-bottom:8px;">
+            <input type="radio" name="charge-pkg" value="1" style="accent-color:#a78bfa; width:16px; height:16px; flex-shrink:0;">
+            <div style="flex:1;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:0.9rem; font-weight:600; color:#e2e8f0;">📸📸 증명사진 2장</span>
+                    <span>
+                        <span style="text-decoration:line-through; color:#666; font-size:0.75rem;">₩20,300</span>
+                        <span style="color:#a78bfa; font-weight:600; font-size:0.85rem; margin-left:4px;">₩18,900</span>
+                    </span>
+                </div>
+                <div style="font-size:0.72rem; color:#34d399; margin-top:3px;">+20c 보너스</div>
+            </div>
+        </label>
+
+        <!-- 프리미엄: 증명사진 4장 + 풀샷 -->
+        <label id="pkg-2" style="display:flex; align-items:center; gap:10px; padding:14px 16px; border:1.5px solid rgba(245,158,11,0.3); background:linear-gradient(135deg,rgba(245,158,11,0.08),rgba(20,20,40,0.7)); border-radius:10px; cursor:pointer; margin-bottom:8px; position:relative;">
+            <span style="position:absolute; top:-8px; right:12px; background:#f59e0b; color:#fff; font-size:0.65rem; font-weight:700; padding:2px 8px; border-radius:8px;">★ BEST</span>
+            <input type="radio" name="charge-pkg" value="2" style="accent-color:#a78bfa; width:16px; height:16px; flex-shrink:0;">
+            <div style="flex:1;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:0.9rem; font-weight:600; color:#e2e8f0;">📸📸📸📸 4장 + 풀샷</span>
+                    <span>
+                        <span style="text-decoration:line-through; color:#666; font-size:0.75rem;">₩40,600</span>
+                        <span style="color:#a78bfa; font-weight:600; font-size:0.85rem; margin-left:4px;">₩34,900</span>
+                    </span>
+                </div>
+                <div style="font-size:0.72rem; color:#34d399; margin-top:3px;">+60c 보너스 · 풀샷 원본 1회 무료</div>
+            </div>
+        </label>
+
+        <!-- 소액충전 스테퍼 -->
+        <div style="text-align:center; font-size:0.78rem; color:#8892a8; margin:16px 0 8px;">── 또는 소액 충전 ──</div>
+
+        <div id="stepper-box" style="display:flex; align-items:center; justify-content:center; gap:16px; padding:14px 16px; border:1px solid rgba(167,139,250,0.12); background:rgba(20,20,40,0.7); border-radius:10px; margin-bottom:8px; cursor:pointer;">
+            <button id="stepper-minus" type="button" style="width:36px; height:36px; border-radius:50%; border:1.5px solid rgba(167,139,250,0.3); background:rgba(167,139,250,0.1); color:#a78bfa; font-size:18px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; line-height:1;">−</button>
+            <div style="text-align:center; min-width:100px;">
+                <div id="stepper-qty" style="font-size:1.1rem; font-weight:700; color:#f8fafc;">10c</div>
+                <div id="stepper-price" style="font-size:0.8rem; color:#a78bfa; margin-top:2px;">₩1,450</div>
+            </div>
+            <button id="stepper-plus" type="button" style="width:36px; height:36px; border-radius:50%; border:1.5px solid rgba(167,139,250,0.3); background:rgba(167,139,250,0.1); color:#a78bfa; font-size:18px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; line-height:1;">+</button>
+        </div>
+        <div style="text-align:center; font-size:0.7rem; color:#666; margin-bottom:16px;">최소 10c · 최대 100c</div>
+
+        <!-- 결제 버튼 -->
+        <button id="charge-pay-btn" style="width:100%; padding:16px; background:linear-gradient(135deg,#a78bfa,#818cf8); color:#fff; border:none; border-radius:14px; font-size:1.05rem; font-weight:700; cursor:pointer; box-shadow:0 4px 16px rgba(167,139,250,0.25);">토스페이먼츠로 결제</button>
+
+        <!-- 돌아가기 -->
+        <button id="charge-back-btn" style="width:100%; padding:14px; background:rgba(30,30,60,0.8); color:#8892a8; border:1px solid rgba(167,139,250,0.12); border-radius:12px; font-size:0.95rem; font-weight:600; cursor:pointer; margin-top:10px;">돌아가기</button>
+    </div>
+
+    <script type="module">
+    import { store, Monk, sharedInit, buyCreditsKR, navigateTo } from './shared.js';
+
+    // ─── 충전 옵션 (charge.js 동일) ───
+    const CHARGE_OPTIONS = [
+      { label: '증명사진 1장', amount: 9900, credits: 80 },
+      { label: '증명사진 2장', amount: 18900, credits: 160 },
+      { label: '증명사진 4장 + 풀샷', amount: 34900, credits: 340 },
+    ];
+
+    const STEP_UNIT = 10;
+    const STEP_PRICE = 1450;
+    const STEP_MIN = 1;
+    const STEP_MAX = 10;
+
+    let selectedPkg = 0;
+    let stepperActive = false;
+    let stepperQty = 1;
+
+    function fmt(n) { return n.toLocaleString('ko-KR'); }
+
+    // ─── 스테퍼 UI 업데이트 ───
+    function updateStepper() {
+      const qtyEl = document.getElementById('stepper-qty');
+      const priceEl = document.getElementById('stepper-price');
+      const minBtn = document.getElementById('stepper-minus');
+      const maxBtn = document.getElementById('stepper-plus');
+      if (qtyEl) qtyEl.textContent = `${stepperQty * STEP_UNIT}c`;
+      if (priceEl) priceEl.textContent = `₩${fmt(stepperQty * STEP_PRICE)}`;
+      if (minBtn) minBtn.style.opacity = stepperQty <= STEP_MIN ? '0.3' : '1';
+      if (maxBtn) maxBtn.style.opacity = stepperQty >= STEP_MAX ? '0.3' : '1';
+    }
+
+    function activateStepper() {
+      stepperActive = true;
+      document.querySelectorAll('input[name=charge-pkg]').forEach(r => { r.checked = false; });
+      document.querySelectorAll('#pkg-0,#pkg-1,#pkg-2').forEach(l => {
+        l.style.borderColor = 'rgba(167,139,250,0.12)';
+      });
+      document.getElementById('stepper-box').style.borderColor = '#a78bfa';
+    }
+
+    function deactivateStepper() {
+      stepperActive = false;
+      stepperQty = 1;
+      updateStepper();
+      document.getElementById('stepper-box').style.borderColor = 'rgba(167,139,250,0.12)';
+    }
+
+    // ─── 패키지 선택 ───
+    document.querySelectorAll('#pkg-0,#pkg-1,#pkg-2').forEach(label => {
+      label.addEventListener('click', () => {
+        selectedPkg = parseInt(label.id.replace('pkg-', ''));
+        deactivateStepper();
+        // border 복원
+        document.querySelectorAll('#pkg-0,#pkg-1,#pkg-2').forEach(l => {
+          l.style.borderColor = 'rgba(167,139,250,0.12)';
+        });
+        if (selectedPkg === 0) label.style.borderColor = '#a78bfa';
+        else if (selectedPkg === 2) label.style.borderColor = 'rgba(245,158,11,0.3)';
+      });
+    });
+
+    // ─── 스테퍼 이벤트 ───
+    document.getElementById('stepper-box').addEventListener('click', (e) => {
+      if (e.target.id === 'stepper-minus' || e.target.id === 'stepper-plus') return;
+      activateStepper();
+    });
+
+    document.getElementById('stepper-minus').addEventListener('click', (e) => {
+      e.stopPropagation();
+      activateStepper();
+      if (stepperQty > STEP_MIN) stepperQty--;
+      updateStepper();
+    });
+
+    document.getElementById('stepper-plus').addEventListener('click', (e) => {
+      e.stopPropagation();
+      activateStepper();
+      if (stepperQty < STEP_MAX) stepperQty++;
+      updateStepper();
+    });
+
+    // ─── 결제 버튼 ───
+    document.getElementById('charge-pay-btn').addEventListener('click', () => {
+      if (stepperActive) {
+        buyCreditsKR(stepperQty * STEP_PRICE, stepperQty * STEP_UNIT);
+      } else {
+        const opt = CHARGE_OPTIONS[selectedPkg];
+        buyCreditsKR(opt.amount, opt.credits);
+      }
+    });
+
+    // ─── 돌아가기 ───
+    function goBack() {
+      const params = new URLSearchParams(location.search);
+      const returnPage = params.get('return') || 'result';
+      navigateTo(`${returnPage}.html`);
+    }
+
+    document.getElementById('charge-back-btn').addEventListener('click', goBack);
+
+    // ─── 초기화 ───
+    async function init() {
+      await sharedInit();
+      Monk.log('충전 페이지 초기화 완료');
+    }
+
+    init();
+    </script>
+</body>
+</html>

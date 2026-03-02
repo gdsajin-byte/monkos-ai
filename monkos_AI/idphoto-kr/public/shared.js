@@ -114,10 +114,9 @@ export function closeCreditModal() {
   store.creditModalOpen = false;
 }
 
-// ─── 충전 모달 (→ modules/charge.js 위임) ───
-export async function showChargeModal() {
-  const { ChargeModule } = await import('./modules/charge.js');
-  ChargeModule.show();
+// ─── 충전 페이지 이동 (v5: 풀페이지) ───
+export function showChargeModal() {
+  navigateTo('charge.html?return=' + encodeURIComponent(location.pathname.replace('.html', '').replace('/', '')));
 }
 
 // ─── 결제 (토스) ───

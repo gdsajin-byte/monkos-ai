@@ -13,7 +13,6 @@ import {
 
 import { GateModule } from './modules/gate.js';
 import { MissionModule } from './modules/mission.js';
-import { ChargeModule } from './modules/charge.js';
 import { PremiumModule } from './modules/premium.js';
 
 // ─── 원본 격리: 풀 원본은 모듈 스코프 private 변수에만 보관 ───
@@ -275,7 +274,7 @@ async function confirmAndGenerate() {
   } catch (err) {
     hideGenOverlay();
     if (err.status === 402) {
-      ChargeModule.show();
+      navigateTo('charge.html?return=result&action=generate');
       store.showStep2Actions = true;
       store.resultTitle = TX.resultConfirm;
       store.resultSubtitle = '크레딧이 부족합니다';
@@ -342,10 +341,10 @@ async function downloadResult() {
     return;
   }
 
-  // 잔액 부족 → 충전 모달
+  // 잔액 부족 → 충전 페이지
   if (store.user.credits < CREDIT_COST.download) {
     sessionStorage.setItem('monkos_pending_action', 'download');
-    ChargeModule.show();
+    navigateTo('charge.html?return=result&action=download');
     return;
   }
 
@@ -368,7 +367,7 @@ async function doDownload() {
     await cropAndShowPostDownload();
   } catch (err) {
     if (err.status === 402) {
-      ChargeModule.show();
+      navigateTo('charge.html?return=result&action=download');
     } else {
       Monk.log('다운로드 크레딧 에러: ' + (err.error || err.message));
     }
@@ -478,8 +477,16 @@ async function cropAndShowPostDownload() {
       });
       mount.appendChild(eventDiv);
     }
-    // ② 충전 — 결제 전환
-    ChargeModule.mountInline(mount);
+    // ② 충전 — 충전 페이지 링크
+    const chargeDiv = document.createElement('div');
+    chargeDiv.id = 'charge-inline';
+    chargeDiv.style.cssText = 'padding:12px 0;text-align:center;';
+    chargeDiv.innerHTML = `
+      <div style="font-size:13px;color:#8892a8;margin-bottom:8px;">💰 또는 크레딧 충전</div>
+      <button id="charge-inline-btn" style="width:100%;padding:12px;background:rgba(30,30,60,0.8);color:#8892a8;border:1px solid rgba(167,139,250,0.12);border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;">충전하기</button>
+    `;
+    chargeDiv.querySelector('#charge-inline-btn').addEventListener('click', () => navigateTo('charge.html?return=result'));
+    mount.appendChild(chargeDiv);
     // ③ 프리미엄 — Coming Soon 축소 표시
     PremiumModule.mount(mount);
   }
@@ -537,7 +544,7 @@ async function selectSpec(specKey) {
   // 크레딧 확인
   if (!store.user.id) return;
   if (store.user.credits < CREDIT_COST.extraCrop) {
-    ChargeModule.show();
+    navigateTo('charge.html?return=result&action=crop');
     return;
   }
 
@@ -552,7 +559,7 @@ async function selectSpec(specKey) {
     switchToSpec(specKey);
     Monk.log(`추가 규격 크롭: ${spec.name} (10c)`);
   } catch (err) {
-    if (err.status === 402) ChargeModule.show();
+    if (err.status === 402) navigateTo('charge.html?return=result&action=crop');
     else Monk.log('추가 크롭 에러: ' + (err.error || err.message));
   }
 }
@@ -578,7 +585,7 @@ async function downloadFullOriginal() {
 
   if (!store.user.id) return;
   if (store.user.credits < CREDIT_COST.fullOriginal) {
-    ChargeModule.show();
+    navigateTo('charge.html?return=result&action=full');
     return;
   }
 
@@ -607,7 +614,7 @@ async function downloadFullOriginal() {
 
     Monk.log('풀 원본 다운로드 완료 (20c)');
   } catch (err) {
-    if (err.status === 402) ChargeModule.show();
+    if (err.status === 402) navigateTo('charge.html?return=result&action=full');
     else Monk.log('풀 원본 에러: ' + (err.error || err.message));
   }
 }
