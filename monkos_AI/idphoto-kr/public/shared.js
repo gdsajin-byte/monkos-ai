@@ -7,14 +7,14 @@ import Monk from './monk.js';
 import {
   API, CREDIT_COST, TOSS_CLIENT_KEY, PHOTO_SPECS, TX, t,
   MAX_CAPTURE_SIZE, COACHING_DISPLAY_MS, FRAME_INTERVAL_MS, CAPTURE_SIZE,
-  DPI, mmToPx, GOOGLE_CLIENT_ID
+  DPI, mmToPx, GOOGLE_CLIENT_ID, SCHEMA_VERSION
 } from './config.js';
 
 // Re-export for page JS convenience
 export {
   Monk, API, CREDIT_COST, TOSS_CLIENT_KEY, PHOTO_SPECS, TX, t,
   MAX_CAPTURE_SIZE, COACHING_DISPLAY_MS, FRAME_INTERVAL_MS, CAPTURE_SIZE,
-  DPI, mmToPx, GOOGLE_CLIENT_ID
+  DPI, mmToPx, GOOGLE_CLIENT_ID, SCHEMA_VERSION
 };
 
 // ─── Store 초기화 ───
@@ -22,11 +22,18 @@ export const store = Monk.store({
   // 사용자
   user: { id: null, email: null, name: null, credits: 0, avatar: '' },
 
-  // 선택 상태
-  style: null,
-  gender: null,
-  age: null,
-  profileComplete: false,
+  // 퍼널 선택 (v5 — SCHEMA_v5_확정.md 기준)
+  format: null,          // "passport" | "id"
+  gender: null,          // "f" | "m"
+  age: null,             // "baby" | "child" | "teen" | "adult"
+  clothing: 'default',   // "default" | "change" | "casual" | "suit"
+  clothingColor: '',     // 조건부
+  suitColor: '',         // 조건부
+  shirtColor: '',        // 조건부
+  tieColor: '',          // 조건부
+  tiePattern: '',        // 조건부
+  hair: 'default',       // "default" | "tidy" | "updo"
+  bgColor: 'white',      // "white" | "gray" | "blue" | "beige"
   prepConfirmText: '',
 
   // 진행 상태
@@ -313,6 +320,38 @@ export function clearSessionImages() {
   sessionStorage.removeItem('monkos_cropped');
 }
 
+// ─── v5 선택값 일괄 저장 ───
+export function saveSelections() {
+  const keys = ['format', 'gender', 'age', 'clothing', 'clothingColor',
+    'suitColor', 'shirtColor', 'tieColor', 'tiePattern', 'hair', 'bgColor'];
+  keys.forEach(k => {
+    const v = store[k];
+    if (v !== null && v !== undefined && v !== '') {
+      saveSessionData(k, v);
+    } else {
+      sessionStorage.removeItem(`monkos_${k}`);
+    }
+  });
+}
+
+// ─── v5 선택값 초기화 (prep 재진입 시) ───
+export function clearSelections() {
+  const keys = ['format', 'gender', 'age', 'clothing', 'clothingColor',
+    'suitColor', 'shirtColor', 'tieColor', 'tiePattern', 'hair', 'bgColor'];
+  keys.forEach(k => sessionStorage.removeItem(`monkos_${k}`));
+  store.format = null;
+  store.gender = null;
+  store.age = null;
+  store.clothing = 'default';
+  store.clothingColor = '';
+  store.suitColor = '';
+  store.shirtColor = '';
+  store.tieColor = '';
+  store.tiePattern = '';
+  store.hair = 'default';
+  store.bgColor = 'white';
+}
+
 // ─── 페이지 이동 (?dev 전파) ───
 export function navigateTo(url) {
   const devMode = new URLSearchParams(location.search).has('dev');
@@ -337,13 +376,29 @@ export async function sharedInit() {
   await initCredits();
   await initFromTossResult();
 
-  // sessionStorage에서 선택 데이터 복원
-  const savedStyle = loadSessionData('style');
-  const savedGender = loadSessionData('gender');
-  const savedAge = loadSessionData('age');
-  if (savedStyle) store.style = savedStyle;
-  if (savedGender) store.gender = savedGender;
-  if (savedAge) store.age = savedAge;
+  // v5 구키 정리 가드 (SCHEMA_v5_확정.md §9)
+  if (loadSessionData('schema_version') !== SCHEMA_VERSION) {
+    ['monkos_purpose', 'monkos_style', 'monkos_expression',
+     'monkos_tie', 'monkos_background'].forEach(k => sessionStorage.removeItem(k));
+    saveSessionData('schema_version', SCHEMA_VERSION);
+  }
+
+  // v5 선택값 복원
+  const restore = (key, fallback) => {
+    const v = loadSessionData(key);
+    return v !== null ? v : fallback;
+  };
+  store.format = restore('format', null);
+  store.gender = restore('gender', null);
+  store.age = restore('age', null);
+  store.clothing = restore('clothing', 'default');
+  store.clothingColor = restore('clothingColor', '');
+  store.suitColor = restore('suitColor', '');
+  store.shirtColor = restore('shirtColor', '');
+  store.tieColor = restore('tieColor', '');
+  store.tiePattern = restore('tiePattern', '');
+  store.hair = restore('hair', 'default');
+  store.bgColor = restore('bgColor', 'white');
 
   // Store 초기값 → DOM 동기화
   // monk.js Store는 초기값에 대해 DOM 업데이트를 안 하므로
@@ -452,4 +507,6 @@ Object.assign(window, {
   downloadGate,
   showEventCard,
   showThankYou,
+  saveSelections,
+  clearSelections,
 });

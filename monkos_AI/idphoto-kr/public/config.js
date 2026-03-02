@@ -77,18 +77,54 @@ export const t = (key) => TX[key] || key;
 
 // 규격 테이블 (mm 기준, 300dpi 출력)
 export const PHOTO_SPECS = {
-  id_photo: {
-    name: '여권/증명사진 (35x45mm)',
+  passport: {
+    name: '여권사진 (35x45mm)',
     widthMM: 35,
     heightMM: 45,
     faceTopMM: 7,
     faceLenMM: 27,
   },
-  resume: {
-    name: '이력서 (30x40mm)',
+  id: {
+    name: '증명사진 (30x40mm)',
     widthMM: 30,
     heightMM: 40,
     faceTopMM: 6,
     faceLenMM: 24,
   },
 };
+
+// ─── v5 옵션 상수 ───
+
+export const V5_OPTIONS = {
+  format: ['passport', 'id'],
+  gender: ['f', 'm'],
+  age: ['baby', 'child', 'teen', 'adult'],
+  clothing: ['default', 'change', 'casual', 'suit'],
+  clothingColor: {
+    child: ['skyblue', 'pink', 'lemon', 'green'],     // 영유아/어린이
+    adult: ['beige', 'blue', 'wine', 'green'],         // 캐주얼 (중고생/성인)
+  },
+  suitColor: ['navy', 'brown', 'gray', 'black'],
+  shirtColor: ['white', 'lightblue', 'lightpink', 'lightbeige'],
+  tieColor: ['notie', 'navy', 'wine', 'black'],
+  tiePattern: ['solid', 'stripe'],
+  hair: ['default', 'tidy', 'updo'],
+  bgColor: ['white', 'gray', 'blue', 'beige'],
+};
+
+// 연령별 clothing 허용값
+export const CLOTHING_BY_AGE = {
+  baby: ['default', 'change'],
+  child: ['default', 'change'],
+  teen: ['default', 'casual', 'suit'],
+  adult: ['default', 'casual', 'suit'],
+};
+
+// 연령별 hair 표시 여부
+export const HAIR_VISIBLE_AGES = ['teen', 'adult'];
+
+// format="passport" → bgColor 강제
+export const PASSPORT_FORCED_BG = 'white';
+
+// 스키마 버전
+export const SCHEMA_VERSION = 'v5';
