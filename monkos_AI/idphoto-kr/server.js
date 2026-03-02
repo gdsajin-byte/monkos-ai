@@ -308,6 +308,78 @@ function buildPrompt(body) {
   return `${IDENTITY_PRESERVATION}\n\n[IMAGE-TO-IMAGE TRANSFORM]\n${parts.join('\n')}`;
 }
 
+// === v5 프롬프트 빌더 (SCHEMA_v5_확정.md §6 정본) ===
+function buildPromptV5(body) {
+  const { format, gender, age, clothing, clothingColor,
+          suitColor, shirtColor, tieColor, tiePattern,
+          hair, bgColor } = body;
+
+  const parts = [];
+
+  // [1] FORMAT (SCHEMA §6-1)
+  if (format === 'passport') {
+    parts.push('[FORMAT] Official passport/visa photo. Head centered, face taking 70-80% of frame height. Forehead and eyebrows must be visible. Neutral composed expression. White background mandatory.');
+  } else {
+    parts.push('[FORMAT] Professional ID photo. Head centered, face taking 70-80% of frame height. Approachable yet professional expression.');
+  }
+
+  // [2] SUBJECT (SCHEMA §6-2 — gender × age = 8조합)
+  const SUBJECT_MAP = {
+    'f-baby':  'This person is a baby girl (infant/toddler).',
+    'f-child': 'This person is a young girl (child, under 12).',
+    'f-teen':  'This person is a teenage girl (13-18).',
+    'f-adult': 'This person is an adult woman.',
+    'm-baby':  'This person is a baby boy (infant/toddler).',
+    'm-child': 'This person is a young boy (child, under 12).',
+    'm-teen':  'This person is a teenage boy (13-18).',
+    'm-adult': 'This person is an adult man.',
+  };
+  parts.push(`[SUBJECT] ${SUBJECT_MAP[`${gender}-${age}`] || 'This person is an adult.'}`);
+
+  // [3] OUTFIT (SCHEMA §6-3)
+  if (!clothing || clothing === 'default') {
+    parts.push('[OUTFIT] Keep current clothing as-is. Only ensure it looks neat and tidy.');
+  } else if (clothing === 'change') {
+    parts.push(`[OUTFIT] Dress this child in a clean ${clothingColor || 'white'} top, age-appropriate and neat.`);
+  } else if (clothing === 'casual') {
+    parts.push(`[OUTFIT] Dress this person in a ${clothingColor || 'beige'} smart casual top, clean and neat.`);
+  } else if (clothing === 'suit') {
+    const suit = suitColor || 'navy';
+    const shirt = shirtColor || 'white';
+    let tieClause = '';
+    if (tieColor && tieColor !== 'notie') {
+      const pattern = tiePattern === 'stripe' ? 'striped' : 'solid';
+      tieClause = ` and a ${pattern} ${tieColor} tie`;
+    }
+    const top = gender === 'f' ? 'blouse' : 'dress shirt';
+    parts.push(`[OUTFIT] Dress this person in a ${suit} formal business suit with a ${shirt} ${top}${tieClause}.`);
+  }
+
+  // [4] HAIR (SCHEMA §6-4)
+  if (hair && hair !== 'default') {
+    const HAIR_MAP = {
+      tidy: 'neatly groomed and tidy hair',
+      updo: 'hair styled up neatly (updo)',
+    };
+    if (HAIR_MAP[hair]) parts.push(`[HAIR] ${HAIR_MAP[hair]}`);
+  }
+
+  // [5] BACKGROUND (SCHEMA §6-5)
+  const BG_MAP = {
+    white: 'pure white (#FFFFFF) background',
+    gray:  'neutral gray (#9CA3AF) studio background',
+    blue:  'soft blue (#4A90D9) studio background',
+    beige: 'warm beige (#D4B896) studio background',
+  };
+  const finalBg = format === 'passport' ? 'white' : (bgColor || 'white');
+  parts.push(`[BACKGROUND] ${BG_MAP[finalBg] || BG_MAP.white}`);
+
+  // [6] CONSTRAINT (SCHEMA §6-6)
+  parts.push('[CONSTRAINT] Keep the person\'s face and body exactly the same — only apply the specified styling. DO NOT change apparent gender or age.');
+
+  return `${IDENTITY_PRESERVATION}\n\n[IMAGE-TO-IMAGE TRANSFORM]\n${parts.join('\n')}`;
+}
+
 // === QC 프롬프트 빌더 (CF qc.js 정본 이식) ===
 function buildQCInstruction(gender, age) {
   const genderText = gender === 'male' ? '남성' : '여성';
@@ -652,7 +724,16 @@ app.post('/api/idgen', async (req, res) => {
       log(`[FREE-GEN] ip=${req.headers['x-forwarded-for'] || req.ip} t=${Date.now()}`);
     }
 
-    const instruction = buildPrompt(body);
+    // v5 버전 분기 (SCHEMA §9 — 48시간 하위호환)
+    const schemaVersion = body.v || 4;
+    if (schemaVersion >= 5) {
+      if (!body.format || !body.gender || !body.age) {
+        return res.status(400).json({ error: 'v5 필수값 누락: format, gender, age' });
+      }
+    }
+    const instruction = schemaVersion >= 5
+      ? buildPromptV5(body)
+      : buildPrompt(body);  // 48시간 후 제거
 
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image-preview:generateContent?key=${apiKey}`,
@@ -772,6 +853,7 @@ app.get('/prep', (req, res) => res.sendFile(join(__dirname, 'public/prep.html'))
 app.get('/camera', (req, res) => res.sendFile(join(__dirname, 'public/camera.html')));
 app.get('/result', (req, res) => res.sendFile(join(__dirname, 'public/result.html')));
 app.get('/thankyou', (req, res) => res.sendFile(join(__dirname, 'public/thankyou.html')));
+app.get('/charge', (req, res) => res.sendFile(join(__dirname, 'public/charge.html')));
 
 // 정적 파일 서빙 (JS/CSS 캐시 방지 — 모바일 브라우저 강제 갱신)
 app.use(express.static(join(__dirname, 'public'), {
