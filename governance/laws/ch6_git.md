@@ -31,7 +31,7 @@
 ### 3조: 커밋 메시지
 
 - **한국어**, 1줄 요약.
-- 접두사 필수: `[feature]`, `[fix]`, `[design]`, `[refactor]`, `[docs]`
+- 접두사 필수: `[feature]`, `[fix]`, `[design]`, `[refactor]`, `[docs]`, `[daemon]`
 - 작업 단위로 분할 커밋 (**거대한 1커밋 금지**, 의미 단위로 분할).
 - 예: `[design] index.html 파일 분리: CSS/JS 7파일 구조화`
 

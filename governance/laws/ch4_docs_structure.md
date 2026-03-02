@@ -134,6 +134,7 @@ monkos-ops/는 4부서 체제로 재편 중이며, 과도기에는 번호 폴더
 | 11 | `ORDER_YYYYMMDD_{topic}.md` | `monkos-ops/ops/orders/` | `ORDER_20260223_KOMOJU전수조사.md` |
 | 12 | `RESEARCH_YYYYMMDD_{topic}_{detail}.md` | `monkos-ops/ops/agenda/` | `RESEARCH_20260223_긴급대행절차_선택지.md` |
 | 13 | `COMPLETION_YYYYMMDD_막내N_{HHMMSS}.md` | `monkos-ops/ops/reports/` | `COMPLETION_20260225_막내1_150900.md` |
+| 14 | `REVIEW_YYYYMMDD_{agent}_{topic}.md` | `monkos-ops/ops/reports/` | `REVIEW_20260302_쌍아_P0_스키마_정합검토.md` |
 
 **표기 규칙**:
 - 에이전트명: `쌍아`, `막내3`, `소넷이`, `한`, `꾸` 등 (디바이스 접두어 불포함)
@@ -302,7 +303,7 @@ monkos-ops/는 4부서 체제로 재편 중이며, 과도기에는 번호 폴더
 | `date` | string | `YYYY-MM-DD HH:MM KST` (헌법 제1조) | `2026-02-23 04:10 KST` |
 | `status` | enum | pending / in_progress / completed / archived / blocked | `pending` |
 
-**type 허용값**: task, report, spec, incident, design, sprint, petition, order, research, completion
+**type 허용값**: task, report, spec, incident, design, sprint, petition, order, research, completion, review
 
 #### 타입별 추가 필수 필드
 
@@ -318,6 +319,7 @@ monkos-ops/는 4부서 체제로 재편 중이며, 과도기에는 번호 폴더
 | order | `from`, `to`, `priority`(P0~P3) | `deadline`, `tags` |
 | research | `from`, `to`, `order_ref` | `category`, `tags` |
 | completion | `from`, `to`, `order`, `commit`, `branch` | `time`, `tags` |
+| review | `from`, `to`, `sources`(검토 대상 보고서 목록) | `tags` |
 
 #### 검증 규칙
 
