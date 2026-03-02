@@ -7,7 +7,7 @@
 import {
   store, Monk, PHOTO_SPECS, CREDIT_COST,
   sharedInit, loadSessionData, navigateTo,
-  API, pipe, fetchLatestCredits, showThankYou
+  API, pipe, fetchLatestCredits
 } from './shared.js';
 
 // ─── Media (toJpeg 전용) ───
@@ -16,6 +16,20 @@ const media = Monk.media({
   canvas: null,
   maxSize: 720,
 });
+
+// ─── 토스트 피드백 ───
+function showToast(message, duration = 2000) {
+  const toast = document.createElement('div');
+  toast.textContent = message;
+  Object.assign(toast.style, {
+    position: 'fixed', bottom: '80px', left: '50%', transform: 'translateX(-50%)',
+    background: 'rgba(139,92,246,0.9)', color: '#fff', padding: '10px 20px',
+    borderRadius: '8px', fontSize: '13px', fontWeight: '600',
+    zIndex: '9999', transition: 'opacity 0.3s',
+  });
+  document.body.appendChild(toast);
+  setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, duration);
+}
 
 // ─── 풀 원본 상태 ───
 let _fullOriginal = null;
@@ -138,48 +152,56 @@ function setupFullshot() {
 async function downloadFullOriginal() {
   if (!_fullOriginal || !store.user.id) return;
 
-  // 이미 구매한 경우 → 무과금 재다운로드
+  // 이미 구매 + JPEG 캐시 있음 → 무과금 재다운로드
   if (_fullOriginalJpeg) {
     redownloadFull();
     return;
   }
 
-  // 잔액 부족 → charge.html
-  if (store.user.credits < CREDIT_COST.fullOriginal) {
-    sessionStorage.setItem('monkos_pending_action', 'full_original');
-    navigateTo('charge.html?return=thankyou&action=full');
-    return;
-  }
+  // 이미 구매했지만 페이지 리로드로 JPEG 캐시 소실 → 재변환만 (크레딧 차감 안 함)
+  const alreadyPurchased = sessionStorage.getItem('monkos_fullshot_purchased');
 
-  try {
-    const result = await pipe.run('creditUse', { userId: store.user.id, type: 'full_original' });
-    store.user = { ...store.user, credits: result.credits };
-
-    _fullOriginalJpeg = await media.toJpeg(_fullOriginal, 0.95);
-
-    const a = document.createElement('a');
-    a.href = _fullOriginalJpeg;
-    a.download = 'MONKOS_AI_Original.jpg';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-
-    // 버튼 상태 변경
-    const titleEl = document.getElementById('ty-fullshot-title');
-    const priceEl = document.getElementById('ty-fullshot-price');
-    if (titleEl) titleEl.textContent = '📸 풀샷 다시 저장하기';
-    if (priceEl) priceEl.textContent = '무료';
-
-    showThankYou('', '풀샷 원본 다운로드 완료');
-    Monk.log('풀샷 원본 다운로드 완료 (20c)');
-  } catch (err) {
-    if (err.status === 402) {
+  if (!alreadyPurchased) {
+    // 첫 구매: 잔액 부족 → charge.html
+    if (store.user.credits < CREDIT_COST.fullOriginal) {
       sessionStorage.setItem('monkos_pending_action', 'full_original');
       navigateTo('charge.html?return=thankyou&action=full');
-    } else {
-      Monk.log('풀샷 원본 에러: ' + (err.error || err.message));
+      return;
+    }
+
+    try {
+      const result = await pipe.run('creditUse', { userId: store.user.id, type: 'full_original' });
+      store.user = { ...store.user, credits: result.credits };
+      sessionStorage.setItem('monkos_fullshot_purchased', '1');
+    } catch (err) {
+      if (err.status === 402) {
+        sessionStorage.setItem('monkos_pending_action', 'full_original');
+        navigateTo('charge.html?return=thankyou&action=full');
+      } else {
+        Monk.log('풀샷 원본 에러: ' + (err.error || err.message));
+      }
+      return;
     }
   }
+
+  // JPEG 변환 + 다운로드
+  _fullOriginalJpeg = await media.toJpeg(_fullOriginal, 0.95);
+
+  const a = document.createElement('a');
+  a.href = _fullOriginalJpeg;
+  a.download = 'MONKOS_AI_Original.jpg';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+
+  // 버튼 상태 변경
+  const titleEl = document.getElementById('ty-fullshot-title');
+  const priceEl = document.getElementById('ty-fullshot-price');
+  if (titleEl) titleEl.textContent = '📸 풀샷 다시 저장하기';
+  if (priceEl) priceEl.textContent = '무료';
+
+  showToast('풀샷 원본 다운로드 완료');
+  Monk.log('풀샷 원본 다운로드 완료 (20c)');
 }
 
 function redownloadFull() {
@@ -210,7 +232,7 @@ function setupSnsEvent() {
       const data = await res.json();
       if (data.success) {
         store.user = { ...store.user, credits: data.credits ?? store.user.credits };
-        showThankYou('+100 Cr', 'SNS 공유 이벤트 완료');
+        showToast('SNS 인증 이벤트 신청 완료 · +100c');
         btn.disabled = true;
         btn.textContent = '✅ 이벤트 완료';
       } else {
@@ -268,10 +290,10 @@ async function init() {
 
   // charge.html 복귀 시 풀샷 자동 진행
   const pendingAction = sessionStorage.getItem('monkos_pending_action');
-  if (pendingAction === 'full_original' && store.user.id) {
+  if (pendingAction === 'full_original' && store.user.id && _fullOriginal) {
     sessionStorage.removeItem('monkos_pending_action');
-    // 크레딧 최신 조회 후 자동 진행
     await fetchLatestCredits();
+    // downloadFullOriginal()이 monkos_fullshot_purchased 플래그를 확인하여 이중차감 방지
     if (store.user.credits >= CREDIT_COST.fullOriginal) {
       setTimeout(() => downloadFullOriginal(), 300);
     }
