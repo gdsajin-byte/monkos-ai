@@ -10,27 +10,13 @@ import { store, Monk, PHOTO_SPECS, sharedInit, loadSessionData, navigateTo } fro
 const USAGE_GUIDE = {
   passport: [
     '여권 신청 (온라인/오프라인)',
-    '주민등록증 / 운전면허증',
     '비자 신청',
+    '주민등록증 / 운전면허증',
   ],
-  student_id: [
-    '학생증 발급',
-    '수험표 사진',
-  ],
-  employee_id: [
-    '사원증 발급',
-    '출입카드 사진',
-    '사내 프로필',
-  ],
-  resume: [
+  id: [
     '이력서 / 자기소개서',
-    '입사지원 온라인 프로필',
-    'LinkedIn / 포트폴리오',
-  ],
-  color_portrait: [
-    'SNS 프로필',
-    '블로그 / 포트폴리오',
-    '명함 사진',
+    '학생증 / 사원증 발급',
+    'SNS 프로필 / 명함 사진',
   ],
 };
 
@@ -70,11 +56,11 @@ function displayPhoto() {
 // ─── 규격 정보 표시 ───
 
 function displaySpecInfo() {
-  const style = loadSessionData('style');
+  const format = loadSessionData('format');
   const specInfoEl = document.getElementById('spec-info');
-  if (!specInfoEl || !style) return;
+  if (!specInfoEl || !format) return;
 
-  const spec = PHOTO_SPECS[style];
+  const spec = PHOTO_SPECS[format];
   if (!spec) return;
 
   specInfoEl.innerHTML = `
@@ -89,12 +75,12 @@ function displaySpecInfo() {
 // ─── 활용 가이드 표시 ───
 
 function displayUsageGuide() {
-  const purpose = loadSessionData('purpose');
+  const format = loadSessionData('format');
   const listEl = document.getElementById('usage-list');
   const guideEl = document.getElementById('usage-guide');
   if (!listEl || !guideEl) return;
 
-  const items = USAGE_GUIDE[purpose];
+  const items = USAGE_GUIDE[format];
   if (!items) {
     guideEl.style.display = 'none';
     return;

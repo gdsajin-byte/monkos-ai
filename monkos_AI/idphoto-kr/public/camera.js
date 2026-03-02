@@ -122,8 +122,8 @@ function startCoachingWS() {
   wsCoaching.onopen = () => {
     Monk.log('코칭 WS 연결');
     wsCoaching.send(JSON.stringify({
-      type: 'set-style',
-      style: store.style || 'id_photo',
+      type: 'set-format',
+      format: store.format || 'passport',
     }));
     startFrameLoop();
   };
@@ -221,9 +221,9 @@ function capturePhoto() {
 }
 
 // ─── 선택 요약 뱃지 ───
-const PURPOSE_LABELS = {
-  passport: '여권', student_id: '학생증', employee_id: '사원증',
-  resume: '이력서', color_portrait: '컬러증명',
+const FORMAT_LABELS = {
+  passport: '여권사진',
+  id: '증명사진',
 };
 
 function renderSelectionSummary() {
@@ -231,9 +231,13 @@ function renderSelectionSummary() {
   if (!summaryEl) return;
 
   const labels = [];
-  labels.push(PURPOSE_LABELS[store.purpose] || store.style || '');
-  if (store.gender === 'male') labels.push('남성');
-  else if (store.gender === 'female') labels.push('여성');
+  labels.push(FORMAT_LABELS[store.format] || '');
+  if (store.gender === 'm') labels.push('남성');
+  else if (store.gender === 'f') labels.push('여성');
+  if (store.age) {
+    const AGE_LABELS = { baby: '영유아', child: '어린이', teen: '청소년', adult: '성인' };
+    labels.push(AGE_LABELS[store.age] || '');
+  }
   summaryEl.textContent = labels.filter(Boolean).join(' · ');
 }
 
@@ -258,32 +262,12 @@ async function init() {
     return;
   }
 
-  // ── 퍼널 9필드 로딩 ──
-  const purpose = loadSessionData('purpose');
-  const age = loadSessionData('age');
-  const gender = loadSessionData('gender');
-  const clothing = loadSessionData('clothing');
-  const clothingColor = loadSessionData('clothingColor');
-  const tie = loadSessionData('tie');
-  const hair = loadSessionData('hair');
-  const background = loadSessionData('background');
-  const expression = loadSessionData('expression');
-
-  // 필수값 체크 (style은 sharedInit()에서 복원됨, purpose는 별도)
-  if (!store.style || !purpose) {
+  // ── v5 필수값 체크 (sharedInit에서 이미 11필드 복원됨) ──
+  if (!store.format) {
     Monk.log('선택 데이터 없음 → 준비실로 이동');
     navigateTo('prep.html');
     return;
   }
-
-  // store에 9필드 세팅
-  store.purpose = purpose;
-  store.clothing = clothing;
-  store.clothingColor = clothingColor;
-  store.tie = tie;
-  store.hair = hair;
-  store.background = background;
-  store.expression = expression;
 
   // 선택 요약 뱃지 렌더링
   renderSelectionSummary();
