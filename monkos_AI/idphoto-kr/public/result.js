@@ -19,7 +19,7 @@ import { PremiumModule } from './modules/premium.js';
 let _fullOriginal = null;
 
 // ─── 규격 탭 상태 ───
-const _specCache = {};   // { id_photo: dataUrl, resume: dataUrl }
+const _specCache = {};   // { passport: dataUrl, id: dataUrl }
 let _currentSpec = null;
 
 // ─── Media 생성 (crop/toJpeg 전용 — 카메라 불필요) ───
@@ -209,17 +209,19 @@ async function confirmAndGenerate() {
   try {
     const genResult = await pipe.run('generate', {
       image: base64,
-      style: store.style,
-      purpose: loadSessionData('purpose'),
+      format: store.format,
       gender: store.gender,
       age: store.age,
-      clothing: loadSessionData('clothing'),
-      clothingColor: loadSessionData('clothingColor'),
-      tie: loadSessionData('tie'),
-      hair: loadSessionData('hair'),
-      background: loadSessionData('background'),
-      expression: loadSessionData('expression'),
+      clothing: store.clothing,
+      clothingColor: store.clothingColor,
+      suitColor: store.suitColor,
+      shirtColor: store.shirtColor,
+      tieColor: store.tieColor,
+      tiePattern: store.tiePattern,
+      hair: store.hair,
+      bgColor: store.bgColor,
       userId: store.user.id,
+      v: 5,
     });
 
     // 풀 원본은 private 변수에만 보관 (img/store/sessionStorage 노출 금지)
@@ -230,7 +232,7 @@ async function confirmAndGenerate() {
     const watermarked = await generateWatermarkPreview(genResult.image);
 
     // 크롭 워터마크 생성 (프리뷰용 — 크롭본 중심 UX)
-    const spec = PHOTO_SPECS[store.style];
+    const spec = PHOTO_SPECS[store.format];
     let croppedWatermark = watermarked;
     try {
       const cropResult = await media.crop(watermarked, spec);
@@ -376,8 +378,8 @@ async function doDownload() {
 
 // ─── 크롭 → 포스트 다운로드 ───
 async function cropAndShowPostDownload() {
-  if (store.generated && store.style) {
-    const spec = PHOTO_SPECS[store.style];
+  if (store.generated && store.format) {
+    const spec = PHOTO_SPECS[store.format];
     try {
       const cropResult = await media.crop(store.generated, spec);
       store.cropped = cropResult.dataUrl;
@@ -386,8 +388,8 @@ async function cropAndShowPostDownload() {
       store.specPx = `${cropResult.outputW}×${cropResult.outputH}px`;
 
       // 캐시에 저장
-      _specCache[store.style] = cropResult.dataUrl;
-      _currentSpec = store.style;
+      _specCache[store.format] = cropResult.dataUrl;
+      _currentSpec = store.format;
 
       Monk.log(`규격 크롭: ${spec.name}`);
     } catch (e) {
@@ -504,11 +506,11 @@ function showSpecTab() {
 
 function updateSpecButtons() {
   const SPEC_DESC = {
-    id_photo: '여권, 운전면허, 신분증',
-    resume: '이력서, 사원증, 학생증, 컬러증명',
+    passport: '여권, 운전면허, 신분증',
+    id: '이력서, 사원증, 학생증, 컬러증명',
   };
 
-  ['id_photo', 'resume'].forEach(key => {
+  ['passport', 'id'].forEach(key => {
     const btn = document.getElementById(`btn-spec-${key}`);
     if (!btn) return;
 
@@ -520,9 +522,9 @@ function updateSpecButtons() {
 
     const span = btn.querySelector('span');
     if (span && !isUnlocked && !isActive) {
-      span.textContent = key === 'id_photo' ? '3.5×4.5cm · 10 Cr' : '3×4cm · 10 Cr';
+      span.textContent = key === 'passport' ? '3.5×4.5cm · 10 Cr' : '3×4cm · 10 Cr';
     } else if (span && (isActive || isUnlocked)) {
-      span.textContent = key === 'id_photo' ? '3.5×4.5cm' : '3×4cm';
+      span.textContent = key === 'passport' ? '3.5×4.5cm' : '3×4cm';
     }
   });
 

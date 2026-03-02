@@ -139,6 +139,9 @@ const COACHING_INSTRUCTIONS = {
 - 긍정 표현: "~하면 완벽해요"
 - 완벽하면: "좋아요! 지금 촬영하세요"`,
 };
+// v5 alias (48시간 후 원본 키 제거)
+COACHING_INSTRUCTIONS.passport = COACHING_INSTRUCTIONS.id_photo;
+COACHING_INSTRUCTIONS.id = COACHING_INSTRUCTIONS.resume;
 
 // === Imagen 프롬프트 (CF idgen.js 정본) ===
 const IDENTITY_PRESERVATION = `IDENTITY RULE: 90% SAME PERSON + 10% ENHANCEMENT
@@ -166,6 +169,9 @@ const STYLE_PROMPTS = {
   id_photo: 'Professional passport/ID photo, perfectly front-facing looking directly at camera, formal white background, sharp focus, head straight, symmetric composition',
   resume: 'Professional resume photo for Korean job application (이력서), perfectly front-facing looking directly at camera, clean white background, business formal attire, 3:4 ratio, approachable yet professional expression',
 };
+// v5 alias (48시간 후 원본 키 제거)
+STYLE_PROMPTS.passport = STYLE_PROMPTS.id_photo;
+STYLE_PROMPTS.id = STYLE_PROMPTS.resume;
 
 // SPA 호환용 성별/연령별 의상 프롬프트 (기존 /api/generate)
 function getOutfitPrompt(gender, age, style = 'id_photo') {
@@ -432,7 +438,7 @@ head_top_margin = 머리 정수리에서 이미지 상단까지 여백 (40~150 �
 // === 클라이언트 세션 관리 ===
 const sessions = new Map();
 
-async function connectGeminiLive(session, clientId, style = 'id_photo') {
+async function connectGeminiLive(session, clientId, style = 'passport') {
   function flushBuffer() {
     if (session.responseBuffer.trim() && session.ws?.readyState === 1) {
       session.ws.send(JSON.stringify({
@@ -451,7 +457,7 @@ async function connectGeminiLive(session, clientId, style = 'id_photo') {
       model: 'gemini-2.0-flash-live-preview-04-09',
       config: {
         responseModalities: ['TEXT'],
-        systemInstruction: { parts: [{ text: COACHING_INSTRUCTIONS[style] || COACHING_INSTRUCTIONS.id_photo }] },
+        systemInstruction: { parts: [{ text: COACHING_INSTRUCTIONS[style] || COACHING_INSTRUCTIONS.passport }] },
       },
       callbacks: {
         onopen: () => log(`[Gemini Live][${clientId}] 연결 완료`),
@@ -489,9 +495,9 @@ function extractBase64(base64Input) {
   return base64Input.includes(',') ? base64Input.split(',')[1] : base64Input;
 }
 
-async function generatePhoto(inputBase64, style = 'id_photo', gender = 'male', age = 'adult') {
+async function generatePhoto(inputBase64, style = 'passport', gender = 'f', age = 'adult') {
   const base64Data = extractBase64(inputBase64);
-  const stylePrompt = STYLE_PROMPTS[style] || STYLE_PROMPTS.id_photo;
+  const stylePrompt = STYLE_PROMPTS[style] || STYLE_PROMPTS.passport;
   const outfitPrompt = getOutfitPrompt(gender, age, style);
   const instruction = `${IDENTITY_PRESERVATION}\n\n[IMAGE-TO-IMAGE TRANSFORM] ${stylePrompt}\n\n${outfitPrompt}`;
 
@@ -906,7 +912,7 @@ wss.on('connection', async (ws) => {
   const clientId = `c${++clientCounter}`;
   log(`[WS][${clientId}] 코칭 세션 연결`);
 
-  const session = { gemini: null, frameCount: 0, responseBuffer: '', bufferFlushTimer: null, ws, photoStyle: 'id_photo' };
+  const session = { gemini: null, frameCount: 0, responseBuffer: '', bufferFlushTimer: null, ws, photoStyle: 'passport' };
   sessions.set(clientId, session);
 
   ws.on('message', async (data, isBinary) => {
@@ -941,9 +947,10 @@ wss.on('connection', async (ws) => {
       msg = JSON.parse(raw);
     } catch { return; }
 
-    if (msg.type === 'set-style') {
-      session.photoStyle = msg.style === 'resume' ? 'resume' : 'id_photo';
-      log(`[스타일][${clientId}] ${session.photoStyle}`);
+    if (msg.type === 'set-format' || msg.type === 'set-style') {
+      const val = msg.format || msg.style;
+      session.photoStyle = (val === 'id' || val === 'resume') ? 'id' : 'passport';
+      log(`[포맷][${clientId}] ${session.photoStyle}`);
       return;
     }
 
