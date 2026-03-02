@@ -460,42 +460,10 @@ export function showEventCard(title, amount, subtitle, tag = 'EVENT') {
 }
 
 /**
- * showThankYou — ④ Big Flip + Burst 축하 오버레이
- * @param {string} amount  - 금액 표시 (예: '+100 Cr')
- * @param {string} message - 메시지 (예: '텔레그램 미션을 완료했습니다')
+ * showThankYou — v5: thankyou.html 별도 페이지로 전환됨. 오버레이 제거.
+ * export 유지 (다른 파일에서 import하므로)
  */
-export function showThankYou(amount, message = 'MONKOS 크립이 적립되었습니다') {
-  const overlay = document.createElement('div');
-  overlay.className = 'thankyou-overlay';
-  overlay.innerHTML = `
-    <div class="thankyou-stage">
-      <div class="thankyou-coin-area">
-        <div class="thankyou-glow"></div>
-        <div class="burst-ring">
-          <div class="burst-ray"></div>
-          <div class="burst-ray"></div>
-          <div class="burst-ray"></div>
-          <div class="burst-ray"></div>
-          <div class="burst-ray"></div>
-          <div class="burst-ray"></div>
-          <div class="burst-ray"></div>
-          <div class="burst-ray"></div>
-        </div>
-        <div class="thankyou-coin">
-          <div class="thankyou-face"><span class="cr-big">Cr</span></div>
-          <div class="thankyou-back"><span class="m-big">M</span></div>
-        </div>
-      </div>
-      <div class="thankyou-text">
-        <span class="big">Thank You!</span>
-        <span class="amount">${amount}</span>
-        <span class="sub">${message}</span>
-      </div>
-    </div>
-  `;
-  document.body.appendChild(overlay);
-  setTimeout(() => overlay.remove(), 5000);
-}
+export function showThankYou() {}
 
 // ─── window 노출 (공통 onclick 함수) ───
 Object.assign(window, {

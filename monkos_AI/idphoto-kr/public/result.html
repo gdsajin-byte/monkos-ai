@@ -35,32 +35,11 @@
     <!-- result 전용 스타일 -->
     <style>
         /* 비교컷 이미지 보호 — 길게 누르기/우클릭 저장 차단 */
-        #photo-generated, #spec-photo {
+        #photo-generated {
             -webkit-touch-callout: none;
             -webkit-user-select: none;
             user-select: none;
             pointer-events: none;
-        }
-        /* 규격 탭 */
-        .spec-tab-btn {
-            background: rgba(167,139,250,0.08);
-            border: 1px solid rgba(167,139,250,0.2);
-            color: #c4b5fd;
-            padding: 12px 16px;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            flex: 1;
-            max-width: 160px;
-            transition: all 0.2s;
-        }
-        .spec-tab-btn.active {
-            background: rgba(167,139,250,0.2);
-            border-color: #a78bfa;
-        }
-        .spec-tab-btn.locked {
-            opacity: 0.5;
         }
         .photo-compare {
             background: rgba(167,139,250,0.04);
@@ -230,33 +209,6 @@
 
         <div id="status-badge" data-bind="statusText" data-show="statusText" style="padding:8px 16px; border-radius:12px; font-size:13px; text-align:center; color:var(--text-dim,#8892a8); background:rgba(167,139,250,0.08); margin:0 16px;"></div>
 
-        <!-- 규격 크롭 결과 -->
-        <div id="spec-result" data-class="cropped:active">
-            <div class="spec-title">클로즈업 완료</div>
-            <div class="spec-photo-wrap">
-                <img id="spec-photo" data-bind-src="cropped" src="" alt="규격 사진">
-            </div>
-            <div class="spec-info">
-                <span class="spec-tag"><strong data-bind="specName">-</strong></span>
-                <span class="spec-tag" data-bind="specSize">-</span>
-                <span class="spec-tag">300dpi</span>
-                <span class="spec-tag" data-bind="specPx">-</span>
-            </div>
-        </div>
-
-        <!-- 규격 선택 탭 (포스트 다운로드 시 표시) -->
-        <div id="spec-tab" style="display:none; padding:12px 16px;">
-            <div style="display:flex; gap:8px; justify-content:center; margin-bottom:8px;">
-                <button class="btn spec-tab-btn" id="btn-spec-passport" onclick="selectSpec('passport')">
-                    여권규격 <span style="display:block;font-size:11px;opacity:0.7;">3.5×4.5cm</span>
-                </button>
-                <button class="btn spec-tab-btn" id="btn-spec-id" onclick="selectSpec('id')">
-                    반명함 <span style="display:block;font-size:11px;opacity:0.7;">3×4cm</span>
-                </button>
-            </div>
-            <div id="spec-tab-desc" style="text-align:center; font-size:12px; color:#8892a8;"></div>
-        </div>
-
         <!-- Step 2 버튼 -->
         <div id="step2-actions" data-show="showStep2Actions" style="display:flex; gap:10px; padding:16px; justify-content:center;">
             <button class="btn btn-secondary" onclick="retakePhoto()">다시 찍기</button>
@@ -335,9 +287,6 @@
 
         <!-- 게이트 팝업 마운트 -->
         <div id="gate-mount"></div>
-
-        <!-- 포스트 다운로드 마운트 (프리미엄→미션→충전 순서로 모듈이 append) -->
-        <div id="post-download-mount" data-show="downloadComplete" style="display:none; padding:0 16px 16px;"></div>
 
         <!-- 충전 모달 마운트 -->
         <div id="charge-mount"></div>
