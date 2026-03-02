@@ -1,619 +1,577 @@
 /**
- * prep.js — 준비실 (퍼널식 키오스크 9스텝 + FINAL)
- * Step 1: 용도 → 2: 연령 → 3: 성별 → 4: 의상 → 5: 의상컬러
- * → 6: 넥타이 → 7: 헤어 → 8: 배경 → 9: 표정 → FINAL: 확인
+ * prep.js — v5 퍼널 (4페이지 선형)
+ * 1p: 규격 선택 (passport/id)
+ * 2p: 성별 + 연령
+ * 3p: 스타일 (아코디언: 의상/헤어/배경)
+ * 4p: CONFIRM (요약 → 촬영 시작)
  */
 
-import { store, Monk, TX, sharedInit, saveSessionData, loadSessionData, navigateTo } from './shared.js';
-
-// ─── 상수 ───
-
-const STEP_KEYS = [
-  'purpose', 'age', 'gender', 'clothing', 'clothingColor',
-  'tie', 'hair', 'background', 'expression',
-];
-const TOTAL_STEPS = STEP_KEYS.length;
-const FINAL_STEP = TOTAL_STEPS + 1; // 10
-
-const selections = {
-  purpose: null, age: null, gender: null,
-  clothing: null, clothingColor: null, tie: null,
-  hair: null, background: null, expression: null,
-};
-
-// ─── 옵션 데이터 ───
-
-const OPTIONS = {
-  purpose: [
-    { val: 'passport',       icon: '📋', title: '여권 / 신분증', desc: '규격 엄격 · 눈썹 이마 노출' },
-    { val: 'student_id',     icon: '🎓', title: '학생증',        desc: '교복 권장 · 중간 자유도' },
-    { val: 'employee_id',    icon: '🏢', title: '사원증',        desc: '정장 권장 · 중간 자유도' },
-    { val: 'resume',         icon: '💼', title: '이력서',        desc: '호감형 · 높은 자유도' },
-    { val: 'color_portrait', icon: '🎨', title: '컬러증명',      desc: '최대 자유도' },
-  ],
-  age: [
-    { val: 'baby',       icon: '👶', title: '~36개월' },
-    { val: 'preschool',  icon: '🧒', title: '4~7세' },
-    { val: 'elementary', icon: '👦', title: '초등학생' },
-    { val: 'teen',       icon: '🧑', title: '중고등학생' },
-    { val: 'adult',      icon: '👤', title: '성인' },
-  ],
-  gender: [
-    { val: 'male',   icon: '👨', title: '남성' },
-    { val: 'female', icon: '👩', title: '여성' },
-  ],
-  clothing: [
-    { val: 'as_is',   icon: '👕', title: '그대로' },
-    { val: 'suit',    icon: '🤵', title: '정장' },
-    { val: 'shirt',   icon: '👔', title: '셔츠 / 블라우스' },
-    { val: 'casual',  icon: '🧥', title: '캐주얼' },
-    { val: 'uniform', icon: '🎽', title: '교복' },
-  ],
-  clothingColor: [
-    { val: 'black',    title: '검정',   color: '#1a1a1a' },
-    { val: 'navy',     title: '네이비', color: '#1b2a4a' },
-    { val: 'charcoal', title: '차콜',   color: '#4a4a4a' },
-    { val: 'white',    title: '흰색',   color: '#f0f0f0' },
-    { val: 'beige',    title: '베이지', color: '#d4b896' },
-    { val: 'wine',     title: '와인',   color: '#722f37' },
-    { val: 'pastel',   title: '파스텔', color: '#b8d4e3' },
-  ],
-  tie: [
-    { val: 'none',         icon: '✕', title: '없음' },
-    { val: 'solid_navy',   title: '무지 네이비',     color: '#1b2a4a' },
-    { val: 'solid_wine',   title: '무지 와인',       color: '#722f37' },
-    { val: 'stripe_blue',  title: '스트라이프 블루',  color: '#3b82f6' },
-    { val: 'stripe_navy',  title: '스트라이프 네이비', color: '#1e3a5f' },
-    { val: 'stripe_wine',  title: '스트라이프 와인',  color: '#8b3a4a' },
-  ],
-  hair: [
-    { val: 'as_is', icon: '💇', title: '그대로' },
-    { val: 'tidy',  icon: '✂️', title: '정돈' },
-    { val: 'up',    icon: '💆', title: '올림머리' },
-    { val: 'down',  icon: '🧑‍🦱', title: '내림머리' },
-  ],
-  background: [
-    { val: 'white',  title: '흰색',   color: '#f0f0f0' },
-    { val: 'blue',   title: '블루',   color: '#4a90d9' },
-    { val: 'gray',   title: '그레이', color: '#9ca3af' },
-    { val: 'beige',  title: '베이지', color: '#d4b896' },
-    { val: 'pink',   title: '핑크',   color: '#f5a0b8' },
-    { val: 'yellow', title: '옐로우', color: '#fbbf24' },
-  ],
-  expression: [
-    { val: 'as_is',         icon: '🙂', title: '그대로' },
-    { val: 'gentle_smile',  icon: '😊', title: '잔잔한 미소' },
-    { val: 'neutral',       icon: '😐', title: '무표정' },
-    { val: 'natural_smile', icon: '😄', title: '자연스러운 미소' },
-    { val: 'bright_smile',  icon: '😁', title: '밝은 미소' },
-  ],
-};
-
-// ─── 필터 테이블 ───
-
-const AGE_FILTER = {
-  passport:       ['baby', 'preschool', 'elementary', 'teen', 'adult'],
-  student_id:     ['elementary', 'teen'],
-  employee_id:    ['adult'],
-  resume:         ['teen', 'adult'],
-  color_portrait: ['baby', 'preschool', 'elementary', 'teen', 'adult'],
-};
-
-const CLOTHING_FILTER = {
-  passport:       ['as_is', 'suit', 'shirt', 'casual'],
-  student_id:     ['as_is', 'casual', 'uniform'],
-  employee_id:    ['as_is', 'suit', 'shirt', 'casual'],
-  resume:         ['as_is', 'suit', 'shirt'],
-  color_portrait: ['as_is', 'suit', 'shirt', 'casual', 'uniform'],
-};
-
-const BG_FILTER = {
-  passport:       [],
-  student_id:     ['white', 'blue', 'gray'],
-  employee_id:    ['white', 'blue', 'gray'],
-  resume:         ['white', 'blue', 'gray', 'beige', 'pink'],
-  color_portrait: ['white', 'blue', 'gray', 'beige', 'pink', 'yellow'],
-};
-
-const EXPR_FILTER = {
-  passport:       ['as_is', 'gentle_smile', 'neutral'],
-  student_id:     ['as_is', 'gentle_smile', 'neutral', 'natural_smile', 'bright_smile'],
-  employee_id:    ['as_is', 'gentle_smile', 'neutral', 'natural_smile', 'bright_smile'],
-  resume:         ['as_is', 'gentle_smile', 'neutral', 'natural_smile', 'bright_smile'],
-  color_portrait: ['as_is', 'gentle_smile', 'neutral', 'natural_smile', 'bright_smile'],
-};
-
-// ─── 스텝 메타 ───
-
-const STEP_META = {
-  purpose:       { label: 'STEP 1', question: '어떤 사진이<br>필요하세요?', layout: 'column' },
-  age:           { label: 'STEP 2', question: '연령대를<br>선택해 주세요', layout: 'column' },
-  gender:        { label: 'STEP 3', question: '성별을<br>선택해 주세요', layout: 'row' },
-  clothing:      { label: 'STEP 4', question: '의상 스타일을<br>선택해 주세요', layout: 'grid' },
-  clothingColor: { label: 'STEP 5', question: '의상 컬러를<br>선택해 주세요', layout: 'grid' },
-  tie:           { label: 'STEP 6', question: '넥타이를<br>선택해 주세요', layout: 'grid' },
-  hair:          { label: 'STEP 7', question: '헤어 스타일을<br>선택해 주세요', layout: 'row2' },
-  background:    { label: 'STEP 8', question: '배경색을<br>선택해 주세요', layout: 'grid' },
-  expression:    { label: 'STEP 9', question: '표정을<br>선택해 주세요', layout: 'row2' },
-};
-
-// ─── 디폴트 테이블 (KR) ───
-
-const DEFAULTS = {
-  passport: {
-    clothing: 'as_is', hair: 'as_is', background: 'white', expression: 'gentle_smile',
-  },
-  student_id: {
-    clothing: 'as_is', hair: 'as_is', background: 'white', expression: 'gentle_smile',
-  },
-  employee_id: {
-    _gender: {
-      male:   { clothing: 'suit', clothingColor: 'navy', tie: 'stripe_navy', hair: 'as_is', background: 'white', expression: 'gentle_smile' },
-      female: { clothing: 'as_is', hair: 'as_is', background: 'white', expression: 'gentle_smile' },
-    },
-  },
-  resume: {
-    _gender: {
-      male:   { clothing: 'suit', clothingColor: 'navy', tie: 'stripe_navy', hair: 'as_is', expression: 'natural_smile' },
-      female: { clothing: 'as_is', hair: 'as_is', expression: 'natural_smile' },
-    },
-  },
-  color_portrait: {
-    clothing: 'as_is', hair: 'as_is',
-  },
-};
-
-// ─── 레거시 키 매핑 ───
-
-const PURPOSE_TO_STYLE = {
-  passport: 'id_photo', student_id: 'id_photo',
-  employee_id: 'resume', resume: 'resume', color_portrait: 'resume',
-};
-
-const AGE_TO_LEGACY = {
-  baby: 'child', preschool: 'child',
-  elementary: 'teen', teen: 'teen',
-  adult: 'adult',
-};
+import {
+  store, Monk, sharedInit, saveSelections, clearSelections,
+  saveSessionData, loadSessionData, navigateTo, SCHEMA_VERSION
+} from './shared.js';
+import {
+  V5_OPTIONS, CLOTHING_BY_AGE, HAIR_VISIBLE_AGES,
+  PASSPORT_FORCED_BG, PHOTO_SPECS
+} from './config.js';
 
 // ─── 상태 ───
+let currentPage = 0; // 0=format, 1=profile, 2=style, 3=confirm
+const PAGES = ['format', 'profile', 'style', 'confirm'];
+let openAccordion = null; // 현재 열린 아코디언: 'clothing' | 'hair' | 'bg' | null
 
-let currentStep = 1;
-let activeSteps = []; // 스킵 제외한 실제 표시 스텝 번호 배열
+// ─── 라벨 맵 ───
+const LABELS = {
+  format: { passport: '여권/신분증', id: '증명사진' },
+  gender: { f: '여성', m: '남성' },
+  age: { baby: '영유아', child: '어린이', teen: '중고생', adult: '성인' },
+  clothing: { default: '그대로', change: '의상변경', casual: '캐주얼', suit: '정장' },
+  clothingColor: {
+    skyblue: '하늘색', pink: '핑크', lemon: '레몬', green: '그린',
+    beige: '베이지', blue: '블루', wine: '와인',
+  },
+  suitColor: { navy: '네이비', brown: '브라운', gray: '그레이', black: '블랙' },
+  shirtColor: { white: '화이트', lightblue: '연블루', lightpink: '연핑크', lightbeige: '연베이지' },
+  tieColor: { notie: '노타이', navy: '네이비', wine: '와인', black: '블랙' },
+  tiePattern: { solid: '민무늬', stripe: '스트라이프' },
+  hair: { default: '그대로', tidy: '깔끔 정리', updo: '올림머리' },
+  bgColor: { white: '흰색', gray: '회색', blue: '파랑', beige: '베이지' },
+};
 
-// ─── 필터 엔진 ───
+const FORMAT_ICONS = { passport: '🛡️', id: '📋' };
+const GENDER_ICONS = { f: '👩', m: '👨' };
+const AGE_ICONS = { baby: '👶', child: '🧒', teen: '🎒', adult: '🙂' };
 
-function getFilteredOptions(key) {
-  const p = selections.purpose;
-  if (!p) return OPTIONS[key] || [];
-  const all = OPTIONS[key] || [];
+const FORMAT_DESC = {
+  passport: '3.5×4.5cm · 흰색 배경 고정',
+  id: '3×4cm 반명함 · 배경 선택 가능',
+};
 
-  if (key === 'age')        return all.filter(o => (AGE_FILTER[p] || []).includes(o.val));
-  if (key === 'clothing') {
-    let filtered = all.filter(o => (CLOTHING_FILTER[p] || []).includes(o.val));
-    // 연령 후필터: baby/preschool → as_is만 허용
-    if (['baby', 'preschool'].includes(selections.age)) {
-      filtered = filtered.filter(o => o.val === 'as_is');
-    }
-    return filtered;
-  }
-  if (key === 'clothingColor') {
-    // 여권/신분증: 흰색 배경 고정 → 의상 흰색 불가
-    if (['passport', 'student_id'].includes(p)) {
-      return all.filter(o => o.val !== 'white');
-    }
-    return all;
-  }
-  if (key === 'hair') {
-    // 연령별 헤어 필터
-    if (selections.age === 'baby') {
-      return all.filter(o => o.val === 'as_is');
-    }
-    if (selections.age === 'preschool') {
-      return all.filter(o => ['as_is', 'tidy'].includes(o.val));
-    }
-    return all;
-  }
-  if (key === 'background') return all.filter(o => (BG_FILTER[p] || []).includes(o.val));
-  if (key === 'expression') return all.filter(o => (EXPR_FILTER[p] || []).includes(o.val));
-  return all;
-}
+const COLOR_MAP = {
+  skyblue: '#87CEEB', pink: '#FFB6C1', lemon: '#FFF44F', green: '#90EE90',
+  beige: '#D4B896', blue: '#4A90D9', wine: '#722f37',
+  navy: '#1b2a4a', brown: '#8B4513', gray: '#9CA3AF', black: '#1a1a1a',
+  white: '#f0f0f0', lightblue: '#ADD8E6', lightpink: '#FFB6C1', lightbeige: '#F5DEB3',
+};
 
-// ─── 디폴트 엔진 ───
+// ─── 페이지 라우팅 ───
 
-function getDefaultValue(key) {
-  const p = selections.purpose;
-  if (!p) return null;
-  const d = DEFAULTS[p];
-  if (!d) return null;
+function showPage(idx) {
+  currentPage = idx;
+  const pages = document.querySelectorAll('.prep-page');
+  pages.forEach((p, i) => {
+    p.classList.toggle('active', i === idx);
+  });
 
-  // 성별 분기 디폴트
-  if (d._gender) {
-    const g = selections.gender;
-    if (!g) return null;
-    const gd = d._gender[g];
-    return gd ? (gd[key] ?? null) : null;
-  }
-  return d[key] ?? null;
-}
+  // 프로그레스 업데이트
+  const fill = document.getElementById('progressFill');
+  const text = document.getElementById('progressText');
+  if (fill) fill.style.width = `${((idx + 1) / PAGES.length) * 100}%`;
+  if (text) text.textContent = `${idx + 1} / ${PAGES.length}`;
 
-// ─── 스킵 엔진 ───
-
-function shouldSkip(stepNum) {
-  const key = STEP_KEYS[stepNum - 1];
-
-  // STEP 2 (age): 사원증 → adult 자동세팅, 스킵
-  if (key === 'age' && selections.purpose === 'employee_id') {
-    selections.age = 'adult';
-    return true;
-  }
-
-  // 연령 필터가 1개뿐이면 자동세팅 + 스킵
-  if (key === 'age' && selections.purpose) {
-    const filtered = getFilteredOptions('age');
-    if (filtered.length === 1) {
-      selections.age = filtered[0].val;
-      return true;
-    }
-  }
-
-  // STEP 5 (clothingColor): 의상 == as_is면 스킵
-  if (key === 'clothingColor') {
-    return selections.clothing === 'as_is' || !selections.clothing;
-  }
-
-  // STEP 6 (tie): baby/preschool 무조건 스킵, 그 외 남성 + (정장 or 셔츠)가 아니면 스킵
-  if (key === 'tie') {
-    if (['baby', 'preschool'].includes(selections.age)) return true;
-    return selections.gender !== 'male' || !['suit', 'shirt'].includes(selections.clothing);
-  }
-
-  // STEP 8 (background): 여권/신분증은 흰색 고정 → 스킵
-  if (key === 'background') {
-    if (['passport', 'student_id', 'employee_id'].includes(selections.purpose)) {
-      selections.background = 'white';
-      return true;
-    }
-  }
-
-  return false;
-}
-
-function computeActiveSteps() {
-  activeSteps = [];
-  for (let i = 1; i <= TOTAL_STEPS; i++) {
-    if (!shouldSkip(i)) activeSteps.push(i);
-  }
-  activeSteps.push(FINAL_STEP);
-}
-
-// ─── 다음 비스킵 스텝 찾기 ───
-
-function getNextStep(from) {
-  for (let i = from + 1; i <= TOTAL_STEPS; i++) {
-    if (!shouldSkip(i)) return i;
-  }
-  return FINAL_STEP;
-}
-
-function getPrevStep(from) {
-  for (let i = from - 1; i >= 1; i--) {
-    if (!shouldSkip(i)) return i;
-  }
-  return 1;
-}
-
-// ─── 하류 선택 초기화 ───
-
-function clearSelectionsAfter(stepNum) {
-  for (let i = stepNum; i < TOTAL_STEPS; i++) {
-    const key = STEP_KEYS[i];
-    selections[key] = null;
+  // 네비 버튼
+  const btnPrev = document.getElementById('btnPrev');
+  const btnNext = document.getElementById('btnNext');
+  if (btnPrev) btnPrev.style.visibility = idx > 0 ? 'visible' : 'hidden';
+  if (btnNext) {
+    btnNext.style.display = idx === 3 ? 'none' : '';
+    btnNext.textContent = '다음';
   }
 }
 
-// ─── 비권장 체크 ───
-
-function isWarning(key, val) {
-  if (key === 'clothingColor' && ['passport', 'student_id'].includes(selections.purpose)) {
-    return ['beige', 'pastel'].includes(val);
+function nextPage() {
+  if (currentPage === 0 && !store.format) return;
+  if (currentPage === 1 && (!store.gender || !store.age)) return;
+  if (currentPage === 2) {
+    // passport → bgColor 강제
+    if (store.format === 'passport') store.bgColor = PASSPORT_FORCED_BG;
   }
-  return false;
+  if (currentPage < PAGES.length - 1) {
+    const next = currentPage + 1;
+    if (next === 2) renderStylePage();
+    if (next === 3) renderConfirmPage();
+    showPage(next);
+  }
 }
 
-// ─── 렌더링 ───
-
-function renderStep(stepNum) {
-  const body = document.getElementById('kiosk-body');
-  if (!body) return;
-
-  const key = STEP_KEYS[stepNum - 1];
-  const meta = STEP_META[key];
-  const opts = getFilteredOptions(key);
-  const def = getDefaultValue(key);
-  const hasColorChip = ['clothingColor', 'tie', 'background'].includes(key);
-
-  // 디폴트 미리 적용
-  if (def && !selections[key]) {
-    selections[key] = def;
+function prevPage() {
+  if (currentPage > 0) {
+    const prev = currentPage - 1;
+    if (prev === 2) renderStylePage();
+    showPage(prev);
   }
-
-  let layoutClass = 'kiosk-cards';
-  if (meta.layout === 'row') layoutClass = 'kiosk-cards kiosk-cards-row';
-  if (meta.layout === 'row2') layoutClass = 'kiosk-cards kiosk-cards-row2';
-  if (meta.layout === 'grid') layoutClass = 'kiosk-cards kiosk-cards-grid';
-
-  let cardsHtml = opts.map(o => {
-    const selected = selections[key] === o.val ? ' selected' : '';
-    const warn = isWarning(key, o.val);
-    const iconHtml = hasColorChip && o.color
-      ? `<span class="kiosk-color-chip" style="background:${o.color}"></span>`
-      : (o.icon ? `<div class="kiosk-card-icon">${o.icon}</div>` : '');
-    const descHtml = o.desc ? `<div class="kiosk-card-desc">${o.desc}</div>` : '';
-    const warnHtml = warn ? '<div class="kiosk-card-warning">배경과 유사 · 비권장</div>' : '';
-
-    return `<button class="kiosk-card${selected}" data-key="${key}" data-val="${o.val}" onclick="kioskSelect(this)">
-      ${iconHtml}
-      <div class="kiosk-card-title">${o.title}</div>
-      ${descHtml}${warnHtml}
-    </button>`;
-  }).join('');
-
-  // 디폴트가 적용되어 있으면 [다음] 버튼 표시
-  const showNext = def && selections[key] === def;
-  const nextHtml = showNext
-    ? '<button class="kiosk-next" onclick="kioskNext()">이대로 진행 <span>&rarr;</span></button>'
-    : '';
-
-  // baby일 때 성별 [건너뛰기]
-  const showSkip = key === 'gender' && selections.age === 'baby';
-  const skipHtml = showSkip
-    ? '<button class="kiosk-skip" onclick="kioskSkipGender()">건너뛰기</button>'
-    : '';
-
-  body.innerHTML = `
-    <div class="kiosk-step active kiosk-enter-forward" data-kiosk-step="${stepNum}">
-      <div class="kiosk-step-inner">
-        <div class="kiosk-label">${meta.label}</div>
-        <h2 class="kiosk-question">${meta.question}</h2>
-        <div class="${layoutClass}">${cardsHtml}</div>
-        ${nextHtml}${skipHtml}
-      </div>
-    </div>
-  `;
 }
 
-function renderFinal() {
-  const body = document.getElementById('kiosk-body');
-  if (!body) return;
+// ─── 카드 선택 헬퍼 ───
 
-  const items = [];
-  const addItem = (icon, text, stepNum) => {
-    if (text) items.push({ icon, text, stepNum });
-  };
-
-  const findTitle = (key, val) => {
-    const opt = (OPTIONS[key] || []).find(o => o.val === val);
-    return opt ? opt.title : val;
-  };
-  const findIcon = (key, val) => {
-    const opt = (OPTIONS[key] || []).find(o => o.val === val);
-    return opt?.icon || '';
-  };
-  const findColor = (key, val) => {
-    const opt = (OPTIONS[key] || []).find(o => o.val === val);
-    return opt?.color || '';
-  };
-
-  // 1. 용도
-  addItem(findIcon('purpose', selections.purpose), findTitle('purpose', selections.purpose), 1);
-
-  // 2. 연령 + 성별 (합쳐서 표시)
-  const ageText = findTitle('age', selections.age);
-  const genderText = selections.gender ? findTitle('gender', selections.gender) : '';
-  const ageGender = genderText ? `${ageText} · ${genderText}` : ageText;
-  addItem(findIcon('age', selections.age), ageGender, 2);
-
-  // 3. 의상 + 컬러 (합쳐서 표시)
-  if (selections.clothing) {
-    const clothText = findTitle('clothing', selections.clothing);
-    const colorText = selections.clothingColor ? findTitle('clothingColor', selections.clothingColor) : '';
-    const colorChip = selections.clothingColor ? findColor('clothingColor', selections.clothingColor) : '';
-    const chipHtml = colorChip ? `<span class="kiosk-summary-chip" style="background:${colorChip}"></span>` : '';
-    addItem(findIcon('clothing', selections.clothing),
-      colorText ? `${clothText} · ${colorText} ${chipHtml}` : clothText, 4);
-  }
-
-  // 4. 넥타이
-  if (selections.tie && selections.tie !== 'none') {
-    const tieColor = findColor('tie', selections.tie);
-    const tieChip = tieColor ? `<span class="kiosk-summary-chip" style="background:${tieColor}"></span>` : '';
-    addItem('👔', `${findTitle('tie', selections.tie)} ${tieChip}`, 6);
-  }
-
-  // 5. 헤어
-  if (selections.hair) {
-    addItem(findIcon('hair', selections.hair), findTitle('hair', selections.hair), 7);
-  }
-
-  // 6. 배경
-  if (selections.background) {
-    const bgColor = findColor('background', selections.background);
-    const bgChip = bgColor ? `<span class="kiosk-summary-chip" style="background:${bgColor}"></span>` : '';
-    addItem('🎨', `${findTitle('background', selections.background)} 배경 ${bgChip}`, 8);
-  }
-
-  // 7. 표정
-  if (selections.expression) {
-    addItem(findIcon('expression', selections.expression), findTitle('expression', selections.expression), 9);
-  }
-
-  const summaryHtml = items.map(item => `
-    <div class="kiosk-summary-item" onclick="kioskJumpTo(${item.stepNum})">
-      <span class="kiosk-summary-icon">${item.icon}</span>
-      <span class="kiosk-summary-text">${item.text}</span>
-      <span class="kiosk-summary-edit">수정</span>
-    </div>
-  `).join('');
-
-  const noteText = ['passport', 'student_id'].includes(selections.purpose)
-    ? '눈썹 · 이마가 보이도록 준비해 주세요'
-    : '헤어와 의상을 깔끔하게 정돈해 주세요';
-
-  body.innerHTML = `
-    <div class="kiosk-step active kiosk-enter-forward" data-kiosk-step="${FINAL_STEP}">
-      <div class="kiosk-step-inner">
-        <div class="kiosk-label">CONFIRM</div>
-        <h2 class="kiosk-question">촬영 정보 확인</h2>
-        <div class="kiosk-summary">
-          <div class="kiosk-summary-list">${summaryHtml}</div>
-          <div class="kiosk-summary-note">${noteText}</div>
-        </div>
-        <button class="kiosk-start" onclick="startShooting()">
-          촬영 시작하기 <span class="kiosk-start-arrow">&rarr;</span>
-        </button>
-        <button class="kiosk-reset" onclick="kioskReset()">처음부터 다시 선택</button>
-      </div>
-    </div>
-  `;
+function selectCard(container, val) {
+  container.querySelectorAll('.prep-card').forEach(c => c.classList.remove('selected'));
+  const target = container.querySelector(`[data-val="${val}"]`);
+  if (target) target.classList.add('selected');
 }
 
-function renderProgressDots() {
-  const el = document.getElementById('kiosk-progress');
+function makeCard(val, icon, title, desc, extraClass) {
+  const cls = extraClass ? `prep-card ${extraClass}` : 'prep-card';
+  const iconHtml = icon.startsWith('#')
+    ? `<span class="prep-color-chip" style="background:${icon}"></span>`
+    : `<div class="prep-card-icon">${icon}</div>`;
+  const descHtml = desc ? `<div class="prep-card-desc">${desc}</div>` : '';
+  return `<button class="${cls}" data-val="${val}">${iconHtml}<div class="prep-card-title">${title}</div>${descHtml}</button>`;
+}
+
+// ─── 1p: 규격 선택 ───
+
+function renderFormatPage() {
+  const el = document.getElementById('page-format');
   if (!el) return;
 
-  computeActiveSteps();
-  const dotsHtml = activeSteps.map(s => {
-    let cls = 'kiosk-dot';
-    if (s === currentStep) cls += ' active';
-    else if (s < currentStep) cls += ' done';
-    return `<div class="${cls}"></div>`;
-  }).join('');
-  el.innerHTML = dotsHtml;
+  el.innerHTML = `
+    <div class="prep-page-inner">
+      <div class="prep-label">STEP 1</div>
+      <h2 class="prep-question">규격을 선택해 주세요</h2>
+      <div class="prep-cards prep-cards-col" id="formatCards">
+        ${makeCard('passport', FORMAT_ICONS.passport, '여권 / 신분증', FORMAT_DESC.passport)}
+        ${makeCard('id', FORMAT_ICONS.id, '증명사진', FORMAT_DESC.id)}
+      </div>
+    </div>
+  `;
+
+  const container = document.getElementById('formatCards');
+  if (store.format) selectCard(container, store.format);
+
+  container.addEventListener('click', (e) => {
+    const card = e.target.closest('.prep-card');
+    if (!card) return;
+    store.format = card.dataset.val;
+    selectCard(container, store.format);
+  });
 }
 
-// ─── 네비게이션 ───
+// ─── 2p: 성별 + 연령 ───
 
-function goToStep(step, direction) {
-  if (step < 1) return;
+function renderProfilePage() {
+  const el = document.getElementById('page-profile');
+  if (!el) return;
 
-  const dir = direction || (step > currentStep ? 'forward' : 'backward');
-  currentStep = step;
+  el.innerHTML = `
+    <div class="prep-page-inner">
+      <div class="prep-label">STEP 2</div>
+      <h2 class="prep-question">성별과 연령을 선택해 주세요</h2>
+      <div class="prep-group-label">성별</div>
+      <div class="prep-cards prep-cards-row" id="genderCards">
+        ${V5_OPTIONS.gender.map(g => makeCard(g, GENDER_ICONS[g], LABELS.gender[g], '')).join('')}
+      </div>
+      <div class="prep-group-label" style="margin-top:24px;">연령</div>
+      <div class="prep-cards prep-cards-row2" id="ageCards">
+        ${V5_OPTIONS.age.map(a => makeCard(a, AGE_ICONS[a], LABELS.age[a], '')).join('')}
+      </div>
+    </div>
+  `;
 
-  if (step === FINAL_STEP) {
-    renderFinal();
-  } else {
-    renderStep(step);
+  const genderContainer = document.getElementById('genderCards');
+  const ageContainer = document.getElementById('ageCards');
+
+  if (store.gender) selectCard(genderContainer, store.gender);
+  if (store.age) selectCard(ageContainer, store.age);
+
+  genderContainer.addEventListener('click', (e) => {
+    const card = e.target.closest('.prep-card');
+    if (!card) return;
+    store.gender = card.dataset.val;
+    selectCard(genderContainer, store.gender);
+  });
+
+  ageContainer.addEventListener('click', (e) => {
+    const card = e.target.closest('.prep-card');
+    if (!card) return;
+    const prevAge = store.age;
+    store.age = card.dataset.val;
+    selectCard(ageContainer, store.age);
+    // 연령 변경 시 clothing 초기화
+    if (prevAge !== store.age) {
+      store.clothing = 'default';
+      store.clothingColor = '';
+      store.suitColor = '';
+      store.shirtColor = '';
+      store.tieColor = '';
+      store.tiePattern = '';
+      store.hair = 'default';
+    }
+  });
+}
+
+// ─── 3p: 스타일 (아코디언) ───
+
+function renderStylePage() {
+  const el = document.getElementById('page-style');
+  if (!el) return;
+
+  const age = store.age;
+  const fmt = store.format;
+  const allowedClothing = CLOTHING_BY_AGE[age] || ['default'];
+  const showHair = HAIR_VISIBLE_AGES.includes(age);
+  const bgLocked = fmt === 'passport';
+
+  // passport 강제
+  if (bgLocked) store.bgColor = PASSPORT_FORCED_BG;
+
+  openAccordion = null;
+
+  let html = `<div class="prep-page-inner">
+    <div class="prep-label">STEP 3</div>
+    <h2 class="prep-question">스타일을 선택해 주세요</h2>
+    <div class="prep-accordion-list">`;
+
+  // 의상 아코디언
+  html += renderAccordionItem('clothing', '👕 의상', getClothingSummary());
+  // 헤어 아코디언 (teen/adult만)
+  if (showHair) {
+    html += renderAccordionItem('hair', '💇 헤어', LABELS.hair[store.hair] || '그대로');
+  }
+  // 배경 아코디언
+  html += renderAccordionItem('bg', '🎨 배경', bgLocked
+    ? '흰색 (여권 고정)'
+    : (LABELS.bgColor[store.bgColor] || '흰색'));
+
+  html += `</div></div>`;
+  el.innerHTML = html;
+
+  // 아코디언 토글 이벤트
+  el.querySelectorAll('.accordion-header').forEach(header => {
+    header.addEventListener('click', () => {
+      const group = header.dataset.group;
+      if (openAccordion === group) {
+        openAccordion = null;
+      } else {
+        openAccordion = group;
+      }
+      renderStylePage();
+    });
+  });
+}
+
+function getClothingSummary() {
+  const c = store.clothing;
+  let txt = LABELS.clothing[c] || '그대로';
+  if (c === 'change' || c === 'casual') {
+    if (store.clothingColor) txt += ' · ' + (LABELS.clothingColor[store.clothingColor] || store.clothingColor);
+  }
+  if (c === 'suit') {
+    txt += ' · ' + (LABELS.suitColor[store.suitColor] || '네이비');
+  }
+  return txt;
+}
+
+function renderAccordionItem(group, title, summary) {
+  const isOpen = openAccordion === group;
+  const openCls = isOpen ? ' open' : '';
+  const arrow = isOpen ? '▲' : '▼';
+  const isBgLocked = group === 'bg' && store.format === 'passport';
+
+  let bodyHtml = '';
+  if (isOpen) {
+    if (group === 'clothing') bodyHtml = renderClothingBody();
+    else if (group === 'hair') bodyHtml = renderHairBody();
+    else if (group === 'bg') bodyHtml = renderBgBody();
   }
 
-  // 슬라이드 방향 적용
-  const stepEl = document.querySelector('.kiosk-step');
-  if (stepEl) {
-    stepEl.classList.remove('kiosk-enter-forward', 'kiosk-enter-backward');
-    stepEl.classList.add(dir === 'forward' ? 'kiosk-enter-forward' : 'kiosk-enter-backward');
+  return `
+    <div class="accordion-item${openCls}">
+      <div class="accordion-header" data-group="${group}"${isBgLocked ? ' style="opacity:0.5;pointer-events:none;"' : ''}>
+        <span class="accordion-title">${title}</span>
+        <span class="accordion-summary">${summary}</span>
+        <span class="accordion-arrow">${arrow}</span>
+      </div>
+      ${isOpen ? `<div class="accordion-body">${bodyHtml}</div>` : ''}
+    </div>`;
+}
+
+function renderClothingBody() {
+  const age = store.age;
+  const allowed = CLOTHING_BY_AGE[age] || ['default'];
+
+  let html = '<div class="prep-cards prep-cards-row2" id="clothingCards">';
+  allowed.forEach(val => {
+    const sel = store.clothing === val ? ' selected' : '';
+    html += `<button class="prep-card${sel}" data-val="${val}" data-field="clothing">
+      <div class="prep-card-title">${LABELS.clothing[val]}</div>
+    </button>`;
+  });
+  html += '</div>';
+
+  // 서브옵션
+  if (store.clothing === 'change' || store.clothing === 'casual') {
+    html += renderColorSuboption();
+  } else if (store.clothing === 'suit') {
+    html += renderSuitSuboption();
   }
 
-  renderProgressDots();
-
-  // 뒤로 버튼
-  const backBtn = document.getElementById('kiosk-back');
-  if (backBtn) backBtn.style.visibility = step > 1 ? 'visible' : 'hidden';
+  return html;
 }
 
-function kioskSelect(btn) {
-  const key = btn.dataset.key;
-  const val = btn.dataset.val;
-  const prevVal = selections[key];
+function renderColorSuboption() {
+  const isChild = ['baby', 'child'].includes(store.age);
+  const colors = isChild ? V5_OPTIONS.clothingColor.child : V5_OPTIONS.clothingColor.adult;
 
-  // 같은 스텝의 카드 선택 해제
-  const cards = btn.closest('.kiosk-cards').querySelectorAll('.kiosk-card');
-  cards.forEach(c => c.classList.remove('selected'));
-  btn.classList.add('selected');
+  let html = '<div class="prep-sub-label">컬러 선택</div>';
+  html += '<div class="prep-cards prep-cards-grid" id="clothingColorCards">';
+  colors.forEach(val => {
+    const sel = store.clothingColor === val ? ' selected' : '';
+    const bg = COLOR_MAP[val] || '#888';
+    html += `<button class="prep-card${sel}" data-val="${val}" data-field="clothingColor">
+      <span class="prep-color-chip" style="background:${bg}"></span>
+      <div class="prep-card-title">${LABELS.clothingColor[val] || val}</div>
+    </button>`;
+  });
+  html += '</div>';
+  return html;
+}
 
-  selections[key] = val;
+function renderSuitSuboption() {
+  let html = '';
 
-  // 값이 변경되면 하류 선택 초기화
-  if (prevVal !== val) {
-    const stepIdx = STEP_KEYS.indexOf(key);
-    clearSelectionsAfter(stepIdx + 1);
+  // 수트 컬러
+  html += '<div class="prep-sub-label">수트 컬러</div>';
+  html += '<div class="prep-cards prep-cards-grid" id="suitColorCards">';
+  V5_OPTIONS.suitColor.forEach(val => {
+    const sel = store.suitColor === val ? ' selected' : '';
+    const bg = COLOR_MAP[val] || '#888';
+    html += `<button class="prep-card${sel}" data-val="${val}" data-field="suitColor">
+      <span class="prep-color-chip" style="background:${bg}"></span>
+      <div class="prep-card-title">${LABELS.suitColor[val]}</div>
+    </button>`;
+  });
+  html += '</div>';
+
+  // 셔츠 컬러
+  html += '<div class="prep-sub-label">셔츠 컬러</div>';
+  html += '<div class="prep-cards prep-cards-grid" id="shirtColorCards">';
+  V5_OPTIONS.shirtColor.forEach(val => {
+    const sel = store.shirtColor === val ? ' selected' : '';
+    const bg = COLOR_MAP[val] || '#888';
+    html += `<button class="prep-card${sel}" data-val="${val}" data-field="shirtColor">
+      <span class="prep-color-chip" style="background:${bg}"></span>
+      <div class="prep-card-title">${LABELS.shirtColor[val]}</div>
+    </button>`;
+  });
+  html += '</div>';
+
+  // 타이 컬러
+  html += '<div class="prep-sub-label">넥타이</div>';
+  html += '<div class="prep-cards prep-cards-grid" id="tieColorCards">';
+  V5_OPTIONS.tieColor.forEach(val => {
+    const sel = store.tieColor === val ? ' selected' : '';
+    const icon = val === 'notie' ? '✕' : '';
+    const bg = val === 'notie' ? '' : (COLOR_MAP[val] || '#888');
+    const chipHtml = bg
+      ? `<span class="prep-color-chip" style="background:${bg}"></span>`
+      : `<div class="prep-card-icon">${icon}</div>`;
+    html += `<button class="prep-card${sel}" data-val="${val}" data-field="tieColor">
+      ${chipHtml}
+      <div class="prep-card-title">${LABELS.tieColor[val]}</div>
+    </button>`;
+  });
+  html += '</div>';
+
+  // 타이 패턴 (notie가 아닐 때만)
+  if (store.tieColor && store.tieColor !== 'notie') {
+    html += '<div class="prep-sub-label">넥타이 무늬</div>';
+    html += '<div class="prep-cards prep-cards-row" id="tiePatternCards">';
+    V5_OPTIONS.tiePattern.forEach(val => {
+      const sel = store.tiePattern === val ? ' selected' : '';
+      html += `<button class="prep-card${sel}" data-val="${val}" data-field="tiePattern">
+        <div class="prep-card-title">${LABELS.tiePattern[val]}</div>
+      </button>`;
+    });
+    html += '</div>';
   }
 
-  // 350ms 후 자동 전진
-  setTimeout(() => {
-    const next = getNextStep(currentStep);
-    goToStep(next, 'forward');
-  }, 350);
+  return html;
 }
 
-function kioskNext() {
-  const next = getNextStep(currentStep);
-  goToStep(next, 'forward');
+function renderHairBody() {
+  let html = '<div class="prep-cards prep-cards-row" id="hairCards">';
+  V5_OPTIONS.hair.forEach(val => {
+    const sel = store.hair === val ? ' selected' : '';
+    html += `<button class="prep-card${sel}" data-val="${val}" data-field="hair">
+      <div class="prep-card-title">${LABELS.hair[val]}</div>
+    </button>`;
+  });
+  html += '</div>';
+  return html;
 }
 
-function kioskBack() {
-  if (currentStep <= 1) return;
-  const prev = getPrevStep(currentStep);
-  goToStep(prev, 'backward');
-}
-
-function kioskReset() {
-  for (const key of STEP_KEYS) selections[key] = null;
-  goToStep(1, 'forward');
-}
-
-function kioskJumpTo(stepNum) {
-  goToStep(stepNum, 'backward');
-}
-
-function kioskSkipGender() {
-  selections.gender = null;
-  const next = getNextStep(3); // 성별은 step 3
-  goToStep(next, 'forward');
-}
-
-// ─── 촬영실 이동 ───
-
-function applyLegacyMapping() {
-  // purpose → style
-  if (selections.purpose) {
-    const legacyStyle = PURPOSE_TO_STYLE[selections.purpose];
-    store.style = legacyStyle;
-    saveSessionData('style', legacyStyle);
+function renderBgBody() {
+  if (store.format === 'passport') {
+    return '<div class="prep-locked-msg">여권/신분증 배경은 흰색으로 고정됩니다</div>';
   }
-  // age → legacy age
-  if (selections.age) {
-    const legacyAge = AGE_TO_LEGACY[selections.age];
-    store.age = legacyAge;
-    saveSessionData('age', legacyAge);
-  }
-  // gender (동일)
-  store.gender = selections.gender;
-  saveSessionData('gender', selections.gender || '');
+
+  let html = '<div class="prep-cards prep-cards-grid" id="bgColorCards">';
+  V5_OPTIONS.bgColor.forEach(val => {
+    const sel = store.bgColor === val ? ' selected' : '';
+    const bg = COLOR_MAP[val] || '#888';
+    html += `<button class="prep-card${sel}" data-val="${val}" data-field="bgColor">
+      <span class="prep-color-chip" style="background:${bg}"></span>
+      <div class="prep-card-title">${LABELS.bgColor[val]}</div>
+    </button>`;
+  });
+  html += '</div>';
+  return html;
 }
+
+// ─── 스타일 페이지 카드 클릭 위임 ───
+
+function handleStyleClick(e) {
+  const card = e.target.closest('.prep-card');
+  if (!card) return;
+  const field = card.dataset.field;
+  const val = card.dataset.val;
+  if (!field || !val) return;
+
+  if (field === 'clothing') {
+    const prevClothing = store.clothing;
+    store.clothing = val;
+    // clothing 변경 시 서브옵션 초기화
+    if (prevClothing !== val) {
+      store.clothingColor = '';
+      store.suitColor = '';
+      store.shirtColor = '';
+      store.tieColor = '';
+      store.tiePattern = '';
+      // suit 디폴트
+      if (val === 'suit') {
+        store.suitColor = 'navy';
+        store.shirtColor = 'white';
+        store.tieColor = 'navy';
+        store.tiePattern = 'solid';
+      }
+    }
+    renderStylePage();
+    openAccordion = 'clothing';
+    renderStylePage();
+    return;
+  }
+
+  if (field === 'tieColor') {
+    store.tieColor = val;
+    if (val === 'notie') store.tiePattern = '';
+    else if (!store.tiePattern) store.tiePattern = 'solid';
+    renderStylePage();
+    openAccordion = 'clothing';
+    renderStylePage();
+    return;
+  }
+
+  // 일반 필드
+  store[field] = val;
+  // 해당 카드 그룹에서 선택 토글
+  const container = card.closest('.prep-cards');
+  if (container) selectCard(container, val);
+}
+
+// ─── 4p: CONFIRM ───
+
+function renderConfirmPage() {
+  const el = document.getElementById('page-confirm');
+  if (!el) return;
+
+  const rows = [];
+
+  // 규격
+  rows.push(confirmRow(FORMAT_ICONS[store.format] || '📋', '규격', LABELS.format[store.format] || '-', 0));
+
+  // 성별 + 연령
+  const genderAge = `${LABELS.gender[store.gender] || '-'} · ${LABELS.age[store.age] || '-'}`;
+  rows.push(confirmRow(GENDER_ICONS[store.gender] || '👤', '인물', genderAge, 1));
+
+  // 의상
+  let clothingText = LABELS.clothing[store.clothing] || '그대로';
+  if (store.clothing === 'change' || store.clothing === 'casual') {
+    if (store.clothingColor) clothingText += ' · ' + (LABELS.clothingColor[store.clothingColor] || '');
+  }
+  if (store.clothing === 'suit') {
+    clothingText = `정장 · ${LABELS.suitColor[store.suitColor] || '네이비'}`;
+    if (store.tieColor && store.tieColor !== 'notie') {
+      clothingText += ` · ${LABELS.tieColor[store.tieColor]} ${LABELS.tiePattern[store.tiePattern] || ''}`;
+    }
+  }
+  rows.push(confirmRow('👔', '의상', clothingText, 2));
+
+  // 헤어 (teen/adult만)
+  if (HAIR_VISIBLE_AGES.includes(store.age)) {
+    rows.push(confirmRow('💇', '헤어', LABELS.hair[store.hair] || '그대로', 2));
+  }
+
+  // 배경
+  const bgText = store.format === 'passport' ? '흰색 (여권 고정)' : (LABELS.bgColor[store.bgColor] || '흰색');
+  rows.push(confirmRow('🎨', '배경', bgText, 2));
+
+  // 코칭 멘트
+  let coachingNote = '';
+  if (store.age === 'baby') coachingNote = '아이를 안고 촬영해도 됩니다';
+  else if (store.age === 'child') coachingNote = '정면을 바라보도록 유도해 주세요';
+  else if (store.format === 'passport') coachingNote = '눈썹 · 이마가 보이도록 준비해 주세요';
+  else coachingNote = '좋은 인상의 표정으로 촬영해 주세요';
+
+  el.innerHTML = `
+    <div class="prep-page-inner">
+      <div class="prep-label">CONFIRM</div>
+      <h2 class="prep-question">촬영 정보 확인</h2>
+      <div class="prep-summary">
+        <div class="prep-summary-list">${rows.join('')}</div>
+        <div class="prep-summary-note">${coachingNote}</div>
+      </div>
+      <button class="prep-start" onclick="startShooting()">
+        촬영 시작하기 <span class="prep-start-arrow">&rarr;</span>
+      </button>
+      <button class="prep-reset" onclick="resetAll()">처음부터 다시 선택</button>
+    </div>
+  `;
+}
+
+function confirmRow(icon, label, value, pageIdx) {
+  return `
+    <div class="prep-summary-item" onclick="jumpTo(${pageIdx})">
+      <span class="prep-summary-icon">${icon}</span>
+      <span class="prep-summary-label">${label}</span>
+      <span class="prep-summary-value">${value}</span>
+      <span class="prep-summary-edit">수정</span>
+    </div>`;
+}
+
+// ─── 촬영 시작 ───
 
 function startShooting() {
-  const btn = document.querySelector('.kiosk-start');
+  const btn = document.querySelector('.prep-start');
   if (btn) {
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner"></span> 준비 중...';
   }
 
-  // 9필드 전부 저장
-  for (const key of STEP_KEYS) {
-    saveSessionData(key, selections[key] || '');
-  }
-
-  // 레거시 매핑 저장
-  applyLegacyMapping();
-
+  saveSelections();
   navigateTo('camera.html');
+}
+
+// ─── 리셋 ───
+
+function resetAll() {
+  clearSelections();
+  renderFormatPage();
+  renderProfilePage();
+  showPage(0);
+}
+
+// ─── 페이지 점프 (CONFIRM에서 수정 클릭) ───
+
+function jumpTo(pageIdx) {
+  if (pageIdx === 2) renderStylePage();
+  showPage(pageIdx);
 }
 
 // ─── window 노출 ───
 
 Object.assign(window, {
-  kioskSelect, kioskNext, kioskBack, kioskReset,
-  kioskJumpTo, kioskSkipGender, startShooting,
+  nextPage, prevPage, startShooting, resetAll, jumpTo,
 });
 
 // ─── 초기화 ───
@@ -622,29 +580,26 @@ async function init() {
   await sharedInit();
 
   store.step = 0;
-  store.stepLabel = TX.stepReady;
 
-  const prepScreen = document.querySelector('#prep-screen');
-  if (prepScreen) prepScreen.classList.add('active');
+  renderFormatPage();
+  renderProfilePage();
 
-  // 이전 방문 데이터 복원
-  let restored = false;
-  for (const key of STEP_KEYS) {
-    const saved = loadSessionData(key);
-    if (saved) {
-      selections[key] = saved;
-      restored = true;
-    }
+  // 스타일 페이지 카드 클릭 위임
+  const stylePage = document.getElementById('page-style');
+  if (stylePage) {
+    stylePage.addEventListener('click', handleStyleClick);
   }
 
-  // 모든 필수 필드가 있으면 FINAL 직행
-  if (restored && selections.purpose && selections.age) {
-    goToStep(FINAL_STEP, 'forward');
+  // 이전 방문 데이터가 있으면 CONFIRM 직행
+  if (store.format && store.gender && store.age) {
+    renderStylePage();
+    renderConfirmPage();
+    showPage(3);
   } else {
-    goToStep(1, 'forward');
+    showPage(0);
   }
 
-  Monk.log('키오스크 초기화 완료 (9스텝)');
+  Monk.log('v5 퍼널 초기화 완료 (4페이지)');
 }
 
 init();
