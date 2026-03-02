@@ -3,7 +3,9 @@ type: PETITION
 date: 2026-03-02
 from: iMac/쌍아
 subject: 막내 자동 지시서 인식 패턴 — MEMORY 명시화 여부
-status: 논의 대기
+status: 보류
+hold_date: 2026-03-02
+hold_reason: 작가님 판단 — 현행 관찰 유지. 명시도 금지도 하지 않은 상태에서 안정성 확인 후 재논의
 related: 세션 시작/마감 규정 개정안
 ---
 
