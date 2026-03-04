@@ -33,7 +33,7 @@ function _injectStyles() {
   _stylesInjected = true;
 }
 
-// ─── 바로 결제 (₩9,900 → 70c) ───
+// ─── 바로 결제 (₩9,900 → 80c (70c+10c bonus)) ───
 async function _buyDirect() {
   if (!TOSS_CLIENT_KEY) {
     alert('결제 시스템 준비 중입니다.\n곧 이용 가능합니다!');

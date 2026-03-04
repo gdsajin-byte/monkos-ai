@@ -37,7 +37,7 @@ export async function handleCreditsGet(req, res) {
 
 /**
  * POST /api/credits/use — 크레딧 사용
- * type: 'generate' (-10c) | 'download' (-70c) | 'extra_crop' (-10c) | 'full_original' (-20c)
+ * type: 'generate' (-10c) | 'download' (-70c) | 'extra_crop' (-10c) | 'full_original' (-10c)
  */
 export async function handleCreditsUse(req, res) {
   try {
@@ -48,7 +48,7 @@ export async function handleCreditsUse(req, res) {
       return;
     }
 
-    const COST_MAP = { generate: 10, download: 70, extra_crop: 10, full_original: 20 };
+    const COST_MAP = { generate: 10, download: 70, extra_crop: 10, full_original: 10 };
     const cost = COST_MAP[type] || 0;
     if (cost === 0) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -106,7 +106,7 @@ export async function handleCreditsRefund(req, res) {
       return;
     }
 
-    const REFUND_MAP = { generate: 10, download: 70, extra_crop: 10, full_original: 20 };
+    const REFUND_MAP = { generate: 10, download: 70, extra_crop: 10, full_original: 10 };
     const refund = REFUND_MAP[type] || 0;
     if (refund === 0) {
       res.writeHead(400, { 'Content-Type': 'application/json' });

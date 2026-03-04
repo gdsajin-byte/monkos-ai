@@ -78,48 +78,8 @@
             <div style="font-size:11px; color:#666; margin-top:8px;">10c = ₩1,450 · 생성 10c · 다운로드 70c · 1회 = 80c</div>
         </div>
 
-        <!-- 패키지 카드 3종 -->
-
-        <!-- 추천: 증명사진 1장 -->
-        <label id="pkg-0" style="display:flex; align-items:center; gap:12px; padding:16px; border:2px solid #a78bfa; background:linear-gradient(135deg,rgba(167,139,250,0.2),rgba(124,58,237,0.15)); border-radius:14px; cursor:pointer; margin-bottom:8px; position:relative;">
-            <span style="position:absolute; top:-8px; right:12px; background:#a78bfa; color:#fff; font-size:0.65rem; font-weight:700; padding:2px 8px; border-radius:8px;">추천</span>
-            <input type="radio" name="charge-pkg" value="0" checked style="accent-color:#a78bfa; width:18px; height:18px; flex-shrink:0;">
-            <div>
-                <div style="font-size:1rem; font-weight:700; color:#f8fafc;">📸 증명사진 1장 &nbsp;<span style="color:#a78bfa;">₩9,900</span></div>
-                <div style="font-size:0.8rem; color:#8892a8; margin-top:2px;">생성 + 다운로드 1회 <span style="color:#34d399;">(보너스 +10c)</span></div>
-            </div>
-        </label>
-
-        <!-- 스탠다드: 증명사진 2장 -->
-        <label id="pkg-1" style="display:flex; align-items:center; gap:10px; padding:14px 16px; border:1px solid rgba(167,139,250,0.12); background:rgba(20,20,40,0.7); border-radius:10px; cursor:pointer; margin-bottom:8px;">
-            <input type="radio" name="charge-pkg" value="1" style="accent-color:#a78bfa; width:16px; height:16px; flex-shrink:0;">
-            <div style="flex:1;">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <span style="font-size:0.9rem; font-weight:600; color:#e2e8f0;">📸📸 증명사진 2장</span>
-                    <span>
-                        <span style="text-decoration:line-through; color:#666; font-size:0.75rem;">₩20,300</span>
-                        <span style="color:#a78bfa; font-weight:600; font-size:0.85rem; margin-left:4px;">₩18,900</span>
-                    </span>
-                </div>
-                <div style="font-size:0.72rem; color:#34d399; margin-top:3px;">+20c 보너스</div>
-            </div>
-        </label>
-
-        <!-- 프리미엄: 증명사진 4장 + 풀샷 -->
-        <label id="pkg-2" style="display:flex; align-items:center; gap:10px; padding:14px 16px; border:1.5px solid rgba(245,158,11,0.3); background:linear-gradient(135deg,rgba(245,158,11,0.08),rgba(20,20,40,0.7)); border-radius:10px; cursor:pointer; margin-bottom:8px; position:relative;">
-            <span style="position:absolute; top:-8px; right:12px; background:#f59e0b; color:#fff; font-size:0.65rem; font-weight:700; padding:2px 8px; border-radius:8px;">★ BEST</span>
-            <input type="radio" name="charge-pkg" value="2" style="accent-color:#a78bfa; width:16px; height:16px; flex-shrink:0;">
-            <div style="flex:1;">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <span style="font-size:0.9rem; font-weight:600; color:#e2e8f0;">📸📸📸📸 4장 + 풀샷</span>
-                    <span>
-                        <span style="text-decoration:line-through; color:#666; font-size:0.75rem;">₩40,600</span>
-                        <span style="color:#a78bfa; font-weight:600; font-size:0.85rem; margin-left:4px;">₩34,900</span>
-                    </span>
-                </div>
-                <div style="font-size:0.72rem; color:#34d399; margin-top:3px;">+60c 보너스 · 풀샷 원본 1회 무료</div>
-            </div>
-        </label>
+        <!-- v3 패키지 카드 (JS 동적 생성) -->
+        <div id="pkg-container"></div>
 
         <!-- 소액충전 스테퍼 -->
         <div style="text-align:center; font-size:0.78rem; color:#8892a8; margin:16px 0 8px;">── 또는 소액 충전 ──</div>
@@ -144,13 +104,15 @@
     <script type="module">
     import { store, Monk, sharedInit, buyCreditsKR, navigateTo } from './shared.js';
 
-    // ─── 충전 옵션 (charge.js 동일) ───
+    // ─── v3 충전 옵션 ───
     const CHARGE_OPTIONS = [
-      { label: '증명사진 1장', amount: 9900, credits: 80 },
-      { label: '증명사진 2장', amount: 18900, credits: 160 },
-      { label: '증명사진 4장 + 풀샷', amount: 34900, credits: 340 },
+      { key: 'single_70', label: '70 크레딧', price: 9900, credits: 70, bonus: 10, recommended: true },
+      { key: 'package_100', label: '100 크레딧', price: 12900, credits: 100, bonus: 30 },
+      { key: 'package_300', label: '300 크레딧', price: 34900, credits: 300, bonus: 120, best: true },
+      { key: 'package_500', label: '500 크레딧', price: 49900, credits: 500, bonus: 250 },
     ];
 
+    const KRW_PER_CREDIT = 145;
     const STEP_UNIT = 10;
     const STEP_PRICE = 1450;
     const STEP_MIN = 1;
@@ -161,6 +123,64 @@
     let stepperQty = 1;
 
     function fmt(n) { return n.toLocaleString('ko-KR'); }
+
+    // ─── v3 상품 카드 동적 생성 ───
+    function renderPackages() {
+      const container = document.getElementById('pkg-container');
+      if (!container) return;
+
+      container.innerHTML = CHARGE_OPTIONS.map((opt, i) => {
+        const totalC = opt.credits + opt.bonus;
+        const strikePrice = totalC * KRW_PER_CREDIT;
+        const saved = strikePrice - opt.price;
+        const isRec = opt.recommended;
+        const isBest = opt.best;
+        const badge = isRec
+          ? '<span style="position:absolute;top:-8px;right:12px;background:#a78bfa;color:#fff;font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:8px;">추천</span>'
+          : isBest
+          ? '<span style="position:absolute;top:-8px;right:12px;background:#f59e0b;color:#fff;font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:8px;">★ BEST</span>'
+          : '';
+        const border = isRec ? '2px solid #a78bfa' : isBest ? '1.5px solid rgba(245,158,11,0.3)' : '1px solid rgba(167,139,250,0.12)';
+        const bg = isRec
+          ? 'linear-gradient(135deg,rgba(167,139,250,0.2),rgba(124,58,237,0.15))'
+          : isBest
+          ? 'linear-gradient(135deg,rgba(245,158,11,0.08),rgba(20,20,40,0.7))'
+          : 'rgba(20,20,40,0.7)';
+        const radius = isRec ? '14px' : '10px';
+        const checked = i === 0 ? ' checked' : '';
+        const nameWeight = isRec ? '700' : '600';
+        const nameColor = isRec ? '#f8fafc' : '#e2e8f0';
+
+        return '<label id="pkg-' + i + '" data-ci="' + i + '" style="display:flex;align-items:center;gap:10px;padding:14px 16px;border:' + border + ';background:' + bg + ';border-radius:' + radius + ';cursor:pointer;margin-bottom:8px;' + (badge ? 'position:relative;' : '') + '">'
+          + badge
+          + '<input type="radio" name="charge-pkg" value="' + i + '"' + checked + ' style="accent-color:#a78bfa;width:16px;height:16px;flex-shrink:0;">'
+          + '<div style="flex:1;">'
+          + '<div style="display:flex;justify-content:space-between;align-items:center;">'
+          + '<span style="font-size:0.9rem;font-weight:' + nameWeight + ';color:' + nameColor + ';">' + opt.label + '</span>'
+          + '<span>'
+          + '<span style="text-decoration:line-through;color:#666;font-size:0.75rem;">₩' + fmt(strikePrice) + '</span>'
+          + '<span style="color:#a78bfa;font-weight:600;font-size:0.85rem;margin-left:4px;">₩' + fmt(opt.price) + '</span>'
+          + '</span>'
+          + '</div>'
+          + '<div style="font-size:0.72rem;color:#34d399;margin-top:3px;">+' + opt.bonus + 'c 보너스 · ₩' + fmt(saved) + '원 절약</div>'
+          + '</div>'
+          + '</label>';
+      }).join('');
+
+      // 패키지 선택 이벤트
+      container.querySelectorAll('label[data-ci]').forEach(label => {
+        label.addEventListener('click', () => {
+          selectedPkg = parseInt(label.dataset.ci);
+          deactivateStepper();
+          container.querySelectorAll('label[data-ci]').forEach(l => {
+            l.style.borderColor = 'rgba(167,139,250,0.12)';
+          });
+          const opt = CHARGE_OPTIONS[selectedPkg];
+          if (opt.best) label.style.borderColor = 'rgba(245,158,11,0.3)';
+          else label.style.borderColor = '#a78bfa';
+        });
+      });
+    }
 
     // ─── 스테퍼 UI 업데이트 ───
     function updateStepper() {
@@ -177,7 +197,7 @@
     function activateStepper() {
       stepperActive = true;
       document.querySelectorAll('input[name=charge-pkg]').forEach(r => { r.checked = false; });
-      document.querySelectorAll('#pkg-0,#pkg-1,#pkg-2').forEach(l => {
+      document.querySelectorAll('label[data-ci]').forEach(l => {
         l.style.borderColor = 'rgba(167,139,250,0.12)';
       });
       document.getElementById('stepper-box').style.borderColor = '#a78bfa';
@@ -189,20 +209,6 @@
       updateStepper();
       document.getElementById('stepper-box').style.borderColor = 'rgba(167,139,250,0.12)';
     }
-
-    // ─── 패키지 선택 ───
-    document.querySelectorAll('#pkg-0,#pkg-1,#pkg-2').forEach(label => {
-      label.addEventListener('click', () => {
-        selectedPkg = parseInt(label.id.replace('pkg-', ''));
-        deactivateStepper();
-        // border 복원
-        document.querySelectorAll('#pkg-0,#pkg-1,#pkg-2').forEach(l => {
-          l.style.borderColor = 'rgba(167,139,250,0.12)';
-        });
-        if (selectedPkg === 0) label.style.borderColor = '#a78bfa';
-        else if (selectedPkg === 2) label.style.borderColor = 'rgba(245,158,11,0.3)';
-      });
-    });
 
     // ─── 스테퍼 이벤트 ───
     document.getElementById('stepper-box').addEventListener('click', (e) => {
@@ -230,7 +236,7 @@
         buyCreditsKR(stepperQty * STEP_PRICE, stepperQty * STEP_UNIT);
       } else {
         const opt = CHARGE_OPTIONS[selectedPkg];
-        buyCreditsKR(opt.amount, opt.credits);
+        buyCreditsKR(opt.price, opt.credits + opt.bonus);
       }
     });
 
@@ -246,6 +252,7 @@
     // ─── 초기화 ───
     async function init() {
       await sharedInit();
+      renderPackages();
       Monk.log('충전 페이지 초기화 완료');
     }
 

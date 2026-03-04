@@ -114,9 +114,9 @@ export function closeCreditModal() {
   store.creditModalOpen = false;
 }
 
-// ─── 충전 페이지 이동 (v5: 풀페이지) ───
+// ─── 충전 모달 (v3: 바텀시트) ───
 export function showChargeModal() {
-  navigateTo('charge.html?return=' + encodeURIComponent(location.pathname.replace('.html', '').replace('/', '')));
+  import('./modules/charge.js').then(m => m.ChargeModule.show());
 }
 
 // ─── 결제 (토스) ───

@@ -153,28 +153,7 @@
                     <div class="value red" data-bind="user.credits">0</div>
                 </div>
             </div>
-            <div class="credit-packages">
-                <button class="credit-pkg" onclick="buyCreditsKR(1450, 10)">
-                    <div class="pkg-credits">10 Cr</div>
-                    <div class="pkg-price">₩1,450</div>
-                </button>
-                <button class="credit-pkg" onclick="buyCreditsKR(13050, 100)">
-                    <div class="pkg-credits">100 Cr</div>
-                    <div class="pkg-price">₩13,050</div>
-                    <div class="pkg-save">10% 할인</div>
-                </button>
-                <button class="credit-pkg popular" onclick="buyCreditsKR(34800, 300)">
-                    <div class="pkg-badge">BEST</div>
-                    <div class="pkg-credits">300 Cr</div>
-                    <div class="pkg-price">₩34,800</div>
-                    <div class="pkg-save">20% 할인</div>
-                </button>
-                <button class="credit-pkg" onclick="buyCreditsKR(50750, 500)">
-                    <div class="pkg-credits">500 Cr</div>
-                    <div class="pkg-price">₩50,750</div>
-                    <div class="pkg-save">30% 할인</div>
-                </button>
-            </div>
+            <button class="credit-modal-btn primary" onclick="showChargeModal()" style="width:100%;padding:14px;background:linear-gradient(135deg,#a78bfa,#818cf8);color:#fff;border:none;border-radius:12px;font-size:0.95rem;font-weight:700;cursor:pointer;margin-top:8px;">충전하기</button>
             <button class="credit-modal-btn secondary" onclick="closeCreditModal()">닫기</button>
         </div>
     </div>

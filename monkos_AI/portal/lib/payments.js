@@ -1,6 +1,6 @@
 /** 담당: 막내2 (리파인) */
 
-import { usersCollection, firestore, log, logTransaction, parseJsonBody, parseRawBody, createHmac, randomBytes, directTokens, LEMONSQUEEZY_API_KEY, LEMONSQUEEZY_WEBHOOK_SECRET, LEMONSQUEEZY_STORE_ID, TOSS_SECRET_KEY, VARIANT_CREDITS, TOSS_AMOUNT_CREDITS } from './shared/config.js';
+import { usersCollection, firestore, log, logTransaction, parseJsonBody, parseRawBody, createHmac, randomBytes, directTokens, LEMONSQUEEZY_API_KEY, LEMONSQUEEZY_WEBHOOK_SECRET, LEMONSQUEEZY_STORE_ID, TOSS_SECRET_KEY, VARIANT_CREDITS, TOSS_AMOUNT_CREDITS, PRODUCTS } from './shared/config.js';
 
 /**
  * POST /api/checkout — Lemon Squeezy 체크아웃 URL 생성
@@ -173,7 +173,9 @@ export async function handleTossConfirm(req, res) {
       return;
     }
 
-    let credits = TOSS_AMOUNT_CREDITS[amount];
+    // v3: PRODUCTS에서 상품 검색 → 총 크레딧(base + bonus) 적립
+    const product = Object.values(PRODUCTS).find(p => p.price === amount);
+    let credits = product ? product.credits + product.bonus : null;
 
     // 맞춤 충전: 패키지 매핑에 없으면 정가(₩145/c) 기준 10c 배수 검증
     if (!credits) {
@@ -241,7 +243,7 @@ export async function handleTossConfirm(req, res) {
       log(`[Toss] 결제 로그 저장 실패: ${logErr.message}`, 'WARNING');
     }
 
-    logTransaction({ userId, amount: credits, type: 'charge', provider: 'toss', balanceAfter: result, description: `토스 결제 (+${credits}c, ₩${amount})`, referenceId: orderId, metadata: { paymentKey, amount } });
+    logTransaction({ userId, amount: credits, type: 'charge', provider: 'toss', balanceAfter: result, description: `토스 결제 (+${credits}c, ₩${amount})`, referenceId: orderId, metadata: { paymentKey, amount, creditsBase: product?.credits, bonus: product?.bonus } });
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({
       success: true,

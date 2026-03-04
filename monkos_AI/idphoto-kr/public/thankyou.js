@@ -6,7 +6,7 @@
 
 import {
   store, Monk, PHOTO_SPECS, CREDIT_COST,
-  sharedInit, loadSessionData, navigateTo,
+  sharedInit, loadSessionData, navigateTo, showChargeModal,
   API, pipe, fetchLatestCredits
 } from './shared.js';
 
@@ -165,7 +165,7 @@ async function downloadFullOriginal() {
     // 첫 구매: 잔액 부족 → charge.html
     if (store.user.credits < CREDIT_COST.fullOriginal) {
       sessionStorage.setItem('monkos_pending_action', 'full_original');
-      navigateTo('charge.html?return=thankyou&action=full');
+      showChargeModal();
       return;
     }
 
@@ -176,7 +176,7 @@ async function downloadFullOriginal() {
     } catch (err) {
       if (err.status === 402) {
         sessionStorage.setItem('monkos_pending_action', 'full_original');
-        navigateTo('charge.html?return=thankyou&action=full');
+        showChargeModal();
       } else {
         Monk.log('풀샷 원본 에러: ' + (err.error || err.message));
       }
@@ -201,7 +201,7 @@ async function downloadFullOriginal() {
   if (priceEl) priceEl.textContent = '무료';
 
   showToast('풀샷 원본 다운로드 완료');
-  Monk.log('풀샷 원본 다운로드 완료 (20c)');
+  Monk.log('풀샷 원본 다운로드 완료 (10c)');
 }
 
 function redownloadFull() {

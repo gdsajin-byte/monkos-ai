@@ -76,23 +76,19 @@ export const VARIANT_CREDITS = {
   '1297531': 50,
 };
 
-export const TOSS_AMOUNT_CREDITS = {
-  1450: 10,
-  2900: 20,
-  4350: 30,
-  5800: 40,
-  7250: 50,
-  8700: 60,
-  9900: 80,
-  10150: 70,
-  11600: 80,
-  13050: 90,
-  14500: 100,
-  18900: 160,
-  34800: 300,
-  34900: 340,
-  50750: 500,
+// v3 상품 정의 — 상품c와 보너스c 분리
+export const PRODUCTS = {
+  single_70:   { price: 9900,  credits: 70,  bonus: 10 },
+  package_100: { price: 12900, credits: 100, bonus: 30 },
+  package_300: { price: 34900, credits: 300, bonus: 120 },
+  package_500: { price: 49900, credits: 500, bonus: 250 },
+  topup_10:    { price: 1450,  credits: 10,  bonus: 0 },
 };
+
+// 하위호환: amount → 총 크레딧 매핑 (payments.js 역참조용)
+export const TOSS_AMOUNT_CREDITS = Object.fromEntries(
+  Object.values(PRODUCTS).map(p => [p.price, p.credits + p.bonus])
+);
 
 // === CORS ===
 export const ALLOWED_ORIGINS = [

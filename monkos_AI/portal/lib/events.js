@@ -188,7 +188,7 @@ export async function handleMissionComplete(req, res) {
 
 /**
  * POST /api/credits/event — 이벤트 크레딧 지급
- * signup_bonus: +30c, telegram_join: +40c, kakao_channel_add: +40c, mission_complete: +100c
+ * signup_bonus: +10c, telegram_join: +40c, kakao_channel_add: +40c, mission_complete: +100c
  */
 export async function handleCreditsEvent(req, res) {
   try {
@@ -200,7 +200,7 @@ export async function handleCreditsEvent(req, res) {
     }
 
     const EVENT_CREDITS = {
-      signup_bonus: 30,
+      signup_bonus: 10,
       telegram_join: 40,
       kakao_channel_add: 40,
       mission_complete: 100,

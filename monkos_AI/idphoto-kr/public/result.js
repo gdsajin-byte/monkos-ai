@@ -6,7 +6,7 @@
 
 import {
   store, pipe, Monk, TX, PHOTO_SPECS, CREDIT_COST,
-  sharedInit, showCreditModal, saveSessionData, loadSessionData, navigateTo,
+  sharedInit, showCreditModal, saveSessionData, loadSessionData, navigateTo, showChargeModal,
   buyCreditsKR, TOSS_CLIENT_KEY, API, fetchLatestCredits, closeCreditModal,
 } from './shared.js';
 
@@ -268,7 +268,7 @@ async function confirmAndGenerate() {
   } catch (err) {
     hideGenOverlay();
     if (err.status === 402) {
-      navigateTo('charge.html?return=result&action=generate');
+      showChargeModal();
       store.showStep2Actions = true;
       store.resultTitle = TX.resultConfirm;
       store.resultSubtitle = '크레딧이 부족합니다';
@@ -342,7 +342,7 @@ async function downloadResult() {
   // 잔액 부족 → 충전 페이지
   if (store.user.credits < CREDIT_COST.download) {
     sessionStorage.setItem('monkos_pending_action', 'download');
-    navigateTo('charge.html?return=result&action=download');
+    showChargeModal();
     return;
   }
 
@@ -445,7 +445,7 @@ async function doDownload() {
 
   } catch (err) {
     if (err.status === 402) {
-      navigateTo('charge.html?return=result&action=download');
+      showChargeModal();
     } else {
       Monk.log('다운로드 크레딧 에러: ' + (err.error || err.message));
       const btn = document.querySelector('#btn-download');
@@ -459,6 +459,7 @@ Object.assign(window, {
   retakePhoto,
   confirmAndGenerate,
   downloadResult,
+  showChargeModal,
 });
 
 // ─── 초기화 ───

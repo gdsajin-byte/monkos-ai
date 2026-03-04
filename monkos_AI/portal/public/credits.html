@@ -192,9 +192,10 @@ var TOSS_CLIENT_KEY = 'test_ck_6bJXmgo28eBJk12vvDAW3LAnGKWx';
 var GOOGLE_CLIENT_ID = '933456016842-clagcrpo1juvukjif1m454jq811bd2rq.apps.googleusercontent.com';
 
 var PACKAGES = [
-  { label: '증명사진 1장', amount: 9900, credits: 80, desc: '생성 + 다운로드 1회', bonus: '+10c 보너스', originalAmount: 10150, recommended: true },
-  { label: '증명사진 2장', amount: 18900, credits: 160, desc: '보너스 20c 포함', bonus: '+20c 보너스', originalAmount: 20300 },
-  { label: '증명사진 4장 + 풀샷', amount: 34900, credits: 340, desc: '보너스 60c + 풀샷 원본 1회 무료', bonus: '+60c 보너스', originalAmount: 40600, best: true },
+  { label: '70 크레딧', amount: 9900, credits: 70, bonus: 10, recommended: true },
+  { label: '100 크레딧', amount: 12900, credits: 100, bonus: 30 },
+  { label: '300 크레딧', amount: 34900, credits: 300, bonus: 120, best: true },
+  { label: '500 크레딧', amount: 49900, credits: 500, bonus: 250 },
 ];
 
 var selectedIdx = 0;
@@ -222,15 +223,15 @@ function renderPackages() {
   var html = '';
   for (var i = 0; i < PACKAGES.length; i++) {
     var p = PACKAGES[i];
+    var totalC = p.credits + p.bonus;
+    var strikePrice = totalC * 145;
+    var saved = strikePrice - p.amount;
     var sel = i === 0 ? ' selected' : '';
     var chk = i === 0 ? ' checked' : '';
     var badge = p.recommended ? '<span class="pkg-badge">추천</span>' : '';
     if (p.best) badge = '<span class="pkg-badge" style="background:#f59e0b;">★ BEST</span>';
-    var priceHtml = p.originalAmount
-      ? '<span style="text-decoration:line-through;color:#666;font-size:0.75rem;">₩' + p.originalAmount.toLocaleString() + '</span> <span class="pkg-price">₩' + p.amount.toLocaleString() + '</span>'
-      : '<span class="pkg-price">₩' + p.amount.toLocaleString() + '</span>';
-    var bonusHtml = p.bonus ? '<div style="font-size:0.72rem;color:#34d399;margin-top:3px;">' + p.bonus + '</div>' : '';
-    var descHtml = p.desc ? '<div class="pkg-desc">' + p.desc + '</div>' : '';
+    var priceHtml = '<span style="text-decoration:line-through;color:#666;font-size:0.75rem;">₩' + strikePrice.toLocaleString() + '</span> <span class="pkg-price">₩' + p.amount.toLocaleString() + '</span>';
+    var bonusHtml = p.bonus ? '<div style="font-size:0.72rem;color:#34d399;margin-top:3px;">+' + p.bonus + 'c 보너스 · ₩' + saved.toLocaleString() + '원 절약</div>' : '';
     html += '<label class="pkg' + sel + '" data-idx="' + i + '">' +
       badge +
       '<input type="radio" name="pkg" value="' + i + '"' + chk + '>' +
@@ -239,7 +240,7 @@ function renderPackages() {
           '<span class="pkg-name">' + p.label + '</span>' +
           '<span>' + priceHtml + '</span>' +
         '</div>' +
-        descHtml + bonusHtml +
+        bonusHtml +
       '</div>' +
     '</label>';
   }
@@ -349,7 +350,7 @@ function startPayment() {
     tossPayments.requestPayment('카드', {
       amount: pkg.amount,
       orderId: orderId,
-      orderName: 'MONKOS ' + pkg.credits + ' 크레딧',
+      orderName: 'MONKOS ' + (pkg.credits + pkg.bonus) + ' 크레딧',
       successUrl: window.location.origin + '/credits?toss=success',
       failUrl: window.location.origin + '/credits?toss=fail',
       customerEmail: currentUser.email || undefined,
