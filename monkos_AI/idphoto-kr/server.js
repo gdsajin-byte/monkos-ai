@@ -110,7 +110,7 @@ async function grantShareBonus(userId, platform) {
 
 // === 코칭 시스템 프롬프트 (한국어 네이티브) ===
 const COACHING_INSTRUCTIONS = {
-  id_photo: `몽코스 AI 코치입니다. 여권/증명사진 촬영을 도와드립니다.
+  passport: `몽코스 AI 코치입니다. 여권/증명사진 촬영을 도와드립니다.
 
 [체크 순서]
 1. 정면 응시 (고개 기울기, 시선)
@@ -125,7 +125,7 @@ const COACHING_INSTRUCTIONS = {
 - 긍정 표현: "~하면 완벽해요"
 - 완벽하면: "좋아요! 지금 촬영하세요"`,
 
-  resume: `몽코스 AI 코치입니다. 이력서 사진 촬영을 도와드립니다.
+  id: `몽코스 AI 코치입니다. 이력서 사진 촬영을 도와드립니다.
 
 [체크 순서]
 1. 정면 응시 (고개 기울기, 시선)
@@ -139,9 +139,6 @@ const COACHING_INSTRUCTIONS = {
 - 긍정 표현: "~하면 완벽해요"
 - 완벽하면: "좋아요! 지금 촬영하세요"`,
 };
-// v5 alias (48시간 후 원본 키 제거)
-COACHING_INSTRUCTIONS.passport = COACHING_INSTRUCTIONS.id_photo;
-COACHING_INSTRUCTIONS.id = COACHING_INSTRUCTIONS.resume;
 
 // === Imagen 프롬프트 (CF idgen.js 정본) ===
 const IDENTITY_PRESERVATION = `IDENTITY RULE: 90% SAME PERSON + 10% ENHANCEMENT
@@ -164,36 +161,11 @@ DO NOT:
 
 GOAL: "This is ME, but on my best day" - perfectly front-facing, studio flat lighting, 90% accuracy, 10% professional retouching.`;
 
-// SPA 호환용 스타일 프롬프트 (기존 /api/generate)
+// === 스타일 프롬프트 ===
 const STYLE_PROMPTS = {
-  id_photo: 'Professional passport/ID photo, perfectly front-facing looking directly at camera, formal white background, sharp focus, head straight, symmetric composition',
-  resume: 'Professional resume photo for Korean job application (이력서), perfectly front-facing looking directly at camera, clean white background, business formal attire, 3:4 ratio, approachable yet professional expression',
+  passport: 'Professional passport/ID photo, perfectly front-facing looking directly at camera, formal white background, sharp focus, head straight, symmetric composition',
+  id: 'Professional resume photo for Korean job application (이력서), perfectly front-facing looking directly at camera, clean white background, business formal attire, 3:4 ratio, approachable yet professional expression',
 };
-// v5 alias (48시간 후 원본 키 제거)
-STYLE_PROMPTS.passport = STYLE_PROMPTS.id_photo;
-STYLE_PROMPTS.id = STYLE_PROMPTS.resume;
-
-// SPA 호환용 성별/연령별 의상 프롬프트 (기존 /api/generate)
-function getOutfitPrompt(gender, age, style = 'id_photo') {
-  const genderLabel = gender === 'female' ? 'female/woman' : 'male/man';
-  const ageMap = {
-    child: { label: 'young child (under 12)', outfit: gender === 'female'
-      ? 'a clean white polo shirt or simple blouse, age-appropriate and neat'
-      : 'a clean white polo shirt or simple dress shirt, age-appropriate and neat' },
-    teen: { label: 'teenager (13-18)', outfit: gender === 'female'
-      ? 'a neat school-style blouse or simple formal top, age-appropriate'
-      : 'a clean dress shirt with or without tie, age-appropriate' },
-    adult: { label: 'adult', outfit: style === 'resume'
-      ? (gender === 'female'
-        ? 'a clean white blouse with regular collar under dark navy or black business jacket, simple and professional, no frills'
-        : 'a dark navy or black formal business suit with white dress shirt and solid-color subtle tie, clean and professional')
-      : (gender === 'female'
-        ? 'a professional blouse or women\'s business jacket, formal and clean'
-        : 'a clean, dark navy or charcoal formal business suit with white dress shirt and subtle tie') },
-  };
-  const info = ageMap[age] || ageMap.adult;
-  return `SUBJECT: This person is a ${genderLabel}, ${info.label}. OUTFIT: Dress this person in ${info.outfit}. Keep the person's face, hair, and body exactly the same — only ensure appropriate attire. DO NOT change the person's apparent gender or age.`;
-}
 
 // === 9필드 퍼널 — CF idgen.js 정본 이식 ===
 const BG_PROMPTS = {
@@ -245,74 +217,6 @@ const HAIR_PROMPTS = {
   up: 'hair tied up neatly',
   down: 'hair down, well-groomed',
 };
-
-const PURPOSE_PROMPTS = {
-  passport: 'Professional passport/ID photo, perfectly front-facing looking directly at camera, sharp focus, head straight, symmetric composition, forehead and eyebrows must be visible',
-  student_id: 'Student ID photo, perfectly front-facing, clean and neat appearance, symmetric composition',
-  employee_id: 'Professional corporate ID photo, perfectly front-facing, business-appropriate appearance, symmetric composition',
-  resume: 'Professional resume photo for job application, perfectly front-facing looking directly at camera, business formal, 3:4 ratio, approachable yet professional',
-  color_portrait: 'Professional color portrait photo, perfectly front-facing, studio lighting, clean and polished look',
-};
-
-function buildPrompt(body) {
-  const { style, purpose, gender, age, clothing, clothingColor, tie, hair, background, expression } = body;
-
-  const parts = [];
-
-  // 1. 용도 베이스
-  const purposePrompt = PURPOSE_PROMPTS[purpose] || PURPOSE_PROMPTS[style === 'id_photo' ? 'passport' : 'resume'];
-  parts.push(`[STYLE] ${purposePrompt}`);
-
-  // 2. 배경
-  const bgPrompt = BG_PROMPTS[background] || BG_PROMPTS.white;
-  parts.push(`[BACKGROUND] ${bgPrompt}`);
-
-  // 3. 피사체 정보
-  const genderLabel = gender === 'female' ? 'female/woman' : 'male/man';
-  const ageLabels = { child: 'young child (under 12)', teen: 'teenager (13-18)', adult: 'adult' };
-  parts.push(`[SUBJECT] This person is a ${genderLabel}, ${ageLabels[age] || 'adult'}.`);
-
-  // 4. 의상
-  if (clothing && clothing !== 'as_is') {
-    const clothBase = CLOTHING_PROMPTS[clothing] || clothing;
-    const colorMod = clothingColor ? (CLOTHING_COLOR_PROMPTS[clothingColor] || clothingColor) : '';
-    const outfitDesc = colorMod ? `${colorMod} ${clothBase}` : clothBase;
-
-    let outfitLine = `[OUTFIT] Dress this person in ${outfitDesc}.`;
-
-    // 여성 셔츠 → 블라우스
-    if (gender === 'female' && clothing === 'shirt') {
-      outfitLine = `[OUTFIT] Dress this person in a ${colorMod ? colorMod + ' ' : ''}clean blouse, simple and professional.`;
-    }
-
-    // 넥타이 (남성 + 정장/셔츠)
-    if (tie && tie !== 'none' && gender === 'male') {
-      const tieDesc = TIE_PROMPTS[tie];
-      if (tieDesc) outfitLine += ` With ${tieDesc}.`;
-    }
-
-    parts.push(outfitLine);
-  } else {
-    parts.push('[OUTFIT] Keep current clothing as-is. Only ensure it looks neat and tidy.');
-  }
-
-  // 5. 헤어
-  if (hair && hair !== 'as_is') {
-    const hairDesc = HAIR_PROMPTS[hair];
-    if (hairDesc) parts.push(`[HAIR] ${hairDesc}`);
-  }
-
-  // 6. 표정
-  if (expression) {
-    const exprDesc = EXPRESSION_PROMPTS[expression];
-    if (exprDesc) parts.push(`[EXPRESSION] ${exprDesc}`);
-  }
-
-  // 7. 공통 제약
-  parts.push('[CONSTRAINT] Keep the person\'s face and body exactly the same — only apply the specified styling. DO NOT change apparent gender or age.');
-
-  return `${IDENTITY_PRESERVATION}\n\n[IMAGE-TO-IMAGE TRANSFORM]\n${parts.join('\n')}`;
-}
 
 // === v5 프롬프트 빌더 (SCHEMA_v5_확정.md §6 정본) ===
 function buildPromptV5(body) {
@@ -490,40 +394,9 @@ async function connectGeminiLive(session, clientId, style = 'passport') {
   }
 }
 
-// === Imagen I2I 생성 (SPA 호환 — Google AI Studio SDK) ===
+// === Base64 추출 헬퍼 ===
 function extractBase64(base64Input) {
   return base64Input.includes(',') ? base64Input.split(',')[1] : base64Input;
-}
-
-async function generatePhoto(inputBase64, style = 'passport', gender = 'f', age = 'adult') {
-  const base64Data = extractBase64(inputBase64);
-  const stylePrompt = STYLE_PROMPTS[style] || STYLE_PROMPTS.passport;
-  const outfitPrompt = getOutfitPrompt(gender, age, style);
-  const instruction = `${IDENTITY_PRESERVATION}\n\n[IMAGE-TO-IMAGE TRANSFORM] ${stylePrompt}\n\n${outfitPrompt}`;
-
-  const response = await imagenAI.models.generateContent({
-    model: 'gemini-3-pro-image-preview',
-    contents: {
-      parts: [
-        { inlineData: { data: base64Data, mimeType: 'image/jpeg' } },
-        { text: instruction },
-      ],
-    },
-    config: {
-      imageConfig: { aspectRatio: '3:4' },
-      safetySettings: [
-        { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
-        { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
-        { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
-        { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
-      ],
-    },
-  });
-
-  const part = response.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
-  if (!part?.inlineData) throw new Error('이미지 생성 실패: 응답에 이미지 없음');
-
-  return `data:image/png;base64,${part.inlineData.data}`;
 }
 
 // === 사전분석 (SPA 호환 — Gemini 2.0 Flash via Vertex AI ADC) ===
@@ -652,50 +525,6 @@ app.post('/api/precheck', async (req, res) => {
   }
 });
 
-// I2I 생성 — SPA 호환 (SDK, 크레딧 체크 포함)
-app.post('/api/generate', async (req, res) => {
-  let bodyUserId = null;
-  try {
-    const body = req.body;
-    bodyUserId = body.userId;
-    if (!body.image) return res.status(400).json({ error: '이미지 필요' });
-
-    // 이미지 사이즈 검증 (2MB 상한)
-    const base64Raw = extractBase64(body.image);
-    const imageSize = Math.ceil(base64Raw.length * 0.75);
-    if (imageSize > 2 * 1024 * 1024) {
-      return res.status(400).json({ error: '이미지 크기가 2MB를 초과합니다' });
-    }
-
-    // 크레딧 체크 및 차감
-    if (body.userId) {
-      const creditResult = await useCredits(body.userId, 'generate');
-      if (!creditResult.success) {
-        return res.status(402).json({
-          error: creditResult.error,
-          credits: creditResult.credits ?? 0,
-          required: 10,
-        });
-      }
-      log(`[Credits] 생성 차감: ${body.userId} → ${creditResult.credits}c`);
-    }
-
-    log(`[Imagen] 생성 요청: style=${body.style}, gender=${body.gender || 'male'}, age=${body.age || 'adult'}`);
-    const image = await generatePhoto(body.image, body.style, body.gender, body.age);
-    res.json({ image });
-  } catch (err) {
-    log(`[API][generate] 에러: ${err.message}`, 'ERROR');
-    // 생성 실패 시 크레딧 환불
-    if (bodyUserId) {
-      try {
-        const refund = await refundCredits(bodyUserId, 'generate');
-        if (refund.success) log(`[Credits] 생성 실패 환불: ${bodyUserId}`);
-      } catch {}
-    }
-    res.status(500).json({ error: err.message });
-  }
-});
-
 // I2I 생성 — MPA용 (9필드 CF 정본, raw fetch, 크레딧 체크 포함)
 app.post('/api/idgen', async (req, res) => {
   let bodyUserId = null;
@@ -730,16 +559,10 @@ app.post('/api/idgen', async (req, res) => {
       log(`[FREE-GEN] ip=${req.headers['x-forwarded-for'] || req.ip} t=${Date.now()}`);
     }
 
-    // v5 버전 분기 (SCHEMA §9 — 48시간 하위호환)
-    const schemaVersion = body.v || 4;
-    if (schemaVersion >= 5) {
-      if (!body.format || !body.gender || !body.age) {
-        return res.status(400).json({ error: 'v5 필수값 누락: format, gender, age' });
-      }
+    if (!body.format || !body.gender || !body.age) {
+      return res.status(400).json({ error: '필수값 누락: format, gender, age' });
     }
-    const instruction = schemaVersion >= 5
-      ? buildPromptV5(body)
-      : buildPrompt(body);  // 48시간 후 제거
+    const instruction = buildPromptV5(body);
 
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image-preview:generateContent?key=${apiKey}`,
@@ -889,8 +712,7 @@ const httpServer = app.listen(PORT, '0.0.0.0', () => {
   log('  GET  /api/info            — 서비스 정보');
   log('  POST /api/pre-check       — 사전분석 (SPA)');
   log('  POST /api/precheck        — 사전분석 (MPA)');
-  log('  POST /api/generate        — Imagen I2I (SPA)');
-  log('  POST /api/idgen           — Imagen I2I (MPA, 9필드)');
+  log('  POST /api/idgen           — Imagen I2I (9필드)');
   log('  POST /api/qc              — QC 검증 (MPA)');
   log('  POST /api/credit/use      — 크레딧 차감');
   log('  POST /api/credit/share-bonus — 공유 보너스');
@@ -947,9 +769,9 @@ wss.on('connection', async (ws) => {
       msg = JSON.parse(raw);
     } catch { return; }
 
-    if (msg.type === 'set-format' || msg.type === 'set-style') {
-      const val = msg.format || msg.style;
-      session.photoStyle = (val === 'id' || val === 'resume') ? 'id' : 'passport';
+    if (msg.type === 'set-format') {
+      const val = msg.format;
+      session.photoStyle = val === 'id' ? 'id' : 'passport';
       log(`[포맷][${clientId}] ${session.photoStyle}`);
       return;
     }
