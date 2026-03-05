@@ -105,9 +105,10 @@ header {
 .hero-bg {
   width: 100%;
   height: 380px;
-  object-fit: cover;
-  object-position: top;
-  display: block;
+  background: radial-gradient(ellipse at 30% 20%, rgba(167,139,250,0.18) 0%, transparent 50%),
+              radial-gradient(ellipse at 70% 60%, rgba(129,140,248,0.12) 0%, transparent 50%),
+              radial-gradient(ellipse at 50% 80%, rgba(192,132,252,0.08) 0%, transparent 40%),
+              #0a0a1a;
 }
 .hero-overlay {
   position: absolute; inset: 0;
@@ -191,24 +192,31 @@ header {
   border-radius: 1px;
 }
 
-/* === 쇼케이스 === */
+/* === 쇼케이스 슬라이드 === */
 .showcase {
   padding: 32px 0 8px;
 }
-.showcase-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+.showcase-track-wrap {
+  overflow: hidden;
+  margin: 0 -20px;
+}
+.showcase-track {
+  display: flex;
   gap: 12px;
+  width: max-content;
+  animation: slide 20s linear infinite;
+}
+@keyframes slide {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 .showcase-card {
   position: relative;
   border-radius: 12px;
   overflow: hidden;
   border: 1px solid var(--border);
-  transition: border-color 0.3s;
-}
-.showcase-card:active {
-  border-color: var(--border-hover);
+  flex-shrink: 0;
+  width: 140px;
 }
 .showcase-card img {
   width: 100%;
@@ -615,7 +623,7 @@ footer a { color: var(--accent); text-decoration: none; }
 
   <!-- 히어로 -->
   <section class="hero">
-    <img class="hero-bg" src="/images/hero.webp" alt="AI 증명사진" decoding="async">
+    <div class="hero-bg"></div>
     <div class="hero-overlay"></div>
     <div class="hero-content">
       <div class="hero-badge">발급 보장 — 반려 시 100c 환급</div>
@@ -630,22 +638,42 @@ footer a { color: var(--accent); text-decoration: none; }
   <section class="showcase fade-in">
     <div class="section-divider"></div>
     <h2 class="section-title">스튜디오 수준의 증명사진</h2>
-    <div class="showcase-grid">
-      <div class="showcase-card">
-        <img src="https://storage.googleapis.com/monk-ai-images/ads/20260220_191245_%E1%84%89%E1%85%A9%E1%86%BC%E1%84%92%E1%85%A8%E1%84%80%E1%85%AD%E1%84%83%E1%85%A1%E1%86%B1%E1%84%8B%E1%85%B3%E1%86%AB.jpg" alt="이력서 증명사진" loading="lazy" decoding="async">
-        <div class="showcase-label">이력서 / 취업</div>
-      </div>
-      <div class="showcase-card">
-        <img src="https://storage.googleapis.com/monk-ai-images/ads/20260220_191258_%E1%84%92%E1%85%A1%E1%86%A8%E1%84%89%E1%85%A2%E1%86%BC%E1%84%8C%E1%85%B3%E1%86%BC%E1%84%86%E1%85%A9%E1%84%83%E1%85%A6%E1%86%AF_(2).jpg" alt="학생증 증명사진" loading="lazy" decoding="async">
-        <div class="showcase-label">학생증</div>
-      </div>
-      <div class="showcase-card">
-        <img src="https://storage.googleapis.com/monk-ai-images/ads/20260220_191208_%E1%84%8B%E1%85%A7%E1%84%8C%E1%85%A1%E1%84%8C%E1%85%B3%E1%86%BC%E1%84%86%E1%85%A7%E1%86%BC%E1%84%8E%E1%85%B3%E1%86%A8%E1%84%86%E1%85%A7%E1%86%AB.jpg" alt="컬러 증명사진" loading="lazy" decoding="async">
-        <div class="showcase-label">컬러증명</div>
-      </div>
-      <div class="showcase-card">
-        <img src="https://storage.googleapis.com/monk-ai-images/ads/20260220_184127_auto_test.jpg" alt="여권 증명사진" loading="lazy" decoding="async">
-        <div class="showcase-label">여권</div>
+    <div class="showcase-track-wrap">
+      <div class="showcase-track">
+        <!-- 원본 4장 -->
+        <div class="showcase-card">
+          <img src="https://storage.googleapis.com/monk-ai-images/ads/20260220_191245_%E1%84%89%E1%85%A9%E1%86%BC%E1%84%92%E1%85%A8%E1%84%80%E1%85%AD%E1%84%83%E1%85%A1%E1%86%B1%E1%84%8B%E1%85%B3%E1%86%AB.jpg" alt="이력서 증명사진" loading="lazy" decoding="async">
+          <div class="showcase-label">이력서 / 취업</div>
+        </div>
+        <div class="showcase-card">
+          <img src="https://storage.googleapis.com/monk-ai-images/ads/20260220_191258_%E1%84%92%E1%85%A1%E1%86%A8%E1%84%89%E1%85%A2%E1%86%BC%E1%84%8C%E1%85%B3%E1%86%BC%E1%84%86%E1%85%A9%E1%84%83%E1%85%A6%E1%86%AF_(2).jpg" alt="학생증 증명사진" loading="lazy" decoding="async">
+          <div class="showcase-label">학생증</div>
+        </div>
+        <div class="showcase-card">
+          <img src="https://storage.googleapis.com/monk-ai-images/ads/20260220_191208_%E1%84%8B%E1%85%A7%E1%84%8C%E1%85%A1%E1%84%8C%E1%85%B3%E1%86%BC%E1%84%86%E1%85%A7%E1%86%BC%E1%84%8E%E1%85%B3%E1%86%A8%E1%84%86%E1%85%A7%E1%86%AB.jpg" alt="컬러 증명사진" loading="lazy" decoding="async">
+          <div class="showcase-label">컬러증명</div>
+        </div>
+        <div class="showcase-card">
+          <img src="https://storage.googleapis.com/monk-ai-images/ads/20260220_184127_auto_test.jpg" alt="여권 증명사진" loading="lazy" decoding="async">
+          <div class="showcase-label">여권</div>
+        </div>
+        <!-- 복제 (무한 루프용) -->
+        <div class="showcase-card">
+          <img src="https://storage.googleapis.com/monk-ai-images/ads/20260220_191245_%E1%84%89%E1%85%A9%E1%86%BC%E1%84%92%E1%85%A8%E1%84%80%E1%85%AD%E1%84%83%E1%85%A1%E1%86%B1%E1%84%8B%E1%85%B3%E1%86%AB.jpg" alt="이력서 증명사진" loading="lazy" decoding="async">
+          <div class="showcase-label">이력서 / 취업</div>
+        </div>
+        <div class="showcase-card">
+          <img src="https://storage.googleapis.com/monk-ai-images/ads/20260220_191258_%E1%84%92%E1%85%A1%E1%86%A8%E1%84%89%E1%85%A2%E1%86%BC%E1%84%8C%E1%85%B3%E1%86%BC%E1%84%86%E1%85%A9%E1%84%83%E1%85%A6%E1%86%AF_(2).jpg" alt="학생증 증명사진" loading="lazy" decoding="async">
+          <div class="showcase-label">학생증</div>
+        </div>
+        <div class="showcase-card">
+          <img src="https://storage.googleapis.com/monk-ai-images/ads/20260220_191208_%E1%84%8B%E1%85%A7%E1%84%8C%E1%85%A1%E1%84%8C%E1%85%B3%E1%86%BC%E1%84%86%E1%85%A7%E1%86%BC%E1%84%8E%E1%85%B3%E1%86%A8%E1%84%86%E1%85%A7%E1%86%AB.jpg" alt="컬러 증명사진" loading="lazy" decoding="async">
+          <div class="showcase-label">컬러증명</div>
+        </div>
+        <div class="showcase-card">
+          <img src="https://storage.googleapis.com/monk-ai-images/ads/20260220_184127_auto_test.jpg" alt="여권 증명사진" loading="lazy" decoding="async">
+          <div class="showcase-label">여권</div>
+        </div>
       </div>
     </div>
   </section>
