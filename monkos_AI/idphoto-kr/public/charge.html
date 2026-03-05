@@ -102,8 +102,20 @@
         <!-- 돌아가기 -->
         <button id="charge-back-btn" style="width:100%; padding:14px; background:rgba(30,30,60,0.8); color:#8892a8; border:1px solid rgba(167,139,250,0.12); border-radius:12px; font-size:0.95rem; font-weight:600; cursor:pointer; margin-top:10px;">돌아가기</button>
 
+        <!-- 사업자 정보 -->
+        <div translate="no" style="padding:32px 0 12px; border-top:1px solid rgba(167,139,250,0.12); margin-top:16px; text-align:center;">
+            <p style="font-size:0.7rem; color:#8892a8; line-height:1.8; opacity:0.7;">
+                <strong style="color:#8892a8; opacity:1;">Business:</strong> MONK STUDIO | <strong style="color:#8892a8; opacity:1;">CEO:</strong> JeongKyu Shin<br>
+                <strong style="color:#8892a8; opacity:1;">Reg. No:</strong> 636-15-00574 | <strong style="color:#8892a8; opacity:1;">E-Commerce:</strong> 2026-Gyeonggi.Hanam-0389<br>
+                <strong style="color:#8892a8; opacity:1;">Address:</strong> B1029, 95 Misagangbyeondong-ro, Hanam-si, Gyeonggi-do, South Korea<br>
+                <strong style="color:#8892a8; opacity:1;">Email:</strong> info@monkos.ai | <strong style="color:#8892a8; opacity:1;">Telegram:</strong> @monkos_support_bot<br>
+                <strong style="color:#8892a8; opacity:1;">Tel:</strong> 031-791-5030<br>
+                <strong style="color:#8892a8; opacity:1;">Hosting:</strong> Google Cloud Platform (Google LLC)
+            </p>
+        </div>
+
         <!-- 푸터 -->
-        <footer translate="no" style="text-align:center; padding:40px 0 20px; color:#8892a8; font-size:0.8rem;">
+        <footer translate="no" style="text-align:center; padding:16px 0 20px; color:#8892a8; font-size:0.8rem;">
             <p style="margin-bottom:8px;">
                 <a href="/privacy.html" style="color:#a78bfa; text-decoration:none;">Privacy Policy</a> &nbsp;|&nbsp;
                 <a href="/terms.html" style="color:#a78bfa; text-decoration:none;">Terms of Service</a> &nbsp;|&nbsp;
@@ -114,17 +126,9 @@
     </div>
 
     <script type="module">
-    import { store, Monk, sharedInit, buyCreditsKR, navigateTo } from './shared.js';
+    import { store, Monk, sharedInit, buyCreditsKR, navigateTo, CHARGE_OPTIONS, KRW_PER_CREDIT } from './shared.js';
+    import { renderChargeCards } from './modules/charge.js';
 
-    // ─── v3 충전 옵션 ───
-    const CHARGE_OPTIONS = [
-      { key: 'single_70', label: '70 크레딧', price: 9900, credits: 70, bonus: 10 },
-      { key: 'package_100', label: '100 크레딧', price: 12900, credits: 100, bonus: 30 },
-      { key: 'package_300', label: '300 크레딧', price: 34900, credits: 300, bonus: 120 },
-      { key: 'package_500', label: '500 크레딧', price: 49900, credits: 500, bonus: 250, best: true },
-    ];
-
-    const KRW_PER_CREDIT = 145;
     const STEP_UNIT = 10;
     const STEP_PRICE = 1450;
     const STEP_MIN = 1;
@@ -136,54 +140,15 @@
 
     function fmt(n) { return n.toLocaleString('ko-KR'); }
 
-    // ─── v3 와이드 카드 동적 생성 ───
+    // ─── v3 와이드 카드 동적 생성 (renderChargeCards 공유) ───
     function renderPackages() {
       const container = document.getElementById('pkg-container');
       if (!container) return;
 
-      let html = '';
+      container.innerHTML = renderChargeCards(CHARGE_OPTIONS);
 
-      CHARGE_OPTIONS.forEach((opt, i) => {
-        const totalC = opt.credits + opt.bonus;
-        const strikePrice = totalC * KRW_PER_CREDIT;
-        const isBest = opt.best;
-
-        // 섹션 레이블
-        if (i === 0) {
-          html += '<div style="font-size:0.75rem; color:#a78bfa; font-weight:600; margin-bottom:8px;">1장 완성</div>';
-        } else if (i === 1) {
-          html += '<div style="font-size:0.78rem; color:#8892a8; margin:20px 0 8px;">패키지</div>';
-        }
-
-        const cardBg = isBest
-          ? 'linear-gradient(135deg,rgba(245,158,11,0.08),rgba(20,20,40,0.7))'
-          : 'rgba(20,20,40,0.7)';
-        const priceBg = isBest
-          ? 'linear-gradient(135deg,rgba(245,158,11,0.3),rgba(245,158,11,0.15))'
-          : 'linear-gradient(135deg,rgba(167,139,250,0.3),rgba(129,140,248,0.2))';
-        const badge = isBest
-          ? '<span style="position:absolute;top:-8px;right:12px;background:#f59e0b;color:#fff;font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:8px;">★ BEST</span>'
-          : '';
-        const checked = i === 0 ? ' checked' : '';
-
-        html += '<label data-ci="' + i + '" style="display:flex;align-items:center;justify-content:space-between;padding:16px;border:1px solid rgba(167,139,250,0.12);background:' + cardBg + ';border-radius:12px;cursor:pointer;margin-bottom:8px;' + (isBest ? 'position:relative;' : '') + '">'
-          + badge
-          + '<input type="radio" name="charge-pkg" value="' + i + '"' + checked + ' style="display:none;">'
-          + '<div>'
-          + '<div style="display:flex;align-items:baseline;gap:6px;">'
-          + '<span style="font-size:1.5rem;font-weight:800;color:#f8fafc;">' + opt.credits + 'c</span>'
-          + '<span style="color:#34d399;font-size:0.85rem;font-weight:600;">+' + opt.bonus + 'c</span>'
-          + '</div>'
-          + '<div style="color:#8892a8;font-size:0.78rem;margin-top:2px;">총 ' + totalC + 'c</div>'
-          + '</div>'
-          + '<div style="background:' + priceBg + ';border-radius:12px;padding:12px 16px;text-align:center;">'
-          + '<div style="text-decoration:line-through;color:#666;font-size:0.78rem;">₩' + fmt(strikePrice) + '</div>'
-          + '<div style="color:#f8fafc;font-weight:700;font-size:1.1rem;">₩' + fmt(opt.price) + '</div>'
-          + '</div>'
-          + '</label>';
-      });
-
-      container.innerHTML = html;
+      // radio name 통일 (charge-pkg)
+      container.querySelectorAll('input[name=co]').forEach(r => { r.name = 'charge-pkg'; });
 
       // 패키지 선택 이벤트
       container.querySelectorAll('label[data-ci]').forEach(label => {
@@ -261,7 +226,7 @@
     // ─── 돌아가기 ───
     function goBack() {
       const params = new URLSearchParams(location.search);
-      const returnPage = params.get('return') || 'result';
+      const returnPage = params.get('return') || 'index';
       navigateTo(`${returnPage}.html`);
     }
 

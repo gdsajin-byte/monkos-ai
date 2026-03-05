@@ -126,5 +126,15 @@ export const HAIR_VISIBLE_AGES = ['teen', 'adult'];
 // format="passport" → bgColor 강제
 export const PASSPORT_FORCED_BG = 'white';
 
+// ─── 충전 상품 (프론트엔드 정본 — 백엔드 PRODUCTS와 가격 동기화 필수) ───
+export const CHARGE_OPTIONS = [
+  { key: 'single_70', label: '70 크레딧', price: 9900, credits: 70, bonus: 10 },
+  { key: 'package_100', label: '100 크레딧', price: 12900, credits: 100, bonus: 30 },
+  { key: 'package_300', label: '300 크레딧', price: 34900, credits: 300, bonus: 120 },
+  { key: 'package_500', label: '500 크레딧', price: 49900, credits: 500, bonus: 250, best: true },
+];
+
+export const KRW_PER_CREDIT = 145;
+
 // 스키마 버전
 export const SCHEMA_VERSION = 'v5';

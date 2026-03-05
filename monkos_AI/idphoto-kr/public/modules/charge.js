@@ -2,45 +2,10 @@
  * modules/charge.js — 충전 모달 모듈
  * v3: 4단 상품 + 소액충전 스테퍼 (10c 단위)
  * 토스 결제 연동
+ * 데이터 정본: config.js CHARGE_OPTIONS
  */
 
-import { store, Monk, TOSS_CLIENT_KEY, closeCreditModal, buyCreditsKR } from '../shared.js';
-
-// ─── v3 충전 옵션 ───
-const CHARGE_OPTIONS = [
-  {
-    key: 'single_70',
-    label: '70 크레딧',
-    price: 9900,
-    credits: 70,
-    bonus: 10,
-    recommended: true,
-  },
-  {
-    key: 'package_100',
-    label: '100 크레딧',
-    price: 12900,
-    credits: 100,
-    bonus: 30,
-  },
-  {
-    key: 'package_300',
-    label: '300 크레딧',
-    price: 34900,
-    credits: 300,
-    bonus: 120,
-    best: true,
-  },
-  {
-    key: 'package_500',
-    label: '500 크레딧',
-    price: 49900,
-    credits: 500,
-    bonus: 250,
-  },
-];
-
-const KRW_PER_CREDIT = 145; // 기축 단가
+import { store, Monk, TOSS_CLIENT_KEY, closeCreditModal, buyCreditsKR, CHARGE_OPTIONS, KRW_PER_CREDIT } from '../shared.js';
 
 // ─── 소액충전 스테퍼 ───
 const STEP_UNIT = 10;    // credits per step
@@ -59,10 +24,10 @@ function _fmt(n) {
 
 function _updateStepperDisplay() {
   if (!_chargeEl) return;
-  const qtyEl = _chargeEl.querySelector('#stepper-qty');
-  const priceEl = _chargeEl.querySelector('#stepper-price');
-  const minBtn = _chargeEl.querySelector('#stepper-minus');
-  const maxBtn = _chargeEl.querySelector('#stepper-plus');
+  const qtyEl = _chargeEl.querySelector('#cm-stepper-qty');
+  const priceEl = _chargeEl.querySelector('#cm-stepper-price');
+  const minBtn = _chargeEl.querySelector('#cm-stepper-minus');
+  const maxBtn = _chargeEl.querySelector('#cm-stepper-plus');
   if (qtyEl) qtyEl.textContent = `${_stepperQty * STEP_UNIT}c`;
   if (priceEl) priceEl.textContent = `₩${_fmt(_stepperQty * STEP_PRICE)}`;
   if (minBtn) minBtn.style.opacity = _stepperQty <= STEP_MIN ? '0.3' : '1';
@@ -76,7 +41,7 @@ function _activateStepper() {
     _chargeEl.querySelectorAll('label[data-ci]').forEach(l => {
       l.style.borderColor = 'rgba(167,139,250,0.12)';
     });
-    const stepperBox = _chargeEl.querySelector('#stepper-box');
+    const stepperBox = _chargeEl.querySelector('#cm-stepper-box');
     if (stepperBox) stepperBox.style.borderColor = '#a78bfa';
   }
 }
@@ -86,70 +51,82 @@ function _deactivateStepper() {
   _stepperQty = 1;
   _updateStepperDisplay();
   if (_chargeEl) {
-    const stepperBox = _chargeEl.querySelector('#stepper-box');
+    const stepperBox = _chargeEl.querySelector('#cm-stepper-box');
     if (stepperBox) stepperBox.style.borderColor = 'rgba(167,139,250,0.12)';
   }
+}
+
+/**
+ * renderChargeCards — 충전 상품 카드 HTML 생성 (charge.html과 동일 디자인)
+ * @param {Array} options - CHARGE_OPTIONS 배열
+ * @returns {string} HTML 문자열
+ */
+export function renderChargeCards(options) {
+  let html = '';
+  options.forEach((opt, i) => {
+    const totalC = opt.credits + opt.bonus;
+    const strikePrice = totalC * KRW_PER_CREDIT;
+    const isBest = opt.best;
+
+    // 섹션 레이블
+    if (i === 0) {
+      html += '<div style="font-size:0.75rem;color:#a78bfa;font-weight:600;margin-bottom:8px;">1장 완성</div>';
+    } else if (i === 1) {
+      html += '<div style="font-size:0.78rem;color:#8892a8;margin:16px 0 8px;">패키지</div>';
+    }
+
+    const cardBg = isBest
+      ? 'linear-gradient(135deg,rgba(245,158,11,0.08),rgba(20,20,40,0.7))'
+      : 'rgba(20,20,40,0.7)';
+    const priceBg = isBest
+      ? 'linear-gradient(135deg,rgba(245,158,11,0.3),rgba(245,158,11,0.15))'
+      : 'linear-gradient(135deg,rgba(167,139,250,0.3),rgba(129,140,248,0.2))';
+    const badge = isBest
+      ? '<span style="position:absolute;top:-8px;right:12px;background:#f59e0b;color:#fff;font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:8px;">★ BEST</span>'
+      : '';
+    const checked = i === 0 ? ' checked' : '';
+
+    html += '<label data-ci="' + i + '" style="display:flex;align-items:center;justify-content:space-between;padding:16px;border:1px solid rgba(167,139,250,0.12);background:' + cardBg + ';border-radius:12px;cursor:pointer;margin-bottom:8px;' + (isBest ? 'position:relative;' : '') + '">'
+      + badge
+      + '<input type="radio" name="co" value="' + i + '"' + checked + ' style="display:none;">'
+      + '<div>'
+      + '<div style="display:flex;align-items:baseline;gap:6px;">'
+      + '<span style="font-size:1.5rem;font-weight:800;color:#f8fafc;">' + opt.credits + 'c</span>'
+      + '<span style="color:#34d399;font-size:0.85rem;font-weight:600;">+' + opt.bonus + 'c</span>'
+      + '</div>'
+      + '<div style="color:#8892a8;font-size:0.78rem;margin-top:2px;">총 ' + totalC + 'c</div>'
+      + '</div>'
+      + '<div style="background:' + priceBg + ';border-radius:12px;padding:12px 16px;text-align:center;">'
+      + '<div style="text-decoration:line-through;color:#666;font-size:0.78rem;">₩' + _fmt(strikePrice) + '</div>'
+      + '<div style="color:#f8fafc;font-weight:700;font-size:1.1rem;">₩' + _fmt(opt.price) + '</div>'
+      + '</div>'
+      + '</label>';
+  });
+  return html;
 }
 
 function _buildModal() {
   if (_chargeEl) return;
 
-  // v3: 상품 카드 런타임 생성 (취소선·절약 금액 동적 계산)
-  const cardsHtml = CHARGE_OPTIONS.map((opt, i) => {
-    const totalC = opt.credits + opt.bonus;
-    const strikePrice = totalC * KRW_PER_CREDIT;
-    const saved = strikePrice - opt.price;
-    const isRec = opt.recommended;
-    const isBest = opt.best;
-    const badge = isRec
-      ? '<span style="position:absolute;top:-8px;right:12px;background:#a78bfa;color:#fff;font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:8px;">추천</span>'
-      : isBest
-      ? '<span style="position:absolute;top:-8px;right:12px;background:#f59e0b;color:#fff;font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:8px;">★ BEST</span>'
-      : '';
-    const border = isRec ? '2px solid #a78bfa' : isBest ? '1.5px solid rgba(245,158,11,0.3)' : '1px solid rgba(167,139,250,0.12)';
-    const bg = isRec
-      ? 'linear-gradient(135deg,rgba(167,139,250,0.2),rgba(124,58,237,0.15))'
-      : isBest
-      ? 'linear-gradient(135deg,rgba(245,158,11,0.08),rgba(20,20,40,0.7))'
-      : 'rgba(20,20,40,0.7)';
-    const radius = isRec ? '14px' : '10px';
-    const checked = i === 0 ? ' checked' : '';
-    const nameWeight = isRec ? '700' : '600';
-    const nameColor = isRec ? '#f8fafc' : '#e2e8f0';
-
-    return '<label data-ci="' + i + '" style="display:flex;align-items:center;gap:10px;padding:14px 16px;border:' + border + ';background:' + bg + ';border-radius:' + radius + ';cursor:pointer;margin-bottom:8px;' + (badge ? 'position:relative;' : '') + '">'
-      + badge
-      + '<input type="radio" name="co" value="' + i + '"' + checked + ' style="accent-color:#a78bfa;width:16px;height:16px;flex-shrink:0;">'
-      + '<div style="flex:1;">'
-      + '<div style="display:flex;justify-content:space-between;align-items:center;">'
-      + '<span style="font-size:0.9rem;font-weight:' + nameWeight + ';color:' + nameColor + ';">' + opt.label + '</span>'
-      + '<span>'
-      + '<span style="text-decoration:line-through;color:#666;font-size:0.75rem;">₩' + _fmt(strikePrice) + '</span>'
-      + '<span style="color:#a78bfa;font-weight:600;font-size:0.85rem;margin-left:4px;">₩' + _fmt(opt.price) + '</span>'
-      + '</span>'
-      + '</div>'
-      + '<div style="font-size:0.72rem;color:#34d399;margin-top:3px;">+' + opt.bonus + 'c 보너스 · ₩' + _fmt(saved) + '원 절약</div>'
-      + '</div>'
-      + '</label>';
-  }).join('');
+  const cardsHtml = renderChargeCards(CHARGE_OPTIONS);
 
   const wrap = document.createElement('div');
   wrap.innerHTML = `
 <div id="charge-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);z-index:1100;align-items:flex-end;justify-content:center;">
-  <div style="width:100%;max-width:480px;background:linear-gradient(180deg,#1e1e3a,#161630);border:1.5px solid rgba(167,139,250,0.35);border-bottom:none;border-radius:16px 16px 0 0;padding:24px 20px;padding-bottom:max(24px,env(safe-area-inset-bottom));box-shadow:0 -8px 40px rgba(0,0,0,0.7),0 0 80px rgba(167,139,250,0.15);">
+  <div style="width:100%;max-width:480px;background:linear-gradient(180deg,#1e1e3a,#161630);border:1.5px solid rgba(167,139,250,0.35);border-bottom:none;border-radius:16px 16px 0 0;padding:24px 20px;padding-bottom:max(24px,env(safe-area-inset-bottom));box-shadow:0 -8px 40px rgba(0,0,0,0.7),0 0 80px rgba(167,139,250,0.15);max-height:85vh;overflow-y:auto;">
     <h3 style="text-align:center;color:#f8fafc;font-size:1.1rem;font-weight:700;margin:0 0 20px;">크레딧 충전</h3>
 
-    ${cardsHtml}
+    <div id="cm-pkg-container">${cardsHtml}</div>
 
     <div style="text-align:center;font-size:0.78rem;color:#8892a8;margin:12px 0;">── 또는 소액 충전 ──</div>
 
-    <div id="stepper-box" style="display:flex;align-items:center;justify-content:center;gap:16px;padding:14px 16px;border:1px solid rgba(167,139,250,0.12);background:rgba(20,20,40,0.7);border-radius:10px;margin-bottom:8px;cursor:pointer;">
-      <button id="stepper-minus" type="button" style="width:36px;height:36px;border-radius:50%;border:1.5px solid rgba(167,139,250,0.3);background:rgba(167,139,250,0.1);color:#a78bfa;font-size:18px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;">−</button>
+    <div id="cm-stepper-box" style="display:flex;align-items:center;justify-content:center;gap:16px;padding:14px 16px;border:1px solid rgba(167,139,250,0.12);background:rgba(20,20,40,0.7);border-radius:10px;margin-bottom:8px;cursor:pointer;">
+      <button id="cm-stepper-minus" type="button" style="width:36px;height:36px;border-radius:50%;border:1.5px solid rgba(167,139,250,0.3);background:rgba(167,139,250,0.1);color:#a78bfa;font-size:18px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;">−</button>
       <div style="text-align:center;min-width:100px;">
-        <div id="stepper-qty" style="font-size:1.1rem;font-weight:700;color:#f8fafc;">10c</div>
-        <div id="stepper-price" style="font-size:0.8rem;color:#a78bfa;margin-top:2px;">₩1,450</div>
+        <div id="cm-stepper-qty" style="font-size:1.1rem;font-weight:700;color:#f8fafc;">10c</div>
+        <div id="cm-stepper-price" style="font-size:0.8rem;color:#a78bfa;margin-top:2px;">₩1,450</div>
       </div>
-      <button id="stepper-plus" type="button" style="width:36px;height:36px;border-radius:50%;border:1.5px solid rgba(167,139,250,0.3);background:rgba(167,139,250,0.1);color:#a78bfa;font-size:18px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;">+</button>
+      <button id="cm-stepper-plus" type="button" style="width:36px;height:36px;border-radius:50%;border:1.5px solid rgba(167,139,250,0.3);background:rgba(167,139,250,0.1);color:#a78bfa;font-size:18px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;">+</button>
     </div>
     <div style="text-align:center;font-size:0.7rem;color:#666;margin-bottom:4px;">최소 10c · 최대 100c</div>
 
@@ -171,26 +148,26 @@ function _buildModal() {
         ll.style.borderColor = 'rgba(167,139,250,0.12)';
       });
       const opt = CHARGE_OPTIONS[_chargeIdx];
-      if (opt.best) l.style.borderColor = 'rgba(245,158,11,0.3)';
+      if (opt.best) l.style.borderColor = '#f59e0b';
       else l.style.borderColor = '#a78bfa';
     });
   });
 
   // 스테퍼 클릭 → 패키지 해제
-  const stepperBox = overlay.querySelector('#stepper-box');
+  const stepperBox = overlay.querySelector('#cm-stepper-box');
   stepperBox.addEventListener('click', (e) => {
-    if (e.target.id === 'stepper-minus' || e.target.id === 'stepper-plus') return;
+    if (e.target.id === 'cm-stepper-minus' || e.target.id === 'cm-stepper-plus') return;
     _activateStepper();
   });
 
-  overlay.querySelector('#stepper-minus').addEventListener('click', (e) => {
+  overlay.querySelector('#cm-stepper-minus').addEventListener('click', (e) => {
     e.stopPropagation();
     _activateStepper();
     if (_stepperQty > STEP_MIN) _stepperQty--;
     _updateStepperDisplay();
   });
 
-  overlay.querySelector('#stepper-plus').addEventListener('click', (e) => {
+  overlay.querySelector('#cm-stepper-plus').addEventListener('click', (e) => {
     e.stopPropagation();
     _activateStepper();
     if (_stepperQty < STEP_MAX) _stepperQty++;
@@ -231,27 +208,12 @@ export const ChargeModule = {
     });
     const first = _chargeEl.querySelector('label[data-ci="0"]');
     if (first) first.style.borderColor = '#a78bfa';
-    const stepperBox = _chargeEl.querySelector('#stepper-box');
+    const stepperBox = _chargeEl.querySelector('#cm-stepper-box');
     if (stepperBox) stepperBox.style.borderColor = 'rgba(167,139,250,0.12)';
     _chargeEl.style.display = 'flex';
   },
 
   close() {
     if (_chargeEl) _chargeEl.style.display = 'none';
-  },
-
-  mountInline(selector) {
-    const mount = typeof selector === 'string' ? document.querySelector(selector) : selector;
-    if (!mount) return;
-
-    const div = document.createElement('div');
-    div.id = 'charge-inline';
-    div.style.cssText = 'padding:12px 0;text-align:center;';
-    div.innerHTML = `
-      <div style="font-size:13px;color:#8892a8;margin-bottom:8px;">💰 또는 크레딧 충전</div>
-      <button id="charge-inline-btn" style="width:100%;padding:12px;background:rgba(30,30,60,0.8);color:#8892a8;border:1px solid rgba(167,139,250,0.12);border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;">충전하기</button>
-    `;
-    div.querySelector('#charge-inline-btn').addEventListener('click', () => ChargeModule.show());
-    mount.appendChild(div);
   },
 };
