@@ -232,6 +232,37 @@ export async function sendTelegramMessage(chatId, text, botApi = TELEGRAM_CS_API
   }
 }
 
+// === Telegram 인라인 키보드 전송 ===
+export async function sendTelegramInlineKeyboard(chatId, text, keyboard, botApi = TELEGRAM_CS_API) {
+  try {
+    await fetch(`${botApi}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text,
+        parse_mode: 'Markdown',
+        reply_markup: { inline_keyboard: keyboard },
+      }),
+    });
+  } catch (err) {
+    log(`[Telegram] 인라인 키보드 전송 실패: ${err.message}`);
+  }
+}
+
+// === Telegram 콜백 쿼리 응답 ===
+export async function answerCallbackQuery(callbackQueryId, text, botApi = TELEGRAM_CS_API) {
+  try {
+    await fetch(`${botApi}/answerCallbackQuery`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ callback_query_id: callbackQueryId, text }),
+    });
+  } catch (err) {
+    log(`[Telegram] 콜백 쿼리 응답 실패: ${err.message}`);
+  }
+}
+
 // === Request Body 파싱 유틸 ===
 export function parseRawBody(req) {
   return new Promise((resolve, reject) => {

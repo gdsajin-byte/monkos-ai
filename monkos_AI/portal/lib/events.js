@@ -37,7 +37,7 @@ export async function handleTelegramGateCode(req, res) {
       used: false,
     });
 
-    const deeplink = `https://t.me/monkos_event_bot?start=GATE_${code}`;
+    const deeplink = `https://t.me/monkos_support_bot?start=GATE_${code}`;
     log(`[TG-Gate] 코드 생성: ${userId} → ${code}`);
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ deeplink, code }));
@@ -68,7 +68,7 @@ export async function handleTelegramMissionCode(req, res) {
       used: false,
     });
 
-    const deeplink = `https://t.me/monkos_event_bot?start=MISSION_${code}`;
+    const deeplink = `https://t.me/monkos_support_bot?start=MISSION_${code}`;
     log(`[TG-Mission] 코드 생성: ${userId} → ${code}`);
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ deeplink, code }));
@@ -205,12 +205,13 @@ export async function handleCreditsEvent(req, res) {
       kakao_channel_add: 40,
       mission_complete: 100,
       sns_share: 100,
+      passport_rejection: 100,
     };
 
     const granted = EVENT_CREDITS[eventType];
     if (!granted) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: 'eventType은 signup_bonus, telegram_join, kakao_channel_add, mission_complete, sns_share 중 하나' }));
+      res.end(JSON.stringify({ error: 'eventType은 signup_bonus, telegram_join, kakao_channel_add, mission_complete, sns_share, passport_rejection 중 하나' }));
       return;
     }
 

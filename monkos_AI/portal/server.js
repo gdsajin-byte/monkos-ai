@@ -27,6 +27,8 @@ import { handleCheckout, handleLemonSqueezyWebhook, handleTossConfirm, handleTos
 import { handleTelegramGateCode, handleTelegramMissionCode, handleConsentSns, handleMissionComplete, handleCreditsEvent } from './lib/events.js';
 import { handleTelegramCSWebhook, handleTelegramEventWebhook } from './lib/telegram.js';
 import { handleTelegramTeamWebhook, handleTeamNotify } from './lib/telegram-team.js';
+import { handleVerifyInit } from './lib/tg-auth.js';
+import { handlePassportIssue, handleUploadMission } from './lib/tg-cs.js';
 import { handleKakaoChatbot } from './lib/kakao-chatbot.js';
 import { handleWebChat, handleCoaching, handleQC } from './lib/coaching.js';
 
@@ -124,6 +126,11 @@ const httpServer = createServer(async (req, res) => {
   if (urlPath === '/api/telegram/gate-code' && req.method === 'POST') return handleTelegramGateCode(req, res);
   if (urlPath === '/api/telegram/mission-code' && req.method === 'POST') return handleTelegramMissionCode(req, res);
   if (urlPath === '/api/consent/sns' && req.method === 'POST') return handleConsentSns(req, res);
+
+  // === Mini App API ===
+  if (urlPath === '/api/tg/verify-init' && req.method === 'POST') return handleVerifyInit(req, res);
+  if (urlPath === '/api/tg/passport-issue' && req.method === 'POST') return handlePassportIssue(req, res);
+  if (urlPath === '/api/tg/upload-mission' && req.method === 'POST') return handleUploadMission(req, res);
 
   // === 봇 웹훅 ===
   if (urlPath === '/api/webhook/telegram' && req.method === 'POST') return handleTelegramCSWebhook(req, res);

@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>MONKOS — SNS Mission</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="tg-style.css">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="tg-common.js"></script>
+</head>
+<body>
+
+<div class="tg-header">
+  <div class="tg-header-dot"></div>
+  <div class="tg-header-title">MONKOS AI</div>
+</div>
+
+<h1 id="page-title">SNS 자랑 미션</h1>
+<p id="page-desc" style="margin-bottom:20px;">증명사진 결과물을 SNS에 공유하고 100c를 받으세요!</p>
+
+<!-- STEP 1: 동의서 -->
+<div id="step1" class="tg-card">
+  <span class="tg-step-badge pending" id="step1-badge">STEP 1</span>
+  <div class="tg-card-title" id="step1-title">SNS 활용 동의서</div>
+  <p id="step1-desc" style="margin-bottom:12px;">촬영 결과물을 MONKOS 공식 SNS(인스타그램, 텔레그램 채널, X, 유튜브)에 활용하는 것에 동의합니다.</p>
+  <div class="tg-checkbox-row" id="consent-row">
+    <input type="checkbox" id="consent-check">
+    <label for="consent-check" id="consent-label">동의합니다</label>
+  </div>
+  <button class="tg-btn tg-btn-primary" id="btn-consent" disabled>동의서 서명</button>
+</div>
+
+<!-- STEP 2: 사진 업로드 -->
+<div id="step2" class="tg-card" style="opacity:0.5; pointer-events:none;">
+  <span class="tg-step-badge pending" id="step2-badge">STEP 2</span>
+  <div class="tg-card-title" id="step2-title">사진 업로드</div>
+  <p id="step2-desc" style="margin-bottom:12px;">증명사진 결과물 캡쳐 또는 다운로드한 사진을 업로드해주세요.</p>
+  <input type="file" accept="image/*" class="tg-file-input" id="photo-input">
+  <div id="photo-preview" style="margin-top:10px; text-align:center;"></div>
+  <button class="tg-btn tg-btn-primary" id="btn-upload" disabled style="margin-top:10px;">업로드</button>
+</div>
+
+<!-- STEP 3: 완료 -->
+<div id="step3" class="tg-card" style="opacity:0.5; pointer-events:none;">
+  <span class="tg-step-badge pending" id="step3-badge">STEP 3</span>
+  <div class="tg-card-title" id="step3-title">100c 받기</div>
+  <p id="step3-desc">모든 조건이 충족되면 보너스를 받을 수 있습니다.</p>
+  <button class="tg-btn tg-btn-primary" id="btn-claim" disabled style="margin-top:12px;">100c 받기</button>
+</div>
+
+<script>
+const I18N = {
+  ko: {
+    title: 'SNS 자랑 미션',
+    desc: '증명사진 결과물을 SNS에 공유하고 100c를 받으세요!',
+    step1Title: 'SNS 활용 동의서',
+    step1Desc: '촬영 결과물을 MONKOS 공식 SNS(인스타그램, 텔레그램 채널, X, 유튜브)에 활용하는 것에 동의합니다.',
+    consentLabel: '동의합니다',
+    btnConsent: '동의서 서명',
+    step2Title: '사진 업로드',
+    step2Desc: '증명사진 결과물 캡쳐 또는 다운로드한 사진을 업로드해주세요.',
+    btnUpload: '업로드',
+    step3Title: '100c 받기',
+    step3Desc: '모든 조건이 충족되면 보너스를 받을 수 있습니다.',
+    btnClaim: '100c 받기',
+    linkRequired: 'MONKOS 계정 연동이 필요합니다.',
+    consentDone: '동의서 서명 완료',
+    uploadDone: '업로드 완료',
+    missionDone: '미션 완료! +100c',
+    alreadyClaimed: '이미 미션 보너스를 수령했습니다.',
+  },
+  ja: {
+    title: 'SNS投稿ミッション',
+    desc: '証明写真をSNSでシェアして100cをゲット！',
+    step1Title: 'SNS利用同意書',
+    step1Desc: '撮影結果をMONKOS公式SNS（インスタグラム、テレグラムチャンネル、X、YouTube）で活用することに同意します。',
+    consentLabel: '同意します',
+    btnConsent: '同意書に署名',
+    step2Title: '写真アップロード',
+    step2Desc: '証明写真のキャプチャまたはダウンロードした写真をアップロードしてください。',
+    btnUpload: 'アップロード',
+    step3Title: '100c受け取り',
+    step3Desc: 'すべての条件を満たすとボーナスを受け取れます。',
+    btnClaim: '100cを受け取る',
+    linkRequired: 'MONKOSアカウント連携が必要です。',
+    consentDone: '同意書署名完了',
+    uploadDone: 'アップロード完了',
+    missionDone: 'ミッション完了！ +100c',
+    alreadyClaimed: '既にミッションボーナスを受け取りました。',
+  },
+  en: {
+    title: 'SNS Mission',
+    desc: 'Share your ID photo on SNS and earn 100c!',
+    step1Title: 'SNS Consent',
+    step1Desc: 'I agree to allow MONKOS to use my photo on official SNS channels (Instagram, Telegram, X, YouTube).',
+    consentLabel: 'I agree',
+    btnConsent: 'Sign Consent',
+    step2Title: 'Upload Photo',
+    step2Desc: 'Upload a screenshot or downloaded photo of your ID photo result.',
+    btnUpload: 'Upload',
+    step3Title: 'Claim 100c',
+    step3Desc: 'You can claim your bonus when all conditions are met.',
+    btnClaim: 'Claim 100c',
+    linkRequired: 'MONKOS account linking required.',
+    consentDone: 'Consent signed',
+    uploadDone: 'Upload complete',
+    missionDone: 'Mission complete! +100c',
+    alreadyClaimed: 'Mission bonus already claimed.',
+  },
+};
+
+(async function () {
+  const { detectLang, verifyUser, apiCall, showToast } = window.MonkosTG;
+  const lang = detectLang();
+  const t = I18N[lang] || I18N.en;
+
+  // 텍스트 적용
+  document.getElementById('page-title').textContent = t.title;
+  document.getElementById('page-desc').textContent = t.desc;
+  document.getElementById('step1-title').textContent = t.step1Title;
+  document.getElementById('step1-desc').textContent = t.step1Desc;
+  document.getElementById('consent-label').textContent = t.consentLabel;
+  document.getElementById('btn-consent').textContent = t.btnConsent;
+  document.getElementById('step2-title').textContent = t.step2Title;
+  document.getElementById('step2-desc').textContent = t.step2Desc;
+  document.getElementById('btn-upload').textContent = t.btnUpload;
+  document.getElementById('step3-title').textContent = t.step3Title;
+  document.getElementById('step3-desc').textContent = t.step3Desc;
+  document.getElementById('btn-claim').textContent = t.btnClaim;
+
+  // 인증
+  const user = await verifyUser();
+  if (!user.linked) {
+    showToast(t.linkRequired, 3000);
+    return;
+  }
+
+  const userId = user.userId;
+  let consentDone = user.consentSigned;
+  let imageDone = user.missionImageReceived;
+  let claimed = user.missionBonusClaimed;
+
+  function updateUI() {
+    const step1 = document.getElementById('step1');
+    const step2 = document.getElementById('step2');
+    const step3 = document.getElementById('step3');
+
+    if (consentDone) {
+      step1.classList.add('completed');
+      document.getElementById('step1-badge').className = 'tg-step-badge done';
+      document.getElementById('step1-badge').textContent = '✓';
+    }
+
+    if (consentDone) {
+      step2.style.opacity = '1';
+      step2.style.pointerEvents = 'auto';
+    }
+
+    if (imageDone) {
+      step2.classList.add('completed');
+      document.getElementById('step2-badge').className = 'tg-step-badge done';
+      document.getElementById('step2-badge').textContent = '✓';
+    }
+
+    if (consentDone && imageDone) {
+      step3.style.opacity = '1';
+      step3.style.pointerEvents = 'auto';
+      if (!claimed) document.getElementById('btn-claim').disabled = false;
+    }
+
+    if (claimed) {
+      step3.classList.add('completed');
+      document.getElementById('step3-badge').className = 'tg-step-badge done';
+      document.getElementById('step3-badge').textContent = '✓';
+      document.getElementById('btn-claim').textContent = '✅';
+      document.getElementById('btn-claim').disabled = true;
+    }
+  }
+  updateUI();
+
+  // 동의서 체크
+  document.getElementById('consent-check').addEventListener('change', (e) => {
+    document.getElementById('btn-consent').disabled = !e.target.checked;
+  });
+
+  // 동의서 서명
+  document.getElementById('btn-consent').addEventListener('click', async () => {
+    const btn = document.getElementById('btn-consent');
+    btn.disabled = true;
+    const res = await apiCall('/api/consent/sns', { userId, agreed: true });
+    if (res.success) {
+      consentDone = true;
+      showToast(t.consentDone);
+      updateUI();
+    } else {
+      btn.disabled = false;
+    }
+  });
+
+  // 사진 선택
+  let photoBase64 = null;
+  document.getElementById('photo-input').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      // 리사이즈 1024px
+      const img = new Image();
+      img.onload = () => {
+        const max = 1024;
+        let w = img.width, h = img.height;
+        if (w > max || h > max) {
+          const ratio = Math.min(max / w, max / h);
+          w = Math.round(w * ratio);
+          h = Math.round(h * ratio);
+        }
+        const c = document.createElement('canvas');
+        c.width = w; c.height = h;
+        c.getContext('2d').drawImage(img, 0, 0, w, h);
+        photoBase64 = c.toDataURL('image/jpeg', 0.8).split(',')[1];
+
+        // 미리보기
+        const preview = document.getElementById('photo-preview');
+        preview.innerHTML = '';
+        const thumb = document.createElement('img');
+        thumb.src = c.toDataURL('image/jpeg', 0.8);
+        thumb.style.cssText = 'max-width:200px; border-radius:8px; border:1px solid rgba(167,139,250,0.2);';
+        preview.appendChild(thumb);
+
+        document.getElementById('btn-upload').disabled = false;
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // 업로드
+  document.getElementById('btn-upload').addEventListener('click', async () => {
+    if (!photoBase64) return;
+    const btn = document.getElementById('btn-upload');
+    btn.disabled = true;
+
+    const initData = window.Telegram.WebApp.initData;
+    const res = await apiCall('/api/tg/upload-mission', { initData, image: photoBase64 });
+    if (res.success) {
+      imageDone = true;
+      showToast(t.uploadDone);
+      updateUI();
+    } else {
+      btn.disabled = false;
+      showToast(res.error || 'Error', 3000);
+    }
+  });
+
+  // 100c 받기
+  document.getElementById('btn-claim').addEventListener('click', async () => {
+    const btn = document.getElementById('btn-claim');
+    btn.disabled = true;
+
+    const res = await apiCall('/api/credits/mission-complete', { userId });
+    if (res.success) {
+      claimed = true;
+      showToast(t.missionDone);
+      updateUI();
+    } else {
+      if (res.error?.includes('이미') || res.error?.includes('already')) {
+        claimed = true;
+        showToast(t.alreadyClaimed, 3000);
+        updateUI();
+      } else {
+        btn.disabled = false;
+        showToast(res.error || 'Error', 3000);
+      }
+    }
+  });
+})();
+</script>
+</body>
+</html>
