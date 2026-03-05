@@ -154,7 +154,9 @@ async function confirmAndGenerate() {
 
   // 로그인 필수 (촬영실 게이트에서 이미 체크되지만 방어용)
   if (!store.user.id) {
-    GateModule.showLoginRequired('리터칭을 진행하려면 로그인이 필요합니다\n첫 로그인 시 10c를 드려요!');
+    GateModule.showLoginRequired('리터칭을 진행하려면 로그인이 필요합니다\n첫 로그인 시 10c를 드려요!', () => {
+      confirmAndGenerate();
+    });
     return;
   }
 
@@ -327,7 +329,9 @@ async function downloadResult() {
 
   // 로그인 필수 (촬영실 게이트에서 이미 체크되지만 방어용)
   if (!store.user.id) {
-    GateModule.showLoginRequired('다운로드하려면 로그인이 필요합니다');
+    GateModule.showLoginRequired('다운로드하려면 로그인이 필요합니다', () => {
+      downloadResult();
+    });
     return;
   }
 

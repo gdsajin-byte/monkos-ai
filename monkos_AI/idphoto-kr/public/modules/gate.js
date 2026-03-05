@@ -1,6 +1,7 @@
 /**
  * modules/gate.js — 로그인 게이트 모듈
  * Phase 3: 비회원 결제 경로 소멸 → showLoginRequired / closeLoginRequired + 소셜 로그인만 보존
+ * Phase 4: showLoginRequired(msg, onSuccess) 콜백 방식 추가 — 로그인 성공 시 원래 액션 자동 재시도
  */
 
 import { store, Monk, API } from '../shared.js';
@@ -18,6 +19,7 @@ const GATE_CSS = `
 `;
 
 let _stylesInjected = false;
+let _loginCallback = null;
 
 function _injectStyles() {
   if (_stylesInjected) return;
@@ -28,8 +30,18 @@ function _injectStyles() {
   _stylesInjected = true;
 }
 
+// ─── 로그인 성공 콜백 발화 ───
+function _fireLoginCallback() {
+  if (_loginCallback) {
+    const cb = _loginCallback;
+    _loginCallback = null;
+    cb();
+  }
+}
+
 // ─── 로그인 필요 모달 ───
-function _showLoginRequired(message) {
+function _showLoginRequired(message, onSuccess) {
+  _loginCallback = onSuccess || null;
   _injectStyles();
   const old = document.getElementById('login-required-modal');
   if (old) old.remove();
@@ -70,6 +82,7 @@ function _showLoginRequired(message) {
           credits: u.credits ?? 0, avatar: u.picture || '',
         };
         Monk.log(`로그인 성공: ${u.email || u.name} (${store.user.credits}c)`);
+        _fireLoginCallback();
       }
     }
     window.addEventListener('message', handler);
@@ -94,6 +107,7 @@ function _showLoginRequired(message) {
           credits: u.credits ?? 0, avatar: u.picture || '',
         };
         Monk.log(`LINE 로그인 성공: ${u.email || u.name} (${store.user.credits}c)`);
+        _fireLoginCallback();
       }
     }
     window.addEventListener('message', handler);
@@ -130,6 +144,7 @@ function _startKakaoLoginSimple() {
         credits: u.credits ?? 0, avatar: u.picture || '',
       };
       Monk.log(`로그인 성공: ${u.email || u.name} (${store.user.credits}c)`);
+      _fireLoginCallback();
     }
   }
   window.addEventListener('message', handler);
@@ -157,6 +172,7 @@ function _startLineLoginSimple() {
         credits: u.credits ?? 0, avatar: u.picture || '',
       };
       Monk.log(`LINE 로그인 성공: ${u.email || u.name} (${store.user.credits}c)`);
+      _fireLoginCallback();
     }
   }
   window.addEventListener('message', handler);
@@ -190,6 +206,7 @@ function _startGoogleLoginSimple() {
               credits: data.user.credits ?? 0, avatar: data.user.picture || '',
             };
             Monk.log(`Google 로그인 성공: ${data.user.email} (${store.user.credits}c)`);
+            _fireLoginCallback();
           }
         } catch (err) {
           Monk.log('Google 로그인 에러: ' + err.message);
@@ -214,8 +231,12 @@ function _startGoogleLoginSimple() {
 // Export: GateModule
 // ═══════════════════════════════════════
 export const GateModule = {
-  showLoginRequired(message) {
-    _showLoginRequired(message);
+  /**
+   * @param {string} message - 모달에 표시할 메시지
+   * @param {Function} [onSuccess] - 로그인 성공 시 실행할 콜백 (닫기 시에는 호출되지 않음)
+   */
+  showLoginRequired(message, onSuccess) {
+    _showLoginRequired(message, onSuccess);
   },
 
   closeLoginRequired() {

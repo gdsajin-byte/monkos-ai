@@ -265,27 +265,22 @@ async function init() {
 
   // ── 로그인 게이트 (촬영실 진입 = 로그인 필수) ──
   if (!store.user.id) {
-    GateModule.showLoginRequired('촬영을 시작하려면 로그인이 필요합니다\n첫 로그인 시 10c를 드려요!');
-
-    // 닫기 버튼 → 랜딩으로 복귀
-    const closeBtn = document.getElementById('gate-login-close-btn');
-    if (closeBtn) {
-      const newBtn = closeBtn.cloneNode(true);
-      closeBtn.parentNode.replaceChild(newBtn, closeBtn);
-      newBtn.addEventListener('click', () => {
-        GateModule.closeLoginRequired();
-        navigateTo('index.html');
-      });
-    }
-
-    // 로그인 완료 대기 → 카메라 초기화 진행
     await new Promise(resolve => {
-      const check = setInterval(() => {
-        if (store.user.id) {
-          clearInterval(check);
-          resolve();
-        }
-      }, 300);
+      GateModule.showLoginRequired(
+        '촬영을 시작하려면 로그인이 필요합니다\n첫 로그인 시 10c를 드려요!',
+        resolve  // 로그인 성공 콜백 → resolve → 카메라 init 진행
+      );
+
+      // 닫기 버튼 → 랜딩으로 복귀
+      const closeBtn = document.getElementById('gate-login-close-btn');
+      if (closeBtn) {
+        const newBtn = closeBtn.cloneNode(true);
+        closeBtn.parentNode.replaceChild(newBtn, closeBtn);
+        newBtn.addEventListener('click', () => {
+          GateModule.closeLoginRequired();
+          navigateTo('index.html');
+        });
+      }
     });
     Monk.log(`로그인 확인: ${store.user.email} (${store.user.credits}c)`);
   }
