@@ -75,6 +75,13 @@ body {
     color: #7c3aed; margin-bottom: 12px;
 }
 
+/* 안내 문구 (1p) */
+.prep-desc {
+    text-align: center; color: #8892a8;
+    font-size: 0.85rem; line-height: 1.6;
+    margin: 0 0 20px;
+}
+
 /* 질문 */
 .prep-question {
     font-size: clamp(22px, 6vw, 30px); font-weight: 800;
