@@ -8,6 +8,7 @@ import {
   sharedInit, saveSessionData, loadSessionData, navigateTo, showDesktopBlocker,
   MAX_CAPTURE_SIZE, FRAME_INTERVAL_MS, COACHING_DISPLAY_MS
 } from './shared.js';
+import { GateModule } from './modules/gate.js';
 
 // ─── Media 생성 (카메라 페이지 전용) ───
 const media = Monk.media({
@@ -260,6 +261,33 @@ async function init() {
   if (!Monk.isMobile() && !devMode) {
     showDesktopBlocker();
     return;
+  }
+
+  // ── 로그인 게이트 (촬영실 진입 = 로그인 필수) ──
+  if (!store.user.id) {
+    GateModule.showLoginRequired('촬영을 시작하려면 로그인이 필요합니다\n첫 로그인 시 10c를 드려요!');
+
+    // 닫기 버튼 → 랜딩으로 복귀
+    const closeBtn = document.getElementById('gate-login-close-btn');
+    if (closeBtn) {
+      const newBtn = closeBtn.cloneNode(true);
+      closeBtn.parentNode.replaceChild(newBtn, closeBtn);
+      newBtn.addEventListener('click', () => {
+        GateModule.closeLoginRequired();
+        navigateTo('index.html');
+      });
+    }
+
+    // 로그인 완료 대기 → 카메라 초기화 진행
+    await new Promise(resolve => {
+      const check = setInterval(() => {
+        if (store.user.id) {
+          clearInterval(check);
+          resolve();
+        }
+      }, 300);
+    });
+    Monk.log(`로그인 확인: ${store.user.email} (${store.user.credits}c)`);
   }
 
   // ── v5 필수값 체크 (sharedInit에서 이미 11필드 복원됨) ──

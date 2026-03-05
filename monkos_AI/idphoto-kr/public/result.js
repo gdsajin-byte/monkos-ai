@@ -152,18 +152,10 @@ function retakePhoto() {
 async function confirmAndGenerate() {
   if (!store.captured) return;
 
-  // 비로그인 1회 생성 제한 (24시간 만료)
+  // 로그인 필수 (촬영실 게이트에서 이미 체크되지만 방어용)
   if (!store.user.id) {
-    const freeGen = localStorage.getItem('monkos_free_gen');
-    if (freeGen) {
-      const elapsed = Date.now() - Number(freeGen);
-      if (elapsed < 86400000) {
-        GateModule.showLoginRequired('무료 체험을 사용하셨습니다.\n로그인 후 이용해주세요.');
-        return;
-      }
-      localStorage.removeItem('monkos_free_gen');
-    }
-    localStorage.setItem('monkos_free_gen', Date.now().toString());
+    GateModule.showLoginRequired('리터칭을 진행하려면 로그인이 필요합니다\n첫 로그인 시 10c를 드려요!');
+    return;
   }
 
   const base64 = store.captured.includes(',') ? store.captured.split(',')[1] : store.captured;
@@ -333,9 +325,9 @@ async function downloadResult() {
     try { sessionStorage.setItem('_mo_p', _fullOriginal); } catch(e) {}
   }
 
-  // 비로그인 → 직결제 (₩9,900)
+  // 로그인 필수 (촬영실 게이트에서 이미 체크되지만 방어용)
   if (!store.user.id) {
-    GateModule.buyDirect();
+    GateModule.showLoginRequired('다운로드하려면 로그인이 필요합니다');
     return;
   }
 
@@ -484,24 +476,6 @@ async function init() {
     sessionStorage.removeItem('_mo_p');
     Monk.log('원본 이미지 임시 저장소에서 복원');
   }
-
-  // 단건 결제 리다이렉트 처리 (GateModule 위임)
-  await GateModule.initDirectPayment(async () => {
-    // 직결제 성공 → 크롭 + 전후비교 합성 + thankyou 전환
-    if (_fullOriginal) {
-      const spec = PHOTO_SPECS[store.format];
-      try {
-        const cropResult = await media.crop(_fullOriginal, spec);
-        saveSessionData('cropped', cropResult.dataUrl);
-      } catch (e) {
-        const jpeg = await media.toJpeg(_fullOriginal, 0.92);
-        saveSessionData('cropped', jpeg);
-      }
-      try { sessionStorage.setItem('_mo_p', _fullOriginal); } catch(e) {}
-    }
-    await generateCompareImage();
-    navigateTo('thankyou.html');
-  });
 
   // 광고 manifest 프리로드
   loadAdManifest();

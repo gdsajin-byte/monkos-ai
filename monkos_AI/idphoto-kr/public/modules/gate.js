@@ -1,12 +1,9 @@
 /**
- * modules/gate.js — 결제/로그인 유틸
- * P2 구조 개선: Phase1/Phase2 제거, 핵심 유틸만 보존
- * - showLoginRequired(): 카메라 진입 시 로그인 유도
- * - buyDirect(): 비로그인 직결제 (₩9,900)
- * - initDirectPayment(): 토스 리다이렉트 처리
+ * modules/gate.js — 로그인 게이트 모듈
+ * Phase 3: 비회원 결제 경로 소멸 → showLoginRequired / closeLoginRequired + 소셜 로그인만 보존
  */
 
-import { store, Monk, API, TOSS_CLIENT_KEY } from '../shared.js';
+import { store, Monk, API } from '../shared.js';
 import { GOOGLE_CLIENT_ID } from '../config.js';
 
 // ─── 스타일 ───
@@ -17,8 +14,6 @@ const GATE_CSS = `
 .gate-btn{display:block;width:100%;padding:14px;border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;margin-bottom:10px}
 .gate-btn-kakao{background:#FEE500;color:#000}
 .gate-btn-kakao:hover{background:#FDD835}
-.gate-btn-pay{background:#f5f5f5;color:#333;border:1px solid #ddd}
-.gate-btn-pay:hover{background:#eee}
 .gate-btn:disabled{opacity:.5;cursor:not-allowed}
 `;
 
@@ -31,65 +26,6 @@ function _injectStyles() {
   el.textContent = GATE_CSS;
   document.head.appendChild(el);
   _stylesInjected = true;
-}
-
-// ─── 바로 결제 (₩9,900 → 80c (70c+10c bonus)) ───
-async function _buyDirect() {
-  if (!TOSS_CLIENT_KEY) {
-    alert('결제 시스템 준비 중입니다.\n곧 이용 가능합니다!');
-    return;
-  }
-
-  const orderId = `DIRECT_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-
-  try {
-    const tossPayments = TossPayments(TOSS_CLIENT_KEY);
-
-    await tossPayments.requestPayment('카드', {
-      amount: 9900,
-      orderId,
-      orderName: 'MONKOS AI 증명사진 다운로드 1장',
-      successUrl: `${window.location.origin}${window.location.pathname}?toss=direct`,
-      failUrl: `${window.location.origin}${window.location.pathname}?toss=fail`,
-    });
-  } catch (err) {
-    if (err.code !== 'PAY_PROCESS_CANCELED' && err.code !== 'USER_CANCEL') {
-      alert('결제 오류: ' + (err.message || err.code));
-    }
-  }
-}
-
-// ─── 바로 결제 리다이렉트 처리 ───
-async function _initDirectPaymentResult(afterPayCallback) {
-  const params = new URLSearchParams(window.location.search);
-  if (params.get('toss') !== 'direct') return false;
-
-  const paymentKey = params.get('paymentKey');
-  const orderId = params.get('orderId');
-  const amount = params.get('amount');
-  history.replaceState({}, '', window.location.pathname);
-
-  if (!paymentKey || !orderId || !amount) return false;
-
-  try {
-    const res = await fetch(`${API.PORTAL_URL}/api/payments/toss/direct`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ paymentKey, orderId, amount: Number(amount) }),
-    });
-    const data = await res.json();
-    if (data.success && data.downloadToken) {
-      Monk.log('단건 결제 완료 → 다운로드 진행');
-      if (afterPayCallback) afterPayCallback();
-      return true;
-    } else {
-      alert('결제 확인 실패: ' + (data.error || ''));
-    }
-  } catch (err) {
-    Monk.log('단건 결제 확인 에러: ' + err.message);
-    alert('결제 확인 중 오류가 발생했습니다.');
-  }
-  return false;
 }
 
 // ─── 로그인 필요 모달 ───
@@ -107,7 +43,7 @@ function _showLoginRequired(message) {
       <button class="gate-btn gate-btn-google" id="gate-login-google-btn" style="background:#fff;color:#333;border:1px solid #ddd;">Google 로그인</button>
       <button class="gate-btn gate-btn-kakao" id="gate-login-kakao-btn" style="margin-top:8px;">카카오 로그인</button>
       <button class="gate-btn gate-btn-line" id="gate-login-line-btn" style="margin-top:8px;background:#06C755;color:#fff;">LINE 로그인</button>
-      <button class="gate-btn gate-btn-pay" style="margin-top:8px" id="gate-login-close-btn">닫기</button>
+      <button class="gate-btn" style="margin-top:8px;background:#f5f5f5;color:#333;border:1px solid #ddd;" id="gate-login-close-btn">닫기</button>
     </div>
   `;
 
@@ -278,29 +214,11 @@ function _startGoogleLoginSimple() {
 // Export: GateModule
 // ═══════════════════════════════════════
 export const GateModule = {
-  /** @deprecated Phase1/Phase2 제거됨 (P2 구조 개선) */
-  show() {
-    console.warn('[Gate] show() is deprecated');
-  },
-
-  close() {
-    const el = document.getElementById('download-gate');
-    if (el) el.remove();
-  },
-
-  initDirectPayment(afterPayCallback) {
-    return _initDirectPaymentResult(afterPayCallback);
-  },
-
   showLoginRequired(message) {
     _showLoginRequired(message);
   },
 
   closeLoginRequired() {
     _closeLoginRequired();
-  },
-
-  buyDirect() {
-    _buyDirect();
   },
 };
