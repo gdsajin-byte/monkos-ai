@@ -9,6 +9,7 @@ import {
   MAX_CAPTURE_SIZE, FRAME_INTERVAL_MS, COACHING_DISPLAY_MS
 } from './shared.js';
 import { GateModule } from './modules/gate.js';
+import { initChatbot } from './modules/chatbot.js';
 
 // ─── Media 생성 (카메라 페이지 전용) ───
 const media = Monk.media({
@@ -250,6 +251,8 @@ Object.assign(window, {
 
 // ─── 초기화 ───
 async function init() {
+  initChatbot();
+
   try {
     await sharedInit();
   } catch (err) {

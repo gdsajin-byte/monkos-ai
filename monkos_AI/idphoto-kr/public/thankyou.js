@@ -9,6 +9,7 @@ import {
   sharedInit, loadSessionData, navigateTo, showChargeModal,
   API, pipe, fetchLatestCredits
 } from './shared.js';
+import { initChatbot } from './modules/chatbot.js';
 
 // ─── Media (toJpeg 전용) ───
 const media = Monk.media({
@@ -259,6 +260,7 @@ Object.assign(window, {
 
 // ─── 초기화 ───
 async function init() {
+  initChatbot();
   await sharedInit();
 
   // 수령처 화면 활성화

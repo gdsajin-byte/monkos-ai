@@ -11,6 +11,7 @@ import {
 } from './shared.js';
 
 import { GateModule } from './modules/gate.js';
+import { initChatbot } from './modules/chatbot.js';
 // ─── 원본 격리: 풀 원본은 모듈 스코프 private 변수에만 보관 ───
 let _fullOriginal = null;
 
@@ -460,6 +461,8 @@ Object.assign(window, {
 
 // ─── 초기화 ───
 async function init() {
+  initChatbot();
+
   try {
     await sharedInit();
   } catch (err) {

@@ -128,6 +128,7 @@
     <script type="module">
     import { store, Monk, sharedInit, buyCreditsKR, navigateTo, CHARGE_OPTIONS, KRW_PER_CREDIT } from './shared.js';
     import { renderChargeCards } from './modules/charge.js';
+    import { initChatbot } from './modules/chatbot.js';
 
     const STEP_UNIT = 10;
     const STEP_PRICE = 1450;
@@ -234,6 +235,7 @@
 
     // ─── 초기화 ───
     async function init() {
+      initChatbot();
       await sharedInit();
       renderPackages();
       Monk.log('충전 페이지 초기화 완료');

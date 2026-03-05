@@ -7,16 +7,17 @@ import { buildCoachingPrompt, buildQCInstruction, READY_KEYWORDS } from './promp
 // === 챗봇 API ===
 export async function handleWebChat(req, res) {
   try {
-    const { message, sessionId, lang } = await parseJsonBody(req);
+    const { message, sessionId, lang, channel } = await parseJsonBody(req);
     if (!message) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: 'message 필드 필수' }));
       return;
     }
     const sid = sessionId || `anon_${Date.now()}`;
-    log(`[Chat][${sid}] ${message.substring(0, 100)}`);
+    const ch = channel || 'web';
+    log(`[Chat][${ch}][${sid}] ${message.substring(0, 100)}`);
 
-    const reply = await chatWithMonkos('web', sid, message);
+    const reply = await chatWithMonkos(ch, sid, message);
     log(`[Chat][${sid}] → ${reply.substring(0, 100)}`);
 
     res.writeHead(200, { 'Content-Type': 'application/json' });

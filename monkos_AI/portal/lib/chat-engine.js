@@ -4,7 +4,7 @@
  */
 
 import { ai, firestore, log } from './shared/config.js';
-import { SYSTEM_PROMPT, CS_SYSTEM_PROMPT, PREP_SYSTEM_PROMPT, COACHING_INSTRUCTIONS } from './prompts.js';
+import { SYSTEM_PROMPT, SYSTEM_PROMPT_KR, CS_SYSTEM_PROMPT, PREP_SYSTEM_PROMPT, COACHING_INSTRUCTIONS } from './prompts.js';
 import { loadCsKnowledge, searchCsKnowledge } from './rag.js';
 
 // === 인메모리 히스토리 ===
@@ -163,6 +163,15 @@ const CHANNEL_CONFIG = {
     historyTTL: 30 * 60 * 1000,
     maxHistory: 20,
     logCollection: 'kakao_conversations',
+  },
+  'idphoto-kr': {
+    systemPrompt: SYSTEM_PROMPT_KR,
+    temperature: 0.7,
+    maxOutputTokens: 300,
+    historyMap: chatHistories,
+    historyTTL: 30 * 60 * 1000,
+    maxHistory: 20,
+    logCollection: 'idphoto_kr_conversations',
   },
 };
 
