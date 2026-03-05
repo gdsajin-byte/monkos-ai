@@ -186,7 +186,7 @@ async function confirmAndGenerate() {
       return;
     }
 
-    store.statusText = `사전분석 OK (${preCheck.score}점) → 생성 시작`;
+    store.statusText = `사전분석 OK (${preCheck.score}점) → 리터칭 시작`;
   } catch (err) {
     Monk.log('사전분석 스킵: ' + (err.error || err.message));
   }
@@ -274,7 +274,7 @@ async function confirmAndGenerate() {
       store.resultSubtitle = '크레딧이 부족합니다';
       store.step = 2;
     } else {
-      showGenerateError(err.error || err.message || '생성 실패');
+      showGenerateError(err.error || err.message || '리터칭 실패');
     }
   }
 }

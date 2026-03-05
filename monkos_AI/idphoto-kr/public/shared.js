@@ -103,10 +103,10 @@ export function showCreditModal(required, current, action) {
   store.creditRequired = required;
   store.creditModalTitle = action === 'download'
     ? '다운로드에 크레딧이 필요합니다'
-    : '생성에 크레딧이 필요합니다';
+    : '리터칭에 크레딧이 필요합니다';
   store.creditModalDesc = action === 'download'
     ? '사진을 다운로드하려면 70 크레딧이 필요합니다.'
-    : '사진을 생성하려면 10 크레딧이 필요합니다.';
+    : '리터칭에 10 크레딧이 필요합니다.';
   store.creditModalOpen = true;
 }
 
