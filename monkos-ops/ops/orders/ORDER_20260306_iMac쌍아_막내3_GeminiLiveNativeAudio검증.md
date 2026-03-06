@@ -3,7 +3,7 @@ type: order
 date: 2026-03-06
 from: iMac/쌍아
 to: iMac/막내3
-status: pending
+status: completed
 ---
 
 # [지시서] Gemini Live Native Audio 모델 검증 + 보이스 시연
