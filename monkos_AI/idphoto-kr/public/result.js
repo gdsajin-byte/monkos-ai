@@ -70,6 +70,11 @@ function showAdImage(index) {
   if (!img || !adImages[index]) return;
   img.style.opacity = '0';
   setTimeout(() => {
+    img.onerror = () => {
+      Monk.log('광고 이미지 로드 실패: ' + adImages[index]);
+      img.style.display = 'none';
+    };
+    img.onload = () => { img.style.display = ''; };
     img.src = adImages[index];
     img.style.opacity = '1';
   }, 400);
@@ -224,6 +229,16 @@ async function confirmAndGenerate() {
     _fullOriginal = genResult.image;
     Monk.log('생성 완료');
 
+    // QC + 워터마크를 병렬 실행 (QC는 백그라운드, 실패해도 진행 차단 안 함)
+    let qcResult = null;
+    const qcPromise = pipe.run('qc', {
+      original: base64,
+      generated: genResult.image,
+      gender: store.gender === 'f' ? 'female' : 'male',
+      age: store.age || 'adult',
+    }).then(r => { qcResult = r; Monk.log(`QC: ${JSON.stringify(r).substring(0, 100)}`); })
+      .catch(e => Monk.log('QC 에러: ' + (e.error || e.message)));
+
     // 워터마크 버전 생성
     const watermarked = await generateWatermarkPreview(genResult.image);
 
@@ -240,6 +255,9 @@ async function confirmAndGenerate() {
     // store/sessionStorage에는 크롭 워터마크 버전 저장
     store.generated = croppedWatermark;
     try { sessionStorage.setItem('monkos_generated', croppedWatermark); } catch(e) {}
+
+    // QC 완료 대기 (최대 10초)
+    await Promise.race([qcPromise, new Promise(r => setTimeout(r, 10000))]);
 
     const elapsed = Date.now() - genStartTime;
     const remaining = Math.max(0, MIN_DISPLAY_TIME - elapsed);
@@ -267,6 +285,9 @@ async function confirmAndGenerate() {
 
       // 워터마크 프리뷰도 크롭 버전
       store.watermarkPreview = croppedWatermark;
+
+      // QC 결과 표시
+      showQCBadge(qcResult);
     });
 
   } catch (err) {
@@ -281,6 +302,34 @@ async function confirmAndGenerate() {
       showGenerateError(err.error || err.message || '리터칭 실패');
     }
   }
+}
+
+// ─── QC 결과 배지 ───
+function showQCBadge(result) {
+  const badge = document.getElementById('qc-badge');
+  if (!badge) return;
+
+  if (!result) {
+    badge.style.display = 'none';
+    return;
+  }
+
+  badge.style.display = 'block';
+  const similarity = result.similarity || 0;
+  const passed = result.identity === 'PASS' && similarity >= 70;
+
+  if (passed) {
+    badge.className = 'qc-badge pass';
+    badge.innerHTML = `<span>AI 검수 완료</span> · 유사도 ${similarity}% · ${result.quality || '양호'}`;
+  } else if (result.identity === 'ERROR') {
+    badge.className = 'qc-badge pending';
+    badge.textContent = 'AI 검수: 분석 실패 (결과에 영향 없음)';
+  } else {
+    badge.className = 'qc-badge fail';
+    badge.innerHTML = `<span>AI 검수 주의</span> · 유사도 ${similarity}% · ${result.note || '재촬영 권장'}`;
+  }
+
+  Monk.log(`QC 배지: ${passed ? 'PASS' : 'FAIL'} (${similarity}%)`);
 }
 
 function showGenerateError(error) {

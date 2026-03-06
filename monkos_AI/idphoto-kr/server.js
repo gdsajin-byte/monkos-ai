@@ -339,6 +339,9 @@ face_center_x = 얼굴 중심 x좌표 (500 근처면 중앙 정렬, ±50 허용)
 head_top_margin = 머리 정수리에서 이미지 상단까지 여백 (40~150 적합)`;
 }
 
+// === QC/사전분석 폴백 모델 (JP 정본 패턴) ===
+const QC_MODELS = ['gemini-3-flash-preview', 'gemini-2.0-flash'];
+
 // === 클라이언트 세션 관리 ===
 const sessions = new Map();
 
@@ -427,36 +430,39 @@ suggestion: 사용자에게 보여줄 한줄 한국어 조언`;
 
 async function runPreCheck(imageBase64) {
   const data = extractBase64(imageBase64);
-  const model = 'gemini-2.0-flash';
 
-  try {
-    log(`[사전분석] 모델: ${model}`);
-    const response = await ai.models.generateContent({
-      model,
-      contents: [{
-        role: 'user',
-        parts: [
-          { inlineData: { mimeType: 'image/jpeg', data } },
-          { text: PRE_CHECK_INSTRUCTION },
-        ],
-      }],
-      config: {
-        responseMimeType: 'application/json',
-        temperature: 0.2,
-      },
-    });
-
-    const text = response.candidates?.[0]?.content?.parts?.[0]?.text || '';
-    log(`[사전분석][${model}] 응답: ${text.substring(0, 300)}`);
-
+  for (const model of QC_MODELS) {
     try {
-      const jsonMatch = text.match(/\{[\s\S]*\}/);
-      if (jsonMatch) return JSON.parse(jsonMatch[0]);
-    } catch { /* JSON 파싱 실패 */ }
-    return { suitable: true, score: 0, raw: text };
-  } catch (err) {
-    log(`[사전분석][${model}] 실패: ${err.message}`);
-    return { suitable: true, score: 0, note: `분석 실패: ${err.message}` };
+      log(`[사전분석] 모델 시도: ${model}`);
+      const response = await ai.models.generateContent({
+        model,
+        contents: [{
+          role: 'user',
+          parts: [
+            { inlineData: { mimeType: 'image/jpeg', data } },
+            { text: PRE_CHECK_INSTRUCTION },
+          ],
+        }],
+        config: {
+          responseMimeType: 'application/json',
+          temperature: 0.2,
+        },
+      });
+
+      const text = response.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      log(`[사전분석][${model}] 응답: ${text.substring(0, 300)}`);
+
+      try {
+        const jsonMatch = text.match(/\{[\s\S]*\}/);
+        if (jsonMatch) return JSON.parse(jsonMatch[0]);
+      } catch { /* JSON 파싱 실패 → 다음 모델 */ }
+      return { suitable: true, score: 0, raw: text };
+    } catch (err) {
+      log(`[사전분석][${model}] 실패: ${err.message} → 폴백`);
+      if (model === QC_MODELS[QC_MODELS.length - 1]) {
+        return { suitable: true, score: 0, note: `분석 실패: ${err.message}` };
+      }
+    }
   }
 }
 
@@ -487,7 +493,8 @@ app.get('/health', (req, res) => {
     auth: 'Hybrid (ADC + API Key)',
     geminiLive: 'ready (ADC)',
     imagen: GEMINI_API_KEY ? 'active (API Key)' : 'NO API KEY',
-    preCheck: 'active (gemini-2.0-flash)',
+    qc: 'active (gemini-3-flash-preview → 2.0-flash 폴백)',
+    preCheck: 'active (gemini-3-flash-preview → 2.0-flash 폴백)',
   });
 });
 
@@ -608,7 +615,7 @@ app.post('/api/idgen', async (req, res) => {
   }
 });
 
-// QC 검증 — MPA용 (Vertex AI ADC)
+// QC 검증 — MPA용 (Vertex AI ADC, 폴백 모델)
 app.post('/api/qc', async (req, res) => {
   try {
     const { original, generated, gender = 'male', age = 'adult' } = req.body;
@@ -621,30 +628,37 @@ app.post('/api/qc', async (req, res) => {
 
     const instruction = buildQCInstruction(gender, age);
 
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.0-flash',
-      contents: [{ role: 'user', parts: [
-        { inlineData: { mimeType: 'image/png', data: origBase64 } },
-        { inlineData: { mimeType: 'image/png', data: genBase64 } },
-        { text: instruction },
-      ]}],
-      config: {
-        responseMimeType: 'application/json',
-        temperature: 0.3,
-      },
-    });
+    for (const model of QC_MODELS) {
+      try {
+        log(`[QC] 모델 시도: ${model} (gender=${gender}, age=${age})`);
+        const response = await ai.models.generateContent({
+          model,
+          contents: [{ role: 'user', parts: [
+            { inlineData: { mimeType: 'image/png', data: origBase64 } },
+            { inlineData: { mimeType: 'image/png', data: genBase64 } },
+            { text: instruction },
+          ]}],
+          config: {
+            responseMimeType: 'application/json',
+            temperature: 0.3,
+          },
+        });
 
-    const text = response.candidates?.[0]?.content?.parts?.[0]?.text || '';
-    let result;
-    try {
-      const jsonMatch = text.match(/\{[\s\S]*\}/);
-      if (jsonMatch) result = JSON.parse(jsonMatch[0]);
-      else result = { identity: 'ERROR', note: 'QC 분석 파싱 실패' };
-    } catch {
-      result = { identity: 'ERROR', note: 'QC 분석 파싱 실패' };
+        const text = response.candidates?.[0]?.content?.parts?.[0]?.text || '';
+        log(`[QC][${model}] 응답: ${text.substring(0, 300)}`);
+
+        try {
+          const jsonMatch = text.match(/\{[\s\S]*\}/);
+          if (jsonMatch) return res.json(JSON.parse(jsonMatch[0]));
+        } catch { /* JSON 파싱 실패 → 다음 모델 */ }
+        return res.json({ raw: text });
+      } catch (err) {
+        log(`[QC][${model}] 실패: ${err.message} → 폴백`);
+        if (model === QC_MODELS[QC_MODELS.length - 1]) {
+          return res.json({ identity: 'ERROR', note: `QC 전체 실패: ${err.message}` });
+        }
+      }
     }
-
-    res.json(result);
   } catch (err) {
     log(`[API][qc] 에러: ${err.message}`, 'ERROR');
     res.status(500).json({ error: err.message });
@@ -705,7 +719,8 @@ const httpServer = app.listen(PORT, '0.0.0.0', () => {
   log(`리전: ${LOCATION}`);
   log(`인증: 하이브리드 (ADC + API Key)`);
   log(`Imagen I2I: 활성 (gemini-3-pro-image-preview, API Key)`);
-  log(`사전분석: 활성 (gemini-2.0-flash)`);
+  log(`QC: 활성 (gemini-3-flash-preview → 2.0-flash 폴백)`);
+  log(`사전분석: 활성 (gemini-3-flash-preview → 2.0-flash 폴백)`);
   log('='.repeat(60));
   log('엔드포인트:');
   log('  GET  /health              — 헬스체크');
