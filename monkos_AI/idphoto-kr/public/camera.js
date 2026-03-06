@@ -96,6 +96,9 @@ function showCoaching(text, ready = false) {
 // ─── WebSocket 코칭 ───
 let wsCoaching = null;
 let frameTimer = null;
+let countdownTimer = null;
+let readyCount = 0;
+const READY_THRESHOLD = 1;
 
 function getWsUrl() {
   const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
@@ -119,7 +122,17 @@ function startCoachingWS() {
     try {
       const msg = JSON.parse(event.data);
       if (msg.type === 'ai-coaching' && msg.text) {
-        showCoaching(msg.text, msg.text.includes('좋') || msg.text.includes('지금') || msg.text.includes('촬영'));
+        const isReady = msg.ready === true;
+        showCoaching(msg.text, isReady);
+
+        if (isReady && !countdownTimer) {
+          readyCount++;
+          if (readyCount >= READY_THRESHOLD) {
+            startCountdown();
+          }
+        } else if (!isReady) {
+          readyCount = 0;
+        }
       }
     } catch (e) {
       Monk.log('코칭 메시지 파싱 실패: ' + e.message);
@@ -166,6 +179,12 @@ function stopCoachingWS() {
     wsCoaching = null;
   }
   stopFrameLoop();
+  if (countdownTimer) {
+    clearInterval(countdownTimer);
+    countdownTimer = null;
+  }
+  readyCount = 0;
+  hideCountdownOverlay();
   if ('speechSynthesis' in window) speechSynthesis.cancel();
   store.coaching = { text: '', ready: false, active: false };
 }
@@ -178,6 +197,78 @@ function startCoachingLoop() {
 function stopCoachingLoop() {
   stopCoachingWS();
 }
+
+// ─── 카운트다운 + 자동 촬영 ───
+function startCountdown() {
+  stopFrameLoop();
+  showCountdownOverlay(3);
+  document.querySelector('#btn-capture')?.setAttribute('disabled', '');
+
+  let n = 3;
+  countdownTimer = setInterval(() => {
+    n--;
+    if (n > 0) {
+      showCountdownOverlay(n);
+    } else {
+      clearInterval(countdownTimer);
+      countdownTimer = null;
+      doAutoCapture();
+    }
+  }, 1000);
+}
+
+function cancelCountdown() {
+  if (countdownTimer) {
+    clearInterval(countdownTimer);
+    countdownTimer = null;
+  }
+  readyCount = 0;
+  hideCountdownOverlay();
+  document.querySelector('#btn-capture')?.removeAttribute('disabled');
+  startFrameLoop();
+}
+
+function doAutoCapture() {
+  const flashEl = document.getElementById('shutter-flash');
+  if (flashEl) {
+    flashEl.classList.add('active');
+    setTimeout(() => flashEl.classList.remove('active'), 300);
+  }
+  setTimeout(() => capturePhoto(), 200);
+}
+
+function showCountdownOverlay(n) {
+  const overlay = document.getElementById('countdown-overlay');
+  const numEl = document.getElementById('countdown-number');
+  const labelEl = document.getElementById('countdown-label');
+  if (!overlay || !numEl) return;
+
+  overlay.classList.add('active');
+  numEl.textContent = n;
+  numEl.style.animation = 'none';
+  void numEl.offsetHeight;
+  numEl.style.animation = 'countdown-pop 0.4s ease';
+
+  if (labelEl) {
+    labelEl.textContent = n === 3 ? '준비되셨습니다, 촬영합니다' : '';
+  }
+
+  const faceGuide = document.querySelector('#face-guide');
+  if (faceGuide) faceGuide.classList.add('ready');
+}
+
+function hideCountdownOverlay() {
+  const overlay = document.getElementById('countdown-overlay');
+  if (overlay) overlay.classList.remove('active');
+}
+
+// 카운트다운 중 탭 → 취소
+document.getElementById('countdown-overlay')?.addEventListener('click', () => {
+  if (countdownTimer) {
+    cancelCountdown();
+    showCoaching('카운트다운 취소됨. 다시 준비해주세요.', false);
+  }
+});
 
 // ─── 촬영 ───
 function capturePhoto() {

@@ -775,3 +775,57 @@ body {
   display: flex;
   flex-direction: column;
 }
+
+/* 카운트다운 오버레이 */
+#countdown-overlay {
+    position: absolute;
+    inset: 0;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 15;
+    pointer-events: auto;
+}
+#countdown-overlay.active { display: flex; }
+
+#countdown-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #22c55e;
+    margin-bottom: 12px;
+    letter-spacing: 0.05em;
+}
+
+#countdown-number {
+    font-size: 96px;
+    font-weight: 900;
+    color: #fff;
+    line-height: 1;
+    text-shadow: 0 0 40px rgba(34, 197, 94, 0.6);
+}
+
+@keyframes countdown-pop {
+    0%   { transform: scale(0.5); opacity: 0; }
+    50%  { transform: scale(1.15); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* 셔터 플래시 */
+#shutter-flash {
+    position: absolute;
+    inset: 0;
+    background: #fff;
+    z-index: 20;
+    opacity: 0;
+    pointer-events: none;
+    transition: none;
+}
+#shutter-flash.active {
+    animation: shutter-flash 0.3s ease forwards;
+}
+@keyframes shutter-flash {
+    0%   { opacity: 0.9; }
+    100% { opacity: 0; }
+}
