@@ -373,28 +373,31 @@ async function init() {
   // 선택 요약 뱃지 렌더링
   renderSelectionSummary();
 
-  // 카메라 화면 활성화
-  document.querySelector('#camera-area')?.classList.add('active');
+  // 스탠바이 화면 표시 (카메라는 아직 OFF)
+  document.querySelector('#standby-screen')?.classList.add('active');
 
-  store.step = 1;
-  store.stepLabel = TX.step1;
-  store.voiceEnabled = (store.coachingMode === 'voice');
-  store.coaching = { text: TX.coachingCheck, ready: false, active: true };
+  // 시작 버튼 핸들러
+  document.getElementById('btn-start-camera')?.addEventListener('click', async () => {
+    // 스탠바이 숨기기
+    document.querySelector('#standby-screen')?.classList.remove('active');
 
-  try {
-    await media.start();
+    // 카메라 화면 활성화
+    document.querySelector('#camera-area')?.classList.add('active');
+    store.step = 1;
+    store.stepLabel = TX.step1;
+    store.voiceEnabled = (store.coachingMode === 'voice');
+    store.coaching = { text: TX.coachingCheck, ready: false, active: true };
 
-    // AI 코칭 루프 시작
-    startCoachingLoop();
-
-    // 컨트롤 표시
-    document.querySelector('#controls')?.classList.add('active');
-
-    Monk.log('촬영실 초기화 완료');
-  } catch (err) {
-    alert(TX.cameraError);
-    Monk.log('카메라 시작 실패: ' + err.message);
-  }
+    try {
+      await media.start();
+      startCoachingLoop();
+      document.querySelector('#controls')?.classList.add('active');
+      Monk.log('촬영실 초기화 완료');
+    } catch (err) {
+      alert(TX.cameraError);
+      Monk.log('카메라 시작 실패: ' + err.message);
+    }
+  });
 }
 
 init();
