@@ -80,8 +80,9 @@ function showCoaching(text, ready = false) {
   const faceGuide = document.querySelector('#face-guide');
   if (faceGuide) faceGuide.classList.toggle('ready', ready);
 
-  const overlay = document.querySelector('#coaching-overlay');
-  if (overlay) overlay.classList.toggle('ready', ready);
+  // 뱃지형 코칭
+  const badge = document.querySelector('#coaching-badge');
+  if (badge) badge.classList.toggle('ready', ready);
 
   speakKo(text);
 
@@ -120,6 +121,10 @@ function startCoachingWS() {
       const msg = JSON.parse(event.data);
       if (msg.type === 'ai-coaching' && msg.text) {
         showCoaching(msg.text, msg.text.includes('좋') || msg.text.includes('지금') || msg.text.includes('촬영'));
+      }
+      if (msg.type === 'auto-capture') {
+        // 코치 승인 → 자동 촬영
+        capturePhoto();
       }
     } catch (e) {
       Monk.log('코칭 메시지 파싱 실패: ' + e.message);
@@ -199,7 +204,7 @@ function capturePhoto() {
   // 카메라 정리
   media.offFrame();
   media.stop();
-  document.querySelector('#controls')?.classList.remove('active');
+  // #controls는 camera-header로 이동됨
 
   Monk.log('촬영 완료 → 분석실 이동');
 
@@ -295,9 +300,6 @@ async function init() {
 
     // AI 코칭 루프 시작
     startCoachingLoop();
-
-    // 컨트롤 표시
-    document.querySelector('#controls')?.classList.add('active');
 
     Monk.log('촬영실 초기화 완료');
   } catch (err) {
