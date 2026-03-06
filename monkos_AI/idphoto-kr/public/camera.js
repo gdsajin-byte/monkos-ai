@@ -47,7 +47,7 @@ if ('speechSynthesis' in window) {
 // iOS Safari: speechSynthesis는 첫 호출이 user gesture 내에서 이뤄져야 함
 // 페이지 첫 터치/클릭 시 TTS 활성화
 function activateTTS() {
-  if (!store.voiceEnabled || ttsActivated || !('speechSynthesis' in window)) return;
+  if (ttsActivated || !('speechSynthesis' in window)) return;
   ttsActivated = true;
   const warmup = new SpeechSynthesisUtterance('');
   warmup.volume = 0;
