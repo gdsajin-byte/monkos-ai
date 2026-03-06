@@ -92,6 +92,7 @@ export const store = Monk.store({
 export const pipe = Monk.pipe({
   precheck: { type: 'post', path: API.PRECHECK },
   generate: { type: 'post', path: API.GENERATE },
+  qc: { type: 'post', path: API.QC },
   creditUse: { type: 'post', path: API.CREDIT_USE },
   coaching: { type: 'ws', url: '' },  // WebSocket — url은 camera.js에서 동적 생성
 }, {
@@ -124,7 +125,11 @@ export function showChargeModal() {
 // ─── 결제 (토스) ───
 export async function buyCreditsKR(amount, credits) {
   if (!store.user.id) {
-    alert('로그인이 필요합니다');
+    import('./modules/gate.js').then(m => {
+      m.GateModule.showLoginRequired('크레딧 충전은 로그인이 필요합니다\n첫 로그인 시 10c를 드려요!', () => {
+        buyCreditsKR(amount, credits);
+      });
+    });
     return;
   }
 
