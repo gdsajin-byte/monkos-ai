@@ -186,6 +186,15 @@ async function confirmAndGenerate() {
     Monk.log('사전분석 스킵: ' + (err.error || err.message));
   }
 
+  // ─── 잔고 사전 체크 (시머링 시작 전) ───
+  if (store.user.credits < CREDIT_COST.generate) {
+    showChargeModal();
+    store.showStep2Actions = true;
+    store.resultTitle = TX.resultConfirm;
+    store.resultSubtitle = '크레딧이 부족합니다';
+    return;
+  }
+
   // 생성 단계
   store.step = 3;
   store.stepLabel = TX.step3;

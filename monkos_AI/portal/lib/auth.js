@@ -136,7 +136,7 @@ export async function handleKakaoCallback(req, res) {
     window.close();
   } else {
     sessionStorage.setItem('monkos_user', JSON.stringify(data.user));
-    location.href = '/';
+    location.href = ${safeJsonForScript(redirectApp || '/')};
   }
 })();
 </script></body></html>`);
@@ -147,11 +147,12 @@ export async function handleKakaoCallback(req, res) {
       res.setHeader('Set-Cookie',
         `monkos_session=${sessionToken}; Domain=.monkos.ai; Path=/; Secure; HttpOnly; SameSite=Lax; Max-Age=2592000`
       );
+      const returnUrl = ALLOWED_POPUP_ORIGINS.includes(redirectApp) ? redirectApp : '/';
       const userObj = JSON.stringify(userInfo);
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
       res.end(`<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body><script>
 sessionStorage.setItem('monkos_user', ${JSON.stringify(userObj)});
-location.href = '/';
+location.href = ${JSON.stringify(returnUrl)};
 </script></body></html>`);
     }
   } catch (err) {
@@ -300,7 +301,7 @@ export async function handleLineCallback(req, res) {
     window.close();
   } else {
     sessionStorage.setItem('monkos_user', JSON.stringify(data.user));
-    location.href = '/';
+    location.href = ${safeJsonForScript(lineStateData.redirectApp || '/')};
   }
 })();
 </script></body></html>`);
@@ -311,6 +312,7 @@ export async function handleLineCallback(req, res) {
       res.setHeader('Set-Cookie',
         `monkos_session=${sessionToken}; Domain=.monkos.ai; Path=/; Secure; HttpOnly; SameSite=Lax; Max-Age=2592000`
       );
+      const returnUrl = ALLOWED_POPUP_ORIGINS.includes(lineStateData.redirectApp) ? lineStateData.redirectApp : '/';
       const userObj = JSON.stringify(userInfo);
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
       res.end(`<!DOCTYPE html><html><head><meta charset="UTF-8">
@@ -325,7 +327,7 @@ body{background:#0f0f23;display:flex;justify-content:center;align-items:center;h
 <div style="text-align:center"><div class="logo">MONKOS AI</div><div class="sub">ログイン中...</div></div>
 <script>
 sessionStorage.setItem('monkos_user', ${JSON.stringify(userObj)});
-location.href = '/';
+location.href = ${JSON.stringify(returnUrl)};
 </script></body></html>`);
     }
   } catch (err) {
@@ -430,6 +432,7 @@ export async function handleGoogleAuth(req, res) {
           name: user.name,
           picture: user.picture,
           credits,
+          provider: 'google',
         }
       }));
     } catch (err) {
@@ -633,6 +636,7 @@ export async function handleVerifyCookie(req, res) {
         name: userData.name,
         picture: userData.picture,
         credits: userData.credits ?? 0,
+        provider: userData.provider || '',
       }
     }));
   } catch (err) {

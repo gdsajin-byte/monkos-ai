@@ -10,6 +10,7 @@ import {
   store, Monk, sharedInit, saveSelections, clearSelections,
   saveSessionData, loadSessionData, navigateTo, SCHEMA_VERSION
 } from './shared.js';
+import { initChatbot } from './modules/chatbot.js';
 import {
   V5_OPTIONS, CLOTHING_BY_AGE, HAIR_VISIBLE_AGES,
   PASSPORT_FORCED_BG, PHOTO_SPECS
@@ -72,7 +73,10 @@ function showPage(idx) {
   // 네비 버튼
   const btnPrev = document.getElementById('btnPrev');
   const btnNext = document.getElementById('btnNext');
-  if (btnPrev) btnPrev.style.visibility = idx > 0 ? 'visible' : 'hidden';
+  if (btnPrev) {
+    btnPrev.style.visibility = 'visible';
+    btnPrev.textContent = idx === 0 ? '← 돌아가기' : '이전';
+  }
   if (btnNext) {
     btnNext.style.display = idx === 3 ? 'none' : '';
     btnNext.textContent = '다음';
@@ -95,11 +99,13 @@ function nextPage() {
 }
 
 function prevPage() {
-  if (currentPage > 0) {
-    const prev = currentPage - 1;
-    if (prev === 2) renderStylePage();
-    showPage(prev);
+  if (currentPage === 0) {
+    navigateTo('index.html');
+    return;
   }
+  const prev = currentPage - 1;
+  if (prev === 2) renderStylePage();
+  showPage(prev);
 }
 
 // ─── 카드 선택 헬퍼 ───
@@ -128,6 +134,7 @@ function renderFormatPage() {
   el.innerHTML = `
     <div class="prep-page-inner">
       <div class="prep-label">STEP 1</div>
+      <p class="prep-desc">용도에 맞는 정확한 증명사진 촬영을 위해<br>규격과 성별, 연령대를 선택해 주세요</p>
       <h2 class="prep-question">규격을 선택해 주세요</h2>
       <div class="prep-cards prep-cards-col" id="formatCards">
         ${makeCard('passport', FORMAT_ICONS.passport, '여권 / 신분증', FORMAT_DESC.passport)}
@@ -573,6 +580,7 @@ Object.assign(window, {
 // ─── 초기화 ───
 
 async function init() {
+  initChatbot();
   await sharedInit();
 
   store.step = 0;

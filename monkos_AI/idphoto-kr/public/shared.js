@@ -159,6 +159,19 @@ export async function buyCreditsKR(amount, credits) {
   }
 }
 
+function _showTossLoading() {
+  const el = document.createElement('div');
+  el.id = 'toss-loading';
+  el.style.cssText = 'position:fixed;inset:0;background:#030508;display:flex;align-items:center;justify-content:center;z-index:9999;';
+  el.innerHTML = '<div style="text-align:center;"><div style="color:#a78bfa;font-size:1.1rem;font-weight:600;">결제 확인 중...</div><div style="color:#8892a8;font-size:0.85rem;margin-top:8px;">잠시만 기다려 주세요</div></div>';
+  document.body.appendChild(el);
+}
+
+function _hideTossLoading() {
+  const el = document.getElementById('toss-loading');
+  if (el) el.remove();
+}
+
 export async function initFromTossResult() {
   const params = new URLSearchParams(window.location.search);
 
@@ -170,13 +183,15 @@ export async function initFromTossResult() {
   }
 
   if (params.get('toss') === 'success') {
+    _showTossLoading();
+
     const paymentKey = params.get('paymentKey');
     const orderId = params.get('orderId');
     const amount = params.get('amount');
 
     history.replaceState({}, '', window.location.pathname);
 
-    if (!paymentKey || !orderId || !amount) return;
+    if (!paymentKey || !orderId || !amount) { _hideTossLoading(); return; }
 
     try {
       const res = await fetch(`${API.PORTAL_URL}/api/payments/toss/confirm`, {
@@ -185,6 +200,7 @@ export async function initFromTossResult() {
         body: JSON.stringify({ paymentKey, orderId, amount: Number(amount), userId: store.user.id }),
       });
       const data = await res.json();
+      _hideTossLoading();
       if (data.success) {
         store.user = { ...store.user, credits: data.credits };
         Monk.log(`결제 완료: ${data.credits}c`);
@@ -193,6 +209,7 @@ export async function initFromTossResult() {
         alert('결제 확인 실패: ' + (data.error || ''));
       }
     } catch (err) {
+      _hideTossLoading();
       Monk.log('결제 확인 에러: ' + err.message);
     }
   }
