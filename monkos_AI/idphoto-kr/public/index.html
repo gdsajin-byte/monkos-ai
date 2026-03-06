@@ -121,11 +121,22 @@ header {
 }
 .hero-content {
   position: absolute;
-  bottom: 0; left: 0; right: 0;
-  padding: 0 24px 28px;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 24px;
   text-align: center;
 }
-/* .hero-pretitle 삭제 — h1에 통합 */
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(167, 139, 250, 0.15); border: 1px solid rgba(167, 139, 250, 0.25);
+  padding: 6px 14px; border-radius: 20px;
+  font-size: 0.75rem; color: var(--accent); font-weight: 600;
+  margin-bottom: 12px; letter-spacing: 0.3px;
+  backdrop-filter: blur(8px);
+}
 .hero h1 {
   font-size: clamp(2rem, 7vw, 2.8rem);
   font-weight: 800; color: var(--text-bright);
@@ -611,6 +622,7 @@ footer a { color: var(--accent); text-decoration: none; }
     <div class="hero-bg"></div>
     <div class="hero-overlay"></div>
     <div class="hero-content">
+      <div class="hero-badge">20년 경력 사진작가가 직접 개발</div>
       <h1>사진관 품질의<br><span>AI 증명사진</span></h1>
       <p class="hero-sub">여권 · 신분증 발급 보장</p>
       <a class="hero-cta" href="/prep">촬영 시작하기 &rarr;</a>
