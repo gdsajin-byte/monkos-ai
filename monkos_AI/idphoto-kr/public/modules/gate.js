@@ -68,10 +68,10 @@ function _showLoginRequired(message, onSuccess) {
     const popup = window.open('about:blank', 'kakao-login', 'width=500,height=600');
     _closeLoginRequired();
     if (!popup) {
-      window.location.href = `${API.PORTAL_URL}/auth/kakao`;
+      window.location.href = `${API.PORTAL_URL}/auth/kakao?redirect_app=${encodeURIComponent(window.location.origin)}`;
       return;
     }
-    popup.location.href = `${API.PORTAL_URL}/auth/kakao?popup=1&redirect_app=idphoto-kr`;
+    popup.location.href = `${API.PORTAL_URL}/auth/kakao?popup=1&redirect_app=${encodeURIComponent(window.location.origin)}`;
     function handler(e) {
       if (e.origin !== API.PORTAL_URL) return;
       if (e.data && e.data.type === 'auth-success') {
@@ -93,10 +93,10 @@ function _showLoginRequired(message, onSuccess) {
     const popup = window.open('about:blank', 'line-login', 'width=500,height=600');
     _closeLoginRequired();
     if (!popup) {
-      window.location.href = `${API.PORTAL_URL}/auth/line`;
+      window.location.href = `${API.PORTAL_URL}/auth/line?redirect_app=${encodeURIComponent(window.location.origin)}`;
       return;
     }
-    popup.location.href = `${API.PORTAL_URL}/auth/line?popup=1&redirect_app=idphoto-kr`;
+    popup.location.href = `${API.PORTAL_URL}/auth/line?popup=1&redirect_app=${encodeURIComponent(window.location.origin)}`;
     function handler(e) {
       if (e.origin !== API.PORTAL_URL) return;
       if (e.data && e.data.type === 'auth-success') {
@@ -126,11 +126,11 @@ function _closeLoginRequired() {
 // ─── 카카오 로그인 (Simple) ───
 function _startKakaoLoginSimple() {
   const popup = window.open(
-    `${API.PORTAL_URL}/auth/kakao?popup=1&redirect_app=idphoto-kr`,
+    `${API.PORTAL_URL}/auth/kakao?popup=1&redirect_app=${encodeURIComponent(window.location.origin)}`,
     'kakao-login', 'width=500,height=600'
   );
   if (!popup) {
-    window.location.href = `${API.PORTAL_URL}/auth/kakao`;
+    window.location.href = `${API.PORTAL_URL}/auth/kakao?redirect_app=${encodeURIComponent(window.location.origin)}`;
     return;
   }
 
@@ -154,11 +154,11 @@ function _startKakaoLoginSimple() {
 // ─── LINE 로그인 (Simple) ───
 function _startLineLoginSimple() {
   const popup = window.open(
-    `${API.PORTAL_URL}/auth/line?popup=1&redirect_app=idphoto-kr`,
+    `${API.PORTAL_URL}/auth/line?popup=1&redirect_app=${encodeURIComponent(window.location.origin)}`,
     'line-login', 'width=500,height=600'
   );
   if (!popup) {
-    window.location.href = `${API.PORTAL_URL}/auth/line`;
+    window.location.href = `${API.PORTAL_URL}/auth/line?redirect_app=${encodeURIComponent(window.location.origin)}`;
     return;
   }
 

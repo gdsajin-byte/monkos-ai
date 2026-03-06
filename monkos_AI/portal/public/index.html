@@ -223,8 +223,10 @@ header {
   background: rgba(167, 139, 250, 0.14);
 }
 
-.credit-diamond {
-  font-size: 14px;
+.credit-badge {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent);
 }
 
 .credit-count {
@@ -1201,7 +1203,7 @@ footer a {
       <button class="header-login-btn" id="headerLoginBtn" onclick="headerLogin()">로그인</button>
       <!-- 크레딧 (로그인 후) -->
       <button class="credit-btn" id="creditBtn" onclick="openCreditShop()">
-        <span class="credit-diamond">💎</span>
+        <span class="credit-badge">Cr</span>
         <span class="credit-count" id="creditCount">0</span>
       </button>
       <!-- SNS provider 아이콘 (로그인 후) -->
@@ -1374,7 +1376,7 @@ footer a {
 <!-- 크레딧 충전 모달 -->
 <div class="consent-modal" id="creditShopModal">
   <div class="consent-modal-content" style="max-width:360px; text-align:center;">
-    <h3 style="margin-bottom:6px;">💎 <span id="shopTitle">Credit Shop</span></h3>
+    <h3 style="margin-bottom:6px;"><span id="shopTitle">Credit Shop</span></h3>
     <p style="font-size:0.8rem; color:var(--text-dim); margin-bottom:18px;" id="shopCurrentLabel">Current: <strong id="shopCurrentCredits">0</strong>c</p>
     <div id="shopItems" style="display:flex; flex-direction:column; gap:10px;"></div>
     <button class="consent-modal-close" onclick="closeCreditShop()" style="margin-top:16px;" id="shopCloseBtn">Close</button>
@@ -1705,14 +1707,20 @@ function renderShopItems() {
     labelEl.innerHTML = `현재: <strong>${credits}</strong>c`;
     closeBtn.textContent = '닫기';
     container.innerHTML = `
+      <button onclick="buyToss(9900)" style="${btnStyle}">
+        <span>70c <small style="color:var(--text-dim);">(+10 bonus)</small></span><span style="color:var(--accent); font-weight:700;">₩9,900</span>
+      </button>
       <button onclick="buyToss(12900)" style="${btnStyle}">
-        <span>💎 10 크레딧</span><span style="color:var(--accent); font-weight:700;">₩12,900</span>
+        <span>100c <small style="color:var(--text-dim);">(+30 bonus)</small></span><span style="color:var(--accent); font-weight:700;">₩12,900</span>
       </button>
-      <button onclick="buyToss(29900)" style="${bestStyle}">
-        <span>💎 30 크레딧</span><span style="color:var(--accent); font-weight:700;">₩29,900 <small style="color:var(--success);">BEST</small></span>
+      <button onclick="buyToss(34900)" style="${bestStyle}">
+        <span>300c <small style="color:var(--text-dim);">(+120 bonus)</small></span><span style="color:var(--accent); font-weight:700;">₩34,900 <small style="color:var(--success);">BEST</small></span>
       </button>
-      <button onclick="buyToss(45900)" style="${btnStyle}">
-        <span>💎 50 크레딧</span><span style="color:var(--accent); font-weight:700;">₩45,900</span>
+      <button onclick="buyToss(49900)" style="${btnStyle}">
+        <span>500c <small style="color:var(--text-dim);">(+250 bonus)</small></span><span style="color:var(--accent); font-weight:700;">₩49,900</span>
+      </button>
+      <button onclick="buyToss(1450)" style="${btnStyle}">
+        <span>10c</span><span style="color:var(--accent); font-weight:700;">₩1,450</span>
       </button>
     `;
   } else {
@@ -1723,13 +1731,13 @@ function renderShopItems() {
     closeBtn.textContent = (lang === 'ja') ? '閉じる' : 'Close';
     container.innerHTML = `
       <button onclick="buyCreditsLS('1297524','$10')" style="${btnStyle}">
-        <span>💎 10 Credits</span><span style="color:var(--accent); font-weight:700;">$10</span>
+        <span>10 Credits</span><span style="color:var(--accent); font-weight:700;">$10</span>
       </button>
       <button onclick="buyCreditsLS('1297532','$25')" style="${bestStyle}">
-        <span>💎 30 Credits</span><span style="color:var(--accent); font-weight:700;">$25 <small style="color:var(--success);">BEST</small></span>
+        <span>30 Credits</span><span style="color:var(--accent); font-weight:700;">$25 <small style="color:var(--success);">BEST</small></span>
       </button>
       <button onclick="buyCreditsLS('1297531','$40')" style="${btnStyle}">
-        <span>💎 50 Credits</span><span style="color:var(--accent); font-weight:700;">$40</span>
+        <span>50 Credits</span><span style="color:var(--accent); font-weight:700;">$40</span>
       </button>
     `;
   }
