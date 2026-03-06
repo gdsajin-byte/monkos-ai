@@ -48,6 +48,8 @@ for file in "${FILES[@]}"; do
     ext="${basename##*.}"
     name="${basename%.*}"
     ext_lower=$(echo "$ext" | tr '[:upper:]' '[:lower:]')
+    # macOS NFD → NFC 정규화 (한글 자모 분리 방지)
+    name=$(python3 -c "import unicodedata,sys; print(unicodedata.normalize('NFC', sys.argv[1]))" "$name")
     gcs_name="${ts}_${name}.${ext_lower}"
 
     log "UPLOAD: $basename → $gcs_name"

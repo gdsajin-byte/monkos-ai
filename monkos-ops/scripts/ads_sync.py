@@ -18,6 +18,7 @@ import json
 import time
 import glob
 import subprocess
+import unicodedata
 from datetime import datetime
 
 LOCAL_DIR = os.path.expanduser("~/monkos-ads")
@@ -72,6 +73,8 @@ def upload_image(local_path):
         ext = ".jpg"
     ts = datetime.now().strftime("%Y%m%d_%H%M%S")
     basename = os.path.splitext(os.path.basename(local_path))[0]
+    # macOS NFD → NFC 정규화 (한글 자모 분리 방지)
+    basename = unicodedata.normalize("NFC", basename)
     # 파일명: 타임스탬프_원본이름.확장자
     gcs_name = f"{ts}_{basename}{ext}"
     gcs_path = f"{GCS_BASE}/{gcs_name}"
