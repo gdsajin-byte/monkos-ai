@@ -516,6 +516,9 @@ function renderConfirmPage() {
   else if (store.format === 'passport') coachingNote = '눈썹 · 이마가 보이도록 준비해 주세요';
   else coachingNote = '좋은 인상의 표정으로 촬영해 주세요';
 
+  const textSel = store.coachingMode === 'text' ? ' selected' : '';
+  const voiceSel = store.coachingMode === 'voice' ? ' selected' : '';
+
   el.innerHTML = `
     <div class="prep-page-inner">
       <div class="prep-label">CONFIRM</div>
@@ -524,12 +527,43 @@ function renderConfirmPage() {
         <div class="prep-summary-list">${rows.join('')}</div>
         <div class="prep-summary-note">${coachingNote}</div>
       </div>
+      <div class="coaching-mode-card" id="coaching-mode-card">
+        <h3 class="coaching-mode-title">AI 코칭 안내 방식</h3>
+        <div class="coaching-mode-options">
+          <button class="coaching-mode-option${textSel}" data-mode="text">
+            <span class="coaching-mode-icon">💬</span>
+            <div>
+              <strong>텍스트</strong>
+              <p>화면에 글자로 안내합니다</p>
+            </div>
+          </button>
+          <button class="coaching-mode-option${voiceSel}" data-mode="voice">
+            <span class="coaching-mode-icon">🔊</span>
+            <div>
+              <strong>음성</strong>
+              <p>AI가 음성으로 안내합니다</p>
+            </div>
+          </button>
+        </div>
+      </div>
       <button class="prep-start" onclick="startShooting()">
         촬영 시작하기 <span class="prep-start-arrow">&rarr;</span>
       </button>
       <button class="prep-reset" onclick="resetAll()">처음부터 다시 선택</button>
     </div>
   `;
+
+  // 코칭 모드 선택 이벤트
+  const modeCard = document.getElementById('coaching-mode-card');
+  if (modeCard) {
+    modeCard.addEventListener('click', (e) => {
+      const btn = e.target.closest('.coaching-mode-option');
+      if (!btn) return;
+      store.coachingMode = btn.dataset.mode;
+      modeCard.querySelectorAll('.coaching-mode-option').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+    });
+  }
 }
 
 function confirmRow(icon, label, value, pageIdx) {

@@ -255,6 +255,38 @@ body {
     text-align: center; line-height: 1.6;
 }
 
+/* 코칭 모드 선택 카드 */
+.coaching-mode-card {
+    width: 100%; max-width: 340px;
+    margin-bottom: 20px;
+}
+.coaching-mode-title {
+    font-size: 13px; font-weight: 600; color: #888;
+    margin-bottom: 10px; text-align: center;
+}
+.coaching-mode-options {
+    display: flex; gap: 10px;
+}
+.coaching-mode-option {
+    flex: 1; display: flex; align-items: center; gap: 10px;
+    padding: 14px 12px; border-radius: 12px;
+    background: rgba(255,255,255,0.04);
+    border: 1.5px solid rgba(255,255,255,0.08);
+    color: #888; cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit; text-align: left;
+    -webkit-tap-highlight-color: transparent;
+}
+.coaching-mode-option strong { font-size: 14px; color: #ccc; display: block; }
+.coaching-mode-option p { font-size: 11px; color: #666; margin: 2px 0 0; }
+.coaching-mode-option .coaching-mode-icon { font-size: 22px; flex-shrink: 0; }
+.coaching-mode-option.selected {
+    border-color: #a78bfa;
+    background: rgba(167,139,250,0.08);
+}
+.coaching-mode-option.selected strong { color: #e2e8f0; }
+.coaching-mode-option.selected p { color: #a78bfa; }
+
 /* 촬영 시작 버튼 */
 .prep-start {
     width: 100%; max-width: 340px;

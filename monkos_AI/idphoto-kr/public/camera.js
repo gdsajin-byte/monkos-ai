@@ -47,7 +47,7 @@ if ('speechSynthesis' in window) {
 // iOS Safari: speechSynthesis는 첫 호출이 user gesture 내에서 이뤄져야 함
 // 페이지 첫 터치/클릭 시 TTS 활성화
 function activateTTS() {
-  if (ttsActivated || !('speechSynthesis' in window)) return;
+  if (!store.voiceEnabled || ttsActivated || !('speechSynthesis' in window)) return;
   ttsActivated = true;
   const warmup = new SpeechSynthesisUtterance('');
   warmup.volume = 0;
@@ -59,28 +59,13 @@ document.addEventListener('click', activateTTS, { once: true });
 
 function speakKo(text) {
   if (!store.voiceEnabled || !('speechSynthesis' in window)) return;
-  if (!koVoice) return;
-  // iOS Safari: cancel() 후 바로 speak()하면 씹힘 → 100ms 딜레이
   speechSynthesis.cancel();
-  setTimeout(() => {
-    if (speechSynthesis.speaking) return; // 이전 발화가 아직 안 끝났으면 스킵
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = 'ko-KR';
-    u.rate = 1.15;
-    u.pitch = 1.05;
-    u.voice = koVoice;
-    speechSynthesis.speak(u);
-  }, 100);
-}
-
-function toggleVoice() {
-  store.voiceEnabled = !store.voiceEnabled;
-  const btn = document.querySelector('#btn-voice');
-  if (btn) {
-    btn.textContent = store.voiceEnabled ? '🔊' : '🔇';
-    btn.title = store.voiceEnabled ? '음성 ON' : '음성 OFF';
-  }
-  Monk.log(`음성 가이드: ${store.voiceEnabled ? 'ON' : 'OFF'}`);
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'ko-KR';
+  u.rate = 1.15;
+  u.pitch = 1.05;
+  if (koVoice) u.voice = koVoice;  // 있으면 사용, 없으면 시스템 기본
+  speechSynthesis.speak(u);
 }
 
 // ─── 코칭 표시 ───
@@ -246,7 +231,6 @@ function renderSelectionSummary() {
 // ─── window 노출 ───
 Object.assign(window, {
   capturePhoto,
-  toggleVoice,
 });
 
 // ─── 초기화 ───
@@ -303,7 +287,7 @@ async function init() {
 
   store.step = 1;
   store.stepLabel = TX.step1;
-  store.voiceEnabled = true;
+  store.voiceEnabled = (store.coachingMode === 'voice');
   store.coaching = { text: TX.coachingCheck, ready: false, active: true };
 
   try {
