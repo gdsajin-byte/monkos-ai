@@ -625,7 +625,7 @@ footer a { color: var(--accent); text-decoration: none; }
       <div class="hero-badge">20년 경력 사진작가가 직접 개발</div>
       <h1>사진관 품질의<br><span>AI 증명사진</span></h1>
       <p class="hero-sub">여권 · 신분증 발급 보장</p>
-      <a class="hero-cta" href="/prep">촬영 시작하기 &rarr;</a>
+      <a class="hero-cta" href="/prep" id="btn-hero-cta">촬영 시작하기 &rarr;</a>
       <p class="hero-price">1장 완성 <strong>₩9,900</strong> · 첫 로그인 10c 무료</p>
     </div>
   </section>
@@ -986,12 +986,40 @@ function downloadGate() {
 
 
 </script>
+<!-- 데스크탑 차단 (CTA 클릭 시 표시) -->
+<div id="desktop-blocker" style="display:none; position:fixed; inset:0; background:#030508; z-index:9999; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:24px;">
+    <div style="font-size:48px; margin-bottom:24px;">📱</div>
+    <h2 style="font-size:22px; font-weight:800; color:#F1F5F9; margin:0 0 12px;">스마트폰에서 이용해 주세요</h2>
+    <p style="font-size:14px; color:#94A3B8; line-height:1.6; margin:0 0 24px;">AI 증명사진은 스마트폰의<br>전면 카메라로 촬영하는 전용 서비스입니다</p>
+    <div style="background:#fff; padding:16px; border-radius:16px; display:inline-block;">
+        <img id="qr-code" src="" alt="QR코드" width="180" height="180">
+    </div>
+    <div id="qr-url" style="margin-top:16px; font-size:12px; color:#64748B; background:rgba(255,255,255,0.06); padding:8px 16px; border-radius:8px;"></div>
+</div>
+
 <script type="module">
 import { GOOGLE_CLIENT_ID, API } from './config.js';
 import { initChatbot } from './modules/chatbot.js';
 window.MONKOS_GOOGLE_CLIENT_ID = GOOGLE_CLIENT_ID;
 window.MONKOS_PORTAL_URL = API.PORTAL_URL;
 initChatbot();
+
+// 데스크톱 QR 게이트
+const cta = document.getElementById('btn-hero-cta');
+if (cta) {
+  cta.addEventListener('click', (e) => {
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (!isMobile) {
+      e.preventDefault();
+      const blocker = document.getElementById('desktop-blocker');
+      const mobileUrl = 'https://idphoto-kr.monkos.ai/prep';
+      document.getElementById('qr-code').src =
+        `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(mobileUrl)}&bgcolor=ffffff&color=000000`;
+      document.getElementById('qr-url').textContent = mobileUrl;
+      blocker.style.display = 'flex';
+    }
+  });
+}
 </script>
 </body>
 </html>
