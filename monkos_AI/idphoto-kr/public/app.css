@@ -364,21 +364,21 @@ body {
 
 /* === 코칭 오버레이 === */
 #coaching-overlay {
-    position: absolute; bottom: 0; left: 0; right: 0;
-    background: linear-gradient(0deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.8) 70%, transparent 100%);
-    padding: 40px 20px 20px;
+    position: absolute; top: 0; left: 0; right: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.7) 70%, transparent 100%);
+    padding: 12px 16px 32px;
     z-index: 10; display: none;
     transition: opacity 0.3s;
 }
 #coaching-overlay.active { display: block; }
 #coaching-overlay.ready {
-    background: linear-gradient(0deg, rgba(0,40,0,0.95) 0%, rgba(0,30,0,0.8) 70%, transparent 100%);
+    background: linear-gradient(180deg, rgba(0,40,0,0.9) 0%, rgba(0,30,0,0.7) 70%, transparent 100%);
 }
 
 .coaching-inner {
     background: rgba(0,0,0,0.6);
     border: 1.5px solid rgba(245,158,11,0.5);
-    border-radius: 16px; padding: 16px 20px;
+    border-radius: 12px; padding: 10px 14px;
     backdrop-filter: blur(10px);
 }
 #coaching-overlay.ready .coaching-inner {
@@ -402,7 +402,7 @@ body {
     50% { opacity: 0.5; transform: scale(1.3); }
 }
 #coaching-text {
-    font-size: 18px; font-weight: 600; line-height: 1.5;
+    font-size: 15px; font-weight: 600; line-height: 1.4;
 }
 #coaching-overlay.ready #coaching-text { color: #22c55e; }
 
@@ -774,4 +774,147 @@ body {
 #chat-messages {
   display: flex;
   flex-direction: column;
+}
+
+/* 스탠바이 화면 */
+#standby-screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 16px 24px;
+    flex: 1;
+    overflow-y: auto;
+}
+#standby-screen.active { display: flex; }
+
+.standby-title { text-align: center; margin-bottom: 24px; }
+.standby-stage {
+    font-size: 11px; letter-spacing: 0.15em; color: #64748B;
+    margin-bottom: 8px; text-transform: uppercase;
+}
+.standby-title h2 {
+    font-size: 20px; font-weight: 800; color: #F1F5F9;
+    margin: 0; letter-spacing: -0.02em;
+}
+.standby-title p {
+    font-size: 13px; color: #94A3B8; margin: 8px 0 0; line-height: 1.6;
+}
+
+/* 프리뷰 프레임 */
+.standby-preview {
+    width: 260px; height: 320px;
+    border-radius: 20px;
+    background: linear-gradient(160deg, #0d1220, #111827);
+    border: 1.5px solid #1E293B;
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 24px;
+}
+.standby-oval {
+    width: 150px; height: 190px;
+    border-radius: 50%;
+    border: 2px dashed #64748B;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0.5;
+}
+.standby-oval span { font-size: 32px; }
+.standby-preview-label {
+    position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
+    font-size: 10px; color: #64748B; letter-spacing: 0.08em; white-space: nowrap;
+}
+
+/* 코너 마커 */
+.corner-mark {
+    position: absolute; width: 16px; height: 16px;
+}
+.corner-mark.tl { top: 12px; left: 12px; border-top: 2px solid #a78bfa; border-left: 2px solid #a78bfa; }
+.corner-mark.tr { top: 12px; right: 12px; border-top: 2px solid #a78bfa; border-right: 2px solid #a78bfa; }
+.corner-mark.bl { bottom: 12px; left: 12px; border-bottom: 2px solid #a78bfa; border-left: 2px solid #a78bfa; }
+.corner-mark.br { bottom: 12px; right: 12px; border-bottom: 2px solid #a78bfa; border-right: 2px solid #a78bfa; }
+
+/* 체크리스트 */
+.standby-checklist {
+    width: 100%;
+    background: rgba(255,255,255,0.03);
+    border-radius: 14px; padding: 14px 16px;
+    margin-bottom: 24px;
+    border: 1px solid #1E293B;
+}
+.checklist-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 6px 0;
+    border-bottom: 1px solid #1E293B;
+}
+.checklist-item:last-child { border-bottom: none; }
+.checklist-icon { font-size: 14px; }
+.checklist-item span:last-child { font-size: 12px; color: #94A3B8; }
+
+/* 시작 버튼 */
+.btn-autoshot-start {
+    width: 100%;
+    padding: 16px 0;
+    border-radius: 16px;
+    border: none;
+    background: linear-gradient(135deg, #8B5CF6, #7C3AED);
+    color: #fff;
+    font-size: 16px; font-weight: 800;
+    cursor: pointer;
+    letter-spacing: -0.01em;
+    box-shadow: 0 4px 24px rgba(139,92,246,0.35);
+    font-family: inherit;
+}
+.btn-autoshot-start:active { transform: scale(0.98); }
+
+/* 카운트다운 오버레이 */
+#countdown-overlay {
+    position: absolute;
+    inset: 0;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 15;
+    pointer-events: auto;
+}
+#countdown-overlay.active { display: flex; }
+
+#countdown-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #22c55e;
+    margin-bottom: 12px;
+    letter-spacing: 0.05em;
+}
+
+#countdown-number {
+    font-size: 96px;
+    font-weight: 900;
+    color: #fff;
+    line-height: 1;
+    text-shadow: 0 0 40px rgba(34, 197, 94, 0.6);
+}
+
+@keyframes countdown-pop {
+    0%   { transform: scale(0.5); opacity: 0; }
+    50%  { transform: scale(1.15); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* 셔터 플래시 */
+#shutter-flash {
+    position: absolute;
+    inset: 0;
+    background: #fff;
+    z-index: 20;
+    opacity: 0;
+    pointer-events: none;
+    transition: none;
+}
+#shutter-flash.active {
+    animation: shutter-flash 0.3s ease forwards;
+}
+@keyframes shutter-flash {
+    0%   { opacity: 0.9; }
+    100% { opacity: 0; }
 }

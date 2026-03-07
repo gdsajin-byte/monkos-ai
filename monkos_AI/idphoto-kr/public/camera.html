@@ -34,119 +34,9 @@
 
     <!-- 촬영실 전용 스타일 (app.css 수정 금지) -->
     <style>
-        /* 기존 헤더 숨김 (카메라 페이지 전용) */
-        #header { display: none !important; }
-
-        /* 미니 헤더 */
-        #camera-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 8px 16px;
-            padding-top: max(8px, env(safe-area-inset-top));
-            background: rgba(3,5,8,0.85);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            position: relative;
-            z-index: 20;
-        }
-        .camera-header-left {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .camera-status-dot {
-            width: 8px; height: 8px;
-            border-radius: 50%;
-            background: #22c55e;
-            animation: pulse 1.5s infinite;
-        }
-        .camera-status-text {
-            font-size: 13px;
-            font-weight: 600;
-            color: #888;
-        }
-
-        /* 셔터 버튼 (상단 우측) */
-        #camera-header #btn-capture {
-            width: 52px; height: 52px;
-            border-radius: 50%;
-            border: 3px solid rgba(255,255,255,0.8);
-            background: rgba(255,255,255,0.15);
-            cursor: pointer;
-            position: relative;
-            transition: all 0.2s;
-            -webkit-tap-highlight-color: transparent;
-        }
-        #camera-header #btn-capture .capture-icon {
-            display: block;
-            width: 38px; height: 38px;
-            border-radius: 50%;
-            background: #fff;
-            margin: auto;
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            transition: all 0.2s;
-        }
-        #camera-header #btn-capture.ready {
-            border-color: #22c55e;
-        }
-        #camera-header #btn-capture.ready .capture-icon {
-            background: #22c55e;
-        }
-
-        /* 코칭 뱃지 (카메라 상단) */
-        #coaching-badge {
-            position: absolute;
-            top: 8px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            padding: 6px 16px;
-            border-radius: 20px;
-            border: 1px solid rgba(245,158,11,0.4);
-            z-index: 10;
-            display: none;
-            align-items: center;
-            gap: 8px;
-            max-width: 85%;
-        }
-        #coaching-badge.active {
-            display: flex;
-        }
-        #coaching-badge.ready {
-            border-color: rgba(34,197,94,0.6);
-        }
-        #coaching-badge .coaching-pulse {
-            width: 6px; height: 6px;
-            border-radius: 50%;
-            background: #f59e0b;
-            animation: pulse 1.5s infinite;
-            flex-shrink: 0;
-        }
-        #coaching-badge.ready .coaching-pulse {
-            background: #22c55e;
-        }
-        #coaching-badge #coaching-text {
-            font-size: 14px;
-            font-weight: 600;
-            color: #fff;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        #coaching-badge.ready #coaching-text {
-            color: #22c55e;
-        }
-
-        /* 선택 요약 뱃지 → 하단 */
         #selection-summary {
             position: absolute;
-            bottom: 12px;
-            top: auto;
+            top: 12px;
             left: 50%;
             transform: translateX(-50%);
             background: rgba(0,0,0,0.6);
@@ -161,12 +51,6 @@
             white-space: nowrap;
             pointer-events: none;
         }
-
-        /* 기존 하단 컨트롤 숨김 */
-        #controls { display: none !important; }
-
-        /* 기존 코칭 오버레이 숨김 (뱃지로 대체) */
-        #coaching-overlay { display: none !important; }
     </style>
 
     <!-- 토스페이먼츠 -->
@@ -212,17 +96,6 @@
                 <span class="balance-unit">Cr</span>
             </div>
         </div>
-    </div>
-
-    <!-- 미니 헤더 (촬영 전용) -->
-    <div id="camera-header">
-        <div class="camera-header-left">
-            <span class="camera-status-dot"></span>
-            <span class="camera-status-text">촬영중</span>
-        </div>
-        <button id="btn-capture" onclick="capturePhoto()" data-class="coaching.ready:ready">
-            <span class="capture-icon"></span>
-        </button>
     </div>
 
     <!-- 크레딧 부족 모달 -->
@@ -277,21 +150,65 @@
         </div>
     </div>
 
+    <!-- === 스탠바이 화면 === -->
+    <div id="standby-screen">
+        <div class="standby-title">
+            <div class="standby-stage">STAGE 2 · 촬영</div>
+            <h2>촬영 준비가 되셨나요?</h2>
+            <p>가이드 원에 얼굴을 맞추면<br>AI가 확인 후 자동으로 촬영합니다</p>
+        </div>
+
+        <!-- 프리뷰 프레임 (더미 가이드) -->
+        <div class="standby-preview">
+            <div class="standby-oval">
+                <span>👤</span>
+            </div>
+            <!-- 코너 마커 (4개) -->
+            <div class="corner-mark tl"></div>
+            <div class="corner-mark tr"></div>
+            <div class="corner-mark bl"></div>
+            <div class="corner-mark br"></div>
+            <div class="standby-preview-label">카메라 화면 미리보기</div>
+        </div>
+
+        <!-- 체크리스트 -->
+        <div class="standby-checklist">
+            <div class="checklist-item">
+                <span class="checklist-icon">💡</span>
+                <span>밝은 곳에서 촬영해주세요</span>
+            </div>
+            <div class="checklist-item">
+                <span class="checklist-icon">👀</span>
+                <span>눈썹·이마가 보이도록 준비해주세요</span>
+            </div>
+            <div class="checklist-item">
+                <span class="checklist-icon">📷</span>
+                <span>카메라와 약 50cm 거리를 유지하세요</span>
+            </div>
+        </div>
+
+        <!-- 시작 버튼 -->
+        <button id="btn-start-camera" class="btn-autoshot-start">촬영 시작하기 →</button>
+    </div>
+
     <!-- === 카메라 화면 === -->
     <div id="camera-area">
         <video id="camera-video" autoplay playsinline muted></video>
         <div id="face-guide" data-guide-text="여기에 얼굴을 맞춰주세요" data-class="coaching.ready:ready"></div>
 
-        <!-- 코칭 뱃지 (카메라 상단, 시선 동선 최적화) -->
-        <div id="coaching-badge" data-class="coaching.active:active">
-            <span class="coaching-pulse"></span>
-            <span id="coaching-text" data-bind="coaching.text">자세를 체크하고 있습니다...</span>
-        </div>
-
-        <!-- 선택 요약 뱃지 (하단) -->
+        <!-- 선택 요약 뱃지 (읽기 전용, 카메라 위 상단) -->
         <div id="selection-summary"></div>
 
-        <!-- 코칭 오버레이 (CSS로 숨김, 뱃지로 대체) -->
+        <!-- 카운트다운 오버레이 -->
+        <div id="countdown-overlay">
+            <div id="countdown-label">준비되셨습니다, 촬영합니다</div>
+            <div id="countdown-number">3</div>
+        </div>
+
+        <!-- 셔터 플래시 -->
+        <div id="shutter-flash"></div>
+
+        <!-- 코칭 오버레이 -->
         <div id="coaching-overlay" data-class="coaching.active:active">
             <div class="coaching-inner">
                 <div id="coaching-label">
@@ -303,7 +220,9 @@
         </div>
     </div>
 
-    <div id="controls"></div>
+    <div id="controls">
+        <button id="btn-capture" onclick="capturePhoto()" data-class="coaching.ready:ready"></button>
+    </div>
 
     <canvas id="capture-canvas" style="display:none;"></canvas>
 
