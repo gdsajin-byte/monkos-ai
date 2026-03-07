@@ -314,8 +314,8 @@ async function init() {
   renderSelectionSummary();
 
   // 이전 결과물 제거 (재촬영 시 옛 generated 잔류 방지)
-  saveSessionData('generated', null);
-  saveSessionData('cropped', null);
+  sessionStorage.removeItem('monkos_generated');
+  sessionStorage.removeItem('monkos_cropped');
 
   // 스탠바이 화면 표시 (카메라는 아직 OFF)
   document.querySelector('#standby-screen')?.classList.add('active');
