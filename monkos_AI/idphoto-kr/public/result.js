@@ -253,15 +253,15 @@ async function confirmAndGenerate() {
     _fullOriginal = genResult.image;
     Monk.log('생성 완료');
 
-    // QC + 워터마크를 병렬 실행 (QC는 백그라운드, 실패해도 진행 차단 안 함)
+    // [QC 비활성화] 프롬프트 예시값 앵무새 문제로 실질적 검수 불가 — 별도 컴포넌트로 분리 후 재설계 예정
     let qcResult = null;
-    const qcPromise = pipe.run('qc', {
-      original: base64,
-      generated: genResult.image,
-      gender: store.gender === 'f' ? 'female' : 'male',
-      age: store.age || 'adult',
-    }).then(r => { qcResult = r; Monk.log(`QC: ${JSON.stringify(r).substring(0, 100)}`); })
-      .catch(e => Monk.log('QC 에러: ' + (e.error || e.message)));
+    // const qcPromise = pipe.run('qc', {
+    //   original: base64,
+    //   generated: genResult.image,
+    //   gender: store.gender === 'f' ? 'female' : 'male',
+    //   age: store.age || 'adult',
+    // }).then(r => { qcResult = r; Monk.log(`QC: ${JSON.stringify(r).substring(0, 100)}`); })
+    //   .catch(e => Monk.log('QC 에러: ' + (e.error || e.message)));
 
     // 워터마크 버전 생성
     const watermarked = await generateWatermarkPreview(genResult.image);
@@ -280,8 +280,8 @@ async function confirmAndGenerate() {
     store.generated = croppedWatermark;
     try { sessionStorage.setItem('monkos_generated', croppedWatermark); } catch(e) {}
 
-    // QC 완료 대기 (최대 10초)
-    await Promise.race([qcPromise, new Promise(r => setTimeout(r, 10000))]);
+    // [QC 비활성화] QC 대기 제거
+    // await Promise.race([qcPromise, new Promise(r => setTimeout(r, 10000))]);
 
     const elapsed = Date.now() - genStartTime;
     const remaining = Math.max(0, MIN_DISPLAY_TIME - elapsed);
@@ -310,8 +310,8 @@ async function confirmAndGenerate() {
       // 워터마크 프리뷰도 크롭 버전
       store.watermarkPreview = croppedWatermark;
 
-      // QC 결과 표시
-      showQCBadge(qcResult);
+      // [QC 비활성화] 배지 미표시
+      // showQCBadge(qcResult);
     });
 
   } catch (err) {
