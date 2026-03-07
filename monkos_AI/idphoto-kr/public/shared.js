@@ -74,11 +74,7 @@ export const store = Monk.store({
   // 워터마크 프리뷰
   watermarkPreview: null,
 
-  // 코칭 모드 ('text' | 'voice')
-  coachingMode: 'text',
-
   // 기타
-  voiceEnabled: true,
   desktopBlocked: false,
   inappBrowser: false,
   downloadComplete: false,
@@ -349,7 +345,7 @@ export function clearSessionImages() {
 // ─── v5 선택값 일괄 저장 ───
 export function saveSelections() {
   const keys = ['format', 'gender', 'age', 'clothing', 'clothingColor',
-    'suitColor', 'shirtColor', 'tieColor', 'tiePattern', 'hair', 'bgColor', 'coachingMode'];
+    'suitColor', 'shirtColor', 'tieColor', 'tiePattern', 'hair', 'bgColor'];
   keys.forEach(k => {
     const v = store[k];
     if (v !== null && v !== undefined && v !== '') {
@@ -363,7 +359,7 @@ export function saveSelections() {
 // ─── v5 선택값 초기화 (prep 재진입 시) ───
 export function clearSelections() {
   const keys = ['format', 'gender', 'age', 'clothing', 'clothingColor',
-    'suitColor', 'shirtColor', 'tieColor', 'tiePattern', 'hair', 'bgColor', 'coachingMode'];
+    'suitColor', 'shirtColor', 'tieColor', 'tiePattern', 'hair', 'bgColor'];
   keys.forEach(k => sessionStorage.removeItem(`monkos_${k}`));
   store.format = null;
   store.gender = null;
@@ -376,7 +372,6 @@ export function clearSelections() {
   store.tiePattern = '';
   store.hair = 'default';
   store.bgColor = 'white';
-  store.coachingMode = 'text';
 }
 
 // ─── 페이지 이동 (?dev 전파) ───
@@ -426,7 +421,6 @@ export async function sharedInit() {
   store.tiePattern = restore('tiePattern', '');
   store.hair = restore('hair', 'default');
   store.bgColor = restore('bgColor', 'white');
-  store.coachingMode = restore('coachingMode', 'text');
 
   // Store 초기값 → DOM 동기화
   // monk.js Store는 초기값에 대해 DOM 업데이트를 안 하므로

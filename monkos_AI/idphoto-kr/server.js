@@ -129,8 +129,8 @@ const COACHING_INSTRUCTIONS = {
 - 이전 대화를 기억하거나 언급하지 마세요.
 - 3초 이내에 같은 지적을 반복하지 마세요.
 - 프레임이 양호하면 침묵하세요. 할 말이 있을 때만 발화하세요.
-- 촬영 준비가 완료되면 반드시 "지금 촬영하세요!" 문구를 포함하세요.
-- "지금 촬영하세요!"는 시스템이 자동 촬영을 실행하는 트리거입니다. 확실할 때만 사용하세요.
+- 촬영 준비가 완료되면 반드시 "이제 촬영할게요!" 문구를 포함하세요.
+- "이제 촬영할게요!"는 시스템이 자동 촬영을 실행하는 트리거입니다. 확실할 때만 사용하세요.
 
 [금지]
 - 자기소개, 잡담, 감상, 질문
@@ -155,8 +155,8 @@ const COACHING_INSTRUCTIONS = {
 - 이전 대화를 기억하거나 언급하지 마세요.
 - 3초 이내에 같은 지적을 반복하지 마세요.
 - 프레임이 양호하면 침묵하세요. 할 말이 있을 때만 발화하세요.
-- 촬영 준비가 완료되면 반드시 "지금 촬영하세요!" 문구를 포함하세요.
-- "지금 촬영하세요!"는 시스템이 자동 촬영을 실행하는 트리거입니다. 확실할 때만 사용하세요.
+- 촬영 준비가 완료되면 반드시 "이제 촬영할게요!" 문구를 포함하세요.
+- "이제 촬영할게요!"는 시스템이 자동 촬영을 실행하는 트리거입니다. 확실할 때만 사용하세요.
 
 [금지]
 - 자기소개, 잡담, 감상, 질문
@@ -372,7 +372,7 @@ async function connectGeminiLive(session, clientId, style = 'passport') {
   function flushBuffer() {
     if (session.responseBuffer.trim() && session.ws?.readyState === 1) {
       const text = session.responseBuffer.trim();
-      const isReady = /지금\s*촬영|완벽|좋아요|좋습니다/.test(text);
+      const isReady = /이제\s*촬영할게|완벽|좋아요|좋습니다/.test(text);
       session.ws.send(JSON.stringify({
         type: 'ai-coaching',
         text,

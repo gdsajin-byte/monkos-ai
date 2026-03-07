@@ -22,68 +22,17 @@ const media = Monk.media({
   mirror: true,
 });
 
-// ─── 음성 가이드 ───
-let koVoice = null;
-let ttsActivated = false;
-
-function initVoice() {
-  const voices = speechSynthesis.getVoices();
-  koVoice = voices.find(v => v.name.includes('Yuna'))
-         || voices.find(v => v.lang.startsWith('ko'));
-  if (koVoice) {
-    Monk.log(`음성 가이드: ${koVoice.name}`);
-    // 음성 로딩이 늦어 첫 인사를 못했으면 지금 발화
-    if (store.coaching?.text && store.coaching.active) {
-      speakKo(store.coaching.text);
-    }
-  }
-}
-
-if ('speechSynthesis' in window) {
-  speechSynthesis.onvoiceschanged = initVoice;
-  initVoice();
-}
-
-// iOS Safari: speechSynthesis는 첫 호출이 user gesture 내에서 이뤄져야 함
-// 페이지 첫 터치/클릭 시 TTS 활성화
-function activateTTS() {
-  if (ttsActivated || !('speechSynthesis' in window)) return;
-  ttsActivated = true;
-  const warmup = new SpeechSynthesisUtterance('');
-  warmup.volume = 0;
-  speechSynthesis.speak(warmup);
-  Monk.log('TTS 활성화 (user gesture)');
-}
-document.addEventListener('touchstart', activateTTS, { once: true });
-document.addEventListener('click', activateTTS, { once: true });
-
-function speakKo(text) {
-  if (!store.voiceEnabled || !('speechSynthesis' in window)) return;
-  speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = 'ko-KR';
-  u.rate = 1.15;
-  u.pitch = 1.05;
-  if (koVoice) u.voice = koVoice;  // 있으면 사용, 없으면 시스템 기본
-  speechSynthesis.speak(u);
-}
-
 // ─── 코칭 표시 ───
 let coachingTimeout = null;
 
 function showCoaching(text, ready = false) {
   store.coaching = { text, ready, active: true };
 
-  const btnCapture = document.querySelector('#btn-capture');
-  if (btnCapture) btnCapture.classList.toggle('ready', ready);
-
   const faceGuide = document.querySelector('#face-guide');
   if (faceGuide) faceGuide.classList.toggle('ready', ready);
 
   const overlay = document.querySelector('#coaching-overlay');
   if (overlay) overlay.classList.toggle('ready', ready);
-
-  speakKo(text);
 
   if (coachingTimeout) clearTimeout(coachingTimeout);
   coachingTimeout = setTimeout(() => {
@@ -185,7 +134,6 @@ function stopCoachingWS() {
   }
   readyCount = 0;
   hideCountdownOverlay();
-  if ('speechSynthesis' in window) speechSynthesis.cancel();
   store.coaching = { text: '', ready: false, active: false };
 }
 
@@ -202,7 +150,6 @@ function stopCoachingLoop() {
 function startCountdown() {
   stopFrameLoop();
   showCountdownOverlay(3);
-  document.querySelector('#btn-capture')?.setAttribute('disabled', '');
 
   let n = 3;
   countdownTimer = setInterval(() => {
@@ -224,7 +171,6 @@ function cancelCountdown() {
   }
   readyCount = 0;
   hideCountdownOverlay();
-  document.querySelector('#btn-capture')?.removeAttribute('disabled');
   startFrameLoop();
 }
 
@@ -290,7 +236,6 @@ function capturePhoto() {
   // 카메라 정리
   media.offFrame();
   media.stop();
-  document.querySelector('#controls')?.classList.remove('active');
 
   Monk.log('촬영 완료 → 분석실 이동');
 
@@ -318,11 +263,6 @@ function renderSelectionSummary() {
   }
   summaryEl.textContent = labels.filter(Boolean).join(' · ');
 }
-
-// ─── window 노출 ───
-Object.assign(window, {
-  capturePhoto,
-});
 
 // ─── 초기화 ───
 async function init() {
@@ -385,13 +325,11 @@ async function init() {
     document.querySelector('#camera-area')?.classList.add('active');
     store.step = 1;
     store.stepLabel = TX.step1;
-    store.voiceEnabled = (store.coachingMode === 'voice');
     store.coaching = { text: TX.coachingCheck, ready: false, active: true };
 
     try {
       await media.start();
       startCoachingLoop();
-      document.querySelector('#controls')?.classList.add('active');
       Monk.log('촬영실 초기화 완료');
     } catch (err) {
       alert(TX.cameraError);
