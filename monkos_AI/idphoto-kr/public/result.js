@@ -144,6 +144,23 @@ function showOriginal() {
 
 // ─── 재촬영 ───
 function retakePhoto() {
+  // Step 2 (리터칭 전): 확인 없이 바로 준비실 이동
+  if (!store.generated) {
+    clearForRetake();
+    return;
+  }
+
+  // Step 3 (리터칭 후): 확인 모달
+  const ok = confirm(
+    '현재 사진을 삭제하고 다시 촬영하시겠습니까?\n리터칭 비용(10c)은 복구되지 않습니다.'
+  );
+  if (!ok) return;
+
+  clearForRetake();
+}
+
+function clearForRetake() {
+  // store 초기화
   store.captured = null;
   store.generated = null;
   store.cropped = null;
@@ -151,7 +168,14 @@ function retakePhoto() {
   store.showStep2Actions = false;
   store.showStep3Actions = false;
 
-  navigateTo('camera.html');
+  // sessionStorage 이전 결과 제거
+  sessionStorage.removeItem('monkos_generated');
+  sessionStorage.removeItem('monkos_compare');
+  sessionStorage.removeItem('monkos_pending_action');
+  try { sessionStorage.removeItem('_mo_p'); } catch(e) {}
+
+  // 촬영 준비실로 이동 (옵션 재선택 가능)
+  navigateTo('prep.html');
 }
 
 // ─── 생성 파이프라인 ───
