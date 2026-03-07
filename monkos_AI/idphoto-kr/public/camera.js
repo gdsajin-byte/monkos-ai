@@ -313,6 +313,10 @@ async function init() {
   // 선택 요약 뱃지 렌더링
   renderSelectionSummary();
 
+  // 이전 결과물 제거 (재촬영 시 옛 generated 잔류 방지)
+  saveSessionData('generated', null);
+  saveSessionData('cropped', null);
+
   // 스탠바이 화면 표시 (카메라는 아직 OFF)
   document.querySelector('#standby-screen')?.classList.add('active');
 

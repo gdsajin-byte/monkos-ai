@@ -19,6 +19,14 @@ export {
   CHARGE_OPTIONS, KRW_PER_CREDIT
 };
 
+// ─── fetch timeout 래퍼 ───
+function fetchWithTimeout(url, options = {}, timeoutMs = 5000) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+  return fetch(url, { ...options, signal: controller.signal })
+    .finally(() => clearTimeout(timeoutId));
+}
+
 // ─── Store 초기화 ───
 export const store = Monk.store({
   // 사용자
@@ -198,11 +206,11 @@ export async function initFromTossResult() {
     if (!paymentKey || !orderId || !amount) { _hideTossLoading(); return; }
 
     try {
-      const res = await fetch(`${API.PORTAL_URL}/api/payments/toss/confirm`, {
+      const res = await fetchWithTimeout(`${API.PORTAL_URL}/api/payments/toss/confirm`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ paymentKey, orderId, amount: Number(amount), userId: store.user.id }),
-      });
+      }, 15000);
       const data = await res.json();
       _hideTossLoading();
       if (data.success) {
@@ -227,7 +235,7 @@ export async function initFromUrlToken() {
   if (!uid || !token) return false;
 
   try {
-    const res = await fetch(`${API.PORTAL_URL}/api/auth/verify?token=${encodeURIComponent(token)}`, {
+    const res = await fetchWithTimeout(`${API.PORTAL_URL}/api/auth/verify?token=${encodeURIComponent(token)}`, {
       credentials: 'include',
     });
     const data = await res.json();
@@ -244,7 +252,7 @@ export async function initFromUrlToken() {
 
 export async function initCredits() {
   try {
-    const res = await fetch(`${API.PORTAL_URL}/api/auth/verify-cookie`, {
+    const res = await fetchWithTimeout(`${API.PORTAL_URL}/api/auth/verify-cookie`, {
       credentials: 'include',
     });
     if (res.ok) {
@@ -272,7 +280,7 @@ export async function initCredits() {
 export async function fetchLatestCredits() {
   if (!store.user?.id) return;
   try {
-    const res = await fetch(`${API.PORTAL_URL}/api/credits?userId=${encodeURIComponent(store.user.id)}`, {
+    const res = await fetchWithTimeout(`${API.PORTAL_URL}/api/credits?userId=${encodeURIComponent(store.user.id)}`, {
       credentials: 'include',
     });
     if (res.ok) {
