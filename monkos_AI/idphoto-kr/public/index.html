@@ -615,6 +615,7 @@ footer a { color: var(--accent); text-decoration: none; }
         <span class="balance-amount" id="creditCount">0</span>
         <span class="balance-unit">Cr</span>
       </div>
+      <a href="/credits-policy.html" id="creditInfoBtn" style="display:none; width:22px; height:22px; border-radius:50%; border:1px solid rgba(167,139,250,0.3); background:rgba(167,139,250,0.1); color:#a78bfa; font-size:11px; font-weight:700; text-decoration:none; align-items:center; justify-content:center; flex-shrink:0;" title="크레딧 정책">?</a>
     </div>
   </header>
 
@@ -751,7 +752,8 @@ footer a { color: var(--accent); text-decoration: none; }
     <p style="margin-bottom:8px;">
       <a href="/privacy.html">Privacy Policy</a> &nbsp;|&nbsp;
       <a href="/terms.html">Terms of Service</a> &nbsp;|&nbsp;
-      <a href="/refund.html">Refund Policy</a>
+      <a href="/refund.html">Refund Policy</a> &nbsp;|&nbsp;
+      <a href="/credits-policy.html">Credit Policy</a>
     </p>
     <p>&copy; 2026 <a href="https://monkos.ai">MONKOS.AI</a> &mdash; Evolution of Creative Intelligence</p>
   </footer>
@@ -830,10 +832,12 @@ function updateAuthUI(user) {
   var loginBtn = document.getElementById('loginBtn');
   var creditBtn = document.getElementById('creditBtn');
   var creditCount = document.getElementById('creditCount');
+  var creditInfoBtn = document.getElementById('creditInfoBtn');
 
   if (!_user || (!_user.id && !_user.uid)) {
     if (loginBtn) loginBtn.style.display = 'block';
     if (creditBtn) creditBtn.style.display = 'none';
+    if (creditInfoBtn) creditInfoBtn.style.display = 'none';
     return;
   }
   if (loginBtn) loginBtn.style.display = 'none';
@@ -841,6 +845,7 @@ function updateAuthUI(user) {
     creditBtn.style.display = 'flex';
     creditCount.textContent = _user.credits != null ? _user.credits : '0';
   }
+  if (creditInfoBtn) creditInfoBtn.style.display = 'flex';
 }
 
 /* === Google OAuth (GIS 팝업) === */
