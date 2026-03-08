@@ -34,7 +34,9 @@ governance/
 
 **docs/ 구조:**
 
-docs/는 **원천 아카이브** — 프로젝트의 뿌리이자 보물창고. 보존 대상.
+docs/는 **아카이브(동결)** — 프로젝트의 뿌리이자 보물창고. 읽기전용 보존 대상.
+
+**⚠️ docs/monkos/ 신규 생성 금지.** 2026-02 이전 산출물의 보존소이다. 신규 운영 문서는 전부 monkos-ops/에 생성한다. docs/monkos/의 문서를 기준으로 설계·실행하지 마라 — 과거 버전이다.
 
 ```
 docs/
@@ -44,7 +46,7 @@ docs/
 │   │   └── 2026-02/
 │   ├── gemini/
 │   └── legacy/
-├── infrastructure/            ← 인프라 문서
+├── infrastructure/            ← 인프라 원천 문서 (보물창고, 변경 없음)
 │   ├── architecture/          ← 시스템 아키텍처, API 설계
 │   ├── deployment/            ← 배포 가이드, 환경 설정
 │   ├── ai-models/             ← AI 모델 명세, 프롬프트 전략
@@ -52,30 +54,22 @@ docs/
 │   ├── guides/                ← 운영 가이드, 코딩 표준
 │   ├── audit/                 ← 감사, 법률 분석, 거버넌스 설계
 │   └── history/               ← 프로젝트 히스토리, 실행 계획
-├── monkos/                    ← 작업 문서
-│   ├── tasks/                 ← 지시서 (월별)
-│   │   └── YYYY-MM/
-│   ├── reports/               ← 보고서 (월별)
-│   │   └── YYYY-MM/
-│   ├── incidents/             ← 장애 보고 (월별)
-│   │   └── YYYY-MM/
-│   ├── designs/               ← 설계 문서 (월별)
-│   │   └── YYYY-MM/
-│   └── sprints/               ← 스프린트 계획
-├── specs/                     ← 기술 명세 (서비스별)
-│   ├── portal/
-│   ├── idphoto-kr/
-│   ├── idphoto-jp/
-│   └── _archive/
+├── monkos/                    ← 🔒 아카이브 동결 (2026-02 이전 산출물)
+│   ├── tasks/                 ← TASK_ 레거시 (→ ORDER_로 통합, 정본: ops/orders/)
+│   ├── reports/               ← REPORT_ 레거시 (정본: ops/reports/)
+│   ├── incidents/             ← INCIDENT_ 레거시 (정본: ops/incidents/)
+│   ├── designs/               ← DESIGN_ 레거시 (정본: tech/designs/)
+│   └── sprints/               ← SPRINT_ 레거시
+├── specs/                     ← 기술 명세 아카이브 (정본: monkos-ops/tech/specs/)
 └── rnd_2026/                  ← R&D 문서
 ```
 
-- 운영 정본(세션로그/전략/리서치)은 monkos-ops/에 있다.
+- **운영 정본은 전부 monkos-ops/에 있다.** docs/는 참고문헌 체제이다.
 - 각 폴더에 `README.md` 필수 — 해당 폴더의 역할, 네이밍 규칙, 정본 위치를 명시.
 
-> 근거: 2026-01-11 docs/ 통합, 02-08 정리, 02-22 ops/ 중심 운영체제 확정 + 하위분류 신설, 02-23 governance/ 분리 + 4계층 위계 확정
-> 작가님 원문: "옵스는 운영체제 독스는 참고문헌체제가 맞지 않나" (02-22) / "각 폴더에 리드미를 심어놓기로 했던것 같은데" (02-22)
-> 위반 시: 문서 산재 → 에이전트 참조 실패, 중복 생성 반복.
+> 근거: 2026-01-11 docs/ 통합, 02-08 정리, 02-22 ops/ 중심 운영체제 확정 + 하위분류 신설, 02-23 governance/ 분리 + 4계층 위계 확정, **03-08 docs/monkos/ 아카이브 동결 선언 + TASK_→ORDER_ 통합 (작가님 승인)**
+> 작가님 원문: "옵스는 운영체제 독스는 참고문헌체제가 맞지 않나" (02-22) / "타스크는 오더 즉 오더와 보고서체제를 확실히 선언" (03-08) / "독스 아카이브는 어젠다로 이관하여 옵스에 편입" (03-08)
+> 위반 시: 문서 산재 → 에이전트 참조 실패, 컴팩팅 후 과거 버전을 현행으로 오인.
 > 상위 헌법: 제3조
 
 **monkos-ops/ 구조:**
@@ -103,12 +97,12 @@ monkos-ops/는 4부서 체제로 재편 중이며, 과도기에는 번호 폴더
 2. **언더스코어 폴더 사용 금지.** (`_archive/` 예외)
 3. **문서 정본 이중화 금지.** 동일 문서가 docs/와 monkos-ops/ 양쪽에 정본으로 존재할 수 없다. 번호 폴더(01~06)에서 부서 폴더(ops/tech/contents/marketing)로 이관된 파일은 부서 폴더를 정본으로 한다. 번호 폴더의 .gitkeep은 이중화에 해당하지 않는다.
 4. **세션 로그 이중화 금지.** 정본: `monkos-ops/ops/sessions/`. `docs/corpus/sessions/`는 읽기전용 아카이브. 신규 세션 로그는 정본에만 생성.
-5. **지시서(TASK_*) docs/monkos/ 루트 직접 배치 금지.** 반드시 `tasks/YYYY-MM/` 하위에 배치.
+5. **docs/monkos/ 하위 신규 파일 생성 금지.** 아카이브 동결. 운영 문서는 monkos-ops/에 생성한다.
 6. **.DS_Store, 바이너리 파일 docs/ 배치 금지.** `.gitignore`에 등록.
 7. **README.md 미보유 폴더 방치 금지.** 폴더 생성 시 README.md 동시 생성 의무.
 
-> 근거: 2026-01~02-08 초기 규칙, 02-22 이중화 해소 + README 의무화, 02-23 과도기 명확화 + 정본 경로 갱신
-> 위반 시: 임시 파일 누적, 폴더 혼재 → 에이전트 탐색 실패, 문서 중복 생성.
+> 근거: 2026-01~02-08 초기 규칙, 02-22 이중화 해소 + README 의무화, 02-23 과도기 명확화 + 정본 경로 갱신, **03-08 docs/monkos/ 아카이브 동결 (작가님 승인)**
+> 위반 시: 임시 파일 누적, 폴더 혼재 → 에이전트 탐색 실패, 컴팩팅 후 과거 문서를 현행으로 오인.
 > 상위 헌법: 제3조
 
 ---
@@ -117,24 +111,27 @@ monkos-ops/는 4부서 체제로 재편 중이며, 과도기에는 번호 폴더
 
 파일명에서 타입/날짜/에이전트를 자동 추출 가능하도록 표준화한다.
 
-**패턴 규격 (13종)**:
+**패턴 규격 (14종)**:
 
 | # | 패턴 | 대상 폴더 | 예시 |
 |---|------|----------|------|
-| 1 | `TASK_YYYYMMDD_{agent}_{name}.md` | `docs/monkos/tasks/YYYY-MM/` | `TASK_20260222_막내3_chatbot_update.md` |
-| 2 | `REPORT_YYYYMMDD_{topic}.md` | `docs/monkos/reports/YYYY-MM/` | `REPORT_20260222_문서인벤토리.md` |
-| 3 | `SPEC_{service}_{feature}.md` | `docs/monkos/specs/{service}/` | `SPEC_idphoto-kr_credit-system.md` |
-| 4 | `INCIDENT_YYYYMMDD_{service}.md` | `docs/monkos/incidents/YYYY-MM/` | `INCIDENT_20260220_cf-function.md` |
-| 5 | `DESIGN_YYYYMMDD_{feature}.md` | `docs/monkos/designs/YYYY-MM/` | `DESIGN_20260215_tts-architecture.md` |
-| 6 | `SPRINT_{range}.md` | `docs/monkos/sprints/` | `SPRINT_0217-0223.md` |
-| 7 | `YYYY-MM-DD_{device}_{agent}.md` | 세션 로그 | `2026-02-22_iMac_막내3.md` |
-| 8 | `YYYY-MM-DD_{agent}_통합.md` | 세션 로그 (통합) | `2026-02-22_쌍아_통합.md` |
-| 9 | `YYYY-MM-DD_{agent범위}_통합.md` | 세션 로그 (복수 에이전트) | `2026-02-22_막내456_통합.md` |
+| 1 | ~~`TASK_YYYYMMDD_{agent}_{name}.md`~~ | ~~`docs/monkos/tasks/YYYY-MM/`~~ | **레거시 — ORDER_로 통합 (03-08)** |
+| 2 | `REPORT_YYYYMMDD_{topic}.md` | `monkos-ops/ops/reports/YYYY-MM/` | `REPORT_20260308_막내1_세션로그정합성점검.md` |
+| 3 | `SPEC_{service}_{feature}.md` | `monkos-ops/tech/specs/{service}/` | `SPEC_idphoto-kr_credit-system.md` |
+| 4 | `INCIDENT_YYYYMMDD_{service}.md` | `monkos-ops/ops/incidents/YYYY-MM/` | `INCIDENT_20260220_cf-function.md` |
+| 5 | `DESIGN_YYYYMMDD_{feature}.md` | `monkos-ops/tech/designs/YYYY-MM/` | `DESIGN_20260215_tts-architecture.md` |
+| 6 | `SPRINT_{range}.md` | `monkos-ops/ops/sprints/` | `SPRINT_0217-0223.md` |
+| 7 | `YYYY-MM-DD_{device}_{agent}.md` | `monkos-ops/ops/sessions/YYYY-MM/` | `2026-02-22_iMac_막내3.md` |
+| 7a | `YYYY-MM-DD_{device}_{agent}_{접미어}.md` | `monkos-ops/ops/sessions/YYYY-MM/` | `2026-02-26_M1_쌍아_새벽.md` |
+| 8 | `YYYY-MM-DD_{agent}_통합.md` | `monkos-ops/ops/sessions/YYYY-MM/` | `2026-02-22_쌍아_통합.md` |
+| 9 | `YYYY-MM-DD_{agent범위}_통합.md` | `monkos-ops/ops/sessions/YYYY-MM/` | `2026-02-22_막내456_통합.md` |
 | 10 | `PETITION_YYYYMMDD_{agent}_{topic}.md` | `governance/constitution/petitions/` | `PETITION_20260222_막내6_법체계자동집행기반.md` |
-| 11 | `ORDER_YYYYMMDD_{topic}.md` | `monkos-ops/ops/orders/` | `ORDER_20260223_KOMOJU전수조사.md` |
+| 11 | `ORDER_YYYYMMDD_{topic}.md` | `monkos-ops/ops/orders/YYYY-MM/` | `ORDER_20260308_M1쌍아_막내1_세션로그정합성점검.md` |
 | 12 | `RESEARCH_YYYYMMDD_{topic}_{detail}.md` | `monkos-ops/ops/agenda/` | `RESEARCH_20260223_긴급대행절차_선택지.md` |
-| 13 | `COMPLETION_YYYYMMDD_막내N_{HHMMSS}.md` | `monkos-ops/ops/reports/` | `COMPLETION_20260225_막내1_150900.md` |
-| 14 | `REVIEW_YYYYMMDD_{agent}_{topic}.md` | `monkos-ops/ops/reports/` | `REVIEW_20260302_쌍아_P0_스키마_정합검토.md` |
+| 13 | `COMPLETION_YYYYMMDD_막내N_{HHMMSS}.md` | `monkos-ops/ops/reports/YYYY-MM/` | `COMPLETION_20260225_막내1_150900.md` |
+| 14 | `REVIEW_YYYYMMDD_{agent}_{topic}.md` | `monkos-ops/ops/reports/YYYY-MM/` | `REVIEW_20260302_쌍아_P0_스키마_정합검토.md` |
+
+**패턴 #7a 접미어 허용값**: 시간대(`새벽`, `오전`, `오후`, `저녁`), 순번(`2차`, `3차`)
 
 **표기 규칙**:
 - 에이전트명: `쌍아`, `막내3`, `소넷이`, `한`, `꾸` 등 (디바이스 접두어 불포함)
@@ -142,9 +139,9 @@ monkos-ops/는 4부서 체제로 재편 중이며, 과도기에는 번호 폴더
 - 한글 파일명: 기존 유지, 신규는 영문 권장
 
 **적용 범위**:
-- docs/monkos/ 하위 전 유형
+- monkos-ops/ 하위 전 운영 문서 (ORDER_*, REPORT_*, COMPLETION_*, REVIEW_*, SPEC_*, DESIGN_*, INCIDENT_*, RESEARCH_*)
 - governance/constitution/petitions/
-- monkos-ops/ 하위 TASK_*, REPORT_*, PETITION_*, ORDER_*, RESEARCH_*, COMPLETION_*
+- docs/monkos/ 하위는 아카이브 동결 (신규 생성 금지, 기존 파일은 읽기전용)
 
 **적용 제외**:
 - docs/infrastructure/ — 원천 아카이브(보물창고). 기존 네이밍 유지, 3조 관할 밖.
@@ -168,22 +165,24 @@ monkos-ops/는 4부서 체제로 재편 중이며, 과도기에는 번호 폴더
 
 **정본 테이블**:
 
-| 영역 | 정본 위치 | 참조/아카이브 | 비고 |
-|------|----------|-------------|------|
+| 영역 | 정본 위치 | 아카이브 (읽기전용) | 비고 |
+|------|----------|-------------------|------|
 | 법률/헌법 | `governance/laws/` | `docs/infrastructure/laws/` (리다이렉트) | 개헌 826060d |
 | 개정 절차 | `governance/constitution/` | — | 개헌 826060d |
 | 청구서 | `governance/constitution/petitions/` | — | 개헌 826060d |
 | 철학 | `governance/philosophy/` | — | 개헌 826060d |
-| 세션 로그 | `monkos-ops/ops/sessions/` | `docs/corpus/sessions/` (아카이브) | 신규는 정본에만 |
-| 전략 문서 | `monkos-ops/ops/` | — | ops가 원본 |
-| 리서치 | `monkos-ops/tech/` | `docs/rnd_2026/` | tech가 원본 |
-| 기술 스펙 | `monkos-ops/tech/specs/` | `docs/specs/` (아카이브) | tech가 원본 |
+| **지시서 (ORDER)** | `monkos-ops/ops/orders/YYYY-MM/` | `docs/monkos/tasks/` (TASK_ 레거시) | **TASK_→ORDER_ 통합 (03-08)** |
+| **보고서 (REPORT)** | `monkos-ops/ops/reports/YYYY-MM/` | `docs/monkos/reports/` (레거시) | **정본 ops/로 통일 (03-08)** |
+| **완료 보고 (COMPLETION)** | `monkos-ops/ops/reports/YYYY-MM/` | — | REPORT와 동일 폴더 |
+| **리뷰 (REVIEW)** | `monkos-ops/ops/reports/YYYY-MM/` | — | REPORT와 동일 폴더 |
+| **세션 로그** | `monkos-ops/ops/sessions/YYYY-MM/` | `docs/corpus/sessions/` | 매월 1일 이관 + README |
+| **기술 스펙 (SPEC)** | `monkos-ops/tech/specs/{service}/` | `docs/specs/` (구버전) | **tech가 유일 정본 (03-08)** |
+| **설계 문서 (DESIGN)** | `monkos-ops/tech/designs/YYYY-MM/` | `docs/monkos/designs/` (레거시) | **tech가 유일 정본 (03-08)** |
+| **인시던트 (INCIDENT)** | `monkos-ops/ops/incidents/YYYY-MM/` | `docs/monkos/incidents/` (레거시) | ops가 정본 |
+| 전략/어젠다 | `monkos-ops/ops/agenda/` | — | RESEARCH_, AGENDA_ |
 | 코드 리뷰 | `monkos-ops/tech/reviews/` | — | tech가 원본 |
-| 지시서 | `docs/monkos/tasks/` | — | docs가 정본 |
-| 보고서 | `docs/monkos/reports/` | — | docs가 정본 |
-| 오더 (ORDER) | `monkos-ops/ops/orders/` | — | ops가 정본. 작가님 의지 |
-| 리서치 (RESEARCH) | `monkos-ops/ops/agenda/` | — | 어젠다 연계 |
-| 완료 보고 (COMPLETION) | `monkos-ops/ops/reports/` | — | 막내 완료 보고 전용 |
+| 스프린트 | `monkos-ops/ops/sprints/` | `docs/monkos/sprints/` (레거시) | ops가 정본 |
+| R&D 리서치 | `monkos-ops/tech/` | `docs/rnd_2026/` | tech가 원본 |
 | 팀 공유 | `monkos-ops/marketing/` | — | marketing 전용 |
 | 에셋 레지스트리 | `docs/infrastructure/ASSET_REGISTRY.md` | — | 전 저장소 통합 인덱스 |
 | 범용 유틸 스크립트 | `scripts/` | — | 막내 소관 |
@@ -191,12 +190,15 @@ monkos-ops/는 4부서 체제로 재편 중이며, 과도기에는 번호 폴더
 **원칙**:
 - 정본은 **하나만** 존재한다. 참조본은 읽기전용(수정 금지).
 - 양쪽에 동일 문서 발견 시: 정본 판정 → 비정본 삭제 또는 리다이렉트 노트.
+- **docs/monkos/ 하위는 아카이브 동결.** 신규 생성 금지. 기존 파일은 읽기전용 보존.
+- **컴팩팅 방어**: docs/의 문서를 발견해도 정본은 항상 monkos-ops/에 있다. docs/는 과거 버전이다.
 - 번호 폴더(01_전략~06_로그)는 레거시다. 신규 문서는 4부서 경로에 생성한다.
 - 번호 폴더 → 4부서 이관이 완료되면 번호 폴더를 삭제하고 본 테이블을 갱신한다.
+- **월별 이관**: orders/, reports/, sessions/, incidents/, designs/ 는 YYYY-MM/ 서브폴더를 사용한다. 매월 1일, 지난달 폴더를 생성하고 README.md(목록·주요사항 개요)를 작성하여 이관한다.
 
-> 근거: 2026-02-22 — 세션 로그/전략 문서 이중화 발견, ops 중심 운영체제 확정, 02-23 governance 개헌 + ops 4부서 재편, 02-25 COMPLETION 정본 등록 (PETITION_20260225, 막내5·6 검수 통과, 작가님 승인)
-> 작가님 원문: "옵스는 운영체제 독스는 참고문헌체제" / "두개가 되면 혼선이 되니" (02-22)
-> 위반 시: 정본 불명 → 에이전트가 구버전 참조, 데이터 불일치.
+> 근거: 2026-02-22 — 세션 로그/전략 문서 이중화 발견, ops 중심 운영체제 확정, 02-23 governance 개헌 + ops 4부서 재편, 02-25 COMPLETION 정본 등록, **03-08 정본 전면 ops/ 통일 + TASK_→ORDER_ 통합 + docs/monkos/ 아카이브 동결 + 월별 서브폴더 도입 (작가님 승인)**
+> 작가님 원문: "옵스는 운영체제 독스는 참고문헌체제" (02-22) / "타스크는 오더 즉 오더와 보고서체제를 확실히 선언" (03-08) / "독스 아카이브는 어젠다로 이관하여 옵스에 편입" (03-08) / "과거가 현재를 부정하며 뒤집는 버그" (03-08)
+> 위반 시: 정본 불명 → 에이전트가 구버전 참조, 컴팩팅 후 과거 문서로 현재 설계 파괴.
 > 상위 헌법: 제3조
 
 ---
@@ -246,8 +248,8 @@ monkos-ops/는 4부서 체제로 재편 중이며, 과도기에는 번호 폴더
 **3. 서비스 편입**
 1. 작가님 승인
 2. ch4 5조 서비스 약칭 레지스트리에 등록
-3. `monkos-ops/03_개발/specs/{서비스}/` 폴더 + README.md 생성
-4. `docs/specs/{서비스}/` 폴더 + README.md 생성 (참고문헌용)
+3. `monkos-ops/tech/specs/{서비스}/` 폴더 + README.md 생성 (정본)
+4. `docs/specs/{서비스}/` — 생성 불필요 (아카이브 동결)
 
 **4. 폴더 편입**
 1. 해당 루트 체계에 따라 트리 문서 갱신:
@@ -285,8 +287,8 @@ monkos-ops/는 4부서 체제로 재편 중이며, 과도기에는 번호 폴더
 
 **적용 범위**:
 - governance/constitution/petitions/*.md
-- docs/monkos/ 하위 전 유형 (tasks, reports, incidents, designs, specs)
-- monkos-ops/ 하위 TASK_*, REPORT_*, PETITION_*, ORDER_*, RESEARCH_*, COMPLETION_* 파일
+- monkos-ops/ 하위 전 운영 문서 (ORDER_*, REPORT_*, COMPLETION_*, REVIEW_*, SPEC_*, DESIGN_*, INCIDENT_*, RESEARCH_* 파일)
+- docs/monkos/ 하위는 아카이브 동결 (기존 파일의 YAML 보정은 허용하나 신규 생성 금지)
 
 **적용 제외**:
 - 법률 파일 (governance/laws/ch*.md) — 법률은 그 자체가 규격
@@ -303,13 +305,14 @@ monkos-ops/는 4부서 체제로 재편 중이며, 과도기에는 번호 폴더
 | `date` | string | `YYYY-MM-DD HH:MM KST` (헌법 제1조) | `2026-02-23 04:10 KST` |
 | `status` | enum | pending / in_progress / completed / archived / blocked | `pending` |
 
-**type 허용값**: task, report, spec, incident, design, sprint, petition, order, research, completion, review
+**type 허용값**: order, report, spec, incident, design, sprint, petition, research, completion, review, agenda
+> `task`는 레거시. 신규 지시서는 `order` 사용 (03-08 TASK_→ORDER_ 통합)
 
 #### 타입별 추가 필수 필드
 
 | 타입 | 필수 | 선택 |
 |------|------|------|
-| task | `from`, `to`, `priority`(P0~P3) | `depends_on`, `tags` |
+| ~~task~~ | ~~레거시 — order 사용~~ | — |
 | report | `from`, `to`, `task_id`, `result`(success/partial/fail) | `tags` |
 | petition | `from`, `to`, `category`, `procedure` | `tags` |
 | spec | `service`(ch4 5조 약칭), `from` | `version`, `tags` |
