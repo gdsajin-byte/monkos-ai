@@ -51,35 +51,50 @@ async function loadChatHistory(sessionId) {
   return null;
 }
 
-// === Firestore 포털 챗봇 대화 저장 ===
-async function logChatConversation(sessionId, userMessage, botReply) {
+// === 채널별 컬렉션 매핑 ===
+const CHANNEL_COLLECTION_MAP = {
+  web: 'chat_conversations',
+  kakao: 'kakao_conversations',
+  'idphoto-kr': 'idphoto_kr_conversations',
+  prep: 'prep_conversations',
+};
+
+// === TTL 상수 ===
+const TTL_90_DAYS = 90 * 24 * 60 * 60 * 1000;
+
+// === Firestore 챗봇 대화 저장 (전 채널 통합) ===
+async function logChatConversation(sessionId, userMessage, botReply, channel = 'web') {
   try {
-    const docRef = chatLogsCollection.doc(sessionId);
+    const collectionName = CHANNEL_COLLECTION_MAP[channel] || 'chat_conversations';
+    const collection = firestore.collection(collectionName);
+    const docRef = collection.doc(sessionId);
     const doc = await docRef.get();
     const entry = { role: 'user', text: userMessage, ts: new Date().toISOString() };
     const replyEntry = { role: 'assistant', text: botReply, ts: new Date().toISOString() };
+    const expireAt = new Date(Date.now() + TTL_90_DAYS);
 
     if (doc.exists) {
       const data = doc.data();
       const messages = data.messages || [];
       messages.push(entry, replyEntry);
       const trimmed = messages.slice(-40);
-      await docRef.update({ messages: trimmed, updatedAt: new Date().toISOString() });
+      await docRef.update({ messages: trimmed, updatedAt: new Date().toISOString(), expireAt });
     } else {
       await docRef.set({
         sessionId,
-        channel: 'web',
+        channel,
         messages: [entry, replyEntry],
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        expireAt,
       });
     }
   } catch (err) {
-    log(`[Chat Log] 저장 실패: ${err.message}`);
+    log(`[Chat Log] 저장 실패 (${channel}): ${err.message}`);
   }
 }
 
-// === Firestore CS 대화 로깅 ===
+// === Firestore CS 대화 로깅 (90일 TTL) ===
 export async function logCsConversation(chatId, username, userMessage, botReply) {
   try {
     const docId = `tg_${chatId}`;
@@ -87,12 +102,13 @@ export async function logCsConversation(chatId, username, userMessage, botReply)
     const doc = await docRef.get();
     const entry = { role: 'user', text: userMessage, ts: new Date().toISOString() };
     const replyEntry = { role: 'assistant', text: botReply, ts: new Date().toISOString() };
+    const expireAt = new Date(Date.now() + TTL_90_DAYS);
 
     if (doc.exists) {
       const data = doc.data();
       const messages = data.messages || [];
       messages.push(entry, replyEntry);
-      await docRef.update({ messages, updatedAt: new Date().toISOString() });
+      await docRef.update({ messages, updatedAt: new Date().toISOString(), expireAt });
     } else {
       await docRef.set({
         chatId,
@@ -102,6 +118,7 @@ export async function logCsConversation(chatId, username, userMessage, botReply)
         status: 'open',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        expireAt,
       });
     }
   } catch (err) {
@@ -246,9 +263,9 @@ export async function chatWithMonkos(channel, chatId, userMessage, options = {})
   const text = response.candidates?.[0]?.content?.parts?.[0]?.text || '';
   history.messages.push({ role: 'model', parts: [{ text }] });
 
-  // 비동기 로깅
-  if (channel === 'web') {
-    logChatConversation(chatId, userMessage, text).catch(() => {});
+  // 비동기 로깅 (stateful 채널 전체 — telegram은 별도 logCsConversation 호출 구조)
+  if (!config.stateless && config.logCollection && channel !== 'telegram') {
+    logChatConversation(chatId, userMessage, text, channel).catch(() => {});
   }
 
   return text;

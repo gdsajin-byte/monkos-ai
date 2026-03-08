@@ -494,9 +494,11 @@ function loadImage(src) {
 }
 
 async function doDownload() {
+  let creditUsed = false;
   try {
     const result = await pipe.run('creditUse', { userId: store.user.id, type: 'download' });
     store.user = { ...store.user, credits: result.credits };
+    creditUsed = true;
 
     // 크롭 실행 (thankyou용 데이터 준비)
     if (_fullOriginal) {
@@ -526,7 +528,17 @@ async function doDownload() {
     if (err.status === 402) {
       showChargeModal();
     } else {
-      Monk.log('다운로드 크레딧 에러: ' + (err.error || err.message));
+      // 크레딧 차감 후 다운로드 전달 실패 시 환불
+      if (creditUsed) {
+        try {
+          const refund = await pipe.run('creditRefund', { userId: store.user.id, type: 'download' });
+          store.user = { ...store.user, credits: refund.credits };
+          Monk.log('다운로드 실패 → 70c 환불 완료');
+        } catch (refundErr) {
+          Monk.log('다운로드 실패 환불 에러: ' + (refundErr.error || refundErr.message));
+        }
+      }
+      Monk.log('다운로드 에러: ' + (err.error || err.message));
       const btn = document.querySelector('#btn-download');
       if (btn) btn.disabled = false;
     }

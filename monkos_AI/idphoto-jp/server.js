@@ -601,6 +601,20 @@ const httpServer = createServer(async (req, res) => {
     return;
   }
 
+  // POST /api/credit/refund — クレジット返金 (ダウンロード失敗等)
+  if (urlPath === '/api/credit/refund' && req.method === 'POST') {
+    try {
+      const body = await parseBody(req);
+      if (!body.userId) return jsonResponse(res, 400, { error: 'ログインが必要です' });
+      const result = await refundCredits(body.userId, body.type || 'download');
+      jsonResponse(res, result.success ? 200 : 400, result);
+    } catch (err) {
+      log(`[API][credit/refund] エラー: ${err.message}`);
+      jsonResponse(res, 500, { error: err.message });
+    }
+    return;
+  }
+
   // POST /api/credit/share-bonus — シェアボーナス
   if (urlPath === '/api/credit/share-bonus' && req.method === 'POST') {
     try {

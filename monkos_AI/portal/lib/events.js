@@ -35,6 +35,7 @@ export async function handleTelegramGateCode(req, res) {
       type: 'gate',
       createdAt: new Date().toISOString(),
       used: false,
+      expireAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
     });
 
     const deeplink = `https://t.me/monkos_support_bot?start=GATE_${code}`;
@@ -66,6 +67,7 @@ export async function handleTelegramMissionCode(req, res) {
       type: 'mission',
       createdAt: new Date().toISOString(),
       used: false,
+      expireAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
     });
 
     const deeplink = `https://t.me/monkos_support_bot?start=MISSION_${code}`;

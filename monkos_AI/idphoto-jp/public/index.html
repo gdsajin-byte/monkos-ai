@@ -2169,7 +2169,20 @@
                     const result = await apiPost('/api/credit/use', { userId, type: 'download' });
                     userCredits = result.credits;
                     updateCreditBadge();
-                    proceedDownload();
+                    try {
+                        proceedDownload();
+                    } catch (dlErr) {
+                        // クレジット消費後のダウンロード失敗 → 返金
+                        try {
+                            const refund = await apiPost('/api/credit/refund', { userId, type: 'download' });
+                            userCredits = refund.credits;
+                            updateCreditBadge();
+                            log('ダウンロード失敗 → 10c返金完了');
+                        } catch (refundErr) {
+                            log('返金エラー: ' + (refundErr.error || refundErr.message));
+                        }
+                        throw dlErr;
+                    }
                 } catch (err) {
                     btn.disabled = false;
                     btn.textContent = originalText;

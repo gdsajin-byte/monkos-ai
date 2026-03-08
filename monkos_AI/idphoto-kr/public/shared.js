@@ -101,6 +101,7 @@ export const pipe = Monk.pipe({
   generate: { type: 'post', path: API.GENERATE },
   qc: { type: 'post', path: API.QC },
   creditUse: { type: 'post', path: API.CREDIT_USE },
+  creditRefund: { type: 'post', path: API.CREDIT_REFUND },
   coaching: { type: 'ws', url: '' },  // WebSocket — url은 camera.js에서 동적 생성
 }, {
   baseUrl: '',
