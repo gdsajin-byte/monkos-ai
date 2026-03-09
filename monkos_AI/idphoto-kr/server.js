@@ -703,6 +703,18 @@ app.post('/api/credit/use', async (req, res) => {
   }
 });
 
+// 크레딧 환불 (다운로드 실패 등)
+app.post('/api/credit/refund', async (req, res) => {
+  try {
+    if (!req.body.userId) return res.status(400).json({ error: '로그인 필요' });
+    const result = await refundCredits(req.body.userId, req.body.type || 'download');
+    res.status(result.success ? 200 : 400).json(result);
+  } catch (err) {
+    log(`[API][credit/refund] 에러: ${err.message}`, 'ERROR');
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // 공유 보너스
 app.post('/api/credit/share-bonus', async (req, res) => {
   try {

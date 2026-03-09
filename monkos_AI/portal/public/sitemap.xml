@@ -3,28 +3,28 @@
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://monkos.ai/</loc>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://monkos.ai/"/>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://monkos.ai/idphoto-kr/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://idphoto-jp.monkos.ai/"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://idphoto-kr.monkos.ai/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://monkos.ai/"/>
-    <lastmod>2026-02-12</lastmod>
+    <lastmod>2026-03-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://monkos.ai/idphoto-jp/</loc>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://monkos.ai/idphoto-jp/"/>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://monkos.ai/idphoto-kr/"/>
+    <loc>https://idphoto-jp.monkos.ai/</loc>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://idphoto-jp.monkos.ai/"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://idphoto-kr.monkos.ai/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://monkos.ai/"/>
-    <lastmod>2026-02-12</lastmod>
+    <lastmod>2026-03-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://monkos.ai/idphoto-kr/</loc>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://monkos.ai/idphoto-kr/"/>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://monkos.ai/idphoto-jp/"/>
+    <loc>https://idphoto-kr.monkos.ai/</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://idphoto-kr.monkos.ai/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://idphoto-jp.monkos.ai/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://monkos.ai/"/>
-    <lastmod>2026-02-12</lastmod>
+    <lastmod>2026-03-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -39,5 +39,17 @@
     <lastmod>2026-02-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://monkos.ai/credits.html</loc>
+    <lastmod>2026-03-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://monkos.ai/refund.html</loc>
+    <lastmod>2026-02-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
 </urlset>

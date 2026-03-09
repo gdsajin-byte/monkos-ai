@@ -25,7 +25,11 @@ export async function handleCheckout(req, res) {
         data: {
           type: 'checkouts',
           attributes: {
+            checkout_options: {
+              locale: 'ja',
+            },
             checkout_data: {
+              billing_address: { country: 'JP' },
               custom: { user_id: userId },
               email: email || undefined,
             },
