@@ -4,7 +4,7 @@
  * 데이터 정본: config.js CHARGE_OPTIONS
  */
 
-import { store, Monk, TOSS_CLIENT_KEY, closeCreditModal, buyCreditsJP, CHARGE_OPTIONS, JPY_PER_CREDIT } from '../shared.js';
+import { store, Monk, closeCreditModal, buyCreditsJP, CHARGE_OPTIONS, JPY_PER_CREDIT } from '../shared.js';
 
 // ─── 소액충전 스테퍼 ───
 const STEP_UNIT = 10;    // credits per step
@@ -166,7 +166,7 @@ function _buildModal() {
       if (_confirmedIdx === idx) {
         const opt = CHARGE_OPTIONS[idx];
         ChargeModule.close();
-        buyCreditsJP(opt.price, opt.credits + opt.bonus);
+        buyCreditsJP(opt);
       } else {
         _resetAllCards();
         _confirmedIdx = idx;
@@ -185,7 +185,9 @@ function _buildModal() {
     e.stopPropagation();
     if (_confirmedIdx === 4) {
       ChargeModule.close();
-      buyCreditsJP(_stepperQty * STEP_PRICE, _stepperQty * STEP_UNIT);
+      // ステッパー: topup_10 商品を数量分で決済
+      const topupOpt = CHARGE_OPTIONS.find(o => o.key === 'topup_10');
+      if (topupOpt) buyCreditsJP(topupOpt);
     } else {
       _resetAllCards();
       _confirmedIdx = 4;

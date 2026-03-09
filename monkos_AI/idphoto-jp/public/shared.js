@@ -5,7 +5,7 @@
 
 import Monk from './monk.js';
 import {
-  API, CREDIT_COST, TOSS_CLIENT_KEY, PHOTO_SPECS, TX, t,
+  API, CREDIT_COST, PHOTO_SPECS, TX, t,
   MAX_CAPTURE_SIZE, COACHING_DISPLAY_MS, FRAME_INTERVAL_MS, CAPTURE_SIZE,
   DPI, mmToPx, GOOGLE_CLIENT_ID, SCHEMA_VERSION,
   CHARGE_OPTIONS, JPY_PER_CREDIT
@@ -13,7 +13,7 @@ import {
 
 // Re-export for page JS convenience
 export {
-  Monk, API, CREDIT_COST, TOSS_CLIENT_KEY, PHOTO_SPECS, TX, t,
+  Monk, API, CREDIT_COST, PHOTO_SPECS, TX, t,
   MAX_CAPTURE_SIZE, COACHING_DISPLAY_MS, FRAME_INTERVAL_MS, CAPTURE_SIZE,
   DPI, mmToPx, GOOGLE_CLIENT_ID, SCHEMA_VERSION,
   CHARGE_OPTIONS, JPY_PER_CREDIT
@@ -116,8 +116,8 @@ export function showCreditModal(required, current, action) {
     ? 'ダウンロードにクレジットが必要です'
     : 'リタッチにクレジットが必要です';
   store.creditModalDesc = action === 'download'
-    ? '写真のダウンロードには10クレジットが必要です。'
-    : 'リタッチには1クレジットが必要です。';
+    ? '写真のダウンロードには70クレジットが必要です。'
+    : 'リタッチには10クレジットが必要です。';
   store.creditModalOpen = true;
 }
 
@@ -130,101 +130,68 @@ export function showChargeModal() {
   import('./modules/charge.js').then(m => m.ChargeModule.show());
 }
 
-// ─── 決済 (Round 2: Lemon Squeezy移行予定 — 現状TossPayments) ───
-export async function buyCreditsJP(amount, credits) {
+// ─── 決済 (Lemon Squeezy Overlay — Portal API 経由) ───
+export async function buyCreditsJP(opt) {
+  // opt = CHARGE_OPTIONS 要素: { key, variantId, price, credits, bonus }
   if (!store.user.id) {
     import('./modules/gate.js').then(m => {
       m.GateModule.showLoginRequired('クレジットチャージにはログインが必要です\n初回ログインで10cプレゼント！', () => {
-        buyCreditsJP(amount, credits);
+        buyCreditsJP(opt);
       });
     });
     return;
   }
 
-  // 決済審査中 — クライアントキーがなければ案内後リターン
-  if (!TOSS_CLIENT_KEY) {
-    alert('決済システム準備中です。\nまもなくご利用いただけます！');
-    return;
-  }
-
   closeCreditModal();
 
-  const orderId = `MONKOS_${store.user.id.slice(0, 8)}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-
   try {
-    const tossPayments = TossPayments(TOSS_CLIENT_KEY);
-
-    await tossPayments.requestPayment('카드', {  // TossPayments API固定値(Round 2でLemon Squeezy移行)
-      amount: amount,
-      orderId: orderId,
-      orderName: `MONKOS ${credits} クレジット`,
-      successUrl: `${window.location.origin}${window.location.pathname}?toss=success`,
-      failUrl: `${window.location.origin}${window.location.pathname}?toss=fail`,
-      customerEmail: store.user.email || undefined,
-      customerName: store.user.name || undefined,
+    // Portal にチェックアウト URL 要求
+    const res = await fetch(`${API.PORTAL_URL}/api/checkout`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({
+        variantId: opt.variantId,
+        userId: store.user.id,
+        email: store.user.email || undefined,
+      }),
     });
-  } catch (err) {
-    if (err.code === 'PAY_PROCESS_CANCELED' || err.code === 'USER_CANCEL') {
-      Monk.log('決済キャンセル');
+
+    const data = await res.json();
+    if (!data.url) {
+      alert('決済の準備に失敗しました。しばらくしてからお試しください。');
+      return;
+    }
+
+    // Lemon.js Overlay で決済画面表示
+    if (window.LemonSqueezy) {
+      window.LemonSqueezy.Url.Open(data.url);
     } else {
-      alert('決済エラー: ' + (err.message || err.code));
+      // Lemon.js 未ロード時は新しいタブでフォールバック
+      window.open(data.url, '_blank');
     }
+  } catch (err) {
+    Monk.log('決済エラー: ' + err.message);
+    alert('決済エラーが発生しました。もう一度お試しください。');
   }
 }
 
-function _showTossLoading() {
-  const el = document.createElement('div');
-  el.id = 'toss-loading';
-  el.style.cssText = 'position:fixed;inset:0;background:#030508;display:flex;align-items:center;justify-content:center;z-index:9999;';
-  el.innerHTML = '<div style="text-align:center;"><div style="color:#a78bfa;font-size:1.1rem;font-weight:600;">決済確認中...</div><div style="color:#8892a8;font-size:0.85rem;margin-top:8px;">しばらくお待ちください</div></div>';
-  document.body.appendChild(el);
-}
-
-function _hideTossLoading() {
-  const el = document.getElementById('toss-loading');
-  if (el) el.remove();
-}
-
-export async function initFromTossResult() {
-  const params = new URLSearchParams(window.location.search);
-
-  if (params.get('toss') === 'fail') {
-    const msg = params.get('message') || '決済失敗';
-    history.replaceState({}, '', window.location.pathname);
-    alert(msg);
-    return;
-  }
-
-  if (params.get('toss') === 'success') {
-    _showTossLoading();
-
-    const paymentKey = params.get('paymentKey');
-    const orderId = params.get('orderId');
-    const amount = params.get('amount');
-
-    history.replaceState({}, '', window.location.pathname);
-
-    if (!paymentKey || !orderId || !amount) { _hideTossLoading(); return; }
-
-    try {
-      const res = await fetchWithTimeout(`${API.PORTAL_URL}/api/payments/toss/confirm`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ paymentKey, orderId, amount: Number(amount), userId: store.user.id }),
-      }, 15000);
-      const data = await res.json();
-      _hideTossLoading();
-      if (data.success) {
-        store.user = { ...store.user, credits: data.credits };
-        Monk.log(`決済完了: ${data.credits}c`);
-        alert(`決済が完了しました！\n現在のクレジット: ${data.credits}c`);
-      } else {
-        alert('決済確認失敗: ' + (data.error || ''));
-      }
-    } catch (err) {
-      _hideTossLoading();
-      Monk.log('決済確認エラー: ' + err.message);
-    }
+// ─── Lemon Squeezy イベントハンドラ ───
+export function initLemonSqueezy() {
+  if (window.LemonSqueezy) {
+    window.LemonSqueezy.Setup({
+      eventHandler: (event) => {
+        if (event.event === 'Checkout.Success') {
+          Monk.log('Lemon決済完了 — クレジット更新中...');
+          // Webhook でクレジット支給完了後 Firestore 反映 → クライアント更新
+          setTimeout(() => fetchLatestCredits(), 2000);
+          setTimeout(() => {
+            fetchLatestCredits();
+            alert(`決済が完了しました！\nクレジットが追加されました。`);
+          }, 4000);
+        }
+      },
+    });
   }
 }
 
@@ -405,7 +372,7 @@ export async function sharedInit() {
   checkInappBrowser();
   await initFromUrlToken();
   await initCredits();
-  await initFromTossResult();
+  initLemonSqueezy();
 
   // v5 旧キー整理ガード (SCHEMA_v5_確定.md §9)
   if (loadSessionData('schema_version') !== SCHEMA_VERSION) {

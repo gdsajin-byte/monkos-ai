@@ -21,14 +21,11 @@ export const API = {
 
 // クレジットコスト
 export const CREDIT_COST = {
-  generate: 1,
-  download: 10,
-  extraCrop: 1,
-  fullOriginal: 1,
+  generate: 10,
+  download: 70,
+  extraCrop: 10,
+  fullOriginal: 10,
 };
-
-// TossPayments (Round 2でLemon Squeezyに移行予定 — 現状維持)
-export const TOSS_CLIENT_KEY = 'test_ck_6bJXmgo28eBJk12vvDAW3LAnGKWx';
 
 // キャプチャ設定
 export const MAX_CAPTURE_SIZE = 512;
@@ -123,16 +120,16 @@ export const HAIR_VISIBLE_AGES = ['teen', 'adult'];
 // format="passport" → bgColor 強制
 export const PASSPORT_FORCED_BG = 'white';
 
-// ─── チャージ商品 (フロントエンド正本 — バックエンドPRODUCTSと価格同期必須) ───
-// JP: Lemon Squeezy ベース (Round 2 で正式連携予定)
+// ─── チャージ商品 (フロントエンド正本 — Lemon Squeezy Variant ID連携) ───
 export const CHARGE_OPTIONS = [
-  { key: 'single_10', label: '10 クレジット', price: 1500, credits: 10, bonus: 0 },
-  { key: 'package_30', label: '30 クレジット', price: 3800, credits: 30, bonus: 5, best: true },
-  { key: 'package_50', label: '50 クレジット', price: 6000, credits: 50, bonus: 10 },
-  { key: 'package_100', label: '100 クレジット', price: 10000, credits: 100, bonus: 30 },
+  { key: 'single_70', variantId: '1382367', label: '1枚分 (70+10ボーナス)', price: 990, credits: 70, bonus: 10 },
+  { key: 'package_100', variantId: '1382348', label: '100クレジット+30ボーナス', price: 1490, credits: 100, bonus: 30, best: true },
+  { key: 'package_300', variantId: '1382362', label: '300クレジット+120ボーナス', price: 3990, credits: 300, bonus: 120 },
+  { key: 'package_500', variantId: '1382436', label: '500クレジット+250ボーナス', price: 5990, credits: 500, bonus: 250 },
+  { key: 'topup_10', variantId: '1382355', label: '10クレジット', price: 150, credits: 10, bonus: 0 },
 ];
 
-export const JPY_PER_CREDIT = 150;
+export const JPY_PER_CREDIT = 15;
 
 // スキーマバージョン
 export const SCHEMA_VERSION = 'v5';

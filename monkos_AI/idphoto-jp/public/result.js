@@ -7,7 +7,7 @@
 import {
   store, pipe, Monk, TX, PHOTO_SPECS, CREDIT_COST,
   sharedInit, showCreditModal, saveSessionData, loadSessionData, navigateTo, showChargeModal,
-  buyCreditsJP, TOSS_CLIENT_KEY, API, fetchLatestCredits, closeCreditModal,
+  buyCreditsJP, API, fetchLatestCredits, closeCreditModal,
 } from './shared.js';
 
 import { GateModule } from './modules/gate.js';
