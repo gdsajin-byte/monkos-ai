@@ -144,6 +144,9 @@ export async function buyCreditsJP(opt) {
 
   closeCreditModal();
 
+  // ポップアップブロック回避: ユーザージェスチャ内で先にタブを開く
+  const win = window.open('about:blank', '_blank');
+
   try {
     // Portal にチェックアウト URL 要求
     const res = await fetch(`${API.PORTAL_URL}/api/checkout`, {
@@ -159,13 +162,20 @@ export async function buyCreditsJP(opt) {
 
     const data = await res.json();
     if (!data.url) {
+      if (win) win.close();
       alert('決済の準備に失敗しました。しばらくしてからお試しください。');
       return;
     }
 
-    // 新しいタブで決済画面表示 (Overlay 404問題回避)
-    window.open(data.url, '_blank');
+    // 取得したURLへリダイレクト
+    if (win) {
+      win.location.href = data.url;
+    } else {
+      // タブが開けなかった場合 → 現在ページで遷移
+      location.href = data.url;
+    }
   } catch (err) {
+    if (win) win.close();
     Monk.log('決済エラー: ' + err.message);
     alert('決済エラーが発生しました。もう一度お試しください。');
   }
