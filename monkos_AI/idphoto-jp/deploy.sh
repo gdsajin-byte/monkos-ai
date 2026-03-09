@@ -1,10 +1,10 @@
 #!/bin/bash
 
 ###############################################################################
-# MONKOS ID Photo KR Service — Cloud Run 배포
+# MONKOS ID Photo JP Service — Cloud Run 배포
 #
-# 한국 시장 특화 AI 증명사진 서비스
-# idphoto-kr.monkos.ai
+# 일본 시장 특화 AI 증명사진 서비스
+# idphoto-jp.monkos.ai
 #
 # 사용법:
 #   ./deploy.sh [dev|prod]
@@ -59,12 +59,12 @@ fi
 
 # 환경별 설정
 if [ "$ENV" = "dev" ]; then
-  SERVICE_NAME="monkos-idphoto-kr-dev"
+  SERVICE_NAME="monkos-idphoto-jp-dev"
   MEMORY="512Mi"
   CPU="1"
   MAX_INSTANCES="2"
 elif [ "$ENV" = "prod" ]; then
-  SERVICE_NAME="monkos-idphoto-kr"
+  SERVICE_NAME="monkos-idphoto-jp"
   MEMORY="2Gi"
   CPU="2"
   MAX_INSTANCES="10"
@@ -84,7 +84,7 @@ elif [ "$ENV" = "prod" ]; then
 fi
 
 echo -e "${BLUE}========================================${NC}"
-echo -e "${BLUE}MONKOS ID Photo KR Service 배포${NC}"
+echo -e "${BLUE}MONKOS ID Photo JP Service 배포${NC}"
 echo -e "${BLUE}========================================${NC}"
 echo -e "환경: ${YELLOW}${ENV}${NC}"
 echo -e "프로젝트: ${YELLOW}${PROJECT_ID}${NC}"
