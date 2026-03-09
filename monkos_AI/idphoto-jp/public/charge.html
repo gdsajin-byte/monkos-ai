@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
@@ -10,11 +10,11 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>MONKOS AI 증명사진 — 충전</title>
+    <title>MONKOS AI証明写真 — チャージ</title>
 
     <!-- Open Graph -->
-    <meta property="og:title" content="MONKOS AI 증명사진">
-    <meta property="og:description" content="AI 코칭과 함께 완벽한 증명사진을 촬영하세요">
+    <meta property="og:title" content="MONKOS AI証明写真">
+    <meta property="og:description" content="AIコーチングで完璧な証明写真を撮影しましょう">
     <meta property="og:type" content="website">
     <meta property="og:image" content="https://monkos.ai/og-image.png">
 
@@ -26,7 +26,7 @@
     <!-- 폰트 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@700&display=swap" rel="stylesheet">
 
     <!-- 스타일시트 -->
@@ -39,15 +39,15 @@
 <body>
     <!-- 인앱 브라우저 안내 배너 -->
     <div id="inapp-banner" data-show="inappBrowser" style="display:none; background:#ff6b35; color:#fff; text-align:center; padding:10px 16px; font-size:13px; font-weight:600; line-height:1.4; position:fixed; top:0; left:0; right:0; z-index:9999;">
-        ⚠️ Google 로그인이 필요합니다. <strong>Chrome/Safari</strong>에서 열어주세요.
-        <button onclick="openExternal()" style="background:#fff; color:#ff6b35; border:none; padding:4px 12px; border-radius:12px; font-size:12px; font-weight:700; margin-left:8px; cursor:pointer;">열기</button>
+        ⚠️ Googleログインが必要です。<strong>Chrome/Safari</strong>で開いてください。
+        <button onclick="openExternal()" style="background:#fff; color:#ff6b35; border:none; padding:4px 12px; border-radius:12px; font-size:12px; font-weight:700; margin-left:8px; cursor:pointer;">開く</button>
     </div>
 
     <!-- 헤더 -->
     <div id="header">
         <div>
-            <h1><span class="brand">MONKOS</span> <span>AI 증명사진</span></h1>
-            <span id="step-label">크레딧 충전</span>
+            <h1><span class="brand">MONKOS</span> <span>AI証明写真</span></h1>
+            <span id="step-label">クレジットチャージ</span>
         </div>
         <div style="display:flex; align-items:center; gap:8px;">
             <div class="header-balance" id="creditBadge" data-show="user.id">
@@ -70,41 +70,41 @@
     <!-- 충전 페이지 본문 -->
     <div id="charge-content" style="padding:16px 16px max(24px,env(safe-area-inset-bottom)); max-width:480px; margin:0 auto;">
 
-        <!-- ← 돌아가기 -->
+        <!-- ← 戻る -->
         <div style="margin-bottom:12px;">
-            <button type="button" onclick="goBack()" style="background:none;border:none;color:#a78bfa;font-size:0.95rem;font-weight:600;cursor:pointer;padding:4px 0;">← 돌아가기</button>
+            <button type="button" onclick="goBack()" style="background:none;border:none;color:#a78bfa;font-size:0.95rem;font-weight:600;cursor:pointer;padding:4px 0;">← 戻る</button>
         </div>
 
         <!-- 가격 산수 바 (필 뱃지) -->
         <div style="display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:6px; margin:20px 0 24px;">
-            <span style="background:rgba(167,139,250,0.15); border:1px solid rgba(167,139,250,0.25); border-radius:20px; padding:6px 14px; font-size:0.8rem; font-weight:600; color:#a78bfa;">1장</span>
+            <span style="background:rgba(167,139,250,0.15); border:1px solid rgba(167,139,250,0.25); border-radius:20px; padding:6px 14px; font-size:0.8rem; font-weight:600; color:#a78bfa;">1枚</span>
             <span style="font-size:0.85rem; color:#8892a8; font-weight:600;">=</span>
-            <span style="background:rgba(167,139,250,0.15); border:1px solid rgba(167,139,250,0.25); border-radius:20px; padding:6px 14px; font-size:0.8rem; font-weight:600; color:#a78bfa;">리터칭 10c</span>
+            <span style="background:rgba(167,139,250,0.15); border:1px solid rgba(167,139,250,0.25); border-radius:20px; padding:6px 14px; font-size:0.8rem; font-weight:600; color:#a78bfa;">リタッチ 1c</span>
             <span style="font-size:0.85rem; color:#8892a8; font-weight:600;">+</span>
-            <span style="background:rgba(167,139,250,0.15); border:1px solid rgba(167,139,250,0.25); border-radius:20px; padding:6px 14px; font-size:0.8rem; font-weight:600; color:#a78bfa;">다운로드 70c</span>
+            <span style="background:rgba(167,139,250,0.15); border:1px solid rgba(167,139,250,0.25); border-radius:20px; padding:6px 14px; font-size:0.8rem; font-weight:600; color:#a78bfa;">ダウンロード 10c</span>
             <span style="font-size:0.85rem; color:#8892a8; font-weight:600;">=</span>
-            <span style="background:rgba(167,139,250,0.15); border:1px solid rgba(167,139,250,0.25); border-radius:20px; padding:6px 14px; font-size:0.8rem; font-weight:600; color:#a78bfa;">80c</span>
+            <span style="background:rgba(167,139,250,0.15); border:1px solid rgba(167,139,250,0.25); border-radius:20px; padding:6px 14px; font-size:0.8rem; font-weight:600; color:#a78bfa;">11c</span>
         </div>
 
         <!-- v3 패키지 카드 (JS 동적 생성) -->
         <div id="pkg-container"></div>
 
         <!-- 소액충전 스테퍼 -->
-        <div style="text-align:center; font-size:0.78rem; color:#8892a8; margin:16px 0 8px;">── 또는 소액 충전 ──</div>
+        <div style="text-align:center; font-size:0.78rem; color:#8892a8; margin:16px 0 8px;">── または少額チャージ ──</div>
 
         <div style="display:flex; align-items:center; justify-content:center; gap:12px; margin-bottom:4px;">
             <button id="stepper-minus" type="button" style="width:36px; height:36px; border-radius:50%; border:1.5px solid rgba(167,139,250,0.3); background:rgba(167,139,250,0.1); color:#a78bfa; font-size:18px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; line-height:1;">−</button>
             <button id="stepper-pay" type="button" style="background:linear-gradient(135deg,rgba(167,139,250,0.3),rgba(129,140,248,0.2)); border:none; border-radius:12px; padding:10px 20px; min-width:120px; text-align:center; cursor:pointer;">
                 <div id="stepper-qty" style="color:#f8fafc; font-weight:700; font-size:1.05rem;">10c</div>
-                <div id="stepper-price" style="color:#a78bfa; font-size:0.8rem; margin-top:2px;">₩1,450</div>
+                <div id="stepper-price" style="color:#a78bfa; font-size:0.8rem; margin-top:2px;">¥150</div>
             </button>
             <button id="stepper-plus" type="button" style="width:36px; height:36px; border-radius:50%; border:1.5px solid rgba(167,139,250,0.3); background:rgba(167,139,250,0.1); color:#a78bfa; font-size:18px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; line-height:1;">+</button>
         </div>
-        <div style="text-align:center; font-size:0.7rem; color:#666; margin-bottom:16px;">최소 10c · 최대 100c</div>
+        <div style="text-align:center; font-size:0.7rem; color:#666; margin-bottom:16px;">最小10c · 最大100c</div>
 
         <!-- 크레딧 정책 링크 -->
         <div style="text-align:center; margin:16px 0 0;">
-            <a href="/credits-policy.html" style="color:#a78bfa; font-size:0.82rem; text-decoration:none;">크레딧 정책 상세보기 →</a>
+            <a href="/credits-policy.html" style="color:#a78bfa; font-size:0.82rem; text-decoration:none;">クレジットポリシー詳細 →</a>
         </div>
 
         <!-- 사업자 정보 -->
@@ -125,26 +125,27 @@
                 <a href="/privacy.html" style="color:#a78bfa; text-decoration:none;">Privacy Policy</a> &nbsp;|&nbsp;
                 <a href="/terms.html" style="color:#a78bfa; text-decoration:none;">Terms of Service</a> &nbsp;|&nbsp;
                 <a href="/refund.html" style="color:#a78bfa; text-decoration:none;">Refund Policy</a> &nbsp;|&nbsp;
-                <a href="/credits-policy.html" style="color:#a78bfa; text-decoration:none;">Credit Policy</a>
+                <a href="/credits-policy.html" style="color:#a78bfa; text-decoration:none;">Credit Policy</a> &nbsp;|&nbsp;
+                <a href="/tokusho.html" style="color:#a78bfa; text-decoration:none;">特定商取引法</a>
             </p>
             <p>&copy; 2026 <a href="https://monkos.ai" style="color:#a78bfa; text-decoration:none;">MONKOS.AI</a> &mdash; Evolution of Creative Intelligence</p>
         </footer>
     </div>
 
     <script type="module">
-    import { store, Monk, sharedInit, buyCreditsKR, navigateTo, CHARGE_OPTIONS, KRW_PER_CREDIT } from './shared.js';
+    import { store, Monk, sharedInit, buyCreditsJP, navigateTo, CHARGE_OPTIONS, JPY_PER_CREDIT } from './shared.js';
     import { renderChargeCards } from './modules/charge.js';
     import { initChatbot } from './modules/chatbot.js';
 
     const STEP_UNIT = 10;
-    const STEP_PRICE = 1450;
+    const STEP_PRICE = 150;
     const STEP_MIN = 1;
     const STEP_MAX = 10;
 
     let confirmedIdx = -1;
     let stepperQty = 1;
 
-    function fmt(n) { return n.toLocaleString('ko-KR'); }
+    function fmt(n) { return n.toLocaleString('ja-JP'); }
 
     function updateStepper() {
       const qtyEl = document.getElementById('stepper-qty');
@@ -153,8 +154,8 @@
       const maxBtn = document.getElementById('stepper-plus');
       if (qtyEl) qtyEl.textContent = `${stepperQty * STEP_UNIT}c`;
       if (priceEl) {
-        const price = `₩${fmt(stepperQty * STEP_PRICE)}`;
-        priceEl.textContent = confirmedIdx === 4 ? `${price} 결제` : price;
+        const price = `¥${fmt(stepperQty * STEP_PRICE)}`;
+        priceEl.textContent = confirmedIdx === 4 ? `${price} 決済` : price;
         priceEl.style.color = confirmedIdx === 4 ? '#f8fafc' : '#a78bfa';
       }
       if (minBtn) minBtn.style.opacity = stepperQty <= STEP_MIN ? '0.3' : '1';
@@ -176,10 +177,10 @@
           : 'linear-gradient(135deg,rgba(167,139,250,0.3),rgba(129,140,248,0.2))';
 
         const totalC = opt.credits + opt.bonus;
-        const strikePrice = totalC * KRW_PER_CREDIT;
+        const strikePrice = totalC * JPY_PER_CREDIT;
         priceBlock.innerHTML =
-          '<div style="text-decoration:line-through;color:#666;font-size:0.78rem;">₩' + fmt(strikePrice) + '</div>' +
-          '<div style="color:#f8fafc;font-weight:700;font-size:1.1rem;">₩' + fmt(opt.price) + '</div>';
+          '<div style="text-decoration:line-through;color:#666;font-size:0.78rem;">¥' + fmt(strikePrice) + '</div>' +
+          '<div style="color:#f8fafc;font-weight:700;font-size:1.1rem;">¥' + fmt(opt.price) + '</div>';
       });
 
       const stepperPay = document.getElementById('stepper-pay');
@@ -201,7 +202,7 @@
           const idx = parseInt(card.dataset.ci);
           if (confirmedIdx === idx) {
             const opt = CHARGE_OPTIONS[idx];
-            buyCreditsKR(opt.price, opt.credits + opt.bonus);
+            buyCreditsJP(opt.price, opt.credits + opt.bonus);
           } else {
             resetAll();
             confirmedIdx = idx;
@@ -209,7 +210,7 @@
             const priceBlock = card.querySelector('.cm-price-block');
             if (priceBlock) {
               priceBlock.style.background = 'linear-gradient(135deg,rgba(34,197,94,0.4),rgba(34,197,94,0.2))';
-              priceBlock.innerHTML = '<div style="color:#f8fafc;font-weight:700;font-size:1.1rem;">₩' + fmt(opt.price) + ' 결제</div>';
+              priceBlock.innerHTML = '<div style="color:#f8fafc;font-weight:700;font-size:1.1rem;">¥' + fmt(opt.price) + ' 決済</div>';
             }
           }
         });
@@ -220,7 +221,7 @@
     document.getElementById('stepper-pay').addEventListener('click', (e) => {
       e.stopPropagation();
       if (confirmedIdx === 4) {
-        buyCreditsKR(stepperQty * STEP_PRICE, stepperQty * STEP_UNIT);
+        buyCreditsJP(stepperQty * STEP_PRICE, stepperQty * STEP_UNIT);
       } else {
         resetAll();
         confirmedIdx = 4;
@@ -259,7 +260,7 @@
       initChatbot();
       await sharedInit();
       renderPackages();
-      Monk.log('충전 페이지 초기화 완료');
+      Monk.log('チャージページ初期化完了');
     }
 
     init();

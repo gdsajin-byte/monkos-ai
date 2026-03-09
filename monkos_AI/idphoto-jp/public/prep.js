@@ -23,20 +23,20 @@ let openAccordion = null; // 현재 열린 아코디언: 'clothing' | 'hair' | '
 
 // ─── 라벨 맵 ───
 const LABELS = {
-  format: { passport: '여권/신분증', id: '증명사진' },
-  gender: { f: '여성', m: '남성' },
-  age: { baby: '영유아', child: '어린이', teen: '중고생', adult: '성인' },
-  clothing: { default: '그대로', change: '의상변경', casual: '캐주얼', suit: '정장' },
+  format: { passport: 'パスポート/身分証', id: '証明写真' },
+  gender: { f: '女性', m: '男性' },
+  age: { baby: '乳幼児', child: '子供', teen: '中高生', adult: '大人' },
+  clothing: { default: 'そのまま', change: '衣装変更', casual: 'カジュアル', suit: 'スーツ' },
   clothingColor: {
-    skyblue: '하늘색', pink: '핑크', lemon: '레몬', green: '그린',
-    beige: '베이지', blue: '블루', wine: '와인',
+    skyblue: 'スカイブルー', pink: 'ピンク', lemon: 'レモン', green: 'グリーン',
+    beige: 'ベージュ', blue: 'ブルー', wine: 'ワイン',
   },
-  suitColor: { navy: '네이비', brown: '브라운', gray: '그레이', black: '블랙' },
-  shirtColor: { white: '화이트', lightblue: '연블루', lightpink: '연핑크', lightbeige: '연베이지' },
-  tieColor: { notie: '노타이', navy: '네이비', wine: '와인', black: '블랙' },
-  tiePattern: { solid: '민무늬', stripe: '스트라이프' },
-  hair: { default: '그대로', tidy: '깔끔 정리', updo: '올림머리' },
-  bgColor: { white: '흰색', gray: '회색', blue: '파랑', beige: '베이지' },
+  suitColor: { navy: 'ネイビー', brown: 'ブラウン', gray: 'グレー', black: 'ブラック' },
+  shirtColor: { white: 'ホワイト', lightblue: 'ライトブルー', lightpink: 'ライトピンク', lightbeige: 'ライトベージュ' },
+  tieColor: { notie: 'ノータイ', navy: 'ネイビー', wine: 'ワイン', black: 'ブラック' },
+  tiePattern: { solid: '無地', stripe: 'ストライプ' },
+  hair: { default: 'そのまま', tidy: 'きちんと整える', updo: 'アップスタイル' },
+  bgColor: { white: '白', gray: 'グレー', blue: 'ブルー', beige: 'ベージュ' },
 };
 
 const FORMAT_ICONS = { passport: '🛡️', id: '📋' };
@@ -44,8 +44,8 @@ const GENDER_ICONS = { f: '👩', m: '👨' };
 const AGE_ICONS = { baby: '👶', child: '🧒', teen: '🎒', adult: '🙂' };
 
 const FORMAT_DESC = {
-  passport: '3.5×4.5cm · 흰색 배경 고정',
-  id: '3×4cm 반명함 · 배경 선택 가능',
+  passport: '3.5×4.5cm · 白背景固定',
+  id: '3×4cm 証明写真 · 背景選択可能',
 };
 
 const COLOR_MAP = {
@@ -75,11 +75,11 @@ function showPage(idx) {
   const btnNext = document.getElementById('btnNext');
   if (btnPrev) {
     btnPrev.style.visibility = 'visible';
-    btnPrev.textContent = idx === 0 ? '← 돌아가기' : '이전';
+    btnPrev.textContent = idx === 0 ? '← 戻る' : '前へ';
   }
   if (btnNext) {
     btnNext.style.display = idx === 3 ? 'none' : '';
-    btnNext.textContent = '다음';
+    btnNext.textContent = '次へ';
   }
 }
 
@@ -134,11 +134,11 @@ function renderFormatPage() {
   el.innerHTML = `
     <div class="prep-page-inner">
       <div class="prep-label">STEP 1</div>
-      <p class="prep-desc">용도에 맞는 정확한 증명사진 촬영을 위해<br>규격과 성별, 연령대를 선택해 주세요</p>
-      <h2 class="prep-question">규격을 선택해 주세요</h2>
+      <p class="prep-desc">用途に合った正確な証明写真撮影のため<br>規格と性別、年齢を選択してください</p>
+      <h2 class="prep-question">規格を選択してください</h2>
       <div class="prep-cards prep-cards-col" id="formatCards">
-        ${makeCard('passport', FORMAT_ICONS.passport, '여권 / 신분증', FORMAT_DESC.passport)}
-        ${makeCard('id', FORMAT_ICONS.id, '증명사진', FORMAT_DESC.id)}
+        ${makeCard('passport', FORMAT_ICONS.passport, 'パスポート / 身分証', FORMAT_DESC.passport)}
+        ${makeCard('id', FORMAT_ICONS.id, '証明写真', FORMAT_DESC.id)}
       </div>
     </div>
   `;
@@ -163,12 +163,12 @@ function renderProfilePage() {
   el.innerHTML = `
     <div class="prep-page-inner">
       <div class="prep-label">STEP 2</div>
-      <h2 class="prep-question">성별과 연령을 선택해 주세요</h2>
-      <div class="prep-group-label">성별</div>
+      <h2 class="prep-question">性別と年齢を選択してください</h2>
+      <div class="prep-group-label">性別</div>
       <div class="prep-cards prep-cards-row" id="genderCards">
         ${V5_OPTIONS.gender.map(g => makeCard(g, GENDER_ICONS[g], LABELS.gender[g], '')).join('')}
       </div>
-      <div class="prep-group-label" style="margin-top:24px;">연령</div>
+      <div class="prep-group-label" style="margin-top:24px;">年齢</div>
       <div class="prep-cards prep-cards-row2" id="ageCards">
         ${V5_OPTIONS.age.map(a => makeCard(a, AGE_ICONS[a], LABELS.age[a], '')).join('')}
       </div>
@@ -224,19 +224,19 @@ function renderStylePage() {
 
   let html = `<div class="prep-page-inner">
     <div class="prep-label">STEP 3</div>
-    <h2 class="prep-question">스타일을 선택해 주세요</h2>
+    <h2 class="prep-question">スタイルを選択してください</h2>
     <div class="prep-accordion-list">`;
 
   // 의상 아코디언
-  html += renderAccordionItem('clothing', '👕 의상', getClothingSummary());
+  html += renderAccordionItem('clothing', '👕 衣装', getClothingSummary());
   // 헤어 아코디언 (teen/adult만)
   if (showHair) {
-    html += renderAccordionItem('hair', '💇 헤어', LABELS.hair[store.hair] || '그대로');
+    html += renderAccordionItem('hair', '💇 ヘア', LABELS.hair[store.hair] || 'そのまま');
   }
   // 배경 아코디언
-  html += renderAccordionItem('bg', '🎨 배경', bgLocked
-    ? '흰색 (여권 고정)'
-    : (LABELS.bgColor[store.bgColor] || '흰색'));
+  html += renderAccordionItem('bg', '🎨 背景', bgLocked
+    ? '白（パスポート固定）'
+    : (LABELS.bgColor[store.bgColor] || '白'));
 
   html += `</div></div>`;
   el.innerHTML = html;
@@ -257,12 +257,12 @@ function renderStylePage() {
 
 function getClothingSummary() {
   const c = store.clothing;
-  let txt = LABELS.clothing[c] || '그대로';
+  let txt = LABELS.clothing[c] || 'そのまま';
   if (c === 'change' || c === 'casual') {
     if (store.clothingColor) txt += ' · ' + (LABELS.clothingColor[store.clothingColor] || store.clothingColor);
   }
   if (c === 'suit') {
-    txt += ' · ' + (LABELS.suitColor[store.suitColor] || '네이비');
+    txt += ' · ' + (LABELS.suitColor[store.suitColor] || 'ネイビー');
   }
   return txt;
 }
@@ -318,7 +318,7 @@ function renderColorSuboption() {
   const isChild = ['baby', 'child'].includes(store.age);
   const colors = isChild ? V5_OPTIONS.clothingColor.child : V5_OPTIONS.clothingColor.adult;
 
-  let html = '<div class="prep-sub-label">컬러 선택</div>';
+  let html = '<div class="prep-sub-label">カラー選択</div>';
   html += '<div class="prep-cards prep-cards-grid" id="clothingColorCards">';
   colors.forEach(val => {
     const sel = store.clothingColor === val ? ' selected' : '';
@@ -336,7 +336,7 @@ function renderSuitSuboption() {
   let html = '';
 
   // 수트 컬러
-  html += '<div class="prep-sub-label">수트 컬러</div>';
+  html += '<div class="prep-sub-label">スーツカラー</div>';
   html += '<div class="prep-cards prep-cards-grid" id="suitColorCards">';
   V5_OPTIONS.suitColor.forEach(val => {
     const sel = store.suitColor === val ? ' selected' : '';
@@ -349,7 +349,7 @@ function renderSuitSuboption() {
   html += '</div>';
 
   // 셔츠 컬러
-  html += '<div class="prep-sub-label">셔츠 컬러</div>';
+  html += '<div class="prep-sub-label">シャツカラー</div>';
   html += '<div class="prep-cards prep-cards-grid" id="shirtColorCards">';
   V5_OPTIONS.shirtColor.forEach(val => {
     const sel = store.shirtColor === val ? ' selected' : '';
@@ -362,7 +362,7 @@ function renderSuitSuboption() {
   html += '</div>';
 
   // 타이 컬러
-  html += '<div class="prep-sub-label">넥타이</div>';
+  html += '<div class="prep-sub-label">ネクタイ</div>';
   html += '<div class="prep-cards prep-cards-grid" id="tieColorCards">';
   V5_OPTIONS.tieColor.forEach(val => {
     const sel = store.tieColor === val ? ' selected' : '';
@@ -380,7 +380,7 @@ function renderSuitSuboption() {
 
   // 타이 패턴 (notie가 아닐 때만)
   if (store.tieColor && store.tieColor !== 'notie') {
-    html += '<div class="prep-sub-label">넥타이 무늬</div>';
+    html += '<div class="prep-sub-label">ネクタイ柄</div>';
     html += '<div class="prep-cards prep-cards-row" id="tiePatternCards">';
     V5_OPTIONS.tiePattern.forEach(val => {
       const sel = store.tiePattern === val ? ' selected' : '';
@@ -408,7 +408,7 @@ function renderHairBody() {
 
 function renderBgBody() {
   if (store.format === 'passport') {
-    return '<div class="prep-locked-msg">여권/신분증 배경은 흰색으로 고정됩니다</div>';
+    return '<div class="prep-locked-msg">パスポート/身分証の背景は白に固定されます</div>';
   }
 
   let html = '<div class="prep-cards prep-cards-grid" id="bgColorCards">';
@@ -481,53 +481,53 @@ function renderConfirmPage() {
   const rows = [];
 
   // 규격
-  rows.push(confirmRow(FORMAT_ICONS[store.format] || '📋', '규격', LABELS.format[store.format] || '-', 0));
+  rows.push(confirmRow(FORMAT_ICONS[store.format] || '📋', '規格', LABELS.format[store.format] || '-', 0));
 
   // 성별 + 연령
   const genderAge = `${LABELS.gender[store.gender] || '-'} · ${LABELS.age[store.age] || '-'}`;
-  rows.push(confirmRow(GENDER_ICONS[store.gender] || '👤', '인물', genderAge, 1));
+  rows.push(confirmRow(GENDER_ICONS[store.gender] || '👤', '人物', genderAge, 1));
 
   // 의상
-  let clothingText = LABELS.clothing[store.clothing] || '그대로';
+  let clothingText = LABELS.clothing[store.clothing] || 'そのまま';
   if (store.clothing === 'change' || store.clothing === 'casual') {
     if (store.clothingColor) clothingText += ' · ' + (LABELS.clothingColor[store.clothingColor] || '');
   }
   if (store.clothing === 'suit') {
-    clothingText = `정장 · ${LABELS.suitColor[store.suitColor] || '네이비'}`;
+    clothingText = `スーツ · ${LABELS.suitColor[store.suitColor] || 'ネイビー'}`;
     if (store.tieColor && store.tieColor !== 'notie') {
       clothingText += ` · ${LABELS.tieColor[store.tieColor]} ${LABELS.tiePattern[store.tiePattern] || ''}`;
     }
   }
-  rows.push(confirmRow('👔', '의상', clothingText, 2));
+  rows.push(confirmRow('👔', '衣装', clothingText, 2));
 
   // 헤어 (teen/adult만)
   if (HAIR_VISIBLE_AGES.includes(store.age)) {
-    rows.push(confirmRow('💇', '헤어', LABELS.hair[store.hair] || '그대로', 2));
+    rows.push(confirmRow('💇', 'ヘア', LABELS.hair[store.hair] || 'そのまま', 2));
   }
 
   // 배경
-  const bgText = store.format === 'passport' ? '흰색 (여권 고정)' : (LABELS.bgColor[store.bgColor] || '흰색');
-  rows.push(confirmRow('🎨', '배경', bgText, 2));
+  const bgText = store.format === 'passport' ? '白（パスポート固定）' : (LABELS.bgColor[store.bgColor] || '白');
+  rows.push(confirmRow('🎨', '背景', bgText, 2));
 
   // 코칭 멘트
   let coachingNote = '';
-  if (store.age === 'baby') coachingNote = '아이를 안고 촬영해도 됩니다';
-  else if (store.age === 'child') coachingNote = '정면을 바라보도록 유도해 주세요';
-  else if (store.format === 'passport') coachingNote = '눈썹 · 이마가 보이도록 준비해 주세요';
-  else coachingNote = '좋은 인상의 표정으로 촬영해 주세요';
+  if (store.age === 'baby') coachingNote = 'お子様を抱いて撮影しても大丈夫です';
+  else if (store.age === 'child') coachingNote = '正面を向くように誘導してください';
+  else if (store.format === 'passport') coachingNote = '眉毛・額が見えるようにしてください';
+  else coachingNote = '好印象の表情で撮影してください';
 
   el.innerHTML = `
     <div class="prep-page-inner">
       <div class="prep-label">CONFIRM</div>
-      <h2 class="prep-question">촬영 정보 확인</h2>
+      <h2 class="prep-question">撮影情報確認</h2>
       <div class="prep-summary">
         <div class="prep-summary-list">${rows.join('')}</div>
         <div class="prep-summary-note">${coachingNote}</div>
       </div>
       <button class="prep-start" onclick="startShooting()">
-        촬영 시작하기 <span class="prep-start-arrow">&rarr;</span>
+        撮影を始める <span class="prep-start-arrow">&rarr;</span>
       </button>
-      <button class="prep-reset" onclick="resetAll()">처음부터 다시 선택</button>
+      <button class="prep-reset" onclick="resetAll()">最初から選び直す</button>
     </div>
   `;
 }
@@ -538,7 +538,7 @@ function confirmRow(icon, label, value, pageIdx) {
       <span class="prep-summary-icon">${icon}</span>
       <span class="prep-summary-label">${label}</span>
       <span class="prep-summary-value">${value}</span>
-      <span class="prep-summary-edit">수정</span>
+      <span class="prep-summary-edit">修正</span>
     </div>`;
 }
 
@@ -548,7 +548,7 @@ function startShooting() {
   const btn = document.querySelector('.prep-start');
   if (btn) {
     btn.disabled = true;
-    btn.innerHTML = '<span class="spinner"></span> 준비 중...';
+    btn.innerHTML = '<span class="spinner"></span> 準備中...';
   }
 
   saveSelections();
@@ -603,7 +603,7 @@ async function init() {
     showPage(0);
   }
 
-  Monk.log('v5 퍼널 초기화 완료 (4페이지)');
+  Monk.log('v5ファネル初期化完了（4ページ）');
 }
 
 init();

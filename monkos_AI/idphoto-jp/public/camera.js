@@ -59,7 +59,7 @@ function startCoachingWS() {
   wsCoaching = new WebSocket(wsUrl);
 
   wsCoaching.onopen = () => {
-    Monk.log('코칭 WS 연결');
+    Monk.log('コーチングWS接続');
     wsCoaching.send(JSON.stringify({
       type: 'set-format',
       format: store.format || 'passport',
@@ -84,16 +84,16 @@ function startCoachingWS() {
         }
       }
     } catch (e) {
-      Monk.log('코칭 메시지 파싱 실패: ' + e.message);
+      Monk.log('コーチングメッセージパース失敗: ' + e.message);
     }
   };
 
   wsCoaching.onerror = () => {
-    Monk.log('코칭 WS 에러');
+    Monk.log('コーチングWSエラー');
   };
 
   wsCoaching.onclose = () => {
-    Monk.log('코칭 WS 종료');
+    Monk.log('コーチングWS終了');
     stopFrameLoop();
   };
 }
@@ -196,7 +196,7 @@ function showCountdownOverlay(n) {
   numEl.style.animation = 'countdown-pop 0.4s ease';
 
   if (labelEl) {
-    labelEl.textContent = n === 3 ? '준비되셨습니다, 촬영합니다' : '';
+    labelEl.textContent = n === 3 ? '準備ができました、撮影します' : '';
   }
 
   const faceGuide = document.querySelector('#face-guide');
@@ -212,7 +212,7 @@ function hideCountdownOverlay() {
 document.getElementById('countdown-overlay')?.addEventListener('click', () => {
   if (countdownTimer) {
     cancelCountdown();
-    showCoaching('카운트다운 취소됨. 다시 준비해주세요.', false);
+    showCoaching('カウントダウンキャンセル。もう一度準備してください。', false);
   }
 });
 
@@ -226,7 +226,7 @@ function capturePhoto() {
   // 캡처
   const captured = media.capture();
   if (!captured) {
-    Monk.log('캡처 실패');
+    Monk.log('キャプチャ失敗');
     return;
   }
 
@@ -237,7 +237,7 @@ function capturePhoto() {
   media.offFrame();
   media.stop();
 
-  Monk.log('촬영 완료 → 분석실 이동');
+  Monk.log('撮影完了 → 分析画面へ移動');
 
   // 분석실로 이동
   navigateTo('result.html');
@@ -245,8 +245,8 @@ function capturePhoto() {
 
 // ─── 선택 요약 뱃지 ───
 const FORMAT_LABELS = {
-  passport: '여권사진',
-  id: '증명사진',
+  passport: 'パスポート写真',
+  id: '証明写真',
 };
 
 function renderSelectionSummary() {
@@ -255,10 +255,10 @@ function renderSelectionSummary() {
 
   const labels = [];
   labels.push(FORMAT_LABELS[store.format] || '');
-  if (store.gender === 'm') labels.push('남성');
-  else if (store.gender === 'f') labels.push('여성');
+  if (store.gender === 'm') labels.push('男性');
+  else if (store.gender === 'f') labels.push('女性');
   if (store.age) {
-    const AGE_LABELS = { baby: '영유아', child: '어린이', teen: '청소년', adult: '성인' };
+    const AGE_LABELS = { baby: '乳幼児', child: '子供', teen: '中高生', adult: '大人' };
     labels.push(AGE_LABELS[store.age] || '');
   }
   summaryEl.textContent = labels.filter(Boolean).join(' · ');
@@ -271,7 +271,7 @@ async function init() {
   try {
     await sharedInit();
   } catch (err) {
-    Monk.log('sharedInit 에러: ' + err.message);
+    Monk.log('sharedInitエラー: ' + err.message);
   }
 
   // ── 데스크톱 차단 (카메라가 필요한 이 페이지에서만) ──
@@ -285,7 +285,7 @@ async function init() {
   if (!store.user.id) {
     await new Promise(resolve => {
       GateModule.showLoginRequired(
-        '촬영을 시작하려면 로그인이 필요합니다\n첫 로그인 시 10c를 드려요!',
+        '撮影を開始するにはログインが必要です\n初回ログインで1cプレゼント！',
         resolve  // 로그인 성공 콜백 → resolve → 카메라 init 진행
       );
 
@@ -305,7 +305,7 @@ async function init() {
 
   // ── v5 필수값 체크 (sharedInit에서 이미 11필드 복원됨) ──
   if (!store.format) {
-    Monk.log('선택 데이터 없음 → 준비실로 이동');
+    Monk.log('選択データなし → 準備画面へ移動');
     navigateTo('prep.html');
     return;
   }
@@ -334,10 +334,10 @@ async function init() {
     try {
       await media.start();
       startCoachingLoop();
-      Monk.log('촬영실 초기화 완료');
+      Monk.log('撮影室初期化完了');
     } catch (err) {
       alert(TX.cameraError);
-      Monk.log('카메라 시작 실패: ' + err.message);
+      Monk.log('カメラ起動失敗: ' + err.message);
     }
   });
 }

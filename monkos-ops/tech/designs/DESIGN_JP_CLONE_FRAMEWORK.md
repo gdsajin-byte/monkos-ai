@@ -86,15 +86,17 @@ subject: JP 클론 사전 프레임워크
 | `modules/charge.js` | Toss SDK→Lemon Squeezy SDK, JPY 가격 |
 | `server.js` 코칭 프롬프트 | COACHING_INSTRUCTIONS 한→일 번역, 톤 변경 |
 
-### 분기 B: 번역 (복사 후 텍스트만 일본어로)
-| 파일 | 번역 대상 |
-|------|----------|
-| `index.html` | 마케팅 카피, 가격 표시, 푸터 링크 |
-| `prep.html` + `prep.js` | LABELS 40키, 폼 텍스트 |
-| `camera.html` + `camera.js` | 촬영 안내 UI |
-| `result.html` + `result.js` | 결과 화면 UI |
-| `charge.html` | 결제 UI 텍스트 + JPY 표시 |
-| `thankyou.html` + `thankyou.js` | CS 채널 (카카오→LINE), 완료 메시지 |
+### 분기 B: 현지화 (일본 시장 완전 적응 — 단순 번역 아님)
+> 기계적 번역이 아닌 일본 UX 관습·마케팅 톤·문화적 기대에 맞는 **재작성**
+
+| 파일 | 현지화 대상 |
+|------|------------|
+| `index.html` | 마케팅 카피 재작성, 가격 표시(税込), 일본식 CTA, 푸터 링크 |
+| `prep.html` + `prep.js` | LABELS 40키 — 일본 증명사진 규격명·용어 적용 |
+| `camera.html` + `camera.js` | 촬영 안내 — 일본식 경어·톤 (丁寧語) |
+| `result.html` + `result.js` | 결과 화면 — 일본 UX 패턴 적용 |
+| `charge.html` | 결제 UI — JPY 표시, 일본 결제 관습 반영 |
+| `thankyou.html` + `thankyou.js` | CS 채널 (카카오→LINE), 일본식 완료 안내 |
 
 ### 분기 C: 법적 페이지 (각국 독립, 공유 불가)
 | 파일 | KR 근거법 | JP 근거법 | 비고 |

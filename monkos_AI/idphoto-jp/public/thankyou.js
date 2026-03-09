@@ -40,7 +40,7 @@ let _fullOriginalJpeg = null; // 변환 캐시 (재다운로드 무과금용)
 function displayPhoto() {
   const cropped = loadSessionData('cropped');
   if (!cropped) {
-    Monk.log('크롭 데이터 없음 → 준비실로 이동');
+    Monk.log('クロップデータなし → 準備画面へ移動');
     navigateTo('prep.html');
     return;
   }
@@ -58,7 +58,7 @@ function displayPhoto() {
     if (spec) specNameEl.textContent = spec.name;
   }
 
-  Monk.log('수령처 사진 표시 완료');
+  Monk.log('受取画面 写真表示完了');
 }
 
 // ─── §2-4 다운로드 (갤러리 저장) ───
@@ -72,8 +72,8 @@ async function downloadCropped() {
       const blob = await res.blob();
       const file = new File([blob], `monkos_photo_${Date.now()}.jpg`, { type: 'image/jpeg' });
       if (navigator.canShare({ files: [file] })) {
-        await navigator.share({ files: [file], title: 'MONKOS AI 증명사진' });
-        Monk.log('사진 공유 완료');
+        await navigator.share({ files: [file], title: 'MONKOS AI証明写真' });
+        Monk.log('写真共有完了');
         return;
       }
     } catch (e) {
@@ -85,7 +85,7 @@ async function downloadCropped() {
   a.href = jpegUrl;
   a.download = `monkos_photo_${Date.now()}.jpg`;
   a.click();
-  Monk.log('JPEG 저장 완료');
+  Monk.log('JPEG保存完了');
 }
 
 // ─── §2-5 전후비교 표시 + 저장 ───
@@ -118,8 +118,8 @@ async function saveCompare(compareData) {
       const blob = await res.blob();
       const file = new File([blob], `monkos_compare_${Date.now()}.jpg`, { type: 'image/jpeg' });
       if (navigator.canShare({ files: [file] })) {
-        await navigator.share({ files: [file], title: 'MONKOS AI 전후비교' });
-        Monk.log('전후비교 공유 완료');
+        await navigator.share({ files: [file], title: 'MONKOS AI ビフォーアフター' });
+        Monk.log('ビフォーアフター共有完了');
         return;
       }
     } catch (e) {
@@ -131,7 +131,7 @@ async function saveCompare(compareData) {
   a.href = jpegUrl;
   a.download = `monkos_compare_${Date.now()}.jpg`;
   a.click();
-  Monk.log('전후비교 저장 완료');
+  Monk.log('ビフォーアフター保存完了');
 }
 
 // ─── §2-8 풀샷 원본 받기 ───
@@ -179,7 +179,7 @@ async function downloadFullOriginal() {
         sessionStorage.setItem('monkos_pending_action', 'full_original');
         showChargeModal();
       } else {
-        Monk.log('풀샷 원본 에러: ' + (err.error || err.message));
+        Monk.log('フルショットオリジナルエラー: ' + (err.error || err.message));
       }
       return;
     }
@@ -198,11 +198,11 @@ async function downloadFullOriginal() {
   // 버튼 상태 변경
   const titleEl = document.getElementById('ty-fullshot-title');
   const priceEl = document.getElementById('ty-fullshot-price');
-  if (titleEl) titleEl.textContent = '📸 풀샷 다시 저장하기';
-  if (priceEl) priceEl.textContent = '무료';
+  if (titleEl) titleEl.textContent = '📸 フルショット再保存';
+  if (priceEl) priceEl.textContent = '無料';
 
-  showToast('풀샷 원본 다운로드 완료');
-  Monk.log('풀샷 원본 다운로드 완료 (10c)');
+  showToast('フルショットオリジナルダウンロード完了');
+  Monk.log('フルショットオリジナルダウンロード完了 (10c)');
 }
 
 function redownloadFull() {
@@ -213,7 +213,7 @@ function redownloadFull() {
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
-  Monk.log('풀샷 재다운로드');
+  Monk.log('フルショット再ダウンロード');
 }
 
 // ─── §2-10 SNS 이벤트 ───
@@ -233,14 +233,14 @@ function setupSnsEvent() {
       const data = await res.json();
       if (data.success) {
         store.user = { ...store.user, credits: data.credits ?? store.user.credits };
-        showToast('SNS 인증 이벤트 신청 완료 · +100c');
+        showToast('SNS認証イベント申請完了 · +100c');
         btn.disabled = true;
-        btn.textContent = '✅ 이벤트 완료';
+        btn.textContent = '✅ イベント完了';
       } else {
-        alert(data.error || '이미 참여한 이벤트입니다.');
+        alert(data.error || 'すでに参加済みのイベントです。');
       }
     } catch (err) {
-      alert('이벤트 처리 중 오류가 발생했습니다.');
+      alert('イベント処理中にエラーが発生しました。');
     }
   });
 }
@@ -303,7 +303,7 @@ async function init() {
     sessionStorage.removeItem('monkos_pending_action');
   }
 
-  Monk.log('수령처 v5 초기화 완료');
+  Monk.log('受取画面 v5 初期化完了');
 }
 
 init();

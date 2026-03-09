@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
@@ -10,11 +10,11 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>MONKOS AI 증명사진 — 완료</title>
+    <title>MONKOS AI証明写真 — 完了</title>
 
     <!-- Open Graph -->
-    <meta property="og:title" content="MONKOS AI 증명사진">
-    <meta property="og:description" content="AI 코칭과 함께 완벽한 증명사진을 촬영하세요">
+    <meta property="og:title" content="MONKOS AI証明写真">
+    <meta property="og:description" content="AIコーチングで完璧な証明写真を撮影しましょう">
     <meta property="og:type" content="website">
     <meta property="og:image" content="https://monkos.ai/og-image.png">
 
@@ -26,7 +26,7 @@
     <!-- 폰트 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@700&display=swap" rel="stylesheet">
 
     <!-- 스타일시트 -->
@@ -349,15 +349,15 @@
 <body>
     <!-- 인앱 브라우저 안내 배너 -->
     <div id="inapp-banner" data-show="inappBrowser" style="display:none; background:#ff6b35; color:#fff; text-align:center; padding:10px 16px; font-size:13px; font-weight:600; line-height:1.4; position:fixed; top:0; left:0; right:0; z-index:9999;">
-        ⚠️ Google 로그인이 필요합니다. <strong>Chrome/Safari</strong>에서 열어주세요.
-        <button onclick="openExternal()" style="background:#fff; color:#ff6b35; border:none; padding:4px 12px; border-radius:12px; font-size:12px; font-weight:700; margin-left:8px; cursor:pointer;">열기</button>
+        ⚠️ Googleログインが必要です。<strong>Chrome/Safari</strong>で開いてください。
+        <button onclick="openExternal()" style="background:#fff; color:#ff6b35; border:none; padding:4px 12px; border-radius:12px; font-size:12px; font-weight:700; margin-left:8px; cursor:pointer;">開く</button>
     </div>
 
     <!-- 헤더 -->
     <div id="header">
         <div>
-            <h1><span class="brand">MONKOS</span> <span>AI 증명사진</span></h1>
-            <span id="step-label">완료</span>
+            <h1><span class="brand">MONKOS</span> <span>AI証明写真</span></h1>
+            <span id="step-label">完了</span>
         </div>
         <div style="display:flex; align-items:center; gap:8px;">
             <div class="header-balance" id="creditBadge" data-show="user.id">
@@ -384,29 +384,29 @@
             <!-- §2-2 셀레브레이션 -->
             <div class="ty-celebration">
                 <div class="ty-celebration-emoji">🎉</div>
-                <div class="ty-celebration-title">증명사진이 완성되었습니다!</div>
-                <div class="ty-celebration-sub">아래에서 다운로드해 주세요</div>
+                <div class="ty-celebration-title">証明写真が完成しました！</div>
+                <div class="ty-celebration-sub">下からダウンロードしてください</div>
             </div>
 
             <!-- §2-3 완성본 이미지 -->
             <div class="ty-photo-card">
                 <div class="ty-photo-frame">
-                    <img id="ty-photo" src="" alt="증명사진">
+                    <img id="ty-photo" src="" alt="証明写真">
                 </div>
                 <div class="ty-photo-spec" id="ty-spec-name"></div>
             </div>
 
             <!-- §2-4 다운로드 버튼 -->
-            <button class="ty-download-btn" id="btn-ty-download">📥 다운로드</button>
+            <button class="ty-download-btn" id="btn-ty-download">📥 ダウンロード</button>
 
             <!-- §2-5 전후비교 저장 -->
             <div class="ty-compare-card" id="ty-compare-section" style="display:none;">
-                <img class="ty-compare-thumb" id="ty-compare-thumb" src="" alt="전후비교">
+                <img class="ty-compare-thumb" id="ty-compare-thumb" src="" alt="ビフォーアフター">
                 <div class="ty-compare-info">
-                    <div class="ty-compare-title">📸 전후 비교 저장</div>
-                    <div class="ty-compare-sub">갤러리에 저장 · 무료</div>
+                    <div class="ty-compare-title">📸 ビフォーアフター保存</div>
+                    <div class="ty-compare-sub">ギャラリーに保存 · 無料</div>
                 </div>
-                <button class="ty-compare-save-btn" id="btn-ty-compare-save">저장</button>
+                <button class="ty-compare-save-btn" id="btn-ty-compare-save">保存</button>
             </div>
 
             <!-- §2-6 구분선 -->
@@ -414,15 +414,15 @@
 
             <!-- §2-7 크레딧 잔고 (로그인 시만) -->
             <div class="ty-credit-row" id="ty-credit-section" data-show="user.id" style="display:none;">
-                <span class="ty-credit-label">내 크레딧</span>
+                <span class="ty-credit-label">マイクレジット</span>
                 <span class="ty-credit-value"><span data-bind="user.credits">0</span>c</span>
             </div>
 
             <!-- §2-8 풀샷 원본 받기 (로그인 + _mo_p 있을 때만) -->
             <div class="ty-fullshot-card" id="ty-fullshot-section" style="display:none;">
                 <div class="ty-fullshot-info">
-                    <div class="ty-fullshot-title" id="ty-fullshot-title">📸 풀샷 원본 받기</div>
-                    <div class="ty-fullshot-sub">크롭되지 않은 풀 원본 사진</div>
+                    <div class="ty-fullshot-title" id="ty-fullshot-title">📸 フルショットオリジナル</div>
+                    <div class="ty-fullshot-sub">クロップされていないフルオリジナル写真</div>
                 </div>
                 <div class="ty-fullshot-price" id="ty-fullshot-price">10c</div>
             </div>
@@ -430,34 +430,34 @@
             <!-- §2-9 인화 서비스·CS -->
             <a class="ty-cs-card" href="https://t.me/monkos_support_bot" target="_blank" rel="noopener">
                 <div class="ty-cs-info">
-                    <div class="ty-cs-title">🖨️ 인화 서비스 · CS</div>
-                    <div class="ty-cs-sub">몽크사진관 공식 채널</div>
+                    <div class="ty-cs-title">🖨️ プリントサービス · CS</div>
+                    <div class="ty-cs-sub">MONKOS公式チャンネル</div>
                 </div>
-                <span class="ty-cs-arrow">Telegram →</span>
+                <span class="ty-cs-arrow">お問い合わせ →</span>
             </a>
 
             <!-- §2-10 SNS 인증 이벤트 (로그인 시만) -->
             <div class="ty-event-card" id="ty-event-section" data-show="user.id" style="display:none;">
                 <div class="ty-event-header">
-                    <span class="ty-event-title">🎉 SNS 인증 이벤트</span>
+                    <span class="ty-event-title">🎉 SNS認証イベント</span>
                     <span class="ty-event-badge">100c</span>
                 </div>
-                <div class="ty-event-desc">전후 비교를 SNS에 올리고 인증하면</div>
-                <button class="ty-event-btn" id="btn-ty-sns-event">📱 텔레그램으로 인증하고 100c 받기</button>
+                <div class="ty-event-desc">ビフォーアフターをSNSに投稿して認証すると</div>
+                <button class="ty-event-btn" id="btn-ty-sns-event">📱 SNS認証で100cゲット</button>
             </div>
 
             <!-- §2-11 발급 보장 -->
             <div class="ty-guarantee-card">
-                <div class="ty-guarantee-title">🛡️ 발급 보장</div>
-                <div class="ty-guarantee-desc">반려 시 100c를 지급해 드립니다</div>
-                <a class="ty-guarantee-link" href="https://t.me/monkos_support_bot" target="_blank" rel="noopener">반려되셨다면 여기를 눌러주세요 →</a>
+                <div class="ty-guarantee-title">🛡️ 発行保証</div>
+                <div class="ty-guarantee-desc">不合格時100cを付与いたします</div>
+                <a class="ty-guarantee-link" href="https://t.me/monkos_support_bot" target="_blank" rel="noopener">不合格の場合はこちらをタップしてください →</a>
             </div>
 
             <!-- 크레딧 정책 안내 -->
-            <a href="/credits-policy.html" style="display:block; margin:0 16px; padding:12px; background:transparent; border:1px solid #1E293B; border-radius:12px; color:#94A3B8; font-size:13px; font-weight:600; text-align:center; text-decoration:none; transition:border-color 0.2s, color 0.2s;" onmouseover="this.style.borderColor='#8B5CF6';this.style.color='#F1F5F9'" onmouseout="this.style.borderColor='#1E293B';this.style.color='#94A3B8'">💳 크레딧 사용 안내</a>
+            <a href="/credits-policy.html" style="display:block; margin:0 16px; padding:12px; background:transparent; border:1px solid #1E293B; border-radius:12px; color:#94A3B8; font-size:13px; font-weight:600; text-align:center; text-decoration:none; transition:border-color 0.2s, color 0.2s;" onmouseover="this.style.borderColor='#8B5CF6';this.style.color='#F1F5F9'" onmouseout="this.style.borderColor='#1E293B';this.style.color='#94A3B8'">💳 クレジット利用案内</a>
 
             <!-- §2-12 홈으로 돌아가기 -->
-            <button class="ty-home-btn" id="btn-ty-home">🏠 홈으로 돌아가기</button>
+            <button class="ty-home-btn" id="btn-ty-home">🏠 ホームに戻る</button>
 
             <div class="ty-bottom-spacer"></div>
         </div>

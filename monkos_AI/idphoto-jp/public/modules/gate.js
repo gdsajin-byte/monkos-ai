@@ -13,8 +13,6 @@ const GATE_CSS = `
 .gate-login-card{background:#fff;border-radius:16px;padding:28px 20px;width:90%;max-width:340px;text-align:center}
 .gate-login-msg{font-size:15px;color:#333;margin-bottom:20px;white-space:pre-line}
 .gate-btn{display:block;width:100%;padding:14px;border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;margin-bottom:10px}
-.gate-btn-kakao{background:#FEE500;color:#000}
-.gate-btn-kakao:hover{background:#FDD835}
 .gate-btn:disabled{opacity:.5;cursor:not-allowed}
 `;
 
@@ -52,41 +50,15 @@ function _showLoginRequired(message, onSuccess) {
   overlay.innerHTML = `
     <div class="gate-login-card">
       <p class="gate-login-msg">${message}</p>
-      <button class="gate-btn gate-btn-google" id="gate-login-google-btn" style="background:#fff;color:#333;border:1px solid #ddd;">Google 로그인</button>
-      <button class="gate-btn gate-btn-kakao" id="gate-login-kakao-btn" style="margin-top:8px;">카카오 로그인</button>
-      <button class="gate-btn gate-btn-line" id="gate-login-line-btn" style="margin-top:8px;background:#06C755;color:#fff;">LINE 로그인</button>
-      <button class="gate-btn" style="margin-top:8px;background:#f5f5f5;color:#333;border:1px solid #ddd;" id="gate-login-close-btn">닫기</button>
+      <button class="gate-btn gate-btn-google" id="gate-login-google-btn" style="background:#fff;color:#333;border:1px solid #ddd;">Googleログイン</button>
+      <button class="gate-btn gate-btn-line" id="gate-login-line-btn" style="margin-top:8px;background:#06C755;color:#fff;">LINEログイン</button>
+      <button class="gate-btn" style="margin-top:8px;background:#f5f5f5;color:#333;border:1px solid #ddd;" id="gate-login-close-btn">閉じる</button>
     </div>
   `;
 
   overlay.querySelector('#gate-login-google-btn').addEventListener('click', () => {
     _closeLoginRequired();
     _startGoogleLoginSimple();
-  });
-  overlay.querySelector('#gate-login-kakao-btn').addEventListener('click', () => {
-    // iOS Safari: window.open MUST happen before DOM removal (user gesture context)
-    const popup = window.open('about:blank', 'kakao-login', 'width=500,height=600');
-    _closeLoginRequired();
-    if (!popup) {
-      window.location.href = `${API.PORTAL_URL}/auth/kakao?redirect_app=${encodeURIComponent(window.location.origin)}`;
-      return;
-    }
-    popup.location.href = `${API.PORTAL_URL}/auth/kakao?popup=1&redirect_app=${encodeURIComponent(window.location.origin)}`;
-    function handler(e) {
-      if (e.origin !== API.PORTAL_URL) return;
-      if (e.data && e.data.type === 'auth-success') {
-        window.removeEventListener('message', handler);
-        const u = e.data.user;
-        store.user = {
-          id: u.id, email: u.email, name: u.name,
-          credits: u.credits ?? 0, avatar: u.picture || '',
-        };
-        Monk.log(`로그인 성공: ${u.email || u.name} (${store.user.credits}c)`);
-        _fireLoginCallback();
-      }
-    }
-    window.addEventListener('message', handler);
-    setTimeout(() => window.removeEventListener('message', handler), 180000);
   });
   overlay.querySelector('#gate-login-line-btn').addEventListener('click', () => {
     // iOS Safari: window.open MUST happen before DOM removal (user gesture context)
@@ -106,7 +78,7 @@ function _showLoginRequired(message, onSuccess) {
           id: u.id, email: u.email, name: u.name,
           credits: u.credits ?? 0, avatar: u.picture || '',
         };
-        Monk.log(`LINE 로그인 성공: ${u.email || u.name} (${store.user.credits}c)`);
+        Monk.log(`LINEログイン成功: ${u.email || u.name} (${store.user.credits}c)`);
         _fireLoginCallback();
       }
     }
@@ -123,35 +95,7 @@ function _closeLoginRequired() {
   if (el) el.remove();
 }
 
-// ─── 카카오 로그인 (Simple) ───
-function _startKakaoLoginSimple() {
-  const popup = window.open(
-    `${API.PORTAL_URL}/auth/kakao?popup=1&redirect_app=${encodeURIComponent(window.location.origin)}`,
-    'kakao-login', 'width=500,height=600'
-  );
-  if (!popup) {
-    window.location.href = `${API.PORTAL_URL}/auth/kakao?redirect_app=${encodeURIComponent(window.location.origin)}`;
-    return;
-  }
-
-  function handler(e) {
-    if (e.origin !== API.PORTAL_URL) return;
-    if (e.data && e.data.type === 'auth-success') {
-      window.removeEventListener('message', handler);
-      const u = e.data.user;
-      store.user = {
-        id: u.id, email: u.email, name: u.name,
-        credits: u.credits ?? 0, avatar: u.picture || '',
-      };
-      Monk.log(`로그인 성공: ${u.email || u.name} (${store.user.credits}c)`);
-      _fireLoginCallback();
-    }
-  }
-  window.addEventListener('message', handler);
-  setTimeout(() => window.removeEventListener('message', handler), 180000);
-}
-
-// ─── LINE 로그인 (Simple) ───
+// ─── LINE ログイン (Simple) ───
 function _startLineLoginSimple() {
   const popup = window.open(
     `${API.PORTAL_URL}/auth/line?popup=1&redirect_app=${encodeURIComponent(window.location.origin)}`,
@@ -171,7 +115,7 @@ function _startLineLoginSimple() {
         id: u.id, email: u.email, name: u.name,
         credits: u.credits ?? 0, avatar: u.picture || '',
       };
-      Monk.log(`LINE 로그인 성공: ${u.email || u.name} (${store.user.credits}c)`);
+      Monk.log(`LINEログイン成功: ${u.email || u.name} (${store.user.credits}c)`);
       _fireLoginCallback();
     }
   }
@@ -179,10 +123,10 @@ function _startLineLoginSimple() {
   setTimeout(() => window.removeEventListener('message', handler), 180000);
 }
 
-// ─── Google 로그인 (GIS) ───
+// ─── Google ログイン (GIS) ───
 function _startGoogleLoginSimple() {
   if (!GOOGLE_CLIENT_ID) {
-    Monk.log('Google Client ID 미설정');
+    Monk.log('Google Client ID未設定');
     return;
   }
 
@@ -205,11 +149,11 @@ function _startGoogleLoginSimple() {
               id: data.user.id, email: data.user.email, name: data.user.name,
               credits: data.user.credits ?? 0, avatar: data.user.picture || '',
             };
-            Monk.log(`Google 로그인 성공: ${data.user.email} (${store.user.credits}c)`);
+            Monk.log(`Googleログイン成功: ${data.user.email} (${store.user.credits}c)`);
             _fireLoginCallback();
           }
         } catch (err) {
-          Monk.log('Google 로그인 에러: ' + err.message);
+          Monk.log('Googleログインエラー: ' + err.message);
         }
       },
     });
@@ -222,7 +166,7 @@ function _startGoogleLoginSimple() {
     const script = document.createElement('script');
     script.src = 'https://accounts.google.com/gsi/client';
     script.onload = () => doLogin();
-    script.onerror = () => Monk.log('Google Identity Services 로드 실패');
+    script.onerror = () => Monk.log('Google Identity Servicesロード失敗');
     document.head.appendChild(script);
   }
 }

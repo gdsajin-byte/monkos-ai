@@ -113,13 +113,13 @@ function _injectDOM() {
     <div class="chat-header">
       <div class="chat-header-dot"></div>
       <div class="chat-header-title">MONKOS AI</div>
-      <button class="chat-close" id="chatCloseBtn" aria-label="닫기">&times;</button>
+      <button class="chat-close" id="chatCloseBtn" aria-label="閉じる">&times;</button>
     </div>
     <div class="chat-messages" id="chatMessages">
-      <div class="chat-msg bot">안녕하세요! MONKOS AI 증명사진 서비스에 대해 궁금한 점을 물어보세요.</div>
+      <div class="chat-msg bot">こんにちは！MONKOS AI証明写真サービスについてお気軽にお問い合わせください。</div>
     </div>
     <div class="chat-input-wrap">
-      <input class="chat-input" id="chatInput" type="text" placeholder="메시지를 입력하세요..." autocomplete="off">
+      <input class="chat-input" id="chatInput" type="text" placeholder="メッセージを入力してください..." autocomplete="off">
       <button class="chat-send" id="chatSendBtn">&#9654;</button>
     </div>
   `;
@@ -182,15 +182,15 @@ async function _sendMessage() {
     const res = await fetch(`${API.PORTAL_URL}/api/chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: text, sessionId: _sessionId, lang: 'ko', channel: 'idphoto-kr' }),
+      body: JSON.stringify({ message: text, sessionId: _sessionId, lang: 'ja', channel: 'idphoto-jp' }),
     });
     const data = await res.json();
     if (typing.parentNode) typing.remove();
-    _addMessage(data.reply || data.message || '죄송합니다. 잠시 후 다시 시도해주세요.', 'bot');
+    _addMessage(data.reply || data.message || '申し訳ございません。しばらくしてからもう一度お試しください。', 'bot');
     if (data.sessionId) _sessionId = data.sessionId;
   } catch {
     if (typing.parentNode) typing.remove();
-    _addMessage('네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.', 'bot');
+    _addMessage('ネットワークエラーが発生しました。しばらくしてからもう一度お試しください。', 'bot');
   }
 
   _isLoading = false;

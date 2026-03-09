@@ -1,17 +1,17 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ja">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>MONKOS AI 증명사진 | AI 코칭으로 완벽한 증명사진</title>
-<meta name="description" content="AI 실시간 코칭으로 완벽한 증명사진을 촬영하세요. 여권, 비자, 이력서, 취업사진 지원. 고품질 AI 증명사진 생성.">
+<title>MONKOS AI証明写真 | AIコーチングで完璧な証明写真</title>
+<meta name="description" content="AIリアルタイムコーチングで完璧な証明写真を撮影。パスポート・ビザ・履歴書・就活写真対応。高品質AI証明写真生成。">
 <meta name="theme-color" content="#0a0a1a">
 
 <!-- OG Tags -->
-<meta property="og:title" content="MONKOS AI 증명사진">
-<meta property="og:description" content="AI 코칭과 함께 완벽한 증명사진을 촬영하세요">
+<meta property="og:title" content="MONKOS AI証明写真">
+<meta property="og:description" content="AIコーチングで完璧な証明写真を撮影しましょう">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://idphoto-kr.monkos.ai">
+<meta property="og:url" content="https://idphoto-jp.monkos.ai">
 <meta property="og:image" content="/og-image.png">
 
 <!-- 파비콘 -->
@@ -22,6 +22,7 @@
 <!-- 폰트 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@700&display=swap" rel="stylesheet">
 
 <!-- Cr 코인 모션 -->
@@ -48,7 +49,7 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Noto Sans JP', -apple-system, 'Hiragino Kaku Gothic ProN', sans-serif;
   background: var(--bg);
   color: var(--text);
   min-height: 100vh;
@@ -462,7 +463,6 @@ footer a { color: var(--accent); text-decoration: none; }
 .provider-badge svg { width: 20px; height: 20px; }
 .provider-badge.google { background: #fff; }
 .provider-badge.line { background: #06C755; }
-.provider-badge.kakao { background: #FEE500; }
 .logout-popover {
   display: none; position: absolute; top: 36px; right: 0;
   background: var(--surface); border: 1px solid var(--border);
@@ -545,10 +545,6 @@ footer a { color: var(--accent); text-decoration: none; }
   background: #fff; color: #333; border-color: #ddd;
 }
 .login-oauth-btn.google:hover { background: #f5f5f5; }
-.login-oauth-btn.kakao {
-  background: #FEE500; color: #3C1E1E; border-color: #FEE500;
-}
-.login-oauth-btn.kakao:hover { background: #FDD835; }
 .login-oauth-btn.line {
   background: #06C755; color: #fff; border-color: #06C755;
 }
@@ -600,7 +596,7 @@ footer a { color: var(--accent); text-decoration: none; }
       <span class="logo-bubble" id="logoBubble">?</span>
     </div>
     <div class="auth-area" id="authArea">
-      <button class="header-login-btn" id="loginBtn" onclick="openLoginModal()">로그인</button>
+      <button class="header-login-btn" id="loginBtn" onclick="openLoginModal()">ログイン</button>
       <div class="header-balance" id="creditBtn" style="display:none;" onclick="location.href='https://monkos.ai/credits?from='+encodeURIComponent(location.href)">
         <div class="header-coin-wrap">
           <div class="header-sparkle"></div>
@@ -615,7 +611,7 @@ footer a { color: var(--accent); text-decoration: none; }
         <span class="balance-amount" id="creditCount">0</span>
         <span class="balance-unit">Cr</span>
       </div>
-      <a href="/credits-policy.html" id="creditInfoBtn" style="display:none; width:22px; height:22px; border-radius:50%; border:1px solid rgba(167,139,250,0.3); background:rgba(167,139,250,0.1); color:#a78bfa; font-size:11px; font-weight:700; text-decoration:none; align-items:center; justify-content:center; flex-shrink:0;" title="크레딧 정책">?</a>
+      <a href="/credits-policy.html" id="creditInfoBtn" style="display:none; width:22px; height:22px; border-radius:50%; border:1px solid rgba(167,139,250,0.3); background:rgba(167,139,250,0.1); color:#a78bfa; font-size:11px; font-weight:700; text-decoration:none; align-items:center; justify-content:center; flex-shrink:0;" title="クレジットポリシー">?</a>
     </div>
   </header>
 
@@ -624,112 +620,112 @@ footer a { color: var(--accent); text-decoration: none; }
     <div class="hero-bg"></div>
     <div class="hero-overlay"></div>
     <div class="hero-content">
-      <div class="hero-badge">20년 경력 사진작가가 직접 개발</div>
-      <h1>사진관 품질의<br><span>AI 증명사진</span></h1>
-      <p class="hero-sub">여권 · 신분증 발급 보장</p>
-      <a class="hero-cta" href="/prep" id="btn-hero-cta">촬영 시작하기 &rarr;</a>
-      <p class="hero-price">1장 완성 <strong>₩9,900</strong> · 첫 로그인 10c 무료</p>
+      <div class="hero-badge">写真家歴20年が自ら開発</div>
+      <h1>写真館クオリティの<br><span>AI証明写真</span></h1>
+      <p class="hero-sub">パスポート・身分証 発行保証</p>
+      <a class="hero-cta" href="/prep" id="btn-hero-cta">今すぐ撮影する &rarr;</a>
+      <p class="hero-price">1枚完成 <strong>¥990(税込)</strong> · 初回ログイン1c無料</p>
     </div>
   </section>
 
-  <!-- 오픈 이벤트 배너 -->
+  <!-- オープンイベントバナー -->
   <div class="event-banner">
-    🎉 오픈 이벤트 — 간편로그인으로 무료 체험!
+    🎉 オープンイベント — 簡単ログインで無料体験！
   </div>
 
-  <!-- 샘플 쇼케이스 -->
+  <!-- サンプルショーケース -->
   <section class="showcase fade-in">
     <div class="section-divider"></div>
-    <h2 class="section-title">스튜디오 수준의 증명사진</h2>
+    <h2 class="section-title">スタジオ品質の証明写真</h2>
     <div class="showcase-track-wrap">
       <div class="showcase-track">
         <!-- 원본 3장 -->
         <div class="showcase-card">
-          <img src="https://storage.googleapis.com/monk-ai-images/ads/20260220_191245_%E1%84%89%E1%85%A9%E1%86%BC%E1%84%92%E1%85%A8%E1%84%80%E1%85%AD%E1%84%83%E1%85%A1%E1%86%B1%E1%84%8B%E1%85%B3%E1%86%AB.jpg" alt="이력서 증명사진" loading="lazy" decoding="async">
+          <img src="https://storage.googleapis.com/monk-ai-images/ads/20260220_191245_%E1%84%89%E1%85%A9%E1%86%BC%E1%84%92%E1%85%A8%E1%84%80%E1%85%AD%E1%84%83%E1%85%A1%E1%86%B1%E1%84%8B%E1%85%B3%E1%86%AB.jpg" alt="履歴書証明写真" loading="lazy" decoding="async">
         </div>
         <div class="showcase-card">
-          <img src="https://storage.googleapis.com/monk-ai-images/ads/20260220_191258_%E1%84%92%E1%85%A1%E1%86%A8%E1%84%89%E1%85%A2%E1%86%BC%E1%84%8C%E1%85%B3%E1%86%BC%E1%84%86%E1%85%A9%E1%84%83%E1%85%A6%E1%86%AF_(2).jpg" alt="학생증 증명사진" loading="lazy" decoding="async">
+          <img src="https://storage.googleapis.com/monk-ai-images/ads/20260220_191258_%E1%84%92%E1%85%A1%E1%86%A8%E1%84%89%E1%85%A2%E1%86%BC%E1%84%8C%E1%85%B3%E1%86%BC%E1%84%86%E1%85%A9%E1%84%83%E1%85%A6%E1%86%AF_(2).jpg" alt="学生証証明写真" loading="lazy" decoding="async">
         </div>
         <div class="showcase-card">
-          <img src="https://storage.googleapis.com/monk-ai-images/ads/20260220_191208_%E1%84%8B%E1%85%A7%E1%84%8C%E1%85%A1%E1%84%8C%E1%85%B3%E1%86%BC%E1%84%86%E1%85%A7%E1%86%BC%E1%84%8E%E1%85%B3%E1%86%A8%E1%84%86%E1%85%A7%E1%86%AB.jpg" alt="컬러 증명사진" loading="lazy" decoding="async">
+          <img src="https://storage.googleapis.com/monk-ai-images/ads/20260220_191208_%E1%84%8B%E1%85%A7%E1%84%8C%E1%85%A1%E1%84%8C%E1%85%B3%E1%86%BC%E1%84%86%E1%85%A7%E1%86%BC%E1%84%8E%E1%85%B3%E1%86%A8%E1%84%86%E1%85%A7%E1%86%AB.jpg" alt="カラー証明写真" loading="lazy" decoding="async">
         </div>
         <!-- 복제 (무한 루프용) -->
         <div class="showcase-card">
-          <img src="https://storage.googleapis.com/monk-ai-images/ads/20260220_191245_%E1%84%89%E1%85%A9%E1%86%BC%E1%84%92%E1%85%A8%E1%84%80%E1%85%AD%E1%84%83%E1%85%A1%E1%86%B1%E1%84%8B%E1%85%B3%E1%86%AB.jpg" alt="이력서 증명사진" loading="lazy" decoding="async">
+          <img src="https://storage.googleapis.com/monk-ai-images/ads/20260220_191245_%E1%84%89%E1%85%A9%E1%86%BC%E1%84%92%E1%85%A8%E1%84%80%E1%85%AD%E1%84%83%E1%85%A1%E1%86%B1%E1%84%8B%E1%85%B3%E1%86%AB.jpg" alt="履歴書証明写真" loading="lazy" decoding="async">
         </div>
         <div class="showcase-card">
-          <img src="https://storage.googleapis.com/monk-ai-images/ads/20260220_191258_%E1%84%92%E1%85%A1%E1%86%A8%E1%84%89%E1%85%A2%E1%86%BC%E1%84%8C%E1%85%B3%E1%86%BC%E1%84%86%E1%85%A9%E1%84%83%E1%85%A6%E1%86%AF_(2).jpg" alt="학생증 증명사진" loading="lazy" decoding="async">
+          <img src="https://storage.googleapis.com/monk-ai-images/ads/20260220_191258_%E1%84%92%E1%85%A1%E1%86%A8%E1%84%89%E1%85%A2%E1%86%BC%E1%84%8C%E1%85%B3%E1%86%BC%E1%84%86%E1%85%A9%E1%84%83%E1%85%A6%E1%86%AF_(2).jpg" alt="学生証証明写真" loading="lazy" decoding="async">
         </div>
         <div class="showcase-card">
-          <img src="https://storage.googleapis.com/monk-ai-images/ads/20260220_191208_%E1%84%8B%E1%85%A7%E1%84%8C%E1%85%A1%E1%84%8C%E1%85%B3%E1%86%BC%E1%84%86%E1%85%A7%E1%86%BC%E1%84%8E%E1%85%B3%E1%86%A8%E1%84%86%E1%85%A7%E1%86%AB.jpg" alt="컬러 증명사진" loading="lazy" decoding="async">
+          <img src="https://storage.googleapis.com/monk-ai-images/ads/20260220_191208_%E1%84%8B%E1%85%A7%E1%84%8C%E1%85%A1%E1%84%8C%E1%85%B3%E1%86%BC%E1%84%86%E1%85%A7%E1%86%BC%E1%84%8E%E1%85%B3%E1%86%A8%E1%84%86%E1%85%A7%E1%86%AB.jpg" alt="カラー証明写真" loading="lazy" decoding="async">
         </div>
       </div>
     </div>
   </section>
 
-  <!-- 기능 소개 -->
+  <!-- 機能紹介 -->
   <section class="features fade-in">
     <div class="section-divider"></div>
-    <h2 class="section-title">이렇게 만들어집니다</h2>
+    <h2 class="section-title">こうして作られます</h2>
     <div class="features-grid">
       <div class="feature-item">
         <div class="feature-icon">
           <svg viewBox="0 0 24 24"><path d="M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0-6 0"/><path d="M5 7h1a2 2 0 0 0 2-2a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1a2 2 0 0 0 2 2h1a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2"/></svg>
         </div>
-        <h4>실시간 셀카</h4>
-        <p>본인 직접 촬영<br>딥페이크 원천차단</p>
+        <h4>リアルタイムセルフィー</h4>
+        <p>ご本人が直接撮影<br>ディープフェイク完全防止</p>
       </div>
       <div class="feature-item">
         <div class="feature-icon">
           <svg viewBox="0 0 24 24"><path d="M9 11l3 3l8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg>
         </div>
-        <h4>AI 촬영 & 검수</h4>
-        <p>AI가 코칭하고<br>결과물까지 검수</p>
+        <h4>AI撮影＆検査</h4>
+        <p>AIがコーチングし<br>仕上がりまで検査</p>
       </div>
       <div class="feature-item">
         <div class="feature-icon">
           <svg viewBox="0 0 24 24"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/><path d="M7 11l5 5l5-5"/><path d="M12 4v12"/></svg>
         </div>
-        <h4>즉시 다운로드</h4>
-        <p>리터칭 즉시<br>고화질 저장</p>
+        <h4>即時ダウンロード</h4>
+        <p>リタッチ即時<br>高画質保存</p>
       </div>
     </div>
   </section>
 
-  <!-- 가격 요약 카드 (v3) -->
+  <!-- 価格サマリーカード (v3) -->
   <section class="pricing fade-in">
     <div class="pricing-card">
-      <h3 class="pricing-title">증명사진 1장 완성</h3>
+      <h3 class="pricing-title">証明写真1枚完成</h3>
       <div class="price-breakdown">
-        <span class="price-chip">리터칭 10c</span>
+        <span class="price-chip">リタッチ 1c</span>
         <span class="price-plus">+</span>
-        <span class="price-chip">다운로드 70c</span>
+        <span class="price-chip">ダウンロード 10c</span>
         <span class="price-eq">=</span>
-        <strong class="price-total-c">80c</strong>
+        <strong class="price-total-c">11c</strong>
       </div>
       <div class="price-amount">
-        <span class="price-strike">₩11,600</span>
-        <span class="price-real">₩9,900</span>
+        <span class="price-strike">¥1,595</span>
+        <span class="price-real">¥990(税込)</span>
       </div>
-      <div class="price-bonus">🎁 +10c 보너스 &nbsp; -₩1,700 절약</div>
-      <a class="pkg-link" href="/charge.html?return=index">패키지 할인 보기 →</a>
+      <div class="price-bonus">🎁 +1cボーナス &nbsp; ¥605おトク</div>
+      <a class="pkg-link" href="/charge.html?return=index">パッケージ割引を見る →</a>
     </div>
   </section>
 
-  <!-- 신뢰 배지 (v3) -->
+  <!-- 信頼バッジ (v3) -->
   <section class="trust-badges fade-in">
     <div class="trust-badge">
       <div class="trust-icon">🛡</div>
       <div class="trust-text">
-        <strong>여권사진 발급 보장</strong>
-        <span>반려 시 100c 지급 · 텔레그램 CS</span>
+        <strong>パスポート写真 発行保証</strong>
+        <span>不合格時100c付与 · LINE CS</span>
       </div>
     </div>
     <div class="trust-badge">
       <div class="trust-icon">🎁</div>
       <div class="trust-text">
-        <strong>첫 로그인 10c 증정</strong>
-        <span>리터칭 1회 무료 체험</span>
+        <strong>初回ログイン1c進呈</strong>
+        <span>リタッチ1回無料体験</span>
       </div>
     </div>
   </section>
@@ -753,35 +749,32 @@ footer a { color: var(--accent); text-decoration: none; }
       <a href="/privacy.html">Privacy Policy</a> &nbsp;|&nbsp;
       <a href="/terms.html">Terms of Service</a> &nbsp;|&nbsp;
       <a href="/refund.html">Refund Policy</a> &nbsp;|&nbsp;
-      <a href="/credits-policy.html">Credit Policy</a>
+      <a href="/credits-policy.html">Credit Policy</a> &nbsp;|&nbsp;
+      <a href="/tokusho.html">特定商取引法</a>
     </p>
     <p>&copy; 2026 <a href="https://monkos.ai">MONKOS.AI</a> &mdash; Evolution of Creative Intelligence</p>
   </footer>
 </div>
 
-<!-- 로그인 모달 -->
+<!-- ログインモーダル -->
 <div class="login-modal" id="loginModal" onclick="if(event.target===this)closeLoginModal()">
   <div class="login-modal-content">
     <button class="login-close" onclick="closeLoginModal()">&times;</button>
-    <h3>로그인</h3>
+    <h3>ログイン</h3>
     <div class="login-btn-group">
       <button class="login-oauth-btn google" onclick="loginGoogle()">
         <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59a14.5 14.5 0 0 1 0-9.18l-7.98-6.19a24.014 24.014 0 0 0 0 21.56l7.98-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-        Google로 로그인
-      </button>
-      <button class="login-oauth-btn kakao" onclick="loginKakao()">
-        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#3C1E1E" d="M12 3C6.48 3 2 6.36 2 10.5c0 2.67 1.74 5.02 4.38 6.39l-1.12 4.11c-.1.37.32.66.64.44l4.84-3.2c.41.04.83.06 1.26.06 5.52 0 10-3.36 10-7.5S17.52 3 12 3z"/></svg>
-        카카오로 로그인
+        Googleでログイン
       </button>
       <button class="login-oauth-btn line" onclick="loginLine()">
         <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#fff" d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
-        LINE으로 로그인
+        LINEでログイン
       </button>
     </div>
   </div>
 </div>
 
-<!-- 토스트 -->
+<!-- トースト -->
 <div class="toast-container" id="toastContainer"></div>
 
 
@@ -816,7 +809,7 @@ function showToast(message, type) {
   }, 3000);
 }
 
-/* === 로그인 모달 === */
+/* === ログインモーダル === */
 function openLoginModal() {
   document.getElementById('loginModal').classList.add('active');
 }
@@ -885,14 +878,14 @@ function loginGoogle() {
   closeLoginModal();
   var clientId = window.MONKOS_GOOGLE_CLIENT_ID;
   if (!clientId) {
-    showToast('설정을 불러오는 중입니다. 잠시 후 다시 시도해주세요.', 'warning');
+    showToast('設定を読み込み中です。しばらくしてからお試しください。', 'warning');
     return;
   }
   if (typeof google === 'undefined' || !google.accounts) {
     loadGISWithRetry().then(function() {
       doGoogleLogin(clientId);
     }).catch(function() {
-      showToast('Google 로그인을 불러올 수 없습니다. 페이지를 새로고침해 주세요.', 'error');
+      showToast('Googleログインを読み込めません。ページを更新してください。', 'error');
     });
   } else {
     doGoogleLogin(clientId);
@@ -924,26 +917,16 @@ function handleGoogleTokenCallback(tokenResponse) {
     if (data.success && data.user) {
       updateAuthUI(data.user);
       if (data.isNewUser) {
-        showToast((data.user.name || '') + '님, MONKOS에 오신 것을 환영합니다!', 'info');
+        showToast((data.user.name || '') + 'さん、MONKOSへようこそ！', 'info');
       }
     }
   })
   .catch(function() {
-    showToast('로그인 중 오류가 발생했습니다.', 'error');
+    showToast('ログイン中にエラーが発生しました。', 'error');
   });
 }
 
-/* === 카카오/LINE OAuth (팝업 + postMessage) === */
-function loginKakao() {
-  closeLoginModal();
-  var popup = window.open(
-    (window.MONKOS_PORTAL_URL || 'https://monkos.ai') + '/auth/kakao?popup=1&redirect_app=' + encodeURIComponent(window.location.origin),
-    'kakao-login', 'width=500,height=600'
-  );
-  if (!popup) { location.href = (window.MONKOS_PORTAL_URL || 'https://monkos.ai') + '/auth/kakao?redirect_app=' + encodeURIComponent(window.location.origin); return; }
-  listenAuthMessage();
-}
-
+/* === LINE OAuth (ポップアップ + postMessage) === */
 function loginLine() {
   closeLoginModal();
   var popup = window.open(
@@ -966,18 +949,18 @@ function listenAuthMessage() {
   setTimeout(function() { window.removeEventListener('message', handler); }, 180000);
 }
 
-/* === 다운로드 게이트 === */
+/* === ダウンロードゲート === */
 function downloadGate() {
   if (!_user || !_user.id) { openLoginModal(); return false; }
   if (!_user.credits || _user.credits < 70) {
-    showToast('크레딧이 부족합니다. 충전 후 다운로드하세요.', 'warning');
+    showToast('クレジットが不足しています。チャージ後にダウンロードしてください。', 'warning');
     setTimeout(function() { location.href = (window.MONKOS_PORTAL_URL || 'https://monkos.ai') + '/credits?from=' + encodeURIComponent(location.href); }, 1500);
     return false;
   }
   return true;
 }
 
-/* === 페이지 초기화 — 쿠키 인증 복원 === */
+/* === ページ初期化 — クッキー認証復元 === */
 (function() {
   var portalUrl = window.MONKOS_PORTAL_URL || 'https://monkos.ai';
   fetch(portalUrl + '/api/auth/verify-cookie', { credentials: 'include' })
@@ -992,13 +975,13 @@ function downloadGate() {
 
 
 </script>
-<!-- 데스크탑 차단 (CTA 클릭 시 표시) -->
+<!-- デスクトップブロッカー (CTAクリック時表示) -->
 <div id="desktop-blocker" style="display:none; position:fixed; inset:0; background:#030508; z-index:9999; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:24px;">
     <div style="font-size:48px; margin-bottom:24px;">📱</div>
-    <h2 style="font-size:22px; font-weight:800; color:#F1F5F9; margin:0 0 12px;">스마트폰에서 이용해 주세요</h2>
-    <p style="font-size:14px; color:#94A3B8; line-height:1.6; margin:0 0 24px;">AI 증명사진은 스마트폰의<br>전면 카메라로 촬영하는 전용 서비스입니다</p>
+    <h2 style="font-size:22px; font-weight:800; color:#F1F5F9; margin:0 0 12px;">スマートフォンでご利用ください</h2>
+    <p style="font-size:14px; color:#94A3B8; line-height:1.6; margin:0 0 24px;">AI証明写真はスマートフォンの<br>フロントカメラで撮影する専用サービスです</p>
     <div style="background:#fff; padding:16px; border-radius:16px; display:inline-block;">
-        <img id="qr-code" src="" alt="QR코드" width="180" height="180">
+        <img id="qr-code" src="" alt="QRコード" width="180" height="180">
     </div>
     <div id="qr-url" style="margin-top:16px; font-size:12px; color:#64748B; background:rgba(255,255,255,0.06); padding:8px 16px; border-radius:8px;"></div>
 </div>
@@ -1010,7 +993,7 @@ window.MONKOS_GOOGLE_CLIENT_ID = GOOGLE_CLIENT_ID;
 window.MONKOS_PORTAL_URL = API.PORTAL_URL;
 initChatbot();
 
-// 데스크톱 QR 게이트
+// デスクトップ QR ゲート
 const cta = document.getElementById('btn-hero-cta');
 if (cta) {
   cta.addEventListener('click', (e) => {
@@ -1018,7 +1001,7 @@ if (cta) {
     if (!isMobile) {
       e.preventDefault();
       const blocker = document.getElementById('desktop-blocker');
-      const mobileUrl = 'https://idphoto-kr.monkos.ai/prep';
+      const mobileUrl = 'https://idphoto-jp.monkos.ai/prep';
       document.getElementById('qr-code').src =
         `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(mobileUrl)}&bgcolor=ffffff&color=000000`;
       document.getElementById('qr-url').textContent = mobileUrl;

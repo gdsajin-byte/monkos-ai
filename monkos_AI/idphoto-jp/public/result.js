@@ -7,7 +7,7 @@
 import {
   store, pipe, Monk, TX, PHOTO_SPECS, CREDIT_COST,
   sharedInit, showCreditModal, saveSessionData, loadSessionData, navigateTo, showChargeModal,
-  buyCreditsKR, TOSS_CLIENT_KEY, API, fetchLatestCredits, closeCreditModal,
+  buyCreditsJP, TOSS_CLIENT_KEY, API, fetchLatestCredits, closeCreditModal,
 } from './shared.js';
 
 import { GateModule } from './modules/gate.js';
@@ -37,9 +37,9 @@ async function loadAdManifest() {
     const res = await fetch(AD_MANIFEST_URL);
     const data = await res.json();
     adImages = data.images || [];
-    Monk.log(`광고 manifest 로드: ${adImages.length}장`);
+    Monk.log(`広告manifest読込: ${adImages.length}枚`);
   } catch (e) {
-    Monk.log('광고 manifest 로드 실패: ' + e.message);
+    Monk.log('広告manifest読込失敗: ' + e.message);
   }
 }
 
@@ -71,7 +71,7 @@ function showAdImage(index) {
   img.style.opacity = '0';
   setTimeout(() => {
     img.onerror = () => {
-      Monk.log('광고 이미지 로드 실패: ' + adImages[index]);
+      Monk.log('広告画像読込失敗: ' + adImages[index]);
       img.style.display = 'none';
     };
     img.onload = () => { img.style.display = ''; };
@@ -121,7 +121,7 @@ function hideGenOverlay() {
 function showOriginal() {
   const captured = loadSessionData('captured');
   if (!captured) {
-    Monk.log('촬영 데이터 없음 → 촬영실로 이동');
+    Monk.log('撮影データなし → 撮影画面へ移動');
     navigateTo('camera.html');
     return;
   }
@@ -139,7 +139,7 @@ function showOriginal() {
   const imgEl = document.querySelector('#photo-original');
   if (imgEl) imgEl.src = captured;
 
-  Monk.log('원본 표시 완료');
+  Monk.log('オリジナル表示完了');
 }
 
 // ─── 재촬영 ───
@@ -152,7 +152,7 @@ function retakePhoto() {
 
   // Step 3 (리터칭 후): 확인 모달
   const ok = confirm(
-    '현재 사진을 삭제하고 다시 촬영하시겠습니까?\n리터칭 비용(10c)은 복구되지 않습니다.'
+    '現在の写真を削除して再撮影しますか？\nリタッチ費用（1c）は返金されません。'
   );
   if (!ok) return;
 
@@ -184,7 +184,7 @@ async function confirmAndGenerate() {
 
   // 로그인 필수 (촬영실 게이트에서 이미 체크되지만 방어용)
   if (!store.user.id) {
-    GateModule.showLoginRequired('리터칭을 진행하려면 로그인이 필요합니다\n첫 로그인 시 10c를 드려요!', () => {
+    GateModule.showLoginRequired('リタッチするにはログインが必要です\n初回ログインで1cプレゼント！', () => {
       confirmAndGenerate();
     });
     return;
@@ -194,25 +194,25 @@ async function confirmAndGenerate() {
 
   // 사전분석
   store.showStep2Actions = false;
-  store.resultTitle = '사진 분석 중...';
-  store.resultSubtitle = 'AI가 촬영본을 검수하고 있습니다';
-  store.statusText = '사전분석 중...';
+  store.resultTitle = '写真分析中...';
+  store.resultSubtitle = 'AIが撮影写真を検査しています';
+  store.statusText = '事前分析中...';
 
   try {
     const preCheck = await pipe.run('precheck', { image: base64 });
-    Monk.log(`사전분석: ${preCheck.score}점 ${preCheck.suitable ? 'OK' : 'NG'}`);
+    Monk.log(`事前分析: ${preCheck.score}点 ${preCheck.suitable ? 'OK' : 'NG'}`);
 
     if (!preCheck.suitable) {
-      store.statusText = `사전분석: ${preCheck.score}점 — ${preCheck.suggestion || '재촬영을 권장합니다'}`;
-      store.resultTitle = '재촬영을 권장합니다';
-      store.resultSubtitle = preCheck.suggestion || '촬영 환경을 개선해 주세요';
+      store.statusText = `事前分析: ${preCheck.score}点 — ${preCheck.suggestion || '再撮影をお勧めします'}`;
+      store.resultTitle = '再撮影をお勧めします';
+      store.resultSubtitle = preCheck.suggestion || '撮影環境を改善してください';
       store.showStep2Actions = true;
       return;
     }
 
-    store.statusText = `사전분석 OK (${preCheck.score}점) → 리터칭 시작`;
+    store.statusText = `事前分析 OK (${preCheck.score}点) → リタッチ開始`;
   } catch (err) {
-    Monk.log('사전분석 스킵: ' + (err.error || err.message));
+    Monk.log('事前分析スキップ: ' + (err.error || err.message));
   }
 
   // ─── 잔고 사전 체크 (시머링 시작 전) ───
@@ -220,11 +220,11 @@ async function confirmAndGenerate() {
     showChargeModal();
     store.showStep2Actions = true;
     store.resultTitle = TX.resultConfirm;
-    store.resultSubtitle = '크레딧이 부족합니다';
+    store.resultSubtitle = 'クレジットが不足しています';
     return;
   }
 
-  // 생성 단계
+  // 生成段階
   store.step = 3;
   store.stepLabel = TX.step3;
 
@@ -251,7 +251,7 @@ async function confirmAndGenerate() {
 
     // 풀 원본은 private 변수에만 보관 (img/store/sessionStorage 노출 금지)
     _fullOriginal = genResult.image;
-    Monk.log('생성 완료');
+    Monk.log('生成完了');
 
     // [QC 비활성화] 프롬프트 예시값 앵무새 문제로 실질적 검수 불가 — 별도 컴포넌트로 분리 후 재설계 예정
     let qcResult = null;
@@ -273,7 +273,7 @@ async function confirmAndGenerate() {
       const cropResult = await media.crop(watermarked, spec);
       croppedWatermark = cropResult.dataUrl;
     } catch (e) {
-      Monk.log('프리뷰 크롭 실패, 풀 워터마크 사용');
+      Monk.log('プレビュークロップ失敗、フルウォーターマーク使用');
     }
 
     // store/sessionStorage에는 크롭 워터마크 버전 저장
@@ -320,10 +320,10 @@ async function confirmAndGenerate() {
       showChargeModal();
       store.showStep2Actions = true;
       store.resultTitle = TX.resultConfirm;
-      store.resultSubtitle = '크레딧이 부족합니다';
+      store.resultSubtitle = 'クレジットが不足しています';
       store.step = 2;
     } else {
-      showGenerateError(err.error || err.message || '리터칭 실패');
+      showGenerateError(err.error || err.message || 'リタッチ失敗');
     }
   }
 }
@@ -344,13 +344,13 @@ function showQCBadge(result) {
 
   if (passed) {
     badge.className = 'qc-badge pass';
-    badge.innerHTML = `<span>AI 검수 완료</span> · 유사도 ${similarity}% · ${result.quality || '양호'}`;
+    badge.innerHTML = `<span>AI検査完了</span> · 類似度 ${similarity}% · ${result.quality || '良好'}`;
   } else if (result.identity === 'ERROR') {
     badge.className = 'qc-badge pending';
-    badge.textContent = 'AI 검수: 분석 실패 (결과에 영향 없음)';
+    badge.textContent = 'AI検査：分析失敗（結果に影響なし）';
   } else {
     badge.className = 'qc-badge fail';
-    badge.innerHTML = `<span>AI 검수 주의</span> · 유사도 ${similarity}% · ${result.note || '재촬영 권장'}`;
+    badge.innerHTML = `<span>AI検査注意</span> · 類似度 ${similarity}% · ${result.note || '再撮影推奨'}`;
   }
 
   Monk.log(`QC 배지: ${passed ? 'PASS' : 'FAIL'} (${similarity}%)`);
@@ -363,7 +363,7 @@ function showGenerateError(error) {
   store.showStep3Actions = false;
   store.showStep2Actions = true;
   store.step = 2;
-  Monk.log('생성 에러: ' + error);
+  Monk.log('生成エラー: ' + error);
 }
 
 // ─── 워터마크 프리뷰 생성 ───
@@ -412,7 +412,7 @@ async function downloadResult() {
 
   // 로그인 필수 (촬영실 게이트에서 이미 체크되지만 방어용)
   if (!store.user.id) {
-    GateModule.showLoginRequired('다운로드하려면 로그인이 필요합니다', () => {
+    GateModule.showLoginRequired('ダウンロードにはログインが必要です', () => {
       downloadResult();
     });
     return;
@@ -468,19 +468,19 @@ async function generateCompareImage() {
     ctx.fillStyle = '#94A3B8';
     ctx.font = '12px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('원본', pad + wA / 2, pad + h + 18);
-    ctx.fillText(PHOTO_SPECS[store.format]?.name || '완성', pad + wA + gap + wB / 2, pad + h + 18);
+    ctx.fillText('オリジナル', pad + wA / 2, pad + h + 18);
+    ctx.fillText(PHOTO_SPECS[store.format]?.name || '完成', pad + wA + gap + wB / 2, pad + h + 18);
 
     // 브랜딩
     ctx.fillStyle = '#8B5CF6';
     ctx.font = 'bold 11px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('✨ MONKOS AI 증명사진  ·  monkos.ai', totalW / 2, totalH - 10);
+    ctx.fillText('✨ MONKOS AI証明写真  ·  monkos.ai', totalW / 2, totalH - 10);
 
     const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
     sessionStorage.setItem('monkos_compare', dataUrl);
   } catch (e) {
-    Monk.log('전후비교 합성 실패: ' + e.message);
+    Monk.log('前後比較合成失敗: ' + e.message);
   }
 }
 
@@ -533,12 +533,12 @@ async function doDownload() {
         try {
           const refund = await pipe.run('creditRefund', { userId: store.user.id, type: 'download' });
           store.user = { ...store.user, credits: refund.credits };
-          Monk.log('다운로드 실패 → 70c 환불 완료');
+          Monk.log('ダウンロード失敗 → 10c返金完了');
         } catch (refundErr) {
-          Monk.log('다운로드 실패 환불 에러: ' + (refundErr.error || refundErr.message));
+          Monk.log('ダウンロード失敗返金エラー: ' + (refundErr.error || refundErr.message));
         }
       }
-      Monk.log('다운로드 에러: ' + (err.error || err.message));
+      Monk.log('ダウンロードエラー: ' + (err.error || err.message));
       const btn = document.querySelector('#btn-download');
       if (btn) btn.disabled = false;
     }
@@ -560,7 +560,7 @@ async function init() {
   try {
     await sharedInit();
   } catch (err) {
-    Monk.log('sharedInit 에러: ' + err.message);
+    Monk.log('sharedInit エラー: ' + err.message);
   }
 
   // 로딩 상태 제거
@@ -575,7 +575,7 @@ async function init() {
   if (pendingOrig) {
     _fullOriginal = pendingOrig;
     sessionStorage.removeItem('_mo_p');
-    Monk.log('원본 이미지 임시 저장소에서 복원');
+    Monk.log('オリジナル画像一時保存から復元');
   }
 
   // 광고 manifest 프리로드
@@ -586,7 +586,7 @@ async function init() {
     const savedGen = sessionStorage.getItem('monkos_generated');
     if (savedGen) {
       store.generated = savedGen;
-      Monk.log('생성 이미지 sessionStorage에서 복원 (워터마크)');
+      Monk.log('生成画像sessionStorageから復元（ウォーターマーク）');
     }
   }
 
@@ -619,7 +619,7 @@ async function init() {
     const btnDownload = document.querySelector('#btn-download');
     if (btnDownload) btnDownload.disabled = false;
 
-    Monk.log('생성 결과 복원 (토스 충전 후 복귀)');
+    Monk.log('生成結果復元（チャージ後復帰）');
 
     // 충전 목적이 다운로드였으면 자동 진행
     const pendingAction = sessionStorage.getItem('monkos_pending_action');
@@ -633,7 +633,7 @@ async function init() {
     showOriginal();
   }
 
-  Monk.log('분석실 초기화 완료');
+  Monk.log('分析室初期化完了');
 }
 
 init();

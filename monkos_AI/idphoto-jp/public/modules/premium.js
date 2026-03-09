@@ -16,13 +16,13 @@ function _buildHTML() {
   div.innerHTML = `
     <div style="position:relative;padding:16px;background:rgba(167,139,250,0.06);border:1px solid rgba(167,139,250,0.15);border-radius:14px;overflow:hidden;">
       <div style="position:absolute;top:8px;right:8px;background:rgba(167,139,250,0.2);color:#a78bfa;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;">Coming Soon</div>
-      <div style="font-size:15px;font-weight:700;color:#c4b5fd;margin-bottom:10px;opacity:0.6;">✨ 프리미엄 옵션</div>
+      <div style="font-size:15px;font-weight:700;color:#c4b5fd;margin-bottom:10px;opacity:0.6;">✨ プレミアムオプション</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;opacity:0.5;">
-        <span style="padding:6px 12px;background:rgba(167,139,250,0.1);border:1px solid rgba(167,139,250,0.2);border-radius:8px;font-size:13px;color:#a78bfa;">정밀 크롭</span>
-        <span style="padding:6px 12px;background:rgba(167,139,250,0.1);border:1px solid rgba(167,139,250,0.2);border-radius:8px;font-size:13px;color:#a78bfa;">배경 변경</span>
-        <span style="padding:6px 12px;background:rgba(167,139,250,0.1);border:1px solid rgba(167,139,250,0.2);border-radius:8px;font-size:13px;color:#a78bfa;">추가 보정</span>
+        <span style="padding:6px 12px;background:rgba(167,139,250,0.1);border:1px solid rgba(167,139,250,0.2);border-radius:8px;font-size:13px;color:#a78bfa;">精密クロップ</span>
+        <span style="padding:6px 12px;background:rgba(167,139,250,0.1);border:1px solid rgba(167,139,250,0.2);border-radius:8px;font-size:13px;color:#a78bfa;">背景変更</span>
+        <span style="padding:6px 12px;background:rgba(167,139,250,0.1);border:1px solid rgba(167,139,250,0.2);border-radius:8px;font-size:13px;color:#a78bfa;">追加補正</span>
       </div>
-      <div style="font-size:13px;color:#8892a8;opacity:0.6;">곧 이용 가능합니다</div>
+      <div style="font-size:13px;color:#8892a8;opacity:0.6;">まもなく利用可能になります</div>
     </div>
   `;
 
@@ -41,7 +41,7 @@ export const PremiumModule = {
 
     _containerEl = _buildHTML();
     _mountEl.appendChild(_containerEl);
-    Monk.log('프리미엄 모듈 마운트 (Coming Soon)');
+    Monk.log('プレミアムモジュールマウント（Coming Soon）');
   },
 
   unmount() {

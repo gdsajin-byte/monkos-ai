@@ -4,7 +4,7 @@
  * 데이터 정본: config.js CHARGE_OPTIONS
  */
 
-import { store, Monk, TOSS_CLIENT_KEY, closeCreditModal, buyCreditsKR, CHARGE_OPTIONS, KRW_PER_CREDIT } from '../shared.js';
+import { store, Monk, TOSS_CLIENT_KEY, closeCreditModal, buyCreditsJP, CHARGE_OPTIONS, JPY_PER_CREDIT } from '../shared.js';
 
 // ─── 소액충전 스테퍼 ───
 const STEP_UNIT = 10;    // credits per step
@@ -52,7 +52,7 @@ function _resetAllCards() {
       : 'linear-gradient(135deg,rgba(167,139,250,0.3),rgba(129,140,248,0.2))';
 
     const totalC = opt.credits + opt.bonus;
-    const strikePrice = totalC * KRW_PER_CREDIT;
+    const strikePrice = totalC * JPY_PER_CREDIT;
     priceBlock.innerHTML =
       '<div style="text-decoration:line-through;color:#666;font-size:0.78rem;">₩' + _fmt(strikePrice) + '</div>' +
       '<div style="color:#f8fafc;font-weight:700;font-size:1.1rem;">₩' + _fmt(opt.price) + '</div>';
@@ -72,7 +72,7 @@ export function renderChargeCards(options) {
   let html = '';
   options.forEach((opt, i) => {
     const totalC = opt.credits + opt.bonus;
-    const strikePrice = totalC * KRW_PER_CREDIT;
+    const strikePrice = totalC * JPY_PER_CREDIT;
     const isBest = opt.best;
 
     if (i === 0) {
@@ -166,7 +166,7 @@ function _buildModal() {
       if (_confirmedIdx === idx) {
         const opt = CHARGE_OPTIONS[idx];
         ChargeModule.close();
-        buyCreditsKR(opt.price, opt.credits + opt.bonus);
+        buyCreditsJP(opt.price, opt.credits + opt.bonus);
       } else {
         _resetAllCards();
         _confirmedIdx = idx;
@@ -185,7 +185,7 @@ function _buildModal() {
     e.stopPropagation();
     if (_confirmedIdx === 4) {
       ChargeModule.close();
-      buyCreditsKR(_stepperQty * STEP_PRICE, _stepperQty * STEP_UNIT);
+      buyCreditsJP(_stepperQty * STEP_PRICE, _stepperQty * STEP_UNIT);
     } else {
       _resetAllCards();
       _confirmedIdx = 4;

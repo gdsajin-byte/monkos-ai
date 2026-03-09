@@ -1,14 +1,13 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ja">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>크레딧 정책 | MONKOS AI 증명사진</title>
-<meta name="description" content="MONKOS 크레딧 사용 안내, 충전 방법, 환불 정책, 거래 기록 보관 규정을 확인하세요.">
-<meta property="og:title" content="크레딧 정책 | MONKOS AI 증명사진">
-<meta property="og:description" content="크레딧 사용 안내, 충전, 환불, 거래 기록 보관 정책">
+<title>クレジットポリシー | MONKOS AI 証明写真</title>
+<meta name="description" content="MONKOS クレジットの使い方、チャージ方法、返金ポリシー、取引記録の保管規定をご確認ください。">
+<meta property="og:title" content="クレジットポリシー | MONKOS AI 証明写真">
+<meta property="og:description" content="クレジットの使い方、チャージ、返金、取引記録の保管ポリシー">
 <meta property="og:type" content="website">
-<meta property="og:image" content="https://monkos.ai/og-image.png">
 <link rel="icon" href="/monkos-icon.svg" type="image/svg+xml">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
@@ -20,7 +19,7 @@
   --green: #22c55e; --amber: #f59e0b;
 }
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Kaku Gothic ProN', 'Segoe UI', sans-serif;
   background: var(--bg); color: var(--text);
   line-height: 1.8; padding: 0 20px;
 }
@@ -40,7 +39,7 @@ td { color: var(--text-dim); }
 .highlight p { margin-bottom: 4px; }
 footer { text-align: center; padding: 40px 0 20px; border-top: 1px solid var(--border); color: var(--text-dim); font-size: 0.8rem; }
 
-/* 앵커 내비게이션 */
+/* 目次 */
 .nav-toc {
   background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
   padding: 16px 20px; margin-bottom: 32px;
@@ -50,31 +49,14 @@ footer { text-align: center; padding: 40px 0 20px; border-top: 1px solid var(--b
 .nav-toc li { font-size: 0.85rem; margin-bottom: 4px; }
 .nav-toc a { font-weight: 500; }
 
-/* 섹션 */
+/* セクション */
 .section { margin-bottom: 40px; scroll-margin-top: 24px; }
 .section h2 {
   font-size: 1.15rem; color: var(--accent); margin-bottom: 16px;
   padding-bottom: 8px; border-bottom: 1px solid var(--border);
 }
 
-/* 가격 카드 */
-.price-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 16px 0; }
-.price-card {
-  background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
-  padding: 14px; text-align: center; position: relative;
-}
-.price-card.best { border-color: var(--amber); }
-.price-card .badge {
-  position: absolute; top: -8px; right: 10px;
-  background: var(--amber); color: #000; font-size: 0.65rem; font-weight: 700;
-  padding: 2px 8px; border-radius: 8px;
-}
-.price-card .credits { font-size: 1.2rem; font-weight: 700; color: #fff; }
-.price-card .bonus { font-size: 0.75rem; color: var(--green); margin: 4px 0; }
-.price-card .price { font-size: 0.9rem; color: var(--accent); font-weight: 600; }
-.price-card .unit { font-size: 0.7rem; color: var(--text-dim); margin-top: 2px; }
-
-/* 크레딧 비용 강조 */
+/* クレジット費用 */
 .cost-row { display: flex; align-items: center; gap: 12px; margin: 8px 0; }
 .cost-label { font-size: 0.9rem; color: var(--text-dim); flex: 1; }
 .cost-badge {
@@ -83,7 +65,7 @@ footer { text-align: center; padding: 40px 0 20px; border-top: 1px solid var(--b
   white-space: nowrap;
 }
 
-/* 경고 박스 */
+/* 情報ボックス */
 .info-box {
   background: rgba(167,139,250,0.08); border: 1px solid rgba(167,139,250,0.2);
   border-radius: 10px; padding: 14px 16px; margin: 12px 0;
@@ -92,213 +74,157 @@ footer { text-align: center; padding: 40px 0 20px; border-top: 1px solid var(--b
 .info-box strong { color: var(--text); }
 
 @media (max-width: 480px) {
-  .price-grid { grid-template-columns: 1fr; }
   h1 { font-size: 1.35rem; }
 }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <a href="/" class="back">&larr; MONKOS AI 증명사진</a>
-  <h1>크레딧 정책</h1>
-  <p class="subtitle">시행일: 2026년 3월 8일</p>
+  <a href="/" class="back">&larr; MONKOS AI 証明写真</a>
+  <h1>クレジットポリシー</h1>
+  <p class="subtitle">施行日: 2026年3月9日</p>
 
-  <!-- 목차 -->
+  <!-- 目次 -->
   <nav class="nav-toc">
-    <p>목차</p>
+    <p>目次</p>
     <ol>
-      <li><a href="#what">크레딧이란?</a></li>
-      <li><a href="#charge">충전 방법</a></li>
-      <li><a href="#usage">사용 내역</a></li>
-      <li><a href="#refund">환불 정책</a></li>
-      <li><a href="#records">거래 기록 보관</a></li>
-      <li><a href="#liability">책임 한계</a></li>
-      <li><a href="#business">사업자 정보</a></li>
+      <li><a href="#what">クレジットとは</a></li>
+      <li><a href="#charge">チャージ方法</a></li>
+      <li><a href="#usage">利用内容</a></li>
+      <li><a href="#refund">返金ポリシー</a></li>
+      <li><a href="#records">取引記録の保管</a></li>
+      <li><a href="#liability">責任の制限</a></li>
+      <li><a href="#legal">法的事項</a></li>
     </ol>
   </nav>
 
-  <!-- 1. 크레딧이란? -->
+  <!-- 1. クレジットとは -->
   <section class="section" id="what">
-    <h2>1. 크레딧이란?</h2>
-    <p>크레딧(Credit, Cr)은 MONKOS AI 증명사진 서비스를 이용하기 위한 <strong>서비스 이용 단위</strong>입니다.</p>
+    <h2>1. クレジットとは</h2>
+    <p>クレジット（Credit, Cr）は、MONKOS AI 証明写真サービスを利用するための<strong>サービス利用単位</strong>です。</p>
     <div class="highlight">
-      <p><strong>1장의 증명사진</strong> = 리터칭(생성) 10c + 다운로드 70c = <strong>총 80c</strong></p>
+      <p><strong>1枚の証明写真</strong> = リタッチ（生成）1c + ダウンロード 10c = <strong>合計 11c</strong></p>
     </div>
     <ul>
-      <li>크레딧 단가: 1c = ₩145 (VAT 포함)</li>
-      <li>크레딧 유효기간: <strong>구매일로부터 1년</strong></li>
-      <li>양도 불가: 다른 사용자에게 양도할 수 없습니다.</li>
-      <li>현금 교환 불가: 크레딧은 현금으로 전환할 수 없습니다.</li>
+      <li>クレジットの有効期間：<strong>購入日から1年間</strong></li>
+      <li>譲渡不可：他のユーザーに譲渡することはできません。</li>
+      <li>換金不可：クレジットを現金に交換することはできません。</li>
     </ul>
   </section>
 
-  <!-- 2. 충전 방법 -->
+  <!-- 2. チャージ方法 -->
   <section class="section" id="charge">
-    <h2>2. 충전 방법</h2>
+    <h2>2. チャージ方法</h2>
 
-    <p><strong>결제 수단</strong>: 토스페이먼츠 (신용카드, 간편결제 — 카카오페이, 토스페이 등)</p>
-    <p>모든 가격은 부가세 포함입니다.</p>
+    <p><strong>決済手段</strong>：Lemon Squeezy社（クレジットカード、PayPal、Apple Pay、Google Pay）</p>
+    <p>すべての価格は税込表示です。各商品の価格はチャージページに表示されます。</p>
 
-    <p style="margin-top:16px; font-weight:600; color:var(--text);">패키지 상품</p>
-    <div class="price-grid">
-      <div class="price-card">
-        <div class="credits">70c</div>
-        <div class="bonus">+10c 보너스</div>
-        <div class="price">₩9,900</div>
-        <div class="unit">₩124/c</div>
-      </div>
-      <div class="price-card">
-        <div class="credits">100c</div>
-        <div class="bonus">+30c 보너스</div>
-        <div class="price">₩12,900</div>
-        <div class="unit">₩99/c</div>
-      </div>
-      <div class="price-card">
-        <div class="credits">300c</div>
-        <div class="bonus">+120c 보너스</div>
-        <div class="price">₩34,900</div>
-        <div class="unit">₩83/c</div>
-      </div>
-      <div class="price-card best">
-        <span class="badge">BEST</span>
-        <div class="credits">500c</div>
-        <div class="bonus">+250c 보너스</div>
-        <div class="price">₩49,900</div>
-        <div class="unit">₩67/c</div>
-      </div>
-    </div>
-
-    <p style="margin-top:16px; font-weight:600; color:var(--text);">소액 충전</p>
+    <p style="margin-top:16px; font-weight:600; color:var(--text);">無料クレジット</p>
     <ul>
-      <li>10c 단위로 충전 가능 (10c ~ 100c)</li>
-      <li>소액 충전 단가: 1c = ₩145</li>
-    </ul>
-
-    <p style="margin-top:16px; font-weight:600; color:var(--text);">무료 크레딧</p>
-    <ul>
-      <li>신규 가입 시 보너스 크레딧이 지급될 수 있습니다.</li>
-      <li>SNS 공유(텔레그램 연동) 시 70c 보너스가 지급됩니다.</li>
-      <li>무료 지급 크레딧은 환불 대상이 아닙니다.</li>
+      <li>新規登録時にボーナスクレジットが付与される場合があります。</li>
+      <li>SNSシェア時に10クレジットのボーナスが付与されます。</li>
+      <li>無料付与されたクレジットは返金の対象外です。</li>
     </ul>
   </section>
 
-  <!-- 3. 사용 내역 -->
+  <!-- 3. 利用内容 -->
   <section class="section" id="usage">
-    <h2>3. 사용 내역</h2>
+    <h2>3. 利用内容</h2>
 
     <div class="cost-row">
-      <span class="cost-label">AI 리터칭(생성) 1회</span>
-      <span class="cost-badge">10c 차감</span>
+      <span class="cost-label">AIリタッチ（生成）1回</span>
+      <span class="cost-badge">1c 消費</span>
     </div>
     <div class="cost-row">
-      <span class="cost-label">다운로드 1회 (규격 크롭 포함)</span>
-      <span class="cost-badge">70c 차감</span>
-    </div>
-    <div class="cost-row">
-      <span class="cost-label">추가 크롭 (다른 규격)</span>
-      <span class="cost-badge">10c 차감</span>
-    </div>
-    <div class="cost-row">
-      <span class="cost-label">원본 전체 다운로드</span>
-      <span class="cost-badge">10c 차감</span>
+      <span class="cost-label">ダウンロード 1回（規格クロップ含む）</span>
+      <span class="cost-badge">10c 消費</span>
     </div>
 
-    <p style="margin-top:20px; font-weight:600; color:var(--text);">자동 복구</p>
+    <p style="margin-top:20px; font-weight:600; color:var(--text);">自動復元</p>
     <div class="info-box">
-      <p><strong>생성 실패 시</strong>: 시스템 오류로 사진 생성에 실패하면, 차감된 10c가 <strong>자동으로 복구</strong>됩니다. 별도 요청이 필요 없습니다.</p>
-      <p><strong>다운로드 실패 시</strong>: 네트워크 오류 등으로 다운로드에 실패하면, 차감된 70c가 <strong>자동으로 복구</strong>됩니다.</p>
+      <p><strong>生成失敗時</strong>：システムエラーで写真生成に失敗した場合、消費された1cが<strong>自動的に復元</strong>されます。別途の依頼は不要です。</p>
+      <p><strong>ダウンロード失敗時</strong>：ネットワークエラー等でダウンロードに失敗した場合、消費された10cが<strong>自動的に復元</strong>されます。</p>
     </div>
 
-    <p style="margin-top:20px; font-weight:600; color:var(--text);">보너스 지급</p>
+    <p style="margin-top:20px; font-weight:600; color:var(--text);">ボーナス付与</p>
     <div class="cost-row">
-      <span class="cost-label">SNS 공유 (텔레그램 연동)</span>
-      <span class="cost-badge" style="color:var(--green); border-color:rgba(34,197,94,0.3); background:rgba(34,197,94,0.1);">+70c 지급</span>
+      <span class="cost-label">SNSシェア</span>
+      <span class="cost-badge" style="color:var(--green); border-color:rgba(34,197,94,0.3); background:rgba(34,197,94,0.1);">+10c 付与</span>
     </div>
   </section>
 
-  <!-- 4. 환불 정책 -->
+  <!-- 4. 返金ポリシー -->
   <section class="section" id="refund">
-    <h2>4. 환불 정책</h2>
+    <h2>4. 返金ポリシー</h2>
 
     <div class="highlight">
-      <p><strong>완전 미사용</strong>: 구매일로부터 7일 이내, 크레딧을 1회도 사용하지 않은 경우 전액 환불</p>
-      <p><strong>사용 후</strong>: 크레딧을 1회라도 사용한 경우 환불 불가 (디지털 콘텐츠 특성)</p>
-      <p><strong>서비스 장애</strong>: 시스템 오류로 인한 크레딧 소진 시 자동 복구</p>
+      <p><strong>完全未使用</strong>：購入後7日以内、クレジットを1回も使用していない場合は全額返金</p>
+      <p><strong>使用後</strong>：クレジットを1回でも使用した場合は返金不可（デジタルコンテンツの特性上）</p>
+      <p><strong>サービス障害</strong>：システムエラーによるクレジット消費は自動復元</p>
     </div>
 
     <table>
-      <tr><th>구분</th><th>조건</th><th>환불</th></tr>
-      <tr><td>구매 후 7일 이내, 완전 미사용</td><td>크레딧 전량 미사용</td><td>전액 환불</td></tr>
-      <tr><td>크레딧 1회 이상 사용</td><td>디지털 콘텐츠 제공 개시</td><td>환불 불가</td></tr>
-      <tr><td>구매 후 7일 초과</td><td>기간 경과</td><td>환불 불가</td></tr>
-      <tr><td>서비스 장애 (생성 실패)</td><td>시스템 오류</td><td>크레딧 자동 복구</td></tr>
-      <tr><td>무료 지급 크레딧</td><td>가입/공유 보너스</td><td>환불 대상 아님</td></tr>
+      <tr><th>区分</th><th>条件</th><th>返金</th></tr>
+      <tr><td>購入後7日以内、完全未使用</td><td>クレジット全量未使用</td><td>全額返金</td></tr>
+      <tr><td>クレジット1回以上使用</td><td>デジタルコンテンツの提供開始</td><td>返金不可</td></tr>
+      <tr><td>購入後7日経過</td><td>期間超過</td><td>返金不可</td></tr>
+      <tr><td>サービス障害（生成失敗）</td><td>システムエラー</td><td>クレジット自動復元</td></tr>
+      <tr><td>無料付与クレジット</td><td>登録/シェアボーナス</td><td>返金対象外</td></tr>
     </table>
 
-    <p>본 환불정책은 「전자상거래 등에서의 소비자보호에 관한 법률」 제17조 제2항 제5호(디지털 콘텐츠 제공 개시 후 청약철회 제한)에 근거합니다.</p>
+    <p>本サービスは通信販売に該当し、特定商取引法上のクーリング・オフは適用されません。上記の返品特約に従います。</p>
 
-    <p style="margin-top:16px; font-weight:600; color:var(--text);">환불 절차</p>
+    <p style="margin-top:16px; font-weight:600; color:var(--text);">返金手続き</p>
     <ul>
-      <li>이메일(<a href="mailto:info@monkos.ai">info@monkos.ai</a>)로 환불 요청</li>
-      <li>요청 시 기재 사항: 가입 이메일, 구매일, 환불 사유</li>
-      <li>확인 후 영업일 기준 3일 이내 처리</li>
-      <li>토스페이먼츠를 통해 원래 결제 수단으로 반환됩니다.</li>
-      <li>결제 수단에 따라 환불 소요 기간이 상이할 수 있습니다 (카드: 3~7일, 간편결제: 즉시~3일)</li>
+      <li>メール（<a href="mailto:info@monkos.ai">info@monkos.ai</a>）にて返金をご依頼ください。</li>
+      <li>ご依頼時の記載事項：登録メールアドレス、購入日、返金理由</li>
+      <li>確認後、営業日3日以内に処理いたします。</li>
+      <li>Lemon Squeezyを通じて元の決済手段に返金されます。</li>
     </ul>
   </section>
 
-  <!-- 5. 거래 기록 보관 -->
+  <!-- 5. 取引記録の保管 -->
   <section class="section" id="records">
-    <h2>5. 거래 기록 보관</h2>
+    <h2>5. 取引記録の保管</h2>
 
-    <p>MONKOS는 「전자상거래 등에서의 소비자보호에 관한 법률」에 따라 거래 기록을 안전하게 보관합니다.</p>
-
-    <table>
-      <tr><th>보관 항목</th><th>보관 기간</th><th>근거</th></tr>
-      <tr><td>대금결제 및 재화 등의 공급에 관한 기록</td><td>5년</td><td>전자상거래법 시행령 제6조 제1항 제3호</td></tr>
-      <tr><td>소비자의 불만 또는 분쟁 처리에 관한 기록</td><td>3년</td><td>전자상거래법 시행령 제6조 제1항 제4호</td></tr>
-      <tr><td>계약 또는 청약철회 등에 관한 기록</td><td>5년</td><td>전자상거래법 시행령 제6조 제1항 제1호</td></tr>
-      <tr><td>표시·광고에 관한 기록</td><td>6개월</td><td>전자상거래법 시행령 제6조 제1항 제5호</td></tr>
-    </table>
+    <p>MONKOSは、特定商取引法その他関連法令に基づき、取引記録を安全に保管いたします。</p>
 
     <div class="info-box">
-      <p><strong>보관 방식</strong>: 암호화된 클라우드 데이터베이스에 안전하게 저장됩니다.</p>
-      <p><strong>열람 요청</strong>: 본인의 거래 기록 열람을 원하시면 <a href="mailto:info@monkos.ai">info@monkos.ai</a>로 요청해 주세요.</p>
+      <p><strong>保管方式</strong>：暗号化されたクラウドデータベースに安全に保管されます。</p>
+      <p><strong>閲覧請求</strong>：ご自身の取引記録の閲覧をご希望の場合は、<a href="mailto:info@monkos.ai">info@monkos.ai</a> までご依頼ください。</p>
     </div>
   </section>
 
-  <!-- 6. 책임 한계 -->
+  <!-- 6. 責任の制限 -->
   <section class="section" id="liability">
-    <h2>6. 책임 한계</h2>
+    <h2>6. 責任の制限</h2>
 
     <ul>
-      <li><strong>관공서 접수</strong>: AI가 생성한 사진의 관공서 접수 여부는 해당 기관의 기준에 따릅니다. MONKOS는 특정 기관의 접수를 보장하지 않습니다.</li>
-      <li><strong>서비스 장애</strong>: 시스템 오류로 인한 크레딧 소진 시 자동 복구됩니다. 천재지변, 시스템 장애 등 불가항력으로 인한 서비스 중단에 대해서는 책임지지 않습니다.</li>
-      <li><strong>디지털 콘텐츠</strong>: 본 서비스는 디지털 콘텐츠를 제공하며, 「전자상거래 등에서의 소비자보호에 관한 법률」 제17조 제2항 제5호에 따라 콘텐츠 제공이 개시된 경우 청약철회가 제한됩니다.</li>
-      <li><strong>크레딧 소멸</strong>: 구매일로부터 1년 경과 시 미사용 크레딧은 소멸됩니다. 탈퇴 시 미사용 크레딧은 소멸되며 환불되지 않습니다.</li>
+      <li><strong>各機関での受理</strong>：AIが生成した写真の各機関（パスポート、ビザ等）での受理は、当該機関の基準に依ります。MONKOSは特定機関での受理を保証するものではありません。</li>
+      <li><strong>サービス障害</strong>：システムエラーによるクレジット消費は自動復元されます。天災、システム障害等の不可抗力による一時的なサービス中断については責任を負いません。</li>
+      <li><strong>クレジットの失効</strong>：購入日から1年経過後、未使用クレジットは失効します。退会時の未使用クレジットは失効し、返金されません。</li>
     </ul>
   </section>
 
-  <!-- 7. 사업자 정보 -->
-  <section class="section" id="business">
-    <h2>7. 사업자 정보</h2>
-    <div class="highlight" translate="no">
-      <p><strong>Business</strong>: MONK STUDIO | <strong>CEO</strong>: JeongKyu Shin</p>
-      <p><strong>Reg. No</strong>: 636-15-00574 | <strong>E-Commerce</strong>: 2026-Gyeonggi.Hanam-0389</p>
-      <p><strong>Address</strong>: B1029, 95 Misagangbyeondong-ro, Hanam-si, Gyeonggi-do, South Korea</p>
-      <p><strong>Email</strong>: <a href="mailto:info@monkos.ai">info@monkos.ai</a> | <strong>Telegram</strong>: <a href="https://t.me/monkos_support_bot">@monkos_support_bot</a></p>
-      <p><strong>Tel</strong>: 031-791-5030</p>
+  <!-- 7. 法的事項 -->
+  <section class="section" id="legal">
+    <h2>7. 法的事項</h2>
+
+    <div class="info-box">
+      <p><strong>資金決済法上の分類</strong>：本サービスのクレジットは、資金決済法上の「自家型前払式支払手段」に該当します。当社は同法の定めに基づき適正に管理・運用しております。</p>
     </div>
+
+    <p>事業者情報の詳細は<a href="/tokusho.html">特定商取引法に基づく表記</a>をご確認ください。</p>
   </section>
 
   <footer>
     <p style="margin-bottom:8px;">
-      <a href="/privacy.html">Privacy Policy</a> &nbsp;|&nbsp;
-      <a href="/terms.html">Terms of Service</a> &nbsp;|&nbsp;
-      <a href="/refund.html">Refund Policy</a> &nbsp;|&nbsp;
-      <a href="/charge.html">Charge Credits</a>
+      <a href="/terms.html">利用規約</a> &nbsp;|&nbsp;
+      <a href="/privacy.html">プライバシーポリシー</a> &nbsp;|&nbsp;
+      <a href="/refund.html">返金ポリシー</a> &nbsp;|&nbsp;
+      <a href="/tokusho.html">特定商取引法に基づく表記</a>
     </p>
-    <p>&copy; 2026 <a href="/">MONKOS AI</a></p>
+    <p>&copy; 2026 <a href="/">MONKOS AI 証明写真</a></p>
   </footer>
 </div>
 </body>
