@@ -1839,48 +1839,61 @@ function renderShopItems() {
       </button>
     `;
   } else {
-    titleEl.textContent = (lang === 'ja') ? 'クレジットショップ' : 'Credit Shop';
+    titleEl.textContent = (lang === 'ja') ? 'クレジットチャージ' : 'Credit Charge';
     labelEl.innerHTML = (lang === 'ja')
       ? `現在: <strong>${credits}</strong>c`
       : `Current: <strong>${credits}</strong>c`;
     closeBtn.textContent = (lang === 'ja') ? '閉じる' : 'Close';
     container.innerHTML = `
-      <button onclick="buyCreditsLS('1297524','$10')" style="${btnStyle}">
-        <span>10 Credits</span><span style="color:var(--accent); font-weight:700;">$10</span>
+      <button onclick="buyCreditsLS('1382367')" style="${btnStyle}">
+        <span>70c <small style="color:var(--text-dim);">(+10 bonus)</small></span><span style="color:var(--accent); font-weight:700;">¥990</span>
       </button>
-      <button onclick="buyCreditsLS('1297532','$25')" style="${bestStyle}">
-        <span>30 Credits</span><span style="color:var(--accent); font-weight:700;">$25 <small style="color:var(--success);">BEST</small></span>
+      <button onclick="buyCreditsLS('1382348')" style="${bestStyle}">
+        <span>100c <small style="color:var(--text-dim);">(+30 bonus)</small></span><span style="color:var(--accent); font-weight:700;">¥1,490 <small style="color:var(--success);">BEST</small></span>
       </button>
-      <button onclick="buyCreditsLS('1297531','$40')" style="${btnStyle}">
-        <span>50 Credits</span><span style="color:var(--accent); font-weight:700;">$40</span>
+      <button onclick="buyCreditsLS('1382362')" style="${btnStyle}">
+        <span>300c <small style="color:var(--text-dim);">(+120 bonus)</small></span><span style="color:var(--accent); font-weight:700;">¥3,990</span>
+      </button>
+      <button onclick="buyCreditsLS('1382436')" style="${btnStyle}">
+        <span>500c <small style="color:var(--text-dim);">(+250 bonus)</small></span><span style="color:var(--accent); font-weight:700;">¥5,990</span>
+      </button>
+      <button onclick="buyCreditsLS('1382355')" style="${btnStyle}">
+        <span>10c</span><span style="color:var(--accent); font-weight:700;">¥150</span>
       </button>
     `;
   }
 }
 
-// Lemon Squeezy 결제 (글로벌) — 토스페이먼츠 전환으로 비활성화
-// async function buyCreditsLS(variantId, amount) {
-//   if (!currentUser?.id) return;
-//   const btn = event.target.closest('button');
-//   btn.disabled = true;
-//   const origText = btn.innerHTML;
-//   btn.textContent = '...';
-//   try {
-//     const res = await fetch('/api/checkout', {
-//       method: 'POST',
-//       headers: { 'Content-Type': 'application/json' },
-//       body: JSON.stringify({ variantId, userId: currentUser.id, email: currentUser.email }),
-//     });
-//     const data = await res.json();
-//     if (data.url) {
-//       window.open(data.url, '_blank');
-//     }
-//   } catch (err) {
-//     console.error('[Checkout] error:', err);
-//   }
-//   btn.disabled = false;
-//   btn.innerHTML = origText;
-// }
+// Lemon Squeezy 결제 (JP)
+async function buyCreditsLS(variantId) {
+  if (!currentUser?.id) {
+    headerLogin();
+    return;
+  }
+  const btn = event.target.closest('button');
+  btn.disabled = true;
+  const origText = btn.innerHTML;
+  btn.textContent = '...';
+  try {
+    const res = await fetch('/api/checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ variantId, userId: currentUser.id, email: currentUser.email }),
+    });
+    const data = await res.json();
+    if (data.url) {
+      window.open(data.url, '_blank');
+    } else {
+      alert((lang === 'ja') ? '決済の準備に失敗しました' : 'Checkout failed');
+    }
+  } catch (err) {
+    console.error('[Checkout] error:', err);
+    alert((lang === 'ja') ? '決済エラーが発生しました' : 'Checkout error');
+  }
+  btn.disabled = false;
+  btn.innerHTML = origText;
+}
 
 // === 토스페이먼츠 결제 (KR 전용) ===
 const TOSS_CLIENT_KEY = ''; // TODO: 토스 계약 완료 후 라이브 키 입력
