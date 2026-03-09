@@ -1,6 +1,6 @@
 /**
- * shared.js — 전 페이지 공통 로직
- * app.js에서 추출: Store, Pipe(REST), 인증, 크레딧, 결제, 유틸리티
+ * shared.js — 全ページ共通ロジック
+ * app.jsから抽出: Store, Pipe(REST), 認証, クレジット, 決済, ユーティリティ
  */
 
 import Monk from './monk.js';
@@ -8,7 +8,7 @@ import {
   API, CREDIT_COST, TOSS_CLIENT_KEY, PHOTO_SPECS, TX, t,
   MAX_CAPTURE_SIZE, COACHING_DISPLAY_MS, FRAME_INTERVAL_MS, CAPTURE_SIZE,
   DPI, mmToPx, GOOGLE_CLIENT_ID, SCHEMA_VERSION,
-  CHARGE_OPTIONS, KRW_PER_CREDIT
+  CHARGE_OPTIONS, JPY_PER_CREDIT
 } from './config.js';
 
 // Re-export for page JS convenience
@@ -16,10 +16,10 @@ export {
   Monk, API, CREDIT_COST, TOSS_CLIENT_KEY, PHOTO_SPECS, TX, t,
   MAX_CAPTURE_SIZE, COACHING_DISPLAY_MS, FRAME_INTERVAL_MS, CAPTURE_SIZE,
   DPI, mmToPx, GOOGLE_CLIENT_ID, SCHEMA_VERSION,
-  CHARGE_OPTIONS, KRW_PER_CREDIT
+  CHARGE_OPTIONS, JPY_PER_CREDIT
 };
 
-// ─── fetch timeout 래퍼 ───
+// ─── fetch timeout ラッパー ───
 function fetchWithTimeout(url, options = {}, timeoutMs = 5000) {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
@@ -27,62 +27,62 @@ function fetchWithTimeout(url, options = {}, timeoutMs = 5000) {
     .finally(() => clearTimeout(timeoutId));
 }
 
-// ─── Store 초기화 ───
+// ─── Store 初期化 ───
 export const store = Monk.store({
-  // 사용자
+  // ユーザー
   user: { id: null, email: null, name: null, credits: 0, avatar: '' },
 
-  // 퍼널 선택 (v5 — SCHEMA_v5_확정.md 기준)
+  // ファネル選択 (v5 — SCHEMA_v5_確定.md 基準)
   format: null,          // "passport" | "id"
   gender: null,          // "f" | "m"
   age: null,             // "baby" | "child" | "teen" | "adult"
   clothing: 'default',   // "default" | "change" | "casual" | "suit"
-  clothingColor: '',     // 조건부
-  suitColor: '',         // 조건부
-  shirtColor: '',        // 조건부
-  tieColor: '',          // 조건부
-  tiePattern: '',        // 조건부
+  clothingColor: '',     // 条件付き
+  suitColor: '',         // 条件付き
+  shirtColor: '',        // 条件付き
+  tieColor: '',          // 条件付き
+  tiePattern: '',        // 条件付き
   hair: 'default',       // "default" | "tidy" | "updo"
   bgColor: 'white',      // "white" | "gray" | "blue" | "beige"
   prepConfirmText: '',
 
-  // 진행 상태
+  // 進行状態
   step: 0,
   stepLabel: TX.stepReady,
 
-  // 이미지 데이터
+  // 画像データ
   captured: null,
   generated: null,
   cropped: null,
 
-  // 코칭
+  // コーチング
   coaching: { text: TX.coachingCheck, ready: false, active: false },
 
-  // 상태 텍스트 (사전분석/생성 진행)
+  // 状態テキスト (事前分析/生成進行)
   statusText: '',
 
-  // 결과 화면
+  // 結果画面
   resultTitle: TX.resultConfirm,
   resultSubtitle: TX.resultConfirmSub,
   showStep2Actions: false,
   showStep3Actions: false,
 
-  // 규격 크롭
+  // 規格クロップ
   specName: '',
   specSize: '',
   specPx: '',
 
-  // 크레딧 모달
+  // クレジットモーダル
   creditModalOpen: false,
-  creditModalTitle: '크레딧이 부족합니다',
-  creditModalDesc: '이 작업을 수행하려면 크레딧이 필요합니다.',
+  creditModalTitle: 'クレジットが不足しています',
+  creditModalDesc: 'この操作にはクレジットが必要です。',
   creditRequired: 10,
   creditLow: false,
 
-  // 워터마크 프리뷰
+  // ウォーターマークプレビュー
   watermarkPreview: null,
 
-  // 기타
+  // その他
   desktopBlocked: false,
   inappBrowser: false,
   downloadComplete: false,
@@ -90,34 +90,34 @@ export const store = Monk.store({
   pageUrl: '',
   qrCodeUrl: '',
 
-  // 포스트 다운로드 (크레딧 게이트 v2)
+  // ポストダウンロード (クレジットゲート v2)
   showMission: false,
   missionConsentDone: false,
 });
 
-// ─── Pipe 설정 (REST only) ───
+// ─── Pipe 設定 (REST only) ───
 export const pipe = Monk.pipe({
   precheck: { type: 'post', path: API.PRECHECK },
   generate: { type: 'post', path: API.GENERATE },
   qc: { type: 'post', path: API.QC },
   creditUse: { type: 'post', path: API.CREDIT_USE },
   creditRefund: { type: 'post', path: API.CREDIT_REFUND },
-  coaching: { type: 'ws', url: '' },  // WebSocket — url은 camera.js에서 동적 생성
+  coaching: { type: 'ws', url: '' },  // WebSocket — urlはcamera.jsで動的生成
 }, {
   baseUrl: '',
   onCreditShort: (err) => showCreditModal(err.required || 10, err.credits || 0, 'generate'),
-  onError: (name, err) => Monk.log(`API 에러[${name}]: ${err.error || err.message}`),
+  onError: (name, err) => Monk.log(`APIエラー[${name}]: ${err.error || err.message}`),
 });
 
-// ─── 크레딧 모달 ───
+// ─── クレジットモーダル ───
 export function showCreditModal(required, current, action) {
   store.creditRequired = required;
   store.creditModalTitle = action === 'download'
-    ? '다운로드에 크레딧이 필요합니다'
-    : '리터칭에 크레딧이 필요합니다';
+    ? 'ダウンロードにクレジットが必要です'
+    : 'リタッチにクレジットが必要です';
   store.creditModalDesc = action === 'download'
-    ? '사진을 다운로드하려면 70 크레딧이 필요합니다.'
-    : '리터칭에 10 크레딧이 필요합니다.';
+    ? '写真のダウンロードには10クレジットが必要です。'
+    : 'リタッチには1クレジットが必要です。';
   store.creditModalOpen = true;
 }
 
@@ -125,25 +125,25 @@ export function closeCreditModal() {
   store.creditModalOpen = false;
 }
 
-// ─── 충전 모달 (v3: 바텀시트) ───
+// ─── チャージモーダル (v3: ボトムシート) ───
 export function showChargeModal() {
   import('./modules/charge.js').then(m => m.ChargeModule.show());
 }
 
-// ─── 결제 (토스) ───
-export async function buyCreditsKR(amount, credits) {
+// ─── 決済 (Round 2: Lemon Squeezy移行予定 — 現状TossPayments) ───
+export async function buyCreditsJP(amount, credits) {
   if (!store.user.id) {
     import('./modules/gate.js').then(m => {
-      m.GateModule.showLoginRequired('크레딧 충전은 로그인이 필요합니다\n첫 로그인 시 10c를 드려요!', () => {
-        buyCreditsKR(amount, credits);
+      m.GateModule.showLoginRequired('クレジットチャージにはログインが必要です\n初回ログインで10cプレゼント！', () => {
+        buyCreditsJP(amount, credits);
       });
     });
     return;
   }
 
-  // 토스 심사 중 — 클라이언트 키 없으면 안내 후 리턴
+  // 決済審査中 — クライアントキーがなければ案内後リターン
   if (!TOSS_CLIENT_KEY) {
-    alert('결제 시스템 준비 중입니다.\n곧 이용 가능합니다!');
+    alert('決済システム準備中です。\nまもなくご利用いただけます！');
     return;
   }
 
@@ -154,10 +154,10 @@ export async function buyCreditsKR(amount, credits) {
   try {
     const tossPayments = TossPayments(TOSS_CLIENT_KEY);
 
-    await tossPayments.requestPayment('카드', {
+    await tossPayments.requestPayment('카드', {  // TossPayments API固定値(Round 2でLemon Squeezy移行)
       amount: amount,
       orderId: orderId,
-      orderName: `MONKOS ${credits} 크레딧`,
+      orderName: `MONKOS ${credits} クレジット`,
       successUrl: `${window.location.origin}${window.location.pathname}?toss=success`,
       failUrl: `${window.location.origin}${window.location.pathname}?toss=fail`,
       customerEmail: store.user.email || undefined,
@@ -165,9 +165,9 @@ export async function buyCreditsKR(amount, credits) {
     });
   } catch (err) {
     if (err.code === 'PAY_PROCESS_CANCELED' || err.code === 'USER_CANCEL') {
-      Monk.log('결제 취소');
+      Monk.log('決済キャンセル');
     } else {
-      alert('결제 오류: ' + (err.message || err.code));
+      alert('決済エラー: ' + (err.message || err.code));
     }
   }
 }
@@ -176,7 +176,7 @@ function _showTossLoading() {
   const el = document.createElement('div');
   el.id = 'toss-loading';
   el.style.cssText = 'position:fixed;inset:0;background:#030508;display:flex;align-items:center;justify-content:center;z-index:9999;';
-  el.innerHTML = '<div style="text-align:center;"><div style="color:#a78bfa;font-size:1.1rem;font-weight:600;">결제 확인 중...</div><div style="color:#8892a8;font-size:0.85rem;margin-top:8px;">잠시만 기다려 주세요</div></div>';
+  el.innerHTML = '<div style="text-align:center;"><div style="color:#a78bfa;font-size:1.1rem;font-weight:600;">決済確認中...</div><div style="color:#8892a8;font-size:0.85rem;margin-top:8px;">しばらくお待ちください</div></div>';
   document.body.appendChild(el);
 }
 
@@ -189,7 +189,7 @@ export async function initFromTossResult() {
   const params = new URLSearchParams(window.location.search);
 
   if (params.get('toss') === 'fail') {
-    const msg = params.get('message') || '결제 실패';
+    const msg = params.get('message') || '決済失敗';
     history.replaceState({}, '', window.location.pathname);
     alert(msg);
     return;
@@ -216,19 +216,19 @@ export async function initFromTossResult() {
       _hideTossLoading();
       if (data.success) {
         store.user = { ...store.user, credits: data.credits };
-        Monk.log(`결제 완료: ${data.credits}c`);
-        alert(`결제가 완료되었습니다!\n현재 크레딧: ${data.credits}c`);
+        Monk.log(`決済完了: ${data.credits}c`);
+        alert(`決済が完了しました！\n現在のクレジット: ${data.credits}c`);
       } else {
-        alert('결제 확인 실패: ' + (data.error || ''));
+        alert('決済確認失敗: ' + (data.error || ''));
       }
     } catch (err) {
       _hideTossLoading();
-      Monk.log('결제 확인 에러: ' + err.message);
+      Monk.log('決済確認エラー: ' + err.message);
     }
   }
 }
 
-// ─── 인증 ───
+// ─── 認証 ───
 export async function initFromUrlToken() {
   const params = new URLSearchParams(location.search);
   const uid = params.get('uid');
@@ -242,11 +242,11 @@ export async function initFromUrlToken() {
     const data = await res.json();
     if (data.success && data.user) {
       history.replaceState(null, '', location.pathname);
-      Monk.log(`토큰 로그인 성공: ${data.user.email}`);
+      Monk.log(`トークンログイン成功: ${data.user.email}`);
       return true;
     }
   } catch (err) {
-    Monk.log('토큰 검증 실패: ' + err.message);
+    Monk.log('トークン検証失敗: ' + err.message);
   }
   return false;
 }
@@ -267,15 +267,15 @@ export async function initCredits() {
           avatar: data.user.picture || '',
         };
         localStorage.removeItem('monkos_free_gen');
-        Monk.log(`쿠키 인증: ${data.user.email} (${data.user.credits}c)`);
+        Monk.log(`Cookie認証: ${data.user.email} (${data.user.credits}c)`);
         return;
       }
     }
   } catch (e) {
-    Monk.log('쿠키 인증 실패');
+    Monk.log('Cookie認証失敗');
   }
   store.user = { id: null, email: null, name: null, credits: 0, avatar: '' };
-  Monk.log('비로그인 상태');
+  Monk.log('未ログイン状態');
 }
 
 export async function fetchLatestCredits() {
@@ -287,21 +287,21 @@ export async function fetchLatestCredits() {
     if (res.ok) {
       const data = await res.json();
       store.user.credits = data.credits ?? store.user.credits;
-      Monk.log(`크레딧 갱신: ${store.user.credits}c`);
+      Monk.log(`クレジット更新: ${store.user.credits}c`);
     }
   } catch (err) {
-    Monk.log('크레딧 조회 실패: ' + err.message);
+    Monk.log('クレジット照会失敗: ' + err.message);
   }
 }
 
-// 탭 복귀 시 크레딧 재조회
+// タブ復帰時クレジット再照会
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible' && store.user.id) {
     fetchLatestCredits();
   }
 });
 
-// ─── 다운로드 게이트 ───
+// ─── ダウンロードゲート ───
 export function downloadGate() {
   if (!store.user.id) {
     return 'login-required';
@@ -313,7 +313,7 @@ export function downloadGate() {
   return 'ok';
 }
 
-// ─── 유틸리티 ───
+// ─── ユーティリティ ───
 export function openExternal() {
   const url = location.href;
   if (/Android/i.test(navigator.userAgent)) {
@@ -325,19 +325,19 @@ export function openExternal() {
 
 export function checkInappBrowser() {
   const ua = navigator.userAgent || '';
-  if (/KAKAOTALK|NAVER|FBAN|FBAV|Instagram|Line\/|Twitter|Snapchat|DaumApps/i.test(ua)) {
+  if (/Line\/|FBAN|FBAV|Instagram|Twitter|Snapchat|Yahoo/i.test(ua)) {
     store.inappBrowser = true;
   }
 }
 
 export function showDesktopBlocker() {
-  const pageUrl = location.href.replace('localhost:8080', 'idphoto-kr.monkos.ai');
+  const pageUrl = location.href.replace('localhost:8080', 'idphoto-jp.monkos.ai');
   store.pageUrl = pageUrl;
   store.qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(pageUrl)}&bgcolor=ffffff&color=000000`;
   store.desktopBlocked = true;
 }
 
-// ─── sessionStorage 헬퍼 ───
+// ─── sessionStorage ヘルパー ───
 export function saveSessionData(key, value) {
   sessionStorage.setItem(`monkos_${key}`, typeof value === 'string' ? value : JSON.stringify(value));
 }
@@ -351,7 +351,7 @@ export function clearSessionImages() {
   sessionStorage.removeItem('monkos_cropped');
 }
 
-// ─── v5 선택값 일괄 저장 ───
+// ─── v5 選択値一括保存 ───
 export function saveSelections() {
   const keys = ['format', 'gender', 'age', 'clothing', 'clothingColor',
     'suitColor', 'shirtColor', 'tieColor', 'tiePattern', 'hair', 'bgColor'];
@@ -365,7 +365,7 @@ export function saveSelections() {
   });
 }
 
-// ─── v5 선택값 초기화 (prep 재진입 시) ───
+// ─── v5 選択値初期化 (prep 再進入時) ───
 export function clearSelections() {
   const keys = ['format', 'gender', 'age', 'clothing', 'clothingColor',
     'suitColor', 'shirtColor', 'tieColor', 'tiePattern', 'hair', 'bgColor'];
@@ -383,13 +383,13 @@ export function clearSelections() {
   store.bgColor = 'white';
 }
 
-// ─── 페이지 이동 (?dev 전파) ───
+// ─── ページ遷移 (?dev 伝播) ───
 export function navigateTo(url) {
   const devMode = new URLSearchParams(location.search).has('dev');
   location.href = devMode ? `${url}?dev` : url;
 }
 
-// ─── 디버그: sessionStorage 상태 출력 ───
+// ─── デバッグ: sessionStorage 状態出力 ───
 export function debugSessionKeys() {
   const keys = Object.keys(sessionStorage).filter(k => k.startsWith('monkos_'));
   const summary = keys.map(k => {
@@ -400,21 +400,21 @@ export function debugSessionKeys() {
   Monk.log(`[DEBUG] sessionStorage (${keys.length}): ${summary}`);
 }
 
-// ─── 공통 초기화 ───
+// ─── 共通初期化 ───
 export async function sharedInit() {
   checkInappBrowser();
   await initFromUrlToken();
   await initCredits();
   await initFromTossResult();
 
-  // v5 구키 정리 가드 (SCHEMA_v5_확정.md §9)
+  // v5 旧キー整理ガード (SCHEMA_v5_確定.md §9)
   if (loadSessionData('schema_version') !== SCHEMA_VERSION) {
     ['monkos_purpose', 'monkos_style', 'monkos_expression',
      'monkos_tie', 'monkos_background'].forEach(k => sessionStorage.removeItem(k));
     saveSessionData('schema_version', SCHEMA_VERSION);
   }
 
-  // v5 선택값 복원
+  // v5 選択値復元
   const restore = (key, fallback) => {
     const v = loadSessionData(key);
     return v !== null ? v : fallback;
@@ -431,14 +431,14 @@ export async function sharedInit() {
   store.hair = restore('hair', 'default');
   store.bgColor = restore('bgColor', 'white');
 
-  // Store 초기값 → DOM 동기화
-  // monk.js Store는 초기값에 대해 DOM 업데이트를 안 하므로
-  // 전체 키를 재할당하여 data-show/data-bind/data-class 동기화
+  // Store 初期値 → DOM 同期
+  // monk.js Storeは初期値に対してDOM更新をしないため
+  // 全キーを再代入してdata-show/data-bind/data-class同期
   for (const key of Object.keys(store)) {
     store[key] = store[key];
   }
 
-  // 헤더 크레딧 → 충전샵 연결
+  // ヘッダークレジット → チャージショップ連結
   const creditBadge = document.getElementById('creditBadge');
   if (creditBadge) {
     creditBadge.style.cursor = 'pointer';
@@ -446,17 +446,17 @@ export async function sharedInit() {
   }
 
   debugSessionKeys();
-  Monk.log('공통 초기화 완료');
+  Monk.log('共通初期化完了');
 }
 
-// ─── Cr 모션 컴포넌트 ───
+// ─── Cr モーションコンポーネント ───
 
 /**
- * showEventCard — ② 이벤트 카드 + 3D Flip 알림
- * @param {string} title  - 카드 제목 (예: '카카오 로그인 완료')
- * @param {string} amount - 금액 표시 (예: '+30 Cr')
- * @param {string} subtitle - 부제 (예: '가입 이벤트')
- * @param {string} tag    - 태그 (예: 'EVENT')
+ * showEventCard — ② イベントカード + 3D Flip 通知
+ * @param {string} title  - カードタイトル (例: 'Googleログイン完了')
+ * @param {string} amount - 金額表示 (例: '+30 Cr')
+ * @param {string} subtitle - サブタイトル (例: '登録イベント')
+ * @param {string} tag    - タグ (例: 'EVENT')
  */
 export function showEventCard(title, amount, subtitle, tag = 'EVENT') {
   let container = document.querySelector('.event-container');
@@ -492,14 +492,14 @@ export function showEventCard(title, amount, subtitle, tag = 'EVENT') {
 }
 
 /**
- * showThankYou — v5: thankyou.html 별도 페이지로 전환됨. 오버레이 제거.
- * export 유지 (다른 파일에서 import하므로)
+ * showThankYou — v5: thankyou.html 別ページに移行。オーバーレイ除去。
+ * export 維持 (他ファイルからimportするため)
  */
 export function showThankYou() {}
 
-// ─── window 노출 (공통 onclick 함수) ───
+// ─── window 公開 (共通 onclick 関数) ───
 Object.assign(window, {
-  buyCreditsKR,
+  buyCreditsJP,
   closeCreditModal,
   showChargeModal,
   openExternal,
