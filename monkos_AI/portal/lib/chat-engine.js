@@ -164,15 +164,6 @@ const CHANNEL_CONFIG = {
     historyMap: null,
     logCollection: null,
   },
-  qc: {
-    systemPrompt: '',
-    temperature: 0.2,
-    maxOutputTokens: 300,
-    stateless: true,
-    historyMap: null,
-    logCollection: 'qc_results',
-    responseMimeType: 'application/json',
-  },
   kakao: {
     systemPrompt: SYSTEM_PROMPT_KR + '\n\n[카카오톡 채널 추가 안내]\n- 이 채널은 카카오톡입니다.\n- 카카오 채널 친구추가 보너스: 40크레딧 (텔레그램과 택1, 1회 한정)\n- 카카오 채널을 통해 이벤트·업데이트 소식을 받을 수 있습니다.',
     temperature: 0.7,
@@ -209,7 +200,7 @@ export async function chatWithMonkos(channel, chatId, userMessage, options = {})
 
   const basePrompt = options.systemPromptOverride || config.systemPrompt;
 
-  // --- stateless (coaching/qc) ---
+  // --- stateless (coaching) ---
   if (config.stateless) {
     const parts = [];
     if (options.image) parts.push({ inlineData: { mimeType: 'image/jpeg', data: options.image } });

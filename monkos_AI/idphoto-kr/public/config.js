@@ -16,7 +16,6 @@ export const API = {
   CREDIT_USE: '/api/credit/use',       // Cloud Run 직접 (CF 프록시 제거)
   CREDIT_REFUND: '/api/credit/refund', // 다운로드 실패 환불
   COACHING: '/api/coaching',            // 같은 서버 (절대URL → 상대경로)
-  QC: '/api/qc',                        // QC 검증 (같은 서버)
 };
 
 // 크레딧 비용

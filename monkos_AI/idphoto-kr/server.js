@@ -313,57 +313,6 @@ function buildPromptV5(body) {
   return `${IDENTITY_PRESERVATION}\n\n[IMAGE-TO-IMAGE TRANSFORM]\n${parts.join('\n')}`;
 }
 
-// === QC 프롬프트 빌더 (CF qc.js 정본 이식) ===
-function buildQCInstruction(gender, age) {
-  const genderText = gender === 'male' ? '남성' : '여성';
-  const ageMap = { child: '유아~12세', teen: '13~18세', adult: '19세 이상' };
-  const ageText = ageMap[age] || '미지정';
-
-  return `2개의 이미지를 비교하고, 2번째 이미지(증명사진)의 품질을 종합 분석해 주세요.
-1번째: 원본 (실제 촬영)
-2번째: AI 생성물 (증명사진)
-사용자 설정: 성별=${genderText}, 연령대=${ageText}
-
-[판정 기준 — 모두 체크 필수]
-1. 동일 인물인가? (얼굴 구조, 눈/코/입 비율)
-2. 유사도 % (0-100)
-3. 아이덴티티 유지 (PASS/FAIL)
-4. 성별 일치: 원본 인물의 외형 성별과 생성물이 일치하는가? (설정과 무관하게 원본 기준 판단)
-5. 연령대 일치: 원본 인물의 외형 나이대와 생성물이 일치하는가? (아이→어른, 어른→아이 변환 감지)
-6. 과도한 보정: 헤어스타일 대폭 변경, 피부 과보정, 얼굴 윤곽 변형, 눈크기 변경 등 부자연스러운 변형이 있는가?
-7. 증명사진 품질 (조명, 배경, 구도)
-8. 2번째 이미지에서 얼굴의 bounding box 좌표 [ymin, xmin, ymax, xmax] (0-1000 정규화)
-
-[FAIL 조건 — 하나라도 해당되면 identity를 FAIL로 판정]
-- 성별 외형이 원본과 다르게 변환됨
-- 연령대가 원본과 크게 달라짐 (10세 이상 차이 추정)
-- 얼굴 윤곽, 눈크기, 코 형태 등이 원본과 다르게 변형됨
-- 헤어스타일이 원본과 완전히 다름 (정돈 수준은 허용)
-- similarity 70% 미만
-
-[응답 형식 — JSON만 출력]
-{
-  "same_person": true,
-  "similarity": 85,
-  "identity": "PASS",
-  "gender_match": true,
-  "age_match": true,
-  "over_retouched": false,
-  "quality": "GOOD",
-  "face_box": [180, 220, 650, 780],
-  "face_ratio": 0.35,
-  "face_center_x": 500,
-  "head_top_margin": 80,
-  "note": "한줄 코멘트"
-}
-
-face_ratio = 얼굴 높이 / 전체 이미지 높이 (0.25~0.45 적합)
-face_center_x = 얼굴 중심 x좌표 (500 근처면 중앙 정렬, ±50 허용)
-head_top_margin = 머리 정수리에서 이미지 상단까지 여백 (40~150 적합)`;
-}
-
-// === QC/사전분석 폴백 모델 (JP 정본 패턴) ===
-const QC_MODELS = ['gemini-3-flash-preview', 'gemini-2.0-flash'];
 
 // === 클라이언트 세션 관리 ===
 const sessions = new Map();
@@ -428,6 +377,9 @@ function extractBase64(base64Input) {
   return base64Input.includes(',') ? base64Input.split(',')[1] : base64Input;
 }
 
+// === 사전분석 폴백 모델 ===
+const PRECHECK_MODELS = ['gemini-3-flash-preview', 'gemini-2.0-flash'];
+
 // === 사전분석 (SPA 호환 — Gemini 2.0 Flash via Vertex AI ADC) ===
 const PRE_CHECK_INSTRUCTION = `이 사진이 증명사진 원본으로 적합한지 분석해 주세요.
 
@@ -457,7 +409,7 @@ suggestion: 사용자에게 보여줄 한줄 한국어 조언`;
 async function runPreCheck(imageBase64) {
   const data = extractBase64(imageBase64);
 
-  for (const model of QC_MODELS) {
+  for (const model of PRECHECK_MODELS) {
     try {
       log(`[사전분석] 모델 시도: ${model}`);
       const response = await ai.models.generateContent({
@@ -485,7 +437,7 @@ async function runPreCheck(imageBase64) {
       return { suitable: true, score: 0, raw: text };
     } catch (err) {
       log(`[사전분석][${model}] 실패: ${err.message} → 폴백`);
-      if (model === QC_MODELS[QC_MODELS.length - 1]) {
+      if (model === PRECHECK_MODELS[PRECHECK_MODELS.length - 1]) {
         return { suitable: true, score: 0, note: `분석 실패: ${err.message}` };
       }
     }
@@ -519,7 +471,6 @@ app.get('/health', (req, res) => {
     auth: 'Hybrid (ADC + API Key)',
     geminiLive: 'ready (ADC)',
     imagen: GEMINI_API_KEY ? 'active (API Key)' : 'NO API KEY',
-    qc: 'active (gemini-3-flash-preview → 2.0-flash 폴백)',
     preCheck: 'active (gemini-3-flash-preview → 2.0-flash 폴백)',
   });
 });
@@ -529,7 +480,7 @@ app.get('/api/info', (req, res) => {
   res.json({
     service: 'MONKOS AI 증명사진',
     domain: 'idphoto-kr.monkos.ai',
-    features: ['AI 코칭 (WS)', 'AI 사전분석', 'AI 증명사진 생성', 'AI QC 검증'],
+    features: ['AI 코칭 (WS)', 'AI 사전분석', 'AI 증명사진 생성'],
     styles: Object.keys(STYLE_PROMPTS),
   });
 });
@@ -641,55 +592,6 @@ app.post('/api/idgen', async (req, res) => {
   }
 });
 
-// QC 검증 — MPA용 (Vertex AI ADC, 폴백 모델)
-app.post('/api/qc', async (req, res) => {
-  try {
-    const { original, generated, gender = 'male', age = 'adult' } = req.body;
-    if (!original || !generated) {
-      return res.status(400).json({ error: '원본과 생성 이미지 모두 필요합니다' });
-    }
-
-    const origBase64 = original.includes(',') ? original.split(',')[1] : original;
-    const genBase64 = generated.includes(',') ? generated.split(',')[1] : generated;
-
-    const instruction = buildQCInstruction(gender, age);
-
-    for (const model of QC_MODELS) {
-      try {
-        log(`[QC] 모델 시도: ${model} (gender=${gender}, age=${age})`);
-        const response = await ai.models.generateContent({
-          model,
-          contents: [{ role: 'user', parts: [
-            { inlineData: { mimeType: 'image/png', data: origBase64 } },
-            { inlineData: { mimeType: 'image/png', data: genBase64 } },
-            { text: instruction },
-          ]}],
-          config: {
-            responseMimeType: 'application/json',
-            temperature: 0.3,
-          },
-        });
-
-        const text = response.candidates?.[0]?.content?.parts?.[0]?.text || '';
-        log(`[QC][${model}] 응답: ${text.substring(0, 300)}`);
-
-        try {
-          const jsonMatch = text.match(/\{[\s\S]*\}/);
-          if (jsonMatch) return res.json(JSON.parse(jsonMatch[0]));
-        } catch { /* JSON 파싱 실패 → 다음 모델 */ }
-        return res.json({ raw: text });
-      } catch (err) {
-        log(`[QC][${model}] 실패: ${err.message} → 폴백`);
-        if (model === QC_MODELS[QC_MODELS.length - 1]) {
-          return res.json({ identity: 'ERROR', note: `QC 전체 실패: ${err.message}` });
-        }
-      }
-    }
-  } catch (err) {
-    log(`[API][qc] 에러: ${err.message}`, 'ERROR');
-    res.status(500).json({ error: err.message });
-  }
-});
 
 // 크레딧 차감
 app.post('/api/credit/use', async (req, res) => {
@@ -757,7 +659,6 @@ const httpServer = app.listen(PORT, '0.0.0.0', () => {
   log(`리전: ${LOCATION}`);
   log(`인증: 하이브리드 (ADC + API Key)`);
   log(`Imagen I2I: 활성 (gemini-3-pro-image-preview, API Key)`);
-  log(`QC: 활성 (gemini-3-flash-preview → 2.0-flash 폴백)`);
   log(`사전분석: 활성 (gemini-3-flash-preview → 2.0-flash 폴백)`);
   log('='.repeat(60));
   log('엔드포인트:');
@@ -766,7 +667,6 @@ const httpServer = app.listen(PORT, '0.0.0.0', () => {
   log('  POST /api/pre-check       — 사전분석 (SPA)');
   log('  POST /api/precheck        — 사전분석 (MPA)');
   log('  POST /api/idgen           — Imagen I2I (9필드)');
-  log('  POST /api/qc              — QC 검증 (MPA)');
   log('  POST /api/credit/use      — 크레딧 차감');
   log('  POST /api/credit/share-bonus — 공유 보너스');
   log('  GET  /                    — 랜딩페이지');

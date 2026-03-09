@@ -253,16 +253,6 @@ async function confirmAndGenerate() {
     _fullOriginal = genResult.image;
     Monk.log('生成完了');
 
-    // [QC 無効化] プロンプト例示値オウム問題で実質的検収不可 — 別コンポーネント分離後再設計予定
-    let qcResult = null;
-    // const qcPromise = pipe.run('qc', {
-    //   original: base64,
-    //   generated: genResult.image,
-    //   gender: store.gender === 'f' ? 'female' : 'male',
-    //   age: store.age || 'adult',
-    // }).then(r => { qcResult = r; Monk.log(`QC: ${JSON.stringify(r).substring(0, 100)}`); })
-    //   .catch(e => Monk.log('QCエラー: ' + (e.error || e.message)));
-
     // ウォーターマーク版生成
     const watermarked = await generateWatermarkPreview(genResult.image);
 
@@ -279,9 +269,6 @@ async function confirmAndGenerate() {
     // store/sessionStorageにはクロップウォーターマーク版保存
     store.generated = croppedWatermark;
     try { sessionStorage.setItem('monkos_generated', croppedWatermark); } catch(e) {}
-
-    // [QC 無効化] QC 待機削除
-    // await Promise.race([qcPromise, new Promise(r => setTimeout(r, 10000))]);
 
     const elapsed = Date.now() - genStartTime;
     const remaining = Math.max(0, MIN_DISPLAY_TIME - elapsed);
@@ -310,8 +297,6 @@ async function confirmAndGenerate() {
       // ウォーターマークプレビューもクロップ版
       store.watermarkPreview = croppedWatermark;
 
-      // [QC 無効化] バッジ非表示
-      // showQCBadge(qcResult);
     });
 
   } catch (err) {
@@ -326,34 +311,6 @@ async function confirmAndGenerate() {
       showGenerateError(err.error || err.message || 'リタッチ失敗');
     }
   }
-}
-
-// ─── QC 結果バッジ ───
-function showQCBadge(result) {
-  const badge = document.getElementById('qc-badge');
-  if (!badge) return;
-
-  if (!result) {
-    badge.style.display = 'none';
-    return;
-  }
-
-  badge.style.display = 'block';
-  const similarity = result.similarity || 0;
-  const passed = result.identity === 'PASS' && similarity >= 70;
-
-  if (passed) {
-    badge.className = 'qc-badge pass';
-    badge.innerHTML = `<span>AI検査完了</span> · 類似度 ${similarity}% · ${result.quality || '良好'}`;
-  } else if (result.identity === 'ERROR') {
-    badge.className = 'qc-badge pending';
-    badge.textContent = 'AI検査：分析失敗（結果に影響なし）';
-  } else {
-    badge.className = 'qc-badge fail';
-    badge.innerHTML = `<span>AI検査注意</span> · 類似度 ${similarity}% · ${result.note || '再撮影推奨'}`;
-  }
-
-  Monk.log(`QC バッジ: ${passed ? 'PASS' : 'FAIL'} (${similarity}%)`);
 }
 
 function showGenerateError(error) {

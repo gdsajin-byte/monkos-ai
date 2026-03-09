@@ -16,7 +16,6 @@ export const API = {
   CREDIT_USE: '/api/credit/use',       // Cloud Run 直接 (CFプロキシ除去)
   CREDIT_REFUND: '/api/credit/refund', // ダウンロード失敗返金
   COACHING: '/api/coaching',            // 同一サーバー (絶対URL → 相対パス)
-  QC: '/api/qc',                        // QC 検証 (同一サーバー)
 };
 
 // クレジットコスト

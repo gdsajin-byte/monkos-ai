@@ -315,57 +315,6 @@ function buildPromptV5(body) {
   return `${IDENTITY_PRESERVATION}\n\n[IMAGE-TO-IMAGE TRANSFORM]\n${parts.join('\n')}`;
 }
 
-// === QC プロンプトビルダー (CF qc.js 正本移植) ===
-function buildQCInstruction(gender, age) {
-  const genderText = gender === 'male' ? '男性' : '女性';
-  const ageMap = { child: '幼児〜12歳', teen: '13〜18歳', adult: '19歳以上' };
-  const ageText = ageMap[age] || '未指定';
-
-  return `2つの画像を比較し、2枚目（証明写真）の品質を総合分析してください。
-1枚目：原本（実際の撮影）
-2枚目：AI生成物（証明写真）
-ユーザー設定：性別=${genderText}、年齢層=${ageText}
-
-[判定基準 — すべてチェック必須]
-1. 同一人物か？（顔の構造、目/鼻/口の比率）
-2. 類似度 %（0-100）
-3. アイデンティティ維持（PASS/FAIL）
-4. 性別一致：原本人物の外見性別と生成物が一致するか？（設定に関わらず原本基準で判断）
-5. 年齢層一致：原本人物の外見年齢と生成物が一致するか？（子供→大人、大人→子供の変換を検知）
-6. 過度な補正：ヘアスタイル大幅変更、肌の過補正、顔の輪郭変形、目のサイズ変更等の不自然な変形があるか？
-7. 証明写真品質（照明、背景、構図）
-8. 2枚目の画像における顔のbounding box座標 [ymin, xmin, ymax, xmax]（0-1000正規化）
-
-[FAIL条件 — 1つでも該当すればidentityをFAILと判定]
-- 性別外見が原本と異なるように変換された
-- 年齢層が原本と大きく異なる（10歳以上の差と推定）
-- 顔の輪郭、目のサイズ、鼻の形態等が原本と異なるように変形された
-- ヘアスタイルが原本と完全に異なる（整える程度は許容）
-- similarity 70%未満
-
-[応答形式 — JSONのみ出力]
-{
-  "same_person": true,
-  "similarity": 85,
-  "identity": "PASS",
-  "gender_match": true,
-  "age_match": true,
-  "over_retouched": false,
-  "quality": "GOOD",
-  "face_box": [180, 220, 650, 780],
-  "face_ratio": 0.35,
-  "face_center_x": 500,
-  "head_top_margin": 80,
-  "note": "一行コメント"
-}
-
-face_ratio = 顔の高さ / 画像全体の高さ（0.25〜0.45が適切）
-face_center_x = 顔の中心x座標（500付近なら中央揃え、±50許容）
-head_top_margin = 頭頂部から画像上端までの余白（40〜150が適切）`;
-}
-
-// === QC/事前分析 フォールバックモデル (JP正本パターン) ===
-const QC_MODELS = ['gemini-3-flash-preview', 'gemini-2.0-flash'];
 
 // === クライアントセッション管理 ===
 const sessions = new Map();
@@ -430,6 +379,9 @@ function extractBase64(base64Input) {
   return base64Input.includes(',') ? base64Input.split(',')[1] : base64Input;
 }
 
+// === 事前分析 フォールバックモデル ===
+const PRECHECK_MODELS = ['gemini-3-flash-preview', 'gemini-2.0-flash'];
+
 // === 事前分析 (SPA互換 — Gemini 2.0 Flash via Vertex AI ADC) ===
 const PRE_CHECK_INSTRUCTION = `この写真が証明写真の原本として適切かどうか分析してください。
 
@@ -459,7 +411,7 @@ suggestion: ユーザーに表示する一行日本語アドバイス`;
 async function runPreCheck(imageBase64) {
   const data = extractBase64(imageBase64);
 
-  for (const model of QC_MODELS) {
+  for (const model of PRECHECK_MODELS) {
     try {
       log(`[事前分析] モデル試行: ${model}`);
       const response = await ai.models.generateContent({
@@ -487,7 +439,7 @@ async function runPreCheck(imageBase64) {
       return { suitable: true, score: 0, raw: text };
     } catch (err) {
       log(`[事前分析][${model}] 失敗: ${err.message} → フォールバック`);
-      if (model === QC_MODELS[QC_MODELS.length - 1]) {
+      if (model === PRECHECK_MODELS[PRECHECK_MODELS.length - 1]) {
         return { suitable: true, score: 0, note: `分析失敗: ${err.message}` };
       }
     }
@@ -521,7 +473,6 @@ app.get('/health', (req, res) => {
     auth: 'Hybrid (ADC + API Key)',
     geminiLive: 'ready (ADC)',
     imagen: GEMINI_API_KEY ? 'active (API Key)' : 'NO API KEY',
-    qc: 'active (gemini-3-flash-preview → 2.0-flash フォールバック)',
     preCheck: 'active (gemini-3-flash-preview → 2.0-flash フォールバック)',
   });
 });
@@ -531,7 +482,7 @@ app.get('/api/info', (req, res) => {
   res.json({
     service: 'MONKOS AI 証明写真',
     domain: 'idphoto-jp.monkos.ai',
-    features: ['AI コーチング (WS)', 'AI 事前分析', 'AI 証明写真生成', 'AI QC 検証'],
+    features: ['AI コーチング (WS)', 'AI 事前分析', 'AI 証明写真生成'],
     styles: Object.keys(STYLE_PROMPTS),
   });
 });
@@ -643,56 +594,6 @@ app.post('/api/idgen', async (req, res) => {
   }
 });
 
-// QC 検証 — MPA用 (Vertex AI ADC、フォールバックモデル)
-app.post('/api/qc', async (req, res) => {
-  try {
-    const { original, generated, gender = 'male', age = 'adult' } = req.body;
-    if (!original || !generated) {
-      return res.status(400).json({ error: '原本と生成画像の両方が必要です' });
-    }
-
-    const origBase64 = original.includes(',') ? original.split(',')[1] : original;
-    const genBase64 = generated.includes(',') ? generated.split(',')[1] : generated;
-
-    const instruction = buildQCInstruction(gender, age);
-
-    for (const model of QC_MODELS) {
-      try {
-        log(`[QC] モデル試行: ${model} (gender=${gender}, age=${age})`);
-        const response = await ai.models.generateContent({
-          model,
-          contents: [{ role: 'user', parts: [
-            { inlineData: { mimeType: 'image/png', data: origBase64 } },
-            { inlineData: { mimeType: 'image/png', data: genBase64 } },
-            { text: instruction },
-          ]}],
-          config: {
-            responseMimeType: 'application/json',
-            temperature: 0.3,
-          },
-        });
-
-        const text = response.candidates?.[0]?.content?.parts?.[0]?.text || '';
-        log(`[QC][${model}] 応答: ${text.substring(0, 300)}`);
-
-        try {
-          const jsonMatch = text.match(/\{[\s\S]*\}/);
-          if (jsonMatch) return res.json(JSON.parse(jsonMatch[0]));
-        } catch { /* JSONパース失敗 → 次のモデル */ }
-        return res.json({ raw: text });
-      } catch (err) {
-        log(`[QC][${model}] 失敗: ${err.message} → フォールバック`);
-        if (model === QC_MODELS[QC_MODELS.length - 1]) {
-          return res.json({ identity: 'ERROR', note: `QC全体失敗: ${err.message}` });
-        }
-      }
-    }
-  } catch (err) {
-    log(`[API][qc] エラー: ${err.message}`, 'ERROR');
-    res.status(500).json({ error: err.message });
-  }
-});
-
 // クレジット差引
 app.post('/api/credit/use', async (req, res) => {
   try {
@@ -759,8 +660,7 @@ const httpServer = app.listen(PORT, '0.0.0.0', () => {
   log(`リージョン: ${LOCATION}`);
   log(`認証: ハイブリッド (ADC + API Key)`);
   log(`Imagen I2I: アクティブ (gemini-3-pro-image-preview, API Key)`);
-  log(`QC: アクティブ (gemini-3-flash-preview → 2.0-flash フォールバック)`);
-  log(`事前分析: アクティブ (gemini-3-flash-preview → 2.0-flash フォールバック)`);
+  log('事前分析: アクティブ (gemini-3-flash-preview → 2.0-flash フォールバック)');
   log('='.repeat(60));
   log('エンドポイント:');
   log('  GET  /health              — ヘルスチェック');
@@ -768,7 +668,6 @@ const httpServer = app.listen(PORT, '0.0.0.0', () => {
   log('  POST /api/pre-check       — 事前分析 (SPA)');
   log('  POST /api/precheck        — 事前分析 (MPA)');
   log('  POST /api/idgen           — Imagen I2I (9フィールド)');
-  log('  POST /api/qc              — QC 検証 (MPA)');
   log('  POST /api/credit/use      — クレジット差引');
   log('  POST /api/credit/share-bonus — シェアボーナス');
   log('  GET  /                    — ランディングページ');

@@ -30,7 +30,7 @@ import { handleTelegramTeamWebhook, handleTeamNotify } from './lib/telegram-team
 import { handleVerifyInit } from './lib/tg-auth.js';
 import { handlePassportIssue, handleUploadMission } from './lib/tg-cs.js';
 import { handleKakaoChatbot } from './lib/kakao-chatbot.js';
-import { handleWebChat, handleCoaching, handleQC } from './lib/coaching.js';
+import { handleWebChat, handleCoaching } from './lib/coaching.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -141,10 +141,9 @@ const httpServer = createServer(async (req, res) => {
   // === 카카오 챗봇 ===
   if (urlPath === '/api/kakao/chatbot' && req.method === 'POST') return handleKakaoChatbot(req, res);
 
-  // === 챗봇/코칭/QC ===
+  // === 챗봇/코칭 ===
   if (urlPath === '/api/chat' && req.method === 'POST') return handleWebChat(req, res);
   if (urlPath === '/api/coaching' && req.method === 'POST') return handleCoaching(req, res);
-  if (urlPath === '/api/qc' && req.method === 'POST') return handleQC(req, res);
 
   // === 정적 파일 ===
   let filePath = req.url === '/' ? '/index.html' : req.url;
