@@ -79,11 +79,11 @@
         <div style="display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:6px; margin:20px 0 24px;">
             <span style="background:rgba(167,139,250,0.15); border:1px solid rgba(167,139,250,0.25); border-radius:20px; padding:6px 14px; font-size:0.8rem; font-weight:600; color:#a78bfa;">1枚</span>
             <span style="font-size:0.85rem; color:#8892a8; font-weight:600;">=</span>
-            <span style="background:rgba(167,139,250,0.15); border:1px solid rgba(167,139,250,0.25); border-radius:20px; padding:6px 14px; font-size:0.8rem; font-weight:600; color:#a78bfa;">リタッチ 1c</span>
+            <span style="background:rgba(167,139,250,0.15); border:1px solid rgba(167,139,250,0.25); border-radius:20px; padding:6px 14px; font-size:0.8rem; font-weight:600; color:#a78bfa;">リタッチ 10c</span>
             <span style="font-size:0.85rem; color:#8892a8; font-weight:600;">+</span>
-            <span style="background:rgba(167,139,250,0.15); border:1px solid rgba(167,139,250,0.25); border-radius:20px; padding:6px 14px; font-size:0.8rem; font-weight:600; color:#a78bfa;">ダウンロード 10c</span>
+            <span style="background:rgba(167,139,250,0.15); border:1px solid rgba(167,139,250,0.25); border-radius:20px; padding:6px 14px; font-size:0.8rem; font-weight:600; color:#a78bfa;">ダウンロード 70c</span>
             <span style="font-size:0.85rem; color:#8892a8; font-weight:600;">=</span>
-            <span style="background:rgba(167,139,250,0.15); border:1px solid rgba(167,139,250,0.25); border-radius:20px; padding:6px 14px; font-size:0.8rem; font-weight:600; color:#a78bfa;">11c</span>
+            <span style="background:rgba(167,139,250,0.15); border:1px solid rgba(167,139,250,0.25); border-radius:20px; padding:6px 14px; font-size:0.8rem; font-weight:600; color:#a78bfa;">80c</span>
         </div>
 
         <!-- v3 패키지 카드 (JS 동적 생성) -->
@@ -110,12 +110,11 @@
         <!-- 사업자 정보 -->
         <div translate="no" style="padding:32px 0 12px; border-top:1px solid rgba(167,139,250,0.12); margin-top:16px; text-align:center;">
             <p style="font-size:0.7rem; color:#8892a8; line-height:1.8; opacity:0.7;">
-                <strong style="color:#8892a8; opacity:1;">Business:</strong> MONK STUDIO | <strong style="color:#8892a8; opacity:1;">CEO:</strong> JeongKyu Shin<br>
-                <strong style="color:#8892a8; opacity:1;">Reg. No:</strong> 636-15-00574 | <strong style="color:#8892a8; opacity:1;">E-Commerce:</strong> 2026-Gyeonggi.Hanam-0389<br>
-                <strong style="color:#8892a8; opacity:1;">Address:</strong> B1029, 95 Misagangbyeondong-ro, Hanam-si, Gyeonggi-do, South Korea<br>
-                <strong style="color:#8892a8; opacity:1;">Email:</strong> info@monkos.ai | <strong style="color:#8892a8; opacity:1;">Telegram:</strong> @monkos_support_bot<br>
-                <strong style="color:#8892a8; opacity:1;">Tel:</strong> 031-791-5030<br>
-                <strong style="color:#8892a8; opacity:1;">Hosting:</strong> Google Cloud Platform (Google LLC)
+                <strong style="color:#8892a8; opacity:1;">運営:</strong> MONK STUDIO |
+                <strong style="color:#8892a8; opacity:1;">代表:</strong> Shin JeongKyu<br>
+                <strong style="color:#8892a8; opacity:1;">Email:</strong> info@monkos.ai |
+                <strong style="color:#8892a8; opacity:1;">Telegram:</strong> @monkos_support_bot<br>
+                <a href="/tokusho.html" style="color:#a78bfa; text-decoration:none;">特定商取引法に基づく表記 →</a>
             </p>
         </div>
 
@@ -202,7 +201,7 @@
           const idx = parseInt(card.dataset.ci);
           if (confirmedIdx === idx) {
             const opt = CHARGE_OPTIONS[idx];
-            buyCreditsJP(opt.price, opt.credits + opt.bonus);
+            buyCreditsJP(opt);
           } else {
             resetAll();
             confirmedIdx = idx;
@@ -221,7 +220,8 @@
     document.getElementById('stepper-pay').addEventListener('click', (e) => {
       e.stopPropagation();
       if (confirmedIdx === 4) {
-        buyCreditsJP(stepperQty * STEP_PRICE, stepperQty * STEP_UNIT);
+        const topupOpt = CHARGE_OPTIONS.find(o => o.key === 'topup_10');
+        if (topupOpt) buyCreditsJP(topupOpt);
       } else {
         resetAll();
         confirmedIdx = 4;
