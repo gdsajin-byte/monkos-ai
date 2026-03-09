@@ -1,6 +1,6 @@
-# idphoto-jp — 日本 AI 証明写真
+# idphoto-kr — 한국 AI 증명사진
 
-> Cloud Run 서비스 | 도메인: **idphoto-jp.monkos.ai**
+> Cloud Run 서비스 | 도메인: **idphoto-kr.monkos.ai**
 
 ## 배포
 
@@ -14,7 +14,7 @@
 
 | 항목 | prod | dev |
 |------|------|-----|
-| 서비스명 | `monkos-idphoto-jp` | `monkos-idphoto-jp-dev` |
+| 서비스명 | `monkos-idphoto-kr` | `monkos-idphoto-kr-dev` |
 | 메모리 | 2Gi | 512Mi |
 | CPU | 2 | 1 |
 | 최대 인스턴스 | 10 | 2 |
@@ -27,23 +27,36 @@
 ## 핵심 구조
 
 ```
-idphoto-jp/
+idphoto-kr/
 ├── server.js           ← Express 서버 (API + SSR)
 ├── deploy.sh           ← 배포 스크립트 (dev/prod)
 ├── Dockerfile          ← node:20-slim 2단계 빌드
 ├── obfuscate.mjs       ← 코드 난독화
 ├── package.json
+├── .env                ← 환경변수 (Git 추적 안 됨)
 └── public/
-    ├── index.html      ← 촬영 앱 (/app)
-    ├── landing.html    ← 랜딩 페이지 (/)
-    ├── privacy.html    ← プライバシーポリシー
-    ├── terms.html      ← 利用規約
-    ├── refund.html     ← 返金ポリシー
+    ├── index.html      ← 랜딩 페이지 (/)
+    ├── prep.html       ← 준비실 (/prep)
+    ├── camera.html     ← 촬영실 (/camera)
+    ├── result.html     ← 분석실 (/result)
+    ├── thankyou.html   ← 수령처 (/thankyou)
+    ├── app.css         ← 공통 스타일
+    ├── monk.js         ← 프레임워크 코어
+    ├── config.js       ← 환경설정
+    ├── shared.js       ← 공통 로직
+    ├── prep.js         ← 준비실 로직
+    ├── camera.js       ← 촬영실 로직
+    ├── result.js       ← 분석실 로직
+    ├── thankyou.js     ← 수령처 로직
+    ├── options.js      ← 옵션 로직
+    ├── privacy.html    ← 개인정보처리방침
+    ├── terms.html      ← 이용약관
+    ├── refund.html     ← 환불 정책
     ├── monkos-icon.svg
     └── og-image.png
 ```
 
-## 환경변수 (.env → monkos_AI/.env)
+## 환경변수 (.env)
 
 | 변수 | 용도 | 인증 방식 |
 |------|------|-----------|
@@ -52,26 +65,24 @@ idphoto-jp/
 | `GCS_BUCKET` | 이미지 저장 (monk-ai-images) | — |
 | `GEMINI_API_KEY` | Imagen I2I 생성 | Google AI Studio API Key |
 
-- **Vertex AI ADC**: Live 코칭 + QC
+- **Vertex AI ADC**: Live 코칭 + QC (API Key 불필요)
 - **Google AI Studio API Key**: Imagen I2I 생성 전용
 
 ## URL 구조
 
 | 경로 | 페이지 |
 |------|--------|
-| `/` | LP (landing.html) |
-| `/app` | 撮影アプリ (index.html) |
-| `/health` | ヘルスチェック |
-
-## idphoto-kr과의 관계
-
-- JP가 원본, KR이 복제본 (한국어화)
-- UI/코칭/QC/음성 전부 일본어
-- 구조·API·배포 스크립트 동일
+| `/` | 랜딩 페이지 (index.html) |
+| `/app` | 촬영 앱 (index.html) |
+| `/prep` | 준비실 (prep.html) |
+| `/camera` | 촬영실 (camera.html) |
+| `/result` | 분석실 (result.html) |
+| `/thankyou` | 수령처 (thankyou.html) |
+| `/health` | 헬스체크 |
 
 ## 주의사항
 
-- `server.js` 수정 시 에스컬레이션 필수
-- `.env` 수정 금지
-- I2I 생성 시 `responseModalities` 사용 금지
+- `server.js` 수정 시 에스컬레이션 필수 (법률 제7장 4조)
+- `.env` 수정 금지 (법률 제7장 3조)
+- I2I 생성 시 `responseModalities` 사용 금지 (에러 발생)
 - 배포 후 `/health` 로 동작 확인 필수

@@ -1,0 +1,639 @@
+/**
+ * result.js — 분석실 전용 로직
+ * 메인 흐름: 프리체크 → 생성 → 프리뷰 → 다운로드 결제 → thankyou.html 전환
+ * 포스트 다운로드(갤러리 저장, 규격 탭, 풀원본, SNS 이벤트)는 thankyou.html로 이관
+ */
+
+import {
+  store, pipe, Monk, TX, PHOTO_SPECS, CREDIT_COST,
+  sharedInit, showCreditModal, saveSessionData, loadSessionData, navigateTo, showChargeModal,
+  buyCreditsKR, TOSS_CLIENT_KEY, API, fetchLatestCredits, closeCreditModal,
+} from './shared.js';
+
+import { GateModule } from './modules/gate.js';
+import { initChatbot } from './modules/chatbot.js';
+// ─── 원본 격리: 풀 원본은 모듈 스코프 private 변수에만 보관 ───
+let _fullOriginal = null;
+
+// ─── Media 생성 (crop/toJpeg 전용 — 카메라 불필요) ───
+const media = Monk.media({
+  video: null,
+  canvas: null,
+  maxSize: 720,
+  faceDetection: true,
+});
+
+// ─── 광고 킷 상수 ───
+const AD_MANIFEST_URL = 'https://storage.googleapis.com/monk-ai-images/ads/manifest.json';
+const MIN_DISPLAY_TIME = 10000; // 최소 10초 표시
+
+let adImages = [];
+let adTimer = null;
+let adIndex = 0;
+
+// ─── 광고 manifest 로드 ───
+async function loadAdManifest() {
+  try {
+    const res = await fetch(AD_MANIFEST_URL);
+    const data = await res.json();
+    adImages = data.images || [];
+    Monk.log(`광고 manifest 로드: ${adImages.length}장`);
+  } catch (e) {
+    Monk.log('광고 manifest 로드 실패: ' + e.message);
+  }
+}
+
+// ─── 오버레이 표시 + 광고 로테이션 시작 ───
+function showGenOverlay() {
+  const overlay = document.getElementById('gen-overlay');
+  if (overlay) overlay.style.display = 'flex';
+
+  const progress = document.getElementById('gen-progress');
+  if (progress) {
+    progress.style.width = '0%';
+    progress.style.transition = 'width 0.5s ease';
+    setTimeout(() => { progress.style.transition = 'width 10s ease-out'; progress.style.width = '90%'; }, 100);
+  }
+
+  if (adImages.length > 0) {
+    adIndex = 0;
+    showAdImage(adIndex);
+    adTimer = setInterval(() => {
+      adIndex = (adIndex + 1) % adImages.length;
+      showAdImage(adIndex);
+    }, 6000);
+  }
+}
+
+function showAdImage(index) {
+  const img = document.getElementById('gen-ad-img');
+  if (!img || !adImages[index]) return;
+  img.style.opacity = '0';
+  setTimeout(() => {
+    img.onerror = () => {
+      Monk.log('광고 이미지 로드 실패: ' + adImages[index]);
+      img.style.display = 'none';
+    };
+    img.onload = () => { img.style.display = ''; };
+    img.src = adImages[index];
+    img.style.opacity = '1';
+  }, 400);
+}
+
+// ─── 카운트다운 → 결과 공개 ───
+function startCountdown(callback) {
+  const countdown = document.getElementById('gen-countdown');
+  const countNum = document.getElementById('gen-count-num');
+  if (!countdown || !countNum) { callback(); return; }
+
+  const progress = document.getElementById('gen-progress');
+  if (progress) { progress.style.transition = 'width 0.5s ease'; progress.style.width = '100%'; }
+
+  countdown.style.display = 'flex';
+
+  let count = 3;
+  countNum.textContent = count;
+
+  const interval = setInterval(() => {
+    count--;
+    if (count > 0) {
+      countNum.textContent = count;
+    } else {
+      clearInterval(interval);
+      countNum.textContent = '✨';
+      setTimeout(() => {
+        hideGenOverlay();
+        callback();
+      }, 500);
+    }
+  }, 1000);
+}
+
+function hideGenOverlay() {
+  if (adTimer) { clearInterval(adTimer); adTimer = null; }
+  const overlay = document.getElementById('gen-overlay');
+  if (overlay) overlay.style.display = 'none';
+  const countdown = document.getElementById('gen-countdown');
+  if (countdown) countdown.style.display = 'none';
+}
+
+// ─── 원본 표시 ───
+function showOriginal() {
+  const captured = loadSessionData('captured');
+  if (!captured) {
+    Monk.log('촬영 데이터 없음 → 촬영실로 이동');
+    navigateTo('camera.html');
+    return;
+  }
+
+  store.captured = captured;
+  store.step = 2;
+  store.stepLabel = TX.step2;
+  store.resultTitle = TX.resultConfirm;
+  store.resultSubtitle = TX.resultConfirmSub;
+  store.showStep2Actions = true;
+  store.showStep3Actions = false;
+  store.generated = null;
+  store.statusText = '';
+
+  const imgEl = document.querySelector('#photo-original');
+  if (imgEl) imgEl.src = captured;
+
+  Monk.log('원본 표시 완료');
+}
+
+// ─── 재촬영 ───
+function retakePhoto() {
+  // Step 2 (리터칭 전): 확인 없이 바로 준비실 이동
+  if (!store.generated) {
+    clearForRetake();
+    return;
+  }
+
+  // Step 3 (리터칭 후): 확인 모달
+  const ok = confirm(
+    '현재 사진을 삭제하고 다시 촬영하시겠습니까?\n리터칭 비용(10c)은 복구되지 않습니다.'
+  );
+  if (!ok) return;
+
+  clearForRetake();
+}
+
+function clearForRetake() {
+  // store 초기화
+  store.captured = null;
+  store.generated = null;
+  store.cropped = null;
+  store.statusText = '';
+  store.showStep2Actions = false;
+  store.showStep3Actions = false;
+
+  // sessionStorage 이전 결과 제거
+  sessionStorage.removeItem('monkos_generated');
+  sessionStorage.removeItem('monkos_compare');
+  sessionStorage.removeItem('monkos_pending_action');
+  try { sessionStorage.removeItem('_mo_p'); } catch(e) {}
+
+  // 촬영 준비실로 이동 (옵션 재선택 가능)
+  navigateTo('prep.html');
+}
+
+// ─── 생성 파이프라인 ───
+async function confirmAndGenerate() {
+  if (!store.captured) return;
+
+  // 로그인 필수 (촬영실 게이트에서 이미 체크되지만 방어용)
+  if (!store.user.id) {
+    GateModule.showLoginRequired('리터칭을 진행하려면 로그인이 필요합니다\n첫 로그인 시 10c를 드려요!', () => {
+      confirmAndGenerate();
+    });
+    return;
+  }
+
+  const base64 = store.captured.includes(',') ? store.captured.split(',')[1] : store.captured;
+
+  // 사전분석
+  store.showStep2Actions = false;
+  store.resultTitle = '사진 분석 중...';
+  store.resultSubtitle = 'AI가 촬영본을 검수하고 있습니다';
+  store.statusText = '사전분석 중...';
+
+  try {
+    const preCheck = await pipe.run('precheck', { image: base64 });
+    Monk.log(`사전분석: ${preCheck.score}점 ${preCheck.suitable ? 'OK' : 'NG'}`);
+
+    if (!preCheck.suitable) {
+      store.statusText = `사전분석: ${preCheck.score}점 — ${preCheck.suggestion || '재촬영을 권장합니다'}`;
+      store.resultTitle = '재촬영을 권장합니다';
+      store.resultSubtitle = preCheck.suggestion || '촬영 환경을 개선해 주세요';
+      store.showStep2Actions = true;
+      return;
+    }
+
+    store.statusText = `사전분석 OK (${preCheck.score}점) → 리터칭 시작`;
+  } catch (err) {
+    Monk.log('사전분석 스킵: ' + (err.error || err.message));
+  }
+
+  // ─── 잔고 사전 체크 (시머링 시작 전) ───
+  if (store.user.credits < CREDIT_COST.generate) {
+    showChargeModal();
+    store.showStep2Actions = true;
+    store.resultTitle = TX.resultConfirm;
+    store.resultSubtitle = '크레딧이 부족합니다';
+    return;
+  }
+
+  // 생성 단계
+  store.step = 3;
+  store.stepLabel = TX.step3;
+
+  showGenOverlay();
+  const genStartTime = Date.now();
+
+  try {
+    const genResult = await pipe.run('generate', {
+      image: base64,
+      format: store.format,
+      gender: store.gender,
+      age: store.age,
+      clothing: store.clothing,
+      clothingColor: store.clothingColor,
+      suitColor: store.suitColor,
+      shirtColor: store.shirtColor,
+      tieColor: store.tieColor,
+      tiePattern: store.tiePattern,
+      hair: store.hair,
+      bgColor: store.bgColor,
+      userId: store.user.id,
+      v: 5,
+    });
+
+    // 풀 원본은 private 변수에만 보관 (img/store/sessionStorage 노출 금지)
+    _fullOriginal = genResult.image;
+    Monk.log('생성 완료');
+
+    // [QC 비활성화] 프롬프트 예시값 앵무새 문제로 실질적 검수 불가 — 별도 컴포넌트로 분리 후 재설계 예정
+    let qcResult = null;
+    // const qcPromise = pipe.run('qc', {
+    //   original: base64,
+    //   generated: genResult.image,
+    //   gender: store.gender === 'f' ? 'female' : 'male',
+    //   age: store.age || 'adult',
+    // }).then(r => { qcResult = r; Monk.log(`QC: ${JSON.stringify(r).substring(0, 100)}`); })
+    //   .catch(e => Monk.log('QC 에러: ' + (e.error || e.message)));
+
+    // 워터마크 버전 생성
+    const watermarked = await generateWatermarkPreview(genResult.image);
+
+    // 크롭 워터마크 생성 (프리뷰용 — 크롭본 중심 UX)
+    const spec = PHOTO_SPECS[store.format];
+    let croppedWatermark = watermarked;
+    try {
+      const cropResult = await media.crop(watermarked, spec);
+      croppedWatermark = cropResult.dataUrl;
+    } catch (e) {
+      Monk.log('프리뷰 크롭 실패, 풀 워터마크 사용');
+    }
+
+    // store/sessionStorage에는 크롭 워터마크 버전 저장
+    store.generated = croppedWatermark;
+    try { sessionStorage.setItem('monkos_generated', croppedWatermark); } catch(e) {}
+
+    // [QC 비활성화] QC 대기 제거
+    // await Promise.race([qcPromise, new Promise(r => setTimeout(r, 10000))]);
+
+    const elapsed = Date.now() - genStartTime;
+    const remaining = Math.max(0, MIN_DISPLAY_TIME - elapsed);
+
+    await new Promise(resolve => setTimeout(resolve, remaining));
+
+    startCountdown(() => {
+      // 비교컷: 원본 vs 크롭 워터마크
+      const genImg = document.querySelector('#photo-generated');
+      if (genImg) genImg.src = croppedWatermark;
+
+      // 비교컷 레이블을 규격명으로 변경
+      const label = document.querySelector('#photo-generated-wrap .label');
+      if (label) label.textContent = spec.name;
+
+      store.statusText = TX.resultDone;
+      store.resultTitle = TX.resultDone;
+      store.resultSubtitle = TX.resultDoneSub;
+      store.stepLabel = TX.resultDone;
+      store.showStep3Actions = true;
+      store.showStep2Actions = false;
+
+      const btnDownload = document.querySelector('#btn-download');
+      if (btnDownload) btnDownload.disabled = false;
+
+      // 워터마크 프리뷰도 크롭 버전
+      store.watermarkPreview = croppedWatermark;
+
+      // [QC 비활성화] 배지 미표시
+      // showQCBadge(qcResult);
+    });
+
+  } catch (err) {
+    hideGenOverlay();
+    if (err.status === 402) {
+      showChargeModal();
+      store.showStep2Actions = true;
+      store.resultTitle = TX.resultConfirm;
+      store.resultSubtitle = '크레딧이 부족합니다';
+      store.step = 2;
+    } else {
+      showGenerateError(err.error || err.message || '리터칭 실패');
+    }
+  }
+}
+
+// ─── QC 결과 배지 ───
+function showQCBadge(result) {
+  const badge = document.getElementById('qc-badge');
+  if (!badge) return;
+
+  if (!result) {
+    badge.style.display = 'none';
+    return;
+  }
+
+  badge.style.display = 'block';
+  const similarity = result.similarity || 0;
+  const passed = result.identity === 'PASS' && similarity >= 70;
+
+  if (passed) {
+    badge.className = 'qc-badge pass';
+    badge.innerHTML = `<span>AI 검수 완료</span> · 유사도 ${similarity}% · ${result.quality || '양호'}`;
+  } else if (result.identity === 'ERROR') {
+    badge.className = 'qc-badge pending';
+    badge.textContent = 'AI 검수: 분석 실패 (결과에 영향 없음)';
+  } else {
+    badge.className = 'qc-badge fail';
+    badge.innerHTML = `<span>AI 검수 주의</span> · 유사도 ${similarity}% · ${result.note || '재촬영 권장'}`;
+  }
+
+  Monk.log(`QC 배지: ${passed ? 'PASS' : 'FAIL'} (${similarity}%)`);
+}
+
+function showGenerateError(error) {
+  store.statusText = TX.genFail + ': ' + error;
+  store.resultTitle = TX.genFail;
+  store.resultSubtitle = error;
+  store.showStep3Actions = false;
+  store.showStep2Actions = true;
+  store.step = 2;
+  Monk.log('생성 에러: ' + error);
+}
+
+// ─── 워터마크 프리뷰 생성 ───
+async function generateWatermarkPreview(imageDataUrl) {
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  const img = new Image();
+
+  return new Promise((resolve) => {
+    img.onload = () => {
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.drawImage(img, 0, 0);
+
+      ctx.save();
+      ctx.globalAlpha = 0.25;
+      ctx.fillStyle = '#ffffff';
+      ctx.font = `bold ${Math.max(img.width / 8, 24)}px sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.translate(canvas.width / 2, canvas.height / 2);
+      ctx.rotate(-Math.PI / 6);
+
+      for (let y = -canvas.height; y < canvas.height * 2; y += img.height / 5) {
+        ctx.fillText('MONKOS', 0, y);
+      }
+      ctx.restore();
+
+      resolve(canvas.toDataURL('image/jpeg', 0.85));
+    };
+    img.src = imageDataUrl;
+  });
+}
+
+// ─── 다운로드 (모듈 호출) ───
+async function downloadResult() {
+  if (!store.generated) return;
+
+  // C2 핫픽스: 연속 클릭 방지
+  const btn = document.querySelector('#btn-download');
+  if (btn) btn.disabled = true;
+
+  // 토스 리다이렉트 대비: 원본을 임시 보관 (결제 중 페이지 리로드 대응)
+  if (_fullOriginal) {
+    try { sessionStorage.setItem('_mo_p', _fullOriginal); } catch(e) {}
+  }
+
+  // 로그인 필수 (촬영실 게이트에서 이미 체크되지만 방어용)
+  if (!store.user.id) {
+    GateModule.showLoginRequired('다운로드하려면 로그인이 필요합니다', () => {
+      downloadResult();
+    });
+    return;
+  }
+
+  // 잔액 부족 → 충전 페이지
+  if (store.user.credits < CREDIT_COST.download) {
+    sessionStorage.setItem('monkos_pending_action', 'download');
+    showChargeModal();
+    return;
+  }
+
+  doDownload();
+}
+
+// ─── 전후비교 합성 (thankyou용) ───
+async function generateCompareImage() {
+  const captured = loadSessionData('captured');
+  const cropped = loadSessionData('cropped');
+  if (!captured || !cropped) return;
+
+  try {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+
+    const [imgA, imgB] = await Promise.all([
+      loadImage(captured),
+      loadImage(cropped),
+    ]);
+
+    // 나란히 배치 (같은 높이, 비율 유지)
+    const h = 400;
+    const wA = (imgA.width / imgA.height) * h;
+    const wB = (imgB.width / imgB.height) * h;
+    const gap = 16;
+    const pad = 24;
+    const totalW = wA + gap + wB + pad * 2;
+    const totalH = h + pad * 2 + 40; // 하단 브랜딩 영역
+
+    canvas.width = totalW;
+    canvas.height = totalH;
+
+    // 배경
+    ctx.fillStyle = '#0A0E17';
+    ctx.fillRect(0, 0, totalW, totalH);
+
+    // 원본
+    ctx.drawImage(imgA, pad, pad, wA, h);
+    // 완성본
+    ctx.drawImage(imgB, pad + wA + gap, pad, wB, h);
+
+    // 라벨
+    ctx.fillStyle = '#94A3B8';
+    ctx.font = '12px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('원본', pad + wA / 2, pad + h + 18);
+    ctx.fillText(PHOTO_SPECS[store.format]?.name || '완성', pad + wA + gap + wB / 2, pad + h + 18);
+
+    // 브랜딩
+    ctx.fillStyle = '#8B5CF6';
+    ctx.font = 'bold 11px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('✨ MONKOS AI 증명사진  ·  monkos.ai', totalW / 2, totalH - 10);
+
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+    sessionStorage.setItem('monkos_compare', dataUrl);
+  } catch (e) {
+    Monk.log('전후비교 합성 실패: ' + e.message);
+  }
+}
+
+function loadImage(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
+  });
+}
+
+async function doDownload() {
+  let creditUsed = false;
+  try {
+    const result = await pipe.run('creditUse', { userId: store.user.id, type: 'download' });
+    store.user = { ...store.user, credits: result.credits };
+    creditUsed = true;
+
+    // 크롭 실행 (thankyou용 데이터 준비)
+    if (_fullOriginal) {
+      const spec = PHOTO_SPECS[store.format];
+      try {
+        const cropResult = await media.crop(_fullOriginal, spec);
+        saveSessionData('cropped', cropResult.dataUrl);
+      } catch (e) {
+        // 크롭 실패 시 원본 그대로 저장
+        const jpeg = await media.toJpeg(_fullOriginal, 0.92);
+        saveSessionData('cropped', jpeg);
+      }
+    }
+
+    // 풀 원본 sessionStorage 보존 (thankyou에서 풀샷 20c용)
+    if (_fullOriginal) {
+      try { sessionStorage.setItem('_mo_p', _fullOriginal); } catch(e) {}
+    }
+
+    // 전후비교 합성 (워터마크 없이)
+    await generateCompareImage();
+
+    // thankyou.html로 전환
+    navigateTo('thankyou.html');
+
+  } catch (err) {
+    if (err.status === 402) {
+      showChargeModal();
+    } else {
+      // 크레딧 차감 후 다운로드 전달 실패 시 환불
+      if (creditUsed) {
+        try {
+          const refund = await pipe.run('creditRefund', { userId: store.user.id, type: 'download' });
+          store.user = { ...store.user, credits: refund.credits };
+          Monk.log('다운로드 실패 → 70c 환불 완료');
+        } catch (refundErr) {
+          Monk.log('다운로드 실패 환불 에러: ' + (refundErr.error || refundErr.message));
+        }
+      }
+      Monk.log('다운로드 에러: ' + (err.error || err.message));
+      const btn = document.querySelector('#btn-download');
+      if (btn) btn.disabled = false;
+    }
+  }
+}
+
+// ─── window 노출 (onclick 호환) ───
+Object.assign(window, {
+  retakePhoto,
+  confirmAndGenerate,
+  downloadResult,
+  showChargeModal,
+});
+
+// ─── 초기화 ───
+async function init() {
+  initChatbot();
+
+  try {
+    await sharedInit();
+  } catch (err) {
+    Monk.log('sharedInit 에러: ' + err.message);
+  }
+
+  // 로딩 상태 제거
+  document.querySelector('#page-loading')?.remove();
+
+  // 결과 화면 활성화
+  const resultArea = document.querySelector('#result-overlay');
+  if (resultArea) resultArea.classList.add('active');
+
+  // 토스 리다이렉트 복귀 시 원본 복원
+  const pendingOrig = sessionStorage.getItem('_mo_p');
+  if (pendingOrig) {
+    _fullOriginal = pendingOrig;
+    sessionStorage.removeItem('_mo_p');
+    Monk.log('원본 이미지 임시 저장소에서 복원');
+  }
+
+  // 광고 manifest 프리로드
+  loadAdManifest();
+
+  // sessionStorage에서 생성 이미지 복원 (토스 리다이렉트 후 복귀용 — 워터마크 버전)
+  if (!store.generated) {
+    const savedGen = sessionStorage.getItem('monkos_generated');
+    if (savedGen) {
+      store.generated = savedGen;
+      Monk.log('생성 이미지 sessionStorage에서 복원 (워터마크)');
+    }
+  }
+
+  // 비교컷 이미지 우클릭 방지 (보조 방어)
+  document.querySelectorAll('#photo-generated').forEach(img => {
+    img.addEventListener('contextmenu', e => e.preventDefault());
+  });
+
+  // === 생성 이미지 존재 시 결과 화면 복원 (토스 충전 후 복귀) ===
+  if (store.generated) {
+    // 원본도 표시 (비교컷용)
+    const captured = loadSessionData('captured');
+    if (captured) {
+      store.captured = captured;
+      const imgEl = document.querySelector('#photo-original');
+      if (imgEl) imgEl.src = captured;
+    }
+
+    const genImg = document.querySelector('#photo-generated');
+    if (genImg) genImg.src = store.generated;
+
+    store.step = 3;
+    store.stepLabel = TX.resultDone;
+    store.resultTitle = TX.resultDone;
+    store.resultSubtitle = TX.resultDoneSub;
+    store.showStep3Actions = true;
+    store.showStep2Actions = false;
+    store.watermarkPreview = store.generated;
+
+    const btnDownload = document.querySelector('#btn-download');
+    if (btnDownload) btnDownload.disabled = false;
+
+    Monk.log('생성 결과 복원 (토스 충전 후 복귀)');
+
+    // 충전 목적이 다운로드였으면 자동 진행
+    const pendingAction = sessionStorage.getItem('monkos_pending_action');
+    if (pendingAction === 'download' && store.user.credits >= CREDIT_COST.download) {
+      sessionStorage.removeItem('monkos_pending_action');
+      setTimeout(() => downloadResult(), 300);
+    } else {
+      sessionStorage.removeItem('monkos_pending_action');
+    }
+  } else {
+    showOriginal();
+  }
+
+  Monk.log('분석실 초기화 완료');
+}
+
+init();
