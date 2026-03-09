@@ -163,13 +163,8 @@ export async function buyCreditsJP(opt) {
       return;
     }
 
-    // Lemon.js Overlay で決済画面表示
-    if (window.LemonSqueezy) {
-      window.LemonSqueezy.Url.Open(data.url);
-    } else {
-      // Lemon.js 未ロード時は新しいタブでフォールバック
-      window.open(data.url, '_blank');
-    }
+    // 新しいタブで決済画面表示 (Overlay 404問題回避)
+    window.open(data.url, '_blank');
   } catch (err) {
     Monk.log('決済エラー: ' + err.message);
     alert('決済エラーが発生しました。もう一度お試しください。');
