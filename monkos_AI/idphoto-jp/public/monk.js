@@ -8,7 +8,7 @@
 
 const Monk = (() => {
   // === 유틸리티 ===
-  const log = (msg) => console.log(`[${new Date().toLocaleTimeString('ko-KR')}] ${msg}`);
+  const log = (msg) => console.log(`[${new Date().toLocaleTimeString('ja-JP')}] ${msg}`);
 
   const isMobile = () =>
     /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ||

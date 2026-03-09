@@ -125,28 +125,7 @@
                     <div class="value red" data-bind="user.credits">0</div>
                 </div>
             </div>
-            <div class="credit-packages">
-                <button class="credit-pkg" onclick="buyCreditsJP(1450, 10)">
-                    <div class="pkg-credits">10 Cr</div>
-                    <div class="pkg-price">¥1,450</div>
-                </button>
-                <button class="credit-pkg" onclick="buyCreditsJP(12900, 130)">
-                    <div class="pkg-credits">130 Cr</div>
-                    <div class="pkg-price">¥12,900</div>
-                    <div class="pkg-save">+30 ボーナス</div>
-                </button>
-                <button class="credit-pkg popular" onclick="buyCreditsJP(34900, 420)">
-                    <div class="pkg-badge">BEST</div>
-                    <div class="pkg-credits">420 Cr</div>
-                    <div class="pkg-price">¥34,900</div>
-                    <div class="pkg-save">+120 ボーナス</div>
-                </button>
-                <button class="credit-pkg" onclick="buyCreditsJP(49900, 750)">
-                    <div class="pkg-credits">750 Cr</div>
-                    <div class="pkg-price">¥49,900</div>
-                    <div class="pkg-save">+250 ボーナス</div>
-                </button>
-            </div>
+            <button class="credit-modal-btn primary" onclick="showChargeModal()" style="width:100%;padding:14px;background:linear-gradient(135deg,#a78bfa,#818cf8);color:#fff;border:none;border-radius:12px;font-size:0.95rem;font-weight:700;cursor:pointer;margin-top:8px;">チャージする</button>
             <button class="credit-modal-btn secondary" onclick="closeCreditModal()">閉じる</button>
         </div>
     </div>

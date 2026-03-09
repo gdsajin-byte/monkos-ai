@@ -285,7 +285,7 @@ async function init() {
   if (!store.user.id) {
     await new Promise(resolve => {
       GateModule.showLoginRequired(
-        '撮影を開始するにはログインが必要です\n初回ログインで1cプレゼント！',
+        '撮影を開始するにはログインが必要です\n初回ログインで10cプレゼント！',
         resolve  // 로그인 성공 콜백 → resolve → 카메라 init 진행
       );
 

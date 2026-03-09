@@ -255,7 +255,7 @@ function buildPromptV5(body) {
   if (format === 'passport') {
     parts.push('[FORMAT] Official passport/visa photo. Head centered, face taking 70-80% of frame height. Forehead and eyebrows must be visible. Neutral composed expression. White background mandatory.');
   } else {
-    parts.push('[FORMAT] Professional ID photo. Head centered, face taking 70-80% of frame height. Approachable yet professional expression.');
+    parts.push('[FORMAT] Professional ID photo. Head centered, face taking 70-80% of frame height. Neutral, composed expression.');
   }
 
   // [2] SUBJECT (SCHEMA §6-2 — gender × age = 8組合)
