@@ -4,7 +4,7 @@
  */
 
 import { ai, firestore, log } from './shared/config.js';
-import { SYSTEM_PROMPT, SYSTEM_PROMPT_KR, CS_SYSTEM_PROMPT, PREP_SYSTEM_PROMPT, COACHING_INSTRUCTIONS } from './prompts.js';
+import { SYSTEM_PROMPT, SYSTEM_PROMPT_KR, SYSTEM_PROMPT_JP, CS_SYSTEM_PROMPT, PREP_SYSTEM_PROMPT, COACHING_INSTRUCTIONS } from './prompts.js';
 import { loadCsKnowledge, searchCsKnowledge } from './rag.js';
 
 // === 인메모리 히스토리 ===
@@ -56,6 +56,7 @@ const CHANNEL_COLLECTION_MAP = {
   web: 'chat_conversations',
   kakao: 'kakao_conversations',
   'idphoto-kr': 'idphoto_kr_conversations',
+  'idphoto-jp': 'idphoto_jp_conversations',
   prep: 'prep_conversations',
 };
 
@@ -173,7 +174,7 @@ const CHANNEL_CONFIG = {
     responseMimeType: 'application/json',
   },
   kakao: {
-    systemPrompt: SYSTEM_PROMPT + '\n\n[중요] 이 채널은 카카오톡입니다. 반드시 한국어로만 응답하세요.',
+    systemPrompt: SYSTEM_PROMPT_KR + '\n\n[카카오톡 채널 추가 안내]\n- 이 채널은 카카오톡입니다.\n- 카카오 채널 친구추가 보너스: 40크레딧 (텔레그램과 택1, 1회 한정)\n- 카카오 채널을 통해 이벤트·업데이트 소식을 받을 수 있습니다.',
     temperature: 0.7,
     maxOutputTokens: 300,
     historyMap: chatHistories,
@@ -189,6 +190,15 @@ const CHANNEL_CONFIG = {
     historyTTL: 30 * 60 * 1000,
     maxHistory: 20,
     logCollection: 'idphoto_kr_conversations',
+  },
+  'idphoto-jp': {
+    systemPrompt: SYSTEM_PROMPT_JP,
+    temperature: 0.7,
+    maxOutputTokens: 300,
+    historyMap: chatHistories,
+    historyTTL: 30 * 60 * 1000,
+    maxHistory: 20,
+    logCollection: 'idphoto_jp_conversations',
   },
 };
 

@@ -1,6 +1,6 @@
 /**
- * modules/chatbot.js — 공유 챗봇 위젯 (idphoto-kr 전 페이지)
- * Phase 5b: 동적 DOM 생성 + /api/chat (channel: 'idphoto-kr')
+ * modules/chatbot.js — 공유 챗봇 위젯 (idphoto-jp 전 페이지)
+ * Phase 5b: 동적 DOM 생성 + /api/chat (channel: 'idphoto-jp')
  */
 
 import { API } from '../config.js';
