@@ -79,16 +79,18 @@ export async function addWatermark(imageBuffer) {
 }
 
 /**
- * 서버단 규격 크롭 (sharp) — 얼굴 상단 기준
+ * 얼굴 좌표 기반 정밀 규격 크롭 (sharp)
+ * 한국 여권: 35×45mm, 얼굴 25-35mm (56-78%), 상단여백 3-7mm
+ * 반명함: 30×40mm
  * @param {Buffer} imageBuffer - 원본 PNG buffer
  * @param {string} format - 'passport' | 'id'
+ * @param {Object|null} faceBox - Gemini 얼굴 좌표 (0-1 비율)
  * @returns {Buffer} 크롭된 PNG buffer
  */
-export async function cropToSpec(imageBuffer, format = 'passport') {
-  // 300 DPI 기준 출력 (35×45mm, 30×40mm)
+export async function cropToSpec(imageBuffer, format = 'passport', faceBox = null) {
   const SPECS = {
-    passport: { width: 413, height: 531, cropW: 0.85, cropH: 0.80 },
-    id: { width: 354, height: 472, cropW: 0.90, cropH: 0.85 },
+    passport: { width: 413, height: 531, faceRatio: 0.65, topMargin: 0.08 },
+    id: { width: 354, height: 472, faceRatio: 0.60, topMargin: 0.10 },
   };
   const spec = SPECS[format] || SPECS.passport;
 
@@ -96,30 +98,48 @@ export async function cropToSpec(imageBuffer, format = 'passport') {
   const srcW = meta.width;
   const srcH = meta.height;
 
-  // 얼굴 중심 확대: 양쪽 여백 + 하단 제거 → 얼굴 비중 증가
-  const extractW = Math.round(srcW * spec.cropW);
-  const extractH = Math.round(srcH * spec.cropH);
-  const left = Math.round((srcW - extractW) / 2);
+  // 얼굴 좌표 없으면 상단 기준 커버 크롭 (폴백)
+  if (!faceBox) {
+    return sharp(imageBuffer)
+      .resize(spec.width, spec.height, { fit: 'cover', position: 'top' })
+      .png()
+      .toBuffer();
+  }
+
+  // 얼굴 좌표 기반 정밀 크롭
+  const { foreheadTop, chinBottom, faceLeft, faceRight } = faceBox;
+  const faceH = (chinBottom - foreheadTop) * srcH;
+  const faceCX = ((faceLeft + faceRight) / 2) * srcW;
+
+  // 크롭 영역: 얼굴이 전체의 faceRatio를 차지하도록 계산
+  const cropH = Math.round(faceH / spec.faceRatio);
+  const cropW = Math.round(cropH * (spec.width / spec.height));
+
+  // 상단 여백: 이마 위 topMargin 비율
+  let top = Math.round((foreheadTop * srcH) - (cropH * spec.topMargin));
+  let left = Math.round(faceCX - cropW / 2);
+
+  // 경계 보정
+  top = Math.max(0, Math.min(top, srcH - cropH));
+  left = Math.max(0, Math.min(left, srcW - cropW));
+  const width = Math.min(cropW, srcW - left);
+  const height = Math.min(cropH, srcH - top);
+
+  log(`[Crop] face=(${foreheadTop.toFixed(2)}-${chinBottom.toFixed(2)}) extract=${width}×${height} → ${spec.width}×${spec.height}`);
 
   return sharp(imageBuffer)
-    .extract({ left, top: 0, width: extractW, height: extractH })
-    .resize(spec.width, spec.height, { fit: 'fill' })
+    .extract({ left, top, width, height })
+    .resize(spec.width, spec.height)
     .png()
     .toBuffer();
 }
 
 /**
- * GCS에서 이미지 다운로드 + 규격 크롭 + 원본 Signed URL 발급
- * @returns {{ croppedBuffer: Buffer, originalUrl: string }}
+ * GCS에서 이미지 다운로드
  */
-export async function downloadAndCrop(gcsPath, format) {
+export async function downloadFromGCS(gcsPath) {
   const [buffer] = await bucket.file(gcsPath).download();
-  const [croppedBuffer, originalUrl] = await Promise.all([
-    cropToSpec(buffer, format),
-    getSignedUrl(gcsPath),
-  ]);
-  log(`[GCS] 크롭+URL 발급 완료: ${gcsPath} (${format})`);
-  return { croppedBuffer, originalUrl };
+  return buffer;
 }
 
 /**

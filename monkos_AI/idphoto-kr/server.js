@@ -16,7 +16,7 @@ import { WebSocketServer } from 'ws';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { GoogleGenAI } from '@google/genai';
-import { saveImages, addWatermark, downloadAndCrop } from './gcs-save.js';
+import { saveImages, addWatermark, cropToSpec, downloadFromGCS, getSignedUrl } from './gcs-save.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PORT = parseInt(process.env.PORT || '8080', 10);
@@ -445,6 +445,49 @@ async function runPreCheck(imageBase64) {
   }
 }
 
+// === 얼굴 좌표 감지 (Gemini Flash — 정밀 크롭용) ===
+const FACE_DETECT_PROMPT = `이 증명사진에서 얼굴 영역의 좌표를 0~1 비율로 알려주세요.
+
+JSON만 출력:
+{ "foreheadTop": 0.xx, "chinBottom": 0.xx, "faceLeft": 0.xx, "faceRight": 0.xx }
+
+foreheadTop: 이마 최상단(머리카락 제외)의 Y좌표 (0=이미지상단, 1=이미지하단)
+chinBottom: 턱 최하단의 Y좌표
+faceLeft: 얼굴 좌측 윤곽 X좌표 (0=이미지좌측, 1=이미지우측)
+faceRight: 얼굴 우측 윤곽 X좌표`;
+
+async function detectFace(imageBuffer) {
+  try {
+    const base64 = imageBuffer.toString('base64');
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.0-flash',
+      contents: [{
+        role: 'user',
+        parts: [
+          { inlineData: { mimeType: 'image/png', data: base64 } },
+          { text: FACE_DETECT_PROMPT },
+        ],
+      }],
+      config: { responseMimeType: 'application/json', temperature: 0.1 },
+    });
+
+    const text = response.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    const match = text.match(/\{[\s\S]*\}/);
+    if (match) {
+      const box = JSON.parse(match[0]);
+      if (box.foreheadTop != null && box.chinBottom != null) {
+        log(`[FaceDetect] 성공: forehead=${box.foreheadTop} chin=${box.chinBottom} L=${box.faceLeft} R=${box.faceRight}`);
+        return box;
+      }
+    }
+    log('[FaceDetect] 파싱 실패 → 폴백 크롭');
+    return null;
+  } catch (err) {
+    log(`[FaceDetect] 에러: ${err.message} → 폴백 크롭`);
+    return null;
+  }
+}
+
 // =============================================
 // Express 앱
 // =============================================
@@ -610,7 +653,7 @@ app.post('/api/idgen', async (req, res) => {
 });
 
 
-// 다운로드 — 서버 크롭 + 원본 Signed URL (크레딧 70c 1회 차감)
+// 다운로드 — Gemini 얼굴감지 + 정밀 크롭 + 원본 Signed URL (크레딧 70c 1회 차감)
 app.post('/api/download', async (req, res) => {
   try {
     const { userId, gcsPath, format } = req.body;
@@ -631,10 +674,19 @@ app.post('/api/download', async (req, res) => {
       });
     }
 
-    // GCS에서 다운로드 → 서버 크롭 + 원본 Signed URL 병렬 발급
-    const { croppedBuffer, originalUrl } = await downloadAndCrop(gcsPath, format || 'passport');
+    // GCS에서 이미지 다운로드
+    const buffer = await downloadFromGCS(gcsPath);
 
-    log(`[Download] ${userId} → ${gcsPath} (${format || 'passport'})`);
+    // 얼굴 감지 + Signed URL 병렬 발급
+    const [faceBox, originalUrl] = await Promise.all([
+      detectFace(buffer),
+      getSignedUrl(gcsPath),
+    ]);
+
+    // 얼굴 좌표 기반 정밀 크롭 (faceBox null이면 폴백)
+    const croppedBuffer = await cropToSpec(buffer, format || 'passport', faceBox);
+
+    log(`[Download] ${userId} → ${gcsPath} (${format || 'passport'}, face=${!!faceBox})`);
     res.json({
       success: true,
       cropped: `data:image/png;base64,${croppedBuffer.toString('base64')}`,
