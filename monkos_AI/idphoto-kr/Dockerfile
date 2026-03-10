@@ -17,6 +17,11 @@ LABEL description="MONKOS AI ID Photo KR Service - idphoto-kr.monkos.ai"
 
 WORKDIR /app
 
+# sharp SVG 텍스트 렌더링(워터마크)에 fontconfig 필요
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends fontconfig fonts-dejavu-core && \
+    rm -rf /var/lib/apt/lists/*
+
 COPY package*.json ./
 
 RUN npm install --omit=dev && \
