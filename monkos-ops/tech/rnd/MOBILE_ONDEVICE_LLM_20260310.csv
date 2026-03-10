@@ -1,0 +1,14 @@
+vendor,device,ram_gb,llm_0_5b_q4,llm_1b_q4,llm_3b_q4,llm_7b_q4,official_ondevice_llm,official_model_size
+Apple,iPhone 13 Pro,6,ok,ok,slow,no,,
+Apple,iPhone 14 Pro,6,ok,ok,slow,no,,
+Apple,iPhone 15 Pro,8,ok,ok,ok,no,Apple Foundation Model,~3B
+Apple,iPhone 16 Pro,8,ok,ok,ok,no,Apple Foundation Model,~3B
+Apple,iPhone 17 Pro,8,ok,ok,ok,no,Apple Foundation Model,~3B
+Samsung,Galaxy S23 Ultra,12,ok,ok,ok,slow,,
+Samsung,Galaxy S24,8-12,ok,ok,ok,slow(12GB only),Gemini Nano 1,~1.8B
+Samsung,Galaxy S24 Ultra,12,ok,ok,ok,slow,Gemini Nano 1,~1.8B
+Samsung,Galaxy S25,12,ok,ok,ok,ok,Gemini Nano 2,~3B
+Samsung,Galaxy S25 Ultra,12,ok,ok,ok,ok,Gemini Nano 2,~3B
+Google,Pixel 8 Pro,12,ok,ok,ok,slow,Gemini Nano 1,~1.8B
+Google,Pixel 9,12,ok,ok,ok,slow,Gemini Nano 2,~3B
+Google,Pixel 9 Pro XL,16,ok,ok,ok,ok,Gemini Nano 2,~3B
