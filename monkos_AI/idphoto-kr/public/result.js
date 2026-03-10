@@ -12,8 +12,8 @@ import {
 
 import { GateModule } from './modules/gate.js';
 import { initChatbot } from './modules/chatbot.js';
-// ─── 원본 격리: 풀 원본은 모듈 스코프 private 변수에만 보관 ───
-let _fullOriginal = null;
+// ─── GCS 경로 보관 (서버단 워터마크 — 클라이언트에 원본 도달하지 않음) ───
+let _gcsPath = null;
 
 // ─── Media 생성 (crop/toJpeg 전용 — 카메라 불필요) ───
 const media = Monk.media({
@@ -172,7 +172,8 @@ function clearForRetake() {
   sessionStorage.removeItem('monkos_generated');
   sessionStorage.removeItem('monkos_compare');
   sessionStorage.removeItem('monkos_pending_action');
-  try { sessionStorage.removeItem('_mo_p'); } catch(e) {}
+  sessionStorage.removeItem('monkos_gcsPath');
+  _gcsPath = null;
 
   // 촬영 준비실로 이동 (옵션 재선택 가능)
   navigateTo('prep.html');
@@ -249,26 +250,26 @@ async function confirmAndGenerate() {
       v: 5,
     });
 
-    // 풀 원본은 private 변수에만 보관 (img/store/sessionStorage 노출 금지)
-    _fullOriginal = genResult.image;
-    Monk.log('생성 완료');
+    // 서버가 워터마크본을 전송 — 클라이언트에 원본 도달하지 않음
+    _gcsPath = genResult.gcsPath || null;
+    if (_gcsPath) {
+      try { sessionStorage.setItem('monkos_gcsPath', _gcsPath); } catch(e) {}
+    }
+    Monk.log('생성 완료' + (_gcsPath ? ` (GCS: ${_gcsPath})` : ''));
 
-    // 워터마크 버전 생성
-    const watermarked = await generateWatermarkPreview(genResult.image);
-
-    // 크롭 워터마크 생성 (프리뷰용 — 크롭본 중심 UX)
+    // 크롭 프리뷰 (서버 워터마크본 기반)
     const spec = PHOTO_SPECS[store.format];
-    let croppedWatermark = watermarked;
+    let croppedPreview = genResult.image;
     try {
-      const cropResult = await media.crop(watermarked, spec);
-      croppedWatermark = cropResult.dataUrl;
+      const cropResult = await media.crop(genResult.image, spec);
+      croppedPreview = cropResult.dataUrl;
     } catch (e) {
       Monk.log('프리뷰 크롭 실패, 풀 워터마크 사용');
     }
 
-    // store/sessionStorage에는 크롭 워터마크 버전 저장
-    store.generated = croppedWatermark;
-    try { sessionStorage.setItem('monkos_generated', croppedWatermark); } catch(e) {}
+    // store/sessionStorage에는 워터마크 프리뷰만 저장
+    store.generated = croppedPreview;
+    try { sessionStorage.setItem('monkos_generated', croppedPreview); } catch(e) {}
 
     const elapsed = Date.now() - genStartTime;
     const remaining = Math.max(0, MIN_DISPLAY_TIME - elapsed);
@@ -276,9 +277,9 @@ async function confirmAndGenerate() {
     await new Promise(resolve => setTimeout(resolve, remaining));
 
     startCountdown(() => {
-      // 비교컷: 원본 vs 크롭 워터마크
+      // 비교컷: 원본 vs 크롭 워터마크 프리뷰
       const genImg = document.querySelector('#photo-generated');
-      if (genImg) genImg.src = croppedWatermark;
+      if (genImg) genImg.src = croppedPreview;
 
       // 비교컷 레이블을 규격명으로 변경
       const label = document.querySelector('#photo-generated-wrap .label');
@@ -294,8 +295,7 @@ async function confirmAndGenerate() {
       const btnDownload = document.querySelector('#btn-download');
       if (btnDownload) btnDownload.disabled = false;
 
-      // 워터마크 프리뷰도 크롭 버전
-      store.watermarkPreview = croppedWatermark;
+      store.watermarkPreview = croppedPreview;
 
     });
 
@@ -323,38 +323,7 @@ function showGenerateError(error) {
   Monk.log('생성 에러: ' + error);
 }
 
-// ─── 워터마크 프리뷰 생성 ───
-async function generateWatermarkPreview(imageDataUrl) {
-  const canvas = document.createElement('canvas');
-  const ctx = canvas.getContext('2d');
-  const img = new Image();
-
-  return new Promise((resolve) => {
-    img.onload = () => {
-      canvas.width = img.width;
-      canvas.height = img.height;
-      ctx.drawImage(img, 0, 0);
-
-      ctx.save();
-      ctx.globalAlpha = 0.25;
-      ctx.fillStyle = '#ffffff';
-      ctx.font = `bold ${Math.max(img.width / 8, 24)}px sans-serif`;
-      ctx.textAlign = 'center';
-      ctx.translate(canvas.width / 2, canvas.height / 2);
-      ctx.rotate(-Math.PI / 6);
-
-      for (let y = -canvas.height; y < canvas.height * 2; y += img.height / 5) {
-        ctx.fillText('MONKOS', 0, y);
-      }
-      ctx.restore();
-
-      resolve(canvas.toDataURL('image/jpeg', 0.85));
-    };
-    img.src = imageDataUrl;
-  });
-}
-
-// ─── 다운로드 (모듈 호출) ───
+// ─── 다운로드 (서버단 Signed URL) ───
 async function downloadResult() {
   if (!store.generated) return;
 
@@ -362,16 +331,18 @@ async function downloadResult() {
   const btn = document.querySelector('#btn-download');
   if (btn) btn.disabled = true;
 
-  // 토스 리다이렉트 대비: 원본을 임시 보관 (결제 중 페이지 리로드 대응)
-  if (_fullOriginal) {
-    try { sessionStorage.setItem('_mo_p', _fullOriginal); } catch(e) {}
-  }
-
-  // 로그인 필수 (촬영실 게이트에서 이미 체크되지만 방어용)
+  // 로그인 필수
   if (!store.user.id) {
     GateModule.showLoginRequired('다운로드하려면 로그인이 필요합니다', () => {
       downloadResult();
     });
+    return;
+  }
+
+  // GCS 경로 필수
+  if (!_gcsPath) {
+    Monk.log('GCS 경로 없음 — 서버단 워터마크 미적용 세션');
+    if (btn) btn.disabled = false;
     return;
   }
 
@@ -451,54 +422,44 @@ function loadImage(src) {
 }
 
 async function doDownload() {
-  let creditUsed = false;
   try {
-    const result = await pipe.run('creditUse', { userId: store.user.id, type: 'download' });
-    store.user = { ...store.user, credits: result.credits };
-    creditUsed = true;
+    // 서버에 다운로드 요청 (크레딧 70c 차감 + 서버 크롭 + 원본 Signed URL)
+    const res = await fetch('/api/download', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: store.user.id, gcsPath: _gcsPath, format: store.format }),
+    });
+    const data = await res.json();
 
-    // 크롭 실행 (thankyou용 데이터 준비)
-    if (_fullOriginal) {
-      const spec = PHOTO_SPECS[store.format];
-      try {
-        const cropResult = await media.crop(_fullOriginal, spec);
-        saveSessionData('cropped', cropResult.dataUrl);
-      } catch (e) {
-        // 크롭 실패 시 원본 그대로 저장
-        const jpeg = await media.toJpeg(_fullOriginal, 0.92);
-        saveSessionData('cropped', jpeg);
+    if (!res.ok) {
+      if (res.status === 402) {
+        showChargeModal();
+        return;
       }
+      throw new Error(data.error || '다운로드 실패');
     }
 
-    // 풀 원본 sessionStorage 보존 (thankyou에서 풀샷 20c용)
-    if (_fullOriginal) {
-      try { sessionStorage.setItem('_mo_p', _fullOriginal); } catch(e) {}
-    }
+    store.user = { ...store.user, credits: data.credits };
 
-    // 전후비교 합성 (워터마크 없이)
+    // 서버 크롭본 → thankyou 표시용
+    saveSessionData('cropped', data.cropped);
+
+    // 원본 Signed URL 보존 (thankyou에서 원본 다운로드용)
+    try {
+      sessionStorage.setItem('monkos_originalUrl', data.originalUrl);
+      sessionStorage.setItem('monkos_gcsPath', _gcsPath);
+    } catch(e) {}
+
+    // 전후비교 합성
     await generateCompareImage();
 
     // thankyou.html로 전환
     navigateTo('thankyou.html');
 
   } catch (err) {
-    if (err.status === 402) {
-      showChargeModal();
-    } else {
-      // 크레딧 차감 후 다운로드 전달 실패 시 환불
-      if (creditUsed) {
-        try {
-          const refund = await pipe.run('creditRefund', { userId: store.user.id, type: 'download' });
-          store.user = { ...store.user, credits: refund.credits };
-          Monk.log('다운로드 실패 → 70c 환불 완료');
-        } catch (refundErr) {
-          Monk.log('다운로드 실패 환불 에러: ' + (refundErr.error || refundErr.message));
-        }
-      }
-      Monk.log('다운로드 에러: ' + (err.error || err.message));
-      const btn = document.querySelector('#btn-download');
-      if (btn) btn.disabled = false;
-    }
+    Monk.log('다운로드 에러: ' + (err.error || err.message));
+    const btn = document.querySelector('#btn-download');
+    if (btn) btn.disabled = false;
   }
 }
 
@@ -527,12 +488,11 @@ async function init() {
   const resultArea = document.querySelector('#result-overlay');
   if (resultArea) resultArea.classList.add('active');
 
-  // 토스 리다이렉트 복귀 시 원본 복원
-  const pendingOrig = sessionStorage.getItem('_mo_p');
-  if (pendingOrig) {
-    _fullOriginal = pendingOrig;
-    sessionStorage.removeItem('_mo_p');
-    Monk.log('원본 이미지 임시 저장소에서 복원');
+  // 토스 리다이렉트 복귀 시 GCS 경로 복원
+  const pendingGcsPath = sessionStorage.getItem('monkos_gcsPath');
+  if (pendingGcsPath) {
+    _gcsPath = pendingGcsPath;
+    Monk.log('GCS 경로 복원: ' + _gcsPath);
   }
 
   // 광고 manifest 프리로드

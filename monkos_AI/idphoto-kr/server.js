@@ -16,7 +16,7 @@ import { WebSocketServer } from 'ws';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { GoogleGenAI } from '@google/genai';
-import { saveGeneratedImage } from './gcs-save.js';
+import { saveImages, addWatermark, downloadAndCrop } from './gcs-save.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PORT = parseInt(process.env.PORT || '8080', 10);
@@ -586,13 +586,22 @@ app.post('/api/idgen', async (req, res) => {
       throw new Error('이미지 생성 실패: 응답에 이미지가 없습니다');
     }
 
-    res.json({ image: `data:image/png;base64,${imagePart.inlineData.data}` });
+    const generatedBase64 = imagePart.inlineData.data;
+    const generatedBuffer = Buffer.from(generatedBase64, 'base64');
 
-    // GCS 비동기 저장 (fire-and-forget — 응답 후 실행, 실패해도 사용자 무영향)
+    // 로그인 유저: GCS 저장 + 워터마크 병렬 → 워터마크본 응답
+    // 비로그인: 원본 그대로 응답 (GCS 저장 없음)
     if (bodyUserId) {
-      saveGeneratedImage(bodyUserId, imagePart.inlineData.data).catch(err => {
-        log('[GCS] 비동기 저장 실패', 'WARNING', { error: err.message, userId: bodyUserId });
+      const [{ generatedPath }, watermarkedBuffer] = await Promise.all([
+        saveImages(bodyUserId, image, generatedBase64),
+        addWatermark(generatedBuffer),
+      ]);
+      res.json({
+        image: `data:image/png;base64,${watermarkedBuffer.toString('base64')}`,
+        gcsPath: generatedPath,
       });
+    } else {
+      res.json({ image: `data:image/png;base64,${generatedBase64}` });
     }
   } catch (err) {
     log(`[API][idgen] 에러: ${err.message}`, 'ERROR');
@@ -600,6 +609,43 @@ app.post('/api/idgen', async (req, res) => {
   }
 });
 
+
+// 다운로드 — 서버 크롭 + 원본 Signed URL (크레딧 70c 1회 차감)
+app.post('/api/download', async (req, res) => {
+  try {
+    const { userId, gcsPath, format } = req.body;
+    if (!userId) return res.status(400).json({ error: '로그인 필요' });
+    if (!gcsPath) return res.status(400).json({ error: 'gcsPath 필요' });
+
+    // gcsPath 검증: 해당 유저 경로인지 확인 (타인 파일 접근 차단)
+    if (!gcsPath.startsWith(`service/idphoto/kr/${userId}/`)) {
+      return res.status(403).json({ error: '접근 권한 없음' });
+    }
+
+    // 크레딧 차감 (70c — 크롭본+원본 포함)
+    const creditResult = await useCredits(userId, 'download');
+    if (!creditResult.success) {
+      return res.status(402).json({
+        error: creditResult.error,
+        credits: creditResult.credits ?? 0,
+      });
+    }
+
+    // GCS에서 다운로드 → 서버 크롭 + 원본 Signed URL 병렬 발급
+    const { croppedBuffer, originalUrl } = await downloadAndCrop(gcsPath, format || 'passport');
+
+    log(`[Download] ${userId} → ${gcsPath} (${format || 'passport'})`);
+    res.json({
+      success: true,
+      cropped: `data:image/png;base64,${croppedBuffer.toString('base64')}`,
+      originalUrl,
+      credits: creditResult.credits,
+    });
+  } catch (err) {
+    log(`[API][download] 에러: ${err.message}`, 'ERROR');
+    res.status(500).json({ error: err.message });
+  }
+});
 
 // 크레딧 차감
 app.post('/api/credit/use', async (req, res) => {

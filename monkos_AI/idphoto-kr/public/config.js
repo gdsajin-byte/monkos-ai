@@ -23,7 +23,6 @@ export const CREDIT_COST = {
   generate: 10,
   download: 70,
   extraCrop: 10,
-  fullOriginal: 10,
 };
 
 // 토스페이먼츠 (KR 전용)
