@@ -16,6 +16,7 @@ import { WebSocketServer } from 'ws';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { GoogleGenAI } from '@google/genai';
+import { saveGeneratedImage } from './gcs-save.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PORT = parseInt(process.env.PORT || '8080', 10);
@@ -586,6 +587,13 @@ app.post('/api/idgen', async (req, res) => {
     }
 
     res.json({ image: `data:image/png;base64,${imagePart.inlineData.data}` });
+
+    // GCS 비동기 저장 (fire-and-forget — 응답 후 실행, 실패해도 사용자 무영향)
+    if (bodyUserId) {
+      saveGeneratedImage(bodyUserId, imagePart.inlineData.data).catch(err => {
+        log('[GCS] 비동기 저장 실패', 'WARNING', { error: err.message, userId: bodyUserId });
+      });
+    }
   } catch (err) {
     log(`[API][idgen] 에러: ${err.message}`, 'ERROR');
     res.status(500).json({ error: err.message });
