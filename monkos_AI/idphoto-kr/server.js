@@ -182,6 +182,7 @@ DO NOT:
 - Change gender, ethnicity, or age by more than 2-3 years
 - Alter fundamental facial features
 - Make them unrecognizable
+- Make eyes look intense, strained, or unnaturally wide — keep natural calm eye contact
 
 GOAL: "This is ME, but on my best day" - perfectly front-facing, studio flat lighting, 90% accuracy, 10% professional retouching.`;
 
