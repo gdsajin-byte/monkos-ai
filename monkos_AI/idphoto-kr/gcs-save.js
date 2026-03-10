@@ -85,15 +85,25 @@ export async function addWatermark(imageBuffer) {
  * @returns {Buffer} 크롭된 PNG buffer
  */
 export async function cropToSpec(imageBuffer, format = 'passport') {
-  // 300 DPI 기준 픽셀 (35×45mm, 30×40mm)
+  // 300 DPI 기준 출력 (35×45mm, 30×40mm)
   const SPECS = {
-    passport: { width: 413, height: 531 },
-    id: { width: 354, height: 472 },
+    passport: { width: 413, height: 531, cropW: 0.85, cropH: 0.80 },
+    id: { width: 354, height: 472, cropW: 0.90, cropH: 0.85 },
   };
   const spec = SPECS[format] || SPECS.passport;
 
+  const meta = await sharp(imageBuffer).metadata();
+  const srcW = meta.width;
+  const srcH = meta.height;
+
+  // 얼굴 중심 확대: 양쪽 여백 + 하단 제거 → 얼굴 비중 증가
+  const extractW = Math.round(srcW * spec.cropW);
+  const extractH = Math.round(srcH * spec.cropH);
+  const left = Math.round((srcW - extractW) / 2);
+
   return sharp(imageBuffer)
-    .resize(spec.width, spec.height, { fit: 'cover', position: 'top' })
+    .extract({ left, top: 0, width: extractW, height: extractH })
+    .resize(spec.width, spec.height, { fit: 'fill' })
     .png()
     .toBuffer();
 }
