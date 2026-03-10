@@ -379,7 +379,7 @@ function extractBase64(base64Input) {
 }
 
 // === 사전분석 폴백 모델 ===
-const PRECHECK_MODELS = ['gemini-3-flash-preview', 'gemini-2.0-flash'];
+const PRECHECK_MODELS = ['gemini-2.0-flash'];
 
 // === 사전분석 (SPA 호환 — Gemini 2.0 Flash via Vertex AI ADC) ===
 const PRE_CHECK_INSTRUCTION = `이 사진이 증명사진 원본으로 적합한지 분석해 주세요.
@@ -446,12 +446,12 @@ async function runPreCheck(imageBase64) {
 }
 
 // === 얼굴 좌표 감지 (Gemini Flash — 정밀 크롭용) ===
-const FACE_DETECT_PROMPT = `이 증명사진에서 얼굴 영역의 좌표를 0~1 비율로 알려주세요.
+const FACE_DETECT_PROMPT = `이 증명사진에서 머리 영역의 좌표를 0~1 비율로 알려주세요.
 
 JSON만 출력:
-{ "foreheadTop": 0.xx, "chinBottom": 0.xx, "faceLeft": 0.xx, "faceRight": 0.xx }
+{ "headTop": 0.xx, "chinBottom": 0.xx, "faceLeft": 0.xx, "faceRight": 0.xx }
 
-foreheadTop: 이마 최상단(머리카락 제외)의 Y좌표 (0=이미지상단, 1=이미지하단)
+headTop: 정수리(머리카락 제외한 머리 최상부)의 Y좌표 (0=이미지상단, 1=이미지하단)
 chinBottom: 턱 최하단의 Y좌표
 faceLeft: 얼굴 좌측 윤곽 X좌표 (0=이미지좌측, 1=이미지우측)
 faceRight: 얼굴 우측 윤곽 X좌표`;
@@ -475,8 +475,8 @@ async function detectFace(imageBuffer) {
     const match = text.match(/\{[\s\S]*\}/);
     if (match) {
       const box = JSON.parse(match[0]);
-      if (box.foreheadTop != null && box.chinBottom != null) {
-        log(`[FaceDetect] 성공: forehead=${box.foreheadTop} chin=${box.chinBottom} L=${box.faceLeft} R=${box.faceRight}`);
+      if (box.headTop != null && box.chinBottom != null) {
+        log(`[FaceDetect] 성공: headTop=${box.headTop} chin=${box.chinBottom} L=${box.faceLeft} R=${box.faceRight}`);
         return box;
       }
     }
@@ -515,7 +515,7 @@ app.get('/health', (req, res) => {
     auth: 'Hybrid (ADC + API Key)',
     geminiLive: 'ready (ADC)',
     imagen: GEMINI_API_KEY ? 'active (API Key)' : 'NO API KEY',
-    preCheck: 'active (gemini-3-flash-preview → 2.0-flash 폴백)',
+    preCheck: 'active (gemini-2.0-flash)',
   });
 });
 
@@ -765,7 +765,7 @@ const httpServer = app.listen(PORT, '0.0.0.0', () => {
   log(`리전: ${LOCATION}`);
   log(`인증: 하이브리드 (ADC + API Key)`);
   log(`Imagen I2I: 활성 (gemini-3-pro-image-preview, API Key)`);
-  log(`사전분석: 활성 (gemini-3-flash-preview → 2.0-flash 폴백)`);
+  log(`사전분석: 활성 (gemini-2.0-flash)`);
   log('='.repeat(60));
   log('엔드포인트:');
   log('  GET  /health              — 헬스체크');

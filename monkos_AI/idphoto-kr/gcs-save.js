@@ -89,8 +89,8 @@ export async function addWatermark(imageBuffer) {
  */
 export async function cropToSpec(imageBuffer, format = 'passport', faceBox = null) {
   const SPECS = {
-    passport: { width: 413, height: 531, faceRatio: 0.65, topMargin: 0.08 },
-    id: { width: 354, height: 472, faceRatio: 0.60, topMargin: 0.10 },
+    passport: { width: 413, height: 531, faceRatio: 0.75, topMargin: 0.12 },
+    id: { width: 354, height: 472, faceRatio: 0.65, topMargin: 0.10 },
   };
   const spec = SPECS[format] || SPECS.passport;
 
@@ -106,17 +106,17 @@ export async function cropToSpec(imageBuffer, format = 'passport', faceBox = nul
       .toBuffer();
   }
 
-  // 얼굴 좌표 기반 정밀 크롭
-  const { foreheadTop, chinBottom, faceLeft, faceRight } = faceBox;
-  const faceH = (chinBottom - foreheadTop) * srcH;
+  // 정수리~턱 기반 정밀 크롭 (외교부 규격: 머리길이 = 정수리~턱끝)
+  const { headTop, chinBottom, faceLeft, faceRight } = faceBox;
+  const faceH = (chinBottom - headTop) * srcH;
   const faceCX = ((faceLeft + faceRight) / 2) * srcW;
 
-  // 크롭 영역: 얼굴이 전체의 faceRatio를 차지하도록 계산
+  // 크롭 영역: 머리가 전체의 faceRatio를 차지하도록 계산
   const cropH = Math.round(faceH / spec.faceRatio);
   const cropW = Math.round(cropH * (spec.width / spec.height));
 
-  // 상단 여백: 이마 위 topMargin 비율
-  let top = Math.round((foreheadTop * srcH) - (cropH * spec.topMargin));
+  // 상단 여백: 정수리 위 topMargin 비율
+  let top = Math.round((headTop * srcH) - (cropH * spec.topMargin));
   let left = Math.round(faceCX - cropW / 2);
 
   // 경계 보정
@@ -125,7 +125,7 @@ export async function cropToSpec(imageBuffer, format = 'passport', faceBox = nul
   const width = Math.min(cropW, srcW - left);
   const height = Math.min(cropH, srcH - top);
 
-  log(`[Crop] face=(${foreheadTop.toFixed(2)}-${chinBottom.toFixed(2)}) extract=${width}×${height} → ${spec.width}×${spec.height}`);
+  log(`[Crop] head=(${headTop.toFixed(2)}-${chinBottom.toFixed(2)}) extract=${width}×${height} → ${spec.width}×${spec.height}`);
 
   return sharp(imageBuffer)
     .extract({ left, top, width, height })
