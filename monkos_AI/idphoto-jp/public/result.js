@@ -12,8 +12,8 @@ import {
 
 import { GateModule } from './modules/gate.js';
 import { initChatbot } from './modules/chatbot.js';
-// ─── 原本隔離: フル原本はモジュールスコープprivate変数にのみ保管 ───
-let _fullOriginal = null;
+// ─── GCSパス保管 (サーバー側ウォーターマーク — クライアントに原本到達しない) ───
+let _gcsPath = null;
 
 // ─── Media 生成 (crop/toJpeg 専用 — カメラ不要) ───
 const media = Monk.media({
@@ -172,7 +172,8 @@ function clearForRetake() {
   sessionStorage.removeItem('monkos_generated');
   sessionStorage.removeItem('monkos_compare');
   sessionStorage.removeItem('monkos_pending_action');
-  try { sessionStorage.removeItem('_mo_p'); } catch(e) {}
+  try { sessionStorage.removeItem('monkos_gcsPath'); } catch(e) {}
+  try { sessionStorage.removeItem('monkos_originalUrl'); } catch(e) {}
 
   // 撮影準備室へ移動（オプション再選択可能）
   navigateTo('prep.html');
@@ -249,18 +250,18 @@ async function confirmAndGenerate() {
       v: 5,
     });
 
-    // フル原本はprivate変数にのみ保管（img/store/sessionStorage露出禁止）
-    _fullOriginal = genResult.image;
-    Monk.log('生成完了');
+    // サーバーがウォーターマーク版を送信 — クライアントに原本到達しない
+    _gcsPath = genResult.gcsPath || null;
+    if (_gcsPath) {
+      try { sessionStorage.setItem('monkos_gcsPath', _gcsPath); } catch(e) {}
+    }
+    Monk.log('生成完了' + (_gcsPath ? ` (GCS: ${_gcsPath})` : ''));
 
-    // ウォーターマーク版生成
-    const watermarked = await generateWatermarkPreview(genResult.image);
-
-    // クロップウォーターマーク生成（プレビュー用 — クロップ本中心UX）
+    // サーバーがウォーターマーク済み画像を返却 → クロッププレビュー生成
     const spec = PHOTO_SPECS[store.format];
-    let croppedWatermark = watermarked;
+    let croppedWatermark = genResult.image;
     try {
-      const cropResult = await media.crop(watermarked, spec);
+      const cropResult = await media.crop(genResult.image, spec);
       croppedWatermark = cropResult.dataUrl;
     } catch (e) {
       Monk.log('プレビュークロップ失敗、フルウォーターマーク使用');
@@ -323,38 +324,7 @@ function showGenerateError(error) {
   Monk.log('生成エラー: ' + error);
 }
 
-// ─── ウォーターマークプレビュー生成 ───
-async function generateWatermarkPreview(imageDataUrl) {
-  const canvas = document.createElement('canvas');
-  const ctx = canvas.getContext('2d');
-  const img = new Image();
-
-  return new Promise((resolve) => {
-    img.onload = () => {
-      canvas.width = img.width;
-      canvas.height = img.height;
-      ctx.drawImage(img, 0, 0);
-
-      ctx.save();
-      ctx.globalAlpha = 0.25;
-      ctx.fillStyle = '#ffffff';
-      ctx.font = `bold ${Math.max(img.width / 8, 24)}px sans-serif`;
-      ctx.textAlign = 'center';
-      ctx.translate(canvas.width / 2, canvas.height / 2);
-      ctx.rotate(-Math.PI / 6);
-
-      for (let y = -canvas.height; y < canvas.height * 2; y += img.height / 5) {
-        ctx.fillText('MONKOS', 0, y);
-      }
-      ctx.restore();
-
-      resolve(canvas.toDataURL('image/jpeg', 0.85));
-    };
-    img.src = imageDataUrl;
-  });
-}
-
-// ─── ダウンロード（モジュール呼出） ───
+// ─── ダウンロード (サーバー側Signed URL) ───
 async function downloadResult() {
   if (!store.generated) return;
 
@@ -362,16 +332,18 @@ async function downloadResult() {
   const btn = document.querySelector('#btn-download');
   if (btn) btn.disabled = true;
 
-  // 決済リダイレクト対応: 原本を一時保管（決済中ページリロード対応）
-  if (_fullOriginal) {
-    try { sessionStorage.setItem('_mo_p', _fullOriginal); } catch(e) {}
-  }
-
-  // ログイン必須（撮影室ゲートで既にチェック済みだが防御用）
+  // ログイン必須
   if (!store.user.id) {
     GateModule.showLoginRequired('ダウンロードにはログインが必要です', () => {
       downloadResult();
     });
+    return;
+  }
+
+  // GCSパス必須
+  if (!_gcsPath) {
+    Monk.log('GCSパスなし — サーバー側ウォーターマーク未適用セッション');
+    if (btn) btn.disabled = false;
     return;
   }
 
@@ -451,54 +423,44 @@ function loadImage(src) {
 }
 
 async function doDownload() {
-  let creditUsed = false;
   try {
-    const result = await pipe.run('creditUse', { userId: store.user.id, type: 'download' });
-    store.user = { ...store.user, credits: result.credits };
-    creditUsed = true;
+    // サーバーにダウンロード要求 (クレジット70c差引 + サーバークロップ + 原本Signed URL)
+    const res = await fetch('/api/download', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: store.user.id, gcsPath: _gcsPath, format: store.format }),
+    });
+    const data = await res.json();
 
-    // クロップ実行（thankyou用データ準備）
-    if (_fullOriginal) {
-      const spec = PHOTO_SPECS[store.format];
-      try {
-        const cropResult = await media.crop(_fullOriginal, spec);
-        saveSessionData('cropped', cropResult.dataUrl);
-      } catch (e) {
-        // クロップ失敗時 原本そのまま保存
-        const jpeg = await media.toJpeg(_fullOriginal, 0.92);
-        saveSessionData('cropped', jpeg);
+    if (!res.ok) {
+      if (res.status === 402) {
+        showChargeModal();
+        return;
       }
+      throw new Error(data.error || 'ダウンロード失敗');
     }
 
-    // フル原本 sessionStorage 保存（thankyouでフルショット用）
-    if (_fullOriginal) {
-      try { sessionStorage.setItem('_mo_p', _fullOriginal); } catch(e) {}
-    }
+    store.user = { ...store.user, credits: data.credits };
 
-    // 前後比較合成（ウォーターマークなし）
+    // サーバークロップ本 → thankyou表示用
+    saveSessionData('cropped', data.cropped);
+
+    // 原本Signed URL 保存 (thankyouで原本ダウンロード用)
+    try {
+      sessionStorage.setItem('monkos_originalUrl', data.originalUrl);
+      sessionStorage.setItem('monkos_gcsPath', _gcsPath);
+    } catch(e) {}
+
+    // 前後比較合成
     await generateCompareImage();
 
     // thankyou.htmlへ遷移
     navigateTo('thankyou.html');
 
   } catch (err) {
-    if (err.status === 402) {
-      showChargeModal();
-    } else {
-      // クレジット差引後ダウンロード転送失敗時の返金
-      if (creditUsed) {
-        try {
-          const refund = await pipe.run('creditRefund', { userId: store.user.id, type: 'download' });
-          store.user = { ...store.user, credits: refund.credits };
-          Monk.log('ダウンロード失敗 → 70c返金完了');
-        } catch (refundErr) {
-          Monk.log('ダウンロード失敗返金エラー: ' + (refundErr.error || refundErr.message));
-        }
-      }
-      Monk.log('ダウンロードエラー: ' + (err.error || err.message));
-      const btn = document.querySelector('#btn-download');
-      if (btn) btn.disabled = false;
-    }
+    Monk.log('ダウンロードエラー: ' + (err.error || err.message));
+    const btn = document.querySelector('#btn-download');
+    if (btn) btn.disabled = false;
   }
 }
 
@@ -527,12 +489,11 @@ async function init() {
   const resultArea = document.querySelector('#result-overlay');
   if (resultArea) resultArea.classList.add('active');
 
-  // リダイレクト復帰時にオリジナル復元
-  const pendingOrig = sessionStorage.getItem('_mo_p');
-  if (pendingOrig) {
-    _fullOriginal = pendingOrig;
-    sessionStorage.removeItem('_mo_p');
-    Monk.log('オリジナル画像一時保存から復元');
+  // リダイレクト復帰時にGCSパス復元
+  const pendingGcsPath = sessionStorage.getItem('monkos_gcsPath');
+  if (pendingGcsPath) {
+    _gcsPath = pendingGcsPath;
+    Monk.log('GCSパス復元: ' + _gcsPath);
   }
 
   // 広告manifestプリロード

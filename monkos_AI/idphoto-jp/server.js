@@ -16,6 +16,7 @@ import { WebSocketServer } from 'ws';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { GoogleGenAI } from '@google/genai';
+import { saveImages, addWatermark, cropToSpec, downloadFromGCS, getSignedUrl } from './gcs-save.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PORT = parseInt(process.env.PORT || '8080', 10);
@@ -24,6 +25,7 @@ const PORT = parseInt(process.env.PORT || '8080', 10);
 const PROJECT_ID = process.env.PROJECT_ID || 'monkos';
 const LOCATION = process.env.LOCATION || 'us-central1';
 const PORTAL_API_URL = process.env.PORTAL_API_URL || 'https://monkos.ai';
+const GCS_BUCKET = process.env.GCS_BUCKET || 'monk-ai-images';
 
 /**
  * 構造化ロギング (Cloud Logging 互換)
@@ -124,6 +126,7 @@ const COACHING_INSTRUCTIONS = {
 3. 表情（無表情または自然な微笑み）
 4. 眉毛が見える（前髪で隠さない）
 5. フェイスラインが見える（髪で覆わない）
+6. 耳が見える（髪で両耳が隠れないように）
 
 [セッション規律]
 - 挨拶しないでください。すぐにコーチングだけ始めてください。
@@ -380,7 +383,7 @@ function extractBase64(base64Input) {
 }
 
 // === 事前分析 フォールバックモデル ===
-const PRECHECK_MODELS = ['gemini-3-flash-preview', 'gemini-2.0-flash'];
+const PRECHECK_MODELS = ['gemini-2.0-flash'];
 
 // === 事前分析 (SPA互換 — Gemini 2.0 Flash via Vertex AI ADC) ===
 const PRE_CHECK_INSTRUCTION = `この写真が証明写真の原本として適切かどうか分析してください。
@@ -393,6 +396,7 @@ const PRE_CHECK_INSTRUCTION = `この写真が証明写真の原本として適�
 5. 顔のサイズ：フレーム対比で顔が十分大きいか？（最低20%）
 6. 表情：無表情または自然な微笑みか？
 7. 目：目を閉じていないか？
+8. 耳：両耳が見えているか？（髪で完全に隠れていないか）
 
 [応答形式 — JSONのみ出力]
 {
@@ -446,6 +450,55 @@ async function runPreCheck(imageBase64) {
   }
 }
 
+// === 顔座標検出 (Gemini Flash — 精密クロップ用) ===
+const FACE_DETECT_PROMPT = `이 증명사진에서 머리 영역의 좌표를 0~1 비율로 알려주세요.
+
+JSON만 출력:
+{ "headTop": 0.xx, "chinBottom": 0.xx, "faceLeft": 0.xx, "faceRight": 0.xx }
+
+headTop: 정수리(머리카락 제외한 머리 최상부)의 Y좌표 (0=이미지상단, 1=이미지하단)
+chinBottom: 턱 최하단의 Y좌표
+faceLeft: 얼굴 좌측 윤곽 X좌표 (0=이미지좌측, 1=이미지우측)
+faceRight: 얼굴 우측 윤곽 X좌표`;
+
+async function detectFace(imageBuffer) {
+  try {
+    const base64 = imageBuffer.toString('base64');
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.0-flash',
+      contents: [{
+        role: 'user',
+        parts: [
+          { inlineData: { mimeType: 'image/png', data: base64 } },
+          { text: FACE_DETECT_PROMPT },
+        ],
+      }],
+      config: { responseMimeType: 'application/json', temperature: 0.1 },
+    });
+
+    const text = response.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    const match = text.match(/\{[\s\S]*\}/);
+    if (match) {
+      const raw = JSON.parse(match[0]);
+      const box = {
+        headTop: Number(raw.headTop),
+        chinBottom: Number(raw.chinBottom),
+        faceLeft: Number(raw.faceLeft),
+        faceRight: Number(raw.faceRight),
+      };
+      if (!isNaN(box.headTop) && !isNaN(box.chinBottom)) {
+        log(`[FaceDetect] 成功: headTop=${box.headTop} chin=${box.chinBottom} L=${box.faceLeft} R=${box.faceRight}`);
+        return box;
+      }
+    }
+    log('[FaceDetect] パース失敗 → フォールバッククロップ');
+    return null;
+  } catch (err) {
+    log(`[FaceDetect] エラー: ${err.message} → フォールバッククロップ`);
+    return null;
+  }
+}
+
 // =============================================
 // Express アプリ
 // =============================================
@@ -473,7 +526,7 @@ app.get('/health', (req, res) => {
     auth: 'Hybrid (ADC + API Key)',
     geminiLive: 'ready (ADC)',
     imagen: GEMINI_API_KEY ? 'active (API Key)' : 'NO API KEY',
-    preCheck: 'active (gemini-3-flash-preview → 2.0-flash フォールバック)',
+    preCheck: 'active (gemini-2.0-flash)',
   });
 });
 
@@ -537,7 +590,7 @@ app.post('/api/idgen', async (req, res) => {
         return res.status(402).json({
           error: creditResult.error,
           credits: creditResult.credits ?? 0,
-          required: 1,
+          required: 10,
         });
       }
       log(`[Credits] idgen差引: ${userId} → ${creditResult.credits}c`);
@@ -587,7 +640,23 @@ app.post('/api/idgen', async (req, res) => {
       throw new Error('画像生成失敗：応答に画像がありません');
     }
 
-    res.json({ image: `data:image/png;base64,${imagePart.inlineData.data}` });
+    const generatedBase64 = imagePart.inlineData.data;
+    const generatedBuffer = Buffer.from(generatedBase64, 'base64');
+
+    // ログインユーザー: GCS保存 + ウォーターマーク並列 → ウォーターマーク版応答
+    // 非ログイン: 原本そのまま応答 (GCS保存なし)
+    if (bodyUserId) {
+      const [{ generatedPath }, watermarkedBuffer] = await Promise.all([
+        saveImages(bodyUserId, image, generatedBase64),
+        addWatermark(generatedBuffer),
+      ]);
+      res.json({
+        image: `data:image/png;base64,${watermarkedBuffer.toString('base64')}`,
+        gcsPath: generatedPath,
+      });
+    } else {
+      res.json({ image: `data:image/png;base64,${generatedBase64}` });
+    }
   } catch (err) {
     log(`[API][idgen] エラー: ${err.message}`, 'ERROR');
     res.status(500).json({ error: err.message });
@@ -630,6 +699,52 @@ app.post('/api/credit/share-bonus', async (req, res) => {
   }
 });
 
+// ダウンロード — Gemini顔検出 + 精密クロップ + 原本Signed URL (クレジット70c 1回差引)
+app.post('/api/download', async (req, res) => {
+  try {
+    const { userId, gcsPath, format } = req.body;
+    if (!userId) return res.status(400).json({ error: 'ログインが必要です' });
+    if (!gcsPath) return res.status(400).json({ error: 'gcsPathが必要です' });
+
+    // gcsPath検証: 該当ユーザーパスか確認 (他人のファイルアクセス遮断)
+    if (!gcsPath.startsWith(`service/idphoto/jp/${userId}/`)) {
+      return res.status(403).json({ error: 'アクセス権限なし' });
+    }
+
+    // クレジット差引 (70c — クロップ本+原本含む)
+    const creditResult = await useCredits(userId, 'download');
+    if (!creditResult.success) {
+      return res.status(402).json({
+        error: creditResult.error,
+        credits: creditResult.credits ?? 0,
+      });
+    }
+
+    // GCSから画像ダウンロード
+    const buffer = await downloadFromGCS(gcsPath);
+
+    // 顔検出 + Signed URL 並列発行
+    const [faceBox, originalUrl] = await Promise.all([
+      detectFace(buffer),
+      getSignedUrl(gcsPath),
+    ]);
+
+    // 顔座標基準 精密クロップ (faceBox nullならフォールバック)
+    const croppedBuffer = await cropToSpec(buffer, format || 'passport', faceBox);
+
+    log(`[Download] ${userId} → ${gcsPath} (${format || 'passport'}, face=${!!faceBox})`);
+    res.json({
+      success: true,
+      cropped: `data:image/png;base64,${croppedBuffer.toString('base64')}`,
+      originalUrl,
+      credits: creditResult.credits,
+    });
+  } catch (err) {
+    log(`[API][download] エラー: ${err.message}`, 'ERROR');
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // === ページルート (MPA) ===
 app.get('/', (req, res) => res.sendFile(join(__dirname, 'public/index.html')));
 app.get('/app', (req, res) => res.sendFile(join(__dirname, 'public/index.html')));
@@ -660,7 +775,7 @@ const httpServer = app.listen(PORT, '0.0.0.0', () => {
   log(`リージョン: ${LOCATION}`);
   log(`認証: ハイブリッド (ADC + API Key)`);
   log(`Imagen I2I: アクティブ (gemini-3-pro-image-preview, API Key)`);
-  log('事前分析: アクティブ (gemini-3-flash-preview → 2.0-flash フォールバック)');
+  log('事前分析: アクティブ (gemini-2.0-flash)');
   log('='.repeat(60));
   log('エンドポイント:');
   log('  GET  /health              — ヘルスチェック');
@@ -670,6 +785,7 @@ const httpServer = app.listen(PORT, '0.0.0.0', () => {
   log('  POST /api/idgen           — Imagen I2I (9フィールド)');
   log('  POST /api/credit/use      — クレジット差引');
   log('  POST /api/credit/share-bonus — シェアボーナス');
+  log('  POST /api/download        — ダウンロード (GCS+クロップ+SignedURL)');
   log('  GET  /                    — ランディングページ');
   log('  GET  /app                 — 撮影アプリ (SPA)');
   log('  GET  /prep                — 準備 (MPA)');

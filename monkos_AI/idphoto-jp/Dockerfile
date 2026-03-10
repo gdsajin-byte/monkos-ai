@@ -13,16 +13,21 @@
 FROM node:20-slim
 
 LABEL maintainer="MONK.KR"
-LABEL description="MONKOS AI ID Photo KR Service - idphoto-kr.monkos.ai"
+LABEL description="MONKOS AI ID Photo JP Service - idphoto-jp.monkos.ai"
 
 WORKDIR /app
 
 COPY package*.json ./
 
+# sharp SVG テキストレンダリング(ウォーターマーク)にfontconfig必要
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends fontconfig fonts-dejavu-core && \
+    rm -rf /var/lib/apt/lists/*
+
 RUN npm install --omit=dev && \
     npm cache clean --force
 
-COPY server.js ./
+COPY server.js gcs-save.js ./
 COPY public/ ./public/
 
 ENV NODE_ENV=production
