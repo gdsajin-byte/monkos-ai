@@ -474,8 +474,14 @@ async function detectFace(imageBuffer) {
     const text = response.candidates?.[0]?.content?.parts?.[0]?.text || '';
     const match = text.match(/\{[\s\S]*\}/);
     if (match) {
-      const box = JSON.parse(match[0]);
-      if (box.headTop != null && box.chinBottom != null) {
+      const raw = JSON.parse(match[0]);
+      const box = {
+        headTop: Number(raw.headTop),
+        chinBottom: Number(raw.chinBottom),
+        faceLeft: Number(raw.faceLeft),
+        faceRight: Number(raw.faceRight),
+      };
+      if (!isNaN(box.headTop) && !isNaN(box.chinBottom)) {
         log(`[FaceDetect] 성공: headTop=${box.headTop} chin=${box.chinBottom} L=${box.faceLeft} R=${box.faceRight}`);
         return box;
       }
