@@ -24,7 +24,7 @@ export async function handleCheckout(req, res) {
       },
     };
     if (redirectUrl) {
-      attributes.checkout_data.custom.redirect_url = redirectUrl;
+      attributes.product_options = { redirect_url: redirectUrl };
     }
 
     const checkoutRes = await fetch('https://api.lemonsqueezy.com/v1/checkouts', {
