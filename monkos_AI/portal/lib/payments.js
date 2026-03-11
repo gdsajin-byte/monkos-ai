@@ -14,10 +14,17 @@ export async function handleCheckout(req, res) {
       return;
     }
 
-    // checkout_options 구성 — redirect_url이 있으면 결제 후 앱으로 복귀
-    const checkoutOptions = { locale: 'ja' };
+    // LS 체크아웃 생성 — redirect_url은 product_options에 배치 (LS API 스펙)
+    const attributes = {
+      checkout_options: { locale: 'ja' },
+      checkout_data: {
+        billing_address: { country: 'JP' },
+        custom: { user_id: userId },
+        email: email || undefined,
+      },
+    };
     if (redirectUrl) {
-      checkoutOptions.redirect_url = redirectUrl;
+      attributes.product_options = { redirect_url: redirectUrl };
     }
 
     const checkoutRes = await fetch('https://api.lemonsqueezy.com/v1/checkouts', {
@@ -30,14 +37,7 @@ export async function handleCheckout(req, res) {
       body: JSON.stringify({
         data: {
           type: 'checkouts',
-          attributes: {
-            checkout_options: checkoutOptions,
-            checkout_data: {
-              billing_address: { country: 'JP' },
-              custom: { user_id: userId },
-              email: email || undefined,
-            },
-          },
+          attributes,
           relationships: {
             store: { data: { type: 'stores', id: LEMONSQUEEZY_STORE_ID } },
             variant: { data: { type: 'variants', id: String(variantId) } },
