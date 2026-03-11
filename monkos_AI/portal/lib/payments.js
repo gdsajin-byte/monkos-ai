@@ -14,7 +14,7 @@ export async function handleCheckout(req, res) {
       return;
     }
 
-    // LS 체크아웃 생성 — redirect_url은 product_options에 배치 (LS API 스펙)
+    // LS 체크아웃 생성
     const attributes = {
       checkout_options: { locale: 'ja' },
       checkout_data: {
@@ -24,7 +24,7 @@ export async function handleCheckout(req, res) {
       },
     };
     if (redirectUrl) {
-      attributes.product_options = { redirect_url: redirectUrl };
+      attributes.checkout_data.custom.redirect_url = redirectUrl;
     }
 
     const checkoutRes = await fetch('https://api.lemonsqueezy.com/v1/checkouts', {
