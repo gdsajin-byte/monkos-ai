@@ -7,11 +7,17 @@ import { usersCollection, firestore, log, logTransaction, parseJsonBody, parseRa
  */
 export async function handleCheckout(req, res) {
   try {
-    const { variantId, userId, email } = await parseJsonBody(req);
+    const { variantId, userId, email, redirectUrl } = await parseJsonBody(req);
     if (!variantId || !userId) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: 'variantId, userId 필수' }));
       return;
+    }
+
+    // checkout_options 구성 — redirect_url이 있으면 결제 후 앱으로 복귀
+    const checkoutOptions = { locale: 'ja' };
+    if (redirectUrl) {
+      checkoutOptions.redirect_url = redirectUrl;
     }
 
     const checkoutRes = await fetch('https://api.lemonsqueezy.com/v1/checkouts', {
@@ -25,9 +31,7 @@ export async function handleCheckout(req, res) {
         data: {
           type: 'checkouts',
           attributes: {
-            checkout_options: {
-              locale: 'ja',
-            },
+            checkout_options: checkoutOptions,
             checkout_data: {
               billing_address: { country: 'JP' },
               custom: { user_id: userId },

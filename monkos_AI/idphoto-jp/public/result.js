@@ -539,11 +539,46 @@ async function init() {
 
     Monk.log('生成結果復元（チャージ後復帰）');
 
-    // チャージ目的がダウンロードなら自動進行
+    // 決済復帰検知 — ?payment=complete パラメータ
+    const urlParams = new URLSearchParams(location.search);
+    const isPaymentReturn = urlParams.get('payment') === 'complete';
+
+    // URLからpaymentパラメータ除去（履歴クリーン化）
+    if (isPaymentReturn) {
+      const cleanUrl = new URL(location.href);
+      cleanUrl.searchParams.delete('payment');
+      history.replaceState(null, '', cleanUrl.toString());
+    }
+
+    // チャージ目的がダウンロードなら自動進行（決済復帰時はクレジットポーリング）
     const pendingAction = sessionStorage.getItem('monkos_pending_action');
-    if (pendingAction === 'download' && store.user.credits >= CREDIT_COST.download) {
-      sessionStorage.removeItem('monkos_pending_action');
-      setTimeout(() => downloadResult(), 300);
+    if (pendingAction === 'download') {
+      if (isPaymentReturn) {
+        // Webhook反映待ち — 最大15秒ポーリング
+        Monk.log('決済復帰 — クレジットポーリング開始');
+        let attempts = 0;
+        const pollCredits = async () => {
+          attempts++;
+          await fetchLatestCredits();
+          if (store.user.credits >= CREDIT_COST.download) {
+            sessionStorage.removeItem('monkos_pending_action');
+            Monk.log(`クレジット反映確認 (${attempts}回目) — ダウンロード自動進行`);
+            setTimeout(() => downloadResult(), 300);
+          } else if (attempts < 5) {
+            setTimeout(pollCredits, 3000);
+          } else {
+            sessionStorage.removeItem('monkos_pending_action');
+            Monk.log('クレジットポーリングタイムアウト — 手動ダウンロードへ');
+            alert('決済は完了しましたが、クレジット反映に時間がかかっています。\nしばらくしてからダウンロードボタンを押してください。');
+          }
+        };
+        setTimeout(pollCredits, 2000);
+      } else if (store.user.credits >= CREDIT_COST.download) {
+        sessionStorage.removeItem('monkos_pending_action');
+        setTimeout(() => downloadResult(), 300);
+      } else {
+        sessionStorage.removeItem('monkos_pending_action');
+      }
     } else {
       sessionStorage.removeItem('monkos_pending_action');
     }

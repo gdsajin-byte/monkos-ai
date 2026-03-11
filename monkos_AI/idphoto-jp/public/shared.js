@@ -129,7 +129,7 @@ export function showChargeModal() {
   import('./modules/charge.js').then(m => m.ChargeModule.show());
 }
 
-// ─── 決済 (Lemon Squeezy Overlay — Portal API 経由) ───
+// ─── 決済 (Lemon Squeezy — Portal API 経由、同一タブリダイレクト) ───
 export async function buyCreditsJP(opt) {
   // opt = CHARGE_OPTIONS 要素: { key, variantId, price, credits, bonus }
   if (!store.user.id) {
@@ -143,10 +143,13 @@ export async function buyCreditsJP(opt) {
 
   closeCreditModal();
 
-  // ポップアップブロック回避: ユーザージェスチャ内で先にタブを開く
-  const win = window.open('about:blank', '_blank');
-
   try {
+    // 決済後の復帰URL — 現在ページに ?payment=complete を付与
+    const returnUrl = new URL(location.href);
+    returnUrl.searchParams.delete('payment');
+    returnUrl.searchParams.set('payment', 'complete');
+    const redirectUrl = returnUrl.toString();
+
     // Portal にチェックアウト URL 要求
     const res = await fetch(`${API.PORTAL_URL}/api/checkout`, {
       method: 'POST',
@@ -156,25 +159,19 @@ export async function buyCreditsJP(opt) {
         variantId: opt.variantId,
         userId: store.user.id,
         email: store.user.email || undefined,
+        redirectUrl,
       }),
     });
 
     const data = await res.json();
     if (!data.url) {
-      if (win) win.close();
       alert('決済の準備に失敗しました。しばらくしてからお試しください。');
       return;
     }
 
-    // 取得したURLへリダイレクト
-    if (win) {
-      win.location.href = data.url;
-    } else {
-      // タブが開けなかった場合 → 現在ページで遷移
-      location.href = data.url;
-    }
+    // 同一タブで遷移 — sessionStorage維持、決済後redirect_urlで復帰
+    location.href = data.url;
   } catch (err) {
-    if (win) win.close();
     Monk.log('決済エラー: ' + err.message);
     alert('決済エラーが発生しました。もう一度お試しください。');
   }
