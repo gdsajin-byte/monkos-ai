@@ -1,0 +1,21 @@
+{
+  "name": "@monkos/crop-engine",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "description": "MONKOS 증명사진 크롭 엔진 — 가이드 프레임 기반 정밀 크롭",
+  "dependencies": {
+    "@tensorflow-models/face-landmarks-detection": "^1.0.0",
+    "@tensorflow/tfjs": "^4.22.0",
+    "@tensorflow/tfjs-backend-wasm": "^4.22.0",
+    "@tensorflow/tfjs-node": "^4.22.0",
+    "cors": "^2.8.5",
+    "sharp": "^0.33.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
