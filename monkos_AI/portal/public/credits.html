@@ -9,7 +9,7 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <script src="https://accounts.google.com/gsi/client" async defer></script>
-<script src="https://js.tosspayments.com/v1/payment"></script>
+<script src="https://js.tosspayments.com/v2/standard"></script>
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 :root {
@@ -170,7 +170,12 @@ footer { text-align: center; padding: 40px 0 20px; border-top: 1px solid rgba(16
       <!-- JS로 렌더링 -->
     </div>
 
-    <button class="pay-btn" id="payBtn" onclick="startPayment()">토스페이먼츠로 결제</button>
+    <div id="widgetSection" style="display:none; margin-top:16px;">
+      <div id="payment-method"></div>
+      <div id="agreement" style="margin-top:8px;"></div>
+    </div>
+
+    <button class="pay-btn" id="payBtn" onclick="startPayment()" disabled>패키지를 선택해 주세요</button>
 
     <div class="info-box">
       <h3>안내</h3>
@@ -191,7 +196,7 @@ footer { text-align: center; padding: 40px 0 20px; border-top: 1px solid rgba(16
 
 <script>
 // === 설정 ===
-var TOSS_CLIENT_KEY = 'test_ck_6bJXmgo28eBJk12vvDAW3LAnGKWx';
+var TOSS_CLIENT_KEY = 'live_gck_GePWvyJnrKaxZNXanzwR3gLzN97E';
 var GOOGLE_CLIENT_ID = '933456016842-clagcrpo1juvukjif1m454jq811bd2rq.apps.googleusercontent.com';
 
 var PACKAGES = [
@@ -204,6 +209,8 @@ var PACKAGES = [
 var selectedIdx = 0;
 var currentUser = null;
 var returnUrl = null;
+var widgets = null;
+var widgetReady = false;
 
 // === 초기화 ===
 window.addEventListener('DOMContentLoaded', async function() {
@@ -251,11 +258,38 @@ function renderPackages() {
 
   container.querySelectorAll('.pkg').forEach(function(el) {
     el.addEventListener('click', function() {
-      selectedIdx = parseInt(this.dataset.idx);
       container.querySelectorAll('.pkg').forEach(function(p) { p.classList.remove('selected'); });
       this.classList.add('selected');
+      selectPkg(parseInt(this.dataset.idx));
     });
   });
+}
+
+// === 위젯 ===
+async function selectPkg(idx) {
+  selectedIdx = idx;
+  var pkg = PACKAGES[idx];
+  var btn = document.getElementById('payBtn');
+  btn.textContent = '₩' + pkg.amount.toLocaleString() + ' 결제하기';
+
+  if (!currentUser || !currentUser.id) return;
+
+  if (!widgets) {
+    try {
+      var tp = TossPayments(TOSS_CLIENT_KEY);
+      widgets = tp.widgets({ customerKey: currentUser.id });
+    } catch(e) { console.error('Widget init failed:', e); return; }
+  }
+
+  await widgets.setAmount({ currency: 'KRW', value: pkg.amount });
+
+  if (!widgetReady) {
+    document.getElementById('widgetSection').style.display = '';
+    await widgets.renderPaymentMethods({ selector: '#payment-method' });
+    await widgets.renderAgreement({ selector: '#agreement' });
+    widgetReady = true;
+    btn.disabled = false;
+  }
 }
 
 // === 인증 ===
@@ -270,6 +304,7 @@ async function checkAuth() {
         currentUser = data.user;
         showLoggedIn(data.user);
         fetchBalance(data.user.id);
+        selectPkg(selectedIdx);
         return;
       }
     }
@@ -321,6 +356,7 @@ function googleLogin() {
           currentUser = data.user;
           showLoggedIn(data.user);
           document.getElementById('balanceCount').textContent = data.user.credits || 0;
+          selectPkg(selectedIdx);
           if (data.isNewUser) {
             showToast('가입 완료! 10c 보너스가 지급되었습니다', 'success');
           }
@@ -333,14 +369,13 @@ function googleLogin() {
 }
 
 // === 결제 ===
-function startPayment() {
+async function startPayment() {
   if (!currentUser || !currentUser.id) {
     showToast('로그인이 필요합니다', 'error');
     return;
   }
-
-  if (!TOSS_CLIENT_KEY) {
-    showToast('결제 시스템 준비 중입니다', 'error');
+  if (!widgets || !widgetReady) {
+    showToast('결제 수단을 선택해 주세요', 'error');
     return;
   }
 
@@ -348,10 +383,7 @@ function startPayment() {
   var orderId = 'MONKOS_' + currentUser.id.slice(0, 8) + '_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
 
   try {
-    var tossPayments = TossPayments(TOSS_CLIENT_KEY);
-
-    tossPayments.requestPayment('카드', {
-      amount: pkg.amount,
+    await widgets.requestPayment({
       orderId: orderId,
       orderName: 'MONKOS ' + (pkg.credits + pkg.bonus) + ' 크레딧',
       successUrl: window.location.origin + '/credits?toss=success',

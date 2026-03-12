@@ -1917,50 +1917,9 @@ function loadTossSDK() {
   });
 }
 
-async function buyToss(amount) {
-  if (!TOSS_ENABLED || !TOSS_CLIENT_KEY) {
-    console.log('[Toss] 결제 모듈 미활성화 (클라이언트 키 미설정)');
-    alert('결제 시스템 준비 중입니다. 곧 오픈 예정입니다!');
-    return;
-  }
-  if (!currentUser?.id) return;
-  const btn = event.target.closest('button');
-  btn.disabled = true;
-  const origText = btn.innerHTML;
-  btn.textContent = '결제 준비 중...';
-
-  try {
-    await loadTossSDK();
-
-    if (!tossPayments) {
-      tossPayments = TossPayments(TOSS_CLIENT_KEY);
-    }
-
-    const creditsMap = { 12900: 10, 29900: 30, 45900: 50 };
-    const credits = creditsMap[amount] || 0;
-    const orderId = `monkos_${currentUser.id.slice(0, 8)}_${Date.now()}`;
-
-    const payment = tossPayments.payment({ customerKey: currentUser.id });
-    await payment.requestPayment({
-      method: 'CARD',
-      amount: { currency: 'KRW', value: amount },
-      orderId,
-      orderName: `MONKOS ${credits} 크레딧`,
-      customerEmail: currentUser.email || '',
-      customerName: currentUser.name || '',
-      successUrl: `${window.location.origin}/toss-success?userId=${encodeURIComponent(currentUser.id)}`,
-      failUrl: `${window.location.origin}/toss-fail`,
-    });
-  } catch (err) {
-    if (err.code === 'USER_CANCEL') {
-      console.log('[Toss] 사용자 결제 취소');
-    } else {
-      console.error('[Toss] 결제 에러:', err);
-      alert('결제 처리 중 오류가 발생했습니다. 다시 시도해 주세요.');
-    }
-  }
-  btn.disabled = false;
-  btn.innerHTML = origText;
+function buyToss(amount) {
+  closeCreditShop();
+  window.location.href = '/credits';
 }
 
 // 페이지 로드 시 초기화
