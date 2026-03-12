@@ -700,6 +700,25 @@ app.post('/api/credit/share-bonus', async (req, res) => {
   }
 });
 
+// === sitemap.xml ===
+app.get('/sitemap.xml', (req, res) => {
+  const base = 'https://idphoto-kr.monkos.ai';
+  const today = new Date().toISOString().slice(0, 10);
+  const urls = [
+    { loc: '/',                   priority: '1.0', changefreq: 'weekly',  lastmod: today },
+    { loc: '/charge',             priority: '0.5', changefreq: 'monthly', lastmod: today },
+    { loc: '/privacy.html',       priority: '0.3', changefreq: 'monthly', lastmod: '2026-02-12' },
+    { loc: '/terms.html',         priority: '0.3', changefreq: 'monthly', lastmod: '2026-02-12' },
+    { loc: '/refund.html',        priority: '0.3', changefreq: 'monthly', lastmod: '2026-02-24' },
+    { loc: '/credits-policy.html', priority: '0.3', changefreq: 'monthly', lastmod: '2026-03-08' },
+  ];
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
+    urls.map(u => `  <url>\n    <loc>${base}${u.loc}</loc>\n    <lastmod>${u.lastmod}</lastmod>\n    <changefreq>${u.changefreq}</changefreq>\n    <priority>${u.priority}</priority>\n  </url>`).join('\n') +
+    `\n</urlset>`;
+  res.set('Content-Type', 'application/xml');
+  res.send(xml);
+});
+
 // === 페이지 라우트 (MPA) ===
 app.get('/', (req, res) => res.sendFile(join(__dirname, 'public/index.html')));
 app.get('/app', (req, res) => res.sendFile(join(__dirname, 'public/index.html')));
