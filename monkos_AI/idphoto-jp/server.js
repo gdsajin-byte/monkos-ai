@@ -234,10 +234,10 @@ const TIE_PROMPTS = {
 };
 
 const EXPRESSION_PROMPTS = {
-  gentle_smile: 'gentle, subtle smile with soft eyes',
-  neutral: 'calm, relaxed neutral expression with soft eyes',
-  natural_smile: 'natural, friendly smile',
-  bright_smile: 'bright, confident smile',
+  gentle_smile: 'gentle, warm subtle smile with relaxed soft eyes, friendly and approachable',
+  neutral: 'calm, relaxed face with soft natural eyes, not stiff or tense',
+  natural_smile: 'natural, warm friendly smile showing ease and confidence',
+  bright_smile: 'bright, genuine confident smile with naturally happy eyes',
 };
 
 const HAIR_PROMPTS = {
@@ -251,15 +251,15 @@ const HAIR_PROMPTS = {
 function buildPromptV5(body) {
   const { format, gender, age, clothing, clothingColor,
           suitColor, shirtColor, tieColor, tiePattern,
-          hair, bgColor } = body;
+          hair, bgColor, expression } = body;
 
   const parts = [];
 
   // [1] FORMAT (SCHEMA §6-1)
   if (format === 'passport') {
-    parts.push('[FORMAT] Official passport/visa photo. Head centered, face taking 70-80% of frame height. Forehead and eyebrows must be visible. Neutral composed expression. White background mandatory.');
+    parts.push('[FORMAT] Official passport/visa photo. Head centered, face taking 70-80% of frame height. Forehead and eyebrows must be visible. White background mandatory.');
   } else {
-    parts.push('[FORMAT] Professional ID photo. Head centered, face taking 70-80% of frame height. Neutral, composed expression.');
+    parts.push('[FORMAT] Professional ID photo. Head centered, face taking 70-80% of frame height.');
   }
 
   // [2] SUBJECT (SCHEMA §6-2 — gender × age = 8組合)
@@ -313,7 +313,13 @@ function buildPromptV5(body) {
   const finalBg = format === 'passport' ? 'white' : (bgColor || 'white');
   parts.push(`[BACKGROUND] ${BG_MAP[finalBg] || BG_MAP.white}`);
 
-  // [6] CONSTRAINT (SCHEMA §6-6)
+  // [6] EXPRESSION (表情 — EXPRESSION_PROMPTS 活性化)
+  const expr = expression || 'gentle_smile';
+  if (EXPRESSION_PROMPTS[expr]) {
+    parts.push(`[EXPRESSION] ${EXPRESSION_PROMPTS[expr]}`);
+  }
+
+  // [7] CONSTRAINT (SCHEMA §6-6)
   parts.push('[CONSTRAINT] Keep the person\'s face and body exactly the same — only apply the specified styling. DO NOT change apparent gender or age.');
 
   return `${IDENTITY_PRESERVATION}\n\n[IMAGE-TO-IMAGE TRANSFORM]\n${parts.join('\n')}`;

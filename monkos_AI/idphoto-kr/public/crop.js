@@ -252,8 +252,8 @@ function render() {
 
   // 스케일 핸들
   const sh = $('scaleHandle');
-  sh.style.left = Math.min(FW - 20, Math.max(10, pts.brCorner.x + 10)) + 'px';
-  sh.style.top = Math.min(FH - 20, Math.max(10, pts.brCorner.y + 10)) + 'px';
+  sh.style.left = Math.min(FW - 25, Math.max(15, pts.brCorner.x + 15)) + 'px';
+  sh.style.top = Math.min(FH - 25, Math.max(15, pts.brCorner.y + 15)) + 'px';
   sh.style.boxShadow = `0 0 10px ${COLORS.accent}BB`;
 
   // 배지: faceMm
@@ -914,19 +914,21 @@ async function init() {
     tab.addEventListener('click', () => reset(tab.dataset.spec));
   });
 
-  // 이벤트: 파일
+  // 이벤트: 파일 + 앱 진입 분기
   $('fileInput').addEventListener('change', handleFile);
-  $('btnPhoto').addEventListener('click', () => $('fileInput').click());
+  const isAppEntry = new URLSearchParams(location.search).get('from') === 'thankyou';
+  const btnPhoto = $('btnPhoto');
+  if (isAppEntry) {
+    btnPhoto.textContent = '\u2190 돌아가기';
+    btnPhoto.addEventListener('click', () => history.back());
+  } else {
+    btnPhoto.textContent = '사진 선택';
+    btnPhoto.addEventListener('click', () => $('fileInput').click());
+  }
   $('sampleUploadBtn').addEventListener('click', () => $('fileInput').click());
 
-  // 이벤트: 리셋
+  // 이벤트: 초기화 (사진 유지, autoPlace 상태 복원)
   $('btnReset').addEventListener('click', () => {
-    if (!isSample) {
-      imgSrc = SAMPLE_IMG;
-      isSample = true;
-      lastDetectedLandmarks = null;
-      loadedImg = null;
-    }
     reset(specKey);
   });
 
