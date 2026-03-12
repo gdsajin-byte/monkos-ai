@@ -134,15 +134,17 @@ function render() {
   const MM = getMM();
 
   // 계산
+  const isPassport = specKey === 'passport';
   const faceMm = (pts.chin.y - pts.crown.y) / MM;
   const topMm = pts.crown.y / MM;
   const bottomMm = spec.hMm - topMm - faceMm;
+  const faceRatio = faceMm / spec.hMm; // 얼굴 비중 (프레임 대비)
   const eyeY = (pts.leftPupil.y + pts.rightPupil.y) / 2;
   const eyeRatio = eyeY / FH;
   const eyePct = (eyeRatio * 100).toFixed(0);
-  const fc = getFaceColor(faceMm, spec);
-  const ec = getEyeColor(eyeRatio);
-  const blocked = isBlocked(faceMm, eyeRatio, spec);
+  const fc = isPassport ? getFaceColor(faceMm, spec) : COLORS.muted;
+  const ec = isPassport ? getEyeColor(eyeRatio) : COLORS.muted;
+  const blocked = isPassport ? isBlocked(faceMm, eyeRatio, spec) : false;
 
   // 프레임 크기
   const frame = $('frame');
@@ -159,6 +161,19 @@ function render() {
   const svg = $('overlaySvg');
   svg.setAttribute('width', FW);
   svg.setAttribute('height', FH);
+
+  // ─── 반명함: 여권 규격 요소 숨김 ───
+  const passportSvg = ['maskTop','maskBottom','ellipsePath','crownLine','chinLine','eyeLine',
+    'dimLineV','dimLineTopH','dimLineBotH','pupilL','pupilR',
+    'crownLabelBg','crownLabelText','chinLabelBg','chinLabelText','eyeLabelBg','eyeLabelText'];
+  passportSvg.forEach(id => { const el = $(id); if (el) el.setAttribute('opacity', isPassport ? '' : '0'); });
+  ['crownPin','crownHint','chinPin','badgeFace','badgeStatus'].forEach(id => {
+    $(id).style.display = isPassport ? '' : 'none';
+  });
+  // 섹션 가시성 (legend, metrics, ICAO range bar)
+  document.querySelector('.legend').style.display = isPassport ? '' : 'none';
+  document.querySelector('.metrics').style.display = isPassport ? '' : 'none';
+  document.querySelector('.range-bar-container').style.display = isPassport ? '' : 'none';
 
   // 상단 마스크
   setAttrs('maskTop', { x: 0, y: 0, width: FW, height: Math.max(0, pts.crown.y) });
@@ -278,70 +293,94 @@ function render() {
   $('metricEyeVal').style.color = ec;
   $('metricEye').style.borderColor = ec + '40';
 
-  // 경고: 눈 위치
+  // ─── 경고 ───
   const eyeWarn = $('eyeWarning');
-  if (ec === COLORS.red) {
-    eyeWarn.classList.remove('hidden');
-    eyeWarn.style.background = COLORS.redDim;
-    eyeWarn.style.border = `1px solid ${COLORS.red}40`;
-    eyeWarn.style.color = COLORS.red;
-    eyeWarn.textContent = `눈 위치 ${eyePct}% — 허용 40~48%. 사진을 상하로 조정하세요.`;
-  } else if (ec === COLORS.yellow) {
-    eyeWarn.classList.remove('hidden');
-    eyeWarn.style.background = COLORS.yellowDim;
-    eyeWarn.style.border = `1px solid ${COLORS.yellow}40`;
-    eyeWarn.style.color = COLORS.yellow;
-    eyeWarn.textContent = `눈 위치 ${eyePct}% — 최적 43~45%. 미세 조정 권장.`;
-  } else {
-    eyeWarn.classList.add('hidden');
-  }
-
-  // 경고: 좌우 중심
   const centerWarn = $('centerWarning');
-  if (!isSample && centerOffsetMm >= 1.5) {
-    centerWarn.classList.remove('hidden');
-    const cwColor = centerOffsetMm >= 2 ? COLORS.red : COLORS.yellow;
-    const cwDim = centerOffsetMm >= 2 ? COLORS.redDim : COLORS.yellowDim;
-    centerWarn.style.background = cwDim;
-    centerWarn.style.border = `1px solid ${cwColor}40`;
-    centerWarn.style.color = cwColor;
-    const dir = faceCenterX < FW / 2 ? '오른쪽' : '왼쪽';
-    centerWarn.textContent = `좌우 중심 ${centerOffsetMm.toFixed(1)}mm 이탈 — 사진을 ${dir}으로 이동하세요.`;
-  } else {
-    centerWarn.classList.add('hidden');
-  }
-
-  // 다운로드 차단 안내
   const dlBlock = $('downloadBlock');
-  if (blocked && !isSample) {
-    dlBlock.classList.remove('hidden');
-    dlBlock.style.background = COLORS.redDim;
-    dlBlock.style.border = `1px solid ${COLORS.red}40`;
-    dlBlock.style.color = COLORS.red;
-    const reasons = [];
-    if (faceMm < spec.faceMin) reasons.push(`얼굴 크기 ${faceMm.toFixed(1)}mm — 허용범위(${spec.faceMin}~${spec.faceMax}mm) 미달. 사진을 확대하세요.`);
-    if (faceMm > spec.faceMax) reasons.push(`얼굴 크기 ${faceMm.toFixed(1)}mm — 허용범위(${spec.faceMin}~${spec.faceMax}mm) 초과. 사진을 축소하세요.`);
-    if (eyeRatio < 0.40) reasons.push(`눈 위치 ${eyePct}% — 허용범위(40~48%) 미달. 사진을 아래로 이동하세요.`);
-    if (eyeRatio > 0.48) reasons.push(`눈 위치 ${eyePct}% — 허용범위(40~48%) 초과. 사진을 위로 이동하세요.`);
-    dlBlock.textContent = reasons.join(' ');
+
+  if (isPassport) {
+    // 여권: 눈 위치 경고
+    if (ec === COLORS.red) {
+      eyeWarn.classList.remove('hidden');
+      eyeWarn.style.background = COLORS.redDim;
+      eyeWarn.style.border = `1px solid ${COLORS.red}40`;
+      eyeWarn.style.color = COLORS.red;
+      eyeWarn.textContent = `눈 위치 ${eyePct}% — 허용 40~48%. 사진을 상하로 조정하세요.`;
+    } else if (ec === COLORS.yellow) {
+      eyeWarn.classList.remove('hidden');
+      eyeWarn.style.background = COLORS.yellowDim;
+      eyeWarn.style.border = `1px solid ${COLORS.yellow}40`;
+      eyeWarn.style.color = COLORS.yellow;
+      eyeWarn.textContent = `눈 위치 ${eyePct}% — 최적 43~45%. 미세 조정 권장.`;
+    } else {
+      eyeWarn.classList.add('hidden');
+    }
+
+    // 여권: 좌우 중심 경고
+    if (!isSample && centerOffsetMm >= 1.5) {
+      centerWarn.classList.remove('hidden');
+      const cwColor = centerOffsetMm >= 2 ? COLORS.red : COLORS.yellow;
+      const cwDim = centerOffsetMm >= 2 ? COLORS.redDim : COLORS.yellowDim;
+      centerWarn.style.background = cwDim;
+      centerWarn.style.border = `1px solid ${cwColor}40`;
+      centerWarn.style.color = cwColor;
+      const dir = faceCenterX < FW / 2 ? '오른쪽' : '왼쪽';
+      centerWarn.textContent = `좌우 중심 ${centerOffsetMm.toFixed(1)}mm 이탈 — 사진을 ${dir}으로 이동하세요.`;
+    } else {
+      centerWarn.classList.add('hidden');
+    }
+
+    // 여권: 다운로드 차단 안내
+    if (blocked && !isSample) {
+      dlBlock.classList.remove('hidden');
+      dlBlock.style.background = COLORS.redDim;
+      dlBlock.style.border = `1px solid ${COLORS.red}40`;
+      dlBlock.style.color = COLORS.red;
+      const reasons = [];
+      if (faceMm < spec.faceMin) reasons.push(`얼굴 크기 ${faceMm.toFixed(1)}mm — 허용범위(${spec.faceMin}~${spec.faceMax}mm) 미달. 사진을 확대하세요.`);
+      if (faceMm > spec.faceMax) reasons.push(`얼굴 크기 ${faceMm.toFixed(1)}mm — 허용범위(${spec.faceMin}~${spec.faceMax}mm) 초과. 사진을 축소하세요.`);
+      if (eyeRatio < 0.40) reasons.push(`눈 위치 ${eyePct}% — 허용범위(40~48%) 미달. 사진을 아래로 이동하세요.`);
+      if (eyeRatio > 0.48) reasons.push(`눈 위치 ${eyePct}% — 허용범위(40~48%) 초과. 사진을 위로 이동하세요.`);
+      dlBlock.textContent = reasons.join(' ');
+    } else {
+      dlBlock.classList.add('hidden');
+    }
+
+    // 여권: ICAO 범위 바
+    const rangeMin = spec.faceMin / spec.hMm * 100;
+    const rangeMax = spec.faceMax / spec.hMm * 100;
+    const dotPos = Math.min(97, Math.max(3, faceMm / spec.hMm * 100));
+    $('rangeLabel').textContent = `ICAO 허용범위 (${spec.faceMin}~${spec.faceMax}mm)`;
+    $('rangeValue').textContent = `${faceInRange ? '✓' : '✗'} ${faceMm.toFixed(1)}mm`;
+    $('rangeValue').style.color = fc;
+    $('rangeFill').style.left = rangeMin + '%';
+    $('rangeFill').style.width = (rangeMax - rangeMin) + '%';
+    $('rangeDot').style.left = dotPos + '%';
+    $('rangeDot').style.background = fc;
+    $('rangeDot').style.boxShadow = `0 0 8px ${fc}`;
+    $('rangeMin').textContent = spec.faceMin + 'mm';
+    $('rangeMax').textContent = spec.faceMax + 'mm';
+
   } else {
+    // ─── 반명함: 간소화 경고 (3가지만) ───
+    eyeWarn.classList.add('hidden');
+    const idWarnings = [];
+    if (!isSample) {
+      if (centerOffsetMm >= 2) idWarnings.push(`좌우 중심 ${centerOffsetMm.toFixed(1)}mm 이탈 — 사진을 ${faceCenterX < FW / 2 ? '오른쪽' : '왼쪽'}으로 이동하세요.`);
+      if (topMm < 2) idWarnings.push(`정수리 여백 ${topMm.toFixed(1)}mm — 상단이 너무 가깝습니다. 사진을 아래로 이동하세요.`);
+      if (faceRatio < 0.50) idWarnings.push(`얼굴 비중 ${(faceRatio * 100).toFixed(0)}% — 50% 이상 권장. 사진을 확대하세요.`);
+    }
+    if (idWarnings.length > 0) {
+      centerWarn.classList.remove('hidden');
+      centerWarn.style.background = COLORS.yellowDim;
+      centerWarn.style.border = `1px solid ${COLORS.yellow}40`;
+      centerWarn.style.color = COLORS.yellow;
+      centerWarn.textContent = idWarnings.join(' ');
+    } else {
+      centerWarn.classList.add('hidden');
+    }
     dlBlock.classList.add('hidden');
   }
-
-  // ICAO 범위 바
-  const rangeMin = spec.faceMin / spec.hMm * 100;
-  const rangeMax = spec.faceMax / spec.hMm * 100;
-  const dotPos = Math.min(97, Math.max(3, faceMm / spec.hMm * 100));
-  $('rangeLabel').textContent = `ICAO 허용범위 (${spec.faceMin}~${spec.faceMax}mm)`;
-  $('rangeValue').textContent = `${faceInRange ? '✓' : '✗'} ${faceMm.toFixed(1)}mm`;
-  $('rangeValue').style.color = fc;
-  $('rangeFill').style.left = rangeMin + '%';
-  $('rangeFill').style.width = (rangeMax - rangeMin) + '%';
-  $('rangeDot').style.left = dotPos + '%';
-  $('rangeDot').style.background = fc;
-  $('rangeDot').style.boxShadow = `0 0 8px ${fc}`;
-  $('rangeMin').textContent = spec.faceMin + 'mm';
-  $('rangeMax').textContent = spec.faceMax + 'mm';
 
   // 다운로드 버튼
   const btnDl = $('btnDownload');
@@ -360,11 +399,15 @@ function render() {
   $('sampleBanner').classList.toggle('hidden', !isSample);
 
   // 규격 정보 테이블
-  const rows = [
+  const rows = isPassport ? [
     ['출력 규격', `${spec.wMm}x${spec.hMm}mm · ${spec.pxW}x${spec.pxH}px`],
     ['해상도', '300dpi'],
     ['ICAO', `얼굴 ${spec.faceMin}~${spec.faceMax}mm`],
     ['눈 위치', '40~48% (최적 43~45%)'],
+  ] : [
+    ['출력 규격', `${spec.wMm}x${spec.hMm}mm · ${spec.pxW}x${spec.pxH}px`],
+    ['해상도', '300dpi'],
+    ['안내', spec.warn],
   ];
   $('specInfo').innerHTML = rows.map((r, i) =>
     `<div class="spec-row${i < rows.length - 1 ? '' : ''}">
