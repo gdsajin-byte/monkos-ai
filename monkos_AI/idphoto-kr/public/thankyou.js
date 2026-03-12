@@ -6,7 +6,7 @@
  */
 
 import {
-  store, Monk, PHOTO_SPECS,
+  store, Monk,
   sharedInit, loadSessionData, navigateTo,
   API
 } from './shared.js';
@@ -46,14 +46,6 @@ function displayPhoto() {
 
   const imgEl = document.querySelector('#ty-photo');
   if (imgEl) imgEl.src = image;
-
-  // 규격명 표시
-  const format = loadSessionData('format');
-  const specNameEl = document.getElementById('ty-spec-name');
-  if (specNameEl && format) {
-    const spec = PHOTO_SPECS[format];
-    if (spec) specNameEl.textContent = spec.name;
-  }
 
   Monk.log('수령처 사진 표시 완료');
 }
