@@ -747,17 +747,25 @@ function performCrop() {
   const dh = natH * coverScale;
   ctx.drawImage(loadedImg, (FW - dw) / 2, (FH - dh) / 2, dw, dh);
 
-  // JPEG 다운로드
+  // JPEG 다운로드 (iOS 분기)
   canvas.toBlob((blob) => {
     if (!blob) return;
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `MONKOS_crop_${spec.id}_${spec.pxW}x${spec.pxH}.jpg`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+
+    if (isIOS) {
+      // iOS: 새 탭에 이미지 직접 표시 → 길게 눌러 "사진에 저장"
+      window.open(url, '_blank');
+    } else {
+      // Android/데스크톱: 자동 다운로드
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `MONKOS_crop_${spec.id}_${spec.pxW}x${spec.pxH}.jpg`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
   }, 'image/jpeg', 0.95);
 }
 
