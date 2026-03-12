@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#06080D">
+  <meta name="format-detection" content="telephone=no">
+  <title>MONKOS Crop</title>
+  <link rel="icon" href="/monkos-icon.svg" type="image/svg+xml">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="crop.css">
+</head>
+<body>
+  <div class="app-container">
+
+    <!-- 헤더 -->
+    <div class="header">
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="header-logo">M</div>
+        <span class="header-title">MONKOS Crop</span>
+      </div>
+      <span class="header-info" id="headerInfo">413x531px · 300dpi</span>
+    </div>
+
+    <!-- 규격 탭 -->
+    <div class="spec-tabs">
+      <button class="spec-tab active" data-spec="passport">여권/신분증</button>
+      <button class="spec-tab" data-spec="id">반명함</button>
+    </div>
+
+    <div class="content">
+
+      <!-- 샘플 배너 -->
+      <div class="sample-banner" id="sampleBanner">
+        <span>샘플 이미지 — 직접 사진을 업로드하세요</span>
+        <button id="sampleUploadBtn">업로드</button>
+      </div>
+
+      <!-- 범례 -->
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-dot" id="legendCrownDot"></div>
+          <span class="legend-label">정수리 — 드래그</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background:var(--gold)"></div>
+          <span class="legend-label">턱끝 — 고정</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background:var(--accent)"></div>
+          <span class="legend-label">스케일 핸들</span>
+        </div>
+      </div>
+
+      <!-- 프레임 -->
+      <div class="frame-container" id="frame">
+        <!-- 사진 -->
+        <img class="photo" id="photo" src="" alt="" draggable="false">
+
+        <!-- SVG 오버레이 -->
+        <svg class="overlay-svg" id="overlaySvg">
+          <!-- 상단 마스크 -->
+          <rect id="maskTop" fill="rgba(0,0,0,0.48)"/>
+          <!-- 하단 마스크 -->
+          <rect id="maskBottom" fill="rgba(0,0,0,0.48)"/>
+          <!-- 십자 가이드 -->
+          <line id="crossH" stroke="rgba(255,255,255,0.12)" stroke-width="1" stroke-dasharray="4 6"/>
+          <line id="crossV" stroke="rgba(255,255,255,0.12)" stroke-width="1" stroke-dasharray="4 6"/>
+          <!-- 스플라인 타원 -->
+          <path id="ellipsePath" fill="none" stroke-width="1.5" stroke-dasharray="5 3"/>
+          <!-- 정수리 가이드선 -->
+          <line id="crownLine" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.9"/>
+          <!-- 턱끝 가이드선 -->
+          <line id="chinLine" stroke="var(--gold)" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.85"/>
+          <!-- 눈 가이드선 -->
+          <line id="eyeLine" stroke-width="1" stroke-dasharray="2 5" opacity="0.7"/>
+          <!-- 치수선 (우측) -->
+          <line id="dimLineV" stroke-width="1" opacity="0.4"/>
+          <line id="dimLineTopH" stroke-width="1" opacity="0.4"/>
+          <line id="dimLineBotH" stroke-width="1" opacity="0.4"/>
+          <!-- 동공 포인트 -->
+          <circle id="pupilL" r="3" opacity="0.8"/>
+          <circle id="pupilR" r="3" opacity="0.8"/>
+          <!-- 라벨: 정수리 -->
+          <rect id="crownLabelBg" rx="3" fill="var(--bg)" opacity="0.88"/>
+          <text id="crownLabelText" font-size="9" font-weight="700">정수리</text>
+          <!-- 라벨: 턱끝 -->
+          <rect id="chinLabelBg" rx="3" fill="var(--bg)" opacity="0.88"/>
+          <text id="chinLabelText" fill="var(--gold)" font-size="9" font-weight="700">턱끝</text>
+          <!-- 라벨: 눈 위치 -->
+          <rect id="eyeLabelBg" rx="3" fill="var(--bg)" opacity="0.78"/>
+          <text id="eyeLabelText" font-size="8"></text>
+        </svg>
+
+        <!-- 정수리 핀 -->
+        <div class="pin pin-crown" id="crownPin"></div>
+        <div class="pin-hint" id="crownHint">↕ 드래그</div>
+
+        <!-- 턱끝 핀 -->
+        <div class="pin pin-chin" id="chinPin" style="background:var(--gold)"></div>
+
+        <!-- 스케일 핸들 -->
+        <div class="scale-handle" id="scaleHandle">⤡</div>
+
+        <!-- faceMm 배지 -->
+        <div class="badge-face" id="badgeFace"><span id="badgeFaceVal"></span><span class="range" id="badgeFaceRange"></span></div>
+
+        <!-- 상태 배지 -->
+        <div class="badge-status" id="badgeStatus"></div>
+
+        <!-- 스케일 표시 -->
+        <div class="badge-scale" id="badgeScale">x1.00</div>
+
+        <!-- FaceMesh 로딩 인디케이터 -->
+        <div class="facemesh-loading hidden" id="facemeshLoading">
+          <div class="facemesh-spinner"></div>
+          <span>얼굴 분석 중...</span>
+        </div>
+      </div>
+
+      <!-- 수치 4칸 -->
+      <div class="metrics">
+        <div class="metric" id="metricTop"><div class="metric-label">상단</div><div class="metric-value" id="metricTopVal">—</div></div>
+        <div class="metric" id="metricFace"><div class="metric-label">얼굴</div><div class="metric-value" id="metricFaceVal">—</div></div>
+        <div class="metric" id="metricBottom"><div class="metric-label">하단</div><div class="metric-value" id="metricBottomVal">—</div></div>
+        <div class="metric" id="metricEye"><div class="metric-label">눈위치</div><div class="metric-value" id="metricEyeVal">—</div></div>
+      </div>
+
+      <!-- 경고: 눈 위치 -->
+      <div class="warning-box hidden" id="eyeWarning"></div>
+      <!-- 경고: 좌우 중심 -->
+      <div class="warning-box hidden" id="centerWarning"></div>
+      <!-- 다운로드 차단 안내 -->
+      <div class="download-block-reason hidden" id="downloadBlock"></div>
+
+      <!-- ICAO 범위 바 -->
+      <div class="range-bar-container">
+        <div class="range-bar-header">
+          <span style="color:var(--muted)" id="rangeLabel">ICAO 허용범위</span>
+          <span id="rangeValue" style="font-weight:700"></span>
+        </div>
+        <div class="range-track">
+          <div class="range-fill" id="rangeFill"></div>
+          <div class="range-dot" id="rangeDot"></div>
+        </div>
+        <div class="range-labels">
+          <span id="rangeMin"></span>
+          <span id="rangeMax"></span>
+        </div>
+      </div>
+
+      <!-- 버튼 -->
+      <div class="actions">
+        <button class="btn btn-photo" id="btnPhoto">사진</button>
+        <button class="btn btn-reset" id="btnReset">리셋</button>
+        <button class="btn btn-download disabled" id="btnDownload">다운로드</button>
+      </div>
+
+      <!-- 규격 정보 -->
+      <div class="spec-info" id="specInfo"></div>
+    </div>
+  </div>
+
+  <!-- 파일 입력 -->
+  <input type="file" accept="image/*" id="fileInput" style="display:none">
+
+  <!-- 다운로드 모달 -->
+  <div class="modal-backdrop hidden" id="modalBackdrop">
+    <div class="modal-content">
+      <div class="modal-handle"></div>
+      <div class="modal-title">다운로드 확인</div>
+      <div class="modal-metrics" id="modalMetrics">
+        <div class="modal-metrics-label">확정 수치</div>
+        <div class="modal-metrics-grid" id="modalMetricsGrid"></div>
+        <div class="modal-warning hidden" id="modalWarning"></div>
+      </div>
+      <div class="consent-list">
+        <div class="consent-item" id="consent1Item">
+          <div class="consent-check" id="consent1Check"></div>
+          <span class="consent-text"><span class="consent-required">[필수] </span>크롭 결과에 대한 책임은 사용자에게 있음을 동의합니다.</span>
+        </div>
+        <div class="consent-item" id="consent2Item">
+          <div class="consent-check" id="consent2Check"></div>
+          <span class="consent-text">크롭 데이터를 품질 향상 목적으로 활용하는 것에 동의합니다. (선택)</span>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="modal-btn modal-btn-primary disabled" id="modalBtnDownload">크롭 결과 다운로드</button>
+        <button class="modal-btn modal-btn-secondary disabled" id="modalBtnOverlay">가이드 오버레이 캡처 (항변 근거용)</button>
+        <button class="modal-btn modal-btn-cancel" id="modalBtnCancel">취소</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MediaPipe FaceMesh -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous"></script>
+  <script src="crop.js"></script>
+</body>
+</html>
