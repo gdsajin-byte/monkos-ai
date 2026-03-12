@@ -79,6 +79,7 @@ export async function addWatermark(imageBuffer) {
 }
 
 /**
+ * @deprecated 2026-03-12 — 크롭앱(crop.html) FaceMesh + Canvas로 이관. 1주 후 제거 예정.
  * 얼굴 좌표 기반 정밀 규격 크롭 (sharp)
  * 한국 여권: 35×45mm, 얼굴 25-35mm (56-78%), 상단여백 3-7mm
  * 반명함: 30×40mm
@@ -87,6 +88,7 @@ export async function addWatermark(imageBuffer) {
  * @param {Object|null} faceBox - Gemini 얼굴 좌표 (0-1 비율)
  * @returns {Buffer} 크롭된 PNG buffer
  */
+/*
 export async function cropToSpec(imageBuffer, format = 'passport', faceBox = null) {
   const SPECS = {
     passport: { width: 413, height: 531, faceRatio: 0.75, topMargin: 0.12 },
@@ -98,7 +100,6 @@ export async function cropToSpec(imageBuffer, format = 'passport', faceBox = nul
   const srcW = meta.width;
   const srcH = meta.height;
 
-  // 얼굴 좌표 없으면 상단 기준 커버 크롭 (폴백)
   if (!faceBox) {
     return sharp(imageBuffer)
       .resize(spec.width, spec.height, { fit: 'cover', position: 'top' })
@@ -106,20 +107,16 @@ export async function cropToSpec(imageBuffer, format = 'passport', faceBox = nul
       .toBuffer();
   }
 
-  // 정수리~턱 기반 정밀 크롭 (외교부 규격: 머리길이 = 정수리~턱끝)
   const { headTop, chinBottom, faceLeft, faceRight } = faceBox;
   const faceH = (chinBottom - headTop) * srcH;
   const faceCX = ((faceLeft + faceRight) / 2) * srcW;
 
-  // 크롭 영역: 머리가 전체의 faceRatio를 차지하도록 계산
   const cropH = Math.round(faceH / spec.faceRatio);
   const cropW = Math.round(cropH * (spec.width / spec.height));
 
-  // 상단 여백: 정수리 위 topMargin 비율
   let top = Math.round((headTop * srcH) - (cropH * spec.topMargin));
   let left = Math.round(faceCX - cropW / 2);
 
-  // 경계 보정
   top = Math.max(0, Math.min(top, srcH - cropH));
   left = Math.max(0, Math.min(left, srcW - cropW));
   const width = Math.min(cropW, srcW - left);
@@ -133,6 +130,7 @@ export async function cropToSpec(imageBuffer, format = 'passport', faceBox = nul
     .png()
     .toBuffer();
 }
+*/
 
 /**
  * GCS에서 이미지 다운로드

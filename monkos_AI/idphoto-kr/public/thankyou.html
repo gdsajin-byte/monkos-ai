@@ -113,6 +113,23 @@
         }
         .ty-download-btn:hover { opacity: 0.9; }
 
+        /* 크롭 조정 버튼 */
+        .ty-crop-btn {
+            display: block;
+            width: auto;
+            margin: 0 16px;
+            padding: 14px;
+            background: rgba(139, 92, 246, 0.15);
+            color: #8B5CF6;
+            border: 1px solid #8B5CF6;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .ty-crop-btn:hover { opacity: 0.85; }
+
         /* §2-5 전후비교 카드 */
         .ty-compare-card {
             display: flex;
@@ -397,7 +414,10 @@
             </div>
 
             <!-- §2-4 다운로드 버튼 -->
-            <button class="ty-download-btn" id="btn-ty-download">📥 다운로드</button>
+            <button class="ty-download-btn" id="btn-ty-download">📥 보정 원본 다운로드</button>
+
+            <!-- 크롭 조정 (무료) -->
+            <button class="ty-crop-btn" id="btn-ty-crop" onclick="goToCrop()">✂️ 규격 크롭 조정하기 · 무료</button>
 
             <!-- §2-5 전후비교 저장 -->
             <div class="ty-compare-card" id="ty-compare-section" style="display:none;">
@@ -417,44 +437,6 @@
                 <span class="ty-credit-label">내 크레딧</span>
                 <span class="ty-credit-value"><span data-bind="user.credits">0</span>c</span>
             </div>
-
-            <!-- §2-8 풀샷 원본 받기 (로그인 + _mo_p 있을 때만) -->
-            <div class="ty-fullshot-card" id="ty-fullshot-section" style="display:none;">
-                <div class="ty-fullshot-info">
-                    <div class="ty-fullshot-title" id="ty-fullshot-title">📸 풀샷 원본 받기</div>
-                    <div class="ty-fullshot-sub">크롭되지 않은 풀 원본 사진</div>
-                </div>
-                <div class="ty-fullshot-price" id="ty-fullshot-price">10c</div>
-            </div>
-
-            <!-- §2-9 인화 서비스·CS -->
-            <a class="ty-cs-card" href="https://t.me/monkos_support_bot" target="_blank" rel="noopener">
-                <div class="ty-cs-info">
-                    <div class="ty-cs-title">🖨️ 인화 서비스 · CS</div>
-                    <div class="ty-cs-sub">몽크사진관 공식 채널</div>
-                </div>
-                <span class="ty-cs-arrow">Telegram →</span>
-            </a>
-
-            <!-- §2-10 SNS 인증 이벤트 (로그인 시만) -->
-            <div class="ty-event-card" id="ty-event-section" data-show="user.id" style="display:none;">
-                <div class="ty-event-header">
-                    <span class="ty-event-title">🎉 SNS 인증 이벤트</span>
-                    <span class="ty-event-badge">100c</span>
-                </div>
-                <div class="ty-event-desc">전후 비교를 SNS에 올리고 인증하면</div>
-                <button class="ty-event-btn" id="btn-ty-sns-event">📱 텔레그램으로 인증하고 100c 받기</button>
-            </div>
-
-            <!-- §2-11 발급 보장 -->
-            <div class="ty-guarantee-card">
-                <div class="ty-guarantee-title">🛡️ 발급 보장</div>
-                <div class="ty-guarantee-desc">반려 시 100c를 지급해 드립니다</div>
-                <a class="ty-guarantee-link" href="https://t.me/monkos_support_bot" target="_blank" rel="noopener">반려되셨다면 여기를 눌러주세요 →</a>
-            </div>
-
-            <!-- 크레딧 정책 안내 -->
-            <a href="/credits-policy.html" style="display:block; margin:0 16px; padding:12px; background:transparent; border:1px solid #1E293B; border-radius:12px; color:#94A3B8; font-size:13px; font-weight:600; text-align:center; text-decoration:none; transition:border-color 0.2s, color 0.2s;" onmouseover="this.style.borderColor='#8B5CF6';this.style.color='#F1F5F9'" onmouseout="this.style.borderColor='#1E293B';this.style.color='#94A3B8'">💳 크레딧 사용 안내</a>
 
             <!-- §2-12 홈으로 돌아가기 -->
             <button class="ty-home-btn" id="btn-ty-home">🏠 홈으로 돌아가기</button>

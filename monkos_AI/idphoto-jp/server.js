@@ -234,8 +234,8 @@ const TIE_PROMPTS = {
 };
 
 const EXPRESSION_PROMPTS = {
-  gentle_smile: 'gentle, subtle smile',
-  neutral: 'neutral, composed expression',
+  gentle_smile: 'gentle, subtle smile with soft eyes',
+  neutral: 'calm, relaxed neutral expression with soft eyes',
   natural_smile: 'natural, friendly smile',
   bright_smile: 'bright, confident smile',
 };
@@ -290,7 +290,7 @@ function buildPromptV5(body) {
       const pattern = tiePattern === 'stripe' ? 'striped' : 'solid';
       tieClause = ` and a ${pattern} ${tieColor} tie`;
     }
-    const top = gender === 'f' ? 'blouse' : 'dress shirt';
+    const top = 'collared dress shirt';
     parts.push(`[OUTFIT] Dress this person in a ${suit} formal business suit with a ${shirt} ${top}${tieClause}.`);
   }
 
