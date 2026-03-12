@@ -359,7 +359,7 @@ async function downloadResult() {
 // ─── 전후비교 합성 (thankyou용) ───
 async function generateCompareImage() {
   const captured = loadSessionData('captured');
-  const cropped = loadSessionData('cropped');
+  const cropped = loadSessionData('image');
   if (!captured || !cropped) return;
 
   try {
@@ -441,8 +441,8 @@ async function doDownload() {
 
     store.user = { ...store.user, credits: data.credits };
 
-    // 서버 크롭본 → thankyou 표시용
-    saveSessionData('cropped', data.cropped);
+    // 보정 원본 (노크롭) → thankyou + 크롭앱 전달용
+    saveSessionData('image', data.image);
 
     // 원본 Signed URL 보존 (thankyou에서 원본 다운로드용)
     try {

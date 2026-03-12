@@ -1,7 +1,7 @@
 /**
  * thankyou.js — v6 수령처(엔딩 페이지) 전용 로직
  * 진입: result.js doDownload() 성공 → navigateTo('thankyou.html')
- * 데이터: sessionStorage (monkos_cropped, monkos_compare, monkos_originalUrl, monkos_format)
+ * 데이터: sessionStorage (monkos_image, monkos_compare, monkos_originalUrl, monkos_format)
  * v6: 풀샷 별도과금 폐지 — 다운로드 70c에 크롭본+원본 포함
  */
 
@@ -38,9 +38,9 @@ let _originalUrl = null;
 
 // ─── §2-3 완성본 표시 ───
 function displayPhoto() {
-  const cropped = loadSessionData('cropped');
+  const cropped = loadSessionData('image');
   if (!cropped) {
-    Monk.log('크롭 데이터 없음 → 준비실로 이동');
+    Monk.log('이미지 데이터 없음 → 준비실로 이동');
     navigateTo('prep.html');
     return;
   }
