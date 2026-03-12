@@ -232,14 +232,14 @@ function render() {
   // 핀: 정수리
   const crownPin = $('crownPin');
   crownPin.style.left = pts.crown.x + 'px';
-  crownPin.style.top = (pts.crown.y - 10) + 'px';
+  crownPin.style.top = (pts.crown.y - 6) + 'px';
   crownPin.style.background = fc;
   crownPin.style.boxShadow = `0 0 12px ${fc}BB`;
 
   // 힌트
   const hint = $('crownHint');
-  hint.style.left = (pts.crown.x + 14) + 'px';
-  hint.style.top = (pts.crown.y - 10) + 'px';
+  hint.style.left = (pts.crown.x + 10) + 'px';
+  hint.style.top = (pts.crown.y - 6) + 'px';
   hint.style.background = COLORS.bg + 'EE';
   hint.style.borderColor = fc + '50';
   hint.style.color = fc;

@@ -257,15 +257,9 @@ async function confirmAndGenerate() {
     }
     Monk.log('생성 완료' + (_gcsPath ? ` (GCS: ${_gcsPath})` : ''));
 
-    // 크롭 프리뷰 (서버 워터마크본 기반)
+    // 노크롭 원본(보정본) 그대로 표시 — 크롭은 크롭앱에서만
     const spec = PHOTO_SPECS[store.format];
     let croppedPreview = genResult.image;
-    try {
-      const cropResult = await media.crop(genResult.image, spec);
-      croppedPreview = cropResult.dataUrl;
-    } catch (e) {
-      Monk.log('프리뷰 크롭 실패, 풀 워터마크 사용');
-    }
 
     // store/sessionStorage에는 워터마크 프리뷰만 저장
     store.generated = croppedPreview;
@@ -281,9 +275,9 @@ async function confirmAndGenerate() {
       const genImg = document.querySelector('#photo-generated');
       if (genImg) genImg.src = croppedPreview;
 
-      // 비교컷 레이블을 규격명으로 변경
+      // 비교컷 레이블 — 크롭 아닌 보정본이므로
       const label = document.querySelector('#photo-generated-wrap .label');
-      if (label) label.textContent = spec.name;
+      if (label) label.textContent = 'AI 보정';
 
       store.statusText = TX.resultDone;
       store.resultTitle = TX.resultDone;

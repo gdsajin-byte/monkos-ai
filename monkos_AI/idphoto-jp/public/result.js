@@ -257,15 +257,9 @@ async function confirmAndGenerate() {
     }
     Monk.log('生成完了' + (_gcsPath ? ` (GCS: ${_gcsPath})` : ''));
 
-    // サーバーがウォーターマーク済み画像を返却 → クロッププレビュー生成
+    // ノークロップ原本（補正本）そのまま表示 — クロップはクロップアプリでのみ
     const spec = PHOTO_SPECS[store.format];
     let croppedWatermark = genResult.image;
-    try {
-      const cropResult = await media.crop(genResult.image, spec);
-      croppedWatermark = cropResult.dataUrl;
-    } catch (e) {
-      Monk.log('プレビュークロップ失敗、フルウォーターマーク使用');
-    }
 
     // store/sessionStorageにはクロップウォーターマーク版保存
     store.generated = croppedWatermark;
@@ -281,9 +275,9 @@ async function confirmAndGenerate() {
       const genImg = document.querySelector('#photo-generated');
       if (genImg) genImg.src = croppedWatermark;
 
-      // 比較カットラベルを規格名に変更
+      // 比較カットラベル — クロップではなく補正本のため
       const label = document.querySelector('#photo-generated-wrap .label');
-      if (label) label.textContent = spec.name;
+      if (label) label.textContent = 'AI 補正';
 
       store.statusText = TX.resultDone;
       store.resultTitle = TX.resultDone;
