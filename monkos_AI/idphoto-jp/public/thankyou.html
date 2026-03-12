@@ -113,6 +113,23 @@
         }
         .ty-download-btn:hover { opacity: 0.9; }
 
+        /* クロップ調整ボタン */
+        .ty-crop-btn {
+            display: block;
+            width: auto;
+            margin: 0 16px;
+            padding: 14px;
+            background: rgba(139, 92, 246, 0.15);
+            color: #8B5CF6;
+            border: 1px solid #8B5CF6;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .ty-crop-btn:hover { opacity: 0.85; }
+
         /* §2-5 전후비교 카드 */
         .ty-compare-card {
             display: flex;
@@ -385,7 +402,11 @@
             <div class="ty-celebration">
                 <div class="ty-celebration-emoji">🎉</div>
                 <div class="ty-celebration-title">証明写真が完成しました！</div>
-                <div class="ty-celebration-sub">下からダウンロードしてください</div>
+                <div class="ty-celebration-sub">
+    こちらはクロップされていないフルサイズ原本です<br>
+    パスポート(3.5×4.5)または証明写真(3×4)規格が必要な場合は<br>
+    <strong style="color:#B4A0FF;">規格カスタムクロップ</strong>を選択してください
+</div>
             </div>
 
             <!-- §2-3 완성본 이미지 -->
@@ -393,11 +414,14 @@
                 <div class="ty-photo-frame">
                     <img id="ty-photo" src="" alt="証明写真">
                 </div>
-                <div class="ty-photo-spec" id="ty-spec-name"></div>
+                <div class="ty-photo-spec">AI補正 原本</div>
             </div>
 
             <!-- §2-4 다운로드 버튼 -->
-            <button class="ty-download-btn" id="btn-ty-download">📥 ダウンロード</button>
+            <button class="ty-download-btn" id="btn-ty-download">📥 フルサイズ原本ダウンロード (No Crop)</button>
+
+            <!-- クロップ調整ボタン -->
+            <button class="ty-crop-btn" id="btn-ty-crop" onclick="goToCrop()">✂️ 規格カスタムクロップ (パスポート/証明写真)</button>
 
             <!-- §2-5 전후비교 저장 -->
             <div class="ty-compare-card" id="ty-compare-section" style="display:none;">
@@ -420,6 +444,17 @@
 
             <!-- §2-6 구분선 -->
             <div class="ty-divider"></div>
+
+            <!-- データ保存ポリシー -->
+            <a href="/policy/data" target="_blank" rel="noopener"
+               style="display:block; padding:10px 16px; margin:0 16px; background:#111827; border:1px solid #1E293B; border-radius:12px; text-align:center; text-decoration:none; cursor:pointer;">
+                <div style="font-size:11px; color:#64748B; line-height:1.5;">
+                    📂 ダウンロードしたファイルはお客様のデバイスに保存されます
+                </div>
+                <div style="font-size:11px; color:#6C5CE7; font-weight:600; margin-top:4px;">
+                    データ保存ポリシーを見る →
+                </div>
+            </a>
 
             <!-- §2-12 홈으로 돌아가기 -->
             <button class="ty-home-btn" id="btn-ty-home">🏠 ホームに戻る</button>

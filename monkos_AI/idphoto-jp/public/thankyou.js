@@ -6,7 +6,7 @@
  */
 
 import {
-  store, Monk, PHOTO_SPECS,
+  store, Monk,
   sharedInit, loadSessionData, navigateTo,
   API
 } from './shared.js';
@@ -49,14 +49,6 @@ function displayPhoto() {
 
   const imgEl = document.querySelector('#ty-photo');
   if (imgEl) imgEl.src = cropped;
-
-  // 規格名表示
-  const format = loadSessionData('format');
-  const specNameEl = document.getElementById('ty-spec-name');
-  if (specNameEl && format) {
-    const spec = PHOTO_SPECS[format];
-    if (spec) specNameEl.textContent = spec.name;
-  }
 
   Monk.log('受取画面 写真表示完了');
 }
@@ -211,9 +203,16 @@ function setupBackGuard() {
   });
 }
 
+// ─── クロップアプリ移動 ───
+function goToCrop() {
+  const format = loadSessionData('format') || 'passport';
+  navigateTo(`crop.html?from=thankyou&spec=${format}`);
+}
+
 // ─── window公開 ───
 Object.assign(window, {
   navigateTo,
+  goToCrop,
 });
 
 // ─── 初期化 ───
@@ -243,6 +242,10 @@ async function init() {
   // ダウンロードボタン (クロップ本)
   const dlBtn = document.getElementById('btn-ty-download');
   if (dlBtn) dlBtn.addEventListener('click', downloadCropped);
+
+  // クロップボタン
+  const cropBtn = document.getElementById('btn-ty-crop');
+  if (cropBtn) cropBtn.addEventListener('click', goToCrop);
 
   // ホームボタン
   const homeBtn = document.getElementById('btn-ty-home');
