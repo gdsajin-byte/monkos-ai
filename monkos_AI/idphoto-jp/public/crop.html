@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#06080D">
+  <meta name="format-detection" content="telephone=no">
+  <title>MONKOS Crop</title>
+  <link rel="icon" href="/monkos-icon.svg" type="image/svg+xml">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="crop.css">
+</head>
+<body>
+  <div class="app-container">
+
+    <!-- ヘッダー -->
+    <div class="header">
+      <div style="display:flex;align-items:center;gap:8px">
+        <img class="header-logo" src="/monkos-icon.svg" alt="M" width="28" height="28">
+        <span class="header-title">MONKOS Crop</span>
+      </div>
+      <span class="header-info" id="headerInfo">413x531px · 300dpi</span>
+    </div>
+
+    <!-- 規格タブ -->
+    <div class="spec-tabs">
+      <button class="spec-tab active" data-spec="passport">パスポート</button>
+      <button class="spec-tab" data-spec="id">証明写真</button>
+    </div>
+
+    <div class="content">
+
+      <!-- サンプルバナー -->
+      <div class="sample-banner" id="sampleBanner">
+        <span>サンプル画像 — 写真をアップロードしてください</span>
+        <button id="sampleUploadBtn">アップロード</button>
+      </div>
+
+      <!-- 凡例 -->
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-dot" id="legendCrownDot"></div>
+          <span class="legend-label">頭頂部 — ドラッグ</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background:var(--gold)"></div>
+          <span class="legend-label">あご — 固定</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background:var(--accent)"></div>
+          <span class="legend-label">スケールハンドル</span>
+        </div>
+      </div>
+
+      <!-- フレーム -->
+      <div class="frame-container" id="frame">
+        <!-- 写真 -->
+        <img class="photo" id="photo" src="" alt="" draggable="false">
+
+        <!-- SVGオーバーレイ -->
+        <svg class="overlay-svg" id="overlaySvg">
+          <!-- 上部マスク -->
+          <rect id="maskTop" fill="rgba(0,0,0,0.48)"/>
+          <!-- 下部マスク -->
+          <rect id="maskBottom" fill="rgba(0,0,0,0.48)"/>
+          <!-- 十字ガイド -->
+          <line id="crossH" stroke="rgba(255,255,255,0.12)" stroke-width="1" stroke-dasharray="4 6"/>
+          <line id="crossV" stroke="rgba(255,255,255,0.12)" stroke-width="1" stroke-dasharray="4 6"/>
+          <!-- スプラインタイプ楕円 -->
+          <path id="ellipsePath" fill="none" stroke-width="1.5" stroke-dasharray="5 3"/>
+          <!-- 頭頂部ガイド線 -->
+          <line id="crownLine" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.9"/>
+          <!-- あごガイド線 -->
+          <line id="chinLine" stroke="var(--gold)" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.85"/>
+          <!-- 目ガイド線 -->
+          <line id="eyeLine" stroke-width="1" stroke-dasharray="2 5" opacity="0.7"/>
+          <!-- 寸法線（右側） -->
+          <line id="dimLineV" stroke-width="1" opacity="0.4"/>
+          <line id="dimLineTopH" stroke-width="1" opacity="0.4"/>
+          <line id="dimLineBotH" stroke-width="1" opacity="0.4"/>
+          <!-- 瞳ポイント -->
+          <circle id="pupilL" r="3" opacity="0.8"/>
+          <circle id="pupilR" r="3" opacity="0.8"/>
+          <!-- ラベル: 頭頂部 -->
+          <rect id="crownLabelBg" rx="3" fill="var(--bg)" opacity="0.88"/>
+          <text id="crownLabelText" font-size="9" font-weight="700">頭頂部</text>
+          <!-- ラベル: あご -->
+          <rect id="chinLabelBg" rx="3" fill="var(--bg)" opacity="0.88"/>
+          <text id="chinLabelText" fill="var(--gold)" font-size="9" font-weight="700">あご</text>
+          <!-- ラベル: 目の位置 -->
+          <rect id="eyeLabelBg" rx="3" fill="var(--bg)" opacity="0.78"/>
+          <text id="eyeLabelText" font-size="8"></text>
+        </svg>
+
+        <!-- 頭頂部ピン -->
+        <div class="pin pin-crown" id="crownPin">↕</div>
+        <div class="pin-hint" id="crownHint">↕ ドラッグ</div>
+
+        <!-- あごピン -->
+        <div class="pin pin-chin" id="chinPin" style="background:var(--gold)"></div>
+
+        <!-- 移動ハンドル（写真ドラッグ領域表示） -->
+        <div class="move-handle" id="moveHandle">✋</div>
+
+        <!-- スケールハンドル -->
+        <div class="scale-handle" id="scaleHandle">⤢</div>
+
+        <!-- faceMmバッジ -->
+        <div class="badge-face" id="badgeFace"><span id="badgeFaceVal"></span><span class="range" id="badgeFaceRange"></span></div>
+
+        <!-- ステータスバッジ -->
+        <div class="badge-status" id="badgeStatus"></div>
+
+        <!-- スケール表示 -->
+        <div class="badge-scale" id="badgeScale">x1.00</div>
+
+        <!-- FaceMeshローディングインジケーター -->
+        <div class="facemesh-loading hidden" id="facemeshLoading">
+          <div class="facemesh-spinner"></div>
+          <span>FaceMesh 分析中...</span>
+        </div>
+      </div>
+
+      <!-- 数値4カラム -->
+      <div class="metrics">
+        <div class="metric" id="metricTop"><div class="metric-label">上部</div><div class="metric-value" id="metricTopVal">—</div></div>
+        <div class="metric" id="metricFace"><div class="metric-label">顔</div><div class="metric-value" id="metricFaceVal">—</div></div>
+        <div class="metric" id="metricBottom"><div class="metric-label">下部</div><div class="metric-value" id="metricBottomVal">—</div></div>
+        <div class="metric" id="metricEye"><div class="metric-label">目の位置</div><div class="metric-value" id="metricEyeVal">—</div></div>
+      </div>
+
+      <!-- 警告: 目の位置 -->
+      <div class="warning-box hidden" id="eyeWarning"></div>
+      <!-- 警告: 左右中心 -->
+      <div class="warning-box hidden" id="centerWarning"></div>
+      <!-- ダウンロードブロック案内 -->
+      <div class="download-block-reason hidden" id="downloadBlock"></div>
+
+      <!-- ICAO範囲バー -->
+      <div class="range-bar-container">
+        <div class="range-bar-header">
+          <span style="color:var(--muted)" id="rangeLabel">ICAO 許容範囲</span>
+          <span id="rangeValue" style="font-weight:700"></span>
+        </div>
+        <div class="range-track">
+          <div class="range-fill" id="rangeFill"></div>
+          <div class="range-dot" id="rangeDot"></div>
+        </div>
+        <div class="range-labels">
+          <span id="rangeMin"></span>
+          <span id="rangeMax"></span>
+        </div>
+      </div>
+
+      <!-- ボタン -->
+      <div class="actions">
+        <button class="btn btn-photo" id="btnPhoto">写真</button>
+        <button class="btn btn-reset" id="btnReset">↻ リセット</button>
+        <button class="btn btn-preview" id="btnPreview">👁 プレビュー</button>
+        <button class="btn btn-download disabled" id="btnDownload">ダウンロード</button>
+      </div>
+
+      <!-- 規格情報 -->
+      <div class="spec-info" id="specInfo"></div>
+    </div>
+  </div>
+
+  <!-- ファイル入力 -->
+  <input type="file" accept="image/*" id="fileInput" style="display:none">
+
+  <!-- ダウンロードモーダル -->
+  <div class="modal-backdrop hidden" id="modalBackdrop">
+    <div class="modal-content">
+      <div class="modal-handle"></div>
+      <div class="modal-title">ダウンロード確認</div>
+      <div class="modal-metrics" id="modalMetrics">
+        <div class="modal-metrics-label">確定数値</div>
+        <div class="modal-metrics-grid" id="modalMetricsGrid"></div>
+        <div class="modal-warning hidden" id="modalWarning"></div>
+      </div>
+      <div class="consent-list">
+        <div class="consent-item" id="consent1Item">
+          <div class="consent-check" id="consent1Check"></div>
+          <span class="consent-text"><span class="consent-required">[必須] </span>クロップ結果に対する責任はユーザーにあることに同意します。</span>
+        </div>
+        <div class="consent-item" id="consent2Item">
+          <div class="consent-check" id="consent2Check"></div>
+          <span class="consent-text">クロップデータを品質向上の目的で活用することに同意します。（任意）</span>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="modal-btn modal-btn-primary disabled" id="modalBtnDownload">クロップ結果ダウンロード</button>
+        <button class="modal-btn modal-btn-secondary disabled" id="modalBtnOverlay">ガイドオーバーレイキャプチャ（証拠用）</button>
+        <button class="modal-btn modal-btn-cancel" id="modalBtnCancel">キャンセル</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MediaPipe FaceMesh -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous"></script>
+  <script src="crop.js"></script>
+</body>
+</html>
