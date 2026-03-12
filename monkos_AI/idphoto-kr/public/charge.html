@@ -34,7 +34,7 @@
     <link rel="stylesheet" href="cr-coin.css">
 
     <!-- 토스페이먼츠 -->
-    <script src="https://js.tosspayments.com/v1/payment"></script>
+    <script src="https://js.tosspayments.com/v2/standard"></script>
 </head>
 <body>
     <!-- 인앱 브라우저 안내 배너 -->
@@ -102,6 +102,29 @@
         </div>
         <div style="text-align:center; font-size:0.7rem; color:#666; margin-bottom:16px;">최소 10c · 최대 100c</div>
 
+        <!-- 선택 요약 + 위젯 영역 (초기 숨김) -->
+        <div id="widget-section" style="display:none; margin-top:20px;">
+            <div style="border-top:1px solid rgba(167,139,250,0.15); padding-top:16px;">
+
+                <!-- 선택된 상품 요약 -->
+                <div id="selected-summary" style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px; background:rgba(167,139,250,0.08); border-radius:12px; margin-bottom:16px;">
+                    <span id="selected-label" style="color:#f8fafc; font-weight:600; font-size:0.95rem;">70c</span>
+                    <span id="selected-price" style="color:#a78bfa; font-weight:700; font-size:1rem;">₩9,900</span>
+                </div>
+
+                <!-- 토스 결제수단 위젯 -->
+                <div id="payment-method" style="margin-bottom:12px;"></div>
+
+                <!-- 토스 약관 위젯 -->
+                <div id="agreement" style="margin-bottom:16px;"></div>
+
+                <!-- 결제하기 버튼 -->
+                <button id="pay-btn" type="button" style="width:100%; padding:16px; background:linear-gradient(135deg,#a78bfa,#818cf8); color:#fff; font-size:1.1rem; font-weight:700; border:none; border-radius:14px; cursor:pointer;">
+                    ₩9,900 결제하기
+                </button>
+            </div>
+        </div>
+
         <!-- 크레딧 정책 링크 -->
         <div style="text-align:center; margin:16px 0 0;">
             <a href="/credits-policy.html" style="color:#a78bfa; font-size:0.82rem; text-decoration:none;">크레딧 정책 상세보기 →</a>
@@ -132,7 +155,7 @@
     </div>
 
     <script type="module">
-    import { store, Monk, sharedInit, buyCreditsKR, navigateTo, CHARGE_OPTIONS, KRW_PER_CREDIT } from './shared.js';
+    import { store, Monk, sharedInit, navigateTo, CHARGE_OPTIONS, KRW_PER_CREDIT, TOSS_CLIENT_KEY } from './shared.js';
     import { renderChargeCards } from './modules/charge.js';
     import { initChatbot } from './modules/chatbot.js';
 
@@ -141,29 +164,123 @@
     const STEP_MIN = 1;
     const STEP_MAX = 10;
 
-    let confirmedIdx = -1;
     let stepperQty = 1;
+    let selectedIdx = -1;       // 0~3: 패키지, 4: 스테퍼
+    let paymentWidgets = null;   // v2 위젯 인스턴스
 
     function fmt(n) { return n.toLocaleString('ko-KR'); }
 
-    function updateStepper() {
-      const qtyEl = document.getElementById('stepper-qty');
-      const priceEl = document.getElementById('stepper-price');
-      const minBtn = document.getElementById('stepper-minus');
-      const maxBtn = document.getElementById('stepper-plus');
-      if (qtyEl) qtyEl.textContent = `${stepperQty * STEP_UNIT}c`;
-      if (priceEl) {
-        const price = `₩${fmt(stepperQty * STEP_PRICE)}`;
-        priceEl.textContent = confirmedIdx === 4 ? `${price} 결제` : price;
-        priceEl.style.color = confirmedIdx === 4 ? '#f8fafc' : '#a78bfa';
-      }
-      if (minBtn) minBtn.style.opacity = stepperQty <= STEP_MIN ? '0.3' : '1';
-      if (maxBtn) maxBtn.style.opacity = stepperQty >= STEP_MAX ? '0.3' : '1';
+    // ─── 위젯 초기화 (1회) ───
+    function initWidget() {
+      if (paymentWidgets || !store.user.id || !TOSS_CLIENT_KEY) return;
+
+      const tossPayments = TossPayments(TOSS_CLIENT_KEY);
+      paymentWidgets = tossPayments.widgets({
+        customerKey: store.user.id,   // Firebase Auth uid
+      });
     }
 
-    function resetAll() {
-      confirmedIdx = -1;
+    // ─── 패키지/스테퍼 선택 → 위젯 렌더 ───
+    async function selectPackage(amount, credits, label) {
+      initWidget();
 
+      if (!paymentWidgets) {
+        alert('로그인 후 이용 가능합니다.');
+        return;
+      }
+
+      // 위젯 영역 표시
+      const section = document.getElementById('widget-section');
+      section.style.display = 'block';
+
+      // 선택 요약 업데이트
+      document.getElementById('selected-label').textContent = `${credits}c`;
+      document.getElementById('selected-price').textContent = `₩${fmt(amount)}`;
+      document.getElementById('pay-btn').textContent = `₩${fmt(amount)} 결제하기`;
+
+      // 위젯 금액 설정 + 렌더
+      await paymentWidgets.setAmount({ currency: 'KRW', value: amount });
+
+      // 최초 렌더 또는 금액 변경 시
+      const methodEl = document.getElementById('payment-method');
+      if (!methodEl.hasChildNodes()) {
+        await paymentWidgets.renderPaymentMethods({
+          selector: '#payment-method',
+          variantKey: 'DEFAULT',
+        });
+        await paymentWidgets.renderAgreement({
+          selector: '#agreement',
+          variantKey: 'AGREEMENT',
+        });
+      }
+    }
+
+    // ─── 결제 실행 ───
+    async function handlePay() {
+      if (!paymentWidgets || selectedIdx < 0) return;
+
+      let amount, credits;
+      if (selectedIdx <= 3) {
+        const opt = CHARGE_OPTIONS[selectedIdx];
+        amount = opt.price;
+        credits = opt.credits + opt.bonus;
+      } else {
+        amount = stepperQty * STEP_PRICE;
+        credits = stepperQty * STEP_UNIT;
+      }
+
+      const orderId = `MONKOS_${store.user.id.slice(0, 8)}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+
+      // return 파라미터 보존 (다른 페이지에서 온 경우)
+      const returnParam = new URLSearchParams(location.search).get('return');
+      const baseUrl = `${location.origin}/charge.html?toss=success`;
+      const successUrl = returnParam
+        ? `${baseUrl}&return=${encodeURIComponent(returnParam)}`
+        : baseUrl;
+      const failBase = `${location.origin}/charge.html?toss=fail`;
+      const failUrl = returnParam
+        ? `${failBase}&return=${encodeURIComponent(returnParam)}`
+        : failBase;
+
+      try {
+        await paymentWidgets.requestPayment({
+          orderId,
+          orderName: `MONKOS ${credits} 크레딧`,
+          successUrl,
+          failUrl,
+          customerEmail: store.user.email || undefined,
+          customerName: store.user.name || undefined,
+        });
+      } catch (err) {
+        if (err.code === 'PAY_PROCESS_CANCELED' || err.code === 'USER_CANCEL') {
+          Monk.log('결제 취소');
+        } else {
+          alert('결제 오류: ' + (err.message || err.code));
+        }
+      }
+    }
+
+    // ─── 패키지 카드 렌더 + 이벤트 ───
+    function renderPackages() {
+      const container = document.getElementById('pkg-container');
+      if (!container) return;
+      container.innerHTML = renderChargeCards(CHARGE_OPTIONS);
+
+      // 단일 탭 → 선택 + 위젯 렌더
+      container.querySelectorAll('[data-ci]').forEach(card => {
+        card.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const idx = parseInt(card.dataset.ci);
+          const opt = CHARGE_OPTIONS[idx];
+          selectedIdx = idx;
+          highlightCard(idx);
+          selectPackage(opt.price, opt.credits + opt.bonus, `${opt.credits}c +${opt.bonus}c`);
+        });
+      });
+    }
+
+    // ─── 카드 하이라이트 ───
+    function highlightCard(activeIdx) {
       document.querySelectorAll('[data-ci]').forEach(card => {
         const i = parseInt(card.dataset.ci);
         const opt = CHARGE_OPTIONS[i];
@@ -171,79 +288,69 @@
         const priceBlock = card.querySelector('.cm-price-block');
         if (!priceBlock) return;
 
-        priceBlock.style.background = opt.best
-          ? 'linear-gradient(135deg,rgba(245,158,11,0.3),rgba(245,158,11,0.15))'
-          : 'linear-gradient(135deg,rgba(167,139,250,0.3),rgba(129,140,248,0.2))';
-
-        const totalC = opt.credits + opt.bonus;
-        const strikePrice = totalC * KRW_PER_CREDIT;
-        priceBlock.innerHTML =
-          '<div style="text-decoration:line-through;color:#666;font-size:0.78rem;">₩' + fmt(strikePrice) + '</div>' +
-          '<div style="color:#f8fafc;font-weight:700;font-size:1.1rem;">₩' + fmt(opt.price) + '</div>';
+        if (i === activeIdx) {
+          priceBlock.style.background = 'linear-gradient(135deg,rgba(34,197,94,0.4),rgba(34,197,94,0.2))';
+          priceBlock.innerHTML = '<div style="color:#f8fafc;font-weight:700;font-size:1.1rem;">✓ 선택됨</div>';
+        } else {
+          const totalC = opt.credits + opt.bonus;
+          const strikePrice = totalC * KRW_PER_CREDIT;
+          priceBlock.style.background = opt.best
+            ? 'linear-gradient(135deg,rgba(245,158,11,0.3),rgba(245,158,11,0.15))'
+            : 'linear-gradient(135deg,rgba(167,139,250,0.3),rgba(129,140,248,0.2))';
+          priceBlock.innerHTML =
+            '<div style="text-decoration:line-through;color:#666;font-size:0.78rem;">₩' + fmt(strikePrice) + '</div>' +
+            '<div style="color:#f8fafc;font-weight:700;font-size:1.1rem;">₩' + fmt(opt.price) + '</div>';
+        }
       });
 
+      // 스테퍼 하이라이트 해제
       const stepperPay = document.getElementById('stepper-pay');
-      if (stepperPay) stepperPay.style.background = 'linear-gradient(135deg,rgba(167,139,250,0.3),rgba(129,140,248,0.2))';
-      updateStepper();
+      if (activeIdx !== 4 && stepperPay) {
+        stepperPay.style.background = 'linear-gradient(135deg,rgba(167,139,250,0.3),rgba(129,140,248,0.2))';
+      }
     }
 
-    // ─── v3 와이드 카드 동적 생성 (renderChargeCards 공유) ───
-    function renderPackages() {
-      const container = document.getElementById('pkg-container');
-      if (!container) return;
-
-      container.innerHTML = renderChargeCards(CHARGE_OPTIONS);
-
-      // 카드 투터치
-      container.querySelectorAll('[data-ci]').forEach(card => {
-        card.addEventListener('click', (e) => {
-          e.stopPropagation();
-          const idx = parseInt(card.dataset.ci);
-          if (confirmedIdx === idx) {
-            const opt = CHARGE_OPTIONS[idx];
-            buyCreditsKR(opt.price, opt.credits + opt.bonus);
-          } else {
-            resetAll();
-            confirmedIdx = idx;
-            const opt = CHARGE_OPTIONS[idx];
-            const priceBlock = card.querySelector('.cm-price-block');
-            if (priceBlock) {
-              priceBlock.style.background = 'linear-gradient(135deg,rgba(34,197,94,0.4),rgba(34,197,94,0.2))';
-              priceBlock.innerHTML = '<div style="color:#f8fafc;font-weight:700;font-size:1.1rem;">₩' + fmt(opt.price) + ' 결제</div>';
-            }
-          }
-        });
-      });
+    // ─── 스테퍼 ───
+    function updateStepper() {
+      const qtyEl = document.getElementById('stepper-qty');
+      const priceEl = document.getElementById('stepper-price');
+      const minBtn = document.getElementById('stepper-minus');
+      const maxBtn = document.getElementById('stepper-plus');
+      if (qtyEl) qtyEl.textContent = `${stepperQty * STEP_UNIT}c`;
+      if (priceEl) priceEl.textContent = `₩${fmt(stepperQty * STEP_PRICE)}`;
+      if (minBtn) minBtn.style.opacity = stepperQty <= STEP_MIN ? '0.3' : '1';
+      if (maxBtn) maxBtn.style.opacity = stepperQty >= STEP_MAX ? '0.3' : '1';
     }
 
-    // ─── 스테퍼 투터치 ───
     document.getElementById('stepper-pay').addEventListener('click', (e) => {
       e.stopPropagation();
-      if (confirmedIdx === 4) {
-        buyCreditsKR(stepperQty * STEP_PRICE, stepperQty * STEP_UNIT);
-      } else {
-        resetAll();
-        confirmedIdx = 4;
-        const stepperPay = document.getElementById('stepper-pay');
-        if (stepperPay) stepperPay.style.background = 'linear-gradient(135deg,rgba(34,197,94,0.4),rgba(34,197,94,0.2))';
-        updateStepper();
-      }
+      selectedIdx = 4;
+      highlightCard(-1); // 패키지 하이라이트 해제
+      const stepperPay = document.getElementById('stepper-pay');
+      stepperPay.style.background = 'linear-gradient(135deg,rgba(34,197,94,0.4),rgba(34,197,94,0.2))';
+      selectPackage(stepperQty * STEP_PRICE, stepperQty * STEP_UNIT, `${stepperQty * STEP_UNIT}c`);
     });
 
     document.getElementById('stepper-minus').addEventListener('click', (e) => {
       e.stopPropagation();
       if (stepperQty > STEP_MIN) stepperQty--;
-      resetAll();
+      updateStepper();
+      if (selectedIdx === 4) {
+        selectPackage(stepperQty * STEP_PRICE, stepperQty * STEP_UNIT, `${stepperQty * STEP_UNIT}c`);
+      }
     });
 
     document.getElementById('stepper-plus').addEventListener('click', (e) => {
       e.stopPropagation();
       if (stepperQty < STEP_MAX) stepperQty++;
-      resetAll();
+      updateStepper();
+      if (selectedIdx === 4) {
+        selectPackage(stepperQty * STEP_PRICE, stepperQty * STEP_UNIT, `${stepperQty * STEP_UNIT}c`);
+      }
     });
 
-    // ─── 빈 영역 탭 → 확인 해제 ───
-    document.getElementById('charge-content').addEventListener('click', () => { resetAll(); });
+    // ─── 결제하기 버튼 ───
+    document.getElementById('pay-btn').addEventListener('click', handlePay);
 
     // ─── 돌아가기 ───
     function goBack() {
@@ -251,7 +358,6 @@
       const returnPage = params.get('return') || 'index';
       navigateTo(`${returnPage}.html`);
     }
-
     window.goBack = goBack;
 
     // ─── 초기화 ───
@@ -259,7 +365,8 @@
       initChatbot();
       await sharedInit();
       renderPackages();
-      Monk.log('충전 페이지 초기화 완료');
+      updateStepper();
+      Monk.log('충전 페이지 초기화 완료 (v2 위젯)');
     }
 
     init();

@@ -129,7 +129,7 @@ export function showChargeModal() {
   import('./modules/charge.js').then(m => m.ChargeModule.show());
 }
 
-// ─── 결제 (토스) ───
+// ─── 결제 (토스) — charge.html 리다이렉트 ───
 export async function buyCreditsKR(amount, credits) {
   if (!store.user.id) {
     import('./modules/gate.js').then(m => {
@@ -140,35 +140,10 @@ export async function buyCreditsKR(amount, credits) {
     return;
   }
 
-  // 토스 심사 중 — 클라이언트 키 없으면 안내 후 리턴
-  if (!TOSS_CLIENT_KEY) {
-    alert('결제 시스템 준비 중입니다.\n곧 이용 가능합니다!');
-    return;
-  }
-
+  // 토스 위젯은 charge.html에서만 동작 → 리다이렉트
   closeCreditModal();
-
-  const orderId = `MONKOS_${store.user.id.slice(0, 8)}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-
-  try {
-    const tossPayments = TossPayments(TOSS_CLIENT_KEY);
-
-    await tossPayments.requestPayment('카드', {
-      amount: amount,
-      orderId: orderId,
-      orderName: `MONKOS ${credits} 크레딧`,
-      successUrl: `${window.location.origin}${window.location.pathname}?toss=success`,
-      failUrl: `${window.location.origin}${window.location.pathname}?toss=fail`,
-      customerEmail: store.user.email || undefined,
-      customerName: store.user.name || undefined,
-    });
-  } catch (err) {
-    if (err.code === 'PAY_PROCESS_CANCELED' || err.code === 'USER_CANCEL') {
-      Monk.log('결제 취소');
-    } else {
-      alert('결제 오류: ' + (err.message || err.code));
-    }
-  }
+  const returnPage = location.pathname.replace(/\.html$/, '').replace(/^\//, '') || 'index';
+  navigateTo(`charge.html?return=${encodeURIComponent(returnPage)}`);
 }
 
 function _showTossLoading() {
@@ -186,10 +161,15 @@ function _hideTossLoading() {
 
 export async function initFromTossResult() {
   const params = new URLSearchParams(window.location.search);
+  const returnParam = params.get('return');
 
   if (params.get('toss') === 'fail') {
     const msg = params.get('message') || '결제 실패';
-    history.replaceState({}, '', window.location.pathname);
+    // return 보존
+    const cleanUrl = returnParam
+      ? `${window.location.pathname}?return=${encodeURIComponent(returnParam)}`
+      : window.location.pathname;
+    history.replaceState({}, '', cleanUrl);
     alert(msg);
     return;
   }
@@ -201,7 +181,11 @@ export async function initFromTossResult() {
     const orderId = params.get('orderId');
     const amount = params.get('amount');
 
-    history.replaceState({}, '', window.location.pathname);
+    // return 보존
+    const cleanUrl = returnParam
+      ? `${window.location.pathname}?return=${encodeURIComponent(returnParam)}`
+      : window.location.pathname;
+    history.replaceState({}, '', cleanUrl);
 
     if (!paymentKey || !orderId || !amount) { _hideTossLoading(); return; }
 

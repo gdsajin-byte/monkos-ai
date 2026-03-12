@@ -26,7 +26,7 @@ export const CREDIT_COST = {
 };
 
 // 토스페이먼츠 (KR 전용)
-export const TOSS_CLIENT_KEY = 'test_ck_6bJXmgo28eBJk12vvDAW3LAnGKWx'; // 테스트키 (API 개별 연동)
+export const TOSS_CLIENT_KEY = 'live_gck_GePWvyJnrKaxZNXanzwR3gLzN97E'; // 위젯 라이브키
 
 // 카카오 채널 (헌법 6조: config.js 집중 관리 — 값 미설정 시 SDK 호출 스킵)
 export const KAKAO_JS_KEY = '35d410a1a29907a670eb3b18ef3a2a03';
