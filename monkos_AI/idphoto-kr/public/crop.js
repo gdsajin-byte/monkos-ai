@@ -829,10 +829,86 @@ function updateConsent() {
   $('modalBtnOverlay').disabled = !consent1;
 }
 
-// ─── 초기화 ───
-function init() {
-  pts = initOverlay('passport');
+// ─── 앱 내 진입 감지 (thankyou → crop) ───
+async function checkAppEntry() {
+  const params = new URLSearchParams(window.location.search);
+  const from = params.get('from');
+  const spec = params.get('spec');
 
+  if (from === 'thankyou') {
+    // 규격 자동 선택
+    if (spec && SPECS[spec]) {
+      specKey = spec;
+      document.querySelectorAll('.spec-tab').forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.spec === spec);
+      });
+    }
+
+    // sessionStorage에서 보정 원본 로드
+    const imageData = sessionStorage.getItem('monkos_image');
+    if (imageData) {
+      // FaceMesh 먼저 로드 (앱 진입 시 얼굴 감지 보장)
+      if (!faceMeshReady) await initFaceMesh();
+
+      imgSrc = imageData;
+      isSample = false;
+
+      const img = new Image();
+      img.onload = async () => {
+        loadedImg = img;
+        const natW = img.naturalWidth;
+        const natH = img.naturalHeight;
+
+        // 초기 렌더 (SAMPLE_POINTS 임시)
+        pts = initOverlay(specKey);
+        render();
+
+        // FaceMesh 실행
+        if (faceMeshReady) {
+          $('facemeshLoading').classList.remove('hidden');
+          try {
+            const rawLandmarks = await detectFaceLandmarks(img);
+            $('facemeshLoading').classList.add('hidden');
+            if (rawLandmarks) {
+              const extracted = extractLandmarks(rawLandmarks, natW, natH);
+              lastDetectedLandmarks = { landmarks: extracted, natW, natH };
+              pts = autoPlace(extracted, natW, natH);
+              render();
+            } else {
+              lastDetectedLandmarks = null;
+              showFaceMeshMsg('얼굴을 감지하지 못했습니다.');
+            }
+          } catch (err) {
+            $('facemeshLoading').classList.add('hidden');
+            lastDetectedLandmarks = null;
+          }
+        } else {
+          lastDetectedLandmarks = null;
+          reset(specKey);
+        }
+      };
+      img.src = imageData;
+
+      // 뒤로가기 = thankyou 복귀
+      window.addEventListener('popstate', () => {
+        window.location.href = 'thankyou.html';
+      });
+
+      return true;
+    }
+
+    // from=thankyou이지만 세션 데이터 없음 → 안내
+    const banner = $('sampleBanner');
+    if (banner) {
+      banner.querySelector('span').textContent = '이전 단계의 이미지를 찾을 수 없습니다. 사진을 업로드하세요.';
+      banner.classList.remove('hidden');
+    }
+  }
+  return false;
+}
+
+// ─── 초기화 ───
+async function init() {
   // 이벤트: 규격 탭
   document.querySelectorAll('.spec-tab').forEach(tab => {
     tab.addEventListener('click', () => reset(tab.dataset.spec));
@@ -879,10 +955,13 @@ function init() {
     if (consent1) { alert('가이드 오버레이 캡처 저장 (Canvas 렌더 예정)'); closeModal(); }
   });
 
-  render();
-
-  // FaceMesh 초기화 (비동기, UI 블로킹 없음)
-  initFaceMesh();
+  // 앱 내 진입이면 자동 로드, 아니면 기존 초기화
+  if (!(await checkAppEntry())) {
+    pts = initOverlay('passport');
+    render();
+    // FaceMesh 초기화 (비동기, UI 블로킹 없음)
+    initFaceMesh();
+  }
 }
 
 document.addEventListener('DOMContentLoaded', init);
