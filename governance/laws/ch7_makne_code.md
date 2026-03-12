@@ -26,7 +26,7 @@
 
 **작가님 직접 지시 수령 시 의무:**
 1. 세션 로그에 `[직접지시]` 태그 기록 + 작가님 지시 내용 인용
-2. `git pull origin develop` 실행 (충돌 방지)
+2. `git pull origin main` 실행 (충돌 방지)
 3. 사전 적합성 검토 (헌법·법률 위반 여부)
 4. 실행 → 커밋+push → 완료 보고
 5. 마무리: 기존과 동일. 엔드라인은 작가님 지시에 따른다.
@@ -36,8 +36,8 @@
 | 순서 | 절차 | 필수 여부 |
 |------|------|----------|
 | 1 | 완료 보고 파일 생성 (하단 참조) | **필수** |
-| 2 | `develop` 브랜치에 커밋 — 작업 파일 + 보고 파일 포함 (세션 로그 포함 시 `[log]` 태그) | **필수** |
-| 3 | `git push origin develop` | **필수** |
+| 2 | `main` 브랜치에 커밋 — 작업 파일 + 보고 파일 포함 (세션 로그 포함 시 `[log]` 태그) | **필수** |
+| 3 | `git push origin main` | **필수** |
 | 4 | 지시서 엔드라인에 따른 추가 작업 (ch1 3조 참조) | **조건부** |
 | 5 | 터미널에 완료 보고 출력 (헌법 제2조 형식) | **필수** |
 | 6 | `main` 머지 + 배포 | **금지** — 작가님 별도 지시 시에만 |
@@ -58,7 +58,7 @@ from: {디바이스}/막내N
 to: {지시서 from 또는 작가님(직접지시 시)}
 order: {지시서 파일명 또는 "[직접지시]"}
 commit: {커밋 해시 7자리}
-branch: develop
+branch: main
 ---
 ```
 
@@ -102,10 +102,10 @@ branch: develop
 - `monkos_AI/` 내 코드 수정 (주의: 배포는 법률 제5장 경유)
 - JS/CSS/HTML 파일 생성·수정·분리
 - 테스트 코드 작성·실행
-- `git add`, `git commit`, `git push origin develop`
+- `git add`, `git commit`, `git push origin main`
 - `wrangler pages deploy` (monk.kr 배포)
 - 로컬 `node`, `npm` 실행 (서버 기동 테스트 등)
-- `./deploy.sh dev` (develop 브랜치에서만)
+- `./deploy.sh dev`
 
 > 근거: 2026-02-15 — CLAUDE.md 막내 규칙 확립
 > 상위 헌법: 제5조
@@ -117,7 +117,7 @@ branch: develop
 | 분류 | 금지 항목 |
 |------|-----------|
 | **파괴** (헌법 제8조) | `rm -rf`, `git push --force`, `git reset --hard`, `git clean -f` |
-| **배포** (법률 제5장) | `./deploy.sh prod`, `gcloud run deploy` 직접, main 브랜치 배포 |
+| **배포** (법률 제5장) | `./deploy.sh prod`, `gcloud run deploy` 직접, prod 배포 (작가님/쌍아 전용) |
 | **보안** (헌법 제6조) | API 키 하드코딩, 민감 정보 생성/추측, `.env` 수정, **시크릿 신규 생성 시 지시서 또는 작가님 직접 승인 필수** |
 | **구조** | DB 스키마 변경, 프로덕션 환경변수 변경, `wrangler.toml` 수정 |
 | **범위** | 지시서 범위 밖 기능 추가, 지시 없는 리팩토링 |

@@ -25,7 +25,7 @@
 
 - 반드시 `deploy.sh` 경유. `gcloud run deploy` 직접 실행 **금지**. `gcloud builds submit` 단독 **금지**.
 - 배포 타겟: 전 서비스 `us-central1` (MEMORY.md 참조).
-- `./deploy.sh dev` — 막내 허용 (develop 브랜치에서만).
+- `./deploy.sh dev` — 막내 허용.
 - dev 배포 후 **반드시 동작 확인** → 완료 보고에 결과 명시.
 - prod 배포가 필요한 경우 `⏳ 대기: prod 배포 필요` 명시.
 

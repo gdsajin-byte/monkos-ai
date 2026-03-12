@@ -115,5 +115,5 @@
 - **commit 메시지**: `[M2/코웍이] 내용 요약`
 - **push 전 반드시 pull** — 충돌 방지
 - `git push --force`, `git reset --hard`, `git clean -f` **절대 금지**
-- 브랜치: `develop`에서만 작업. 브랜치 생성/삭제 금지
+- 브랜치: `main`에서 작업. 브랜치 생성/삭제 금지
 - 코드 파일(`.js`, `.html`, `.css`, `.py` 등) 수정 금지 — 산출물(`.md`)만 취급
