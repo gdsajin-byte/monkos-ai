@@ -932,12 +932,24 @@ async function init() {
     reset(specKey);
   });
 
-  // 이벤트: 드래그
-  $('photo').addEventListener('pointerdown', (e) => onPtrDown(e, 'img'));
+  // 이벤트: 드래그 (이동은 ✋ 핸들에서만)
+  $('moveHandle').addEventListener('pointerdown', (e) => onPtrDown(e, 'img'));
   $('crownPin').addEventListener('pointerdown', (e) => onPtrDown(e, 'crown'));
   $('scaleHandle').addEventListener('pointerdown', (e) => onPtrDown(e, 'scale'));
   window.addEventListener('pointermove', onPtrMove);
   window.addEventListener('pointerup', onPtrUp);
+
+  // 이벤트: 미리보기 (누르는 동안 가이드 숨김)
+  const btnPreview = $('btnPreview');
+  const guideIds = ['overlaySvg','crownPin','crownHint','chinPin','scaleHandle','moveHandle','badgeFace','badgeStatus','badgeScale'];
+  btnPreview.addEventListener('pointerdown', () => {
+    guideIds.forEach(id => { $(id).style.opacity = '0'; });
+  });
+  const restoreGuides = () => {
+    guideIds.forEach(id => { $(id).style.opacity = ''; });
+  };
+  btnPreview.addEventListener('pointerup', restoreGuides);
+  btnPreview.addEventListener('pointerleave', restoreGuides);
 
   // 이벤트: 다운로드
   $('btnDownload').addEventListener('click', openModal);

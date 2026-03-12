@@ -99,14 +99,17 @@
         </svg>
 
         <!-- 정수리 핀 -->
-        <div class="pin pin-crown" id="crownPin"></div>
+        <div class="pin pin-crown" id="crownPin">↕</div>
         <div class="pin-hint" id="crownHint">↕ 드래그</div>
 
         <!-- 턱끝 핀 -->
         <div class="pin pin-chin" id="chinPin" style="background:var(--gold)"></div>
 
+        <!-- 이동 핸들 (사진 드래그 영역 표시) -->
+        <div class="move-handle" id="moveHandle">✋</div>
+
         <!-- 스케일 핸들 -->
-        <div class="scale-handle" id="scaleHandle">⤡</div>
+        <div class="scale-handle" id="scaleHandle">⤢</div>
 
         <!-- faceMm 배지 -->
         <div class="badge-face" id="badgeFace"><span id="badgeFaceVal"></span><span class="range" id="badgeFaceRange"></span></div>
@@ -159,6 +162,7 @@
       <div class="actions">
         <button class="btn btn-photo" id="btnPhoto">사진</button>
         <button class="btn btn-reset" id="btnReset">↻ 초기화</button>
+        <button class="btn btn-preview" id="btnPreview">👁 미리보기</button>
         <button class="btn btn-download disabled" id="btnDownload">다운로드</button>
       </div>
 
