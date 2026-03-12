@@ -316,7 +316,7 @@ export function loadSessionData(key) {
 
 export function clearSessionImages() {
   sessionStorage.removeItem('monkos_captured');
-  sessionStorage.removeItem('monkos_cropped');
+  sessionStorage.removeItem('monkos_image');
 }
 
 // ─── v5 選択値一括保存 ───

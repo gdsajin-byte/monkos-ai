@@ -727,24 +727,19 @@ app.post('/api/download', async (req, res) => {
       });
     }
 
-    // GCSから画像ダウンロード
-    const buffer = await downloadFromGCS(gcsPath);
-
-    // 顔検出 + Signed URL 並列発行
-    const [faceBox, originalUrl] = await Promise.all([
-      detectFace(buffer),
+    // GCSから画像ダウンロード + Signed URL 並列発行
+    const [buffer, originalUrl] = await Promise.all([
+      downloadFromGCS(gcsPath),
       getSignedUrl(gcsPath),
     ]);
 
-    // 顔座標基準 精密クロップ (faceBox nullならフォールバック)
-    const croppedBuffer = await cropToSpec(buffer, format || 'passport', faceBox);
-
-    log(`[Download] ${userId} → ${gcsPath} (${format || 'passport'}, face=${!!faceBox})`);
+    log(`[Download] ${userId} → ${gcsPath} (ノークロップ原本)`);
     res.json({
       success: true,
-      cropped: `data:image/png;base64,${croppedBuffer.toString('base64')}`,
+      image: `data:image/png;base64,${buffer.toString('base64')}`,
       originalUrl,
       credits: creditResult.credits,
+      format: format || 'passport',
     });
   } catch (err) {
     log(`[API][download] エラー: ${err.message}`, 'ERROR');

@@ -1,7 +1,7 @@
 /**
  * thankyou.js — v6 受取処(エンディングページ) 専用ロジック
  * 進入: result.js doDownload() 成功 → navigateTo('thankyou.html')
- * データ: sessionStorage (monkos_cropped, monkos_compare, monkos_originalUrl, monkos_format)
+ * データ: sessionStorage (monkos_image, monkos_compare, monkos_originalUrl, monkos_format)
  * v6: フルショット別課金廃止 — ダウンロード70cにクロップ本+原本含む
  */
 
@@ -38,7 +38,7 @@ let _originalUrl = null;
 
 // ─── §2-3 完成本表示 ───
 function displayPhoto() {
-  const cropped = loadSessionData('cropped');
+  const cropped = loadSessionData('image');
   if (!cropped) {
     Monk.log('クロップデータなし → 準備画面へ移動');
     navigateTo('prep.html');

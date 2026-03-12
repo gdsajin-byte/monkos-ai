@@ -354,7 +354,7 @@ async function downloadResult() {
 // ─── 前後比較合成（thankyou用） ───
 async function generateCompareImage() {
   const captured = loadSessionData('captured');
-  const cropped = loadSessionData('cropped');
+  const cropped = loadSessionData('image');
   if (!captured || !cropped) return;
 
   try {
@@ -437,7 +437,7 @@ async function doDownload() {
     store.user = { ...store.user, credits: data.credits };
 
     // サーバークロップ本 → thankyou表示用
-    saveSessionData('cropped', data.cropped);
+    saveSessionData('image', data.image);
 
     // 原本Signed URL 保存 (thankyouで原本ダウンロード用)
     try {
