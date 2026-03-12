@@ -230,10 +230,10 @@ const TIE_PROMPTS = {
 };
 
 const EXPRESSION_PROMPTS = {
-  gentle_smile: 'very subtle hint of warmth in eyes, barely perceptible gentle expression, not smiling but pleasant',
-  neutral: 'calm, natural resting face with soft relaxed eyes, pleasant but not smiling',
-  natural_smile: 'slight natural warmth, gentle friendly eyes, minimal smile',
-  bright_smile: 'gentle, warm subtle smile with relaxed soft eyes, approachable',
+  gentle_smile: 'relaxed pleasant expression with naturally soft eyes, at ease, quiet warmth in face',
+  neutral: 'natural calm resting face with soft relaxed eyes, at ease and composed',
+  natural_smile: 'gently pleasant face with warm relaxed eyes, approachable and at ease',
+  bright_smile: 'warm friendly expression with bright relaxed eyes, naturally pleasant',
 };
 
 const HAIR_PROMPTS = {
