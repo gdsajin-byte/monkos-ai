@@ -193,6 +193,14 @@ const httpServer = createServer(async (req, res) => {
 
   // === CMS 공개 페이지 (SSR) ===
   if (urlPath === '/sitemap.xml' && req.method === 'GET') return renderSitemap(req, res);
+
+  // 다국어 블로그 라우트 (언어 접두사 — 기존 /blog 라우트 앞에 배치)
+  if (urlPath === '/ja/blog' && req.method === 'GET') return renderBlogList(req, res, 'ja');
+  if (urlPath === '/en/blog' && req.method === 'GET') return renderBlogList(req, res, 'en');
+  if (urlPath?.startsWith('/ja/blog/') && req.method === 'GET') return renderBlogPost(req, res, 'ja');
+  if (urlPath?.startsWith('/en/blog/') && req.method === 'GET') return renderBlogPost(req, res, 'en');
+
+  // 기존 라우트 (한국어 = 기본, 접두사 없음)
   if (urlPath === '/blog' && req.method === 'GET') return renderBlogList(req, res);
   if (urlPath?.startsWith('/blog/') && req.method === 'GET') return renderBlogPost(req, res);
   if (urlPath === '/faq' && req.method === 'GET') return renderFaq(req, res);

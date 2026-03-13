@@ -15,9 +15,9 @@ function escapeHtml(str) {
   return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-function layoutHead(title, description, extra = '') {
+function layoutHead(title, description, extra = '', htmlLang = 'ko') {
   return `<!DOCTYPE html>
-<html lang="ko">
+<html lang="${htmlLang}">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -101,10 +101,10 @@ function layoutFooter() {
 // =============================================
 
 // GET /blog — 목록 페이지
-export async function renderBlogList(req, res) {
+export async function renderBlogList(req, res, forceLang = null) {
   try {
     const url = new URL(req.url, 'https://monkos.ai');
-    const lang = url.searchParams.get('lang');
+    const lang = forceLang || url.searchParams.get('lang');
     const page = Math.max(1, parseInt(url.searchParams.get('page') || '1', 10));
     const perPage = 10;
 
@@ -116,38 +116,60 @@ export async function renderBlogList(req, res) {
     const totalPages = Math.ceil(allPosts.length / perPage);
     const posts = allPosts.slice((page - 1) * perPage, page * perPage);
 
+    // 다국어 URL prefix
+    const prefix = forceLang ? `/${forceLang}` : '';
+    const canonicalUrl = `https://monkos.ai${prefix}/blog`;
+    const htmlLang = forceLang || 'ko';
+
     const ogMeta = `<meta property="og:title" content="MONKOS Blog">
 <meta property="og:description" content="AI ID Photo tips, guides, and news">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://monkos.ai/blog">
-<link rel="canonical" href="https://monkos.ai/blog">`;
+<meta property="og:url" content="${canonicalUrl}">
+<link rel="canonical" href="${canonicalUrl}">`;
 
-    const cardsHtml = posts.map(p => `
-      <a href="/blog/${escapeHtml(p.slug)}" class="blog-card">
+    // 카드 링크: lang에 따라 URL 생성
+    const cardsHtml = posts.map(p => {
+      let cardHref;
+      const postLang = p.lang || 'ko';
+      if (postLang === 'ja') {
+        const baseSlug = p.originalSlug || p.slug.replace(/-ja$/, '');
+        cardHref = `/ja/blog/${escapeHtml(baseSlug)}`;
+      } else if (postLang === 'en') {
+        const baseSlug = p.originalSlug || p.slug.replace(/-en$/, '');
+        cardHref = `/en/blog/${escapeHtml(baseSlug)}`;
+      } else {
+        const baseSlug = p.originalSlug || p.slug;
+        cardHref = `/blog/${escapeHtml(baseSlug)}`;
+      }
+      return `
+      <a href="${cardHref}" class="blog-card">
         ${p.thumbnail ? `<div class="card-thumb" style="background-image:url('${escapeHtml(p.thumbnail)}')"></div>` : `<div class="card-thumb card-thumb-empty"></div>`}
         <div class="card-body">
           <div class="card-meta">
-            <span class="card-lang">${escapeHtml(p.lang || 'ko')}</span>
+            <span class="card-lang">${escapeHtml(postLang)}</span>
             <span class="card-date">${p.createdAt ? p.createdAt.substring(0, 10) : ''}</span>
           </div>
           <h2 class="card-title">${escapeHtml(p.title)}</h2>
           <p class="card-summary">${escapeHtml(p.summary || '')}</p>
         </div>
-      </a>`).join('');
+      </a>`;
+    }).join('');
 
+    // 페이지네이션: forceLang 시 접두사 URL 사용
     let paginationHtml = '';
     if (totalPages > 1) {
-      const langParam = lang ? `&lang=${lang}` : '';
+      const baseUrl = forceLang ? `/${forceLang}/blog` : '/blog';
+      const langParam = (!forceLang && lang) ? `&lang=${lang}` : '';
       const links = [];
-      if (page > 1) links.push(`<a href="/blog?page=${page - 1}${langParam}">&laquo; Prev</a>`);
+      if (page > 1) links.push(`<a href="${baseUrl}?page=${page - 1}${langParam}">&laquo; Prev</a>`);
       for (let i = 1; i <= totalPages; i++) {
-        links.push(i === page ? `<span class="pg-current">${i}</span>` : `<a href="/blog?page=${i}${langParam}">${i}</a>`);
+        links.push(i === page ? `<span class="pg-current">${i}</span>` : `<a href="${baseUrl}?page=${i}${langParam}">${i}</a>`);
       }
-      if (page < totalPages) links.push(`<a href="/blog?page=${page + 1}${langParam}">Next &raquo;</a>`);
+      if (page < totalPages) links.push(`<a href="${baseUrl}?page=${page + 1}${langParam}">Next &raquo;</a>`);
       paginationHtml = `<div class="pagination">${links.join('')}</div>`;
     }
 
-    const html = `${layoutHead('Blog | MONKOS AI', 'AI ID Photo tips, guides, and news', ogMeta)}
+    const html = `${layoutHead('Blog | MONKOS AI', 'AI ID Photo tips, guides, and news', ogMeta, htmlLang)}
 <style>
 .blog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 24px; }
 .blog-card {
@@ -188,9 +210,9 @@ ${layoutNav()}
     <h1>Blog</h1>
     <div class="lang-filter">
       <a href="/blog" class="${!lang ? 'active' : ''}">All</a>
-      <a href="/blog?lang=ko" class="${lang === 'ko' ? 'active' : ''}">KO</a>
-      <a href="/blog?lang=ja" class="${lang === 'ja' ? 'active' : ''}">JA</a>
-      <a href="/blog?lang=en" class="${lang === 'en' ? 'active' : ''}">EN</a>
+      <a href="/blog" class="${lang === 'ko' ? 'active' : ''}">KO</a>
+      <a href="/ja/blog" class="${lang === 'ja' || forceLang === 'ja' ? 'active' : ''}">JA</a>
+      <a href="/en/blog" class="${lang === 'en' || forceLang === 'en' ? 'active' : ''}">EN</a>
     </div>
   </div>
   <div class="blog-grid">${cardsHtml || '<p style="color:var(--text-dim)">No posts yet.</p>'}</div>
@@ -210,49 +232,69 @@ ${layoutFooter()}
 }
 
 // GET /blog/:slug — 상세 페이지
-export async function renderBlogPost(req, res) {
+export async function renderBlogPost(req, res, lang = null) {
   try {
-    const slug = decodeURIComponent(req.url.split('/blog/')[1]?.split('?')[0] || '');
+    // slug 추출: lang에 따라 URL 접두사가 다름
+    let slug;
+    if (lang === 'ja') {
+      slug = decodeURIComponent(req.url.split('/ja/blog/')[1]?.split('?')[0] || '');
+    } else if (lang === 'en') {
+      slug = decodeURIComponent(req.url.split('/en/blog/')[1]?.split('?')[0] || '');
+    } else {
+      slug = decodeURIComponent(req.url.split('/blog/')[1]?.split('?')[0] || '');
+    }
     if (!slug) {
       res.writeHead(404, { 'Content-Type': 'text/plain' });
       return res.end('Not Found');
     }
 
-    const doc = await blogCollection.doc(slug).get();
+    // Firestore doc ID: lang이 있으면 slug-{lang}
+    const docId = lang ? `${slug}-${lang}` : slug;
+    const doc = await blogCollection.doc(docId).get();
     if (!doc.exists || !doc.data().published) {
       res.writeHead(404, { 'Content-Type': 'text/plain' });
       return res.end('Not Found');
     }
 
     const post = doc.data();
+    const htmlLang = lang || post.lang || 'ko';
 
     // viewCount 비동기 증가
-    blogCollection.doc(slug).update({ viewCount: (post.viewCount || 0) + 1 }).catch(() => {});
+    blogCollection.doc(docId).update({ viewCount: (post.viewCount || 0) + 1 }).catch(() => {});
 
     const contentHtml = marked(post.content || '');
 
-    // hreflang: 동일 slug prefix의 다른 lang 버전 검색
+    // baseSlug: 언어 접미사 없는 원래 slug
+    const baseSlug = slug;
+
+    // hreflang: 다국어 버전 링크 (새 URL 패턴)
     let hreflangTags = '';
     try {
       const allLangs = await blogCollection.where('published', '==', true).get();
-      const baseSlug = slug.replace(/-(?:ko|ja|en)$/, '');
-      const related = allLangs.docs.filter(d => {
-        const s = d.id;
-        return s !== slug && s.replace(/-(?:ko|ja|en)$/, '') === baseSlug;
-      });
-      hreflangTags = related.map(d => {
-        const data = d.data();
-        return `<link rel="alternate" hreflang="${data.lang || 'ko'}" href="https://monkos.ai/blog/${d.id}">`;
-      }).join('\n');
+      const hreflangLinks = [];
+      for (const d of allLangs.docs) {
+        const dSlug = d.id;
+        const dBaseSlug = dSlug.replace(/-(?:ko|ja|en)$/, '');
+        if (dBaseSlug === baseSlug) {
+          const dLang = d.data().lang || 'ko';
+          const dPrefix = dLang === 'ko' ? '' : `/${dLang}`;
+          hreflangLinks.push(`<link rel="alternate" hreflang="${dLang}" href="https://monkos.ai${dPrefix}/blog/${baseSlug}">`);
+        }
+      }
+      hreflangTags = hreflangLinks.join('\n');
     } catch { /* skip */ }
+
+    // canonical URL: 다국어 접두사 반영
+    const prefix = lang ? `/${lang}` : '';
+    const canonicalUrl = `https://monkos.ai${prefix}/blog/${escapeHtml(baseSlug)}`;
 
     const seoMeta = `
 <meta property="og:title" content="${escapeHtml(post.title)}">
 <meta property="og:description" content="${escapeHtml(post.summary || '')}">
 <meta property="og:image" content="${escapeHtml(post.thumbnail || '')}">
 <meta property="og:type" content="article">
-<meta property="og:url" content="https://monkos.ai/blog/${escapeHtml(slug)}">
-<link rel="canonical" href="https://monkos.ai/blog/${escapeHtml(slug)}">
+<meta property="og:url" content="${canonicalUrl}">
+<link rel="canonical" href="${canonicalUrl}">
 ${hreflangTags}
 <script type="application/ld+json">
 ${JSON.stringify({
@@ -270,7 +312,10 @@ ${JSON.stringify({
 
     const tagsHtml = (post.tags || []).map(t => `<span class="post-tag">${escapeHtml(t)}</span>`).join('');
 
-    const html = `${layoutHead(`${post.title} | MONKOS AI`, post.summary || '', seoMeta)}
+    // Back to Blog 링크: lang에 따라 경로 분기
+    const backLink = lang ? `/${lang}/blog` : '/blog';
+
+    const html = `${layoutHead(`${post.title} | MONKOS AI`, post.summary || '', seoMeta, htmlLang)}
 <style>
 .post-header { margin-bottom: 32px; max-width: 800px; margin-left: auto; margin-right: auto; }
 .post-header h1 { font-size: 32px; font-weight: 700; color: var(--text-bright); line-height: 1.4; margin-bottom: 16px; }
@@ -305,7 +350,7 @@ ${JSON.stringify({
 <body>
 ${layoutNav()}
 <div class="container">
-  <a href="/blog" class="post-back">&larr; Back to Blog</a>
+  <a href="${backLink}" class="post-back">&larr; Back to Blog</a>
   <div class="post-header">
     <h1>${escapeHtml(post.title)}</h1>
     <div class="post-meta">
@@ -870,12 +915,15 @@ export async function renderSitemap(req, res) {
       { loc: 'https://monkos.ai/board', changefreq: 'daily', priority: '0.5' },
     ];
 
-    // 발행된 블로그 글 추가
+    // 발행된 블로그 글 추가 (다국어 URL 접두사 반영)
     const snapshot = await blogCollection.where('published', '==', true).orderBy('createdAt', 'desc').get();
     const blogUrls = snapshot.docs.map(doc => {
       const data = doc.data();
+      const docLang = data.lang || 'ko';
+      const baseSlug = data.originalSlug || doc.id.replace(/-(?:ja|en)$/, '');
+      const langPrefix = docLang === 'ko' ? '' : `/${docLang}`;
       return {
-        loc: `https://monkos.ai/blog/${doc.id}`,
+        loc: `https://monkos.ai${langPrefix}/blog/${baseSlug}`,
         lastmod: (data.updatedAt || data.createdAt || '').substring(0, 10),
         changefreq: 'weekly',
         priority: '0.7',
