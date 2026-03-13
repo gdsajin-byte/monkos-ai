@@ -1,6 +1,10 @@
 /**
  * CMS SSR 렌더링 엔진
  * Firestore 데이터 → HTML 페이지 (SEO 최적화)
+ *
+ * 구조: fragment 함수 (데이터+HTML) + layoutShell (전체 페이지 래핑)
+ * - *Fragment() → { title, description, seoMeta, htmlLang, pageStyle, bodyContent, pageScript }
+ * - render*()   → layoutShell(fragment) → res.end(html)  (기존 호출 100% 호환)
  */
 import { marked } from 'marked';
 import { firestore, log } from '../shared/config.js';
@@ -96,52 +100,68 @@ function layoutFooter() {
 </footer>`;
 }
 
+/**
+ * 전체 HTML 페이지를 래핑하는 셸 함수
+ * v4에서 3컬럼 레이아웃으로 교체될 진입점
+ */
+export function layoutShell({ title, description, seoMeta, htmlLang, pageStyle, bodyContent, pageScript }) {
+  return `${layoutHead(title, description, seoMeta || '', htmlLang || 'ko')}
+${pageStyle ? `<style>${pageStyle}</style>` : ''}
+</head>
+<body>
+${layoutNav()}
+<div class="container">
+  ${bodyContent}
+</div>
+${layoutFooter()}
+${pageScript ? `<script>${pageScript}</script>` : ''}
+</body>
+</html>`;
+}
+
 // =============================================
 // Blog
 // =============================================
 
-// GET /blog — 목록 페이지
-export async function renderBlogList(req, res, forceLang = null) {
-  try {
-    const url = new URL(req.url, 'https://monkos.ai');
-    const lang = forceLang || url.searchParams.get('lang');
-    const page = Math.max(1, parseInt(url.searchParams.get('page') || '1', 10));
-    const perPage = 10;
+// 블로그 목록 — fragment (데이터 조회 + HTML 생성)
+export async function blogListFragment(req, forceLang = null) {
+  const url = new URL(req.url, 'https://monkos.ai');
+  const lang = forceLang || url.searchParams.get('lang');
+  const page = Math.max(1, parseInt(url.searchParams.get('page') || '1', 10));
+  const perPage = 10;
 
-    let query = blogCollection.where('published', '==', true).orderBy('createdAt', 'desc');
-    if (lang) query = blogCollection.where('published', '==', true).where('lang', '==', lang).orderBy('createdAt', 'desc');
+  let query = blogCollection.where('published', '==', true).orderBy('createdAt', 'desc');
+  if (lang) query = blogCollection.where('published', '==', true).where('lang', '==', lang).orderBy('createdAt', 'desc');
 
-    const snapshot = await query.get();
-    const allPosts = snapshot.docs.map(doc => ({ slug: doc.id, ...doc.data() }));
-    const totalPages = Math.ceil(allPosts.length / perPage);
-    const posts = allPosts.slice((page - 1) * perPage, page * perPage);
+  const snapshot = await query.get();
+  const allPosts = snapshot.docs.map(doc => ({ slug: doc.id, ...doc.data() }));
+  const totalPages = Math.ceil(allPosts.length / perPage);
+  const posts = allPosts.slice((page - 1) * perPage, page * perPage);
 
-    // 다국어 URL prefix
-    const prefix = forceLang ? `/${forceLang}` : '';
-    const canonicalUrl = `https://monkos.ai${prefix}/blog`;
-    const htmlLang = forceLang || 'ko';
+  const prefix = forceLang ? `/${forceLang}` : '';
+  const canonicalUrl = `https://monkos.ai${prefix}/blog`;
+  const htmlLang = forceLang || 'ko';
 
-    const ogMeta = `<meta property="og:title" content="MONKOS Blog">
+  const seoMeta = `<meta property="og:title" content="MONKOS Blog">
 <meta property="og:description" content="AI ID Photo tips, guides, and news">
 <meta property="og:type" content="website">
 <meta property="og:url" content="${canonicalUrl}">
 <link rel="canonical" href="${canonicalUrl}">`;
 
-    // 카드 링크: lang에 따라 URL 생성
-    const cardsHtml = posts.map(p => {
-      let cardHref;
-      const postLang = p.lang || 'ko';
-      if (postLang === 'ja') {
-        const baseSlug = p.originalSlug || p.slug.replace(/-ja$/, '');
-        cardHref = `/ja/blog/${escapeHtml(baseSlug)}`;
-      } else if (postLang === 'en') {
-        const baseSlug = p.originalSlug || p.slug.replace(/-en$/, '');
-        cardHref = `/en/blog/${escapeHtml(baseSlug)}`;
-      } else {
-        const baseSlug = p.originalSlug || p.slug;
-        cardHref = `/blog/${escapeHtml(baseSlug)}`;
-      }
-      return `
+  const cardsHtml = posts.map(p => {
+    let cardHref;
+    const postLang = p.lang || 'ko';
+    if (postLang === 'ja') {
+      const baseSlug = p.originalSlug || p.slug.replace(/-ja$/, '');
+      cardHref = `/ja/blog/${escapeHtml(baseSlug)}`;
+    } else if (postLang === 'en') {
+      const baseSlug = p.originalSlug || p.slug.replace(/-en$/, '');
+      cardHref = `/en/blog/${escapeHtml(baseSlug)}`;
+    } else {
+      const baseSlug = p.originalSlug || p.slug;
+      cardHref = `/blog/${escapeHtml(baseSlug)}`;
+    }
+    return `
       <a href="${cardHref}" class="blog-card">
         ${p.thumbnail ? `<div class="card-thumb" style="background-image:url('${escapeHtml(p.thumbnail)}')"></div>` : `<div class="card-thumb card-thumb-empty"></div>`}
         <div class="card-body">
@@ -153,24 +173,22 @@ export async function renderBlogList(req, res, forceLang = null) {
           <p class="card-summary">${escapeHtml(p.summary || '')}</p>
         </div>
       </a>`;
-    }).join('');
+  }).join('');
 
-    // 페이지네이션: forceLang 시 접두사 URL 사용
-    let paginationHtml = '';
-    if (totalPages > 1) {
-      const baseUrl = forceLang ? `/${forceLang}/blog` : '/blog';
-      const langParam = (!forceLang && lang) ? `&lang=${lang}` : '';
-      const links = [];
-      if (page > 1) links.push(`<a href="${baseUrl}?page=${page - 1}${langParam}">&laquo; Prev</a>`);
-      for (let i = 1; i <= totalPages; i++) {
-        links.push(i === page ? `<span class="pg-current">${i}</span>` : `<a href="${baseUrl}?page=${i}${langParam}">${i}</a>`);
-      }
-      if (page < totalPages) links.push(`<a href="${baseUrl}?page=${page + 1}${langParam}">Next &raquo;</a>`);
-      paginationHtml = `<div class="pagination">${links.join('')}</div>`;
+  let paginationHtml = '';
+  if (totalPages > 1) {
+    const baseUrl = forceLang ? `/${forceLang}/blog` : '/blog';
+    const langParam = (!forceLang && lang) ? `&lang=${lang}` : '';
+    const links = [];
+    if (page > 1) links.push(`<a href="${baseUrl}?page=${page - 1}${langParam}">&laquo; Prev</a>`);
+    for (let i = 1; i <= totalPages; i++) {
+      links.push(i === page ? `<span class="pg-current">${i}</span>` : `<a href="${baseUrl}?page=${i}${langParam}">${i}</a>`);
     }
+    if (page < totalPages) links.push(`<a href="${baseUrl}?page=${page + 1}${langParam}">Next &raquo;</a>`);
+    paginationHtml = `<div class="pagination">${links.join('')}</div>`;
+  }
 
-    const html = `${layoutHead('Blog | MONKOS AI', 'AI ID Photo tips, guides, and news', ogMeta, htmlLang)}
-<style>
+  const pageStyle = `
 .blog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 24px; }
 .blog-card {
   display: flex; flex-direction: column; background: var(--card-bg);
@@ -200,12 +218,9 @@ export async function renderBlogList(req, res, forceLang = null) {
   background: var(--surface); border: 1px solid var(--border); color: var(--text-dim);
 }
 .lang-filter a:hover, .lang-filter a.active { border-color: var(--accent); color: var(--accent); }
-@media (max-width: 600px) { .blog-grid { grid-template-columns: 1fr; } }
-</style>
-</head>
-<body>
-${layoutNav()}
-<div class="container">
+@media (max-width: 600px) { .blog-grid { grid-template-columns: 1fr; } }`;
+
+  const bodyContent = `
   <div class="blog-header">
     <h1>Blog</h1>
     <div class="lang-filter">
@@ -216,12 +231,16 @@ ${layoutNav()}
     </div>
   </div>
   <div class="blog-grid">${cardsHtml || '<p style="color:var(--text-dim)">No posts yet.</p>'}</div>
-  ${paginationHtml}
-</div>
-${layoutFooter()}
-</body>
-</html>`;
+  ${paginationHtml}`;
 
+  return { title: 'Blog | MONKOS AI', description: 'AI ID Photo tips, guides, and news', seoMeta, htmlLang, pageStyle, bodyContent, pageScript: null };
+}
+
+// GET /blog — 목록 페이지 (기존 호출 호환)
+export async function renderBlogList(req, res, forceLang = null) {
+  try {
+    const parts = await blogListFragment(req, forceLang);
+    const html = layoutShell(parts);
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
     res.end(html);
   } catch (err) {
@@ -231,64 +250,56 @@ ${layoutFooter()}
   }
 }
 
-// GET /blog/:slug — 상세 페이지
-export async function renderBlogPost(req, res, lang = null) {
+// =============================================
+// Blog Post
+// =============================================
+
+// 블로그 상세 — fragment
+export async function blogPostFragment(req, lang = null) {
+  let slug;
+  if (lang === 'ja') {
+    slug = decodeURIComponent(req.url.split('/ja/blog/')[1]?.split('?')[0] || '');
+  } else if (lang === 'en') {
+    slug = decodeURIComponent(req.url.split('/en/blog/')[1]?.split('?')[0] || '');
+  } else {
+    slug = decodeURIComponent(req.url.split('/blog/')[1]?.split('?')[0] || '');
+  }
+  if (!slug) return null; // 404 시그널
+
+  const docId = lang ? `${slug}-${lang}` : slug;
+  const doc = await blogCollection.doc(docId).get();
+  if (!doc.exists || !doc.data().published) return null;
+
+  const post = doc.data();
+  const htmlLang = lang || post.lang || 'ko';
+
+  // viewCount 비동기 증가
+  blogCollection.doc(docId).update({ viewCount: (post.viewCount || 0) + 1 }).catch(() => {});
+
+  const contentHtml = marked(post.content || '');
+  const baseSlug = slug;
+
+  // hreflang
+  let hreflangTags = '';
   try {
-    // slug 추출: lang에 따라 URL 접두사가 다름
-    let slug;
-    if (lang === 'ja') {
-      slug = decodeURIComponent(req.url.split('/ja/blog/')[1]?.split('?')[0] || '');
-    } else if (lang === 'en') {
-      slug = decodeURIComponent(req.url.split('/en/blog/')[1]?.split('?')[0] || '');
-    } else {
-      slug = decodeURIComponent(req.url.split('/blog/')[1]?.split('?')[0] || '');
-    }
-    if (!slug) {
-      res.writeHead(404, { 'Content-Type': 'text/plain' });
-      return res.end('Not Found');
-    }
-
-    // Firestore doc ID: lang이 있으면 slug-{lang}
-    const docId = lang ? `${slug}-${lang}` : slug;
-    const doc = await blogCollection.doc(docId).get();
-    if (!doc.exists || !doc.data().published) {
-      res.writeHead(404, { 'Content-Type': 'text/plain' });
-      return res.end('Not Found');
-    }
-
-    const post = doc.data();
-    const htmlLang = lang || post.lang || 'ko';
-
-    // viewCount 비동기 증가
-    blogCollection.doc(docId).update({ viewCount: (post.viewCount || 0) + 1 }).catch(() => {});
-
-    const contentHtml = marked(post.content || '');
-
-    // baseSlug: 언어 접미사 없는 원래 slug
-    const baseSlug = slug;
-
-    // hreflang: 다국어 버전 링크 (새 URL 패턴)
-    let hreflangTags = '';
-    try {
-      const allLangs = await blogCollection.where('published', '==', true).get();
-      const hreflangLinks = [];
-      for (const d of allLangs.docs) {
-        const dSlug = d.id;
-        const dBaseSlug = dSlug.replace(/-(?:ko|ja|en)$/, '');
-        if (dBaseSlug === baseSlug) {
-          const dLang = d.data().lang || 'ko';
-          const dPrefix = dLang === 'ko' ? '' : `/${dLang}`;
-          hreflangLinks.push(`<link rel="alternate" hreflang="${dLang}" href="https://monkos.ai${dPrefix}/blog/${baseSlug}">`);
-        }
+    const allLangs = await blogCollection.where('published', '==', true).get();
+    const hreflangLinks = [];
+    for (const d of allLangs.docs) {
+      const dSlug = d.id;
+      const dBaseSlug = dSlug.replace(/-(?:ko|ja|en)$/, '');
+      if (dBaseSlug === baseSlug) {
+        const dLang = d.data().lang || 'ko';
+        const dPrefix = dLang === 'ko' ? '' : `/${dLang}`;
+        hreflangLinks.push(`<link rel="alternate" hreflang="${dLang}" href="https://monkos.ai${dPrefix}/blog/${baseSlug}">`);
       }
-      hreflangTags = hreflangLinks.join('\n');
-    } catch { /* skip */ }
+    }
+    hreflangTags = hreflangLinks.join('\n');
+  } catch { /* skip */ }
 
-    // canonical URL: 다국어 접두사 반영
-    const prefix = lang ? `/${lang}` : '';
-    const canonicalUrl = `https://monkos.ai${prefix}/blog/${escapeHtml(baseSlug)}`;
+  const prefix = lang ? `/${lang}` : '';
+  const canonicalUrl = `https://monkos.ai${prefix}/blog/${escapeHtml(baseSlug)}`;
 
-    const seoMeta = `
+  const seoMeta = `
 <meta property="og:title" content="${escapeHtml(post.title)}">
 <meta property="og:description" content="${escapeHtml(post.summary || '')}">
 <meta property="og:image" content="${escapeHtml(post.thumbnail || '')}">
@@ -310,13 +321,10 @@ ${JSON.stringify({
 })}
 </script>`;
 
-    const tagsHtml = (post.tags || []).map(t => `<span class="post-tag">${escapeHtml(t)}</span>`).join('');
+  const tagsHtml = (post.tags || []).map(t => `<span class="post-tag">${escapeHtml(t)}</span>`).join('');
+  const backLink = lang ? `/${lang}/blog` : '/blog';
 
-    // Back to Blog 링크: lang에 따라 경로 분기
-    const backLink = lang ? `/${lang}/blog` : '/blog';
-
-    const html = `${layoutHead(`${post.title} | MONKOS AI`, post.summary || '', seoMeta, htmlLang)}
-<style>
+  const pageStyle = `
 .post-header { margin-bottom: 32px; max-width: 800px; margin-left: auto; margin-right: auto; }
 .post-header h1 { font-size: 32px; font-weight: 700; color: var(--text-bright); line-height: 1.4; margin-bottom: 16px; }
 .post-meta { display: flex; gap: 16px; font-size: 13px; color: var(--text-dim); flex-wrap: wrap; align-items: center; }
@@ -344,12 +352,9 @@ ${JSON.stringify({
 @media (max-width: 600px) {
   .post-header h1 { font-size: 24px; }
   .post-content { font-size: 15px; }
-}
-</style>
-</head>
-<body>
-${layoutNav()}
-<div class="container">
+}`;
+
+  const bodyContent = `
   <a href="${backLink}" class="post-back">&larr; Back to Blog</a>
   <div class="post-header">
     <h1>${escapeHtml(post.title)}</h1>
@@ -362,12 +367,20 @@ ${layoutNav()}
     ${tagsHtml ? `<div class="post-tags">${tagsHtml}</div>` : ''}
   </div>
   ${post.thumbnail ? `<div class="post-thumb"><img src="${escapeHtml(post.thumbnail)}" alt="${escapeHtml(post.title)}"></div>` : ''}
-  <div class="post-content">${contentHtml}</div>
-</div>
-${layoutFooter()}
-</body>
-</html>`;
+  <div class="post-content">${contentHtml}</div>`;
 
+  return { title: `${post.title} | MONKOS AI`, description: post.summary || '', seoMeta, htmlLang, pageStyle, bodyContent, pageScript: null };
+}
+
+// GET /blog/:slug — 상세 페이지 (기존 호출 호환)
+export async function renderBlogPost(req, res, lang = null) {
+  try {
+    const parts = await blogPostFragment(req, lang);
+    if (!parts) {
+      res.writeHead(404, { 'Content-Type': 'text/plain' });
+      return res.end('Not Found');
+    }
+    const html = layoutShell(parts);
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
     res.end(html);
   } catch (err) {
@@ -381,42 +394,39 @@ ${layoutFooter()}
 // FAQ
 // =============================================
 
-// GET /faq — FAQ 공개 페이지
-export async function renderFaq(req, res) {
-  try {
-    const snapshot = await faqCollection.where('published', '==', true).orderBy('order', 'asc').get();
-    const items = snapshot.docs.map(doc => doc.data());
+// FAQ — fragment
+export async function faqFragment(req) {
+  const snapshot = await faqCollection.where('published', '==', true).orderBy('order', 'asc').get();
+  const items = snapshot.docs.map(doc => doc.data());
 
-    // 카테고리별 그룹
-    const categories = {};
-    for (const item of items) {
-      const cat = item.category || '일반';
-      if (!categories[cat]) categories[cat] = [];
-      categories[cat].push(item);
-    }
+  const categories = {};
+  for (const item of items) {
+    const cat = item.category || '일반';
+    if (!categories[cat]) categories[cat] = [];
+    categories[cat].push(item);
+  }
 
-    // FAQ JSON-LD
-    const faqJsonLd = JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": items.map(item => ({
-        "@type": "Question",
-        "name": item.question,
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": item.answer,
-        }
-      }))
-    });
+  const faqJsonLd = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": items.map(item => ({
+      "@type": "Question",
+      "name": item.question,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": item.answer,
+      }
+    }))
+  });
 
-    const seoMeta = `<meta property="og:title" content="FAQ | MONKOS AI">
+  const seoMeta = `<meta property="og:title" content="FAQ | MONKOS AI">
 <meta property="og:description" content="MONKOS AI ID Photo FAQ - frequently asked questions">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://monkos.ai/faq">
 <link rel="canonical" href="https://monkos.ai/faq">
 <script type="application/ld+json">${faqJsonLd}</script>`;
 
-    const faqHtml = Object.entries(categories).map(([cat, faqs]) => `
+  const faqHtml = Object.entries(categories).map(([cat, faqs]) => `
       <div class="faq-category">
         <h2 class="faq-cat-title">${escapeHtml(cat)}</h2>
         ${faqs.map(f => `
@@ -427,8 +437,7 @@ export async function renderFaq(req, res) {
         `).join('')}
       </div>`).join('');
 
-    const html = `${layoutHead('FAQ | MONKOS AI', 'MONKOS AI ID Photo FAQ', seoMeta)}
-<style>
+  const pageStyle = `
 .faq-header { margin-bottom: 32px; }
 .faq-header h1 { font-size: 28px; font-weight: 700; color: var(--text-bright); }
 .faq-header p { color: var(--text-dim); margin-top: 8px; font-size: 15px; }
@@ -453,22 +462,34 @@ export async function renderFaq(req, res) {
   padding: 0 20px 16px; font-size: 14px; color: var(--text-dim); line-height: 1.7;
 }
 .faq-answer p { margin-bottom: 8px; }
-.faq-answer a { color: var(--accent); }
-</style>
-</head>
-<body>
-${layoutNav()}
-<div class="container" style="max-width:800px;">
+.faq-answer a { color: var(--accent); }`;
+
+  const bodyContent = `
   <div class="faq-header">
     <h1>FAQ</h1>
     <p>Frequently Asked Questions</p>
   </div>
-  ${faqHtml || '<p style="color:var(--text-dim)">No FAQs yet.</p>'}
+  ${faqHtml || '<p style="color:var(--text-dim)">No FAQs yet.</p>'}`;
+
+  return { title: 'FAQ | MONKOS AI', description: 'MONKOS AI ID Photo FAQ', seoMeta, htmlLang: 'ko', pageStyle, bodyContent, pageScript: null };
+}
+
+// GET /faq — FAQ 공개 페이지 (기존 호출 호환)
+export async function renderFaq(req, res) {
+  try {
+    const parts = await faqFragment(req);
+    // FAQ는 container max-width가 다름 → bodyContent를 container style로 오버라이드
+    const html = `${layoutHead(parts.title, parts.description, parts.seoMeta || '', parts.htmlLang || 'ko')}
+${parts.pageStyle ? `<style>${parts.pageStyle}</style>` : ''}
+</head>
+<body>
+${layoutNav()}
+<div class="container" style="max-width:800px;">
+  ${parts.bodyContent}
 </div>
 ${layoutFooter()}
 </body>
 </html>`;
-
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
     res.end(html);
   } catch (err) {
@@ -482,32 +503,30 @@ ${layoutFooter()}
 // Gallery
 // =============================================
 
-// GET /gallery — 갤러리 공개 페이지
-export async function renderGallery(req, res) {
-  try {
-    const snapshot = await galleryCollection.where('published', '==', true).orderBy('order', 'asc').get();
-    const items = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+// 갤러리 — fragment
+export async function galleryFragment(req) {
+  const snapshot = await galleryCollection.where('published', '==', true).orderBy('order', 'asc').get();
+  const items = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-    const allCategories = [...new Set(items.map(i => i.category || '일반'))];
+  const allCategories = [...new Set(items.map(i => i.category || '일반'))];
 
-    const seoMeta = `<meta property="og:title" content="Gallery | MONKOS AI">
+  const seoMeta = `<meta property="og:title" content="Gallery | MONKOS AI">
 <meta property="og:description" content="MONKOS AI ID Photo gallery - sample photos">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://monkos.ai/gallery">
 <link rel="canonical" href="https://monkos.ai/gallery">`;
 
-    const imagesHtml = items.map(item => `
+  const imagesHtml = items.map(item => `
       <div class="gallery-item" data-category="${escapeHtml(item.category || '일반')}">
         <img src="${escapeHtml(item.imageUrl)}" alt="${escapeHtml(item.caption || 'MONKOS AI Photo')}" loading="lazy" onclick="openLightbox(this)">
         ${item.caption ? `<p class="gallery-caption">${escapeHtml(item.caption)}</p>` : ''}
       </div>`).join('');
 
-    const filterHtml = allCategories.map(cat =>
-      `<button class="gallery-filter-btn" onclick="filterGallery('${escapeHtml(cat)}')">${escapeHtml(cat)}</button>`
-    ).join('');
+  const filterHtml = allCategories.map(cat =>
+    `<button class="gallery-filter-btn" onclick="filterGallery('${escapeHtml(cat)}')">${escapeHtml(cat)}</button>`
+  ).join('');
 
-    const html = `${layoutHead('Gallery | MONKOS AI', 'MONKOS AI ID Photo gallery', seoMeta)}
-<style>
+  const pageStyle = `
 .gallery-header { margin-bottom: 24px; }
 .gallery-header h1 { font-size: 28px; font-weight: 700; color: var(--text-bright); }
 .gallery-filters { display: flex; gap: 8px; margin: 16px 0 24px; flex-wrap: wrap; }
@@ -539,12 +558,9 @@ export async function renderGallery(req, res) {
 }
 .lightbox.open { display: flex; }
 .lightbox img { max-width: 90%; max-height: 90%; border-radius: 8px; }
-@media (max-width: 600px) { .gallery-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; } .gallery-item img { height: 180px; } }
-</style>
-</head>
-<body>
-${layoutNav()}
-<div class="container">
+@media (max-width: 600px) { .gallery-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; } .gallery-item img { height: 180px; } }`;
+
+  const bodyContent = `
   <div class="gallery-header">
     <h1>Gallery</h1>
   </div>
@@ -556,9 +572,9 @@ ${layoutNav()}
 </div>
 <div class="lightbox" id="lightbox" onclick="closeLightbox()">
   <img id="lightboxImg" src="" alt="">
-</div>
-${layoutFooter()}
-<script>
+</div>`;
+
+  const pageScript = `
 function filterGallery(cat) {
   document.querySelectorAll('.gallery-filter-btn').forEach(b => b.classList.remove('active'));
   event.target.classList.add('active');
@@ -572,11 +588,27 @@ function openLightbox(img) {
 }
 function closeLightbox() {
   document.getElementById('lightbox').classList.remove('open');
+}`;
+
+  return { title: 'Gallery | MONKOS AI', description: 'MONKOS AI ID Photo gallery', seoMeta, htmlLang: 'ko', pageStyle, bodyContent, pageScript };
 }
-</script>
+
+// GET /gallery — 갤러리 공개 페이지 (기존 호출 호환)
+export async function renderGallery(req, res) {
+  try {
+    const parts = await galleryFragment(req);
+    // 갤러리는 lightbox가 container 밖에 있으므로 커스텀 셸 사용
+    const html = `${layoutHead(parts.title, parts.description, parts.seoMeta || '', parts.htmlLang || 'ko')}
+${parts.pageStyle ? `<style>${parts.pageStyle}</style>` : ''}
+</head>
+<body>
+${layoutNav()}
+<div class="container">
+  ${parts.bodyContent}
+${layoutFooter()}
+${parts.pageScript ? `<script>${parts.pageScript}</script>` : ''}
 </body>
 </html>`;
-
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
     res.end(html);
   } catch (err) {
@@ -590,47 +622,45 @@ function closeLightbox() {
 // Board (게시판)
 // =============================================
 
-// GET /board — 게시판 목록
-export async function renderBoardList(req, res) {
-  try {
-    const url = new URL(req.url, 'https://monkos.ai');
-    const page = Math.max(1, parseInt(url.searchParams.get('page') || '1', 10));
-    const perPage = 20;
+// 게시판 목록 — fragment
+export async function boardListFragment(req) {
+  const url = new URL(req.url, 'https://monkos.ai');
+  const page = Math.max(1, parseInt(url.searchParams.get('page') || '1', 10));
+  const perPage = 20;
 
-    const snapshot = await boardCollection.where('published', '==', true).orderBy('createdAt', 'desc').get();
-    const allPosts = snapshot.docs.map(doc => {
-      const d = doc.data();
-      return { id: doc.id, author: d.author, title: d.title, category: d.category, hasReply: Array.isArray(d.replies) && d.replies.length > 0, createdAt: d.createdAt };
-    });
-    const totalPages = Math.ceil(allPosts.length / perPage);
-    const posts = allPosts.slice((page - 1) * perPage, page * perPage);
+  const snapshot = await boardCollection.where('published', '==', true).orderBy('createdAt', 'desc').get();
+  const allPosts = snapshot.docs.map(doc => {
+    const d = doc.data();
+    return { id: doc.id, author: d.author, title: d.title, category: d.category, hasReply: Array.isArray(d.replies) && d.replies.length > 0, createdAt: d.createdAt };
+  });
+  const totalPages = Math.ceil(allPosts.length / perPage);
+  const posts = allPosts.slice((page - 1) * perPage, page * perPage);
 
-    const seoMeta = `<meta property="og:title" content="Board | MONKOS AI">
+  const seoMeta = `<meta property="og:title" content="Board | MONKOS AI">
 <meta property="og:description" content="MONKOS customer board">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://monkos.ai/board">
 <link rel="canonical" href="https://monkos.ai/board">`;
 
-    const rowsHtml = posts.map(p => `
+  const rowsHtml = posts.map(p => `
       <a href="/board/${escapeHtml(p.id)}" class="board-row">
         <span class="board-cat">${escapeHtml(p.category || '')}</span>
         <span class="board-title">${escapeHtml(p.title)}${p.hasReply ? ' <span class="board-replied">answered</span>' : ''}</span>
         <span class="board-meta">${escapeHtml(p.author || '')} &middot; ${(p.createdAt || '').substring(0, 10)}</span>
       </a>`).join('');
 
-    let paginationHtml = '';
-    if (totalPages > 1) {
-      const links = [];
-      if (page > 1) links.push(`<a href="/board?page=${page - 1}">&laquo;</a>`);
-      for (let i = 1; i <= totalPages; i++) {
-        links.push(i === page ? `<span class="pg-current">${i}</span>` : `<a href="/board?page=${i}">${i}</a>`);
-      }
-      if (page < totalPages) links.push(`<a href="/board?page=${page + 1}">&raquo;</a>`);
-      paginationHtml = `<div class="pagination">${links.join('')}</div>`;
+  let paginationHtml = '';
+  if (totalPages > 1) {
+    const links = [];
+    if (page > 1) links.push(`<a href="/board?page=${page - 1}">&laquo;</a>`);
+    for (let i = 1; i <= totalPages; i++) {
+      links.push(i === page ? `<span class="pg-current">${i}</span>` : `<a href="/board?page=${i}">${i}</a>`);
     }
+    if (page < totalPages) links.push(`<a href="/board?page=${page + 1}">&raquo;</a>`);
+    paginationHtml = `<div class="pagination">${links.join('')}</div>`;
+  }
 
-    const html = `${layoutHead('Board | MONKOS AI', 'MONKOS customer board', seoMeta)}
-<style>
+  const pageStyle = `
 .board-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
 .board-header h1 { font-size: 28px; font-weight: 700; color: var(--text-bright); }
 .btn-write {
@@ -657,12 +687,9 @@ export async function renderBoardList(req, res) {
 @media (max-width: 600px) {
   .board-row { grid-template-columns: 1fr; gap: 4px; }
   .board-meta { text-align: left; }
-}
-</style>
-</head>
-<body>
-${layoutNav()}
-<div class="container" style="max-width:900px;">
+}`;
+
+  const bodyContent = `
   <div class="board-header">
     <h1>Board</h1>
     <a href="/board/write" class="btn-write">Write</a>
@@ -670,12 +697,27 @@ ${layoutNav()}
   <div class="board-list">
     ${rowsHtml || '<p style="color:var(--text-dim);text-align:center;padding:40px">No posts yet.</p>'}
   </div>
-  ${paginationHtml}
+  ${paginationHtml}`;
+
+  return { title: 'Board | MONKOS AI', description: 'MONKOS customer board', seoMeta, htmlLang: 'ko', pageStyle, bodyContent, pageScript: null };
+}
+
+// GET /board — 게시판 목록 (기존 호출 호환)
+export async function renderBoardList(req, res) {
+  try {
+    const parts = await boardListFragment(req);
+    // Board는 container max-width가 다름
+    const html = `${layoutHead(parts.title, parts.description, parts.seoMeta || '', parts.htmlLang || 'ko')}
+${parts.pageStyle ? `<style>${parts.pageStyle}</style>` : ''}
+</head>
+<body>
+${layoutNav()}
+<div class="container" style="max-width:900px;">
+  ${parts.bodyContent}
 </div>
 ${layoutFooter()}
 </body>
 </html>`;
-
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
     res.end(html);
   } catch (err) {
@@ -685,31 +727,23 @@ ${layoutFooter()}
   }
 }
 
-// GET /board/:id — 게시글 상세
-export async function renderBoardPost(req, res) {
-  try {
-    const id = decodeURIComponent(req.url.split('/board/')[1]?.split('?')[0] || '');
-    if (!id || id === 'write') {
-      res.writeHead(404, { 'Content-Type': 'text/plain' });
-      return res.end('Not Found');
-    }
+// 게시판 상세 — fragment
+export async function boardPostFragment(req) {
+  const id = decodeURIComponent(req.url.split('/board/')[1]?.split('?')[0] || '');
+  if (!id || id === 'write') return null;
 
-    const doc = await boardCollection.doc(id).get();
-    if (!doc.exists || !doc.data().published) {
-      res.writeHead(404, { 'Content-Type': 'text/plain' });
-      return res.end('Not Found');
-    }
+  const doc = await boardCollection.doc(id).get();
+  if (!doc.exists || !doc.data().published) return null;
 
-    const post = doc.data();
-    const repliesHtml = (post.replies || []).map(r => `
+  const post = doc.data();
+  const repliesHtml = (post.replies || []).map(r => `
       <div class="reply-item">
         <div class="reply-author">MONKOS</div>
         <div class="reply-text">${escapeHtml(r.text)}</div>
         <div class="reply-date">${(r.createdAt || '').substring(0, 10)}</div>
       </div>`).join('');
 
-    const html = `${layoutHead(`${post.title} | Board`, 'MONKOS Board')}
-<style>
+  const pageStyle = `
 .post-back { display: inline-block; margin-bottom: 24px; color: var(--text-dim); font-size: 14px; }
 .post-back:hover { color: var(--accent); }
 .board-post { max-width: 800px; margin: 0 auto; }
@@ -734,12 +768,9 @@ export async function renderBoardPost(req, res) {
   border: 1px solid var(--border); border-radius: 8px;
   color: var(--text-dim); font-size: 13px; cursor: pointer;
 }
-.btn-delete:hover { border-color: #f87171; color: #f87171; }
-</style>
-</head>
-<body>
-${layoutNav()}
-<div class="container">
+.btn-delete:hover { border-color: #f87171; color: #f87171; }`;
+
+  const bodyContent = `
   <a href="/board" class="post-back">&larr; Back to Board</a>
   <div class="board-post">
     <div class="board-post-header">
@@ -753,10 +784,9 @@ ${layoutNav()}
     <div class="board-post-body">${escapeHtml(post.content)}</div>
     ${repliesHtml ? `<div class="replies-section"><h3>Replies</h3>${repliesHtml}</div>` : ''}
     <button class="btn-delete" onclick="deletePost('${escapeHtml(doc.id)}')">Delete</button>
-  </div>
-</div>
-${layoutFooter()}
-<script>
+  </div>`;
+
+  const pageScript = `
 async function deletePost(id) {
   const pw = prompt('Enter password to delete');
   if (!pw) return;
@@ -770,11 +800,20 @@ async function deletePost(id) {
     if (data.success) { alert('Deleted'); location.href = '/board'; }
     else alert(data.error || 'Failed');
   } catch { alert('Error'); }
-}
-</script>
-</body>
-</html>`;
+}`;
 
+  return { title: `${post.title} | Board`, description: 'MONKOS Board', seoMeta: null, htmlLang: 'ko', pageStyle, bodyContent, pageScript };
+}
+
+// GET /board/:id — 게시글 상세 (기존 호출 호환)
+export async function renderBoardPost(req, res) {
+  try {
+    const parts = await boardPostFragment(req);
+    if (!parts) {
+      res.writeHead(404, { 'Content-Type': 'text/plain' });
+      return res.end('Not Found');
+    }
+    const html = layoutShell(parts);
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
     res.end(html);
   } catch (err) {
@@ -784,11 +823,9 @@ async function deletePost(id) {
   }
 }
 
-// GET /board/write — 글쓰기 폼
-export async function renderBoardWrite(req, res) {
-  try {
-    const html = `${layoutHead('Write | Board', 'Write a post on MONKOS board')}
-<style>
+// 게시판 글쓰기 — fragment
+export async function boardWriteFragment(req) {
+  const pageStyle = `
 .write-form { max-width: 700px; margin: 0 auto; }
 .write-form h1 { font-size: 24px; font-weight: 700; color: var(--text-bright); margin-bottom: 24px; }
 .form-row { margin-bottom: 16px; }
@@ -809,12 +846,9 @@ export async function renderBoardWrite(req, res) {
 .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
 .post-back { display: inline-block; margin-bottom: 24px; color: var(--text-dim); font-size: 14px; }
 .post-back:hover { color: var(--accent); }
-@media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
-</style>
-</head>
-<body>
-${layoutNav()}
-<div class="container">
+@media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }`;
+
+  const bodyContent = `
   <a href="/board" class="post-back">&larr; Back to Board</a>
   <div class="write-form">
     <h1>Write</h1>
@@ -847,10 +881,9 @@ ${layoutNav()}
       <textarea id="content" rows="10" maxlength="5000" placeholder="Write your message..."></textarea>
     </div>
     <button class="btn-submit" id="submitBtn" onclick="submitPost()">Submit</button>
-  </div>
-</div>
-${layoutFooter()}
-<script>
+  </div>`;
+
+  const pageScript = `
 async function submitPost() {
   const btn = document.getElementById('submitBtn');
   const body = {
@@ -882,11 +915,16 @@ async function submitPost() {
     alert('Error: ' + err.message);
     btn.disabled = false;
   }
-}
-</script>
-</body>
-</html>`;
+}`;
 
+  return { title: 'Write | Board', description: 'Write a post on MONKOS board', seoMeta: null, htmlLang: 'ko', pageStyle, bodyContent, pageScript };
+}
+
+// GET /board/write — 글쓰기 폼 (기존 호출 호환)
+export async function renderBoardWrite(req, res) {
+  try {
+    const parts = await boardWriteFragment(req);
+    const html = layoutShell(parts);
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
     res.end(html);
   } catch (err) {
@@ -897,7 +935,7 @@ async function submitPost() {
 }
 
 // =============================================
-// Sitemap
+// Sitemap (변경 없음)
 // =============================================
 
 // GET /sitemap.xml — 동적 생성
@@ -915,7 +953,6 @@ export async function renderSitemap(req, res) {
       { loc: 'https://monkos.ai/board', changefreq: 'daily', priority: '0.5' },
     ];
 
-    // 발행된 블로그 글 추가 (다국어 URL 접두사 반영)
     const snapshot = await blogCollection.where('published', '==', true).orderBy('createdAt', 'desc').get();
     const blogUrls = snapshot.docs.map(doc => {
       const data = doc.data();
