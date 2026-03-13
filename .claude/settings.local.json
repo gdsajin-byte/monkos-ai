@@ -49,7 +49,9 @@
       "WebFetch(domain:www.npmjs.com)",
       "WebFetch(domain:github.com)",
       "WebFetch(domain:docs.cloud.google.com)",
-      "Bash(launchctl list:*)"
+      "Bash(launchctl list:*)",
+      "Bash(git commit:*)",
+      "WebFetch(domain:docs.tosspayments.com)"
     ],
     "deny": [
       "Bash(rm -rf /*)",
