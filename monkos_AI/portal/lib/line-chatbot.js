@@ -57,11 +57,7 @@ export async function handleLineWebhook(req, res) {
     const body = JSON.parse(rawBody);
     const events = body.events || [];
 
-    // LINE은 200 아니면 재전송하므로 먼저 200 응답
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ ok: true }));
-
-    // 이벤트 비동기 처리
+    // 이벤트 처리 (200 응답은 처리 완료 후 — Cloud Run CPU 할당 유지)
     for (const event of events) {
       try {
         // follow 이벤트 (친구 추가)
@@ -85,9 +81,11 @@ export async function handleLineWebhook(req, res) {
         log(`[LineChat] 이벤트 처리 에러: ${err.message}`, 'ERROR');
       }
     }
+
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ ok: true }));
   } catch (err) {
     log(`[LineChat] 웹훅 에러: ${err.message}`, 'ERROR');
-    // 아직 응답 안 보냈으면 200 반환 (재전송 방지)
     if (!res.headersSent) {
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ ok: true }));
