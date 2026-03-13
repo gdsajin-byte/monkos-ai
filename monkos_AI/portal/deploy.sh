@@ -6,11 +6,12 @@
 # monkos.ai 메인 포털 (인증 + 크레딧 + 결제)
 #
 # 사용법:
-#   ./deploy.sh [dev|prod]
+#   ./deploy.sh [dev|prod|preview]
 #
 # 환경:
-#   dev   → dev 서비스에 배포 (테스트)
-#   prod  → production 서비스에 배포 (실서비스)
+#   dev     → dev 서비스에 배포 (테스트)
+#   prod    → production 서비스에 배포 (실서비스, --to-latest)
+#   preview → prod 이미지 빌드 → 트래픽 0%로 배포 → 태그 URL 반환
 ###############################################################################
 
 set -e
@@ -25,15 +26,16 @@ ENV=${1:-""}
 
 # 인자 필수
 if [ -z "$ENV" ]; then
-  echo -e "${RED}사용법: ./deploy.sh [dev|prod]${NC}"
-  echo -e "  dev   → dev 서비스에 배포 (테스트)"
-  echo -e "  prod  → production 서비스에 배포 (실서비스)"
+  echo -e "${RED}사용법: ./deploy.sh [dev|prod|preview]${NC}"
+  echo -e "  dev     → dev 서비스에 배포 (테스트)"
+  echo -e "  prod    → production 서비스에 배포 (실서비스, --to-latest)"
+  echo -e "  preview → prod 이미지 → 트래픽 0% 배포 (블루/그린 검증용)"
   exit 1
 fi
 
 # 유효한 환경값 체크
-if [ "$ENV" != "dev" ] && [ "$ENV" != "prod" ]; then
-  echo -e "${RED}에러: 환경은 'dev' 또는 'prod'만 가능합니다${NC}"
+if [ "$ENV" != "dev" ] && [ "$ENV" != "prod" ] && [ "$ENV" != "preview" ]; then
+  echo -e "${RED}에러: 환경은 'dev', 'prod', 'preview'만 가능합니다${NC}"
   exit 1
 fi
 
@@ -56,11 +58,13 @@ if [ "$ENV" = "dev" ]; then
   MEMORY="512Mi"
   CPU="1"
   MAX_INSTANCES="2"
+  DEPLOY_FLAGS="--to-latest"
 elif [ "$ENV" = "prod" ]; then
   SERVICE_NAME="monkos-portal"
   MEMORY="512Mi"
   CPU="1"
   MAX_INSTANCES="5"
+  DEPLOY_FLAGS="--to-latest"
 
   # 브랜치 안전장치
   CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
@@ -69,6 +73,26 @@ elif [ "$ENV" = "prod" ]; then
     exit 1
   fi
   echo -e "${YELLOW}⚠ PRODUCTION 배포입니다. 계속하시겠습니까? (y/N)${NC}"
+  read -r confirm
+  if [ "$confirm" != "y" ]; then
+    echo "취소됨"
+    exit 0
+  fi
+
+elif [ "$ENV" = "preview" ]; then
+  SERVICE_NAME="monkos-portal"
+  MEMORY="512Mi"
+  CPU="1"
+  MAX_INSTANCES="5"
+  DEPLOY_FLAGS="--no-traffic --tag v4-preview"
+
+  # 브랜치 안전장치
+  CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
+  if [ "$CURRENT_BRANCH" != "main" ]; then
+    echo -e "${RED}preview 배포는 main 브랜치에서만 가능합니다 (현재: ${CURRENT_BRANCH})${NC}"
+    exit 1
+  fi
+  echo -e "${YELLOW}⚠ PREVIEW 배포 (트래픽 0%, 태그 URL 생성). 계속하시겠습니까? (y/N)${NC}"
   read -r confirm
   if [ "$confirm" != "y" ]; then
     echo "취소됨"
@@ -108,7 +132,8 @@ gcloud run deploy ${SERVICE_NAME} \
   --min-instances 0 \
   --max-instances ${MAX_INSTANCES} \
   --update-env-vars "^::^PROJECT_ID=${PROJECT_ID}::LOCATION=${REGION}::KAKAO_REST_API_KEY=${KAKAO_REST_API_KEY}::KAKAO_REDIRECT_URI=${KAKAO_REDIRECT_URI}::KAKAO_CLIENT_SECRET=${KAKAO_CLIENT_SECRET}::TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}::TELEGRAM_EVENT_BOT_TOKEN=${TELEGRAM_EVENT_BOT_TOKEN}::TOSS_SECRET_KEY=${TOSS_SECRET_KEY}::LEMONSQUEEZY_API_KEY=${LEMONSQUEEZY_API_KEY}::LEMONSQUEEZY_WEBHOOK_SECRET=${LEMONSQUEEZY_WEBHOOK_SECRET}::LINE_CHANNEL_ID=${LINE_CHANNEL_ID}::LINE_CHANNEL_SECRET=${LINE_CHANNEL_SECRET}::TX_API_KEY=${TX_API_KEY}::TX_API_URL=${TX_API_URL}::TELEGRAM_TEAM_BOT_TOKEN=${TELEGRAM_TEAM_BOT_TOKEN}::TEAM_CHAT_ID=${TEAM_CHAT_ID}::TEAM_NOTIFY_SECRET=${TEAM_NOTIFY_SECRET}::KAKAO_CHANNEL_ID=${KAKAO_CHANNEL_ID}::AUTH_SECRET=${AUTH_SECRET}::LINE_MESSAGING_CHANNEL_SECRET=${LINE_MESSAGING_CHANNEL_SECRET}::LINE_MESSAGING_ACCESS_TOKEN=${LINE_MESSAGING_ACCESS_TOKEN}::GCS_BUCKET=${GCS_BUCKET}::ADMIN_UIDS=${ADMIN_UIDS}" \
-  --service-account ${SERVICE_ACCOUNT}
+  --service-account ${SERVICE_ACCOUNT} \
+  ${DEPLOY_FLAGS}
 
 # 결과 출력
 SERVICE_URL=$(gcloud run services describe ${SERVICE_NAME} --region ${REGION} --format 'value(status.url)')
@@ -119,11 +144,34 @@ echo -e "${BLUE}========================================${NC}"
 echo -e "서비스 URL: ${YELLOW}${SERVICE_URL}${NC}"
 echo -e "헬스 체크: ${YELLOW}${SERVICE_URL}/health${NC}"
 echo -e ""
-if [ "$ENV" = "prod" ]; then
+
+if [ "$ENV" = "preview" ]; then
+  PREVIEW_URL=$(gcloud run services describe ${SERVICE_NAME} --region ${REGION} --format json \
+    | python3 -c "import sys,json; d=json.load(sys.stdin); tags=[t for t in d.get('status',{}).get('traffic',[]) if t.get('tag')=='v4-preview']; print(tags[0]['url'] if tags else 'URL 확인 필요')" 2>/dev/null || echo "태그 URL 확인 필요")
+  echo -e "${GREEN}Preview 태그 URL:${NC}"
+  echo -e "  ${YELLOW}${PREVIEW_URL}${NC}"
+  echo -e ""
+  echo -e "${YELLOW}검증 후 트래픽 전환:${NC}"
+  echo -e "  gcloud run services update-traffic ${SERVICE_NAME} \\"
+  echo -e "    --region ${REGION} \\"
+  echo -e "    --to-latest"
+  echo -e ""
+  echo -e "${YELLOW}롤백 명령:${NC}"
+  echo -e "  gcloud run services update-traffic ${SERVICE_NAME} \\"
+  echo -e "    --region ${REGION} \\"
+  echo -e "    --to-revisions REVISION_NAME=100"
+
+elif [ "$ENV" = "prod" ]; then
   echo -e "${YELLOW}도메인 매핑 (최초 1회):${NC}"
   echo -e "  gcloud beta run domain-mappings create \\"
   echo -e "    --service ${SERVICE_NAME} \\"
   echo -e "    --domain monkos.ai \\"
   echo -e "    --region ${REGION}"
+  echo -e ""
+  echo -e "${YELLOW}롤백 명령:${NC}"
+  echo -e "  gcloud run services update-traffic ${SERVICE_NAME} \\"
+  echo -e "    --region ${REGION} \\"
+  echo -e "    --to-revisions REVISION_NAME=100"
 fi
+
 echo -e "${BLUE}========================================${NC}"
