@@ -18,6 +18,7 @@ import {
   TELEGRAM_BOT_TOKEN, TELEGRAM_EVENT_BOT_TOKEN, TELEGRAM_TEAM_BOT_TOKEN,
   TELEGRAM_CHANNEL_ID, TEAM_CHAT_ID,
   KAKAO_REST_API_KEY, KAKAO_CHANNEL_ID, LINE_CHANNEL_ID,
+  LINE_MESSAGING_ACCESS_TOKEN,
 } from './lib/shared/config.js';
 
 // === 핸들러 모듈 ===
@@ -30,6 +31,7 @@ import { handleTelegramTeamWebhook, handleTeamNotify } from './lib/telegram-team
 import { handleVerifyInit } from './lib/tg-auth.js';
 import { handlePassportIssue, handleUploadMission } from './lib/tg-cs.js';
 import { handleKakaoChatbot } from './lib/kakao-chatbot.js';
+import { handleLineWebhook } from './lib/line-chatbot.js';
 import { handleWebChat, handleCoaching } from './lib/coaching.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -141,6 +143,9 @@ const httpServer = createServer(async (req, res) => {
   // === 카카오 챗봇 ===
   if (urlPath === '/api/kakao/chatbot' && req.method === 'POST') return handleKakaoChatbot(req, res);
 
+  // === LINE 챗봇 ===
+  if (urlPath === '/api/webhook/line' && req.method === 'POST') return handleLineWebhook(req, res);
+
   // === 챗봇/코칭 ===
   if (urlPath === '/api/chat' && req.method === 'POST') return handleWebChat(req, res);
   if (urlPath === '/api/coaching' && req.method === 'POST') return handleCoaching(req, res);
@@ -201,5 +206,6 @@ httpServer.listen(PORT, '0.0.0.0', () => {
   log(`Kakao Login: ${KAKAO_REST_API_KEY ? '설정됨' : '미설정'}`);
   log(`Kakao Channel: ${KAKAO_CHANNEL_ID || '미설정'}`);
   log(`LINE Login: ${LINE_CHANNEL_ID ? '설정됨' : '미설정'}`);
+  log(`LINE Messaging: ${LINE_MESSAGING_ACCESS_TOKEN ? '설정됨' : '미설정'}`);
   log('='.repeat(60));
 });

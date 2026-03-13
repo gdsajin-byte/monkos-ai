@@ -48,7 +48,8 @@
       "WebSearch",
       "WebFetch(domain:www.npmjs.com)",
       "WebFetch(domain:github.com)",
-      "WebFetch(domain:docs.cloud.google.com)"
+      "WebFetch(domain:docs.cloud.google.com)",
+      "Bash(launchctl list:*)"
     ],
     "deny": [
       "Bash(rm -rf /*)",
@@ -56,6 +57,9 @@
       "Bash(git reset --hard *)",
       "Bash(format *)",
       "Bash(del /s /q C:*)"
+    ],
+    "additionalDirectories": [
+      "/Users/jeong-kyushin/Desktop/쌍아"
     ]
   }
 }

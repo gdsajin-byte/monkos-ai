@@ -49,6 +49,11 @@ export const LINE_CHANNEL_ID = process.env.LINE_CHANNEL_ID || '';
 export const LINE_CHANNEL_SECRET = process.env.LINE_CHANNEL_SECRET || '';
 export const LINE_REDIRECT_URI = process.env.LINE_REDIRECT_URI || 'https://monkos.ai/auth/line/callback';
 
+// LINE Messaging API (봇)
+export const LINE_MESSAGING_CHANNEL_SECRET = process.env.LINE_MESSAGING_CHANNEL_SECRET || '';
+export const LINE_MESSAGING_ACCESS_TOKEN = process.env.LINE_MESSAGING_ACCESS_TOKEN || '';
+export const LINE_MESSAGING_API = 'https://api.line.me/v2/bot/message/reply';
+
 // D1 거래 원장 (CF Workers tx.js 제거됨 — 환경변수 미설정 시 비활성)
 export const TX_API_URL = process.env.TX_API_URL || '';
 export const TX_API_KEY = process.env.TX_API_KEY || '';
