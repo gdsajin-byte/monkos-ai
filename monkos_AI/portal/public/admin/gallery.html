@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gallery Management — MONKOS Admin</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #0a0a1a; --surface: #141428; --surface2: #1a1a35;
+  --accent: #a78bfa; --accent2: #818cf8;
+  --text: #e2e8f0; --text-dim: #8892a8; --text-bright: #f8fafc;
+  --border: rgba(167, 139, 250, 0.12); --border-hover: rgba(167, 139, 250, 0.3);
+  --success: #34d399; --danger: #f87171;
+}
+body { font-family: 'Noto Sans KR', -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+a { color: var(--accent); text-decoration: none; }
+
+.nav { display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; border-bottom: 1px solid var(--border); }
+.nav-logo { font-size: 20px; font-weight: 700; color: var(--text-bright); letter-spacing: 2px; }
+.nav-back { font-size: 14px; color: var(--text-dim); }
+
+.container { max-width: 1200px; margin: 0 auto; padding: 40px 24px; }
+
+.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+.header h1 { font-size: 24px; font-weight: 700; color: var(--text-bright); }
+.btn-new {
+  padding: 10px 20px; background: var(--accent); color: var(--bg);
+  border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer;
+}
+.btn-new:hover { background: var(--accent2); }
+
+/* Grid */
+.gallery-admin-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px;
+}
+.gallery-admin-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+  overflow: hidden; position: relative;
+}
+.gallery-admin-card img { width: 100%; height: 180px; object-fit: cover; }
+.gallery-admin-body { padding: 12px; }
+.gallery-admin-caption {
+  font-size: 13px; color: var(--text-dim); margin-bottom: 4px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.gallery-admin-meta { font-size: 11px; color: var(--text-dim); margin-bottom: 8px; }
+.gallery-admin-actions { display: flex; gap: 6px; }
+.btn-sm {
+  padding: 4px 10px; border: 1px solid var(--border); border-radius: 6px;
+  background: transparent; color: var(--text-dim); font-size: 11px; cursor: pointer;
+}
+.btn-sm:hover { border-color: var(--accent); color: var(--accent); }
+.btn-sm.danger:hover { border-color: var(--danger); color: var(--danger); }
+.badge-status {
+  position: absolute; top: 8px; right: 8px; padding: 3px 8px; border-radius: 8px;
+  font-size: 11px; font-weight: 600;
+}
+.badge-pub { background: rgba(52, 211, 153, 0.9); color: #fff; }
+.badge-draft { background: rgba(136, 146, 168, 0.9); color: #fff; }
+
+/* Modal */
+.modal-overlay {
+  display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.7); z-index: 100; align-items: center; justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+  padding: 32px; width: 90%; max-width: 500px;
+}
+.modal h2 { font-size: 20px; color: var(--text-bright); margin-bottom: 20px; }
+.form-row { margin-bottom: 14px; }
+.form-row label { display: block; font-size: 13px; color: var(--text-dim); margin-bottom: 6px; font-weight: 500; }
+.form-row input, .form-row select {
+  width: 100%; padding: 10px 14px; background: var(--bg); border: 1px solid var(--border);
+  border-radius: 8px; color: var(--text); font-size: 14px; outline: none;
+}
+.form-row input:focus, .form-row select:focus { border-color: var(--accent); }
+.modal-btns { display: flex; gap: 12px; margin-top: 20px; }
+.btn { padding: 10px 20px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+.btn-primary { background: var(--accent); color: var(--bg); }
+.btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+
+.upload-zone {
+  border: 2px dashed var(--border); border-radius: 12px; padding: 24px; text-align: center;
+  color: var(--text-dim); font-size: 13px; cursor: pointer; margin-bottom: 14px;
+}
+.upload-zone:hover { border-color: var(--accent); }
+.upload-zone input { display: none; }
+.upload-preview { max-width: 100%; max-height: 150px; border-radius: 8px; margin-top: 8px; }
+
+.empty { text-align: center; padding: 60px 20px; color: var(--text-dim); }
+.toast {
+  position: fixed; bottom: 24px; right: 24px; padding: 12px 24px;
+  background: var(--success); color: var(--bg); border-radius: 8px;
+  font-size: 14px; font-weight: 500; opacity: 0; transition: opacity 0.3s; z-index: 1000;
+}
+.toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/admin/" class="nav-logo">MONKOS Admin</a>
+  <a href="/admin/" class="nav-back">&larr; Dashboard</a>
+</nav>
+
+<div class="container">
+  <div class="header">
+    <h1>Gallery Management</h1>
+    <button class="btn-new" onclick="openModal()">+ Add Image</button>
+  </div>
+  <div class="gallery-admin-grid" id="galleryGrid">
+    <div class="empty" style="grid-column:1/-1">Loading...</div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h2 id="modalTitle">Add Image</h2>
+    <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
+      Click to upload image (max 5MB)
+      <input type="file" id="fileInput" accept="image/*" onchange="handleUpload(event)">
+      <img class="upload-preview" id="uploadPreview" src="" style="display:none">
+    </div>
+    <div class="form-row">
+      <label>Image URL (auto-filled after upload)</label>
+      <input type="text" id="imageUrl" placeholder="https://storage.googleapis.com/...">
+    </div>
+    <div class="form-row">
+      <label>Caption (also used for alt tag)</label>
+      <input type="text" id="caption" placeholder="Photo description">
+    </div>
+    <div class="form-row">
+      <label>Category</label>
+      <input type="text" id="category" placeholder="e.g. 여권, 이력서, 면허증, 프로필" value="일반">
+    </div>
+    <div class="form-row">
+      <label>Order</label>
+      <input type="number" id="order" value="0">
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-primary" onclick="saveItem(true)">Save & Publish</button>
+      <button class="btn btn-secondary" onclick="saveItem(false)">Save Draft</button>
+      <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = '/api/admin/gallery';
+let editId = null;
+
+async function loadItems() {
+  try {
+    const r = await fetch(API, { credentials: 'include' });
+    if (r.status === 401) { location.href = '/admin/'; return; }
+    const { items } = await r.json();
+
+    const grid = document.getElementById('galleryGrid');
+    if (!items || items.length === 0) {
+      grid.innerHTML = '<div class="empty" style="grid-column:1/-1">No gallery items. Add your first image!</div>';
+      return;
+    }
+
+    grid.innerHTML = items.map(g => `
+      <div class="gallery-admin-card">
+        <span class="badge-status ${g.published ? 'badge-pub' : 'badge-draft'}">${g.published ? 'Live' : 'Draft'}</span>
+        <img src="${esc(g.imageUrl)}" alt="${esc(g.caption)}">
+        <div class="gallery-admin-body">
+          <div class="gallery-admin-caption">${esc(g.caption) || '(no caption)'}</div>
+          <div class="gallery-admin-meta">${esc(g.category)} · #${g.order}</div>
+          <div class="gallery-admin-actions">
+            <button class="btn-sm" onclick="editItem('${g.id}')">Edit</button>
+            <button class="btn-sm" onclick="togglePub('${g.id}', ${!g.published})">${g.published ? 'Hide' : 'Show'}</button>
+            <button class="btn-sm danger" onclick="deleteItem('${g.id}')">Del</button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  } catch (err) {
+    document.getElementById('galleryGrid').innerHTML = `<div class="empty" style="grid-column:1/-1">Error: ${err.message}</div>`;
+  }
+}
+
+async function handleUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const preview = document.getElementById('uploadPreview');
+  preview.src = URL.createObjectURL(file);
+  preview.style.display = 'block';
+
+  const form = new FormData();
+  form.append('image', file, file.name);
+  try {
+    const r = await fetch('/api/admin/upload', { method: 'POST', credentials: 'include', body: form });
+    const data = await r.json();
+    if (data.url) {
+      document.getElementById('imageUrl').value = data.url;
+      showToast('Image uploaded!');
+    } else {
+      showToast(data.error || 'Upload failed', true);
+    }
+  } catch (err) {
+    showToast('Upload error: ' + err.message, true);
+  }
+}
+
+function openModal(data) {
+  editId = data ? data.id : null;
+  document.getElementById('modalTitle').textContent = editId ? 'Edit Image' : 'Add Image';
+  document.getElementById('imageUrl').value = data?.imageUrl || '';
+  document.getElementById('caption').value = data?.caption || '';
+  document.getElementById('category').value = data?.category || '일반';
+  document.getElementById('order').value = data?.order ?? 0;
+  document.getElementById('uploadPreview').style.display = data?.imageUrl ? 'block' : 'none';
+  document.getElementById('uploadPreview').src = data?.imageUrl || '';
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  editId = null;
+}
+
+async function editItem(id) {
+  const r = await fetch(API, { credentials: 'include' });
+  const { items } = await r.json();
+  const item = items.find(g => g.id === id);
+  if (item) openModal(item);
+}
+
+async function saveItem(publish) {
+  const body = {
+    imageUrl: document.getElementById('imageUrl').value.trim(),
+    caption: document.getElementById('caption').value.trim(),
+    category: document.getElementById('category').value.trim() || '일반',
+    order: parseInt(document.getElementById('order').value, 10) || 0,
+    published: publish,
+  };
+  if (!body.imageUrl) { showToast('Image URL required', true); return; }
+
+  const url = editId ? `${API}/${encodeURIComponent(editId)}` : API;
+  const method = editId ? 'PUT' : 'POST';
+  const r = await fetch(url, {
+    method, headers: { 'Content-Type': 'application/json' },
+    credentials: 'include', body: JSON.stringify(body),
+  });
+  if (r.ok) {
+    showToast(publish ? 'Published!' : 'Saved!');
+    closeModal();
+    loadItems();
+  } else {
+    const data = await r.json();
+    showToast(data.error || 'Failed', true);
+  }
+}
+
+async function togglePub(id, published) {
+  await fetch(`${API}/${encodeURIComponent(id)}`, {
+    method: 'PUT', headers: { 'Content-Type': 'application/json' },
+    credentials: 'include', body: JSON.stringify({ published }),
+  });
+  loadItems();
+}
+
+async function deleteItem(id) {
+  if (!confirm('Delete this image?')) return;
+  await fetch(`${API}/${encodeURIComponent(id)}`, { method: 'DELETE', credentials: 'include' });
+  loadItems();
+}
+
+function esc(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+
+function showToast(msg, isError) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.background = isError ? 'var(--danger)' : 'var(--success)';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+loadItems();
+</script>
+</body>
+</html>

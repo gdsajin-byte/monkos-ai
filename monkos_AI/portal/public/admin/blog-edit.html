@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blog Editor — MONKOS Admin</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #0a0a1a; --surface: #141428; --surface2: #1a1a35;
+  --accent: #a78bfa; --accent2: #818cf8;
+  --text: #e2e8f0; --text-dim: #8892a8; --text-bright: #f8fafc;
+  --border: rgba(167, 139, 250, 0.12); --border-hover: rgba(167, 139, 250, 0.3);
+  --success: #34d399; --danger: #f87171;
+}
+body { font-family: 'Noto Sans KR', -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+a { color: var(--accent); text-decoration: none; }
+
+.nav { display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; border-bottom: 1px solid var(--border); }
+.nav-logo { font-size: 20px; font-weight: 700; color: var(--text-bright); letter-spacing: 2px; }
+.nav-back { font-size: 14px; color: var(--text-dim); }
+
+.container { max-width: 1000px; margin: 0 auto; padding: 24px; }
+
+.form-row { margin-bottom: 16px; }
+.form-row label { display: block; font-size: 13px; color: var(--text-dim); margin-bottom: 6px; font-weight: 500; }
+.form-row input, .form-row select, .form-row textarea {
+  width: 100%; padding: 10px 14px; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; color: var(--text); font-size: 14px; outline: none;
+}
+.form-row input:focus, .form-row select:focus, .form-row textarea:focus { border-color: var(--accent); }
+
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
+
+.editor-wrap { margin-bottom: 16px; }
+#editor { min-height: 400px; }
+
+/* Toast UI dark override */
+.toastui-editor-defaultUI { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.toastui-editor-defaultUI .toastui-editor-md-container { background: var(--surface); }
+.toastui-editor-defaultUI .toastui-editor-md-container .toastui-editor-md-preview { background: var(--surface2); }
+.ProseMirror { color: var(--text); }
+
+.btn-group { display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
+.btn {
+  padding: 12px 24px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600;
+  cursor: pointer; transition: opacity 0.2s;
+}
+.btn:hover { opacity: 0.85; }
+.btn-primary { background: var(--accent); color: var(--bg); }
+.btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+.btn-success { background: var(--success); color: var(--bg); }
+.btn-preview { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+
+.toast {
+  position: fixed; bottom: 24px; right: 24px; padding: 12px 24px;
+  background: var(--success); color: var(--bg); border-radius: 8px;
+  font-size: 14px; font-weight: 500; opacity: 0; transition: opacity 0.3s;
+  z-index: 1000;
+}
+.toast.show { opacity: 1; }
+
+.title-row { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+.title-row h1 { font-size: 22px; font-weight: 700; color: var(--text-bright); }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/admin/" class="nav-logo">MONKOS Admin</a>
+  <a href="/admin/blog-list.html" class="nav-back">&larr; Blog List</a>
+</nav>
+
+<div class="container">
+  <div class="title-row">
+    <h1 id="pageTitle">New Post</h1>
+  </div>
+
+  <div class="form-row">
+    <label>Title</label>
+    <input type="text" id="title" placeholder="Enter post title">
+  </div>
+
+  <div class="form-grid">
+    <div class="form-row">
+      <label>Slug (auto-generated)</label>
+      <input type="text" id="slug" placeholder="auto-generated-from-title">
+    </div>
+    <div class="form-row">
+      <label>Language</label>
+      <select id="lang">
+        <option value="ko">Korean (ko)</option>
+        <option value="ja">Japanese (ja)</option>
+        <option value="en">English (en)</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <label>Summary (meta description, max 160 chars)</label>
+    <textarea id="summary" rows="2" maxlength="160" placeholder="Brief summary for SEO"></textarea>
+  </div>
+
+  <div class="form-grid">
+    <div class="form-row">
+      <label>Tags (comma separated)</label>
+      <input type="text" id="tags" placeholder="passport, photo, guide">
+    </div>
+    <div class="form-row">
+      <label>Thumbnail URL</label>
+      <input type="text" id="thumbnail" placeholder="https://storage.googleapis.com/...">
+    </div>
+  </div>
+
+  <div class="editor-wrap">
+    <label style="display:block;font-size:13px;color:var(--text-dim);margin-bottom:6px;font-weight:500">Content</label>
+    <div id="editor"></div>
+  </div>
+
+  <div class="btn-group">
+    <button class="btn btn-secondary" onclick="save(false)">Save Draft</button>
+    <button class="btn btn-success" onclick="save(true)">Publish</button>
+    <button class="btn btn-preview" onclick="preview()">Preview</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+<script>
+const API = '/api/admin/blog';
+const params = new URLSearchParams(location.search);
+const editSlug = params.get('slug');
+let isEdit = false;
+
+// Toast UI Editor
+const editor = new toastui.Editor({
+  el: document.getElementById('editor'),
+  height: '450px',
+  initialEditType: 'markdown',
+  previewStyle: 'vertical',
+  hooks: {
+    addImageBlobHook: async (blob, callback) => {
+      try {
+        const form = new FormData();
+        form.append('image', blob, blob.name || 'image.png');
+        const r = await fetch('/api/admin/upload', {
+          method: 'POST',
+          credentials: 'include',
+          body: form,
+        });
+        const data = await r.json();
+        if (data.url) {
+          callback(data.url, blob.name || 'image');
+        } else {
+          alert('Upload failed: ' + (data.error || 'Unknown error'));
+        }
+      } catch (err) {
+        alert('Upload error: ' + err.message);
+      }
+    }
+  }
+});
+
+// Auto-generate slug from title
+document.getElementById('title').addEventListener('input', (e) => {
+  if (!isEdit) {
+    const slug = e.target.value
+      .toLowerCase()
+      .replace(/[^\w\s가-힣ぁ-んァ-ヶ一-龥-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '')
+      .substring(0, 100);
+    document.getElementById('slug').value = slug;
+  }
+});
+
+// Load existing post for editing
+async function loadPost() {
+  if (!editSlug) return;
+  isEdit = true;
+  document.getElementById('pageTitle').textContent = 'Edit Post';
+
+  try {
+    const r = await fetch(`${API}/${encodeURIComponent(editSlug)}`, { credentials: 'include' });
+    if (r.status === 401) { location.href = '/admin/'; return; }
+    if (!r.ok) { showToast('Post not found', true); return; }
+
+    const post = await r.json();
+    document.getElementById('title').value = post.title || '';
+    document.getElementById('slug').value = post.slug || '';
+    document.getElementById('slug').readOnly = true;
+    document.getElementById('summary').value = post.summary || '';
+    document.getElementById('tags').value = (post.tags || []).join(', ');
+    document.getElementById('thumbnail').value = post.thumbnail || '';
+    document.getElementById('lang').value = post.lang || 'ko';
+    editor.setMarkdown(post.content || '');
+  } catch (err) {
+    showToast('Load failed: ' + err.message, true);
+  }
+}
+
+async function save(published) {
+  const title = document.getElementById('title').value.trim();
+  const content = editor.getMarkdown();
+  if (!title) { showToast('Title is required', true); return; }
+  if (!content) { showToast('Content is required', true); return; }
+
+  const body = {
+    title,
+    slug: document.getElementById('slug').value.trim(),
+    content,
+    summary: document.getElementById('summary').value.trim(),
+    tags: document.getElementById('tags').value.split(',').map(t => t.trim()).filter(Boolean),
+    thumbnail: document.getElementById('thumbnail').value.trim(),
+    lang: document.getElementById('lang').value,
+    published,
+    author: 'MONKOS',
+  };
+
+  try {
+    const url = isEdit ? `${API}/${encodeURIComponent(editSlug)}` : API;
+    const method = isEdit ? 'PUT' : 'POST';
+    const r = await fetch(url, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(body),
+    });
+
+    if (r.status === 401) { location.href = '/admin/'; return; }
+    const data = await r.json();
+
+    if (r.ok) {
+      showToast(published ? 'Published!' : 'Draft saved!');
+      if (!isEdit && data.slug) {
+        // 생성 후 편집 모드로 전환
+        history.replaceState(null, '', `/admin/blog-edit.html?slug=${encodeURIComponent(data.slug)}`);
+        isEdit = true;
+        document.getElementById('slug').readOnly = true;
+        document.getElementById('pageTitle').textContent = 'Edit Post';
+      }
+    } else {
+      showToast(data.error || 'Save failed', true);
+    }
+  } catch (err) {
+    showToast('Error: ' + err.message, true);
+  }
+}
+
+function preview() {
+  const slug = document.getElementById('slug').value.trim();
+  if (slug) window.open(`/blog/${slug}`, '_blank');
+  else showToast('Save first to preview', true);
+}
+
+function showToast(msg, isError = false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.background = isError ? 'var(--danger)' : 'var(--success)';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+loadPost();
+</script>
+</body>
+</html>

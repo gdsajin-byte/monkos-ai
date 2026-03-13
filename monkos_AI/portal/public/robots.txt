@@ -1,5 +1,10 @@
 User-agent: *
 Allow: /
+Allow: /blog
+Allow: /faq
+Allow: /gallery
+Allow: /board
+Disallow: /admin
 Disallow: /api/
 
 Sitemap: https://monkos.ai/sitemap.xml

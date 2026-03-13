@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MONKOS Admin</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #0a0a1a; --surface: #141428; --surface2: #1a1a35;
+  --accent: #a78bfa; --accent2: #818cf8;
+  --text: #e2e8f0; --text-dim: #8892a8; --text-bright: #f8fafc;
+  --border: rgba(167, 139, 250, 0.12); --border-hover: rgba(167, 139, 250, 0.3);
+  --success: #34d399; --danger: #f87171;
+}
+body { font-family: 'Noto Sans KR', -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+a { color: var(--accent); text-decoration: none; }
+
+.nav { display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; border-bottom: 1px solid var(--border); }
+.nav-logo { font-size: 20px; font-weight: 700; color: var(--text-bright); letter-spacing: 2px; }
+.nav-user { font-size: 13px; color: var(--text-dim); }
+
+.container { max-width: 800px; margin: 0 auto; padding: 40px 24px; }
+h1 { font-size: 24px; font-weight: 700; color: var(--text-bright); margin-bottom: 32px; }
+
+.login-box { text-align: center; padding: 60px 20px; }
+.login-box p { color: var(--text-dim); margin-bottom: 24px; }
+.kakao-btn {
+  display: inline-block; padding: 14px 40px; background: #FEE500; color: #191919;
+  border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; border: none;
+}
+.kakao-btn:hover { background: #f5dc00; }
+
+.menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+.menu-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+  padding: 24px; text-align: center; transition: border-color 0.2s, transform 0.2s; cursor: pointer;
+}
+.menu-card:hover { border-color: var(--border-hover); transform: translateY(-2px); }
+.menu-card h3 { font-size: 18px; color: var(--text-bright); margin-bottom: 8px; }
+.menu-card .count { font-size: 28px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+.menu-card .label { font-size: 13px; color: var(--text-dim); }
+.menu-card.disabled { opacity: 0.4; pointer-events: none; }
+.menu-card.disabled .label::after { content: ' (Coming Soon)'; }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/admin/" class="nav-logo">MONKOS Admin</a>
+  <span class="nav-user" id="navUser"></span>
+</nav>
+
+<div class="container">
+  <!-- 미인증 -->
+  <div id="loginSection" class="login-box" style="display:none">
+    <h1>CMS Admin</h1>
+    <p>관리자 로그인이 필요합니다</p>
+    <a href="/auth/kakao?redirect=/admin/" class="kakao-btn">카카오 로그인</a>
+  </div>
+
+  <!-- 인증 후 -->
+  <div id="dashSection" style="display:none">
+    <h1>Dashboard</h1>
+    <div class="menu-grid">
+      <a href="/admin/blog-list.html" class="menu-card" id="blogCard">
+        <div class="count" id="blogCount">-</div>
+        <h3>Blog</h3>
+        <div class="label">블로그 관리</div>
+      </a>
+      <a href="/admin/faq.html" class="menu-card" id="faqCard">
+        <div class="count" id="faqCount">-</div>
+        <h3>FAQ</h3>
+        <div class="label">FAQ 관리</div>
+      </a>
+      <a href="/admin/gallery.html" class="menu-card" id="galleryCard">
+        <div class="count" id="galleryCount">-</div>
+        <h3>Gallery</h3>
+        <div class="label">갤러리 관리</div>
+      </a>
+      <a href="/admin/board.html" class="menu-card" id="boardCard">
+        <div class="count" id="boardCount">-</div>
+        <h3>Board</h3>
+        <div class="label">게시판 관리</div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+async function init() {
+  try {
+    const r = await fetch('/api/auth/verify-cookie', { credentials: 'include' });
+    if (!r.ok) throw new Error('Not authenticated');
+    const data = await r.json();
+
+    // 관리자 권한 확인
+    const adminCheck = await fetch('/api/admin/blog', { credentials: 'include' });
+    if (adminCheck.status === 401) {
+      document.getElementById('loginSection').style.display = 'block';
+      document.querySelector('.login-box p').textContent = '관리자 권한이 없습니다';
+      return;
+    }
+
+    document.getElementById('navUser').textContent = data.userId || '';
+    document.getElementById('dashSection').style.display = 'block';
+
+    // 블로그 글 수 표시
+    const blogRes = await adminCheck.json();
+    document.getElementById('blogCount').textContent = blogRes.posts ? blogRes.posts.length : 0;
+
+    // FAQ/Gallery/Board 카운트
+    fetch('/api/admin/faq', { credentials: 'include' }).then(r => r.json()).then(d => {
+      document.getElementById('faqCount').textContent = d.items ? d.items.length : 0;
+    }).catch(() => {});
+    fetch('/api/admin/gallery', { credentials: 'include' }).then(r => r.json()).then(d => {
+      document.getElementById('galleryCount').textContent = d.items ? d.items.length : 0;
+    }).catch(() => {});
+    fetch('/api/admin/board', { credentials: 'include' }).then(r => r.json()).then(d => {
+      document.getElementById('boardCount').textContent = d.posts ? d.posts.length : 0;
+    }).catch(() => {});
+  } catch {
+    document.getElementById('loginSection').style.display = 'block';
+  }
+}
+init();
+</script>
+</body>
+</html>

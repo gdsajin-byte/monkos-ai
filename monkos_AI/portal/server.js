@@ -19,6 +19,7 @@ import {
   TELEGRAM_CHANNEL_ID, TEAM_CHAT_ID,
   KAKAO_REST_API_KEY, KAKAO_CHANNEL_ID, LINE_CHANNEL_ID,
   LINE_MESSAGING_ACCESS_TOKEN,
+  ADMIN_UIDS,
 } from './lib/shared/config.js';
 
 // === 핸들러 모듈 ===
@@ -33,6 +34,13 @@ import { handlePassportIssue, handleUploadMission } from './lib/tg-cs.js';
 import { handleKakaoChatbot } from './lib/kakao-chatbot.js';
 import { handleLineWebhook } from './lib/line-chatbot.js';
 import { handleWebChat, handleCoaching } from './lib/coaching.js';
+import { handleBlogList, handleBlogGet, handleBlogCreate, handleBlogUpdate, handleBlogDelete } from './lib/cms/blog.js';
+import { handleFaqList, handleFaqCreate, handleFaqUpdate, handleFaqDelete } from './lib/cms/faq.js';
+import { handleGalleryList, handleGalleryCreate, handleGalleryUpdate, handleGalleryDelete } from './lib/cms/gallery.js';
+import { handleBoardPublicList, handleBoardPublicGet, handleBoardPublicCreate, handleBoardPublicDelete, handleBoardAdminList, handleBoardAdminReply, handleBoardAdminDelete, handleBoardAdminToggle } from './lib/cms/board.js';
+import { handleUpload } from './lib/cms/upload.js';
+import { handleTranslate } from './lib/cms/translate.js';
+import { renderBlogList, renderBlogPost, renderFaq, renderGallery, renderBoardList, renderBoardPost, renderBoardWrite, renderSitemap } from './lib/cms/render.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -49,7 +57,7 @@ const httpServer = createServer(async (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', origin);
     res.setHeader('Access-Control-Allow-Credentials', 'true');
   }
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   if (req.method === 'OPTIONS') {
@@ -150,6 +158,49 @@ const httpServer = createServer(async (req, res) => {
   if (urlPath === '/api/chat' && req.method === 'POST') return handleWebChat(req, res);
   if (urlPath === '/api/coaching' && req.method === 'POST') return handleCoaching(req, res);
 
+  // === CMS 관리자 API ===
+  if (urlPath === '/api/admin/blog' && req.method === 'GET') return handleBlogList(req, res);
+  if (urlPath === '/api/admin/blog' && req.method === 'POST') return handleBlogCreate(req, res);
+  if (urlPath?.startsWith('/api/admin/blog/') && req.method === 'GET') return handleBlogGet(req, res);
+  if (urlPath?.startsWith('/api/admin/blog/') && req.method === 'PUT') return handleBlogUpdate(req, res);
+  if (urlPath?.startsWith('/api/admin/blog/') && req.method === 'DELETE') return handleBlogDelete(req, res);
+  if (urlPath === '/api/admin/upload' && req.method === 'POST') return handleUpload(req, res);
+  if (urlPath?.endsWith('/translate') && urlPath?.startsWith('/api/admin/blog/') && req.method === 'POST') return handleTranslate(req, res);
+
+  // === CMS FAQ 관리자 API ===
+  if (urlPath === '/api/admin/faq' && req.method === 'GET') return handleFaqList(req, res);
+  if (urlPath === '/api/admin/faq' && req.method === 'POST') return handleFaqCreate(req, res);
+  if (urlPath?.startsWith('/api/admin/faq/') && req.method === 'PUT') return handleFaqUpdate(req, res);
+  if (urlPath?.startsWith('/api/admin/faq/') && req.method === 'DELETE') return handleFaqDelete(req, res);
+
+  // === CMS 갤러리 관리자 API ===
+  if (urlPath === '/api/admin/gallery' && req.method === 'GET') return handleGalleryList(req, res);
+  if (urlPath === '/api/admin/gallery' && req.method === 'POST') return handleGalleryCreate(req, res);
+  if (urlPath?.startsWith('/api/admin/gallery/') && req.method === 'PUT') return handleGalleryUpdate(req, res);
+  if (urlPath?.startsWith('/api/admin/gallery/') && req.method === 'DELETE') return handleGalleryDelete(req, res);
+
+  // === CMS 게시판 공개 API ===
+  if (urlPath === '/api/board' && req.method === 'GET') return handleBoardPublicList(req, res);
+  if (urlPath === '/api/board' && req.method === 'POST') return handleBoardPublicCreate(req, res);
+  if (urlPath?.startsWith('/api/board/') && req.method === 'GET') return handleBoardPublicGet(req, res);
+  if (urlPath?.startsWith('/api/board/') && req.method === 'DELETE') return handleBoardPublicDelete(req, res);
+
+  // === CMS 게시판 관리자 API ===
+  if (urlPath === '/api/admin/board' && req.method === 'GET') return handleBoardAdminList(req, res);
+  if (urlPath?.startsWith('/api/admin/board/') && urlPath?.endsWith('/reply') && req.method === 'POST') return handleBoardAdminReply(req, res);
+  if (urlPath?.startsWith('/api/admin/board/') && urlPath?.endsWith('/toggle') && req.method === 'PUT') return handleBoardAdminToggle(req, res);
+  if (urlPath?.startsWith('/api/admin/board/') && req.method === 'DELETE') return handleBoardAdminDelete(req, res);
+
+  // === CMS 공개 페이지 (SSR) ===
+  if (urlPath === '/sitemap.xml' && req.method === 'GET') return renderSitemap(req, res);
+  if (urlPath === '/blog' && req.method === 'GET') return renderBlogList(req, res);
+  if (urlPath?.startsWith('/blog/') && req.method === 'GET') return renderBlogPost(req, res);
+  if (urlPath === '/faq' && req.method === 'GET') return renderFaq(req, res);
+  if (urlPath === '/gallery' && req.method === 'GET') return renderGallery(req, res);
+  if (urlPath === '/board' && req.method === 'GET') return renderBoardList(req, res);
+  if (urlPath === '/board/write' && req.method === 'GET') return renderBoardWrite(req, res);
+  if (urlPath?.startsWith('/board/') && req.method === 'GET') return renderBoardPost(req, res);
+
   // === favicon.ico ===
   if (urlPath === '/favicon.ico') {
     try {
@@ -207,5 +258,6 @@ httpServer.listen(PORT, '0.0.0.0', () => {
   log(`Kakao Channel: ${KAKAO_CHANNEL_ID || '미설정'}`);
   log(`LINE Login: ${LINE_CHANNEL_ID ? '설정됨' : '미설정'}`);
   log(`LINE Messaging: ${LINE_MESSAGING_ACCESS_TOKEN ? '설정됨' : '미설정'}`);
+  log(`CMS Admin: ${ADMIN_UIDS.length > 0 ? ADMIN_UIDS.length + '명 등록' : '전체 허용(개발모드)'}`);
   log('='.repeat(60));
 });

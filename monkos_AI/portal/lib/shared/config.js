@@ -54,6 +54,10 @@ export const LINE_MESSAGING_CHANNEL_SECRET = process.env.LINE_MESSAGING_CHANNEL_
 export const LINE_MESSAGING_ACCESS_TOKEN = process.env.LINE_MESSAGING_ACCESS_TOKEN || '';
 export const LINE_MESSAGING_API = 'https://api.line.me/v2/bot/message/reply';
 
+// CMS
+export const GCS_BUCKET = process.env.GCS_BUCKET || 'monk-ai-images';
+export const ADMIN_UIDS = (process.env.ADMIN_UIDS || '').split(',').filter(Boolean);
+
 // D1 거래 원장 (CF Workers tx.js 제거됨 — 환경변수 미설정 시 비활성)
 export const TX_API_URL = process.env.TX_API_URL || '';
 export const TX_API_KEY = process.env.TX_API_KEY || '';
