@@ -20,7 +20,7 @@ async function replyMessage(replyToken, text) {
   // LINE 텍스트 제한: 2,000자
   const trimmed = text.length > 2000 ? text.substring(0, 1997) + '...' : text;
   try {
-    await fetch(LINE_MESSAGING_API, {
+    const resp = await fetch(LINE_MESSAGING_API, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -31,6 +31,10 @@ async function replyMessage(replyToken, text) {
         messages: [{ type: 'text', text: trimmed }],
       }),
     });
+    if (!resp.ok) {
+      const errBody = await resp.text();
+      log(`[LineChat] Reply API 실패 ${resp.status}: ${errBody}`, 'ERROR');
+    }
   } catch (err) {
     log(`[LineChat] Reply API 에러: ${err.message}`, 'ERROR');
   }
