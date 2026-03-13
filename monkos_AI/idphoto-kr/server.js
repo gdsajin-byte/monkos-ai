@@ -700,6 +700,11 @@ app.post('/api/credit/share-bonus', async (req, res) => {
   }
 });
 
+// === favicon.ico ===
+app.get('/favicon.ico', (req, res) => {
+  res.sendFile(join(__dirname, 'public/favicon-32.png'));
+});
+
 // === sitemap.xml ===
 app.get('/sitemap.xml', (req, res) => {
   const base = 'https://idphoto-kr.monkos.ai';
@@ -727,6 +732,7 @@ app.get('/camera', (req, res) => res.sendFile(join(__dirname, 'public/camera.htm
 app.get('/result', (req, res) => res.sendFile(join(__dirname, 'public/result.html')));
 app.get('/thankyou', (req, res) => res.sendFile(join(__dirname, 'public/thankyou.html')));
 app.get('/charge', (req, res) => res.sendFile(join(__dirname, 'public/charge.html')));
+app.get('/policy/data', (req, res) => res.sendFile(join(__dirname, 'public/policy-data.html')));
 
 // 정적 파일 서빙 (JS/CSS 캐시 방지 — 모바일 브라우저 강제 갱신)
 app.use(express.static(join(__dirname, 'public'), {

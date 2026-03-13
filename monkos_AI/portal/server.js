@@ -145,6 +145,15 @@ const httpServer = createServer(async (req, res) => {
   if (urlPath === '/api/chat' && req.method === 'POST') return handleWebChat(req, res);
   if (urlPath === '/api/coaching' && req.method === 'POST') return handleCoaching(req, res);
 
+  // === favicon.ico ===
+  if (urlPath === '/favicon.ico') {
+    try {
+      const ico = readFileSync(join(__dirname, 'public/favicon-32.png'));
+      res.writeHead(200, { 'Content-Type': 'image/png' });
+      return res.end(ico);
+    } catch { /* fall through */ }
+  }
+
   // === 정적 파일 ===
   let filePath = req.url === '/' ? '/index.html' : req.url;
   filePath = filePath.split('?')[0];

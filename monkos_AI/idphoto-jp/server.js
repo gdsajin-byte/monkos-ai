@@ -747,6 +747,11 @@ app.post('/api/download', async (req, res) => {
   }
 });
 
+// === favicon.ico ===
+app.get('/favicon.ico', (req, res) => {
+  res.sendFile(join(__dirname, 'public/favicon-32.png'));
+});
+
 // === sitemap.xml ===
 app.get('/sitemap.xml', (req, res) => {
   const base = 'https://idphoto-jp.monkos.ai';
@@ -775,6 +780,7 @@ app.get('/camera', (req, res) => res.sendFile(join(__dirname, 'public/camera.htm
 app.get('/result', (req, res) => res.sendFile(join(__dirname, 'public/result.html')));
 app.get('/thankyou', (req, res) => res.sendFile(join(__dirname, 'public/thankyou.html')));
 app.get('/charge', (req, res) => res.sendFile(join(__dirname, 'public/charge.html')));
+app.get('/policy/data', (req, res) => res.sendFile(join(__dirname, 'public/policy-data.html')));
 
 // 静的ファイル配信 (JS/CSS キャッシュ無効 — モバイルブラウザ強制更新)
 app.use(express.static(join(__dirname, 'public'), {
