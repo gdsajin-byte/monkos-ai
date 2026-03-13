@@ -93,21 +93,6 @@ async function refundCredits(userId, type) {
   }
 }
 
-async function grantShareBonus(userId, platform) {
-  if (!userId) return { success: false, error: '로그인 필요' };
-
-  try {
-    const response = await fetch(`${PORTAL_API_URL}/api/credits/share-bonus`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId, platform }),
-    });
-    return await response.json();
-  } catch (err) {
-    log(`[Credits] 공유 보너스 API 호출 실패: ${err.message}`);
-    return { success: false, error: 'Portal API 연결 실패' };
-  }
-}
 
 // === 코칭 시스템 프롬프트 (한국어 네이티브) ===
 const COACHING_INSTRUCTIONS = {
@@ -688,17 +673,6 @@ app.post('/api/credit/refund', async (req, res) => {
   }
 });
 
-// 공유 보너스
-app.post('/api/credit/share-bonus', async (req, res) => {
-  try {
-    if (!req.body.userId) return res.status(400).json({ error: '로그인 필요' });
-    const result = await grantShareBonus(req.body.userId, req.body.platform);
-    res.status(result.success ? 200 : 400).json(result);
-  } catch (err) {
-    log(`[API][credit/share-bonus] 에러: ${err.message}`, 'ERROR');
-    res.status(500).json({ error: err.message });
-  }
-});
 
 // === favicon.ico ===
 app.get('/favicon.ico', (req, res) => {
@@ -764,7 +738,7 @@ const httpServer = app.listen(PORT, '0.0.0.0', () => {
   log('  POST /api/precheck        — 사전분석 (MPA)');
   log('  POST /api/idgen           — Imagen I2I (9필드)');
   log('  POST /api/credit/use      — 크레딧 차감');
-  log('  POST /api/credit/share-bonus — 공유 보너스');
+
   log('  GET  /                    — 랜딩페이지');
   log('  GET  /app                 — 촬영 앱 (SPA)');
   log('  GET  /prep                — 준비 (MPA)');

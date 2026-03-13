@@ -94,22 +94,6 @@ async function refundCredits(userId, type) {
   }
 }
 
-async function grantShareBonus(userId, platform) {
-  if (!userId) return { success: false, error: 'ログインが必要です' };
-
-  try {
-    const response = await fetch(`${PORTAL_API_URL}/api/credits/share-bonus`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId, platform }),
-    });
-    return await response.json();
-  } catch (err) {
-    log(`[Credits] シェアボーナスAPI呼び出し失敗: ${err.message}`);
-    return { success: false, error: 'Portal API接続失敗' };
-  }
-}
-
 // === コーチング システムプロンプト (日本語ネイティブ) ===
 const COACHING_INSTRUCTIONS = {
   passport: `証明写真撮影のAIコーチです。パスポート・証明写真撮影をサポートします。
@@ -694,18 +678,6 @@ app.post('/api/credit/refund', async (req, res) => {
   }
 });
 
-// シェアボーナス
-app.post('/api/credit/share-bonus', async (req, res) => {
-  try {
-    if (!req.body.userId) return res.status(400).json({ error: 'ログインが必要です' });
-    const result = await grantShareBonus(req.body.userId, req.body.platform);
-    res.status(result.success ? 200 : 400).json(result);
-  } catch (err) {
-    log(`[API][credit/share-bonus] エラー: ${err.message}`, 'ERROR');
-    res.status(500).json({ error: err.message });
-  }
-});
-
 // ダウンロード — Gemini顔検出 + 精密クロップ + 原本Signed URL (クレジット70c 1回差引)
 app.post('/api/download', async (req, res) => {
   try {
@@ -812,7 +784,6 @@ const httpServer = app.listen(PORT, '0.0.0.0', () => {
   log('  POST /api/precheck        — 事前分析 (MPA)');
   log('  POST /api/idgen           — Imagen I2I (9フィールド)');
   log('  POST /api/credit/use      — クレジット差引');
-  log('  POST /api/credit/share-bonus — シェアボーナス');
   log('  POST /api/download        — ダウンロード (GCS+クロップ+SignedURL)');
   log('  GET  /                    — ランディングページ');
   log('  GET  /app                 — 撮影アプリ (SPA)');

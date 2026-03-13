@@ -166,35 +166,6 @@ async function saveCompare(compareData) {
   Monk.log('ビフォーアフター保存完了');
 }
 
-// ─── §2-10 SNSイベント ───
-function setupSnsEvent() {
-  const btn = document.getElementById('btn-ty-sns-event');
-  if (!btn) return;
-
-  btn.addEventListener('click', async () => {
-    if (!store.user.id) return;
-
-    try {
-      const res = await fetch(`${API.PORTAL_URL}/api/credits/event`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: store.user.id, eventType: 'sns_share' }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        store.user = { ...store.user, credits: data.credits ?? store.user.credits };
-        showToast('SNS認証イベント申請完了 · +100c');
-        btn.disabled = true;
-        btn.textContent = '✅ イベント完了';
-      } else {
-        alert(data.error || 'すでに参加済みのイベントです。');
-      }
-    } catch (err) {
-      alert('イベント処理中にエラーが発生しました。');
-    }
-  });
-}
-
 // ─── 戻るボタン防御 ───
 function setupBackGuard() {
   history.replaceState(null, '', location.href);
@@ -232,9 +203,6 @@ async function init() {
 
   // 原本ダウンロードセットアップ (追加課金なし)
   setupOriginalDownload();
-
-  // SNSイベントセットアップ
-  setupSnsEvent();
 
   // 戻るボタン防御
   setupBackGuard();
