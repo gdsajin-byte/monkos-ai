@@ -27,7 +27,7 @@ function layoutHead(title, description, extra = '', htmlLang = 'ko') {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>${escapeHtml(title)}</title>
 <meta name="description" content="${escapeHtml(description)}">
-<meta name="theme-color" content="#0f0f23">
+<meta name="theme-color" content="#f6f7fb">
 <link rel="icon" href="/monkos-icon.svg" type="image/svg+xml">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -35,17 +35,17 @@ ${extra}
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 :root {
-  --bg: #0a0a1a;
-  --surface: #141428;
-  --surface2: #1a1a35;
-  --accent: #a78bfa;
-  --accent2: #818cf8;
-  --text: #e2e8f0;
-  --text-dim: #8892a8;
-  --text-bright: #f8fafc;
-  --border: rgba(167, 139, 250, 0.12);
-  --border-hover: rgba(167, 139, 250, 0.3);
-  --card-bg: rgba(20, 20, 40, 0.7);
+  --bg: #f6f7fb;
+  --surface: #ffffff;
+  --surface2: #f0f1f5;
+  --accent: #6c4fff;
+  --accent2: #5a3de6;
+  --text: #13152a;
+  --text-dim: #4a4f6e;
+  --text-bright: #13152a;
+  --border: #e4e6f0;
+  --border-hover: rgba(108, 79, 255, 0.3);
+  --card-bg: #ffffff;
   --success: #34d399;
 }
 body {
@@ -58,16 +58,29 @@ body {
 a { color: var(--accent); text-decoration: none; }
 a:hover { color: var(--accent2); }
 
-/* Nav */
-.nav {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 16px 24px; border-bottom: 1px solid var(--border);
-  max-width: 1200px; margin: 0 auto;
+/* Header (dark branded — mockup 준용) */
+.site-header { background: #090b1a; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.header-top {
+  max-width: 1200px; margin: 0 auto; padding: 0 24px;
+  height: 58px; display: flex; align-items: center; justify-content: space-between;
 }
-.nav-logo { font-size: 20px; font-weight: 700; color: var(--text-bright); letter-spacing: 2px; }
-.nav-links { display: flex; gap: 24px; }
-.nav-links a { color: var(--text-dim); font-size: 14px; font-weight: 500; }
-.nav-links a:hover { color: var(--accent); }
+.logo {
+  font-size: 15px; font-weight: 800; letter-spacing: 0.14em;
+  color: #f0f2ff; text-transform: uppercase;
+  display: flex; align-items: center; gap: 8px; text-decoration: none;
+}
+.logo-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+.header-nav { display: flex; gap: 2px; }
+.header-nav a {
+  padding: 6px 14px; border-radius: 7px; font-size: 13px;
+  color: #8892b4; text-decoration: none; transition: all 0.15s;
+}
+.header-nav a:hover { background: rgba(255,255,255,0.07); color: #f0f2ff; }
+.header-cta {
+  padding: 7px 18px; border-radius: 8px; font-size: 13px; font-weight: 700;
+  background: var(--accent); color: #fff; text-decoration: none; transition: opacity 0.15s;
+}
+.header-cta:hover { opacity: 0.9; }
 
 /* Footer */
 .footer {
@@ -81,16 +94,18 @@ a:hover { color: var(--accent2); }
 }
 
 function layoutNav() {
-  return `<nav class="nav">
-  <a href="/" class="nav-logo">MONKOS</a>
-  <div class="nav-links">
-    <a href="/blog">Blog</a>
-    <a href="/faq">FAQ</a>
-    <a href="/gallery">Gallery</a>
-    <a href="/board">Board</a>
-    <a href="/">Home</a>
+  return `<header class="site-header">
+  <div class="header-top">
+    <a href="/" class="logo"><span class="logo-dot"></span>MONKOS</a>
+    <nav class="header-nav">
+      <a href="/blog">Blog</a>
+      <a href="/faq">FAQ</a>
+      <a href="/gallery">Gallery</a>
+      <a href="/board">Board</a>
+    </nav>
+    <a href="/" class="header-cta">촬영 시작하기 →</a>
   </div>
-</nav>`;
+</header>`;
 }
 
 function layoutFooter() {
@@ -193,11 +208,12 @@ export async function blogListFragment(req, forceLang = null) {
 .blog-card {
   display: flex; flex-direction: column; background: var(--card-bg);
   border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
-  transition: border-color 0.2s, transform 0.2s; color: var(--text);
+  transition: all 0.2s; color: var(--text);
+  box-shadow: 0 1px 6px rgba(0,0,0,0.04);
 }
-.blog-card:hover { border-color: var(--border-hover); transform: translateY(-2px); }
+.blog-card:hover { box-shadow: 0 8px 28px rgba(108,79,255,0.1); border-color: rgba(108,79,255,0.22); transform: translateY(-3px); }
 .card-thumb { width: 100%; height: 200px; background-size: cover; background-position: center; background-color: var(--surface2); }
-.card-thumb-empty { background: linear-gradient(135deg, var(--surface), var(--surface2)); }
+.card-thumb-empty { background: linear-gradient(135deg, #2a1d6e, #0f0a2e); }
 .card-body { padding: 20px; flex: 1; }
 .card-meta { display: flex; gap: 12px; margin-bottom: 8px; font-size: 12px; color: var(--text-dim); }
 .card-lang { background: var(--surface2); padding: 2px 8px; border-radius: 4px; text-transform: uppercase; }
@@ -333,7 +349,9 @@ ${JSON.stringify({
 .post-thumb { max-width: 800px; margin: 0 auto 32px; border-radius: 12px; overflow: hidden; }
 .post-thumb img { width: 100%; height: auto; display: block; }
 .post-content {
-  max-width: 800px; margin: 0 auto; font-size: 16px; line-height: 1.8;
+  max-width: 800px; margin: 0 auto; font-size: 17px; line-height: 1.85; color: #2a2d48;
+  background: var(--surface); border-radius: 16px; padding: 40px 48px;
+  border: 1px solid var(--border); box-shadow: 0 1px 8px rgba(0,0,0,0.04);
 }
 .post-content h1, .post-content h2, .post-content h3 { color: var(--text-bright); margin: 32px 0 16px; }
 .post-content h2 { font-size: 24px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
@@ -343,7 +361,7 @@ ${JSON.stringify({
 .post-content code { background: var(--surface2); padding: 2px 6px; border-radius: 4px; font-size: 14px; }
 .post-content pre { background: var(--surface); padding: 16px; border-radius: 8px; overflow-x: auto; margin: 16px 0; }
 .post-content pre code { background: none; padding: 0; }
-.post-content blockquote { border-left: 3px solid var(--accent); padding-left: 16px; color: var(--text-dim); margin: 16px 0; }
+.post-content blockquote { border-left: 4px solid var(--accent); padding: 16px 24px; background: rgba(108,79,255,0.06); border-radius: 0 10px 10px 0; color: var(--text-dim); margin: 16px 0; font-style: italic; }
 .post-content ul, .post-content ol { padding-left: 24px; margin-bottom: 16px; }
 .post-content li { margin-bottom: 8px; }
 .post-content a { color: var(--accent); text-decoration: underline; }

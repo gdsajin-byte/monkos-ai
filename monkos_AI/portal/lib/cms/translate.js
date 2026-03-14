@@ -6,6 +6,7 @@ import { ai, firestore, log } from '../shared/config.js';
 import { requireAdmin } from './admin-auth.js';
 
 const TRANSLATE_PROMPT = {
+  // KO 원본 → JA/EN
   ja: `あなたは韓国語→日本語の専門翻訳者です。
 以下のブログ記事を自然な日本語に翻訳してください。
 - マークダウン書式はそのまま維持
@@ -19,15 +20,48 @@ Translate the following blog post into natural English.
 - Use appropriate English technical terms
 - Write in an SEO-friendly, natural tone
 - Translate both title and body`,
+
+  // JA 원본 → KO/EN
+  ja_to_ko: `あなたは日本語→韓国語の専門翻訳者です。
+以下のブログ記事を自然な韓国語に翻訳してください。
+- マークダウン書式はそのまま維持
+- 技術用語は適切な韓国語表現に
+- SEOを意識した自然な文体
+- タイトルと本文を両方翻訳`,
+
+  ja_to_en: `You are a professional Japanese→English translator.
+Translate the following blog post into natural English.
+- Keep markdown formatting intact
+- Use appropriate English technical terms
+- Write in an SEO-friendly, natural tone
+- Translate both title and body`,
 };
 
 export async function translateAndSaveBlogPost(slug, originalDoc) {
-  const targetLangs = ['ja', 'en'];
+  const srcLang = originalDoc.lang || 'ko';
+  let targetLangs;
+  if (srcLang === 'ko') {
+    targetLangs = ['ja', 'en'];
+  } else if (srcLang === 'ja') {
+    targetLangs = ['ko', 'en'];
+  } else {
+    targetLangs = ['ko', 'ja'];
+  }
+
   const blogCollection = firestore.collection('blog_posts');
 
   for (const lang of targetLangs) {
     try {
-      const prompt = `${TRANSLATE_PROMPT[lang]}
+      // 원본 언어에 따라 프롬프트 키 결정
+      let promptKey;
+      if (srcLang === 'ko') {
+        promptKey = lang; // 'ja' or 'en'
+      } else if (srcLang === 'ja') {
+        promptKey = lang === 'ko' ? 'ja_to_ko' : 'ja_to_en';
+      } else {
+        promptKey = lang; // EN 원본 — 미래용 fallback
+      }
+      const prompt = `${TRANSLATE_PROMPT[promptKey] || TRANSLATE_PROMPT[lang]}
 
 ---
 # ${originalDoc.title}
@@ -99,16 +133,14 @@ export async function handleTranslate(req, res) {
     }
 
     const data = doc.data();
-    if (data.lang !== 'ko') {
-      res.writeHead(400, { 'Content-Type': 'application/json' });
-      return res.end(JSON.stringify({ error: '한국어 원본만 번역할 수 있습니다' }));
-    }
+    const srcLang = data.lang || 'ko';
+    const targets = srcLang === 'ko' ? ['ja', 'en'] : srcLang === 'ja' ? ['ko', 'en'] : ['ko', 'ja'];
 
     // 백그라운드 번역 시작
     translateAndSaveBlogPost(slug, data).catch(() => {});
 
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ success: true, message: `${slug} 번역 시작 (ja, en)` }));
+    res.end(JSON.stringify({ success: true, message: `${slug} 번역 시작 (${targets.join(', ')})` }));
   } catch (err) {
     log(`[CMS] 번역 트리거 에러: ${err.message}`, 'ERROR');
     res.writeHead(500, { 'Content-Type': 'application/json' });

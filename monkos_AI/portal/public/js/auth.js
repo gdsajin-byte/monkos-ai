@@ -207,6 +207,10 @@ function updateAuthUI() {
       }
     }
 
+    // 어드민 링크
+    var adminLink = document.getElementById('adminLink');
+    if (adminLink) adminLink.style.display = currentUser.isAdmin ? 'block' : 'none';
+
     // 로그인 버튼 숨김
     document.body.classList.add('logged-in');
     if (headerLoginBtn) headerLoginBtn.style.display = 'none';

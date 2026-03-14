@@ -5,7 +5,7 @@ import {
   generateAuthToken, verifyAuthToken, parseCookies, parseJsonBody,
   GOOGLE_CLIENT_ID, KAKAO_REST_API_KEY, KAKAO_REDIRECT_URI,
   LINE_CHANNEL_ID, LINE_CHANNEL_SECRET,
-  LEMONSQUEEZY_WEBHOOK_SECRET, ALLOWED_POPUP_ORIGINS,
+  LEMONSQUEEZY_WEBHOOK_SECRET, ALLOWED_POPUP_ORIGINS, ADMIN_UIDS,
   pendingLineStates, createHmac, randomBytes, authSecret
 } from './shared/config.js';
 
@@ -628,6 +628,7 @@ export async function handleVerifyCookie(req, res) {
     }
 
     const userData = userDoc.data();
+    const isAdmin = ADMIN_UIDS.length === 0 || ADMIN_UIDS.includes(result.userId);
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({
       user: {
@@ -637,6 +638,7 @@ export async function handleVerifyCookie(req, res) {
         picture: userData.picture,
         credits: userData.credits ?? 0,
         provider: userData.provider || '',
+        isAdmin,
       }
     }));
   } catch (err) {

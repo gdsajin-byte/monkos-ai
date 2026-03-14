@@ -106,6 +106,24 @@ a { color: var(--accent); text-decoration: none; }
 
   <div class="form-grid">
     <div class="form-row">
+      <label>Category</label>
+      <select id="category">
+        <option value="">-- 선택 --</option>
+        <option value="증명사진">증명사진</option>
+        <option value="여권·비자">여권·비자</option>
+        <option value="취업·이력서">취업·이력서</option>
+        <option value="헤어·메이크업">헤어·메이크업</option>
+        <option value="news">뉴스 (News)</option>
+      </select>
+    </div>
+    <div class="form-row" style="display:flex;align-items:center;gap:8px;padding-top:22px">
+      <input type="checkbox" id="pinned" style="width:auto;accent-color:var(--accent)">
+      <label for="pinned" style="margin-bottom:0;cursor:pointer">매거진 영역 고정 (Pinned)</label>
+    </div>
+  </div>
+
+  <div class="form-grid">
+    <div class="form-row">
       <label>Tags (comma separated)</label>
       <input type="text" id="tags" placeholder="passport, photo, guide">
     </div>
@@ -198,6 +216,8 @@ async function loadPost() {
     document.getElementById('tags').value = (post.tags || []).join(', ');
     document.getElementById('thumbnail').value = post.thumbnail || '';
     document.getElementById('lang').value = post.lang || 'ko';
+    document.getElementById('category').value = post.category || '';
+    document.getElementById('pinned').checked = post.pinned || false;
     editor.setMarkdown(post.content || '');
   } catch (err) {
     showToast('Load failed: ' + err.message, true);
@@ -218,6 +238,8 @@ async function save(published) {
     tags: document.getElementById('tags').value.split(',').map(t => t.trim()).filter(Boolean),
     thumbnail: document.getElementById('thumbnail').value.trim(),
     lang: document.getElementById('lang').value,
+    category: document.getElementById('category').value,
+    pinned: document.getElementById('pinned').checked,
     published,
     author: 'MONKOS',
   };

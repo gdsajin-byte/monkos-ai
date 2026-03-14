@@ -75,7 +75,7 @@ export async function handleBlogCreate(req, res) {
 
   try {
     const body = await parseJsonBody(req);
-    const { title, content, summary, thumbnail, tags, lang, published, author } = body;
+    const { title, content, summary, thumbnail, tags, lang, published, author, pinned, category } = body;
 
     if (!title || !content) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -100,6 +100,8 @@ export async function handleBlogCreate(req, res) {
       lang: lang || 'ko',
       published: published || false,
       author: author || 'MONKOS',
+      pinned: pinned || false,
+      category: category || '',
       createdAt: now,
       updatedAt: now,
       viewCount: 0,
@@ -142,7 +144,7 @@ export async function handleBlogUpdate(req, res) {
 
     const body = await parseJsonBody(req);
     const updates = {};
-    const allowedFields = ['title', 'content', 'summary', 'thumbnail', 'tags', 'lang', 'published', 'author'];
+    const allowedFields = ['title', 'content', 'summary', 'thumbnail', 'tags', 'lang', 'published', 'author', 'pinned', 'category'];
     for (const field of allowedFields) {
       if (body[field] !== undefined) updates[field] = body[field];
     }

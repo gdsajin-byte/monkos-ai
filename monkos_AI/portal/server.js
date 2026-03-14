@@ -41,6 +41,7 @@ import { handleBoardPublicList, handleBoardPublicGet, handleBoardPublicCreate, h
 import { handleUpload } from './lib/cms/upload.js';
 import { handleTranslate } from './lib/cms/translate.js';
 import { renderBlogList, renderBlogPost, renderFaq, renderGallery, renderBoardList, renderBoardPost, renderBoardWrite, renderSitemap } from './lib/cms/render.js';
+import { renderHome, handleSettingsGet, handleSettingsPut } from './lib/cms/home.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -167,6 +168,10 @@ const httpServer = createServer(async (req, res) => {
   if (urlPath === '/api/admin/upload' && req.method === 'POST') return handleUpload(req, res);
   if (urlPath?.endsWith('/translate') && urlPath?.startsWith('/api/admin/blog/') && req.method === 'POST') return handleTranslate(req, res);
 
+  // === CMS 사이트 설정 API ===
+  if (urlPath === '/api/admin/settings' && req.method === 'GET') return handleSettingsGet(req, res);
+  if (urlPath === '/api/admin/settings' && req.method === 'PUT') return handleSettingsPut(req, res);
+
   // === CMS FAQ 관리자 API ===
   if (urlPath === '/api/admin/faq' && req.method === 'GET') return handleFaqList(req, res);
   if (urlPath === '/api/admin/faq' && req.method === 'POST') return handleFaqCreate(req, res);
@@ -192,6 +197,7 @@ const httpServer = createServer(async (req, res) => {
   if (urlPath?.startsWith('/api/admin/board/') && req.method === 'DELETE') return handleBoardAdminDelete(req, res);
 
   // === CMS 공개 페이지 (SSR) ===
+  if ((urlPath === '/' || urlPath === '/index.html') && req.method === 'GET') return renderHome(req, res);
   if (urlPath === '/sitemap.xml' && req.method === 'GET') return renderSitemap(req, res);
 
   // 다국어 블로그 라우트 (언어 접두사 — 기존 /blog 라우트 앞에 배치)
@@ -221,6 +227,7 @@ const httpServer = createServer(async (req, res) => {
   // === 정적 파일 ===
   let filePath = req.url === '/' ? '/index.html' : req.url;
   filePath = filePath.split('?')[0];
+  if (filePath.endsWith('/')) filePath += 'index.html';
   const fullPath = join(__dirname, 'public', filePath);
   const ext = extname(filePath);
 
