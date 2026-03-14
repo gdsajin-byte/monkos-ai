@@ -1,6 +1,6 @@
 # audit
 
-> 소관: docs/infrastructure/audit/
+> 소관: governance/audit/
 > 성격: 감사 보고, 법률 분석, 거버넌스 설계
 > 법적 근거: ch4 1조
 

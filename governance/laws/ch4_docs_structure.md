@@ -144,7 +144,7 @@ monkos-ops/는 4부서 체제로 재편 중이며, 과도기에는 번호 폴더
 - docs/monkos/ 하위는 아카이브 동결 (신규 생성 금지, 기존 파일은 읽기전용)
 
 **적용 제외**:
-- docs/infrastructure/ — 원천 아카이브(보물창고). 기존 네이밍 유지, 3조 관할 밖.
+- docs/infrastructure/ — **(소멸됨, monkos-ops/tech/ 등으로 분산 이관 완료 2026-03-14)**
 - governance/laws/ — 법률 파일은 ch별 고정 네이밍.
 - 세션 로그 — 패턴 #7~#9 전용.
 - `monkos-ops/ops/reports/data/` — 자동 생성 데이터 출력물 (8조 6항).
@@ -167,7 +167,7 @@ monkos-ops/는 4부서 체제로 재편 중이며, 과도기에는 번호 폴더
 
 | 영역 | 정본 위치 | 아카이브 (읽기전용) | 비고 |
 |------|----------|-------------------|------|
-| 법률/헌법 | `governance/laws/` | `docs/infrastructure/laws/` (리다이렉트) | 개헌 826060d |
+| 법률/헌법 | `governance/laws/` | — | 개헌 826060d |
 | 개정 절차 | `governance/constitution/` | — | 개헌 826060d |
 | 청구서 | `governance/constitution/petitions/` | — | 개헌 826060d |
 | 철학 | `governance/philosophy/` | — | 개헌 826060d |
@@ -184,7 +184,7 @@ monkos-ops/는 4부서 체제로 재편 중이며, 과도기에는 번호 폴더
 | 스프린트 | `monkos-ops/ops/sprints/` | `docs/monkos/sprints/` (레거시) | ops가 정본 |
 | R&D 리서치 | `monkos-ops/tech/` | `docs/rnd_2026/` | tech가 원본 |
 | 팀 공유 | `monkos-ops/marketing/` | — | marketing 전용 |
-| 에셋 레지스트리 | `docs/infrastructure/ASSET_REGISTRY.md` | — | 전 저장소 통합 인덱스 |
+| 에셋 레지스트리 | `monkos-ops/tech/ASSET_REGISTRY.md` | — | 전 저장소 통합 인덱스 |
 | 범용 유틸 스크립트 | `scripts/` | — | 막내 소관 |
 
 **원칙**:
@@ -272,7 +272,7 @@ monkos-ops/는 4부서 체제로 재편 중이며, 과도기에는 번호 폴더
    - 바이너리/미디어 → GCS 또는 R2
    - DB 레코드 → D1 또는 Firestore
    - 시크릿 → 환경변수 (절대 Git 금지, 헌법 6조)
-3. `docs/infrastructure/ASSET_REGISTRY.md` 해당 카테고리 테이블에 행 추가
+3. `monkos-ops/tech/ASSET_REGISTRY.md` 해당 카테고리 테이블에 행 추가
 4. 상세 문서 해당 시 참조 링크 기재 (GCS_BUCKET_STRUCTURE.md 등)
 
 > 근거: 2026-02-22 통합 스키마 제정 — 신규 편입 시 법적 근거 부재, 02-23 디바이스 물리확인 + governance 폴더 편입 + YAML 연동 + 에셋 편입 절차 신설

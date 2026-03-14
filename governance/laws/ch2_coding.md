@@ -60,8 +60,8 @@
 
 - GCP Cloud Run + Imagen (NB3 Pro I2I) + Gemini Flash (QC/코칭).
 - 상세 참조:
-  - 코딩 표준: `docs/infrastructure/guides/CODING_STANDARDS.md`
-  - 디자인 시스템: `docs/infrastructure/guides/DESIGN_SYSTEM.md`
+  - 코딩 표준: `monkos-ops/tech/guides/CODING_STANDARDS.md`
+  - 디자인 시스템: `monkos-ops/tech/guides/DESIGN_SYSTEM.md`
 
 > 근거: 2026-01-12 2-Tier 아키텍처 결정, 이후 지속 발전.
 > 상위 헌법: 제3조(프로젝트 정체성 및 기밀 보호), 제4조(인프라 보호 및 금지 사항)
