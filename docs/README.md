@@ -28,7 +28,6 @@ from: 막내3
 | corpus/ | AI 세션 로그, Gemini/Claude 대화 기록, 학습 코퍼스 |
 | infrastructure/ | 인프라 정본 -- AI 모델, 아키텍처, 배포, 가이드, 전략 문서 |
 | monkos/ | MONKOS 서비스 관련 문서 -- 설계, 명세, 스프린트, 인시던트, 리포트 |
-| rnd_2026/ | 2026년 R&D 자료 -- 디딤돌 신청, KOITA 보고서, 결제 리서치 |
 
 ## 관련 문서
 
