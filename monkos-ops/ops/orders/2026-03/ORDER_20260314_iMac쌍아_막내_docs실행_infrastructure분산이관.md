@@ -1,12 +1,11 @@
 ---
-type: ORDER
-date: 2026-03-14
-time: "18:50 KST"
+type: order
+id: ORDER_20260314_iMac쌍아_막내_docs실행_infrastructure분산이관
+date: "2026-03-14 18:50 KST"
+status: completed
 from: iMac/쌍아
 to: 막내
-subject: docs/infrastructure/ 분산 이관 — 사문화 9건 삭제 + 활성 75건 편제 안착
-priority: 일반
-endline: 보고 후 대기
+priority: P2
 ---
 
 # 지시: docs/infrastructure/ 분산 이관

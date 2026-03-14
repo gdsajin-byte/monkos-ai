@@ -1,12 +1,11 @@
 ---
-type: ORDER
-date: 2026-03-14
-time: "19:05 KST"
+type: order
+id: ORDER_20260314_iMac쌍아_막내_docs실행_sessions이관
+date: "2026-03-14 19:05 KST"
+status: completed
 from: iMac/쌍아
 to: 막내
-subject: docs/corpus/sessions/ → ops/sessions/ 이관
-priority: 일반
-endline: 보고 후 대기
+priority: P2
 ---
 
 # 지시: 세션 로그 1~2월 이관
