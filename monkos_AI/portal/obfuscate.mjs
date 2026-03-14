@@ -30,9 +30,10 @@ for (const file of files) {
   let html = readFileSync(file, 'utf8');
   let count = 0;
 
-  // src 속성이 없는 inline <script> 블록만 처리
+  // src 속성이 없는 inline <script> 블록만 처리 (gtag/analytics 제외)
   html = html.replace(/<script(?![^>]*\bsrc\b)([^>]*)>([\s\S]*?)<\/script>/gi, (match, attrs, js) => {
     if (!js.trim() || js.trim().length < 100) return match;
+    if (js.includes('gtag(') || js.includes('dataLayer')) return match;
     try {
       const result = JavaScriptObfuscator.obfuscate(js, options);
       count++;
