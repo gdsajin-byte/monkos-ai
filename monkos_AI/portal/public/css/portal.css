@@ -459,16 +459,22 @@ nav {
 
 /* === Chatbot Bar === */
 .chatbot-bar {
-  position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+  position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); z-index: 200;
+  width: 100%; max-width: 640px;
   background: var(--white); border-top: 1px solid var(--border);
-  padding: 10px 24px; display: flex; align-items: center; gap: 10px;
+  padding: 10px 24px; padding-bottom: max(10px, env(safe-area-inset-bottom));
+  display: flex; align-items: center; gap: 10px;
   box-shadow: 0 -4px 20px rgba(0,0,0,.04);
+  border-radius: 16px 16px 0 0;
+  transition: bottom .15s ease;
 }
 .cb-avatar {
   width: 32px; height: 32px; border-radius: 10px;
-  background: linear-gradient(135deg, var(--accent), #7C3AED);
   display: flex; align-items: center; justify-content: center;
-  font-size: 14px; color: #fff; font-weight: 900; flex-shrink: 0;
+  flex-shrink: 0; overflow: hidden;
+}
+.cb-avatar img {
+  width: 100%; height: 100%; object-fit: contain;
 }
 .cb-input {
   flex: 1; padding: 10px 16px; border-radius: 10px;

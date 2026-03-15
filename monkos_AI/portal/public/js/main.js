@@ -114,6 +114,19 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
+// === 모바일 키보드 — chatbot-bar 고정 ===
+(function() {
+  if (!window.visualViewport) return;
+  var bar = document.querySelector('.chatbot-bar');
+  if (!bar) return;
+  function onViewportChange() {
+    var offset = window.innerHeight - visualViewport.height - visualViewport.offsetTop;
+    bar.style.bottom = (offset > 0 ? offset : 0) + 'px';
+  }
+  visualViewport.addEventListener('resize', onViewportChange);
+  visualViewport.addEventListener('scroll', onViewportChange);
+})();
+
 // === 팝오버/모달 외부 클릭 닫기 ===
 document.addEventListener('click', function(e) {
   // 로그아웃 팝오버
