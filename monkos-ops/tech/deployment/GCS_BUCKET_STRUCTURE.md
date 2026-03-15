@@ -1,6 +1,6 @@
 # GCS 버킷 구조 (2026-01-15 확정, 2026-02-15 업데이트)
 
-**버킷명**: `gs://monk-project/`
+**버킷명**: `gs://monk-project/` (학습/운영), `gs://monk-ai-images/` (서비스 이미지)
 **위치**: asia-northeast3 (서울)
 **스토리지 클래스**: Standard
 
@@ -278,6 +278,57 @@ Sync: On-demand
 
 ---
 
+---
+
+## monk-ai-images 서비스 에셋 경로 (2026-03-15 추가)
+
+> 고객 데이터와 서비스 에셋을 같은 버킷 내 경로로 분리.
+> 향후 R2 이관 시 assets/ 하위만 이동.
+
+```
+gs://monk-ai-images/
+│
+├── 📁 service/                    # L1: 고객 데이터 (가동 중)
+│   └── idphoto/
+│       ├── kr/{userId}/{ts}_*.jpg  # 증명사진 원본+생성본
+│       └── jp/{userId}/{ts}_*.jpg
+│
+├── 📁 blog/                       # L2: CMS 블로그 이미지 (가동 중)
+│   └── {timestamp}_{safeName}
+│
+├── 📁 ads/                        # L3: 광고 로테이션 (가동 중, 6장 FIFO)
+│   └── manifest.json + *.jpg
+│
+├── 📁 assets/                     # L2: 서비스 에셋 (신규)
+│   └── portal/
+│       ├── slide/                  # 갤러리 스트립 Before/After
+│       ├── og/                     # og:image
+│       └── shimmering/             # 쉬머링 효과
+│
+└── 📁 generated/                  # AI 생성 이미지
+```
+
+### 데이터 분류 4계층
+
+| 계층 | 성격 | 보존 | 이관 대상 |
+|------|------|------|----------|
+| **L1: 고객 데이터** | 개인정보, 보존정책 | GCS 유지 (보안) | ❌ |
+| **L2: 서비스 에셋** | 공개, CDN | R2 이관 예정 | ✅ assets/ |
+| **L3: 마케팅/광고** | 로테이션 | R2 이관 예정 | ✅ ads/ |
+| **L4: 원본 아카이브** | 콜드, 장기 | GCS Archive | ❌ |
+
+### CF 미디어 확장 로드맵
+
+| Phase | 시점 | 내용 | 비용 |
+|-------|------|------|------|
+| 0 | 현재 | GCS 경로 분리 | $0 추가 |
+| 1 | 볼륨 증가 시 | R2 `monkos-assets` + `assets.monkos.ai` | 무료 (10GB) |
+| 2 | 영상 서비스 시 | CF Stream | $5/월 (1000분) |
+| 3 | 이미지 만 장+ | CF Images | $5/월 (10만 장) |
+
+---
+
 *문서 생성: 2026-01-15 08:13*
 *업데이트: 2026-01-15 - visitor_data/ 추가*
 *업데이트: 2026-02-08 - corpus/ 구조 변경 반영 (claude_sessions/, factory/, legacy/ 추가)*
+*업데이트: 2026-03-15 - monk-ai-images 서비스 에셋 경로 + 4계층 분류 + CF 확장 로드맵 추가*
