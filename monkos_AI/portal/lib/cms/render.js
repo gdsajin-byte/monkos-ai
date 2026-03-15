@@ -48,6 +48,7 @@ ${extra}
   --card-bg: #ffffff;
   --success: #34d399;
 }
+html, body { overflow-x: hidden; }
 body {
   font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
   background: var(--bg);
@@ -103,7 +104,6 @@ function layoutNav() {
       <a href="/gallery">Gallery</a>
       <a href="/board">Board</a>
     </nav>
-    <a href="/" class="header-cta">촬영 시작하기 →</a>
   </div>
 </header>`;
 }
@@ -365,6 +365,8 @@ ${JSON.stringify({
 .post-content ul, .post-content ol { padding-left: 24px; margin-bottom: 16px; }
 .post-content li { margin-bottom: 8px; }
 .post-content a { color: var(--accent); text-decoration: underline; }
+.post-content table { width: 100%; display: block; overflow-x: auto; }
+.post-content iframe { max-width: 100%; height: auto; }
 .post-back { display: inline-block; margin-bottom: 24px; color: var(--text-dim); font-size: 14px; }
 .post-back:hover { color: var(--accent); }
 @media (max-width: 600px) {
