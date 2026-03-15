@@ -234,18 +234,9 @@ a { color: inherit; text-decoration: none; }
   transition: all .2s;
 }
 .gi:hover { border-color: var(--accent); transform: scale(1.03); }
-.gi-img {
-  width: 100%; height: 90px;
-  background: linear-gradient(180deg, #e0ddd6, #d0cdc6);
-  display: flex; align-items: center; justify-content: center;
+img.gi-img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
 }
-.gi-sil {
-  width: 34px; height: 44px;
-  border-radius: 50% 50% 50% 50% / 38% 38% 62% 62%;
-  background: linear-gradient(180deg, #b8b5ae, #a5a298);
-}
-.gi-img.af .gi-sil { background: linear-gradient(180deg, var(--accent-xl), var(--accent-l)); }
-.gi-cap { padding: 3px; font-size: 7px; color: var(--ink-m); text-align: center; font-weight: 600; }
 .gi-label {
   position: absolute; top: 3px; left: 3px;
   padding: 1px 4px; border-radius: 2px;
