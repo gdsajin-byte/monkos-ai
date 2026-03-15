@@ -103,14 +103,23 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
-// === 갤러리 자동 스크롤 ===
+// === 갤러리 자동 스크롤 (무한 루프) ===
 document.addEventListener('DOMContentLoaded', function() {
   var gt = document.getElementById('gt');
   if (gt) {
+    // 원본 아이템 복제하여 이어붙이기
+    var items = gt.querySelectorAll('.gi');
+    items.forEach(function(item) {
+      var clone = item.cloneNode(true);
+      clone.setAttribute('aria-hidden', 'true');
+      gt.appendChild(clone);
+    });
     var sp = 0;
+    var originalWidth = 0;
+    items.forEach(function(item) { originalWidth += item.offsetWidth + 8; }); // 8 = gap
     setInterval(function() {
       sp += 0.8;
-      if (sp >= gt.scrollWidth - gt.clientWidth) sp = 0;
+      if (sp >= originalWidth) sp -= originalWidth;
       gt.scrollLeft = sp;
     }, 30);
   }
