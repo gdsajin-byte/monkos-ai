@@ -13,6 +13,7 @@ const templatePath = join(__dirname, '../../public/index.html');
 let templateHtml = null;
 
 const blogCollection = firestore.collection('blog_posts');
+const galleryCollection = firestore.collection('gallery_items');
 const siteConfigRef = firestore.collection('site_config').doc('main');
 
 const EMOJI = { '증명사진': '📸', '여권·비자': '🛂', '취업·이력서': '💼', '헤어·메이크업': '💆', 'news': '📰', 'default': '💡' };
@@ -74,9 +75,10 @@ export async function renderHome(req, res) {
   try {
     let html = getTemplate();
 
-    const [configSnap, postsSnap] = await Promise.all([
+    const [configSnap, postsSnap, gallerySnap] = await Promise.all([
       siteConfigRef.get().catch(() => null),
       blogCollection.where('published', '==', true).orderBy('createdAt', 'desc').get().catch(() => ({ docs: [] })),
+      galleryCollection.where('published', '==', true).orderBy('order', 'asc').get().catch(() => ({ docs: [] })),
     ]);
 
     const allPosts = postsSnap.docs.map(d => ({ slug: d.id, ...d.data() }));
@@ -84,6 +86,18 @@ export async function renderHome(req, res) {
     // KO 우선 필터 (KO 없으면 전체 fallback)
     const koPosts = allPosts.filter(p => p.lang === 'ko');
     const displayPosts = koPosts.length > 0 ? koPosts : allPosts;
+
+    // 0. Gallery strip (Firestore → 동적)
+    const galleryItems = gallerySnap.docs.map(d => d.data());
+    if (galleryItems.length > 0) {
+      const stripHtml = galleryItems.slice(0, 12).map(item =>
+        `  <div class="gi"><img class="gi-img" src="${esc(item.imageUrl)}" alt="${esc(item.caption || 'AI 증명사진')}" loading="lazy"></div>`
+      ).join('\n');
+      html = html.replace(
+        /(<div class="gallery-track" id="gt">)\n[\s\S]*?(<\/div><\/div>\n\n<!-- Sticky Nav -->)/,
+        `$1\n${stripHtml}\n</div></div>\n\n<!-- Sticky Nav -->`
+      );
+    }
 
     // 1. Intro text
     if (configSnap?.exists && configSnap.data().intro) {
