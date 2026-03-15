@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MONKOS Portal v4 — Layout Preview</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --purple: #6c4fff;
+  --purple-mid: rgba(108,79,255,0.15);
+  --nav: #111428;
+  --bg: #f0f2fb;
+  --surface: #ffffff;
+  --border: #e4e6f0;
+  --text: #13152a;
+  --text2: #4a4f6e;
+  --text3: #8e93b0;
+  --teal: #00b897;
+  --max-w: 1280px;
+}
+body {
+  font-family: -apple-system, 'Noto Sans KR', sans-serif;
+  background: #c8ccd8;
+  min-height: 100vh;
+  padding-top: 48px;
+}
+
+/* ── CONTROL BAR ── */
+.ctrl-bar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 999;
+  height: 48px;
+  background: var(--nav);
+  display: flex; align-items: center;
+  padding: 0 16px; gap: 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  overflow-x: auto;
+}
+.ctrl-bar::-webkit-scrollbar { display: none; }
+.ctrl-logo {
+  font-size: 11px; font-weight: 800; letter-spacing: 0.1em;
+  color: #fff; white-space: nowrap; margin-right: 16px; flex-shrink: 0;
+}
+.ctrl-sep { width: 1px; height: 20px; background: rgba(255,255,255,0.1); margin: 0 12px; flex-shrink: 0; }
+.ctrl-group { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+.ctrl-label {
+  font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.35);
+  letter-spacing: 0.06em; text-transform: uppercase;
+  margin-right: 6px; white-space: nowrap;
+}
+.ctrl-btn {
+  padding: 4px 10px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 5px;
+  color: rgba(255,255,255,0.45);
+  font-size: 11px; font-weight: 700;
+  cursor: pointer; transition: all 0.12s; white-space: nowrap;
+}
+.ctrl-btn:hover { color: rgba(255,255,255,0.8); background: rgba(255,255,255,0.11); }
+.ctrl-btn.active { background: var(--purple); border-color: var(--purple); color: #fff; }
+.ctrl-right { margin-left: auto; display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+.ctrl-stat { font-size: 11px; color: rgba(255,255,255,0.3); white-space: nowrap; }
+.ctrl-stat strong { color: rgba(255,255,255,0.75); }
+.ctrl-vp { font-size: 12px; font-weight: 800; color: var(--teal); }
+
+/* ── 외부 배경 영역 표시 ── */
+.outer-bg {
+  min-height: calc(100vh - 48px);
+  display: flex; justify-content: center;
+  position: relative;
+}
+/* 외부 여백 가이드 라인 */
+.outer-bg::before, .outer-bg::after {
+  content: '';
+  position: fixed; top: 48px; bottom: 0;
+  width: 1px; background: rgba(255,255,255,0.15);
+  pointer-events: none; z-index: 10;
+}
+
+/* ── SITE WRAPPER (전체 박스) ── */
+.site-wrapper {
+  width: 100%;
+  max-width: var(--max-w);
+  background: var(--bg);
+  min-height: calc(100vh - 48px);
+  position: relative;
+  box-shadow: 0 0 60px rgba(0,0,0,0.25);
+}
+
+/* ── SITE HEADER (wrapper 안 풀블리드) ── */
+.site-header {
+  width: 100%;
+  background: linear-gradient(160deg, #0d0f1e 0%, #1a1535 50%, #0f1a20 100%);
+  position: relative; overflow: hidden;
+}
+.site-header::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% -10%, rgba(108,79,255,0.4) 0%, transparent 60%);
+}
+.header-inner {
+  padding: 32px 24px 28px;
+  text-align: center; position: relative;
+}
+.header-eyebrow {
+  font-size: 9px; font-weight: 700; letter-spacing: 0.14em;
+  color: rgba(255,255,255,0.35); text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.header-logo {
+  font-size: clamp(26px, 4vw, 38px);
+  font-weight: 900; letter-spacing: -0.02em; color: #fff;
+}
+.header-logo em {
+  font-style: italic;
+  background: linear-gradient(90deg, #a78bfa, #6c4fff);
+  -webkit-background-clip: text; background-clip: text;
+  color: transparent;
+}
+.header-sub {
+  font-size: 12px; color: rgba(255,255,255,0.4);
+  margin-top: 6px; letter-spacing: 0.04em;
+}
+/* 사진 스트립 */
+.photo-strip {
+  display: flex; gap: 0; overflow: hidden; height: 130px;
+}
+.photo-item {
+  flex: 1; min-width: 0;
+  background: linear-gradient(135deg, #1a1a2e, #2d1b69);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; color: rgba(255,255,255,0.2); font-weight: 600;
+  border-right: 1px solid rgba(255,255,255,0.04);
+  overflow: hidden; position: relative;
+}
+.photo-item::after {
+  content: '👤';
+  font-size: 32px; opacity: 0.15;
+}
+
+/* ── SITE NAV ── */
+.site-nav {
+  background: var(--surface);
+  border-bottom: 2px solid var(--border);
+  display: flex; align-items: center;
+  padding: 0 16px; height: 44px; gap: 0;
+}
+.nav-link {
+  padding: 0 14px; height: 100%;
+  display: flex; align-items: center;
+  font-size: 12px; font-weight: 700; color: var(--text3);
+  cursor: pointer; border-bottom: 2px solid transparent;
+  margin-bottom: -2px; transition: all 0.12s; white-space: nowrap;
+}
+.nav-link:hover { color: var(--text); }
+.nav-link.active { color: var(--purple); border-bottom-color: var(--purple); }
+.nav-cta {
+  margin-left: auto;
+  padding: 6px 14px; background: var(--purple); color: #fff;
+  border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer;
+}
+
+/* ── 3컬럼 그리드 ── */
+.layout {
+  display: grid;
+  grid-template-columns: 260px 1fr 260px;
+  min-height: 600px;
+  transition: grid-template-columns 0.3s;
+}
+
+/* ── LEFT SIDEBAR ── */
+.sidebar-left {
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 14px 10px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.ogp-card {
+  border-radius: 9px; overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+.ogp-thumb {
+  width: 100%; aspect-ratio: 200/105;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; font-weight: 700;
+  color: rgba(255,255,255,0.7); letter-spacing: 0.04em;
+}
+.ogp-body { padding: 7px 9px 9px; }
+.ogp-badge {
+  font-size: 8px; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase;
+  padding: 2px 5px; border-radius: 3px; margin-bottom: 3px;
+  display: inline-block;
+}
+.ogp-badge.live { background: rgba(108,79,255,0.12); color: var(--purple); }
+.ogp-badge.free { background: rgba(0,184,151,0.12); color: var(--teal); }
+.ogp-badge.new  { background: rgba(240,165,0,0.15); color: #b07a00; }
+.ogp-title { font-size: 11px; font-weight: 700; color: var(--text); }
+.ogp-desc  { font-size: 10px; color: var(--text3); margin-top: 1px; }
+
+/* ── MAIN ── */
+.main-col { background: var(--bg); }
+.hero {
+  background: linear-gradient(135deg, #111428, #1c1a3e, #0f2027);
+  padding: 36px 20px 32px; text-align: center; position: relative; overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(108,79,255,0.35) 0%, transparent 65%);
+}
+.hero-badge {
+  display: inline-flex; gap: 5px;
+  background: rgba(108,79,255,0.2); border: 1px solid rgba(108,79,255,0.4);
+  border-radius: 99px; padding: 3px 10px;
+  font-size: 9px; font-weight: 700; color: rgba(255,255,255,0.75);
+  letter-spacing: 0.06em; text-transform: uppercase;
+  position: relative; margin-bottom: 12px;
+}
+.hero-title {
+  font-size: clamp(18px, 3vw, 26px); font-weight: 900; line-height: 1.25;
+  color: #fff; position: relative; letter-spacing: -0.02em;
+}
+.hero-title em {
+  font-style: normal; color: transparent;
+  background: linear-gradient(90deg, #a78bfa, #6c4fff, #38bdf8);
+  -webkit-background-clip: text; background-clip: text;
+}
+.hero-sub { font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 10px; position: relative; }
+.hero-tags {
+  display: flex; flex-wrap: wrap; gap: 5px;
+  justify-content: center; margin-top: 16px; position: relative;
+}
+.hero-tag {
+  padding: 3px 9px; background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12); border-radius: 99px;
+  font-size: 10px; color: rgba(255,255,255,0.55); font-weight: 600;
+}
+.hero-btns { display: flex; gap: 8px; justify-content: center; margin-top: 20px; position: relative; }
+.btn-p { padding: 10px 22px; background: var(--purple); color: #fff; border-radius: 7px; font-size: 12px; font-weight: 700; cursor: pointer; }
+.btn-s { padding: 10px 18px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.7); border-radius: 7px; font-size: 12px; font-weight: 600; cursor: pointer; }
+
+.services { padding: 20px 16px; }
+.sec-label { font-size: 9px; font-weight: 800; color: var(--text3); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px; }
+.svc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.svc-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 11px; padding: 13px; cursor: pointer; transition: all 0.12s;
+}
+.svc-card:hover { border-color: var(--purple); box-shadow: 0 2px 10px rgba(108,79,255,0.1); }
+.svc-icon { font-size: 20px; margin-bottom: 7px; }
+.svc-badge { font-size: 8px; font-weight: 800; padding: 2px 5px; border-radius: 3px; display: inline-block; margin-bottom: 4px; letter-spacing: 0.04em; }
+.svc-badge.hot  { background: rgba(232,70,90,0.1); color: #e8465a; }
+.svc-badge.free { background: rgba(0,184,151,0.1); color: var(--teal); }
+.svc-title { font-size: 12px; font-weight: 800; color: var(--text); }
+.svc-desc  { font-size: 10px; color: var(--text3); margin-top: 2px; line-height: 1.4; }
+.svc-link  { font-size: 10px; font-weight: 700; color: var(--purple); margin-top: 7px; display: inline-block; }
+
+/* ── RIGHT SIDEBAR ── */
+.sidebar-right {
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  padding: 14px 10px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.vid-card {
+  border-radius: 9px; overflow: hidden;
+  border: 1px solid var(--border); background: var(--surface); cursor: pointer;
+}
+.vid-thumb {
+  width: 100%;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+.vid-thumb .play { position: absolute; width: 28px; height: 28px; background: rgba(0,0,0,0.5); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #fff; }
+.vid-body { padding: 7px 9px 9px; }
+.vid-platform { font-size: 8px; font-weight: 700; color: var(--text3); letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 3px; }
+.vid-title { font-size: 11px; font-weight: 700; color: var(--text); line-height: 1.4; }
+
+/* ── 하단 수치 바 ── */
+.ruler {
+  background: rgba(0,0,0,0.06);
+  border-top: 1px solid var(--border);
+  height: 28px;
+  display: flex; align-items: center; gap: 12px;
+  padding: 0 14px;
+  font-size: 10px; font-family: monospace; font-weight: 600; color: var(--text3);
+}
+.ruler strong { color: var(--purple); }
+.ruler .ok { color: var(--teal); }
+
+/* 반응형 */
+@media (max-width: 1024px) {
+  .layout { grid-template-columns: 0 1fr 260px; }
+  .sidebar-left { display: none; }
+}
+@media (max-width: 768px) {
+  .layout { grid-template-columns: 1fr; }
+  .sidebar-left, .sidebar-right { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- CONTROL BAR -->
+<div class="ctrl-bar">
+  <div class="ctrl-logo">MONKOS v4 LAYOUT</div>
+  <div class="ctrl-sep"></div>
+  <div class="ctrl-group">
+    <span class="ctrl-label">max-width</span>
+    <button class="ctrl-btn active" onclick="setMaxW(1280)" id="mw1280">1280px</button>
+    <button class="ctrl-btn" onclick="setMaxW(1400)" id="mw1400">1400px</button>
+    <button class="ctrl-btn" onclick="setMaxW(1600)" id="mw1600">1600px</button>
+  </div>
+  <div class="ctrl-sep"></div>
+  <div class="ctrl-group">
+    <span class="ctrl-label">사이드바</span>
+    <button class="ctrl-btn active" onclick="setSidebar(260)" id="sw260">260px</button>
+    <button class="ctrl-btn" onclick="setSidebar(200)" id="sw200">200px (현재)</button>
+    <button class="ctrl-btn" onclick="setSidebar(0)"   id="sw0">숨김</button>
+  </div>
+  <div class="ctrl-sep"></div>
+  <div class="ctrl-group">
+    <span class="ctrl-label">우측 비율</span>
+    <button class="ctrl-btn active" onclick="setRatio('9:16')" id="r916">9:16</button>
+    <button class="ctrl-btn" onclick="setRatio('16:9')"  id="r169">16:9</button>
+  </div>
+  <div class="ctrl-right">
+    <div class="ctrl-stat">뷰포트 <strong id="statVp">—</strong></div>
+    <div class="ctrl-stat">컨테이너 <strong id="statBox">—</strong></div>
+    <div class="ctrl-stat">메인 <strong id="statMain">—</strong></div>
+    <div class="ctrl-sep"></div>
+    <div class="ctrl-vp" id="ctrlVp">—</div>
+  </div>
+</div>
+
+<!-- OUTER BG -->
+<div class="outer-bg">
+
+<!-- SITE WRAPPER — 모든 것이 이 안에 -->
+<div class="site-wrapper" id="siteWrapper">
+
+  <!-- HEADER (wrapper 안 풀블리드) -->
+  <div class="site-header">
+    <div class="header-inner">
+      <div class="header-eyebrow">AI CREATIVE PLATFORM</div>
+      <div class="header-logo">MONKOS <em>AI</em></div>
+      <div class="header-sub">Photography × AI × K-Beauty</div>
+    </div>
+    <div class="photo-strip" id="photoStrip">
+      <div class="photo-item"></div>
+      <div class="photo-item"></div>
+      <div class="photo-item"></div>
+      <div class="photo-item"></div>
+      <div class="photo-item"></div>
+      <div class="photo-item"></div>
+      <div class="photo-item"></div>
+      <div class="photo-item"></div>
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <nav class="site-nav">
+    <div class="nav-link active">홈</div>
+    <div class="nav-link">블로그</div>
+    <div class="nav-link">FAQ</div>
+    <div class="nav-link">갤러리</div>
+    <div class="nav-link">가격</div>
+    <div class="nav-cta">촬영 시작하기</div>
+  </nav>
+
+  <!-- 3컬럼 그리드 -->
+  <div class="layout" id="layout">
+
+    <!-- LEFT -->
+    <aside class="sidebar-left" id="sideLeft">
+      <div class="ogp-card">
+        <div class="ogp-thumb" style="background:linear-gradient(135deg,#6c4fff,#38bdf8);">AI 증명사진</div>
+        <div class="ogp-body">
+          <div class="ogp-badge live">LIVE</div>
+          <div class="ogp-title">AI 증명사진</div>
+          <div class="ogp-desc">20년 사진작가가 만든</div>
+        </div>
+      </div>
+      <div class="ogp-card">
+        <div class="ogp-thumb" style="background:linear-gradient(135deg,#00b897,#0ea5e9);">크롭앱</div>
+        <div class="ogp-body">
+          <div class="ogp-badge free">FREE</div>
+          <div class="ogp-title">무료 크롭앱</div>
+          <div class="ogp-desc">규격 자동 크롭</div>
+        </div>
+      </div>
+      <div class="ogp-card">
+        <div class="ogp-thumb" style="background:linear-gradient(135deg,#f0a500,#e8465a);">헤어메이크업</div>
+        <div class="ogp-body">
+          <div class="ogp-badge new">NEW</div>
+          <div class="ogp-title">헤어메이크업 가이드</div>
+          <div class="ogp-desc">사진관 준비 완벽 가이드</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main-col" id="mainCol">
+      <div class="hero">
+        <div class="hero-badge">✦ AI POWERED</div>
+        <h1 class="hero-title">AI로 만드는<br><em>프로페셔널 이미지</em></h1>
+        <p class="hero-sub">빠르고 정확하게 · 누구나 쉽게</p>
+        <div class="hero-tags">
+          <span class="hero-tag">AI증명사진</span>
+          <span class="hero-tag">배경제거</span>
+          <span class="hero-tag">얼굴보정</span>
+          <span class="hero-tag">여권사진</span>
+        </div>
+        <div class="hero-btns">
+          <div class="btn-p">지금 시작하기</div>
+          <div class="btn-s">서비스 둘러보기</div>
+        </div>
+      </div>
+      <div class="services">
+        <div class="sec-label">서비스</div>
+        <div class="svc-grid">
+          <div class="svc-card">
+            <div class="svc-icon">📷</div>
+            <div class="svc-badge hot">인기</div>
+            <div class="svc-title">AI 증명사진</div>
+            <div class="svc-desc">AI 자동 보정 증명사진</div>
+            <div class="svc-link">바로가기 →</div>
+          </div>
+          <div class="svc-card">
+            <div class="svc-icon">✂️</div>
+            <div class="svc-badge free">무료</div>
+            <div class="svc-title">크롭앱</div>
+            <div class="svc-desc">규격별 자동 크롭</div>
+            <div class="svc-link">시작하기 →</div>
+          </div>
+          <div class="svc-card">
+            <div class="svc-icon">🎨</div>
+            <div class="svc-badge free">무료</div>
+            <div class="svc-title">배경 제거</div>
+            <div class="svc-desc">원클릭 배경 제거</div>
+            <div class="svc-link">사용하기 →</div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- RIGHT -->
+    <aside class="sidebar-right" id="sideRight">
+      <div class="vid-card">
+        <div class="vid-thumb" id="vt1" style="background:linear-gradient(160deg,#1a1a2e,#6c4fff);">
+          <div class="play">▶</div>
+        </div>
+        <div class="vid-body">
+          <div class="vid-platform">Reels</div>
+          <div class="vid-title">AI 증명사진 30초 완성</div>
+        </div>
+      </div>
+      <div class="vid-card">
+        <div class="vid-thumb" id="vt2" style="background:linear-gradient(160deg,#0f2027,#00b897);">
+          <div class="play">▶</div>
+        </div>
+        <div class="vid-body">
+          <div class="vid-platform">YouTube</div>
+          <div class="vid-title">여권사진 직접 만들기</div>
+        </div>
+      </div>
+    </aside>
+
+  </div><!-- /layout -->
+
+  <!-- 수치 표시 바 -->
+  <div class="ruler">
+    <span>뷰포트 <strong id="rVp">—</strong></span>
+    <span>·</span>
+    <span>컨테이너 <strong id="rBox">—</strong></span>
+    <span>·</span>
+    <span>좌측 <strong id="rLeft">—</strong></span>
+    <span>·</span>
+    <span>메인 <strong id="rMain">—</strong></span>
+    <span>·</span>
+    <span>우측 <strong id="rRight">—</strong></span>
+    <span>·</span>
+    <span id="rNote" class="ok"></span>
+  </div>
+
+</div><!-- /site-wrapper -->
+</div><!-- /outer-bg -->
+
+<script>
+let curMaxW = 1280, curSW = 260, curRatio = '9:16';
+
+function setMaxW(val) {
+  curMaxW = val;
+  document.getElementById('siteWrapper').style.maxWidth = val + 'px';
+  [1280,1400,1600].forEach(v => document.getElementById('mw'+v).classList.toggle('active', v===val));
+  update();
+}
+
+function setSidebar(val) {
+  curSW = val;
+  const layout = document.getElementById('layout');
+  if (val === 0) {
+    layout.style.gridTemplateColumns = '1fr';
+  } else {
+    layout.style.gridTemplateColumns = val+'px 1fr '+val+'px';
+  }
+  [260,200,0].forEach(v => document.getElementById('sw'+v).classList.toggle('active', v===val));
+  update();
+}
+
+function setRatio(ratio) {
+  curRatio = ratio;
+  const [w,h] = ratio.split(':').map(Number);
+  const sw = curSW || 260;
+  const thumbW = sw - 20;
+  const thumbH = Math.round(thumbW * h / w);
+  ['vt1','vt2'].forEach(id => {
+    document.getElementById(id).style.height = Math.min(thumbH, 360) + 'px';
+  });
+  document.getElementById('r916').classList.toggle('active', ratio==='9:16');
+  document.getElementById('r169').classList.toggle('active', ratio==='16:9');
+}
+
+function update() {
+  const vp      = window.innerWidth;
+  const box     = document.getElementById('siteWrapper').offsetWidth;
+  const main    = document.getElementById('mainCol').offsetWidth;
+  const left    = document.getElementById('sideLeft').offsetWidth;
+  const right   = document.getElementById('sideRight').offsetWidth;
+  const outside = vp - box;
+
+  document.getElementById('statVp').textContent   = vp + 'px';
+  document.getElementById('statBox').textContent  = box + 'px';
+  document.getElementById('statMain').textContent = main + 'px';
+  document.getElementById('ctrlVp').textContent   = vp + 'px';
+
+  document.getElementById('rVp').textContent    = vp + 'px';
+  document.getElementById('rBox').textContent   = box + 'px';
+  document.getElementById('rLeft').textContent  = left  ? left+'px'  : '숨김';
+  document.getElementById('rMain').textContent  = main + 'px';
+  document.getElementById('rRight').textContent = right ? right+'px' : '숨김';
+
+  const note = document.getElementById('rNote');
+  if (outside > 0) {
+    note.textContent = '▸ 박스 밖 배경 ' + outside + 'px';
+    note.style.color = '#f0a500';
+  } else {
+    note.textContent = '▸ 박스가 뷰포트 꽉 참';
+    note.style.color = 'var(--teal)';
+  }
+
+  setRatio(curRatio);
+}
+
+window.addEventListener('resize', update);
+setMaxW(1280);
+setSidebar(260);
+setRatio('9:16');
+update();
+</script>
+</body>
+</html>
