@@ -227,7 +227,7 @@ a { color: inherit; text-decoration: none; }
 .gallery-track::-webkit-scrollbar { display: none; }
 
 .gi {
-  min-width: 90px; height: 115px;
+  min-width: 120px; height: 160px;
   border-radius: 6px; overflow: hidden;
   border: 1px solid var(--border); background: var(--white);
   flex-shrink: 0; position: relative; cursor: pointer;
