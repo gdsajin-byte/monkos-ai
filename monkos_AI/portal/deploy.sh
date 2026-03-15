@@ -10,7 +10,7 @@
 #
 # 환경:
 #   dev     → dev 서비스에 배포 (테스트)
-#   prod    → production 서비스에 배포 (실서비스, --to-latest)
+#   prod    → production 서비스에 배포 (실서비스)
 #   preview → prod 이미지 빌드 → 트래픽 0%로 배포 → 태그 URL 반환
 ###############################################################################
 
@@ -28,7 +28,7 @@ ENV=${1:-""}
 if [ -z "$ENV" ]; then
   echo -e "${RED}사용법: ./deploy.sh [dev|prod|preview]${NC}"
   echo -e "  dev     → dev 서비스에 배포 (테스트)"
-  echo -e "  prod    → production 서비스에 배포 (실서비스, --to-latest)"
+  echo -e "  prod    → production 서비스에 배포 (실서비스)"
   echo -e "  preview → prod 이미지 → 트래픽 0% 배포 (블루/그린 검증용)"
   exit 1
 fi
@@ -58,13 +58,13 @@ if [ "$ENV" = "dev" ]; then
   MEMORY="512Mi"
   CPU="1"
   MAX_INSTANCES="2"
-  DEPLOY_FLAGS="--to-latest"
+  DEPLOY_FLAGS=""
 elif [ "$ENV" = "prod" ]; then
   SERVICE_NAME="monkos-portal"
   MEMORY="512Mi"
   CPU="1"
   MAX_INSTANCES="5"
-  DEPLOY_FLAGS="--to-latest"
+  DEPLOY_FLAGS=""
 
   # 브랜치 안전장치
   CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")

@@ -459,27 +459,27 @@ nav {
 
 /* === Chatbot Bar === */
 .chatbot-bar {
-  position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); z-index: 200;
-  width: 100%; max-width: 640px;
-  background: var(--white); border-top: 1px solid var(--border);
-  padding: 10px 24px; padding-bottom: max(10px, env(safe-area-inset-bottom));
-  display: flex; align-items: center; gap: 10px;
+  position: fixed; bottom: 8px; left: 50%; transform: translateX(-50%); z-index: 200;
+  width: calc(100% - 380px); max-width: 700px; min-width: 320px;
+  background: var(--white); border: 1px solid var(--border);
+  padding: 10px 20px;
+  display: flex; align-items: flex-end; gap: 10px;
   box-shadow: 0 -4px 20px rgba(0,0,0,.04);
-  border-radius: 16px 16px 0 0;
-  transition: bottom .15s ease;
+  border-radius: 16px;
 }
 .cb-avatar {
   width: 32px; height: 32px; border-radius: 10px;
   display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; overflow: hidden;
+  flex-shrink: 0; overflow: hidden; margin-bottom: 4px;
 }
 .cb-avatar img {
   width: 100%; height: 100%; object-fit: contain;
 }
 .cb-input {
-  flex: 1; padding: 10px 16px; border-radius: 10px;
+  flex: 1; padding: 8px 16px; border-radius: 10px;
   border: 1px solid var(--border); background: var(--surface);
   font-size: 13px; color: var(--ink); font-family: var(--sans); outline: none;
+  resize: none; line-height: 1.5; height: 56px;
 }
 .cb-input:focus { border-color: var(--accent); background: var(--white); }
 .cb-input::placeholder { color: var(--ink-l); }
@@ -487,9 +487,9 @@ nav {
   width: 36px; height: 36px; border-radius: 10px; border: none;
   background: var(--accent); color: #fff; font-size: 14px;
   cursor: pointer; display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
+  flex-shrink: 0; margin-bottom: 4px;
 }
-.cb-hint { font-size: 9px; color: var(--ink-l); flex-shrink: 0; }
+.cb-hint { font-size: 9px; color: var(--ink-l); flex-shrink: 0; margin-bottom: 8px; }
 
 /* === Chat Modal === */
 .chat-modal {
@@ -624,7 +624,13 @@ footer {
   .svc-grid { grid-template-columns: 1fr; }
   .howto-grid { grid-template-columns: 1fr; }
   .user-bar { padding: 6px 12px; }
-  .chatbot-bar { padding: 8px 12px; }
+  .chatbot-bar {
+    width: calc(100% - 24px); min-width: 0; max-width: 100%;
+    bottom: 0; border-radius: 16px 16px 0 0;
+    padding: 8px 12px; padding-bottom: max(12px, env(safe-area-inset-bottom));
+  }
+  .cb-input { height: 40px; font-size: 14px; }
+  .cb-hint { display: none; }
   nav { padding: 0 12px; }
   .n-links { gap: 12px; overflow-x: auto; }
   .main { padding: 12px 14px; }

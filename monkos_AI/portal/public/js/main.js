@@ -86,9 +86,11 @@ document.addEventListener('DOMContentLoaded', function() {
   if (cbSend) cbSend.addEventListener('click', sendMessage);
   if (cbInput) {
     cbInput.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter' && !e.isComposing) sendMessage();
+      if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) {
+        e.preventDefault();
+        sendMessage();
+      }
     });
-    // 입력창 클릭 시 포커스 유지 (모달 안 열림)
   }
   if (chatCloseBtn) chatCloseBtn.addEventListener('click', closeChat);
 
@@ -119,12 +121,10 @@ document.addEventListener('DOMContentLoaded', function() {
   if (!window.visualViewport) return;
   var bar = document.querySelector('.chatbot-bar');
   if (!bar) return;
-  function onViewportChange() {
-    var offset = window.innerHeight - visualViewport.height - visualViewport.offsetTop;
-    bar.style.bottom = (offset > 0 ? offset : 0) + 'px';
-  }
-  visualViewport.addEventListener('resize', onViewportChange);
-  visualViewport.addEventListener('scroll', onViewportChange);
+  visualViewport.addEventListener('resize', function() {
+    var kbH = window.innerHeight - visualViewport.height;
+    bar.style.bottom = (kbH > 50) ? kbH + 'px' : '';
+  });
 })();
 
 // === 팝오버/모달 외부 클릭 닫기 ===
