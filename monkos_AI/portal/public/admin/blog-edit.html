@@ -240,7 +240,7 @@ a { color: var(--accent); text-decoration: none; }
         </div>
         <input type="file" id="imgLibFile" accept="image/*" multiple style="display:none">
       </div>
-      <div id="imageLibrary" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;max-height:60vh;overflow-y:auto;transition:max-height 0.3s">
+      <div id="imageLibrary" style="display:grid;grid-template-columns:repeat(4, 1fr);gap:6px;max-height:60vh;overflow-y:auto;transition:max-height 0.3s">
       </div>
     </div>
   </div>
@@ -330,10 +330,22 @@ async function loadImageLibrary() {
       container.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-dim);font-size:12px;padding:20px">업로드된 이미지가 없습니다</div>';
       return;
     }
-    container.innerHTML = images.map(img => {
-      const escapedUrl = img.url.replace(/'/g, "\\'");
-      const escapedName = (img.name || 'image').replace(/'/g, "\\'");
-      return `<div class="img-thumb" onclick="insertImage('${escapedUrl}', '${escapedName}')" draggable="true" ondragstart="event.dataTransfer.setData('text/plain', '![${escapedName}](${escapedUrl})')" title="${img.name}"><img src="${img.url}" alt="${img.name}" loading="lazy"><button class="img-delete" onclick="event.stopPropagation(); deleteImage('${escapedName}')" title="삭제">&times;</button></div>`;
+    // 날짜별 그룹핑
+    const groups = {};
+    images.forEach(img => {
+      const date = img.created ? img.created.substring(0, 10) : 'unknown';
+      if (!groups[date]) groups[date] = [];
+      groups[date].push(img);
+    });
+    container.innerHTML = Object.entries(groups).map(([date, imgs]) => {
+      const dateHeader = `<div style="grid-column:1/-1;font-size:11px;color:var(--text-dim);padding:4px 0;border-bottom:1px solid var(--border);margin-top:8px">${date}</div>`;
+      const imgCards = imgs.map(img => {
+        const escapedUrl = img.url.replace(/'/g, "\\'");
+        const escapedName = (img.name || 'image').replace(/'/g, "\\'");
+        const tooltip = `${img.name}\n${img.created?.substring(0, 10) || ''}\n${img.size ? (img.size / 1024).toFixed(0) + 'KB' : ''}`;
+        return `<div class="img-thumb" style="aspect-ratio:1;overflow:hidden;border-radius:4px;position:relative;cursor:pointer" onclick="insertImage('${escapedUrl}', '${escapedName}')" draggable="true" ondragstart="event.dataTransfer.setData('text/plain', '![${escapedName}](${escapedUrl})')" title="${tooltip}"><img src="${img.url}" alt="${img.name}" loading="lazy" style="width:100%;height:100%;object-fit:cover"><button class="img-delete" onclick="event.stopPropagation(); deleteImage('${escapedName}')" title="삭제">&times;</button></div>`;
+      }).join('');
+      return dateHeader + imgCards;
     }).join('');
   } catch (err) {
     container.innerHTML = '<div style="grid-column:1/-1;color:var(--danger);font-size:12px;padding:20px">이미지 로드 실패</div>';
@@ -347,11 +359,22 @@ function insertImage(url, name) {
 }
 
 async function deleteImage(filename) {
-  if (!confirm('이미지를 삭제하시겠습니까?')) return;
   try {
-    await fetch(`/api/admin/images/${encodeURIComponent(filename)}`, {
+    const r = await fetch(`/api/admin/images/${encodeURIComponent(filename)}`, {
       method: 'DELETE', credentials: 'include'
     });
+    const result = await r.json();
+
+    if (result.warning) {
+      const posts = result.usedIn.map(p => `  - ${p.title}`).join('\n');
+      const msg = `⚠️ 이 이미지는 ${result.usedIn.length}개 글에서 사용 중입니다:\n${posts}\n\n삭제하면 해당 글에서 이미지가 깨집니다.\n정말 삭제하시겠습니까?`;
+      if (!confirm(msg)) return;
+
+      await fetch(`/api/admin/images/${encodeURIComponent(filename)}?force=true`, {
+        method: 'DELETE', credentials: 'include'
+      });
+    }
+
     showToast('이미지 삭제 완료');
     loadImageLibrary();
   } catch (err) {

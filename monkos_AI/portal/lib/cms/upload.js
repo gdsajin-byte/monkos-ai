@@ -4,8 +4,10 @@
  */
 import { Storage } from '@google-cloud/storage';
 import sharp from 'sharp';
-import { GCS_BUCKET, log } from '../shared/config.js';
+import { GCS_BUCKET, log, firestore } from '../shared/config.js';
 import { requireAdmin } from './admin-auth.js';
+
+const blogCollection = firestore.collection('blog_posts');
 
 const storage = new Storage();
 const bucket = storage.bucket(GCS_BUCKET);
@@ -59,10 +61,32 @@ export async function handleImageDelete(req, res) {
     return res.end(JSON.stringify({ error: 'Filename required' }));
   }
 
+  const url = new URL(req.url, `http://${req.headers.host}`);
+  const force = url.searchParams.get('force') === 'true';
+
   try {
+    // 역링크 체크: blog_posts에서 이 이미지를 사용하는 글 검색
+    const postsSnap = await blogCollection.get();
+    const usedIn = [];
+    postsSnap.docs.forEach(doc => {
+      const data = doc.data();
+      if ((data.content || '').includes(filename) || (data.thumbnail || '').includes(filename)) {
+        usedIn.push({ slug: doc.id, title: data.title });
+      }
+    });
+
+    if (usedIn.length > 0 && !force) {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({
+        warning: true,
+        usedIn,
+        message: `이 이미지는 ${usedIn.length}개 글에서 사용 중입니다`
+      }));
+    }
+
     const file = bucket.file(`blog/${filename}`);
     await file.delete();
-    log(`[CMS] 이미지 삭제: blog/${filename}`);
+    log(`[CMS] 이미지 삭제: blog/${filename}${usedIn.length ? ` (경고 무시: ${usedIn.length}건 참조)` : ''}`);
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ ok: true }));
   } catch (err) {

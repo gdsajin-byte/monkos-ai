@@ -109,7 +109,7 @@ export async function handleBlogCreate(req, res) {
       title,
       content,
       summary: (summary || '').substring(0, 160),
-      thumbnail: thumbnail || '',
+      thumbnail: thumbnail || (content ? (content.match(/<img[^>]+src="([^"]+)"/)?.[1] || '') : ''),
       tags: tags || [],
       lang: lang || 'ko',
       published: published || false,
@@ -165,6 +165,10 @@ export async function handleBlogUpdate(req, res) {
       if (body[field] !== undefined) updates[field] = body[field];
     }
     if (updates.summary) updates.summary = updates.summary.substring(0, 160);
+    if (updates.thumbnail === '' && updates.content) {
+      const imgMatch = updates.content.match(/<img[^>]+src="([^"]+)"/);
+      if (imgMatch) updates.thumbnail = imgMatch[1];
+    }
     updates.updatedAt = new Date().toISOString();
 
     await blogCollection.doc(slug).update(updates);
