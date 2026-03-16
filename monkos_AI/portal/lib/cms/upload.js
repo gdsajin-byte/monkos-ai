@@ -3,6 +3,7 @@
  * GCS 버킷에 이미지 업로드 (Toast UI Editor 호환)
  */
 import { Storage } from '@google-cloud/storage';
+import sharp from 'sharp';
 import { GCS_BUCKET, log } from '../shared/config.js';
 import { requireAdmin } from './admin-auth.js';
 
@@ -134,19 +135,31 @@ export async function handleUpload(req, res) {
       return res.end(JSON.stringify({ error: `허용되지 않는 파일 형식: ${filePart.contentType}` }));
     }
 
-    // GCS 업로드
+    // WebP 변환 + GCS 업로드
     const timestamp = Date.now();
     const safeName = filePart.filename.replace(/[^a-zA-Z0-9._-]/g, '_');
-    const gcsPath = `blog/${timestamp}_${safeName}`;
+
+    let imageData = filePart.data;
+    let uploadContentType = filePart.contentType;
+    let fileName = safeName;
+
+    // WebP 변환 (GIF 제외 — 애니메이션 손실 방지)
+    if (filePart.contentType !== 'image/gif') {
+      imageData = await sharp(filePart.data).webp({ quality: 85 }).toBuffer();
+      uploadContentType = 'image/webp';
+      fileName = fileName.replace(/\.(jpg|jpeg|png)$/i, '.webp');
+    }
+
+    const gcsPath = `blog/${timestamp}_${fileName}`;
     const file = bucket.file(gcsPath);
 
-    await file.save(filePart.data, {
-      metadata: { contentType: filePart.contentType },
+    await file.save(imageData, {
+      metadata: { contentType: uploadContentType },
       public: true,
     });
 
     const url = `https://storage.googleapis.com/${GCS_BUCKET}/${gcsPath}`;
-    log(`[CMS] 이미지 업로드: ${gcsPath} (${(filePart.data.length / 1024).toFixed(1)}KB)`);
+    log(`[CMS] 이미지 업로드: ${gcsPath} (${(filePart.data.length / 1024).toFixed(1)}KB → ${(imageData.length / 1024).toFixed(1)}KB${uploadContentType === 'image/webp' ? ' webp' : ''})`);
 
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ url }));
