@@ -433,6 +433,7 @@ export async function handleGoogleAuth(req, res) {
           picture: user.picture,
           credits,
           provider: 'google',
+          isAdmin: ADMIN_UIDS.length === 0 || ADMIN_UIDS.includes(user.id),
         }
       }));
     } catch (err) {
