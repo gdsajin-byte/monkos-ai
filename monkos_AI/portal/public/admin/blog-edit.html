@@ -209,7 +209,7 @@ a { color: var(--accent); text-decoration: none; }
     <div class="sidebar-section" id="previewCard">
       <label>미리보기</label>
       <div style="border:1px solid var(--border);border-radius:6px;overflow:hidden;background:var(--surface2)">
-        <div id="previewThumb" style="width:100%;aspect-ratio:16/9;background:#eee;display:flex;align-items:center;justify-content:center;overflow:hidden">
+        <div id="previewThumb" style="width:100%;aspect-ratio:1200/630;background:#eee;display:flex;align-items:center;justify-content:center;overflow:hidden">
           <span style="color:var(--text-dim);font-size:11px">썸네일 없음</span>
         </div>
         <div style="padding:8px">
@@ -343,6 +343,7 @@ async function loadImageLibrary() {
 function insertImage(url, name) {
   editor.exec('addImage', { imageUrl: url, altText: name || 'image' });
   showToast('이미지 삽입 완료');
+  setTimeout(updatePreview, 300);
 }
 
 async function deleteImage(filename) {
@@ -455,16 +456,29 @@ function updatePreview() {
   document.getElementById('previewTitle').textContent = title;
   document.getElementById('previewSummary').textContent = summary;
   const thumbEl = document.getElementById('previewThumb');
+
   if (thumb) {
     thumbEl.innerHTML = `<img src="${thumb}" style="width:100%;height:100%;object-fit:cover">`;
-  } else {
-    const content = editor.getMarkdown();
-    const match = content.match(/!\[.*?\]\((.*?)\)/);
-    if (match) {
-      thumbEl.innerHTML = `<img src="${match[1]}" style="width:100%;height:100%;object-fit:cover">`;
-    } else {
-      thumbEl.innerHTML = '<span style="color:var(--text-dim);font-size:11px">썸네일 없음</span>';
+    return;
+  }
+
+  // 1차: WYSIWYG HTML에서 직접 img 태그 추출
+  const wwContainer = document.querySelector('.toastui-editor-ww-container .ProseMirror');
+  if (wwContainer) {
+    const firstImg = wwContainer.querySelector('img');
+    if (firstImg && firstImg.src) {
+      thumbEl.innerHTML = `<img src="${firstImg.src}" style="width:100%;height:100%;object-fit:cover">`;
+      return;
     }
+  }
+
+  // 2차: 마크다운에서 추출 (fallback)
+  const content = editor.getMarkdown();
+  const match = content.match(/!\[.*?\]\((.*?)\)/);
+  if (match) {
+    thumbEl.innerHTML = `<img src="${match[1]}" style="width:100%;height:100%;object-fit:cover">`;
+  } else {
+    thumbEl.innerHTML = '<span style="color:var(--text-dim);font-size:11px">썸네일 없음</span>';
   }
 }
 
@@ -539,9 +553,20 @@ async function save(published) {
   // 썸네일 미지정 시 본문 첫 이미지 자동 추출
   let thumbnail = document.getElementById('thumbnail').value.trim();
   if (!thumbnail) {
-    const imgMatch = content.match(/!\[.*?\]\((.*?)\)/);
-    if (imgMatch) {
-      thumbnail = imgMatch[1];
+    // WYSIWYG DOM에서 직접 추출
+    const wwContainer = document.querySelector('.toastui-editor-ww-container .ProseMirror');
+    if (wwContainer) {
+      const firstImg = wwContainer.querySelector('img');
+      if (firstImg && firstImg.src) {
+        thumbnail = firstImg.src;
+      }
+    }
+    // fallback: 마크다운
+    if (!thumbnail) {
+      const imgMatch = content.match(/!\[.*?\]\((.*?)\)/);
+      if (imgMatch) thumbnail = imgMatch[1];
+    }
+    if (thumbnail) {
       document.getElementById('thumbnail').value = thumbnail;
       updatePreview();
     }

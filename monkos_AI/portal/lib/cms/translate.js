@@ -37,6 +37,15 @@ Translate the following blog post into natural English.
 - Translate both title and body`,
 };
 
+const JSON_INSTRUCTION = {
+  ja: `以下のJSON形式で回答してください:
+{"title": "翻訳されたタイトル", "content": "翻訳された本文(マークダウン)", "summary": "翻訳された要約(160文字以内)"}`,
+  en: `Respond in the following JSON format:
+{"title": "translated title", "content": "translated body (markdown)", "summary": "translated summary (max 160 chars)"}`,
+  ko: `다음 JSON 형식으로 응답하세요:
+{"title": "번역된 제목", "content": "번역된 본문(마크다운)", "summary": "번역된 요약(160자 이내)"}`,
+};
+
 export async function translateAndSaveBlogPost(slug, originalDoc) {
   const srcLang = originalDoc.lang || 'ko';
   let targetLangs;
@@ -69,8 +78,7 @@ export async function translateAndSaveBlogPost(slug, originalDoc) {
 ${originalDoc.content}
 ---
 
-JSON으로 응답:
-{"title": "번역된 제목", "content": "번역된 본문(마크다운)", "summary": "번역된 요약(160자 이내)"}`;
+${JSON_INSTRUCTION[lang] || JSON_INSTRUCTION.en}`;
 
       const response = await ai.models.generateContent({
         model: 'gemini-2.0-flash',
@@ -86,6 +94,13 @@ JSON으로 응답:
       if (!text) throw new Error('빈 응답');
 
       const translated = JSON.parse(text);
+
+      // 번역 검증: 타이틀이 원본과 동일하면 번역 실패로 판단
+      if (translated.title === originalDoc.title) {
+        log(`[CMS] 자동번역 실패 — 원문 그대로 반환됨 (${lang})`, 'ERROR');
+        continue;
+      }
+
       const translatedSlug = `${slug}-${lang}`;
 
       await blogCollection.doc(translatedSlug).set({
@@ -137,7 +152,9 @@ export async function handleTranslate(req, res) {
     const targets = srcLang === 'ko' ? ['ja', 'en'] : srcLang === 'ja' ? ['ko', 'en'] : ['ko', 'ja'];
 
     // 백그라운드 번역 시작
-    translateAndSaveBlogPost(slug, data).catch(() => {});
+    translateAndSaveBlogPost(slug, data).catch(err => {
+      log(`[CMS] 백그라운드 번역 에러: ${err.message}`, 'ERROR');
+    });
 
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ success: true, message: `${slug} 번역 시작 (${targets.join(', ')})` }));
