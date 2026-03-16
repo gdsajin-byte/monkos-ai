@@ -47,14 +47,68 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "WebApplication",
-  "name": "MONKOS AI 증명사진",
-  "url": "https://monkos.ai",
-  "applicationCategory": "PhotographyApplication",
-  "operatingSystem": "Web",
-  "inLanguage": ["ko", "ja", "en"],
-  "description": "AI 실시간 코칭으로 완벽한 증명사진 촬영. 여권·비자·이력서·취업사진 대응.",
-  "provider": { "@type": "Organization", "name": "MONKOS", "url": "https://monkos.ai" }
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "MONKOS AI 증명사진",
+      "url": "https://monkos.ai",
+      "applicationCategory": "PhotographyApplication",
+      "operatingSystem": "Web",
+      "inLanguage": ["ko", "ja", "en"],
+      "description": "AI 실시간 코칭으로 완벽한 증명사진 촬영. 여권·비자·이력서·취업사진 대응.",
+      "provider": {
+        "@type": "Organization",
+        "name": "Monk Studio",
+        "url": "https://monkos.ai",
+        "founder": {
+          "@type": "Person",
+          "name": "Shin-jakka",
+          "jobTitle": "Photographer & AI Architect",
+          "sameAs": ["https://github.com/monkos-studio"]
+        }
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "MONKOS AI는 무엇인가요?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "20년 경력 사진작가가 만든 AI 증명사진 플랫폼입니다. 셀카 한 장으로 여권·이력서·비자사진을 ICAO 국제 규격에 맞춰 완성합니다."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "일반 AI 사진 서비스와 차이점은?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "범용 AI가 아닌 20년간 축적된 실제 스튜디오 촬영 데이터 기반. 사진작가의 미학이 반영된 보정으로 자연스러운 결과물을 제공합니다."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "ICAO 규격을 준수하나요?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "네. 모든 생성 사진은 ICAO 9303 국제 표준을 준수하며, 여권·비자 심사에 적합합니다."
+          }
+        }
+      ]
+    },
+    {
+      "@type": "ItemList",
+      "name": "MONKOS AI Services",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "AI 증명사진", "url": "https://monkos.ai" },
+        { "@type": "ListItem", "position": 2, "name": "무료 크롭앱", "url": "https://crop.monkos.ai" },
+        { "@type": "ListItem", "position": 3, "name": "블로그", "url": "https://monkos.ai/blog" },
+        { "@type": "ListItem", "position": 4, "name": "FAQ", "url": "https://monkos.ai/faq" },
+        { "@type": "ListItem", "position": 5, "name": "갤러리", "url": "https://monkos.ai/gallery" }
+      ]
+    }
+  ]
 }
 </script>
 

@@ -324,6 +324,11 @@ export async function blogPostFragment(req, lang = null) {
 <meta property="og:image" content="${escapeHtml(post.thumbnail || '')}">
 <meta property="og:type" content="article">
 <meta property="og:url" content="${canonicalUrl}">
+<meta property="article:published_time" content="${post.createdAt}">
+<meta property="article:modified_time" content="${post.updatedAt || post.createdAt}">
+<meta property="article:author" content="${post.author || 'MONKOS'}">
+<meta property="article:section" content="${post.category || 'blog'}">
+${(post.tags || []).map(t => `<meta property="article:tag" content="${escapeHtml(t)}">`).join('\n')}
 <link rel="canonical" href="${canonicalUrl}">
 ${hreflangTags}
 <script type="application/ld+json">
@@ -332,8 +337,26 @@ ${JSON.stringify({
   "@type": "Article",
   "headline": post.title,
   "image": post.thumbnail || '',
-  "author": { "@type": "Organization", "name": "MONKOS" },
-  "publisher": { "@type": "Organization", "name": "MONKOS", "url": "https://monkos.ai" },
+  "author": {
+    "@type": "Person",
+    "name": post.author === 'MONKOS' ? 'Shin-jakka' : post.author,
+    "jobTitle": "Photographer & AI Architect",
+    "url": "https://monkos.ai",
+    "sameAs": ["https://github.com/monkos-studio"]
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Monk Studio",
+    "url": "https://monkos.ai",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://monkos.ai/monkos-icon-1024.png"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": canonicalUrl
+  },
   "datePublished": post.createdAt,
   "dateModified": post.updatedAt,
   "description": post.summary || ''
@@ -541,7 +564,7 @@ export async function galleryFragment(req) {
 
   const imagesHtml = items.map(item => `
       <div class="gallery-item" data-category="${escapeHtml(item.category || '일반')}">
-        <img src="${escapeHtml(item.imageUrl)}" alt="${escapeHtml(item.caption || 'MONKOS AI Photo')}" loading="lazy" onclick="openLightbox(this)">
+        <img src="${escapeHtml(item.imageUrl)}" alt="AI ID photo by MONKOS (monkos.ai) — ${escapeHtml(item.caption || 'Studio-quality portrait')}" loading="lazy" onclick="openLightbox(this)">
         ${item.caption ? `<p class="gallery-caption">${escapeHtml(item.caption)}</p>` : ''}
       </div>`).join('');
 
@@ -974,6 +997,9 @@ export async function renderSitemap(req, res) {
       { loc: 'https://monkos.ai/faq', changefreq: 'weekly', priority: '0.7' },
       { loc: 'https://monkos.ai/gallery', changefreq: 'weekly', priority: '0.6' },
       { loc: 'https://monkos.ai/board', changefreq: 'daily', priority: '0.5' },
+      { loc: 'https://monkos.ai/ja/blog', changefreq: 'daily', priority: '0.7' },
+      { loc: 'https://monkos.ai/en/blog', changefreq: 'daily', priority: '0.7' },
+      { loc: 'https://monkos.ai/llms.txt', changefreq: 'monthly', priority: '0.5' },
     ];
 
     const snapshot = await blogCollection.where('published', '==', true).orderBy('createdAt', 'desc').get();
