@@ -48,6 +48,29 @@ function parseMultipart(buffer, boundary) {
   return parts;
 }
 
+export async function handleImageDelete(req, res) {
+  const admin = requireAdmin(req, res);
+  if (!admin) return;
+
+  const filename = decodeURIComponent(req.url.split('/api/admin/images/')[1]);
+  if (!filename) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    return res.end(JSON.stringify({ error: 'Filename required' }));
+  }
+
+  try {
+    const file = bucket.file(`blog/${filename}`);
+    await file.delete();
+    log(`[CMS] 이미지 삭제: blog/${filename}`);
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ ok: true }));
+  } catch (err) {
+    log(`[CMS] 이미지 삭제 에러: ${err.message}`, 'ERROR');
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: err.message }));
+  }
+}
+
 export async function handleImageList(req, res) {
   const admin = requireAdmin(req, res);
   if (!admin) return;

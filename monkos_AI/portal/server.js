@@ -38,7 +38,7 @@ import { handleBlogList, handleBlogGet, handleBlogCreate, handleBlogUpdate, hand
 import { handleFaqList, handleFaqCreate, handleFaqUpdate, handleFaqDelete } from './lib/cms/faq.js';
 import { handleGalleryList, handleGalleryCreate, handleGalleryUpdate, handleGalleryDelete } from './lib/cms/gallery.js';
 import { handleBoardPublicList, handleBoardPublicGet, handleBoardPublicCreate, handleBoardPublicDelete, handleBoardAdminList, handleBoardAdminReply, handleBoardAdminDelete, handleBoardAdminToggle } from './lib/cms/board.js';
-import { handleUpload, handleImageList } from './lib/cms/upload.js';
+import { handleUpload, handleImageList, handleImageDelete } from './lib/cms/upload.js';
 import { handleTranslate } from './lib/cms/translate.js';
 import { renderBlogList, renderBlogPost, renderFaq, renderGallery, renderBoardList, renderBoardPost, renderBoardWrite, renderSitemap } from './lib/cms/render.js';
 import { renderHome, handleSettingsGet, handleSettingsPut, handleLayoutGet, handleLayoutPut } from './lib/cms/home.js';
@@ -167,6 +167,7 @@ const httpServer = createServer(async (req, res) => {
   if (urlPath?.startsWith('/api/admin/blog/') && req.method === 'DELETE') return handleBlogDelete(req, res);
   if (urlPath === '/api/admin/upload' && req.method === 'POST') return handleUpload(req, res);
   if (urlPath === '/api/admin/images' && req.method === 'GET') return handleImageList(req, res);
+  if (urlPath?.startsWith('/api/admin/images/') && req.method === 'DELETE') return handleImageDelete(req, res);
   if (urlPath?.endsWith('/translate') && urlPath?.startsWith('/api/admin/blog/') && req.method === 'POST') return handleTranslate(req, res);
 
   // === CMS 사이트 설정 API ===
