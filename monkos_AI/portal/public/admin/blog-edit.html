@@ -19,33 +19,41 @@
 body { font-family: 'Pretendard', 'Noto Sans JP', -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 a { color: var(--accent); text-decoration: none; }
 
-.nav { display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; border-bottom: 1px solid var(--border); }
-.nav-logo { font-size: 20px; font-weight: 700; color: var(--text-bright); letter-spacing: 2px; }
-.nav-back { font-size: 14px; color: var(--text-dim); }
+.nav { display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; border-bottom: 1px solid var(--border); background: var(--surface); position: sticky; top: 0; z-index: 100; }
+.nav-logo { font-size: 18px; font-weight: 700; color: var(--text-bright); letter-spacing: 2px; }
+.nav-back { font-size: 13px; color: var(--text-dim); }
 
-/* 2-column layout */
+/* 3-column layout */
 .editor-layout {
   display: grid;
-  grid-template-columns: 1fr 340px;
-  gap: 24px;
-  max-width: 1280px;
+  grid-template-columns: 220px 1fr 300px;
+  gap: 20px;
+  max-width: 100%;
   margin: 0 auto;
-  padding: 24px;
+  padding: 20px 24px;
 }
-.editor-main { min-width: 0; }
-.editor-sidebar {
+.editor-left {
   position: sticky;
-  top: 24px;
+  top: 80px;
   align-self: start;
-  max-height: calc(100vh - 48px);
+  max-height: calc(100vh - 100px);
   overflow-y: auto;
 }
+.editor-main { min-width: 0; }
+.editor-right {
+  position: sticky;
+  top: 80px;
+  align-self: start;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+}
+
 .sidebar-section {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 8px;
-  padding: 16px;
-  margin-bottom: 12px;
+  padding: 14px;
+  margin-bottom: 10px;
 }
 .sidebar-section label {
   display: block;
@@ -55,56 +63,68 @@ a { color: var(--accent); text-decoration: none; }
   font-weight: 500;
 }
 .sidebar-section input, .sidebar-section select, .sidebar-section textarea {
-  width: 100%; padding: 8px 12px; background: var(--surface2); border: 1px solid var(--border);
+  width: 100%; padding: 8px 10px; background: var(--surface2); border: 1px solid var(--border);
   border-radius: 6px; color: var(--text); font-size: 13px; outline: none;
 }
 .sidebar-section input:focus, .sidebar-section select:focus, .sidebar-section textarea:focus { border-color: var(--accent); }
-.sidebar-hint { font-size: 11px; color: var(--text-dim); margin-top: 4px; display: block; }
+.sidebar-hint { font-size: 10px; color: var(--text-dim); margin-top: 3px; display: block; }
 
-.title-row { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
-.title-row h1 { font-size: 22px; font-weight: 700; color: var(--text-bright); }
 .title-input {
   width: 100%; padding: 12px 16px; background: var(--surface); border: 1px solid var(--border);
   border-radius: 8px; color: var(--text-bright); font-size: 18px; font-weight: 600; outline: none; margin-bottom: 16px;
 }
 .title-input:focus { border-color: var(--accent); }
 
-.editor-wrap { margin-bottom: 16px; }
+.editor-wrap { margin-bottom: 0; }
 #editor { min-height: 400px; }
 
 /* Toast UI overrides */
 .toastui-editor-defaultUI { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
-.toastui-editor-defaultUI .toastui-editor-md-container { background: var(--surface); }
 .toastui-editor-defaultUI .toastui-editor-ww-container { background: var(--surface); }
-.toastui-editor-defaultUI .toastui-editor-md-container .toastui-editor-md-preview { background: var(--surface2); }
 .ProseMirror { color: var(--text); }
 
-.btn-group { display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
+/* Buttons */
 .btn {
   padding: 12px 24px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600;
   cursor: pointer; transition: opacity 0.2s;
 }
 .btn:hover { opacity: 0.85; }
-.btn-primary { background: var(--accent); color: var(--bg); }
+.btn-sm { padding: 6px 14px; font-size: 13px; }
 .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
-.btn-success { background: var(--success); color: var(--bg); }
+.btn-success { background: var(--success); color: #fff; }
 .btn-preview { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
 
 .toast {
   position: fixed; bottom: 24px; right: 24px; padding: 12px 24px;
-  background: var(--success); color: var(--bg); border-radius: 8px;
+  background: var(--success); color: #fff; border-radius: 8px;
   font-size: 14px; font-weight: 500; opacity: 0; transition: opacity 0.3s;
   z-index: 1000;
 }
 .toast.show { opacity: 1; }
 
-.pinned-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+.pinned-row { display: flex; align-items: center; gap: 8px; }
 .pinned-row input[type="checkbox"] { width: auto; accent-color: var(--accent); }
-.pinned-row label { margin-bottom: 0; cursor: pointer; font-size: 13px; }
+.pinned-row label { margin-bottom: 0; cursor: pointer; font-size: 12px; }
 
+/* Image library */
+.img-thumb {
+  aspect-ratio: 1;
+  border-radius: 6px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border-color 0.2s;
+}
+.img-thumb:hover { border-color: var(--accent); }
+.img-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+@media (max-width: 1200px) {
+  .editor-layout { grid-template-columns: 200px 1fr; }
+  .editor-right { display: none; }
+}
 @media (max-width: 900px) {
   .editor-layout { grid-template-columns: 1fr; }
-  .editor-sidebar { position: static; max-height: none; }
+  .editor-left { position: static; max-height: none; }
 }
 </style>
 </head>
@@ -112,7 +132,11 @@ a { color: var(--accent); text-decoration: none; }
 
 <nav class="nav">
   <a href="/admin/" class="nav-logo">MONKOS Admin</a>
-  <div style="display:flex;align-items:center;gap:12px">
+  <div style="display:flex;align-items:center;gap:8px">
+    <button class="btn btn-secondary btn-sm" onclick="save(false)">임시저장</button>
+    <button class="btn btn-success btn-sm" onclick="save(true)">발행</button>
+    <button class="btn btn-preview btn-sm" onclick="preview()">미리보기</button>
+    <span style="width:1px;height:20px;background:var(--border);margin:0 4px"></span>
     <div style="position:relative">
       <button id="myPostsBtn" onclick="loadMyPosts()" style="padding:6px 14px;border:1px solid var(--border);border-radius:6px;background:var(--surface2);color:var(--text-dim);font-size:13px;cursor:pointer">내 글 목록 ▾</button>
       <div id="myPostsDropdown" style="display:none;position:absolute;top:36px;right:0;width:320px;max-height:400px;overflow-y:auto;background:var(--surface);border:1px solid var(--border);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.1);z-index:50"></div>
@@ -122,26 +146,8 @@ a { color: var(--accent); text-decoration: none; }
 </nav>
 
 <div class="editor-layout">
-  <!-- Main -->
-  <div class="editor-main">
-    <div class="title-row">
-      <h1 id="pageTitle">New Post</h1>
-    </div>
-    <input type="text" class="title-input" id="title" placeholder="제목을 입력하세요">
-
-    <div class="editor-wrap">
-      <div id="editor"></div>
-    </div>
-
-    <div class="btn-group">
-      <button class="btn btn-secondary" onclick="save(false)">Save Draft</button>
-      <button class="btn btn-success" onclick="save(true)">Publish</button>
-      <button class="btn btn-preview" onclick="preview()">Preview</button>
-    </div>
-  </div>
-
-  <!-- Sidebar -->
-  <div class="editor-sidebar">
+  <!-- Left: Meta settings -->
+  <div class="editor-left">
     <div class="sidebar-section">
       <label>카테고리</label>
       <select id="category">
@@ -155,12 +161,6 @@ a { color: var(--accent); text-decoration: none; }
         <option value="기타">기타</option>
       </select>
     </div>
-
-    <div class="sidebar-section">
-      <label>태그</label>
-      <input type="text" id="tags" placeholder="콤마로 구분 (예: 증명사진, 여권)">
-    </div>
-
     <div class="sidebar-section">
       <label>언어</label>
       <select id="lang">
@@ -169,31 +169,53 @@ a { color: var(--accent); text-decoration: none; }
         <option value="en">English (en)</option>
       </select>
     </div>
-
     <div class="sidebar-section">
       <label>썸네일</label>
-      <div style="display:flex;gap:8px;align-items:center">
+      <div style="display:flex;gap:6px;align-items:center">
         <input type="text" id="thumbnail" placeholder="이미지 URL" style="flex:1">
-        <button type="button" class="btn btn-secondary" id="thumbUploadBtn" onclick="uploadThumbnail()" style="padding:8px 12px;font-size:12px;white-space:nowrap">업로드</button>
+        <button type="button" class="btn btn-secondary" id="thumbUploadBtn" onclick="uploadThumbnail()" style="padding:6px 10px;font-size:11px;white-space:nowrap">업로드</button>
         <input type="file" id="thumbFile" accept="image/*" style="display:none">
       </div>
     </div>
-
     <div class="sidebar-section">
       <label>URL 주소</label>
-      <input type="text" id="slug" placeholder="제목에서 자동 생성">
-      <span class="sidebar-hint">블로그 주소에 사용됩니다. 특수문자($ / 등) 사용 불가.</span>
+      <input type="text" id="slug" placeholder="자동 생성">
+      <span class="sidebar-hint">특수문자($ / 등) 사용 불가</span>
     </div>
-
     <div class="sidebar-section">
-      <label>요약 (SEO, 최대 160자)</label>
-      <textarea id="summary" rows="3" maxlength="160" placeholder="검색 결과에 표시될 요약문"></textarea>
+      <label>요약 (SEO)</label>
+      <textarea id="summary" rows="3" maxlength="160" placeholder="검색 결과 요약문 (최대 160자)"></textarea>
     </div>
-
     <div class="sidebar-section">
       <div class="pinned-row">
         <input type="checkbox" id="pinned">
-        <label for="pinned">매거진 영역 고정</label>
+        <label for="pinned">매거진 고정</label>
+      </div>
+    </div>
+    <div class="sidebar-section">
+      <label>태그</label>
+      <input type="text" id="tags" placeholder="콤마 구분">
+    </div>
+  </div>
+
+  <!-- Center: Editor -->
+  <div class="editor-main">
+    <h1 id="pageTitle" style="font-size:20px;font-weight:700;color:var(--text-bright);margin-bottom:12px">New Post</h1>
+    <input type="text" class="title-input" id="title" placeholder="제목을 입력하세요">
+    <div class="editor-wrap">
+      <div id="editor"></div>
+    </div>
+  </div>
+
+  <!-- Right: Image library -->
+  <div class="editor-right">
+    <div class="sidebar-section">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <label style="margin-bottom:0">이미지 저장소</label>
+        <button type="button" class="btn btn-secondary" id="imgUploadBtn" onclick="uploadToLibrary()" style="padding:4px 10px;font-size:11px">+ 업로드</button>
+        <input type="file" id="imgLibFile" accept="image/*" multiple style="display:none">
+      </div>
+      <div id="imageLibrary" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;max-height:calc(100vh - 200px);overflow-y:auto">
       </div>
     </div>
   </div>
@@ -208,7 +230,7 @@ const params = new URLSearchParams(location.search);
 const editSlug = params.get('slug');
 let isEdit = false;
 
-// Slug sanitize (remove $, /, and other invalid chars)
+// Slug sanitize
 document.getElementById('slug').addEventListener('input', (e) => {
   e.target.value = e.target.value.replace(/[\/$#\[\].]/g, '');
 });
@@ -221,7 +243,7 @@ async function uploadThumbnail() {
     const file = fileInput.files[0];
     if (!file) return;
     const btn = document.getElementById('thumbUploadBtn');
-    btn.textContent = '업로드 중...';
+    btn.textContent = '...';
     btn.disabled = true;
     try {
       const form = new FormData();
@@ -272,6 +294,59 @@ document.addEventListener('click', (e) => {
   if (dd && !e.target.closest('#myPostsBtn') && !e.target.closest('#myPostsDropdown')) dd.style.display = 'none';
 });
 
+// Image library
+async function loadImageLibrary() {
+  const container = document.getElementById('imageLibrary');
+  container.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-dim);font-size:12px;padding:20px">불러오는 중...</div>';
+  try {
+    const r = await fetch('/api/admin/images', { credentials: 'include' });
+    const { images } = await r.json();
+    if (!images || images.length === 0) {
+      container.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-dim);font-size:12px;padding:20px">업로드된 이미지가 없습니다</div>';
+      return;
+    }
+    container.innerHTML = images.map(img => {
+      const escapedUrl = img.url.replace(/'/g, "\\'");
+      const escapedName = (img.name || 'image').replace(/'/g, "\\'");
+      return `<div class="img-thumb" onclick="insertImage('${escapedUrl}', '${escapedName}')" title="${img.name}"><img src="${img.url}" alt="${img.name}" loading="lazy"></div>`;
+    }).join('');
+  } catch (err) {
+    container.innerHTML = '<div style="grid-column:1/-1;color:var(--danger);font-size:12px;padding:20px">이미지 로드 실패</div>';
+  }
+}
+
+function insertImage(url, name) {
+  editor.exec('addImage', { imageUrl: url, altText: name || 'image' });
+  showToast('이미지 삽입 완료');
+}
+
+async function uploadToLibrary() {
+  const fileInput = document.getElementById('imgLibFile');
+  fileInput.click();
+  fileInput.onchange = async () => {
+    const files = fileInput.files;
+    if (!files.length) return;
+    const btn = document.getElementById('imgUploadBtn');
+    btn.textContent = '업로드 중...';
+    btn.disabled = true;
+    try {
+      for (const file of files) {
+        const form = new FormData();
+        form.append('image', file, file.name);
+        await fetch('/api/admin/upload', { method: 'POST', credentials: 'include', body: form });
+      }
+      showToast(`${files.length}건 업로드 완료`);
+      loadImageLibrary();
+    } catch (err) {
+      showToast('업로드 에러: ' + err.message, true);
+    } finally {
+      btn.textContent = '+ 업로드';
+      btn.disabled = false;
+      fileInput.value = '';
+    }
+  };
+}
+
 // Toast UI Editor — WYSIWYG mode
 const editor = new toastui.Editor({
   el: document.getElementById('editor'),
@@ -291,6 +366,7 @@ const editor = new toastui.Editor({
         const data = await r.json();
         if (data.url) {
           callback(data.url, blob.name || 'image');
+          loadImageLibrary(); // refresh library after drag-drop upload
         } else {
           alert('Upload failed: ' + (data.error || 'Unknown error'));
         }
@@ -315,7 +391,7 @@ document.getElementById('title').addEventListener('input', (e) => {
   }
 });
 
-// Load existing post for editing
+// Load existing post
 async function loadPost() {
   if (!editSlug) return;
   isEdit = true;
@@ -406,6 +482,7 @@ function showToast(msg, isError = false) {
 }
 
 loadPost();
+loadImageLibrary();
 </script>
 </body>
 </html>

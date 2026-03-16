@@ -48,6 +48,32 @@ function parseMultipart(buffer, boundary) {
   return parts;
 }
 
+export async function handleImageList(req, res) {
+  const admin = requireAdmin(req, res);
+  if (!admin) return;
+
+  try {
+    const [files] = await bucket.getFiles({ prefix: 'blog/', maxResults: 50 });
+
+    const images = files
+      .filter(f => /\.(jpg|jpeg|png|webp|gif)$/i.test(f.name))
+      .sort((a, b) => new Date(b.metadata.timeCreated) - new Date(a.metadata.timeCreated))
+      .map(f => ({
+        name: f.name.replace('blog/', ''),
+        url: `https://storage.googleapis.com/${GCS_BUCKET}/${f.name}`,
+        size: parseInt(f.metadata.size, 10),
+        created: f.metadata.timeCreated,
+      }));
+
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ images }));
+  } catch (err) {
+    log(`[CMS] 이미지 목록 에러: ${err.message}`, 'ERROR');
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: err.message }));
+  }
+}
+
 export async function handleUpload(req, res) {
   const admin = requireAdmin(req, res);
   if (!admin) return;
