@@ -18,9 +18,19 @@ function generateSlug(title) {
     .substring(0, 100);
 }
 
+function sanitizeSlug(slug) {
+  return slug
+    .replace(/[\/$#\[\].]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
+    .substring(0, 100);
+}
+
 function extractSlug(url) {
   const parts = url.split('/api/admin/blog/');
-  return parts[1] ? decodeURIComponent(parts[1].split('?')[0]) : null;
+  const raw = parts[1] ? decodeURIComponent(parts[1].split('?')[0]) : null;
+  return raw ? sanitizeSlug(raw) : null;
 }
 
 // GET /api/admin/blog — 목록 (drafts 포함)
@@ -82,7 +92,11 @@ export async function handleBlogCreate(req, res) {
       return res.end(JSON.stringify({ error: '제목과 본문은 필수입니다' }));
     }
 
-    const slug = body.slug || generateSlug(title);
+    const slug = sanitizeSlug(body.slug || generateSlug(title));
+    if (!slug) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ error: '유효한 slug를 생성할 수 없습니다' }));
+    }
     const existing = await blogCollection.doc(slug).get();
     if (existing.exists) {
       res.writeHead(409, { 'Content-Type': 'application/json' });

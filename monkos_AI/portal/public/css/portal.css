@@ -25,7 +25,7 @@
   --green-s: rgba(26,122,92,.06);
   --deep: #0A0E17;
   --serif: 'Cormorant Garamond', Georgia, serif;
-  --sans: 'Noto Sans KR', -apple-system, sans-serif;
+  --sans: 'Pretendard', 'Noto Sans JP', -apple-system, sans-serif;
   --mono: 'DM Mono', monospace;
 
   /* Cr Coin Design Tokens (from v3) */

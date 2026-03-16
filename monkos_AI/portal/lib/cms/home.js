@@ -167,6 +167,42 @@ export async function renderHome(req, res) {
   }
 }
 
+// ========== Layout API ==========
+const layoutConfigRef = firestore.collection('site_config').doc('layout');
+
+export async function handleLayoutGet(req, res) {
+  const admin = requireAdmin(req, res);
+  if (!admin) return;
+  try {
+    const doc = await layoutConfigRef.get();
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(doc.exists ? doc.data() : { sections: [] }));
+  } catch (err) {
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: err.message }));
+  }
+}
+
+export async function handleLayoutPut(req, res) {
+  const admin = requireAdmin(req, res);
+  if (!admin) return;
+  try {
+    const body = await parseJsonBody(req);
+    if (!body.sections || !Array.isArray(body.sections)) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ error: 'sections 배열이 필요합니다' }));
+    }
+    const data = { sections: body.sections, updatedAt: new Date().toISOString() };
+    await layoutConfigRef.set(data);
+    log(`[Layout] Updated by ${admin.userId}`);
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(data));
+  } catch (err) {
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: err.message }));
+  }
+}
+
 // ========== Settings API ==========
 export async function handleSettingsGet(req, res) {
   const admin = requireAdmin(req, res);

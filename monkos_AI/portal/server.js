@@ -41,7 +41,7 @@ import { handleBoardPublicList, handleBoardPublicGet, handleBoardPublicCreate, h
 import { handleUpload } from './lib/cms/upload.js';
 import { handleTranslate } from './lib/cms/translate.js';
 import { renderBlogList, renderBlogPost, renderFaq, renderGallery, renderBoardList, renderBoardPost, renderBoardWrite, renderSitemap } from './lib/cms/render.js';
-import { renderHome, handleSettingsGet, handleSettingsPut } from './lib/cms/home.js';
+import { renderHome, handleSettingsGet, handleSettingsPut, handleLayoutGet, handleLayoutPut } from './lib/cms/home.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -171,6 +171,10 @@ const httpServer = createServer(async (req, res) => {
   // === CMS 사이트 설정 API ===
   if (urlPath === '/api/admin/settings' && req.method === 'GET') return handleSettingsGet(req, res);
   if (urlPath === '/api/admin/settings' && req.method === 'PUT') return handleSettingsPut(req, res);
+
+  // === CMS 홈 레이아웃 API ===
+  if (urlPath === '/api/admin/layout' && req.method === 'GET') return handleLayoutGet(req, res);
+  if (urlPath === '/api/admin/layout' && req.method === 'PUT') return handleLayoutPut(req, res);
 
   // === CMS FAQ 관리자 API ===
   if (urlPath === '/api/admin/faq' && req.method === 'GET') return handleFaqList(req, res);
