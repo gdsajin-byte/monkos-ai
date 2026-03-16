@@ -38,7 +38,7 @@
   "@context": "https://schema.org",
   "@type": "Service",
   "name": "MONKOS AI 証明写真",
-  "description": "セルフィー1枚でパスポート・履歴書・ビザ写真を作成。写真館品質のAIレタッチと発行保証。",
+  "description": "セルフィー1枚でパスポート・履歴書・ビザ写真を作成。写真館品質のAIレタッチ。",
   "url": "https://idphoto-jp.monkos.ai",
   "provider": {
     "@type": "LocalBusiness",
@@ -64,7 +64,7 @@
       "name": "AI証明写真は実際のパスポート申請に使えますか？",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "はい、MONKOS AIはパスポート・履歴書・ビザなどの公式規格に合わせて作成し、発行保証を提供しています。"
+        "text": "はい、MONKOS AIはパスポート・履歴書・ビザなどの公式規格に合わせて作成します。"
       }
     },
     {
@@ -154,7 +154,7 @@ body {
 /* === 레이아웃 === */
 .container {
   position: relative; z-index: 1;
-  max-width: 480px; margin: 0 auto; padding: 0 20px;
+  max-width: 560px; margin: 0 auto; padding: 0 20px;
 }
 
 /* === 헤더 === */
@@ -225,16 +225,6 @@ header {
   font-size: 0.85rem;
   color: rgba(226, 232, 240, 0.85);
   margin: 0 auto 16px; line-height: 1.5;
-}
-.event-banner {
-  text-align: center;
-  padding: 12px 16px;
-  margin: 0 -20px;
-  background: linear-gradient(135deg, #7c3aed, #6366f1);
-  color: #fff;
-  font-size: 0.85rem;
-  font-weight: 700;
-  letter-spacing: 0.3px;
 }
 .hero-cta {
   display: inline-flex; align-items: center; gap: 8px;
@@ -438,37 +428,6 @@ header {
   box-shadow: 0 6px 24px rgba(167, 139, 250, 0.35);
 }
 
-/* === 신뢰 배지 (v3) === */
-.trust-badges {
-  padding: 0 0 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.trust-badge {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 16px 20px;
-  backdrop-filter: blur(12px);
-}
-.trust-icon {
-  font-size: 28px;
-  flex-shrink: 0;
-}
-.trust-text strong {
-  display: block;
-  font-size: 0.85rem;
-  color: var(--text-bright);
-  margin-bottom: 2px;
-}
-.trust-text span {
-  font-size: 0.75rem;
-  color: var(--text-dim);
-}
 
 /* === 사업자 정보 === */
 .biz-info {
@@ -576,7 +535,7 @@ footer a { color: var(--accent); text-decoration: none; }
 }
 .login-modal.active { display: flex; }
 .login-modal-content {
-  width: 100%; max-width: 480px;
+  width: 100%; max-width: 560px;
   background: linear-gradient(180deg, #1e1e3a 0%, #161630 100%);
   border: 1.5px solid rgba(167, 139, 250, 0.35);
   border-bottom: none;
@@ -694,16 +653,10 @@ footer a { color: var(--accent); text-decoration: none; }
     <div class="hero-content">
       <div class="hero-badge">写真家歴20年が自ら開発</div>
       <h1>写真館クオリティの<br><span>AI証明写真</span></h1>
-      <p class="hero-sub">パスポート・身分証 発行保証</p>
       <a class="hero-cta" href="/prep" id="btn-hero-cta">今すぐ撮影する &rarr;</a>
       <p class="hero-price">1枚完成 <strong>¥990(税込)</strong> · 初回ログイン10c無料</p>
     </div>
   </section>
-
-  <!-- オープンイベントバナー -->
-  <div class="event-banner">
-    🎉 オープンイベント — 簡単ログインで無料体験！
-  </div>
 
   <!-- サンプルショーケース -->
   <section class="showcase fade-in">
@@ -781,24 +734,6 @@ footer a { color: var(--accent); text-decoration: none; }
       </div>
       <div class="price-bonus">🎁 +10cボーナス &nbsp; ¥210おトク</div>
       <a class="pkg-link" href="/charge.html?return=index">パッケージ割引を見る →</a>
-    </div>
-  </section>
-
-  <!-- 信頼バッジ (v3) -->
-  <section class="trust-badges fade-in">
-    <div class="trust-badge">
-      <div class="trust-icon">🛡</div>
-      <div class="trust-text">
-        <strong>パスポート写真 発行保証</strong>
-        <span>不合格時100c付与 · LINE CS</span>
-      </div>
-    </div>
-    <div class="trust-badge">
-      <div class="trust-icon">🎁</div>
-      <div class="trust-text">
-        <strong>初回ログイン10c進呈</strong>
-        <span>リタッチ1回無料体験</span>
-      </div>
     </div>
   </section>
 
