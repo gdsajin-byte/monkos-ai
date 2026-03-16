@@ -16,7 +16,7 @@ const blogCollection = firestore.collection('blog_posts');
 const galleryCollection = firestore.collection('gallery_items');
 const siteConfigRef = firestore.collection('site_config').doc('main');
 
-const EMOJI = { '증명사진': '📸', '여권·비자': '🛂', '취업·이력서': '💼', '헤어·메이크업': '💆', 'news': '📰', 'default': '💡' };
+const EMOJI = { '사진': '📸', '패션': '👗', '헤어': '💇', '메이크업': '💄', 'AI': '🤖', 'news': '📰', '기타': '💡', 'default': '💡' };
 const GRADIENTS = [
   'linear-gradient(135deg,#f0eee8,#e8e5de)',
   'linear-gradient(135deg,#eef0f8,#e0e4f0)',

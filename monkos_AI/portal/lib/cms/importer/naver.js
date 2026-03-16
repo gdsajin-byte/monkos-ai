@@ -13,10 +13,10 @@ const DELAY_MS = 500;
 
 // 허용 카테고리 → Firestore 필드 매핑
 const CATEGORY_MAP = {
-  'MONKOS AI': { category: '증명사진', author: 'MONKOS' },
-  "SHIN's AI story": { category: '증명사진', author: '신작가' },
-  "HAN's BEAUTY": { category: '헤어·메이크업', author: '한송이' },
-  "KKU's DESIGN": { category: '증명사진', author: '꾸' },
+  'MONKOS AI': { category: 'AI', author: 'MONKOS' },
+  "SHIN's AI story": { category: 'AI', author: '신작가' },
+  "HAN's BEAUTY": { category: '메이크업', author: '한송이' },
+  "KKU's DESIGN": { category: '사진', author: '꾸' },
 };
 
 const HEADERS = {
