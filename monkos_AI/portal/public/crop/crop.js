@@ -232,14 +232,14 @@ function render() {
   // 핀: 정수리
   const crownPin = $('crownPin');
   crownPin.style.left = pts.crown.x + 'px';
-  crownPin.style.top = (pts.crown.y - 6) + 'px';
+  crownPin.style.top = (pts.crown.y - 4.5) + 'px';
   crownPin.style.background = fc;
   crownPin.style.boxShadow = `0 0 12px ${fc}BB`;
 
   // 힌트
   const hint = $('crownHint');
   hint.style.left = (pts.crown.x + 10) + 'px';
-  hint.style.top = (pts.crown.y - 6) + 'px';
+  hint.style.top = (pts.crown.y - 4.5) + 'px';
   hint.style.background = COLORS.bg + 'EE';
   hint.style.borderColor = fc + '50';
   hint.style.color = fc;
@@ -825,8 +825,6 @@ function updateConsent() {
   const cls1 = consent1 ? 'enabled' : 'disabled';
   $('modalBtnDownload').className = `modal-btn modal-btn-primary ${cls1}`;
   $('modalBtnDownload').disabled = !consent1;
-  $('modalBtnOverlay').className = `modal-btn modal-btn-secondary ${cls1}`;
-  $('modalBtnOverlay').disabled = !consent1;
 }
 
 // ─── 앱 내 진입 감지 (thankyou → crop) ───
@@ -964,9 +962,6 @@ async function init() {
 
   $('modalBtnDownload').addEventListener('click', () => {
     if (consent1) { performCrop(); closeModal(); }
-  });
-  $('modalBtnOverlay').addEventListener('click', () => {
-    if (consent1) { alert('가이드 오버레이 캡처 저장 (Canvas 렌더 예정)'); closeModal(); }
   });
 
   // 앱 내 진입이면 자동 로드, 아니면 기존 초기화
