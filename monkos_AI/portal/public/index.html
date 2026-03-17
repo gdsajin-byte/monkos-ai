@@ -191,10 +191,11 @@
       <div class="mag-card"><div class="mag-img" style="background:linear-gradient(135deg,#f0eef5,#e8e4f0)"><span class="icon">😊</span></div><div class="mag-body"><h4>표정 &amp; 포즈 연습법</h4><p>첫인상을 만드는 표정 팁</p><div class="meta">MONKOS · 오늘</div></div></div>
     </div>
     <div class="sb-sec"><div class="sb-t">태그</div>
-      <div class="sb-tags">
+      <div class="sb-tags" id="sbTags">
         <span class="sb-tag">여권</span><span class="sb-tag">이력서</span><span class="sb-tag">비자</span><span class="sb-tag">헤어메이크업</span>
         <span class="sb-tag">규격안내</span><span class="sb-tag">취업</span><span class="sb-tag">AI리터칭</span><span class="sb-tag">크롭</span>
       </div>
+      <button class="sb-tag-toggle" id="sbTagToggle" onclick="(function(btn){var t=document.getElementById('sbTags');if(t.classList.toggle('expanded')){btn.textContent='접기 ▲'}else{btn.textContent='더보기 ▼'}})(this)">더보기 ▼</button>
     </div>
   </aside>
 
@@ -266,19 +267,20 @@
   <div class="ft-copy">© 2026 MONKOS.AI — Evolution of Creative Intelligence</div>
 </footer>
 
-<!-- Chatbot Bar -->
-<div class="chatbot-bar">
-  <div class="cb-avatar"><img src="/monkos-icon.svg" alt="MONKOS"></div>
-  <textarea class="cb-input" id="cbInput" rows="2" placeholder="MONKOS AI에게 질문하세요 — 증명사진, 규격, 크롭, 가격 등"></textarea>
-  <button class="cb-send" id="cbSend">↑</button>
-  <span class="cb-hint">Enter로 전송</span>
-</div>
+<!-- Chatbot FAB -->
+<button class="chatbot-fab" id="chatFab" onclick="openChat()">
+  <img src="/monkos-icon.svg" alt="MONKOS" width="28" height="28">
+</button>
 
 <!-- Chat Modal -->
 <div class="chat-modal" id="chatModal">
   <div class="chat-box">
     <div class="chat-header"><h3>MONKOS AI</h3><button class="chat-close" id="chatClose">✕</button></div>
     <div class="chat-body" id="chatBody"></div>
+    <div class="chat-input-area">
+      <textarea class="cb-input" id="cbInput" rows="1" placeholder="MONKOS AI에게 질문하세요"></textarea>
+      <button class="cb-send" id="cbSend">↑</button>
+    </div>
   </div>
 </div>
 
@@ -331,6 +333,17 @@
     <button class="modal-close-btn" id="portraitModalClose" onclick="closeConsentModal('portrait')">確認</button>
   </div>
 </div>
+
+<script>
+// 태그 토글: 4줄 초과 시에만 버튼 표시
+document.addEventListener('DOMContentLoaded', function() {
+  var tags = document.getElementById('sbTags');
+  var toggle = document.getElementById('sbTagToggle');
+  if (tags && toggle && tags.scrollHeight > tags.clientHeight) {
+    toggle.style.display = 'block';
+  }
+});
+</script>
 
 <!-- JS (의존성 순서: i18n → auth → credits → chat → main) -->
 <script src="/js/i18n.js"></script>

@@ -52,7 +52,7 @@ body {
   color: var(--ink);
   background: var(--bg);
   -webkit-font-smoothing: antialiased;
-  padding-bottom: 60px;
+  padding-bottom: 0;
   overflow-x: hidden;
 }
 a { color: inherit; text-decoration: none; }
@@ -292,13 +292,19 @@ nav {
   font-size: 8px; font-weight: 700; color: var(--ink-l);
   text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px;
 }
-.sb-tags { display: flex; flex-wrap: wrap; gap: 3px; }
+.sb-tags { display: flex; flex-wrap: wrap; gap: 3px; max-height: 68px; overflow: hidden; transition: max-height 0.3s; }
+.sb-tags.expanded { max-height: 500px; }
 .sb-tag {
   padding: 2px 6px; border-radius: 3px;
   font-size: 8px; font-weight: 600; color: var(--ink-m);
   background: var(--surface); border: 1px solid var(--border); cursor: pointer;
 }
 .sb-tag:hover { border-color: var(--accent); color: var(--accent); }
+.sb-tag-toggle {
+  display: none; width: 100%; padding: 4px 0; margin-top: 4px;
+  border: none; background: none; font-size: 8px; color: var(--ink-l); cursor: pointer; text-align: center;
+}
+.sb-tag-toggle:hover { color: var(--accent); }
 
 .mag-card {
   padding: 0; border-radius: 8px;
@@ -456,51 +462,29 @@ nav {
 .credit-info-total .price { font-size: 15px; font-weight: 800; font-family: var(--mono); margin-left: 3px; }
 .credit-info-total .note { font-size: 7px; color: var(--green); font-weight: 600; margin-top: 2px; }
 
-/* === Chatbot Bar === */
-.chatbot-bar {
-  position: fixed; bottom: 8px; left: 50%; transform: translateX(-50%); z-index: 200;
-  width: calc(100% - 380px); max-width: 700px; min-width: 320px;
-  background: var(--white); border: 1px solid var(--border);
-  padding: 10px 20px;
-  display: flex; align-items: flex-end; gap: 10px;
-  box-shadow: 0 -4px 20px rgba(0,0,0,.04);
-  border-radius: 16px;
-}
-.cb-avatar {
-  width: 32px; height: 32px; border-radius: 10px;
+/* === Chatbot FAB === */
+.chatbot-fab {
+  position: fixed; bottom: 24px; right: 24px; z-index: 200;
+  width: 56px; height: 56px; border-radius: 50%; border: none;
+  background: var(--accent); color: #fff; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; overflow: hidden; margin-bottom: 4px;
+  box-shadow: 0 4px 16px rgba(74,58,186,.3);
+  transition: transform 0.2s, box-shadow 0.2s;
 }
-.cb-avatar img {
-  width: 100%; height: 100%; object-fit: contain;
-}
-.cb-input {
-  flex: 1; padding: 8px 16px; border-radius: 10px;
-  border: 1px solid var(--border); background: var(--surface);
-  font-size: 13px; color: var(--ink); font-family: var(--sans); outline: none;
-  resize: none; line-height: 1.5; height: 56px;
-}
-.cb-input:focus { border-color: var(--accent); background: var(--white); }
-.cb-input::placeholder { color: var(--ink-l); }
-.cb-send {
-  width: 36px; height: 36px; border-radius: 10px; border: none;
-  background: var(--accent); color: #fff; font-size: 14px;
-  cursor: pointer; display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; margin-bottom: 4px;
-}
-.cb-hint { font-size: 9px; color: var(--ink-l); flex-shrink: 0; margin-bottom: 8px; }
+.chatbot-fab:hover { transform: scale(1.08); box-shadow: 0 6px 24px rgba(74,58,186,.4); }
+.chatbot-fab img { width: 28px; height: 28px; border-radius: 50%; }
 
 /* === Chat Modal === */
 .chat-modal {
   display: none; position: fixed; inset: 0; z-index: 300;
   background: rgba(0,0,0,.4); backdrop-filter: blur(4px);
   align-items: flex-end; justify-content: center;
-  padding: 0 24px 80px;
+  padding: 0 24px 24px;
 }
 .chat-modal.open { display: flex; }
 .chat-box {
   width: 100%; max-width: 640px; max-height: 70vh;
-  border-radius: 16px 16px 0 0; background: var(--white);
+  border-radius: 16px; background: var(--white);
   border: 1px solid var(--border);
   box-shadow: 0 -8px 40px rgba(0,0,0,.1);
   display: flex; flex-direction: column; overflow: hidden;
@@ -537,6 +521,23 @@ nav {
 .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
 .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
 @keyframes typingDot { 0%, 60%, 100% { opacity: 0.3; } 30% { opacity: 1; } }
+.chat-input-area {
+  display: flex; align-items: flex-end; gap: 8px;
+  padding: 12px 18px; border-top: 1px solid var(--border); background: var(--white);
+}
+.chat-input-area .cb-input {
+  flex: 1; padding: 10px 14px; border-radius: 10px;
+  border: 1px solid var(--border); background: var(--surface);
+  font-size: 13px; color: var(--ink); font-family: var(--sans);
+  outline: none; resize: none; line-height: 1.5; max-height: 80px;
+}
+.chat-input-area .cb-input:focus { border-color: var(--accent); background: var(--white); }
+.chat-input-area .cb-input::placeholder { color: var(--ink-l); }
+.chat-input-area .cb-send {
+  width: 36px; height: 36px; border-radius: 10px; border: none;
+  background: var(--accent); color: #fff; font-size: 14px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
 
 /* === Modals (shared) === */
 .modal-overlay {
@@ -600,7 +601,7 @@ nav {
 footer {
   border-top: 1px solid var(--border);
   padding: 20px 24px;
-  max-width: 1280px; margin: 0 auto; margin-bottom: 60px;
+  max-width: 1280px; margin: 0 auto;
 }
 .ft-biz {
   font-size: 9px; color: var(--ink-l); line-height: 1.6; text-align: center;
@@ -623,13 +624,11 @@ footer {
   .svc-grid { grid-template-columns: 1fr; }
   .howto-grid { grid-template-columns: 1fr; }
   .user-bar { padding: 6px 12px; }
-  .chatbot-bar {
-    width: calc(100% - 24px); min-width: 0; max-width: 100%;
-    bottom: env(safe-area-inset-bottom, 0px); border-radius: 16px 16px 0 0;
-    padding: 8px 12px 12px;
-  }
-  .cb-input { height: 40px; font-size: 14px; }
-  .cb-hint { display: none; }
+  .chatbot-fab { bottom: 16px; right: 16px; width: 48px; height: 48px; }
+  .chatbot-fab img { width: 24px; height: 24px; }
+  .chat-modal { padding: 0; }
+  .chat-box { max-width: 100%; max-height: 100%; height: 100%; border-radius: 0; }
+  .chat-input-area .cb-input { font-size: 14px; }
   .gi { width: 100px; }
   nav { padding: 0 12px; }
   .n-links { gap: 12px; overflow-x: auto; }

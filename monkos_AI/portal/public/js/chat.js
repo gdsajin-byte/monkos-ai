@@ -12,6 +12,8 @@ function openChat(initialMsg) {
   if (!modal) return;
   chatOpen = true;
   modal.classList.add('open');
+  var fab = document.getElementById('chatFab');
+  if (fab) fab.style.display = 'none';
 
   var body = document.getElementById('chatBody');
   // 첫 오픈 시 웰컴 메시지
@@ -23,12 +25,19 @@ function openChat(initialMsg) {
     addMessage(initialMsg, 'user');
     doSend(initialMsg);
   }
+  // 입력창 포커스
+  setTimeout(function() {
+    var input = document.getElementById('cbInput');
+    if (input) input.focus();
+  }, 300);
 }
 
 function closeChat() {
   var modal = document.getElementById('chatModal');
   if (modal) modal.classList.remove('open');
   chatOpen = false;
+  var fab = document.getElementById('chatFab');
+  if (fab) fab.style.display = 'flex';
 }
 
 function addMessage(text, type) {
