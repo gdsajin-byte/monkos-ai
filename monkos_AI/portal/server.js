@@ -202,6 +202,15 @@ const httpServer = createServer(async (req, res) => {
   if (urlPath?.startsWith('/api/admin/board/') && urlPath?.endsWith('/toggle') && req.method === 'PUT') return handleBoardAdminToggle(req, res);
   if (urlPath?.startsWith('/api/admin/board/') && req.method === 'DELETE') return handleBoardAdminDelete(req, res);
 
+  // === 크롭앱 ===
+  if (urlPath === '/crop' && req.method === 'GET') {
+    try {
+      const html = readFileSync(join(__dirname, 'public/crop/index.html'));
+      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+      return res.end(html);
+    } catch { /* fall through to static */ }
+  }
+
   // === CMS 공개 페이지 (SSR) ===
   if ((urlPath === '/' || urlPath === '/index.html') && req.method === 'GET') return renderHome(req, res);
   if (urlPath === '/sitemap.xml' && req.method === 'GET') return renderSitemap(req, res);

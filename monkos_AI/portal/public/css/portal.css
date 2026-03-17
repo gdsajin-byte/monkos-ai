@@ -464,7 +464,7 @@ nav {
 
 /* === Chatbot FAB === */
 .chatbot-fab {
-  position: fixed; bottom: 24px; right: max(16px, calc(50vw - 640px + 90px)); z-index: 200;
+  position: fixed; bottom: 24px; right: max(16px, calc(50vw - 640px + 16px)); z-index: 200;
   width: 56px; height: 56px; border-radius: 50%; border: none;
   background: var(--accent); color: #fff; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
@@ -494,7 +494,7 @@ nav {
 .chat-header {
   padding: 14px 18px; border-bottom: none;
   display: flex; justify-content: space-between; align-items: center;
-  background: linear-gradient(135deg, hsl(268, 60%, 30%), hsl(268, 55%, 38%));
+  background: linear-gradient(135deg, #4a1d96, #5b2da8);
 }
 .chat-header h3 { font-size: 14px; font-weight: 800; color: #fff; }
 .chat-close {
