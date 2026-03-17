@@ -26,11 +26,19 @@ h1 { font-size: 24px; font-weight: 700; color: var(--text-bright); margin-bottom
 
 .login-box { text-align: center; padding: 60px 20px; }
 .login-box p { color: var(--text-dim); margin-bottom: 24px; }
+.login-buttons { display: flex; flex-direction: column; gap: 12px; align-items: center; }
 .kakao-btn {
   display: inline-block; padding: 14px 40px; background: #FEE500; color: #191919;
-  border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; border: none;
+  border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; border: none; min-width: 240px;
 }
 .kakao-btn:hover { background: #f5dc00; }
+.google-btn {
+  display: inline-block; padding: 14px 40px; background: #fff; color: #333;
+  border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; border: 1px solid var(--border); min-width: 240px;
+}
+.google-btn:hover { background: #f8f8f8; border-color: var(--border-hover); }
+.nav-back { font-size: 13px; color: var(--text-dim); }
+.nav-back:hover { color: var(--accent); }
 
 .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
 .menu-card {
@@ -49,7 +57,10 @@ h1 { font-size: 24px; font-weight: 700; color: var(--text-bright); margin-bottom
 
 <nav class="nav">
   <a href="/admin/" class="nav-logo">MONKOS Admin</a>
-  <span class="nav-user" id="navUser"></span>
+  <div style="display:flex;align-items:center;gap:16px;">
+    <a href="/" class="nav-back">&larr; 포털로 돌아가기</a>
+    <span class="nav-user" id="navUser"></span>
+  </div>
 </nav>
 
 <div class="container">
@@ -57,7 +68,10 @@ h1 { font-size: 24px; font-weight: 700; color: var(--text-bright); margin-bottom
   <div id="loginSection" class="login-box" style="display:none">
     <h1>CMS Admin</h1>
     <p>관리자 로그인이 필요합니다</p>
-    <a href="/auth/kakao?redirect=/admin/" class="kakao-btn">카카오 로그인</a>
+    <div class="login-buttons">
+      <button class="google-btn" onclick="googleLogin()">Google 로그인</button>
+      <a href="/auth/kakao?redirect=/admin/" class="kakao-btn">카카오 로그인</a>
+    </div>
   </div>
 
   <!-- 인증 후 -->
@@ -93,8 +107,16 @@ h1 { font-size: 24px; font-weight: 700; color: var(--text-bright); margin-bottom
   </div>
 </div>
 
+<script>var region = 'kr'; var lang = 'ko';</script>
+<script src="/js/auth.js"></script>
 <script>
+// Google 로그인 성공 시 어드민 페이지 새로고침
+var _origUpdateAuthUI = updateAuthUI;
+updateAuthUI = function() { if (currentUser) { location.reload(); } };
+
 async function init() {
+  await loadGISWithRetry();
+  await initGoogleAuth();
   try {
     const r = await fetch('/api/auth/verify-cookie', { credentials: 'include' });
     if (!r.ok) throw new Error('Not authenticated');
