@@ -59,13 +59,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // 크롭앱 카드
-  var svcFree = document.querySelector('.svc.free');
-  if (svcFree) {
-    svcFree.addEventListener('click', function() {
-      window.open('https://crop.monkos.ai', '_blank');
-    });
-  }
+  // 크롭앱 카드 — <a href="/crop">으로 이미 처리, JS 가로채기 제거
 
   // /pricing → openCreditShop
   var pricingLink = document.querySelector('a[href="/pricing"]');
