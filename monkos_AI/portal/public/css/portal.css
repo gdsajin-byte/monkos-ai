@@ -464,7 +464,7 @@ nav {
 
 /* === Chatbot FAB === */
 .chatbot-fab {
-  position: fixed; bottom: 24px; right: 24px; z-index: 200;
+  position: fixed; bottom: 24px; right: max(24px, calc((100vw - 1280px) / 2 + 24px)); z-index: 200;
   width: 56px; height: 56px; border-radius: 50%; border: none;
   background: var(--accent); color: #fff; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
@@ -492,14 +492,15 @@ nav {
 }
 @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 .chat-header {
-  padding: 14px 18px; border-bottom: 1px solid var(--border);
+  padding: 14px 18px; border-bottom: none;
   display: flex; justify-content: space-between; align-items: center;
+  background: linear-gradient(135deg, var(--accent), var(--accent-l));
 }
-.chat-header h3 { font-size: 14px; font-weight: 800; }
+.chat-header h3 { font-size: 14px; font-weight: 800; color: #fff; }
 .chat-close {
   width: 28px; height: 28px; border-radius: 7px;
-  border: 1px solid var(--border); background: none;
-  cursor: pointer; font-size: 12px; color: var(--ink-m);
+  border: 1px solid rgba(255,255,255,.3); background: none;
+  cursor: pointer; font-size: 12px; color: #fff;
   display: flex; align-items: center; justify-content: center;
 }
 .chat-body { flex: 1; padding: 18px; overflow-y: auto; }
@@ -626,8 +627,8 @@ footer {
   .user-bar { padding: 6px 12px; }
   .chatbot-fab { bottom: 16px; right: 16px; width: 48px; height: 48px; }
   .chatbot-fab img { width: 24px; height: 24px; }
-  .chat-modal { padding: 0; }
-  .chat-box { max-width: 100%; max-height: 100%; height: 100%; border-radius: 0; }
+  .chat-modal { padding: 0; align-items: flex-end; }
+  .chat-box { max-width: 100%; max-height: 50vh; border-radius: 16px 16px 0 0; }
   .chat-input-area .cb-input { font-size: 14px; }
   .gi { width: 100px; }
   nav { padding: 0 12px; }
