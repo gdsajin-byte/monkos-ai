@@ -1,3 +1,0 @@
-# CF Pages custom headers
-# photolab/ 경로만 idphoto-kr.monkos.ai로 301 리다이렉트 (_redirects 참고)
-# image_pro/ 및 /api/* 는 monk.kr 자체 서빙 (분리 원칙)
