@@ -42,42 +42,45 @@ We believe AI photo technology must be used responsibly. MONKOS will never gener
 
 **[monkos.ai/crop](https://monkos.ai/crop)** · Free · No signup · No upload
 
-MONKOS Crop takes any portrait photo and produces a pixel-perfect ICAO-compliant passport crop (35×45mm, 413×531px, 300dpi). Everything runs in the browser — your photo never leaves your device.
+MONKOS Crop produces pixel-perfect ICAO-compliant passport crops entirely in the browser. Your photo never leaves your device.
 
 | | Competitor crop apps | MONKOS Crop |
 |---|---|---|
 | Price | Paid | **Free** |
 | Server | Photo uploaded | **None — device only** |
 | Privacy | Photo transmitted | **Never leaves device** |
-| Validation | Basic guides | **3-tier real-time ICAO judgment** |
-| Precision | Manual eye-match | **FaceMesh 478 landmarks + auto-placement** |
+| Validation | Basic guides | **Real-time compliance feedback** |
+| Precision | Manual alignment | **AI face detection + auto-placement** |
 
-### Architecture evolution — 3 versions in 8 days
+### How we got here — 3 pivots in 8 days
 
-| Version | Approach | Outcome |
-|---------|----------|---------|
-| **v0** (Mar 10) | Gemini 2.0 Flash LLM coordinates → `cropToSpec` | LLMs can't do pixel-precision — 1mm off means rejection |
-| **v1** (Mar 11) | TensorFlow.js FaceMesh on Cloud Run (478 landmarks, 742ms/img) | Works, but cold-start + cost + privacy unsolved |
-| **v2** (Mar 12) | MediaPipe FaceMesh CDN + Canvas 2D in browser | **Shipped** — zero server, zero cost, zero privacy risk |
+The final architecture wasn't the first attempt. We went through three fundamentally different approaches before landing on the right one.
 
-### Key technical decisions
+**Attempt 1 — LLM-based crop (Mar 10)**: Asked a large language model for facial coordinates, then reverse-calculated the crop. Turned out LLMs give *approximate* positions — useless when millimeter precision determines pass or fail. More importantly, this approach was structurally backwards.
 
-- **Crown estimation**: `crownY = eyeY - (chinY - eyeY)` — anatomical approximation, manual pin override for edge cases
-- **3-tier color judgment**: Green (optimal) / Yellow (borderline) / Red (out of spec) — not just pass/fail
-- **Download blocking**: Red metric → button disabled + specific fix instruction
-- **Canvas transform replication**: CSS `object-fit: cover` + translate/scale reproduced in Canvas 2D for pixel-accurate output
+**Attempt 2 — Server-side face detection (Mar 11)**: Replaced LLM with proper face detection (478 landmarks). Accurate, but server-side processing meant cold-start delays, ongoing cost, and photos leaving the user's device.
 
-### Stack
+**Attempt 3 — Browser-only (Mar 12, shipped)**: Moved everything to the browser. Face detection runs client-side via CDN. Crop output via Canvas API. The server disappears entirely — and with it, all three problems.
 
-| Layer | Technology | Role |
-|-------|-----------|------|
-| Face detection | MediaPipe FaceMesh (CDN) | 478 landmarks, real-time |
-| Crop engine | Canvas 2D API | Native resolution + 300dpi |
-| UI | Vanilla HTML + JS + CSS | Zero build tools |
-| Validation | ICAO 3-tier color system | Green / Yellow / Red |
-| Hosting | Static CDN | Zero server cost |
+### The photo studio insight
 
-**977 LOC** JS + 380 CSS + 217 HTML · **1 external dependency** (MediaPipe CDN) · 8-day development · All tiers on roadmap (background removal, replacement) are client-only.
+The key design breakthrough came from real-world photo studio workflow: studios don't extract a frame from a photo — they fit the photo into a fixed frame. The frame comes first. We digitized this exact workflow with interactive guides and real-time compliance feedback.
+
+### Development metrics
+
+| Metric | Value |
+|--------|-------|
+| Total development | 8 days (Mar 10–17) |
+| Core session | 8h 40min single-day intensive (Mar 12) |
+| Architecture iterations | 3 |
+| UX iterations | 3 cycles |
+| Server cost | **Zero** |
+| External dependencies | **1** (face detection CDN) |
+| JP localization | Same day as v2 launch |
+
+### Roadmap
+
+All future tiers (background removal, background replacement, spec database expansion) will remain **client-only** — zero server calls at any scale.
 
 ## Architecture
 
@@ -85,7 +88,7 @@ MONKOS Crop takes any portrait photo and produces a pixel-perfect ICAO-compliant
 - **Real-time AI Retouching Pipeline** — End-to-end image processing in <10s
 - **Cloud-native Infrastructure** — Google Cloud Run (serverless), Firestore (real-time DB), GCS (image storage)
 - **ICAO Compliance Engine** — Automated validation against international photo standards
-- **Client-side Crop Engine** — MediaPipe FaceMesh + Canvas 2D (zero server)
+- **Client-side Crop Engine** — Browser-based face detection + Canvas crop (zero server)
 - **Credit-based Billing** — Flexible pay-per-use pricing model
 
 ## Standards & Compliance
