@@ -83,9 +83,11 @@ export async function renderHome(req, res) {
 
     const allPosts = postsSnap.docs.map(d => ({ slug: d.id, ...d.data() }));
 
-    // KO 우선 필터 (KO 없으면 전체 fallback)
-    const koPosts = allPosts.filter(p => p.lang === 'ko');
-    const displayPosts = koPosts.length > 0 ? koPosts : allPosts;
+    // 언어별 필터 (쿼리 파라미터 ?lang= 기반, 기본값 ko)
+    const reqUrl = new URL(req.url, 'http://localhost');
+    const lang = reqUrl.searchParams.get('lang') || 'ko';
+    const langPosts = allPosts.filter(p => p.lang === lang);
+    const displayPosts = langPosts.length > 0 ? langPosts : allPosts;
 
     // 0. Gallery strip (Firestore → 동적)
     const galleryItems = gallerySnap.docs.map(d => d.data());

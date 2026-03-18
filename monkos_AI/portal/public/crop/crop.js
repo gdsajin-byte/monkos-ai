@@ -4,6 +4,135 @@
 // ─── 샘플 이미지 (없음 — 업로드 유도) ───
 const SAMPLE_IMG = "";
 
+// ─── i18n 딕셔너리 ───
+const CROP_I18N = {
+  ko: {
+    passport: '여권/신분증', id: '반명함',
+    warnPassport: '눈썹/이마 노출 필수 · 무표정 정면',
+    warnId: '헤어/의상 정돈 · 좋은 인상의 표정',
+    crownLabel: '정수리', chinLabel: '턱끝', eyeLabel: '눈',
+    inSpec: '✓ 규격 내', outSpec: '✗ 범위 초과',
+    crownDrag: '정수리 드래그', chinLock: '턱끝 고정', scale: '스케일',
+    pinHint: '↕ 드래그',
+    metricTop: '상단', metricFace: '얼굴', metricBottom: '하단', metricEye: '눈위치',
+    photo: '사진 선택', back: '← 돌아가기',
+    reset: '↻ 초기화', preview: '👁 미리보기', download: '다운로드',
+    upload: '업로드',
+    sampleMsg: '정면 얼굴 사진(어깨~가슴선 노출)을 업로드하세요',
+    analyzing: '얼굴 분석 중...',
+    noFace: '얼굴을 감지하지 못했습니다. 정면 사진을 업로드하세요.',
+    noWebGL: '이 브라우저에서는 얼굴 분석을 지원하지 않습니다.',
+    noImage: '이전 단계의 이미지를 찾을 수 없습니다. 사진을 업로드하세요.',
+    eyeWarnRed: (pct) => `눈 위치 ${pct}% — 허용 40~48%. 사진을 상하로 조정하세요.`,
+    eyeWarnYellow: (pct) => `눈 위치 ${pct}% — 최적 43~45%. 미세 조정 권장.`,
+    centerWarn: (mm, dir) => `좌우 중심 ${mm}mm 이탈 — 사진을 ${dir}으로 이동하세요.`,
+    dirRight: '오른쪽', dirLeft: '왼쪽',
+    faceSmall: (mm, min, max) => `얼굴 크기 ${mm}mm — 허용범위(${min}~${max}mm) 미달. 사진을 확대하세요.`,
+    faceLarge: (mm, min, max) => `얼굴 크기 ${mm}mm — 허용범위(${min}~${max}mm) 초과. 사진을 축소하세요.`,
+    eyeLow: (pct) => `눈 위치 ${pct}% — 허용범위(40~48%) 미달. 사진을 아래로 이동하세요.`,
+    eyeHigh: (pct) => `눈 위치 ${pct}% — 허용범위(40~48%) 초과. 사진을 위로 이동하세요.`,
+    idCenterWarn: (mm, dir) => `좌우 중심 ${mm}mm 이탈 — 사진을 ${dir}으로 이동하세요.`,
+    idTopWarn: (mm) => `정수리 여백 ${mm}mm — 상단이 너무 가깝습니다. 사진을 아래로 이동하세요.`,
+    idFaceWarn: (pct) => `얼굴 비중 ${pct}% — 50% 이상 권장. 사진을 확대하세요.`,
+    icaoRange: (min, max) => `ICAO 허용범위 (${min}~${max}mm)`,
+    specOutput: '출력 규격', specDpi: '해상도', specIcao: 'ICAO',
+    specEyePos: '눈 위치', specGuide: '안내',
+    specIcaoFace: (min, max) => `얼굴 ${min}~${max}mm`,
+    specEyeRange: '40~48% (최적 43~45%)',
+    modalTitle: '다운로드 확인', modalMetricsLabel: '확정 수치',
+    modalFace: '얼굴', modalTop: '상단', modalBottom: '하단', modalEye: '눈위치',
+    modalFaceWarn: (mm, min, max) => `얼굴 길이 ${mm}mm — ICAO 범위(${min}~${max}mm) 벗어남`,
+    modalEyeWarn: (pct) => `눈 위치 ${pct}% — 허용 40~48% 벗어남`,
+    consent1: '[필수] 크롭 결과에 대한 책임은 사용자에게 있음을 동의합니다.',
+    consent2: '크롭 데이터를 품질 향상 목적으로 활용하는 것에 동의합니다. (선택)',
+    modalDownload: '크롭 결과 다운로드', modalCancel: '취소',
+  },
+  ja: {
+    passport: 'パスポート', id: '証明写真',
+    warnPassport: '眉毛・額の露出必須 · 無表情で正面',
+    warnId: 'ヘア・服装を整える · 好印象の表情',
+    crownLabel: '頭頂部', chinLabel: '顎先', eyeLabel: '目',
+    inSpec: '✓ 規格内', outSpec: '✗ 範囲超過',
+    crownDrag: '頭頂ドラッグ', chinLock: '顎先固定', scale: 'スケール',
+    pinHint: '↕ ドラッグ',
+    metricTop: '上部', metricFace: '顔', metricBottom: '下部', metricEye: '目の位置',
+    photo: '写真選択', back: '← 戻る',
+    reset: '↻ リセット', preview: '👁 プレビュー', download: 'ダウンロード',
+    upload: 'アップロード',
+    sampleMsg: '正面顔写真（肩〜胸元露出）をアップロードしてください',
+    analyzing: '顔分析中...',
+    noFace: '顔を検出できませんでした。正面写真をアップロードしてください。',
+    noWebGL: 'このブラウザでは顔分析をサポートしていません。',
+    noImage: '前のステップの画像が見つかりません。写真をアップロードしてください。',
+    eyeWarnRed: (pct) => `目の位置 ${pct}% — 許容 40~48%. 写真を上下に調整してください。`,
+    eyeWarnYellow: (pct) => `目の位置 ${pct}% — 最適 43~45%. 微調整を推奨。`,
+    centerWarn: (mm, dir) => `左右中心 ${mm}mm 逸脱 — 写真を${dir}に移動してください。`,
+    dirRight: '右', dirLeft: '左',
+    faceSmall: (mm, min, max) => `顔のサイズ ${mm}mm — 許容範囲(${min}~${max}mm) 未満. 写真を拡大してください。`,
+    faceLarge: (mm, min, max) => `顔のサイズ ${mm}mm — 許容範囲(${min}~${max}mm) 超過. 写真を縮小してください。`,
+    eyeLow: (pct) => `目の位置 ${pct}% — 許容範囲(40~48%) 未満. 写真を下に移動してください。`,
+    eyeHigh: (pct) => `目の位置 ${pct}% — 許容範囲(40~48%) 超過. 写真を上に移動してください。`,
+    idCenterWarn: (mm, dir) => `左右中心 ${mm}mm 逸脱 — 写真を${dir}に移動してください。`,
+    idTopWarn: (mm) => `頭頂部余白 ${mm}mm — 上部が近すぎます。写真を下に移動してください。`,
+    idFaceWarn: (pct) => `顔の比率 ${pct}% — 50%以上推奨。写真を拡大してください。`,
+    icaoRange: (min, max) => `ICAO 許容範囲 (${min}~${max}mm)`,
+    specOutput: '出力規格', specDpi: '解像度', specIcao: 'ICAO',
+    specEyePos: '目の位置', specGuide: '案内',
+    specIcaoFace: (min, max) => `顔 ${min}~${max}mm`,
+    specEyeRange: '40~48% (最適 43~45%)',
+    modalTitle: 'ダウンロード確認', modalMetricsLabel: '確定数値',
+    modalFace: '顔', modalTop: '上部', modalBottom: '下部', modalEye: '目の位置',
+    modalFaceWarn: (mm, min, max) => `顔の長さ ${mm}mm — ICAO 範囲(${min}~${max}mm) 逸脱`,
+    modalEyeWarn: (pct) => `目の位置 ${pct}% — 許容 40~48% 逸脱`,
+    consent1: '[必須] クロップ結果に対する責任はユーザーにあることに同意します。',
+    consent2: 'クロップデータを品質向上目的で活用することに同意します。(任意)',
+    modalDownload: 'クロップ結果ダウンロード', modalCancel: 'キャンセル',
+  },
+  en: {
+    passport: 'Passport', id: 'ID Photo',
+    warnPassport: 'Eyebrows/forehead must be visible · Neutral expression',
+    warnId: 'Neat hair & clothing · Pleasant expression',
+    crownLabel: 'Crown', chinLabel: 'Chin', eyeLabel: 'Eye',
+    inSpec: '✓ In spec', outSpec: '✗ Out of range',
+    crownDrag: 'Crown drag', chinLock: 'Chin lock', scale: 'Scale',
+    pinHint: '↕ Drag',
+    metricTop: 'Top', metricFace: 'Face', metricBottom: 'Bottom', metricEye: 'Eye pos.',
+    photo: 'Choose Photo', back: '← Back',
+    reset: '↻ Reset', preview: '👁 Preview', download: 'Download',
+    upload: 'Upload',
+    sampleMsg: 'Upload a front-facing photo (shoulders visible)',
+    analyzing: 'Analyzing face...',
+    noFace: 'No face detected. Please upload a front-facing photo.',
+    noWebGL: 'Face analysis is not supported in this browser.',
+    noImage: 'Image from previous step not found. Please upload a photo.',
+    eyeWarnRed: (pct) => `Eye position ${pct}% — allowed 40~48%. Adjust photo up/down.`,
+    eyeWarnYellow: (pct) => `Eye position ${pct}% — optimal 43~45%. Fine adjustment recommended.`,
+    centerWarn: (mm, dir) => `Center offset ${mm}mm — move photo ${dir}.`,
+    dirRight: 'right', dirLeft: 'left',
+    faceSmall: (mm, min, max) => `Face size ${mm}mm — below range (${min}~${max}mm). Zoom in.`,
+    faceLarge: (mm, min, max) => `Face size ${mm}mm — above range (${min}~${max}mm). Zoom out.`,
+    eyeLow: (pct) => `Eye position ${pct}% — below range (40~48%). Move photo down.`,
+    eyeHigh: (pct) => `Eye position ${pct}% — above range (40~48%). Move photo up.`,
+    idCenterWarn: (mm, dir) => `Center offset ${mm}mm — move photo ${dir}.`,
+    idTopWarn: (mm) => `Top margin ${mm}mm — too close. Move photo down.`,
+    idFaceWarn: (pct) => `Face ratio ${pct}% — 50%+ recommended. Zoom in.`,
+    icaoRange: (min, max) => `ICAO range (${min}~${max}mm)`,
+    specOutput: 'Output', specDpi: 'Resolution', specIcao: 'ICAO',
+    specEyePos: 'Eye position', specGuide: 'Guide',
+    specIcaoFace: (min, max) => `Face ${min}~${max}mm`,
+    specEyeRange: '40~48% (optimal 43~45%)',
+    modalTitle: 'Download Confirm', modalMetricsLabel: 'Final metrics',
+    modalFace: 'Face', modalTop: 'Top', modalBottom: 'Bottom', modalEye: 'Eye pos.',
+    modalFaceWarn: (mm, min, max) => `Face length ${mm}mm — outside ICAO range (${min}~${max}mm)`,
+    modalEyeWarn: (pct) => `Eye position ${pct}% — outside 40~48% range`,
+    consent1: '[Required] I agree that responsibility for crop results lies with the user.',
+    consent2: 'I agree to use crop data for quality improvement. (Optional)',
+    modalDownload: 'Download crop result', modalCancel: 'Cancel',
+  }
+};
+const cropLang = localStorage.getItem('monkos_lang') || 'ko';
+const ct = CROP_I18N[cropLang] || CROP_I18N.ko;
+
 // ─── 규격 데이터 ───
 const SPECS = {
   passport: { id: 'passport', label: '여권/신분증', wMm: 35, hMm: 45, faceMin: 32, faceMax: 36, faceTarget: 34, topDefault: 5, bottomDefault: 6, pxW: 413, pxH: 531, warn: '눈썹/이마 노출 필수 · 무표정 정면' },
@@ -226,7 +355,7 @@ function render() {
   // 라벨: 눈 위치
   setAttrs('eyeLabelBg', { x: FW - 38, y: eyeY - 15, width: 35, height: 13 });
   const eyeLabel = $('eyeLabelText');
-  eyeLabel.textContent = `눈 ${eyePct}%`;
+  eyeLabel.textContent = `${ct.eyeLabel} ${eyePct}%`;
   setAttrs('eyeLabelText', { x: FW - 36, y: eyeY - 5, fill: ec });
 
   // 핀: 정수리
@@ -271,7 +400,7 @@ function render() {
   bs.style.background = faceInRange ? COLORS.green + '20' : COLORS.red + '20';
   bs.style.border = `1px solid ${fc}50`;
   bs.style.color = fc;
-  bs.textContent = faceInRange ? '✓ 규격 내' : '✗ 범위 초과';
+  bs.textContent = faceInRange ? ct.inSpec : ct.outSpec;
 
   // 배지: 스케일
   $('badgeScale').textContent = `x${imgScale.toFixed(2)}`;
@@ -305,13 +434,13 @@ function render() {
       eyeWarn.style.background = COLORS.redDim;
       eyeWarn.style.border = `1px solid ${COLORS.red}40`;
       eyeWarn.style.color = COLORS.red;
-      eyeWarn.textContent = `눈 위치 ${eyePct}% — 허용 40~48%. 사진을 상하로 조정하세요.`;
+      eyeWarn.textContent = ct.eyeWarnRed(eyePct);
     } else if (ec === COLORS.yellow) {
       eyeWarn.classList.remove('hidden');
       eyeWarn.style.background = COLORS.yellowDim;
       eyeWarn.style.border = `1px solid ${COLORS.yellow}40`;
       eyeWarn.style.color = COLORS.yellow;
-      eyeWarn.textContent = `눈 위치 ${eyePct}% — 최적 43~45%. 미세 조정 권장.`;
+      eyeWarn.textContent = ct.eyeWarnYellow(eyePct);
     } else {
       eyeWarn.classList.add('hidden');
     }
@@ -324,8 +453,8 @@ function render() {
       centerWarn.style.background = cwDim;
       centerWarn.style.border = `1px solid ${cwColor}40`;
       centerWarn.style.color = cwColor;
-      const dir = faceCenterX < FW / 2 ? '오른쪽' : '왼쪽';
-      centerWarn.textContent = `좌우 중심 ${centerOffsetMm.toFixed(1)}mm 이탈 — 사진을 ${dir}으로 이동하세요.`;
+      const dir = faceCenterX < FW / 2 ? ct.dirRight : ct.dirLeft;
+      centerWarn.textContent = ct.centerWarn(centerOffsetMm.toFixed(1), dir);
     } else {
       centerWarn.classList.add('hidden');
     }
@@ -337,10 +466,10 @@ function render() {
       dlBlock.style.border = `1px solid ${COLORS.red}40`;
       dlBlock.style.color = COLORS.red;
       const reasons = [];
-      if (faceMm < spec.faceMin) reasons.push(`얼굴 크기 ${faceMm.toFixed(1)}mm — 허용범위(${spec.faceMin}~${spec.faceMax}mm) 미달. 사진을 확대하세요.`);
-      if (faceMm > spec.faceMax) reasons.push(`얼굴 크기 ${faceMm.toFixed(1)}mm — 허용범위(${spec.faceMin}~${spec.faceMax}mm) 초과. 사진을 축소하세요.`);
-      if (eyeRatio < 0.40) reasons.push(`눈 위치 ${eyePct}% — 허용범위(40~48%) 미달. 사진을 아래로 이동하세요.`);
-      if (eyeRatio > 0.48) reasons.push(`눈 위치 ${eyePct}% — 허용범위(40~48%) 초과. 사진을 위로 이동하세요.`);
+      if (faceMm < spec.faceMin) reasons.push(ct.faceSmall(faceMm.toFixed(1), spec.faceMin, spec.faceMax));
+      if (faceMm > spec.faceMax) reasons.push(ct.faceLarge(faceMm.toFixed(1), spec.faceMin, spec.faceMax));
+      if (eyeRatio < 0.40) reasons.push(ct.eyeLow(eyePct));
+      if (eyeRatio > 0.48) reasons.push(ct.eyeHigh(eyePct));
       dlBlock.textContent = reasons.join(' ');
     } else {
       dlBlock.classList.add('hidden');
@@ -350,7 +479,7 @@ function render() {
     const rangeMin = spec.faceMin / spec.hMm * 100;
     const rangeMax = spec.faceMax / spec.hMm * 100;
     const dotPos = Math.min(97, Math.max(3, faceMm / spec.hMm * 100));
-    $('rangeLabel').textContent = `ICAO 허용범위 (${spec.faceMin}~${spec.faceMax}mm)`;
+    $('rangeLabel').textContent = ct.icaoRange(spec.faceMin, spec.faceMax);
     $('rangeValue').textContent = `${faceInRange ? '✓' : '✗'} ${faceMm.toFixed(1)}mm`;
     $('rangeValue').style.color = fc;
     $('rangeFill').style.left = rangeMin + '%';
@@ -366,9 +495,9 @@ function render() {
     eyeWarn.classList.add('hidden');
     const idWarnings = [];
     if (!isSample) {
-      if (centerOffsetMm >= 2) idWarnings.push(`좌우 중심 ${centerOffsetMm.toFixed(1)}mm 이탈 — 사진을 ${faceCenterX < FW / 2 ? '오른쪽' : '왼쪽'}으로 이동하세요.`);
-      if (topMm < 2) idWarnings.push(`정수리 여백 ${topMm.toFixed(1)}mm — 상단이 너무 가깝습니다. 사진을 아래로 이동하세요.`);
-      if (faceRatio < 0.50) idWarnings.push(`얼굴 비중 ${(faceRatio * 100).toFixed(0)}% — 50% 이상 권장. 사진을 확대하세요.`);
+      if (centerOffsetMm >= 2) idWarnings.push(ct.idCenterWarn(centerOffsetMm.toFixed(1), faceCenterX < FW / 2 ? ct.dirRight : ct.dirLeft));
+      if (topMm < 2) idWarnings.push(ct.idTopWarn(topMm.toFixed(1)));
+      if (faceRatio < 0.50) idWarnings.push(ct.idFaceWarn((faceRatio * 100).toFixed(0)));
     }
     if (idWarnings.length > 0) {
       centerWarn.classList.remove('hidden');
@@ -399,15 +528,16 @@ function render() {
   $('sampleBanner').classList.toggle('hidden', !isSample);
 
   // 규격 정보 테이블
+  const specWarn = specKey === 'passport' ? ct.warnPassport : ct.warnId;
   const rows = isPassport ? [
-    ['출력 규격', `${spec.wMm}x${spec.hMm}mm · ${spec.pxW}x${spec.pxH}px`],
-    ['해상도', '300dpi'],
-    ['ICAO', `얼굴 ${spec.faceMin}~${spec.faceMax}mm`],
-    ['눈 위치', '40~48% (최적 43~45%)'],
+    [ct.specOutput, `${spec.wMm}x${spec.hMm}mm · ${spec.pxW}x${spec.pxH}px`],
+    [ct.specDpi, '300dpi'],
+    [ct.specIcao, ct.specIcaoFace(spec.faceMin, spec.faceMax)],
+    [ct.specEyePos, ct.specEyeRange],
   ] : [
-    ['출력 규격', `${spec.wMm}x${spec.hMm}mm · ${spec.pxW}x${spec.pxH}px`],
-    ['해상도', '300dpi'],
-    ['안내', spec.warn],
+    [ct.specOutput, `${spec.wMm}x${spec.hMm}mm · ${spec.pxW}x${spec.pxH}px`],
+    [ct.specDpi, '300dpi'],
+    [ct.specGuide, specWarn],
   ];
   $('specInfo').innerHTML = rows.map((r, i) =>
     `<div class="spec-row${i < rows.length - 1 ? '' : ''}">
@@ -657,7 +787,7 @@ function showFaceMeshMsg(msg) {
   setTimeout(() => {
     el.classList.add('hidden');
     el.querySelector('.facemesh-spinner').style.display = '';
-    el.querySelector('span').textContent = '얼굴 분석 중...';
+    el.querySelector('span').textContent = ct.analyzing;
   }, 2500);
 }
 
@@ -700,7 +830,7 @@ async function handleFile(e) {
         } else {
           // 얼굴 미감지
           lastDetectedLandmarks = null;
-          showFaceMeshMsg('얼굴을 감지하지 못했습니다. 정면 사진을 업로드하세요.');
+          showFaceMeshMsg(ct.noFace);
         }
       } catch (err) {
         $('facemeshLoading').classList.add('hidden');
@@ -711,7 +841,7 @@ async function handleFile(e) {
       // FaceMesh 미사용 → SAMPLE_POINTS 폴백
       lastDetectedLandmarks = null;
       if (!checkWebGL()) {
-        showFaceMeshMsg('이 브라우저에서는 얼굴 분석을 지원하지 않습니다.');
+        showFaceMeshMsg(ct.noWebGL);
       }
       reset(specKey);
     }
@@ -779,10 +909,10 @@ function openModal() {
   $('modalMetrics').style.borderColor = faceInRange ? COLORS.green + '40' : COLORS.red + '40';
 
   const items = [
-    { l: '얼굴', v: faceMm.toFixed(1) + 'mm', c: fc },
-    { l: '상단', v: topMm.toFixed(1) + 'mm', c: COLORS.muted },
-    { l: '하단', v: bottomMm.toFixed(1) + 'mm', c: COLORS.muted },
-    { l: '눈위치', v: eyePct + '%', c: ec },
+    { l: ct.modalFace, v: faceMm.toFixed(1) + 'mm', c: fc },
+    { l: ct.modalTop, v: topMm.toFixed(1) + 'mm', c: COLORS.muted },
+    { l: ct.modalBottom, v: bottomMm.toFixed(1) + 'mm', c: COLORS.muted },
+    { l: ct.modalEye, v: eyePct + '%', c: ec },
   ];
   $('modalMetricsGrid').innerHTML = items.map(i =>
     `<div class="modal-metric-item">
@@ -798,8 +928,8 @@ function openModal() {
     mw.style.background = COLORS.redDim;
     mw.style.color = COLORS.red;
     mw.textContent = !faceInRange
-      ? `얼굴 길이 ${faceMm.toFixed(1)}mm — ICAO 범위(${spec.faceMin}~${spec.faceMax}mm) 벗어남`
-      : `눈 위치 ${eyePct}% — 허용 40~48% 벗어남`;
+      ? ct.modalFaceWarn(faceMm.toFixed(1), spec.faceMin, spec.faceMax)
+      : ct.modalEyeWarn(eyePct);
   } else {
     mw.classList.add('hidden');
   }
@@ -874,7 +1004,7 @@ async function checkAppEntry() {
               render();
             } else {
               lastDetectedLandmarks = null;
-              showFaceMeshMsg('얼굴을 감지하지 못했습니다.');
+              showFaceMeshMsg(ct.noFace);
             }
           } catch (err) {
             $('facemeshLoading').classList.add('hidden');
@@ -898,11 +1028,60 @@ async function checkAppEntry() {
     // from=thankyou이지만 세션 데이터 없음 → 안내
     const banner = $('sampleBanner');
     if (banner) {
-      banner.querySelector('span').textContent = '이전 단계의 이미지를 찾을 수 없습니다. 사진을 업로드하세요.';
+      banner.querySelector('span').textContent = ct.noImage;
       banner.classList.remove('hidden');
     }
   }
   return false;
+}
+
+// ─── i18n DOM 적용 ───
+function applyCropLang() {
+  document.documentElement.lang = cropLang;
+  // 규격 탭
+  document.querySelectorAll('.spec-tab').forEach(tab => {
+    if (tab.dataset.spec === 'passport') tab.textContent = ct.passport;
+    if (tab.dataset.spec === 'id') tab.textContent = ct.id;
+  });
+  // 샘플 배너
+  const bannerSpan = $('sampleBanner')?.querySelector('span');
+  if (bannerSpan) bannerSpan.textContent = ct.sampleMsg;
+  $('sampleUploadBtn').textContent = ct.upload;
+  // 범례
+  const legendLabels = document.querySelectorAll('.legend-label');
+  if (legendLabels[0]) legendLabels[0].textContent = ct.crownDrag;
+  if (legendLabels[1]) legendLabels[1].textContent = ct.chinLock;
+  if (legendLabels[2]) legendLabels[2].textContent = ct.scale;
+  // SVG 텍스트
+  $('crownLabelText').textContent = ct.crownLabel;
+  $('chinLabelText').textContent = ct.chinLabel;
+  // 핀 힌트
+  $('crownHint').textContent = ct.pinHint;
+  // 수치 라벨
+  const metricLabels = document.querySelectorAll('.metric-label');
+  if (metricLabels[0]) metricLabels[0].textContent = ct.metricTop;
+  if (metricLabels[1]) metricLabels[1].textContent = ct.metricFace;
+  if (metricLabels[2]) metricLabels[2].textContent = ct.metricBottom;
+  if (metricLabels[3]) metricLabels[3].textContent = ct.metricEye;
+  // FaceMesh 로딩
+  const fmSpan = $('facemeshLoading')?.querySelector('span');
+  if (fmSpan) fmSpan.textContent = ct.analyzing;
+  // 버튼
+  $('btnReset').textContent = ct.reset;
+  $('btnPreview').textContent = ct.preview;
+  $('btnDownload').textContent = ct.download;
+  // 모달
+  const modalTitle = document.querySelector('.modal-title');
+  if (modalTitle) modalTitle.textContent = ct.modalTitle;
+  const modalMetricsLabel = document.querySelector('.modal-metrics-label');
+  if (modalMetricsLabel) modalMetricsLabel.textContent = ct.modalMetricsLabel;
+  // 동의 텍스트
+  const consentTexts = document.querySelectorAll('.consent-text');
+  if (consentTexts[0]) consentTexts[0].innerHTML = `<span class="consent-required">${ct.consent1.startsWith('[') ? ct.consent1.split(']')[0] + '] ' : ''}</span>${ct.consent1.replace(/^\[.*?\]\s*/, '')}`;
+  if (consentTexts[1]) consentTexts[1].textContent = ct.consent2;
+  // 모달 버튼
+  $('modalBtnDownload').textContent = ct.modalDownload;
+  $('modalBtnCancel').textContent = ct.modalCancel;
 }
 
 // ─── 초기화 ───
@@ -917,10 +1096,10 @@ async function init() {
   const isAppEntry = new URLSearchParams(location.search).get('from') === 'thankyou';
   const btnPhoto = $('btnPhoto');
   if (isAppEntry) {
-    btnPhoto.textContent = '\u2190 돌아가기';
+    btnPhoto.textContent = ct.back;
     btnPhoto.addEventListener('click', () => history.back());
   } else {
-    btnPhoto.textContent = '사진 선택';
+    btnPhoto.textContent = ct.photo;
     btnPhoto.addEventListener('click', () => $('fileInput').click());
   }
   $('sampleUploadBtn').addEventListener('click', () => $('fileInput').click());
@@ -963,6 +1142,9 @@ async function init() {
   $('modalBtnDownload').addEventListener('click', () => {
     if (consent1) { performCrop(); closeModal(); }
   });
+
+  // i18n DOM 적용
+  applyCropLang();
 
   // 앱 내 진입이면 자동 로드, 아니면 기존 초기화
   if (!(await checkAppEntry())) {
