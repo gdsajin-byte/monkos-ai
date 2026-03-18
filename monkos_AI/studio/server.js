@@ -76,6 +76,31 @@ DO NOT:
 
 GOAL: "This is ME, but on my best day" - perfectly front-facing, studio flat lighting, 90% accuracy, 10% professional retouching.`;
 
+const IDENTITY_PRESERVATION_BABY = `IDENTITY RULE: 98% SAME CHILD + 2% CLEANUP ONLY
+
+PRESERVE (98%):
+- Face shape, cheek fullness, baby fat, skin texture
+- Eye shape, nose, lips — all baby/toddler proportions
+- Natural baby expression (open mouth is acceptable for infants)
+- Chubby cheeks, soft rounded face, innocent look
+- The child must look EXACTLY like the original photo
+
+CLEANUP ONLY (2%):
+- Fix lighting to studio flat lighting
+- Clean up background
+- Straighten head position to front-facing if slightly tilted
+- Minor color/exposure correction
+
+DO NOT:
+- Smooth or retouch baby skin — keep natural texture
+- Change facial expression or close an open mouth
+- Apply any beauty enhancement or skin softening
+- Make the child look older or more mature
+- Alter baby fat, cheek fullness, or face proportions
+- Add adult-like lighting/retouching aesthetics
+
+GOAL: "This is my baby, exactly as they are" - front-facing, clean studio lighting and background, but ZERO cosmetic retouching.`;
+
 const EXPRESSION_PROMPTS = {
   gentle_smile: 'relaxed pleasant expression with naturally soft eyes, at ease, quiet warmth in face',
   neutral: 'natural calm resting face with soft relaxed eyes, at ease and composed',
@@ -144,14 +169,19 @@ function buildPromptV5(body) {
   const finalBg = format === 'passport' ? 'white' : (bgColor || 'white');
   parts.push(`[BACKGROUND] ${BG_MAP[finalBg] || BG_MAP.white}`);
 
-  const expr = expression || 'gentle_smile';
-  if (EXPRESSION_PROMPTS[expr]) {
-    parts.push(`[EXPRESSION] ${EXPRESSION_PROMPTS[expr]}`);
+  if (age === 'baby') {
+    parts.push('[EXPRESSION] Keep the baby\'s natural expression as-is. Open mouth is acceptable for infants. Do NOT force a specific expression.');
+  } else {
+    const expr = expression || 'gentle_smile';
+    if (EXPRESSION_PROMPTS[expr]) {
+      parts.push(`[EXPRESSION] ${EXPRESSION_PROMPTS[expr]}`);
+    }
   }
 
   parts.push('[CONSTRAINT] Keep the person\'s face and body exactly the same — only apply the specified styling. DO NOT change apparent gender or age.');
 
-  return `${IDENTITY_PRESERVATION}\n\n[IMAGE-TO-IMAGE TRANSFORM]\n${parts.join('\n')}`;
+  const identity = (age === 'baby') ? IDENTITY_PRESERVATION_BABY : IDENTITY_PRESERVATION;
+  return `${identity}\n\n[IMAGE-TO-IMAGE TRANSFORM]\n${parts.join('\n')}`;
 }
 
 // === Base64 추출 헬퍼 ===
