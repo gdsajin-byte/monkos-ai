@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="theme-color" content="#030508">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <title>MONKOS Studio — 결과</title>
+
+    <link rel="icon" href="/monkos-icon.svg" type="image/svg+xml">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="app.css">
+
+    <style>
+        .internal-badge {
+            position: fixed;
+            top: 8px;
+            right: 8px;
+            background: rgba(239,68,68,0.2);
+            color: #ef4444;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 6px;
+            z-index: 100;
+            letter-spacing: 0.5px;
+        }
+
+        .result-container {
+            padding: 16px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .result-title {
+            text-align: center;
+            margin-bottom: 16px;
+        }
+        .result-title h2 {
+            font-size: 18px;
+            font-weight: 800;
+            color: #e2e8f0;
+        }
+        .result-title p {
+            font-size: 13px;
+            color: #8892a8;
+            margin-top: 4px;
+        }
+
+        /* 비교 뷰 */
+        .compare-view {
+            display: flex;
+            gap: 8px;
+            background: rgba(167,139,250,0.04);
+            border-radius: 16px;
+            padding: 16px 12px 0;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+        }
+        .compare-side {
+            flex: 1;
+            min-width: 0;
+            text-align: center;
+        }
+        .compare-side img {
+            width: 100%;
+            height: auto;
+            aspect-ratio: 3/4;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        .compare-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #8892a8;
+            margin-top: 6px;
+            padding-bottom: 12px;
+        }
+        .compare-brand {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 10px 0;
+            font-size: 11px;
+            font-weight: 600;
+            color: #a78bfa;
+            letter-spacing: 0.5px;
+            border-top: 1px solid rgba(167,139,250,0.1);
+        }
+
+        /* 로딩 */
+        .gen-loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 24px;
+            text-align: center;
+        }
+        .gen-loading .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(167,139,250,0.3);
+            border-top-color: #a78bfa;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .gen-loading .text {
+            margin-top: 16px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #c4b5fd;
+        }
+        .gen-loading .sub {
+            margin-top: 6px;
+            font-size: 12px;
+            color: #8892a8;
+        }
+
+        /* 시머링 프로그레스 */
+        .progress-bar {
+            width: 80%;
+            max-width: 300px;
+            height: 4px;
+            background: rgba(167,139,250,0.15);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 16px;
+        }
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #a78bfa, #c4b5fd, #a78bfa);
+            background-size: 200% 100%;
+            animation: shimmerBar 1.5s ease infinite;
+            border-radius: 2px;
+            transition: width 0.5s ease;
+        }
+        @keyframes shimmerBar {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        /* 액션 버튼 */
+        .result-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            flex: 1;
+            min-width: 120px;
+            padding: 14px;
+            border-radius: 14px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            text-align: center;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #a78bfa, #818cf8);
+            color: #fff;
+        }
+        .btn-secondary {
+            background: rgba(255,255,255,0.06);
+            color: #c4b5fd;
+            border: 1px solid rgba(167,139,250,0.2);
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: #fff;
+        }
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="internal-badge">INTERNAL</div>
+
+    <!-- 헤더 -->
+    <div id="header">
+        <div>
+            <h1><span class="brand">MONKOS</span> <span>Studio</span></h1>
+            <span id="step-label">AI 보정</span>
+        </div>
+    </div>
+
+    <div class="result-container">
+        <!-- 로딩 상태 -->
+        <div id="loading-view" class="gen-loading">
+            <div class="spinner"></div>
+            <div class="text">AI 보정 중...</div>
+            <div class="sub">MONKOS가 증명사진을 리터칭하고 있습니다</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+        </div>
+
+        <!-- 결과 뷰 (초기 숨김) -->
+        <div id="result-view" style="display:none;">
+            <div class="result-title">
+                <h2 id="result-title-text">완료!</h2>
+                <p id="result-subtitle-text">Before/After를 비교해 보세요</p>
+            </div>
+
+            <!-- Before/After 비교 -->
+            <div class="compare-view">
+                <div class="compare-side">
+                    <img id="img-before" src="" alt="Before">
+                    <div class="compare-label">Before</div>
+                </div>
+                <div class="compare-side">
+                    <img id="img-after" src="" alt="After">
+                    <div class="compare-label">After</div>
+                </div>
+            </div>
+            <div class="compare-brand">
+                MONKOS AI Studio · monkos.ai
+            </div>
+
+            <div class="result-actions">
+                <button class="btn btn-secondary" id="btn-retry">다시 하기</button>
+                <button class="btn btn-success" id="btn-download-after">After 다운로드</button>
+                <button class="btn btn-primary" id="btn-download-compare">비교 컷 다운로드</button>
+            </div>
+        </div>
+
+        <!-- 에러 뷰 -->
+        <div id="error-view" style="display:none; text-align:center; padding:60px 24px;">
+            <div style="font-size:48px; margin-bottom:16px;">😵</div>
+            <h2 style="font-size:18px; color:#ef4444; margin-bottom:8px;">보정 실패</h2>
+            <p id="error-text" style="font-size:13px; color:#8892a8;"></p>
+            <button class="btn btn-secondary" id="btn-error-retry" style="margin-top:24px; width:auto; padding:12px 32px;">다시 시도</button>
+        </div>
+    </div>
+
+    <div id="log"></div>
+
+    <script type="module" src="result.js"></script>
+</body>
+</html>

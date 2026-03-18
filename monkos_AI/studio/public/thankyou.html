@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-JPZWSJ3323"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-JPZWSJ3323');
+  gtag('config', 'G-FKG0CPTC14');
+</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#030508">
+    <meta name="format-detection" content="telephone=no">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>MONKOS AI 증명사진 — 완료</title>
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="MONKOS AI 증명사진">
+    <meta property="og:description" content="AI 코칭과 함께 완벽한 증명사진을 촬영하세요">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://monkos.ai/og-image.png">
+
+    <!-- 파비콘 -->
+    <link rel="icon" href="/monkos-icon.svg" type="image/svg+xml">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+
+    <!-- 폰트 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@700&display=swap" rel="stylesheet">
+
+    <!-- 스타일시트 -->
+    <link rel="stylesheet" href="app.css">
+    <link rel="stylesheet" href="cr-coin.css">
+
+
+
+    <style>
+        /* ─── thankyou v5 ─── */
+        #thankyou-screen {
+            background: #0A0E17;
+        }
+        #thankyou-screen .ty-body {
+            align-items: stretch;
+        }
+
+        /* §2-2 셀레브레이션 */
+        .ty-celebration {
+            text-align: center;
+            padding: 24px 16px 8px;
+        }
+        .ty-celebration-emoji {
+            font-size: 32px;
+            display: inline-block;
+            animation: pulse-emoji 2s ease-in-out infinite;
+        }
+        @keyframes pulse-emoji {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+        .ty-celebration-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: #F1F5F9;
+            margin-top: 8px;
+        }
+        .ty-celebration-sub {
+            font-size: 13px;
+            color: #94A3B8;
+            margin-top: 4px;
+        }
+
+        /* §2-3 완성본 이미지 */
+        .ty-photo-card {
+            text-align: center;
+            padding: 0 16px;
+        }
+        .ty-photo-frame {
+            display: inline-block;
+            background: #fff;
+            padding: 6px;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(139, 92, 246, 0.2);
+        }
+        .ty-photo-frame img {
+            display: block;
+            height: 220px;
+            width: auto;
+            border-radius: 12px;
+        }
+        .ty-photo-spec {
+            font-size: 11px;
+            color: #94A3B8;
+            margin-top: 6px;
+        }
+
+        /* §2-4 다운로드 버튼 */
+        .ty-download-btn {
+            display: block;
+            width: auto;
+            margin: 0 16px;
+            padding: 16px;
+            background: linear-gradient(135deg, #8B5CF6, #7C3AED);
+            color: #fff;
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3);
+            transition: opacity 0.2s;
+        }
+        .ty-download-btn:hover { opacity: 0.9; }
+
+        /* 크롭 조정 버튼 */
+        .ty-crop-btn {
+            display: block;
+            width: auto;
+            margin: 0 16px;
+            padding: 14px;
+            background: rgba(139, 92, 246, 0.15);
+            color: #8B5CF6;
+            border: 1px solid #8B5CF6;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .ty-crop-btn:hover { opacity: 0.85; }
+
+        /* §2-5 전후비교 카드 */
+        .ty-compare-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            margin: 0 16px;
+            background: #111827;
+            border: 1px solid #1E293B;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        .ty-compare-card:hover { border-color: #8B5CF6; }
+        .ty-compare-thumb {
+            width: 56px;
+            height: 56px;
+            border-radius: 8px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+        .ty-compare-info {
+            flex: 1;
+        }
+        .ty-compare-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #F1F5F9;
+        }
+        .ty-compare-sub {
+            font-size: 12px;
+            color: #64748B;
+            margin-top: 2px;
+        }
+        .ty-compare-save-btn {
+            padding: 8px 14px;
+            background: rgba(139, 92, 246, 0.15);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 10px;
+            color: #8B5CF6;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        /* §2-6 구분선 */
+        .ty-divider {
+            height: 1px;
+            background: #1E293B;
+            margin: 4px 16px;
+        }
+
+        /* §2-7 크레딧 잔고 */
+        .ty-credit-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            margin: 0 16px;
+            font-size: 14px;
+        }
+        .ty-credit-label { color: #94A3B8; }
+        .ty-credit-value { color: #F1F5F9; font-weight: 700; }
+
+        /* §2-8 풀샷 카드 */
+        .ty-fullshot-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+            margin: 0 16px;
+            background: #111827;
+            border: 1px solid #1E293B;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        .ty-fullshot-card:hover { border-color: #8B5CF6; }
+        .ty-fullshot-info {
+            flex: 1;
+        }
+        .ty-fullshot-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #F1F5F9;
+        }
+        .ty-fullshot-sub {
+            font-size: 12px;
+            color: #64748B;
+            margin-top: 2px;
+        }
+        .ty-fullshot-price {
+            padding: 6px 12px;
+            background: rgba(139, 92, 246, 0.15);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 10px;
+            color: #8B5CF6;
+            font-size: 13px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        /* §2-9 인화·CS 카드 */
+        .ty-cs-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+            margin: 0 16px;
+            background: transparent;
+            border: 1px dashed #1E293B;
+            border-radius: 14px;
+            text-decoration: none;
+            transition: border-color 0.2s;
+        }
+        .ty-cs-card:hover { border-color: #229ED9; }
+        .ty-cs-info { flex: 1; }
+        .ty-cs-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #F1F5F9;
+        }
+        .ty-cs-sub {
+            font-size: 12px;
+            color: #64748B;
+            margin-top: 2px;
+        }
+        .ty-cs-arrow {
+            color: #229ED9;
+            font-size: 14px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        /* §2-10 SNS 이벤트 */
+        .ty-event-card {
+            padding: 16px;
+            margin: 0 16px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.08), rgba(245, 158, 11, 0.06));
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 14px;
+        }
+        .ty-event-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        .ty-event-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #F1F5F9;
+        }
+        .ty-event-badge {
+            font-size: 13px;
+            font-weight: 700;
+            color: #F59E0B;
+        }
+        .ty-event-desc {
+            font-size: 12px;
+            color: #94A3B8;
+            margin-bottom: 12px;
+        }
+        .ty-event-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: #229ED9;
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .ty-event-btn:disabled {
+            background: #1E293B;
+            color: #64748B;
+            cursor: not-allowed;
+        }
+
+        /* §2-11 발급 보장 */
+        .ty-guarantee-card {
+            padding: 14px 16px;
+            margin: 0 16px;
+            background: rgba(16, 185, 129, 0.06);
+            border: 1px solid rgba(16, 185, 129, 0.15);
+            border-radius: 14px;
+        }
+        .ty-guarantee-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #10B981;
+            margin-bottom: 4px;
+        }
+        .ty-guarantee-desc {
+            font-size: 12px;
+            color: #94A3B8;
+            margin-bottom: 10px;
+        }
+        .ty-guarantee-link {
+            display: block;
+            font-size: 13px;
+            color: #10B981;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* §2-12 홈 버튼 */
+        .ty-home-btn {
+            display: block;
+            width: auto;
+            margin: 4px 16px 0;
+            padding: 14px;
+            background: transparent;
+            border: 1px solid #1E293B;
+            border-radius: 12px;
+            color: #94A3B8;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            transition: border-color 0.2s, color 0.2s;
+        }
+        .ty-home-btn:hover { border-color: #8B5CF6; color: #F1F5F9; }
+
+        /* 하단 safe area */
+        .ty-bottom-spacer {
+            height: max(24px, env(safe-area-inset-bottom));
+        }
+    </style>
+</head>
+<body>
+    <!-- 인앱 브라우저 안내 배너 -->
+    <div id="inapp-banner" data-show="inappBrowser" style="display:none; background:#ff6b35; color:#fff; text-align:center; padding:10px 16px; font-size:13px; font-weight:600; line-height:1.4; position:fixed; top:0; left:0; right:0; z-index:9999;">
+        ⚠️ Google 로그인이 필요합니다. <strong>Chrome/Safari</strong>에서 열어주세요.
+        <button onclick="openExternal()" style="background:#fff; color:#ff6b35; border:none; padding:4px 12px; border-radius:12px; font-size:12px; font-weight:700; margin-left:8px; cursor:pointer;">열기</button>
+    </div>
+
+    <!-- 헤더 -->
+    <div id="header">
+        <div>
+            <h1><span class="brand">MONKOS</span> <span>AI 증명사진</span></h1>
+            <span id="step-label">완료</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+            <div class="header-balance" id="creditBadge" data-show="user.id">
+                <div class="header-coin-wrap">
+                    <div class="header-sparkle"></div>
+                    <div class="header-sparkle"></div>
+                    <div class="header-coin">
+                        <div class="header-coin-face">
+                            <div class="header-shimmer"></div>
+                            <span class="cr-sym">Cr</span>
+                        </div>
+                    </div>
+                </div>
+                <span class="balance-amount" data-bind="user.credits">0</span>
+                <span class="balance-unit">Cr</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- === 수령처 화면 === -->
+    <div id="thankyou-screen">
+        <div class="ty-body" style="gap:12px;">
+
+            <!-- §2-2 셀레브레이션 -->
+            <div class="ty-celebration">
+                <div class="ty-celebration-emoji">🎉</div>
+                <div class="ty-celebration-title">증명사진이 완성되었습니다!</div>
+                <div class="ty-celebration-sub">
+                    본 사진은 자르기가 되지 않은 풀사이즈 원본입니다<br>
+                    여권(3.5×4.5) 또는 반명함(3×4) 규격이 필요하시면<br>
+                    <strong style="color:#B4A0FF;">규격 맞춤 자르기</strong>를 선택해 주세요
+                </div>
+            </div>
+
+            <!-- §2-3 완성본 이미지 -->
+            <div class="ty-photo-card">
+                <div class="ty-photo-frame">
+                    <img id="ty-photo" src="" alt="증명사진">
+                </div>
+                <div class="ty-photo-spec">AI 보정 원본</div>
+            </div>
+
+            <!-- §2-4 다운로드 버튼 -->
+            <button class="ty-download-btn" id="btn-ty-download">📥 풀 사이즈 원본 다운로드 (No Crop)</button>
+
+            <!-- 크롭 조정 (무료) -->
+            <button class="ty-crop-btn" id="btn-ty-crop" onclick="goToCrop()">✂️ 규격 맞춤 자르기 (여권/반명함)</button>
+
+            <!-- §2-5 전후비교 저장 -->
+            <div class="ty-compare-card" id="ty-compare-section" style="display:none;">
+                <img class="ty-compare-thumb" id="ty-compare-thumb" src="" alt="전후비교">
+                <div class="ty-compare-info">
+                    <div class="ty-compare-title">📸 전후 비교 저장</div>
+                    <div class="ty-compare-sub">갤러리에 저장 · 무료</div>
+                </div>
+                <button class="ty-compare-save-btn" id="btn-ty-compare-save">저장</button>
+            </div>
+
+            <!-- §2-6 구분선 -->
+            <div class="ty-divider"></div>
+
+            <!-- 데이터 저장 정책 링크 -->
+            <a href="/policy/data" target="_blank" rel="noopener"
+               style="display:block; padding:10px 16px; margin:0 16px; background:#111827; border:1px solid #1E293B; border-radius:12px; text-align:center; text-decoration:none; cursor:pointer;">
+                <div style="font-size:11px; color:#64748B; line-height:1.5;">
+                    📂 다운로드한 파일은 고객님의 기기에 저장됩니다
+                </div>
+                <div style="font-size:11px; color:#6C5CE7; font-weight:600; margin-top:4px;">
+                    데이터 저장 정책 보기 →
+                </div>
+            </a>
+
+            <!-- §2-12 홈으로 돌아가기 -->
+            <button class="ty-home-btn" id="btn-ty-home">🏠 홈으로 돌아가기</button>
+
+            <div class="ty-bottom-spacer"></div>
+        </div>
+    </div>
+
+    <div id="log"></div>
+
+    <!-- 앱 스크립트 -->
+    <script type="module" src="thankyou.js?v=v5"></script>
+</body>
+</html>
