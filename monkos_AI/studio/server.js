@@ -332,10 +332,9 @@ app.post('/api/idgen', async (req, res) => {
   }
 });
 
-// === 페이지 라우트 ===
+// === 페이지 라우트 (v2 SPA — 단일 페이지) ===
 app.get('/', (req, res) => res.sendFile(join(__dirname, 'public/app.html')));
 app.get('/app', (req, res) => res.sendFile(join(__dirname, 'public/app.html')));
-app.get('/result', (req, res) => res.sendFile(join(__dirname, 'public/result.html')));
 
 // 정적 파일 서빙
 app.use(express.static(join(__dirname, 'public'), {
@@ -363,7 +362,6 @@ app.listen(PORT, '0.0.0.0', () => {
   log('  GET  /health       — 헬스체크');
   log('  POST /api/precheck — 사전분석');
   log('  POST /api/idgen    — Imagen I2I 생성');
-  log('  GET  /             — 업로드 페이지');
-  log('  GET  /result       — 결과 페이지');
+  log('  GET  /             — Studio SPA');
   log('='.repeat(50));
 });
