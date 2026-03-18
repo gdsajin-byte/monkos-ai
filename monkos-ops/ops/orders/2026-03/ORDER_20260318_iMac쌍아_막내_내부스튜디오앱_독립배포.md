@@ -3,7 +3,7 @@ type: order
 from: iMac/쌍아
 to: iMac/막내
 date: 2026-03-18
-status: 대기
+status: 완료
 ---
 
 # [지시서] 내부 스튜디오 앱 — idphoto-kr 기반 독립 배포
