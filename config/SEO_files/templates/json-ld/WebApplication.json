@@ -1,0 +1,20 @@
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "{{서비스명}}",
+  "description": "{{설명}}",
+  "url": "https://{{도메인}}",
+  "applicationCategory": "{{카테고리}}",
+  "operatingSystem": "Web",
+  "inLanguage": ["ko"],
+  "provider": {
+    "@type": "Organization",
+    "name": "MONKOS",
+    "url": "https://monkos.ai"
+  },
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "KRW"
+  }
+}
