@@ -106,6 +106,7 @@ function layoutNav() {
       <a href="/faq">FAQ</a>
       <a href="/gallery">Gallery</a>
       <a href="/board">Board</a>
+      <a href="/guide">Guide</a>
     </nav>
   </div>
 </header>`;
@@ -981,7 +982,171 @@ export async function renderBoardWrite(req, res) {
 }
 
 // =============================================
-// Sitemap (변경 없음)
+// Guide (사용 가이드)
+// =============================================
+
+// 가이드 — fragment
+export async function guideFragment(req) {
+  const seoMeta = `<meta property="og:title" content="사용 가이드 | MONKOS AI">
+<meta property="og:description" content="MONKOS AI 증명사진 촬영 가이드 및 앱 사용법 안내">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://monkos.ai/guide">
+<link rel="canonical" href="https://monkos.ai/guide">`;
+
+  const pageStyle = `
+.guide-header { margin-bottom: 32px; }
+.guide-header h1 { font-size: 28px; font-weight: 700; color: var(--text-bright); }
+.guide-header p { color: var(--text-dim); margin-top: 8px; font-size: 15px; }
+.guide-section { margin-bottom: 40px; }
+.guide-section h2 {
+  font-size: 20px; font-weight: 700; color: var(--accent); margin-bottom: 16px;
+  padding-bottom: 8px; border-bottom: 1px solid var(--border);
+}
+.guide-steps {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px;
+}
+.guide-step-card {
+  background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px;
+  padding: 24px 20px; text-align: center; transition: border-color 0.2s;
+}
+.guide-step-card:hover { border-color: var(--border-hover); }
+.step-num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--accent); color: #fff; font-weight: 700; font-size: 15px;
+  margin-bottom: 12px;
+}
+.step-title { font-size: 16px; font-weight: 600; color: var(--text-bright); margin-bottom: 8px; }
+.step-desc { font-size: 14px; color: var(--text-dim); line-height: 1.6; }
+.guide-tip {
+  background: rgba(108,79,255,0.06); border: 1px solid var(--border);
+  border-radius: 10px; padding: 16px 20px; margin-bottom: 12px;
+}
+.guide-tip strong { color: var(--accent); }
+.guide-tip p { font-size: 14px; color: var(--text-dim); line-height: 1.7; margin-top: 4px; }
+.guide-cta {
+  text-align: center; margin-top: 40px; padding: 32px;
+  background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px;
+}
+.guide-cta h3 { font-size: 18px; font-weight: 700; color: var(--text-bright); margin-bottom: 12px; }
+.guide-cta-links { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 16px; }
+.guide-cta-links a {
+  padding: 10px 24px; border-radius: 10px; font-size: 14px; font-weight: 600;
+  transition: opacity 0.2s;
+}
+.guide-cta-links .primary { background: var(--accent); color: #fff; }
+.guide-cta-links .primary:hover { opacity: 0.9; color: #fff; }
+.guide-cta-links .secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+.guide-cta-links .secondary:hover { border-color: var(--accent); color: var(--accent); }
+@media (max-width: 600px) {
+  .guide-steps { grid-template-columns: 1fr; }
+}`;
+
+  const bodyContent = `
+  <div class="guide-header">
+    <h1>사용 가이드</h1>
+    <p>MONKOS AI 증명사진 촬영법과 앱 사용법을 안내합니다</p>
+  </div>
+
+  <div class="guide-section">
+    <h2>AI 증명사진 촬영 가이드</h2>
+    <div class="guide-steps">
+      <div class="guide-step-card">
+        <div class="step-num">1</div>
+        <div class="step-title">규격 선택</div>
+        <div class="step-desc">여권(3.5×4.5cm), 반명함(3×4cm), 신분증 등 원하는 규격을 선택합니다.</div>
+      </div>
+      <div class="guide-step-card">
+        <div class="step-num">2</div>
+        <div class="step-title">셀카 촬영</div>
+        <div class="step-desc">AI 코칭 가이드를 따라 정면 셀카를 촬영합니다. 밝은 곳에서 촬영하면 더 좋은 결과를 얻을 수 있습니다.</div>
+      </div>
+      <div class="guide-step-card">
+        <div class="step-num">3</div>
+        <div class="step-title">AI 리터칭</div>
+        <div class="step-desc">배경 정리, 조명 보정, 피부 보정, 의상 정돈까지 AI가 자동으로 처리합니다.</div>
+      </div>
+      <div class="guide-step-card">
+        <div class="step-num">4</div>
+        <div class="step-title">다운로드</div>
+        <div class="step-desc">ICAO 국제 규격에 맞는 증명사진을 고화질로 다운로드합니다.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="guide-section">
+    <h2>촬영 팁</h2>
+    <div class="guide-tip">
+      <strong>조명</strong>
+      <p>자연광이 들어오는 창가 또는 밝은 실내 조명 아래에서 촬영하세요. 역광은 피해 주세요.</p>
+    </div>
+    <div class="guide-tip">
+      <strong>포즈</strong>
+      <p>정면을 바라보고, 어깨를 곧게 펴세요. 자연스러운 표정이 가장 좋습니다.</p>
+    </div>
+    <div class="guide-tip">
+      <strong>배경</strong>
+      <p>AI가 배경을 자동 보정하지만, 단색 배경에서 촬영하면 더 깔끔한 결과물을 얻습니다.</p>
+    </div>
+    <div class="guide-tip">
+      <strong>복장</strong>
+      <p>증명사진용 단정한 복장을 권장합니다. AI가 의상을 정돈하지만 기본 복장이 좋을수록 결과가 좋습니다.</p>
+    </div>
+  </div>
+
+  <div class="guide-section">
+    <h2>무료 크롭앱 사용법</h2>
+    <div class="guide-steps">
+      <div class="guide-step-card">
+        <div class="step-num">1</div>
+        <div class="step-title">사진 선택</div>
+        <div class="step-desc">갤러리에서 사진을 선택하거나 카메라로 촬영합니다.</div>
+      </div>
+      <div class="guide-step-card">
+        <div class="step-num">2</div>
+        <div class="step-title">규격 크롭</div>
+        <div class="step-desc">여권, 반명함 등 원하는 규격에 맞춰 자동 크롭합니다.</div>
+      </div>
+      <div class="guide-step-card">
+        <div class="step-num">3</div>
+        <div class="step-title">배경 제거/교체</div>
+        <div class="step-desc">누끼(배경 제거)와 배경색 교체를 서버 전송 없이 처리합니다.</div>
+      </div>
+      <div class="guide-step-card">
+        <div class="step-num">4</div>
+        <div class="step-title">다운로드</div>
+        <div class="step-desc">완성된 사진을 바로 다운로드합니다. 무료, 크레딧 소모 없음.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="guide-cta">
+    <h3>지금 바로 시작하세요</h3>
+    <div class="guide-cta-links">
+      <a href="/" class="primary">AI 증명사진 촬영</a>
+      <a href="/crop" class="secondary">무료 크롭앱</a>
+    </div>
+  </div>`;
+
+  return { title: '사용 가이드 | MONKOS AI', description: 'MONKOS AI 증명사진 촬영 가이드 및 앱 사용법 안내', seoMeta, htmlLang: 'ko', pageStyle, bodyContent, pageScript: null };
+}
+
+// GET /guide — 사용 가이드 (SSR)
+export async function renderGuide(req, res) {
+  try {
+    const parts = await guideFragment(req);
+    const html = layoutShell(parts);
+    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+    res.end(html);
+  } catch (err) {
+    log(`[CMS] 가이드 렌더 에러: ${err.message}`, 'ERROR');
+    res.writeHead(500, { 'Content-Type': 'text/plain' });
+    res.end('Internal Server Error');
+  }
+}
+
+// =============================================
+// Sitemap
 // =============================================
 
 // GET /sitemap.xml — 동적 생성
@@ -997,6 +1162,9 @@ export async function renderSitemap(req, res) {
       { loc: 'https://monkos.ai/faq', changefreq: 'weekly', priority: '0.7' },
       { loc: 'https://monkos.ai/gallery', changefreq: 'weekly', priority: '0.6' },
       { loc: 'https://monkos.ai/board', changefreq: 'daily', priority: '0.5' },
+      { loc: 'https://monkos.ai/pricing', changefreq: 'monthly', priority: '0.6' },
+      { loc: 'https://monkos.ai/guide', changefreq: 'weekly', priority: '0.7' },
+      { loc: 'https://monkos.ai/crop', changefreq: 'weekly', priority: '0.7' },
       { loc: 'https://monkos.ai/ja/blog', changefreq: 'daily', priority: '0.7' },
       { loc: 'https://monkos.ai/en/blog', changefreq: 'daily', priority: '0.7' },
       { loc: 'https://monkos.ai/llms.txt', changefreq: 'monthly', priority: '0.5' },

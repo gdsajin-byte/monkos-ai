@@ -4,6 +4,8 @@ Allow: /blog
 Allow: /faq
 Allow: /gallery
 Allow: /board
+Allow: /guide
+Allow: /crop
 Disallow: /admin
 Disallow: /api/
 

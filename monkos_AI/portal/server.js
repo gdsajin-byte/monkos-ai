@@ -40,7 +40,7 @@ import { handleGalleryList, handleGalleryCreate, handleGalleryUpdate, handleGall
 import { handleBoardPublicList, handleBoardPublicGet, handleBoardPublicCreate, handleBoardPublicDelete, handleBoardAdminList, handleBoardAdminReply, handleBoardAdminDelete, handleBoardAdminToggle } from './lib/cms/board.js';
 import { handleUpload, handleImageList, handleImageDelete } from './lib/cms/upload.js';
 import { handleTranslate } from './lib/cms/translate.js';
-import { renderBlogList, renderBlogPost, renderFaq, renderGallery, renderBoardList, renderBoardPost, renderBoardWrite, renderSitemap } from './lib/cms/render.js';
+import { renderBlogList, renderBlogPost, renderFaq, renderGallery, renderBoardList, renderBoardPost, renderBoardWrite, renderGuide, renderSitemap } from './lib/cms/render.js';
 import { renderHome, handleSettingsGet, handleSettingsPut, handleLayoutGet, handleLayoutPut } from './lib/cms/home.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -224,6 +224,7 @@ const httpServer = createServer(async (req, res) => {
   // 기존 라우트 (한국어 = 기본, 접두사 없음)
   if (urlPath === '/blog' && req.method === 'GET') return renderBlogList(req, res);
   if (urlPath?.startsWith('/blog/') && req.method === 'GET') return renderBlogPost(req, res);
+  if (urlPath === '/guide' && req.method === 'GET') return renderGuide(req, res);
   if (urlPath === '/faq' && req.method === 'GET') return renderFaq(req, res);
   if (urlPath === '/gallery' && req.method === 'GET') return renderGallery(req, res);
   if (urlPath === '/board' && req.method === 'GET') return renderBoardList(req, res);

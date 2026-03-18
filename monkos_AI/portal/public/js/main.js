@@ -60,15 +60,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // 크롭앱 카드 — <a href="/crop">으로 이미 처리, JS 가로채기 제거
-
-  // /pricing → openCreditShop
-  var pricingLink = document.querySelector('a[href="/pricing"]');
-  if (pricingLink) {
-    pricingLink.addEventListener('click', function(e) {
-      e.preventDefault();
-      window.openCreditShop();
-    });
-  }
+  // /pricing — 정적 페이지 생성됨, 가로채기 제거 (2026-03-18)
 });
 
 // === 챗봇 이벤트 ===
