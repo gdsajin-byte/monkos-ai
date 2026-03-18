@@ -76,30 +76,27 @@ DO NOT:
 
 GOAL: "This is ME, but on my best day" - perfectly front-facing, studio flat lighting, 90% accuracy, 10% professional retouching.`;
 
-const IDENTITY_PRESERVATION_BABY = `IDENTITY RULE: 98% SAME CHILD + 2% CLEANUP ONLY
+const IDENTITY_PRESERVATION_BABY = `IDENTITY RULE: 95% SAME CHILD + 5% CLEANUP
 
-PRESERVE (98%):
-- Face shape, cheek fullness, baby fat, skin texture
-- Eye shape, nose, lips — all baby/toddler proportions
-- Natural baby expression (open mouth is acceptable for infants)
-- Chubby cheeks, soft rounded face, innocent look
-- The child must look EXACTLY like the original photo
+PRESERVE (95%):
+- Face shape, eye shape, nose, lips, skin tone
+- Overall facial structure and unique characteristics
+- Baby/toddler proportions — chubby cheeks, soft rounded face, baby fat
+- The child must be clearly recognizable as the SAME individual
+- Current facial expression (mouth open or closed — keep as-is)
 
-CLEANUP ONLY (2%):
-- Fix lighting to studio flat lighting
-- Clean up background
-- Straighten head position to front-facing if slightly tilted
+CLEANUP (5% — less than adult retouching):
+- Studio flat lighting and clean background
 - Minor color/exposure correction
+- Make them look clean and presentable (not "enhanced")
 
 DO NOT:
-- Smooth or retouch baby skin — keep natural texture
-- Change facial expression or close an open mouth
-- Apply any beauty enhancement or skin softening
+- Apply adult-style beauty enhancement or skin smoothing
+- Change facial expression or mouth position
+- Alter fundamental facial features or baby proportions
 - Make the child look older or more mature
-- Alter baby fat, cheek fullness, or face proportions
-- Add adult-like lighting/retouching aesthetics
 
-GOAL: "This is my baby, exactly as they are" - front-facing, clean studio lighting and background, but ZERO cosmetic retouching.`;
+GOAL: "This is my baby, looking clean and presentable" - studio lighting, tidy background, 95% accuracy, 5% minimal cleanup only.`;
 
 const EXPRESSION_PROMPTS = {
   gentle_smile: 'relaxed pleasant expression with naturally soft eyes, at ease, quiet warmth in face',
@@ -170,7 +167,7 @@ function buildPromptV5(body) {
   parts.push(`[BACKGROUND] ${BG_MAP[finalBg] || BG_MAP.white}`);
 
   if (age === 'baby') {
-    parts.push('[EXPRESSION] Keep the baby\'s natural expression as-is. Open mouth is acceptable for infants. Do NOT force a specific expression.');
+    parts.push('[EXPRESSION] Keep the child\'s natural expression exactly as-is.');
   } else {
     const expr = expression || 'gentle_smile';
     if (EXPRESSION_PROMPTS[expr]) {
