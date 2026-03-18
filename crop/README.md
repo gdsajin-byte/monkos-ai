@@ -1,65 +1,71 @@
 # works/crop — 크롭앱
 
-> 증명사진 규격 크롭 서비스. 사용자가 정수리 핀으로 좌표를 정의하고, 서버에서 정밀 크롭.
+> 클라이언트 완결형 증명사진 규격 크롭 서비스. 서버 비용 제로, 프라이버시 완전 보호.
 
 ## 개요
 
-- **서비스**: 증명사진 규격 크롭 (여권 KR/JP, 주민등록증 등)
-- **핵심 원리**: FaceMesh 478 랜드마크 → 사용자 정수리 핀 조정 → 서버 크롭
-- **언어**: KR + JP (idphoto-kr, idphoto-jp)
+- **서비스**: 증명사진 규격 크롭 (여권 3.5×4.5cm, 반명함 3×4cm)
+- **핵심 원리**: MediaPipe FaceMesh 478 랜드마크 → 자동 배치 → 사용자 미세 조정 → Canvas 2D 크롭
+- **아키텍처**: 완전 클라이언트 (서버 호출 제로)
+- **언어**: KR + JP
 
-## 아키텍처
+## 아키텍처 (현행 v2)
 
 ```
 사용자 (모바일/웹)
     │
     ▼
-crop.html + crop.js (Vanilla JS)
-    │  FaceMesh (CDN @mediapipe/face_mesh)
-    │  Canvas 2D — 프레임 오버레이, 드래그 인터랙션
-    │
-    ▼  POST /api/crop (Base64)
-crop-engine (Cloud Run, Node.js 20)
-    ├── face-detect.js — @tensorflow-models/face-landmarks-detection
-    ├── crop.js — sharp 정밀 크롭 (300dpi 보존)
-    └── specs/formats.js — 규격 정의 (passport_kr/jp, id_kr)
+crop/index.html + crop.js + crop.css (Vanilla JS)
+    │  MediaPipe FaceMesh (CDN) → 478 랜드마크
+    │  자동 배치 (눈 앵커 43%) + 정수리 추산 (눈~턱 1:1 반전)
+    │  3단계 ICAO 색상 판정 (녹색/노랑/레드)
+    │  Canvas 2D → JPEG 다운로드 (원본 해상도, 300dpi)
     │
     ▼
-크롭 사진 (JPEG) + 가이드 캡처
+크롭 사진 (MONKOS_crop_passport_413x531.jpg)
+※ 서버 전송 없음. 사진은 디바이스에서만 처리.
 ```
 
 ## 코드 경로
 
-| 구분 | 경로 |
-|------|------|
-| KR 프론트 | `monkos_AI/idphoto-kr/public/crop.{html,js,css}` |
-| JP 프론트 | `monkos_AI/idphoto-jp/public/crop.{html,js,css}` |
-| 백엔드 | `monkos_AI/crop-engine/` |
-| 배포 | 각 폴더 `deploy.sh` → Cloud Run |
+| 구분 | 경로 | 비고 |
+|------|------|------|
+| **포털 (정본)** | `monkos_AI/portal/public/crop/` | monkos.ai/crop |
+| KR 프론트 (원본) | `monkos_AI/idphoto-kr/public/crop.*` | 이식 원본 |
+| JP 프론트 (클론) | `monkos_AI/idphoto-jp/public/crop.*` | 일본어 |
 
 ## 기술 스택
 
 | 레이어 | 스택 |
 |--------|------|
-| 프론트 | Vanilla HTML+JS, @mediapipe/face_mesh (CDN), Canvas 2D |
-| 백엔드 | Node.js 20, TensorFlow.js, sharp v0.33 |
-| 배포 | Cloud Run (Dockerfile), asia-northeast3 |
+| 얼굴 감지 | MediaPipe Face Mesh (CDN) |
+| 크롭 엔진 | Canvas 2D API (원본 해상도 유지, 300dpi) |
+| UI | Vanilla HTML + JS + CSS (빌드 도구 없음) |
+| 규격 판정 | ICAO 기반 3단계 색상 체계 |
+| 호스팅 | Cloudflare Pages (포털 내 /crop) |
 
-## 핵심 기술 결정
+## 아키텍처 진화
 
-| 항목 | 결정 | 근거 |
+| 버전 | 시기 | 방식 | 결과 |
+|------|------|------|------|
+| v0 | 03-10 | 서버 Gemini LLM 좌표 추출 | 픽셀 정밀도 부족, 턱 잘림 |
+| v1 | 03-11 | 서버 tfjs FaceMesh | 동작 확인, 서버 의존 문제 |
+| **v2** | **03-12** | **클라이언트 MediaPipe + Canvas** | **서버 제로, 프라이버시 완전** |
+
+## 로드맵
+
+| 단계 | 내용 | 기술 |
 |------|------|------|
-| 프론트 스택 | Vanilla JS | idphoto-kr/jp 통일, 빌드 불필요 |
-| 좌표 결정 | 클라이언트 (사용자 핀) | 사용자 정의 = 책임 소재 명확 |
-| 이미지 처리 | sharp (서버) | 정확한 픽셀 추출, 300dpi 메타 보존 |
-| 얼굴 감지 | MediaPipe FaceMesh | WebGL/WASM 자동, 브라우저 네이티브 |
+| ✅ Tier 1 | 규격 크롭 + ICAO 검증 | MediaPipe FaceMesh + Canvas 2D |
+| ⏳ Tier 2 | 누끼 따기 (배경 제거) | Transformers.js + RMBG-1.4 |
+| ⏳ Tier 3 | 배경 교체 | Canvas 합성 |
+| ⏳ 특허 | 출원 준비 | 기초 자료 SPEC_20260318 참조 |
 
-## 미해결
+## 문서
 
-- [ ] crop-engine Cloud Run 배포
-- [ ] AI 검수 — Gemini Flash 비전 (눈썹/귀/이빨/어깨선/정수리)
-- [ ] 데이터 수집 — 동의 시 좌표 데이터 GCS 저장
-- [ ] idphoto-kr/jp result 페이지 → crop 진입점 연동
+| 문서 | 파일 | 용도 |
+|------|------|------|
+| 개발기 명세서 | `SPEC_20260318_MONKOS_크롭앱개발기.md` | 기술 블로그 + 특허/실용신안 기초 자료 |
 
 ## 출납 로그
 
@@ -67,7 +73,9 @@ crop-engine (Cloud Run, Node.js 20)
 |------|------|------|
 | 2026-03-12 | (세션 로그) 크롭앱 설계 확정 | M1/쌍아 — vanilla JS, FaceMesh, 정수리 핀 |
 | 2026-03-14 | README 초안 작성 | 기술명세 초기 적립 |
+| 2026-03-17 | 포털 /crop 정식 등록 | 화이트 모드 + edge-to-edge |
+| 2026-03-18 | SPEC_20260318_MONKOS_크롭앱개발기.md | 기술 블로그 + 특허 기초 자료 |
 
 ---
 
-> 최종 갱신: 2026-03-14 iMac/쌍아
+> 최종 갱신: 2026-03-18 iMac/쌍아
