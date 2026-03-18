@@ -51,6 +51,12 @@ h1 { font-size: 24px; font-weight: 700; color: var(--text-bright); margin-bottom
 .menu-card .label { font-size: 13px; color: var(--text-dim); }
 .menu-card.disabled { opacity: 0.4; pointer-events: none; }
 .menu-card.disabled .label::after { content: ' (Coming Soon)'; }
+
+.section-divider { margin: 36px 0 20px; font-size: 12px; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1.5px; border-top: 1px solid var(--border); padding-top: 20px; }
+.menu-card.external { border-color: rgba(79,70,229,0.15); background: linear-gradient(135deg, #faf5ff 0%, #f5f3ff 100%); }
+.menu-card.external:hover { border-color: var(--accent2); }
+.badge-internal { display: inline-block; font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 4px; background: rgba(239,68,68,0.1); color: #dc2626; letter-spacing: 0.5px; vertical-align: middle; margin-left: 4px; }
+.badge-external { display: inline-block; font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 4px; background: rgba(79,70,229,0.1); color: #4f46e5; letter-spacing: 0.5px; vertical-align: middle; margin-left: 4px; }
 </style>
 </head>
 <body>
@@ -102,6 +108,20 @@ h1 { font-size: 24px; font-weight: 700; color: var(--text-bright); margin-bottom
         <div class="count">⚙️</div>
         <h3>Settings</h3>
         <div class="label">사이트 설정</div>
+      </a>
+    </div>
+
+    <div class="section-divider">내부 도구</div>
+    <div class="menu-grid">
+      <a href="https://image.monkos.ai" target="_blank" rel="noopener" class="menu-card external">
+        <div class="count">🖼️</div>
+        <h3>IMAGE PRO <span class="badge-external">↗ EXTERNAL</span></h3>
+        <div class="label">이미지 편집 도구</div>
+      </a>
+      <a href="https://monkos-studio-dev-4jeplpqpua-uc.a.run.app/" target="_blank" rel="noopener" class="menu-card">
+        <div class="count">📸</div>
+        <h3>Studio <span class="badge-internal">INTERNAL</span></h3>
+        <div class="label">AI 증명사진 내부 생성 도구</div>
       </a>
     </div>
   </div>
