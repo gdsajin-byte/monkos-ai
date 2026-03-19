@@ -1,6 +1,6 @@
 ---
 name: project_pending_agenda
-description: 미결 어젠다 — 즉시 실행 대기 / 기안 검토 대기 / 장기 로드맵 항목 (2026-03-18 12:41 갱신)
+description: 미결 어젠다 — 즉시 실행 대기 / 기안 검토 대기 / 장기 로드맵 항목 (2026-03-19 13:40 갱신)
 type: project
 ---
 
@@ -45,12 +45,21 @@ type: project
 
 ## 장기 로드맵
 
-11. **팀웍 레포 분리 + 데몬 세팅** — works/ 서브레포 분리, fswatch 데몬, 현행 클론 안정 후. ⚠️ symlink 불가(코웍이 마운트 제약), rsync 양방향 머지만 허용(--delete 금지, 2026-03-18 사고)
+11. **~~팀웍 레포 분리~~+ 데몬 세팅** — ~~works/ 서브레포 분리~~ ✅ monkos-works 레포+subtree+M4/M2 클론+mk-push/pull 스크립트 완료 (2026-03-19). **잔여**: M2 Claude Desktop+uv+MCP 세팅 (접속 후), M1 origin-works 등록 (귀가 후), fswatch 데몬 (안정화 후)
 12. **포털 홈 블록 분리 리팩토링** — Phase 0~1 완료 (CSS 1280px, 갤러리 Firestore), **Phase 2~7 미착수**
 13. **어드민 블록 에디터 UI** — v4 Phase 6~7, #6과 합류
 14. **크롭앱 특허 출원** — FaceMesh 기반 ICAO 규격 자동 검증 + 클라이언트 전용 처리. **기술 명세서 초안 완료** (`works/crop/SPEC_20260318_MONKOS_크롭앱개발기.md`) → 변리사 연결. 디딤돌 R&D 연동
 15. **내부 스튜디오 앱** — idphoto-kr 기반 독립 배포 (`monkos_AI/studio/`). **v2 Phase A 완료** (SPA 3컬럼+퍼널 복원). 영유아 프롬프트 95%/5% 확립 — 케이스별 이터레이션 계속 필요. Phase B(T2I→I2I 듀얼) 미착수
 16. **영유아 I2I 프롬프트 세밀화** — 95%/5% 방향 확립 (v2), 성인 정본 클론 후 idphoto-kr 반영 예정. 케이스별 결과 편차 큼 → Studio에서 지속 테스트
+
+## 완료 처리 (2026-03-19)
+
+- ~~monkos-works 레포 생성 + subtree 연결~~ → M1 새벽 완료
+- ~~M4(한) works 클론 + 코웍이 세팅~~ → PAT 공유, 클론+전역지침 완료. 코웍이 세션 로그 push 확인
+- ~~M2(꾸) works 클론~~ → PAT 세팅+클론 완료. 전역지침 push 완료
+- ~~mk-push/pull 스크립트~~ → `scripts/mk-push.sh`, `scripts/mk-pull.sh` 작성+iMac 세팅 완료
+- ~~works subtree 운용 규정~~ → MEMORY 규정화 완료 (삭제 금지, 스크립트, 명령체계)
+- ~~M1 git MCP 연결~~ → 코웍이 본진 직접 조회 가능 (M1 새벽)
 
 ## 완료 처리 (2026-03-18)
 
