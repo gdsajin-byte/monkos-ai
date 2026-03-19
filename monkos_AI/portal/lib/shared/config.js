@@ -54,6 +54,10 @@ export const LINE_MESSAGING_CHANNEL_SECRET = process.env.LINE_MESSAGING_CHANNEL_
 export const LINE_MESSAGING_ACCESS_TOKEN = process.env.LINE_MESSAGING_ACCESS_TOKEN || '';
 export const LINE_MESSAGING_API = 'https://api.line.me/v2/bot/message/reply';
 
+// 네이버 검색 API
+export const NAVER_CLIENT_ID = process.env.NAVER_CLIENT_ID || '';
+export const NAVER_CLIENT_SECRET = process.env.NAVER_CLIENT_SECRET || '';
+
 // CMS
 export const GCS_BUCKET = process.env.GCS_BUCKET || 'monk-ai-images';
 export const ADMIN_UIDS = (process.env.ADMIN_UIDS || '').split(',').filter(Boolean);

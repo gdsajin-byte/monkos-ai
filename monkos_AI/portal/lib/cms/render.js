@@ -366,6 +366,7 @@ ${JSON.stringify({
 
   const tagsHtml = (post.tags || []).map(t => `<span class="post-tag">${escapeHtml(t)}</span>`).join('');
   const backLink = lang ? `/${lang}/blog` : '/blog';
+  const shareLabel = { ko: '공유하기', en: 'Share', ja: 'シェア' }[htmlLang] || '공유하기';
 
   const pageStyle = `
 .post-header { margin-bottom: 32px; max-width: 800px; margin-left: auto; margin-right: auto; }
@@ -396,9 +397,24 @@ ${JSON.stringify({
 .post-content iframe { max-width: 100%; height: auto; }
 .post-back { display: inline-block; margin-bottom: 24px; color: var(--text-dim); font-size: 14px; }
 .post-back:hover { color: var(--accent); }
+.share-buttons {
+  display: flex; align-items: center; gap: 10px; margin-top: 32px;
+  max-width: 800px; margin-left: auto; margin-right: auto; padding: 16px 0;
+}
+.share-label { font-size: 13px; color: var(--text-dim); font-weight: 500; }
+.share-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border);
+  background: var(--surface); color: var(--text-dim); font-size: 14px;
+  text-decoration: none; cursor: pointer; transition: all 0.2s;
+}
+.share-btn:hover { border-color: var(--accent); color: var(--accent); }
+.share-copy { font-family: inherit; }
+.share-more { display: none; }
 @media (max-width: 600px) {
   .post-header h1 { font-size: 24px; }
   .post-content { font-size: 15px; }
+  .share-more { display: inline-flex; }
 }`;
 
   const bodyContent = `
@@ -414,9 +430,19 @@ ${JSON.stringify({
     ${tagsHtml ? `<div class="post-tags">${tagsHtml}</div>` : ''}
   </div>
   ${post.thumbnail ? `<div class="post-thumb"><img src="${escapeHtml(post.thumbnail)}" alt="${escapeHtml(post.title)}"></div>` : ''}
-  <div class="post-content">${contentHtml}</div>`;
+  <div class="post-content">${contentHtml}</div>
+  <div class="share-buttons">
+    <span class="share-label">${shareLabel}</span>
+    <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(post.title)}&url=${encodeURIComponent(canonicalUrl)}" target="_blank" rel="noopener" class="share-btn" title="X">\ud835\udd4f</a>
+    <a href="https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(canonicalUrl)}" target="_blank" rel="noopener" class="share-btn" title="LINE">L</a>
+    <a href="https://story.kakao.com/share?url=${encodeURIComponent(canonicalUrl)}" target="_blank" rel="noopener" class="share-btn" title="KakaoStory">\ud83d\udcac</a>
+    <button class="share-btn share-copy" onclick="navigator.clipboard.writeText('${canonicalUrl}');this.textContent='\u2713';setTimeout(()=>this.textContent='\ud83d\udd17',1500)" title="Link">\ud83d\udd17</button>
+    <button class="share-btn share-more" onclick="shareNative()" title="Share">\u2197</button>
+  </div>`;
 
-  return { title: `${post.title} | MONKOS AI`, description: post.summary || '', seoMeta, htmlLang, pageStyle, bodyContent, pageScript: null };
+  const pageScript = `function shareNative(){if(navigator.share){navigator.share({title:${JSON.stringify(post.title)},url:${JSON.stringify(canonicalUrl)}}).catch(function(){})}}`;
+
+  return { title: `${post.title} | MONKOS AI`, description: post.summary || '', seoMeta, htmlLang, pageStyle, bodyContent, pageScript };
 }
 
 // GET /blog/:slug — 상세 페이지 (기존 호출 호환)

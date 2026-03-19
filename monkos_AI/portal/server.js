@@ -19,7 +19,7 @@ import {
   TELEGRAM_CHANNEL_ID, TEAM_CHAT_ID,
   KAKAO_REST_API_KEY, KAKAO_CHANNEL_ID, LINE_CHANNEL_ID,
   LINE_MESSAGING_ACCESS_TOKEN,
-  ADMIN_UIDS,
+  ADMIN_UIDS, NAVER_CLIENT_ID,
 } from './lib/shared/config.js';
 
 // === 핸들러 모듈 ===
@@ -40,6 +40,7 @@ import { handleGalleryList, handleGalleryCreate, handleGalleryUpdate, handleGall
 import { handleBoardPublicList, handleBoardPublicGet, handleBoardPublicCreate, handleBoardPublicDelete, handleBoardAdminList, handleBoardAdminReply, handleBoardAdminDelete, handleBoardAdminToggle } from './lib/cms/board.js';
 import { handleUpload, handleImageList, handleImageDelete } from './lib/cms/upload.js';
 import { handleTranslate } from './lib/cms/translate.js';
+import { handleSearch } from './lib/cms/search.js';
 import { renderBlogList, renderBlogPost, renderFaq, renderGallery, renderBoardList, renderBoardPost, renderBoardWrite, renderGuide, renderSitemap } from './lib/cms/render.js';
 import { renderHome, handleSettingsGet, handleSettingsPut, handleLayoutGet, handleLayoutPut } from './lib/cms/home.js';
 
@@ -169,6 +170,7 @@ const httpServer = createServer(async (req, res) => {
   if (urlPath === '/api/admin/images' && req.method === 'GET') return handleImageList(req, res);
   if (urlPath?.startsWith('/api/admin/images/') && req.method === 'DELETE') return handleImageDelete(req, res);
   if (urlPath?.endsWith('/translate') && urlPath?.startsWith('/api/admin/blog/') && req.method === 'POST') return handleTranslate(req, res);
+  if (urlPath === '/api/admin/search' && req.method === 'GET') return handleSearch(req, res);
 
   // === CMS 사이트 설정 API ===
   if (urlPath === '/api/admin/settings' && req.method === 'GET') return handleSettingsGet(req, res);
@@ -293,5 +295,6 @@ httpServer.listen(PORT, '0.0.0.0', () => {
   log(`LINE Login: ${LINE_CHANNEL_ID ? '설정됨' : '미설정'}`);
   log(`LINE Messaging: ${LINE_MESSAGING_ACCESS_TOKEN ? '설정됨' : '미설정'}`);
   log(`CMS Admin: ${ADMIN_UIDS.length > 0 ? ADMIN_UIDS.length + '명 등록' : '전체 허용(개발모드)'}`);
+  log(`Naver Search: ${NAVER_CLIENT_ID ? '설정됨' : '미설정'}`);
   log('='.repeat(60));
 });
