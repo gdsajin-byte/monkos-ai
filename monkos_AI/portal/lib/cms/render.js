@@ -146,6 +146,7 @@ ${pageScript ? `<script>${pageScript}</script>` : ''}
 export async function blogListFragment(req, forceLang = null) {
   const url = new URL(req.url, 'https://monkos.ai');
   const lang = forceLang || url.searchParams.get('lang');
+  const catFilter = url.searchParams.get('cat');
   const page = Math.max(1, parseInt(url.searchParams.get('page') || '1', 10));
   const perPage = 10;
 
@@ -153,7 +154,14 @@ export async function blogListFragment(req, forceLang = null) {
   if (lang) query = blogCollection.where('published', '==', true).where('lang', '==', lang).orderBy('createdAt', 'desc');
 
   const snapshot = await query.get();
-  const allPosts = snapshot.docs.map(doc => ({ slug: doc.id, ...doc.data() }));
+  let allPosts = snapshot.docs.map(doc => ({ slug: doc.id, ...doc.data() }));
+
+  // 카테고리 필터 (client-side — 복합 인덱스 불필요)
+  if (catFilter) allPosts = allPosts.filter(p => p.category === catFilter);
+
+  // 카테고리 목록 추출 (필터 전 전체에서)
+  const allCategories = [...new Set(snapshot.docs.map(d => d.data().category).filter(Boolean))].sort();
+
   const totalPages = Math.ceil(allPosts.length / perPage);
   const posts = allPosts.slice((page - 1) * perPage, page * perPage);
 
@@ -166,6 +174,30 @@ export async function blogListFragment(req, forceLang = null) {
 <meta property="og:type" content="website">
 <meta property="og:url" content="${canonicalUrl}">
 <link rel="canonical" href="${canonicalUrl}">`;
+
+  // 언어 필터 탭
+  const baseUrl = forceLang ? `/${forceLang}/blog` : '/blog';
+  const langTabs = [
+    { code: null, label: 'ALL' },
+    { code: 'ko', label: 'KO' },
+    { code: 'ja', label: 'JA' },
+    { code: 'en', label: 'EN' },
+  ].map(t => {
+    const isActive = (lang === t.code) || (!lang && !t.code);
+    const href = t.code ? `${baseUrl}?lang=${t.code}${catFilter ? `&cat=${encodeURIComponent(catFilter)}` : ''}` : `${baseUrl}${catFilter ? `?cat=${encodeURIComponent(catFilter)}` : ''}`;
+    return `<a href="${href}" class="filter-tab${isActive ? ' active' : ''}">${t.label}</a>`;
+  }).join('');
+
+  // 카테고리 필터 탭
+  const catTabs = [
+    { code: null, label: 'ALL' },
+    ...allCategories.map(c => ({ code: c, label: c })),
+  ].map(t => {
+    const isActive = (catFilter === t.code) || (!catFilter && !t.code);
+    const langParam = lang ? `lang=${lang}&` : '';
+    const href = t.code ? `${baseUrl}?${langParam}cat=${encodeURIComponent(t.code)}` : `${baseUrl}${lang ? `?lang=${lang}` : ''}`;
+    return `<a href="${href}" class="filter-tab${isActive ? ' active' : ''}">${escapeHtml(t.label)}</a>`;
+  }).join('');
 
   const cardsHtml = posts.map(p => {
     let cardHref;
@@ -196,14 +228,18 @@ export async function blogListFragment(req, forceLang = null) {
 
   let paginationHtml = '';
   if (totalPages > 1) {
-    const baseUrl = forceLang ? `/${forceLang}/blog` : '/blog';
-    const langParam = (!forceLang && lang) ? `&lang=${lang}` : '';
+    const pgBase = forceLang ? `/${forceLang}/blog` : '/blog';
+    const extraParams = [
+      (!forceLang && lang) ? `lang=${lang}` : '',
+      catFilter ? `cat=${encodeURIComponent(catFilter)}` : '',
+    ].filter(Boolean).join('&');
+    const pgSuffix = extraParams ? `&${extraParams}` : '';
     const links = [];
-    if (page > 1) links.push(`<a href="${baseUrl}?page=${page - 1}${langParam}">&laquo; Prev</a>`);
+    if (page > 1) links.push(`<a href="${pgBase}?page=${page - 1}${pgSuffix}">&laquo; Prev</a>`);
     for (let i = 1; i <= totalPages; i++) {
-      links.push(i === page ? `<span class="pg-current">${i}</span>` : `<a href="${baseUrl}?page=${i}${langParam}">${i}</a>`);
+      links.push(i === page ? `<span class="pg-current">${i}</span>` : `<a href="${pgBase}?page=${i}${pgSuffix}">${i}</a>`);
     }
-    if (page < totalPages) links.push(`<a href="${baseUrl}?page=${page + 1}${langParam}">Next &raquo;</a>`);
+    if (page < totalPages) links.push(`<a href="${pgBase}?page=${page + 1}${pgSuffix}">Next &raquo;</a>`);
     paginationHtml = `<div class="pagination">${links.join('')}</div>`;
   }
 
@@ -232,22 +268,30 @@ export async function blogListFragment(req, forceLang = null) {
 .pg-current { background: var(--accent); color: var(--bg); font-weight: 600; }
 .blog-header { margin-bottom: 32px; }
 .blog-header h1 { font-size: 28px; font-weight: 700; color: var(--text-bright); }
-.lang-filter { display: flex; gap: 8px; margin-top: 16px; }
-.lang-filter a {
-  padding: 6px 16px; border-radius: 20px; font-size: 13px;
+.blog-filters { margin-top: 16px; display: flex; flex-direction: column; gap: 10px; }
+.filter-row { display: flex; align-items: center; gap: 10px; }
+.filter-label { font-size: 12px; color: var(--text-dim); font-weight: 500; min-width: 40px; }
+.filter-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+.filter-tab {
+  padding: 5px 14px; border-radius: 18px; font-size: 13px;
   background: var(--surface); border: 1px solid var(--border); color: var(--text-dim);
+  transition: all 0.15s;
 }
-.lang-filter a:hover, .lang-filter a.active { border-color: var(--accent); color: var(--accent); }
+.filter-tab:hover, .filter-tab.active { border-color: var(--accent); color: var(--accent); background: rgba(108,79,255,0.04); }
 @media (max-width: 600px) { .blog-grid { grid-template-columns: 1fr; } }`;
 
   const bodyContent = `
   <div class="blog-header">
     <h1>Blog</h1>
-    <div class="lang-filter">
-      <a href="/blog" class="${!lang ? 'active' : ''}">All</a>
-      <a href="/blog" class="${lang === 'ko' ? 'active' : ''}">KO</a>
-      <a href="/ja/blog" class="${lang === 'ja' || forceLang === 'ja' ? 'active' : ''}">JA</a>
-      <a href="/en/blog" class="${lang === 'en' || forceLang === 'en' ? 'active' : ''}">EN</a>
+    <div class="blog-filters">
+      <div class="filter-row">
+        <span class="filter-label">언어</span>
+        <div class="filter-tabs">${langTabs}</div>
+      </div>
+      ${allCategories.length > 0 ? `<div class="filter-row">
+        <span class="filter-label">주제</span>
+        <div class="filter-tabs">${catTabs}</div>
+      </div>` : ''}
     </div>
   </div>
   <div class="blog-grid">${cardsHtml || '<p style="color:var(--text-dim)">No posts yet.</p>'}</div>
