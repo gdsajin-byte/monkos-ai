@@ -129,6 +129,7 @@
   "workbench.panel.defaultLocation": "bottom",
 
   // ─── Claude 관련 ───
+  "claudeCode.selectedModel": "opus[1m]",
   "claude.autoScroll": true,
   "workbench.editor.autoLockGroups": {
     "agentSessionsWelcomePage": true,
