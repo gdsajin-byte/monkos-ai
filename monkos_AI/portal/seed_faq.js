@@ -1,5 +1,5 @@
 /**
- * faq_items Firestore 초기 데이터 시드 — FAQ 확정본 (Q1~Q13 한국어)
+ * faq_items Firestore 초기 데이터 시드 — FAQ 확정본 (KO/EN/JA 각 13건, 총 39건)
  * 실행: node seed_faq.js
  * 환경: GOOGLE_APPLICATION_CREDENTIALS 또는 ADC 인증 필요
  *
@@ -11,7 +11,7 @@ import { Firestore } from '@google-cloud/firestore';
 const firestore = new Firestore({ projectId: 'monkos' });
 const collection = firestore.collection('faq_items');
 
-const faqItems = [
+const faqItemsKo = [
   {
     id: 'faq_ko_01',
     question: 'MONKOS AI는 어떤 서비스인가요?',
@@ -151,6 +151,292 @@ MONKOS AI가 채택한 모델은 20년 경력의 사진작가 기준으로 보�
   },
 ];
 
+const faqItemsEn = [
+  {
+    id: 'faq_en_01',
+    question: 'What is MONKOS AI?',
+    answer: `MONKOS AI is a platform that provides AI-powered image solutions, including Photo, Beauty, LookBook, and Models. We combine generative AI and LLM models through a precision-engineered pipeline to deliver photo-realistic image services.
+
+Our ID photo service is currently live. The team includes a veteran photographer with 20 years of experience and 12 years of studio management, alongside a beauty researcher (doctoral candidate) with over 7 years of hands-on practice. As working studio professionals, we strive for perfection in every detail — lighting, backgrounds, skin tones, poses, attire, and hair.`,
+    category: 'About the Service',
+    order: 1,
+  },
+  {
+    id: 'faq_en_02',
+    question: 'What ID photo formats do you support?',
+    answer: `We currently offer ICAO-standard passport photos (3.5cm × 4.5cm) and standard ID photos (3cm × 4cm) commonly used for student IDs, resumes, and similar purposes.`,
+    category: 'About the Service',
+    order: 2,
+  },
+  {
+    id: 'faq_en_03',
+    question: 'What services are you working on next?',
+    answer: `MONKOS AI aims to become a comprehensive AI image service. Our team of photography, beauty, and design professionals is rapidly building and expanding our capabilities.
+
+We are committed to growing as a communication-oriented AI service provider through a wide range of image-related offerings.`,
+    category: 'About the Service',
+    order: 3,
+  },
+  {
+    id: 'faq_en_04',
+    question: 'Can a single selfie really produce an ID photo?',
+    answer: `In the early stages, multiple photos from different angles were needed to achieve satisfactory results. With the explosive improvement in recent generative AI models, we can now achieve over 90% identity consistency from just one selfie.
+
+By combining our decades of studio expertise with carefully selected AI models tested through extensive trials, we have reached a quality level that closely approaches our studio-grade ID photos. You no longer need a bright, clean background — as long as shooting conditions fall within a reasonable range, you can expect high-quality, realistic ID photos.`,
+    category: 'Quality & Technology',
+    order: 4,
+  },
+  {
+    id: 'faq_en_05',
+    question: "It's AI-generated — will it actually look like me?",
+    answer: `Maintaining identity fidelity in AI-generated photos is the industry's top priority and benchmark. While many AI models exist, most produce results that look like dolls, cartoons, or have an obvious AI appearance. Very few models can deliver the photo-realism required even for passport submissions.
+
+The model adopted by MONKOS AI achieves at least 85% identity accuracy as evaluated by our photographer with 20 years of experience. However, since AI cannot see your face in person the way a photographer would, we cannot claim 100% perfection.
+
+If you receive a result that looks nothing like you, we recommend stopping at the preview stage and retaking (free) or regenerating (10c). Since we provide 10c immediately upon your first login, **previews are completely free**.`,
+    category: 'Quality & Technology',
+    order: 5,
+  },
+  {
+    id: 'faq_en_06',
+    question: 'Is it mobile-only? Can I use it on a PC?',
+    answer: `Compared to other services, MONKOS AI maintains very strict standards for ID photos — especially for identity documents like passports and driver's licenses. This stems from our commitment to **preventing deepfake misuse**.
+
+From a pure business standpoint, opening the service to all platforms would be more convenient. However, this creates a clear risk of someone using another person's photo. Given that MONKOS AI produces near-photorealistic output, we take this responsibility seriously.
+
+For this reason, unlike other services, **we only accept real-time mobile selfies taken through an authenticated account**. We appreciate your understanding. We are exploring PC input support for other services in the future.`,
+    category: 'Quality & Technology',
+    order: 6,
+  },
+  {
+    id: 'faq_en_07',
+    question: 'How much does it cost? How does the credit system work?',
+    answer: `MONKOS AI operates on a credit-based pricing system, where **10c = $1**.
+
+**ID photo pricing breakdown:**
+- Auto-capture: Free
+- Retouching & generation: 10c (preview included)
+- High-resolution download: 70c
+- **Total: 80c**
+
+Credits can be purchased within the app. Detailed documentation on refund and credit policies is available on our website.`,
+    category: 'Pricing & Payment',
+    order: 7,
+  },
+  {
+    id: 'faq_en_08',
+    question: 'Can I use it from outside Korea?',
+    answer: `Yes, MONKOS AI is designed as a global service. We currently support Korean, Japanese, and English. Payments in Korea are processed through Toss Payments, while international and Japanese payments are handled through Lemon Squeezy.`,
+    category: 'Pricing & Payment',
+    order: 8,
+  },
+  {
+    id: 'faq_en_09',
+    question: "What if I'm not happy with my photo?",
+    answer: `You can **retake photos as many times as you like — for free**. Charges only apply at the retouching stage (10c) and the final download stage (70c).
+
+Please prepare yourself neatly and select the appropriate photo type, gender, age range, attire, and hairstyle before shooting. The AI will run a few checks and then capture your photo automatically.
+
+**Shooting tips:**
+- Look straight ahead and keep your face centered within the guide circle
+- Avoid areas with harsh shadows or poor lighting
+- Avoid busy environments or locations with colored lighting
+- Follow these simple steps and the AI will handle the rest
+
+You can view your capture immediately — feel free to retake as many times as you'd like.`,
+    category: 'Capturing & Usage',
+    order: 9,
+  },
+  {
+    id: 'faq_en_10',
+    question: 'What is the free crop app?',
+    answer: `The ID photo service provides capture, AI retouching, and the finished photo (uncropped original).
+
+**MONKOS CROP** is a separate, free app we developed in-house. It precisely calculates passport specifications and crops your photo to fully comply with official requirements. This tool focuses solely on photo trimming — adjusting the crown position, eye position, and photo framing to deliver **highly precise cropping and trimming**.
+
+We plan to expand this into a cropping service for various visa types and other document requirements across different countries.
+
+→ [crop.monkos.ai](https://crop.monkos.ai)`,
+    category: 'Capturing & Usage',
+    order: 10,
+  },
+  {
+    id: 'faq_en_11',
+    question: 'Can MONKOS AI photos be used for passports?',
+    answer: `MONKOS AI generates ID photos that comply with ICAO international standards. We precisely apply official specifications for size, ratio, background color, and resolution. You can use our free crop app (MONKOS CROP) to produce a final file that meets all regulatory requirements.`,
+    category: 'Standards & Safety',
+    order: 11,
+  },
+  {
+    id: 'faq_en_12',
+    question: 'Is my personal data safe? Are my selfies stored somewhere?',
+    answer: `Yes, your personal data is safe. While photos must pass through our servers for AI processing, MONKOS AI operates on Google Cloud infrastructure. All data is encrypted immediately upon generation and automatically deleted after a defined retention period. We never use your data for marketing or AI training without your consent.
+
+**Data retention policy:**
+- **30-day default retention**: After service delivery, your data is retained for 30 days to support re-downloads, customer service, and refund verification, then automatically deleted. For the full legal basis, please refer to our [Privacy Policy](https://monkos.ai/privacy).
+- **Retention until account deletion (optional)**: If you opt in to extended retention on your profile page, your data will be kept until you delete your account, and you can re-download at any time. Data is deleted immediately upon account deletion.
+
+All services comply with applicable privacy and portrait rights laws in each country of operation.`,
+    category: 'Standards & Safety',
+    order: 12,
+  },
+  {
+    id: 'faq_en_13',
+    question: 'How can I reach customer support?',
+    answer: `- **Board**: Leave a message on our official portal at [monkos.ai](https://monkos.ai)
+- **AI Chatbot**: Ask our chatbot — it's well-versed in our services
+- **Email**: For important matters, please contact us at **info@monkos.ai** and we'll respond promptly`,
+    category: 'Customer Support',
+    order: 13,
+  },
+];
+
+const faqItemsJa = [
+  {
+    id: 'faq_ja_01',
+    question: 'MONKOS AIはどのようなサービスですか？',
+    answer: `MONKOS AIは、AI技術を活用したPhoto、Beauty、LookBook、Modelsなど、画像関連ソリューションを提供するプラットフォームです。生成AIとLLMモデルを精密なパイプラインで設計・構築し、実写レベルの画像サービスの提供を目指しています。
+
+現在、証明写真サービスが先行オープンしています。写真歴20年・スタジオ運営12年のベテランフォトグラファーと、ビューティー実務7年以上の研究員（関連学博士課程）が共同で研究・開発を行っています。実際にスタジオを運営している現場のプロフェッショナルであり、ライティング・背景・肌色・ポーズ・衣装・ヘアなど、すべての要素において完璧を期しています。`,
+    category: 'サービス紹介',
+    order: 1,
+  },
+  {
+    id: 'faq_ja_02',
+    question: '証明写真はどのような規格に対応していますか？',
+    answer: `現在、ICAO基準のパスポート写真規格（3.5cm × 4.5cm）と、一般的に多く使用される証明写真（3cm × 4cm）（学生証・履歴書用写真などに対応）をご提供しています。`,
+    category: 'サービス紹介',
+    order: 2,
+  },
+  {
+    id: 'faq_ja_03',
+    question: '今後、どのようなサービスを準備していますか？',
+    answer: `MONKOS AIは、画像関連のトータルAIサービスを目指しています。写真の専門家、ビューティーの専門家、デザインの専門家がチームとして活動しており、非常にスピーディーな開発とサービス対応を実現しています。
+
+今後、画像関連のさまざまなサービスを展開し、コミュニケーション型AIサービス企業として成長してまいります。`,
+    category: 'サービス紹介',
+    order: 3,
+  },
+  {
+    id: 'faq_ja_04',
+    question: 'セルフィー1枚で本当に証明写真になりますか？',
+    answer: `初期段階では、複数のアングルからの写真を入力しなければ満足のいく結果が得られませんでした。最近の生成AIモデルの性能が飛躍的に向上し、セルフィー1枚でも本人一致率90%以上を達成できるレベルに到達しています。
+
+これまで培ってきた写真実務のノウハウと、数多くのテストを経て厳選したAIモデルを組み合わせることで、私たちのスタジオ証明写真に大きく劣らないクオリティを実現しています。撮影環境も以前のように明るくきれいな背景でなくても、ある程度の範囲内であれば十分に高品質な実写証明写真をお受け取りいただけます。`,
+    category: '品質と技術',
+    order: 4,
+  },
+  {
+    id: 'faq_ja_05',
+    question: 'AIが作った写真なのに、実際の自分と違って見えませんか？',
+    answer: `AI生成写真の本人一致率は、業界最大の課題でありベンチマーク指標です。多くのAIモデルが存在しますが、きれいな人形やイラストのようになったり、AI感が強く出るモデルがほとんどであるのも事実です。パスポート写真としても通用するほどの実写レベルを提供できるAIモデルは、現時点では極めて限られています。
+
+MONKOS AIが採用しているモデルは、20年の経歴を持つフォトグラファーの基準で見ても、本人一致率85%以上を達成しています。ただし、直接撮影してお顔を見ながら判断する領域ではないため、AIが100%完璧であるとは申し上げられません。
+
+料金をお支払いいただいて証明写真をお受け取りになったのに、まったく別人であったり不適切な写真が出力された場合は、プレビュー段階で止めていただき、再撮影（無料）・再生成（10c）をおすすめします。初回ログイン時に10cを即時付与しておりますので、**プレビューまでは完全無料**です。`,
+    category: '品質と技術',
+    order: 5,
+  },
+  {
+    id: 'faq_ja_06',
+    question: 'スマートフォンでしか使えないのですか？PCでは利用できませんか？',
+    answer: `他のサービスと比較して、MONKOS AIは証明写真、特にパスポートや運転免許証などの身分関連写真について非常に厳格な基準を設けています。それは、**ディープフェイク（Deepfake）の根本的な防止**に対する取り組みです。
+
+ビジネスの観点だけで見れば、すべてのプラットフォームに開放する方がはるかに便利です。しかしその場合、他人の写真を不正使用されるリスクが明らかに存在します。MONKOS AIの出力写真は実写にほぼ近いため、より強い責任感を持って対応しています。
+
+このような理由から、他のサービスとは異なり、**ログインで認証されたアカウントのモバイルリアルタイムセルフィーのみを入力として受け付けて**います。少しご不便をおかけしますが、ご理解いただけますと幸いです。今後、他のサービスにおいてはPC入力のサポートも検討しています。`,
+    category: '品質と技術',
+    order: 6,
+  },
+  {
+    id: 'faq_ja_07',
+    question: '料金はいくらですか？クレジットシステムはどうなっていますか？',
+    answer: `MONKOS AIはクレジット制の料金体系を採用しており、**10c = $1**が基準です。
+
+**証明写真の料金構成：**
+- 自動撮影：無料
+- リタッチ生成：10c（プレビュー付き）
+- 高画質オリジナルダウンロード：70c
+- **合計 80c**
+
+クレジットはアプリ内でご購入いただけます。返金およびクレジット運用ポリシーの詳細は、ウェブサイトに掲載しております。`,
+    category: '料金とお支払い',
+    order: 7,
+  },
+  {
+    id: 'faq_ja_08',
+    question: '海外からも利用できますか？',
+    answer: `はい、MONKOS AIはグローバルサービスを目指しています。現在、韓国語・日本語・英語に対応しており、韓国ではToss Payments、日本およびグローバルサービスではLemon Squeezyを通じてお支払いが可能です。`,
+    category: '料金とお支払い',
+    order: 8,
+  },
+  {
+    id: 'faq_ja_09',
+    question: '写真が気に入らない場合はどうすればいいですか？',
+    answer: `はい、**何度でも無料で再撮影が可能**です。課金が発生するのは、リタッチ生成（10c）と完成写真のダウンロード（70c）の段階のみです。
+
+身だしなみを整えた上で、写真の種類・性別・年齢層・衣装・ヘアスタイルなどを適切に選択してから撮影してください。AIがいくつかの項目をチェックした後、自動的に撮影いたします。
+
+**撮影のコツ：**
+- 正面をしっかり見て、ガイド円の中に顔をきちんと合わせてください
+- 影が強すぎる場所や暗い場所は避けてください
+- 周囲が騒がしい場所や、色のついた照明がある場所は避けてください
+- これだけ守っていただければ、AIがほとんどの処理をうまく行います
+
+撮影した写真はすぐにご確認いただけますので、気に入らなければ何度でも再撮影してください。`,
+    category: '撮影と使い方',
+    order: 9,
+  },
+  {
+    id: 'faq_ja_10',
+    question: '無料クロップアプリとは何ですか？',
+    answer: `証明写真サービスは、撮影・AIリタッチ生成・完成写真（クロップされていないオリジナル）をお渡しするサービスです。
+
+**MONKOS CROP**は、当社が独自に開発し無料で配布している別サービスです。パスポート規格を精密に計算し、規定に完全に適合するファイルにクロップするアプリです。撮影や生成ではなく、写真のトリミングのみに特化しており、頭頂部の位置と目の位置、写真の画角などを設定する**非常に精密なクロップ・トリミング**を提供します。
+
+今後、各国のビザやその他の用途に対応するクロップサービスへと発展させてまいります。
+
+→ [crop.monkos.ai](https://crop.monkos.ai)`,
+    category: '撮影と使い方',
+    order: 10,
+  },
+  {
+    id: 'faq_ja_11',
+    question: 'MONKOS AIの証明写真はパスポート写真として使用できますか？',
+    answer: `MONKOS AIは、ICAO国際規格に適合した証明写真を生成します。サイズ・比率・背景色・解像度などの公式規格を精密に適用しており、無料クロップアプリ（MONKOS CROP）を通じて規定に準拠した最終ファイルを作成いただけます。`,
+    category: '規格と安全性',
+    order: 11,
+  },
+  {
+    id: 'faq_ja_12',
+    question: '個人情報は安全ですか？私のセルフィーはどこかに保存されますか？',
+    answer: `はい、お客様の個人情報は安全です。撮影された写真をAIが処理するためにはサーバーを経由する必要がありますが、MONKOS AIはGoogle Cloudインフラ上で運営されており、生成即時に暗号化され、定められた期間保管後に自動削除されます。お客様の同意なくマーケティング等に無断使用したり、AI学習に活用することはありません。
+
+**データ保管ポリシー：**
+- **基本30日保管**：サービス提供後30日間、再ダウンロード・アフターサービス・返金検証のために保管され、その後自動的に削除されます。詳しい法的根拠は[プライバシーポリシー](https://monkos.ai/privacy)をご参照ください。
+- **退会時まで保管（任意選択）**：マイページで保管延長に同意いただくと、アカウント退会時まで保管され、いつでも再ダウンロードが可能です。退会時に即時削除されます。
+
+すべてのサービスは、各国の個人情報保護法（日本では個人情報保護法/APPI）および肖像権に関する法律を遵守しています。`,
+    category: '規格と安全性',
+    order: 12,
+  },
+  {
+    id: 'faq_ja_13',
+    question: 'カスタマーサポートへの問い合わせ方法は？',
+    answer: `- **掲示板**：[monkos.ai](https://monkos.ai) 公式ポータルページの掲示板にメッセージをお寄せください
+- **AIチャットボット**：サービスに精通したチャットボットにお気軽にお尋ねください
+- **メール**：重要なお問い合わせは、公式メール **info@monkos.ai** までご連絡ください。誠心誠意対応いたします`,
+    category: 'カスタマーサポート',
+    order: 13,
+  },
+];
+
+const allFaqItems = [
+  ...faqItemsKo.map(item => ({ ...item, lang: 'ko' })),
+  ...faqItemsEn.map(item => ({ ...item, lang: 'en' })),
+  ...faqItemsJa.map(item => ({ ...item, lang: 'ja' })),
+];
+
 async function seed() {
   // 1. 기존 데이터 확인 및 백업 (헌법 4조 1항)
   console.log('=== faq_items 기존 데이터 확인 ===');
@@ -171,19 +457,19 @@ async function seed() {
     console.log('기존 데이터 없음 — 클린 시딩 진행');
   }
 
-  // 2. FAQ 시딩
-  console.log('\n=== FAQ 시딩 시작 (Q1~Q13 한국어) ===');
+  // 2. FAQ 시딩 (KO/EN/JA 총 39건)
+  console.log('\n=== FAQ 시딩 시작 (KO/EN/JA 각 13건, 총 39건) ===');
   const now = new Date().toISOString();
-  for (const item of faqItems) {
-    const { id, ...data } = item;
-    data.lang = 'ko';
+  for (const item of allFaqItems) {
+    const { id, lang, ...data } = item;
+    data.lang = lang;
     data.published = true;
     data.createdAt = now;
     data.updatedAt = now;
     await collection.doc(id).set(data);
-    console.log(`  ✓ ${id}: ${data.question}`);
+    console.log(`  ✓ ${id} [${lang}]: ${data.question}`);
   }
-  console.log(`\n완료: ${faqItems.length}건 시딩됨`);
+  console.log(`\n완료: ${allFaqItems.length}건 시딩됨`);
 }
 
 seed().catch(console.error);

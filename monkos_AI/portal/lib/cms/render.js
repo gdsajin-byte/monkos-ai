@@ -442,8 +442,14 @@ export async function renderBlogPost(req, res, lang = null) {
 // =============================================
 
 // FAQ — fragment
-export async function faqFragment(req) {
-  const snapshot = await faqCollection.where('published', '==', true).orderBy('order', 'asc').get();
+export async function faqFragment(req, forceLang = null) {
+  const url = new URL(req.url, `http://${req.headers.host}`);
+  const lang = forceLang || url.searchParams.get('lang') || 'ko';
+  const snapshot = await faqCollection
+    .where('published', '==', true)
+    .where('lang', '==', lang)
+    .orderBy('order', 'asc')
+    .get();
   const items = snapshot.docs.map(doc => doc.data());
 
   const categories = {};
@@ -466,11 +472,22 @@ export async function faqFragment(req) {
     }))
   });
 
-  const seoMeta = `<meta property="og:title" content="FAQ | MONKOS AI">
-<meta property="og:description" content="MONKOS AI ID Photo FAQ - frequently asked questions">
+  const canonicalPath = lang === 'ko' ? '/faq' : `/${lang}/faq`;
+  const canonicalUrl = `https://monkos.ai${canonicalPath}`;
+  const ogTitleMap = { ko: 'FAQ | MONKOS AI', en: 'FAQ | MONKOS AI', ja: 'FAQ | MONKOS AI' };
+  const ogDescMap = {
+    ko: 'MONKOS AI 증명사진 FAQ - 자주 묻는 질문',
+    en: 'MONKOS AI ID Photo FAQ - frequently asked questions',
+    ja: 'MONKOS AI 証明写真 FAQ - よくある質問',
+  };
+  const ogTitle = ogTitleMap[lang] || ogTitleMap.ko;
+  const ogDesc = ogDescMap[lang] || ogDescMap.ko;
+
+  const seoMeta = `<meta property="og:title" content="${ogTitle}">
+<meta property="og:description" content="${ogDesc}">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://monkos.ai/faq">
-<link rel="canonical" href="https://monkos.ai/faq">
+<meta property="og:url" content="${canonicalUrl}">
+<link rel="canonical" href="${canonicalUrl}">
 <script type="application/ld+json">${faqJsonLd}</script>`;
 
   const faqHtml = Object.entries(categories).map(([cat, faqs]) => `
@@ -518,13 +535,13 @@ export async function faqFragment(req) {
   </div>
   ${faqHtml || '<p style="color:var(--text-dim)">No FAQs yet.</p>'}`;
 
-  return { title: 'FAQ | MONKOS AI', description: 'MONKOS AI ID Photo FAQ', seoMeta, htmlLang: 'ko', pageStyle, bodyContent, pageScript: null };
+  return { title: ogTitle, description: ogDesc, seoMeta, htmlLang: lang, pageStyle, bodyContent, pageScript: null };
 }
 
 // GET /faq — FAQ 공개 페이지 (기존 호출 호환)
-export async function renderFaq(req, res) {
+export async function renderFaq(req, res, forceLang = null) {
   try {
-    const parts = await faqFragment(req);
+    const parts = await faqFragment(req, forceLang);
     // FAQ는 container max-width가 다름 → bodyContent를 container style로 오버라이드
     const html = `${layoutHead(parts.title, parts.description, parts.seoMeta || '', parts.htmlLang || 'ko')}
 ${parts.pageStyle ? `<style>${parts.pageStyle}</style>` : ''}
