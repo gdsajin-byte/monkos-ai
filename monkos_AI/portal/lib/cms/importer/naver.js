@@ -4,11 +4,11 @@
  * 전략: RSS 우선 → 실패 시 모바일 HTML fallback
  */
 import { Storage } from '@google-cloud/storage';
-import { firestore, GCS_BUCKET, log } from '../../shared/config.js';
+import { firestore, log, GCS_BUCKET } from '../../shared/config.js';
 import { translateAndSaveBlogPost } from '../translate.js';
 
-const storage = new Storage();
-const bucket = storage.bucket(GCS_BUCKET);
+const gcsStorage = new Storage();
+const gcsBucket = gcsStorage.bucket(GCS_BUCKET);
 
 const BLOG_ID = 'monkos_ai';
 const RSS_URL = `https://rss.blog.naver.com/${BLOG_ID}.xml`;
@@ -147,51 +147,39 @@ async function fetchMobileContent(postId) {
   return null;
 }
 
+/**
+ * content 내 pstatic.net 이미지를 GCS로 복사, URL 교체
+ * Referer 없이 다운로드 → GCS blog/{slug}/ 업로드
+ */
 async function copyPstaticToGCS(content, slug) {
-  const pstaticRegex = /https?:\/\/[a-z0-9-]*\.?pstatic\.net\/[^\s)"']+/g;
+  const pstaticRegex = /(https?:\/\/[^\s"']*pstatic\.net[^\s"')*]*)/g;
   const urls = [...new Set(content.match(pstaticRegex) || [])];
   if (urls.length === 0) return content;
 
+  log(`[네이버] pstatic 이미지 ${urls.length}개 GCS 복사: ${slug}`);
   let updated = content;
-  for (const url of urls) {
+
+  for (let i = 0; i < urls.length; i++) {
     try {
-      // postfiles.pstatic.net 도메인으로 fallback (mblogthumb는 ?type= 필요)
-      const tryUrls = [url];
-      if (url.includes('mblogthumb-phinf.pstatic.net')) {
-        tryUrls.unshift(url.replace('mblogthumb-phinf.pstatic.net', 'postfiles.pstatic.net'));
-      } else if (url.includes('blogthumb.pstatic.net')) {
-        tryUrls.unshift(url.replace('blogthumb.pstatic.net', 'postfiles.pstatic.net'));
-      }
+      const res = await fetch(urls[i]);
+      if (!res.ok) { log(`[네이버] 이미지 다운로드 실패 (${res.status}): ${urls[i]}`, 'WARNING'); continue; }
 
-      let buffer = null;
-      let contentType = 'image/jpeg';
-      for (const tryUrl of tryUrls) {
-        try {
-          const res = await fetch(tryUrl, { headers: { 'User-Agent': HEADERS['User-Agent'] } });
-          if (!res.ok) continue;
-          buffer = Buffer.from(await res.arrayBuffer());
-          contentType = res.headers.get('content-type') || 'image/jpeg';
-          break;
-        } catch { continue; }
-      }
-      if (!buffer) continue;
+      const buffer = Buffer.from(await res.arrayBuffer());
+      const contentType = res.headers.get('content-type') || 'image/jpeg';
+      const ext = contentType.includes('png') ? 'png' : contentType.includes('webp') ? 'webp' : contentType.includes('gif') ? 'gif' : 'jpg';
+      const gcsPath = `blog/${slug}/${i}.${ext}`;
 
-      // 파일명 추출
-      const urlPath = new URL(url).pathname;
-      const ext = contentType.includes('png') ? '.png' : contentType.includes('webp') ? '.webp' : '.jpg';
-      const fileName = urlPath.split('/').pop()?.replace(/[^a-zA-Z0-9._-]/g, '_') || `img_${Date.now()}`;
-      const gcsPath = `blog/${slug}/${fileName}${fileName.includes('.') ? '' : ext}`;
-
-      const file = bucket.file(gcsPath);
+      const file = gcsBucket.file(gcsPath);
       await file.save(buffer, { metadata: { contentType }, public: true });
 
       const gcsUrl = `https://storage.googleapis.com/${GCS_BUCKET}/${gcsPath}`;
-      updated = updated.split(url).join(gcsUrl);
-      log(`[네이버] GCS 복사: ${fileName}`);
+      updated = updated.split(urls[i]).join(gcsUrl);
+      log(`[네이버] GCS 복사: ${urls[i].substring(0, 60)}… → ${gcsPath}`);
     } catch (err) {
-      log(`[네이버] GCS 복사 실패: ${err.message}`, 'WARNING');
+      log(`[네이버] 이미지 GCS 복사 실패: ${err.message}`, 'WARNING');
     }
   }
+
   return updated;
 }
 
