@@ -19,7 +19,7 @@ import {
   TELEGRAM_CHANNEL_ID, TEAM_CHAT_ID,
   KAKAO_REST_API_KEY, KAKAO_CHANNEL_ID, LINE_CHANNEL_ID,
   LINE_MESSAGING_ACCESS_TOKEN,
-  ADMIN_UIDS, NAVER_CLIENT_ID,
+  ADMIN_UIDS, AGENT_API_KEYS, NAVER_CLIENT_ID,
 } from './lib/shared/config.js';
 
 // === 핸들러 모듈 ===
@@ -34,6 +34,7 @@ import { handlePassportIssue, handleUploadMission } from './lib/tg-cs.js';
 import { handleKakaoChatbot } from './lib/kakao-chatbot.js';
 import { handleLineWebhook } from './lib/line-chatbot.js';
 import { handleWebChat, handleCoaching } from './lib/coaching.js';
+import { handleAgentAuth } from './lib/cms/admin-auth.js';
 import { handleBlogList, handleBlogGet, handleBlogCreate, handleBlogUpdate, handleBlogDelete } from './lib/cms/blog.js';
 import { handleFaqList, handleFaqCreate, handleFaqUpdate, handleFaqDelete } from './lib/cms/faq.js';
 import { handleGalleryList, handleGalleryCreate, handleGalleryUpdate, handleGalleryDelete } from './lib/cms/gallery.js';
@@ -117,6 +118,9 @@ const httpServer = createServer(async (req, res) => {
   if (urlPath === '/api/auth/verify-cookie' && req.method === 'GET') return handleVerifyCookie(req, res);
   if (urlPath === '/api/auth/refresh' && req.method === 'POST') return handleAuthRefresh(req, res);
   if (urlPath === '/api/auth/logout' && req.method === 'POST') return handleLogout(req, res);
+
+  // === 에이전트 인증 ===
+  if (urlPath === '/auth/agent' && req.method === 'POST') return handleAgentAuth(req, res);
 
   // === 크레딧 ===
   if (req.url?.startsWith('/api/credits') && req.method === 'GET' && urlPath === '/api/credits') return handleCreditsGet(req, res);
@@ -295,6 +299,7 @@ httpServer.listen(PORT, '0.0.0.0', () => {
   log(`LINE Login: ${LINE_CHANNEL_ID ? '설정됨' : '미설정'}`);
   log(`LINE Messaging: ${LINE_MESSAGING_ACCESS_TOKEN ? '설정됨' : '미설정'}`);
   log(`CMS Admin: ${ADMIN_UIDS.length > 0 ? ADMIN_UIDS.length + '명 등록' : '전체 허용(개발모드)'}`);
+  log(`Agent API Keys: ${AGENT_API_KEYS.length > 0 ? AGENT_API_KEYS.length + '개 등록' : '미설정'}`);
   log(`Naver Search: ${NAVER_CLIENT_ID ? '설정됨' : '미설정'}`);
   log('='.repeat(60));
 });

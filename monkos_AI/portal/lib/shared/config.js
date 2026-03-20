@@ -62,6 +62,9 @@ export const NAVER_CLIENT_SECRET = process.env.NAVER_CLIENT_SECRET || '';
 export const GCS_BUCKET = process.env.GCS_BUCKET || 'monk-ai-images';
 export const ADMIN_UIDS = (process.env.ADMIN_UIDS || '').split(',').filter(Boolean);
 
+// 에이전트 API 키 (민아/코웍이 등 — Cloud Run 환경변수에서 설정)
+export const AGENT_API_KEYS = (process.env.AGENT_API_KEYS || '').split(',').filter(Boolean);
+
 // D1 거래 원장 (CF Workers tx.js 제거됨 — 환경변수 미설정 시 비활성)
 export const TX_API_URL = process.env.TX_API_URL || '';
 export const TX_API_KEY = process.env.TX_API_KEY || '';
