@@ -12,14 +12,16 @@ const TRANSLATE_PROMPT = {
 - マークダウン書式はそのまま維持
 - 技術用語は適切な日本語表現に
 - SEOを意識した自然な文体
-- タイトルと本文を両方翻訳`,
+- タイトルと本文を両方翻訳
+- 画像マークダウン ![alt](URL) は絶対に削除・変更しないこと。URLはそのまま保持`,
 
   en: `You are a professional Korean→English translator.
 Translate the following blog post into natural English.
 - Keep markdown formatting intact
 - Use appropriate English technical terms
 - Write in an SEO-friendly, natural tone
-- Translate both title and body`,
+- Translate both title and body
+- NEVER remove or modify image markdown ![alt](URL). Preserve all image URLs exactly as-is`,
 
   // JA 원본 → KO/EN
   ja_to_ko: `あなたは日本語→韓国語の専門翻訳者です。
@@ -27,14 +29,16 @@ Translate the following blog post into natural English.
 - マークダウン書式はそのまま維持
 - 技術用語は適切な韓国語表現に
 - SEOを意識した自然な文体
-- タイトルと本文を両方翻訳`,
+- タイトルと本文を両方翻訳
+- 画像マークダウン ![alt](URL) は絶対に削除・変更しないこと。URLはそのまま保持`,
 
   ja_to_en: `You are a professional Japanese→English translator.
 Translate the following blog post into natural English.
 - Keep markdown formatting intact
 - Use appropriate English technical terms
 - Write in an SEO-friendly, natural tone
-- Translate both title and body`,
+- Translate both title and body
+- NEVER remove or modify image markdown ![alt](URL). Preserve all image URLs exactly as-is`,
 };
 
 const JSON_INSTRUCTION = {
@@ -84,7 +88,7 @@ ${JSON_INSTRUCTION[lang] || JSON_INSTRUCTION.en}`;
         model: 'gemini-2.0-flash',
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
         config: {
-          maxOutputTokens: 4096,
+          maxOutputTokens: 16384,
           temperature: 0.3,
           responseMimeType: 'application/json',
         },
@@ -99,6 +103,21 @@ ${JSON_INSTRUCTION[lang] || JSON_INSTRUCTION.en}`;
       if (translated.title === originalDoc.title) {
         log(`[CMS] 자동번역 실패 — 원문 그대로 반환됨 (${lang})`, 'ERROR');
         continue;
+      }
+
+      // 이미지 보존 검증: 원본 이미지가 번역에서 누락되면 끝에 복원
+      const originalImages = (originalDoc.content.match(/!\[.*?\]\(.*?\)/g) || []);
+      const translatedImages = (translated.content.match(/!\[.*?\]\(.*?\)/g) || []);
+
+      if (originalImages.length > translatedImages.length) {
+        const missingImages = originalImages.filter(img => {
+          const url = img.match(/\((.*?)\)/)?.[1];
+          return url && !translated.content.includes(url);
+        });
+        if (missingImages.length > 0) {
+          translated.content += '\n\n' + missingImages.join('\n\n');
+          log(`[CMS] 이미지 ${missingImages.length}개 복원 (${lang})`);
+        }
       }
 
       const translatedSlug = `${slug}-${lang}`;
