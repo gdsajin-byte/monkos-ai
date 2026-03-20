@@ -784,10 +784,13 @@ async function loadImageLibrary() {
   }
 }
 
+let _isInsertingImage = false;
 function insertImage(url, name) {
+  if (_isInsertingImage) return;
+  _isInsertingImage = true;
   editor.exec('addImage', { imageUrl: url, altText: name || 'image' });
   showToast('이미지 삽입 완료');
-  setTimeout(updatePreview, 300);
+  setTimeout(() => { _isInsertingImage = false; updatePreview(); }, 300);
 }
 
 async function deleteImage(filename) {
@@ -936,7 +939,21 @@ function showEditorImageToolbar(img) {
     { label: '📌 썸네일 지정', action: () => setThumbnail(img.src) },
     { label: '🗑 삭제', action: () => {
       if (confirm('이 이미지를 삭제하시겠습니까?')) {
-        img.parentElement?.remove() || img.remove();
+        const md = editor.getMarkdown();
+        const imgSrc = img.src;
+        const escapedSrc = imgSrc.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const newMd = md.replace(new RegExp(`!\\[[^\\]]*\\]\\(${escapedSrc}\\)\\n?`), '');
+        if (newMd !== md) {
+          editor.setMarkdown(newMd);
+        } else {
+          // fallback: URL path만으로 매칭 시도
+          try {
+            const path = new URL(imgSrc).pathname;
+            const escapedPath = path.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const fallbackMd = md.replace(new RegExp(`!\\[[^\\]]*\\]\\([^)]*${escapedPath}\\)\\n?`), '');
+            editor.setMarkdown(fallbackMd);
+          } catch { editor.setMarkdown(md); }
+        }
         updatePreview();
       }
     }}
@@ -1025,19 +1042,21 @@ function updatePreview() {
   }
 }
 
-// Image library drag-to-editor
+// Image library drag-to-editor (capture phase to intercept before ProseMirror)
 const editorEl = document.querySelector('.toastui-editor-ww-container');
 if (editorEl) {
   editorEl.addEventListener('drop', (e) => {
     const text = e.dataTransfer.getData('text/plain');
     if (text && text.startsWith('![')) {
       e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
       const match = text.match(/!\[(.*?)\]\((.*?)\)/);
       if (match) {
-        editor.exec('addImage', { imageUrl: match[2], altText: match[1] });
+        insertImage(match[2], match[1]);
       }
     }
-  });
+  }, true);
 }
 
 // Preview event bindings

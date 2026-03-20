@@ -102,23 +102,40 @@ ${JSON_INSTRUCTION[lang] || JSON_INSTRUCTION.en}`;
       }
 
       const translatedSlug = `${slug}-${lang}`;
+      const existingDoc = await blogCollection.doc(translatedSlug).get();
+      const now = new Date().toISOString();
 
-      await blogCollection.doc(translatedSlug).set({
-        slug: translatedSlug,
-        title: translated.title,
-        content: translated.content,
-        summary: (translated.summary || originalDoc.summary || '').substring(0, 160),
-        thumbnail: originalDoc.thumbnail || '',
-        tags: originalDoc.tags || [],
-        lang,
-        published: originalDoc.published || false,
-        author: originalDoc.author || 'MONKOS',
-        createdAt: originalDoc.createdAt,
-        updatedAt: new Date().toISOString(),
-        viewCount: 0,
-        originalSlug: slug,
-        autoTranslated: true,
-      });
+      if (existingDoc.exists) {
+        await blogCollection.doc(translatedSlug).update({
+          title: translated.title,
+          content: translated.content,
+          summary: (translated.summary || originalDoc.summary || '').substring(0, 160),
+          thumbnail: originalDoc.thumbnail || '',
+          tags: originalDoc.tags || [],
+          published: originalDoc.published || false,
+          updatedAt: now,
+          translatedAt: now,
+          autoTranslated: true,
+        });
+      } else {
+        await blogCollection.doc(translatedSlug).set({
+          slug: translatedSlug,
+          title: translated.title,
+          content: translated.content,
+          summary: (translated.summary || originalDoc.summary || '').substring(0, 160),
+          thumbnail: originalDoc.thumbnail || '',
+          tags: originalDoc.tags || [],
+          lang,
+          published: originalDoc.published || false,
+          author: originalDoc.author || 'MONKOS',
+          createdAt: now,
+          updatedAt: now,
+          translatedAt: now,
+          viewCount: 0,
+          originalSlug: slug,
+          autoTranslated: true,
+        });
+      }
 
       log(`[CMS] 자동번역 완료: ${slug} → ${translatedSlug} (${lang})`);
     } catch (err) {

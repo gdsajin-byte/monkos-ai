@@ -87,7 +87,9 @@ export async function renderHome(req, res) {
     const reqUrl = new URL(req.url, 'http://localhost');
     const lang = reqUrl.searchParams.get('lang') || 'ko';
     const langPosts = allPosts.filter(p => p.lang === lang);
-    const displayPosts = langPosts.length > 0 ? langPosts : allPosts;
+    const displayPosts = (langPosts.length > 0 ? langPosts : allPosts)
+      .filter(p => !p.autoTranslated)
+      .filter(p => p.thumbnail && p.thumbnail.length > 0);
 
     // 0. Gallery strip (Firestore → 동적)
     const galleryItems = gallerySnap.docs.map(d => d.data());

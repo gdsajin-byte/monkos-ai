@@ -87,15 +87,31 @@ function extractThumbnail(html) {
   return imgMatch ? imgMatch[1] : null;
 }
 
-async function isDuplicate(sourceUrl) {
-  const snap = await blogCollection.where('sourceUrl', '==', sourceUrl).limit(1).get();
-  return !snap.empty;
+function normalizeTitle(title) {
+  return (title || '').replace(/[\s\u3000·・―—–\-_.,!?！？。、：:；;()（）「」『』【】\[\]]/g, '').toLowerCase();
 }
 
-async function ensureUniqueSlug(slug) {
-  const doc = await blogCollection.doc(slug).get();
-  if (!doc.exists) return slug;
-  return `${slug}-${Date.now().toString(36)}`;
+async function isDuplicate(sourceUrl, title, slug) {
+  // 1. sourceUrl 일치
+  const snapUrl = await blogCollection.where('sourceUrl', '==', sourceUrl).limit(1).get();
+  if (!snapUrl.empty) return true;
+
+  // 2. 동일 title (정규화 후 비교)
+  if (title) {
+    const normalized = normalizeTitle(title);
+    const allPublished = await blogCollection.where('published', '==', true).get();
+    for (const doc of allPublished.docs) {
+      if (normalizeTitle(doc.data().title) === normalized) return true;
+    }
+  }
+
+  // 3. 동일 slug 존재
+  if (slug) {
+    const docSnap = await blogCollection.doc(slug).get();
+    if (docSnap.exists) return true;
+  }
+
+  return false;
 }
 
 async function fetchMobileContent(postId) {
@@ -159,7 +175,9 @@ export async function importFromNaver() {
     const sourceUrl = item.link.replace(/\?fromRss=true&trackingCode=rss$/, '');
 
     try {
-      if (await isDuplicate(sourceUrl)) {
+      const slug = generateSlug(item.title);
+
+      if (await isDuplicate(sourceUrl, item.title, slug)) {
         log(`[네이버] skip (중복): ${item.title}`);
         stats.skipped++;
         continue;
@@ -178,9 +196,6 @@ export async function importFromNaver() {
 
       const summary = stripHtml(content).substring(0, 200);
       const thumbnail = extractThumbnail(content);
-
-      let slug = generateSlug(item.title);
-      slug = await ensureUniqueSlug(slug);
 
       const now = new Date().toISOString();
       let publishedAt = now;

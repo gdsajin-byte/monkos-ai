@@ -156,6 +156,15 @@ export async function blogListFragment(req, forceLang = null) {
   const snapshot = await query.get();
   let allPosts = snapshot.docs.map(doc => ({ slug: doc.id, ...doc.data() }));
 
+  // originalSlug 기반 중복 제거 (같은 원본의 번역본이 혼재하지 않도록)
+  const seenOriginals = new Set();
+  allPosts = allPosts.filter(p => {
+    const key = p.originalSlug || p.slug;
+    if (seenOriginals.has(key)) return false;
+    seenOriginals.add(key);
+    return true;
+  });
+
   // 카테고리 필터 (client-side — 복합 인덱스 불필요)
   if (catFilter) allPosts = allPosts.filter(p => p.category === catFilter);
 

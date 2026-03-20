@@ -30,15 +30,31 @@ function stripHtml(html) {
   return html.replace(/<[^>]*>/g, '').replace(/&[^;]+;/g, ' ').replace(/\s+/g, ' ').trim();
 }
 
-async function isDuplicate(sourceUrl) {
-  const snap = await blogCollection.where('sourceUrl', '==', sourceUrl).limit(1).get();
-  return !snap.empty;
+function normalizeTitle(title) {
+  return (title || '').replace(/[\s\u3000·・―—–\-_.,!?！？。、：:；;()（）「」『』【】\[\]]/g, '').toLowerCase();
 }
 
-async function ensureUniqueSlug(slug) {
-  const doc = await blogCollection.doc(slug).get();
-  if (!doc.exists) return slug;
-  return `${slug}-${Date.now().toString(36)}`;
+async function isDuplicate(sourceUrl, title, slug) {
+  // 1. sourceUrl 일치
+  const snapUrl = await blogCollection.where('sourceUrl', '==', sourceUrl).limit(1).get();
+  if (!snapUrl.empty) return true;
+
+  // 2. 동일 title (정규화 후 비교)
+  if (title) {
+    const normalized = normalizeTitle(title);
+    const allPublished = await blogCollection.where('published', '==', true).get();
+    for (const doc of allPublished.docs) {
+      if (normalizeTitle(doc.data().title) === normalized) return true;
+    }
+  }
+
+  // 3. 동일 slug 존재
+  if (slug) {
+    const docSnap = await blogCollection.doc(slug).get();
+    if (docSnap.exists) return true;
+  }
+
+  return false;
 }
 
 function extractContentFromHtml(html) {
@@ -97,7 +113,10 @@ export async function importFromNote() {
       const sourceUrl = `https://note.com/${CREATOR}/n/${item.key}`;
 
       try {
-        if (await isDuplicate(sourceUrl)) {
+        let title = item.name || '';
+        const slug = generateSlug(title);
+
+        if (await isDuplicate(sourceUrl, title, slug)) {
           stats.skipped++;
           log(`[note.com] skip (중복): ${item.name}`);
           continue;
@@ -105,7 +124,6 @@ export async function importFromNote() {
 
         // 개별 포스트 HTML fetch → 본문 추출
         let content = '';
-        let title = item.name || '';
         let thumbnail = item.eyecatch || '';
         let publishedAt = item.publishAt || new Date().toISOString();
 
@@ -134,9 +152,6 @@ export async function importFromNote() {
         const textForLang = stripHtml(title + ' ' + content).substring(0, 400);
         const lang = detectLang(textForLang);
         const summary = stripHtml(content).substring(0, 200);
-
-        let slug = generateSlug(title);
-        slug = await ensureUniqueSlug(slug);
 
         const now = new Date().toISOString();
         const post = {
