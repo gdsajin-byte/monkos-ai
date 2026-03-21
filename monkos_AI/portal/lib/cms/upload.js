@@ -101,10 +101,11 @@ export async function handleImageList(req, res) {
   if (!admin) return;
 
   try {
-    const [files] = await bucket.getFiles({ prefix: 'blog/', maxResults: 50 });
+    const [files] = await bucket.getFiles({ prefix: 'blog/' });
 
     const images = files
       .filter(f => /\.(jpg|jpeg|png|webp|gif)$/i.test(f.name))
+      .filter(f => !f.name.replace('blog/', '').includes('/'))  // blog/{slug}/ nested 제외
       .sort((a, b) => new Date(b.metadata.timeCreated) - new Date(a.metadata.timeCreated))
       .map(f => ({
         name: f.name.replace('blog/', ''),

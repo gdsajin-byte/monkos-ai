@@ -82,12 +82,12 @@ async function deleteImage(filename) {
 /* ===== 이미지 라이브러리 로딩 ===== */
 async function loadImageLibrary() {
   const container = document.getElementById('imageLibrary');
-  container.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-dim);font-size:12px;padding:20px">불러오는 중...</div>';
+  container.innerHTML = '<div class="img-lib-status">불러오는 중...</div>';
   try {
     const r = await fetch('/api/admin/images', { credentials: 'include' });
     const { images } = await r.json();
     if (!images || images.length === 0) {
-      container.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-dim);font-size:12px;padding:20px">업로드된 이미지가 없습니다</div>';
+      container.innerHTML = '<div class="img-lib-status">이미지를 업로드해보세요</div>';
       return;
     }
     const groups = {};
@@ -97,17 +97,17 @@ async function loadImageLibrary() {
       groups[date].push(img);
     });
     container.innerHTML = Object.entries(groups).map(([date, imgs]) => {
-      const dateHeader = `<div style="grid-column:1/-1;font-size:11px;color:var(--text-dim);padding:4px 0;border-bottom:1px solid var(--border);margin-top:8px">${date}</div>`;
+      const dateHeader = `<div class="img-lib-date">${date}</div>`;
       const imgCards = imgs.map(img => {
         const escapedUrl = img.url.replace(/'/g, "\\'");
         const escapedName = (img.name || 'image').replace(/'/g, "\\'");
         const tooltip = `${img.name}\n${img.created?.substring(0, 10) || ''}\n${img.size ? (img.size / 1024).toFixed(0) + 'KB' : ''}`;
-        return `<div class="img-thumb" style="aspect-ratio:1;overflow:hidden;border-radius:4px;position:relative;cursor:pointer" onclick="showLibraryToolbar(event, '${escapedUrl}', '${escapedName}')" draggable="true" ondragstart="event.dataTransfer.setData('text/plain', '![${escapedName}](${escapedUrl})')" title="${tooltip}"><img src="${img.url}" alt="${img.name}" loading="lazy" style="width:100%;height:100%;object-fit:cover"><button class="img-delete" onclick="event.stopPropagation(); deleteImage('${escapedName}')" title="삭제">&times;</button></div>`;
+        return `<div class="img-thumb" onclick="showLibraryToolbar(event, '${escapedUrl}', '${escapedName}')" draggable="true" ondragstart="event.dataTransfer.setData('text/plain', '![${escapedName}](${escapedUrl})')" title="${tooltip}"><img src="${img.url}" alt="${img.name}" loading="lazy"><button class="img-delete" onclick="event.stopPropagation(); deleteImage('${escapedName}')" title="삭제">&times;</button></div>`;
       }).join('');
       return dateHeader + imgCards;
     }).join('');
   } catch (err) {
-    container.innerHTML = '<div style="grid-column:1/-1;color:var(--danger);font-size:12px;padding:20px">이미지 로드 실패</div>';
+    container.innerHTML = '<div class="img-lib-status img-lib-status--error">이미지 로드 실패</div>';
   }
 }
 
@@ -211,14 +211,44 @@ function showEditorImageToolbar(img) {
   ]);
 }
 
+/* ===== 이미지 확대 뷰 모달 ===== */
+function showImagePreview(url, name) {
+  removeFloatToolbar();
+  const overlay = document.createElement('div');
+  overlay.className = 'img-preview-overlay';
+
+  overlay.innerHTML = `
+    <div class="img-preview-modal">
+      <img src="${url}" alt="${name || 'image'}">
+      <div class="img-preview-actions">
+        <button class="img-preview-btn" data-action="insert">본문 삽입</button>
+        <button class="img-preview-btn" data-action="thumb">썸네일 지정</button>
+        <button class="img-preview-btn img-preview-btn--danger" data-action="delete">삭제</button>
+        <button class="img-preview-btn img-preview-btn--dim" data-action="close">닫기</button>
+      </div>
+    </div>
+  `;
+
+  const close = () => overlay.remove();
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) close();
+  });
+  overlay.querySelector('[data-action="insert"]').onclick = () => { close(); insertImage(url, name); };
+  overlay.querySelector('[data-action="thumb"]').onclick = () => { close(); setThumbnail(url); };
+  overlay.querySelector('[data-action="delete"]').onclick = () => { close(); deleteImage(name); };
+  overlay.querySelector('[data-action="close"]').onclick = close;
+
+  document.addEventListener('keydown', function esc(e) {
+    if (e.key === 'Escape') { close(); document.removeEventListener('keydown', esc); }
+  });
+
+  document.body.appendChild(overlay);
+}
+
 /* ===== 툴바: 라이브러리 이미지 ===== */
 function showLibraryToolbar(e, url, name) {
   e.stopPropagation();
-  const thumb = e.currentTarget.querySelector('img') || e.currentTarget;
-  createFloatToolbar(thumb, [
-    { label: '\uD83D\uDCDD 본문 삽입', action: () => insertImage(url, name) },
-    { label: '\uD83D\uDCCC 썸네일 지정', action: () => setThumbnail(url) }
-  ]);
+  showImagePreview(url, name);
 }
 
 /* ===== 썸네일 지정 ===== */
