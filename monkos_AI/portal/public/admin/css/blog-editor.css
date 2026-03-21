@@ -22,7 +22,9 @@
   top: 80px;
   align-self: start;
   max-height: calc(100vh - 100px);
-  overflow-y: auto;
+  overflow-y: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Title & editor area */
@@ -78,6 +80,9 @@
   border-top: none;
   border-radius: 0 0 8px 8px;
   padding: 14px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 /* Seed catalog */
@@ -108,8 +113,7 @@
   cursor: pointer;
 }
 .seed-list {
-  max-height: 60vh;
-  overflow-y: auto;
+  /* 스크롤은 .tab-content에서 처리 */
 }
 .seed-item {
   padding: 10px;
@@ -343,8 +347,7 @@
 .research-source-toggle button:not(:last-child) { border-right: 1px solid var(--border); }
 .research-source-toggle button.active { background: var(--accent); color: #fff; }
 .research-results {
-  max-height: 55vh;
-  overflow-y: auto;
+  /* 스크롤은 .tab-content에서 처리 */
 }
 .research-item {
   padding: 10px;

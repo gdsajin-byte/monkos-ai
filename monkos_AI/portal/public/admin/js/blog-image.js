@@ -115,13 +115,11 @@ async function loadImageLibrary() {
 function toggleImageLibrary() {
   const lib = document.getElementById('imageLibrary');
   const btn = document.getElementById('imgToggleBtn');
-  if (lib.style.maxHeight === '0px') {
-    lib.style.maxHeight = '60vh';
-    lib.style.overflow = 'auto';
+  if (lib.style.display === 'none') {
+    lib.style.display = 'grid';
     btn.textContent = '접기';
   } else {
-    lib.style.maxHeight = '0px';
-    lib.style.overflow = 'hidden';
+    lib.style.display = 'none';
     btn.textContent = '펼치기';
   }
 }
