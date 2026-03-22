@@ -11,7 +11,7 @@ const blogCollection = firestore.collection('blog_posts');
 function generateSlug(title) {
   return title
     .toLowerCase()
-    .replace(/[^\w\s가-힣ぁ-んァ-ヶ一-龥-]/g, '')
+    .replace(/[^a-z0-9\s-]/g, '')
     .replace(/\s+/g, '-')
     .replace(/-+/g, '-')
     .replace(/^-|-$/g, '')

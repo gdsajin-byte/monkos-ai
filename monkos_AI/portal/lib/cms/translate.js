@@ -43,11 +43,11 @@ Translate the following blog post into natural English.
 
 const JSON_INSTRUCTION = {
   ja: `以下のJSON形式で回答してください:
-{"title": "翻訳されたタイトル", "content": "翻訳された本文(マークダウン)", "summary": "翻訳された要約(160文字以内)"}`,
+{"title": "翻訳されたタイトル", "content": "翻訳された本文(マークダウン)", "summary": "翻訳された要約(160文字以内、SEO用)", "slug": "english-slug-from-title (lowercase, hyphens, max 60 chars, ASCII only)", "tags": ["日本語タグ1", "日本語タグ2", "日本語タグ3"]}`,
   en: `Respond in the following JSON format:
-{"title": "translated title", "content": "translated body (markdown)", "summary": "translated summary (max 160 chars)"}`,
+{"title": "translated title", "content": "translated body (markdown)", "summary": "translated summary (max 160 chars, for SEO)", "slug": "english-slug-from-title (lowercase, hyphens, max 60 chars, ASCII only)", "tags": ["English tag1", "English tag2", "English tag3"]}`,
   ko: `다음 JSON 형식으로 응답하세요:
-{"title": "번역된 제목", "content": "번역된 본문(마크다운)", "summary": "번역된 요약(160자 이내)"}`,
+{"title": "번역된 제목", "content": "번역된 본문(마크다운)", "summary": "번역된 요약(160자 이내, SEO용)", "slug": "english-slug-from-title (소문자, 하이픈, 60자 이내, ASCII만)", "tags": ["한국어 태그1", "한국어 태그2", "한국어 태그3"]}`,
 };
 
 export async function translateAndSaveBlogPost(slug, originalDoc) {
@@ -74,7 +74,10 @@ export async function translateAndSaveBlogPost(slug, originalDoc) {
       } else {
         promptKey = lang; // EN 원본 — 미래용 fallback
       }
+      const originalTags = (originalDoc.tags || []).join(', ');
       const prompt = `${TRANSLATE_PROMPT[promptKey] || TRANSLATE_PROMPT[lang]}
+
+Original tags for reference: ${originalTags}
 
 ---
 # ${originalDoc.title}
@@ -120,7 +123,20 @@ ${JSON_INSTRUCTION[lang] || JSON_INSTRUCTION.en}`;
         }
       }
 
-      const translatedSlug = `${slug}-${lang}`;
+      // Gemini가 생성한 영문 slug 사용, 없으면 원본 slug에 lang 접미사
+      let translatedSlug;
+      if (translated.slug) {
+        // slug 정제: ASCII만, 하이픈 구분, lang 접미사
+        translatedSlug = translated.slug
+          .toLowerCase()
+          .replace(/[^a-z0-9-]/g, '')
+          .replace(/-+/g, '-')
+          .replace(/^-|-$/g, '')
+          .substring(0, 60);
+        translatedSlug = `${translatedSlug}-${lang}`;
+      } else {
+        translatedSlug = `${slug}-${lang}`;
+      }
       const existingDoc = await blogCollection.doc(translatedSlug).get();
       const now = new Date().toISOString();
 
@@ -130,7 +146,7 @@ ${JSON_INSTRUCTION[lang] || JSON_INSTRUCTION.en}`;
           content: translated.content,
           summary: (translated.summary || originalDoc.summary || '').substring(0, 160),
           thumbnail: originalDoc.thumbnail || '',
-          tags: originalDoc.tags || [],
+          tags: translated.tags && translated.tags.length > 0 ? translated.tags : (originalDoc.tags || []),
           published: originalDoc.published || false,
           updatedAt: now,
           translatedAt: now,
@@ -143,7 +159,7 @@ ${JSON_INSTRUCTION[lang] || JSON_INSTRUCTION.en}`;
           content: translated.content,
           summary: (translated.summary || originalDoc.summary || '').substring(0, 160),
           thumbnail: originalDoc.thumbnail || '',
-          tags: originalDoc.tags || [],
+          tags: translated.tags && translated.tags.length > 0 ? translated.tags : (originalDoc.tags || []),
           lang,
           published: originalDoc.published || false,
           author: originalDoc.author || 'MONKOS',
