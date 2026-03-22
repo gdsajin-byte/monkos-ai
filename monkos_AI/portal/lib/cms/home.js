@@ -144,7 +144,7 @@ export async function renderHome(req, res) {
         return `      <div class="faq-item"><h4>${esc(f.question)}</h4><p>${esc(f.answer)}</p></div>`;
       }).join('\n');
       html = html.replace(
-        /(<div class="faq-list" id="faqPreview">)\n[\s\S]*?(<\/div>\n\n\s*<div class="sec-h"><h2>고객 게시판)/,
+        /(<div class="faq-list" id="faqPreview">)\n[\s\S]*?(<\/div>\n\n\s*<div class="sec-h" id="sec-board"><h2>고객 게시판)/,
         `$1\n${faqHtml}\n    $2`
       );
     }
@@ -163,13 +163,13 @@ export async function renderHome(req, res) {
         return `      <a href="/board#${d.id}" class="board-item"><span class="board-item-title">${esc(b.title)}</span><span class="board-item-badge answered">답변완료</span><span class="board-item-meta">${fmtDate(b.createdAt)}</span></a>`;
       }).join('\n');
       html = html.replace(
-        /(<div class="board-preview" id="boardPreview">)\n[\s\S]*?(<\/div>\n\n\s*<div class="sec-h"><h2>최근 블로그)/,
+        /(<div class="board-preview" id="boardPreview">)\n[\s\S]*?(<\/div>\n\n\s*<div class="sec-h" id="sec-blog"><h2>최근 블로그)/,
         `$1\n${boardHtml}\n    $2`
       );
     } else {
       // 게시글 없으면 섹션 자체 숨김
       html = html.replace(
-        /\s*<div class="sec-h"><h2>고객 게시판<\/h2>[\s\S]*?<\/div>\n\n(\s*<div class="sec-h"><h2>최근 블로그)/,
+        /\s*<div class="sec-h" id="sec-board"><h2>고객 게시판<\/h2>[\s\S]*?<\/div>\n\n(\s*<div class="sec-h" id="sec-blog"><h2>최근 블로그)/,
         '\n    $1'
       );
     }

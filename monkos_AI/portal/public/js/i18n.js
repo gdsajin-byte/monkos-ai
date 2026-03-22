@@ -27,6 +27,8 @@ const i18n = {
     howto2: 'セルフィー撮影', howto2d: 'AIコーチングガイドで完璧撮影',
     howto3: 'AIリタッチ', howto3d: '背景・照明・肌・服装自動補正',
     secHowto: '証明写真アプリの使い方', secHowtoAll: '全て見る →',
+    secFaq: 'よくある質問', secFaqAll: '全て見る →',
+    secBoard: 'お客様掲示板', secBoardAll: '全て見る →',
     secBlog: '最新ブログ', secBlogAll: '全て見る →',
     secNews: '業界ニュース', secNewsMore: 'もっと見る →',
   },
@@ -52,6 +54,8 @@ const i18n = {
     howto2: '셀카 촬영', howto2d: 'AI 코칭 가이드로 완벽 촬영',
     howto3: 'AI 리터칭', howto3d: '배경·조명·피부·의상 자동 보정',
     secHowto: '증명사진 앱 활용법', secHowtoAll: '전체보기 →',
+    secFaq: '자주 묻는 질문', secFaqAll: '전체보기 →',
+    secBoard: '고객 게시판', secBoardAll: '전체보기 →',
     secBlog: '최근 블로그', secBlogAll: '전체보기 →',
     secNews: '업계 소식', secNewsMore: '더보기 →',
   },
@@ -77,6 +81,8 @@ const i18n = {
     howto2: 'Take Selfie', howto2d: 'AI coaching guide for perfect shots',
     howto3: 'AI Retouch', howto3d: 'Auto background, lighting, skin & clothing',
     secHowto: 'How to Use', secHowtoAll: 'View all →',
+    secFaq: 'FAQ', secFaqAll: 'View all →',
+    secBoard: 'Customer Board', secBoardAll: 'View all →',
     secBlog: 'Latest Blog', secBlogAll: 'View all →',
     secNews: 'Industry News', secNewsMore: 'More →',
   }
@@ -237,19 +243,20 @@ function applyLang() {
     }
   });
 
-  // 섹션 헤더
-  var secHeaders = document.querySelectorAll('.sec-h');
-  var secData = [
-    { h: t.secHowto, a: t.secHowtoAll },
-    { h: t.secBlog, a: t.secBlogAll },
-    { h: t.secNews, a: t.secNewsMore }
-  ];
-  secHeaders.forEach(function(sh, i) {
-    if (secData[i]) {
-      var h2 = sh.querySelector('h2');
-      var a = sh.querySelector('a');
-      if (h2) h2.textContent = secData[i].h;
-      if (a) a.textContent = secData[i].a;
+  // 섹션 헤더 (ID 기반 — SSR 섹션 제거에 영향받지 않음)
+  var secMap = {
+    'sec-howto': { h: t.secHowto, a: t.secHowtoAll },
+    'sec-faq':   { h: t.secFaq,   a: t.secFaqAll },
+    'sec-board': { h: t.secBoard, a: t.secBoardAll },
+    'sec-blog':  { h: t.secBlog,  a: t.secBlogAll }
+  };
+  Object.keys(secMap).forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) {
+      var h2 = el.querySelector('h2');
+      var a = el.querySelector('a');
+      if (h2) h2.textContent = secMap[id].h;
+      if (a) a.textContent = secMap[id].a;
     }
   });
 
