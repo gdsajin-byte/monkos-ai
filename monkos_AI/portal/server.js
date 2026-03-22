@@ -266,7 +266,11 @@ const httpServer = createServer(async (req, res) => {
         resolvedExt = '.html';
       } else { throw new Error('Not Found'); }
     }
-    res.writeHead(200, { 'Content-Type': MIME_TYPES[resolvedExt] || 'application/octet-stream' });
+    const cacheHeader = ['.css', '.js'].includes(resolvedExt) ? 'no-cache' : 'public, max-age=3600';
+    res.writeHead(200, {
+      'Content-Type': MIME_TYPES[resolvedExt] || 'application/octet-stream',
+      'Cache-Control': cacheHeader,
+    });
     res.end(content);
   } catch {
     res.writeHead(404, { 'Content-Type': 'text/plain' });

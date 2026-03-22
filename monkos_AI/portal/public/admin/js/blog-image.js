@@ -97,14 +97,13 @@ async function loadImageLibrary() {
       groups[date].push(img);
     });
     container.innerHTML = Object.entries(groups).map(([date, imgs]) => {
-      const dateHeader = `<div class="img-lib-date">${date}</div>`;
       const imgCards = imgs.map(img => {
         const escapedUrl = img.url.replace(/'/g, "\\'");
         const escapedName = (img.name || 'image').replace(/'/g, "\\'");
         const tooltip = `${img.name}\n${img.created?.substring(0, 10) || ''}\n${img.size ? (img.size / 1024).toFixed(0) + 'KB' : ''}`;
         return `<div class="img-thumb" onclick="showLibraryToolbar(event, '${escapedUrl}', '${escapedName}')" draggable="true" ondragstart="event.dataTransfer.setData('text/plain', '![${escapedName}](${escapedUrl})')" title="${tooltip}"><img src="${img.url}" alt="${img.name}" loading="lazy"><button class="img-delete" onclick="event.stopPropagation(); deleteImage('${escapedName}')" title="삭제">&times;</button></div>`;
       }).join('');
-      return dateHeader + imgCards;
+      return `<div class="img-lib-date">${date}</div><div class="img-lib-grid">${imgCards}</div>`;
     }).join('');
   } catch (err) {
     container.innerHTML = '<div class="img-lib-status img-lib-status--error">이미지 로드 실패</div>';

@@ -177,6 +177,12 @@
 .seed-popup-actions button { flex: 1; }
 
 /* Image library */
+.img-lib-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-bottom: 4px;
+}
 .img-thumb {
   position: relative;
   aspect-ratio: 1;
