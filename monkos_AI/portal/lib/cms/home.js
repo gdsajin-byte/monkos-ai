@@ -121,8 +121,8 @@ export async function renderHome(req, res) {
     const tags = Object.keys(tagMap).sort((a, b) => tagMap[b] - tagMap[a]);
     if (tags.length > 0) {
       html = html.replace(
-        /<div class="sb-tags">[\s\S]*?<\/div>/,
-        `<div class="sb-tags">\n        ${tags.map(t => `<span class="sb-tag">${esc(t)}</span>`).join('')}\n      </div>`
+        /<div class="sb-tags"[^>]*>[\s\S]*?<\/div>/,
+        `<div class="sb-tags" id="sbTags">\n        ${tags.map(t => `<span class="sb-tag">${esc(t)}</span>`).join('')}\n      </div>`
       );
     }
 
@@ -137,7 +137,8 @@ export async function renderHome(req, res) {
     );
 
     // 5. FAQ preview (상위 3건)
-    const faqSnap = await firestore.collection('faq')
+    const faqSnap = await firestore.collection('faq_items')
+      .where('published', '==', true)
       .where('lang', '==', lang)
       .orderBy('order', 'asc')
       .limit(3)
