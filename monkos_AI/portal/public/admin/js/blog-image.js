@@ -4,6 +4,7 @@ import { editor, updatePreview } from './blog-editor.js';
 
 /* ===== 이벤트 중복 방지 플래그 ===== */
 let _isInsertingImage = false;
+let _changeDebounceTimer = null;
 
 /* ===== Floating toolbar 시스템 ===== */
 let activeFloatToolbar = null;
@@ -281,18 +282,21 @@ export function setupImageHandlers() {
   }
   // 에디터 변경 시: 이미지 클릭 핸들러 + 썸네일 마킹 (dataset.toolbarReady 체크)
   editor.on('change', () => {
-    const wwContainer = document.querySelector('.toastui-editor-ww-container .ProseMirror');
-    if (!wwContainer) return;
-    wwContainer.querySelectorAll('img').forEach(img => {
-      if (img.dataset.toolbarReady) return;
-      img.dataset.toolbarReady = 'true';
-      img.style.cursor = 'pointer';
-      img.addEventListener('click', (e) => {
-        e.stopPropagation();
-        showEditorImageToolbar(img);
+    clearTimeout(_changeDebounceTimer);
+    _changeDebounceTimer = setTimeout(() => {
+      const wwContainer = document.querySelector('.toastui-editor-ww-container .ProseMirror');
+      if (!wwContainer) return;
+      wwContainer.querySelectorAll('img').forEach(img => {
+        if (img.dataset.toolbarReady) return;
+        img.dataset.toolbarReady = 'true';
+        img.style.cursor = 'pointer';
+        img.addEventListener('click', (e) => {
+          e.stopPropagation();
+          showEditorImageToolbar(img);
+        });
       });
-    });
-    markThumbnailInEditor();
+      markThumbnailInEditor();
+    }, 500);
   });
 
   // 드래그&드롭: capture phase + stopImmediatePropagation
