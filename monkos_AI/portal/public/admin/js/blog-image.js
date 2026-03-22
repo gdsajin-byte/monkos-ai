@@ -281,7 +281,9 @@ export function setupImageHandlers() {
     return;
   }
   // 에디터 변경 시: 이미지 클릭 핸들러 + 썸네일 마킹 (dataset.toolbarReady 체크)
+  let _suppressChange = false;
   editor.on('change', () => {
+    if (_suppressChange) return;
     clearTimeout(_changeDebounceTimer);
     _changeDebounceTimer = setTimeout(() => {
       const wwContainer = document.querySelector('.toastui-editor-ww-container .ProseMirror');
@@ -295,7 +297,9 @@ export function setupImageHandlers() {
           showEditorImageToolbar(img);
         });
       });
+      _suppressChange = true;
       markThumbnailInEditor();
+      requestAnimationFrame(() => { _suppressChange = false; });
     }, 500);
   });
 
