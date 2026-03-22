@@ -168,11 +168,13 @@ export async function handleUpload(req, res) {
     let uploadContentType = filePart.contentType;
     let fileName = safeName;
 
-    // WebP 변환 (GIF 제외 — 애니메이션 손실 방지)
+    // JPEG 변환 (GIF 제외 — 애니메이션 손실 방지)
+    // JPEG 통일: 외부 배포 호환 (Medium, 카카오톡 등 WebP 미지원 플랫폼 대응)
     if (filePart.contentType !== 'image/gif') {
-      imageData = await sharp(filePart.data).webp({ quality: 85 }).toBuffer();
-      uploadContentType = 'image/webp';
-      fileName = fileName.replace(/\.(jpg|jpeg|png)$/i, '.webp');
+      imageData = await sharp(filePart.data).jpeg({ quality: 85 }).toBuffer();
+      uploadContentType = 'image/jpeg';
+      fileName = fileName.replace(/\.(png|webp)$/i, '.jpg');
+      if (!fileName.match(/\.jpe?g$/i)) fileName += '.jpg';
     }
 
     const gcsPath = `blog/${timestamp}_${fileName}`;
@@ -184,7 +186,7 @@ export async function handleUpload(req, res) {
     });
 
     const url = `https://storage.googleapis.com/${GCS_BUCKET}/${gcsPath}`;
-    log(`[CMS] 이미지 업로드: ${gcsPath} (${(filePart.data.length / 1024).toFixed(1)}KB → ${(imageData.length / 1024).toFixed(1)}KB${uploadContentType === 'image/webp' ? ' webp' : ''})`);
+    log(`[CMS] 이미지 업로드: ${gcsPath} (${(filePart.data.length / 1024).toFixed(1)}KB → ${(imageData.length / 1024).toFixed(1)}KB jpeg)`);
 
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ url }));

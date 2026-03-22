@@ -47,10 +47,8 @@ function createFloatToolbar(anchorEl, buttons) {
 
 /* ===== 이미지 삽입 (단일 진입점) ===== */
 function insertImage(url, name) {
-  console.log('[insertImage] 호출', url?.substring(0, 50));
   const ed = getEditor();
   if (!ed) {
-    console.error('[insertImage] editor 없음');
     showToast('에디터 초기화 대기 중', true);
     return;
   }
@@ -60,14 +58,12 @@ function insertImage(url, name) {
     showToast('이미지 삽입 완료');
     setTimeout(() => updatePreview(), 300);
   } catch (err) {
-    console.error('[insertImage] 에러:', err);
     try {
       const md = ed.getMarkdown();
       ed.setMarkdown(md + `\n![${name || 'image'}](${url})\n`);
       showToast('이미지 삽입 완료');
       setTimeout(() => updatePreview(), 300);
     } catch (err2) {
-      console.error('[insertImage] 폴백도 실패:', err2);
       showToast('이미지 삽입 실패', true);
     }
   }
@@ -294,7 +290,6 @@ function markThumbnailInEditor() {
 /* ===== 에디터 이미지 핸들러 셋업 (editor 초기화 후 호출) ===== */
 export function setupImageHandlers() {
   if (!getEditor()) {
-    console.warn('[blog-image] editor 미초기화 — 재시도 대기');
     setTimeout(setupImageHandlers, 200);
     return;
   }
