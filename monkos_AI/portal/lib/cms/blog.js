@@ -92,6 +92,16 @@ export async function handleBlogCreate(req, res) {
       return res.end(JSON.stringify({ error: '제목과 본문은 필수입니다' }));
     }
 
+    // summary 빈값 방지 — 본문에서 자동 추출
+    if (!summary && content) {
+      body.summary = content
+        .replace(/!\[.*?\]\(.*?\)/g, '')
+        .replace(/^#+\s.*/gm, '')
+        .replace(/\n+/g, ' ')
+        .trim()
+        .substring(0, 160);
+    }
+
     const slug = sanitizeSlug(body.slug || generateSlug(title));
     if (!slug) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -123,6 +133,16 @@ export async function handleBlogCreate(req, res) {
 
     await blogCollection.doc(slug).set(post);
     log(`[CMS] 블로그 생성: ${slug}`);
+
+    // Google 색인 등록 ping
+    if (post.published) {
+      try {
+        await fetch(`https://www.google.com/ping?sitemap=https://monkos.ai/sitemap.xml`);
+        log(`[CMS] Google sitemap ping 완료: ${slug}`);
+      } catch (e) {
+        log(`[CMS] Google sitemap ping 실패: ${e.message}`, 'WARN');
+      }
+    }
 
     // 한국어 원본 발행 시 자동번역 (백그라운드)
     if (post.published && post.lang === 'ko') {
@@ -165,6 +185,15 @@ export async function handleBlogUpdate(req, res) {
       if (body[field] !== undefined) updates[field] = body[field];
     }
     if (updates.summary) updates.summary = updates.summary.substring(0, 160);
+    // summary 빈값 방지 — 본문에서 자동 추출
+    if (!updates.summary && updates.content) {
+      updates.summary = updates.content
+        .replace(/!\[.*?\]\(.*?\)/g, '')
+        .replace(/^#+\s.*/gm, '')
+        .replace(/\n+/g, ' ')
+        .trim()
+        .substring(0, 160);
+    }
     if (updates.thumbnail === '' && updates.content) {
       const imgMatch = updates.content.match(/<img[^>]+src="([^"]+)"/);
       if (imgMatch) updates.thumbnail = imgMatch[1];
@@ -176,6 +205,16 @@ export async function handleBlogUpdate(req, res) {
 
     const updated = await blogCollection.doc(slug).get();
     const updatedData = updated.data();
+
+    // Google 색인 등록 ping
+    if (updatedData.published) {
+      try {
+        await fetch(`https://www.google.com/ping?sitemap=https://monkos.ai/sitemap.xml`);
+        log(`[CMS] Google sitemap ping 완료: ${slug}`);
+      } catch (e) {
+        log(`[CMS] Google sitemap ping 실패: ${e.message}`, 'WARN');
+      }
+    }
 
     // 한국어 원본 발행 시 자동번역 (백그라운드, 재번역 덮어쓰기)
     if (updatedData.published && updatedData.lang === 'ko') {
