@@ -1,6 +1,6 @@
 /* blog-image.js — 이미지 시스템 모듈 (ESM, v2.0) */
 import { showToast } from './admin-common.js';
-import { editor, updatePreview } from './blog-editor.js';
+import { getEditor, updatePreview } from './blog-editor.js';
 
 /* ===== 이벤트 중복 방지 플래그 ===== */
 let _isInsertingImage = false;
@@ -50,9 +50,9 @@ function createFloatToolbar(anchorEl, buttons) {
 function insertImage(url, name) {
   if (_isInsertingImage) return;
   _isInsertingImage = true;
-  const md = editor.getMarkdown();
+  const md = getEditor().getMarkdown();
   const imgTag = `\n![${name || 'image'}](${url})\n`;
-  editor.setMarkdown(md + imgTag);
+  getEditor().setMarkdown(md + imgTag);
   showToast('이미지 삽입 완료');
   setTimeout(() => { _isInsertingImage = false; updatePreview(); }, 300);
 }
@@ -191,19 +191,19 @@ function showEditorImageToolbar(img) {
     { label: '\uD83D\uDCCC 썸네일 지정', action: () => setThumbnail(img.src) },
     { label: '\uD83D\uDDD1 삭제', action: () => {
       if (confirm('이 이미지를 삭제하시겠습니까?')) {
-        const md = editor.getMarkdown();
+        const md = getEditor().getMarkdown();
         const imgSrc = img.src;
         const escapedSrc = imgSrc.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         const newMd = md.replace(new RegExp(`!\\[[^\\]]*\\]\\(${escapedSrc}\\)\\n?`), '');
         if (newMd !== md) {
-          editor.setMarkdown(newMd);
+          getEditor().setMarkdown(newMd);
         } else {
           try {
             const path = new URL(imgSrc).pathname;
             const escapedPath = path.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
             const fallbackMd = md.replace(new RegExp(`!\\[[^\\]]*\\]\\([^)]*${escapedPath}\\)\\n?`), '');
-            editor.setMarkdown(fallbackMd);
-          } catch { editor.setMarkdown(md); }
+            getEditor().setMarkdown(fallbackMd);
+          } catch { getEditor().setMarkdown(md); }
         }
         updatePreview();
       }
@@ -277,13 +277,13 @@ function markThumbnailInEditor() {
 
 /* ===== 에디터 이미지 핸들러 셋업 (editor 초기화 후 호출) ===== */
 export function setupImageHandlers() {
-  if (!editor) {
+  if (!getEditor()) {
     console.warn('[blog-image] editor 미초기화 — 재시도 대기');
     setTimeout(setupImageHandlers, 200);
     return;
   }
   // 에디터 변경 시: 이미지 클릭 핸들러 + 썸네일 마킹 (dataset.toolbarReady 체크)
-  editor.on('change', () => {
+  getEditor().on('change', () => {
     clearTimeout(_changeDebounceTimer);
     _changeDebounceTimer = setTimeout(() => {
       const wwContainer = document.querySelector('.toastui-editor-ww-container .ProseMirror');

@@ -8,7 +8,8 @@ const editSlug = params.get('slug');
 let isEdit = false;
 let currentPublished = false;
 
-export let editor;
+let editor;
+export function getEditor() { return editor; }
 
 /* ===== Toast UI Editor 초기화 ===== */
 export function initEditor() {
