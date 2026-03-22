@@ -2,8 +2,7 @@
 import { showToast } from './admin-common.js';
 import { getEditor, updatePreview } from './blog-editor.js';
 
-/* ===== 이벤트 중복 방지 플래그 ===== */
-let _isInsertingImage = false;
+/* ===== 타이머 ===== */
 let _changeDebounceTimer = null;
 
 /* ===== Floating toolbar 시스템 ===== */
@@ -48,13 +47,30 @@ function createFloatToolbar(anchorEl, buttons) {
 
 /* ===== 이미지 삽입 (단일 진입점) ===== */
 function insertImage(url, name) {
-  if (_isInsertingImage) return;
-  _isInsertingImage = true;
-  const md = getEditor().getMarkdown();
-  const imgTag = `\n![${name || 'image'}](${url})\n`;
-  getEditor().setMarkdown(md + imgTag);
-  showToast('이미지 삽입 완료');
-  setTimeout(() => { _isInsertingImage = false; updatePreview(); }, 300);
+  console.log('[insertImage] 호출', url?.substring(0, 50));
+  const ed = getEditor();
+  if (!ed) {
+    console.error('[insertImage] editor 없음');
+    showToast('에디터 초기화 대기 중', true);
+    return;
+  }
+  try {
+    ed.focus();
+    ed.exec('addImage', { imageUrl: url, altText: name || 'image' });
+    showToast('이미지 삽입 완료');
+    setTimeout(() => updatePreview(), 300);
+  } catch (err) {
+    console.error('[insertImage] 에러:', err);
+    try {
+      const md = ed.getMarkdown();
+      ed.setMarkdown(md + `\n![${name || 'image'}](${url})\n`);
+      showToast('이미지 삽입 완료');
+      setTimeout(() => updatePreview(), 300);
+    } catch (err2) {
+      console.error('[insertImage] 폴백도 실패:', err2);
+      showToast('이미지 삽입 실패', true);
+    }
+  }
 }
 
 /* ===== 이미지 삭제 ===== */
