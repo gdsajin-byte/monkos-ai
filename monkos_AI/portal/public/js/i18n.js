@@ -224,10 +224,17 @@ function applyLang() {
   var btnShoot = document.querySelector('.btn-shoot');
   if (btnShoot) btnShoot.textContent = t.ctaText;
 
-  // 네비게이션
+  // 네비게이션 (텍스트 + href 언어 접두사)
   var navKeys = ['navHome', 'navBlog', 'navFaq', 'navGallery', 'navBoard', 'navPricing'];
+  var navHrefs = {
+    ko: ['/', '/blog', '/faq', '/gallery', '/board', '/pricing'],
+    ja: ['/?lang=ja', '/ja/blog', '/ja/faq', '/gallery', '/board', '/ja/pricing'],
+    en: ['/?lang=en', '/en/blog', '/en/faq', '/gallery', '/board', '/en/pricing'],
+  };
+  var hrefs = navHrefs[lang] || navHrefs.ko;
   document.querySelectorAll('.n-links a').forEach(function(a, i) {
     if (navKeys[i] && t[navKeys[i]]) a.textContent = t[navKeys[i]];
+    if (hrefs[i]) a.href = hrefs[i];
   });
 
   // 인트로 텍스트
