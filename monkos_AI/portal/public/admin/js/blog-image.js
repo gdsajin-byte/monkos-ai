@@ -274,6 +274,11 @@ function markThumbnailInEditor() {
 
 /* ===== 에디터 이미지 핸들러 셋업 (editor 초기화 후 호출) ===== */
 export function setupImageHandlers() {
+  if (!editor) {
+    console.warn('[blog-image] editor 미초기화 — 재시도 대기');
+    setTimeout(setupImageHandlers, 200);
+    return;
+  }
   // 에디터 변경 시: 이미지 클릭 핸들러 + 썸네일 마킹 (dataset.toolbarReady 체크)
   editor.on('change', () => {
     const wwContainer = document.querySelector('.toastui-editor-ww-container .ProseMirror');
