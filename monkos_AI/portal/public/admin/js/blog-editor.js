@@ -13,6 +13,7 @@ export function getEditor() { return editor; }
 
 /* ===== Toast UI Editor 초기화 ===== */
 export function initEditor() {
+  console.log('[blog-editor] initEditor 시작, toastui:', typeof toastui);
   editor = new toastui.Editor({
     el: document.getElementById('editor'),
     height: '70vh',
@@ -47,6 +48,7 @@ export function initEditor() {
     updatePreview();
   });
 
+  console.log('[blog-editor] initEditor 완료, editor:', !!editor);
   return editor;
 }
 
