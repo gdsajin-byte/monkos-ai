@@ -31,6 +31,15 @@ const i18n = {
     secBoard: 'お客様掲示板', secBoardAll: '全て見る →',
     secBlog: '最新ブログ', secBlogAll: '全て見る →',
     secNews: '業界ニュース', secNewsMore: 'もっと見る →',
+    sbMagazine: 'マガジン', sbTags: 'タグ', sbTagMore: 'もっと見る ▼', sbTagLess: '閉じる ▲',
+    sbGuide: '使い方ガイド',
+    guide1Title: '証明写真の撮り方', guide1Desc: '規格選択 → セルフィー → AIリタッチ → ダウンロード', guideStatus: '▶ 自動再生中',
+    guide2Title: 'クロップアプリの使い方', guide2Desc: '写真選択 → 規格クロップ → 背景除去 → ダウンロード',
+    sbCredit: 'クレジット案内',
+    creditExchange: '💡 10c = ¥150',
+    creditGen: 'AIリタッチ', creditDl: 'ダウンロード', creditTotal: '1枚完成',
+    creditOld: '¥1,200', creditNew: '¥990',
+    creditBonus: '🎁 初回ログイン +10cボーナス',
   },
   ko: {
     heroTag: '<strong>Photography</strong> × <strong>AI</strong> × <strong>K-Beauty</strong>',
@@ -58,6 +67,15 @@ const i18n = {
     secBoard: '고객 게시판', secBoardAll: '전체보기 →',
     secBlog: '최근 블로그', secBlogAll: '전체보기 →',
     secNews: '업계 소식', secNewsMore: '더보기 →',
+    sbMagazine: '매거진', sbTags: '태그', sbTagMore: '더보기 ▼', sbTagLess: '접기 ▲',
+    sbGuide: '사용 가이드',
+    guide1Title: '증명사진 촬영법', guide1Desc: '규격 선택 → 셀카 → AI 리터칭 → 다운로드', guideStatus: '▶ 자동 재생 중',
+    guide2Title: '크롭앱 사용법', guide2Desc: '사진 선택 → 규격 크롭 → 누끼 → 다운로드',
+    sbCredit: '크레딧 안내',
+    creditExchange: '💡 10c = $1 ≈ ₩1,450',
+    creditGen: 'AI 생성', creditDl: '다운로드', creditTotal: '1장 완성',
+    creditOld: '₩10,150', creditNew: '₩9,900',
+    creditBonus: '🎁 회원가입 시 +10c 보너스',
   },
   en: {
     heroTag: '<strong>Photography</strong> × <strong>AI</strong> × <strong>K-Beauty</strong>',
@@ -85,6 +103,15 @@ const i18n = {
     secBoard: 'Customer Board', secBoardAll: 'View all →',
     secBlog: 'Latest Blog', secBlogAll: 'View all →',
     secNews: 'Industry News', secNewsMore: 'More →',
+    sbMagazine: 'Magazine', sbTags: 'Tags', sbTagMore: 'More ▼', sbTagLess: 'Less ▲',
+    sbGuide: 'User Guide',
+    guide1Title: 'How to Take ID Photo', guide1Desc: 'Select spec → Selfie → AI retouch → Download', guideStatus: '▶ Auto-playing',
+    guide2Title: 'How to Use Crop App', guide2Desc: 'Select photo → Spec crop → Remove BG → Download',
+    sbCredit: 'Credit Info',
+    creditExchange: '💡 10c = $1',
+    creditGen: 'AI Retouch', creditDl: 'Download', creditTotal: '1 Photo',
+    creditOld: '$8.00', creditNew: '$6.90',
+    creditBonus: '🎁 +10c bonus on sign-up',
   }
 };
 
@@ -259,6 +286,46 @@ function applyLang() {
       if (a) a.textContent = secMap[id].a;
     }
   });
+
+  // 사이드바 라벨
+  var idTexts = {
+    'sb-magazine': t.sbMagazine,
+    'sb-tags': t.sbTags,
+    'sb-guide': t.sbGuide,
+    'sb-credit': t.sbCredit,
+    'guide1-title': t.guide1Title,
+    'guide1-desc': t.guide1Desc,
+    'guide1-status': t.guideStatus,
+    'guide2-title': t.guide2Title,
+    'guide2-desc': t.guide2Desc,
+    'guide2-status': t.guideStatus,
+    'credit-exchange': t.creditExchange,
+    'credit-gen-label': t.creditGen,
+    'credit-dl-label': t.creditDl,
+    'credit-total-label': t.creditTotal,
+    'credit-old-price': t.creditOld,
+    'credit-new-price': t.creditNew,
+    'credit-bonus': t.creditBonus
+  };
+  Object.keys(idTexts).forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = idTexts[id];
+  });
+
+  // 태그 토글 버튼
+  var tagToggle = document.getElementById('sbTagToggle');
+  if (tagToggle) {
+    var expanded = document.getElementById('sbTags') && document.getElementById('sbTags').classList.contains('expanded');
+    tagToggle.textContent = expanded ? t.sbTagLess : t.sbTagMore;
+    tagToggle.onclick = function() {
+      var tags = document.getElementById('sbTags');
+      if (tags.classList.toggle('expanded')) {
+        tagToggle.textContent = t.sbTagLess;
+      } else {
+        tagToggle.textContent = t.sbTagMore;
+      }
+    };
+  }
 
   // 챗봇
   var cbInput = document.getElementById('cbInput');

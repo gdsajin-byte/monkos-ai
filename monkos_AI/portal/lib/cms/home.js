@@ -110,14 +110,14 @@ export async function renderHome(req, res) {
     if (mags.length > 0) {
       const magHtml = mags.map((p, i) => magCard(p, i)).join('\n');
       html = html.replace(
-        /(<div class="sb-t">매거진<\/div>)\n[\s\S]*?(\n\s*<\/div>\n\s*<div class="sb-sec"><div class="sb-t">태그)/,
+        /(<div class="sb-t" id="sb-magazine">[^<]*<\/div>)\n[\s\S]*?(\n\s*<\/div>\n\s*<div class="sb-sec"><div class="sb-t" id="sb-tags">)/,
         `$1\n${magHtml}\n$2`
       );
     }
 
     // 3. Tags (aggregated)
     const tagMap = {};
-    for (const p of allPosts) for (const t of (p.tags || [])) tagMap[t] = (tagMap[t] || 0) + 1;
+    for (const p of displayPosts) for (const t of (p.tags || [])) tagMap[t] = (tagMap[t] || 0) + 1;
     const tags = Object.keys(tagMap).sort((a, b) => tagMap[b] - tagMap[a]);
     if (tags.length > 0) {
       html = html.replace(
@@ -137,7 +137,12 @@ export async function renderHome(req, res) {
     );
 
     // 5. FAQ preview (상위 3건)
-    const faqSnap = await firestore.collection('faq').orderBy('order', 'asc').limit(3).get().catch(() => ({ docs: [] }));
+    const faqSnap = await firestore.collection('faq')
+      .where('lang', '==', lang)
+      .orderBy('order', 'asc')
+      .limit(3)
+      .get()
+      .catch(() => ({ docs: [] }));
     if (faqSnap.docs.length > 0) {
       const faqHtml = faqSnap.docs.map(d => {
         const f = d.data();
