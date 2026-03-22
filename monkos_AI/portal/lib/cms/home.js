@@ -66,10 +66,6 @@ function blogCard(p) {
   return `      <a href="/blog/${esc(p.slug)}" class="bi">${thumb}<div class="bi-info"><h3>${esc(p.title)}</h3><p>${esc(p.summary || '')}</p><div class="meta"><span class="lt">${esc((p.lang || 'ko').toUpperCase())}</span> ${esc(p.author || 'MONKOS')} · ${fmtDate(p.createdAt)}</div></div></a>`;
 }
 
-function newsCard(p) {
-  return `      <a href="/blog/${esc(p.slug)}" class="bi"><div class="bi-thumb" style="background:#eef;font-size:12px">📰</div><div class="bi-info"><h3>${esc(p.title)}</h3><p>${esc(p.summary || '')}</p><div class="meta"><span class="lt" style="background:#eef">NEWS</span> ${fmtDate(p.createdAt)}</div></div></a>`;
-}
-
 // ========== Home SSR ==========
 export async function renderHome(req, res) {
   try {
@@ -136,23 +132,45 @@ export async function renderHome(req, res) {
       ? blogs.map(p => blogCard(p)).join('\n')
       : '      <p style="color:var(--ink-m);padding:24px 0">아직 포스트가 없습니다</p>';
     html = html.replace(
-      /(최근 블로그<\/h2><a[^>]*>[^<]*<\/a><\/div>\n\s*<div class="blog-list">\n)[\s\S]*?(\n\s*<\/div>\n\n\s*<div class="sec-h"><h2>업계 소식)/,
+      /(최근 블로그<\/h2><a[^>]*>[^<]*<\/a><\/div>\n\s*<div class="blog-list">\n)[\s\S]*?(\n\s*<\/div>\n\s*<\/main>)/,
       `$1${blogHtml}$2`
     );
 
-    // 5. News cards (category=news, latest 2)
-    const news = displayPosts.filter(p => p.category === 'news').slice(0, 2);
-    if (news.length > 0) {
-      const newsHtml = news.map(p => newsCard(p)).join('\n');
+    // 5. FAQ preview (상위 3건)
+    const faqSnap = await firestore.collection('faq').orderBy('order', 'asc').limit(3).get().catch(() => ({ docs: [] }));
+    if (faqSnap.docs.length > 0) {
+      const faqHtml = faqSnap.docs.map(d => {
+        const f = d.data();
+        return `      <div class="faq-item"><h4>${esc(f.question)}</h4><p>${esc(f.answer)}</p></div>`;
+      }).join('\n');
       html = html.replace(
-        /(업계 소식<\/h2><a[^>]*>[^<]*<\/a><\/div>\n\s*<div class="blog-list">\n)[\s\S]*?(\n\s*<\/div>\n\s*<\/main>)/,
-        `$1${newsHtml}$2`
+        /(<div class="faq-list" id="faqPreview">)\n[\s\S]*?(<\/div>\n\n\s*<div class="sec-h"><h2>고객 게시판)/,
+        `$1\n${faqHtml}\n    $2`
+      );
+    }
+
+    // 6. Board preview (답변 완료 최근 5건)
+    const boardSnap = await firestore.collection('board')
+      .where('answered', '==', true)
+      .orderBy('createdAt', 'desc')
+      .limit(5)
+      .get()
+      .catch(() => ({ docs: [] }));
+
+    if (boardSnap.docs.length > 0) {
+      const boardHtml = boardSnap.docs.map(d => {
+        const b = d.data();
+        return `      <a href="/board#${d.id}" class="board-item"><span class="board-item-title">${esc(b.title)}</span><span class="board-item-badge answered">답변완료</span><span class="board-item-meta">${fmtDate(b.createdAt)}</span></a>`;
+      }).join('\n');
+      html = html.replace(
+        /(<div class="board-preview" id="boardPreview">)\n[\s\S]*?(<\/div>\n\n\s*<div class="sec-h"><h2>최근 블로그)/,
+        `$1\n${boardHtml}\n    $2`
       );
     } else {
-      // Hide news section when no news
+      // 게시글 없으면 섹션 자체 숨김
       html = html.replace(
-        /\s*<div class="sec-h"><h2>업계 소식<\/h2>[\s\S]*?<\/div>\n\s*<\/main>/,
-        '\n  </main>'
+        /\s*<div class="sec-h"><h2>고객 게시판<\/h2>[\s\S]*?<\/div>\n\n(\s*<div class="sec-h"><h2>최근 블로그)/,
+        '\n    $1'
       );
     }
 

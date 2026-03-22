@@ -401,17 +401,46 @@ nav {
   cursor: pointer; transition: all .2s;
 }
 .svc:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 3px 10px rgba(0,0,0,.04); }
-.svc.live { border-left: 3px solid var(--accent); }
-.svc.free { border-left: 3px solid var(--green); }
+.svc.live {
+  background: linear-gradient(135deg, rgba(108, 79, 255, 0.04), rgba(108, 79, 255, 0.08));
+  border: 1.5px solid rgba(108, 79, 255, 0.2);
+}
+.svc.live:hover {
+  border-color: rgba(108, 79, 255, 0.4);
+  box-shadow: 0 8px 24px rgba(108, 79, 255, 0.12);
+  transform: translateY(-2px);
+}
+.svc.free {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.04), rgba(16, 185, 129, 0.08));
+  border: 1.5px solid rgba(16, 185, 129, 0.2);
+}
+.svc.free:hover {
+  border-color: rgba(16, 185, 129, 0.4);
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.12);
+  transform: translateY(-2px);
+}
 .svc-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
 .svc-icon { font-size: 14px; }
-.svc-bdg { padding: 2px 5px; border-radius: 3px; font-size: 7px; font-weight: 800; text-transform: uppercase; }
+.svc-bdg { padding: 3px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
 .svc-bdg.lb { background: rgba(139,92,246,.1); color: var(--accent-l); }
 .svc-bdg.fb { background: var(--green-s); color: var(--green); }
 .svc h3 { font-size: 14px; font-weight: 800; margin-bottom: 2px; }
 .svc p { font-size: 12px; color: var(--ink-m); line-height: 1.35; }
-.svc-link { display: block; margin-top: 5px; font-size: 9px; font-weight: 700; color: var(--accent); }
-.svc.free .svc-link { color: var(--green); }
+.svc-link {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 6px 14px;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.svc.free .svc-link {
+  background: #10B981;
+  color: #fff;
+}
 
 .sec-h { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
 .sec-h h2 { font-size: 18px; font-weight: 800; }
@@ -447,6 +476,76 @@ nav {
 }
 .bi-info .meta { font-size: 10px; color: var(--ink-l); margin-top: 2px; display: flex; gap: 2px; }
 .lt { padding: 1px 3px; border-radius: 2px; background: var(--surface); font-weight: 700; font-size: 7px; }
+
+/* FAQ preview */
+.faq-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; }
+.faq-item {
+  padding: 14px 16px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.faq-item:hover { border-color: var(--accent); }
+.faq-item h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+.faq-item p {
+  font-size: 13px;
+  color: var(--ink-m);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Board preview */
+.board-preview { display: flex; flex-direction: column; gap: 6px; margin-bottom: 18px; }
+.board-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.2s;
+}
+.board-item:hover { border-color: var(--accent); }
+.board-item-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+.board-item-meta {
+  font-size: 11px;
+  color: var(--ink-m);
+  white-space: nowrap;
+  margin-left: 12px;
+}
+.board-item-badge {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+  margin-left: 8px;
+  white-space: nowrap;
+}
+.board-item-badge.answered {
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
+}
 
 /* Credit Info (Right Sidebar) */
 .credit-info { padding: 10px; border-radius: 7px; background: var(--white); border: 1px solid var(--border); font-size: 11px; }
