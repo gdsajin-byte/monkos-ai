@@ -50,6 +50,7 @@ function createFloatToolbar(anchorEl, buttons) {
 function insertImage(url, name) {
   if (_isInsertingImage) return;
   _isInsertingImage = true;
+  editor.focus();
   editor.exec('addImage', { imageUrl: url, altText: name || 'image' });
   showToast('이미지 삽입 완료');
   setTimeout(() => { _isInsertingImage = false; updatePreview(); }, 300);
