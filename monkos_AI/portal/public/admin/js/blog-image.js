@@ -115,7 +115,7 @@ function toggleImageLibrary() {
   const lib = document.getElementById('imageLibrary');
   const btn = document.getElementById('imgToggleBtn');
   if (lib.style.display === 'none') {
-    lib.style.display = 'grid';
+    lib.style.display = '';
     btn.textContent = '접기';
   } else {
     lib.style.display = 'none';
