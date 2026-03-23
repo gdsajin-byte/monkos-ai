@@ -1,6 +1,0 @@
-node_modules/
-.git/
-.env
-README.md
-.gitignore
-.DS_Store
