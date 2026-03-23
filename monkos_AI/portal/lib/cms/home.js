@@ -67,7 +67,7 @@ function blogCard(p) {
 }
 
 // ========== Home SSR ==========
-export async function renderHome(req, res) {
+export async function renderHome(req, res, forceLang = null) {
   try {
     let html = getTemplate();
 
@@ -82,7 +82,7 @@ export async function renderHome(req, res) {
 
     // 언어별 필터 (쿼리 파라미터 ?lang= 기반, 기본값 ko)
     const reqUrl = new URL(req.url, 'http://localhost');
-    const lang = reqUrl.searchParams.get('lang') || 'ko';
+    const lang = forceLang || reqUrl.searchParams.get('lang') || 'ko';
     const langPosts = allPosts.filter(p => p.lang === lang);
     const displayPosts = (langPosts.length > 0 ? langPosts : allPosts)
       .filter(p => !p.autoTranslated)

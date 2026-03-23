@@ -119,8 +119,11 @@ window.setLang = function(newLang) {
   }
   setCookie('monkos_region', region);
   // 홈 페이지에서 언어 변경 시 SSR 콘텐츠 리로드
-  if (window.location.pathname === '/' || window.location.pathname === '/index.html') {
-    window.location.href = '/?lang=' + newLang;
+  if (window.location.pathname === '/' || window.location.pathname === '/index.html'
+      || window.location.pathname === '/ja/' || window.location.pathname === '/ja'
+      || window.location.pathname === '/en/' || window.location.pathname === '/en') {
+    if (newLang === 'ko') window.location.href = '/';
+    else window.location.href = '/' + newLang + '/';
     return;
   }
   applyLang();

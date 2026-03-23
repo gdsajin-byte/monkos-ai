@@ -1298,6 +1298,12 @@ export async function renderSitemap(req, res) {
       { loc: 'https://monkos.ai/crop', lastmod: today, changefreq: 'weekly', priority: '0.7' },
       { loc: 'https://monkos.ai/ja/blog', lastmod: today, changefreq: 'daily', priority: '0.7' },
       { loc: 'https://monkos.ai/en/blog', lastmod: today, changefreq: 'daily', priority: '0.7' },
+      { loc: 'https://monkos.ai/ja/', lastmod: today, changefreq: 'weekly', priority: '0.9' },
+      { loc: 'https://monkos.ai/en/', lastmod: today, changefreq: 'weekly', priority: '0.9' },
+      { loc: 'https://monkos.ai/ja/faq', lastmod: today, changefreq: 'weekly', priority: '0.6' },
+      { loc: 'https://monkos.ai/en/faq', lastmod: today, changefreq: 'weekly', priority: '0.6' },
+      { loc: 'https://monkos.ai/ja/pricing', lastmod: today, changefreq: 'monthly', priority: '0.5' },
+      { loc: 'https://monkos.ai/en/pricing', lastmod: today, changefreq: 'monthly', priority: '0.5' },
     ];
 
     const snapshot = await blogCollection.where('published', '==', true).orderBy('createdAt', 'desc').get();

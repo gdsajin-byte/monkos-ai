@@ -219,6 +219,9 @@ const httpServer = createServer(async (req, res) => {
 
   // === CMS 공개 페이지 (SSR) ===
   if ((urlPath === '/' || urlPath === '/index.html') && req.method === 'GET') return renderHome(req, res);
+  // 다국어 홈 라우트 (/ja/, /en/ → 경로 방식 통일)
+  if ((urlPath === '/ja' || urlPath === '/ja/') && req.method === 'GET') return renderHome(req, res, 'ja');
+  if ((urlPath === '/en' || urlPath === '/en/') && req.method === 'GET') return renderHome(req, res, 'en');
   if (urlPath === '/sitemap.xml' && req.method === 'GET') return renderSitemap(req, res);
 
   // 다국어 블로그 라우트 (언어 접두사 — 기존 /blog 라우트 앞에 배치)
