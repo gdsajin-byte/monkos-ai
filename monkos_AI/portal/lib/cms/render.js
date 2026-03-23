@@ -1286,22 +1286,18 @@ export async function renderGuide(req, res) {
 // GET /sitemap.xml — 동적 생성
 export async function renderSitemap(req, res) {
   try {
+    const today = new Date().toISOString().substring(0, 10);
     const staticUrls = [
-      { loc: 'https://monkos.ai/', changefreq: 'weekly', priority: '1.0' },
-      { loc: 'https://monkos.ai/credits.html', changefreq: 'monthly', priority: '0.5' },
-      { loc: 'https://monkos.ai/privacy.html', changefreq: 'monthly', priority: '0.3' },
-      { loc: 'https://monkos.ai/terms.html', changefreq: 'monthly', priority: '0.3' },
-      { loc: 'https://monkos.ai/refund.html', changefreq: 'monthly', priority: '0.3' },
-      { loc: 'https://monkos.ai/blog', changefreq: 'daily', priority: '0.8' },
-      { loc: 'https://monkos.ai/faq', changefreq: 'weekly', priority: '0.7' },
-      { loc: 'https://monkos.ai/gallery', changefreq: 'weekly', priority: '0.6' },
-      { loc: 'https://monkos.ai/board', changefreq: 'daily', priority: '0.5' },
-      { loc: 'https://monkos.ai/pricing', changefreq: 'monthly', priority: '0.6' },
-      { loc: 'https://monkos.ai/guide', changefreq: 'weekly', priority: '0.7' },
-      { loc: 'https://monkos.ai/crop', changefreq: 'weekly', priority: '0.7' },
-      { loc: 'https://monkos.ai/ja/blog', changefreq: 'daily', priority: '0.7' },
-      { loc: 'https://monkos.ai/en/blog', changefreq: 'daily', priority: '0.7' },
-      { loc: 'https://monkos.ai/llms.txt', changefreq: 'monthly', priority: '0.5' },
+      { loc: 'https://monkos.ai/', lastmod: today, changefreq: 'weekly', priority: '1.0' },
+      { loc: 'https://monkos.ai/blog', lastmod: today, changefreq: 'daily', priority: '0.8' },
+      { loc: 'https://monkos.ai/faq', lastmod: today, changefreq: 'weekly', priority: '0.7' },
+      { loc: 'https://monkos.ai/gallery', lastmod: today, changefreq: 'weekly', priority: '0.6' },
+      { loc: 'https://monkos.ai/board', lastmod: today, changefreq: 'daily', priority: '0.5' },
+      { loc: 'https://monkos.ai/pricing', lastmod: today, changefreq: 'monthly', priority: '0.6' },
+      { loc: 'https://monkos.ai/guide', lastmod: today, changefreq: 'weekly', priority: '0.7' },
+      { loc: 'https://monkos.ai/crop', lastmod: today, changefreq: 'weekly', priority: '0.7' },
+      { loc: 'https://monkos.ai/ja/blog', lastmod: today, changefreq: 'daily', priority: '0.7' },
+      { loc: 'https://monkos.ai/en/blog', lastmod: today, changefreq: 'daily', priority: '0.7' },
     ];
 
     const snapshot = await blogCollection.where('published', '==', true).orderBy('createdAt', 'desc').get();

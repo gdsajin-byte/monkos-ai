@@ -241,14 +241,32 @@ export async function renderHome(req, res) {
       .catch(() => ({ docs: [] }));
     if (faqSnap.docs.length > 0) {
       const faqPrefix = lang === 'ko' ? '/faq' : `/${lang}/faq`;
-      const faqHtml = faqSnap.docs.map(d => {
-        const f = d.data();
+      const faqItems = faqSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+      const faqHtml = faqItems.map(f => {
         const short = (f.answer || '').substring(0, 80) + (f.answer?.length > 80 ? '…' : '');
-        return `      <a href="${faqPrefix}#faq-${esc(d.id)}" class="faq-item"><h4>${esc(f.question)}</h4><p>${esc(short)}</p></a>`;
+        return `      <a href="${faqPrefix}#faq-${esc(f.id)}" class="faq-item"><h4>${esc(f.question)}</h4><p>${esc(short)}</p></a>`;
       }).join('\n');
       html = html.replace(
         /(<div class="faq-list" id="faqPreview">)\n[\s\S]*?(<\/div>\n\n\s*<div class="sec-h" id="sec-board"><h2>고객 게시판)/,
         `$1\n${faqHtml}\n    $2`
+      );
+
+      // FAQ 프리뷰 JSON-LD 삽입 (서치콘솔 mainEntity 오류 수정)
+      const faqJsonLd = JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": faqItems.map(f => ({
+          "@type": "Question",
+          "name": f.question,
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": f.answer
+          }
+        }))
+      });
+      html = html.replace(
+        '</head>',
+        `<script type="application/ld+json">${faqJsonLd}</script>\n</head>`
       );
     }
 
