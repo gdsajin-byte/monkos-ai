@@ -233,7 +233,7 @@ export function setupEditorBindings() {
   document.getElementById('summary').addEventListener('input', updatePreview);
   document.getElementById('thumbnail').addEventListener('input', updatePreview);
 
-  // Auto-generate slug from title
+  // Auto-generate slug from title (영문 제목 → slug, 비영문은 서버에서 AI 생성)
   document.getElementById('title').addEventListener('input', (e) => {
     if (!isEdit) {
       const slug = e.target.value
@@ -243,7 +243,14 @@ export function setupEditorBindings() {
         .replace(/-+/g, '-')
         .replace(/^-|-$/g, '')
         .substring(0, 100);
-      document.getElementById('slug').value = slug;
+      const slugField = document.getElementById('slug');
+      if (slug.length >= 3) {
+        slugField.value = slug;
+        slugField.placeholder = '';
+      } else {
+        slugField.value = '';
+        slugField.placeholder = '자동 생성됩니다 (영문 입력 시 직접 지정)';
+      }
     }
   });
 

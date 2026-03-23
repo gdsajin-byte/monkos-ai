@@ -557,7 +557,7 @@ export async function faqFragment(req, forceLang = null) {
     .where('lang', '==', lang)
     .orderBy('order', 'asc')
     .get();
-  const items = snapshot.docs.map(doc => doc.data());
+  const items = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
   const categories = {};
   for (const item of items) {
@@ -601,7 +601,7 @@ export async function faqFragment(req, forceLang = null) {
       <div class="faq-category">
         <h2 class="faq-cat-title">${escapeHtml(cat)}</h2>
         ${faqs.map(f => `
-          <details class="faq-item">
+          <details class="faq-item" id="faq-${f.id}">
             <summary class="faq-question">${escapeHtml(f.question)}</summary>
             <div class="faq-answer">${marked(f.answer || '')}</div>
           </details>
@@ -642,7 +642,16 @@ export async function faqFragment(req, forceLang = null) {
   </div>
   ${faqHtml || '<p style="color:var(--text-dim)">No FAQs yet.</p>'}`;
 
-  return { title: ogTitle, description: ogDesc, seoMeta, htmlLang: lang, pageStyle, bodyContent, pageScript: null };
+  const pageScript = `
+if (location.hash) {
+  var el = document.getElementById(location.hash.substring(1));
+  if (el && el.tagName === 'DETAILS') {
+    el.open = true;
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}`;
+
+  return { title: ogTitle, description: ogDesc, seoMeta, htmlLang: lang, pageStyle, bodyContent, pageScript };
 }
 
 // GET /faq — FAQ 공개 페이지 (기존 호출 호환)
@@ -659,6 +668,7 @@ ${layoutNav()}
   ${parts.bodyContent}
 </div>
 ${layoutFooter()}
+${parts.pageScript ? `<script>${parts.pageScript}</script>` : ''}
 </body>
 </html>`;
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });

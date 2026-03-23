@@ -71,10 +71,11 @@ export async function renderHome(req, res) {
   try {
     let html = getTemplate();
 
-    const [configSnap, postsSnap, gallerySnap] = await Promise.all([
+    const [configSnap, postsSnap, gallerySnap, layoutSnap] = await Promise.all([
       siteConfigRef.get().catch(() => null),
       blogCollection.where('published', '==', true).orderBy('createdAt', 'desc').get().catch(() => ({ docs: [] })),
       galleryCollection.where('published', '==', true).orderBy('order', 'asc').get().catch(() => ({ docs: [] })),
+      layoutConfigRef.get().catch(() => null),
     ]);
 
     const allPosts = postsSnap.docs.map(d => ({ slug: d.id, ...d.data() }));
@@ -87,10 +88,17 @@ export async function renderHome(req, res) {
       .filter(p => !p.autoTranslated)
       .filter(p => p.thumbnail && p.thumbnail.length > 0);
 
-    // 0. Gallery strip (Firestore → 동적)
+    // Layout 블록 헬퍼 (fallback: layout 없으면 기존 하드코딩 유지)
+    const layoutSections = layoutSnap?.exists ? (layoutSnap.data().sections || []) : [];
+    function getBlock(id) { return layoutSections.find(s => s.id === id); }
+    function lt(obj) { return (obj && obj[lang]) || obj?.ko || ''; }
+
+    // 0. Gallery strip (Firestore → 동적, layout maxItems 적용)
+    const galleryBlock = getBlock('gallery-strip');
+    const galleryMax = galleryBlock?.data?.maxItems || 12;
     const galleryItems = gallerySnap.docs.map(d => d.data());
     if (galleryItems.length > 0) {
-      const stripHtml = galleryItems.slice(0, 12).map(item =>
+      const stripHtml = galleryItems.slice(0, galleryMax).map(item =>
         `  <div class="gi"><img class="gi-img" src="${esc(item.imageUrl)}" alt="${esc(item.caption || 'AI 증명사진')}" loading="lazy"></div>`
       ).join('\n');
       html = html.replace(
@@ -99,14 +107,95 @@ export async function renderHome(req, res) {
       );
     }
 
-    // 1. Intro text
-    if (configSnap?.exists && configSnap.data().intro) {
+    // 1. Hero
+    const heroBlock = getBlock('hero');
+    if (heroBlock?.visible && heroBlock.data) {
+      const hd = heroBlock.data;
+      const heroHtml = `<div class="hero"><div class="hero-inner">\n  <div class="hero-label">${hd.label || 'AI Creative Platform'}</div>\n  <h1>${hd.title || 'MONKOS <em>AI</em>'}</h1>\n  <div class="hero-tag">${hd.tagline || '<strong>Photography</strong> × <strong>AI</strong> × <strong>K-Beauty</strong>'}</div>\n</div></div>`;
+      html = html.replace(
+        /<div class="hero"><div class="hero-inner">\n[\s\S]*?<\/div><\/div>\n\n<!-- User Bar -->/,
+        `${heroHtml}\n\n<!-- User Bar -->`
+      );
+    }
+
+    // 2. User-bar CTA text only (onclick·class 보존)
+    const userBarBlock = getBlock('user-bar');
+    if (userBarBlock?.visible && userBarBlock.data?.cta) {
+      html = html.replace(
+        /<button class="btn-shoot">[^<]*<\/button>/,
+        `<button class="btn-shoot">${esc(lt(userBarBlock.data.cta))}</button>`
+      );
+    }
+
+    // 3. Nav
+    const navBlock = getBlock('nav');
+    if (navBlock?.visible && navBlock.items) {
+      const navLinks = navBlock.items.map(item => {
+        const href = item.href ? (item.href[lang] || item.href.ko || '/') : '/';
+        const label = lt(item.label);
+        const cls = item.active ? ' class="active"' : '';
+        return `  <a href="${esc(href)}"${cls}>${esc(label)}</a>`;
+      }).join('\n');
+      html = html.replace(
+        /(<nav><div class="n-links">)\n[\s\S]*?\n(<\/div><\/nav>)/,
+        `$1\n${navLinks}\n$2`
+      );
+    }
+
+    // 4. Intro text (layout 블록 우선, fallback: site_config/main)
+    const introBlock = getBlock('intro-text');
+    if (introBlock?.visible && introBlock.data?.text) {
+      const introHtml = lt(introBlock.data.text);
+      if (introHtml) html = html.replace(/<p class="intro-text">[\s\S]*?<\/p>/, `<p class="intro-text">${introHtml}</p>`);
+    } else if (configSnap?.exists && configSnap.data().intro) {
       html = html.replace(/<p class="intro-text">[\s\S]*?<\/p>/, `<p class="intro-text">${configSnap.data().intro}</p>`);
     }
 
-    // 2. Magazine cards (pinned → fallback latest)
-    const pinned = displayPosts.filter(p => p.pinned).slice(0, 4);
-    const mags = pinned.length > 0 ? pinned : displayPosts.slice(0, 4);
+    // 5. Service cards (.svc.live, .svc-link class 보존)
+    const svcBlock = getBlock('service-cards');
+    if (svcBlock?.visible && svcBlock.items) {
+      const svcHtml = svcBlock.items.map(item => {
+        const title = lt(item.title);
+        const desc = lt(item.desc);
+        const link = lt(item.link);
+        const icon = item.icon || '';
+        const badgeHtml = item.badge ? `<span class="svc-bdg ${item.badge.class || ''}">${item.badge.text || ''}</span>` : '';
+        if (item.cardClass === 'live') {
+          return `      <div class="svc live"><div class="svc-top"><span class="svc-icon">${icon}</span>${badgeHtml}</div><h3>${esc(title)}</h3><p>${esc(desc)}</p><span class="svc-link">${esc(link)}</span></div>`;
+        }
+        return `      <a href="${esc(item.url || '#')}" class="svc ${esc(item.cardClass || '')}" style="text-decoration:none;color:inherit"><div class="svc-top"><span class="svc-icon">${icon}</span>${badgeHtml}</div><h3>${esc(title)}</h3><p>${esc(desc)}</p><span class="svc-link">${esc(link)}</span></a>`;
+      }).join('\n');
+      html = html.replace(
+        /(<div class="svc-grid">)\n[\s\S]*?(<\/div>\n\n\s*<div class="sec-h" id="sec-howto">)/,
+        `$1\n${svcHtml}\n    $2`
+      );
+    }
+
+    // 6. Howto
+    const howtoBlock = getBlock('howto');
+    if (howtoBlock?.visible) {
+      if (howtoBlock.header) {
+        html = html.replace(
+          /<div class="sec-h" id="sec-howto"><h2>[^<]*<\/h2><a[^>]*>[^<]*<\/a><\/div>/,
+          `<div class="sec-h" id="sec-howto"><h2>${esc(lt(howtoBlock.header.title))}</h2><a href="${esc(howtoBlock.header.href || '/guide')}">${esc(lt(howtoBlock.header.link))}</a></div>`
+        );
+      }
+      if (howtoBlock.items) {
+        const howtoHtml = howtoBlock.items.map(item =>
+          `      <div class="howto"><div class="num">${esc(item.num)}</div><h4>${esc(lt(item.title))}</h4><p>${esc(lt(item.desc))}</p></div>`
+        ).join('\n');
+        html = html.replace(
+          /(<div class="howto-grid">)\n[\s\S]*?(<\/div>\n\n\s*<div class="sec-h" id="sec-faq">)/,
+          `$1\n${howtoHtml}\n    $2`
+        );
+      }
+    }
+
+    // 7. Magazine cards (pinned → fallback latest, layout maxItems 적용)
+    const magBlock = getBlock('magazine');
+    const magMax = magBlock?.data?.maxItems || 4;
+    const pinned = displayPosts.filter(p => p.pinned).slice(0, magMax);
+    const mags = pinned.length > 0 ? pinned : displayPosts.slice(0, magMax);
     if (mags.length > 0) {
       const magHtml = mags.map((p, i) => magCard(p, i)).join('\n');
       html = html.replace(
@@ -115,10 +204,12 @@ export async function renderHome(req, res) {
       );
     }
 
-    // 3. Tags (aggregated)
+    // 8. Tags (aggregated, layout maxTags 적용)
+    const tagsBlock = getBlock('tags');
+    const maxTags = tagsBlock?.data?.maxTags || 16;
     const tagMap = {};
     for (const p of displayPosts) for (const t of (p.tags || [])) tagMap[t] = (tagMap[t] || 0) + 1;
-    const tags = Object.keys(tagMap).sort((a, b) => tagMap[b] - tagMap[a]);
+    const tags = Object.keys(tagMap).sort((a, b) => tagMap[b] - tagMap[a]).slice(0, maxTags);
     if (tags.length > 0) {
       html = html.replace(
         /<div class="sb-tags"[^>]*>[\s\S]*?<\/div>/,
@@ -126,8 +217,10 @@ export async function renderHome(req, res) {
       );
     }
 
-    // 4. Blog cards (latest 4)
-    const blogs = displayPosts.slice(0, 4);
+    // 9. Blog cards (latest N, layout maxItems 적용)
+    const blogBlock = getBlock('blog-cards');
+    const blogMax = blogBlock?.data?.maxItems || 4;
+    const blogs = displayPosts.slice(0, blogMax);
     const blogHtml = blogs.length > 0
       ? blogs.map(p => blogCard(p)).join('\n')
       : '      <p style="color:var(--ink-m);padding:24px 0">아직 포스트가 없습니다</p>';
@@ -136,18 +229,22 @@ export async function renderHome(req, res) {
       `$1${blogHtml}$2`
     );
 
-    // 5. FAQ preview (상위 3건)
+    // 10. FAQ preview (layout maxItems 적용)
+    const faqBlock = getBlock('faq-preview');
+    const faqMax = faqBlock?.data?.maxItems || 3;
     const faqSnap = await firestore.collection('faq_items')
       .where('published', '==', true)
       .where('lang', '==', lang)
       .orderBy('order', 'asc')
-      .limit(3)
+      .limit(faqMax)
       .get()
       .catch(() => ({ docs: [] }));
     if (faqSnap.docs.length > 0) {
+      const faqPrefix = lang === 'ko' ? '/faq' : `/${lang}/faq`;
       const faqHtml = faqSnap.docs.map(d => {
         const f = d.data();
-        return `      <div class="faq-item"><h4>${esc(f.question)}</h4><p>${esc(f.answer)}</p></div>`;
+        const short = (f.answer || '').substring(0, 80) + (f.answer?.length > 80 ? '…' : '');
+        return `      <a href="${faqPrefix}#faq-${esc(d.id)}" class="faq-item"><h4>${esc(f.question)}</h4><p>${esc(short)}</p></a>`;
       }).join('\n');
       html = html.replace(
         /(<div class="faq-list" id="faqPreview">)\n[\s\S]*?(<\/div>\n\n\s*<div class="sec-h" id="sec-board"><h2>고객 게시판)/,
@@ -155,18 +252,24 @@ export async function renderHome(req, res) {
       );
     }
 
-    // 6. Board preview (답변 완료 최근 5건)
-    const boardSnap = await firestore.collection('board')
-      .where('answered', '==', true)
+    // 11. Board preview (layout maxItems 적용, 답변 여부 표시)
+    const boardBlock = getBlock('board-preview');
+    const boardMax = boardBlock?.data?.maxItems || 5;
+    const boardSnap = await firestore.collection('board_posts')
+      .where('published', '==', true)
       .orderBy('createdAt', 'desc')
-      .limit(5)
+      .limit(boardMax)
       .get()
       .catch(() => ({ docs: [] }));
 
     if (boardSnap.docs.length > 0) {
       const boardHtml = boardSnap.docs.map(d => {
         const b = d.data();
-        return `      <a href="/board#${d.id}" class="board-item"><span class="board-item-title">${esc(b.title)}</span><span class="board-item-badge answered">답변완료</span><span class="board-item-meta">${fmtDate(b.createdAt)}</span></a>`;
+        const hasReply = Array.isArray(b.replies) && b.replies.length > 0;
+        const badge = hasReply
+          ? '<span class="board-item-badge answered">답변완료</span>'
+          : '<span class="board-item-badge">대기중</span>';
+        return `      <a href="/board#${d.id}" class="board-item"><span class="board-item-title">${esc(b.title)}</span>${badge}<span class="board-item-meta">${fmtDate(b.createdAt)}</span></a>`;
       }).join('\n');
       html = html.replace(
         /(<div class="board-preview" id="boardPreview">)\n[\s\S]*?(<\/div>\n\n\s*<div class="sec-h" id="sec-blog"><h2>최근 블로그)/,
@@ -178,6 +281,76 @@ export async function renderHome(req, res) {
         /\s*<div class="sec-h" id="sec-board"><h2>고객 게시판<\/h2>[\s\S]*?<\/div>\n\n(\s*<div class="sec-h" id="sec-blog"><h2>최근 블로그)/,
         '\n    $1'
       );
+    }
+
+    // 12. Section headers i18n (FAQ·Board·Blog — 콘텐츠 regex 이후에 실행)
+    if (faqBlock?.data?.header) {
+      html = html.replace(
+        /<div class="sec-h" id="sec-faq"><h2>[^<]*<\/h2><a[^>]*>[^<]*<\/a><\/div>/,
+        `<div class="sec-h" id="sec-faq"><h2>${esc(lt(faqBlock.data.header.title))}</h2><a href="${esc(faqBlock.data.header.href || '/faq')}">${esc(lt(faqBlock.data.header.link))}</a></div>`
+      );
+    }
+    if (boardBlock?.data?.header) {
+      html = html.replace(
+        /<div class="sec-h" id="sec-board"><h2>[^<]*<\/h2><a[^>]*>[^<]*<\/a><\/div>/,
+        `<div class="sec-h" id="sec-board"><h2>${esc(lt(boardBlock.data.header.title))}</h2><a href="${esc(boardBlock.data.header.href || '/board')}">${esc(lt(boardBlock.data.header.link))}</a></div>`
+      );
+    }
+    if (blogBlock?.data?.header) {
+      html = html.replace(
+        /<div class="sec-h" id="sec-blog"><h2>[^<]*<\/h2><a[^>]*>[^<]*<\/a><\/div>/,
+        `<div class="sec-h" id="sec-blog"><h2>${esc(lt(blogBlock.data.header.title))}</h2><a href="${esc(blogBlock.data.header.href || '/blog')}">${esc(lt(blogBlock.data.header.link))}</a></div>`
+      );
+    }
+
+    // 13. Guide cards (ID 기반 텍스트 교체)
+    const guideBlock = getBlock('guide');
+    if (guideBlock?.visible && guideBlock.items) {
+      for (let i = 0; i < guideBlock.items.length; i++) {
+        const g = guideBlock.items[i];
+        const n = i + 1;
+        html = html.replace(new RegExp(`(<h4 id="guide${n}-title">)[^<]*(</h4>)`), (_, g1, g2) => g1 + esc(lt(g.title)) + g2);
+        html = html.replace(new RegExp(`(<p id="guide${n}-desc">)[^<]*(</p>)`), (_, g1, g2) => g1 + esc(lt(g.desc)) + g2);
+        html = html.replace(new RegExp(`(<div class="now" id="guide${n}-status"[^>]*>)[^<]*(</div>)`), (_, g1, g2) => g1 + esc(lt(g.status)) + g2);
+      }
+    }
+
+    // 14. Credit info ($ 기호 포함 → function 기반 replace)
+    const creditBlock = getBlock('credit-info');
+    if (creditBlock?.visible && creditBlock.data) {
+      const cd = creditBlock.data;
+      if (cd.exchange) {
+        html = html.replace(/(<div class="credit-info-title" id="credit-exchange">)[^<]*(<\/div>)/, (_, g1, g2) => g1 + esc(lt(cd.exchange)) + g2);
+      }
+      if (cd.rows) {
+        for (const row of cd.rows) {
+          const lbl = esc(lt(row.label));
+          if (row.label?.ko === 'AI 생성') html = html.replace(/(<span id="credit-gen-label">)[^<]*(<\/span>)/, (_, g1, g2) => g1 + lbl + g2);
+          else if (row.label?.ko === '다운로드') html = html.replace(/(<span id="credit-dl-label">)[^<]*(<\/span>)/, (_, g1, g2) => g1 + lbl + g2);
+          else if (row.label?.ko === '1장 완성') html = html.replace(/(<span id="credit-total-label">)[^<]*(<\/span>)/, (_, g1, g2) => g1 + lbl + g2);
+        }
+      }
+      if (cd.promo) {
+        if (cd.promo.oldPrice) html = html.replace(/(<span class="old" id="credit-old-price">)[^<]*(<\/span>)/, (_, g1, g2) => g1 + esc(lt(cd.promo.oldPrice)) + g2);
+        if (cd.promo.newPrice) html = html.replace(/(<span class="price" id="credit-new-price">)[^<]*(<\/span>)/, (_, g1, g2) => g1 + esc(lt(cd.promo.newPrice)) + g2);
+        if (cd.promo.bonus) html = html.replace(/(<div class="note" id="credit-bonus">)[^<]*(<\/div>)/, (_, g1, g2) => g1 + esc(lt(cd.promo.bonus)) + g2);
+      }
+    }
+
+    // 15. Footer
+    const footerBlock = getBlock('footer');
+    if (footerBlock?.visible && footerBlock.data) {
+      const fd = footerBlock.data;
+      if (fd.links) {
+        const ftLinks = fd.links.map(l => `    <a href="${esc(l.href)}">${esc(l.label)}</a>`).join('\n');
+        html = html.replace(
+          /(<footer[^>]*>\n\s*<div class="ft-links">)\n[\s\S]*?(<\/div>\n\s*<div class="ft-copy">)/,
+          `$1\n${ftLinks}\n  $2`
+        );
+      }
+      if (fd.copyright) {
+        html = html.replace(/(<div class="ft-copy">)[^<]*(<\/div>)/, (_, g1, g2) => g1 + esc(fd.copyright) + g2);
+      }
     }
 
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });

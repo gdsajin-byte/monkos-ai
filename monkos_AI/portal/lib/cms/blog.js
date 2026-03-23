@@ -2,7 +2,7 @@
  * CMS 블로그 CRUD API 핸들러
  * Firestore blog_posts 컬렉션
  */
-import { firestore, log, parseJsonBody } from '../shared/config.js';
+import { firestore, ai, log, parseJsonBody } from '../shared/config.js';
 import { requireAdmin } from './admin-auth.js';
 import { translateAndSaveBlogPost } from './translate.js';
 
@@ -16,6 +16,22 @@ function generateSlug(title) {
     .replace(/-+/g, '-')
     .replace(/^-|-$/g, '')
     .substring(0, 100);
+}
+
+async function generateSlugFromAI(title) {
+  try {
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.0-flash',
+      contents: [{ role: 'user', parts: [{ text: `Convert this blog title to an English URL slug. Rules: lowercase, hyphens only, max 60 chars, ASCII only. Return ONLY the slug, nothing else.\n\nTitle: ${title}` }] }],
+      config: { maxOutputTokens: 64, temperature: 0.1 },
+    });
+    const slug = (response.candidates?.[0]?.content?.parts?.[0]?.text || '')
+      .trim().toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/-+/g, '-').replace(/^-|-$/g, '').substring(0, 60);
+    if (slug.length >= 3) return slug;
+  } catch (err) {
+    log(`[CMS] AI slug 생성 실패: ${err.message}`, 'WARN');
+  }
+  return 'post-' + new Date().toISOString().slice(0, 19).replace(/[-:T]/g, '');
 }
 
 function sanitizeSlug(slug) {
@@ -102,10 +118,10 @@ export async function handleBlogCreate(req, res) {
         .substring(0, 160);
     }
 
-    const slug = sanitizeSlug(body.slug || generateSlug(title));
+    let slug = sanitizeSlug(body.slug || generateSlug(title));
     if (!slug) {
-      res.writeHead(400, { 'Content-Type': 'application/json' });
-      return res.end(JSON.stringify({ error: '유효한 slug를 생성할 수 없습니다' }));
+      slug = await generateSlugFromAI(title);
+      log(`[CMS] AI slug 생성: "${title}" → "${slug}"`);
     }
     const existing = await blogCollection.doc(slug).get();
     if (existing.exists) {

@@ -480,12 +480,15 @@ nav {
 /* FAQ preview */
 .faq-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; }
 .faq-item {
+  display: block;
   padding: 14px 16px;
   background: var(--white);
   border: 1px solid var(--border);
   border-radius: 8px;
   cursor: pointer;
   transition: border-color 0.2s;
+  text-decoration: none;
+  color: inherit;
 }
 .faq-item:hover { border-color: var(--accent); }
 .faq-item h4 {

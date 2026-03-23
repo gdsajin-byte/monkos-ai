@@ -6,8 +6,6 @@
 // === 번역 데이터 ===
 const i18n = {
   ja: {
-    heroTag: '<strong>Photography</strong> × <strong>AI</strong> × <strong>K-Beauty</strong>',
-    ctaText: '証明写真を撮る',
     login: 'ログイン',
     loginGoogle: 'Googleでログイン',
     loginKakao: 'カカオでログイン',
@@ -17,33 +15,8 @@ const i18n = {
     chatHint: 'Enterで送信',
     chatWelcome: 'こんにちは！MONKOS AIです。証明写真、規格、価格、クロップアプリなど何でも聞いてください。',
     chatTitle: 'MONKOS AI',
-    navHome: 'ホーム', navBlog: 'ブログ', navFaq: 'FAQ', navGallery: 'ギャラリー', navBoard: '掲示板', navPricing: '料金',
-    svcPhotoTitle: 'AI証明写真', svcPhotoDesc: 'パスポート・履歴書・ビザ — スタジオ品質のAIリタッチ。ICAO国際規格。',
-    svcPhotoLink: '撮影開始 →',
-    svcCropTitle: '無料クロップアプリ', svcCropDesc: '規格クロップ・背景除去・背景交換。サーバー送信なし。',
-    svcCropLink: '/crop →',
-    introText: '<strong>MONKOS</strong>は20年のキャリアを持つ写真家が作った<strong>AI証明写真</strong>プラットフォームです。パスポート写真、履歴書写真、ビザ写真をセルフィー1枚で完成します。スタジオ撮影ノウハウを学習したAIが背景整理、照明補正、肌補正、服装整頓まで処理し、<strong>ICAO国際規格</strong>に適合する証明写真を提供します。',
-    howto1: '規格選択', howto1d: 'パスポート/身分証または半名刺選択',
-    howto2: 'セルフィー撮影', howto2d: 'AIコーチングガイドで完璧撮影',
-    howto3: 'AIリタッチ', howto3d: '背景・照明・肌・服装自動補正',
-    secHowto: '証明写真アプリの使い方', secHowtoAll: '全て見る →',
-    secFaq: 'よくある質問', secFaqAll: '全て見る →',
-    secBoard: 'お客様掲示板', secBoardAll: '全て見る →',
-    secBlog: '最新ブログ', secBlogAll: '全て見る →',
-    secNews: '業界ニュース', secNewsMore: 'もっと見る →',
-    sbMagazine: 'マガジン', sbTags: 'タグ', sbTagMore: 'もっと見る ▼', sbTagLess: '閉じる ▲',
-    sbGuide: '使い方ガイド',
-    guide1Title: '証明写真の撮り方', guide1Desc: '規格選択 → セルフィー → AIリタッチ → ダウンロード', guideStatus: '▶ 自動再生中',
-    guide2Title: 'クロップアプリの使い方', guide2Desc: '写真選択 → 規格クロップ → 背景除去 → ダウンロード',
-    sbCredit: 'クレジット案内',
-    creditExchange: '💡 10c = ¥150',
-    creditGen: 'AIリタッチ', creditDl: 'ダウンロード', creditTotal: '1枚完成',
-    creditOld: '¥1,200', creditNew: '¥990',
-    creditBonus: '🎁 初回ログイン +10cボーナス',
   },
   ko: {
-    heroTag: '<strong>Photography</strong> × <strong>AI</strong> × <strong>K-Beauty</strong>',
-    ctaText: '촬영 시작하기',
     login: '로그인',
     loginGoogle: 'Google로 로그인',
     loginKakao: '카카오로 로그인',
@@ -53,33 +26,8 @@ const i18n = {
     chatHint: 'Enter로 전송',
     chatWelcome: '안녕하세요! MONKOS AI입니다. 증명사진, 규격, 가격, 크롭앱 등 무엇이든 물어보세요.',
     chatTitle: 'MONKOS AI',
-    navHome: '홈', navBlog: '블로그', navFaq: 'FAQ', navGallery: '갤러리', navBoard: '게시판', navPricing: '가격',
-    svcPhotoTitle: 'AI 증명사진', svcPhotoDesc: '여권·이력서·비자 — 사진관 품질 AI 리터칭. ICAO 국제 규격.',
-    svcPhotoLink: '촬영 시작 →',
-    svcCropTitle: '무료 크롭앱', svcCropDesc: '규격 크롭·배경 제거·배경 교체. 서버 전송 없음.',
-    svcCropLink: '/crop →',
-    introText: '<strong>MONKOS</strong>는 20년 경력 사진작가가 만든 <strong>AI 증명사진</strong> 플랫폼입니다. 여권사진, 이력서사진, 비자사진을 셀카 한 장으로 완성합니다. 사진관 촬영 노하우를 학습한 AI가 배경 정리, 조명 보정, 피부 보정, 의상 정돈까지 처리하며 <strong>ICAO 국제 규격</strong>에 부합하는 증명사진을 제공합니다.',
-    howto1: '규격 선택', howto1d: '여권/신분증 또는 반명함 선택',
-    howto2: '셀카 촬영', howto2d: 'AI 코칭 가이드로 완벽 촬영',
-    howto3: 'AI 리터칭', howto3d: '배경·조명·피부·의상 자동 보정',
-    secHowto: '증명사진 앱 활용법', secHowtoAll: '전체보기 →',
-    secFaq: '자주 묻는 질문', secFaqAll: '전체보기 →',
-    secBoard: '고객 게시판', secBoardAll: '전체보기 →',
-    secBlog: '최근 블로그', secBlogAll: '전체보기 →',
-    secNews: '업계 소식', secNewsMore: '더보기 →',
-    sbMagazine: '매거진', sbTags: '태그', sbTagMore: '더보기 ▼', sbTagLess: '접기 ▲',
-    sbGuide: '사용 가이드',
-    guide1Title: '증명사진 촬영법', guide1Desc: '규격 선택 → 셀카 → AI 리터칭 → 다운로드', guideStatus: '▶ 자동 재생 중',
-    guide2Title: '크롭앱 사용법', guide2Desc: '사진 선택 → 규격 크롭 → 누끼 → 다운로드',
-    sbCredit: '크레딧 안내',
-    creditExchange: '💡 10c = $1 ≈ ₩1,450',
-    creditGen: 'AI 생성', creditDl: '다운로드', creditTotal: '1장 완성',
-    creditOld: '₩10,150', creditNew: '₩9,900',
-    creditBonus: '🎁 회원가입 시 +10c 보너스',
   },
   en: {
-    heroTag: '<strong>Photography</strong> × <strong>AI</strong> × <strong>K-Beauty</strong>',
-    ctaText: 'Take ID Photo',
     login: 'Login',
     loginGoogle: 'Login with Google',
     loginKakao: 'Login with Kakao',
@@ -89,29 +37,6 @@ const i18n = {
     chatHint: 'Press Enter',
     chatWelcome: 'Hello! I\'m MONKOS AI. Ask me anything about ID photos, specs, pricing, or the crop app.',
     chatTitle: 'MONKOS AI',
-    navHome: 'Home', navBlog: 'Blog', navFaq: 'FAQ', navGallery: 'Gallery', navBoard: 'Board', navPricing: 'Pricing',
-    svcPhotoTitle: 'AI ID Photo', svcPhotoDesc: 'Passport, resume, visa — studio-quality AI retouching. ICAO standard.',
-    svcPhotoLink: 'Start shooting →',
-    svcCropTitle: 'Free Crop App', svcCropDesc: 'Spec crop, background removal & replacement. No server upload.',
-    svcCropLink: '/crop →',
-    introText: '<strong>MONKOS</strong> is an <strong>AI ID photo</strong> platform created by a photographer with 20 years of experience. Complete passport, resume, and visa photos with just one selfie. AI trained on studio techniques handles background, lighting, skin, and clothing — <strong>ICAO standard</strong> ID photos.',
-    howto1: 'Select Spec', howto1d: 'Choose passport/ID or business card',
-    howto2: 'Take Selfie', howto2d: 'AI coaching guide for perfect shots',
-    howto3: 'AI Retouch', howto3d: 'Auto background, lighting, skin & clothing',
-    secHowto: 'How to Use', secHowtoAll: 'View all →',
-    secFaq: 'FAQ', secFaqAll: 'View all →',
-    secBoard: 'Customer Board', secBoardAll: 'View all →',
-    secBlog: 'Latest Blog', secBlogAll: 'View all →',
-    secNews: 'Industry News', secNewsMore: 'More →',
-    sbMagazine: 'Magazine', sbTags: 'Tags', sbTagMore: 'More ▼', sbTagLess: 'Less ▲',
-    sbGuide: 'User Guide',
-    guide1Title: 'How to Take ID Photo', guide1Desc: 'Select spec → Selfie → AI retouch → Download', guideStatus: '▶ Auto-playing',
-    guide2Title: 'How to Use Crop App', guide2Desc: 'Select photo → Spec crop → Remove BG → Download',
-    sbCredit: 'Credit Info',
-    creditExchange: '💡 10c = $1',
-    creditGen: 'AI Retouch', creditDl: 'Download', creditTotal: '1 Photo',
-    creditOld: '$8.00', creditNew: '$6.90',
-    creditBonus: '🎁 +10c bonus on sign-up',
   }
 };
 
@@ -210,129 +135,6 @@ function applyLang() {
   document.querySelectorAll('.lang-sw button').forEach(function(btn) {
     btn.classList.toggle('active', btn.dataset.lang === lang);
   });
-
-  // 히어로
-  var heroTag = document.querySelector('.hero-tag');
-  if (heroTag) heroTag.innerHTML = t.heroTag;
-
-  // CTA 버튼
-  var ctaBtn = document.getElementById('ctaBtn');
-  if (ctaBtn) {
-    ctaBtn.textContent = t.ctaText;
-    ctaBtn.href = getCtaUrl();
-  }
-  var btnShoot = document.querySelector('.btn-shoot');
-  if (btnShoot) btnShoot.textContent = t.ctaText;
-
-  // 네비게이션 (텍스트 + href 언어 접두사)
-  var navKeys = ['navHome', 'navBlog', 'navFaq', 'navGallery', 'navBoard', 'navPricing'];
-  var navHrefs = {
-    ko: ['/', '/blog', '/faq', '/gallery', '/board', '/pricing'],
-    ja: ['/?lang=ja', '/ja/blog', '/ja/faq', '/gallery', '/board', '/ja/pricing'],
-    en: ['/?lang=en', '/en/blog', '/en/faq', '/gallery', '/board', '/en/pricing'],
-  };
-  var hrefs = navHrefs[lang] || navHrefs.ko;
-  document.querySelectorAll('.n-links a').forEach(function(a, i) {
-    if (navKeys[i] && t[navKeys[i]]) a.textContent = t[navKeys[i]];
-    if (hrefs[i]) a.href = hrefs[i];
-  });
-
-  // 인트로 텍스트
-  var intro = document.querySelector('.intro-text');
-  if (intro) intro.innerHTML = t.introText;
-
-  // 서비스 카드
-  var svcPhoto = document.querySelector('.svc.live');
-  if (svcPhoto) {
-    var h3 = svcPhoto.querySelector('h3');
-    var p = svcPhoto.querySelector('p');
-    var link = svcPhoto.querySelector('.svc-link');
-    if (h3) h3.textContent = t.svcPhotoTitle;
-    if (p) p.textContent = t.svcPhotoDesc;
-    if (link) link.textContent = t.svcPhotoLink;
-  }
-  var svcCrop = document.querySelector('.svc.free');
-  if (svcCrop) {
-    var h3c = svcCrop.querySelector('h3');
-    var pc = svcCrop.querySelector('p');
-    var linkc = svcCrop.querySelector('.svc-link');
-    if (h3c) h3c.textContent = t.svcCropTitle;
-    if (pc) pc.textContent = t.svcCropDesc;
-    if (linkc) linkc.textContent = t.svcCropLink;
-  }
-
-  // 활용법 섹션
-  var howtoCards = document.querySelectorAll('.howto');
-  var howtoData = [
-    { t: t.howto1, d: t.howto1d },
-    { t: t.howto2, d: t.howto2d },
-    { t: t.howto3, d: t.howto3d }
-  ];
-  howtoCards.forEach(function(card, i) {
-    if (howtoData[i]) {
-      var h4 = card.querySelector('h4');
-      var p2 = card.querySelector('p');
-      if (h4) h4.textContent = howtoData[i].t;
-      if (p2) p2.textContent = howtoData[i].d;
-    }
-  });
-
-  // 섹션 헤더 (ID 기반 — SSR 섹션 제거에 영향받지 않음)
-  var secMap = {
-    'sec-howto': { h: t.secHowto, a: t.secHowtoAll },
-    'sec-faq':   { h: t.secFaq,   a: t.secFaqAll },
-    'sec-board': { h: t.secBoard, a: t.secBoardAll },
-    'sec-blog':  { h: t.secBlog,  a: t.secBlogAll }
-  };
-  Object.keys(secMap).forEach(function(id) {
-    var el = document.getElementById(id);
-    if (el) {
-      var h2 = el.querySelector('h2');
-      var a = el.querySelector('a');
-      if (h2) h2.textContent = secMap[id].h;
-      if (a) a.textContent = secMap[id].a;
-    }
-  });
-
-  // 사이드바 라벨
-  var idTexts = {
-    'sb-magazine': t.sbMagazine,
-    'sb-tags': t.sbTags,
-    'sb-guide': t.sbGuide,
-    'sb-credit': t.sbCredit,
-    'guide1-title': t.guide1Title,
-    'guide1-desc': t.guide1Desc,
-    'guide1-status': t.guideStatus,
-    'guide2-title': t.guide2Title,
-    'guide2-desc': t.guide2Desc,
-    'guide2-status': t.guideStatus,
-    'credit-exchange': t.creditExchange,
-    'credit-gen-label': t.creditGen,
-    'credit-dl-label': t.creditDl,
-    'credit-total-label': t.creditTotal,
-    'credit-old-price': t.creditOld,
-    'credit-new-price': t.creditNew,
-    'credit-bonus': t.creditBonus
-  };
-  Object.keys(idTexts).forEach(function(id) {
-    var el = document.getElementById(id);
-    if (el) el.textContent = idTexts[id];
-  });
-
-  // 태그 토글 버튼
-  var tagToggle = document.getElementById('sbTagToggle');
-  if (tagToggle) {
-    var expanded = document.getElementById('sbTags') && document.getElementById('sbTags').classList.contains('expanded');
-    tagToggle.textContent = expanded ? t.sbTagLess : t.sbTagMore;
-    tagToggle.onclick = function() {
-      var tags = document.getElementById('sbTags');
-      if (tags.classList.toggle('expanded')) {
-        tagToggle.textContent = t.sbTagLess;
-      } else {
-        tagToggle.textContent = t.sbTagMore;
-      }
-    };
-  }
 
   // 챗봇
   var cbInput = document.getElementById('cbInput');
