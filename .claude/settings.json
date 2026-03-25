@@ -3,6 +3,13 @@
     "allow": [
       "Bash(dir:*)",
       "Bash(gsutil ls:*)"
+    ],
+    "deny": [
+      "Bash(rm -rf *)",
+      "Bash(git push --force *)",
+      "Bash(git reset --hard *)",
+      "Bash(git clean -f *)",
+      "Bash(git checkout -- *)"
     ]
   }
 }
