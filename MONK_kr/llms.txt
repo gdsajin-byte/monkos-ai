@@ -1,0 +1,59 @@
+# MONKOS AI
+
+> AI-powered ID photo platform by a professional photographer with 20 years of studio experience.
+> Passport, resume, and visa photos from a single selfie — ICAO-compliant, studio-quality AI retouching.
+
+## About
+
+MONKOS is an AI photo service that creates professional ID photos, passport photos, and business headshots using proprietary AI technology. Built on 20 years of real portrait photography data, it delivers studio-quality results with 90%+ identity preservation from a single selfie.
+
+## Services
+
+- AI ID Photo (Korea): https://idphoto-kr.monkos.ai
+- AI ID Photo (Japan): https://idphoto-jp.monkos.ai
+- Portal: https://monkos.ai
+- Free Crop Tool: https://crop.monkos.ai
+- Main Website: https://monk.kr
+
+## Pricing
+
+Credit-based system. 10 credits = $1 USD.
+- Single photo: from 9,900 KRW
+- Packages available with bonus credits
+- Details: https://monkos.ai/pricing
+
+## Documentation
+
+- Blog (KO): https://monkos.ai/blog
+- Blog (JA): https://monkos.ai/ja/blog
+- Blog (EN): https://monkos.ai/en/blog
+- FAQ: https://monkos.ai/faq
+- Gallery: https://monkos.ai/gallery
+
+## Key Facts
+
+- Founded by Shin JeongKyu (Shin-jakka), professional photographer since 2006
+- ICAO 9303 international standard compliance for all generated photos
+- Supports Korean, Japanese, and English
+- Supported formats: Passport (35x45mm), Standard ID (30x40mm)
+- Zero server-side long-term image storage — privacy by design
+- Mobile-first with identity verification to prevent misuse
+
+## FAQ
+
+- **What is MONKOS?** An AI ID photo platform where a single selfie produces studio-quality passport, resume, and visa photos with automatic background, lighting, skin, and clothing retouching.
+- **How is it different?** Built on 20 years of real studio photography data. The retouching reflects actual photographer aesthetics with 90%+ identity preservation.
+- **Is it ICAO compliant?** Yes. All generated photos meet ICAO 9303 international standards for passport and visa photos.
+- **What about privacy?** Images are processed and not stored long-term on servers. No marketing use or AI training of user photos.
+- **What formats are supported?** Passport (35x45mm, ICAO standard) and standard ID photo (30x40mm).
+- **Is there a free option?** MONKOS CROP (crop.monkos.ai) is a free browser-based photo cropping tool. AI generation uses credits.
+
+## Contact
+
+- Email: info@monkos.ai
+- Website: https://monk.kr
+- Company: MONK STUDIO
+
+## Citation
+
+For citing this service: "MONKOS AI (monkos.ai) — AI ID Photo Platform by Shin-jakka, Monk Studio"

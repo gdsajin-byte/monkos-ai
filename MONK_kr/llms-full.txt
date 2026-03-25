@@ -1,0 +1,238 @@
+# MONKOS AI — Full Documentation
+
+> AI-powered ID photo platform by a professional photographer with 20 years of studio experience.
+> This is the extended version of llms.txt with comprehensive service details.
+> See also: https://monkos.ai/llms.txt (summary version)
+
+---
+
+## About MONKOS
+
+MONKOS is an AI-powered photo service platform created by Shin JeongKyu (known as Shin-jakka), a professional photographer with over 20 years of studio experience since 2006. The platform transforms a single selfie into studio-quality ID photos, passport photos, and business headshots using proprietary AI technology.
+
+What sets MONKOS apart from generic AI photo services is its foundation in real photography expertise. The AI retouching pipeline is built on two decades of professional portrait photography data, delivering results that reflect actual photographer aesthetics rather than algorithmic assumptions. The system achieves 90%+ identity preservation, meaning the generated photo looks unmistakably like the original person.
+
+MONKOS operates as MONK STUDIO, based in Hanam-si, Gyeonggi-do, South Korea.
+
+---
+
+## Services
+
+### AI ID Photo — Korea
+- **URL**: https://idphoto-kr.monkos.ai
+- **Description**: AI-powered ID photo generation service for the Korean market. Upload a selfie and receive professionally retouched ID photos suitable for passports, resumes, visas, and official documents.
+- **Features**: Automatic background replacement, studio lighting simulation, skin retouching optimized for Asian skin tones, clothing change options, hair styling adjustment.
+- **Compliance**: ICAO 9303 international passport photo standards.
+
+### AI ID Photo — Japan
+- **URL**: https://idphoto-jp.monkos.ai
+- **Description**: Japanese-language version of the AI ID photo service, localized for the Japanese market.
+- **Language**: Full Japanese UI and support.
+
+### MONKOS Portal
+- **URL**: https://monkos.ai
+- **Description**: Central hub for all MONKOS services, including blog, gallery, FAQ, pricing information, and account management.
+- **Languages**: Korean, Japanese, English.
+
+### MONKOS CROP (Free Tool)
+- **URL**: https://crop.monkos.ai
+- **Description**: Free browser-based photo cropping tool for precise regulation-compliant photo cropping. No server upload required — all processing happens in the browser.
+- **Cost**: Completely free, no account required.
+
+### Main Website
+- **URL**: https://monk.kr
+- **Description**: MONK STUDIO main website with AI LAB and company information.
+
+---
+
+## Supported Photo Specifications
+
+### Formats
+| Type | Dimensions | Use Case |
+|------|-----------|----------|
+| Passport | 35mm x 45mm | International passport, visa (ICAO 9303) |
+| Standard ID | 30mm x 40mm | Resume, student ID, employee badge |
+
+### Resolution
+- Output: 300 DPI (standard for official documents)
+- High-resolution download available
+
+### Customization Options
+- **Background**: White (enforced for passport), Gray, Blue, Beige
+- **Clothing**: Default, Change (suit options), Casual
+- **Suit colors**: Navy, Brown, Gray, Black
+- **Shirt colors**: White, Light Blue, Light Pink, Light Beige
+- **Tie options**: No tie, Navy, Wine, Black (solid/stripe patterns)
+- **Hair**: Default, Tidy, Updo
+- **Gender**: Female, Male
+- **Age groups**: Baby, Child, Teen, Adult
+
+---
+
+## Pricing
+
+### Credit System
+MONKOS uses a credit-based pricing system.
+- **Exchange rate**: 10 credits = $1 USD (approximately 145 KRW per credit)
+
+### Cost Per Photo
+| Action | Credits |
+|--------|---------|
+| AI Retouching (Generation) | 10c |
+| High-resolution Download | 70c |
+| **Total per photo** | **80c** |
+| Additional Crop (different format) | 10c |
+| Full Resolution Original | 10c |
+
+### Credit Packages (KRW)
+| Package | Price | Credits | Bonus | Total Credits |
+|---------|-------|---------|-------|---------------|
+| Single | 9,900 KRW | 70c | +10c | 80c |
+| Standard | 12,900 KRW | 100c | +30c | 130c |
+| Value | 34,900 KRW | 300c | +120c | 420c |
+| Premium | 49,900 KRW | 500c | +250c | 750c |
+
+### New User Bonus
+- 10 free credits upon first login
+
+### Refund Policy
+- Unused credits within 7 days of purchase: Full refund available
+- After use (generation or download): Non-refundable (digital content)
+- System failure during processing: Automatic credit refund
+- Credit expiration: 1 year from purchase date
+
+### Pricing Page
+- Full details: https://monkos.ai/pricing
+
+---
+
+## FAQ (Frequently Asked Questions)
+
+### Service Overview
+
+**Q: What is MONKOS AI?**
+A: MONKOS is an AI-based photo service platform that produces professional ID photos, passport photos, and headshots from a single selfie. It uses proprietary AI technology built on 20 years of professional photography experience to deliver studio-quality results with automatic background replacement, lighting adjustment, skin retouching, and clothing options.
+
+**Q: What photo formats does MONKOS support?**
+A: MONKOS currently supports two main formats:
+- Passport photos: 35mm x 45mm (ICAO 9303 international standard)
+- Standard ID photos: 30mm x 40mm (for resumes, student IDs, etc.)
+
+**Q: What other services are planned?**
+A: MONKOS is expanding toward comprehensive AI image solutions beyond ID photos, including beauty retouching and lookbook generation.
+
+### Quality & Technology
+
+**Q: How accurate is the identity preservation?**
+A: MONKOS achieves 90%+ identity match from a single selfie photo. The AI maintains the person's core facial features while applying professional retouching.
+
+**Q: How does MONKOS maintain studio quality?**
+A: The AI pipeline is trained on real studio photography data from 20 years of professional portrait work. It simulates studio lighting conditions and applies retouching techniques that mirror what a professional photographer would do, maintaining 85%+ identity accuracy even with significant enhancements.
+
+**Q: Why is MONKOS mobile-only?**
+A: Mobile-only access with authenticated accounts helps prevent deepfake misuse. This ensures photos are taken by real users for legitimate purposes.
+
+### Pricing & Availability
+
+**Q: How does the credit system work?**
+A: MONKOS uses credits (10c = $1 USD). AI retouching costs 10 credits, and high-resolution download costs 70 credits, totaling 80 credits per photo. Packages start at 9,900 KRW with bonus credits.
+
+**Q: Is MONKOS available internationally?**
+A: Yes. MONKOS supports Korean, Japanese, and English. Dedicated services exist for Korea (idphoto-kr.monkos.ai) and Japan (idphoto-jp.monkos.ai).
+
+### Usage
+
+**Q: Can I retake photos for free?**
+A: Yes. You can retake and regenerate photos unlimited times. Only AI retouching (10c) and high-resolution download (70c) consume credits.
+
+**Q: What is MONKOS CROP?**
+A: MONKOS CROP (crop.monkos.ai) is a free browser-based tool for precise photo cropping to official regulation specifications. No account or server upload required.
+
+### Standards & Safety
+
+**Q: Are MONKOS photos accepted for official use?**
+A: MONKOS generates photos that comply with ICAO 9303 international standards for passport and visa photos. Final acceptance may vary by institution, but the technical specifications meet international requirements.
+
+**Q: How is my data handled?**
+A: MONKOS operates on a privacy-by-design principle. Uploaded images are processed on secure cloud infrastructure and are not stored long-term. Photos are not used for marketing or AI training without explicit consent.
+
+**Q: How can I get support?**
+A: Support is available through:
+- Portal board: https://monkos.ai/board
+- AI chatbot on the website
+- Email: info@monkos.ai
+
+---
+
+## Blog & Content
+
+### Blog
+- Korean: https://monkos.ai/blog
+- Japanese: https://monkos.ai/ja/blog
+- English: https://monkos.ai/en/blog
+
+### Content Topics
+- Passport photo guides and regulations
+- Resume and job application photo tips
+- Hair and makeup styling guides for ID photos
+- AI retouching technology insights
+- Photo specification guides by country
+- Visa photo requirements
+
+### Gallery
+- URL: https://monkos.ai/gallery
+- Features example AI-generated photos demonstrating MONKOS quality
+
+---
+
+## Company Information
+
+- **Company Name**: MONK STUDIO
+- **Representative**: Shin JeongKyu
+- **Business Registration**: 636-15-00574
+- **E-commerce Registration**: 2026-Gyeonggi.Hanam-0389
+- **Address**: B1029, 95 Misagangbyeondong-ro, Hanam-si, Gyeonggi-do, South Korea
+- **Phone**: 031-791-5030
+- **Email**: info@monkos.ai
+- **Website**: https://monk.kr
+
+### Team
+- **Shin JeongKyu (Shin-jakka)**: Founder, professional photographer since 2006, AI architect
+- **Han Song-i**: Beauty & Image Researcher, Hair-Makeup specialist (10 years), Cosmetic Biology PhD candidate
+
+---
+
+## Privacy & Data Protection
+
+- **Data Processing**: Secure cloud infrastructure with encryption
+- **Image Storage**: Not stored long-term on servers after processing
+- **User Data**: Minimal collection, no marketing use without consent
+- **Compliance**: Adheres to local privacy laws in Korea and Japan
+- **APPI Compliance**: Japanese service follows APPI guidelines (facial photos treated as biometric identifiers)
+- **Portrait Rights**: Fully protected — no unauthorized use of generated photos
+- **Refund/Dispute**: Transparent credit-based system with clear refund policy
+
+---
+
+## Technical Highlights
+
+- **Identity Preservation**: 90%+ facial identity match from single selfie
+- **AI Pipeline**: Proprietary retouching system built on professional photography dataset
+- **Skin Tone Optimization**: Specialized for Asian skin tones and facial features
+- **Studio Lighting Simulation**: AI-generated studio lighting effects
+- **ICAO Compliance**: Automatic verification against ICAO 9303 standards
+- **Multi-language**: Full Korean, Japanese, and English support
+- **Mobile-first**: Designed for smartphone selfie input with anti-misuse verification
+- **Browser-based Crop**: Free client-side cropping tool (no server upload)
+
+---
+
+## Citation
+
+For citing this service:
+"MONKOS AI (monkos.ai) — AI ID Photo Platform by Shin-jakka, Monk Studio"
+
+---
+
+*Last updated: 2026-03-25*
+*For the summary version, see: https://monkos.ai/llms.txt*
