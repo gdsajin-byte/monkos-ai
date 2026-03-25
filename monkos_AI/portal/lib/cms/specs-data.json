@@ -14,9 +14,9 @@
     "validity": "6개월 이내",
     "fileSpec": "JPEG, 500KB 이하",
     "details": {
-      "ko": "표정은 무표정, 입은 다문 상태. 안경 착용 불가(2021년부터). 머리카락이 이마를 가리면 안 됨. 귀 노출 권장.",
-      "ja": "表情は無表情、口は閉じた状態。メガネ着用不可（2021年から）。前髪が額を隠してはならない。",
-      "en": "Neutral expression, mouth closed. Glasses not allowed (since 2021). Hair must not cover forehead."
+      "ko": "표정은 무표정, 입은 다문 상태. 안경 착용 가능(렌즈 반사·프레임 주의). 머리카락이 이마를 가리면 안 됨. 귀 노출 권장.",
+      "ja": "表情は無表情、口は閉じた状態。メガネ着用可能（レンズ反射・フレーム注意）。前髪が額を隠してはならない。",
+      "en": "Neutral expression, mouth closed. Glasses allowed (watch for lens glare and frame obstruction). Hair must not cover forehead."
     },
     "rejectionReasons": {
       "ko": ["배경에 그림자", "머리 기울어짐", "이마를 가린 머리카락", "조명 불균일", "사이즈 불일치"],
@@ -26,7 +26,7 @@
     "faqs": {
       "ko": [
         { "q": "여권사진 배경은 흰색만 가능한가요?", "a": "네, 대한민국 여권사진은 균일한 흰색 배경만 허용됩니다. 그림자나 무늬가 있으면 반려됩니다." },
-        { "q": "안경 쓰고 여권사진 찍어도 되나요?", "a": "2021년부터 안경 착용 여권사진은 허용되지 않습니다. 렌즈 반사와 프레임이 얼굴을 가릴 수 있어 제한됩니다." },
+        { "q": "안경 쓰고 여권사진 찍어도 되나요?", "a": "네, 안경 착용이 가능합니다. 다만 렌즈 반사가 없어야 하고 프레임이 눈을 가리면 안 됩니다." },
         { "q": "여권사진 셀프로 찍을 수 있나요?", "a": "네, 규격만 맞으면 셀프 촬영도 가능합니다. MONKOS AI를 사용하면 배경 제거와 규격 크롭을 자동으로 처리합니다." },
         { "q": "여권사진 유효기간이 있나요?", "a": "촬영 후 6개월 이내의 사진만 사용할 수 있습니다." }
       ],
@@ -37,7 +37,7 @@
       ],
       "en": [
         { "q": "Does the passport photo background have to be white?", "a": "Yes, a solid white background is required. Shadows or patterns will cause rejection." },
-        { "q": "Can I wear glasses in a passport photo?", "a": "For Korea, glasses are not allowed since 2021. For Japan, glasses are allowed if there is no glare." },
+        { "q": "Can I wear glasses in a passport photo?", "a": "For Korea, glasses are allowed but watch for lens glare and frame obstruction. For Japan, removing glasses is strongly recommended." },
         { "q": "Can I take a passport photo by myself?", "a": "Yes, as long as it meets the specifications. MONKOS AI automatically removes the background and crops to the correct size." }
       ]
     },
@@ -48,20 +48,20 @@
     "slug": "korea-resume",
     "country": "한국",
     "countryEn": "Korea",
-    "type": "반명함 (이력서)",
-    "typeEn": "Resume / Half-size",
-    "typeJa": "半名刺（履歴書）",
+    "type": "반명함 (3×4)",
+    "typeEn": "Half-size (3×4)",
+    "typeJa": "半名刺（3×4）",
     "size": "3 × 4cm",
-    "pixels": "354 × 472px",
-    "dpi": 300,
-    "background": "균일 흰색",
-    "headHeight": "2.8~3.2cm",
-    "validity": "6개월 이내",
-    "fileSpec": "JPEG, 500KB 이하",
+    "pixels": "제출처에 따라 상이",
+    "dpi": "-",
+    "background": "흰색 또는 연파란 (관행)",
+    "headHeight": "제출처에 따라 상이",
+    "validity": "제출처에 따라 상이",
+    "fileSpec": "제출처에 따라 상이",
     "details": {
-      "ko": "이력서, 학생증, 자격증 등에 사용. 여권사진과 동일한 촬영 기준이나 사이즈만 다름.",
-      "ja": "履歴書、学生証、資格証に使用。パスポート写真と同じ撮影基準でサイズのみ異なる。",
-      "en": "Used for resumes, student IDs, certificates. Same shooting standards as passport photo, only size differs."
+      "ko": "이력서, 학생증, 자격증 등 사기관 제출용. 사이즈(3×4cm)만 통일되어 있으며 픽셀·배경·파일 등 세부 규격은 공식 규정 없음. 제출처 요구사항을 확인할 것.",
+      "ja": "履歴書、学生証、資格証など各機関提出用。サイズ（3×4cm）のみ統一で、公式な細則は定められていない。提出先の要件を確認すること。",
+      "en": "For resumes, student IDs, certificates. Only the size (3×4cm) is standardized — no official regulation for pixels, background, or file specs. Check requirements of the submitting institution."
     },
     "rejectionReasons": {
       "ko": ["사이즈 불일치 (여권 규격과 혼동)", "배경 불균일", "머리 잘림", "표정 부적합", "해상도 부족"],
@@ -70,7 +70,7 @@
     },
     "faqs": {
       "ko": [
-        { "q": "반명함과 여권사진 차이가 뭔가요?", "a": "사이즈만 다릅니다. 여권사진은 3.5×4.5cm, 반명함(이력서)은 3×4cm입니다. 촬영 기준은 동일합니다." },
+        { "q": "반명함과 여권사진 차이가 뭔가요?", "a": "사이즈가 다릅니다. 여권사진은 3.5×4.5cm, 반명함은 3×4cm입니다. 반명함은 공식 규정이 없어 제출처마다 요구사항이 다를 수 있습니다." },
         { "q": "이력서 사진도 정장을 입어야 하나요?", "a": "필수는 아니지만 권장됩니다. 비즈니스 캐주얼 이상이 일반적입니다." },
         { "q": "반명함 사진을 온라인으로 제출할 수 있나요?", "a": "네, MONKOS에서 디지털 파일로 다운로드하여 온라인 제출이 가능합니다." }
       ],
@@ -94,16 +94,16 @@
     "typeEn": "Passport",
     "typeJa": "パスポート",
     "size": "3.5 × 4.5cm",
-    "pixels": "413 × 531px",
+    "pixels": "600 × 730px",
     "dpi": 300,
-    "background": "均一な白または薄いグレー",
+    "background": "無背景（白推奨）",
     "headHeight": "34±2mm (顔の70~80%)",
     "validity": "6ヶ月以内",
-    "fileSpec": "JPEG",
+    "fileSpec": "JPEG, 600KB以下",
     "details": {
-      "ko": "일본 여권사진은 흰색 또는 연한 회색 배경 허용. 안경 착용 가능(반사 없을 것). 머리 높이 34±2mm.",
-      "ja": "背景は均一な白またはライトグレー。メガネ着用可（レンズ反射なし）。頭の高さ34±2mm。",
-      "en": "White or light gray background. Glasses allowed if no glare. Head height 34±2mm."
+      "ko": "일본 여권사진은 흰색 배경 강력 권장(2025년 신여권 흑백 레이저 인쇄). 안경 제거 강력 권장(외무성). 머리 높이 34±2mm. 온라인 제출 시 600×730px, 600KB 이하.",
+      "ja": "白背景を強く推奨（2025年新パスポートはレーザー白黒印刷）。メガネは外すことを推奨（外務省）。頭の高さ34±2mm。オンライン提出時600×730px、600KB以下。",
+      "en": "White background strongly recommended (2025 new passport uses B&W laser printing). Removing glasses strongly recommended (MOFA). Head height 34±2mm. Online: 600×730px, max 600KB."
     },
     "rejectionReasons": {
       "ko": ["배경색 부적합", "얼굴 비율 초과/미달", "안경 반사", "그림자", "사이즈 불일치"],
@@ -112,11 +112,11 @@
     },
     "faqs": {
       "ko": [
-        { "q": "일본 여권사진에 안경을 써도 되나요?", "a": "네, 렌즈에 반사만 없으면 안경 착용이 가능합니다. 한국과 달리 2026년 현재 허용됩니다." },
+        { "q": "일본 여권사진에 안경을 써도 되나요?", "a": "외무성은 안경 제거를 강력 권장합니다. 의료상 필요한 경우만 허용되며, 렌즈 반사·프레임이 눈을 가리면 안 됩니다." },
         { "q": "일본 여권사진 배경은 흰색만 가능한가요?", "a": "흰색 또는 연한 회색(라이트그레이)이 허용됩니다." }
       ],
       "ja": [
-        { "q": "パスポート写真にメガネをかけてもいいですか？", "a": "はい、レンズに反射がなければメガネ着用可能です。" },
+        { "q": "パスポート写真にメガネをかけてもいいですか？", "a": "外務省はメガネを外すことを強く推奨しています。医療上の理由がある場合のみ着用可能ですが、レンズ反射やフレームが目を隠すと却下されます。" },
         { "q": "パスポート写真の背景は白のみですか？", "a": "白または薄いグレーが許可されています。" },
         { "q": "パスポート写真をスマホで撮れますか？", "a": "はい、規格を満たせばスマホ撮影も可能です。MONKOS AIで自動処理できます。" }
       ],
@@ -176,16 +176,16 @@
     "typeEn": "Passport / Visa",
     "typeJa": "パスポート・ビザ",
     "size": "2 × 2 inch (51 × 51mm)",
-    "pixels": "600 × 600px",
+    "pixels": "600 × 600px ~ 1200 × 1200px",
     "dpi": 300,
-    "background": "Plain white",
+    "background": "White or off-white",
     "headHeight": "1~1⅜ inches (25~35mm)",
     "validity": "Within 6 months",
-    "fileSpec": "JPEG, 240KB~10MB",
+    "fileSpec": "JPEG (비자: 240KB 이하 / 여권 갱신: 54KB~10MB)",
     "details": {
-      "ko": "미국 여권·비자·그린카드 공통 규격. 정사각형(2×2인치). 안경 착용 불가(2016년부터).",
-      "ja": "米国パスポート・ビザ・グリーンカード共通規格。正方形（2×2インチ）。メガネ不可（2016年から）。",
-      "en": "Standard for US passport, visa, and green card. Square format (2×2 inch). Glasses not allowed since 2016."
+      "ko": "미국 여권·비자·그린카드 공통 규격. 정사각형(2×2인치). 안경 착용 불가(2016년 11월부터). 600×600~1200×1200px. 비자(DS-160)와 여권 온라인 갱신의 파일 제한이 다름.",
+      "ja": "米国パスポート・ビザ・グリーンカード共通規格。正方形（2×2インチ）。メガネ不可（2016年11月から）。600×600〜1200×1200px。",
+      "en": "Standard for US passport, visa, and green card. Square format (2×2 inch). Glasses not allowed since Nov 2016. 600×600 to 1200×1200px. File limits differ between visa (DS-160: max 240KB) and passport renewal (54KB–10MB)."
     },
     "rejectionReasons": {
       "ko": ["사이즈 불일치 (정사각형 아님)", "안경 착용", "그림자", "배경 불균일", "얼굴 비율 부적합"],
@@ -216,16 +216,16 @@
     "typeEn": "Driver's License",
     "typeJa": "運転免許証",
     "size": "3.5 × 4.5cm",
-    "pixels": "413 × 531px",
+    "pixels": "350 × 450px",
     "dpi": 300,
     "background": "균일 흰색",
     "headHeight": "3.2~3.6cm",
     "validity": "6개월 이내",
-    "fileSpec": "JPEG, 500KB 이하",
+    "fileSpec": "JPEG, 250KB 이하",
     "details": {
-      "ko": "여권사진과 동일 규격(3.5×4.5cm). 도로교통공단 온라인 접수 시 디지털 파일 제출 가능.",
-      "ja": "パスポート写真と同一規格（3.5×4.5cm）。",
-      "en": "Same specifications as passport photo (3.5×4.5cm). Digital file submission available for online applications."
+      "ko": "여권사진과 동일 사이즈(3.5×4.5cm). 도로교통공단 온라인 접수 시 디지털 파일 제출 가능. 온라인 제출 픽셀은 350×450px, 파일크기 250KB 이하.",
+      "ja": "パスポート写真と同サイズ（3.5×4.5cm）。オンライン提出時は350×450px、250KB以下。",
+      "en": "Same size as passport (3.5×4.5cm). For online submission: 350×450px, max 250KB."
     },
     "rejectionReasons": {
       "ko": ["사이즈 불일치", "배경 불균일", "안경 반사", "모자·선글라스 착용", "사진 오래됨"],
@@ -255,9 +255,9 @@
     "typeEn": "My Number Card",
     "typeJa": "マイナンバーカード",
     "size": "3.5 × 4.5cm",
-    "pixels": "413 × 531px",
+    "pixels": "480~6,000px (幅・高さとも)",
     "dpi": 300,
-    "background": "均一な白",
+    "background": "無背景・単色",
     "headHeight": "34±2mm",
     "validity": "6ヶ月以内",
     "fileSpec": "JPEG, 20KB~7MB",
