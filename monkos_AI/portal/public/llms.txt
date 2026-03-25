@@ -44,5 +44,15 @@
 - **Is there a free tool?** Yes. crop.monkos.ai offers browser-based photo cropping with no server upload required.
 - **Are there multilingual FAQs?** Yes. Full FAQ is available in Korean, Japanese, and English at monkos.ai/{lang}/faq.
 
+## Photo Specification Pages
+- All Specs: https://monkos.ai/specs
+- Korea Passport: https://monkos.ai/specs/korea-passport
+- Korea Resume: https://monkos.ai/specs/korea-resume
+- Japan Passport: https://monkos.ai/specs/japan-passport
+- Japan Resume: https://monkos.ai/specs/japan-resume
+- US Passport: https://monkos.ai/specs/us-passport
+- Korea Driver's License: https://monkos.ai/specs/korea-drivers-license
+- Japan My Number Card: https://monkos.ai/specs/japan-mynumber
+
 ## Citation
 For citing this project: "MONKOS AI (monkos.ai) — AI ID Photo Platform by Shin-jakka, Monk Studio"

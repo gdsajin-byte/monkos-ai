@@ -45,13 +45,49 @@ MONKOS operates as MONK STUDIO, based in Hanam-si, Gyeonggi-do, South Korea.
 
 ---
 
-## Supported Photo Specifications
+## Photo Specifications by Country
 
-### Formats
-| Type | Dimensions | Use Case |
-|------|-----------|----------|
-| Passport | 35mm x 45mm | International passport, visa (ICAO 9303) |
-| Standard ID | 30mm x 40mm | Resume, student ID, employee badge |
+### Korea (한국)
+| Type | Size | Pixels (300dpi) | Use |
+|------|------|-----------------|-----|
+| Passport/ID (여권·신분증) | 35×45mm | 413×531px | 여권, 주민등록증, 운전면허 |
+| Half-size (반명함) | 30×40mm | 354×472px | 이력서, 학생증, 자격증 |
+| Business card (명함판) | 50×70mm | 591×827px | 공무원증, 택시자격증 |
+
+#### Korea Passport Photo Requirements
+- Background: Solid white, no shadows
+- Head height: 3.2~3.6cm (crown to chin)
+- Expression: Neutral, mouth closed
+- Glasses: Not allowed (since 2021)
+- Validity: Within 6 months
+- File: JPEG, under 500KB
+- Top 5 rejection reasons: shadow on background, head tilt, hair covering forehead, uneven lighting, wrong size
+
+### Japan (日本)
+| Type | Size | Pixels (300dpi) | Use |
+|------|------|-----------------|-----|
+| Passport (パスポート) | 35×45mm | 413×531px | 여권, マイナンバーカード |
+| Resume (履歴書) | 30×40mm | 354×472px | 이력서(就活), 資格証 |
+| Visa | 45×45mm | 531×531px | 査証申請 |
+
+#### Japan Passport Photo Requirements
+- Background: Solid white or light gray
+- Head height: 70~80% of frame (34±2mm)
+- Expression: Neutral
+- Glasses: Allowed if no glare
+- Validity: Within 6 months
+
+### USA
+| Type | Size | Pixels (300dpi) | Use |
+|------|------|-----------------|-----|
+| Passport/Visa | 2×2 inch (51×51mm) | 600×600px | Passport, Visa, Green Card |
+
+#### USA Passport Photo Requirements
+- Background: Plain white
+- Head height: 1~1⅜ inches (25~35mm)
+- Expression: Neutral with both eyes open
+- Glasses: Not allowed (since 2016)
+- Validity: Within 6 months
 
 ### Resolution
 - Output: 300 DPI (standard for official documents)
@@ -234,5 +270,5 @@ For citing this service:
 
 ---
 
-*Last updated: 2026-03-25*
+*Last updated: 2026-03-26*
 *For the summary version, see: https://monkos.ai/llms.txt*

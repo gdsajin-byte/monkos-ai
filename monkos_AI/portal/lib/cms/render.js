@@ -616,7 +616,10 @@ export async function faqFragment(req, forceLang = null) {
     <h1>FAQ</h1>
     <p>Frequently Asked Questions</p>
   </div>
-  ${faqHtml || '<p style="color:var(--text-dim)">No FAQs yet.</p>'}`;
+  ${faqHtml || '<p style="color:var(--text-dim)">No FAQs yet.</p>'}
+  <div style="margin-top:32px;padding:16px 20px;background:var(--surface);border:1px solid var(--border);border-radius:10px;text-align:center;">
+    <a href="${lang === 'ko' ? '/specs' : `/${lang}/specs`}" style="color:var(--accent);font-size:14px;font-weight:600;text-decoration:none;">📋 ${lang === 'ja' ? '国別証明写真の規格を確認する →' : lang === 'en' ? 'View ID photo specs by country →' : '국가별 증명사진 규격 상세 →'}</a>
+  </div>`;
 
   const pageScript = `
 if (location.hash) {
@@ -1097,11 +1100,29 @@ export async function renderBoardWrite(req, res) {
 
 // 가이드 — fragment
 export async function guideFragment(req) {
-  const seoMeta = `<meta property="og:title" content="사용 가이드 | MONKOS AI">
-<meta property="og:description" content="MONKOS AI 증명사진 촬영 가이드 및 앱 사용법 안내">
+  const guideJsonLd = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": "AI 증명사진 촬영 가이드",
+    "description": "AI로 여권·이력서용 증명사진을 촬영하는 방법",
+    "step": [
+      { "@type": "HowToStep", "position": 1, "name": "규격 선택", "text": "여권, 이력서 등 용도에 맞는 증명사진 규격을 선택합니다." },
+      { "@type": "HowToStep", "position": 2, "name": "셀카 촬영", "text": "밝은 곳에서 흰 배경 앞에 셀카를 촬영합니다." },
+      { "@type": "HowToStep", "position": 3, "name": "AI 리터칭", "text": "AI가 배경 제거, 얼굴 보정, 규격 크롭을 자동 처리합니다." },
+      { "@type": "HowToStep", "position": 4, "name": "다운로드", "text": "완성된 증명사진을 다운로드합니다." }
+    ]
+  });
+
+  const seoMeta = `<meta property="og:title" content="AI 증명사진 촬영 가이드 — 여권·이력서 규격별 촬영법 | MONKOS">
+<meta property="og:description" content="AI로 여권·이력서용 증명사진을 촬영하는 4단계 가이드. 규격 선택부터 다운로드까지.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://monkos.ai/guide">
-<link rel="canonical" href="https://monkos.ai/guide">`;
+<link rel="canonical" href="https://monkos.ai/guide">
+<link rel="alternate" hreflang="ko" href="https://monkos.ai/guide">
+<link rel="alternate" hreflang="ja" href="https://monkos.ai/ja/guide">
+<link rel="alternate" hreflang="en" href="https://monkos.ai/en/guide">
+<link rel="alternate" hreflang="x-default" href="https://monkos.ai/guide">
+<script type="application/ld+json">${guideJsonLd}</script>`;
 
   const pageStyle = `
 .guide-header { margin-bottom: 32px; }
@@ -1164,7 +1185,7 @@ export async function guideFragment(req) {
       <div class="guide-step-card">
         <div class="step-num">1</div>
         <div class="step-title">규격 선택</div>
-        <div class="step-desc">여권(3.5×4.5cm), 반명함(3×4cm), 신분증 등 원하는 규격을 선택합니다.</div>
+        <div class="step-desc">여권(3.5×4.5cm), 반명함(3×4cm), 신분증 등 원하는 규격을 선택합니다. <a href="/specs" style="color:var(--accent);">규격 확인하기 →</a></div>
       </div>
       <div class="guide-step-card">
         <div class="step-num">2</div>
@@ -1235,10 +1256,11 @@ export async function guideFragment(req) {
     <div class="guide-cta-links">
       <a href="/" class="primary">AI 증명사진 촬영</a>
       <a href="/crop" class="secondary">무료 크롭앱</a>
+      <a href="/specs" class="secondary">📋 규격 확인하기 →</a>
     </div>
   </div>`;
 
-  return { title: '사용 가이드 | MONKOS AI', description: 'MONKOS AI 증명사진 촬영 가이드 및 앱 사용법 안내', seoMeta, htmlLang: 'ko', pageStyle, bodyContent, pageScript: null };
+  return { title: 'AI 증명사진 촬영 가이드 — 여권·이력서 규격별 촬영법 | MONKOS', description: 'AI로 여권·이력서용 증명사진을 촬영하는 4단계 가이드. 규격 선택부터 다운로드까지.', seoMeta, htmlLang: 'ko', pageStyle, bodyContent, pageScript: null };
 }
 
 // GET /guide — 사용 가이드 (SSR)
@@ -1250,6 +1272,457 @@ export async function renderGuide(req, res) {
     res.end(html);
   } catch (err) {
     log(`[CMS] 가이드 렌더 에러: ${err.message}`, 'ERROR');
+    res.writeHead(500, { 'Content-Type': 'text/plain' });
+    res.end('Internal Server Error');
+  }
+}
+
+// =============================================
+// Specs (규격 허브)
+// =============================================
+
+import { createRequire } from 'module';
+const _require = createRequire(import.meta.url);
+const SPECS_DATA = _require('./specs-data.json');
+
+const SPECS_I18N = {
+  ko: {
+    hubTitle: '증명사진 규격 가이드 — 국가별·용도별 사이즈 총정리 | MONKOS',
+    hubDesc: '한국 여권·반명함, 일본 패스포트·이력서, 미국 비자 등 증명사진 규격을 한눈에. 사이즈·배경·복장 기준과 반려 사유까지.',
+    hubH1: '증명사진 규격 가이드',
+    hubSub: '국가별·용도별 사이즈, 배경, 복장 기준과 반려 사유까지 한눈에 확인하세요.',
+    detailSuffix: '규격 — 사이즈·배경·복장 완벽 가이드 | MONKOS',
+    tableHeaders: { size: '사이즈', pixels: '해상도', dpi: 'DPI', background: '배경', headHeight: '머리 높이', validity: '유효기간', fileSpec: '파일 규격' },
+    detailsTitle: '상세 규정',
+    rejectionTitle: '반려 사유 TOP 5',
+    faqTitle: '자주 묻는 질문',
+    ctaAI: 'AI로 촬영하기 →',
+    ctaCrop: '무료 크롭앱 →',
+    relatedTitle: '관련 콘텐츠',
+    relatedLinks: [
+      { label: '사용 가이드', href: '/guide' },
+      { label: '무료 크롭앱', href: '/crop' },
+      { label: 'FAQ', href: '/faq' },
+    ],
+    sameCountryLabel: '같은 국가 다른 규격',
+    specLabel: '규격 보기',
+  },
+  ja: {
+    hubTitle: '証明写真 規格ガイド — 国別・用途別サイズ総まとめ | MONKOS',
+    hubDesc: '韓国パスポート・半名刺、日本パスポート・履歴書、米国ビザなど証明写真規格を一覧で。サイズ・背景・服装基準と却下理由まで。',
+    hubH1: '証明写真 規格ガイド',
+    hubSub: '国別・用途別のサイズ、背景、服装基準と却下理由をまとめて確認できます。',
+    detailSuffix: '規格 — サイズ・背景・服装 完全ガイド | MONKOS',
+    tableHeaders: { size: 'サイズ', pixels: '解像度', dpi: 'DPI', background: '背景', headHeight: '頭の高さ', validity: '有効期限', fileSpec: 'ファイル規格' },
+    detailsTitle: '詳細規定',
+    rejectionTitle: '却下理由 TOP 5',
+    faqTitle: 'よくある質問',
+    ctaAI: 'AIで撮影する →',
+    ctaCrop: '無料クロップアプリ →',
+    relatedTitle: '関連コンテンツ',
+    relatedLinks: [
+      { label: 'ご利用ガイド', href: '/guide' },
+      { label: '無料クロップアプリ', href: '/crop' },
+      { label: 'FAQ', href: '/ja/faq' },
+    ],
+    sameCountryLabel: '同じ国の別の規格',
+    specLabel: '規格を見る',
+  },
+  en: {
+    hubTitle: 'ID Photo Specifications Guide — Size & Requirements by Country | MONKOS',
+    hubDesc: 'Korea passport & resume, Japan passport & resume, US visa photo specs at a glance. Size, background, dress code and rejection reasons.',
+    hubH1: 'ID Photo Specifications Guide',
+    hubSub: 'Size, background, dress code standards and rejection reasons by country and purpose.',
+    detailSuffix: 'Specs — Size, Background & Dress Code Complete Guide | MONKOS',
+    tableHeaders: { size: 'Size', pixels: 'Resolution', dpi: 'DPI', background: 'Background', headHeight: 'Head Height', validity: 'Validity', fileSpec: 'File Spec' },
+    detailsTitle: 'Detailed Requirements',
+    rejectionTitle: 'Top 5 Rejection Reasons',
+    faqTitle: 'Frequently Asked Questions',
+    ctaAI: 'Take with AI →',
+    ctaCrop: 'Free Crop App →',
+    relatedTitle: 'Related Content',
+    relatedLinks: [
+      { label: 'User Guide', href: '/guide' },
+      { label: 'Free Crop App', href: '/crop' },
+      { label: 'FAQ', href: '/en/faq' },
+    ],
+    sameCountryLabel: 'Other specs for the same country',
+    specLabel: 'View specs',
+  },
+};
+
+// specs 공통 스타일
+const SPECS_PAGE_STYLE = `
+.specs-hub-header { text-align: center; margin-bottom: 40px; }
+.specs-hub-header h1 { font-size: 28px; font-weight: 700; color: var(--text-bright); margin-bottom: 8px; }
+.specs-hub-header p { color: var(--text-dim); font-size: 15px; }
+.specs-country-group { margin-bottom: 36px; }
+.specs-country-group h2 {
+  font-size: 20px; font-weight: 700; color: var(--accent); margin-bottom: 16px;
+  padding-bottom: 8px; border-bottom: 1px solid var(--border);
+}
+.specs-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px;
+}
+.specs-card {
+  background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px;
+  padding: 24px 20px; transition: border-color 0.2s, box-shadow 0.2s;
+  text-decoration: none; display: block; color: inherit;
+}
+.specs-card:hover { border-color: var(--border-hover); box-shadow: 0 4px 16px rgba(108,79,255,0.08); }
+.specs-card-type { font-size: 17px; font-weight: 600; color: var(--text-bright); margin-bottom: 6px; }
+.specs-card-size { font-size: 14px; color: var(--accent); font-weight: 500; margin-bottom: 4px; }
+.specs-card-desc { font-size: 13px; color: var(--text-dim); line-height: 1.5; }
+.specs-detail-header { margin-bottom: 32px; }
+.specs-detail-header h1 { font-size: 26px; font-weight: 700; color: var(--text-bright); margin-bottom: 8px; }
+.specs-detail-header p { color: var(--text-dim); font-size: 15px; }
+.specs-table {
+  width: 100%; border-collapse: collapse; margin-bottom: 32px;
+  background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
+}
+.specs-table th, .specs-table td { padding: 14px 20px; text-align: left; font-size: 14px; }
+.specs-table th {
+  background: var(--surface2); font-weight: 600; color: var(--text-bright); width: 140px; font-size: 13px;
+}
+.specs-table td { color: var(--text); }
+.specs-table tr { border-top: 1px solid var(--border); }
+.specs-table tr:first-child { border-top: none; }
+.specs-section { margin-bottom: 32px; }
+.specs-section h2 {
+  font-size: 18px; font-weight: 700; color: var(--text-bright); margin-bottom: 16px;
+  padding-bottom: 8px; border-bottom: 1px solid var(--border);
+}
+.specs-section p { font-size: 14px; color: var(--text); line-height: 1.8; }
+.specs-rejection { list-style: none; padding: 0; }
+.specs-rejection li {
+  padding: 12px 16px; margin-bottom: 8px;
+  background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px;
+  font-size: 14px; color: var(--text); display: flex; align-items: center; gap: 10px;
+}
+.specs-rejection li .rj-num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 24px; height: 24px; border-radius: 50%;
+  background: rgba(245,158,11,0.15); color: #f59e0b; font-size: 12px; font-weight: 700; flex-shrink: 0;
+}
+.specs-faq { list-style: none; padding: 0; }
+.specs-faq li { margin-bottom: 16px; }
+.specs-faq .faq-q {
+  font-size: 15px; font-weight: 600; color: var(--text-bright); margin-bottom: 6px; cursor: pointer;
+}
+.specs-faq .faq-q::before { content: "Q. "; color: var(--accent); }
+.specs-faq .faq-a { font-size: 14px; color: var(--text-dim); line-height: 1.7; padding-left: 20px; }
+.specs-cta {
+  display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+  margin: 32px 0; padding: 28px;
+  background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px;
+}
+.specs-cta a {
+  padding: 12px 28px; border-radius: 10px; font-size: 14px; font-weight: 600;
+  transition: opacity 0.2s; text-decoration: none;
+}
+.specs-cta .primary { background: var(--accent); color: #fff; }
+.specs-cta .primary:hover { opacity: 0.9; color: #fff; }
+.specs-cta .secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+.specs-cta .secondary:hover { border-color: var(--accent); color: var(--accent); }
+.specs-related {
+  margin-top: 32px; padding: 20px 24px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+}
+.specs-related h3 { font-size: 15px; font-weight: 600; color: var(--text-bright); margin-bottom: 12px; }
+.specs-related-links { display: flex; flex-wrap: wrap; gap: 10px; }
+.specs-related-links a {
+  font-size: 13px; color: var(--accent); text-decoration: none; padding: 6px 14px;
+  background: rgba(108,79,255,0.06); border-radius: 8px; transition: background 0.2s;
+}
+.specs-related-links a:hover { background: rgba(108,79,255,0.12); }
+.specs-back { display: inline-block; margin-bottom: 20px; font-size: 13px; color: var(--accent); text-decoration: none; }
+.specs-back:hover { text-decoration: underline; }
+@media (max-width: 600px) {
+  .specs-grid { grid-template-columns: 1fr; }
+  .specs-table th { width: 100px; }
+  .specs-cta { flex-direction: column; align-items: center; }
+}`;
+
+// 규격 허브 인덱스 (/specs)
+export function specsListFragment(forceLang = null) {
+  const lang = forceLang || 'ko';
+  const i = SPECS_I18N[lang] || SPECS_I18N.ko;
+  const prefix = lang === 'ko' ? '' : `/${lang}`;
+
+  // 국가별 그룹핑
+  const groups = {};
+  const sortedSpecs = Object.values(SPECS_DATA).sort((a, b) => a.priority - b.priority);
+  for (const spec of sortedSpecs) {
+    const country = lang === 'ja' ? spec.country : (lang === 'en' ? spec.countryEn : spec.country);
+    if (!groups[country]) groups[country] = [];
+    groups[country].push(spec);
+  }
+
+  // ItemList JSON-LD
+  const itemListJsonLd = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": i.hubH1,
+    "itemListElement": sortedSpecs.map((spec, idx) => ({
+      "@type": "ListItem",
+      "position": idx + 1,
+      "url": `https://monkos.ai${prefix}/specs/${spec.slug}`,
+      "name": lang === 'ja' ? (spec.typeJa || spec.type) : (lang === 'en' ? spec.typeEn : spec.type),
+    })),
+  });
+
+  const canonicalUrl = lang === 'ko' ? 'https://monkos.ai/specs' : `https://monkos.ai/${lang}/specs`;
+  const hreflangTags = [
+    '<link rel="alternate" hreflang="ko" href="https://monkos.ai/specs">',
+    '<link rel="alternate" hreflang="ja" href="https://monkos.ai/ja/specs">',
+    '<link rel="alternate" hreflang="en" href="https://monkos.ai/en/specs">',
+    '<link rel="alternate" hreflang="x-default" href="https://monkos.ai/specs">',
+  ].join('\n');
+
+  const seoMeta = `<meta property="og:title" content="${escapeHtml(i.hubH1)} | MONKOS AI">
+<meta property="og:description" content="${escapeHtml(i.hubDesc)}">
+<meta property="og:type" content="website">
+<meta property="og:url" content="${canonicalUrl}">
+<link rel="canonical" href="${canonicalUrl}">
+${hreflangTags}
+<script type="application/ld+json">${itemListJsonLd}</script>`;
+
+  // 카드 그리드
+  const groupsHtml = Object.entries(groups).map(([country, specs]) => {
+    const cards = specs.map(spec => {
+      const typeName = lang === 'ja' ? (spec.typeJa || spec.type) : (lang === 'en' ? spec.typeEn : spec.type);
+      const detail = spec.details[lang] || spec.details.ko || spec.details.en || '';
+      const shortDesc = detail.length > 60 ? detail.substring(0, 60) + '…' : detail;
+      return `<a href="${prefix}/specs/${spec.slug}" class="specs-card">
+        <div class="specs-card-type">${escapeHtml(typeName)}</div>
+        <div class="specs-card-size">${escapeHtml(spec.size)} · ${escapeHtml(spec.pixels)}</div>
+        <div class="specs-card-desc">${escapeHtml(shortDesc)}</div>
+      </a>`;
+    }).join('\n      ');
+    return `<div class="specs-country-group">
+      <h2>${escapeHtml(country)}</h2>
+      <div class="specs-grid">
+        ${cards}
+      </div>
+    </div>`;
+  }).join('\n    ');
+
+  const bodyContent = `
+  <div class="specs-hub-header">
+    <h1>${escapeHtml(i.hubH1)}</h1>
+    <p>${escapeHtml(i.hubSub)}</p>
+  </div>
+  ${groupsHtml}`;
+
+  return {
+    title: i.hubTitle,
+    description: i.hubDesc,
+    seoMeta,
+    htmlLang: lang,
+    pageStyle: SPECS_PAGE_STYLE,
+    bodyContent,
+    pageScript: null,
+  };
+}
+
+// 개별 규격 페이지 (/specs/:slug)
+export function specsDetailFragment(slug, forceLang = null) {
+  const lang = forceLang || 'ko';
+  const i = SPECS_I18N[lang] || SPECS_I18N.ko;
+  const prefix = lang === 'ko' ? '' : `/${lang}`;
+  const specData = SPECS_DATA[slug];
+  if (!specData) return null;
+
+  const typeName = lang === 'ja' ? (specData.typeJa || specData.type) : (lang === 'en' ? specData.typeEn : specData.type);
+  const countryName = lang === 'en' ? specData.countryEn : specData.country;
+  const title = `2026 ${countryName} ${typeName} ${i.detailSuffix}`;
+  const description = specData.details[lang] || specData.details.ko || specData.details.en || '';
+
+  const canonicalUrl = lang === 'ko' ? `https://monkos.ai/specs/${slug}` : `https://monkos.ai/${lang}/specs/${slug}`;
+  const hreflangTags = [
+    `<link rel="alternate" hreflang="ko" href="https://monkos.ai/specs/${slug}">`,
+    `<link rel="alternate" hreflang="ja" href="https://monkos.ai/ja/specs/${slug}">`,
+    `<link rel="alternate" hreflang="en" href="https://monkos.ai/en/specs/${slug}">`,
+    `<link rel="alternate" hreflang="x-default" href="https://monkos.ai/specs/${slug}">`,
+  ].join('\n');
+
+  // FAQ 데이터
+  const faqs = specData.faqs[lang] || specData.faqs.ko || [];
+
+  // JSON-LD 트리플 스택
+  const specsJsonLd = JSON.stringify([
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": title,
+      "author": { "@type": "Person", "name": "Shin JeongKyu", "jobTitle": "Photographer & AI Architect" },
+      "publisher": { "@type": "Organization", "name": "Monk Studio" },
+      "datePublished": "2026-03-26",
+      "dateModified": "2026-03-26",
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": faqs.map(f => ({
+        "@type": "Question",
+        "name": f.q,
+        "acceptedAnswer": { "@type": "Answer", "text": f.a },
+      })),
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "HowTo",
+      "name": lang === 'ja' ? `${typeName}の規格に合わせて写真を準備する方法`
+             : lang === 'en' ? `How to prepare a ${typeName} photo`
+             : `${typeName} 규격에 맞게 사진 준비하는 법`,
+      "step": [
+        { "@type": "HowToStep", "position": 1, "name": lang === 'ja' ? '規格確認' : lang === 'en' ? 'Check specs' : '규격 확인', "text": `${specData.size} / ${specData.background}` },
+        { "@type": "HowToStep", "position": 2, "name": lang === 'ja' ? 'セルフィー撮影' : lang === 'en' ? 'Take a selfie' : '셀카 촬영', "text": lang === 'ja' ? '明るい場所で白い背景の前で撮影' : lang === 'en' ? 'Take a photo in a bright area with a white background' : '밝은 곳에서 흰 배경 앞에 촬영' },
+        { "@type": "HowToStep", "position": 3, "name": lang === 'ja' ? 'AI補正またはクロップ' : lang === 'en' ? 'AI retouch or crop' : 'AI 보정 또는 크롭', "text": lang === 'ja' ? 'MONKOS AIまたは無料クロップアプリで規格に合わせる' : lang === 'en' ? 'Use MONKOS AI or the free crop app to fit the specs' : 'MONKOS AI 또는 무료 크롭앱으로 규격 맞춤' },
+        { "@type": "HowToStep", "position": 4, "name": lang === 'ja' ? 'ダウンロード' : lang === 'en' ? 'Download' : '다운로드', "text": lang === 'ja' ? '完成写真をダウンロード' : lang === 'en' ? 'Download the finished photo' : '완성 사진 다운로드' },
+      ],
+    },
+  ]);
+
+  const seoMeta = `<meta property="og:title" content="${escapeHtml(title)}">
+<meta property="og:description" content="${escapeHtml(description)}">
+<meta property="og:type" content="article">
+<meta property="og:url" content="${canonicalUrl}">
+<link rel="canonical" href="${canonicalUrl}">
+${hreflangTags}
+<script type="application/ld+json">${specsJsonLd}</script>`;
+
+  // 규격 테이블
+  const h = i.tableHeaders;
+  const tableRows = [
+    [h.size, specData.size],
+    [h.pixels, specData.pixels],
+    [h.dpi, String(specData.dpi)],
+    [h.background, specData.background],
+    [h.headHeight, specData.headHeight],
+    [h.validity, specData.validity],
+    [h.fileSpec, specData.fileSpec],
+  ].map(([label, val]) => `<tr><th>${escapeHtml(label)}</th><td>${escapeHtml(val)}</td></tr>`).join('\n      ');
+
+  // 반려 사유
+  const rejections = specData.rejectionReasons[lang] || specData.rejectionReasons.ko || [];
+  const rejectionHtml = rejections.map((r, idx) =>
+    `<li><span class="rj-num">${idx + 1}</span> ${escapeHtml(r)}</li>`
+  ).join('\n        ');
+
+  // FAQ
+  const faqHtml = faqs.map(f =>
+    `<li>
+          <div class="faq-q">${escapeHtml(f.q)}</div>
+          <div class="faq-a">${escapeHtml(f.a)}</div>
+        </li>`
+  ).join('\n        ');
+
+  // 같은 국가 다른 규격
+  const sameCountry = Object.values(SPECS_DATA)
+    .filter(s => s.country === specData.country && s.slug !== slug)
+    .sort((a, b) => a.priority - b.priority);
+  const sameCountryLinks = sameCountry.map(s => {
+    const name = lang === 'ja' ? (s.typeJa || s.type) : (lang === 'en' ? s.typeEn : s.type);
+    return `<a href="${prefix}/specs/${s.slug}">${escapeHtml(name)}</a>`;
+  }).join('\n        ');
+
+  // 관련 링크
+  const relatedLinksHtml = i.relatedLinks.map(l =>
+    `<a href="${l.href}">${escapeHtml(l.label)}</a>`
+  ).join('\n        ');
+
+  const backLabel = lang === 'ja' ? '← 全規格一覧' : lang === 'en' ? '← All Specifications' : '← 전체 규격 목록';
+
+  const bodyContent = `
+  <a href="${prefix}/specs" class="specs-back">${escapeHtml(backLabel)}</a>
+  <div class="specs-detail-header">
+    <h1>2026 ${escapeHtml(countryName)} ${escapeHtml(typeName)}</h1>
+    <p>${escapeHtml(description)}</p>
+  </div>
+
+  <table class="specs-table">
+    <tbody>
+      ${tableRows}
+    </tbody>
+  </table>
+
+  <div class="specs-section">
+    <h2>${escapeHtml(i.detailsTitle)}</h2>
+    <p>${escapeHtml(description)}</p>
+  </div>
+
+  <div class="specs-section">
+    <h2>${escapeHtml(i.rejectionTitle)}</h2>
+    <ul class="specs-rejection">
+      ${rejectionHtml}
+    </ul>
+  </div>
+
+  <div class="specs-section">
+    <h2>${escapeHtml(i.faqTitle)}</h2>
+    <ul class="specs-faq">
+      ${faqHtml}
+    </ul>
+  </div>
+
+  <div class="specs-cta">
+    <a href="/" class="primary">${escapeHtml(i.ctaAI)}</a>
+    <a href="/crop" class="secondary">${escapeHtml(i.ctaCrop)}</a>
+  </div>
+
+  <div class="specs-related">
+    <h3>${escapeHtml(i.relatedTitle)}</h3>
+    <div class="specs-related-links">
+      ${relatedLinksHtml}
+    </div>
+    ${sameCountry.length > 0 ? `<h3 style="margin-top:16px;">${escapeHtml(i.sameCountryLabel)}</h3>
+    <div class="specs-related-links">
+      ${sameCountryLinks}
+    </div>` : ''}
+  </div>`;
+
+  return {
+    title,
+    description,
+    seoMeta,
+    htmlLang: lang,
+    pageStyle: SPECS_PAGE_STYLE,
+    bodyContent,
+    pageScript: null,
+  };
+}
+
+// GET /specs — 규격 허브 인덱스
+export function renderSpecsList(req, res, forceLang = null) {
+  try {
+    const parts = specsListFragment(forceLang);
+    const html = layoutShell(parts);
+    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+    res.end(html);
+  } catch (err) {
+    log(`[CMS] Specs 허브 렌더 에러: ${err.message}`, 'ERROR');
+    res.writeHead(500, { 'Content-Type': 'text/plain' });
+    res.end('Internal Server Error');
+  }
+}
+
+// GET /specs/:slug — 규격 상세 페이지
+export function renderSpecsDetail(req, res, forceLang = null) {
+  try {
+    const url = new URL(req.url, `http://${req.headers.host}`);
+    const pathParts = url.pathname.replace(/^\/(?:ja|en)\//, '/').split('/');
+    const slug = pathParts[pathParts.indexOf('specs') + 1];
+    const parts = specsDetailFragment(slug, forceLang);
+    if (!parts) {
+      res.writeHead(404, { 'Content-Type': 'text/plain' });
+      return res.end('Not Found');
+    }
+    const html = layoutShell(parts);
+    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+    res.end(html);
+  } catch (err) {
+    log(`[CMS] Specs 상세 렌더 에러: ${err.message}`, 'ERROR');
     res.writeHead(500, { 'Content-Type': 'text/plain' });
     res.end('Internal Server Error');
   }
@@ -1280,7 +1753,18 @@ export async function renderSitemap(req, res) {
       { loc: 'https://monkos.ai/en/faq', lastmod: today, changefreq: 'weekly', priority: '0.6' },
       { loc: 'https://monkos.ai/ja/pricing', lastmod: today, changefreq: 'monthly', priority: '0.5' },
       { loc: 'https://monkos.ai/en/pricing', lastmod: today, changefreq: 'monthly', priority: '0.5' },
+      // specs 허브 인덱스
+      { loc: 'https://monkos.ai/specs', lastmod: today, changefreq: 'monthly', priority: '0.9' },
+      { loc: 'https://monkos.ai/ja/specs', lastmod: today, changefreq: 'monthly', priority: '0.8' },
+      { loc: 'https://monkos.ai/en/specs', lastmod: today, changefreq: 'monthly', priority: '0.8' },
     ];
+
+    // specs 개별 페이지 동적 추가
+    for (const slug of Object.keys(SPECS_DATA)) {
+      staticUrls.push({ loc: `https://monkos.ai/specs/${slug}`, lastmod: today, changefreq: 'monthly', priority: '0.8' });
+      staticUrls.push({ loc: `https://monkos.ai/ja/specs/${slug}`, lastmod: today, changefreq: 'monthly', priority: '0.7' });
+      staticUrls.push({ loc: `https://monkos.ai/en/specs/${slug}`, lastmod: today, changefreq: 'monthly', priority: '0.7' });
+    }
 
     const snapshot = await blogCollection.where('published', '==', true).orderBy('createdAt', 'desc').get();
     const blogUrls = snapshot.docs.map(doc => {

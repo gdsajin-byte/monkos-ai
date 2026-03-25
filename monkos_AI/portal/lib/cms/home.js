@@ -270,6 +270,14 @@ export async function renderHome(req, res, forceLang = null) {
       );
     }
 
+    // 10-b. specs 링크 삽입 (FAQ 프리뷰 하단)
+    const specsPrefix = lang === 'ko' ? '/specs' : `/${lang}/specs`;
+    const specsLabel = lang === 'ja' ? '📋 証明写真 規格ガイド →' : lang === 'en' ? '📋 ID Photo Specs Guide →' : '📋 증명사진 규격 가이드 →';
+    html = html.replace(
+      '<div class="sec-h" id="sec-board">',
+      `<div style="text-align:center;margin:12px 0 24px;"><a href="${specsPrefix}" style="color:#6c4fff;font-size:14px;font-weight:600;text-decoration:none;">${specsLabel}</a></div>\n    <div class="sec-h" id="sec-board">`
+    );
+
     // 11. Board preview (layout maxItems 적용, 답변 여부 표시)
     const boardBlock = getBlock('board-preview');
     const boardMax = boardBlock?.data?.maxItems || 5;

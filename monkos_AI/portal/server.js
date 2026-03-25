@@ -42,7 +42,7 @@ import { handleBoardPublicList, handleBoardPublicGet, handleBoardPublicCreate, h
 import { handleUpload, handleImageList, handleImageDelete } from './lib/cms/upload.js';
 import { handleTranslate } from './lib/cms/translate.js';
 import { handleSearch } from './lib/cms/search.js';
-import { renderBlogList, renderBlogPost, renderFaq, renderGallery, renderBoardList, renderBoardPost, renderBoardWrite, renderGuide, renderSitemap, renderPricing } from './lib/cms/render.js';
+import { renderBlogList, renderBlogPost, renderFaq, renderGallery, renderBoardList, renderBoardPost, renderBoardWrite, renderGuide, renderSitemap, renderPricing, renderSpecsList, renderSpecsDetail } from './lib/cms/render.js';
 import { renderHome, handleSettingsGet, handleSettingsPut, handleLayoutGet, handleLayoutPut } from './lib/cms/home.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -242,6 +242,14 @@ const httpServer = createServer(async (req, res) => {
   if (urlPath === '/ja/pricing' && req.method === 'GET') return renderPricing(req, res, 'ja');
   if (urlPath === '/en/pricing' && req.method === 'GET') return renderPricing(req, res, 'en');
   if (urlPath === '/pricing' && req.method === 'GET') return renderPricing(req, res);
+  // === Specs (규격 허브) ===
+  if (urlPath === '/specs' && req.method === 'GET') return renderSpecsList(req, res);
+  if (urlPath?.startsWith('/specs/') && req.method === 'GET') return renderSpecsDetail(req, res);
+  if (urlPath === '/ja/specs' && req.method === 'GET') return renderSpecsList(req, res, 'ja');
+  if (urlPath?.startsWith('/ja/specs/') && req.method === 'GET') return renderSpecsDetail(req, res, 'ja');
+  if (urlPath === '/en/specs' && req.method === 'GET') return renderSpecsList(req, res, 'en');
+  if (urlPath?.startsWith('/en/specs/') && req.method === 'GET') return renderSpecsDetail(req, res, 'en');
+
   if (urlPath === '/gallery' && req.method === 'GET') return renderGallery(req, res);
   if (urlPath === '/board' && req.method === 'GET') return renderBoardList(req, res);
   if (urlPath === '/board/write' && req.method === 'GET') return renderBoardWrite(req, res);

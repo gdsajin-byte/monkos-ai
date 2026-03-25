@@ -16,7 +16,13 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#f5f5f5">
   <meta name="format-detection" content="telephone=no">
-  <title>MONKOS Crop</title>
+  <title>증명사진 무료 크롭 — 여권 3.5×4.5cm · 반명함 3×4cm ICAO 규격 | MONKOS</title>
+  <meta name="description" content="여권·신분증(3.5×4.5cm) 반명함(3×4cm) 증명사진을 ICAO 국제 규격에 맞춰 무료 크롭. 서버 전송 없이 브라우저에서 즉시 처리.">
+  <meta property="og:title" content="증명사진 무료 크롭 — ICAO 규격 | MONKOS">
+  <meta property="og:description" content="여권·신분증·반명함 증명사진을 ICAO 규격에 맞춰 무료 크롭. 브라우저에서 즉시 처리.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://monkos.ai/crop">
+  <link rel="canonical" href="https://monkos.ai/crop">
   <link rel="icon" href="/monkos-icon.svg" type="image/svg+xml">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
@@ -41,6 +47,7 @@
     <div class="spec-tabs">
       <button class="spec-tab active" data-spec="passport">여권/신분증</button>
       <button class="spec-tab" data-spec="id">반명함</button>
+      <a href="/specs" style="font-size:12px;color:#6c4fff;text-decoration:none;margin-left:auto;padding:6px 0;">규격 확인 →</a>
     </div>
 
     <div class="content">
@@ -209,6 +216,20 @@
       </div>
     </div>
   </div>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "MONKOS Crop",
+    "applicationCategory": "PhotographyApplication",
+    "operatingSystem": "Web Browser",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "KRW" },
+    "description": "여권·신분증·반명함 증명사진을 ICAO 국제 규격에 맞춰 무료 크롭하는 웹 도구",
+    "url": "https://monkos.ai/crop",
+    "publisher": { "@type": "Organization", "name": "Monk Studio" }
+  }
+  </script>
 
   <!-- MediaPipe FaceMesh -->
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous"></script>
