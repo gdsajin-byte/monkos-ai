@@ -226,14 +226,13 @@ export async function blogListFragment(req, forceLang = null) {
     let cardHref;
     const postLang = p.lang || 'ko';
     if (postLang === 'ja') {
-      const baseSlug = p.originalSlug || p.slug.replace(/-ja$/, '');
+      const baseSlug = p.slug.replace(/-ja$/, '');
       cardHref = `/ja/blog/${escapeHtml(baseSlug)}`;
     } else if (postLang === 'en') {
-      const baseSlug = p.originalSlug || p.slug.replace(/-en$/, '');
+      const baseSlug = p.slug.replace(/-en$/, '');
       cardHref = `/en/blog/${escapeHtml(baseSlug)}`;
     } else {
-      const baseSlug = p.originalSlug || p.slug;
-      cardHref = `/blog/${escapeHtml(baseSlug)}`;
+      cardHref = `/blog/${escapeHtml(p.slug)}`;
     }
     return `
       <a href="${cardHref}" class="blog-card">
@@ -366,36 +365,13 @@ export async function blogPostFragment(req, lang = null) {
   const contentHtml = marked(post.content || '');
   const baseSlug = slug;
 
-  // hreflang — originalSlug 기반 번역본 상호 연결
-  const hreflangLinks = [];
-  const hrefBaseSlug = post.originalSlug || slug;
-  try {
-    // 자기 자신
-    hreflangLinks.push(`<link rel="alternate" hreflang="${post.lang || 'ko'}" href="https://monkos.ai/${(post.lang || 'ko') === 'ko' ? '' : (post.lang || 'ko') + '/'}blog/${slug}">`);
-
-    // 번역본 조회
-    const siblings = await blogCollection.where('originalSlug', '==', hrefBaseSlug).get();
-    siblings.forEach(doc => {
-      const d = doc.data();
-      if (d.slug !== slug && d.published) {
-        const langPrefix = d.lang === 'ko' ? '' : d.lang + '/';
-        hreflangLinks.push(`<link rel="alternate" hreflang="${d.lang}" href="https://monkos.ai/${langPrefix}blog/${d.slug}">`);
-      }
-    });
-
-    // 원본이 자기 자신이 아닌 경우 (번역본에서 원본 참조)
-    if (post.originalSlug && post.originalSlug !== slug) {
-      const origDoc = await blogCollection.doc(post.originalSlug).get();
-      if (origDoc.exists && origDoc.data().published) {
-        const orig = origDoc.data();
-        const langPrefix = orig.lang === 'ko' ? '' : orig.lang + '/';
-        hreflangLinks.push(`<link rel="alternate" hreflang="${orig.lang}" href="https://monkos.ai/${langPrefix}blog/${orig.slug}">`);
-      }
-    }
-
-    hreflangLinks.push(`<link rel="alternate" hreflang="x-default" href="https://monkos.ai/blog/${hrefBaseSlug}">`);
-  } catch { /* skip */ }
-  const hreflangTags = hreflangLinks.join('\n');
+  // hreflang — 경로 접두어 교체 방식 (slug 영문 통일 정책, 2026-03-22)
+  const hreflangTags = [
+    `<link rel="alternate" hreflang="ko" href="https://monkos.ai/blog/${slug}">`,
+    `<link rel="alternate" hreflang="ja" href="https://monkos.ai/ja/blog/${slug}">`,
+    `<link rel="alternate" hreflang="en" href="https://monkos.ai/en/blog/${slug}">`,
+    `<link rel="alternate" hreflang="x-default" href="https://monkos.ai/blog/${slug}">`,
+  ].join('\n');
 
   const prefix = lang ? `/${lang}` : '';
   const canonicalUrl = `https://monkos.ai${prefix}/blog/${escapeHtml(baseSlug)}`;
@@ -1310,7 +1286,7 @@ export async function renderSitemap(req, res) {
     const blogUrls = snapshot.docs.map(doc => {
       const data = doc.data();
       const docLang = data.lang || 'ko';
-      const baseSlug = data.originalSlug || doc.id.replace(/-(?:ja|en)$/, '');
+      const baseSlug = doc.id.replace(/-(?:ja|en)$/, '');
       const langPrefix = docLang === 'ko' ? '' : `/${docLang}`;
       return {
         loc: `https://monkos.ai${langPrefix}/blog/${baseSlug}`,
@@ -1320,7 +1296,13 @@ export async function renderSitemap(req, res) {
       };
     });
 
-    const allUrls = [...staticUrls, ...blogUrls];
+    // URL 중복 제거
+    const seen = new Set();
+    const allUrls = [...staticUrls, ...blogUrls].filter(u => {
+      if (seen.has(u.loc)) return false;
+      seen.add(u.loc);
+      return true;
+    });
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${allUrls.map(u => `  <url>
