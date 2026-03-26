@@ -1353,6 +1353,7 @@ const SPECS_I18N = {
 
 // specs 공통 스타일
 const SPECS_PAGE_STYLE = `
+/* === Hub (목록) === */
 .specs-hub-header { text-align: center; margin-bottom: 40px; }
 .specs-hub-header h1 { font-size: 28px; font-weight: 700; color: var(--text-bright); margin-bottom: 8px; }
 .specs-hub-header p { color: var(--text-dim); font-size: 15px; }
@@ -1373,74 +1374,194 @@ const SPECS_PAGE_STYLE = `
 .specs-card-type { font-size: 17px; font-weight: 600; color: var(--text-bright); margin-bottom: 6px; }
 .specs-card-size { font-size: 14px; color: var(--accent); font-weight: 500; margin-bottom: 4px; }
 .specs-card-desc { font-size: 13px; color: var(--text-dim); line-height: 1.5; }
-.specs-detail-header { margin-bottom: 32px; }
-.specs-detail-header h1 { font-size: 26px; font-weight: 700; color: var(--text-bright); margin-bottom: 8px; }
-.specs-detail-header p { color: var(--text-dim); font-size: 15px; }
+
+/* === Detail 공통 === */
+.specs-back { display: inline-block; margin-bottom: 20px; font-size: 13px; color: var(--accent); text-decoration: none; }
+.specs-back:hover { text-decoration: underline; }
+
+/* === Hero 2열 레이아웃 === */
+.specs-hero { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; margin-bottom: 40px; }
+.specs-hero-text h1 { font-size: 28px; font-weight: 700; color: var(--text-bright); line-height: 1.3; margin-bottom: 12px; }
+.specs-hero-text .specs-hero-desc { color: var(--text-dim); font-size: 15px; line-height: 1.7; margin-bottom: 16px; }
+.specs-hero-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+.specs-hero-tags span {
+  background: rgba(108,79,255,0.08); color: var(--accent); padding: 4px 12px;
+  border-radius: 20px; font-size: 13px; font-weight: 500;
+}
+
+/* 규격 다이어그램 */
+.specs-diagram {
+  background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px;
+  padding: 32px; display: flex; justify-content: center; align-items: center; position: relative;
+}
+.specs-photo-frame {
+  width: 175px; height: 225px; background: var(--surface2, #f9fafb);
+  border: 2px dashed var(--accent); border-radius: 4px; position: relative;
+  display: flex; align-items: center; justify-content: center;
+}
+.specs-photo-frame svg { opacity: 0.15; }
+.specs-guide-w {
+  position: absolute; bottom: -28px; left: 0; right: 0; text-align: center;
+  font-size: 12px; color: var(--accent); font-weight: 600;
+}
+.specs-guide-h {
+  position: absolute; top: 0; bottom: 0; right: -50px;
+  display: flex; align-items: center; font-size: 12px; color: var(--accent); font-weight: 600;
+  writing-mode: vertical-rl;
+}
+.specs-guide-h::before {
+  content: ''; position: absolute; top: 0; bottom: 0; left: -8px; width: 1px; background: var(--accent);
+}
+.specs-head-guide {
+  position: absolute; top: 20px; left: -45px; height: 144px;
+  display: flex; align-items: center; font-size: 11px; color: #ef4444; font-weight: 500;
+  writing-mode: vertical-rl;
+}
+.specs-head-guide::before {
+  content: ''; position: absolute; top: 0; bottom: 0; right: -6px; width: 1px;
+  background: #ef4444; opacity: 0.5;
+}
+
+/* === 테이블 === */
 .specs-table {
-  width: 100%; border-collapse: collapse; margin-bottom: 32px;
+  width: 100%; border-collapse: separate; border-spacing: 0; margin-bottom: 32px;
   background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
 }
 .specs-table th, .specs-table td { padding: 14px 20px; text-align: left; font-size: 14px; }
 .specs-table th {
   background: var(--surface2); font-weight: 600; color: var(--text-bright); width: 140px; font-size: 13px;
+  border-right: 1px solid var(--border);
 }
 .specs-table td { color: var(--text); }
-.specs-table tr { border-top: 1px solid var(--border); }
-.specs-table tr:first-child { border-top: none; }
+.specs-table tr:not(:last-child) th,
+.specs-table tr:not(:last-child) td { border-bottom: 1px solid var(--border); }
+
+/* === 상세 규정 그리드 === */
 .specs-section { margin-bottom: 32px; }
 .specs-section h2 {
   font-size: 18px; font-weight: 700; color: var(--text-bright); margin-bottom: 16px;
-  padding-bottom: 8px; border-bottom: 1px solid var(--border);
 }
 .specs-section p { font-size: 14px; color: var(--text); line-height: 1.8; }
-.specs-rejection { list-style: none; padding: 0; }
-.specs-rejection li {
-  padding: 12px 16px; margin-bottom: 8px;
-  background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px;
-  font-size: 14px; color: var(--text); display: flex; align-items: center; gap: 10px;
+.specs-details-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
 }
-.specs-rejection li .rj-num {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 24px; height: 24px; border-radius: 50%;
-  background: rgba(245,158,11,0.15); color: #f59e0b; font-size: 12px; font-weight: 700; flex-shrink: 0;
+.specs-detail-item {
+  display: flex; align-items: flex-start; gap: 10px; padding: 12px;
+  background: var(--surface2, #f8f9fc); border-radius: 8px; font-size: 14px; color: var(--text);
 }
+.specs-detail-item .sdi-icon { flex-shrink: 0; font-size: 16px; width: 24px; text-align: center; }
+
+/* === O/X 비교 카드 === */
+.specs-ox-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 32px; }
+.specs-ox-card {
+  background: var(--card-bg); border-radius: 12px; overflow: hidden; border: 2px solid var(--border);
+}
+.specs-ox-card.ox-good { border-color: #22c55e; }
+.specs-ox-card.ox-bad { border-color: #ef4444; }
+.specs-ox-header { padding: 10px 16px; font-weight: 700; font-size: 14px; display: flex; align-items: center; gap: 8px; }
+.specs-ox-card.ox-good .specs-ox-header { background: rgba(34,197,94,0.08); color: #166534; }
+.specs-ox-card.ox-bad .specs-ox-header { background: rgba(239,68,68,0.08); color: #991b1b; }
+.specs-ox-body {
+  padding: 20px; display: flex; justify-content: center; align-items: center;
+  background: var(--surface2, #fafafa); min-height: 180px;
+}
+.specs-ox-photo {
+  width: 120px; height: 154px; background: var(--card-bg); border: 2px dashed #ddd;
+  border-radius: 4px; display: flex; align-items: center; justify-content: center;
+}
+.specs-ox-card.ox-good .specs-ox-photo { border-color: #22c55e; }
+.specs-ox-card.ox-bad .specs-ox-photo { border-color: #ef4444; }
+.specs-ox-photo svg { opacity: 0.3; }
+.specs-ox-caption { margin-top: 10px; font-size: 12px; color: var(--text-dim); text-align: center; }
+.specs-ox-points { padding: 12px 16px; border-top: 1px solid var(--border); list-style: none; margin: 0; }
+.specs-ox-points li {
+  font-size: 13px; color: var(--text-dim); padding: 3px 0; display: flex; align-items: center; gap: 6px;
+}
+
+/* === 반려 사유 2열 카드 === */
+.specs-rejection-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; list-style: none; padding: 0; }
+.specs-rejection-card {
+  background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px;
+  padding: 20px; display: flex; gap: 14px; align-items: flex-start;
+  transition: box-shadow 0.2s;
+}
+.specs-rejection-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+.specs-rj-badge {
+  flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: #ef4444; color: #fff; font-weight: 700; font-size: 14px;
+}
+.specs-rj-info h4 { font-size: 14px; font-weight: 600; color: var(--text-bright); margin: 0 0 4px 0; }
+.specs-rj-info p { font-size: 13px; color: var(--text-dim); margin: 0; line-height: 1.5; }
+
+/* === FAQ 아코디언 === */
 .specs-faq { list-style: none; padding: 0; }
-.specs-faq li { margin-bottom: 16px; }
-.specs-faq .faq-q {
-  font-size: 15px; font-weight: 600; color: var(--text-bright); margin-bottom: 6px; cursor: pointer;
+.specs-faq-item {
+  background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px;
+  margin-bottom: 8px; overflow: hidden;
 }
-.specs-faq .faq-q::before { content: "Q. "; color: var(--accent); }
-.specs-faq .faq-a { font-size: 14px; color: var(--text-dim); line-height: 1.7; padding-left: 20px; }
+.specs-faq-q {
+  padding: 16px 20px; font-weight: 600; font-size: 15px; color: var(--text-bright);
+  cursor: pointer; display: flex; align-items: center; gap: 10px; user-select: none;
+}
+.specs-faq-q::before { content: "Q"; color: var(--accent); font-weight: 700; font-size: 14px; }
+.specs-faq-q::after {
+  content: "\\25BE"; margin-left: auto; color: var(--text-dim); font-size: 12px;
+  transition: transform 0.2s;
+}
+.specs-faq-item.open .specs-faq-q::after { transform: rotate(180deg); }
+.specs-faq-a {
+  padding: 0 20px 16px 46px; font-size: 14px; color: var(--text-dim);
+  line-height: 1.7; display: none;
+}
+.specs-faq-item.open .specs-faq-a { display: block; }
+
+/* === CTA 배너 === */
 .specs-cta {
-  display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
-  margin: 32px 0; padding: 28px;
-  background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px;
+  background: linear-gradient(135deg, var(--accent) 0%, #8b6fff 100%);
+  border-radius: 16px; padding: 36px 40px;
+  display: flex; align-items: center; justify-content: space-between;
+  margin: 32px 0;
 }
-.specs-cta a {
-  padding: 12px 28px; border-radius: 10px; font-size: 14px; font-weight: 600;
-  transition: opacity 0.2s; text-decoration: none;
+.specs-cta-text h3 { color: #fff; font-size: 20px; font-weight: 700; margin: 0 0 4px 0; }
+.specs-cta-text p { color: rgba(255,255,255,0.85); font-size: 14px; margin: 0; }
+.specs-cta-buttons { display: flex; gap: 12px; }
+.specs-cta-buttons a {
+  padding: 12px 24px; border-radius: 10px; font-size: 14px; font-weight: 600;
+  text-decoration: none; transition: all 0.2s;
 }
-.specs-cta .primary { background: var(--accent); color: #fff; }
-.specs-cta .primary:hover { opacity: 0.9; color: #fff; }
-.specs-cta .secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
-.specs-cta .secondary:hover { border-color: var(--accent); color: var(--accent); }
+.specs-cta-buttons .primary { background: #fff; color: var(--accent); }
+.specs-cta-buttons .primary:hover { background: #f0f0ff; color: var(--accent); }
+.specs-cta-buttons .secondary {
+  background: rgba(255,255,255,0.15); color: #fff; border: 1px solid rgba(255,255,255,0.3);
+}
+
+/* === 관련 콘텐츠 === */
 .specs-related {
   margin-top: 32px; padding: 20px 24px;
-  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+  background: var(--surface, var(--card-bg)); border: 1px solid var(--border); border-radius: 12px;
 }
 .specs-related h3 { font-size: 15px; font-weight: 600; color: var(--text-bright); margin-bottom: 12px; }
 .specs-related-links { display: flex; flex-wrap: wrap; gap: 10px; }
 .specs-related-links a {
   font-size: 13px; color: var(--accent); text-decoration: none; padding: 6px 14px;
-  background: rgba(108,79,255,0.06); border-radius: 8px; transition: background 0.2s;
+  background: rgba(108,79,255,0.06); border-radius: 8px; transition: all 0.2s;
+  border: 1px solid transparent;
 }
-.specs-related-links a:hover { background: rgba(108,79,255,0.12); }
-.specs-back { display: inline-block; margin-bottom: 20px; font-size: 13px; color: var(--accent); text-decoration: none; }
-.specs-back:hover { text-decoration: underline; }
+.specs-related-links a:hover { background: rgba(108,79,255,0.12); border-color: var(--accent); }
+
+/* === 반응형 === */
+@media (max-width: 768px) {
+  .specs-hero { grid-template-columns: 1fr; }
+  .specs-diagram { order: -1; }
+  .specs-details-grid { grid-template-columns: 1fr; }
+  .specs-ox-compare { grid-template-columns: 1fr; }
+  .specs-rejection-grid { grid-template-columns: 1fr; }
+  .specs-cta { flex-direction: column; text-align: center; gap: 20px; }
+}
 @media (max-width: 600px) {
   .specs-grid { grid-template-columns: 1fr; }
   .specs-table th { width: 100px; }
-  .specs-cta { flex-direction: column; align-items: center; }
 }`;
 
 // 규격 허브 인덱스 (/specs)
@@ -1594,28 +1715,39 @@ ${hreflangTags}
 
   // 규격 테이블
   const h = i.tableHeaders;
+  const tableIconMap = { size: '📐', pixels: '🖥️', dpi: '🔍', background: '🎨', headHeight: '📏', validity: '📅', fileSpec: '📁' };
   const tableRows = [
-    [h.size, specData.size],
-    [h.pixels, specData.pixels],
-    [h.dpi, String(specData.dpi)],
-    [h.background, specData.background],
-    [h.headHeight, specData.headHeight],
-    [h.validity, specData.validity],
-    [h.fileSpec, specData.fileSpec],
-  ].map(([label, val]) => `<tr><th>${escapeHtml(label)}</th><td>${escapeHtml(val)}</td></tr>`).join('\n      ');
+    ['size', h.size, specData.size],
+    ['pixels', h.pixels, specData.pixels],
+    ['dpi', h.dpi, String(specData.dpi)],
+    ['background', h.background, specData.background],
+    ['headHeight', h.headHeight, specData.headHeight],
+    ['validity', h.validity, specData.validity],
+    ['fileSpec', h.fileSpec, specData.fileSpec],
+  ].map(([key, label, val]) => `<tr><th>${tableIconMap[key] || ''} ${escapeHtml(label)}</th><td>${escapeHtml(val)}</td></tr>`).join('\n      ');
 
-  // 반려 사유
-  const rejections = specData.rejectionReasons[lang] || specData.rejectionReasons.ko || [];
-  const rejectionHtml = rejections.map((r, idx) =>
-    `<li><span class="rj-num">${idx + 1}</span> ${escapeHtml(r)}</li>`
+  // 상세 규정 아이콘 매핑 (details 텍스트를 파싱하여 그리드 아이템으로)
+  const detailIcons = ['😐', '👓', '💇', '👂', '👔', '📸'];
+  const detailLines = description.split(/[.。]\s*/).filter(d => d.trim().length > 0);
+  const detailGridHtml = detailLines.map((line, idx) =>
+    `<div class="specs-detail-item"><span class="sdi-icon">${detailIcons[idx] || '📋'}</span><span>${escapeHtml(line.trim())}</span></div>`
   ).join('\n        ');
 
-  // FAQ
-  const faqHtml = faqs.map(f =>
-    `<li>
-          <div class="faq-q">${escapeHtml(f.q)}</div>
-          <div class="faq-a">${escapeHtml(f.a)}</div>
+  // 반려 사유 (2열 카드)
+  const rejections = specData.rejectionReasons[lang] || specData.rejectionReasons.ko || [];
+  const rejectionHtml = rejections.map((r, idx) =>
+    `<li class="specs-rejection-card">
+          <span class="specs-rj-badge">${idx + 1}</span>
+          <div class="specs-rj-info"><h4>${escapeHtml(r)}</h4></div>
         </li>`
+  ).join('\n        ');
+
+  // FAQ (아코디언)
+  const faqHtml = faqs.map((f, idx) =>
+    `<div class="specs-faq-item${idx === 0 ? ' open' : ''}">
+          <div class="specs-faq-q" onclick="this.parentElement.classList.toggle('open')">${escapeHtml(f.q)}</div>
+          <div class="specs-faq-a">${escapeHtml(f.a)}</div>
+        </div>`
   ).join('\n        ');
 
   // 같은 국가 다른 규격
@@ -1634,43 +1766,116 @@ ${hreflangTags}
 
   const backLabel = lang === 'ja' ? '← 全規格一覧' : lang === 'en' ? '← All Specifications' : '← 전체 규격 목록';
 
+  // O/X 비교 i18n
+  const oxGoodLabel = lang === 'ja' ? '✅ 適合写真' : lang === 'en' ? '✅ Acceptable Photo' : '✅ 적합한 사진';
+  const oxBadLabel = lang === 'ja' ? '❌ 却下される写真' : lang === 'en' ? '❌ Rejected Photo' : '❌ 반려되는 사진';
+  const oxGoodCaption = lang === 'ja' ? '正面・無表情・白背景' : lang === 'en' ? 'Front-facing · Neutral · White BG' : '정면 · 무표정 · 흰배경';
+  const oxBadCaption = lang === 'ja' ? '傾き・影・髪' : lang === 'en' ? 'Tilted · Shadow · Hair' : '기울어짐 · 그림자 · 머리카락';
+
+  // CTA i18n
+  const ctaHeadline = lang === 'ja' ? '規格に合う写真、AIが自動で' : lang === 'en' ? 'AI makes your photo spec-ready' : '규격에 맞는 사진, AI가 자동으로';
+  const ctaSub = lang === 'ja' ? '背景除去・規格クロップ・補正まで一度に' : lang === 'en' ? 'Background removal · Crop · Retouch in one step' : '배경 제거 · 규격 크롭 · 보정까지 한 번에';
+
   const bodyContent = `
   <a href="${prefix}/specs" class="specs-back">${escapeHtml(backLabel)}</a>
-  <div class="specs-detail-header">
-    <h1>2026 ${escapeHtml(countryName)} ${escapeHtml(typeName)}</h1>
-    <p>${escapeHtml(description)}</p>
-  </div>
 
+  <!-- Hero 2열 -->
+  <section class="specs-hero">
+    <div class="specs-hero-text">
+      <h1>2026 ${escapeHtml(countryName)} ${escapeHtml(typeName)}</h1>
+      <p class="specs-hero-desc">${escapeHtml(description)}</p>
+      <div class="specs-hero-tags">
+        <span>${escapeHtml(specData.size)}</span>
+        <span>${escapeHtml(specData.background)}</span>
+        <span>${escapeHtml(specData.validity)}</span>
+        <span>${specData.dpi} DPI</span>
+      </div>
+    </div>
+    <div class="specs-diagram">
+      <div class="specs-photo-frame">
+        <svg viewBox="0 0 120 160" width="100" height="133" fill="currentColor">
+          <ellipse cx="60" cy="45" rx="30" ry="38"/>
+          <ellipse cx="60" cy="140" rx="50" ry="45"/>
+        </svg>
+        <div class="specs-head-guide">${escapeHtml(specData.headHeight)}</div>
+        <div class="specs-guide-w">${escapeHtml(specData.size.split('×')[0].trim())}cm</div>
+      </div>
+      <div class="specs-guide-h">${escapeHtml(specData.size.split('×')[1]?.trim() || '4.5cm')}</div>
+    </div>
+  </section>
+
+  <!-- 규격 테이블 -->
   <table class="specs-table">
     <tbody>
       ${tableRows}
     </tbody>
   </table>
 
+  <!-- 상세 규정 그리드 -->
   <div class="specs-section">
     <h2>${escapeHtml(i.detailsTitle)}</h2>
-    <p>${escapeHtml(description)}</p>
+    <div class="specs-details-grid">
+      ${detailGridHtml}
+    </div>
   </div>
 
+  <!-- O/X 비교 -->
+  <div class="specs-section">
+    <div class="specs-ox-compare">
+      <div class="specs-ox-card ox-good">
+        <div class="specs-ox-header">${oxGoodLabel}</div>
+        <div class="specs-ox-body">
+          <div>
+            <div class="specs-ox-photo">
+              <svg viewBox="0 0 60 80" width="50" height="67" fill="#aaa"><ellipse cx="30" cy="22" rx="16" ry="20"/><ellipse cx="30" cy="72" rx="26" ry="22"/></svg>
+            </div>
+            <div class="specs-ox-caption">${oxGoodCaption}</div>
+          </div>
+        </div>
+      </div>
+      <div class="specs-ox-card ox-bad">
+        <div class="specs-ox-header">${oxBadLabel}</div>
+        <div class="specs-ox-body">
+          <div>
+            <div class="specs-ox-photo">
+              <svg viewBox="0 0 60 80" width="50" height="67" fill="#aaa" style="transform:rotate(8deg)"><ellipse cx="30" cy="22" rx="16" ry="20"/><ellipse cx="30" cy="72" rx="26" ry="22"/></svg>
+            </div>
+            <div class="specs-ox-caption">${oxBadCaption}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 반려 사유 TOP 5 -->
   <div class="specs-section">
     <h2>${escapeHtml(i.rejectionTitle)}</h2>
-    <ul class="specs-rejection">
+    <ul class="specs-rejection-grid">
       ${rejectionHtml}
     </ul>
   </div>
 
+  <!-- FAQ 아코디언 -->
   <div class="specs-section">
     <h2>${escapeHtml(i.faqTitle)}</h2>
-    <ul class="specs-faq">
+    <div class="specs-faq">
       ${faqHtml}
-    </ul>
+    </div>
   </div>
 
+  <!-- CTA 배너 -->
   <div class="specs-cta">
-    <a href="/" class="primary">${escapeHtml(i.ctaAI)}</a>
-    <a href="/crop" class="secondary">${escapeHtml(i.ctaCrop)}</a>
+    <div class="specs-cta-text">
+      <h3>${ctaHeadline}</h3>
+      <p>${ctaSub}</p>
+    </div>
+    <div class="specs-cta-buttons">
+      <a href="/" class="primary">${escapeHtml(i.ctaAI)}</a>
+      <a href="/crop" class="secondary">${escapeHtml(i.ctaCrop)}</a>
+    </div>
   </div>
 
+  <!-- 관련 콘텐츠 -->
   <div class="specs-related">
     <h3>${escapeHtml(i.relatedTitle)}</h3>
     <div class="specs-related-links">
