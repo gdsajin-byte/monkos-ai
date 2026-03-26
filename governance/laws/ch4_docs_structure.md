@@ -130,6 +130,14 @@ monkos-ops/는 4부서 체제로 재편 중이며, 과도기에는 번호 폴더
 | 12 | `RESEARCH_YYYYMMDD_{topic}_{detail}.md` | `monkos-ops/ops/agenda/` | `RESEARCH_20260223_긴급대행절차_선택지.md` |
 | 13 | `COMPLETION_YYYYMMDD_막내N_{HHMMSS}.md` | `monkos-ops/ops/reports/YYYY-MM/` | `COMPLETION_20260225_막내1_150900.md` |
 | 14 | `REVIEW_YYYYMMDD_{agent}_{topic}.md` | `monkos-ops/ops/reports/YYYY-MM/` | `REVIEW_20260302_쌍아_P0_스키마_정합검토.md` |
+| 15 | `PF_{코드네임}.md` | `monkos-ops/ops/portfolios/` | `PF_CITADEL.md`, `PF_PORTAL_V4.md` |
+
+**PF 귀속 파일명 규칙**:
+- PF에 귀속된 문서(ORDER, REPORT, COMPLETION 등)의 파일명에 **PF 코드네임을 삽입**한다.
+- 무귀속 문서는 생략.
+- 예시:
+  - 귀속: `ORDER_20260326_M1쌍아_막내1_CITADEL_Phase1_즉시최적화.md`
+  - 무귀속: `ORDER_20260326_M1쌍아_막내1_서버장애대응.md`
 
 **패턴 #7a 접미어 허용값**: 시간대(`새벽`, `오전`, `오후`, `저녁`), 순번(`2차`, `3차`)
 
@@ -186,6 +194,7 @@ monkos-ops/는 4부서 체제로 재편 중이며, 과도기에는 번호 폴더
 | 팀 공유 | `monkos-ops/marketing/` | — | marketing 전용 |
 | 에셋 레지스트리 | `monkos-ops/tech/ASSET_REGISTRY.md` | — | 전 저장소 통합 인덱스 |
 | 외부 에이전트 산출물 | `monkos-ops/works/ops/` (subtree) | — | works가 유일 원본. ops/에 복사 금지 |
+| **포트폴리오 (PF)** | `monkos-ops/ops/portfolios/` | — | **프로젝트 생애주기 허브 (03-26 신설)** |
 | 범용 유틸 스크립트 | `scripts/` | — | 막내 소관 |
 
 **원칙**:
@@ -313,7 +322,7 @@ monkos-ops/는 4부서 체제로 재편 중이며, 과도기에는 번호 폴더
 | `date` | string | `YYYY-MM-DD HH:MM KST` (헌법 제3조(적립) 1항) | `2026-02-23 04:10 KST` |
 | `status` | enum | pending / in_progress / completed / archived / blocked | `pending` |
 
-**type 허용값**: order, report, spec, incident, design, sprint, petition, research, completion, review, agenda
+**type 허용값**: order, report, spec, incident, design, sprint, petition, research, completion, review, agenda, portfolio
 > `task`는 레거시. 신규 지시서는 `order` 사용 (03-08 TASK_→ORDER_ 통합)
 
 #### 타입별 추가 필수 필드
@@ -331,6 +340,7 @@ monkos-ops/는 4부서 체제로 재편 중이며, 과도기에는 번호 폴더
 | research | `from`, `to`, `order_ref` | `category`, `tags` |
 | completion | `from`, `to`, `order`, `commit`, `branch` | `time`, `tags` |
 | review | `from`, `to`, `sources`(검토 대상 보고서 목록) | `tags` |
+| portfolio | `name`, `subject`, `owner`, `leads` | `domain`, `tags` |
 
 #### 검증 규칙
 
@@ -452,3 +462,44 @@ monkos.ai에 개인정보 처리방침을 **반드시 게시**한다.
 > 근거: 2026-02-28 막내1 원안(PETITION_20260228_막내1_데이터운영규정.md), 삼권심사 조건부 승인, 철창이 리서치(APPI, 소프트삭제), 작가님 보정(서버 미보관 원칙, 반려 보장 절차), 03-02 쌍아 재설계(DESIGN_20260302_쌍아_데이터운영규정_재설계.md)
 > 위반 시: 개인정보 유출, 법적 리스크(APPI 위반), 데이터 영구 유실, 고객 신뢰 훼손.
 > 상위 헌법: 제4조(구속·윤리), 제3조(적립) 3항(문서 규격)
+
+---
+
+### 9조: 포트폴리오(PF) 운용 규칙
+
+> 상위 헌법: 제3조(적립) 2항 (PF 적립 의무)
+> 신설: 03-26 (AMENDMENT_20260326, 5인 만장일치)
+
+**1항 — 생애주기**
+
+기안(PROPOSAL) 승인 시, PF 신규 생성 또는 기존 PF 인입을 작가님+쌍아가 협의하여 결정한다.
+PF의 status는 `draft | active | blocked | paused | completed` 중 하나이다.
+완료된 PF는 에셋으로 영구 보존하며, 버전업 시 `active`로 복귀한다.
+
+**2항 — 정합성 판정 기준**
+
+PF 히스토리와 세션 로그가 동일 사건을 기록할 수 있다. 양자가 어긋날 때의 정본:
+- 사실 판단("이 작업이 실행되었는가?") → **세션 로그**가 정본
+- 상태 판단("프로젝트가 지금 어디인가?") → **PF Phase 현황**이 정본
+
+**3항 — 비대화 관리**
+
+- 히스토리 테이블 **100행 초과 시**: 완료된 Phase의 히스토리를 별도 파일(`PF_{코드네임}_HISTORY_{PhaseN}.md`)로 분리. 본문에 요약 + 링크만 잔류.
+- PF 파일 **500줄 초과 시**: 아카이브 트리거. 쌍아가 세션 마감 시 줄 수 확인.
+
+**4항 — PROPOSAL 보존**
+
+PROPOSAL은 PF 승격 후에도 `ops/proposals/`에 영구 보존한다. 삭제 금지.
+
+**5항 — 소급 불적용**
+
+기존 프로젝트는 현재 상태 스냅샷만 작성한다. 히스토리 역추적은 하지 않는다.
+
+**6항 — ops/projects/ 폐지**
+
+PF 체계 발효에 따라 `ops/projects/` 폴더는 폐지한다. 잔류 파일은 `ops/portfolios/`로 이관 완료.
+
+> 근거: 2026-03-26 — PF 체계 개헌 (AMENDMENT_20260326). 작가님 기안, 쌍아 설계, 삼권심사(입법·행정·사법) 3자 "수정 후 통과", 5인 만장일치 의결.
+> 작가님 원문: "세션로그만 뒤지다보니 에이전트들이 리서치할때마다 해석이 달라지고" / "포트폴리오는 시작부터 완성되어 내보일 수 있는 작품의 뉘앙스" / "문서체계에 완벽히 들어와야하는 시스템이고 세션로그처럼 의무를 부여할 파트"
+> 위반 시: PF 미갱신 → 에이전트 맥락 유실, 프로젝트 상태 추적 불가.
+> 상위 헌법: 제3조(적립) 2항
