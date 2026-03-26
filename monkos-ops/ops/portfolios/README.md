@@ -13,6 +13,7 @@
 | [PF_CITADEL](PF_CITADEL.md) | CITADEL | SEO/GEO/AEO 통합 | active | 03-26 |
 | [PF_STUDIO](PF_STUDIO.md) | STUDIO | AI 촬영실 UX + 음성 코칭 | paused | 03-06 |
 | [PF_SPREAD](PF_SPREAD.md) | SPREAD | 콘텐츠 배포·마케팅 통합 전략 | active | 03-04 |
+| [PF_CDP](PF_CDP.md) | CDP | 로컬 CDP 브라우저 제어 — 에이전트 독립 인프라 | active | 03-27 |
 
 ## 네이밍
 
