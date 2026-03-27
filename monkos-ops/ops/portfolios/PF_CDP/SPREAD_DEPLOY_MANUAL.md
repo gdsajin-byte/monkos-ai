@@ -451,6 +451,8 @@ checks = await evaluate(ws, """(function(){
 | 8 | setHTML 에디터 굳음 | 편집 불가 상태 | setMarkdown 사용 권장 |
 | 9 | 탭 동시 접속 충돌 | 같은 탭에 두 에이전트 타이핑 | 채널 배당으로 분리 |
 | 10 | API 직접 호출 시 쿠키 | 인증 실패 | CDP Network.getCookies로 추출 |
+| 11 | CDP 스크린샷 → Claude API 전송 시 크기 초과 | "image dimensions exceed max allowed size: 2000 pixels" | `deviceScaleFactor:1`로 낮추거나, 스크린샷 대신 DOM innerText로 확인. clip으로 영역 제한도 가능 |
+| 12 | LINE 메시지 작성 URL 직접 접근 404 | broadcast/create 페이지 404 | 사이드바 "새 전체 메시지" 클릭으로 접근. 또는 정확한 URL: `manager.line.biz/account/@208xpvko/broadcast/create` |
 
 ---
 
