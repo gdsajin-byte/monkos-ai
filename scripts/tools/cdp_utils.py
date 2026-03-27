@@ -337,6 +337,243 @@ class CDP:
         """최하단으로"""
         await self.evaluate("window.scrollTo(0, document.body.scrollHeight)")
 
+    # ── Accessibility Tree ──
+
+    async def get_accessibility_tree(self, depth: int = 8, node_id: int = None) -> dict:
+        """접근성 트리 반환. 크롬 확장의 read_page에 해당."""
+        await self._send("Accessibility.enable", {})
+        if node_id:
+            result = await self._send("Accessibility.getPartialAXTree", {
+                "nodeId": node_id, "fetchRelatives": True
+            })
+        else:
+            result = await self._send("Accessibility.getFullAXTree", {"depth": depth})
+        return result.get("nodes", [])
+
+    async def read_page(self, interactive_only: bool = False, max_items: int = 200) -> list:
+        """페이지 요소 목록 반환. 크롬 확장의 read_page 대응.
+        각 요소: {ref, role, name, x, y, w, h, interactive}"""
+        nodes = await self.get_accessibility_tree(depth=10)
+        elements = []
+        ref_id = 0
+
+        for node in nodes:
+            role = node.get("role", {}).get("value", "")
+            name_obj = node.get("name", {})
+            name = name_obj.get("value", "") if isinstance(name_obj, dict) else str(name_obj)
+
+            # 인터랙티브 필터
+            interactive_roles = {
+                "button", "link", "textbox", "combobox", "checkbox",
+                "radio", "tab", "menuitem", "switch", "searchbox",
+                "spinbutton", "slider", "option"
+            }
+            is_interactive = role in interactive_roles
+
+            if interactive_only and not is_interactive:
+                continue
+            if not name and role in ("generic", "none", "presentation", ""):
+                continue
+
+            ref_id += 1
+            el = {
+                "ref": f"ref_{ref_id}",
+                "role": role,
+                "name": name[:80],
+                "interactive": is_interactive,
+                "backend_node_id": node.get("backendDOMNodeId"),
+            }
+            elements.append(el)
+
+            if len(elements) >= max_items:
+                break
+
+        return elements
+
+    async def find_by_role(self, role: str, name: str = None) -> list:
+        """역할+이름으로 요소 검색. 크롬 확장의 find 대응."""
+        elements = await self.read_page()
+        results = []
+        for el in elements:
+            if el["role"] != role:
+                continue
+            if name and name.lower() not in el["name"].lower():
+                continue
+            # 좌표 가져오기
+            if el.get("backend_node_id"):
+                try:
+                    box = await self._get_node_box(el["backend_node_id"])
+                    if box:
+                        el.update(box)
+                except Exception:
+                    pass
+            results.append(el)
+        return results
+
+    async def find_interactive(self, query: str = None) -> list:
+        """인터랙티브 요소만 검색. query가 있으면 이름 필터."""
+        elements = await self.read_page(interactive_only=True)
+        if query:
+            elements = [e for e in elements if query.lower() in e["name"].lower()]
+        # 좌표 가져오기
+        for el in elements:
+            if el.get("backend_node_id"):
+                try:
+                    box = await self._get_node_box(el["backend_node_id"])
+                    if box:
+                        el.update(box)
+                except Exception:
+                    pass
+        return elements
+
+    async def _get_node_box(self, backend_node_id: int) -> dict:
+        """backendNodeId로 요소 좌표 가져오기"""
+        try:
+            result = await self._send("DOM.getBoxModel", {
+                "backendNodeId": backend_node_id
+            })
+            content = result.get("model", {}).get("content", [])
+            if len(content) >= 8:
+                x1, y1 = content[0], content[1]
+                x2, y2 = content[4], content[5]
+                return {
+                    "x": int(x1), "y": int(y1),
+                    "w": int(x2 - x1), "h": int(y2 - y1),
+                    "cx": int((x1 + x2) / 2), "cy": int((y1 + y2) / 2)
+                }
+        except Exception:
+            pass
+        return None
+
+    async def click_accessible(self, role: str, name: str):
+        """접근성 트리에서 역할+이름으로 찾아 클릭. 좌표 계산 불필요."""
+        results = await self.find_by_role(role, name)
+        if not results:
+            raise ValueError(f"요소 없음: role={role}, name={name}")
+        el = results[0]
+        if "cx" in el:
+            await self.click(el["cx"], el["cy"])
+        else:
+            raise ValueError(f"좌표 없음: {el}")
+
+    # ── 마우스 고급 ──
+
+    async def hover(self, x: int, y: int):
+        """마우스 호버 (클릭 없이 이동)"""
+        await self._send("Input.dispatchMouseEvent", {
+            "type": "mouseMoved", "x": x, "y": y
+        })
+
+    async def hover_element(self, selector: str):
+        """셀렉터로 요소 호버"""
+        rect = await self.evaluate_json(
+            f"JSON.stringify(document.querySelector('{selector}').getBoundingClientRect())"
+        )
+        await self.hover(int(rect["x"] + rect["width"] / 2), int(rect["y"] + rect["height"] / 2))
+
+    async def drag(self, start_x: int, start_y: int, end_x: int, end_y: int, steps: int = 10):
+        """드래그앤드롭"""
+        await self._send("Input.dispatchMouseEvent", {
+            "type": "mousePressed", "x": start_x, "y": start_y, "button": "left", "clickCount": 1
+        })
+        for i in range(1, steps + 1):
+            ratio = i / steps
+            x = int(start_x + (end_x - start_x) * ratio)
+            y = int(start_y + (end_y - start_y) * ratio)
+            await self._send("Input.dispatchMouseEvent", {
+                "type": "mouseMoved", "x": x, "y": y, "button": "left"
+            })
+            await asyncio.sleep(0.02)
+        await self._send("Input.dispatchMouseEvent", {
+            "type": "mouseReleased", "x": end_x, "y": end_y, "button": "left", "clickCount": 1
+        })
+
+    # ── 네트워크 모니터링 ──
+
+    async def enable_network(self):
+        """네트워크 이벤트 수신 시작"""
+        await self._send("Network.enable", {})
+        self._network_requests = []
+
+    async def get_network_requests(self, url_filter: str = None) -> list:
+        """수집된 네트워크 요청 반환"""
+        # 이벤트 기반이 아닌 직접 조회 방식 (간소화)
+        result = await self.evaluate("""
+            (function() {
+                var entries = performance.getEntriesByType('resource');
+                return JSON.stringify(entries.map(e => ({
+                    name: e.name, type: e.initiatorType,
+                    duration: Math.round(e.duration),
+                    size: e.transferSize || 0,
+                    status: e.responseStatus || 0
+                })));
+            })()
+        """)
+        requests = json.loads(result) if isinstance(result, str) else result
+        if url_filter:
+            requests = [r for r in requests if url_filter in r["name"]]
+        return requests
+
+    # ── 콘솔 로그 ──
+
+    async def get_console_logs(self, level: str = None) -> list:
+        """브라우저 콘솔 로그 수집. level: log, warn, error, info"""
+        result = await self.evaluate("""
+            (function() {
+                if (!window.__cdp_console_logs) {
+                    window.__cdp_console_logs = [];
+                    var orig = {};
+                    ['log','warn','error','info','debug'].forEach(function(m) {
+                        orig[m] = console[m];
+                        console[m] = function() {
+                            window.__cdp_console_logs.push({
+                                level: m, time: Date.now(),
+                                text: Array.from(arguments).map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ')
+                            });
+                            orig[m].apply(console, arguments);
+                        };
+                    });
+                    return JSON.stringify([]);
+                }
+                var logs = window.__cdp_console_logs;
+                window.__cdp_console_logs = [];
+                return JSON.stringify(logs);
+            })()
+        """)
+        logs = json.loads(result) if isinstance(result, str) else result
+        if level:
+            logs = [l for l in logs if l["level"] == level]
+        return logs
+
+    # ── 파일 업로드 ──
+
+    async def upload_file(self, selector: str, file_paths: list):
+        """파일 input에 파일 업로드"""
+        # DOM.getDocument로 노드 ID 획득
+        doc = await self._send("DOM.getDocument", {})
+        root_id = doc["root"]["nodeId"]
+        result = await self._send("DOM.querySelector", {
+            "nodeId": root_id, "selector": selector
+        })
+        node_id = result["nodeId"]
+        await self._send("DOM.setFileInputFiles", {
+            "nodeId": node_id, "files": file_paths
+        })
+
+    # ── 탭 관리 ──
+
+    async def new_tab(self, url: str = "about:blank") -> str:
+        """새 탭 열기"""
+        result = await self._send("Target.createTarget", {"url": url})
+        return result.get("targetId", "")
+
+    async def close_tab(self, target_id: str = None):
+        """탭 닫기"""
+        if target_id is None:
+            tabs = self._get_tabs()
+            target_id = tabs[self.tab_index]["id"]
+        await self._send("Target.closeTarget", {"targetId": target_id})
+
 
 # ── MONKOS 에디터 특화 ──
 
