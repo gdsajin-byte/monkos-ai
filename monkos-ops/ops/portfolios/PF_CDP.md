@@ -83,6 +83,8 @@ status: active
 | 03/27 | M1/쌍아 | Phase 1 코드수집 지시서 발행 → iMac/민아 | `ORDER_20260327_...CDP_Phase1_코드수집.md` | ✅ |
 | 03/27 | M1/민아 | Phase 1 cdp_utils.py 패키지화 완료 (530줄) | `scripts/tools/cdp_utils.py` | ✅ |
 | 03/27 | iMac/쌍아 | PF 비전 보정 — "전 에이전트 MCP 무장"으로 확장 (작가님 인사이트) | PF_CDP.md | ✅ |
+| 03/27 | iMac/민아 | cdp_setup.sh 원커맨드 셋업 스크립트 작성 | `scripts/tools/cdp_setup.sh` | ✅ |
+| 03/27 | iMac/민아 | PF_CDP 컴포넌트 폴더 신설 + README | `portfolios/PF_CDP/` | ✅ |
 
 ---
 
