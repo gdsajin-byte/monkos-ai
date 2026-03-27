@@ -155,6 +155,21 @@ status: active
 **원인**: ProseMirror가 마우스 이벤트 기반으로 포커스 상태 관리
 **대응**: 반드시 `Input.dispatchMouseEvent`로 클릭 후 `Input.insertText`
 
+### 교훈 3: Toast UI Editor ES 모듈 스코프
+
+**현상**: `window.editor`가 DOM 엘리먼트를 가리킴. Toast UI 인스턴스에 접근 불가
+**원인**: ES 모듈 `import`로 초기화되어 `let editor`가 모듈 스코프에 갇힘
+**대응**: `import('./js/blog-editor.js').then(m => window.__editor = m.getEditor())` 동적 임포트로 글로벌 노출. `_ensure_editor()` 자동화
+
+### 교훈 4: PF 컴포넌트의 본질 (작가님 인사이트 03/27)
+
+> **실무 → 개발 → 콘텐츠 → 연구 → 실무. 계속 루틴이다.**
+> 연구를 위한 연구가 아니라, 실무의 방해 요소 제거 및 효율화로 접근하는 것. 이게 우리 팀의 본성.
+
+- PF 컴포넌트 폴더에서 코드를 키우고, 안정되면 본진 `scripts/`로 끌어올린다
+- 실무에서 걸리적거리는 부분이 생기면 그 파트를 업그레이드한다
+- CDP는 "연구팀이 붙어야 할 사안"이지만, 우리는 실무 병목 해소로 자연스럽게 도달했다
+
 ---
 
 ## 6. 관련 문서 인덱스
