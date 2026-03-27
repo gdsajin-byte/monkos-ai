@@ -97,6 +97,13 @@ status: active
 | 03/27 | iMac/민아 | cdp_setup.sh 원커맨드 셋업 스크립트 작성 | `scripts/tools/cdp_setup.sh` | ✅ |
 | 03/27 | iMac/민아 | PF_CDP 컴포넌트 폴더 신설 + README | `portfolios/PF_CDP/` | ✅ |
 | 03/27 | 작가님 | 최종 비전 선언 — 역할 융합. "쌍아가 민아고 민아가 막내인" | PF_CDP.md 비전 | ✅ |
+| 03/27 | iMac/민아 | 12채널 멀티탭 실전 — X발행+댓글, 깃헙Issue#5, 티스토리/네이버/미디움 글작성 | REPORT_20260327 | ✅ |
+| 03/27 | iMac/민아 | 미디움 이미지 업로드 돌파 (backendNodeId+setFileInputFiles) | cdp_utils.py | ✅ |
+| 03/27 | 작가님 | CDP 추월 포인트 2건 발견 — ①탭 공유(작가님 탭 접근) ②동시 인스턴스 무제한 | PF_CDP.md | ✅ |
+| 03/27 | iMac/민아 | 에디터 API 업로드 (curl→GCS→이미지뱅크) + 본문삽입 패턴 확립 | cdp_utils.py | ✅ |
+| 03/27 | iMac/민아 | HTML→CDP 스크린샷 썸네일 자동 생성 (캔바 없이) | /tmp/monkos_thumbnail_v3.png | ✅ |
+| 03/27 | iMac/민아 | 콘텐츠 생애주기 1편 완주 — 뉴스스캔→글작성→썸네일→에디터 등록 | blog-edit.html | ✅ |
+| 03/27 | 작가님 | Phase 2 방향 — 셀렉터 캐싱 + 하이브리드 클릭 (Stagehand v3 참조) | PF_CDP.md | ✅ |
 
 ---
 
@@ -157,6 +164,12 @@ status: active
 | 항목 | 수치 | 측정일 | 비고 |
 |------|------|--------|------|
 | CDP 검증 기능 수 | 8/8 (전수 통과) | 03/26 | 탭·JS·이동·스크린샷·클릭·타이핑·키보드·이미지 |
+| 채널별 에디터 글쓰기 | 7/12 채널 성공 | 03/27 | MONKOS/X/티스토리/깃헙/미디움/note/네이버 |
+| 이미지 업로드 | 2채널 성공 | 03/27 | 미디움(backendNodeId), MONKOS(API직접) |
+| 실제 발행 | 3건 | 03/27 | X포스트, X댓글, GitHub Issue#5 |
+| 크롬 확장 추월 포인트 | 2건 | 03/27 | ①작가님 탭 접근 ②동시 인스턴스 무제한 |
+| HTML 썸네일 생성 | 1280x670 3버전 | 03/27 | 캔바 없이 HTML→CDP 스크린샷 |
+| GA 소스/매체 드릴다운 | CDP로 GA 조작 성공 | 03/27 | 드롭다운 클릭→옵션 선택→테이블 수집 |
 
 ---
 
@@ -188,6 +201,32 @@ status: active
 - PF 컴포넌트 폴더에서 코드를 키우고, 안정되면 본진 `scripts/`로 끌어올린다
 - 실무에서 걸리적거리는 부분이 생기면 그 파트를 업그레이드한다
 - CDP는 "연구팀이 붙어야 할 사안"이지만, 우리는 실무 병목 해소로 자연스럽게 도달했다
+
+---
+
+### 교훈 5: 채널별 에디터 입력 방식 전부 다름 (03/27)
+
+**현상**: 12채널 실전 테스트 결과, 에디터마다 입력 방식이 전부 달랐음.
+**패턴**: 티스토리(iframe innerHTML) / X(data-testid+insertText) / 깃헙(React→클릭+타이핑) / 미디움(contenteditable) / note(ClipboardEvent) / 네이버(SmartEditor, 서식/링크 불가)
+**대응**: 채널별 입력 패턴을 PF_SPREAD §7에 기록. 범용 함수가 아닌 채널 특화 패턴이 필요.
+
+### 교훈 6: 이미지 업로드 — backendNodeId 패턴 (03/27)
+
+**현상**: hidden file input에 `querySelector` nodeId가 0 반환. `setFileInputFiles` 실패.
+**원인**: DOM agent가 숨겨진 노드를 추적 못 함.
+**해결**: `Runtime.evaluate`→objectId → `DOM.describeNode`→backendNodeId → `DOM.setFileInputFiles`. 미디움에서 검증 완료.
+
+### 교훈 7: 좌표 클릭의 한계 → Phase 2 하이브리드 (03/27)
+
+**현상**: 좌표 기반 클릭은 해상도/레이아웃 변하면 깨짐. 네이버 SmartEditor에서 텍스트 선택 불가.
+**트렌드**: Stagehand v3 — DOM+접근성트리(빠름) + 비전(폴백) + CDP 캐싱(반복). 44% 속도 향상.
+**방향**: 첫 방문→접근성 트리 매핑 → 셀렉터 캐싱 → 반복은 캐시로 즉시 클릭.
+
+### 교훈 8: API 직접 호출이 UI 조작보다 확실 (03/27)
+
+**현상**: 에디터 file input에 CDP로 파일 넣어도 JS FileAPI에서 인식 안 됨. 버튼 클릭도 업로드 미트리거.
+**해결**: `curl`로 `/api/admin/upload` 직접 호출 → GCS 업로드 + 이미지 뱅크 등록 한 번에 성공.
+**원칙**: UI 조작 가능하면 UI, 안 되면 API 직접 호출. 하이브리드가 답.
 
 ---
 
