@@ -8,10 +8,8 @@ type: project
 
 ## 즉시 실행 대기
 
-1. **FAQ EN/JA Firestore 시딩** — KO 13건 완료, EN/JA 번역 파일 준비 완료(`~/Desktop/works/portal_v4/`), **시딩 스크립트 EN/JA 확장 + 실행 필요**
-2. **GitHub Issue 자동 게시 (파이프라인 Phase 1)** — PAT 미발급, translate.js에 GitHub API 코드 0건, 가장 빠르게 착수 가능
-3. **블로그 slug 버그** — Phase 0에서 AI 자동생성(한국어→Gemini 영문 slug) 도입. /blog 라이트 테마 적용 여부 별도 점검 필요
-4. **크롤링 파이프라인 네이버 실행** — `importer/naver.js` 코드 존재, note.com 완료, **네이버 4카테고리 미실행**
+1. **GitHub Issue 자동 게시 (파이프라인 Phase 1)** — PAT 미발급, translate.js에 GitHub API 코드 0건, 가장 빠르게 착수 가능
+2. **크롤링 파이프라인 네이버 실행** — `importer/naver.js` 코드 존재, note.com 완료, **네이버 4카테고리 미실행**
 
 ## 기안 검토 대기
 
