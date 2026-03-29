@@ -131,6 +131,7 @@ monkos-ops/는 4부서 체제로 재편 중이며, 과도기에는 번호 폴더
 | 13 | `COMPLETION_YYYYMMDD_막내N_{HHMMSS}.md` | `monkos-ops/ops/reports/YYYY-MM/` | `COMPLETION_20260225_막내1_150900.md` |
 | 14 | `REVIEW_YYYYMMDD_{agent}_{topic}.md` | `monkos-ops/ops/reports/YYYY-MM/` | `REVIEW_20260302_쌍아_P0_스키마_정합검토.md` |
 | 15 | `PF_{코드네임}.md` | `monkos-ops/ops/portfolios/` | `PF_CITADEL.md`, `PF_PORTAL_V4.md` |
+| 16 | `PROPOSAL_YYYYMMDD_{agent}_{topic}.md` | `monkos-ops/ops/proposals/` | `PROPOSAL_20260329_민아_SEO검색노출_수정제안서.md` |
 
 **PF 귀속 파일명 규칙**:
 - PF에 귀속된 문서(ORDER, REPORT, COMPLETION 등)의 파일명에 **PF 코드네임을 삽입**한다.
@@ -183,6 +184,7 @@ monkos-ops/는 4부서 체제로 재편 중이며, 과도기에는 번호 폴더
 | **보고서 (REPORT)** | `monkos-ops/ops/reports/YYYY-MM/` | `docs/monkos/reports/` (레거시) | **정본 ops/로 통일 (03-08)** |
 | **완료 보고 (COMPLETION)** | `monkos-ops/ops/reports/YYYY-MM/` | — | REPORT와 동일 폴더 |
 | **리뷰 (REVIEW)** | `monkos-ops/ops/reports/YYYY-MM/` | — | REPORT와 동일 폴더 |
+| **제안서 (PROPOSAL)** | `monkos-ops/ops/proposals/` | — | PF 승격 후에도 영구 보존 (9조 4항) |
 | **세션 로그** | `monkos-ops/ops/sessions/YYYY-MM/` | `docs/corpus/sessions/` | 매월 1일 이관 + README |
 | **기술 스펙 (SPEC)** | `monkos-ops/tech/specs/{service}/` | `docs/specs/` (구버전) | **tech가 유일 정본 (03-08)** |
 | **설계 문서 (DESIGN)** | `monkos-ops/tech/designs/YYYY-MM/` | `docs/monkos/designs/` (레거시) | **tech가 유일 정본 (03-08)** |
@@ -304,7 +306,7 @@ monkos-ops/는 4부서 체제로 재편 중이며, 과도기에는 번호 폴더
 
 **적용 범위**:
 - governance/constitution/petitions/*.md
-- monkos-ops/ 하위 전 운영 문서 (ORDER_*, REPORT_*, COMPLETION_*, REVIEW_*, SPEC_*, DESIGN_*, INCIDENT_*, RESEARCH_* 파일)
+- monkos-ops/ 하위 전 운영 문서 (ORDER_*, REPORT_*, COMPLETION_*, REVIEW_*, SPEC_*, DESIGN_*, INCIDENT_*, RESEARCH_*, PROPOSAL_* 파일)
 - docs/monkos/ 하위는 아카이브 동결 (기존 파일의 YAML 보정은 허용하나 신규 생성 금지)
 
 **적용 제외**:
@@ -322,7 +324,7 @@ monkos-ops/는 4부서 체제로 재편 중이며, 과도기에는 번호 폴더
 | `date` | string | `YYYY-MM-DD HH:MM KST` (헌법 제3조(적립) 1항) | `2026-02-23 04:10 KST` |
 | `status` | enum | pending / in_progress / completed / archived / blocked | `pending` |
 
-**type 허용값**: order, report, spec, incident, design, sprint, petition, research, completion, review, agenda, portfolio
+**type 허용값**: order, report, spec, incident, design, sprint, petition, research, completion, review, agenda, portfolio, **proposal**
 > `task`는 레거시. 신규 지시서는 `order` 사용 (03-08 TASK_→ORDER_ 통합)
 
 #### 타입별 추가 필수 필드
@@ -341,6 +343,7 @@ monkos-ops/는 4부서 체제로 재편 중이며, 과도기에는 번호 폴더
 | completion | `from`, `to`, `order`, `commit`, `branch` | `time`, `tags` |
 | review | `from`, `to`, `sources`(검토 대상 보고서 목록) | `tags` |
 | portfolio | `name`, `subject`, `owner`, `leads` | `domain`, `tags` |
+| proposal | `from`, `to`, `subject`, `priority` | `pf_ref`, `tags` |
 
 #### 검증 규칙
 
