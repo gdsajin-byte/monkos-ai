@@ -19,6 +19,17 @@ function escapeHtml(str) {
   return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
+function stripHtml(str) {
+  if (!str) return '';
+  return str.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+}
+
+function getSeoDescription(post) {
+  const raw = post.summary || post.content || '';
+  const cleaned = stripHtml(raw);
+  return cleaned.length > 160 ? cleaned.substring(0, 157) + '...' : cleaned;
+}
+
 function layoutHead(title, description, extra = '', htmlLang = 'ko') {
   return `<!DOCTYPE html>
 <html lang="${htmlLang}">
@@ -243,7 +254,7 @@ export async function blogListFragment(req, forceLang = null) {
             <span class="card-date">${p.createdAt ? p.createdAt.substring(0, 10) : ''}</span>
           </div>
           <h2 class="card-title">${escapeHtml(p.title)}</h2>
-          <p class="card-summary">${escapeHtml(p.summary || '')}</p>
+          <p class="card-summary">${escapeHtml(stripHtml(p.summary || ''))}</p>
         </div>
       </a>`;
   }).join('');
@@ -378,7 +389,7 @@ export async function blogPostFragment(req, lang = null) {
 
   const seoMeta = `
 <meta property="og:title" content="${escapeHtml(post.title)}">
-<meta property="og:description" content="${escapeHtml(post.summary || '')}">
+<meta property="og:description" content="${escapeHtml(getSeoDescription(post))}">
 <meta property="og:image" content="${escapeHtml(post.thumbnail || '')}">
 <meta property="og:type" content="article">
 <meta property="og:url" content="${canonicalUrl}">
@@ -417,7 +428,7 @@ ${JSON.stringify({
   },
   "datePublished": post.createdAt,
   "dateModified": post.updatedAt,
-  "description": post.summary || ''
+  "description": getSeoDescription(post)
 })}
 </script>`;
 
@@ -499,7 +510,7 @@ ${JSON.stringify({
 
   const pageScript = `function shareNative(){if(navigator.share){navigator.share({title:${JSON.stringify(post.title)},url:${JSON.stringify(canonicalUrl)}}).catch(function(){})}}`;
 
-  return { title: `${post.title} | MONKOS AI`, description: post.summary || '', seoMeta, htmlLang, pageStyle, bodyContent, pageScript };
+  return { title: `${post.title} | MONKOS AI`, description: getSeoDescription(post), seoMeta, htmlLang, pageStyle, bodyContent, pageScript };
 }
 
 // GET /blog/:slug — 상세 페이지 (기존 호출 호환)
