@@ -92,6 +92,14 @@ soul_sync.sh
 outputs/
 nul
 
+# Claude Code 워크트리 잔해 (세션 복구 가능성으로 삭제 보류, gitignore만 등록)
+monk_project/
+.claude/worktrees/
+
+# Python cache
+__pycache__/
+**/__pycache__/
+
 # iPhone 캡쳐 (로컬 전용)
 iphone_capture/
 
