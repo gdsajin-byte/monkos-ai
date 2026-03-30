@@ -21,7 +21,14 @@ function escapeHtml(str) {
 
 function stripHtml(str) {
   if (!str) return '';
-  return str.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+  return str
+    .replace(/<[^>]*>/g, '')
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, '')
+    .replace(/\[[^\]]*\]\([^)]*\)/g, '')
+    .replace(/^>+\s?/gm, '')
+    .replace(/[#*_~`]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 function getSeoDescription(post) {
