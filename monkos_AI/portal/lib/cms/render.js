@@ -14,6 +14,14 @@ const faqCollection = firestore.collection('faq_items');
 const galleryCollection = firestore.collection('gallery_items');
 const boardCollection = firestore.collection('board_posts');
 
+// SEO: 블로그 콘텐츠 내 heading 다운그레이드 (페이지 H1과 중복 방지)
+const blogRenderer = new marked.Renderer();
+blogRenderer.heading = function({ tokens, depth }) {
+  const text = this.parser.parseInline(tokens);
+  const level = Math.min(depth + 1, 6);
+  return `<h${level}>${text}</h${level}>`;
+};
+
 function escapeHtml(str) {
   if (!str) return '';
   return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -337,7 +345,13 @@ export async function blogListFragment(req, forceLang = null) {
   <div class="blog-grid">${cardsHtml || '<p style="color:var(--text-dim)">No posts yet.</p>'}</div>
   ${paginationHtml}`;
 
-  return { title: 'Blog | MONKOS AI', description: 'AI ID Photo tips, guides, and news', seoMeta, htmlLang, pageStyle, bodyContent, pageScript: null };
+  const listMeta = {
+    ko: { title: 'AI 증명사진 블로그 | MONKOS AI', description: 'AI 증명사진 팁, 가이드, 최신 뉴스 | MONKOS AI 블로그' },
+    ja: { title: 'AI証明写真ブログ | MONKOS AI', description: 'AI証明写真のヒント、ガイド、最新ニュース | MONKOS AI ブログ' },
+    en: { title: 'AI ID Photo Blog | MONKOS AI', description: 'AI ID Photo tips, guides, and news | MONKOS AI Blog' },
+  };
+  const meta = listMeta[htmlLang] || listMeta.ko;
+  return { title: meta.title, description: meta.description, seoMeta, htmlLang, pageStyle, bodyContent, pageScript: null };
 }
 
 // GET /blog — 목록 페이지 (기존 호출 호환)
@@ -380,7 +394,7 @@ export async function blogPostFragment(req, lang = null) {
   // viewCount 비동기 증가
   blogCollection.doc(docId).update({ viewCount: (post.viewCount || 0) + 1 }).catch(() => {});
 
-  const contentHtml = marked(post.content || '');
+  const contentHtml = marked(post.content || '', { renderer: blogRenderer });
   const baseSlug = slug;
 
   // hreflang — 경로 접두어 교체 방식 (slug 영문 통일 정책, 2026-03-22)
@@ -492,20 +506,23 @@ ${JSON.stringify({
   .share-more { display: inline-flex; }
 }`;
 
+  const backLabel = { ko: '블로그 목록으로', ja: 'ブログ一覧へ', en: 'Back to Blog' };
   const bodyContent = `
-  <a href="${backLink}" class="post-back">&larr; Back to Blog</a>
-  <div class="post-header">
-    <h1>${escapeHtml(post.title)}</h1>
-    <div class="post-meta">
-      <span>${escapeHtml(post.author || 'MONKOS')}</span>
-      <span>${post.createdAt ? post.createdAt.substring(0, 10) : ''}</span>
-      <span>${escapeHtml(post.lang || 'ko').toUpperCase()}</span>
-      <span>${post.viewCount || 0} views</span>
+  <a href="${backLink}" class="post-back">&larr; ${backLabel[htmlLang] || backLabel.ko}</a>
+  <article>
+    <div class="post-header">
+      <h1>${escapeHtml(post.title)}</h1>
+      <div class="post-meta">
+        <span>${escapeHtml(post.author || 'MONKOS')}</span>
+        <span>${post.createdAt ? post.createdAt.substring(0, 10) : ''}</span>
+        <span>${escapeHtml(post.lang || 'ko').toUpperCase()}</span>
+        <span>${post.viewCount || 0} views</span>
+      </div>
+      ${tagsHtml ? `<div class="post-tags">${tagsHtml}</div>` : ''}
     </div>
-    ${tagsHtml ? `<div class="post-tags">${tagsHtml}</div>` : ''}
-  </div>
-  ${post.thumbnail ? `<div class="post-thumb"><img src="${escapeHtml(post.thumbnail)}" alt="${escapeHtml(post.title)}"></div>` : ''}
-  <div class="post-content">${contentHtml}</div>
+    ${post.thumbnail ? `<div class="post-thumb"><img src="${escapeHtml(post.thumbnail)}" alt="${escapeHtml(post.title)}"></div>` : ''}
+    <div class="post-content">${contentHtml}</div>
+  </article>
   <div class="share-buttons">
     <span class="share-label">${shareLabel}</span>
     <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(post.title)}&url=${encodeURIComponent(canonicalUrl)}" target="_blank" rel="noopener" class="share-btn" title="X">\ud835\udd4f</a>
