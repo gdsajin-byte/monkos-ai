@@ -1,7 +1,7 @@
 ---
 type: PROPOSAL
 date: 2026-03-31
-author: iMac/쌍아
+author: iMac/민아
 status: 기안
 subject: Aphorisms(어록) 체계 신설
 affects: governance/philosophy/, MEMORY.md, 세션 운용 전반
@@ -9,7 +9,7 @@ affects: governance/philosophy/, MEMORY.md, 세션 운용 전반
 
 # 기안서: Aphorisms(어록) 체계 신설
 
-**[2026-03-31 11:24 KST] iMac/쌍아 → 작가님**
+**[2026-03-31 11:24 KST] iMac/민아 → 작가님**
 
 ---
 
@@ -34,17 +34,17 @@ governance/philosophy/aphorisms/
 ### 2.2 파일 네이밍
 
 ```
-APH_YYYYMMDD_키워드.md
+PHIL_YYYYMMDD_키워드.md
 ```
 
-- `APH` = Aphorism 접두사 (법률 ch4 3조 15종 패턴에 신규 추가)
+- `PHIL` = Philosophy 접두사 (법률 ch4 3조 15종 패턴에 신규 추가). 당초 APH(Aphorism) → 직관성 문제로 PHIL로 변경 (2026-03-31 작가님 합의)
 - 키워드: 어록의 핵심 테마를 한영 혼용 가능하게 (예: `헌법AI_상호성장`, `쥐와구조`)
 
 ### 2.3 파일 내부 구조
 
 ```yaml
 ---
-type: APH
+type: PHIL
 date: YYYY-MM-DD
 speaker: 작가님 | 에이전트명 | 공동
 session: 세션 출처 (예: iMac/쌍아 2026-03-31)
