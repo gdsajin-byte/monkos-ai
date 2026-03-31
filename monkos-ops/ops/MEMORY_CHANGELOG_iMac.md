@@ -92,3 +92,16 @@
 ---
 
 > 실행자: 막내1 (Opus 4.6) | 지시서: TASK_20260224_막내1_iMac_MEMORY_압축.md
+
+---
+
+## 2026-03-31 — works submodule 전환 반영
+
+**변경자**: 막내1 (iMac)
+**변경 내용**: "works subtree 운용 규정" → "works submodule 운용 규정" 전면 갱신
+**이유**: subtree push 성능 한계(1,441커밋 전수 스캔 → 10분 타임아웃) → submodule 전환 (작가님 결정)
+**주요 변경 항목**:
+- subtree/origin-works 관련 내용 삭제
+- submodule 운용 규정 신설 (.gitmodules, git submodule update 등)
+- M1 최초 1회 `git submodule update --init` 안내 추가
+- 세션 마감 스크립트 안내 유지 (mk-push.sh/mk-pull.sh는 동일 경로, 내용만 변경)
