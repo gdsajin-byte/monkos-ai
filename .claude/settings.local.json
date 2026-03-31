@@ -52,7 +52,8 @@
       "Bash(launchctl list:*)",
       "Bash(git commit:*)",
       "WebFetch(domain:docs.tosspayments.com)",
-      "Bash(find /Users/developer/monk_project -type f \\\\\\(-name *민아* -o -name *mina* \\\\\\))"
+      "WebFetch(domain:ai.google.dev)",
+      "Bash(bash deploy.sh prod)"
     ],
     "deny": [
       "Bash(rm -rf /*)",
