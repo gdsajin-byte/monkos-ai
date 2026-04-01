@@ -36,11 +36,16 @@ GCS_BUCKET="monk-ai-images"
 SERVICE_ACCOUNT="monk-image-engine@${PROJECT_ID}.iam.gserviceaccount.com"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-# API Key — .env에서 읽기
-if [ -f "${SCRIPT_DIR}/../.env" ]; then
-  GEMINI_API_KEY=$(grep GEMINI_API_KEY "${SCRIPT_DIR}/../.env" | cut -d'=' -f2)
-elif [ -f "${SCRIPT_DIR}/.env" ]; then
-  GEMINI_API_KEY=$(grep GEMINI_API_KEY "${SCRIPT_DIR}/.env" | cut -d'=' -f2)
+# API Key — Secret Manager에서 읽기 (fallback: .env)
+GEMINI_API_KEY=$(gcloud secrets versions access latest --secret=GEMINI_API_KEY --project=${PROJECT_ID} 2>/dev/null)
+
+if [ -z "$GEMINI_API_KEY" ]; then
+  echo -e "${YELLOW}⚠ Secret Manager 접근 실패. .env fallback${NC}"
+  if [ -f "${SCRIPT_DIR}/../.env" ]; then
+    GEMINI_API_KEY=$(grep GEMINI_API_KEY "${SCRIPT_DIR}/../.env" | cut -d'=' -f2)
+  elif [ -f "${SCRIPT_DIR}/.env" ]; then
+    GEMINI_API_KEY=$(grep GEMINI_API_KEY "${SCRIPT_DIR}/.env" | cut -d'=' -f2)
+  fi
 fi
 
 if [ -z "$GEMINI_API_KEY" ]; then
