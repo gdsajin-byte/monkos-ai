@@ -4,7 +4,11 @@
 # 사용: cdp.sh <command> [args]
 
 CDP_HOST="127.0.0.1"
-CDP_PORT="9222"
+CDP_PORT="${CDP_PORT:-$(case $(scutil --get ComputerName 2>/dev/null) in
+  *M4*|*한송이*) echo 9230;;
+  *M2*|*꾸*)     echo 9231;;
+  *)             echo 9222;;
+esac)}"
 CDP_BASE="http://${CDP_HOST}:${CDP_PORT}"
 
 case "$1" in
