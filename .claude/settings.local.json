@@ -53,7 +53,10 @@
       "Bash(git commit:*)",
       "WebFetch(domain:docs.tosspayments.com)",
       "WebFetch(domain:ai.google.dev)",
-      "Bash(bash deploy.sh prod)"
+      "Bash(bash deploy.sh prod)",
+      "Read(//Users/jeong-kyushin/Desktop/works/**)",
+      "Bash(scripts/tools/cdp_setup.sh status:*)",
+      "Bash(/Users/jeong-kyushin/developer/monk_project/scripts/tools/cdp_setup.sh status:*)"
     ],
     "deny": [
       "Bash(rm -rf /*)",
