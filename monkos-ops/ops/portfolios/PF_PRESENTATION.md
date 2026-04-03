@@ -67,7 +67,7 @@ domain: "presentation, 3d-avatar, tts, content-pipeline"
 | 04/03 | 막내3 | 실제 슬라이드 12장 + TTS 대본 ~60문장 + 액션 싱크 적용 완료 | `apps/monkos-3d/` | ✅ |
 | 04/03 | 막내 | pt.monkos.ai 프로드 배포 (Cloud Run + 커스텀 도메인) | Dockerfile + server.js | ✅ |
 | 04/03 | 민아 | pt.monkos.ai 프로드 접속 확인 (CDP 스크린샷 12장 전수 확인) | — | ✅ |
-| 04/03 | 작가님 | **콘텐츠 정밀 수정 피드백 3건** (아래 기록) | — | 📝 |
+| 04/03 | 작가님 | **콘텐츠 정밀 수정 피드백 4건** (아래 Phase 1.5 기록) | — | 📝 |
 
 ---
 
