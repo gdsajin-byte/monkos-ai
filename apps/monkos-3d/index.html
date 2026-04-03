@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>몽코스 3D 프로토타입</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0f0f23;
+      color: #fff;
+      font-family: 'Pretendard', -apple-system, sans-serif;
+      height: 100vh;
+      overflow: hidden;
+    }
+    #app {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+    .main-area {
+      position: relative;
+      flex: 1;
+      min-height: 0;
+    }
+    /* 슬라이드 영역 (전체) */
+    #slide-panel {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: #13132b;
+    }
+    #slide-content {
+      width: 100%;
+      max-width: 1200px;
+      background: #0a0a0a;
+      border-radius: 16px;
+      padding: 32px 40px;
+      min-height: 500px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      box-shadow: 0 8px 32px rgba(167, 139, 250, 0.1);
+      overflow-y: auto;
+    }
+    #slide-content h2 {
+      color: #a78bfa;
+      font-size: 3rem;
+      margin-bottom: 16px;
+    }
+    #slide-content p {
+      color: #c4b5fd;
+      font-size: 1.8rem;
+      line-height: 1.7;
+    }
+    #slide-counter {
+      margin-top: 24px;
+      color: #6d5faa;
+      font-size: 14px;
+      text-align: center;
+    }
+    /* 3D 캐릭터 영역 — 오버레이 (유튜브 얼굴캠 크기) */
+    #character-panel {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      width: 400px;
+      height: 440px;
+      z-index: 10;
+      pointer-events: none;
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    #three-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      border-radius: 16px;
+    }
+    /* 하단 컨트롤 */
+    #controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 16px 24px;
+      background: #13132b;
+      border-top: 1px solid #a78bfa33;
+      flex-wrap: wrap;
+    }
+    .ctrl-btn {
+      background: #a78bfa;
+      color: #0f0f23;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .ctrl-btn:hover { background: #c4b5fd; }
+    .ctrl-btn.secondary {
+      background: transparent;
+      color: #a78bfa;
+      border: 1px solid #a78bfa55;
+    }
+    .ctrl-btn.secondary:hover { background: #a78bfa22; }
+    .ctrl-btn.active {
+      background: #e879f9;
+    }
+    #tts-status {
+      color: #6d5faa;
+      font-size: 13px;
+      margin-left: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="main-area">
+      <div id="slide-panel">
+        <div id="slide-content">
+          <h2>로딩 중...</h2>
+          <p></p>
+        </div>
+      </div>
+      <div id="character-panel">
+        <canvas id="three-canvas"></canvas>
+      </div>
+    </div>
+    <div id="controls">
+      <button class="ctrl-btn" id="btn-speak">▶ 발화</button>
+      <button class="ctrl-btn" id="btn-auto" style="background:#e879f9;">▶▶ 자동</button>
+      <button class="ctrl-btn secondary" id="btn-prev">◀ 이전</button>
+      <button class="ctrl-btn secondary" id="btn-next">다음 ▶</button>
+      <button class="ctrl-btn secondary" id="btn-bounce">통통</button>
+      <button class="ctrl-btn secondary" id="btn-look">시선</button>
+      <button class="ctrl-btn secondary" id="btn-point">가리키기</button>
+      <button class="ctrl-btn secondary" id="btn-walk">걷기</button>
+      <button class="ctrl-btn secondary" id="btn-roam">걸어다니기</button>
+      <span style="color:#a78bfa55; margin:0 4px;">|</span>
+      <select id="voice-select" style="
+        background:#1a1a3e; color:#c4b5fd; border:1px solid #a78bfa55;
+        border-radius:6px; padding:8px 12px; font-size:13px; cursor:pointer;
+        outline:none;
+      ">
+        <option value="ErXwobaYiN019PkySvjV">Antoni — 남성, 친근</option>
+        <option value="21m00Tcm4TlvDq8ikWAM">Rachel — 여성, 밝고 또렷</option>
+        <option value="EXAVITQu4vr4xnSDxMaL">Bella — 여성, 따뜻한 톤</option>
+        <option value="VR6AewLTigWG4xSOukaG">Arnold — 남성, 깊고 단단</option>
+        <option value="pNInz6obpgDQGcFmaJgB">Adam — 남성, 차분</option>
+        <option value="__custom__">커스텀 ID 입력...</option>
+      </select>
+      <input id="voice-custom" type="text" placeholder="Voice ID 붙여넣기"
+        style="
+          display:none; background:#1a1a3e; color:#c4b5fd; border:1px solid #a78bfa55;
+          border-radius:6px; padding:8px 12px; font-size:13px; width:200px;
+          outline:none;
+        "
+      />
+      <span id="tts-status"></span>
+    </div>
+  </div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
