@@ -56,7 +56,8 @@
       "Bash(bash deploy.sh prod)",
       "Read(//Users/jeong-kyushin/Desktop/works/**)",
       "Bash(scripts/tools/cdp_setup.sh status:*)",
-      "Bash(/Users/jeong-kyushin/developer/monk_project/scripts/tools/cdp_setup.sh status:*)"
+      "Bash(/Users/jeong-kyushin/developer/monk_project/scripts/tools/cdp_setup.sh status:*)",
+      "Bash(dig studio.monkos.ai +short)"
     ],
     "deny": [
       "Bash(rm -rf /*)",

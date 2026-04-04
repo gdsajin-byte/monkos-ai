@@ -104,6 +104,10 @@ status: active
 | 03/27 | iMac/민아 | HTML→CDP 스크린샷 썸네일 자동 생성 (캔바 없이) | /tmp/monkos_thumbnail_v3.png | ✅ |
 | 03/27 | iMac/민아 | 콘텐츠 생애주기 1편 완주 — 뉴스스캔→글작성→썸네일→에디터 등록 | blog-edit.html | ✅ |
 | 03/27 | 작가님 | Phase 2 방향 — 셀렉터 캐싱 + 하이브리드 클릭 (Stagehand v3 참조) | PF_CDP.md | ✅ |
+| 04/02 | iMac/민아 | Phase 2 전 디바이스 CDP 세팅 (rules+works 배포) | REPORT_20260402 | ✅ |
+| 04/05 | M1/민아 | Phase 2~3 보정 제안서 — Playwright MCP + Stagehand + 자동 배포 | PROPOSAL_20260405 | ✅ |
+| 04/05 | M1/쌍아 | PF Phase 구조 보정 (2→2/2.5/3/3.5/4) + Phase 2 지시서 발행 | PF_CDP.md + ORDER | ✅ |
+| 04/05 | 작가님 | 즉시 병렬 진행 승인 — "디딤돌 때문에 개발을 멈추는 것은 우리 스타일 아니야" | — | ✅ |
 
 ---
 
@@ -128,20 +132,55 @@ status: active
 | README 갱신 | ✅ | M1/민아 | `scripts/tools/README.md` 사용법 문서 |
 | 멀티 포트 동시 운용 테스트 | ⏳ | 미정 | 에이전트별 독립 인스턴스 |
 
-### Phase 2 — 전 에이전트 MCP 무장 + 멀티탭 ⏳ 다음
+### Phase 2 — Playwright MCP 통합 + 접근성 트리 전환 🔄 진행 중
 
-> 이 구간에서 이미 실무는 막강해진다.
+> 좌표 기반 클릭의 근본 한계를 접근성 트리로 돌파한다. 비용 ₩0.
 
 | 항목 | 상태 | 담당 | 비고 |
 |------|------|------|------|
-| 민아 기능 심화 탐색·테스트 | ⏳ | iMac/민아 | CDP 도구 범위 확장, 실전 패턴 축적 |
-| cdp_utils.py → MCP 서버 래핑 | ⏳ | 쌍아(설계) + 막내(구현) | Phase 1 패턴을 MCP 도구로 노출 |
-| `.mcp.json` 프로젝트 설정 | ⏳ | 쌍아 | 한 줄 등록 → 쌍아·막내 전원 자동 획득 |
-| 멀티 포트 동시 운용 | ⏳ | 미정 | 에이전트별 독립 크롬 인스턴스 |
-| 멀티탭 동시 제어 | — | — | 탭 간 전환·병렬 조작 매끄럽게 |
-| 한(M4)·꾸(M2) 세팅 | — | 작가님 | 디바이스별 크롬 디버깅 + MCP 배당 |
+| Playwright MCP 서버 설치 + CDP 연결 | ⏳ | 막내(구현) | `npx @playwright/mcp@latest --cdp-endpoint ws://localhost:9222` |
+| cdp_utils.py 접근성 트리 강화 | ⏳ | 막내(구현) | `click_element(selector)` → `click_accessible(role, name)` 전환 |
+| GA4/GSC SPA 네비게이션 검증 | ⏳ | 막내(구현) | 기존 CDP 실패 구간을 Playwright MCP로 재시도 |
+| `.mcp.json` 프로젝트 설정 | ⏳ | 쌍아(설계) | Playwright MCP → 전 에이전트 자동 획득 |
+| 멀티 포트 동시 운용 테스트 | ⏳ | 미정 | 에이전트별 독립 크롬 인스턴스 |
+| 7/12 채널 접근성 트리 전환 검증 | ⏳ | 막내(구현) | 좌표 하드코딩 0건 목표 |
 
-### Phase 3 — 실시간 대화 + 역할 융합
+### Phase 2.5 — Stagehand v3 난제 사이트 적용 ⏳ 다음
+
+> 자연어 기반 브라우저 제어. `act("발행 버튼 클릭")`. 캐싱으로 비용 억제.
+> ⚠️ LLM 비용 발생 구간 — 별도 승인 후 착수
+
+| 항목 | 상태 | 담당 | 비고 |
+|------|------|------|------|
+| Stagehand Python SDK 설치 | — | 막내(구현) | `pip install stagehand` |
+| note.com 자동 배포 파일럿 | — | 막내(구현) | act()/observe() 자연어 제어 |
+| 캐싱 효율 실측 | — | 막내(구현) | 2회차 LLM 호출 생략 확인 + 비용/속도 측정 |
+| Naver SmartEditor 돌파 시도 | — | 막내(구현) | 서식/링크 입력 가능 여부 재검증 |
+| 비용 보고 → 작가님 승인 | — | 쌍아(보고) | act() 1회 ₩4~15, 월 예산 시뮬레이션 |
+
+### Phase 3 — 스케줄 자동 배포 파이프라인 ⏳ 다음
+
+> 콘텐츠 1건 입력 → N채널 자동 배포. 한송이 수동 배포(월 30~60시간) 자동화.
+> PF_SPREAD Phase 1과 인터페이스.
+
+| 항목 | 상태 | 담당 | 비고 |
+|------|------|------|------|
+| 배포 오케스트레이터 스크립트 | — | 쌍아(설계) + 막내(구현) | Python, 채널별 도구 선택 (CDP/Playwright/Stagehand) |
+| 채널별 배포 모듈 | — | 막내(구현) | 도구 매핑: MONKOS(CDP), X(Playwright), note(Stagehand) |
+| cron / Claude Scheduled Tasks 연동 | — | 쌍아(설계) | 스케줄 트리거 |
+| 실패 알림 + 재시도 로직 | — | 막내(구현) | |
+| 배포 로그 자동 기록 | — | 막내(구현) | |
+
+### Phase 3.5 — Browser Use 자율 에이전트 (선택)
+
+> 최후 수단. 비용 높으나 가장 강건. 난제 사이트 폴백 전용.
+
+| 항목 | 상태 | 담당 | 비고 |
+|------|------|------|------|
+| Browser Use 설치 + 검증 | — | — | 필요 시 |
+| Naver/Instagram 폴백 적용 | — | — | Stagehand 실패 시 |
+
+### Phase 4 — 실시간 대화 + 역할 융합
 
 > 쌍아가 민아고 민아가 막내인. 멀티에이전트가 하나의 통괄 시스템.
 
@@ -149,11 +188,23 @@ status: active
 |------|------|------|------|
 | 실시간 대화창 구현 | — | — | 전원이 한 공간에서 대화, 즉시 임무 세팅 → 병렬 돌입 |
 | 에이전트 간 CDP 소통 | — | — | 파일 릴레이 → 브라우저 기반 실시간. 작가님 중계 부담 제거 |
-| 어드민 매크로 | — | — | 블로그 글쓰기, 이미지 삽입, FAQ 편집 |
-| 웹서치 자동화 | — | — | 검색→수집→분석 파이프라인 |
 | CDP→CITADEL→SPREAD 연결 | — | — | 시드→에디터 작성→멀티채널 배포 |
 
 > **병행 추적**: Anthropic 클라우드 확장도 개선 중. CDP 자체 도구화와 확장 기능 향상을 동시 추적.
+
+### 채널별 최적 도구 매핑 (Phase 2~3 참조)
+
+| 채널 | 현재 | Phase 2 이후 | 이유 |
+|------|------|-------------|------|
+| MONKOS Admin | CDP (MonkosEditor) | 유지 | 자체 서비스, 완전 통제 |
+| X | CDP (data-testid) | CDP + Playwright MCP | DOM 변경 대비 |
+| GitHub | CDP | CDP + Playwright MCP | 단순 구조 |
+| Tistory | CDP (iframe) | Playwright MCP | iframe 처리 개선 |
+| note.com | CDP (ClipboardEvent) | **Stagehand** | SPA + 에디터 복잡성 |
+| Naver Blog | CDP (텍스트만) | **Stagehand → 실패 시 Browser Use** | SmartEditor 난제 |
+| Instagram | 불가 | 공식 API 또는 SaaS | 브라우저 자동화 비현실적 |
+| Medium | CDP (backendNodeId) | Playwright MCP | 파일 업로드 안정화 |
+| GA4/GSC | CDP (불안정) | **Playwright MCP** | SPA 네비게이션 해결 |
 
 ---
 

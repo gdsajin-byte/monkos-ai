@@ -78,6 +78,10 @@ status: active
 | 3/26 | 쌍아 | **Phase 1 코드 완료 보고** + render.js 2079줄 문제 발견 → 어젠다 #31 등록 | [COMPLETION_20260326_쌍아_032500](../reports/2026-03/COMPLETION_20260326_쌍아_032500.md) | ✅ |
 | 3/26 | 막내2 | 코드 리뷰 9/9 합격. 경미 잔여: Guide 다국어 라우트 미구현 | — | ✅ |
 | 3/26 | 작가님 | 배포 지시 (portal + monk.kr) | — | ⏳ 배포중 |
+| 3/29 | 민아 | SEO 검색노출 수정 제안서 (P0/P1/P2 이슈) | PROPOSAL_20260329_민아_SEO검색노출_수정제안서 | ✅ |
+| 4/05 | 민아 | SEO 기술 보정 4건 진단 (JA/EN 메타, Crop, Blog JSON-LD, alt) | ORDER_20260405_CITADEL_SEO보정_4건 | ✅ 진단 |
+| 4/05 | 쌍아 | 코드 검증 → 3건 확정 (건4 alt 이미 해결 확인, 제외) | ORDER_20260405_CITADEL_SEO보정_3건 | ✅ |
+| 4/05 | 막내2 | SEO 3건 코딩 완료 (home.js metaMap, crop H1+hreflang, blog JSON-LD) | — | ✅ 커밋 대기 |
 
 ---
 
@@ -116,6 +120,18 @@ status: active
 | 블로그 타이틀 최적화 (CMS 에디터) | ❌ 미착수 | 민아/작가님 |
 | 외부 백링크 콘텐츠 발행 (note.com, 네이버 등) | ❌ 미착수 | 한 |
 | GSC 색인 요청 + 모니터링 | ❌ 배포 후 | 민아 |
+
+### Phase 1.5 — 기술 SEO 보정 ⏳ 커밋 대기 (4/05)
+
+| 항목 | 상태 | 담당 |
+|------|------|------|
+| JA/EN 메인 메타 현지화 (home.js SSR metaMap 치환) | ✅ 코딩 완료 | 막내2 |
+| Crop 페이지 hreflang 추가 (ko + x-default) | ✅ 코딩 완료 | 막내2 |
+| Crop H1 태그 추가 (span→h1 + CSS 보정) | ✅ 코딩 완료 | 막내2 |
+| Blog 목록 JSON-LD (@type: Blog) | ✅ 코딩 완료 | 막내2 |
+| 포탈 prod 배포 (monkos-portal, ./deploy.sh prod) | ⏳ 커밋 후 | 막내 |
+
+> 핵심: JA canonical이 KO를 가리켜 일본 자연검색 구조적 차단 → 해소
 
 ### Phase 2 — GEO 본격 + 고급 SEO (예정)
 
