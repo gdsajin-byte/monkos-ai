@@ -93,6 +93,49 @@ export async function renderHome(req, res, forceLang = null) {
     function getBlock(id) { return layoutSections.find(s => s.id === id); }
     function lt(obj) { return (obj && obj[lang]) || obj?.ko || ''; }
 
+    // 0-pre. 메타 태그 언어별 치환 (SEO: JA/EN 현지화)
+    const metaMap = {
+      ko: {
+        title: 'MONKOS AI | AI 증명사진 · 여권사진 · 이력서사진',
+        desc: 'AI 실시간 코칭으로 완벽한 증명사진을 촬영하세요. 여권, 비자, 이력서, 취업사진 지원. 고품질 AI 증명사진 생성.',
+        ogTitle: 'MONKOS AI | AI 증명사진',
+        ogDesc: 'AI 코치가 촬영을 실시간 가이드. 증명사진 · 여권사진 · 이력서사진 촬영.',
+        canonical: 'https://monkos.ai/',
+        locale: 'ko_KR',
+        htmlLang: 'ko'
+      },
+      ja: {
+        title: 'MONKOS AI | AI証明写真 · パスポート写真 · 履歴書写真',
+        desc: 'AIリアルタイムコーチングで完璧な証明写真を撮影。パスポート、ビザ、履歴書対応。高品質AI証明写真生成。',
+        ogTitle: 'MONKOS AI | AI証明写真',
+        ogDesc: 'AIコーチがリアルタイムガイド。証明写真・パスポート写真・履歴書写真の撮影。',
+        canonical: 'https://monkos.ai/ja/',
+        locale: 'ja_JP',
+        htmlLang: 'ja'
+      },
+      en: {
+        title: 'MONKOS AI | AI ID Photos · Passport Photos · Resume Photos',
+        desc: 'Capture perfect ID photos with AI real-time coaching. Passport, visa, resume photos supported. High-quality AI photo generation.',
+        ogTitle: 'MONKOS AI | AI ID Photos',
+        ogDesc: 'AI coach guides your photo session in real time. ID · Passport · Resume photos.',
+        canonical: 'https://monkos.ai/en/',
+        locale: 'en_US',
+        htmlLang: 'en'
+      }
+    };
+    const m = metaMap[lang] || metaMap.ko;
+
+    html = html.replace(/<html lang="ko">/, `<html lang="${m.htmlLang}">`);
+    html = html.replace(/<title>[^<]+<\/title>/, `<title>${m.title}</title>`);
+    html = html.replace(/<meta name="description" content="[^"]*">/, `<meta name="description" content="${m.desc}">`);
+    html = html.replace(/<meta property="og:title" content="[^"]*">/, `<meta property="og:title" content="${m.ogTitle}">`);
+    html = html.replace(/<meta property="og:description" content="[^"]*">/, `<meta property="og:description" content="${m.ogDesc}">`);
+    html = html.replace(/<meta property="og:url" content="[^"]*">/, `<meta property="og:url" content="${m.canonical}">`);
+    html = html.replace(/<meta property="og:locale" content="[^"]*">/, `<meta property="og:locale" content="${m.locale}">`);
+    html = html.replace(/<link rel="canonical" href="[^"]*">/, `<link rel="canonical" href="${m.canonical}">`);
+    html = html.replace(/<meta name="twitter:title" content="[^"]*">/, `<meta name="twitter:title" content="${m.ogTitle}">`);
+    html = html.replace(/<meta name="twitter:description" content="[^"]*">/, `<meta name="twitter:description" content="${m.ogDesc}">`);
+
     // 0. Gallery strip (Firestore → 동적, layout maxItems 적용)
     const galleryBlock = getBlock('gallery-strip');
     const galleryMax = galleryBlock?.data?.maxItems || 12;
