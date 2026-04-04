@@ -351,7 +351,24 @@ export async function blogListFragment(req, forceLang = null) {
     en: { title: 'AI ID Photo Blog | MONKOS AI', description: 'AI ID Photo tips, guides, and news | MONKOS AI Blog' },
   };
   const meta = listMeta[htmlLang] || listMeta.ko;
-  return { title: meta.title, description: meta.description, seoMeta, htmlLang, pageStyle, bodyContent, pageScript: null };
+
+  const blogJsonLd = `<script type="application/ld+json">
+${JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "Blog",
+  "name": meta.title,
+  "description": meta.description,
+  "url": canonicalUrl,
+  "publisher": {
+    "@type": "Organization",
+    "name": "Monk Studio",
+    "url": "https://monkos.ai",
+    "logo": { "@type": "ImageObject", "url": "https://monkos.ai/monkos-icon-1024.png" }
+  }
+})}
+</script>`;
+
+  return { title: meta.title, description: meta.description, seoMeta, htmlLang, pageStyle, bodyContent, pageScript: blogJsonLd };
 }
 
 // GET /blog — 목록 페이지 (기존 호출 호환)
