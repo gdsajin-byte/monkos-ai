@@ -108,6 +108,9 @@ status: active
 | 04/05 | M1/민아 | Phase 2~3 보정 제안서 — Playwright MCP + Stagehand + 자동 배포 | PROPOSAL_20260405 | ✅ |
 | 04/05 | M1/쌍아 | PF Phase 구조 보정 (2→2/2.5/3/3.5/4) + Phase 2 지시서 발행 | PF_CDP.md + ORDER | ✅ |
 | 04/05 | 작가님 | 즉시 병렬 진행 승인 — "디딤돌 때문에 개발을 멈추는 것은 우리 스타일 아니야" | — | ✅ |
+| 04/05 | M1/막내3 | Phase 2 Playwright MCP 기동 검증 — 서버 기동, CDP 연결, 접근성 트리(GA4 498개), ref 클릭, .mcp.json 등록(21도구) | 5570be9 | ✅ |
+| 04/05 | M1/민아 | Playwright vs CDP 비교 테스트 — GA4 SPA 진단: MAT-TREE-NODE 구조 식별, 오류 원인 "subtree intercepts pointer events" 확인. 진단 능력 Playwright 우위 확정 | SESSION_20260405 | ✅ |
+| 04/05 | 작가님 | 전략적 위치 선언 — "빅테크 사이의 빈 공간 점유". CDP 스택이 빅테크 종속 없이 각사 최강점 조합 가능한 열린 구조임을 확인. 이의신청 PT 논리로 활용 예정 | PROPOSAL_20260405 §9 | ✅ |
 
 ---
 
