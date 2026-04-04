@@ -37,16 +37,21 @@ git push origin main
 # 네이버 검색 API 키 추가
 gcloud run services update monkos-portal \
   --project monkos \
-  --region asia-northeast1 \
+  --region us-central1 \
   --update-env-vars NAVER_CLIENT_ID=JaqN_J5ashaxBC7t6aya,NAVER_CLIENT_SECRET=RThJGuoEET
 ```
 
 ## Task 3: prod 배포
 
+⚠️ 직접 gcloud 명령이 아닌 deploy.sh 경유 (ch5 2조)
+
 ```bash
 cd /Users/jeong-kyushin/developer/monk_project/monkos_AI/portal
-gcloud run deploy monkos-portal --source . --project monkos --region asia-northeast1
+./deploy.sh prod
 ```
+
+> 서비스명: monkos-portal (deploy.sh L63에 정의)
+> 리전: us-central1 (deploy.sh L52에 정의)
 
 ## Task 4: 배포 후 확인
 

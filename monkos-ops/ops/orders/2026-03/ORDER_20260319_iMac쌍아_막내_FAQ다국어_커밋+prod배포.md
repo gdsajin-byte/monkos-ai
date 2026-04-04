@@ -25,10 +25,15 @@ git push origin main
 
 ## Task 2: prod 배포
 
+⚠️ 직접 gcloud 명령이 아닌 deploy.sh 경유 (ch5 2조)
+
 ```bash
 cd /Users/jeong-kyushin/developer/monk_project/monkos_AI/portal
-gcloud run deploy monkos-portal --source . --project monkos --region asia-northeast1
+./deploy.sh prod
 ```
+
+> 서비스명: monkos-portal (deploy.sh L63에 정의)
+> 리전: us-central1 (deploy.sh L52에 정의)
 
 ## Task 3: 배포 후 확인
 

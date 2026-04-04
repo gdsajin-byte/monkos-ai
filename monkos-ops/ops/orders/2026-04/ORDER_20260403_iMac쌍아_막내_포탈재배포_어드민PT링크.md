@@ -6,7 +6,7 @@ date: 2026-04-03 19:10 KST
 priority: P1
 subject: 포탈 재배포 — 어드민에 PT 링크 추가 반영
 tags: [portal, deploy, admin, pt]
-status: open
+status: closed
 ---
 
 # 지시서: 포탈 재배포
@@ -33,14 +33,15 @@ status: open
 
 포탈 Cloud Run 재배포:
 
+⚠️ 직접 gcloud 명령이 아닌 deploy.sh 경유 (ch5 2조)
+
 ```bash
 cd monkos_AI/portal
-gcloud run deploy portal \
-  --project=monkos \
-  --region=asia-northeast1 \
-  --source=. \
-  --allow-unauthenticated
+./deploy.sh prod
 ```
+
+> 서비스명: monkos-portal (deploy.sh L63에 정의)
+> 리전: us-central1 (deploy.sh L52에 정의)
 
 ---
 

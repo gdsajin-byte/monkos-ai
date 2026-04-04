@@ -91,8 +91,8 @@ credits.html, privacy.html, terms.html, refund.html 등:
 ## 작업 4: 3서비스 배포
 
 ```bash
-# portal
-cd monkos_AI/portal && gcloud builds submit --tag gcr.io/gen-lang-client-0105707468/monkos-portal && gcloud run deploy monkos-portal --image gcr.io/gen-lang-client-0105707468/monkos-portal --region asia-northeast1 --platform managed
+# portal — deploy.sh 경유 (ch5 2조), 서비스명: monkos-portal, 리전: us-central1
+cd monkos_AI/portal && ./deploy.sh prod
 
 # idphoto-jp
 cd monkos_AI/idphoto-jp && gcloud builds submit --tag gcr.io/gen-lang-client-0105707468/monkos-idphoto-jp && gcloud run deploy monkos-idphoto-jp --image gcr.io/gen-lang-client-0105707468/monkos-idphoto-jp --region asia-northeast1 --platform managed
