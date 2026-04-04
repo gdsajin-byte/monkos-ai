@@ -53,7 +53,7 @@ body {
   width: 28px; height: 28px;
   border-radius: 6px;
 }
-.header-title { font-size: 14px; font-weight: 700; color: var(--text); }
+.header-title { font-size: 14px; font-weight: 700; color: var(--text); margin: 0; }
 .header-info { font-size: 10px; color: var(--muted); font-family: monospace; }
 
 /* 규격 탭 */
