@@ -118,7 +118,11 @@ status: active
 | 04/05 | 작가님 | 보안 관리 체계화 선언 — "불필요 SA 삭제, 필요한 것만 집중관리. 매번 SA 발급은 보안에 치명적" | — | ✅ |
 | 04/05 | iMac/민아 | PT앱 슬라이드 전면 재설계 지시서 발행 — 8시퀀스 숏컷 영상 구조 + CDP 캡처 지시서 | ORDER×2 | ✅ |
 | 04/05 | iMac/막내3 | PT 슬라이드 전면 재설계 완료 — slides.js 8시퀀스 교체, TTS 발음 교정 전건 반영, npm build 성공 | slides.js | ✅ |
-| 04/05 | iMac/막내4 | CDP 동작화면 캡처 중간 — 스크린샷 3장 완료, Playwright 스월링(포트 충돌 추정). 9223 포트 분리 재시도 지시 | cdp_demo_1~3.png | ⏳ |
+| 04/05 | iMac/막내4 | CDP 동작화면 캡처 — 스크린샷 3장 + Playwright 포트 충돌 발견. 9223 포트 분리로 해결. 최종 6장 완료 (CDP 3 + Playwright 2 + 바우쳐 1) | cdp_demo_1~3 + playwright_tree/click + voucher_google | ✅ |
+| 04/05 | iMac/막내4 | **포트 충돌 실증**: 9222를 민아+작가님 점유 중 막내4 동시 접속 → Playwright 스월링. 9223 분리로 해결. 멀티에이전트 CDP 동시 사용 시 포트 분리 필수 확정 | — | ✅ |
+| 04/05 | 작가님 | CDP 정교화 방향 — "버튼 하나 못 눌러서야 되겠나". 하드코딩 아닌 DevTools API 런타임 자동 파악. 페이지 구조 변경에도 자동 대응하는 설계 지시 | — | ✅ |
+| 04/05 | iMac/막내3 | **PageProfiler 구현 완료** — CDP DevTools API 4종 병렬 수집(DOM+접근성+이벤트리스너+CSS), 프로파일 캐시, 자동 변경 감지. 첫 프로파일 5~17ms, 캐시 히트 2~29ms (기존 3초 대비 100x+) | cdp_utils.py PageProfiler 클래스 | ✅ |
+| 04/05 | iMac/막내3 | **GA4+GSC CDP 실전 시연** — PageProfiler smart_click 100% 성공 (5/5). GA4 보고서→실시간, GSC 실적 전부 자동 네비게이션. GA4 활성 사용자 400명(↑143.9%), GSC 클릭 27/노출 245 추출 | 스크린샷 5장 + 데이터 | ✅ |
 
 ---
 
@@ -141,7 +145,7 @@ status: active
 | 수집 코드 → `scripts/tools/cdp_utils.py` 패키지화 | ✅ | M1/민아 | CDP 클래스 + MonkosEditor 클래스 (530줄) |
 | 에디터 조작 노하우 코드화 | ✅ | M1/민아 | Toast UI editor API, ProseMirror 포커스 패턴 |
 | README 갱신 | ✅ | M1/민아 | `scripts/tools/README.md` 사용법 문서 |
-| 멀티 포트 동시 운용 테스트 | ⏳ | 미정 | 에이전트별 독립 인스턴스 |
+| 멀티 포트 동시 운용 테스트 | ✅ | iMac/막내4 | 9222+9223 포트 분리 검증 완료. 동시 접속 시 충돌 실증 → 분리 필수 |
 
 ### Phase 2 — Playwright MCP 통합 + 접근성 트리 전환 🔄 진행 중
 
@@ -149,11 +153,14 @@ status: active
 
 | 항목 | 상태 | 담당 | 비고 |
 |------|------|------|------|
-| Playwright MCP 서버 설치 + CDP 연결 | ⏳ | 막내(구현) | `npx @playwright/mcp@latest --cdp-endpoint ws://localhost:9222` |
-| cdp_utils.py 접근성 트리 강화 | ⏳ | 막내(구현) | `click_element(selector)` → `click_accessible(role, name)` 전환 |
-| GA4/GSC SPA 네비게이션 검증 | ⏳ | 막내(구현) | 기존 CDP 실패 구간을 Playwright MCP로 재시도 |
-| `.mcp.json` 프로젝트 설정 | ⏳ | 쌍아(설계) | Playwright MCP → 전 에이전트 자동 획득 |
-| 멀티 포트 동시 운용 테스트 | ⏳ | 미정 | 에이전트별 독립 크롬 인스턴스 |
+| Playwright MCP 서버 설치 + CDP 연결 | ✅ | M1/막내3 | `.mcp.json` 등록, 38개 도구 확인 |
+| cdp_utils.py 접근성 트리 강화 | ✅ | iMac/막내3 | `click_accessible` + **PageProfiler** `smart_click` 추가 |
+| GA4/GSC SPA 네비게이션 검증 | ✅ | iMac/막내3 | PageProfiler로 GA4/GSC smart_click 100% 성공 (5/5) |
+| `.mcp.json` 프로젝트 설정 | ✅ | iMac/막내1 | 4서버 (playwright + GA4 MCP + GSC MCP + cloudflare) |
+| 멀티 포트 동시 운용 테스트 | ✅ | iMac/막내4 | 9222+9223 분리 검증. 동시 접속 시 포트 분리 필수 확정 |
+| **PageProfiler 런타임 자동 프로파일링** | ✅ | iMac/막내3 | 첫 프로파일 5~17ms, 캐시 히트 2~29ms. 하드코딩 제로 |
+| **Cloudflare MCP 도입** | ✅ | iMac/막내2 | 84개 도구, D1/R2/KV/Workers/Zones 전수 성공 |
+| **GA4/GSC MCP 도입** | ✅ | iMac/막내1 | SA impersonation 방식. API 인증 완료 |
 | 7/12 채널 접근성 트리 전환 검증 | ⏳ | 막내(구현) | 좌표 하드코딩 0건 목표 |
 
 ### Phase 2.5 — Stagehand v3 난제 사이트 적용 ⏳ 다음
@@ -215,7 +222,7 @@ status: active
 | Naver Blog | CDP (텍스트만) | **Stagehand → 실패 시 Browser Use** | SmartEditor 난제 |
 | Instagram | 불가 | 공식 API 또는 SaaS | 브라우저 자동화 비현실적 |
 | Medium | CDP (backendNodeId) | Playwright MCP | 파일 업로드 안정화 |
-| GA4/GSC | CDP (불안정) | **Playwright MCP** | SPA 네비게이션 해결 |
+| GA4/GSC | CDP (불안정) | **PageProfiler smart_click (검증 완료)** + GA4/GSC MCP API 병행 | SPA 네비게이션 해결. 100% 성공 |
 
 ---
 
@@ -232,6 +239,16 @@ status: active
 | 크롬 확장 추월 포인트 | 2건 | 03/27 | ①작가님 탭 접근 ②동시 인스턴스 무제한 |
 | HTML 썸네일 생성 | 1280x670 3버전 | 03/27 | 캔바 없이 HTML→CDP 스크린샷 |
 | GA 소스/매체 드릴다운 | CDP로 GA 조작 성공 | 03/27 | 드롭다운 클릭→옵션 선택→테이블 수집 |
+| MCP 생태계 리서치 | 서버 80+종, 프로토콜 스펙, 경쟁분석 | 04/05 | MCP 올인 판정 (AAIF 6사 공동 거버넌스) |
+| Cloudflare MCP 도입 | 84개 도구, 5도메인 전수 성공 | 04/05 | D1/R2/KV/Workers/Zones 읽기 테스트 |
+| GA4/GSC MCP 도입 | SA impersonation + 4서버 설정 | 04/05 | API 인증 완료, 속성 권한 부여 잔여 |
+| .mcp.json 서버 수 | 4서버 (playwright+GA4+GSC+CF) | 04/05 | 전 에이전트 자동 획득 |
+| **PageProfiler 성능** | **첫 5~17ms / 캐시 2~29ms** | 04/05 | 기존 풀스캔 3초 대비 **100x+ 향상** |
+| PageProfiler smart_click | GA4/GSC SPA 5/5 성공 (100%) | 04/05 | "보고서"→"실시간"→"실적" 전부 자동 |
+| GA4 데이터 추출 | 활성 사용자 400(↑143.9%) | 04/05 | 7일 기준, CDP 직접 추출 |
+| GSC 데이터 추출 | 클릭 27 / 노출 245 / CTR 11% | 04/05 | 약 3개월 기준 |
+| 멀티포트 충돌 실증 | 9222 동시 접속 → 스월링 | 04/05 | 9223 분리로 해결. 포트 분리 필수 확정 |
+| Playwright MCP 도구 수 | 38개 (5티어 caps 확장) | 04/05 | 기존 인지 21개 → 실제 38개 |
 
 ---
 
@@ -289,6 +306,28 @@ status: active
 **현상**: 에디터 file input에 CDP로 파일 넣어도 JS FileAPI에서 인식 안 됨. 버튼 클릭도 업로드 미트리거.
 **해결**: `curl`로 `/api/admin/upload` 직접 호출 → GCS 업로드 + 이미지 뱅크 등록 한 번에 성공.
 **원칙**: UI 조작 가능하면 UI, 안 되면 API 직접 호출. 하이브리드가 답.
+
+### 교훈 9: 멀티에이전트 CDP 포트 충돌 (04/05)
+
+**현상**: 포트 9222를 민아+작가님 점유 중, 막내4가 동시 접속 → Playwright MCP 스월링(무응답)
+**원인**: 브라우저 레벨 WebSocket(`/devtools/browser/...`) 공유 시 접근성 트리 등 전체 상태 조회 명령이 충돌
+**해결**: 9223 포트에 별도 크롬 인스턴스 기동 → 정상 동작
+**원칙**: 멀티에이전트 동시 CDP 사용 시 **에이전트별 포트 분리 필수** (9222/9223/9224/9225). 같은 탭은 괜찮으나 브라우저 레벨 명령은 충돌.
+
+### 교훈 10: 하드코딩 vs 런타임 자동 파악 (04/05, 작가님 인사이트)
+
+**현상**: 에이전트 클릭 속도 병목 (접근성 트리 풀스캔 ~3초)
+**초안**: 코드에 `data-action` 심기 → 작가님 기각: "업그레이드때마다 구조 바뀌면 하드코딩 바꿔야 하잖아"
+**확정 방향**: CDP DevTools API(DOM+접근성+이벤트리스너+CSS)로 런타임 자동 파악. 프로파일 캐싱 + DOM 해시 변경 감지.
+**결과**: PageProfiler 구현. 첫 프로파일 5~17ms, 캐시 히트 2~29ms. 자체/외부 사이트 무관 동작.
+**원칙**: "개발자 도구 가리고 싶어도 못 가리는 거면 우리도 활용하면 된다" — 악의적 해킹이 아닌 브라우저 동작의 정교화.
+
+### 교훈 11: SA 보안 관리 (04/05, 작가님 선언)
+
+**현상**: GA4/GSC MCP 인증 시 매번 새 SA 키 발급 시도
+**작가님 기각**: "매번 SA 발급하면 관리할 시크릿만 늘어나고 보안에 치명적"
+**해결**: 기존 yong-a-orchestrator SA를 impersonate 방식으로 활용. 새 키 발급 제로.
+**원칙**: 기존 SA 재활용 우선. 불필요 SA 삭제, 필요한 것만 집중관리.
 
 ---
 
