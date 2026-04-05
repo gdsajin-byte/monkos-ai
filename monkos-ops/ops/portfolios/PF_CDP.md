@@ -38,10 +38,18 @@ status: active
 > 전원이 CDP로 같은 브라우저를 보고 대화하는 순간, 역할 경계가 녹는다.
 > 설계·검증·실행이 고정 직책이 아니라 그 순간의 기능이 되는 것.
 
-**Phase 로드맵**:
-1. **Phase 2** — 민아 기능 탐색·테스트 → 쌍아·막내 MCP 공유 → 멀티탭 연동. 이 구간에서 이미 실무 막강
-2. **Phase 3** — 실시간 대화창. 쌍아·민아·막내가 한 공간에서 대화 → 즉시 각자 임무 세팅 → 병렬 돌입. 멀티에이전트가 하나의 통괄 시스템처럼 움직인다
-3. CDP가 여는 것: 에이전트가 브라우저를 **눈으로 보고 입력**할 수 있으니, 파일 릴레이 없이 실시간 소통이 가능. 작가님 중계 부담 제거
+**Phase 로드맵** (04/05 현행):
+
+| Phase | 내용 | 상태 |
+|-------|------|------|
+| 0 | CDP 프로토콜 검증 | ✅ |
+| 1 | 유틸 패키지화 (cdp_utils.py) | ✅ |
+| 2 | Playwright MCP + 접근성 트리 + PageProfiler + MCP 4서버 | ✅ |
+| **2.5** | **CDP 정교화 + Skills 패키징** | 🔄 Critical 완료, Important+Skills 잔여 |
+| 3 | Stagehand v3 난제 사이트 (LLM 비용 발생) | ⏳ |
+| 4 | 스케줄 자동 배포 파이프라인 | ⏳ |
+| 5 | Browser Use 자율 에이전트 (선택) | ⏳ |
+| 6 | 실시간 대화 + 역할 융합 | ⏳ |
 
 ### PF 유기적 연결 (작가님 비전)
 
@@ -70,13 +78,26 @@ status: active
 | 키보드 입력 | `Input.dispatchKeyEvent` | ✅ |
 | 실전 블로그 작성 | 어드민 에디터 풀 페이지 | ✅ |
 
+### 설계 원칙 (작가님 04/05)
+
+> **"개발자 도구 가리고 싶어도 못 가리는 거면 우리도 활용하면 된다"**
+> — 악의적 해킹이 아닌 브라우저 동작의 정교화. CDP DevTools API로 페이지 구조를 런타임에 자동 파악.
+
+> **"데이터를 심으면 업그레이드때마다 바꿔야 하잖아"**
+> — 하드코딩(data-action 등) 거부. 런타임 자동 프로파일링 + 캐시 + DOM 해시 변경 감지가 정답.
+
+> **Skills 패키징 방향**: `/ga4`만 치면 에이전트가 알아서 GA4 접속 → 데이터 추출 → 브리핑. 도구가 쌓일수록 Skill이 풍부해지고, 한 마디로 더 많은 일이 돌아간다.
+
 ### 성공 지표
 
-| 지표 | 시작점 (3/26) | Phase 1 목표 | Phase 2 목표 |
-|------|-------------|-------------|-------------|
-| MCP 배당 에이전트 | 민아만 (직접 호출) | cdp_utils.py 완성 | **쌍아·막내·민아 전원** MCP 도구 |
-| 반복 작업 자동화 수준 | 매번 인라인 Python | 유틸 라이브러리 | `.mcp.json` 한 줄로 전원 무장 |
-| 어드민 작업 커버리지 | 블로그 글쓰기 | +이미지 일괄 +FAQ | 전 어드민 기능 |
+| 지표 | 시작점 (3/26) | Phase 1 | Phase 2 | Phase 2.5+ |
+|------|-------------|---------|---------|------------|
+| MCP 배당 에이전트 | 민아만 | cdp_utils.py | **전원 MCP 도구** ✅ | Skills로 워크플로우 패키징 |
+| 반복 작업 자동화 | 매번 인라인 Python | 유틸 라이브러리 | `.mcp.json` 4서버 ✅ | `/ga4` 한 마디로 끝 |
+| 어드민 커버리지 | 블로그 글쓰기 | +이미지+FAQ | 전 어드민 기능 | 에디터 자동감지 7종 ✅ |
+| 클릭 속도 | 좌표 추론 3초 | — | 접근성 트리 3초 | **캐시 2~29ms** ✅ (100x+) |
+| 프레임워크 호환 | 바닐라만 | — | — | React/Vue/Angular ✅ |
+| 외부 사이트 | 불가 | — | GA4/GSC SPA | **자체+외부 무관 동작** ✅ |
 
 ---
 
@@ -147,7 +168,7 @@ status: active
 | README 갱신 | ✅ | M1/민아 | `scripts/tools/README.md` 사용법 문서 |
 | 멀티 포트 동시 운용 테스트 | ✅ | iMac/막내4 | 9222+9223 포트 분리 검증 완료. 동시 접속 시 충돌 실증 → 분리 필수 |
 
-### Phase 2 — Playwright MCP 통합 + 접근성 트리 전환 🔄 진행 중
+### Phase 2 — Playwright MCP 통합 + 접근성 트리 전환 ✅ 완료 (04/05)
 
 > 좌표 기반 클릭의 근본 한계를 접근성 트리로 돌파한다. 비용 ₩0.
 
@@ -161,7 +182,7 @@ status: active
 | **PageProfiler 런타임 자동 프로파일링** | ✅ | iMac/막내3 | 첫 프로파일 5~17ms, 캐시 히트 2~29ms. 하드코딩 제로 |
 | **Cloudflare MCP 도입** | ✅ | iMac/막내2 | 84개 도구, D1/R2/KV/Workers/Zones 전수 성공 |
 | **GA4/GSC MCP 도입** | ✅ | iMac/막내1 | SA impersonation 방식. API 인증 완료 |
-| 7/12 채널 접근성 트리 전환 검증 | ⏳ | 막내(구현) | 좌표 하드코딩 0건 목표 |
+| 7/12 채널 접근성 트리 전환 검증 | ⏳ | 막내(구현) | Phase 2.5로 이관 |
 
 ### Phase 2.5 — CDP 정교화 + Skills 패키징 🔄 진행 중
 
@@ -170,20 +191,20 @@ status: active
 
 | 항목 | 상태 | 담당 | 비고 |
 |------|------|------|------|
-| **C1. smart_fill 이벤트 발사 내장** | 🔄 | 막내(구현) | React/Vue/Angular state 트리거. nativeSetter + input/change/blur 이벤트 |
-| **C2. 에디터 자동감지** | 🔄 | 막내(구현) | TinyMCE/Toast UI/ProseMirror/CKEditor/Quill 시그니처 감지 + smart_editor_write() |
+| **C1. smart_fill 이벤트 발사 내장** | ✅ | iMac/막내2 | React/Vue/Angular nativeSetter + focus/input/change/blur 4종 이벤트. 3사이트 검증 통과 |
+| **C2. 에디터 자동감지** | ✅ | iMac/막내3 | 7종 시그니처 감지 + smart_editor_write/read API + Toast UI ES 모듈 자동 노출 |
 | **C3. 탭 관리 안정화** | ✅ | iMac/막내4 | type=page 필터 + URL/title 매칭 + safe_navigate 크로스오리진 재접속 |
+| 7/12 채널 접근성 트리 전환 검증 | ⏳ | 막내(구현) | 좌표 하드코딩 0건 목표 (Phase 2에서 이관) |
 | I1. 드롭다운 depth=2 탐색 | ⏳ | — | smart_click에 depth 옵션 |
 | I2. 검색 통합 smart_search() | ⏳ | — | 검색 input 자동 탐지 + 입력 + 실행 |
 | I3. 텍스트 구조화 smart_extract() | ⏳ | — | 테이블/제목/본문 구조화 추출 |
 | I4. 섹션맵 smart_scroll() | ⏳ | — | h1~h6, section, [id] 위치 기록 |
-| **Skills 패키징** | ⏳ | 쌍아(설계) | /ga4, /gsc, /blog-write, /deploy-status, /biz-search, /site-check — C1~C3 완료 후 착수 |
+| **Skills 패키징** | ⏳ | 쌍아(설계) | /ga4, /gsc, /blog-write, /deploy-status, /biz-search, /site-check (어젠다 #22) |
 
 ### Phase 3 — Stagehand v3 난제 사이트 적용 ⏳ 다음
 
 > 자연어 기반 브라우저 제어. `act("발행 버튼 클릭")`. 캐싱으로 비용 억제.
 > ⚠️ LLM 비용 발생 구간 — 별도 승인 후 착수
-> (구 Phase 2.5)
 
 | 항목 | 상태 | 담당 | 비고 |
 |------|------|------|------|
@@ -193,7 +214,7 @@ status: active
 | Naver SmartEditor 돌파 시도 | — | 막내(구현) | 서식/링크 입력 가능 여부 재검증 |
 | 비용 보고 → 작가님 승인 | — | 쌍아(보고) | act() 1회 ₩4~15, 월 예산 시뮬레이션 |
 
-### Phase 3 — 스케줄 자동 배포 파이프라인 ⏳ 다음
+### Phase 4 — 스케줄 자동 배포 파이프라인 ⏳ 다음
 
 > 콘텐츠 1건 입력 → N채널 자동 배포. 한송이 수동 배포(월 30~60시간) 자동화.
 > PF_SPREAD Phase 1과 인터페이스.
@@ -206,7 +227,7 @@ status: active
 | 실패 알림 + 재시도 로직 | — | 막내(구현) | |
 | 배포 로그 자동 기록 | — | 막내(구현) | |
 
-### Phase 3.5 — Browser Use 자율 에이전트 (선택)
+### Phase 5 — Browser Use 자율 에이전트 (선택)
 
 > 최후 수단. 비용 높으나 가장 강건. 난제 사이트 폴백 전용.
 
@@ -215,7 +236,7 @@ status: active
 | Browser Use 설치 + 검증 | — | — | 필요 시 |
 | Naver/Instagram 폴백 적용 | — | — | Stagehand 실패 시 |
 
-### Phase 4 — 실시간 대화 + 역할 융합
+### Phase 6 — 실시간 대화 + 역할 융합
 
 > 쌍아가 민아고 민아가 막내인. 멀티에이전트가 하나의 통괄 시스템.
 
@@ -226,6 +247,15 @@ status: active
 | CDP→CITADEL→SPREAD 연결 | — | — | 시드→에디터 작성→멀티채널 배포 |
 
 > **병행 추적**: Anthropic 클라우드 확장도 개선 중. CDP 자체 도구화와 확장 기능 향상을 동시 추적.
+
+### 리팩토링 계획 — ~1500줄 도달 시 착수
+
+> 현재 cdp_utils.py ~900줄 (단일 파일). 1500줄 도달 시 리팩토링 싸인.
+
+- **Python → JavaScript 전환**: 서비스 코드(MONK_kr, monkos_AI, CF Workers) 전부 JS. 엔진도 통일
+- **모듈 분리**: `scripts/tools/cdp/` 패키지화 (core / actions / profiler / smart / editors / tabs)
+- **타이밍**: 1500줄 도달 또는 Phase 2.5 Important 착수 시점 중 빠른 쪽
+- **하위 호환**: `__init__.py`(또는 index.js)에서 기존 import 유지
 
 ### 채널별 최적 도구 매핑 (Phase 2~3 참조)
 

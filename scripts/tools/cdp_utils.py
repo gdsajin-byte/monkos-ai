@@ -625,9 +625,10 @@ class CDP:
             self._profiler = PageProfiler(self)
         return self._profiler
 
-    async def click_smart(self, name: str) -> bool:
-        """프로파일 기반 스마트 클릭 — 캐시 히트 시 즉시, 미스 시 프로파일링 후 클릭"""
-        return await self.profiler.smart_click(name)
+    async def click_smart(self, name: str, depth: int = 1) -> bool:
+        """프로파일 기반 스마트 클릭 — 캐시 히트 시 즉시, 미스 시 프로파일링 후 클릭
+        depth=2: 미발견 시 재프로파일링 후 재탐색 (동적 드롭다운 옵션 등)"""
+        return await self.profiler.smart_click(name, depth=depth)
 
 
 # ── PageProfiler — 런타임 자동 프로파일링 + 캐시 (PF_CDP Phase 2) ──
@@ -738,6 +739,60 @@ class PageProfiler:
 """
 
     # JS: 에디터 자동감지 — 글로벌 시그니처 탐색 (우선순위순)
+    # JS: 섹션맵 수집 — h1~h6, section, article, [id], a[name]
+    _COLLECT_SECTIONS_JS = """
+(function() {
+    var sections = [];
+    var seen = new Set();
+
+    function addSection(name, selector, tag, y) {
+        var key = name.toLowerCase().trim();
+        if (!key || key.length > 100 || seen.has(key)) return;
+        seen.add(key);
+        sections.push({name: name.trim().substring(0, 80), selector: selector, tag: tag, y: Math.round(y)});
+    }
+
+    // 1. h1~h6 태그
+    var headings = document.querySelectorAll('h1,h2,h3,h4,h5,h6');
+    for (var i = 0; i < headings.length; i++) {
+        var h = headings[i];
+        if (h.offsetWidth === 0 || h.offsetHeight === 0) continue;
+        var text = h.textContent.trim();
+        if (!text) continue;
+        var sel = h.id ? '#' + CSS.escape(h.id)
+                 : h.tagName.toLowerCase() + ':nth-of-type(' + (Array.from(h.parentElement.querySelectorAll(h.tagName)).indexOf(h) + 1) + ')';
+        addSection(text, sel, h.tagName.toLowerCase(), h.getBoundingClientRect().top + window.scrollY);
+    }
+
+    // 2. section, article 태그 (id 또는 첫 heading으로 이름)
+    var containers = document.querySelectorAll('section[id], article[id], div[id]');
+    for (var j = 0; j < containers.length && sections.length < 100; j++) {
+        var c = containers[j];
+        if (c.offsetWidth === 0 || c.offsetHeight === 0) continue;
+        var cId = c.id;
+        if (!cId || cId.length > 60) continue;
+        var cName = cId;
+        var firstH = c.querySelector('h1,h2,h3,h4,h5,h6');
+        if (firstH && firstH.textContent.trim()) cName = firstH.textContent.trim();
+        addSection(cName, '#' + CSS.escape(cId), c.tagName.toLowerCase(), c.getBoundingClientRect().top + window.scrollY);
+    }
+
+    // 3. a[name] 앵커
+    var anchors = document.querySelectorAll('a[name]');
+    for (var k = 0; k < anchors.length && sections.length < 100; k++) {
+        var a = anchors[k];
+        var aName = a.getAttribute('name');
+        if (!aName) continue;
+        var aText = a.textContent.trim() || aName;
+        addSection(aText, 'a[name="' + aName + '"]', 'a', a.getBoundingClientRect().top + window.scrollY);
+    }
+
+    // y좌표 기준 정렬
+    sections.sort(function(a, b) { return a.y - b.y; });
+    return JSON.stringify(sections);
+})()
+"""
+
     _DETECT_EDITOR_JS = """
 (function() {
     var editors = [];
@@ -894,16 +949,31 @@ class PageProfiler:
         profile["_cache_hit"] = False
         return profile
 
-    async def smart_click(self, name: str) -> bool:
-        """프로파일 기반 즉시 클릭. 풀스캔 불필요."""
+    async def smart_click(self, name: str, depth: int = 1) -> bool:
+        """프로파일 기반 즉시 클릭. 풀스캔 불필요.
+        depth=1: 기존 동작 (캐시 프로파일에서 탐색)
+        depth=2: 미발견 시 재프로파일링 후 재탐색 (동적 드롭다운 옵션 등)
+        """
         profile = await self.profile()
         name_l = name.lower()
-        # actions → navigation 순서 탐색
+
+        # 1차 탐색: 현재 프로파일에서 검색
         for pool in ("actions", "navigation"):
             for el in profile.get(pool, []):
                 if name_l in el["name"].lower():
                     if await self._try_selectors(el):
                         return True
+
+        if depth >= 2:
+            # 동적 DOM 생성 대기 → 재프로파일링 → 2차 탐색
+            await asyncio.sleep(0.5)
+            profile = await self.profile(force=True)
+            for pool in ("actions", "navigation"):
+                for el in profile.get(pool, []):
+                    if name_l in el["name"].lower():
+                        if await self._try_selectors(el):
+                            return True
+
         return False
 
     # React/Vue/Angular 범용 이벤트 발사 JS
@@ -958,8 +1028,77 @@ class PageProfiler:
                     return True
         return False
 
+    _SEARCH_SUBMIT_JS = """
+    (inputSelector) => {
+        const el = document.querySelector(inputSelector);
+        if (!el) return 'no_element';
+        const form = el.closest('form');
+        if (form) {
+            const ok = form.dispatchEvent(new Event('submit', {bubbles:true, cancelable:true}));
+            if (ok) form.submit();
+            return 'form';
+        }
+        ['keydown','keypress','keyup'].forEach(t =>
+            el.dispatchEvent(new KeyboardEvent(t, {key:'Enter',code:'Enter',keyCode:13,bubbles:true})));
+        return 'enter';
+    }
+    """
+
+    async def smart_search(self, query: str) -> bool:
+        """검색 필드 자동 탐지 → 입력 → 실행."""
+        profile = await self.profile()
+        search_inputs = profile.get("search_inputs", [])
+        if not search_inputs:
+            return False
+
+        si = search_inputs[0]
+        input_sel = si["selector"]
+
+        escaped_sel = json.dumps(input_sel)
+        escaped_val = json.dumps(query)
+        filled = await self.cdp.evaluate(
+            f"({self._FRAMEWORK_FILL_JS})({escaped_sel}, {escaped_val})"
+        )
+        if not filled:
+            return False
+
+        await asyncio.sleep(0.3)
+
+        method = si.get("submit_method", "enter")
+        submit_sel = si.get("submit_selector")
+
+        if method == "button" and submit_sel:
+            try:
+                if submit_sel.startswith("text:"):
+                    await self.cdp.click_text(submit_sel[5:])
+                else:
+                    await self.cdp.click_element(submit_sel)
+                return True
+            except Exception:
+                pass
+
+        escaped_input = json.dumps(input_sel)
+        await self.cdp.evaluate(
+            f"({self._SEARCH_SUBMIT_JS})({escaped_input})"
+        )
+        return True
+
+    async def smart_scroll(self, name: str) -> bool:
+        """섹션맵에서 이름 검색 → scrollIntoView"""
+        profile = await self.profile()
+        name_l = name.lower()
+        for section in profile.get("sections", []):
+            if name_l in section["name"].lower():
+                selector = section["selector"]
+                escaped = selector.replace("'", "\\'")
+                await self.cdp.evaluate(
+                    f"document.querySelector('{escaped}').scrollIntoView({{behavior:'smooth',block:'start'}})"
+                )
+                return True
+        return False
+
     def list_actions(self, profile: dict) -> str:
-        """프로파일의 actions/inputs/navigation 요약 (디버그용)"""
+        """프로파일의 actions/inputs/navigation/sections 요약 (디버그용)"""
         lines = []
         for cat in ("actions", "inputs", "navigation"):
             items = profile.get(cat, [])
@@ -967,6 +1106,11 @@ class PageProfiler:
                 lines.append(f"\n[{cat}] ({len(items)}개)")
                 for i, el in enumerate(items[:20]):
                     lines.append(f"  {i}: [{el['role']}] {el['name'][:40]} → {el['selector'][:50]}")
+        sections = profile.get("sections", [])
+        if sections:
+            lines.append(f"\n[sections] ({len(sections)}개)")
+            for i, s in enumerate(sections[:20]):
+                lines.append(f"  {i}: [{s['tag']}] {s['name'][:40]} → {s['selector'][:50]}  (y={s['y']})")
         return "\n".join(lines)
 
     async def detect_editors(self) -> list:
@@ -1086,6 +1230,73 @@ class PageProfiler:
         except Exception:
             return ""
 
+    async def smart_extract(self) -> dict:
+        """페이지 콘텐츠를 구조화 추출.
+
+        반환: {title, headings, tables, body, files, images, meta}
+        """
+        js = (
+            '(function(){'
+            'var R={};'
+            'var h1=document.querySelector("h1");'
+            'R.title=(h1&&h1.offsetWidth>0)?h1.textContent.trim():document.title;'
+            'R.headings=[];'
+            'document.querySelectorAll("h1,h2,h3,h4,h5,h6").forEach(function(h){'
+            'if(h.offsetWidth>0&&h.textContent.trim())'
+            'R.headings.push({level:parseInt(h.tagName[1]),text:h.textContent.trim().substring(0,200)});});'
+            'R.tables=[];'
+            'document.querySelectorAll("table").forEach(function(table){'
+            'if(table.offsetWidth===0)return;'
+            'var rows=table.querySelectorAll("tr");if(rows.length===0)return;'
+            'var hds=[];rows[0].querySelectorAll("th,td").forEach(function(c){'
+            'hds.push(c.textContent.trim().substring(0,100));});'
+            'var td=[];'
+            'for(var i=1;i<rows.length&&i<100;i++){'
+            'var cells=rows[i].querySelectorAll("td,th");'
+            'if(hds.length>0&&cells.length===hds.length){'
+            'var o={};for(var j=0;j<cells.length;j++)o[hds[j]]=cells[j].textContent.trim().substring(0,300);td.push(o);'
+            '}else{'
+            'var a=[];cells.forEach(function(c){a.push(c.textContent.trim().substring(0,300));});'
+            'if(a.length>0)td.push(a);}}'
+            'if(td.length===0){for(var i=0;i<rows.length&&i<50;i++){'
+            'var th=rows[i].querySelector("th"),tdc=rows[i].querySelector("td");'
+            'if(th&&tdc){var o2={};o2[th.textContent.trim()]=tdc.textContent.trim().substring(0,300);td.push(o2);}}}'
+            'if(td.length>0)R.tables.push(td);});'
+            'var exSel="nav,header,footer,[role=navigation],[role=banner],[role=contentinfo],.sidebar,#sidebar,aside";'
+            'var exSet=new Set();document.querySelectorAll(exSel).forEach(function(e){exSet.add(e);});'
+            'var mainEl=document.querySelector("main,[role=main],article,.content,#content,#main");'
+            'var br=mainEl||document.body;'
+            'function ext(el,d){'
+            'if(d>15||!el||exSet.has(el))return"";'
+            'if(el.offsetWidth===0&&el.tagName!=="BR")return"";'
+            'var tg=(el.tagName||"").toLowerCase();'
+            'if(tg==="script"||tg==="style"||tg==="noscript")return"";'
+            'if(el.children.length===0)return el.textContent.trim();'
+            'var p=[];for(var i=0;i<el.children.length;i++){var t=ext(el.children[i],d+1);if(t)p.push(t);}'
+            'return p.join("\\n");}'
+            'R.body=ext(br,0).substring(0,10000);'
+            'R.files=[];'
+            'var fRx=/\\.(pdf|hwp|hwpx|xlsx|xls|docx|doc|pptx|ppt|zip|rar|7z|csv|txt)/i;'
+            'document.querySelectorAll("a[href]").forEach(function(a){'
+            'var hr=a.href||"",tx=a.textContent.trim().substring(0,100);'
+            'if(fRx.test(hr)||fRx.test(tx)||a.hasAttribute("download"))'
+            'R.files.push({name:tx||hr.split("/").pop(),url:hr});});'
+            'R.images=[];'
+            'document.querySelectorAll("img").forEach(function(img){'
+            'if(img.offsetWidth<50||img.offsetHeight<50)return;'
+            'if(R.images.length>=20)return;'
+            'R.images.push({src:img.src,alt:(img.alt||"").substring(0,100),'
+            'w:img.naturalWidth||img.offsetWidth,h:img.naturalHeight||img.offsetHeight});});'
+            'R.meta={};'
+            "var mt={description:'meta[name=\"description\"]',og_title:'meta[property=\"og:title\"]',"
+            "og_desc:'meta[property=\"og:description\"]',og_image:'meta[property=\"og:image\"]'};"
+            'for(var k in mt){var el=document.querySelector(mt[k]);if(el)R.meta[k]=(el.content||"").substring(0,300);}'
+            'return JSON.stringify(R);})()'
+        )
+        raw = await self.cdp.evaluate(js)
+        data = json.loads(raw) if isinstance(raw, str) else raw
+        return data or {}
+
     def invalidate(self, url: str = None):
         """캐시 무효화. url 없으면 전체 삭제."""
         if url:
@@ -1138,6 +1349,13 @@ class PageProfiler:
         editor_raw = await self.cdp.evaluate(self._DETECT_EDITOR_JS)
         editors = json.loads(editor_raw) if isinstance(editor_raw, str) else (editor_raw or [])
 
+        # 섹션맵 수집
+        section_raw = await self.cdp.evaluate(self._COLLECT_SECTIONS_JS)
+        sections = json.loads(section_raw) if isinstance(section_raw, str) else (section_raw or [])
+
+        # 검색 필드 자동 감지
+        search_inputs = self._detect_search_inputs(inputs, actions)
+
         profile = {
             "url": url,
             "domain": parsed.netloc,
@@ -1148,16 +1366,90 @@ class PageProfiler:
             "actions": actions,
             "inputs": inputs,
             "navigation": navigation,
+            "sections": sections,
             "editors": editors,
+            "search_inputs": search_inputs,
             "stats": {
                 "total_elements": len(elements),
                 "actions": len(actions),
                 "inputs": len(inputs),
                 "navigation": len(navigation),
+                "sections": len(sections),
                 "editors": len(editors),
+                "search_inputs": len(search_inputs),
             },
         }
         return profile
+
+    def _detect_search_inputs(self, inputs: list, actions: list) -> list:
+        """검색 필드 자동 감지 + submit 방식 결정."""
+        _SEARCH_KW = ("search", "검색", "찾기", "query", "keyword", "q", "조회")
+        _BTN_KW = ("검색", "search", "찾기", "조회", "go", "submit")
+        results = []
+        for inp in inputs:
+            name_l = inp.get("name", "").lower()
+            ph_l = (inp.get("placeholder") or "").lower()
+            sel_l = inp.get("selector", "").lower()
+            role = inp.get("role", "")
+            itype = inp.get("input_type", "")
+
+            is_search = (
+                role == "searchbox"
+                or itype == "search"
+                or any(kw in name_l or kw in ph_l or kw in sel_l
+                       for kw in _SEARCH_KW)
+            )
+            if not is_search:
+                continue
+
+            # submit 방식 결정: submit 타입 버튼 > 검색 키워드 버튼 > enter
+            submit_method = "enter"
+            submit_selector = None
+            best_score = 0
+            for act in actions:
+                act_name = act.get("name", "").lower().strip()
+                act_role = act.get("role", "")
+                if act_role != "button":
+                    continue
+                sel = act.get("selector", "")
+                score = 0
+                # submit 타입 버튼 최우선 (input[type=submit], name=btn*)
+                if 'type="submit"' in sel or 'name="btn' in sel:
+                    for kw in _BTN_KW:
+                        if kw in act_name:
+                            score = 100
+                            break
+                else:
+                    # 이름이 검색 키워드로 끝나거나 짧은 정확 매칭
+                    for kw in _BTN_KW:
+                        if act_name == kw:
+                            score = max(score, 50)
+                        elif act_name.endswith(kw) and len(act_name) < 10:
+                            score = max(score, 30)
+                        elif act_name.endswith(kw):
+                            score = max(score, 15)
+                if score > best_score:
+                    best_score = score
+                    candidate_sel = sel
+                    if not candidate_sel or candidate_sel.startswith("text:"):
+                        fbs = act.get("fallback_selectors", [])
+                        for fb in fbs:
+                            if not fb.startswith("text:"):
+                                candidate_sel = fb
+                                break
+                        else:
+                            candidate_sel = sel
+                    submit_selector = candidate_sel
+            if best_score >= 15:
+                submit_method = "button"
+
+            results.append({
+                "selector": inp["selector"],
+                "fallback_selectors": inp.get("fallback_selectors", []),
+                "submit_method": submit_method,
+                "submit_selector": submit_selector,
+            })
+        return results
 
     async def _try_selectors(self, element: dict) -> bool:
         """셀렉터 체인 순회 — 첫 번째 성공하는 것으로 클릭"""

@@ -71,6 +71,11 @@ domain: "presentation, 3d-avatar, tts, content-pipeline"
 | 04/05 | iMac/민아 | 전략 전환 — 12슬라이드 순차 브리핑 → 8시퀀스 숏컷 영상(8분) + 작가님 라이브 토크(7분). 지시서 2건 발행 (슬라이드 재설계 + CDP 캡처) | ORDER×2 | ✅ |
 | 04/05 | iMac/막내3 | slides.js 8시퀀스 전면 교체 완료 — TTS 발음 교정 전건 반영, npm build 성공 | slides.js | ✅ |
 | 04/05 | iMac/막내4 | CDP 동작화면 캡처 — 스크린샷 3장 완료, Playwright 포트 충돌로 일부 미완. 포트 분리 재시도 중 | cdp_demo_1~3.png | ⏳ |
+| 04/05 | iMac/민아 | 작가님과 실시간 CDP 브리핑 — 기업마당 공고 4건 발견 (SaaS/GPU/GovTech/도메인특화AI). PT 반론 논거 대폭 강화 | — | ✅ |
+| 04/05 | 작가님 | **PT 전략 핵심 전환**: 영상+토크 → 영상+토크+**온디바이스 챗봇 현장 시연**. USB에 DeepSeek 3B 구워서 인터넷 없이 현장 PC에서 즉시 가동 | — | 💡 |
+| 04/05 | iMac/민아 | 온디바이스 챗봇 리서치 지시서 발행 — llamafile 유력, D-4 PoC 판정 포함 | ORDER | ✅ |
+| 04/05 | 작가님 | v6.3 콘솔 발굴 (외장HDD) — RLHF 큐레이션 콘솔 원본. PT 증거 자료 + 에셋 관리 원점 | monk_master_v6_3.html (28MB) | ✅ |
+| 04/05 | iMac/민아 | CivitAI 모델 벤치마크 — Flux NSFW 차단, CivitAI Z Image Turbo 통과. 4060 로컬 추론 트랙 근거 확보 | 스크린샷 | ✅ |
 
 ---
 
