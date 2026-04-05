@@ -57,7 +57,11 @@
       "Read(//Users/jeong-kyushin/Desktop/works/**)",
       "Bash(scripts/tools/cdp_setup.sh status:*)",
       "Bash(/Users/jeong-kyushin/developer/monk_project/scripts/tools/cdp_setup.sh status:*)",
-      "Bash(dig studio.monkos.ai +short)"
+      "Bash(dig studio.monkos.ai +short)",
+      "Bash(bash scripts/mk-push.sh)",
+      "Bash(env)",
+      "Read(//Users/jeong-kyushin/.config/gcloud/**)",
+      "Read(//Users/jeong-kyushin/**)"
     ],
     "deny": [
       "Bash(rm -rf /*)",

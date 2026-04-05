@@ -111,6 +111,14 @@ status: active
 | 04/05 | M1/막내3 | Phase 2 Playwright MCP 기동 검증 — 서버 기동, CDP 연결, 접근성 트리(GA4 498개), ref 클릭, .mcp.json 등록(21도구) | 5570be9 | ✅ |
 | 04/05 | M1/민아 | Playwright vs CDP 비교 테스트 — GA4 SPA 진단: MAT-TREE-NODE 구조 식별, 오류 원인 "subtree intercepts pointer events" 확인. 진단 능력 Playwright 우위 확정 | SESSION_20260405 | ✅ |
 | 04/05 | 작가님 | 전략적 위치 선언 — "빅테크 사이의 빈 공간 점유". CDP 스택이 빅테크 종속 없이 각사 최강점 조합 가능한 열린 구조임을 확인. 이의신청 PT 논리로 활용 예정 | PROPOSAL_20260405 §9 | ✅ |
+| 04/05 | iMac/막내1+2 | MCP 생태계 종합 리서치 — 서버 80+종 전수조사, 프로토콜 스펙(2025-11-25), 경쟁 분석, Playwright 38개 도구 상세, 브라우저 3도구 비교. MCP 올인 판정(AAIF 6사 공동 거버넌스). 즉시 도입 TOP 2: GA4/GSC MCP + Cloudflare MCP | REPORT×2 | ✅ |
+| 04/05 | iMac/쌍아 | MCP 확장 지시서 발행 — GA4/GSC MCP 도입(막내1) + Cloudflare MCP 도입(막내2). 작가님 즉시 승인 | ORDER×2 | ✅ |
+| 04/05 | iMac/막내2 | Cloudflare MCP 도입 완료 — 84개 도구, D1/R2/KV/Workers/Zones 5도메인 읽기 테스트 전수 성공. wrangler OAuth 활용, 작가님 액션 불필요 | REPORT + cloudflare_mcp.sh | ✅ |
+| 04/05 | iMac/막내1 | GA4/GSC MCP 도입 — SA impersonation 방식 채택 (ADC OAuth 스코프 차단 우회). API 3개 활성화 + Token Creator 부여 + .mcp.json 4서버 설정 완료. GA4/GSC 속성 권한 부여 후 가동 가능 | REPORT + .mcp.json | ⏳ |
+| 04/05 | 작가님 | 보안 관리 체계화 선언 — "불필요 SA 삭제, 필요한 것만 집중관리. 매번 SA 발급은 보안에 치명적" | — | ✅ |
+| 04/05 | iMac/민아 | PT앱 슬라이드 전면 재설계 지시서 발행 — 8시퀀스 숏컷 영상 구조 + CDP 캡처 지시서 | ORDER×2 | ✅ |
+| 04/05 | iMac/막내3 | PT 슬라이드 전면 재설계 완료 — slides.js 8시퀀스 교체, TTS 발음 교정 전건 반영, npm build 성공 | slides.js | ✅ |
+| 04/05 | iMac/막내4 | CDP 동작화면 캡처 중간 — 스크린샷 3장 완료, Playwright 스월링(포트 충돌 추정). 9223 포트 분리 재시도 지시 | cdp_demo_1~3.png | ⏳ |
 
 ---
 

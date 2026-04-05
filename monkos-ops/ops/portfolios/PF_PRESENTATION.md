@@ -68,6 +68,9 @@ domain: "presentation, 3d-avatar, tts, content-pipeline"
 | 04/03 | 막내 | pt.monkos.ai 프로드 배포 (Cloud Run + 커스텀 도메인) | Dockerfile + server.js | ✅ |
 | 04/03 | 민아 | pt.monkos.ai 프로드 접속 확인 (CDP 스크린샷 12장 전수 확인) | — | ✅ |
 | 04/03 | 작가님 | **콘텐츠 정밀 수정 피드백 4건** (아래 Phase 1.5 기록) | — | 📝 |
+| 04/05 | iMac/민아 | 전략 전환 — 12슬라이드 순차 브리핑 → 8시퀀스 숏컷 영상(8분) + 작가님 라이브 토크(7분). 지시서 2건 발행 (슬라이드 재설계 + CDP 캡처) | ORDER×2 | ✅ |
+| 04/05 | iMac/막내3 | slides.js 8시퀀스 전면 교체 완료 — TTS 발음 교정 전건 반영, npm build 성공 | slides.js | ✅ |
+| 04/05 | iMac/막내4 | CDP 동작화면 캡처 — 스크린샷 3장 완료, Playwright 포트 충돌로 일부 미완. 포트 분리 재시도 중 | cdp_demo_1~3.png | ⏳ |
 
 ---
 
