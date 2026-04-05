@@ -33,10 +33,13 @@ except ImportError:
 class CDP:
     """Chrome DevTools Protocol 클라이언트"""
 
-    def __init__(self, port: int = 9222, host: str = "127.0.0.1", tab_index: int = 0):
+    def __init__(self, port: int = 9222, host: str = "127.0.0.1",
+                 tab_index: int = 0, url: str = None, title: str = None):
         self.port = port
         self.host = host
         self.tab_index = tab_index
+        self._url_pattern = url
+        self._title_pattern = title
         self.base_url = f"http://{host}:{port}"
         self.ws = None
         self._msg_id = 0
@@ -51,12 +54,32 @@ class CDP:
         await self.close()
 
     async def connect(self, tab_index: Optional[int] = None):
-        """WebSocket 연결"""
-        idx = tab_index if tab_index is not None else self.tab_index
+        """WebSocket 연결. url/title 패턴이 설정되어 있으면 매칭 우선, 폴백으로 인덱스."""
         tabs = self._get_tabs()
-        if idx >= len(tabs):
-            raise IndexError(f"탭 인덱스 {idx} 없음 (총 {len(tabs)}개)")
-        ws_url = tabs[idx]["webSocketDebuggerUrl"]
+        if not tabs:
+            raise RuntimeError("page 타입 탭 없음")
+
+        ws_url = None
+
+        # URL 패턴 매칭 우선
+        if self._url_pattern:
+            matched = [t for t in tabs if self._url_pattern in t.get("url", "")]
+            if matched:
+                ws_url = matched[0]["webSocketDebuggerUrl"]
+
+        # 타이틀 패턴 매칭
+        if ws_url is None and self._title_pattern:
+            matched = [t for t in tabs if self._title_pattern in t.get("title", "")]
+            if matched:
+                ws_url = matched[0]["webSocketDebuggerUrl"]
+
+        # 폴백: 인덱스 방식
+        if ws_url is None:
+            idx = tab_index if tab_index is not None else self.tab_index
+            if idx >= len(tabs):
+                raise IndexError(f"탭 인덱스 {idx} 없음 (총 {len(tabs)}개 page 탭)")
+            ws_url = tabs[idx]["webSocketDebuggerUrl"]
+
         self.ws = await websockets.connect(ws_url, max_size=10 * 1024 * 1024)
         return self
 
@@ -75,21 +98,26 @@ class CDP:
     # ── 탭 조회 (동기) ──
 
     def _get_tabs(self) -> list:
-        """HTTP로 탭 목록 조회"""
-        result = subprocess.run(
-            ["curl", "-s", f"{self.base_url}/json"],
-            capture_output=True, text=True
-        )
-        return json.loads(result.stdout)
+        """HTTP로 탭 목록 조회 (page 타입만, iframe/service_worker/background_page 제외)"""
+        import urllib.request
+        data = json.loads(urllib.request.urlopen(f"{self.base_url}/json").read())
+        return [t for t in data if t.get("type") == "page"]
+
+    def _get_all_targets(self) -> list:
+        """전체 타겟 반환 (디버그용)"""
+        import urllib.request
+        return json.loads(urllib.request.urlopen(f"{self.base_url}/json").read())
 
     def list_tabs(self) -> list:
         """탭 목록 반환 [{id, url, title, webSocketDebuggerUrl}]"""
         return self._get_tabs()
 
     def print_tabs(self):
-        """탭 목록 출력"""
-        for i, t in enumerate(self._get_tabs()):
-            print(f"[{i}] {t['id'][:12]}  {t['url']}")
+        """page 탭만 보기 좋게 출력"""
+        tabs = self._get_tabs()
+        for i, t in enumerate(tabs):
+            print(f"  [{i}] {t.get('title', '(no title)')[:50]}")
+            print(f"      {t.get('url', '')[:80]}")
 
     # ── CDP 메시지 ──
 
@@ -129,6 +157,16 @@ class CDP:
     async def navigate(self, url: str):
         """URL 이동"""
         return await self._send("Page.navigate", {"url": url})
+
+    async def safe_navigate(self, url: str, wait: float = 3.0):
+        """크로스오리진 이동 시 WebSocket 끊김 자동 재접속"""
+        try:
+            await self.navigate(url)
+        except Exception:
+            await asyncio.sleep(1)
+            await self.close()
+            await self.connect()
+        await self.wait(wait)
 
     async def reload(self):
         """페이지 새로고침"""
@@ -699,6 +737,137 @@ class PageProfiler:
 })()
 """
 
+    # JS: 에디터 자동감지 — 글로벌 시그니처 탐색 (우선순위순)
+    _DETECT_EDITOR_JS = """
+(function() {
+    var editors = [];
+
+    // 1. TinyMCE
+    if (window.tinymce && window.tinymce.activeEditor) {
+        var ed = window.tinymce.activeEditor;
+        editors.push({
+            type: 'tinymce',
+            selector: '#' + (ed.id || 'tinymce'),
+            iframe: ed.iframeElement ? '#' + ed.iframeElement.id : null,
+            ready: true
+        });
+    }
+
+    // 2. Toast UI Editor — 인스턴스 또는 컨테이너로 감지
+    var toastInst = window.__editor || (window.toastui && window.toastui.Editor
+        && window.toastui.Editor.getInstances && window.toastui.Editor.getInstances()[0]);
+    if (toastInst && typeof toastInst.setHTML === 'function') {
+        editors.push({
+            type: 'toastui',
+            selector: '.toastui-editor-ww-container .ProseMirror.toastui-editor-contents',
+            iframe: null,
+            ready: true
+        });
+    } else if (document.querySelector('.toastui-editor')) {
+        // 컨테이너는 있지만 인스턴스가 글로벌에 노출 안 됨 (ES 모듈)
+        editors.push({
+            type: 'toastui',
+            selector: '.toastui-editor-ww-container .ProseMirror.toastui-editor-contents',
+            iframe: null,
+            ready: false,
+            needs_init: true
+        });
+    }
+
+    // 3. CKEditor 4
+    if (window.CKEDITOR && window.CKEDITOR.instances) {
+        var names = Object.keys(window.CKEDITOR.instances);
+        if (names.length > 0) {
+            editors.push({
+                type: 'ckeditor4',
+                instance_name: names[0],
+                selector: '#' + names[0],
+                iframe: null,
+                ready: true
+            });
+        }
+    }
+
+    // 4. CKEditor 5
+    var ck5El = document.querySelector('.ck-editor__editable');
+    if (ck5El && ck5El.ckeditorInstance) {
+        editors.push({
+            type: 'ckeditor5',
+            selector: '.ck-editor__editable',
+            iframe: null,
+            ready: true
+        });
+    }
+
+    // 5. Quill
+    var qlEl = document.querySelector('.ql-editor');
+    if (qlEl) {
+        editors.push({
+            type: 'quill',
+            selector: '.ql-editor',
+            iframe: null,
+            has_instance: !!(window.quill),
+            ready: true
+        });
+    }
+
+    // 6. ProseMirror (standalone — Toast UI 아닌 순수 PM)
+    if (!editors.some(function(e){ return e.type === 'toastui'; })) {
+        var pm = document.querySelector('.ProseMirror');
+        if (pm) {
+            editors.push({
+                type: 'prosemirror',
+                selector: '.ProseMirror',
+                iframe: null,
+                ready: true
+            });
+        }
+    }
+
+    // 7. contenteditable 폴백
+    if (editors.length === 0) {
+        var ces = document.querySelectorAll('[contenteditable="true"]');
+        for (var i = 0; i < ces.length; i++) {
+            var ce = ces[i];
+            if (ce.offsetWidth > 50 && ce.offsetHeight > 30) {
+                var ceSel = ce.id ? '#' + CSS.escape(ce.id) : '[contenteditable="true"]';
+                editors.push({
+                    type: 'contenteditable',
+                    selector: ceSel,
+                    iframe: null,
+                    ready: true
+                });
+                break;
+            }
+        }
+    }
+
+    return JSON.stringify(editors);
+})()
+"""
+
+    # 에디터별 write/read JS 템플릿
+    _EDITOR_WRITE = {
+        "tinymce": "tinymce.activeEditor.setContent({content})",
+        "toastui_html": "window.__editor.setHTML({content})",
+        "toastui_md": "window.__editor.setMarkdown({content})",
+        "ckeditor4": "CKEDITOR.instances['{instance}'].setData({content})",
+        "ckeditor5": "document.querySelector('.ck-editor__editable').ckeditorInstance.setData({content})",
+        "quill": "(window.quill || document.querySelector('.ql-editor').__quill).root.innerHTML = {content}",
+        "prosemirror": "document.querySelector('{selector}').innerHTML = {content}",
+        "contenteditable": "document.querySelector('{selector}').innerHTML = {content}",
+    }
+    _EDITOR_READ = {
+        "tinymce": "tinymce.activeEditor.getContent()",
+        "toastui_html": "window.__editor.getHTML()",
+        "toastui_md": "window.__editor.getMarkdown()",
+        "ckeditor4": "CKEDITOR.instances['{instance}'].getData()",
+        "ckeditor5": "document.querySelector('.ck-editor__editable').ckeditorInstance.getData()",
+        "quill": "(window.quill || document.querySelector('.ql-editor').__quill).root.innerHTML",
+        "prosemirror": "document.querySelector('{selector}').innerHTML",
+        "contenteditable": "document.querySelector('{selector}').innerHTML",
+    }
+
     def __init__(self, cdp: 'CDP'):
         self.cdp = cdp
         os.makedirs(self.CACHE_DIR, exist_ok=True)
@@ -737,8 +906,27 @@ class PageProfiler:
                         return True
         return False
 
+    # React/Vue/Angular 범용 이벤트 발사 JS
+    _FRAMEWORK_FILL_JS = """
+    (selector, value) => {
+        const el = document.querySelector(selector);
+        if (!el) return false;
+        el.focus();
+        const proto = el.tagName === 'TEXTAREA'
+            ? window.HTMLTextAreaElement.prototype
+            : window.HTMLInputElement.prototype;
+        const nativeSetter = Object.getOwnPropertyDescriptor(proto, 'value')?.set;
+        if (nativeSetter) nativeSetter.call(el, value);
+        else el.value = value;
+        el.dispatchEvent(new Event('input', { bubbles: true }));
+        el.dispatchEvent(new Event('change', { bubbles: true }));
+        el.dispatchEvent(new Event('blur', { bubbles: true }));
+        return true;
+    }
+    """
+
     async def smart_fill(self, name: str, value: str) -> bool:
-        """프로파일 기반 입력 필드 즉시 채우기."""
+        """프로파일 기반 입력 필드 즉시 채우기 (React/Vue/Angular 호환)."""
         profile = await self.profile()
         name_l = name.lower()
         for inp in profile.get("inputs", []):
@@ -749,8 +937,13 @@ class PageProfiler:
                     if sel.startswith("text:"):
                         continue
                     try:
-                        await self.cdp.fill(sel, value)
-                        return True
+                        escaped_sel = json.dumps(sel)
+                        escaped_val = json.dumps(value)
+                        result = await self.cdp.evaluate(
+                            f"({self._FRAMEWORK_FILL_JS})({escaped_sel}, {escaped_val})"
+                        )
+                        if result:
+                            return True
                     except Exception:
                         continue
         return False
@@ -775,6 +968,123 @@ class PageProfiler:
                 for i, el in enumerate(items[:20]):
                     lines.append(f"  {i}: [{el['role']}] {el['name'][:40]} → {el['selector'][:50]}")
         return "\n".join(lines)
+
+    async def detect_editors(self) -> list:
+        """현재 페이지의 에디터 감지 (프로파일 캐시 무관, 항상 실시간).
+        Toast UI가 ES 모듈로 숨어있으면 자동 노출 시도."""
+        raw = await self.cdp.evaluate(self._DETECT_EDITOR_JS)
+        editors = json.loads(raw) if isinstance(raw, str) else (raw or [])
+
+        # Toast UI needs_init → 인스턴스 자동 노출 시도
+        if editors and editors[0].get("needs_init"):
+            await self._expose_toastui()
+            # 재감지
+            raw2 = await self.cdp.evaluate(self._DETECT_EDITOR_JS)
+            editors2 = json.loads(raw2) if isinstance(raw2, str) else (raw2 or [])
+            if editors2 and editors2[0].get("ready"):
+                return editors2
+
+        return editors
+
+    async def _expose_toastui(self):
+        """Toast UI Editor 인스턴스를 window.__editor로 노출 (ES 모듈 스코프 우회).
+        여러 패턴 시도: 동적 import → 에디터 DOM 탐색 → ProseMirror view 추출."""
+        patterns = [
+            # 패턴 1: MONKOS admin (blog-editor.js 동적 import)
+            "import('./js/blog-editor.js').then(m => { window.__editor = m.getEditor(); return 'ok'; })",
+            # 패턴 2: 일반적인 toastui 글로벌
+            "(function() { var e = document.querySelector('.toastui-editor'); if (e && e.__vue__) { window.__editor = e.__vue__.editor; return 'ok'; } return null; })()",
+            # 패턴 3: ProseMirror view에서 에디터 추출
+            "(function() { var pm = document.querySelector('.ProseMirror'); if (pm && pm.pmViewDesc && pm.pmViewDesc.view) { window.__pm_view = pm.pmViewDesc.view; return 'pm'; } return null; })()",
+        ]
+        for pattern in patterns:
+            try:
+                result = await self.cdp._send("Runtime.evaluate", {
+                    "expression": pattern,
+                    "awaitPromise": True,
+                })
+                val = result.get("result", {}).get("value")
+                if val == "ok":
+                    await asyncio.sleep(0.1)
+                    return
+            except Exception:
+                continue
+
+    async def smart_editor_write(self, content: str, fmt: str = "html") -> bool:
+        """프로파일 기반 에디터 자동 입력. 에디터 유형에 맞는 API 자동 선택.
+
+        Args:
+            content: 입력할 콘텐츠
+            fmt: "html" 또는 "markdown" (Toast UI만 마크다운 지원)
+        """
+        editors = await self.detect_editors()
+        if not editors:
+            return False
+
+        editor = editors[0]  # 첫 번째 감지된 에디터
+        etype = editor["type"]
+        escaped = json.dumps(content)
+
+        try:
+            if etype == "tinymce":
+                js = self._EDITOR_WRITE["tinymce"].replace("{content}", escaped)
+            elif etype == "toastui":
+                key = "toastui_md" if fmt == "markdown" else "toastui_html"
+                js = self._EDITOR_WRITE[key].replace("{content}", escaped)
+            elif etype == "ckeditor4":
+                inst = editor.get("instance_name", "")
+                js = self._EDITOR_WRITE["ckeditor4"].replace("{instance}", inst).replace("{content}", escaped)
+            elif etype == "ckeditor5":
+                js = self._EDITOR_WRITE["ckeditor5"].replace("{content}", escaped)
+            elif etype == "quill":
+                js = self._EDITOR_WRITE["quill"].replace("{content}", escaped)
+            elif etype in ("prosemirror", "contenteditable"):
+                sel = editor.get("selector", "[contenteditable]")
+                js = self._EDITOR_WRITE[etype].replace("{selector}", sel).replace("{content}", escaped)
+            else:
+                return False
+
+            await self.cdp.evaluate(js)
+            return True
+        except Exception:
+            return False
+
+    async def smart_editor_read(self, fmt: str = "html") -> str:
+        """프로파일 기반 에디터 콘텐츠 읽기.
+
+        Args:
+            fmt: "html" 또는 "markdown" (Toast UI만 마크다운 지원)
+        """
+        editors = await self.detect_editors()
+        if not editors:
+            return ""
+
+        editor = editors[0]
+        etype = editor["type"]
+
+        try:
+            if etype == "tinymce":
+                js = self._EDITOR_READ["tinymce"]
+            elif etype == "toastui":
+                key = "toastui_md" if fmt == "markdown" else "toastui_html"
+                js = self._EDITOR_READ[key]
+            elif etype == "ckeditor4":
+                inst = editor.get("instance_name", "")
+                js = self._EDITOR_READ["ckeditor4"].replace("{instance}", inst)
+            elif etype == "ckeditor5":
+                js = self._EDITOR_READ["ckeditor5"]
+            elif etype == "quill":
+                js = self._EDITOR_READ["quill"]
+            elif etype in ("prosemirror", "contenteditable"):
+                sel = editor.get("selector", "[contenteditable]")
+                js = self._EDITOR_READ[etype].replace("{selector}", sel)
+            else:
+                return ""
+
+            result = await self.cdp.evaluate(js)
+            return result if isinstance(result, str) else str(result or "")
+        except Exception:
+            return ""
 
     def invalidate(self, url: str = None):
         """캐시 무효화. url 없으면 전체 삭제."""
@@ -824,6 +1134,10 @@ class PageProfiler:
             else:
                 actions.append(entry)
 
+        # 에디터 감지
+        editor_raw = await self.cdp.evaluate(self._DETECT_EDITOR_JS)
+        editors = json.loads(editor_raw) if isinstance(editor_raw, str) else (editor_raw or [])
+
         profile = {
             "url": url,
             "domain": parsed.netloc,
@@ -834,11 +1148,13 @@ class PageProfiler:
             "actions": actions,
             "inputs": inputs,
             "navigation": navigation,
+            "editors": editors,
             "stats": {
                 "total_elements": len(elements),
                 "actions": len(actions),
                 "inputs": len(inputs),
                 "navigation": len(navigation),
+                "editors": len(editors),
             },
         }
         return profile

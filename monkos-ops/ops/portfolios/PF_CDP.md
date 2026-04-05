@@ -163,10 +163,27 @@ status: active
 | **GA4/GSC MCP 도입** | ✅ | iMac/막내1 | SA impersonation 방식. API 인증 완료 |
 | 7/12 채널 접근성 트리 전환 검증 | ⏳ | 막내(구현) | 좌표 하드코딩 0건 목표 |
 
-### Phase 2.5 — Stagehand v3 난제 사이트 적용 ⏳ 다음
+### Phase 2.5 — CDP 정교화 + Skills 패키징 🔄 진행 중
+
+> Phase 2 도구를 실전 수준으로 정교화하고, `.claude/skills/`로 워크플로우 패키징.
+> 민아 실전 검증 리뷰 기반 (REPORT_20260405_iMac민아_CDP_PageProfiler_실전검증리뷰.md)
+
+| 항목 | 상태 | 담당 | 비고 |
+|------|------|------|------|
+| **C1. smart_fill 이벤트 발사 내장** | 🔄 | 막내(구현) | React/Vue/Angular state 트리거. nativeSetter + input/change/blur 이벤트 |
+| **C2. 에디터 자동감지** | 🔄 | 막내(구현) | TinyMCE/Toast UI/ProseMirror/CKEditor/Quill 시그니처 감지 + smart_editor_write() |
+| **C3. 탭 관리 안정화** | ✅ | iMac/막내4 | type=page 필터 + URL/title 매칭 + safe_navigate 크로스오리진 재접속 |
+| I1. 드롭다운 depth=2 탐색 | ⏳ | — | smart_click에 depth 옵션 |
+| I2. 검색 통합 smart_search() | ⏳ | — | 검색 input 자동 탐지 + 입력 + 실행 |
+| I3. 텍스트 구조화 smart_extract() | ⏳ | — | 테이블/제목/본문 구조화 추출 |
+| I4. 섹션맵 smart_scroll() | ⏳ | — | h1~h6, section, [id] 위치 기록 |
+| **Skills 패키징** | ⏳ | 쌍아(설계) | /ga4, /gsc, /blog-write, /deploy-status, /biz-search, /site-check — C1~C3 완료 후 착수 |
+
+### Phase 3 — Stagehand v3 난제 사이트 적용 ⏳ 다음
 
 > 자연어 기반 브라우저 제어. `act("발행 버튼 클릭")`. 캐싱으로 비용 억제.
 > ⚠️ LLM 비용 발생 구간 — 별도 승인 후 착수
+> (구 Phase 2.5)
 
 | 항목 | 상태 | 담당 | 비고 |
 |------|------|------|------|
