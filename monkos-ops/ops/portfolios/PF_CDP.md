@@ -195,10 +195,10 @@ status: active
 | **C2. 에디터 자동감지** | ✅ | iMac/막내3 | 7종 시그니처 감지 + smart_editor_write/read API + Toast UI ES 모듈 자동 노출 |
 | **C3. 탭 관리 안정화** | ✅ | iMac/막내4 | type=page 필터 + URL/title 매칭 + safe_navigate 크로스오리진 재접속 |
 | 7/12 채널 접근성 트리 전환 검증 | ⏳ | 막내(구현) | 좌표 하드코딩 0건 목표 (Phase 2에서 이관) |
-| I1. 드롭다운 depth=2 탐색 | ⏳ | — | smart_click에 depth 옵션 |
-| I2. 검색 통합 smart_search() | ⏳ | — | 검색 input 자동 탐지 + 입력 + 실행 |
-| I3. 텍스트 구조화 smart_extract() | ⏳ | — | 테이블/제목/본문 구조화 추출 |
-| I4. 섹션맵 smart_scroll() | ⏳ | — | h1~h6, section, [id] 위치 기록 |
+| I1. 드롭다운 depth=2 탐색 | ✅ | iMac/막내1 | smart_click depth=2 → 재프로파일링 → 옵션 클릭 |
+| I2. 검색 통합 smart_search() | ✅ | iMac/막내2 | 검색 필드 자동 탐지 + 입력 + button/form/enter 자동 실행. Google/기업마당 검증 |
+| I3. 텍스트 구조화 smart_extract() | ✅ | iMac/막내3 | 7필드 추출 (title/headings/tables/body/files/images/meta). 3사이트 검증 |
+| I4. 섹션맵 smart_scroll() | ✅ | iMac/막내4 | h1~h6/section/div[id]/a[name] → scrollIntoView smooth. monkos.ai 35섹션 |
 | **Skills 패키징** | ⏳ | 쌍아(설계) | /ga4, /gsc, /blog-write, /deploy-status, /biz-search, /site-check (어젠다 #22) |
 
 ### Phase 3 — Stagehand v3 난제 사이트 적용 ⏳ 다음
