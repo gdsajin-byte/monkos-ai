@@ -66,11 +66,7 @@ scripts/tools/cdp.sh screenshot /tmp/cdp_demo_3.png 0
 - **호칭 마스킹**: 터미널 프롬프트에 "쌍아/민아/막내" 노출 시 블러 처리 또는 크롭
 - 외부용 표기: "Agent 1", "Agent 2" 등
 
-### 캡처 4: 바우쳐/크레딧 증빙 (스크린샷 2장)
-
-- Google Cloud 콘솔 → 크레딧 잔액 화면 (프로젝트 ID 마스킹)
-- Anthropic 콘솔 → 크레딧 내역 (API 키 마스킹)
-- **민감정보 마스킹 필수**: 프로젝트 ID, API 키, 계정 이메일 등
+### ~~캡처 4: 삭제~~ (바우쳐 캡처 불필요 — 작가님 지시 04/05)
 
 ---
 
@@ -87,8 +83,7 @@ apps/monkos-3d/public/assets/demo/
 ├── playwright_tree.png
 ├── playwright_click.png
 ├── multi_agent.png
-├── voucher_google.png
-├── voucher_anthropic.png
+├── (바우쳐 캡처 삭제)
 └── README.md            (각 파일 설명)
 ```
 

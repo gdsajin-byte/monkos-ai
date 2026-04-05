@@ -17,8 +17,12 @@ import asyncio
 import json
 import base64
 import subprocess
+import os
+import hashlib
+import time
 from typing import Optional
 from contextlib import asynccontextmanager
+from urllib.parse import urlparse
 
 try:
     import websockets
@@ -573,6 +577,343 @@ class CDP:
             tabs = self._get_tabs()
             target_id = tabs[self.tab_index]["id"]
         await self._send("Target.closeTarget", {"targetId": target_id})
+
+    # ── PageProfiler 통합 ──
+
+    @property
+    def profiler(self) -> 'PageProfiler':
+        """프로파일러 접근. 첫 호출 시 인스턴스 생성."""
+        if not hasattr(self, '_profiler'):
+            self._profiler = PageProfiler(self)
+        return self._profiler
+
+    async def click_smart(self, name: str) -> bool:
+        """프로파일 기반 스마트 클릭 — 캐시 히트 시 즉시, 미스 시 프로파일링 후 클릭"""
+        return await self.profiler.smart_click(name)
+
+
+# ── PageProfiler — 런타임 자동 프로파일링 + 캐시 (PF_CDP Phase 2) ──
+
+
+class PageProfiler:
+    """페이지 자동 프로파일링 + 캐시.
+
+    CDP DevTools API로 페이지 구조를 자동으로 읽어내고 캐싱한다.
+    첫 방문 = 학습, 재방문 = 캐시 즉시 동작, 페이지 변경 = 자동 갱신.
+    LLM 호출 불필요, 순수 CDP API만으로, 비용 ₩0.
+    """
+
+    CACHE_DIR = os.path.expanduser("~/.cache/cdp_profiles")
+    CACHE_TTL = 86400 * 7  # 7일
+
+    # JS: 인터랙티브 요소 수집 + DOM 구조 해시 (단일 평가로 왕복 최소화)
+    _COLLECT_JS = """
+(function() {
+    // ── DOM 구조 해시 (태그+id 트리, 텍스트 무시) ──
+    function structHash(el, d) {
+        if (d > 6 || !el) return '';
+        var s = el.tagName || '';
+        if (el.id) s += '#' + el.id;
+        var ch = el.children;
+        if (ch) for (var i = 0; i < Math.min(ch.length, 30); i++) s += structHash(ch[i], d+1);
+        return s;
+    }
+    var raw = structHash(document.body, 0);
+    var h = 0;
+    for (var i = 0; i < raw.length; i++) h = ((h << 5) - h + raw.charCodeAt(i)) | 0;
+    var domHash = String(Math.abs(h));
+
+    // ── 인터랙티브 요소 수집 ──
+    var SEL = 'button,a[href],input,select,textarea,[role="button"],[role="link"],[role="textbox"],' +
+              '[role="combobox"],[role="checkbox"],[role="radio"],[role="tab"],[role="menuitem"],' +
+              '[role="switch"],[role="searchbox"],[onclick],[tabindex]:not([tabindex="-1"])';
+    var allEls = document.querySelectorAll(SEL);
+    var results = [];
+
+    for (var idx = 0; idx < allEls.length && results.length < 500; idx++) {
+        var el = allEls[idx];
+        var cs = getComputedStyle(el);
+        if (el.offsetWidth === 0 && el.offsetHeight === 0) continue;
+        if (cs.display === 'none' || cs.visibility === 'hidden') continue;
+
+        var rect = el.getBoundingClientRect();
+        if (rect.width === 0 || rect.height === 0) continue;
+
+        var tag = el.tagName.toLowerCase();
+        var role = el.getAttribute('role') || '';
+        if (!role) {
+            if (tag === 'button' || el.type === 'submit' || el.type === 'button') role = 'button';
+            else if (tag === 'a') role = 'link';
+            else if (tag === 'input') {
+                var t = (el.type || 'text').toLowerCase();
+                role = (t === 'checkbox') ? 'checkbox' : (t === 'radio') ? 'radio' : 'textbox';
+            }
+            else if (tag === 'select') role = 'combobox';
+            else if (tag === 'textarea') role = 'textbox';
+            else role = 'widget';
+        }
+
+        var name = el.getAttribute('aria-label')
+            || (role !== 'textbox' && role !== 'combobox' ? el.textContent.trim().substring(0,80) : '')
+            || el.getAttribute('placeholder') || el.getAttribute('title')
+            || el.getAttribute('alt') || el.name || '';
+
+        // ── 셀렉터 체인 ──
+        var sels = [];
+        if (el.id) sels.push('#' + CSS.escape(el.id));
+        if (el.name && tag !== 'a') sels.push(tag + '[name="' + el.name + '"]');
+        var tid = el.getAttribute('data-testid');
+        if (tid) sels.push('[data-testid="' + tid + '"]');
+        for (var ai = 0; ai < el.attributes.length && sels.length < 5; ai++) {
+            var an = el.attributes[ai].name;
+            if (an.startsWith('data-') && an !== 'data-testid') {
+                sels.push('[' + an + '="' + el.attributes[ai].value.substring(0,60) + '"]');
+            }
+        }
+        var ariaLabel = el.getAttribute('aria-label');
+        if (ariaLabel) sels.push('[aria-label="' + ariaLabel + '"]');
+
+        // 텍스트 폴백 (링크/버튼만)
+        if (name && name.length < 50 && (role === 'button' || role === 'link')) {
+            sels.push('text:' + name);
+        }
+
+        var primary = sels[0] || tag;
+        var fallbacks = sels.slice(1);
+
+        results.push({
+            name: name.substring(0,80),
+            role: role,
+            tag: tag,
+            selector: primary,
+            fallback_selectors: fallbacks,
+            box: {x:Math.round(rect.x), y:Math.round(rect.y), w:Math.round(rect.width), h:Math.round(rect.height)},
+            visible: true,
+            enabled: !el.disabled,
+            href: el.href || null,
+            placeholder: el.placeholder || null,
+            input_type: el.type || null
+        });
+    }
+    return JSON.stringify({domHash: domHash, elements: results});
+})()
+"""
+
+    def __init__(self, cdp: 'CDP'):
+        self.cdp = cdp
+        os.makedirs(self.CACHE_DIR, exist_ok=True)
+
+    # ── 공개 API ──
+
+    async def profile(self, url: str = None, force: bool = False) -> dict:
+        """현재 페이지 프로파일링. 캐시 히트 시 로드, 미스/변경 시 재생성."""
+        if url is None:
+            url = await self.cdp.url()
+
+        cache_path = self._cache_path(url)
+
+        if not force and os.path.exists(cache_path):
+            cached = self._load_cache(cache_path)
+            if cached:
+                changed = await self._detect_change(cached)
+                if not changed:
+                    cached["_cache_hit"] = True
+                    return cached
+
+        profile = await self._build_profile(url)
+        self._save_cache(cache_path, profile)
+        profile["_cache_hit"] = False
+        return profile
+
+    async def smart_click(self, name: str) -> bool:
+        """프로파일 기반 즉시 클릭. 풀스캔 불필요."""
+        profile = await self.profile()
+        name_l = name.lower()
+        # actions → navigation 순서 탐색
+        for pool in ("actions", "navigation"):
+            for el in profile.get(pool, []):
+                if name_l in el["name"].lower():
+                    if await self._try_selectors(el):
+                        return True
+        return False
+
+    async def smart_fill(self, name: str, value: str) -> bool:
+        """프로파일 기반 입력 필드 즉시 채우기."""
+        profile = await self.profile()
+        name_l = name.lower()
+        for inp in profile.get("inputs", []):
+            match = (name_l in inp["name"].lower()
+                     or name_l in (inp.get("placeholder") or "").lower())
+            if match:
+                for sel in [inp["selector"]] + inp.get("fallback_selectors", []):
+                    if sel.startswith("text:"):
+                        continue
+                    try:
+                        await self.cdp.fill(sel, value)
+                        return True
+                    except Exception:
+                        continue
+        return False
+
+    async def smart_navigate(self, name: str) -> bool:
+        """프로파일 기반 네비게이션 링크 즉시 클릭."""
+        profile = await self.profile()
+        name_l = name.lower()
+        for nav in profile.get("navigation", []):
+            if name_l in nav["name"].lower():
+                if await self._try_selectors(nav):
+                    return True
+        return False
+
+    def list_actions(self, profile: dict) -> str:
+        """프로파일의 actions/inputs/navigation 요약 (디버그용)"""
+        lines = []
+        for cat in ("actions", "inputs", "navigation"):
+            items = profile.get(cat, [])
+            if items:
+                lines.append(f"\n[{cat}] ({len(items)}개)")
+                for i, el in enumerate(items[:20]):
+                    lines.append(f"  {i}: [{el['role']}] {el['name'][:40]} → {el['selector'][:50]}")
+        return "\n".join(lines)
+
+    def invalidate(self, url: str = None):
+        """캐시 무효화. url 없으면 전체 삭제."""
+        if url:
+            path = self._cache_path(url)
+            if os.path.exists(path):
+                os.remove(path)
+        else:
+            for f in os.listdir(self.CACHE_DIR):
+                os.remove(os.path.join(self.CACHE_DIR, f))
+
+    # ── 내부 구현 ──
+
+    async def _build_profile(self, url: str) -> dict:
+        """페이지 프로파일 생성 — CDP JS 일괄 수집 + 파싱"""
+        parsed = urlparse(url)
+
+        raw = await self.cdp.evaluate(self._COLLECT_JS)
+        data = json.loads(raw) if isinstance(raw, str) else raw
+
+        dom_hash = data.get("domHash", "0")
+        elements = data.get("elements", [])
+
+        actions = []
+        inputs = []
+        navigation = []
+
+        for el in elements:
+            role = el.get("role", "")
+            entry = {
+                "name": el["name"],
+                "role": role,
+                "selector": el["selector"],
+                "fallback_selectors": el.get("fallback_selectors", []),
+                "box": el.get("box"),
+                "visible": el.get("visible", True),
+                "enabled": el.get("enabled", True),
+            }
+
+            if role in ("textbox", "searchbox", "combobox"):
+                entry["placeholder"] = el.get("placeholder", "")
+                entry["input_type"] = el.get("input_type", "text")
+                inputs.append(entry)
+            elif role == "link" and el.get("href"):
+                entry["href"] = el["href"]
+                navigation.append(entry)
+            else:
+                actions.append(entry)
+
+        profile = {
+            "url": url,
+            "domain": parsed.netloc,
+            "path": parsed.path or "/",
+            "title": await self.cdp.title(),
+            "profiled_at": time.strftime("%Y-%m-%dT%H:%M:%S"),
+            "dom_hash": dom_hash,
+            "actions": actions,
+            "inputs": inputs,
+            "navigation": navigation,
+            "stats": {
+                "total_elements": len(elements),
+                "actions": len(actions),
+                "inputs": len(inputs),
+                "navigation": len(navigation),
+            },
+        }
+        return profile
+
+    async def _try_selectors(self, element: dict) -> bool:
+        """셀렉터 체인 순회 — 첫 번째 성공하는 것으로 클릭"""
+        selectors = [element["selector"]] + element.get("fallback_selectors", [])
+        for selector in selectors:
+            try:
+                if selector.startswith("text:"):
+                    text = selector[5:]
+                    await self.cdp.click_text(text)
+                    return True
+                else:
+                    await self.cdp.click_element(selector)
+                    return True
+            except Exception:
+                continue
+        # 좌표 폴백
+        box = element.get("box")
+        if box and box.get("w", 0) > 0:
+            cx = box["x"] + box["w"] // 2
+            cy = box["y"] + box["h"] // 2
+            try:
+                await self.cdp.click(cx, cy)
+                return True
+            except Exception:
+                pass
+        return False
+
+    async def _detect_change(self, cached: dict) -> bool:
+        """DOM 구조 해시 비교로 페이지 변경 감지"""
+        try:
+            current_hash = await self.cdp.evaluate("""
+                (function() {
+                    function h(el, d) {
+                        if (d > 6 || !el) return '';
+                        var s = el.tagName || '';
+                        if (el.id) s += '#' + el.id;
+                        var c = el.children;
+                        if (c) for (var i = 0; i < Math.min(c.length, 30); i++) s += h(c[i], d+1);
+                        return s;
+                    }
+                    var r = h(document.body, 0), v = 0;
+                    for (var i = 0; i < r.length; i++) v = ((v << 5) - v + r.charCodeAt(i)) | 0;
+                    return String(Math.abs(v));
+                })()
+            """)
+            return str(current_hash) != str(cached.get("dom_hash", ""))
+        except Exception:
+            return True  # 에러 시 재프로파일링
+
+    def _cache_path(self, url: str) -> str:
+        """URL → 캐시 파일 경로"""
+        parsed = urlparse(url)
+        key = hashlib.md5(f"{parsed.netloc}{parsed.path}".encode()).hexdigest()[:12]
+        safe_domain = parsed.netloc.replace(":", "_")
+        return os.path.join(self.CACHE_DIR, f"{safe_domain}_{key}.json")
+
+    def _load_cache(self, path: str) -> dict:
+        """캐시 파일 로드. TTL 초과 시 None."""
+        try:
+            with open(path) as f:
+                cached = json.load(f)
+            if time.time() - cached.get("_cached_at", 0) > self.CACHE_TTL:
+                return None
+            return cached
+        except Exception:
+            return None
+
+    def _save_cache(self, path: str, profile: dict):
+        """캐시 파일 저장"""
+        profile["_cached_at"] = time.time()
+        with open(path, "w") as f:
+            json.dump(profile, f, ensure_ascii=False, indent=2)
 
 
 # ── MONKOS 에디터 특화 ──
