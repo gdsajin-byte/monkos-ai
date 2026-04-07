@@ -82,6 +82,8 @@ status: active
 | 4/05 | 민아 | SEO 기술 보정 4건 진단 (JA/EN 메타, Crop, Blog JSON-LD, alt) | ORDER_20260405_CITADEL_SEO보정_4건 | ✅ 진단 |
 | 4/05 | 쌍아 | 코드 검증 → 3건 확정 (건4 alt 이미 해결 확인, 제외) | ORDER_20260405_CITADEL_SEO보정_3건 | ✅ |
 | 4/05 | 막내2 | SEO 3건 코딩 완료 (home.js metaMap, crop H1+hreflang, blog JSON-LD) | — | ✅ 커밋 대기 |
+| 4/07 | 막내2 | SEO 3건 prod 배포 완료 — JA/EN 메타 현지화 + Crop hreflang/H1 + Blog JSON-LD. monkos-portal rev 00015-tkk 재배포 | — | ✅ |
+| 4/07 | 막내1 | SEO 3건 재배포 확인 (rev 00016-swt). Cloud Run 직접URL 4건 정상. **monkos.ai `/ja/`, `/en/` root경로만 KO로 fallback** — 인프라 프록시 계층 rewrite 이슈 발견. `/ja/blog` 등 하위경로는 정상 | — | ⚠️ 인프라 이슈 |
 
 ---
 
@@ -121,7 +123,7 @@ status: active
 | 외부 백링크 콘텐츠 발행 (note.com, 네이버 등) | ❌ 미착수 | 한 |
 | GSC 색인 요청 + 모니터링 | ❌ 배포 후 | 민아 |
 
-### Phase 1.5 — 기술 SEO 보정 ⏳ 커밋 대기 (4/05)
+### Phase 1.5 — 기술 SEO 보정 ✅ 완료 (4/07 배포)
 
 | 항목 | 상태 | 담당 |
 |------|------|------|
@@ -129,7 +131,7 @@ status: active
 | Crop 페이지 hreflang 추가 (ko + x-default) | ✅ 코딩 완료 | 막내2 |
 | Crop H1 태그 추가 (span→h1 + CSS 보정) | ✅ 코딩 완료 | 막내2 |
 | Blog 목록 JSON-LD (@type: Blog) | ✅ 코딩 완료 | 막내2 |
-| 포탈 prod 배포 (monkos-portal, ./deploy.sh prod) | ⏳ 커밋 후 | 막내 |
+| 포탈 prod 배포 (monkos-portal, rev 00015-tkk) | ✅ 4/07 | 막내2 |
 
 > 핵심: JA canonical이 KO를 가리켜 일본 자연검색 구조적 차단 → 해소
 
@@ -262,3 +264,4 @@ status: active
 | Thin Content 패널티 | 낮음 | 가드레일: 페이지당 800자+, 고유 60%+ |
 | AI 엔진 인용 지연 | 중간 | llms.txt + JSON-LD + 구조화 콘텐츠 |
 | 일본 취활 피크(4~5월) 전 미완료 | 중간 | 4/1 배포 목표 설정, 병렬 실행 |
+| monkos.ai `/ja/`, `/en/` root 프록시 rewrite | 높음 | 인프라 계층(도메인→Cloud Run 매핑) 확인 필요. 하위 경로(`/ja/blog` 등)는 정상. Cloud Run 직접 URL 정상 |
