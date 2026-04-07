@@ -1,6 +1,6 @@
 /** 담당: 막내2 (리파인) */
 
-import { usersCollection, firestore, log, logTransaction, parseJsonBody, parseRawBody, createHmac, randomBytes, directTokens, LEMONSQUEEZY_API_KEY, LEMONSQUEEZY_WEBHOOK_SECRET, LEMONSQUEEZY_STORE_ID, TOSS_SECRET_KEY, VARIANT_CREDITS, TOSS_AMOUNT_CREDITS, PRODUCTS } from './shared/config.js';
+import { usersCollection, firestore, log, logTransaction, parseJsonBody, parseRawBody, createHmac, randomBytes, directTokens, sendTelegramMessage, TELEGRAM_TEAM_API, TEAM_CHAT_ID, LEMONSQUEEZY_API_KEY, LEMONSQUEEZY_WEBHOOK_SECRET, LEMONSQUEEZY_STORE_ID, TOSS_SECRET_KEY, VARIANT_CREDITS, TOSS_AMOUNT_CREDITS, PRODUCTS } from './shared/config.js';
 
 /**
  * POST /api/checkout — Lemon Squeezy 체크아웃 URL 생성
@@ -214,6 +214,9 @@ export async function handleTossConfirm(req, res) {
 
     if (!tossRes.ok) {
       log(`[Toss] 결제 승인 실패: ${tossData.code} - ${tossData.message}`, 'ERROR', { userId, amount, orderId });
+      if (TEAM_CHAT_ID) {
+        sendTelegramMessage(TEAM_CHAT_ID, `🚨 *토스 결제 실패*\n코드: ${tossData.code}\n메시지: ${tossData.message}\n금액: ₩${amount}\nuserId: ${userId}\norderId: ${orderId}`, TELEGRAM_TEAM_API).catch(() => {});
+      }
       res.writeHead(400, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: tossData.message || '결제 승인 실패' }));
       return;
@@ -261,6 +264,9 @@ export async function handleTossConfirm(req, res) {
     }));
   } catch (err) {
     log(`[Toss] 에러: ${err.message}`, 'ERROR', { error: err.stack });
+    if (TEAM_CHAT_ID) {
+      sendTelegramMessage(TEAM_CHAT_ID, `🚨 *토스 결제 서버 에러*\n${err.message}`, TELEGRAM_TEAM_API).catch(() => {});
+    }
     res.writeHead(500, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: err.message }));
   }
