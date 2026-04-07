@@ -58,6 +58,10 @@ export const LINE_MESSAGING_API = 'https://api.line.me/v2/bot/message/reply';
 export const NAVER_CLIENT_ID = process.env.NAVER_CLIENT_ID || '';
 export const NAVER_CLIENT_SECRET = process.env.NAVER_CLIENT_SECRET || '';
 
+// GitHub (SPREAD 배포)
+export const GITHUB_TOKEN = process.env.GITHUB_TOKEN || '';
+export const GITHUB_REPO = process.env.GITHUB_REPO || 'gdsajin-byte/monkos-ai';
+
 // CMS
 export const GCS_BUCKET = process.env.GCS_BUCKET || 'monk-ai-images';
 export const ADMIN_UIDS = (process.env.ADMIN_UIDS || '').split(',').filter(Boolean);

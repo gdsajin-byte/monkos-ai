@@ -5,6 +5,7 @@
 import { firestore, ai, log, parseJsonBody } from '../shared/config.js';
 import { requireAdmin } from './admin-auth.js';
 import { translateAndSaveBlogPost } from './translate.js';
+import { publishBlogToGitHub } from './github-issues.js';
 
 const blogCollection = firestore.collection('blog_posts');
 
@@ -160,11 +161,13 @@ export async function handleBlogCreate(req, res) {
       }
     }
 
-    // 한국어 원본 발행 시 자동번역 (백그라운드)
+    // 한국어 원본 발행 시 자동번역 → GitHub Issues (백그라운드 체이닝)
     if (post.published && post.lang === 'ko') {
-      translateAndSaveBlogPost(slug, post).catch(err => {
-        log(`[CMS] 백그라운드 번역 에러: ${err.message}`, 'ERROR');
-      });
+      translateAndSaveBlogPost(slug, post)
+        .then(() => publishBlogToGitHub(slug))
+        .catch(err => {
+          log(`[CMS] 백그라운드 번역/게시 에러: ${err.message}`, 'ERROR');
+        });
     }
 
     res.writeHead(201, { 'Content-Type': 'application/json' });
@@ -232,11 +235,13 @@ export async function handleBlogUpdate(req, res) {
       }
     }
 
-    // 한국어 원본 발행 시 자동번역 (백그라운드, 재번역 덮어쓰기)
+    // 한국어 원본 발행 시 자동번역 → GitHub Issues (백그라운드 체이닝)
     if (updatedData.published && updatedData.lang === 'ko') {
-      translateAndSaveBlogPost(slug, updatedData).catch(err => {
-        log(`[CMS] 백그라운드 번역 에러: ${err.message}`, 'ERROR');
-      });
+      translateAndSaveBlogPost(slug, updatedData)
+        .then(() => publishBlogToGitHub(slug))
+        .catch(err => {
+          log(`[CMS] 백그라운드 번역/게시 에러: ${err.message}`, 'ERROR');
+        });
     }
 
     res.writeHead(200, { 'Content-Type': 'application/json' });
