@@ -219,7 +219,7 @@ const SLIDES = [
             <tr style="border-bottom:1px solid #222; background:#1a1a2e;">
               <td style="padding:8px; text-align:center; color:#a78bfa; font-weight:700;">④</td>
               <td style="padding:8px; color:#fca5a5;">"범용 GenAI 대비 차별성 미흡"</td>
-              <td style="padding:8px; color:#a7f3d0;">빅테크 정책의 크랙을 파고드는 자체 엔진 — Google·Anthropic 바우처 인정</td>
+              <td style="padding:8px; color:#a7f3d0;">빅테크 정책의 크랙을 파고드는 자체 엔진 개발 — 멀티에이전트 실가동</td>
             </tr>
             <tr style="border-bottom:1px solid #222;">
               <td style="padding:8px; text-align:center; color:#666;">⑤</td>
@@ -257,10 +257,10 @@ const SLIDES = [
       "알엘에이치에프는 오픈에이아이도 쓰는 글로벌 표준 학습 방식입니다.",
       // ④ 차별성 (부연 포함)
       "지적 4번. 범용 젠에이아이 대비 차별성 미흡.",
-      "빅테크 정책의 크랙을 파고드는 자체 엔진 개발. 구글과 앤스로픽 바우처로 인정받았습니다.",
+      "빅테크 정책의 크랙을 파고드는 자체 엔진 개발. 멀티에이전트 실가동 중입니다.",
       "몽코스는 구글, 마이크로소프트, 앤스로픽, 오픈에이아이, 오픈소스를 실시간으로 벤치마크하고 크롤링합니다.",
       "대표적으로 엠씨피 자체 서버 구축과 씨디피 엔진 직접 개발로, 앤스로픽의 공식 도구를 오히려 뛰어넘는 기술을 보유하고 있습니다.",
-      "이것은 해킹이 아닌 혁신으로서, 구글과 앤스로픽으로부터 주기적인 바우쳐를 제공받으며 인정받고 있습니다.",
+      "멀티에이전트 오케스트레이션 시스템으로 에이아이 에이전트 4기에서 20기까지 동시 병렬 가동이 가능합니다.",
       // ⑤ 크롤링
       "지적 5번. 크롤링 저작권 리스크.",
       "100퍼센트 사용자 본인 사진 기반. 저작권 분쟁 구조 자체가 부재합니다.",
@@ -395,7 +395,7 @@ const SLIDES = [
       "씨디피, 크롬 데브툴즈 프로토콜 엔진을 직접 개발했습니다.",
       "에이아이 에이전트가 브라우저를 직접 보고, 입력하고, 검증합니다.",
       "멀티에이전트가 동시에 병렬 작업을 수행하는 오케스트레이션 시스템입니다.",
-      "이 기술력을 구글과 앤스로픽이 바우쳐와 크레딧으로 인정하고 있습니다.",
+      "이 시스템이 지금 이 순간에도 실가동 중이며, 글로벌 빅테크가 핵심 방향성으로 경쟁하고 있는 바로 그 기술입니다.",
     ],
     actions: [ACTION.BOUNCE, ACTION.POINT, ACTION.POINT, ACTION.LOOK, ACTION.FRONT],
   },
@@ -431,6 +431,10 @@ const SLIDES = [
           <div style="background:#1a1a2e; border-radius:8px; padding:16px; text-align:center;">
             <p style="color:#6d5faa; font-size:2.5rem; font-weight:900;">특허</p>
             <p style="color:#8b7fbd; font-size:1rem;">출원 진행 중</p>
+          </div>
+          <div style="background:#1a1a2e; border-radius:8px; padding:16px; text-align:center;">
+            <p style="color:#38bdf8; font-size:2.5rem; font-weight:900;">벤처</p>
+            <p style="color:#7dd3fc; font-size:1rem;">인증 진행 중</p>
           </div>
         </div>
         <div style="border-top:2px solid #a78bfa44; padding-top:24px; text-align:center;">
