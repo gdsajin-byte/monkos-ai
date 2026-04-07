@@ -76,6 +76,15 @@ export async function publishBlogToGitHub(originalSlug) {
   }
 
   try {
+    // 카테고리 필터: AI 카테고리만 GitHub Issue 등록
+    const originalDoc = await firestore.collection('blog_posts').doc(originalSlug).get();
+    const originalData = originalDoc.exists ? originalDoc.data() : {};
+    const category = (originalData.category || '').toLowerCase();
+    if (category !== 'ai') {
+      log(`[SPREAD] GitHub Issue 스킵 — AI 카테고리 아님: ${originalSlug} (${category || '미설정'})`, 'INFO');
+      return null;
+    }
+
     const enPost = await findEnTranslation(originalSlug);
     if (!enPost) {
       log(`[SPREAD] GitHub Issue 스킵 — EN 번역본 없음: ${originalSlug}`, 'WARN');
