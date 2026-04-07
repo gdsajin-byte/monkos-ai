@@ -100,6 +100,12 @@ monk_project/
 __pycache__/
 **/__pycache__/
 
+# 온디바이스 챗봇 (바이너리+모델 2.3GB, Git 부적합)
+apps/monkos-chat/monkos-chat.exe
+apps/monkos-chat/model/*.gguf
+apps/monkos-chat/llamafile-*
+apps/monkos-chat/*.zip
+
 # iPhone 캡쳐 (로컬 전용)
 iphone_capture/
 

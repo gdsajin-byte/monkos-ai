@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MONKOS AI</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #0a0a0a;
+  color: #e5e5e5;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+header {
+  padding: 16px 24px;
+  background: #111;
+  border-bottom: 1px solid #222;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+header .logo {
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg, #a78bfa, #7c3aed);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 14px;
+  color: #fff;
+}
+header h1 { font-size: 18px; font-weight: 600; color: #fff; }
+header .badge {
+  font-size: 11px;
+  background: #1a1a2e;
+  color: #a78bfa;
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid #2d2d4e;
+}
+.chat-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.msg {
+  max-width: 80%;
+  padding: 12px 16px;
+  border-radius: 12px;
+  line-height: 1.6;
+  font-size: 14px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.msg.user {
+  align-self: flex-end;
+  background: #7c3aed;
+  color: #fff;
+  border-bottom-right-radius: 4px;
+}
+.msg.assistant {
+  align-self: flex-start;
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  border-bottom-left-radius: 4px;
+}
+.msg.system-info {
+  align-self: center;
+  background: transparent;
+  color: #666;
+  font-size: 12px;
+  padding: 4px;
+}
+.typing {
+  align-self: flex-start;
+  color: #888;
+  font-size: 13px;
+  padding: 8px 16px;
+}
+.typing::after {
+  content: '...';
+  animation: dots 1.2s steps(4, end) infinite;
+}
+@keyframes dots {
+  0%, 20% { content: ''; }
+  40% { content: '.'; }
+  60% { content: '..'; }
+  80%, 100% { content: '...'; }
+}
+.input-area {
+  padding: 16px 24px;
+  background: #111;
+  border-top: 1px solid #222;
+  display: flex;
+  gap: 12px;
+}
+#input {
+  flex: 1;
+  padding: 12px 16px;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 10px;
+  color: #e5e5e5;
+  font-size: 14px;
+  outline: none;
+  resize: none;
+  min-height: 44px;
+  max-height: 120px;
+  font-family: inherit;
+}
+#input:focus { border-color: #7c3aed; }
+#input::placeholder { color: #555; }
+#send {
+  padding: 0 20px;
+  background: #7c3aed;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+#send:hover { background: #6d28d9; }
+#send:disabled { background: #333; cursor: not-allowed; }
+footer {
+  padding: 8px;
+  text-align: center;
+  font-size: 11px;
+  color: #444;
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">M</div>
+  <h1>MONKOS AI</h1>
+  <span class="badge">On-Device</span>
+</header>
+
+<div class="chat-area" id="chatArea">
+  <div class="msg system-info">MONKOS AI 어시스턴트입니다. 무엇이든 질문해 주세요.</div>
+</div>
+
+<div class="input-area">
+  <textarea id="input" placeholder="질문을 입력하세요..." rows="1"></textarea>
+  <button id="send">전송</button>
+</div>
+
+<footer>MONKOS AI &mdash; On-Device Chatbot &middot; Powered by EXAONE</footer>
+
+<script>
+const SYSTEM_PROMPT = `당신은 MONKOS AI 어시스턴트입니다.
+몽크사진관(MONK.KR)의 AI 증명사진·뷰티 서비스 전문 상담 챗봇입니다.
+아래 도메인 지식을 바탕으로 질문에 한국어로 정확하고 간결하게 답변하세요.
+
+===== 기업 개요 =====
+
+- 기업명: 몽크사진관 (대표 신정규)
+- 플랫폼: MONKOS (monk.kr / monkos.ai)
+- 비전: K-뷰티 도메인 특화 AI 증명사진 토털 솔루션
+- 과제명: K-뷰티 전문가 지식 기반의 생성형 AI 룩북 제작 및 지능형 비주얼 큐레이션 서비스 플랫폼 개발
+- 과제번호: RS-2026-25508252
+
+===== 핵심 기술 =====
+
+4개 연구과제:
+1. [1-1] AI 이미지 정체성 유지율 90% 달성, 외부 API 의존율 50% 이하로 기술 자립화
+2. [1-2] 자체 고해상도 파이프라인으로 인쇄품질(300dpi) 실사 이미지 대형 출력 실현
+3. [1-3] Human-AI 협업 기반 자가 진화 파이프라인 — 사용할수록 K-뷰티 도메인에 특화되어 스스로 진화하는 지능
+4. [1-4] 소상공인 맞춤 AI 챗봇 탑재 저비용 홈페이지 서비스 사업화
+
+핵심 파이프라인 7단계:
+1단계 데이터 수집 → 2단계 전처리·필터링 → 3단계 AI 검수 → 4단계 모델 학습(LoRA·파인튜닝) → 5단계 AI 평가 → 6단계 전문가 큐레이션(RLHF) → 7단계 배포
+
+GPU(RTX 5090×2)의 목적: 서비스 서버가 아닌 연구장비. VRAM 확보를 통한 오픈소스 모델 적재·MLOps·파인튜닝용.
+클라우드 API = 프로덕션 서비스, 로컬 GPU = R&D. 이 병렬 구조가 API 의존율 50% 목표의 핵심.
+
+===== 서비스 현황 (6개 라이브) =====
+
+1. monkos.ai — 메인 플랫폼 (KR·JP·EN 3개국어)
+2. idphoto-kr.monkos.ai — 한국 증명사진 서비스
+3. idphoto-jp.monkos.ai — 일본 증명사진 서비스
+4. crop.monkos.ai — MONKOS Crop (FaceMesh 478포인트 기반, 특허 출원 중)
+5. RAG 챗봇 — FAQ 학습 + 휴먼 코멘트 가중 업데이트 적용
+6. 어드민 — 관리자 대시보드
+
+===== R&D 실적 =====
+
+- Git 커밋: 1,421+
+- Cloud Run 배포: 118회+
+- 국내외 결제 연동: 토스페이먼츠(국내) + Lemon Squeezy/Stripe(해외)
+- KOITA 연구개발 전담부서 인증 완료
+- OAuth 인증: 카카오·Google·LINE 3종
+- 25개 SNS 채널 홍보 파이프라인 가동 중
+- 벤처인증: 진행 중
+- 특허출원: MONKOS Crop (진행 중)
+
+===== 팀 구성 =====
+
+- 신정규 (대표/연구책임자): 사진작가 20년, MONKOS 플랫폼 설계·개발 총괄
+- 한송이 (연구원): 헤어메이크업 실무 10년, 건국대 미용교육학 석사, 건국대 향장생물학 박사과정 (학점 4.5/4.5)
+
+===== 원가 구조 =====
+
+1회 원가 $0.04 (Gemini Live 코칭 $0.01 + Imagen I2I 생성 $0.02 + QC 검증 $0.005 + Cloud Run $0.001)
+판매가 $10 → 마진율 99.6%
+
+===== 반박서 핵심 — 8건 지적에 대한 반론 =====
+
+① "발색 수치 정확성 미흡" → 제안서에 "발색" 0회 기재. 핵심 연구과제는 "인물 정체성 유지율 90%". 과제 오독.
+② "GPU 처리 속도 방안 부족" → GPU는 서비스 서버가 아닌 연구장비(파인튜닝·MLOps용). 연구장비를 서버로 오독.
+③ "전문가 편향 우려" → RLHF는 글로벌 AI 표준 학습 방식. 뷰티에 절대적 정답 없어 편향 판단 기준 자체 부재.
+④ "범용 GenAI 차별성 미흡" → 자가 진화 파이프라인은 모든 AI 서비스의 핵심 엔진. 6개 서비스 가동 중.
+⑤ "크롤링 저작권 리스크" → 서비스 이미지는 100% 사용자 본인 사진 기반. 저작권 분쟁 구조 자체 부재.
+⑥ "빅테크 대비 경쟁력 부족" → Adobe·Runway·Stitch Fix 모두 증명사진 서비스 없음. 범주 오류.
+⑦ "고해상도 비용 모순" → 서로 다른 연구과제이자 상품 라인. 현 시점 원가 $0.04, 판매가 $10. 기술 진화가 해소.
+⑧ "사업화 전략 미흡" → 6개 서비스 가동, 결제 연동, KOITA 인증 등 실행으로 증명 중.
+
+===== 경쟁 우위 =====
+
+29개 경쟁사 중 3단계 풀 파이프라인(실시간 코칭→AI 생성→QC 검증) 보유 서비스는 MONKOS가 유일.
+
+===== 응답 규칙 =====
+
+1. 한국어로 답변. 간결하고 전문적인 톤.
+2. 위 도메인 지식 기반으로 정확하게 답변.
+3. 제안서/반박서에 없는 내용: "해당 내용은 제안서 범위 밖입니다"로 답변.
+4. 미출시·미확정 기능 언급 금지. 현재 가동 중인 것만 답변.
+5. 기술적 질문에는 구체적 수치와 증거 포함.`;
+
+const API_URL = 'http://127.0.0.1:8080/v1/chat/completions';
+const chatArea = document.getElementById('chatArea');
+const input = document.getElementById('input');
+const sendBtn = document.getElementById('send');
+let history = [];
+let generating = false;
+
+function addMsg(role, text) {
+  const div = document.createElement('div');
+  div.className = 'msg ' + role;
+  div.textContent = text;
+  chatArea.appendChild(div);
+  chatArea.scrollTop = chatArea.scrollHeight;
+  return div;
+}
+
+function showTyping() {
+  const div = document.createElement('div');
+  div.className = 'typing';
+  div.id = 'typing';
+  div.textContent = '답변 생성 중';
+  chatArea.appendChild(div);
+  chatArea.scrollTop = chatArea.scrollHeight;
+}
+function hideTyping() {
+  const el = document.getElementById('typing');
+  if (el) el.remove();
+}
+
+async function send() {
+  const text = input.value.trim();
+  if (!text || generating) return;
+  generating = true;
+  sendBtn.disabled = true;
+  input.value = '';
+  input.style.height = 'auto';
+
+  addMsg('user', text);
+  history.push({ role: 'user', content: text });
+  showTyping();
+
+  try {
+    const messages = [
+      { role: 'system', content: SYSTEM_PROMPT },
+      ...history
+    ];
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'exaone',
+        messages,
+        max_tokens: 1024,
+        temperature: 0.7,
+        stream: true
+      })
+    });
+
+    hideTyping();
+    const msgDiv = addMsg('assistant', '');
+    let fullText = '';
+
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      const chunk = decoder.decode(value, { stream: true });
+      const lines = chunk.split('\n');
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        const data = line.slice(6);
+        if (data === '[DONE]') continue;
+        try {
+          const json = JSON.parse(data);
+          const delta = json.choices?.[0]?.delta?.content;
+          if (delta) {
+            fullText += delta;
+            msgDiv.textContent = fullText;
+            chatArea.scrollTop = chatArea.scrollHeight;
+          }
+        } catch {}
+      }
+    }
+    history.push({ role: 'assistant', content: fullText });
+  } catch (err) {
+    hideTyping();
+    addMsg('system-info', '연결 오류: 서버가 실행 중인지 확인하세요. (' + err.message + ')');
+  }
+
+  generating = false;
+  sendBtn.disabled = false;
+  input.focus();
+}
+
+sendBtn.addEventListener('click', send);
+input.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+});
+input.addEventListener('input', () => {
+  input.style.height = 'auto';
+  input.style.height = Math.min(input.scrollHeight, 120) + 'px';
+});
+</script>
+</body>
+</html>
