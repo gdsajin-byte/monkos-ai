@@ -37,7 +37,7 @@ export const TELEGRAM_EVENT_BOT_TOKEN = process.env.TELEGRAM_EVENT_BOT_TOKEN || 
 export const TELEGRAM_TEAM_BOT_TOKEN = process.env.TELEGRAM_TEAM_BOT_TOKEN || '';
 export const TEAM_CHAT_ID = process.env.TEAM_CHAT_ID || '';
 export const TELEGRAM_CHANNEL_ID = process.env.TELEGRAM_CHANNEL_ID || '';
-export const TEAM_NOTIFY_SECRET = process.env.TEAM_NOTIFY_SECRET || 'monkos-internal';
+export const TEAM_NOTIFY_SECRET = process.env.TEAM_NOTIFY_SECRET || '';
 
 // 카카오 (KR)
 export const KAKAO_REST_API_KEY = process.env.KAKAO_REST_API_KEY || '';
@@ -57,6 +57,10 @@ export const LINE_MESSAGING_API = 'https://api.line.me/v2/bot/message/reply';
 // 네이버 검색 API
 export const NAVER_CLIENT_ID = process.env.NAVER_CLIENT_ID || '';
 export const NAVER_CLIENT_SECRET = process.env.NAVER_CLIENT_SECRET || '';
+
+// GitHub (SPREAD 배포)
+export const GITHUB_TOKEN = process.env.GITHUB_TOKEN || '';
+export const GITHUB_REPO = process.env.GITHUB_REPO || 'gdsajin-byte/monkos-ai';
 
 // CMS
 export const GCS_BUCKET = process.env.GCS_BUCKET || 'monk-ai-images';

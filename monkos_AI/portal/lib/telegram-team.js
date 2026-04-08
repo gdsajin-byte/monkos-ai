@@ -96,9 +96,9 @@ export async function handleTelegramTeamWebhook(req, res) {
 // === Team 알림 API — 에이전트 → 그룹 알림 ===
 export async function handleTeamNotify(req, res) {
   try {
-    // 간단 인증
+    // 간단 인증 (TEAM_NOTIFY_SECRET 미설정 시 비활성화)
     const secret = req.headers['x-team-secret'] || '';
-    if (secret !== TEAM_NOTIFY_SECRET) {
+    if (!TEAM_NOTIFY_SECRET || secret !== TEAM_NOTIFY_SECRET) {
       res.writeHead(403, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: 'Forbidden' }));
       return;
