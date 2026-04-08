@@ -2,7 +2,7 @@
 
 import { log, parseJsonBody } from './shared/config.js';
 import { chatWithMonkos } from './chat-engine.js';
-import { buildCoachingPrompt, READY_KEYWORDS } from './prompts.js';
+import { buildCoachingPrompt, READY_KEYWORDS, SYSTEM_PROMPT_KR, SYSTEM_PROMPT_JP, SYSTEM_PROMPT } from './prompts.js';
 
 // === 챗봇 API ===
 export async function handleWebChat(req, res) {
@@ -17,8 +17,12 @@ export async function handleWebChat(req, res) {
     const ch = channel || 'web';
     log(`[Chat][${ch}][${sid}] ${message.substring(0, 100)}`);
 
-    const reply = await chatWithMonkos(ch, sid, message);
-    log(`[Chat][${sid}] → ${reply.substring(0, 100)}`);
+    // lang 분기: ko → KR 프롬프트, ja → JP, 그 외 → 다국어 자동
+    const promptByLang = lang === 'ko' ? SYSTEM_PROMPT_KR
+                       : lang === 'ja' ? SYSTEM_PROMPT_JP
+                       : undefined; // chat-engine 기본(SYSTEM_PROMPT_KR) 사용
+    const reply = await chatWithMonkos(ch, sid, message, promptByLang ? { systemPromptOverride: promptByLang } : {});
+    log(`[Chat][${ch}][${sid}] → ${reply.substring(0, 100)}`);
 
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ reply, sessionId: sid }));

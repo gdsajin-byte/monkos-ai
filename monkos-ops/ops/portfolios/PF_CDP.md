@@ -141,6 +141,9 @@ status: active
 | 04/05 | iMac/막내3 | PT 슬라이드 전면 재설계 완료 — slides.js 8시퀀스 교체, TTS 발음 교정 전건 반영, npm build 성공 | slides.js | ✅ |
 | 04/05 | iMac/막내4 | CDP 동작화면 캡처 — 스크린샷 3장 + Playwright 포트 충돌 발견. 9223 포트 분리로 해결. 최종 6장 완료 (CDP 3 + Playwright 2 + 바우쳐 1) | cdp_demo_1~3 + playwright_tree/click + voucher_google | ✅ |
 | 04/05 | iMac/막내4 | **포트 충돌 실증**: 9222를 민아+작가님 점유 중 막내4 동시 접속 → Playwright 스월링. 9223 분리로 해결. 멀티에이전트 CDP 동시 사용 시 포트 분리 필수 확정 | — | ✅ |
+| 04/07 | iMac/민아 | **CDP 실전 활용 — GA/GSC 진단**: CDP(9222)로 analytics.google.com + search.google.com/search-console 접근, 데이터 추출+스크린샷. 실서비스 데이터 분석에 CDP 도구 활용 실증 | /tmp/ga_*.png, /tmp/gsc_*.png | ✅ |
+| 04/07 | iMac/민아 | **SPREAD 첫 바퀴와 CDP 멀티포트 실전 테스트 설계** — EXAONE 콘텐츠 패키지를 막내3기가 9222/9223/9224 동시 가동으로 4채널 배포. CDP 멀티포트 첫 실전 검증 기회 | PROPOSAL_20260407 | ⏳ |
+| 04/07 | 막내4 | 네이버 블로그 에디터 CDP 입력 난항 — contentEditable iframe 구조로 직접 입력 시 저장 후 본문 소실. 클립보드 붙여넣기 우회 제안 | — | ⚠️ 난제 |
 | 04/05 | 작가님 | CDP 정교화 방향 — "버튼 하나 못 눌러서야 되겠나". 하드코딩 아닌 DevTools API 런타임 자동 파악. 페이지 구조 변경에도 자동 대응하는 설계 지시 | — | ✅ |
 | 04/05 | iMac/막내3 | **PageProfiler 구현 완료** — CDP DevTools API 4종 병렬 수집(DOM+접근성+이벤트리스너+CSS), 프로파일 캐시, 자동 변경 감지. 첫 프로파일 5~17ms, 캐시 히트 2~29ms (기존 3초 대비 100x+) | cdp_utils.py PageProfiler 클래스 | ✅ |
 | 04/05 | iMac/막내3 | **GA4+GSC CDP 실전 시연** — PageProfiler smart_click 100% 성공 (5/5). GA4 보고서→실시간, GSC 실적 전부 자동 네비게이션. GA4 활성 사용자 400명(↑143.9%), GSC 클릭 27/노출 245 추출 | 스크린샷 5장 + 데이터 | ✅ |

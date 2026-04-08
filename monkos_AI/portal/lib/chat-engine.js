@@ -131,7 +131,7 @@ export async function logCsConversation(chatId, username, userMessage, botReply)
 // === 채널 설정 ===
 const CHANNEL_CONFIG = {
   web: {
-    systemPrompt: SYSTEM_PROMPT,
+    systemPrompt: SYSTEM_PROMPT_KR,
     temperature: 0.7,
     maxOutputTokens: 300,
     historyMap: chatHistories,

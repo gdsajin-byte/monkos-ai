@@ -84,6 +84,8 @@ status: active
 | 4/05 | 막내2 | SEO 3건 코딩 완료 (home.js metaMap, crop H1+hreflang, blog JSON-LD) | — | ✅ 커밋 대기 |
 | 4/07 | 막내2 | SEO 3건 prod 배포 완료 — JA/EN 메타 현지화 + Crop hreflang/H1 + Blog JSON-LD. monkos-portal rev 00015-tkk 재배포 | — | ✅ |
 | 4/07 | 막내1 | SEO 3건 재배포 확인 (rev 00016-swt). Cloud Run 직접URL 4건 정상. **monkos.ai `/ja/`, `/en/` root경로만 KO로 fallback** — 인프라 프록시 계층 rewrite 이슈 발견. `/ja/blog` 등 하위경로는 정상 | — | ⚠️ 인프라 이슈 |
+| 4/07 | 민아 | **GSC 실측 검증** — URL 검사 정상, FAQ 구조화 데이터 중복 오류 발견 (FAQPage 4건). 원인: index.html 정적 + home.js 동적 이중 삽입. 쌍아 전달 | GSC 캡처, 세션 로그 | ⚠️ 보정 대기 |
+| 4/07 | 민아 | **GA/GSC 3개월 진단** — 오가닉 클릭 27회(하루 0.3), 검색어 6개, Paid 92%. claudemax 후기 노출 9,600%=허수(클릭0) | 세션 로그 내 분석 | ✅ 진단 완료 |
 
 ---
 

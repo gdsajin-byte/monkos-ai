@@ -36,22 +36,8 @@ GCS_BUCKET="monk-ai-images"
 SERVICE_ACCOUNT="monk-image-engine@${PROJECT_ID}.iam.gserviceaccount.com"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-# API Key — Secret Manager에서 읽기 (fallback: .env)
-GEMINI_API_KEY=$(gcloud secrets versions access latest --secret=GEMINI_API_KEY --project=${PROJECT_ID} 2>/dev/null)
-
-if [ -z "$GEMINI_API_KEY" ]; then
-  echo -e "${YELLOW}⚠ Secret Manager 접근 실패. .env fallback${NC}"
-  if [ -f "${SCRIPT_DIR}/../.env" ]; then
-    GEMINI_API_KEY=$(grep GEMINI_API_KEY "${SCRIPT_DIR}/../.env" | cut -d'=' -f2)
-  elif [ -f "${SCRIPT_DIR}/.env" ]; then
-    GEMINI_API_KEY=$(grep GEMINI_API_KEY "${SCRIPT_DIR}/.env" | cut -d'=' -f2)
-  fi
-fi
-
-if [ -z "$GEMINI_API_KEY" ]; then
-  echo -e "${RED}에러: GEMINI_API_KEY를 찾을 수 없습니다${NC}"
-  exit 1
-fi
+# 시크릿은 GCP에 세팅된 값 유지 — deploy.sh가 덮어쓰지 않음
+# GEMINI_API_KEY 등 시크릿은 GCP 콘솔 또는 gcloud로 1회 세팅
 
 # 환경별 설정
 if [ "$ENV" = "dev" ]; then
@@ -104,7 +90,7 @@ gcloud run deploy ${SERVICE_NAME} \
   --concurrency 80 \
   --min-instances 0 \
   --max-instances ${MAX_INSTANCES} \
-  --set-env-vars "PROJECT_ID=${PROJECT_ID},LOCATION=${REGION},GCS_BUCKET=${GCS_BUCKET},GEMINI_API_KEY=${GEMINI_API_KEY}" \
+  --update-env-vars "PROJECT_ID=${PROJECT_ID},LOCATION=${REGION},GCS_BUCKET=${GCS_BUCKET:-monkos-shared}" \
   --service-account ${SERVICE_ACCOUNT}
 
 # 결과 출력

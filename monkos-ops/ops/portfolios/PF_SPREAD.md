@@ -54,6 +54,7 @@ status: active
 | 3/21 | 민아 | 콘텐츠 제작 종합 파이프라인 기안 (IMAGE PRO 중심) | PROPOSAL_20260321 | ⏳ 검토대기 |
 | 3/26 | — | **스냅샷 작성 (PF 체계 편입)** | PF_SPREAD.md | ✅ |
 | 3/27 | 민아 | CDP 12채널 실전 검증 — X발행, 깃헙Issue발행, 티스토리/네이버/note 에디터 검증 | REPORT_20260327, PF_SPREAD §7 | ✅ |
+| 4/7 | 민아 | **SPREAD 첫 바퀴 파일럿 제안** — EXAONE 3.5 온디바이스 AI 실전 후기 콘텐츠 패키지 (블로그+X+GitHub+네이버 4채널). 민아 제안→쌍아 배분→막내 CDP 실행 체제 | PROPOSAL_20260407_iMac민아_EXAONE_콘텐츠패키지.md | ⏳ 쌍아 배분 대기 |
 | 4/7 | 막내4 | Phase 1 착수 — OG 공유 버튼 기존 구현 확인, GitHub Issues 자동 게시 코드 구현 (blog.js→github-issues.js 체이닝) | github-issues.js, blog.js, config.js | ⏳ PAT 설정 후 활성 |
 
 ---

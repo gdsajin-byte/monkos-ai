@@ -72,10 +72,11 @@ elif [ "$ENV" = "prod" ]; then
     echo -e "${RED}production 배포는 main 브랜치에서만 가능합니다 (현재: ${CURRENT_BRANCH})${NC}"
     exit 1
   fi
-  # 결제 키 안전장치: prod에 테스트 키 배포 차단
-  if [ -n "$TOSS_SECRET_KEY" ] && [[ ! "$TOSS_SECRET_KEY" == live_* ]]; then
-    echo -e "${RED}🚨 TOSS_SECRET_KEY가 라이브 키가 아닙니다 (현재: ${TOSS_SECRET_KEY:0:10}...)${NC}"
-    echo -e "${RED}production에는 live_ 접두사 키만 배포 가능합니다. .env를 확인하세요.${NC}"
+  # 결제 키 안전장치: GCP에 세팅된 키가 라이브인지 확인 (deploy.sh는 시크릿을 덮어쓰지 않음)
+  CURRENT_TOSS=$(gcloud run services describe ${SERVICE_NAME} --region ${REGION} --project=${PROJECT_ID} --format=yaml 2>/dev/null | grep -A1 "name: TOSS_SECRET_KEY" | grep value | awk '{print $2}')
+  if [ -n "$CURRENT_TOSS" ] && [[ ! "$CURRENT_TOSS" == live_* ]]; then
+    echo -e "${RED}🚨 GCP의 TOSS_SECRET_KEY가 라이브 키가 아닙니다 (현재: ${CURRENT_TOSS:0:10}...)${NC}"
+    echo -e "${RED}GCP 콘솔에서 라이브 키로 교체 후 다시 시도하세요.${NC}"
     exit 1
   fi
 
@@ -138,7 +139,7 @@ gcloud run deploy ${SERVICE_NAME} \
   --concurrency 100 \
   --min-instances 0 \
   --max-instances ${MAX_INSTANCES} \
-  --update-env-vars "^::^PROJECT_ID=${PROJECT_ID}::LOCATION=${REGION}::KAKAO_REST_API_KEY=${KAKAO_REST_API_KEY}::KAKAO_REDIRECT_URI=${KAKAO_REDIRECT_URI}::KAKAO_CLIENT_SECRET=${KAKAO_CLIENT_SECRET}::TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}::TELEGRAM_EVENT_BOT_TOKEN=${TELEGRAM_EVENT_BOT_TOKEN}::TOSS_SECRET_KEY=${TOSS_SECRET_KEY}::LEMONSQUEEZY_API_KEY=${LEMONSQUEEZY_API_KEY}::LEMONSQUEEZY_WEBHOOK_SECRET=${LEMONSQUEEZY_WEBHOOK_SECRET}::LINE_CHANNEL_ID=${LINE_CHANNEL_ID}::LINE_CHANNEL_SECRET=${LINE_CHANNEL_SECRET}::TX_API_KEY=${TX_API_KEY}::TX_API_URL=${TX_API_URL}::TELEGRAM_TEAM_BOT_TOKEN=${TELEGRAM_TEAM_BOT_TOKEN}::TEAM_CHAT_ID=${TEAM_CHAT_ID}::TEAM_NOTIFY_SECRET=${TEAM_NOTIFY_SECRET}::KAKAO_CHANNEL_ID=${KAKAO_CHANNEL_ID}::AUTH_SECRET=${AUTH_SECRET}::LINE_MESSAGING_CHANNEL_SECRET=${LINE_MESSAGING_CHANNEL_SECRET}::LINE_MESSAGING_ACCESS_TOKEN=${LINE_MESSAGING_ACCESS_TOKEN}::GCS_BUCKET=${GCS_BUCKET}::ADMIN_UIDS=${ADMIN_UIDS}" \
+  --update-env-vars "^::^PROJECT_ID=${PROJECT_ID}::LOCATION=${REGION}::GCS_BUCKET=${GCS_BUCKET:-monkos-shared}::ADMIN_UIDS=${ADMIN_UIDS}" \
   --service-account ${SERVICE_ACCOUNT} \
   ${DEPLOY_FLAGS}
 

@@ -116,7 +116,7 @@ MONKOS AI가 채택한 모델은 20년 경력의 사진작가 기준으로 보�
 
 차후 각국의 비자나 별도 용도로서의 크롭 서비스로 발전시켜 나가겠습니다.
 
-→ [crop.monkos.ai](https://crop.monkos.ai)`,
+→ [monkos.ai/crop](https://monkos.ai/crop)`,
     category: '촬영과 사용법',
     order: 10,
   },
@@ -148,6 +148,34 @@ MONKOS AI가 채택한 모델은 20년 경력의 사진작가 기준으로 보�
 - **이메일**: 더욱 중요한 사항은 공식 이메일 **info@monkos.ai**로 문의해 주시면 성심껏 대응하겠습니다`,
     category: '고객지원',
     order: 13,
+  },
+  {
+    id: 'faq_ko_14',
+    question: '어떤 나라의 증명사진 규격을 지원하나요?',
+    answer: `MONKOS AI는 현재 **26개국/규격**의 증명사진 규격 정보를 제공하고 있습니다.
+
+**주요 지원 규격:**
+- 한국: 여권, 주민등록증, 운전면허증, 반명함, 비자
+- 일본: パスポート, 履歴書, マイナンバー, 運転免許, ビザ
+- 미국: US Passport, US Visa
+- 유럽: 독일, 프랑스, 영국, 이탈리아, 스페인 여권
+- 기타: 중국, 인도, 캐나다, 호주, 브라질 등 9개국
+
+각 규격의 상세 사이즈·배경색·해상도는 → [monkos.ai/specs](https://monkos.ai/specs)
+일본어: /ja/specs, 영어: /en/specs 에서도 확인 가능합니다.`,
+    category: '규격과 안전',
+    order: 14,
+  },
+  {
+    id: 'faq_ko_15',
+    question: '영어나 일본어로도 사이트를 볼 수 있나요?',
+    answer: `네, MONKOS는 한국어·일본어·영어 3개 언어를 지원합니다.
+
+- 일본어 페이지: URL 앞에 **/ja/** 를 붙이면 됩니다 (예: monkos.ai/ja/specs)
+- 영어 페이지: URL 앞에 **/en/** 을 붙이면 됩니다 (예: monkos.ai/en/specs)
+- 증명사진 앱: 한국어(idphoto-kr.monkos.ai), 일본어(idphoto-jp.monkos.ai)`,
+    category: '서비스 소개',
+    order: 15,
   },
 ];
 
@@ -256,7 +284,7 @@ You can view your capture immediately — feel free to retake as many times as y
 
 We plan to expand this into a cropping service for various visa types and other document requirements across different countries.
 
-→ [crop.monkos.ai](https://crop.monkos.ai)`,
+→ [monkos.ai/crop](https://monkos.ai/crop)`,
     category: 'Capturing & Usage',
     order: 10,
   },
@@ -288,6 +316,34 @@ All services comply with applicable privacy and portrait rights laws in each cou
 - **Email**: For important matters, please contact us at **info@monkos.ai** and we'll respond promptly`,
     category: 'Customer Support',
     order: 13,
+  },
+  {
+    id: 'faq_en_14',
+    question: 'Which countries\' ID photo specifications do you support?',
+    answer: `MONKOS AI currently provides specification information for **26 countries/formats**.
+
+**Key supported specifications:**
+- Korea: Passport, ID card, driver's license, resume photo, visa (5 types)
+- Japan: Passport, resume, My Number, driver's license, visa (5 types)
+- USA: US Passport, US Visa (2 types)
+- Europe: Germany, France, UK, Italy, Spain passports (5 types)
+- Others: China, India, Canada, Australia, Brazil and more (9 types)
+
+For detailed sizes, background colors, and resolution requirements → [monkos.ai/specs](https://monkos.ai/specs)
+Also available in Japanese (/ja/specs) and English (/en/specs).`,
+    category: 'Standards & Safety',
+    order: 14,
+  },
+  {
+    id: 'faq_en_15',
+    question: 'Can I view the site in Japanese or English?',
+    answer: `Yes, MONKOS supports Korean, Japanese, and English.
+
+- Japanese pages: Add **/ja/** prefix to the URL (e.g., monkos.ai/ja/specs)
+- English pages: Add **/en/** prefix to the URL (e.g., monkos.ai/en/specs)
+- ID photo apps: Korean (idphoto-kr.monkos.ai), Japanese (idphoto-jp.monkos.ai)`,
+    category: 'About the Service',
+    order: 15,
   },
 ];
 
@@ -396,7 +452,7 @@ MONKOS AIが採用しているモデルは、20年の経歴を持つフォトグ
 
 今後、各国のビザやその他の用途に対応するクロップサービスへと発展させてまいります。
 
-→ [crop.monkos.ai](https://crop.monkos.ai)`,
+→ [monkos.ai/crop](https://monkos.ai/crop)`,
     category: '撮影と使い方',
     order: 10,
   },
@@ -428,6 +484,34 @@ MONKOS AIが採用しているモデルは、20年の経歴を持つフォトグ
 - **メール**：重要なお問い合わせは、公式メール **info@monkos.ai** までご連絡ください。誠心誠意対応いたします`,
     category: 'カスタマーサポート',
     order: 13,
+  },
+  {
+    id: 'faq_ja_14',
+    question: 'どの国の証明写真規格に対応していますか？',
+    answer: `MONKOS AIは現在、**26か国/規格**の証明写真規格情報を提供しています。
+
+**主な対応規格：**
+- 日本：パスポート、履歴書、マイナンバーカード、運転免許証、ビザ（5種）
+- 韓国：パスポート、住民登録証、運転免許証、半名刺判、ビザ（5種）
+- 米国：USパスポート、USビザ（2種）
+- 欧州：ドイツ、フランス、英国、イタリア、スペイン パスポート（5種）
+- その他：中国、インド、カナダ、オーストラリア、ブラジルなど（9種）
+
+各規格の詳細サイズ・背景色・解像度は → [monkos.ai/specs](https://monkos.ai/specs)
+日本語：/ja/specs、英語：/en/specs でもご確認いただけます。`,
+    category: '規格と安全性',
+    order: 14,
+  },
+  {
+    id: 'faq_ja_15',
+    question: '英語や日本語でもサイトを閲覧できますか？',
+    answer: `はい、MONKOSは韓国語・日本語・英語の3言語に対応しています。
+
+- 日本語ページ：URLの前に **/ja/** を付けてください（例：monkos.ai/ja/specs）
+- 英語ページ：URLの前に **/en/** を付けてください（例：monkos.ai/en/specs）
+- 証明写真アプリ：韓国語版(idphoto-kr.monkos.ai)、日本語版(idphoto-jp.monkos.ai)`,
+    category: 'サービス紹介',
+    order: 15,
   },
 ];
 
