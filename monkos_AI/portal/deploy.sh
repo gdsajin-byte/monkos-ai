@@ -72,6 +72,13 @@ elif [ "$ENV" = "prod" ]; then
     echo -e "${RED}production 배포는 main 브랜치에서만 가능합니다 (현재: ${CURRENT_BRANCH})${NC}"
     exit 1
   fi
+  # 결제 키 안전장치: prod에 테스트 키 배포 차단
+  if [ -n "$TOSS_SECRET_KEY" ] && [[ ! "$TOSS_SECRET_KEY" == live_* ]]; then
+    echo -e "${RED}🚨 TOSS_SECRET_KEY가 라이브 키가 아닙니다 (현재: ${TOSS_SECRET_KEY:0:10}...)${NC}"
+    echo -e "${RED}production에는 live_ 접두사 키만 배포 가능합니다. .env를 확인하세요.${NC}"
+    exit 1
+  fi
+
   echo -e "${YELLOW}⚠ PRODUCTION 배포입니다. 계속하시겠습니까? (y/N)${NC}"
   read -r confirm
   if [ "$confirm" != "y" ]; then
