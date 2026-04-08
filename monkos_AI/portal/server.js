@@ -308,9 +308,10 @@ httpServer.listen(PORT, '0.0.0.0', () => {
   log('='.repeat(60));
   log(`Google Client ID: ${GOOGLE_CLIENT_ID ? '설정됨' : '미설정'}`);
   log(`Lemon Squeezy: ${LEMONSQUEEZY_API_KEY ? '설정됨' : '미설정'}`);
+  const kService = process.env.K_SERVICE || '';
   if (TOSS_SECRET_KEY && !TOSS_SECRET_KEY.startsWith('live_')) {
     log(`🚨 TOSS_SECRET_KEY가 테스트 키입니다! (${TOSS_SECRET_KEY.slice(0, 10)}...)`, 'ERROR');
-    if (TEAM_CHAT_ID) {
+    if (TEAM_CHAT_ID && !kService.includes('-dev')) {
       sendTelegramMessage(TEAM_CHAT_ID, `🚨 *포털 서버 시작 — 토스 테스트 키 감지*\nTOSS_SECRET_KEY가 \`${TOSS_SECRET_KEY.slice(0, 10)}...\`입니다.\n프로덕션에서 결제가 실패합니다. 즉시 확인 필요!`, TELEGRAM_TEAM_API).catch(() => {});
     }
   }
