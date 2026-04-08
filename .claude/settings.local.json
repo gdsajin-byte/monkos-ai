@@ -61,7 +61,8 @@
       "Bash(bash scripts/mk-push.sh)",
       "Bash(env)",
       "Read(//Users/jeong-kyushin/.config/gcloud/**)",
-      "Read(//Users/jeong-kyushin/**)"
+      "Read(//Users/jeong-kyushin/**)",
+      "Bash(find . -type f \\\\\\(-name *test*output* -o -name *test_output* \\\\\\))"
     ],
     "deny": [
       "Bash(rm -rf /*)",
