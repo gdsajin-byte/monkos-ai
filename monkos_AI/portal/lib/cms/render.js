@@ -1617,6 +1617,13 @@ const SPECS_PAGE_STYLE = `
 }`;
 
 // 규격 허브 인덱스 (/specs)
+// locale별 필드 선택 (pixelsEn, backgroundJa 등 존재 시 우선)
+function locField(spec, field, lang) {
+  if (lang === 'en' && spec[field + 'En']) return spec[field + 'En'];
+  if (lang === 'ja' && spec[field + 'Ja']) return spec[field + 'Ja'];
+  return spec[field];
+}
+
 export function specsListFragment(forceLang = null) {
   const lang = forceLang || 'ko';
   const i = SPECS_I18N[lang] || SPECS_I18N.ko;
@@ -1668,7 +1675,7 @@ ${hreflangTags}
       const shortDesc = detail.length > 60 ? detail.substring(0, 60) + '…' : detail;
       return `<a href="${prefix}/specs/${spec.slug}" class="specs-card">
         <div class="specs-card-type">${escapeHtml(typeName)}</div>
-        <div class="specs-card-size">${escapeHtml(spec.size)} · ${escapeHtml(spec.pixels)}</div>
+        <div class="specs-card-size">${escapeHtml(locField(spec, 'size', lang))} · ${escapeHtml(locField(spec, 'pixels', lang))}</div>
         <div class="specs-card-desc">${escapeHtml(shortDesc)}</div>
       </a>`;
     }).join('\n      ');
@@ -1769,13 +1776,13 @@ ${hreflangTags}
   const h = i.tableHeaders;
   const tableIconMap = { size: '📐', pixels: '🖥️', dpi: '🔍', background: '🎨', headHeight: '📏', validity: '📅', fileSpec: '📁' };
   const tableRows = [
-    ['size', h.size, specData.size],
-    ['pixels', h.pixels, specData.pixels],
+    ['size', h.size, locField(specData, 'size', lang)],
+    ['pixels', h.pixels, locField(specData, 'pixels', lang)],
     ['dpi', h.dpi, String(specData.dpi)],
-    ['background', h.background, specData.background],
-    ['headHeight', h.headHeight, specData.headHeight],
-    ['validity', h.validity, specData.validity],
-    ['fileSpec', h.fileSpec, specData.fileSpec],
+    ['background', h.background, locField(specData, 'background', lang)],
+    ['headHeight', h.headHeight, locField(specData, 'headHeight', lang)],
+    ['validity', h.validity, locField(specData, 'validity', lang)],
+    ['fileSpec', h.fileSpec, locField(specData, 'fileSpec', lang)],
   ].map(([key, label, val]) => `<tr><th>${tableIconMap[key] || ''} ${escapeHtml(label)}</th><td>${escapeHtml(val)}</td></tr>`).join('\n      ');
 
   // 상세 규정 아이콘 매핑 (details 텍스트를 파싱하여 그리드 아이템으로)
@@ -1837,9 +1844,9 @@ ${hreflangTags}
       <h1>2026 ${escapeHtml(countryName)} ${escapeHtml(typeName)}</h1>
       <p class="specs-hero-desc">${escapeHtml(description)}</p>
       <div class="specs-hero-tags">
-        <span>${escapeHtml(specData.size)}</span>
-        <span>${escapeHtml(specData.background)}</span>
-        <span>${escapeHtml(specData.validity)}</span>
+        <span>${escapeHtml(locField(specData, 'size', lang))}</span>
+        <span>${escapeHtml(locField(specData, 'background', lang))}</span>
+        <span>${escapeHtml(locField(specData, 'validity', lang))}</span>
         <span>${specData.dpi} DPI</span>
       </div>
     </div>
@@ -1849,10 +1856,10 @@ ${hreflangTags}
           <ellipse cx="60" cy="45" rx="30" ry="38"/>
           <ellipse cx="60" cy="140" rx="50" ry="45"/>
         </svg>
-        <div class="specs-head-guide">${escapeHtml(specData.headHeight)}</div>
-        <div class="specs-guide-w">${escapeHtml(specData.size.split('×')[0].trim())}cm</div>
+        <div class="specs-head-guide">${escapeHtml(locField(specData, 'headHeight', lang))}</div>
+        <div class="specs-guide-w">${escapeHtml(locField(specData, 'size', lang).split('×')[0].trim())}cm</div>
       </div>
-      <div class="specs-guide-h">${escapeHtml(specData.size.split('×')[1]?.trim() || '4.5cm')}</div>
+      <div class="specs-guide-h">${escapeHtml(locField(specData, 'size', lang).split('×')[1]?.trim() || '4.5cm')}</div>
     </div>
   </section>
 

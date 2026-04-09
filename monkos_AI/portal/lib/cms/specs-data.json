@@ -90,7 +90,15 @@
       ]
     },
     "ctaService": "idphoto-kr",
-    "priority": 1
+    "priority": 1,
+    "headHeightEn": "3.2-3.6cm (crown to chin)",
+    "headHeightJa": "3.2〜3.6cm（頭頂〜あご）",
+    "validityEn": "Within 6 months",
+    "validityJa": "6ヶ月以内",
+    "fileSpecEn": "JPEG, max 500KB",
+    "fileSpecJa": "JPEG、500KB以下",
+    "backgroundEn": "Uniform white",
+    "backgroundJa": "均一な白"
   },
   "korea-resume": {
     "slug": "korea-resume",
@@ -171,7 +179,17 @@
       ]
     },
     "ctaService": "idphoto-kr",
-    "priority": 2
+    "priority": 2,
+    "pixelsEn": "Varies by institution",
+    "pixelsJa": "提出先により異なる",
+    "headHeightEn": "Varies by institution",
+    "headHeightJa": "提出先により異なる",
+    "validityEn": "Varies by institution",
+    "validityJa": "提出先により異なる",
+    "fileSpecEn": "Varies by institution",
+    "fileSpecJa": "提出先により異なる",
+    "backgroundEn": "White or light blue (convention)",
+    "backgroundJa": "白または薄い青（慣行）"
   },
   "japan-passport": {
     "slug": "japan-passport",
@@ -398,7 +416,9 @@
       ]
     },
     "ctaService": "idphoto-kr",
-    "priority": 11
+    "priority": 11,
+    "fileSpecEn": "JPEG (Visa: max 240KB / Passport renewal: 54KB-10MB)",
+    "fileSpecJa": "JPEG（ビザ: 240KB以下 / パスポート更新: 54KB〜10MB）"
   },
   "korea-drivers-license": {
     "slug": "korea-drivers-license",
@@ -467,7 +487,13 @@
       ]
     },
     "ctaService": "idphoto-kr",
-    "priority": 5
+    "priority": 5,
+    "validityEn": "Within 6 months",
+    "validityJa": "6ヶ月以内",
+    "fileSpecEn": "JPEG, max 250KB",
+    "fileSpecJa": "JPEG、250KB以下",
+    "backgroundEn": "Uniform white",
+    "backgroundJa": "均一な白"
   },
   "japan-mynumber": {
     "slug": "japan-mynumber",
@@ -585,7 +611,13 @@
       "en": []
     },
     "ctaService": "idphoto-kr",
-    "priority": 3
+    "priority": 3,
+    "headHeightEn": "Varies by institution",
+    "headHeightJa": "提出先により異なる",
+    "validityEn": "Varies by institution",
+    "validityJa": "提出先により異なる",
+    "backgroundEn": "White",
+    "backgroundJa": "白"
   },
   "korea-resident": {
     "slug": "korea-resident",
@@ -633,7 +665,11 @@
       "en": []
     },
     "ctaService": "idphoto-kr",
-    "priority": 4
+    "priority": 4,
+    "validityEn": "Within 6 months",
+    "validityJa": "6ヶ月以内",
+    "backgroundEn": "Uniform white",
+    "backgroundJa": "均一な白"
   },
   "japan-halfcard": {
     "slug": "japan-halfcard",
@@ -717,7 +753,13 @@
       "en": []
     },
     "ctaService": "idphoto-jp",
-    "priority": 8
+    "priority": 8,
+    "headHeightEn": "Per institution requirements",
+    "headHeightJa": "提出先基準",
+    "validityEn": "Within 3 months",
+    "validityJa": "3ヶ月以内",
+    "backgroundEn": "White",
+    "backgroundJa": "白"
   },
   "usa-headshot": {
     "slug": "usa-headshot",
@@ -749,7 +791,9 @@
       "en": []
     },
     "ctaService": "idphoto-kr",
-    "priority": 12
+    "priority": 12,
+    "backgroundEn": "Solid color",
+    "backgroundJa": "単色"
   },
   "eu-passport": {
     "slug": "eu-passport",
@@ -788,7 +832,11 @@
       "en": []
     },
     "ctaService": "idphoto-kr",
-    "priority": 13
+    "priority": 13,
+    "validityEn": "Within 6 months",
+    "validityJa": "6ヶ月以内",
+    "backgroundEn": "White/gray",
+    "backgroundJa": "白/グレー"
   },
   "spain-passport": {
     "slug": "spain-passport",
@@ -822,7 +870,13 @@
       "en": []
     },
     "ctaService": "idphoto-kr",
-    "priority": 14
+    "priority": 14,
+    "headHeightEn": "Separate regulation",
+    "headHeightJa": "別途規定",
+    "validityEn": "Within 6 months",
+    "validityJa": "6ヶ月以内",
+    "backgroundEn": "White",
+    "backgroundJa": "白"
   },
   "germany-resume": {
     "slug": "germany-resume",
@@ -854,7 +908,9 @@
       "en": []
     },
     "ctaService": "idphoto-kr",
-    "priority": 15
+    "priority": 15,
+    "backgroundEn": "Light background",
+    "backgroundJa": "明るい背景"
   },
   "eu-resume": {
     "slug": "eu-resume",
@@ -886,7 +942,9 @@
       "en": []
     },
     "ctaService": "idphoto-kr",
-    "priority": 16
+    "priority": 16,
+    "backgroundEn": "Solid color",
+    "backgroundJa": "単色"
   },
   "uk-passport": {
     "slug": "uk-passport",
@@ -921,7 +979,11 @@
       "en": []
     },
     "ctaService": "idphoto-kr",
-    "priority": 17
+    "priority": 17,
+    "validityEn": "Within 6 months",
+    "validityJa": "6ヶ月以内",
+    "backgroundEn": "White",
+    "backgroundJa": "白"
   },
   "australia-passport": {
     "slug": "australia-passport",
@@ -955,7 +1017,11 @@
       "en": []
     },
     "ctaService": "idphoto-kr",
-    "priority": 18
+    "priority": 18,
+    "validityEn": "Within 6 months",
+    "validityJa": "6ヶ月以内",
+    "backgroundEn": "White",
+    "backgroundJa": "白"
   },
   "canada-passport": {
     "slug": "canada-passport",
@@ -989,7 +1055,11 @@
       "en": []
     },
     "ctaService": "idphoto-kr",
-    "priority": 19
+    "priority": 19,
+    "validityEn": "Within 6 months",
+    "validityJa": "6ヶ月以内",
+    "backgroundEn": "White",
+    "backgroundJa": "白"
   },
   "singapore-passport": {
     "slug": "singapore-passport",
@@ -1021,7 +1091,11 @@
       "en": []
     },
     "ctaService": "idphoto-kr",
-    "priority": 20
+    "priority": 20,
+    "validityEn": "Within 6 months",
+    "validityJa": "6ヶ月以内",
+    "backgroundEn": "White",
+    "backgroundJa": "白"
   },
   "thailand-passport": {
     "slug": "thailand-passport",
@@ -1053,7 +1127,11 @@
       "en": []
     },
     "ctaService": "idphoto-kr",
-    "priority": 21
+    "priority": 21,
+    "validityEn": "Within 6 months",
+    "validityJa": "6ヶ月以内",
+    "backgroundEn": "White",
+    "backgroundJa": "白"
   },
   "india-passport": {
     "slug": "india-passport",
@@ -1085,7 +1163,13 @@
       "en": []
     },
     "ctaService": "idphoto-kr",
-    "priority": 22
+    "priority": 22,
+    "headHeightEn": "Head 70-80%",
+    "headHeightJa": "頭部 70-80%",
+    "validityEn": "Within 6 months",
+    "validityJa": "6ヶ月以内",
+    "backgroundEn": "White",
+    "backgroundJa": "白"
   },
   "china-passport": {
     "slug": "china-passport",
@@ -1119,7 +1203,11 @@
       "en": []
     },
     "ctaService": "idphoto-kr",
-    "priority": 23
+    "priority": 23,
+    "validityEn": "Within 6 months",
+    "validityJa": "6ヶ月以内",
+    "backgroundEn": "White",
+    "backgroundJa": "白"
   },
   "china-resume": {
     "slug": "china-resume",
@@ -1151,7 +1239,11 @@
       "en": []
     },
     "ctaService": "idphoto-kr",
-    "priority": 24
+    "priority": 24,
+    "backgroundEn": "White or blue",
+    "backgroundJa": "白・青",
+    "sizeEn": "1-inch / 2-inch (multiple sizes)",
+    "sizeJa": "1寸・2寸（複数規格）"
   },
   "vietnam-passport": {
     "slug": "vietnam-passport",
@@ -1183,7 +1275,11 @@
       "en": []
     },
     "ctaService": "idphoto-kr",
-    "priority": 25
+    "priority": 25,
+    "validityEn": "Within 6 months",
+    "validityJa": "6ヶ月以内",
+    "backgroundEn": "White",
+    "backgroundJa": "白"
   },
   "indonesia-passport": {
     "slug": "indonesia-passport",
@@ -1215,6 +1311,12 @@
       "en": []
     },
     "ctaService": "idphoto-kr",
-    "priority": 26
+    "priority": 26,
+    "headHeightEn": "Head 70-80%",
+    "headHeightJa": "頭部 70-80%",
+    "validityEn": "Within 6 months",
+    "validityJa": "6ヶ月以内",
+    "backgroundEn": "White",
+    "backgroundJa": "白"
   }
 }
