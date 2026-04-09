@@ -86,6 +86,15 @@ status: active
 | 4/07 | 막내1 | SEO 3건 재배포 확인 (rev 00016-swt). Cloud Run 직접URL 4건 정상. **monkos.ai `/ja/`, `/en/` root경로만 KO로 fallback** — 인프라 프록시 계층 rewrite 이슈 발견. `/ja/blog` 등 하위경로는 정상 | — | ⚠️ 인프라 이슈 |
 | 4/07 | 민아 | **GSC 실측 검증** — URL 검사 정상, FAQ 구조화 데이터 중복 오류 발견 (FAQPage 4건). 원인: index.html 정적 + home.js 동적 이중 삽입. 쌍아 전달 | GSC 캡처, 세션 로그 | ⚠️ 보정 대기 |
 | 4/07 | 민아 | **GA/GSC 3개월 진단** — 오가닉 클릭 27회(하루 0.3), 검색어 6개, Paid 92%. claudemax 후기 노출 9,600%=허수(클릭0) | 세션 로그 내 분석 | ✅ 진단 완료 |
+| 4/08 | 민아 | **sitemap 198개 재제출** + GA4·GSC 리서치 | `233c13f` | ✅ |
+| 4/08 | 민아 | Google Ads 사이트링크 6개 등록 (심사 대기) + SEO DA 진단 — 코드 정상, DA(도메인 권위) 문제 판별 | 세션 로그 | ✅ |
+| 4/08 | 민아 | Specs 26종 데이터 업데이트 배포 확인 | — | ✅ |
+| 4/09 | 쌍아 | CDP 시연 지시서 3건 발행 (막내1 SEO진단 9222, 막내2 블로그발행 9223, 막내3 다국어검증 9224) | ORDER×3 | ✅ |
+| 4/09 | 막내1 | **CDP SEO 라이브 진단 7페이지** — 이슈 3건 발견 (crop hreflang 불완전, idphoto canonical 경로 불일치, en specs 마이너) | REPORT_20260409_막내1, `5f5912a` | ✅ 진단완료 |
+| 4/09 | 막내3 | **CDP 다국어 15페이지 검증** — lang 불일치 2건(/ja/ /en/ root=ko), 깨진img 3건, /en/about 404 | REPORT_20260409_막내3, `add12da` | ✅ 진단완료 |
+| 4/10 | 쌍아 | Phase 1.7 보정 지시서 발행 (4건: crop hreflang, canonical, 깨진img, specs 혼입) | ORDER_20260410 | ✅ |
+| 4/10 | 민아 | **HEAD 404 + 구슬러그 301 + NOINDEX 사이트맵** 지시서 2건 발행 — 오가닉 3대 장애 근본 원인 특정 | ORDER_20260410×2 | ✅ |
+| 4/10 | 막내1+2 | **3서비스 prod 배포** (portal+idphoto-kr+idphoto-jp) + CDP 재검증 전 건 통과 | 배포 완료, `a247c3c` | ✅ |
 
 ---
 
@@ -123,7 +132,7 @@ status: active
 | llms.txt + llms-full.txt specs URL 등록 | ✅ 3/26 | 막내2 |
 | 블로그 타이틀 최적화 (CMS 에디터) | ❌ 미착수 | 민아/작가님 |
 | 외부 백링크 콘텐츠 발행 (note.com, 네이버 등) | ❌ 미착수 | 한 |
-| GSC 색인 요청 + 모니터링 | ❌ 배포 후 | 민아 |
+| GSC 색인 요청 + 모니터링 | ⏳ sitemap 198개 재제출 (4/8 민아), 지속 모니터링 | 민아 |
 
 ### Phase 1.5 — 기술 SEO 보정 ✅ 완료 (4/07 배포)
 
@@ -136,6 +145,19 @@ status: active
 | 포탈 prod 배포 (monkos-portal, rev 00015-tkk) | ✅ 4/07 | 막내2 |
 
 > 핵심: JA canonical이 KO를 가리켜 일본 자연검색 구조적 차단 → 해소
+
+### Phase 1.7 — 4/9~10 CDP 진단 이슈 보정 + 오가닉 장애 해소 ✅ 완료 (04/10)
+
+> 4/9 막내1+3 CDP 진단에서 발견된 이슈. 지시서 미발행.
+
+| 항목 | 긴급도 | 담당 | 비고 |
+|------|--------|------|------|
+| `/ja/`, `/en/` root lang=ko 표시 (인프라 프록시 rewrite) | 🔴 | 미정 | Cloud Run 직접URL은 정상, 프록시 계층 이슈 |
+| crop hreflang 불완전 (ko/x-default만, ja/en 없음) | 🔴 | 막내 | crop/index.html |
+| idphoto canonical `/app` 경로 누락 | 🟠 | 막내 | idphoto-kr/jp |
+| 깨진 이미지 3건 (crop, idphoto-kr/jp) | 🟠 | 막내 | 원인 파악 필요 |
+| `/en/about` 404 | 🟠 | 막내 | 라우트 미등록 |
+| `/en/specs` H1 영어지만 본문 일부 한국어 혼입 | 🟡 | 막내 | 데이터 확인 |
 
 ### Phase 2 — GEO 본격 + 고급 SEO (예정)
 

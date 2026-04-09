@@ -56,6 +56,9 @@ status: active
 | 3/27 | 민아 | CDP 12채널 실전 검증 — X발행, 깃헙Issue발행, 티스토리/네이버/note 에디터 검증 | REPORT_20260327, PF_SPREAD §7 | ✅ |
 | 4/7 | 민아 | **SPREAD 첫 바퀴 파일럿 제안** — EXAONE 3.5 온디바이스 AI 실전 후기 콘텐츠 패키지 (블로그+X+GitHub+네이버 4채널). 민아 제안→쌍아 배분→막내 CDP 실행 체제 | PROPOSAL_20260407_iMac민아_EXAONE_콘텐츠패키지.md | ⏳ 쌍아 배분 대기 |
 | 4/7 | 막내4 | Phase 1 착수 — OG 공유 버튼 기존 구현 확인, GitHub Issues 자동 게시 코드 구현 (blog.js→github-issues.js 체이닝) | github-issues.js, blog.js, config.js | ⏳ PAT 설정 후 활성 |
+| 4/7 | 막내4 | 블로그 CMS Gemini 2.0 Flash 자동번역 정상 동작 확인 (KO↔JA/EN) | — | ✅ |
+| 4/7 | 쌍아→막내 | **SPREAD 첫 순환 완료** — EXAONE 콘텐츠 4/5채널 배포. 블로그+X+GitHub 성공, 네이버 실패 (CDP contentEditable 난제) | `4c5bf48` | ✅ (네이버 제외) |
+| 4/7 | 막내 | GitHub Issues AI 카테고리만 자동 등록 필터 추가 + prod 배포 rev 00216 | `b2a7de8` | ✅ |
 
 ---
 
@@ -70,7 +73,8 @@ status: active
 | 항목 | 상태 | 담당 | 비고 |
 |------|------|------|------|
 | 블로그 OG 공유 버튼 (X, LINE, 카카오) | ✅ | 막내 | 방식A: 기존 구현 확인 완료 (render.js). 카카오스토리→카카오톡 전환은 후순위 |
-| GitHub Issues 자동 게시 | ⏳ | 막내4 | blog.js→github-issues.js 체이닝 구현. GITHUB_TOKEN 환경변수 설정 후 활성화 |
+| GitHub Issues 자동 게시 | ✅ | 막내4 | AI 카테고리 필터 추가 + prod 배포 rev 00216 (`b2a7de8`). PAT 활성 완료 |
+| **첫 순환 실전** (EXAONE 4채널) | ✅ | 막내 3기 | 블로그+X+GitHub 성공 (4/5). 네이버 CDP 난제 잔류 (`4c5bf48`) |
 | 코웍이 배포 워크플로우 수립 | ❌ | 코웍이 | 방식C: 채널별 톤 최적화 |
 | works/spread/ 산출물 적립 구조 | ❌ | 코웍이 | 배포물 추적 |
 | 블로그 CMS 자동 번역 연동 확인 | ✅ | 막내4 | Gemini 2.0 Flash — KO↔JA/EN 자동번역 정상 동작 확인 (4/7) |
