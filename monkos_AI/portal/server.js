@@ -219,6 +219,30 @@ const httpServer = createServer(async (req, res) => {
   }
 
   // === CMS 공개 페이지 (SSR) ===
+  // HEAD 요청을 GET으로 처리 — Googlebot HEAD 404 방지 (2026-04-10)
+  if (req.method === 'HEAD') req.method = 'GET';
+
+  // 구 슬러그 → 신규 슬러그 301 리다이렉트 (2026-04-10, GSC 404 해소)
+  const blogRedirects = {
+    // JA
+    '/ja/blog/vol23-qa-5':     '/ja/blog/ai-de-shomei-shashin-geneki-shashinkan-review',
+    '/ja/blog/vol22':          '/ja/blog/job-interview-updo-hair-5-steps',
+    '/ja/blog/vol21-ai-monkosai': '/ja/blog/20-year-photographer-ai-id-photo-monkos-ai-birth',
+    '/ja/blog/vol20-vs':       '/ja/blog/korea-vs-japan-job-photo-hair',
+    // EN
+    '/en/blog/vol23-qa-5':     '/en/blog/ai-id-photo-review-photography-studio-owner',
+    '/en/blog/vol22':          '/en/blog/interview-updo-flight-attendant-hair-5-steps',
+    '/en/blog/vol21-ai-monkosai': '/en/blog/ai-id-photo-created-by-a-20-year-photographer-monkos-ai',
+    '/en/blog/vol20-vs':       '/en/blog/korean-vs-japanese-job-application-photos-hairstyle',
+    '/en/blog/vol19':          '/en/blog/id-photo-job-application-photo-makeup-for-each-skin-tone',
+    // KO
+    '/blog/vol23-qa-5':        '/blog/vol24-20-ai-monkosai',
+  };
+  if (blogRedirects[urlPath]) {
+    res.writeHead(301, { 'Location': blogRedirects[urlPath] });
+    return res.end();
+  }
+
   if ((urlPath === '/' || urlPath === '/index.html') && req.method === 'GET') return renderHome(req, res);
   // 다국어 홈 라우트 (/ja/, /en/ → 경로 방식 통일)
   if ((urlPath === '/ja' || urlPath === '/ja/') && req.method === 'GET') return renderHome(req, res, 'ja');
