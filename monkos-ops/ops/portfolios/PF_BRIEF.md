@@ -69,6 +69,15 @@ status: active
 | 04/10 | 쌍아 | PF_NEWS 발족 + Phase 0 설계 | PF_NEWS.md | ✅ |
 | 04/10 | 작가님 | **PF 격상** — 뉴스 한정 → 성과+교정+뉴스 통합 브리핑. PF_NEWS → PF_BRIEF | — | ✅ |
 | 04/10 | 쌍아 | PF_BRIEF 재작성 — 브리핑 3축(성과/교정/뉴스), /schedule 원격 cron 활용 | PF_BRIEF.md | ✅ |
+| 04/10 | 쌍아 | Cloud RemoteTrigger `trig_017yVCnS4tBKyCQTMLHieMF5` 생성 (매일 04:57 KST) | 트리거 ID | ✅ |
+| 04/10 | 쌍아 | PoC 테스트 — bash `curl` 차단 관측 → "방안 B 불가" 판정 → 방안 C(로컬) 전환 예정 | 세션 로그 | ⚠️ |
+| 04/10 | 쌍아 | iMac 오후 세션 GCS_BUCKET+ADMIN_UIDS 사고 폭발 → PF_BRIEF 후속 미착수 | — | ❌ |
+| 04/11 | 민아 | **04/11 첫 발행 부재 확인** — briefings/ 폴더 미생성, `BRIEFING_20260411.md` 없음, 04:57 이후 git push 전무 | 본 세션 로그 | ❌ |
+| 04/11 | 민아 | **근본 원인 재진단** — 쌍아의 "curl 차단=전면 불가" 판정을 재검증. 3축 독립 실측 | 본 세션 로그 | ✅ |
+| 04/11 | 민아 | 축3 (뉴스) WebSearch 실측 — Anthropic/Claude 공식 릴리즈 리드 정상 수집. **즉시 부활 가능 확정** | 실측 결과 | ✅ |
+| 04/11 | 민아 | 축2 (SEO 교정) WebFetch 실측 — HTML→markdown 변환 과정에서 `<head>` 메타태그(canonical/hreflang/robots) 전량 소실. **WebFetch는 SEO 엄밀 진단 부적합**. 원인은 네트워크가 아니라 도구 출력 스키마 | 실측 결과 | ⚠️ |
+| 04/11 | 민아 | 축1 (GSC) MCP 실측 — `/Users/jeong-kyushin/.config/gcloud/adc_impersonated.json` 경로 ENOENT. **M1 민아 세션의 GSC MCP 임퍼소네이션 경로가 엉뚱한 홈디렉토리를 가리킴**. PF_BRIEF와 독립된 설정 사고 | 실측 결과 | 🚨 |
+| 04/11 | 민아 | **근본 원인 재정정** — 쌍아 판정은 3개의 이질 문제(① bash curl 범위 과확장 ② WebFetch 출력 한계 ③ GSC MCP 경로 오류)를 "curl 차단" 뭉텅이로 합친 오진단. 샌드박스 네트워크는 원인 아님 | 본 세션 로그 | ✅ |
 
 ---
 
