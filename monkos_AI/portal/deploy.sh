@@ -52,6 +52,14 @@ PROJECT_ID="monkos"
 REGION="us-central1"
 SERVICE_ACCOUNT="monk-image-engine@${PROJECT_ID}.iam.gserviceaccount.com"
 
+# === 비시크릿 운영값 (deploy.sh가 정본, .env 의존 금지) ===
+# 4f71cbc 사고(2026-04-10) 재발 방지: 폴백값과 .env 누락이 트리거였음
+# - GCS_BUCKET: 코드 폴백(config.js:66) + idphoto deploy.sh와 일치하는 단일 진실값
+# - ADMIN_UIDS: Google sub UID 리스트, 시크릿 아님 (외부 노출 무해)
+#   추가/제거 시 monkos_AI/portal/scripts/find_admin_uids.js 사용
+GCS_BUCKET="monk-ai-images"
+ADMIN_UIDS="108827115052045057530,115646365617285208759"
+
 # 환경별 설정 (Portal은 경량 서비스)
 if [ "$ENV" = "dev" ]; then
   SERVICE_NAME="monkos-portal-dev"
@@ -117,18 +125,6 @@ echo -e "리전: ${YELLOW}${REGION}${NC}"
 echo -e "서비스: ${YELLOW}${SERVICE_NAME}${NC}"
 echo -e "리소스: ${YELLOW}${MEMORY} / ${CPU} CPU / max ${MAX_INSTANCES}${NC}"
 echo -e "${BLUE}========================================${NC}"
-
-# === 환경변수 가드 (4f71cbc 사고 재발 방지, 2026-04-10) ===
-if [ -z "$GCS_BUCKET" ]; then
-  echo -e "${RED}🚨 GCS_BUCKET 미설정. .env 또는 환경변수 확인 후 재시도.${NC}"
-  echo -e "${RED}   참고: 진짜 버킷명은 monk-ai-images (config.js:66 폴백과 일치)${NC}"
-  exit 1
-fi
-if [ -z "$ADMIN_UIDS" ]; then
-  echo -e "${RED}🚨 ADMIN_UIDS 미설정. 빈값 배포 시 모든 로그인 사용자가 admin 권한 획득.${NC}"
-  echo -e "${RED}   .env에 ADMIN_UIDS=uid1,uid2,uid3 추가 후 재시도.${NC}"
-  exit 1
-fi
 
 # 1. GCP 프로젝트 설정
 echo -e "\n${GREEN}[1/3]${NC} GCP 프로젝트 설정..."
