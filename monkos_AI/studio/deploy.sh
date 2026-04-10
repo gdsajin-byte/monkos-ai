@@ -90,7 +90,7 @@ gcloud run deploy ${SERVICE_NAME} \
   --concurrency 80 \
   --min-instances 0 \
   --max-instances ${MAX_INSTANCES} \
-  --update-env-vars "PROJECT_ID=${PROJECT_ID},LOCATION=${REGION},GCS_BUCKET=${GCS_BUCKET:-monkos-shared}" \
+  --update-env-vars "PROJECT_ID=${PROJECT_ID},LOCATION=${REGION},GCS_BUCKET=${GCS_BUCKET}" \
   --service-account ${SERVICE_ACCOUNT}
 
 # 결과 출력

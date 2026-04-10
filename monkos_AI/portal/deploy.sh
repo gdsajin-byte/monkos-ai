@@ -118,6 +118,18 @@ echo -e "서비스: ${YELLOW}${SERVICE_NAME}${NC}"
 echo -e "리소스: ${YELLOW}${MEMORY} / ${CPU} CPU / max ${MAX_INSTANCES}${NC}"
 echo -e "${BLUE}========================================${NC}"
 
+# === 환경변수 가드 (4f71cbc 사고 재발 방지, 2026-04-10) ===
+if [ -z "$GCS_BUCKET" ]; then
+  echo -e "${RED}🚨 GCS_BUCKET 미설정. .env 또는 환경변수 확인 후 재시도.${NC}"
+  echo -e "${RED}   참고: 진짜 버킷명은 monk-ai-images (config.js:66 폴백과 일치)${NC}"
+  exit 1
+fi
+if [ -z "$ADMIN_UIDS" ]; then
+  echo -e "${RED}🚨 ADMIN_UIDS 미설정. 빈값 배포 시 모든 로그인 사용자가 admin 권한 획득.${NC}"
+  echo -e "${RED}   .env에 ADMIN_UIDS=uid1,uid2,uid3 추가 후 재시도.${NC}"
+  exit 1
+fi
+
 # 1. GCP 프로젝트 설정
 echo -e "\n${GREEN}[1/3]${NC} GCP 프로젝트 설정..."
 gcloud config set project ${PROJECT_ID}
@@ -139,7 +151,7 @@ gcloud run deploy ${SERVICE_NAME} \
   --concurrency 100 \
   --min-instances 0 \
   --max-instances ${MAX_INSTANCES} \
-  --update-env-vars "^::^PROJECT_ID=${PROJECT_ID}::LOCATION=${REGION}::GCS_BUCKET=${GCS_BUCKET:-monkos-shared}::ADMIN_UIDS=${ADMIN_UIDS}" \
+  --update-env-vars "^::^PROJECT_ID=${PROJECT_ID}::LOCATION=${REGION}::GCS_BUCKET=${GCS_BUCKET}::ADMIN_UIDS=${ADMIN_UIDS}" \
   --service-account ${SERVICE_ACCOUNT} \
   ${DEPLOY_FLAGS}
 
