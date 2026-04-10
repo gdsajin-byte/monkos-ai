@@ -59,6 +59,8 @@ status: active
 | 04/08 | 민아 | Specs 26종 데이터 업데이트 배포 확인 | — | ✅ |
 | 04/08 | 막내 | **deploy.sh 시크릿 근본 수정** (4개 서비스: portal/idphoto-kr/idphoto-jp/studio) + 팀봇 토스키 dev 오탐 방지 | `2453d3f` | ✅ |
 | 04/08 | 쌍아 | **법률 ch5 배포 규칙 개정** + `.claude/rules/deployment.md` 신설 | `4f71cbc` | ✅ |
+| 04/10 | 민아·쌍아 | 🚨 **INCIDENT**: 4f71cbc 잠복 폭탄 발현 — GCS_BUCKET 오기(`monkos-shared`)로 이미지 뱅크 ~10시간 무력화 + ADMIN_UIDS 빈값으로 admin 권한 무방비 노출 | rev 00223-llj(GCS), 00224-5m5(ADMIN), [INCIDENT REPORT](../reports/2026-04/REPORT_20260410_iMac쌍아_INCIDENT_GCS_BUCKET+ADMIN_UIDS_사고.md) | ✅ 1차 봉인 |
+| 04/10 | 쌍아→막내1 | 통합 지시서: deploy.sh 4파일 잠복 폭탄 제거 + admin/js 401 위장 머지 (Layer 2) | [ORDER](../orders/2026-04/ORDER_20260410_iMac쌍아_막내_4f71cbc잠복폭탄제거+admin401위장머지.md) | ⏳ 막내1 작업 대기 |
 
 ---
 

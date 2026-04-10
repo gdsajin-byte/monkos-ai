@@ -6,7 +6,7 @@ date: 2026-04-10 06:56 KST
 priority: P0
 subject: Search Console NOINDEX 경고 해소 — 사이트맵에서 noindex 페이지 제거 (JP + KR)
 tags: [seo, idphoto-jp, idphoto-kr, sitemap, search-console]
-status: open
+status: done
 origin: Google Search Console 경고 4건 (2026-04-08) + GA4 Organic Search 7건/주 진단
 ---
 

@@ -95,6 +95,7 @@ status: active
 | 4/10 | 쌍아 | Phase 1.7 보정 지시서 발행 (4건: crop hreflang, canonical, 깨진img, specs 혼입) | ORDER_20260410 | ✅ |
 | 4/10 | 민아 | **HEAD 404 + 구슬러그 301 + NOINDEX 사이트맵** 지시서 2건 발행 — 오가닉 3대 장애 근본 원인 특정 | ORDER_20260410×2 | ✅ |
 | 4/10 | 막내1+2 | **3서비스 prod 배포** (portal+idphoto-kr+idphoto-jp) + CDP 재검증 전 건 통과 | 배포 완료, `a247c3c` | ✅ |
+| 4/10 | 민아 | **GSC 색인 재요청 19건** (포탈 9건 + 다국어 6건 + specs 4건) 전수 제출 | GSC 우선순위 크롤링 대기열 추가 확인 | ✅ |
 
 ---
 
@@ -132,7 +133,7 @@ status: active
 | llms.txt + llms-full.txt specs URL 등록 | ✅ 3/26 | 막내2 |
 | 블로그 타이틀 최적화 (CMS 에디터) | ❌ 미착수 | 민아/작가님 |
 | 외부 백링크 콘텐츠 발행 (note.com, 네이버 등) | ❌ 미착수 | 한 |
-| GSC 색인 요청 + 모니터링 | ⏳ sitemap 198개 재제출 (4/8 민아), 지속 모니터링 | 민아 |
+| GSC 색인 요청 + 모니터링 | ⏳ sitemap 198개 재제출 (4/8) + **주요 19건 개별 재요청 (4/10)**. 지속 모니터링 | 민아 |
 
 ### Phase 1.5 — 기술 SEO 보정 ✅ 완료 (4/07 배포)
 
@@ -148,16 +149,19 @@ status: active
 
 ### Phase 1.7 — 4/9~10 CDP 진단 이슈 보정 + 오가닉 장애 해소 ✅ 완료 (04/10)
 
-> 4/9 막내1+3 CDP 진단에서 발견된 이슈. 지시서 미발행.
+> 4/9 막내1+3 CDP 진단 이슈 + 4/10 민아 오가닉 3대 장애 근인 분석. 3서비스 prod 배포 완료.
 
-| 항목 | 긴급도 | 담당 | 비고 |
-|------|--------|------|------|
-| `/ja/`, `/en/` root lang=ko 표시 (인프라 프록시 rewrite) | 🔴 | 미정 | Cloud Run 직접URL은 정상, 프록시 계층 이슈 |
-| crop hreflang 불완전 (ko/x-default만, ja/en 없음) | 🔴 | 막내 | crop/index.html |
-| idphoto canonical `/app` 경로 누락 | 🟠 | 막내 | idphoto-kr/jp |
-| 깨진 이미지 3건 (crop, idphoto-kr/jp) | 🟠 | 막내 | 원인 파악 필요 |
-| `/en/about` 404 | 🟠 | 막내 | 라우트 미등록 |
-| `/en/specs` H1 영어지만 본문 일부 한국어 혼입 | 🟡 | 막내 | 데이터 확인 |
+| 항목 | 긴급도 | 상태 | 커밋 | 비고 |
+|------|--------|------|------|------|
+| **HEAD 404 전면 차단** (Googlebot HEAD→404) | 🔴 | ✅ | `a247c3c` | server.js HEAD→GET 변환. 오가닉 색인 직접 원인 |
+| **NOINDEX↔사이트맵 모순** (idphoto JP/KR) | 🔴 | ✅ | `70189c0` | sitemap에서 noindex 페이지 제거 (JP 6건, KR 5건) |
+| **구 슬러그 404** (블로그 vol→서술형) | 🟠 | ✅ | `a247c3c` | 301 리다이렉트 10건 매핑 |
+| crop hreflang 불완전 (ko/x-default만) | 🔴 | ✅ | `cdcb3f7` | ja/en 추가. crop/index.html |
+| idphoto canonical `/app` 경로 누락 | 🟠 | ✅ | `cdcb3f7` | idphoto-kr/jp index.html + hreflang 동시 보정 |
+| `/en/specs` 본문 한국어 혼입 | 🟡 | ✅ | `cdcb3f7` | render.js locField() + specs-data.json i18n 필드 추가 |
+| 깨진 이미지 3건 (crop, idphoto-kr/jp) | 🟠 | ⏳ | — | SPA 런타임 이미지. CDP 진단 미완 |
+| `/ja/`, `/en/` root lang=ko (인프라 프록시) | 🔴 | ⏳ | — | Cloud Run 직접URL 정상. 프록시 계층 이슈 |
+| `/en/about` 404 | — | 🚫 제외 | — | 유령 URL (코드·sitemap·내부링크 참조 없음) |
 
 ### Phase 2 — GEO 본격 + 고급 SEO (예정)
 

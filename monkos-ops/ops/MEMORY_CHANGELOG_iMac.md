@@ -105,3 +105,22 @@
 - submodule 운용 규정 신설 (.gitmodules, git submodule update 등)
 - M1 최초 1회 `git submodule update --init` 안내 추가
 - 세션 마감 스크립트 안내 유지 (mk-push.sh/mk-pull.sh는 동일 경로, 내용만 변경)
+
+---
+
+## 2026-04-10 19:16 KST — 4/10 GCS 사고 복기 결과 반영
+
+**변경자**: iMac/쌍아
+**근거**: 4/10 GCS_BUCKET + ADMIN_UIDS 사고 (~10시간 무력화 + admin 무방비). 사고 복기 → 학습 메모리 + 후속 어젠다 박음
+
+**신규 외장 메모리 2건**:
+- `feedback_diagnose_with_resource_first.md` — 진단 1순위 = 실제 리소스 직접 조회. 코드 추론·가설 나열 금지. 근거: 사고 진단 시 가설 5개로 작가님 시간 30분 낭비 후에야 `gsutil ls` 1줄로 5초 만에 확정
+- `feedback_constitution_overextension.md` — 헌법 4조 1항 ".env 수정 승인"을 "비시크릿값까지 작가님 수동"으로 과확장 금지. 비시크릿 운영값(GCS_BUCKET, ADMIN_UIDS)은 deploy.sh가 정본
+
+**MEMORY.md 인덱스 갱신**: 위 2건 피드백 메모리 라인 추가
+
+**project_pending_agenda.md #24 추가**: PF_DEPLOY 발족 어젠다
+- 배경: 모든 사고가 같은 클래스(배포·환경변수 drift)
+- dev 부활 ❌ (멀티 에이전트 시절 유령 코드 사고 빈발 경험)
+- preview 리비전 부활 ✅ (deploy.sh L90~108 코드 존재, 죽어있음)
+- Phase 0~3 안
