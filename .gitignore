@@ -85,6 +85,9 @@ _archive/
 # 개인정보 문서 (동의서, 신용정보 등)
 docs/rnd_2026/**/동의서/
 
+# PF_FUNDING 첨부 (개인정보 포함 발급 서류 - 로컬 전용)
+monkos-ops/ops/attachments/PF_FUNDING/
+
 # GCS 동기화 (로컬에서만 관리)
 soul_sync.sh
 
