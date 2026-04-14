@@ -414,13 +414,29 @@ export async function blogPostFragment(req, lang = null) {
   const contentHtml = marked(post.content || '', { renderer: blogRenderer });
   const baseSlug = slug;
 
-  // hreflang — 경로 접두어 교체 방식 (slug 영문 통일 정책, 2026-03-22)
-  const hreflangTags = [
-    `<link rel="alternate" hreflang="ko" href="https://monkos.ai/blog/${slug}">`,
-    `<link rel="alternate" hreflang="ja" href="https://monkos.ai/ja/blog/${slug}">`,
-    `<link rel="alternate" hreflang="en" href="https://monkos.ai/en/blog/${slug}">`,
-    `<link rel="alternate" hreflang="x-default" href="https://monkos.ai/blog/${slug}">`,
-  ].join('\n');
+  // hreflang — 실제 존재+published 언어 버전만 출력 (2026-04-14 유령URL 근절)
+  const hreflangPairs = [
+    { lang: 'ko', docId: slug, prefix: '' },
+    { lang: 'ja', docId: `${slug}-ja`, prefix: '/ja' },
+    { lang: 'en', docId: `${slug}-en`, prefix: '/en' },
+  ];
+  const existChecks = await Promise.all(
+    hreflangPairs.map(async (p) => {
+      try {
+        const d = await blogCollection.doc(p.docId).get();
+        return d.exists && d.data().published ? p : null;
+      } catch { return null; }
+    })
+  );
+  const existingLangs = existChecks.filter(Boolean);
+  const hasKo = existingLangs.some(p => p.lang === 'ko');
+  const hreflangTags = existingLangs.map(p =>
+    `<link rel="alternate" hreflang="${p.lang}" href="https://monkos.ai${p.prefix}/blog/${slug}">`
+  ).concat(
+    hasKo
+      ? [`<link rel="alternate" hreflang="x-default" href="https://monkos.ai/blog/${slug}">`]
+      : []
+  ).join('\n');
 
   const prefix = lang ? `/${lang}` : '';
   const canonicalUrl = `https://monkos.ai${prefix}/blog/${escapeHtml(baseSlug)}`;

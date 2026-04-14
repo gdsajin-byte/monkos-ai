@@ -237,6 +237,13 @@ const httpServer = createServer(async (req, res) => {
     '/en/blog/vol19':          '/en/blog/id-photo-job-application-photo-makeup-for-each-skin-tone',
     // KO
     '/blog/vol23-qa-5':        '/blog/vol24-20-ai-monkosai',
+
+    // === 신규 3건 (2026-04-14 GSC 404 해소 — hreflang 유령 URL 잔존분) ===
+    // 주: 오더 원안은 6건이었으나 JA 번역본 부재(vol17/18/19 JA)로 3건 제외.
+    //    해당 3건은 건1(hreflang 조건부)로 장기 해소 예정. 기존 캐시는 자연 해소.
+    '/en/blog/vol17-vs':       '/en/blog/korea-vs-japan-interview-attire-whats-the-difference',
+    '/en/blog/vol18-ai-vs':    '/en/blog/ai-photo-id-can-a-selfie-really-become-an-official-photo',
+    '/ja/blog/vol24-20-ai-monkosai': '/ja/blog/20-year-photographer-ai-id-photo-monkos-ai-birth',
   };
   if (blogRedirects[urlPath]) {
     res.writeHead(301, { 'Location': blogRedirects[urlPath] });
