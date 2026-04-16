@@ -139,6 +139,32 @@ async with MonkosEditor(port=9222) as ed:
 
 **잔여**: M1/M4/M2 — git pull 후 CDP 크롬 시작 + 수동 로그인 필요.
 
+### Phase 3 — Google Docs 실전 운용 발견사항 (2026-04-16, iMac/민아)
+
+**배경**: 소진공 혁신성장촉진자금 사업계획서를 CDP로 Google Docs에서 직접 편집.
+
+**성공 패턴**:
+- 찾기/바꾸기(Cmd+Shift+H) + JS `nativeInputValueSetter`로 필드 값 설정 → 안정적 텍스트 교체
+- HTML 테이블 생성 → file:// 열기 → Cmd+A/C → Google Docs에 Cmd+V → 테이블 삽입 성공
+- Clipboard API (`navigator.clipboard.write`)로 같은 페이지 내 HTML 클립보드 쓰기 → 붙여넣기 성공
+
+**실패 패턴 (회피 필수)**:
+- `type_text()`로 찾기 필드 입력 시 **문서 본문에 텍스트 삽입되는 사고** 반복 — 찾기 필드 포커스가 불안정
+- 페이지 간 `navigate()` 시 **OS 클립보드 초기화** — 같은 탭에서 복사→붙여넣기 필수
+- Google Docs 테이블 행 추가/삭제 — CDP 우클릭 컨텍스트 메뉴 미작동
+- Apps Script 실행 — OAuth 팝업 차단 (CDP 브라우저에서 팝업 불가)
+
+**교훈 요약**:
+1. 찾기 필드 입력은 반드시 JS `nativeInputValueSetter` 사용. `type_text()` 금지
+2. 클립보드 연산은 같은 탭 내에서 완결 (navigate 금지)
+3. 테이블 행 삭제/추가는 CDP 한계 — 작가님 수동 또는 HTML 테이블 통째 교체
+4. Google Docs API는 gcloud 토큰 scope 부족, Clipboard API가 현실적 대안
+
+**산출물**:
+- 조직도 이미지 생성 (PIL) + Google Docs 삽입
+- 중장기 로드맵 HTML 테이블 생성 + 삽입
+- 찾기/바꾸기 기반 일괄 텍스트 교체 30건+
+
 ---
 
 ## 관련 문서
