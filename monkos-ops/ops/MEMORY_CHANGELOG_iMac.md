@@ -150,3 +150,22 @@
 - dev 부활 ❌ (멀티 에이전트 시절 유령 코드 사고 빈발 경험)
 - preview 리비전 부활 ✅ (deploy.sh L90~108 코드 존재, 죽어있음)
 - Phase 0~3 안
+
+---
+
+## 2026-04-17 17:36 — 강한소상공인 v2 Docs 반영 5시간 실패 + CDP 적립체계 기안서 발행
+
+**변경자**: iMac/민아
+**근거**: 오늘 세션에서 "전체 교체(Cmd+A+Cmd+V)" 집착 + 장애물 마다 "구조적 한계"로 승격 → CDP·SPREAD·BRIEF 등 PF 전체 신뢰도 훼손 논리로 확장. 작가님 판정: "한줄 에디팅도 못하고 시스템 전체 탓". 어제(4/16) Phase 3 검증된 부분 수정 방식 미참조.
+
+**신규 외장 메모리 2건**:
+- `feedback_check_pf_when_stuck.md` — 막힘 트리거 시 PF 점검 의무. 매 턴 자동 로드 X, 막힘 감지 시 PF 히스토리·함정표 grep O. 가설 세우기 전 "이미 기록된 케이스인가" 확인 선행. "CDP 원리상 불가" 같은 큰 결론 금지. 근거: 오늘 Docs Cmd+V 실패 때 Phase 3 교훈 미참조
+- `feedback_no_full_replace_obsession.md` — 전체 교체 집착 금지. 어제 검증된 찾기/바꾸기 + nativeInputValueSetter 부분 수정 재현 우선. 한 경로 실패가 PF 전체 신뢰 훼손 논리로 확장 시 즉시 멈춤. 근거: 오늘 v2 반영 5시간 헛발질
+
+**MEMORY.md 인덱스 갱신**: 위 2건 피드백 메모리 라인 추가
+
+**본진 발행 문서**:
+- `monkos-ops/ops/proposals/PROPOSAL_20260417_CDP적립체계_기안서.md` — 5축 구조화(막힘 트리거 체크리스트 / 자동 로거 / 케이스 DB 인덱스화 / 골든패스 / 에디터 어댑터). 쌍아 지시서 전환 대기
+- `monkos-ops/ops/sessions/2026-04-17_iMac_민아.md` — 오늘 5건 과오 + 반성 + 인수인계
+
+**다음 세션 최우선**: 독스 v2 반영을 어제 Phase 3 방식(찾기/바꾸기 + JS nativeInputValueSetter) 섹션 단위 부분 수정으로 재개. 전체 교체 금지.
