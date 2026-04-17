@@ -20,6 +20,8 @@ import subprocess
 import os
 import hashlib
 import time
+import glob as glob_mod
+from datetime import datetime, timezone, timedelta
 from typing import Optional
 from contextlib import asynccontextmanager
 from urllib.parse import urlparse
@@ -30,11 +32,117 @@ except ImportError:
     raise ImportError("websockets 패키지 필요: pip install websockets")
 
 
+class CDPDebugLogger:
+    """CDP 디버그 로거 — JSONL append 방식.
+
+    PF_CDP/debug_log/YYYY-MM-DD_디바이스_에이전트_주제.jsonl 에 기록.
+    CDP(logger=logger) 형태로 옵셔널 주입. logger 미지정 시 기록 안 함 (기존 호환).
+    """
+
+    LOG_DIR = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+        "monkos-ops", "ops", "portfolios", "PF_CDP", "debug_log"
+    )
+
+    def __init__(self, device: str = "iMac", agent: str = "막내", subject: str = "cdp",
+                 log_dir: str = None):
+        self.device = device
+        self.agent = agent
+        self.subject = subject
+        self.log_dir = log_dir or self.LOG_DIR
+        os.makedirs(self.log_dir, exist_ok=True)
+
+        kst = timezone(timedelta(hours=9))
+        date_str = datetime.now(kst).strftime("%Y-%m-%d")
+        self.log_path = os.path.join(
+            self.log_dir,
+            f"{date_str}_{device}_{agent}_{subject}.jsonl"
+        )
+
+    def log(self, record_type: str, method: str = "", result_sample: str = "",
+            duration_ms: int = 0, error: str = None, **extra):
+        """JSONL 1줄 어펜드."""
+        kst = timezone(timedelta(hours=9))
+        entry = {
+            "ts": datetime.now(kst).isoformat(),
+            "type": record_type,
+            "method": method,
+            "result_sample": str(result_sample)[:200] if result_sample else "",
+            "duration_ms": duration_ms,
+            "error": error,
+        }
+        entry.update(extra)
+        with open(self.log_path, "a", encoding="utf-8") as f:
+            f.write(json.dumps(entry, ensure_ascii=False) + "\n")
+
+    def log_send(self, method: str, params: dict = None, result: dict = None,
+                 duration_ms: int = 0, error: str = None):
+        """CDP _send() 호출 기록."""
+        result_sample = ""
+        if result:
+            result_sample = json.dumps(result, ensure_ascii=False)[:200]
+        self.log("send", method=method, result_sample=result_sample,
+                 duration_ms=duration_ms, error=error)
+
+    def log_key(self, key: str, modifiers: int = 0):
+        """키 이벤트 기록."""
+        self.log("key", method=f"key:{key}", result_sample=f"modifiers={modifiers}")
+
+    def log_eval(self, expression: str, result=None, duration_ms: int = 0, error: str = None):
+        """evaluate 호출 기록."""
+        expr_sample = expression[:150]
+        result_sample = str(result)[:200] if result is not None else ""
+        self.log("eval", method="Runtime.evaluate", result_sample=result_sample,
+                 duration_ms=duration_ms, error=error, expression=expr_sample)
+
+    def log_paste(self, target: str = "", success: bool = False, method: str = ""):
+        """paste 시도 기록."""
+        self.log("paste", method=method, result_sample=f"target={target}, success={success}")
+
+
+def print_recent_cases(log_dir: str = None, n: int = 5):
+    """최근 N건 로그 파일의 에러 요약 출력. 스탠드얼론 함수."""
+    log_dir = log_dir or CDPDebugLogger.LOG_DIR
+    if not os.path.exists(log_dir):
+        print(f"로그 디렉토리 없음: {log_dir}")
+        return
+
+    files = sorted(glob_mod.glob(os.path.join(log_dir, "*.jsonl")), reverse=True)[:n]
+    if not files:
+        print("로그 파일 없음")
+        return
+
+    for fpath in files:
+        fname = os.path.basename(fpath)
+        errors = []
+        total = 0
+        with open(fpath, "r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                total += 1
+                try:
+                    record = json.loads(line)
+                    if record.get("error"):
+                        errors.append(record)
+                except json.JSONDecodeError:
+                    continue
+
+        print(f"\n📄 {fname} — {total}건, 에러 {len(errors)}건")
+        for err in errors[-5:]:
+            ts = err.get("ts", "?")[:19]
+            method = err.get("method", "?")
+            error_msg = err.get("error", "?")[:80]
+            print(f"  ❌ [{ts}] {method} → {error_msg}")
+
+
 class CDP:
     """Chrome DevTools Protocol 클라이언트"""
 
     def __init__(self, port: int = 9222, host: str = "127.0.0.1",
-                 tab_index: int = 0, url: str = None, title: str = None):
+                 tab_index: int = 0, url: str = None, title: str = None,
+                 logger: CDPDebugLogger = None):
         self.port = port
         self.host = host
         self.tab_index = tab_index
@@ -43,6 +151,7 @@ class CDP:
         self.base_url = f"http://{host}:{port}"
         self.ws = None
         self._msg_id = 0
+        self._logger = logger
 
     # ── 연결 ──
 
@@ -129,21 +238,41 @@ class CDP:
         msg = {"id": self._msg_id, "method": method}
         if params:
             msg["params"] = params
+        t0 = time.monotonic()
         await self.ws.send(json.dumps(msg))
         resp = json.loads(await self.ws.recv())
+        duration_ms = int((time.monotonic() - t0) * 1000)
         if "error" in resp:
+            if self._logger:
+                self._logger.log_send(method, params, error=str(resp['error']),
+                                      duration_ms=duration_ms)
             raise RuntimeError(f"CDP 에러: {resp['error']}")
-        return resp.get("result", {})
+        result = resp.get("result", {})
+        if self._logger:
+            self._logger.log_send(method, params, result=result, duration_ms=duration_ms)
+        return result
 
     # ── JS 실행 ──
 
     async def evaluate(self, expression: str):
         """JS 실행 후 값 반환"""
-        result = await self._send("Runtime.evaluate", {"expression": expression})
-        val = result.get("result", {})
-        if val.get("type") == "undefined":
-            return None
-        return val.get("value", val)
+        t0 = time.monotonic()
+        try:
+            result = await self._send("Runtime.evaluate", {"expression": expression})
+            val = result.get("result", {})
+            if val.get("type") == "undefined":
+                ret = None
+            else:
+                ret = val.get("value", val)
+            if self._logger:
+                duration_ms = int((time.monotonic() - t0) * 1000)
+                self._logger.log_eval(expression, ret, duration_ms=duration_ms)
+            return ret
+        except Exception as e:
+            if self._logger:
+                duration_ms = int((time.monotonic() - t0) * 1000)
+                self._logger.log_eval(expression, error=str(e), duration_ms=duration_ms)
+            raise
 
     async def evaluate_json(self, expression: str):
         """JS 실행 후 JSON 파싱된 값 반환"""
@@ -267,6 +396,8 @@ class CDP:
 
     async def press_key(self, key: str, modifiers: int = 0):
         """키 누르기. modifiers: 1=Alt, 2=Ctrl, 4=Meta, 8=Shift"""
+        if self._logger:
+            self._logger.log_key(key, modifiers)
         await self._send("Input.dispatchKeyEvent", {
             "type": "keyDown", "key": key, "code": key, "modifiers": modifiers
         })

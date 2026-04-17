@@ -37,7 +37,22 @@ Chrome DevTools Protocol(CDP)로 디버깅 포트를 열면, **포트별 독립 
 | `cdp_utils.py` | Python 유틸 패키지 (전 기능) | 정본. `scripts/tools/`에도 심링크 |
 | `cdp_setup.sh` | 디바이스 셋업 스크립트 | install → start → 바로 사용 |
 | `cdp.sh` | 간이 CLI (bash) | 빠른 확인용 |
+| `case_studies.md` | 케이스 DB (append-only) | CASE-001~ |
+| `golden_paths.md` | 검증된 성공 패턴 인덱스 | GP-001~ |
+| `debug_log/` | 세션별 자동 디버그 로그 | JSONL |
+| `editor_adapters/` | 에디터별 특성·제약 문서 | 플랫폼별 |
 | `README.md` | 본 문서 | |
+
+## 막힘 트리거 체크리스트
+
+> 브라우저 자동화 예외·예상외 동작 포착 시 (키 이벤트 미반영, 클릭 무효, 타이핑 실패, DOM 비어 보임 등):
+
+1. `PF_CDP/case_studies.md` grep (증상 키워드 기반)
+2. `PF_CDP/golden_paths.md` 에서 대상 에디터 성공 패턴 확인
+3. `PF_CDP/editor_adapters/{에디터}.md` 금지 패턴 확인
+4. 일치 케이스 있으면 해당 해법 적용
+5. 일치 없으면 `case_studies.md` 에 신규 CASE 등록 후 조사
+6. **가설 세우기 전에 1~3 선행. "원리상 불가" 같은 큰 결론으로 뛰기 금지**
 
 ## 사용 절차
 
@@ -164,6 +179,19 @@ async with MonkosEditor(port=9222) as ed:
 - 조직도 이미지 생성 (PIL) + Google Docs 삽입
 - 중장기 로드맵 HTML 테이블 생성 + 삽입
 - 찾기/바꾸기 기반 일괄 텍스트 교체 30건+
+
+### Phase 4 — 적립 체계 구조화 (2026-04-17, iMac/쌍아→막내)
+
+**배경**: 작가님 지적 — "매번 다른 지점에서 막힌다". 기록은 있으나 구조화·검색·참조 루틴 부재.
+
+**5축 체계 구축**:
+1. **막힘 트리거 체크리스트** — 장애 감지 시 PF_CDP grep 의무화
+2. **CDPDebugLogger** — cdp_utils.py 자동 로깅 레이어
+3. **case_studies.md** — 기존 §8 12건 migration + CASE-013 등록
+4. **golden_paths.md** — 검증된 성공 패턴 인덱스
+5. **editor_adapters/** — 플랫폼별 특성 분리 문서
+
+**기안**: PROPOSAL_20260417_CDP적립체계_기안서 (민아)
 
 ---
 

@@ -454,6 +454,8 @@ checks = await evaluate(ws, """(function(){
 | 11 | CDP 스크린샷 → Claude API 전송 시 크기 초과 | "image dimensions exceed max allowed size: 2000 pixels" | `deviceScaleFactor:1`로 낮추거나, 스크린샷 대신 DOM innerText로 확인. clip으로 영역 제한도 가능 |
 | 12 | LINE 메시지 작성 URL 직접 접근 404 | broadcast/create 페이지 404 | 사이드바 "새 전체 메시지" 클릭으로 접근. 또는 정확한 URL: `manager.line.biz/account/@208xpvko/broadcast/create` |
 
+> 📌 **상세**: 각 함정의 구조화된 케이스 기록은 [case_studies.md](./case_studies.md) CASE-001~012 참조.
+
 ---
 
 ## 9. 완료 보고 형식
