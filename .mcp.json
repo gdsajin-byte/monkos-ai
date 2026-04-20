@@ -30,6 +30,12 @@
       "args": [
         "scripts/tools/cloudflare_mcp.sh"
       ]
+    },
+    "google-docs": {
+      "command": "bash",
+      "args": [
+        "scripts/tools/gdocs_mcp.sh"
+      ]
     }
   }
 }
