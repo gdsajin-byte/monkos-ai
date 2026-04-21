@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-JPZWSJ3323"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-JPZWSJ3323');
+  gtag('config', 'G-FKG0CPTC14');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="index, follow">
+<title>AI証明写真の仕組みと使い方 | MONKOS AIの技術解説 | MONKOS AI</title>
+<meta name="description" content="証明写真AIの仕組みを解説。リアルタイムAIコーチング・AIリタッチ生成・AI品質検査の3段階パイプラインで、写真館クオリティの証明写真を¥990で。セルフィー1枚から高画質ダウンロードまでの流れを詳しく紹介。">
+<meta name="keywords" content="証明写真 AI, AI 証明写真, AIコーチング, AIリタッチ, MONKOS">
+<link rel="canonical" href="https://idphoto-jp.monkos.ai/guide/ai">
+<link rel="alternate" hreflang="ja" href="https://idphoto-jp.monkos.ai/guide/ai">
+<link rel="alternate" hreflang="ko" href="https://idphoto-kr.monkos.ai/">
+<link rel="alternate" hreflang="x-default" href="https://monkos.ai/">
+<meta property="og:type" content="article">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:title" content="AI証明写真の仕組みと使い方 | MONKOS AI">
+<meta property="og:description" content="証明写真AIの3段階パイプラインで、写真館クオリティの証明写真を¥990で。">
+<meta property="og:url" content="https://idphoto-jp.monkos.ai/guide/ai">
+<meta property="og:image" content="https://idphoto-jp.monkos.ai/og-image.png">
+<link rel="icon" type="image/png" href="/favicon-32.png">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #0f0f23; --surface: #1a1a2e; --accent: #a78bfa;
+  --text: #e2e8f0; --text-dim: #94a3b8; --border: #2d2d5e;
+  --cta: #8b5cf6; --cta-hover: #7c3aed;
+}
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Kaku Gothic ProN', 'Segoe UI', sans-serif;
+  background: var(--bg); color: var(--text); line-height: 1.8; padding: 0 20px;
+}
+.wrap { max-width: 760px; margin: 0 auto; padding: 40px 0 80px; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.back { display: inline-block; margin-bottom: 24px; font-size: 0.85rem; }
+h1 { font-size: 1.8rem; margin-bottom: 16px; color: #fff; line-height: 1.4; }
+.subtitle { color: var(--text-dim); font-size: 0.95rem; margin-bottom: 32px; }
+h2 { font-size: 1.25rem; color: var(--accent); margin: 40px 0 14px; }
+h3 { font-size: 1.05rem; color: #fff; margin: 20px 0 10px; }
+p, li { font-size: 0.95rem; color: var(--text-dim); margin-bottom: 10px; }
+ul, ol { padding-left: 22px; margin-bottom: 12px; }
+.hero-cta { margin: 28px 0 8px; }
+.cta-btn {
+  display: inline-block; background: var(--cta); color: #fff;
+  padding: 14px 28px; border-radius: 10px; font-size: 1rem; font-weight: 600;
+  text-decoration: none; transition: background 0.2s;
+}
+.cta-btn:hover { background: var(--cta-hover); text-decoration: none; }
+.price { color: var(--text-dim); font-size: 0.85rem; margin-top: 8px; }
+.feature-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin: 16px 0; }
+.feature-box h3 { color: var(--accent); margin: 0 0 8px; }
+.step { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; margin: 12px 0; }
+.step-num { display: inline-block; background: var(--cta); color: #fff; width: 28px; height: 28px; border-radius: 50%; text-align: center; line-height: 28px; font-weight: 600; margin-right: 10px; }
+.faq { margin: 16px 0; padding: 16px; background: var(--surface); border-radius: 10px; border: 1px solid var(--border); }
+.faq-q { font-weight: 600; color: #fff; margin-bottom: 6px; }
+.faq-a { color: var(--text-dim); font-size: 0.9rem; }
+footer { text-align: center; padding: 40px 0 20px; border-top: 1px solid var(--border); color: var(--text-dim); font-size: 0.8rem; margin-top: 40px; }
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "AI証明写真の使い方",
+  "description": "MONKOS AI証明写真の使い方を5ステップで解説。セルフィーから高画質ダウンロードまで3分以内。",
+  "step": [
+    {"@type": "HowToStep", "position": 1, "name": "ログイン", "text": "Google または LINE でログイン。初回は10クレジット（¥150相当）が無料で付与されます。"},
+    {"@type": "HowToStep", "position": 2, "name": "規格選択", "text": "パスポート（35×45mm）または証明写真（30×40mm）を選択。性別・年齢・服装・背景色もここで設定します。"},
+    {"@type": "HowToStep", "position": 3, "name": "AIコーチング撮影", "text": "リアルタイムAIコーチング（500~800ms応答）が姿勢・表情・髪型をガイド。セルフィーを撮影します。"},
+    {"@type": "HowToStep", "position": 4, "name": "AIリタッチ", "text": "AIが背景・照明・肌・衣服を約30秒で自動補正します。"},
+    {"@type": "HowToStep", "position": 5, "name": "高画質ダウンロード", "text": "クレジット決済後、300dpi以上の高画質画像をダウンロードします。"}
+  ]
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <a href="/" class="back">&larr; MONKOS AI 証明写真</a>
+
+  <h1>証明写真のAI技術を完全解説</h1>
+  <p class="subtitle">MONKOS AIの3段階パイプラインと、¥990で写真館クオリティを実現する仕組み。</p>
+
+  <div class="hero-cta">
+    <a href="/prep" class="cta-btn">今すぐ撮影する →</a>
+    <p class="price">1枚¥990 · 初回ログイン10クレジット無料</p>
+  </div>
+
+  <h2>MONKOSの3段階AI品質保証パイプライン</h2>
+
+  <div class="feature-box">
+    <h3>Stage 1 — AIリアルタイムコーチング（撮影前）</h3>
+    <p>撮影中にGemini Liveベースの音声コーチングが500~800msの低レイテンシで応答。「もう少し顎を引いてください」「背筋を伸ばしてください」など、プロのカメラマンがスタジオで行うディレクションをAIが代行します。</p>
+  </div>
+
+  <div class="feature-box">
+    <h3>Stage 2 — AIリタッチ生成（撮影後）</h3>
+    <p>Imagen I2Iモデルが背景・照明・肌・衣服・髪型を同時処理。「本人らしさ」を90%以上保持する独自の損失関数で、顔の同一性を守りながら証明写真として整えます。約30秒で完成。</p>
+  </div>
+
+  <div class="feature-box">
+    <h3>Stage 3 — AI品質検査（ダウンロード前）</h3>
+    <p>生成された画像が規格に合致しているかをAIが自動検査。顔の位置・背景の均一性・照明・目線・表情などを多次元的に評価。不合格時はクレジットを自動返還します。</p>
+  </div>
+
+  <h2>なぜこの3段階が必要なのか</h2>
+
+  <p>一般的な証明写真アプリは「AIリタッチ」のみ、または「AI品質検査」のみしか持っていません。撮影時のガイダンスがなければ、AIが補正しきれない根本的な失敗写真が量産されます。MONKOSは「前（コーチング）→中（生成）→後（検査）」の3重ガードで、撮り直しを最小限に抑えます。</p>
+
+  <p>14カ国29の証明写真サービスを全数調査した結果、3段階フルパイプラインを実装しているのはMONKOS AIのみでした。</p>
+
+  <h2>ディープフェイク源泉遮断の仕組み</h2>
+  <ul>
+    <li>ギャラリー画像のアップロードは不可</li>
+    <li>入力はリアルタイムセルフィーのみ（カメラ必須）</li>
+    <li>フレーム単位で「本人が今撮影している」ことを検証</li>
+    <li>2026年1月の米国AIパスポート写真却下ルールに構造的対応</li>
+  </ul>
+
+  <h2>利用の5ステップ</h2>
+
+  <div class="step"><span class="step-num">1</span><strong>ログイン</strong> — Google または LINE。初回10クレジット（¥150相当）無料。</div>
+  <div class="step"><span class="step-num">2</span><strong>規格選択</strong> — パスポート（35×45mm）/ 証明写真（30×40mm）から。性別・年齢・服装・背景色も設定。</div>
+  <div class="step"><span class="step-num">3</span><strong>AIコーチング撮影</strong> — リアルタイム音声コーチングを聞きながらセルフィー撮影。</div>
+  <div class="step"><span class="step-num">4</span><strong>AIリタッチ</strong> — AIが約30秒で背景・照明・肌・衣服を自動補正。</div>
+  <div class="step"><span class="step-num">5</span><strong>高画質ダウンロード</strong> — クレジット決済後、300dpi以上の画像をダウンロード。</div>
+
+  <h2>よくある質問</h2>
+  <div class="faq">
+    <div class="faq-q">Q. AI証明写真の精度はどのくらい？</div>
+    <div class="faq-a">A. MONKOSは本人同一性90%以上保持の独自損失関数と、出力物の規格適合をAIで自動検査する3段階パイプラインを持ちます。14カ国29サービスで唯一の構造です。</div>
+  </div>
+  <div class="faq">
+    <div class="faq-q">Q. AI生成の写真はパスポートで却下されない？</div>
+    <div class="faq-a">A. MONKOSはリアルタイムセルフィーのみ入力、ICAO国際規格準拠、AI品質検査を備え、2026年1月の米国却下ルールに構造的対応します。</div>
+  </div>
+  <div class="faq">
+    <div class="faq-q">Q. 処理時間はどのくらい？</div>
+    <div class="faq-a">A. コーチング撮影→AIリタッチ→ダウンロードまで3分以内で1枚完成します。</div>
+  </div>
+
+  <div class="hero-cta">
+    <a href="/prep" class="cta-btn">MONKOSのAI証明写真を体験する →</a>
+    <p class="price">1枚¥990 · 初回ログイン10クレジット無料</p>
+  </div>
+
+  <footer>
+    <p>Business: MONK STUDIO | CEO: Shin JeongKyu | Email: info@monkos.ai</p>
+    <p><a href="/tokusho.html">特定商取引法に基づく表記</a> · <a href="/privacy.html">Privacy Policy</a> · <a href="/terms.html">Terms of Service</a></p>
+  </footer>
+</div>
+</body>
+</html>

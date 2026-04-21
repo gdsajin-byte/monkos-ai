@@ -729,11 +729,17 @@ app.get('/sitemap.xml', (req, res) => {
   const base = 'https://idphoto-jp.monkos.ai';
   const today = new Date().toISOString().slice(0, 10);
   const urls = [
-    { loc: '/',                   priority: '1.0', changefreq: 'weekly',  lastmod: today },
-    { loc: '/app',                priority: '1.0', changefreq: 'weekly',  lastmod: today },
-    { loc: '/camera',             priority: '0.9', changefreq: 'weekly',  lastmod: today },
-    { loc: '/prep',               priority: '0.8', changefreq: 'monthly', lastmod: today },
-    { loc: '/policy/data',        priority: '0.4', changefreq: 'yearly',  lastmod: '2026-03-08' },
+    { loc: '/',                         priority: '1.0', changefreq: 'weekly',  lastmod: today },
+    { loc: '/app',                      priority: '1.0', changefreq: 'weekly',  lastmod: today },
+    { loc: '/camera',                   priority: '0.9', changefreq: 'weekly',  lastmod: today },
+    { loc: '/prep',                     priority: '0.8', changefreq: 'monthly', lastmod: today },
+    // Phase 2.1 — 日本コアキーワード ランディング (2026-04-21)
+    { loc: '/guide/shukatsu',           priority: '0.9', changefreq: 'monthly', lastmod: today },
+    { loc: '/guide/app-comparison',     priority: '0.9', changefreq: 'monthly', lastmod: today },
+    { loc: '/guide/ai',                 priority: '0.9', changefreq: 'monthly', lastmod: today },
+    { loc: '/specs/passport',           priority: '0.9', changefreq: 'monthly', lastmod: today },
+    { loc: '/specs/drivers-license',    priority: '0.9', changefreq: 'monthly', lastmod: today },
+    { loc: '/policy/data',              priority: '0.4', changefreq: 'yearly',  lastmod: '2026-03-08' },
   ];
   const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
     urls.map(u => `  <url>\n    <loc>${base}${u.loc}</loc>\n    <lastmod>${u.lastmod}</lastmod>\n    <changefreq>${u.changefreq}</changefreq>\n    <priority>${u.priority}</priority>\n  </url>`).join('\n') +
@@ -751,6 +757,13 @@ app.get('/result', (req, res) => res.sendFile(join(__dirname, 'public/result.htm
 app.get('/thankyou', (req, res) => res.sendFile(join(__dirname, 'public/thankyou.html')));
 app.get('/charge', (req, res) => res.sendFile(join(__dirname, 'public/charge.html')));
 app.get('/policy/data', (req, res) => res.sendFile(join(__dirname, 'public/policy-data.html')));
+
+// Phase 2.1 — 日本コアキーワード ランディングページ (2026-04-21)
+app.get('/guide/shukatsu',        (req, res) => res.sendFile(join(__dirname, 'public/guide/shukatsu.html')));
+app.get('/guide/app-comparison',  (req, res) => res.sendFile(join(__dirname, 'public/guide/app-comparison.html')));
+app.get('/guide/ai',              (req, res) => res.sendFile(join(__dirname, 'public/guide/ai.html')));
+app.get('/specs/passport',        (req, res) => res.sendFile(join(__dirname, 'public/specs/passport.html')));
+app.get('/specs/drivers-license', (req, res) => res.sendFile(join(__dirname, 'public/specs/drivers-license.html')));
 
 // 静的ファイル配信 (JS/CSS キャッシュ無効 — モバイルブラウザ強制更新)
 app.use(express.static(join(__dirname, 'public'), {
