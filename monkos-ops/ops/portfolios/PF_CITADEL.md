@@ -97,6 +97,9 @@ status: active
 | 4/10 | 막내1+2 | **3서비스 prod 배포** (portal+idphoto-kr+idphoto-jp) + CDP 재검증 전 건 통과 | 배포 완료, `a247c3c` | ✅ |
 | 4/10 | 민아 | **GSC 색인 재요청 19건** (포탈 9건 + 다국어 6건 + specs 4건) 전수 제출 | GSC 우선순위 크롤링 대기열 추가 확인 | ✅ |
 | 4/19 | 민아 | **강한소상공인 v3 사업계획서 §4 실측 수치 확보** — GA/GSC/Ads CDP 직접 캡처. 일본 사용자 +33.7%(28일), GSC 노출 실측. §4-2 v1(기술 과적재) 확인 → v2(타임라인+실측지표) 드래프트(`/tmp/idea42v2.html`). PF_CITADEL·PF_PORTAL·PF_SPREAD 전수 파악 완료 | 세션 로그 `2026-04-19_iMac_민아.md` | ⏳ §4-2 v2 삽입 미완 |
+| 4/21 | 민아 | **Phase 2 전환 제안서 발행** — 4/21 CDP 실측 기반. 일본 28일 노출 49/클릭 8 정체, 404 33개 잔존, idphoto-jp/kr sitemap URL 1개씩 치명 발견. 3단 로드맵(즉시/이번달/다음분기) + 논의 포인트 6건. 작가님 지시: "쌍아가 나와 논의하고 지시서로 환급" | [PROPOSAL_20260421_민아_CITADEL_Phase2_색인누수차단+일본타깃정밀화](../proposals/PROPOSAL_20260421_민아_CITADEL_Phase2_색인누수차단+일본타깃정밀화.md) | ✅ 지시서 환급 |
+| 4/21 | 쌍아→막내1(막내3 재활용) | **Phase 2.0 지시서 발행**: idphoto-jp/kr sitemap 누수 차단 + 404 원인 분류 + 재색인 요청 | [ORDER_20260421_iMac쌍아_막내1_CITADEL_Phase20_색인누수차단](../orders/2026-04/ORDER_20260421_iMac쌍아_막내1_CITADEL_Phase20_색인누수차단.md) | ✅ |
+| 4/21 | 막내3 | **Phase 2.0 실행**: idphoto-jp/kr sitemap 1→5 URL 확장(`/`, `/app`, `/camera`, `/prep`, `/policy/data`). prod 배포 jp rev **00107-5kx** + kr rev **00181-2v6**. 10/10 URL HTTP 200 실측. 404 33건 전수 수집·카테고리 분류(B1 vol 슬러그 10건·B2 언어 교차오염 4건·B3 번역 유령 17건·B4 레거시 2건 — **전부 portal 블로그 기원, idphoto 직접 관련 없음**). GSC sitemap 재제출 시도(UI 반영 비동기), URL 색인 요청 자동화 실패(deep link 404) | server.js 양 서비스 | ⚠️ 부분 완료 — 10+ 미달(SPA L1 5개 물리적 한계, 2.1 L1 랜딩 신설 필요), GSC 재크롤 대기(24-72h), portal hreflang 로직 수정 별건 권고 |
 
 ---
 
