@@ -610,7 +610,7 @@ export async function faqFragment(req, forceLang = null) {
     categories[cat].push(item);
   }
 
-  const faqJsonLd = JSON.stringify({
+  const faqJsonLd = items.length ? JSON.stringify({
     "@context": "https://schema.org",
     "@type": "FAQPage",
     "mainEntity": items.map(item => ({
@@ -621,7 +621,7 @@ export async function faqFragment(req, forceLang = null) {
         "text": item.answer,
       }
     }))
-  });
+  }) : '';
 
   const canonicalPath = lang === 'ko' ? '/faq' : `/${lang}/faq`;
   const canonicalUrl = `https://monkos.ai${canonicalPath}`;
@@ -639,7 +639,7 @@ export async function faqFragment(req, forceLang = null) {
 <meta property="og:type" content="website">
 <meta property="og:url" content="${canonicalUrl}">
 <link rel="canonical" href="${canonicalUrl}">
-<script type="application/ld+json">${faqJsonLd}</script>`;
+${faqJsonLd ? `<script type="application/ld+json">${faqJsonLd}</script>` : ''}`;
 
   const faqHtml = Object.entries(categories).map(([cat, faqs]) => `
       <div class="faq-category">
@@ -1745,8 +1745,8 @@ export function specsDetailFragment(slug, forceLang = null) {
   // FAQ 데이터
   const faqs = specData.faqs[lang] || specData.faqs.ko || [];
 
-  // JSON-LD 트리플 스택
-  const specsJsonLd = JSON.stringify([
+  // JSON-LD 트리플 스택 (FAQPage는 faqs 존재 시만 삽입 — GSC mainEntity 누락 방어)
+  const specsJsonLdArr = [
     {
       "@context": "https://schema.org",
       "@type": "Article",
@@ -1756,7 +1756,7 @@ export function specsDetailFragment(slug, forceLang = null) {
       "datePublished": "2026-03-26",
       "dateModified": "2026-03-26",
     },
-    {
+    ...(faqs.length ? [{
       "@context": "https://schema.org",
       "@type": "FAQPage",
       "mainEntity": faqs.map(f => ({
@@ -1764,7 +1764,7 @@ export function specsDetailFragment(slug, forceLang = null) {
         "name": f.q,
         "acceptedAnswer": { "@type": "Answer", "text": f.a },
       })),
-    },
+    }] : []),
     {
       "@context": "https://schema.org",
       "@type": "HowTo",
@@ -1778,7 +1778,8 @@ export function specsDetailFragment(slug, forceLang = null) {
         { "@type": "HowToStep", "position": 4, "name": lang === 'ja' ? 'ダウンロード' : lang === 'en' ? 'Download' : '다운로드', "text": lang === 'ja' ? '完成写真をダウンロード' : lang === 'en' ? 'Download the finished photo' : '완성 사진 다운로드' },
       ],
     },
-  ]);
+  ];
+  const specsJsonLd = JSON.stringify(specsJsonLdArr);
 
   const seoMeta = `<meta property="og:title" content="${escapeHtml(title)}">
 <meta property="og:description" content="${escapeHtml(description)}">
