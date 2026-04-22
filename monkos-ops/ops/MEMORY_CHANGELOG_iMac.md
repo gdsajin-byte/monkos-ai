@@ -203,3 +203,22 @@
 ### 변경 없음
 - 다른 섹션 무변경
 - 200줄 캡 여유
+
+---
+
+## 2026-04-22 18:21 KST — 강한소상공인 v7/v8 대편집 + GSC 조사 + 제안서 (iMac/민아)
+
+### 신규 메모리 (2건)
+1. **`memory/project_monkos_org_structure.md`** — MONKOS 조직 구성: 팀 4명 ≠ 상시 고용 2명 (대표·배우자 경영진 제외, 배재인 KOITA 자격용 조카 서류 등재). 사업계획서 고용 수치 산정 시 필수 구분. (§6-2 2025 0명 오진단 방지)
+2. **`memory/feedback_mcp_over_cdp_for_docs.md`** — Google Docs/Sheets 편집은 공식 MCP(`insertText`/`deleteRange`/`insertTable`)가 CDP 키입력보다 압도적. 4/17 CDP 전체교체 5시간 헛발질 vs 4/22 MCP 섹션 단위 정밀 편집 수 분 완결.
+
+### MEMORY.md 인덱스 2행 추가
+- 조직 구성 + MCP 우선 두 메모리 인덱스 추가
+
+### 오늘 주요 산출물 (세션로그 상세)
+- Docs v7 (백업 봉인) + v8 (Phase 2까지) 생성
+- 제안서 1건 (GSC/GA4 상시 연결, 쌍아 답신 대기)
+- 리포트 2건 (v7 전수감사, 정본 진단 로드맵)
+
+### 변경 없음
+- 다른 섹션 무변경 · 200줄 캡 여유
