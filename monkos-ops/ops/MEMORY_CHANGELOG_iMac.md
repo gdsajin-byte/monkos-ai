@@ -222,3 +222,28 @@
 
 ### 변경 없음
 - 다른 섹션 무변경 · 200줄 캡 여유
+
+---
+
+## 2026-04-22 19:43 KST — 철학 대화 연쇄 + 운영 원칙 재정립 (보조 엔트리)
+
+### 주요 변경
+1. `memory/user_monk_ai_philosophy.md` 대폭 확장 (11 섹션) — 🟡 **PHIL 재분류 어젠다로 등록**
+   - 섹션 1~10 중 상당수가 `governance/philosophy/aphorisms/PHIL_YYYYMMDD_주제.md` 포맷으로 이관될 대상
+   - 민아가 체계 무지로 memory 에만 쌓은 것. 체계 파악 완료 후 재분류 예정
+
+### PHIL 체계 파악 결과
+- 경로: `governance/philosophy/` (PHILOSOPHY.md 89건 + aphorisms/ 167건 + indexes/)
+- 파일명: `PHIL_YYYYMMDD_주제.md`
+- 양식: id·date·author·tags·source frontmatter + 원문/맥락/해석
+
+### 어젠다 — 다음 세션 실행
+- memory/user_monk_ai_philosophy.md → 3건 PHIL 파일로 응축 이관
+  - PHIL_20260422_빌더와분업 (섹션 6+8+9)
+  - PHIL_20260422_95%함정과79리팩토링 (섹션 2+3+4)
+  - PHIL_20260422_헌법은레일과기록이우리자체 (섹션 11+10+이번 "기록=우리 자체" 선언)
+- memory 파일 경량화 (체크리스트·운영 지침만 남김)
+- MEMORY.md 인덱스 리네이밍
+
+### 변경 없음
+- 다른 섹션 무변경
