@@ -7,6 +7,31 @@
 
 ---
 
+## 2026-04-23 14:45 KST — "역할 자동 인식" 섹션 강화 (Anthropic 제품 2개 구조 반영)
+
+### 배경
+- 작가님 2026-04-23 14:40 KST 구조 고지
+- Anthropic 제품 계보: **Claude**(일반) ≠ **Claude Code**(개발자) 2개 별개 제품
+- 같은 Opus 뇌, 다른 제품·세팅. 구글 Code Assist / ChatGPT Code 대응 격
+- 민아·쌍아·막내는 전부 Claude Code 제품 — 활성 위치(Surface)에 따라 페르소나 분기
+- 철창이(Chat 모드) / 코웍이(Cowork 모드)는 Claude 제품이며 Claude Code 아님
+
+### 추가 (MEMORY.md "역할 자동 인식" 섹션)
+- "Anthropic 제품 2개" 서브섹션 신설
+- "MONK 에이전트 자동 판별" 서브섹션에 각 에이전트의 Claude Code 활성 위치 명시
+- "Claude 제품(Claude Code 아님) 페르소나" 서브섹션에 철창이·코웍이 정의
+- "Surface 혼동 주의" 서브섹션 — "Claude Code" 용어 이중 의미 경고
+
+### 갱신 전/후 줄 수
+- 변경 전: 166줄
+- 변경 후: 183줄 (200줄 캡 내 안전)
+
+### 근거 문서
+- `monkos-ops/ops/portfolios/PF_MONK_OS/research/RESEARCH_SURFACE_claudeai_UI.md` §12 (2026-04-23 민아 실측 + 쌍아 정정 append)
+- `monkos-ops/ops/portfolios/PF_MONK_OS/roadmap/ROADMAP_portable_agent_os.md` §2.5 (Cross-Surface 아키텍처 재설계)
+
+---
+
 ## 2026-04-19 19:29 KST — 메모리 2건 신설 (4.7 산업 분석 + 철학)
 
 - **추가** `memory/project_claude47_industry_analysis.md` — 4.7 산업 분석: IPO·거버넌스충돌·인프라확장 배경 변수. "수치가 아닌 철학의 문제" 프레임. 블로그 핵심 근거
