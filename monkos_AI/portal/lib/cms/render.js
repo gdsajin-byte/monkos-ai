@@ -57,6 +57,7 @@ function layoutHead(title, description, extra = '', htmlLang = 'ko') {
   gtag('js', new Date());
   gtag('config', 'G-JPZWSJ3323');
   gtag('config', 'G-FKG0CPTC14');
+  (function(){var d=['chatgpt.com','perplexity','claude.ai','gemini.google','copilot'];var r=document.referrer||'';if(d.some(function(s){return r.includes(s)})){var e=r.includes('chatgpt')?'chatgpt':r.includes('perplexity')?'perplexity':r.includes('claude.ai')?'claude':r.includes('gemini.google')?'gemini':r.includes('copilot')?'copilot':'other_ai';gtag('event','ai_referral_landing',{'ai_engine':e,'landing_page':location.pathname})}})();
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">

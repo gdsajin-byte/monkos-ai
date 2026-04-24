@@ -250,6 +250,14 @@ const httpServer = createServer(async (req, res) => {
     return res.end();
   }
 
+  // === /app → idphoto 서비스 리다이렉트 (ChatGPT referral 404 해소) ===
+  if (urlPath === '/app' && req.method === 'GET') {
+    const acceptLang = req.headers['accept-language'] || '';
+    const target = acceptLang.startsWith('ja') ? 'https://idphoto-jp.monkos.ai/' : 'https://idphoto-kr.monkos.ai/';
+    res.writeHead(302, { 'Location': target });
+    return res.end();
+  }
+
   if ((urlPath === '/' || urlPath === '/index.html') && req.method === 'GET') return renderHome(req, res);
   // 다국어 홈 라우트 (/ja/, /en/ → 경로 방식 통일)
   if ((urlPath === '/ja' || urlPath === '/ja/') && req.method === 'GET') return renderHome(req, res, 'ja');
