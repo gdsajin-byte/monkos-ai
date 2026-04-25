@@ -54,6 +54,10 @@ status: active
 | 03/26 | 쌍아 | PF_CROP 스냅샷 생성 (소급 불적용) | 본 문서 | ✅ |
 | 04/08 | 쌍아→막내 | **크롭앱 오프라인 번들 제작** + FaceMesh 디버깅 완료 (USB 시연용) | ORDER, 세션 로그 | ✅ |
 | 04/08 | 막내 | **Electron Win 빌드** — 크롭앱 오프라인 실행 정상 동작 확인 | ORDER, 세션 로그 | ✅ |
+| 04/25 | 막내2 | 크롭앱 코드 + 26국 정합성 전수 조사 — SPECS 객체 한국 2종 하드코딩, specs-data 미연결 확인 | [REPORT](../reports/REPORT_20260425_막내2_크롭앱구조및규격정합성.md) | ✅ |
+| 04/25 | 막내3 | 26국 공식 규정 세부 조사 + 정수리·얼굴비율·여백 + A/B/C 그룹 분류 | [REPORT](../reports/REPORT_20260425_막내3_26국증명사진규정세부조사.md) | ✅ |
+| 04/25 | 막내3 | 오류 판정 정밀 재검증 — 4건 중 2건 오탐 확정 (korea 안경, india 35×45 현행 정확) | [REPORT](../reports/REPORT_20260425_막내3_오류판정정밀재검증.md) | ✅ |
+| 04/25 | 쌍아 | **PF_CROP Phase 1.5 신설** — specs 26국 ↔ 크롭앱 연동 설계 (URL 파라미터 + SPECS 확장 + 카드 진입 동선) | 본 문서 §3 Phase 1.5 | ⏳ 설계중 |
 
 ---
 
@@ -81,6 +85,48 @@ status: active
 | 특허 출원 | ❌ | — | 미착수 |
 | 오프라인 번들 (USB 시연용) | ✅ | 막내 4/8 | FaceMesh 정상 |
 | Electron Win 빌드 | ✅ | 막내 4/8 | 오프라인 실행 확인 |
+
+### Phase 1.5 — specs 26국 ↔ 크롭앱 연동 ⏳ 설계중 (04-25 신설)
+
+> 작가님 디렉션: "규격 가이드 카드 누르면 해당 수치가 자동 입력되고 크롭앱이 그에 맞게 크롭". specs 26국 데이터를 크롭앱 프리셋으로 연결 + 커스텀 px 입력 개설.
+
+#### 현황 진단 (막내2·3 리포트 종합)
+
+- 크롭앱 SPECS 객체: 한국 2종(passport 35×45, id 30×40)만 하드코딩
+- specs-data.json: 26국 완비 (사이즈·px·DPI·headHeight·배경)
+- 양쪽 데이터 통합 부재 — 동일 정보가 두 군데에서 따로 관리됨
+- 크롭 로직 3그룹 (막내3 분류):
+
+**A그룹 — ICAO 35×45 표준 10종** (공통 파라미터 1세트)
+korea-passport, korea-resident, korea-drivers-license, japan-passport, japan-mynumber, eu-passport, eu-resume, australia-passport, singapore-passport, thailand-passport
+
+**B그룹 — 사이즈만 다름 12종** (종별 비율 오버라이드)
+korea-resume, korea-halfcard (30×40), japan-resume, japan-halfcard, japan-zairyu (30×40), canada-passport (50×70), vietnam-passport (40×60), china-passport (33×48), china-resume 1寸 (25×35), china-resume 2寸 (35×49), germany-resume (45×60), spain-DNI (26×32)
+
+**C그룹 — 특수 규정 4종** (별도 로직)
+us-passport (51×51 정사각형), india-passport (51×51, 단 우리 정본은 35×45 여권 — 51×51은 비자), indonesia-passport (40×60 흰색 — 적색 KTP 별건), uk-passport (정수리=모발제외 두개골 기준)
+※ usa-headshot은 비표준 자유 사이즈 → 커스텀 입력 영역 (그룹 외)
+※ spain-여권(35×45)은 A그룹, spain-DNI(26×32)는 B그룹
+- 정수리 인식: FaceMesh 직접 감지 아님, 눈~턱 1:1 반전 추정 + 사용자 수동 보정
+
+#### 작업 트랙
+
+| # | 항목 | 상태 | 담당 | 비고 |
+|---|------|------|------|------|
+| 1.5-A | specs-data.json 보정 (indonesia 사이즈, uk headHeight·background) | ⏳ | 막내1 | [ORDER](../orders/ORDER_20260425_iMac쌍아→막내1_specs데이터보정.md) |
+| 1.5-B | crop.js SPECS 객체 → specs-data.json import 전환 | ❌ | — | 단일 정본 원칙 |
+| 1.5-C | 크롭앱 URL 파라미터 처리 (`/crop?spec=korea-passport`) | ❌ | — | 카드 진입 동선 |
+| 1.5-D | specs-data.json에 cropConfig 필드 추가 (faceRatio·topMargin·bottomMargin 등) | ❌ | — | 26국 크롭 파라미터 정본 |
+| 1.5-E | /specs/{slug} 페이지에 "이 규격으로 크롭" CTA 신설 | ❌ | — | specs → 크롭앱 동선 |
+| 1.5-F | 크롭앱에 커스텀 px 입력 필드 (headshot·이력서 자유 사이즈 대응) | ❌ | — | usa-headshot 같은 비표준 |
+| 1.5-G | A/B/C 그룹별 크롭 로직 분기 구현 | ❌ | — | C그룹 정사각형 별도 처리 |
+
+#### 설계 원칙
+
+1. **단일 정본**: specs-data.json이 모든 규격 정보의 정본. crop.js는 import해서 사용
+2. **SEO 보존**: /specs 페이지의 Article+FAQPage+HowTo 스키마 유지 (4/24 AEO 1단계 자산)
+3. **점진 적용**: A그룹(ICAO 표준 10종)부터 우선 적용 후 B·C 그룹 확장
+4. **백워드 호환**: 기존 한국 2종 크롭 로직 동작 유지
 
 ### Phase 2 — 크롭 엔진 고도화 (미착수)
 

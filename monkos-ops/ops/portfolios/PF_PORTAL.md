@@ -60,7 +60,23 @@ status: active
 | 04/08 | 막내 | **deploy.sh 시크릿 근본 수정** (4개 서비스: portal/idphoto-kr/idphoto-jp/studio) + 팀봇 토스키 dev 오탐 방지 | `2453d3f` | ✅ |
 | 04/08 | 쌍아 | **법률 ch5 배포 규칙 개정** + `.claude/rules/deployment.md` 신설 | `4f71cbc` | ✅ |
 | 04/10 | 민아·쌍아 | 🚨 **INCIDENT**: 4f71cbc 잠복 폭탄 발현 — GCS_BUCKET 오기(`monkos-shared`)로 이미지 뱅크 ~10시간 무력화 + ADMIN_UIDS 빈값으로 admin 권한 무방비 노출 | rev 00223-llj(GCS), 00224-5m5(ADMIN), [INCIDENT REPORT](../reports/2026-04/REPORT_20260410_iMac쌍아_INCIDENT_GCS_BUCKET+ADMIN_UIDS_사고.md) | ✅ 1차 봉인 |
-| 04/10 | 쌍아→막내1 | 통합 지시서: deploy.sh 4파일 잠복 폭탄 제거 + admin/js 401 위장 머지 (Layer 2) | [ORDER](../orders/2026-04/ORDER_20260410_iMac쌍아_막내_4f71cbc잠복폭탄제거+admin401위장머지.md) | ⏳ 막내1 작업 대기 |
+| 04/10 | 쌍아→막내1 | 통합 지시서: deploy.sh 4파일 잠복 폭탄 제거 + admin/js 401 위장 머지 (Layer 2) | [ORDER](../orders/2026-04/ORDER_20260410_iMac쌍아_막내_4f71cbc잠복폭탄제거+admin401위장머지.md) | ✅ |
+| 04/11 | 막내1 | **INCIDENT Layer 2 봉인** — 4f71cbc 잠복 폭탄 제거 + admin/js 401 위장 패턴 통합 수정 | `500c2e1` | ✅ |
+| 04/11 | 막내1 | portal/deploy.sh `.env` 의존 제거 — 비시크릿값 직접 하드코딩 (재발 방지) | `d86217a` | ✅ |
+| 04/13 | 막내 | hreflang 조건부 생성 — 유령 URL 근절 + blogRedirects 3건 추가 | `d6d9fed` | ✅ |
+| 04/21 | 쌍아 | **매출 0 전수분석** (내부 전환 + 외부 돌파구 + 결제퍼널 정합성 실측) | [REPORT 3건](../reports/) | ✅ |
+| 04/21 | 막내1 | **CITADEL Phase 2.0/2.1** — 일본 L1 랜딩 5개 신설(`/guide/shukatsu`, `app-comparison`, `ai`, `/specs/passport`, `drivers-license`) + sitemap 1→10 확장 | rev 00108-ngl | ✅ |
+| 04/22 | 막내1 | **GCP 인프라 감사** + PUBLIC 버킷 맥락 확인 + 포털 FAQ 구조화 데이터 수정 | `97b7f8c`, `28a665a` | ✅ |
+| 04/23 | 민아 | **GA4·GSC MCP 정비완결** + Ads 병목 진단 | [REPORT](../reports/REPORT_20260423_민아_GA4_GSC_MCP_정비완결+Ads_병목진단.md) | ✅ |
+| 04/24 | 쌍아 | **총체 진단** — GA 30일 실측 (portal 255 / idphoto-kr 1,587 / idphoto-jp 265 / **결제 0건**) + 5대 병목 도출 + 막내 4기 일괄 지시서 | `98f9ba2` | ✅ |
+| 04/24 | 막내1 | **idphoto 퍼널 UX 진단 + 히어로 개편** (KR/JP 동시) — 결과물 3장 + 신뢰지표 + 3단계 + "왜 MONKOS인가" 신설 | [COMPLETION](../completions/COMPLETION_20260424_막내1_퍼널UX진단.md) | ✅ |
+| 04/24 | 막내2 | **결제 플로우 기술 점검** + AI referral 추적 스크립트 4서비스 + AEO 트랙 3·4·5 정합성 검토 | [COMPLETION 3건](../completions/) | ✅ |
+| 04/24 | 막내3 | **SEO 기술 인프라** 즉시 수정 (idphoto sitemap dead file 식별, server.js 동적 생성 정본 확인) | — | ✅ |
+| 04/24 | 막내4 | **콘텐츠 파이프라인** 오가닉 기반 — 블로그 4편 추가 | — | ✅ |
+| 04/24 | 막내1 | **AEO 1단계** — `/app` 404→리다이렉트 + `/crop` FAQ 스키마 + AI referral 추적 4서비스 + /specs 26국 Article+FAQPage+HowTo 스키마 완비 | `4da28dc`, [COMPLETION](../completions/COMPLETION_20260424_막내1_app404_crop_FAQ.md) | ✅ |
+| 04/24 | 작가님 승인 | **prod 배포** — idphoto-kr/jp + portal + studio (`deploy.sh prod`) | `cedadb3`, `0559d8f` | ✅ |
+| 04/25 | 민아 | **포털 4트랙 개편 기안서 발행** — 헤더(브랜드 보존+듀얼CTA) + nav 슬림화(specs 신설) + 본문 specs 5권역 카드 + 우측 사이드바 한송이 쇼츠 썸네일화 | [PROPOSAL](../proposals/PROPOSAL_20260425_민아_포털전체개편_기안서.md) | ⏳ 검토중 |
+| 04/25 | 작가님 디렉션 | **방향 전환 — iCloud.com 스타일 메인 전면 카드 그리드** (12장 내외 타일). 트랙 1·3 통합 흡수. 철창이 JSX 시안 발주. | [BRIEFING](../proposals/BRIEFING_20260425_민아→철창이_포털메인_카드그리드_JSX의뢰.md) | ⏳ 시안 대기 |
 
 ---
 
@@ -112,6 +128,38 @@ status: active
 | 포털 홈 i18n 전면 보강 | ✅ | 막내 | `0e67f4d` |
 | 잔여 미번역 영역 보정 | ⏳ | 막내 | 지속 |
 
+### Phase 6 — SEO/AEO 인프라 완비 ✅ 완료 (04/24)
+
+> 매출 0건 전수분석(4/21)을 기점으로 SEO 사각지대 일제 보강. 검색 의도 강한 콘텐츠를 사이트맵·스키마·다국어 라우팅에 모두 등재.
+
+| 항목 | 상태 | 담당 | 비고 |
+|------|------|------|------|
+| hreflang 조건부 생성 + 유령 URL 근절 | ✅ | 막내 | `d6d9fed` (4/13) |
+| 매출 0 전수분석 (내부 전환 + 외부 돌파구 + 결제퍼널) | ✅ | 쌍아 | REPORT 3건 (4/21) |
+| CITADEL Phase 2.0/2.1 — 일본 L1 랜딩 5개 + sitemap 1→10 | ✅ | 막내1 | rev 00108-ngl (4/21) |
+| 포털 FAQ 구조화 데이터 수정 + GCP 인프라 감사 | ✅ | 막내1 | `97b7f8c`, `28a665a` (4/22) |
+| GA4/GSC MCP 정비완결 + Ads 병목 진단 | ✅ | 민아 | REPORT (4/23) |
+| GA 30일 실측 + 5대 병목 도출 | ✅ | 쌍아 | `98f9ba2` (4/24) |
+| AEO 1단계 — /specs 26국 Article+FAQPage+HowTo 스키마 + /crop FAQ + /app 404→리다이렉트 + AI referral 추적 4서비스 | ✅ | 막내1 | `4da28dc` (4/24) |
+| 결제 플로우 기술 점검 + 정상 작동 확인 (Firestore 38건 실측) | ✅ | 막내2 | COMPLETION (4/24) |
+
+### Phase 7 — 포털 IA 전체 개편 ⏳ 검토중 (04/25 시작)
+
+> Phase 6에서 **자산은 완비됐으나 노출 부재**가 핵심 문제로 식별 (작가님 4/25 직접 지적: specs 26국이 nav 진입로 0). 포털 IA(헤더·nav·본문·우측 사이드바) 4축 동시 개편으로 자산 가시화 + 전환 강화.
+
+> **4/25 15:53 작가님 디렉션 — 방향 전환**: 트랙 1·3을 분리하지 않고 **iCloud.com 스타일 메인 전면 카드 그리드**로 통합. 12장 내외 카드(서비스 2 + 규격 5 + 가격·FAQ + 블로그 + 쇼츠 2)로 메인 재구성. 철창이 JSX 시안 발주.
+
+| 트랙 | 항목 | 상태 | 담당 | 비고 |
+|------|------|------|------|------|
+| **T1+T3 통합** | **iCloud 스타일 메인 카드 그리드** (12장 / 4×3) — 헤더 슬림화 + 메인 전면 카드화 (서비스·규격·콘텐츠·가이드 진입로 통합) | ⏳ JSX 시안 대기 | 철창이 1차 → 민아·작가님 검토 → 막내 컨버트 | [BRIEFING](../proposals/BRIEFING_20260425_민아→철창이_포털메인_카드그리드_JSX의뢰.md) |
+| T2 | 네비게이션 슬림화 — 6개 → 5개 + **/specs 신설** (갤러리·게시판 푸터 강등) | ⏳ 검토중 | 막내 실행 | B안 |
+| T4 | 우측 사이드바 — 한송이 쇼츠 썸네일 카드 (카드 그리드에 카드 #11·#12로 통합) | ⏳ 영상 URL 대기 | 작가님 영상 URL 수령 후 | 카드 #11 증명사진 사용법 / #12 크롭앱 사용법 |
+| — | 철창이 JSX 1차 시안 수령 | ⏳ 대기 | 철창이 | 작가님이 채팅 toss |
+| — | 작가님 + 민아 시안 검토 (필요 시 2~3회 반복) | ⏳ 대기 | 작가님·민아 | — |
+| — | 쌍아 영향평가 + 헌법·법률 충돌 점검 | ⏳ 대기 | 쌍아 | 통상 검토 |
+| — | 막내 컨버트 — JSX 시안 → `index.html` + `portal.css` | ⏳ 대기 | 쌍아→막내 | `monkos_AI/portal/deploy.sh prod` |
+| — | 라이브 검증 + GA 이벤트 추적 (카드별 클릭) | ⏳ 대기 | 민아 | 배포 후 |
+
 ---
 
 ## 4. 성과
@@ -125,6 +173,13 @@ status: active
 | 블로그 에디터 모듈 수 | 9파일 (ESM) | 03-20 | v2.0 |
 | 블록 에디터 블록 수 | 15종 | 03-23 | Phase 0 |
 | 다국어 지원 | KR/JP/EN | 03-23 | i18n SSR |
+| **GA 30일 실측** — 총 유저 | 2,107명 | 04-24 | 3/24~4/24 (idphoto-kr 1,587 / idphoto-jp 265 / **portal 255**) |
+| 유입 비중 | Paid 81% / Organic 2% (41명) | 04-24 | 오가닉 채널 부재 — Phase 6 동기 |
+| idphoto-kr 퍼널 | 랜딩 1,997 → prep 130(6.5%) → camera 69 → result 37 → charge 18 → thankyou 5 → **결제 0** | 04-24 | 5대 병목 도출 |
+| Firestore 결제 실데이터 | 38건 (작가님 테스트 29 + 외부 9) | 04-24 | 시스템 정상 / 외부 결제 사실상 0 |
+| sitemap URL | 1 → **10** | 04-21 | CITADEL Phase 2.0/2.1 |
+| /specs 스키마 | **26국 Article+FAQPage+HowTo 완비** | 04-24 | AEO 1단계 |
+| 블로그 발행수 | 208건 (KR/JP/EN 3언어) | 04-24 | Firestore 실측 |
 
 ---
 
@@ -144,6 +199,21 @@ status: active
 **원인**: 이중 스크롤 컨테이너 (뱅크 + 전체 페이지)
 **대응**: 스크롤 컨테이너 단일화 + z-index 정리
 
+### 교훈 3: deploy.sh `.env` 의존 잠복 폭탄 (4/10 INCIDENT)
+
+**현상**: 4f71cbc(4/8) 시점 deploy.sh 시크릿 근본 수정 이후 **GCS_BUCKET 오기 + ADMIN_UIDS 빈값**으로 이미지 뱅크 ~10시간 무력화 + admin 권한 무방비 노출
+**원인**: deploy.sh가 `.env`에 의존하는데 비시크릿 운영값(GCS_BUCKET, ADMIN_UIDS)도 `.env` 경유 → `.env` 누락/오타 시 빈값 주입. 시크릿과 비시크릿이 같은 채널에 섞여 있는 구조 자체의 결함
+**1차 봉인 (4/10)**: rev 00223-llj(GCS) + rev 00224-5m5(ADMIN)
+**Layer 2 (4/11)**: `500c2e1` 잠복 폭탄 통합 제거 + `d86217a` portal/deploy.sh `.env` 의존 제거 — 비시크릿값 직접 하드코딩으로 전환
+**교훈**: 비시크릿 운영값(버킷명, 관리자 UID 등)은 deploy.sh 내 직접 하드코딩이 정본. `.env`는 시크릿(API 키 등)에만 사용. 헌법 4조 1항을 비시크릿값까지 과확장하지 말 것 (`memory/feedback_constitution_overextension.md`)
+
+### 교훈 4: 자산은 있으나 노출 부재 (4/25 작가님 지적)
+
+**현상**: /specs 26국 데이터 + Article+FAQPage+HowTo 스키마 완비, 라이브 200 OK이나 포털 nav·본문 어디에도 진입 동선 없음. 검색 유입자도 다른 페이지로 못 옴
+**원인**: SEO 자산 구축(Phase 6)과 사이트 IA(Phase 0~3)가 시간차로 진행되며 통합 미흡. 자산 완성 시점에 노출 동선을 동시 갱신하지 않음
+**대응**: Phase 7(4/25~) — 헤더·nav·본문·우측 사이드바 4축 동시 개편으로 자산 가시화
+**교훈**: SEO/AEO 자산 완성과 사이트 IA 갱신은 같은 사이클에 묶어야 함. 자산 완성 보고 시 "노출 동선 검증"을 자동 체크리스트로 포함
+
 ---
 
 ## 6. 관련 문서 인덱스
@@ -157,6 +227,7 @@ status: active
 | `PROPOSAL_20260316_블록에디터통합_기안서.md` | 쌍아 | 블로그→블록 에디터 통합 | 승인 |
 | `PROPOSAL_20260322_민아_monkosAI_메인페이지_리디자인.md` | 민아 | 메인페이지 리디자인 v2 | 승인 |
 | `PROPOSAL_20260323_홈블록에디터_Phase0_기안서.md` | 쌍아 | 블록 에디터 Phase 0 | 승인 |
+| `PROPOSAL_20260425_민아_포털전체개편_기안서.md` | 민아 | 포털 IA 4트랙 개편 (Phase 7) | ⏳ 검토중 |
 
 ### 기술명세 (SPEC)
 
@@ -171,6 +242,25 @@ status: active
 |------|------|------|
 | 막내1 분기분석 PU-1,PU-2 | 막내1 | 포털+에디터 3/15~26 분석 |
 | 막내2 분기분석 P8,P9 | 막내2 | 포털v4+CMS 3/1~14 분석 |
+| `REPORT_20260410_iMac쌍아_INCIDENT_GCS_BUCKET+ADMIN_UIDS_사고.md` | 쌍아 | 4/10 INCIDENT 1차 봉인 보고 |
+| `REPORT_20260421_매출0_내부전환분석.md` | 쌍아 | 매출 0 내부 전환 전수분석 (4/21) |
+| `REPORT_20260421_매출0_외부돌파구분석.md` | 쌍아 | 외부 돌파구 분석 (4/21) |
+| `REPORT_20260421_결제퍼널_정합성실측.md` | 쌍아 | 결제 퍼널 정합성 실측 (4/21) |
+| `REPORT_20260422_PUBLIC버킷_맥락확인.md` | 막내1 | PUBLIC 버킷 맥락 확인 (4/22) |
+| `REPORT_20260422_GCP_Firebase_인프라감사.md` | 막내1 | GCP·Firebase 인프라 감사 (4/22) |
+| `REPORT_20260423_민아_GA4_GSC_MCP_정비완결+Ads_병목진단.md` | 민아 | GA4·GSC MCP 정비완결 + Ads 병목 (4/23) |
+
+### 완료보고 (COMPLETION)
+
+| 파일 | 주체 | 내용 |
+|------|------|------|
+| `COMPLETION_20260424_막내1_퍼널UX진단.md` | 막내1 | idphoto 히어로 개편 (KR/JP 동시) |
+| `COMPLETION_20260424_막내1_app404_crop_FAQ.md` | 막내1 | AEO 1단계 — /app·/crop 보강 |
+| `COMPLETION_20260424_막내1_AEO_트랙12_정합성검토.md` | 막내1 | AEO 제안서 트랙 1·2 정합성 검토 |
+| `COMPLETION_20260424_막내2_결제플로우점검.md` | 막내2 | 결제 정상 작동 확인 |
+| `COMPLETION_20260424_막내2_AI_referral_추적.md` | 막내2 | AI referral 추적 4서비스 |
+| `COMPLETION_20260424_막내2_AEO_트랙345_정합성검토.md` | 막내2 | AEO 제안서 트랙 3·4·5 정합성 검토 |
+| `COMPLETION_20260424_막내4_콘텐츠파이프라인.md` | 막내4 | 콘텐츠 파이프라인 오가닉 기반 |
 
 ### 커밋
 
@@ -192,3 +282,7 @@ status: active
 | 에디터 기술부채 (렉 재발) | 중 | ESM 모듈 분리 완료 — 모듈별 디버깅 가능 |
 | 블록 에디터 Phase 1 지연 | 중 | Phase 0 안정 확인 후 진행 |
 | 다국어 번역 품질 | 저 | 자동번역 후 수동 검수 파이프라인 |
+| **외부 결제 0건 (4/24 GA 30일 실측)** | 고 | Phase 7 IA 개편으로 specs 노출 + 헤더 듀얼 CTA 강화. 트랙별 GA 이벤트 추적으로 효과 검증 |
+| **deploy.sh 시크릿/비시크릿 혼용 재발** | 중 | portal/deploy.sh는 4/11 분리 완료. idphoto-kr/jp/studio 동일 패턴 점검 필요 (ch5 운영 점검) |
+| **Phase 7 트랙 4 (쇼츠) 영상 URL 미수령** | 저 | 트랙 1~3은 작가님 결정 즉시 진행 가능. 트랙 4는 영상 URL 수령 후 후속 분리 배포 가능 |
+| **자산-노출 시간차 재발** | 중 | 교훈 4 — SEO/AEO 자산 완성 보고에 "노출 동선 검증" 자동 체크리스트 도입 |

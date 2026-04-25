@@ -342,48 +342,29 @@ nav {
   height: calc(100vh - 38px);
   overflow-y: auto;
 }
-.guide-card { margin-bottom: 12px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); background: var(--white); }
-.guide-video {
-  width: 100%; height: 200px;
-  background: var(--deep);
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  position: relative; overflow: hidden;
+.guide-card {
+  display: block; text-decoration: none; color: inherit;
+  margin-bottom: 12px; border-radius: 12px; overflow: hidden;
+  border: 1px solid var(--border); background: var(--white);
+  transition: box-shadow 0.2s;
 }
-.guide-phone {
-  width: 80px; height: 140px;
-  border-radius: 10px;
-  border: 2px solid rgba(255,255,255,.2);
-  background: rgba(255,255,255,.05);
+.guide-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+.guide-thumb {
+  width: 100%; aspect-ratio: 9/16;
+  background-size: cover; background-position: center;
+  position: relative; border-radius: 8px 8px 0 0;
+}
+.play-overlay {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 32px; height: 32px; border-radius: 50%;
+  background: rgba(0,0,0,0.5); color: white;
   display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
 }
-.guide-phone .screen {
-  width: 64px; height: 112px; border-radius: 6px;
-  background: linear-gradient(180deg, #1a1a30, #0f0f20);
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center; gap: 4px;
-}
-.guide-phone .dot {
-  width: 6px; height: 6px; border-radius: 3px;
-  background: var(--accent-xl);
-  animation: pulse 1.5s ease infinite;
-}
-.guide-phone .bar { width: 40px; height: 3px; border-radius: 1px; background: rgba(255,255,255,.15); }
-@keyframes pulse { 0%, 100% { opacity: .4; } 50% { opacity: 1; } }
-.guide-step {
-  position: absolute; bottom: 8px; left: 8px; right: 8px;
-  display: flex; gap: 3px;
-}
-.guide-step span { flex: 1; height: 2px; border-radius: 1px; background: rgba(255,255,255,.15); }
-.guide-step span.active { background: var(--accent-xl); }
 .guide-label { padding: 8px 10px; }
-.guide-label h4 { font-size: 12px; font-weight: 800; margin-bottom: 2px; }
-.guide-label p { font-size: 10px; color: var(--ink-m); line-height: 1.3; }
-.guide-label .now {
-  display: inline-block; padding: 1px 5px; border-radius: 2px;
-  background: rgba(139,92,246,.08); color: var(--accent);
-  font-size: 7px; font-weight: 700; margin-top: 3px;
-}
+.guide-label h4 { font-size: 11px; font-weight: 600; line-height: 1.4; }
+.guide-meta { font-size: 9px; color: var(--ink-l); margin-top: 2px; }
 
 /* === Main Content === */
 .main { padding: 16px 22px; }
@@ -716,6 +697,23 @@ footer {
 .ft-links a { color: var(--ink-l); }
 .ft-links a.hl { color: var(--accent); font-weight: 600; }
 .ft-copy { text-align: center; font-size: 8px; color: var(--ink-xl); margin-top: 6px; }
+
+/* === Hero Sub === */
+.hero-sub { font-size: 13px; color: rgba(255,255,255,.55); letter-spacing: .02em; }
+
+/* === Specs Quick Section === */
+.specs-quick { margin: 2rem 0; }
+.specs-quick .sec-h { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+.specs-quick .sec-h h2 { font-size: 1.1rem; font-weight: 700; }
+.specs-quick .sec-h a { font-size: 0.85rem; opacity: 0.7; }
+.specs-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.75rem; }
+.spec-tile { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; text-align: center; text-decoration: none; color: inherit; transition: border-color 0.2s; }
+.spec-tile:hover { border-color: var(--accent); }
+.spec-tile .flag { font-size: 1.8rem; display: block; margin-bottom: 0.4rem; }
+.spec-tile h4 { font-size: 0.95rem; margin: 0 0 0.3rem; }
+.spec-tile p { font-size: 0.75rem; opacity: 0.6; margin: 0; line-height: 1.3; }
+@media (max-width: 768px) { .specs-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 480px) { .specs-grid { grid-template-columns: repeat(2, 1fr); } }
 
 /* === Responsive === */
 @media (max-width: 1024px) {

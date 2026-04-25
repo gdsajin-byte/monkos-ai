@@ -954,16 +954,16 @@
     "typeEn": "Passport",
     "typeJa": "UKパスポート",
     "size": "35 × 45 mm",
-    "pixels": "413 × 531px",
+    "pixels": "413 × 531px (인화) / 600 × 750px (디지털)",
     "dpi": 300,
-    "background": "흰색",
-    "headHeight": "32~36mm",
+    "background": "크림 또는 연회색",
+    "headHeight": "29~34mm",
     "validity": "6개월 이내",
     "fileSpec": "JPEG",
     "details": {
-      "ko": "영국 여권. 크림색 배경도 허용. ICAO 규격.",
-      "ja": "英国パスポート。クリーム色背景も可。",
-      "en": "UK passport. Cream background also accepted. ICAO standard."
+      "ko": "영국 여권. 인화: 크림/연회색 배경, 디지털: 최소 600×750px. 얼굴 높이(정수리~턱) 29~34mm.",
+      "ja": "英国パスポート。印刷：クリーム/薄灰色背景、デジタル：最低600×750px。顔の高さ29~34mm。",
+      "en": "UK passport. Print: cream/light grey background. Digital: min 600×750px. Head height (crown to chin) 29-34mm."
     },
     "rejectionReasons": {
       "ko": [
@@ -980,10 +980,12 @@
     },
     "ctaService": "idphoto-kr",
     "priority": 17,
+    "headHeightEn": "29-34mm",
+    "headHeightJa": "29~34mm",
     "validityEn": "Within 6 months",
     "validityJa": "6ヶ月以内",
-    "backgroundEn": "White",
-    "backgroundJa": "白"
+    "backgroundEn": "Cream or light grey",
+    "backgroundJa": "クリームまたは薄灰色"
   },
   "australia-passport": {
     "slug": "australia-passport",
@@ -1288,17 +1290,17 @@
     "type": "Paspor",
     "typeEn": "Passport",
     "typeJa": "パスポート",
-    "size": "35 × 45 mm",
-    "pixels": "413 × 531px",
+    "size": "40 × 60 mm",
+    "pixels": "472 × 708px",
     "dpi": 300,
     "background": "흰색",
     "headHeight": "머리 70~80%",
     "validity": "6개월 이내",
     "fileSpec": "JPEG",
     "details": {
-      "ko": "인도네시아 여권. ICAO 규격.",
-      "ja": "インドネシアパスポート。ICAO規格。",
-      "en": "Indonesian passport. ICAO standard."
+      "ko": "인도네시아 여권(Paspor). 4×6cm 흰색 배경. 히잡 허용, 안경 금지.",
+      "ja": "インドネシアパスポート。4×6cm白背景。ヒジャブ可、眼鏡不可。",
+      "en": "Indonesian passport. 4×6cm white background. Hijab allowed, glasses prohibited."
     },
     "rejectionReasons": {
       "ko": [],
