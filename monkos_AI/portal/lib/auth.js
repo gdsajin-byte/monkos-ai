@@ -14,9 +14,10 @@ export async function handleKakaoAuth(req, res) {
   const parsedUrl = new URL(req.url, `http://${req.headers.host}`);
   const popup = parsedUrl.searchParams.get('popup') === '1';
   const redirectApp = parsedUrl.searchParams.get('redirect_app') || '';
+  const sourcePage = parsedUrl.searchParams.get('source_page') || '';
 
   // state에 popup 정보 인코딩
-  const state = Buffer.from(JSON.stringify({ popup, redirectApp })).toString('base64url');
+  const state = Buffer.from(JSON.stringify({ popup, redirectApp, sourcePage })).toString('base64url');
   const effectiveRedirect = `https://${req.headers.host}/auth/kakao/callback`;
   const authUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_REST_API_KEY}&redirect_uri=${encodeURIComponent(effectiveRedirect)}&response_type=code&scope=plusfriends&state=${state}`;
   res.writeHead(302, { Location: authUrl });
@@ -67,6 +68,19 @@ export async function handleKakaoCallback(req, res) {
     const profileImage = userData.kakao_account?.profile?.profile_image_url || '';
     const docId = `kakao_${kakaoId}`;
 
+    let popupMode = false;
+    let redirectApp = '';
+    let sourcePage = '';
+    const stateParam = url.searchParams.get('state');
+    if (stateParam) {
+      try {
+        const stateData = JSON.parse(Buffer.from(stateParam, 'base64url').toString());
+        popupMode = stateData.popup === true;
+        redirectApp = stateData.redirectApp || '';
+        sourcePage = stateData.sourcePage || '';
+      } catch {}
+    }
+
     const userRef = usersCollection.doc(docId);
     const userDoc = await userRef.get();
 
@@ -81,6 +95,7 @@ export async function handleKakaoCallback(req, res) {
         kakaoAccessToken: tokenData.access_token,
         createdAt: new Date().toISOString(),
         lastLogin: new Date().toISOString(),
+        signupSource: sourcePage,
       });
       log(`[Kakao] 신규 가입: ${docId} (${nickname}) +10c 보너스`);
     } else {
@@ -103,18 +118,6 @@ export async function handleKakaoCallback(req, res) {
       provider: 'kakao',
       credits: finalData.credits ?? 0,
     };
-
-    // state에서 popup 정보 추출
-    let popupMode = false;
-    let redirectApp = '';
-    const stateParam = url.searchParams.get('state');
-    if (stateParam) {
-      try {
-        const stateData = JSON.parse(Buffer.from(stateParam, 'base64url').toString());
-        popupMode = stateData.popup === true;
-        redirectApp = stateData.redirectApp || '';
-      } catch {}
-    }
 
     if (popupMode) {
       // 팝업 모드: postMessage로 부모 윈도우에 전달 후 자동 닫힘
@@ -167,10 +170,11 @@ export async function handleLineAuth(req, res) {
   const parsedUrl = new URL(req.url, `http://${req.headers.host}`);
   const popup = parsedUrl.searchParams.get('popup') === '1';
   const redirectApp = parsedUrl.searchParams.get('redirect_app') || '';
+  const sourcePage = parsedUrl.searchParams.get('source_page') || '';
 
   const csrf = randomBytes(16).toString('hex');
   // CSRF 토큰 + popup 정보를 state에 합성
-  const stateObj = { csrf, popup, redirectApp };
+  const stateObj = { csrf, popup, redirectApp, sourcePage };
   const state = Buffer.from(JSON.stringify(stateObj)).toString('base64url');
 
   pendingLineStates.set(csrf, Date.now());
@@ -197,7 +201,7 @@ export async function handleLineCallback(req, res) {
   }
 
   // state에서 CSRF 토큰 + popup 정보 추출
-  let lineStateData = { csrf: state, popup: false, redirectApp: '' };
+  let lineStateData = { csrf: state, popup: false, redirectApp: '', sourcePage: '' };
   try {
     lineStateData = JSON.parse(Buffer.from(state, 'base64url').toString());
   } catch {
@@ -259,6 +263,7 @@ export async function handleLineCallback(req, res) {
         credits: 10,
         createdAt: new Date().toISOString(),
         lastLogin: new Date().toISOString(),
+        signupSource: lineStateData.sourcePage || '',
       });
       log(`[LINE] 신규 가입: ${docId} (${displayName}) +10c 보너스`);
     } else {
@@ -343,7 +348,7 @@ export async function handleGoogleAuth(req, res) {
   req.on('data', chunk => { body += chunk; });
   req.on('end', async () => {
     try {
-      const { credential, access_token } = JSON.parse(body);
+      const { credential, access_token, signup_source } = JSON.parse(body);
       if (!credential && !access_token) {
         res.writeHead(400, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: 'credential 또는 access_token 필수' }));
@@ -407,6 +412,7 @@ export async function handleGoogleAuth(req, res) {
         ...(isNewUser ? {
           createdAt: new Date().toISOString(),
           credits: 10,
+          signupSource: signup_source || '',
         } : {}),
       };
 

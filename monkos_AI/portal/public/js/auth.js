@@ -83,8 +83,8 @@ async function initGoogleAuth() {
   });
 }
 
-window.loginKakao = function() { location.href = '/auth/kakao'; };
-window.loginLine = function() { location.href = '/auth/line'; };
+window.loginKakao = function() { location.href = '/auth/kakao?source_page=' + encodeURIComponent(window.location.hostname + window.location.pathname); };
+window.loginLine = function() { location.href = '/auth/line?source_page=' + encodeURIComponent(window.location.hostname + window.location.pathname); };
 
 window.headerLogin = function() {
   if (region === 'kr') {
@@ -130,12 +130,18 @@ async function handleGoogleTokenCallback(tokenResponse) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
-      body: JSON.stringify({ access_token: tokenResponse.access_token }),
+      body: JSON.stringify({ access_token: tokenResponse.access_token, signup_source: window.location.hostname + window.location.pathname }),
     });
     var data = await res.json();
     if (data.user) {
       currentUser = data.user;
       updateAuthUI();
+      if (data.isNewUser && typeof gtag === 'function') {
+        gtag('event', 'sign_up', {
+          method: data.user.provider,
+          signup_source: window.location.hostname + window.location.pathname
+        });
+      }
     }
   } catch (err) {
     console.error('[Auth] Google token error:', err);
@@ -149,12 +155,18 @@ async function handleGoogleCallback(response) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
-      body: JSON.stringify({ credential: response.credential }),
+      body: JSON.stringify({ credential: response.credential, signup_source: window.location.hostname + window.location.pathname }),
     });
     var data = await res.json();
     if (data.user) {
       currentUser = data.user;
       updateAuthUI();
+      if (data.isNewUser && typeof gtag === 'function') {
+        gtag('event', 'sign_up', {
+          method: data.user.provider,
+          signup_source: window.location.hostname + window.location.pathname
+        });
+      }
     }
   } catch (err) {
     console.error('[Auth] Google callback error:', err);
