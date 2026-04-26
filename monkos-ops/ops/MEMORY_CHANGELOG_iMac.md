@@ -272,3 +272,23 @@
 
 ### 변경 없음
 - 다른 섹션 무변경
+
+---
+
+## 2026-04-26 13:18 KST — Universal Clipboard 무한 잔존 메모리 등재
+
+### 주요 변경
+1. **신규 메모리 1건**: `memory/project_universal_clipboard_handoff.md` (project 타입)
+   - Apple Handoff/Universal Clipboard는 fetch된 내용을 무한 잔존 + BTLE 불가 시 APNs로 거리 무관 우회
+   - 4/26 새벽 폰에 11시간 묵은 iMac 쌍아 보고서 출현 사고 메커니즘 정리
+   - 1차 대응: 작가님 Handoff 차단 (직접 처리)
+   - 검증: 향후 동일 현상 미재발 시 가설 확정
+2. **MEMORY.md 인덱스 1행 추가** (피드백 메모리 섹션 말미)
+
+### 사고 배경
+- 4/25 Kimi 캐스팅 테스트 §6 "미해결 의문: 클립보드 이상 현상" 분석에서 발견
+- WebSearch 결과 [MacPass#651](https://github.com/MacPass/MacPass/issues/651) + Apple Handoff Security Guide로 메커니즘 확정
+- 통설("1~2분 timeout") 부정확 — fetch된 내용은 무기한 잔존
+
+### 변경 없음
+- 다른 섹션 무변경 · 200줄 캡 여유 (MEMORY.md 현재 라인 수 점검 권고)
