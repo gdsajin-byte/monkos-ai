@@ -2,7 +2,7 @@
 type: ORDER
 date: 2026-04-26
 from: iMac/쌍아
-to: 막내 (4060)
+to: 4060/쌍아
 status: 대기
 priority: A
 ---
