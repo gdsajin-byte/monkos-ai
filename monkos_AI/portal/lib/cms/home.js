@@ -154,7 +154,8 @@ export async function renderHome(req, res, forceLang = null) {
     const heroBlock = getBlock('hero');
     if (heroBlock?.visible && heroBlock.data) {
       const hd = heroBlock.data;
-      const heroHtml = `<div class="hero"><div class="hero-inner">\n  <div class="hero-label">${hd.label || 'AI Creative Platform'}</div>\n  <h1>${hd.title || 'MONKOS <em>AI</em>'}</h1>\n  <div class="hero-tag">${hd.tagline || '<strong>Photography</strong> × <strong>AI</strong> × <strong>K-Beauty</strong>'}</div>\n</div></div>`;
+      const heroSubMap = { ko: 'AI 증명사진 · 26개국 규격', ja: 'AI証明写真 · 26カ国規格', en: 'AI ID Photos · 26 Countries' };
+      const heroHtml = `<div class="hero"><div class="hero-inner">\n  <div class="hero-label">${hd.label || 'AI CREATIVE PLATFORM'}</div>\n  <h1>${hd.title || 'MONKOS <em>AI</em>'}</h1>\n  <p class="hero-sub" data-i18n="hero_sub">${heroSubMap[lang] || heroSubMap.ko}</p>\n</div></div>`;
       html = html.replace(
         /<div class="hero"><div class="hero-inner">\n[\s\S]*?<\/div><\/div>\n\n<!-- User Bar -->/,
         `${heroHtml}\n\n<!-- User Bar -->`
@@ -170,20 +171,22 @@ export async function renderHome(req, res, forceLang = null) {
       );
     }
 
-    // 3. Nav
-    const navBlock = getBlock('nav');
-    if (navBlock?.visible && navBlock.items) {
-      const navLinks = navBlock.items.map(item => {
-        const href = item.href ? (item.href[lang] || item.href.ko || '/') : '/';
-        const label = lt(item.label);
-        const cls = item.active ? ' class="active"' : '';
-        return `  <a href="${esc(href)}"${cls}>${esc(label)}</a>`;
-      }).join('\n');
-      html = html.replace(
-        /(<nav><div class="n-links">)\n[\s\S]*?\n(<\/div><\/nav>)/,
-        `$1\n${navLinks}\n$2`
-      );
-    }
+    // 3. Nav (고정 5항목 — specs 경로 확보)
+    const navItems = [
+      { href: '/', label: { ko: '홈', ja: 'ホーム', en: 'Home' }, active: true },
+      { href: '/specs', label: { ko: '규격', ja: '規格', en: 'Specs' } },
+      { href: '/blog', label: { ko: '블로그', ja: 'ブログ', en: 'Blog' } },
+      { href: '/faq', label: { ko: 'FAQ', ja: 'FAQ', en: 'FAQ' } },
+      { href: '/pricing', label: { ko: '가격', ja: '料金', en: 'Pricing' } },
+    ];
+    const navLinks = navItems.map(item => {
+      const cls = item.active ? ' class="active"' : '';
+      return `  <a href="${esc(item.href)}"${cls}>${esc(item.label[lang] || item.label.ko)}</a>`;
+    }).join('\n');
+    html = html.replace(
+      /(<nav><div class="n-links">)\n[\s\S]*?\n(<\/div><\/nav>)/,
+      `$1\n${navLinks}\n$2`
+    );
 
     // 4. Intro text (layout 블록 우선, fallback: site_config/main)
     const introBlock = getBlock('intro-text');

@@ -2,6 +2,11 @@
 
 > **법률 제5장 2조 준수. 2026-04-08 개정.**
 
+## 브랜치
+
+- 기본 작업 브랜치: **main** (ch6 1조). develop 폐기 상태.
+- 지시서에 develop 지정 금지.
+
 ## 필수
 
 - Cloud Run 배포는 **반드시 deploy.sh 경유**. `gcloud run deploy` / `gcloud builds submit` 직접 실행 금지.

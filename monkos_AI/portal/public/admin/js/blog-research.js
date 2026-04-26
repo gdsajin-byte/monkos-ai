@@ -1,5 +1,5 @@
 /* blog-research.js — 리서치 탭 모듈 (ESM, v2.0) */
-import { showToast } from './admin-common.js';
+import { showToast, authFetch } from './admin-common.js';
 
 let researchSource = 'news';
 let researchPage = 1;
@@ -47,7 +47,8 @@ async function doResearch(append) {
 
   try {
     const start = (researchPage - 1) * 10 + 1;
-    const r = await fetch(`/api/admin/search?query=${encodeURIComponent(q)}&type=${researchSource}&start=${start}&display=10`, { credentials: 'include' });
+    const r = await authFetch(`/api/admin/search?query=${encodeURIComponent(q)}&type=${researchSource}&start=${start}&display=10`);
+    if (!r) return; // 401 리다이렉트됨
     const data = await r.json();
 
     if (!r.ok) {

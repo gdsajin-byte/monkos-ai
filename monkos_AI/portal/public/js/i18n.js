@@ -15,6 +15,17 @@ const i18n = {
     chatHint: 'Enterで送信',
     chatWelcome: 'こんにちは！MONKOS AIです。証明写真、規格、価格、クロップアプリなど何でも聞いてください。',
     chatTitle: 'MONKOS AI',
+    hero_sub: 'AI証明写真 · 26カ国規格',
+    nav_home: 'ホーム',
+    nav_specs: '規格',
+    nav_blog: 'ブログ',
+    nav_faq: 'FAQ',
+    nav_pricing: '料金',
+    specs_heading: '国別証明写真規格',
+    specs_viewall: '全て見る →',
+    specs_others: 'その他',
+    guide1_title: 'AI証明写真をセルカで作る方法',
+    guide2_title: '就活写真 前髪のポイント',
   },
   ko: {
     login: '로그인',
@@ -26,6 +37,17 @@ const i18n = {
     chatHint: 'Enter로 전송',
     chatWelcome: '안녕하세요! MONKOS AI입니다. 증명사진, 규격, 가격, 크롭앱 등 무엇이든 물어보세요.',
     chatTitle: 'MONKOS AI',
+    hero_sub: 'AI 증명사진 · 26개국 규격',
+    nav_home: '홈',
+    nav_specs: '규격',
+    nav_blog: '블로그',
+    nav_faq: 'FAQ',
+    nav_pricing: '가격',
+    specs_heading: '국가별 증명사진 규격',
+    specs_viewall: '전체보기 →',
+    specs_others: '기타',
+    guide1_title: 'AI 증명사진 셀카로 만드는법',
+    guide2_title: '취활사진 앞머리 꼭 없애야 하나?',
   },
   en: {
     login: 'Login',
@@ -37,6 +59,17 @@ const i18n = {
     chatHint: 'Press Enter',
     chatWelcome: 'Hello! I\'m MONKOS AI. Ask me anything about ID photos, specs, pricing, or the crop app.',
     chatTitle: 'MONKOS AI',
+    hero_sub: 'AI ID Photos · 26 Countries',
+    nav_home: 'Home',
+    nav_specs: 'Specs',
+    nav_blog: 'Blog',
+    nav_faq: 'FAQ',
+    nav_pricing: 'Pricing',
+    specs_heading: 'ID Photo Specs by Country',
+    specs_viewall: 'View All →',
+    specs_others: 'Others',
+    guide1_title: 'How to make AI ID photos from selfies',
+    guide2_title: 'Job photo: Must you remove bangs?',
   }
 };
 
@@ -179,6 +212,12 @@ function applyLang() {
   // KR 트랙: LINE 로그인 버튼 숨김
   var lineBtn = document.getElementById('loginLineBtn');
   if (lineBtn) lineBtn.style.display = (region === 'kr') ? 'none' : 'flex';
+
+  // data-i18n 범용 핸들러
+  document.querySelectorAll('[data-i18n]').forEach(function(el) {
+    var key = el.getAttribute('data-i18n');
+    if (t[key]) el.textContent = t[key];
+  });
 }
 
 // 초기 적용

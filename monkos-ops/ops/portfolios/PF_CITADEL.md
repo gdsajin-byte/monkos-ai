@@ -86,6 +86,23 @@ status: active
 | 4/07 | 막내1 | SEO 3건 재배포 확인 (rev 00016-swt). Cloud Run 직접URL 4건 정상. **monkos.ai `/ja/`, `/en/` root경로만 KO로 fallback** — 인프라 프록시 계층 rewrite 이슈 발견. `/ja/blog` 등 하위경로는 정상 | — | ⚠️ 인프라 이슈 |
 | 4/07 | 민아 | **GSC 실측 검증** — URL 검사 정상, FAQ 구조화 데이터 중복 오류 발견 (FAQPage 4건). 원인: index.html 정적 + home.js 동적 이중 삽입. 쌍아 전달 | GSC 캡처, 세션 로그 | ⚠️ 보정 대기 |
 | 4/07 | 민아 | **GA/GSC 3개월 진단** — 오가닉 클릭 27회(하루 0.3), 검색어 6개, Paid 92%. claudemax 후기 노출 9,600%=허수(클릭0) | 세션 로그 내 분석 | ✅ 진단 완료 |
+| 4/08 | 민아 | **sitemap 198개 재제출** + GA4·GSC 리서치 | `233c13f` | ✅ |
+| 4/08 | 민아 | Google Ads 사이트링크 6개 등록 (심사 대기) + SEO DA 진단 — 코드 정상, DA(도메인 권위) 문제 판별 | 세션 로그 | ✅ |
+| 4/08 | 민아 | Specs 26종 데이터 업데이트 배포 확인 | — | ✅ |
+| 4/09 | 쌍아 | CDP 시연 지시서 3건 발행 (막내1 SEO진단 9222, 막내2 블로그발행 9223, 막내3 다국어검증 9224) | ORDER×3 | ✅ |
+| 4/09 | 막내1 | **CDP SEO 라이브 진단 7페이지** — 이슈 3건 발견 (crop hreflang 불완전, idphoto canonical 경로 불일치, en specs 마이너) | REPORT_20260409_막내1, `5f5912a` | ✅ 진단완료 |
+| 4/09 | 막내3 | **CDP 다국어 15페이지 검증** — lang 불일치 2건(/ja/ /en/ root=ko), 깨진img 3건, /en/about 404 | REPORT_20260409_막내3, `add12da` | ✅ 진단완료 |
+| 4/10 | 쌍아 | Phase 1.7 보정 지시서 발행 (4건: crop hreflang, canonical, 깨진img, specs 혼입) | ORDER_20260410 | ✅ |
+| 4/10 | 민아 | **HEAD 404 + 구슬러그 301 + NOINDEX 사이트맵** 지시서 2건 발행 — 오가닉 3대 장애 근본 원인 특정 | ORDER_20260410×2 | ✅ |
+| 4/10 | 막내1+2 | **3서비스 prod 배포** (portal+idphoto-kr+idphoto-jp) + CDP 재검증 전 건 통과 | 배포 완료, `a247c3c` | ✅ |
+| 4/10 | 민아 | **GSC 색인 재요청 19건** (포탈 9건 + 다국어 6건 + specs 4건) 전수 제출 | GSC 우선순위 크롤링 대기열 추가 확인 | ✅ |
+| 4/19 | 민아 | **강한소상공인 v3 사업계획서 §4 실측 수치 확보** — GA/GSC/Ads CDP 직접 캡처. 일본 사용자 +33.7%(28일), GSC 노출 실측. §4-2 v1(기술 과적재) 확인 → v2(타임라인+실측지표) 드래프트(`/tmp/idea42v2.html`). PF_CITADEL·PF_PORTAL·PF_SPREAD 전수 파악 완료 | 세션 로그 `2026-04-19_iMac_민아.md` | ⏳ §4-2 v2 삽입 미완 |
+| 4/21 | 민아 | **Phase 2 전환 제안서 발행** — 4/21 CDP 실측 기반. 일본 28일 노출 49/클릭 8 정체, 404 33개 잔존, idphoto-jp/kr sitemap URL 1개씩 치명 발견. 3단 로드맵(즉시/이번달/다음분기) + 논의 포인트 6건. 작가님 지시: "쌍아가 나와 논의하고 지시서로 환급" | [PROPOSAL_20260421_민아_CITADEL_Phase2_색인누수차단+일본타깃정밀화](../proposals/PROPOSAL_20260421_민아_CITADEL_Phase2_색인누수차단+일본타깃정밀화.md) | ✅ 지시서 환급 |
+| 4/21 | 쌍아→막내1(막내3 재활용) | **Phase 2.0 지시서 발행**: idphoto-jp/kr sitemap 누수 차단 + 404 원인 분류 + 재색인 요청 | [ORDER_20260421_iMac쌍아_막내1_CITADEL_Phase20_색인누수차단](../orders/2026-04/ORDER_20260421_iMac쌍아_막내1_CITADEL_Phase20_색인누수차단.md) | ✅ |
+| 4/21 | 막내3 | **Phase 2.0 실행**: idphoto-jp/kr sitemap 1→5 URL 확장(`/`, `/app`, `/camera`, `/prep`, `/policy/data`). prod 배포 jp rev **00107-5kx** + kr rev **00181-2v6**. 10/10 URL HTTP 200 실측. 404 33건 전수 수집·카테고리 분류(B1 vol 슬러그 10건·B2 언어 교차오염 4건·B3 번역 유령 17건·B4 레거시 2건 — **전부 portal 블로그 기원, idphoto 직접 관련 없음**). GSC sitemap 재제출 시도(UI 반영 비동기), URL 색인 요청 자동화 실패(deep link 404) | server.js 양 서비스 | ⚠️ 부분 완료 — 10+ 미달(SPA L1 5개 물리적 한계, 2.1 L1 랜딩 신설 필요), GSC 재크롤 대기(24-72h), portal hreflang 로직 수정 별건 권고 |
+| 4/21 | 민아 | **Phase 2.1 제안 §4** — 일본 코어 키워드 5개(就活写真·証明写真 アプリ·パスポート写真 アプリ·証明写真 AI·運転免許 写真) 매칭 L1 랜딩 신설 지시 | [PROPOSAL_20260421_민아_CITADEL_Phase2_색인누수차단+일본타깃정밀화](../proposals/PROPOSAL_20260421_민아_CITADEL_Phase2_색인누수차단+일본타깃정밀화.md) §4 | ✅ 지시서 환급 |
+| 4/21 | 쌍아→막내1 | **Phase 2.1 지시서 발행** — 일본 코어 키워드 5개 L1 랜딩 신설 (조정안 A/B/C/D 작가님 전건 승인) | [ORDER_20260421_iMac쌍아_막내1_CITADEL_Phase21_일본랜딩신설](../orders/2026-04/ORDER_20260421_iMac쌍아_막내1_CITADEL_Phase21_일본랜딩신설.md) | ✅ |
+| 4/21 | 막내1 | **Phase 2.1 실행** — idphoto-jp L1 랜딩 5개 신설·배포: `/guide/shukatsu`·`/guide/app-comparison`·`/guide/ai`·`/specs/passport`·`/specs/drivers-license`. 각 페이지에 title·meta description·H1·hreflang·JSON-LD(FAQ/HowTo)·CTA(/prep) 구현. server.js 라우트 5건 + sitemap urls 배열 5→10 URL 확장. prod 배포 jp rev **00108-ngl** 100% 트래픽. **5/5 URL HTTP 200 실측** + sitemap.xml 10 URL 반영 확인. 정합성 검토 3건(라우팅 MPA·sitemap 하드코딩 배열·PHOTO_SPECS config.js 2종) 선행 수행 후 실행. 운전면허 규격 24×30mm 확인 출처는 외무성·경찰청 가이드 기준. | public/guide/*.html 3건·public/specs/*.html 2건·server.js 라우트+sitemap 수정 | ✅ 배포·200 검증 완료 · GSC 재제출 후속 |
 
 ---
 
@@ -123,7 +140,7 @@ status: active
 | llms.txt + llms-full.txt specs URL 등록 | ✅ 3/26 | 막내2 |
 | 블로그 타이틀 최적화 (CMS 에디터) | ❌ 미착수 | 민아/작가님 |
 | 외부 백링크 콘텐츠 발행 (note.com, 네이버 등) | ❌ 미착수 | 한 |
-| GSC 색인 요청 + 모니터링 | ❌ 배포 후 | 민아 |
+| GSC 색인 요청 + 모니터링 | ⏳ sitemap 198개 재제출 (4/8) + **주요 19건 개별 재요청 (4/10)**. 지속 모니터링 | 민아 |
 
 ### Phase 1.5 — 기술 SEO 보정 ✅ 완료 (4/07 배포)
 
@@ -136,6 +153,22 @@ status: active
 | 포탈 prod 배포 (monkos-portal, rev 00015-tkk) | ✅ 4/07 | 막내2 |
 
 > 핵심: JA canonical이 KO를 가리켜 일본 자연검색 구조적 차단 → 해소
+
+### Phase 1.7 — 4/9~10 CDP 진단 이슈 보정 + 오가닉 장애 해소 ✅ 완료 (04/10)
+
+> 4/9 막내1+3 CDP 진단 이슈 + 4/10 민아 오가닉 3대 장애 근인 분석. 3서비스 prod 배포 완료.
+
+| 항목 | 긴급도 | 상태 | 커밋 | 비고 |
+|------|--------|------|------|------|
+| **HEAD 404 전면 차단** (Googlebot HEAD→404) | 🔴 | ✅ | `a247c3c` | server.js HEAD→GET 변환. 오가닉 색인 직접 원인 |
+| **NOINDEX↔사이트맵 모순** (idphoto JP/KR) | 🔴 | ✅ | `70189c0` | sitemap에서 noindex 페이지 제거 (JP 6건, KR 5건) |
+| **구 슬러그 404** (블로그 vol→서술형) | 🟠 | ✅ | `a247c3c` | 301 리다이렉트 10건 매핑 |
+| crop hreflang 불완전 (ko/x-default만) | 🔴 | ✅ | `cdcb3f7` | ja/en 추가. crop/index.html |
+| idphoto canonical `/app` 경로 누락 | 🟠 | ✅ | `cdcb3f7` | idphoto-kr/jp index.html + hreflang 동시 보정 |
+| `/en/specs` 본문 한국어 혼입 | 🟡 | ✅ | `cdcb3f7` | render.js locField() + specs-data.json i18n 필드 추가 |
+| 깨진 이미지 3건 (crop, idphoto-kr/jp) | 🟠 | ⏳ | — | SPA 런타임 이미지. CDP 진단 미완 |
+| `/ja/`, `/en/` root lang=ko (인프라 프록시) | 🔴 | ⏳ | — | Cloud Run 직접URL 정상. 프록시 계층 이슈 |
+| `/en/about` 404 | — | 🚫 제외 | — | 유령 URL (코드·sitemap·내부링크 참조 없음) |
 
 ### Phase 2 — GEO 본격 + 고급 SEO (예정)
 

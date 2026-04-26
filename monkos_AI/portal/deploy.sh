@@ -52,6 +52,14 @@ PROJECT_ID="monkos"
 REGION="us-central1"
 SERVICE_ACCOUNT="monk-image-engine@${PROJECT_ID}.iam.gserviceaccount.com"
 
+# === 비시크릿 운영값 (deploy.sh가 정본, .env 의존 금지) ===
+# 4f71cbc 사고(2026-04-10) 재발 방지: 폴백값과 .env 누락이 트리거였음
+# - GCS_BUCKET: 코드 폴백(config.js:66) + idphoto deploy.sh와 일치하는 단일 진실값
+# - ADMIN_UIDS: Google sub UID 리스트, 시크릿 아님 (외부 노출 무해)
+#   추가/제거 시 monkos_AI/portal/scripts/find_admin_uids.js 사용
+GCS_BUCKET="monk-ai-images"
+ADMIN_UIDS="108827115052045057530,115646365617285208759"
+
 # 환경별 설정 (Portal은 경량 서비스)
 if [ "$ENV" = "dev" ]; then
   SERVICE_NAME="monkos-portal-dev"
@@ -139,7 +147,7 @@ gcloud run deploy ${SERVICE_NAME} \
   --concurrency 100 \
   --min-instances 0 \
   --max-instances ${MAX_INSTANCES} \
-  --update-env-vars "^::^PROJECT_ID=${PROJECT_ID}::LOCATION=${REGION}::GCS_BUCKET=${GCS_BUCKET:-monkos-shared}::ADMIN_UIDS=${ADMIN_UIDS}" \
+  --update-env-vars "^::^PROJECT_ID=${PROJECT_ID}::LOCATION=${REGION}::GCS_BUCKET=${GCS_BUCKET}::ADMIN_UIDS=${ADMIN_UIDS}" \
   --service-account ${SERVICE_ACCOUNT} \
   ${DEPLOY_FLAGS}
 

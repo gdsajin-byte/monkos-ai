@@ -368,12 +368,35 @@ export function debugSessionKeys() {
   Monk.log(`[DEBUG] sessionStorage (${keys.length}): ${summary}`);
 }
 
+// ─── Lemon Squeezy 決済復帰処理 ───
+function _handlePaymentComplete() {
+  const params = new URLSearchParams(location.search);
+  if (params.get('payment') !== 'complete') return;
+
+  params.delete('payment');
+  const cleanUrl = params.toString()
+    ? `${location.pathname}?${params.toString()}`
+    : location.pathname;
+  history.replaceState({}, '', cleanUrl);
+
+  Monk.log('LS決済復帰 — クレジット更新中...');
+  setTimeout(() => fetchLatestCredits(), 2000);
+  setTimeout(() => {
+    fetchLatestCredits().then(() => {
+      if (store.user.credits > 0) {
+        alert(`決済が完了しました！\n現在のクレジット: ${store.user.credits}c`);
+      }
+    });
+  }, 5000);
+}
+
 // ─── 共通初期化 ───
 export async function sharedInit() {
   checkInappBrowser();
   await initFromUrlToken();
   await initCredits();
   initLemonSqueezy();
+  _handlePaymentComplete();
 
   // v5 旧キー整理ガード (SCHEMA_v5_確定.md §9)
   if (loadSessionData('schema_version') !== SCHEMA_VERSION) {

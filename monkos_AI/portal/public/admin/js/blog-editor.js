@@ -1,5 +1,5 @@
 /* blog-editor.js — 에디터 코어 모듈 (ESM, v2.0) */
-import { showToast } from './admin-common.js';
+import { showToast, authFetch } from './admin-common.js';
 import { updateShareButtons } from './blog-share.js';
 
 const API = '/api/admin/blog';
@@ -23,11 +23,15 @@ export function initEditor() {
         try {
           const form = new FormData();
           form.append('image', blob, blob.name || 'image.png');
-          const r = await fetch('/api/admin/upload', {
+          const r = await authFetch('/api/admin/upload', {
             method: 'POST',
-            credentials: 'include',
             body: form,
           });
+          if (!r) return; // 401 리다이렉트됨
+          if (!r.ok) {
+            alert(`Upload failed (${r.status})`);
+            return;
+          }
           const data = await r.json();
           if (data.url) {
             callback(data.url, blob.name || 'image');
@@ -97,7 +101,12 @@ async function loadMyPosts() {
   dd.innerHTML = '<div style="padding:12px;color:var(--text-dim);font-size:13px">불러오는 중...</div>';
   dd.style.display = 'block';
   try {
-    const r = await fetch(API, { credentials: 'include' });
+    const r = await authFetch(API);
+    if (!r) return; // 401 리다이렉트됨
+    if (!r.ok) {
+      dd.innerHTML = `<div style="padding:12px;color:var(--danger);font-size:13px">로드 실패 (${r.status})</div>`;
+      return;
+    }
     const { posts } = await r.json();
     if (!posts || posts.length === 0) {
       dd.innerHTML = '<div style="padding:12px;color:var(--text-dim);font-size:13px">글이 없습니다</div>';
@@ -121,8 +130,8 @@ export async function loadPost() {
   document.getElementById('pageTitle').textContent = 'Edit Post';
 
   try {
-    const r = await fetch(`${API}/${encodeURIComponent(editSlug)}`, { credentials: 'include' });
-    if (r.status === 401) { location.href = '/admin/'; return; }
+    const r = await authFetch(`${API}/${encodeURIComponent(editSlug)}`);
+    if (!r) return; // 401 리다이렉트됨
     if (!r.ok) { showToast('Post not found', true); return; }
 
     const post = await r.json();
@@ -186,14 +195,13 @@ async function save(published) {
   try {
     const url = isEdit ? `${API}/${encodeURIComponent(editSlug)}` : API;
     const method = isEdit ? 'PUT' : 'POST';
-    const r = await fetch(url, {
+    const r = await authFetch(url, {
       method,
       headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
       body: JSON.stringify(body),
     });
 
-    if (r.status === 401) { location.href = '/admin/'; return; }
+    if (!r) return; // 401 리다이렉트됨
     const data = await r.json();
 
     if (r.ok) {

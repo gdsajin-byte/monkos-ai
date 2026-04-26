@@ -1,0 +1,88 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "monk-kr (CF Pages)",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["wrangler", "pages", "dev", "MONK_kr", "--port", "8788"],
+      "port": 8788
+    },
+    {
+      "name": "portal (monkos.ai)",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["server.js"],
+      "cwd": "monkos_AI/portal",
+      "port": 8080
+    },
+    {
+      "name": "idphoto-kr",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["server.js"],
+      "cwd": "monkos_AI/idphoto-kr",
+      "port": 8081
+    },
+    {
+      "name": "idphoto-jp",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["server.js"],
+      "cwd": "monkos_AI/idphoto-jp",
+      "port": 8082
+    },
+    {
+      "name": "studio",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["server.js"],
+      "cwd": "monkos_AI/studio",
+      "port": 8083
+    },
+    {
+      "name": "crop-engine",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["server.js"],
+      "cwd": "monkos_AI/crop-engine",
+      "port": 8084
+    },
+    {
+      "name": "photolab-engine",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["server.js"],
+      "cwd": "MONK_kr/ai_lab/photolab/engine",
+      "port": 8085
+    },
+    {
+      "name": "imagen4-backend",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "cwd": "apps/monk_imagen4/backend",
+      "port": 8086
+    },
+    {
+      "name": "imagen4-pages",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["wrangler", "pages", "dev"],
+      "cwd": "apps/monk_imagen4",
+      "port": 8787
+    },
+    {
+      "name": "photo-coach (WSS)",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["server.js"],
+      "cwd": "apps/photo-coach",
+      "port": 8443
+    },
+    {
+      "name": "monk-cam (Vite)",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "cwd": "apps/monk-cam",
+      "port": 5173
+    },
+    {
+      "name": "monkos-chat (Firebase)",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["firebase", "emulators:start", "--only", "functions"],
+      "cwd": "apps/MonkosChat/functions",
+      "port": 5001
+    }
+  ]
+}

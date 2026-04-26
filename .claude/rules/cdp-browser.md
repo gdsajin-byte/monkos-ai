@@ -88,6 +88,17 @@ scripts/tools/cdp.sh screenshot /tmp/check.png 0
 
 대신 위의 `cdp.sh` / `cdp_utils.py`를 사용한다.
 
+## 막힘 대응 — PF_CDP 참조 의무 (법률 ch7 6조)
+
+브라우저 자동화 예외·예상외 동작 포착 시 (키 이벤트 미반영, 클릭 무효,
+타이핑 실패, DOM 비어 보임, 붙여넣기 미반영, 팝업 차단 등):
+
+1. `/cdp-troubleshoot` 스킬을 호출한다. (절차 상세 위임)
+2. **가설 수립 전**에 case_studies.md + golden_paths.md + editor_adapters/ 선행 점검.
+3. "CDP 원리상 불가" 같은 큰 결론으로 뛰기 금지.
+
+> 위반 시: 2026-04-17 Google Docs Cmd+V 실패 — Phase 3 교훈 미참조로 같은 함정 재발.
+
 ## 의존성
 
 - `pip install websockets` (단일 패키지)

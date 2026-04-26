@@ -181,6 +181,25 @@ export async function handleTossConfirm(req, res) {
       return;
     }
 
+    // 멱등성: 이미 처리된 orderId인지 확인
+    const existingPayments = await firestore.collection('payments')
+      .where('orderId', '==', orderId)
+      .where('type', '==', 'toss_confirm')
+      .limit(1).get();
+    if (!existingPayments.empty) {
+      const existing = existingPayments.docs[0].data();
+      log(`[Toss] 중복 confirm 요청 — orderId=${orderId} 이미 처리됨`);
+      const userDoc = await usersCollection.doc(userId).get();
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({
+        success: true,
+        credits: userDoc.data()?.credits ?? existing.balanceAfter,
+        creditsAdded: existing.creditsAdded,
+        orderId,
+      }));
+      return;
+    }
+
     // v3: PRODUCTS에서 상품 검색 → 총 크레딧(base + bonus) 적립
     const product = Object.values(PRODUCTS).find(p => p.price === amount);
     let credits = product ? product.credits + product.bonus : null;

@@ -1,5 +1,5 @@
 /* blog-image.js — 이미지 시스템 모듈 (ESM, v2.0) */
-import { showToast } from './admin-common.js';
+import { showToast, authFetch } from './admin-common.js';
 import { getEditor, updatePreview } from './blog-editor.js';
 
 /* ===== 타이머 ===== */
@@ -72,9 +72,14 @@ function insertImage(url, name) {
 /* ===== 이미지 삭제 ===== */
 async function deleteImage(filename) {
   try {
-    const r = await fetch(`/api/admin/images/${encodeURIComponent(filename)}`, {
-      method: 'DELETE', credentials: 'include'
+    const r = await authFetch(`/api/admin/images/${encodeURIComponent(filename)}`, {
+      method: 'DELETE'
     });
+    if (!r) return; // 401 리다이렉트됨
+    if (!r.ok) {
+      showToast(`삭제 실패 (${r.status})`, true);
+      return;
+    }
     const result = await r.json();
 
     if (result.warning) {
@@ -82,9 +87,14 @@ async function deleteImage(filename) {
       const msg = `\u26A0\uFE0F 이 이미지는 ${result.usedIn.length}개 글에서 사용 중입니다:\n${posts}\n\n삭제하면 해당 글에서 이미지가 깨집니다.\n정말 삭제하시겠습니까?`;
       if (!confirm(msg)) return;
 
-      await fetch(`/api/admin/images/${encodeURIComponent(filename)}?force=true`, {
-        method: 'DELETE', credentials: 'include'
+      const r2 = await authFetch(`/api/admin/images/${encodeURIComponent(filename)}?force=true`, {
+        method: 'DELETE'
       });
+      if (!r2) return;
+      if (!r2.ok) {
+        showToast(`강제 삭제 실패 (${r2.status})`, true);
+        return;
+      }
     }
 
     showToast('이미지 삭제 완료');
@@ -99,7 +109,12 @@ async function loadImageLibrary() {
   const container = document.getElementById('imageLibrary');
   container.innerHTML = '<div class="img-lib-status">불러오는 중...</div>';
   try {
-    const r = await fetch('/api/admin/images', { credentials: 'include' });
+    const r = await authFetch('/api/admin/images');
+    if (!r) return; // 401 리다이렉트됨
+    if (!r.ok) {
+      container.innerHTML = `<div class="img-lib-status img-lib-status--error">로드 실패 (${r.status})</div>`;
+      return;
+    }
     const { images } = await r.json();
     if (!images || images.length === 0) {
       container.innerHTML = '<div class="img-lib-status">이미지를 업로드해보세요</div>';
@@ -149,12 +164,19 @@ async function uploadToLibrary() {
     btn.textContent = '업로드 중...';
     btn.disabled = true;
     try {
+      let okCount = 0;
       for (const file of files) {
         const form = new FormData();
         form.append('image', file, file.name);
-        await fetch('/api/admin/upload', { method: 'POST', credentials: 'include', body: form });
+        const r = await authFetch('/api/admin/upload', { method: 'POST', body: form });
+        if (!r) return; // 401 리다이렉트됨
+        if (!r.ok) {
+          showToast(`업로드 실패 (${r.status}): ${file.name}`, true);
+          continue;
+        }
+        okCount++;
       }
-      showToast(`${files.length}건 업로드 완료`);
+      if (okCount > 0) showToast(`${okCount}건 업로드 완료`);
       loadImageLibrary();
     } catch (err) {
       showToast('업로드 에러: ' + err.message, true);
@@ -179,7 +201,12 @@ async function uploadThumbnail() {
     try {
       const form = new FormData();
       form.append('image', file, file.name);
-      const r = await fetch('/api/admin/upload', { method: 'POST', credentials: 'include', body: form });
+      const r = await authFetch('/api/admin/upload', { method: 'POST', body: form });
+      if (!r) return; // 401 리다이렉트됨
+      if (!r.ok) {
+        showToast(`업로드 실패 (${r.status})`, true);
+        return;
+      }
       const data = await r.json();
       if (data.url) {
         document.getElementById('thumbnail').value = data.url;

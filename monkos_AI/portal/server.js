@@ -219,6 +219,45 @@ const httpServer = createServer(async (req, res) => {
   }
 
   // === CMS 공개 페이지 (SSR) ===
+  // HEAD 요청을 GET으로 처리 — Googlebot HEAD 404 방지 (2026-04-10)
+  if (req.method === 'HEAD') req.method = 'GET';
+
+  // 구 슬러그 → 신규 슬러그 301 리다이렉트 (2026-04-10, GSC 404 해소)
+  const blogRedirects = {
+    // JA
+    '/ja/blog/vol23-qa-5':     '/ja/blog/ai-de-shomei-shashin-geneki-shashinkan-review',
+    '/ja/blog/vol22':          '/ja/blog/job-interview-updo-hair-5-steps',
+    '/ja/blog/vol21-ai-monkosai': '/ja/blog/20-year-photographer-ai-id-photo-monkos-ai-birth',
+    '/ja/blog/vol20-vs':       '/ja/blog/korea-vs-japan-job-photo-hair',
+    // EN
+    '/en/blog/vol23-qa-5':     '/en/blog/ai-id-photo-review-photography-studio-owner',
+    '/en/blog/vol22':          '/en/blog/interview-updo-flight-attendant-hair-5-steps',
+    '/en/blog/vol21-ai-monkosai': '/en/blog/ai-id-photo-created-by-a-20-year-photographer-monkos-ai',
+    '/en/blog/vol20-vs':       '/en/blog/korean-vs-japanese-job-application-photos-hairstyle',
+    '/en/blog/vol19':          '/en/blog/id-photo-job-application-photo-makeup-for-each-skin-tone',
+    // KO
+    '/blog/vol23-qa-5':        '/blog/vol24-20-ai-monkosai',
+
+    // === 신규 3건 (2026-04-14 GSC 404 해소 — hreflang 유령 URL 잔존분) ===
+    // 주: 오더 원안은 6건이었으나 JA 번역본 부재(vol17/18/19 JA)로 3건 제외.
+    //    해당 3건은 건1(hreflang 조건부)로 장기 해소 예정. 기존 캐시는 자연 해소.
+    '/en/blog/vol17-vs':       '/en/blog/korea-vs-japan-interview-attire-whats-the-difference',
+    '/en/blog/vol18-ai-vs':    '/en/blog/ai-photo-id-can-a-selfie-really-become-an-official-photo',
+    '/ja/blog/vol24-20-ai-monkosai': '/ja/blog/20-year-photographer-ai-id-photo-monkos-ai-birth',
+  };
+  if (blogRedirects[urlPath]) {
+    res.writeHead(301, { 'Location': blogRedirects[urlPath] });
+    return res.end();
+  }
+
+  // === /app → idphoto 서비스 리다이렉트 (ChatGPT referral 404 해소) ===
+  if (urlPath === '/app' && req.method === 'GET') {
+    const acceptLang = req.headers['accept-language'] || '';
+    const target = acceptLang.startsWith('ja') ? 'https://idphoto-jp.monkos.ai/' : 'https://idphoto-kr.monkos.ai/';
+    res.writeHead(302, { 'Location': target });
+    return res.end();
+  }
+
   if ((urlPath === '/' || urlPath === '/index.html') && req.method === 'GET') return renderHome(req, res);
   // 다국어 홈 라우트 (/ja/, /en/ → 경로 방식 통일)
   if ((urlPath === '/ja' || urlPath === '/ja/') && req.method === 'GET') return renderHome(req, res, 'ja');

@@ -685,11 +685,10 @@ app.get('/sitemap.xml', (req, res) => {
   const today = new Date().toISOString().slice(0, 10);
   const urls = [
     { loc: '/',                   priority: '1.0', changefreq: 'weekly',  lastmod: today },
-    { loc: '/charge',             priority: '0.5', changefreq: 'monthly', lastmod: today },
-    { loc: '/privacy.html',       priority: '0.3', changefreq: 'monthly', lastmod: '2026-02-12' },
-    { loc: '/terms.html',         priority: '0.3', changefreq: 'monthly', lastmod: '2026-02-12' },
-    { loc: '/refund.html',        priority: '0.3', changefreq: 'monthly', lastmod: '2026-02-24' },
-    { loc: '/credits-policy.html', priority: '0.3', changefreq: 'monthly', lastmod: '2026-03-08' },
+    { loc: '/app',                priority: '1.0', changefreq: 'weekly',  lastmod: today },
+    { loc: '/camera',             priority: '0.9', changefreq: 'weekly',  lastmod: today },
+    { loc: '/prep',               priority: '0.8', changefreq: 'monthly', lastmod: today },
+    { loc: '/policy/data',        priority: '0.4', changefreq: 'yearly',  lastmod: '2026-03-08' },
   ];
   const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
     urls.map(u => `  <url>\n    <loc>${base}${u.loc}</loc>\n    <lastmod>${u.lastmod}</lastmod>\n    <changefreq>${u.changefreq}</changefreq>\n    <priority>${u.priority}</priority>\n  </url>`).join('\n') +
