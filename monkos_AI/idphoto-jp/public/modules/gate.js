@@ -65,10 +65,10 @@ function _showLoginRequired(message, onSuccess) {
     const popup = window.open('about:blank', 'line-login', 'width=500,height=600');
     _closeLoginRequired();
     if (!popup) {
-      window.location.href = `${API.PORTAL_URL}/auth/line?redirect_app=${encodeURIComponent(window.location.origin)}`;
+      window.location.href = `${API.PORTAL_URL}/auth/line?redirect_app=${encodeURIComponent(window.location.origin)}&source_page=${encodeURIComponent(window.location.hostname + window.location.pathname)}`;
       return;
     }
-    popup.location.href = `${API.PORTAL_URL}/auth/line?popup=1&redirect_app=${encodeURIComponent(window.location.origin)}`;
+    popup.location.href = `${API.PORTAL_URL}/auth/line?popup=1&redirect_app=${encodeURIComponent(window.location.origin)}&source_page=${encodeURIComponent(window.location.hostname + window.location.pathname)}`;
     function handler(e) {
       if (e.origin !== API.PORTAL_URL) return;
       if (e.data && e.data.type === 'auth-success') {
@@ -98,11 +98,11 @@ function _closeLoginRequired() {
 // ─── LINE ログイン (Simple) ───
 function _startLineLoginSimple() {
   const popup = window.open(
-    `${API.PORTAL_URL}/auth/line?popup=1&redirect_app=${encodeURIComponent(window.location.origin)}`,
+    `${API.PORTAL_URL}/auth/line?popup=1&redirect_app=${encodeURIComponent(window.location.origin)}&source_page=${encodeURIComponent(window.location.hostname + window.location.pathname)}`,
     'line-login', 'width=500,height=600'
   );
   if (!popup) {
-    window.location.href = `${API.PORTAL_URL}/auth/line?redirect_app=${encodeURIComponent(window.location.origin)}`;
+    window.location.href = `${API.PORTAL_URL}/auth/line?redirect_app=${encodeURIComponent(window.location.origin)}&source_page=${encodeURIComponent(window.location.hostname + window.location.pathname)}`;
     return;
   }
 
@@ -141,7 +141,7 @@ function _startGoogleLoginSimple() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
-            body: JSON.stringify({ access_token: tokenResponse.access_token }),
+            body: JSON.stringify({ access_token: tokenResponse.access_token, signup_source: window.location.hostname + window.location.pathname }),
           });
           const data = await res.json();
           if (data.success && data.user) {
@@ -150,6 +150,12 @@ function _startGoogleLoginSimple() {
               credits: data.user.credits ?? 0, avatar: data.user.picture || '',
             };
             Monk.log(`Googleログイン成功: ${data.user.email} (${store.user.credits}c)`);
+            if (data.isNewUser && typeof gtag === 'function') {
+              gtag('event', 'sign_up', {
+                method: 'google',
+                signup_source: window.location.hostname + window.location.pathname
+              });
+            }
             _fireLoginCallback();
           }
         } catch (err) {
