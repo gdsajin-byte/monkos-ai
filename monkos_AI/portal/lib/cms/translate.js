@@ -5,6 +5,27 @@
 import { ai, firestore, log } from '../shared/config.js';
 import { requireAdmin } from './admin-auth.js';
 
+function hasKorean(str) {
+  return /[가-힣ㄱ-ㅎㅏ-ㅣ]/.test(str);
+}
+
+async function ensureEnglishBase(title, candidateBase) {
+  if (!hasKorean(candidateBase)) return candidateBase;
+  try {
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.0-flash',
+      contents: [{ role: 'user', parts: [{ text: `Convert this blog title to an English URL slug. Rules: lowercase, hyphens only, max 60 chars, ASCII only. Return ONLY the slug, nothing else.\n\nTitle: ${title}` }] }],
+      config: { maxOutputTokens: 64, temperature: 0.1 },
+    });
+    const slug = (response.candidates?.[0]?.content?.parts?.[0]?.text || '')
+      .trim().toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/-+/g, '-').replace(/^-|-$/g, '').substring(0, 60);
+    if (slug.length >= 3) return slug;
+  } catch (err) {
+    log(`[CMS] translate baseSlug AI 생성 실패: ${err.message}`, 'WARN');
+  }
+  return 'post-' + new Date().toISOString().slice(0, 19).replace(/[-:T]/g, '');
+}
+
 const TRANSLATE_PROMPT = {
   // KO 원본 → JA/EN
   ja: `あなたは韓国語→日本語の専門翻訳者です。
@@ -43,11 +64,11 @@ Translate the following blog post into natural English.
 
 const JSON_INSTRUCTION = {
   ja: `以下のJSON形式で回答してください:
-{"title": "翻訳されたタイトル", "content": "翻訳された本文(マークダウン)", "summary": "翻訳された要約(160文字以内、SEO用)", "slug": "english-slug-from-title (lowercase, hyphens, max 60 chars, ASCII only)", "tags": ["日本語タグ1", "日本語タグ2", "日本語タグ3"]}`,
+{"title": "翻訳されたタイトル", "content": "翻訳された本文(マークダウン)", "summary": "翻訳された要約(160文字以内、SEO用)", "tags": ["日本語タグ1", "日本語タグ2", "日本語タグ3"]}`,
   en: `Respond in the following JSON format:
-{"title": "translated title", "content": "translated body (markdown)", "summary": "translated summary (max 160 chars, for SEO)", "slug": "english-slug-from-title (lowercase, hyphens, max 60 chars, ASCII only)", "tags": ["English tag1", "English tag2", "English tag3"]}`,
+{"title": "translated title", "content": "translated body (markdown)", "summary": "translated summary (max 160 chars, for SEO)", "tags": ["English tag1", "English tag2", "English tag3"]}`,
   ko: `다음 JSON 형식으로 응답하세요:
-{"title": "번역된 제목", "content": "번역된 본문(마크다운)", "summary": "번역된 요약(160자 이내, SEO용)", "slug": "english-slug-from-title (소문자, 하이픈, 60자 이내, ASCII만)", "tags": ["한국어 태그1", "한국어 태그2", "한국어 태그3"]}`,
+{"title": "번역된 제목", "content": "번역된 본문(마크다운)", "summary": "번역된 요약(160자 이내, SEO용)", "tags": ["한국어 태그1", "한국어 태그2", "한국어 태그3"]}`,
 };
 
 export async function translateAndSaveBlogPost(slug, originalDoc) {
@@ -123,20 +144,12 @@ ${JSON_INSTRUCTION[lang] || JSON_INSTRUCTION.en}`;
         }
       }
 
-      // Gemini가 생성한 영문 slug 사용, 없으면 원본 slug에 lang 접미사
-      let translatedSlug;
-      if (translated.slug) {
-        // slug 정제: ASCII만, 하이픈 구분, lang 접미사
-        translatedSlug = translated.slug
-          .toLowerCase()
-          .replace(/[^a-z0-9-]/g, '')
-          .replace(/-+/g, '-')
-          .replace(/^-|-$/g, '')
-          .substring(0, 60);
-        translatedSlug = `${translatedSlug}-${lang}`;
-      } else {
-        translatedSlug = `${slug}-${lang}`;
+      let baseSlug = (originalDoc.baseSlug || slug).replace(/-(kr|ja|en)$/, '');
+      if (hasKorean(baseSlug)) {
+        baseSlug = await ensureEnglishBase(originalDoc.title, baseSlug);
+        log(`[CMS] 한글 baseSlug 교정: "${slug}" → "${baseSlug}"`);
       }
+      const translatedSlug = `${baseSlug}-${lang}`;
       const existingDoc = await blogCollection.doc(translatedSlug).get();
       const now = new Date().toISOString();
 
@@ -167,7 +180,7 @@ ${JSON_INSTRUCTION[lang] || JSON_INSTRUCTION.en}`;
           updatedAt: now,
           translatedAt: now,
           viewCount: 0,
-          originalSlug: slug,
+          originalSlug: baseSlug,
           autoTranslated: true,
         });
       }

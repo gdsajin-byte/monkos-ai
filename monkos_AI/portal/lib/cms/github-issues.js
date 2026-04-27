@@ -28,18 +28,20 @@ function buildIssueBody(enPost, canonicalUrl) {
 
 async function findEnTranslation(originalSlug) {
   const blogCollection = firestore.collection('blog_posts');
+  const baseSlug = originalSlug.replace(/-(kr|ja|en)$/, '');
 
-  // 1) originalSlug 필드로 검색
-  const snapshot = await blogCollection
-    .where('originalSlug', '==', originalSlug)
-    .where('lang', '==', 'en')
-    .limit(1)
-    .get();
+  // 1) originalSlug 필드로 검색 (new schema: baseSlug, legacy: full slug)
+  for (const query of [baseSlug, originalSlug]) {
+    const snapshot = await blogCollection
+      .where('originalSlug', '==', query)
+      .where('lang', '==', 'en')
+      .limit(1)
+      .get();
+    if (!snapshot.empty) return snapshot.docs[0].data();
+  }
 
-  if (!snapshot.empty) return snapshot.docs[0].data();
-
-  // 2) slug-en 직접 조회
-  const directDoc = await blogCollection.doc(`${originalSlug}-en`).get();
+  // 2) {base}-en 직접 조회
+  const directDoc = await blogCollection.doc(`${baseSlug}-en`).get();
   if (directDoc.exists) return directDoc.data();
 
   return null;
@@ -77,7 +79,11 @@ export async function publishBlogToGitHub(originalSlug) {
 
   try {
     // 카테고리 필터: AI 카테고리만 GitHub Issue 등록
-    const originalDoc = await firestore.collection('blog_posts').doc(originalSlug).get();
+    let originalDoc = await firestore.collection('blog_posts').doc(originalSlug).get();
+    if (!originalDoc.exists) {
+      const baseSlug = originalSlug.replace(/-(kr|ja|en)$/, '');
+      originalDoc = await firestore.collection('blog_posts').doc(`${baseSlug}-kr`).get();
+    }
     const originalData = originalDoc.exists ? originalDoc.data() : {};
     const category = (originalData.category || '').toLowerCase();
     if (category !== 'ai') {

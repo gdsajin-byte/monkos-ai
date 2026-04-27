@@ -44,6 +44,15 @@ function sanitizeSlug(slug) {
     .substring(0, 100);
 }
 
+function hasKorean(str) {
+  return /[가-힣ㄱ-ㅎㅏ-ㅣ]/.test(str);
+}
+
+function langSuffix(lang) {
+  const map = { ko: 'kr', ja: 'ja', en: 'en' };
+  return map[lang] || 'kr';
+}
+
 function extractSlug(url) {
   const parts = url.split('/api/admin/blog/');
   const raw = parts[1] ? decodeURIComponent(parts[1].split('?')[0]) : null;
@@ -119,11 +128,21 @@ export async function handleBlogCreate(req, res) {
         .substring(0, 160);
     }
 
-    let slug = sanitizeSlug(body.slug || generateSlug(title));
-    if (!slug) {
-      slug = await generateSlugFromAI(title);
-      log(`[CMS] AI slug 생성: "${title}" → "${slug}"`);
+    const postLang = lang || 'ko';
+    const suffix = langSuffix(postLang);
+
+    let baseSlug = sanitizeSlug(body.slug || generateSlug(title));
+    if (!baseSlug || hasKorean(baseSlug)) {
+      baseSlug = await generateSlugFromAI(title);
+      log(`[CMS] AI slug 생성: "${title}" → "${baseSlug}"`);
     }
+    if (hasKorean(baseSlug)) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ error: 'slug에 한글이 포���될 수 없습니다. 영문 slug를 직접 지정해주세요.' }));
+    }
+    baseSlug = baseSlug.replace(/-(kr|ja|en)$/, '');
+    const slug = `${baseSlug}-${suffix}`;
+
     const existing = await blogCollection.doc(slug).get();
     if (existing.exists) {
       res.writeHead(409, { 'Content-Type': 'application/json' });
@@ -133,6 +152,7 @@ export async function handleBlogCreate(req, res) {
     const now = new Date().toISOString();
     const post = {
       slug,
+      baseSlug,
       title,
       content,
       summary: (summary || '').substring(0, 160),

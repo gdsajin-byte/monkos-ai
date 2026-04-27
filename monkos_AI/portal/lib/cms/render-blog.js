@@ -23,7 +23,7 @@ export async function blogListFragment(req, forceLang = null) {
   // originalSlug 기반 중복 제거 (같은 원본의 번역본이 혼재하지 않도록)
   const seenOriginals = new Set();
   allPosts = allPosts.filter(p => {
-    const key = p.originalSlug || p.slug;
+    const key = p.originalSlug || p.slug.replace(/-(kr|ja|en)$/, '');
     if (seenOriginals.has(key)) return false;
     seenOriginals.add(key);
     return true;
@@ -79,14 +79,13 @@ export async function blogListFragment(req, forceLang = null) {
   const cardsHtml = posts.map(p => {
     let cardHref;
     const postLang = p.lang || 'ko';
+    const baseSlug = p.slug.replace(/-(kr|ja|en)$/, '');
     if (postLang === 'ja') {
-      const baseSlug = p.slug.replace(/-ja$/, '');
       cardHref = `/ja/blog/${escapeHtml(baseSlug)}`;
     } else if (postLang === 'en') {
-      const baseSlug = p.slug.replace(/-en$/, '');
       cardHref = `/en/blog/${escapeHtml(baseSlug)}`;
     } else {
-      cardHref = `/blog/${escapeHtml(p.slug)}`;
+      cardHref = `/blog/${escapeHtml(baseSlug)}`;
     }
     return `
       <a href="${cardHref}" class="blog-card">
@@ -229,8 +228,11 @@ export async function blogPostFragment(req, lang = null) {
   }
   if (!slug) return null; // 404 시그널
 
-  const docId = lang ? `${slug}-${lang}` : slug;
-  const doc = await blogCollection.doc(docId).get();
+  const docId = lang ? `${slug}-${lang}` : `${slug}-kr`;
+  let doc = await blogCollection.doc(docId).get();
+  if ((!doc.exists || !doc.data().published) && !lang) {
+    doc = await blogCollection.doc(slug).get();
+  }
   if (!doc.exists || !doc.data().published) return null;
 
   const post = doc.data();
@@ -244,14 +246,17 @@ export async function blogPostFragment(req, lang = null) {
 
   // hreflang — 실제 존재+published 언어 버전만 출력 (2026-04-14 유령URL 근절)
   const hreflangPairs = [
-    { lang: 'ko', docId: slug, prefix: '' },
+    { lang: 'ko', docId: `${slug}-kr`, prefix: '' },
     { lang: 'ja', docId: `${slug}-ja`, prefix: '/ja' },
     { lang: 'en', docId: `${slug}-en`, prefix: '/en' },
   ];
   const existChecks = await Promise.all(
     hreflangPairs.map(async (p) => {
       try {
-        const d = await blogCollection.doc(p.docId).get();
+        let d = await blogCollection.doc(p.docId).get();
+        if ((!d.exists || !d.data().published) && p.lang === 'ko') {
+          d = await blogCollection.doc(slug).get();
+        }
         return d.exists && d.data().published ? p : null;
       } catch { return null; }
     })

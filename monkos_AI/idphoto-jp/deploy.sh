@@ -103,7 +103,7 @@ gcloud run deploy ${SERVICE_NAME} \
   --cpu ${CPU} \
   --timeout 300 \
   --concurrency 80 \
-  --min-instances 0 \
+  --min-instances 1 \
   --max-instances ${MAX_INSTANCES} \
   --update-env-vars "PROJECT_ID=${PROJECT_ID},LOCATION=${REGION},GCS_BUCKET=${GCS_BUCKET}" \
   --service-account ${SERVICE_ACCOUNT}

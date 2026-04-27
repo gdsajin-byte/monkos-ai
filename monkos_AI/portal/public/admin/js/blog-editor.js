@@ -225,7 +225,10 @@ async function save(published) {
 /* ===== 미리보기 ===== */
 function preview() {
   const slug = document.getElementById('slug').value.trim();
-  if (slug) window.open(`/blog/${slug}`, '_blank');
+  const lang = document.getElementById('lang').value;
+  const base = slug.replace(/-(kr|ja|en)$/, '');
+  const prefix = lang === 'ja' ? '/ja' : lang === 'en' ? '/en' : '';
+  if (base) window.open(`${prefix}/blog/${base}`, '_blank');
   else showToast('Save first to preview', true);
 }
 

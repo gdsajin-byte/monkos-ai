@@ -44,7 +44,7 @@ export async function renderSitemap(req, res) {
     const blogUrls = snapshot.docs.map(doc => {
       const data = doc.data();
       const docLang = data.lang || 'ko';
-      const baseSlug = doc.id.replace(/-(?:ja|en)$/, '');
+      const baseSlug = doc.id.replace(/-(?:kr|ja|en)$/, '');
       const langPrefix = docLang === 'ko' ? '' : `/${docLang}`;
       return {
         loc: `https://monkos.ai${langPrefix}/blog/${baseSlug}`,
