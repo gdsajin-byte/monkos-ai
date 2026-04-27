@@ -109,6 +109,9 @@ status: active
 | 4/27 | 막내3 | **전 Phase 정밀 감사** — 49항목 중 42건 완료(86%). 미실행 7건 특정. Phase 1.7 잔존 2건(깨진이미지+lang=ko) 해소 확인. specs 20개국+ 이미 81 URL 완료. 일본 L1 5개 중 4/5 색인(6일 만에 3개 SERP 노출) | [REPORT_20260427_막내3_CITADEL_Phase감사+미실행보고](../reports/REPORT_20260427_막내3_CITADEL_Phase감사+미실행보고.md) | ✅ |
 | 4/27 | 민아 | **GSC 28일 분석** — Quick Wins 3건, claudemax /en/ 노출 49% 점유 CTR 0.23%(자산화 실패), "여권사이즈" specs 매칭 오류(KR에 SG/TH 노출), 面接お団子 카니발리제이션 | [REPORT_20260427_iMac민아_GSC_28일_검색노출분석](../reports/REPORT_20260427_iMac민아_GSC_28일_검색노출분석.md) | ✅ |
 | 4/27 | 민아 | **GSC×GA4 교차 + 이미지 검색** — 이미지 노출 4/16 변곡점(일평균 14→61, 4.2배). chatgpt.com referral 8세션(AEO 시작). 트래픽 79% 광고, Organic 1.9%. 4/22~23 급락=광고 정지 패턴 | [REPORT_20260427_iMac민아_GSC_GA4_교차분석_이미지검색](../reports/REPORT_20260427_iMac민아_GSC_GA4_교차분석_이미지검색.md) | ✅ |
+| 4/27 | 쌍아 | **교차오염 25건 Firestore 삭제** — migrate_korean_slugs.js `--execute` 실행. 3/14~3/21 초기 문서 전부 delete (unpublish 아닌 완전 삭제, 작가님 승인) | — | ✅ |
+| 4/27 | 쌍아 | **KO 잔재 35건 마이그레이션** — `--phase2 --execute` 실행. 한글 slug → 영문 `-kr` doc 전환. 기존 번역본 `originalSlug` 연쇄 갱신. server.js 301 매핑 35건 추가. portal rev **00238-987** 배포 완료 | server.js, migrate_korean_slugs.js | ✅ |
+| 4/27 | 쌍아 | **vol36 번역 실패 발견** — 한송이 신규 발행(13:51 KST). Gemini JSON 파싱 오류(`Bad escaped character`). JA/EN 미생성. translate.js JSON 방어 + vol36 재번역 + 35건 일괄 재번역 지시서 발행 | ORDER_20260427 | ⏳ 막내 투입 대기 |
 
 ---
 
@@ -188,8 +191,10 @@ status: active
 | 한글 slug 60건 전수 조사 + 교정 방안 설계 | ✅ | 막내2 |
 | slug 스키마 통일 코드 (영문 베이스 + -kr/-ja/-en) | ✅ | 막내2 |
 | portal rev 00237-6p9 배포 + 레거시 호환 검증 | ✅ | 쌍아 |
-| **교차오염 25건 Firestore 정리 + 301** | ⏳ 진행중 | 막내2 |
-| KO 잔재 35건 Firestore 마이그레이션 | ⏳ B-1 검증 후 | — |
+| 교차오염 25건 Firestore 삭제 (완전 삭제, unpublish 아님) | ✅ | 쌍아 |
+| KO 잔재 35건 Firestore 마이그레이션 (한글→영문-kr) + 301 35건 | ✅ | 쌍아 |
+| portal rev 00238-987 배포 (301 매핑 반영) | ✅ | 쌍아 |
+| translate.js JSON 파싱 방어 + vol36 재번역 + 35건 일괄 재번역 | ⏳ 지시서 발행 | 막내 |
 
 ### Phase 2 미착수 → 재분류 (4/27 감사 기준)
 
