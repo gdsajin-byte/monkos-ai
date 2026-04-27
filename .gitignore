@@ -114,5 +114,10 @@ apps/monkos-chat/*.zip
 # iPhone 캡쳐 (로컬 전용)
 iphone_capture/
 
+# R&D 바이너리 (PDF/DOCX — 로컬·GDrive 관리)
+monkos-ops/tech/rnd/*.pdf
+monkos-ops/tech/rnd/*.docx
+monkos-ops/tech/rnd/PDF변환 디딤돌 R&D/
+
 # Local device memory (디바이스별 로컬 전용)
 MEMORY.md
