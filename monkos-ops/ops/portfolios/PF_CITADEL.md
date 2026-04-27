@@ -112,6 +112,11 @@ status: active
 | 4/27 | 쌍아 | **교차오염 25건 Firestore 삭제** — migrate_korean_slugs.js `--execute` 실행. 3/14~3/21 초기 문서 전부 delete (unpublish 아닌 완전 삭제, 작가님 승인) | — | ✅ |
 | 4/27 | 쌍아 | **KO 잔재 35건 마이그레이션** — `--phase2 --execute` 실행. 한글 slug → 영문 `-kr` doc 전환. 기존 번역본 `originalSlug` 연쇄 갱신. server.js 301 매핑 35건 추가. portal rev **00238-987** 배포 완료 | server.js, migrate_korean_slugs.js | ✅ |
 | 4/27 | 쌍아 | **vol36 번역 실패 발견** — 한송이 신규 발행(13:51 KST). Gemini JSON 파싱 오류(`Bad escaped character`). JA/EN 미생성. translate.js JSON 방어 + vol36 재번역 + 35건 일괄 재번역 지시서 발행 | ORDER_20260427 | ⏳ 막내 투입 대기 |
+| 4/27 | 쌍아 | **블로그 본문 잘림 발견** — 기존 데이터 문제. EN 28건/JA 24건/KO 15건 content < 500자. CMS 저장 시 원본 유실(기존). 마이그레이션은 잘린 데이터를 그대로 복사한 결과. **쌍아 과오: Firestore 전수 검증 없이 마이그레이션 실행** | — | 🔴 |
+| 4/27 | 쌍아 | **render-blog.js 목록 12건만 표시 버그** — 중복 제거 key가 언어 무관 base slug → 전 언어 257건에서 12건만 생존. `effectiveLang` 강제 + base key 개선 → 즉시 수정+배포 rev 00239-sxg | render-blog.js | ✅ |
+| 4/27 | 쌍아 | **CMS 파이프라인 전수 진단 지시서 발행** — PF_PORTAL 소관. 작성→번역→sitemap→색인 전 구간 오류 패턴 분석. 추가 마이그레이션/번역 트리거 전면 동결 | ORDER_20260427 | ⏳ 막내 투입 |
+| 4/27 | 민아 | **GSC 색인 경보 원인 규명** — idphoto-jp/kr `Disallow: /app` prefix 매칭이 `/guide/app-comparison` 차단 + sitemap에 차단 URL 포함 = robots.txt × sitemap 직접 충돌 | REPORT_20260427 | ✅ |
+| 4/27 | 쌍아 | **robots.txt × sitemap 충돌 해소** — robots.txt `/app` → `/app/` (prefix 매칭 사고 방지) + sitemap에서 /app /camera /prep 제거. idphoto-jp+kr 배포 완료 | robots.txt ×2, server.js ×2 | ✅ |
 
 ---
 

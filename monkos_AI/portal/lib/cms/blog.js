@@ -23,7 +23,7 @@ async function generateSlugFromAI(title) {
   try {
     const response = await ai.models.generateContent({
       model: 'gemini-2.0-flash',
-      contents: [{ role: 'user', parts: [{ text: `Convert this blog title to an English URL slug. Rules: lowercase, hyphens only, max 60 chars, ASCII only. Return ONLY the slug, nothing else.\n\nTitle: ${title}` }] }],
+      contents: [{ role: 'user', parts: [{ text: `You are an SEO expert. First TRANSLATE the blog title meaning into English, then convert to a URL slug. Do NOT romanize Korean — translate the MEANING. Lowercase, hyphens only, max 60 chars, ASCII only. Return ONLY the slug.\n\nTitle: ${title}` }] }],
       config: { maxOutputTokens: 64, temperature: 0.1 },
     });
     const slug = (response.candidates?.[0]?.content?.parts?.[0]?.text || '')

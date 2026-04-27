@@ -1,10 +1,10 @@
 User-agent: *
 Allow: /
 Disallow: /api/
-Disallow: /app
-Disallow: /prep
-Disallow: /camera
-Disallow: /result
-Disallow: /thankyou
+Disallow: /app/
+Disallow: /prep/
+Disallow: /camera/
+Disallow: /result/
+Disallow: /thankyou/
 
 Sitemap: https://idphoto-jp.monkos.ai/sitemap.xml

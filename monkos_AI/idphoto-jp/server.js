@@ -730,9 +730,7 @@ app.get('/sitemap.xml', (req, res) => {
   const today = new Date().toISOString().slice(0, 10);
   const urls = [
     { loc: '/',                         priority: '1.0', changefreq: 'weekly',  lastmod: today },
-    { loc: '/app',                      priority: '1.0', changefreq: 'weekly',  lastmod: today },
-    { loc: '/camera',                   priority: '0.9', changefreq: 'weekly',  lastmod: today },
-    { loc: '/prep',                     priority: '0.8', changefreq: 'monthly', lastmod: today },
+    // /app, /camera, /prep — robots.txt 차단 (촬영 퍼널 중간진입 방지). sitemap에서 제외.
     // Phase 2.1 — 日本コアキーワード ランディング (2026-04-21)
     { loc: '/guide/shukatsu',           priority: '0.9', changefreq: 'monthly', lastmod: today },
     { loc: '/guide/app-comparison',     priority: '0.9', changefreq: 'monthly', lastmod: today },

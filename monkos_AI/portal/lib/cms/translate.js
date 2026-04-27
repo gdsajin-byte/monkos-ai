@@ -14,7 +14,7 @@ async function ensureEnglishBase(title, candidateBase) {
   try {
     const response = await ai.models.generateContent({
       model: 'gemini-2.0-flash',
-      contents: [{ role: 'user', parts: [{ text: `Convert this blog title to an English URL slug. Rules: lowercase, hyphens only, max 60 chars, ASCII only. Return ONLY the slug, nothing else.\n\nTitle: ${title}` }] }],
+      contents: [{ role: 'user', parts: [{ text: `You are an SEO expert. First TRANSLATE the blog title meaning into English, then convert to a URL slug. Do NOT romanize Korean — translate the MEANING. Lowercase, hyphens only, max 60 chars, ASCII only. Return ONLY the slug.\n\nTitle: ${title}` }] }],
       config: { maxOutputTokens: 64, temperature: 0.1 },
     });
     const slug = (response.candidates?.[0]?.content?.parts?.[0]?.text || '')
@@ -112,7 +112,7 @@ ${JSON_INSTRUCTION[lang] || JSON_INSTRUCTION.en}`;
         model: 'gemini-2.0-flash',
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
         config: {
-          maxOutputTokens: 8192,
+          maxOutputTokens: 32768,
           temperature: 0.3,
           responseMimeType: 'application/json',
         },
@@ -121,7 +121,35 @@ ${JSON_INSTRUCTION[lang] || JSON_INSTRUCTION.en}`;
       const text = response.candidates?.[0]?.content?.parts?.[0]?.text;
       if (!text) throw new Error('빈 응답');
 
-      const translated = JSON.parse(text);
+      let translated;
+      try {
+        translated = JSON.parse(text);
+      } catch (parseErr) {
+        try {
+          const sanitized = text
+            .replace(/\\(?!["\\/bfnrtu])/g, '\\\\')
+            .replace(/[\x00-\x1f]/g, ' ');
+          translated = JSON.parse(sanitized);
+          log(`[CMS] JSON 수리 성공 (${lang})`);
+        } catch {
+          const titleMatch = text.match(/"title"\s*:\s*"((?:[^"\\]|\\.)*)"/);
+          const contentMatch = text.match(/"content"\s*:\s*"((?:[^"\\]|\\[\s\S])*)"/);
+          const summaryMatch = text.match(/"summary"\s*:\s*"((?:[^"\\]|\\.)*)"/);
+          const tagsMatch = text.match(/"tags"\s*:\s*\[(.*?)\]/);
+          if (titleMatch && contentMatch) {
+            translated = {
+              title: titleMatch[1].replace(/\\"/g, '"').replace(/\\n/g, '\n'),
+              content: contentMatch[1].replace(/\\"/g, '"').replace(/\\n/g, '\n'),
+              summary: summaryMatch ? summaryMatch[1].replace(/\\"/g, '"') : '',
+              tags: tagsMatch ? tagsMatch[1].match(/"([^"]*)"/g)?.map(t => t.replace(/"/g, '')) || [] : [],
+            };
+            log(`[CMS] JSON regex 추출 성공 (${lang})`);
+          } else {
+            log(`[CMS] 번역 JSON 원문 (앞 500자): ${text.substring(0, 500)}`, 'ERROR');
+            throw new Error(`JSON 파싱 실패 (원본+수리+regex 전부 실패): ${parseErr.message}`);
+          }
+        }
+      }
 
       // 번역 검증: 타이틀이 원본과 동일하면 번역 실패로 판단
       if (translated.title === originalDoc.title) {

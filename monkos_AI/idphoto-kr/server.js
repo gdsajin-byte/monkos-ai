@@ -685,9 +685,7 @@ app.get('/sitemap.xml', (req, res) => {
   const today = new Date().toISOString().slice(0, 10);
   const urls = [
     { loc: '/',                   priority: '1.0', changefreq: 'weekly',  lastmod: today },
-    { loc: '/app',                priority: '1.0', changefreq: 'weekly',  lastmod: today },
-    { loc: '/camera',             priority: '0.9', changefreq: 'weekly',  lastmod: today },
-    { loc: '/prep',               priority: '0.8', changefreq: 'monthly', lastmod: today },
+    // /app, /camera, /prep — robots.txt 차단 (촬영 퍼널 중간진입 방지). sitemap에서 제외.
     { loc: '/policy/data',        priority: '0.4', changefreq: 'yearly',  lastmod: '2026-03-08' },
   ];
   const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +

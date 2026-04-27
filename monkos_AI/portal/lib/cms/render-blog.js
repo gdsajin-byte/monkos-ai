@@ -14,18 +14,18 @@ export async function blogListFragment(req, forceLang = null) {
   const page = Math.max(1, parseInt(url.searchParams.get('page') || '1', 10));
   const perPage = 10;
 
-  let query = blogCollection.where('published', '==', true).orderBy('createdAt', 'desc');
-  if (lang) query = blogCollection.where('published', '==', true).where('lang', '==', lang).orderBy('createdAt', 'desc');
+  const effectiveLang = lang || 'ko';
+  let query = blogCollection.where('published', '==', true).where('lang', '==', effectiveLang).orderBy('createdAt', 'desc');
 
   const snapshot = await query.get();
   let allPosts = snapshot.docs.map(doc => ({ slug: doc.id, ...doc.data() }));
 
-  // originalSlug 기반 중복 제거 (같은 원본의 번역본이 혼재하지 않도록)
+  // 동일 원본의 구/신 slug doc 공존 시 중복 제거 (같은 언어 내에서만)
   const seenOriginals = new Set();
   allPosts = allPosts.filter(p => {
-    const key = p.originalSlug || p.slug.replace(/-(kr|ja|en)$/, '');
-    if (seenOriginals.has(key)) return false;
-    seenOriginals.add(key);
+    const base = p.baseSlug || p.originalSlug || p.slug.replace(/-(kr|ja|en)$/, '');
+    if (seenOriginals.has(base)) return false;
+    seenOriginals.add(base);
     return true;
   });
 
