@@ -103,6 +103,12 @@ status: active
 | 4/21 | 민아 | **Phase 2.1 제안 §4** — 일본 코어 키워드 5개(就活写真·証明写真 アプリ·パスポート写真 アプリ·証明写真 AI·運転免許 写真) 매칭 L1 랜딩 신설 지시 | [PROPOSAL_20260421_민아_CITADEL_Phase2_색인누수차단+일본타깃정밀화](../proposals/PROPOSAL_20260421_민아_CITADEL_Phase2_색인누수차단+일본타깃정밀화.md) §4 | ✅ 지시서 환급 |
 | 4/21 | 쌍아→막내1 | **Phase 2.1 지시서 발행** — 일본 코어 키워드 5개 L1 랜딩 신설 (조정안 A/B/C/D 작가님 전건 승인) | [ORDER_20260421_iMac쌍아_막내1_CITADEL_Phase21_일본랜딩신설](../orders/2026-04/ORDER_20260421_iMac쌍아_막내1_CITADEL_Phase21_일본랜딩신설.md) | ✅ |
 | 4/21 | 막내1 | **Phase 2.1 실행** — idphoto-jp L1 랜딩 5개 신설·배포: `/guide/shukatsu`·`/guide/app-comparison`·`/guide/ai`·`/specs/passport`·`/specs/drivers-license`. 각 페이지에 title·meta description·H1·hreflang·JSON-LD(FAQ/HowTo)·CTA(/prep) 구현. server.js 라우트 5건 + sitemap urls 배열 5→10 URL 확장. prod 배포 jp rev **00108-ngl** 100% 트래픽. **5/5 URL HTTP 200 실측** + sitemap.xml 10 URL 반영 확인. 정합성 검토 3건(라우팅 MPA·sitemap 하드코딩 배열·PHOTO_SPECS config.js 2종) 선행 수행 후 실행. 운전면허 규격 24×30mm 확인 출처는 외무성·경찰청 가이드 기준. | public/guide/*.html 3건·public/specs/*.html 2건·server.js 라우트+sitemap 수정 | ✅ 배포·200 검증 완료 · GSC 재제출 후속 |
+| 4/27 | 막내1 | **Phase 2.3 cold-start 해소** — deploy.sh 3건 min-instances 0→1. portal rev **00236-ck4** + idphoto-kr **00185-7n2** + idphoto-jp **00112-8p4**. 전 URL 200 OK, 최대 TTFB 0.92초, 503 **0건**. GSC 20건 검사: 17건 색인, 3건 미인식 | deploy.sh ×3 | ✅ |
+| 4/27 | 막내2 | **슬러그 잔재 전수 조사** — 한글 slug 60건 분류 (교차오염 JA 11+EN 14, KO 잔재 18, A+B 17). 근본 원인: translate.js Gemini slug 실패 시 한글 원본 사용. 교정 옵션 3안 비교 → **옵션 B(Firestore 갱신+301) 추천** | [REPORT_20260427_막내2_슬러그잔재_조사결과](../reports/REPORT_20260427_막내2_슬러그잔재_조사결과.md) | ✅ |
+| 4/27 | 막내2 | **슬러그 스키마 통일 코드 (작업 A)** — blog.js 영문 베이스 slug 강제 + `-kr` 접미사. translate.js 베이스 재사용(Gemini 독립 생성 폐지). render-blog/sitemap/github-issues/blog-editor 6파일 일괄 수정. 레거시 호환 폴백 구현. portal rev **00237-6p9** 배포 완료 | blog.js, translate.js 외 4파일 | ✅ |
+| 4/27 | 막내3 | **전 Phase 정밀 감사** — 49항목 중 42건 완료(86%). 미실행 7건 특정. Phase 1.7 잔존 2건(깨진이미지+lang=ko) 해소 확인. specs 20개국+ 이미 81 URL 완료. 일본 L1 5개 중 4/5 색인(6일 만에 3개 SERP 노출) | [REPORT_20260427_막내3_CITADEL_Phase감사+미실행보고](../reports/REPORT_20260427_막내3_CITADEL_Phase감사+미실행보고.md) | ✅ |
+| 4/27 | 민아 | **GSC 28일 분석** — Quick Wins 3건, claudemax /en/ 노출 49% 점유 CTR 0.23%(자산화 실패), "여권사이즈" specs 매칭 오류(KR에 SG/TH 노출), 面接お団子 카니발리제이션 | [REPORT_20260427_iMac민아_GSC_28일_검색노출분석](../reports/REPORT_20260427_iMac민아_GSC_28일_검색노출분석.md) | ✅ |
+| 4/27 | 민아 | **GSC×GA4 교차 + 이미지 검색** — 이미지 노출 4/16 변곡점(일평균 14→61, 4.2배). chatgpt.com referral 8세션(AEO 시작). 트래픽 79% 광고, Organic 1.9%. 4/22~23 급락=광고 정지 패턴 | [REPORT_20260427_iMac민아_GSC_GA4_교차분석_이미지검색](../reports/REPORT_20260427_iMac민아_GSC_GA4_교차분석_이미지검색.md) | ✅ |
 
 ---
 
@@ -166,19 +172,34 @@ status: active
 | crop hreflang 불완전 (ko/x-default만) | 🔴 | ✅ | `cdcb3f7` | ja/en 추가. crop/index.html |
 | idphoto canonical `/app` 경로 누락 | 🟠 | ✅ | `cdcb3f7` | idphoto-kr/jp index.html + hreflang 동시 보정 |
 | `/en/specs` 본문 한국어 혼입 | 🟡 | ✅ | `cdcb3f7` | render.js locField() + specs-data.json i18n 필드 추가 |
-| 깨진 이미지 3건 (crop, idphoto-kr/jp) | 🟠 | ⏳ | — | SPA 런타임 이미지. CDP 진단 미완 |
-| `/ja/`, `/en/` root lang=ko (인프라 프록시) | 🔴 | ⏳ | — | Cloud Run 직접URL 정상. 프록시 계층 이슈 |
+| 깨진 이미지 3건 (crop, idphoto-kr/jp) | 🟠 | ✅ 4/27 해소 | — | GCS 소스 3건 HTTP 200 확인 (막내3 감사) |
+| `/ja/`, `/en/` root lang=ko (인프라 프록시) | 🔴 | ✅ 4/27 해소 | — | curl 실측 ja→lang="ja", en→lang="en" 정상 (막내3 감사) |
 | `/en/about` 404 | — | 🚫 제외 | — | 유령 URL (코드·sitemap·내부링크 참조 없음) |
 
-### Phase 2 — GEO 본격 + 고급 SEO (예정)
+### Phase 2.3 — Cold-start 해소 + Slug 스키마 통일 ✅ 완료 (4/27)
 
-| 항목 | 상태 |
-|------|------|
-| AI 검색 인용 모니터링 체계 | ❌ 미설계 |
-| 엔티티 SEO (Organization/Person 스키마 강화) | ❌ 미착수 |
-| 토픽 클러스터 심화 (블로그 ↔ specs 양방향) | ❌ Phase 1 완료 후 |
-| CWV (Core Web Vitals) 최적화 | ❌ 미착수 |
-| 프로그래매틱 SEO 규격 확장 (20개국+) | ❌ Phase 1 성과 검증 후 |
+> 4/27 새벽 cold-start가 색인 실패 원흉 확정 (503 실측). 동시에 slug 교차오염 근본 해소.
+
+| 항목 | 상태 | 담당 |
+|------|------|------|
+| deploy.sh min-instances 0→1 (3서비스) | ✅ | 막내1 |
+| cold-start 해소 실측 (TTFB ≤0.92s, 503 0건) | ✅ | 막내1 |
+| GSC 색인 검사 20건 (17건 색인, 3건 미인식) | ✅ | 막내1 |
+| 한글 slug 60건 전수 조사 + 교정 방안 설계 | ✅ | 막내2 |
+| slug 스키마 통일 코드 (영문 베이스 + -kr/-ja/-en) | ✅ | 막내2 |
+| portal rev 00237-6p9 배포 + 레거시 호환 검증 | ✅ | 쌍아 |
+| **교차오염 25건 Firestore 정리 + 301** | ⏳ 진행중 | 막내2 |
+| KO 잔재 35건 Firestore 마이그레이션 | ⏳ B-1 검증 후 | — |
+
+### Phase 2 미착수 → 재분류 (4/27 감사 기준)
+
+| 항목 | 상태 | 비고 |
+|------|------|------|
+| 프로그래매틱 SEO 규격 확장 (20개국+) | ✅ **완료 재분류** | sitemap specs 81 URL(27개국×3언어) 이미 구현 |
+| 엔티티 SEO (Organization/Person 스키마 강화) | ❌ 미착수 | **Phase 2.2 우선순위 1위** |
+| 토픽 클러스터 심화 (블로그 ↔ specs 양방향) | ❌ | 블로그 타이틀 최적화와 묶음 |
+| AI 검색 인용 모니터링 체계 | ❌ | 도메인 권위 선행 필요 |
+| CWV (Core Web Vitals) 최적화 | ❌ | 트래픽 확보 후 |
 
 ### Phase 3 — 사업화 (미래)
 
@@ -207,15 +228,26 @@ status: active
 | AI 엔진 MONKOS 인용 | **0** |
 | AI 엔진 경쟁사 인용 | sajinkwan.com (Claude 등) |
 
-### Phase 0 완료 후 (4/1 예정 — 1주 후 측정)
+### 4/27 실측 (민아+막내3 GSC/GA4 교차 분석)
 
-| 항목 | 수치 | 변화 |
-|------|------|------|
-| GSC 색인 | — | — |
-| GSC "여권사진" 노출 | — | — |
-| — | — | — |
+| 항목 | 수치 | 변화 (vs 3/25) |
+|------|------|---------------|
+| GSC 28일 총 노출 | **866** | — (기준점 미측정) |
+| GSC 28일 총 클릭 | **16** | — |
+| 평균 CTR | 1.85% | — |
+| 평균 순위 | ~10 | — |
+| 일별 노출 추이 | 3/30 8회 → 4/26 ~50회 | **6배 증가** |
+| GSC "여권사진" 주간 노출 | **0** | ❌ 4주 목표 100+ 미달 |
+| GSC "증명사진" 주간 노출 | **6** | ❌ 4주 목표 50+ 미달 |
+| specs 페이지 색인 수 | **15+** | ✅ **4주 목표 8+ 초과** |
+| 일본 L1 5개 색인 | **4/5** (6일 만) | ✅ 3개 SERP 노출 시작 |
+| 이미지 탭 노출 | **786** (4/16 변곡점, 4.2배) | 신규 지표 |
+| chatgpt.com referral | **8세션** | AEO 신호 시작 |
+| 국가: KOR | 244노출 / 13클릭 / CTR 5.3% | 주력 |
+| 국가: JPN | 58노출 / 2클릭 / CTR 3.4% | 성장 초기 |
+| GA Organic Search 비중 | **1.9%** (45세션) | 트래픽 79% 광고 의존 |
 
-> ⏳ Phase 0 배포 후 1주 경과 시점에 민아가 측정 예정
+> 다음 측정: cold-start 해소 + 슬러그 정리 효과 반영 (2~4주 후)
 
 ---
 
@@ -246,7 +278,21 @@ status: active
 
 **대응**: 배포 전 설계 필요. 어젠다 #31 등록. 분리 기준(도메인별 vs 기능별), 공통부 처리, export 패턴, 기존 home.js 패턴과의 정합 검토 후 실행. **"빠르게 하는 것"보다 "프레임워크를 잡고 가는 것"이 우선** (작가님 판단).
 
-### 교훈 4: 병렬 실행 효율 (3/25, 3/26)
+### 교훈 4: cold-start가 색인 원흉 (4/27)
+
+**현상**: 4/27 새벽 실측에서 monkos.ai 503 에러 + TTFB 4.7초 포착. monk.kr(CF)는 동일 시점 정상.
+
+**원인**: Cloud Run min-instances=0 → 새벽 Googlebot 크롤 시 cold-start 503 → 색인 실패 누적 → 크롤 빈도 감소 악순환.
+
+**대응**: min-instances=1 설정 (3서비스). 즉시 해소 — TTFB 0.92초, 503 0건. **바우처 기간이라 비용 무관. "몇 달러 아끼겠다고 검색 노출을 잃은" 셈.**
+
+### 교훈 5: 논문 벤치마크 ≠ 실사용 추천 (4/27, PF_PRESENTATION 연계)
+
+**현상**: 막내1 리서치에서 MuseTalk ★5 추천 → 4060 실생성물 확인 시 "입만 움직여서 어색" 판정.
+
+**대응**: 벤치마크(FID/CSIM)는 입 영역 생성 품질만 측정. 실사용 평가 항목(자연스러움, 정체성 보존, 환경 적합성)을 별도로 잡아야 함. **리서치 보고서에 "실사용 관점 평가" 필수 항목화.**
+
+### 교훈 6: 병렬 실행 효율 (3/25, 3/26)
 
 **현상**: Phase 0 — 지시서 3건 → 막내 3명 병렬 → 37분 완료. Phase 1 — 지시서 2건 → 막내 2명 병렬 → 16분 완료.
 
