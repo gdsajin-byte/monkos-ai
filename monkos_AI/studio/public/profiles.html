@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="theme-color" content="#030508">
+    <title>MONKOS Studio — Profiles</title>
+
+    <link rel="icon" href="/monkos-icon.svg" type="image/svg+xml">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="profiles.css">
+</head>
+<body>
+    <div class="studio-layout profiles-layout">
+
+        <!-- ══ 헤더 ══ -->
+        <header class="studio-header">
+            <div class="header-left">
+                <h1><span class="brand">MONKOS</span> Studio</h1>
+                <nav class="mode-tabs">
+                    <a href="/app" class="mode-tab">증명사진</a>
+                    <a href="/profiles" class="mode-tab active">프로필</a>
+                </nav>
+            </div>
+            <div class="header-right">
+                <select id="model-select" class="model-selector">
+                    <option value="nano-banana-2" selected>Nano Banana 2</option>
+                    <option value="nano-banana-pro">Nano Banana Pro</option>
+                </select>
+                <span class="internal-badge">INTERNAL</span>
+            </div>
+        </header>
+
+        <!-- ══ 사이드바 — 고객 선택 축 ══ -->
+        <aside class="studio-sidebar" id="sidebar">
+
+            <!-- 사진 업로드 -->
+            <div class="sidebar-section">
+                <div id="file-drop" class="file-drop">
+                    <div class="file-drop-icon">📸</div>
+                    <div class="file-drop-title">내 사진 업로드</div>
+                    <div class="file-drop-desc">클릭 또는 드래그</div>
+                    <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp" style="display:none;">
+                </div>
+                <div id="sidebar-preview" class="sidebar-preview" style="display:none;">
+                    <img id="preview-img" src="" alt="미리보기">
+                    <button class="btn-change-file" id="btn-change">다른 사진</button>
+                </div>
+            </div>
+
+            <div class="sidebar-divider"></div>
+
+            <!-- 성별 / 연령 -->
+            <div class="sidebar-section">
+                <div class="sidebar-label">성별</div>
+                <div class="opt-chips" data-field="gender">
+                    <button class="opt-chip selected" data-val="f">여성</button>
+                    <button class="opt-chip" data-val="m">남성</button>
+                </div>
+            </div>
+
+            <div class="sidebar-divider"></div>
+
+            <!-- 용도 (Purpose) -->
+            <div class="sidebar-section">
+                <div class="sidebar-label">용도</div>
+                <div class="opt-chips purpose-chips" data-field="purpose">
+                    <button class="opt-chip selected" data-val="linkedin">LinkedIn</button>
+                    <button class="opt-chip" data-val="sns">SNS</button>
+                    <button class="opt-chip" data-val="corporate">기업</button>
+                    <button class="opt-chip" data-val="dating">매칭앱</button>
+                    <button class="opt-chip" data-val="artist">아티스트</button>
+                    <button class="opt-chip" data-val="speaker">연사</button>
+                </div>
+            </div>
+
+            <div class="sidebar-divider"></div>
+
+            <!-- 트리밍 (Framing) -->
+            <div class="sidebar-section">
+                <div class="sidebar-label">트리밍</div>
+                <div class="opt-chips" data-field="framing">
+                    <button class="opt-chip" data-val="beauty-closeup">뷰티 클로즈업</button>
+                    <button class="opt-chip selected" data-val="headshot">헤드샷</button>
+                    <button class="opt-chip" data-val="bust">바스트</button>
+                    <button class="opt-chip" data-val="waist-up">웨이스트업</button>
+                </div>
+            </div>
+
+            <div class="sidebar-divider"></div>
+
+            <!-- 배경 (장소 기반) -->
+            <div class="sidebar-section">
+                <div class="sidebar-label">배경</div>
+                <div class="opt-chips" data-field="background">
+                    <button class="opt-chip selected" data-val="studio-white">스튜디오 (화이트)</button>
+                    <button class="opt-chip" data-val="studio-gray">스튜디오 (그레이)</button>
+                    <button class="opt-chip" data-val="office">오피스</button>
+                    <button class="opt-chip" data-val="cafe">카페</button>
+                    <button class="opt-chip" data-val="outdoor-urban">야외 (도심)</button>
+                    <button class="opt-chip" data-val="outdoor-nature">야외 (자연)</button>
+                </div>
+            </div>
+
+            <div class="sidebar-divider"></div>
+
+            <!-- 생성 버튼 -->
+            <div class="sidebar-footer">
+                <button class="btn-generate" id="btn-generate" disabled>프로필 생성</button>
+                <div class="cost-hint" id="cost-hint">Nano Banana 2 · ~₩92/장</div>
+            </div>
+        </aside>
+
+        <!-- ══ 워크스페이스 — Before/After + 스타일 샘플 ══ -->
+        <main class="studio-workspace profiles-workspace">
+
+            <!-- 상단: Before / After -->
+            <div class="workspace-content">
+                <div class="image-panel">
+                    <div class="image-frame" id="frame-before">
+                        <div class="placeholder" id="ph-before">사진을 업로드하세요</div>
+                        <img id="img-before" src="" alt="Before" style="display:none;">
+                    </div>
+                    <div class="image-label">원본</div>
+                </div>
+                <div class="image-panel">
+                    <div class="image-frame" id="frame-after">
+                        <div class="placeholder" id="ph-after">스타일을 선택하고 생성하세요</div>
+                        <img id="img-after" src="" alt="After" style="display:none;">
+                        <div class="loading-overlay" id="loading-overlay">
+                            <div class="loading-spinner"></div>
+                            <div class="loading-text">프로필 생성 중...</div>
+                            <div class="gen-progress">
+                                <div class="gen-progress-fill" id="progress-fill"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="image-label">프로필</div>
+                </div>
+            </div>
+
+            <!-- 하단 액션 -->
+            <div class="workspace-actions">
+                <button class="wbtn wbtn-retry" id="btn-retry" disabled>다시 생성</button>
+                <button class="wbtn wbtn-dl-after" id="btn-dl-after" disabled>다운로드</button>
+                <button class="wbtn wbtn-dl-compare" id="btn-dl-compare" disabled>비교컷</button>
+            </div>
+
+            <!-- 하단: 메인 프롬프트 입력 -->
+            <div class="main-prompt-bar">
+                <div class="prompt-bar-inner">
+                    <textarea id="custom-prompt" class="main-prompt-input" rows="1"
+                        placeholder="프로필 사진을 설명하세요 — 예: 네이비 정장, 따뜻한 조명, 카페 배경, 자연스러운 미소"></textarea>
+                    <button class="prompt-send-btn" id="btn-prompt-generate" disabled>
+                        <span class="prompt-send-icon">▶</span>
+                    </button>
+                </div>
+                <div class="prompt-bar-hint">
+                    <span>스타일 샘플을 선택하거나 직접 설명하세요</span>
+                    <span class="prompt-bar-cost" id="prompt-cost">Nano Banana 2 · ~₩92/장</span>
+                </div>
+            </div>
+
+            <!-- 스타일 샘플 박스 -->
+            <div class="style-samples">
+
+                <!-- 의상 샘플 -->
+                <div class="sample-section">
+                    <div class="sample-header">
+                        <span class="sample-title">의상</span>
+                        <button class="sample-expand" data-target="outfit-grid">전체보기</button>
+                    </div>
+                    <div class="sample-grid" id="outfit-grid">
+                        <!-- JS에서 성별에 따라 동적 렌더링 -->
+                        <!-- 각 카드: 썸네일 + 라벨, 클릭 시 선택 -->
+                    </div>
+                </div>
+
+                <!-- 헤어 샘플 -->
+                <div class="sample-section">
+                    <div class="sample-header">
+                        <span class="sample-title">헤어</span>
+                        <button class="sample-expand" data-target="hair-grid">전체보기</button>
+                    </div>
+                    <div class="sample-grid" id="hair-grid"></div>
+                </div>
+
+                <!-- 포즈 샘플 -->
+                <div class="sample-section">
+                    <div class="sample-header">
+                        <span class="sample-title">포즈</span>
+                        <button class="sample-expand" data-target="pose-grid">전체보기</button>
+                    </div>
+                    <div class="sample-grid" id="pose-grid"></div>
+                </div>
+
+                <!-- 메이크업 샘플 -->
+                <div class="sample-section">
+                    <div class="sample-header">
+                        <span class="sample-title">메이크업</span>
+                        <button class="sample-expand" data-target="makeup-grid">전체보기</button>
+                    </div>
+                    <div class="sample-grid" id="makeup-grid"></div>
+                </div>
+
+            </div>
+        </main>
+
+        <!-- ══ 우측 패널 — 탭 스위치 3종 ══ -->
+        <aside class="right-panel" id="right-panel">
+
+            <!-- 탭 헤더 -->
+            <div class="panel-tabs">
+                <button class="panel-tab active" data-tab="ref">레퍼런스</button>
+                <button class="panel-tab" data-tab="tag">태깅</button>
+                <button class="panel-tab" data-tab="history">히스토리</button>
+            </div>
+
+            <!-- 탭 1: 레퍼런스 슬롯 -->
+            <div class="panel-content active" id="tab-ref">
+                <div class="ref-slots-header">
+                    <span class="ref-slots-title">적용 레퍼런스</span>
+                    <span class="ref-slots-count" id="ref-count">0/5</span>
+                </div>
+
+                <div class="ref-slot ref-slot-main" id="slot-main">
+                    <div class="ref-slot-thumb" id="slot-main-thumb">
+                        <div class="ref-slot-empty">👤</div>
+                    </div>
+                    <div class="ref-slot-info">
+                        <span class="ref-slot-role">내 사진</span>
+                        <span class="ref-slot-res">1024px · 메인</span>
+                    </div>
+                </div>
+
+                <div class="ref-slots-list" id="ref-slots-list"></div>
+                <div class="ref-slots-empty" id="ref-slots-empty">
+                    아래에서 스타일을 선택하세요
+                </div>
+            </div>
+
+            <!-- 탭 2: 태깅 -->
+            <div class="panel-content" id="tab-tag">
+                <div class="tag-section">
+                    <div class="tag-header">스타일 태그</div>
+                    <div class="tag-desc">생성된 이미지에 태그를 부여하여 갤러리·검색 자산으로 활용</div>
+
+                    <div class="tag-group">
+                        <div class="tag-group-label">촬영 스타일</div>
+                        <div class="tag-chips" data-tag-group="shootStyle">
+                            <button class="tag-chip" data-val="headshot">헤드샷</button>
+                            <button class="tag-chip" data-val="beauty-closeup">뷰티 클로즈업</button>
+                            <button class="tag-chip" data-val="editorial">에디토리얼</button>
+                            <button class="tag-chip" data-val="corporate">기업 프로필</button>
+                            <button class="tag-chip" data-val="lifestyle">라이프스타일</button>
+                            <button class="tag-chip" data-val="cinematic">시네마틱</button>
+                        </div>
+                    </div>
+
+                    <div class="tag-group">
+                        <div class="tag-group-label">조명</div>
+                        <div class="tag-chips" data-tag-group="lighting">
+                            <button class="tag-chip" data-val="flat">플랫</button>
+                            <button class="tag-chip" data-val="soft-studio">소프트 스튜디오</button>
+                            <button class="tag-chip" data-val="rembrandt">렘브란트</button>
+                            <button class="tag-chip" data-val="butterfly">버터플라이</button>
+                            <button class="tag-chip" data-val="rim">림라이트</button>
+                            <button class="tag-chip" data-val="natural">자연광</button>
+                            <button class="tag-chip" data-val="high-key">하이키</button>
+                            <button class="tag-chip" data-val="low-key">로우키</button>
+                        </div>
+                    </div>
+
+                    <div class="tag-group">
+                        <div class="tag-group-label">무드</div>
+                        <div class="tag-chips" data-tag-group="mood">
+                            <button class="tag-chip" data-val="clean">클린</button>
+                            <button class="tag-chip" data-val="warm">웜톤</button>
+                            <button class="tag-chip" data-val="cool">쿨톤</button>
+                            <button class="tag-chip" data-val="cinematic">시네마틱</button>
+                            <button class="tag-chip" data-val="editorial">에디토리얼</button>
+                            <button class="tag-chip" data-val="glamour">글래머</button>
+                            <button class="tag-chip" data-val="moody">무디</button>
+                            <button class="tag-chip" data-val="fresh">프레시</button>
+                        </div>
+                    </div>
+
+                    <div class="tag-group">
+                        <div class="tag-group-label">커스텀 태그</div>
+                        <input type="text" class="tag-custom-input" id="custom-tag-input"
+                               placeholder="태그 입력 후 Enter">
+                        <div class="tag-custom-list" id="custom-tag-list"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 탭 3: 히스토리 -->
+            <div class="panel-content" id="tab-history">
+                <div class="history-list" id="history-list"></div>
+                <div class="history-empty" id="history-empty">
+                    생성하면 여기에 쌓입니다
+                </div>
+            </div>
+
+        </aside>
+
+    </div>
+
+    <script type="module" src="profiles/main.js"></script>
+</body>
+</html>

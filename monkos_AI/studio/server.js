@@ -54,6 +54,118 @@ const imagenAI = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 log('[Studio] 내부용 AI 보정 앱 초기화');
 log(`[Google AI Studio] Imagen 클라이언트 초기화 (API Key ${GEMINI_API_KEY ? '설정됨' : '미설정'})`);
 
+// === 프로필 프롬프트 맵 ===
+const PROFILE_FRAMING_MAP = {
+  'beauty-closeup': 'Beauty close-up portrait. Face fills 80% of frame, collarbone to forehead.',
+  'headshot': 'Professional headshot. Head and shoulders, face centered.',
+  'bust': 'Bust shot. Chest to top of head visible.',
+  'waist-up': 'Waist-up portrait. Waist to top of head visible.',
+};
+
+const PROFILE_BG_MAP = {
+  'studio-white': 'pure white (#FFFFFF) studio background',
+  'studio-gray': 'neutral gray studio background',
+  'studio-color': 'solid colored studio background, professional',
+  'office': 'modern office interior, soft bokeh background',
+  'cafe': 'warm cafe interior, natural light, soft bokeh',
+  'outdoor-urban': 'urban street background, shallow depth of field',
+  'outdoor-nature': 'natural outdoor setting, soft sunlight, green bokeh',
+};
+
+const PROFILE_LIGHTING_MAP = {
+  'flat': 'flat even lighting, minimal shadows',
+  'soft-studio': 'soft diffused studio lighting, gentle shadows',
+  'rembrandt': 'Rembrandt lighting, triangle shadow on cheek',
+  'butterfly': 'butterfly lighting, shadow under nose, beauty style',
+  'rim': 'rim light on edges, dramatic separation from background',
+  'natural': 'natural window light, soft and warm',
+  'high-key': 'high-key lighting, bright and airy, minimal shadows',
+  'low-key': 'low-key dramatic lighting, dark background, face highlighted',
+};
+
+const PROFILE_MOOD_MAP = {
+  'clean': 'clean natural color grading, minimal post-processing',
+  'warm': 'warm golden tones, inviting and friendly feel',
+  'cool': 'cool blue-silver tones, sleek and modern',
+  'cinematic': 'cinematic color grading, teal and orange, shallow depth',
+  'editorial': 'editorial magazine style, high contrast, fashion feel',
+  'glamour': 'glamour lighting, skin glow, highlights emphasized',
+  'moody': 'moody dark tones, film grain, emotional atmosphere',
+  'fresh': 'bright fresh tones, high white balance, airy summer feel',
+};
+
+const OUTFIT_KEYWORDS = {
+  'suit-navy-m':       'navy formal business suit, white collared dress shirt',
+  'suit-navy-w':       'navy formal business blazer, white silk blouse',
+  'suit-charcoal-m':   'charcoal gray formal suit, light blue dress shirt',
+  'suit-charcoal-w':   'charcoal gray blazer, cream silk blouse',
+  'suit-black-m':      'black formal suit, white dress shirt, no tie',
+  'suit-black-w':      'black formal blazer, white blouse',
+  'casual-knit-m':     'casual crew neck knit sweater, neutral earth tone',
+  'casual-vneck-w':    'casual v-neck knit sweater, soft pastel tone',
+  'casual-oxford-m':   'oxford button-down shirt, light blue, rolled sleeves',
+  'casual-blouse-w':   'elegant silk blouse, soft cream ivory tone',
+  'casual-polo-m':     'classic polo shirt, navy, clean collar',
+  'creative-turtle-m': 'black turtleneck sweater, minimalist style',
+  'creative-turtle-w': 'black turtleneck, elegant minimalist',
+  'creative-leather-m':'black leather jacket, white crew neck t-shirt',
+  'creative-denim-w':  'classic denim jacket, white top underneath',
+  'uniform-doctor-m':  'white doctor lab coat, stethoscope',
+  'uniform-chef-w':    'white double-breasted chef coat',
+  'season-linen-m':    'light linen short sleeve shirt, summer casual',
+  'season-summer-w':   'light cotton short sleeve top, summer fresh',
+  'season-coat-w':     'camel wool coat upper body, knit scarf',
+};
+
+const HAIR_KEYWORDS = {
+  'tidy-short-m':     'neatly groomed short hair, clean cut',
+  'two-block-m':      'two-block haircut, trimmed sides, volume on top',
+  'dandy-cut-m':      'dandy cut, slicked back sides, refined gentleman style',
+  'side-part-m':      'clean side part, neatly combed',
+  'comma-hair-m':     'comma hair, soft bangs curved to one side',
+  'tidy-bob-f':       'neat bob cut, shoulder length, clean straight',
+  'long-straight-f':  'long straight hair, sleek and shiny',
+  'c-curl-bob-f':     'C-curl bob, inward curled ends, volumized',
+  'wave-long-f':      'long wavy hair, soft natural waves',
+  'half-updo-f':      'half-up half-down hairstyle, elegant',
+  'updo-f':           'hair styled up in elegant updo',
+  'low-ponytail-f':   'low ponytail, sleek and polished',
+};
+
+const POSE_KEYWORDS = {
+  'front-center':       'facing directly forward, centered, symmetrical',
+  'front-smile':        'facing directly forward, warm natural smile',
+  'three-quarter-left': 'three-quarter turn to the left, slight angle',
+  'three-quarter-right':'three-quarter turn to the right, slight angle',
+  'shoulder-angle':     'slight shoulder angle, dynamic professional pose',
+  'chin-rest':          'chin resting on hand, thoughtful relaxed pose',
+  'arms-crossed':       'arms crossed confidently, professional stance',
+  'head-tilt':          'slight head tilt, friendly approachable',
+  'look-away':          'looking slightly off-camera, candid natural feel',
+};
+
+const MAKEUP_KEYWORDS = {
+  'natural-minimal': 'natural minimal makeup, clean skin',
+  'office-daily':    'office-appropriate daily makeup, polished',
+  'glow':            'dewy glowing skin, highlight on cheekbones',
+  'grooming-m':      'groomed clean skin, subtle concealer, neat brows',
+  'toneup':          'brightened skin tone, even complexion',
+};
+
+const PURPOSE_ASPECT_MAP = {
+  'linkedin':  '1:1',
+  'sns':       '1:1',
+  'corporate': '3:4',
+  'dating':    '3:4',
+  'artist':    '3:4',
+  'speaker':   '16:9',
+};
+
+const PROFILE_MODEL_MAP = {
+  'nano-banana-2':   'gemini-3.1-flash-image-preview',
+  'nano-banana-pro': 'gemini-3-pro-image-preview',
+};
+
 // === Imagen 프롬프트 (idphoto-kr 정본 — 수정 금지) ===
 const IDENTITY_PRESERVATION = `IDENTITY RULE: 90% SAME PERSON + 10% ENHANCEMENT
 
@@ -179,6 +291,57 @@ function buildPromptV5(body) {
 
   const identity = (age === 'baby') ? IDENTITY_PRESERVATION_BABY : IDENTITY_PRESERVATION;
   return `${identity}\n\n[IMAGE-TO-IMAGE TRANSFORM]\n${parts.join('\n')}`;
+}
+
+// === 프로필 프롬프트 빌더 ===
+function buildProfilePrompt(body) {
+  const { framing, background, outfit, hair, pose, makeup,
+          lighting, mood, customPrompt, referenceImages } = body;
+
+  const parts = [];
+  const hasRef = (cat) => referenceImages?.some(r => r.category === cat && r.data);
+
+  parts.push(`[FRAMING] ${PROFILE_FRAMING_MAP[framing] || PROFILE_FRAMING_MAP.headshot}`);
+  parts.push(`[BACKGROUND] ${PROFILE_BG_MAP[background] || PROFILE_BG_MAP['studio-white']}`);
+  parts.push(`[LIGHTING] ${PROFILE_LIGHTING_MAP[lighting] || PROFILE_LIGHTING_MAP['soft-studio']}`);
+  parts.push(`[MOOD] ${PROFILE_MOOD_MAP[mood] || PROFILE_MOOD_MAP.clean}`);
+
+  if (outfit) {
+    if (hasRef('outfit')) {
+      parts.push('[OUTFIT] Apply the outfit style from the reference image labeled "outfit". Keep the person\'s body exactly the same.');
+    } else if (OUTFIT_KEYWORDS[outfit]) {
+      parts.push(`[OUTFIT] Dress this person in: ${OUTFIT_KEYWORDS[outfit]}. Keep the person's body exactly the same.`);
+    }
+  }
+
+  if (hair && !hair.startsWith('default')) {
+    if (hasRef('hair')) {
+      parts.push('[HAIR] Apply the hairstyle from the reference image labeled "hair". Keep the face exactly the same.');
+    } else if (HAIR_KEYWORDS[hair]) {
+      parts.push(`[HAIR] Style the hair as: ${HAIR_KEYWORDS[hair]}. Keep the face exactly the same.`);
+    }
+  }
+
+  if (pose) {
+    if (hasRef('pose')) {
+      parts.push('[POSE] Match the pose and angle from the reference image labeled "pose". Keep the person\'s identity.');
+    } else if (POSE_KEYWORDS[pose]) {
+      parts.push(`[POSE] ${POSE_KEYWORDS[pose]}`);
+    }
+  }
+
+  if (makeup) {
+    if (hasRef('makeup')) {
+      parts.push('[MAKEUP] Apply the makeup style from the reference image labeled "makeup". Subtle and natural.');
+    } else if (MAKEUP_KEYWORDS[makeup]) {
+      parts.push(`[MAKEUP] ${MAKEUP_KEYWORDS[makeup]}`);
+    }
+  }
+
+  if (customPrompt) parts.push(`[ADDITIONAL] ${customPrompt}`);
+  parts.push('[CONSTRAINT] Keep the person\'s face and identity exactly the same — only apply the specified styling.');
+
+  return `${IDENTITY_PRESERVATION}\n\n[IMAGE-TO-IMAGE PROFILE TRANSFORM]\n${parts.join('\n')}`;
 }
 
 // === Base64 추출 헬퍼 ===
@@ -359,9 +522,96 @@ app.post('/api/idgen', async (req, res) => {
   }
 });
 
-// === 페이지 라우트 (v2 SPA — 단일 페이지) ===
+// 프로필 I2I 생성
+app.post('/api/profiles/generate', async (req, res) => {
+  try {
+    const apiKey = GEMINI_API_KEY;
+    if (!apiKey) return res.status(500).json({ error: 'API 키 미설정' });
+
+    const body = req.body;
+    const { image, model, purpose, referenceImages } = body;
+    if (!image) return res.status(400).json({ error: '이미지가 필요합니다' });
+
+    const base64Data = extractBase64(image);
+    const byteLength = Math.ceil(base64Data.length * 3 / 4);
+    log(`[profiles] 입력: ${(byteLength/1024).toFixed(1)}KB, 모델: ${model || 'nano-banana-2'}`);
+    if (byteLength > 5 * 1024 * 1024) {
+      return res.status(400).json({ error: '이미지가 너무 큽니다 (5MB 이하)' });
+    }
+
+    const instruction = buildProfilePrompt(body);
+    const modelId = PROFILE_MODEL_MAP[model] || PROFILE_MODEL_MAP['nano-banana-2'];
+    const aspectRatio = PURPOSE_ASPECT_MAP[purpose] || '3:4';
+
+    const contentParts = [
+      { inlineData: { mimeType: 'image/jpeg', data: base64Data } },
+      { text: 'This is the main person. Preserve their face 90%.' },
+    ];
+
+    if (referenceImages?.length) {
+      for (const ref of referenceImages) {
+        if (ref.data) {
+          const refData = extractBase64(ref.data);
+          contentParts.push({ inlineData: { mimeType: 'image/jpeg', data: refData } });
+          contentParts.push({ text: `Reference for ${ref.category} style only.` });
+        }
+      }
+    }
+
+    contentParts.push({ text: instruction });
+
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: contentParts }],
+          generationConfig: { imageConfig: { aspectRatio } },
+          safetySettings: [
+            { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
+            { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
+            { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
+            { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
+          ],
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      let detail = '';
+      try { detail = JSON.parse(errorText)?.error?.message || errorText.substring(0, 200); } catch { detail = errorText.substring(0, 200); }
+      throw new Error(`API ${response.status}: ${detail}`);
+    }
+
+    const data = await response.json();
+    const imagePart = data.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
+    if (!imagePart?.inlineData) {
+      throw new Error('이미지 생성 실패: 응답에 이미지가 없습니다');
+    }
+
+    const generatedBase64 = imagePart.inlineData.data;
+
+    try {
+      await saveImages('studio-profiles', image, generatedBase64);
+      log('[GCS] 프로필 샘플 저장 완료');
+    } catch (e) {
+      log(`[GCS] 저장 실패 (무시): ${e.message}`, 'WARNING');
+    }
+
+    res.json({ image: `data:image/png;base64,${generatedBase64}` });
+
+  } catch (err) {
+    log(`[API][profiles] 에러: ${err.message}`, 'ERROR');
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// === 페이지 라우트 ===
 app.get('/', (req, res) => res.sendFile(join(__dirname, 'public/app.html')));
 app.get('/app', (req, res) => res.sendFile(join(__dirname, 'public/app.html')));
+app.get('/profiles', (req, res) => res.sendFile(join(__dirname, 'public/profiles.html')));
 
 // 정적 파일 서빙
 app.use(express.static(join(__dirname, 'public'), {
@@ -388,7 +638,9 @@ app.listen(PORT, '0.0.0.0', () => {
   log('엔드포인트:');
   log('  GET  /health       — 헬스체크');
   log('  POST /api/precheck — 사전분석');
-  log('  POST /api/idgen    — Imagen I2I 생성');
+  log('  POST /api/idgen    — Imagen I2I 생성 (증명사진)');
+  log('  POST /api/profiles/generate — 프로필 I2I 생성');
   log('  GET  /             — Studio SPA');
+  log('  GET  /profiles     — 프로필스 SPA');
   log('='.repeat(50));
 });

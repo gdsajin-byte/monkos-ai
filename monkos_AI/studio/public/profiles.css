@@ -1,0 +1,461 @@
+/**
+ * profiles.css — 프로필스 전용 스타일 (style.css 위에 오버레이)
+ */
+
+/* ── 헤더 모드 탭 ── */
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.mode-tabs {
+  display: flex;
+  gap: 4px;
+}
+.mode-tab {
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #888;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.mode-tab:hover { color: #ccc; background: rgba(255,255,255,0.05); }
+.mode-tab.active { color: #a78bfa; background: rgba(167,139,250,0.1); }
+
+/* ── 모델 셀렉터 ── */
+.model-selector {
+  background: #111;
+  color: #aaa;
+  border: 1px solid #333;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 11px;
+  font-family: inherit;
+  cursor: pointer;
+}
+.model-selector:focus { border-color: #a78bfa; outline: none; }
+
+/* ── 비용 힌트 ── */
+.cost-hint {
+  text-align: center;
+  font-size: 11px;
+  color: #666;
+  margin-top: 6px;
+}
+
+/* ── 용도 칩 (2열) ── */
+.purpose-chips {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 4px;
+}
+
+/* ── 스타일 샘플 박스 ── */
+.style-samples {
+  padding: 12px 16px;
+  border-top: 1px solid #1a1a1a;
+  overflow-y: auto;
+  max-height: 280px;
+}
+.sample-section {
+  margin-bottom: 16px;
+}
+.sample-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.sample-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #aaa;
+}
+.sample-expand {
+  background: none;
+  border: none;
+  color: #a78bfa;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+/* 샘플 그리드 */
+.sample-grid {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: #333 transparent;
+}
+.sample-grid::-webkit-scrollbar { height: 4px; }
+.sample-grid::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+
+/* 샘플 카드 */
+.sample-card {
+  flex-shrink: 0;
+  width: 72px;
+  cursor: pointer;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  transition: all 0.2s;
+  text-align: center;
+}
+.sample-card:hover { border-color: rgba(167,139,250,0.3); }
+.sample-card.selected { border-color: #a78bfa; background: rgba(167,139,250,0.08); }
+
+.sample-thumb {
+  width: 68px;
+  height: 68px;
+  border-radius: 6px;
+  overflow: hidden;
+  margin: 2px auto 4px;
+}
+.sample-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.sample-label {
+  font-size: 10px;
+  color: #888;
+  padding-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── 우측 패널 ── */
+.right-panel {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 52px);
+  overflow: hidden;
+}
+
+/* 탭 스위치 */
+.panel-tabs {
+  display: flex;
+  border-bottom: 1px solid #1a1a1a;
+  padding: 0 8px;
+  flex-shrink: 0;
+}
+.panel-tab {
+  flex: 1;
+  padding: 10px 4px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: #666;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.panel-tab:hover { color: #aaa; }
+.panel-tab.active { color: #a78bfa; border-bottom-color: #a78bfa; }
+
+.panel-content {
+  display: none;
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+}
+.panel-content.active { display: flex; flex-direction: column; }
+
+/* ── 레퍼런스 슬롯 ── */
+.ref-slots-section {
+  flex: 0 0 auto;
+}
+.ref-slots-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.ref-slots-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #aaa;
+}
+.ref-slots-count {
+  background: rgba(167,139,250,0.15);
+  color: #a78bfa;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+.ref-slots-empty {
+  color: #444;
+  font-size: 11px;
+  text-align: center;
+  padding: 16px 0;
+}
+
+/* 메인 슬롯 (고객 사진) */
+.ref-slot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #1a1a1a;
+  margin-bottom: 6px;
+  transition: border-color 0.2s;
+}
+.ref-slot-main { border-color: #a78bfa33; }
+.ref-slot-main.has-image { border-color: #a78bfa; }
+
+.ref-slot-thumb {
+  width: 48px;
+  height: 48px;
+  border-radius: 6px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ref-slot-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.ref-slot-empty {
+  font-size: 20px;
+  opacity: 0.3;
+}
+.ref-slot-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.ref-slot-role {
+  font-size: 12px;
+  font-weight: 600;
+  color: #ccc;
+}
+.ref-slot-res {
+  font-size: 10px;
+  color: #666;
+}
+
+/* 스타일 슬롯 */
+.ref-slot-style {
+  position: relative;
+}
+.ref-slot-remove {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #333;
+  color: #999;
+  border: none;
+  font-size: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+.ref-slot-remove:hover { background: #c44; color: #fff; }
+
+.ref-slots-list {
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+/* 역할별 아이콘 */
+.ref-role-icon {
+  font-size: 14px;
+  margin-right: 4px;
+}
+
+/* ── 태깅 ── */
+.tag-section {
+  flex: 1;
+}
+.tag-header {
+  font-size: 13px;
+  font-weight: 600;
+  color: #aaa;
+  margin-bottom: 4px;
+}
+.tag-desc {
+  font-size: 11px;
+  color: #555;
+  margin-bottom: 16px;
+}
+.tag-group {
+  margin-bottom: 14px;
+}
+.tag-group-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #777;
+  margin-bottom: 6px;
+}
+.tag-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.tag-chip {
+  padding: 4px 10px;
+  border-radius: 12px;
+  border: 1px solid #333;
+  background: none;
+  color: #888;
+  font-size: 11px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.tag-chip:hover { border-color: #555; color: #bbb; }
+.tag-chip.selected { border-color: #a78bfa; color: #a78bfa; background: rgba(167,139,250,0.08); }
+
+.tag-custom-input {
+  width: 100%;
+  background: #111;
+  color: #ddd;
+  border: 1px solid #333;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 11px;
+  font-family: inherit;
+  margin-bottom: 6px;
+}
+.tag-custom-input:focus { border-color: #a78bfa; outline: none; }
+.tag-custom-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+/* ── 히스토리 ── */
+.history-list {
+  flex: 1;
+  overflow-y: auto;
+}
+.history-empty {
+  color: #444;
+  font-size: 11px;
+  text-align: center;
+  padding: 24px 0;
+}
+
+/* 히스토리 카드 */
+.history-card {
+  padding: 6px;
+  border-radius: 8px;
+  border: 1px solid #1a1a1a;
+  margin-bottom: 6px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.history-card:hover { border-color: #333; }
+.history-thumbs {
+  display: flex;
+  gap: 3px;
+  margin-bottom: 4px;
+}
+.history-thumb-b, .history-thumb-a {
+  width: 50%;
+  aspect-ratio: 3/4;
+  object-fit: cover;
+  border-radius: 4px;
+}
+.history-meta {
+  display: flex;
+  gap: 6px;
+  font-size: 10px;
+  color: #666;
+}
+.history-purpose {
+  color: #a78bfa;
+  font-weight: 600;
+}
+
+/* ── 메인 프롬프트 바 ── */
+.main-prompt-bar {
+  padding: 12px 16px;
+  border-top: 1px solid #1a1a1a;
+  background: #060810;
+}
+.prompt-bar-inner {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 8px 12px;
+  transition: border-color 0.2s;
+}
+.prompt-bar-inner:focus-within { border-color: #a78bfa; }
+
+.main-prompt-input {
+  flex: 1;
+  background: none;
+  color: #ddd;
+  border: none;
+  font-size: 14px;
+  font-family: inherit;
+  line-height: 1.5;
+  resize: none;
+  min-height: 24px;
+  max-height: 80px;
+  outline: none;
+}
+.main-prompt-input::placeholder { color: #555; }
+
+.prompt-send-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: #a78bfa;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+.prompt-send-btn:hover { background: #8b6fe0; }
+.prompt-send-btn:disabled { background: #333; color: #666; cursor: not-allowed; }
+.prompt-send-icon { font-size: 14px; }
+
+.prompt-bar-hint {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 4px 0;
+  font-size: 11px;
+  color: #555;
+}
+.prompt-bar-cost { color: #666; }
+
+/* ── 워크스페이스 프로필 모드 조정 ── */
+.profiles-workspace .workspace-content {
+  flex: 0 0 auto;
+}
+.profiles-workspace {
+  display: flex;
+  flex-direction: column;
+}

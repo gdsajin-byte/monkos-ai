@@ -112,7 +112,7 @@ ${JSON_INSTRUCTION[lang] || JSON_INSTRUCTION.en}`;
         model: 'gemini-2.0-flash',
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
         config: {
-          maxOutputTokens: 32768,
+          maxOutputTokens: 8192,
           temperature: 0.3,
           responseMimeType: 'application/json',
         },
