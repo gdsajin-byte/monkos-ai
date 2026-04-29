@@ -1,9 +1,8 @@
 /**
- * profiles/api.js — 서버 통신 (생성 요청)
+ * profiles/api.js — 서버 통신 (마스터 + 오버라이드, 단일 모드)
  */
 
 import { state, updateState } from './state.js';
-import { PURPOSE_PRESETS, SAMPLES } from './templates.js';
 import { addToHistory } from './ui-gallery.js';
 
 async function fetchImageAsBase64(url) {
@@ -23,24 +22,27 @@ async function fetchImageAsBase64(url) {
 
 async function collectReferenceImages() {
   const refs = [];
-  const categories = ['outfit', 'hair', 'pose', 'makeup'];
 
-  for (const cat of categories) {
-    const id = state[cat];
-    if (!id || id.startsWith('default')) continue;
-    const items = SAMPLES[cat];
-    if (!items) continue;
-    const item = items.find(i => i.id === id);
-    if (!item?.thumb) continue;
-    const data = await fetchImageAsBase64(item.thumb);
-    if (data) refs.push({ category: cat, data });
+  if (state.masterRef) {
+    const data = state.masterRef.data || await fetchImageAsBase64(state.masterRef.thumb);
+    if (data) refs.push({ role: 'master', data });
+  }
+
+  for (const cat of ['fashion', 'hair', 'makeup', 'background']) {
+    const override = state.overrides[cat];
+    if (!override) continue;
+    const data = override.data || await fetchImageAsBase64(override.thumb);
+    if (data) refs.push({ role: cat, data });
   }
 
   return refs;
 }
 
 export async function generate() {
-  if (!state.base64Image) return;
+  if (!state.base64Image && !state.masterRef) {
+    alert('내 사진 또는 마스터 레퍼런스를 선택하세요');
+    return;
+  }
 
   const overlay = document.getElementById('loading-overlay');
   const progressFill = document.getElementById('progress-fill');
@@ -51,9 +53,8 @@ export async function generate() {
   btnGenerate.disabled = true;
 
   try {
-    const preset = PURPOSE_PRESETS[state.purpose] || PURPOSE_PRESETS.linkedin;
-
     progressFill.style.width = '20%';
+
     const referenceImages = await collectReferenceImages();
     progressFill.style.width = '30%';
 
@@ -61,21 +62,12 @@ export async function generate() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        image: state.base64Image,
-        mode: 'profile',
+        image: state.base64Image || null,
         model: state.model,
         gender: state.gender,
         age: 'adult',
         purpose: state.purpose,
-        framing: state.framing,
-        background: state.background,
-        outfit: state.outfit,
-        hair: state.hair,
-        pose: state.pose,
-        makeup: state.makeup,
         customPrompt: state.customPrompt || '',
-        lighting: preset.lighting,
-        mood: preset.mood,
         referenceImages,
       }),
     });
@@ -96,8 +88,6 @@ export async function generate() {
       before: state.base64Image,
       after: data.image,
       purpose: state.purpose,
-      outfit: state.outfit,
-      hair: state.hair,
     });
 
   } catch (err) {

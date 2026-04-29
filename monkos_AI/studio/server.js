@@ -40,19 +40,22 @@ function log(msg, severity = 'INFO', meta = {}) {
   }
 }
 
-// === 하이브리드 인증 ===
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
-
+// === Vertex AI ADC 인증 ===
 const ai = new GoogleGenAI({
   vertexai: true,
   project: PROJECT_ID,
   location: LOCATION,
 });
 
-const imagenAI = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+const imageAI = new GoogleGenAI({
+  vertexai: true,
+  project: PROJECT_ID,
+  location: 'global',
+});
 
 log('[Studio] 내부용 AI 보정 앱 초기화');
-log(`[Google AI Studio] Imagen 클라이언트 초기화 (API Key ${GEMINI_API_KEY ? '설정됨' : '미설정'})`);
+log(`[Vertex AI] ADC 클라이언트 초기화 (project: ${PROJECT_ID}, location: ${LOCATION})`);
+log(`[Vertex AI] 이미지 생성 클라이언트 초기화 (location: global)`);
 
 // === 프로필 프롬프트 맵 ===
 const PROFILE_FRAMING_MAP = {
@@ -153,12 +156,21 @@ const MAKEUP_KEYWORDS = {
 };
 
 const PURPOSE_ASPECT_MAP = {
-  'linkedin':  '1:1',
-  'sns':       '1:1',
-  'corporate': '3:4',
-  'dating':    '3:4',
-  'artist':    '3:4',
-  'speaker':   '16:9',
+  'linkedin':     '1:1',
+  'professional': '3:4',
+  'executive':    '3:4',
+  'artist':       '3:4',
+  'beauty':       '1:1',
+  'fitting':      '3:4',
+};
+
+const PURPOSE_PROMPT_MAP = {
+  'linkedin':     'Professional LinkedIn headshot. Bust shot, soft studio lighting, clean neutral background. Confident, approachable expression.',
+  'professional': 'Professional portrait for expert/specialist. Upper body, arms crossed or confident pose. Clean studio background.',
+  'executive':    'Executive portrait. Bust to upper body, authoritative but approachable. Premium studio lighting, subtle gradient background.',
+  'artist':       'Creative artist portrait. Free framing, emotional mood lighting. Dramatic or editorial feel.',
+  'beauty':       'Beauty close-up portrait. Face fills 80% of frame. Flawless skin, professional makeup. Soft diffused lighting.',
+  'fitting':      'Model fitting portrait. Full body to upper body, clothing-focused. Clean studio background, even lighting.',
 };
 
 const PROFILE_MODEL_MAP = {
@@ -293,55 +305,27 @@ function buildPromptV5(body) {
   return `${identity}\n\n[IMAGE-TO-IMAGE TRANSFORM]\n${parts.join('\n')}`;
 }
 
-// === 프로필 프롬프트 빌더 ===
+// === 프로필 프롬프트 빌더 (마스터 + 오버라이드, 단일 모드) ===
 function buildProfilePrompt(body) {
-  const { framing, background, outfit, hair, pose, makeup,
-          lighting, mood, customPrompt, referenceImages } = body;
+  const { customPrompt, referenceImages } = body;
+  const hasMaster = referenceImages?.some(r => r.role === 'master');
+  const hasOverride = (role) => referenceImages?.some(r => r.role === role);
 
-  const parts = [];
-  const hasRef = (cat) => referenceImages?.some(r => r.category === cat && r.data);
-
-  parts.push(`[FRAMING] ${PROFILE_FRAMING_MAP[framing] || PROFILE_FRAMING_MAP.headshot}`);
-  parts.push(`[BACKGROUND] ${PROFILE_BG_MAP[background] || PROFILE_BG_MAP['studio-white']}`);
-  parts.push(`[LIGHTING] ${PROFILE_LIGHTING_MAP[lighting] || PROFILE_LIGHTING_MAP['soft-studio']}`);
-  parts.push(`[MOOD] ${PROFILE_MOOD_MAP[mood] || PROFILE_MOOD_MAP.clean}`);
-
-  if (outfit) {
-    if (hasRef('outfit')) {
-      parts.push('[OUTFIT] Apply the outfit style from the reference image labeled "outfit". Keep the person\'s body exactly the same.');
-    } else if (OUTFIT_KEYWORDS[outfit]) {
-      parts.push(`[OUTFIT] Dress this person in: ${OUTFIT_KEYWORDS[outfit]}. Keep the person's body exactly the same.`);
-    }
+  if (hasMaster) {
+    const parts = [];
+    parts.push('[MASTER] Apply EVERYTHING from the MASTER REFERENCE image — pose, framing, clothing, hair, makeup, background, lighting, and overall mood.');
+    if (hasOverride('fashion')) parts.push('[FASHION OVERRIDE] Use the clothing/outfit from the FASHION OVERRIDE image INSTEAD of the master reference clothing.');
+    if (hasOverride('hair')) parts.push('[HAIR OVERRIDE] Use the hairstyle from the HAIR OVERRIDE image INSTEAD of the master reference hair.');
+    if (hasOverride('makeup')) parts.push('[MAKEUP OVERRIDE] Use the makeup style from the MAKEUP OVERRIDE image INSTEAD of the master reference makeup.');
+    if (hasOverride('background')) parts.push('[BACKGROUND OVERRIDE] Use the background/setting from the BACKGROUND OVERRIDE image INSTEAD of the master reference background.');
+    if (customPrompt) parts.push(`[ADDITIONAL] ${customPrompt}`);
+    parts.push('[CONSTRAINT] Keep the person\'s face and identity exactly the same — only apply the specified styling.');
+    return parts.join('\n');
   }
 
-  if (hair && !hair.startsWith('default')) {
-    if (hasRef('hair')) {
-      parts.push('[HAIR] Apply the hairstyle from the reference image labeled "hair". Keep the face exactly the same.');
-    } else if (HAIR_KEYWORDS[hair]) {
-      parts.push(`[HAIR] Style the hair as: ${HAIR_KEYWORDS[hair]}. Keep the face exactly the same.`);
-    }
-  }
-
-  if (pose) {
-    if (hasRef('pose')) {
-      parts.push('[POSE] Match the pose and angle from the reference image labeled "pose". Keep the person\'s identity.');
-    } else if (POSE_KEYWORDS[pose]) {
-      parts.push(`[POSE] ${POSE_KEYWORDS[pose]}`);
-    }
-  }
-
-  if (makeup) {
-    if (hasRef('makeup')) {
-      parts.push('[MAKEUP] Apply the makeup style from the reference image labeled "makeup". Subtle and natural.');
-    } else if (MAKEUP_KEYWORDS[makeup]) {
-      parts.push(`[MAKEUP] ${MAKEUP_KEYWORDS[makeup]}`);
-    }
-  }
-
-  if (customPrompt) parts.push(`[ADDITIONAL] ${customPrompt}`);
-  parts.push('[CONSTRAINT] Keep the person\'s face and identity exactly the same — only apply the specified styling.');
-
-  return `${IDENTITY_PRESERVATION}\n\n[IMAGE-TO-IMAGE PROFILE TRANSFORM]\n${parts.join('\n')}`;
+  const purposePrompt = PURPOSE_PROMPT_MAP[body.purpose] || '';
+  return `${purposePrompt}\n${customPrompt || ''}`.trim()
+    || 'Generate a professional portrait photo.';
 }
 
 // === Base64 추출 헬퍼 ===
@@ -450,9 +434,6 @@ app.post('/api/precheck', async (req, res) => {
 // I2I 생성 — 인증/크레딧 없이 직접 생성
 app.post('/api/idgen', async (req, res) => {
   try {
-    const apiKey = GEMINI_API_KEY;
-    if (!apiKey) return res.status(500).json({ error: 'API 키 미설정' });
-
     const body = req.body;
     const { image } = body;
     if (!image) return res.status(400).json({ error: '이미지가 필요합니다' });
@@ -469,36 +450,25 @@ app.post('/api/idgen', async (req, res) => {
     }
     const instruction = buildPromptV5(body);
 
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image-preview:generateContent?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [
-            { inlineData: { mimeType: 'image/jpeg', data: base64Data } },
-            { text: instruction },
-          ]}],
-          generationConfig: { imageConfig: { aspectRatio: '3:4' } },
-          safetySettings: [
-            { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
-            { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
-            { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
-            { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
-          ],
-        }),
-      }
-    );
+    const response = await imageAI.models.generateContent({
+      model: 'gemini-3-pro-image-preview',
+      contents: [{ role: 'user', parts: [
+        { inlineData: { mimeType: 'image/jpeg', data: base64Data } },
+        { text: instruction },
+      ]}],
+      config: {
+        responseModalities: ['TEXT', 'IMAGE'],
+        imageConfig: { aspectRatio: '3:4' },
+        safetySettings: [
+          { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
+          { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
+          { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
+          { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
+        ],
+      },
+    });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      let detail = '';
-      try { detail = JSON.parse(errorText)?.error?.message || errorText.substring(0, 200); } catch { detail = errorText.substring(0, 200); }
-      throw new Error(`API ${response.status}: ${detail}`);
-    }
-
-    const data = await response.json();
-    const imagePart = data.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
+    const imagePart = response.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
     if (!imagePart?.inlineData) {
       throw new Error('이미지 생성 실패: 응답에 이미지가 없습니다');
     }
@@ -525,68 +495,76 @@ app.post('/api/idgen', async (req, res) => {
 // 프로필 I2I 생성
 app.post('/api/profiles/generate', async (req, res) => {
   try {
-    const apiKey = GEMINI_API_KEY;
-    if (!apiKey) return res.status(500).json({ error: 'API 키 미설정' });
-
     const body = req.body;
     const { image, model, purpose, referenceImages } = body;
-    if (!image) return res.status(400).json({ error: '이미지가 필요합니다' });
 
-    const base64Data = extractBase64(image);
-    const byteLength = Math.ceil(base64Data.length * 3 / 4);
-    log(`[profiles] 입력: ${(byteLength/1024).toFixed(1)}KB, 모델: ${model || 'nano-banana-2'}`);
-    if (byteLength > 5 * 1024 * 1024) {
-      return res.status(400).json({ error: '이미지가 너무 큽니다 (5MB 이하)' });
+    if (!image && !referenceImages?.length) {
+      return res.status(400).json({ error: '내 사진 또는 레퍼런스 이미지가 필요합니다' });
+    }
+
+    const roles = referenceImages?.map(r => r.role).join('+') || 'none';
+    if (image) {
+      const base64Data = extractBase64(image);
+      const byteLength = Math.ceil(base64Data.length * 3 / 4);
+      log(`[profiles] 입력: ${(byteLength/1024).toFixed(1)}KB, 모델: ${model || 'nano-banana-2'}, 용도: ${purpose || 'linkedin'}, refs: ${roles}`);
+      if (byteLength > 5 * 1024 * 1024) {
+        return res.status(400).json({ error: '이미지가 너무 큽니다 (5MB 이하)' });
+      }
+    } else {
+      log(`[profiles] 유저사진 없음, refs: ${roles}, 모델: ${model || 'nano-banana-2'}, 용도: ${purpose || 'linkedin'}`);
     }
 
     const instruction = buildProfilePrompt(body);
     const modelId = PROFILE_MODEL_MAP[model] || PROFILE_MODEL_MAP['nano-banana-2'];
     const aspectRatio = PURPOSE_ASPECT_MAP[purpose] || '3:4';
 
-    const contentParts = [
-      { inlineData: { mimeType: 'image/jpeg', data: base64Data } },
-      { text: 'This is the main person. Preserve their face 90%.' },
-    ];
+    const contentParts = [];
+
+    if (image) {
+      const base64Data = extractBase64(image);
+      contentParts.push({ inlineData: { mimeType: 'image/jpeg', data: base64Data } });
+      contentParts.push({ text: 'Image 1: This is the subject person. Preserve their face and identity.' });
+    }
 
     if (referenceImages?.length) {
+      const ROLE_LABELS = {
+        master: 'MASTER REFERENCE. Apply everything from this image — pose, framing, clothing, hair, makeup, background, lighting, and overall mood. This is the target style.',
+        fashion: 'FASHION OVERRIDE. Use this clothing/outfit style INSTEAD of the master reference clothing.',
+        hair: 'HAIR OVERRIDE. Use this hairstyle INSTEAD of the master reference hair.',
+        makeup: 'MAKEUP OVERRIDE. Use this makeup style INSTEAD of the master reference makeup.',
+        background: 'BACKGROUND OVERRIDE. Use this background/setting INSTEAD of the master reference background.',
+      };
+
+      let imgIdx = image ? 2 : 1;
       for (const ref of referenceImages) {
         if (ref.data) {
           const refData = extractBase64(ref.data);
           contentParts.push({ inlineData: { mimeType: 'image/jpeg', data: refData } });
-          contentParts.push({ text: `Reference for ${ref.category} style only.` });
+          const label = ROLE_LABELS[ref.role] || `Reference for ${ref.role} style.`;
+          contentParts.push({ text: `Image ${imgIdx}: ${label}` });
+          imgIdx++;
         }
       }
     }
 
     contentParts.push({ text: instruction });
 
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: contentParts }],
-          generationConfig: { imageConfig: { aspectRatio } },
-          safetySettings: [
-            { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
-            { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
-            { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
-            { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
-          ],
-        }),
-      }
-    );
+    const response = await imageAI.models.generateContent({
+      model: modelId,
+      contents: [{ role: 'user', parts: contentParts }],
+      config: {
+        responseModalities: ['TEXT', 'IMAGE'],
+        imageConfig: { aspectRatio },
+        safetySettings: [
+          { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
+          { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
+          { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
+          { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
+        ],
+      },
+    });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      let detail = '';
-      try { detail = JSON.parse(errorText)?.error?.message || errorText.substring(0, 200); } catch { detail = errorText.substring(0, 200); }
-      throw new Error(`API ${response.status}: ${detail}`);
-    }
-
-    const data = await response.json();
-    const imagePart = data.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
+    const imagePart = response.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
     if (!imagePart?.inlineData) {
       throw new Error('이미지 생성 실패: 응답에 이미지가 없습니다');
     }
@@ -594,7 +572,7 @@ app.post('/api/profiles/generate', async (req, res) => {
     const generatedBase64 = imagePart.inlineData.data;
 
     try {
-      await saveImages('studio-profiles', image, generatedBase64);
+      await saveImages('studio-profiles', image || 'freestyle-no-user-photo', generatedBase64);
       log('[GCS] 프로필 샘플 저장 완료');
     } catch (e) {
       log(`[GCS] 저장 실패 (무시): ${e.message}`, 'WARNING');
@@ -631,7 +609,7 @@ app.listen(PORT, '0.0.0.0', () => {
   log('='.repeat(50));
   log(`포트: ${PORT}`);
   log(`프로젝트: ${PROJECT_ID}`);
-  log(`Imagen: ${GEMINI_API_KEY ? '활성' : 'API Key 미설정'}`);
+  log(`Imagen: Vertex AI ADC (${LOCATION})`);
   log('인증: 없음 (내부 전용)');
   log('결제: 없음');
   log('='.repeat(50));
