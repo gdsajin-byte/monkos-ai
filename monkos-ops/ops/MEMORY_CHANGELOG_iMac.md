@@ -7,6 +7,29 @@
 
 ---
 
+## 2026-04-28 16:00 KST — `project_payment_gateway_constraints.md` 갱신 (LS×Stripe 인수 + Stripe Connect 의미 + PayPay 옵션)
+
+### 배경
+- 작가님 2026-04-28 LS 어드민 본체 복구 + W-8BEN 제출 + Stripe Connect 활성화 통보 받음
+- LS support 회신에 "Stripe Connect account has been enabled" 표현 → 작가님 의문: "이제 스트라이프를 정식으로 쓰는 형태가 된건가"
+- WebSearch에서 핵심 신규 사실 발견: **Stripe가 2024년 LS 인수**, LS는 "Managed Payments" 라인으로 Stripe 본진과 통합 중 (35+개국)
+- Stripe Japan이 PayPay 통합 발표(2025) → LS에도 도입 가능성 (단 공식 docs 미명시)
+
+### 추가 (project_payment_gateway_constraints.md 어펜드)
+- **2026-04-28 갱신** 섹션 신설
+- Stripe-LS 인수 사실 + LS = MoR 구조 명확화 (Stripe 직접 사용자 아님)
+- Stripe Connect Enabled의 정확한 의미 (작가님 입장 변동 없음)
+- PayPay 옵션 가능성 + LS 문의 메일 draft 작성 사실
+- 일본 PayPay 68M+ 사용자 / idphoto-jp 매출 회복 단계에서 즉시 효과 큰 옵션
+
+### 근거 문서
+- `monkos-ops/ops/sessions/2026-04-28_iMac_민아.md` (LS 트랙 전체)
+- `monkos-ops/ops/reports/REPORT_20260428_iMac민아_나노바나나2_코드아키텍처_사용툴_분석.md` (별건)
+- WebSearch sources: blog.lemonsqueezy.com/2026-update, stripe.com/newsroom/news/japan-payments-moment-2025
+- LS support 메일 thread: 19daf21e8ce73285 (Deerga + Gadha)
+
+---
+
 ## 2026-04-23 14:45 KST — "역할 자동 인식" 섹션 강화 (Anthropic 제품 2개 구조 반영)
 
 ### 배경
