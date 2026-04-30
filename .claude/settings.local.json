@@ -1,5 +1,4 @@
 {
-  "model": "claude-opus-4-6[1m]",
   "permissions": {
     "allow": [
       "Bash(dir:*)",
@@ -73,7 +72,8 @@
       "Bash(mv \"han/업무절차/HAN_업무절차_SOP.md\" /tmp/works_nfd_backup/)",
       "Bash(mv \"han/업무절차/HAN_일일브리핑_템플릿.md\" /tmp/works_nfd_backup/)",
       "Bash(git -C /Users/jeong-kyushin/developer/monk_project/monkos-ops/works pull origin main --no-edit)",
-      "Bash(git -C /Users/jeong-kyushin/developer/monk_project/monkos-ops/works log --oneline -3)"
+      "Bash(git -C /Users/jeong-kyushin/developer/monk_project/monkos-ops/works log --oneline -3)",
+      "mcp__google-search-console__search_analytics"
     ],
     "deny": [
       "Bash(rm -rf *)",
@@ -87,5 +87,6 @@
       "/Users/jeong-kyushin/Desktop/쌍아",
       "/Users/jeong-kyushin/developer/monk_project/monkos-ops/works/han/260406_셀카증명사진촬영팁/watermarked"
     ]
-  }
+  },
+  "model": "claude-opus-4-6[1m]"
 }
