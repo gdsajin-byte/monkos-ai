@@ -1,0 +1,18 @@
+{
+  "name": "MONKOS Crop — 증명사진 규격 크롭",
+  "short_name": "MONKOS Crop",
+  "description": "ICAO 국제 규격 증명사진 자동 크롭 — 오프라인, 무료, 개인정보 보호",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f5f5f5",
+  "theme_color": "#f5f5f5",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "categories": ["photo", "utilities"],
+  "lang": "ko",
+  "dir": "ltr"
+}

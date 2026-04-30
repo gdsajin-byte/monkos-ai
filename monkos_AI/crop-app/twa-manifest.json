@@ -1,0 +1,23 @@
+{
+  "packageId": "ai.monkos.crop",
+  "host": "crop.monkos.ai",
+  "name": "MONKOS Crop",
+  "launcherName": "MONKOS Crop",
+  "display": "standalone",
+  "themeColor": "#f5f5f5",
+  "navigationColor": "#f5f5f5",
+  "backgroundColor": "#f5f5f5",
+  "enableNotifications": false,
+  "startUrl": "/index.html",
+  "iconUrl": "/icons/icon-512.png",
+  "maskableIconUrl": "/icons/icon-maskable-512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "__KEYSTORE_PATH__",
+    "alias": "__KEY_ALIAS__"
+  },
+  "appVersionCode": 1,
+  "appVersionName": "1.0.0",
+  "shortcuts": [],
+  "generatorApp": "bubblewrap-cli"
+}
