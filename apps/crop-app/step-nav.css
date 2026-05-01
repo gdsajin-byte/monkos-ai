@@ -1,0 +1,519 @@
+/* ═══ Step Navigation ═══ */
+
+body {
+  background: var(--bg);
+  padding: 0;
+  display: block;
+}
+
+.step-bar {
+  display: flex;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 12px;
+  gap: 4px;
+}
+.step-bar-item {
+  flex: 1;
+  text-align: center;
+  position: relative;
+}
+.step-bar-item span {
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: 0.5px;
+}
+.step-bar-item::after {
+  content: '';
+  display: block;
+  height: 2px;
+  background: var(--muted);
+  border-radius: 1px;
+  margin-top: 4px;
+  opacity: 0.3;
+}
+.step-bar-item.active span { color: var(--accent); }
+.step-bar-item.active::after { background: var(--accent); opacity: 1; }
+.step-bar-item.done span { color: var(--green); }
+.step-bar-item.done::after { background: var(--green); opacity: 0.6; }
+
+/* ═══ Step Pages ═══ */
+
+.step-page {
+  display: none;
+  min-height: calc(100vh - 50px);
+}
+.step-page.active { display: block; }
+
+.step-wrapper {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 16px;
+}
+.step-heading {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 12px;
+}
+
+/* ═══ Step 1: Purpose + Country Dropdown + Spec Detail ═══ */
+
+.purpose-row {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.purpose-btn {
+  flex: 1;
+  min-width: 60px;
+  padding: 10px 4px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--card);
+  color: var(--sub);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.15s;
+}
+
+.purpose-btn:active { transform: scale(0.96); }
+.purpose-btn.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(0,212,170,0.06);
+}
+
+/* Country dropdown */
+.country-dropdown { margin-bottom: 14px; }
+
+.dropdown-label {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--sub);
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
+.dropdown-select {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.dropdown-select:hover { border-color: var(--accent); }
+.dropdown-flag { font-size: 20px; }
+.dropdown-text { flex: 1; font-size: 14px; color: var(--text); }
+.dropdown-arrow { font-size: 12px; color: var(--muted); }
+
+.dropdown-list {
+  margin-top: 4px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.dropdown-search {
+  width: 100%;
+  padding: 10px 14px;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  font-size: 13px;
+  outline: none;
+}
+.dropdown-search::placeholder { color: var(--muted); }
+
+.dropdown-items {}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.dropdown-item:hover { background: rgba(0,212,170,0.06); }
+.dropdown-item.selected { background: rgba(0,212,170,0.1); }
+.dropdown-item-flag { font-size: 18px; }
+.dropdown-item-name { font-size: 13px; color: var(--text); flex: 1; }
+.dropdown-item-sub { font-size: 10px; color: var(--muted); }
+
+/* Custom size input */
+.custom-size { margin-bottom: 14px; }
+.custom-inputs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.custom-field {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+}
+
+.custom-field input {
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 16px;
+  font-family: monospace;
+  outline: none;
+  text-align: center;
+}
+
+.custom-field input:focus { border-color: var(--accent); }
+.custom-field span { font-size: 12px; color: var(--muted); }
+.custom-x { color: var(--muted); font-size: 14px; }
+
+/* Spec detail container */
+.spec-detail {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  margin-top: 12px;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.spec-detail-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.spec-detail-flag { font-size: 32px; }
+.spec-detail-country { font-size: 15px; font-weight: 700; color: var(--text); }
+.spec-detail-doc { font-size: 12px; color: var(--sub); margin-top: 2px; }
+
+.spec-detail-body { padding: 14px 16px; }
+
+.spec-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.spec-info-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+}
+
+.spec-info-label { font-size: 11px; color: var(--sub); }
+.spec-info-val { font-size: 12px; font-weight: 700; color: var(--text); font-family: monospace; }
+
+.spec-face-info {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+.spec-ai-warn {
+  margin-top: 10px;
+  padding: 8px 12px;
+  background: rgba(255,176,32,0.08);
+  border: 1px solid rgba(255,176,32,0.2);
+  border-radius: 8px;
+  font-size: 12px;
+  color: #FFB020;
+}
+
+.spec-source {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 11px;
+  color: var(--accent);
+  text-decoration: none;
+}
+.spec-source:hover { text-decoration: underline; }
+
+.spec-confirm {
+  margin: 14px 16px 16px;
+  width: calc(100% - 32px);
+}
+
+/* ═══ Step 2: Upload ═══ */
+
+.selected-spec-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(0,212,170,0.08);
+  border: 1px solid rgba(0,212,170,0.2);
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+
+.upload-buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.upload-btn {
+  flex: 1;
+  padding: 24px 12px;
+  background: var(--card);
+  border: 2px dashed var(--border);
+  border-radius: 14px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.upload-btn:hover { border-color: var(--accent); }
+.upload-btn:active { transform: scale(0.97); }
+.upload-btn-icon { font-size: 32px; }
+
+.tips-card-s {
+  padding: 14px 16px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.tips-header-s {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.tips-title-s {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.3px;
+}
+
+.tips-list-s {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tips-list-s li {
+  font-size: 12px;
+  color: var(--sub);
+  padding-left: 14px;
+  position: relative;
+  line-height: 1.4;
+}
+
+.tips-list-s li::before {
+  content: '•';
+  position: absolute;
+  left: 2px;
+  color: var(--accent);
+}
+
+/* ═══ Step 3: Crop overrides ═══ */
+
+#stepPage3 .app-container {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  border-radius: 0;
+  border: none;
+  box-shadow: none;
+}
+#stepPage3 .header { display: none; }
+#stepPage3 .spec-tabs { display: none; }
+#stepPage3 .sample-banner { display: none; }
+#stepPage3 #btnPhoto { display: none; }
+
+.crop-spec-badge {
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+  border-bottom: 1px solid var(--border);
+}
+
+/* S3: 정수리 핀 축소 */
+.pin-crown {
+  width: 5px !important;
+  height: 5px !important;
+  padding: 12px !important;
+  margin: -12px !important;
+  font-size: 10px !important;
+}
+
+/* S4: 스케일 핸들 숨김 (슬라이더로 대체) */
+.scale-handle.hidden { display: none !important; }
+
+.scale-slider-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 4px 0;
+}
+.scale-slider-label { font-size: 10px; color: var(--sub); min-width: 32px; }
+.scale-slider {
+  flex: 1;
+  height: 4px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--border);
+  border-radius: 2px;
+  outline: none;
+}
+.scale-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid #fff;
+  cursor: pointer;
+}
+.scale-slider-value { font-size: 10px; color: var(--accent); font-family: monospace; min-width: 36px; }
+
+/* ═══ Step 4: BG ═══ */
+
+.bg-preview-s {
+  position: relative;
+  margin: 12px 0;
+  text-align: center;
+}
+.bg-preview-s canvas {
+  background: repeating-conic-gradient(#222 0% 25%, #1a1a1a 0% 50%) 50% / 12px 12px;
+}
+.bg-spinner {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(0,0,0,0.6);
+  color: var(--accent);
+  font-size: 13px;
+  border-radius: 8px;
+}
+.bg-colors {
+  display: flex; gap: 8px; justify-content: center; margin: 12px 0;
+}
+.bg-c {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.bg-c.active { border-color: var(--accent); box-shadow: 0 0 8px var(--accent-dim); }
+
+/* ═══ Step 5: Done ═══ */
+
+.done-spec {
+  font-size: 13px;
+  color: var(--sub);
+  margin-bottom: 12px;
+}
+
+/* ═══ Shared Buttons ═══ */
+
+.btn-full {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 12px;
+  box-shadow: 0 0 20px rgba(0,212,170,0.2);
+}
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+  box-shadow: none;
+}
+
+/* ═══ Back Button ═══ */
+.btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--sub);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 8px;
+  transition: all 0.15s;
+}
+.btn-back:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ═══ BG Color Labels ═══ */
+.bg-c-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.bg-c-label {
+  font-size: 9px;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+/* Step bar: clickable completed steps */
+.step-bar-item.done { cursor: pointer; }
+.step-bar-item.done:hover span { color: var(--accent); }
+
+.hidden { display: none !important; }

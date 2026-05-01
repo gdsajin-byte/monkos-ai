@@ -1,0 +1,476 @@
+{
+  "version": "2.0",
+  "countries": [
+    {
+      "id": "korea",
+      "flag": "🇰🇷",
+      "name": { "ko": "대한민국", "ja": "韓国", "en": "South Korea" },
+      "documents": [
+        {
+          "id": "korea-passport",
+          "type": "passport",
+          "name": { "ko": "여권", "ja": "パスポート", "en": "Passport" },
+          "size": { "w_mm": 35, "h_mm": 45 },
+          "px": { "w": 413, "h": 531, "dpi": 300 },
+          "headHeight": { "min_mm": 32, "max_mm": 36 },
+          "group": "A",
+          "background": "white",
+          "eyePosition": null,
+          "aiRestriction": true,
+          "officialSource": "https://www.passport.go.kr/home/kor/contents.do?menuPos=32"
+        },
+        {
+          "id": "korea-resident",
+          "type": "national_id",
+          "name": { "ko": "주민등록증", "ja": "住民登録証", "en": "Resident ID Card" },
+          "size": { "w_mm": 35, "h_mm": 45 },
+          "px": null,
+          "headHeight": null,
+          "group": "A",
+          "background": "white",
+          "eyePosition": null,
+          "aiRestriction": true,
+          "officialSource": "https://www.mois.go.kr/frt/sub/a06/b06/IDCard_5/screen.do"
+        },
+        {
+          "id": "korea-drivers-license",
+          "type": "drivers_license",
+          "name": { "ko": "운전면허증", "ja": "運転免許証", "en": "Driver's License" },
+          "size": { "w_mm": 35, "h_mm": 45 },
+          "px": null,
+          "headHeight": { "min_mm": 32, "max_mm": 36 },
+          "group": "A",
+          "background": "white",
+          "eyePosition": null,
+          "aiRestriction": true,
+          "officialSource": "https://www.safedriving.or.kr/guide/larGuide10.do?menuCode=MN-PO-12111"
+        },
+        {
+          "id": "korea-resume",
+          "type": "resume",
+          "name": { "ko": "반명함 (이력서)", "ja": "半名刺 (履歴書)", "en": "Resume Photo" },
+          "size": { "w_mm": 30, "h_mm": 40 },
+          "px": null,
+          "headHeight": null,
+          "group": "B",
+          "background": "white",
+          "eyePosition": null,
+          "aiRestriction": false,
+          "officialSource": null
+        }
+      ]
+    },
+    {
+      "id": "japan",
+      "flag": "🇯🇵",
+      "name": { "ko": "일본", "ja": "日本", "en": "Japan" },
+      "documents": [
+        {
+          "id": "japan-passport",
+          "type": "passport",
+          "name": { "ko": "여권", "ja": "パスポート", "en": "Passport" },
+          "size": { "w_mm": 35, "h_mm": 45 },
+          "px": null,
+          "headHeight": { "min_mm": 32, "max_mm": 36 },
+          "group": "A",
+          "background": "white",
+          "eyePosition": null,
+          "aiRestriction": false,
+          "officialSource": "https://www.mofa.go.jp/mofaj/toko/passport/ic_photo.html"
+        },
+        {
+          "id": "japan-mynumber",
+          "type": "national_id",
+          "name": { "ko": "마이넘버카드", "ja": "マイナンバーカード", "en": "My Number Card" },
+          "size": { "w_mm": 35, "h_mm": 45 },
+          "px": { "w": 480, "h": 480, "dpi": null },
+          "headHeight": { "min_mm": 32, "max_mm": 36 },
+          "group": "A",
+          "background": "plain",
+          "eyePosition": null,
+          "aiRestriction": false,
+          "officialSource": "https://www.kojinbango-card.go.jp/apprec/apply/facephoto/"
+        },
+        {
+          "id": "japan-zairyu",
+          "type": "residence_card",
+          "name": { "ko": "재류카드", "ja": "在留カード", "en": "Residence Card" },
+          "size": { "w_mm": 30, "h_mm": 40 },
+          "px": null,
+          "headHeight": null,
+          "group": "B",
+          "background": "white",
+          "eyePosition": null,
+          "aiRestriction": false,
+          "officialSource": "https://www.moj.go.jp/isa/applications/status/photo_info_00002.html"
+        },
+        {
+          "id": "japan-resume",
+          "type": "resume",
+          "name": { "ko": "이력서", "ja": "履歴書", "en": "Resume Photo" },
+          "size": { "w_mm": 30, "h_mm": 40 },
+          "px": null,
+          "headHeight": null,
+          "group": "B",
+          "background": "white",
+          "eyePosition": null,
+          "aiRestriction": false,
+          "officialSource": null
+        }
+      ]
+    },
+    {
+      "id": "us",
+      "flag": "🇺🇸",
+      "name": { "ko": "미국", "ja": "アメリカ", "en": "United States" },
+      "documents": [
+        {
+          "id": "us-passport",
+          "type": "passport",
+          "name": { "ko": "여권", "ja": "パスポート", "en": "Passport" },
+          "size": { "w_mm": 51, "h_mm": 51 },
+          "px": null,
+          "headHeight": { "min_mm": 25, "max_mm": 35 },
+          "group": "C",
+          "background": "white",
+          "eyePosition": null,
+          "aiRestriction": true,
+          "officialSource": "https://travel.state.gov/content/travel/en/passports/how-apply/photos.html"
+        },
+        {
+          "id": "us-visa",
+          "type": "visa",
+          "name": { "ko": "비자 (DS-160)", "ja": "ビザ (DS-160)", "en": "Visa (DS-160)" },
+          "size": { "w_mm": 51, "h_mm": 51 },
+          "px": { "w": 600, "h": 600, "dpi": null },
+          "headHeight": { "min_mm": 25, "max_mm": 35, "min_pct": 50, "max_pct": 69 },
+          "group": "C",
+          "background": "white",
+          "eyePosition": { "min_pct": 56, "max_pct": 69, "basis": "bottom" },
+          "aiRestriction": true,
+          "officialSource": "https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/photos.html"
+        },
+        {
+          "id": "usa-headshot",
+          "type": "headshot",
+          "name": { "ko": "프로필 사진", "ja": "プロフィール写真", "en": "Headshot / Profile Photo" },
+          "size": null,
+          "px": { "w": 400, "h": 400, "dpi": null },
+          "headHeight": null,
+          "group": null,
+          "background": "any",
+          "eyePosition": null,
+          "aiRestriction": false,
+          "officialSource": null
+        }
+      ]
+    },
+    {
+      "id": "canada",
+      "flag": "🇨🇦",
+      "name": { "ko": "캐나다", "ja": "カナダ", "en": "Canada" },
+      "documents": [
+        {
+          "id": "canada-passport",
+          "type": "passport",
+          "name": { "ko": "여권", "ja": "パスポート", "en": "Passport" },
+          "size": { "w_mm": 50, "h_mm": 70 },
+          "px": { "w": 1200, "h": 1800, "dpi": null },
+          "headHeight": { "min_mm": 31, "max_mm": 36, "min_pct": 45, "max_pct": 50 },
+          "group": "B",
+          "background": "white",
+          "eyePosition": null,
+          "aiRestriction": true,
+          "officialSource": "https://www.canada.ca/en/immigration-refugees-citizenship/services/canadian-passports/photos.html"
+        }
+      ]
+    },
+    {
+      "id": "australia",
+      "flag": "🇦🇺",
+      "name": { "ko": "호주", "ja": "オーストラリア", "en": "Australia" },
+      "documents": [
+        {
+          "id": "australia-passport",
+          "type": "passport",
+          "name": { "ko": "여권", "ja": "パスポート", "en": "Passport" },
+          "size": { "w_mm": 35, "h_mm": 45 },
+          "px": null,
+          "headHeight": { "min_mm": 32, "max_mm": 36 },
+          "group": "A",
+          "background": "white",
+          "eyePosition": null,
+          "aiRestriction": true,
+          "officialSource": "https://www.passports.gov.au/getting-passport-how-it-works/photo-requirements"
+        }
+      ]
+    },
+    {
+      "id": "uk",
+      "flag": "🇬🇧",
+      "name": { "ko": "영국", "ja": "イギリス", "en": "United Kingdom" },
+      "documents": [
+        {
+          "id": "uk-passport",
+          "type": "passport",
+          "name": { "ko": "여권", "ja": "パスポート", "en": "Passport" },
+          "size": { "w_mm": 35, "h_mm": 45 },
+          "px": { "w": 600, "h": 750, "dpi": null },
+          "headHeight": { "min_mm": 29, "max_mm": 34 },
+          "group": "C",
+          "background": "light-grey",
+          "eyePosition": null,
+          "aiRestriction": true,
+          "officialSource": "https://www.gov.uk/photos-for-passports"
+        }
+      ]
+    },
+    {
+      "id": "eu",
+      "flag": "🇪🇺",
+      "name": { "ko": "유럽연합 (공통)", "ja": "EU（共通）", "en": "European Union (Common)" },
+      "documents": [
+        {
+          "id": "eu-passport",
+          "type": "passport",
+          "name": { "ko": "여권/신분증 (ICAO)", "ja": "パスポート/身分証 (ICAO)", "en": "Passport / ID (ICAO)" },
+          "size": { "w_mm": 35, "h_mm": 45 },
+          "px": null,
+          "headHeight": null,
+          "group": "A",
+          "background": "white",
+          "eyePosition": null,
+          "aiRestriction": false,
+          "officialSource": "https://eur-lex.europa.eu/legal-content/EN/ALL/?uri=celex:32004R2252"
+        },
+        {
+          "id": "eu-resume",
+          "type": "resume",
+          "name": { "ko": "이력서 사진", "ja": "履歴書写真", "en": "CV Photo" },
+          "size": { "w_mm": 35, "h_mm": 45 },
+          "px": null,
+          "headHeight": null,
+          "group": "A",
+          "background": "white",
+          "eyePosition": null,
+          "aiRestriction": false,
+          "officialSource": null
+        }
+      ]
+    },
+    {
+      "id": "germany",
+      "flag": "🇩🇪",
+      "name": { "ko": "독일", "ja": "ドイツ", "en": "Germany" },
+      "documents": [
+        {
+          "id": "germany-passport",
+          "type": "passport",
+          "name": { "ko": "여권", "ja": "パスポート", "en": "Passport" },
+          "size": { "w_mm": 35, "h_mm": 45 },
+          "px": null,
+          "headHeight": { "min_mm": 32, "max_mm": 36 },
+          "group": "A",
+          "background": "light-grey",
+          "eyePosition": null,
+          "aiRestriction": false,
+          "officialSource": "https://www.bmi.bund.de/SharedDocs/kurzmeldungen/DE/2025/04/neue-passbilder.html"
+        }
+      ]
+    },
+    {
+      "id": "spain",
+      "flag": "🇪🇸",
+      "name": { "ko": "스페인", "ja": "スペイン", "en": "Spain" },
+      "documents": [
+        {
+          "id": "spain-passport",
+          "type": "passport",
+          "name": { "ko": "여권", "ja": "パスポート", "en": "Passport" },
+          "size": { "w_mm": 35, "h_mm": 45 },
+          "px": null,
+          "headHeight": null,
+          "group": "A",
+          "background": "white",
+          "eyePosition": null,
+          "aiRestriction": false,
+          "officialSource": "https://www.exteriores.gob.es"
+        },
+        {
+          "id": "spain-dni",
+          "type": "national_id",
+          "name": { "ko": "DNI (신분증)", "ja": "DNI（身分証）", "en": "DNI (National ID)" },
+          "size": { "w_mm": 26, "h_mm": 32 },
+          "px": null,
+          "headHeight": null,
+          "group": "B",
+          "background": "white",
+          "eyePosition": null,
+          "aiRestriction": false,
+          "officialSource": "https://www.dnielectronico.es/PortalDNIe/PRF1_Cons02.action?pag=REF_1084"
+        }
+      ]
+    },
+    {
+      "id": "singapore",
+      "flag": "🇸🇬",
+      "name": { "ko": "싱가포르", "ja": "シンガポール", "en": "Singapore" },
+      "documents": [
+        {
+          "id": "singapore-passport",
+          "type": "passport",
+          "name": { "ko": "여권", "ja": "パスポート", "en": "Passport" },
+          "size": { "w_mm": 35, "h_mm": 45 },
+          "px": { "w": 400, "h": 514, "dpi": null },
+          "headHeight": { "min_mm": 25, "max_mm": 35 },
+          "group": "A",
+          "background": "white",
+          "eyePosition": null,
+          "aiRestriction": false,
+          "officialSource": "https://www.ica.gov.sg/photo-guidelines"
+        }
+      ]
+    },
+    {
+      "id": "thailand",
+      "flag": "🇹🇭",
+      "name": { "ko": "태국", "ja": "タイ", "en": "Thailand" },
+      "documents": [
+        {
+          "id": "thailand-passport",
+          "type": "passport",
+          "name": { "ko": "여권", "ja": "パスポート", "en": "Passport" },
+          "size": { "w_mm": 35, "h_mm": 45 },
+          "px": null,
+          "headHeight": null,
+          "group": "A",
+          "background": "white",
+          "eyePosition": null,
+          "aiRestriction": false,
+          "officialSource": "https://www.mfa.go.th/en/page/electronic-passport"
+        }
+      ]
+    },
+    {
+      "id": "india",
+      "flag": "🇮🇳",
+      "name": { "ko": "인도", "ja": "インド", "en": "India" },
+      "documents": [
+        {
+          "id": "india-passport",
+          "type": "passport",
+          "name": { "ko": "여권", "ja": "パスポート", "en": "Passport" },
+          "size": { "w_mm": 51, "h_mm": 51 },
+          "px": { "w": 630, "h": 810, "dpi": null },
+          "headHeight": { "min_mm": 25, "max_mm": 35 },
+          "group": "C",
+          "background": "white",
+          "eyePosition": null,
+          "aiRestriction": false,
+          "officialSource": "https://passportindia.gov.in",
+          "note": "2025.9.1부터 ICAO 35×45mm 전환 예정. 현행 51×51 (2×2 inch)"
+        },
+        {
+          "id": "india-visa",
+          "type": "visa",
+          "name": { "ko": "비자 (e-Visa)", "ja": "ビザ (e-Visa)", "en": "Visa (e-Visa)" },
+          "size": { "w_mm": 51, "h_mm": 51 },
+          "px": { "w": 350, "h": 350, "dpi": null },
+          "headHeight": { "min_mm": 25, "max_mm": 35, "min_pct": 50, "max_pct": 69 },
+          "group": "C",
+          "background": "white",
+          "eyePosition": { "min_pct": 56, "max_pct": 69, "basis": "bottom" },
+          "aiRestriction": false,
+          "officialSource": "https://indianvisaonline.gov.in/visa/instruction.html"
+        }
+      ]
+    },
+    {
+      "id": "china",
+      "flag": "🇨🇳",
+      "name": { "ko": "중국", "ja": "中国", "en": "China" },
+      "documents": [
+        {
+          "id": "china-passport",
+          "type": "passport",
+          "name": { "ko": "여권 (护照)", "ja": "パスポート（护照）", "en": "Passport (护照)" },
+          "size": { "w_mm": 33, "h_mm": 48 },
+          "px": { "w": 390, "h": 567, "dpi": 300 },
+          "headHeight": { "min_mm": 28, "max_mm": 33 },
+          "group": "B",
+          "background": "white",
+          "eyePosition": null,
+          "aiRestriction": true,
+          "officialSource": "https://www.nia.gov.cn/n741445/n741619/n894511/c896346/content.html"
+        },
+        {
+          "id": "china-visa",
+          "type": "visa",
+          "name": { "ko": "비자 (签证)", "ja": "ビザ（签证）", "en": "Visa (签证)" },
+          "size": { "w_mm": 33, "h_mm": 48 },
+          "px": { "w": 354, "h": 472, "dpi": null },
+          "headHeight": { "min_mm": 28, "max_mm": 33 },
+          "group": "B",
+          "background": "white",
+          "eyePosition": null,
+          "aiRestriction": true,
+          "officialSource": "https://ma.china-embassy.gov.cn/lsfw/zytz/202504/t20250427_11605604.htm"
+        },
+        {
+          "id": "china-resume",
+          "type": "resume",
+          "name": { "ko": "증명사진 (1寸/2寸)", "ja": "証明写真（1寸/2寸）", "en": "ID Photo (1寸/2寸)" },
+          "size": { "w_mm": 25, "h_mm": 35 },
+          "px": null,
+          "headHeight": null,
+          "group": "B",
+          "background": "white",
+          "eyePosition": null,
+          "aiRestriction": false,
+          "officialSource": null,
+          "note": "관행 규격. 一寸 25×35 / 二寸 35×49"
+        }
+      ]
+    },
+    {
+      "id": "vietnam",
+      "flag": "🇻🇳",
+      "name": { "ko": "베트남", "ja": "ベトナム", "en": "Vietnam" },
+      "documents": [
+        {
+          "id": "vietnam-passport",
+          "type": "passport",
+          "name": { "ko": "여권 (Hộ chiếu)", "ja": "パスポート", "en": "Passport (Hộ chiếu)" },
+          "size": { "w_mm": 40, "h_mm": 60 },
+          "px": null,
+          "headHeight": null,
+          "group": "B",
+          "background": "white",
+          "eyePosition": { "approx_pct": 60, "basis": "bottom" },
+          "aiRestriction": true,
+          "officialSource": "https://dichvucong.bocongan.gov.vn/bocongan/tintuc/chitiet?matin=41"
+        }
+      ]
+    },
+    {
+      "id": "indonesia",
+      "flag": "🇮🇩",
+      "name": { "ko": "인도네시아", "ja": "インドネシア", "en": "Indonesia" },
+      "documents": [
+        {
+          "id": "indonesia-passport",
+          "type": "passport",
+          "name": { "ko": "여권 (Paspor)", "ja": "パスポート", "en": "Passport (Paspor)" },
+          "size": { "w_mm": 40, "h_mm": 60 },
+          "px": { "w": 400, "h": 600, "dpi": null },
+          "headHeight": null,
+          "group": "B",
+          "background": "white",
+          "eyePosition": { "min_pct": 50, "max_pct": 60, "basis": "bottom" },
+          "aiRestriction": false,
+          "officialSource": "https://safetravel.kemlu.go.id/official-service"
+        }
+      ]
+    }
+  ]
+}

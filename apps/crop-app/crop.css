@@ -1,0 +1,384 @@
+/* MONKOS Crop App — Dark HUD Theme */
+:root {
+  --bg: #05080E;
+  --surface: #0A0F18;
+  --card: #0D1320;
+  --border: rgba(255, 255, 255, 0.08);
+  --accent: #00D4AA;
+  --accent-dim: rgba(0, 212, 170, 0.12);
+  --green: #00D4AA;
+  --green-dim: rgba(0, 212, 170, 0.12);
+  --yellow: #FFB020;
+  --yellow-dim: rgba(255, 176, 32, 0.15);
+  --red: #FF4060;
+  --red-dim: rgba(255, 64, 96, 0.12);
+  --gold: #FFB020;
+  --text: #E8EDF5;
+  --sub: #6B7D9A;
+  --muted: #3A4B65;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  min-height: 100vh;
+  background: var(--bg);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 24px 16px 48px;
+  font-family: 'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.app-container {
+  width: 360px;
+  background: var(--surface);
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+  overflow: hidden;
+}
+
+/* 헤더 */
+.header {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface);
+}
+.header-logo {
+  width: 28px; height: 28px;
+  border-radius: 6px;
+}
+.header-title { font-size: 14px; font-weight: 700; color: var(--text); margin: 0; }
+.header-info { font-size: 10px; color: var(--muted); font-family: monospace; }
+
+/* 규격 탭 */
+.spec-tabs {
+  display: flex; padding: 10px 14px; gap: 6px;
+  border-bottom: 1px solid var(--border);
+}
+.spec-tab {
+  flex: 1; padding: 7px 6px; border-radius: 8px;
+  border: 1px solid var(--border); background: transparent;
+  color: var(--sub); font-size: 11px; font-weight: 400; cursor: pointer;
+}
+.spec-tab.active {
+  border-color: var(--accent); background: var(--accent-dim);
+  color: var(--accent); font-weight: 700;
+}
+
+/* 본문 */
+.content { padding: 16px 14px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+
+/* 샘플 배너 */
+.sample-banner {
+  width: 100%; padding: 8px 12px;
+  background: var(--accent-dim); border: 1px solid rgba(109, 40, 217, 0.15);
+  border-radius: 8px; display: flex; align-items: center; justify-content: space-between;
+}
+.sample-banner span { font-size: 10px; color: var(--accent); }
+.sample-banner button {
+  font-size: 10px; color: var(--accent); font-weight: 700;
+  background: none; border: 1px solid var(--accent);
+  border-radius: 5px; padding: 2px 8px; cursor: pointer;
+}
+.sample-banner.hidden { display: none; }
+
+/* 범례 */
+.legend { display: flex; gap: 5px; width: 100%; }
+.legend-item {
+  flex: 1; display: flex; align-items: center; gap: 5px;
+  padding: 5px 7px; background: var(--card);
+  border-radius: 7px; border: 1px solid var(--border);
+}
+.legend-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.legend-label { font-size: 9px; color: var(--sub); }
+
+/* 프레임 — 캔버스 영역 다크 유지 */
+.frame-container {
+  position: relative; border: 2px solid var(--accent);
+  border-radius: 3px; overflow: hidden;
+  background: #0a0e17; flex-shrink: 0;
+  touch-action: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.frame-container.grabbing { cursor: grabbing; }
+.frame-container:not(.grabbing) { cursor: grab; }
+
+/* 사진 */
+.photo {
+  position: absolute; left: 50%; top: 50%;
+  width: 100%; height: 100%; object-fit: cover;
+  user-select: none; -webkit-user-drag: none;
+  -webkit-touch-callout: none;
+}
+.photo.sample-guide {
+  filter: blur(2px) grayscale(0.3);
+  opacity: 0.25;
+}
+
+/* SVG 오버레이 */
+.overlay-svg { position: absolute; inset: 0; pointer-events: none; z-index: 10; }
+
+/* 핀 (정수리/턱) — 캔버스 내부 */
+.pin {
+  position: absolute; transform: translateX(-50%);
+  border-radius: 50%; border: 2.5px solid #fff;
+  z-index: 22; pointer-events: auto;
+}
+.pin-crown {
+  width: 9px; height: 9px; cursor: ns-resize;
+  /* 터치 히트 영역 — 시각 9px, 히트 47px */
+  padding: 19px;
+  margin: -19px;
+  box-sizing: content-box;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; color: #fff; font-weight: 800;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+}
+.pin-chin {
+  width: 18px; height: 18px; pointer-events: none;
+}
+.pin-hint {
+  position: absolute; z-index: 22; pointer-events: none; white-space: nowrap;
+  border-radius: 6px; padding: 2px 7px; font-size: 12px; font-weight: 700;
+}
+
+/* 스케일 핸들 — 캔버스 내부 */
+.scale-handle {
+  position: absolute; transform: translate(-50%,-50%);
+  width: 14px; height: 14px; border-radius: 5px;
+  background: var(--accent); border: 2px solid #fff;
+  cursor: nwse-resize; z-index: 22; pointer-events: auto;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; color: #fff; font-weight: 900;
+  /* 터치 히트 영역 — 시각 14px, 히트 46px */
+  padding: 16px;
+  margin: -16px;
+  box-sizing: content-box;
+}
+
+/* 이동 핸들 — 캔버스 내부 */
+.move-handle {
+  position: absolute;
+  left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: rgba(6,8,13,0.5);
+  border: 1.5px solid rgba(255,255,255,0.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  z-index: 15;
+  pointer-events: auto;
+  cursor: grab;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+.move-handle:active {
+  opacity: 1;
+  cursor: grabbing;
+}
+
+/* 배지 (프레임 내) — 캔버스 내부 다크 */
+.badge-face {
+  position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
+  border-radius: 20px; padding: 4px 14px;
+  font-size: 13px; font-weight: 800; z-index: 20;
+  backdrop-filter: blur(8px); white-space: nowrap;
+}
+.badge-face .range { font-size: 9px; color: #7F8C9B; font-weight: 400; margin-left: 4px; }
+
+.badge-status {
+  position: absolute; top: 7px; left: 7px;
+  border-radius: 5px; padding: 2px 7px;
+  font-size: 9px; font-weight: 700; z-index: 20;
+}
+.badge-scale {
+  position: absolute; top: 7px; right: 7px;
+  background: rgba(6,8,13,0.8); border-radius: 5px; padding: 2px 7px;
+  font-size: 9px; color: #7F8C9B; font-family: monospace; z-index: 20;
+}
+
+/* 수치 4칸 */
+.metrics { display: flex; gap: 5px; width: 100%; }
+.metric {
+  flex: 1; padding: 7px 6px; background: var(--card);
+  border: 1px solid var(--border); border-radius: 8px; text-align: center;
+}
+.metric-label { font-size: 9px; color: var(--sub); margin-bottom: 2px; }
+.metric-value { font-size: 12px; font-weight: 700; }
+
+/* 경고 */
+.warning-box {
+  width: 100%; padding: 7px 12px;
+  border-radius: 8px; font-size: 10px;
+}
+.warning-box.hidden { display: none; }
+
+/* ICAO 범위 바 */
+.range-bar-container { width: 100%; }
+.range-bar-header { display: flex; justify-content: space-between; margin-bottom: 5px; }
+.range-bar-header span { font-size: 10px; }
+.range-track {
+  height: 6px; background: rgba(255,255,255,0.06); border-radius: 3px;
+  position: relative;
+}
+.range-fill {
+  position: absolute; height: 100%;
+  background: var(--green-dim); border: 1px solid rgba(0,184,148,0.2);
+  border-radius: 3px;
+}
+.range-dot {
+  position: absolute; top: -4px; transform: translateX(-50%);
+  width: 14px; height: 14px; border-radius: 50%;
+  border: 2px solid #fff; transition: left 0.08s, background 0.2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+.range-labels { display: flex; justify-content: space-between; margin-top: 3px; }
+.range-labels span { font-size: 9px; color: var(--sub); }
+
+/* 버튼 */
+.actions { display: flex; gap: 6px; width: 100%; }
+.btn {
+  padding: 11px 0; border-radius: 10px; font-size: 12px; cursor: pointer;
+  border: 1px solid var(--border); background: var(--card); color: var(--text);
+}
+.btn-photo { flex: 1; }
+.btn-reset { padding: 11px 14px; }
+.btn-preview { padding: 11px 10px; font-size: 11px; }
+.btn-download {
+  flex: 2; border: none; color: #fff; font-size: 13px; font-weight: 700;
+}
+.btn-download.enabled { background: var(--accent); cursor: pointer; opacity: 1; }
+.btn-download.disabled { background: var(--muted); cursor: not-allowed; opacity: 0.5; }
+
+.btn-download.enabled {
+  background: var(--accent);
+  box-shadow: 0 0 20px rgba(0, 212, 170, 0.25);
+}
+
+/* 다운로드 차단 안내 */
+.download-block-reason {
+  width: 100%; padding: 7px 12px; border-radius: 8px;
+  font-size: 10px; line-height: 1.5;
+}
+.download-block-reason.hidden { display: none; }
+
+/* 규격 정보 테이블 */
+.spec-info {
+  width: 100%; padding: 10px 12px; background: var(--bg);
+  border-radius: 8px; border: 1px solid var(--border);
+}
+.spec-row {
+  display: flex; justify-content: space-between; padding: 3px 0;
+}
+.spec-row:not(:last-child) { border-bottom: 1px solid var(--border); }
+.spec-row .label { font-size: 10px; color: var(--sub); }
+.spec-row .value { font-size: 10px; color: var(--text); font-weight: 600; }
+
+/* 모달 */
+.modal-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.4); backdrop-filter: blur(6px);
+  display: flex; align-items: flex-end; justify-content: center;
+  z-index: 200;
+}
+.modal-backdrop.hidden { display: none; }
+.modal-content {
+  width: 360px; background: var(--surface);
+  border-radius: 18px 18px 0 0;
+  border: 1px solid var(--border); border-bottom: none;
+  padding: 20px 18px 36px;
+  box-shadow: 0 -4px 24px rgba(0,0,0,0.08);
+}
+.modal-handle {
+  width: 36px; height: 4px; border-radius: 2px;
+  background: var(--muted); margin: 0 auto 18px;
+}
+.modal-title {
+  font-size: 16px; font-weight: 800; color: var(--text); margin-bottom: 4px;
+}
+.modal-metrics {
+  padding: 10px 12px; border-radius: 10px;
+  background: var(--bg); margin-bottom: 14px;
+}
+.modal-metrics-label { font-size: 10px; color: var(--sub); margin-bottom: 6px; }
+.modal-metrics-grid { display: flex; gap: 8px; }
+.modal-metric-item { flex: 1; text-align: center; }
+.modal-metric-item .label { font-size: 9px; color: var(--sub); }
+.modal-metric-item .value { font-size: 12px; font-weight: 700; }
+.modal-warning {
+  margin-top: 8px; padding: 5px 8px; border-radius: 6px;
+  font-size: 10px;
+}
+.modal-warning.hidden { display: none; }
+
+/* 동의 체크박스 */
+.consent-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+.consent-item { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; }
+.consent-check {
+  width: 18px; height: 18px; border-radius: 4px;
+  border: 2px solid rgba(0,0,0,0.15); background: transparent;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 1px; cursor: pointer;
+  font-size: 11px; color: #fff;
+}
+.consent-check.checked { border-color: var(--accent); background: var(--accent); }
+.consent-text { font-size: 11px; color: var(--sub); line-height: 1.5; }
+.consent-required { color: var(--accent); font-weight: 700; }
+
+/* 모달 버튼 */
+.modal-actions { display: flex; flex-direction: column; gap: 7px; }
+.modal-btn {
+  width: 100%; border-radius: 10px; font-size: 13px; cursor: pointer;
+}
+.modal-btn-primary {
+  padding: 13px 0; border: none; color: #fff; font-weight: 700;
+}
+.modal-btn-primary.enabled { background: var(--accent); cursor: pointer; opacity: 1; }
+.modal-btn-primary.disabled { background: var(--muted); cursor: not-allowed; opacity: 0.5; }
+.modal-btn-cancel {
+  padding: 9px 0; border: none; background: transparent;
+  color: var(--sub); font-size: 11px; cursor: pointer;
+}
+
+/* FaceMesh 로딩 인디케이터 — 캔버스 내부 다크 유지 */
+.facemesh-loading {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 10px; z-index: 30;
+  background: rgba(6,8,13,0.85);
+  backdrop-filter: blur(4px);
+}
+.facemesh-loading.hidden { display: none; }
+.facemesh-loading span {
+  font-size: 11px; color: var(--accent);
+  font-weight: 600;
+}
+.facemesh-spinner {
+  width: 28px; height: 28px;
+  border: 3px solid rgba(255,255,255,0.15);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── 모바일 edge-to-edge ── */
+@media (max-width: 700px) {
+  body { padding: 0; }
+  .app-container {
+    width: 100%;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+  }
+}

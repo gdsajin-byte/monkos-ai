@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>bg-remove Worker 테스트</title>
+  <style>
+    body { font-family: sans-serif; background: #1a1a2e; color: #eee; padding: 20px; }
+    canvas { max-width: 300px; border: 1px solid #333; border-radius: 8px;
+      background: repeating-conic-gradient(#333 0% 25%, #222 0% 50%) 50% / 12px 12px; }
+    .row { display: flex; gap: 16px; margin-top: 16px; }
+    button { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; background: #6c5ce7; color: #fff; font-size: 14px; }
+    button:disabled { opacity: .4; }
+    #status { margin-top: 12px; color: #fdcb6e; }
+  </style>
+</head>
+<body>
+  <h2>WebWorker 배경 제거 테스트</h2>
+  <button id="btn">사진 선택 + 배경 제거</button>
+  <div id="status">대기</div>
+  <div class="row">
+    <div><canvas id="before"></canvas><br>원본</div>
+    <div><canvas id="after"></canvas><br>결과</div>
+  </div>
+  <input type="file" accept="image/*" id="file" hidden>
+
+  <script type="module">
+    import { removeBG } from './bg-remove.js';
+
+    const btn = document.getElementById('btn');
+    const fileInput = document.getElementById('file');
+    const status = document.getElementById('status');
+
+    btn.addEventListener('click', () => fileInput.click());
+
+    fileInput.addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      btn.disabled = true;
+
+      const img = new Image();
+      img.onload = () => {
+        const c = document.getElementById('before');
+        c.width = img.width; c.height = img.height;
+        c.getContext('2d').drawImage(img, 0, 0);
+      };
+      img.src = URL.createObjectURL(file);
+
+      status.textContent = '처리 중...';
+      const t0 = performance.now();
+
+      try {
+        const blob = await removeBG(file, (phase, pct) => {
+          status.textContent = `${phase}: ${pct}%`;
+        });
+
+        const elapsed = ((performance.now() - t0) / 1000).toFixed(1);
+        status.textContent = `완료 — ${elapsed}s`;
+
+        const resultImg = new Image();
+        resultImg.onload = () => {
+          const c = document.getElementById('after');
+          c.width = resultImg.width; c.height = resultImg.height;
+          c.getContext('2d').drawImage(resultImg, 0, 0);
+        };
+        resultImg.src = URL.createObjectURL(blob);
+      } catch (err) {
+        status.textContent = '에러: ' + err.message;
+      }
+
+      btn.disabled = false;
+    });
+  </script>
+</body>
+</html>

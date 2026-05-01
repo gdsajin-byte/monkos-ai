@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>배경 제거 엔진 벤치마크 — 크롭앱 통합용</title>
+  <script type="importmap">
+  {
+    "imports": {
+      "onnxruntime-web": "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/ort.min.mjs",
+      "onnxruntime-common": "https://cdn.jsdelivr.net/npm/onnxruntime-common@1.20.1/+esm"
+    }
+  }
+  </script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #0f0f1a; color: #e0e0e0; padding: 20px; }
+    h1 { font-size: 20px; margin-bottom: 4px; }
+    .sub { font-size: 13px; color: #888; margin-bottom: 20px; }
+    .controls { display: flex; gap: 12px; margin-bottom: 16px; align-items: center; flex-wrap: wrap; }
+    .btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; transition: opacity .2s; }
+    .btn:disabled { opacity: .4; cursor: not-allowed; }
+    .btn-upload { background: #6c5ce7; color: #fff; }
+    .btn-run { background: #00b894; color: #fff; }
+    .btn-runall { background: #e17055; color: #fff; }
+    input[type="file"] { display: none; }
+
+    .source-preview { margin-bottom: 20px; }
+    .source-preview img { max-height: 200px; border-radius: 8px; border: 1px solid #333; }
+
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 20px; margin-top: 20px; }
+    .engine-card {
+      background: #1a1a2e; border: 1px solid #2d2d44; border-radius: 12px; padding: 16px;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .engine-card.running { border-color: #fdcb6e; }
+    .engine-card.done { border-color: #00b894; }
+    .engine-card.error { border-color: #d63031; }
+    .engine-header { display: flex; justify-content: space-between; align-items: center; }
+    .engine-name { font-size: 16px; font-weight: 700; }
+    .engine-badge { font-size: 11px; padding: 3px 8px; border-radius: 4px; background: #2d2d44; }
+    .engine-meta { font-size: 12px; color: #888; line-height: 1.6; }
+    .engine-status { font-size: 13px; color: #fdcb6e; min-height: 18px; }
+    .engine-result { display: flex; gap: 10px; flex-wrap: wrap; }
+    .engine-result canvas {
+      max-width: 180px; max-height: 220px; border-radius: 6px; border: 1px solid #333;
+      background: repeating-conic-gradient(#333 0% 25%, #222 0% 50%) 50% / 12px 12px;
+    }
+    .engine-timing { font-size: 13px; font-weight: 600; }
+    .timing-good { color: #00b894; }
+    .timing-ok { color: #fdcb6e; }
+    .timing-slow { color: #d63031; }
+    .engine-btn { padding: 6px 14px; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; background: #2d2d44; color: #eee; }
+    .engine-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+    .summary { margin-top: 30px; background: #1a1a2e; border-radius: 12px; padding: 20px; }
+    .summary h2 { font-size: 16px; margin-bottom: 12px; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { padding: 8px 12px; text-align: left; border-bottom: 1px solid #2d2d44; }
+    th { color: #888; font-weight: 600; }
+    td.best { color: #00b894; font-weight: 700; }
+  </style>
+</head>
+<body>
+  <h1>배경 제거 엔진 벤치마크</h1>
+  <div class="sub">크롭앱 통합용 · 4개 엔진 실측 비교 · 브라우저 로컬 추론</div>
+
+  <div class="controls">
+    <button class="btn btn-upload" id="btnUpload">사진 업로드</button>
+    <button class="btn btn-runall" id="btnRunAll" disabled>전체 벤치마크 실행</button>
+    <span id="globalStatus" style="font-size:13px; color:#888;"></span>
+  </div>
+  <input type="file" accept="image/*" id="fileInput" multiple>
+
+  <div class="source-preview" id="sourcePreview"></div>
+
+  <div class="grid" id="engineGrid"></div>
+
+  <div class="summary" id="summarySection" style="display:none;">
+    <h2>비교 결과</h2>
+    <table id="summaryTable">
+      <thead>
+        <tr>
+          <th>엔진</th>
+          <th>모델 크기</th>
+          <th>Cold Start</th>
+          <th>Warm 추론</th>
+          <th>상태</th>
+        </tr>
+      </thead>
+      <tbody id="summaryBody"></tbody>
+    </table>
+  </div>
+
+  <script type="module">
+    const ENGINES = [
+      {
+        id: 'imgly',
+        name: '@imgly/background-removal',
+        version: 'v1.5.5',
+        modelSize: '~40 MB (ISNet fp16)',
+        cdnUrl: 'https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.5.5/+esm',
+        description: 'IMG.LY ISNet ONNX · 가장 간단한 API · PoC 검증 완료',
+      },
+      {
+        id: 'transformers',
+        name: 'Transformers.js + RMBG-1.4',
+        version: 'v3',
+        modelSize: '~44.4 MB (quantized)',
+        cdnUrl: 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3',
+        description: 'HuggingFace RMBG-1.4 · 최고 품질 · 브라우저 ONNX',
+      },
+      {
+        id: 'rembg',
+        name: 'rembg-web (u2netp)',
+        version: 'latest',
+        modelSize: '~4.7 MB',
+        cdnUrl: 'https://unpkg.com/@bunnio/rembg-web@latest/dist/index.js',
+        description: 'U²-Net Portable · 최소 번들 · 품질 트레이드오프',
+      },
+      {
+        id: 'mediapipe',
+        name: 'MediaPipe Selfie Segmenter',
+        version: 'v0.10.18',
+        modelSize: '~0.45 MB',
+        cdnUrl: 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.18',
+        description: 'Google MediaPipe · 초경량 · 비디오 최적화 (사진 약세)',
+      },
+    ];
+
+    let uploadedFiles = [];
+    let uploadedImages = [];
+    const results = {};
+
+    // --- UI Setup ---
+    const grid = document.getElementById('engineGrid');
+    ENGINES.forEach(eng => {
+      const card = document.createElement('div');
+      card.className = 'engine-card';
+      card.id = `card-${eng.id}`;
+      card.innerHTML = `
+        <div class="engine-header">
+          <span class="engine-name">${eng.name}</span>
+          <span class="engine-badge">${eng.version}</span>
+        </div>
+        <div class="engine-meta">
+          ${eng.description}<br>모델: ${eng.modelSize}
+        </div>
+        <div class="engine-status" id="status-${eng.id}">대기</div>
+        <div class="engine-result" id="result-${eng.id}"></div>
+        <div class="engine-timing" id="timing-${eng.id}"></div>
+        <button class="engine-btn" id="btn-${eng.id}" disabled>단독 실행</button>
+      `;
+      grid.appendChild(card);
+    });
+
+    // --- File Upload ---
+    document.getElementById('btnUpload').addEventListener('click', () => {
+      document.getElementById('fileInput').click();
+    });
+
+    document.getElementById('fileInput').addEventListener('change', async (e) => {
+      const files = Array.from(e.target.files);
+      if (!files.length) return;
+      uploadedFiles = files.slice(0, 3);
+      uploadedImages = [];
+
+      const preview = document.getElementById('sourcePreview');
+      preview.innerHTML = '';
+
+      for (const file of uploadedFiles) {
+        const img = await loadImage(file);
+        uploadedImages.push(img);
+        const el = document.createElement('img');
+        el.src = img.src;
+        el.title = `${file.name} (${img.width}×${img.height})`;
+        preview.appendChild(el);
+      }
+
+      document.getElementById('btnRunAll').disabled = false;
+      ENGINES.forEach(e => document.getElementById(`btn-${e.id}`).disabled = false);
+      document.getElementById('globalStatus').textContent =
+        `${uploadedFiles.length}장 로드 완료`;
+    });
+
+    function loadImage(file) {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.src = URL.createObjectURL(file);
+      });
+    }
+
+    // --- Engine Runners ---
+
+    async function runImgly(file) {
+      const mod = await import('https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.5.5/+esm');
+      const removeBackground = mod.removeBackground || mod.default?.removeBackground || mod.default;
+      const blob = await removeBackground(file, {
+        progress: (key, cur, tot) => {
+          if (tot > 0) setStatus('imgly', `${key}: ${Math.round(cur/tot*100)}%`);
+        }
+      });
+      return blob;
+    }
+
+    async function runTransformers(file) {
+      const { pipeline, RawImage } = await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3');
+      setStatus('transformers', '모델 로딩 중...');
+      const segmenter = await pipeline('image-segmentation', 'briaai/RMBG-1.4', {
+        quantized: true,
+      });
+      setStatus('transformers', '추론 중...');
+      const url = URL.createObjectURL(file);
+      const result = await segmenter(url);
+      URL.revokeObjectURL(url);
+
+      const maskData = result[0].mask;
+      const w = maskData.width;
+      const h = maskData.height;
+
+      const img = await loadImage(file);
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      const imageData = ctx.getImageData(0, 0, w, h);
+
+      for (let i = 0; i < maskData.data.length; i++) {
+        imageData.data[i * 4 + 3] = maskData.data[i];
+      }
+      ctx.putImageData(imageData, 0, 0);
+
+      return new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+    }
+
+    async function runRembg(file) {
+      const mod = await import('https://cdn.jsdelivr.net/npm/@bunnio/rembg-web@1.0.2/+esm');
+      mod.rembgConfig.baseUrl = 'https://huggingface.co/nicjac/u2netp-onnx/resolve/main';
+      setStatus('rembg', '모델 로딩 + 추론 중...');
+      const blob = await mod.remove(file, {
+        model: 'u2netp',
+        onProgress: (p) => setStatus('rembg', `${p.step}: ${Math.round((p.progress || 0) * 100)}%`)
+      });
+      return blob;
+    }
+
+    async function runMediaPipe(file) {
+      const mod = await import(
+        'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/+esm'
+      );
+      const ImageSegmenter = mod.ImageSegmenter;
+      const FilesetResolver = mod.FilesetResolver;
+      setStatus('mediapipe', 'WASM 로딩 중...');
+      const vision = await FilesetResolver.forVisionTasks(
+        'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm'
+      );
+      setStatus('mediapipe', '모델 로딩 중...');
+      const segmenter = await ImageSegmenter.createFromOptions(vision, {
+        baseOptions: {
+          modelAssetPath:
+            'https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_segmenter/float16/latest/selfie_segmenter.tflite',
+        },
+        outputCategoryMask: true,
+        runningMode: 'IMAGE',
+      });
+
+      setStatus('mediapipe', '추론 중...');
+      const img = await loadImage(file);
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+
+      return new Promise((resolve, reject) => {
+        segmenter.segment(canvas, (result) => {
+          try {
+            const mask = result.categoryMask.getAsUint8Array();
+            const w = result.categoryMask.width;
+            const h = result.categoryMask.height;
+
+            const outCanvas = document.createElement('canvas');
+            outCanvas.width = img.width;
+            outCanvas.height = img.height;
+            const outCtx = outCanvas.getContext('2d');
+            outCtx.drawImage(img, 0, 0);
+
+            const imageData = outCtx.getImageData(0, 0, img.width, img.height);
+            const scaleX = w / img.width;
+            const scaleY = h / img.height;
+
+            for (let y = 0; y < img.height; y++) {
+              for (let x = 0; x < img.width; x++) {
+                const mx = Math.min(Math.floor(x * scaleX), w - 1);
+                const my = Math.min(Math.floor(y * scaleY), h - 1);
+                const maskVal = mask[my * w + mx];
+                imageData.data[(y * img.width + x) * 4 + 3] = maskVal > 0 ? 255 : 0;
+              }
+            }
+            outCtx.putImageData(imageData, 0, 0);
+            outCanvas.toBlob(blob => resolve(blob), 'image/png');
+          } catch (err) { reject(err); }
+        });
+      });
+    }
+
+    const runners = {
+      imgly: runImgly,
+      transformers: runTransformers,
+      rembg: runRembg,
+      mediapipe: runMediaPipe,
+    };
+
+    // --- Benchmark Logic ---
+
+    function setStatus(id, text) {
+      document.getElementById(`status-${id}`).textContent = text;
+    }
+
+    function setCardState(id, state) {
+      const card = document.getElementById(`card-${id}`);
+      card.className = 'engine-card' + (state ? ` ${state}` : '');
+    }
+
+    async function benchmarkEngine(engineId) {
+      const btn = document.getElementById(`btn-${engineId}`);
+      btn.disabled = true;
+      setCardState(engineId, 'running');
+      setStatus(engineId, '시작...');
+
+      const resultDiv = document.getElementById(`result-${engineId}`);
+      const timingDiv = document.getElementById(`timing-${engineId}`);
+      resultDiv.innerHTML = '';
+      timingDiv.innerHTML = '';
+
+      const timings = { cold: null, warm: [] };
+      const runner = runners[engineId];
+
+      try {
+        for (let i = 0; i < uploadedFiles.length; i++) {
+          const file = uploadedFiles[i];
+          setStatus(engineId, `이미지 ${i+1}/${uploadedFiles.length} 처리 중...`);
+
+          const t0 = performance.now();
+          const blob = await runner(file);
+          const elapsed = performance.now() - t0;
+
+          if (i === 0) {
+            timings.cold = elapsed;
+          } else {
+            timings.warm.push(elapsed);
+          }
+
+          if (blob) {
+            const canvas = document.createElement('canvas');
+            const img = await loadImage(new File([blob], 'result.png'));
+            canvas.width = img.width;
+            canvas.height = img.height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0);
+            resultDiv.appendChild(canvas);
+          }
+        }
+
+        const warmAvg = timings.warm.length > 0
+          ? timings.warm.reduce((a, b) => a + b, 0) / timings.warm.length
+          : null;
+
+        const coldSec = (timings.cold / 1000).toFixed(1);
+        const warmSec = warmAvg ? (warmAvg / 1000).toFixed(1) : '-';
+        const timingClass = timings.cold < 3000 ? 'timing-good'
+          : timings.cold < 8000 ? 'timing-ok' : 'timing-slow';
+
+        timingDiv.innerHTML = `<span class="${timingClass}">Cold: ${coldSec}s</span> · Warm: ${warmSec}s`;
+        setStatus(engineId, '완료');
+        setCardState(engineId, 'done');
+
+        results[engineId] = { cold: timings.cold, warm: warmAvg, status: 'ok' };
+      } catch (err) {
+        setStatus(engineId, `에러: ${err.message}`);
+        setCardState(engineId, 'error');
+        results[engineId] = { cold: null, warm: null, status: 'error', error: err.message };
+        console.error(`[${engineId}]`, err);
+      }
+
+      btn.disabled = false;
+      updateSummary();
+    }
+
+    function updateSummary() {
+      const section = document.getElementById('summarySection');
+      const tbody = document.getElementById('summaryBody');
+      tbody.innerHTML = '';
+
+      const hasResults = Object.keys(results).length > 0;
+      if (!hasResults) return;
+      section.style.display = 'block';
+
+      let bestCold = Infinity, bestWarm = Infinity;
+      for (const r of Object.values(results)) {
+        if (r.cold && r.cold < bestCold) bestCold = r.cold;
+        if (r.warm && r.warm < bestWarm) bestWarm = r.warm;
+      }
+
+      ENGINES.forEach(eng => {
+        const r = results[eng.id];
+        if (!r) return;
+        const tr = document.createElement('tr');
+        const coldStr = r.cold ? (r.cold / 1000).toFixed(1) + 's' : '-';
+        const warmStr = r.warm ? (r.warm / 1000).toFixed(1) + 's' : '-';
+        const isBestCold = r.cold && Math.abs(r.cold - bestCold) < 100;
+        const isBestWarm = r.warm && Math.abs(r.warm - bestWarm) < 100;
+
+        tr.innerHTML = `
+          <td>${eng.name}</td>
+          <td>${eng.modelSize}</td>
+          <td class="${isBestCold ? 'best' : ''}">${coldStr}</td>
+          <td class="${isBestWarm ? 'best' : ''}">${warmStr}</td>
+          <td>${r.status === 'ok' ? '✅' : '❌ ' + (r.error || '')}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // --- Event Bindings ---
+
+    ENGINES.forEach(eng => {
+      document.getElementById(`btn-${eng.id}`).addEventListener('click', () => {
+        benchmarkEngine(eng.id);
+      });
+    });
+
+    document.getElementById('btnRunAll').addEventListener('click', async () => {
+      const btn = document.getElementById('btnRunAll');
+      btn.disabled = true;
+      document.getElementById('globalStatus').textContent = '전체 벤치마크 실행 중...';
+
+      for (const eng of ENGINES) {
+        await benchmarkEngine(eng.id);
+      }
+
+      document.getElementById('globalStatus').textContent = '전체 벤치마크 완료';
+      btn.disabled = false;
+    });
+  </script>
+</body>
+</html>
