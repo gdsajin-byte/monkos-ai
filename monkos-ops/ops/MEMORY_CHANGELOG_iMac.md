@@ -7,6 +7,26 @@
 
 ---
 
+## 2026-05-04 13:21 KST — 체계 정비: feedback 20개 삭제 + MEMORY 다이어트 (194줄→144줄)
+
+### 배경
+- 지시서: `ORDER_20260504_iMac쌍아_막내_체계정비.md`
+- feedback 메모리 파일 20개가 실제 행동에 영향 미미. MEMORY.md 200줄 캡 직전.
+
+### 변경
+1. **feedback 파일 전수 삭제** (20개): feedback_cdp_autotranslate_artifact ~ feedback_worktree_path
+2. **MEMORY.md 피드백 섹션 전체 삭제** (인덱스 제거)
+3. **외장 메모리 인덱스 축소**: 18개 항목 제거, 9개 유지 (4MUSE/미결어젠다/CDP×2/자비스/엔드게임/광고전략/AI철학/품질경고)
+4. **works 운용 규정 압축**: 20줄→5줄
+5. **global settings.json allow 정리**: 107→30개 항목
+
+### 최종 상태
+- MEMORY.md: 144줄
+- feedback_*.md: 0개
+- settings.json allow: 30개
+
+---
+
 ## 2026-05-02 19:18 KST — `feedback_japan_is_first_market_only.md` 신규 (일본 첫 타겟 vs 유일 목적 다회 지적)
 
 ### 배경
