@@ -1,12 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "Bash(dir:*)",
-      "Bash(gsutil ls:*)",
-      "Bash(./deploy.sh dev:*)",
-      "Bash(git fetch:*)",
-      "Bash(git submodule:*)",
-      "Bash(node scripts/find_admin_uids.js)"
+      "Bash(*)",
+      "Read",
+      "Write",
+      "Edit"
     ],
     "deny": [
       "Bash(rm -rf *)",
