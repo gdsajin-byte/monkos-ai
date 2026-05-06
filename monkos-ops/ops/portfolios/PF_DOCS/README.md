@@ -16,7 +16,8 @@ status: Phase 1 (개설)
 | **Google Docs** | Google Docs MCP + python-docx 생성 | 읽기 O, 직접 수정 X (금지), 로컬 생성→업로드 |
 | **DOCX** | python-docx (v1.2.0) | 생성·편집 자유 |
 | **PDF** | 미정 | 조사 필요 |
-| **HWP** | 미정 | 조사 필요 (정부 서식 제출용) |
+| **HWPX** | python-hwpx (v2.9.1) + lxml XML 직접 조작 | 읽기 O, 양식 빈칸 채우기 O, 4060에서 HWP→HWPX 변환 |
+| **HWP** (레거시) | hwp5txt (읽기만), 4060 한컴 오피스 2024로 HWPX 변환 | Mac 직접 편집 불가, HWPX 변환 후 처리 |
 | **Markdown** | 직접 편집 | 완전 지원 |
 
 ## 핵심 파이프라인 (2026-05-04 확립)
@@ -42,7 +43,8 @@ status: Phase 1 (개설)
 ```
 DOCX ←→ Google Docs : 업로드 시 자동 변환, 복사-붙여넣기로 이동
 DOCX ←→ PDF        : python-docx → PDF 변환 (libreoffice 등)
-HWP  ←→ DOCX       : 조사 필요 (한컴 CLI 변환 도구)
+HWP  → HWPX        : 4060(Windows) 한컴 오피스 "다른 이름으로 저장" (SSH+SCP 전송)
+HWPX ←→ 자동채우기  : python-hwpx + lxml XML 직접 조작 (Mac OK, 한글 설치 불필요)
 MD   ←→ DOCX       : pandoc 변환 가능
 ```
 
@@ -58,11 +60,27 @@ MD   ←→ DOCX       : pandoc 변환 가능
 - `mcp__google-docs__*` — Google Docs 읽기 + Sheets
 - `mcp__claude_ai_Google_Drive__*` — Drive 파일 관리
 
+### HWPX 파이프라인 (2026-05-06 확립)
+
+```
+[원본] HWP 양식 (정부 배포)
+  → [변환] 4060(Windows) 한컴 오피스 "다른 이름으로 저장 → HWPX"
+  → [전송] sshpass+scp (Tailscale VPN, smuse73@100.118.31.62)
+  → [채우기] python-hwpx + lxml XML 직접 조작 (iMac)
+     - HwpxPackage.open() → pkg.read("Contents/section0.xml")
+     - lxml etree로 tbl/tr/tc 셀 탐색 → itertext()로 라벨 매칭 → 빈 셀에 set_cell_text()
+     - pkg.set_part() → pkg.save()
+  → [검증] open 명령으로 한컴 뷰어 확인
+```
+
+**주의**: 한컴 COM 자동화(win32com)는 SSH 원격 세션에서 동작 불가 (GUI 세션 필요). HWP→HWPX 변환은 작가님 AnyDesk 접속 or 4060 직접 조작.
+
 ### 추적 대상 (향후 도입 검토)
 - Claude Code 플러그인 마켓플레이스 — 문서 편집 플러그인 등장 여부
 - Google Docs MCP 업데이트 — 셀 병합, 행 삭제 등 기능 추가 여부
 - `python-pptx` — 프레젠테이션 (PT용)
-- `pyhwp` / `hwp5` — HWP 읽기/쓰기
+- `pyhwpxlib` — HWPX 생성/편집 (공문 양식 자동생성, 2025 행정기준)
+- `kordoc` (npm) — HWP→Markdown 변환, MCP 지원
 - `reportlab` / `fpdf2` — PDF 생성
 - `pandoc` — 포맷 간 변환 허브
 
@@ -71,3 +89,4 @@ MD   ←→ DOCX       : pandoc 변환 가능
 | 날짜 | 내용 |
 |------|------|
 | 2026-05-04 | PF 개설. Google Docs 직접 수정 금지 원칙 확립 (v8 §4-2 원본 손상 사고) |
+| 2026-05-06 | HWPX 파이프라인 확립. python-hwpx v2.9.1 설치, 4060 Tailscale 경유 HWP→HWPX 변환, lxml XML 직접 조작으로 양식 빈칸 자동 채우기 PoC 성공 |
