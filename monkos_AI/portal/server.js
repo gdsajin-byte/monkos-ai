@@ -289,6 +289,18 @@ const httpServer = createServer(async (req, res) => {
     return res.end();
   }
 
+  // EN/JA 한글슬러그 → KO 영문슬러그 폴백 301 (hreflang 유령 URL 근절)
+  const langBlogMatch = urlPath.match(/^\/(en|ja)\/blog\//);
+  if (langBlogMatch) {
+    const koPath = urlPath.replace(/^\/(en|ja)\/blog\//, '/blog/');
+    const koDecoded = decodeURIComponent(koPath);
+    const koTarget = blogRedirects[koPath] || blogRedirects[koDecoded];
+    if (koTarget) {
+      res.writeHead(301, { 'Location': koTarget });
+      return res.end();
+    }
+  }
+
   // === /app → idphoto 서비스 리다이렉트 (ChatGPT referral 404 해소) ===
   if (urlPath === '/app' && req.method === 'GET') {
     const acceptLang = req.headers['accept-language'] || '';

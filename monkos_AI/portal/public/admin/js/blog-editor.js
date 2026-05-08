@@ -4,7 +4,7 @@ import { updateShareButtons } from './blog-share.js';
 
 const API = '/api/admin/blog';
 const params = new URLSearchParams(location.search);
-const editSlug = params.get('slug');
+let editSlug = params.get('slug');
 let isEdit = false;
 let currentPublished = false;
 
@@ -209,8 +209,10 @@ async function save(published) {
       updateShareButtons(currentPublished);
       showToast(published ? 'Published!' : 'Draft saved!');
       if (!isEdit && data.slug) {
+        editSlug = data.slug;
         history.replaceState(null, '', `/admin/blog-edit.html?slug=${encodeURIComponent(data.slug)}`);
         isEdit = true;
+        document.getElementById('slug').value = data.slug;
         document.getElementById('slug').readOnly = true;
         document.getElementById('pageTitle').textContent = 'Edit Post';
       }
