@@ -49,16 +49,7 @@
 > 디바이스·에이전트·사람 간 소통의 인프라, 형식, 행동 원칙을 규정한다.
 
 **1항 — 디바이스 맵**
-- 호칭만으로 소유·위치가 식별되어야 한다. 디바이스 추가·변경 시 본 조항을 갱신한다.
-
-| 호칭 | 스펙 | 소유 | 위치 |
-|------|------|------|------|
-| **M1** | Mac Mini M1 | 작가님 | 집 |
-| **iMac** | iMac | 작가님 | 사무실 |
-| **4060** | GPU 서버 (RTX 4060) | 작가님 | 사무실 |
-| **M2** | Mac Mini M2 | 꾸 | 몽크사진관 |
-| **M4** | MacBook Pro M4 | 한 | 사무실 |
-| **iPhone** | iPhone 17 Pro | 작가님 | 모바일 |
+- 호칭만으로 소유·위치가 식별되어야 한다. 상세 테이블: 법률 ch1 4조.
 
 **2항 — 수발신 헤더**
 - 모든 공식 커뮤니케이션에 `[YYYY-MM-DD HH:MM KST] {디바이스}/{에이전트} → {수신자}` 헤더 필수.
@@ -196,22 +187,7 @@
 | 제7장 | 막내 행동 강령 | [ch7_makne_code.md](governance/laws/ch7_makne_code.md) | 5조 |
 | 제8장 | 브랜딩/마케팅 | [ch8_branding.md](governance/laws/ch8_branding.md) | 3조 |
 
----
-
-## 규정 참조
-
-> 기술 상세(모델명, API 경로, 배포 타겟, 크레딧 단가 등)는 아래를 참조.
-
-| 규정 | 파일 | 로딩 |
-|------|------|------|
-| **프로젝트 지식** | MEMORY.md | 매 세션 자동 |
-| **조항 코드표** | `governance/audit/MONK_ARTICLES_DRAFT_v1.md` | 수동 읽기 |
-| **코딩 표준** | `monkos-ops/tech/guides/CODING_STANDARDS.md` | 수동 읽기 |
-| **디자인 시스템** | `monkos-ops/tech/guides/DESIGN_SYSTEM.md` | 수동 읽기 |
-| **GCS 구조** | `monkos-ops/tech/deployment/GCS_BUCKET_STRUCTURE.md` | 수동 읽기 |
-| **조항 매핑** | `governance/constitution/ARTICLE_MAPPING_20260314.md` | 수동 읽기 |
-
-규정 내용 변경 시 해당 파일만 갱신한다. 본 문서(헌법)는 수정하지 않는다.
+규정 참조(모델명, API 경로, 배포 타겟 등): `.claude/rules/references.md`
 
 ---
 
