@@ -1,3 +1,11 @@
+---
+description: 배포 관련 파일 접근 시 적용
+globs:
+  - "**/deploy.sh"
+  - "**/Dockerfile"
+  - "**/cloudbuild.yaml"
+---
+
 # Cloud Run 배포 규칙
 
 > **법률 제5장 2조 준수. 2026-04-08 개정.**

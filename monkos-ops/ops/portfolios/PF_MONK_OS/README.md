@@ -54,6 +54,21 @@ domain: "governance/infrastructure"
 | 2026-04-23 | iMac/쌍아 | Phase 1 통합 로드맵 초안 작성 (4트랙 합성 + 개헌 후보 6건 + PoC 3건 + 지시서 큐 9건) | [ROADMAP_portable_agent_os.md](roadmap/ROADMAP_portable_agent_os.md) | ✅ |
 | 2026-04-23 | iMac/쌍아 | claude.ai UI 개편 로드맵 전면 반영 (§2.5 Cross-Surface 매트릭스 + H-7 + PoC-4 신설) → H-7 선행 실측 지시서 발행 | ORDER_…_H7_claudeai_UI실측.md | ⏳→✅ |
 | 2026-04-23 | iMac/민아 | H-7 선행 실측 완료 — Connectors 260+ / Plugins 10(Anthropic) / Skills 마켓 / 자동 동기화 ❌ / PoC-4 정본 스펙 확정 / 후속 지시서 5건 제안 | [RESEARCH_SURFACE_claudeai_UI.md](research/RESEARCH_SURFACE_claudeai_UI.md) | ✅ |
+| 2026-05-09 | iMac/쌍아 | **문서체계 총정리 세션 — PF·어젠다·세션로그·memory 전면 정비** | 아래 상세 | ✅ |
+| 2026-05-09 | iMac/막내1 | 리서치: 현행 헌법 vs PF 정합성 진단 (6대 갭 식별) | [RESEARCH_20260509_막내1_헌법PF정합성진단.md](research/RESEARCH_20260509_막내1_헌법PF정합성진단.md) | ✅ |
+| 2026-05-09 | iMac/막내2 | 리서치: Claude Code 최신 정책 시사점 (4계층 정합 확인, CLAUDE.md 200줄 권장) | [RESEARCH_20260509_막내2_클로드정책_시사점.md](research/RESEARCH_20260509_막내2_클로드정책_시사점.md) | ✅ |
+| 2026-05-09 | iMac/막내3 | 리서치: PF 체계 개정안 설계 (4축 — 정본통일/카테고리열/환류규율/인덱스) | [RESEARCH_20260509_막내3_PF체계_개정안.md](research/RESEARCH_20260509_막내3_PF체계_개정안.md) | ✅ |
+| 2026-05-09 | iMac/막내1 | memory/ 외장 22개+sonnet/ 정본 이관 및 삭제. MEMORY.md만 잔류 | COMPLETION_20260509_막내1 | ✅ |
+| 2026-05-09 | iMac/막내2 | 문서체계 전수스캔 51폴더 (활성16/반활성14/비활성6/레거시14/정본충돌1) | [AUDIT_20260509_문서체계_전수스캔.md](audit/AUDIT_20260509_문서체계_전수스캔.md) | ✅ |
+| 2026-05-09 | iMac/막내3 | PF 인덱스 7→16 전수등록 + YAML 4건 수정 + 히스토리 열 2건 보정 | COMPLETION_20260509_막내3 | ✅ |
+| 2026-05-09 | iMac/막내4 | 어젠다 README 현행화 (3/26→5/9, 신규 4건 #33~#36) | COMPLETION_20260509_막내4 | ✅ |
+| 2026-05-09 | iMac/막내5 | 세션로그·보고서·지시서 262건 월별 폴더 일괄 이동 (git mv) | COMPLETION_20260509_막내5 | ✅ |
+| 2026-05-09 | iMac/막내3 | 워크트리 잔해 24개 삭제 (2.3GB 해방) + 한글 빈 폴더 4개 삭제 + 바이너리 72건 판정 | COMPLETION_20260509_막내3_워크트리정리 | ✅ |
+| 2026-05-09 | iMac/막내1 | iMac 로컬 폴더 전수 파악 + 정리 로드맵 설계 (22GB 해방 가능) | [AUDIT_20260509_iMac로컬_정리로드맵.md](audit/AUDIT_20260509_iMac로컬_정리로드맵.md) | ✅ |
+| 2026-05-09 | iMac/막내1 | 로컬 P0 삭제 16건 + 산재 파일 정위치 14건 + 본진 이관 1건. 루트 파일 0건 달성 | COMPLETION_20260509_막내1_로컬정리실행 | ✅ |
+| 2026-05-09 | iMac/쌍아 | CLAUDE.md 경량화 222→198줄 (디바이스맵→ch1참조, 규정참조→rules 이관) | 커밋 9dd4d0e | ✅ |
+| 2026-05-09 | iMac/쌍아 | monkos-chat Git 추적 해제 (.gitignore + git rm --cached) | 커밋 473583d | ✅ |
+| 2026-05-09 | iMac/쌍아 | rules 4개 신설 (session-log, pf-ops, git-safety, makne-guard) + deployment frontmatter 보강 | — | ✅ |
 
 ---
 
