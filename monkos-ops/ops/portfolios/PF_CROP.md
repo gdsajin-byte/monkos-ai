@@ -65,6 +65,8 @@ status: active
 | 04/30 | 막내1~4 | **26국 증명사진 규격 전수조사** — 4명 병렬, 28건(여권/비자 분리), 공식 1차 출처 기반, 추정 환산 배제 | [REPORT×4](../reports/) | ✅ |
 | 04/30 | 쌍아 | **배경 제거 엔진 PoC** — MediaPipe(거침 ❌) vs @imgly ISNet(준수 ✅). 배경 제거 = 크롭과 세트 기능으로 확정 | bg-test.html, bg-test2.html | ✅ |
 | 04/30 | 작가님 | **Phase 2 전략 확정** — 완전 무료+광고 없음+인앱결제 없음, 배경 제거 필수 포함, 크롭 완료 후 퍼널(텔레그램 인화+MONKOS OG), 글로벌 다국어 localization | — | ✅ |
+| 05/09 | 민아 | **iOS 네이티브 앱 전환 제안서** — SwiftUI 6화면, Phase 1 크롭 무료 → Phase 2 AI 통합, StoreKit IAP $1/컷 | [PROPOSAL_20260509_민아_IDPhoto_iOS네이티브앱_제안서.md](../proposals/PROPOSAL_20260509_민아_IDPhoto_iOS네이티브앱_제안서.md) | ✅ |
+| 05/09 | 작가님 | **iOS 앱 로드맵 승인** — PF_CROP 확장으로 편입. Phase 1(크롭 무료) iMac 코드+M1 빌드 분리 운용. Apple Developer 가입 완료 확인 | — | ✅ |
 
 ---
 
