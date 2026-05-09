@@ -37,23 +37,24 @@ branch: main
 - 다음 순번 #37로 갱신
 - 최종 갱신 라인 갱신 (잔여: C 6건, D 6건, G 3건 = 총 15건)
 
-## ❌ 미완료 — 임무 2: MEMORY.md 외장 인덱스 교체
+## ✅ 완료 사항 — 임무 2: MEMORY.md 외장 인덱스 교체 (13:05 KST)
 
-**의존성 미충족으로 미착수.**
+막내1 이관 완료 확인 (memory/ → MEMORY.md만 잔류). 외장 인덱스 경로 교체:
 
-지시서 조건: "막내1이 정본 이관 완료 후 실행"
-실제 상황:
-- 막내1 임무 = 헌법·PF 정합성 진단 (COMPLETION_20260509_막내1_112509)
-- memory/ 파일 이관 작업은 어떤 막내에게도 할당되지 않은 상태
-- memory/ 디렉토리 24개 파일 전부 원위치, PF_MONK_OS/research/에 이관된 파일 없음
+| 항목 | 이전 경로 | 이관 경로 | 처리 |
+|------|----------|----------|------|
+| 4MUSE 기원+페르소나 | `memory/user_4muse_origins.md` | `governance/philosophy/4MUSE_PERSONA.md` | 삭제 (정본 별도 존재) |
+| 미결 어젠다 | `memory/project_pending_agenda.md` | 어젠다 README가 정본 | 삭제 |
+| CDP 역할 융합 | `memory/project_cdp_role_fusion.md` | `PF_MONK_OS/research/RESEARCH_CDP역할융합_비전.md` | 경로 교체 |
+| CDP 에코시스템 | `memory/project_cdp_ecosystem_vision.md` | `PF_CDP/RESEARCH_CDP에코시스템_비전.md` | 경로 교체 |
+| MONK OS → 자비스 | `memory/project_jarvis_vision.md` | `PF_MONK_OS/research/RESEARCH_자비스비전.md` | 경로 교체 |
+| MONKOS 엔드게임 | `memory/project_monkos_endgame.md` | `PF_MONK_OS/research/RESEARCH_엔드게임.md` | 경로 교체 |
+| 광고=오가닉 부스터 ⭐ | `memory/project_advertising_organic_booster.md` | `monkos-ops/marketing/strategy/STRATEGY_광고오가닉부스터.md` | 경로 교체 |
+| MONK AI 철학 ⭐ | `memory/user_monk_ai_philosophy.md` | `governance/philosophy/MONK_AI_PHILOSOPHY.md` | 경로 교체 |
+| 품질 하락 패턴 경고 ⭐ | (인라인) | (인라인) | 유지 |
 
 ## 📁 산출물
 
 - `monkos-ops/ops/agenda/README.md` (수정)
-- `monkos-ops/ops/reports/COMPLETION_20260509_막내4_어젠다MEMORY현행화.md` (본 파일)
-
-## 💡 판단 요청
-
-임무 2 진행을 위해 다음 중 하나가 필요합니다:
-1. memory/ 파일 이관 작업을 별도 막내에게 발행
-2. 또는 이관 없이 현행 memory/ 경로를 유지하는 것으로 판단 변경
+- `MEMORY.md` 외장 인덱스 섹션 (수정)
+- `monkos-ops/ops/reports/2026-05/COMPLETION_20260509_막내4_어젠다MEMORY현행화.md` (본 파일)

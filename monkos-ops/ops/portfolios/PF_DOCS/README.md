@@ -1,8 +1,12 @@
 ---
-name: PF_DOCS
-description: 문서 편집 체계 — 포맷별 에디터 세팅 + 파이프라인 + 도구 추적
+type: portfolio
+id: PF_DOCS
+name: DOCS
+subject: 문서 편집 체계 — 포맷별 에디터 세팅 + 파이프라인 + 도구 추적
 created: 2026-05-04
-status: Phase 1 (개설)
+owner: 작가님
+leads: 쌍아(설계), 막내(구현)
+status: active
 ---
 
 # PF_DOCS — 문서 편집 체계
@@ -86,7 +90,9 @@ MD   ←→ DOCX       : pandoc 변환 가능
 
 ## 히스토리
 
-| 날짜 | 내용 |
-|------|------|
-| 2026-05-04 | PF 개설. Google Docs 직접 수정 금지 원칙 확립 (v8 §4-2 원본 손상 사고) |
-| 2026-05-06 | HWPX 파이프라인 확립. python-hwpx v2.9.1 설치, 4060 Tailscale 경유 HWP→HWPX 변환, lxml XML 직접 조작으로 양식 빈칸 자동 채우기 PoC 성공 |
+> **append only. 수정·삭제 금지.** 신규 항목은 하단에 추가.
+
+| 날짜 | 주체 | 내용 | 산출물 | 상태 |
+|------|------|------|--------|------|
+| 05/04 | 쌍아 | PF 개설. Google Docs 직접 수정 금지 원칙 확립 (v8 §4-2 원본 손상 사고) | 본 문서 | ✅ |
+| 05/06 | 쌍아 | HWPX 파이프라인 확립. python-hwpx v2.9.1 설치, 4060 경유 HWP→HWPX 변환, lxml XML 직접 조작 PoC 성공 | — | ✅ |
