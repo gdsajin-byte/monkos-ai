@@ -2,13 +2,12 @@
 <html lang="ko">
 <head>
     <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-JPZWSJ3323"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-C2H9ZM85F7"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-JPZWSJ3323');
-      gtag('config', 'G-FKG0CPTC14');
+      gtag('config', 'G-C2H9ZM85F7');
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -324,29 +323,29 @@
     </footer>
 
     <script>
-        // ============ GEMINI CHAT LOGIC ============
+        // ============ MONKOS CHAT (Workers AI Gemma 3 12B) ============
         let llmConnected = false;
-        const GEMINI_API_URL = window.MONK_CONFIG?.API?.GEMINI_PROXY || 'https://monk-gemini-proxy.gdsajin.workers.dev';
+        const CHAT_API = '/api/chat';
+        const chatHistory = [];
 
         async function checkLLMConnection() {
             try {
-                const response = await fetch(GEMINI_API_URL, {
-                    method: 'OPTIONS',
-                    mode: 'cors'
+                const response = await fetch(CHAT_API, {
+                    method: 'OPTIONS'
                 });
-                
-                if (response.ok || response.status === 200) {
+
+                if (response.ok || response.status === 204) {
                     llmConnected = true;
                     document.getElementById('status-gemini').innerHTML = '<span class="flex items-center text-local"><span class="w-2 h-2 bg-local rounded-full mr-2 animate-pulse"></span> Monkos Ready</span>';
                     document.getElementById('llm-connection-status').textContent = '✓ Monkos.ai 연결됨';
                     document.getElementById('llm-send-btn').disabled = false;
                 } else {
-                    throw new Error('Workers not responding');
+                    throw new Error('API not responding');
                 }
             } catch (error) {
                 console.warn('Monkos.ai 연결 실패:', error);
                 document.getElementById('status-gemini').innerHTML = '<span class="flex items-center"><span class="w-2 h-2 bg-yellow-600 rounded-full mr-2"></span> Setup Needed</span>';
-                document.getElementById('llm-connection-status').textContent = '⚠️ Workers 배포 필요';
+                document.getElementById('llm-connection-status').textContent = '⚠️ 연결 확인 중...';
                 document.getElementById('llm-send-btn').disabled = true;
             }
         }
@@ -384,7 +383,7 @@
         async function sendLLMMessage() {
             const input = document.getElementById('llm-input');
             const message = input.value.trim();
-            
+
             if (!message) return;
             if (!llmConnected) {
                 addLLMMessage('bot', '⚠️ 서버가 연결되지 않았습니다.');
@@ -393,7 +392,8 @@
 
             addLLMMessage('user', message);
             input.value = '';
-            
+            chatHistory.push({ role: 'user', content: message });
+
             const messagesDiv = document.getElementById('llm-messages');
             const loadingEl = document.createElement('div');
             loadingEl.className = 'flex justify-start';
@@ -407,16 +407,10 @@
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
 
             try {
-                const response = await fetch(GEMINI_API_URL, {
+                const response = await fetch(CHAT_API, {
                     method: 'POST',
-                    mode: 'cors',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        prompt: message,
-                        model: 'gemini-2.0-flash-exp'
-                    })
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ messages: chatHistory.slice(-10) })
                 });
 
                 if (!response.ok) {
@@ -426,12 +420,14 @@
 
                 const data = await response.json();
                 document.getElementById('llm-loading')?.remove();
-                addLLMMessage('bot', data.response || '응답을 생성할 수 없습니다.');
+                const reply = data.response || '응답을 생성할 수 없습니다.';
+                addLLMMessage('bot', reply);
+                chatHistory.push({ role: 'assistant', content: reply });
 
             } catch (error) {
                 document.getElementById('llm-loading')?.remove();
                 addLLMMessage('bot', `❌ 오류: ${error.message}`);
-                console.error('Gemini API Error:', error);
+                console.error('Chat API Error:', error);
             }
         }
 
