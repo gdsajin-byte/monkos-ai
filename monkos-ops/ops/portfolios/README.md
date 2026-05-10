@@ -20,6 +20,7 @@
 | [PF_MONK_OS](PF_MONK_OS/README.md) | MONK_OS | 운영 | 범용 Agent OS 이식 로드맵 | draft | 04-23 |
 | [PF_DOCS](PF_DOCS/README.md) | DOCS | 운영 | 문서 편집 체계 (포맷별 도구·파이프라인) | active | 05-04 |
 | [PF_RND](PF_RND/README.md) | RND | 운영 | 정부 R&D·IP 지원사업 통합 추적 | active | 04-24 |
+| [PF_CHATBOT](PF_CHATBOT/PF_CHATBOT.md) | CHATBOT | 인프라 | 통합 AI 챗봇 — 6채널 엔진 + RAG + 온디바이스 | active | 01-10 |
 | [PF_BRIEF](PF_BRIEF.md) | BRIEF | 콘텐츠 | 매일 자동 브리핑 — 성과 보고 + SEO 교정 + 뉴스 | active | 04-10 |
 | [PF_PRESENTATION](PF_PRESENTATION.md) | PRESENTATION | 콘텐츠 | PT 콘텐츠 자동화 엔진 — 3D캐릭터/TTS | active | 04-03 |
 | [PF_VIDEO](PF_VIDEO.md) | VIDEO | 콘텐츠 | AI 영상 생성 엔진 — video.monkos.ai | active | 04-27 |
