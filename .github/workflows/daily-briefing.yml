@@ -1,0 +1,54 @@
+name: Daily Briefing
+
+on:
+  schedule:
+    - cron: '0 20 * * *'  # UTC 20:00 = KST 05:00
+  workflow_dispatch:
+
+jobs:
+  briefing:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r .github/scripts/requirements.txt
+
+      - name: Generate briefing
+        env:
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+          GA4_PROPERTY_ID: ${{ secrets.GA4_PROPERTY_ID }}
+          GSC_SITE_URL: ${{ secrets.GSC_SITE_URL }}
+        run: python .github/scripts/daily_briefing.py
+
+      - name: Commit and push
+        run: |
+          git config user.name "monkos-autopilot"
+          git config user.email "autopilot@monkos.ai"
+          git add monkos-ops/ops/briefings/
+          git commit -m "[briefing] $(date +%Y-%m-%d) 데일리 브리핑 자동 생성" || exit 0
+          git push
+
+      - name: Create Issue
+        if: success()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          DATE=$(date -d "yesterday" +%Y-%m-%d 2>/dev/null || date -v-1d +%Y-%m-%d)
+          FILE="monkos-ops/ops/briefings/BRIEFING_$(echo $DATE | tr -d '-').md"
+          if [ -f "$FILE" ]; then
+            BODY=$(cat "$FILE")
+          else
+            BODY="브리핑 파일 생성 확인 필요: $FILE"
+          fi
+          gh issue create \
+            --title "📊 데일리 브리핑 ${DATE}" \
+            --body "$BODY" \
+            --label "일일보고"
