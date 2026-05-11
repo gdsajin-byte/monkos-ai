@@ -172,6 +172,7 @@ status: 현행
 | GSC_SITE_URL | `sc-domain:monkos.ai` | — | 05-11 | 일일 보고서 |
 | TELEGRAM_BOT_TOKEN | monkos_AI/.env TELEGRAM_TEAM_BOT_TOKEN | — | 05-11 | 텔레그램 알림 허브 (팀 봇) |
 | TELEGRAM_CHAT_ID | monkos_AI/.env TEAM_CHAT_ID | — | 05-11 | 텔레그램 팀 채팅 |
+| PAT_TOKEN | GitHub Fine-grained PAT (MONKOS_PAT, No expiration) | — | 05-11 | cross-repo 접근 (monk_project + monkos-works + monk-kr) |
 
 ### 향후 확장 (배포 자동화 시)
 

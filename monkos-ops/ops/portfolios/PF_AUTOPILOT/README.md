@@ -70,6 +70,9 @@ domain: 인프라
 | 05/11 | iMac/막내3 | R&D 마감 알림 + PF 대시보드 주간 워크플로우 구현 — rnd_deadline_check.py + pf_dashboard.py + weekly-dashboard.yml + 라벨. Issue #3 자동 생성 검증 완료 | .github/scripts/, Issue #3 | ✅ |
 | 05/11 | iMac/막내2 | 텔레그램 알림 허브 — telegram_notify.py + notify.yml(reusable) + daily-briefing.yml 연동. Secrets 2개 등록 + 봇 교체(CS→팀) + HTML 모드 전환. 풀 체인(브리핑→Issue→텔레그램) 검증 완료 | telegram_notify.py, notify.yml, Issue #5 | ✅ |
 | 05/11 | iMac/막내1 | works submodule 자동 동기화 Action — sync-works.yml + PAT_TOKEN 교차 레포 접근. workflow_dispatch 검증 성공 (변경분 자동 커밋 확인) | sync-works.yml | ✅ |
+| 05/11 | 4060/쌍아 | n8n 전수 조사 — 워크플로우 0개 확인. 팩토리 봇은 Firebase Functions 운용 | REPORT | ✅ |
+| 05/11 | iMac/쌍아 | 팩토리 봇 체계 발굴 — notify.ps1 + Firebase(notifyWriter/updateAiStatus/getCommands). 텔레그램 4봇 체계 전수 정리 | — | ✅ |
+| 05/11 | 작가님 | **PF_FACTORY 발족** — 4060 GPU 팩토리 PF 분리. AUTOPILOT(클라우드) ↔ FACTORY(로컬 GPU) 짝 구조 확정 | PF_FACTORY.md | ✅ |
 
 ---
 
