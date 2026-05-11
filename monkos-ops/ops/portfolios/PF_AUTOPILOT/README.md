@@ -67,6 +67,7 @@ domain: 인프라
 | 05/11 | iMac/막내2 | Phase 2 데일리 브리핑 구현 — daily_briefing.py 4축 + workflow + 라벨 + workflow_dispatch 성공. Issue #1 자동 생성 | .github/scripts/, BRIEFING_20260510.md | ✅ |
 | 05/11 | iMac/막내3 | Phase 2 보정 리서치 — 4건 이슈 조사 완료. 기업마당 공식 API 발견, RSS 날짜 파싱 오류, Anthropic RSS 부재(커뮤니티 피드 대안), GSC 3일 지연 사양 확인 | REPORT_20260511_막내3_브리핑스크립트_보정리서치.md | ✅ |
 | 05/11 | iMac/막내3 | Phase 2 보정 실행 — 4건 코드 수정 + workflow_dispatch 재실행 검증 완료. 기업마당 API 전환, RSS 날짜 파싱, Anthropic 커뮤니티 RSS, GSC days=3 + 0값 방어 | BRIEFING_20260508.md (보정 검증) | ✅ |
+| 05/11 | iMac/막내3 | R&D 마감 알림 + PF 대시보드 주간 워크플로우 구현 — rnd_deadline_check.py + pf_dashboard.py + weekly-dashboard.yml + 라벨. Issue #3 자동 생성 검증 완료 | .github/scripts/, Issue #3 | ✅ |
 
 ---
 
