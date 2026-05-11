@@ -105,7 +105,7 @@ PF_AUTOPILOT (클라우드)          PF_FACTORY (로컬 GPU)
 | 05/11 | 4060/쌍아 | 팩토리 봇 `/notifyWriter` 동작 확인 성공 | — | ✅ |
 | 05/11 | 4060/쌍아 | PF_FACTORY 폴더 구조 생성 + CSV 스키마 확정 + devlog RQ 레지스트리 초기화 | 폴더/CSV | ✅ |
 | 05/11 | 4060/쌍아 | `track_models.py` 작성 + 첫 실행 — HF 30건 + Civitai 10건 = 40건 적립 | CSV 40행 | ✅ |
-| 05/11 | 4060/쌍아 | conda `factory` 환경 생성 (Python 3.10) + PyTorch CUDA 설치 진행 | — | ⏳ |
+| 05/11 | 4060/쌍아 | conda `factory` 환경 완성 — PyTorch 2.11.0+cu126 + HF 1.14 + transformers 5.8 + accelerate 1.13 | GPU test OK | ✅ |
 
 ---
 
