@@ -66,8 +66,5 @@ jobs:
           FILE="monkos-ops/ops/briefings/BRIEFING_$(echo $DATE | tr -d '-').md"
           ALERTS=$(grep "^- 🔴\|^- 🟡" "$FILE" 2>/dev/null || echo "없음")
           ISSUE_URL="${{ steps.issue.outputs.url }}"
-          python .github/scripts/telegram_notify.py "📊 *데일리 브리핑 ${DATE}*
-
-${ALERTS}
-
-전문: ${ISSUE_URL}"
+          MSG=$(printf '📊 *데일리 브리핑 %s*\n\n%s\n\n전문: %s' "$DATE" "$ALERTS" "$ISSUE_URL")
+          python .github/scripts/telegram_notify.py "$MSG"
