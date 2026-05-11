@@ -69,6 +69,7 @@ domain: 인프라
 | 05/11 | iMac/막내3 | Phase 2 보정 실행 — 4건 코드 수정 + workflow_dispatch 재실행 검증 완료. 기업마당 API 전환, RSS 날짜 파싱, Anthropic 커뮤니티 RSS, GSC days=3 + 0값 방어 | BRIEFING_20260508.md (보정 검증) | ✅ |
 | 05/11 | iMac/막내3 | R&D 마감 알림 + PF 대시보드 주간 워크플로우 구현 — rnd_deadline_check.py + pf_dashboard.py + weekly-dashboard.yml + 라벨. Issue #3 자동 생성 검증 완료 | .github/scripts/, Issue #3 | ✅ |
 | 05/11 | iMac/막내2 | 텔레그램 알림 허브 — telegram_notify.py + notify.yml(reusable) + daily-briefing.yml 연동. Secrets 2개 등록 + 봇 교체(CS→팀) + HTML 모드 전환. 풀 체인(브리핑→Issue→텔레그램) 검증 완료 | telegram_notify.py, notify.yml, Issue #5 | ✅ |
+| 05/11 | iMac/막내1 | works submodule 자동 동기화 Action — sync-works.yml + PAT_TOKEN 교차 레포 접근. workflow_dispatch 검증 성공 (변경분 자동 커밋 확인) | sync-works.yml | ✅ |
 
 ---
 
@@ -94,7 +95,7 @@ domain: 인프라
 | 항목 | 상태 | 담당 | 비고 |
 |------|------|------|------|
 | CR 스테이징 자동 배포 (monkos_AI/ 변경 PR 트리거) | ❌ | 막내 | deploy.sh 경유 원칙 유지 |
-| works submodule 자동 갱신 (한송이 push → 본진 반영) | ❌ | 막내 | 현재 수동 mk-pull.sh |
+| works submodule 자동 갱신 (한송이 push → 본진 반영) | ✅ | 막내1 | sync-works.yml (6시간 cron + PAT_TOKEN) |
 | 배포 결과 통합 알림 (Issue 또는 텔레그램) | ❌ | 막내 | |
 | 멀티레포 이벤트 전파 설계 (repository_dispatch) | ❌ | 쌍아 | 분리 시점 대비 |
 
