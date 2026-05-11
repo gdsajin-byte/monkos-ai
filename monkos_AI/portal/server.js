@@ -43,7 +43,7 @@ import { handleBoardPublicList, handleBoardPublicGet, handleBoardPublicCreate, h
 import { handleUpload, handleImageList, handleImageDelete } from './lib/cms/upload.js';
 import { handleTranslate } from './lib/cms/translate.js';
 import { handleSearch } from './lib/cms/search.js';
-import { renderBlogList, renderBlogPost, renderFaq, renderGallery, renderBoardList, renderBoardPost, renderBoardWrite, renderGuide, renderSitemap, renderPricing, renderSpecsList, renderSpecsDetail } from './lib/cms/render.js';
+import { renderBlogList, renderBlogPost, renderFaq, renderGallery, renderBoardList, renderBoardPost, renderBoardWrite, renderGuide, renderAiPhotoGuide, renderSitemap, renderPricing, renderSpecsList, renderSpecsDetail } from './lib/cms/render.js';
 import { renderHome, handleSettingsGet, handleSettingsPut, handleLayoutGet, handleLayoutPut } from './lib/cms/home.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -324,6 +324,7 @@ const httpServer = createServer(async (req, res) => {
   // 기존 라우트 (한국어 = 기본, 접두사 없음)
   if (urlPath === '/blog' && req.method === 'GET') return renderBlogList(req, res);
   if (urlPath?.startsWith('/blog/') && req.method === 'GET') return renderBlogPost(req, res);
+  if (urlPath === '/guide/ai-photo' && req.method === 'GET') return renderAiPhotoGuide(req, res);
   if (urlPath === '/guide' && req.method === 'GET') return renderGuide(req, res);
   // 다국어 FAQ 라우트
   if (urlPath === '/ja/faq' && req.method === 'GET') return renderFaq(req, res, 'ja');

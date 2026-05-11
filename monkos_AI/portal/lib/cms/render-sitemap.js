@@ -18,6 +18,7 @@ export async function renderSitemap(req, res) {
       { loc: 'https://monkos.ai/board', lastmod: today, changefreq: 'daily', priority: '0.5' },
       { loc: 'https://monkos.ai/pricing', lastmod: today, changefreq: 'monthly', priority: '0.6' },
       { loc: 'https://monkos.ai/guide', lastmod: today, changefreq: 'weekly', priority: '0.7' },
+      { loc: 'https://monkos.ai/guide/ai-photo', lastmod: today, changefreq: 'weekly', priority: '0.8' },
       { loc: 'https://monkos.ai/crop', lastmod: today, changefreq: 'weekly', priority: '0.7' },
       { loc: 'https://monkos.ai/ja/blog', lastmod: today, changefreq: 'daily', priority: '0.7' },
       { loc: 'https://monkos.ai/en/blog', lastmod: today, changefreq: 'daily', priority: '0.7' },

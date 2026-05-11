@@ -6,6 +6,10 @@ import { firestore, log } from '../shared/config.js';
 
 const blogCollection = firestore.collection('blog_posts');
 
+const NOINDEX_SLUGS = new Set([
+  'claudemax-20x-2개월-실사용-후기',
+]);
+
 // 블로그 목록 — fragment (데이터 조회 + HTML 생성)
 export async function blogListFragment(req, forceLang = null) {
   const url = new URL(req.url, 'https://monkos.ai');
@@ -274,7 +278,8 @@ export async function blogPostFragment(req, lang = null) {
   const prefix = lang ? `/${lang}` : '';
   const canonicalUrl = `https://monkos.ai${prefix}/blog/${escapeHtml(baseSlug)}`;
 
-  const seoMeta = `
+  const noindexTag = NOINDEX_SLUGS.has(baseSlug) ? '\n<meta name="robots" content="noindex">' : '';
+  const seoMeta = `${noindexTag}
 <meta property="og:title" content="${escapeHtml(post.title)}">
 <meta property="og:description" content="${escapeHtml(getSeoDescription(post))}">
 <meta property="og:image" content="${escapeHtml(post.thumbnail || '')}">

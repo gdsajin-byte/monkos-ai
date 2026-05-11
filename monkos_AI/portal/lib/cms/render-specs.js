@@ -387,8 +387,8 @@ export function specsDetailFragment(slug, forceLang = null) {
 
   const typeName = lang === 'ja' ? (specData.typeJa || specData.type) : (lang === 'en' ? specData.typeEn : specData.type);
   const countryName = lang === 'en' ? specData.countryEn : specData.country;
-  const title = `2026 ${countryName} ${typeName} ${i.detailSuffix}`;
-  const description = specData.details[lang] || specData.details.ko || specData.details.en || '';
+  const title = (specData.seoTitle && specData.seoTitle[lang]) || `2026 ${countryName} ${typeName} ${i.detailSuffix}`;
+  const description = (specData.seoDescription && specData.seoDescription[lang]) || specData.details[lang] || specData.details.ko || specData.details.en || '';
 
   const canonicalUrl = lang === 'ko' ? `https://monkos.ai/specs/${slug}` : `https://monkos.ai/${lang}/specs/${slug}`;
   const hreflangTags = [

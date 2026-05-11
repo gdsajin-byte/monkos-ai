@@ -58,6 +58,14 @@
         {
           "q": "여권사진 유효기간이 있나요?",
           "a": "촬영 후 6개월 이내의 사진만 사용할 수 있습니다."
+        },
+        {
+          "q": "여권사진 집에서 찍어도 되나요?",
+          "a": "네, 3.5×4.5cm 규격과 흰색 배경 등 조건만 충족하면 집에서 촬영해도 됩니다. MONKOS AI를 쓰면 배경 자동 제거와 규격 크롭까지 처리됩니다."
+        },
+        {
+          "q": "여권사진 메이크업 주의사항이 있나요?",
+          "a": "자연스러운 메이크업은 허용됩니다. 다만 얼굴 윤곽을 크게 바꾸는 과한 컨투어링이나 컬러 렌즈는 반려 사유가 될 수 있습니다."
         }
       ],
       "ja": [
@@ -98,7 +106,17 @@
     "fileSpecEn": "JPEG, max 500KB",
     "fileSpecJa": "JPEG、500KB以下",
     "backgroundEn": "Uniform white",
-    "backgroundJa": "均一な白"
+    "backgroundJa": "均一な白",
+    "seoTitle": {
+      "ko": "여권사진 규격 2026 — 사이즈·배경·복장 총정리 | MONKOS",
+      "ja": "韓国パスポート写真 規格 2026 — サイズ・背景・服装 総まとめ | MONKOS",
+      "en": "Korea Passport Photo Size 2026 — Requirements & Free AI Tool | MONKOS"
+    },
+    "seoDescription": {
+      "ko": "한국 여권사진 3.5×4.5cm, 흰색 배경, 6개월 이내. 반려 사유 5가지와 셀프 촬영 팁까지. 무료 AI 증명사진 도구로 바로 만들기.",
+      "ja": "韓国パスポート写真 3.5×4.5cm、白背景、6ヶ月以内。却下理由5つとセルフ撮影のコツ。無料AIツールで今すぐ作成。",
+      "en": "Korea passport photo 3.5×4.5cm, white background, within 6 months. Top 5 rejection reasons and selfie tips. Make yours free with AI."
+    }
   },
   "korea-resume": {
     "slug": "korea-resume",
@@ -493,7 +511,17 @@
     "fileSpecEn": "JPEG, max 250KB",
     "fileSpecJa": "JPEG、250KB以下",
     "backgroundEn": "Uniform white",
-    "backgroundJa": "均一な白"
+    "backgroundJa": "均一な白",
+    "seoTitle": {
+      "ko": "운전면허 사진 규격 2026 — 사이즈·배경·온라인 제출 총정리 | MONKOS",
+      "ja": "韓国運転免許証 写真規格 2026 — サイズ・背景 総まとめ | MONKOS",
+      "en": "Korea Driver's License Photo Size 2026 — Requirements Guide | MONKOS"
+    },
+    "seoDescription": {
+      "ko": "운전면허 증명사진 3.5×4.5cm, 온라인 제출 350×450px 250KB 이하. 여권사진과 같은 규격이라 하나로 해결. 무료 AI 도구로 바로 만들기.",
+      "ja": "韓国運転免許証写真 3.5×4.5cm。オンライン提出は350×450px、250KB以下。無料AIツールで作成。",
+      "en": "Korea driver's license photo 3.5×4.5cm, online submission 350×450px max 250KB. Same as passport size. Make it free with AI."
+    }
   },
   "japan-mynumber": {
     "slug": "japan-mynumber",
@@ -669,7 +697,17 @@
     "validityEn": "Within 6 months",
     "validityJa": "6ヶ月以内",
     "backgroundEn": "Uniform white",
-    "backgroundJa": "均一な白"
+    "backgroundJa": "均一な白",
+    "seoTitle": {
+      "ko": "주민등록증 사진 규격 2026 — 사이즈·배경·촬영 팁 총정리 | MONKOS",
+      "ja": "韓国住民登録証 写真規格 2026 — サイズ・背景 総まとめ | MONKOS",
+      "en": "Korea Resident ID Photo Size 2026 — Requirements Guide | MONKOS"
+    },
+    "seoDescription": {
+      "ko": "주민등록증 증명사진 35×45mm 규격 안내. 여권사진과 동일 사이즈라 한 번에 해결. 무료 AI 도구로 집에서 바로 만들기.",
+      "ja": "韓国住民登録証写真 35×45mm。パスポートと同一規格。無料AIツールで作成可能。",
+      "en": "Korea resident ID photo 35×45mm. Same specs as passport. Make it free with MONKOS AI."
+    }
   },
   "japan-halfcard": {
     "slug": "japan-halfcard",

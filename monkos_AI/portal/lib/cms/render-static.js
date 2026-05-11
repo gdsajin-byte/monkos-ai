@@ -436,3 +436,169 @@ export async function renderGuide(req, res) {
     res.end('Internal Server Error');
   }
 }
+
+// === AI 증명사진 전용 가이드 (/guide/ai-photo) ===
+
+export function aiPhotoGuideFragment(forceLang = null) {
+  const lang = forceLang || 'ko';
+  const canonicalUrl = lang === 'ko' ? 'https://monkos.ai/guide/ai-photo' : `https://monkos.ai/${lang}/guide/ai-photo`;
+
+  const i18n = {
+    ko: {
+      title: 'AI 증명사진 만들기 — 무료 사이트 비교·가격·사용법 총정리 2026 | MONKOS',
+      desc: 'AI 증명사진 무료 사이트 비교, 사진관 vs AI 가격 차이, 셀프 촬영부터 규격 크롭까지. 여권·이력서·면허증 증명사진을 집에서 바로 만드세요.',
+      h1: 'AI 증명사진 만들기 — 2026 완벽 가이드',
+      intro: '사진관에 가지 않아도, 스마트폰 하나면 규격에 맞는 증명사진을 만들 수 있습니다.',
+      whatTitle: 'AI 증명사진이란?',
+      whatText: 'AI 증명사진은 인공지능이 자동으로 배경을 제거하고, 얼굴 위치와 크기를 규격에 맞춰 크롭하며, 자연스러운 보정까지 처리하는 서비스입니다. 셀카 한 장이면 여권·이력서·운전면허 등 모든 규격의 증명사진을 만들 수 있습니다.',
+      compareTitle: '사진관 vs AI 증명사진 비교',
+      compareHeaders: ['항목', '사진관', 'AI 증명사진'],
+      compareRows: [
+        ['가격', '10,000~20,000원', '무료~3,000원'],
+        ['소요 시간', '방문 + 촬영 30분~1시간', '1~3분'],
+        ['장소', '사진관 방문 필요', '집에서 스마트폰으로'],
+        ['규격 정확도', '촬영사 경험에 의존', 'AI가 자동으로 규격 맞춤'],
+        ['재촬영', '재방문 필요', '무제한 재시도'],
+      ],
+      howTitle: '사용 방법 — 3단계',
+      steps: [
+        { title: '1. 셀카 촬영', text: '밝은 곳에서 흰 벽 앞에서 정면 셀카를 찍으세요. 자연광이 가장 좋습니다.' },
+        { title: '2. AI 자동 처리', text: 'MONKOS AI가 배경 제거, 규격 크롭, 자연 보정을 자동으로 처리합니다.' },
+        { title: '3. 다운로드', text: '완성된 증명사진을 다운로드하세요. 인쇄용(300dpi)과 온라인 제출용 모두 제공.' },
+      ],
+      specsTitle: '지원 규격',
+      specsText: '여권(3.5×4.5cm), 반명함(3×4cm), 운전면허(3.5×4.5cm), 주민등록증(35×45mm) 등 한국 주요 규격과 일본·미국·유럽 등 26개국 규격을 지원합니다.',
+      faqTitle: '자주 묻는 질문',
+      faqs: [
+        { q: 'AI 증명사진이 실제 서류에 사용 가능한가요?', a: '네, MONKOS AI는 각국 공식 규격(사이즈, 배경색, 머리 비율)에 맞춰 생성하므로 여권·비자·이력서 제출에 사용할 수 있습니다.' },
+        { q: '무료인가요?', a: '기본 크롭 기능은 무료입니다. AI 보정이 포함된 증명사진은 크레딧 차감 방식으로, 사진관 대비 90% 이상 저렴합니다.' },
+        { q: '스마트폰으로만 가능한가요?', a: '스마트폰, 태블릿, PC 모두 사용 가능합니다. 웹 브라우저만 있으면 됩니다.' },
+        { q: '셀카 품질이 낮아도 괜찮나요?', a: '밝은 환경에서 촬영하면 충분합니다. AI가 배경과 조명을 자동으로 보정합니다.' },
+      ],
+      ctaTitle: '지금 바로 만들어 보세요',
+      ctaBtn1: 'AI 증명사진 만들기',
+      ctaBtn2: '무료 크롭 앱',
+      ctaBtn1Url: 'https://idphoto-kr.monkos.ai/app',
+      ctaBtn2Url: 'https://monkos.ai/crop',
+    },
+  };
+  const t = i18n[lang] || i18n.ko;
+
+  const jsonLd = JSON.stringify([
+    {
+      "@context": "https://schema.org",
+      "@type": "HowTo",
+      "name": t.h1,
+      "step": t.steps.map((s, idx) => ({ "@type": "HowToStep", "position": idx + 1, "name": s.title, "text": s.text })),
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": t.faqs.map(f => ({ "@type": "Question", "name": f.q, "acceptedAnswer": { "@type": "Answer", "text": f.a } })),
+    },
+  ]);
+
+  const seoMeta = `<meta property="og:title" content="${escapeHtml(t.title)}">
+<meta property="og:description" content="${escapeHtml(t.desc)}">
+<meta property="og:type" content="article">
+<meta property="og:url" content="${canonicalUrl}">
+<link rel="canonical" href="${canonicalUrl}">
+<link rel="alternate" hreflang="ko" href="https://monkos.ai/guide/ai-photo">
+<link rel="alternate" hreflang="x-default" href="https://monkos.ai/guide/ai-photo">
+<script type="application/ld+json">${jsonLd}</script>`;
+
+  const compareRowsHtml = t.compareRows.map(([item, studio, ai]) =>
+    `<tr><td>${escapeHtml(item)}</td><td>${escapeHtml(studio)}</td><td><strong>${escapeHtml(ai)}</strong></td></tr>`
+  ).join('\n');
+
+  const stepsHtml = t.steps.map(s =>
+    `<div class="aip-step"><h3>${escapeHtml(s.title)}</h3><p>${escapeHtml(s.text)}</p></div>`
+  ).join('\n');
+
+  const faqsHtml = t.faqs.map(f =>
+    `<details class="aip-faq"><summary>${escapeHtml(f.q)}</summary><p>${escapeHtml(f.a)}</p></details>`
+  ).join('\n');
+
+  const pageStyle = `
+.aip-container { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+.aip-container h1 { font-size: 28px; font-weight: 700; color: var(--text-bright); margin-bottom: 8px; }
+.aip-intro { color: var(--text-dim); font-size: 16px; line-height: 1.7; margin-bottom: 40px; }
+.aip-section { margin-bottom: 48px; }
+.aip-section h2 { font-size: 22px; font-weight: 600; color: var(--text-bright); margin-bottom: 16px; border-left: 4px solid var(--accent); padding-left: 12px; }
+.aip-section p { color: var(--text-dim); font-size: 15px; line-height: 1.7; }
+.aip-table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+.aip-table th, .aip-table td { padding: 10px 14px; border: 1px solid var(--border-dim); text-align: left; font-size: 14px; }
+.aip-table th { background: var(--bg-card); color: var(--text-bright); font-weight: 600; }
+.aip-table td strong { color: var(--accent); }
+.aip-step { background: var(--bg-card); border: 1px solid var(--border-dim); border-radius: 8px; padding: 16px 20px; margin-bottom: 12px; }
+.aip-step h3 { font-size: 16px; font-weight: 600; color: var(--accent); margin-bottom: 6px; }
+.aip-step p { font-size: 14px; color: var(--text-dim); line-height: 1.6; }
+.aip-faq { border: 1px solid var(--border-dim); border-radius: 8px; margin-bottom: 8px; }
+.aip-faq summary { padding: 12px 16px; font-weight: 500; cursor: pointer; font-size: 15px; color: var(--text-bright); }
+.aip-faq p { padding: 0 16px 12px; font-size: 14px; color: var(--text-dim); line-height: 1.6; }
+.aip-cta { text-align: center; background: var(--bg-card); border: 1px solid var(--border-dim); border-radius: 12px; padding: 32px; }
+.aip-cta h2 { border: none; padding: 0; text-align: center; margin-bottom: 16px; }
+.aip-cta-buttons { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.aip-cta-buttons a { display: inline-block; padding: 12px 24px; border-radius: 8px; font-weight: 600; text-decoration: none; font-size: 15px; }
+.aip-cta-buttons a.primary { background: var(--accent); color: #fff; }
+.aip-cta-buttons a.secondary { background: transparent; border: 1px solid var(--accent); color: var(--accent); }
+`;
+
+  const bodyContent = `
+<div class="aip-container">
+  <h1>${escapeHtml(t.h1)}</h1>
+  <p class="aip-intro">${escapeHtml(t.intro)}</p>
+
+  <div class="aip-section">
+    <h2>${escapeHtml(t.whatTitle)}</h2>
+    <p>${escapeHtml(t.whatText)}</p>
+  </div>
+
+  <div class="aip-section">
+    <h2>${escapeHtml(t.compareTitle)}</h2>
+    <table class="aip-table">
+      <thead><tr>${t.compareHeaders.map(h => `<th>${escapeHtml(h)}</th>`).join('')}</tr></thead>
+      <tbody>${compareRowsHtml}</tbody>
+    </table>
+  </div>
+
+  <div class="aip-section">
+    <h2>${escapeHtml(t.howTitle)}</h2>
+    ${stepsHtml}
+  </div>
+
+  <div class="aip-section">
+    <h2>${escapeHtml(t.specsTitle)}</h2>
+    <p>${escapeHtml(t.specsText)}</p>
+    <p style="margin-top:8px;"><a href="/specs" style="color:var(--accent);">전체 규격 보기 →</a></p>
+  </div>
+
+  <div class="aip-section">
+    <h2>${escapeHtml(t.faqTitle)}</h2>
+    ${faqsHtml}
+  </div>
+
+  <div class="aip-cta">
+    <h2>${escapeHtml(t.ctaTitle)}</h2>
+    <div class="aip-cta-buttons">
+      <a href="${t.ctaBtn1Url}" class="primary">${escapeHtml(t.ctaBtn1)}</a>
+      <a href="${t.ctaBtn2Url}" class="secondary">${escapeHtml(t.ctaBtn2)}</a>
+    </div>
+  </div>
+</div>`;
+
+  return { title: t.title, description: t.desc, seoMeta, htmlLang: lang, pageStyle, bodyContent, pageScript: null };
+}
+
+export function renderAiPhotoGuide(req, res, forceLang = null) {
+  try {
+    const parts = aiPhotoGuideFragment(forceLang);
+    const html = layoutShell(parts);
+    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+    res.end(html);
+  } catch (err) {
+    log(`[CMS] AI Photo 가이드 렌더 에러: ${err.message}`, 'ERROR');
+    res.writeHead(500, { 'Content-Type': 'text/plain' });
+    res.end('Internal Server Error');
+  }
+}
