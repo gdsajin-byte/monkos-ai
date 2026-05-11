@@ -170,13 +170,14 @@ status: 현행
 | GCP_SA_KEY | yong-a-orchestrator 키 JSON → base64 | yong-a-orchestrator | 05-11 | Actions에서 GCP 인증 |
 | GA4_PROPERTY_ID | `521406894` | — | 05-11 | 일일 보고서 |
 | GSC_SITE_URL | `sc-domain:monkos.ai` | — | 05-11 | 일일 보고서 |
+| TELEGRAM_BOT_TOKEN | monkos_AI/.env TELEGRAM_BOT_TOKEN | — | 05-11 | 텔레그램 알림 허브 |
+| TELEGRAM_CHAT_ID | monkos_AI/.env TEAM_CHAT_ID | — | 05-11 | 텔레그램 팀 채팅 |
 
 ### 향후 확장 (배포 자동화 시)
 
 | GitHub Secret 이름 | 값 소스 | 용도 |
 |--------------------|---------|------|
 | CF_API_TOKEN | monkos_AI/.env | CF 배포 자동화 |
-| TELEGRAM_BOT_TOKEN | monkos_AI/.env | 알림 허브 |
 
 ---
 
