@@ -26,6 +26,7 @@
 | [PF_BRIEF](PF_BRIEF.md) | BRIEF | 콘텐츠 | 매일 자동 브리핑 — 성과 보고 + SEO 교정 + 뉴스 | completed (→ AUTOPILOT) | 04-10 |
 | [PF_PRESENTATION](PF_PRESENTATION.md) | PRESENTATION | 콘텐츠 | PT 콘텐츠 자동화 엔진 — 3D캐릭터/TTS | active | 04-03 |
 | [PF_VIDEO](PF_VIDEO.md) | VIDEO | 콘텐츠 | AI 영상 생성 엔진 — video.monkos.ai | active | 04-27 |
+| [PF_MUSE](PF_MUSE.md) | MUSE | 콘텐츠 | 멀티 에이전트 토론방 — 서사적 유희 + 창작 + 아이디어 발산 | active | 05-11 |
 
 ## 네이밍
 

@@ -120,6 +120,7 @@ status: active
 | 5/10 | 민아 | **30일 성과 종합 분석** — GA4+GSC 병렬 수집. 활성유저 2,625(+142%), SEO 노출 4/26~ 3배 점프(일 100~170), 회원가입 15건(전환율 0.57%), AI유입 4건 첫 감지. 퍼널 병목: 홈→prep 4.8% | 세션 로그 `2026-05-10_iMac_민아.md` | ✅ |
 | 5/10 | 쌍아 | **광고 채널 정밀 분석** — 스마트 캠페인 이탈 82.4% 판명, 일본 검색이 최양질(이탈 60.5%/체류 64초). 멀티채널 숏폼 전략 확정 | [RESEARCH_20260510](../../sessions/2026-05/RESEARCH_20260510_쌍아_광고채널_데이터분석.md) | ✅ |
 | 5/11 | 민아 | **GA4+GSC 종합 분석 (4/13~5/10)** — 노출 866→2,189(+153%), 클릭 16→49(+206%). "여권사진" 첫 등장(23건). AEO 19세션(+125%). specs CTR 1.5~2% 병목 특정. **Phase 2.2 업그레이드 제안서 발행** | [PROPOSAL_20260511_민아_CITADEL_Phase22_업그레이드](../proposals/PROPOSAL_20260511_민아_CITADEL_Phase22_전환율최적화+키워드확장.md) | ✅ 작가님 리뷰 |
+| 5/11 | iMac/막내1 | **Phase 2.2 Tier 1 실행** — A: specs 상위3건 seoTitle/seoDescription B: /guide/ai-photo 랜딩+JSON-LD C: korea-passport FAQ 확장 D: claudemax EN noindex(승인 완료) | 코드 7파일 | ✅ |
 
 ---
 
