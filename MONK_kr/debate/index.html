@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MONK 토론방</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #1a1a2e; color: #e0e0e0; height: 100vh; display: flex; flex-direction: column; }
+header { padding: 16px 20px; background: #16213e; border-bottom: 1px solid #0f3460; display: flex; justify-content: space-between; align-items: center; }
+header h1 { font-size: 18px; font-weight: 600; }
+header button { background: none; border: 1px solid #555; color: #aaa; padding: 4px 12px; border-radius: 4px; cursor: pointer; font-size: 13px; }
+header button:hover { border-color: #888; color: #ddd; }
+
+.topic-bar { padding: 10px 20px; background: #1a1a3e; border-bottom: 1px solid #0f3460; display: flex; gap: 8px; align-items: center; }
+.topic-bar input { flex: 1; padding: 8px 12px; background: #0f3460; border: 1px solid #1a4080; border-radius: 6px; color: #e0e0e0; font-size: 14px; }
+.topic-bar input::placeholder { color: #666; }
+.topic-bar button { padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; font-size: 13px; font-weight: 500; }
+#btn-auto { background: #e94560; color: white; }
+#btn-auto:hover { background: #c73e55; }
+#btn-auto.running { background: #555; }
+#btn-reset { background: #333; color: #aaa; border: 1px solid #555; }
+#btn-reset:hover { background: #444; }
+
+#chat { flex: 1; overflow-y: auto; padding: 16px 20px; display: flex; flex-direction: column; gap: 12px; }
+.msg { max-width: 80%; padding: 10px 14px; border-radius: 12px; font-size: 14px; line-height: 1.6; word-break: break-word; }
+.msg .speaker { font-size: 12px; font-weight: 600; margin-bottom: 4px; }
+.msg.agent1 { align-self: flex-start; background: #1a3a5c; border: 1px solid #1a5090; }
+.msg.agent1 .speaker { color: #64b5f6; }
+.msg.agent2 { align-self: flex-end; background: #1a3c2e; border: 1px solid #1a7050; }
+.msg.agent2 .speaker { color: #81c784; }
+.msg.human { align-self: center; background: #2a2a3e; border: 1px solid #444; max-width: 90%; }
+.msg.human .speaker { color: #ce93d8; }
+.msg.system { align-self: center; background: #2a2030; border: 1px solid #503050; font-style: italic; font-size: 13px; }
+.msg.system .speaker { color: #f48fb1; }
+.typing { align-self: flex-start; padding: 10px 14px; font-size: 13px; color: #888; }
+
+#input-bar { padding: 12px 20px; background: #16213e; border-top: 1px solid #0f3460; display: flex; gap: 8px; }
+#input-bar input { flex: 1; padding: 10px 14px; background: #0f3460; border: 1px solid #1a4080; border-radius: 8px; color: #e0e0e0; font-size: 14px; }
+#input-bar input::placeholder { color: #555; }
+#input-bar button { padding: 10px 20px; background: #e94560; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 500; }
+#input-bar button:hover { background: #c73e55; }
+#input-bar button:disabled { background: #444; cursor: not-allowed; }
+
+.settings-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 100; justify-content: center; align-items: center; }
+.settings-overlay.open { display: flex; }
+.settings-panel { background: #1a1a2e; border: 1px solid #333; border-radius: 12px; padding: 24px; width: 400px; max-width: 90vw; }
+.settings-panel h2 { margin-bottom: 16px; font-size: 16px; }
+.settings-panel label { display: block; font-size: 13px; color: #aaa; margin-top: 12px; }
+.settings-panel input, .settings-panel select, .settings-panel textarea { width: 100%; margin-top: 4px; padding: 8px; background: #0f3460; border: 1px solid #1a4080; border-radius: 4px; color: #e0e0e0; font-size: 13px; }
+.settings-panel textarea { height: 60px; resize: vertical; }
+.settings-panel .btn-row { margin-top: 16px; display: flex; justify-content: flex-end; gap: 8px; }
+.settings-panel button { padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; font-size: 13px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>MONK 토론방</h1>
+  <button id="btn-settings">설정</button>
+</header>
+
+<div class="topic-bar">
+  <input id="topic" placeholder="토론 주제를 입력하세요..." />
+  <button id="btn-auto">자동 토론</button>
+  <button id="btn-reset">초기화</button>
+</div>
+
+<div id="chat"></div>
+
+<div id="input-bar">
+  <input id="msg-input" placeholder="메시지 입력..." />
+  <button id="btn-send">보내기</button>
+</div>
+
+<div class="settings-overlay" id="settings-overlay">
+  <div class="settings-panel">
+    <h2>설정</h2>
+    <label>에이전트1 이름 <input id="s-a1-name" value="에이전트1" /></label>
+    <label>에이전트1 모델
+      <select id="s-a1-model">
+        <option value="@cf/google/gemma-3-12b-it">Gemma 3 12B</option>
+        <option value="@cf/meta/llama-4-scout-17b-16e-instruct">Llama 4 Scout 17B</option>
+        <option value="@cf/qwen/qwen2.5-coder-32b-instruct">Qwen 2.5 32B</option>
+      </select>
+    </label>
+    <label>에이전트2 이름 <input id="s-a2-name" value="에이전트2" /></label>
+    <label>에이전트2 모델
+      <select id="s-a2-model">
+        <option value="@cf/qwen/qwen2.5-coder-32b-instruct">Qwen 2.5 32B</option>
+        <option value="@cf/google/gemma-3-12b-it">Gemma 3 12B</option>
+        <option value="@cf/meta/llama-4-scout-17b-16e-instruct">Llama 4 Scout 17B</option>
+      </select>
+    </label>
+    <label>라운드 수 <input id="s-rounds" type="number" value="3" min="1" max="10" /></label>
+    <label>API 엔드포인트 <input id="s-api" value="/api/debate" /></label>
+    <div class="btn-row">
+      <button onclick="closeSettings()" style="background:#333;color:#aaa;">닫기</button>
+      <button onclick="saveSettings()" style="background:#e94560;color:white;">저장</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = "monk_debate";
+let state = loadState();
+let autoRunning = false;
+let abortAuto = false;
+
+const chatEl = document.getElementById("chat");
+const topicEl = document.getElementById("topic");
+const msgInput = document.getElementById("msg-input");
+const btnSend = document.getElementById("btn-send");
+const btnAuto = document.getElementById("btn-auto");
+const btnReset = document.getElementById("btn-reset");
+const btnSettings = document.getElementById("btn-settings");
+const settingsOverlay = document.getElementById("settings-overlay");
+
+function loadState() {
+  try {
+    const s = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if (s && s.messages) return s;
+  } catch {}
+  return {
+    messages: [],
+    config: {
+      agent1: { name: "에이전트1", model: "@cf/google/gemma-3-12b-it" },
+      agent2: { name: "에이전트2", model: "@cf/qwen/qwen2.5-coder-32b-instruct" },
+      max_rounds: 3,
+      api: "/api/debate",
+    },
+    topic: "",
+  };
+}
+
+function saveState() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function renderMessages() {
+  chatEl.innerHTML = "";
+  for (const m of state.messages) {
+    const div = document.createElement("div");
+    div.className = "msg " + m.role;
+    const nameMap = { agent1: state.config.agent1.name, agent2: state.config.agent2.name, human: "작가님", system: "주제" };
+    div.innerHTML = `<div class="speaker">${nameMap[m.role] || m.role}</div><div>${escapeHtml(m.content)}</div>`;
+    chatEl.appendChild(div);
+  }
+  chatEl.scrollTop = chatEl.scrollHeight;
+}
+
+function escapeHtml(text) {
+  return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>");
+}
+
+function addMessage(role, content) {
+  state.messages.push({ role, content });
+  saveState();
+  renderMessages();
+}
+
+function showTyping(name) {
+  const div = document.createElement("div");
+  div.className = "typing";
+  div.id = "typing-indicator";
+  div.textContent = `${name} 입력 중...`;
+  chatEl.appendChild(div);
+  chatEl.scrollTop = chatEl.scrollHeight;
+}
+
+function hideTyping() {
+  const el = document.getElementById("typing-indicator");
+  if (el) el.remove();
+}
+
+async function callWorker(nextSpeaker, retries = 2) {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const res = await fetch(state.config.api, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: state.messages,
+          next_speaker: nextSpeaker,
+          config: {
+            agent1: state.config.agent1,
+            agent2: state.config.agent2,
+            max_rounds: state.config.max_rounds,
+          },
+        }),
+      });
+      if (res.ok) return res.json();
+      if (attempt < retries) { await delay(2000); continue; }
+      throw new Error(`Worker error: ${res.status}`);
+    } catch (e) {
+      if (attempt < retries && e.name !== "AbortError") { await delay(2000); continue; }
+      throw e;
+    }
+  }
+}
+
+async function sendHumanMessage() {
+  const text = msgInput.value.trim();
+  if (!text) return;
+  msgInput.value = "";
+
+  if (autoRunning) {
+    abortAuto = true;
+    autoRunning = false;
+    btnAuto.textContent = "자동 토론";
+    btnAuto.classList.remove("running");
+  }
+
+  addMessage("human", text);
+  btnSend.disabled = true;
+
+  try {
+    showTyping(state.config.agent1.name);
+    const r1 = await callWorker("agent1");
+    hideTyping();
+    if (r1.message) addMessage("agent1", r1.message);
+
+    showTyping(state.config.agent2.name);
+    const r2 = await callWorker("agent2");
+    hideTyping();
+    if (r2.message) addMessage("agent2", r2.message);
+  } catch (err) {
+    hideTyping();
+    addMessage("system", "오류: " + err.message);
+  }
+  btnSend.disabled = false;
+}
+
+async function startAutoDebate() {
+  if (autoRunning) {
+    abortAuto = true;
+    autoRunning = false;
+    btnAuto.textContent = "자동 토론";
+    btnAuto.classList.remove("running");
+    return;
+  }
+
+  const topic = topicEl.value.trim();
+  if (!topic) { topicEl.focus(); return; }
+
+  state.topic = topic;
+  autoRunning = true;
+  abortAuto = false;
+  btnAuto.textContent = "중지";
+  btnAuto.classList.add("running");
+  btnSend.disabled = true;
+
+  if (state.messages.length === 0 || state.messages[0].content !== topic) {
+    addMessage("system", topic);
+  }
+
+  const maxRounds = state.config.max_rounds;
+
+  for (let round = 1; round <= maxRounds; round++) {
+    if (abortAuto) break;
+
+    showTyping(state.config.agent1.name);
+    await delay(800);
+    try {
+      const r1 = await callWorker("agent1");
+      hideTyping();
+      if (abortAuto) break;
+      if (r1.done) break;
+      if (r1.message) addMessage("agent1", r1.message);
+    } catch (err) {
+      hideTyping();
+      addMessage("system", "오류: " + err.message);
+      break;
+    }
+
+    if (abortAuto) break;
+    await delay(1200);
+
+    showTyping(state.config.agent2.name);
+    await delay(800);
+    try {
+      const r2 = await callWorker("agent2");
+      hideTyping();
+      if (abortAuto) break;
+      if (r2.done) break;
+      if (r2.message) addMessage("agent2", r2.message);
+    } catch (err) {
+      hideTyping();
+      addMessage("system", "오류: " + err.message);
+      break;
+    }
+
+    if (round < maxRounds) await delay(1000);
+  }
+
+  autoRunning = false;
+  abortAuto = false;
+  btnAuto.textContent = "자동 토론";
+  btnAuto.classList.remove("running");
+  btnSend.disabled = false;
+}
+
+function resetChat() {
+  if (!confirm("대화를 초기화하시겠습니까?")) return;
+  state.messages = [];
+  saveState();
+  renderMessages();
+}
+
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function openSettings() { settingsOverlay.classList.add("open"); loadSettingsUI(); }
+function closeSettings() { settingsOverlay.classList.remove("open"); }
+function loadSettingsUI() {
+  document.getElementById("s-a1-name").value = state.config.agent1.name;
+  document.getElementById("s-a1-model").value = state.config.agent1.model;
+  document.getElementById("s-a2-name").value = state.config.agent2.name;
+  document.getElementById("s-a2-model").value = state.config.agent2.model;
+  document.getElementById("s-rounds").value = state.config.max_rounds;
+  document.getElementById("s-api").value = state.config.api;
+}
+function saveSettings() {
+  state.config.agent1.name = document.getElementById("s-a1-name").value.trim() || "에이전트1";
+  state.config.agent1.model = document.getElementById("s-a1-model").value;
+  state.config.agent2.name = document.getElementById("s-a2-name").value.trim() || "에이전트2";
+  state.config.agent2.model = document.getElementById("s-a2-model").value;
+  state.config.max_rounds = parseInt(document.getElementById("s-rounds").value) || 3;
+  state.config.api = document.getElementById("s-api").value.trim() || "/api/debate";
+  saveState();
+  renderMessages();
+  closeSettings();
+}
+
+btnSend.addEventListener("click", sendHumanMessage);
+msgInput.addEventListener("keydown", e => { if (e.key === "Enter" && !e.isComposing) sendHumanMessage(); });
+btnAuto.addEventListener("click", startAutoDebate);
+btnReset.addEventListener("click", resetChat);
+btnSettings.addEventListener("click", openSettings);
+settingsOverlay.addEventListener("click", e => { if (e.target === settingsOverlay) closeSettings(); });
+
+topicEl.value = state.topic || "";
+renderMessages();
+</script>
+</body>
+</html>
