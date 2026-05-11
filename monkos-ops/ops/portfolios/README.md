@@ -12,7 +12,7 @@
 | [PF_CROP](PF_CROP.md) | CROP | 서비스 | MONKOS Crop — ICAO 크롭 + 특허 | active | 03-11 |
 | [PF_STUDIO](PF_STUDIO.md) | STUDIO | 서비스 | AI 촬영실 UX + 음성 코칭 | paused | 03-06 |
 | [PF_CDP](PF_CDP.md) | CDP | 인프라 | 로컬 CDP 브라우저 제어 — 에이전트 독립 인프라 | active | 03-27 |
-| [PF_SECURITY](PF_SECURITY/README.md) | SECURITY | 인프라 | IAM·SA 권한 재조정·분기 재설계 | blocked | 04-23 |
+| [PF_SECURITY](PF_SECURITY/README.md) | SECURITY | 인프라 | IAM·SA 권한 재조정·분기 재설계 | completed (→ AUTOPILOT) | 04-23 |
 | [PF_CITADEL](PF_CITADEL.md) | CITADEL | 전략 | SEO/GEO/AEO 통합 | active | 03-26 |
 | [PF_SPREAD](PF_SPREAD.md) | SPREAD | 전략 | 콘텐츠 배포·마케팅 통합 전략 | active | 03-04 |
 | [PF_EVENT](PF_EVENT.md) | EVENT | 전략 | 매출 전환 이벤트 | active | 04-21 |
@@ -21,7 +21,8 @@
 | [PF_DOCS](PF_DOCS/README.md) | DOCS | 운영 | 문서 편집 체계 (포맷별 도구·파이프라인) | active | 05-04 |
 | [PF_RND](PF_RND/README.md) | RND | 운영 | 정부 R&D·IP 지원사업 통합 추적 | active | 04-24 |
 | [PF_CHATBOT](PF_CHATBOT/PF_CHATBOT.md) | CHATBOT | 인프라 | 통합 AI 챗봇 — 6채널 엔진 + RAG + 온디바이스 | active | 01-10 |
-| [PF_BRIEF](PF_BRIEF.md) | BRIEF | 콘텐츠 | 매일 자동 브리핑 — 성과 보고 + SEO 교정 + 뉴스 | active | 04-10 |
+| [PF_AUTOPILOT](PF_AUTOPILOT/README.md) | AUTOPILOT | 인프라 | 접착 레이어 — CF↔CR 중계 + 시크릿 통합 + 멀티레포 연결 + 에이전트 연결 | active | 05-11 |
+| [PF_BRIEF](PF_BRIEF.md) | BRIEF | 콘텐츠 | 매일 자동 브리핑 — 성과 보고 + SEO 교정 + 뉴스 | completed (→ AUTOPILOT) | 04-10 |
 | [PF_PRESENTATION](PF_PRESENTATION.md) | PRESENTATION | 콘텐츠 | PT 콘텐츠 자동화 엔진 — 3D캐릭터/TTS | active | 04-03 |
 | [PF_VIDEO](PF_VIDEO.md) | VIDEO | 콘텐츠 | AI 영상 생성 엔진 — video.monkos.ai | active | 04-27 |
 

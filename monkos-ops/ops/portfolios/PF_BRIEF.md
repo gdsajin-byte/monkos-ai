@@ -6,7 +6,7 @@ subject: 매일 자동 브리핑 — 성과 보고 + SEO 교정 + 외부 뉴스�
 created: 2026-04-10
 owner: 작가님
 leads: 쌍아(설계), 민아(진단·브리핑)
-status: active
+status: completed (merged → PF_AUTOPILOT)
 ---
 
 # PF_BRIEF — 데일리 자동 브리핑
