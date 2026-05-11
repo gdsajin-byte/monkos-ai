@@ -22,6 +22,7 @@
 | [PF_RND](PF_RND/README.md) | RND | 운영 | 정부 R&D·IP 지원사업 통합 추적 | active | 04-24 |
 | [PF_CHATBOT](PF_CHATBOT/PF_CHATBOT.md) | CHATBOT | 인프라 | 통합 AI 챗봇 — 6채널 엔진 + RAG + 온디바이스 | active | 01-10 |
 | [PF_AUTOPILOT](PF_AUTOPILOT/README.md) | AUTOPILOT | 인프라 | 접착 레이어 — CF↔CR 중계 + 시크릿 통합 + 멀티레포 연결 + 에이전트 연결 | active | 05-11 |
+| [PF_FACTORY](PF_FACTORY.md) | FACTORY | 인프라 | 4060 GPU 팩토리 — 야간 생산 + 모델 연구 + 텔레그램 보고/지시 | draft | 05-11 |
 | [PF_BRIEF](PF_BRIEF.md) | BRIEF | 콘텐츠 | 매일 자동 브리핑 — 성과 보고 + SEO 교정 + 뉴스 | completed (→ AUTOPILOT) | 04-10 |
 | [PF_PRESENTATION](PF_PRESENTATION.md) | PRESENTATION | 콘텐츠 | PT 콘텐츠 자동화 엔진 — 3D캐릭터/TTS | active | 04-03 |
 | [PF_VIDEO](PF_VIDEO.md) | VIDEO | 콘텐츠 | AI 영상 생성 엔진 — video.monkos.ai | active | 04-27 |
