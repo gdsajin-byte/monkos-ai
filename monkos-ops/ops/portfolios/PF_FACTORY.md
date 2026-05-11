@@ -107,6 +107,9 @@ PF_AUTOPILOT (클라우드)          PF_FACTORY (로컬 GPU)
 | 05/11 | 4060/쌍아 | `track_models.py` 작성 + 첫 실행 — HF 30건 + Civitai 10건 = 40건 적립 | CSV 40행 | ✅ |
 | 05/11 | 4060/쌍아 | conda `factory` 환경 완성 — PyTorch 2.11.0+cu126 + HF 1.14 + transformers 5.8 + accelerate 1.13 | GPU test OK | ✅ |
 | 05/11 | iMac/막내1 | 에이전트 토론방 웹 UI POC — CF Worker(debate.js) + 프론트(index.html). Gemma 3 vs Qwen 2.5 자동 토론 3라운드 + 사람 개입 + localStorage 세션 복원 검증 완료 | functions/api/debate.js, apps/debate/ | ✅ |
+| 05/11 | 4060/쌍아 | ComfyUI 현황 확인 — `C:\AI_Factory\` 존재, HelloWorldXL+RealVisXL+LoRA 3개+커스텀노드 5개+스크립트 11개 (인프라 보고서 보정) | — | ✅ |
+| 05/11 | 4060/쌍아 | `benchmark_llm.py` 작성 + 실행 시작 (Qwen3-1.7B, Gemma-3-4B, Phi-4-mini) — 세션 마감 시점 모델 다운로드 진행 중 | 스크립트 | ⏳ |
+| 05/11 | 4060/쌍아 | 세션 마감 — 종합 보고서 산출 | REPORT | ✅ |
 
 ---
 
