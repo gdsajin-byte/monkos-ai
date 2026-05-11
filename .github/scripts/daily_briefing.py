@@ -5,6 +5,7 @@ import json
 import os
 import sys
 from datetime import date, timedelta
+from email.utils import parsedate_to_datetime
 from pathlib import Path
 
 import requests
@@ -43,7 +44,7 @@ NEWS_SOURCES = [
     {
         "name": "Anthropic Blog",
         "category": "AI/기술",
-        "rss": "https://www.anthropic.com/rss.xml",
+        "rss": "https://raw.githubusercontent.com/taobojlen/anthropic-rss-feed/main/anthropic_news_rss.xml",
     },
     {
         "name": "Google AI Blog",
@@ -165,24 +166,44 @@ def fetch_rss(url, limit=3):
         title = item.find("title").text.strip() if item.find("title") else ""
         link = item.find("link").text.strip() if item.find("link") else ""
         pub_date = item.find("pubDate")
-        date_str = pub_date.text.strip()[:10] if pub_date else ""
+        if pub_date:
+            try:
+                dt = parsedate_to_datetime(pub_date.text.strip())
+                date_str = dt.strftime("%Y-%m-%d")
+            except (ValueError, TypeError):
+                date_str = ""
+        else:
+            date_str = ""
         items.append({"title": title, "url": link, "date": date_str})
     return items
 
 
 def fetch_bizinfo(url, keywords):
-    resp = requests.get(url, timeout=15)
-    resp.raise_for_status()
-    soup = BeautifulSoup(resp.content, "html.parser")
+    api_url = "https://www.bizinfo.go.kr/uss/rss/bizinfoApi.do"
     items = []
-    for row in soup.select("tr, li, .list-item, a"):
-        text = row.get_text(strip=True)
-        if any(kw in text for kw in keywords):
-            link = row.get("href") or (row.find("a") and row.find("a").get("href"))
-            if link and not link.startswith("http"):
-                link = "https://www.bizinfo.go.kr" + link
-            if link and len(items) < 3:
-                items.append({"title": text[:80], "url": link or "", "date": ""})
+    for kw in keywords:
+        params = {
+            "crtfcKey": os.environ.get("BIZINFO_API_KEY", "QP6yn2"),
+            "dataType": "json",
+            "pageUnit": "5",
+            "pageIndex": "1",
+            "hashtags": kw,
+        }
+        try:
+            resp = requests.get(api_url, params=params, timeout=15)
+            resp.raise_for_status()
+            data = resp.json()
+            for entry in data.get("jsonArray", []):
+                title = entry.get("pblancNm", "")
+                detail_url = entry.get("pblancUrl", "")
+                pub_date = entry.get("creatPnttm", "")[:10]
+                if title and detail_url and len(items) < 3:
+                    if not any(i["url"] == detail_url for i in items):
+                        items.append({"title": title[:80], "url": detail_url, "date": pub_date})
+        except Exception:
+            continue
+        if len(items) >= 3:
+            break
     return items[:3]
 
 
@@ -194,7 +215,9 @@ def detect_anomalies(ga4_today, ga4_compare, gsc_today, gsc_compare, seo_issues)
         if change <= -0.3:
             alerts.append(f"- 🔴 GA4 세션 전주 대비 {change*100:.0f}% 하락 ({ga4_compare['sessions']} → {ga4_today['sessions']})")
 
-    if gsc_compare["impressions"] > 0:
+    if gsc_today["clicks"] == 0 and gsc_today["impressions"] == 0:
+        alerts.append("- 🟡 GSC 데이터 미도착 (3일 전 기준). 정상 지연 가능성 높음.")
+    elif gsc_compare["impressions"] > 0:
         change = (gsc_today["impressions"] - gsc_compare["impressions"]) / gsc_compare["impressions"]
         if change <= -0.3:
             alerts.append(f"- 🔴 GSC 노출 전주 대비 {change*100:.0f}% 하락 ({gsc_compare['impressions']} → {gsc_today['impressions']})")
@@ -305,11 +328,11 @@ def main():
         print("ERROR: GA4_PROPERTY_ID or GSC_SITE_URL not set", file=sys.stderr)
         sys.exit(1)
 
-    yesterday = date.today() - timedelta(days=1)
-    last_week_same_day = yesterday - timedelta(days=7)
+    target = date.today() - timedelta(days=3)
+    compare = target - timedelta(days=7)
 
-    target_date = yesterday.isoformat()
-    compare_date = last_week_same_day.isoformat()
+    target_date = target.isoformat()
+    compare_date = compare.isoformat()
 
     print(f"[BRIEFING] 대상일: {target_date}, 비교일: {compare_date}")
 
@@ -353,7 +376,7 @@ def main():
 
     output_dir = Path("monkos-ops/ops/briefings")
     output_dir.mkdir(parents=True, exist_ok=True)
-    output_file = output_dir / f"BRIEFING_{yesterday.strftime('%Y%m%d')}.md"
+    output_file = output_dir / f"BRIEFING_{target.strftime('%Y%m%d')}.md"
     output_file.write_text(content, encoding="utf-8")
 
     print(f"[DONE] {output_file} 생성 완료 ({len(content)} bytes)")
