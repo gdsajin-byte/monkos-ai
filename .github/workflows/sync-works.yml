@@ -11,12 +11,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: true
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PAT_TOKEN }}
 
       - name: Update submodule
         run: |
-          git submodule update --remote monkos-ops/works
+          git -c url."https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/".insteadOf="git@github.com:" submodule update --init --remote monkos-ops/works
 
       - name: Check for changes
         id: check
