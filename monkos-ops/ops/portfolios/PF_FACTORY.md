@@ -101,6 +101,11 @@ PF_AUTOPILOT (클라우드)          PF_FACTORY (로컬 GPU)
 | 05/11 | iMac/쌍아 | 팩토리 봇 체계 발굴 — Firebase Functions (notifyWriter/updateAiStatus/getCommands) + notify.ps1 | — | ✅ |
 | 05/11 | 작가님 | **PF_FACTORY 발족 지시** — 4060 GPU 팩토리 + 모델 연구 + 텔레그램 체계 | — | ✅ |
 | 05/11 | 쌍아 | PF_FACTORY 발족 | PF_FACTORY.md | ✅ |
+| 05/11 | 4060/쌍아 | 인프라 전수 파악 완료 — GPU/CPU/스토리지/CUDA/Python/기존자산 | REPORT | ✅ |
+| 05/11 | 4060/쌍아 | 팩토리 봇 `/notifyWriter` 동작 확인 성공 | — | ✅ |
+| 05/11 | 4060/쌍아 | PF_FACTORY 폴더 구조 생성 + CSV 스키마 확정 + devlog RQ 레지스트리 초기화 | 폴더/CSV | ✅ |
+| 05/11 | 4060/쌍아 | `track_models.py` 작성 + 첫 실행 — HF 30건 + Civitai 10건 = 40건 적립 | CSV 40행 | ✅ |
+| 05/11 | 4060/쌍아 | conda `factory` 환경 생성 (Python 3.10) + PyTorch CUDA 설치 진행 | — | ⏳ |
 
 ---
 
@@ -110,11 +115,11 @@ PF_AUTOPILOT (클라우드)          PF_FACTORY (로컬 GPU)
 
 | 항목 | 상태 | 담당 | 비고 |
 |------|------|------|------|
-| iMac → 4060 SSH 키 등록 완료 확인 | ⏳ | 4060/쌍아 | Windows authorized_keys 경로 이슈 |
-| Firebase Functions 엔드포인트 동작 확인 | ❌ | 막내 | /notifyWriter, /updateAiStatus, /getCommands |
+| iMac → 4060 SSH 키 등록 완료 확인 | ⚠️ | 4060/쌍아 | user경로 등록됨, admin경로 미등록 (관리자 권한 필요) |
+| Firebase Functions 엔드포인트 동작 확인 | ✅ | 4060/쌍아 | /notifyWriter 동작 확인 (05/11) |
 | notify.ps1 → bash 포팅 (Mac/Linux 에이전트용) | ❌ | 막내 | |
 | AUTOPILOT Actions 발신 → Firebase 경유로 전환 | ❌ | 막내 | MONKOS.AI 채팅방 통합 |
-| 4060 환경 점검 (CUDA, Python, ComfyUI) | ❌ | 4060/쌍아 | GPU 작업 가능 상태 확인 |
+| 4060 환경 점검 (CUDA, Python, ComfyUI) | ✅ | 4060/쌍아 | CUDA 12.6 설치, PyTorch 미설치 → conda factory 구축 중 |
 | n8n 처분 결정 (유지/폐기/한송이 전용) | ❌ | 작가님 | |
 
 ### Phase 1 — 야간 배치 생산
