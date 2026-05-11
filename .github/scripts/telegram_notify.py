@@ -13,8 +13,15 @@ def send(message):
     resp = requests.post(url, json={
         "chat_id": chat_id,
         "text": message,
-        "parse_mode": "Markdown",
+        "parse_mode": "HTML",
+        "disable_web_page_preview": True,
     })
+    if resp.status_code == 400:
+        resp = requests.post(url, json={
+            "chat_id": chat_id,
+            "text": message,
+            "disable_web_page_preview": True,
+        })
     resp.raise_for_status()
     print(f"[OK] 텔레그램 발신 완료 (chat_id: {chat_id[:4]}...)")
 
