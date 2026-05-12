@@ -73,6 +73,7 @@ domain: 인프라
 | 05/11 | 4060/쌍아 | n8n 전수 조사 — 워크플로우 0개 확인. 팩토리 봇은 Firebase Functions 운용 | REPORT | ✅ |
 | 05/11 | iMac/쌍아 | 팩토리 봇 체계 발굴 — notify.ps1 + Firebase(notifyWriter/updateAiStatus/getCommands). 텔레그램 4봇 체계 전수 정리 | — | ✅ |
 | 05/11 | 작가님 | **PF_FACTORY 발족** — 4060 GPU 팩토리 PF 분리. AUTOPILOT(클라우드) ↔ FACTORY(로컬 GPU) 짝 구조 확정 | PF_FACTORY.md | ✅ |
+| 05/12 | iMac/막내1 | Phase 2 품질 보정 2차 — 노이즈 제거 6건 (날짜 표기, URL 디코딩, SEO Known Issues, RSS 키워드 필터, 피드 정체 경고, 소규모 절대수치). workflow_dispatch 검증 완료 | BRIEFING_20260509.md (보정) | ✅ |
 
 ---
 
