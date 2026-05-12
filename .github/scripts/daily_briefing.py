@@ -381,6 +381,12 @@ def main():
 
     print(f"[DONE] {output_file} 생성 완료 ({len(content)} bytes)")
 
+    github_output = os.environ.get("GITHUB_OUTPUT")
+    if github_output:
+        with open(github_output, "a") as f:
+            f.write(f"target_date={target_date}\n")
+            f.write(f"briefing_file={output_file}\n")
+
 
 if __name__ == "__main__":
     main()

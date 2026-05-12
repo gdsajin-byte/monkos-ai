@@ -170,8 +170,8 @@ status: 현행
 | GCP_SA_KEY | yong-a-orchestrator 키 JSON → base64 | yong-a-orchestrator | 05-11 | Actions에서 GCP 인증 |
 | GA4_PROPERTY_ID | `521406894` | — | 05-11 | 일일 보고서 |
 | GSC_SITE_URL | `sc-domain:monkos.ai` | — | 05-11 | 일일 보고서 |
-| TELEGRAM_BOT_TOKEN | monkos_AI/.env TELEGRAM_TEAM_BOT_TOKEN | — | 05-11 | 텔레그램 알림 허브 (팀 봇) |
-| TELEGRAM_CHAT_ID | monkos_AI/.env TEAM_CHAT_ID | — | 05-11 | 텔레그램 팀 채팅 |
+| TELEGRAM_BOT_TOKEN | Firebase Functions (telegramWebhook) @monkos_factory_bot | — | 05-12 | 텔레그램 알림 허브 (팩토리 봇) |
+| TELEGRAM_CHAT_ID | Firebase Functions WRITER_CHAT_ID | — | 05-12 | 작가님 DM (팩토리 봇 → 작가님) |
 | PAT_TOKEN | GitHub Fine-grained PAT (MONKOS_PAT, No expiration) | — | 05-11 | cross-repo 접근 (monk_project + monkos-works + monk-kr) |
 
 ### 향후 확장 (배포 자동화 시)

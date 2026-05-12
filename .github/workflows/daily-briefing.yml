@@ -22,6 +22,7 @@ jobs:
         run: pip install -r .github/scripts/requirements.txt
 
       - name: Generate briefing
+        id: gen
         env:
           GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
           GA4_PROPERTY_ID: ${{ secrets.GA4_PROPERTY_ID }}
@@ -42,8 +43,8 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          DATE=$(date -d "yesterday" +%Y-%m-%d 2>/dev/null || date -v-1d +%Y-%m-%d)
-          FILE="monkos-ops/ops/briefings/BRIEFING_$(echo $DATE | tr -d '-').md"
+          DATE="${{ steps.gen.outputs.target_date }}"
+          FILE="${{ steps.gen.outputs.briefing_file }}"
           if [ -f "$FILE" ]; then
             BODY=$(cat "$FILE")
           else
@@ -54,7 +55,6 @@ jobs:
             --body "$BODY" \
             --label "일일보고")
           echo "url=$ISSUE_URL" >> $GITHUB_OUTPUT
-          echo "date=$DATE" >> $GITHUB_OUTPUT
 
       - name: Telegram notification
         if: success()
@@ -62,8 +62,8 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
-          DATE="${{ steps.issue.outputs.date }}"
-          FILE="monkos-ops/ops/briefings/BRIEFING_$(echo $DATE | tr -d '-').md"
+          DATE="${{ steps.gen.outputs.target_date }}"
+          FILE="${{ steps.gen.outputs.briefing_file }}"
           ALERTS=$(grep "^- 🔴\|^- 🟡" "$FILE" 2>/dev/null || echo "없음")
           ISSUE_URL="${{ steps.issue.outputs.url }}"
           MSG=$(printf '📊 <b>데일리 브리핑 %s</b>\n\n%s\n\n전문: %s' "$DATE" "$ALERTS" "$ISSUE_URL")
