@@ -68,6 +68,8 @@ status: active
 | 05/09 | 민아 | **iOS 네이티브 앱 전환 제안서** — SwiftUI 6화면, Phase 1 크롭 무료 → Phase 2 AI 통합, StoreKit IAP $1/컷 | [PROPOSAL_20260509_민아_IDPhoto_iOS네이티브앱_제안서.md](../proposals/PROPOSAL_20260509_민아_IDPhoto_iOS네이티브앱_제안서.md) | ✅ |
 | 05/09 | 작가님 | **iOS 앱 로드맵 승인** — PF_CROP 확장으로 편입. Phase 1(크롭 무료) iMac 코드+M1 빌드 분리 운용. Apple Developer 가입 완료 확인 | — | ✅ |
 | 05/12 | 쌍아 | **Xcode 15.2 설치 + MonkosCrop 프로젝트 생성** — SwiftUI MVP 4파일 (SpecData 9국, CropEngine Vision 얼굴인식, CropView 결과+저장, ContentView 홈+피커). Preview 렌더링 정상. Simulator는 iMac Intel 메모리 한계 → M1/M2 빌드로 분리 결정 | apps/MonkosCrop/ | ⏳ |
+| 05/12 | 쌍아 | **Xcode Build Succeeded 확인** (iPhone SE 3rd gen 타겟). Preview paused 상태. 실기기 테스트 검토 — 작가님 아이폰 17(iOS 19) vs Xcode 15.2(iOS 17 지원 한계) = 실기기 연결 불가 판정. **결론: M1에 최신 Xcode 17.x 설치 필수** (iMac Intel+Ventura → Xcode 15.2가 맥스) | — | ⏳ |
+| 05/12 | 막내1 | **iOS vs Android 네이티브 API 비교 분석** — 20개 영역×7개 항목 데이터표. iOS 핵심 4기능(얼굴인식/배경제거/이미지처리/ML추론) 압도적 우위 확인. 번들 56MB→0MB, 배경제거 80배 속도차. Android NNAPI deprecated 주의 | [REPORT](../reports/2026-05/REPORT_20260512_막내_iOS안드로이드_네이티브API비교분석.md) | ✅ |
 
 ---
 
@@ -178,6 +180,8 @@ us-passport (51×51 정사각형), india-passport (51×51, 단 우리 정본은 
 | 2-K | 크롭 완료 퍼널 (텔레그램 공유 + MONKOS OG) | ❌ | — | Web Share API |
 | 2-L | 스토어 리스팅 에셋 (스크린샷/설명문/키워드) | ❌ | — | 한/일/영 localization |
 | 2-M | TWA/Capacitor 빌드 + 스토어 제출 | ❌ | — | 계정 인증 완료 후 |
+| 2-N | **iOS 네이티브 앱 (SwiftUI + Vision)** — MonkosCrop Xcode 프로젝트 생성, MVP 4파일 작성 | ⏳ | 쌍아 5/12 | apps/MonkosCrop/ |
+| 2-O | M1에 Xcode 17.x 설치 + 아이폰 17 실기기 빌드/테스트 환경 구축 | ❌ | — | iMac Intel에서는 Xcode 15.2 한계 |
 
 #### 배경 제거 엔진 비교 (04-30 PoC)
 
@@ -424,3 +428,4 @@ us-passport (51×51 정사각형), india-passport (51×51, 단 우리 정본은 
 | FaceMesh 정확도 한계 | 저 | 사진 품질 가이드 + 재촬영 안내 |
 | 독립 도메인 결정 지연 | 저 | /crop으로 운영 충분, 도메인 분리는 트래픽 기반 판단 |
 | CITADEL SEO 연동 의존 | 저 | 크롭 규격 허브는 CITADEL Phase 1에서 처리됨 |
+| iOS 빌드 환경 분리 | 고 | iMac Intel(Ventura) → Xcode 15.2 한계, 아이폰 17(iOS 19) 미지원. M1에 Xcode 17.x 필수. 코드=iMac, 빌드=M1 분리 운용 |
