@@ -15,6 +15,9 @@ if sys.platform == "win32":
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
     sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
 
+os.environ["HF_HUB_DOWNLOAD_TIMEOUT"] = "300"
+os.environ["TRANSFORMERS_OFFLINE"] = "0"
+
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
@@ -156,11 +159,16 @@ def main():
 
     results = []
     for m in MODELS:
-        result = benchmark_model(m)
-        if result:
-            results.append(result)
-            append_csv(result)
-            print(f"\n  -> CSV appended for {m['name']}")
+        try:
+            result = benchmark_model(m)
+            if result:
+                results.append(result)
+                append_csv(result)
+                print(f"\n  -> CSV appended for {m['name']}")
+        except Exception as e:
+            print(f"\n[SKIP] {m['name']} failed: {e}")
+            torch.cuda.empty_cache()
+            gc.collect()
 
     print(f"\n{'='*60}")
     print("SUMMARY")

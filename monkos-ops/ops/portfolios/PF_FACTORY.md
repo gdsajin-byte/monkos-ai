@@ -110,6 +110,10 @@ PF_AUTOPILOT (클라우드)          PF_FACTORY (로컬 GPU)
 | 05/11 | 4060/쌍아 | ComfyUI 현황 확인 — `C:\AI_Factory\` 존재, HelloWorldXL+RealVisXL+LoRA 3개+커스텀노드 5개+스크립트 11개 (인프라 보고서 보정) | — | ✅ |
 | 05/11 | 4060/쌍아 | `benchmark_llm.py` 작성 + 실행 시작 (Qwen3-1.7B, Gemma-3-4B, Phi-4-mini) — 세션 마감 시점 모델 다운로드 진행 중 | 스크립트 | ⏳ |
 | 05/11 | 4060/쌍아 | 세션 마감 — 종합 보고서 산출 | REPORT | ✅ |
+| 05/12 | 4060/쌍아 | Qwen3-1.7B 벤치마크 완료 — 25.9 tok/s, VRAM 3283MB. benchmarks.csv 첫 데이터 적립 | CSV 1행 | ✅ |
+| 05/12 | 4060/쌍아 | 팩토리 봇 텔레그램 보고 발신 성공 — 풀 사이클 검증 완료 (4060→Firebase→텔레그램→작가님) | — | ✅ |
+| 05/12 | 4060/쌍아 | devlog 001 작성: "4060에서 소형 LLM은 얼마나 쓸만한가" | devlog/001 | ✅ |
+| 05/12 | 4060/쌍아 | Gemma3(게이트)/Phi4(호환에러) 실패 → Qwen2.5-3B+Phi-3.5 대체 시도 → HF 비인증 rate limit으로 다운로드 지연 | — | ⚠️ |
 
 ---
 
