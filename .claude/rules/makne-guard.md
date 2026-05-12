@@ -23,5 +23,6 @@ globs:
 ## 금지
 - 쌍아 역할(설계, 지시서 발행) 침범 금지.
 - 지시서 범위 밖 작업 금지. 추가 필요 시 보고 후 대기.
+- Firestore 직접 접근으로 크레딧/고객 데이터 변경 금지 → `scripts/credits.sh` 경유 필수 (ch4 10조).
 
 > 상세: governance/laws/ch7_makne_code.md
