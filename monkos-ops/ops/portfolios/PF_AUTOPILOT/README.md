@@ -74,6 +74,8 @@ domain: 인프라
 | 05/11 | iMac/쌍아 | 팩토리 봇 체계 발굴 — notify.ps1 + Firebase(notifyWriter/updateAiStatus/getCommands). 텔레그램 4봇 체계 전수 정리 | — | ✅ |
 | 05/11 | 작가님 | **PF_FACTORY 발족** — 4060 GPU 팩토리 PF 분리. AUTOPILOT(클라우드) ↔ FACTORY(로컬 GPU) 짝 구조 확정 | PF_FACTORY.md | ✅ |
 | 05/12 | iMac/막내1 | Phase 2 품질 보정 2차 — 노이즈 제거 6건 (날짜 표기, URL 디코딩, SEO Known Issues, RSS 키워드 필터, 피드 정체 경고, 소규모 절대수치). workflow_dispatch 검증 완료 | BRIEFING_20260509.md (보정) | ✅ |
+| 05/12 | iMac/쌍아 | **날짜 불일치 버그 수정** — daily-briefing.yml의 Issue/텔레그램 step이 yesterday(5/10) 참조하여 옛날 브리핑 발송. GITHUB_OUTPUT으로 target_date 전달 방식 전환 | `a9b9adcb` | ✅ |
+| 05/12 | iMac/쌍아 | **채널 전환** — 팀봇(@monkos_team_bot)→팩토리봇(@monkos_factory_bot), 팀챗→작가님DM. GCP Cloud Functions에서 토큰 추출 → GitHub Secrets 갱신 | SECRET_INVENTORY.md | ✅ |
 
 ---
 
