@@ -7,6 +7,7 @@ import sys
 from datetime import date, timedelta
 from email.utils import parsedate_to_datetime
 from pathlib import Path
+from urllib.parse import unquote
 
 import requests
 from bs4 import BeautifulSoup
@@ -22,6 +23,13 @@ from google.oauth2.service_account import Credentials
 
 SCOPES_GA4 = ["https://www.googleapis.com/auth/analytics.readonly"]
 SCOPES_GSC = ["https://www.googleapis.com/auth/webmasters.readonly"]
+
+KNOWN_SEO_ISSUES = {
+    "https://monkos.ai/kr": 404,
+    "https://monkos.ai/jp": 404,
+    "https://monk.kr": 403,
+    "https://monk.kr/blog": 403,
+}
 
 PAGES = [
     "https://monkos.ai",
@@ -50,6 +58,7 @@ NEWS_SOURCES = [
         "name": "Google AI Blog",
         "category": "AI/기술",
         "rss": "https://blog.google/technology/ai/rss/",
+        "rss_keywords": ["AI", "Gemini", "model", "LLM", "machine learning", "neural", "DeepMind"],
     },
 ]
 
@@ -129,41 +138,59 @@ def fetch_gsc(key_json, site_url, target_date, compare_date):
 
 
 def seo_scan():
-    issues = []
+    new_issues = []
+    known_issues = []
+    recovered = []
     for url in PAGES:
         try:
             resp = requests.head(url, timeout=10, allow_redirects=True)
             if resp.status_code != 200:
-                issues.append(f"- 🔴 `{url}` → HTTP {resp.status_code}")
+                if url in KNOWN_SEO_ISSUES and KNOWN_SEO_ISSUES[url] == resp.status_code:
+                    known_issues.append(f"{url} {resp.status_code}")
+                else:
+                    new_issues.append(f"- 🔴 `{url}` → HTTP {resp.status_code}")
+            elif url in KNOWN_SEO_ISSUES:
+                recovered.append(f"- ✅ `{url}` 복구됨 (기존 {KNOWN_SEO_ISSUES[url]} → 200)")
         except requests.RequestException as e:
-            issues.append(f"- 🔴 `{url}` → 연결 실패: {e}")
-    return issues
+            new_issues.append(f"- 🔴 `{url}` → 연결 실패: {e}")
+    return {"new": new_issues, "known": known_issues, "recovered": recovered}
 
 
 def fetch_news():
     results = {"정부자금": [], "AI/기술": []}
+    stale_sources = []
 
     for source in NEWS_SOURCES:
         try:
             if "rss" in source:
-                items = fetch_rss(source["rss"], limit=3)
+                keywords = source.get("rss_keywords")
+                items = fetch_rss(source["rss"], limit=3, keywords=keywords)
             else:
                 items = fetch_bizinfo(source["url"], source["keywords"])
             results[source["category"]].extend(items)
+            if source["name"] == "Anthropic Blog" and items:
+                latest = items[0].get("date", "")
+                if latest and latest < (date.today() - timedelta(days=14)).isoformat():
+                    print(f"WARNING: Anthropic RSS 최신 기사 {latest} — 14일 초과 (피드 정체 의심)", file=sys.stderr)
+                    stale_sources.append(source["name"])
         except Exception as e:
             print(f"WARNING: {source['name']} 수집 실패 — {e}", file=sys.stderr)
             continue
 
-    return results
+    return results, stale_sources
 
 
-def fetch_rss(url, limit=3):
+def fetch_rss(url, limit=3, keywords=None):
     resp = requests.get(url, timeout=15)
     resp.raise_for_status()
     soup = BeautifulSoup(resp.content, "xml")
     items = []
-    for item in soup.find_all("item")[:limit]:
+    for item in soup.find_all("item"):
+        if len(items) >= limit:
+            break
         title = item.find("title").text.strip() if item.find("title") else ""
+        if keywords and not any(kw.lower() in title.lower() for kw in keywords):
+            continue
         link = item.find("link").text.strip() if item.find("link") else ""
         pub_date = item.find("pubDate")
         if pub_date:
@@ -207,7 +234,7 @@ def fetch_bizinfo(url, keywords):
     return items[:3]
 
 
-def detect_anomalies(ga4_today, ga4_compare, gsc_today, gsc_compare, seo_issues):
+def detect_anomalies(ga4_today, ga4_compare, gsc_today, gsc_compare, seo_result):
     alerts = []
 
     if ga4_compare["sessions"] > 0:
@@ -222,8 +249,9 @@ def detect_anomalies(ga4_today, ga4_compare, gsc_today, gsc_compare, seo_issues)
         if change <= -0.3:
             alerts.append(f"- 🔴 GSC 노출 전주 대비 {change*100:.0f}% 하락 ({gsc_compare['impressions']} → {gsc_today['impressions']})")
 
-    if seo_issues:
-        alerts.append(f"- 🔴 SEO 스캔 이상 {len(seo_issues)}건 감지")
+    new_seo = seo_result["new"]
+    if new_seo:
+        alerts.append(f"- 🔴 SEO 스캔 신규 이상 {len(new_seo)}건 감지")
 
     return alerts
 
@@ -231,13 +259,18 @@ def detect_anomalies(ga4_today, ga4_compare, gsc_today, gsc_compare, seo_issues)
 def pct_change(now, before):
     if before == 0:
         return "N/A" if now == 0 else "+∞"
+    if before < 10 and now < 10:
+        diff = now - before
+        sign = "+" if diff >= 0 else ""
+        return f"{sign}{diff}"
     change = (now - before) / before * 100
     sign = "+" if change >= 0 else ""
     return f"{sign}{change:.0f}%"
 
 
 def generate_briefing(ga4_today, ga4_compare, gsc_today, gsc_compare,
-                      top_queries, top_pages, seo_issues, news, alerts, target_date):
+                      top_queries, top_pages, seo_result, news, alerts,
+                      target_date, compare_date, stale_sources=None):
     lines = []
     lines.append("---")
     lines.append("type: briefing")
@@ -258,7 +291,7 @@ def generate_briefing(ga4_today, ga4_compare, gsc_today, gsc_compare,
 
     # 성과
     lines.append("## 📊 성과")
-    lines.append("| 지표 | 어제 | 전주 동요일 | 변동 |")
+    lines.append(f"| 지표 | {target_date} | {compare_date} | 변동 |")
     lines.append("|------|------|-----------|------|")
     lines.append(f"| GSC 클릭 | {gsc_today['clicks']:.0f} | {gsc_compare['clicks']:.0f} | {pct_change(gsc_today['clicks'], gsc_compare['clicks'])} |")
     lines.append(f"| GSC 노출 | {gsc_today['impressions']:.0f} | {gsc_compare['impressions']:.0f} | {pct_change(gsc_today['impressions'], gsc_compare['impressions'])} |")
@@ -280,16 +313,23 @@ def generate_briefing(ga4_today, ga4_compare, gsc_today, gsc_compare,
     lines.append("| 페이지 | 클릭 | 노출 | CTR |")
     lines.append("|--------|------|------|-----|")
     for row in top_pages:
-        p = row["keys"][0].replace("https://monkos.ai", "").replace("https://monk.kr", "monk.kr") or "/"
+        p = unquote(row["keys"][0].replace("https://monkos.ai", "").replace("https://monk.kr", "monk.kr")) or "/"
         lines.append(f"| {p} | {row['clicks']:.0f} | {row['impressions']:.0f} | {row['ctr']*100:.1f}% |")
     lines.append("")
 
     # SEO
     lines.append("## 🔧 SEO 스캔")
-    if seo_issues:
-        lines.extend(seo_issues)
+    new_seo = seo_result["new"]
+    known_seo = seo_result["known"]
+    recovered_seo = seo_result["recovered"]
+    if new_seo:
+        lines.extend(new_seo)
     else:
-        lines.append("- ✅ 전 페이지 정상")
+        lines.append("- ✅ 신규 이상 없음")
+    if recovered_seo:
+        lines.extend(recovered_seo)
+    if known_seo:
+        lines.append(f"- 🟡 기존 이슈 {len(known_seo)}건 유지 ({', '.join(known_seo)})")
     lines.append("")
 
     # 뉴스
@@ -309,6 +349,9 @@ def generate_briefing(ga4_today, ga4_compare, gsc_today, gsc_compare,
             lines.append(f"- [{item['title']}]({item['url']}){date_str}")
     else:
         lines.append("- (수집 건 없음)")
+    if stale_sources:
+        for s in stale_sources:
+            lines.append(f"- ⚠️ {s}: 피드 정체 (최신 기사 14일 초과)")
     lines.append("")
 
     # 참고
@@ -359,19 +402,20 @@ def main():
 
     # 축2: SEO
     print("[3/4] SEO 스캔...")
-    seo_issues = seo_scan()
+    seo_result = seo_scan()
 
     # 축3: 뉴스
     print("[4/4] 뉴스 수집...")
-    news = fetch_news()
+    news, stale_sources = fetch_news()
 
     # 축4: 이상 감지
-    alerts = detect_anomalies(ga4_today, ga4_compare, gsc_today, gsc_compare, seo_issues)
+    alerts = detect_anomalies(ga4_today, ga4_compare, gsc_today, gsc_compare, seo_result)
 
     # 생성
     content = generate_briefing(
         ga4_today, ga4_compare, gsc_today, gsc_compare,
-        top_queries, top_pages, seo_issues, news, alerts, target_date
+        top_queries, top_pages, seo_result, news, alerts,
+        target_date, compare_date, stale_sources
     )
 
     output_dir = Path("monkos-ops/ops/briefings")
