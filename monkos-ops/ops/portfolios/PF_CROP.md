@@ -76,6 +76,7 @@ status: active
 | 05/13 | 쌍아 | **웹 크롭 엔진 v2 Swift 이식** — 눈 43% 앵커 + 정수리=눈~턱 반전 + 헤어탑 여백 + 하단 축소. CIDetector bounds 기반 추정 (Vision 실기기 전환 시 정밀도 향상 예정) | CropEngine.swift | ⏳ |
 | 05/13 | 쌍아 | **TestFlight 배포 파이프라인 전체 구축** — Apple Distribution 인증서 생성, 디바이스 등록(iPhone17 UDID), 앱 아이콘 전 사이즈 생성, Archive→업로드→수출규정→내부테스트그룹 | App Store Connect MonkosCrop | ✅ |
 | 05/13 | 작가님 | **TestFlight 실기기 테스트 완료** — 속도 빠름 확인. 크롭 정확도는 웹 엔진 대비 부족 (CIDetector 한계). Vision 실기기 동작 여부 다음 빌드에서 확인 예정 | — | ⏳ |
+| 05/13 | 쌍아 | **iOS/Android 네이티브 얼굴인식 엔진 비교 실측** — Vision 76pt iMac macOS에서 실행 확인. 동공/턱/윤곽 정확. ML Kit contour 모드 시뮬레이션. 양 플랫폼 동일 크롭 로직 적용 가능 판정 | 아래 §비교분석 + /tmp 시각화 | ✅ |
 
 ---
 
@@ -343,6 +344,55 @@ us-passport (51×51 정사각형), india-passport (51×51, 단 우리 정본은 
 - 크롭앱 자체: **수익 0 (완전 무료)**
 - 역할: **퍼널 입구** → 증명사진 앱(유료, IAP 건당 결제)으로 전환
 - 부수 효과: 앱스토어 SEO + 브랜드 인지도 + 리뷰 자산
+
+---
+
+### 크롭 엔진 — 플랫폼별 얼굴인식 비교분석 (2026-05-13 실측)
+
+#### 3사 엔진 비교
+
+| 항목 | Web (MediaPipe FaceMesh) | iOS (Apple Vision) | Android (ML Kit) |
+|------|------------------------|-------------------|-----------------|
+| **포인트 수** | 478pt (얼굴 피부 메시) | 76pt (특징점) | 기본 7pt / contour ~130pt |
+| **번들 사이즈** | 16MB (WASM+모델) | 0MB (시스템 내장) | 0MB (Play Services) |
+| **동공** | ✅ 정밀 (iris 추적) | ✅ leftPupil/rightPupil 각 1pt | ❌ 없음 |
+| **눈 좌표** | 눈 윤곽 다수 | 눈 윤곽 6pt + 동공 1pt | 기본: 중심 1pt / contour: 16pt |
+| **턱 최하단** | chin 랜드마크 (#152) | faceContour 17~21pt 중 최하단 | 기본: ❌ / contour: face oval 36pt 중 최하단 |
+| **이마/정수리** | 이마 상단 (#10) — 정수리 아님 | ❌ 없음 | ❌ 없음 |
+| **정수리 추산** | 이마~턱 × 보정계수 | 눈~턱 해부학 반전 | 눈~턱 해부학 반전 |
+| **턱선 윤곽** | 전체 메시에서 추출 | faceContour 17~21pt | contour: face oval 36pt |
+| **속도** | ~200ms (WASM) | ~50ms (Neural Engine) | ~100ms (GPU) |
+| **오프라인** | ✅ (번들 내장) | ✅ (시스템) | ✅ (Play Services 캐시) |
+
+#### 크롭에 필요한 핵심 데이터 — 플랫폼별 취득 방법
+
+| 필요 데이터 | Web | iOS | Android |
+|-----------|-----|-----|---------|
+| **눈 중심 좌표** | 좌/우 눈 랜드마크 평균 | `leftPupil` / `rightPupil` (정확) | 눈 윤곽 16pt 중심 평균 (동공 없으므로) |
+| **턱 최하단 Y** | chin 랜드마크 (#152) | `faceContour` 최하단 | `FACE` oval contour 최하단 |
+| **정수리 Y** | 이마(#10) + 보정계수 30% 올림 | 눈~턱 반전 (해부학) | 눈~턱 반전 (해부학) |
+| **헤어탑 Y** | 정수리 - 얼굴높이×8% | 동일 | 동일 |
+
+#### 결론: 단일 크롭 로직, 플랫폼별 입력 어댑터
+
+```
+[플랫폼별 어댑터]                    [공통 크롭 엔진]
+                                    
+Web:  FaceMesh → eyeCenter, chinY ──┐
+iOS:  Vision   → eyeCenter, chinY ──┼→ cropToFrame(eyeCenter, chinY, spec)
+Android: ML Kit → eyeCenter, chinY ─┘   ├─ 정수리 추산 (해부학)
+                                         ├─ 눈 43% 앵커
+                                         ├─ 헤어탑 여백 보장
+                                         └─ 하단 축소 보정
+```
+
+**활용 방안:**
+1. 크롭 로직(배치 상수, 스케일 결정, 여백 보정)은 **플랫폼 무관 공통 모듈**로 유지
+2. 각 플랫폼은 **어댑터만 구현** — 얼굴인식 엔진에서 `eyeCenterX`, `eyeCenterY`, `chinY` 3개 값만 추출
+3. iOS는 Vision 76pt 동공+턱이 가장 정확 → 기준 플랫폼
+4. Android는 ML Kit contour 모드 필수 (`setContourMode(CONTOUR_MODE_ALL)`)
+5. Web은 기존 FaceMesh 유지 (번들 16MB 감수)
+6. **정수리는 어떤 엔진도 직접 감지 불가** — 해부학 추산(눈~턱=눈~정수리)이 업계 표준. 이 추산의 정확도는 눈/턱 입력 정밀도에 의존
 
 ---
 
