@@ -77,6 +77,13 @@ status: active
 | 05/13 | 쌍아 | **TestFlight 배포 파이프라인 전체 구축** — Apple Distribution 인증서 생성, 디바이스 등록(iPhone17 UDID), 앱 아이콘 전 사이즈 생성, Archive→업로드→수출규정→내부테스트그룹 | App Store Connect MonkosCrop | ✅ |
 | 05/13 | 작가님 | **TestFlight 실기기 테스트 완료** — 속도 빠름 확인. 크롭 정확도는 웹 엔진 대비 부족 (CIDetector 한계). Vision 실기기 동작 여부 다음 빌드에서 확인 예정 | — | ⏳ |
 | 05/13 | 쌍아 | **iOS/Android 네이티브 얼굴인식 엔진 비교 실측** — Vision 76pt iMac macOS에서 실행 확인. 동공/턱/윤곽 정확. ML Kit contour 모드 시뮬레이션. 양 플랫폼 동일 크롭 로직 적용 가능 판정 | 아래 §비교분석 + /tmp 시각화 | ✅ |
+| 05/13 | 클로드 디자인 | **V1 프로토 UI 제작** — iOS 26 Liquid Glass 디바이스 프레임, 다크 HUD 3시안(V1 Safe/V2 Cinematic/V3 Editorial), 7화면 풀 플로우(Landing→5Step→Thanks), Tweaks 패널, ko/en/ja i18n, MONKOS 검수 시퀀스 연출 | Desktop/CROP APP/ (JSX+HTML) | ✅ |
+| 05/13 | 작가님 | **V1 Safe 디자인 채택 + iOS 프로토 지시** — V1 다크 HUD 디자인으로 확정. Apple Vision으로 FaceMesh 대체하여 iOS 프로토앱 제작 지시 | — | ✅ |
+| 05/13 | 쌍아 | **V1 디자인 SwiftUI 이식 (특별승인)** — JSX 940줄 → SwiftUI 1,952줄(4파일). 7화면: Landing(데모 검수 루프)+Step1(6국 선택/검색)+Step2(갤러리 피커)+Step3(크롭 뷰포트+8단계 검수 애니+VERIFIED 스탬프)+Step4(배경)+Step5(결과+다운로드)+Thanks(AI Studio 프로모). V1 다크 HUD(#05080E/#00D4AA), ko/en/ja i18n, Vision 76pt + CropEngine 연동 | apps/MonkosCrop/ 4파일 교체 | ✅ |
+| 05/13 | 쌍아 | **크로스플랫폼 수정 + iMac macOS PoC 빌드** — `#if canImport(UIKit)` 조건부 컴파일. PlatformImage typealias(UIImage/NSImage). swiftc 직접 빌드 → /tmp/MonkosCrop.app 실행 성공 | Package.swift + 조건부 컴파일 | ✅ |
+| 05/13 | 쌍아 | **CGContext 좌표계 버그 수정** — ①뒤집힘: CGContext bottom-left origin에서 이미지 반전 → flippedRect 적용. ②크롭 위치 오차: CGContext drawRect 좌표 변환 불일치 → **CIImage 기반 렌더링으로 전면 교체** (crop→translate→scale→composite). 좌표 문제 근본 해결 | CropEngine.swift macOS 브랜치 | ✅ |
+| 05/13 | 쌍아 | **Apple Vision PersonSegmentation 배경 제거 구현** — `VNGeneratePersonSegmentationRequest(.accurate)` + `CIBlendWithMask` 합성. 마스크 1회 생성 후 캐시, 배경색 변경은 즉시 재합성. ISNet 40MB 번들 불필요 | CropEngine.swift | ✅ |
+| 05/13 | 작가님 | **1차 E2E 확인** — iMac macOS에서 V1 프로토 풀 플로우 테스트 완료. 크롭 정확도 확인(Vision 턱끝점 정확), 배경 제거 품질 ISNet 대비 **우위** 판정. 디테일 조정 필요하나 기본 흐름 동작 확인 | — | ✅ |
 
 ---
 
@@ -194,13 +201,18 @@ us-passport (51×51 정사각형), india-passport (51×51, 단 우리 정본은 
 | 2-R | TestFlight 배포 파이프라인 (인증서+디바이스+Archive+업로드) | ✅ | 쌍아 5/13 | 내부테스트 그룹 monktest |
 | 2-S | 실기기 TestFlight 테스트 | ✅ | 작가님 5/13 | 속도 양호, 크롭 정확도 개선 필요 |
 | 2-T | Vision 실기기 동작 확인 + 크롭 정밀도 개선 | ❌ | — | 다음 빌드 |
+| 2-U | **V1 디자인 프로토 (클로드 디자인)** — JSX 3시안, 7화면 풀 플로우 | ✅ | 클로드 디자인 5/13 | Desktop/CROP APP/ |
+| 2-V | **V1→SwiftUI 이식 + macOS PoC** — 7화면 풀 플로우, Vision 76pt, 크로스플랫폼 빌드 | ✅ | 쌍아 5/13 | iMac swiftc 빌드 |
+| 2-W | **Apple Vision 배경 제거** — PersonSegmentation, ISNet 대비 품질 우위, 번들 0MB | ✅ | 쌍아 5/13 | CropEngine.swift |
+| 2-X | **1차 E2E 테스트 통과** — macOS PoC에서 풀 플로우 동작 확인 | ✅ | 작가님 5/13 | 디테일 조정 남음 |
 
 #### 배경 제거 엔진 비교 (04-30 PoC)
 
 | 엔진 | 품질 | 속도 | 사이즈 | 판정 |
 |------|------|------|--------|------|
 | MediaPipe Selfie Segmentation | 거침 (머리카락 뭉개짐) | ~1초 | +3MB | ❌ 품질 부족 |
-| **@imgly/background-removal (ISNet)** | **준수 (포토샵 수준)** | **~5초 (캐시 후)** | **+40MB** | **✅ 채택** |
+| @imgly/background-removal (ISNet) | 준수 (포토샵 수준) | ~5초 (캐시 후) | +40MB | ✅ 웹용 채택 |
+| **Apple Vision PersonSegmentation** | **ISNet 대비 우위 (작가님 실측)** | **~1-2초** | **0MB (시스템 내장)** | **✅ iOS/macOS 채택 (5/13)** |
 
 #### 전수조사 결과 요약 (04-30)
 
@@ -456,6 +468,20 @@ Android: ML Kit → eyeCenter, chinY ─┘   ├─ 정수리 추산 (해부학
 - CFBundleIconName in Info.plist
 - 수출 규정 문서 답변
 - SSH에서 코드 서명 불가 → VNC GUI Archive 필수
+
+### 교훈 6: macOS CGContext 좌표계 — 땜질 vs 근본 해결 (2026-05-13)
+
+**현상**: macOS PoC에서 크롭 이미지 뒤집힘 + 턱 위치 오차
+**1차 시도(땜질)**: flippedRect Y 반전 → 이미지 정방향은 됐으나 crop 위치 어긋남. 턱 보정 마진(CHIN_EXTEND_RATIO) 추가 → 작가님 지적 "Vision은 턱끝점 잘 잡는데 억지로 내릴게 아니라 로직을 파악해야지"
+**근본 원인**: CGContext(bottom-left origin)에서 UIKit drawRect(top-left origin)을 그대로 사용 → 좌표 변환 불일치
+**근본 해결**: macOS 렌더링을 **CIImage 기반으로 전면 교체** — `CIImage.cropped(to:)` → `transformed` → `composited(over:)`. CIImage는 좌표 변환을 내부 처리하므로 flip 문제 원천 제거
+**교훈**: 좌표 문제에 보정 상수를 얹는 건 항상 틀린 방향. 좌표계 자체를 통일하거나, 좌표를 자동 처리하는 레이어(CIImage)로 이동하는 게 정답.
+
+### 교훈 7: Apple Vision PersonSegmentation > ISNet (2026-05-13)
+
+**현상**: 배경 제거 엔진으로 @imgly ISNet(40MB ONNX)을 웹에서 채택(4/30)했으나, iOS 앱에서는 번들 부담
+**발견**: `VNGeneratePersonSegmentationRequest(.accurate)` — 시스템 내장, 0MB, 1-2초, 품질 ISNet 대비 우위 (작가님 실측)
+**교훈**: 네이티브 앱에서는 플랫폼 내장 API를 먼저 평가할 것. 웹에서의 최선(ISNet)이 네이티브에서의 최선이 아닐 수 있다. iOS/macOS 앱 사이즈 60MB→20MB 이하 가능.
 
 ### 교훈 2: CSS/JS 경로 상대→절대
 
