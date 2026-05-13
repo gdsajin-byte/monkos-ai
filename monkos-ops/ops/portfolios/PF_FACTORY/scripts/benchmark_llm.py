@@ -35,9 +35,9 @@ PROMPTS = {
 }
 
 MODELS = [
-    {"id": "Qwen/Qwen3-1.7B", "name": "Qwen3-1.7B", "params": "1.7B", "quant": "fp16"},
+    {"id": "Qwen/Qwen2.5-3B-Instruct", "name": "Qwen2.5-3B", "params": "3B", "quant": "fp16"},
+    {"id": "microsoft/Phi-3.5-mini-instruct", "name": "Phi-3.5-mini", "params": "3.8B", "quant": "fp16"},
     {"id": "google/gemma-3-4b-it", "name": "Gemma-3-4B-it", "params": "4B", "quant": "fp16"},
-    {"id": "microsoft/Phi-4-mini-instruct", "name": "Phi-4-mini", "params": "3.8B", "quant": "fp16"},
 ]
 
 MAX_NEW_TOKENS = 200
