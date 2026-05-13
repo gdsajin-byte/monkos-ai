@@ -98,6 +98,15 @@ struct CropView: View {
     }
 
     private func processCrop() async {
+        print("[MonkosCrop] image size: \(image.size), scale: \(image.scale), orientation: \(image.imageOrientation.rawValue)")
+        print("[MonkosCrop] cgImage: \(image.cgImage != nil), cgImage size: \(image.cgImage.map { "\($0.width)x\($0.height)" } ?? "nil")")
+
+        if let data = image.jpegData(compressionQuality: 0.9) {
+            let path = FileManager.default.temporaryDirectory.appendingPathComponent("debug_input.jpg")
+            try? data.write(to: path)
+            print("[MonkosCrop] saved debug image to: \(path.path)")
+        }
+
         guard let face = await CropEngine.detectFace(in: image) else {
             errorMessage = "얼굴을 찾을 수 없습니다.\n정면 사진을 사용해 주세요."
             isProcessing = false

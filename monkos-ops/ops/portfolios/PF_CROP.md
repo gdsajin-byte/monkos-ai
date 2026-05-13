@@ -70,6 +70,12 @@ status: active
 | 05/12 | 쌍아 | **Xcode 15.2 설치 + MonkosCrop 프로젝트 생성** — SwiftUI MVP 4파일 (SpecData 9국, CropEngine Vision 얼굴인식, CropView 결과+저장, ContentView 홈+피커). Preview 렌더링 정상. Simulator는 iMac Intel 메모리 한계 → M1/M2 빌드로 분리 결정 | apps/MonkosCrop/ | ⏳ |
 | 05/12 | 쌍아 | **Xcode Build Succeeded 확인** (iPhone SE 3rd gen 타겟). Preview paused 상태. 실기기 테스트 검토 — 작가님 아이폰 17(iOS 19) vs Xcode 15.2(iOS 17 지원 한계) = 실기기 연결 불가 판정. **결론: M1에 최신 Xcode 17.x 설치 필수** (iMac Intel+Ventura → Xcode 15.2가 맥스) | — | ⏳ |
 | 05/12 | 막내1 | **iOS vs Android 네이티브 API 비교 분석** — 20개 영역×7개 항목 데이터표. iOS 핵심 4기능(얼굴인식/배경제거/이미지처리/ML추론) 압도적 우위 확인. 번들 56MB→0MB, 배경제거 80배 속도차. Android NNAPI deprecated 주의 | [REPORT](../reports/2026-05/REPORT_20260512_막내_iOS안드로이드_네이티브API비교분석.md) | ✅ |
+| 05/13 | 쌍아 | **M1 원격 빌드 파이프라인 구축** — Tailscale VNC(ping 8ms) + SSH xcodebuild. iMac 코드→scp→M1 빌드→시뮬레이터→VNC 확인 | — | ✅ |
+| 05/13 | 쌍아 | **M1 Xcode 26.5 시뮬레이터 빌드/실행 성공** — iPhone 17 Pro (iOS 26.5). Build Succeeded + 앱 실행 확인 | — | ✅ |
+| 05/13 | 쌍아 | **Vision 얼굴 인식 디버깅** — iOS 시뮬레이터 Vision CoreML "Could not create inference context" 발견. CheckedContinuation 이중 resume 크래시 해결. CIDetector(구형) fallback 적용으로 시뮬레이터 동작 확보 | — | ✅ |
+| 05/13 | 쌍아 | **웹 크롭 엔진 v2 Swift 이식** — 눈 43% 앵커 + 정수리=눈~턱 반전 + 헤어탑 여백 + 하단 축소. CIDetector bounds 기반 추정 (Vision 실기기 전환 시 정밀도 향상 예정) | CropEngine.swift | ⏳ |
+| 05/13 | 쌍아 | **TestFlight 배포 파이프라인 전체 구축** — Apple Distribution 인증서 생성, 디바이스 등록(iPhone17 UDID), 앱 아이콘 전 사이즈 생성, Archive→업로드→수출규정→내부테스트그룹 | App Store Connect MonkosCrop | ✅ |
+| 05/13 | 작가님 | **TestFlight 실기기 테스트 완료** — 속도 빠름 확인. 크롭 정확도는 웹 엔진 대비 부족 (CIDetector 한계). Vision 실기기 동작 여부 다음 빌드에서 확인 예정 | — | ⏳ |
 
 ---
 
@@ -180,8 +186,13 @@ us-passport (51×51 정사각형), india-passport (51×51, 단 우리 정본은 
 | 2-K | 크롭 완료 퍼널 (텔레그램 공유 + MONKOS OG) | ❌ | — | Web Share API |
 | 2-L | 스토어 리스팅 에셋 (스크린샷/설명문/키워드) | ❌ | — | 한/일/영 localization |
 | 2-M | TWA/Capacitor 빌드 + 스토어 제출 | ❌ | — | 계정 인증 완료 후 |
-| 2-N | **iOS 네이티브 앱 (SwiftUI + Vision)** — MonkosCrop Xcode 프로젝트 생성, MVP 4파일 작성 | ⏳ | 쌍아 5/12 | apps/MonkosCrop/ |
-| 2-O | M1에 Xcode 17.x 설치 + 아이폰 17 실기기 빌드/테스트 환경 구축 | ❌ | — | iMac Intel에서는 Xcode 15.2 한계 |
+| 2-N | **iOS 네이티브 앱 (SwiftUI + Vision)** — MonkosCrop Xcode 프로젝트 생성, MVP 4파일 작성 | ✅ | 쌍아 5/12 | apps/MonkosCrop/ |
+| 2-O | M1 Xcode 26.5 설치 + 원격 빌드 파이프라인 | ✅ | 쌍아 5/13 | VNC+SSH xcodebuild |
+| 2-P | Vision CoreML 시뮬레이터 미지원 → CIDetector fallback | ✅ | 쌍아 5/13 | 실기기 Vision 확인 필요 |
+| 2-Q | 웹 크롭 엔진 v2 Swift 이식 (눈앵커+정수리+여백) | ⏳ | 쌍아 5/13 | CIDetector→Vision 전환 시 완성 |
+| 2-R | TestFlight 배포 파이프라인 (인증서+디바이스+Archive+업로드) | ✅ | 쌍아 5/13 | 내부테스트 그룹 monktest |
+| 2-S | 실기기 TestFlight 테스트 | ✅ | 작가님 5/13 | 속도 양호, 크롭 정확도 개선 필요 |
+| 2-T | Vision 실기기 동작 확인 + 크롭 정밀도 개선 | ❌ | — | 다음 빌드 |
 
 #### 배경 제거 엔진 비교 (04-30 PoC)
 
@@ -373,6 +384,29 @@ us-passport (51×51 정사각형), india-passport (51×51, 단 우리 정본은 
 **원인**: main.js의 범용 링크 핸들러가 /crop을 외부 URL로 오인
 **대응**: main.js 가로채기 제거 핫픽스 `9abf398`
 
+### 교훈 3: iOS 시뮬레이터 Vision 미지원 (2026-05-13)
+
+**현상**: `VNDetectFaceRectanglesRequest` 실행 시 "Could not create inference context"
+**원인**: iOS 26.5 시뮬레이터에서 Vision의 CoreML 추론 엔진이 Neural Engine 없이 동작 불가
+**대응**: CIDetector(구형 얼굴 인식) fallback 적용. 실기기에서 Vision 정상 동작 기대 — 다음 빌드에서 확인
+**교훈**: 시뮬레이터에서 Vision/CoreML 의존 기능은 반드시 실기기 테스트 필요. CLI(macOS)에서 되는 것과 시뮬레이터에서 되는 것은 다르다.
+
+### 교훈 4: CheckedContinuation 이중 resume 크래시 (2026-05-13)
+
+**현상**: 사진 선택 시 앱 크래시 (`EXC_BREAKPOINT`)
+**원인**: `withCheckedContinuation` 콜백 + `try/catch` 조합에서 perform 에러 시 콜백과 catch 양쪽에서 resume 호출
+**대응**: Vision의 `perform`은 동기 메서드 → `withCheckedContinuation` 제거, 직접 호출로 단순화
+**교훈**: 동기 API를 불필요하게 async 래핑하면 continuation 관리 복잡도만 증가. 동기면 동기로 쓰자.
+
+### 교훈 5: TestFlight 배포 시 필요한 것 체크리스트 (2026-05-13)
+
+- Apple Distribution 인증서 (Manage Certificates에서 수동 생성)
+- 디바이스 UDID 등록 (Developer Portal → Devices)
+- 앱 아이콘 전 사이즈 (1024, 180, 167, 152, 120, 87, 80, 76, 60, 58, 40, 29, 20)
+- CFBundleIconName in Info.plist
+- 수출 규정 문서 답변
+- SSH에서 코드 서명 불가 → VNC GUI Archive 필수
+
 ### 교훈 2: CSS/JS 경로 상대→절대
 
 **현상**: /crop 하위에서 CSS/JS가 로딩 안 됨
@@ -428,4 +462,6 @@ us-passport (51×51 정사각형), india-passport (51×51, 단 우리 정본은 
 | FaceMesh 정확도 한계 | 저 | 사진 품질 가이드 + 재촬영 안내 |
 | 독립 도메인 결정 지연 | 저 | /crop으로 운영 충분, 도메인 분리는 트래픽 기반 판단 |
 | CITADEL SEO 연동 의존 | 저 | 크롭 규격 허브는 CITADEL Phase 1에서 처리됨 |
-| iOS 빌드 환경 분리 | 고 | iMac Intel(Ventura) → Xcode 15.2 한계, 아이폰 17(iOS 19) 미지원. M1에 Xcode 17.x 필수. 코드=iMac, 빌드=M1 분리 운용 |
+| ~~iOS 빌드 환경 분리~~ | ~~고~~ | ~~해결 (5/13): M1 Xcode 26.5 + VNC+SSH 원격 빌드 파이프라인 확립~~ |
+| Vision 시뮬레이터 미지원 | 중 | iOS 26.5 시뮬레이터에서 Vision CoreML 추론 불가. CIDetector fallback 적용. 실기기에서 Vision 동작 여부 확인 필요 |
+| 크롭 정확도 (CIDetector) | 고 | CIDetector는 faceBounds만 제공, 턱/눈 정밀 좌표 없음. Vision 전환 시 76개 랜드마크로 웹 엔진급 달성 가능 |

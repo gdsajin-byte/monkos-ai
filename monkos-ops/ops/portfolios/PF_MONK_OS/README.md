@@ -69,6 +69,14 @@ domain: "governance/infrastructure"
 | 2026-05-09 | iMac/쌍아 | CLAUDE.md 경량화 222→198줄 (디바이스맵→ch1참조, 규정참조→rules 이관) | 커밋 9dd4d0e | ✅ |
 | 2026-05-09 | iMac/쌍아 | monkos-chat Git 추적 해제 (.gitignore + git rm --cached) | 커밋 473583d | ✅ |
 | 2026-05-09 | iMac/쌍아 | rules 4개 신설 (session-log, pf-ops, git-safety, makne-guard) + deployment frontmatter 보강 | — | ✅ |
+| 2026-05-13 | iMac/쌍아 | **디바이스 인프라 정비 세션** — 전 디바이스 Claude Code 설정 전수 수집·정본화 | 아래 상세 | ✅ |
+| 2026-05-13 | iMac/막내1 | 디바이스 설정 전수 수집 (iMac/M1 완료, 4060 SSH키 미등록, M2 offline) | `monkos-ops/ops/devices/` 폴더 구조 + 4개 프로필 | ✅ |
+| 2026-05-13 | iMac/쌍아 | M1 SSH 호스트 등록 + SSH 키 등록 (비밀번호 없이 접속 가능) | `~/.ssh/config` m1 추가 | ✅ |
+| 2026-05-13 | iMac/쌍아 | M1 Tailscale VNC 화면 공유 연결 확인 (ping 8ms, P2P 직결) | — | ✅ |
+| 2026-05-13 | iMac/쌍아 | M1 Claude Code CLI 설치 (2.1.140) + model → opus-4-6[1m] 통일 | M1 `~/.claude/settings.json` | ✅ |
+| 2026-05-13 | iMac/쌍아 | 4060 설정값 전수 수집 (sshpass 경유) + DEVICE_PROFILE 갱신 | `devices/w4060/DEVICE_PROFILE.md` | ✅ |
+| 2026-05-13 | iMac/쌍아 | 4060 CLI 업데이트 (2.1.52→2.1.140) + model → opus-4-6[1m] 통일 | 4060 `settings.json` | ✅ |
+| 2026-05-13 | iMac/쌍아 | 디바이스 맵 현행화 — 운용 디바이스 3맥+iPhone, M2/M4 팀원용 보류 | `devices/README.md` | ✅ |
 
 ---
 
