@@ -9,6 +9,7 @@ struct CropView: View {
     @State private var faceDetected = false
     @State private var errorMessage: String?
     @State private var saved = false
+    @State private var visionInfo = ""
 
     var body: some View {
         VStack(spacing: 0) {
@@ -46,6 +47,9 @@ struct CropView: View {
                         Label("MONKOS 검수 통과", systemImage: "checkmark.seal.fill")
                             .font(.subheadline)
                             .foregroundStyle(.green)
+                        Text(visionInfo)
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
                     }
                 }
 
@@ -98,20 +102,13 @@ struct CropView: View {
     }
 
     private func processCrop() async {
-        print("[MonkosCrop] image size: \(image.size), scale: \(image.scale), orientation: \(image.imageOrientation.rawValue)")
-        print("[MonkosCrop] cgImage: \(image.cgImage != nil), cgImage size: \(image.cgImage.map { "\($0.width)x\($0.height)" } ?? "nil")")
-
-        if let data = image.jpegData(compressionQuality: 0.9) {
-            let path = FileManager.default.temporaryDirectory.appendingPathComponent("debug_input.jpg")
-            try? data.write(to: path)
-            print("[MonkosCrop] saved debug image to: \(path.path)")
-        }
-
         guard let face = await CropEngine.detectFace(in: image) else {
             errorMessage = "얼굴을 찾을 수 없습니다.\n정면 사진을 사용해 주세요."
             isProcessing = false
             return
         }
+
+        visionInfo = face.visionUsed ? "Vision 76pt" : "CIDetector fallback"
 
         faceDetected = true
 
