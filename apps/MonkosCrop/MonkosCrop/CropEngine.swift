@@ -19,6 +19,15 @@ extension UIImage {
 }
 #endif
 
+struct LandmarkPoints {
+    let faceContour: [CGPoint]
+    let leftEye: [CGPoint]
+    let rightEye: [CGPoint]
+    let nose: [CGPoint]
+    let medianLine: [CGPoint]
+    let outerLips: [CGPoint]
+}
+
 struct FaceDetectionResult {
     let eyeCenterX: CGFloat
     let eyeCenterY: CGFloat
@@ -26,6 +35,17 @@ struct FaceDetectionResult {
     let imageWidth: CGFloat
     let imageHeight: CGFloat
     let visionUsed: Bool
+    let leftEyeX: CGFloat
+    let leftEyeY: CGFloat
+    let rightEyeX: CGFloat
+    let rightEyeY: CGFloat
+    let rollDeg: CGFloat
+    let yawDeg: CGFloat
+    let landmarks: LandmarkPoints?
+
+    var tiltDeg: CGFloat {
+        atan2(rightEyeY - leftEyeY, rightEyeX - leftEyeX) * 180 / .pi
+    }
 }
 
 // ─── 배치 상수 (웹 크롭 엔진 v2 이식) ───
@@ -37,6 +57,11 @@ private let FACE_MIN_RATIO: CGFloat = 32.0 / 45.0
 private let BOTTOM_MIN_RATIO: CGFloat = 0.12
 
 class CropEngine {
+
+    static var lastCropX: CGFloat = 0
+    static var lastCropY: CGFloat = 0
+    static var lastCropW: CGFloat = 1
+    static var lastCropH: CGFloat = 1
 
     // MARK: - Background Removal (Apple Vision PersonSegmentation)
 
@@ -154,10 +179,35 @@ class CropEngine {
         let eyeCenterX = (leftEyePt.x + rightEyePt.x) / 2
         let eyeCenterY = (leftEyePt.y + rightEyePt.y) / 2
 
+        let rollDeg = (face.roll?.doubleValue ?? 0) * 180 / .pi
+        let yawDeg = (face.yaw?.doubleValue ?? 0) * 180 / .pi
+
+        func pts(_ region: VNFaceLandmarkRegion2D?) -> [CGPoint] {
+            guard let r = region else { return [] }
+            return r.normalizedPoints.map { pt in
+                CGPoint(
+                    x: (bounds.origin.x + pt.x * bounds.width) * imageW,
+                    y: (1 - (bounds.origin.y + pt.y * bounds.height)) * imageH
+                )
+            }
+        }
+        let lm = LandmarkPoints(
+            faceContour: pts(landmarks.faceContour),
+            leftEye: pts(landmarks.leftEye),
+            rightEye: pts(landmarks.rightEye),
+            nose: pts(landmarks.nose),
+            medianLine: pts(landmarks.medianLine),
+            outerLips: pts(landmarks.outerLips)
+        )
+
         return FaceDetectionResult(
             eyeCenterX: eyeCenterX, eyeCenterY: eyeCenterY,
             chinY: chinY, imageWidth: imageW, imageHeight: imageH,
-            visionUsed: true
+            visionUsed: true,
+            leftEyeX: leftEyePt.x, leftEyeY: leftEyePt.y,
+            rightEyeX: rightEyePt.x, rightEyeY: rightEyePt.y,
+            rollDeg: CGFloat(rollDeg), yawDeg: CGFloat(yawDeg),
+            landmarks: lm
         )
     }
 
@@ -184,7 +234,10 @@ class CropEngine {
         return FaceDetectionResult(
             eyeCenterX: eyeCenterX, eyeCenterY: eyeCenterY,
             chinY: chinY, imageWidth: imageW, imageHeight: imageH,
-            visionUsed: false
+            visionUsed: false,
+            leftEyeX: eyeCenterX - 30, leftEyeY: eyeCenterY,
+            rightEyeX: eyeCenterX + 30, rightEyeY: eyeCenterY,
+            rollDeg: 0, yawDeg: 0, landmarks: nil
         )
     }
 
@@ -262,6 +315,9 @@ class CropEngine {
             x: -cropX * scaleX, y: -cropY * scaleY,
             width: imageW * scaleX, height: imageH * scaleY
         )
+
+        lastCropX = cropX; lastCropY = cropY
+        lastCropW = cropW; lastCropH = cropH
 
         guard let cgImage = image.platformCGImage else { return nil }
 

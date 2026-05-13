@@ -144,21 +144,40 @@ struct BgOption: Identifiable, Hashable {
 
 // MARK: - InspectionState
 
+// phase: 0=idle, 1=측정시작, 2=눈, 3=턱, 4=정수리측정중, 5=정수리확인(정지), 6=분석, 7=결과(정지), 8=완료
 class InspectionState: ObservableObject {
     @Published var phase = 0
     private var timer: Timer?
 
-    var isRunning: Bool { phase > 0 && phase < 7 }
-    var isDone: Bool { phase == 7 }
+    var isDone: Bool { phase == 8 }
+    var isAtCrownConfirm: Bool { phase == 5 }
+    var isAtResult: Bool { phase == 7 }
 
     func start() {
         reset()
         phase = 1
-        timer = Timer.scheduledTimer(withTimeInterval: 0.7, repeats: true) { [weak self] t in
-            guard let self else { t.invalidate(); return }
-            if self.phase >= 7 { t.invalidate() }
-            else { self.phase += 1 }
+        scheduleNext()
+    }
+
+    private func scheduleNext() {
+        let delays: [Int: TimeInterval] = [1: 1.2, 2: 1.0, 3: 1.0, 4: 1.0, 6: 1.5]
+        guard let delay = delays[phase] else { return }
+        timer = Timer.scheduledTimer(withTimeInterval: delay, repeats: false) { [weak self] _ in
+            guard let self else { return }
+            self.phase += 1
+            self.scheduleNext()
         }
+    }
+
+    func confirmCrown() {
+        guard phase == 5 else { return }
+        phase = 6
+        scheduleNext()
+    }
+
+    func finalize() {
+        guard phase == 7 else { return }
+        phase = 8
     }
 
     func reset() {
@@ -326,12 +345,12 @@ private let i18n: [String: [String: String]] = [
     ],
 ]
 
-let phaseToasts: [Int: [String: String]] = [
-    2: ["ko": "눈 검출 · 기울기 0.3° ✓", "en": "Eyes · Tilt 0.3° ✓", "ja": "目検出 · 傾き 0.3° ✓"],
-    3: ["ko": "정면 ✓ · 시선축 정렬", "en": "Front-facing ✓", "ja": "正面 ✓ · 視線整列"],
-    4: ["ko": "입 다물기 ✓", "en": "Mouth closed ✓", "ja": "口閉じ ✓"],
-    5: ["ko": "얼굴 34.0mm · ICAO 범위 내", "en": "Face 34.0mm · ICAO ✓", "ja": "顔 34.0mm · ICAO内"],
-    6: ["ko": "좌우 밝기 균일 Δ4%", "en": "L/R balance Δ4%", "ja": "左右明るさ均一"],
+var phaseToasts: [Int: [String: String]] = [
+    2: ["ko": "눈 검출 · 기울기 측정", "en": "Eyes · Tilt measured", "ja": "目検出 · 傾き測定"],
+    3: ["ko": "정면 판정 · 시선축 확인", "en": "Front-facing check", "ja": "正面判定 · 視線確認"],
+    4: ["ko": "얼굴 크기 측정", "en": "Face size measured", "ja": "顔サイズ測定"],
+    5: ["ko": "ICAO 규격 확인", "en": "ICAO spec check", "ja": "ICAO規格確認"],
+    6: ["ko": "검수 완료", "en": "Inspection done", "ja": "検査完了"],
 ]
 
 // MARK: - Static Data

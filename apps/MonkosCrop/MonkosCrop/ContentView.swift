@@ -23,6 +23,10 @@ struct ContentView: View {
     @State private var errorMsg: String?
     @State private var saved = false
     @State private var selectedPhoto: PhotosPickerItem?
+    @State private var crownAdjust: CGFloat = 0
+    @State private var zoomAdjust: CGFloat = 0
+    @State private var panOffset: CGSize = .zero
+    @State private var panStart: CGSize = .zero
     @StateObject private var inspection = InspectionState()
 
     private var lang: String {
@@ -61,6 +65,15 @@ struct ContentView: View {
         }
         .preferredColorScheme(.dark)
         .animation(.easeInOut(duration: 0.25), value: screen)
+        #if os(macOS)
+        .buttonStyle(.plain)
+        .onAppear {
+            NSApplication.shared.windows.forEach { w in
+                w.backgroundColor = NSColor(red: 0.02, green: 0.03, blue: 0.055, alpha: 1)
+                w.isOpaque = true
+            }
+        }
+        #endif
     }
 
     // MARK: - Step 1 — Select
@@ -108,6 +121,7 @@ struct ContentView: View {
                 TextField(tr("search", lang), text: $search)
                     .font(.system(size: 12))
                     .foregroundStyle(V1.text)
+                    .textFieldStyle(.plain)
             }
             .padding(.horizontal, 12).padding(.vertical, 9)
             .background(RoundedRectangle(cornerRadius: 8).fill(V1.card))
@@ -186,6 +200,7 @@ struct ContentView: View {
                 }
                 .padding(.horizontal, 20)
             }
+            .scrollContentBackground(.hidden)
 
             AccentButton(title: "\(tr("use_spec", lang)) →") { screen = .step(2) }
                 .padding(.horizontal, 20).padding(.top, 8).padding(.bottom, 12)
@@ -351,7 +366,34 @@ struct ContentView: View {
         screen = .step(3)
     }
 
-    // MARK: - Step 3 — Crop + Inspect
+    // MARK: - Step 3 — Crop + Inspect (멘트 시퀀스)
+
+    private var inspectMessage: String {
+        switch inspection.phase {
+        case 1: return "귀하의 사진을 정밀 측정합니다."
+        case 2: return "눈 위치를 분석합니다."
+        case 3: return "턱선을 측정합니다."
+        case 4: return "정수리를 측정중…"
+        case 5: return "귀하의 정수리가 정확한지 확인해주세요.\n정수리는 헤어의 끝이 아닌 두상의 최고점이어야합니다."
+        case 6: return "데이터를 분석하고 있습니다."
+        case 7: return inspectResultMessage
+        case 8: return "검수가 완료되었습니다."
+        default: return ""
+        }
+    }
+
+    private var inspectResultMessage: String {
+        guard let f = faceResult else { return "분석 완료" }
+        var msgs: [String] = []
+        let faceMM = Double(metricFaceMM) ?? 33
+        if faceMM > 36 { msgs.append("얼굴이 규격보다 큽니다 (\(metricFaceMM)mm > 36mm)") }
+        else if faceMM < 32 { msgs.append("얼굴이 규격보다 작습니다 (\(metricFaceMM)mm < 32mm)") }
+        if abs(f.tiltDeg) > 3 { msgs.append("눈 기울기가 큽니다 (\(String(format: "%.1f", f.tiltDeg))°)") }
+        if abs(f.yawDeg) > 10 { msgs.append("정면이 아닙니다 (YAW \(String(format: "%.0f", abs(f.yawDeg)))°)") }
+        return msgs.isEmpty ? "모든 항목이 규격 범위 내입니다." : msgs.joined(separator: "\n")
+    }
+
+    @State private var showFineTune = false
 
     private var step3: some View {
         VStack(spacing: 0) {
@@ -366,7 +408,18 @@ struct ContentView: View {
                     .background(RoundedRectangle(cornerRadius: 4).fill(V1.card))
                     .overlay(RoundedRectangle(cornerRadius: 4).stroke(V1.border, lineWidth: 1))
             }
-            .padding(.horizontal, 14).padding(.bottom, 8)
+            .padding(.horizontal, 14).padding(.bottom, 4)
+
+            // 멘트
+            if inspection.phase > 0 {
+                Text(inspectMessage)
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundStyle(inspection.isAtCrownConfirm ? Color(hex: "FFB020") : V1.text)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 20).padding(.vertical, 6)
+                    .id(inspection.phase)
+                    .transition(.opacity)
+            }
 
             // Crop viewport
             ZStack {
@@ -374,24 +427,44 @@ struct ContentView: View {
                     Image(platformImage: img)
                         .resizable()
                         .aspectRatio(contentMode: .fill)
+                        .scaleEffect(1 + zoomAdjust)
+                        .offset(panOffset)
+                        .gesture(
+                            inspection.isAtCrownConfirm ?
+                            DragGesture()
+                                .onChanged { v in
+                                    panOffset = CGSize(
+                                        width: panStart.width + v.translation.width,
+                                        height: panStart.height + v.translation.height
+                                    )
+                                }
+                                .onEnded { _ in panStart = panOffset }
+                            : nil
+                        )
                 }
 
                 CornerBrackets()
-                FaceLandmarksOverlay(phase: inspection.phase)
+                FaceLandmarksOverlay(
+                    phase: inspection.phase,
+                    faceResult: faceResult,
+                    cropX: CropEngine.lastCropX,
+                    cropY: CropEngine.lastCropY,
+                    cropW: CropEngine.lastCropW,
+                    cropH: CropEngine.lastCropH,
+                    crownAdjust: $crownAdjust
+                )
 
                 // Status badge
                 VStack {
                     HStack {
-                        Text(inspection.isDone ? "PASS" : inspection.phase > 0 ? "SCANNING" : "READY")
+                        Text(inspection.isDone ? "PASS" : inspection.isAtResult ? "RESULT" : inspection.phase > 0 ? "SCAN" : "READY")
                             .font(.system(size: 8, weight: .bold, design: .monospaced))
                             .tracking(1)
                             .foregroundStyle(inspection.isDone ? Color(hex: "05080E") : V1.accent)
                             .padding(.horizontal, 7).padding(.vertical, 3)
                             .background(RoundedRectangle(cornerRadius: 4).fill(inspection.isDone ? V1.accent : .black.opacity(0.6)))
-
                         Spacer()
-
-                        Text("×1.00 · \(doc.size.replacingOccurrences(of: " mm", with: "mm"))")
+                        Text(doc.size.replacingOccurrences(of: " mm", with: "mm"))
                             .font(.system(size: 8, design: .monospaced))
                             .foregroundStyle(V1.muted)
                             .padding(.horizontal, 7).padding(.vertical, 3)
@@ -400,14 +473,6 @@ struct ContentView: View {
                     .padding(8)
                     Spacer()
                 }
-
-                // Phase toast
-                PhaseToast(phase: inspection.phase, lang: lang)
-
-                // Stamp
-                if inspection.isDone {
-                    VerifiedStamp()
-                }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .clipShape(RoundedRectangle(cornerRadius: 8))
@@ -415,37 +480,61 @@ struct ContentView: View {
             .shadow(color: V1.accent.opacity(0.2), radius: 10)
             .padding(.horizontal, 14)
 
-            // Metrics
+            // 메트릭 (phase 2부터 활성, 신호등 판정)
             HStack(spacing: 4) {
-                MetricBox(label: tr("crown_y", lang), value: "11.2", unit: "%", active: inspection.phase >= 5)
-                MetricBox(label: tr("eye_height", lang), value: "43.0", unit: "%", active: inspection.phase >= 2)
-                MetricBox(label: tr("chin_y", lang), value: "72.5", unit: "%", active: inspection.phase >= 5)
-                MetricBox(label: tr("face_size", lang), value: "34.0", unit: "mm", active: inspection.phase >= 5)
+                MetricBox(label: "EYE", value: metricEye, unit: "%", active: inspection.phase >= 2, signal: sigEye)
+                MetricBox(label: "HEAD", value: metricFaceMM, unit: "mm", active: inspection.phase >= 4, signal: sigHead)
+                MetricBox(label: "TOP", value: metricTop, unit: "%", active: inspection.phase >= 4, signal: sigTop)
+                MetricBox(label: "BTM", value: metricBottom, unit: "%", active: inspection.phase >= 4, signal: sigBtm)
             }
             .padding(.horizontal, 14).padding(.top, 8)
 
-            ICAORangeBar(lang: lang)
-                .padding(.horizontal, 14).padding(.top, 10)
-
-            // Actions
-            HStack(spacing: 6) {
-                Button { inspection.start() } label: {
-                    HStack(spacing: 5) {
-                        Text("⬢")
-                        Text(tr("inspect", lang))
+            // 하단 액션 (단계별)
+            Group {
+                if inspection.isAtCrownConfirm {
+                    HStack(spacing: 8) {
+                        Text("−").font(.system(size: 14, weight: .bold, design: .monospaced)).foregroundStyle(V1.muted)
+                        Slider(value: $zoomAdjust, in: -0.3...0.3, step: 0.01)
+                            .tint(V1.accent)
+                        Text("+").font(.system(size: 14, weight: .bold, design: .monospaced)).foregroundStyle(V1.muted)
+                        Text(String(format: "%.0f%%", (1 + zoomAdjust) * 100))
+                            .font(.system(size: 10, weight: .bold, design: .monospaced))
+                            .foregroundStyle(V1.accent)
+                            .frame(width: 36)
                     }
-                    .font(.system(size: 12, weight: .heavy))
-                    .foregroundStyle(V1.accent)
-                    .padding(.horizontal, 14).padding(.vertical, 11)
-                    .background(RoundedRectangle(cornerRadius: 10).fill(V1.accent.opacity(0.08)))
-                    .overlay(RoundedRectangle(cornerRadius: 10).stroke(V1.accent, lineWidth: 1.5))
-                }
-
-                AccentButton(title: "\(tr("next", lang)) →", enabled: inspection.isDone) {
-                    screen = .step(4)
+                    .padding(.horizontal, 14)
+                    AccentButton(title: "위치 확인 ✓") {
+                        inspection.confirmCrown()
+                    }
+                } else if inspection.isAtResult {
+                    HStack(spacing: 6) {
+                        Button {
+                            inspection.phase = 5
+                        } label: {
+                            Text("정밀 조정")
+                                .font(.system(size: 12, weight: .heavy))
+                                .foregroundStyle(V1.accent)
+                                .padding(.horizontal, 14).padding(.vertical, 11)
+                                .background(RoundedRectangle(cornerRadius: 10).fill(V1.accent.opacity(0.08)))
+                                .overlay(RoundedRectangle(cornerRadius: 10).stroke(V1.accent, lineWidth: 1.5))
+                        }
+                        AccentButton(title: "검수 완료 →") {
+                            inspection.finalize()
+                        }
+                    }
+                } else if inspection.isDone {
+                    AccentButton(title: "\(tr("next", lang)) →") {
+                        screen = .step(4)
+                    }
+                } else {
+                    Text(inspection.phase > 0 ? "측정 중…" : "")
+                        .font(.system(size: 11, design: .monospaced))
+                        .foregroundStyle(V1.dim)
+                        .frame(height: 50)
                 }
             }
-            .padding(.horizontal, 14).padding(.top, 10).padding(.bottom, 12)
+            .padding(.horizontal, 14).padding(.top, 8).padding(.bottom, 12)
+            .animation(.easeInOut(duration: 0.2), value: inspection.phase)
         }
         .onAppear {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
@@ -683,6 +772,58 @@ struct ContentView: View {
         }
     }
 
+    // MARK: - 크롭 메트릭 (정수리 드래그 연동)
+
+    private var eyePct: CGFloat {
+        guard let f = faceResult else { return 43 }
+        return (f.eyeCenterY - CropEngine.lastCropY) / CropEngine.lastCropH * 100
+    }
+
+    private var chinPct: CGFloat {
+        guard let f = faceResult else { return 80 }
+        return (f.chinY - CropEngine.lastCropY) / CropEngine.lastCropH * 100
+    }
+
+    private var crownPct: CGFloat {
+        let base = eyePct - (chinPct - eyePct)
+        return base + crownAdjust * 100
+    }
+
+    // 신호등 판정
+    private var sigEye: Signal {
+        let v = eyePct
+        if v >= 41 && v <= 45 { return .pass }
+        if v >= 40 && v <= 46 { return .warn }
+        return .fail
+    }
+    private var sigHead: Signal {
+        let v = Double(metricFaceMM) ?? 33
+        if v >= 33 && v <= 35 { return .pass }
+        if v >= 32 && v <= 36 { return .warn }
+        return .fail
+    }
+    private var sigTop: Signal {
+        let v = crownPct
+        if v >= 4 && v <= 10 { return .pass }
+        if v >= 2 && v <= 12 { return .warn }
+        return .fail
+    }
+    private var sigBtm: Signal {
+        let v = 100 - chinPct
+        if v >= 12 && v <= 22 { return .pass }
+        if v >= 10 && v <= 25 { return .warn }
+        return .fail
+    }
+
+    private var metricEye: String { String(format: "%.1f", eyePct) }
+    private var metricTop: String { String(format: "%.1f", crownPct) }
+    private var metricBottom: String { String(format: "%.1f", 100 - chinPct) }
+    private var metricFaceMM: String {
+        let facePct = chinPct - crownPct
+        let mm = facePct / 100 * doc.photoSpec.heightMM * (1 + zoomAdjust)
+        return String(format: "%.1f", mm)
+    }
+
     private var specDetails: [(String, String)] {
         [
             (tr("size", lang), doc.size),
@@ -840,6 +981,10 @@ struct ContentView: View {
         croppedImage = nil
         bgRemovedImage = nil
         personMask = nil
+        crownAdjust = 0
+        zoomAdjust = 0
+        panOffset = .zero
+        panStart = .zero
         faceResult = nil
         saved = false
         inspection.reset()
@@ -901,7 +1046,7 @@ struct LandingView: View {
                     .foregroundStyle(V1.accent.opacity(0.15))
 
                 CornerBrackets()
-                FaceLandmarksOverlay(phase: demoInsp.phase)
+                FaceLandmarksOverlay(phase: demoInsp.phase, crownAdjust: .constant(0))
 
                 VStack {
                     HStack {

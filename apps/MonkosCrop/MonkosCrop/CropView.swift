@@ -78,13 +78,26 @@ struct SpecBadge: View {
 
 // MARK: - MetricBox
 
+enum Signal { case neutral, pass, warn, fail
+    var color: Color {
+        switch self {
+        case .neutral: return V1.accent
+        case .pass: return Color(hex: "00D4AA")
+        case .warn: return Color(hex: "FFB020")
+        case .fail: return Color(hex: "E74C3C")
+        }
+    }
+}
+
 struct MetricBox: View {
     let label: String
     let value: String
     let unit: String
     let active: Bool
+    var signal: Signal = .neutral
 
     var body: some View {
+        let c = active ? signal.color : V1.dim
         VStack(spacing: 1) {
             Text(label.uppercased())
                 .font(.system(size: 8, weight: .bold, design: .monospaced))
@@ -97,7 +110,7 @@ struct MetricBox: View {
                         .font(.system(size: 8, weight: .semibold, design: .monospaced))
                 }
             }
-            .foregroundStyle(active ? V1.accent : V1.dim)
+            .foregroundStyle(c)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 7)
@@ -107,7 +120,7 @@ struct MetricBox: View {
         )
         .overlay(
             RoundedRectangle(cornerRadius: 8)
-                .stroke(active ? V1.accent.opacity(0.2) : V1.border, lineWidth: 1)
+                .stroke(active ? c.opacity(0.3) : V1.border, lineWidth: 1)
         )
     }
 }
@@ -143,68 +156,120 @@ struct CornerBrackets: View {
     }
 }
 
-// MARK: - FaceLandmarksOverlay
+// MARK: - FaceLandmarksOverlay (흰색 가로선 3개 + 꺽은선 라벨)
 
 struct FaceLandmarksOverlay: View {
     let phase: Int
+    var faceResult: FaceDetectionResult? = nil
+    var cropX: CGFloat = 0
+    var cropY: CGFloat = 0
+    var cropW: CGFloat = 1
+    var cropH: CGFloat = 1
+    @Binding var crownAdjust: CGFloat
+    @State private var dragStart: CGFloat = 0
+
+    private func toViewY(_ origY: CGFloat, vh: CGFloat) -> CGFloat {
+        (origY - cropY) / cropH * vh
+    }
 
     var body: some View {
         GeometryReader { geo in
-            let w = geo.size.width
-            let h = geo.size.height
-            let eyeY = h * 0.43
-            let lx = w * 0.40, rx = w * 0.60
-            let crownY = h * 0.06, chinY = h * 0.80
+            let vw = geo.size.width
+            let vh = geo.size.height
 
-            ZStack {
-                if phase >= 2 {
-                    Circle().fill(V1.orange).frame(width: 6, height: 6)
-                        .position(x: lx, y: eyeY)
-                    Circle().fill(V1.orange).frame(width: 6, height: 6)
-                        .position(x: rx, y: eyeY)
-                    DashedLine(from: CGPoint(x: w * 0.30, y: eyeY),
-                               to: CGPoint(x: w * 0.70, y: eyeY))
-                        .stroke(V1.orange.opacity(0.7), style: StrokeStyle(lineWidth: 0.8, dash: [3, 3]))
+            if let f = faceResult {
+                let eyeY = toViewY(f.eyeCenterY, vh: vh)
+                let chinY = toViewY(f.chinY, vh: vh)
+                let eyeToChin = chinY - eyeY
+                let crownY = (eyeY - eyeToChin) + crownAdjust * vh
+
+                ZStack {
+                    // Phase 2: EYE 라인
+                    if phase >= 2 {
+                        GuideLineShape(y: eyeY, vw: vw, labelSide: .right, hookUp: true)
+                            .stroke(.white.opacity(0.85), lineWidth: 0.8)
+                        Text("EYE")
+                            .font(.system(size: 8, weight: .bold, design: .monospaced))
+                            .foregroundStyle(.white.opacity(0.7))
+                            .position(x: vw - 28, y: eyeY - 18)
+                    }
+
+                    // Phase 4+: CROWN 라인
+                    if phase >= 4 {
+                        let crownColor: Color = phase >= 6 ? .white.opacity(0.85) : Color(hex: "FFB020")
+                        let crownStyle = phase >= 6
+                            ? StrokeStyle(lineWidth: 0.8)
+                            : StrokeStyle(lineWidth: 0.8, dash: [4, 3])
+                        GuideLineShape(y: crownY, vw: vw, labelSide: .left, hookUp: true)
+                            .stroke(crownColor, style: crownStyle)
+                        Text("CROWN")
+                            .font(.system(size: 8, weight: .bold, design: .monospaced))
+                            .foregroundStyle(crownColor)
+                            .position(x: 38, y: crownY - 18)
+                    }
+
+                    // Phase 5: 정수리 드래그 핸들 (확인 대기 중에만)
+                    if phase == 5 {
+                        Circle()
+                            .fill(V1.accent)
+                            .frame(width: 16, height: 16)
+                            .overlay(
+                                VStack(spacing: 1) {
+                                    Image(systemName: "chevron.up").font(.system(size: 5, weight: .bold))
+                                    Image(systemName: "chevron.down").font(.system(size: 5, weight: .bold))
+                                }
+                                .foregroundStyle(Color(hex: "05080E"))
+                            )
+                            .position(x: vw - 18, y: crownY)
+                            .gesture(
+                                DragGesture()
+                                    .onChanged { v in
+                                        let raw = dragStart + v.translation.height / vh
+                                        crownAdjust = max(-0.12, min(0.12, raw))
+                                    }
+                                    .onEnded { _ in dragStart = crownAdjust }
+                            )
+                    }
+
+                    // Phase 5: CHIN 라인
+                    if phase >= 5 {
+                        GuideLineShape(y: chinY, vw: vw, labelSide: .left, hookUp: false)
+                            .stroke(.white.opacity(0.85), lineWidth: 0.8)
+                        Text("CHIN")
+                            .font(.system(size: 8, weight: .bold, design: .monospaced))
+                            .foregroundStyle(.white.opacity(0.7))
+                            .position(x: 30, y: chinY + 18)
+                    }
                 }
-                if phase >= 3 {
-                    DashedLine(from: CGPoint(x: w * 0.5, y: h * 0.04),
-                               to: CGPoint(x: w * 0.5, y: h * 0.96))
-                        .stroke(V1.blue.opacity(0.5), style: StrokeStyle(lineWidth: 0.6, dash: [2, 4]))
-                    Ellipse()
-                        .stroke(V1.blue.opacity(0.6), lineWidth: 1)
-                        .frame(width: w * 0.34, height: h * 0.48)
-                        .position(x: w * 0.5, y: h * 0.47)
-                }
-                if phase >= 5 {
-                    DashedLine(from: CGPoint(x: w * 0.25, y: crownY),
-                               to: CGPoint(x: w * 0.75, y: crownY))
-                        .stroke(V1.accent.opacity(0.9), style: StrokeStyle(lineWidth: 1, dash: [3, 2]))
-                    DashedLine(from: CGPoint(x: w * 0.25, y: chinY),
-                               to: CGPoint(x: w * 0.75, y: chinY))
-                        .stroke(V1.accent.opacity(0.9), style: StrokeStyle(lineWidth: 1, dash: [3, 2]))
-                    Text("CROWN")
-                        .font(.system(size: 7, weight: .bold, design: .monospaced))
-                        .foregroundStyle(V1.accent)
-                        .position(x: w * 0.30, y: crownY - 8)
-                    Text("CHIN")
-                        .font(.system(size: 7, weight: .bold, design: .monospaced))
-                        .foregroundStyle(V1.accent)
-                        .position(x: w * 0.28, y: chinY + 10)
-                }
+                .animation(.easeOut(duration: 0.3), value: phase)
             }
-            .animation(.easeOut(duration: 0.3), value: phase)
         }
-        .allowsHitTesting(false)
     }
 }
 
-private struct DashedLine: Shape {
-    let from: CGPoint
-    let to: CGPoint
+// 가로선 + 끝에 꺽은선
+private struct GuideLineShape: Shape {
+    let y: CGFloat
+    let vw: CGFloat
+    let labelSide: LabelSide
+    let hookUp: Bool
+    enum LabelSide { case left, right }
+
     func path(in rect: CGRect) -> Path {
+        let margin: CGFloat = 10
+        let hookLen: CGFloat = 12
+
         var p = Path()
-        p.move(to: from)
-        p.addLine(to: to)
+        // 메인 가로선
+        p.move(to: CGPoint(x: margin, y: y))
+        p.addLine(to: CGPoint(x: vw - margin, y: y))
+
+        // 꺽은선 (라벨 쪽)
+        let hookX = labelSide == .left ? margin : vw - margin
+        let hookY = hookUp ? y - hookLen : y + hookLen
+        p.move(to: CGPoint(x: hookX, y: y))
+        p.addLine(to: CGPoint(x: hookX, y: hookY))
+
         return p
     }
 }
