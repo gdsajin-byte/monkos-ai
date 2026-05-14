@@ -2,98 +2,104 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://monk.kr/</loc>
-    <lastmod>2026-04-24</lastmod>
+    <lastmod>2026-05-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://monk.kr/monk_studio/monk_studio.html</loc>
-    <lastmod>2026-04-24</lastmod>
+    <lastmod>2026-05-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://monk.kr/monk_studio/id_photo/id_photo.html</loc>
-    <lastmod>2026-04-24</lastmod>
+    <lastmod>2026-05-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://monk.kr/monk_studio/id_photo/standard/standard.html</loc>
-    <lastmod>2026-04-24</lastmod>
+    <lastmod>2026-05-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://monk.kr/monk_studio/id_photo/premium/premium.html</loc>
-    <lastmod>2026-04-24</lastmod>
+    <lastmod>2026-05-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://monk.kr/monk_studio/id_photo/deluxe/deluxe.html</loc>
-    <lastmod>2026-04-24</lastmod>
+    <lastmod>2026-05-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://monk.kr/monk_studio/profile/profile.html</loc>
-    <lastmod>2026-04-24</lastmod>
+    <lastmod>2026-05-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://monk.kr/monk_studio/family/family.html</loc>
-    <lastmod>2026-04-24</lastmod>
+    <lastmod>2026-05-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://monk.kr/monk_studio/group/group.html</loc>
-    <lastmod>2026-04-24</lastmod>
+    <lastmod>2026-05-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://monk.kr/ai_lab/ai_lab.html</loc>
-    <lastmod>2026-04-24</lastmod>
+    <lastmod>2026-05-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://monk.kr/ai_lab/photolab/</loc>
-    <lastmod>2026-04-24</lastmod>
+    <lastmod>2026-05-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://monk.kr/ai_lab/image_pro/</loc>
-    <lastmod>2026-04-24</lastmod>
+    <lastmod>2026-05-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://monk.kr/ai_lab/model_agency/</loc>
-    <lastmod>2026-04-24</lastmod>
+    <lastmod>2026-05-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://monk.kr/ai_lab/lookbook/</loc>
-    <lastmod>2026-04-24</lastmod>
+    <lastmod>2026-05-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://monk.kr/Academy/academy.html</loc>
-    <lastmod>2026-04-24</lastmod>
+    <lastmod>2026-05-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://monk.kr/b2b/</loc>
-    <lastmod>2026-04-24</lastmod>
+    <lastmod>2026-05-14</lastmod>
     <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://monk.kr/debate/</loc>
+    <lastmod>2026-05-14</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
 </urlset>
