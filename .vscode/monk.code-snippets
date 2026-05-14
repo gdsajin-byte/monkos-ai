@@ -1,0 +1,94 @@
+{
+  "세션 로그 YAML": {
+    "scope": "markdown",
+    "prefix": "yaml-session",
+    "body": [
+      "---",
+      "type: session_log",
+      "date: $CURRENT_YEAR-$CURRENT_MONTH-$CURRENT_DATE",
+      "device: ${1:iMac}",
+      "agent: ${2:쌍아}",
+      "status: ${3|진행,마감|}",
+      "---",
+      "",
+      "$0"
+    ],
+    "description": "세션 로그 YAML frontmatter (ch3)"
+  },
+  "지시서 YAML": {
+    "scope": "markdown",
+    "prefix": "yaml-order",
+    "body": [
+      "---",
+      "type: order",
+      "date: $CURRENT_YEAR-$CURRENT_MONTH-$CURRENT_DATE",
+      "from: ${1:iMac/쌍아}",
+      "to: ${2:iMac/막내}",
+      "subject: ${3:제목}",
+      "status: ${4|대기,진행,완료|}",
+      "portfolio: ${5:~}",
+      "---",
+      "",
+      "# 지시서: $3",
+      "",
+      "$0"
+    ],
+    "description": "지시서 YAML frontmatter (ch4)"
+  },
+  "완료 보고서 YAML": {
+    "scope": "markdown",
+    "prefix": "yaml-completion",
+    "body": [
+      "---",
+      "type: completion",
+      "date: $CURRENT_YEAR-$CURRENT_MONTH-$CURRENT_DATE",
+      "device: ${1:iMac}",
+      "agent: ${2:막내1}",
+      "subject: ${3:제목}",
+      "order: ${4:ORDER_파일명}",
+      "status: 완료",
+      "---",
+      "",
+      "# 완료 보고: $3",
+      "",
+      "$0"
+    ],
+    "description": "완료 보고서 YAML frontmatter (ch3/ch4)"
+  },
+  "포트폴리오 YAML": {
+    "scope": "markdown",
+    "prefix": "yaml-pf",
+    "body": [
+      "---",
+      "type: portfolio",
+      "id: PF_${1:코드네임}",
+      "name: \"${2:$1}\"",
+      "subject: \"${3:한 줄 요약}\"",
+      "owner: 작가님",
+      "leads: \"${4:에이전트(역할)}\"",
+      "status: ${5|draft,active,blocked,paused,completed|}",
+      "---",
+      "",
+      "# PF_$1",
+      "",
+      "$0"
+    ],
+    "description": "포트폴리오 YAML frontmatter (ch4 9조)"
+  },
+  "KST 타임스탬프": {
+    "scope": "markdown",
+    "prefix": "ts-kst",
+    "body": [
+      "**[$CURRENT_YEAR-$CURRENT_MONTH-$CURRENT_DATE ${1:HH:MM} KST]**$0"
+    ],
+    "description": "KST 타임스탬프 블록 (헌법 3조 1항)"
+  },
+  "수발신 헤더": {
+    "scope": "markdown",
+    "prefix": "header-comm",
+    "body": [
+      "[$CURRENT_YEAR-$CURRENT_MONTH-$CURRENT_DATE ${1:HH:MM} KST] ${2:iMac}/${3:쌍아} → ${4:수신자}$0"
+    ],
+    "description": "수발신 헤더 (헌법 2조 2항)"
+  }
+}

@@ -79,6 +79,8 @@ status: active
 | 05/13 | 쌍아 | **iOS/Android 네이티브 얼굴인식 엔진 비교 실측** — Vision 76pt iMac macOS에서 실행 확인. 동공/턱/윤곽 정확. ML Kit contour 모드 시뮬레이션. 양 플랫폼 동일 크롭 로직 적용 가능 판정 | 아래 §비교분석 + /tmp 시각화 | ✅ |
 | 05/13 | 클로드 디자인 | **V1 프로토 UI 제작** — iOS 26 Liquid Glass 디바이스 프레임, 다크 HUD 3시안(V1 Safe/V2 Cinematic/V3 Editorial), 7화면 풀 플로우(Landing→5Step→Thanks), Tweaks 패널, ko/en/ja i18n, MONKOS 검수 시퀀스 연출 | Desktop/CROP APP/ (JSX+HTML) | ✅ |
 | 05/13 | 작가님 | **V1 Safe 디자인 채택 + iOS 프로토 지시** — V1 다크 HUD 디자인으로 확정. Apple Vision으로 FaceMesh 대체하여 iOS 프로토앱 제작 지시 | — | ✅ |
+| 05/14 | 막내1 | **웹 크롭 엔진 ↔ iOS V1 디자인 통합 설계 보고서** — crop.js 1163줄 정밀 분석(render/autoPlace/performCrop), iOS CropEngine 비교(패러다임 차이 5항·랜드마크 차이·좌표 변환), Step4 SwiftUI 구현 스펙(뷰 구조·CropState·computeMetrics·autoPlace 이식·performFinalCrop), 웹→SwiftUI 매핑 25항, 구현 5Phase 권고 | [REPORT](../reports/2026-05/REPORT_20260514_막내1_크롭앱_엔진통합설계.md) | ✅ |
+| 05/14 | 막내1 | **Step4 웹 크롭 엔진 통합 구현 완료** — "프레임 고정+사진 이동" 패러다임으로 전면 교체. PhotoSpec 확장(faceMin/Max/Target/pxW/pxH), CropState struct, cropAutoPlace(), computeMetrics(), GuideOverlay(Canvas+Crown pin drag), performFinalCrop(CSS transform 재현), 코칭 메시지 ko/en/ja. macOS swiftc 빌드 성공 | SpecData/CropView/ContentView.swift | ✅ |
 | 05/13 | 쌍아 | **V1 디자인 SwiftUI 이식 (특별승인)** — JSX 940줄 → SwiftUI 1,952줄(4파일). 7화면: Landing(데모 검수 루프)+Step1(6국 선택/검색)+Step2(갤러리 피커)+Step3(크롭 뷰포트+8단계 검수 애니+VERIFIED 스탬프)+Step4(배경)+Step5(결과+다운로드)+Thanks(AI Studio 프로모). V1 다크 HUD(#05080E/#00D4AA), ko/en/ja i18n, Vision 76pt + CropEngine 연동 | apps/MonkosCrop/ 4파일 교체 | ✅ |
 | 05/13 | 쌍아 | **크로스플랫폼 수정 + iMac macOS PoC 빌드** — `#if canImport(UIKit)` 조건부 컴파일. PlatformImage typealias(UIImage/NSImage). swiftc 직접 빌드 → /tmp/MonkosCrop.app 실행 성공 | Package.swift + 조건부 컴파일 | ✅ |
 | 05/13 | 쌍아 | **CGContext 좌표계 버그 수정** — ①뒤집힘: CGContext bottom-left origin에서 이미지 반전 → flippedRect 적용. ②크롭 위치 오차: CGContext drawRect 좌표 변환 불일치 → **CIImage 기반 렌더링으로 전면 교체** (crop→translate→scale→composite). 좌표 문제 근본 해결 | CropEngine.swift macOS 브랜치 | ✅ |
@@ -87,6 +89,22 @@ status: active
 | 05/13 | 쌍아 | **Phase 2 디테일 작업** — ①macOS 스타일 수정(buttonStyle/textFieldStyle/scrollContentBackground/NSWindow bg) ②VERIFIED 스탬프 제거 ③오버레이 흰색 가로선+꺽은선 라벨로 심플화 ④정수리 드래그 핸들 ⑤메트릭 실측 전환(EYE/HEAD/TOP/BTM) ⑥신호등 판정(초록/노랑/빨강) ⑦줌 슬라이더+사진 드래그 이동 | ContentView/CropView 다수 수정 | ✅ |
 | 05/13 | 쌍아 | **검수 시퀀스 재설계** — 자동 8단계→멘트 기반 단계별 시퀀스. 측정시작→눈→턱→정수리(노란점선)→정수리확인(사용자대기+드래그)→분석→결과(정밀조정/검수완료)→완료. InspectionState를 phase 5/7 자동정지 방식으로 | SpecData+ContentView | ✅ |
 | 05/13 | 작가님 | **Phase 2→3 방향 결정** — ①배경→크롭 순서 확정(줌 인/아웃 시 누끼 상태 필수) ②정밀 교정은 별도 분기(기본=자동→다운로드, 정밀=프레임 고정+원본 줌/패닝) ③기본 플로우는 간결하게, 전문가 기능은 옵션으로 | — | 방향 확정 |
+| 05/14 | 쌍아 | **Step 순서 재배치** — Step3(배경색선택+누끼) → Step4(측정+검수+교정) → Step5(완료). 원본 전체 누끼 후 프레임 안에서 교정, 크롭은 최종 승인 시점 | ContentView Step3/4 재구성 | ✅ |
+| 05/14 | 막내1 | **웹 크롭 엔진 ↔ iOS 통합 설계 보고서** — crop.js 1163줄 정독, render/autoPlace/performCrop 정밀 분석, 웹→SwiftUI 25항목 매핑, 5Phase 구현 계획. 핵심 발견: "프레임 고정+사진 이동" vs "사진 고정+영역 잘라냄" 패러다임 차이 | [REPORT](../reports/2026-05/REPORT_20260514_막내1_크롭앱_엔진통합설계.md) | ✅ |
+| 05/14 | 막내1 | **Step4 웹 엔진 통합 구현** — CropState(프레임좌표 랜드마크+imgOffset/Scale) + cropAutoPlace(웹 직역) + computeMetrics(실시간 수치) + GuideOverlay(Canvas 마스크+가이드선+핀+배지) + performFinalCrop(좌표역산+CIImage crop) | SpecData/CropView/ContentView 3파일 | ✅ |
+| 05/14 | 쌍아 | **드래그/커서/크롭 버그 수정** — GuideOverlay hitTest 분리, 상단1/4 정수리드래그+나머지 핸드커서, performFinalCrop 좌표 역산 수정 | ContentView | ✅ |
+| 05/14 | 작가님 | **크롭 결과 포토샵 검증 통과** — 여권규격 300dpi 확인 ✅. 중심선 개선 아이디어: medianLine 기반 + 1mm노랑/2mm빨강 + 스냅 자석 | — | ✅ |
+| 05/14 | 쌍아 | **중심선 개선 구현 (직접수정)** — CropState에 noseTip/mouthCenter 추가, faceCenterX=눈+코+입 3점 평균, centerSignal 1mm초록/2mm노랑/2mm+빨강, 0.3mm 자석 스냅 | SpecData/CropView/ContentView | ✅ |
+| 05/14 | 작가님 | **미국 여권 51×51 검증 통과** — 정사각형 크롭+출력 정상. Step5 프리뷰 프레임 하드코딩(35×45) 발견→규격 동적 비율로 수정 | — | ✅ |
+| 05/14 | 쌍아 | **캐나다 경고 시스템 구현** — DocSpec에 warning 필드(i18n) 추가, Step1에서 규격 선택 시 노란 경고 박스. 캐나다 전문사진사 필수 경고 | SpecData/ContentView | ✅ |
+| 05/14 | 쌍아 | **UK 여권 카드 추가** — 35×45mm, 29~34mm 얼굴, 600×750px, HMPO 표준 | SpecData | ✅ |
+| 05/14 | 막내2 | **여권/비자 규격 전수조사 v2** — 20개국 1차 출처 기반, 테이블 4종(ICAO 기본/통과국/별도 규정 전체 필드/앱 반영용), 사이즈 6종 발견, 순수 ICAO 통과국 사실상 없음 | [REPORT_v2](../reports/2026-05/REPORT_20260514_막내2_여권비자규격_전수조사v2.md) | ✅ |
+| 05/14 | 막내2 | **글로벌 경쟁사+ICAO 커버리지 분석** — 9개 경쟁사 비교, ICAO 비호환 ~30국 전수 발굴, Tier 1(4종)으로 ~170국 커버 가능, 경쟁사 "200국"=같은 규격 국가별 카운팅 확인 | [REPORT_경쟁사](../reports/2026-05/REPORT_20260514_막내2_글로벌여권규격_경쟁사+ICAO커버리지.md) | ✅ |
+| 05/14 | 작가님 | **경쟁사(AiPassportPhoto) 실사 비교** — 정수리를 헤어탑으로 잡는 문제 확인(우리는 두개골 추정+핀 드래그), 어깨 부족 시 재촬영 요구(우리는 줌아웃), 유료 $1.5~$11(우리는 무료). 중국 파일용량 40~120KB 범위 내 확인 | — | ✅ |
+| 05/14 | 쌍아 | **UI/UX 보정** — bgOptions 6종(미색·블루 추가), iPhone 크기 고정, 프레임 내 드래그 제한, 커버리지 코칭, faceTarget 33mm 통일(인도 37) | SpecData/ContentView | ✅ |
+| 05/14 | 막내2 | **여권/비자 분기 국가** — 7국 사이즈 분기(일본·인도·캐나다·터키·사우디·UAE·필리핀), 2국 배경분기, 8국 동일. 일본 비자 45×45 신규, 51×51이 비자 국제표준 | [REPORT_분기](../reports/2026-05/REPORT_20260514_막내2_여권비자분기국가.md) | ✅ |
+| 05/14 | 막내3 | **주요 10국 운전면허 규격** — 5국 여권동일, 4국 고유규격(JP 24×30, CN 22×32, VN/ID 30×40), 미국 현장촬영 | [REPORT_면허](../reports/2026-05/REPORT_20260514_막내3_주요국_운전면허규격.md) | ✅ |
+| 05/14 | 쌍아 | **SpecData 확장** — 싱가포르·인도 카드 추가, 전체 faceTarget 보정 적용 | SpecData.swift | ✅ |
 
 ---
 

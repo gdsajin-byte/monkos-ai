@@ -366,6 +366,79 @@ struct AccentButton: View {
     }
 }
 
+// MARK: - GuideOverlay (웹 crop.js SVG 오버레이 이식)
+
+struct GuideOverlay: View {
+    @Binding var state: CropState
+    let metrics: CropMetrics
+    let spec: PhotoSpec
+    @State private var crownDragBase: CGFloat? = nil
+
+    var body: some View {
+        GeometryReader { geo in
+            let w = geo.size.width, h = geo.size.height
+            let eyeY = (state.leftPupil.y + state.rightPupil.y) / 2
+            let cColor: Color = metrics.centerSignal == .pass ? .green.opacity(0.4) :
+                metrics.centerSignal == .warn ? .yellow.opacity(0.6) : .red.opacity(0.6)
+
+            Canvas { ctx, _ in
+                ctx.fill(Path(CGRect(x: 0, y: 0, width: w, height: max(0, state.crown.y))),
+                         with: .color(.black.opacity(0.35)))
+                ctx.fill(Path(CGRect(x: 0, y: state.chin.y, width: w, height: max(0, h - state.chin.y))),
+                         with: .color(.black.opacity(0.35)))
+
+                var cp = Path(); cp.move(to: CGPoint(x: 0, y: state.crown.y)); cp.addLine(to: CGPoint(x: w, y: state.crown.y))
+                ctx.stroke(cp, with: .color(metrics.faceSignal.color), lineWidth: 1)
+
+                var chp = Path(); chp.move(to: CGPoint(x: 0, y: state.chin.y)); chp.addLine(to: CGPoint(x: w, y: state.chin.y))
+                ctx.stroke(chp, with: .color(.white.opacity(0.5)), lineWidth: 0.8)
+
+                var ep = Path(); ep.move(to: CGPoint(x: 10, y: eyeY)); ep.addLine(to: CGPoint(x: w - 10, y: eyeY))
+                ctx.stroke(ep, with: .color(metrics.eyeSignal.color), lineWidth: 0.8)
+
+                var vp = Path(); vp.move(to: CGPoint(x: w / 2, y: 0)); vp.addLine(to: CGPoint(x: w / 2, y: h))
+                ctx.stroke(vp, with: .color(cColor), style: StrokeStyle(lineWidth: 1, dash: [4, 4]))
+            }
+
+            Circle().fill(metrics.faceSignal.color).frame(width: 18, height: 18)
+                .overlay(VStack(spacing: 1) {
+                    Image(systemName: "chevron.up").font(.system(size: 5, weight: .bold))
+                    Image(systemName: "chevron.down").font(.system(size: 5, weight: .bold))
+                }.foregroundStyle(Color(hex: "05080E")))
+                .position(x: w - 20, y: state.crown.y)
+                .gesture(DragGesture()
+                    .onChanged { v in
+                        if crownDragBase == nil { crownDragBase = state.crown.y }
+                        state.crown.y = max(2, min(state.chin.y - 20, crownDragBase! + v.translation.height))
+                    }
+                    .onEnded { _ in crownDragBase = nil })
+
+            VStack(spacing: 1) {
+                Text(String(format: "%.1fmm", metrics.faceMm))
+                    .font(.system(size: 10, weight: .heavy, design: .monospaced))
+                Text("/\(Int(spec.faceMin))~\(Int(spec.faceMax))")
+                    .font(.system(size: 7, design: .monospaced)).opacity(0.7)
+            }
+            .foregroundStyle(metrics.faceSignal.color)
+            .padding(.horizontal, 6).padding(.vertical, 3)
+            .background(RoundedRectangle(cornerRadius: 4).fill(V1.bg.opacity(0.85)))
+            .overlay(RoundedRectangle(cornerRadius: 4).stroke(metrics.faceSignal.color.opacity(0.5), lineWidth: 1))
+            .position(x: w / 2, y: (state.crown.y + state.chin.y) / 2)
+
+            Text("CROWN").font(.system(size: 7, weight: .bold, design: .monospaced))
+                .foregroundStyle(metrics.faceSignal.color.opacity(0.8))
+                .position(x: 32, y: state.crown.y - 10)
+            Text("CHIN").font(.system(size: 7, weight: .bold, design: .monospaced))
+                .foregroundStyle(.white.opacity(0.5))
+                .position(x: 26, y: state.chin.y + 10)
+            Text(String(format: "EYE %.0f%%", metrics.eyePct))
+                .font(.system(size: 7, weight: .bold, design: .monospaced))
+                .foregroundStyle(metrics.eyeSignal.color.opacity(0.8))
+                .position(x: w - 35, y: eyeY - 10)
+        }
+    }
+}
+
 // MARK: - ICAO Range Bar
 
 struct ICAORangeBar: View {

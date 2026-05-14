@@ -73,6 +73,8 @@
   "git.openRepositoryInParentFolders": "always",
 
   // ─── 터미널 (맥 최적화) ───
+  "terminal.integrated.commandRiskAssessment": true,
+  "terminal.integrated.outputCompression": true,
   "terminal.integrated.fontSize": 13,
   "terminal.integrated.fontFamily": "MesloLGS NF",
   "terminal.integrated.defaultProfile.osx": "zsh",

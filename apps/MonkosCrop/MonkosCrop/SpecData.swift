@@ -91,6 +91,11 @@ struct PhotoSpec: Identifiable, Hashable {
     let faceRatioMin: Double
     let faceRatioMax: Double
     let backgroundColor: String
+    let faceMin: Double
+    let faceMax: Double
+    let faceTarget: Double
+    let pxW: Double
+    let pxH: Double
     var aspectRatio: Double { widthMM / heightMM }
     var displaySize: String { "\(Int(widthMM))×\(Int(heightMM))mm" }
 }
@@ -114,17 +119,34 @@ struct DocSpec: Identifiable, Hashable {
     let group: String
     let headHeight: String
     let standard: String
+    var warning: [String: String]? = nil
 
     func name(_ l: String) -> String { names[l] ?? names["ko"] ?? id }
 
     var photoSpec: PhotoSpec {
         let n = size.replacingOccurrences(of: " mm", with: "").components(separatedBy: " × ")
+        let w = Double(n.first ?? "35") ?? 35
+        let h = Double(n.last ?? "45") ?? 45
+        let p = px.replacingOccurrences(of: " px", with: "").components(separatedBy: " × ")
+        let pw = Double(p.first ?? "413") ?? 413
+        let ph = Double(p.last ?? "531") ?? 531
+        let hh = headHeight.replacingOccurrences(of: " mm", with: "").replacingOccurrences(of: "–", with: "-")
+        let parts = hh.components(separatedBy: "-")
+        let fMin: Double, fMax: Double
+        if parts.count == 2,
+           let a = Double(parts[0].trimmingCharacters(in: .whitespaces)),
+           let b = Double(parts[1].trimmingCharacters(in: .whitespaces)) {
+            fMin = a; fMax = b
+        } else {
+            fMin = h * 0.6; fMax = h * 0.8
+        }
         return PhotoSpec(
             id: id, name: names["ko"] ?? id,
-            widthMM: Double(n.first ?? "35") ?? 35,
-            heightMM: Double(n.last ?? "45") ?? 45,
+            widthMM: w, heightMM: h,
             faceRatioMin: 0.50, faceRatioMax: 0.70,
-            backgroundColor: "#FFFFFF"
+            backgroundColor: "#FFFFFF",
+            faceMin: fMin, faceMax: fMax, faceTarget: max(33, fMin + 1),
+            pxW: pw, pxH: ph
         )
     }
 
@@ -244,6 +266,15 @@ private let i18n: [String: [String: String]] = [
         "tip1": "균일한 조명", "tip2": "단색 배경 권장",
         "tip3": "안경·모자 금지", "tip4": "정면, 무표정",
         "tip5": "그림자 없이", "tip6": "어깨까지 보이게",
+        "coach_ok": "모든 항목이 규격 범위 내입니다.",
+        "coach_small": "얼굴 크기 {v}mm — 범위 미달. 확대하세요.",
+        "coach_large": "얼굴 크기 {v}mm — 범위 초과. 축소하세요.",
+        "coach_eye_low": "눈 위치 {v}% — 허용(40~48%) 미달. 아래로 이동하세요.",
+        "coach_eye_high": "눈 위치 {v}% — 허용(40~48%) 초과. 위로 이동하세요.",
+        "coach_coverage": "어깨/팔 부위가 부족합니다. 하단 슬라이더를 +로 조정하세요.",
+        "coach_center": "좌우 중심 {v}mm 이탈. 반대쪽으로 이동하세요.",
+        "reset_crop": "↻ 초기화",
+        "crop_confirm": "이대로 크롭",
     ],
     "en": [
         "select_country": "Select Country",
@@ -293,6 +324,15 @@ private let i18n: [String: [String: String]] = [
         "tip1": "Even lighting", "tip2": "Plain background",
         "tip3": "No glasses or hats", "tip4": "Face forward, neutral",
         "tip5": "No shadows on face", "tip6": "Shoulders visible",
+        "coach_ok": "All metrics are within spec.",
+        "coach_small": "Face size {v}mm — below range. Zoom in.",
+        "coach_large": "Face size {v}mm — above range. Zoom out.",
+        "coach_eye_low": "Eye position {v}% — below 40~48%. Move down.",
+        "coach_eye_high": "Eye position {v}% — above 40~48%. Move up.",
+        "coach_coverage": "Shoulders/arms not fully visible. Use the slider (+) below.",
+        "coach_center": "Center offset {v}mm. Move to opposite side.",
+        "reset_crop": "↻ Reset",
+        "crop_confirm": "Crop this",
     ],
     "ja": [
         "select_country": "国を選択",
@@ -342,6 +382,15 @@ private let i18n: [String: [String: String]] = [
         "tip1": "均一な照明", "tip2": "単色の背景",
         "tip3": "眼鏡・帽子なし", "tip4": "正面、無表情",
         "tip5": "影なし", "tip6": "肩まで写る",
+        "coach_ok": "すべての項目が規格範囲内です。",
+        "coach_small": "顔サイズ {v}mm — 範囲未満。拡大してください。",
+        "coach_large": "顔サイズ {v}mm — 範囲超過。縮小してください。",
+        "coach_eye_low": "目の位置 {v}% — 許容(40~48%)未満。下へ移動。",
+        "coach_eye_high": "目の位置 {v}% — 許容(40~48%)超過。上へ移動。",
+        "coach_coverage": "肩・腕が不足しています。下のスライダーを+へ調整してください。",
+        "coach_center": "左右中心 {v}mm 逸脱。反対側へ移動。",
+        "reset_crop": "↻ リセット",
+        "crop_confirm": "このままクロップ",
     ],
 ]
 
@@ -373,10 +422,10 @@ let purposeList: [(id: String, icon: String, names: [String: String])] = [
 let bgOptions: [BgOption] = [
     BgOption(id: "white", hex: "FFFFFF", names: ["ko": "백색", "en": "White", "ja": "白"]),
     BgOption(id: "offw",  hex: "F5F5F5", names: ["ko": "오프화이트", "en": "Off-white", "ja": "オフホワイト"]),
+    BgOption(id: "ivory", hex: "FFFFF0", names: ["ko": "미색", "en": "Ivory", "ja": "アイボリー"]),
     BgOption(id: "grey",  hex: "E0E0E0", names: ["ko": "회색", "en": "Grey", "ja": "グレー"]),
-    BgOption(id: "blue",  hex: "D6EAF8", names: ["ko": "연파랑", "en": "Light Blue", "ja": "淡い青"]),
-    BgOption(id: "navy",  hex: "1E3A5F", names: ["ko": "네이비", "en": "Navy", "ja": "ネイビー"]),
-    BgOption(id: "red",   hex: "E74C3C", names: ["ko": "빨강", "en": "Red", "ja": "赤"]),
+    BgOption(id: "ltblue", hex: "D6EAF8", names: ["ko": "연파랑", "en": "Light Blue", "ja": "淡い青"]),
+    BgOption(id: "blue",  hex: "7BA3C9", names: ["ko": "블루", "en": "Blue", "ja": "ブルー"]),
 ]
 
 let appCountries: [Country] = [
@@ -424,6 +473,14 @@ let appCountries: [Country] = [
                         size: "35 × 45 mm", px: "413 × 531 px", group: "A",
                         headHeight: "32–36 mm", standard: "ICAO 9303"),
             ]),
+    Country(id: "uk", flag: "🇬🇧",
+            names: ["ko": "영국", "en": "United Kingdom", "ja": "イギリス"],
+            docs: [
+                DocSpec(id: "uk-passport", type: "passport",
+                        names: ["ko": "여권", "en": "Passport", "ja": "パスポート"],
+                        size: "35 × 45 mm", px: "600 × 750 px", group: "A",
+                        headHeight: "29–34 mm", standard: "HMPO"),
+            ]),
     Country(id: "china", flag: "🇨🇳",
             names: ["ko": "중국", "en": "China", "ja": "中国"],
             docs: [
@@ -442,9 +499,183 @@ let appCountries: [Country] = [
                 DocSpec(id: "ca-passport", type: "passport",
                         names: ["ko": "여권", "en": "Passport", "ja": "パスポート"],
                         size: "50 × 70 mm", px: "590 × 826 px", group: "D",
-                        headHeight: "31–36 mm", standard: "PPTC-203"),
+                        headHeight: "31–36 mm", standard: "PPTC-203",
+                        warning: [
+                            "ko": "⚠️ 캐나다 여권은 전문 사진사 촬영이 의무입니다. 사진 뒷면에 사진사 서명·주소·촬영일자 기재 필수. 본 앱은 디지털 크롭 도구이며, 최종 제출용으로는 공인 사진관 이용을 권장합니다.",
+                            "en": "⚠️ Canada requires photos taken by a commercial photographer. Photographer's signature, address, and date must be on the back. This app is a digital crop tool — use a certified photo studio for final submission.",
+                            "ja": "⚠️ カナダのパスポートは商業写真家による撮影が義務です。写真裏面に撮影者の署名・住所・撮影日の記載が必須。本アプリはデジタルクロップツールです。最終提出には公認写真館をご利用ください。"
+                        ]),
+            ]),
+    Country(id: "singapore", flag: "🇸🇬",
+            names: ["ko": "싱가포르", "en": "Singapore", "ja": "シンガポール"],
+            docs: [
+                DocSpec(id: "sg-passport", type: "passport",
+                        names: ["ko": "여권", "en": "Passport", "ja": "パスポート"],
+                        size: "35 × 45 mm", px: "400 × 514 px", group: "A",
+                        headHeight: "25–35 mm", standard: "ICA"),
+            ]),
+    Country(id: "india", flag: "🇮🇳",
+            names: ["ko": "인도", "en": "India", "ja": "インド"],
+            docs: [
+                DocSpec(id: "in-passport", type: "passport",
+                        names: ["ko": "여권", "en": "Passport", "ja": "パスポート"],
+                        size: "51 × 51 mm", px: "630 × 810 px", group: "C",
+                        headHeight: "36–41 mm", standard: "ICAO (2025.9~)"),
             ]),
 ]
+
+// MARK: - CropState (웹 crop.js pts + imgPos + imgScale 이식)
+
+struct CropState {
+    var crown: CGPoint = .zero
+    var chin: CGPoint = .zero
+    var leftPupil: CGPoint = .zero
+    var rightPupil: CGPoint = .zero
+    var noseTip: CGPoint = .zero
+    var mouthCenter: CGPoint = .zero
+    var imgOffset: CGSize = .zero
+    var imgScale: CGFloat = 1.0
+    var natW: CGFloat = 1
+    var natH: CGFloat = 1
+
+    var faceCenterX: CGFloat {
+        let eyeMid = (leftPupil.x + rightPupil.x) / 2
+        return (eyeMid + noseTip.x + mouthCenter.x) / 3
+    }
+
+    mutating func moveAll(dx: CGFloat, dy: CGFloat) {
+        crown.x += dx; crown.y += dy
+        chin.x += dx; chin.y += dy
+        leftPupil.x += dx; leftPupil.y += dy
+        rightPupil.x += dx; rightPupil.y += dy
+        noseTip.x += dx; noseTip.y += dy
+        mouthCenter.x += dx; mouthCenter.y += dy
+    }
+
+    mutating func rescaleAll(newScale: CGFloat, oldScale: CGFloat, cx: CGFloat, cy: CGFloat) {
+        let r = newScale / oldScale
+        func rs(_ pt: CGPoint) -> CGPoint { CGPoint(x: cx + (pt.x - cx) * r, y: cy + (pt.y - cy) * r) }
+        crown = rs(crown); chin = rs(chin)
+        leftPupil = rs(leftPupil); rightPupil = rs(rightPupil)
+        noseTip = rs(noseTip); mouthCenter = rs(mouthCenter)
+        imgScale = newScale
+    }
+}
+
+struct CropMetrics {
+    let faceMm: CGFloat
+    let topMm: CGFloat
+    let bottomMm: CGFloat
+    let eyeRatio: CGFloat
+    let eyePct: CGFloat
+    let centerOffsetMm: CGFloat
+    let faceSignal: Signal
+    let eyeSignal: Signal
+    let topSignal: Signal
+    let btmSignal: Signal
+    let centerSignal: Signal
+    let isBlocked: Bool
+    var coverageShort: Bool = false
+}
+
+func computeMetrics(state: CropState, frameH: CGFloat, spec: PhotoSpec) -> CropMetrics {
+    let MM = frameH / spec.heightMM
+    let frameW = frameH * spec.widthMM / spec.heightMM
+    let faceMm = (state.chin.y - state.crown.y) / MM
+    let topMm = state.crown.y / MM
+    let bottomMm = spec.heightMM - topMm - faceMm
+    let eyeY = (state.leftPupil.y + state.rightPupil.y) / 2
+    let eyeRatio = eyeY / frameH
+    let centerOffMm = abs(state.faceCenterX - frameW / 2) / MM
+
+    let fs: Signal = faceMm >= 33 && faceMm <= 35 ? .pass : faceMm >= spec.faceMin && faceMm <= spec.faceMax ? .warn : .fail
+    let es: Signal = eyeRatio >= 0.43 && eyeRatio <= 0.45 ? .pass : eyeRatio >= 0.40 && eyeRatio <= 0.48 ? .warn : .fail
+    let ts: Signal = topMm >= 3 && topMm <= 7 ? .pass : topMm >= 2 && topMm <= 10 ? .warn : .fail
+    let bs: Signal = bottomMm >= 4 && bottomMm <= 10 ? .pass : bottomMm >= 2 && bottomMm <= 12 ? .warn : .fail
+    let cs: Signal = centerOffMm < 1 ? .pass : centerOffMm < 2 ? .warn : .fail
+    let blocked = faceMm < spec.faceMin || faceMm > spec.faceMax || eyeRatio < 0.40 || eyeRatio > 0.48
+
+    return CropMetrics(faceMm: faceMm, topMm: topMm, bottomMm: bottomMm,
+                       eyeRatio: eyeRatio, eyePct: eyeRatio * 100,
+                       centerOffsetMm: centerOffMm,
+                       faceSignal: fs, eyeSignal: es, topSignal: ts, btmSignal: bs,
+                       centerSignal: cs, isBlocked: blocked)
+}
+
+func cropAutoPlace(face: FaceDetectionResult, frameW: CGFloat, frameH: CGFloat, spec: PhotoSpec) -> CropState {
+    let MM = frameH / spec.heightMM
+    let natW = face.imageWidth, natH = face.imageHeight
+    let covS = max(frameW / natW, frameH / natH)
+    let baseW = natW * covS, baseH = natH * covS
+    let offX = (baseW - frameW) / 2, offY = (baseH - frameH) / 2
+
+    func toC(_ x: CGFloat, _ y: CGFloat) -> CGPoint { CGPoint(x: x * covS - offX, y: y * covS - offY) }
+
+    let crownY = face.eyeCenterY - (face.chinY - face.eyeCenterY)
+    let crC = toC(face.eyeCenterX, crownY)
+    let chC = toC(face.eyeCenterX, face.chinY)
+    let elC = toC(face.leftEyeX, face.leftEyeY)
+    let erC = toC(face.rightEyeX, face.rightEyeY)
+
+    let faceHC = chC.y - crC.y
+    let targetPx = spec.faceTarget * MM
+    let sc = targetPx / faceHC
+
+    let eyeYC = (elC.y + erC.y) / 2
+    let posY = 0.43 * frameH - frameH / 2 - (eyeYC - frameH / 2) * sc
+    let faceCXC = (elC.x + erC.x) / 2
+    let posX = -(faceCXC - frameW / 2) * sc
+
+    func toF(_ cp: CGPoint) -> CGPoint {
+        CGPoint(x: frameW / 2 + (cp.x - frameW / 2) * sc + posX,
+                y: frameH / 2 + (cp.y - frameH / 2) * sc + posY)
+    }
+
+    // 코/입 좌표 (landmarks 있으면 사용, 없으면 눈-턱 사이 추정)
+    let noseImg: CGPoint
+    let mouthImg: CGPoint
+    if let lm = face.landmarks, !lm.nose.isEmpty, !lm.outerLips.isEmpty {
+        let nosePt = lm.nose[lm.nose.count / 2]
+        noseImg = nosePt
+        let mx = lm.outerLips.map(\.x).reduce(0, +) / CGFloat(lm.outerLips.count)
+        let my = lm.outerLips.map(\.y).reduce(0, +) / CGFloat(lm.outerLips.count)
+        mouthImg = CGPoint(x: mx, y: my)
+    } else {
+        let midX = face.eyeCenterX
+        noseImg = CGPoint(x: midX, y: face.eyeCenterY + (face.chinY - face.eyeCenterY) * 0.45)
+        mouthImg = CGPoint(x: midX, y: face.eyeCenterY + (face.chinY - face.eyeCenterY) * 0.75)
+    }
+    let noseC = toC(noseImg.x, noseImg.y)
+    let mouthC = toC(mouthImg.x, mouthImg.y)
+
+    return CropState(crown: toF(crC), chin: toF(chC),
+                     leftPupil: toF(elC), rightPupil: toF(erC),
+                     noseTip: toF(noseC), mouthCenter: toF(mouthC),
+                     imgOffset: CGSize(width: posX, height: posY),
+                     imgScale: sc, natW: natW, natH: natH)
+}
+
+func cropCoachingMessage(m: CropMetrics, spec: PhotoSpec, lang: String) -> String? {
+    if m.coverageShort {
+        return tr("coach_coverage", lang)
+    }
+    if m.faceMm < spec.faceMin {
+        return tr("coach_small", lang).replacingOccurrences(of: "{v}", with: String(format: "%.1f", m.faceMm))
+    }
+    if m.faceMm > spec.faceMax {
+        return tr("coach_large", lang).replacingOccurrences(of: "{v}", with: String(format: "%.1f", m.faceMm))
+    }
+    if m.eyeRatio < 0.40 {
+        return tr("coach_eye_low", lang).replacingOccurrences(of: "{v}", with: String(format: "%.0f", m.eyePct))
+    }
+    if m.eyeRatio > 0.48 {
+        return tr("coach_eye_high", lang).replacingOccurrences(of: "{v}", with: String(format: "%.0f", m.eyePct))
+    }
+    if m.centerOffsetMm >= 1.5 {
+        return tr("coach_center", lang).replacingOccurrences(of: "{v}", with: String(format: "%.1f", m.centerOffsetMm))
+    }
+    return nil
+}
 
 struct SpecData {
     static let specs: [PhotoSpec] = appCountries.flatMap { $0.docs.map { $0.photoSpec } }

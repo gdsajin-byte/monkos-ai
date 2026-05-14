@@ -77,6 +77,8 @@ domain: "governance/infrastructure"
 | 2026-05-13 | iMac/쌍아 | 4060 설정값 전수 수집 (sshpass 경유) + DEVICE_PROFILE 갱신 | `devices/w4060/DEVICE_PROFILE.md` | ✅ |
 | 2026-05-13 | iMac/쌍아 | 4060 CLI 업데이트 (2.1.52→2.1.140) + model → opus-4-6[1m] 통일 | 4060 `settings.json` | ✅ |
 | 2026-05-13 | iMac/쌍아 | 디바이스 맵 현행화 — 운용 디바이스 3맥+iPhone, M2/M4 팀원용 보류 | `devices/README.md` | ✅ |
+| 2026-05-14 | iMac/막내1 | VSCode 전수조사 (1.108~1.120, 13버전) + MONK 도입 인사이트 13건 도출 | `reports/2026-05/REPORT_20260514_막내_VSCode전수조사.md` | ✅ |
+| 2026-05-14 | iMac/막내1 | VSCode 셋업 실행 — 스니펫 6종 + 터미널 설정 2건 + 구버전 확장 2건 정리 | `.vscode/monk.code-snippets` + settings.json 보강 | ✅ |
 
 ---
 

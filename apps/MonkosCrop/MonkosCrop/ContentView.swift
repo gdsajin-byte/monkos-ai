@@ -17,16 +17,18 @@ struct ContentView: View {
     @State private var search = ""
     @State private var bgColor: BgOption = bgOptions[0]
     @State private var inputImage: PlatformImage?
+    @State private var normalizedImage: PlatformImage?
     @State private var croppedImage: PlatformImage?
     @State private var faceResult: FaceDetectionResult?
     @State private var isProcessing = false
     @State private var errorMsg: String?
     @State private var saved = false
     @State private var selectedPhoto: PhotosPickerItem?
-    @State private var crownAdjust: CGFloat = 0
-    @State private var zoomAdjust: CGFloat = 0
-    @State private var panOffset: CGSize = .zero
-    @State private var panStart: CGSize = .zero
+    @State private var cropState = CropState()
+    @State private var cropStateReady = false
+    @State private var step4FrameSize: CGSize = CGSize(width: 300, height: 400)
+    @State private var lastDragT: CGSize = .zero
+    @State private var crownDragBase: CGFloat? = nil
     @StateObject private var inspection = InspectionState()
 
     private var lang: String {
@@ -67,10 +69,13 @@ struct ContentView: View {
         .animation(.easeInOut(duration: 0.25), value: screen)
         #if os(macOS)
         .buttonStyle(.plain)
+        .frame(width: 393, height: 852)
         .onAppear {
             NSApplication.shared.windows.forEach { w in
                 w.backgroundColor = NSColor(red: 0.02, green: 0.03, blue: 0.055, alpha: 1)
                 w.isOpaque = true
+                w.setContentSize(NSSize(width: 393, height: 852))
+                w.styleMask.remove(.resizable)
             }
         }
         #endif
@@ -201,6 +206,17 @@ struct ContentView: View {
                 .padding(.horizontal, 20)
             }
             .scrollContentBackground(.hidden)
+
+            if let warn = doc.warning?[lang] ?? doc.warning?["en"] {
+                Text(warn)
+                    .font(.system(size: 10))
+                    .foregroundStyle(Color(hex: "FFB020"))
+                    .padding(10)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(RoundedRectangle(cornerRadius: 8).fill(Color(hex: "FFB020").opacity(0.08)))
+                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color(hex: "FFB020").opacity(0.3), lineWidth: 1))
+                    .padding(.horizontal, 20)
+            }
 
             AccentButton(title: "\(tr("use_spec", lang)) →") { screen = .step(2) }
                 .padding(.horizontal, 20).padding(.top, 8).padding(.bottom, 12)
@@ -348,212 +364,41 @@ struct ContentView: View {
         isProcessing = true
 
         let normalized = loadedImage.normalizedImage()
+        normalizedImage = normalized
         guard let face = await CropEngine.detectFace(in: normalized) else {
             isProcessing = false
             errorMsg = tr("no_face", lang)
             return
         }
         faceResult = face
-
-        guard let cropped = CropEngine.crop(image: normalized, spec: doc.photoSpec, face: face) else {
-            isProcessing = false
-            errorMsg = tr("no_face", lang)
-            return
-        }
-        croppedImage = cropped
         isProcessing = false
         saved = false
         screen = .step(3)
     }
 
-    // MARK: - Step 3 — Crop + Inspect (멘트 시퀀스)
-
-    private var inspectMessage: String {
-        switch inspection.phase {
-        case 1: return "귀하의 사진을 정밀 측정합니다."
-        case 2: return "눈 위치를 분석합니다."
-        case 3: return "턱선을 측정합니다."
-        case 4: return "정수리를 측정중…"
-        case 5: return "귀하의 정수리가 정확한지 확인해주세요.\n정수리는 헤어의 끝이 아닌 두상의 최고점이어야합니다."
-        case 6: return "데이터를 분석하고 있습니다."
-        case 7: return inspectResultMessage
-        case 8: return "검수가 완료되었습니다."
-        default: return ""
+    private func runBgRemoval() {
+        guard let img = normalizedImage, faceResult != nil else { return }
+        bgProcessing = true
+        Task {
+            let mask = await CropEngine.generatePersonMask(from: img)
+            personMask = mask
+            if let mask {
+                bgRemovedImage = CropEngine.compositeBackground(original: img, mask: mask, bgHex: bgColor.hex)
+            } else {
+                bgRemovedImage = img
+            }
+            cropStateReady = false
+            bgProcessing = false
+            screen = .step(4)
         }
     }
 
-    private var inspectResultMessage: String {
-        guard let f = faceResult else { return "분석 완료" }
-        var msgs: [String] = []
-        let faceMM = Double(metricFaceMM) ?? 33
-        if faceMM > 36 { msgs.append("얼굴이 규격보다 큽니다 (\(metricFaceMM)mm > 36mm)") }
-        else if faceMM < 32 { msgs.append("얼굴이 규격보다 작습니다 (\(metricFaceMM)mm < 32mm)") }
-        if abs(f.tiltDeg) > 3 { msgs.append("눈 기울기가 큽니다 (\(String(format: "%.1f", f.tiltDeg))°)") }
-        if abs(f.yawDeg) > 10 { msgs.append("정면이 아닙니다 (YAW \(String(format: "%.0f", abs(f.yawDeg)))°)") }
-        return msgs.isEmpty ? "모든 항목이 규격 범위 내입니다." : msgs.joined(separator: "\n")
-    }
-
-    @State private var showFineTune = false
+    // MARK: - Step 3 — Background
 
     private var step3: some View {
         VStack(spacing: 0) {
             HStack(spacing: 8) {
                 BackButton { screen = .step(2) }
-                SpecBadge(country: country, doc: doc, lang: lang)
-                Spacer()
-                Text(faceResult?.visionUsed == true ? "VISION · 76pt" : "CIDETECTOR")
-                    .font(.system(size: 9, weight: .bold, design: .monospaced))
-                    .foregroundStyle(V1.muted)
-                    .padding(.horizontal, 6).padding(.vertical, 3)
-                    .background(RoundedRectangle(cornerRadius: 4).fill(V1.card))
-                    .overlay(RoundedRectangle(cornerRadius: 4).stroke(V1.border, lineWidth: 1))
-            }
-            .padding(.horizontal, 14).padding(.bottom, 4)
-
-            // 멘트
-            if inspection.phase > 0 {
-                Text(inspectMessage)
-                    .font(.system(size: 11, weight: .medium))
-                    .foregroundStyle(inspection.isAtCrownConfirm ? Color(hex: "FFB020") : V1.text)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 20).padding(.vertical, 6)
-                    .id(inspection.phase)
-                    .transition(.opacity)
-            }
-
-            // Crop viewport
-            ZStack {
-                if let img = croppedImage {
-                    Image(platformImage: img)
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .scaleEffect(1 + zoomAdjust)
-                        .offset(panOffset)
-                        .gesture(
-                            inspection.isAtCrownConfirm ?
-                            DragGesture()
-                                .onChanged { v in
-                                    panOffset = CGSize(
-                                        width: panStart.width + v.translation.width,
-                                        height: panStart.height + v.translation.height
-                                    )
-                                }
-                                .onEnded { _ in panStart = panOffset }
-                            : nil
-                        )
-                }
-
-                CornerBrackets()
-                FaceLandmarksOverlay(
-                    phase: inspection.phase,
-                    faceResult: faceResult,
-                    cropX: CropEngine.lastCropX,
-                    cropY: CropEngine.lastCropY,
-                    cropW: CropEngine.lastCropW,
-                    cropH: CropEngine.lastCropH,
-                    crownAdjust: $crownAdjust
-                )
-
-                // Status badge
-                VStack {
-                    HStack {
-                        Text(inspection.isDone ? "PASS" : inspection.isAtResult ? "RESULT" : inspection.phase > 0 ? "SCAN" : "READY")
-                            .font(.system(size: 8, weight: .bold, design: .monospaced))
-                            .tracking(1)
-                            .foregroundStyle(inspection.isDone ? Color(hex: "05080E") : V1.accent)
-                            .padding(.horizontal, 7).padding(.vertical, 3)
-                            .background(RoundedRectangle(cornerRadius: 4).fill(inspection.isDone ? V1.accent : .black.opacity(0.6)))
-                        Spacer()
-                        Text(doc.size.replacingOccurrences(of: " mm", with: "mm"))
-                            .font(.system(size: 8, design: .monospaced))
-                            .foregroundStyle(V1.muted)
-                            .padding(.horizontal, 7).padding(.vertical, 3)
-                            .background(RoundedRectangle(cornerRadius: 4).fill(.black.opacity(0.6)))
-                    }
-                    .padding(8)
-                    Spacer()
-                }
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .clipShape(RoundedRectangle(cornerRadius: 8))
-            .overlay(RoundedRectangle(cornerRadius: 8).stroke(V1.accent, lineWidth: 1.5))
-            .shadow(color: V1.accent.opacity(0.2), radius: 10)
-            .padding(.horizontal, 14)
-
-            // 메트릭 (phase 2부터 활성, 신호등 판정)
-            HStack(spacing: 4) {
-                MetricBox(label: "EYE", value: metricEye, unit: "%", active: inspection.phase >= 2, signal: sigEye)
-                MetricBox(label: "HEAD", value: metricFaceMM, unit: "mm", active: inspection.phase >= 4, signal: sigHead)
-                MetricBox(label: "TOP", value: metricTop, unit: "%", active: inspection.phase >= 4, signal: sigTop)
-                MetricBox(label: "BTM", value: metricBottom, unit: "%", active: inspection.phase >= 4, signal: sigBtm)
-            }
-            .padding(.horizontal, 14).padding(.top, 8)
-
-            // 하단 액션 (단계별)
-            Group {
-                if inspection.isAtCrownConfirm {
-                    HStack(spacing: 8) {
-                        Text("−").font(.system(size: 14, weight: .bold, design: .monospaced)).foregroundStyle(V1.muted)
-                        Slider(value: $zoomAdjust, in: -0.3...0.3, step: 0.01)
-                            .tint(V1.accent)
-                        Text("+").font(.system(size: 14, weight: .bold, design: .monospaced)).foregroundStyle(V1.muted)
-                        Text(String(format: "%.0f%%", (1 + zoomAdjust) * 100))
-                            .font(.system(size: 10, weight: .bold, design: .monospaced))
-                            .foregroundStyle(V1.accent)
-                            .frame(width: 36)
-                    }
-                    .padding(.horizontal, 14)
-                    AccentButton(title: "위치 확인 ✓") {
-                        inspection.confirmCrown()
-                    }
-                } else if inspection.isAtResult {
-                    HStack(spacing: 6) {
-                        Button {
-                            inspection.phase = 5
-                        } label: {
-                            Text("정밀 조정")
-                                .font(.system(size: 12, weight: .heavy))
-                                .foregroundStyle(V1.accent)
-                                .padding(.horizontal, 14).padding(.vertical, 11)
-                                .background(RoundedRectangle(cornerRadius: 10).fill(V1.accent.opacity(0.08)))
-                                .overlay(RoundedRectangle(cornerRadius: 10).stroke(V1.accent, lineWidth: 1.5))
-                        }
-                        AccentButton(title: "검수 완료 →") {
-                            inspection.finalize()
-                        }
-                    }
-                } else if inspection.isDone {
-                    AccentButton(title: "\(tr("next", lang)) →") {
-                        screen = .step(4)
-                    }
-                } else {
-                    Text(inspection.phase > 0 ? "측정 중…" : "")
-                        .font(.system(size: 11, design: .monospaced))
-                        .foregroundStyle(V1.dim)
-                        .frame(height: 50)
-                }
-            }
-            .padding(.horizontal, 14).padding(.top, 8).padding(.bottom, 12)
-            .animation(.easeInOut(duration: 0.2), value: inspection.phase)
-        }
-        .onAppear {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                inspection.start()
-            }
-        }
-        .onDisappear { inspection.reset() }
-    }
-
-    // MARK: - Step 4 — Background
-
-    @State private var bgProcessing = true
-    @State private var bgRemovedImage: PlatformImage?
-    @State private var personMask: CIImage?
-
-    private var step4: some View {
-        VStack(spacing: 0) {
-            HStack(spacing: 8) {
-                BackButton { screen = .step(3) }
                 SpecBadge(country: country, doc: doc, lang: lang)
                 Spacer()
             }
@@ -570,46 +415,13 @@ struct ContentView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, 20).padding(.bottom, 14)
 
-            // Preview
+            // Preview (original photo)
             ZStack {
                 bgColor.color
-                if let img = bgRemovedImage {
+                if let img = normalizedImage {
                     Image(platformImage: img)
                         .resizable()
-                        .aspectRatio(contentMode: .fill)
-                } else if let img = croppedImage {
-                    Image(platformImage: img)
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                }
-                if bgProcessing {
-                    ZStack {
-                        Color.black.opacity(0.85)
-                        VStack(spacing: 10) {
-                            ProgressView()
-                                .tint(V1.accent)
-                                .scaleEffect(1.3)
-                            Text("VISION · SEGMENTING…")
-                                .font(.system(size: 10, weight: .bold, design: .monospaced))
-                                .foregroundStyle(V1.accent)
-                                .tracking(1)
-                        }
-                    }
-                }
-                if !bgProcessing && bgRemovedImage != nil {
-                    VStack {
-                        HStack {
-                            Text("BG · \(bgColor.name(lang).uppercased())")
-                                .font(.system(size: 8, weight: .bold, design: .monospaced))
-                                .foregroundStyle(V1.accent)
-                                .tracking(1)
-                                .padding(.horizontal, 7).padding(.vertical, 3)
-                                .background(RoundedRectangle(cornerRadius: 4).fill(.black.opacity(0.7)))
-                            Spacer()
-                        }
-                        .padding(8)
-                        Spacer()
-                    }
+                        .aspectRatio(contentMode: .fit)
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -632,10 +444,7 @@ struct ContentView: View {
                             .foregroundStyle(sel ? V1.accent : V1.muted)
                     }
                     .frame(maxWidth: .infinity)
-                    .onTapGesture {
-                        bgColor = c
-                        recompositeBackground()
-                    }
+                    .onTapGesture { bgColor = c }
                 }
             }
             .padding(.vertical, 10).padding(.horizontal, 8)
@@ -643,30 +452,286 @@ struct ContentView: View {
             .overlay(RoundedRectangle(cornerRadius: 12).stroke(V1.border, lineWidth: 1))
             .padding(.horizontal, 20).padding(.top, 12)
 
-            AccentButton(title: "\(tr("next", lang)) →", enabled: !bgProcessing) {
-                screen = .step(5)
+            AccentButton(title: "\(tr("bg_remove", lang)) →") {
+                runBgRemoval()
             }
             .padding(.horizontal, 20).padding(.top, 10).padding(.bottom, 12)
         }
-        .onAppear { runBgRemoval() }
-    }
-
-    private func runBgRemoval() {
-        guard let img = croppedImage else { return }
-        bgProcessing = true
-        Task {
-            let mask = await CropEngine.generatePersonMask(from: img)
-            personMask = mask
-            if let mask {
-                bgRemovedImage = CropEngine.compositeBackground(original: img, mask: mask, bgHex: bgColor.hex)
+        .overlay {
+            if bgProcessing {
+                ZStack {
+                    V1.bg.opacity(0.85).ignoresSafeArea()
+                    VStack(spacing: 12) {
+                        ProgressView()
+                            .tint(V1.accent)
+                            .scaleEffect(1.5)
+                        Text("VISION · SEGMENTING…")
+                            .font(.system(size: 12, weight: .bold, design: .monospaced))
+                            .foregroundStyle(V1.accent)
+                            .tracking(1)
+                    }
+                }
             }
-            bgProcessing = false
         }
     }
 
+    // MARK: - Step 4 — Frame-fixed + Image-movable (웹 crop.js 이식)
+
+    private var curMetrics: CropMetrics {
+        guard cropStateReady, step4FrameSize.height > 10 else {
+            return CropMetrics(faceMm: 34, topMm: 5, bottomMm: 6, eyeRatio: 0.43, eyePct: 43, centerOffsetMm: 0, faceSignal: .pass, eyeSignal: .pass, topSignal: .pass, btmSignal: .pass, centerSignal: .pass, isBlocked: false)
+        }
+        var m = computeMetrics(state: cropState, frameH: step4FrameSize.height, spec: doc.photoSpec)
+        if let img = bgRemovedImage {
+            let fw = step4FrameSize.width, fh = step4FrameSize.height
+            let nw = CGFloat(img.platformCGImage?.width ?? 1)
+            let nh = CGFloat(img.platformCGImage?.height ?? 1)
+            let cs = max(fw / nw, fh / nh)
+            let dispW = nw * cs * cropState.imgScale
+            let dispH = nh * cs * cropState.imgScale
+            if dispW < fw - 2 || dispH < fh - 2 {
+                m.coverageShort = true
+            }
+        }
+        return m
+    }
+
+    private var step4: some View {
+        VStack(spacing: 0) {
+            HStack(spacing: 8) {
+                BackButton { screen = .step(3) }
+                SpecBadge(country: country, doc: doc, lang: lang)
+                Spacer()
+            }
+            .padding(.horizontal, 14).padding(.bottom, 4)
+
+            if let msg = cropCoachingMessage(m: curMetrics, spec: doc.photoSpec, lang: lang) {
+                Text(msg)
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundStyle(Color(hex: "FFB020"))
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 20).padding(.vertical, 6)
+            } else {
+                Text(tr("coach_ok", lang))
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundStyle(V1.accent)
+                    .padding(.horizontal, 20).padding(.vertical, 6)
+            }
+
+            ZStack {
+                bgColor.color
+
+                if let img = bgRemovedImage {
+                    GeometryReader { geo in
+                        let fw = geo.size.width, fh = geo.size.height
+                        let nw = CGFloat(img.platformCGImage?.width ?? 1)
+                        let nh = CGFloat(img.platformCGImage?.height ?? 1)
+                        let cs = max(fw / nw, fh / nh)
+                        let bw = nw * cs, bh = nh * cs
+
+                        Image(platformImage: img)
+                            .resizable()
+                            .frame(width: bw * cropState.imgScale, height: bh * cropState.imgScale)
+                            .position(x: fw / 2 + cropState.imgOffset.width,
+                                      y: fh / 2 + cropState.imgOffset.height)
+                            .allowsHitTesting(false)
+                            .onAppear {
+                                step4FrameSize = geo.size
+                                if !cropStateReady, let face = faceResult {
+                                    cropState = cropAutoPlace(face: face, frameW: fw, frameH: fh, spec: doc.photoSpec)
+                                    cropStateReady = true
+                                }
+                            }
+                            .onChange(of: geo.size) { newSize in
+                                step4FrameSize = newSize
+                            }
+                    }
+                }
+
+                if cropStateReady {
+                    GuideOverlay(state: $cropState, metrics: curMetrics, spec: doc.photoSpec)
+                        .allowsHitTesting(false)
+
+                    // 상단 1/4: 정수리 드래그 영역
+                    GeometryReader { geo in
+                        let h = geo.size.height
+                        Color.clear
+                            .frame(height: h / 4)
+                            .contentShape(Rectangle())
+                            #if os(macOS)
+                            .onHover { hovering in
+                                if hovering { NSCursor.resizeUpDown.push() } else { NSCursor.pop() }
+                            }
+                            #endif
+                            .gesture(DragGesture()
+                                .onChanged { v in
+                                    if crownDragBase == nil { crownDragBase = cropState.crown.y }
+                                    cropState.crown.y = max(2, min(cropState.chin.y - 20, crownDragBase! + v.translation.height))
+                                }
+                                .onEnded { _ in crownDragBase = nil })
+                    }
+                }
+
+                CornerBrackets()
+                    .allowsHitTesting(false)
+
+                VStack {
+                    HStack {
+                        Text(curMetrics.isBlocked ? "ADJUST" : "READY")
+                            .font(.system(size: 8, weight: .bold, design: .monospaced)).tracking(1)
+                            .foregroundStyle(curMetrics.isBlocked ? Color(hex: "FFB020") : V1.accent)
+                            .padding(.horizontal, 7).padding(.vertical, 3)
+                            .background(RoundedRectangle(cornerRadius: 4).fill(.black.opacity(0.6)))
+                        Spacer()
+                        Text(doc.size.replacingOccurrences(of: " mm", with: "mm"))
+                            .font(.system(size: 8, design: .monospaced)).foregroundStyle(V1.muted)
+                            .padding(.horizontal, 7).padding(.vertical, 3)
+                            .background(RoundedRectangle(cornerRadius: 4).fill(.black.opacity(0.6)))
+                    }
+                    .padding(8)
+                    Spacer()
+                }
+            }
+            .aspectRatio(doc.photoSpec.widthMM / doc.photoSpec.heightMM, contentMode: .fit)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .contentShape(RoundedRectangle(cornerRadius: 8))
+            .overlay(RoundedRectangle(cornerRadius: 8).stroke(V1.accent, lineWidth: 1.5))
+            .shadow(color: V1.accent.opacity(0.2), radius: 10)
+            .gesture(DragGesture()
+                .onChanged { v in
+                    let dx = v.translation.width - lastDragT.width
+                    let dy = v.translation.height - lastDragT.height
+                    cropState.imgOffset.width += dx
+                    cropState.imgOffset.height += dy
+                    cropState.moveAll(dx: dx, dy: dy)
+                    lastDragT = v.translation
+
+                    let MM = step4FrameSize.height / doc.photoSpec.heightMM
+                    let frameCX = step4FrameSize.width / 2
+                    let offMm = abs(cropState.faceCenterX - frameCX) / MM
+                    if offMm < 0.3 {
+                        let snap = frameCX - cropState.faceCenterX
+                        cropState.imgOffset.width += snap
+                        cropState.moveAll(dx: snap, dy: 0)
+                    }
+                }
+                .onEnded { _ in lastDragT = .zero })
+            #if os(macOS)
+            .onHover { hovering in
+                if hovering { NSCursor.openHand.push() } else { NSCursor.pop() }
+            }
+            #endif
+            .padding(.horizontal, 14)
+
+            HStack(spacing: 4) {
+                MetricBox(label: "EYE", value: String(format: "%.1f", curMetrics.eyePct), unit: "%", active: cropStateReady, signal: curMetrics.eyeSignal)
+                MetricBox(label: "FACE", value: String(format: "%.1f", curMetrics.faceMm), unit: "mm", active: cropStateReady, signal: curMetrics.faceSignal)
+                MetricBox(label: "TOP", value: String(format: "%.1f", curMetrics.topMm), unit: "mm", active: cropStateReady, signal: curMetrics.topSignal)
+                MetricBox(label: "BTM", value: String(format: "%.1f", curMetrics.bottomMm), unit: "mm", active: cropStateReady, signal: curMetrics.btmSignal)
+            }
+            .padding(.horizontal, 14).padding(.top, 8)
+
+            HStack(spacing: 8) {
+                Text("−").font(.system(size: 14, weight: .bold, design: .monospaced)).foregroundStyle(V1.muted)
+                Slider(value: Binding(
+                    get: { cropState.imgScale },
+                    set: { nv in
+                        let old = cropState.imgScale
+                        cropState.rescaleAll(newScale: nv, oldScale: old, cx: step4FrameSize.width / 2, cy: step4FrameSize.height / 2)
+                    }
+                ), in: 0.3...4.0, step: 0.01).tint(V1.accent)
+                Text("+").font(.system(size: 14, weight: .bold, design: .monospaced)).foregroundStyle(V1.muted)
+                Text(String(format: "×%.2f", cropState.imgScale))
+                    .font(.system(size: 10, weight: .bold, design: .monospaced)).foregroundStyle(V1.accent)
+                    .frame(width: 44)
+            }
+            .padding(.horizontal, 14).padding(.top, 8)
+
+            HStack(spacing: 6) {
+                Button {
+                    if let face = faceResult {
+                        cropState = cropAutoPlace(face: face, frameW: step4FrameSize.width, frameH: step4FrameSize.height, spec: doc.photoSpec)
+                    }
+                } label: {
+                    Text(tr("reset_crop", lang))
+                        .font(.system(size: 12, weight: .heavy)).foregroundStyle(V1.accent)
+                        .padding(.horizontal, 14).padding(.vertical, 11)
+                        .background(RoundedRectangle(cornerRadius: 10).fill(V1.accent.opacity(0.08)))
+                        .overlay(RoundedRectangle(cornerRadius: 10).stroke(V1.accent, lineWidth: 1.5))
+                }
+                AccentButton(title: "\(tr("crop_confirm", lang)) →", enabled: !curMetrics.isBlocked) {
+                    performFinalCrop()
+                    screen = .step(5)
+                }
+            }
+            .padding(.horizontal, 14).padding(.top, 8).padding(.bottom, 12)
+        }
+    }
+
+    private func performFinalCrop() {
+        guard let img = bgRemovedImage, let cgImage = img.platformCGImage else { return }
+        let spec = doc.photoSpec
+        let fw = step4FrameSize.width, fh = step4FrameSize.height
+        let natW = cropState.natW, natH = cropState.natH
+        let covS = max(fw / natW, fh / natH)
+        let displayW = natW * covS
+        let displayH = natH * covS
+        let s = cropState.imgScale
+
+        // Step4에서 이미지는 .position(fw/2 + off.w, fh/2 + off.h) + .frame(displayW*s, displayH*s)
+        // 이미지 좌상 화면좌표 = (fw/2 + off.w - displayW*s/2, fh/2 + off.h - displayH*s/2)
+        // 프레임 (0,0)의 이미지 원본 좌표:
+        //   imgX = (0 - imgLeftScreen) / (covS * s)
+        //   imgY = (0 - imgTopScreen) / (covS * s)
+        let imgLeft = fw / 2 + cropState.imgOffset.width - displayW * s / 2
+        let imgTop = fh / 2 + cropState.imgOffset.height - displayH * s / 2
+        let pixelScale = covS * s
+
+        let cropX = (0 - imgLeft) / pixelScale
+        let cropY = (0 - imgTop) / pixelScale
+        let cropW = fw / pixelScale
+        let cropH = fh / pixelScale
+
+        let cx = max(0, cropX)
+        let cy = max(0, cropY)
+        let cw = min(cropW, natW - cx)
+        let ch = min(cropH, natH - cy)
+
+        let outputW = spec.pxW
+        let outputH = spec.pxH
+
+        let ciImg = CIImage(cgImage: cgImage)
+        // CIImage: bottom-left origin
+        let ciY = natH - cy - ch
+        let cropped = ciImg.cropped(to: CGRect(x: cx, y: ciY, width: cw, height: ch))
+
+        let sx = outputW / cw
+        let sy = outputH / ch
+        let scaled = cropped
+            .transformed(by: CGAffineTransform(translationX: -cx, y: -ciY))
+            .transformed(by: CGAffineTransform(scaleX: sx, y: sy))
+
+        let ciCtx = CIContext()
+        let outRect = CGRect(x: 0, y: 0, width: Int(outputW), height: Int(outputH))
+        guard let finalCG = ciCtx.createCGImage(scaled, from: outRect) else { return }
+
+        #if canImport(UIKit)
+        croppedImage = UIImage(cgImage: finalCG)
+        #else
+        croppedImage = NSImage(cgImage: finalCG, size: NSSize(width: Int(outputW), height: Int(outputH)))
+        #endif
+    }
+
+    @State private var bgProcessing = false
+    @State private var bgRemovedImage: PlatformImage?
+    @State private var personMask: CIImage?
+
     private func recompositeBackground() {
-        guard let img = croppedImage, let mask = personMask else { return }
-        bgRemovedImage = CropEngine.compositeBackground(original: img, mask: mask, bgHex: bgColor.hex)
+        guard let img = normalizedImage, let mask = personMask, let face = faceResult,
+              let fullComposite = CropEngine.compositeBackground(original: img, mask: mask, bgHex: bgColor.hex),
+              let recropped = CropEngine.crop(image: fullComposite, spec: doc.photoSpec, face: face) else { return }
+        croppedImage = recropped
+        bgRemovedImage = recropped
     }
 
     // MARK: - Step 5 — Done
@@ -701,7 +766,7 @@ struct ContentView: View {
             }
 
             // Result preview
-            if let img = bgRemovedImage ?? croppedImage {
+            if let img = croppedImage ?? bgRemovedImage {
                 ZStack {
                     bgColor.color
                     Image(platformImage: img)
@@ -721,7 +786,7 @@ struct ContentView: View {
                         Spacer()
                     }
                 }
-                .frame(width: 180, height: 232)
+                .frame(width: 180, height: 180 / doc.photoSpec.aspectRatio)
                 .clipShape(RoundedRectangle(cornerRadius: 6))
                 .overlay(RoundedRectangle(cornerRadius: 6).stroke(V1.accent, lineWidth: 2))
                 .shadow(color: V1.accent.opacity(0.2), radius: 15)
@@ -750,7 +815,7 @@ struct ContentView: View {
             Spacer()
 
             AccentButton(title: "↓ \(tr("download", lang)) · \(tr("free", lang))") {
-                if let img = bgRemovedImage ?? croppedImage {
+                if let img = croppedImage ?? bgRemovedImage {
                     saveToDisk(img)
                     saved = true
                 }
@@ -770,58 +835,6 @@ struct ContentView: View {
             }
             .padding(.horizontal, 20).padding(.top, 6).padding(.bottom, 12)
         }
-    }
-
-    // MARK: - 크롭 메트릭 (정수리 드래그 연동)
-
-    private var eyePct: CGFloat {
-        guard let f = faceResult else { return 43 }
-        return (f.eyeCenterY - CropEngine.lastCropY) / CropEngine.lastCropH * 100
-    }
-
-    private var chinPct: CGFloat {
-        guard let f = faceResult else { return 80 }
-        return (f.chinY - CropEngine.lastCropY) / CropEngine.lastCropH * 100
-    }
-
-    private var crownPct: CGFloat {
-        let base = eyePct - (chinPct - eyePct)
-        return base + crownAdjust * 100
-    }
-
-    // 신호등 판정
-    private var sigEye: Signal {
-        let v = eyePct
-        if v >= 41 && v <= 45 { return .pass }
-        if v >= 40 && v <= 46 { return .warn }
-        return .fail
-    }
-    private var sigHead: Signal {
-        let v = Double(metricFaceMM) ?? 33
-        if v >= 33 && v <= 35 { return .pass }
-        if v >= 32 && v <= 36 { return .warn }
-        return .fail
-    }
-    private var sigTop: Signal {
-        let v = crownPct
-        if v >= 4 && v <= 10 { return .pass }
-        if v >= 2 && v <= 12 { return .warn }
-        return .fail
-    }
-    private var sigBtm: Signal {
-        let v = 100 - chinPct
-        if v >= 12 && v <= 22 { return .pass }
-        if v >= 10 && v <= 25 { return .warn }
-        return .fail
-    }
-
-    private var metricEye: String { String(format: "%.1f", eyePct) }
-    private var metricTop: String { String(format: "%.1f", crownPct) }
-    private var metricBottom: String { String(format: "%.1f", 100 - chinPct) }
-    private var metricFaceMM: String {
-        let facePct = chinPct - crownPct
-        let mm = facePct / 100 * doc.photoSpec.heightMM * (1 + zoomAdjust)
-        return String(format: "%.1f", mm)
     }
 
     private var specDetails: [(String, String)] {
@@ -862,7 +875,7 @@ struct ContentView: View {
 
             // Saved header
             HStack(spacing: 12) {
-                if let img = bgRemovedImage ?? croppedImage {
+                if let img = croppedImage ?? bgRemovedImage {
                     ZStack {
                         bgColor.color
                         Image(platformImage: img)
@@ -978,13 +991,13 @@ struct ContentView: View {
 
     private func resetFlow() {
         inputImage = nil
+        normalizedImage = nil
         croppedImage = nil
         bgRemovedImage = nil
         personMask = nil
-        crownAdjust = 0
-        zoomAdjust = 0
-        panOffset = .zero
-        panStart = .zero
+        cropState = CropState()
+        cropStateReady = false
+        lastDragT = .zero
         faceResult = nil
         saved = false
         inspection.reset()

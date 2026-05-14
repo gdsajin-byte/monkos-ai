@@ -78,6 +78,8 @@ monk.kr/debate/ (CF Pages)
 | 05/11 | iMac/막내1 | 에이전트 토론방 웹 UI POC — CF Worker + Workers AI (Gemma 3 vs Qwen 2.5) + 사람 개입 + localStorage | functions/api/debate.js, apps/debate/ | ✅ |
 | 05/11 | 작가님 | 황용 vs 조민 토론 테스트 — 파이프라인 동작 확인. 캐릭터 체현 품질은 모델/프롬프트 과제 | — | ✅ |
 | 05/11 | 작가님 | **PF_MUSE 발족** — 서사적 유희 + 창작 + 아이디어 발산 PF로 독립 | PF_MUSE.md | ✅ |
+| 05/14 | iMac/민아 | Agent View ↔ MONK OS 5축·PF_MUSE 정합성 정밀 분석 — 3계층 위상 정렬(현재형 보완재→미래형 자율), 리스크 3종, 권고 | [RESEARCH_20260514](research/RESEARCH_20260514_민아_AgentView_PF뮤즈정합성.md) | ✅ |
+| 05/14 | iMac/쌍아 | JSONL 세션 자동 저장 발견 — Claude Code `.jsonl` + VSCode JSON 2중 백업 구조 확인. L0(블랙박스)→L2(정본) 변환 아키텍처 제안 | — | ✅ |
 
 ---
 
@@ -129,6 +131,7 @@ monk.kr/debate/ (CF Pages)
 | PF_FACTORY | 모델 캐릭터 품질 비교 데이터 → FACTORY 벤치마크에 환류 |
 | PF_SPREAD | 토론/에피소드 산출물 → 콘텐츠 소재 |
 | PF_AUTOPILOT | 토론 로그 적립 경로 (Actions/Git) |
+| PF_MONK_OS | Agent View·멀티에이전트 관제 비전 정합 — MUSE가 MONK OS 자율 대화 채널의 실현체 |
 
 ---
 
