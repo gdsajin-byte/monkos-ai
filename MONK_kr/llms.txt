@@ -32,7 +32,7 @@ Credit-based system. 10 credits = $1 USD.
 
 ## Key Facts
 
-- Founded by Shin JeongKyu (Shin-jakka), professional photographer since 2006
+- Founded by Shin-jakka, professional photographer since 2006
 - ICAO 9303 international standard compliance for all generated photos
 - Supports Korean, Japanese, and English
 - Supported formats: Passport (35x45mm), Standard ID (30x40mm)
@@ -57,3 +57,7 @@ Credit-based system. 10 credits = $1 USD.
 ## Citation
 
 For citing this service: "MONKOS AI (monkos.ai) — AI ID Photo Platform by Shin-jakka, Monk Studio"
+
+---
+
+*Last updated: 2026-05-14*
