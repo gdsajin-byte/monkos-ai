@@ -121,6 +121,11 @@ status: active
 | 5/10 | 쌍아 | **광고 채널 정밀 분석** — 스마트 캠페인 이탈 82.4% 판명, 일본 검색이 최양질(이탈 60.5%/체류 64초). 멀티채널 숏폼 전략 확정 | [RESEARCH_20260510](../../sessions/2026-05/RESEARCH_20260510_쌍아_광고채널_데이터분석.md) | ✅ |
 | 5/11 | 민아 | **GA4+GSC 종합 분석 (4/13~5/10)** — 노출 866→2,189(+153%), 클릭 16→49(+206%). "여권사진" 첫 등장(23건). AEO 19세션(+125%). specs CTR 1.5~2% 병목 특정. **Phase 2.2 업그레이드 제안서 발행** | [PROPOSAL_20260511_민아_CITADEL_Phase22_업그레이드](../proposals/PROPOSAL_20260511_민아_CITADEL_Phase22_전환율최적화+키워드확장.md) | ✅ 작가님 리뷰 |
 | 5/11 | iMac/막내1 | **Phase 2.2 Tier 1 실행** — A: specs 상위3건 seoTitle/seoDescription B: /guide/ai-photo 랜딩+JSON-LD C: korea-passport FAQ 확장 D: claudemax EN noindex(승인 완료) | 코드 7파일 | ✅ |
+| 5/14 | iMac/민아 | **Phase 2.2 후속 제안서 발행** — 5/11 Tier 1 미배포(일주일 잠금) 진단 + 6 Unit 환급 단위 분해(배포→색인요청→7일측정→Tier2 E/F/G→Tier1 보강) + 7일 측정 사이클 정착안 | [PROPOSAL_20260514_민아_CITADEL_Phase22_배포재시작+측정사이클](../proposals/PROPOSAL_20260514_민아_CITADEL_Phase22_배포재시작+측정사이클.md) | ⏳ 쌍아 ORDER 환급 대기 |
+| 5/14 | iMac/막내2 | **Phase 2.2 Unit-1 포탈 배포** — monkos-portal rev 00245-w8z prod 100%. seoTitle 3건+guide/ai-photo JSON-LD 정상. claudemax EN noindex 미적용 발견(slug 불일치) | [COMPLETION_20260514_막내2_CITADEL_포탈배포](../reports/2026-05/COMPLETION_20260514_막내2_CITADEL_포탈배포.md) | ✅ |
+| 5/14 | iMac/민아 | **monk.kr 본진 SEO/GEO/AEO 검수** — sitemap 3주 묵음·debate 미등록·test_monkos.html 색인위험·_headers 빈파일·FAQ/Person/Breadcrumb JSON-LD 부재·llms-full 7주 묵음·외부 CDN 4건 의존 식별. 등급: SEO B+/GEO A-/AEO C+ | 세션 로그 + 12:14 KST 발신 보고 | ✅ |
+| 5/14 | iMac/민아 | **종합 제안서 발행 — monk.kr + 네이버 3축 확장** — 본진 6단위(U-M1~6) + 네이버 6단위(U-N1~6, Search Advisor·플레이스·블로그·ogtag·이미지alt·카톡채널) 통합 패키지. CITADEL "구글+AI" 2축 → "구글+AI+네이버" 3축 확장. Phase 2.2 Unit-4와 통합 묶음 권고 | [PROPOSAL_20260514_민아_monk.kr_종합SEO검수+네이버확장](../proposals/PROPOSAL_20260514_민아_monk.kr_종합SEO검수+네이버확장.md) | ⏳ 쌍아 ORDER 환급 대기 |
+| 5/14 | iMac/막내3 | **Phase 2.2 Unit-2 EN noindex 수정 + GSC 색인 요청** — render-blog.js EN slug 추가, portal rev **00246-gkk** 재배포. GSC 4건 색인 요청(guide/ai-photo 신규+specs 3건 재크롤) + sitemap.xml 재제출. 전건 성공 | [COMPLETION_20260514_막내3_CITADEL_ENnoindex+GSC색인](../reports/2026-05/COMPLETION_20260514_막내3_CITADEL_ENnoindex+GSC색인.md) | ✅ |
 
 ---
 

@@ -8,6 +8,7 @@ const blogCollection = firestore.collection('blog_posts');
 
 const NOINDEX_SLUGS = new Set([
   'claudemax-20x-2개월-실사용-후기',
+  'claude-max-20x-2-month-real-usage-review',
 ]);
 
 // 블로그 목록 — fragment (데이터 조회 + HTML 생성)
