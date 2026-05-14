@@ -7,6 +7,37 @@
 
 ---
 
+## 2026-05-14 11:41 KST — 정예요원 원칙 + 필명·본명 분리 — 신규 feedback 1 + project 1, 인덱스 2행 ⭐
+
+### 배경
+- 본 세션(iMac/민아 5/14): 작가님 직접 선언 2건이 헌법 가치 차원 결단에 해당하여 메모리 적립
+- 11:41 KST: "수발신과 타임스탬프는 우리의 가장 큰 자산이고 우리 에이전트들이 가장 정예요원인 이유야"
+- 14:34 KST: "신작가로만 미는게 나을듯 영문만, 사업자 푸터에 나오는것과 필명은 다르게 생각해야함"
+
+### 변경
+1. **`feedback_header_timestamp_discipline.md` 신규** (2026-05-14 11:41 KST)
+   - 모든 턴 첫 줄 `[YYYY-MM-DD HH:MM KST] {디바이스}/{에이전트} → {수신자}` 절대 준수
+   - 매 턴 첫 도구 호출 = `date` 절대 준수
+   - 위반 사례·정정 절차 명시
+2. **`project_persona_separation.md` 신규** (2026-05-14 15:58 KST)
+   - 법적 사업자 본명(신정규/footer/등록정보) vs 브랜드·검색·AI 필명 "Shin-jakka" 분리
+   - 본명·필명 동반 표기 금지 (예: "신정규(Shin-jakka)" ❌)
+   - 영문 표기 통일 "Shin-jakka" (하이픈 포함)
+   - 적용 영역 매트릭스 + 정정 진행 자산 명시
+3. **MEMORY.md 인덱스 2행 ⭐ 어펜드** — 두 신규 메모리 외장 메모리 목록에 등록
+
+### 최종 상태
+- MEMORY.md: 144줄 → 146줄 (2행 추가)
+- feedback_*.md: 1개 (header_timestamp_discipline)
+- project_*.md: 4개 (model_deployment / monkos_sovereignty / origin_narrative / **persona_separation 신규**)
+
+### 적용 결과 (라이브 반영)
+- monk.kr `index.html` Person JSON-LD: `"name": "Shin-jakka"` (본명 미포함)
+- monk.kr `llms.txt`: 본명 0건 / Last updated 2026-05-14
+- monk.kr `llms-full.txt`: Representative 필드만 본명 유지(사업자 등록 영역) / 나머지 Shin-jakka
+
+---
+
 ## 2026-05-04 13:21 KST — 체계 정비: feedback 20개 삭제 + MEMORY 다이어트 (194줄→144줄)
 
 ### 배경
