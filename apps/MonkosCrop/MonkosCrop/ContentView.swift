@@ -15,6 +15,9 @@ struct ContentView: View {
     @State private var doc: DocSpec = appCountries[0].docs[0]
     @State private var purpose = "passport"
     @State private var search = ""
+    @State private var customW = "35"
+    @State private var customH = "45"
+    @State private var customDPI = 300
     @State private var bgColor: BgOption = bgOptions[0]
     @State private var inputImage: PlatformImage?
     @State private var normalizedImage: PlatformImage?
@@ -96,12 +99,13 @@ struct ContentView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, 20).padding(.bottom, 12)
 
-            // Purpose pills
+            // Purpose tabs
             HStack(spacing: 5) {
                 ForEach(purposeList, id: \.id) { p in
                     let sel = purpose == p.id
                     Button {
                         purpose = p.id
+                        search = ""
                     } label: {
                         VStack(spacing: 2) {
                             Text(p.icon).font(.system(size: 14))
@@ -118,115 +122,169 @@ struct ContentView: View {
             }
             .padding(.horizontal, 20).padding(.bottom, 10)
 
-            // Search
-            HStack(spacing: 8) {
-                Image(systemName: "magnifyingglass")
-                    .font(.system(size: 14))
-                    .foregroundStyle(V1.dim)
-                TextField(tr("search", lang), text: $search)
-                    .font(.system(size: 12))
-                    .foregroundStyle(V1.text)
-                    .textFieldStyle(.plain)
-            }
-            .padding(.horizontal, 12).padding(.vertical, 9)
-            .background(RoundedRectangle(cornerRadius: 8).fill(V1.card))
-            .overlay(RoundedRectangle(cornerRadius: 8).stroke(V1.border, lineWidth: 1))
-            .padding(.horizontal, 20).padding(.bottom, 10)
-
-            // Country list
-            ScrollView(.vertical, showsIndicators: false) {
-                LazyVStack(spacing: 5) {
-                    ForEach(filteredCountries) { c in
-                        let sel = country.id == c.id
-                        Button {
-                            country = c
-                            doc = c.docs[0]
-                        } label: {
-                            HStack(spacing: 10) {
-                                Text(c.flag).font(.system(size: 22))
-                                VStack(alignment: .leading, spacing: 1) {
-                                    Text(c.name(lang))
-                                        .font(.system(size: 13, weight: .bold))
-                                        .foregroundStyle(V1.text)
-                                    Text("\(c.docs.count) doc · \(c.docs[0].size.replacingOccurrences(of: " mm", with: ""))")
-                                        .font(.system(size: 9, design: .monospaced))
-                                        .foregroundStyle(V1.dim)
-                                }
-                                Spacer()
-                                Text(c.docs[0].group)
-                                    .font(.system(size: 9, weight: .bold, design: .monospaced))
-                                    .foregroundStyle(sel ? V1.accent : V1.muted)
-                                    .padding(.horizontal, 6).padding(.vertical, 2)
-                                    .background(RoundedRectangle(cornerRadius: 3).fill(sel ? V1.accent.opacity(0.08) : .clear))
-                                    .overlay(RoundedRectangle(cornerRadius: 3).stroke(sel ? V1.accent.opacity(0.26) : V1.border, lineWidth: 1))
+            if purpose == "custom" {
+                // 기타: 직접 입력
+                VStack(spacing: 12) {
+                    HStack(spacing: 10) {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(tr("width", lang)).font(.system(size: 10, weight: .bold)).foregroundStyle(V1.muted)
+                            HStack(spacing: 4) {
+                                TextField("35", text: $customW)
+                                    .font(.system(size: 16, weight: .heavy, design: .monospaced))
+                                    .foregroundStyle(V1.text)
+                                    .textFieldStyle(.plain)
+                                    .frame(width: 50)
+                                Text("mm").font(.system(size: 10)).foregroundStyle(V1.dim)
                             }
-                            .padding(.horizontal, 12).padding(.vertical, 10)
-                            .background(RoundedRectangle(cornerRadius: 10).fill(sel ? V1.accent.opacity(0.06) : V1.card))
-                            .overlay(RoundedRectangle(cornerRadius: 10).stroke(sel ? V1.accent.opacity(0.4) : V1.border, lineWidth: 1))
+                            .padding(.horizontal, 10).padding(.vertical, 8)
+                            .background(RoundedRectangle(cornerRadius: 8).fill(V1.card))
+                            .overlay(RoundedRectangle(cornerRadius: 8).stroke(V1.border, lineWidth: 1))
+                        }
+                        Text("×").font(.system(size: 20, weight: .bold)).foregroundStyle(V1.dim)
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(tr("height", lang)).font(.system(size: 10, weight: .bold)).foregroundStyle(V1.muted)
+                            HStack(spacing: 4) {
+                                TextField("45", text: $customH)
+                                    .font(.system(size: 16, weight: .heavy, design: .monospaced))
+                                    .foregroundStyle(V1.text)
+                                    .textFieldStyle(.plain)
+                                    .frame(width: 50)
+                                Text("mm").font(.system(size: 10)).foregroundStyle(V1.dim)
+                            }
+                            .padding(.horizontal, 10).padding(.vertical, 8)
+                            .background(RoundedRectangle(cornerRadius: 8).fill(V1.card))
+                            .overlay(RoundedRectangle(cornerRadius: 8).stroke(V1.border, lineWidth: 1))
                         }
                     }
 
-                    // Doc cards for selected country
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("\(tr("purpose", lang).uppercased()) · \(country.name(lang))")
-                            .font(.system(size: 9, weight: .bold, design: .monospaced))
-                            .foregroundStyle(V1.muted)
-                            .tracking(1)
-                            .padding(.top, 8).padding(.bottom, 2)
-
-                        ForEach(country.docs) { d in
-                            let sel = doc.id == d.id
-                            Button { doc = d } label: {
-                                HStack {
-                                    VStack(alignment: .leading, spacing: 2) {
-                                        Text(d.name(lang))
-                                            .font(.system(size: 12, weight: .bold))
-                                            .foregroundStyle(V1.text)
-                                        Text(d.standard)
-                                            .font(.system(size: 9, design: .monospaced))
-                                            .foregroundStyle(V1.dim)
-                                    }
-                                    Spacer()
-                                    VStack(alignment: .trailing, spacing: 2) {
-                                        Text(d.size.replacingOccurrences(of: " mm", with: ""))
-                                            .font(.system(size: 11, weight: .bold, design: .monospaced))
-                                            .foregroundStyle(sel ? V1.accent : V1.text)
-                                        Text(d.px.replacingOccurrences(of: " px", with: ""))
-                                            .font(.system(size: 9, design: .monospaced))
-                                            .foregroundStyle(V1.dim)
-                                    }
+                        Text("DPI").font(.system(size: 10, weight: .bold)).foregroundStyle(V1.muted)
+                        HStack(spacing: 6) {
+                            ForEach([72, 300, 600], id: \.self) { dpi in
+                                let sel = customDPI == dpi
+                                Button { customDPI = dpi } label: {
+                                    Text("\(dpi)")
+                                        .font(.system(size: 13, weight: .heavy, design: .monospaced))
+                                        .foregroundStyle(sel ? Color(hex: "05080E") : V1.muted)
+                                        .frame(maxWidth: .infinity).frame(height: 36)
+                                        .background(RoundedRectangle(cornerRadius: 8).fill(sel ? V1.accent : V1.card))
+                                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(sel ? V1.accent : V1.border, lineWidth: 1))
                                 }
-                                .padding(.horizontal, 12).padding(.vertical, 9)
-                                .background(RoundedRectangle(cornerRadius: 8).fill(sel ? V1.accent.opacity(0.06) : Color(hex: "0A0F18")))
-                                .overlay(RoundedRectangle(cornerRadius: 8).stroke(sel ? V1.accent.opacity(0.33) : V1.border, lineWidth: 1))
                             }
                         }
                     }
+
+                    let cw = Double(customW) ?? 35, ch = Double(customH) ?? 45
+                    let cpx = Int(cw / 25.4 * Double(customDPI)), cpy = Int(ch / 25.4 * Double(customDPI))
+                    HStack {
+                        Text(tr("output", lang)).font(.system(size: 10)).foregroundStyle(V1.muted)
+                        Spacer()
+                        Text("\(cpx) × \(cpy) px")
+                            .font(.system(size: 12, weight: .bold, design: .monospaced))
+                            .foregroundStyle(V1.accent)
+                    }
+                    .padding(10)
+                    .background(RoundedRectangle(cornerRadius: 8).fill(V1.card))
+                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(V1.border, lineWidth: 1))
                 }
                 .padding(.horizontal, 20)
-            }
-            .scrollContentBackground(.hidden)
 
-            if let warn = doc.warning?[lang] ?? doc.warning?["en"] {
-                Text(warn)
-                    .font(.system(size: 10))
-                    .foregroundStyle(Color(hex: "FFB020"))
-                    .padding(10)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(RoundedRectangle(cornerRadius: 8).fill(Color(hex: "FFB020").opacity(0.08)))
-                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color(hex: "FFB020").opacity(0.3), lineWidth: 1))
-                    .padding(.horizontal, 20)
-            }
+                Spacer()
 
-            AccentButton(title: "\(tr("use_spec", lang)) →") { screen = .step(2) }
+                AccentButton(title: "\(tr("use_spec", lang)) →") {
+                    let cw = Double(customW) ?? 35, ch = Double(customH) ?? 45
+                    let cpx = cw / 25.4 * Double(customDPI), cpy = ch / 25.4 * Double(customDPI)
+                    doc = DocSpec(id: "custom", type: "custom",
+                                 names: ["ko": "커스텀", "en": "Custom", "ja": "カスタム"],
+                                 size: "\(Int(cw)) × \(Int(ch)) mm", px: "\(Int(cpx)) × \(Int(cpy)) px",
+                                 group: "X", headHeight: "32–36 mm", standard: "Custom")
+                    country = Country(id: "custom", flag: "🌐",
+                                      names: ["ko": "커스텀", "en": "Custom", "ja": "カスタム"],
+                                      docs: [doc])
+                    screen = .step(2)
+                }
                 .padding(.horizontal, 20).padding(.top, 8).padding(.bottom, 12)
+
+            } else {
+                // 여권/비자/면허: 검색 + 국가 드롭다운
+                HStack(spacing: 8) {
+                    Image(systemName: "magnifyingglass")
+                        .font(.system(size: 14))
+                        .foregroundStyle(V1.dim)
+                    TextField(tr("search", lang), text: $search)
+                        .font(.system(size: 12))
+                        .foregroundStyle(V1.text)
+                        .textFieldStyle(.plain)
+                }
+                .padding(.horizontal, 12).padding(.vertical, 9)
+                .background(RoundedRectangle(cornerRadius: 8).fill(V1.card))
+                .overlay(RoundedRectangle(cornerRadius: 8).stroke(V1.border, lineWidth: 1))
+                .padding(.horizontal, 20).padding(.bottom, 10)
+
+                ScrollView(.vertical, showsIndicators: false) {
+                    LazyVStack(spacing: 5) {
+                        ForEach(filteredCountries) { c in
+                            let matchDocs = c.docs.filter { $0.type == purpose || purpose == "passport" && $0.type == "id" }
+                            if !matchDocs.isEmpty {
+                                let firstDoc = matchDocs[0]
+                                let sel = country.id == c.id && matchDocs.contains(where: { $0.id == doc.id })
+                                Button {
+                                    country = c
+                                    doc = firstDoc
+                                } label: {
+                                    HStack(spacing: 10) {
+                                        Text(c.flag).font(.system(size: 22))
+                                        VStack(alignment: .leading, spacing: 1) {
+                                            Text(c.name(lang))
+                                                .font(.system(size: 13, weight: .bold))
+                                                .foregroundStyle(V1.text)
+                                            Text("\(firstDoc.name(lang)) · \(firstDoc.size.replacingOccurrences(of: " mm", with: ""))")
+                                                .font(.system(size: 9, design: .monospaced))
+                                                .foregroundStyle(V1.dim)
+                                        }
+                                        Spacer()
+                                        Text(firstDoc.size.replacingOccurrences(of: " mm", with: ""))
+                                            .font(.system(size: 10, weight: .bold, design: .monospaced))
+                                            .foregroundStyle(sel ? V1.accent : V1.muted)
+                                            .padding(.horizontal, 6).padding(.vertical, 2)
+                                            .background(RoundedRectangle(cornerRadius: 3).fill(sel ? V1.accent.opacity(0.08) : .clear))
+                                            .overlay(RoundedRectangle(cornerRadius: 3).stroke(sel ? V1.accent.opacity(0.26) : V1.border, lineWidth: 1))
+                                    }
+                                    .padding(.horizontal, 12).padding(.vertical, 10)
+                                    .background(RoundedRectangle(cornerRadius: 10).fill(sel ? V1.accent.opacity(0.06) : V1.card))
+                                    .overlay(RoundedRectangle(cornerRadius: 10).stroke(sel ? V1.accent.opacity(0.4) : V1.border, lineWidth: 1))
+                                }
+                            }
+                        }
+                    }
+                    .padding(.horizontal, 20)
+                }
+                .scrollContentBackground(.hidden)
+
+                if let warn = doc.warning?[lang] ?? doc.warning?["en"] {
+                    Text(warn)
+                        .font(.system(size: 10))
+                        .foregroundStyle(Color(hex: "FFB020"))
+                        .padding(10)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(RoundedRectangle(cornerRadius: 8).fill(Color(hex: "FFB020").opacity(0.08)))
+                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color(hex: "FFB020").opacity(0.3), lineWidth: 1))
+                        .padding(.horizontal, 20)
+                }
+
+                AccentButton(title: "\(tr("use_spec", lang)) →") { screen = .step(2) }
+                    .padding(.horizontal, 20).padding(.top, 8).padding(.bottom, 12)
+            }
         }
     }
 
     private var filteredCountries: [Country] {
-        guard !search.isEmpty else { return appCountries }
+        let base = appCountries.filter { c in
+            c.docs.contains { $0.type == purpose || (purpose == "passport" && $0.type == "id") }
+        }
+        guard !search.isEmpty else { return base }
         let q = search.lowercased()
-        return appCountries.filter {
+        return base.filter {
             $0.name(lang).lowercased().contains(q) ||
             $0.name("en").lowercased().contains(q)
         }
@@ -505,17 +563,19 @@ struct ContentView: View {
             }
             .padding(.horizontal, 14).padding(.bottom, 4)
 
-            if let msg = cropCoachingMessage(m: curMetrics, spec: doc.photoSpec, lang: lang) {
-                Text(msg)
-                    .font(.system(size: 11, weight: .medium))
-                    .foregroundStyle(Color(hex: "FFB020"))
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 20).padding(.vertical, 6)
-            } else {
-                Text(tr("coach_ok", lang))
-                    .font(.system(size: 11, weight: .medium))
-                    .foregroundStyle(V1.accent)
-                    .padding(.horizontal, 20).padding(.vertical, 6)
+            if doc.type != "custom" {
+                if let msg = cropCoachingMessage(m: curMetrics, spec: doc.photoSpec, lang: lang) {
+                    Text(msg)
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundStyle(Color(hex: "FFB020"))
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 20).padding(.vertical, 6)
+                } else {
+                    Text(tr("coach_ok", lang))
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundStyle(V1.accent)
+                        .padding(.horizontal, 20).padding(.vertical, 6)
+                }
             }
 
             ZStack {
@@ -548,11 +608,10 @@ struct ContentView: View {
                     }
                 }
 
-                if cropStateReady {
+                if cropStateReady && doc.type != "custom" {
                     GuideOverlay(state: $cropState, metrics: curMetrics, spec: doc.photoSpec)
                         .allowsHitTesting(false)
 
-                    // 상단 1/4: 정수리 드래그 영역
                     GeometryReader { geo in
                         let h = geo.size.height
                         Color.clear
@@ -577,11 +636,13 @@ struct ContentView: View {
 
                 VStack {
                     HStack {
-                        Text(curMetrics.isBlocked ? "ADJUST" : "READY")
-                            .font(.system(size: 8, weight: .bold, design: .monospaced)).tracking(1)
-                            .foregroundStyle(curMetrics.isBlocked ? Color(hex: "FFB020") : V1.accent)
-                            .padding(.horizontal, 7).padding(.vertical, 3)
-                            .background(RoundedRectangle(cornerRadius: 4).fill(.black.opacity(0.6)))
+                        if doc.type != "custom" {
+                            Text(curMetrics.isBlocked ? "ADJUST" : "READY")
+                                .font(.system(size: 8, weight: .bold, design: .monospaced)).tracking(1)
+                                .foregroundStyle(curMetrics.isBlocked ? Color(hex: "FFB020") : V1.accent)
+                                .padding(.horizontal, 7).padding(.vertical, 3)
+                                .background(RoundedRectangle(cornerRadius: 4).fill(.black.opacity(0.6)))
+                        }
                         Spacer()
                         Text(doc.size.replacingOccurrences(of: " mm", with: "mm"))
                             .font(.system(size: 8, design: .monospaced)).foregroundStyle(V1.muted)
@@ -606,13 +667,15 @@ struct ContentView: View {
                     cropState.moveAll(dx: dx, dy: dy)
                     lastDragT = v.translation
 
-                    let MM = step4FrameSize.height / doc.photoSpec.heightMM
-                    let frameCX = step4FrameSize.width / 2
-                    let offMm = abs(cropState.faceCenterX - frameCX) / MM
-                    if offMm < 0.3 {
-                        let snap = frameCX - cropState.faceCenterX
-                        cropState.imgOffset.width += snap
-                        cropState.moveAll(dx: snap, dy: 0)
+                    if doc.type != "custom" {
+                        let MM = step4FrameSize.height / doc.photoSpec.heightMM
+                        let frameCX = step4FrameSize.width / 2
+                        let offMm = abs(cropState.faceCenterX - frameCX) / MM
+                        if offMm < 0.3 {
+                            let snap = frameCX - cropState.faceCenterX
+                            cropState.imgOffset.width += snap
+                            cropState.moveAll(dx: snap, dy: 0)
+                        }
                     }
                 }
                 .onEnded { _ in lastDragT = .zero })
@@ -623,13 +686,15 @@ struct ContentView: View {
             #endif
             .padding(.horizontal, 14)
 
-            HStack(spacing: 4) {
-                MetricBox(label: "EYE", value: String(format: "%.1f", curMetrics.eyePct), unit: "%", active: cropStateReady, signal: curMetrics.eyeSignal)
-                MetricBox(label: "FACE", value: String(format: "%.1f", curMetrics.faceMm), unit: "mm", active: cropStateReady, signal: curMetrics.faceSignal)
-                MetricBox(label: "TOP", value: String(format: "%.1f", curMetrics.topMm), unit: "mm", active: cropStateReady, signal: curMetrics.topSignal)
-                MetricBox(label: "BTM", value: String(format: "%.1f", curMetrics.bottomMm), unit: "mm", active: cropStateReady, signal: curMetrics.btmSignal)
+            if doc.type != "custom" {
+                HStack(spacing: 4) {
+                    MetricBox(label: "EYE", value: String(format: "%.1f", curMetrics.eyePct), unit: "%", active: cropStateReady, signal: curMetrics.eyeSignal)
+                    MetricBox(label: "FACE", value: String(format: "%.1f", curMetrics.faceMm), unit: "mm", active: cropStateReady, signal: curMetrics.faceSignal)
+                    MetricBox(label: "TOP", value: String(format: "%.1f", curMetrics.topMm), unit: "mm", active: cropStateReady, signal: curMetrics.topSignal)
+                    MetricBox(label: "BTM", value: String(format: "%.1f", curMetrics.bottomMm), unit: "mm", active: cropStateReady, signal: curMetrics.btmSignal)
+                }
+                .padding(.horizontal, 14).padding(.top, 8)
             }
-            .padding(.horizontal, 14).padding(.top, 8)
 
             HStack(spacing: 8) {
                 Text("−").font(.system(size: 14, weight: .bold, design: .monospaced)).foregroundStyle(V1.muted)
@@ -659,7 +724,7 @@ struct ContentView: View {
                         .background(RoundedRectangle(cornerRadius: 10).fill(V1.accent.opacity(0.08)))
                         .overlay(RoundedRectangle(cornerRadius: 10).stroke(V1.accent, lineWidth: 1.5))
                 }
-                AccentButton(title: "\(tr("crop_confirm", lang)) →", enabled: !curMetrics.isBlocked) {
+                AccentButton(title: "\(tr("crop_confirm", lang)) →", enabled: doc.type == "custom" || !curMetrics.isBlocked) {
                     performFinalCrop()
                     screen = .step(5)
                 }
