@@ -115,6 +115,8 @@ status: active
 | 05/15 | 쌍아 | **구글 시트 정리** — A+B 114건(시트1) + C/X 33건(미확인 추적) 테이블링. 대륙/국가id/규격/특이점/출처구분/신뢰등급 13컬럼 | [구글 시트](https://docs.google.com/spreadsheets/d/1xJevDKOWCCIjEGqamiaLSMaNi0tOrqN8BQpQ0pToCks/edit) | ✅ |
 | 05/15 | 막내1 | **JSONL A+B 등급 반영** — 비표준 63국 docs 추가 + 인도 여권 51×51→35×45 + 중국 비자 head 15-22→28-33. 202국/커스텀 72국/ICAO 130국. swift build 통과 | countries.jsonl | ✅ |
 | 05/15 | 쌍아 | **캐나다 50×70 배치 보정** — 세로 60mm+ 규격: faceTarget=fMax-1(35mm), eyeTarget=42%, 신호등 TOP/BTM/EYE 허용 범위 확대 | SpecData.swift | ✅ |
+| 05/15 | 막내1 | **PF 폴더 구조 통일** — 21개 PF 전부 `PF_{코드네임}/README.md` 구조로 git mv. 중복 4건 해소, YAML 3건 보정, 인덱스 갱신 | portfolios/ 전체 | ✅ |
+| 05/15 | 쌍아 | **M4 원격 빌드 환경 구축** — Tailscale SSH(100.121.220.14) + Xcode 26.5 + Apple Developer 서명 인증서 + swift build 성공. iOS 플랫폼 8.5GB 다운로드 진행 중 | M4 han-macbookpro | ⏳ |
 
 ---
 
