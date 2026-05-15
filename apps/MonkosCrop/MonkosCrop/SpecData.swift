@@ -183,7 +183,8 @@ struct DocSpec: Identifiable, Hashable {
             backgroundColor: "#FFFFFF",
             faceMin: fMin, faceMax: fMax,
             faceTarget: {
-                let base = h >= 40 ? max(33.0, fMin + 1) : h * 0.70
+                let range = fMax - fMin
+                let base = h >= 60 ? fMax - 1 : h >= 40 ? max(33.0, fMin + 1) : h * 0.70
                 return min(max(base, fMin + 1), fMax - 1)
             }(),
             pxW: pw, pxH: ph
@@ -620,9 +621,16 @@ func computeMetrics(state: CropState, frameH: CGFloat, spec: PhotoSpec) -> CropM
     let fSweetMin = spec.faceMin + fRange * 0.2
     let fSweetMax = spec.faceMax - fRange * 0.2
     let fs: Signal = faceMm >= fSweetMin && faceMm <= fSweetMax ? .pass : faceMm >= spec.faceMin && faceMm <= spec.faceMax ? .warn : .fail
-    let es: Signal = eyeRatio >= 0.43 && eyeRatio <= 0.45 ? .pass : eyeRatio >= 0.40 && eyeRatio <= 0.48 ? .warn : .fail
-    let ts: Signal = topMm >= 3 && topMm <= 7 ? .pass : topMm >= 2 && topMm <= 10 ? .warn : .fail
-    let bs: Signal = bottomMm >= 4 && bottomMm <= 10 ? .pass : bottomMm >= 2 && bottomMm <= 12 ? .warn : .fail
+    let tall = spec.heightMM >= 60
+    let es: Signal = tall
+        ? (eyeRatio >= 0.40 && eyeRatio <= 0.48 ? .pass : eyeRatio >= 0.38 && eyeRatio <= 0.50 ? .warn : .fail)
+        : (eyeRatio >= 0.43 && eyeRatio <= 0.45 ? .pass : eyeRatio >= 0.40 && eyeRatio <= 0.48 ? .warn : .fail)
+    let ts: Signal = tall
+        ? (topMm >= 10 && topMm <= 20 ? .pass : topMm >= 5 && topMm <= 25 ? .warn : .fail)
+        : (topMm >= 3 && topMm <= 7 ? .pass : topMm >= 2 && topMm <= 10 ? .warn : .fail)
+    let bs: Signal = tall
+        ? (bottomMm >= 10 && bottomMm <= 25 ? .pass : bottomMm >= 5 && bottomMm <= 30 ? .warn : .fail)
+        : (bottomMm >= 4 && bottomMm <= 10 ? .pass : bottomMm >= 2 && bottomMm <= 12 ? .warn : .fail)
     let cs: Signal = centerOffMm < 1 ? .pass : centerOffMm < 2 ? .warn : .fail
     let blocked = faceMm < spec.faceMin || faceMm > spec.faceMax || eyeRatio < 0.40 || eyeRatio > 0.48
 
@@ -653,7 +661,8 @@ func cropAutoPlace(face: FaceDetectionResult, frameW: CGFloat, frameH: CGFloat, 
     let sc = targetPx / faceHC
 
     let eyeYC = (elC.y + erC.y) / 2
-    let posY = 0.43 * frameH - frameH / 2 - (eyeYC - frameH / 2) * sc
+    let eyeTarget: CGFloat = spec.heightMM >= 60 ? 0.42 : 0.43
+    let posY = eyeTarget * frameH - frameH / 2 - (eyeYC - frameH / 2) * sc
     let faceCXC = (elC.x + erC.x) / 2
     let posX = -(faceCXC - frameW / 2) * sc
 

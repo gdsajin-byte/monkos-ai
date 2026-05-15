@@ -107,6 +107,7 @@ struct ContentView: View {
                     Button {
                         purpose = p.id
                         search = ""
+                        selectedContinent = nil
                     } label: {
                         VStack(spacing: 2) {
                             Text(p.icon).font(.system(size: 14))

@@ -106,6 +106,15 @@ status: active
 | 05/14 | 막내3 | **주요 10국 운전면허 규격** — 5국 여권동일, 4국 고유규격(JP 24×30, CN 22×32, VN/ID 30×40), 미국 현장촬영 | [REPORT_면허](../reports/2026-05/REPORT_20260514_막내3_주요국_운전면허규격.md) | ✅ |
 | 05/14 | 쌍아 | **SpecData 확장** — 싱가포르·인도 카드 추가, 전체 faceTarget 보정 적용 | SpecData.swift | ✅ |
 | 05/14 | 쌍아 | **Step1 4탭 재구성 + 기타 모드** — 여권/비자/면허/기타 탭 분리, 기타=커스텀 mm+DPI 입력+가이드 없는 자유 크롭. 비자 5국·면허 7국 DocSpec 추가. faceTarget 높이별 분기(≥40mm→33, <40mm→70%) | ContentView/SpecData | ✅ |
+| 05/15 | 쌍아 | **신호등 컬러 버그 수정** — faceSignal 하드코딩(33-35mm) → 규격별 sweet spot 20-80% 동적 계산. 인도 여권/비자 px 630×810→600×600 정사각 수정 | SpecData.swift | ✅ |
+| 05/15 | 쌍아 | **200개국 JSONL 데이터 구축** — 하드코딩 10국 → `countries.jsonl` 파일 분리. Package.swift resources 추가, Bundle.module 로딩. ISO alpha-2 코드에서 국기 이모지 자동 생성 | Resources/countries.jsonl + SpecData.swift | ✅ |
+| 05/15 | 쌍아 | **대륙별 카드 UI 전면 교체** — 6대륙 그라데이션 카드 그리드(2열) + 국가 카드 그리드(2열) + 뒤로가기 + 검색 시 플랫 리스트. ContinentGroup 모델 + continentMeta(색상/점) | ContentView/SpecData | ✅ |
+| 05/15 | 쌍아 | **비자 탭 200개국 표시** — icaoDefault에 ICAO 기본 비자(35×45) 자동 생성 추가. 탭 전환 시 selectedContinent 초기화 | SpecData/ContentView | ✅ |
+| 05/15 | 막내1~4 | **200개국 전수조사 1차** — 4명 병렬(아시아+오세아니아 48국, 유럽 51국, 아메리카+중동 49국, 아프리카 54국). 비표준 73국 발견, 특이점 조사(AI 금지/배경색/발급위치별 차이 등) | REPORT×4 | ✅ |
+| 05/15 | 막내1~4 | **200개국 전수조사 2차 검수** — 출처 신뢰도 재검증. A/B/C/X 등급 체계 도입. A+B=114건 반영 대상, C/X=33건 보류 | REPORT×4 (2차 검수) | ✅ |
+| 05/15 | 쌍아 | **구글 시트 정리** — A+B 114건(시트1) + C/X 33건(미확인 추적) 테이블링. 대륙/국가id/규격/특이점/출처구분/신뢰등급 13컬럼 | [구글 시트](https://docs.google.com/spreadsheets/d/1xJevDKOWCCIjEGqamiaLSMaNi0tOrqN8BQpQ0pToCks/edit) | ✅ |
+| 05/15 | 막내1 | **JSONL A+B 등급 반영** — 비표준 63국 docs 추가 + 인도 여권 51×51→35×45 + 중국 비자 head 15-22→28-33. 202국/커스텀 72국/ICAO 130국. swift build 통과 | countries.jsonl | ✅ |
+| 05/15 | 쌍아 | **캐나다 50×70 배치 보정** — 세로 60mm+ 규격: faceTarget=fMax-1(35mm), eyeTarget=42%, 신호등 TOP/BTM/EYE 허용 범위 확대 | SpecData.swift | ✅ |
 
 ---
 
@@ -228,8 +237,17 @@ us-passport (51×51 정사각형), india-passport (51×51, 단 우리 정본은 
 | 2-W | **Apple Vision 배경 제거** — PersonSegmentation, ISNet 대비 품질 우위, 번들 0MB | ✅ | 쌍아 5/13 | CropEngine.swift |
 | 2-X | **1차 E2E 테스트 통과** — macOS PoC에서 풀 플로우 동작 확인 | ✅ | 작가님 5/13 | 디테일 조정 남음 |
 | 2-Y | **Phase 2 디테일** — macOS 스타일/오버레이 심플화/신호등/검수 시퀀스/줌+패닝 | ✅ | 쌍아 5/13 | |
-| 2-Z | Step 순서 변경: 배경→크롭 (줌 시 누끼 필수) | ❌ | — | 방향 확정, 다음 이터 |
+| 2-Z | Step 순서 변경: 배경→크롭 (줌 시 누끼 필수) | ✅ | 쌍아 5/14 | 배경→크롭 순서 확정 구현 |
 | 2-AA | **정밀 교정 모드** — 프레임 고정+원본 줌/패닝+실시간 메트릭. 기본 플로우와 별도 분기 | ❌ | — | 아래 §설계 방향 참조 |
+| 2-AB | **202국 JSONL 데이터 + 대륙별 카드 UI** | ✅ | 쌍아 5/15 | 72국 커스텀 + 130국 ICAO |
+| 2-AC | **200개국 전수조사 + 2차 출처 검수** | ✅ | 막내1~4 5/15 | A+B 114건 반영, C/X 33건 보류 |
+| 2-AD | **JSONL A+B 등급 반영** | ✅ | 막내1 5/15 | 비표준 63국 docs 추가 |
+| 2-AE | **세로 60mm+ 규격 배치 보정 (캐나다 등)** | ✅ | 쌍아 5/15 | faceTarget/eyeTarget/신호등 분기 |
+| 2-AF | 대륙 카드 배경 이미지 (그라데이션→사진) | ❌ | — | 철창이 디자인 대기 |
+| 2-AG | warning 확장 (AI 금지/안경 금지 등 특이점 표시) | ❌ | — | 2차 검수 데이터 활용 |
+| 2-AH | 앱 네이밍 확정 | ❌ | — | 철창이 브레인스토밍 |
+| 2-AI | M1 Xcode 빌드 + 앱스토어 배포 | ❌ | — | 기능 완성 후 |
+| 2-AJ | Analytics SDK (Firebase 등 2단계 데이터 수집) | ❌ | — | 배포 시점 |
 
 #### 배경 제거 엔진 비교 (04-30 PoC)
 
