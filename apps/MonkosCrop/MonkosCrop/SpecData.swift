@@ -106,8 +106,44 @@ struct Country: Identifiable, Hashable {
     let id: String
     let flag: String
     let names: [String: String]
+    var continent: String = "asia"
     let docs: [DocSpec]
     func name(_ l: String) -> String { names[l] ?? names["ko"] ?? id }
+}
+
+struct ContinentGroup: Identifiable {
+    let id: String
+    let names: [String: String]
+    let icon: String
+    let countries: [Country]
+    var gradA: String = "1A1A2A"
+    var gradB: String = "2A2A3A"
+    var dot: String = "00D4AA"
+    func name(_ l: String) -> String { names[l] ?? names["ko"] ?? id }
+}
+
+let continentOrder = ["asia", "europe", "americas", "oceania", "africa", "middleeast"]
+
+let continentMeta: [String: (names: [String: String], icon: String, colors: (String, String), dot: String)] = [
+    "asia":       (["ko": "아시아", "en": "Asia", "ja": "アジア"], "🌏", ("1A3A2A", "2D5A3A"), "00D4AA"),
+    "europe":     (["ko": "유럽", "en": "Europe", "ja": "ヨーロッパ"], "🌍", ("1A1A3A", "3A2A5A"), "A78BFA"),
+    "americas":   (["ko": "아메리카", "en": "Americas", "ja": "アメリカ大陸"], "🌎", ("1A2A3A", "2A3A5A"), "3B82F6"),
+    "africa":     (["ko": "아프리카", "en": "Africa", "ja": "アフリカ"], "🌍", ("3A2A1A", "5A3A1A"), "FFB020"),
+    "oceania":    (["ko": "오세아니아", "en": "Oceania", "ja": "オセアニア"], "🌊", ("1A2A2A", "1A3A4A"), "FF6B9D"),
+    "middleeast": (["ko": "중동", "en": "Middle East", "ja": "中東"], "🕌", ("2A2A1A", "4A3A1A"), "F59E0B"),
+]
+
+func groupedByContinent(_ countries: [Country]) -> [ContinentGroup] {
+    var dict: [String: [Country]] = [:]
+    for c in countries {
+        dict[c.continent, default: []].append(c)
+    }
+    return continentOrder.compactMap { key in
+        guard let list = dict[key], !list.isEmpty,
+              let meta = continentMeta[key] else { return nil }
+        return ContinentGroup(id: key, names: meta.names, icon: meta.icon, countries: list,
+                              gradA: meta.colors.0, gradB: meta.colors.1, dot: meta.dot)
+    }
 }
 
 struct DocSpec: Identifiable, Hashable {
@@ -260,6 +296,7 @@ private let i18n: [String: [String: String]] = [
         "server": "서버",
         "crop_lbl": "크롭",
         "search": "국가 검색…",
+        "countries_unit": "개국",
         "purpose": "문서 유형",
         "width": "가로",
         "height": "세로",
@@ -320,6 +357,7 @@ private let i18n: [String: [String: String]] = [
         "server": "SERVER",
         "crop_lbl": "CROP",
         "search": "Search country…",
+        "countries_unit": " countries",
         "purpose": "Document Type",
         "width": "Width",
         "height": "Height",
@@ -380,6 +418,7 @@ private let i18n: [String: [String: String]] = [
         "server": "サーバー",
         "crop_lbl": "クロップ",
         "search": "国を検索…",
+        "countries_unit": "ヶ国",
         "purpose": "書類の種類",
         "width": "幅",
         "height": "高さ",
@@ -438,141 +477,80 @@ let bgOptions: [BgOption] = [
     BgOption(id: "blue",  hex: "7BA3C9", names: ["ko": "블루", "en": "Blue", "ja": "ブルー"]),
 ]
 
-let appCountries: [Country] = [
-    Country(id: "korea", flag: "🇰🇷",
-            names: ["ko": "대한민국", "en": "South Korea", "ja": "韓国"],
-            docs: [
-                DocSpec(id: "kr-passport", type: "passport",
-                        names: ["ko": "여권", "en": "Passport", "ja": "パスポート"],
-                        size: "35 × 45 mm", px: "413 × 531 px", group: "A",
-                        headHeight: "32–36 mm", standard: "ICAO 9303"),
-                DocSpec(id: "kr-id", type: "id",
-                        names: ["ko": "주민등록증", "en": "Resident ID", "ja": "住民登録証"],
-                        size: "35 × 45 mm", px: "413 × 531 px", group: "A",
-                        headHeight: "32–36 mm", standard: "KR-MOIS"),
-                DocSpec(id: "kr-resume", type: "resume",
-                        names: ["ko": "반명함", "en": "Resume", "ja": "半名刺"],
-                        size: "30 × 40 mm", px: "354 × 472 px", group: "B",
-                        headHeight: "—", standard: "—"),
-                DocSpec(id: "kr-license", type: "license",
-                        names: ["ko": "면허", "en": "License", "ja": "免許証"],
-                        size: "35 × 45 mm", px: "413 × 531 px", group: "A",
-                        headHeight: "32–36 mm", standard: "도로교통법"),
-            ]),
-    Country(id: "japan", flag: "🇯🇵",
-            names: ["ko": "일본", "en": "Japan", "ja": "日本"],
-            docs: [
-                DocSpec(id: "jp-passport", type: "passport",
-                        names: ["ko": "여권", "en": "Passport", "ja": "パスポート"],
-                        size: "35 × 45 mm", px: "413 × 531 px", group: "A",
-                        headHeight: "32–36 mm", standard: "ICAO 9303"),
-                DocSpec(id: "jp-mynumber", type: "id",
-                        names: ["ko": "마이넘버", "en": "My Number", "ja": "マイナンバー"],
-                        size: "35 × 45 mm", px: "480 × 480 px", group: "A",
-                        headHeight: "32–36 mm", standard: "J-LIS"),
-                DocSpec(id: "jp-visa", type: "visa",
-                        names: ["ko": "비자", "en": "Visa", "ja": "ビザ"],
-                        size: "45 × 45 mm", px: "531 × 531 px", group: "C",
-                        headHeight: "32–36 mm", standard: "MOJ"),
-                DocSpec(id: "jp-license", type: "license",
-                        names: ["ko": "면허", "en": "License", "ja": "免許証"],
-                        size: "24 × 30 mm", px: "283 × 354 px", group: "B",
-                        headHeight: "—", standard: "道路交通法"),
-            ]),
-    Country(id: "usa", flag: "🇺🇸",
-            names: ["ko": "미국", "en": "United States", "ja": "アメリカ"],
-            docs: [
-                DocSpec(id: "us-passport", type: "passport",
-                        names: ["ko": "여권", "en": "Passport", "ja": "パスポート"],
-                        size: "51 × 51 mm", px: "600 × 600 px", group: "C",
-                        headHeight: "25–35 mm", standard: "22 CFR 51"),
-                DocSpec(id: "us-visa", type: "visa",
-                        names: ["ko": "비자", "en": "Visa", "ja": "ビザ"],
-                        size: "51 × 51 mm", px: "600 × 600 px", group: "C",
-                        headHeight: "22–35 mm", standard: "22 CFR 51"),
-            ]),
-    Country(id: "eu", flag: "🇪🇺",
-            names: ["ko": "EU (쉥겐)", "en": "EU (Schengen)", "ja": "EU (シェンゲン)"],
-            docs: [
-                DocSpec(id: "eu-passport", type: "passport",
-                        names: ["ko": "여권", "en": "Passport", "ja": "パスポート"],
-                        size: "35 × 45 mm", px: "413 × 531 px", group: "A",
-                        headHeight: "32–36 mm", standard: "ICAO 9303"),
-                DocSpec(id: "eu-visa", type: "visa",
-                        names: ["ko": "비자", "en": "Visa", "ja": "ビザ"],
-                        size: "35 × 45 mm", px: "413 × 531 px", group: "A",
-                        headHeight: "32–36 mm", standard: "ICAO 9303"),
-                DocSpec(id: "eu-license", type: "license",
-                        names: ["ko": "면허", "en": "License", "ja": "免許証"],
-                        size: "35 × 45 mm", px: "413 × 531 px", group: "A",
-                        headHeight: "32–36 mm", standard: "EU Directive"),
-            ]),
-    Country(id: "uk", flag: "🇬🇧",
-            names: ["ko": "영국", "en": "United Kingdom", "ja": "イギリス"],
-            docs: [
-                DocSpec(id: "uk-passport", type: "passport",
-                        names: ["ko": "여권", "en": "Passport", "ja": "パスポート"],
-                        size: "35 × 45 mm", px: "600 × 750 px", group: "A",
-                        headHeight: "29–34 mm", standard: "HMPO"),
-                DocSpec(id: "uk-license", type: "license",
-                        names: ["ko": "면허", "en": "License", "ja": "免許証"],
-                        size: "35 × 45 mm", px: "600 × 750 px", group: "A",
-                        headHeight: "29–34 mm", standard: "DVLA"),
-            ]),
-    Country(id: "china", flag: "🇨🇳",
-            names: ["ko": "중국", "en": "China", "ja": "中国"],
-            docs: [
-                DocSpec(id: "cn-passport", type: "passport",
-                        names: ["ko": "여권", "en": "Passport", "ja": "パスポート"],
-                        size: "33 × 48 mm", px: "390 × 567 px", group: "B",
-                        headHeight: "28–33 mm", standard: "GA 461"),
-                DocSpec(id: "cn-visa", type: "visa",
-                        names: ["ko": "비자", "en": "Visa", "ja": "ビザ"],
-                        size: "33 × 48 mm", px: "354 × 472 px", group: "B",
-                        headHeight: "15–22 mm", standard: "GA 461"),
-                DocSpec(id: "cn-license", type: "license",
-                        names: ["ko": "면허", "en": "License", "ja": "免許証"],
-                        size: "22 × 32 mm", px: "260 × 378 px", group: "B",
-                        headHeight: "—", standard: "GA 482"),
-            ]),
-    Country(id: "canada", flag: "🇨🇦",
-            names: ["ko": "캐나다", "en": "Canada", "ja": "カナダ"],
-            docs: [
-                DocSpec(id: "ca-passport", type: "passport",
-                        names: ["ko": "여권", "en": "Passport", "ja": "パスポート"],
-                        size: "50 × 70 mm", px: "590 × 826 px", group: "D",
-                        headHeight: "31–36 mm", standard: "PPTC-203",
-                        warning: [
-                            "ko": "⚠️ 캐나다 여권은 전문 사진사 촬영이 의무입니다. 사진 뒷면에 사진사 서명·주소·촬영일자 기재 필수. 본 앱은 디지털 크롭 도구이며, 최종 제출용으로는 공인 사진관 이용을 권장합니다.",
-                            "en": "⚠️ Canada requires photos taken by a commercial photographer. Photographer's signature, address, and date must be on the back. This app is a digital crop tool — use a certified photo studio for final submission.",
-                            "ja": "⚠️ カナダのパスポートは商業写真家による撮影が義務です。写真裏面に撮影者の署名・住所・撮影日の記載が必須。本アプリはデジタルクロップツールです。最終提出には公認写真館をご利用ください。"
-                        ]),
-            ]),
-    Country(id: "singapore", flag: "🇸🇬",
-            names: ["ko": "싱가포르", "en": "Singapore", "ja": "シンガポール"],
-            docs: [
-                DocSpec(id: "sg-passport", type: "passport",
-                        names: ["ko": "여권", "en": "Passport", "ja": "パスポート"],
-                        size: "35 × 45 mm", px: "400 × 514 px", group: "A",
-                        headHeight: "25–35 mm", standard: "ICA"),
-            ]),
-    Country(id: "india", flag: "🇮🇳",
-            names: ["ko": "인도", "en": "India", "ja": "インド"],
-            docs: [
-                DocSpec(id: "in-passport", type: "passport",
-                        names: ["ko": "여권", "en": "Passport", "ja": "パスポート"],
-                        size: "51 × 51 mm", px: "630 × 810 px", group: "C",
-                        headHeight: "36–41 mm", standard: "ICAO (2025.9~)"),
-                DocSpec(id: "in-visa", type: "visa",
-                        names: ["ko": "비자", "en": "Visa", "ja": "ビザ"],
-                        size: "51 × 51 mm", px: "630 × 810 px", group: "C",
-                        headHeight: "36–41 mm", standard: "BLS/VFS"),
-                DocSpec(id: "in-license", type: "license",
-                        names: ["ko": "면허", "en": "License", "ja": "免許証"],
-                        size: "35 × 45 mm", px: "413 × 531 px", group: "A",
-                        headHeight: "32–36 mm", standard: "MVA"),
-            ]),
-]
+// MARK: - JSONL → Country loader
+
+private func flagEmoji(_ code: String) -> String {
+    let base: UInt32 = 0x1F1E6
+    return code.uppercased().unicodeScalars.compactMap {
+        Unicode.Scalar(base + $0.value - Unicode.Scalar("A").value)
+    }.map { String($0) }.joined()
+}
+
+private func icaoDefault(id: String, ko: String, en: String, ja: String) -> [DocSpec] {
+    [DocSpec(id: "\(id)-passport", type: "passport",
+             names: ["ko": "여권", "en": "Passport", "ja": "パスポート"],
+             size: "35 × 45 mm", px: "413 × 531 px", group: "A",
+             headHeight: "32–36 mm", standard: "ICAO 9303"),
+     DocSpec(id: "\(id)-visa", type: "visa",
+             names: ["ko": "비자", "en": "Visa", "ja": "ビザ"],
+             size: "35 × 45 mm", px: "413 × 531 px", group: "A",
+             headHeight: "32–36 mm", standard: "ICAO 9303")]
+}
+
+private func parseDoc(_ d: [String: Any]) -> DocSpec? {
+    guard let id = d["id"] as? String,
+          let type = d["type"] as? String else { return nil }
+    let ko = d["ko"] as? String ?? type
+    let en = d["en"] as? String ?? type
+    let ja = d["ja"] as? String ?? type
+    let sz = (d["size"] as? String ?? "35x45").components(separatedBy: "x")
+    let px = (d["px"] as? String ?? "413x531").components(separatedBy: "x")
+    let head = d["head"] as? String ?? ""
+    let std = d["std"] as? String ?? "ICAO 9303"
+    let w = sz.first ?? "35", h = sz.last ?? "45"
+    let pw = px.first ?? "413", ph = px.last ?? "531"
+    let headStr = head.isEmpty ? "—" : "\(head) mm".replacingOccurrences(of: "-", with: "–")
+    let sizeStr = "\(w) × \(h) mm"
+    let pxStr = "\(pw) × \(ph) px"
+    let wv = Double(w) ?? 35, hv = Double(h) ?? 45
+    let group = wv == hv ? "C" : hv >= 60 ? "D" : wv <= 30 ? "B" : "A"
+
+    var warn: [String: String]? = nil
+    if let w = d["warning"] as? [String: String] { warn = w }
+
+    return DocSpec(id: id, type: type,
+                   names: ["ko": ko, "en": en, "ja": ja],
+                   size: sizeStr, px: pxStr, group: group,
+                   headHeight: headStr, standard: std, warning: warn)
+}
+
+let appCountries: [Country] = {
+    guard let url = Bundle.module.url(forResource: "countries", withExtension: "jsonl"),
+          let data = try? String(contentsOf: url, encoding: .utf8) else { return [] }
+    return data.components(separatedBy: .newlines).compactMap { line -> Country? in
+        let trimmed = line.trimmingCharacters(in: .whitespaces)
+        guard !trimmed.isEmpty,
+              let jsonData = trimmed.data(using: .utf8),
+              let obj = try? JSONSerialization.jsonObject(with: jsonData) as? [String: Any],
+              let id = obj["id"] as? String,
+              let ko = obj["ko"] as? String,
+              let en = obj["en"] as? String,
+              let ja = obj["ja"] as? String,
+              let continent = obj["continent"] as? String else { return nil }
+
+        let flag = flagEmoji(id)
+        var docs: [DocSpec] = []
+        if let rawDocs = obj["docs"] as? [[String: Any]], !rawDocs.isEmpty {
+            docs = rawDocs.compactMap { parseDoc($0) }
+        }
+        if docs.isEmpty {
+            docs = icaoDefault(id: id, ko: ko, en: en, ja: ja)
+        }
+        return Country(id: id, flag: flag,
+                       names: ["ko": ko, "en": en, "ja": ja],
+                       continent: continent, docs: docs)
+    }
+}()
 
 // MARK: - CropState (웹 crop.js pts + imgPos + imgScale 이식)
 
@@ -638,7 +616,10 @@ func computeMetrics(state: CropState, frameH: CGFloat, spec: PhotoSpec) -> CropM
     let eyeRatio = eyeY / frameH
     let centerOffMm = abs(state.faceCenterX - frameW / 2) / MM
 
-    let fs: Signal = faceMm >= 33 && faceMm <= 35 ? .pass : faceMm >= spec.faceMin && faceMm <= spec.faceMax ? .warn : .fail
+    let fRange = spec.faceMax - spec.faceMin
+    let fSweetMin = spec.faceMin + fRange * 0.2
+    let fSweetMax = spec.faceMax - fRange * 0.2
+    let fs: Signal = faceMm >= fSweetMin && faceMm <= fSweetMax ? .pass : faceMm >= spec.faceMin && faceMm <= spec.faceMax ? .warn : .fail
     let es: Signal = eyeRatio >= 0.43 && eyeRatio <= 0.45 ? .pass : eyeRatio >= 0.40 && eyeRatio <= 0.48 ? .warn : .fail
     let ts: Signal = topMm >= 3 && topMm <= 7 ? .pass : topMm >= 2 && topMm <= 10 ? .warn : .fail
     let bs: Signal = bottomMm >= 4 && bottomMm <= 10 ? .pass : bottomMm >= 2 && bottomMm <= 12 ? .warn : .fail

@@ -8,7 +8,8 @@ let package = Package(
         .executableTarget(
             name: "MonkosCrop",
             path: "MonkosCrop",
-            exclude: ["Preview Content", "Info.plist", "Assets.xcassets"]
+            exclude: ["Preview Content", "Info.plist", "Assets.xcassets"],
+            resources: [.copy("Resources/countries.jsonl")]
         )
     ]
 )

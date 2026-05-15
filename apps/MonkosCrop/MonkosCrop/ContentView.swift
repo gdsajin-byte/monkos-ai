@@ -33,6 +33,7 @@ struct ContentView: View {
     @State private var lastDragT: CGSize = .zero
     @State private var crownDragBase: CGFloat? = nil
     @StateObject private var inspection = InspectionState()
+    @State private var selectedContinent: String? = nil
 
     private var lang: String {
         let l = Locale.current.language.languageCode?.identifier ?? "en"
@@ -206,7 +207,6 @@ struct ContentView: View {
                 .padding(.horizontal, 20).padding(.top, 8).padding(.bottom, 12)
 
             } else {
-                // 여권/비자/면허: 검색 + 국가 드롭다운
                 HStack(spacing: 8) {
                     Image(systemName: "magnifyingglass")
                         .font(.system(size: 14))
@@ -222,37 +222,89 @@ struct ContentView: View {
                 .padding(.horizontal, 20).padding(.bottom, 10)
 
                 ScrollView(.vertical, showsIndicators: false) {
-                    LazyVStack(spacing: 5) {
-                        ForEach(filteredCountries) { c in
-                            let matchDocs = c.docs.filter { $0.type == purpose || purpose == "passport" && $0.type == "id" }
-                            if !matchDocs.isEmpty {
-                                let firstDoc = matchDocs[0]
-                                let sel = country.id == c.id && matchDocs.contains(where: { $0.id == doc.id })
+                    VStack(spacing: 12) {
+                        if !search.isEmpty {
+                            let cols = [GridItem(.flexible(), spacing: 6), GridItem(.flexible(), spacing: 6)]
+                            LazyVGrid(columns: cols, spacing: 6) {
+                                ForEach(filteredCountries) { c in
+                                    let matchDocs = c.docs.filter { $0.type == purpose || (purpose == "passport" && $0.type == "id") }
+                                    if !matchDocs.isEmpty { countryCard(c) }
+                                }
+                            }
+                        } else if let selCont = selectedContinent {
+                            let groups = groupedByContinent(filteredCountries)
+                            if let group = groups.first(where: { $0.id == selCont }) {
+                                let groupCountries = group.countries.filter { c in
+                                    c.docs.contains { $0.type == purpose || (purpose == "passport" && $0.type == "id") }
+                                }
+
                                 Button {
-                                    country = c
-                                    doc = firstDoc
+                                    withAnimation(.easeInOut(duration: 0.25)) { selectedContinent = nil }
                                 } label: {
-                                    HStack(spacing: 10) {
-                                        Text(c.flag).font(.system(size: 22))
-                                        VStack(alignment: .leading, spacing: 1) {
-                                            Text(c.name(lang))
-                                                .font(.system(size: 13, weight: .bold))
-                                                .foregroundStyle(V1.text)
-                                            Text("\(firstDoc.name(lang)) · \(firstDoc.size.replacingOccurrences(of: " mm", with: ""))")
-                                                .font(.system(size: 9, design: .monospaced))
-                                                .foregroundStyle(V1.dim)
-                                        }
+                                    HStack(spacing: 6) {
+                                        Image(systemName: "chevron.left")
+                                            .font(.system(size: 10, weight: .bold))
+                                        Text(group.name(lang))
+                                            .font(.system(size: 13, weight: .bold))
+                                        Text("· \(groupCountries.count)\(tr("countries_unit", lang))")
+                                            .font(.system(size: 11))
+                                            .foregroundStyle(V1.dim)
                                         Spacer()
-                                        Text(firstDoc.size.replacingOccurrences(of: " mm", with: ""))
-                                            .font(.system(size: 10, weight: .bold, design: .monospaced))
-                                            .foregroundStyle(sel ? V1.accent : V1.muted)
-                                            .padding(.horizontal, 6).padding(.vertical, 2)
-                                            .background(RoundedRectangle(cornerRadius: 3).fill(sel ? V1.accent.opacity(0.08) : .clear))
-                                            .overlay(RoundedRectangle(cornerRadius: 3).stroke(sel ? V1.accent.opacity(0.26) : V1.border, lineWidth: 1))
                                     }
-                                    .padding(.horizontal, 12).padding(.vertical, 10)
-                                    .background(RoundedRectangle(cornerRadius: 10).fill(sel ? V1.accent.opacity(0.06) : V1.card))
-                                    .overlay(RoundedRectangle(cornerRadius: 10).stroke(sel ? V1.accent.opacity(0.4) : V1.border, lineWidth: 1))
+                                    .foregroundStyle(V1.text)
+                                }
+
+                                let cols = [GridItem(.flexible(), spacing: 6), GridItem(.flexible(), spacing: 6)]
+                                LazyVGrid(columns: cols, spacing: 6) {
+                                    ForEach(groupCountries) { c in
+                                        countryCard(c)
+                                    }
+                                }
+                            }
+                        } else {
+                            let groups = groupedByContinent(filteredCountries)
+                            let cols = [GridItem(.flexible(), spacing: 8), GridItem(.flexible(), spacing: 8)]
+                            LazyVGrid(columns: cols, spacing: 8) {
+                                ForEach(groups) { group in
+                                    let cnt = group.countries.filter { c in
+                                        c.docs.contains { $0.type == purpose || (purpose == "passport" && $0.type == "id") }
+                                    }.count
+                                    if cnt > 0 {
+                                        Button {
+                                            withAnimation(.easeInOut(duration: 0.25)) { selectedContinent = group.id }
+                                        } label: {
+                                            ZStack(alignment: .topTrailing) {
+                                                VStack(alignment: .leading, spacing: 2) {
+                                                    Spacer()
+                                                    Text(group.names["en"] ?? "")
+                                                        .font(.system(size: 8, weight: .heavy, design: .monospaced))
+                                                        .foregroundStyle(Color(hex: group.dot).opacity(0.8))
+                                                        .textCase(.uppercase)
+                                                    Text(group.name(lang))
+                                                        .font(.system(size: 18, weight: .heavy))
+                                                        .foregroundStyle(.white)
+                                                    Text("\(cnt)\(tr("countries_unit", lang))")
+                                                        .font(.system(size: 11))
+                                                        .foregroundStyle(.white.opacity(0.6))
+                                                }
+                                                .frame(maxWidth: .infinity, alignment: .leading)
+                                                .padding(12)
+
+                                                Circle()
+                                                    .fill(Color(hex: group.dot))
+                                                    .frame(width: 10, height: 10)
+                                                    .padding(10)
+                                            }
+                                            .frame(height: 110)
+                                            .background(
+                                                LinearGradient(
+                                                    colors: [Color(hex: group.gradA), Color(hex: group.gradB)],
+                                                    startPoint: .topLeading, endPoint: .bottomTrailing
+                                                )
+                                            )
+                                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -287,6 +339,69 @@ struct ContentView: View {
         return base.filter {
             $0.name(lang).lowercased().contains(q) ||
             $0.name("en").lowercased().contains(q)
+        }
+    }
+
+    @ViewBuilder
+    private func countryRow(_ c: Country) -> some View {
+        let matchDocs = c.docs.filter { $0.type == purpose || (purpose == "passport" && $0.type == "id") }
+        if let firstDoc = matchDocs.first {
+            let sel = country.id == c.id && matchDocs.contains(where: { $0.id == doc.id })
+            Button {
+                country = c
+                doc = firstDoc
+            } label: {
+                HStack(spacing: 10) {
+                    Text(c.flag).font(.system(size: 22))
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text(c.name(lang))
+                            .font(.system(size: 13, weight: .bold))
+                            .foregroundStyle(V1.text)
+                        Text("\(firstDoc.name(lang)) · \(firstDoc.size.replacingOccurrences(of: " mm", with: ""))")
+                            .font(.system(size: 9, design: .monospaced))
+                            .foregroundStyle(V1.dim)
+                    }
+                    Spacer()
+                    Text(firstDoc.size.replacingOccurrences(of: " mm", with: ""))
+                        .font(.system(size: 10, weight: .bold, design: .monospaced))
+                        .foregroundStyle(sel ? V1.accent : V1.muted)
+                        .padding(.horizontal, 6).padding(.vertical, 2)
+                        .background(RoundedRectangle(cornerRadius: 3).fill(sel ? V1.accent.opacity(0.08) : .clear))
+                        .overlay(RoundedRectangle(cornerRadius: 3).stroke(sel ? V1.accent.opacity(0.26) : V1.border, lineWidth: 1))
+                }
+                .padding(.horizontal, 12).padding(.vertical, 10)
+                .background(RoundedRectangle(cornerRadius: 10).fill(sel ? V1.accent.opacity(0.06) : V1.card))
+                .overlay(RoundedRectangle(cornerRadius: 10).stroke(sel ? V1.accent.opacity(0.4) : V1.border, lineWidth: 1))
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func countryCard(_ c: Country) -> some View {
+        let matchDocs = c.docs.filter { $0.type == purpose || (purpose == "passport" && $0.type == "id") }
+        if let firstDoc = matchDocs.first {
+            let sel = country.id == c.id && matchDocs.contains(where: { $0.id == doc.id })
+            Button {
+                country = c
+                doc = firstDoc
+            } label: {
+                HStack(spacing: 8) {
+                    Text(c.flag).font(.system(size: 24))
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text(c.name(lang))
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundStyle(V1.text)
+                            .lineLimit(1)
+                        Text("\(firstDoc.name(lang)) · \(firstDoc.size.replacingOccurrences(of: " mm", with: ""))")
+                            .font(.system(size: 8, design: .monospaced))
+                            .foregroundStyle(V1.dim)
+                    }
+                    Spacer(minLength: 0)
+                }
+                .padding(.horizontal, 10).padding(.vertical, 10)
+                .background(RoundedRectangle(cornerRadius: 10).fill(sel ? V1.accent.opacity(0.06) : V1.card))
+                .overlay(RoundedRectangle(cornerRadius: 10).stroke(sel ? V1.accent.opacity(0.4) : V1.border, lineWidth: 1))
+            }
         }
     }
 
