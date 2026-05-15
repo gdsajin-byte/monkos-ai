@@ -6,7 +6,7 @@ subject: "AI 프로필 사진 독립 서비스 — 스타일링 템플릿 기반
 created: 2026-04-28
 owner: 작가님
 leads: "쌍아(설계), 막내(구현)"
-status: "draft"
+status: draft
 domain: "monkos-ai/service"
 ---
 

@@ -6,7 +6,7 @@ subject: "PT 콘텐츠 자동화 엔진 — 3D캐릭터/실사모델 × TTS × �
 created: 2026-04-03
 owner: 작가님
 leads: "쌍아(설계+지휘), 민아(콘텐츠+싱크맵), 막내(구현)"
-status: "active"
+status: active
 domain: "presentation, 3d-avatar, tts, content-pipeline"
 ---
 

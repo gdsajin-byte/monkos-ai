@@ -6,7 +6,7 @@ subject: "어떤 에이전트에도 이식 가능한 범용 Agent OS로의 진�
 created: 2026-04-23
 owner: 작가님
 leads: "iMac/쌍아(설계·통합), iMac/막내1~4(병렬 리서치·감사), 민아(검증·통합 보조)"
-status: "draft"
+status: draft
 domain: "governance/infrastructure"
 ---
 
