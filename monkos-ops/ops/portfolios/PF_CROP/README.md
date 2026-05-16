@@ -121,6 +121,11 @@ status: active
 | 05/16 | 쌍아 | **iOS 빌드 이슈 3건 해결** — ①Bundle.module→Bundle.main(SPM vs Xcode 프로젝트) ②countries.jsonl pbxproj 리소스 등록 ③DEVELOPMENT_TEAM(ZPMVHPDUHW) 서명 설정 + Keychain unlock | project.pbxproj, SpecData.swift | ✅ |
 | 05/16 | 쌍아 | **iPhone 실기기 설치 + 실행 성공** — M4→iPhone(26.4.2) devicectl install + launch. 개발자 모드 활성화 필요 확인. NSPhotoLibraryAddUsageDescription + NSCameraUsageDescription 권한 추가 | Info.plist | ✅ |
 | 05/16 | 작가님 | **iPhone 실기기 E2E 확인** — 앱 정상 동작. 다운로드 시 이전 규격 캐시 표시 의심 — saveToDisk 에러 콜백 미구현으로 저장 실패 무시 가능성. 후속 수정 대상 | — | ⏳ |
+| 05/16 | 작가님 | **IDPASS 네이밍 확정** — 앱 브랜드 MONKOS CROP → IDPASS (powered by MONKOS AI). 경쟁 조사 완료: 기존 IDPASS 서비스는 신원인증 영역, 증명사진과 충돌 없음 | — | ✅ |
+| 05/16 | 막내1 | **IDPASS Landing 리디자인 + 브랜딩 변경** — Hero(IDPASS 로고+태그라인) + Phone Demo(18초 루프 애니) + 하단 5섹션. 앱 전체 MONKOS CROP → IDPASS 변경 | ContentView/SpecData | ✅ |
+| 05/16 | 쌍아 | **Phone Demo 실사 이미지 적용 + Vision 실측 좌표 보정** — 여성 셀카 4종(be/bg/crop/passport). 프레임 3:4→1:1(51×51 규격). Vision으로 눈/턱/정수리 실측 → 줌인 scale 1.44/offset 0.136 수학적 계산 | Resources/ + ContentView | ✅ |
+| 05/16 | 쌍아+작가님 | **데모 애니메이션 시퀀스 확정** — SCANNING→BG REMOVE→CROP(줌인)→INSPECT(검수: 눈→턱→정수리→HEAD 측정)→PASS→여권(PASSPORTUSA+스탬프 쾅)→블러+IDPASS 타이포. 디버그 스텝 모드 동기화 | ContentView | ✅ |
+| 05/16 | 작가님 | **Landing 구조 개편 확정** — 하단 5섹션 제거 → 4서비스카드(여권/비자/면허/커스텀) 배치. Landing=종류선택 → Step1=대륙/국가선택. 기존 Step1 4탭이 Landing으로 올라옴 | — | ⏳ 설계중 |
 
 ---
 

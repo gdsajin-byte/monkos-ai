@@ -9,7 +9,15 @@ let package = Package(
             name: "MonkosCrop",
             path: "MonkosCrop",
             exclude: ["Preview Content", "Info.plist", "Assets.xcassets"],
-            resources: [.copy("Resources/countries.jsonl")]
+            resources: [
+                .copy("Resources/countries.jsonl"),
+                .copy("Resources/ID_Photosample.jpg"),
+                .copy("Resources/be_f_1.jpg"),
+                .copy("Resources/bg_f_1.jpg"),
+                .copy("Resources/bg_cr_f_1.jpg"),
+                .copy("Resources/pass_f_1.jpg"),
+                .copy("Resources/PASSPORTUSA.jpg"),
+            ]
         )
     ]
 )
