@@ -45,7 +45,7 @@ cat /etc/ssh/sshd_config | grep -E "PasswordAuthentication|KbdInteractive|UsePAM
 
 - `PasswordAuthentication yes` 확인 (또는 주석 상태 = 기본값 yes)
 - `KbdInteractiveAuthentication yes` 확인
-- `AllowUsers` 항목이 있으면 `hansongyi` 포함 확인
+- `AllowUsers` 항목이 있으면 `hansonngyi` 포함 확인
 
 ### 1-4. iMac 공개키 등록
 
@@ -66,7 +66,7 @@ chmod 600 ~/.ssh/authorized_keys
 M4 로컬에서 자기 자신 접속 테스트:
 
 ```bash
-ssh hansongyi@localhost "echo SSH_OK"
+ssh hansonngyi@localhost "echo SSH_OK"
 ```
 
 ## 작업 2: 디바이스 프로파일 수집

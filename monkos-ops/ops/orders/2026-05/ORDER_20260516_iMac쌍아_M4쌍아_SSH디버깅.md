@@ -35,7 +35,7 @@ sudo sshd -T | grep -E "pubkeyauth|passwordauth|maxauth|usepam|allowusers|denyus
 
 - `pubkeyauthentication yes` 인지 확인
 - `authorizedkeysfile` 경로가 `~/.ssh/authorized_keys`인지 확인
-- `allowusers` / `denyusers` 항목에 hansongyi가 걸리는지 확인
+- `allowusers` / `denyusers` 항목에 hansonngyi가 걸리는지 확인
 
 ### 1-2. authorized_keys 파일 상태 확인
 
@@ -51,7 +51,7 @@ cat ~/.ssh/authorized_keys
 ### 1-3. 홈 디렉토리 퍼미션
 
 ```bash
-ls -ld /Users/hansongyi
+ls -ld /Users/hansonngyi
 ```
 
 - 홈 디렉토리가 group/other writable이면 sshd가 키를 무시한다
@@ -68,7 +68,7 @@ sudo log show --predicate 'process == "sshd"' --last 5m
 ### 1-5. 로컬 접속 테스트
 
 ```bash
-ssh hansongyi@localhost "echo SSH_LOCAL_OK"
+ssh hansonngyi@localhost "echo SSH_LOCAL_OK"
 ```
 
 ## 작업 2: 해결
@@ -78,7 +78,7 @@ ssh hansongyi@localhost "echo SSH_LOCAL_OK"
 문제 해결 후 아래 명령으로 검증:
 
 ```bash
-ssh hansongyi@localhost "echo SSH_OK"
+ssh hansonngyi@localhost "echo SSH_OK"
 ```
 
 ## 완료 기준
