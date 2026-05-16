@@ -4,5 +4,9 @@
 <dict>
 	<key>CFBundleIconName</key>
 	<string>AppIcon</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>증명사진을 사진 앨범에 저장합니다.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>증명사진 촬영을 위해 카메라를 사용합니다.</string>
 </dict>
 </plist>
