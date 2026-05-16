@@ -1,0 +1,132 @@
+client:
+  name: basic
+tools: {}
+targets:
+  "MonkosCrop-debug.exe": ["<MonkosCrop-debug.exe>"]
+  "MonkosCrop-debug.module": ["<MonkosCrop-debug.module>"]
+  "PackageStructure": ["<PackageStructure>"]
+  "main": ["<MonkosCrop-debug.exe>","<MonkosCrop-debug.module>"]
+  "test": ["<MonkosCrop-debug.exe>","<MonkosCrop-debug.module>"]
+default: "main"
+nodes:
+  "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/":
+    is-directory-structure: true
+    content-exclusion-patterns: [".git",".build"]
+commands:
+  "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/ID_Photosample.jpg":
+    tool: copy-tool
+    inputs: ["/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/Resources/ID_Photosample.jpg"]
+    outputs: ["/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/ID_Photosample.jpg"]
+    description: "Copying /Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/Resources/ID_Photosample.jpg"
+
+  "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/PASSPORTUSA.jpg":
+    tool: copy-tool
+    inputs: ["/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/Resources/PASSPORTUSA.jpg"]
+    outputs: ["/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/PASSPORTUSA.jpg"]
+    description: "Copying /Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/Resources/PASSPORTUSA.jpg"
+
+  "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/be_f_1.jpg":
+    tool: copy-tool
+    inputs: ["/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/Resources/be_f_1.jpg"]
+    outputs: ["/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/be_f_1.jpg"]
+    description: "Copying /Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/Resources/be_f_1.jpg"
+
+  "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/bg_cr_f_1.jpg":
+    tool: copy-tool
+    inputs: ["/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/Resources/bg_cr_f_1.jpg"]
+    outputs: ["/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/bg_cr_f_1.jpg"]
+    description: "Copying /Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/Resources/bg_cr_f_1.jpg"
+
+  "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/bg_f_1.jpg":
+    tool: copy-tool
+    inputs: ["/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/Resources/bg_f_1.jpg"]
+    outputs: ["/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/bg_f_1.jpg"]
+    description: "Copying /Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/Resources/bg_f_1.jpg"
+
+  "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/card_custom.jpg":
+    tool: copy-tool
+    inputs: ["/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/Resources/card_custom.jpg"]
+    outputs: ["/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/card_custom.jpg"]
+    description: "Copying /Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/Resources/card_custom.jpg"
+
+  "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/card_license.jpg":
+    tool: copy-tool
+    inputs: ["/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/Resources/card_license.jpg"]
+    outputs: ["/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/card_license.jpg"]
+    description: "Copying /Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/Resources/card_license.jpg"
+
+  "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/card_passport.jpg":
+    tool: copy-tool
+    inputs: ["/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/Resources/card_passport.jpg"]
+    outputs: ["/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/card_passport.jpg"]
+    description: "Copying /Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/Resources/card_passport.jpg"
+
+  "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/card_visa.jpg":
+    tool: copy-tool
+    inputs: ["/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/Resources/card_visa.jpg"]
+    outputs: ["/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/card_visa.jpg"]
+    description: "Copying /Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/Resources/card_visa.jpg"
+
+  "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/countries.jsonl":
+    tool: copy-tool
+    inputs: ["/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/Resources/countries.jsonl"]
+    outputs: ["/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/countries.jsonl"]
+    description: "Copying /Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/Resources/countries.jsonl"
+
+  "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/monkos-icon.png":
+    tool: copy-tool
+    inputs: ["/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/Resources/monkos-icon.png"]
+    outputs: ["/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/monkos-icon.png"]
+    description: "Copying /Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/Resources/monkos-icon.png"
+
+  "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/pass_f_1.jpg":
+    tool: copy-tool
+    inputs: ["/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/Resources/pass_f_1.jpg"]
+    outputs: ["/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/pass_f_1.jpg"]
+    description: "Copying /Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/Resources/pass_f_1.jpg"
+
+  "<MonkosCrop-debug.exe>":
+    tool: phony
+    inputs: ["/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop"]
+    outputs: ["<MonkosCrop-debug.exe>"]
+
+  "<MonkosCrop-debug.module>":
+    tool: phony
+    inputs: ["/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.build/ContentView.swift.o","/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.build/CropEngine.swift.o","/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.build/CropView.swift.o","/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.build/MonkosCropApp.swift.o","/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.build/SpecData.swift.o","/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.build/resource_bundle_accessor.swift.o","/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.swiftmodule"]
+    outputs: ["<MonkosCrop-debug.module>"]
+
+  "C.MonkosCrop-debug.exe":
+    tool: shell
+    inputs: ["/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.build/ContentView.swift.o","/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.build/CropEngine.swift.o","/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.build/CropView.swift.o","/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.build/MonkosCropApp.swift.o","/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.build/SpecData.swift.o","/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.build/resource_bundle_accessor.swift.o"]
+    outputs: ["/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop"]
+    description: "Linking ./.build/x86_64-apple-macosx/debug/MonkosCrop"
+    args: ["/Users/jeong-kyushin/Downloads/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc","-L","/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug","-o","/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop","-module-name","MonkosCrop","-emit-executable","-Xlinker","-alias","-Xlinker","_MonkosCrop_main","-Xlinker","_main","-Xlinker","-rpath","-Xlinker","@loader_path","@/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.product/Objects.LinkFileList","-target","x86_64-apple-macosx13.0","-Xlinker","-add_ast_path","-Xlinker","/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.swiftmodule","-sdk","/Users/jeong-kyushin/Downloads/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk","-F","/Users/jeong-kyushin/Downloads/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks","-I","/Users/jeong-kyushin/Downloads/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib","-L","/Users/jeong-kyushin/Downloads/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib"]
+
+  "C.MonkosCrop-debug.module":
+    tool: swift-compiler
+    inputs: ["/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/ContentView.swift","/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/CropEngine.swift","/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/CropView.swift","/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/MonkosCropApp.swift","/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/SpecData.swift","/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.build/DerivedSources/resource_bundle_accessor.swift","<MonkosCrop-debug.module-resources>"]
+    outputs: ["/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.build/ContentView.swift.o","/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.build/CropEngine.swift.o","/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.build/CropView.swift.o","/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.build/MonkosCropApp.swift.o","/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.build/SpecData.swift.o","/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.build/resource_bundle_accessor.swift.o","/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.swiftmodule"]
+    executable: "/Users/jeong-kyushin/Downloads/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+    module-name: "MonkosCrop"
+    module-output-path: "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.swiftmodule"
+    import-paths: ["/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug"]
+    temps-path: "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.build"
+    objects: ["/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.build/ContentView.swift.o","/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.build/CropEngine.swift.o","/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.build/CropView.swift.o","/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.build/MonkosCropApp.swift.o","/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.build/SpecData.swift.o","/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.build/resource_bundle_accessor.swift.o"]
+    other-args: ["-target","x86_64-apple-macosx13.0","-swift-version","5","-enable-batch-mode","-index-store-path","/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/index/store","-Onone","-enable-testing","-g","-j8","-DSWIFT_PACKAGE","-DDEBUG","-module-cache-path","/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/ModuleCache","-parseable-output","-Xfrontend","-entry-point-function-name","-Xfrontend","MonkosCrop_main","-sdk","/Users/jeong-kyushin/Downloads/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk","-F","/Users/jeong-kyushin/Downloads/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks","-I","/Users/jeong-kyushin/Downloads/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib","-L","/Users/jeong-kyushin/Downloads/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib","-Xcc","-isysroot","-Xcc","/Users/jeong-kyushin/Downloads/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk","-Xcc","-F","-Xcc","/Users/jeong-kyushin/Downloads/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks","-Xcc","-fPIC","-package-name","monkoscrop"]
+    sources: ["/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/ContentView.swift","/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/CropEngine.swift","/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/CropView.swift","/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/MonkosCropApp.swift","/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/SpecData.swift","/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.build/DerivedSources/resource_bundle_accessor.swift"]
+    is-library: false
+    enable-whole-module-optimization: false
+    num-threads: 8
+
+  "MonkosCrop-debug.module-resources":
+    tool: phony
+    inputs: ["/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/bg_f_1.jpg","/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/monkos-icon.png","/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/card_visa.jpg","/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/PASSPORTUSA.jpg","/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/countries.jsonl","/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/pass_f_1.jpg","/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/bg_cr_f_1.jpg","/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/card_custom.jpg","/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/be_f_1.jpg","/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/ID_Photosample.jpg","/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/card_passport.jpg","/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/card_license.jpg"]
+    outputs: ["<MonkosCrop-debug.module-resources>"]
+
+  "PackageStructure":
+    tool: package-structure-tool
+    inputs: ["/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/","/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/Package.swift","/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/Package.resolved"]
+    outputs: ["<PackageStructure>"]
+    description: "Planning build"
+    allow-missing-inputs: true
+

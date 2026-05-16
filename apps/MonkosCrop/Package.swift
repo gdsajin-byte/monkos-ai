@@ -21,6 +21,7 @@ let package = Package(
                 .copy("Resources/card_visa.jpg"),
                 .copy("Resources/card_license.jpg"),
                 .copy("Resources/card_custom.jpg"),
+                .copy("Resources/monkos-icon.png"),
             ]
         )
     ]

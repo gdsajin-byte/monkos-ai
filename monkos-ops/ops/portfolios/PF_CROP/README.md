@@ -125,7 +125,9 @@ status: active
 | 05/16 | 막내1 | **IDPASS Landing 리디자인 + 브랜딩 변경** — Hero(IDPASS 로고+태그라인) + Phone Demo(18초 루프 애니) + 하단 5섹션. 앱 전체 MONKOS CROP → IDPASS 변경 | ContentView/SpecData | ✅ |
 | 05/16 | 쌍아 | **Phone Demo 실사 이미지 적용 + Vision 실측 좌표 보정** — 여성 셀카 4종(be/bg/crop/passport). 프레임 3:4→1:1(51×51 규격). Vision으로 눈/턱/정수리 실측 → 줌인 scale 1.44/offset 0.136 수학적 계산 | Resources/ + ContentView | ✅ |
 | 05/16 | 쌍아+작가님 | **데모 애니메이션 시퀀스 확정** — SCANNING→BG REMOVE→CROP(줌인)→INSPECT(검수: 눈→턱→정수리→HEAD 측정)→PASS→여권(PASSPORTUSA+스탬프 쾅)→블러+IDPASS 타이포. 디버그 스텝 모드 동기화 | ContentView | ✅ |
-| 05/16 | 작가님 | **Landing 구조 개편 확정** — 하단 5섹션 제거 → 4서비스카드(여권/비자/면허/커스텀) 배치. Landing=종류선택 → Step1=대륙/국가선택. 기존 Step1 4탭이 Landing으로 올라옴 | — | ⏳ 설계중 |
+| 05/16 | 작가님 | **Landing 구조 개편 확정** — 하단 5섹션 제거 → 4서비스카드(여권/비자/면허/커스텀) 배치. Landing=종류선택 → Step1=대륙/국가선택. 기존 Step1 4탭이 Landing으로 올라옴 | — | ✅ |
+| 05/16 | 쌍아 | **Landing 구조 개편 구현** — 4서비스카드(철창이 실사 이미지) 2×2 그리드. Step1 4탭 삭제. IDPASS 로고→Landing 복귀. CTA/푸터 제거. 한국 비자 규격 추가(kr-visa) | ContentView/CropView/countries.jsonl | ✅ |
+| 05/16 | 쌍아+작가님 | **Landing 푸터 확정** — 보라 몽키 로고 + "powered by MONKOS AI" + "© 2026 MONK STUDIO". IDPASS=초록 / MONKOS=보라 보색 브랜드 분리 | ContentView | ✅ |
 
 ---
 

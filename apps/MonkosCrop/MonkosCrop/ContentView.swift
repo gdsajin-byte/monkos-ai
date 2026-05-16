@@ -1350,13 +1350,11 @@ struct LandingView: View {
     @StateObject private var demo = LandingDemoState()
 
     var body: some View {
-        ScrollView(.vertical, showsIndicators: false) {
-            VStack(spacing: 0) {
-                heroSection
-                serviceCardsSection
-                ctaSection
-                footerSection
-            }
+        VStack(spacing: 0) {
+            heroSection
+            serviceCardsSection
+            Spacer(minLength: 0)
+            landingFooter
         }
         .overlay(alignment: .bottom) {
             if demo.debugStep >= 0 {
@@ -1397,26 +1395,20 @@ struct LandingView: View {
                 Text("PASS").font(.system(size: 54, weight: .black)).foregroundStyle(V1.accent)
             }
             .tracking(3)
-            .padding(.top, 24)
-
-            Text("powered by MONKOS AI")
-                .font(.system(size: 11, weight: .semibold))
-                .foregroundStyle(V1.dim)
-                .tracking(1.5)
-                .padding(.top, 8)
+            .padding(.top, 12)
 
             (Text(tr("landing_tagline", lang)) +
              Text(tr("landing_tagline_accent", lang)).foregroundColor(V1.accent))
-                .font(.system(size: 20, weight: .bold))
+                .font(.system(size: 18, weight: .bold))
                 .foregroundStyle(V1.text)
-                .padding(.top, 16)
+                .padding(.top, 8)
 
             Text(tr("landing_sub", lang))
-                .font(.system(size: 12))
+                .font(.system(size: 11))
                 .foregroundStyle(V1.muted)
-                .padding(.top, 6)
+                .padding(.top, 3)
 
-            phoneDemo.padding(.top, 28).padding(.bottom, 40)
+            phoneDemo.padding(.top, 16).padding(.bottom, 12)
         }
         .frame(maxWidth: .infinity)
         .background(
@@ -1519,14 +1511,14 @@ struct LandingView: View {
     @ViewBuilder
     private func demoImage(_ name: String) -> some View {
         #if canImport(UIKit)
-        if let path = Bundle.main.path(forResource: name, ofType: "jpg"),
+        if let path = Bundle.main.path(forResource: name, ofType: "jpg") ?? Bundle.main.path(forResource: name, ofType: "png"),
            let img = UIImage(contentsOfFile: path) {
             Image(uiImage: img).resizable().aspectRatio(contentMode: .fill)
         } else {
             Image(systemName: "person.fill").font(.system(size: 80)).foregroundStyle(V1.accent.opacity(0.15))
         }
         #else
-        if let url = Bundle.module.url(forResource: name, withExtension: "jpg"),
+        if let url = Bundle.module.url(forResource: name, withExtension: "jpg") ?? Bundle.module.url(forResource: name, withExtension: "png"),
            let img = NSImage(contentsOf: url) {
             Image(nsImage: img).resizable().aspectRatio(contentMode: .fill)
         } else {
@@ -1687,7 +1679,7 @@ struct LandingView: View {
             }
         }
         .padding(.horizontal, 20)
-        .padding(.top, 16)
+        .padding(.top, 24)
     }
 
     private func serviceCard(_ card: (type: String, ko: String, en: String, sub: String, img: String)) -> some View {
@@ -1718,6 +1710,29 @@ struct LandingView: View {
             .overlay(RoundedRectangle(cornerRadius: 12).stroke(V1.border, lineWidth: 1))
         }
         .buttonStyle(.plain)
+    }
+
+    // MARK: Landing Footer
+
+    private var landingFooter: some View {
+        VStack(spacing: 6) {
+            HStack(spacing: 6) {
+                demoImage("monkos-icon")
+                    .frame(width: 20, height: 20)
+                    .clipShape(RoundedRectangle(cornerRadius: 4))
+                Text("powered by")
+                    .font(.system(size: 9, weight: .medium))
+                    .foregroundStyle(V1.dim)
+                Text("MONKOS AI")
+                    .font(.system(size: 10, weight: .black))
+                    .foregroundStyle(V1.purple)
+            }
+            Text("© 2026 MONK STUDIO · Terms · Privacy")
+                .font(.system(size: 8, weight: .medium, design: .monospaced))
+                .foregroundStyle(V1.dim)
+                .tracking(0.5)
+        }
+        .padding(.top, 16).padding(.bottom, 20)
     }
 
     // MARK: Transformation Strip
