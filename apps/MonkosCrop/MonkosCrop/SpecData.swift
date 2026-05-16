@@ -526,7 +526,7 @@ private func parseDoc(_ d: [String: Any]) -> DocSpec? {
 }
 
 let appCountries: [Country] = {
-    guard let url = Bundle.module.url(forResource: "countries", withExtension: "jsonl"),
+    guard let url = Bundle.main.url(forResource: "countries", withExtension: "jsonl"),
           let data = try? String(contentsOf: url, encoding: .utf8) else { return [] }
     return data.components(separatedBy: .newlines).compactMap { line -> Country? in
         let trimmed = line.trimmingCharacters(in: .whitespaces)
