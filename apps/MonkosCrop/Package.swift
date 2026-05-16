@@ -17,6 +17,10 @@ let package = Package(
                 .copy("Resources/bg_cr_f_1.jpg"),
                 .copy("Resources/pass_f_1.jpg"),
                 .copy("Resources/PASSPORTUSA.jpg"),
+                .copy("Resources/card_passport.jpg"),
+                .copy("Resources/card_visa.jpg"),
+                .copy("Resources/card_license.jpg"),
+                .copy("Resources/card_custom.jpg"),
             ]
         )
     ]

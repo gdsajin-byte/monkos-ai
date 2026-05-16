@@ -6,19 +6,22 @@ struct V1TopBar: View {
     let lang: String
     let step: Int
     let onStep: (Int) -> Void
+    var onHome: (() -> Void)? = nil
 
     var body: some View {
         VStack(spacing: 12) {
             HStack {
-                HStack(spacing: 6) {
-                    Text("MONKOS")
-                        .font(.system(size: 16, weight: .black))
-                        .foregroundStyle(V1.accent)
-                        .kerning(-0.5)
-                    Text("CROP")
-                        .font(.system(size: 10, weight: .semibold, design: .monospaced))
-                        .foregroundStyle(V1.dim)
-                        .tracking(1)
+                Button {
+                    onHome?()
+                } label: {
+                    HStack(spacing: 6) {
+                        Text("ID")
+                            .font(.system(size: 16, weight: .black))
+                            .foregroundStyle(V1.text)
+                        Text("PASS")
+                            .font(.system(size: 16, weight: .black))
+                            .foregroundStyle(V1.accent)
+                    }
                 }
                 Spacer()
                 Text("FREE")
@@ -309,7 +312,7 @@ struct VerifiedStamp: View {
                 .frame(width: size, height: size)
                 .shadow(color: V1.accent.opacity(0.3), radius: 15)
             VStack(spacing: 2) {
-                Text("MONKOS")
+                Text("IDPASS")
                     .font(.system(size: size * 0.10, weight: .black))
                     .tracking(2)
                 Text("VERIFIED")

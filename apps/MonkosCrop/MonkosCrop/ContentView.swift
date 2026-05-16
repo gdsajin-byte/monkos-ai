@@ -46,11 +46,14 @@ struct ContentView: View {
 
             switch screen {
             case .landing:
-                LandingView(lang: lang) { screen = .step(1) }
+                LandingView(lang: lang, onStart: { screen = .step(1) }, onSelectType: { type in
+                    purpose = type
+                    screen = .step(1)
+                })
 
             case .step(let n):
                 VStack(spacing: 0) {
-                    V1TopBar(lang: lang, step: n, onStep: { screen = .step($0) })
+                    V1TopBar(lang: lang, step: n, onStep: { screen = .step($0) }, onHome: { screen = .landing })
 
                     ZStack {
                         switch n {
@@ -100,29 +103,6 @@ struct ContentView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, 20).padding(.bottom, 12)
 
-            // Purpose tabs
-            HStack(spacing: 5) {
-                ForEach(purposeList, id: \.id) { p in
-                    let sel = purpose == p.id
-                    Button {
-                        purpose = p.id
-                        search = ""
-                        selectedContinent = nil
-                    } label: {
-                        VStack(spacing: 2) {
-                            Text(p.icon).font(.system(size: 14))
-                            Text(p.names[lang] ?? p.names["en"] ?? "")
-                                .font(.system(size: 10, weight: .bold))
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 8)
-                        .background(RoundedRectangle(cornerRadius: 8).fill(sel ? V1.accent.opacity(0.08) : V1.card))
-                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(sel ? V1.accent : V1.border, lineWidth: 1))
-                        .foregroundStyle(sel ? V1.accent : V1.muted)
-                    }
-                }
-            }
-            .padding(.horizontal, 20).padding(.bottom, 10)
 
             if purpose == "custom" {
                 // 기타: 직접 입력
@@ -1366,16 +1346,14 @@ class LandingDemoState: ObservableObject {
 struct LandingView: View {
     let lang: String
     let onStart: () -> Void
+    let onSelectType: (String) -> Void
     @StateObject private var demo = LandingDemoState()
 
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
             VStack(spacing: 0) {
                 heroSection
-                transformSection
-                processSection
-                featuresSection
-                trustSection
+                serviceCardsSection
                 ctaSection
                 footerSection
             }
@@ -1684,6 +1662,62 @@ struct LandingView: View {
             .rotationEffect(.degrees(-18))
             .position(x: geo.size.width - 58, y: geo.size.height - 58)
         }
+    }
+
+    // MARK: Service Cards
+
+    private var serviceCardsSection: some View {
+        let cards: [(type: String, ko: String, en: String, sub: String, img: String)] = [
+            ("passport", "여권", "Passport", "200 COUNTRIES", "card_passport"),
+            ("visa", "비자", "Visa", "VISA · 50+", "card_visa"),
+            ("license", "면허증", "License", "LICENSE · 30+", "card_license"),
+            ("custom", "커스텀", "Custom", "CUSTOM SIZE", "card_custom"),
+        ]
+
+        return VStack(spacing: 8) {
+            HStack(spacing: 8) {
+                ForEach(0..<2, id: \.self) { i in
+                    serviceCard(cards[i])
+                }
+            }
+            HStack(spacing: 8) {
+                ForEach(2..<4, id: \.self) { i in
+                    serviceCard(cards[i])
+                }
+            }
+        }
+        .padding(.horizontal, 20)
+        .padding(.top, 16)
+    }
+
+    private func serviceCard(_ card: (type: String, ko: String, en: String, sub: String, img: String)) -> some View {
+        Button {
+            onSelectType(card.type)
+        } label: {
+            ZStack {
+                demoImage(card.img)
+                    .frame(height: 90)
+                    .clipped()
+                    .overlay(
+                        LinearGradient(colors: [.black.opacity(0.6), .black.opacity(0.3)],
+                                       startPoint: .bottom, endPoint: .top)
+                    )
+
+                VStack(spacing: 2) {
+                    Text(lang == "en" ? card.en : card.ko)
+                        .font(.system(size: 18, weight: .black))
+                        .foregroundStyle(V1.text)
+                    Text(card.sub)
+                        .font(.system(size: 9, weight: .bold, design: .monospaced))
+                        .foregroundStyle(V1.accent)
+                        .tracking(1)
+                }
+            }
+            .frame(height: 90)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .overlay(RoundedRectangle(cornerRadius: 12).stroke(V1.border, lineWidth: 1))
+        }
+        .buttonStyle(.plain)
     }
 
     // MARK: Transformation Strip

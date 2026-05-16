@@ -77,6 +77,7 @@ _saga/BWYA_Academy/강의실(B.W.Y.A)/**/*.docx
 !MONK_kr/images/*.jpg
 !apps/**/compare.html
 !apps/**/original_*.jpg
+!apps/MonkosCrop/MonkosCrop/Resources/*.jpg
 !apps/**/vertex_*.png
 !**/favicon-32.png
 !**/favicon-192.png

@@ -18,6 +18,7 @@
 		B52C2D6B2FB322830011867C /* CropView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52C2D682FB322820011867C /* CropView.swift */; };
 		B52C2D6C2FB322830011867C /* CropEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52C2D692FB322830011867C /* CropEngine.swift */; };
 		B52C2D702FB322840011867C /* countries.jsonl in Resources */ = {isa = PBXBuildFile; fileRef = B52C2D6F2FB322840011867C /* countries.jsonl */; };
+		B52C2D722FB322850011867C /* ID_Photosample.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B52C2D712FB322850011867C /* ID_Photosample.jpg */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -52,7 +53,8 @@
 		B52C2D682FB322820011867C /* CropView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CropView.swift; sourceTree = "<group>"; };
 		B52C2D692FB322830011867C /* CropEngine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CropEngine.swift; sourceTree = "<group>"; };
 		B52C2D6F2FB322840011867C /* countries.jsonl */ = {isa = PBXFileReference; lastKnownFileType = text; path = countries.jsonl; sourceTree = "<group>"; };
-		B52C2D6E2FB322840011867C /* Resources */ = {isa = PBXGroup; children = (B52C2D6F2FB322840011867C /* countries.jsonl */,); path = Resources; sourceTree = "<group>"; };
+		B52C2D712FB322850011867C /* ID_Photosample.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = ID_Photosample.jpg; sourceTree = "<group>"; };
+		B52C2D6E2FB322840011867C /* Resources */ = {isa = PBXGroup; children = (B52C2D6F2FB322840011867C /* countries.jsonl */, B52C2D712FB322850011867C /* ID_Photosample.jpg */,); path = Resources; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -247,6 +249,7 @@
 				B52C2D452FB31FD90011867C /* Preview Assets.xcassets in Resources */,
 				B52C2D422FB31FD90011867C /* Assets.xcassets in Resources */,
 				B52C2D702FB322840011867C /* countries.jsonl in Resources */,
+				B52C2D722FB322850011867C /* ID_Photosample.jpg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
