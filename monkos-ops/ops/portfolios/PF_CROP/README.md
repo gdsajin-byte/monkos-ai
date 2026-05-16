@@ -117,6 +117,10 @@ status: active
 | 05/15 | 쌍아 | **캐나다 50×70 배치 보정** — 세로 60mm+ 규격: faceTarget=fMax-1(35mm), eyeTarget=42%, 신호등 TOP/BTM/EYE 허용 범위 확대 | SpecData.swift | ✅ |
 | 05/15 | 막내1 | **PF 폴더 구조 통일** — 21개 PF 전부 `PF_{코드네임}/README.md` 구조로 git mv. 중복 4건 해소, YAML 3건 보정, 인덱스 갱신 | portfolios/ 전체 | ✅ |
 | 05/15 | 쌍아 | **M4 원격 빌드 환경 구축** — Tailscale SSH(100.121.220.14) + Xcode 26.5 + Apple Developer 서명 인증서 + swift build 성공. iOS 플랫폼 8.5GB 다운로드 진행 중 | M4 han-macbookpro | ⏳ |
+| 05/16 | 쌍아 | **M4 SSH 접속 확립** — `ssh m4` config 등록(hansonngyi@100.121.220.14), 디바이스 프로파일 생성(M3 Pro/18GB/macOS 26.4.1/Xcode 26.5). iOS SDK 다운로드 완료 확인 | devices/m4/DEVICE_PROFILE.md | ✅ |
+| 05/16 | 쌍아 | **iOS 빌드 이슈 3건 해결** — ①Bundle.module→Bundle.main(SPM vs Xcode 프로젝트) ②countries.jsonl pbxproj 리소스 등록 ③DEVELOPMENT_TEAM(ZPMVHPDUHW) 서명 설정 + Keychain unlock | project.pbxproj, SpecData.swift | ✅ |
+| 05/16 | 쌍아 | **iPhone 실기기 설치 + 실행 성공** — M4→iPhone(26.4.2) devicectl install + launch. 개발자 모드 활성화 필요 확인. NSPhotoLibraryAddUsageDescription + NSCameraUsageDescription 권한 추가 | Info.plist | ✅ |
+| 05/16 | 작가님 | **iPhone 실기기 E2E 확인** — 앱 정상 동작. 다운로드 시 이전 규격 캐시 표시 의심 — saveToDisk 에러 콜백 미구현으로 저장 실패 무시 가능성. 후속 수정 대상 | — | ⏳ |
 
 ---
 
