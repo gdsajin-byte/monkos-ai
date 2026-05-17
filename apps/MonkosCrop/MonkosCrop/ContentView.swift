@@ -255,18 +255,28 @@ struct ContentView: View {
                                             withAnimation(.easeInOut(duration: 0.25)) { selectedContinent = group.id }
                                         } label: {
                                             ZStack(alignment: .topTrailing) {
+                                                BundleImage(name: group.image)
+                                                    .frame(height: 110)
+                                                    .clipped()
+                                                    .overlay(
+                                                        LinearGradient(
+                                                            colors: [.black.opacity(0.7), .black.opacity(0.3), .black.opacity(0.5)],
+                                                            startPoint: .bottom, endPoint: .top
+                                                        )
+                                                    )
+
                                                 VStack(alignment: .leading, spacing: 2) {
                                                     Spacer()
                                                     Text(group.names["en"] ?? "")
                                                         .font(.system(size: 8, weight: .heavy, design: .monospaced))
-                                                        .foregroundStyle(Color(hex: group.dot).opacity(0.8))
+                                                        .foregroundStyle(Color(hex: group.dot).opacity(0.9))
                                                         .textCase(.uppercase)
                                                     Text(group.name(lang))
                                                         .font(.system(size: 18, weight: .heavy))
                                                         .foregroundStyle(.white)
                                                     Text("\(cnt)\(tr("countries_unit", lang))")
                                                         .font(.system(size: 11))
-                                                        .foregroundStyle(.white.opacity(0.6))
+                                                        .foregroundStyle(.white.opacity(0.7))
                                                 }
                                                 .frame(maxWidth: .infinity, alignment: .leading)
                                                 .padding(12)
@@ -277,12 +287,6 @@ struct ContentView: View {
                                                     .padding(10)
                                             }
                                             .frame(height: 110)
-                                            .background(
-                                                LinearGradient(
-                                                    colors: [Color(hex: group.gradA), Color(hex: group.gradB)],
-                                                    startPoint: .topLeading, endPoint: .bottomTrailing
-                                                )
-                                            )
                                             .clipShape(RoundedRectangle(cornerRadius: 12))
                                         }
                                     }
@@ -455,30 +459,16 @@ struct ContentView: View {
             .padding(.horizontal, 20).padding(.top, 10)
 
             // Buttons
-            HStack(spacing: 6) {
-                Button {} label: {
-                    HStack(spacing: 4) {
-                        Text("📸")
-                        Text(tr("take_photo", lang))
-                    }
-                    .font(.system(size: 13, weight: .bold))
-                    .foregroundStyle(V1.text)
-                    .frame(maxWidth: .infinity).frame(height: 46)
-                    .background(RoundedRectangle(cornerRadius: 12).fill(V1.card))
-                    .overlay(RoundedRectangle(cornerRadius: 12).stroke(V1.border, lineWidth: 1))
+            PhotosPicker(selection: $selectedPhoto, matching: .images) {
+                HStack(spacing: 6) {
+                    Text("🖼")
+                    Text(tr("choose_gallery", lang))
                 }
-
-                PhotosPicker(selection: $selectedPhoto, matching: .images) {
-                    HStack(spacing: 4) {
-                        Text("🖼")
-                        Text(tr("choose_gallery", lang))
-                    }
-                    .font(.system(size: 13, weight: .heavy))
-                    .foregroundStyle(Color(hex: "05080E"))
-                    .frame(maxWidth: .infinity).frame(height: 46)
-                    .background(RoundedRectangle(cornerRadius: 12).fill(V1.accent))
-                    .shadow(color: V1.accent.opacity(0.2), radius: 7)
-                }
+                .font(.system(size: 14, weight: .heavy))
+                .foregroundStyle(Color(hex: "05080E"))
+                .frame(maxWidth: .infinity).frame(height: 50)
+                .background(RoundedRectangle(cornerRadius: 12).fill(V1.accent))
+                .shadow(color: V1.accent.opacity(0.25), radius: 10)
             }
             .padding(.horizontal, 20).padding(.top, 10).padding(.bottom, 12)
         }
@@ -1033,7 +1023,7 @@ struct ContentView: View {
             .padding(.horizontal, 20).padding(.top, 8).padding(.bottom, 14)
 
             // Saved header
-            HStack(spacing: 12) {
+            VStack(spacing: 12) {
                 if let img = croppedImage ?? bgRemovedImage {
                     ZStack {
                         bgColor.color
@@ -1041,21 +1031,18 @@ struct ContentView: View {
                             .resizable()
                             .aspectRatio(contentMode: .fill)
                     }
-                    .frame(width: 70, height: 90)
-                    .clipShape(RoundedRectangle(cornerRadius: 4))
-                    .overlay(RoundedRectangle(cornerRadius: 4).stroke(V1.accent, lineWidth: 1.5))
-                    .shadow(color: V1.accent.opacity(0.2), radius: 6)
+                    .frame(width: 160, height: 160 / doc.photoSpec.aspectRatio)
+                    .clipShape(RoundedRectangle(cornerRadius: 6))
+                    .overlay(RoundedRectangle(cornerRadius: 6).stroke(V1.accent, lineWidth: 2))
+                    .shadow(color: V1.accent.opacity(0.25), radius: 12)
                 }
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(tr("saved", lang))
-                        .font(.system(size: 22, weight: .black))
-                        .foregroundStyle(V1.text)
-                    Text("\(country.flag) \(doc.size.replacingOccurrences(of: " mm", with: "mm")) · \(doc.standard)")
-                        .font(.system(size: 10, design: .monospaced))
-                        .foregroundStyle(V1.muted)
-                        .tracking(0.3)
-                }
-                Spacer()
+                Text(tr("saved", lang))
+                    .font(.system(size: 22, weight: .black))
+                    .foregroundStyle(V1.text)
+                Text("\(country.flag) \(doc.size.replacingOccurrences(of: " mm", with: "mm")) · \(doc.standard)")
+                    .font(.system(size: 10, design: .monospaced))
+                    .foregroundStyle(V1.muted)
+                    .tracking(0.3)
             }
             .padding(.horizontal, 20)
 

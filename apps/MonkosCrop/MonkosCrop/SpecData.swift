@@ -119,18 +119,19 @@ struct ContinentGroup: Identifiable {
     var gradA: String = "1A1A2A"
     var gradB: String = "2A2A3A"
     var dot: String = "00D4AA"
+    var image: String = ""
     func name(_ l: String) -> String { names[l] ?? names["ko"] ?? id }
 }
 
 let continentOrder = ["asia", "europe", "americas", "oceania", "africa", "middleeast"]
 
-let continentMeta: [String: (names: [String: String], icon: String, colors: (String, String), dot: String)] = [
-    "asia":       (["ko": "아시아", "en": "Asia", "ja": "アジア"], "🌏", ("1A3A2A", "2D5A3A"), "00D4AA"),
-    "europe":     (["ko": "유럽", "en": "Europe", "ja": "ヨーロッパ"], "🌍", ("1A1A3A", "3A2A5A"), "A78BFA"),
-    "americas":   (["ko": "아메리카", "en": "Americas", "ja": "アメリカ大陸"], "🌎", ("1A2A3A", "2A3A5A"), "3B82F6"),
-    "africa":     (["ko": "아프리카", "en": "Africa", "ja": "アフリカ"], "🌍", ("3A2A1A", "5A3A1A"), "FFB020"),
-    "oceania":    (["ko": "오세아니아", "en": "Oceania", "ja": "オセアニア"], "🌊", ("1A2A2A", "1A3A4A"), "FF6B9D"),
-    "middleeast": (["ko": "중동", "en": "Middle East", "ja": "中東"], "🕌", ("2A2A1A", "4A3A1A"), "F59E0B"),
+let continentMeta: [String: (names: [String: String], icon: String, colors: (String, String), dot: String, image: String)] = [
+    "asia":       (["ko": "아시아", "en": "Asia", "ja": "アジア"], "🌏", ("1A3A2A", "2D5A3A"), "00D4AA", "cont_asia"),
+    "europe":     (["ko": "유럽", "en": "Europe", "ja": "ヨーロッパ"], "🌍", ("1A1A3A", "3A2A5A"), "A78BFA", "cont_europe"),
+    "americas":   (["ko": "아메리카", "en": "Americas", "ja": "アメリカ大陸"], "🌎", ("1A2A3A", "2A3A5A"), "3B82F6", "cont_americas"),
+    "africa":     (["ko": "아프리카", "en": "Africa", "ja": "アフリカ"], "🌍", ("3A2A1A", "5A3A1A"), "FFB020", "cont_africa"),
+    "oceania":    (["ko": "오세아니아", "en": "Oceania", "ja": "オセアニア"], "🌊", ("1A2A2A", "1A3A4A"), "FF6B9D", "cont_oceania"),
+    "middleeast": (["ko": "중동", "en": "Middle East", "ja": "中東"], "🕌", ("2A2A1A", "4A3A1A"), "F59E0B", "cont_middleeast"),
 ]
 
 func groupedByContinent(_ countries: [Country]) -> [ContinentGroup] {
@@ -142,7 +143,7 @@ func groupedByContinent(_ countries: [Country]) -> [ContinentGroup] {
         guard let list = dict[key], !list.isEmpty,
               let meta = continentMeta[key] else { return nil }
         return ContinentGroup(id: key, names: meta.names, icon: meta.icon, countries: list,
-                              gradA: meta.colors.0, gradB: meta.colors.1, dot: meta.dot)
+                              gradA: meta.colors.0, gradB: meta.colors.1, dot: meta.dot, image: meta.image)
     }
 }
 

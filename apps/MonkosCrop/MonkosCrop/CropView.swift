@@ -328,6 +328,30 @@ struct VerifiedStamp: View {
     }
 }
 
+// MARK: - BundleImage
+
+struct BundleImage: View {
+    let name: String
+
+    var body: some View {
+        #if canImport(UIKit)
+        if let path = Bundle.main.path(forResource: name, ofType: "jpg") ?? Bundle.main.path(forResource: name, ofType: "png"),
+           let img = UIImage(contentsOfFile: path) {
+            Image(uiImage: img).resizable().aspectRatio(contentMode: .fill)
+        } else {
+            Color(hex: "1A1A2A")
+        }
+        #else
+        if let url = Bundle.module.url(forResource: name, withExtension: "jpg") ?? Bundle.module.url(forResource: name, withExtension: "png"),
+           let img = NSImage(contentsOf: url) {
+            Image(nsImage: img).resizable().aspectRatio(contentMode: .fill)
+        } else {
+            Color(hex: "1A1A2A")
+        }
+        #endif
+    }
+}
+
 // MARK: - BackButton
 
 struct BackButton: View {

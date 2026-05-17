@@ -88,6 +88,7 @@ domain: "presentation, 3d-avatar, tts, content-pipeline"
 | 04/09 | 쌍아 | USB 챗봇 RAG 구현 지시서 발행 (4060/쌍아 수신) — knowledge.json 10건 + RAG 검색 함수 | `eed4147` | ✅ 지시서 발행 |
 | 04/09 | 민아 | **대면평가 실전 핸드아웃 PDF 제작** — 인삿말 + 15분 큐시트 + Q&A 10건 | DRAFT_20260409 | ✅ |
 | 04/09 | 민아 | **4/9 디딤돌 대면평가 현장 출석 완료** | `27fc703` | ✅ 결과 대기 |
+| 05/17 | 작가님 | **SwiftUI 코드 애니메이션 → PT 자동화 인사이트** — IDPASS Landing 데모(상태머신+타이머+선언적 UI)가 macOS 네이티브로 KeyNote 없이 프레젠테이션 가능함을 입증. 코드=슬라이드 패턴. ImageRenderer 프레임 캡처→mp4 자동 출력으로 영상화도 가능. PF_VIDEO와 공통 패턴. macOS 전용(Apple 생태계) | — | 💡 인사이트 |
 
 ---
 
