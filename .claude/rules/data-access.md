@@ -11,6 +11,7 @@ scripts/credits.sh charge <email> <amount> "<사유>"   # 충전 (사유 필수)
 scripts/credits.sh deduct <email> <amount> "<사유>"   # 차감 (사유 필수)
 scripts/credits.sh user <email>                      # 고객 정보 조회
 scripts/credits.sh log [N]                           # 감사 로그 열람
+scripts/credits.sh signups [일수]                     # 신규 회원가입 집계 (읽기 전용, 기본 7일)
 ```
 
 ## 감사 추적 (10조 3항)
