@@ -1,0 +1,65 @@
+name: Signups Report
+
+on:
+  workflow_dispatch:
+    inputs:
+      days:
+        description: '집계 기간 (일수)'
+        required: false
+        default: '7'
+
+jobs:
+  signups:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install portal deps
+        working-directory: monkos_AI/portal
+        run: npm install --no-audit --no-fund
+
+      - name: Write GCP credentials
+        env:
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+        run: |
+          echo "$GCP_SA_KEY" | base64 -d > "${RUNNER_TEMP}/sa.json"
+
+      - name: Run signups aggregation
+        id: agg
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/sa.json
+          PROJECT_ID: monkos
+        run: |
+          DAYS="${{ github.event.inputs.days }}"
+          OUT=$(bash scripts/credits.sh signups "${DAYS:-7}")
+          echo "$OUT"
+          {
+            echo "## 신규 회원가입 집계 (최근 ${DAYS:-7}일)"
+            echo '```json'
+            echo "$OUT"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "$OUT" > "${RUNNER_TEMP}/signups.json"
+
+      - name: Create issue
+        if: success()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          DAYS="${{ github.event.inputs.days }}"
+          BODY="$(printf '신규 회원가입 집계 (최근 %s일)\n\n```json\n%s\n```' "${DAYS:-7}" "$(cat ${RUNNER_TEMP}/signups.json)")"
+          gh issue create \
+            --title "👥 신규 회원가입 집계 $(date -u -d '+9 hours' +%Y-%m-%d)" \
+            --body "$BODY" \
+            --label "일일보고"
+
+      - name: Cleanup credentials
+        if: always()
+        run: rm -f "${RUNNER_TEMP}/sa.json"
