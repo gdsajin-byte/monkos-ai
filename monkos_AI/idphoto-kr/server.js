@@ -371,7 +371,7 @@ function extractBase64(base64Input) {
 }
 
 // === 사전분석 폴백 모델 ===
-const PRECHECK_MODELS = ['gemini-2.0-flash'];
+const PRECHECK_MODELS = ['gemini-2.5-flash'];
 
 // === 사전분석 (SPA 호환 — Gemini 2.0 Flash via Vertex AI ADC) ===
 const PRE_CHECK_INSTRUCTION = `이 사진이 증명사진 원본으로 적합한지 분석해 주세요.
@@ -471,7 +471,7 @@ app.get('/health', (req, res) => {
     auth: 'Hybrid (ADC + API Key)',
     geminiLive: 'ready (ADC)',
     imagen: GEMINI_API_KEY ? 'active (API Key)' : 'NO API KEY',
-    preCheck: 'active (gemini-2.0-flash)',
+    preCheck: 'active (gemini-2.5-flash)',
   });
 });
 
@@ -726,7 +726,7 @@ const httpServer = app.listen(PORT, '0.0.0.0', () => {
   log(`리전: ${LOCATION}`);
   log(`인증: 하이브리드 (ADC + API Key)`);
   log(`Imagen I2I: 활성 (gemini-3-pro-image-preview, API Key)`);
-  log(`사전분석: 활성 (gemini-2.0-flash)`);
+  log(`사전분석: 활성 (gemini-2.5-flash)`);
   log('='.repeat(60));
   log('엔드포인트:');
   log('  GET  /health              — 헬스체크');

@@ -374,7 +374,7 @@ function extractBase64(base64Input) {
 }
 
 // === 事前分析 フォールバックモデル ===
-const PRECHECK_MODELS = ['gemini-2.0-flash'];
+const PRECHECK_MODELS = ['gemini-2.5-flash'];
 
 // === 事前分析 (SPA互換 — Gemini 2.0 Flash via Vertex AI ADC) ===
 const PRE_CHECK_INSTRUCTION = `この写真が証明写真の原本として適切かどうか分析してください。
@@ -456,7 +456,7 @@ async function detectFace(imageBuffer) {
   try {
     const base64 = imageBuffer.toString('base64');
     const response = await ai.models.generateContent({
-      model: 'gemini-2.0-flash',
+      model: 'gemini-2.5-flash',
       contents: [{
         role: 'user',
         parts: [
@@ -517,7 +517,7 @@ app.get('/health', (req, res) => {
     auth: 'Hybrid (ADC + API Key)',
     geminiLive: 'ready (ADC)',
     imagen: GEMINI_API_KEY ? 'active (API Key)' : 'NO API KEY',
-    preCheck: 'active (gemini-2.0-flash)',
+    preCheck: 'active (gemini-2.5-flash)',
   });
 });
 
@@ -784,7 +784,7 @@ const httpServer = app.listen(PORT, '0.0.0.0', () => {
   log(`リージョン: ${LOCATION}`);
   log(`認証: ハイブリッド (ADC + API Key)`);
   log(`Imagen I2I: アクティブ (gemini-3-pro-image-preview, API Key)`);
-  log('事前分析: アクティブ (gemini-2.0-flash)');
+  log('事前分析: アクティブ (gemini-2.5-flash)');
   log('='.repeat(60));
   log('エンドポイント:');
   log('  GET  /health              — ヘルスチェック');

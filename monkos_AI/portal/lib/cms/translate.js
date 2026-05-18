@@ -13,7 +13,7 @@ async function ensureEnglishBase(title, candidateBase) {
   if (!hasKorean(candidateBase)) return candidateBase;
   try {
     const response = await ai.models.generateContent({
-      model: 'gemini-2.0-flash',
+      model: 'gemini-2.5-flash',
       contents: [{ role: 'user', parts: [{ text: `You are an SEO expert. First TRANSLATE the blog title meaning into English, then convert to a URL slug. Do NOT romanize Korean — translate the MEANING. Lowercase, hyphens only, max 60 chars, ASCII only. Return ONLY the slug.\n\nTitle: ${title}` }] }],
       config: { maxOutputTokens: 64, temperature: 0.1 },
     });
@@ -109,7 +109,7 @@ ${originalDoc.content}
 ${JSON_INSTRUCTION[lang] || JSON_INSTRUCTION.en}`;
 
       const response = await ai.models.generateContent({
-        model: 'gemini-2.0-flash',
+        model: 'gemini-2.5-flash',
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
         config: {
           maxOutputTokens: 8192,

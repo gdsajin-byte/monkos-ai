@@ -75,7 +75,7 @@ const httpServer = createServer(async (req, res) => {
   // === 헬스체크 ===
   if (req.url === '/health') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ status: 'healthy', service: 'monkos-portal', version: '1.0.0', timestamp: new Date().toISOString(), auth: 'Vertex AI ADC', chatbot: 'gemini-2.0-flash' }));
+    res.end(JSON.stringify({ status: 'healthy', service: 'monkos-portal', version: '1.0.0', timestamp: new Date().toISOString(), auth: 'Vertex AI ADC', chatbot: 'gemini-2.5-flash' }));
     return;
   }
 
@@ -394,7 +394,7 @@ httpServer.listen(PORT, '0.0.0.0', () => {
   log(`프로젝트: ${PROJECT_ID}`);
   log(`리전: ${LOCATION}`);
   log(`인증: Vertex AI ADC`);
-  log(`챗봇: gemini-2.0-flash`);
+  log(`챗봇: gemini-2.5-flash`);
   log(`DB: Firestore`);
   log('='.repeat(60));
   log(`Google Client ID: ${GOOGLE_CLIENT_ID ? '설정됨' : '미설정'}`);

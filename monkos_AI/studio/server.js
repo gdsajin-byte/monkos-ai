@@ -334,7 +334,7 @@ function extractBase64(base64Input) {
 }
 
 // === 사전분석 ===
-const PRECHECK_MODELS = ['gemini-2.0-flash'];
+const PRECHECK_MODELS = ['gemini-2.5-flash'];
 
 const PRE_CHECK_INSTRUCTION = `이 사진이 증명사진 원본으로 적합한지 분석해 주세요.
 

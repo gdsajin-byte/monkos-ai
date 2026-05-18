@@ -315,4 +315,4 @@ export function parseCookies(cookieHeader) {
 // === crypto re-export ===
 export { createHmac, randomBytes, authSecret };
 
-log('[Vertex AI] ADC 클라이언트 초기화 (Gemini 2.0 Flash 챗봇)');
+log('[Vertex AI] ADC 클라이언트 초기화 (Gemini 2.5 Flash 챗봇)');
