@@ -690,7 +690,7 @@ footer a { color: var(--accent); text-decoration: none; }
     </div>
     <div class="auth-area" id="authArea">
       <button class="header-login-btn" id="loginBtn" onclick="openLoginModal()">로그인</button>
-      <button class="credit-btn" id="creditBtn" style="display:none;" onclick="location.href='https://monkos.ai/credits'">
+      <button class="credit-btn" id="creditBtn" style="display:none;" onclick="location.href='https://monkos.ai/credits?from='+encodeURIComponent(location.href)">
         <span class="credit-diamond">💎</span><span class="credit-count" id="creditCount">0</span>
       </button>
     </div>
@@ -1109,7 +1109,7 @@ function downloadGate() {
     var user = JSON.parse(raw);
     if (!user.credits || user.credits < 70) {
       showToast('크레딧이 부족합니다. 충전 후 다운로드하세요.', 'warning');
-      setTimeout(function() { location.href = 'https://monkos.ai/credits'; }, 1500);
+      setTimeout(function() { location.href = 'https://monkos.ai/credits?from=' + encodeURIComponent(location.href); }, 1500);
       return false;
     }
     return true;

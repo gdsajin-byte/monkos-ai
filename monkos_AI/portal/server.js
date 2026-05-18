@@ -2592,8 +2592,17 @@ location.href = '/';
   const ext = extname(filePath);
 
   try {
-    const content = readFileSync(fullPath);
-    res.writeHead(200, { 'Content-Type': MIME_TYPES[ext] || 'application/octet-stream' });
+    let content, resolvedExt = ext;
+    try {
+      content = readFileSync(fullPath);
+    } catch {
+      // 확장자 없는 URL → .html 폴백 (/credits → /credits.html)
+      if (!ext) {
+        content = readFileSync(fullPath + '.html');
+        resolvedExt = '.html';
+      } else { throw new Error('Not Found'); }
+    }
+    res.writeHead(200, { 'Content-Type': MIME_TYPES[resolvedExt] || 'application/octet-stream' });
     res.end(content);
   } catch {
     res.writeHead(404, { 'Content-Type': 'text/plain' });
