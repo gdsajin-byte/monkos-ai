@@ -182,7 +182,45 @@ status: 현행
 
 ---
 
-## 4. 변경 시 체크리스트
+## 4. 디바이스 맵 + SSH/Tailscale 크리덴셜
+
+> 2026-05-18 갱신. Tailscale 네트워크: gdsajin@
+
+### Tailscale 디바이스
+
+| 약칭 | Tailscale 호스트 | IP | OS | 소유 | 용도 |
+|------|-----------------|-----|-----|------|------|
+| **iMac** | jeong-kyu-imac | 100.97.103.10 | macOS | 작가님 | 사무실 메인 워크스테이션 |
+| **M1** | macmini-macmini | 100.76.80.99 | macOS | 작가님 | 집. Xcode 원격 빌드 + VNC |
+| **M2** | kku-macmini-m2-macmini | 100.81.38.20 | macOS | 꾸(와이프) | 팀원용 |
+| **M4** | han-macbookpro | 100.121.220.14 | macOS | 한송이 | iOS 빌드 + arm64 |
+| **4060** | desktop-70gomar | 100.118.31.62 | Windows | 작가님 | GPU 서버 (WSL) |
+| **iPhone** | iphone181 | 100.115.57.53 | iOS | 작가님 | 모바일 |
+
+### SSH 접속 정보
+
+| 약칭 | 접속 명령 | User | 인증 방식 | 설정 위치 |
+|------|----------|------|----------|----------|
+| **M1** | `ssh m1` | macmini | SSH 키 | ~/.ssh/config |
+| **M2** | `sshm2` / `ssh m2` | kku | 비밀번호 (1234) | ~/.bash_profile + ~/.ssh/config |
+| **M4** | `ssh m4` | hansonngyi | 비밀번호 | ~/.ssh/config |
+| **4060** | `ssh4060` / `ssh 4060` | smuse73 | 비밀번호 (akrso4060) | ~/.bash_profile + ~/.ssh/config |
+
+### 원격 빌드 파이프라인 (5/13 확립)
+
+```
+iMac (코드 편집) → scp → M1 (xcodebuild) → Simulator → VNC (UI 확인)
+```
+- VNC: macOS 화면 공유 (Tailscale P2P, ping 8ms)
+- M4도 동일 파이프라인 가능 (5/15~16 확립, arm64 + Xcode 26.5)
+
+### 디바이스 프로필 정본
+
+`monkos-ops/ops/devices/` — 5/13 전수 수집 (iMac, M1, M2, 4060, M4)
+
+---
+
+## 5. 변경 시 체크리스트
 
 1. 키 추가/변경 → 해당 `.env` 갱신
 2. deploy.sh `--update-env-vars` 반영 여부 확인
@@ -190,4 +228,5 @@ status: 현행
 4. **이 문서(SECRET_INVENTORY.md) 갱신** ← 정본
 5. `.gitignore` 패턴 확인
 6. GitHub Secrets 해당 시 등록/갱신
-7. `credentials_inventory.md`는 이 문서로 대체됨 (구본)
+7. 디바이스 추가/IP 변경 시 §4 + `~/.ssh/config` + `~/.bash_profile` 동시 갱신
+8. `credentials_inventory.md`는 이 문서로 대체됨 (구본)
