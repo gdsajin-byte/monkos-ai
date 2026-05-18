@@ -4,19 +4,19 @@
  * 日本市場特化 AI 証明写真サービス
  *   a) Gemini Live コーチング — 撮影前リアルタイムガイド (日本語)
  *   b) Imagen I2I 生成 — 証明写真変換 (gemini-3-pro-image-preview)
- *   c) Gemini QC — 原本 vs 生成物 類似度検証
  *
- * 認証: Vertex AI ADC 一本化 (API Key 不要)
- * Cloud Run 配備用 (HTTP — SSL は Cloud Run が処理)
+ * 認証: ハイブリッド (Vertex AI ADC + Google AI Studio API Key)
+ * Cloud Run デプロイ用 (HTTP — SSLはCloud Run処理)
  * ポート: 8080 (Cloud Run デフォルト)
  */
 
-import { createServer } from 'http';
+import express from 'express';
+import cors from 'cors';
 import { WebSocketServer } from 'ws';
-import { readFileSync } from 'fs';
-import { join, dirname, extname } from 'path';
+import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { GoogleGenAI } from '@google/genai';
+import { saveImages, addWatermark, cropToSpec, downloadFromGCS, getSignedUrl } from './gcs-save.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PORT = parseInt(process.env.PORT || '8080', 10);
@@ -25,6 +25,7 @@ const PORT = parseInt(process.env.PORT || '8080', 10);
 const PROJECT_ID = process.env.PROJECT_ID || 'monkos';
 const LOCATION = process.env.LOCATION || 'us-central1';
 const PORTAL_API_URL = process.env.PORTAL_API_URL || 'https://monkos.ai';
+const GCS_BUCKET = process.env.GCS_BUCKET || 'monk-ai-images';
 
 /**
  * 構造化ロギング (Cloud Logging 互換)
@@ -44,8 +45,8 @@ function log(msg, severity = 'INFO', meta = {}) {
 }
 
 // === ハイブリッド認証 ===
-// Live コーチング + QC → Vertex AI ADC
-// Imagen I2I 生成 → Google AI Studio API Key (gemini-3-pro-image-preview は Vertex AI 未対応)
+// Live コーチング → Vertex AI ADC
+// Imagen I2I 生成 → Google AI Studio API Key (gemini-3-pro-image-previewはVertex AI未対応)
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
 
 const ai = new GoogleGenAI({
@@ -56,11 +57,11 @@ const ai = new GoogleGenAI({
 
 const imagenAI = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 
-log('[Vertex AI] ADC クライアント初期化 (Live + QC)');
+log('[Vertex AI] ADC クライアント初期化 (Live)');
 log(`[Google AI Studio] Imagen クライアント初期化 (API Key ${GEMINI_API_KEY ? '設定済み' : '未設定'})`);
 log(`[Portal API] ${PORTAL_API_URL}`);
 
-// === クレジットAPI ヘルパー ===
+// === クレジット API ヘルパー ===
 async function useCredits(userId, type) {
   if (!userId) return { success: false, error: 'ログインが必要です' };
 
@@ -93,25 +94,15 @@ async function refundCredits(userId, type) {
   }
 }
 
-async function grantShareBonus(userId, platform) {
-  if (!userId) return { success: false, error: 'ログインが必要です' };
-
-  try {
-    const response = await fetch(`${PORTAL_API_URL}/api/credits/share-bonus`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId, platform }),
-    });
-    return await response.json();
-  } catch (err) {
-    log(`[Credits] シェアボーナスAPI呼び出し失敗: ${err.message}`);
-    return { success: false, error: 'Portal API接続失敗' };
-  }
-}
-
 // === コーチング システムプロンプト (日本語ネイティブ) ===
 const COACHING_INSTRUCTIONS = {
-  id_photo: `モンコス AIコーチです。パスポート・証明写真撮影をサポートします。
+  passport: `証明写真撮影のAIコーチです。パスポート・証明写真撮影をサポートします。
+
+[コーチングルール]
+- 日本語1文、15文字以内
+- 問題は1つだけ指摘（角度、表情、照明など）
+- ポジティブ表現：「〜すれば完璧です」
+- 完璧なら：「いいですね！今撮影してください」
 
 [チェック順序]
 1. 正面を向く（傾き、視線）
@@ -119,50 +110,50 @@ const COACHING_INSTRUCTIONS = {
 3. 表情（無表情または自然な微笑み）
 4. 眉毛が見える（前髪で隠さない）
 5. フェイスラインが見える（髪で覆わない）
+6. 耳が見える（髪で両耳が隠れないように）
 
-[応答ルール]
+[セッション規律]
+- 挨拶しないでください。すぐにコーチングだけ始めてください。
+- 以前の会話を記憶したり言及しないでください。
+- 3秒以内に同じ指摘を繰り返さないでください。
+- フレームが良好なら沈黙してください。言うべきことがある時だけ発話してください。
+- 撮影準備が完了したら必ず「いいですね！今撮影してください」を含めてください。
+- 「今撮影してください」はシステムが自動撮影を実行するトリガーです。確実な時だけ使用してください。
+
+[禁止]
+- 自己紹介、雑談、感想、質問
+- 「こんにちは」「はじめまして」「お手伝いしましょうか」類の発話`,
+
+  id: `履歴書写真撮影のAIコーチです。
+
+[コーチングルール]
 - 日本語1文、15文字以内
-- 問題は1つだけ指摘
+- 問題は1つだけ指摘（角度、表情、照明など）
 - ポジティブ表現：「〜すれば完璧です」
-- 完璧なら：「いいですね！今撮影してください」`,
-
-  resume: `モンコス AIコーチです。履歴書写真撮影をサポートします。
+- 完璧なら：「いいですね！今撮影してください」
 
 [チェック順序]
 1. 正面を向く（傾き、視線）
 2. 照明均一（顔に影がない）
 3. 表情（自然で親しみやすい微笑み）
 4. 姿勢（背筋を伸ばし、肩を平行に）
+5. 髪と服装がきちんと整っているか
 
-[応答ルール]
-- 日本語1文、15文字以内
-- 問題は1つだけ指摘
-- ポジティブ表現：「〜すれば完璧です」
-- 完璧なら：「いいですね！今撮影してください」`,
+[セッション規律]
+- 挨拶しないでください。すぐにコーチングだけ始めてください。
+- 以前の会話を記憶したり言及しないでください。
+- 3秒以内に同じ指摘を繰り返さないでください。
+- フレームが良好なら沈黙してください。言うべきことがある時だけ発話してください。
+- 撮影準備が完了したら必ず「いいですね！今撮影してください」を含めてください。
+- 「今撮影してください」はシステムが自動撮影を実行するトリガーです。確実な時だけ使用してください。
+
+[禁止]
+- 自己紹介、雑談、感想、質問
+- 「こんにちは」「はじめまして」「お手伝いしましょうか」類の発話`,
 };
 
-// === Imagen プロンプト ===
-const IDENTITY_PRESERVATION = `LIGHTING (HIGHEST PRIORITY — override all lighting from input):
-- Flat, even studio illumination from directly above-front (centered, 45° overhead)
-- BOTH sides of face equally lit — zero shadow on cheeks, forehead, or neck
-- Only shadow allowed: very soft, small shadow directly under chin
-- f/8 uniform sharpness, 5500K daylight white balance
-- ABSOLUTELY NO: rembrandt lighting, side light, rim light, split light, dramatic shadows, warm/cool color shifts
-
-BACKGROUND & SCENE (STRICT):
-- Pure white background (#FFFFFF), evenly lit, no falloff or gradient
-- ONLY the person in the frame — nothing else visible
-- NO props, NO equipment, NO lighting gear, NO softbox, NO reflector, NO studio objects
-- NO text, NO watermark, NO border, NO frame
-
-IDENTITY RULE: 90% SAME PERSON + 10% ENHANCEMENT
-
-POSE (CRITICAL):
-- MUST be perfectly front-facing, looking directly at the camera
-- NO semi-profile, no side angles, no 3/4 view
-- Head straight, eyes looking directly at the lens
-- Both ears should be equally visible
-- Symmetric face positioning
+// === Imagen プロンプト (CF idgen.js 正本) ===
+const IDENTITY_PRESERVATION = `IDENTITY RULE: 90% SAME PERSON + 10% ENHANCEMENT
 
 PRESERVE (90%):
 - Face shape, eye shape, nose, lips, skin tone
@@ -171,107 +162,169 @@ PRESERVE (90%):
 
 ENHANCE (10% creative freedom):
 - Slightly smoother skin, subtle beauty enhancement
+- Optimal lighting and flattering angles
 - Minor imperfections can be softened
 - Make them look their BEST version (not a different person)
 
 DO NOT:
-- Use side lighting, rim lighting, or any dramatic lighting setup
-- Generate side angles or semi-profile poses
 - Change gender, ethnicity, or age by more than 2-3 years
 - Alter fundamental facial features
 - Make them unrecognizable
+- Make eyes look intense, strained, or unnaturally wide — keep natural calm eye contact
 
 GOAL: "This is ME, but on my best day" - perfectly front-facing, studio flat lighting, 90% accuracy, 10% professional retouching.`;
 
+// === スタイルプロンプト ===
 const STYLE_PROMPTS = {
-  id_photo: 'Professional passport/ID photo, perfectly front-facing looking directly at camera, formal white background, sharp focus, head straight, symmetric composition',
-  resume: 'Professional resume photo for Japanese job application (履歴書), perfectly front-facing looking directly at camera, clean white background, Japanese recruit suit (リクルートスーツ), 3:4 ratio, approachable yet professional expression',
+  passport: 'Professional passport/ID photo, perfectly front-facing looking directly at camera, formal white background, sharp focus, head straight, symmetric composition',
+  id: 'Professional resume photo for Japanese job application (履歴書), perfectly front-facing looking directly at camera, clean white background, business formal attire, 3:4 ratio, approachable yet professional expression',
 };
 
-// 性別・年齢別の衣装プロンプト
-function getOutfitPrompt(gender, age, style = 'id_photo') {
-  const genderLabel = gender === 'female' ? 'female/woman' : 'male/man';
-  const ageMap = {
-    child: { label: 'young child (under 12)', outfit: gender === 'female'
-      ? 'a clean white polo shirt or simple blouse, age-appropriate and neat'
-      : 'a clean white polo shirt or simple dress shirt, age-appropriate and neat' },
-    teen: { label: 'teenager (13-18)', outfit: gender === 'female'
-      ? 'a neat school-style blouse or simple formal top, age-appropriate'
-      : 'a clean dress shirt with or without tie, age-appropriate' },
-    adult: { label: 'adult', outfit: style === 'resume'
-      ? (gender === 'female'
-        ? 'a white plain blouse with regular collar under solid black recruit suit (リクルートスーツ), simple and clean, no frills or lace'
-        : 'a solid black recruit suit (リクルートスーツ) with white dress shirt and blue regimental stripe necktie')
-      : (gender === 'female'
-        ? 'a professional blouse or women\'s business jacket, formal and clean'
-        : 'a clean, dark navy or charcoal formal business suit with white dress shirt and subtle tie') },
+// === 9フィールドファネル — CF idgen.js 正本移植 ===
+const BG_PROMPTS = {
+  white:  'pure white (#FFFFFF) background',
+  blue:   'soft blue (#4A90D9) studio background',
+  gray:   'neutral gray (#9CA3AF) studio background',
+  beige:  'warm beige (#D4B896) studio background',
+  pink:   'soft pink (#F5A0B8) studio background',
+  yellow: 'warm yellow (#FBBF24) studio background',
+};
+
+const CLOTHING_PROMPTS = {
+  as_is: null,
+  suit: 'formal business suit',
+  shirt: 'clean dress shirt',
+  casual: 'smart casual top',
+  uniform: 'neat school uniform',
+};
+
+const CLOTHING_COLOR_PROMPTS = {
+  black: 'black',
+  navy: 'dark navy',
+  charcoal: 'charcoal gray',
+  white: 'white',
+  beige: 'beige',
+  wine: 'wine/burgundy',
+  pastel: 'soft pastel-toned',
+};
+
+const TIE_PROMPTS = {
+  none: null,
+  solid_navy: 'solid navy tie',
+  solid_wine: 'solid wine/burgundy tie',
+  stripe_blue: 'blue striped tie',
+  stripe_navy: 'navy striped tie',
+  stripe_wine: 'wine striped regimental tie',
+};
+
+const EXPRESSION_PROMPTS = {
+  gentle_smile: 'relaxed pleasant expression with naturally soft eyes, at ease, quiet warmth in face',
+  neutral: 'natural calm resting face with soft relaxed eyes, at ease and composed',
+  natural_smile: 'gently pleasant face with warm relaxed eyes, approachable and at ease',
+  bright_smile: 'warm friendly expression with bright relaxed eyes, naturally pleasant',
+};
+
+const HAIR_PROMPTS = {
+  as_is: null,
+  tidy: 'neatly groomed hair',
+  up: 'hair tied up neatly',
+  down: 'hair down, well-groomed',
+};
+
+// === v5 プロンプトビルダー (SCHEMA_v5_確定.md §6 正本) ===
+function buildPromptV5(body) {
+  const { format, gender, age, clothing, clothingColor,
+          suitColor, shirtColor, tieColor, tiePattern,
+          hair, bgColor, expression } = body;
+
+  const parts = [];
+
+  // [1] FORMAT (SCHEMA §6-1)
+  if (format === 'passport') {
+    parts.push('[FORMAT] Official passport/visa photo. Head centered, face taking 70-80% of frame height. Forehead and eyebrows must be visible. White background mandatory.');
+  } else {
+    parts.push('[FORMAT] Professional ID photo. Head centered, face taking 70-80% of frame height.');
+  }
+
+  // [2] SUBJECT (SCHEMA §6-2 — gender × age = 8組合)
+  const SUBJECT_MAP = {
+    'f-baby':  'This person is a baby girl (infant/toddler).',
+    'f-child': 'This person is a young girl (child, under 12).',
+    'f-teen':  'This person is a teenage girl (13-18).',
+    'f-adult': 'This person is an adult woman.',
+    'm-baby':  'This person is a baby boy (infant/toddler).',
+    'm-child': 'This person is a young boy (child, under 12).',
+    'm-teen':  'This person is a teenage boy (13-18).',
+    'm-adult': 'This person is an adult man.',
   };
-  const info = ageMap[age] || ageMap.adult;
-  return `SUBJECT: This person is a ${genderLabel}, ${info.label}. OUTFIT: Dress this person in ${info.outfit}. Keep the person's face, hair, and body exactly the same — only ensure appropriate attire. DO NOT change the person's apparent gender or age.`;
+  parts.push(`[SUBJECT] ${SUBJECT_MAP[`${gender}-${age}`] || 'This person is an adult.'}`);
+
+  // [3] OUTFIT (SCHEMA §6-3)
+  if (!clothing || clothing === 'default') {
+    parts.push('[OUTFIT] Keep current clothing as-is. Only ensure it looks neat and tidy.');
+  } else if (clothing === 'change') {
+    parts.push(`[OUTFIT] Dress this child in a clean ${clothingColor || 'white'} top, age-appropriate and neat.`);
+  } else if (clothing === 'casual') {
+    parts.push(`[OUTFIT] Dress this person in a ${clothingColor || 'beige'} smart casual top, clean and neat.`);
+  } else if (clothing === 'suit') {
+    const suit = suitColor || 'navy';
+    const shirt = shirtColor || 'white';
+    let tieClause = '';
+    if (tieColor && tieColor !== 'notie') {
+      const pattern = tiePattern === 'stripe' ? 'striped' : 'solid';
+      tieClause = ` and a ${pattern} ${tieColor} tie`;
+    }
+    const top = 'collared dress shirt';
+    parts.push(`[OUTFIT] Dress this person in a ${suit} formal business suit with a ${shirt} ${top}${tieClause}.`);
+  }
+
+  // [4] HAIR (SCHEMA §6-4)
+  if (hair && hair !== 'default') {
+    const HAIR_MAP = {
+      tidy: 'neatly groomed and tidy hair',
+      updo: 'hair styled up neatly (updo)',
+    };
+    if (HAIR_MAP[hair]) parts.push(`[HAIR] ${HAIR_MAP[hair]}`);
+  }
+
+  // [5] BACKGROUND (SCHEMA §6-5)
+  const BG_MAP = {
+    white: 'pure white (#FFFFFF) background',
+    gray:  'neutral gray (#9CA3AF) studio background',
+    blue:  'soft blue (#4A90D9) studio background',
+    beige: 'warm beige (#D4B896) studio background',
+  };
+  const finalBg = format === 'passport' ? 'white' : (bgColor || 'white');
+  parts.push(`[BACKGROUND] ${BG_MAP[finalBg] || BG_MAP.white}`);
+
+  // [6] EXPRESSION (表情 — EXPRESSION_PROMPTS 活性化)
+  const expr = expression || 'gentle_smile';
+  if (EXPRESSION_PROMPTS[expr]) {
+    parts.push(`[EXPRESSION] ${EXPRESSION_PROMPTS[expr]}`);
+  }
+
+  // [7] CONSTRAINT (SCHEMA §6-6)
+  parts.push('[CONSTRAINT] Keep the person\'s face and body exactly the same — only apply the specified styling. DO NOT change apparent gender or age.');
+
+  return `${IDENTITY_PRESERVATION}\n\n[IMAGE-TO-IMAGE TRANSFORM]\n${parts.join('\n')}`;
 }
 
-// === QC プロンプト (日本語 — bounding box 含む) ===
-// === QCプロンプト（日本語 — bounding box + 性別/年齢/補正チェック）===
-function buildQCInstruction(gender, age) {
-  const genderText = gender === 'male' ? '男性' : '女性';
-  const ageMap = { child: '幼児〜12歳', teen: '13〜18歳', adult: '19歳以上' };
-  const ageText = ageMap[age] || '未指定';
-
-  return `2つの画像を比較し、2枚目（証明写真）の品質を総合分析してください。
-1枚目：原本（実際の撮影）
-2枚目：AI生成物（証明写真）
-ユーザー設定：性別=${genderText}、年齢層=${ageText}
-
-[判定基準 — すべてチェック必須]
-1. 同一人物か？（顔の構造、目/鼻/口の比率）
-2. 類似度 %（0-100）
-3. アイデンティティ維持（PASS/FAIL）
-4. 性別一致：原本の外見上の性別と生成物が一致するか？（設定に関係なく原本基準で判断）
-5. 年齢層一致：原本の外見年齢と生成物が一致するか？（子供→大人、大人→子供の変換を検出）
-6. 過度な補正：ヘアスタイルの大幅変更、肌の過度な補正、顔の輪郭変形、目の大きさ変更など不自然な変形があるか？
-7. 証明写真品質（照明、背景、構図）
-8. 2枚目の画像で顔のbounding box座標 [ymin, xmin, ymax, xmax]（0-1000正規化）
-
-[FAIL条件 — 一つでも該当すればidentityをFAILと判定]
-- 性別の外見が原本と異なるように変換された
-- 年齢層が原本と大きく異なる（10歳以上の差と推定）
-- 顔の輪郭、目の大きさ、鼻の形態が原本と異なるように変形
-- ヘアスタイルが原本と完全に異なる（整える程度は許容）
-- similarity 70%未満
-
-[応答形式 — JSONのみ出力]
-{
-  "same_person": true,
-  "similarity": 85,
-  "identity": "PASS",
-  "gender_match": true,
-  "age_match": true,
-  "over_retouched": false,
-  "quality": "GOOD",
-  "face_box": [180, 220, 650, 780],
-  "face_ratio": 0.35,
-  "face_center_x": 500,
-  "head_top_margin": 80,
-  "note": "一行コメント"
-}
-
-face_ratio = 顔の高さ / 画像全体の高さ（0.25〜0.45が適切）
-face_center_x = 顔の中心x座標（500付近で中央揃え、±50許容）
-head_top_margin = 頭頂部から画像上端までの余白（40〜150が適切）`;
-}
 
 // === クライアントセッション管理 ===
 const sessions = new Map();
 
-async function connectGeminiLive(session, clientId, style = 'id_photo') {
+async function connectGeminiLive(session, clientId, style = 'passport') {
   function flushBuffer() {
     if (session.responseBuffer.trim() && session.ws?.readyState === 1) {
+      const text = session.responseBuffer.trim();
+      const isReady = /今\s*撮影してください|完璧|いいですね/.test(text);
       session.ws.send(JSON.stringify({
         type: 'ai-coaching',
-        text: session.responseBuffer.trim(),
+        text,
+        ready: isReady,
         timestamp: Date.now(),
       }));
-      log(`[コーチング][${clientId}] ${session.responseBuffer.trim()}`);
+      log(`[コーチング][${clientId}] ${text}${isReady ? ' [READY]' : ''}`);
     }
     session.responseBuffer = '';
     session.bufferFlushTimer = null;
@@ -282,7 +335,7 @@ async function connectGeminiLive(session, clientId, style = 'id_photo') {
       model: 'gemini-2.0-flash-live-preview-04-09',
       config: {
         responseModalities: ['TEXT'],
-        systemInstruction: { parts: [{ text: COACHING_INSTRUCTIONS[style] || COACHING_INSTRUCTIONS.id_photo }] },
+        systemInstruction: { parts: [{ text: COACHING_INSTRUCTIONS[style] || COACHING_INSTRUCTIONS.passport }] },
       },
       callbacks: {
         onopen: () => log(`[Gemini Live][${clientId}] 接続完了`),
@@ -315,94 +368,26 @@ async function connectGeminiLive(session, clientId, style = 'id_photo') {
   }
 }
 
-// === Imagen I2I 生成 (Google AI Studio API Key) ===
-async function generatePhoto(inputBase64, style = 'id_photo', gender = 'male', age = 'adult') {
-  const base64Data = inputBase64.includes(',') ? inputBase64.split(',')[1] : inputBase64;
-  const stylePrompt = STYLE_PROMPTS[style] || STYLE_PROMPTS.id_photo;
-  const outfitPrompt = getOutfitPrompt(gender, age, style);
-  const instruction = `${IDENTITY_PRESERVATION}\n\n[IMAGE-TO-IMAGE TRANSFORM] ${stylePrompt}\n\n${outfitPrompt}`;
-
-  const response = await imagenAI.models.generateContent({
-    model: 'gemini-3-pro-image-preview',
-    contents: {
-      parts: [
-        { inlineData: { data: base64Data, mimeType: 'image/jpeg' } },
-        { text: instruction },
-      ],
-    },
-    config: {
-      responseModalities: ['TEXT', 'IMAGE'],
-      imageConfig: { aspectRatio: '3:4' },
-      safetySettings: [
-        { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
-        { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
-        { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
-        { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
-      ],
-    },
-  });
-
-  const part = response.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
-  if (!part?.inlineData) throw new Error('画像生成失敗: レスポンスに画像なし');
-
-  return `data:image/png;base64,${part.inlineData.data}`;
+// === Base64 抽出ヘルパー ===
+function extractBase64(base64Input) {
+  return base64Input.includes(',') ? base64Input.split(',')[1] : base64Input;
 }
 
-// === Gemini QC (Vertex AI ADC) — 3 Flash → 2.0 Flash フォールバック ===
-const QC_MODELS = ['gemini-3-flash-preview', 'gemini-2.0-flash'];
+// === 事前分析 フォールバックモデル ===
+const PRECHECK_MODELS = ['gemini-2.0-flash'];
 
-async function runQC(originalBase64, generatedBase64, gender = 'male', age = 'adult') {
-  const origData = originalBase64.includes(',') ? originalBase64.split(',')[1] : originalBase64;
-  const genData = generatedBase64.includes(',') ? generatedBase64.split(',')[1] : generatedBase64;
-  const qcInstruction = buildQCInstruction(gender, age);
-
-  for (const model of QC_MODELS) {
-    try {
-      log(`[QC] モデル試行: ${model} (gender=${gender}, age=${age})`);
-      const response = await ai.models.generateContent({
-        model,
-        contents: [{
-          role: 'user',
-          parts: [
-            { inlineData: { mimeType: 'image/jpeg', data: origData } },
-            { inlineData: { mimeType: 'image/png', data: genData } },
-            { text: qcInstruction },
-          ],
-        }],
-        config: {
-          responseMimeType: 'application/json',
-          temperature: 0.3,
-        },
-      });
-
-      const text = response.candidates?.[0]?.content?.parts?.[0]?.text || '';
-      log(`[QC][${model}] 応答: ${text.substring(0, 300)}`);
-
-      try {
-        const jsonMatch = text.match(/\{[\s\S]*\}/);
-        if (jsonMatch) return JSON.parse(jsonMatch[0]);
-      } catch { /* JSONパース失敗 → 次のモデル */ }
-      return { raw: text };
-    } catch (err) {
-      log(`[QC][${model}] 失敗: ${err.message} → フォールバック`);
-      if (model === QC_MODELS[QC_MODELS.length - 1]) {
-        return { identity: 'ERROR', note: `QC全体失敗: ${err.message}` };
-      }
-    }
-  }
-}
-
-// === 事前分析 (Gemini 3 Flash — 撮影写真の適合性チェック) ===
+// === 事前分析 (SPA互換 — Gemini 2.0 Flash via Vertex AI ADC) ===
 const PRE_CHECK_INSTRUCTION = `この写真が証明写真の原本として適切かどうか分析してください。
 
 [チェック項目]
 1. 顔検出：顔が1つ明確に見えるか？
-2. 正面性：正面を向いているか？（左右の傾き、頭の上下）
+2. 正面性：正面を向いているか？（左右の傾き、うつむき/あおむき）
 3. 照明：顔に強い影や逆光がないか？
 4. 鮮明度：ブレなく鮮明か？
-5. 顔サイズ：フレーム対比で顔が十分大きいか？（最小20%）
+5. 顔のサイズ：フレーム対比で顔が十分大きいか？（最低20%）
 6. 表情：無表情または自然な微笑みか？
 7. 目：目を閉じていないか？
+8. 耳：両耳が見えているか？（髪で完全に隠れていないか）
 
 [応答形式 — JSONのみ出力]
 {
@@ -413,15 +398,15 @@ const PRE_CHECK_INSTRUCTION = `この写真が証明写真の原本として適�
   "suggestion": "一行アドバイス"
 }
 
-suitable: 証明写真生成可能かどうか (true/false)
-score: 総合点数 (0-100, 70以上ならsuitable=true)
+suitable: 証明写真生成可否 (true/false)
+score: 総合スコア (0-100、70以上ならsuitable=true)
 issues: 問題リスト (空配列なら問題なし)
 suggestion: ユーザーに表示する一行日本語アドバイス`;
 
 async function runPreCheck(imageBase64) {
-  const data = imageBase64.includes(',') ? imageBase64.split(',')[1] : imageBase64;
+  const data = extractBase64(imageBase64);
 
-  for (const model of QC_MODELS) {
+  for (const model of PRECHECK_MODELS) {
     try {
       log(`[事前分析] モデル試行: ${model}`);
       const response = await ai.models.generateContent({
@@ -449,196 +434,377 @@ async function runPreCheck(imageBase64) {
       return { suitable: true, score: 0, raw: text };
     } catch (err) {
       log(`[事前分析][${model}] 失敗: ${err.message} → フォールバック`);
-      if (model === QC_MODELS[QC_MODELS.length - 1]) {
+      if (model === PRECHECK_MODELS[PRECHECK_MODELS.length - 1]) {
         return { suitable: true, score: 0, note: `分析失敗: ${err.message}` };
       }
     }
   }
 }
 
-// === HTTP サーバー (静的ファイル + APIエンドポイント) ===
-const MIME_TYPES = {
-  '.html': 'text/html; charset=utf-8',
-  '.js': 'application/javascript; charset=utf-8',
-  '.css': 'text/css; charset=utf-8',
-  '.json': 'application/json; charset=utf-8',
-  '.png': 'image/png',
-  '.jpg': 'image/jpeg',
-  '.svg': 'image/svg+xml',
-  '.ico': 'image/x-icon',
-};
+// === 顔座標検出 (Gemini Flash — 精密クロップ用) ===
+const FACE_DETECT_PROMPT = `이 증명사진에서 머리 영역의 좌표를 0~1 비율로 알려주세요.
 
-// POST bodyパーサー (JSON)
-function parseBody(req) {
-  return new Promise((resolve, reject) => {
-    const chunks = [];
-    req.on('data', c => chunks.push(c));
-    req.on('end', () => {
-      try { resolve(JSON.parse(Buffer.concat(chunks).toString())); }
-      catch (e) { reject(e); }
-    });
-    req.on('error', reject);
-  });
-}
+JSON만 출력:
+{ "headTop": 0.xx, "chinBottom": 0.xx, "faceLeft": 0.xx, "faceRight": 0.xx }
 
-function jsonResponse(res, status, data) {
-  res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8' });
-  res.end(JSON.stringify(data));
-}
+headTop: 정수리(머리카락 제외한 머리 최상부)의 Y좌표 (0=이미지상단, 1=이미지하단)
+chinBottom: 턱 최하단의 Y좌표
+faceLeft: 얼굴 좌측 윤곽 X좌표 (0=이미지좌측, 1=이미지우측)
+faceRight: 얼굴 우측 윤곽 X좌표`;
 
-const httpServer = createServer(async (req, res) => {
-  // セキュリティヘッダー
-  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
-  res.setHeader('X-Content-Type-Options', 'nosniff');
-  res.setHeader('X-Frame-Options', 'DENY');
-
-  const urlPath = req.url.split('?')[0];
-
-  // ヘルスチェック
-  if (urlPath === '/health') {
-    jsonResponse(res, 200, {
-      status: 'healthy',
-      service: 'monkos-idphoto-jp',
-      version: '2.0.0',
-      timestamp: new Date().toISOString(),
-      auth: 'Hybrid (ADC + API Key)',
-      geminiLive: 'ready (ADC)',
-      imagen: GEMINI_API_KEY ? 'active (API Key)' : 'NO API KEY',
-      qc: 'active (gemini-3-flash-preview → 2.0-flash フォールバック)',
-      preCheck: 'active (gemini-3-flash-preview)',
-    });
-    return;
-  }
-
-  // API 情報
-  if (urlPath === '/api/info') {
-    jsonResponse(res, 200, {
-      service: 'MONKOS AI 証明写真',
-      domain: 'idphoto-jp.monkos.ai',
-      features: ['AIコーチング (WS)', 'AI事前分析', 'AI証明写真生成', 'AI品質検証'],
-      styles: Object.keys(STYLE_PROMPTS),
-    });
-    return;
-  }
-
-  // === REST APIエンドポイント ===
-
-  // POST /api/pre-check — 撮影写真の適合性分析
-  if (urlPath === '/api/pre-check' && req.method === 'POST') {
-    try {
-      const body = await parseBody(req);
-      if (!body.image) return jsonResponse(res, 400, { error: '画像が必要です' });
-      const result = await runPreCheck(body.image);
-      jsonResponse(res, 200, result);
-    } catch (err) {
-      log(`[API][pre-check] エラー: ${err.message}`);
-      jsonResponse(res, 500, { error: err.message });
-    }
-    return;
-  }
-
-  // POST /api/generate — Imagen I2I 生成 (クレジットチェック含む)
-  if (urlPath === '/api/generate' && req.method === 'POST') {
-    let bodyUserId = null;
-    try {
-      const body = await parseBody(req);
-      bodyUserId = body.userId;
-      if (!body.image) return jsonResponse(res, 400, { error: '画像が必要です' });
-
-      if (body.userId) {
-        const creditResult = await useCredits(body.userId, 'generate');
-        if (!creditResult.success) {
-          return jsonResponse(res, 402, {
-            error: creditResult.error,
-            credits: creditResult.credits ?? 0,
-            required: 1,
-          });
-        }
-        log(`[Credits] 生成消費: ${body.userId} → ${creditResult.credits}c`);
-      }
-
-      log(`[Imagen] 生成リクエスト: style=${body.style}, gender=${body.gender || 'male'}, age=${body.age || 'adult'}`);
-      const image = await generatePhoto(body.image, body.style, body.gender, body.age);
-      jsonResponse(res, 200, { image });
-    } catch (err) {
-      log(`[API][generate] エラー: ${err.message}`);
-      if (bodyUserId) {
-        try {
-          const refund = await refundCredits(bodyUserId, 'generate');
-          if (refund.success) log(`[Credits] 生成失敗返金: ${bodyUserId}`);
-        } catch {}
-      }
-      jsonResponse(res, 500, { error: err.message });
-    }
-    return;
-  }
-
-  // POST /api/qc — QC検証
-  if (urlPath === '/api/qc' && req.method === 'POST') {
-    try {
-      const body = await parseBody(req);
-      if (!body.original || !body.generated) return jsonResponse(res, 400, { error: '原本/生成物が必要です' });
-      const result = await runQC(body.original, body.generated, body.gender, body.age);
-      jsonResponse(res, 200, result);
-    } catch (err) {
-      log(`[API][qc] エラー: ${err.message}`);
-      jsonResponse(res, 500, { error: err.message });
-    }
-    return;
-  }
-
-  // POST /api/credit/use — クレジット消費
-  if (urlPath === '/api/credit/use' && req.method === 'POST') {
-    try {
-      const body = await parseBody(req);
-      if (!body.userId) return jsonResponse(res, 400, { error: 'ログインが必要です' });
-      const result = await useCredits(body.userId, body.type || 'download');
-      jsonResponse(res, result.success ? 200 : 402, result);
-    } catch (err) {
-      log(`[API][credit/use] エラー: ${err.message}`);
-      jsonResponse(res, 500, { error: err.message });
-    }
-    return;
-  }
-
-  // POST /api/credit/share-bonus — シェアボーナス
-  if (urlPath === '/api/credit/share-bonus' && req.method === 'POST') {
-    try {
-      const body = await parseBody(req);
-      if (!body.userId) return jsonResponse(res, 400, { error: 'ログインが必要です' });
-      const result = await grantShareBonus(body.userId, body.platform);
-      jsonResponse(res, result.success ? 200 : 400, result);
-    } catch (err) {
-      log(`[API][credit/share-bonus] エラー: ${err.message}`);
-      jsonResponse(res, 500, { error: err.message });
-    }
-    return;
-  }
-
-  // 静的ファイル配信
-  // / → アプリへリダイレクト, /app → 撮影アプリUI
-  if (urlPath === '/') {
-    res.writeHead(302, { 'Location': '/app' });
-    res.end();
-    return;
-  }
-  let filePath;
-  if (urlPath === '/app') filePath = '/index.html';
-  else filePath = urlPath;
-  const fullPath = join(__dirname, 'public', filePath);
-  const ext = extname(filePath);
-
+async function detectFace(imageBuffer) {
   try {
-    const content = readFileSync(fullPath);
-    res.writeHead(200, { 'Content-Type': MIME_TYPES[ext] || 'application/octet-stream' });
-    res.end(content);
-  } catch {
-    res.writeHead(404, { 'Content-Type': 'text/plain' });
-    res.end('Not Found');
+    const base64 = imageBuffer.toString('base64');
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.0-flash',
+      contents: [{
+        role: 'user',
+        parts: [
+          { inlineData: { mimeType: 'image/png', data: base64 } },
+          { text: FACE_DETECT_PROMPT },
+        ],
+      }],
+      config: { responseMimeType: 'application/json', temperature: 0.1 },
+    });
+
+    const text = response.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    const match = text.match(/\{[\s\S]*\}/);
+    if (match) {
+      const raw = JSON.parse(match[0]);
+      const box = {
+        headTop: Number(raw.headTop),
+        chinBottom: Number(raw.chinBottom),
+        faceLeft: Number(raw.faceLeft),
+        faceRight: Number(raw.faceRight),
+      };
+      if (!isNaN(box.headTop) && !isNaN(box.chinBottom)) {
+        log(`[FaceDetect] 成功: headTop=${box.headTop} chin=${box.chinBottom} L=${box.faceLeft} R=${box.faceRight}`);
+        return box;
+      }
+    }
+    log('[FaceDetect] パース失敗 → フォールバッククロップ');
+    return null;
+  } catch (err) {
+    log(`[FaceDetect] エラー: ${err.message} → フォールバッククロップ`);
+    return null;
+  }
+}
+
+// =============================================
+// Express アプリ
+// =============================================
+const app = express();
+app.use(cors());
+app.use(express.json({ limit: '10mb' }));
+
+// セキュリティヘッダー
+app.use((req, res, next) => {
+  res.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  res.set('X-Content-Type-Options', 'nosniff');
+  res.set('X-Frame-Options', 'DENY');
+  next();
+});
+
+// === API ルート ===
+
+// ヘルスチェック
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'healthy',
+    service: 'monkos-idphoto-jp',
+    version: '3.0.0',
+    timestamp: new Date().toISOString(),
+    auth: 'Hybrid (ADC + API Key)',
+    geminiLive: 'ready (ADC)',
+    imagen: GEMINI_API_KEY ? 'active (API Key)' : 'NO API KEY',
+    preCheck: 'active (gemini-2.0-flash)',
+  });
+});
+
+// サービス情報
+app.get('/api/info', (req, res) => {
+  res.json({
+    service: 'MONKOS AI 証明写真',
+    domain: 'idphoto-jp.monkos.ai',
+    features: ['AI コーチング (WS)', 'AI 事前分析', 'AI 証明写真生成'],
+    styles: Object.keys(STYLE_PROMPTS),
+  });
+});
+
+// 事前分析 — SPA互換 (ハイフン、Vertex AI ADC)
+app.post('/api/pre-check', async (req, res) => {
+  try {
+    if (!req.body.image) return res.status(400).json({ error: '画像が必要です' });
+    const result = await runPreCheck(req.body.image);
+    res.json(result);
+  } catch (err) {
+    log(`[API][pre-check] エラー: ${err.message}`, 'ERROR');
+    res.status(500).json({ error: err.message });
   }
 });
 
-// === WebSocket (コーチング専用 — 撮影室 Step 1 でのみ接続) ===
+// 事前分析 — MPA用 (連結、Vertex AI ADC)
+app.post('/api/precheck', async (req, res) => {
+  try {
+    if (!req.body.image) return res.status(400).json({ error: '画像が必要です' });
+    const result = await runPreCheck(req.body.image);
+    res.json(result);
+  } catch (err) {
+    log(`[API][precheck] エラー: ${err.message}`, 'ERROR');
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// I2I 生成 — MPA用 (9フィールド CF正本、raw fetch、クレジットチェック含む)
+app.post('/api/idgen', async (req, res) => {
+  let bodyUserId = null;
+  try {
+    const apiKey = GEMINI_API_KEY;
+    if (!apiKey) return res.status(500).json({ error: 'APIキー未設定' });
+
+    const body = req.body;
+    const { image, userId } = body;
+    bodyUserId = userId;
+    if (!image) return res.status(400).json({ error: '画像が必要です' });
+
+    const base64Data = image.includes(',') ? image.split(',')[1] : image;
+    const byteLength = Math.ceil(base64Data.length * 3 / 4);
+    log(`[idgen] 入力画像: base64=${base64Data.length}chars, bytes=${byteLength}, KB=${(byteLength/1024).toFixed(1)}`);
+    if (byteLength > 2 * 1024 * 1024) {
+      return res.status(400).json({ error: '画像が大きすぎます（2MB以下）' });
+    }
+
+    // クレジット差引
+    if (userId) {
+      const creditResult = await useCredits(userId, 'generate');
+      if (!creditResult.success) {
+        return res.status(402).json({
+          error: creditResult.error,
+          credits: creditResult.credits ?? 0,
+          required: 10,
+        });
+      }
+      log(`[Credits] idgen差引: ${userId} → ${creditResult.credits}c`);
+    } else {
+      log(`[FREE-GEN] ip=${req.headers['x-forwarded-for'] || req.ip} t=${Date.now()}`);
+    }
+
+    if (!body.format || !body.gender || !body.age) {
+      return res.status(400).json({ error: '必須値不足: format, gender, age' });
+    }
+    const instruction = buildPromptV5(body);
+
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image-preview:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [
+            { inlineData: { mimeType: 'image/jpeg', data: base64Data } },
+            { text: instruction },
+          ]}],
+          generationConfig: { imageConfig: { aspectRatio: '3:4' } },
+          safetySettings: [
+            { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
+            { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
+            { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
+            { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
+          ],
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      let detail = '';
+      try { detail = JSON.parse(errorText)?.error?.message || errorText.substring(0, 200); } catch { detail = errorText.substring(0, 200); }
+      // 生成失敗時クレジット返金
+      if (bodyUserId) await refundCredits(bodyUserId, 'generate');
+      throw new Error(`API ${response.status}: ${detail}`);
+    }
+
+    const data = await response.json();
+    const imagePart = data.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
+    if (!imagePart?.inlineData) {
+      if (bodyUserId) await refundCredits(bodyUserId, 'generate');
+      throw new Error('画像生成失敗：応答に画像がありません');
+    }
+
+    const generatedBase64 = imagePart.inlineData.data;
+    const generatedBuffer = Buffer.from(generatedBase64, 'base64');
+
+    // ログインユーザー: GCS保存 + ウォーターマーク並列 → ウォーターマーク版応答
+    // 非ログイン: 原本そのまま応答 (GCS保存なし)
+    if (bodyUserId) {
+      const [{ generatedPath }, watermarkedBuffer] = await Promise.all([
+        saveImages(bodyUserId, image, generatedBase64),
+        addWatermark(generatedBuffer),
+      ]);
+      res.json({
+        image: `data:image/png;base64,${watermarkedBuffer.toString('base64')}`,
+        gcsPath: generatedPath,
+      });
+    } else {
+      res.json({ image: `data:image/png;base64,${generatedBase64}` });
+    }
+  } catch (err) {
+    log(`[API][idgen] エラー: ${err.message}`, 'ERROR');
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// クレジット差引
+app.post('/api/credit/use', async (req, res) => {
+  try {
+    if (!req.body.userId) return res.status(400).json({ error: 'ログインが必要です' });
+    const result = await useCredits(req.body.userId, req.body.type || 'download');
+    res.status(result.success ? 200 : 402).json(result);
+  } catch (err) {
+    log(`[API][credit/use] エラー: ${err.message}`, 'ERROR');
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// クレジット返金（ダウンロード失敗等）
+app.post('/api/credit/refund', async (req, res) => {
+  try {
+    if (!req.body.userId) return res.status(400).json({ error: 'ログインが必要です' });
+    const result = await refundCredits(req.body.userId, req.body.type || 'download');
+    res.status(result.success ? 200 : 400).json(result);
+  } catch (err) {
+    log(`[API][credit/refund] エラー: ${err.message}`, 'ERROR');
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ダウンロード — Gemini顔検出 + 精密クロップ + 原本Signed URL (クレジット70c 1回差引)
+app.post('/api/download', async (req, res) => {
+  try {
+    const { userId, gcsPath, format } = req.body;
+    if (!userId) return res.status(400).json({ error: 'ログインが必要です' });
+    if (!gcsPath) return res.status(400).json({ error: 'gcsPathが必要です' });
+
+    // gcsPath検証: 該当ユーザーパスか確認 (他人のファイルアクセス遮断)
+    if (!gcsPath.startsWith(`service/idphoto/jp/${userId}/`)) {
+      return res.status(403).json({ error: 'アクセス権限なし' });
+    }
+
+    // クレジット差引 (70c — クロップ本+原本含む)
+    const creditResult = await useCredits(userId, 'download');
+    if (!creditResult.success) {
+      return res.status(402).json({
+        error: creditResult.error,
+        credits: creditResult.credits ?? 0,
+      });
+    }
+
+    // GCSから画像ダウンロード + Signed URL 並列発行
+    const [buffer, originalUrl] = await Promise.all([
+      downloadFromGCS(gcsPath),
+      getSignedUrl(gcsPath),
+    ]);
+
+    log(`[Download] ${userId} → ${gcsPath} (ノークロップ原本)`);
+    res.json({
+      success: true,
+      image: `data:image/png;base64,${buffer.toString('base64')}`,
+      originalUrl,
+      credits: creditResult.credits,
+      format: format || 'passport',
+    });
+  } catch (err) {
+    log(`[API][download] エラー: ${err.message}`, 'ERROR');
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// === favicon.ico ===
+app.get('/favicon.ico', (req, res) => {
+  res.sendFile(join(__dirname, 'public/favicon-32.png'));
+});
+
+// === sitemap.xml ===
+app.get('/sitemap.xml', (req, res) => {
+  const base = 'https://idphoto-jp.monkos.ai';
+  const today = new Date().toISOString().slice(0, 10);
+  const urls = [
+    { loc: '/',                         priority: '1.0', changefreq: 'weekly',  lastmod: today },
+    // /app, /camera, /prep — robots.txt 차단 (촬영 퍼널 중간진입 방지). sitemap에서 제외.
+    // Phase 2.1 — 日本コアキーワード ランディング (2026-04-21)
+    { loc: '/guide/shukatsu',           priority: '0.9', changefreq: 'monthly', lastmod: today },
+    { loc: '/guide/app-comparison',     priority: '0.9', changefreq: 'monthly', lastmod: today },
+    { loc: '/guide/ai',                 priority: '0.9', changefreq: 'monthly', lastmod: today },
+    { loc: '/specs/passport',           priority: '0.9', changefreq: 'monthly', lastmod: today },
+    { loc: '/specs/drivers-license',    priority: '0.9', changefreq: 'monthly', lastmod: today },
+    { loc: '/policy/data',              priority: '0.4', changefreq: 'yearly',  lastmod: '2026-03-08' },
+  ];
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
+    urls.map(u => `  <url>\n    <loc>${base}${u.loc}</loc>\n    <lastmod>${u.lastmod}</lastmod>\n    <changefreq>${u.changefreq}</changefreq>\n    <priority>${u.priority}</priority>\n  </url>`).join('\n') +
+    `\n</urlset>`;
+  res.set('Content-Type', 'application/xml');
+  res.send(xml);
+});
+
+// === ページルート (MPA) ===
+app.get('/', (req, res) => res.sendFile(join(__dirname, 'public/index.html')));
+app.get('/app', (req, res) => res.sendFile(join(__dirname, 'public/index.html')));
+app.get('/prep', (req, res) => res.sendFile(join(__dirname, 'public/prep.html')));
+app.get('/camera', (req, res) => res.sendFile(join(__dirname, 'public/camera.html')));
+app.get('/result', (req, res) => res.sendFile(join(__dirname, 'public/result.html')));
+app.get('/thankyou', (req, res) => res.sendFile(join(__dirname, 'public/thankyou.html')));
+app.get('/charge', (req, res) => res.sendFile(join(__dirname, 'public/charge.html')));
+app.get('/policy/data', (req, res) => res.sendFile(join(__dirname, 'public/policy-data.html')));
+
+// Phase 2.1 — 日本コアキーワード ランディングページ (2026-04-21)
+app.get('/guide/shukatsu',        (req, res) => res.sendFile(join(__dirname, 'public/guide/shukatsu.html')));
+app.get('/guide/app-comparison',  (req, res) => res.sendFile(join(__dirname, 'public/guide/app-comparison.html')));
+app.get('/guide/ai',              (req, res) => res.sendFile(join(__dirname, 'public/guide/ai.html')));
+app.get('/specs/passport',        (req, res) => res.sendFile(join(__dirname, 'public/specs/passport.html')));
+app.get('/specs/drivers-license', (req, res) => res.sendFile(join(__dirname, 'public/specs/drivers-license.html')));
+
+// 静的ファイル配信 (JS/CSS キャッシュ無効 — モバイルブラウザ強制更新)
+app.use(express.static(join(__dirname, 'public'), {
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('.js') || filePath.endsWith('.css')) {
+      res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.set('Pragma', 'no-cache');
+      res.set('Expires', '0');
+    }
+  }
+}));
+
+// === サーバー起動 + WebSocket ===
+const httpServer = app.listen(PORT, '0.0.0.0', () => {
+  log('='.repeat(60));
+  log('MONKOS AI 証明写真 (JP) — Express サーバー起動');
+  log('='.repeat(60));
+  log(`ポート: ${PORT}`);
+  log(`プロジェクト: ${PROJECT_ID}`);
+  log(`リージョン: ${LOCATION}`);
+  log(`認証: ハイブリッド (ADC + API Key)`);
+  log(`Imagen I2I: アクティブ (gemini-3-pro-image-preview, API Key)`);
+  log('事前分析: アクティブ (gemini-2.0-flash)');
+  log('='.repeat(60));
+  log('エンドポイント:');
+  log('  GET  /health              — ヘルスチェック');
+  log('  GET  /api/info            — サービス情報');
+  log('  POST /api/pre-check       — 事前分析 (SPA)');
+  log('  POST /api/precheck        — 事前分析 (MPA)');
+  log('  POST /api/idgen           — Imagen I2I (9フィールド)');
+  log('  POST /api/credit/use      — クレジット差引');
+  log('  POST /api/download        — ダウンロード (GCS+クロップ+SignedURL)');
+  log('  GET  /                    — ランディングページ');
+  log('  GET  /app                 — 撮影アプリ (SPA)');
+  log('  GET  /prep                — 準備 (MPA)');
+  log('  GET  /camera              — 撮影 (MPA)');
+  log('  GET  /result              — 結果 (MPA)');
+  log('  GET  /thankyou            — 受取 (MPA)');
+  log('  WS   /                    — WebSocket (コーチング専用)');
+  log('='.repeat(60));
+});
+
+// === WebSocket (コーチング専用 — 撮影室でのみ接続) ===
 const wss = new WebSocketServer({ server: httpServer });
 let clientCounter = 0;
 
@@ -646,7 +812,7 @@ wss.on('connection', async (ws) => {
   const clientId = `c${++clientCounter}`;
   log(`[WS][${clientId}] コーチングセッション接続`);
 
-  const session = { gemini: null, frameCount: 0, responseBuffer: '', bufferFlushTimer: null, ws, photoStyle: 'id_photo' };
+  const session = { gemini: null, frameCount: 0, responseBuffer: '', bufferFlushTimer: null, ws, photoStyle: 'passport' };
   sessions.set(clientId, session);
 
   ws.on('message', async (data, isBinary) => {
@@ -674,16 +840,17 @@ wss.on('connection', async (ws) => {
       return;
     }
 
-    // テキスト = JSON コマンド（コーチング関連のみ）
+    // テキスト = JSON コマンド (コーチング関連のみ)
     let msg;
     try {
       const raw = Buffer.isBuffer(data) ? data.toString() : data;
       msg = JSON.parse(raw);
     } catch { return; }
 
-    if (msg.type === 'set-style') {
-      session.photoStyle = msg.style === 'resume' ? 'resume' : 'id_photo';
-      log(`[スタイル][${clientId}] ${session.photoStyle}`);
+    if (msg.type === 'set-format') {
+      const val = msg.format;
+      session.photoStyle = val === 'id' ? 'id' : 'passport';
+      log(`[フォーマット][${clientId}] ${session.photoStyle}`);
       return;
     }
 
@@ -714,38 +881,11 @@ wss.on('connection', async (ws) => {
   });
 
   ws.on('close', () => {
-    log(`[WS][${clientId}] コーチングセッション切断`);
+    log(`[WS][${clientId}] コーチングセッション終了`);
     if (session.gemini) {
       try { session.gemini.close(); } catch {}
     }
     if (session.bufferFlushTimer) clearTimeout(session.bufferFlushTimer);
     sessions.delete(clientId);
   });
-});
-
-// === サーバー起動 ===
-httpServer.listen(PORT, '0.0.0.0', () => {
-  log('='.repeat(60));
-  log('MONKOS AI 証明写真 (JP) — サーバー起動');
-  log('='.repeat(60));
-  log(`ポート: ${PORT}`);
-  log(`プロジェクト: ${PROJECT_ID}`);
-  log(`リージョン: ${LOCATION}`);
-  log(`認証: ハイブリッド (ADC + API Key)`);
-  log(`Imagen I2I: アクティブ (gemini-3-pro-image-preview, API Key)`);
-  log(`QC: アクティブ (gemini-3-flash-preview → 2.0-flash フォールバック)`);
-  log(`事前分析: アクティブ (gemini-3-flash-preview)`);
-  log('='.repeat(60));
-  log('エンドポイント:');
-  log('  GET  /health              — ヘルスチェック');
-  log('  GET  /api/info            — サービス情報');
-  log('  POST /api/pre-check       — 事前分析 (撮影適合性)');
-  log('  POST /api/generate        — Imagen I2I 生成');
-  log('  POST /api/qc              — QC 検証');
-  log('  POST /api/credit/use      — クレジット消費');
-  log('  POST /api/credit/share-bonus — シェアボーナス');
-  log('  GET  /                    — ランディングページ');
-  log('  GET  /app                 — 撮影アプリ');
-  log('  WS   /                    — WebSocket (コーチング専用)');
-  log('='.repeat(60));
 });

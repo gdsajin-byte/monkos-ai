@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="theme-color" content="#030508">
+    <title>MONKOS Studio — Profiles</title>
+
+    <link rel="icon" href="/monkos-icon.svg" type="image/svg+xml">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="profiles.css">
+</head>
+<body>
+    <div class="studio-layout profiles-layout">
+
+        <!-- ══ 헤더 ══ -->
+        <header class="studio-header">
+            <div class="header-left">
+                <h1><span class="brand">MONKOS</span> Studio</h1>
+                <nav class="mode-tabs">
+                    <a href="/app" class="mode-tab">증명사진</a>
+                    <a href="/profiles" class="mode-tab active">프로필</a>
+                </nav>
+            </div>
+            <div class="header-right">
+                <span class="internal-badge">INTERNAL</span>
+            </div>
+        </header>
+
+        <!-- ══ 좌측 사이드바 — 카테고리 탭 ══ -->
+        <aside class="studio-sidebar" id="sidebar">
+
+            <!-- 용도 (장르) -->
+            <div class="sidebar-section">
+                <div class="sidebar-label">용도</div>
+                <div class="opt-chips purpose-chips" data-field="purpose">
+                    <button class="opt-chip selected" data-val="linkedin">링크드인</button>
+                    <button class="opt-chip" data-val="professional">전문직종</button>
+                    <button class="opt-chip" data-val="executive">기업인</button>
+                    <button class="opt-chip" data-val="artist">아티스트</button>
+                    <button class="opt-chip" data-val="beauty">뷰티</button>
+                    <button class="opt-chip" data-val="fitting">피팅모델</button>
+                </div>
+            </div>
+
+            <div class="sidebar-divider"></div>
+
+            <!-- 카테고리 탭 -->
+            <div class="sidebar-section">
+                <div class="sidebar-label">레퍼런스 카테고리</div>
+                <div class="category-tabs" id="category-tabs">
+                    <button class="category-tab" data-cat="master">
+                        <span class="cat-icon">🎯</span>
+                        <span class="cat-label">마스터</span>
+                        <span class="cat-dot" id="dot-master"></span>
+                    </button>
+                    <button class="category-tab" data-cat="fashion">
+                        <span class="cat-icon">👔</span>
+                        <span class="cat-label">패션</span>
+                        <span class="cat-dot" id="dot-fashion"></span>
+                    </button>
+                    <button class="category-tab" data-cat="hair">
+                        <span class="cat-icon">💇</span>
+                        <span class="cat-label">헤어</span>
+                        <span class="cat-dot" id="dot-hair"></span>
+                    </button>
+                    <button class="category-tab" data-cat="makeup">
+                        <span class="cat-icon">💄</span>
+                        <span class="cat-label">메이크업</span>
+                        <span class="cat-dot" id="dot-makeup"></span>
+                    </button>
+                    <button class="category-tab" data-cat="background">
+                        <span class="cat-icon">🏞️</span>
+                        <span class="cat-label">배경</span>
+                        <span class="cat-dot" id="dot-background"></span>
+                    </button>
+                </div>
+            </div>
+
+        </aside>
+
+        <!-- ══ 중앙 워크스페이스 — 레퍼런스 갤러리 ══ -->
+        <main class="studio-workspace profiles-workspace">
+
+            <!-- 결과 프리뷰 (생성 후 표시) -->
+            <div class="result-preview" id="result-preview" style="display:none;">
+                <div class="result-header">
+                    <span class="result-title">생성 결과</span>
+                    <div class="result-actions">
+                        <button class="wbtn wbtn-retry" id="btn-retry">다시 생성</button>
+                        <button class="wbtn wbtn-dl-after" id="btn-dl-after">다운로드</button>
+                        <button class="wbtn wbtn-dl-compare" id="btn-dl-compare">비교컷</button>
+                    </div>
+                </div>
+                <div class="result-images">
+                    <div class="result-img-wrap">
+                        <img id="img-before" src="" alt="Before">
+                        <div class="result-img-label">원본</div>
+                    </div>
+                    <div class="result-img-wrap">
+                        <img id="img-after" src="" alt="After">
+                        <div class="result-img-label">프로필</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 로딩 오버레이 -->
+            <div class="loading-overlay" id="loading-overlay">
+                <div class="loading-spinner"></div>
+                <div class="loading-text">프로필 생성 중...</div>
+                <div class="gen-progress">
+                    <div class="gen-progress-fill" id="progress-fill"></div>
+                </div>
+            </div>
+
+            <!-- 레퍼런스 그리드 (카테고리별 전환) -->
+            <div class="ref-gallery" id="ref-gallery">
+                <div class="ref-gallery-header">
+                    <span class="ref-gallery-title" id="gallery-title">마스터 레퍼런스</span>
+                    <span class="ref-gallery-hint" id="gallery-hint">클릭하여 우측 스택에 추가</span>
+                </div>
+
+                <!-- 직접 업로드 영역 -->
+                <div class="ref-gallery-upload" id="gallery-upload-drop">
+                    <div class="ref-gallery-upload-icon">+</div>
+                    <div class="ref-gallery-upload-text">레퍼런스 이미지 직접 업로드 (드래그 또는 클릭)</div>
+                    <input type="file" id="gallery-upload-input" accept="image/jpeg,image/png,image/webp" style="display:none;">
+                </div>
+
+                <!-- 샘플 그리드 -->
+                <div class="ref-gallery-grid" id="gallery-grid">
+                    <!-- JS에서 동적 렌더링 -->
+                </div>
+            </div>
+
+        </main>
+
+        <!-- ══ 우측 사이드바 — 스택 + 생성 ══ -->
+        <aside class="right-panel" id="right-panel">
+
+            <!-- 1. 내 사진 업로드 -->
+            <div class="stack-section">
+                <div class="stack-label">내 사진</div>
+                <div id="file-drop" class="file-drop-compact">
+                    <div class="file-drop-icon">📸</div>
+                    <div class="file-drop-text">클릭 또는 드래그</div>
+                    <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp" style="display:none;">
+                </div>
+                <div id="user-photo-preview" class="user-photo-preview" style="display:none;">
+                    <img id="preview-img" src="" alt="미리보기">
+                    <button class="btn-change-photo" id="btn-change">변경</button>
+                </div>
+            </div>
+
+            <div class="sidebar-divider"></div>
+
+            <!-- 2. 마스터 레퍼런스 -->
+            <div class="stack-section">
+                <div class="stack-label">마스터 레퍼런스 <span class="stack-required">필수</span></div>
+                <div class="stack-slot" id="slot-master">
+                    <div class="stack-slot-empty">첫 번째 선택이 마스터가 됩니다</div>
+                </div>
+            </div>
+
+            <div class="sidebar-divider"></div>
+
+            <!-- 3. 파트별 오버라이드 -->
+            <div class="stack-section">
+                <div class="stack-label">파트별 오버라이드 <span class="stack-optional">선택</span></div>
+                <div class="override-list" id="override-list">
+                    <div class="override-empty" id="override-empty">마스터의 특정 파트만 교체하려면<br>카테고리별로 추가하세요</div>
+                </div>
+            </div>
+
+            <div class="sidebar-divider"></div>
+
+            <!-- 4. 생성 옵션 -->
+            <div class="stack-section stack-options">
+                <div class="stack-row">
+                    <div class="stack-label-sm">성별</div>
+                    <div class="opt-chips-sm" data-field="gender">
+                        <button class="opt-chip-sm selected" data-val="f">여성</button>
+                        <button class="opt-chip-sm" data-val="m">남성</button>
+                    </div>
+                </div>
+                <div class="stack-row">
+                    <div class="stack-label-sm">모델</div>
+                    <select id="model-select" class="model-selector-sm">
+                        <option value="nano-banana-2" selected>Nano Banana 2</option>
+                        <option value="nano-banana-pro">Nano Banana Pro</option>
+                    </select>
+                </div>
+                <textarea id="custom-prompt" class="stack-prompt" rows="2"
+                    placeholder="추가 프롬프트 (선택)"></textarea>
+            </div>
+
+            <!-- 5. 생성 버튼 -->
+            <div class="stack-footer">
+                <button class="btn-generate" id="btn-generate" disabled>프로필 생성</button>
+                <div class="cost-hint" id="cost-hint">Nano Banana 2 · ~₩92/장</div>
+            </div>
+
+        </aside>
+
+    </div>
+
+    <script type="module" src="profiles/main.js"></script>
+</body>
+</html>

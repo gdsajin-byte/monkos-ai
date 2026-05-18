@@ -1,0 +1,40 @@
+name: Weekly Dashboard
+
+on:
+  schedule:
+    - cron: '0 21 * * 0'  # UTC 21:00 일요일 = KST 06:00 월요일
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  dashboard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install pyyaml
+
+      - name: R&D deadline check
+        run: python .github/scripts/rnd_deadline_check.py > /tmp/rnd.md
+
+      - name: PF dashboard
+        run: python .github/scripts/pf_dashboard.py > /tmp/pf.md
+
+      - name: Create Issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BODY="$(cat /tmp/pf.md)
+
+          ---
+
+          $(cat /tmp/rnd.md)"
+          gh issue create \
+            --title "📋 주간 대시보드 $(date -u -d '+9 hours' +%Y-%m-%d 2>/dev/null || date -u +%Y-%m-%d)" \
+            --body "${BODY}" \
+            --label "주간대시보드"

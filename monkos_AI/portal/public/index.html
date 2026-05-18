@@ -1,2503 +1,468 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="ko">
 <head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-JPZWSJ3323"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-JPZWSJ3323');
+  gtag('config', 'G-FKG0CPTC14');
+  (function(){var d=['chatgpt.com','perplexity','claude.ai','gemini.google','copilot'];var r=document.referrer||'';if(d.some(function(s){return r.includes(s)})){var e=r.includes('chatgpt')?'chatgpt':r.includes('perplexity')?'perplexity':r.includes('claude.ai')?'claude':r.includes('gemini.google')?'gemini':r.includes('copilot')?'copilot':'other_ai';gtag('event','ai_referral_landing',{'ai_engine':e,'landing_page':location.pathname})}})();
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>MONKOS AI | AI証明写真・パスポート写真・履歴書写真</title>
-<meta name="description" content="AIリアルタイムコーチングで完璧な証明写真を撮影。パスポート・ビザ・履歴書・就活写真対応。高品質AI証明写真を生成。">
-<meta name="theme-color" content="#0f0f23">
+<title>MONKOS AI | AI 증명사진 · 여권사진 · 이력서사진</title>
+<meta name="description" content="AI 실시간 코칭으로 완벽한 증명사진을 촬영하세요. 여권, 비자, 이력서, 취업사진 지원. 고품질 AI 증명사진 생성.">
+<meta name="theme-color" content="#FAFAF8">
 
 <!-- OG Tags -->
-<meta property="og:title" content="MONKOS AI | AI証明写真">
-<meta property="og:description" content="AIコーチが撮影をリアルタイムガイド。証明写真・パスポート写真・履歴書写真を撮影。">
+<meta property="og:title" content="MONKOS AI | AI 증명사진">
+<meta property="og:description" content="AI 코치가 촬영을 실시간 가이드. 증명사진 · 여권사진 · 이력서사진 촬영.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://monkos.ai">
 <meta property="og:site_name" content="MONKOS AI">
-<meta property="og:locale" content="ja_JP">
-<meta property="og:locale:alternate" content="ko_KR">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:locale:alternate" content="ja_JP">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="MONKOS AI | AI証明写真">
-<meta name="twitter:description" content="AIコーチが撮影をリアルタイムガイド。AI証明写真を撮影。">
+<meta name="twitter:title" content="MONKOS AI | AI 증명사진">
+<meta name="twitter:description" content="AI 코치가 촬영을 실시간 가이드. AI 증명사진 촬영.">
+<meta property="og:image" content="https://monkos.ai/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 
 <!-- Canonical & Hreflang -->
 <link rel="canonical" href="https://monkos.ai/">
-<link rel="alternate" hreflang="ja" href="https://monkos.ai/">
-<link rel="alternate" hreflang="ko" href="https://monkos.ai/idphoto-kr/">
+<link rel="alternate" hreflang="ko" href="https://monkos.ai/">
+<link rel="alternate" hreflang="en" href="https://monkos.ai/en/">
+<link rel="alternate" hreflang="ja" href="https://monkos.ai/ja/">
 <link rel="alternate" hreflang="x-default" href="https://monkos.ai/">
+
+<!-- Favicon -->
+<link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/favicon-192.png" sizes="192x192" type="image/png">
+<link rel="icon" href="/monkos-icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 
 <!-- Structured Data -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "WebApplication",
-  "name": "MONKOS AI証明写真",
-  "url": "https://monkos.ai",
-  "applicationCategory": "PhotographyApplication",
-  "operatingSystem": "Web",
-  "inLanguage": ["ja", "ko", "en"],
-  "description": "AIリアルタイムコーチングで完璧な証明写真を撮影。パスポート・ビザ・履歴書・就活写真対応。",
-  "provider": {
-    "@type": "Organization",
-    "name": "MONKOS",
-    "url": "https://monk.kr"
-  }
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "MONKOS AI 증명사진",
+      "url": "https://monkos.ai",
+      "applicationCategory": "PhotographyApplication",
+      "operatingSystem": "Web",
+      "inLanguage": ["ko", "ja", "en"],
+      "description": "AI 실시간 코칭으로 완벽한 증명사진 촬영. 여권·비자·이력서·취업사진 대응.",
+      "provider": {
+        "@type": "Organization",
+        "name": "Monk Studio",
+        "url": "https://monkos.ai",
+        "founder": {
+          "@type": "Person",
+          "name": "Shin-jakka",
+          "jobTitle": "Photographer & AI Architect",
+          "sameAs": ["https://github.com/monkos-studio"]
+        }
+      }
+    },
+    {
+      "@type": "ItemList",
+      "name": "MONKOS AI Services",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "AI 증명사진", "url": "https://monkos.ai" },
+        { "@type": "ListItem", "position": 2, "name": "무료 크롭앱", "url": "https://monkos.ai/crop" },
+        { "@type": "ListItem", "position": 3, "name": "26개국 규격 가이드", "url": "https://monkos.ai/specs" },
+        { "@type": "ListItem", "position": 4, "name": "블로그", "url": "https://monkos.ai/blog" },
+        { "@type": "ListItem", "position": 5, "name": "FAQ", "url": "https://monkos.ai/faq" },
+        { "@type": "ListItem", "position": 6, "name": "갤러리", "url": "https://monkos.ai/gallery" }
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "name": "MONKOS AI — AI 증명사진 · 26개국 규격",
+      "url": "https://monkos.ai",
+      "inLanguage": ["ko", "ja", "en"],
+      "description": "AI-powered ID photo service covering 26 countries. Passport, visa, resume photos with ICAO-compliant specifications. Free crop tool and AI retouching.",
+      "keywords": "AI passport photo, AI ID photo, 증명사진 AI, 여권사진, 履歴書 写真, ICAO photo, visa photo, 26 countries ID photo specs"
+    },
+    {
+      "@type": "Organization",
+      "name": "MONKOS",
+      "alternateName": ["Monk Studio", "몽크사진관", "몽코스"],
+      "url": "https://monkos.ai",
+      "logo": "https://monkos.ai/favicon-192.png",
+      "sameAs": ["https://monk.kr"],
+      "founder": {
+        "@type": "Person",
+        "name": "Shin JeongKyu",
+        "jobTitle": "Photographer & AI Architect"
+      },
+      "knowsAbout": [
+        "AI ID photo generation",
+        "ICAO passport photo standard",
+        "Passport photo specifications by country",
+        "Face landmark detection for photo cropping",
+        "AI photo retouching",
+        "증명사진 규격",
+        "여권사진",
+        "履歴書 証明写真",
+        "AI 증명사진"
+      ],
+      "areaServed": ["KR","JP","US","GB","DE","ES","FR","IT","AU","CA","SG","TH","IN","CN","VN","ID"],
+      "description": "사진작가 경력 20년·스튜디오 운영 12년차 전문가가 설계한 AI 증명사진 서비스. 26개국 공식 규격 데이터 완비."
+    },
+    {
+      "@type": "ProfessionalService",
+      "name": "MONKOS AI 증명사진 서비스",
+      "serviceType": "AI ID Photo Service",
+      "url": "https://monkos.ai",
+      "provider": { "@type": "Organization", "name": "MONKOS" },
+      "areaServed": ["KR","JP","US","GB","DE","ES","FR","IT","AU","CA","SG","TH","IN","CN","VN","ID"],
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "26개국 증명사진 규격 가이드",
+        "numberOfItems": 26,
+        "itemListElement": [
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "한국 여권·신분증", "url": "https://monkos.ai/specs/korea-passport" }},
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "한국 반명함 (3×4)", "url": "https://monkos.ai/specs/korea-resume" }},
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "한국 반명함 (이력서)", "url": "https://monkos.ai/specs/korea-halfcard" }},
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "한국 주민등록증", "url": "https://monkos.ai/specs/korea-resident" }},
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "한국 운전면허증", "url": "https://monkos.ai/specs/korea-drivers-license" }},
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "日本 パスポート", "url": "https://monkos.ai/specs/japan-passport" }},
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "日本 マイナンバーカード", "url": "https://monkos.ai/specs/japan-mynumber" }},
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "日本 在留カード", "url": "https://monkos.ai/specs/japan-zairyu" }},
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "日本 履歴書", "url": "https://monkos.ai/specs/japan-resume" }},
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "日本 半名刺写真", "url": "https://monkos.ai/specs/japan-halfcard" }},
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "USA Passport / Visa", "url": "https://monkos.ai/specs/us-passport" }},
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "USA Headshot · LinkedIn", "url": "https://monkos.ai/specs/usa-headshot" }},
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "EU Passport · ID", "url": "https://monkos.ai/specs/eu-passport" }},
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Spain Pasaporte · NIE", "url": "https://monkos.ai/specs/spain-passport" }},
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Germany Bewerbungsfoto", "url": "https://monkos.ai/specs/germany-resume" }},
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "EU CV Photo", "url": "https://monkos.ai/specs/eu-resume" }},
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "UK Passport", "url": "https://monkos.ai/specs/uk-passport" }},
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Australia Passport · ID", "url": "https://monkos.ai/specs/australia-passport" }},
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Canada Passport · ID", "url": "https://monkos.ai/specs/canada-passport" }},
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Singapore Passport · PR", "url": "https://monkos.ai/specs/singapore-passport" }},
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Thailand Passport", "url": "https://monkos.ai/specs/thailand-passport" }},
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "India Passport", "url": "https://monkos.ai/specs/india-passport" }},
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "中国 护照 · 签证", "url": "https://monkos.ai/specs/china-passport" }},
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "中国 简历照片", "url": "https://monkos.ai/specs/china-resume" }},
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Vietnam Hộ chiếu", "url": "https://monkos.ai/specs/vietnam-passport" }},
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Indonesia Paspor", "url": "https://monkos.ai/specs/indonesia-passport" }}
+        ]
+      },
+      "description": "26개국 공식 증명사진 규격 데이터를 완비한 AI 서비스. 각국 여권·비자·이력서·신분증 사진을 ICAO 국제 표준에 맞춰 자동 생성·크롭."
+    },
+    {
+      "@type": "VideoObject",
+      "name": "AI 증명사진 — 자연스럽게 셀카로 만드는법",
+      "description": "MONKOS AI로 셀카 한 장으로 증명사진을 만드는 방법을 안내합니다.",
+      "thumbnailUrl": "https://i.ytimg.com/vi/xAJsKdZWtjU/maxresdefault.jpg",
+      "uploadDate": "2026-04-15T19:02:58+09:00",
+      "contentUrl": "https://youtu.be/xAJsKdZWtjU",
+      "embedUrl": "https://www.youtube.com/embed/xAJsKdZWtjU",
+      "publisher": { "@type": "Organization", "name": "MONKOS AI" }
+    },
+    {
+      "@type": "VideoObject",
+      "name": "就活写真で前髪、絶対なくさないといけないの？",
+      "description": "就活証明写真の前髪について解説します。",
+      "thumbnailUrl": "https://i.ytimg.com/vi/2okGk_3k9TM/maxresdefault.jpg",
+      "uploadDate": "2026-04-21T17:13:28+09:00",
+      "contentUrl": "https://youtube.com/shorts/2okGk_3k9TM",
+      "embedUrl": "https://www.youtube.com/embed/2okGk_3k9TM",
+      "publisher": { "@type": "Organization", "name": "MONKOS AI" }
+    }
+  ]
 }
 </script>
 
-<!-- Google Identity Services (동적 로딩) -->
-<style>
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
-:root {
-  --bg: #0a0a1a;
-  --surface: #141428;
-  --surface2: #1a1a35;
-  --accent: #a78bfa;
-  --accent2: #818cf8;
-  --accent3: #c084fc;
-  --text: #e2e8f0;
-  --text-dim: #8892a8;
-  --text-bright: #f8fafc;
-  --border: rgba(167, 139, 250, 0.12);
-  --border-hover: rgba(167, 139, 250, 0.3);
-  --success: #34d399;
-  --card-bg: rgba(20, 20, 40, 0.7);
-  --card-bg-hover: rgba(30, 30, 55, 0.8);
-  --glow: rgba(167, 139, 250, 0.06);
-  --blue: #60A5FA;
-  --emerald: #34d399;
-  --gold: #f59e0b;
-  --chat-bg: rgba(15, 15, 35, 0.98);
-  --chat-border: rgba(167, 139, 250, 0.25);
-}
-
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  overflow-x: hidden;
-}
-
-/* === 배경 애니메이션 === */
-.bg-grid {
-  position: fixed;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(167, 139, 250, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(167, 139, 250, 0.03) 1px, transparent 1px);
-  background-size: 60px 60px;
-  z-index: 0;
-}
-
-.bg-glow {
-  position: fixed;
-  top: -200px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 800px;
-  height: 600px;
-  background: radial-gradient(ellipse, rgba(167, 139, 250, 0.1) 0%, rgba(129, 140, 248, 0.04) 40%, transparent 70%);
-  z-index: 0;
-  pointer-events: none;
-}
-
-.bg-glow-2 {
-  position: fixed;
-  bottom: -300px;
-  right: -200px;
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(ellipse, rgba(192, 132, 252, 0.06) 0%, transparent 70%);
-  z-index: 0;
-  pointer-events: none;
-}
-
-/* === 레이아웃 === */
-.container {
-  position: relative;
-  z-index: 1;
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 0 20px;
-}
-
-/* === 헤더 === */
-header {
-  padding: 16px 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  max-width: 1000px;
-  margin: 0 auto;
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  background: rgba(10, 10, 26, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border);
-}
-
-.logo-chat-trigger {
-  position: relative;
-  cursor: pointer;
-  flex-shrink: 0;
-}
-
-.logo-icon {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  flex-shrink: 0;
-  transition: transform 0.2s;
-}
-
-.logo-chat-trigger:hover .logo-icon {
-  transform: scale(1.15);
-}
-
-.logo-bubble {
-  position: absolute;
-  right: -6px;
-  top: -3px;
-  width: 13px;
-  height: 13px;
-  background: var(--accent);
-  color: #fff;
-  font-size: 8px;
-  font-weight: 700;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  animation: bubbleWiggle 2.5s ease-in-out infinite;
-  pointer-events: none;
-}
-
-.logo-bubble.hide { display: none; }
-
-@keyframes bubbleWiggle {
-  0%, 100% { transform: scale(1) rotate(0deg); }
-  25% { transform: scale(1.1) rotate(-8deg); }
-  75% { transform: scale(1.1) rotate(8deg); }
-}
-
-/* === 헤더 우측 영역 === */
-.auth-area {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.header-login-btn {
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
-  color: #fff;
-  border: none;
-  padding: 6px 16px;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: opacity 0.2s;
-}
-.header-login-btn:hover { opacity: 0.85; }
-
-/* 크레딧 버튼 */
-.credit-btn {
-  display: none;
-  align-items: center;
-  gap: 5px;
-  background: rgba(167, 139, 250, 0.08);
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.credit-btn:hover {
-  border-color: var(--border-hover);
-  background: rgba(167, 139, 250, 0.14);
-}
-
-.credit-diamond {
-  font-size: 14px;
-}
-
-.credit-count {
-  color: var(--accent);
-  font-variant-numeric: tabular-nums;
-}
-
-/* SNS provider 아이콘 */
-.provider-badge {
-  display: none;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  cursor: pointer;
-  position: relative;
-}
-
-.provider-badge img {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  border: 2px solid var(--accent);
-}
-
-.provider-badge svg {
-  width: 20px;
-  height: 20px;
-}
-
-.provider-badge.google { background: #fff; }
-.provider-badge.line { background: #06C755; }
-.provider-badge.kakao { background: #FEE500; }
-
-/* 로그아웃 팝오버 */
-.logout-popover {
-  display: none;
-  position: absolute;
-  top: 36px;
-  right: 0;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 8px 0;
-  min-width: 140px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-  z-index: 100;
-}
-
-.logout-popover.open { display: block; }
-
-.logout-popover-name {
-  padding: 6px 14px;
-  font-size: 0.8rem;
-  color: var(--text-dim);
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 4px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.logout-popover-btn {
-  display: block;
-  width: 100%;
-  text-align: left;
-  background: none;
-  border: none;
-  color: var(--text);
-  padding: 8px 14px;
-  font-size: 0.85rem;
-  cursor: pointer;
-}
-
-.logout-popover-btn:hover {
-  background: rgba(167,139,250,0.1);
-  color: var(--accent);
-}
-
-/* === 입구컷 게이트 화면 === */
-.gate-screen {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  min-height: calc(100vh - 56px);
-  text-align: center;
-  padding: 40px 20px 100px;
-}
-
-.gate-top {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.gate-screen h1 {
-  font-size: clamp(2.5rem, 8vw, 4rem);
-  font-weight: 800;
-  margin-bottom: 20px;
-}
-
-.gate-screen h1 span {
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.gate-sub {
-  font-size: clamp(1rem, 2.5vw, 1.25rem);
-  color: var(--text-dim);
-  max-width: 500px;
-  margin-bottom: 0;
-  line-height: 1.6;
-}
-
-/* === 게이트 하단 (동의 + 로그인) === */
-.gate-bottom {
-  width: 100%;
-  max-width: 360px;
-}
-
-.gate-login-buttons {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  width: 100%;
-}
-
-.gate-login-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  width: 100%;
-  background: #fff;
-  color: #333;
-  border: none;
-  padding: 14px 0;
-  border-radius: 14px;
-  font-size: 0.95rem;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.gate-login-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
-}
-
-.gate-login-btn:disabled {
-  opacity: 0.35;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.gate-login-kakao { background: #FEE500; color: #3C1E1E; }
-.gate-login-kakao:hover:not(:disabled) { box-shadow: 0 4px 24px rgba(254, 229, 0, 0.25); }
-.gate-login-line { background: #06C755; color: #fff; }
-.gate-login-line:hover:not(:disabled) { box-shadow: 0 4px 24px rgba(6, 199, 85, 0.25); }
-
-/* === 동의 체크박스 === */
-.gate-consent {
-  width: 100%;
-  max-width: 360px;
-  margin-bottom: 24px;
-  text-align: left;
-}
-
-.consent-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  margin-bottom: 12px;
-  font-size: 0.9rem;
-  color: var(--text);
-}
-
-.consent-item input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
-  margin-top: 2px;
-  accent-color: var(--accent);
-  cursor: pointer;
-  flex-shrink: 0;
-}
-
-.consent-item label {
-  cursor: pointer;
-  line-height: 1.4;
-}
-
-.consent-item .required {
-  color: var(--accent);
-  font-size: 0.8rem;
-  margin-left: 4px;
-}
-
-.consent-item .view-link {
-  color: var(--text-dim);
-  font-size: 0.8rem;
-  text-decoration: underline;
-  cursor: pointer;
-  margin-left: 4px;
-}
-
-.consent-item .view-link:hover {
-  color: var(--accent);
-}
-
-/* === 동의 모달 === */
-.consent-modal {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.8);
-  z-index: 9999;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-}
-
-.consent-modal.active {
-  display: flex;
-}
-
-.consent-modal-content {
-  background: var(--surface);
-  border-radius: 16px;
-  max-width: 600px;
-  max-height: 80vh;
-  overflow-y: auto;
-  padding: 24px;
-}
-
-.consent-modal-content h3 {
-  font-size: 1.2rem;
-  margin-bottom: 16px;
-  color: var(--text-bright);
-}
-
-.consent-modal-content p,
-.consent-modal-content ul {
-  font-size: 0.9rem;
-  line-height: 1.6;
-  color: var(--text);
-  margin-bottom: 12px;
-}
-
-.consent-modal-content ul {
-  padding-left: 20px;
-}
-
-.consent-modal-close {
-  display: block;
-  margin: 20px auto 0;
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  padding: 12px 32px;
-  border-radius: 8px;
-  font-size: 1rem;
-  cursor: pointer;
-}
-
-/* === 히어로 === */
-.hero {
-  text-align: center;
-  padding: 48px 0 24px;
-  position: relative;
-}
-
-.hero h1 {
-  font-size: clamp(2.2rem, 7vw, 3.8rem);
-  font-weight: 800;
-  color: var(--text-bright);
-  line-height: 1.15;
-  margin-bottom: 16px;
-  letter-spacing: -0.02em;
-}
-
-.hero h1 span {
-  background: linear-gradient(135deg, var(--accent), var(--accent2), var(--accent3));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.hero-sub {
-  font-size: clamp(0.9rem, 2vw, 1.05rem);
-  color: var(--text-dim);
-  max-width: 500px;
-  margin: 0 auto 20px;
-  line-height: 1.6;
-}
-
-.hero-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: rgba(167, 139, 250, 0.1);
-  border: 1px solid var(--border);
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  color: var(--accent);
-  font-weight: 600;
-  margin-bottom: 16px;
-  letter-spacing: 0.5px;
-}
-
-.hero-badge::before {
-  content: '';
-  width: 6px;
-  height: 6px;
-  background: var(--success);
-  border-radius: 50%;
-  animation: pulse-dot 2s ease-in-out infinite;
-}
-
-@keyframes pulse-dot {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
-}
-
-/* === 서비스 카드 === */
-.services {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 16px;
-  margin-bottom: 20px;
-}
-
-@media (min-width: 641px) {
-  .services.card-grid { grid-template-columns: 1fr 1fr; }
-  .services.card-grid .service-card:first-child {
-    grid-column: 1 / -1;
-    min-height: 280px;
-  }
-}
-
-.service-card {
-  position: relative;
-  overflow: hidden;
-  border-radius: 20px;
-  border: 1px solid rgba(255,255,255,0.08);
-  min-height: 240px;
-  transition: transform 0.4s, box-shadow 0.4s, border-color 0.3s;
-  cursor: pointer;
-}
-
-/* 카드 배경 이미지 */
-.service-card .card-bg-img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.7s ease;
-}
-
-.service-card:hover .card-bg-img {
-  transform: scale(1.1);
-}
-
-/* 카드 오버레이 (이미지 위 색상 레이어) */
-.service-card .card-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-}
-
-/* LIVE 카드 — 보라 오버레이 */
-.service-card.live .card-overlay {
-  background: linear-gradient(160deg, rgba(167,139,250,0.5) 0%, rgba(10,10,30,0.75) 70%);
-}
-.service-card.live {
-  border-color: rgba(167,139,250,0.3);
-}
-.service-card.live:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 16px 48px rgba(167,139,250,0.3);
-  border-color: rgba(167,139,250,0.5);
-}
-
-/* COMING SOON — 블루 (AI Models) */
-.service-card.color-blue .card-overlay {
-  background: linear-gradient(160deg, rgba(96,165,250,0.45) 0%, rgba(10,10,30,0.8) 70%);
-}
-.service-card.color-blue { border-color: rgba(96,165,250,0.15); }
-
-/* COMING SOON — 에메랄드 (AI Academy) */
-.service-card.color-emerald .card-overlay {
-  background: linear-gradient(160deg, rgba(52,211,153,0.4) 0%, rgba(10,10,30,0.8) 70%);
-}
-.service-card.color-emerald { border-color: rgba(52,211,153,0.15); }
-
-/* COMING SOON 공통 */
-.service-card.coming-soon .card-bg-img {
-  filter: grayscale(0.3) brightness(0.55);
-}
-.service-card.coming-soon:hover .card-bg-img {
-  transform: none;
-}
-.service-card.coming-soon {
-  cursor: default;
-}
-
-/* 카드 내부 컨텐츠 */
-.card-inner {
-  position: relative;
-  z-index: 2;
-  padding: 28px;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  min-height: 240px;
-}
-@media (min-width: 641px) {
-  .service-card:first-child .card-inner { min-height: 280px; }
-}
-
-/* COMING SOON 배지 */
-.coming-soon-overlay {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 3;
-}
-
-.coming-soon-badge {
-  background: rgba(0,0,0,0.55);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  border: 1px solid rgba(255,255,255,0.2);
-  color: #fff;
-  font-size: 0.85rem;
-  font-weight: 800;
-  letter-spacing: 3px;
-  padding: 12px 32px;
-  border-radius: 10px;
-  text-transform: uppercase;
-}
-
-.service-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 10px;
-  font-weight: 700;
-  padding: 4px 12px;
-  border-radius: 20px;
-  margin-bottom: 12px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-}
-
-.service-badge.badge-live {
-  background: rgba(52, 211, 153, 0.15);
-  color: var(--success);
-}
-
-.service-badge.badge-blue {
-  background: rgba(96,165,250,0.15);
-  color: var(--blue);
-}
-
-.service-badge.badge-emerald {
-  background: rgba(52,211,153,0.15);
-  color: var(--emerald);
-}
-
-.service-card h3 {
-  font-size: 1.5rem;
-  color: #fff;
-  margin-bottom: 6px;
-  font-weight: 800;
-  text-shadow: 0 2px 8px rgba(0,0,0,0.4);
-}
-
-.service-card p {
-  display: block;
-  font-size: 0.88rem;
-  color: rgba(255,255,255,0.75);
-  margin-bottom: 16px;
-  line-height: 1.5;
-  text-shadow: 0 1px 4px rgba(0,0,0,0.3);
-}
-
-.service-features {
-  list-style: none;
-  margin-bottom: 20px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.service-features li {
-  color: #fff;
-  padding: 5px 12px;
-  font-size: 0.78rem;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(4px);
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-}
-
-.service-features li::before {
-  content: '✓ ';
-  color: var(--success);
-  font-weight: 700;
-}
-
-.cta-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
-  color: #fff;
-  font-size: 0.95rem;
-  font-weight: 700;
-  padding: 14px 32px;
-  border: none;
-  border-radius: 12px;
-  text-decoration: none;
-  cursor: pointer;
-  transition: all 0.3s;
-  box-shadow: 0 4px 16px rgba(167, 139, 250, 0.25);
-}
-
-.cta-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 24px rgba(167, 139, 250, 0.35);
-}
-
-/* === 이벤트 카드 === */
-.event-card {
-  background: linear-gradient(135deg, rgba(245,158,11,0.08), rgba(239,68,68,0.06));
-  border: 1px solid rgba(245,158,11,0.2);
-  border-radius: 20px;
-  padding: 24px;
-  text-align: center;
-  margin-bottom: 20px;
-  position: relative;
-  overflow: hidden;
-}
-.event-card::before {
-  content: '';
-  position: absolute; top: -50%; left: -50%;
-  width: 200%; height: 200%;
-  background: conic-gradient(from 0deg, transparent, rgba(245,158,11,0.05), transparent 30%);
-  animation: eventSpin 8s linear infinite;
-}
-@keyframes eventSpin { to { transform: rotate(360deg); } }
-.event-card-inner { position: relative; z-index: 1; }
-.event-emoji { font-size: 36px; margin-bottom: 8px; }
-.event-title { font-size: 1.1rem; font-weight: 800; color: #f59e0b; margin-bottom: 6px; }
-.event-desc { font-size: 0.85rem; color: var(--text-dim); margin-bottom: 14px; line-height: 1.5; }
-.event-remaining {
-  display: inline-block;
-  background: rgba(245,158,11,0.15); color: #f59e0b;
-  padding: 6px 16px; border-radius: 20px;
-  font-size: 0.8rem; font-weight: 700; margin-bottom: 16px;
-}
-.event-remaining.soldout { background: rgba(239,68,68,0.15); color: #ef4444; }
-.event-btn {
-  display: inline-block;
-  background: linear-gradient(135deg, #f59e0b, #ef4444);
-  color: #fff; border: none; padding: 12px 32px;
-  border-radius: 12px; font-size: 0.95rem; font-weight: 700;
-  cursor: pointer; transition: opacity 0.3s, transform 0.3s;
-}
-.event-btn:hover { opacity: 0.9; transform: translateY(-1px); }
-.event-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-
-
-/* === 사업자 정보 === */
-.biz-info {
-  padding: 32px 0 20px;
-  border-top: 1px solid var(--border);
-  margin-top: 8px;
-}
-
-.biz-info-inner {
-  max-width: 600px;
-  margin: 0 auto;
-  text-align: center;
-}
-
-.biz-info p {
-  font-size: 0.7rem;
-  color: var(--text-dim);
-  line-height: 1.8;
-  opacity: 0.7;
-}
-
-.biz-info strong {
-  color: var(--text-dim);
-  opacity: 1;
-}
-
-/* === 푸터 === */
-footer {
-  text-align: center;
-  padding: 16px 0 60px;
-  color: var(--text-dim);
-  font-size: 0.8rem;
-}
-
-footer a {
-  color: var(--accent);
-  text-decoration: none;
-}
-
-/* === 챗봇 FAB === */
-.chat-fab {
-  position: fixed;
-  bottom: 68px;
-  right: 24px;
-  width: 44px;
-  height: 44px;
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
-  border: none;
-  border-radius: 50%;
-  color: #fff;
-  cursor: pointer;
-  box-shadow: 0 4px 16px rgba(167, 139, 250, 0.4);
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.2s;
-}
-
-.chat-fab:hover { transform: scale(1.1); }
-
-/* === 챗봇 백드롭 === */
-.chat-backdrop {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  z-index: 999;
-}
-
-.chat-backdrop.open { display: block; }
-
-/* === 챗봇 패널 === */
-.chat-panel {
-  position: fixed;
-  top: 60px;
-  right: 24px;
-  width: min(380px, calc(100vw - 48px));
-  max-height: calc(100vh - 140px);
-  background: linear-gradient(180deg, #1e1e3a 0%, #161630 100%);
-  border: 1.5px solid rgba(167, 139, 250, 0.35);
-  border-radius: 16px;
-  box-shadow:
-    0 8px 40px rgba(0, 0, 0, 0.7),
-    0 0 80px rgba(167, 139, 250, 0.15),
-    inset 0 1px 0 rgba(167, 139, 250, 0.1);
-  z-index: 1000;
-  display: none;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.chat-panel.open {
-  display: flex;
-}
-
-.chat-header {
-  padding: 16px;
-  border-bottom: 1px solid rgba(167, 139, 250, 0.2);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: linear-gradient(135deg, rgba(167, 139, 250, 0.2) 0%, rgba(129, 140, 248, 0.12) 50%, rgba(192, 132, 252, 0.08) 100%);
-}
-
-.chat-header-dot {
-  width: 10px;
-  height: 10px;
-  background: var(--success);
-  border-radius: 50%;
-}
-
-.chat-header-title {
-  font-weight: 700;
-  font-size: 0.9rem;
-  color: var(--text-bright);
-  flex: 1;
-}
-
-.chat-close {
-  background: none;
-  border: none;
-  color: var(--text-dim);
-  font-size: 1.3rem;
-  cursor: pointer;
-  padding: 0 4px;
-  line-height: 1;
-  transition: color 0.2s;
-}
-.chat-close:hover { color: var(--text-bright); }
-
-.chat-messages {
-  flex: 1;
-  overflow-y: auto;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  min-height: 200px;
-  max-height: 340px;
-  background: rgba(12, 12, 28, 0.6);
-}
-
-.chat-msg {
-  max-width: 85%;
-  padding: 10px 14px;
-  border-radius: 12px;
-  font-size: 0.9rem;
-  line-height: 1.5;
-  word-break: break-word;
-}
-
-.chat-msg.bot {
-  background: var(--surface2);
-  color: var(--text);
-  align-self: flex-start;
-  border-bottom-left-radius: 4px;
-}
-
-.chat-msg.user {
-  background: var(--accent);
-  color: #fff;
-  align-self: flex-end;
-  border-bottom-right-radius: 4px;
-}
-
-.chat-msg a {
-  color: var(--accent);
-  text-decoration: underline;
-}
-
-.chat-msg.user a {
-  color: #e0d4ff;
-}
-
-.chat-input-wrap {
-  padding: 12px;
-  border-top: 1px solid rgba(167, 139, 250, 0.15);
-  display: flex;
-  gap: 8px;
-  background: rgba(20, 20, 42, 0.9);
-}
-
-.chat-input {
-  flex: 1;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  color: var(--text);
-  border-radius: 10px;
-  padding: 10px 14px;
-  font-size: 0.9rem;
-  outline: none;
-}
-
-.chat-input:focus { border-color: var(--accent); }
-
-.chat-send {
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  border-radius: 10px;
-  padding: 10px 16px;
-  font-size: 0.9rem;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.chat-send:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* === 타이핑 인디케이터 === */
-.typing-indicator {
-  display: flex;
-  gap: 4px;
-  padding: 10px 14px;
-  align-self: flex-start;
-}
-
-.typing-indicator span {
-  width: 8px;
-  height: 8px;
-  background: var(--text-dim);
-  border-radius: 50%;
-  animation: bounce 1.4s ease-in-out infinite;
-}
-
-.typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
-.typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
-
-@keyframes bounce {
-  0%, 60%, 100% { transform: translateY(0); }
-  30% { transform: translateY(-6px); }
-}
-
-/* === 언어 선택 === */
-.lang-selector {
-  display: flex;
-  gap: 2px;
-  align-items: center;
-}
-
-.lang-selector {
-  position: relative;
-}
-
-.lang-globe-btn {
-  background: transparent;
-  border: 1px solid var(--border);
-  padding: 5px 10px;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  cursor: pointer;
-  color: var(--text-dim);
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.lang-globe-btn:hover {
-  border-color: var(--border-hover);
-  color: var(--text);
-}
-
-.lang-globe-arrow {
-  font-size: 0.7rem;
-}
-
-.lang-dropdown {
-  display: none;
-  position: absolute;
-  top: calc(100% + 6px);
-  left: 0;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  overflow: hidden;
-  min-width: 140px;
-  z-index: 100;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-}
-
-.lang-dropdown.open {
-  display: block;
-}
-
-.lang-dropdown-item {
-  display: block;
-  width: 100%;
-  background: transparent;
-  border: none;
-  padding: 10px 14px;
-  color: var(--text);
-  font-size: 0.85rem;
-  cursor: pointer;
-  text-align: left;
-  transition: background 0.15s;
-}
-
-.lang-dropdown-item:hover {
-  background: rgba(167,139,250,0.1);
-}
-
-.lang-dropdown-item.active {
-  color: var(--accent);
-  background: rgba(167,139,250,0.08);
-}
-
-/* === 리전 선택 버튼 === */
-.region-selector {
-  display: flex;
-  gap: 4px;
-  margin-right: 8px;
-}
-
-.region-btn {
-  background: transparent;
-  border: 1px solid var(--border);
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-size: 0.85rem;
-  cursor: pointer;
-  color: var(--text-dim);
-  transition: all 0.2s;
-}
-
-.region-btn:hover {
-  border-color: var(--border-hover);
-  color: var(--text);
-}
-
-.region-btn.active {
-  border-color: var(--accent);
-  color: var(--accent);
-  background: rgba(167,139,250,0.1);
-}
-
-/* === 모바일 === */
-@media (max-width: 640px) {
-  header { padding: 12px 16px; }
-  .hero { padding: 36px 0 20px; }
-  .hero h1 { font-size: clamp(1.8rem, 8vw, 2.8rem); }
-  .service-card { padding: 22px; }
-  .service-features { gap: 6px; }
-  .credit-btn { padding: 5px 10px; font-size: 0.78rem; }
-  .logo-bubble { width: 12px; height: 12px; font-size: 7px; }
-  .chat-panel {
-    bottom: 0;
-    right: 0;
-    width: 100vw;
-    max-height: 70vh;
-    border-radius: 16px 16px 0 0;
-    top: auto;
-    border-bottom: none;
-  }
-}
-</style>
+<!-- Fonts & CSS — 외부 폰트는 비동기 로딩 (CDN 장애 시에도 페이지 렌더 보장) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="/css/portal.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=DM+Mono:wght@400;500&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=DM+Mono:wght@400;500&display=swap"></noscript>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css"></noscript>
 </head>
 <body>
-<div class="bg-grid"></div>
-<div class="bg-glow"></div>
-<div class="bg-glow-2"></div>
 
-<div class="container">
-  <header>
-    <div class="logo-chat-trigger" id="logoChatTrigger">
-      <img class="logo-icon" src="/monkos-icon.svg" alt="MONKOS" width="28" height="28">
-      <div class="logo-bubble" id="logoBubble">?</div>
+<!-- Hero -->
+<div class="hero"><div class="hero-inner">
+  <div class="hero-label">AI CREATIVE PLATFORM</div>
+  <h1>MONKOS <em>AI</em></h1>
+  <p class="hero-sub" data-i18n="hero_sub">AI 증명사진 · 26개국 규격</p>
+</div></div>
+
+<!-- User Bar -->
+<div class="user-bar" id="userBar">
+  <div class="ub-left">
+    <div class="lang-sw" id="langSwitch">
+      <button data-lang="ko" onclick="setLang('ko')">KO</button>
+      <button data-lang="ja" onclick="setLang('ja')">JA</button>
+      <button data-lang="en" onclick="setLang('en')">EN</button>
     </div>
-    <div class="region-selector" id="regionSelector">
-      <button class="region-btn" data-region="kr" onclick="setRegion('kr')">🇰🇷</button>
-      <button class="region-btn" data-region="global" onclick="setRegion('global')">🇯🇵</button>
+    <button class="btn-shoot">촬영 시작하기</button>
+  </div>
+  <div class="ub-right">
+    <button class="btn-login" id="headerLoginBtn" onclick="headerLogin()">ログイン</button>
+    <span class="ub-user" id="userName" style="display:none"></span>
+    <div class="ub-credit" id="creditBadge" onclick="openCreditShop()">
+      <div class="coin">Cr</div>
+      <span class="amt" id="creditCount">0</span>
     </div>
-    <div class="lang-selector" id="langSelector">
-      <button class="lang-globe-btn" id="langGlobeBtn" onclick="toggleLangDropdown()">🌐 <span class="lang-globe-arrow">▾</span></button>
-      <div class="lang-dropdown" id="langDropdown">
-        <button class="lang-dropdown-item" data-lang="ja" onclick="setLang('ja')">🇯🇵 日本語</button>
-        <button class="lang-dropdown-item" data-lang="en" onclick="setLang('en')">🇺🇸 English</button>
-        <button class="lang-dropdown-item" data-lang="ko" onclick="setLang('ko')">🇰🇷 한국어</button>
+    <div class="provider-badge" id="providerBadge" onclick="toggleLogoutPopover()">
+      <div id="providerIconInner"></div>
+      <div class="logout-popover" id="logoutPopover">
+        <div class="logout-popover-name" id="popoverName"></div>
+        <a href="/admin/" class="logout-popover-btn" id="adminLink" style="display:none;text-align:center">Admin</a>
+        <button class="logout-popover-btn" onclick="logout()">Logout</button>
       </div>
     </div>
-    <div class="auth-area">
-      <!-- 로그인 버튼 (비로그인 시) -->
-      <button class="header-login-btn" id="headerLoginBtn" onclick="headerLogin()">로그인</button>
-      <!-- 크레딧 (로그인 후) -->
-      <button class="credit-btn" id="creditBtn" onclick="openCreditShop()">
-        <span class="credit-diamond">💎</span>
-        <span class="credit-count" id="creditCount">0</span>
-      </button>
-      <!-- SNS provider 아이콘 (로그인 후) -->
-      <div class="provider-badge" id="providerBadge" onclick="toggleLogoutPopover()">
-        <div id="providerIconInner"></div>
-        <div class="logout-popover" id="logoutPopover">
-          <div class="logout-popover-name" id="popoverName"></div>
-          <button class="logout-popover-btn" onclick="logout()">Logout</button>
-        </div>
-      </div>
-    </div>
-  </header>
-
-  <!-- 게이트 화면 제거: OAuth 벽 없이 mainContent 바로 노출 -->
-
-  <!-- 메인 콘텐츠 (비로그인에서도 표시) -->
-  <div id="mainContent">
-    <!-- 히어로 -->
-    <section class="hero">
-      <div class="hero-badge" id="heroBadge">LIVE SERVICE</div>
-      <h1 id="heroTitle" translate="no"><span>MONKOS AI</span></h1>
-      <p class="hero-sub" id="heroSub"></p>
-    </section>
-
-    <!-- 서비스 카드 그리드 -->
-    <section class="services card-grid">
-      <!-- 1. AI 증명사진 (LIVE) -->
-      <div class="service-card live">
-        <img class="card-bg-img" src="https://images.unsplash.com/photo-1542038784456-1ea8e935640e?auto=format&fit=crop&q=80&w=800" alt="AI ID Photo" loading="lazy">
-        <div class="card-overlay"></div>
-        <div class="card-inner">
-          <div class="service-badge badge-live">LIVE</div>
-          <h3 id="serviceTitle"></h3>
-          <p id="serviceDesc"></p>
-          <ul class="service-features" id="serviceFeatures"></ul>
-          <a class="cta-btn" id="ctaBtn" href="#"></a>
-        </div>
-      </div>
-      <!-- 2. AI Models (COMING SOON) -->
-      <div class="service-card coming-soon color-blue">
-        <img class="card-bg-img" src="https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?auto=format&fit=crop&q=80&w=800" alt="AI Models" loading="lazy">
-        <div class="card-overlay"></div>
-        <div class="card-inner">
-          <div class="service-badge badge-blue">AI MODELS</div>
-          <h3 id="card2Title"></h3>
-          <p id="card2Desc"></p>
-          <ul class="service-features" id="card2Features"></ul>
-        </div>
-        <div class="coming-soon-overlay"><div class="coming-soon-badge">Coming Soon</div></div>
-      </div>
-      <!-- 3. AI Academy (COMING SOON) -->
-      <div class="service-card coming-soon color-emerald">
-        <img class="card-bg-img" src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=800" alt="AI Academy" loading="lazy">
-        <div class="card-overlay"></div>
-        <div class="card-inner">
-          <div class="service-badge badge-emerald">ACADEMY</div>
-          <h3 id="card3Title"></h3>
-          <p id="card3Desc"></p>
-          <ul class="service-features" id="card3Features"></ul>
-        </div>
-        <div class="coming-soon-overlay"><div class="coming-soon-badge">Coming Soon</div></div>
-      </div>
-    </section>
-
-  <!-- 텔레그램 보너스 카드 -->
-  <section class="services" id="eventSection" style="display:none;">
-    <div class="event-card">
-      <div class="event-card-inner">
-        <div class="event-emoji">✈️</div>
-        <div class="event-title" id="eventTitle">텔레그램 친구 추가하고 30크레딧 받기!</div>
-        <div class="event-desc" id="eventDesc">@monkos_support_bot을 친구 추가하면 30크레딧을 즉시 지급합니다.</div>
-        <div class="event-remaining" id="eventRemaining"></div><br>
-        <button class="event-btn" id="eventBtn" onclick="claimTelegramBonus()">텔레그램 친구 추가 → 30c 받기</button>
-      </div>
-    </div>
-  </section>
-
-  <!-- 사업자 정보 -->
-  <section class="biz-info" translate="no">
-    <div class="biz-info-inner">
-      <p>
-        <strong>Business:</strong> MONK STUDIO | <strong>CEO:</strong> JeongKyu Shin<br>
-        <strong>Reg. No:</strong> 636-15-00574 | <strong>E-Commerce:</strong> Pending<br>
-        <strong>Address:</strong> B1029, 95 Misagangbyeondong-ro, Hanam-si, Gyeonggi-do, South Korea<br>
-        <strong>Email:</strong> info@monkos.ai | <strong>Telegram:</strong> @monkos_support_bot<br>
-        <strong>Hosting:</strong> Google Cloud Platform (Google LLC)
-      </p>
-    </div>
-  </section>
-
-    <footer translate="no">
-      <p style="margin-bottom:8px;">
-        <a href="/privacy.html">Privacy Policy</a> &nbsp;|&nbsp;
-        <a href="/terms.html">Terms of Service</a> &nbsp;|&nbsp;
-        <a href="/refund.html">Refund Policy</a>
-      </p>
-      <p>&copy; 2026 <a href="https://monkos.ai">MONKOS.AI</a> — Evolution of Creative Intelligence</p>
-    </footer>
-  </div><!-- /mainContent -->
-</div>
-
-<!-- 개인정보 동의 모달 -->
-<div class="consent-modal" id="privacyModal">
-  <div class="consent-modal-content">
-    <h3 id="privacyModalTitle">개인정보 수집·이용 동의</h3>
-    <div id="privacyModalContent">
-      <p><strong>1. 수집 항목</strong></p>
-      <ul>
-        <li>Google 계정 정보: 이메일, 이름, 프로필 사진</li>
-        <li>서비스 이용 기록: 접속 시간, 이용 내역</li>
-      </ul>
-      <p><strong>2. 수집 목적</strong></p>
-      <ul>
-        <li>회원 식별 및 서비스 제공</li>
-        <li>서비스 이용 통계 및 개선</li>
-        <li>고객 문의 대응</li>
-      </ul>
-      <p><strong>3. 보유 기간</strong></p>
-      <ul>
-        <li>회원 탈퇴 시까지 또는 관련 법령에 따른 보존 기간</li>
-      </ul>
-      <p><strong>4. 동의 거부권</strong></p>
-      <ul>
-        <li>동의를 거부할 권리가 있으며, 거부 시 서비스 이용이 제한됩니다.</li>
-      </ul>
-    </div>
-    <button class="consent-modal-close" onclick="closeConsentModal('privacy')" id="privacyModalClose">확인</button>
   </div>
 </div>
 
-<!-- 초상권 동의 모달 -->
-<div class="consent-modal" id="portraitModal">
-  <div class="consent-modal-content">
-    <h3 id="portraitModalTitle">초상권 및 이미지 사용 동의</h3>
-    <div id="portraitModalContent">
-      <p><strong>1. 동의 내용</strong></p>
-      <ul>
-        <li>AI 증명사진 생성을 위한 얼굴 이미지 촬영 및 처리</li>
-        <li>AI 모델을 통한 이미지 변환 및 생성</li>
-      </ul>
-      <p><strong>2. 이미지 처리 방식</strong></p>
-      <ul>
-        <li>업로드된 이미지는 AI 처리 후 즉시 삭제됩니다.</li>
-        <li>생성된 이미지는 서버에 저장되지 않습니다.</li>
-        <li>모든 처리는 Google Cloud Platform에서 안전하게 수행됩니다.</li>
-      </ul>
-      <p><strong>3. 권리 안내</strong></p>
-      <ul>
-        <li>생성된 이미지의 저작권은 이용자에게 있습니다.</li>
-        <li>MONKOS는 이용자의 이미지를 마케팅 등 다른 목적으로 사용하지 않습니다.</li>
-      </ul>
-      <p><strong>4. 동의 거부권</strong></p>
-      <ul>
-        <li>동의를 거부할 권리가 있으며, 거부 시 AI 사진 서비스 이용이 제한됩니다.</li>
-      </ul>
+<!-- Gallery Strip -->
+<div class="gallery-strip"><div class="gallery-track" id="gt">
+  <div class="gi"><img class="gi-img" src="https://storage.googleapis.com/monk-ai-images/assets/portal/slide/0311_001.webp" alt="AI 증명사진" loading="lazy"></div>
+  <div class="gi"><img class="gi-img" src="https://storage.googleapis.com/monk-ai-images/assets/portal/slide/0311_002.webp" alt="AI 증명사진" loading="lazy"></div>
+  <div class="gi"><img class="gi-img" src="https://storage.googleapis.com/monk-ai-images/assets/portal/slide/0311_003.webp" alt="AI 증명사진" loading="lazy"></div>
+  <div class="gi"><img class="gi-img" src="https://storage.googleapis.com/monk-ai-images/assets/portal/slide/0311_004.webp" alt="AI 증명사진" loading="lazy"></div>
+  <div class="gi"><img class="gi-img" src="https://storage.googleapis.com/monk-ai-images/assets/portal/slide/0311_005.webp" alt="AI 증명사진" loading="lazy"></div>
+  <div class="gi"><img class="gi-img" src="https://storage.googleapis.com/monk-ai-images/assets/portal/slide/0311_006.webp" alt="AI 증명사진" loading="lazy"></div>
+  <div class="gi"><img class="gi-img" src="https://storage.googleapis.com/monk-ai-images/assets/portal/slide/0311_007.webp" alt="AI 증명사진" loading="lazy"></div>
+  <div class="gi"><img class="gi-img" src="https://storage.googleapis.com/monk-ai-images/assets/portal/slide/0311_008.webp" alt="AI 증명사진" loading="lazy"></div>
+  <div class="gi"><img class="gi-img" src="https://storage.googleapis.com/monk-ai-images/assets/portal/slide/0311_009.webp" alt="AI 증명사진" loading="lazy"></div>
+  <div class="gi"><img class="gi-img" src="https://storage.googleapis.com/monk-ai-images/assets/portal/slide/0311_010.webp" alt="AI 증명사진" loading="lazy"></div>
+</div></div>
+
+<!-- Sticky Nav -->
+<nav><div class="n-links">
+  <a href="/" class="active" data-i18n="nav_home">홈</a>
+  <a href="/specs" data-i18n="nav_specs">규격</a>
+  <a href="/blog" data-i18n="nav_blog">블로그</a>
+  <a href="/faq" data-i18n="nav_faq">FAQ</a>
+  <a href="/pricing" data-i18n="nav_pricing">가격</a>
+</div></nav>
+
+<!-- 3-Column Layout -->
+<div class="layout">
+
+  <!-- Left Sidebar -->
+  <aside class="left-sb">
+    <div class="sb-sec"><div class="sb-t" id="sb-magazine">매거진</div>
+      <div class="mag-card"><div class="mag-img" style="background:linear-gradient(135deg,#f0eee8,#e8e5de)"><span class="icon">📸</span><span class="tag pop">인기</span></div><div class="mag-body"><h4>취업사진과 면접 복장 &amp; 헤어</h4><p>한송이 연구원의 스타일링 가이드</p><div class="meta">한송이 · 1일 전</div></div></div>
+      <div class="mag-card"><div class="mag-img" style="background:linear-gradient(135deg,#eef0f8,#e0e4f0)"><span class="icon">🛂</span><span class="tag new">신규</span></div><div class="mag-body"><h4>여권사진 체크마크 완전 가이드</h4><p>규격 하나씩 확인하는 방법</p><div class="meta">MONKOS · 3시간 전</div></div></div>
+      <div class="mag-card"><div class="mag-img" style="background:linear-gradient(135deg,#f5f0e8,#efe8d8)"><span class="icon">💡</span><span class="tag tip">스토리</span></div><div class="mag-body"><h4>사진관 12년, AI 앱 개발기</h4><p>몽크사진관에서 monkos.ai까지</p><div class="meta">신작가 · 6시간 전</div></div></div>
+      <div class="mag-card"><div class="mag-img" style="background:linear-gradient(135deg,#f0eef5,#e8e4f0)"><span class="icon">😊</span></div><div class="mag-body"><h4>표정 &amp; 포즈 연습법</h4><p>첫인상을 만드는 표정 팁</p><div class="meta">MONKOS · 오늘</div></div></div>
     </div>
-    <button class="consent-modal-close" onclick="closeConsentModal('portrait')" id="portraitModalClose">확인</button>
+    <div class="sb-sec"><div class="sb-t" id="sb-tags">태그</div>
+      <div class="sb-tags" id="sbTags">
+        <span class="sb-tag">여권</span><span class="sb-tag">이력서</span><span class="sb-tag">비자</span><span class="sb-tag">헤어메이크업</span>
+        <span class="sb-tag">규격안내</span><span class="sb-tag">취업</span><span class="sb-tag">AI리터칭</span><span class="sb-tag">크롭</span>
+      </div>
+      <button class="sb-tag-toggle" id="sbTagToggle" onclick="(function(btn){var t=document.getElementById('sbTags');if(t.classList.toggle('expanded')){btn.textContent='접기 ▲'}else{btn.textContent='더보기 ▼'}})(this)">더보기 ▼</button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main" id="mainContent">
+    <p class="intro-text"><strong>MONKOS AI</strong>는 20년 경력 사진작가가 만든 <strong>AI 증명사진</strong> 플랫폼입니다. 여권사진, 이력서사진을 셀카 한 장으로 완성합니다. 리얼 스튜디오의 실무와 노하우를 학습한 AI가 촬영, 배경과 조명 세팅, 피부부터 의상, 헤어 세팅까지 완벽하게 맞춤 처리하며, <strong>ICAO 국제 규격</strong>에 부합하는 증명사진을 제공합니다.</p>
+
+    <section class="specs-quick">
+      <div class="sec-h"><h2 data-i18n="specs_heading">국가별 증명사진 규격</h2><a href="/specs" data-i18n="specs_viewall">전체보기 →</a></div>
+      <div class="specs-grid">
+        <a href="/specs#korea" class="spec-tile">
+          <span class="flag">🇰🇷</span><h4>한국</h4>
+          <p>여권·신분증·이력서·반명함·주민등록·운전면허</p>
+        </a>
+        <a href="/specs#japan" class="spec-tile">
+          <span class="flag">🇯🇵</span><h4>日本</h4>
+          <p>パスポート·マイナンバー·履歴書·在留·半名刺</p>
+        </a>
+        <a href="/specs#usa" class="spec-tile">
+          <span class="flag">🇺🇸</span><h4>USA</h4>
+          <p>Passport · Headshot</p>
+        </a>
+        <a href="/specs#europe" class="spec-tile">
+          <span class="flag">🇪🇺</span><h4>Europe</h4>
+          <p>EU · UK · Spain · Germany</p>
+        </a>
+        <a href="/specs#others" class="spec-tile">
+          <span class="flag">🌏</span><h4 data-i18n="specs_others">기타</h4>
+          <p>호주·캐나다·중국·베트남 외 8국</p>
+        </a>
+      </div>
+    </section>
+
+    <div class="svc-grid">
+      <div class="svc live"><div class="svc-top"><span class="svc-icon">📷</span><span class="svc-bdg lb">LIVE</span></div><h3>AI 증명사진</h3><p>여권·이력서 — 사진관 품질 AI 리터칭. ICAO 국제 규격.</p><span class="svc-link">촬영 시작 →</span></div>
+      <a href="/crop" class="svc free" style="text-decoration:none;color:inherit"><div class="svc-top"><span class="svc-icon">✂️</span><span class="svc-bdg fb">FREE</span></div><h3>무료 크롭앱</h3><p>규격 크롭·배경 제거·배경 교체. 서버 전송 없음.</p><span class="svc-link">/crop →</span></a>
+    </div>
+
+    <div class="sec-h" id="sec-howto"><h2>증명사진 앱 활용법</h2><a href="/guide">전체보기 →</a></div>
+    <div class="howto-grid">
+      <div class="howto"><div class="num">01</div><h4>규격 선택</h4><p>여권/신분증 또는 반명함 선택</p></div>
+      <div class="howto"><div class="num">02</div><h4>셀카 촬영</h4><p>AI 코칭 가이드로 완벽 촬영</p></div>
+      <div class="howto"><div class="num">03</div><h4>AI 리터칭</h4><p>배경·조명·피부·의상 자동 보정</p></div>
+    </div>
+
+    <div class="sec-h" id="sec-faq"><h2>자주 묻는 질문</h2><a href="/faq">전체보기 →</a></div>
+    <div class="faq-list" id="faqPreview">
+      <div class="faq-item"><h4>증명사진 규격은 어떻게 되나요?</h4><p>한국 여권사진 3.5×4.5cm, 반명함 3×4cm을 지원합니다. 촬영 시 규격을 선택하면 AI가 자동 크롭합니다.</p></div>
+      <div class="faq-item"><h4>AI가 만든 사진을 공식 서류에 쓸 수 있나요?</h4><p>네, ICAO 국제 규격에 부합하도록 제작됩니다. 단, 최종 판단은 발급 기관에 있습니다.</p></div>
+      <div class="faq-item"><h4>환불은 어떻게 하나요?</h4><p>크레딧 결제 후 미사용분은 전액 환불됩니다. 고객센터로 문의해주세요.</p></div>
+    </div>
+
+    <div class="sec-h" id="sec-board"><h2>고객 게시판</h2><a href="/board">전체보기 →</a></div>
+    <div class="board-preview" id="boardPreview">
+      <p style="color:var(--ink-m);padding:12px 0;font-size:13px">게시글을 불러오는 중...</p>
+    </div>
+
+    <div class="sec-h" id="sec-blog"><h2>최근 블로그</h2><a href="/blog">전체보기 →</a></div>
+    <div class="blog-list">
+      <div class="bi"><div class="bi-thumb">📸</div><div class="bi-info"><h3>취업사진 복장 &amp; 면접 헤어 가이드</h3><p>한송이 연구원이 전하는 취업사진 스타일링.</p><div class="meta"><span class="lt">KO</span> 한송이 · 03.12</div></div></div>
+      <div class="bi"><div class="bi-thumb">🛂</div><div class="bi-info"><h3>여권사진 체크마크 완전 안내</h3><p>규격을 하나씩 확인하는 방법.</p><div class="meta"><span class="lt">KO</span><span class="lt">JA</span> MONKOS · 03.13</div></div></div>
+      <div class="bi"><div class="bi-thumb">💡</div><div class="bi-info"><h3>사진관 12년, AI 앱 개발 사진가 이야기</h3><p>몽크사진관에서 monkos.ai까지.</p><div class="meta"><span class="lt">KO</span><span class="lt">JA</span><span class="lt">EN</span> 신작가 · 03.13</div></div></div>
+      <div class="bi"><div class="bi-thumb">💆</div><div class="bi-info"><h3>헤어메이크업 각질 케어 가이드</h3><p>청결감·신뢰감의 시작!</p><div class="meta"><span class="lt">KO</span><span class="lt">JA</span> 한송이 · 03.11</div></div></div>
+    </div>
+  </main>
+
+  <!-- Right Sidebar -->
+  <aside class="right-sb">
+    <div class="sb-t">MONKOS AI 쇼츠</div>
+    <a class="guide-card" href="https://youtu.be/xAJsKdZWtjU" target="_blank" rel="noopener">
+      <div class="guide-thumb" style="background-image:url('https://i.ytimg.com/vi/xAJsKdZWtjU/maxresdefault.jpg')">
+        <span class="play-overlay">▶</span>
+      </div>
+      <div class="guide-label">
+        <h4 data-i18n="guide1_title">AI 증명사진 셀카로 만드는법</h4>
+        <div class="guide-meta">MONKOS AI · 쇼츠</div>
+      </div>
+    </a>
+    <a class="guide-card" href="https://youtube.com/shorts/2okGk_3k9TM" target="_blank" rel="noopener">
+      <div class="guide-thumb" style="background-image:url('https://i.ytimg.com/vi/2okGk_3k9TM/maxresdefault.jpg')">
+        <span class="play-overlay">▶</span>
+      </div>
+      <div class="guide-label">
+        <h4 data-i18n="guide2_title">就活写真 前髪のポイント</h4>
+        <div class="guide-meta">MONKOS AI · ショート</div>
+      </div>
+    </a>
+    <div style="margin-top:16px">
+      <div class="sb-t" id="sb-credit">크레딧 안내</div>
+      <div class="credit-info">
+        <div class="credit-info-title" id="credit-exchange">💡 10c = $1 ≈ ₩1,450</div>
+        <div class="credit-info-row"><span id="credit-gen-label">AI 생성</span><span>10c</span></div>
+        <div class="credit-info-row"><span id="credit-dl-label">다운로드</span><span>70c</span></div>
+        <div class="credit-info-row"><span id="credit-total-label">1장 완성</span><span style="color:var(--accent)">80c</span></div>
+        <div class="credit-info-total"><span class="old" id="credit-old-price">₩10,150</span><span class="price" id="credit-new-price">₩9,900</span><div class="note" id="credit-bonus">🎁 회원가입 시 +10c 보너스</div></div>
+      </div>
+    </div>
+  </aside>
+
+</div><!-- /layout -->
+
+<!-- Footer -->
+<footer translate="no">
+  <div class="ft-links">
+    <a href="/privacy">Privacy Policy</a>
+    <a href="/terms">Terms of Service</a>
+    <a href="/refund">Refund Policy</a>
+    <a href="https://t.me/monkos_bot">Support</a>
   </div>
-</div>
+  <div class="ft-copy">© 2026 MONKOS.AI — Evolution of Creative Intelligence</div>
+</footer>
 
-
-<!-- 챗봇 FAB -->
-<button class="chat-fab" id="chatFab" aria-label="Chat" style="display:none">
+<!-- Chatbot FAB -->
+<button class="chatbot-fab" id="chatFab" onclick="openChat()">
+  <img src="/monkos-icon.svg" alt="MONKOS" width="28" height="28">
 </button>
 
-<!-- 챗봇 백드롭 -->
-<div class="chat-backdrop" id="chatBackdrop" onclick="toggleChat()"></div>
-
-<!-- 챗봇 패널 -->
-<div class="chat-panel" id="chatPanel">
-  <div class="chat-header">
-    <div class="chat-header-dot"></div>
-    <div class="chat-header-title">MONKOS AI</div>
-    <button class="chat-close" id="chatClose" aria-label="Close">&times;</button>
-  </div>
-  <div class="chat-messages" id="chatMessages"></div>
-  <div class="chat-input-wrap">
-    <input class="chat-input" id="chatInput" placeholder="" autocomplete="off">
-    <button class="chat-send" id="chatSend">Send</button>
+<!-- Chat Modal -->
+<div class="chat-modal" id="chatModal">
+  <div class="chat-box">
+    <div class="chat-header"><h3>MONKOS AI</h3><button class="chat-close" id="chatClose">✕</button></div>
+    <div class="chat-body" id="chatBody"></div>
+    <div class="chat-input-area">
+      <textarea class="cb-input" id="cbInput" rows="1" placeholder="MONKOS AI에게 질문하세요"></textarea>
+      <button class="cb-send" id="cbSend">↑</button>
+    </div>
   </div>
 </div>
 
-<!-- 크레딧 충전 모달 -->
-<div class="consent-modal" id="creditShopModal">
-  <div class="consent-modal-content" style="max-width:360px; text-align:center;">
-    <h3 style="margin-bottom:6px;">💎 <span id="shopTitle">Credit Shop</span></h3>
-    <p style="font-size:0.8rem; color:var(--text-dim); margin-bottom:18px;" id="shopCurrentLabel">Current: <strong id="shopCurrentCredits">0</strong>c</p>
-    <div id="shopItems" style="display:flex; flex-direction:column; gap:10px;"></div>
-    <button class="consent-modal-close" onclick="closeCreditShop()" style="margin-top:16px;" id="shopCloseBtn">Close</button>
-  </div>
-</div>
-
-<!-- KR 로그인 선택 모달 -->
-<div class="consent-modal" id="loginModal">
-  <div class="consent-modal-content" style="max-width:340px; text-align:center;">
-    <h3 id="loginModalTitle">로그인</h3>
-    <div class="gate-login-buttons" style="margin-top:16px;">
-      <button class="gate-login-btn" onclick="googleLogin(); closeLoginModal();">
-        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59a14.5 14.5 0 0 1 0-9.18l-7.98-6.19a24.014 24.014 0 0 0 0 21.56l7.98-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-        <span id="loginGoogleText">Google로 로그인</span>
+<!-- Login Modal -->
+<div class="modal-overlay" id="loginModal">
+  <div class="modal-box">
+    <h3 id="loginModalTitle">ログイン</h3>
+    <div class="login-buttons">
+      <button class="login-btn" onclick="googleLogin(); closeLoginModal();">
+        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59a14.5 14.5 0 0 1 0-9.18l-7.98-6.19a24.014 24.014 0 0 0 0 21.56l7.98-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-2.77c-.98.66-2.23 1.06-3.71 1.06-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+        <span id="loginGoogleText">Googleでログイン</span>
       </button>
-      <button class="gate-login-btn gate-login-kakao" onclick="loginKakao(); closeLoginModal();">
+      <button class="login-btn kakao" onclick="loginKakao(); closeLoginModal();">
         <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#3C1E1E" d="M12 3C6.48 3 2 6.36 2 10.5c0 2.67 1.74 5.02 4.38 6.39l-1.12 4.11c-.1.37.32.66.64.44l4.84-3.2c.41.04.83.06 1.26.06 5.52 0 10-3.36 10-7.5S17.52 3 12 3z"/></svg>
-        <span id="loginKakaoText">카카오로 로그인</span>
+        <span id="loginKakaoText">カカオでログイン</span>
+      </button>
+      <button class="login-btn line" id="loginLineBtn" onclick="loginLine(); closeLoginModal();">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 5.83 2 10.5c0 4.08 3.39 7.5 7.96 8.33.31.07.73.2.84.47.1.24.06.62.03.87l-.14.82c-.04.24-.19.94.82.51s5.46-3.21 7.44-5.5C21.23 13.37 22 11.98 22 10.5 22 5.83 17.52 2 12 2z" fill="#fff"/></svg>
+        <span id="loginLineText">LINEでログイン</span>
       </button>
     </div>
-    <button class="consent-modal-close" onclick="closeLoginModal()" style="margin-top:16px;" id="loginModalClose">닫기</button>
+    <button class="modal-close-btn" id="loginModalClose" onclick="closeLoginModal()">閉じる</button>
+  </div>
+</div>
+
+<!-- Credit Shop Modal -->
+<div class="modal-overlay" id="creditShopModal">
+  <div class="modal-box" style="text-align:center">
+    <h3 id="shopTitle">Credit Shop</h3>
+    <p style="font-size:12px;color:var(--ink-m);margin-bottom:16px" id="shopCurrentLabel">Current: <strong id="shopCurrentCredits">0</strong>c</p>
+    <div id="shopItems" class="shop-items"></div>
+    <button class="modal-close-btn" id="shopCloseBtn" onclick="closeCreditShop()">Close</button>
+  </div>
+</div>
+
+<!-- Privacy Consent Modal -->
+<div class="modal-overlay" id="privacyModal">
+  <div class="modal-box">
+    <h3 id="privacyModalTitle">個人情報の収集·利用同意</h3>
+    <div class="consent-body" id="privacyModalContent"></div>
+    <button class="modal-close-btn" id="privacyModalClose" onclick="closeConsentModal('privacy')">確認</button>
+  </div>
+</div>
+
+<!-- Portrait Consent Modal -->
+<div class="modal-overlay" id="portraitModal">
+  <div class="modal-box">
+    <h3 id="portraitModalTitle">肖像権及び画像使用同意</h3>
+    <div class="consent-body" id="portraitModalContent"></div>
+    <button class="modal-close-btn" id="portraitModalClose" onclick="closeConsentModal('portrait')">確認</button>
   </div>
 </div>
 
 <script>
-// === Google OAuth 설정 ===
-const GOOGLE_CLIENT_ID = '933456016842-clagcrpo1juvukjif1m454jq811bd2rq.apps.googleusercontent.com';
-
-let currentUser = null;
-let gisLoaded = false;
-let gisLoadRetries = 0;
-const GIS_MAX_RETRIES = 3;
-
-// GIS 스크립트 동적 로딩
-function loadGIS() {
-  return new Promise((resolve, reject) => {
-    if (typeof google !== 'undefined' && google.accounts) {
-      gisLoaded = true;
-      resolve();
-      return;
-    }
-    const script = document.createElement('script');
-    script.src = 'https://accounts.google.com/gsi/client';
-    script.onload = () => {
-      console.log('[Auth] GIS 스크립트 로드 완료');
-      gisLoaded = true;
-      resolve();
-    };
-    script.onerror = () => {
-      console.warn('[Auth] GIS 스크립트 로드 실패 (시도 ' + (gisLoadRetries + 1) + '/' + GIS_MAX_RETRIES + ')');
-      reject(new Error('GIS load failed'));
-    };
-    document.head.appendChild(script);
-  });
-}
-
-// GIS 로드 + 재시도
-async function loadGISWithRetry() {
-  for (let i = 0; i < GIS_MAX_RETRIES; i++) {
-    try {
-      gisLoadRetries = i;
-      await loadGIS();
-      return true;
-    } catch (e) {
-      if (i < GIS_MAX_RETRIES - 1) {
-        await new Promise(r => setTimeout(r, 1000 * (i + 1)));
-      }
-    }
-  }
-  console.error('[Auth] GIS 스크립트 로드 최종 실패');
-  return false;
-}
-
-// 세션 복원 (GIS와 무관하게 즉시 실행)
-function restoreSession() {
-  const saved = sessionStorage.getItem('monkos_user');
-  if (saved) {
-    try {
-      currentUser = JSON.parse(saved);
-      updateAuthUI();
-    } catch (e) {
-      sessionStorage.removeItem('monkos_user');
-    }
-  }
-}
-
-// Google 로그인 초기화 (GIS만 담당)
-async function initGoogleAuth() {
-  if (!GOOGLE_CLIENT_ID || GOOGLE_CLIENT_ID === '__GOOGLE_CLIENT_ID__') {
-    return;
-  }
-
-  if (!gisLoaded) {
-    await loadGISWithRetry();
-  }
-
-  if (typeof google === 'undefined' || !google.accounts) {
-    console.warn('[Auth] GIS 사용 불가 — Google 로그인 제한');
-    return;
-  }
-
-  google.accounts.id.initialize({
-    client_id: GOOGLE_CLIENT_ID,
-    callback: handleGoogleCallback,
-    auto_select: false,
-    cancel_on_tap_outside: false,
-    itp_support: true,
-  });
-}
-
-// 카카오 로그인
-function loginKakao() {
-  location.href = '/auth/kakao';
-}
-
-// LINE 로그인
-function loginLine() {
-  location.href = '/auth/line';
-}
-
-// 헤더 로그인 — KR: 선택 팝업, 글로벌: Google 바로
-function headerLogin() {
-  if (region === 'kr') {
-    document.getElementById('loginModal').classList.add('active');
-  } else {
-    googleLogin();
-  }
-}
-
-function closeLoginModal() {
-  document.getElementById('loginModal').classList.remove('active');
-}
-
-// Google 로그인 버튼 클릭 (OAuth 팝업 — One Tap 쿨다운 회피)
-async function googleLogin() {
-  // GIS 미로드 시 재시도
-  if (typeof google === 'undefined' || !google.accounts) {
-    const loginBtn = document.querySelector('.gate-login-btn');
-    const origText = loginBtn ? loginBtn.textContent : '';
-    if (loginBtn) loginBtn.textContent = '로딩 중...';
-
-    const loaded = await loadGISWithRetry();
-    if (loginBtn) loginBtn.textContent = origText;
-
-    if (!loaded) {
-      const errMsg = {
-        ja: 'Googleログインを読み込めませんでした。広告ブロッカーを無効にするか、ページを再読み込みしてください。',
-        ko: 'Google 로그인을 불러올 수 없습니다. 광고 차단기를 끄거나 페이지를 새로고침해 주세요.',
-        en: 'Could not load Google Sign-In. Please disable ad blockers or reload the page.'
-      };
-      alert(errMsg[lang] || errMsg.en);
-      return;
-    }
-  }
-
-  // OAuth 팝업 (One Tap 대신 — 쿨다운/쿠키 제한 없음)
-  if (google.accounts.oauth2) {
-    const tokenClient = google.accounts.oauth2.initTokenClient({
-      client_id: GOOGLE_CLIENT_ID,
-      scope: 'openid email profile',
-      callback: handleGoogleTokenCallback,
-    });
-    tokenClient.requestAccessToken();
-  } else {
-    google.accounts.id.prompt();
-  }
-}
-
-// OAuth 팝업 콜백 (access_token 방식)
-async function handleGoogleTokenCallback(tokenResponse) {
-  if (tokenResponse.error) {
-    console.error('[Auth] OAuth error:', tokenResponse.error);
-    return;
-  }
-  try {
-    const res = await fetch('/api/auth/google', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ access_token: tokenResponse.access_token }),
-    });
-    const data = await res.json();
-    if (data.success && data.user) {
-      currentUser = data.user;
-      sessionStorage.setItem('monkos_user', JSON.stringify(currentUser));
-      updateAuthUI();
-    }
-  } catch (err) {
-    console.error('[Auth] Google login error:', err);
-  }
-}
-
-// Google 콜백 처리
-async function handleGoogleCallback(response) {
-  try {
-    const res = await fetch('/api/auth/google', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ credential: response.credential }),
-    });
-    const data = await res.json();
-
-    if (data.success && data.user) {
-      currentUser = data.user;
-      sessionStorage.setItem('monkos_user', JSON.stringify(currentUser));
-      updateAuthUI();
-      // 신규 가입자 환영 메시지
-      if (data.isNewUser) {
-        const welcomeMsg = {
-          ja: `${data.user.name}さん、MONKOSへようこそ！`,
-          ko: `${data.user.name}님, MONKOS에 오신 것을 환영합니다!`,
-          en: `Welcome to MONKOS, ${data.user.name}!`
-        };
-        alert(welcomeMsg[lang] || welcomeMsg.en);
-      }
-    } else {
-      console.error('[Auth] 로그인 실패:', data.error);
-    }
-  } catch (err) {
-    console.error('[Auth] 에러:', err);
-  }
-}
-
-// 로그아웃
-function logout() {
-  currentUser = null;
-  sessionStorage.removeItem('monkos_user');
-  updateAuthUI();
-  if (typeof google !== 'undefined') {
-    google.accounts.id.disableAutoSelect();
-  }
-}
-
-// UI 업데이트
-function updateAuthUI() {
-  const creditBtn = document.getElementById('creditBtn');
-  const creditCount = document.getElementById('creditCount');
-  const providerBadge = document.getElementById('providerBadge');
-  const providerIconInner = document.getElementById('providerIconInner');
-  const popoverName = document.getElementById('popoverName');
-  const headerLoginBtn = document.getElementById('headerLoginBtn');
-
-  if (currentUser) {
-    // 크레딧 표시
-    creditBtn.style.display = 'flex';
-    creditCount.textContent = currentUser.credits ?? 0;
-
-    // SNS provider 아이콘
-    providerBadge.style.display = 'flex';
-    providerBadge.className = 'provider-badge ' + (currentUser.provider || 'google');
-    popoverName.textContent = currentUser.name || currentUser.email || '';
-
-    if (currentUser.picture) {
-      providerIconInner.innerHTML = `<img src="${currentUser.picture}" alt="">`;
-    } else if (currentUser.provider === 'line') {
-      providerIconInner.innerHTML = `<svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 2C6.48 2 2 5.83 2 10.5c0 4.08 3.39 7.5 7.96 8.33.31.07.73.2.84.47.1.24.06.62.03.87l-.14.82c-.04.24-.19.94.82.51s5.46-3.21 7.44-5.5C21.23 13.37 22 11.98 22 10.5 22 5.83 17.52 2 12 2z" fill="#fff"/></svg>`;
-    } else if (currentUser.provider === 'kakao') {
-      providerIconInner.innerHTML = `<svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 3C6.48 3 2 6.36 2 10.5c0 2.67 1.74 5.01 4.36 6.33-.14.53-.9 3.4-.93 3.6 0 0-.02.16.08.22.1.06.22.01.22.01.29-.04 3.37-2.2 3.9-2.57.76.11 1.55.16 2.37.16 5.52 0 10-3.36 10-7.5S17.52 3 12 3z" fill="#3C1E1E"/></svg>`;
-    } else {
-      providerIconInner.innerHTML = `<svg viewBox="0 0 24 24" width="20" height="20"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>`;
-    }
-
-    // 로그인 상태: 헤더 로그인 버튼 숨김
-    document.body.classList.add('logged-in');
-    if (headerLoginBtn) headerLoginBtn.style.display = 'none';
-    loadEventStatus();
-  } else {
-    creditBtn.style.display = 'none';
-    providerBadge.style.display = 'none';
-    document.body.classList.remove('logged-in');
-    // 비로그인 상태: 헤더에 로그인 버튼 표시, mainContent는 그대로 노출
-    if (headerLoginBtn) headerLoginBtn.style.display = 'block';
-  }
-}
-
-// 로그아웃 팝오버
-function toggleLogoutPopover() {
-  const pop = document.getElementById('logoutPopover');
-  pop.classList.toggle('open');
-}
-
-// 팝오버 외부 클릭 닫기
-document.addEventListener('click', (e) => {
-  const badge = document.getElementById('providerBadge');
-  const pop = document.getElementById('logoutPopover');
-  if (badge && !badge.contains(e.target)) {
-    pop.classList.remove('open');
+// 태그 토글: 4줄 초과 시에만 버튼 표시
+document.addEventListener('DOMContentLoaded', function() {
+  var tags = document.getElementById('sbTags');
+  var toggle = document.getElementById('sbTagToggle');
+  if (tags && toggle && tags.scrollHeight > tags.clientHeight) {
+    toggle.style.display = 'block';
   }
 });
-
-// 크레딧 충전 모달
-function openCreditShop() {
-  const modal = document.getElementById('creditShopModal');
-  document.getElementById('shopCurrentCredits').textContent = currentUser?.credits ?? 0;
-  renderShopItems();
-  if (modal) modal.classList.add('active');
-}
-
-function closeCreditShop() {
-  const modal = document.getElementById('creditShopModal');
-  if (modal) modal.classList.remove('active');
-}
-
-// region 기반 샵 아이템 렌더링
-function renderShopItems() {
-  const container = document.getElementById('shopItems');
-  const titleEl = document.getElementById('shopTitle');
-  const labelEl = document.getElementById('shopCurrentLabel');
-  const closeBtn = document.getElementById('shopCloseBtn');
-  const credits = currentUser?.credits ?? 0;
-
-  const btnStyle = 'display:flex; justify-content:space-between; align-items:center; background:var(--bg); border:1px solid var(--border); color:var(--text); padding:14px 18px; border-radius:12px; font-size:0.95rem; cursor:pointer;';
-  const bestStyle = 'display:flex; justify-content:space-between; align-items:center; background:linear-gradient(135deg, rgba(167,139,250,0.1), rgba(129,140,248,0.1)); border:1px solid var(--accent); color:var(--text); padding:14px 18px; border-radius:12px; font-size:0.95rem; cursor:pointer;';
-
-  if (region === 'kr') {
-    titleEl.textContent = '크레딧 충전';
-    labelEl.innerHTML = `현재: <strong>${credits}</strong>c`;
-    closeBtn.textContent = '닫기';
-    container.innerHTML = `
-      <button onclick="buyToss(12900)" style="${btnStyle}">
-        <span>💎 10 크레딧</span><span style="color:var(--accent); font-weight:700;">₩12,900</span>
-      </button>
-      <button onclick="buyToss(29900)" style="${bestStyle}">
-        <span>💎 30 크레딧</span><span style="color:var(--accent); font-weight:700;">₩29,900 <small style="color:var(--success);">BEST</small></span>
-      </button>
-      <button onclick="buyToss(45900)" style="${btnStyle}">
-        <span>💎 50 크레딧</span><span style="color:var(--accent); font-weight:700;">₩45,900</span>
-      </button>
-    `;
-  } else {
-    titleEl.textContent = (lang === 'ja') ? 'クレジットショップ' : 'Credit Shop';
-    labelEl.innerHTML = (lang === 'ja')
-      ? `現在: <strong>${credits}</strong>c`
-      : `Current: <strong>${credits}</strong>c`;
-    closeBtn.textContent = (lang === 'ja') ? '閉じる' : 'Close';
-    container.innerHTML = `
-      <button onclick="buyCreditsLS('1297524','$10')" style="${btnStyle}">
-        <span>💎 10 Credits</span><span style="color:var(--accent); font-weight:700;">$10</span>
-      </button>
-      <button onclick="buyCreditsLS('1297532','$25')" style="${bestStyle}">
-        <span>💎 30 Credits</span><span style="color:var(--accent); font-weight:700;">$25 <small style="color:var(--success);">BEST</small></span>
-      </button>
-      <button onclick="buyCreditsLS('1297531','$40')" style="${btnStyle}">
-        <span>💎 50 Credits</span><span style="color:var(--accent); font-weight:700;">$40</span>
-      </button>
-    `;
-  }
-}
-
-// Lemon Squeezy 결제 (글로벌) — 토스페이먼츠 전환으로 비활성화
-// async function buyCreditsLS(variantId, amount) {
-//   if (!currentUser?.id) return;
-//   const btn = event.target.closest('button');
-//   btn.disabled = true;
-//   const origText = btn.innerHTML;
-//   btn.textContent = '...';
-//   try {
-//     const res = await fetch('/api/checkout', {
-//       method: 'POST',
-//       headers: { 'Content-Type': 'application/json' },
-//       body: JSON.stringify({ variantId, userId: currentUser.id, email: currentUser.email }),
-//     });
-//     const data = await res.json();
-//     if (data.url) {
-//       window.open(data.url, '_blank');
-//     }
-//   } catch (err) {
-//     console.error('[Checkout] error:', err);
-//   }
-//   btn.disabled = false;
-//   btn.innerHTML = origText;
-// }
-
-// === 토스페이먼츠 결제 (KR 전용) ===
-const TOSS_CLIENT_KEY = ''; // TODO: 토스 계약 완료 후 라이브 키 입력
-const TOSS_ENABLED = false; // TODO: 키 입력 후 true로 변경
-const CREDIT_PACKAGES = [
-  { id: 'credit_1',  credits: 1,  price: 1500,  label: '1 크레딧' },
-  { id: 'credit_10', credits: 10, price: 12900, label: '10 크레딧 (10% 할인)' },
-  { id: 'credit_30', credits: 30, price: 29900, label: '30 크레딧 (17% 할인)', popular: true },
-  { id: 'credit_50', credits: 50, price: 45900, label: '50 크레딧 (20% 할인)' },
-];
-let tossPayments = null;
-
-function loadTossSDK() {
-  return new Promise((resolve, reject) => {
-    if (window.TossPayments) { resolve(); return; }
-    const script = document.createElement('script');
-    script.src = 'https://js.tosspayments.com/v2/standard';
-    script.onload = () => resolve();
-    script.onerror = () => reject(new Error('토스 SDK 로드 실패'));
-    document.head.appendChild(script);
-  });
-}
-
-async function buyToss(amount) {
-  if (!TOSS_ENABLED || !TOSS_CLIENT_KEY) {
-    console.log('[Toss] 결제 모듈 미활성화 (클라이언트 키 미설정)');
-    alert('결제 시스템 준비 중입니다. 곧 오픈 예정입니다!');
-    return;
-  }
-  if (!currentUser?.id) return;
-  const btn = event.target.closest('button');
-  btn.disabled = true;
-  const origText = btn.innerHTML;
-  btn.textContent = '결제 준비 중...';
-
-  try {
-    await loadTossSDK();
-
-    if (!tossPayments) {
-      tossPayments = TossPayments(TOSS_CLIENT_KEY);
-    }
-
-    const creditsMap = { 12900: 10, 29900: 30, 45900: 50 };
-    const credits = creditsMap[amount] || 0;
-    const orderId = `monkos_${currentUser.id.slice(0, 8)}_${Date.now()}`;
-
-    const payment = tossPayments.payment({ customerKey: currentUser.id });
-    await payment.requestPayment({
-      method: 'CARD',
-      amount: { currency: 'KRW', value: amount },
-      orderId,
-      orderName: `MONKOS ${credits} 크레딧`,
-      customerEmail: currentUser.email || '',
-      customerName: currentUser.name || '',
-      successUrl: `${window.location.origin}/toss-success?userId=${encodeURIComponent(currentUser.id)}`,
-      failUrl: `${window.location.origin}/toss-fail`,
-    });
-  } catch (err) {
-    if (err.code === 'USER_CANCEL') {
-      console.log('[Toss] 사용자 결제 취소');
-    } else {
-      console.error('[Toss] 결제 에러:', err);
-      alert('결제 처리 중 오류가 발생했습니다. 다시 시도해 주세요.');
-    }
-  }
-  btn.disabled = false;
-  btn.innerHTML = origText;
-}
-
-// 페이지 로드 시 초기화
-// 세션 즉시 복원 (LINE/카카오 로그인 포함) → GIS는 비동기 로드
-restoreSession();
-window.addEventListener('load', initGoogleAuth);
-
-// === i18n (하드코딩 3개 언어) ===
-const i18n = {
-  ja: {
-    heroSub: 'AIクリエイティブプラットフォーム',
-    serviceTitle: 'AI証明写真',
-    serviceDesc: 'AIコーチングで完璧な撮影 → AIで証明写真に変換。パスポート・履歴書対応。',
-    features: ['AIリアルタイムコーチング', 'プロ品質の自動変換', 'パスポート・履歴書対応'],
-    ctaText: '証明写真を撮る',
-    ctaUrl: 'https://idphoto-jp.monkos.ai/app',
-    card2Title: 'AI Models',
-    card2Desc: 'MONKOS AIモデル。最先端のAI画像生成・編集モデルをまもなく公開。',
-    card2Features: ['AI画像生成', 'スタイル変換', 'プロ品質出力'],
-    card3Title: 'AI Academy',
-    card3Desc: 'AI活用スキルを体系的に学ぶ。クリエイター向けAI教育プラットフォーム。',
-    card3Features: ['AI活用講座', '実践ワークショップ', 'クリエイター育成'],
-    chatPlaceholder: '質問を入力...',
-    chatWelcome: 'こんにちは！MONKOSです。サービスについて何でも聞いてください。',
-    eventTitle: 'Telegramで友達追加して30クレジットGET！',
-    eventDesc: '@monkos_support_botを友達追加すると30クレジットを即時支給します。',
-    eventBtn: 'Telegram友達追加 → 30c GET',
-    eventDone: 'ボーナス受取済み！',
-    login: 'ログイン',
-    loginGoogle: 'Googleでログイン',
-    loginKakao: 'カカオでログイン',
-    loginClose: '閉じる',
-  },
-  ko: {
-    heroSub: 'AI 크리에이티브 플랫폼',
-    serviceTitle: 'AI 증명사진',
-    serviceDesc: 'AI 코칭으로 완벽한 촬영 → AI로 증명사진 변환. 증명사진, 이력서 대응.',
-    features: ['AI 실시간 코칭', '프로 품질 자동 변환', '증명사진/이력서 대응'],
-    ctaText: '증명사진 촬영하기',
-    ctaUrl: 'https://idphoto-kr.monkos.ai/app',
-    card2Title: 'AI Models',
-    card2Desc: 'MONKOS AI 모델. 최첨단 AI 이미지 생성·편집 모델을 곧 공개합니다.',
-    card2Features: ['AI 이미지 생성', '스타일 변환', '프로 품질 출력'],
-    card3Title: 'AI Academy',
-    card3Desc: 'AI 활용 스킬을 체계적으로 학습. 크리에이터를 위한 AI 교육 플랫폼.',
-    card3Features: ['AI 활용 강좌', '실전 워크숍', '크리에이터 육성'],
-    chatPlaceholder: '질문을 입력하세요...',
-    chatWelcome: '안녕하세요! MONKOS입니다. 서비스에 대해 무엇이든 물어보세요.',
-    eventTitle: '텔레그램 친구 추가하고 30크레딧 받기!',
-    eventDesc: '@monkos_support_bot을 친구 추가하면 30크레딧을 즉시 지급합니다.',
-    eventBtn: '텔레그램 친구 추가 → 30c 받기',
-    eventDone: '보너스 수령 완료!',
-    login: '로그인',
-    loginGoogle: 'Google로 로그인',
-    loginKakao: '카카오로 로그인',
-    loginClose: '닫기',
-  },
-  en: {
-    heroSub: 'AI Creative Platform',
-    serviceTitle: 'AI ID Photo',
-    serviceDesc: 'AI coaching for perfect shots → AI transforms into ID photos. ID photo and resume supported.',
-    features: ['AI real-time coaching', 'Pro-quality auto conversion', 'ID photo / resume ready'],
-    ctaText: 'Take ID Photo',
-    ctaUrl: 'https://idphoto-jp.monkos.ai/app',
-    card2Title: 'AI Models',
-    card2Desc: 'MONKOS AI Models. Cutting-edge AI image generation & editing models coming soon.',
-    card2Features: ['AI image generation', 'Style transfer', 'Pro-quality output'],
-    card3Title: 'AI Academy',
-    card3Desc: 'Learn AI skills systematically. AI education platform for creators.',
-    card3Features: ['AI courses', 'Hands-on workshops', 'Creator training'],
-    chatPlaceholder: 'Type your question...',
-    chatWelcome: 'Hi! I\'m MONKOS. Ask me anything about our services.',
-    login: 'Login',
-    loginGoogle: 'Login with Google',
-    loginKakao: 'Login with Kakao',
-    loginClose: 'Close',
-    eventTitle: 'Add us on Telegram & get 30 credits!',
-    eventDesc: 'Add @monkos_support_bot as friend and get 30 credits instantly.',
-    eventBtn: 'Add on Telegram → get 30c',
-    eventDone: 'Bonus claimed!',
-  },
-};
-
-// 게이트 화면 텍스트
-const gateTexts = {
-  ja: 'AIがリアルタイムで撮影をコーチング。\nプロ品質の証明写真をその場で。',
-  ko: 'AI가 실시간으로 촬영을 코칭합니다.\n프로 품질 증명사진을 바로 완성하세요.',
-  en: 'AI coaches your shot in real-time.\nGet pro-quality ID photos instantly.'
-};
-
-// 동의 텍스트 다국어
-const consentTexts = {
-  ja: {
-    privacy: '個人情報の収集・利用に同意します',
-    portrait: '肖像権および画像使用に同意します',
-    required: '(必須)',
-    viewLink: '[内容を見る]',
-    confirm: '確認',
-    privacyTitle: '個人情報の収集・利用同意',
-    portraitTitle: '肖像権および画像使用同意',
-    privacyContent: `
-      <p><strong>1. 収集項目</strong></p>
-      <ul>
-        <li>Googleアカウント情報: メールアドレス、氏名、プロフィール写真</li>
-        <li>サービス利用記録: アクセス時間、利用履歴</li>
-      </ul>
-      <p><strong>2. 収集目的</strong></p>
-      <ul>
-        <li>会員識別およびサービス提供</li>
-        <li>サービス利用統計および改善</li>
-        <li>お問い合わせ対応</li>
-      </ul>
-      <p><strong>3. 保有期間</strong></p>
-      <ul>
-        <li>会員退会時まで、または関連法令による保存期間</li>
-      </ul>
-      <p><strong>4. 同意拒否権</strong></p>
-      <ul>
-        <li>同意を拒否する権利があります。拒否した場合、サービス利用が制限されます。</li>
-      </ul>
-    `,
-    portraitContent: `
-      <p><strong>1. 同意内容</strong></p>
-      <ul>
-        <li>AI証明写真生成のための顔画像の撮影および処理</li>
-        <li>AIモデルによる画像変換および生成</li>
-      </ul>
-      <p><strong>2. 画像処理方式</strong></p>
-      <ul>
-        <li>アップロードされた画像はAI処理後、直ちに削除されます。</li>
-        <li>生成された画像はサーバーに保存されません。</li>
-        <li>すべての処理はGoogle Cloud Platformで安全に行われます。</li>
-      </ul>
-      <p><strong>3. 権利案内</strong></p>
-      <ul>
-        <li>生成された画像の著作権はご利用者にあります。</li>
-        <li>MONKOSはご利用者の画像をマーケティング等の他の目的に使用しません。</li>
-      </ul>
-      <p><strong>4. 同意拒否権</strong></p>
-      <ul>
-        <li>同意を拒否する権利があります。拒否した場合、AI写真サービスの利用が制限されます。</li>
-      </ul>
-    `
-  },
-  ko: {
-    privacy: '개인정보 수집·이용에 동의합니다',
-    portrait: '초상권 및 이미지 사용에 동의합니다',
-    required: '(필수)',
-    viewLink: '[내용 보기]',
-    confirm: '확인',
-    privacyTitle: '개인정보 수집·이용 동의',
-    portraitTitle: '초상권 및 이미지 사용 동의',
-    privacyContent: `
-      <p><strong>1. 수집 항목</strong></p>
-      <ul>
-        <li>Google 계정 정보: 이메일, 이름, 프로필 사진</li>
-        <li>서비스 이용 기록: 접속 시간, 이용 내역</li>
-      </ul>
-      <p><strong>2. 수집 목적</strong></p>
-      <ul>
-        <li>회원 식별 및 서비스 제공</li>
-        <li>서비스 이용 통계 및 개선</li>
-        <li>고객 문의 대응</li>
-      </ul>
-      <p><strong>3. 보유 기간</strong></p>
-      <ul>
-        <li>회원 탈퇴 시까지 또는 관련 법령에 따른 보존 기간</li>
-      </ul>
-      <p><strong>4. 동의 거부권</strong></p>
-      <ul>
-        <li>동의를 거부할 권리가 있으며, 거부 시 서비스 이용이 제한됩니다.</li>
-      </ul>
-    `,
-    portraitContent: `
-      <p><strong>1. 동의 내용</strong></p>
-      <ul>
-        <li>AI 증명사진 생성을 위한 얼굴 이미지 촬영 및 처리</li>
-        <li>AI 모델을 통한 이미지 변환 및 생성</li>
-      </ul>
-      <p><strong>2. 이미지 처리 방식</strong></p>
-      <ul>
-        <li>업로드된 이미지는 AI 처리 후 즉시 삭제됩니다.</li>
-        <li>생성된 이미지는 서버에 저장되지 않습니다.</li>
-        <li>모든 처리는 Google Cloud Platform에서 안전하게 수행됩니다.</li>
-      </ul>
-      <p><strong>3. 권리 안내</strong></p>
-      <ul>
-        <li>생성된 이미지의 저작권은 이용자에게 있습니다.</li>
-        <li>MONKOS는 이용자의 이미지를 마케팅 등 다른 목적으로 사용하지 않습니다.</li>
-      </ul>
-      <p><strong>4. 동의 거부권</strong></p>
-      <ul>
-        <li>동의를 거부할 권리가 있으며, 거부 시 AI 사진 서비스 이용이 제한됩니다.</li>
-      </ul>
-    `
-  },
-  en: {
-    privacy: 'I agree to the collection and use of personal information',
-    portrait: 'I agree to portrait rights and image usage',
-    required: '(Required)',
-    viewLink: '[View Details]',
-    confirm: 'Confirm',
-    privacyTitle: 'Privacy Policy Agreement',
-    portraitTitle: 'Portrait Rights and Image Usage Agreement',
-    privacyContent: `
-      <p><strong>1. Information Collected</strong></p>
-      <ul>
-        <li>Google Account Info: Email, Name, Profile Picture</li>
-        <li>Service Usage Records: Access time, Usage history</li>
-      </ul>
-      <p><strong>2. Purpose of Collection</strong></p>
-      <ul>
-        <li>Member identification and service provision</li>
-        <li>Service usage statistics and improvement</li>
-        <li>Customer inquiry response</li>
-      </ul>
-      <p><strong>3. Retention Period</strong></p>
-      <ul>
-        <li>Until account deletion or as required by applicable law</li>
-      </ul>
-      <p><strong>4. Right to Refuse</strong></p>
-      <ul>
-        <li>You have the right to refuse. If refused, service usage will be restricted.</li>
-      </ul>
-    `,
-    portraitContent: `
-      <p><strong>1. Consent Details</strong></p>
-      <ul>
-        <li>Capturing and processing facial images for AI ID photo generation</li>
-        <li>Image transformation and generation through AI models</li>
-      </ul>
-      <p><strong>2. Image Processing</strong></p>
-      <ul>
-        <li>Uploaded images are immediately deleted after AI processing.</li>
-        <li>Generated images are not stored on servers.</li>
-        <li>All processing is performed securely on Google Cloud Platform.</li>
-      </ul>
-      <p><strong>3. Rights Information</strong></p>
-      <ul>
-        <li>Copyright of generated images belongs to the user.</li>
-        <li>MONKOS does not use your images for marketing or other purposes.</li>
-      </ul>
-      <p><strong>4. Right to Refuse</strong></p>
-      <ul>
-        <li>You have the right to refuse. If refused, AI photo service usage will be restricted.</li>
-      </ul>
-    `
-  }
-};
-
-// === 지역 감지 (KR vs 글로벌) ===
-function detectRegion() {
-  const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  const navLang = (navigator.language || '').toLowerCase();
-  if (tz === 'Asia/Seoul' || navLang.startsWith('ko')) return 'kr';
-  return 'global';
-}
-
-// 쿠키 헬퍼 함수
-function getCookie(name) {
-  const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
-  return match ? match[2] : null;
-}
-
-function setCookie(name, value) {
-  document.cookie = `${name}=${value};domain=.monkos.ai;path=/;max-age=31536000;SameSite=Lax`;
-}
-
-let region = getCookie('monkos_region');
-// 쿠키 없을 때만 자동 감지 + 저장
-if (!region) {
-  region = detectRegion();
-  setCookie('monkos_region', region);
-}
-
-// 리전 버튼 활성화 상태 업데이트
-function updateRegionButtons() {
-  document.querySelectorAll('.region-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.region === region);
-  });
-}
-
-// 리전 변경 함수 (window에 노출 - 난독화 후에도 onclick에서 접근 가능)
-window.setRegion = function(newRegion) {
-  region = newRegion;
-  setCookie('monkos_region', region);
-  updateRegionButtons();
-  // KR이면 언어도 ko로 고정
-  if (region === 'kr') {
-    setLang('ko');
-  }
-};
-
-// 초기 버튼 상태 설정
-updateRegionButtons();
-
-// === 언어 감지 ===
-function detectLang() {
-  if (region === 'kr') return 'ko';
-  const navLang = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
-  if (navLang.startsWith('ja')) return 'ja';
-  return 'en';
-}
-
-let lang = (region === 'kr') ? 'ko' : (localStorage.getItem('monkos_lang') || detectLang());
-let t = i18n[lang];
-
-// === CTA 클릭 이벤트 ===
-const ctaBtn = document.getElementById('ctaBtn');
-
-// region 기반 CTA URL 헬퍼
-function getCtaUrl() {
-  return (region === 'kr')
-    ? 'https://idphoto-kr.monkos.ai/app'
-    : 'https://idphoto-jp.monkos.ai/app';
-}
-
-// CTA 클릭 시 로그인 상태면 토큰 파라미터 추가
-ctaBtn.addEventListener('click', async (e) => {
-  if (!currentUser?.id) return; // 비로그인 시 기본 URL 이동
-  e.preventDefault();
-  const targetUrl = getCtaUrl();
-  try {
-    const res = await fetch('/api/auth/token', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId: currentUser.id }),
-    });
-    const data = await res.json();
-    if (data.token) {
-      const url = new URL(targetUrl);
-      url.searchParams.set('uid', currentUser.id);
-      url.searchParams.set('token', data.token);
-      window.location.href = url.toString();
-    } else {
-      window.location.href = targetUrl;
-    }
-  } catch {
-    window.location.href = targetUrl;
-  }
-});
-
-// (i18n 초기 적용은 applyLang()에서 처리)
-
-
-
-function showConsentModal(type) {
-  if (type === 'privacy') {
-    document.getElementById('privacyModal').classList.add('active');
-  } else if (type === 'portrait') {
-    document.getElementById('portraitModal').classList.add('active');
-  }
-}
-
-function closeConsentModal(type) {
-  if (type === 'privacy') {
-    document.getElementById('privacyModal').classList.remove('active');
-  } else if (type === 'portrait') {
-    document.getElementById('portraitModal').classList.remove('active');
-  }
-}
-
-// 모달 외부 클릭 시 닫기
-document.getElementById('privacyModal').addEventListener('click', (e) => {
-  if (e.target.id === 'privacyModal') closeConsentModal('privacy');
-});
-document.getElementById('portraitModal').addEventListener('click', (e) => {
-  if (e.target.id === 'portraitModal') closeConsentModal('portrait');
-});
-
-// === 언어 전환 ===
-function applyLang() {
-  t = i18n[lang];
-  document.documentElement.lang = lang;
-
-  // 헤더 언어 선택기 (KR 트랙: 숨김, 글로벌: 드롭다운)
-  const langSel = document.getElementById('langSelector');
-  if (region === 'kr') {
-    langSel.style.display = 'none';
-  } else {
-    langSel.style.display = 'block';
-    document.querySelectorAll('.lang-dropdown-item').forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.lang === lang);
-    });
-  }
-
-  // 히어로
-  document.getElementById('heroSub').textContent = t.heroSub;
-  document.getElementById('serviceTitle').textContent = t.serviceTitle;
-  document.getElementById('serviceDesc').textContent = t.serviceDesc;
-
-  // 서비스 피처 리스트
-  const feats = document.getElementById('serviceFeatures');
-  feats.innerHTML = '';
-  t.features.forEach(f => {
-    const li = document.createElement('li');
-    li.textContent = f;
-    feats.appendChild(li);
-  });
-
-  // CTA 버튼 (region 기반 URL 분기)
-  const cta = document.getElementById('ctaBtn');
-  cta.textContent = t.ctaText;
-  const ctaUrl = (region === 'kr')
-    ? 'https://idphoto-kr.monkos.ai/app'
-    : 'https://idphoto-jp.monkos.ai/app';
-  cta.href = ctaUrl;
-
-  // COMING SOON 카드 텍스트
-  const cards = [
-    { n: 2, title: t.card2Title, desc: t.card2Desc, feats: t.card2Features },
-    { n: 3, title: t.card3Title, desc: t.card3Desc, feats: t.card3Features },
-  ];
-  cards.forEach(c => {
-    document.getElementById(`card${c.n}Title`).textContent = c.title;
-    document.getElementById(`card${c.n}Desc`).textContent = c.desc;
-    const fl = document.getElementById(`card${c.n}Features`);
-    fl.innerHTML = '';
-    c.feats.forEach(f => { const li = document.createElement('li'); li.textContent = f; fl.appendChild(li); });
-  });
-
-  // 동의 모달 텍스트 (게이트 제거 후에도 모달은 유지)
-  const ct = consentTexts[lang] || consentTexts.en;
-  document.getElementById('privacyModalTitle').textContent = ct.privacyTitle;
-  document.getElementById('portraitModalTitle').textContent = ct.portraitTitle;
-  document.getElementById('privacyModalContent').innerHTML = ct.privacyContent;
-  document.getElementById('portraitModalContent').innerHTML = ct.portraitContent;
-  document.getElementById('privacyModalClose').textContent = ct.confirm;
-  document.getElementById('portraitModalClose').textContent = ct.confirm;
-
-  // 챗봇
-  document.getElementById('chatInput').placeholder = t.chatPlaceholder;
-
-  // 로그인 모달 + 헤더 로그인 버튼 텍스트
-  document.getElementById('headerLoginBtn').textContent = t.login;
-  document.getElementById('loginModalTitle').textContent = t.login;
-  document.getElementById('loginGoogleText').textContent = t.loginGoogle;
-  document.getElementById('loginKakaoText').textContent = t.loginKakao;
-  document.getElementById('loginModalClose').textContent = t.loginClose;
-}
-
-function setLang(newLang) {
-  lang = newLang;
-  localStorage.setItem('monkos_lang', lang);
-  applyLang();
-  closeLangDropdown();
-}
-
-// 🌐 드롭다운 토글
-function toggleLangDropdown() {
-  document.getElementById('langDropdown').classList.toggle('open');
-}
-
-function closeLangDropdown() {
-  document.getElementById('langDropdown').classList.remove('open');
-}
-
-// 드롭다운 외부 클릭 닫기
-document.addEventListener('click', (e) => {
-  const sel = document.getElementById('langSelector');
-  if (sel && !sel.contains(e.target)) closeLangDropdown();
-});
-
-// 초기 언어 적용
-applyLang();
-
-// === 챗봇 ===
-const chatFab = document.getElementById('chatFab');
-const chatPanel = document.getElementById('chatPanel');
-const chatMessages = document.getElementById('chatMessages');
-const chatInput = document.getElementById('chatInput');
-const chatSend = document.getElementById('chatSend');
-const logoChatTrigger = document.getElementById('logoChatTrigger');
-const logoBubble = document.getElementById('logoBubble');
-const chatClose = document.getElementById('chatClose');
-
-let chatOpen = false;
-let sessionId = `s_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-let isLoading = false;
-
-function toggleChat() {
-  chatOpen = !chatOpen;
-  chatPanel.classList.toggle('open', chatOpen);
-  document.getElementById('chatBackdrop').classList.toggle('open', chatOpen);
-  if (chatOpen) {
-    logoBubble.classList.add('hide');
-    if (chatMessages.children.length === 0) {
-      addMessage(t.chatWelcome, 'bot');
-    }
-    chatInput.focus();
-  } else {
-    logoBubble.classList.remove('hide');
-  }
-}
-
-function closeChat() {
-  chatOpen = false;
-  chatPanel.classList.remove('open');
-  document.getElementById('chatBackdrop').classList.remove('open');
-  logoBubble.classList.remove('hide');
-}
-
-logoChatTrigger.addEventListener('click', toggleChat);
-chatClose.addEventListener('click', closeChat);
-
-function addMessage(text, type) {
-  const div = document.createElement('div');
-  div.className = `chat-msg ${type}`;
-  // 링크 자동 변환
-  div.innerHTML = text.replace(
-    /(https?:\/\/[^\s<]+)/g,
-    '<a href="$1" target="_blank" rel="noopener">$1</a>'
-  );
-  chatMessages.appendChild(div);
-  chatMessages.scrollTop = chatMessages.scrollHeight;
-}
-
-function showTyping() {
-  const div = document.createElement('div');
-  div.className = 'typing-indicator';
-  div.id = 'typingIndicator';
-  div.innerHTML = '<span></span><span></span><span></span>';
-  chatMessages.appendChild(div);
-  chatMessages.scrollTop = chatMessages.scrollHeight;
-}
-
-function hideTyping() {
-  const el = document.getElementById('typingIndicator');
-  if (el) el.remove();
-}
-
-async function sendMessage() {
-  const msg = chatInput.value.trim();
-  if (!msg || isLoading) return;
-
-  addMessage(msg, 'user');
-  chatInput.value = '';
-  isLoading = true;
-  chatSend.disabled = true;
-  showTyping();
-
-  try {
-    const res = await fetch('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: msg, sessionId, lang }),
-    });
-    const data = await res.json();
-    hideTyping();
-
-    if (data.reply) {
-      addMessage(data.reply, 'bot');
-      sessionId = data.sessionId || sessionId;
-    } else if (data.error) {
-      addMessage('Error: ' + data.error, 'bot');
-    }
-  } catch (err) {
-    hideTyping();
-    addMessage('Connection error. Please try again.', 'bot');
-  }
-
-  isLoading = false;
-  chatSend.disabled = false;
-  chatInput.focus();
-}
-
-chatSend.addEventListener('click', sendMessage);
-chatInput.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter' && !e.isComposing) sendMessage();
-});
-
-// === 텔레그램 보너스 ===
-async function loadEventStatus() {
-  if (!currentUser?.id) return;
-  try {
-    const res = await fetch(`/api/telegram-bonus/status?userId=${encodeURIComponent(currentUser.id)}`);
-    const data = await res.json();
-    const section = document.getElementById('eventSection');
-    const titleEl = document.getElementById('eventTitle');
-    const descEl = document.getElementById('eventDesc');
-    const remainEl = document.getElementById('eventRemaining');
-    const btnEl = document.getElementById('eventBtn');
-
-    titleEl.textContent = t.eventTitle || '';
-    descEl.textContent = t.eventDesc || '';
-    remainEl.textContent = '';
-
-    if (data.claimed) {
-      btnEl.disabled = true;
-      btnEl.textContent = '✅ ' + (t.eventDone || 'Done');
-    } else {
-      btnEl.textContent = t.eventBtn || '';
-    }
-
-    section.style.display = 'block';
-  } catch (err) {
-    console.error('[Event] 상태 로드 실패:', err);
-  }
-}
-
-let bonusPolling = null;
-
-async function claimTelegramBonus() {
-  if (!currentUser?.id) {
-    alert('로그인이 필요합니다');
-    return;
-  }
-
-  const btn = document.getElementById('eventBtn');
-  btn.disabled = true;
-  btn.textContent = '...';
-
-  try {
-    const res = await fetch(`/api/telegram-bonus/generate?userId=${encodeURIComponent(currentUser.id)}`);
-    const data = await res.json();
-
-    if (data.alreadyClaimed) {
-      btn.textContent = '✅ ' + (t.eventDone || 'Done');
-      return;
-    }
-
-    if (data.deepLink) {
-      window.open(data.deepLink, '_blank');
-
-      // 안내 표시
-      const descEl = document.getElementById('eventDesc');
-      const waitMsg = { ja: 'Telegramで「スタート」をタップしたらこのページに戻ってください...', ko: '텔레그램에서 "시작"을 누른 후 이 페이지로 돌아오세요...', en: 'Tap "Start" in Telegram, then come back here...' };
-      descEl.textContent = waitMsg[lang] || waitMsg.en;
-      btn.textContent = '⏳';
-
-      // 5초 간격 폴링 (최대 2분)
-      let attempts = 0;
-      bonusPolling = setInterval(async () => {
-        attempts++;
-        if (attempts > 24) {
-          clearInterval(bonusPolling);
-          btn.disabled = false;
-          btn.textContent = t.eventBtn || '';
-          return;
-        }
-        try {
-          const check = await fetch(`/api/telegram-bonus/status?userId=${encodeURIComponent(currentUser.id)}`);
-          const status = await check.json();
-          if (status.claimed) {
-            clearInterval(bonusPolling);
-            btn.textContent = '✅ ' + (t.eventDone || 'Done');
-            descEl.textContent = t.eventDesc || '';
-
-            const successMsg = { ja: `🎉 30クレジットが支給されました！`, ko: `🎉 30크레딧이 지급되었습니다!`, en: `🎉 30 credits granted!` };
-            alert(successMsg[lang] || successMsg.en);
-
-            // 크레딧 갱신
-            const userRes = await fetch(`/api/user?userId=${encodeURIComponent(currentUser.id)}`);
-            if (userRes.ok) {
-              const userData = await userRes.json();
-              currentUser.credits = userData.credits;
-              sessionStorage.setItem('monkos_user', JSON.stringify(currentUser));
-            }
-          }
-        } catch (e) {}
-      }, 5000);
-    }
-  } catch (err) {
-    alert('오류: ' + err.message);
-    btn.disabled = false;
-    btn.textContent = t.eventBtn || '';
-  }
-}
 </script>
 
-<footer style="position:fixed; bottom:0; left:0; right:0; text-align:center; padding:8px 16px; font-size:0.6rem; color:#64748b; background:rgba(10,10,26,0.92); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); z-index:10; line-height:1.5; border-top:1px solid rgba(167,139,250,0.08);" translate="no">
-  <a href="/privacy.html" style="color:#8892a8;">Privacy</a> &middot; <a href="/terms.html" style="color:#8892a8;">Terms</a> &middot; <a href="/refund.html" style="color:#8892a8;">Refund</a> &middot; <span>&copy; 2026 MONKOS.AI</span>
-</footer>
+<!-- JS (의존성 순서: i18n → auth → credits → chat → main) -->
+<script src="/js/i18n.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/credits.js"></script>
+<script src="/js/chat.js"></script>
+<script src="/js/main.js"></script>
 </body>
 </html>

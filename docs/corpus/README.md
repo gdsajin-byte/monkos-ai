@@ -120,6 +120,6 @@ gsutil -m rsync -r gs://monk-project/corpus/ docs/corpus/
 
 ## 관련 문서
 
-- 아키텍처: `docs/infrastructure/3TRACK_SYSTEM_ARCHITECTURE.md`
-- GCS 구조: `docs/infrastructure/GCS_BUCKET_STRUCTURE.md`
-- 세션 가치: `docs/infrastructure/SESSION_LOG_VALUE.md`
+- 아키텍처: `docs/infrastructure/architecture/3TRACK_SYSTEM_ARCHITECTURE.md`
+- GCS 구조: `docs/infrastructure/deployment/GCS_BUCKET_STRUCTURE.md`
+- 세션 가치: `docs/infrastructure/guides/SESSION_LOG_VALUE.md`

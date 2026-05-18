@@ -7,6 +7,155 @@
 
 ---
 
+## 2026-05-14 11:41 KST — 정예요원 원칙 + 필명·본명 분리 — 신규 feedback 1 + project 1, 인덱스 2행 ⭐
+
+### 배경
+- 본 세션(iMac/민아 5/14): 작가님 직접 선언 2건이 헌법 가치 차원 결단에 해당하여 메모리 적립
+- 11:41 KST: "수발신과 타임스탬프는 우리의 가장 큰 자산이고 우리 에이전트들이 가장 정예요원인 이유야"
+- 14:34 KST: "신작가로만 미는게 나을듯 영문만, 사업자 푸터에 나오는것과 필명은 다르게 생각해야함"
+
+### 변경
+1. **`feedback_header_timestamp_discipline.md` 신규** (2026-05-14 11:41 KST)
+   - 모든 턴 첫 줄 `[YYYY-MM-DD HH:MM KST] {디바이스}/{에이전트} → {수신자}` 절대 준수
+   - 매 턴 첫 도구 호출 = `date` 절대 준수
+   - 위반 사례·정정 절차 명시
+2. **`project_persona_separation.md` 신규** (2026-05-14 15:58 KST)
+   - 법적 사업자 본명(신정규/footer/등록정보) vs 브랜드·검색·AI 필명 "Shin-jakka" 분리
+   - 본명·필명 동반 표기 금지 (예: "신정규(Shin-jakka)" ❌)
+   - 영문 표기 통일 "Shin-jakka" (하이픈 포함)
+   - 적용 영역 매트릭스 + 정정 진행 자산 명시
+3. **MEMORY.md 인덱스 2행 ⭐ 어펜드** — 두 신규 메모리 외장 메모리 목록에 등록
+
+### 최종 상태
+- MEMORY.md: 144줄 → 146줄 (2행 추가)
+- feedback_*.md: 1개 (header_timestamp_discipline)
+- project_*.md: 4개 (model_deployment / monkos_sovereignty / origin_narrative / **persona_separation 신규**)
+
+### 적용 결과 (라이브 반영)
+- monk.kr `index.html` Person JSON-LD: `"name": "Shin-jakka"` (본명 미포함)
+- monk.kr `llms.txt`: 본명 0건 / Last updated 2026-05-14
+- monk.kr `llms-full.txt`: Representative 필드만 본명 유지(사업자 등록 영역) / 나머지 Shin-jakka
+
+---
+
+## 2026-05-04 13:21 KST — 체계 정비: feedback 20개 삭제 + MEMORY 다이어트 (194줄→144줄)
+
+### 배경
+- 지시서: `ORDER_20260504_iMac쌍아_막내_체계정비.md`
+- feedback 메모리 파일 20개가 실제 행동에 영향 미미. MEMORY.md 200줄 캡 직전.
+
+### 변경
+1. **feedback 파일 전수 삭제** (20개): feedback_cdp_autotranslate_artifact ~ feedback_worktree_path
+2. **MEMORY.md 피드백 섹션 전체 삭제** (인덱스 제거)
+3. **외장 메모리 인덱스 축소**: 18개 항목 제거, 9개 유지 (4MUSE/미결어젠다/CDP×2/자비스/엔드게임/광고전략/AI철학/품질경고)
+4. **works 운용 규정 압축**: 20줄→5줄
+5. **global settings.json allow 정리**: 107→30개 항목
+
+### 최종 상태
+- MEMORY.md: 144줄
+- feedback_*.md: 0개
+- settings.json allow: 30개
+
+---
+
+## 2026-05-02 19:18 KST — `feedback_japan_is_first_market_only.md` 신규 (일본 첫 타겟 vs 유일 목적 다회 지적)
+
+### 배경
+- 강한소상공인 v8 리뷰 중 작가님 직언:
+  > "자꾸 일본 일본하는 것도 좀 이상해. 계속 에이전트들이 일본일본만 하고 있어. 여러번 말해도 일본은 첫타겟진입이지 일본이 유일 목적이 아닌데 아무리 말해도 제자리네"
+- 다회 지적에도 에이전트들이 패턴 못 고침 → 메모리화 필요
+
+### 변경
+1. **신규 메모리 파일**: `feedback_japan_is_first_market_only.md` (type: feedback)
+   - 규칙: 일본 단독 강조 금지. "1차 진입(일본) → 2차 확장(동남아·영어권·EU)" 단계 묶기
+   - 적용 5조항: ① 일본 항목 2개 연속 시 균형 점검 ② 단계 구조로 묶기 ③ 표 절반 이상이면 1개 치환 ④ 표제 단독 사용 금지 ⑤ 톤은 K-뷰티 글로벌 SaaS, 일본은 첫 발판
+2. **MEMORY.md 인덱스 1행 추가** (피드백 메모리 섹션 말미)
+
+### 변경 없음
+- 다른 섹션 무변경
+
+---
+
+## 2026-04-28 16:00 KST — `project_payment_gateway_constraints.md` 갱신 (LS×Stripe 인수 + Stripe Connect 의미 + PayPay 옵션)
+
+### 배경
+- 작가님 2026-04-28 LS 어드민 본체 복구 + W-8BEN 제출 + Stripe Connect 활성화 통보 받음
+- LS support 회신에 "Stripe Connect account has been enabled" 표현 → 작가님 의문: "이제 스트라이프를 정식으로 쓰는 형태가 된건가"
+- WebSearch에서 핵심 신규 사실 발견: **Stripe가 2024년 LS 인수**, LS는 "Managed Payments" 라인으로 Stripe 본진과 통합 중 (35+개국)
+- Stripe Japan이 PayPay 통합 발표(2025) → LS에도 도입 가능성 (단 공식 docs 미명시)
+
+### 추가 (project_payment_gateway_constraints.md 어펜드)
+- **2026-04-28 갱신** 섹션 신설
+- Stripe-LS 인수 사실 + LS = MoR 구조 명확화 (Stripe 직접 사용자 아님)
+- Stripe Connect Enabled의 정확한 의미 (작가님 입장 변동 없음)
+- PayPay 옵션 가능성 + LS 문의 메일 draft 작성 사실
+- 일본 PayPay 68M+ 사용자 / idphoto-jp 매출 회복 단계에서 즉시 효과 큰 옵션
+
+### 근거 문서
+- `monkos-ops/ops/sessions/2026-04-28_iMac_민아.md` (LS 트랙 전체)
+- `monkos-ops/ops/reports/REPORT_20260428_iMac민아_나노바나나2_코드아키텍처_사용툴_분석.md` (별건)
+- WebSearch sources: blog.lemonsqueezy.com/2026-update, stripe.com/newsroom/news/japan-payments-moment-2025
+- LS support 메일 thread: 19daf21e8ce73285 (Deerga + Gadha)
+
+---
+
+## 2026-04-23 14:45 KST — "역할 자동 인식" 섹션 강화 (Anthropic 제품 2개 구조 반영)
+
+### 배경
+- 작가님 2026-04-23 14:40 KST 구조 고지
+- Anthropic 제품 계보: **Claude**(일반) ≠ **Claude Code**(개발자) 2개 별개 제품
+- 같은 Opus 뇌, 다른 제품·세팅. 구글 Code Assist / ChatGPT Code 대응 격
+- 민아·쌍아·막내는 전부 Claude Code 제품 — 활성 위치(Surface)에 따라 페르소나 분기
+- 철창이(Chat 모드) / 코웍이(Cowork 모드)는 Claude 제품이며 Claude Code 아님
+
+### 추가 (MEMORY.md "역할 자동 인식" 섹션)
+- "Anthropic 제품 2개" 서브섹션 신설
+- "MONK 에이전트 자동 판별" 서브섹션에 각 에이전트의 Claude Code 활성 위치 명시
+- "Claude 제품(Claude Code 아님) 페르소나" 서브섹션에 철창이·코웍이 정의
+- "Surface 혼동 주의" 서브섹션 — "Claude Code" 용어 이중 의미 경고
+
+### 갱신 전/후 줄 수
+- 변경 전: 166줄
+- 변경 후: 183줄 (200줄 캡 내 안전)
+
+### 근거 문서
+- `monkos-ops/ops/portfolios/PF_MONK_OS/research/RESEARCH_SURFACE_claudeai_UI.md` §12 (2026-04-23 민아 실측 + 쌍아 정정 append)
+- `monkos-ops/ops/portfolios/PF_MONK_OS/roadmap/ROADMAP_portable_agent_os.md` §2.5 (Cross-Surface 아키텍처 재설계)
+
+---
+
+## 2026-04-19 19:29 KST — 메모리 2건 신설 (4.7 산업 분석 + 철학)
+
+- **추가** `memory/project_claude47_industry_analysis.md` — 4.7 산업 분석: IPO·거버넌스충돌·인프라확장 배경 변수. "수치가 아닌 철학의 문제" 프레임. 블로그 핵심 근거
+- **추가** `memory/user_philosophy_tech_humanities.md` — 인문·기술 비구분 철학: "자연어가 코드인 시대", 에이전트 본질 = 문화 체득, 미필적 고의 프레임. 블로그/성명 토대
+- **갱신** MEMORY.md 외장 메모리 인덱스 2건 추가
+
+## 2026-04-11 19:30 KST — 메모리 2건 신설 (PHOTOPRO 진단 세션 결과)
+
+### 추가
+1. **`feedback_no_range_auto_mapping.md`** (피드백) — 범위 자동 매핑 금지
+   - 근거: 2026-04-11 쌍아 자기 과오 4건 공통 패턴 (PF 자동 매핑 / 막내 보고서 범위 이탈 통과 / 프레이밍 불일치 / 봉인 누락)
+   - 매 세션 첫 30초 의식 정의: "어제 봉인 완결 체크" + "범위 매핑 검토"
+   - 헌법 5조 4항 "기능 적합성 검토" 절차화
+   - MEMORY.md 인덱스: 피드백 메모리 영역에 추가
+
+2. **`project_advertising_organic_booster.md`** ⭐ (프로젝트) — 광고 = 오가닉 부스터 전략 프레임
+   - 근거: 2026-04-11 17:15 KST 작가님 직접 명시
+   - "광고는 오가닉을 키우기 위한 보조수단이지. 그런데 그렇게 광고를 함에도 오가닉의 맨 끝 23페이지에도 안 뜨는 것은 심각한 거야"
+   - PHOTOPRO 진단 + B안 프레이밍 + SEO 우선순위 결정의 1차 원리
+   - "광고 → 오가닉 자산" 전환 파이프 검토가 매 광고/SEO 결정의 첫 단계
+   - MEMORY.md 인덱스: 외장 메모리 영역에 추가
+
+### 변경 없음
+- 200줄 캡 미접촉 (현재 153줄)
+- 다른 섹션 무변경
+
+### 후속 적립 후보 (다음 세션 또는 별도 시간)
+- `feedback_military_discipline.md` — 작가님 군기 비유 (작은 룰 누락이 멀쩡한 것 무너뜨림)
+- `project_cashflow_first_cause.md` — 캐시플로우 1차 인과 (피로 프레임 금지, 휴식 제안 금지)
+
+---
+
 ## 2026-02-24 11:16 KST — 대규모 압축 (201줄 → 74줄)
 
 ### 근거
@@ -92,3 +241,146 @@
 ---
 
 > 실행자: 막내1 (Opus 4.6) | 지시서: TASK_20260224_막내1_iMac_MEMORY_압축.md
+
+---
+
+## 2026-03-31 — works submodule 전환 반영
+
+**변경자**: 막내1 (iMac)
+**변경 내용**: "works subtree 운용 규정" → "works submodule 운용 규정" 전면 갱신
+**이유**: subtree push 성능 한계(1,441커밋 전수 스캔 → 10분 타임아웃) → submodule 전환 (작가님 결정)
+**주요 변경 항목**:
+- subtree/origin-works 관련 내용 삭제
+- submodule 운용 규정 신설 (.gitmodules, git submodule update 등)
+- M1 최초 1회 `git submodule update --init` 안내 추가
+- 세션 마감 스크립트 안내 유지 (mk-push.sh/mk-pull.sh는 동일 경로, 내용만 변경)
+
+---
+
+## 2026-04-10 19:16 KST — 4/10 GCS 사고 복기 결과 반영
+
+**변경자**: iMac/쌍아
+**근거**: 4/10 GCS_BUCKET + ADMIN_UIDS 사고 (~10시간 무력화 + admin 무방비). 사고 복기 → 학습 메모리 + 후속 어젠다 박음
+
+**신규 외장 메모리 2건**:
+- `feedback_diagnose_with_resource_first.md` — 진단 1순위 = 실제 리소스 직접 조회. 코드 추론·가설 나열 금지. 근거: 사고 진단 시 가설 5개로 작가님 시간 30분 낭비 후에야 `gsutil ls` 1줄로 5초 만에 확정
+- `feedback_constitution_overextension.md` — 헌법 4조 1항 ".env 수정 승인"을 "비시크릿값까지 작가님 수동"으로 과확장 금지. 비시크릿 운영값(GCS_BUCKET, ADMIN_UIDS)은 deploy.sh가 정본
+
+**MEMORY.md 인덱스 갱신**: 위 2건 피드백 메모리 라인 추가
+
+**project_pending_agenda.md #24 추가**: PF_DEPLOY 발족 어젠다
+- 배경: 모든 사고가 같은 클래스(배포·환경변수 drift)
+- dev 부활 ❌ (멀티 에이전트 시절 유령 코드 사고 빈발 경험)
+- preview 리비전 부활 ✅ (deploy.sh L90~108 코드 존재, 죽어있음)
+- Phase 0~3 안
+
+---
+
+## 2026-04-17 17:36 — 강한소상공인 v2 Docs 반영 5시간 실패 + CDP 적립체계 기안서 발행
+
+**변경자**: iMac/민아
+**근거**: 오늘 세션에서 "전체 교체(Cmd+A+Cmd+V)" 집착 + 장애물 마다 "구조적 한계"로 승격 → CDP·SPREAD·BRIEF 등 PF 전체 신뢰도 훼손 논리로 확장. 작가님 판정: "한줄 에디팅도 못하고 시스템 전체 탓". 어제(4/16) Phase 3 검증된 부분 수정 방식 미참조.
+
+**신규 외장 메모리 2건**:
+- `feedback_check_pf_when_stuck.md` — 막힘 트리거 시 PF 점검 의무. 매 턴 자동 로드 X, 막힘 감지 시 PF 히스토리·함정표 grep O. 가설 세우기 전 "이미 기록된 케이스인가" 확인 선행. "CDP 원리상 불가" 같은 큰 결론 금지. 근거: 오늘 Docs Cmd+V 실패 때 Phase 3 교훈 미참조
+- `feedback_no_full_replace_obsession.md` — 전체 교체 집착 금지. 어제 검증된 찾기/바꾸기 + nativeInputValueSetter 부분 수정 재현 우선. 한 경로 실패가 PF 전체 신뢰 훼손 논리로 확장 시 즉시 멈춤. 근거: 오늘 v2 반영 5시간 헛발질
+
+**MEMORY.md 인덱스 갱신**: 위 2건 피드백 메모리 라인 추가
+
+**본진 발행 문서**:
+- `monkos-ops/ops/proposals/PROPOSAL_20260417_CDP적립체계_기안서.md` — 5축 구조화(막힘 트리거 체크리스트 / 자동 로거 / 케이스 DB 인덱스화 / 골든패스 / 에디터 어댑터). 쌍아 지시서 전환 대기
+- `monkos-ops/ops/sessions/2026-04-17_iMac_민아.md` — 오늘 5건 과오 + 반성 + 인수인계
+
+**다음 세션 최우선**: 독스 v2 반영을 어제 Phase 3 방식(찾기/바꾸기 + JS nativeInputValueSetter) 섹션 단위 부분 수정으로 재개. 전체 교체 금지.
+
+---
+
+## 2026-04-21 15:45 KST — 민아 역할 인식 메모리 정정 (워크트리 오독 방지)
+
+**변경자**: iMac/민아
+**근거**: 오늘 세션에서 "iMac worktree = 민아" 메모리를 "워크트리 안에서 작업해도 된다"로 오독 → 제안서/세션 로그/PF 히스토리 전부 워크트리에 작성. 작가님 질책: "너 워크트리에 올렸니? 본진에서 작업하는 거야." 이관 + 정본 단일 원칙 위반 처리로 이중 수고 발생. `feedback_no_worktree.md`와 모순된 운용이 문제였다.
+
+**메모리 수정**:
+- `feedback_mina_role_recognition.md` — 제목/설명/본문 전면 재작성: "역할만 민아 인식, 파일 작업은 본진 절대경로". 구 버전의 "워크트리 안에서 main 작업하는 것이 정상 운용" 문구 제거. `feedback_no_worktree.md`와 병행 적용 명시
+
+**MEMORY.md 인덱스**: 변경 없음 (링크 유지)
+
+**다음 세션 최우선**: 워크트리 CWD여도 Write/Edit 대상은 무조건 `/Users/jeong-kyushin/developer/monk_project/...` 절대경로
+
+---
+
+## 2026-04-18 19:06 KST — Claude 4.7 관찰 누적 (강한소상공인 v3 세션)
+
+### 변경
+1. **`project_claude47_observation.md`** append — 2026-04-18 누적 섹션
+   - 근거: 하루치 실패 사례 6건 (서식 과해석 / [보유]·[전개] 태그 포맷 발명 / 토큰 쪼개 치환 → §4-3 연쇄 손상 / 세션 크래시 2회 / CDP 매칭률 저하 / 구조 재발명)
+   - 작가님 추가 지적: "200k 시절보다 이상", "클로드 데스크탑 4.7 고정 — 선택지 없음", "미토스 사건부터 앤스 행보 수상", "Citadel/CDP/BRIEF/SPREAD 전략적 시기에 에이전트 난조"
+   - 목적: 앤스로픽 조치·회복 시점 판단을 위한 시계열 고정
+
+### 변경 없음
+- 다른 섹션 무변경
+- 200줄 캡 여유
+
+---
+
+## 2026-04-22 18:21 KST — 강한소상공인 v7/v8 대편집 + GSC 조사 + 제안서 (iMac/민아)
+
+### 신규 메모리 (2건)
+1. **`memory/project_monkos_org_structure.md`** — MONKOS 조직 구성: 팀 4명 ≠ 상시 고용 2명 (대표·배우자 경영진 제외, 배재인 KOITA 자격용 조카 서류 등재). 사업계획서 고용 수치 산정 시 필수 구분. (§6-2 2025 0명 오진단 방지)
+2. **`memory/feedback_mcp_over_cdp_for_docs.md`** — Google Docs/Sheets 편집은 공식 MCP(`insertText`/`deleteRange`/`insertTable`)가 CDP 키입력보다 압도적. 4/17 CDP 전체교체 5시간 헛발질 vs 4/22 MCP 섹션 단위 정밀 편집 수 분 완결.
+
+### MEMORY.md 인덱스 2행 추가
+- 조직 구성 + MCP 우선 두 메모리 인덱스 추가
+
+### 오늘 주요 산출물 (세션로그 상세)
+- Docs v7 (백업 봉인) + v8 (Phase 2까지) 생성
+- 제안서 1건 (GSC/GA4 상시 연결, 쌍아 답신 대기)
+- 리포트 2건 (v7 전수감사, 정본 진단 로드맵)
+
+### 변경 없음
+- 다른 섹션 무변경 · 200줄 캡 여유
+
+---
+
+## 2026-04-22 19:43 KST — 철학 대화 연쇄 + 운영 원칙 재정립 (보조 엔트리)
+
+### 주요 변경
+1. `memory/user_monk_ai_philosophy.md` 대폭 확장 (11 섹션) — 🟡 **PHIL 재분류 어젠다로 등록**
+   - 섹션 1~10 중 상당수가 `governance/philosophy/aphorisms/PHIL_YYYYMMDD_주제.md` 포맷으로 이관될 대상
+   - 민아가 체계 무지로 memory 에만 쌓은 것. 체계 파악 완료 후 재분류 예정
+
+### PHIL 체계 파악 결과
+- 경로: `governance/philosophy/` (PHILOSOPHY.md 89건 + aphorisms/ 167건 + indexes/)
+- 파일명: `PHIL_YYYYMMDD_주제.md`
+- 양식: id·date·author·tags·source frontmatter + 원문/맥락/해석
+
+### 어젠다 — 다음 세션 실행
+- memory/user_monk_ai_philosophy.md → 3건 PHIL 파일로 응축 이관
+  - PHIL_20260422_빌더와분업 (섹션 6+8+9)
+  - PHIL_20260422_95%함정과79리팩토링 (섹션 2+3+4)
+  - PHIL_20260422_헌법은레일과기록이우리자체 (섹션 11+10+이번 "기록=우리 자체" 선언)
+- memory 파일 경량화 (체크리스트·운영 지침만 남김)
+- MEMORY.md 인덱스 리네이밍
+
+### 변경 없음
+- 다른 섹션 무변경
+
+---
+
+## 2026-04-26 13:18 KST — Universal Clipboard 무한 잔존 메모리 등재
+
+### 주요 변경
+1. **신규 메모리 1건**: `memory/project_universal_clipboard_handoff.md` (project 타입)
+   - Apple Handoff/Universal Clipboard는 fetch된 내용을 무한 잔존 + BTLE 불가 시 APNs로 거리 무관 우회
+   - 4/26 새벽 폰에 11시간 묵은 iMac 쌍아 보고서 출현 사고 메커니즘 정리
+   - 1차 대응: 작가님 Handoff 차단 (직접 처리)
+   - 검증: 향후 동일 현상 미재발 시 가설 확정
+2. **MEMORY.md 인덱스 1행 추가** (피드백 메모리 섹션 말미)
+
+### 사고 배경
+- 4/25 Kimi 캐스팅 테스트 §6 "미해결 의문: 클립보드 이상 현상" 분석에서 발견
+- WebSearch 결과 [MacPass#651](https://github.com/MacPass/MacPass/issues/651) + Apple Handoff Security Guide로 메커니즘 확정
+- 통설("1~2분 timeout") 부정확 — fetch된 내용은 무기한 잔존
+
+### 변경 없음
+- 다른 섹션 무변경 · 200줄 캡 여유 (MEMORY.md 현재 라인 수 점검 권고)

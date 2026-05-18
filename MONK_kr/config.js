@@ -10,9 +10,9 @@ window.MONK_CONFIG = {
         GEMINI_PROXY: 'https://monk-gemini-proxy.gdsajin.workers.dev',
         IMAGEN_PROXY: 'https://monk-imagen-proxy.gdsajin.workers.dev',
         CHATBOT: 'https://monk-chatbot.gdsajin.workers.dev',
-        PORTAL: 'https://monkos.ai',
-        IDPHOTO_KR: 'https://idphoto-kr.monkos.ai',
-        IDPHOTO_JP: 'https://idphoto-jp.monkos.ai'
+        PORTAL: '',      // 분리 원칙: monkos.ai 교차 호출 금지
+        IDPHOTO_KR: '',  // 분리 원칙: monkos.ai 교차 호출 금지
+        IDPHOTO_JP: ''   // 분리 원칙: monkos.ai 교차 호출 금지
     },
 
     // 결제 (토스페이먼츠)

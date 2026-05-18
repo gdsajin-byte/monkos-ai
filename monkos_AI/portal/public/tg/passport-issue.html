@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>MONKOS — Passport Issue</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="tg-style.css">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="tg-common.js"></script>
+</head>
+<body>
+
+<div class="tg-header">
+  <div class="tg-header-dot"></div>
+  <div class="tg-header-title">MONKOS AI</div>
+</div>
+
+<h1 id="page-title">여권 반려 신고</h1>
+<p id="page-desc" style="margin-bottom:20px;">여권사진이 반려되었나요? 사유를 알려주시면 100c를 보상해드립니다.</p>
+
+<!-- 반려 사유 선택 -->
+<h2 id="reason-title">반려 사유 선택</h2>
+<div id="reasons-container"></div>
+
+<!-- 상세 설명 -->
+<div style="margin-top:16px;">
+  <h2 id="detail-title">상세 설명 (선택)</h2>
+  <textarea class="tg-textarea" id="detail-text" rows="3"></textarea>
+</div>
+
+<!-- 제출 -->
+<button class="tg-btn tg-btn-primary" id="btn-submit" disabled style="margin-top:20px;">제출하기</button>
+
+<!-- 결과 -->
+<div id="result-area" class="tg-hidden" style="margin-top:20px;">
+  <div class="tg-card" style="border-color:var(--success); text-align:center;">
+    <div style="font-size:2rem; margin-bottom:8px;">✅</div>
+    <div class="tg-card-title" id="result-title">접수 완료</div>
+    <p id="result-desc">100c가 지급되었습니다. 감사합니다.</p>
+  </div>
+</div>
+
+<script>
+const REASONS = {
+  bg_invalid:    { ko: '배경 부적합',  ja: '背景が不適切', en: 'Invalid Background' },
+  face_blocked:  { ko: '얼굴 가림',    ja: '顔が隠れている', en: 'Face Blocked' },
+  spec_mismatch: { ko: '규격 불일치',  ja: '規格不一致', en: 'Spec Mismatch' },
+  low_quality:   { ko: '화질 불량',    ja: '画質不良', en: 'Low Quality' },
+  shadow:        { ko: '그림자',       ja: '影がある', en: 'Shadow' },
+  other:         { ko: '기타',         ja: 'その他', en: 'Other' },
+};
+
+const I18N = {
+  ko: {
+    title: '여권 반려 신고',
+    desc: '여권사진이 반려되었나요? 사유를 알려주시면 100c를 보상해드립니다.',
+    reasonTitle: '반려 사유 선택 (복수 가능)',
+    detailTitle: '상세 설명 (선택)',
+    detailPlaceholder: '추가 설명이 있으면 입력해주세요...',
+    btnSubmit: '제출하기',
+    resultTitle: '접수 완료',
+    resultDesc: '100c가 지급되었습니다. 감사합니다.',
+    linkRequired: 'MONKOS 계정 연동이 필요합니다.',
+    selectReason: '반려 사유를 1개 이상 선택해주세요.',
+  },
+  ja: {
+    title: 'パスポート写真却下報告',
+    desc: 'パスポート写真が却下されましたか？理由をお知らせいただければ100cを補償します。',
+    reasonTitle: '却下理由を選択（複数可）',
+    detailTitle: '詳細説明（任意）',
+    detailPlaceholder: '追加の説明があれば入力してください...',
+    btnSubmit: '提出する',
+    resultTitle: '受付完了',
+    resultDesc: '100cが付与されました。ありがとうございます。',
+    linkRequired: 'MONKOSアカウント連携が必要です。',
+    selectReason: '却下理由を1つ以上選択してください。',
+  },
+  en: {
+    title: 'Passport Photo Issue',
+    desc: 'Was your passport photo rejected? Let us know the reason and receive 100c compensation.',
+    reasonTitle: 'Select Rejection Reason(s)',
+    detailTitle: 'Additional Details (Optional)',
+    detailPlaceholder: 'Enter additional details if any...',
+    btnSubmit: 'Submit',
+    resultTitle: 'Submitted',
+    resultDesc: '100c has been credited. Thank you.',
+    linkRequired: 'MONKOS account linking required.',
+    selectReason: 'Please select at least one reason.',
+  },
+};
+
+(async function () {
+  const { detectLang, verifyUser, apiCall, showToast } = window.MonkosTG;
+  const tg = window.Telegram.WebApp;
+  const lang = detectLang();
+  const t = I18N[lang] || I18N.en;
+
+  document.getElementById('page-title').textContent = t.title;
+  document.getElementById('page-desc').textContent = t.desc;
+  document.getElementById('reason-title').textContent = t.reasonTitle;
+  document.getElementById('detail-title').textContent = t.detailTitle;
+  document.getElementById('detail-text').placeholder = t.detailPlaceholder;
+  document.getElementById('btn-submit').textContent = t.btnSubmit;
+  document.getElementById('result-title').textContent = t.resultTitle;
+  document.getElementById('result-desc').textContent = t.resultDesc;
+
+  // 반려 사유 카드 생성
+  const container = document.getElementById('reasons-container');
+  const selectedReasons = new Set();
+
+  Object.entries(REASONS).forEach(([code, labels]) => {
+    const row = document.createElement('div');
+    row.className = 'tg-checkbox-row';
+    row.innerHTML = `<input type="checkbox" id="reason-${code}"><label for="reason-${code}">${labels[lang] || labels.en}</label>`;
+    row.addEventListener('click', (e) => {
+      if (e.target.tagName === 'INPUT') return;
+      const cb = row.querySelector('input');
+      cb.checked = !cb.checked;
+      cb.dispatchEvent(new Event('change'));
+    });
+    row.querySelector('input').addEventListener('change', (e) => {
+      if (e.target.checked) {
+        selectedReasons.add(code);
+        row.classList.add('selected');
+      } else {
+        selectedReasons.delete(code);
+        row.classList.remove('selected');
+      }
+      document.getElementById('btn-submit').disabled = selectedReasons.size === 0;
+    });
+    container.appendChild(row);
+  });
+
+  // 인증
+  const user = await verifyUser();
+  if (!user.linked) {
+    showToast(t.linkRequired, 3000);
+    return;
+  }
+
+  // 제출
+  document.getElementById('btn-submit').addEventListener('click', async () => {
+    if (selectedReasons.size === 0) {
+      showToast(t.selectReason, 2000);
+      return;
+    }
+
+    const btn = document.getElementById('btn-submit');
+    btn.disabled = true;
+
+    const initData = tg.initData;
+    const description = document.getElementById('detail-text').value.trim();
+
+    const res = await apiCall('/api/tg/passport-issue', {
+      initData,
+      reasons: [...selectedReasons],
+      description,
+    });
+
+    if (res.success) {
+      // 입력 폼 숨기고 결과 표시
+      document.getElementById('reasons-container').classList.add('tg-hidden');
+      document.getElementById('detail-title').classList.add('tg-hidden');
+      document.getElementById('detail-text').classList.add('tg-hidden');
+      document.getElementById('reason-title').classList.add('tg-hidden');
+      btn.classList.add('tg-hidden');
+      document.getElementById('result-area').classList.remove('tg-hidden');
+    } else {
+      btn.disabled = false;
+      showToast(res.error || 'Error', 3000);
+    }
+  });
+})();
+</script>
+</body>
+</html>

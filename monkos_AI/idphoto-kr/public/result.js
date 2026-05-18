@@ -1,13 +1,19 @@
 /**
  * result.js — 분석실 전용 로직
- * 프리체크 → 생성 → 결제 → 규격 크롭 → 수령처 이동
+ * 메인 흐름: 프리체크 → 생성 → 프리뷰 → 다운로드 결제 → thankyou.html 전환
+ * 포스트 다운로드(갤러리 저장, 규격 탭, 풀원본, SNS 이벤트)는 thankyou.html로 이관
  */
 
 import {
   store, pipe, Monk, TX, PHOTO_SPECS, CREDIT_COST,
-  sharedInit, showCreditModal, saveSessionData, loadSessionData, navigateTo,
-  buyCreditsKR, TOSS_CLIENT_KEY, API, fetchLatestCredits, closeCreditModal
+  sharedInit, showCreditModal, saveSessionData, loadSessionData, navigateTo, showChargeModal,
+  buyCreditsKR, TOSS_CLIENT_KEY, API, fetchLatestCredits, closeCreditModal,
 } from './shared.js';
+
+import { GateModule } from './modules/gate.js';
+import { initChatbot } from './modules/chatbot.js';
+// ─── GCS 경로 보관 (서버단 워터마크 — 클라이언트에 원본 도달하지 않음) ───
+let _gcsPath = null;
 
 // ─── Media 생성 (crop/toJpeg 전용 — 카메라 불필요) ───
 const media = Monk.media({
@@ -24,386 +30,6 @@ const MIN_DISPLAY_TIME = 10000; // 최소 10초 표시
 let adImages = [];
 let adTimer = null;
 let adIndex = 0;
-
-// ─── 게이트 스타일 ───
-const GATE_CSS = `
-.gate-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;display:flex;align-items:flex-end;justify-content:center}
-.gate-card{background:#fff;border-radius:20px 20px 0 0;padding:28px 20px 32px;width:100%;max-width:420px;position:relative;animation:gateUp .3s ease}
-@keyframes gateUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.gate-close{position:absolute;top:12px;right:16px;background:none;border:none;font-size:24px;cursor:pointer;color:#888}
-.gate-title{font-size:18px;font-weight:700;text-align:center;margin-bottom:16px}
-.gate-badge{background:#FFF3E0;color:#E65100;padding:8px 12px;border-radius:8px;font-size:14px;font-weight:600;text-align:center;margin-bottom:16px}
-.gate-checklist{margin-bottom:12px}
-.gate-check{display:flex;align-items:center;gap:8px;padding:8px 0;font-size:14px;color:#444}
-.gate-check.done{color:#2E7D32}
-.gate-check .icon{font-size:16px;width:20px}
-.gate-check .credit{margin-left:auto;font-weight:600;color:#1976D2}
-.gate-progress{text-align:center;font-size:15px;font-weight:600;padding:8px 0 16px;color:#333}
-.gate-btn{display:block;width:100%;padding:14px;border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;margin-bottom:10px}
-.gate-btn-kakao{background:#FEE500;color:#000}
-.gate-btn-kakao:hover{background:#FDD835}
-.gate-btn-pay{background:#f5f5f5;color:#333;border:1px solid #ddd}
-.gate-btn-pay:hover{background:#eee}
-.gate-btn-share{background:#0088cc;color:#fff}
-.gate-btn-share:hover{background:#0077b3}
-.gate-btn-consent{background:#E8F5E9;color:#2E7D32;border:1px solid #C8E6C9}
-.gate-btn-consent:hover{background:#C8E6C9}
-.gate-btn:disabled{opacity:.5;cursor:not-allowed}
-.gate-divider{display:flex;align-items:center;margin:12px 0}
-.gate-divider::before,.gate-divider::after{content:'';flex:1;border-bottom:1px solid #eee}
-.gate-divider span{padding:0 12px;color:#999;font-size:13px}
-.gate-login-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;display:flex;align-items:center;justify-content:center}
-.gate-login-card{background:#fff;border-radius:16px;padding:28px 20px;width:90%;max-width:340px;text-align:center}
-.gate-login-msg{font-size:15px;color:#333;margin-bottom:20px;white-space:pre-line}
-`;
-
-// ─── 게이트 상태 ───
-let gateCredits = 0;
-
-function injectGateStyles() {
-  if (document.getElementById('gate-styles')) return;
-  const el = document.createElement('style');
-  el.id = 'gate-styles';
-  el.textContent = GATE_CSS;
-  document.head.appendChild(el);
-}
-
-// ─── 다운로드 게이트 팝업 ───
-function showDownloadGatePopup() {
-  injectGateStyles();
-  // 기존 팝업 제거
-  const old = document.getElementById('download-gate');
-  if (old) old.remove();
-
-  gateCredits = 0;
-
-  const overlay = document.createElement('div');
-  overlay.id = 'download-gate';
-  overlay.className = 'gate-overlay';
-  overlay.innerHTML = `
-    <div class="gate-card">
-      <button class="gate-close" onclick="closeDownloadGatePopup()">&times;</button>
-      <h2 class="gate-title">로그인이 필요한 서비스입니다</h2>
-      <div class="gate-badge">가입 이벤트 — 첫 1장 무료!</div>
-      <div class="gate-checklist">
-        <div class="gate-check" id="gate-ck-login">
-          <span class="icon">☐</span>
-          <span>카카오 로그인</span>
-          <span class="credit">30c 증정</span>
-        </div>
-        <div class="gate-check" id="gate-ck-event" style="opacity:.4">
-          <span class="icon">☐</span>
-          <span>SNS 공유 또는 전후사진 동의</span>
-          <span class="credit">+40c</span>
-        </div>
-      </div>
-      <div class="gate-progress" id="gate-progress">
-        = <span id="gate-progress-num">0</span>c / 70c
-      </div>
-      <div id="gate-phase1">
-        <button class="gate-btn gate-btn-kakao" onclick="startKakaoLogin()">카카오 로그인으로 무료 받기</button>
-        <div class="gate-divider"><span>또는</span></div>
-        <button class="gate-btn gate-btn-pay" onclick="buyDirectKR()">바로 결제 ₩10,150</button>
-      </div>
-      <div id="gate-phase2" style="display:none">
-        <button class="gate-btn gate-btn-share" onclick="doShareTelegram()">텔레그램 공유로 +40c 받기</button>
-        <div class="gate-divider"><span>또는</span></div>
-        <button class="gate-btn gate-btn-consent" onclick="doPhotoConsent()">전후사진 활용 동의 +40c</button>
-      </div>
-    </div>
-  `;
-  document.body.appendChild(overlay);
-  Monk.log('다운로드 게이트 팝업 표시');
-}
-
-function closeDownloadGatePopup() {
-  const el = document.getElementById('download-gate');
-  if (el) el.remove();
-}
-
-function updateGateUI(credits) {
-  gateCredits = credits;
-  const num = document.getElementById('gate-progress-num');
-  if (num) num.textContent = credits;
-
-  if (credits >= 70) {
-    // 70c 달성 — 자동 다운로드 진행
-    closeDownloadGatePopup();
-    Monk.log(`게이트 달성: ${credits}c → 다운로드 진행`);
-    proceedDownloadAfterGate();
-  }
-}
-
-async function proceedDownloadAfterGate() {
-  // 로그인 후 크레딧 최신화
-  await fetchLatestCredits();
-
-  if (store.user.credits < CREDIT_COST.download) {
-    // 이벤트 크레딧으로도 부족하면 충전 모달
-    if (typeof window.showChargeModal === 'function') {
-      window.showChargeModal();
-    } else {
-      showCreditModal(CREDIT_COST.download, store.user.credits, 'download');
-    }
-    return;
-  }
-
-  try {
-    const result = await pipe.run('creditUse', { userId: store.user.id, type: 'download' });
-    store.user = { ...store.user, credits: result.credits };
-    await cropAndGoToThankyou();
-  } catch (err) {
-    if (err.status === 402) {
-      if (typeof window.showChargeModal === 'function') {
-        window.showChargeModal();
-      } else {
-        showCreditModal(CREDIT_COST.download, err.credits || 0, 'download');
-      }
-    } else {
-      Monk.log('다운로드 크레딧 에러: ' + (err.error || err.message));
-    }
-  }
-}
-
-// ─── 카카오 로그인 (팝업 + postMessage) ───
-function startKakaoLogin() {
-  const popup = window.open(
-    `${API.PORTAL_URL}/auth/kakao?popup=1&redirect_app=idphoto-kr`,
-    'kakao-login', 'width=500,height=600'
-  );
-  if (!popup) {
-    window.location.href = `${API.PORTAL_URL}/auth/kakao`;
-    return;
-  }
-
-  function handler(e) {
-    if (e.origin !== API.PORTAL_URL) return;
-    if (e.data && e.data.type === 'auth-success') {
-      window.removeEventListener('message', handler);
-      // 유저 데이터 저장
-      localStorage.setItem('monkos_user', JSON.stringify(e.data.user));
-      if (e.data.token) localStorage.setItem('monkos_token', e.data.token);
-      // store 갱신
-      const u = e.data.user;
-      store.user = {
-        id: u.id, email: u.email, name: u.name,
-        credits: u.credits ?? 0, avatar: u.picture || '',
-      };
-      Monk.log(`로그인 성공: ${u.email || u.name} (${store.user.credits}c)`);
-      onKakaoLoginSuccess();
-    }
-  }
-  window.addEventListener('message', handler);
-  setTimeout(() => window.removeEventListener('message', handler), 180000);
-}
-
-async function onKakaoLoginSuccess() {
-  // 체크리스트 UI 업데이트
-  const ckLogin = document.getElementById('gate-ck-login');
-  if (ckLogin) {
-    ckLogin.classList.add('done');
-    ckLogin.querySelector('.icon').textContent = '✅';
-  }
-
-  // 가입 보너스 30c 요청
-  try {
-    const res = await fetch(`${API.PORTAL_URL}/api/credits/event`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId: store.user.id, eventType: 'signup_bonus' }),
-    });
-    const data = await res.json();
-    if (data.success) {
-      store.user = { ...store.user, credits: data.credits ?? store.user.credits };
-      updateGateUI(30);
-      Monk.log('가입 보너스 30c 지급');
-    } else {
-      // 이미 받은 경우 등 — 현재 크레딧으로 진행
-      updateGateUI(Math.min(store.user.credits, 30));
-      Monk.log('가입 보너스: ' + (data.error || '이미 수령'));
-    }
-  } catch (err) {
-    Monk.log('가입 보너스 요청 실패: ' + err.message);
-    updateGateUI(0);
-  }
-
-  // Phase 2 표시 (이벤트 선택)
-  const phase1 = document.getElementById('gate-phase1');
-  const phase2 = document.getElementById('gate-phase2');
-  if (phase1) phase1.style.display = 'none';
-  if (phase2) phase2.style.display = 'block';
-
-  const ckEvent = document.getElementById('gate-ck-event');
-  if (ckEvent) ckEvent.style.opacity = '1';
-}
-
-// ─── 이벤트 크레딧 요청 ───
-async function requestEventCredit(eventType) {
-  try {
-    const res = await fetch(`${API.PORTAL_URL}/api/credits/event`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId: store.user.id, eventType }),
-    });
-    const data = await res.json();
-    if (data.success) {
-      store.user = { ...store.user, credits: data.credits ?? store.user.credits };
-      return true;
-    }
-    Monk.log(`이벤트 크레딧 실패: ${data.error || eventType}`);
-    return false;
-  } catch (err) {
-    Monk.log(`이벤트 크레딧 에러: ${err.message}`);
-    return false;
-  }
-}
-
-// ─── 텔레그램 공유 ───
-async function shareTelegram() {
-  const text = 'AI 증명사진 만들어봤어요! #MONKOS #AI증명사진';
-  const url = 'https://idphoto-kr.monkos.ai';
-  window.open(
-    `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`,
-    '_blank'
-  );
-  return true;
-}
-
-async function doShareTelegram() {
-  await shareTelegram();
-  // 공유 창 열림 = 공유 완료 간주
-  const ok = await requestEventCredit('sns_share');
-  if (ok) {
-    const ck = document.getElementById('gate-ck-event');
-    if (ck) { ck.classList.add('done'); ck.querySelector('.icon').textContent = '✅'; }
-    updateGateUI(gateCredits + 40);
-    Monk.log('텔레그램 공유 보너스 40c');
-  }
-}
-
-async function doPhotoConsent() {
-  const ok = await requestEventCredit('photo_consent');
-  if (ok) {
-    const ck = document.getElementById('gate-ck-event');
-    if (ck) { ck.classList.add('done'); ck.querySelector('.icon').textContent = '✅'; }
-    updateGateUI(gateCredits + 40);
-    Monk.log('전후사진 동의 보너스 40c');
-  }
-}
-
-// ─── 바로 결제 (비로그인 단건) ───
-async function buyDirectKR() {
-  closeDownloadGatePopup();
-
-  if (!TOSS_CLIENT_KEY) {
-    alert('결제 시스템 준비 중입니다.\n곧 이용 가능합니다!');
-    return;
-  }
-
-  const orderId = `DIRECT_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-
-  try {
-    const tossPayments = TossPayments(TOSS_CLIENT_KEY);
-    const payment = tossPayments.payment({ customerKey: `GUEST_${orderId}` });
-
-    await payment.requestPayment({
-      method: 'CARD',
-      amount: { currency: 'KRW', value: 10150 },
-      orderId,
-      orderName: 'MONKOS AI 증명사진 1장',
-      successUrl: `${window.location.origin}${window.location.pathname}?toss=direct`,
-      failUrl: `${window.location.origin}${window.location.pathname}?toss=fail`,
-    });
-  } catch (err) {
-    if (err.code !== 'PAY_PROCESS_CANCELED' && err.code !== 'USER_CANCEL') {
-      alert('결제 오류: ' + (err.message || err.code));
-    }
-  }
-}
-
-// ─── 바로 결제 리다이렉트 처리 ───
-async function initDirectPaymentResult() {
-  const params = new URLSearchParams(window.location.search);
-  if (params.get('toss') !== 'direct') return;
-
-  const paymentKey = params.get('paymentKey');
-  const orderId = params.get('orderId');
-  const amount = params.get('amount');
-  history.replaceState({}, '', window.location.pathname);
-
-  if (!paymentKey || !orderId || !amount) return;
-
-  try {
-    const res = await fetch(`${API.PORTAL_URL}/api/payments/toss/direct`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ paymentKey, orderId, amount: Number(amount) }),
-    });
-    const data = await res.json();
-    if (data.success && data.downloadToken) {
-      Monk.log('단건 결제 완료 — 다운로드 진행');
-      await cropAndGoToThankyou();
-    } else {
-      alert('결제 확인 실패: ' + (data.error || ''));
-    }
-  } catch (err) {
-    Monk.log('단건 결제 확인 에러: ' + err.message);
-    alert('결제 확인 중 오류가 발생했습니다.');
-  }
-}
-
-// ─── 로그인 필요 모달 (생성 2회차 차단용) ───
-function showLoginRequiredModal(message) {
-  injectGateStyles();
-  const old = document.getElementById('login-required-modal');
-  if (old) old.remove();
-
-  const overlay = document.createElement('div');
-  overlay.id = 'login-required-modal';
-  overlay.className = 'gate-login-overlay';
-  overlay.innerHTML = `
-    <div class="gate-login-card">
-      <p class="gate-login-msg">${message}</p>
-      <button class="gate-btn gate-btn-kakao" onclick="startKakaoLoginSimple()">카카오 로그인</button>
-      <button class="gate-btn gate-btn-pay" style="margin-top:8px" onclick="closeLoginRequiredModal()">닫기</button>
-    </div>
-  `;
-  document.body.appendChild(overlay);
-}
-
-function closeLoginRequiredModal() {
-  const el = document.getElementById('login-required-modal');
-  if (el) el.remove();
-}
-
-function startKakaoLoginSimple() {
-  closeLoginRequiredModal();
-  const popup = window.open(
-    `${API.PORTAL_URL}/auth/kakao?popup=1&redirect_app=idphoto-kr`,
-    'kakao-login', 'width=500,height=600'
-  );
-  if (!popup) {
-    window.location.href = `${API.PORTAL_URL}/auth/kakao`;
-    return;
-  }
-
-  function handler(e) {
-    if (e.origin !== API.PORTAL_URL) return;
-    if (e.data && e.data.type === 'auth-success') {
-      window.removeEventListener('message', handler);
-      localStorage.setItem('monkos_user', JSON.stringify(e.data.user));
-      if (e.data.token) localStorage.setItem('monkos_token', e.data.token);
-      const u = e.data.user;
-      store.user = {
-        id: u.id, email: u.email, name: u.name,
-        credits: u.credits ?? 0, avatar: u.picture || '',
-      };
-      Monk.log(`로그인 성공: ${u.email || u.name} (${store.user.credits}c)`);
-    }
-  }
-  window.addEventListener('message', handler);
-  setTimeout(() => window.removeEventListener('message', handler), 180000);
-}
 
 // ─── 광고 manifest 로드 ───
 async function loadAdManifest() {
@@ -422,16 +48,13 @@ function showGenOverlay() {
   const overlay = document.getElementById('gen-overlay');
   if (overlay) overlay.style.display = 'flex';
 
-  // 프로그레스 바 시작
   const progress = document.getElementById('gen-progress');
   if (progress) {
     progress.style.width = '0%';
     progress.style.transition = 'width 0.5s ease';
-    // 10초에 걸쳐 90%까지 서서히 채움
     setTimeout(() => { progress.style.transition = 'width 10s ease-out'; progress.style.width = '90%'; }, 100);
   }
 
-  // 광고 이미지 로테이션
   if (adImages.length > 0) {
     adIndex = 0;
     showAdImage(adIndex);
@@ -447,6 +70,11 @@ function showAdImage(index) {
   if (!img || !adImages[index]) return;
   img.style.opacity = '0';
   setTimeout(() => {
+    img.onerror = () => {
+      Monk.log('광고 이미지 로드 실패: ' + adImages[index]);
+      img.style.display = 'none';
+    };
+    img.onload = () => { img.style.display = ''; };
     img.src = adImages[index];
     img.style.opacity = '1';
   }, 400);
@@ -458,7 +86,6 @@ function startCountdown(callback) {
   const countNum = document.getElementById('gen-count-num');
   if (!countdown || !countNum) { callback(); return; }
 
-  // 프로그레스 바 100%
   const progress = document.getElementById('gen-progress');
   if (progress) { progress.style.transition = 'width 0.5s ease'; progress.style.width = '100%'; }
 
@@ -509,7 +136,6 @@ function showOriginal() {
   store.generated = null;
   store.statusText = '';
 
-  // 원본 이미지 표시
   const imgEl = document.querySelector('#photo-original');
   if (imgEl) imgEl.src = captured;
 
@@ -518,6 +144,23 @@ function showOriginal() {
 
 // ─── 재촬영 ───
 function retakePhoto() {
+  // Step 2 (리터칭 전): 확인 없이 바로 준비실 이동
+  if (!store.generated) {
+    clearForRetake();
+    return;
+  }
+
+  // Step 3 (리터칭 후): 확인 모달
+  const ok = confirm(
+    '현재 사진을 삭제하고 다시 촬영하시겠습니까?\n리터칭 비용(10c)은 복구되지 않습니다.'
+  );
+  if (!ok) return;
+
+  clearForRetake();
+}
+
+function clearForRetake() {
+  // store 초기화
   store.captured = null;
   store.generated = null;
   store.cropped = null;
@@ -525,20 +168,27 @@ function retakePhoto() {
   store.showStep2Actions = false;
   store.showStep3Actions = false;
 
-  navigateTo('camera.html');
+  // sessionStorage 이전 결과 제거
+  sessionStorage.removeItem('monkos_generated');
+  sessionStorage.removeItem('monkos_compare');
+  sessionStorage.removeItem('monkos_pending_action');
+  sessionStorage.removeItem('monkos_gcsPath');
+  _gcsPath = null;
+
+  // 촬영 준비실로 이동 (옵션 재선택 가능)
+  navigateTo('prep.html');
 }
 
-// ─── 생성 파이프라인 (QC 제거됨) ───
+// ─── 생성 파이프라인 ───
 async function confirmAndGenerate() {
   if (!store.captured) return;
 
-  // 비로그인 1회 생성 제한
+  // 로그인 필수 (촬영실 게이트에서 이미 체크되지만 방어용)
   if (!store.user.id) {
-    if (localStorage.getItem('monkos_free_gen')) {
-      showLoginRequiredModal('무료 체험을 사용하셨습니다.\n로그인 후 이용해주세요.');
-      return;
-    }
-    localStorage.setItem('monkos_free_gen', Date.now().toString());
+    GateModule.showLoginRequired('리터칭을 진행하려면 로그인이 필요합니다\n첫 로그인 시 10c를 드려요!', () => {
+      confirmAndGenerate();
+    });
+    return;
   }
 
   const base64 = store.captured.includes(',') ? store.captured.split(',')[1] : store.captured;
@@ -561,49 +211,73 @@ async function confirmAndGenerate() {
       return;
     }
 
-    store.statusText = `사전분석 OK (${preCheck.score}점) → 생성 시작`;
+    store.statusText = `사전분석 OK (${preCheck.score}점) → 리터칭 시작`;
   } catch (err) {
     Monk.log('사전분석 스킵: ' + (err.error || err.message));
+  }
+
+  // ─── 잔고 사전 체크 (시머링 시작 전) ───
+  if (store.user.credits < CREDIT_COST.generate) {
+    showChargeModal();
+    store.showStep2Actions = true;
+    store.resultTitle = TX.resultConfirm;
+    store.resultSubtitle = '크레딧이 부족합니다';
+    return;
   }
 
   // 생성 단계
   store.step = 3;
   store.stepLabel = TX.step3;
 
-  // 오버레이 표시
   showGenOverlay();
   const genStartTime = Date.now();
 
   try {
     const genResult = await pipe.run('generate', {
       image: base64,
-      style: store.style,
-      purpose: loadSessionData('purpose'),
+      format: store.format,
       gender: store.gender,
       age: store.age,
-      clothing: loadSessionData('clothing'),
-      clothingColor: loadSessionData('clothingColor'),
-      tie: loadSessionData('tie'),
-      hair: loadSessionData('hair'),
-      background: loadSessionData('background'),
-      expression: loadSessionData('expression'),
+      clothing: store.clothing,
+      clothingColor: store.clothingColor,
+      suitColor: store.suitColor,
+      shirtColor: store.shirtColor,
+      tieColor: store.tieColor,
+      tiePattern: store.tiePattern,
+      hair: store.hair,
+      bgColor: store.bgColor,
       userId: store.user.id,
+      v: 5,
     });
 
-    store.generated = genResult.image;
-    Monk.log('생성 완료');
+    // 서버가 워터마크본을 전송 — 클라이언트에 원본 도달하지 않음
+    _gcsPath = genResult.gcsPath || null;
+    if (_gcsPath) {
+      try { sessionStorage.setItem('monkos_gcsPath', _gcsPath); } catch(e) {}
+    }
+    Monk.log('생성 완료' + (_gcsPath ? ` (GCS: ${_gcsPath})` : ''));
 
-    // 최소 대기 시간 보장
+    // 노크롭 원본(보정본) 그대로 표시 — 크롭은 크롭앱에서만
+    const spec = PHOTO_SPECS[store.format];
+    let croppedPreview = genResult.image;
+
+    // store/sessionStorage에는 워터마크 프리뷰만 저장
+    store.generated = croppedPreview;
+    try { sessionStorage.setItem('monkos_generated', croppedPreview); } catch(e) {}
+
     const elapsed = Date.now() - genStartTime;
     const remaining = Math.max(0, MIN_DISPLAY_TIME - elapsed);
 
     await new Promise(resolve => setTimeout(resolve, remaining));
 
-    // 카운트다운 → 결과 공개
     startCountdown(() => {
-      // 생성된 이미지 표시
+      // 비교컷: 원본 vs 크롭 워터마크 프리뷰
       const genImg = document.querySelector('#photo-generated');
-      if (genImg) genImg.src = genResult.image;
+      if (genImg) genImg.src = croppedPreview;
+
+      // 비교컷 레이블 — 크롭 아닌 보정본이므로
+      const label = document.querySelector('#photo-generated-wrap .label');
+      if (label) label.textContent = 'AI 보정';
 
       store.statusText = TX.resultDone;
       store.resultTitle = TX.resultDone;
@@ -615,26 +289,20 @@ async function confirmAndGenerate() {
       const btnDownload = document.querySelector('#btn-download');
       if (btnDownload) btnDownload.disabled = false;
 
-      // 워터마크 프리뷰 생성
-      generateWatermarkPreview(genResult.image).then(watermarked => {
-        if (watermarked) store.watermarkPreview = watermarked;
-      });
+      store.watermarkPreview = croppedPreview;
+
     });
 
   } catch (err) {
     hideGenOverlay();
     if (err.status === 402) {
-      if (typeof window.showChargeModal === 'function') {
-        window.showChargeModal();
-      } else {
-        showCreditModal(err.required || 10, err.credits || 0, 'generate');
-      }
+      showChargeModal();
       store.showStep2Actions = true;
       store.resultTitle = TX.resultConfirm;
       store.resultSubtitle = '크레딧이 부족합니다';
       store.step = 2;
     } else {
-      showGenerateError(err.error || err.message || '생성 실패');
+      showGenerateError(err.error || err.message || '리터칭 실패');
     }
   }
 }
@@ -649,131 +317,158 @@ function showGenerateError(error) {
   Monk.log('생성 에러: ' + error);
 }
 
-// ─── 워터마크 프리뷰 생성 ───
-async function generateWatermarkPreview(imageDataUrl) {
-  const canvas = document.createElement('canvas');
-  const ctx = canvas.getContext('2d');
-  const img = new Image();
-
-  return new Promise((resolve) => {
-    img.onload = () => {
-      canvas.width = img.width;
-      canvas.height = img.height;
-      ctx.drawImage(img, 0, 0);
-
-      // 워터마크: 대각선 반복 MONKOS 텍스트
-      ctx.save();
-      ctx.globalAlpha = 0.15;
-      ctx.fillStyle = '#ffffff';
-      ctx.font = `bold ${Math.max(img.width / 8, 24)}px sans-serif`;
-      ctx.textAlign = 'center';
-      ctx.translate(canvas.width / 2, canvas.height / 2);
-      ctx.rotate(-Math.PI / 6);
-
-      for (let y = -canvas.height; y < canvas.height * 2; y += img.height / 4) {
-        ctx.fillText('MONKOS', 0, y);
-      }
-      ctx.restore();
-
-      resolve(canvas.toDataURL('image/jpeg', 0.85));
-    };
-    img.src = imageDataUrl;
-  });
-}
-
-// ─── 다운로드 (결제 + 크롭 → 수령처 이동) ───
+// ─── 다운로드 (서버단 Signed URL) ───
 async function downloadResult() {
   if (!store.generated) return;
 
-  // 비로그인 → 게이트 팝업
+  // C2 핫픽스: 연속 클릭 방지
+  const btn = document.querySelector('#btn-download');
+  if (btn) btn.disabled = true;
+
+  // 로그인 필수
   if (!store.user.id) {
-    showDownloadGatePopup();
+    GateModule.showLoginRequired('다운로드하려면 로그인이 필요합니다', () => {
+      downloadResult();
+    });
     return;
   }
 
-  // 로그인 사용자: 잔액 부족 → 충전 모달
+  // GCS 경로 필수
+  if (!_gcsPath) {
+    Monk.log('GCS 경로 없음 — 서버단 워터마크 미적용 세션');
+    if (btn) btn.disabled = false;
+    return;
+  }
+
+  // 잔액 부족 → 충전 페이지
   if (store.user.credits < CREDIT_COST.download) {
-    if (typeof window.showChargeModal === 'function') {
-      window.showChargeModal();
-    } else {
-      showCreditModal(CREDIT_COST.download, store.user.credits, 'download');
-    }
+    sessionStorage.setItem('monkos_pending_action', 'download');
+    showChargeModal();
     return;
   }
 
-  // 크레딧 차감 → 수령처
+  doDownload();
+}
+
+// ─── 전후비교 합성 (thankyou용) ───
+async function generateCompareImage() {
+  const captured = loadSessionData('captured');
+  const cropped = loadSessionData('image');
+  if (!captured || !cropped) return;
+
   try {
-    const result = await pipe.run('creditUse', { userId: store.user.id, type: 'download' });
-    store.user = { ...store.user, credits: result.credits };
-    await cropAndGoToThankyou();
-  } catch (err) {
-    if (err.status === 402) {
-      if (typeof window.showChargeModal === 'function') {
-        window.showChargeModal();
-      } else {
-        showCreditModal(CREDIT_COST.download, err.credits || 0, 'download');
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+
+    const [imgA, imgB] = await Promise.all([
+      loadImage(captured),
+      loadImage(cropped),
+    ]);
+
+    // 나란히 배치 (같은 높이, 비율 유지)
+    const h = 400;
+    const wA = (imgA.width / imgA.height) * h;
+    const wB = (imgB.width / imgB.height) * h;
+    const gap = 16;
+    const pad = 24;
+    const totalW = wA + gap + wB + pad * 2;
+    const totalH = h + pad * 2 + 40; // 하단 브랜딩 영역
+
+    canvas.width = totalW;
+    canvas.height = totalH;
+
+    // 배경
+    ctx.fillStyle = '#0A0E17';
+    ctx.fillRect(0, 0, totalW, totalH);
+
+    // 원본
+    ctx.drawImage(imgA, pad, pad, wA, h);
+    // 완성본
+    ctx.drawImage(imgB, pad + wA + gap, pad, wB, h);
+
+    // 라벨
+    ctx.fillStyle = '#94A3B8';
+    ctx.font = '12px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('원본', pad + wA / 2, pad + h + 18);
+    ctx.fillText(PHOTO_SPECS[store.format]?.name || '완성', pad + wA + gap + wB / 2, pad + h + 18);
+
+    // 브랜딩
+    ctx.fillStyle = '#8B5CF6';
+    ctx.font = 'bold 11px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('✨ MONKOS AI 증명사진  ·  monkos.ai', totalW / 2, totalH - 10);
+
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+    sessionStorage.setItem('monkos_compare', dataUrl);
+  } catch (e) {
+    Monk.log('전후비교 합성 실패: ' + e.message);
+  }
+}
+
+function loadImage(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
+  });
+}
+
+async function doDownload() {
+  try {
+    // 서버에 다운로드 요청 (크레딧 70c 차감 + 서버 크롭 + 원본 Signed URL)
+    const res = await fetch('/api/download', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: store.user.id, gcsPath: _gcsPath, format: store.format }),
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      if (res.status === 402) {
+        showChargeModal();
+        return;
       }
-    } else {
-      Monk.log('다운로드 크레딧 에러: ' + (err.error || err.message));
+      throw new Error(data.error || '다운로드 실패');
     }
-  }
-}
 
-async function cropAndGoToThankyou() {
-  // 규격 크롭 실행
-  if (store.generated && store.style) {
-    const spec = PHOTO_SPECS[store.style];
+    store.user = { ...store.user, credits: data.credits };
+
+    // 보정 원본 (노크롭) → thankyou + 크롭앱 전달용
+    saveSessionData('image', data.image);
+
+    // 원본 Signed URL 보존 (thankyou에서 원본 다운로드용)
     try {
-      const cropResult = await media.crop(store.generated, spec);
-      store.cropped = cropResult.dataUrl;
-      store.specName = spec.name;
-      store.specSize = `${spec.widthMM}×${spec.heightMM}mm`;
-      store.specPx = `${cropResult.outputW}×${cropResult.outputH}px`;
-      Monk.log(`규격 크롭: ${spec.name}`);
-    } catch (e) {
-      Monk.log('규격 크롭 실패: ' + e.message);
-      store.cropped = await media.toJpeg(store.generated, 0.92);
-    }
-  }
+      sessionStorage.setItem('monkos_originalUrl', data.originalUrl);
+      sessionStorage.setItem('monkos_gcsPath', _gcsPath);
+    } catch(e) {}
 
-  // sessionStorage에 저장
-  if (store.cropped) {
-    saveSessionData('cropped', store.cropped);
-  }
+    // 전후비교 합성
+    await generateCompareImage();
 
-  Monk.log('수령처로 이동');
-  navigateTo('thankyou.html');
+    // thankyou.html로 전환
+    navigateTo('thankyou.html');
+
+  } catch (err) {
+    Monk.log('다운로드 에러: ' + (err.error || err.message));
+    const btn = document.querySelector('#btn-download');
+    if (btn) btn.disabled = false;
+  }
 }
 
-// ─── 텔레그램 이벤트 ───
-function openTelegram() {
-  const uid = store.user.id || 'guest';
-  const link = `https://t.me/monkos_event_bot?start=${encodeURIComponent(uid)}`;
-  window.open(link, '_blank');
-  Monk.log('텔레그램 이벤트 링크 오픈');
-}
-
-// ─── window 노출 ───
+// ─── window 노출 (onclick 호환) ───
 Object.assign(window, {
   retakePhoto,
   confirmAndGenerate,
   downloadResult,
-  openTelegram,
-  // 게이트 팝업
-  showDownloadGatePopup,
-  closeDownloadGatePopup,
-  startKakaoLogin,
-  startKakaoLoginSimple,
-  doShareTelegram,
-  doPhotoConsent,
-  buyDirectKR,
-  showLoginRequiredModal,
-  closeLoginRequiredModal,
-  shareTelegram,
+  showChargeModal,
 });
 
 // ─── 초기화 ───
 async function init() {
+  initChatbot();
+
   try {
     await sharedInit();
   } catch (err) {
@@ -787,14 +482,67 @@ async function init() {
   const resultArea = document.querySelector('#result-overlay');
   if (resultArea) resultArea.classList.add('active');
 
-  // 단건 결제 리다이렉트 처리
-  await initDirectPaymentResult();
+  // 토스 리다이렉트 복귀 시 GCS 경로 복원
+  const pendingGcsPath = sessionStorage.getItem('monkos_gcsPath');
+  if (pendingGcsPath) {
+    _gcsPath = pendingGcsPath;
+    Monk.log('GCS 경로 복원: ' + _gcsPath);
+  }
 
   // 광고 manifest 프리로드
   loadAdManifest();
 
-  // 원본 표시
-  showOriginal();
+  // sessionStorage에서 생성 이미지 복원 (토스 리다이렉트 후 복귀용 — 워터마크 버전)
+  if (!store.generated) {
+    const savedGen = sessionStorage.getItem('monkos_generated');
+    if (savedGen) {
+      store.generated = savedGen;
+      Monk.log('생성 이미지 sessionStorage에서 복원 (워터마크)');
+    }
+  }
+
+  // 비교컷 이미지 우클릭 방지 (보조 방어)
+  document.querySelectorAll('#photo-generated').forEach(img => {
+    img.addEventListener('contextmenu', e => e.preventDefault());
+  });
+
+  // === 생성 이미지 존재 시 결과 화면 복원 (토스 충전 후 복귀) ===
+  if (store.generated) {
+    // 원본도 표시 (비교컷용)
+    const captured = loadSessionData('captured');
+    if (captured) {
+      store.captured = captured;
+      const imgEl = document.querySelector('#photo-original');
+      if (imgEl) imgEl.src = captured;
+    }
+
+    const genImg = document.querySelector('#photo-generated');
+    if (genImg) genImg.src = store.generated;
+
+    store.step = 3;
+    store.stepLabel = TX.resultDone;
+    store.resultTitle = TX.resultDone;
+    store.resultSubtitle = TX.resultDoneSub;
+    store.showStep3Actions = true;
+    store.showStep2Actions = false;
+    store.watermarkPreview = store.generated;
+
+    const btnDownload = document.querySelector('#btn-download');
+    if (btnDownload) btnDownload.disabled = false;
+
+    Monk.log('생성 결과 복원 (토스 충전 후 복귀)');
+
+    // 충전 목적이 다운로드였으면 자동 진행
+    const pendingAction = sessionStorage.getItem('monkos_pending_action');
+    if (pendingAction === 'download' && store.user.credits >= CREDIT_COST.download) {
+      sessionStorage.removeItem('monkos_pending_action');
+      setTimeout(() => downloadResult(), 300);
+    } else {
+      sessionStorage.removeItem('monkos_pending_action');
+    }
+  } else {
+    showOriginal();
+  }
 
   Monk.log('분석실 초기화 완료');
 }

@@ -1,0 +1,24 @@
+- generic [ref=e1]:
+  - banner [ref=e2]:
+    - heading "MONK 토론방" [level=1] [ref=e3]
+    - button "설정" [ref=e4] [cursor=pointer]
+  - generic [ref=e5]:
+    - textbox "토론 주제를 입력하세요..." [ref=e6]: 1B 파인튜닝 vs 12B 양자화, 어느 쪽이 소규모 팀에 유리한가
+    - button "자동 토론" [active] [ref=e20] [cursor=pointer]
+    - button "초기화" [ref=e8] [cursor=pointer]
+  - generic [ref=e9]:
+    - generic [ref=e21]:
+      - generic [ref=e22]: 주제
+      - generic [ref=e23]: 1B 파인튜닝 vs 12B 양자화, 어느 쪽이 소규모 팀에 유리한가
+    - generic [ref=e24]:
+      - generic [ref=e25]: 에이전트1
+      - generic [ref=e26]: 알겠습니다. 에이전트1입니다. 토론 준비 완료되었습니다. 에이전트2님, 시작해 주십시오.
+    - generic [ref=e27]:
+      - generic [ref=e28]: 에이전트2
+      - generic [ref=e29]: 알겠습니다. 그럼 제가 먼저 의견을 제시하겠습니다. 1B 파인튜닝이 소규모 팀에 더 유리하다고 생각합니다. 그 이유는 1B 모델은 파인튜닝 시 필요한 데이터와 컴퓨팅 자원이 적기 때문입니다. 또한, 모델 크기가 작아 배포와 유지보수 비용이 줄어들게 됩니다. 따라서 소규모 팀의 자원과 시간을 고려할 때 1B 파인튜닝이 더욱 효율적일 것입니다.
+    - generic [ref=e30]:
+      - generic [ref=e31]: 주제
+      - generic [ref=e32]: "오류: Worker error: 500"
+  - generic [ref=e10]:
+    - textbox "메시지 입력..." [ref=e11]
+    - button "보내기" [ref=e12] [cursor=pointer]

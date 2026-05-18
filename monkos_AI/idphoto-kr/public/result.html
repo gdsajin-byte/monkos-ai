@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-JPZWSJ3323"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-JPZWSJ3323');
+  gtag('config', 'G-FKG0CPTC14');
+</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -19,19 +28,29 @@
     <meta property="og:image" content="https://monkos.ai/og-image.png">
 
     <!-- 파비콘 -->
-    <link rel="icon" type="image/png" sizes="32x32" href="https://monkos.ai/favicon-32.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="https://monkos.ai/apple-touch-icon.png">
+    <link rel="icon" href="/monkos-icon.svg" type="image/svg+xml">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 
     <!-- 폰트 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@700&display=swap" rel="stylesheet">
 
     <!-- 스타일시트 -->
     <link rel="stylesheet" href="app.css">
+    <link rel="stylesheet" href="cr-coin.css">
 
     <!-- result 전용 스타일 -->
     <style>
+        /* 비교컷 이미지 보호 — 길게 누르기/우클릭 저장 차단 */
+        #photo-generated {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+            pointer-events: none;
+        }
         .photo-compare {
             background: rgba(167,139,250,0.04);
             border-radius: 16px;
@@ -82,10 +101,13 @@
             0% { background-position: -200% 0; }
             100% { background-position: 200% 0; }
         }
+        /* QC 배지 */
+        .qc-badge { font-weight: 500; }
+        .qc-badge.pass { background: rgba(34,197,94,0.12); color: #22c55e; border: 1px solid rgba(34,197,94,0.25); }
+        .qc-badge.fail { background: rgba(239,68,68,0.12); color: #ef4444; border: 1px solid rgba(239,68,68,0.25); }
+        .qc-badge.pending { background: rgba(245,158,11,0.12); color: #f59e0b; border: 1px solid rgba(245,158,11,0.25); }
     </style>
 
-    <!-- 토스페이먼츠 -->
-    <script src="https://js.tosspayments.com/v2/standard"></script>
 </head>
 <body>
     <!-- 인앱 브라우저 안내 배너 -->
@@ -101,9 +123,19 @@
             <span id="step-label" data-bind="stepLabel">촬영 확인</span>
         </div>
         <div style="display:flex; align-items:center; gap:8px;">
-            <div class="credit-badge" id="creditBadge" data-show="user.id" data-class="creditLow:low">
-                <span>💎</span>
-                <span data-bind="user.credits">0</span>c
+            <div class="header-balance" id="creditBadge" data-show="user.id">
+                <div class="header-coin-wrap">
+                    <div class="header-sparkle"></div>
+                    <div class="header-sparkle"></div>
+                    <div class="header-coin">
+                        <div class="header-coin-face">
+                            <div class="header-shimmer"></div>
+                            <span class="cr-sym">Cr</span>
+                        </div>
+                    </div>
+                </div>
+                <span class="balance-amount" data-bind="user.credits">0</span>
+                <span class="balance-unit">Cr</span>
             </div>
         </div>
     </div>
@@ -111,7 +143,15 @@
     <!-- 크레딧 부족 모달 -->
     <div id="credit-modal" data-class="creditModalOpen:active">
         <div class="credit-modal-box">
-            <div class="credit-modal-icon">💎</div>
+            <div class="credit-modal-icon">
+                <div class="event-coin-wrap" style="width:48px;height:48px;margin:0 auto;">
+                    <div class="event-coin" style="animation:none;">
+                        <div class="event-coin-face">
+                            <span class="cr-sym" style="font-size:16px;">Cr</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="credit-modal-title" data-bind="creditModalTitle">크레딧이 부족합니다</div>
             <div class="credit-modal-desc" data-bind="creditModalDesc">
                 이 작업을 수행하려면 크레딧이 필요합니다.
@@ -126,28 +166,7 @@
                     <div class="value red" data-bind="user.credits">0</div>
                 </div>
             </div>
-            <div class="credit-packages">
-                <button class="credit-pkg" onclick="buyCreditsKR(1450, 10)">
-                    <div class="pkg-credits">10c</div>
-                    <div class="pkg-price">₩1,450</div>
-                </button>
-                <button class="credit-pkg" onclick="buyCreditsKR(13050, 100)">
-                    <div class="pkg-credits">100c</div>
-                    <div class="pkg-price">₩13,050</div>
-                    <div class="pkg-save">10% 할인</div>
-                </button>
-                <button class="credit-pkg popular" onclick="buyCreditsKR(34800, 300)">
-                    <div class="pkg-badge">BEST</div>
-                    <div class="pkg-credits">300c</div>
-                    <div class="pkg-price">₩34,800</div>
-                    <div class="pkg-save">20% 할인</div>
-                </button>
-                <button class="credit-pkg" onclick="buyCreditsKR(50750, 500)">
-                    <div class="pkg-credits">500c</div>
-                    <div class="pkg-price">₩50,750</div>
-                    <div class="pkg-save">30% 할인</div>
-                </button>
-            </div>
+            <button class="credit-modal-btn primary" onclick="showChargeModal()" style="width:100%;padding:14px;background:linear-gradient(135deg,#a78bfa,#818cf8);color:#fff;border:none;border-radius:12px;font-size:0.95rem;font-weight:700;cursor:pointer;margin-top:8px;">충전하기</button>
             <button class="credit-modal-btn secondary" onclick="closeCreditModal()">닫기</button>
         </div>
     </div>
@@ -182,24 +201,13 @@
 
         <div id="status-badge" data-bind="statusText" data-show="statusText" style="padding:8px 16px; border-radius:12px; font-size:13px; text-align:center; color:var(--text-dim,#8892a8); background:rgba(167,139,250,0.08); margin:0 16px;"></div>
 
-        <!-- 규격 크롭 결과 -->
-        <div id="spec-result" data-class="cropped:active">
-            <div class="spec-title">클로즈업 완료</div>
-            <div class="spec-photo-wrap">
-                <img id="spec-photo" data-bind-src="cropped" src="" alt="규격 사진">
-            </div>
-            <div class="spec-info">
-                <span class="spec-tag"><strong data-bind="specName">-</strong></span>
-                <span class="spec-tag" data-bind="specSize">-</span>
-                <span class="spec-tag">300dpi</span>
-                <span class="spec-tag" data-bind="specPx">-</span>
-            </div>
-        </div>
+        <!-- QC 결과 배지 -->
+        <div id="qc-badge" style="display:none; padding:8px 16px; border-radius:12px; font-size:13px; text-align:center; margin:8px 16px 0;"></div>
 
         <!-- Step 2 버튼 -->
         <div id="step2-actions" data-show="showStep2Actions" style="display:flex; gap:10px; padding:16px; justify-content:center;">
-            <button class="btn btn-secondary" onclick="retakePhoto()">다시 찍기</button>
-            <button class="btn btn-primary" onclick="confirmAndGenerate()">이 사진으로 생성 <span style="opacity:0.7;font-size:13px">(10c)</span></button>
+            <button class="btn btn-secondary" onclick="retakePhoto()">재촬영</button>
+            <button class="btn btn-primary" onclick="confirmAndGenerate()">이 사진으로 리터칭 <span style="opacity:0.7;font-size:13px">(10c)</span></button>
         </div>
 
         <!-- 생성 대기 오버레이 -->
@@ -268,26 +276,26 @@
 
         <!-- Step 3 버튼 -->
         <div id="step3-actions" data-show="showStep3Actions" style="display:none; gap:10px; padding:16px; justify-content:center;">
-            <button class="btn btn-secondary" onclick="retakePhoto()" style="flex:1;">다시 찍기</button>
+            <button class="btn btn-secondary" onclick="retakePhoto()" style="flex:1;">재촬영</button>
             <button class="btn btn-success" id="btn-download" onclick="downloadResult()" style="flex:2;">📥 고화질 다운로드 (70c)</button>
         </div>
 
-        <!-- SNS 공유 이벤트 -->
-        <div id="sns-event" data-show="showStep3Actions" style="display:none; margin:0 16px 16px; padding:14px 16px; background:rgba(167,139,250,0.06); border:1px solid rgba(167,139,250,0.12); border-radius:14px; text-align:center;">
-            <div style="font-size:14px; font-weight:700; color:#c4b5fd; margin-bottom:6px;">📸 이 화면을 캡처해서 SNS에 공유하세요!</div>
-            <div style="font-size:12px; color:#8892a8; line-height:1.6;">
-                인스타·X·블로그에 공유 + 텔레그램으로 캡처 전송<br>
-                → <strong style="color:#a78bfa;">100크레딧 즉시 지급!</strong>
-            </div>
-            <a href="#" onclick="openTelegram(); return false;" style="display:inline-block; margin-top:10px; padding:8px 20px; background:linear-gradient(135deg,#a78bfa,#7c3aed); color:#fff; border-radius:10px; font-size:13px; font-weight:600; text-decoration:none;">
-                ✈️ 텔레그램으로 100c 받기
-            </a>
-        </div>
+        <!-- 게이트 팝업 마운트 -->
+        <div id="gate-mount"></div>
+
+        <!-- 충전 모달 마운트 -->
+        <div id="charge-mount"></div>
+
+        <!-- 이벤트 알림 마운트 -->
+        <div id="event-notification-mount"></div>
     </div>
 
     <div id="log"></div>
 
+    <!-- Cr 이벤트 카드 컨테이너 -->
+    <div class="event-container" style="position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:9998;width:380px;max-width:calc(100vw - 32px);"></div>
+
     <!-- 앱 스크립트 -->
-    <script type="module" src="result.js?v=migration01"></script>
+    <script type="module" src="result.js?v=fix03"></script>
 </body>
 </html>

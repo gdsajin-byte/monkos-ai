@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#05080E">
+  <title>MONKOS Crop — ID Photo Crop</title>
+  <link rel="icon" href="monkos-icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="crop.css">
+  <link rel="stylesheet" href="step-nav.css">
+</head>
+<body>
+
+  <!-- ═══ Step Navigation Bar ═══ -->
+  <nav class="step-bar" id="stepBar">
+    <div class="step-bar-item active" data-step="1"><span>SELECT</span></div>
+    <div class="step-bar-item" data-step="2"><span>UPLOAD</span></div>
+    <div class="step-bar-item" data-step="3"><span>CROP</span></div>
+    <div class="step-bar-item" data-step="4"><span>BG</span></div>
+    <div class="step-bar-item" data-step="5"><span>DONE</span></div>
+  </nav>
+
+  <!-- ═══ Step 1: Purpose + Country + Spec Detail ═══ -->
+  <section class="step-page active" id="stepPage1">
+    <div class="step-wrapper">
+      <h1 class="step-heading" id="s1Heading">Select Specification</h1>
+
+      <!-- Purpose selector -->
+      <div class="purpose-row" id="purposeRow">
+        <button class="purpose-btn active" data-purpose="passport">🛂 <span data-i18n="passport">Passport</span></button>
+        <button class="purpose-btn" data-purpose="visa">📋 <span data-i18n="visa">Visa</span></button>
+        <button class="purpose-btn" data-purpose="id">🪪 <span data-i18n="id_card">ID Card</span></button>
+        <button class="purpose-btn" data-purpose="resume">📄 <span data-i18n="resume">Resume</span></button>
+        <button class="purpose-btn" data-purpose="custom">⚙️ <span data-i18n="custom">Custom</span></button>
+      </div>
+
+      <!-- Country dropdown -->
+      <div class="country-dropdown" id="countryDropdown">
+        <label class="dropdown-label" data-i18n="country">Country</label>
+        <div class="dropdown-select" id="countrySelect">
+          <span class="dropdown-flag" id="dropdownFlag">🌍</span>
+          <span class="dropdown-text" id="dropdownText" data-i18n="select_country">Select country...</span>
+          <span class="dropdown-arrow">▾</span>
+        </div>
+        <div class="dropdown-list hidden" id="dropdownList">
+          <input type="text" class="dropdown-search" id="countrySearch" data-i18n-placeholder="search_country" placeholder="Search country...">
+          <div class="dropdown-items" id="dropdownItems"></div>
+        </div>
+      </div>
+
+      <!-- Custom size input (only when purpose=custom) -->
+      <div class="custom-size hidden" id="customSize">
+        <label class="dropdown-label" data-i18n="custom_size">Custom Size</label>
+        <div class="custom-inputs">
+          <div class="custom-field">
+            <input type="number" id="customW" placeholder="35" min="10" max="200">
+            <span>mm</span>
+          </div>
+          <span class="custom-x">×</span>
+          <div class="custom-field">
+            <input type="number" id="customH" placeholder="45" min="10" max="200">
+            <span>mm</span>
+          </div>
+        </div>
+        <button class="btn-full" id="customApply" data-i18n="apply_custom">Apply Custom Size</button>
+      </div>
+
+      <!-- Spec detail container (shown after country + purpose chosen) -->
+      <div class="spec-detail hidden" id="specDetail">
+        <div class="spec-detail-header">
+          <span class="spec-detail-flag" id="specFlag"></span>
+          <div class="spec-detail-title">
+            <div class="spec-detail-country" id="specCountryName"></div>
+            <div class="spec-detail-doc" id="specDocName"></div>
+          </div>
+        </div>
+
+        <div class="spec-detail-body">
+          <div class="spec-detail-grid">
+            <div class="spec-info-row"><span class="spec-info-label" data-i18n="size">Size</span><span class="spec-info-val" id="specSize"></span></div>
+            <div class="spec-info-row"><span class="spec-info-label" data-i18n="output">Output</span><span class="spec-info-val" id="specPx"></span></div>
+            <div class="spec-info-row"><span class="spec-info-label" data-i18n="dpi">DPI</span><span class="spec-info-val" id="specDpi"></span></div>
+            <div class="spec-info-row"><span class="spec-info-label" data-i18n="background">Background</span><span class="spec-info-val" id="specBg"></span></div>
+            <div class="spec-info-row"><span class="spec-info-label" data-i18n="standard">Standard</span><span class="spec-info-val" id="specStandard"></span></div>
+          </div>
+
+          <div class="spec-face-info hidden" id="specFaceInfo">
+            <div class="spec-info-row"><span class="spec-info-label" data-i18n="face_size">Face size</span><span class="spec-info-val" id="specFaceRange"></span></div>
+            <div class="spec-info-row"><span class="spec-info-label" data-i18n="eye_pos">Eye position</span><span class="spec-info-val" id="specEyeRange"></span></div>
+          </div>
+
+          <div class="spec-ai-warn hidden" id="specAiWarn" data-i18n="ai_warn">⚠️ AI editing prohibited for this country</div>
+
+          <a class="spec-source hidden" id="specSource" target="_blank" rel="noopener">
+            <span data-i18n="official_source">Official source</span> ↗
+          </a>
+        </div>
+
+        <button class="btn-full spec-confirm" id="specConfirm" data-i18n="use_this_spec">Use this specification →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ Step 2: Photo Upload ═══ -->
+  <section class="step-page" id="stepPage2">
+    <div class="step-wrapper">
+      <button class="btn-back hidden">← Back</button>
+      <div class="selected-spec-badge" id="uploadSpecBadge"></div>
+      <h1 class="step-heading" data-i18n="upload_photo">Upload Photo</h1>
+
+      <!-- Camera + Gallery buttons -->
+      <div class="upload-buttons">
+        <button class="upload-btn upload-btn-camera" id="btnCamera">
+          <span class="upload-btn-icon">📸</span>
+          <span data-i18n="take_photo">Take Photo</span>
+        </button>
+        <button class="upload-btn upload-btn-gallery" id="btnGallery">
+          <span class="upload-btn-icon">🖼️</span>
+          <span data-i18n="choose_from_gallery">Choose from Gallery</span>
+        </button>
+      </div>
+      <input type="file" accept="image/*" id="stepFileInput" hidden>
+      <input type="file" accept="image/*" id="cameraInput" capture="user" hidden>
+
+      <!-- Tips card -->
+      <div class="tips-card-s">
+        <div class="tips-header-s">
+          <span>📋</span>
+          <span class="tips-title-s" data-i18n="photo_tips">Photo Tips</span>
+        </div>
+        <ul class="tips-list-s">
+          <li data-i18n="tip1">Take in a well-lit area</li>
+          <li data-i18n="tip2">White or solid-color background</li>
+          <li data-i18n="tip3">No hats or sunglasses</li>
+          <li data-i18n="tip4">Face forward, mouth closed</li>
+          <li data-i18n="tip5">Shoulders visible</li>
+          <li data-i18n="tip6">Even lighting, no shadows</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ Step 3: Crop (crop.js core) ═══ -->
+  <section class="step-page" id="stepPage3">
+    <div class="app-container" id="cropContainer">
+      <button class="btn-back hidden">← Back</button>
+      <!-- 규격 배지 (탭 대체) -->
+      <div class="crop-spec-badge" id="cropSpecBadge"></div>
+
+      <div class="content">
+        <!-- 범례 -->
+        <div class="legend">
+          <div class="legend-item">
+            <div class="legend-dot" id="legendCrownDot"></div>
+            <span class="legend-label">정수리</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot" style="background:var(--gold)"></div>
+            <span class="legend-label">턱끝</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot" style="background:var(--accent)"></div>
+            <span class="legend-label">스케일</span>
+          </div>
+        </div>
+
+        <!-- 프레임 -->
+        <div class="frame-container" id="frame">
+          <img class="photo" id="photo" src="" alt="" draggable="false">
+          <svg class="overlay-svg" id="overlaySvg">
+            <rect id="maskTop" fill="rgba(0,0,0,0.48)"/>
+            <rect id="maskBottom" fill="rgba(0,0,0,0.48)"/>
+            <line id="crossH" stroke="rgba(255,255,255,0.12)" stroke-width="1" stroke-dasharray="4 6"/>
+            <line id="crossV" stroke="rgba(255,255,255,0.12)" stroke-width="1" stroke-dasharray="4 6"/>
+            <path id="ellipsePath" fill="none" stroke-width="1.5" stroke-dasharray="5 3"/>
+            <line id="crownLine" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.9"/>
+            <line id="chinLine" stroke="var(--gold)" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.85"/>
+            <line id="eyeLine" stroke-width="1" stroke-dasharray="2 5" opacity="0.7"/>
+            <line id="dimLineV" stroke-width="1" opacity="0.4"/>
+            <line id="dimLineTopH" stroke-width="1" opacity="0.4"/>
+            <line id="dimLineBotH" stroke-width="1" opacity="0.4"/>
+            <circle id="pupilL" r="3" opacity="0.8"/>
+            <circle id="pupilR" r="3" opacity="0.8"/>
+            <rect id="crownLabelBg" rx="3" fill="#06080D" opacity="0.88"/>
+            <text id="crownLabelText" font-size="9" font-weight="700">정수리</text>
+            <rect id="chinLabelBg" rx="3" fill="#06080D" opacity="0.88"/>
+            <text id="chinLabelText" fill="var(--gold)" font-size="9" font-weight="700">턱끝</text>
+            <rect id="eyeLabelBg" rx="3" fill="#06080D" opacity="0.78"/>
+            <text id="eyeLabelText" font-size="8"></text>
+          </svg>
+          <div class="pin pin-crown" id="crownPin">↕</div>
+          <div class="pin-hint" id="crownHint">↕ 드래그</div>
+          <div class="pin pin-chin" id="chinPin" style="background:var(--gold)"></div>
+          <div class="move-handle" id="moveHandle">✋</div>
+          <div class="scale-handle hidden" id="scaleHandle">⤢</div>
+          <div class="badge-face" id="badgeFace"><span id="badgeFaceVal"></span><span class="range" id="badgeFaceRange"></span></div>
+          <div class="badge-status" id="badgeStatus"></div>
+          <div class="badge-scale" id="badgeScale">x1.00</div>
+          <div class="facemesh-loading hidden" id="facemeshLoading">
+            <div class="facemesh-spinner"></div>
+            <span>얼굴 분석 중...</span>
+          </div>
+        </div>
+
+        <!-- 수치 4칸 -->
+        <div class="metrics">
+          <div class="metric" id="metricTop"><div class="metric-label">상단</div><div class="metric-value" id="metricTopVal">—</div></div>
+          <div class="metric" id="metricFace"><div class="metric-label">얼굴</div><div class="metric-value" id="metricFaceVal">—</div></div>
+          <div class="metric" id="metricBottom"><div class="metric-label">하단</div><div class="metric-value" id="metricBottomVal">—</div></div>
+          <div class="metric" id="metricEye"><div class="metric-label">눈위치</div><div class="metric-value" id="metricEyeVal">—</div></div>
+        </div>
+
+        <div class="warning-box hidden" id="eyeWarning"></div>
+        <div class="warning-box hidden" id="centerWarning"></div>
+        <div class="download-block-reason hidden" id="downloadBlock"></div>
+
+        <!-- 스케일 슬라이더 (S4) -->
+        <div class="scale-slider-container">
+          <span class="scale-slider-label">Scale</span>
+          <input type="range" id="scaleSlider" class="scale-slider" min="50" max="300" value="100" step="1">
+          <span class="scale-slider-value" id="scaleSliderVal">x1.00</span>
+        </div>
+
+        <!-- ICAO 범위 바 -->
+        <div class="range-bar-container">
+          <div class="range-bar-header">
+            <span style="color:var(--muted)" id="rangeLabel">ICAO 허용범위</span>
+            <span id="rangeValue" style="font-weight:700"></span>
+          </div>
+          <div class="range-track">
+            <div class="range-fill" id="rangeFill"></div>
+            <div class="range-dot" id="rangeDot"></div>
+          </div>
+          <div class="range-labels">
+            <span id="rangeMin"></span>
+            <span id="rangeMax"></span>
+          </div>
+        </div>
+
+        <!-- 버튼 -->
+        <div class="actions">
+          <button class="btn btn-reset" id="btnReset">↻ 초기화</button>
+          <button class="btn btn-preview" id="btnPreview">👁 미리보기</button>
+          <button class="btn btn-download enabled" id="btnNextBG">Continue →</button>
+        </div>
+
+        <div class="spec-info" id="specInfo"></div>
+      </div>
+    </div>
+
+    <!-- 기존 crop.js가 참조하는 숨김 요소 -->
+    <div class="sample-banner hidden" id="sampleBanner"><span></span><button id="sampleUploadBtn"></button></div>
+    <div class="spec-tabs hidden">
+      <button class="spec-tab active" data-spec="passport">여권</button>
+      <button class="spec-tab" data-spec="id">반명함</button>
+    </div>
+    <div class="header hidden">
+      <span class="header-info" id="headerInfo"></span>
+    </div>
+    <button class="hidden" id="btnPhoto"></button>
+    <button class="hidden" id="btnDownload"></button>
+  </section>
+
+  <!-- ═══ Step 4: Background Removal ═══ -->
+  <section class="step-page" id="stepPage4">
+    <div class="step-wrapper">
+      <button class="btn-back hidden">← Back</button>
+      <h1 class="step-heading">Background</h1>
+      <div class="bg-preview-s" id="bgPreviewS">
+        <canvas id="bgCanvas" style="max-width:100%;border-radius:8px;"></canvas>
+        <div class="bg-spinner hidden" id="bgSpinner">Removing background...</div>
+      </div>
+      <div class="bg-colors">
+        <div class="bg-c-wrap">
+          <button class="bg-c active" data-color="#FFFFFF" style="background:#FFFFFF" title="Pure White"></button>
+          <span class="bg-c-label">White</span>
+        </div>
+        <div class="bg-c-wrap">
+          <button class="bg-c" data-color="#F5F5F5" style="background:#F5F5F5" title="Off-white"></button>
+          <span class="bg-c-label">Off-white</span>
+        </div>
+        <div class="bg-c-wrap">
+          <button class="bg-c" data-color="#E0E0E0" style="background:#E0E0E0" title="Light Grey"></button>
+          <span class="bg-c-label">Grey</span>
+        </div>
+        <div class="bg-c-wrap">
+          <button class="bg-c" data-color="#D6EAF8" style="background:#D6EAF8" title="Light Blue"></button>
+          <span class="bg-c-label">Blue</span>
+        </div>
+      </div>
+      <button class="btn-full" id="btnBGDone">Complete →</button>
+    </div>
+  </section>
+
+  <!-- ═══ Step 5: Done ═══ -->
+  <section class="step-page" id="stepPage5">
+    <div class="step-wrapper" style="text-align:center;">
+      <button class="btn-back hidden">← Back</button>
+      <div style="font-size:48px;margin:20px 0;">✓</div>
+      <h1 class="step-heading">Crop Complete</h1>
+      <div class="done-spec" id="doneSpec"></div>
+      <canvas id="doneCanvas" style="max-width:280px;border-radius:8px;margin:16px auto;border:1px solid var(--border);"></canvas>
+      <button class="btn-full" id="btnDownloadFinal">Download (Free)</button>
+      <button class="btn-full btn-outline" id="btnCropAnother">Crop Another Spec</button>
+    </div>
+  </section>
+
+  <!-- crop.js가 필요로 하는 숨김 요소들 -->
+  <input type="file" accept="image/*" id="fileInput" style="display:none">
+  <div class="modal-backdrop hidden" id="modalBackdrop">
+    <div class="modal-content">
+      <div class="modal-handle"></div>
+      <div class="modal-title">다운로드 확인</div>
+      <div class="modal-metrics" id="modalMetrics">
+        <div class="modal-metrics-label">확정 수치</div>
+        <div class="modal-metrics-grid" id="modalMetricsGrid"></div>
+        <div class="modal-warning hidden" id="modalWarning"></div>
+      </div>
+      <div class="consent-list">
+        <div class="consent-item" id="consent1Item">
+          <div class="consent-check" id="consent1Check"></div>
+          <span class="consent-text"><span class="consent-required">[필수] </span>동의</span>
+        </div>
+        <div class="consent-item" id="consent2Item">
+          <div class="consent-check" id="consent2Check"></div>
+          <span class="consent-text">선택 동의</span>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="modal-btn modal-btn-primary disabled" id="modalBtnDownload">다운로드</button>
+        <button class="modal-btn modal-btn-cancel" id="modalBtnCancel">취소</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="mediapipe/face_mesh.js"></script>
+  <script src="crop.js"></script>
+  <script type="module" src="step-nav.js"></script>
+</body>
+</html>

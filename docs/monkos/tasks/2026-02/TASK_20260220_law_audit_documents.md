@@ -71,18 +71,18 @@ tags: [audit, documents, law-system, overnight, architecture]
 
 ### 핵심 후보 (우선 확인)
 ```
-docs/infrastructure/CODING_STANDARDS.md
-docs/infrastructure/DESIGN_SYSTEM.md
-docs/infrastructure/DEPLOYMENT_GUIDE.md
-docs/infrastructure/SESSION_LOG_VALUE.md
-docs/infrastructure/3TRACK_SYSTEM_ARCHITECTURE.md
-docs/infrastructure/GCS_BUCKET_STRUCTURE.md
-docs/infrastructure/OVERNIGHT_AUTOMATION_RULES.md
-docs/infrastructure/VSCODE_WORKSPACE_STANDARD.md
-docs/infrastructure/CLAUDE_CODE_COLLABORATION_STRATEGY.md
-docs/infrastructure/CLAUDE_CODE_FEATURES.md
-docs/infrastructure/CLAUDE_CODE_SETUP_GUIDE.md
-docs/infrastructure/MONKOS_AI_TECHNICAL_SPEC.md
+docs/infrastructure/guides/CODING_STANDARDS.md
+docs/infrastructure/guides/DESIGN_SYSTEM.md
+docs/infrastructure/deployment/DEPLOYMENT_GUIDE.md
+docs/infrastructure/guides/SESSION_LOG_VALUE.md
+docs/infrastructure/architecture/3TRACK_SYSTEM_ARCHITECTURE.md
+docs/infrastructure/deployment/GCS_BUCKET_STRUCTURE.md
+docs/infrastructure/guides/OVERNIGHT_AUTOMATION_RULES.md
+docs/infrastructure/guides/VSCODE_WORKSPACE_STANDARD.md
+docs/infrastructure/guides/CLAUDE_CODE_COLLABORATION_STRATEGY.md
+docs/infrastructure/guides/CLAUDE_CODE_FEATURES.md
+docs/infrastructure/guides/CLAUDE_CODE_SETUP_GUIDE.md
+docs/infrastructure/architecture/MONKOS_AI_TECHNICAL_SPEC.md
 ```
 
 ### 작업
@@ -158,7 +158,7 @@ Phase 1~3 결과를 종합하여 **구체적 설계안** 제시.
 
 ## 산출물
 
-파일: `docs/infrastructure/LAW_AUDIT_DOCUMENT_ANALYSIS.md`
+파일: `docs/infrastructure/audit/LAW_AUDIT_DOCUMENT_ANALYSIS.md`
 
 ### 포함 내용
 1. **CLAUDE.md 해부표** — 줄 번호별 3계층 분류

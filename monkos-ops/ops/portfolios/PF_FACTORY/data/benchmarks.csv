@@ -1,0 +1,2 @@
+date,model_name,parameters,quantization,vram_mb,speed_toks,korean_score,notes
+2026-05-12,Qwen3-1.7B,1.7B,fp16,3283,25.9,,

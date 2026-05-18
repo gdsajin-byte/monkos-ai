@@ -1,6 +1,5 @@
-// Cloudflare Pages Function - Imagen 4.0 T2I (이미지 프로 전용)
-// → monk-image-engine (Cloud Run + Vertex AI ADC) 프록시
-// BLOCK_NONE은 Vertex AI ADC에서만 안정 동작
+// Cloudflare Pages Function - Gemini Image Generation (이미지 프로 전용)
+// monk.kr 독립 — Gemini API 직접 호출 (monkos.ai 교차 호출 제거)
 
 export async function onRequestPost(context) {
   const corsHeaders = {
@@ -11,8 +10,17 @@ export async function onRequestPost(context) {
   };
 
   try {
-    const body = await context.request.json();
-    const { prompt, config, model } = body;
+    const { request, env } = context;
+
+    if (!env.GEMINI_API_KEY) {
+      return new Response(JSON.stringify({
+        success: false,
+        error: 'API key not configured'
+      }), { status: 500, headers: corsHeaders });
+    }
+
+    const body = await request.json();
+    const { prompt, config } = body;
 
     if (!prompt) {
       return new Response(JSON.stringify({
@@ -21,47 +29,61 @@ export async function onRequestPost(context) {
       }), { status: 400, headers: corsHeaders });
     }
 
-    console.log('📸 [IMAGE PRO] Generating via monk-image-engine (Vertex AI)...');
+    console.log('📸 [IMAGE PRO] Generating via Gemini API (독립)...');
     console.log('   Prompt:', prompt.substring(0, 100) + '...');
 
-    // monk-image-engine (Cloud Run + Vertex AI ADC + block_none)
-    const engineResponse = await fetch('https://image.monkos.ai/generate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        prompt: prompt,
-        model: model || 'fast',
-        aspectRatio: config?.aspectRatio || '1:1',
-        safetyFilterLevel: 'block_none',
-        personGeneration: 'allow_all'
-      })
-    });
+    const apiKey = env.GEMINI_API_KEY;
+    const geminiResponse = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image-preview:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{
+            parts: [
+              { text: `[HIGH-QUALITY IMAGE GENERATION] Generate a professional, high-resolution image based on the following prompt. Style: photography. Aspect ratio: ${config?.aspectRatio || '1:1'}. Prompt: ${prompt}` }
+            ]
+          }],
+          generationConfig: {
+            imageConfig: {}
+          },
+          safetySettings: [
+            { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+            { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+            { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
+            { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
+          ],
+        })
+      }
+    );
 
-    if (!engineResponse.ok) {
-      const errorText = await engineResponse.text();
-      console.error('❌ monk-image-engine error:', errorText);
+    if (!geminiResponse.ok) {
+      const errorText = await geminiResponse.text();
+      console.error('❌ Gemini API error:', errorText);
       return new Response(JSON.stringify({
         success: false,
         error: 'Image generation failed',
         details: errorText
-      }), { status: engineResponse.status, headers: corsHeaders });
+      }), { status: geminiResponse.status, headers: corsHeaders });
     }
 
-    const result = await engineResponse.json();
+    const result = await geminiResponse.json();
+    const candidates = result.candidates || [];
+    const parts = candidates[0]?.content?.parts || [];
+    const imageParts = parts.filter(p => p.inlineData);
 
-    if (!result.success) {
+    if (imageParts.length === 0) {
       return new Response(JSON.stringify({
         success: false,
-        error: result.error || 'Generation failed'
+        error: 'No image in response. The model might have declined the request.'
       }), { status: 500, headers: corsHeaders });
     }
 
-    // 응답 변환: engine { images: [{ base64 }] } → 프론트 { images: ["data:..."] }
-    const images = (result.images || []).map(img =>
-      typeof img === 'string' ? img : `data:image/jpeg;base64,${img.imageBase64 || img.base64}`
+    const images = imageParts.map(p =>
+      `data:image/png;base64,${p.inlineData.data}`
     );
 
-    console.log('✅ [IMAGE PRO] Generated', images.length, 'images via Vertex AI');
+    console.log('✅ [IMAGE PRO] Generated', images.length, 'images via Gemini API');
 
     return new Response(JSON.stringify({
       success: true,

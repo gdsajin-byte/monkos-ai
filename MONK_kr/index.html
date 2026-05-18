@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-C2H9ZM85F7"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-C2H9ZM85F7');
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>MONK | 몽크사진관 · AI 증명사진 · 크리에이티브 플랫폼</title>
@@ -13,20 +21,36 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://monk.kr">
     <meta property="og:site_name" content="MONK">
+    <meta property="og:image" content="https://monk.kr/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
     <meta property="og:locale" content="ko_KR">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="MONK | 몽크사진관 · AI 크리에이티브 플랫폼">
     <meta name="twitter:description" content="증명사진부터 AI 이미지 생성까지. MONK.KR">
-    
+    <meta name="twitter:image" content="https://monk.kr/og-image.png">
+
+    <!-- Naver OG Tag (네이버 카페·블로그 공유 미리보기) -->
+    <meta property="naver:ogtag" content="MONK | 몽크사진관 · AI 크리에이티브 플랫폼">
+
+    <!-- 모바일 최적화 -->
+    <meta name="format-detection" content="telephone=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#05070A">
+
     <!-- Naver 사이트 인증 -->
     <meta name="naver-site-verification" content="4e800c0d59980f07d75c95f515409a962c8440b0" />
     
     <!-- 검색엔진 로봇 -->
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://monk.kr">
-
-    <!-- Canonical -->
     <link rel="canonical" href="https://monk.kr/">
+
+    <!-- 파비콘 -->
+    <link rel="icon" href="/monkos-icon.svg" type="image/svg+xml">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 
     <!-- Structured Data -->
     <script type="application/ld+json">
@@ -54,6 +78,123 @@
           {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "MONKOS Business", "url": "https://monk.kr/b2b/"}}
         ]
       }
+    }
+    </script>
+    <!-- FAQPage JSON-LD (AEO — AI 엔진 답변 인용 신호) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "MONKOS는 무엇입니까?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "AI 기반 증명사진 플랫폼입니다. 셀카 한 장으로 여권사진, 이력서, 비자 사진을 만들 수 있으며 배경·조명·피부·의상 자동 보정을 제공합니다. ICAO 9303 국제 표준을 준수합니다."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "다른 AI 증명사진 서비스와 무엇이 다른가요?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "20년간 실제 스튜디오 사진 데이터를 기반으로 만들어졌습니다. 알고리즘 추정이 아닌 전문 사진사 미학을 반영하며 90% 이상 정체성 보존을 달성합니다."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "ICAO 규격을 준수하나요?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "예. 생성되는 모든 사진은 여권·비자용 ICAO 9303 국제 표준을 충족합니다."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "개인정보는 어떻게 처리되나요?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "이미지는 처리 후 서버에 장기 저장되지 않습니다. 마케팅이나 AI 학습에 사용자 사진을 사용하지 않습니다."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "어떤 사진 규격을 지원하나요?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "여권 사진(35x45mm, ICAO 표준)과 표준 증명사진(30x40mm)을 지원합니다."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "무료 옵션이 있나요?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "MONKOS CROP (crop.monkos.ai)은 무료 브라우저 기반 사진 크롭 도구입니다. AI 생성은 크레딧을 사용합니다."
+          }
+        }
+      ]
+    }
+    </script>
+    <!-- BreadcrumbList JSON-LD (사이트 구조 신호) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "MONK",
+          "item": "https://monk.kr"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "몽크사진관",
+          "item": "https://monk.kr/monk_studio/monk_studio.html"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "AI LAB",
+          "item": "https://monk.kr/ai_lab/ai_lab.html"
+        },
+        {
+          "@type": "ListItem",
+          "position": 4,
+          "name": "B2B",
+          "item": "https://monk.kr/b2b/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 5,
+          "name": "Academy",
+          "item": "https://monk.kr/Academy/academy.html"
+        }
+      ]
+    }
+    </script>
+    <!-- Person JSON-LD (Founder — 필명 단독, 본명 미포함) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Shin-jakka",
+      "jobTitle": "Founder, Professional Photographer",
+      "worksFor": {
+        "@type": "Organization",
+        "name": "MONK STUDIO",
+        "url": "https://monk.kr"
+      },
+      "knowsAbout": [
+        "Studio Photography",
+        "AI Photo Retouching",
+        "ICAO 9303 Standards",
+        "Portrait Photography"
+      ],
+      "url": "https://monk.kr"
     }
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -308,29 +449,29 @@
     </footer>
 
     <script>
-        // ============ GEMINI CHAT LOGIC ============
+        // ============ MONKOS CHAT (Workers AI Gemma 3 12B) ============
         let llmConnected = false;
-        const GEMINI_API_URL = window.MONK_CONFIG?.API?.GEMINI_PROXY || 'https://monk-gemini-proxy.gdsajin.workers.dev';
+        const CHAT_API = '/api/chat';
+        const chatHistory = [];
 
         async function checkLLMConnection() {
             try {
-                const response = await fetch(GEMINI_API_URL, {
-                    method: 'OPTIONS',
-                    mode: 'cors'
+                const response = await fetch(CHAT_API, {
+                    method: 'OPTIONS'
                 });
-                
-                if (response.ok || response.status === 200) {
+
+                if (response.ok || response.status === 204) {
                     llmConnected = true;
                     document.getElementById('status-gemini').innerHTML = '<span class="flex items-center text-local"><span class="w-2 h-2 bg-local rounded-full mr-2 animate-pulse"></span> Monkos Ready</span>';
                     document.getElementById('llm-connection-status').textContent = '✓ Monkos.ai 연결됨';
                     document.getElementById('llm-send-btn').disabled = false;
                 } else {
-                    throw new Error('Workers not responding');
+                    throw new Error('API not responding');
                 }
             } catch (error) {
                 console.warn('Monkos.ai 연결 실패:', error);
                 document.getElementById('status-gemini').innerHTML = '<span class="flex items-center"><span class="w-2 h-2 bg-yellow-600 rounded-full mr-2"></span> Setup Needed</span>';
-                document.getElementById('llm-connection-status').textContent = '⚠️ Workers 배포 필요';
+                document.getElementById('llm-connection-status').textContent = '⚠️ 연결 확인 중...';
                 document.getElementById('llm-send-btn').disabled = true;
             }
         }
@@ -368,7 +509,7 @@
         async function sendLLMMessage() {
             const input = document.getElementById('llm-input');
             const message = input.value.trim();
-            
+
             if (!message) return;
             if (!llmConnected) {
                 addLLMMessage('bot', '⚠️ 서버가 연결되지 않았습니다.');
@@ -377,7 +518,8 @@
 
             addLLMMessage('user', message);
             input.value = '';
-            
+            chatHistory.push({ role: 'user', content: message });
+
             const messagesDiv = document.getElementById('llm-messages');
             const loadingEl = document.createElement('div');
             loadingEl.className = 'flex justify-start';
@@ -391,16 +533,10 @@
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
 
             try {
-                const response = await fetch(GEMINI_API_URL, {
+                const response = await fetch(CHAT_API, {
                     method: 'POST',
-                    mode: 'cors',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        prompt: message,
-                        model: 'gemini-2.0-flash-exp'
-                    })
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ messages: chatHistory.slice(-10) })
                 });
 
                 if (!response.ok) {
@@ -410,12 +546,14 @@
 
                 const data = await response.json();
                 document.getElementById('llm-loading')?.remove();
-                addLLMMessage('bot', data.response || '응답을 생성할 수 없습니다.');
+                const reply = data.response || '응답을 생성할 수 없습니다.';
+                addLLMMessage('bot', reply);
+                chatHistory.push({ role: 'assistant', content: reply });
 
             } catch (error) {
                 document.getElementById('llm-loading')?.remove();
                 addLLMMessage('bot', `❌ 오류: ${error.message}`);
-                console.error('Gemini API Error:', error);
+                console.error('Chat API Error:', error);
             }
         }
 

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blog Management — MONKOS Admin</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #f5f5f5; --surface: #ffffff; --surface2: #fafafa;
+  --accent: #6d28d9; --accent2: #4f46e5;
+  --text: #334155; --text-dim: #64748b; --text-bright: #0f172a;
+  --border: rgba(0, 0, 0, 0.1); --border-hover: rgba(109, 40, 217, 0.3);
+  --success: #059669; --danger: #dc2626;
+}
+body { font-family: 'Pretendard', 'Noto Sans JP', -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+a { color: var(--accent); text-decoration: none; }
+
+.nav { display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; border-bottom: 1px solid var(--border); }
+.nav-logo { font-size: 20px; font-weight: 700; color: var(--text-bright); letter-spacing: 2px; }
+.nav-back { font-size: 14px; color: var(--text-dim); }
+
+.container { max-width: 1000px; margin: 0 auto; padding: 40px 24px; }
+
+.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+.header h1 { font-size: 24px; font-weight: 700; color: var(--text-bright); }
+.btn-new {
+  padding: 10px 20px; background: var(--accent); color: var(--bg);
+  border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer;
+}
+.btn-new:hover { background: var(--accent2); }
+
+table { width: 100%; border-collapse: collapse; }
+thead th {
+  text-align: left; padding: 12px 16px; font-size: 13px; color: var(--text-dim);
+  border-bottom: 1px solid var(--border); font-weight: 500;
+}
+tbody td { padding: 14px 16px; border-bottom: 1px solid var(--border); font-size: 14px; }
+tbody tr:hover { background: var(--surface); }
+.td-title { max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.td-title a { color: var(--text-bright); font-weight: 500; }
+.badge {
+  display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 500;
+}
+.badge-pub { background: rgba(52, 211, 153, 0.15); color: var(--success); }
+.badge-draft { background: rgba(136, 146, 168, 0.15); color: var(--text-dim); }
+.badge-lang { background: var(--surface2); color: var(--accent); padding: 2px 8px; border-radius: 4px; font-size: 11px; text-transform: uppercase; }
+
+.actions { display: flex; gap: 8px; }
+.btn-sm {
+  padding: 5px 12px; border: 1px solid var(--border); border-radius: 6px;
+  background: transparent; color: var(--text-dim); font-size: 12px; cursor: pointer;
+}
+.btn-sm:hover { border-color: var(--accent); color: var(--accent); }
+.btn-sm.danger:hover { border-color: var(--danger); color: var(--danger); }
+
+.empty { text-align: center; padding: 60px 20px; color: var(--text-dim); }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/admin/" class="nav-logo">MONKOS Admin</a>
+  <a href="/admin/" class="nav-back">&larr; Dashboard</a>
+</nav>
+
+<div class="container">
+  <div class="header">
+    <h1>Blog Management</h1>
+    <a href="/admin/blog-edit.html" class="btn-new">+ New Post</a>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Status</th>
+        <th>Lang</th>
+        <th>Date</th>
+        <th>Views</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="blogTable">
+      <tr><td colspan="6" class="empty">Loading...</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<script>
+const API = '/api/admin/blog';
+
+async function loadPosts() {
+  try {
+    const r = await fetch(API, { credentials: 'include' });
+    if (r.status === 401) { location.href = '/admin/'; return; }
+    const { posts } = await r.json();
+
+    const tbody = document.getElementById('blogTable');
+    if (!posts || posts.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" class="empty">No posts yet. Create your first post!</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = posts.map(p => `
+      <tr>
+        <td class="td-title"><a href="/admin/blog-edit.html?slug=${encodeURIComponent(p.slug)}">${esc(p.title)}</a></td>
+        <td><span class="badge ${p.published ? 'badge-pub' : 'badge-draft'}">${p.published ? 'Published' : 'Draft'}</span></td>
+        <td><span class="badge-lang">${p.lang || 'ko'}</span></td>
+        <td style="color:var(--text-dim);font-size:13px">${(p.createdAt || '').substring(0, 10)}</td>
+        <td style="color:var(--text-dim);font-size:13px">${p.viewCount || 0}</td>
+        <td class="actions">
+          <button class="btn-sm" onclick="togglePublish('${p.slug}', ${!p.published})">${p.published ? 'Unpublish' : 'Publish'}</button>
+          <button class="btn-sm danger" onclick="deletePost('${p.slug}')">Delete</button>
+        </td>
+      </tr>
+    `).join('');
+  } catch (err) {
+    document.getElementById('blogTable').innerHTML = `<tr><td colspan="6" class="empty">Error: ${err.message}</td></tr>`;
+  }
+}
+
+async function togglePublish(slug, published) {
+  await fetch(`${API}/${encodeURIComponent(slug)}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ published }),
+  });
+  loadPosts();
+}
+
+async function deletePost(slug) {
+  if (!confirm(`Delete "${slug}"? This cannot be undone.`)) return;
+  await fetch(`${API}/${encodeURIComponent(slug)}`, {
+    method: 'DELETE',
+    credentials: 'include',
+  });
+  loadPosts();
+}
+
+function esc(s) {
+  const d = document.createElement('div');
+  d.textContent = s || '';
+  return d.innerHTML;
+}
+
+loadPosts();
+</script>
+</body>
+</html>

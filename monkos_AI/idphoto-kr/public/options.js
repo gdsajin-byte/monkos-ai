@@ -18,7 +18,7 @@ function goToCamera() {
 }
 
 function goToPortal() {
-  location.href = 'https://monk.kr';
+  location.href = 'https://monkos.ai';
 }
 
 function openTelegramEvent() {

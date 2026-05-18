@@ -49,8 +49,8 @@ tags: [law-system, governance, protocol, architecture]
 ### Step 1: 참조 문서 읽기
 
 반드시 아래를 먼저 읽고 시작:
-1. `docs/infrastructure/LAW_AUDIT_DOCUMENT_ANALYSIS.md` — 네 이전 조사 결과
-2. `docs/infrastructure/LAW_AUDIT_SESSION_CHRONICLE.md` — 막내1 조사 결과
+1. `docs/infrastructure/audit/LAW_AUDIT_DOCUMENT_ANALYSIS.md` — 네 이전 조사 결과
+2. `docs/infrastructure/audit/LAW_AUDIT_SESSION_CHRONICLE.md` — 막내1 조사 결과
 3. `CLAUDE.md` — 현행 규칙 (372줄)
 
 ### Step 2: CLAUDE.md 재구성 골격 설계
@@ -165,7 +165,7 @@ CLAUDE.md 전문(Preamble)에 들어갈 **에이전트 행동 분기 로직**.
 
 ## 산출물
 
-파일: `docs/infrastructure/MONK_GOVERNANCE_DESIGN_v1.md`
+파일: `docs/infrastructure/audit/MONK_GOVERNANCE_DESIGN_v1.md`
 
 ### 포함 내용
 1. CLAUDE.md 재구성 골격 (목차 + 각 섹션 설명 + 예상 줄 수)

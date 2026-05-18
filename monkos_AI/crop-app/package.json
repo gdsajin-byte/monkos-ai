@@ -1,0 +1,14 @@
+{
+  "name": "monkos-crop-app",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "MONKOS Crop — ICAO 규격 증명사진 자동 크롭 PWA",
+  "scripts": {
+    "build": "node obfuscate.mjs",
+    "build:clean": "node obfuscate.mjs && rm -f public/crop.src.js"
+  },
+  "devDependencies": {
+    "javascript-obfuscator": "^4.1.1"
+  }
+}

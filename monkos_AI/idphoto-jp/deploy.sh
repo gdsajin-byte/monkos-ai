@@ -27,14 +27,14 @@ ENV=${1:-""}
 # 인자 필수
 if [ -z "$ENV" ]; then
   echo -e "${RED}사용법: ./deploy.sh [dev|prod]${NC}"
-  echo -e "  dev   → dev 서비스에 배포 (テスト)"
-  echo -e "  prod  → production 서비스에 배포 (本番)"
+  echo -e "  dev   → dev 서비스에 배포 (테스트)"
+  echo -e "  prod  → production 서비스에 배포 (실서비스)"
   exit 1
 fi
 
 # 유효한 환경값 체크
 if [ "$ENV" != "dev" ] && [ "$ENV" != "prod" ]; then
-  echo -e "${RED}エラー: 環境は 'dev' または 'prod' のみ可能です${NC}"
+  echo -e "${RED}에러: 환경은 'dev' 또는 'prod'만 가능합니다${NC}"
   exit 1
 fi
 
@@ -45,17 +45,8 @@ GCS_BUCKET="monk-ai-images"
 SERVICE_ACCOUNT="monk-image-engine@${PROJECT_ID}.iam.gserviceaccount.com"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-# API Key — .env에서 읽기 (하드코딩 금지)
-if [ -f "${SCRIPT_DIR}/../.env" ]; then
-  GEMINI_API_KEY=$(grep GEMINI_API_KEY "${SCRIPT_DIR}/../.env" | cut -d'=' -f2)
-elif [ -f "${SCRIPT_DIR}/.env" ]; then
-  GEMINI_API_KEY=$(grep GEMINI_API_KEY "${SCRIPT_DIR}/.env" | cut -d'=' -f2)
-fi
-
-if [ -z "$GEMINI_API_KEY" ]; then
-  echo -e "${RED}エラー: GEMINI_API_KEY が見つかりません${NC}"
-  exit 1
-fi
+# 시크릿은 GCP에 세팅된 값 유지 — deploy.sh가 덮어쓰지 않음
+# GEMINI_API_KEY 등 시크릿은 GCP 콘솔 또는 gcloud로 1회 세팅
 
 # 환경별 설정
 if [ "$ENV" = "dev" ]; then
@@ -72,13 +63,13 @@ elif [ "$ENV" = "prod" ]; then
   # 브랜치 안전장치
   CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
   if [ "$CURRENT_BRANCH" != "main" ]; then
-    echo -e "${RED}production 배포는 main 브랜치에서만 가능합니다 (現在: ${CURRENT_BRANCH})${NC}"
+    echo -e "${RED}production 배포는 main 브랜치에서만 가능합니다 (현재: ${CURRENT_BRANCH})${NC}"
     exit 1
   fi
   echo -e "${YELLOW}⚠ PRODUCTION 배포입니다. 계속하시겠습니까? (y/N)${NC}"
   read -r confirm
   if [ "$confirm" != "y" ]; then
-    echo "キャンセル"
+    echo "취소됨"
     exit 0
   fi
 fi
@@ -86,23 +77,23 @@ fi
 echo -e "${BLUE}========================================${NC}"
 echo -e "${BLUE}MONKOS ID Photo JP Service 배포${NC}"
 echo -e "${BLUE}========================================${NC}"
-echo -e "環境: ${YELLOW}${ENV}${NC}"
-echo -e "プロジェクト: ${YELLOW}${PROJECT_ID}${NC}"
-echo -e "リージョン: ${YELLOW}${REGION}${NC}"
-echo -e "サービス: ${YELLOW}${SERVICE_NAME}${NC}"
-echo -e "リソース: ${YELLOW}${MEMORY} / ${CPU} CPU / max ${MAX_INSTANCES}${NC}"
+echo -e "환경: ${YELLOW}${ENV}${NC}"
+echo -e "프로젝트: ${YELLOW}${PROJECT_ID}${NC}"
+echo -e "리전: ${YELLOW}${REGION}${NC}"
+echo -e "서비스: ${YELLOW}${SERVICE_NAME}${NC}"
+echo -e "리소스: ${YELLOW}${MEMORY} / ${CPU} CPU / max ${MAX_INSTANCES}${NC}"
 echo -e "${BLUE}========================================${NC}"
 
 # 1. GCP 프로젝트 설정
-echo -e "\n${GREEN}[1/3]${NC} GCP プロジェクト設定..."
+echo -e "\n${GREEN}[1/3]${NC} GCP 프로젝트 설정..."
 gcloud config set project ${PROJECT_ID}
 
 # 2. Docker 이미지 빌드
-echo -e "\n${GREEN}[2/3]${NC} Docker イメージビルド中..."
+echo -e "\n${GREEN}[2/3]${NC} Docker 이미지 빌드 중..."
 gcloud builds submit --tag gcr.io/${PROJECT_ID}/${SERVICE_NAME}
 
 # 3. Cloud Run 배포
-echo -e "\n${GREEN}[3/3]${NC} Cloud Run デプロイ中..."
+echo -e "\n${GREEN}[3/3]${NC} Cloud Run 배포 중..."
 gcloud run deploy ${SERVICE_NAME} \
   --image gcr.io/${PROJECT_ID}/${SERVICE_NAME} \
   --platform managed \
@@ -112,17 +103,17 @@ gcloud run deploy ${SERVICE_NAME} \
   --cpu ${CPU} \
   --timeout 300 \
   --concurrency 80 \
-  --min-instances 0 \
+  --min-instances 1 \
   --max-instances ${MAX_INSTANCES} \
-  --set-env-vars "PROJECT_ID=${PROJECT_ID},LOCATION=${REGION},GCS_BUCKET=${GCS_BUCKET},GEMINI_API_KEY=${GEMINI_API_KEY}" \
+  --update-env-vars "PROJECT_ID=${PROJECT_ID},LOCATION=${REGION},GCS_BUCKET=${GCS_BUCKET}" \
   --service-account ${SERVICE_ACCOUNT}
 
 # 결과 출력
 SERVICE_URL=$(gcloud run services describe ${SERVICE_NAME} --region ${REGION} --format 'value(status.url)')
 
 echo -e "\n${BLUE}========================================${NC}"
-echo -e "${GREEN}デプロイ完了${NC}"
+echo -e "${GREEN}배포 완료${NC}"
 echo -e "${BLUE}========================================${NC}"
-echo -e "サービス URL: ${YELLOW}${SERVICE_URL}${NC}"
-echo -e "ヘルスチェック: ${YELLOW}${SERVICE_URL}/health${NC}"
+echo -e "서비스 URL: ${YELLOW}${SERVICE_URL}${NC}"
+echo -e "헬스 체크: ${YELLOW}${SERVICE_URL}/health${NC}"
 echo -e "${BLUE}========================================${NC}"

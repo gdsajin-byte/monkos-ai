@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>MONKOS — Channel Join</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="tg-style.css">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="tg-common.js"></script>
+</head>
+<body>
+
+<div class="tg-header">
+  <div class="tg-header-dot"></div>
+  <div class="tg-header-title">MONKOS AI</div>
+</div>
+
+<h1 id="page-title">채널 가입 보너스</h1>
+<p id="page-desc" style="margin-bottom:20px;">MONKOS 텔레그램 채널에 가입하고 40c를 받으세요!</p>
+
+<div class="tg-card" id="card-join">
+  <div class="tg-card-title" id="card-title">텔레그램 채널 가입</div>
+  <p id="card-desc" style="margin-bottom:16px;">아래 버튼으로 채널에 가입한 후, "가입 확인" 버튼을 눌러주세요.</p>
+  <button class="tg-btn tg-btn-secondary" id="btn-open-channel" style="margin-bottom:10px;">채널 열기</button>
+  <button class="tg-btn tg-btn-primary" id="btn-verify">가입 확인 (+40c)</button>
+</div>
+
+<p id="info-text" style="margin-top:12px; font-size:0.78rem; text-align:center;"></p>
+
+<script>
+const I18N = {
+  ko: {
+    title: '채널 가입 보너스',
+    desc: 'MONKOS 텔레그램 채널에 가입하고 40c를 받으세요!',
+    cardTitle: '텔레그램 채널 가입',
+    cardDesc: '아래 버튼으로 채널에 가입한 후, "가입 확인" 버튼을 눌러주세요.',
+    btnOpen: '채널 열기',
+    btnVerify: '가입 확인 (+40c)',
+    info: '* 카카오 채널 / 텔레그램 채널 보너스는 택1입니다.',
+    linkRequired: 'MONKOS 계정 연동이 필요합니다.',
+    success: '채널 가입 확인 완료! +40c',
+    notJoined: '아직 채널에 가입되지 않았습니다. 채널 가입 후 다시 시도해주세요.',
+    alreadyClaimed: '이미 채널 보너스를 수령했습니다.',
+  },
+  ja: {
+    title: 'チャンネル参加ボーナス',
+    desc: 'MONKOSテレグラムチャンネルに参加して40cをゲット！',
+    cardTitle: 'テレグラムチャンネル参加',
+    cardDesc: '下のボタンでチャンネルに参加し、「参加確認」を押してください。',
+    btnOpen: 'チャンネルを開く',
+    btnVerify: '参加確認 (+40c)',
+    info: '* カカオチャンネル / テレグラムチャンネルボーナスは択一です。',
+    linkRequired: 'MONKOSアカウント連携が必要です。',
+    success: 'チャンネル参加確認完了！ +40c',
+    notJoined: 'まだチャンネルに参加していません。参加後にもう一度お試しください。',
+    alreadyClaimed: '既にチャンネルボーナスを受け取りました。',
+  },
+  en: {
+    title: 'Channel Join Bonus',
+    desc: 'Join the MONKOS Telegram channel and earn 40c!',
+    cardTitle: 'Join Telegram Channel',
+    cardDesc: 'Join the channel using the button below, then click "Verify" to claim your bonus.',
+    btnOpen: 'Open Channel',
+    btnVerify: 'Verify (+40c)',
+    info: '* Kakao / Telegram channel bonus is one-time only (choose one).',
+    linkRequired: 'MONKOS account linking required.',
+    success: 'Channel join verified! +40c',
+    notJoined: 'Channel membership not detected. Please join the channel first.',
+    alreadyClaimed: 'Channel bonus already claimed.',
+  },
+};
+
+(async function () {
+  const { detectLang, verifyUser, apiCall, showToast } = window.MonkosTG;
+  const tg = window.Telegram.WebApp;
+  const lang = detectLang();
+  const t = I18N[lang] || I18N.en;
+
+  document.getElementById('page-title').textContent = t.title;
+  document.getElementById('page-desc').textContent = t.desc;
+  document.getElementById('card-title').textContent = t.cardTitle;
+  document.getElementById('card-desc').textContent = t.cardDesc;
+  document.getElementById('btn-open-channel').textContent = t.btnOpen;
+  document.getElementById('btn-verify').textContent = t.btnVerify;
+  document.getElementById('info-text').textContent = t.info;
+
+  const user = await verifyUser();
+  if (!user.linked) {
+    showToast(t.linkRequired, 3000);
+    return;
+  }
+
+  const userId = user.userId;
+
+  if (user.channelJoined) {
+    document.getElementById('card-join').classList.add('completed');
+    document.getElementById('btn-verify').textContent = '✅';
+    document.getElementById('btn-verify').disabled = true;
+    return;
+  }
+
+  // 채널 열기
+  document.getElementById('btn-open-channel').addEventListener('click', () => {
+    tg.openTelegramLink('https://t.me/MonkosChannel');
+  });
+
+  // 가입 확인
+  document.getElementById('btn-verify').addEventListener('click', async () => {
+    const btn = document.getElementById('btn-verify');
+    btn.disabled = true;
+
+    const res = await apiCall('/api/credits/event', { userId, eventType: 'telegram_join' });
+    if (res.success) {
+      showToast(t.success);
+      document.getElementById('card-join').classList.add('completed');
+      btn.textContent = '✅';
+    } else if (res.alreadyClaimed) {
+      showToast(t.alreadyClaimed, 3000);
+      document.getElementById('card-join').classList.add('completed');
+      btn.textContent = '✅';
+    } else if (res.error?.includes('가입') || res.error?.includes('not') || res.status) {
+      showToast(t.notJoined, 3000);
+      btn.disabled = false;
+    } else {
+      showToast(res.error || 'Error', 3000);
+      btn.disabled = false;
+    }
+  });
+})();
+</script>
+</body>
+</html>

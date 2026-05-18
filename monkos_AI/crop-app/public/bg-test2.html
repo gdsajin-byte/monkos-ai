@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>배경 제거 테스트 2 — @imgly/background-removal</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, sans-serif; background: #1a1a2e; color: #eee; padding: 20px; }
+    h1 { font-size: 18px; margin-bottom: 8px; }
+    .sub { font-size: 13px; color: #888; margin-bottom: 16px; }
+    .controls { display: flex; gap: 12px; margin-bottom: 16px; align-items: center; flex-wrap: wrap; }
+    .btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; }
+    .btn-upload { background: #6c5ce7; color: #fff; }
+    .btn-process { background: #00b894; color: #fff; }
+    .btn-process:disabled { background: #555; cursor: not-allowed; }
+    select { padding: 8px 12px; border-radius: 8px; border: 1px solid #444; background: #2d2d44; color: #eee; font-size: 14px; }
+    .canvas-row { display: flex; gap: 20px; flex-wrap: wrap; }
+    .canvas-box { text-align: center; }
+    .canvas-box canvas { max-width: 400px; max-height: 500px; border-radius: 8px; border: 1px solid #333; background: repeating-conic-gradient(#333 0% 25%, #222 0% 50%) 50% / 16px 16px; }
+    .label { font-size: 12px; color: #888; margin-top: 6px; }
+    .status { margin: 12px 0; font-size: 14px; color: #fdcb6e; min-height: 20px; }
+    .timing { color: #00b894; font-weight: 600; }
+    .progress { width: 300px; height: 6px; background: #333; border-radius: 3px; margin-top: 8px; display: none; }
+    .progress-bar { height: 100%; background: #6c5ce7; border-radius: 3px; transition: width 0.3s; }
+    input[type="file"] { display: none; }
+  </style>
+</head>
+<body>
+  <h1>배경 제거 테스트 2 — @imgly/background-removal (ISNet ONNX)</h1>
+  <div class="sub">모델 ~40MB 첫 로드 후 캐시됨 · 브라우저 로컬 추론 · 서버 전송 없음</div>
+
+  <div class="controls">
+    <button class="btn btn-upload" id="btnUpload">사진 업로드</button>
+    <button class="btn btn-process" id="btnProcess" disabled>배경 제거</button>
+    <select id="bgSelect">
+      <option value="#FFFFFF">흰색 배경</option>
+      <option value="#E8E8E8">연회색 배경</option>
+      <option value="#D4E6F1">연파랑 배경</option>
+      <option value="transparent">투명 배경 (체크무늬)</option>
+    </select>
+  </div>
+
+  <div class="status" id="status">사진을 업로드하세요 (첫 실행 시 모델 ~40MB 다운로드)</div>
+  <div class="progress" id="progress"><div class="progress-bar" id="progressBar"></div></div>
+
+  <div class="canvas-row">
+    <div class="canvas-box">
+      <canvas id="canvasOriginal"></canvas>
+      <div class="label">원본</div>
+    </div>
+    <div class="canvas-box">
+      <canvas id="canvasResult"></canvas>
+      <div class="label">배경 제거 결과</div>
+    </div>
+    <div class="canvas-box">
+      <canvas id="canvasFinal"></canvas>
+      <div class="label">배경 교체 결과</div>
+    </div>
+  </div>
+
+  <input type="file" accept="image/*" id="fileInput">
+
+  <script type="module">
+    async function loadLib() {
+      const m = await import('https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.5.5/+esm');
+      return m.removeBackground || m.default?.removeBackground || m.default;
+    }
+    const imglyRemoveBackground = await loadLib();
+
+    const fileInput = document.getElementById('fileInput');
+    const btnUpload = document.getElementById('btnUpload');
+    const btnProcess = document.getElementById('btnProcess');
+    const bgSelect = document.getElementById('bgSelect');
+    const statusEl = document.getElementById('status');
+    const progressEl = document.getElementById('progress');
+    const progressBar = document.getElementById('progressBar');
+    const canvasOrig = document.getElementById('canvasOriginal');
+    const canvasResult = document.getElementById('canvasResult');
+    const canvasFinal = document.getElementById('canvasFinal');
+
+    let loadedFile = null;
+    let loadedImage = null;
+
+    btnUpload.addEventListener('click', () => fileInput.click());
+
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      loadedFile = file;
+      const img = new Image();
+      img.onload = () => {
+        loadedImage = img;
+        canvasOrig.width = img.width;
+        canvasOrig.height = img.height;
+        canvasOrig.getContext('2d').drawImage(img, 0, 0);
+        btnProcess.disabled = false;
+        statusEl.textContent = `이미지 로드 완료 (${img.width}×${img.height}, ${(file.size / 1024).toFixed(0)}KB)`;
+      };
+      img.src = URL.createObjectURL(file);
+    });
+
+    btnProcess.addEventListener('click', async () => {
+      if (!loadedFile) return;
+      btnProcess.disabled = true;
+      progressEl.style.display = 'block';
+      progressBar.style.width = '10%';
+      statusEl.textContent = '모델 로딩 + 추론 중... (첫 실행 ~30초, 이후 ~5초)';
+
+      const t0 = performance.now();
+
+      try {
+        const blob = await imglyRemoveBackground(loadedFile, {
+          progress: (key, current, total) => {
+            if (total > 0) {
+              const pct = Math.round((current / total) * 100);
+              progressBar.style.width = pct + '%';
+              statusEl.textContent = `${key}: ${pct}%`;
+            }
+          }
+        });
+
+        const t1 = performance.now();
+        progressBar.style.width = '100%';
+
+        // 투명 배경 결과
+        const resultImg = new Image();
+        resultImg.onload = () => {
+          const w = resultImg.width;
+          const h = resultImg.height;
+
+          // 투명 결과
+          canvasResult.width = w;
+          canvasResult.height = h;
+          const rctx = canvasResult.getContext('2d');
+          rctx.clearRect(0, 0, w, h);
+          rctx.drawImage(resultImg, 0, 0);
+
+          // 배경 교체 결과
+          canvasFinal.width = w;
+          canvasFinal.height = h;
+          const fctx = canvasFinal.getContext('2d');
+
+          const bgColor = bgSelect.value;
+          if (bgColor !== 'transparent') {
+            fctx.fillStyle = bgColor;
+            fctx.fillRect(0, 0, w, h);
+          } else {
+            fctx.clearRect(0, 0, w, h);
+          }
+          fctx.drawImage(resultImg, 0, 0);
+
+          const t2 = performance.now();
+          statusEl.innerHTML = `완료 — <span class="timing">추론: ${((t1 - t0) / 1000).toFixed(1)}초 · 합성: ${(t2 - t1).toFixed(0)}ms</span>`;
+          progressEl.style.display = 'none';
+          btnProcess.disabled = false;
+        };
+        resultImg.src = URL.createObjectURL(blob);
+
+      } catch (err) {
+        statusEl.textContent = '에러: ' + err.message;
+        progressEl.style.display = 'none';
+        btnProcess.disabled = false;
+      }
+    });
+
+    bgSelect.addEventListener('change', () => {
+      // 결과가 있으면 배경만 다시 합성
+      const rctx = canvasResult.getContext('2d');
+      if (canvasResult.width === 0) return;
+      const w = canvasResult.width;
+      const h = canvasResult.height;
+      const fctx = canvasFinal.getContext('2d');
+      canvasFinal.width = w;
+      canvasFinal.height = h;
+      const bgColor = bgSelect.value;
+      if (bgColor !== 'transparent') {
+        fctx.fillStyle = bgColor;
+        fctx.fillRect(0, 0, w, h);
+      } else {
+        fctx.clearRect(0, 0, w, h);
+      }
+      fctx.drawImage(canvasResult, 0, 0);
+    });
+  </script>
+</body>
+</html>

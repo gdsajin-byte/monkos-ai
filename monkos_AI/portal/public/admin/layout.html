@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Home Layout — MONKOS Admin</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #f5f5f5; --surface: #ffffff; --surface2: #fafafa;
+  --accent: #6d28d9; --accent2: #4f46e5;
+  --text: #334155; --text-dim: #64748b; --text-bright: #0f172a;
+  --border: rgba(0, 0, 0, 0.1); --border-hover: rgba(109, 40, 217, 0.3);
+  --success: #059669; --danger: #dc2626;
+}
+body { font-family: 'Pretendard', 'Noto Sans JP', -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+a { color: var(--accent); text-decoration: none; }
+
+.nav { display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; border-bottom: 1px solid var(--border); }
+.nav-logo { font-size: 20px; font-weight: 700; color: var(--text-bright); letter-spacing: 2px; }
+.nav-back { font-size: 14px; color: var(--text-dim); }
+
+.container { max-width: 900px; margin: 0 auto; padding: 40px 24px; }
+
+.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+.header h1 { font-size: 24px; font-weight: 700; color: var(--text-bright); }
+
+.btn {
+  padding: 10px 20px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600;
+  cursor: pointer; transition: opacity 0.2s;
+}
+.btn:hover { opacity: 0.85; }
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+
+.hint { font-size: 12px; color: var(--text-dim); margin-bottom: 20px; }
+
+/* Category tabs */
+.cat-tabs { display: flex; gap: 4px; margin-bottom: 20px; border-bottom: 2px solid var(--border); padding-bottom: 0; }
+.cat-tab {
+  padding: 10px 20px; font-size: 14px; font-weight: 600; color: var(--text-dim);
+  border: none; background: none; cursor: pointer; border-bottom: 2px solid transparent;
+  margin-bottom: -2px; transition: color 0.2s, border-color 0.2s;
+}
+.cat-tab:hover { color: var(--text-bright); }
+.cat-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* Block table */
+table { width: 100%; border-collapse: collapse; background: var(--surface); border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
+thead th {
+  text-align: left; padding: 12px 16px; font-size: 13px; color: var(--text-dim);
+  border-bottom: 1px solid var(--border); font-weight: 500; background: var(--surface2);
+}
+tbody td { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 14px; vertical-align: middle; }
+tbody tr:hover { background: var(--surface2); }
+
+.section-name { font-weight: 600; color: var(--text-bright); }
+.section-type { font-size: 12px; color: var(--text-dim); margin-left: 6px; }
+
+.toggle { position: relative; width: 40px; height: 22px; cursor: pointer; }
+.toggle input { opacity: 0; width: 0; height: 0; }
+.toggle .slider {
+  position: absolute; inset: 0; background: #ccc; border-radius: 11px; transition: 0.3s;
+}
+.toggle .slider::before {
+  content: ''; position: absolute; height: 16px; width: 16px; left: 3px; bottom: 3px;
+  background: white; border-radius: 50%; transition: 0.3s;
+}
+.toggle input:checked + .slider { background: var(--accent); }
+.toggle input:checked + .slider::before { transform: translateX(18px); }
+
+.order-btns { display: flex; gap: 4px; }
+.order-btn {
+  width: 28px; height: 28px; border: 1px solid var(--border); border-radius: 4px;
+  background: var(--surface); cursor: pointer; font-size: 12px; color: var(--text-dim);
+  display: flex; align-items: center; justify-content: center;
+}
+.order-btn:hover { border-color: var(--accent); color: var(--accent); }
+.order-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+.btn-edit {
+  padding: 5px 12px; border: 1px solid var(--border); border-radius: 6px;
+  background: transparent; color: var(--text-dim); font-size: 12px; cursor: pointer;
+}
+.btn-edit:hover { border-color: var(--accent); color: var(--accent); }
+
+/* Modal */
+.modal-overlay {
+  display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.7); z-index: 100; align-items: flex-start; justify-content: center;
+  padding-top: 40px; overflow-y: auto;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+  padding: 32px; width: 90%; max-width: 700px; max-height: calc(100vh - 80px); overflow-y: auto;
+  margin-bottom: 40px;
+}
+.modal h2 { font-size: 20px; color: var(--text-bright); margin-bottom: 16px; }
+
+/* i18n tabs in modal */
+.lang-tabs { display: flex; gap: 4px; margin-bottom: 20px; }
+.lang-tab {
+  padding: 6px 16px; font-size: 13px; font-weight: 600; border-radius: 6px;
+  border: 1px solid var(--border); background: var(--surface2); color: var(--text-dim);
+  cursor: pointer; transition: all 0.2s;
+}
+.lang-tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+.form-row { margin-bottom: 14px; }
+.form-row label { display: block; font-size: 13px; color: var(--text-dim); margin-bottom: 6px; font-weight: 500; }
+.form-row input, .form-row select, .form-row textarea {
+  width: 100%; padding: 10px 14px; background: var(--bg); border: 1px solid var(--border);
+  border-radius: 8px; color: var(--text); font-size: 14px; outline: none; font-family: inherit;
+}
+.form-row input:focus, .form-row select:focus, .form-row textarea:focus { border-color: var(--accent); }
+.form-row input[type="number"] { width: 120px; }
+.form-row input[type="checkbox"] { width: auto; }
+
+.form-section { border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 16px; background: var(--surface2); }
+.form-section-title { font-size: 13px; font-weight: 700; color: var(--text-bright); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+.item-card { border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 8px; background: var(--surface); }
+.item-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.item-card-title { font-size: 13px; font-weight: 600; color: var(--text-bright); }
+.btn-sm-inline {
+  padding: 3px 8px; font-size: 11px; border: 1px solid var(--border); border-radius: 4px;
+  background: transparent; color: var(--text-dim); cursor: pointer;
+}
+.btn-sm-inline:hover { border-color: var(--accent); color: var(--accent); }
+.btn-sm-inline.danger:hover { border-color: var(--danger); color: var(--danger); }
+
+.modal-btns { display: flex; gap: 12px; margin-top: 20px; }
+
+.inline-toggle { display: flex; align-items: center; gap: 8px; }
+.inline-toggle span { font-size: 13px; color: var(--text-dim); }
+
+.toast {
+  position: fixed; bottom: 24px; right: 24px; padding: 12px 24px;
+  background: var(--success); color: #fff; border-radius: 8px;
+  font-size: 14px; font-weight: 500; opacity: 0; transition: opacity 0.3s;
+  z-index: 1000;
+}
+.toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/admin/" class="nav-logo">MONKOS Admin</a>
+  <a href="/admin/" class="nav-back">&larr; Dashboard</a>
+</nav>
+
+<div class="container">
+  <div class="header">
+    <h1>Home Layout</h1>
+    <button class="btn btn-primary" onclick="saveLayout()">저장</button>
+  </div>
+  <p class="hint">홈 페이지 블록의 표시 여부, 순서, 내용을 편집합니다. 변경 후 "저장"을 누르면 즉시 반영됩니다.</p>
+
+  <div class="cat-tabs">
+    <button class="cat-tab active" onclick="switchTab('header')">헤더</button>
+    <button class="cat-tab" onclick="switchTab('main')">메인</button>
+    <button class="cat-tab" onclick="switchTab('sidebar')">사이드바</button>
+    <button class="cat-tab" onclick="switchTab('footer')">푸터</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>블록</th>
+        <th>표시</th>
+        <th>순서</th>
+        <th>편집</th>
+      </tr>
+    </thead>
+    <tbody id="layoutTable">
+      <tr><td colspan="4" style="text-align:center;color:var(--text-dim)">불러오는 중...</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h2 id="modalTitle">블록 편집</h2>
+    <div class="lang-tabs" id="langTabs" style="display:none">
+      <button class="lang-tab active" onclick="switchLang('ko')">KO</button>
+      <button class="lang-tab" onclick="switchLang('ja')">JA</button>
+      <button class="lang-tab" onclick="switchLang('en')">EN</button>
+    </div>
+    <div id="modalBody"></div>
+    <div class="modal-btns">
+      <button class="btn btn-primary" onclick="applyModal()">적용</button>
+      <button class="btn btn-secondary" onclick="closeModal()">취소</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = '/api/admin/layout';
+const LANGS = ['ko', 'ja', 'en'];
+
+const CATEGORIES = {
+  header: ['hero', 'user-bar', 'gallery-strip', 'nav'],
+  main: ['intro-text', 'service-cards', 'howto', 'faq-preview', 'board-preview', 'blog-cards'],
+  sidebar: ['magazine', 'tags', 'guide', 'credit-info'],
+  footer: ['footer'],
+};
+
+const BLOCK_LABELS = {
+  'hero': 'Hero (메인 배너)',
+  'user-bar': 'User Bar (상단 CTA)',
+  'gallery-strip': 'Gallery Strip (갤러리 띠)',
+  'nav': 'Navigation (내비게이션)',
+  'intro-text': 'Intro Text (인트로 문구)',
+  'service-cards': 'Service Cards (서비스 카드)',
+  'howto': 'How To (이용법)',
+  'faq-preview': 'FAQ Preview (FAQ 프리뷰)',
+  'board-preview': 'Board Preview (게시판 프리뷰)',
+  'blog-cards': 'Blog Cards (블로그 카드)',
+  'magazine': 'Magazine (매거진)',
+  'tags': 'Tags (태그)',
+  'guide': 'Guide (가이드)',
+  'credit-info': 'Credit Info (크레딧 정보)',
+  'footer': 'Footer (푸터)',
+};
+
+let sections = [];
+let currentTab = 'header';
+let currentLang = 'ko';
+let editingBlockId = null;
+
+// ─── Load / Save ───
+
+async function loadLayout() {
+  try {
+    const r = await fetch(API, { credentials: 'include' });
+    if (r.status === 401) { location.href = '/admin/'; return; }
+    const data = await r.json();
+    sections = data.sections || [];
+    sections.sort((a, b) => a.order - b.order);
+    render();
+  } catch (err) {
+    showToast('로드 실패: ' + err.message, true);
+  }
+}
+
+async function saveLayout() {
+  sections.forEach((s, i) => s.order = i + 1);
+  try {
+    const r = await fetch(API, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ sections }),
+    });
+    if (r.status === 401) { location.href = '/admin/'; return; }
+    if (r.ok) showToast('저장 완료');
+    else {
+      const d = await r.json();
+      showToast(d.error || '저장 실패', true);
+    }
+  } catch (err) {
+    showToast('에러: ' + err.message, true);
+  }
+}
+
+// ─── Tab / Render ───
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.cat-tab').forEach(el => el.classList.remove('active'));
+  document.querySelector(`.cat-tab[onclick="switchTab('${tab}')"]`).classList.add('active');
+  render();
+}
+
+function render() {
+  const ids = CATEGORIES[currentTab] || [];
+  const filtered = sections.filter(s => ids.includes(s.id));
+  filtered.sort((a, b) => a.order - b.order);
+
+  const tbody = document.getElementById('layoutTable');
+  if (filtered.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--text-dim)">블록 없음</td></tr>';
+    return;
+  }
+
+  const globalIdx = (id) => sections.findIndex(s => s.id === id);
+
+  tbody.innerHTML = filtered.map((s, i) => `
+    <tr data-id="${s.id}">
+      <td><span class="section-name">${BLOCK_LABELS[s.id] || s.id}</span></td>
+      <td>
+        <label class="toggle">
+          <input type="checkbox" ${s.visible ? 'checked' : ''} onchange="toggleVisible('${s.id}', this.checked)">
+          <span class="slider"></span>
+        </label>
+      </td>
+      <td>
+        <div class="order-btns">
+          <button class="order-btn" onclick="moveBlock('${s.id}', -1)" ${i === 0 ? 'disabled' : ''}>&#9650;</button>
+          <button class="order-btn" onclick="moveBlock('${s.id}', 1)" ${i === filtered.length - 1 ? 'disabled' : ''}>&#9660;</button>
+        </div>
+      </td>
+      <td>
+        <button class="btn-edit" onclick="openEditModal('${s.id}')">편집</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function toggleVisible(id, checked) {
+  const s = sections.find(s => s.id === id);
+  if (s) s.visible = checked;
+}
+
+function moveBlock(id, dir) {
+  const ids = CATEGORIES[currentTab] || [];
+  const filtered = sections.filter(s => ids.includes(s.id)).sort((a, b) => a.order - b.order);
+  const idx = filtered.findIndex(s => s.id === id);
+  const swapIdx = idx + dir;
+  if (swapIdx < 0 || swapIdx >= filtered.length) return;
+
+  const aOrder = filtered[idx].order;
+  const bOrder = filtered[swapIdx].order;
+  filtered[idx].order = bOrder;
+  filtered[swapIdx].order = aOrder;
+  render();
+}
+
+// ─── Modal ───
+
+function switchLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-tab').forEach(el => el.classList.remove('active'));
+  document.querySelector(`.lang-tab[onclick="switchLang('${lang}')"]`).classList.add('active');
+
+  document.querySelectorAll('[data-lang]').forEach(el => {
+    el.style.display = el.dataset.lang === lang ? '' : 'none';
+  });
+}
+
+function openEditModal(id) {
+  editingBlockId = id;
+  const block = sections.find(s => s.id === id);
+  if (!block) return;
+
+  document.getElementById('modalTitle').textContent = BLOCK_LABELS[id] || id;
+  currentLang = 'ko';
+  document.querySelectorAll('.lang-tab').forEach(el => el.classList.remove('active'));
+  document.querySelector('.lang-tab[onclick="switchLang(\'ko\')"]').classList.add('active');
+
+  const body = document.getElementById('modalBody');
+  const needsLang = needsI18n(id);
+  document.getElementById('langTabs').style.display = needsLang ? 'flex' : 'none';
+
+  body.innerHTML = buildForm(id, block);
+  document.getElementById('modalOverlay').classList.add('open');
+
+  if (needsLang) switchLang('ko');
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  editingBlockId = null;
+}
+
+function needsI18n(id) {
+  return !['gallery-strip', 'magazine', 'tags', 'footer'].includes(id);
+}
+
+function applyModal() {
+  const block = sections.find(s => s.id === editingBlockId);
+  if (!block) return;
+  readForm(editingBlockId, block);
+  closeModal();
+  showToast('적용 완료 (저장 버튼으로 서버 반영)');
+}
+
+// ─── Form Builders ───
+
+function i18nInput(name, obj, label, type) {
+  type = type || 'text';
+  obj = obj || {};
+  return LANGS.map(lang => {
+    const val = esc(obj[lang] || '');
+    const tag = type === 'textarea'
+      ? `<textarea id="${name}_${lang}" rows="2">${val}</textarea>`
+      : `<input type="text" id="${name}_${lang}" value="${val}">`;
+    return `<div data-lang="${lang}" ${lang !== 'ko' ? 'style="display:none"' : ''}>
+      <div class="form-row"><label>${label} (${lang.toUpperCase()})</label>${tag}</div>
+    </div>`;
+  }).join('');
+}
+
+function singleInput(name, val, label, type) {
+  type = type || 'text';
+  val = val || '';
+  if (type === 'number') return `<div class="form-row"><label>${label}</label><input type="number" id="${name}" value="${val}"></div>`;
+  if (type === 'textarea') return `<div class="form-row"><label>${label}</label><textarea id="${name}" rows="2">${esc(val)}</textarea></div>`;
+  return `<div class="form-row"><label>${label}</label><input type="text" id="${name}" value="${esc(val)}"></div>`;
+}
+
+function toggleInput(name, val, label) {
+  return `<div class="form-row"><div class="inline-toggle">
+    <label class="toggle"><input type="checkbox" id="${name}" ${val ? 'checked' : ''}><span class="slider"></span></label>
+    <span>${label}</span>
+  </div></div>`;
+}
+
+function buildForm(id, block) {
+  const d = block.data || {};
+  switch (id) {
+    case 'hero': return buildHeroForm(d);
+    case 'user-bar': return buildUserBarForm(d);
+    case 'gallery-strip': return buildGalleryStripForm(d);
+    case 'nav': return buildNavForm(block);
+    case 'intro-text': return buildIntroTextForm(d);
+    case 'service-cards': return buildServiceCardsForm(block);
+    case 'howto': return buildHowtoForm(block);
+    case 'faq-preview': return buildDynamicBlockForm(d, 'faq-preview');
+    case 'board-preview': return buildDynamicBlockForm(d, 'board-preview');
+    case 'blog-cards': return buildDynamicBlockForm(d, 'blog-cards');
+    case 'magazine': return buildMagazineForm(d);
+    case 'tags': return buildTagsForm(d);
+    case 'guide': return buildGuideForm(block);
+    case 'credit-info': return buildCreditForm(d);
+    case 'footer': return buildFooterForm(d);
+    default: return '<p style="color:var(--text-dim)">이 블록은 편집 폼이 없습니다.</p>';
+  }
+}
+
+// Hero
+function buildHeroForm(d) {
+  return singleInput('hero_label', d.label, 'Label') +
+    singleInput('hero_title', d.title, 'Title (HTML)') +
+    singleInput('hero_tagline', d.tagline, 'Tagline (HTML)');
+}
+
+// Intro Text
+function buildIntroTextForm(d) {
+  return i18nInput('intro_text', d.text, 'Intro Text (HTML 허용)', 'textarea');
+}
+
+// User Bar
+function buildUserBarForm(d) {
+  return i18nInput('ub_cta', d.cta, 'CTA 문구') +
+    `<div class="form-section"><div class="form-section-title">CTA URL</div>
+    ${singleInput('ub_ctaUrl_kr', d.ctaUrl?.kr, 'KR URL')}
+    ${singleInput('ub_ctaUrl_global', d.ctaUrl?.global, 'Global URL')}
+    </div>` +
+    toggleInput('ub_showLangSwitch', d.showLangSwitch, 'Language Switch 표시') +
+    toggleInput('ub_showLogin', d.showLogin, 'Login 버튼 표시') +
+    toggleInput('ub_showCredit', d.showCredit, 'Credit 표시');
+}
+
+// Gallery Strip
+function buildGalleryStripForm(d) {
+  return singleInput('gs_maxItems', d.maxItems, 'Max Items', 'number') +
+    toggleInput('gs_autoScroll', d.autoScroll, 'Auto Scroll') +
+    singleInput('gs_speed', d.speed, 'Speed', 'number');
+}
+
+// Nav
+function buildNavForm(block) {
+  const items = block.items || [];
+  let html = '<div id="navItems">';
+  items.forEach((item, i) => {
+    html += buildNavItemCard(i, item);
+  });
+  html += '</div>';
+  html += `<button class="btn btn-secondary" style="margin-top:8px;font-size:12px" onclick="addNavItem()">+ 항목 추가</button>`;
+  return html;
+}
+
+function buildNavItemCard(i, item) {
+  return `<div class="item-card" id="navItem_${i}">
+    <div class="item-card-header">
+      <span class="item-card-title">Nav #${i + 1}</span>
+      <button class="btn-sm-inline danger" onclick="removeNavItem(${i})">삭제</button>
+    </div>
+    ${i18nInput('nav_label_' + i, item.label, 'Label')}
+    ${i18nInput('nav_href_' + i, item.href, 'URL')}
+  </div>`;
+}
+
+// Service Cards
+function buildServiceCardsForm(block) {
+  const items = block.items || [];
+  let html = '<div id="svcItems">';
+  items.forEach((item, i) => {
+    html += buildSvcItemCard(i, item);
+  });
+  html += '</div>';
+  html += `<button class="btn btn-secondary" style="margin-top:8px;font-size:12px" onclick="addSvcItem()">+ 카드 추가</button>`;
+  return html;
+}
+
+function buildSvcItemCard(i, item) {
+  return `<div class="item-card" id="svcItem_${i}">
+    <div class="item-card-header">
+      <span class="item-card-title">Card #${i + 1}</span>
+      <button class="btn-sm-inline danger" onclick="removeSvcItem(${i})">삭제</button>
+    </div>
+    ${i18nInput('svc_title_' + i, item.title, 'Title')}
+    ${i18nInput('svc_desc_' + i, item.desc, 'Description', 'textarea')}
+    ${i18nInput('svc_link_' + i, item.link, 'Link Text')}
+    ${singleInput('svc_url_' + i, item.url, 'URL')}
+    ${singleInput('svc_icon_' + i, item.icon, 'Icon')}
+    ${singleInput('svc_badge_' + i, item.badge?.text, 'Badge Text')}
+    ${singleInput('svc_cardClass_' + i, item.cardClass, 'Card Class')}
+  </div>`;
+}
+
+// Howto
+function buildHowtoForm(block) {
+  const h = block.header || {};
+  const items = block.items || [];
+  let html = `<div class="form-section"><div class="form-section-title">Header</div>
+    ${i18nInput('howto_htitle', h.title, 'Title')}
+    ${i18nInput('howto_hlink', h.link, 'Link Text')}
+    ${singleInput('howto_hhref', h.href, 'Link URL')}
+  </div>`;
+  html += '<div id="howtoItems">';
+  items.forEach((item, i) => {
+    html += `<div class="item-card" id="howtoItem_${i}">
+      <div class="item-card-header"><span class="item-card-title">Step #${i + 1}</span></div>
+      ${singleInput('howto_num_' + i, item.num, 'Number')}
+      ${i18nInput('howto_title_' + i, item.title, 'Title')}
+      ${i18nInput('howto_desc_' + i, item.desc, 'Description')}
+    </div>`;
+  });
+  html += '</div>';
+  return html;
+}
+
+// Dynamic blocks (faq-preview, board-preview, blog-cards)
+function buildDynamicBlockForm(d, type) {
+  const h = d.header || {};
+  let html = singleInput('dyn_maxItems', d.maxItems, 'Max Items', 'number');
+  if (type === 'faq-preview') {
+    html += toggleInput('dyn_linkToFull', d.linkToFull, '전체보기 링크 표시');
+  }
+  html += `<div class="form-section"><div class="form-section-title">Header</div>
+    ${i18nInput('dyn_htitle', h.title, 'Title')}
+    ${i18nInput('dyn_hlink', h.link, 'Link Text')}
+    ${singleInput('dyn_hhref', h.href, 'Link URL')}
+  </div>`;
+  return html;
+}
+
+// Magazine
+function buildMagazineForm(d) {
+  return singleInput('mag_maxItems', d.maxItems, 'Max Items', 'number');
+}
+
+// Tags
+function buildTagsForm(d) {
+  return singleInput('tags_maxTags', d.maxTags, 'Max Tags', 'number') +
+    toggleInput('tags_expandable', d.expandable, 'Expandable');
+}
+
+// Guide
+function buildGuideForm(block) {
+  const items = block.items || [];
+  let html = '<div id="guideItems">';
+  items.forEach((item, i) => {
+    html += `<div class="item-card" id="guideItem_${i}">
+      <div class="item-card-header"><span class="item-card-title">Guide #${i + 1}</span></div>
+      ${i18nInput('guide_title_' + i, item.title, 'Title')}
+      ${i18nInput('guide_desc_' + i, item.desc, 'Description')}
+      ${i18nInput('guide_status_' + i, item.status, 'Status')}
+      ${singleInput('guide_bg_' + i, item.style?.background, 'Background Color')}
+    </div>`;
+  });
+  html += '</div>';
+  return html;
+}
+
+// Credit Info
+function buildCreditForm(d) {
+  let html = i18nInput('cr_exchange', d.exchange, 'Exchange Rate');
+  html += `<div class="form-section"><div class="form-section-title">Rows</div><div id="creditRows">`;
+  (d.rows || []).forEach((row, i) => {
+    html += `<div class="item-card" id="creditRow_${i}">
+      <div class="item-card-header"><span class="item-card-title">Row #${i + 1}</span></div>
+      ${i18nInput('cr_label_' + i, row.label, 'Label')}
+      ${singleInput('cr_value_' + i, row.value, 'Value')}
+    </div>`;
+  });
+  html += '</div></div>';
+  const p = d.promo || {};
+  html += `<div class="form-section"><div class="form-section-title">Promo</div>
+    ${i18nInput('cr_oldPrice', p.oldPrice, 'Old Price')}
+    ${i18nInput('cr_newPrice', p.newPrice, 'New Price')}
+    ${i18nInput('cr_bonus', p.bonus, 'Bonus')}
+  </div>`;
+  return html;
+}
+
+// Footer
+function buildFooterForm(d) {
+  let html = `<div class="form-section"><div class="form-section-title">Links</div><div id="footerLinks">`;
+  (d.links || []).forEach((link, i) => {
+    html += `<div class="item-card" id="footerLink_${i}">
+      <div class="item-card-header">
+        <span class="item-card-title">Link #${i + 1}</span>
+        <button class="btn-sm-inline danger" onclick="removeFooterLink(${i})">삭제</button>
+      </div>
+      ${singleInput('ft_label_' + i, link.label, 'Label')}
+      ${singleInput('ft_href_' + i, link.href, 'URL')}
+    </div>`;
+  });
+  html += '</div></div>';
+  html += `<button class="btn btn-secondary" style="margin-top:8px;font-size:12px" onclick="addFooterLink()">+ 링크 추가</button>`;
+  html += singleInput('ft_copyright', d.copyright, 'Copyright');
+  return html;
+}
+
+// ─── Form Readers ───
+
+function readI18n(prefix) {
+  const obj = {};
+  LANGS.forEach(lang => {
+    const el = document.getElementById(prefix + '_' + lang);
+    if (el) obj[lang] = el.value;
+  });
+  return obj;
+}
+
+function readVal(id, type) {
+  const el = document.getElementById(id);
+  if (!el) return '';
+  if (type === 'number') return parseInt(el.value, 10) || 0;
+  if (type === 'bool') return el.checked;
+  return el.value;
+}
+
+function readForm(id, block) {
+  switch (id) {
+    case 'hero': return readHeroForm(block);
+    case 'user-bar': return readUserBarForm(block);
+    case 'gallery-strip': return readGalleryStripForm(block);
+    case 'nav': return readNavForm(block);
+    case 'intro-text': return readIntroTextForm(block);
+    case 'service-cards': return readServiceCardsForm(block);
+    case 'howto': return readHowtoForm(block);
+    case 'faq-preview': return readDynamicBlockForm(block, true);
+    case 'board-preview': return readDynamicBlockForm(block, false);
+    case 'blog-cards': return readDynamicBlockForm(block, false);
+    case 'magazine': return readMagazineForm(block);
+    case 'tags': return readTagsForm(block);
+    case 'guide': return readGuideForm(block);
+    case 'credit-info': return readCreditForm(block);
+    case 'footer': return readFooterForm(block);
+  }
+}
+
+function readIntroTextForm(block) {
+  if (!block.data) block.data = {};
+  block.data.text = readI18n('intro_text');
+}
+
+function readHeroForm(block) {
+  if (!block.data) block.data = {};
+  block.data.label = readVal('hero_label');
+  block.data.title = readVal('hero_title');
+  block.data.tagline = readVal('hero_tagline');
+}
+
+function readUserBarForm(block) {
+  if (!block.data) block.data = {};
+  block.data.cta = readI18n('ub_cta');
+  if (!block.data.ctaUrl) block.data.ctaUrl = {};
+  block.data.ctaUrl.kr = readVal('ub_ctaUrl_kr');
+  block.data.ctaUrl.global = readVal('ub_ctaUrl_global');
+  block.data.showLangSwitch = readVal('ub_showLangSwitch', 'bool');
+  block.data.showLogin = readVal('ub_showLogin', 'bool');
+  block.data.showCredit = readVal('ub_showCredit', 'bool');
+}
+
+function readGalleryStripForm(block) {
+  if (!block.data) block.data = {};
+  block.data.maxItems = readVal('gs_maxItems', 'number');
+  block.data.autoScroll = readVal('gs_autoScroll', 'bool');
+  block.data.speed = readVal('gs_speed', 'number');
+}
+
+function readNavForm(block) {
+  const container = document.getElementById('navItems');
+  if (!container) return;
+  const cards = container.querySelectorAll('.item-card');
+  block.items = [];
+  cards.forEach((_, i) => {
+    block.items.push({
+      label: readI18n('nav_label_' + i),
+      href: readI18n('nav_href_' + i),
+    });
+  });
+}
+
+function readServiceCardsForm(block) {
+  const container = document.getElementById('svcItems');
+  if (!container) return;
+  const cards = container.querySelectorAll('.item-card');
+  block.items = [];
+  cards.forEach((_, i) => {
+    block.items.push({
+      title: readI18n('svc_title_' + i),
+      desc: readI18n('svc_desc_' + i),
+      link: readI18n('svc_link_' + i),
+      url: readVal('svc_url_' + i),
+      icon: readVal('svc_icon_' + i),
+      badge: { text: readVal('svc_badge_' + i) },
+      cardClass: readVal('svc_cardClass_' + i),
+      style: {},
+    });
+  });
+}
+
+function readHowtoForm(block) {
+  if (!block.header) block.header = {};
+  block.header.title = readI18n('howto_htitle');
+  block.header.link = readI18n('howto_hlink');
+  block.header.href = readVal('howto_hhref');
+
+  const container = document.getElementById('howtoItems');
+  if (!container) return;
+  const cards = container.querySelectorAll('.item-card');
+  block.items = [];
+  cards.forEach((_, i) => {
+    block.items.push({
+      num: readVal('howto_num_' + i),
+      title: readI18n('howto_title_' + i),
+      desc: readI18n('howto_desc_' + i),
+    });
+  });
+}
+
+function readDynamicBlockForm(block, hasLinkToFull) {
+  if (!block.data) block.data = {};
+  block.data.maxItems = readVal('dyn_maxItems', 'number');
+  if (hasLinkToFull) block.data.linkToFull = readVal('dyn_linkToFull', 'bool');
+  if (!block.data.header) block.data.header = {};
+  block.data.header.title = readI18n('dyn_htitle');
+  block.data.header.link = readI18n('dyn_hlink');
+  block.data.header.href = readVal('dyn_hhref');
+}
+
+function readMagazineForm(block) {
+  if (!block.data) block.data = {};
+  block.data.maxItems = readVal('mag_maxItems', 'number');
+}
+
+function readTagsForm(block) {
+  if (!block.data) block.data = {};
+  block.data.maxTags = readVal('tags_maxTags', 'number');
+  block.data.expandable = readVal('tags_expandable', 'bool');
+}
+
+function readGuideForm(block) {
+  const container = document.getElementById('guideItems');
+  if (!container) return;
+  const cards = container.querySelectorAll('.item-card');
+  block.items = [];
+  cards.forEach((_, i) => {
+    block.items.push({
+      title: readI18n('guide_title_' + i),
+      desc: readI18n('guide_desc_' + i),
+      status: readI18n('guide_status_' + i),
+      style: { background: readVal('guide_bg_' + i) },
+    });
+  });
+}
+
+function readCreditForm(block) {
+  if (!block.data) block.data = {};
+  block.data.exchange = readI18n('cr_exchange');
+
+  const container = document.getElementById('creditRows');
+  if (container) {
+    const cards = container.querySelectorAll('.item-card');
+    block.data.rows = [];
+    cards.forEach((_, i) => {
+      block.data.rows.push({
+        label: readI18n('cr_label_' + i),
+        value: readVal('cr_value_' + i),
+      });
+    });
+  }
+
+  if (!block.data.promo) block.data.promo = {};
+  block.data.promo.oldPrice = readI18n('cr_oldPrice');
+  block.data.promo.newPrice = readI18n('cr_newPrice');
+  block.data.promo.bonus = readI18n('cr_bonus');
+}
+
+function readFooterForm(block) {
+  if (!block.data) block.data = {};
+  const container = document.getElementById('footerLinks');
+  if (container) {
+    const cards = container.querySelectorAll('.item-card');
+    block.data.links = [];
+    cards.forEach((_, i) => {
+      block.data.links.push({
+        label: readVal('ft_label_' + i),
+        href: readVal('ft_href_' + i),
+      });
+    });
+  }
+  block.data.copyright = readVal('ft_copyright');
+}
+
+// ─── Dynamic item add/remove ───
+
+function addNavItem() {
+  const block = sections.find(s => s.id === 'nav');
+  if (!block) return;
+  readNavForm(block);
+  block.items.push({ label: { ko: '', ja: '', en: '' }, href: { ko: '', ja: '', en: '' } });
+  openEditModal('nav');
+}
+
+function removeNavItem(i) {
+  const block = sections.find(s => s.id === 'nav');
+  if (!block) return;
+  readNavForm(block);
+  block.items.splice(i, 1);
+  openEditModal('nav');
+}
+
+function addSvcItem() {
+  const block = sections.find(s => s.id === 'service-cards');
+  if (!block) return;
+  readServiceCardsForm(block);
+  block.items.push({ title: {}, desc: {}, link: {}, url: '', icon: '', badge: { text: '' }, cardClass: '', style: {} });
+  openEditModal('service-cards');
+}
+
+function removeSvcItem(i) {
+  const block = sections.find(s => s.id === 'service-cards');
+  if (!block) return;
+  readServiceCardsForm(block);
+  block.items.splice(i, 1);
+  openEditModal('service-cards');
+}
+
+function addFooterLink() {
+  const block = sections.find(s => s.id === 'footer');
+  if (!block) return;
+  readFooterForm(block);
+  block.data.links.push({ label: '', href: '' });
+  openEditModal('footer');
+}
+
+function removeFooterLink(i) {
+  const block = sections.find(s => s.id === 'footer');
+  if (!block) return;
+  readFooterForm(block);
+  block.data.links.splice(i, 1);
+  openEditModal('footer');
+}
+
+// ─── Util ───
+
+function esc(s) {
+  if (!s) return '';
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function showToast(msg, isError) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.background = isError ? 'var(--danger)' : 'var(--success)';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+loadLayout();
+</script>
+</body>
+</html>

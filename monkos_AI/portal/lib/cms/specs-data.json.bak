@@ -1,0 +1,1322 @@
+{
+  "korea-passport": {
+    "slug": "korea-passport",
+    "country": "한국",
+    "countryEn": "Korea",
+    "type": "여권·신분증",
+    "typeEn": "Passport / ID Card",
+    "typeJa": "パスポート・身分証",
+    "size": "3.5 × 4.5cm",
+    "pixels": "413 × 531px",
+    "dpi": 300,
+    "background": "균일 흰색",
+    "headHeight": "3.2~3.6cm (정수리~턱)",
+    "validity": "6개월 이내",
+    "fileSpec": "JPEG, 500KB 이하",
+    "details": {
+      "ko": "표정은 무표정, 입은 다문 상태. 안경 착용 가능(렌즈 반사·프레임 주의). 머리카락이 이마를 가리면 안 됨. 귀 노출 권장.",
+      "ja": "表情は無表情、口は閉じた状態。メガネ着用可能（レンズ反射・フレーム注意）。前髪が額を隠してはならない。",
+      "en": "Neutral expression, mouth closed. Glasses allowed (watch for lens glare and frame obstruction). Hair must not cover forehead."
+    },
+    "rejectionReasons": {
+      "ko": [
+        "배경에 그림자",
+        "머리 기울어짐",
+        "이마를 가린 머리카락",
+        "조명 불균일",
+        "사이즈 불일치"
+      ],
+      "ja": [
+        "背景に影",
+        "頭の傾き",
+        "額を隠す髪",
+        "照明の不均一",
+        "サイズ不一致"
+      ],
+      "en": [
+        "Shadow on background",
+        "Head tilt",
+        "Hair covering forehead",
+        "Uneven lighting",
+        "Wrong size"
+      ]
+    },
+    "faqs": {
+      "ko": [
+        {
+          "q": "여권사진 배경은 흰색만 가능한가요?",
+          "a": "네, 대한민국 여권사진은 균일한 흰색 배경만 허용됩니다. 그림자나 무늬가 있으면 반려됩니다."
+        },
+        {
+          "q": "안경 쓰고 여권사진 찍어도 되나요?",
+          "a": "네, 안경 착용이 가능합니다. 다만 렌즈 반사가 없어야 하고 프레임이 눈을 가리면 안 됩니다."
+        },
+        {
+          "q": "여권사진 셀프로 찍을 수 있나요?",
+          "a": "네, 규격만 맞으면 셀프 촬영도 가능합니다. MONKOS AI를 사용하면 배경 제거와 규격 크롭을 자동으로 처리합니다."
+        },
+        {
+          "q": "여권사진 유효기간이 있나요?",
+          "a": "촬영 후 6개월 이내의 사진만 사용할 수 있습니다."
+        }
+      ],
+      "ja": [
+        {
+          "q": "パスポート写真の背景は白のみですか？",
+          "a": "はい、均一な白背景のみ許可されています。影や模様があると却下されます。"
+        },
+        {
+          "q": "メガネをかけてパスポート写真を撮れますか？",
+          "a": "撮影可能ですが、レンズの反射がないことが条件です。"
+        },
+        {
+          "q": "セルフでパスポート写真を撮れますか？",
+          "a": "はい、規格を満たせばセルフ撮影も可能です。MONKOS AIで背景除去と規格クロップを自動処理できます。"
+        }
+      ],
+      "en": [
+        {
+          "q": "Does the passport photo background have to be white?",
+          "a": "Yes, a solid white background is required. Shadows or patterns will cause rejection."
+        },
+        {
+          "q": "Can I wear glasses in a passport photo?",
+          "a": "For Korea, glasses are allowed but watch for lens glare and frame obstruction. For Japan, removing glasses is strongly recommended."
+        },
+        {
+          "q": "Can I take a passport photo by myself?",
+          "a": "Yes, as long as it meets the specifications. MONKOS AI automatically removes the background and crops to the correct size."
+        }
+      ]
+    },
+    "ctaService": "idphoto-kr",
+    "priority": 1,
+    "headHeightEn": "3.2-3.6cm (crown to chin)",
+    "headHeightJa": "3.2〜3.6cm（頭頂〜あご）",
+    "validityEn": "Within 6 months",
+    "validityJa": "6ヶ月以内",
+    "fileSpecEn": "JPEG, max 500KB",
+    "fileSpecJa": "JPEG、500KB以下",
+    "backgroundEn": "Uniform white",
+    "backgroundJa": "均一な白"
+  },
+  "korea-resume": {
+    "slug": "korea-resume",
+    "country": "한국",
+    "countryEn": "Korea",
+    "type": "반명함 (3×4)",
+    "typeEn": "Half-size (3×4)",
+    "typeJa": "半名刺（3×4）",
+    "size": "3 × 4cm",
+    "pixels": "제출처에 따라 상이",
+    "dpi": "-",
+    "background": "흰색 또는 연파란 (관행)",
+    "headHeight": "제출처에 따라 상이",
+    "validity": "제출처에 따라 상이",
+    "fileSpec": "제출처에 따라 상이",
+    "details": {
+      "ko": "이력서, 학생증, 자격증 등 사기관 제출용. 사이즈(3×4cm)만 통일되어 있으며 픽셀·배경·파일 등 세부 규격은 공식 규정 없음. 제출처 요구사항을 확인할 것.",
+      "ja": "履歴書、学生証、資格証など各機関提出用。サイズ（3×4cm）のみ統一で、公式な細則は定められていない。提出先の要件を確認すること。",
+      "en": "For resumes, student IDs, certificates. Only the size (3×4cm) is standardized — no official regulation for pixels, background, or file specs. Check requirements of the submitting institution."
+    },
+    "rejectionReasons": {
+      "ko": [
+        "사이즈 불일치 (여권 규격과 혼동)",
+        "배경 불균일",
+        "머리 잘림",
+        "표정 부적합",
+        "해상도 부족"
+      ],
+      "ja": [
+        "サイズ不一致",
+        "背景不均一",
+        "頭切れ",
+        "表情不適合",
+        "解像度不足"
+      ],
+      "en": [
+        "Wrong size (confused with passport)",
+        "Uneven background",
+        "Head cropped",
+        "Inappropriate expression",
+        "Low resolution"
+      ]
+    },
+    "faqs": {
+      "ko": [
+        {
+          "q": "반명함과 여권사진 차이가 뭔가요?",
+          "a": "사이즈가 다릅니다. 여권사진은 3.5×4.5cm, 반명함은 3×4cm입니다. 반명함은 공식 규정이 없어 제출처마다 요구사항이 다를 수 있습니다."
+        },
+        {
+          "q": "이력서 사진도 정장을 입어야 하나요?",
+          "a": "필수는 아니지만 권장됩니다. 비즈니스 캐주얼 이상이 일반적입니다."
+        },
+        {
+          "q": "반명함 사진을 온라인으로 제출할 수 있나요?",
+          "a": "네, MONKOS에서 디지털 파일로 다운로드하여 온라인 제출이 가능합니다."
+        }
+      ],
+      "ja": [
+        {
+          "q": "半名刺とパスポート写真の違いは？",
+          "a": "サイズのみ異なります。パスポートは3.5×4.5cm、半名刺（履歴書）は3×4cmです。"
+        },
+        {
+          "q": "履歴書写真はスーツ必須ですか？",
+          "a": "必須ではありませんが、ビジネスカジュアル以上が推奨されます。"
+        }
+      ],
+      "en": [
+        {
+          "q": "What's the difference between resume and passport photo?",
+          "a": "Only the size differs. Passport is 3.5×4.5cm, resume is 3×4cm."
+        },
+        {
+          "q": "Do I need to wear a suit for a resume photo?",
+          "a": "Not required, but business casual or above is recommended."
+        }
+      ]
+    },
+    "ctaService": "idphoto-kr",
+    "priority": 2,
+    "pixelsEn": "Varies by institution",
+    "pixelsJa": "提出先により異なる",
+    "headHeightEn": "Varies by institution",
+    "headHeightJa": "提出先により異なる",
+    "validityEn": "Varies by institution",
+    "validityJa": "提出先により異なる",
+    "fileSpecEn": "Varies by institution",
+    "fileSpecJa": "提出先により異なる",
+    "backgroundEn": "White or light blue (convention)",
+    "backgroundJa": "白または薄い青（慣行）"
+  },
+  "japan-passport": {
+    "slug": "japan-passport",
+    "country": "日本",
+    "countryEn": "Japan",
+    "type": "パスポート",
+    "typeEn": "Passport",
+    "typeJa": "パスポート",
+    "size": "3.5 × 4.5cm",
+    "pixels": "600 × 730px",
+    "dpi": 300,
+    "background": "無背景（白推奨）",
+    "headHeight": "34±2mm (顔の70~80%)",
+    "validity": "6ヶ月以内",
+    "fileSpec": "JPEG, 600KB以下",
+    "details": {
+      "ko": "일본 여권사진은 흰색 배경 강력 권장(2025년 신여권 흑백 레이저 인쇄). 안경 제거 강력 권장(외무성). 머리 높이 34±2mm. 온라인 제출 시 600×730px, 600KB 이하.",
+      "ja": "白背景を強く推奨（2025年新パスポートはレーザー白黒印刷）。メガネは外すことを推奨（外務省）。頭の高さ34±2mm。オンライン提出時600×730px、600KB以下。",
+      "en": "White background strongly recommended (2025 new passport uses B&W laser printing). Removing glasses strongly recommended (MOFA). Head height 34±2mm. Online: 600×730px, max 600KB."
+    },
+    "rejectionReasons": {
+      "ko": [
+        "배경색 부적합",
+        "얼굴 비율 초과/미달",
+        "안경 반사",
+        "그림자",
+        "사이즈 불일치"
+      ],
+      "ja": [
+        "背景色不適合",
+        "顔比率超過/不足",
+        "メガネ反射",
+        "影",
+        "サイズ不一致"
+      ],
+      "en": [
+        "Wrong background color",
+        "Face ratio out of range",
+        "Glasses glare",
+        "Shadow",
+        "Wrong size"
+      ]
+    },
+    "faqs": {
+      "ko": [
+        {
+          "q": "일본 여권사진에 안경을 써도 되나요?",
+          "a": "외무성은 안경 제거를 강력 권장합니다. 의료상 필요한 경우만 허용되며, 렌즈 반사·프레임이 눈을 가리면 안 됩니다."
+        },
+        {
+          "q": "일본 여권사진 배경은 흰색만 가능한가요?",
+          "a": "흰색 또는 연한 회색(라이트그레이)이 허용됩니다."
+        }
+      ],
+      "ja": [
+        {
+          "q": "パスポート写真にメガネをかけてもいいですか？",
+          "a": "外務省はメガネを外すことを強く推奨しています。医療上の理由がある場合のみ着用可能ですが、レンズ反射やフレームが目を隠すと却下されます。"
+        },
+        {
+          "q": "パスポート写真の背景は白のみですか？",
+          "a": "白または薄いグレーが許可されています。"
+        },
+        {
+          "q": "パスポート写真をスマホで撮れますか？",
+          "a": "はい、規格を満たせばスマホ撮影も可能です。MONKOS AIで自動処理できます。"
+        }
+      ],
+      "en": [
+        {
+          "q": "Can I wear glasses in a Japanese passport photo?",
+          "a": "Yes, as long as there is no glare on the lenses."
+        },
+        {
+          "q": "What background color for Japanese passport photo?",
+          "a": "White or light gray is accepted."
+        }
+      ]
+    },
+    "ctaService": "idphoto-jp",
+    "priority": 6
+  },
+  "japan-resume": {
+    "slug": "japan-resume",
+    "country": "日本",
+    "countryEn": "Japan",
+    "type": "履歴書",
+    "typeEn": "Resume",
+    "typeJa": "履歴書（就活）",
+    "size": "3 × 4cm",
+    "pixels": "354 × 472px",
+    "dpi": 300,
+    "background": "均一な白",
+    "headHeight": "2.8~3.2cm",
+    "validity": "3ヶ月以内推奨",
+    "fileSpec": "JPEG",
+    "details": {
+      "ko": "일본 취직활동(就活)용. 3개월 이내 촬영 권장. 정장 착용이 사실상 필수.",
+      "ja": "就職活動用。3ヶ月以内の撮影を推奨。スーツ着用が事実上必須。",
+      "en": "For Japanese job hunting (shūkatsu). Photos within 3 months recommended. Business suit practically required."
+    },
+    "rejectionReasons": {
+      "ko": [
+        "사이즈 불일치",
+        "정장 미착용",
+        "표정 부적합",
+        "촬영일 초과",
+        "배경 불균일"
+      ],
+      "ja": [
+        "サイズ不一致",
+        "スーツ未着用",
+        "表情不適合",
+        "撮影日超過",
+        "背景不均一"
+      ],
+      "en": [
+        "Wrong size",
+        "No business suit",
+        "Inappropriate expression",
+        "Photo too old",
+        "Uneven background"
+      ]
+    },
+    "faqs": {
+      "ko": [
+        {
+          "q": "일본 이력서 사진은 반드시 정장인가요?",
+          "a": "법적 필수는 아니지만, 취직활동에서는 사실상 필수입니다. 검은색 또는 네이비 정장이 표준입니다."
+        }
+      ],
+      "ja": [
+        {
+          "q": "履歴書写真は必ずスーツですか？",
+          "a": "法的義務ではありませんが、就活では事実上必須です。黒またはネイビーのスーツが標準です。"
+        },
+        {
+          "q": "履歴書写真の有効期限は？",
+          "a": "一般的に3ヶ月以内が推奨されます。企業によっては6ヶ月以内でも可。"
+        },
+        {
+          "q": "コンビニでプリントできますか？",
+          "a": "はい、ローソン・セブンイレブン・ファミマのマルチコピー機で印刷可能です。MONKOS AIで作成→ダウンロード→コンビニプリント。"
+        }
+      ],
+      "en": [
+        {
+          "q": "Is a suit required for Japanese resume photos?",
+          "a": "Not legally, but practically required for job hunting. Black or navy suit is standard."
+        }
+      ]
+    },
+    "ctaService": "idphoto-jp",
+    "priority": 9
+  },
+  "us-passport": {
+    "slug": "us-passport",
+    "country": "USA",
+    "countryEn": "USA",
+    "type": "Passport / Visa",
+    "typeEn": "Passport / Visa",
+    "typeJa": "パスポート・ビザ",
+    "size": "2 × 2 inch (51 × 51mm)",
+    "pixels": "600 × 600px ~ 1200 × 1200px",
+    "dpi": 300,
+    "background": "White or off-white",
+    "headHeight": "1~1⅜ inches (25~35mm)",
+    "validity": "Within 6 months",
+    "fileSpec": "JPEG (비자: 240KB 이하 / 여권 갱신: 54KB~10MB)",
+    "details": {
+      "ko": "미국 여권·비자·그린카드 공통 규격. 정사각형(2×2인치). 안경 착용 불가(2016년 11월부터). 600×600~1200×1200px. 비자(DS-160)와 여권 온라인 갱신의 파일 제한이 다름.",
+      "ja": "米国パスポート・ビザ・グリーンカード共通規格。正方形（2×2インチ）。メガネ不可（2016年11月から）。600×600〜1200×1200px。",
+      "en": "Standard for US passport, visa, and green card. Square format (2×2 inch). Glasses not allowed since Nov 2016. 600×600 to 1200×1200px. File limits differ between visa (DS-160: max 240KB) and passport renewal (54KB–10MB)."
+    },
+    "rejectionReasons": {
+      "ko": [
+        "사이즈 불일치 (정사각형 아님)",
+        "안경 착용",
+        "그림자",
+        "배경 불균일",
+        "얼굴 비율 부적합"
+      ],
+      "ja": [
+        "サイズ不一致（正方形でない）",
+        "メガネ着用",
+        "影",
+        "背景不均一",
+        "顔比率不適合"
+      ],
+      "en": [
+        "Wrong size (not square)",
+        "Wearing glasses",
+        "Shadow",
+        "Uneven background",
+        "Face proportion out of range"
+      ]
+    },
+    "faqs": {
+      "ko": [
+        {
+          "q": "미국 여권사진은 왜 정사각형인가요?",
+          "a": "미국 국무부 규정입니다. 2×2인치(51×51mm) 정사각형이 표준이며, 다른 국가와 규격이 다릅니다."
+        }
+      ],
+      "ja": [
+        {
+          "q": "アメリカのパスポート写真はなぜ正方形？",
+          "a": "米国国務省の規定です。2×2インチ（51×51mm）の正方形が標準です。"
+        }
+      ],
+      "en": [
+        {
+          "q": "Why is the US passport photo square?",
+          "a": "It's a US State Department requirement. 2×2 inches (51×51mm) is the standard."
+        },
+        {
+          "q": "Can I wear glasses in a US passport photo?",
+          "a": "No, glasses have not been allowed in US passport photos since November 2016."
+        },
+        {
+          "q": "Can I smile in a US passport photo?",
+          "a": "A natural, neutral expression is required. No wide smiles."
+        }
+      ]
+    },
+    "ctaService": "idphoto-kr",
+    "priority": 11,
+    "fileSpecEn": "JPEG (Visa: max 240KB / Passport renewal: 54KB-10MB)",
+    "fileSpecJa": "JPEG（ビザ: 240KB以下 / パスポート更新: 54KB〜10MB）"
+  },
+  "korea-drivers-license": {
+    "slug": "korea-drivers-license",
+    "country": "한국",
+    "countryEn": "Korea",
+    "type": "운전면허증",
+    "typeEn": "Driver's License",
+    "typeJa": "運転免許証",
+    "size": "3.5 × 4.5cm",
+    "pixels": "350 × 450px",
+    "dpi": 300,
+    "background": "균일 흰색",
+    "headHeight": "3.2~3.6cm",
+    "validity": "6개월 이내",
+    "fileSpec": "JPEG, 250KB 이하",
+    "details": {
+      "ko": "여권사진과 동일 사이즈(3.5×4.5cm). 도로교통공단 온라인 접수 시 디지털 파일 제출 가능. 온라인 제출 픽셀은 350×450px, 파일크기 250KB 이하.",
+      "ja": "パスポート写真と同サイズ（3.5×4.5cm）。オンライン提出時は350×450px、250KB以下。",
+      "en": "Same size as passport (3.5×4.5cm). For online submission: 350×450px, max 250KB."
+    },
+    "rejectionReasons": {
+      "ko": [
+        "사이즈 불일치",
+        "배경 불균일",
+        "안경 반사",
+        "모자·선글라스 착용",
+        "사진 오래됨"
+      ],
+      "ja": [
+        "サイズ不一致",
+        "背景不均一",
+        "メガネ反射",
+        "帽子・サングラス着用",
+        "写真が古い"
+      ],
+      "en": [
+        "Wrong size",
+        "Uneven background",
+        "Glasses glare",
+        "Hat or sunglasses",
+        "Photo too old"
+      ]
+    },
+    "faqs": {
+      "ko": [
+        {
+          "q": "운전면허증 사진 규격이 여권사진과 같나요?",
+          "a": "네, 동일한 3.5×4.5cm 규격입니다. 여권사진으로 운전면허 갱신도 가능합니다."
+        },
+        {
+          "q": "운전면허증 사진을 온라인으로 제출할 수 있나요?",
+          "a": "도로교통공단 홈페이지에서 온라인 접수 시 디지털 파일을 업로드할 수 있습니다."
+        }
+      ],
+      "ja": [
+        {
+          "q": "運転免許証の写真規格はパスポートと同じ？",
+          "a": "はい、同じ3.5×4.5cm規格です。"
+        }
+      ],
+      "en": [
+        {
+          "q": "Is the driver's license photo the same as passport?",
+          "a": "Yes, same 3.5×4.5cm size in Korea."
+        }
+      ]
+    },
+    "ctaService": "idphoto-kr",
+    "priority": 5,
+    "validityEn": "Within 6 months",
+    "validityJa": "6ヶ月以内",
+    "fileSpecEn": "JPEG, max 250KB",
+    "fileSpecJa": "JPEG、250KB以下",
+    "backgroundEn": "Uniform white",
+    "backgroundJa": "均一な白"
+  },
+  "japan-mynumber": {
+    "slug": "japan-mynumber",
+    "country": "日本",
+    "countryEn": "Japan",
+    "type": "マイナンバーカード",
+    "typeEn": "My Number Card",
+    "typeJa": "マイナンバーカード",
+    "size": "3.5 × 4.5cm",
+    "pixels": "480~6,000px (幅・高さとも)",
+    "dpi": 300,
+    "background": "無背景・単色",
+    "headHeight": "34±2mm",
+    "validity": "6ヶ月以内",
+    "fileSpec": "JPEG, 20KB~7MB",
+    "details": {
+      "ko": "일본 마이넘버(개인번호) 카드 신청용. 여권사진과 동일 규격. 온라인 신청 시 스마트폰 촬영 가능.",
+      "ja": "マイナンバーカード申請用。パスポートと同一規格。オンライン申請時スマホ撮影可能。",
+      "en": "For My Number Card application. Same specs as passport. Smartphone photos accepted for online applications."
+    },
+    "rejectionReasons": {
+      "ko": [
+        "사이즈 불일치",
+        "배경 불균일",
+        "그림자",
+        "파일 용량 초과",
+        "얼굴 비율 부적합"
+      ],
+      "ja": [
+        "サイズ不一致",
+        "背景不均一",
+        "影",
+        "ファイル容量超過",
+        "顔比率不適合"
+      ],
+      "en": [
+        "Wrong size",
+        "Uneven background",
+        "Shadow",
+        "File too large",
+        "Face proportion out of range"
+      ]
+    },
+    "faqs": {
+      "ja": [
+        {
+          "q": "マイナンバーカードの写真はスマホで撮れますか？",
+          "a": "はい、オンライン申請ではスマホ撮影が認められています。MONKOS AIで規格に合わせて自動処理できます。"
+        },
+        {
+          "q": "マイナンバーカードの写真規格はパスポートと同じ？",
+          "a": "はい、3.5×4.5cm、白背景で同一規格です。"
+        }
+      ],
+      "ko": [
+        {
+          "q": "마이넘버카드 사진을 스마트폰으로 찍어도 되나요?",
+          "a": "네, 온라인 신청 시 스마트폰 촬영이 허용됩니다."
+        }
+      ],
+      "en": [
+        {
+          "q": "Can I take a My Number Card photo with my phone?",
+          "a": "Yes, smartphone photos are accepted for online applications."
+        }
+      ]
+    },
+    "ctaService": "idphoto-jp",
+    "priority": 7
+  },
+  "korea-halfcard": {
+    "slug": "korea-halfcard",
+    "country": "한국",
+    "countryEn": "Korea",
+    "type": "반명함 (이력서·서류)",
+    "typeEn": "Half-size Photo",
+    "typeJa": "半名刺写真",
+    "size": "30 × 40 mm",
+    "pixels": "354 × 472px",
+    "dpi": 300,
+    "background": "흰색",
+    "headHeight": "제출처에 따라 상이",
+    "validity": "제출처에 따라 상이",
+    "fileSpec": "JPEG",
+    "details": {
+      "ko": "이력서, 학생증, 자격증 등 각종 서류 제출용. 3×4cm 사이즈만 통일, 세부 규격은 제출처마다 상이.",
+      "ja": "履歴書、学生証、資格証など各種書類提出用。3×4cmのみ統一。",
+      "en": "For resumes, student IDs, certificates. Only 3×4cm size is standardized."
+    },
+    "rejectionReasons": {
+      "ko": [
+        "사이즈 불일치",
+        "배경 불균일",
+        "머리 잘림"
+      ],
+      "ja": [
+        "サイズ不一致",
+        "背景不均一",
+        "頭切れ"
+      ],
+      "en": [
+        "Wrong size",
+        "Uneven background",
+        "Head cropped"
+      ]
+    },
+    "faqs": {
+      "ko": [
+        {
+          "q": "반명함과 여권사진 차이가 뭔가요?",
+          "a": "사이즈가 다릅니다. 여권 3.5×4.5cm, 반명함 3×4cm입니다."
+        }
+      ],
+      "ja": [],
+      "en": []
+    },
+    "ctaService": "idphoto-kr",
+    "priority": 3,
+    "headHeightEn": "Varies by institution",
+    "headHeightJa": "提出先により異なる",
+    "validityEn": "Varies by institution",
+    "validityJa": "提出先により異なる",
+    "backgroundEn": "White",
+    "backgroundJa": "白"
+  },
+  "korea-resident": {
+    "slug": "korea-resident",
+    "country": "한국",
+    "countryEn": "Korea",
+    "type": "주민등록증",
+    "typeEn": "Resident ID Card",
+    "typeJa": "住民登録証",
+    "size": "35 × 45 mm",
+    "pixels": "413 × 531px",
+    "dpi": 300,
+    "background": "균일 흰색",
+    "headHeight": "3.2~3.6cm",
+    "validity": "6개월 이내",
+    "fileSpec": "JPEG",
+    "details": {
+      "ko": "주민등록증 발급/재발급용. 여권사진과 동일 규격(35×45mm). 무표정, 안경 착용 가능.",
+      "ja": "住民登録証発行用。パスポートと同一規格（35×45mm）。",
+      "en": "For resident ID card issuance. Same specs as passport (35×45mm)."
+    },
+    "rejectionReasons": {
+      "ko": [
+        "배경 불균일",
+        "사이즈 불일치",
+        "안경 반사",
+        "표정 부적합"
+      ],
+      "ja": [
+        "背景不均一",
+        "サイズ不一致"
+      ],
+      "en": [
+        "Uneven background",
+        "Wrong size"
+      ]
+    },
+    "faqs": {
+      "ko": [
+        {
+          "q": "주민등록증 사진도 여권사진과 같나요?",
+          "a": "네, 동일한 35×45mm 규격입니다."
+        }
+      ],
+      "ja": [],
+      "en": []
+    },
+    "ctaService": "idphoto-kr",
+    "priority": 4,
+    "validityEn": "Within 6 months",
+    "validityJa": "6ヶ月以内",
+    "backgroundEn": "Uniform white",
+    "backgroundJa": "均一な白"
+  },
+  "japan-halfcard": {
+    "slug": "japan-halfcard",
+    "country": "日本",
+    "countryEn": "Japan",
+    "type": "半名刺写真",
+    "typeEn": "Half-size Photo",
+    "typeJa": "半名刺写真",
+    "size": "30 × 40 mm",
+    "pixels": "354 × 472px",
+    "dpi": 300,
+    "background": "白/単色",
+    "headHeight": "提出先による",
+    "validity": "提出先による",
+    "fileSpec": "JPEG",
+    "details": {
+      "ko": "일본 반명함 사진. 이력서·자격증 등 제출용. 30×40mm.",
+      "ja": "各種提出書類用の半名刺写真。30×40mm。",
+      "en": "Japanese half-size photo for documents. 30×40mm."
+    },
+    "rejectionReasons": {
+      "ko": [
+        "사이즈 불일치"
+      ],
+      "ja": [
+        "サイズ不一致"
+      ],
+      "en": [
+        "Wrong size"
+      ]
+    },
+    "faqs": {
+      "ko": [],
+      "ja": [],
+      "en": []
+    },
+    "ctaService": "idphoto-jp",
+    "priority": 10
+  },
+  "japan-zairyu": {
+    "slug": "japan-zairyu",
+    "country": "日本",
+    "countryEn": "Japan",
+    "type": "在留カード",
+    "typeEn": "Residence Card",
+    "typeJa": "在留カード",
+    "size": "30 × 40 mm",
+    "pixels": "354 × 472px",
+    "dpi": 300,
+    "background": "흰색",
+    "headHeight": "제출처 기준",
+    "validity": "3개월 이내",
+    "fileSpec": "JPEG",
+    "details": {
+      "ko": "외국인 재류자격 카드용. 30×40mm 흰색 배경.",
+      "ja": "在留カード申請用。30×40mm白背景。",
+      "en": "For residence card application. 30×40mm white background."
+    },
+    "rejectionReasons": {
+      "ko": [
+        "배경 불균일",
+        "사이즈 불일치"
+      ],
+      "ja": [
+        "背景不均一",
+        "サイズ不一致"
+      ],
+      "en": [
+        "Uneven background",
+        "Wrong size"
+      ]
+    },
+    "faqs": {
+      "ko": [],
+      "ja": [
+        {
+          "q": "在留カードの写真はパスポートと同じですか？",
+          "a": "サイズが異なります。在留カードは30×40mm、パスポートは35×45mmです。"
+        }
+      ],
+      "en": []
+    },
+    "ctaService": "idphoto-jp",
+    "priority": 8,
+    "headHeightEn": "Per institution requirements",
+    "headHeightJa": "提出先基準",
+    "validityEn": "Within 3 months",
+    "validityJa": "3ヶ月以内",
+    "backgroundEn": "White",
+    "backgroundJa": "白"
+  },
+  "usa-headshot": {
+    "slug": "usa-headshot",
+    "country": "USA",
+    "countryEn": "USA",
+    "type": "Headshot · LinkedIn",
+    "typeEn": "Headshot / Profile Photo",
+    "typeJa": "ヘッドショット・プロフィール",
+    "size": "400×400px~",
+    "pixels": "8×10 inch",
+    "dpi": 300,
+    "background": "단색",
+    "headHeight": "-",
+    "validity": "-",
+    "fileSpec": "JPEG/PNG",
+    "details": {
+      "ko": "LinkedIn·취업 포트폴리오·프로필용 헤드샷.",
+      "ja": "LinkedIn・就職ポートフォリオ・プロフィール用。",
+      "en": "Professional headshot for LinkedIn, portfolios, profiles."
+    },
+    "rejectionReasons": {
+      "ko": [],
+      "ja": [],
+      "en": []
+    },
+    "faqs": {
+      "ko": [],
+      "ja": [],
+      "en": []
+    },
+    "ctaService": "idphoto-kr",
+    "priority": 12,
+    "backgroundEn": "Solid color",
+    "backgroundJa": "単色"
+  },
+  "eu-passport": {
+    "slug": "eu-passport",
+    "country": "유럽",
+    "countryEn": "Europe",
+    "type": "EU Passport · ID",
+    "typeEn": "Passport / ID Card",
+    "typeJa": "EUパスポート・ID",
+    "size": "35 × 45 mm",
+    "pixels": "413 × 531px",
+    "dpi": 300,
+    "background": "흰/회색",
+    "headHeight": "32~36mm",
+    "validity": "6개월 이내",
+    "fileSpec": "JPEG",
+    "details": {
+      "ko": "EU 공통 ICAO 규격. 35×45mm.",
+      "ja": "EU共通ICAO規格。35×45mm。",
+      "en": "EU common ICAO standard. 35×45mm."
+    },
+    "rejectionReasons": {
+      "ko": [
+        "배경 불균일",
+        "사이즈 불일치"
+      ],
+      "ja": [
+        "背景不均一"
+      ],
+      "en": [
+        "Uneven background"
+      ]
+    },
+    "faqs": {
+      "ko": [],
+      "ja": [],
+      "en": []
+    },
+    "ctaService": "idphoto-kr",
+    "priority": 13,
+    "validityEn": "Within 6 months",
+    "validityJa": "6ヶ月以内",
+    "backgroundEn": "White/gray",
+    "backgroundJa": "白/グレー"
+  },
+  "spain-passport": {
+    "slug": "spain-passport",
+    "country": "유럽",
+    "countryEn": "Europe",
+    "type": "Pasaporte · NIE",
+    "typeEn": "Passport / NIE",
+    "typeJa": "パスポート・NIE",
+    "size": "32 × 26 mm",
+    "pixels": "378 × 307px",
+    "dpi": 300,
+    "background": "흰색",
+    "headHeight": "별도 규정",
+    "validity": "6개월 이내",
+    "fileSpec": "JPEG",
+    "details": {
+      "ko": "스페인 특수 가로형 규격 32×26mm.",
+      "ja": "スペイン特殊横型規格32×26mm。",
+      "en": "Spanish special landscape format 32×26mm."
+    },
+    "rejectionReasons": {
+      "ko": [
+        "사이즈 불일치"
+      ],
+      "ja": [],
+      "en": []
+    },
+    "faqs": {
+      "ko": [],
+      "ja": [],
+      "en": []
+    },
+    "ctaService": "idphoto-kr",
+    "priority": 14,
+    "headHeightEn": "Separate regulation",
+    "headHeightJa": "別途規定",
+    "validityEn": "Within 6 months",
+    "validityJa": "6ヶ月以内",
+    "backgroundEn": "White",
+    "backgroundJa": "白"
+  },
+  "germany-resume": {
+    "slug": "germany-resume",
+    "country": "유럽",
+    "countryEn": "Europe",
+    "type": "Bewerbungsfoto",
+    "typeEn": "Application Photo",
+    "typeJa": "応募写真",
+    "size": "35 × 45 mm",
+    "pixels": "413 × 531px",
+    "dpi": 300,
+    "background": "밝은 배경",
+    "headHeight": "-",
+    "validity": "-",
+    "fileSpec": "JPEG",
+    "details": {
+      "ko": "독일 취업·유학 지원서용. 정장 권장.",
+      "ja": "ドイツ就職・留学応募用。スーツ推奨。",
+      "en": "German job/university application photo. Suit recommended."
+    },
+    "rejectionReasons": {
+      "ko": [],
+      "ja": [],
+      "en": []
+    },
+    "faqs": {
+      "ko": [],
+      "ja": [],
+      "en": []
+    },
+    "ctaService": "idphoto-kr",
+    "priority": 15,
+    "backgroundEn": "Light background",
+    "backgroundJa": "明るい背景"
+  },
+  "eu-resume": {
+    "slug": "eu-resume",
+    "country": "유럽",
+    "countryEn": "Europe",
+    "type": "EU CV Photo",
+    "typeEn": "CV Photo",
+    "typeJa": "EU履歴書写真",
+    "size": "35 × 45 mm",
+    "pixels": "413 × 531px",
+    "dpi": 300,
+    "background": "단색",
+    "headHeight": "-",
+    "validity": "-",
+    "fileSpec": "JPEG",
+    "details": {
+      "ko": "프랑스·스페인·이탈리아 등 EU 공통 CV 사진.",
+      "ja": "EU共通CV写真。",
+      "en": "EU common CV photo for France, Spain, Italy etc."
+    },
+    "rejectionReasons": {
+      "ko": [],
+      "ja": [],
+      "en": []
+    },
+    "faqs": {
+      "ko": [],
+      "ja": [],
+      "en": []
+    },
+    "ctaService": "idphoto-kr",
+    "priority": 16,
+    "backgroundEn": "Solid color",
+    "backgroundJa": "単色"
+  },
+  "uk-passport": {
+    "slug": "uk-passport",
+    "country": "유럽",
+    "countryEn": "Europe",
+    "type": "UK Passport",
+    "typeEn": "Passport",
+    "typeJa": "UKパスポート",
+    "size": "35 × 45 mm",
+    "pixels": "413 × 531px",
+    "dpi": 300,
+    "background": "흰색",
+    "headHeight": "32~36mm",
+    "validity": "6개월 이내",
+    "fileSpec": "JPEG",
+    "details": {
+      "ko": "영국 여권. 크림색 배경도 허용. ICAO 규격.",
+      "ja": "英国パスポート。クリーム色背景も可。",
+      "en": "UK passport. Cream background also accepted. ICAO standard."
+    },
+    "rejectionReasons": {
+      "ko": [
+        "그림자",
+        "사이즈 불일치"
+      ],
+      "ja": [],
+      "en": []
+    },
+    "faqs": {
+      "ko": [],
+      "ja": [],
+      "en": []
+    },
+    "ctaService": "idphoto-kr",
+    "priority": 17,
+    "validityEn": "Within 6 months",
+    "validityJa": "6ヶ月以内",
+    "backgroundEn": "White",
+    "backgroundJa": "白"
+  },
+  "australia-passport": {
+    "slug": "australia-passport",
+    "country": "기타 Others",
+    "countryEn": "Others",
+    "type": "Passport · ID",
+    "typeEn": "Passport / ID",
+    "typeJa": "パスポート・ID",
+    "size": "35 × 45 mm",
+    "pixels": "413 × 531px",
+    "dpi": 300,
+    "background": "흰색",
+    "headHeight": "32~36mm",
+    "validity": "6개월 이내",
+    "fileSpec": "JPEG",
+    "details": {
+      "ko": "호주 여권. ICAO 규격 35×45mm.",
+      "ja": "オーストラリアパスポート。ICAO規格。",
+      "en": "Australian passport. ICAO standard 35×45mm."
+    },
+    "rejectionReasons": {
+      "ko": [
+        "머리높이 부적합"
+      ],
+      "ja": [],
+      "en": []
+    },
+    "faqs": {
+      "ko": [],
+      "ja": [],
+      "en": []
+    },
+    "ctaService": "idphoto-kr",
+    "priority": 18,
+    "validityEn": "Within 6 months",
+    "validityJa": "6ヶ月以内",
+    "backgroundEn": "White",
+    "backgroundJa": "白"
+  },
+  "canada-passport": {
+    "slug": "canada-passport",
+    "country": "기타 Others",
+    "countryEn": "Others",
+    "type": "Passport · ID",
+    "typeEn": "Passport / ID",
+    "typeJa": "パスポート・ID",
+    "size": "50 × 70 mm",
+    "pixels": "591 × 827px",
+    "dpi": 300,
+    "background": "흰색",
+    "headHeight": "31~36mm",
+    "validity": "6개월 이내",
+    "fileSpec": "JPEG",
+    "details": {
+      "ko": "캐나다 여권. 50×70mm 특수 규격.",
+      "ja": "カナダパスポート。50×70mm特殊規格。",
+      "en": "Canadian passport. Special 50×70mm format."
+    },
+    "rejectionReasons": {
+      "ko": [
+        "사이즈 불일치"
+      ],
+      "ja": [],
+      "en": []
+    },
+    "faqs": {
+      "ko": [],
+      "ja": [],
+      "en": []
+    },
+    "ctaService": "idphoto-kr",
+    "priority": 19,
+    "validityEn": "Within 6 months",
+    "validityJa": "6ヶ月以内",
+    "backgroundEn": "White",
+    "backgroundJa": "白"
+  },
+  "singapore-passport": {
+    "slug": "singapore-passport",
+    "country": "기타 Others",
+    "countryEn": "Others",
+    "type": "Passport · PR",
+    "typeEn": "Passport / PR",
+    "typeJa": "パスポート・PR",
+    "size": "35 × 45 mm",
+    "pixels": "413 × 531px",
+    "dpi": 300,
+    "background": "흰색",
+    "headHeight": "32~36mm",
+    "validity": "6개월 이내",
+    "fileSpec": "JPEG",
+    "details": {
+      "ko": "싱가포르 여권. ICAO 규격.",
+      "ja": "シンガポールパスポート。ICAO規格。",
+      "en": "Singapore passport. ICAO standard."
+    },
+    "rejectionReasons": {
+      "ko": [],
+      "ja": [],
+      "en": []
+    },
+    "faqs": {
+      "ko": [],
+      "ja": [],
+      "en": []
+    },
+    "ctaService": "idphoto-kr",
+    "priority": 20,
+    "validityEn": "Within 6 months",
+    "validityJa": "6ヶ月以内",
+    "backgroundEn": "White",
+    "backgroundJa": "白"
+  },
+  "thailand-passport": {
+    "slug": "thailand-passport",
+    "country": "기타 Others",
+    "countryEn": "Others",
+    "type": "Passport",
+    "typeEn": "Passport",
+    "typeJa": "パスポート",
+    "size": "35 × 45 mm",
+    "pixels": "413 × 531px",
+    "dpi": 300,
+    "background": "흰색",
+    "headHeight": "32~36mm",
+    "validity": "6개월 이내",
+    "fileSpec": "JPEG",
+    "details": {
+      "ko": "태국 여권. ICAO 규격.",
+      "ja": "タイパスポート。ICAO規格。",
+      "en": "Thai passport. ICAO standard."
+    },
+    "rejectionReasons": {
+      "ko": [],
+      "ja": [],
+      "en": []
+    },
+    "faqs": {
+      "ko": [],
+      "ja": [],
+      "en": []
+    },
+    "ctaService": "idphoto-kr",
+    "priority": 21,
+    "validityEn": "Within 6 months",
+    "validityJa": "6ヶ月以内",
+    "backgroundEn": "White",
+    "backgroundJa": "白"
+  },
+  "india-passport": {
+    "slug": "india-passport",
+    "country": "기타 Others",
+    "countryEn": "Others",
+    "type": "Passport",
+    "typeEn": "Passport",
+    "typeJa": "パスポート",
+    "size": "35 × 45 mm",
+    "pixels": "413 × 531px",
+    "dpi": 300,
+    "background": "흰색",
+    "headHeight": "머리 70~80%",
+    "validity": "6개월 이내",
+    "fileSpec": "JPEG",
+    "details": {
+      "ko": "인도 여권. 머리 70~80% 기준.",
+      "ja": "インドパスポート。頭70~80%基準。",
+      "en": "Indian passport. Head 70-80% of frame."
+    },
+    "rejectionReasons": {
+      "ko": [],
+      "ja": [],
+      "en": []
+    },
+    "faqs": {
+      "ko": [],
+      "ja": [],
+      "en": []
+    },
+    "ctaService": "idphoto-kr",
+    "priority": 22,
+    "headHeightEn": "Head 70-80%",
+    "headHeightJa": "頭部 70-80%",
+    "validityEn": "Within 6 months",
+    "validityJa": "6ヶ月以内",
+    "backgroundEn": "White",
+    "backgroundJa": "白"
+  },
+  "china-passport": {
+    "slug": "china-passport",
+    "country": "기타 Others",
+    "countryEn": "Others",
+    "type": "护照 · 签证",
+    "typeEn": "Passport / Visa",
+    "typeJa": "パスポート・ビザ",
+    "size": "33 × 48 mm",
+    "pixels": "390 × 567px",
+    "dpi": 300,
+    "background": "흰색",
+    "headHeight": "28~33mm",
+    "validity": "6개월 이내",
+    "fileSpec": "JPEG",
+    "details": {
+      "ko": "중국 여권·비자용. 33×48mm 특수 규격.",
+      "ja": "中国パスポート・ビザ用。33×48mm特殊規格。",
+      "en": "Chinese passport/visa. Special 33×48mm format."
+    },
+    "rejectionReasons": {
+      "ko": [
+        "사이즈 불일치"
+      ],
+      "ja": [],
+      "en": []
+    },
+    "faqs": {
+      "ko": [],
+      "ja": [],
+      "en": []
+    },
+    "ctaService": "idphoto-kr",
+    "priority": 23,
+    "validityEn": "Within 6 months",
+    "validityJa": "6ヶ月以内",
+    "backgroundEn": "White",
+    "backgroundJa": "白"
+  },
+  "china-resume": {
+    "slug": "china-resume",
+    "country": "기타 Others",
+    "countryEn": "Others",
+    "type": "简历照片",
+    "typeEn": "Resume Photo",
+    "typeJa": "履歴書写真",
+    "size": "1寸 · 2寸 복수 규격",
+    "pixels": "25×35 / 35×49 mm",
+    "dpi": 300,
+    "background": "흰색·파란 배경",
+    "headHeight": "-",
+    "validity": "-",
+    "fileSpec": "JPEG",
+    "details": {
+      "ko": "중국 취업·유학·관공서 제출용. 1寸/2寸 복수 규격.",
+      "ja": "中国就職・留学・官公庁提出用。",
+      "en": "Chinese resume photo. Multiple sizes (1-inch/2-inch)."
+    },
+    "rejectionReasons": {
+      "ko": [],
+      "ja": [],
+      "en": []
+    },
+    "faqs": {
+      "ko": [],
+      "ja": [],
+      "en": []
+    },
+    "ctaService": "idphoto-kr",
+    "priority": 24,
+    "backgroundEn": "White or blue",
+    "backgroundJa": "白・青",
+    "sizeEn": "1-inch / 2-inch (multiple sizes)",
+    "sizeJa": "1寸・2寸（複数規格）"
+  },
+  "vietnam-passport": {
+    "slug": "vietnam-passport",
+    "country": "기타 Others",
+    "countryEn": "Others",
+    "type": "Hộ chiếu",
+    "typeEn": "Passport",
+    "typeJa": "パスポート",
+    "size": "40 × 60 mm",
+    "pixels": "472 × 708px",
+    "dpi": 300,
+    "background": "흰색",
+    "headHeight": "32~36mm",
+    "validity": "6개월 이내",
+    "fileSpec": "JPEG",
+    "details": {
+      "ko": "베트남 여권. 40×60mm 특수 규격.",
+      "ja": "ベトナムパスポート。40×60mm特殊規格。",
+      "en": "Vietnamese passport. Special 40×60mm format."
+    },
+    "rejectionReasons": {
+      "ko": [],
+      "ja": [],
+      "en": []
+    },
+    "faqs": {
+      "ko": [],
+      "ja": [],
+      "en": []
+    },
+    "ctaService": "idphoto-kr",
+    "priority": 25,
+    "validityEn": "Within 6 months",
+    "validityJa": "6ヶ月以内",
+    "backgroundEn": "White",
+    "backgroundJa": "白"
+  },
+  "indonesia-passport": {
+    "slug": "indonesia-passport",
+    "country": "기타 Others",
+    "countryEn": "Others",
+    "type": "Paspor",
+    "typeEn": "Passport",
+    "typeJa": "パスポート",
+    "size": "35 × 45 mm",
+    "pixels": "413 × 531px",
+    "dpi": 300,
+    "background": "흰색",
+    "headHeight": "머리 70~80%",
+    "validity": "6개월 이내",
+    "fileSpec": "JPEG",
+    "details": {
+      "ko": "인도네시아 여권. ICAO 규격.",
+      "ja": "インドネシアパスポート。ICAO規格。",
+      "en": "Indonesian passport. ICAO standard."
+    },
+    "rejectionReasons": {
+      "ko": [],
+      "ja": [],
+      "en": []
+    },
+    "faqs": {
+      "ko": [],
+      "ja": [],
+      "en": []
+    },
+    "ctaService": "idphoto-kr",
+    "priority": 26,
+    "headHeightEn": "Head 70-80%",
+    "headHeightJa": "頭部 70-80%",
+    "validityEn": "Within 6 months",
+    "validityJa": "6ヶ月以内",
+    "backgroundEn": "White",
+    "backgroundJa": "白"
+  }
+}

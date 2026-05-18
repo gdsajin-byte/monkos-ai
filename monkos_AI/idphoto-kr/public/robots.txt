@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /app/
+Disallow: /prep/
+Disallow: /camera/
+Disallow: /result/
+Disallow: /thankyou/
+
+Sitemap: https://idphoto-kr.monkos.ai/sitemap.xml

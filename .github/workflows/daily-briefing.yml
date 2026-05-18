@@ -1,0 +1,70 @@
+name: Daily Briefing
+
+on:
+  schedule:
+    - cron: '0 20 * * *'  # UTC 20:00 = KST 05:00
+  workflow_dispatch:
+
+jobs:
+  briefing:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r .github/scripts/requirements.txt
+
+      - name: Generate briefing
+        id: gen
+        env:
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+          GA4_PROPERTY_ID: ${{ secrets.GA4_PROPERTY_ID }}
+          GSC_SITE_URL: ${{ secrets.GSC_SITE_URL }}
+        run: python .github/scripts/daily_briefing.py
+
+      - name: Commit and push
+        run: |
+          git config user.name "monkos-autopilot"
+          git config user.email "autopilot@monkos.ai"
+          git add monkos-ops/ops/briefings/
+          git commit -m "[briefing] $(date +%Y-%m-%d) 데일리 브리핑 자동 생성" || exit 0
+          git push
+
+      - name: Create Issue
+        id: issue
+        if: success()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          DATE="${{ steps.gen.outputs.target_date }}"
+          FILE="${{ steps.gen.outputs.briefing_file }}"
+          if [ -f "$FILE" ]; then
+            BODY=$(cat "$FILE")
+          else
+            BODY="브리핑 파일 생성 확인 필요: $FILE"
+          fi
+          ISSUE_URL=$(gh issue create \
+            --title "📊 데일리 브리핑 ${DATE}" \
+            --body "$BODY" \
+            --label "일일보고")
+          echo "url=$ISSUE_URL" >> $GITHUB_OUTPUT
+
+      - name: Telegram notification
+        if: success()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          DATE="${{ steps.gen.outputs.target_date }}"
+          FILE="${{ steps.gen.outputs.briefing_file }}"
+          ALERTS=$(grep "^- 🔴\|^- 🟡" "$FILE" 2>/dev/null || echo "없음")
+          ISSUE_URL="${{ steps.issue.outputs.url }}"
+          MSG=$(printf '📊 <b>데일리 브리핑 %s</b>\n\n%s\n\n전문: %s' "$DATE" "$ALERTS" "$ISSUE_URL")
+          python .github/scripts/telegram_notify.py "$MSG"

@@ -1,15 +1,19 @@
 {
-  "name": "@monkos/idphoto-jp",
+  "name": "@monkos/idphoto-kr",
   "version": "1.0.0",
   "type": "module",
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js"
   },
-  "description": "MONKOS AI 証明写真 (日本特化) — idphoto-jp.monkos.ai | Vertex AI ADC 統一認証",
+  "description": "MONKOS AI 증명사진 (한국 특화) — idphoto-kr.monkos.ai | Vertex AI ADC 통합 인증",
   "dependencies": {
     "@google-cloud/firestore": "7.11.6",
+    "@google-cloud/storage": "^7.15.0",
     "@google/genai": "1.41.0",
+    "sharp": "^0.33.0",
+    "cors": "^2.8.5",
+    "express": "^4.21.0",
     "ws": "8.19.0"
   },
   "engines": {

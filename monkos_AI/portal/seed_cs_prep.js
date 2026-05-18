@@ -86,8 +86,10 @@ const prepDocs = [
 
 async function seed() {
   for (const doc of prepDocs) {
-    await collection.doc(doc.id).set(doc);
-    console.log(`✅ Seeded: ${doc.id}`);
+    const { id, ...data } = doc;
+    data.updatedAt = new Date().toISOString();
+    await collection.doc(id).set(data);
+    console.log(`✅ Seeded: ${id}`);
   }
   console.log(`\n총 ${prepDocs.length}건 시드 완료`);
 }

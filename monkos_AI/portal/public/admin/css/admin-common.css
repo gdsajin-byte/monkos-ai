@@ -1,0 +1,64 @@
+/* admin-common.css — MONKOS Admin 공통 스타일 (v2.0) */
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #f5f5f5; --surface: #ffffff; --surface2: #fafafa;
+  --accent: #6d28d9; --accent2: #4f46e5;
+  --text: #334155; --text-dim: #64748b; --text-bright: #0f172a;
+  --border: rgba(0, 0, 0, 0.1); --border-hover: rgba(109, 40, 217, 0.3);
+  --success: #059669; --danger: #dc2626;
+}
+
+body {
+  font-family: 'Pretendard', 'Noto Sans JP', -apple-system, sans-serif;
+  background: var(--bg); color: var(--text); min-height: 100vh;
+}
+a { color: var(--accent); text-decoration: none; }
+
+/* Navigation */
+.nav { display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; border-bottom: 1px solid var(--border); background: var(--surface); position: sticky; top: 0; z-index: 100; }
+.nav-logo { font-size: 18px; font-weight: 700; color: var(--text-bright); letter-spacing: 2px; }
+.nav-back { font-size: 13px; color: var(--text-dim); }
+
+/* Sidebar sections */
+.sidebar-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px;
+  margin-bottom: 10px;
+}
+.sidebar-section label {
+  display: block;
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+.sidebar-section input, .sidebar-section select, .sidebar-section textarea {
+  width: 100%; padding: 8px 10px; background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 6px; color: var(--text); font-size: 13px; outline: none;
+}
+.sidebar-section input:focus, .sidebar-section select:focus, .sidebar-section textarea:focus { border-color: var(--accent); }
+.sidebar-hint { font-size: 10px; color: var(--text-dim); margin-top: 3px; display: block; }
+
+/* Buttons */
+.btn {
+  padding: 12px 24px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600;
+  cursor: pointer; transition: opacity 0.2s;
+}
+.btn:hover { opacity: 0.85; }
+.btn-sm { padding: 6px 14px; font-size: 13px; }
+.btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+.btn-success { background: var(--success); color: #fff; }
+.btn-preview { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+
+/* Toast notification */
+.toast {
+  position: fixed; bottom: 24px; right: 24px; padding: 12px 24px;
+  background: var(--success); color: #fff; border-radius: 8px;
+  font-size: 14px; font-weight: 500; opacity: 0; transition: opacity 0.3s;
+  z-index: 1000;
+}
+.toast.show { opacity: 1; }

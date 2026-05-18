@@ -1,0 +1,613 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		B52C2D3E2FB31FD70011867C /* MonkosCropApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52C2D3D2FB31FD70011867C /* MonkosCropApp.swift */; };
+		B52C2D402FB31FD70011867C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52C2D3F2FB31FD70011867C /* ContentView.swift */; };
+		B52C2D422FB31FD90011867C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B52C2D412FB31FD90011867C /* Assets.xcassets */; };
+		B52C2D452FB31FD90011867C /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B52C2D442FB31FD90011867C /* Preview Assets.xcassets */; };
+		B52C2D4F2FB31FD90011867C /* MonkosCropTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52C2D4E2FB31FD90011867C /* MonkosCropTests.swift */; };
+		B52C2D592FB31FD90011867C /* MonkosCropUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52C2D582FB31FD90011867C /* MonkosCropUITests.swift */; };
+		B52C2D5B2FB31FD90011867C /* MonkosCropUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52C2D5A2FB31FD90011867C /* MonkosCropUITestsLaunchTests.swift */; };
+		B52C2D6A2FB322830011867C /* SpecData.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52C2D672FB322820011867C /* SpecData.swift */; };
+		B52C2D6B2FB322830011867C /* CropView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52C2D682FB322820011867C /* CropView.swift */; };
+		B52C2D6C2FB322830011867C /* CropEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52C2D692FB322830011867C /* CropEngine.swift */; };
+		B52C2D702FB322840011867C /* countries.jsonl in Resources */ = {isa = PBXBuildFile; fileRef = B52C2D6F2FB322840011867C /* countries.jsonl */; };
+		B52C2D722FB322850011867C /* ID_Photosample.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B52C2D712FB322850011867C /* ID_Photosample.jpg */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		B52C2D4B2FB31FD90011867C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B52C2D322FB31FD70011867C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B52C2D392FB31FD70011867C;
+			remoteInfo = MonkosCrop;
+		};
+		B52C2D552FB31FD90011867C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B52C2D322FB31FD70011867C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B52C2D392FB31FD70011867C;
+			remoteInfo = MonkosCrop;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		B52C2D3A2FB31FD70011867C /* MonkosCrop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MonkosCrop.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B52C2D3D2FB31FD70011867C /* MonkosCropApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonkosCropApp.swift; sourceTree = "<group>"; };
+		B52C2D3F2FB31FD70011867C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		B52C2D412FB31FD90011867C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		B52C2D442FB31FD90011867C /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		B52C2D4A2FB31FD90011867C /* MonkosCropTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MonkosCropTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		B52C2D4E2FB31FD90011867C /* MonkosCropTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonkosCropTests.swift; sourceTree = "<group>"; };
+		B52C2D542FB31FD90011867C /* MonkosCropUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MonkosCropUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		B52C2D582FB31FD90011867C /* MonkosCropUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonkosCropUITests.swift; sourceTree = "<group>"; };
+		B52C2D5A2FB31FD90011867C /* MonkosCropUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonkosCropUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		B52C2D672FB322820011867C /* SpecData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpecData.swift; sourceTree = "<group>"; };
+		B52C2D682FB322820011867C /* CropView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CropView.swift; sourceTree = "<group>"; };
+		B52C2D692FB322830011867C /* CropEngine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CropEngine.swift; sourceTree = "<group>"; };
+		B52C2D6F2FB322840011867C /* countries.jsonl */ = {isa = PBXFileReference; lastKnownFileType = text; path = countries.jsonl; sourceTree = "<group>"; };
+		B52C2D712FB322850011867C /* ID_Photosample.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = ID_Photosample.jpg; sourceTree = "<group>"; };
+		B52C2D6E2FB322840011867C /* Resources */ = {isa = PBXGroup; children = (B52C2D6F2FB322840011867C /* countries.jsonl */, B52C2D712FB322850011867C /* ID_Photosample.jpg */,); path = Resources; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		B52C2D372FB31FD70011867C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B52C2D472FB31FD90011867C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B52C2D512FB31FD90011867C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		B52C2D312FB31FD70011867C = {
+			isa = PBXGroup;
+			children = (
+				B52C2D3C2FB31FD70011867C /* MonkosCrop */,
+				B52C2D4D2FB31FD90011867C /* MonkosCropTests */,
+				B52C2D572FB31FD90011867C /* MonkosCropUITests */,
+				B52C2D3B2FB31FD70011867C /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		B52C2D3B2FB31FD70011867C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B52C2D3A2FB31FD70011867C /* MonkosCrop.app */,
+				B52C2D4A2FB31FD90011867C /* MonkosCropTests.xctest */,
+				B52C2D542FB31FD90011867C /* MonkosCropUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		B52C2D3C2FB31FD70011867C /* MonkosCrop */ = {
+			isa = PBXGroup;
+			children = (
+				B52C2D692FB322830011867C /* CropEngine.swift */,
+				B52C2D682FB322820011867C /* CropView.swift */,
+				B52C2D672FB322820011867C /* SpecData.swift */,
+				B52C2D3D2FB31FD70011867C /* MonkosCropApp.swift */,
+				B52C2D3F2FB31FD70011867C /* ContentView.swift */,
+				B52C2D412FB31FD90011867C /* Assets.xcassets */,
+				B52C2D6E2FB322840011867C /* Resources */,
+				B52C2D432FB31FD90011867C /* Preview Content */,
+			);
+			path = MonkosCrop;
+			sourceTree = "<group>";
+		};
+		B52C2D432FB31FD90011867C /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				B52C2D442FB31FD90011867C /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		B52C2D4D2FB31FD90011867C /* MonkosCropTests */ = {
+			isa = PBXGroup;
+			children = (
+				B52C2D4E2FB31FD90011867C /* MonkosCropTests.swift */,
+			);
+			path = MonkosCropTests;
+			sourceTree = "<group>";
+		};
+		B52C2D572FB31FD90011867C /* MonkosCropUITests */ = {
+			isa = PBXGroup;
+			children = (
+				B52C2D582FB31FD90011867C /* MonkosCropUITests.swift */,
+				B52C2D5A2FB31FD90011867C /* MonkosCropUITestsLaunchTests.swift */,
+			);
+			path = MonkosCropUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		B52C2D392FB31FD70011867C /* MonkosCrop */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B52C2D5E2FB31FD90011867C /* Build configuration list for PBXNativeTarget "MonkosCrop" */;
+			buildPhases = (
+				B52C2D362FB31FD70011867C /* Sources */,
+				B52C2D372FB31FD70011867C /* Frameworks */,
+				B52C2D382FB31FD70011867C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MonkosCrop;
+			productName = MonkosCrop;
+			productReference = B52C2D3A2FB31FD70011867C /* MonkosCrop.app */;
+			productType = "com.apple.product-type.application";
+		};
+		B52C2D492FB31FD90011867C /* MonkosCropTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B52C2D612FB31FD90011867C /* Build configuration list for PBXNativeTarget "MonkosCropTests" */;
+			buildPhases = (
+				B52C2D462FB31FD90011867C /* Sources */,
+				B52C2D472FB31FD90011867C /* Frameworks */,
+				B52C2D482FB31FD90011867C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B52C2D4C2FB31FD90011867C /* PBXTargetDependency */,
+			);
+			name = MonkosCropTests;
+			productName = MonkosCropTests;
+			productReference = B52C2D4A2FB31FD90011867C /* MonkosCropTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		B52C2D532FB31FD90011867C /* MonkosCropUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B52C2D642FB31FD90011867C /* Build configuration list for PBXNativeTarget "MonkosCropUITests" */;
+			buildPhases = (
+				B52C2D502FB31FD90011867C /* Sources */,
+				B52C2D512FB31FD90011867C /* Frameworks */,
+				B52C2D522FB31FD90011867C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B52C2D562FB31FD90011867C /* PBXTargetDependency */,
+			);
+			name = MonkosCropUITests;
+			productName = MonkosCropUITests;
+			productReference = B52C2D542FB31FD90011867C /* MonkosCropUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		B52C2D322FB31FD70011867C /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1520;
+				LastUpgradeCheck = 1520;
+				TargetAttributes = {
+					B52C2D392FB31FD70011867C = {
+						CreatedOnToolsVersion = 15.2;
+					};
+					B52C2D492FB31FD90011867C = {
+						CreatedOnToolsVersion = 15.2;
+						TestTargetID = B52C2D392FB31FD70011867C;
+					};
+					B52C2D532FB31FD90011867C = {
+						CreatedOnToolsVersion = 15.2;
+						TestTargetID = B52C2D392FB31FD70011867C;
+					};
+				};
+			};
+			buildConfigurationList = B52C2D352FB31FD70011867C /* Build configuration list for PBXProject "MonkosCrop" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = B52C2D312FB31FD70011867C;
+			productRefGroup = B52C2D3B2FB31FD70011867C /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				B52C2D392FB31FD70011867C /* MonkosCrop */,
+				B52C2D492FB31FD90011867C /* MonkosCropTests */,
+				B52C2D532FB31FD90011867C /* MonkosCropUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		B52C2D382FB31FD70011867C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B52C2D452FB31FD90011867C /* Preview Assets.xcassets in Resources */,
+				B52C2D422FB31FD90011867C /* Assets.xcassets in Resources */,
+				B52C2D702FB322840011867C /* countries.jsonl in Resources */,
+				B52C2D722FB322850011867C /* ID_Photosample.jpg in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B52C2D482FB31FD90011867C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B52C2D522FB31FD90011867C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		B52C2D362FB31FD70011867C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B52C2D6B2FB322830011867C /* CropView.swift in Sources */,
+				B52C2D402FB31FD70011867C /* ContentView.swift in Sources */,
+				B52C2D6A2FB322830011867C /* SpecData.swift in Sources */,
+				B52C2D3E2FB31FD70011867C /* MonkosCropApp.swift in Sources */,
+				B52C2D6C2FB322830011867C /* CropEngine.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B52C2D462FB31FD90011867C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B52C2D4F2FB31FD90011867C /* MonkosCropTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B52C2D502FB31FD90011867C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B52C2D592FB31FD90011867C /* MonkosCropUITests.swift in Sources */,
+				B52C2D5B2FB31FD90011867C /* MonkosCropUITestsLaunchTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		B52C2D4C2FB31FD90011867C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B52C2D392FB31FD70011867C /* MonkosCrop */;
+			targetProxy = B52C2D4B2FB31FD90011867C /* PBXContainerItemProxy */;
+		};
+		B52C2D562FB31FD90011867C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B52C2D392FB31FD70011867C /* MonkosCrop */;
+			targetProxy = B52C2D552FB31FD90011867C /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		B52C2D5C2FB31FD90011867C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		B52C2D5D2FB31FD90011867C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		B52C2D5F2FB31FD90011867C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 2;
+				DEVELOPMENT_ASSET_PATHS = "\"MonkosCrop/Preview Content\"";
+				DEVELOPMENT_TEAM = ZPMVHPDUHW;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MonkosCrop/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = MonkosCrop;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = ai.monkos.MonkosCrop;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		B52C2D602FB31FD90011867C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 2;
+				DEVELOPMENT_ASSET_PATHS = "\"MonkosCrop/Preview Content\"";
+				DEVELOPMENT_TEAM = ZPMVHPDUHW;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MonkosCrop/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = MonkosCrop;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = ai.monkos.MonkosCrop;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		B52C2D622FB31FD90011867C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 2;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = ai.monkos.MonkosCropTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MonkosCrop.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/MonkosCrop";
+			};
+			name = Debug;
+		};
+		B52C2D632FB31FD90011867C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 2;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = ai.monkos.MonkosCropTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MonkosCrop.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/MonkosCrop";
+			};
+			name = Release;
+		};
+		B52C2D652FB31FD90011867C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 2;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = ai.monkos.MonkosCropUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = MonkosCrop;
+			};
+			name = Debug;
+		};
+		B52C2D662FB31FD90011867C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 2;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = ai.monkos.MonkosCropUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = MonkosCrop;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		B52C2D352FB31FD70011867C /* Build configuration list for PBXProject "MonkosCrop" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B52C2D5C2FB31FD90011867C /* Debug */,
+				B52C2D5D2FB31FD90011867C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B52C2D5E2FB31FD90011867C /* Build configuration list for PBXNativeTarget "MonkosCrop" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B52C2D5F2FB31FD90011867C /* Debug */,
+				B52C2D602FB31FD90011867C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B52C2D612FB31FD90011867C /* Build configuration list for PBXNativeTarget "MonkosCropTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B52C2D622FB31FD90011867C /* Debug */,
+				B52C2D632FB31FD90011867C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B52C2D642FB31FD90011867C /* Build configuration list for PBXNativeTarget "MonkosCropUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B52C2D652FB31FD90011867C /* Debug */,
+				B52C2D662FB31FD90011867C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = B52C2D322FB31FD70011867C /* Project object */;
+}
