@@ -6,8 +6,11 @@ subject: AI 증명사진/프로필 사진 서비스 — monk.kr + monkos.ai 핵�
 created: 2026-01-11
 owner: 작가님
 leads: 쌍아(설계), 막내(실행)
-status: active
+status: completed (merged → PF_IDPHOTO)
 ---
+
+> ⚠️ 본 PF는 **PF_IDPHOTO**로 통합되었습니다. → [PF_IDPHOTO](../PF_IDPHOTO/README.md)
+> 아래 내용은 읽기전용 아카이브입니다. 수정하지 마세요.
 
 # PF_PHOTOPRO — AI 증명사진/프로필 서비스
 
