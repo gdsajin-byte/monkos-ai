@@ -51,6 +51,27 @@ extension Image {
     }
 }
 
+// MARK: - Bundle Image Helper
+
+@ViewBuilder
+func bundleImage(_ name: String) -> some View {
+    #if canImport(UIKit)
+    if let path = Bundle.main.path(forResource: name, ofType: "jpg") ?? Bundle.main.path(forResource: name, ofType: "png"),
+       let img = UIImage(contentsOfFile: path) {
+        Image(uiImage: img).resizable().aspectRatio(contentMode: .fill)
+    } else {
+        Image(systemName: "person.fill").font(.system(size: 80)).foregroundStyle(V1.accent.opacity(0.15))
+    }
+    #else
+    if let url = Bundle.module.url(forResource: name, withExtension: "jpg") ?? Bundle.module.url(forResource: name, withExtension: "png"),
+       let img = NSImage(contentsOf: url) {
+        Image(nsImage: img).resizable().aspectRatio(contentMode: .fill)
+    } else {
+        Image(systemName: "person.fill").font(.system(size: 80)).foregroundStyle(V1.accent.opacity(0.15))
+    }
+    #endif
+}
+
 // MARK: - Color(hex:)
 
 extension Color {
@@ -170,12 +191,19 @@ struct DocSpec: Identifiable, Hashable {
         let hh = headHeight.replacingOccurrences(of: " mm", with: "").replacingOccurrences(of: "–", with: "-")
         let parts = hh.components(separatedBy: "-")
         let fMin: Double, fMax: Double
+        let explicitTarget: Double?
         if parts.count == 2,
            let a = Double(parts[0].trimmingCharacters(in: .whitespaces)),
            let b = Double(parts[1].trimmingCharacters(in: .whitespaces)) {
             fMin = a; fMax = b
+            explicitTarget = nil
+        } else if parts.count == 1,
+                  let v = Double(parts[0].trimmingCharacters(in: .whitespaces)), v > 0 {
+            fMin = v - 2; fMax = v + 2
+            explicitTarget = v
         } else {
             fMin = h * 0.6; fMax = h * 0.8
+            explicitTarget = nil
         }
         return PhotoSpec(
             id: id, name: names["ko"] ?? id,
@@ -183,8 +211,7 @@ struct DocSpec: Identifiable, Hashable {
             faceRatioMin: 0.50, faceRatioMax: 0.70,
             backgroundColor: "#FFFFFF",
             faceMin: fMin, faceMax: fMax,
-            faceTarget: {
-                let range = fMax - fMin
+            faceTarget: explicitTarget ?? {
                 let base = h >= 60 ? fMax - 1 : h >= 40 ? max(33.0, fMin + 1) : h * 0.70
                 return min(max(base, fMin + 1), fMax - 1)
             }(),

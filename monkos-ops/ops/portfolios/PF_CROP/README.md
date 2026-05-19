@@ -128,7 +128,13 @@ status: active
 | 05/16 | 작가님 | **Landing 구조 개편 확정** — 하단 5섹션 제거 → 4서비스카드(여권/비자/면허/커스텀) 배치. Landing=종류선택 → Step1=대륙/국가선택. 기존 Step1 4탭이 Landing으로 올라옴 | — | ✅ |
 | 05/16 | 쌍아 | **Landing 구조 개편 구현** — 4서비스카드(철창이 실사 이미지) 2×2 그리드. Step1 4탭 삭제. IDPASS 로고→Landing 복귀. CTA/푸터 제거. 한국 비자 규격 추가(kr-visa) | ContentView/CropView/countries.jsonl | ✅ |
 | 05/16 | 쌍아+작가님 | **Landing 푸터 확정** — 보라 몽키 로고 + "powered by MONKOS AI" + "© 2026 MONK STUDIO". IDPASS=초록 / MONKOS=보라 보색 브랜드 분리 | ContentView | ✅ |
-| 05/19 | 막내2 | **SPECS 페이지 현황 파악 + 리디자인 로드맵** — render-specs.js 666줄 전수 분석, specs-data.json 26건 분석, 3소스 갭 분석(웹/크롭앱/iOS), 경쟁사 3곳 벤치마크, 4Phase 로드맵(A:통합→B:확장→C:비주얼→D:SEO). 핵심 발견: 3소스 정본 분리=헌법 위반, 실사 이미지 전무, 26건 vs 경쟁사 200국+ | [REPORT](../reports/2026-05/REPORT_20260519_막내2_SPECS페이지_현황파악_리디자인로드맵.md) | ✅ |
+| 05/19 | 쌍아 | **ContentView.swift 3파일 분리** — 1,900줄→1,155줄. DemoAnimation.swift(401줄, 상태머신+PhoneDemoView) + LandingView.swift(329줄, Hero+카드+푸터) 분리. bundleImage() 공유 함수. swift build 성공 | DemoAnimation/LandingView/SpecData | ✅ |
+| 05/19 | 쌍아 | **Step1 대륙카드 UI 보정** — 컬러 점 제거, 정사각형(1:1) 적용(GeometryReader), 영문 타이틀만 표기 + "N countries" accent | ContentView | ✅ |
+| 05/19 | 쌍아 | **SpecData 단일값 head 파싱 수정** — head "38" 같은 단일값이 무시되던 버그. fMin=v-2, fMax=v+2, faceTarget=작가님 지정값. 25건 국가 적용 | SpecData.swift | ✅ |
+| 05/19 | 쌍아→막내1 | **IDPASS Step2 규정카드 지시서 발행** — 철창이 시안 기반 촬영 가이드+규정 카드+공식 링크. Phase 1 HTML 프로토→승인→Phase 2 SwiftUI | [ORDER](../../orders/2026-05/ORDER_20260519_iMac쌍아_막내1_IDPASS_Step2_규정카드.md) | ⏳ |
+| 05/19 | 막내1 | **Step2 규정카드 Phase 1 완료** — HTML 프로토 3국 전환(러시아/한국/미국). 규정 카드+체크리스트+공식 링크 동작. 작가님 승인 대기 | idpass_upload_v5_proto.html | ⏳ 승인대기 |
+| 05/19 | 막내2 | **SPECS 페이지 현황 파악 + 리디자인 로드맵** — render-specs.js 666줄 전수 분석, 3소스 갭 분석, 경쟁사 3곳 벤치마크, 4Phase 로드맵. 핵심: 3소스 정본 분리=헌법 위반, 실사 전무, 26건 vs 경쟁사 200국+ | [REPORT](../reports/2026-05/REPORT_20260519_막내2_SPECS페이지_현황파악_리디자인로드맵.md) | ✅ |
+| 05/19 | 쌍아 | **카카오 로그인 plusfriends scope 제거** — KOE205 에러 해소. portal prod 배포 (rev 00249) | portal/lib/auth.js | ✅ |
 
 ---
 
