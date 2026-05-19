@@ -128,6 +128,7 @@ status: active
 | 05/16 | 작가님 | **Landing 구조 개편 확정** — 하단 5섹션 제거 → 4서비스카드(여권/비자/면허/커스텀) 배치. Landing=종류선택 → Step1=대륙/국가선택. 기존 Step1 4탭이 Landing으로 올라옴 | — | ✅ |
 | 05/16 | 쌍아 | **Landing 구조 개편 구현** — 4서비스카드(철창이 실사 이미지) 2×2 그리드. Step1 4탭 삭제. IDPASS 로고→Landing 복귀. CTA/푸터 제거. 한국 비자 규격 추가(kr-visa) | ContentView/CropView/countries.jsonl | ✅ |
 | 05/16 | 쌍아+작가님 | **Landing 푸터 확정** — 보라 몽키 로고 + "powered by MONKOS AI" + "© 2026 MONK STUDIO". IDPASS=초록 / MONKOS=보라 보색 브랜드 분리 | ContentView | ✅ |
+| 05/19 | 막내2 | **SPECS 페이지 현황 파악 + 리디자인 로드맵** — render-specs.js 666줄 전수 분석, specs-data.json 26건 분석, 3소스 갭 분석(웹/크롭앱/iOS), 경쟁사 3곳 벤치마크, 4Phase 로드맵(A:통합→B:확장→C:비주얼→D:SEO). 핵심 발견: 3소스 정본 분리=헌법 위반, 실사 이미지 전무, 26건 vs 경쟁사 200국+ | [REPORT](../reports/2026-05/REPORT_20260519_막내2_SPECS페이지_현황파악_리디자인로드맵.md) | ✅ |
 
 ---
 
