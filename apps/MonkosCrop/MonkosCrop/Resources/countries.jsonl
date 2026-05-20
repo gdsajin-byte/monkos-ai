@@ -1,202 +1,202 @@
-{"id": "kr", "ko": "대한민국", "en": "South Korea", "ja": "韓国", "continent": "asia", "docs": [{"id": "kr-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "35x45", "px": "413x531", "head": "32-36", "std": "ICAO 9303"}, {"id": "kr-visa", "type": "visa", "ko": "비자", "en": "Visa", "ja": "ビザ", "size": "35x45", "px": "413x531", "head": "32-36", "std": "출입국관리법"}, {"id": "kr-id", "type": "id", "ko": "주민등록증", "en": "National ID", "ja": "住民登録証", "size": "35x45", "px": "413x531", "head": "32-36", "std": "KR-MOIS"}, {"id": "kr-resume", "type": "resume", "ko": "반명함", "en": "Half-size Portrait", "ja": "半名刺判", "size": "30x40", "px": "354x472", "head": "", "std": ""}, {"id": "kr-license", "type": "license", "ko": "운전면허", "en": "Driver License", "ja": "運転免許", "size": "35x45", "px": "413x531", "head": "32-36", "std": "도로교통법"}]}
-{"id": "jp", "ko": "일본", "en": "Japan", "ja": "日本", "continent": "asia", "docs": [{"id": "jp-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "35x45", "px": "413x531", "head": "32-36", "std": "ICAO 9303"}, {"id": "jp-id", "type": "id", "ko": "마이넘버카드", "en": "My Number Card", "ja": "マイナンバーカード", "size": "35x45", "px": "480x480", "head": "32-36", "std": "J-LIS"}, {"id": "jp-visa", "type": "visa", "ko": "비자", "en": "Visa", "ja": "ビザ", "size": "45x45", "px": "531x531", "head": "32-36", "std": "MOJ"}, {"id": "jp-license", "type": "license", "ko": "운전면허", "en": "Driver License", "ja": "運転免許", "size": "24x30", "px": "283x354", "head": "", "std": "道路交通法"}]}
-{"id": "us", "ko": "미국", "en": "United States", "ja": "アメリカ", "continent": "americas", "docs": [{"id": "us-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "51x51", "px": "600x600", "head": "25-35", "std": "22 CFR 51"}, {"id": "us-visa", "type": "visa", "ko": "비자", "en": "Visa", "ja": "ビザ", "size": "51x51", "px": "600x600", "head": "22-35", "std": "22 CFR 51"}]}
-{"id": "eu", "ko": "유럽연합", "en": "European Union", "ja": "欧州連合", "continent": "europe", "docs": [{"id": "eu-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "35x45", "px": "413x531", "head": "32-36", "std": "ICAO 9303"}, {"id": "eu-visa", "type": "visa", "ko": "비자", "en": "Visa", "ja": "ビザ", "size": "35x45", "px": "413x531", "head": "32-36", "std": "ICAO 9303"}, {"id": "eu-license", "type": "license", "ko": "운전면허", "en": "Driver License", "ja": "運転免許", "size": "35x45", "px": "413x531", "head": "32-36", "std": "EU Directive"}]}
-{"id": "uk", "ko": "영국", "en": "United Kingdom", "ja": "イギリス", "continent": "europe", "docs": [{"id": "uk-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "35x45", "px": "600x750", "head": "29-34", "std": "HMPO"}, {"id": "uk-license", "type": "license", "ko": "운전면허", "en": "Driver License", "ja": "運転免許", "size": "35x45", "px": "600x750", "head": "29-34", "std": "DVLA"}]}
-{"id": "cn", "ko": "중국", "en": "China", "ja": "中国", "continent": "asia", "docs": [{"id": "cn-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "33x48", "px": "390x567", "head": "28-33", "std": "GA 461"}, {"id": "cn-visa", "type": "visa", "ko": "비자", "en": "Visa", "ja": "ビザ", "size": "33x48", "px": "354x472", "head": "28-33", "std": "GA 461"}, {"id": "cn-license", "type": "license", "ko": "운전면허", "en": "Driver License", "ja": "運転免許", "size": "22x32", "px": "260x378", "head": "", "std": "GA 482"}]}
-{"id": "ca", "ko": "캐나다", "en": "Canada", "ja": "カナダ", "continent": "americas", "docs": [{"id": "ca-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "50x70", "px": "590x826", "head": "31-36", "std": "PPTC-203", "warning": {"ko": "⚠️ 캐나다 여권은 전문 사진사 촬영이 의무입니다. 사진 뒷면에 사진사 서명·주소·촬영일자 기재 필수.", "en": "⚠️ Canada requires photos taken by a commercial photographer.", "ja": "⚠️ カナダのパスポートは商業写真家による撮影が義務です。"}}]}
-{"id": "sg", "ko": "싱가포르", "en": "Singapore", "ja": "シンガポール", "continent": "asia", "docs": [{"id": "sg-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "35x45", "px": "400x514", "head": "25-35", "std": "ICA"}]}
-{"id": "in", "ko": "인도", "en": "India", "ja": "インド", "continent": "asia", "docs": [{"id": "in-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "35x45", "px": "413x531", "head": "", "std": "ICAO 9303 (2025.9~)"}, {"id": "in-visa", "type": "visa", "ko": "비자", "en": "Visa", "ja": "ビザ", "size": "51x51", "px": "600x600", "head": "36-41", "std": "BLS/VFS"}, {"id": "in-license", "type": "license", "ko": "운전면허", "en": "Driver License", "ja": "運転免許", "size": "35x45", "px": "413x531", "head": "32-36", "std": "MVA"}]}
-{"id": "tw", "ko": "대만", "en": "Taiwan", "ja": "台湾", "continent": "asia", "docs": []}
-{"id": "hk", "ko": "홍콩", "en": "Hong Kong", "ja": "香港", "continent": "asia", "docs": [{"id": "hk-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "40x50", "px": "472x591", "head": "32-36", "std": "HKSAR IMMD"}]}
-{"id": "mo", "ko": "마카오", "en": "Macao", "ja": "マカオ", "continent": "asia", "docs": []}
-{"id": "th", "ko": "태국", "en": "Thailand", "ja": "タイ", "continent": "asia", "docs": []}
-{"id": "vn", "ko": "베트남", "en": "Vietnam", "ja": "ベトナム", "continent": "asia", "docs": [{"id": "vn-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "40x60", "px": "472x709", "head": "", "std": ""}]}
-{"id": "id", "ko": "인도네시아", "en": "Indonesia", "ja": "インドネシア", "continent": "asia", "docs": [{"id": "id-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "51x51", "px": "600x600", "head": "25-31", "std": ""}, {"id": "id-visa", "type": "visa", "ko": "비자", "en": "Visa", "ja": "ビザ", "size": "35x45", "px": "413x531", "head": "", "std": ""}]}
-{"id": "my", "ko": "말레이시아", "en": "Malaysia", "ja": "マレーシア", "continent": "asia", "docs": [{"id": "my-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "35x50", "px": "413x591", "head": "25-30", "std": ""}]}
-{"id": "ph", "ko": "필리핀", "en": "Philippines", "ja": "フィリピン", "continent": "asia", "docs": []}
-{"id": "mm", "ko": "미얀마", "en": "Myanmar", "ja": "ミャンマー", "continent": "asia", "docs": []}
-{"id": "kh", "ko": "캄보디아", "en": "Cambodia", "ja": "カンボジア", "continent": "asia", "docs": [{"id": "kh-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "40x60", "px": "472x709", "head": "36", "std": ""}]}
-{"id": "la", "ko": "라오스", "en": "Laos", "ja": "ラオス", "continent": "asia", "docs": [{"id": "la-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "40x60", "px": "472x709", "head": "", "std": ""}]}
-{"id": "bd", "ko": "방글라데시", "en": "Bangladesh", "ja": "バングラデシュ", "continent": "asia", "docs": [{"id": "bd-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "45x55", "px": "531x650", "head": "34", "std": ""}]}
-{"id": "lk", "ko": "스리랑카", "en": "Sri Lanka", "ja": "スリランカ", "continent": "asia", "docs": []}
-{"id": "np", "ko": "네팔", "en": "Nepal", "ja": "ネパール", "continent": "asia", "docs": []}
-{"id": "pk", "ko": "파키스탄", "en": "Pakistan", "ja": "パキスタン", "continent": "asia", "docs": []}
-{"id": "af", "ko": "아프가니스탄", "en": "Afghanistan", "ja": "アフガニスタン", "continent": "asia", "docs": []}
-{"id": "mn", "ko": "몽골", "en": "Mongolia", "ja": "モンゴル", "continent": "asia", "docs": []}
-{"id": "kz", "ko": "카자흐스탄", "en": "Kazakhstan", "ja": "カザフスタン", "continent": "asia", "docs": []}
-{"id": "uz", "ko": "우즈베키스탄", "en": "Uzbekistan", "ja": "ウズベキスタン", "continent": "asia", "docs": []}
-{"id": "kg", "ko": "키르기스스탄", "en": "Kyrgyzstan", "ja": "キルギス", "continent": "asia", "docs": [{"id": "kg-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "40x60", "px": "472x709", "head": "", "std": ""}, {"id": "kg-visa", "type": "visa", "ko": "비자", "en": "Visa", "ja": "ビザ", "size": "35x45", "px": "413x531", "head": "", "std": ""}]}
-{"id": "tj", "ko": "타지키스탄", "en": "Tajikistan", "ja": "タジキスタン", "continent": "asia", "docs": []}
-{"id": "tm", "ko": "투르크메니스탄", "en": "Turkmenistan", "ja": "トルクメニスタン", "continent": "asia", "docs": [{"id": "tm-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "30x40", "px": "354x472", "head": "30", "std": ""}, {"id": "tm-visa", "type": "visa", "ko": "비자", "en": "Visa", "ja": "ビザ", "size": "50x60", "px": "591x709", "head": "", "std": ""}]}
-{"id": "bn", "ko": "브루나이", "en": "Brunei", "ja": "ブルネイ", "continent": "asia", "docs": [{"id": "bn-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "40x52", "px": "472x614", "head": "35", "std": ""}]}
-{"id": "tl", "ko": "동티모르", "en": "Timor-Leste", "ja": "東ティモール", "continent": "asia", "docs": []}
-{"id": "kp", "ko": "북한", "en": "North Korea", "ja": "北朝鮮", "continent": "asia", "docs": []}
-{"id": "bt", "ko": "부탄", "en": "Bhutan", "ja": "ブータン", "continent": "asia", "docs": []}
-{"id": "mv", "ko": "몰디브", "en": "Maldives", "ja": "モルディブ", "continent": "asia", "docs": []}
-{"id": "ru", "ko": "러시아", "en": "Russia", "ja": "ロシア", "continent": "europe", "docs": []}
-{"id": "ua", "ko": "우크라이나", "en": "Ukraine", "ja": "ウクライナ", "continent": "europe", "docs": []}
-{"id": "fr", "ko": "프랑스", "en": "France", "ja": "フランス", "continent": "europe", "docs": []}
-{"id": "de", "ko": "독일", "en": "Germany", "ja": "ドイツ", "continent": "europe", "docs": []}
-{"id": "it", "ko": "이탈리아", "en": "Italy", "ja": "イタリア", "continent": "europe", "docs": []}
-{"id": "es", "ko": "스페인", "en": "Spain", "ja": "スペイン", "continent": "europe", "docs": []}
-{"id": "pt", "ko": "포르투갈", "en": "Portugal", "ja": "ポルトガル", "continent": "europe", "docs": []}
-{"id": "nl", "ko": "네덜란드", "en": "Netherlands", "ja": "オランダ", "continent": "europe", "docs": []}
-{"id": "be", "ko": "벨기에", "en": "Belgium", "ja": "ベルギー", "continent": "europe", "docs": []}
-{"id": "ch", "ko": "스위스", "en": "Switzerland", "ja": "スイス", "continent": "europe", "docs": []}
-{"id": "at", "ko": "오스트리아", "en": "Austria", "ja": "オーストリア", "continent": "europe", "docs": []}
-{"id": "se", "ko": "스웨덴", "en": "Sweden", "ja": "スウェーデン", "continent": "europe", "docs": []}
-{"id": "no", "ko": "노르웨이", "en": "Norway", "ja": "ノルウェー", "continent": "europe", "docs": []}
-{"id": "dk", "ko": "덴마크", "en": "Denmark", "ja": "デンマーク", "continent": "europe", "docs": []}
-{"id": "fi", "ko": "핀란드", "en": "Finland", "ja": "フィンランド", "continent": "europe", "docs": [{"id": "fi-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "36x47", "px": "425x555", "head": "32-36", "std": ""}]}
-{"id": "is", "ko": "아이슬란드", "en": "Iceland", "ja": "アイスランド", "continent": "europe", "docs": []}
-{"id": "ie", "ko": "아일랜드", "en": "Ireland", "ja": "アイルランド", "continent": "europe", "docs": []}
-{"id": "pl", "ko": "폴란드", "en": "Poland", "ja": "ポーランド", "continent": "europe", "docs": []}
-{"id": "cz", "ko": "체코", "en": "Czechia", "ja": "チェコ", "continent": "europe", "docs": []}
-{"id": "sk", "ko": "슬로바키아", "en": "Slovakia", "ja": "スロバキア", "continent": "europe", "docs": []}
-{"id": "hu", "ko": "헝가리", "en": "Hungary", "ja": "ハンガリー", "continent": "europe", "docs": []}
-{"id": "ro", "ko": "루마니아", "en": "Romania", "ja": "ルーマニア", "continent": "europe", "docs": []}
-{"id": "bg", "ko": "불가리아", "en": "Bulgaria", "ja": "ブルガリア", "continent": "europe", "docs": []}
-{"id": "hr", "ko": "크로아티아", "en": "Croatia", "ja": "クロアチア", "continent": "europe", "docs": []}
-{"id": "rs", "ko": "세르비아", "en": "Serbia", "ja": "セルビア", "continent": "europe", "docs": [{"id": "rs-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "50x50", "px": "591x591", "head": "", "std": ""}, {"id": "rs-visa", "type": "visa", "ko": "비자", "en": "Visa", "ja": "ビザ", "size": "35x45", "px": "413x531", "head": "", "std": ""}]}
-{"id": "ba", "ko": "보스니아", "en": "Bosnia and Herzegovina", "ja": "ボスニア・ヘルツェゴビナ", "continent": "europe", "docs": []}
-{"id": "me", "ko": "몬테네그로", "en": "Montenegro", "ja": "モンテネグロ", "continent": "europe", "docs": []}
-{"id": "mk", "ko": "북마케도니아", "en": "North Macedonia", "ja": "北マケドニア", "continent": "europe", "docs": [{"id": "mk-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "50x50", "px": "591x591", "head": "", "std": ""}, {"id": "mk-visa", "type": "visa", "ko": "비자", "en": "Visa", "ja": "ビザ", "size": "35x45", "px": "413x531", "head": "", "std": ""}]}
-{"id": "al", "ko": "알바니아", "en": "Albania", "ja": "アルバニア", "continent": "europe", "docs": [{"id": "al-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "40x50", "px": "472x591", "head": "", "std": ""}, {"id": "al-visa", "type": "visa", "ko": "비자", "en": "Visa", "ja": "ビザ", "size": "36x47", "px": "425x555", "head": "", "std": ""}]}
-{"id": "xk", "ko": "코소보", "en": "Kosovo", "ja": "コソボ", "continent": "europe", "docs": []}
-{"id": "md", "ko": "몰도바", "en": "Moldova", "ja": "モルドバ", "continent": "europe", "docs": []}
-{"id": "by", "ko": "벨라루스", "en": "Belarus", "ja": "ベラルーシ", "continent": "europe", "docs": [{"id": "by-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "40x50", "px": "472x591", "head": "32-35", "std": ""}, {"id": "by-visa", "type": "visa", "ko": "비자", "en": "Visa", "ja": "ビザ", "size": "35x45", "px": "413x531", "head": "", "std": ""}]}
-{"id": "lv", "ko": "라트비아", "en": "Latvia", "ja": "ラトビア", "continent": "europe", "docs": []}
-{"id": "lt", "ko": "리투아니아", "en": "Lithuania", "ja": "リトアニア", "continent": "europe", "docs": [{"id": "lt-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "40x60", "px": "472x709", "head": "33", "std": ""}, {"id": "lt-visa", "type": "visa", "ko": "비자", "en": "Visa", "ja": "ビザ", "size": "35x45", "px": "413x531", "head": "", "std": ""}]}
-{"id": "ee", "ko": "에스토니아", "en": "Estonia", "ja": "エストニア", "continent": "europe", "docs": [{"id": "ee-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "40x50", "px": "472x591", "head": "", "std": ""}, {"id": "ee-visa", "type": "visa", "ko": "비자", "en": "Visa", "ja": "ビザ", "size": "35x45", "px": "413x531", "head": "", "std": ""}]}
-{"id": "si", "ko": "슬로베니아", "en": "Slovenia", "ja": "スロベニア", "continent": "europe", "docs": []}
-{"id": "gr", "ko": "그리스", "en": "Greece", "ja": "ギリシャ", "continent": "europe", "docs": [{"id": "gr-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "40x60", "px": "472x709", "head": "", "std": ""}, {"id": "gr-visa", "type": "visa", "ko": "비자", "en": "Visa", "ja": "ビザ", "size": "35x45", "px": "413x531", "head": "", "std": ""}]}
-{"id": "cy", "ko": "키프로스", "en": "Cyprus", "ja": "キプロス", "continent": "europe", "docs": [{"id": "cy-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "40x50", "px": "472x591", "head": "", "std": ""}, {"id": "cy-visa", "type": "visa", "ko": "비자", "en": "Visa", "ja": "ビザ", "size": "35x45", "px": "413x531", "head": "", "std": ""}]}
-{"id": "mt", "ko": "몰타", "en": "Malta", "ja": "マルタ", "continent": "europe", "docs": []}
-{"id": "lu", "ko": "룩셈부르크", "en": "Luxembourg", "ja": "ルクセンブルク", "continent": "europe", "docs": []}
-{"id": "ge", "ko": "조지아", "en": "Georgia", "ja": "ジョージア", "continent": "europe", "docs": []}
-{"id": "am", "ko": "아르메니아", "en": "Armenia", "ja": "アルメニア", "continent": "europe", "docs": []}
-{"id": "az", "ko": "아제르바이잔", "en": "Azerbaijan", "ja": "アゼルバイジャン", "continent": "europe", "docs": [{"id": "az-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "30x40", "px": "354x472", "head": "", "std": ""}]}
-{"id": "tr", "ko": "터키", "en": "Turkey", "ja": "トルコ", "continent": "europe", "docs": [{"id": "tr-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "50x60", "px": "591x709", "head": "34", "std": ""}]}
-{"id": "mx", "ko": "멕시코", "en": "Mexico", "ja": "メキシコ", "continent": "americas", "docs": []}
-{"id": "br", "ko": "브라질", "en": "Brazil", "ja": "ブラジル", "continent": "americas", "docs": [{"id": "br-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "50x70", "px": "591x827", "head": "42", "std": ""}]}
-{"id": "ar", "ko": "아르헨티나", "en": "Argentina", "ja": "アルゼンチン", "continent": "americas", "docs": [{"id": "ar-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "40x40", "px": "472x472", "head": "28", "std": ""}]}
-{"id": "cl", "ko": "칠레", "en": "Chile", "ja": "チリ", "continent": "americas", "docs": [{"id": "cl-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "45x45", "px": "531x531", "head": "27", "std": ""}]}
-{"id": "co", "ko": "콜롬비아", "en": "Colombia", "ja": "コロンビア", "continent": "americas", "docs": [{"id": "co-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "40x50", "px": "472x591", "head": "27", "std": ""}, {"id": "co-visa", "type": "visa", "ko": "비자", "en": "Visa", "ja": "ビザ", "size": "30x40", "px": "354x472", "head": "", "std": ""}]}
-{"id": "pe", "ko": "페루", "en": "Peru", "ja": "ペルー", "continent": "americas", "docs": []}
-{"id": "ve", "ko": "베네수엘라", "en": "Venezuela", "ja": "ベネズエラ", "continent": "americas", "docs": [{"id": "ve-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "51x51", "px": "600x600", "head": "34-38", "std": ""}]}
-{"id": "ec", "ko": "에콰도르", "en": "Ecuador", "ja": "エクアドル", "continent": "americas", "docs": [{"id": "ec-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "50x50", "px": "591x591", "head": "25-35", "std": ""}]}
-{"id": "bo", "ko": "볼리비아", "en": "Bolivia", "ja": "ボリビア", "continent": "americas", "docs": [{"id": "bo-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "40x50", "px": "472x591", "head": "34", "std": ""}]}
-{"id": "py", "ko": "파라과이", "en": "Paraguay", "ja": "パラグアイ", "continent": "americas", "docs": []}
-{"id": "uy", "ko": "우루과이", "en": "Uruguay", "ja": "ウルグアイ", "continent": "americas", "docs": []}
-{"id": "pa", "ko": "파나마", "en": "Panama", "ja": "パナマ", "continent": "americas", "docs": []}
-{"id": "cr", "ko": "코스타리카", "en": "Costa Rica", "ja": "コスタリカ", "continent": "americas", "docs": [{"id": "cr-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "51x51", "px": "600x600", "head": "31-36", "std": ""}]}
-{"id": "ni", "ko": "니카라과", "en": "Nicaragua", "ja": "ニカラグア", "continent": "americas", "docs": [{"id": "ni-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "40x50", "px": "472x591", "head": "34", "std": ""}]}
-{"id": "hn", "ko": "온두라스", "en": "Honduras", "ja": "ホンジュラス", "continent": "americas", "docs": [{"id": "hn-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "50x50", "px": "591x591", "head": "25-35", "std": ""}]}
-{"id": "sv", "ko": "엘살바도르", "en": "El Salvador", "ja": "エルサルバドル", "continent": "americas", "docs": []}
-{"id": "gt", "ko": "과테말라", "en": "Guatemala", "ja": "グアテマラ", "continent": "americas", "docs": []}
-{"id": "cu", "ko": "쿠바", "en": "Cuba", "ja": "キューバ", "continent": "americas", "docs": [{"id": "cu-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "45x45", "px": "531x531", "head": "27", "std": ""}]}
-{"id": "jm", "ko": "자메이카", "en": "Jamaica", "ja": "ジャマイカ", "continent": "americas", "docs": [{"id": "jm-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "35x45", "px": "413x531", "head": "25-35", "std": ""}]}
-{"id": "do", "ko": "도미니카공화국", "en": "Dominican Republic", "ja": "ドミニカ共和国", "continent": "americas", "docs": [{"id": "do-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "51x51", "px": "600x600", "head": "25-35", "std": ""}]}
-{"id": "ht", "ko": "아이티", "en": "Haiti", "ja": "ハイチ", "continent": "americas", "docs": [{"id": "ht-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "51x51", "px": "600x600", "head": "25-35", "std": ""}]}
-{"id": "tt", "ko": "트리니다드토바고", "en": "Trinidad and Tobago", "ja": "トリニダード・トバゴ", "continent": "americas", "docs": [{"id": "tt-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "31x41", "px": "366x484", "head": "29-33", "std": ""}]}
-{"id": "bs", "ko": "바하마", "en": "Bahamas", "ja": "バハマ", "continent": "americas", "docs": []}
-{"id": "bz", "ko": "벨리즈", "en": "Belize", "ja": "ベリーズ", "continent": "americas", "docs": [{"id": "bz-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "51x51", "px": "600x600", "head": "35-41", "std": ""}]}
-{"id": "sr", "ko": "수리남", "en": "Suriname", "ja": "スリナム", "continent": "americas", "docs": []}
-{"id": "gy", "ko": "가이아나", "en": "Guyana", "ja": "ガイアナ", "continent": "americas", "docs": []}
-{"id": "sa", "ko": "사우디아라비아", "en": "Saudi Arabia", "ja": "サウジアラビア", "continent": "middleeast", "docs": [{"id": "sa-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "40x60", "px": "472x709", "head": "38", "std": ""}]}
-{"id": "ae", "ko": "아랍에미리트", "en": "United Arab Emirates", "ja": "アラブ首長国連邦", "continent": "middleeast", "docs": []}
-{"id": "qa", "ko": "카타르", "en": "Qatar", "ja": "カタール", "continent": "middleeast", "docs": [{"id": "qa-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "38x48", "px": "449x567", "head": "34", "std": ""}]}
-{"id": "kw", "ko": "쿠웨이트", "en": "Kuwait", "ja": "クウェート", "continent": "middleeast", "docs": [{"id": "kw-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "40x50", "px": "472x591", "head": "38", "std": ""}]}
-{"id": "bh", "ko": "바레인", "en": "Bahrain", "ja": "バーレーン", "continent": "middleeast", "docs": [{"id": "bh-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "40x60", "px": "472x709", "head": "38", "std": ""}]}
-{"id": "om", "ko": "오만", "en": "Oman", "ja": "オマーン", "continent": "middleeast", "docs": [{"id": "om-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "40x60", "px": "472x709", "head": "38", "std": ""}]}
-{"id": "ir", "ko": "이란", "en": "Iran", "ja": "イラン", "continent": "middleeast", "docs": [{"id": "ir-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "30x40", "px": "354x472", "head": "28", "std": ""}]}
-{"id": "iq", "ko": "이라크", "en": "Iraq", "ja": "イラク", "continent": "middleeast", "docs": []}
-{"id": "jo", "ko": "요르단", "en": "Jordan", "ja": "ヨルダン", "continent": "middleeast", "docs": []}
-{"id": "lb", "ko": "레바논", "en": "Lebanon", "ja": "レバノン", "continent": "middleeast", "docs": []}
-{"id": "sy", "ko": "시리아", "en": "Syria", "ja": "シリア", "continent": "middleeast", "docs": []}
-{"id": "ye", "ko": "예멘", "en": "Yemen", "ja": "イエメン", "continent": "middleeast", "docs": [{"id": "ye-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "40x60", "px": "472x709", "head": "32-36", "std": ""}]}
-{"id": "il", "ko": "이스라엘", "en": "Israel", "ja": "イスラエル", "continent": "middleeast", "docs": []}
-{"id": "ps", "ko": "팔레스타인", "en": "Palestine", "ja": "パレスチナ", "continent": "middleeast", "docs": []}
-{"id": "za", "ko": "남아프리카공화국", "en": "South Africa", "ja": "南アフリカ", "continent": "africa", "docs": []}
-{"id": "eg", "ko": "이집트", "en": "Egypt", "ja": "エジプト", "continent": "africa", "docs": [{"id": "eg-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "40x60", "px": "472x709", "head": "38-40", "std": ""}]}
-{"id": "ma", "ko": "모로코", "en": "Morocco", "ja": "モロッコ", "continent": "africa", "docs": []}
-{"id": "ng", "ko": "나이지리아", "en": "Nigeria", "ja": "ナイジェリア", "continent": "africa", "docs": []}
-{"id": "ke", "ko": "케냐", "en": "Kenya", "ja": "ケニア", "continent": "africa", "docs": []}
-{"id": "tz", "ko": "탄자니아", "en": "Tanzania", "ja": "タンザニア", "continent": "africa", "docs": [{"id": "tz-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "40x45", "px": "472x531", "head": "34", "std": ""}]}
-{"id": "et", "ko": "에티오피아", "en": "Ethiopia", "ja": "エチオピア", "continent": "africa", "docs": [{"id": "et-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "30x40", "px": "354x472", "head": "30", "std": ""}]}
-{"id": "gh", "ko": "가나", "en": "Ghana", "ja": "ガーナ", "continent": "africa", "docs": []}
-{"id": "sn", "ko": "세네갈", "en": "Senegal", "ja": "セネガル", "continent": "africa", "docs": []}
-{"id": "ci", "ko": "코트디부아르", "en": "Côte d'Ivoire", "ja": "コートジボワール", "continent": "africa", "docs": []}
-{"id": "cm", "ko": "카메룬", "en": "Cameroon", "ja": "カメルーン", "continent": "africa", "docs": [{"id": "cm-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "40x50", "px": "472x591", "head": "31-36", "std": ""}]}
-{"id": "dz", "ko": "알제리", "en": "Algeria", "ja": "アルジェリア", "continent": "africa", "docs": []}
-{"id": "tn", "ko": "튀니지", "en": "Tunisia", "ja": "チュニジア", "continent": "africa", "docs": []}
-{"id": "ly", "ko": "리비아", "en": "Libya", "ja": "リビア", "continent": "africa", "docs": [{"id": "ly-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "40x60", "px": "472x709", "head": "38", "std": ""}]}
-{"id": "sd", "ko": "수단", "en": "Sudan", "ja": "スーダン", "continent": "africa", "docs": [{"id": "sd-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "40x50", "px": "472x591", "head": "34", "std": ""}]}
-{"id": "ug", "ko": "우간다", "en": "Uganda", "ja": "ウガンダ", "continent": "africa", "docs": [{"id": "ug-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "51x51", "px": "600x600", "head": "25-35", "std": ""}]}
-{"id": "rw", "ko": "르완다", "en": "Rwanda", "ja": "ルワンダ", "continent": "africa", "docs": [{"id": "rw-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "51x51", "px": "600x600", "head": "", "std": ""}]}
-{"id": "mz", "ko": "모잠비크", "en": "Mozambique", "ja": "モザンビーク", "continent": "africa", "docs": []}
-{"id": "zw", "ko": "짐바브웨", "en": "Zimbabwe", "ja": "ジンバブエ", "continent": "africa", "docs": []}
-{"id": "ao", "ko": "앙골라", "en": "Angola", "ja": "アンゴラ", "continent": "africa", "docs": []}
-{"id": "cd", "ko": "콩고민주공화국", "en": "DR Congo", "ja": "コンゴ民主共和国", "continent": "africa", "docs": []}
-{"id": "mg", "ko": "마다가스카르", "en": "Madagascar", "ja": "マダガスカル", "continent": "africa", "docs": [{"id": "mg-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "40x40", "px": "472x472", "head": "25-32", "std": ""}, {"id": "mg-visa", "type": "visa", "ko": "비자", "en": "Visa", "ja": "ビザ", "size": "35x45", "px": "413x531", "head": "", "std": ""}]}
-{"id": "so", "ko": "소말리아", "en": "Somalia", "ja": "ソマリア", "continent": "africa", "docs": []}
-{"id": "bw", "ko": "보츠와나", "en": "Botswana", "ja": "ボツワナ", "continent": "africa", "docs": [{"id": "bw-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "30x40", "px": "354x472", "head": "30", "std": ""}]}
-{"id": "na", "ko": "나미비아", "en": "Namibia", "ja": "ナミビア", "continent": "africa", "docs": [{"id": "na-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "37x52", "px": "437x614", "head": "36", "std": ""}]}
-{"id": "zm", "ko": "잠비아", "en": "Zambia", "ja": "ザンビア", "continent": "africa", "docs": []}
-{"id": "mw", "ko": "말라위", "en": "Malawi", "ja": "マラウイ", "continent": "africa", "docs": []}
-{"id": "mu", "ko": "모리셔스", "en": "Mauritius", "ja": "モーリシャス", "continent": "africa", "docs": []}
-{"id": "au", "ko": "호주", "en": "Australia", "ja": "オーストラリア", "continent": "oceania", "docs": []}
-{"id": "nz", "ko": "뉴질랜드", "en": "New Zealand", "ja": "ニュージーランド", "continent": "oceania", "docs": []}
-{"id": "fj", "ko": "피지", "en": "Fiji", "ja": "フィジー", "continent": "oceania", "docs": []}
-{"id": "pg", "ko": "파푸아뉴기니", "en": "Papua New Guinea", "ja": "パプアニューギニア", "continent": "oceania", "docs": []}
-{"id": "ws", "ko": "사모아", "en": "Samoa", "ja": "サモア", "continent": "oceania", "docs": []}
-{"id": "to", "ko": "통가", "en": "Tonga", "ja": "トンガ", "continent": "oceania", "docs": []}
-{"id": "li", "ko": "리히텐슈타인", "en": "Liechtenstein", "ja": "リヒテンシュタイン", "continent": "europe", "docs": []}
-{"id": "mc", "ko": "모나코", "en": "Monaco", "ja": "モナコ", "continent": "europe", "docs": []}
-{"id": "sm", "ko": "산마리노", "en": "San Marino", "ja": "サンマリノ", "continent": "europe", "docs": []}
-{"id": "ad", "ko": "안도라", "en": "Andorra", "ja": "アンドラ", "continent": "europe", "docs": []}
-{"id": "va", "ko": "바티칸", "en": "Vatican City", "ja": "バチカン", "continent": "europe", "docs": []}
-{"id": "bb", "ko": "바베이도스", "en": "Barbados", "ja": "バルバドス", "continent": "americas", "docs": [{"id": "bb-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "50x50", "px": "591x591", "head": "30-40", "std": ""}]}
-{"id": "ag", "ko": "앤티가바부다", "en": "Antigua and Barbuda", "ja": "アンティグア・バーブーダ", "continent": "americas", "docs": []}
-{"id": "dm", "ko": "도미니카연방", "en": "Dominica", "ja": "ドミニカ国", "continent": "americas", "docs": [{"id": "dm-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "38x45", "px": "449x531", "head": "", "std": ""}]}
-{"id": "gd", "ko": "그레나다", "en": "Grenada", "ja": "グレナダ", "continent": "americas", "docs": []}
-{"id": "kn", "ko": "세인트키츠네비스", "en": "Saint Kitts and Nevis", "ja": "セントクリストファー・ネイビス", "continent": "americas", "docs": []}
-{"id": "lc", "ko": "세인트루시아", "en": "Saint Lucia", "ja": "セントルシア", "continent": "americas", "docs": [{"id": "lc-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "40x50", "px": "472x591", "head": "25-35", "std": ""}]}
-{"id": "vc", "ko": "세인트빈센트그레나딘", "en": "Saint Vincent and the Grenadines", "ja": "セントビンセント・グレナディーン", "continent": "americas", "docs": []}
-{"id": "bf", "ko": "부르키나파소", "en": "Burkina Faso", "ja": "ブルキナファソ", "continent": "africa", "docs": []}
-{"id": "ml", "ko": "말리", "en": "Mali", "ja": "マリ", "continent": "africa", "docs": []}
-{"id": "ne", "ko": "니제르", "en": "Niger", "ja": "ニジェール", "continent": "africa", "docs": []}
-{"id": "td", "ko": "차드", "en": "Chad", "ja": "チャド", "continent": "africa", "docs": [{"id": "td-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "50x50", "px": "591x591", "head": "34-35", "std": ""}]}
-{"id": "mr", "ko": "모리타니", "en": "Mauritania", "ja": "モーリタニア", "continent": "africa", "docs": []}
-{"id": "gm", "ko": "감비아", "en": "Gambia", "ja": "ガンビア", "continent": "africa", "docs": []}
-{"id": "gw", "ko": "기니비사우", "en": "Guinea-Bissau", "ja": "ギニアビサウ", "continent": "africa", "docs": []}
-{"id": "gn", "ko": "기니", "en": "Guinea", "ja": "ギニア", "continent": "africa", "docs": []}
-{"id": "sl", "ko": "시에라리온", "en": "Sierra Leone", "ja": "シエラレオネ", "continent": "africa", "docs": [{"id": "sl-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "50x50", "px": "591x591", "head": "30-35", "std": ""}, {"id": "sl-visa", "type": "visa", "ko": "비자", "en": "Visa", "ja": "ビザ", "size": "35x45", "px": "413x531", "head": "", "std": ""}]}
-{"id": "lr", "ko": "라이베리아", "en": "Liberia", "ja": "リベリア", "continent": "africa", "docs": []}
-{"id": "tg", "ko": "토고", "en": "Togo", "ja": "トーゴ", "continent": "africa", "docs": []}
-{"id": "bj", "ko": "베냉", "en": "Benin", "ja": "ベナン", "continent": "africa", "docs": []}
-{"id": "cg", "ko": "콩고공화국", "en": "Republic of the Congo", "ja": "コンゴ共和国", "continent": "africa", "docs": []}
-{"id": "ga", "ko": "가봉", "en": "Gabon", "ja": "ガボン", "continent": "africa", "docs": []}
-{"id": "gq", "ko": "적도기니", "en": "Equatorial Guinea", "ja": "赤道ギニア", "continent": "africa", "docs": []}
-{"id": "cf", "ko": "중앙아프리카공화국", "en": "Central African Republic", "ja": "中央アフリカ", "continent": "africa", "docs": []}
-{"id": "st", "ko": "상투메프린시페", "en": "São Tomé and Príncipe", "ja": "サントメ・プリンシペ", "continent": "africa", "docs": []}
-{"id": "er", "ko": "에리트레아", "en": "Eritrea", "ja": "エリトリア", "continent": "africa", "docs": []}
-{"id": "dj", "ko": "지부티", "en": "Djibouti", "ja": "ジブチ", "continent": "africa", "docs": [{"id": "dj-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "35x35", "px": "413x413", "head": "", "std": ""}]}
-{"id": "bi", "ko": "부룬디", "en": "Burundi", "ja": "ブルンジ", "continent": "africa", "docs": []}
-{"id": "ss", "ko": "남수단", "en": "South Sudan", "ja": "南スーダン", "continent": "africa", "docs": []}
-{"id": "cv", "ko": "카보베르데", "en": "Cape Verde", "ja": "カーボベルデ", "continent": "africa", "docs": []}
-{"id": "km", "ko": "코모로", "en": "Comoros", "ja": "コモロ", "continent": "africa", "docs": []}
-{"id": "sc", "ko": "세이셸", "en": "Seychelles", "ja": "セーシェル", "continent": "africa", "docs": []}
-{"id": "sz", "ko": "에스와티니", "en": "Eswatini", "ja": "エスワティニ", "continent": "africa", "docs": []}
-{"id": "ls", "ko": "레소토", "en": "Lesotho", "ja": "レソト", "continent": "africa", "docs": []}
-{"id": "vu", "ko": "바누아투", "en": "Vanuatu", "ja": "バヌアツ", "continent": "oceania", "docs": []}
-{"id": "sb", "ko": "솔로몬제도", "en": "Solomon Islands", "ja": "ソロモン諸島", "continent": "oceania", "docs": []}
-{"id": "ki", "ko": "키리바시", "en": "Kiribati", "ja": "キリバス", "continent": "oceania", "docs": []}
-{"id": "mh", "ko": "마셜제도", "en": "Marshall Islands", "ja": "マーシャル諸島", "continent": "oceania", "docs": [{"id": "mh-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "51x51", "px": "600x600", "head": "", "std": ""}]}
-{"id": "fm", "ko": "미크로네시아", "en": "Micronesia", "ja": "ミクロネシア", "continent": "oceania", "docs": []}
-{"id": "pw", "ko": "팔라우", "en": "Palau", "ja": "パラオ", "continent": "oceania", "docs": [{"id": "pw-passport", "type": "passport", "ko": "여권", "en": "Passport", "ja": "パスポート", "size": "51x51", "px": "600x600", "head": "", "std": ""}]}
-{"id": "nr", "ko": "나우루", "en": "Nauru", "ja": "ナウル", "continent": "oceania", "docs": []}
-{"id": "tv", "ko": "투발루", "en": "Tuvalu", "ja": "ツバル", "continent": "oceania", "docs": []}
-{"id": "ck", "ko": "쿡 제도", "en": "Cook Islands", "ja": "クック諸島", "continent": "oceania", "docs": []}
-{"id": "nu", "ko": "니우에", "en": "Niue", "ja": "ニウエ", "continent": "oceania", "docs": []}
+{"id":"kr","ko":"대한민국","en":"South Korea","ja":"韓国","continent":"asia","docs":[{"id":"kr-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"32-36","std":"ICAO 9303"},{"id":"kr-visa","type":"visa","ko":"비자","en":"Visa","ja":"ビザ","size":"35x45","px":"413x531","head":"32-36","std":"출입국관리법"},{"id":"kr-id","type":"id","ko":"주민등록증","en":"National ID","ja":"住民登録証","size":"35x45","px":"413x531","head":"32-36","std":"KR-MOIS"},{"id":"kr-resume","type":"resume","ko":"반명함","en":"Half-size Portrait","ja":"半名刺判","size":"30x40","px":"354x472","head":"","std":""},{"id":"kr-license","type":"license","ko":"운전면허","en":"Driver License","ja":"運転免許","size":"35x45","px":"413x531","head":"32-36","std":"도로교통법"}]}
+{"id":"jp","ko":"일본","en":"Japan","ja":"日本","continent":"asia","docs":[{"id":"jp-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"32-36","std":"ICAO 9303"},{"id":"jp-id","type":"id","ko":"마이넘버카드","en":"My Number Card","ja":"マイナンバーカード","size":"35x45","px":"480x480","head":"32-36","std":"J-LIS"},{"id":"jp-visa","type":"visa","ko":"비자","en":"Visa","ja":"ビザ","size":"45x45","px":"531x531","head":"32-36","std":"MOJ"},{"id":"jp-license","type":"license","ko":"운전면허","en":"Driver License","ja":"運転免許","size":"24x30","px":"283x354","head":"","std":"道路交通法"}]}
+{"id":"us","ko":"미국","en":"United States","ja":"アメリカ","continent":"americas","docs":[{"id":"us-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"51x51","px":"600x600","head":"25-35","std":"22 CFR 51"},{"id":"us-visa","type":"visa","ko":"비자","en":"Visa","ja":"ビザ","size":"51x51","px":"600x600","head":"22-35","std":"22 CFR 51"}]}
+{"id":"eu","ko":"유럽연합","en":"European Union","ja":"欧州連合","continent":"europe","docs":[{"id":"eu-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"32-36","std":"ICAO 9303"},{"id":"eu-visa","type":"visa","ko":"비자","en":"Visa","ja":"ビザ","size":"35x45","px":"413x531","head":"32-36","std":"ICAO 9303"},{"id":"eu-license","type":"license","ko":"운전면허","en":"Driver License","ja":"運転免許","size":"35x45","px":"413x531","head":"32-36","std":"EU Directive"}]}
+{"id":"uk","ko":"영국","en":"United Kingdom","ja":"イギリス","continent":"europe","docs":[{"id":"uk-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"600x750","head":"29-34","std":"HMPO"},{"id":"uk-license","type":"license","ko":"운전면허","en":"Driver License","ja":"運転免許","size":"35x45","px":"600x750","head":"29-34","std":"DVLA"}]}
+{"id":"cn","ko":"중국","en":"China","ja":"中国","continent":"asia","docs":[{"id":"cn-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"33x48","px":"390x567","head":"28-33","std":"GA 461"},{"id":"cn-visa","type":"visa","ko":"비자","en":"Visa","ja":"ビザ","size":"33x48","px":"354x472","head":"28-33","std":"GA 461"},{"id":"cn-license","type":"license","ko":"운전면허","en":"Driver License","ja":"運転免許","size":"22x32","px":"260x378","head":"","std":"GA 482"}]}
+{"id":"ca","ko":"캐나다","en":"Canada","ja":"カナダ","continent":"americas","docs":[{"id":"ca-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"50x70","px":"590x826","head":"31-36","std":"PPTC-203","warning":{"ko":"⚠️ 캐나다 여권은 전문 사진사 촬영이 의무입니다. 사진 뒷면에 사진사 서명·주소·촬영일자 기재 필수.","en":"⚠️ Canada requires photos taken by a commercial photographer.","ja":"⚠️ カナダのパスポートは商業写真家による撮影が義務です。"}}]}
+{"id":"sg","ko":"싱가포르","en":"Singapore","ja":"シンガポール","continent":"asia","docs":[{"id":"sg-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"400x514","head":"25-35","std":"ICA","warning":{"ko":"⚠️ 유효기간 3개월","en":"⚠️ Valid 3 months","ja":"⚠️ 有効期限3ヶ月"}}]}
+{"id":"in","ko":"인도","en":"India","ja":"インド","continent":"asia","docs":[{"id":"in-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":"ICAO 9303 (2025.9~)"},{"id":"in-visa","type":"visa","ko":"비자","en":"Visa","ja":"ビザ","size":"51x51","px":"600x600","head":"36-41","std":"BLS/VFS"},{"id":"in-license","type":"license","ko":"운전면허","en":"Driver License","ja":"運転免許","size":"35x45","px":"413x531","head":"32-36","std":"MVA"}]}
+{"id":"tw","ko":"대만","en":"Taiwan","ja":"台湾","continent":"asia","docs":[{"id":"tw-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"32-36","std":"BOCA"}]}
+{"id":"hk","ko":"홍콩","en":"Hong Kong","ja":"香港","continent":"asia","docs":[{"id":"hk-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"40x50","px":"472x591","head":"32-36","std":"HKSAR IMMD"}]}
+{"id":"mo","ko":"마카오","en":"Macao","ja":"マカオ","continent":"asia","docs":[]}
+{"id":"th","ko":"태국","en":"Thailand","ja":"タイ","continent":"asia","docs":[{"id":"th-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"vn","ko":"베트남","en":"Vietnam","ja":"ベトナム","continent":"asia","docs":[{"id":"vn-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"40x60","px":"472x709","head":"","std":""}]}
+{"id":"id","ko":"인도네시아","en":"Indonesia","ja":"インドネシア","continent":"asia","docs":[{"id":"id-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"40x60","px":"472x709","head":"25-31","std":"","warning":{"ko":"⚠️ 여권 배경색 빨간색. 비자는 흰색 35x45.","en":"⚠️ Passport background is RED. Visa uses white 35x45.","ja":"⚠️ パスポートの背景は赤色。ビザは白35x45。"}},{"id":"id-visa","type":"visa","ko":"비자","en":"Visa","ja":"ビザ","size":"35x45","px":"413x531","head":"","std":"","warning":{"ko":"⚠️ 비자 사양은 여권과 다릅니다 (흰색 배경 35x45).","en":"⚠️ Visa spec differs from passport (white background 35x45).","ja":"⚠️ ビザの仕様はパスポートと異なります（白背景35x45）。"}}]}
+{"id":"my","ko":"말레이시아","en":"Malaysia","ja":"マレーシア","continent":"asia","docs":[{"id":"my-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x50","px":"413x591","head":"25-30","std":""}]}
+{"id":"ph","ko":"필리핀","en":"Philippines","ja":"フィリピン","continent":"asia","docs":[{"id":"ph-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"32-36","std":"","warning":{"ko":"⚠️ DFA 국내 현장촬영","en":"⚠️ On-site photo at DFA offices","ja":"⚠️ DFA国内現場撮影"}}]}
+{"id":"mm","ko":"미얀마","en":"Myanmar","ja":"ミャンマー","continent":"asia","docs":[{"id":"mm-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""},{"id":"mm-visa","type":"visa","ko":"비자","en":"Visa","ja":"ビザ","size":"38x48","px":"449x567","head":"","std":""}]}
+{"id":"kh","ko":"캄보디아","en":"Cambodia","ja":"カンボジア","continent":"asia","docs":[{"id":"kh-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"40x60","px":"472x709","head":"36","std":""}]}
+{"id":"la","ko":"라오스","en":"Laos","ja":"ラオス","continent":"asia","docs":[{"id":"la-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"40x60","px":"472x709","head":"","std":""}]}
+{"id":"bd","ko":"방글라데시","en":"Bangladesh","ja":"バングラデシュ","continent":"asia","docs":[{"id":"bd-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"45x55","px":"531x650","head":"34","std":""}]}
+{"id":"lk","ko":"스리랑카","en":"Sri Lanka","ja":"スリランカ","continent":"asia","docs":[{"id":"lk-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"32-36","std":""}]}
+{"id":"np","ko":"네팔","en":"Nepal","ja":"ネパール","continent":"asia","docs":[{"id":"np-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"pk","ko":"파키스탄","en":"Pakistan","ja":"パキスタン","continent":"asia","docs":[{"id":"pk-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"32-36","std":""}]}
+{"id":"af","ko":"아프가니스탄","en":"Afghanistan","ja":"アフガニスタン","continent":"asia","docs":[{"id":"af-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"40x45","px":"472x531","head":"","std":""}]}
+{"id":"mn","ko":"몽골","en":"Mongolia","ja":"モンゴル","continent":"asia","docs":[{"id":"mn-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"kz","ko":"카자흐스탄","en":"Kazakhstan","ja":"カザフスタン","continent":"asia","docs":[]}
+{"id":"uz","ko":"우즈베키스탄","en":"Uzbekistan","ja":"ウズベキスタン","continent":"asia","docs":[{"id":"uz-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"kg","ko":"키르기스스탄","en":"Kyrgyzstan","ja":"キルギス","continent":"asia","docs":[{"id":"kg-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"40x60","px":"472x709","head":"","std":""},{"id":"kg-visa","type":"visa","ko":"비자","en":"Visa","ja":"ビザ","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"tj","ko":"타지키스탄","en":"Tajikistan","ja":"タジキスタン","continent":"asia","docs":[]}
+{"id":"tm","ko":"투르크메니스탄","en":"Turkmenistan","ja":"トルクメニスタン","continent":"asia","docs":[{"id":"tm-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"30x40","px":"354x472","head":"30","std":""},{"id":"tm-visa","type":"visa","ko":"비자","en":"Visa","ja":"ビザ","size":"50x60","px":"591x709","head":"","std":""}]}
+{"id":"bn","ko":"브루나이","en":"Brunei","ja":"ブルネイ","continent":"asia","docs":[{"id":"bn-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"40x52","px":"472x614","head":"35","std":""}]}
+{"id":"tl","ko":"동티모르","en":"Timor-Leste","ja":"東ティモール","continent":"asia","docs":[]}
+{"id":"kp","ko":"북한","en":"North Korea","ja":"北朝鮮","continent":"asia","docs":[]}
+{"id":"bt","ko":"부탄","en":"Bhutan","ja":"ブータン","continent":"asia","docs":[]}
+{"id":"mv","ko":"몰디브","en":"Maldives","ja":"モルディブ","continent":"asia","docs":[]}
+{"id":"ru","ko":"러시아","en":"Russia","ja":"ロシア","continent":"europe","docs":[{"id":"ru-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"32-36","std":"","warning":{"ko":"⚠️ 광택종이 필수","en":"⚠️ Glossy paper required","ja":"⚠️ 光沢紙必須"}}]}
+{"id":"ua","ko":"우크라이나","en":"Ukraine","ja":"ウクライナ","continent":"europe","docs":[{"id":"ua-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"fr","ko":"프랑스","en":"France","ja":"フランス","continent":"europe","docs":[{"id":"fr-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"32-36","std":"","warning":{"ko":"⚠️ 흰색 배경 금지! 밝은 회색/파란 필수","en":"⚠️ White background prohibited! Light grey/blue required","ja":"⚠️ 白背景禁止！明るいグレー/青必須"}}]}
+{"id":"de","ko":"독일","en":"Germany","ja":"ドイツ","continent":"europe","docs":[{"id":"de-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"32-36","std":"","warning":{"ko":"⚠️ 2025.05~ 종이사진 금지, 디지털 전용","en":"⚠️ From 2025.05 paper photos prohibited, digital only","ja":"⚠️ 2025.05〜紙写真禁止、デジタル専用"}}]}
+{"id":"it","ko":"이탈리아","en":"Italy","ja":"イタリア","continent":"europe","docs":[{"id":"it-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"es","ko":"스페인","en":"Spain","ja":"スペイン","continent":"europe","docs":[{"id":"es-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"pt","ko":"포르투갈","en":"Portugal","ja":"ポルトガル","continent":"europe","docs":[{"id":"pt-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"nl","ko":"네덜란드","en":"Netherlands","ja":"オランダ","continent":"europe","docs":[{"id":"nl-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"be","ko":"벨기에","en":"Belgium","ja":"ベルギー","continent":"europe","docs":[{"id":"be-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"ch","ko":"스위스","en":"Switzerland","ja":"スイス","continent":"europe","docs":[{"id":"ch-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"at","ko":"오스트리아","en":"Austria","ja":"オーストリア","continent":"europe","docs":[{"id":"at-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"se","ko":"스웨덴","en":"Sweden","ja":"スウェーデン","continent":"europe","docs":[{"id":"se-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"no","ko":"노르웨이","en":"Norway","ja":"ノルウェー","continent":"europe","docs":[{"id":"no-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"dk","ko":"덴마크","en":"Denmark","ja":"デンマーク","continent":"europe","docs":[{"id":"dk-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"fi","ko":"핀란드","en":"Finland","ja":"フィンランド","continent":"europe","docs":[{"id":"fi-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"36x47","px":"424x555","head":"","std":""}]}
+{"id":"is","ko":"아이슬란드","en":"Iceland","ja":"アイスランド","continent":"europe","docs":[{"id":"is-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"ie","ko":"아일랜드","en":"Ireland","ja":"アイルランド","continent":"europe","docs":[{"id":"ie-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"pl","ko":"폴란드","en":"Poland","ja":"ポーランド","continent":"europe","docs":[{"id":"pl-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"cz","ko":"체코","en":"Czechia","ja":"チェコ","continent":"europe","docs":[{"id":"cz-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"sk","ko":"슬로바키아","en":"Slovakia","ja":"スロバキア","continent":"europe","docs":[{"id":"sk-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"hu","ko":"헝가리","en":"Hungary","ja":"ハンガリー","continent":"europe","docs":[{"id":"hu-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"ro","ko":"루마니아","en":"Romania","ja":"ルーマニア","continent":"europe","docs":[{"id":"ro-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"bg","ko":"불가리아","en":"Bulgaria","ja":"ブルガリア","continent":"europe","docs":[{"id":"bg-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"hr","ko":"크로아티아","en":"Croatia","ja":"クロアチア","continent":"europe","docs":[{"id":"hr-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"rs","ko":"세르비아","en":"Serbia","ja":"セルビア","continent":"europe","docs":[{"id":"rs-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"50x50","px":"591x591","head":"","std":""},{"id":"rs-visa","type":"visa","ko":"비자","en":"Visa","ja":"ビザ","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"ba","ko":"보스니아","en":"Bosnia and Herzegovina","ja":"ボスニア・ヘルツェゴビナ","continent":"europe","docs":[]}
+{"id":"me","ko":"몬테네그로","en":"Montenegro","ja":"モンテネグロ","continent":"europe","docs":[]}
+{"id":"mk","ko":"북마케도니아","en":"North Macedonia","ja":"北マケドニア","continent":"europe","docs":[{"id":"mk-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"50x50","px":"591x591","head":"","std":""},{"id":"mk-visa","type":"visa","ko":"비자","en":"Visa","ja":"ビザ","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"al","ko":"알바니아","en":"Albania","ja":"アルバニア","continent":"europe","docs":[{"id":"al-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"40x50","px":"472x591","head":"","std":""},{"id":"al-visa","type":"visa","ko":"비자","en":"Visa","ja":"ビザ","size":"36x47","px":"425x555","head":"","std":""}]}
+{"id":"xk","ko":"코소보","en":"Kosovo","ja":"コソボ","continent":"europe","docs":[]}
+{"id":"md","ko":"몰도바","en":"Moldova","ja":"モルドバ","continent":"europe","docs":[]}
+{"id":"by","ko":"벨라루스","en":"Belarus","ja":"ベラルーシ","continent":"europe","docs":[{"id":"by-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"40x50","px":"472x591","head":"32-35","std":""},{"id":"by-visa","type":"visa","ko":"비자","en":"Visa","ja":"ビザ","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"lv","ko":"라트비아","en":"Latvia","ja":"ラトビア","continent":"europe","docs":[{"id":"lv-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"lt","ko":"리투아니아","en":"Lithuania","ja":"リトアニア","continent":"europe","docs":[{"id":"lt-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"40x60","px":"472x709","head":"33","std":""},{"id":"lt-visa","type":"visa","ko":"비자","en":"Visa","ja":"ビザ","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"ee","ko":"에스토니아","en":"Estonia","ja":"エストニア","continent":"europe","docs":[{"id":"ee-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"40x50","px":"472x591","head":"","std":""},{"id":"ee-visa","type":"visa","ko":"비자","en":"Visa","ja":"ビザ","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"si","ko":"슬로베니아","en":"Slovenia","ja":"スロベニア","continent":"europe","docs":[{"id":"si-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"gr","ko":"그리스","en":"Greece","ja":"ギリシャ","continent":"europe","docs":[{"id":"gr-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"40x60","px":"472x709","head":"","std":""},{"id":"gr-visa","type":"visa","ko":"비자","en":"Visa","ja":"ビザ","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"cy","ko":"키프로스","en":"Cyprus","ja":"キプロス","continent":"europe","docs":[{"id":"cy-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"40x50","px":"472x591","head":"","std":""},{"id":"cy-visa","type":"visa","ko":"비자","en":"Visa","ja":"ビザ","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"mt","ko":"몰타","en":"Malta","ja":"マルタ","continent":"europe","docs":[{"id":"mt-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"lu","ko":"룩셈부르크","en":"Luxembourg","ja":"ルクセンブルク","continent":"europe","docs":[{"id":"lu-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"ge","ko":"조지아","en":"Georgia","ja":"ジョージア","continent":"europe","docs":[]}
+{"id":"am","ko":"아르메니아","en":"Armenia","ja":"アルメニア","continent":"europe","docs":[]}
+{"id":"az","ko":"아제르바이잔","en":"Azerbaijan","ja":"アゼルバイジャン","continent":"europe","docs":[{"id":"az-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"30x40","px":"354x472","head":"","std":""}]}
+{"id":"tr","ko":"터키","en":"Turkey","ja":"トルコ","continent":"europe","docs":[{"id":"tr-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"50x60","px":"591x709","head":"34","std":""}]}
+{"id":"mx","ko":"멕시코","en":"Mexico","ja":"メキシコ","continent":"americas","docs":[{"id":"mx-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"32-39","std":"","warning":{"ko":"⚠️ 국내+영사관 현장촬영 병행","en":"⚠️ In-person photography at offices/consulates","ja":"⚠️ 国内・領事館で現場撮影"}}]}
+{"id":"br","ko":"브라질","en":"Brazil","ja":"ブラジル","continent":"americas","docs":[{"id":"br-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"50x70","px":"591x827","head":"42","std":"","warning":{"ko":"⚠️ 브라질 여권은 대면 방문 시 현장에서 얼굴 사진을 촬영합니다(gov.br/pf).","en":"⚠️ Brazil passport photos are taken on-site during in-person visits (gov.br/pf).","ja":"⚠️ ブラジルのパスポートは対面訪問時に現地で顔写真を撮影します（gov.br/pf）。"}},{"id":"br-visa","type":"visa","ko":"비자","en":"Visa","ja":"ビザ","size":"35x45","px":"413x531","head":"32-36","std":"ICAO 9303"}]}
+{"id":"ar","ko":"아르헨티나","en":"Argentina","ja":"アルゼンチン","continent":"americas","docs":[{"id":"ar-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"40x40","px":"472x472","head":"","std":"Decreto 261/2011"}]}
+{"id":"cl","ko":"칠레","en":"Chile","ja":"チリ","continent":"americas","docs":[{"id":"cl-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"45x45","px":"531x531","head":"27","std":""}]}
+{"id":"co","ko":"콜롬비아","en":"Colombia","ja":"コロンビア","continent":"americas","docs":[{"id":"co-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"40x50","px":"472x591","head":"27","std":""},{"id":"co-visa","type":"visa","ko":"비자","en":"Visa","ja":"ビザ","size":"30x40","px":"354x472","head":"","std":""}]}
+{"id":"pe","ko":"페루","en":"Peru","ja":"ペルー","continent":"americas","docs":[{"id":"pe-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":"","warning":{"ko":"⚠️ Migraciones 현장촬영 (사진 불필요)","en":"⚠️ On-site biometric photo at Migraciones","ja":"⚠️ Migraciones現場撮影（写真不要）"}}]}
+{"id":"ve","ko":"베네수엘라","en":"Venezuela","ja":"ベネズエラ","continent":"americas","docs":[{"id":"ve-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"51x51","px":"600x600","head":"34-38","std":""}]}
+{"id":"ec","ko":"에콰도르","en":"Ecuador","ja":"エクアドル","continent":"americas","docs":[{"id":"ec-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"50x50","px":"591x591","head":"25-35","std":""}]}
+{"id":"bo","ko":"볼리비아","en":"Bolivia","ja":"ボリビア","continent":"americas","docs":[{"id":"bo-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"40x50","px":"472x591","head":"34","std":""}]}
+{"id":"py","ko":"파라과이","en":"Paraguay","ja":"パラグアイ","continent":"americas","docs":[]}
+{"id":"uy","ko":"우루과이","en":"Uruguay","ja":"ウルグアイ","continent":"americas","docs":[]}
+{"id":"pa","ko":"파나마","en":"Panama","ja":"パナマ","continent":"americas","docs":[]}
+{"id":"cr","ko":"코스타리카","en":"Costa Rica","ja":"コスタリカ","continent":"americas","docs":[{"id":"cr-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"51x51","px":"600x600","head":"31-36","std":""}]}
+{"id":"ni","ko":"니카라과","en":"Nicaragua","ja":"ニカラグア","continent":"americas","docs":[{"id":"ni-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"40x50","px":"472x591","head":"34","std":""}]}
+{"id":"hn","ko":"온두라스","en":"Honduras","ja":"ホンジュラス","continent":"americas","docs":[{"id":"hn-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"50x50","px":"591x591","head":"25-35","std":""}]}
+{"id":"sv","ko":"엘살바도르","en":"El Salvador","ja":"エルサルバドル","continent":"americas","docs":[]}
+{"id":"gt","ko":"과테말라","en":"Guatemala","ja":"グアテマラ","continent":"americas","docs":[]}
+{"id":"cu","ko":"쿠바","en":"Cuba","ja":"キューバ","continent":"americas","docs":[{"id":"cu-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"45x45","px":"531x531","head":"27","std":""}]}
+{"id":"jm","ko":"자메이카","en":"Jamaica","ja":"ジャマイカ","continent":"americas","docs":[{"id":"jm-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"25-35","std":""}]}
+{"id":"do","ko":"도미니카공화국","en":"Dominican Republic","ja":"ドミニカ共和国","continent":"americas","docs":[{"id":"do-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"51x51","px":"600x600","head":"25-35","std":""}]}
+{"id":"ht","ko":"아이티","en":"Haiti","ja":"ハイチ","continent":"americas","docs":[{"id":"ht-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"51x51","px":"600x600","head":"25-35","std":""}]}
+{"id":"tt","ko":"트리니다드토바고","en":"Trinidad and Tobago","ja":"トリニダード・トバゴ","continent":"americas","docs":[{"id":"tt-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"31x41","px":"366x484","head":"29-33","std":""}]}
+{"id":"bs","ko":"바하마","en":"Bahamas","ja":"バハマ","continent":"americas","docs":[]}
+{"id":"bz","ko":"벨리즈","en":"Belize","ja":"ベリーズ","continent":"americas","docs":[{"id":"bz-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"51x51","px":"600x600","head":"35-41","std":""}]}
+{"id":"sr","ko":"수리남","en":"Suriname","ja":"スリナム","continent":"americas","docs":[]}
+{"id":"gy","ko":"가이아나","en":"Guyana","ja":"ガイアナ","continent":"americas","docs":[]}
+{"id":"sa","ko":"사우디아라비아","en":"Saudi Arabia","ja":"サウジアラビア","continent":"middleeast","docs":[{"id":"sa-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"40x60","px":"472x709","head":"38","std":""}]}
+{"id":"ae","ko":"아랍에미리트","en":"United Arab Emirates","ja":"アラブ首長国連邦","continent":"middleeast","docs":[{"id":"ae-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"40x60","px":"472x709","head":"","std":""},{"id":"ae-visa","type":"visa","ko":"비자","en":"Visa","ja":"ビザ","size":"43x55","px":"507x650","head":"","std":""},{"id":"ae-id","type":"id","ko":"신분증","en":"National ID","ja":"身分証","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"qa","ko":"카타르","en":"Qatar","ja":"カタール","continent":"middleeast","docs":[{"id":"qa-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"38x48","px":"449x567","head":"34","std":""}]}
+{"id":"kw","ko":"쿠웨이트","en":"Kuwait","ja":"クウェート","continent":"middleeast","docs":[{"id":"kw-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"40x50","px":"472x591","head":"38","std":""}]}
+{"id":"bh","ko":"바레인","en":"Bahrain","ja":"バーレーン","continent":"middleeast","docs":[{"id":"bh-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"40x60","px":"472x709","head":"38","std":""}]}
+{"id":"om","ko":"오만","en":"Oman","ja":"オマーン","continent":"middleeast","docs":[{"id":"om-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"40x60","px":"472x709","head":"38","std":""}]}
+{"id":"ir","ko":"이란","en":"Iran","ja":"イラン","continent":"middleeast","docs":[{"id":"ir-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"30x40","px":"354x472","head":"28","std":""}]}
+{"id":"iq","ko":"이라크","en":"Iraq","ja":"イラク","continent":"middleeast","docs":[]}
+{"id":"jo","ko":"요르단","en":"Jordan","ja":"ヨルダン","continent":"middleeast","docs":[]}
+{"id":"lb","ko":"레바논","en":"Lebanon","ja":"レバノン","continent":"middleeast","docs":[]}
+{"id":"sy","ko":"시리아","en":"Syria","ja":"シリア","continent":"middleeast","docs":[]}
+{"id":"ye","ko":"예멘","en":"Yemen","ja":"イエメン","continent":"middleeast","docs":[{"id":"ye-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"40x60","px":"472x709","head":"32-36","std":""}]}
+{"id":"il","ko":"이스라엘","en":"Israel","ja":"イスラエル","continent":"middleeast","docs":[]}
+{"id":"ps","ko":"팔레스타인","en":"Palestine","ja":"パレスチナ","continent":"middleeast","docs":[]}
+{"id":"za","ko":"남아프리카공화국","en":"South Africa","ja":"南アフリカ","continent":"africa","docs":[]}
+{"id":"eg","ko":"이집트","en":"Egypt","ja":"エジプト","continent":"africa","docs":[{"id":"eg-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"40x60","px":"472x709","head":"38-40","std":""}]}
+{"id":"ma","ko":"모로코","en":"Morocco","ja":"モロッコ","continent":"africa","docs":[]}
+{"id":"ng","ko":"나이지리아","en":"Nigeria","ja":"ナイジェリア","continent":"africa","docs":[{"id":"ng-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":"","warning":{"ko":"⚠️ 600DPI, 사진 유효기간 2주","en":"⚠️ 600DPI required, photo valid 2 weeks","ja":"⚠️ 600DPI必要、写真有効期限2週間"}}]}
+{"id":"ke","ko":"케냐","en":"Kenya","ja":"ケニア","continent":"africa","docs":[]}
+{"id":"tz","ko":"탄자니아","en":"Tanzania","ja":"タンザニア","continent":"africa","docs":[{"id":"tz-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"40x45","px":"472x531","head":"34","std":""}]}
+{"id":"et","ko":"에티오피아","en":"Ethiopia","ja":"エチオピア","continent":"africa","docs":[{"id":"et-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"30x40","px":"354x472","head":"30","std":""}]}
+{"id":"gh","ko":"가나","en":"Ghana","ja":"ガーナ","continent":"africa","docs":[{"id":"gh-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"sn","ko":"세네갈","en":"Senegal","ja":"セネガル","continent":"africa","docs":[{"id":"sn-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"ci","ko":"코트디부아르","en":"Côte d'Ivoire","ja":"コートジボワール","continent":"africa","docs":[{"id":"ci-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"cm","ko":"카메룬","en":"Cameroon","ja":"カメルーン","continent":"africa","docs":[{"id":"cm-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"40x50","px":"472x591","head":"31-36","std":""}]}
+{"id":"dz","ko":"알제리","en":"Algeria","ja":"アルジェリア","continent":"africa","docs":[{"id":"dz-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"tn","ko":"튀니지","en":"Tunisia","ja":"チュニジア","continent":"africa","docs":[{"id":"tn-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"ly","ko":"리비아","en":"Libya","ja":"リビア","continent":"africa","docs":[{"id":"ly-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"40x60","px":"472x709","head":"38","std":""}]}
+{"id":"sd","ko":"수단","en":"Sudan","ja":"スーダン","continent":"africa","docs":[{"id":"sd-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"40x50","px":"472x591","head":"34","std":""}]}
+{"id":"ug","ko":"우간다","en":"Uganda","ja":"ウガンダ","continent":"africa","docs":[{"id":"ug-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"51x51","px":"600x600","head":"25-35","std":""}]}
+{"id":"rw","ko":"르완다","en":"Rwanda","ja":"ルワンダ","continent":"africa","docs":[{"id":"rw-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"51x51","px":"600x600","head":"","std":""}]}
+{"id":"mz","ko":"모잠비크","en":"Mozambique","ja":"モザンビーク","continent":"africa","docs":[{"id":"mz-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"zw","ko":"짐바브웨","en":"Zimbabwe","ja":"ジンバブエ","continent":"africa","docs":[{"id":"zw-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"ao","ko":"앙골라","en":"Angola","ja":"アンゴラ","continent":"africa","docs":[{"id":"ao-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"cd","ko":"콩고민주공화국","en":"DR Congo","ja":"コンゴ民主共和国","continent":"africa","docs":[{"id":"cd-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"mg","ko":"마다가스카르","en":"Madagascar","ja":"マダガスカル","continent":"africa","docs":[{"id":"mg-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"40x40","px":"472x472","head":"25-32","std":""},{"id":"mg-visa","type":"visa","ko":"비자","en":"Visa","ja":"ビザ","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"so","ko":"소말리아","en":"Somalia","ja":"ソマリア","continent":"africa","docs":[{"id":"so-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"bw","ko":"보츠와나","en":"Botswana","ja":"ボツワナ","continent":"africa","docs":[{"id":"bw-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"30x40","px":"354x472","head":"30","std":""}]}
+{"id":"na","ko":"나미비아","en":"Namibia","ja":"ナミビア","continent":"africa","docs":[{"id":"na-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"37x52","px":"437x614","head":"36","std":""}]}
+{"id":"zm","ko":"잠비아","en":"Zambia","ja":"ザンビア","continent":"africa","docs":[]}
+{"id":"mw","ko":"말라위","en":"Malawi","ja":"マラウイ","continent":"africa","docs":[{"id":"mw-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"mu","ko":"모리셔스","en":"Mauritius","ja":"モーリシャス","continent":"africa","docs":[]}
+{"id":"au","ko":"호주","en":"Australia","ja":"オーストラリア","continent":"oceania","docs":[]}
+{"id":"nz","ko":"뉴질랜드","en":"New Zealand","ja":"ニュージーランド","continent":"oceania","docs":[]}
+{"id":"fj","ko":"피지","en":"Fiji","ja":"フィジー","continent":"oceania","docs":[{"id":"fj-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"pg","ko":"파푸아뉴기니","en":"Papua New Guinea","ja":"パプアニューギニア","continent":"oceania","docs":[]}
+{"id":"ws","ko":"사모아","en":"Samoa","ja":"サモア","continent":"oceania","docs":[{"id":"ws-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"to","ko":"통가","en":"Tonga","ja":"トンガ","continent":"oceania","docs":[{"id":"to-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"li","ko":"리히텐슈타인","en":"Liechtenstein","ja":"リヒテンシュタイン","continent":"europe","docs":[{"id":"li-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"mc","ko":"모나코","en":"Monaco","ja":"モナコ","continent":"europe","docs":[]}
+{"id":"sm","ko":"산마리노","en":"San Marino","ja":"サンマリノ","continent":"europe","docs":[]}
+{"id":"ad","ko":"안도라","en":"Andorra","ja":"アンドラ","continent":"europe","docs":[]}
+{"id":"va","ko":"바티칸","en":"Vatican City","ja":"バチカン","continent":"europe","docs":[]}
+{"id":"bb","ko":"바베이도스","en":"Barbados","ja":"バルバドス","continent":"americas","docs":[{"id":"bb-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"50x50","px":"591x591","head":"30-40","std":""}]}
+{"id":"ag","ko":"앤티가바부다","en":"Antigua and Barbuda","ja":"アンティグア・バーブーダ","continent":"americas","docs":[]}
+{"id":"dm","ko":"도미니카연방","en":"Dominica","ja":"ドミニカ国","continent":"americas","docs":[{"id":"dm-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"38x45","px":"449x531","head":"","std":""}]}
+{"id":"gd","ko":"그레나다","en":"Grenada","ja":"グレナダ","continent":"americas","docs":[{"id":"gd-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"38x51","px":"449x602","head":"","std":""}]}
+{"id":"kn","ko":"세인트키츠네비스","en":"Saint Kitts and Nevis","ja":"セントクリストファー・ネイビス","continent":"americas","docs":[]}
+{"id":"lc","ko":"세인트루시아","en":"Saint Lucia","ja":"セントルシア","continent":"americas","docs":[{"id":"lc-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"40x50","px":"472x591","head":"25-35","std":""}]}
+{"id":"vc","ko":"세인트빈센트그레나딘","en":"Saint Vincent and the Grenadines","ja":"セントビンセント・グレナディーン","continent":"americas","docs":[]}
+{"id":"bf","ko":"부르키나파소","en":"Burkina Faso","ja":"ブルキナファソ","continent":"africa","docs":[{"id":"bf-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"ml","ko":"말리","en":"Mali","ja":"マリ","continent":"africa","docs":[{"id":"ml-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"ne","ko":"니제르","en":"Niger","ja":"ニジェール","continent":"africa","docs":[{"id":"ne-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"td","ko":"차드","en":"Chad","ja":"チャド","continent":"africa","docs":[{"id":"td-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"50x50","px":"591x591","head":"34-35","std":""}]}
+{"id":"mr","ko":"모리타니","en":"Mauritania","ja":"モーリタニア","continent":"africa","docs":[]}
+{"id":"gm","ko":"감비아","en":"Gambia","ja":"ガンビア","continent":"africa","docs":[{"id":"gm-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"gw","ko":"기니비사우","en":"Guinea-Bissau","ja":"ギニアビサウ","continent":"africa","docs":[]}
+{"id":"gn","ko":"기니","en":"Guinea","ja":"ギニア","continent":"africa","docs":[]}
+{"id":"sl","ko":"시에라리온","en":"Sierra Leone","ja":"シエラレオネ","continent":"africa","docs":[{"id":"sl-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"50x50","px":"591x591","head":"30-35","std":""},{"id":"sl-visa","type":"visa","ko":"비자","en":"Visa","ja":"ビザ","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"lr","ko":"라이베리아","en":"Liberia","ja":"リベリア","continent":"africa","docs":[]}
+{"id":"tg","ko":"토고","en":"Togo","ja":"トーゴ","continent":"africa","docs":[]}
+{"id":"bj","ko":"베냉","en":"Benin","ja":"ベナン","continent":"africa","docs":[{"id":"bj-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"cg","ko":"콩고공화국","en":"Republic of the Congo","ja":"コンゴ共和国","continent":"africa","docs":[{"id":"cg-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"ga","ko":"가봉","en":"Gabon","ja":"ガボン","continent":"africa","docs":[]}
+{"id":"gq","ko":"적도기니","en":"Equatorial Guinea","ja":"赤道ギニア","continent":"africa","docs":[]}
+{"id":"cf","ko":"중앙아프리카공화국","en":"Central African Republic","ja":"中央アフリカ","continent":"africa","docs":[{"id":"cf-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"st","ko":"상투메프린시페","en":"São Tomé and Príncipe","ja":"サントメ・プリンシペ","continent":"africa","docs":[{"id":"st-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"er","ko":"에리트레아","en":"Eritrea","ja":"エリトリア","continent":"africa","docs":[{"id":"er-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"dj","ko":"지부티","en":"Djibouti","ja":"ジブチ","continent":"africa","docs":[{"id":"dj-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x35","px":"413x413","head":"","std":""}]}
+{"id":"bi","ko":"부룬디","en":"Burundi","ja":"ブルンジ","continent":"africa","docs":[{"id":"bi-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"45x45","px":"531x531","head":"","std":""}]}
+{"id":"ss","ko":"남수단","en":"South Sudan","ja":"南スーダン","continent":"africa","docs":[{"id":"ss-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"cv","ko":"카보베르데","en":"Cape Verde","ja":"カーボベルデ","continent":"africa","docs":[{"id":"cv-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"km","ko":"코모로","en":"Comoros","ja":"コモロ","continent":"africa","docs":[]}
+{"id":"sc","ko":"세이셸","en":"Seychelles","ja":"セーシェル","continent":"africa","docs":[]}
+{"id":"sz","ko":"에스와티니","en":"Eswatini","ja":"エスワティニ","continent":"africa","docs":[{"id":"sz-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"ls","ko":"레소토","en":"Lesotho","ja":"レソト","continent":"africa","docs":[{"id":"ls-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"vu","ko":"바누아투","en":"Vanuatu","ja":"バヌアツ","continent":"oceania","docs":[{"id":"vu-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"sb","ko":"솔로몬제도","en":"Solomon Islands","ja":"ソロモン諸島","continent":"oceania","docs":[{"id":"sb-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"35x45","px":"413x531","head":"","std":""}]}
+{"id":"ki","ko":"키리바시","en":"Kiribati","ja":"キリバス","continent":"oceania","docs":[]}
+{"id":"mh","ko":"마셜제도","en":"Marshall Islands","ja":"マーシャル諸島","continent":"oceania","docs":[{"id":"mh-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"51x51","px":"600x600","head":"","std":""}]}
+{"id":"fm","ko":"미크로네시아","en":"Micronesia","ja":"ミクロネシア","continent":"oceania","docs":[]}
+{"id":"pw","ko":"팔라우","en":"Palau","ja":"パラオ","continent":"oceania","docs":[{"id":"pw-passport","type":"passport","ko":"여권","en":"Passport","ja":"パスポート","size":"51x51","px":"600x600","head":"","std":""}]}
+{"id":"nr","ko":"나우루","en":"Nauru","ja":"ナウル","continent":"oceania","docs":[]}
+{"id":"tv","ko":"투발루","en":"Tuvalu","ja":"ツバル","continent":"oceania","docs":[]}
+{"id":"ck","ko":"쿡 제도","en":"Cook Islands","ja":"クック諸島","continent":"oceania","docs":[]}
+{"id":"nu","ko":"니우에","en":"Niue","ja":"ニウエ","continent":"oceania","docs":[]}

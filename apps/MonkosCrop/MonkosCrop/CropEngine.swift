@@ -49,11 +49,8 @@ struct FaceDetectionResult {
 }
 
 // ─── 배치 상수 (웹 크롭 엔진 v2 이식) ───
-private let EYE_POSITION_RATIO: CGFloat = 0.43
 private let HAIR_MARGIN_MIN: CGFloat = 0.044
 private let HAIR_VOLUME_RATIO: CGFloat = 0.08
-private let FACE_TARGET_RATIO: CGFloat = 33.0 / 45.0
-private let FACE_MIN_RATIO: CGFloat = 32.0 / 45.0
 private let BOTTOM_MIN_RATIO: CGFloat = 0.12
 
 class CropEngine {
@@ -250,6 +247,10 @@ class CropEngine {
         let eyeCenterY = face.eyeCenterY
         let chinY = face.chinY
 
+        let faceTargetRatio = CGFloat(spec.faceTarget / spec.heightMM)
+        let faceMinRatio = CGFloat(spec.faceMin / spec.heightMM)
+        let eyePositionRatio: CGFloat = spec.heightMM >= 60 ? 0.42 : 0.43
+
         let eyeToChin = chinY - eyeCenterY
         let crownY = eyeCenterY - eyeToChin
         let fullFaceH = eyeToChin * 2
@@ -259,10 +260,10 @@ class CropEngine {
         let frameH_v: CGFloat = 1000
         let frameW_v = frameH_v * frameAspect
 
-        let targetFaceH = frameH_v * FACE_TARGET_RATIO
+        let targetFaceH = frameH_v * faceTargetRatio
         var scale = targetFaceH / fullFaceH
 
-        let targetEyeY = frameH_v * EYE_POSITION_RATIO
+        let targetEyeY = frameH_v * eyePositionRatio
         var extractTop = eyeCenterY * scale - targetEyeY
 
         let scaledHairTopY = hairTopY * scale
@@ -278,7 +279,7 @@ class CropEngine {
             let minBottomPx = frameH_v * BOTTOM_MIN_RATIO
 
             if bottomMargin < minBottomPx {
-                let minTargetFaceH = frameH_v * FACE_MIN_RATIO
+                let minTargetFaceH = frameH_v * faceMinRatio
                 var newScale = scale
                 while newScale * fullFaceH > minTargetFaceH {
                     newScale *= 0.995
@@ -293,6 +294,10 @@ class CropEngine {
                 }
             }
         }
+
+        // 크롭 영역이 원본 이미지를 초과하지 않도록 scale 하한 보장
+        let minScaleForFit = max(frameW_v / imageW, frameH_v / imageH)
+        if scale < minScaleForFit { scale = minScaleForFit }
 
         let scaledEyeCenterX = eyeCenterX * scale
         var extractLeft = scaledEyeCenterX - frameW_v / 2

@@ -135,6 +135,13 @@ status: active
 | 05/19 | 막내1 | **Step2 규정카드 Phase 1 완료** — HTML 프로토 3국 전환(러시아/한국/미국). 규정 카드+체크리스트+공식 링크 동작. 작가님 승인 대기 | idpass_upload_v5_proto.html | ⏳ 승인대기 |
 | 05/19 | 막내2 | **SPECS 페이지 현황 파악 + 리디자인 로드맵** — render-specs.js 666줄 전수 분석, 3소스 갭 분석, 경쟁사 3곳 벤치마크, 4Phase 로드맵. 핵심: 3소스 정본 분리=헌법 위반, 실사 전무, 26건 vs 경쟁사 200국+ | [REPORT](../reports/2026-05/REPORT_20260519_막내2_SPECS페이지_현황파악_리디자인로드맵.md) | ✅ |
 | 05/19 | 쌍아 | **카카오 로그인 plusfriends scope 제거** — KOE205 에러 해소. portal prod 배포 (rev 00249) | portal/lib/auth.js | ✅ |
+| 05/20 | 쌍아+막내1 | **CropEngine 규격별 동적 비율 보정** — FACE_TARGET_RATIO 33/45 하드코딩→spec.faceTarget/heightMM 동적. 이미지 비율 왜곡 수정(minScaleForFit). 가이드 이미지 23장 재생성 ×5회 | CropEngine.swift, MonkosCropApp.swift | ✅ |
+| 05/20 | 쌍아 | **Step2 가이드 이미지 UI 적용** — 실루엣→규격별 가이드 이미지. 철창이 디자인 리팩터(좌 높이+이미지+우 얼굴범위+하단 배지). CROWN/CHIN 영어 통일. 다국어 i18n | ContentView.swift, SpecData.swift | ✅ |
+| 05/20 | 쌍아 | **coverageShort 오탐 수정** — 세로 규격(h≥60) threshold 80%로 완화. 얼굴 표기 faceMin–fMax 범위로 변경. warning Step1→Step2 이동 | ContentView.swift | ✅ |
+| 05/20 | 철창이+쌍아 | **브라질 공식 소스 검증** — gov.br/pf "현장 촬영 원칙" 확인. warning 추가. 비자 ICAO 추가. standard 빈 경우 ICAO 폴백 제거 | countries.jsonl | ✅ |
+| 05/20 | 철창이 | **1차 교차검증 보고서** — 82건 반영 대상. B→A 5건, C→A 1건, 신규 ~64건, 오류 수정 3건. 프랑스 흰배경 금지 등 핵심 발견 | MONKOS_규격검증_1차_철창_20260520.md | ✅ |
+| 05/20 | 쌍아 | **막내1 전면 반영 지시서 발행** — 82건 jsonl+시트+가이드+커밋·푸시 | ORDER | ⏳ |
+| 05/20 | 막내1 | **철창이 1차 검증 82건 전면 반영** — countries.jsonl: 72→145국 docs 보유(+73국 신규). documents 112→186(+74). 핵심: ID 40x60+빨강, FR 흰배경금지, DE 디지털전용, UAE 3종분리, AR 40x40, NG 600DPI. 가이드 이미지 23→25장 재생성. seed.sql 재생성 | countries.jsonl, seed.sql, size-*.webp 25건 | ✅ |
 
 ---
 

@@ -291,17 +291,6 @@ struct ContentView: View {
                 }
                 .scrollContentBackground(.hidden)
 
-                if let warn = doc.warning?[lang] ?? doc.warning?["en"] {
-                    Text(warn)
-                        .font(.system(size: 10))
-                        .foregroundStyle(Color(hex: "FFB020"))
-                        .padding(10)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(RoundedRectangle(cornerRadius: 8).fill(Color(hex: "FFB020").opacity(0.08)))
-                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color(hex: "FFB020").opacity(0.3), lineWidth: 1))
-                        .padding(.horizontal, 20)
-                }
-
                 AccentButton(title: "\(tr("use_spec", lang)) →") { screen = .step(2) }
                     .padding(.horizontal, 20).padding(.top, 8).padding(.bottom, 12)
             }
@@ -383,6 +372,43 @@ struct ContentView: View {
         }
     }
 
+    // MARK: - Helpers
+
+    private func gcd(_ a: Double, _ b: Double) -> Double {
+        let ia = Int(a), ib = Int(b)
+        var x = ia, y = ib
+        while y != 0 { let t = y; y = x % y; x = t }
+        return Double(x == 0 ? 1 : x)
+    }
+
+    // MARK: - Guide Image Helper
+
+    @ViewBuilder
+    private func guideImageView(for doc: DocSpec) -> some View {
+        let w = Int(doc.photoSpec.widthMM)
+        let h = Int(doc.photoSpec.heightMM)
+        let filename = "\(w)x\(h).png"
+        let path = (("~/Desktop/CROP APP/guides/" + filename) as NSString).expandingTildeInPath
+
+        #if canImport(UIKit)
+        if let img = UIImage(contentsOfFile: path) {
+            Image(uiImage: img).resizable().aspectRatio(contentMode: .fit)
+        } else {
+            Image(systemName: "person.crop.rectangle")
+                .font(.system(size: 60, weight: .ultraLight))
+                .foregroundStyle(V1.accent.opacity(0.3))
+        }
+        #else
+        if let img = NSImage(contentsOfFile: path) {
+            Image(nsImage: img).resizable().aspectRatio(contentMode: .fit)
+        } else {
+            Image(systemName: "person.crop.rectangle")
+                .font(.system(size: 60, weight: .ultraLight))
+                .foregroundStyle(V1.accent.opacity(0.3))
+        }
+        #endif
+    }
+
     // MARK: - Step 2 — Upload
 
     private var step2: some View {
@@ -405,15 +431,104 @@ struct ContentView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, 20).padding(.bottom, 14)
 
-            // Upload area
-            VStack(spacing: 4) {
-                Image(systemName: "person.crop.rectangle")
-                    .font(.system(size: 60, weight: .ultraLight))
-                    .foregroundStyle(V1.accent.opacity(0.5))
-                Text("FACE • EYE LINE • SHOULDER")
-                    .font(.system(size: 10, weight: .medium, design: .monospaced))
-                    .foregroundStyle(V1.muted)
-                    .tracking(0.5)
+            if let warn = doc.warning?[lang] ?? doc.warning?["en"] {
+                Text(warn)
+                    .font(.system(size: 10))
+                    .foregroundStyle(V1.orange)
+                    .padding(10)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(RoundedRectangle(cornerRadius: 8).fill(V1.orange.opacity(0.08)))
+                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(V1.orange.opacity(0.3), lineWidth: 1))
+                    .padding(.horizontal, 20).padding(.bottom, 6)
+            }
+
+            // Upload area — Guide (철창이 디자인)
+            VStack(spacing: 10) {
+                Spacer()
+
+                HStack(spacing: 4) {
+                    Text("📐")
+                    Text(tr("spec_guide", lang))
+                        .font(.system(size: 11, weight: .medium, design: .monospaced))
+                        .foregroundStyle(V1.muted)
+                }
+
+                // 이미지 + 좌측 높이 + 우측 얼굴범위
+                HStack(alignment: .center, spacing: 0) {
+                    // 좌측 — 세로 높이
+                    VStack(spacing: 4) {
+                        Rectangle().fill(V1.accent.opacity(0.4)).frame(width: 1).frame(maxHeight: .infinity)
+                        Text(String(format: "%.1fcm", doc.photoSpec.heightMM / 10))
+                            .font(.system(size: 10, weight: .bold, design: .monospaced))
+                            .foregroundStyle(V1.accent)
+                        Rectangle().fill(V1.accent.opacity(0.4)).frame(width: 1).frame(maxHeight: .infinity)
+                    }
+                    .frame(width: 32)
+
+                    // 가이드 이미지 + 하단 배지
+                    ZStack(alignment: .bottom) {
+                        guideImageView(for: doc)
+                            .clipShape(RoundedRectangle(cornerRadius: 4))
+                            .shadow(color: .black.opacity(0.35), radius: 10, y: 4)
+
+                        Text(doc.standard.isEmpty
+                             ? "\(Int(doc.photoSpec.widthMM))×\(Int(doc.photoSpec.heightMM))mm"
+                             : "\(Int(doc.photoSpec.widthMM))×\(Int(doc.photoSpec.heightMM))mm · \(doc.standard)")
+                            .font(.system(size: 9, weight: .heavy, design: .monospaced))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 10).padding(.vertical, 4)
+                            .background(Capsule().fill(V1.accent))
+                            .padding(.bottom, 8)
+                    }
+
+                    // 우측 — 얼굴 범위 (정수리~턱 비율에 맞게)
+                    let faceRatio = doc.photoSpec.faceTarget / doc.photoSpec.heightMM
+                    let topPad = 0.05  // 정수리 위 여백
+                    VStack(spacing: 0) {
+                        Spacer().frame(maxHeight: .infinity).layoutPriority(topPad * 100)
+                        VStack(spacing: 4) {
+                            Rectangle().fill(V1.accent.opacity(0.5)).frame(width: 6, height: 1)
+                            Rectangle().fill(V1.accent.opacity(0.4)).frame(width: 1)
+                                .frame(maxHeight: .infinity)
+                            Text("\(Int(doc.photoSpec.faceMin))~\(Int(doc.photoSpec.faceMax))mm")
+                                .font(.system(size: 10, weight: .bold, design: .monospaced))
+                                .foregroundStyle(V1.accent)
+                                .rotationEffect(.degrees(-90))
+                                .fixedSize()
+                            Rectangle().fill(V1.accent.opacity(0.4)).frame(width: 1)
+                                .frame(maxHeight: .infinity)
+                            Rectangle().fill(V1.accent.opacity(0.5)).frame(width: 6, height: 1)
+                        }
+                        .frame(maxHeight: .infinity).layoutPriority(faceRatio * 100)
+                        Spacer().frame(maxHeight: .infinity).layoutPriority((1 - topPad - faceRatio) * 100)
+                    }
+                    .frame(width: 36)
+                }
+                .padding(.horizontal, 20)
+
+                // 하단 텍스트
+                VStack(spacing: 2) {
+                    let spec = doc.photoSpec
+                    let ratio = Int(spec.widthMM) == Int(spec.heightMM)
+                        ? "1:1"
+                        : "\(Int(spec.widthMM / gcd(spec.widthMM, spec.heightMM))):\(Int(spec.heightMM / gcd(spec.widthMM, spec.heightMM)))"
+                    Text("\(doc.size) · \(tr("face_size", lang)) \(Int(spec.faceMin))–\(Int(spec.faceMax))mm")
+                        .font(.system(size: 13, weight: .bold))
+                        .foregroundStyle(V1.accent)
+                    Text(doc.standard.isEmpty
+                         ? "\(ratio) \(tr("ratio", lang))"
+                         : "\(doc.standard) · \(ratio) \(tr("ratio", lang))")
+                        .font(.system(size: 10))
+                        .foregroundStyle(V1.dim)
+                }
+
+                Text(tr("face_note", lang))
+                    .font(.system(size: 9))
+                    .foregroundStyle(V1.orange)
+                    .padding(.horizontal, 30)
+                    .padding(.top, 2)
+
+                Spacer()
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(
@@ -626,7 +741,8 @@ struct ContentView: View {
             let cs = max(fw / nw, fh / nh)
             let dispW = nw * cs * cropState.imgScale
             let dispH = nh * cs * cropState.imgScale
-            if dispW < fw - 2 || dispH < fh - 2 {
+            let coverageThreshold: CGFloat = doc.photoSpec.heightMM >= 60 ? 0.80 : 0.95
+            if dispW < fw * coverageThreshold || dispH < fh * coverageThreshold {
                 m.coverageShort = true
             }
         }

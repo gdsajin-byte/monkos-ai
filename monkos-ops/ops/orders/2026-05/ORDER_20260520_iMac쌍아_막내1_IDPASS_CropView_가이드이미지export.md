@@ -17,13 +17,28 @@ IDPASS Step2(업로드) 화면을 심플하게 가져간다: **규격 가이드 
 
 이 가이드 이미지는 **CropView(크롭 엔진)가 실제로 잡은 결과물**에서 최소 오버레이만 남긴 것이다. Node Canvas로 추정하는 방식은 폐기. 동일 이미지를 monk.kr/specs/ 웹 페이지에서도 사용한다.
 
-## 사전 컨텍스트 파악
+## 🔴 이전 세션 실패 복기 (필독)
 
-1. **CropEngine.swift**: `apps/MonkosCrop/MonkosCrop/CropEngine.swift` — Vision 얼굴 감지 + 좌표 계산
-2. **CropView.swift**: `apps/MonkosCrop/MonkosCrop/CropView.swift` — 오버레이 렌더링 (정수리/눈/턱/어깨 라인 등)
-3. **countries.jsonl**: `apps/MonkosCrop/MonkosCrop/Resources/countries.jsonl` — 규격 데이터
-4. **ref.jpg**: `~/Desktop/CROP APP/ref.jpg` — 샘플 인물 사진 (1024×1024)
-5. **IDPASS 크롭 화면 스크린샷**: 미국 51×51 크롭 결과 — 정수리/턱/EYE 라인 + FACE 33.0mm + 하단 수치 패널. **이 수준의 정확도가 기준**
+5/20 오전 세션에서 동일 작업을 Node Canvas / CGContext로 4회 시도하여 전부 실패했다.
+
+**근본 원인**: PF_CROP을 안 읽고 작업 시작. Vision 76pt + CIImage가 이미 완벽 동작하는데 Node Canvas로 수동 추정하려 함.
+
+**절대 하지 말 것**:
+- Node Canvas, Python Pillow 등 외부 도구로 가이드 이미지 생성 시도
+- 얼굴 좌표를 수동 측정/하드코딩
+- CGContext 직접 사용 (교훈 6: CIImage 기반으로 전면 교체 완료)
+
+**해야 할 것**: 기존 CropEngine.crop() + Vision detectFace()를 그대로 활용. 오버레이만 추가.
+
+## 사전 컨텍스트 파악 (착수 전 필수 Read)
+
+1. **⭐ PF_CROP 히스토리**: `monkos-ops/ops/portfolios/PF_CROP/README.md` — 전체 맥락, 교훈 6(CGContext→CIImage), 교훈 7(Vision>ISNet). **반드시 먼저 읽을 것**
+2. **CropEngine.swift**: `apps/MonkosCrop/MonkosCrop/CropEngine.swift` — Vision 76pt 얼굴 감지 + CIImage 기반 크롭. macOS에서 Vision 정상 동작 확인됨
+3. **CropView.swift**: `apps/MonkosCrop/MonkosCrop/CropView.swift` — 오버레이 렌더링 (정수리/눈/턱/어깨 라인 등)
+4. **SpecData.swift**: `apps/MonkosCrop/MonkosCrop/SpecData.swift` — PhotoSpec, DocSpec 모델 + countries.jsonl 파싱
+5. **countries.jsonl**: `apps/MonkosCrop/MonkosCrop/Resources/countries.jsonl` — 202국 규격 데이터
+6. **ref.jpg**: `~/Desktop/CROP APP/ref.jpg` — 샘플 인물 사진 (1024×1024)
+7. **IDPASS 크롭 화면 스크린샷**: 미국 51×51 크롭 결과 — 정수리/턱/EYE 라인 + FACE 33.0mm + 하단 수치 패널. **이 수준의 정확도가 기준**
 
 ## 23개 고유 사이즈
 
@@ -119,7 +134,9 @@ let guideImage = UIImage(named: "guide-\(spec.size)")
 
 ## ⚠️ 준수 조항
 
-- CropEngine 핵심 로직 수정 금지 — export용 메서드만 추가
+- **PF_CROP README 선행 참조 필수** — 착수 전 반드시 Read (ch7 6조)
+- CropEngine 핵심 로직(crop, detectFace) 수정 금지 — export용 메서드만 추가
+- macOS에서는 **CIImage 기반 렌더링** 사용 (CGContext 직접 사용 금지 — 교훈 6)
 - ref.jpg 리포 커밋 금지
 - 생성된 가이드 이미지(webp)는 MONK_kr에 커밋
 - Step2 UI 변경은 이 지시서 범위 내 (규정카드 관련 코드 제거 가능)
