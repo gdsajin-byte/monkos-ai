@@ -131,6 +131,14 @@ status: active
 | 5/14 | iMac/막내3 | **monk.kr Person 스키마 + llms 필명 정정** — Person JSON-LD(Shin-jakka 단독) 추가, llms.txt/llms-full.txt 본명 제거(Representative 유지). CF Pages wrangler 수동 배포. curl 4건 전건 통과 | [COMPLETION_20260514_막내3_monk.kr_Person+llms필명정정](../reports/2026-05/COMPLETION_20260514_막내3_monk.kr_Person+llms필명정정.md) | ✅ |
 | 5/14 | 작가님 | **필명·본명 정체성 분리 원칙 확정** — 법적 사업자 본명(신정규/footer) vs 브랜드·검색·AI 필명 "Shin-jakka" 분리. 동반 표기 금지. 영문 표기 통일. 메모리 적립 `project_persona_separation.md` | 메모리 + MEMORY.md ⭐ | ✅ 적립 |
 | 5/14 | iMac/민아→막내2 | **민아 직접 후속 ORDER 환급** — monk.kr Person 스키마 추가(Shin-jakka 단일, 본명 미포함) + llms.txt·llms-full.txt 필명 정정(Representative 필드는 본명 유지) + Last updated 5/14 갱신. CF Pages 배포 | [ORDER_20260514_iMac민아_막내2_monk.kr_Person스키마+llms필명정정](../orders/2026-05/ORDER_20260514_iMac민아_막내2_monk.kr_Person스키마+llms필명정정.md) | ⏳ 막내2 실행 대기 |
+| 5/20 | iMac/막내1 | **D1 IDPASS 스키마 생성 + 데이터 마이그레이션** — 5테이블(countries/documents/seo_content/common_requirements/slug_aliases) + 8인덱스 DDL. 3소스 통합 마이그레이션: countries 202, documents 112(jsonl 101+v2 10+seo 1), seo_content 24, slug_aliases 26, ICAO 요구사항 10. 기존 테이블 무영향 확인 | `scripts/d1-migration/migrate-specs.js`, `seed.sql`, D1 monk-db 적재 완료 | ✅ |
+| 5/20 | iMac/막내2 | **CF Workers SSR monk.kr/specs/ 구축** — _lib 모듈 4개(queries/seo/i18n/template) + 라우트 핸들러 9개 + robots.txt. JSON-LD 4종(Article+FAQ+HowTo+Breadcrumb), hreflang 4개, 3언어 라우팅. 로컬 테스트 8항목 전건 통과 | `functions/specs/` 11파일 | ✅ |
+| 5/20 | iMac/막내1 | **SEO "사진" 키워드 보정 + Canvas 가이드** — H1/title에 type별 "사진" 삽입(passport→여권사진), Canvas 인라인 JS 가이드 오버레이 | template.js, seo.js | ✅ |
+| 5/20 | iMac/쌍아 | **가이드 이미지 생성 4회 시도 — 전부 품질 미달** — ①Node Canvas 추정 ②좌표보정 ③CropEngine export ④글씨반전+줌아웃. PF_CROP 미참조가 근본 원인. CropView 스냅샷 방식 지시서 발행(미실행) | — | 🔴 |
+| 5/20 | iMac/막내1 | **CropEngine Vision export 23장** — 글씨반전 수정 + 줌아웃 보정 완료했으나 IDPASS 앱 수준 미달. CropView 스냅샷으로 재접근 필요 | MONK_kr/images/specs/guides/ | ⚠️ 재작업 필요 |
+| 5/20 | iMac/막내1 | **IDPASS 가이드 Canvas + SEO 키워드 보정** — Hero SVG→Canvas 인터랙티브 가이드(코너 브래킷+가이드라인 4개+치수 라벨+스펙 배지). O/X 비교 SVG→Canvas(PASS/FAIL). H1/title에 "사진" 키워드 추가(passport/visa/id/license). queries.js ICAO 글로벌 요구사항 포함 수정. 단위 테스트 12/12 통과 | `template.js`, `seo.js`, `queries.js` | ✅ |
+| 5/20 | iMac/막내1 | **규격별 가이드 이미지 112개 일괄 생성** — ref.jpg 얼굴좌표 측정 + Node Canvas/Sharp로 규격별 크롭·오버레이(코너 브래킷+가이드라인 4개+치수 라벨+스펙 배지). WebP 85% 출력, 총 4.0MB. Canvas 인라인 JS→`<img>` 정적 이미지로 전환 (이미지 SEO alt 포함). 단위 테스트 10/10 통과 | `generate-guide-images.js`, `MONK_kr/images/specs/guides/*.webp` 112건, `template.js` 수정 | ✅ → 아래 교체 |
+| 5/20 | iMac/막내1 | **CropEngine Vision 기반 23개 사이즈별 가이드 이미지** — Node Canvas 추정 방식 폐기 → CropEngine.swift Vision 얼굴 감지 + crop() 실제 크롭 결과 기반. `--export-guides` CLI 모드 추가. 23 고유사이즈 × PNG export → cwebp WebP 변환 760KB(총). 112개 개별파일 → 23개 사이즈별로 통합. template.js size-WxH.webp 매핑 | `MonkosCropApp.swift` export 기능, `MONK_kr/images/specs/guides/size-*.webp` 23건, `template.js` 수정 | ✅ |
 
 ---
 

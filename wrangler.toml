@@ -4,3 +4,8 @@ compatibility_date = "2026-01-02"
 
 [ai]
 binding = "AI"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "monk-db"
+database_id = "6fe2a64b-9144-436c-94f7-1e9375249a1e"
