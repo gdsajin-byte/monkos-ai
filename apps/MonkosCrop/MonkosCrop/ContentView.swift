@@ -1195,7 +1195,7 @@ struct ContentView: View {
 
                 Button {
                     resetFlow()
-                    screen = .step(1)
+                    screen = .landing
                 } label: {
                     Text("↻ \(tr("crop_another", lang))")
                         .font(.system(size: 12, weight: .bold))
