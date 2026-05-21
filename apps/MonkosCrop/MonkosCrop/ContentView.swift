@@ -1158,8 +1158,40 @@ struct ContentView: View {
                 BeforeAfterSlider(lang: lang)
                     .padding(.horizontal, 20).padding(.top, 18)
 
-                SNSIconRow()
-                    .padding(.horizontal, 24).padding(.top, 14)
+                // Contact info
+                VStack(spacing: 8) {
+                    contactRow(icon: "paperplane", label: "Telegram", value: "@monkos_support_bot", url: "https://t.me/monkos_support_bot")
+                    contactRow(icon: "envelope", label: "Email", value: "info@monkos.ai", url: "mailto:info@monkos.ai")
+                }
+                .padding(.horizontal, 20).padding(.top, 14)
+
+                // Print service (Korean only)
+                if lang == "ko" {
+                    Button {
+                        if let url = URL(string: "https://smartstore.naver.com/market_kku/products/13535954098") {
+                            #if canImport(UIKit)
+                            UIApplication.shared.open(url)
+                            #else
+                            NSWorkspace.shared.open(url)
+                            #endif
+                        }
+                    } label: {
+                        HStack(spacing: 8) {
+                            Image(systemName: "printer")
+                                .font(.system(size: 14))
+                            Text("증명사진 인화하기")
+                                .font(.system(size: 13, weight: .bold))
+                            Spacer()
+                            Text("→")
+                                .font(.system(size: 14, weight: .bold))
+                        }
+                        .foregroundStyle(V1.text)
+                        .padding(.horizontal, 16).padding(.vertical, 14)
+                        .background(RoundedRectangle(cornerRadius: 12).fill(V1.card))
+                        .overlay(RoundedRectangle(cornerRadius: 12).stroke(V1.border, lineWidth: 1))
+                    }
+                    .padding(.horizontal, 20).padding(.top, 10)
+                }
 
                 Button {
                     resetFlow()
@@ -1185,6 +1217,36 @@ struct ContentView: View {
             }
         }
         .scrollContentBackground(.hidden)
+    }
+
+    @ViewBuilder
+    private func contactRow(icon: String, label: String, value: String, url: String) -> some View {
+        Button {
+            if let u = URL(string: url) {
+                #if canImport(UIKit)
+                UIApplication.shared.open(u)
+                #else
+                NSWorkspace.shared.open(u)
+                #endif
+            }
+        } label: {
+            HStack(spacing: 10) {
+                Image(systemName: icon)
+                    .font(.system(size: 13))
+                    .foregroundStyle(V1.accent)
+                    .frame(width: 20)
+                Text(label)
+                    .font(.system(size: 11, weight: .bold))
+                    .foregroundStyle(V1.muted)
+                Spacer()
+                Text(value)
+                    .font(.system(size: 11, design: .monospaced))
+                    .foregroundStyle(V1.text)
+            }
+            .padding(.horizontal, 14).padding(.vertical, 10)
+            .background(RoundedRectangle(cornerRadius: 10).fill(V1.card))
+            .overlay(RoundedRectangle(cornerRadius: 10).stroke(V1.border, lineWidth: 1))
+        }
     }
 
     private func saveToDisk(_ image: PlatformImage) {

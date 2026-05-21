@@ -531,14 +531,14 @@ struct BeforeAfterSlider: View {
                 let h = geo.size.height
 
                 ZStack {
-                    BundleImage(name: "be_f_1")
+                    BundleImage(name: "slider_before")
                         .frame(width: w, height: h)
                         .clipped()
                         .grayscale(0.85)
                         .brightness(-0.15)
                         .contrast(0.95)
 
-                    BundleImage(name: "pass_f_1")
+                    BundleImage(name: "slider_after")
                         .frame(width: w, height: h)
                         .clipped()
                         .clipShape(SliderClip(pos: sliderPos))
@@ -633,7 +633,7 @@ struct BeforeAfterSlider: View {
                     .foregroundStyle(V1.muted)
                     .padding(.top, 8)
 
-                Button {} label: {
+                Button { openLink("https://monkos.ai") } label: {
                     HStack(spacing: 7) {
                         Text(tr("slider_cta", lang))
                         Text("→")
@@ -657,6 +657,15 @@ struct BeforeAfterSlider: View {
             sliderPos = 0.5 + sin(sweepT) * 0.22
         }
     }
+
+    private func openLink(_ urlString: String) {
+        guard let url = URL(string: urlString) else { return }
+        #if canImport(UIKit)
+        UIApplication.shared.open(url)
+        #else
+        NSWorkspace.shared.open(url)
+        #endif
+    }
 }
 
 private struct SliderClip: Shape {
@@ -678,19 +687,15 @@ private struct SliderClip: Shape {
 // MARK: - SNS Icon Row
 
 struct SNSIconRow: View {
-    let snsItems = [
-        ("instagram", "camera"),
-        ("x", "xmark"),
-        ("youtube", "play.rectangle"),
-        ("tiktok", "music.note"),
-        ("telegram", "paperplane"),
-        ("threads", "at"),
+    let snsItems: [(String, String, String)] = [
+        ("telegram", "paperplane", "https://t.me/monkos_ai"),
+        ("email", "envelope", "mailto:info@monkos.ai"),
     ]
 
     var body: some View {
         HStack(spacing: 6) {
             ForEach(snsItems, id: \.0) { item in
-                Button {} label: {
+                Button { openURL(item.2) } label: {
                     Image(systemName: item.1)
                         .font(.system(size: 14))
                         .foregroundStyle(.white.opacity(0.75))
@@ -707,5 +712,14 @@ struct SNSIconRow: View {
                 }
             }
         }
+    }
+
+    private func openURL(_ urlString: String) {
+        guard let url = URL(string: urlString) else { return }
+        #if canImport(UIKit)
+        UIApplication.shared.open(url)
+        #else
+        NSWorkspace.shared.open(url)
+        #endif
     }
 }

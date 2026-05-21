@@ -28,6 +28,8 @@ let package = Package(
                 .copy("Resources/cont_africa.jpg"),
                 .copy("Resources/cont_oceania.jpg"),
                 .copy("Resources/cont_middleeast.jpg"),
+                .copy("Resources/slider_before.jpg"),
+                .copy("Resources/slider_after.jpg"),
             ]
         )
     ]

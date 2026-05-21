@@ -67,8 +67,7 @@ struct GuideExporter {
                 backgroundColor: "#FFFFFF",
                 faceMin: fMin,
                 faceMax: fMax,
-                faceTarget: (fMin + fMax) / 2,
-                pxW: 600, pxH: 600 / s.w * s.h
+                faceTarget: (fMin + fMax) / 2
             )
 
             guard let cropped = CropEngine.crop(image: nsImg, spec: spec, face: face) else {
