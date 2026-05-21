@@ -115,8 +115,9 @@ struct PhotoSpec: Identifiable, Hashable {
     let faceMin: Double
     let faceMax: Double
     let faceTarget: Double
-    let pxW: Double
-    let pxH: Double
+    var dpi: Double = 300
+    var pxW: Double { (widthMM / 25.4 * dpi).rounded() }
+    var pxH: Double { (heightMM / 25.4 * dpi).rounded() }
     var aspectRatio: Double { widthMM / heightMM }
     var displaySize: String { "\(Int(widthMM))×\(Int(heightMM))mm" }
 }
@@ -178,6 +179,8 @@ struct DocSpec: Identifiable, Hashable {
     let headHeight: String
     let standard: String
     var warning: [String: String]? = nil
+    var docDpi: Double = 300
+    var explicitFaceTarget: Double? = nil
 
     func name(_ l: String) -> String { names[l] ?? names["ko"] ?? id }
 
@@ -185,9 +188,6 @@ struct DocSpec: Identifiable, Hashable {
         let n = size.replacingOccurrences(of: " mm", with: "").components(separatedBy: " × ")
         let w = Double(n.first ?? "35") ?? 35
         let h = Double(n.last ?? "45") ?? 45
-        let p = px.replacingOccurrences(of: " px", with: "").components(separatedBy: " × ")
-        let pw = Double(p.first ?? "413") ?? 413
-        let ph = Double(p.last ?? "531") ?? 531
         let hh = headHeight.replacingOccurrences(of: " mm", with: "").replacingOccurrences(of: "–", with: "-")
         let parts = hh.components(separatedBy: "-")
         let fMin: Double, fMax: Double
@@ -211,11 +211,11 @@ struct DocSpec: Identifiable, Hashable {
             faceRatioMin: 0.50, faceRatioMax: 0.70,
             backgroundColor: "#FFFFFF",
             faceMin: fMin, faceMax: fMax,
-            faceTarget: explicitTarget ?? {
+            faceTarget: explicitFaceTarget ?? explicitTarget ?? {
                 let base = h >= 60 ? fMax - 1 : h >= 40 ? max(33.0, fMin + 1) : h * 0.70
                 return min(max(base, fMin + 1), fMax - 1)
             }(),
-            pxW: pw, pxH: ph
+            dpi: docDpi
         )
     }
 
@@ -369,6 +369,13 @@ private let i18n: [String: [String: String]] = [
         "landing_trust3": "MONKOS AI가 만든 글로벌 증명사진 도구",
         "landing_cta": "시작하기 →",
         "landing_cta_sub": "로그인 불필요 · 완전 무료",
+        "slider_drag": "밀어서, ",
+        "slider_accent": "차이를 보세요.",
+        "slider_sub": "한 컷 $1. AI가 끝까지 정돈.",
+        "slider_compare": "← DRAG TO COMPARE",
+        "slider_cta": "monkos.ai 보기",
+        "slider_h1": "AI 보정으로",
+        "slider_h2": "한 단계 더, ",
     ],
     "en": [
         "select_country": "Select Country",
@@ -452,6 +459,13 @@ private let i18n: [String: [String: String]] = [
         "landing_trust3": "Built by MONKOS AI — global ID photo tool",
         "landing_cta": "Start →",
         "landing_cta_sub": "No login · 100% free",
+        "slider_drag": "Swipe to ",
+        "slider_accent": "see the difference.",
+        "slider_sub": "One shot $1. AI handles the rest.",
+        "slider_compare": "← DRAG TO COMPARE",
+        "slider_cta": "Try monkos.ai",
+        "slider_h1": "AI retouched,",
+        "slider_h2": "one step further, ",
     ],
     "ja": [
         "select_country": "国を選択",
@@ -535,6 +549,13 @@ private let i18n: [String: [String: String]] = [
         "landing_trust3": "MONKOS AIが作ったグローバル証明写真ツール",
         "landing_cta": "始める →",
         "landing_cta_sub": "ログイン不要 · 完全無料",
+        "slider_drag": "スワイプして、",
+        "slider_accent": "違いを見てください。",
+        "slider_sub": "1枚$1。AIが仕上げます。",
+        "slider_compare": "← DRAG TO COMPARE",
+        "slider_cta": "monkos.ai へ",
+        "slider_h1": "AI補正で",
+        "slider_h2": "もう一段階、",
     ],
 ]
 
@@ -613,10 +634,14 @@ private func parseDoc(_ d: [String: Any]) -> DocSpec? {
     var warn: [String: String]? = nil
     if let w = d["warning"] as? [String: String] { warn = w }
 
+    let dpiVal = (d["dpi"] as? NSNumber)?.doubleValue ?? 300
+    let ftVal = (d["faceTarget"] as? NSNumber)?.doubleValue
+
     return DocSpec(id: id, type: type,
                    names: ["ko": ko, "en": en, "ja": ja],
                    size: sizeStr, px: pxStr, group: group,
-                   headHeight: headStr, standard: std, warning: warn)
+                   headHeight: headStr, standard: std, warning: warn,
+                   docDpi: dpiVal, explicitFaceTarget: ftVal)
 }
 
 let appCountries: [Country] = {

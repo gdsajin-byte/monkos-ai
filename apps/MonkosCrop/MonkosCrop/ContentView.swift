@@ -179,7 +179,8 @@ struct ContentView: View {
                     doc = DocSpec(id: "custom", type: "custom",
                                  names: ["ko": "커스텀", "en": "Custom", "ja": "カスタム"],
                                  size: "\(Int(cw)) × \(Int(ch)) mm", px: "\(Int(cpx)) × \(Int(cpy)) px",
-                                 group: "X", headHeight: "32–36 mm", standard: "Custom")
+                                 group: "X", headHeight: "32–36 mm", standard: "Custom",
+                                 docDpi: Double(customDPI))
                     country = Country(id: "custom", flag: "🌐",
                                       names: ["ko": "커스텀", "en": "Custom", "ja": "カスタム"],
                                       docs: [doc])
@@ -588,7 +589,7 @@ struct ContentView: View {
                         ProgressView()
                             .tint(V1.accent)
                             .scaleEffect(1.5)
-                        Text(tr("processing", lang))
+                        Text("MONKOS WORKING")
                             .font(.system(size: 12, weight: .bold, design: .monospaced))
                             .foregroundStyle(V1.accent)
                     }
@@ -717,7 +718,7 @@ struct ContentView: View {
                         ProgressView()
                             .tint(V1.accent)
                             .scaleEffect(1.5)
-                        Text("VISION · SEGMENTING…")
+                        Text("MONKOS WORKING")
                             .font(.system(size: 12, weight: .bold, design: .monospaced))
                             .foregroundStyle(V1.accent)
                             .tracking(1)
@@ -1100,134 +1101,90 @@ struct ContentView: View {
     private var specDetails: [(String, String)] {
         [
             (tr("size", lang), doc.size),
-            (tr("output", lang), doc.px),
+            (tr("output", lang), "\(Int(doc.photoSpec.pxW)) × \(Int(doc.photoSpec.pxH)) px"),
             (tr("background", lang), bgColor.name(lang)),
             (tr("standard", lang), doc.standard),
         ]
     }
 
-    // MARK: - Thanks (Ad page)
+    // MARK: - Thanks (C3 — Before/After Slider + SNS)
 
     private var thanksView: some View {
-        VStack(spacing: 0) {
-            // Top bar
-            HStack {
-                HStack(spacing: 0) {
-                    Text("ID")
-                        .font(.system(size: 16, weight: .black))
-                        .foregroundStyle(V1.text)
-                    Text("PASS")
-                        .font(.system(size: 16, weight: .black))
+        ScrollView(.vertical, showsIndicators: false) {
+            VStack(spacing: 0) {
+                HStack {
+                    HStack(spacing: 0) {
+                        Text("ID")
+                            .font(.system(size: 16, weight: .black))
+                            .foregroundStyle(V1.text)
+                        Text("PASS")
+                            .font(.system(size: 16, weight: .black))
+                            .foregroundStyle(V1.accent)
+                    }
+                    Spacer()
+                    Text("SAVED ✓")
+                        .font(.system(size: 9, weight: .heavy, design: .monospaced))
                         .foregroundStyle(V1.accent)
+                        .tracking(1.2)
+                        .padding(.horizontal, 7).padding(.vertical, 3)
+                        .background(V1.accent.opacity(0.12))
+                        .clipShape(RoundedRectangle(cornerRadius: 3))
                 }
-                Spacer()
-                Text("SAVED ✓")
-                    .font(.system(size: 9, weight: .heavy, design: .monospaced))
-                    .foregroundStyle(V1.accent)
-                    .tracking(1.2)
-                    .padding(.horizontal, 7).padding(.vertical, 3)
-                    .background(V1.accent.opacity(0.12))
-                    .clipShape(RoundedRectangle(cornerRadius: 3))
-            }
-            .padding(.horizontal, 20).padding(.top, 8).padding(.bottom, 14)
+                .padding(.horizontal, 20).padding(.top, 8).padding(.bottom, 14)
 
-            // Saved header
-            VStack(spacing: 12) {
-                if let img = croppedImage ?? bgRemovedImage {
-                    ZStack {
-                        bgColor.color
-                        Image(platformImage: img)
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
+                VStack(spacing: 12) {
+                    if let img = croppedImage ?? bgRemovedImage {
+                        ZStack {
+                            bgColor.color
+                            Image(platformImage: img)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                        }
+                        .frame(width: 160, height: 160 / doc.photoSpec.aspectRatio)
+                        .clipShape(RoundedRectangle(cornerRadius: 6))
+                        .overlay(RoundedRectangle(cornerRadius: 6).stroke(V1.accent, lineWidth: 2))
+                        .shadow(color: V1.accent.opacity(0.25), radius: 12)
                     }
-                    .frame(width: 160, height: 160 / doc.photoSpec.aspectRatio)
-                    .clipShape(RoundedRectangle(cornerRadius: 6))
-                    .overlay(RoundedRectangle(cornerRadius: 6).stroke(V1.accent, lineWidth: 2))
-                    .shadow(color: V1.accent.opacity(0.25), radius: 12)
-                }
-                Text(tr("saved", lang))
-                    .font(.system(size: 22, weight: .black))
-                    .foregroundStyle(V1.text)
-                Text("\(country.flag) \(doc.size.replacingOccurrences(of: " mm", with: "mm")) · \(doc.standard)")
-                    .font(.system(size: 10, design: .monospaced))
-                    .foregroundStyle(V1.muted)
-                    .tracking(0.3)
-            }
-            .padding(.horizontal, 20)
-
-            // AI Studio Promo
-            VStack(alignment: .leading, spacing: 0) {
-                Text(tr("ai_tag", lang))
-                    .font(.system(size: 9, weight: .heavy, design: .monospaced))
-                    .foregroundStyle(V1.purple)
-                    .tracking(1.5)
-                    .padding(.horizontal, 7).padding(.vertical, 2)
-                    .background(V1.purple.opacity(0.14))
-                    .clipShape(RoundedRectangle(cornerRadius: 3))
-
-                HStack(spacing: 0) {
-                    Text(tr("ai_h1", lang) + "\n" + tr("ai_h2", lang))
+                    Text(tr("saved", lang))
                         .font(.system(size: 22, weight: .black))
                         .foregroundStyle(V1.text)
-                    Text(tr("ai_price", lang))
-                        .font(.system(size: 22, weight: .black))
-                        .foregroundStyle(V1.purple)
+                    Text("\(country.flag) \(doc.size.replacingOccurrences(of: " mm", with: "mm")) · \(doc.standard)")
+                        .font(.system(size: 10, design: .monospaced))
+                        .foregroundStyle(V1.muted)
+                        .tracking(0.3)
                 }
-                .padding(.top, 10)
+                .padding(.horizontal, 20)
 
-                Text(tr("ai_desc", lang))
-                    .font(.system(size: 11))
-                    .foregroundStyle(Color(hex: "A4B0C8"))
-                    .padding(.top, 8)
+                BeforeAfterSlider(lang: lang)
+                    .padding(.horizontal, 20).padding(.top, 18)
 
-                Button {} label: {
-                    HStack(spacing: 6) {
-                        Text(tr("ai_cta", lang))
-                        Text("→")
-                    }
-                    .font(.system(size: 12, weight: .heavy))
-                    .foregroundStyle(Color(hex: "0A0F18"))
-                    .padding(.horizontal, 14).padding(.vertical, 10)
-                    .background(RoundedRectangle(cornerRadius: 8).fill(V1.purple))
+                SNSIconRow()
+                    .padding(.horizontal, 24).padding(.top, 14)
+
+                Button {
+                    resetFlow()
+                    screen = .step(1)
+                } label: {
+                    Text("↻ \(tr("crop_another", lang))")
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundStyle(V1.text)
+                        .frame(maxWidth: .infinity).frame(height: 48)
+                        .background(RoundedRectangle(cornerRadius: 12).stroke(V1.border, lineWidth: 1))
                 }
-                .padding(.top, 12)
-            }
-            .padding(16)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(
-                RoundedRectangle(cornerRadius: 14)
-                    .fill(LinearGradient(
-                        colors: [Color(hex: "1C1736"), Color(hex: "0F1224"), Color(hex: "0A0F18")],
-                        startPoint: .topLeading, endPoint: .bottomTrailing
-                    ))
-            )
-            .overlay(RoundedRectangle(cornerRadius: 14).stroke(V1.purple.opacity(0.35), lineWidth: 1))
-            .padding(.horizontal, 20).padding(.top, 18)
+                .padding(.horizontal, 20).padding(.top, 14)
 
-            Spacer()
-
-            Button {
-                resetFlow()
-                screen = .step(1)
-            } label: {
-                Text("↻ \(tr("crop_another", lang))")
-                    .font(.system(size: 12, weight: .bold))
-                    .foregroundStyle(V1.text)
-                    .frame(maxWidth: .infinity).frame(height: 48)
-                    .background(RoundedRectangle(cornerRadius: 12).stroke(V1.border, lineWidth: 1))
+                HStack {
+                    Text("© 2026 IDPASS")
+                    Spacer()
+                    Text("idpass by monkos.ai · TERMS")
+                }
+                .font(.system(size: 8, design: .monospaced))
+                .foregroundStyle(V1.dim)
+                .tracking(0.5)
+                .padding(.horizontal, 20).padding(.top, 8).padding(.bottom, 14)
             }
-            .padding(.horizontal, 20)
-
-            HStack {
-                Text("© 2026 IDPASS")
-                Spacer()
-                Text("idpass by monkos.ai · TERMS")
-            }
-            .font(.system(size: 8, design: .monospaced))
-            .foregroundStyle(V1.dim)
-            .tracking(0.5)
-            .padding(.horizontal, 20).padding(.top, 8).padding(.bottom, 14)
         }
+        .scrollContentBackground(.hidden)
     }
 
     private func saveToDisk(_ image: PlatformImage) {

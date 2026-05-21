@@ -1,4 +1,5 @@
 import SwiftUI
+import Combine
 
 // MARK: - V1TopBar
 
@@ -511,5 +512,200 @@ struct ICAORangeBar: View {
         .padding(10)
         .background(RoundedRectangle(cornerRadius: 10).fill(V1.card))
         .overlay(RoundedRectangle(cornerRadius: 10).stroke(V1.border, lineWidth: 1))
+    }
+}
+
+// MARK: - Before/After Slider Card (C3)
+
+struct BeforeAfterSlider: View {
+    let lang: String
+    @State private var sliderPos: CGFloat = 0.5
+    @State private var isDragging = false
+    @State private var sweepT: CGFloat = 0
+    private let sweepTimer = Timer.publish(every: 0.03, on: .main, in: .common).autoconnect()
+
+    var body: some View {
+        VStack(spacing: 0) {
+            GeometryReader { geo in
+                let w = geo.size.width
+                let h = geo.size.height
+
+                ZStack {
+                    BundleImage(name: "be_f_1")
+                        .frame(width: w, height: h)
+                        .clipped()
+                        .grayscale(0.85)
+                        .brightness(-0.15)
+                        .contrast(0.95)
+
+                    BundleImage(name: "pass_f_1")
+                        .frame(width: w, height: h)
+                        .clipped()
+                        .clipShape(SliderClip(pos: sliderPos))
+
+                    Rectangle()
+                        .fill(.white)
+                        .frame(width: 2)
+                        .shadow(color: .white.opacity(0.55), radius: 8)
+                        .position(x: w * sliderPos, y: h / 2)
+
+                    Circle()
+                        .fill(.white)
+                        .frame(width: 36, height: 36)
+                        .shadow(color: .black.opacity(0.4), radius: 8)
+                        .overlay(
+                            Text("‹›")
+                                .font(.system(size: 14, weight: .heavy, design: .monospaced))
+                                .foregroundStyle(Color(hex: "1E1B4B"))
+                        )
+                        .position(x: w * sliderPos, y: h / 2)
+
+                    VStack {
+                        HStack {
+                            Text("BEFORE")
+                                .font(.system(size: 9, weight: .heavy, design: .monospaced))
+                                .foregroundStyle(.white.opacity(0.9))
+                                .tracking(1.5)
+                                .padding(.horizontal, 8).padding(.vertical, 4)
+                                .background(RoundedRectangle(cornerRadius: 5).fill(.black.opacity(0.6)))
+                            Spacer()
+                            Text("AFTER · AI")
+                                .font(.system(size: 9, weight: .heavy, design: .monospaced))
+                                .foregroundStyle(Color(hex: "1E1B4B"))
+                                .tracking(1.5)
+                                .padding(.horizontal, 8).padding(.vertical, 4)
+                                .background(RoundedRectangle(cornerRadius: 5).fill(V1.purple))
+                                .shadow(color: V1.purple.opacity(0.45), radius: 5)
+                            Spacer().frame(width: 0)
+                        }
+                        .padding(12)
+                        Spacer()
+                    }
+                }
+                .contentShape(Rectangle())
+                .gesture(DragGesture(minimumDistance: 0)
+                    .onChanged { v in
+                        isDragging = true
+                        sliderPos = max(0.05, min(0.95, v.location.x / w))
+                    }
+                    .onEnded { _ in isDragging = false }
+                )
+                #if os(macOS)
+                .onHover { hovering in
+                    if hovering { NSCursor.resizeLeftRight.push() } else { NSCursor.pop() }
+                }
+                #endif
+            }
+            .frame(height: 220)
+            .clipped()
+
+            VStack(alignment: .leading, spacing: 0) {
+                HStack {
+                    Text("MONKOS · AI STUDIO")
+                        .font(.system(size: 9, weight: .heavy, design: .monospaced))
+                        .foregroundStyle(V1.purple)
+                        .tracking(2)
+                    Spacer()
+                    Text(tr("slider_compare", lang))
+                        .font(.system(size: 8, design: .monospaced))
+                        .foregroundStyle(V1.muted)
+                }
+                .padding(.bottom, 10)
+
+                HStack(spacing: 0) {
+                    Text(tr("slider_drag", lang))
+                        .font(.system(size: 24, weight: .black))
+                        .foregroundStyle(V1.text)
+                    Text(tr("slider_accent", lang))
+                        .font(.system(size: 24, weight: .black))
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [Color(hex: "C4B5FD"), Color(hex: "F472B6")],
+                                startPoint: .leading, endPoint: .trailing
+                            )
+                        )
+                }
+                .lineLimit(2)
+                .minimumScaleFactor(0.8)
+
+                Text(tr("slider_sub", lang))
+                    .font(.system(size: 11.5))
+                    .foregroundStyle(V1.muted)
+                    .padding(.top, 8)
+
+                Button {} label: {
+                    HStack(spacing: 7) {
+                        Text(tr("slider_cta", lang))
+                        Text("→")
+                    }
+                    .font(.system(size: 13, weight: .heavy))
+                    .foregroundStyle(Color(hex: "1E1B4B"))
+                    .padding(.horizontal, 18).padding(.vertical, 12)
+                    .background(Capsule().fill(V1.purple))
+                    .shadow(color: V1.purple.opacity(0.35), radius: 12)
+                }
+                .padding(.top, 14)
+            }
+            .padding(.horizontal, 18).padding(.vertical, 16)
+        }
+        .background(RoundedRectangle(cornerRadius: 24).fill(V1.card))
+        .overlay(RoundedRectangle(cornerRadius: 24).stroke(.white.opacity(0.08), lineWidth: 0.5))
+        .shadow(color: .black.opacity(0.4), radius: 20)
+        .onReceive(sweepTimer) { _ in
+            guard !isDragging else { return }
+            sweepT += 0.02
+            sliderPos = 0.5 + sin(sweepT) * 0.22
+        }
+    }
+}
+
+private struct SliderClip: Shape {
+    var pos: CGFloat
+
+    var animatableData: CGFloat {
+        get { pos }
+        set { pos = newValue }
+    }
+
+    func path(in rect: CGRect) -> Path {
+        var p = Path()
+        p.addRect(CGRect(x: rect.width * pos, y: 0,
+                         width: rect.width * (1 - pos), height: rect.height))
+        return p
+    }
+}
+
+// MARK: - SNS Icon Row
+
+struct SNSIconRow: View {
+    let snsItems = [
+        ("instagram", "camera"),
+        ("x", "xmark"),
+        ("youtube", "play.rectangle"),
+        ("tiktok", "music.note"),
+        ("telegram", "paperplane"),
+        ("threads", "at"),
+    ]
+
+    var body: some View {
+        HStack(spacing: 6) {
+            ForEach(snsItems, id: \.0) { item in
+                Button {} label: {
+                    Image(systemName: item.1)
+                        .font(.system(size: 14))
+                        .foregroundStyle(.white.opacity(0.75))
+                        .frame(maxWidth: .infinity)
+                        .aspectRatio(1, contentMode: .fit)
+                        .background(
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(.white.opacity(0.04))
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(.white.opacity(0.07), lineWidth: 1)
+                        )
+                }
+            }
+        }
     }
 }

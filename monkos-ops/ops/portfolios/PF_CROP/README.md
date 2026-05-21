@@ -142,6 +142,8 @@ status: active
 | 05/20 | 철창이 | **1차 교차검증 보고서** — 82건 반영 대상. B→A 5건, C→A 1건, 신규 ~64건, 오류 수정 3건. 프랑스 흰배경 금지 등 핵심 발견 | MONKOS_규격검증_1차_철창_20260520.md | ✅ |
 | 05/20 | 쌍아 | **막내1 전면 반영 지시서 발행** — 82건 jsonl+시트+가이드+커밋·푸시 | ORDER | ⏳ |
 | 05/20 | 막내1 | **철창이 1차 검증 82건 전면 반영** — countries.jsonl: 72→145국 docs 보유(+73국 신규). documents 112→186(+74). 핵심: ID 40x60+빨강, FR 흰배경금지, DE 디지털전용, UAE 3종분리, AR 40x40, NG 600DPI. 가이드 이미지 23→25장 재생성. seed.sql 재생성 | countries.jsonl, seed.sql, size-*.webp 25건 | ✅ |
+| 05/21 | 막내2 | **크롭 결과물 비율 왜곡 전수조사** — 근본 원인: performFinalCrop()이 JSONL px 값을 출력 크기로 직접 사용하나 px/mm 비율 불일치 시 sx≠sy 비균일 스케일링 발생. 187건 스캔 결과 4건 불일치(cn-visa 9.1%, jp-id 28.6%, uk-passport/license 2.9%). P0=코드 수정(균일 스케일 강제), P1=데이터 4건 px 보정, P2=크롭 클램핑 비율 보정, P3=Step5 .fill→.fit | [REPORT](../reports/2026-05/REPORT_20260521_막내2_크롭비율왜곡_전수조사.md) | ✅ |
+| 05/21 | 막내2 | **떙큐 페이지 C3 시안 적용** — thanksView 전면 교체: Before/After 슬라이더 카드(드래그+auto-sweep sin 진동) + SNS 6아이콘 행 + i18n 7키×3언어. AI Studio Promo 텍스트→슬라이더 인터랙티브 카드. ScrollView 전환. step5 현행 유지. swift build 성공 | CropView/ContentView/SpecData | ✅ |
 
 ---
 
