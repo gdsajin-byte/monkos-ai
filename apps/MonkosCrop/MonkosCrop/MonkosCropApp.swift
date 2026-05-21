@@ -6,18 +6,22 @@
 //
 
 import SwiftUI
+#if canImport(AppKit)
 import AppKit
+#endif
 
 @main
 struct MonkosCropApp: App {
 
     init() {
+        #if canImport(AppKit)
         if CommandLine.arguments.contains("--export-guides") {
             Task {
                 await GuideExporter.run()
                 exit(0)
             }
         }
+        #endif
     }
 
     var body: some Scene {
@@ -27,6 +31,7 @@ struct MonkosCropApp: App {
     }
 }
 
+#if canImport(AppKit)
 struct GuideExporter {
     static func run() async {
         let args = CommandLine.arguments
@@ -209,3 +214,4 @@ struct GuideExporter {
         }
     }
 }
+#endif
