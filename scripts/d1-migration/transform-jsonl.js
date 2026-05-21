@@ -17,32 +17,52 @@ const JSONL_PATH = join(ROOT, 'apps/MonkosCrop/MonkosCrop/Resources/countries.js
 const lines = readFileSync(JSONL_PATH, 'utf8').trim().split('\n');
 const countries = lines.map(l => JSON.parse(l));
 
-// === GRADE MAP (doc-level) ===
+// === GRADE MAP ===
+
+// Country-level A grade: all docs of these countries get A
+const GRADE_A_COUNTRIES = new Set([
+  // EU Reg. 2252/2004 (31국)
+  'de','fr','it','es','nl','pl','se','be','at','pt','cz','ro','dk','ie',
+  'hu','bg','hr','sk','si','lv','lt','ee','lu','mt','cy','fi','gr',
+  'no','is','ch','li',
+  // 개별 .gov 확인 (§1~§4, §14, §32, §35, §36)
+  'kr','jp','tw','sg','hk','my','kz','in','au','nz','uk','tr',
+  'us','ca','mx','ar','br','pe','co','bz','dm','jm',
+  'kw','bh','ye','iq','la','mv','mu',
+]);
+
+// Doc-level overrides (specific docs that override country default)
 const GRADE_A_DOCS = new Set([
-  'kr-passport','kr-visa','kr-id','kr-license',
-  'jp-passport',
-  'ca-passport',
-  'mx-passport',
-  'ar-passport',
-  'br-passport',
-  'fr-passport',
-  'pe-passport',
-  'tw-passport',
-  'sg-passport',
-  'in-visa-evisa','in-visa-bls',
+  'in-visa-evisa','in-visa-bls','cn-visa',
+]);
+
+const GRADE_BPLUS_COUNTRIES = new Set([
+  // EAC Directive 16 (8국)
+  'ke','tz','rw','ug','ss','cd','so',
 ]);
 
 const GRADE_C_DOCS = {
   'af-passport': 'C',
   'gd-passport': 'C',
   'mm-visa': 'C',
-  'bi-passport': 'C',
 };
 
-const GRADE_X_DOCS = {};
-// sy has no docs currently, so no X assignment needed
+// bi-passport is C (상충) but bi is also in EAC → doc-level C overrides country B+
+const GRADE_C_COUNTRIES_DOCS = {
+  'bi': { 'bi-passport': 'C' },
+};
 
-// B-grade: all other docs with data get B
+// EU source for bulk A upgrade
+const EU_SOURCE = 'https://eur-lex.europa.eu/legal-content/EN/ALL/?uri=celex:32004R2252';
+const EU_SOURCE_NAME = 'EU Reg. 2252/2004';
+const EAC_SOURCE = 'https://www.eac.int/immigration/migration-management/electronic-machine-readable-travel-documents';
+const EAC_SOURCE_NAME = 'EAC/CM32/Directive 16';
+
+const EU_COUNTRIES = new Set([
+  'de','fr','it','es','nl','pl','se','be','at','pt','cz','ro','dk','ie',
+  'hu','bg','hr','sk','si','lv','lt','ee','lu','mt','cy','fi','gr',
+  'no','is','ch','li',
+]);
 
 // === BACKGROUND MAP (doc or country level) ===
 const BG_OVERRIDES = {
@@ -146,11 +166,28 @@ const KZ_PASSPORT = {
   size: '35x45', px: '413x531', head: '', std: '', grade: 'B', bg: 'gray',
 };
 
+// === NEW DOCS: au, nz, mv, iq, mu (empty docs → add passport) ===
+const EMPTY_COUNTRY_PASSPORTS = {
+  'au': { id: 'au-passport', type: 'passport', ko: '여권', en: 'Passport', ja: 'パスポート', size: '35x45', px: '413x531', head: '', std: 'ICAO 9303', grade: 'A', source: 'https://immi.homeaffairs.gov.au/citizenship/photo-requirements-for-citizenship-applications', sourceName: 'homeaffairs.gov.au', bg: 'light-gray', maxKB: 3584, minKB: 70, format: 'JPEG' },
+  'nz': { id: 'nz-passport', type: 'passport', ko: '여권', en: 'Passport', ja: 'パスポート', size: '35x45', px: '413x531', head: '', std: 'ICAO 9303', grade: 'A', source: 'https://www.passports.govt.nz/passport-photos/', sourceName: 'passports.govt.nz', maxKB: 5120, minKB: 250, format: 'JPEG' },
+  'mv': { id: 'mv-passport', type: 'passport', ko: '여권', en: 'Passport', ja: 'パスポート', size: '35x45', px: '413x531', head: '', std: '', grade: 'A' },
+  'iq': { id: 'iq-passport', type: 'passport', ko: '여권', en: 'Passport', ja: 'パスポート', size: '35x45', px: '413x531', head: '', std: '', grade: 'A' },
+  'mu': { id: 'mu-passport', type: 'passport', ko: '여권', en: 'Passport', ja: 'パスポート', size: '35x45', px: '413x531', head: '', std: '', grade: 'A' },
+};
+
+// === UK enhancements ===
+const UK_ENHANCEMENTS = {
+  'uk-passport': { grade: 'A', source: 'https://www.gov.uk/photos-for-passports', sourceName: 'gov.uk', bg: 'light-gray', validity: '1m', maxKB: 10240, minKB: 50, format: 'JPEG' },
+  'uk-license': { grade: 'A', source: 'https://www.gov.uk/photos-for-passports', sourceName: 'gov.uk', bg: 'light-gray' },
+};
+
 // === TRANSFORM ===
-function assignGrade(docId) {
+function assignGrade(docId, countryId) {
   if (GRADE_A_DOCS.has(docId)) return 'A';
   if (GRADE_C_DOCS[docId]) return GRADE_C_DOCS[docId];
-  if (GRADE_X_DOCS[docId]) return GRADE_X_DOCS[docId];
+  if (GRADE_C_COUNTRIES_DOCS[countryId]?.[docId]) return GRADE_C_COUNTRIES_DOCS[countryId][docId];
+  if (GRADE_A_COUNTRIES.has(countryId)) return 'A';
+  if (GRADE_BPLUS_COUNTRIES.has(countryId)) return 'B+';
   return 'B';
 }
 
@@ -159,7 +196,27 @@ function applyDocEnhancements(doc, countryId) {
   const enhanced = { ...doc };
 
   // Grade (preserve if already set, e.g. from split/new docs)
-  if (!enhanced.grade) enhanced.grade = assignGrade(docId);
+  if (!enhanced.grade) enhanced.grade = assignGrade(docId, countryId);
+
+  // UK-specific enhancements
+  if (UK_ENHANCEMENTS[docId]) {
+    const uke = UK_ENHANCEMENTS[docId];
+    for (const [k, v] of Object.entries(uke)) {
+      if (!enhanced[k]) enhanced[k] = v;
+    }
+  }
+
+  // EU source auto-assign (if no source yet and country is EU)
+  if (!enhanced.source && EU_COUNTRIES.has(countryId)) {
+    enhanced.source = EU_SOURCE;
+    enhanced.sourceName = EU_SOURCE_NAME;
+  }
+
+  // EAC source auto-assign
+  if (!enhanced.source && GRADE_BPLUS_COUNTRIES.has(countryId)) {
+    enhanced.source = EAC_SOURCE;
+    enhanced.sourceName = EAC_SOURCE_NAME;
+  }
 
   // Background - doc-level override first, then country-level
   if (BG_DOC_OVERRIDES[docId]) {
@@ -240,6 +297,11 @@ for (const country of countries) {
     country.docs.push(cleanDoc(KZ_PASSPORT));
   }
 
+  // Special: Add passport to empty A-grade countries (au, nz, mv, iq, mu)
+  if (EMPTY_COUNTRY_PASSPORTS[country.id] && country.docs.length === 0) {
+    country.docs.push(cleanDoc(EMPTY_COUNTRY_PASSPORTS[country.id]));
+  }
+
   // Apply enhancements to all existing docs
   country.docs = country.docs.map(d => {
     if (d.grade) return cleanDoc(d); // already processed (new docs)
@@ -255,7 +317,7 @@ writeFileSync(JSONL_PATH, output, 'utf8');
 let totalCountries = countries.length;
 let countriesWithDocs = 0;
 let totalDocs = 0;
-const gradeCounts = { A: 0, B: 0, C: 0, X: 0 };
+const gradeCounts = { A: 0, 'B+': 0, B: 0, C: 0, X: 0 };
 let bgNonStandard = 0;
 let digitalCount = 0;
 
@@ -274,6 +336,6 @@ console.log('=== IDPASS jsonl 변환 완료 ===');
 console.log(`총 국가: ${totalCountries}`);
 console.log(`docs 보유 국가: ${countriesWithDocs}`);
 console.log(`총 문서 수: ${totalDocs}`);
-console.log(`grade 분포: A=${gradeCounts.A}, B=${gradeCounts.B}, C=${gradeCounts.C}, X=${gradeCounts.X || 0}`);
+console.log(`grade 분포: A=${gradeCounts.A}, B+=${gradeCounts['B+']}, B=${gradeCounts.B}, C=${gradeCounts.C}, X=${gradeCounts.X || 0}`);
 console.log(`bg 비표준 국가: ${bgNonStandard}`);
 console.log(`디지털 규격 보유: ${digitalCount}`);
