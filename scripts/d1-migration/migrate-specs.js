@@ -168,14 +168,15 @@ for (const c of countries) {
 
   for (const d of c.docs) {
     const docSlug = TYPE_TO_SLUG[d.type] || d.type;
-    const docId = `${c.id}-${docSlug}`;
+    const docId = d.id || `${c.id}-${docSlug}`;
     const size = parseSize(d.size);
     const px = parsePx(d.px);
     const head = parseHead(d.head);
 
     // v2 오버레이 검색
     const v2Match = Object.values(v2Index).find(v => v._docId === docId);
-    const officialUrl = v2Match?.officialSource || null;
+    const officialUrl = d.source || v2Match?.officialSource || null;
+    const officialName = d.sourceName || null;
     const aiRestriction = v2Match?.aiRestriction ? 1 : 0;
     const groupTier = v2Match?.group || null;
     const eyeMinPct = v2Match?.eyePosition?.min_pct ?? v2Match?.eyePosition?.approx_pct ?? null;
@@ -183,14 +184,23 @@ for (const c of countries) {
     const eyeBasis = v2Match?.eyePosition?.basis || null;
     const headMinPct = v2Match?.headHeight?.min_pct ?? null;
     const headMaxPct = v2Match?.headHeight?.max_pct ?? null;
-    const dpi = v2Match?.px?.dpi ?? (px.w && size.w ? Math.round(px.w / (size.w / 25.4)) : null);
-    const bg = v2Match?.background || null;
+    const dpiVal = d.dpi || v2Match?.px?.dpi || (px.w && size.w ? Math.round(px.w / (size.w / 25.4)) : null);
+    const bg = d.bg || v2Match?.background || null;
+    const bgNote = d.bgNote || null;
     const pxW = v2Match?.px?.w ?? px.w;
     const pxH = v2Match?.px?.h ?? px.h;
+    const grade = d.grade || 'C';
+    const maxKb = d.maxKB || null;
+    const minKb = d.minKB || null;
+    const digitalPxRange = d.pxRange || null;
+    const format = d.format || null;
+    const isOnsite = d.onsite ? 1 : 0;
+    const isDigitalOnly = d.digitalOnly ? 1 : 0;
+    const validityVal = d.validity || null;
 
     const warning = d.warning;
 
-    sql.push(`INSERT INTO documents (id, country_id, type, name_ko, name_en, name_ja, slug, size_w_mm, size_h_mm, size_display, px_w, px_h, dpi, background, head_height_min_mm, head_height_max_mm, head_height_min_pct, head_height_max_pct, eye_position_min_pct, eye_position_max_pct, eye_position_basis, standard, official_source_url, ai_restriction, group_tier, priority, is_published, special_notes_ko, special_notes_en, special_notes_ja) VALUES (${esc(docId)}, ${esc(c.id)}, ${esc(d.type)}, ${esc(d.ko)}, ${esc(d.en)}, ${esc(d.ja)}, ${esc(docSlug)}, ${numOrNull(size.w)}, ${numOrNull(size.h)}, ${esc(d.size)}, ${numOrNull(pxW)}, ${numOrNull(pxH)}, ${numOrNull(dpi)}, ${esc(bg)}, ${numOrNull(head.min)}, ${numOrNull(head.max)}, ${numOrNull(headMinPct)}, ${numOrNull(headMaxPct)}, ${numOrNull(eyeMinPct)}, ${numOrNull(eyeMaxPct)}, ${esc(eyeBasis)}, ${esc(d.std || null)}, ${esc(officialUrl)}, ${aiRestriction}, ${esc(groupTier)}, ${docSlug === 'passport' ? 1 : docSlug === 'visa' ? 2 : 10}, 1, ${warning ? esc(warning.ko) : 'NULL'}, ${warning ? esc(warning.en) : 'NULL'}, ${warning ? esc(warning.ja) : 'NULL'});`);
+    sql.push(`INSERT INTO documents (id, country_id, type, name_ko, name_en, name_ja, slug, size_w_mm, size_h_mm, size_display, px_w, px_h, dpi, background, background_detail_ko, background_detail_en, background_detail_ja, head_height_min_mm, head_height_max_mm, head_height_min_pct, head_height_max_pct, eye_position_min_pct, eye_position_max_pct, eye_position_basis, standard, official_source_url, official_source_name, validity, ai_restriction, reliability_grade, group_tier, priority, is_published, special_notes_ko, special_notes_en, special_notes_ja, max_kb, min_kb, digital_px_range, format, is_onsite, is_digital_only) VALUES (${esc(docId)}, ${esc(c.id)}, ${esc(d.type)}, ${esc(d.ko)}, ${esc(d.en)}, ${esc(d.ja)}, ${esc(docSlug)}, ${numOrNull(size.w)}, ${numOrNull(size.h)}, ${esc(d.size)}, ${numOrNull(pxW)}, ${numOrNull(pxH)}, ${numOrNull(dpiVal)}, ${esc(bg)}, ${bgNote ? esc(bgNote.ko) : 'NULL'}, ${bgNote ? esc(bgNote.en) : 'NULL'}, ${bgNote ? esc(bgNote.ja) : 'NULL'}, ${numOrNull(head.min)}, ${numOrNull(head.max)}, ${numOrNull(headMinPct)}, ${numOrNull(headMaxPct)}, ${numOrNull(eyeMinPct)}, ${numOrNull(eyeMaxPct)}, ${esc(eyeBasis)}, ${esc(d.std || null)}, ${esc(officialUrl)}, ${esc(officialName)}, ${esc(validityVal)}, ${aiRestriction}, ${esc(grade)}, ${esc(groupTier)}, ${docSlug === 'passport' ? 1 : docSlug === 'visa' ? 2 : 10}, 1, ${warning ? esc(warning.ko) : 'NULL'}, ${warning ? esc(warning.en) : 'NULL'}, ${warning ? esc(warning.ja) : 'NULL'}, ${numOrNull(maxKb)}, ${numOrNull(minKb)}, ${esc(digitalPxRange)}, ${esc(format)}, ${isOnsite}, ${isDigitalOnly});`);
 
     insertedDocIds.add(docId);
   }
