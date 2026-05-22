@@ -390,6 +390,7 @@ struct ContentView: View {
         let h = Int(doc.photoSpec.heightMM)
         let filename = "\(w)x\(h)"
 
+        #if canImport(UIKit)
         if let path = Bundle.main.path(forResource: filename, ofType: "jpg", inDirectory: "guides"),
            let img = loadImage(from: path) {
             img.resizable().aspectRatio(contentMode: .fit)
@@ -398,6 +399,16 @@ struct ContentView: View {
                 .font(.system(size: 60, weight: .ultraLight))
                 .foregroundStyle(V1.accent.opacity(0.3))
         }
+        #else
+        if let url = Bundle.module.url(forResource: filename, withExtension: "jpg", subdirectory: "guides"),
+           let img = NSImage(contentsOf: url) {
+            Image(nsImage: img).resizable().aspectRatio(contentMode: .fit)
+        } else {
+            Image(systemName: "person.crop.rectangle")
+                .font(.system(size: 60, weight: .ultraLight))
+                .foregroundStyle(V1.accent.opacity(0.3))
+        }
+        #endif
     }
 
     private func loadImage(from path: String) -> Image? {
