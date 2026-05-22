@@ -56,6 +56,7 @@ extension Image {
 @ViewBuilder
 func bundleImage(_ name: String) -> some View {
     #if canImport(UIKit)
+    let _ = print("[bundleImage] name=\(name), path=\(Bundle.main.path(forResource: name, ofType: "jpg") ?? "nil"), bundlePath=\(Bundle.main.bundlePath)")
     if let path = Bundle.main.path(forResource: name, ofType: "jpg") ?? Bundle.main.path(forResource: name, ofType: "png"),
        let img = UIImage(contentsOfFile: path) {
         Image(uiImage: img).resizable().aspectRatio(contentMode: .fill)
