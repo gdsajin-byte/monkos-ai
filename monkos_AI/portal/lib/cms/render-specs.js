@@ -29,14 +29,15 @@ const SPECS_I18N = {
     ],
     sameCountryLabel: '같은 국가 다른 규격',
     specLabel: '규격 보기',
-    tabContinent: '대륙', tabCountry: '국가', tabDocument: '문서', tabSize: '규격',
     heroGlobal: '🌐 GLOBAL PHOTO SPEC GUIDE',
     heroTitle: '증명사진 규격 가이드',
     heroSub: '전세계 200국가 이상의 여권, 비자 등 증명사진 규격 정보 제공 및 규격 맞춤 서비스.',
     statCountries: '국가', statSpecs: '규격', statVerified: '공식 검증',
-    selectContinent: '대륙을 선택하세요',
     hubFooter: '© 2026 MONKOS · 규격 정보는 공식 출처 기반 검증. 최종 규정은 발급 기관 확인.',
     freeCropCta: '무료 AI 크롭 →',
+    searchPlaceholder: '국가명 검색...',
+    selectCountry: '국가를 선택하세요',
+    selectSpec: '규격을 선택하세요',
   },
   ja: {
     hubTitle: '証明写真 規格ガイド — 国別・用途別サイズ総まとめ | MONKOS',
@@ -58,14 +59,15 @@ const SPECS_I18N = {
     ],
     sameCountryLabel: '同じ国の別の規格',
     specLabel: '規格を見る',
-    tabContinent: '大陸', tabCountry: '国', tabDocument: '書類', tabSize: 'サイズ',
     heroGlobal: '🌐 GLOBAL PHOTO SPEC GUIDE',
     heroTitle: '証明写真 規格ガイド',
     heroSub: '世界200カ国以上のパスポート・ビザなど証明写真規格情報と規格合わせサービス。',
     statCountries: 'カ国', statSpecs: '規格', statVerified: '公式検証',
-    selectContinent: '大陸を選択',
     hubFooter: '© 2026 MONKOS · 規格情報は公式ソースに基づく検証済み。最終規定は発行機関にご確認ください。',
     freeCropCta: '無料AIクロップ →',
+    searchPlaceholder: '国名で検索...',
+    selectCountry: '国を選択',
+    selectSpec: '規格を選択',
   },
   en: {
     hubTitle: 'ID Photo Specifications Guide — Size & Requirements by Country | MONKOS',
@@ -87,14 +89,15 @@ const SPECS_I18N = {
     ],
     sameCountryLabel: 'Other specs for the same country',
     specLabel: 'View specs',
-    tabContinent: 'Continent', tabCountry: 'Country', tabDocument: 'Document', tabSize: 'Size',
     heroGlobal: '🌐 GLOBAL PHOTO SPEC GUIDE',
     heroTitle: 'Photo Spec Guide',
     heroSub: 'ID photo specifications for 200+ countries — passport, visa, and more. Free crop service included.',
     statCountries: 'Countries', statSpecs: 'Specs', statVerified: 'Verified',
-    selectContinent: 'Select a continent',
     hubFooter: '© 2026 MONKOS · Specifications verified from official sources. Confirm final requirements with the issuing authority.',
     freeCropCta: 'Free AI Crop →',
+    searchPlaceholder: 'Search country...',
+    selectCountry: 'Select a country',
+    selectSpec: 'Select a specification',
   },
 };
 
@@ -145,18 +148,6 @@ const SPECS_PAGE_STYLE = `
 .specs-card-size { font-size: 14px; color: var(--accent); font-weight: 500; margin-bottom: 4px; }
 .specs-card-desc { font-size: 13px; color: var(--text-dim); line-height: 1.5; }
 
-/* === Hub Tabs === */
-.specs-tabs { display: flex; gap: 0; border-bottom: 2px solid var(--border, #e5e7eb); margin-bottom: 32px; }
-.specs-tab {
-  padding: 12px 24px; font-size: 15px; font-weight: 600; color: var(--text-dim, #9ca3af);
-  cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px;
-  transition: color 0.2s, border-color 0.2s; background: none; border-top: none; border-left: none; border-right: none;
-}
-.specs-tab:hover { color: var(--text-bright, #111); }
-.specs-tab.active { color: var(--accent, #6c4fff); border-bottom-color: var(--accent, #6c4fff); }
-.specs-tab-panel { display: none; }
-.specs-tab-panel.active { display: block; }
-
 /* === Hub Hero === */
 .specs-hub-hero { text-align: center; margin-bottom: 40px; padding: 40px 20px; }
 .specs-hub-hero .hero-global { font-size: 13px; letter-spacing: 2px; color: var(--accent, #6c4fff); font-weight: 600; margin-bottom: 12px; }
@@ -167,31 +158,41 @@ const SPECS_PAGE_STYLE = `
 .specs-hub-stat .stat-num { font-size: 28px; font-weight: 800; color: var(--accent, #6c4fff); }
 .specs-hub-stat .stat-label { font-size: 13px; color: var(--text-dim, #6b7280); margin-top: 2px; }
 
-/* === Continent Cards === */
-.specs-continent-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 32px; }
-.specs-continent-card {
-  border-radius: 16px; padding: 32px 28px; position: relative; overflow: hidden;
-  text-decoration: none; display: flex; flex-direction: column; justify-content: flex-end;
-  min-height: 180px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
-  background-size: cover; background-position: center;
+/* === Hub Router (Search + Dropdowns) === */
+.specs-router { max-width: 600px; margin: 0 auto 40px; }
+.specs-search-wrap { position: relative; margin-bottom: 20px; }
+.specs-search-wrap input {
+  width: 100%; padding: 14px 20px 14px 44px; font-size: 16px; border: 2px solid var(--border, #e5e7eb);
+  border-radius: 12px; background: var(--card-bg, #fff); color: var(--text-bright, #111);
+  outline: none; transition: border-color 0.2s; box-sizing: border-box;
 }
-.specs-continent-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.2); }
-.specs-continent-card::before {
-  content: ''; position: absolute; inset: 0; border-radius: 16px; opacity: 0.85;
+.specs-search-wrap input:focus { border-color: var(--accent, #6c4fff); }
+.specs-search-wrap::before {
+  content: '\\1F50D'; position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+  font-size: 16px; pointer-events: none;
 }
-.specs-continent-card .cont-dot {
-  position: absolute; top: 16px; right: 16px; width: 10px; height: 10px; border-radius: 50%;
+.specs-search-results {
+  position: absolute; top: 100%; left: 0; right: 0; background: var(--card-bg, #fff);
+  border: 1px solid var(--border, #e5e7eb); border-radius: 10px; margin-top: 4px;
+  max-height: 240px; overflow-y: auto; z-index: 10; display: none; box-shadow: 0 8px 24px rgba(0,0,0,0.08);
 }
-.specs-continent-card .cont-en {
-  font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: rgba(255,255,255,0.7);
-  position: relative; z-index: 1; margin-bottom: 4px;
+.specs-search-results.show { display: block; }
+.specs-search-item {
+  padding: 12px 16px; cursor: pointer; font-size: 14px; color: var(--text, #333);
+  border-bottom: 1px solid var(--border, #f0f0f0);
 }
-.specs-continent-card .cont-name {
-  font-size: 24px; font-weight: 800; color: #fff; position: relative; z-index: 1; margin-bottom: 4px;
+.specs-search-item:hover { background: rgba(108,79,255,0.06); }
+.specs-search-item:last-child { border-bottom: none; }
+.specs-dropdowns { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.specs-dropdowns select {
+  width: 100%; padding: 14px 16px; font-size: 16px; border: 2px solid var(--border, #e5e7eb);
+  border-radius: 12px; background: var(--card-bg, #fff); color: var(--text-bright, #111);
+  outline: none; cursor: pointer; appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b7280' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 16px center;
 }
-.specs-continent-card .cont-count {
-  font-size: 13px; color: rgba(255,255,255,0.8); position: relative; z-index: 1;
-}
+.specs-dropdowns select:focus { border-color: var(--accent, #6c4fff); }
+.specs-dropdowns select:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* === Hub Footer === */
 .specs-hub-footer { text-align: center; padding: 24px 0; margin-top: 32px; font-size: 12px; color: var(--text-dim, #9ca3af); border-top: 1px solid var(--border, #e5e7eb); }
@@ -383,9 +384,7 @@ const SPECS_PAGE_STYLE = `
   .specs-ox-compare { grid-template-columns: 1fr; }
   .specs-rejection-grid { grid-template-columns: 1fr; }
   .specs-cta { flex-direction: column; text-align: center; gap: 20px; }
-  .specs-continent-grid { grid-template-columns: 1fr; }
-  .specs-tabs { overflow-x: auto; }
-  .specs-tab { padding: 10px 16px; font-size: 14px; white-space: nowrap; }
+  .specs-dropdowns { grid-template-columns: 1fr; }
 }
 @media (max-width: 600px) {
   .specs-grid { grid-template-columns: 1fr; }
@@ -447,105 +446,33 @@ export function specsListFragment(forceLang = null) {
 ${hreflangTags}
 <script type="application/ld+json">${itemListJsonLd}</script>`;
 
-  // --- Tab 1: 대륙 카드 ---
-  const continentCardsHtml = CONTINENT_META.map(c => {
-    const name = c[lang] || c.en;
-    const specsInContinent = sortedSpecs.filter(s => SPEC_CONTINENT_MAP[s.slug] === c.id);
-    const count = specsInContinent.length;
-    return `<div class="specs-continent-card" style="background-image:url('/images/continents/cont_${c.id}.webp')" data-continent="${c.id}" onclick="filterContinent('${c.id}')">
-        <div style="position:absolute;inset:0;background:${c.gradient};opacity:0.82;border-radius:16px;"></div>
-        <div class="cont-dot" style="background:${c.dot}"></div>
-        <div class="cont-en">${c.en.toLowerCase()}</div>
-        <div class="cont-name">${escapeHtml(name)}</div>
-        <div class="cont-count">${c.countryCount}+ ${i.statCountries}${count ? ` · ${count} ${i.statSpecs}` : ''}</div>
-      </div>`;
-  }).join('\n      ');
-
-  // --- Tab 2: 국가별 ---
-  const countryGroups = {};
+  // --- 국가별 대륙 그룹핑 (드롭다운 optgroup용) ---
+  const continentGroups = {};
   for (const spec of sortedSpecs) {
-    const country = lang === 'ja' ? spec.country : (lang === 'en' ? spec.countryEn : spec.country);
-    if (!countryGroups[country]) countryGroups[country] = [];
-    countryGroups[country].push(spec);
+    const cid = SPEC_CONTINENT_MAP[spec.slug] || 'other';
+    if (!continentGroups[cid]) continentGroups[cid] = {};
+    const countryKey = lang === 'en' ? spec.countryEn : spec.country;
+    if (!continentGroups[cid][countryKey]) continentGroups[cid][countryKey] = [];
+    continentGroups[cid][countryKey].push(spec);
   }
-  const countryGroupsHtml = Object.entries(countryGroups).map(([country, specs]) => {
-    const anchorId = (specs[0].countryEn || country).toLowerCase().replace(/\s+/g, '');
-    const cards = specs.map(spec => {
-      const typeName = lang === 'ja' ? (spec.typeJa || spec.type) : (lang === 'en' ? spec.typeEn : spec.type);
-      const detail = spec.details[lang] || spec.details.ko || spec.details.en || '';
-      const shortDesc = detail.length > 60 ? detail.substring(0, 60) + '…' : detail;
-      return `<a href="${prefix}/specs/${spec.slug}" class="specs-card">
-          <div class="specs-card-type">${escapeHtml(typeName)}</div>
-          <div class="specs-card-size">${escapeHtml(locField(spec, 'size', lang))} · ${escapeHtml(locField(spec, 'pixels', lang))}</div>
-          <div class="specs-card-desc">${escapeHtml(shortDesc)}</div>
-        </a>`;
-    }).join('\n        ');
-    return `<div class="specs-country-group" id="${anchorId}">
-        <h2>${escapeHtml(country)}</h2>
-        <div class="specs-grid">${cards}</div>
-      </div>`;
-  }).join('\n      ');
 
-  // --- Tab 3: 문서 유형별 ---
-  const docGroups = {};
-  const docTypeMap = {
-    passport: { ko: '여권 / 비자', ja: 'パスポート・ビザ', en: 'Passport / Visa' },
-    resume: { ko: '이력서 / 반명함', ja: '履歴書・半名刺', en: 'Resume / CV' },
-    id: { ko: '신분증 / 면허', ja: '身分証・免許', en: 'ID Card / License' },
-    other: { ko: '기타', ja: 'その他', en: 'Other' },
-  };
-  for (const spec of sortedSpecs) {
-    const slug = spec.slug;
-    let docType = 'other';
-    if (slug.includes('passport') || slug.includes('zairyu') || slug.includes('visa')) docType = 'passport';
-    else if (slug.includes('resume') || slug.includes('halfcard') || slug.includes('headshot') || slug.includes('eu-resume')) docType = 'resume';
-    else if (slug.includes('drivers') || slug.includes('resident') || slug.includes('mynumber')) docType = 'id';
-    if (!docGroups[docType]) docGroups[docType] = [];
-    docGroups[docType].push(spec);
-  }
-  const docGroupsHtml = ['passport', 'resume', 'id', 'other'].filter(dt => docGroups[dt]?.length).map(dt => {
-    const label = docTypeMap[dt][lang] || docTypeMap[dt].en;
-    const cards = docGroups[dt].map(spec => {
-      const typeName = lang === 'ja' ? (spec.typeJa || spec.type) : (lang === 'en' ? spec.typeEn : spec.type);
-      const countryName = lang === 'en' ? spec.countryEn : spec.country;
-      return `<a href="${prefix}/specs/${spec.slug}" class="specs-card">
-          <div class="specs-card-type">${escapeHtml(countryName)} — ${escapeHtml(typeName)}</div>
-          <div class="specs-card-size">${escapeHtml(locField(spec, 'size', lang))}</div>
-        </a>`;
-    }).join('\n        ');
-    return `<div class="specs-country-group">
-        <h2>${escapeHtml(label)}</h2>
-        <div class="specs-grid">${cards}</div>
-      </div>`;
-  }).join('\n      ');
+  const continentOrder = ['asia', 'europe', 'americas', 'oceania', 'middleeast', 'africa', 'other'];
+  const countryOptionsHtml = continentOrder.filter(cid => continentGroups[cid]).map(cid => {
+    const meta = CONTINENT_META.find(c => c.id === cid);
+    const label = meta ? (meta[lang] || meta.en) : (lang === 'ja' ? 'その他' : lang === 'en' ? 'Other' : '기타');
+    const countries = Object.keys(continentGroups[cid]);
+    const opts = countries.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+    return `<optgroup label="${escapeHtml(label)}">${opts}</optgroup>`;
+  }).join('');
 
-  // --- Tab 4: 규격(사이즈)별 ---
-  const sizeGroups = {};
-  for (const spec of sortedSpecs) {
-    const mm = parseSizeMm(spec.size) || 'other';
-    if (!sizeGroups[mm]) sizeGroups[mm] = [];
-    sizeGroups[mm].push(spec);
-  }
-  const sizeOrder = Object.keys(sizeGroups).sort((a, b) => {
-    if (a === 'other') return 1;
-    if (b === 'other') return -1;
-    return sizeGroups[b].length - sizeGroups[a].length;
-  });
-  const sizeGroupsHtml = sizeOrder.map(mm => {
-    const label = mm === 'other' ? (lang === 'ja' ? 'その他' : lang === 'en' ? 'Other' : '기타') : mm.replace('x', ' × ') + 'mm';
-    const cards = sizeGroups[mm].map(spec => {
-      const typeName = lang === 'ja' ? (spec.typeJa || spec.type) : (lang === 'en' ? spec.typeEn : spec.type);
-      const countryName = lang === 'en' ? spec.countryEn : spec.country;
-      return `<a href="${prefix}/specs/${spec.slug}" class="specs-card">
-          <div class="specs-card-type">${escapeHtml(countryName)} — ${escapeHtml(typeName)}</div>
-          <div class="specs-card-size">${escapeHtml(locField(spec, 'size', lang))}</div>
-        </a>`;
-    }).join('\n        ');
-    return `<div class="specs-country-group">
-        <h2>${escapeHtml(label)} (${sizeGroups[mm].length})</h2>
-        <div class="specs-grid">${cards}</div>
-      </div>`;
-  }).join('\n      ');
+  const specsDataJson = JSON.stringify(
+    sortedSpecs.map(s => ({
+      slug: s.slug,
+      country: lang === 'en' ? s.countryEn : s.country,
+      type: lang === 'ja' ? (s.typeJa || s.type) : (lang === 'en' ? s.typeEn : s.type),
+      size: locField(s, 'size', lang),
+    }))
+  );
 
   const bodyContent = `
   <div class="specs-hub-topbar">
@@ -564,48 +491,86 @@ ${hreflangTags}
     </div>
   </div>
 
-  <div class="specs-tabs">
-    <button class="specs-tab active" data-tab="continent">${escapeHtml(i.tabContinent)}</button>
-    <button class="specs-tab" data-tab="country">${escapeHtml(i.tabCountry)}</button>
-    <button class="specs-tab" data-tab="document">${escapeHtml(i.tabDocument)}</button>
-    <button class="specs-tab" data-tab="size">${escapeHtml(i.tabSize)}</button>
-  </div>
-
-  <div class="specs-tab-panel active" id="tab-continent">
-    <div class="specs-continent-grid">
-      ${continentCardsHtml}
+  <div class="specs-router">
+    <div class="specs-search-wrap">
+      <input type="search" id="country-search" placeholder="${escapeHtml(i.searchPlaceholder)}" autocomplete="off">
+      <div class="specs-search-results" id="search-results"></div>
     </div>
-  </div>
-
-  <div class="specs-tab-panel" id="tab-country">
-    ${countryGroupsHtml}
-  </div>
-
-  <div class="specs-tab-panel" id="tab-document">
-    ${docGroupsHtml}
-  </div>
-
-  <div class="specs-tab-panel" id="tab-size">
-    ${sizeGroupsHtml}
+    <div class="specs-dropdowns">
+      <select id="country-select">
+        <option value="" disabled selected>${escapeHtml(i.selectCountry)}</option>
+        ${countryOptionsHtml}
+      </select>
+      <select id="spec-select" disabled>
+        <option value="" disabled selected>${escapeHtml(i.selectSpec)}</option>
+      </select>
+    </div>
   </div>
 
   <div class="specs-hub-footer">${i.hubFooter}</div>`;
 
   const pageScript = `
-  document.querySelectorAll('.specs-tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      document.querySelectorAll('.specs-tab').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.specs-tab-panel').forEach(p => p.classList.remove('active'));
-      tab.classList.add('active');
-      document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+  (function(){
+    var prefix = '${prefix}';
+    var specsData = ${specsDataJson};
+    var countrySelect = document.getElementById('country-select');
+    var specSelect = document.getElementById('spec-select');
+    var searchInput = document.getElementById('country-search');
+    var searchResults = document.getElementById('search-results');
+
+    var countries = [];
+    for (var j = 0; j < countrySelect.options.length; j++) {
+      if (countrySelect.options[j].value) countries.push(countrySelect.options[j].value);
+    }
+
+    searchInput.addEventListener('input', function() {
+      var q = this.value.trim().toLowerCase();
+      if (!q) { searchResults.classList.remove('show'); return; }
+      var matches = countries.filter(function(c) { return c.toLowerCase().indexOf(q) !== -1; });
+      if (!matches.length) { searchResults.classList.remove('show'); return; }
+      searchResults.innerHTML = matches.map(function(c) {
+        return '<div class="specs-search-item" data-country="' + c.replace(/"/g,'&quot;') + '">' + c + '</div>';
+      }).join('');
+      searchResults.classList.add('show');
     });
-  });
-  function filterContinent(id) {
-    document.querySelectorAll('.specs-tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.specs-tab-panel').forEach(p => p.classList.remove('active'));
-    document.querySelector('[data-tab="country"]').classList.add('active');
-    document.getElementById('tab-country').classList.add('active');
-  }`;
+
+    searchResults.addEventListener('click', function(e) {
+      var item = e.target.closest('.specs-search-item');
+      if (!item) return;
+      var country = item.dataset.country;
+      countrySelect.value = country;
+      countrySelect.dispatchEvent(new Event('change'));
+      searchInput.value = country;
+      searchResults.classList.remove('show');
+    });
+
+    document.addEventListener('click', function(e) {
+      if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+        searchResults.classList.remove('show');
+      }
+    });
+
+    countrySelect.addEventListener('change', function() {
+      var country = this.value;
+      var specs = specsData.filter(function(s) { return s.country === country; });
+      specSelect.innerHTML = '<option value="" disabled selected>${escapeHtml(i.selectSpec)}</option>';
+      specs.forEach(function(s) {
+        var opt = document.createElement('option');
+        opt.value = s.slug;
+        opt.textContent = s.type + ' (' + s.size + ')';
+        specSelect.appendChild(opt);
+      });
+      specSelect.disabled = false;
+      if (specs.length === 1) {
+        specSelect.value = specs[0].slug;
+        specSelect.dispatchEvent(new Event('change'));
+      }
+    });
+
+    specSelect.addEventListener('change', function() {
+      if (this.value) location.href = prefix + '/specs/' + this.value;
+    });
+  })();`;
 
   return {
     title: i.hubTitle,
