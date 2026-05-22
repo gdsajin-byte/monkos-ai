@@ -144,6 +144,12 @@ status: active
 | 05/20 | 막내1 | **철창이 1차 검증 82건 전면 반영** — countries.jsonl: 72→145국 docs 보유(+73국 신규). documents 112→186(+74). 핵심: ID 40x60+빨강, FR 흰배경금지, DE 디지털전용, UAE 3종분리, AR 40x40, NG 600DPI. 가이드 이미지 23→25장 재생성. seed.sql 재생성 | countries.jsonl, seed.sql, size-*.webp 25건 | ✅ |
 | 05/21 | 막내2 | **크롭 결과물 비율 왜곡 전수조사** — 근본 원인: performFinalCrop()이 JSONL px 값을 출력 크기로 직접 사용하나 px/mm 비율 불일치 시 sx≠sy 비균일 스케일링 발생. 187건 스캔 결과 4건 불일치(cn-visa 9.1%, jp-id 28.6%, uk-passport/license 2.9%). P0=코드 수정(균일 스케일 강제), P1=데이터 4건 px 보정, P2=크롭 클램핑 비율 보정, P3=Step5 .fill→.fit | [REPORT](../reports/2026-05/REPORT_20260521_막내2_크롭비율왜곡_전수조사.md) | ✅ |
 | 05/21 | 막내2 | **떙큐 페이지 C3 시안 적용** — thanksView 전면 교체: Before/After 슬라이더 카드(드래그+auto-sweep sin 진동) + SNS 6아이콘 행 + i18n 7키×3언어. AI Studio Promo 텍스트→슬라이더 인터랙티브 카드. ScrollView 전환. step5 현행 유지. swift build 성공 | CropView/ContentView/SpecData | ✅ |
+| 05/21 | 쌍아 | **비율 왜곡 근본 수정** — PhotoSpec.pxW/pxH를 stored→computed(mm×DPI/25.4)로 변경. DPI 국가별(300기본, RU/NG 600)+커스텀(72/300/600). faceTarget JSONL explicitFaceTarget 파싱(UK=31, CN=30) | CropEngine/SpecData/ContentView | ✅ |
+| 05/21 | 막내3 | **비자 128국 일괄 추가** — 쉥겐 27+개별 8+복제 93. 비자 보유 24→151국, 문서 193→320건 | countries.jsonl | ✅ |
+| 05/21 | 쌍아 | **떙큐 페이지 직접수정** — slider 이미지 크롭+Resources 배치, OG 카드 monkos.ai 링크, SNS→텔레그램+이메일, 인화 서비스 카드(한국어 전용), i18n 보정 | CropView/ContentView/SpecData | ✅ |
+| 05/21 | 쌍아 | **M4 TestFlight 빌드** — pbxproj 파일등록(LandingView/DemoAnimation/slider), 카메라 권한 제거, M4 직접 빌드→아이폰 실기기 설치. 작가님 검증 "완성도 강력" | 308d4809 | ✅ |
+| 05/22 | 쌍아 | **App Store Connect 등록** — M1 클론→Archive→업로드(build 2→3→4). 앱 이름 IDPASS, 무료, 4+등급, DSA 거래자 등록. pbxproj 리소스 16개 번들 등록 누락 수정, monkos-icon.png git 추가, 가이드 이미지 25장 번들 포함(119MB→1.5MB JPEG 압축), guideImageView Desktop경로→Bundle.main 전환 | App Store Connect + 커밋 4건 | ✅ |
+| 05/22 | 쌍아 | **Package.swift guides 폴더 등록 + Bundle.module 분기** — SPM 빌드에서 가이드 이미지 로딩 정상화 | Package.swift, ContentView.swift | ✅ |
 
 ---
 
@@ -274,8 +280,8 @@ us-passport (51×51 정사각형), india-passport (51×51, 단 우리 정본은 
 | 2-AE | **세로 60mm+ 규격 배치 보정 (캐나다 등)** | ✅ | 쌍아 5/15 | faceTarget/eyeTarget/신호등 분기 |
 | 2-AF | 대륙 카드 배경 이미지 (그라데이션→사진) | ❌ | — | 철창이 디자인 대기 |
 | 2-AG | warning 확장 (AI 금지/안경 금지 등 특이점 표시) | ❌ | — | 2차 검수 데이터 활용 |
-| 2-AH | 앱 네이밍 확정 | ❌ | — | 철창이 브레인스토밍 |
-| 2-AI | M1 Xcode 빌드 + 앱스토어 배포 | ❌ | — | 기능 완성 후 |
+| 2-AH | 앱 네이밍 확정 — **IDPASS** | ✅ | 작가님 5/16 | powered by MONKOS AI |
+| 2-AI | M1 Archive + App Store Connect 업로드 (build 4) | ✅ | 쌍아 5/22 | 스크린샷/설명 입력 미완 |
 | 2-AJ | Analytics SDK (Firebase 등 2단계 데이터 수집) | ❌ | — | 배포 시점 |
 
 #### 배경 제거 엔진 비교 (04-30 PoC)
