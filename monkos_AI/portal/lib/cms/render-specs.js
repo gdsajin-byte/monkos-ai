@@ -554,9 +554,9 @@ ${hreflangTags}
         </svg>`;
         })()}
         <div class="specs-head-guide">${escapeHtml(locField(specData, 'headHeight', lang))}</div>
-        <div class="specs-guide-w">${escapeHtml(locField(specData, 'size', lang).split('×')[0].trim())}cm</div>
+        <div class="specs-guide-w">${escapeHtml((() => { const s = locField(specData, 'size', lang).split('×')[0].trim(); return /\d$/.test(s) ? s + 'mm' : s; })())}</div>
       </div>
-      <div class="specs-guide-h">${escapeHtml(locField(specData, 'size', lang).split('×')[1]?.trim() || '4.5cm')}</div>
+      <div class="specs-guide-h">${escapeHtml((() => { const s = (locField(specData, 'size', lang).split('×')[1] || '45 mm').trim(); return /\d$/.test(s) ? s + 'mm' : s; })())}</div>
     </div>
   </section>
 
