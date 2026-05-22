@@ -23,6 +23,22 @@
 		AABB00022FB400000011867C /* DemoAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB00042FB400000011867C /* DemoAnimation.swift */; };
 		AABB00052FB400010011867C /* slider_before.jpg in Resources */ = {isa = PBXBuildFile; fileRef = AABB00072FB400010011867C /* slider_before.jpg */; };
 		AABB00062FB400010011867C /* slider_after.jpg in Resources */ = {isa = PBXBuildFile; fileRef = AABB00082FB400010011867C /* slider_after.jpg */; };
+		CCDD00012FB500000011867C /* PASSPORTUSA.jpg in Resources */ = {isa = PBXBuildFile; fileRef = CCDD00112FB500000011867C /* PASSPORTUSA.jpg */; };
+		CCDD00022FB500000011867C /* be_f_1.jpg in Resources */ = {isa = PBXBuildFile; fileRef = CCDD00122FB500000011867C /* be_f_1.jpg */; };
+		CCDD00032FB500000011867C /* bg_cr_f_1.jpg in Resources */ = {isa = PBXBuildFile; fileRef = CCDD00132FB500000011867C /* bg_cr_f_1.jpg */; };
+		CCDD00042FB500000011867C /* bg_f_1.jpg in Resources */ = {isa = PBXBuildFile; fileRef = CCDD00142FB500000011867C /* bg_f_1.jpg */; };
+		CCDD00052FB500000011867C /* card_custom.jpg in Resources */ = {isa = PBXBuildFile; fileRef = CCDD00152FB500000011867C /* card_custom.jpg */; };
+		CCDD00062FB500000011867C /* card_license.jpg in Resources */ = {isa = PBXBuildFile; fileRef = CCDD00162FB500000011867C /* card_license.jpg */; };
+		CCDD00072FB500000011867C /* card_passport.jpg in Resources */ = {isa = PBXBuildFile; fileRef = CCDD00172FB500000011867C /* card_passport.jpg */; };
+		CCDD00082FB500000011867C /* card_visa.jpg in Resources */ = {isa = PBXBuildFile; fileRef = CCDD00182FB500000011867C /* card_visa.jpg */; };
+		CCDD00092FB500000011867C /* cont_africa.jpg in Resources */ = {isa = PBXBuildFile; fileRef = CCDD00192FB500000011867C /* cont_africa.jpg */; };
+		CCDD000A2FB500000011867C /* cont_americas.jpg in Resources */ = {isa = PBXBuildFile; fileRef = CCDD001A2FB500000011867C /* cont_americas.jpg */; };
+		CCDD000B2FB500000011867C /* cont_asia.jpg in Resources */ = {isa = PBXBuildFile; fileRef = CCDD001B2FB500000011867C /* cont_asia.jpg */; };
+		CCDD000C2FB500000011867C /* cont_europe.jpg in Resources */ = {isa = PBXBuildFile; fileRef = CCDD001C2FB500000011867C /* cont_europe.jpg */; };
+		CCDD000D2FB500000011867C /* cont_middleeast.jpg in Resources */ = {isa = PBXBuildFile; fileRef = CCDD001D2FB500000011867C /* cont_middleeast.jpg */; };
+		CCDD000E2FB500000011867C /* cont_oceania.jpg in Resources */ = {isa = PBXBuildFile; fileRef = CCDD001E2FB500000011867C /* cont_oceania.jpg */; };
+		CCDD000F2FB500000011867C /* monkos-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = CCDD001F2FB500000011867C /* monkos-icon.png */; };
+		CCDD00102FB500000011867C /* pass_f_1.jpg in Resources */ = {isa = PBXBuildFile; fileRef = CCDD00202FB500000011867C /* pass_f_1.jpg */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -62,7 +78,23 @@
 		AABB00042FB400000011867C /* DemoAnimation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DemoAnimation.swift; sourceTree = "<group>"; };
 		AABB00072FB400010011867C /* slider_before.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = slider_before.jpg; sourceTree = "<group>"; };
 		AABB00082FB400010011867C /* slider_after.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = slider_after.jpg; sourceTree = "<group>"; };
-		B52C2D6E2FB322840011867C /* Resources */ = {isa = PBXGroup; children = (B52C2D6F2FB322840011867C /* countries.jsonl */, B52C2D712FB322850011867C /* ID_Photosample.jpg */, AABB00072FB400010011867C /* slider_before.jpg */, AABB00082FB400010011867C /* slider_after.jpg */,); path = Resources; sourceTree = "<group>"; };
+		CCDD00112FB500000011867C /* PASSPORTUSA.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = PASSPORTUSA.jpg; sourceTree = "<group>"; };
+		CCDD00122FB500000011867C /* be_f_1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = be_f_1.jpg; sourceTree = "<group>"; };
+		CCDD00132FB500000011867C /* bg_cr_f_1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = bg_cr_f_1.jpg; sourceTree = "<group>"; };
+		CCDD00142FB500000011867C /* bg_f_1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = bg_f_1.jpg; sourceTree = "<group>"; };
+		CCDD00152FB500000011867C /* card_custom.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = card_custom.jpg; sourceTree = "<group>"; };
+		CCDD00162FB500000011867C /* card_license.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = card_license.jpg; sourceTree = "<group>"; };
+		CCDD00172FB500000011867C /* card_passport.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = card_passport.jpg; sourceTree = "<group>"; };
+		CCDD00182FB500000011867C /* card_visa.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = card_visa.jpg; sourceTree = "<group>"; };
+		CCDD00192FB500000011867C /* cont_africa.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = cont_africa.jpg; sourceTree = "<group>"; };
+		CCDD001A2FB500000011867C /* cont_americas.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = cont_americas.jpg; sourceTree = "<group>"; };
+		CCDD001B2FB500000011867C /* cont_asia.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = cont_asia.jpg; sourceTree = "<group>"; };
+		CCDD001C2FB500000011867C /* cont_europe.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = cont_europe.jpg; sourceTree = "<group>"; };
+		CCDD001D2FB500000011867C /* cont_middleeast.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = cont_middleeast.jpg; sourceTree = "<group>"; };
+		CCDD001E2FB500000011867C /* cont_oceania.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = cont_oceania.jpg; sourceTree = "<group>"; };
+		CCDD001F2FB500000011867C /* monkos-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "monkos-icon.png"; sourceTree = "<group>"; };
+		CCDD00202FB500000011867C /* pass_f_1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = pass_f_1.jpg; sourceTree = "<group>"; };
+		B52C2D6E2FB322840011867C /* Resources */ = {isa = PBXGroup; children = (B52C2D6F2FB322840011867C /* countries.jsonl */, B52C2D712FB322850011867C /* ID_Photosample.jpg */, AABB00072FB400010011867C /* slider_before.jpg */, AABB00082FB400010011867C /* slider_after.jpg */, CCDD00112FB500000011867C /* PASSPORTUSA.jpg */, CCDD00122FB500000011867C /* be_f_1.jpg */, CCDD00132FB500000011867C /* bg_cr_f_1.jpg */, CCDD00142FB500000011867C /* bg_f_1.jpg */, CCDD00152FB500000011867C /* card_custom.jpg */, CCDD00162FB500000011867C /* card_license.jpg */, CCDD00172FB500000011867C /* card_passport.jpg */, CCDD00182FB500000011867C /* card_visa.jpg */, CCDD00192FB500000011867C /* cont_africa.jpg */, CCDD001A2FB500000011867C /* cont_americas.jpg */, CCDD001B2FB500000011867C /* cont_asia.jpg */, CCDD001C2FB500000011867C /* cont_europe.jpg */, CCDD001D2FB500000011867C /* cont_middleeast.jpg */, CCDD001E2FB500000011867C /* cont_oceania.jpg */, CCDD001F2FB500000011867C /* monkos-icon.png */, CCDD00202FB500000011867C /* pass_f_1.jpg */,); path = Resources; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -262,6 +294,22 @@
 				B52C2D722FB322850011867C /* ID_Photosample.jpg in Resources */,
 				AABB00052FB400010011867C /* slider_before.jpg in Resources */,
 				AABB00062FB400010011867C /* slider_after.jpg in Resources */,
+				CCDD00012FB500000011867C /* PASSPORTUSA.jpg in Resources */,
+				CCDD00022FB500000011867C /* be_f_1.jpg in Resources */,
+				CCDD00032FB500000011867C /* bg_cr_f_1.jpg in Resources */,
+				CCDD00042FB500000011867C /* bg_f_1.jpg in Resources */,
+				CCDD00052FB500000011867C /* card_custom.jpg in Resources */,
+				CCDD00062FB500000011867C /* card_license.jpg in Resources */,
+				CCDD00072FB500000011867C /* card_passport.jpg in Resources */,
+				CCDD00082FB500000011867C /* card_visa.jpg in Resources */,
+				CCDD00092FB500000011867C /* cont_africa.jpg in Resources */,
+				CCDD000A2FB500000011867C /* cont_americas.jpg in Resources */,
+				CCDD000B2FB500000011867C /* cont_asia.jpg in Resources */,
+				CCDD000C2FB500000011867C /* cont_europe.jpg in Resources */,
+				CCDD000D2FB500000011867C /* cont_middleeast.jpg in Resources */,
+				CCDD000E2FB500000011867C /* cont_oceania.jpg in Resources */,
+				CCDD000F2FB500000011867C /* monkos-icon.png in Resources */,
+				CCDD00102FB500000011867C /* pass_f_1.jpg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -454,7 +502,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_ASSET_PATHS = "\"MonkosCrop/Preview Content\"";
 				DEVELOPMENT_TEAM = ZPMVHPDUHW;
 				ENABLE_PREVIEWS = YES;
@@ -485,7 +533,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_ASSET_PATHS = "\"MonkosCrop/Preview Content\"";
 				DEVELOPMENT_TEAM = ZPMVHPDUHW;
 				ENABLE_PREVIEWS = YES;
@@ -516,7 +564,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
 				MARKETING_VERSION = 1.0;
@@ -535,7 +583,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
 				MARKETING_VERSION = 1.0;
@@ -553,7 +601,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = ai.monkos.MonkosCropUITests;
@@ -570,7 +618,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = ai.monkos.MonkosCropUITests;
