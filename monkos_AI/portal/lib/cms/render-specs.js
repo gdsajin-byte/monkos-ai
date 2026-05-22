@@ -287,6 +287,17 @@ const SPECS_PAGE_STYLE = `
   .specs-table th { width: 100px; }
 }`;
 
+function parseSizeMm(sizeStr) {
+  if (!sizeStr) return null;
+  const mmMatch = sizeStr.match(/(\d+)\s*[×x]\s*(\d+)\s*mm/i);
+  if (mmMatch) return `${mmMatch[1]}x${mmMatch[2]}`;
+  const cmMatch = sizeStr.match(/([\d.]+)\s*[×x]\s*([\d.]+)\s*cm/i);
+  if (cmMatch) return `${Math.round(parseFloat(cmMatch[1]) * 10)}x${Math.round(parseFloat(cmMatch[2]) * 10)}`;
+  const inchMm = sizeStr.match(/inch[^(]*\((\d+)\s*[×x]\s*(\d+)\s*mm\)/i);
+  if (inchMm) return `${inchMm[1]}x${inchMm[2]}`;
+  return null;
+}
+
 // 규격 허브 인덱스 (/specs)
 // locale별 필드 선택 (pixelsEn, backgroundJa 등 존재 시 우선)
 function locField(spec, field, lang) {
@@ -525,10 +536,23 @@ ${hreflangTags}
     </div>
     <div class="specs-diagram">
       <div class="specs-photo-frame">
-        <svg viewBox="0 0 120 160" width="100" height="133" fill="currentColor">
+        ${(() => {
+          const sizeMm = parseSizeMm(specData.size);
+          if (sizeMm) {
+            return `<img src="/images/guides/${sizeMm}.webp"
+             alt="${escapeHtml(countryName)} ${escapeHtml(typeName)} ${sizeMm.replace('x','×')}mm"
+             width="200" loading="lazy"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+        <svg viewBox="0 0 120 160" width="100" height="133" fill="currentColor" style="display:none">
           <ellipse cx="60" cy="45" rx="30" ry="38"/>
           <ellipse cx="60" cy="140" rx="50" ry="45"/>
-        </svg>
+        </svg>`;
+          }
+          return `<svg viewBox="0 0 120 160" width="100" height="133" fill="currentColor">
+          <ellipse cx="60" cy="45" rx="30" ry="38"/>
+          <ellipse cx="60" cy="140" rx="50" ry="45"/>
+        </svg>`;
+        })()}
         <div class="specs-head-guide">${escapeHtml(locField(specData, 'headHeight', lang))}</div>
         <div class="specs-guide-w">${escapeHtml(locField(specData, 'size', lang).split('×')[0].trim())}cm</div>
       </div>
@@ -559,7 +583,15 @@ ${hreflangTags}
         <div class="specs-ox-body">
           <div>
             <div class="specs-ox-photo">
-              <svg viewBox="0 0 60 80" width="50" height="67" fill="#aaa"><ellipse cx="30" cy="22" rx="16" ry="20"/><ellipse cx="30" cy="72" rx="26" ry="22"/></svg>
+              ${(() => {
+                const sizeMm = parseSizeMm(specData.size);
+                if (sizeMm) {
+                  return `<img src="/images/guides/${sizeMm}.webp" alt="${oxGoodCaption}" width="80" loading="lazy"
+                onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+              <svg viewBox="0 0 60 80" width="50" height="67" fill="#aaa" style="display:none"><ellipse cx="30" cy="22" rx="16" ry="20"/><ellipse cx="30" cy="72" rx="26" ry="22"/></svg>`;
+                }
+                return `<svg viewBox="0 0 60 80" width="50" height="67" fill="#aaa"><ellipse cx="30" cy="22" rx="16" ry="20"/><ellipse cx="30" cy="72" rx="26" ry="22"/></svg>`;
+              })()}
             </div>
             <div class="specs-ox-caption">${oxGoodCaption}</div>
           </div>
@@ -570,7 +602,15 @@ ${hreflangTags}
         <div class="specs-ox-body">
           <div>
             <div class="specs-ox-photo">
-              <svg viewBox="0 0 60 80" width="50" height="67" fill="#aaa" style="transform:rotate(8deg)"><ellipse cx="30" cy="22" rx="16" ry="20"/><ellipse cx="30" cy="72" rx="26" ry="22"/></svg>
+              ${(() => {
+                const sizeMm = parseSizeMm(specData.size);
+                if (sizeMm) {
+                  return `<img src="/images/guides/${sizeMm}.webp" alt="${oxBadCaption}" width="80" loading="lazy" style="transform:rotate(8deg);opacity:0.6"
+                onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+              <svg viewBox="0 0 60 80" width="50" height="67" fill="#aaa" style="display:none;transform:rotate(8deg)"><ellipse cx="30" cy="22" rx="16" ry="20"/><ellipse cx="30" cy="72" rx="26" ry="22"/></svg>`;
+                }
+                return `<svg viewBox="0 0 60 80" width="50" height="67" fill="#aaa" style="transform:rotate(8deg)"><ellipse cx="30" cy="22" rx="16" ry="20"/><ellipse cx="30" cy="72" rx="26" ry="22"/></svg>`;
+              })()}
             </div>
             <div class="specs-ox-caption">${oxBadCaption}</div>
           </div>
