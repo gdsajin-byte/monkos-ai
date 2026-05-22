@@ -29,6 +29,14 @@ const SPECS_I18N = {
     ],
     sameCountryLabel: '같은 국가 다른 규격',
     specLabel: '규격 보기',
+    tabContinent: '대륙', tabCountry: '국가', tabDocument: '문서', tabSize: '규격',
+    heroGlobal: '🌐 GLOBAL PHOTO SPEC GUIDE',
+    heroTitle: '증명사진 규격 가이드',
+    heroSub: '전세계 200국가 이상의 여권, 비자 등 증명사진 규격 정보 제공 및 규격 맞춤 서비스.',
+    statCountries: '국가', statSpecs: '규격', statVerified: '공식 검증',
+    selectContinent: '대륙을 선택하세요',
+    hubFooter: '© 2026 MONKOS · 규격 정보는 공식 출처 기반 검증. 최종 규정은 발급 기관 확인.',
+    freeCropCta: '무료 AI 크롭 →',
   },
   ja: {
     hubTitle: '証明写真 規格ガイド — 国別・用途別サイズ総まとめ | MONKOS',
@@ -50,6 +58,14 @@ const SPECS_I18N = {
     ],
     sameCountryLabel: '同じ国の別の規格',
     specLabel: '規格を見る',
+    tabContinent: '大陸', tabCountry: '国', tabDocument: '書類', tabSize: 'サイズ',
+    heroGlobal: '🌐 GLOBAL PHOTO SPEC GUIDE',
+    heroTitle: '証明写真 規格ガイド',
+    heroSub: '世界200カ国以上のパスポート・ビザなど証明写真規格情報と規格合わせサービス。',
+    statCountries: 'カ国', statSpecs: '規格', statVerified: '公式検証',
+    selectContinent: '大陸を選択',
+    hubFooter: '© 2026 MONKOS · 規格情報は公式ソースに基づく検証済み。最終規定は発行機関にご確認ください。',
+    freeCropCta: '無料AIクロップ →',
   },
   en: {
     hubTitle: 'ID Photo Specifications Guide — Size & Requirements by Country | MONKOS',
@@ -71,7 +87,38 @@ const SPECS_I18N = {
     ],
     sameCountryLabel: 'Other specs for the same country',
     specLabel: 'View specs',
+    tabContinent: 'Continent', tabCountry: 'Country', tabDocument: 'Document', tabSize: 'Size',
+    heroGlobal: '🌐 GLOBAL PHOTO SPEC GUIDE',
+    heroTitle: 'Photo Spec Guide',
+    heroSub: 'ID photo specifications for 200+ countries — passport, visa, and more. Free crop service included.',
+    statCountries: 'Countries', statSpecs: 'Specs', statVerified: 'Verified',
+    selectContinent: 'Select a continent',
+    hubFooter: '© 2026 MONKOS · Specifications verified from official sources. Confirm final requirements with the issuing authority.',
+    freeCropCta: 'Free AI Crop →',
   },
+};
+
+const CONTINENT_META = [
+  { id: 'asia', ko: '아시아', ja: 'アジア', en: 'Asia', gradient: 'linear-gradient(135deg, #1A3A2A, #2D5A3A)', dot: '#00D4AA', countries: ['한국', '日本', 'Korea', 'Japan'], countryCount: 48 },
+  { id: 'europe', ko: '유럽', ja: 'ヨーロッパ', en: 'Europe', gradient: 'linear-gradient(135deg, #1A1A3A, #3A2A5A)', dot: '#A78BFA', countries: ['유럽', 'Europe'], countryCount: 44 },
+  { id: 'americas', ko: '아메리카', ja: 'アメリカ', en: 'Americas', gradient: 'linear-gradient(135deg, #1A2A3A, #2A3A5A)', dot: '#3B82F6', countries: ['USA'], countryCount: 35 },
+  { id: 'africa', ko: '아프리카', ja: 'アフリカ', en: 'Africa', gradient: 'linear-gradient(135deg, #3A2A1A, #5A3A1A)', dot: '#FFB020', countries: [], countryCount: 54 },
+  { id: 'oceania', ko: '오세아니아', ja: 'オセアニア', en: 'Oceania', gradient: 'linear-gradient(135deg, #1A2A2A, #1A3A4A)', dot: '#FF6B9D', countries: [], countryCount: 14 },
+  { id: 'middleeast', ko: '중동', ja: '中東', en: 'Middle East', gradient: 'linear-gradient(135deg, #2A2A1A, #4A3A1A)', dot: '#F59E0B', countries: [], countryCount: 17 },
+];
+
+const SPEC_CONTINENT_MAP = {
+  'korea-passport': 'asia', 'korea-resume': 'asia', 'korea-drivers-license': 'asia',
+  'korea-halfcard': 'asia', 'korea-resident': 'asia',
+  'japan-passport': 'asia', 'japan-resume': 'asia', 'japan-mynumber': 'asia',
+  'japan-halfcard': 'asia', 'japan-zairyu': 'asia',
+  'singapore-passport': 'asia', 'thailand-passport': 'asia',
+  'india-passport': 'asia', 'china-passport': 'asia', 'china-resume': 'asia',
+  'vietnam-passport': 'asia', 'indonesia-passport': 'asia',
+  'us-passport': 'americas', 'usa-headshot': 'americas', 'canada-passport': 'americas',
+  'eu-passport': 'europe', 'spain-passport': 'europe', 'germany-resume': 'europe',
+  'eu-resume': 'europe', 'uk-passport': 'europe',
+  'australia-passport': 'oceania',
 };
 
 // specs 공통 스타일
@@ -97,6 +144,61 @@ const SPECS_PAGE_STYLE = `
 .specs-card-type { font-size: 17px; font-weight: 600; color: var(--text-bright); margin-bottom: 6px; }
 .specs-card-size { font-size: 14px; color: var(--accent); font-weight: 500; margin-bottom: 4px; }
 .specs-card-desc { font-size: 13px; color: var(--text-dim); line-height: 1.5; }
+
+/* === Hub Tabs === */
+.specs-tabs { display: flex; gap: 0; border-bottom: 2px solid var(--border, #e5e7eb); margin-bottom: 32px; }
+.specs-tab {
+  padding: 12px 24px; font-size: 15px; font-weight: 600; color: var(--text-dim, #9ca3af);
+  cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px;
+  transition: color 0.2s, border-color 0.2s; background: none; border-top: none; border-left: none; border-right: none;
+}
+.specs-tab:hover { color: var(--text-bright, #111); }
+.specs-tab.active { color: var(--accent, #6c4fff); border-bottom-color: var(--accent, #6c4fff); }
+.specs-tab-panel { display: none; }
+.specs-tab-panel.active { display: block; }
+
+/* === Hub Hero === */
+.specs-hub-hero { text-align: center; margin-bottom: 40px; padding: 40px 20px; }
+.specs-hub-hero .hero-global { font-size: 13px; letter-spacing: 2px; color: var(--accent, #6c4fff); font-weight: 600; margin-bottom: 12px; }
+.specs-hub-hero h1 { font-size: 32px; font-weight: 800; color: var(--text-bright, #111); margin-bottom: 12px; }
+.specs-hub-hero .hero-sub { font-size: 15px; color: var(--text-dim, #6b7280); line-height: 1.7; max-width: 560px; margin: 0 auto 24px; }
+.specs-hub-stats { display: flex; justify-content: center; gap: 32px; flex-wrap: wrap; }
+.specs-hub-stat { text-align: center; }
+.specs-hub-stat .stat-num { font-size: 28px; font-weight: 800; color: var(--accent, #6c4fff); }
+.specs-hub-stat .stat-label { font-size: 13px; color: var(--text-dim, #6b7280); margin-top: 2px; }
+
+/* === Continent Cards === */
+.specs-continent-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 32px; }
+.specs-continent-card {
+  border-radius: 16px; padding: 32px 28px; position: relative; overflow: hidden;
+  text-decoration: none; display: flex; flex-direction: column; justify-content: flex-end;
+  min-height: 180px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+  background-size: cover; background-position: center;
+}
+.specs-continent-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.2); }
+.specs-continent-card::before {
+  content: ''; position: absolute; inset: 0; border-radius: 16px; opacity: 0.85;
+}
+.specs-continent-card .cont-dot {
+  position: absolute; top: 16px; right: 16px; width: 10px; height: 10px; border-radius: 50%;
+}
+.specs-continent-card .cont-en {
+  font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: rgba(255,255,255,0.7);
+  position: relative; z-index: 1; margin-bottom: 4px;
+}
+.specs-continent-card .cont-name {
+  font-size: 24px; font-weight: 800; color: #fff; position: relative; z-index: 1; margin-bottom: 4px;
+}
+.specs-continent-card .cont-count {
+  font-size: 13px; color: rgba(255,255,255,0.8); position: relative; z-index: 1;
+}
+
+/* === Hub Footer === */
+.specs-hub-footer { text-align: center; padding: 24px 0; margin-top: 32px; font-size: 12px; color: var(--text-dim, #9ca3af); border-top: 1px solid var(--border, #e5e7eb); }
+.specs-hub-topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+.specs-hub-topbar .hub-brand { font-size: 18px; font-weight: 800; color: var(--text-bright, #111); letter-spacing: 1px; }
+.specs-hub-topbar .hub-cta { font-size: 13px; color: var(--accent, #6c4fff); text-decoration: none; font-weight: 600; }
+.specs-hub-topbar .hub-cta:hover { text-decoration: underline; }
 
 /* === Detail 공통 === */
 .specs-back { display: inline-block; margin-bottom: 20px; font-size: 13px; color: var(--accent); text-decoration: none; }
@@ -281,6 +383,9 @@ const SPECS_PAGE_STYLE = `
   .specs-ox-compare { grid-template-columns: 1fr; }
   .specs-rejection-grid { grid-template-columns: 1fr; }
   .specs-cta { flex-direction: column; text-align: center; gap: 20px; }
+  .specs-continent-grid { grid-template-columns: 1fr; }
+  .specs-tabs { overflow-x: auto; }
+  .specs-tab { padding: 10px 16px; font-size: 14px; white-space: nowrap; }
 }
 @media (max-width: 600px) {
   .specs-grid { grid-template-columns: 1fr; }
@@ -311,14 +416,7 @@ export function specsListFragment(forceLang = null) {
   const i = SPECS_I18N[lang] || SPECS_I18N.ko;
   const prefix = lang === 'ko' ? '' : `/${lang}`;
 
-  // 국가별 그룹핑
-  const groups = {};
   const sortedSpecs = Object.values(SPECS_DATA).sort((a, b) => a.priority - b.priority);
-  for (const spec of sortedSpecs) {
-    const country = lang === 'ja' ? spec.country : (lang === 'en' ? spec.countryEn : spec.country);
-    if (!groups[country]) groups[country] = [];
-    groups[country].push(spec);
-  }
 
   // ItemList JSON-LD
   const itemListJsonLd = JSON.stringify({
@@ -349,33 +447,165 @@ export function specsListFragment(forceLang = null) {
 ${hreflangTags}
 <script type="application/ld+json">${itemListJsonLd}</script>`;
 
-  // 카드 그리드
-  const groupsHtml = Object.entries(groups).map(([country, specs]) => {
+  // --- Tab 1: 대륙 카드 ---
+  const continentCardsHtml = CONTINENT_META.map(c => {
+    const name = c[lang] || c.en;
+    const specsInContinent = sortedSpecs.filter(s => SPEC_CONTINENT_MAP[s.slug] === c.id);
+    const count = specsInContinent.length;
+    return `<div class="specs-continent-card" style="background-image:url('/images/continents/cont_${c.id}.webp')" data-continent="${c.id}" onclick="filterContinent('${c.id}')">
+        <div style="position:absolute;inset:0;background:${c.gradient};opacity:0.82;border-radius:16px;"></div>
+        <div class="cont-dot" style="background:${c.dot}"></div>
+        <div class="cont-en">${c.en.toLowerCase()}</div>
+        <div class="cont-name">${escapeHtml(name)}</div>
+        <div class="cont-count">${c.countryCount}+ ${i.statCountries}${count ? ` · ${count} ${i.statSpecs}` : ''}</div>
+      </div>`;
+  }).join('\n      ');
+
+  // --- Tab 2: 국가별 ---
+  const countryGroups = {};
+  for (const spec of sortedSpecs) {
+    const country = lang === 'ja' ? spec.country : (lang === 'en' ? spec.countryEn : spec.country);
+    if (!countryGroups[country]) countryGroups[country] = [];
+    countryGroups[country].push(spec);
+  }
+  const countryGroupsHtml = Object.entries(countryGroups).map(([country, specs]) => {
     const anchorId = (specs[0].countryEn || country).toLowerCase().replace(/\s+/g, '');
     const cards = specs.map(spec => {
       const typeName = lang === 'ja' ? (spec.typeJa || spec.type) : (lang === 'en' ? spec.typeEn : spec.type);
       const detail = spec.details[lang] || spec.details.ko || spec.details.en || '';
       const shortDesc = detail.length > 60 ? detail.substring(0, 60) + '…' : detail;
       return `<a href="${prefix}/specs/${spec.slug}" class="specs-card">
-        <div class="specs-card-type">${escapeHtml(typeName)}</div>
-        <div class="specs-card-size">${escapeHtml(locField(spec, 'size', lang))} · ${escapeHtml(locField(spec, 'pixels', lang))}</div>
-        <div class="specs-card-desc">${escapeHtml(shortDesc)}</div>
-      </a>`;
-    }).join('\n      ');
+          <div class="specs-card-type">${escapeHtml(typeName)}</div>
+          <div class="specs-card-size">${escapeHtml(locField(spec, 'size', lang))} · ${escapeHtml(locField(spec, 'pixels', lang))}</div>
+          <div class="specs-card-desc">${escapeHtml(shortDesc)}</div>
+        </a>`;
+    }).join('\n        ');
     return `<div class="specs-country-group" id="${anchorId}">
-      <h2>${escapeHtml(country)}</h2>
-      <div class="specs-grid">
-        ${cards}
-      </div>
-    </div>`;
-  }).join('\n    ');
+        <h2>${escapeHtml(country)}</h2>
+        <div class="specs-grid">${cards}</div>
+      </div>`;
+  }).join('\n      ');
+
+  // --- Tab 3: 문서 유형별 ---
+  const docGroups = {};
+  const docTypeMap = {
+    passport: { ko: '여권 / 비자', ja: 'パスポート・ビザ', en: 'Passport / Visa' },
+    resume: { ko: '이력서 / 반명함', ja: '履歴書・半名刺', en: 'Resume / CV' },
+    id: { ko: '신분증 / 면허', ja: '身分証・免許', en: 'ID Card / License' },
+    other: { ko: '기타', ja: 'その他', en: 'Other' },
+  };
+  for (const spec of sortedSpecs) {
+    const slug = spec.slug;
+    let docType = 'other';
+    if (slug.includes('passport') || slug.includes('zairyu') || slug.includes('visa')) docType = 'passport';
+    else if (slug.includes('resume') || slug.includes('halfcard') || slug.includes('headshot') || slug.includes('eu-resume')) docType = 'resume';
+    else if (slug.includes('drivers') || slug.includes('resident') || slug.includes('mynumber')) docType = 'id';
+    if (!docGroups[docType]) docGroups[docType] = [];
+    docGroups[docType].push(spec);
+  }
+  const docGroupsHtml = ['passport', 'resume', 'id', 'other'].filter(dt => docGroups[dt]?.length).map(dt => {
+    const label = docTypeMap[dt][lang] || docTypeMap[dt].en;
+    const cards = docGroups[dt].map(spec => {
+      const typeName = lang === 'ja' ? (spec.typeJa || spec.type) : (lang === 'en' ? spec.typeEn : spec.type);
+      const countryName = lang === 'en' ? spec.countryEn : spec.country;
+      return `<a href="${prefix}/specs/${spec.slug}" class="specs-card">
+          <div class="specs-card-type">${escapeHtml(countryName)} — ${escapeHtml(typeName)}</div>
+          <div class="specs-card-size">${escapeHtml(locField(spec, 'size', lang))}</div>
+        </a>`;
+    }).join('\n        ');
+    return `<div class="specs-country-group">
+        <h2>${escapeHtml(label)}</h2>
+        <div class="specs-grid">${cards}</div>
+      </div>`;
+  }).join('\n      ');
+
+  // --- Tab 4: 규격(사이즈)별 ---
+  const sizeGroups = {};
+  for (const spec of sortedSpecs) {
+    const mm = parseSizeMm(spec.size) || 'other';
+    if (!sizeGroups[mm]) sizeGroups[mm] = [];
+    sizeGroups[mm].push(spec);
+  }
+  const sizeOrder = Object.keys(sizeGroups).sort((a, b) => {
+    if (a === 'other') return 1;
+    if (b === 'other') return -1;
+    return sizeGroups[b].length - sizeGroups[a].length;
+  });
+  const sizeGroupsHtml = sizeOrder.map(mm => {
+    const label = mm === 'other' ? (lang === 'ja' ? 'その他' : lang === 'en' ? 'Other' : '기타') : mm.replace('x', ' × ') + 'mm';
+    const cards = sizeGroups[mm].map(spec => {
+      const typeName = lang === 'ja' ? (spec.typeJa || spec.type) : (lang === 'en' ? spec.typeEn : spec.type);
+      const countryName = lang === 'en' ? spec.countryEn : spec.country;
+      return `<a href="${prefix}/specs/${spec.slug}" class="specs-card">
+          <div class="specs-card-type">${escapeHtml(countryName)} — ${escapeHtml(typeName)}</div>
+          <div class="specs-card-size">${escapeHtml(locField(spec, 'size', lang))}</div>
+        </a>`;
+    }).join('\n        ');
+    return `<div class="specs-country-group">
+        <h2>${escapeHtml(label)} (${sizeGroups[mm].length})</h2>
+        <div class="specs-grid">${cards}</div>
+      </div>`;
+  }).join('\n      ');
 
   const bodyContent = `
-  <div class="specs-hub-header">
-    <h1>${escapeHtml(i.hubH1)}</h1>
-    <p>${escapeHtml(i.hubSub)}</p>
+  <div class="specs-hub-topbar">
+    <span class="hub-brand">MONKOS GUIDE</span>
+    <a href="${prefix}/crop" class="hub-cta">${escapeHtml(i.freeCropCta)}</a>
   </div>
-  ${groupsHtml}`;
+
+  <div class="specs-hub-hero">
+    <div class="hero-global">${i.heroGlobal}</div>
+    <h1>${escapeHtml(i.heroTitle)}</h1>
+    <p class="hero-sub">${escapeHtml(i.heroSub)}</p>
+    <div class="specs-hub-stats">
+      <div class="specs-hub-stat"><div class="stat-num">200+</div><div class="stat-label">${escapeHtml(i.statCountries)}</div></div>
+      <div class="specs-hub-stat"><div class="stat-num">500+</div><div class="stat-label">${escapeHtml(i.statSpecs)}</div></div>
+      <div class="specs-hub-stat"><div class="stat-num">35+</div><div class="stat-label">${escapeHtml(i.statVerified)}</div></div>
+    </div>
+  </div>
+
+  <div class="specs-tabs">
+    <button class="specs-tab active" data-tab="continent">${escapeHtml(i.tabContinent)}</button>
+    <button class="specs-tab" data-tab="country">${escapeHtml(i.tabCountry)}</button>
+    <button class="specs-tab" data-tab="document">${escapeHtml(i.tabDocument)}</button>
+    <button class="specs-tab" data-tab="size">${escapeHtml(i.tabSize)}</button>
+  </div>
+
+  <div class="specs-tab-panel active" id="tab-continent">
+    <div class="specs-continent-grid">
+      ${continentCardsHtml}
+    </div>
+  </div>
+
+  <div class="specs-tab-panel" id="tab-country">
+    ${countryGroupsHtml}
+  </div>
+
+  <div class="specs-tab-panel" id="tab-document">
+    ${docGroupsHtml}
+  </div>
+
+  <div class="specs-tab-panel" id="tab-size">
+    ${sizeGroupsHtml}
+  </div>
+
+  <div class="specs-hub-footer">${i.hubFooter}</div>`;
+
+  const pageScript = `
+  document.querySelectorAll('.specs-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.specs-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.specs-tab-panel').forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+    });
+  });
+  function filterContinent(id) {
+    document.querySelectorAll('.specs-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.specs-tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelector('[data-tab="country"]').classList.add('active');
+    document.getElementById('tab-country').classList.add('active');
+  }`;
 
   return {
     title: i.hubTitle,
@@ -384,7 +614,7 @@ ${hreflangTags}
     htmlLang: lang,
     pageStyle: SPECS_PAGE_STYLE,
     bodyContent,
-    pageScript: null,
+    pageScript,
   };
 }
 
