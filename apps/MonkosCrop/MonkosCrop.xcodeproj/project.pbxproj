@@ -39,6 +39,7 @@
 		CCDD000E2FB500000011867C /* cont_oceania.jpg in Resources */ = {isa = PBXBuildFile; fileRef = CCDD001E2FB500000011867C /* cont_oceania.jpg */; };
 		CCDD000F2FB500000011867C /* monkos-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = CCDD001F2FB500000011867C /* monkos-icon.png */; };
 		CCDD00102FB500000011867C /* pass_f_1.jpg in Resources */ = {isa = PBXBuildFile; fileRef = CCDD00202FB500000011867C /* pass_f_1.jpg */; };
+		DDEE00012FB600000011867C /* guides in Resources */ = {isa = PBXBuildFile; fileRef = DDEE00022FB600000011867C /* guides */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -94,7 +95,8 @@
 		CCDD001E2FB500000011867C /* cont_oceania.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = cont_oceania.jpg; sourceTree = "<group>"; };
 		CCDD001F2FB500000011867C /* monkos-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "monkos-icon.png"; sourceTree = "<group>"; };
 		CCDD00202FB500000011867C /* pass_f_1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = pass_f_1.jpg; sourceTree = "<group>"; };
-		B52C2D6E2FB322840011867C /* Resources */ = {isa = PBXGroup; children = (B52C2D6F2FB322840011867C /* countries.jsonl */, B52C2D712FB322850011867C /* ID_Photosample.jpg */, AABB00072FB400010011867C /* slider_before.jpg */, AABB00082FB400010011867C /* slider_after.jpg */, CCDD00112FB500000011867C /* PASSPORTUSA.jpg */, CCDD00122FB500000011867C /* be_f_1.jpg */, CCDD00132FB500000011867C /* bg_cr_f_1.jpg */, CCDD00142FB500000011867C /* bg_f_1.jpg */, CCDD00152FB500000011867C /* card_custom.jpg */, CCDD00162FB500000011867C /* card_license.jpg */, CCDD00172FB500000011867C /* card_passport.jpg */, CCDD00182FB500000011867C /* card_visa.jpg */, CCDD00192FB500000011867C /* cont_africa.jpg */, CCDD001A2FB500000011867C /* cont_americas.jpg */, CCDD001B2FB500000011867C /* cont_asia.jpg */, CCDD001C2FB500000011867C /* cont_europe.jpg */, CCDD001D2FB500000011867C /* cont_middleeast.jpg */, CCDD001E2FB500000011867C /* cont_oceania.jpg */, CCDD001F2FB500000011867C /* monkos-icon.png */, CCDD00202FB500000011867C /* pass_f_1.jpg */,); path = Resources; sourceTree = "<group>"; };
+		DDEE00022FB600000011867C /* guides */ = {isa = PBXFileReference; lastKnownFileType = folder; path = guides; sourceTree = "<group>"; };
+		B52C2D6E2FB322840011867C /* Resources */ = {isa = PBXGroup; children = (B52C2D6F2FB322840011867C /* countries.jsonl */, B52C2D712FB322850011867C /* ID_Photosample.jpg */, AABB00072FB400010011867C /* slider_before.jpg */, AABB00082FB400010011867C /* slider_after.jpg */, CCDD00112FB500000011867C /* PASSPORTUSA.jpg */, CCDD00122FB500000011867C /* be_f_1.jpg */, CCDD00132FB500000011867C /* bg_cr_f_1.jpg */, CCDD00142FB500000011867C /* bg_f_1.jpg */, CCDD00152FB500000011867C /* card_custom.jpg */, CCDD00162FB500000011867C /* card_license.jpg */, CCDD00172FB500000011867C /* card_passport.jpg */, CCDD00182FB500000011867C /* card_visa.jpg */, CCDD00192FB500000011867C /* cont_africa.jpg */, CCDD001A2FB500000011867C /* cont_americas.jpg */, CCDD001B2FB500000011867C /* cont_asia.jpg */, CCDD001C2FB500000011867C /* cont_europe.jpg */, CCDD001D2FB500000011867C /* cont_middleeast.jpg */, CCDD001E2FB500000011867C /* cont_oceania.jpg */, CCDD001F2FB500000011867C /* monkos-icon.png */, CCDD00202FB500000011867C /* pass_f_1.jpg */, DDEE00022FB600000011867C /* guides */,); path = Resources; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -310,6 +312,7 @@
 				CCDD000E2FB500000011867C /* cont_oceania.jpg in Resources */,
 				CCDD000F2FB500000011867C /* monkos-icon.png in Resources */,
 				CCDD00102FB500000011867C /* pass_f_1.jpg in Resources */,
+				DDEE00012FB600000011867C /* guides in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -502,7 +505,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_ASSET_PATHS = "\"MonkosCrop/Preview Content\"";
 				DEVELOPMENT_TEAM = ZPMVHPDUHW;
 				ENABLE_PREVIEWS = YES;
@@ -533,7 +536,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_ASSET_PATHS = "\"MonkosCrop/Preview Content\"";
 				DEVELOPMENT_TEAM = ZPMVHPDUHW;
 				ENABLE_PREVIEWS = YES;
@@ -564,7 +567,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
 				MARKETING_VERSION = 1.0;
@@ -583,7 +586,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
 				MARKETING_VERSION = 1.0;
@@ -601,7 +604,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = ai.monkos.MonkosCropUITests;
@@ -618,7 +621,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = ai.monkos.MonkosCropUITests;

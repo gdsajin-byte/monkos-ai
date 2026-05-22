@@ -388,25 +388,25 @@ struct ContentView: View {
     private func guideImageView(for doc: DocSpec) -> some View {
         let w = Int(doc.photoSpec.widthMM)
         let h = Int(doc.photoSpec.heightMM)
-        let filename = "\(w)x\(h).png"
-        let path = (("~/Desktop/CROP APP/guides/" + filename) as NSString).expandingTildeInPath
+        let filename = "\(w)x\(h)"
 
+        if let path = Bundle.main.path(forResource: filename, ofType: "jpg", inDirectory: "guides"),
+           let img = loadImage(from: path) {
+            img.resizable().aspectRatio(contentMode: .fit)
+        } else {
+            Image(systemName: "person.crop.rectangle")
+                .font(.system(size: 60, weight: .ultraLight))
+                .foregroundStyle(V1.accent.opacity(0.3))
+        }
+    }
+
+    private func loadImage(from path: String) -> Image? {
         #if canImport(UIKit)
-        if let img = UIImage(contentsOfFile: path) {
-            Image(uiImage: img).resizable().aspectRatio(contentMode: .fit)
-        } else {
-            Image(systemName: "person.crop.rectangle")
-                .font(.system(size: 60, weight: .ultraLight))
-                .foregroundStyle(V1.accent.opacity(0.3))
-        }
+        guard let img = UIImage(contentsOfFile: path) else { return nil }
+        return Image(uiImage: img)
         #else
-        if let img = NSImage(contentsOfFile: path) {
-            Image(nsImage: img).resizable().aspectRatio(contentMode: .fit)
-        } else {
-            Image(systemName: "person.crop.rectangle")
-                .font(.system(size: 60, weight: .ultraLight))
-                .foregroundStyle(V1.accent.opacity(0.3))
-        }
+        guard let img = NSImage(contentsOfFile: path) else { return nil }
+        return Image(nsImage: img)
         #endif
     }
 
