@@ -150,9 +150,9 @@ const SPECS_PAGE_STYLE = `
   width: 100%; border-collapse: separate; border-spacing: 0; margin-bottom: 32px;
   background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
 }
-.specs-table th, .specs-table td { padding: 14px 20px; text-align: left; font-size: 14px; }
+.specs-table th, .specs-table td { padding: 10px 14px; text-align: left; font-size: 14px; }
 .specs-table th {
-  background: var(--surface2); font-weight: 600; color: var(--text-bright); width: 140px; font-size: 13px;
+  background: var(--surface2); font-weight: 600; color: var(--text-bright); width: 110px; font-size: 13px;
   border-right: 1px solid var(--border);
 }
 .specs-table td { color: var(--text); }
@@ -572,50 +572,6 @@ ${hreflangTags}
     <h2>${escapeHtml(i.detailsTitle)}</h2>
     <div class="specs-details-grid">
       ${detailGridHtml}
-    </div>
-  </div>
-
-  <!-- O/X 비교 -->
-  <div class="specs-section">
-    <div class="specs-ox-compare">
-      <div class="specs-ox-card ox-good">
-        <div class="specs-ox-header">${oxGoodLabel}</div>
-        <div class="specs-ox-body">
-          <div>
-            <div class="specs-ox-photo">
-              ${(() => {
-                const sizeMm = parseSizeMm(specData.size);
-                if (sizeMm) {
-                  return `<img src="/images/guides/${sizeMm}.webp" alt="${oxGoodCaption}" width="80" loading="lazy"
-                onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-              <svg viewBox="0 0 60 80" width="50" height="67" fill="#aaa" style="display:none"><ellipse cx="30" cy="22" rx="16" ry="20"/><ellipse cx="30" cy="72" rx="26" ry="22"/></svg>`;
-                }
-                return `<svg viewBox="0 0 60 80" width="50" height="67" fill="#aaa"><ellipse cx="30" cy="22" rx="16" ry="20"/><ellipse cx="30" cy="72" rx="26" ry="22"/></svg>`;
-              })()}
-            </div>
-            <div class="specs-ox-caption">${oxGoodCaption}</div>
-          </div>
-        </div>
-      </div>
-      <div class="specs-ox-card ox-bad">
-        <div class="specs-ox-header">${oxBadLabel}</div>
-        <div class="specs-ox-body">
-          <div>
-            <div class="specs-ox-photo">
-              ${(() => {
-                const sizeMm = parseSizeMm(specData.size);
-                if (sizeMm) {
-                  return `<img src="/images/guides/${sizeMm}.webp" alt="${oxBadCaption}" width="80" loading="lazy" style="transform:rotate(8deg);opacity:0.6"
-                onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-              <svg viewBox="0 0 60 80" width="50" height="67" fill="#aaa" style="display:none;transform:rotate(8deg)"><ellipse cx="30" cy="22" rx="16" ry="20"/><ellipse cx="30" cy="72" rx="26" ry="22"/></svg>`;
-                }
-                return `<svg viewBox="0 0 60 80" width="50" height="67" fill="#aaa" style="transform:rotate(8deg)"><ellipse cx="30" cy="22" rx="16" ry="20"/><ellipse cx="30" cy="72" rx="26" ry="22"/></svg>`;
-              })()}
-            </div>
-            <div class="specs-ox-caption">${oxBadCaption}</div>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 
