@@ -28,6 +28,7 @@
 | [PF_PRESENTATION](PF_PRESENTATION/README.md) | PRESENTATION | 콘텐츠 | PT 콘텐츠 자동화 엔진 — 3D캐릭터/TTS | active | 04-03 |
 | [PF_VIDEO](PF_VIDEO/README.md) | VIDEO | 콘텐츠 | AI 영상 생성 엔진 — video.monkos.ai | active | 04-27 |
 | [PF_MUSE](PF_MUSE/README.md) | MUSE | 콘텐츠 | 멀티 에이전트 토론방 — 서사적 유희 + 창작 + 아이디어 발산 | active | 05-11 |
+| **[PF_SPECS](PF_SPECS/README.md)** | **SPECS** | **전략** | **글로벌 증명사진 규격 허브 — 9언어 × 320문서 SEO/GEO 자산** | **active** | **05-22** |
 | [PF_TEMPLATE](PF_TEMPLATE/README.md) | TEMPLATE | 메타 | 신규 PF 생성 템플릿 | — | — |
 
 ## 네이밍
