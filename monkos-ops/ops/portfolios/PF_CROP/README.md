@@ -150,6 +150,10 @@ status: active
 | 05/21 | 쌍아 | **M4 TestFlight 빌드** — pbxproj 파일등록(LandingView/DemoAnimation/slider), 카메라 권한 제거, M4 직접 빌드→아이폰 실기기 설치. 작가님 검증 "완성도 강력" | 308d4809 | ✅ |
 | 05/22 | 쌍아 | **App Store Connect 등록** — M1 클론→Archive→업로드(build 2→3→4). 앱 이름 IDPASS, 무료, 4+등급, DSA 거래자 등록. pbxproj 리소스 16개 번들 등록 누락 수정, monkos-icon.png git 추가, 가이드 이미지 25장 번들 포함(119MB→1.5MB JPEG 압축), guideImageView Desktop경로→Bundle.main 전환 | App Store Connect + 커밋 4건 | ✅ |
 | 05/22 | 쌍아 | **Package.swift guides 폴더 등록 + Bundle.module 분기** — SPM 빌드에서 가이드 이미지 로딩 정상화 | Package.swift, ContentView.swift | ✅ |
+| 05/23 | 쌍아 | **앱스토어 등록 지시서 발행** — M1↔M4 교차 빌드 히스토리 종합, Phase 0(환경 동기화) 포함. M4/쌍아 수신 | 지시서 2건 | ✅ |
+| 05/23 | 쌍아 | **랜딩 푸터 몽코스 아이콘 수정** — bundleImage .fill→.fit. 20×20에서 보라 몽키 식별 불가 → monkosIconView 헬퍼 | LandingView.swift | ✅ |
+| 05/23 | 쌍아 | **앱 표시 이름 IDPASS 변경** — PRODUCT_NAME=$(TARGET_NAME)→IDPASS 직접 지정. Info.plist CFBundleName/DisplayName 추가. iPhone 홈화면+Safari back 버튼 "IDPASS" 확인 | pbxproj, Info.plist | ✅ |
+| 05/23 | M4/쌍아 | **M4 중복 레포 삭제** — ~/developer/monk_project/ 삭제. 정본 ~/monk_Project/ 단일화 | — | ✅ |
 
 ---
 
