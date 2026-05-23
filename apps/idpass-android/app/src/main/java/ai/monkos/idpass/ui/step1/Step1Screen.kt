@@ -9,7 +9,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -17,21 +16,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.ScrollableTabRow
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Tab
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -44,21 +34,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ai.monkos.idpass.data.ContinentGroup
 import ai.monkos.idpass.data.Country
 import ai.monkos.idpass.data.CountryLoader
 import ai.monkos.idpass.data.DocSpec
-import ai.monkos.idpass.data.continentMeta
 import ai.monkos.idpass.data.groupedByContinent
-import ai.monkos.idpass.data.purposeList
 import ai.monkos.idpass.data.tr
 import ai.monkos.idpass.ui.navigation.CropFlowViewModel
 import ai.monkos.idpass.ui.theme.AccentButton
@@ -74,23 +65,19 @@ fun Step1Screen(
 ) {
     val context = LocalContext.current
     val lang = vm.flow.lang
+    val purpose = vm.flow.purpose
     val countries = remember { CountryLoader.load(context) }
     val groups = remember(countries) { groupedByContinent(countries) }
+    val isCustom = purpose == "custom"
 
     var searchQuery by remember { mutableStateOf("") }
-    var expandedContinent by remember { mutableStateOf<String?>(null) }
-    var selectedCountry by remember { mutableStateOf<Country?>(null) }
-    var showDocPicker by remember { mutableStateOf(false) }
+    var selectedContinent by remember { mutableStateOf<String?>(null) }
+    var expandedCountryId by remember { mutableStateOf<String?>(null) }
 
     // Custom mode state
     var customW by remember { mutableStateOf("35") }
     var customH by remember { mutableStateOf("45") }
-    var customDpi by remember { mutableStateOf("300") }
-
-    // Purpose filter
-    val purposeIndex = purposeList.indexOf(vm.flow.purpose).coerceAtLeast(0)
-    var selectedPurposeIdx by remember { mutableIntStateOf(purposeIndex) }
-    val isCustom = purposeList.getOrNull(selectedPurposeIdx) == "custom"
+    var customDpi by remember { mutableIntStateOf(300) }
 
     Column(
         modifier = Modifier
@@ -99,44 +86,29 @@ fun Step1Screen(
     ) {
         V1TopBar(currentStep = 1, onBack = onBack, onHome = onHome)
 
-        // Purpose filter tabs
-        ScrollableTabRow(
-            selectedTabIndex = selectedPurposeIdx,
-            containerColor = V1.bg,
-            contentColor = V1.accent,
-            edgePadding = 16.dp,
-            divider = {},
-            indicator = {},
+        // Title + Description
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp)
+                .padding(bottom = 12.dp),
         ) {
-            purposeList.forEachIndexed { index, purpose ->
-                val isSelected = index == selectedPurposeIdx
-                Tab(
-                    selected = isSelected,
-                    onClick = {
-                        selectedPurposeIdx = index
-                        vm.flow.purpose = purpose
-                    },
-                    modifier = Modifier.padding(horizontal = 4.dp),
-                ) {
-                    Surface(
-                        shape = RoundedCornerShape(20.dp),
-                        color = if (isSelected) V1.accent else V1.card,
-                        modifier = Modifier.padding(vertical = 8.dp),
-                    ) {
-                        Text(
-                            text = tr(purpose, lang),
-                            color = if (isSelected) V1.bg else V1.muted,
-                            fontSize = 13.sp,
-                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                        )
-                    }
-                }
-            }
+            Text(
+                text = tr("select_country", lang),
+                color = V1.text,
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Black,
+            )
+            Spacer(Modifier.height(3.dp))
+            Text(
+                text = tr("select_desc", lang),
+                color = V1.muted,
+                fontSize = 12.sp,
+            )
         }
 
         if (isCustom) {
-            // Custom mode: width/height/DPI input
+            // ── Custom Input Form ──
             CustomInputSection(
                 customW = customW,
                 customH = customH,
@@ -148,458 +120,610 @@ fun Step1Screen(
                 onConfirm = {
                     val w = customW.toDoubleOrNull() ?: 35.0
                     val h = customH.toDoubleOrNull() ?: 45.0
-                    val d = customDpi.toDoubleOrNull() ?: 300.0
+                    val d = customDpi.toDouble()
                     val pxW = (w / 25.4 * d).toInt()
                     val pxH = (h / 25.4 * d).toInt()
                     vm.flow.selectedDoc = DocSpec(
                         id = "custom",
                         type = "custom",
                         names = mapOf("ko" to "커스텀", "en" to "Custom", "ja" to "カスタム"),
-                        size = "${w.toInt()} x ${h.toInt()} mm",
-                        px = "$pxW x $pxH px",
-                        group = "A",
-                        headHeight = "---",
+                        size = "${w.toInt()} × ${h.toInt()} mm",
+                        px = "$pxW × $pxH px",
+                        group = "X",
+                        headHeight = "32–36 mm",
                         standard = "Custom",
                         docDpi = d,
                     )
-                    vm.flow.selectedCountry = null
+                    vm.flow.selectedCountry = Country(
+                        id = "custom",
+                        flag = "🌐",
+                        names = mapOf("ko" to "커스텀", "en" to "Custom", "ja" to "カスタム"),
+                        docs = listOf(vm.flow.selectedDoc!!),
+                    )
                     onDocSelected()
                 },
             )
         } else {
-            // Search bar
-            OutlinedTextField(
-                value = searchQuery,
-                onValueChange = { searchQuery = it },
-                placeholder = { Text(tr("search", lang), color = V1.dim) },
+            // ── Search Bar ──
+            Row(
                 modifier = Modifier
+                    .padding(horizontal = 20.dp)
+                    .padding(bottom = 10.dp)
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                shape = RoundedCornerShape(12.dp),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedTextColor = V1.text,
-                    unfocusedTextColor = V1.text,
-                    focusedBorderColor = V1.accent,
-                    unfocusedBorderColor = V1.border,
-                    cursorColor = V1.accent,
-                    focusedContainerColor = V1.card,
-                    unfocusedContainerColor = V1.card,
-                ),
-                singleLine = true,
-            )
-
-            if (showDocPicker && selectedCountry != null) {
-                // Show doc list for selected country
-                DocPickerSection(
-                    country = selectedCountry!!,
-                    lang = lang,
-                    purpose = vm.flow.purpose,
-                    onDocSelected = { doc ->
-                        vm.flow.selectedCountry = selectedCountry
-                        vm.flow.selectedDoc = doc
-                        onDocSelected()
-                    },
-                    onBack = {
-                        showDocPicker = false
-                        selectedCountry = null
+                    .background(V1.card, RoundedCornerShape(8.dp))
+                    .border(1.dp, V1.border, RoundedCornerShape(8.dp))
+                    .padding(horizontal = 12.dp, vertical = 9.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = "🔍",
+                    fontSize = 14.sp,
+                    color = V1.dim,
+                )
+                Spacer(Modifier.width(8.dp))
+                BasicTextField(
+                    value = searchQuery,
+                    onValueChange = { searchQuery = it },
+                    modifier = Modifier.weight(1f),
+                    textStyle = TextStyle(
+                        color = V1.text,
+                        fontSize = 12.sp,
+                    ),
+                    singleLine = true,
+                    cursorBrush = SolidColor(V1.accent),
+                    decorationBox = { inner ->
+                        if (searchQuery.isEmpty()) {
+                            Text(
+                                text = tr("search", lang),
+                                color = V1.dim,
+                                fontSize = 12.sp,
+                            )
+                        }
+                        inner()
                     },
                 )
-            } else {
-                // Continent grid + country lists
-                val filteredGroups = if (searchQuery.isBlank()) {
-                    groups
-                } else {
-                    val q = searchQuery.lowercase()
-                    groups.mapNotNull { group ->
-                        val filtered = group.countries.filter { c ->
-                            c.name(lang).lowercase().contains(q) ||
-                            c.name("en").lowercase().contains(q) ||
-                            c.id.contains(q)
-                        }
-                        if (filtered.isEmpty()) null
-                        else group.copy(countries = filtered)
-                    }
+            }
+
+            // ── Content: Continent Grid / Country List ──
+            val filteredCountries = if (searchQuery.isBlank()) {
+                countries.filter { c ->
+                    c.docs.any { it.type == purpose || (purpose == "passport" && it.type == "id") }
                 }
+            } else {
+                val q = searchQuery.lowercase()
+                countries.filter { c ->
+                    c.docs.any { it.type == purpose || (purpose == "passport" && it.type == "id") } &&
+                    (c.name(lang).lowercase().contains(q) || c.name("en").lowercase().contains(q))
+                }
+            }
 
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(bottom = 32.dp),
-                ) {
-                    // Continent cards (grid when no search, or list when searching)
-                    if (searchQuery.isBlank()) {
-                        item {
-                            ContinentGrid(
-                                groups = filteredGroups,
-                                lang = lang,
-                                onContinentClick = { id ->
-                                    expandedContinent = if (expandedContinent == id) null else id
-                                },
+            val filteredGroups = groupedByContinent(filteredCountries).filter { group ->
+                group.countries.any { c ->
+                    c.docs.any { it.type == purpose || (purpose == "passport" && it.type == "id") }
+                }
+            }
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 20.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                if (searchQuery.isNotBlank()) {
+                    // Search results: 2-column grid of CountryCards
+                    val matchingCountries = filteredCountries
+                    TwoColumnCountryCards(
+                        countries = matchingCountries,
+                        lang = lang,
+                        purpose = purpose,
+                        expandedCountryId = expandedCountryId,
+                        selectedCountryId = vm.flow.selectedCountry?.id,
+                        selectedDocId = vm.flow.selectedDoc?.id,
+                        onCountryClick = { c ->
+                            expandedCountryId = if (expandedCountryId == c.id) null else c.id
+                        },
+                        onDocSelect = { c, doc ->
+                            vm.flow.selectedCountry = c
+                            vm.flow.selectedDoc = doc
+                            onDocSelected()
+                        },
+                    )
+                } else if (selectedContinent != null) {
+                    // Back button + countries in continent
+                    val group = filteredGroups.firstOrNull { it.id == selectedContinent }
+                    if (group != null) {
+                        Row(
+                            modifier = Modifier
+                                .clickable { selectedContinent = null }
+                                .padding(vertical = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Text(
+                                text = "❮",
+                                color = V1.text,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold,
                             )
-                        }
-                    }
-
-                    // Expanded country list or search results
-                    val displayGroups = if (searchQuery.isNotBlank()) {
-                        filteredGroups
-                    } else {
-                        filteredGroups.filter { it.id == expandedContinent }
-                    }
-
-                    displayGroups.forEach { group ->
-                        item {
+                            Spacer(Modifier.width(6.dp))
                             Text(
                                 text = group.name(lang),
-                                color = V1.accent,
-                                fontSize = 14.sp,
+                                color = V1.text,
+                                fontSize = 13.sp,
                                 fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                             )
                         }
-                        items(group.countries) { country ->
-                            CountryRow(
-                                country = country,
-                                lang = lang,
-                                onClick = {
-                                    selectedCountry = country
-                                    showDocPicker = true
-                                },
-                            )
+
+                        val continentCountries = group.countries.filter { c ->
+                            c.docs.any { it.type == purpose || (purpose == "passport" && it.type == "id") }
                         }
+                        TwoColumnCountryCards(
+                            countries = continentCountries,
+                            lang = lang,
+                            purpose = purpose,
+                            expandedCountryId = expandedCountryId,
+                            selectedCountryId = vm.flow.selectedCountry?.id,
+                            selectedDocId = vm.flow.selectedDoc?.id,
+                            onCountryClick = { c ->
+                                expandedCountryId = if (expandedCountryId == c.id) null else c.id
+                            },
+                            onDocSelect = { c, doc ->
+                                vm.flow.selectedCountry = c
+                                vm.flow.selectedDoc = doc
+                                onDocSelected()
+                            },
+                        )
                     }
+                } else {
+                    // Continent cards: 2-column grid
+                    ContinentCardsGrid(
+                        groups = filteredGroups,
+                        lang = lang,
+                        onContinentClick = { id -> selectedContinent = id },
+                    )
                 }
+
+                Spacer(Modifier.height(32.dp))
             }
         }
     }
 }
 
+// ── Continent Cards Grid ──
+
 @Composable
-private fun ContinentGrid(
+private fun ContinentCardsGrid(
     groups: List<ContinentGroup>,
     lang: String,
     onContinentClick: (String) -> Unit,
 ) {
     val context = LocalContext.current
+    val rows = groups.chunked(2)
 
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(3),
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(280.dp)
-            .padding(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        contentPadding = PaddingValues(vertical = 8.dp),
-    ) {
-        items(groups) { group ->
-            val meta = continentMeta[group.id]
-            val bitmap = remember(group.image) {
-                try {
-                    context.assets.open("images/${group.image}.jpg").use {
-                        BitmapFactory.decodeStream(it)
-                    }
-                } catch (_: Exception) {
-                    null
-                }
+    rows.forEach { rowItems ->
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            rowItems.forEach { group ->
+                ContinentCard(
+                    group = group,
+                    lang = lang,
+                    onClick = { onContinentClick(group.id) },
+                    modifier = Modifier.weight(1f),
+                )
             }
-
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(0.9f)
-                    .clip(RoundedCornerShape(12.dp))
-                    .clickable { onContinentClick(group.id) },
-                shape = RoundedCornerShape(12.dp),
-                color = V1.card,
-            ) {
-                Box(Modifier.fillMaxSize()) {
-                    bitmap?.let { bmp ->
-                        Image(
-                            bitmap = bmp.asImageBitmap(),
-                            contentDescription = group.name(lang),
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.fillMaxSize(),
-                        )
-                    }
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(
-                                Brush.verticalGradient(
-                                    colors = listOf(
-                                        Color.Transparent,
-                                        V1.bg.copy(alpha = 0.8f),
-                                    ),
-                                    startY = 50f,
-                                )
-                            )
-                    )
-                    Column(
-                        modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                            .padding(bottom = 8.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        Text(
-                            text = meta?.icon ?: "",
-                            fontSize = 20.sp,
-                        )
-                        Text(
-                            text = group.name(lang),
-                            color = V1.text,
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Medium,
-                            textAlign = TextAlign.Center,
-                        )
-                        Text(
-                            text = "${group.countries.size}",
-                            color = V1.dim,
-                            fontSize = 10.sp,
-                        )
-                    }
-                }
+            // Fill empty space if odd number
+            if (rowItems.size == 1) {
+                Spacer(Modifier.weight(1f))
             }
         }
     }
 }
 
 @Composable
-private fun CountryRow(
-    country: Country,
+private fun ContinentCard(
+    group: ContinentGroup,
     lang: String,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() }
-            .padding(horizontal = 16.dp, vertical = 2.dp),
-        color = Color.Transparent,
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 10.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(text = country.flag, fontSize = 22.sp)
-            Spacer(Modifier.width(12.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = country.name(lang),
-                    color = V1.text,
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Medium,
-                )
-                if (lang != "en") {
-                    Text(
-                        text = country.name("en"),
-                        color = V1.dim,
-                        fontSize = 12.sp,
-                    )
-                }
+    val context = LocalContext.current
+    val bitmap = remember(group.image) {
+        try {
+            context.assets.open("images/${group.image}.jpg").use {
+                BitmapFactory.decodeStream(it)
             }
-            Text(
-                text = "${country.docs.size}",
-                color = V1.muted,
-                fontSize = 13.sp,
-            )
+        } catch (_: Exception) {
+            null
         }
     }
-    HorizontalDivider(color = V1.border.copy(alpha = 0.3f), thickness = 0.5.dp)
+
+    Box(
+        modifier = modifier
+            .aspectRatio(1f)
+            .clip(RoundedCornerShape(12.dp))
+            .border(1.dp, V1.border, RoundedCornerShape(12.dp))
+            .clickable { onClick() },
+        contentAlignment = Alignment.BottomStart,
+    ) {
+        // Background image
+        bitmap?.let { bmp ->
+            Image(
+                bitmap = bmp.asImageBitmap(),
+                contentDescription = group.name(lang),
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize(),
+            )
+        }
+
+        // Gradient overlay
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            Color.Black.copy(alpha = 0.4f),
+                            Color.Black.copy(alpha = 0.2f),
+                            Color.Black.copy(alpha = 0.7f),
+                        ),
+                    )
+                ),
+        )
+
+        // Continent name bottom-left
+        Text(
+            text = (group.names["en"] ?: "").uppercase(),
+            color = V1.accent.copy(alpha = 0.9f),
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Black,
+            letterSpacing = 1.sp,
+            modifier = Modifier.padding(12.dp),
+        )
+    }
+}
+
+// ── Two Column Country Cards ──
+
+@Composable
+private fun TwoColumnCountryCards(
+    countries: List<Country>,
+    lang: String,
+    purpose: String,
+    expandedCountryId: String?,
+    selectedCountryId: String?,
+    selectedDocId: String?,
+    onCountryClick: (Country) -> Unit,
+    onDocSelect: (Country, DocSpec) -> Unit,
+) {
+    val rows = countries.chunked(2)
+
+    rows.forEach { rowItems ->
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+            rowItems.forEach { c ->
+                val matchDocs = c.docs.filter { it.type == purpose || (purpose == "passport" && it.type == "id") }
+                val firstDoc = matchDocs.firstOrNull()
+                if (firstDoc != null) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        val sel = selectedCountryId == c.id && matchDocs.any { it.id == selectedDocId }
+                        CountryCard(
+                            country = c,
+                            firstDoc = firstDoc,
+                            lang = lang,
+                            isSelected = sel,
+                            onClick = { onCountryClick(c) },
+                        )
+                        // Expanded doc rows
+                        AnimatedVisibility(visible = expandedCountryId == c.id && matchDocs.size > 0) {
+                            Column(
+                                modifier = Modifier.padding(top = 4.dp),
+                                verticalArrangement = Arrangement.spacedBy(4.dp),
+                            ) {
+                                matchDocs.forEach { doc ->
+                                    DocRow(
+                                        doc = doc,
+                                        lang = lang,
+                                        isSelected = selectedDocId == doc.id,
+                                        onClick = { onDocSelect(c, doc) },
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if (rowItems.size == 1) {
+                Spacer(Modifier.weight(1f))
+            }
+        }
+    }
 }
 
 @Composable
-private fun DocPickerSection(
+private fun CountryCard(
     country: Country,
+    firstDoc: DocSpec,
     lang: String,
-    purpose: String,
-    onDocSelected: (DocSpec) -> Unit,
-    onBack: () -> Unit,
+    isSelected: Boolean,
+    onClick: () -> Unit,
 ) {
-    val filteredDocs = if (purpose == "custom") {
-        country.docs
-    } else {
-        val matching = country.docs.filter { it.type == purpose }
-        matching.ifEmpty { country.docs }
-    }
-
-    Column(
+    Row(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp),
-    ) {
-        // Country header
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                text = "<",
-                color = V1.muted,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .clickable { onBack() }
-                    .padding(end = 12.dp),
+            .fillMaxWidth()
+            .background(
+                if (isSelected) V1.accent.copy(alpha = 0.06f) else V1.card,
+                RoundedCornerShape(10.dp),
             )
-            Text(text = country.flag, fontSize = 28.sp)
-            Spacer(Modifier.width(12.dp))
+            .border(
+                1.dp,
+                if (isSelected) V1.accent.copy(alpha = 0.4f) else V1.border,
+                RoundedCornerShape(10.dp),
+            )
+            .clickable { onClick() }
+            .padding(horizontal = 10.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(text = country.flag, fontSize = 24.sp)
+        Spacer(Modifier.width(8.dp))
+        Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = country.name(lang),
                 color = V1.text,
-                fontSize = 20.sp,
+                fontSize = 12.sp,
                 fontWeight = FontWeight.Bold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
             )
-        }
-
-        HorizontalDivider(color = V1.border, thickness = 0.5.dp)
-
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(vertical = 8.dp),
-        ) {
-            items(filteredDocs) { doc ->
-                Surface(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .clickable { onDocSelected(doc) },
-                    shape = RoundedCornerShape(12.dp),
-                    color = V1.card,
-                ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp),
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Text(
-                                text = doc.name(lang),
-                                color = V1.text,
-                                fontSize = 15.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                modifier = Modifier.weight(1f),
-                            )
-                            Surface(
-                                shape = RoundedCornerShape(6.dp),
-                                color = V1.accent.copy(alpha = 0.15f),
-                            ) {
-                                Text(
-                                    text = doc.size,
-                                    color = V1.accent,
-                                    fontSize = 11.sp,
-                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
-                                )
-                            }
-                        }
-                        Spacer(Modifier.height(4.dp))
-                        Row {
-                            Text(
-                                text = doc.px,
-                                color = V1.dim,
-                                fontSize = 12.sp,
-                            )
-                            Spacer(Modifier.width(12.dp))
-                            Text(
-                                text = doc.standard,
-                                color = V1.dim,
-                                fontSize = 12.sp,
-                            )
-                        }
-                        if (doc.headHeight != "---" && doc.headHeight != "—") {
-                            Text(
-                                text = "${tr("face_note", lang)}: ${doc.headHeight}",
-                                color = V1.muted,
-                                fontSize = 12.sp,
-                                modifier = Modifier.padding(top = 4.dp),
-                            )
-                        }
-                    }
-                }
-            }
+            Spacer(Modifier.height(1.dp))
+            Text(
+                text = "${firstDoc.name(lang)} · ${firstDoc.size.replace(" mm", "")}",
+                color = V1.dim,
+                fontSize = 8.sp,
+                fontFamily = FontFamily.Monospace,
+            )
         }
     }
 }
+
+@Composable
+private fun DocRow(
+    doc: DocSpec,
+    lang: String,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(
+                if (isSelected) V1.accent.copy(alpha = 0.06f) else V1.card,
+                RoundedCornerShape(10.dp),
+            )
+            .border(
+                1.dp,
+                if (isSelected) V1.accent.copy(alpha = 0.4f) else V1.border,
+                RoundedCornerShape(10.dp),
+            )
+            .clickable { onClick() }
+            .padding(horizontal = 10.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = doc.name(lang),
+                color = V1.text,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Spacer(Modifier.height(1.dp))
+            Text(
+                text = "${doc.size} · ${doc.standard}",
+                color = V1.dim,
+                fontSize = 8.sp,
+                fontFamily = FontFamily.Monospace,
+            )
+        }
+    }
+}
+
+// ── Custom Input Section ──
 
 @Composable
 private fun CustomInputSection(
     customW: String,
     customH: String,
-    customDpi: String,
+    customDpi: Int,
     onWChange: (String) -> Unit,
     onHChange: (String) -> Unit,
-    onDpiChange: (String) -> Unit,
+    onDpiChange: (Int) -> Unit,
     lang: String,
     onConfirm: () -> Unit,
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
+            .padding(horizontal = 20.dp)
+            .verticalScroll(rememberScrollState()),
     ) {
-        Text(
-            text = tr("custom", lang),
-            color = V1.text,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-        )
-        Spacer(Modifier.height(24.dp))
+        Spacer(Modifier.height(16.dp))
 
-        val fieldColors = OutlinedTextFieldDefaults.colors(
-            focusedTextColor = V1.text,
-            unfocusedTextColor = V1.text,
-            focusedBorderColor = V1.accent,
-            unfocusedBorderColor = V1.border,
-            cursorColor = V1.accent,
-            focusedContainerColor = V1.card,
-            unfocusedContainerColor = V1.card,
-            focusedLabelColor = V1.accent,
-            unfocusedLabelColor = V1.muted,
-        )
-
-        OutlinedTextField(
-            value = customW,
-            onValueChange = onWChange,
-            label = { Text(tr("custom_w", lang)) },
+        // W x H input
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp),
-            colors = fieldColors,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            singleLine = true,
-        )
+        ) {
+            // Width
+            Column(horizontalAlignment = Alignment.Start) {
+                Text(
+                    text = tr("width", lang),
+                    color = V1.muted,
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Bold,
+                )
+                Spacer(Modifier.height(4.dp))
+                Row(
+                    modifier = Modifier
+                        .background(V1.card, RoundedCornerShape(8.dp))
+                        .border(1.dp, V1.border, RoundedCornerShape(8.dp))
+                        .padding(horizontal = 10.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    BasicTextField(
+                        value = customW,
+                        onValueChange = onWChange,
+                        modifier = Modifier.width(50.dp),
+                        textStyle = TextStyle(
+                            color = V1.text,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Black,
+                            fontFamily = FontFamily.Monospace,
+                        ),
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        cursorBrush = SolidColor(V1.accent),
+                    )
+                    Spacer(Modifier.width(4.dp))
+                    Text(text = "mm", color = V1.dim, fontSize = 10.sp)
+                }
+            }
+
+            Spacer(Modifier.width(10.dp))
+            Text(
+                text = "×",
+                color = V1.dim,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(top = 16.dp),
+            )
+            Spacer(Modifier.width(10.dp))
+
+            // Height
+            Column(horizontalAlignment = Alignment.Start) {
+                Text(
+                    text = tr("height", lang),
+                    color = V1.muted,
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Bold,
+                )
+                Spacer(Modifier.height(4.dp))
+                Row(
+                    modifier = Modifier
+                        .background(V1.card, RoundedCornerShape(8.dp))
+                        .border(1.dp, V1.border, RoundedCornerShape(8.dp))
+                        .padding(horizontal = 10.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    BasicTextField(
+                        value = customH,
+                        onValueChange = onHChange,
+                        modifier = Modifier.width(50.dp),
+                        textStyle = TextStyle(
+                            color = V1.text,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Black,
+                            fontFamily = FontFamily.Monospace,
+                        ),
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        cursorBrush = SolidColor(V1.accent),
+                    )
+                    Spacer(Modifier.width(4.dp))
+                    Text(text = "mm", color = V1.dim, fontSize = 10.sp)
+                }
+            }
+        }
+
         Spacer(Modifier.height(12.dp))
-        OutlinedTextField(
-            value = customH,
-            onValueChange = onHChange,
-            label = { Text(tr("custom_h", lang)) },
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp),
-            colors = fieldColors,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            singleLine = true,
-        )
+
+        // DPI selector
+        Column {
+            Text(
+                text = "DPI",
+                color = V1.muted,
+                fontSize = 10.sp,
+                fontWeight = FontWeight.Bold,
+            )
+            Spacer(Modifier.height(4.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
+                listOf(72, 300, 600).forEach { dpi ->
+                    val sel = customDpi == dpi
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(36.dp)
+                            .background(
+                                if (sel) V1.accent else V1.card,
+                                RoundedCornerShape(8.dp),
+                            )
+                            .border(
+                                1.dp,
+                                if (sel) V1.accent else V1.border,
+                                RoundedCornerShape(8.dp),
+                            )
+                            .clickable { onDpiChange(dpi) },
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            text = "$dpi",
+                            color = if (sel) Color(0xFF05080E) else V1.muted,
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Black,
+                            fontFamily = FontFamily.Monospace,
+                        )
+                    }
+                }
+            }
+        }
+
         Spacer(Modifier.height(12.dp))
-        OutlinedTextField(
-            value = customDpi,
-            onValueChange = onDpiChange,
-            label = { Text(tr("custom_dpi", lang)) },
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp),
-            colors = fieldColors,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            singleLine = true,
-        )
 
-        Spacer(Modifier.height(32.dp))
+        // Output display
+        val cw = customW.toDoubleOrNull() ?: 35.0
+        val ch = customH.toDoubleOrNull() ?: 45.0
+        val cpx = (cw / 25.4 * customDpi).toInt()
+        val cpy = (ch / 25.4 * customDpi).toInt()
 
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(V1.card, RoundedCornerShape(8.dp))
+                .border(1.dp, V1.border, RoundedCornerShape(8.dp))
+                .padding(10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = tr("output", lang),
+                color = V1.muted,
+                fontSize = 10.sp,
+            )
+            Spacer(Modifier.weight(1f))
+            Text(
+                text = "$cpx × $cpy px",
+                color = V1.accent,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily.Monospace,
+            )
+        }
+
+        Spacer(Modifier.weight(1f))
+
+        // Confirm button
         AccentButton(
-            text = tr("next", lang),
+            text = "${tr("use_spec", lang)} →",
             onClick = onConfirm,
+            modifier = Modifier
+                .padding(top = 8.dp, bottom = 12.dp),
         )
     }
 }

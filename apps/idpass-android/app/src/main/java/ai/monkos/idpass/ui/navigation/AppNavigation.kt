@@ -157,9 +157,8 @@ fun AppNavigation() {
                     vm.flow.reset()
                     navController.popBackStack(Screen.Step1.route, false)
                 },
-                onStartOver = {
-                    vm.flow.reset()
-                    navController.popBackStack(Screen.Landing.route, false)
+                onSaved = {
+                    navController.navigate(Screen.Thanks.route)
                 },
                 onBack = { navController.popBackStack() },
                 onHome = {
@@ -170,7 +169,8 @@ fun AppNavigation() {
 
         composable(Screen.Thanks.route) {
             ThanksScreen(
-                onStartOver = {
+                vm = vm,
+                onCropAnother = {
                     vm.flow.reset()
                     navController.popBackStack(Screen.Landing.route, false)
                 },

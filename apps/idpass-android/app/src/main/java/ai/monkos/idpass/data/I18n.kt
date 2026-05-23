@@ -71,6 +71,10 @@ private val i18nStrings: Map<String, Map<String, String>> = mapOf(
         "coach_center" to "얼굴을 중앙에 맞추세요.",
         "coach_coverage" to "사진이 프레임을 다 채우지 못합니다.",
 
+        // Crop buttons
+        "reset_crop" to "↻ 초기화",
+        "crop_confirm" to "이대로 크롭",
+
         // Hero / Landing
         "hero_title" to "AI 증명사진",
         "hero_sub" to "글로벌 규격 · 무료 · 광고 없음",
@@ -113,6 +117,27 @@ private val i18nStrings: Map<String, Map<String, String>> = mapOf(
         "custom_dpi" to "DPI",
         "warning" to "주의사항",
         "success_saved" to "저장되었습니다",
+        "landing_tagline" to "증명사진, ",
+        "landing_tagline_accent" to "다 통과.",
+        "landing_sub" to "글로벌 규격 · 서버 전송 없음 · 완전 무료",
+        "select_desc" to "증명사진 규격을 선택하세요",
+        "upload_desc" to "아래 규격을 참고하여 정면 사진을 올려주세요",
+        "choose_gallery" to "갤러리에서 선택",
+        "use_spec" to "이 규격으로 시작",
+        "width" to "가로",
+        "height" to "세로",
+        "output" to "출력",
+        "ratio" to "비율",
+        "free" to "무료",
+        "size" to "사이즈",
+        "bg_desc" to "배경색을 선택하세요",
+        "saved" to "저장됐어요.",
+        "background" to "배경",
+        "slider_drag" to "밀어서, ",
+        "slider_accent" to "차이를 보세요.",
+        "slider_sub" to "전문 스튜디오 수준의 AI 포토그래피",
+        "slider_compare" to "← DRAG TO COMPARE",
+        "slider_cta" to "monkos.ai 보기",
     ),
     "en" to mapOf(
         // Navigation / Steps
@@ -168,6 +193,10 @@ private val i18nStrings: Map<String, Map<String, String>> = mapOf(
         "coach_center" to "Center the face.",
         "coach_coverage" to "Photo does not fill the frame.",
 
+        // Crop buttons
+        "reset_crop" to "↻ Reset",
+        "crop_confirm" to "Crop this",
+
         // Hero / Landing
         "hero_title" to "AI ID Photo",
         "hero_sub" to "Global specs · Free · No ads",
@@ -210,6 +239,27 @@ private val i18nStrings: Map<String, Map<String, String>> = mapOf(
         "custom_dpi" to "DPI",
         "warning" to "Warning",
         "success_saved" to "Saved successfully",
+        "landing_tagline" to "ID photos, ",
+        "landing_tagline_accent" to "all pass.",
+        "landing_sub" to "Global specs · No server upload · 100% free",
+        "select_desc" to "Choose your ID photo specification",
+        "upload_desc" to "Refer to the spec guide below and upload a front-facing photo",
+        "choose_gallery" to "Choose from Gallery",
+        "use_spec" to "Use this spec",
+        "width" to "Width",
+        "height" to "Height",
+        "output" to "Output",
+        "ratio" to "ratio",
+        "free" to "FREE",
+        "size" to "Size",
+        "bg_desc" to "Pick a background color",
+        "saved" to "It's saved.",
+        "background" to "Background",
+        "slider_drag" to "Swipe to ",
+        "slider_accent" to "see the difference.",
+        "slider_sub" to "Studio-quality AI photography",
+        "slider_compare" to "← DRAG TO COMPARE",
+        "slider_cta" to "Visit monkos.ai",
     ),
     "ja" to mapOf(
         // Navigation / Steps
@@ -265,6 +315,10 @@ private val i18nStrings: Map<String, Map<String, String>> = mapOf(
         "coach_center" to "顔を中央に合わせてください。",
         "coach_coverage" to "写真がフレームを埋めていません。",
 
+        // Crop buttons
+        "reset_crop" to "↻ リセット",
+        "crop_confirm" to "このままクロップ",
+
         // Hero / Landing
         "hero_title" to "AI証明写真",
         "hero_sub" to "グローバル規格・無料・広告なし",
@@ -307,5 +361,26 @@ private val i18nStrings: Map<String, Map<String, String>> = mapOf(
         "custom_dpi" to "DPI",
         "warning" to "注意",
         "success_saved" to "保存されました",
+        "landing_tagline" to "証明写真、",
+        "landing_tagline_accent" to "全部通過。",
+        "landing_sub" to "グローバル規格 · サーバー送信なし · 完全無料",
+        "select_desc" to "証明写真の規格を選択してください",
+        "upload_desc" to "下の規格を参考に正面写真をアップロードしてください",
+        "choose_gallery" to "ギャラリーから選択",
+        "use_spec" to "この規格で開始",
+        "width" to "幅",
+        "height" to "高さ",
+        "output" to "出力",
+        "ratio" to "比率",
+        "free" to "無料",
+        "size" to "サイズ",
+        "bg_desc" to "背景色を選択してください",
+        "saved" to "保存しました。",
+        "background" to "背景",
+        "slider_drag" to "スワイプして、",
+        "slider_accent" to "違いを確認。",
+        "slider_sub" to "スタジオ品質のAIフォトグラフィー",
+        "slider_compare" to "← DRAG TO COMPARE",
+        "slider_cta" to "monkos.ai を見る",
     )
 )
