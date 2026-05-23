@@ -904,7 +904,7 @@ struct ContentView: View {
                     get: { cropState.imgScale },
                     set: { nv in
                         let old = cropState.imgScale
-                        cropState.rescaleAll(newScale: nv, oldScale: old, cx: step4FrameSize.width / 2, cy: step4FrameSize.height / 2)
+                        cropState.rescaleAll(newScale: nv, oldScale: old, cx: step4FrameSize.width / 2 + cropState.imgOffset.width, cy: step4FrameSize.height / 2 + cropState.imgOffset.height)
                     }
                 ), in: 0.3...4.0, step: 0.01).tint(V1.accent)
                 Text("+").font(.system(size: 14, weight: .bold, design: .monospaced)).foregroundStyle(V1.muted)
