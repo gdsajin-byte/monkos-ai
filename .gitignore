@@ -119,3 +119,9 @@ monkos-ops/tech/rnd/PDF변환 디딤돌 R&D/
 
 # Local device memory (디바이스별 로컬 전용)
 MEMORY.md
+
+# Android build cache
+**/.gradle/
+**/build/
+**/local.properties
+*.tgz

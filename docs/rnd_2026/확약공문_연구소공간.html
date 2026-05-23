@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>확약공문 - 연구소/전담부서 신고공간</title>
+<style>
+  @page {
+    size: A4;
+    margin: 15mm 20mm 15mm 20mm;
+  }
+  body {
+    font-family: '맑은 고딕', 'Malgun Gothic', sans-serif;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #000;
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 20px 50px;
+  }
+  .header {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  .header h1 {
+    font-size: 24px;
+    font-weight: bold;
+    letter-spacing: 8px;
+    margin-bottom: 0;
+  }
+  .doc-number {
+    text-align: left;
+    font-size: 12px;
+    margin-bottom: 15px;
+  }
+  .doc-number table {
+    border-collapse: collapse;
+  }
+  .doc-number td {
+    padding: 2px 10px 2px 0;
+  }
+  .doc-number td:first-child {
+    font-weight: bold;
+    width: 80px;
+  }
+  .recipient {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 15px;
+  }
+  .subject {
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+  .subject span {
+    font-weight: bold;
+  }
+  .body-text {
+    text-indent: 10px;
+    margin-bottom: 12px;
+    text-align: justify;
+  }
+  .confirm-box {
+    border: 2px solid #000;
+    padding: 15px 20px;
+    margin: 15px 0;
+  }
+  .confirm-box ol {
+    margin: 0;
+    padding-left: 20px;
+  }
+  .confirm-box li {
+    margin-bottom: 4px;
+  }
+  .closing {
+    text-align: center;
+    margin: 25px 0 20px 0;
+    font-size: 14px;
+  }
+  .date {
+    text-align: center;
+    font-size: 14px;
+    margin-bottom: 25px;
+  }
+  .signature {
+    text-align: center;
+    margin-top: 20px;
+  }
+  .signature .company {
+    font-size: 15px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  .signature .ceo-line {
+    font-size: 15px;
+    font-weight: bold;
+  }
+  .signature .seal {
+    display: inline-block;
+    width: 60px;
+    height: 60px;
+    border: 2px solid #ccc;
+    border-radius: 50%;
+    line-height: 60px;
+    text-align: center;
+    font-size: 12px;
+    color: #999;
+    margin-left: 15px;
+    vertical-align: middle;
+  }
+  .dash-line {
+    border: none;
+    border-top: 1px dashed #999;
+    margin: 8px 0;
+  }
+  @media print {
+    body {
+      padding: 0;
+    }
+    .no-print {
+      display: none;
+    }
+    .signature .seal {
+      border-color: #ccc;
+    }
+  }
+  .no-print {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 15px;
+    background: #f0f0f0;
+    border-radius: 8px;
+  }
+  .no-print button {
+    padding: 10px 30px;
+    font-size: 14px;
+    cursor: pointer;
+    background: #333;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    margin: 0 5px;
+  }
+  .no-print button:hover {
+    background: #555;
+  }
+  .editable {
+    color: #0066cc;
+    border-bottom: 1px dashed #0066cc;
+    cursor: text;
+  }
+  @media print {
+    .editable {
+      color: #000;
+      border-bottom: none;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="no-print">
+  <p>파란색 텍스트를 클릭하여 내용을 수정한 후 인쇄하세요</p>
+  <button onclick="window.print()">인쇄 / PDF 저장</button>
+</div>
+
+<!-- 공문 시작 -->
+
+<div class="header">
+  <h1>확 약 공 문</h1>
+</div>
+
+<div class="doc-number">
+  <table>
+    <tr>
+      <td>문서번호</td>
+      <td><span class="editable" contenteditable="true">MONK-2026-001</span></td>
+    </tr>
+    <tr>
+      <td>시행일자</td>
+      <td><span class="editable" contenteditable="true">2026년 02월 11일</span></td>
+    </tr>
+  </table>
+</div>
+
+<div class="recipient">
+  수 신 : <span class="editable" contenteditable="true">한국산업기술진흥협회장</span> 귀하
+</div>
+
+<div class="subject">
+  <span>제 목 : 연구소(전담부서) 신고공간 관련 확약공문</span>
+</div>
+
+<hr class="dash-line">
+
+<div class="body-text">
+  1. 귀 협회의 무궁한 발전을 기원합니다.
+</div>
+
+<div class="body-text">
+  2. 당사는 기업부설연구소(연구개발전담부서) 신고와 관련하여, 신고된 공간이 연구소(전담부서)로 사용되고 있음을 아래와 같이 확약합니다.
+</div>
+
+<div class="confirm-box">
+  <ol>
+    <li>당사는 연구소/전담부서의 요건을 인지하였으며, 하기 내용을 확약합니다.</li>
+    <li>연구인력은 신고된 공간에서 상시 근무하며 연구개발활동만을 수행하고 있습니다.</li>
+    <li>해당 공간은 기업의 '연구소/전담부서'로 사용되는 사실에 대해 확약합니다.</li>
+    <li>신고내역과 상이할 시 발생하는 불이익은 본 기업이 책임지겠습니다.</li>
+  </ol>
+</div>
+
+<div class="body-text">
+  3. 상기 내용에 대하여 사실과 다름이 없음을 확약하며, 이에 본 확약공문을 제출합니다.
+</div>
+
+<div class="closing">
+- 끝 -
+</div>
+
+<div class="date">
+  <span class="editable" contenteditable="true">2026</span>년 <span class="editable" contenteditable="true">02</span>월 <span class="editable" contenteditable="true">11</span>일
+</div>
+
+<div class="signature">
+  <div class="company"><span class="editable" contenteditable="true">주식회사 몽크</span></div>
+  <div class="ceo-line">
+    대표이사 <span class="editable" contenteditable="true">홍 길 동</span>
+    <span class="seal">(인)</span>
+  </div>
+</div>
+
+</body>
+</html>

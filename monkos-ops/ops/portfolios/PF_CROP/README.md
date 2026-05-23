@@ -150,6 +150,7 @@ status: active
 | 05/21 | 쌍아 | **M4 TestFlight 빌드** — pbxproj 파일등록(LandingView/DemoAnimation/slider), 카메라 권한 제거, M4 직접 빌드→아이폰 실기기 설치. 작가님 검증 "완성도 강력" | 308d4809 | ✅ |
 | 05/22 | 쌍아 | **App Store Connect 등록** — M1 클론→Archive→업로드(build 2→3→4). 앱 이름 IDPASS, 무료, 4+등급, DSA 거래자 등록. pbxproj 리소스 16개 번들 등록 누락 수정, monkos-icon.png git 추가, 가이드 이미지 25장 번들 포함(119MB→1.5MB JPEG 압축), guideImageView Desktop경로→Bundle.main 전환 | App Store Connect + 커밋 4건 | ✅ |
 | 05/22 | 쌍아 | **Package.swift guides 폴더 등록 + Bundle.module 분기** — SPM 빌드에서 가이드 이미지 로딩 정상화 | Package.swift, ContentView.swift | ✅ |
+| 05/22 | 4060/막내 | **ML Kit Subject Segmentation 배경제거 품질실측** — Android 테스트앱 제작(Kotlin Compose), 실기기(Galaxy M33) 실측 완료. ML Kit 5장 성공(평균 1.8초) vs ISNet ONNX 5장 성공(평균 18.8초) → **ML Kit 10배 빠르고 번들 0MB, 채택 추천**. Face Detection contour 133pt(Apple Vision 76pt 대비 1.75배) + 10 landmark → 크롭 로직 이식 가능 판정 | [REPORT](../reports/2026-05/REPORT_20260522_4060막내_MLKit배경제거_품질실측.md) + `apps/monkos-crop-android-test/` | ✅ |
 | 05/23 | 쌍아 | **앱스토어 등록 지시서 발행** — M1↔M4 교차 빌드 히스토리 종합, Phase 0(환경 동기화) 포함. M4/쌍아 수신 | 지시서 2건 | ✅ |
 | 05/23 | 쌍아 | **랜딩 푸터 몽코스 아이콘 수정** — bundleImage .fill→.fit. 20×20에서 보라 몽키 식별 불가 → monkosIconView 헬퍼 | LandingView.swift | ✅ |
 | 05/23 | 쌍아 | **앱 표시 이름 IDPASS 변경** — PRODUCT_NAME=$(TARGET_NAME)→IDPASS 직접 지정. Info.plist CFBundleName/DisplayName 추가. iPhone 홈화면+Safari back 버튼 "IDPASS" 확인 | pbxproj, Info.plist | ✅ |
