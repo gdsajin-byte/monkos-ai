@@ -228,9 +228,6 @@ struct ContentView: View {
                                             .font(.system(size: 10, weight: .bold))
                                         Text(group.name(lang))
                                             .font(.system(size: 13, weight: .bold))
-                                        Text("· \(groupCountries.count)\(tr("countries_unit", lang))")
-                                            .font(.system(size: 11))
-                                            .foregroundStyle(V1.dim)
                                         Spacer()
                                     }
                                     .foregroundStyle(V1.text)
@@ -272,8 +269,6 @@ struct ContentView: View {
                                                             .font(.system(size: 20, weight: .black))
                                                             .foregroundStyle(.white)
                                                             .textCase(.uppercase)
-                                                        Text("\(cnt) countries")
-                                                            .font(.system(size: 9, weight: .bold, design: .monospaced))
                                                             .foregroundStyle(V1.accent.opacity(0.9))
                                                             .tracking(1)
                                                     }
