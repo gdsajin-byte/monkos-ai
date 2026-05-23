@@ -158,6 +158,9 @@ status: active
 | 05/23 | 쌍아 | **베트남 비자 faceTarget 47→40 보정** — head 미지정 시 디폴트 fMax-1=47 과대. 범위 36~48 중간값 40 명시 | countries.jsonl | ✅ |
 | 05/23 | 쌍아 | **🔴 줌 시 가이드라인 이탈 버그 수정** — rescaleAll 확대 기준점이 프레임 중심이었으나 이미지 중심이어야 함. 5/14 막내1 웹→Swift 이식 시 crop.js의 `FW/2 + imgPos.x` 패턴을 `step4FrameSize.width/2`로 offset 누락. 웹 원본 615줄 주석 "스케일 중심 = 사진의 실제 시각 중심 (imgPos 반영)" 대조 확인 | ContentView.swift | ✅ |
 | 05/23 | 쌍아+작가님 | **App Store Connect 14개 언어 리스팅 입력** — ko/en/ja/zh/es/fr/de/pt-BR/ar/vi/id/ru/hi/it. 앱 이름 "IDPASS 증명사진", 부제, 프로모션, 설명, 키워드 전 언어 완료. CDP+작가님 수동 협업 | App Store Connect | ✅ |
+| 05/23 | 쌍아 | **스크린샷 8장 리사이즈(6.9"+6.5") + JPEG 변환 + 업로드** — PNG 투명도 에러 해결. 시간순 재배치 | App Store Connect | ✅ |
+| 05/23 | 쌍아 | **IDPASS 전용 개인정보처리방침 페이지** — monkos.ai/privacy-idpass 생성 + 포털 prod 배포. 데이터 수집 없음 명시 | portal/public/privacy-idpass.html | ✅ |
+| 05/23 | M4/쌍아 | **앱 아이콘 R2(타이트) 교체 + build 6 Archive + 업로드** — 철창이 디자인 R2 채택. iMac→M4 SCP 전송. 전 사이즈 생성 + AppIcon 교체 | AppIcon.appiconset + App Store Connect | ✅ |
 
 ---
 
