@@ -157,6 +157,7 @@ status: active
 | 05/23 | 쌍아 | **랜딩 수치 표기 전면 삭제** — 서비스카드(200/50+/30+), 대륙카드(N countries), i18n "200개국"→"글로벌", WHY IDPASS 죽은 코드 삭제 | LandingView/ContentView/SpecData | ✅ |
 | 05/23 | 쌍아 | **베트남 비자 faceTarget 47→40 보정** — head 미지정 시 디폴트 fMax-1=47 과대. 범위 36~48 중간값 40 명시 | countries.jsonl | ✅ |
 | 05/23 | 쌍아 | **🔴 줌 시 가이드라인 이탈 버그 수정** — rescaleAll 확대 기준점이 프레임 중심이었으나 이미지 중심이어야 함. 5/14 막내1 웹→Swift 이식 시 crop.js의 `FW/2 + imgPos.x` 패턴을 `step4FrameSize.width/2`로 offset 누락. 웹 원본 615줄 주석 "스케일 중심 = 사진의 실제 시각 중심 (imgPos 반영)" 대조 확인 | ContentView.swift | ✅ |
+| 05/23 | 쌍아+작가님 | **App Store Connect 14개 언어 리스팅 입력** — ko/en/ja/zh/es/fr/de/pt-BR/ar/vi/id/ru/hi/it. 앱 이름 "IDPASS 증명사진", 부제, 프로모션, 설명, 키워드 전 언어 완료. CDP+작가님 수동 협업 | App Store Connect | ✅ |
 
 ---
 
