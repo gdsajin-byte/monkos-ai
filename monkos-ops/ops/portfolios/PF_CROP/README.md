@@ -163,6 +163,7 @@ status: active
 | 05/23 | M4/쌍아 | **앱 아이콘 R2(타이트) 교체 + build 6 Archive + 업로드** — 철창이 디자인 R2 채택. iMac→M4 SCP 전송. 전 사이즈 생성 + AppIcon 교체 | AppIcon.appiconset + App Store Connect | ✅ |
 | 05/23 | M4/쌍아 | **알파 채널 에러 해소 + iPhone 전용 전환 + build 7 업로드** — build 6 알파 채널 거부(code 90717) → PNG→JPEG→PNG 변환으로 해결. iMac/쌍아 pbxproj iPad/Mac/Vision 타겟 제거 반영. build 7 Archive+업로드 성공 | App Store Connect build 7 | ✅ |
 | 05/23 | M4/쌍아 | **Apple App Store 심사 제출 완료 (18:01 KST)** — build 7 선택. 14개 언어+스크린샷+개인정보방침+아이콘R2 완비 | App Store Connect | ✅ |
+| 05/23 | 작가님 | **💡 Face ID 본인 검증 아이디어** — 갤러리 업로드 사진이 본인인지 Face ID로 대조. 딥페이크/도용 방지 + 실시간 촬영 제한 없이 신뢰성 확보. IDPASS(무료)보다 증명사진 앱(유료·AI 보정) 쪽 유료 기능 후보 | — | 💡 아이디어 |
 
 ---
 
