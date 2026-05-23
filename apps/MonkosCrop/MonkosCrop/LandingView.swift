@@ -137,9 +137,7 @@ struct LandingView: View {
     private var landingFooter: some View {
         VStack(spacing: 6) {
             HStack(spacing: 6) {
-                bundleImage("monkos-icon")
-                    .frame(width: 20, height: 20)
-                    .clipShape(RoundedRectangle(cornerRadius: 4))
+                monkosIconView(size: 20)
                 Text("powered by")
                     .font(.system(size: 9, weight: .medium))
                     .foregroundStyle(V1.dim)
@@ -153,6 +151,29 @@ struct LandingView: View {
                 .tracking(0.5)
         }
         .padding(.top, 16).padding(.bottom, 20)
+    }
+
+    @ViewBuilder
+    private func monkosIconView(size: CGFloat) -> some View {
+        #if canImport(UIKit)
+        if let path = Bundle.main.path(forResource: "monkos-icon", ofType: "png"),
+           let img = UIImage(contentsOfFile: path) {
+            Image(uiImage: img)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: size, height: size)
+                .clipShape(RoundedRectangle(cornerRadius: size * 0.2))
+        }
+        #else
+        if let url = Bundle.module.url(forResource: "monkos-icon", withExtension: "png"),
+           let img = NSImage(contentsOf: url) {
+            Image(nsImage: img)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: size, height: size)
+                .clipShape(RoundedRectangle(cornerRadius: size * 0.2))
+        }
+        #endif
     }
 
     // MARK: Transformation Strip
