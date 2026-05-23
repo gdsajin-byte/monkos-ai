@@ -80,9 +80,9 @@ struct LandingView: View {
 
     private var serviceCardsSection: some View {
         let cards: [(type: String, ko: String, en: String, sub: String, img: String)] = [
-            ("passport", "여권", "Passport", "200 COUNTRIES", "card_passport"),
-            ("visa", "비자", "Visa", "VISA · 50+", "card_visa"),
-            ("license", "면허증", "License", "LICENSE · 30+", "card_license"),
+            ("passport", "여권", "Passport", "PASSPORT", "card_passport"),
+            ("visa", "비자", "Visa", "VISA", "card_visa"),
+            ("license", "면허증", "License", "LICENSE", "card_license"),
             ("custom", "커스텀", "Custom", "CUSTOM SIZE", "card_custom"),
         ]
 
@@ -256,36 +256,6 @@ struct LandingView: View {
     }
 
     // MARK: Features
-
-    private var featuresSection: some View {
-        VStack(spacing: 14) {
-            landingSectionLabel("WHY IDPASS")
-            Text(lang == "ko" ? "다른 앱과\n비교해보세요" :
-                 lang == "ja" ? "他のアプリと\n比べてください" : "Compare with\nother apps")
-                .font(.system(size: 22, weight: .black))
-                .foregroundStyle(V1.text)
-                .multilineTextAlignment(.center)
-            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
-                featureTile(value: "200", label: "COUNTRIES")
-                featureTile(value: "₩0", label: "FOREVER")
-                featureTile(value: "0", label: "SERVER")
-                featureTile(value: "~1s", label: "CROP")
-                featureTile(value: "0", label: "ADS")
-                featureTile(value: "6", label: "CHECKS")
-            }
-        }
-        .padding(.horizontal, 24).padding(.vertical, 40)
-    }
-
-    private func featureTile(value: String, label: String) -> some View {
-        VStack(spacing: 4) {
-            Text(value).font(.system(size: 22, weight: .heavy, design: .monospaced)).foregroundStyle(V1.accent)
-            Text(label).font(.system(size: 8, weight: .bold, design: .monospaced)).foregroundStyle(V1.muted).tracking(1)
-        }
-        .frame(maxWidth: .infinity).padding(.vertical, 14)
-        .background(RoundedRectangle(cornerRadius: 10).fill(V1.card))
-        .overlay(RoundedRectangle(cornerRadius: 10).stroke(V1.border, lineWidth: 1))
-    }
 
     // MARK: Trust
 
