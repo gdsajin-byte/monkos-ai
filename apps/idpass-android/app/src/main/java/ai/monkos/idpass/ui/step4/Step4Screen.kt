@@ -304,7 +304,7 @@ fun Step4Screen(
                         zoomSlider = newVal
                         val old = cropState ?: return@Slider
                         val s = old.copy()
-                        s.rescaleAll(newVal, frameW / 2f, frameH / 2f)
+                        s.rescaleAll(newVal, frameW / 2f + s.imgOffsetX, frameH / 2f + s.imgOffsetY)
                         cropState = s
                         updateMetrics(s)
                     },

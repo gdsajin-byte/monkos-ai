@@ -73,7 +73,7 @@ private val i18nStrings: Map<String, Map<String, String>> = mapOf(
 
         // Hero / Landing
         "hero_title" to "AI 증명사진",
-        "hero_sub" to "200개국 규격 · 무료 · 광고 없음",
+        "hero_sub" to "글로벌 규격 · 무료 · 광고 없음",
 
         // Result screen
         "select_bg" to "배경색 선택",
@@ -83,7 +83,7 @@ private val i18nStrings: Map<String, Map<String, String>> = mapOf(
 
         // Legacy keys for backward compatibility
         "app_title" to "IDPASS",
-        "hero_subtitle" to "200개국 규격 · 무료 · 광고 없음",
+        "hero_subtitle" to "글로벌 규격 · 무료 · 광고 없음",
         "select_doc" to "서류 선택",
         "bg_color" to "배경색",
         "save_gallery" to "갤러리에 저장",
@@ -170,7 +170,7 @@ private val i18nStrings: Map<String, Map<String, String>> = mapOf(
 
         // Hero / Landing
         "hero_title" to "AI ID Photo",
-        "hero_sub" to "200 countries · Free · No ads",
+        "hero_sub" to "Global specs · Free · No ads",
 
         // Result screen
         "select_bg" to "Select Background",
@@ -180,7 +180,7 @@ private val i18nStrings: Map<String, Map<String, String>> = mapOf(
 
         // Legacy keys
         "app_title" to "IDPASS",
-        "hero_subtitle" to "200 Countries · Free · No Ads",
+        "hero_subtitle" to "Global Specs · Free · No Ads",
         "select_doc" to "Select Document",
         "bg_color" to "Background",
         "save_gallery" to "Save to Gallery",
@@ -267,7 +267,7 @@ private val i18nStrings: Map<String, Map<String, String>> = mapOf(
 
         // Hero / Landing
         "hero_title" to "AI証明写真",
-        "hero_sub" to "200カ国規格・無料・広告なし",
+        "hero_sub" to "グローバル規格・無料・広告なし",
 
         // Result screen
         "select_bg" to "背景色を選択",
@@ -277,7 +277,7 @@ private val i18nStrings: Map<String, Map<String, String>> = mapOf(
 
         // Legacy keys
         "app_title" to "IDPASS",
-        "hero_subtitle" to "200カ国規格 · 無料 · 広告なし",
+        "hero_subtitle" to "グローバル規格 · 無料 · 広告なし",
         "select_doc" to "書類を選択",
         "bg_color" to "背景色",
         "save_gallery" to "ギャラリーに保存",
