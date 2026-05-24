@@ -166,6 +166,11 @@ status: active
 | 05/23 | M4/쌍아 | **Apple App Store 심사 제출 완료 (18:01 KST)** — build 7 선택. 14개 언어+스크린샷+개인정보방침+아이콘R2 완비 | App Store Connect | ✅ |
 | 05/23 | 작가님 | **💡 Face ID 본인 검증 아이디어** — 갤러리 업로드 사진이 본인인지 Face ID로 대조. 딥페이크/도용 방지 + 실시간 촬영 제한 없이 신뢰성 확보. IDPASS(무료)보다 증명사진 앱(유료·AI 보정) 쪽 유료 기능 후보 | — | 💡 아이디어 |
 | 05/23 | 4060/쌍아 | **IDPASS Android iOS 동기화** — 🔴 rescaleAll 기준점 버그 수정(imgOffset 반영, 웹 crop.js:615 대조), countries.jsonl iOS 정본 동기화(베트남 비자 faceTarget 40), 수치 표기 "200개국"→"글로벌" 3개국어, 앱 이름 IDPASS 확인, 디버그 로그 없음 확인 | Step4Screen.kt, I18n.kt, countries.jsonl | ✅ |
+| 05/24 | M4/쌍아 | **M4 Android 빌드 환경 구축** — Android Studio Panda 4 + SDK API 36 + JDK 21 + keystore 생성 + debug/release 빌드 성공 | 환경 설치 + app-release.aab (25MB) | ✅ |
+| 05/24 | M4/쌍아 | **PhoneDemoView Compose 포팅** — iOS DemoAnimation.swift 완전 이식. SCAN→BG REMOVE→CROP→INSPECT(EYE/CHIN/CROWN/HEAD)→PASSPORT→PASS STAMP→BLUR→END CARD 애니메이션 루프 | PhoneDemoView.kt + LandingScreen.kt | ✅ |
+| 05/24 | M4/쌍아 | **에뮬레이터 전체 플로우 검증** — Pixel 7 API 35. Landing~Thanks 7단계 스크린샷 확인. 에셋 40종(iMac/쌍아 푸시) 적용 후 대륙카드+서비스카드+가이드 이미지 정상 | 스크린샷 7장 | ✅ |
+| 05/24 | M4/쌍아 | **실기기(Galaxy M33) 테스트 — 12건 이슈 발견+수정** — ①fontScale 1.5 뻥튀기→IdpassTheme fontScale=1.0 고정 ②systemBarsPadding 미적용→추가 ③V1TopBar Step2~5 미표시→추가 ④대륙카드 텍스트 accent→흰색 ⑤Step3 자동배경제거→버튼 클릭 시만 ⑥연파랑 색상 7BA3C9→D6EAF8(iOS 정본) ⑦Step3 컨테이너 1:1 고정 ⑧Step4 뷰포트 높이 고정+가로 비율 축소 ⑨verticalScroll 제거(weight 무효 해소) ⑩MetricBox Column→Row 납작 ⑪브라질 경고 괄호 삭제 ⑫베트남 faceTarget 42 | 다수 파일 수정 | ✅ |
+| 05/24 | M4/쌍아 | **🔴 ML Kit Subject Segmentation SIGBUS 크래시 분석** — `play-services-mlkit-subject-segmentation:16.0.0-beta1`의 `mobile_bg_removal_v8.f16.tflite` 모델이 Exynos GPU에서 DEQUANTIZE 연산 실패. GPU 경로→SIGBUS 크래시, CPU 경로→정상. ML Kit 내부에서 랜덤 선택하므로 코드로 제어 불가. try-catch 불가(네이티브 시그널). **beta 라이브러리 기기 호환성 버그 — 대안 검토 필요(ISNet ONNX/서버사이드/stable 대기)** | logcat 분석 | 🔴 블로커 |
 
 ---
 

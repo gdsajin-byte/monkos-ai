@@ -41,6 +41,7 @@ import ai.monkos.idpass.ui.theme.AccentButton
 import ai.monkos.idpass.ui.theme.BackButton
 import ai.monkos.idpass.ui.theme.SpecBadge
 import ai.monkos.idpass.ui.theme.V1
+import ai.monkos.idpass.ui.theme.V1TopBar
 
 @Composable
 fun Step5Screen(
@@ -66,6 +67,8 @@ fun Step5Screen(
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        V1TopBar(currentStep = 5, onBack = onBack, onHome = onHome)
+
         // TopBar: BackButton + "STEP 5 / 5" + Spacer
         Row(
             modifier = Modifier

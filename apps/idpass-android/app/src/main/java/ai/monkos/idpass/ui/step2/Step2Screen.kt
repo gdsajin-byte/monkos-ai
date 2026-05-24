@@ -57,6 +57,7 @@ import ai.monkos.idpass.ui.theme.AccentButton
 import ai.monkos.idpass.ui.theme.BackButton
 import ai.monkos.idpass.ui.theme.SpecBadge
 import ai.monkos.idpass.ui.theme.V1
+import ai.monkos.idpass.ui.theme.V1TopBar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -128,6 +129,8 @@ fun Step2Screen(
             .fillMaxSize()
             .background(V1.bg),
     ) {
+        V1TopBar(currentStep = 2, onBack = onBack, onHome = onHome)
+
         // TopBar row: BackButton + SpecBadge + Spacer
         Row(
             modifier = Modifier

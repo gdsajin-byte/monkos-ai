@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -62,6 +63,7 @@ import ai.monkos.idpass.ui.theme.BackButton
 import ai.monkos.idpass.ui.theme.MetricBox
 import ai.monkos.idpass.ui.theme.SpecBadge
 import ai.monkos.idpass.ui.theme.V1
+import ai.monkos.idpass.ui.theme.V1TopBar
 import ai.monkos.idpass.ui.theme.color
 import ai.monkos.idpass.ui.theme.drawCornerBrackets
 import kotlin.math.abs
@@ -124,15 +126,16 @@ fun Step4Screen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(V1.bg)
-            .verticalScroll(rememberScrollState()),
+            .background(V1.bg),
     ) {
+        V1TopBar(currentStep = 4, onBack = onBack, onHome = onHome)
+
         // ── TopBar row: BackButton + SpecBadge + Spacer (iOS: padding H14 B4) ──
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 14.dp)
-                .padding(bottom = 4.dp, top = 12.dp),
+                .padding(bottom = 2.dp, top = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
@@ -167,8 +170,13 @@ fun Step4Screen(
         // ── Crop viewport ZStack ──
         Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 14.dp)
+                .weight(1f)
+                .padding(horizontal = 14.dp),
+            contentAlignment = Alignment.TopCenter,
+        ) {
+        Box(
+            modifier = Modifier
+                .fillMaxHeight()
                 .aspectRatio(specAspect)
                 .clip(RoundedCornerShape(8.dp))
                 .border(1.5.dp, V1.accent, RoundedCornerShape(8.dp))
@@ -458,6 +466,7 @@ fun Step4Screen(
                 }
             }
         }
+        } // outer center Box
 
         // ── MetricBox row: EYE FACE TOP BTM (spacing 4dp, padding H14 T8) ──
         if (!isCustom && m != null) {
@@ -465,7 +474,7 @@ fun Step4Screen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 14.dp)
-                    .padding(top = 8.dp),
+                    .padding(top = 4.dp),
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 MetricBox(
@@ -503,12 +512,12 @@ fun Step4Screen(
             }
         }
 
-        // ── Zoom slider: - Slider(0.3..4.0) + xN.NN (padding H14 T8) ──
+        // ── Zoom slider ──
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 14.dp)
-                .padding(top = 8.dp),
+                .padding(top = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
@@ -566,7 +575,7 @@ fun Step4Screen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 14.dp)
-                .padding(top = 8.dp, bottom = 12.dp),
+                .padding(top = 4.dp, bottom = 8.dp),
             horizontalArrangement = Arrangement.spacedBy(6.dp),
         ) {
             // Reset button (accent border, accent.opacity(0.08) bg)

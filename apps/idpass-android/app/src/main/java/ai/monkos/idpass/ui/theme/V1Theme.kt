@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -30,6 +31,9 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ai.monkos.idpass.data.Signal
@@ -88,10 +92,14 @@ private val DarkColors = darkColorScheme(
 
 @Composable
 fun IdpassTheme(content: @Composable () -> Unit) {
-    MaterialTheme(
-        colorScheme = DarkColors,
-        content = content,
-    )
+    val density = LocalDensity.current
+    val fixedDensity = Density(density.density, fontScale = 1f)
+    CompositionLocalProvider(LocalDensity provides fixedDensity) {
+        MaterialTheme(
+            colorScheme = DarkColors,
+            content = content,
+        )
+    }
 }
 
 // ─── Step labels (iOS SpecData.swift lines 573-578) ───
@@ -147,33 +155,35 @@ fun V1TopBar(
             ) {
                 Text(
                     text = "ID",
-                    fontSize = 15.sp,
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.Black,
-                    fontFamily = FontFamily.Default,
                     color = V1.text,
                 )
                 Text(
                     text = "PASS",
-                    fontSize = 15.sp,
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.Black,
-                    fontFamily = FontFamily.Default,
                     color = V1.accent,
                 )
             }
             Spacer(Modifier.weight(1f))
             Text(
                 text = "FREE",
-                fontSize = 9.sp,
-                fontWeight = FontWeight.ExtraBold,
-                fontFamily = FontFamily.Monospace,
+                fontSize = 11.sp,
+                fontWeight = FontWeight.Bold,
                 color = V1.accent,
-                letterSpacing = 1.2.sp,
+                letterSpacing = 1.sp,
                 modifier = Modifier
-                    .background(
-                        color = V1.accent.copy(alpha = 0.12f),
-                        shape = RoundedCornerShape(3.dp),
+                    .border(
+                        width = 1.dp,
+                        color = V1.accent.copy(alpha = 0.3f),
+                        shape = RoundedCornerShape(4.dp),
                     )
-                    .padding(horizontal = 7.dp, vertical = 3.dp),
+                    .background(
+                        color = V1.accent.copy(alpha = 0.08f),
+                        shape = RoundedCornerShape(4.dp),
+                    )
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
             )
         }
 
@@ -204,7 +214,7 @@ fun V1TopBar(
                     // Label
                     Text(
                         text = s.names[lang] ?: s.names["en"] ?: "",
-                        fontSize = 8.sp,
+                        fontSize = 9.sp,
                         fontWeight = FontWeight.Bold,
                         fontFamily = FontFamily.Monospace,
                         color = if (active) V1.accent else V1.dim,
@@ -363,37 +373,36 @@ fun MetricBox(
     modifier: Modifier = Modifier,
 ) {
     val c = if (active) signal.color() else V1.dim
-    Column(
+    Row(
         modifier = modifier
             .background(
                 color = if (active) V1.card else Color(0xFF0A0F18),
-                shape = RoundedCornerShape(8.dp),
+                shape = RoundedCornerShape(5.dp),
             )
             .border(
                 width = 1.dp,
                 color = if (active) c.copy(alpha = 0.3f) else V1.border,
-                shape = RoundedCornerShape(8.dp),
+                shape = RoundedCornerShape(5.dp),
             )
-            .padding(vertical = 7.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
+            .padding(horizontal = 6.dp, vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center,
     ) {
-        // Label
         Text(
             text = label.uppercase(),
-            fontSize = 8.sp,
+            fontSize = 7.sp,
             fontWeight = FontWeight.Bold,
             fontFamily = FontFamily.Monospace,
             color = V1.muted,
         )
-        Spacer(Modifier.height(1.dp))
-        // Value + unit
+        Spacer(Modifier.width(4.dp))
         Row(
             verticalAlignment = Alignment.Bottom,
             horizontalArrangement = Arrangement.spacedBy(1.dp),
         ) {
             Text(
                 text = if (active) value else "—",
-                fontSize = 12.sp,
+                fontSize = 11.sp,
                 fontWeight = FontWeight.ExtraBold,
                 fontFamily = FontFamily.Monospace,
                 color = c,

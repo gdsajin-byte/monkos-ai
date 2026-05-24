@@ -41,14 +41,33 @@ class BackgroundRemover {
      * Request model download if not already available.
      * Call this early (e.g. on app start or before first use) so segmentation is ready.
      */
-    suspend fun ensureModelReady(context: Context) {
-        suspendCancellableCoroutine { cont ->
-            val moduleInstallClient = ModuleInstall.getClient(context)
-            val request = ModuleInstallRequest.newBuilder()
-                .addApi(SubjectSegmentation.getClient(SubjectSegmenterOptions.Builder().build()))
-                .build()
+    suspend fun ensureModelReady(context: Context): Boolean {
+        val moduleInstallClient = ModuleInstall.getClient(context)
+        val testClient = SubjectSegmentation.getClient(SubjectSegmenterOptions.Builder().build())
+
+        // First check if already available
+        val available = suspendCancellableCoroutine { cont ->
+            moduleInstallClient.areModulesAvailable(testClient)
+                .addOnSuccessListener { cont.resume(it.areModulesAvailable()) }
+                .addOnFailureListener { cont.resume(false) }
+        }
+        if (available) return true
+
+        // Request install and wait
+        val request = ModuleInstallRequest.newBuilder()
+            .addApi(testClient)
+            .build()
+        val installed = suspendCancellableCoroutine { cont ->
             moduleInstallClient.installModules(request)
                 .addOnSuccessListener { cont.resume(true) }
+                .addOnFailureListener { cont.resume(false) }
+        }
+        if (!installed) return false
+
+        // Verify actually available after install
+        return suspendCancellableCoroutine { cont ->
+            moduleInstallClient.areModulesAvailable(testClient)
+                .addOnSuccessListener { cont.resume(it.areModulesAvailable()) }
                 .addOnFailureListener { cont.resume(false) }
         }
     }
@@ -63,11 +82,19 @@ class BackgroundRemover {
      * @return Composited bitmap with new background, or null on failure
      */
     suspend fun removeBackground(bitmap: Bitmap, bgColorHex: String): Bitmap? {
-        // Check if we can reuse the cached mask
+        return try {
+            removeBackgroundInternal(bitmap, bgColorHex)
+        } catch (_: Exception) {
+            null
+        } catch (_: Error) {
+            null
+        }
+    }
+
+    private suspend fun removeBackgroundInternal(bitmap: Bitmap, bgColorHex: String): Bitmap? {
         val isSameImage = cachedOriginal === bitmap && cachedMask != null
 
         if (!isSameImage) {
-            // Run segmentation
             val inputImage = InputImage.fromBitmap(bitmap, 0)
             val result: SubjectSegmentationResult? = suspendCancellableCoroutine { cont ->
                 segmenter.process(inputImage)
@@ -84,7 +111,6 @@ class BackgroundRemover {
             cachedOriginal = bitmap
         }
 
-        // Composite with the new background color
         val mask = cachedMask ?: return null
         return compositeOnBackground(bitmap, mask, cachedMaskWidth, cachedMaskHeight, bgColorHex)
     }

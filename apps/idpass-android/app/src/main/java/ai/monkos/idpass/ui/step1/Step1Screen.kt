@@ -43,6 +43,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ai.monkos.idpass.data.ContinentGroup
@@ -375,7 +376,7 @@ private fun ContinentCard(
         // Continent name bottom-left
         Text(
             text = (group.names["en"] ?: "").uppercase(),
-            color = V1.accent.copy(alpha = 0.9f),
+            color = Color.White,
             fontSize = 18.sp,
             fontWeight = FontWeight.Black,
             letterSpacing = 1.sp,

@@ -8,9 +8,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -42,6 +44,9 @@ import ai.monkos.idpass.ui.theme.AccentButton
 import ai.monkos.idpass.ui.theme.BackButton
 import ai.monkos.idpass.ui.theme.SpecBadge
 import ai.monkos.idpass.ui.theme.V1
+import ai.monkos.idpass.ui.theme.V1TopBar
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -61,12 +66,18 @@ fun Step3Screen(
     var isProcessing by remember { mutableStateOf(false) }
     var selectedBgIdx by remember { mutableIntStateOf(0) }
 
+    val context = LocalContext.current
     val bgRemover = remember { BackgroundRemover() }
+    var modelReady by remember { mutableStateOf(false) }
 
     fun runBgRemoval(hexColor: String) {
         val input = vm.flow.inputBitmap ?: return
         isProcessing = true
         scope.launch {
+            if (!modelReady) {
+                bgRemover.ensureModelReady(context)
+                modelReady = true
+            }
             val result = withContext(Dispatchers.Default) {
                 bgRemover.removeBackground(input, hexColor)
             }
@@ -76,11 +87,8 @@ fun Step3Screen(
         }
     }
 
-    val hasRun = remember { mutableStateOf(false) }
-    if (!hasRun.value && vm.flow.bgRemovedBitmap == null) {
-        hasRun.value = true
-        runBgRemoval(bgOptions[0].hex)
-    }
+    // ML Kit Subject Segmentation beta — disabled due to SIGBUS crash on Galaxy devices
+    // LaunchedEffect(Unit) { modelReady = bgRemover.ensureModelReady(context) }
 
     val displayBitmap = vm.flow.bgRemovedBitmap ?: vm.flow.inputBitmap
     val selectedBgColor = V1.parseHexColor(bgOptions.getOrNull(selectedBgIdx)?.hex ?: "FFFFFF")
@@ -90,6 +98,8 @@ fun Step3Screen(
             .fillMaxSize()
             .background(V1.bg),
     ) {
+        V1TopBar(currentStep = 3, onBack = onBack, onHome = onHome)
+
         // TopBar: BackButton + SpecBadge + Spacer
         Row(
             modifier = Modifier
@@ -113,7 +123,8 @@ fun Step3Screen(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp),
+                .padding(horizontal = 20.dp)
+                .padding(bottom = 4.dp),
         ) {
             Text(
                 text = tr("bg_remove", lang),
@@ -128,13 +139,13 @@ fun Step3Screen(
             )
         }
 
-        // Image preview with bgColor fill
+        // Image preview — 1:1 fixed container, photo centered with bgColor fill
         Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
                 .padding(horizontal = 20.dp)
-                .padding(top = 14.dp)
+                .padding(top = 10.dp)
+                .fillMaxWidth()
+                .aspectRatio(1f)
                 .clip(RoundedCornerShape(12.dp))
                 .background(selectedBgColor)
                 .border(1.dp, V1.border, RoundedCornerShape(12.dp)),
@@ -170,7 +181,6 @@ fun Step3Screen(
                         .weight(1f)
                         .clickable {
                             selectedBgIdx = index
-                            runBgRemoval(option.hex)
                         },
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
@@ -208,9 +218,10 @@ fun Step3Screen(
         AccentButton(
             text = "${tr("bg_remove", lang)} →",
             onClick = {
-                if (vm.flow.bgRemovedBitmap == null) {
-                    vm.flow.bgRemovedBitmap = vm.flow.inputBitmap
-                }
+                val hex = bgOptions.getOrNull(selectedBgIdx)?.hex ?: "FFFFFF"
+                val input = vm.flow.inputBitmap ?: return@AccentButton
+                vm.flow.bgRemovedBitmap = input
+                vm.flow.bgColorHex = hex
                 onNext()
             },
             enabled = !isProcessing,
