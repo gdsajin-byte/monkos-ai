@@ -125,3 +125,7 @@ MEMORY.md
 **/build/
 **/local.properties
 *.tgz
+
+# Android keystore
+*.keystore
+*.jks

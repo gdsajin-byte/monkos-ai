@@ -16,9 +16,19 @@ android {
         versionName = "1.0.0"
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file("../idpass-release.keystore")
+            storePassword = "123456"
+            keyAlias = "idpass"
+            keyPassword = "123456"
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 
