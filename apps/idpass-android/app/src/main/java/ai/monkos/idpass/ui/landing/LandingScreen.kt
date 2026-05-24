@@ -159,34 +159,12 @@ fun LandingScreen(
                 modifier = Modifier.padding(top = 3.dp),
             )
 
-            // Placeholder for PhoneDemoView
+            // PhoneDemoView — iOS 정본 포팅
             Box(
                 modifier = Modifier
-                    .padding(top = 20.dp, bottom = 12.dp)
-                    .widthIn(max = 260.dp)
-                    .fillMaxWidth()
-                    .aspectRatio(1f)
-                    .shadow(
-                        elevation = 40.dp,
-                        spotColor = V1.accent.copy(alpha = 0.12f),
-                        shape = RoundedCornerShape(12.dp),
-                    )
-                    .border(
-                        width = 2.dp,
-                        color = V1.accent.copy(alpha = 0.3f),
-                        shape = RoundedCornerShape(12.dp),
-                    )
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(V1.card),
-                contentAlignment = Alignment.Center,
+                    .padding(top = 20.dp, bottom = 12.dp),
             ) {
-                Text(
-                    text = "DEMO",
-                    color = V1.dim,
-                    fontSize = 13.sp,
-                    fontFamily = FontFamily.Monospace,
-                    fontWeight = FontWeight.Bold,
-                )
+                PhoneDemoView()
             }
         }
 
