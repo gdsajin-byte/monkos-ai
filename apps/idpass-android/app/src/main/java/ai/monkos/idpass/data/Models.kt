@@ -151,11 +151,11 @@ data class BgOption(
 
 val bgOptions: List<BgOption> = listOf(
     BgOption("white", "FFFFFF", mapOf("ko" to "백색", "en" to "White", "ja" to "白")),
-    BgOption("offw", "FAF8F5", mapOf("ko" to "오프화이트", "en" to "Off-white", "ja" to "オフホワイト")),
+    BgOption("offw", "F5F5F5", mapOf("ko" to "오프화이트", "en" to "Off-white", "ja" to "オフホワイト")),
     BgOption("ivory", "FFFFF0", mapOf("ko" to "미색", "en" to "Ivory", "ja" to "アイボリー")),
     BgOption("grey", "E0E0E0", mapOf("ko" to "회색", "en" to "Grey", "ja" to "グレー")),
     BgOption("ltblue", "7BA3C9", mapOf("ko" to "연파랑", "en" to "Light Blue", "ja" to "淡い青")),
-    BgOption("blue", "4A7EB5", mapOf("ko" to "블루", "en" to "Blue", "ja" to "ブルー")),
+    BgOption("blue", "7BA3C9", mapOf("ko" to "블루", "en" to "Blue", "ja" to "ブルー")),
 )
 
 val continentOrder: List<String> = listOf(
