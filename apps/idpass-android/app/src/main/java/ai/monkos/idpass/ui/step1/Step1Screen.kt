@@ -96,14 +96,14 @@ fun Step1Screen(
             Text(
                 text = tr("select_country", lang),
                 color = V1.text,
-                fontSize = 24.sp,
+                fontSize = 22.sp,
                 fontWeight = FontWeight.Black,
             )
             Spacer(Modifier.height(3.dp))
             Text(
                 text = tr("select_desc", lang),
                 color = V1.muted,
-                fontSize = 12.sp,
+                fontSize = 11.sp,
             )
         }
 
@@ -157,7 +157,7 @@ fun Step1Screen(
             ) {
                 Text(
                     text = "🔍",
-                    fontSize = 14.sp,
+                    fontSize = 13.sp,
                     color = V1.dim,
                 )
                 Spacer(Modifier.width(8.dp))
@@ -167,7 +167,7 @@ fun Step1Screen(
                     modifier = Modifier.weight(1f),
                     textStyle = TextStyle(
                         color = V1.text,
-                        fontSize = 12.sp,
+                        fontSize = 11.sp,
                     ),
                     singleLine = true,
                     cursorBrush = SolidColor(V1.accent),
@@ -176,7 +176,7 @@ fun Step1Screen(
                             Text(
                                 text = tr("search", lang),
                                 color = V1.dim,
-                                fontSize = 12.sp,
+                                fontSize = 11.sp,
                             )
                         }
                         inner()
@@ -249,7 +249,7 @@ fun Step1Screen(
                             Text(
                                 text = group.name(lang),
                                 color = V1.text,
-                                fontSize = 13.sp,
+                                fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold,
                             )
                         }
@@ -376,7 +376,7 @@ private fun ContinentCard(
         Text(
             text = (group.names["en"] ?: "").uppercase(),
             color = V1.accent.copy(alpha = 0.9f),
-            fontSize = 20.sp,
+            fontSize = 18.sp,
             fontWeight = FontWeight.Black,
             letterSpacing = 1.sp,
             modifier = Modifier.padding(12.dp),
@@ -415,7 +415,16 @@ private fun TwoColumnCountryCards(
                             firstDoc = firstDoc,
                             lang = lang,
                             isSelected = sel,
-                            onClick = { onCountryClick(c) },
+                            onClick = {
+                                val exactMatch = matchDocs.filter { it.type == purpose }
+                                if (exactMatch.size == 1) {
+                                    onDocSelect(c, exactMatch.first())
+                                } else if (matchDocs.size == 1) {
+                                    onDocSelect(c, matchDocs.first())
+                                } else {
+                                    onCountryClick(c)
+                                }
+                            },
                         )
                         // Expanded doc rows
                         AnimatedVisibility(visible = expandedCountryId == c.id && matchDocs.size > 0) {
@@ -467,13 +476,13 @@ private fun CountryCard(
             .padding(horizontal = 10.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(text = country.flag, fontSize = 24.sp)
+        Text(text = country.flag, fontSize = 22.sp)
         Spacer(Modifier.width(8.dp))
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = country.name(lang),
                 color = V1.text,
-                fontSize = 12.sp,
+                fontSize = 11.sp,
                 fontWeight = FontWeight.Bold,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -516,7 +525,7 @@ private fun DocRow(
             Text(
                 text = doc.name(lang),
                 color = V1.text,
-                fontSize = 12.sp,
+                fontSize = 11.sp,
                 fontWeight = FontWeight.Bold,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -581,7 +590,7 @@ private fun CustomInputSection(
                         modifier = Modifier.width(50.dp),
                         textStyle = TextStyle(
                             color = V1.text,
-                            fontSize = 16.sp,
+                            fontSize = 15.sp,
                             fontWeight = FontWeight.Black,
                             fontFamily = FontFamily.Monospace,
                         ),
@@ -598,7 +607,7 @@ private fun CustomInputSection(
             Text(
                 text = "×",
                 color = V1.dim,
-                fontSize = 20.sp,
+                fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(top = 16.dp),
             )
@@ -626,7 +635,7 @@ private fun CustomInputSection(
                         modifier = Modifier.width(50.dp),
                         textStyle = TextStyle(
                             color = V1.text,
-                            fontSize = 16.sp,
+                            fontSize = 15.sp,
                             fontWeight = FontWeight.Black,
                             fontFamily = FontFamily.Monospace,
                         ),
@@ -676,7 +685,7 @@ private fun CustomInputSection(
                         Text(
                             text = "$dpi",
                             color = if (sel) Color(0xFF05080E) else V1.muted,
-                            fontSize = 13.sp,
+                            fontSize = 12.sp,
                             fontWeight = FontWeight.Black,
                             fontFamily = FontFamily.Monospace,
                         )
@@ -710,7 +719,7 @@ private fun CustomInputSection(
             Text(
                 text = "$cpx × $cpy px",
                 color = V1.accent,
-                fontSize = 12.sp,
+                fontSize = 11.sp,
                 fontWeight = FontWeight.Bold,
                 fontFamily = FontFamily.Monospace,
             )

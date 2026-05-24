@@ -98,7 +98,7 @@ fun ThanksScreen(
                     withStyle(SpanStyle(color = V1.text)) { append("ID") }
                     withStyle(SpanStyle(color = V1.accent)) { append("PASS") }
                 },
-                fontSize = 16.sp,
+                fontSize = 15.sp,
                 fontWeight = FontWeight.Black,
             )
             Spacer(Modifier.weight(1f))
@@ -145,7 +145,7 @@ fun ThanksScreen(
         Text(
             text = tr("saved", lang),
             color = V1.text,
-            fontSize = 22.sp,
+            fontSize = 20.sp,
             fontWeight = FontWeight.Black,
         )
 
@@ -209,19 +209,19 @@ fun ThanksScreen(
                     .padding(horizontal = 16.dp, vertical = 14.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(text = "🖨️", fontSize = 14.sp)
+                Text(text = "🖨️", fontSize = 13.sp)
                 Spacer(Modifier.width(8.dp))
                 Text(
                     text = "증명사진 인화하기",
                     color = V1.text,
-                    fontSize = 13.sp,
+                    fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
                 )
                 Spacer(Modifier.weight(1f))
                 Text(
                     text = "→",
                     color = V1.text,
-                    fontSize = 14.sp,
+                    fontSize = 13.sp,
                     fontWeight = FontWeight.Bold,
                 )
             }
@@ -242,7 +242,7 @@ fun ThanksScreen(
             Text(
                 text = "↻ ${tr("crop_another", lang)}",
                 color = V1.text,
-                fontSize = 12.sp,
+                fontSize = 11.sp,
                 fontWeight = FontWeight.Bold,
             )
         }
@@ -411,7 +411,7 @@ private fun BeforeAfterSlider(
                 Text(
                     text = "‹›",
                     color = Color(0xFF1E1B4B),
-                    fontSize = 14.sp,
+                    fontSize = 13.sp,
                     fontWeight = FontWeight.Black,
                     fontFamily = FontFamily.Monospace,
                 )
@@ -496,7 +496,7 @@ private fun BeforeAfterSlider(
                         append(tr("slider_accent", lang))
                     }
                 },
-                fontSize = 24.sp,
+                fontSize = 22.sp,
                 fontWeight = FontWeight.Black,
                 maxLines = 2,
             )
@@ -529,14 +529,14 @@ private fun BeforeAfterSlider(
                     Text(
                         text = tr("slider_cta", lang),
                         color = Color(0xFF1E1B4B),
-                        fontSize = 13.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.Black,
                     )
                     Spacer(Modifier.width(7.dp))
                     Text(
                         text = "→",
                         color = Color(0xFF1E1B4B),
-                        fontSize = 13.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.Black,
                     )
                 }
@@ -567,7 +567,7 @@ private fun ContactRow(
         // Telegram/email icon placeholder using emoji
         Text(
             text = if (label == "Telegram") "✈" else "✉",
-            fontSize = 13.sp,
+            fontSize = 12.sp,
             color = V1.accent,
         )
         Spacer(Modifier.width(10.dp))

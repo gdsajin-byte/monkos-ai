@@ -340,7 +340,7 @@ fun Step4Screen(
                         // Face mm label (monospaced 10sp bold)
                         val facePaint = android.graphics.Paint().apply {
                             color = faceSignalColor.toArgb()
-                            textSize = 28f  // ~10sp at typical density
+                            textSize = 26f  // ~9sp at typical density
                             typeface = android.graphics.Typeface.MONOSPACE
                             isFakeBoldText = true
                             textAlign = android.graphics.Paint.Align.CENTER
@@ -348,7 +348,7 @@ fun Step4Screen(
                         }
                         val faceRangePaint = android.graphics.Paint().apply {
                             color = faceSignalColor.copy(alpha = 0.7f).toArgb()
-                            textSize = 20f  // ~7sp
+                            textSize = 18f  // ~6sp
                             typeface = android.graphics.Typeface.MONOSPACE
                             textAlign = android.graphics.Paint.Align.CENTER
                             isAntiAlias = true
@@ -383,7 +383,7 @@ fun Step4Screen(
                         // CROWN label (monospaced 7sp, left side)
                         val crownLabelPaint = android.graphics.Paint().apply {
                             color = faceSignalColor.copy(alpha = 0.8f).toArgb()
-                            textSize = 20f  // ~7sp
+                            textSize = 18f  // ~6sp
                             typeface = android.graphics.Typeface.MONOSPACE
                             isFakeBoldText = true
                             isAntiAlias = true
@@ -393,7 +393,7 @@ fun Step4Screen(
                         // CHIN label (monospaced 7sp, left side)
                         val chinLabelPaint = android.graphics.Paint().apply {
                             color = Color.White.copy(alpha = 0.5f).toArgb()
-                            textSize = 20f
+                            textSize = 18f
                             typeface = android.graphics.Typeface.MONOSPACE
                             isFakeBoldText = true
                             isAntiAlias = true
@@ -404,7 +404,7 @@ fun Step4Screen(
                         val eyePctText = if (m != null) "EYE %.0f%%".format(m.eyePct) else "EYE"
                         val eyeLabelPaint = android.graphics.Paint().apply {
                             color = eyeSignalColor.copy(alpha = 0.8f).toArgb()
-                            textSize = 20f
+                            textSize = 18f
                             typeface = android.graphics.Typeface.MONOSPACE
                             isFakeBoldText = true
                             textAlign = android.graphics.Paint.Align.RIGHT
@@ -513,7 +513,7 @@ fun Step4Screen(
         ) {
             Text(
                 text = "−", // minus sign
-                fontSize = 14.sp,
+                fontSize = 13.sp,
                 fontWeight = FontWeight.Bold,
                 fontFamily = FontFamily.Monospace,
                 color = V1.muted,
@@ -545,7 +545,7 @@ fun Step4Screen(
             )
             Text(
                 text = "+",
-                fontSize = 14.sp,
+                fontSize = 13.sp,
                 fontWeight = FontWeight.Bold,
                 fontFamily = FontFamily.Monospace,
                 color = V1.muted,
@@ -590,7 +590,7 @@ fun Step4Screen(
             ) {
                 Text(
                     text = tr("reset_crop", lang),
-                    fontSize = 12.sp,
+                    fontSize = 11.sp,
                     fontWeight = FontWeight.ExtraBold,
                     color = V1.accent,
                 )

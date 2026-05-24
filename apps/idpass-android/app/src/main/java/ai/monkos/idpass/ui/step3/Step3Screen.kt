@@ -118,13 +118,13 @@ fun Step3Screen(
             Text(
                 text = tr("bg_remove", lang),
                 color = V1.text,
-                fontSize = 22.sp,
+                fontSize = 20.sp,
                 fontWeight = FontWeight.Black,
             )
             Text(
                 text = tr("bg_desc", lang),
                 color = V1.muted,
-                fontSize = 12.sp,
+                fontSize = 11.sp,
             )
         }
 
@@ -237,7 +237,7 @@ fun Step3Screen(
                 Text(
                     text = "MONKOS WORKING",
                     color = V1.accent,
-                    fontSize = 12.sp,
+                    fontSize = 11.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily.Monospace,
                     letterSpacing = 1.sp,

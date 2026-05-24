@@ -123,14 +123,14 @@ fun LandingScreen(
                 Text(
                     text = "ID",
                     color = V1.text,
-                    fontSize = 54.sp,
+                    fontSize = 52.sp,
                     fontWeight = FontWeight.Black,
                     letterSpacing = 3.sp,
                 )
                 Text(
                     text = "PASS",
                     color = V1.accent,
-                    fontSize = 54.sp,
+                    fontSize = 52.sp,
                     fontWeight = FontWeight.Black,
                     letterSpacing = 3.sp,
                 )
@@ -146,7 +146,7 @@ fun LandingScreen(
                         append(tr("landing_tagline_accent", lang))
                     }
                 },
-                fontSize = 18.sp,
+                fontSize = 17.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(top = 8.dp),
             )
@@ -183,7 +183,7 @@ fun LandingScreen(
                 Text(
                     text = "DEMO",
                     color = V1.dim,
-                    fontSize = 14.sp,
+                    fontSize = 13.sp,
                     fontFamily = FontFamily.Monospace,
                     fontWeight = FontWeight.Bold,
                 )
@@ -352,7 +352,7 @@ private fun ServiceCardItem(
             Text(
                 text = if (lang == "en") card.enName else card.koName,
                 color = V1.text,
-                fontSize = 18.sp,
+                fontSize = 17.sp,
                 fontWeight = FontWeight.Black,
             )
             Spacer(Modifier.height(2.dp))

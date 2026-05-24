@@ -147,14 +147,14 @@ fun V1TopBar(
             ) {
                 Text(
                     text = "ID",
-                    fontSize = 16.sp,
+                    fontSize = 15.sp,
                     fontWeight = FontWeight.Black,
                     fontFamily = FontFamily.Default,
                     color = V1.text,
                 )
                 Text(
                     text = "PASS",
-                    fontSize = 16.sp,
+                    fontSize = 15.sp,
                     fontWeight = FontWeight.Black,
                     fontFamily = FontFamily.Default,
                     color = V1.accent,
@@ -261,7 +261,7 @@ fun AccentButton(
     ) {
         Text(
             text = title,
-            fontSize = 14.sp,
+            fontSize = 13.sp,
             fontWeight = FontWeight.ExtraBold,
         )
     }
@@ -296,7 +296,7 @@ fun BackButton(
     ) {
         Text(
             text = "‹", // ‹
-            fontSize = 18.sp,
+            fontSize = 14.sp,
             fontWeight = FontWeight.Medium,
             color = V1.muted,
         )
@@ -335,7 +335,7 @@ fun SpecBadge(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-        Text(text = flag, fontSize = 12.sp)
+        Text(text = flag, fontSize = 11.sp)
         Text(
             text = if (country.isNotEmpty()) "$country · $doc" else doc,
             fontSize = 10.sp,
@@ -393,7 +393,7 @@ fun MetricBox(
         ) {
             Text(
                 text = if (active) value else "—",
-                fontSize = 13.sp,
+                fontSize = 12.sp,
                 fontWeight = FontWeight.ExtraBold,
                 fontFamily = FontFamily.Monospace,
                 color = c,

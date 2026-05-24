@@ -66,8 +66,8 @@ private val i18nStrings: Map<String, Map<String, String>> = mapOf(
         "coach_ok" to "규격에 적합합니다! 다운로드하세요.",
         "coach_small" to "얼굴이 작습니다. 확대하세요.",
         "coach_large" to "얼굴이 큽니다. 축소하세요.",
-        "coach_eye_low" to "눈 위치가 낮습니다.",
-        "coach_eye_high" to "눈 위치가 높습니다.",
+        "coach_eye_low" to "눈 위치 {v}% — 허용(40~48%) 미달. 아래로 이동하세요.",
+        "coach_eye_high" to "눈 위치 {v}% — 허용(40~48%) 초과. 위로 이동하세요.",
         "coach_center" to "얼굴을 중앙에 맞추세요.",
         "coach_coverage" to "사진이 프레임을 다 채우지 못합니다.",
 
@@ -188,8 +188,8 @@ private val i18nStrings: Map<String, Map<String, String>> = mapOf(
         "coach_ok" to "Meets specs! Download now.",
         "coach_small" to "Face too small. Zoom in.",
         "coach_large" to "Face too large. Zoom out.",
-        "coach_eye_low" to "Eyes too low.",
-        "coach_eye_high" to "Eyes too high.",
+        "coach_eye_low" to "Eye position {v}% — below 40~48%. Move down.",
+        "coach_eye_high" to "Eye position {v}% — above 40~48%. Move up.",
         "coach_center" to "Center the face.",
         "coach_coverage" to "Photo does not fill the frame.",
 
@@ -310,8 +310,8 @@ private val i18nStrings: Map<String, Map<String, String>> = mapOf(
         "coach_ok" to "規格に適合！ダウンロードしてください。",
         "coach_small" to "顔が小さすぎます。拡大してください。",
         "coach_large" to "顔が大きすぎます。縮小してください。",
-        "coach_eye_low" to "目の位置が低い。",
-        "coach_eye_high" to "目の位置が高い。",
+        "coach_eye_low" to "目の位置 {v}% — 許容(40~48%)未満。下へ移動。",
+        "coach_eye_high" to "目の位置 {v}% — 許容(40~48%)超過。上へ移動。",
         "coach_center" to "顔を中央に合わせてください。",
         "coach_coverage" to "写真がフレームを埋めていません。",
 

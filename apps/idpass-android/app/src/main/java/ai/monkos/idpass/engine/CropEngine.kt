@@ -222,10 +222,10 @@ object CropEngine {
             return tr("coach_large", lang)
         }
         if (metrics.eyeRatio < 0.40f) {
-            return tr("coach_eye_low", lang)
+            return tr("coach_eye_low", lang).replace("{v}", "%.0f".format(metrics.eyePct))
         }
         if (metrics.eyeRatio > 0.48f) {
-            return tr("coach_eye_high", lang)
+            return tr("coach_eye_high", lang).replace("{v}", "%.0f".format(metrics.eyePct))
         }
         if (metrics.centerOffsetMm >= 1.5f) {
             return tr("coach_center", lang)

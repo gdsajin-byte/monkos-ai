@@ -158,14 +158,14 @@ fun Step2Screen(
             Text(
                 text = tr("upload_photo", lang),
                 color = V1.text,
-                fontSize = 22.sp,
+                fontSize = 20.sp,
                 fontWeight = FontWeight.Black,
             )
             Spacer(Modifier.height(3.dp))
             Text(
                 text = tr("upload_desc", lang),
                 color = V1.muted,
-                fontSize = 12.sp,
+                fontSize = 11.sp,
             )
         }
 
@@ -325,7 +325,7 @@ fun Step2Screen(
                                 } else {
                                     Text(
                                         text = "👤",
-                                        fontSize = 60.sp,
+                                        fontSize = 58.sp,
                                         color = V1.accent.copy(alpha = 0.3f),
                                     )
                                 }
@@ -440,7 +440,7 @@ fun Step2Screen(
                         Text(
                             text = "${doc.size} · ${tr("face_size", lang)} ${spec.faceMin.toInt()}–${spec.faceMax.toInt()}mm",
                             color = V1.accent,
-                            fontSize = 13.sp,
+                            fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
                         )
                         Spacer(Modifier.height(2.dp))
@@ -566,7 +566,7 @@ fun Step2Screen(
                 Text(
                     text = "MONKOS WORKING",
                     color = V1.accent,
-                    fontSize = 12.sp,
+                    fontSize = 11.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily.Monospace,
                 )

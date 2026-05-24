@@ -108,7 +108,7 @@ fun Step5Screen(
             Text(
                 text = "✓",
                 color = V1.accent,
-                fontSize = 28.sp,
+                fontSize = 26.sp,
             )
         }
 
@@ -117,7 +117,7 @@ fun Step5Screen(
         Text(
             text = tr("done", lang),
             color = V1.text,
-            fontSize = 22.sp,
+            fontSize = 20.sp,
             fontWeight = FontWeight.Black,
         )
 
@@ -251,7 +251,7 @@ fun Step5Screen(
             Text(
                 text = "↻ ${tr("crop_another", lang)}",
                 color = V1.muted,
-                fontSize = 12.sp,
+                fontSize = 11.sp,
             )
         }
     }
