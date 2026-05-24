@@ -58,9 +58,11 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
 
     implementation("com.google.mlkit:face-detection:16.1.7")
-    implementation("com.google.android.gms:play-services-mlkit-subject-segmentation:16.0.0-beta1")
+    implementation("com.google.mlkit:segmentation-selfie:16.0.0-beta6")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
     implementation("io.coil-kt:coil-compose:2.7.0")
     implementation("androidx.exifinterface:exifinterface:1.3.7")
+
+    implementation("com.microsoft.onnxruntime:onnxruntime-android:1.17.0")
 }

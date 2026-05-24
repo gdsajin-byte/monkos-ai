@@ -38,7 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ai.monkos.idpass.data.bgOptions
 import ai.monkos.idpass.data.tr
-import ai.monkos.idpass.engine.BackgroundRemover
+import ai.monkos.idpass.engine.SelfieSegmenter
 import ai.monkos.idpass.ui.navigation.CropFlowViewModel
 import ai.monkos.idpass.ui.theme.AccentButton
 import ai.monkos.idpass.ui.theme.BackButton
@@ -66,29 +66,7 @@ fun Step3Screen(
     var isProcessing by remember { mutableStateOf(false) }
     var selectedBgIdx by remember { mutableIntStateOf(0) }
 
-    val context = LocalContext.current
-    val bgRemover = remember { BackgroundRemover() }
-    var modelReady by remember { mutableStateOf(false) }
-
-    fun runBgRemoval(hexColor: String) {
-        val input = vm.flow.inputBitmap ?: return
-        isProcessing = true
-        scope.launch {
-            if (!modelReady) {
-                bgRemover.ensureModelReady(context)
-                modelReady = true
-            }
-            val result = withContext(Dispatchers.Default) {
-                bgRemover.removeBackground(input, hexColor)
-            }
-            vm.flow.bgRemovedBitmap = result
-            vm.flow.bgColorHex = hexColor
-            isProcessing = false
-        }
-    }
-
-    // ML Kit Subject Segmentation beta — disabled due to SIGBUS crash on Galaxy devices
-    // LaunchedEffect(Unit) { modelReady = bgRemover.ensureModelReady(context) }
+    val selfieSegmenter = remember { SelfieSegmenter() }
 
     val displayBitmap = vm.flow.bgRemovedBitmap ?: vm.flow.inputBitmap
     val selectedBgColor = V1.parseHexColor(bgOptions.getOrNull(selectedBgIdx)?.hex ?: "FFFFFF")
@@ -220,9 +198,21 @@ fun Step3Screen(
             onClick = {
                 val hex = bgOptions.getOrNull(selectedBgIdx)?.hex ?: "FFFFFF"
                 val input = vm.flow.inputBitmap ?: return@AccentButton
-                vm.flow.bgRemovedBitmap = input
-                vm.flow.bgColorHex = hex
-                onNext()
+                isProcessing = true
+                scope.launch {
+                    val result = withContext(Dispatchers.Default) {
+                        try {
+                            selfieSegmenter.removeBackground(input, hex)
+                        } catch (e: Exception) {
+                            android.util.Log.e("IDPASS", "Selfie segmentation failed", e)
+                            null
+                        }
+                    }
+                    vm.flow.bgRemovedBitmap = result ?: input
+                    vm.flow.bgColorHex = hex
+                    isProcessing = false
+                    onNext()
+                }
             },
             enabled = !isProcessing,
             modifier = Modifier
