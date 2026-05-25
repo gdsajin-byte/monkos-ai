@@ -72,7 +72,7 @@ status: 현행
 |---|--------|------|------|
 | 1 | GEMINI_API_KEY | Gemini API | monkos_AI와 동일값 추정 |
 
-### E. Cloudflare Dashboard (monk-kr Pages — 12개)
+### E. Cloudflare Dashboard (monk-kr Pages — 13개)
 
 | # | 변수명 | 용도 |
 |---|--------|------|
@@ -88,12 +88,13 @@ status: 현행
 | 10 | TELEGRAM_BOT_TOKEN | 텔레그램 봇 |
 | 11 | ADMIN_CHAT_ID | 관리자 채팅 ID |
 | 12 | TX_API_KEY | D1 거래 원장 |
+| 13 | CHAT_API_KEY | 챗봇 Workers API 인증 (monkos.ai→Workers 서비스 간 호출) | ⭐ 2026-05-25 추가
 
 ### F. Cloud Run 환경변수 (deploy.sh 경유)
 
 | 서비스 | 주입 변수 | deploy.sh |
 |--------|----------|-----------|
-| monkos-portal | PROJECT_ID, LOCATION, GCS_BUCKET, ADMIN_UIDS + .env 17개 | monkos_AI/portal/deploy.sh |
+| monkos-portal | PROJECT_ID, LOCATION, GCS_BUCKET, ADMIN_UIDS + .env 17개 + **CHAT_WORKERS_URL, CHAT_API_KEY** | monkos_AI/portal/deploy.sh |
 | monkos-idphoto-kr | PROJECT_ID, LOCATION, GCS_BUCKET | monkos_AI/idphoto-kr/deploy.sh |
 | monkos-idphoto-jp | PROJECT_ID, LOCATION, GCS_BUCKET | monkos_AI/idphoto-jp/deploy.sh |
 | monkos-studio | (확인 필요) | monkos_AI/studio/deploy.sh |

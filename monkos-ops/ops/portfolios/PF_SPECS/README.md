@@ -297,6 +297,10 @@ SEO 콘텐츠가 있는 문서 → 풀 페이지 (FAQ + 반려사유 + 촬영가
 | 05/20 | 막내1 | D1 IDPASS 스키마 + 데이터 마이그레이션 (202국, 112문서, 5테이블) | seed.sql, migrate-specs.js | ✅ |
 | 05/22 | 쌍아 | **PF_SPECS 신설** — 9개 언어 × 320문서 = 4,761 페이지 목표. 단일 정본 구조 + 4Phase 로드맵 | 본 문서 | ✅ |
 | 05/22 | 막내3 | **규격 다이어그램 SVG→실 가이드 이미지 교체** — 25장 WebP(600px, 16~21KB) + parseSizeMm 3패턴. 24/26건 매핑, 2건 SVG 폴백. Hero+O/X 영역 적용. 배포 완료 | render-specs.js + images/guides/ 25장 | ✅ |
+| 05/25 | 막내1 | **specs-data.json 445건 확장** — 기존 26건 보존 + 419건 추가 (countries.jsonl 기반). 변환 스크립트 작성 | scripts/convert-specs-data.js, specs-data.json (445건) | ✅ |
+| 05/25 | 쌍아 | **URL 스키마 확정: 용도→국가** — `/specs/:type/:country` 구조. IDPASS 앱과 동조 (용도 먼저). 기존 slug → 301 리다이렉트 | 설계서: ORDER_20260525_스펙스페이지_리빌드설계.md | ✅ |
+| 05/25 | 쌍아 | **15개 언어 확장 확정** — IDPASS 15개 언어와 동조 (기존 9개 → 15개). 445건 × 15언어 = 6,675 URL 목표 | 설계서 반영 | ✅ |
+| 05/25 | 쌍아 | **JSON-LD 3종 설계** — L1(CollectionPage) + L2(ItemList) + L3(Article+FAQPage+HowTo). 15개 언어 hreflang | 설계서 반영 | ✅ |
 
 ---
 
