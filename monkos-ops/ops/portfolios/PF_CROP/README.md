@@ -172,6 +172,8 @@ status: active
 | 05/24 | M4/쌍아 | **실기기(Galaxy M33) 테스트 — 12건 이슈 발견+수정** — ①fontScale 1.5 뻥튀기→IdpassTheme fontScale=1.0 고정 ②systemBarsPadding 미적용→추가 ③V1TopBar Step2~5 미표시→추가 ④대륙카드 텍스트 accent→흰색 ⑤Step3 자동배경제거→버튼 클릭 시만 ⑥연파랑 색상 7BA3C9→D6EAF8(iOS 정본) ⑦Step3 컨테이너 1:1 고정 ⑧Step4 뷰포트 높이 고정+가로 비율 축소 ⑨verticalScroll 제거(weight 무효 해소) ⑩MetricBox Column→Row 납작 ⑪브라질 경고 괄호 삭제 ⑫베트남 faceTarget 42 | 다수 파일 수정 | ✅ |
 | 05/24 | M4/쌍아 | **🔴 ML Kit Subject Segmentation SIGBUS 크래시 분석** — `mobile_bg_removal_v8.f16.tflite` 모델이 Exynos GPU에서 DEQUANTIZE 연산 실패. GPU→SIGBUS, CPU→정상. 랜덤 선택이라 코드 제어 불가 | logcat 분석 | 🔴 |
 | 05/24 | M4/쌍아 | **Android 배경제거 엔진 5종 실기기 비교** — ①ML Kit beta: SIGBUS ②ISNet small 42MB: 20초+형편없음 ③ISNet medium 84MB: 동일 ④ISNet 512px+NNAPI: 안따짐 ⑤MediaPipe Selfie Seg: 2초+안정+중간품질. **Selfie Seg이 유일하게 동작하나 출시 수준 미달(작가님 판단). Android 온디바이스 배경제거 현시점 프로덕션 불가** | SelfieSegmenter.kt, IsnetRunner.kt | ⏳ 판단대기 |
+| 05/24 | 4060/쌍아 | **IDPASS Android Step1 자동선택 + 눈 메시지 반전 수정 + 폰트 스케일다운** — purpose 정확 매치 1개 시 아코디언 스킵 Step2 직행. coach_eye_low/high iOS 원본 일치(행동 지시+{v}%). 폰트 20sp↑ -2sp, 12~19sp -1sp (Roboto vs SF Pro 보정, 전 8파일) | Step1Screen/I18n/CropEngine/V1Theme 외 | ✅ |
+| 05/25 | 4060/쌍아 | **RMBG-2.0 GPU 테스트 환경 세팅** — Python 3.10 venv + PyTorch CUDA 12.1 + transformers/flask 설치. rmbg2_server.py + rmbg2-test.html 작성 완료. HF 토큰 확인(환경변수). **모델 다운로드 blocked: gated repo 접근 승인 필요** | apps/crop-app/benchmark/ | ⏳ HF 승인 대기 |
 
 ---
 
