@@ -51,6 +51,7 @@ status: 현행
 | 30 | N8N_API_KEY | n8n 자동화 API | Docker 4060 | |
 | 31 | TX_API_KEY | D1 거래 원장 인증 | portal, MONK_kr | |
 | 32 | TX_API_URL | D1 거래 원장 엔드포인트 | portal, MONK_kr | |
+| 33 | REMOVEBG_API_KEY | remove.bg 배경 제거 API | 크롭앱, 스펙스, Android | ⭐ 2026-05-25 추가. 무료 50장/월 |
 
 ### B. 루트 .env (로컬 전용 — 2개)
 
