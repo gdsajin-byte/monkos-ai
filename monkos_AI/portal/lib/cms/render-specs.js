@@ -449,7 +449,7 @@ ${hreflangTags}
   // --- 국가별 대륙 그룹핑 (드롭다운 optgroup용) ---
   const continentGroups = {};
   for (const spec of sortedSpecs) {
-    const cid = SPEC_CONTINENT_MAP[spec.slug] || 'other';
+    const cid = SPEC_CONTINENT_MAP[spec.slug] || spec.continent || 'other';
     if (!continentGroups[cid]) continentGroups[cid] = {};
     const countryKey = lang === 'en' ? spec.countryEn : spec.country;
     if (!continentGroups[cid][countryKey]) continentGroups[cid][countryKey] = [];
@@ -594,7 +594,7 @@ export function specsDetailFragment(slug, forceLang = null) {
   const typeName = lang === 'ja' ? (specData.typeJa || specData.type) : (lang === 'en' ? specData.typeEn : specData.type);
   const countryName = lang === 'en' ? specData.countryEn : specData.country;
   const title = (specData.seoTitle && specData.seoTitle[lang]) || `2026 ${countryName} ${typeName} ${i.detailSuffix}`;
-  const description = (specData.seoDescription && specData.seoDescription[lang]) || specData.details[lang] || specData.details.ko || specData.details.en || '';
+  const description = (specData.seoDescription && specData.seoDescription[lang]) || (specData.details && (specData.details[lang] || specData.details.ko || specData.details.en)) || '';
 
   const canonicalUrl = lang === 'ko' ? `https://monkos.ai/specs/${slug}` : `https://monkos.ai/${lang}/specs/${slug}`;
   const hreflangTags = [
@@ -605,7 +605,7 @@ export function specsDetailFragment(slug, forceLang = null) {
   ].join('\n');
 
   // FAQ 데이터
-  const faqs = specData.faqs[lang] || specData.faqs.ko || [];
+  const faqs = (specData.faqs && (specData.faqs[lang] || specData.faqs.ko)) || [];
 
   // JSON-LD 트리플 스택 (FAQPage는 faqs 존재 시만 삽입 — GSC mainEntity 누락 방어)
   const specsJsonLdArr = [
@@ -672,7 +672,7 @@ ${hreflangTags}
   ).join('\n        ');
 
   // 반려 사유 (2열 카드)
-  const rejections = specData.rejectionReasons[lang] || specData.rejectionReasons.ko || [];
+  const rejections = (specData.rejectionReasons && (specData.rejectionReasons[lang] || specData.rejectionReasons.ko)) || [];
   const rejectionHtml = rejections.map((r, idx) =>
     `<li class="specs-rejection-card">
           <span class="specs-rj-badge">${idx + 1}</span>
