@@ -24,6 +24,7 @@ const SPECS_I18N = {
     faqTitle: '자주 묻는 질문',
     ctaAI: 'AI로 촬영하기 →',
     ctaCrop: '무료 크롭앱 →',
+    officialSourceTitle: '공식 발급 안내',
     relatedTitle: '관련 콘텐츠',
     relatedLinks: [
       { label: '사용 가이드', href: '/guide' },
@@ -71,6 +72,7 @@ const SPECS_I18N = {
     faqTitle: 'よくある質問',
     ctaAI: 'AIで撮影する →',
     ctaCrop: '無料クロップアプリ →',
+    officialSourceTitle: '公式申請案内',
     relatedTitle: '関連コンテンツ',
     relatedLinks: [
       { label: 'ご利用ガイド', href: '/guide' },
@@ -118,6 +120,7 @@ const SPECS_I18N = {
     faqTitle: 'Frequently Asked Questions',
     ctaAI: 'Take with AI →',
     ctaCrop: 'Free Crop App →',
+    officialSourceTitle: 'Official Application',
     relatedTitle: 'Related Content',
     relatedLinks: [
       { label: 'User Guide', href: '/guide' },
@@ -259,7 +262,7 @@ function parseSizeMm(sizeStr) {
 // ─── DARK THEME CSS ─────────────────────────────────────────────
 
 const SPECS_PAGE_STYLE = `
-body { background: #05080E !important; color: #F0F0F0 !important; }
+body { background: #f6f7fb !important; color: #1a1a1a !important; }
 .container { max-width: 1000px; }
 a { color: #00D4AA; }
 a:hover { color: #00F4C4; }
@@ -270,7 +273,7 @@ a:hover { color: #00F4C4; }
   font-size: 12px; letter-spacing: 3px; color: #00D4AA; font-weight: 600;
   font-family: monospace; margin-bottom: 14px;
 }
-.specs-hub-hero h1 { font-size: 32px; font-weight: 800; color: #F0F0F0; margin-bottom: 12px; }
+.specs-hub-hero h1 { font-size: 32px; font-weight: 800; color: #1a1a1a; margin-bottom: 12px; }
 .specs-hub-hero .hero-sub { font-size: 15px; color: #888; line-height: 1.7; max-width: 520px; margin: 0 auto 28px; }
 .specs-hub-stats { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; }
 .specs-hub-stat { text-align: center; }
@@ -281,7 +284,7 @@ a:hover { color: #00F4C4; }
 .purpose-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 32px; }
 .purpose-card {
   position: relative; height: 100px; border-radius: 12px; overflow: hidden;
-  cursor: pointer; border: 1px solid rgba(255,255,255,0.06);
+  cursor: pointer; border: 1px solid rgba(0,0,0,0.08);
   transition: border-color 0.2s, transform 0.15s;
 }
 .purpose-card:hover { border-color: rgba(0,212,170,0.3); transform: translateY(-2px); }
@@ -294,7 +297,7 @@ a:hover { color: #00F4C4; }
   background: linear-gradient(to top, rgba(0,0,0,0.7), rgba(0,0,0,0.3));
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
 }
-.purpose-card .p-name { font-size: 18px; font-weight: 800; color: #F0F0F0; }
+.purpose-card .p-name { font-size: 18px; font-weight: 800; color: #1a1a1a; }
 .purpose-card .p-sub { font-size: 10px; font-weight: 700; color: #00D4AA; letter-spacing: 2px; font-family: monospace; }
 
 /* === Continent Cards (2×3) === */
@@ -307,10 +310,10 @@ a:hover { color: #00F4C4; }
 .continent-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 32px; }
 .continent-card {
   position: relative; height: 120px; border-radius: 12px; overflow: hidden;
-  cursor: pointer; border: 1px solid rgba(255,255,255,0.06);
+  cursor: pointer; border: 1px solid rgba(0,0,0,0.08);
   transition: border-color 0.2s, transform 0.15s;
 }
-.continent-card:hover { border-color: rgba(255,255,255,0.15); transform: translateY(-2px); }
+.continent-card:hover { border-color: rgba(0,0,0,0.15); transform: translateY(-2px); }
 .continent-card img {
   position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
 }
@@ -318,28 +321,28 @@ a:hover { color: #00F4C4; }
   position: absolute; inset: 0; display: flex; flex-direction: column;
   align-items: center; justify-content: center; gap: 4px;
 }
-.continent-card .c-name { font-size: 18px; font-weight: 800; color: #F0F0F0; text-shadow: 0 1px 4px rgba(0,0,0,0.5); }
+.continent-card .c-name { font-size: 18px; font-weight: 800; color: #1a1a1a; text-shadow: 0 1px 4px rgba(0,0,0,0.5); }
 .continent-card .c-name-en { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.7); letter-spacing: 1px; text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
 .continent-card .c-count { font-size: 12px; color: rgba(255,255,255,0.6); margin-top: 2px; text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
 
 /* === Country Cards === */
 .country-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 32px; }
 .country-card {
-  background: #0D1117; border: 1px solid rgba(255,255,255,0.06); border-radius: 12px;
+  background: #ffffff; border: 1px solid rgba(0,0,0,0.08); border-radius: 12px;
   padding: 16px; cursor: pointer; text-decoration: none; display: block; color: inherit;
   transition: border-color 0.2s, transform 0.15s;
 }
 .country-card:hover { border-color: rgba(0,212,170,0.3); transform: translateY(-1px); color: inherit; }
 .country-card .cc-flag { font-size: 24px; margin-bottom: 6px; }
-.country-card .cc-name { font-size: 15px; font-weight: 700; color: #F0F0F0; margin-bottom: 3px; }
+.country-card .cc-name { font-size: 15px; font-weight: 700; color: #1a1a1a; margin-bottom: 3px; }
 .country-card .cc-meta { font-size: 12px; color: #888; }
 
 /* === Search === */
 .specs-search-wrap { position: relative; margin-bottom: 20px; }
 .specs-search-wrap input {
   width: 100%; padding: 14px 20px 14px 44px; font-size: 15px;
-  border: 1px solid rgba(255,255,255,0.1); border-radius: 12px;
-  background: #0D1117; color: #F0F0F0; outline: none; box-sizing: border-box;
+  border: 1px solid rgba(0,0,0,0.1); border-radius: 12px;
+  background: #ffffff; color: #1a1a1a; outline: none; box-sizing: border-box;
   transition: border-color 0.2s;
 }
 .specs-search-wrap input:focus { border-color: #00D4AA; }
@@ -348,15 +351,15 @@ a:hover { color: #00F4C4; }
   font-size: 16px; pointer-events: none;
 }
 .specs-search-results {
-  position: absolute; top: 100%; left: 0; right: 0; background: #0D1117;
-  border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; margin-top: 4px;
+  position: absolute; top: 100%; left: 0; right: 0; background: #ffffff;
+  border: 1px solid rgba(0,0,0,0.1); border-radius: 10px; margin-top: 4px;
   max-height: 280px; overflow-y: auto; z-index: 10; display: none;
   box-shadow: 0 8px 24px rgba(0,0,0,0.4);
 }
 .specs-search-results.show { display: block; }
 .specs-search-item {
-  padding: 12px 16px; cursor: pointer; font-size: 14px; color: #F0F0F0;
-  border-bottom: 1px solid rgba(255,255,255,0.04); display: flex; align-items: center; gap: 10px;
+  padding: 12px 16px; cursor: pointer; font-size: 14px; color: #1a1a1a;
+  border-bottom: 1px solid rgba(0,0,0,0.04); display: flex; align-items: center; gap: 10px;
 }
 .specs-search-item:hover { background: rgba(0,212,170,0.08); }
 .specs-search-item:last-child { border-bottom: none; }
@@ -364,7 +367,7 @@ a:hover { color: #00F4C4; }
 .specs-search-item .si-meta { font-size: 12px; color: #888; margin-left: auto; }
 
 /* === Hub Footer === */
-.specs-hub-footer { text-align: center; padding: 24px 0; margin-top: 32px; font-size: 12px; color: #555; border-top: 1px solid rgba(255,255,255,0.06); }
+.specs-hub-footer { text-align: center; padding: 24px 0; margin-top: 32px; font-size: 12px; color: #888; border-top: 1px solid rgba(0,0,0,0.08); }
 
 /* === Detail — Back link === */
 .specs-back { display: inline-block; margin-bottom: 20px; font-size: 13px; color: #00D4AA; text-decoration: none; }
@@ -372,7 +375,7 @@ a:hover { color: #00F4C4; }
 
 /* === Detail — Hero 2열 === */
 .specs-hero { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; margin-bottom: 40px; }
-.specs-hero-text h1 { font-size: 28px; font-weight: 700; color: #F0F0F0; line-height: 1.3; margin-bottom: 12px; }
+.specs-hero-text h1 { font-size: 28px; font-weight: 700; color: #1a1a1a; line-height: 1.3; margin-bottom: 12px; }
 .specs-hero-text .specs-hero-desc { color: #888; font-size: 15px; line-height: 1.7; margin-bottom: 16px; }
 .specs-hero-tags { display: flex; gap: 8px; flex-wrap: wrap; }
 .specs-hero-tags span {
@@ -382,11 +385,11 @@ a:hover { color: #00F4C4; }
 
 /* === Detail — Diagram === */
 .specs-diagram {
-  background: #0D1117; border: 1px solid rgba(255,255,255,0.06); border-radius: 16px;
+  background: #ffffff; border: 1px solid rgba(0,0,0,0.08); border-radius: 16px;
   padding: 32px; display: flex; justify-content: center; align-items: center; position: relative;
 }
 .specs-photo-frame {
-  width: 175px; height: 225px; background: #161B22;
+  width: 175px; height: 225px; background: #f0f1f4;
   border: 2px dashed #00D4AA; border-radius: 4px; position: relative;
   display: flex; align-items: center; justify-content: center;
 }
@@ -416,32 +419,32 @@ a:hover { color: #00F4C4; }
 /* === Detail — Table === */
 .specs-table {
   width: 100%; border-collapse: separate; border-spacing: 0; margin-bottom: 32px;
-  background: #0D1117; border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; overflow: hidden;
+  background: #ffffff; border: 1px solid rgba(0,0,0,0.08); border-radius: 12px; overflow: hidden;
 }
 .specs-table th, .specs-table td { padding: 10px 14px; text-align: left; font-size: 14px; }
 .specs-table th {
-  background: #161B22; font-weight: 600; color: #F0F0F0; width: 110px; font-size: 13px;
-  border-right: 1px solid rgba(255,255,255,0.06);
+  background: #f0f1f4; font-weight: 600; color: #1a1a1a; width: 110px; font-size: 13px;
+  border-right: 1px solid rgba(0,0,0,0.08);
 }
-.specs-table td { color: #ccc; }
+.specs-table td { color: #888; }
 .specs-table tr:not(:last-child) th,
-.specs-table tr:not(:last-child) td { border-bottom: 1px solid rgba(255,255,255,0.06); }
+.specs-table tr:not(:last-child) td { border-bottom: 1px solid rgba(0,0,0,0.08); }
 
 /* === Detail — Section === */
 .specs-section { margin-bottom: 32px; }
-.specs-section h2 { font-size: 18px; font-weight: 700; color: #F0F0F0; margin-bottom: 16px; }
-.specs-section p { font-size: 14px; color: #ccc; line-height: 1.8; }
+.specs-section h2 { font-size: 18px; font-weight: 700; color: #1a1a1a; margin-bottom: 16px; }
+.specs-section p { font-size: 14px; color: #888; line-height: 1.8; }
 .specs-details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .specs-detail-item {
   display: flex; align-items: flex-start; gap: 10px; padding: 12px;
-  background: #0D1117; border-radius: 8px; font-size: 14px; color: #ccc;
+  background: #ffffff; border-radius: 8px; font-size: 14px; color: #888;
 }
 .specs-detail-item .sdi-icon { flex-shrink: 0; font-size: 16px; width: 24px; text-align: center; }
 
 /* === Detail — O/X Compare === */
 .specs-ox-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 32px; }
 .specs-ox-card {
-  background: #0D1117; border-radius: 12px; overflow: hidden; border: 2px solid rgba(255,255,255,0.06);
+  background: #ffffff; border-radius: 12px; overflow: hidden; border: 2px solid rgba(0,0,0,0.08);
 }
 .specs-ox-card.ox-good { border-color: #22c55e; }
 .specs-ox-card.ox-bad { border-color: #ef4444; }
@@ -450,17 +453,17 @@ a:hover { color: #00F4C4; }
 .specs-ox-card.ox-bad .specs-ox-header { background: rgba(239,68,68,0.1); color: #f87171; }
 .specs-ox-body {
   padding: 20px; display: flex; justify-content: center; align-items: center;
-  background: #161B22; min-height: 180px;
+  background: #f0f1f4; min-height: 180px;
 }
 .specs-ox-photo {
-  width: 120px; height: 154px; background: #0D1117; border: 2px dashed #333;
+  width: 120px; height: 154px; background: #ffffff; border: 2px dashed #ccc;
   border-radius: 4px; display: flex; align-items: center; justify-content: center;
 }
 .specs-ox-card.ox-good .specs-ox-photo { border-color: #22c55e; }
 .specs-ox-card.ox-bad .specs-ox-photo { border-color: #ef4444; }
 .specs-ox-photo svg { opacity: 0.3; }
 .specs-ox-caption { margin-top: 10px; font-size: 12px; color: #888; text-align: center; }
-.specs-ox-points { padding: 12px 16px; border-top: 1px solid rgba(255,255,255,0.06); list-style: none; margin: 0; }
+.specs-ox-points { padding: 12px 16px; border-top: 1px solid rgba(0,0,0,0.08); list-style: none; margin: 0; }
 .specs-ox-points li {
   font-size: 13px; color: #888; padding: 3px 0; display: flex; align-items: center; gap: 6px;
 }
@@ -468,7 +471,7 @@ a:hover { color: #00F4C4; }
 /* === Detail — Rejection === */
 .specs-rejection-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; list-style: none; padding: 0; }
 .specs-rejection-card {
-  background: #0D1117; border: 1px solid rgba(255,255,255,0.06); border-radius: 12px;
+  background: #ffffff; border: 1px solid rgba(0,0,0,0.08); border-radius: 12px;
   padding: 20px; display: flex; gap: 14px; align-items: flex-start;
   transition: box-shadow 0.2s;
 }
@@ -478,17 +481,17 @@ a:hover { color: #00F4C4; }
   display: flex; align-items: center; justify-content: center;
   background: #ef4444; color: #fff; font-weight: 700; font-size: 14px;
 }
-.specs-rj-info h4 { font-size: 14px; font-weight: 600; color: #F0F0F0; margin: 0 0 4px 0; }
+.specs-rj-info h4 { font-size: 14px; font-weight: 600; color: #1a1a1a; margin: 0 0 4px 0; }
 .specs-rj-info p { font-size: 13px; color: #888; margin: 0; line-height: 1.5; }
 
 /* === Detail — FAQ === */
 .specs-faq { list-style: none; padding: 0; }
 .specs-faq-item {
-  background: #0D1117; border: 1px solid rgba(255,255,255,0.06); border-radius: 10px;
+  background: #ffffff; border: 1px solid rgba(0,0,0,0.08); border-radius: 10px;
   margin-bottom: 8px; overflow: hidden;
 }
 .specs-faq-q {
-  padding: 16px 20px; font-weight: 600; font-size: 15px; color: #F0F0F0;
+  padding: 16px 20px; font-weight: 600; font-size: 15px; color: #1a1a1a;
   cursor: pointer; display: flex; align-items: center; gap: 10px; user-select: none;
 }
 .specs-faq-q::before { content: "Q"; color: #00D4AA; font-weight: 700; font-size: 14px; }
@@ -503,40 +506,50 @@ a:hover { color: #00F4C4; }
 }
 .specs-faq-item.open .specs-faq-a { display: block; }
 
+/* === Official Source Link === */
+.specs-official-link {
+  display: flex; align-items: center; gap: 12px; padding: 16px 20px;
+  background: #ffffff; border: 1px solid rgba(0,0,0,0.08); border-radius: 12px;
+  color: #1a1a1a; text-decoration: none; font-size: 14px; font-weight: 500;
+  transition: border-color 0.2s;
+}
+.specs-official-link:hover { border-color: #00D4AA; }
+.specs-external-icon { margin-left: auto; color: #00D4AA; font-size: 16px; }
+
 /* === Detail — 3-Tier CTA === */
 .tier-section { margin: 40px 0 32px; }
-.tier-section h2 { font-size: 18px; font-weight: 700; color: #F0F0F0; margin-bottom: 16px; }
+.tier-section h2 { font-size: 18px; font-weight: 700; color: #1a1a1a; margin-bottom: 16px; }
 .tier-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
 .tier-card {
-  background: #0D1117; border: 1px solid rgba(255,255,255,0.06); border-radius: 12px;
+  background: #ffffff; border: 1px solid rgba(0,0,0,0.08); border-radius: 12px;
   padding: 24px 20px; position: relative; transition: border-color 0.2s;
 }
-.tier-card:hover { border-color: rgba(255,255,255,0.12); }
+.tier-card:hover { border-color: rgba(0,0,0,0.12); }
 .tier-card.recommended { border-color: #00D4AA; }
 .tier-badge {
-  position: absolute; top: -10px; right: 16px; background: #00D4AA; color: #05080E;
+  position: absolute; top: -10px; right: 16px; background: #00D4AA; color: #fff;
   font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 10px;
 }
-.tier-card h3 { font-size: 16px; font-weight: 700; color: #F0F0F0; margin-bottom: 8px; }
+.tier-card h3 { font-size: 16px; font-weight: 700; color: #1a1a1a; margin-bottom: 8px; }
 .tier-card .tier-sub { font-size: 13px; color: #00D4AA; margin-bottom: 6px; }
 .tier-card .tier-desc { font-size: 13px; color: #888; margin-bottom: 16px; }
 .tier-card .tier-cta {
   display: inline-block; padding: 10px 20px; border-radius: 8px; font-size: 13px;
   font-weight: 600; text-decoration: none; transition: all 0.2s;
 }
-.tier-card:first-child .tier-cta { background: #00D4AA; color: #05080E; }
+.tier-card:first-child .tier-cta { background: #00D4AA; color: #fff; }
 .tier-card:first-child .tier-cta:hover { background: #00F4C4; }
 .tier-card:nth-child(2) .tier-cta, .tier-card:nth-child(3) .tier-cta {
-  background: rgba(255,255,255,0.08); color: #888; cursor: default;
+  background: rgba(0,0,0,0.05); color: #888; cursor: default;
 }
-.tier-coming { font-size: 11px; color: #555; margin-top: 6px; }
+.tier-coming { font-size: 11px; color: #888; margin-top: 6px; }
 
 /* === Detail — Related === */
 .specs-related {
   margin-top: 32px; padding: 20px 24px;
-  background: #0D1117; border: 1px solid rgba(255,255,255,0.06); border-radius: 12px;
+  background: #ffffff; border: 1px solid rgba(0,0,0,0.08); border-radius: 12px;
 }
-.specs-related h3 { font-size: 15px; font-weight: 600; color: #F0F0F0; margin-bottom: 12px; }
+.specs-related h3 { font-size: 15px; font-weight: 600; color: #1a1a1a; margin-bottom: 12px; }
 .specs-related-links { display: flex; flex-wrap: wrap; gap: 10px; }
 .specs-related-links a {
   font-size: 13px; color: #00D4AA; text-decoration: none; padding: 6px 14px;
@@ -913,7 +926,8 @@ ${hreflangTags}
   ].map(([key, label, val]) => `<tr><th>${tableIconMap[key] || ''} ${escapeHtml(label)}</th><td>${escapeHtml(val)}</td></tr>`).join('\n      ');
 
   const detailIcons = ['😐', '👓', '💇', '👂', '👔', '📸'];
-  const detailLines = description.split(/[.。]\s*/).filter(d => d.trim().length > 0);
+  const detailText = (specData.details && (specData.details[lang] || specData.details.ko)) || '';
+  const detailLines = detailText.split(/[.。]\s*/).filter(d => d.trim().length > 0);
   const detailGridHtml = detailLines.map((line, idx) =>
     `<div class="specs-detail-item"><span class="sdi-icon">${detailIcons[idx] || '📋'}</span><span>${escapeHtml(line.trim())}</span></div>`
   ).join('\n        ');
@@ -1009,44 +1023,6 @@ ${hreflangTags}
     </div>
   </div>` : ''}
 
-  <!-- O/X 비교 -->
-  <div class="specs-ox-compare">
-    <div class="specs-ox-card ox-good">
-      <div class="specs-ox-header">${oxGoodLabel}</div>
-      <div class="specs-ox-body">
-        <div class="specs-ox-photo">
-          ${(() => {
-            const sizeMm = parseSizeMm(specData.size);
-            if (sizeMm) {
-              return `<img src="/images/guides/${sizeMm}.webp" alt="Good" width="80" loading="lazy"
-                onerror="this.style.display='none';this.nextElementSibling.style.display='block'"
-                style="width:80px;height:auto;border-radius:2px">
-              <svg viewBox="0 0 120 160" width="60" height="80" fill="currentColor" style="display:none">
-                <ellipse cx="60" cy="45" rx="30" ry="38"/><ellipse cx="60" cy="140" rx="50" ry="45"/>
-              </svg>`;
-            }
-            return `<svg viewBox="0 0 120 160" width="60" height="80" fill="currentColor">
-              <ellipse cx="60" cy="45" rx="30" ry="38"/><ellipse cx="60" cy="140" rx="50" ry="45"/>
-            </svg>`;
-          })()}
-        </div>
-      </div>
-      <div class="specs-ox-caption">${oxGoodCaption}</div>
-    </div>
-    <div class="specs-ox-card ox-bad">
-      <div class="specs-ox-header">${oxBadLabel}</div>
-      <div class="specs-ox-body">
-        <div class="specs-ox-photo">
-          <svg viewBox="0 0 120 160" width="60" height="80" fill="currentColor" transform="rotate(15)">
-            <ellipse cx="60" cy="45" rx="30" ry="38"/>
-            <ellipse cx="60" cy="140" rx="50" ry="45"/>
-          </svg>
-        </div>
-      </div>
-      <div class="specs-ox-caption">${oxBadCaption}</div>
-    </div>
-  </div>
-
   <!-- 반려 사유 -->
   ${rejections.length ? `<div class="specs-section">
     <h2>${escapeHtml(i.rejectionTitle)}</h2>
@@ -1061,6 +1037,16 @@ ${hreflangTags}
     <div class="specs-faq">
       ${faqHtml}
     </div>
+  </div>` : ''}
+
+  <!-- 공식 발급 안내 -->
+  ${specData.officialSource ? `<div class="specs-section">
+    <h2>${escapeHtml(i.officialSourceTitle)}</h2>
+    <a href="${escapeHtml(specData.officialSource.url)}" target="_blank" rel="noopener noreferrer" class="specs-official-link">
+      <span>🏛️</span>
+      <span>${escapeHtml((specData.officialSource.label && (specData.officialSource.label[lang] || specData.officialSource.label.ko)) || specData.officialSource.url)}</span>
+      <span class="specs-external-icon">↗</span>
+    </a>
   </div>` : ''}
 
   <!-- 3단 티어 CTA -->

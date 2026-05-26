@@ -117,7 +117,15 @@
       "ja": "韓国パスポート写真 3.5×4.5cm、白背景、6ヶ月以内。却下理由5つとセルフ撮影のコツ。無料AIツールで今すぐ作成。",
       "en": "Korea passport photo 3.5×4.5cm, white background, within 6 months. Top 5 rejection reasons and selfie tips. Make yours free with AI."
     },
-    "continent": "asia"
+    "continent": "asia",
+    "officialSource": {
+      "url": "https://www.passport.go.kr",
+      "label": {
+        "ko": "대한민국 여권 안내 (외교부)",
+        "en": "Republic of Korea Passport Guide (MOFA)",
+        "ja": "大韓民国パスポート案内（外交部）"
+      }
+    }
   },
   "korea-resume": {
     "slug": "korea-resume",
