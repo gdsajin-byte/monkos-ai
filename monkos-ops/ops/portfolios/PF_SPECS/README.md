@@ -301,6 +301,7 @@ SEO 콘텐츠가 있는 문서 → 풀 페이지 (FAQ + 반려사유 + 촬영가
 | 05/25 | 쌍아 | **URL 스키마 확정: 용도→국가** — `/specs/:type/:country` 구조. IDPASS 앱과 동조 (용도 먼저). 기존 slug → 301 리다이렉트 | 설계서: ORDER_20260525_스펙스페이지_리빌드설계.md | ✅ |
 | 05/25 | 쌍아 | **15개 언어 확장 확정** — IDPASS 15개 언어와 동조 (기존 9개 → 15개). 445건 × 15언어 = 6,675 URL 목표 | 설계서 반영 | ✅ |
 | 05/25 | 쌍아 | **JSON-LD 3종 설계** — L1(CollectionPage) + L2(ItemList) + L3(Article+FAQPage+HowTo). 15개 언어 hreflang | 설계서 반영 | ✅ |
+| 05/26 | 막내1 | **허브 리빌드 + 3티어 CTA** — IDPASS 카드 UI(용도→대륙→국가 퍼널), 다크 테마(#05080E), `/specs/:type/:country` URL 전환, 기존 slug 301 리다이렉트, 3단 티어 CTA(무료 활성), 대륙·카드 이미지 10장 WebP. render-specs.js 전면 리빌드 | render-specs.js + images/continents/ 6장 + images/cards/ 4장 | ✅ |
 
 ---
 
