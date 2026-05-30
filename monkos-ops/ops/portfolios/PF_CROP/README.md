@@ -174,6 +174,7 @@ status: active
 | 05/24 | M4/쌍아 | **Android 배경제거 엔진 5종 실기기 비교** — ①ML Kit beta: SIGBUS ②ISNet small 42MB: 20초+형편없음 ③ISNet medium 84MB: 동일 ④ISNet 512px+NNAPI: 안따짐 ⑤MediaPipe Selfie Seg: 2초+안정+중간품질. **Selfie Seg이 유일하게 동작하나 출시 수준 미달(작가님 판단). Android 온디바이스 배경제거 현시점 프로덕션 불가** | SelfieSegmenter.kt, IsnetRunner.kt | ⏳ 판단대기 |
 | 05/24 | 4060/쌍아 | **IDPASS Android Step1 자동선택 + 눈 메시지 반전 수정 + 폰트 스케일다운** — purpose 정확 매치 1개 시 아코디언 스킵 Step2 직행. coach_eye_low/high iOS 원본 일치(행동 지시+{v}%). 폰트 20sp↑ -2sp, 12~19sp -1sp (Roboto vs SF Pro 보정, 전 8파일) | Step1Screen/I18n/CropEngine/V1Theme 외 | ✅ |
 | 05/25 | 4060/쌍아 | **RMBG-2.0 GPU 테스트 환경 세팅** — Python 3.10 venv + PyTorch CUDA 12.1 + transformers/flask 설치. rmbg2_server.py + rmbg2-test.html 작성 완료. HF 토큰 확인(환경변수). **모델 다운로드 blocked: gated repo 접근 승인 필요** | apps/crop-app/benchmark/ | ⏳ HF 승인 대기 |
+| 05/29 | iMac/쌍아 | **IDPASS ASO 진단+최적화** — iris API로 15개 언어 메타데이터 전수 점검. de-DE 프로모션 버그(영어 키워드 복붙) 수정, ko 프로모션 오타("없슴"→"없음") PATCH. 부제 15개 언어 전부 정상 확인(appInfoLocalizations). 키워드는 라이브 잠김 → 키워드 4언어 최적화안+6.9" 스크린샷 카피 구성안 적립(1.0.1 반영) | [REPORT](reports/2026-05/REPORT_20260529_iMac쌍아_IDPASS_ASO최적화패키지.md) | ⏳ 1.0.1 대기 |
 
 ---
 
