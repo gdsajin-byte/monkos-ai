@@ -139,6 +139,7 @@ status: active
 | 5/20 | iMac/막내1 | **IDPASS 가이드 Canvas + SEO 키워드 보정** — Hero SVG→Canvas 인터랙티브 가이드(코너 브래킷+가이드라인 4개+치수 라벨+스펙 배지). O/X 비교 SVG→Canvas(PASS/FAIL). H1/title에 "사진" 키워드 추가(passport/visa/id/license). queries.js ICAO 글로벌 요구사항 포함 수정. 단위 테스트 12/12 통과 | `template.js`, `seo.js`, `queries.js` | ✅ |
 | 5/20 | iMac/막내1 | **규격별 가이드 이미지 112개 일괄 생성** — ref.jpg 얼굴좌표 측정 + Node Canvas/Sharp로 규격별 크롭·오버레이(코너 브래킷+가이드라인 4개+치수 라벨+스펙 배지). WebP 85% 출력, 총 4.0MB. Canvas 인라인 JS→`<img>` 정적 이미지로 전환 (이미지 SEO alt 포함). 단위 테스트 10/10 통과 | `generate-guide-images.js`, `MONK_kr/images/specs/guides/*.webp` 112건, `template.js` 수정 | ✅ → 아래 교체 |
 | 5/20 | iMac/막내1 | **CropEngine Vision 기반 23개 사이즈별 가이드 이미지** — Node Canvas 추정 방식 폐기 → CropEngine.swift Vision 얼굴 감지 + crop() 실제 크롭 결과 기반. `--export-guides` CLI 모드 추가. 23 고유사이즈 × PNG export → cwebp WebP 변환 760KB(총). 112개 개별파일 → 23개 사이즈별로 통합. template.js size-WxH.webp 매핑 | `MonkosCropApp.swift` export 기능, `MONK_kr/images/specs/guides/size-*.webp` 23건, `template.js` 수정 | ✅ |
+| 5/20 | iMac/막내1 | **CropEngine.crop() 규격별 비율 보정 + 초록 오버레이** — 하드코딩 FACE_TARGET=33/45 폐기 → spec.faceTarget/heightMM 동적 계산. 51×51: 73%→65%, 50×70: 73%→50% 얼굴 비율 분화. EYE_POSITION도 높이≥60mm면 0.42. 오버레이 색상 #6c4fff→#00D4AA(IDPASS 액센트). 23장 재생성 | `CropEngine.swift` 상수→동적, `MonkosCropApp.swift` 색상, `size-*.webp` 23건 | ✅ |
 
 ---
 
