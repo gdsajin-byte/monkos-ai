@@ -63,7 +63,7 @@ NSFW 커뮤니티(Civitai 사실계)가 인체 리얼리즘을 선도하는 게 
 |-------|------|------|
 | Phase 0 | SSH 복구 + ComfyUI 환경 정찰 | ✅ 완료 (5/30~5/31) |
 | Phase 1 | 클라우드 타당성 검증 (Imagen4/nano 실측 → 불가 확정) | ✅ 완료 (5/31) |
-| Phase 2 | 4060 CatVTON_Wrapper 설치 + 이너웨어 PoC (1단계 검증) | ⏳ 착수 (ORDER 발행) |
+| Phase 2 | 4060 CatVTON_Wrapper 설치 + 이너웨어 PoC (1단계 검증) | ✅ 완료 (3컷, 5/31) |
 | Phase 3 | 품질 부족 시 RunPod 2단계 (CatVTON+Flux Fill / Qwen·HiDream) | ❌ 조건부 |
 | Phase 4 | 워크플로우 정형화 + 상세페이지 양산 체계 | ❌ 대기 |
 
@@ -73,3 +73,4 @@ NSFW 커뮤니티(Civitai 사실계)가 인체 리얼리즘을 선도하는 게 
 |------|------|------|--------|------|
 | 2026-05-31 | iMac/쌍아 | 클라우드 VTON 불가 확정 + 4060 정찰(CatVTON 8GB 가능, detectron2 회피 경로 확정) + PF 신설 | PF_VTON, ORDER(CatVTON설치_PoC) | active |
 | 2026-05-31 | iMac/쌍아 | 모델 매트릭스 + 2단계 GPU 전략 반영(4060 검증→RunPod 양산). VTON SOTA=CatVTON+Flux Fill, 베이스 후보 Qwen/HiDream/Z-Image | 모델전략 섹션 | active |
+| 2026-05-31 | 4060/쌍아 | CatVTON 베이스라인 PoC — 환경구축+가중치+착장 3컷. VRAM 51%(4199MiB)/컷당 45~50초/OOM 없음. 정체성·교체 정합성 우수, 텍스처 평면화(SD1.5 한계) → RunPod 2단계 권장 | COMPLETION_20260531_4060쌍아_이너웨어VTON_CatVTON_PoC, test_outputs/VTON_PoC_20260531(3컷) | active |
