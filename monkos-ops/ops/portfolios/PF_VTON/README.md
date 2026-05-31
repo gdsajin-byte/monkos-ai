@@ -73,3 +73,4 @@ NSFW 커뮤니티(Civitai 사실계)가 인체 리얼리즘을 선도하는 게 
 |------|------|------|--------|------|
 | 2026-05-31 | iMac/쌍아 | 클라우드 VTON 불가 확정 + 4060 정찰(CatVTON 8GB 가능, detectron2 회피 경로 확정) + PF 신설 | PF_VTON, ORDER(CatVTON설치_PoC) | active |
 | 2026-05-31 | iMac/쌍아 | 모델 매트릭스 + 2단계 GPU 전략 반영(4060 검증→RunPod 양산). VTON SOTA=CatVTON+Flux Fill, 베이스 후보 Qwen/HiDream/Z-Image | 모델전략 섹션 | active |
+| 2026-05-31 | iMac/쌍아 | RunPod 2단계 인프라 구축(API직접제어·볼륨 e0sdw1kxku·3090 pod·SSH·CatvtonFlux노드·LoRA·HF토큰·Flux Fill다운로드 착수). pod EXITED(과금정지) | 4060 SD1.5 베이스라인=납품미달 / RunPod Flux Fill 환경 | active |
