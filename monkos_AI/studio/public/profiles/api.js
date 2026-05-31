@@ -40,7 +40,7 @@ async function collectReferenceImages() {
 
 export async function generate() {
   if (!state.base64Image && !state.masterRef) {
-    alert('내 사진 또는 마스터 레퍼런스를 선택하세요');
+    showError('내 사진 또는 마스터 레퍼런스를 선택하세요');
     return;
   }
 
@@ -49,14 +49,18 @@ export async function generate() {
   const btnGenerate = document.getElementById('btn-generate');
 
   overlay.classList.add('active');
-  progressFill.style.width = '10%';
   btnGenerate.disabled = true;
 
-  try {
-    progressFill.style.width = '20%';
+  // 시간 기반 점진 증가: 90%까지 남은 거리의 일정 비율씩 수렴 (실제 생성이 길어도 멈춘 듯 보이지 않음)
+  let progress = 0;
+  progressFill.style.width = '0%';
+  const progressTimer = setInterval(() => {
+    progress += (90 - progress) * 0.08;
+    progressFill.style.width = `${progress.toFixed(1)}%`;
+  }, 400);
 
+  try {
     const referenceImages = await collectReferenceImages();
-    progressFill.style.width = '30%';
 
     const res = await fetch('/api/profiles/generate', {
       method: 'POST',
@@ -72,14 +76,13 @@ export async function generate() {
       }),
     });
 
-    progressFill.style.width = '80%';
-
     if (!res.ok) {
       const err = await res.json();
       throw new Error(err.error || '생성 실패');
     }
 
     const data = await res.json();
+    clearInterval(progressTimer);
     progressFill.style.width = '100%';
 
     updateState('generatedImage', data.image);
@@ -91,12 +94,22 @@ export async function generate() {
     });
 
   } catch (err) {
-    alert(`생성 실패: ${err.message}`);
+    showError(err.message);
   } finally {
+    clearInterval(progressTimer);
     setTimeout(() => {
       overlay.classList.remove('active');
       progressFill.style.width = '0%';
       btnGenerate.disabled = false;
     }, 500);
   }
+}
+
+function showError(msg) {
+  const banner = document.getElementById('gen-error');
+  if (!banner) { alert(`생성 실패: ${msg}`); return; }
+  banner.textContent = msg;
+  banner.style.display = 'flex';
+  clearTimeout(showError._timer);
+  showError._timer = setTimeout(() => { banner.style.display = 'none'; }, 8000);
 }

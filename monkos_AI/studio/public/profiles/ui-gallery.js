@@ -163,4 +163,5 @@ function renderOverrides() {
 
 export function addToHistory(entry) {
   state.history.unshift(entry);
+  updateState('history', state.history);
 }

@@ -566,7 +566,17 @@ app.post('/api/profiles/generate', async (req, res) => {
 
     const imagePart = response.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
     if (!imagePart?.inlineData) {
-      throw new Error('이미지 생성 실패: 응답에 이미지가 없습니다');
+      const cand = response.candidates?.[0];
+      const finishReason = cand?.finishReason || 'UNKNOWN';
+      const blockReason = response.promptFeedback?.blockReason || null;
+      const textParts = (cand?.content?.parts || []).filter(p => p.text).map(p => p.text).join(' | ');
+      log(`[profiles] 이미지 없음 — finishReason: ${finishReason}, blockReason: ${blockReason || 'none'}, text: ${textParts || 'none'}`, 'WARNING');
+
+      const reason = blockReason || finishReason;
+      if (blockReason || finishReason === 'IMAGE_SAFETY' || finishReason === 'SAFETY') {
+        throw new Error(`안전 정책상 생성이 거부되었습니다 (사유: ${reason})`);
+      }
+      throw new Error(`이미지 생성 실패 (사유: ${reason}${textParts ? ` — ${textParts}` : ''})`);
     }
 
     const generatedBase64 = imagePart.inlineData.data;

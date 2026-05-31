@@ -18,6 +18,7 @@ export function initWorkspace() {
     if (key === 'masterRef' || key === 'overrides') renderGallery();
     if (key === 'generatedImage' && state.generatedImage) showResult();
     if (key === 'base64Image' && state.base64Image) updateResultBefore();
+    if (key === 'history') renderHistory();
   });
 }
 
@@ -145,12 +146,17 @@ function initResultPanel() {
   const btnDlCompare = document.getElementById('btn-dl-compare');
   const btnRetry = document.getElementById('btn-retry');
 
-  btnDlAfter.addEventListener('click', () => {
+  btnDlAfter.addEventListener('click', async () => {
     if (!state.generatedImage) return;
+    const blob = await (await fetch(state.generatedImage)).blob();
+    const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
-    link.href = state.generatedImage;
+    link.href = url;
     link.download = `monkos_profile_${Date.now()}.png`;
+    document.body.appendChild(link);
     link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
   });
 
   btnDlCompare.addEventListener('click', () => {
@@ -177,10 +183,16 @@ function initResultPanel() {
         ctx.fillStyle = '#555';
         ctx.font = '11px "Noto Sans KR"';
         ctx.fillText('MONKOS AI Studio · monkos.ai', canvas.width / 2, canvas.height - 12);
-        const link = document.createElement('a');
-        link.href = canvas.toDataURL('image/jpeg', 0.92);
-        link.download = `monkos_compare_${Date.now()}.jpg`;
-        link.click();
+        canvas.toBlob((blob) => {
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `monkos_compare_${Date.now()}.jpg`;
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+          setTimeout(() => URL.revokeObjectURL(url), 1000);
+        }, 'image/jpeg', 0.92);
       };
       imgB.src = state.generatedImage;
     };
@@ -206,4 +218,29 @@ function showResult() {
 function updateResultBefore() {
   const imgBefore = document.getElementById('img-before');
   if (imgBefore) imgBefore.src = state.base64Image;
+}
+
+function renderHistory() {
+  const wrap = document.getElementById('result-history');
+  const strip = document.getElementById('result-history-strip');
+  if (!wrap || !strip) return;
+
+  if (!state.history.length) {
+    wrap.style.display = 'none';
+    return;
+  }
+
+  wrap.style.display = 'block';
+  strip.innerHTML = '';
+
+  state.history.forEach((entry, idx) => {
+    const thumb = document.createElement('div');
+    thumb.className = 'result-history-item';
+    thumb.innerHTML = `<img src="${entry.after}" alt="생성 ${idx + 1}" loading="lazy">`;
+    thumb.addEventListener('click', () => {
+      if (entry.before) updateState('base64Image', entry.before);
+      updateState('generatedImage', entry.after);
+    });
+    strip.appendChild(thumb);
+  });
 }
