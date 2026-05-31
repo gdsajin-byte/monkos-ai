@@ -19,7 +19,7 @@ export async function handleKakaoAuth(req, res) {
   // state에 popup 정보 인코딩
   const state = Buffer.from(JSON.stringify({ popup, redirectApp, sourcePage })).toString('base64url');
   const effectiveRedirect = `https://${req.headers.host}/auth/kakao/callback`;
-  const authUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_REST_API_KEY}&redirect_uri=${encodeURIComponent(effectiveRedirect)}&response_type=code&scope=account_email&state=${state}`;
+  const authUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_REST_API_KEY}&redirect_uri=${encodeURIComponent(effectiveRedirect)}&response_type=code&scope=account_email,plusfriends&state=${state}`;
   res.writeHead(302, { Location: authUrl });
   res.end();
 }

@@ -1,8 +1,9 @@
-/** 담당: 막내3 (리파인) */
+/** 챗봇 + 코칭 API — Workers 호출 전환 */
 
 import { log, parseJsonBody } from './shared/config.js';
 import { chatWithMonkos } from './chat-engine.js';
-import { buildCoachingPrompt, READY_KEYWORDS, SYSTEM_PROMPT_KR, SYSTEM_PROMPT_JP, SYSTEM_PROMPT } from './prompts.js';
+
+const READY_KEYWORDS = ['좋아요', '완벽', '촬영하세요', 'OK', '좋습니다', '잘 맞', '훌륭', '지금'];
 
 // === 챗봇 API ===
 export async function handleWebChat(req, res) {
@@ -14,14 +15,10 @@ export async function handleWebChat(req, res) {
       return;
     }
     const sid = sessionId || `anon_${Date.now()}`;
-    const ch = channel || 'web';
+    const ch = channel || (lang === 'ja' ? 'idphoto-jp' : 'web');
     log(`[Chat][${ch}][${sid}] ${message.substring(0, 100)}`);
 
-    // lang 분기: ko → KR 프롬프트, ja → JP, 그 외 → 다국어 자동
-    const promptByLang = lang === 'ko' ? SYSTEM_PROMPT_KR
-                       : lang === 'ja' ? SYSTEM_PROMPT_JP
-                       : undefined; // chat-engine 기본(SYSTEM_PROMPT_KR) 사용
-    const reply = await chatWithMonkos(ch, sid, message, promptByLang ? { systemPromptOverride: promptByLang } : {});
+    const reply = await chatWithMonkos(ch, sid, message);
     log(`[Chat][${ch}][${sid}] → ${reply.substring(0, 100)}`);
 
     res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -33,7 +30,7 @@ export async function handleWebChat(req, res) {
   }
 }
 
-// === AI 코칭 API (photolab MPA → monkos.ai) ===
+// === AI 코칭 API (photolab MPA → monkos.ai → Workers) ===
 export async function handleCoaching(req, res) {
   try {
     const { image, style, purpose, gender, age, clothing, clothingColor, tie, hair, expression } = await parseJsonBody(req);
@@ -43,12 +40,9 @@ export async function handleCoaching(req, res) {
       return;
     }
 
-    const fields = { style, purpose, gender, age, clothing, clothingColor, tie, hair, expression };
-    const prompt = buildCoachingPrompt(fields);
-
     const text = await chatWithMonkos('coaching', 'coaching', '이 사진의 자세, 조명, 표정을 체크해주세요.', {
       image,
-      systemPromptOverride: prompt,
+      style, purpose, gender, age, clothing, clothingColor, tie, hair, expression,
     });
 
     const ready = READY_KEYWORDS.some(kw => text.includes(kw));
