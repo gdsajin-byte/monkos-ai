@@ -12,6 +12,7 @@
 | [PF_PORTAL](PF_PORTAL/README.md) | PORTAL | 서비스 | 포털 v4 + CMS + 블록에디터 + 다국어 | active | 01-16 |
 | [PF_CROP](PF_CROP/README.md) | CROP | 서비스 | MONKOS Crop — ICAO 크롭 + 특허 | active | 03-11 |
 | [PF_STUDIO](PF_STUDIO/README.md) | STUDIO | 서비스 | AI 촬영실 UX + 음성 코칭 | paused | 03-06 |
+| [PF_VTON](PF_VTON/README.md) | VTON | 서비스 | 이너웨어/패션 AI 가상착장(VTON) — 4060 로컬 CatVTON | active | 05-31 |
 | [PF_CDP](PF_CDP/README.md) | CDP | 인프라 | 로컬 CDP 브라우저 제어 — 에이전트 독립 인프라 | active | 03-27 |
 | [PF_SECURITY](PF_SECURITY/README.md) | SECURITY | 인프라 | IAM·SA 권한 재조정·분기 재설계 | completed (→ AUTOPILOT) | 04-23 |
 | [PF_CITADEL](PF_CITADEL/README.md) | CITADEL | 전략 | SEO/GEO/AEO 통합 | active | 03-26 |
