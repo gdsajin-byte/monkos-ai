@@ -3,17 +3,18 @@ type: order
 date: 2026-05-31
 device: iMac
 agent: 쌍아
-to: 4060막내
+to: 4060쌍아
 status: 발행
 portfolio: PF_VTON
 ---
 
 # ORDER — 4060 CatVTON 설치 + 이너웨어 VTON PoC
 
-**발신**: iMac/쌍아 → **수신**: 4060막내
+**발신**: iMac/쌍아 → **수신**: 4060/쌍아 (4060 메인 작업자)
 **PF**: PF_VTON (착수 전 README Read 필수)
 
-> 쌍아가 SSH로 직접 정찰 완료. 아래는 검증된 사실 — 재조사 불필요, 바로 실행.
+> iMac/쌍아가 SSH로 직접 정찰 완료. 아래는 검증된 사실 — 재조사 불필요, 바로 실행.
+> 입력 자산(monk_assets 2.5GB)은 iMac/쌍아가 `C:\Users\smuse73\Desktop\monk_assets\`로 전송 중 — 도착 확인 후 PoC 입력으로 활용.
 
 ---
 
@@ -44,7 +45,7 @@ portfolio: PF_VTON
 - `python_embeded\python.exe`로 ComfyUI 실행 → CatVTON 워크플로우 첫 실행 시 **가중치 자동 다운로드(수십 분)**.
 
 ### 4. 이너웨어 PoC
-- 입력 자산(모델 베이스 + 제품 이미지)은 **작가님이 별도 제공** (전달 경로는 착수 시 작가님께 확인 — GDrive 공유폴더 or scp).
+- 입력 자산: **`C:\Users\smuse73\Desktop\monk_assets\`** (iMac/쌍아가 전송한 2.5GB — AI_LAb_Model/monk_models/monk_workbench/monk_assets_all/monk_sorting). 모델 베이스·제품 이미지를 여기서 선별. 제품 상세컷이 부족하면 작가님께 추가 요청.
 - CatVTON으로 **착용 컷 생성** → 정체성 보존 + 의상 충실도 평가. 목표 다양 포즈/제품 수 컷.
 - 결과는 `G:\4060Factory\OUTPUT_Zone\Images` 동기화 확인.
 
