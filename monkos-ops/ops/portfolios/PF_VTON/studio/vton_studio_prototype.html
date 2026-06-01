@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MONK VTON Studio</title>
+<style>
+  :root{--bg:#0d0f14;--panel:#171a22;--line:#272b36;--accent:#4a9eff;--green:#3ecf8e;--txt:#e8eaed;--dim:#8a92a0}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);font-family:-apple-system,system-ui,"Apple SD Gothic Neo",sans-serif}
+  header{padding:18px 28px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px}
+  header h1{font-size:18px;margin:0;font-weight:600;letter-spacing:.3px}
+  header .badge{font-size:11px;color:var(--dim);border:1px solid var(--line);padding:3px 8px;border-radius:20px}
+  header .status{margin-left:auto;font-size:12px;color:var(--dim)}
+  .wrap{display:grid;grid-template-columns:340px 1fr;gap:0;height:calc(100vh - 61px)}
+  .controls{padding:22px;border-right:1px solid var(--line);overflow-y:auto}
+  .stage{padding:22px;overflow-y:auto}
+  .group{margin-bottom:24px}
+  .group h3{font-size:12px;text-transform:uppercase;letter-spacing:.8px;color:var(--dim);margin:0 0 10px}
+  .drop{border:1.5px dashed var(--line);border-radius:12px;padding:14px;text-align:center;cursor:pointer;transition:.15s;background:var(--panel)}
+  .drop:hover{border-color:var(--accent)}
+  .drop.has{border-style:solid;border-color:var(--green);padding:8px}
+  .drop img{max-width:100%;max-height:200px;border-radius:8px;display:block;margin:0 auto}
+  .drop .ph{color:var(--dim);font-size:13px;padding:24px 0}
+  .seg{display:flex;gap:8px;margin-top:6px}
+  .seg button{flex:1;background:var(--panel);border:1px solid var(--line);color:var(--txt);padding:10px;border-radius:9px;cursor:pointer;font-size:13px;transition:.15s}
+  .seg button.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+  .run{width:100%;background:var(--green);border:none;color:#06231a;font-weight:700;font-size:15px;padding:14px;border-radius:11px;cursor:pointer;margin-top:6px}
+  .run:disabled{opacity:.5;cursor:not-allowed}
+  .hint{font-size:11px;color:var(--dim);margin-top:8px;line-height:1.5}
+  .prog{height:4px;background:var(--line);border-radius:4px;overflow:hidden;margin-top:14px;display:none}
+  .prog.show{display:block}
+  .prog i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+  .log{font-size:11px;color:var(--dim);margin-top:10px;white-space:pre-wrap;font-family:ui-monospace,monospace;max-height:120px;overflow-y:auto}
+  .results{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .card img{width:100%;display:block;cursor:zoom-in}
+  .card .meta{padding:8px 12px;font-size:11px;color:var(--dim);display:flex;justify-content:space-between;align-items:center}
+  .card a{color:var(--accent);text-decoration:none}
+  .empty{color:var(--dim);text-align:center;padding:80px 0;font-size:14px}
+  #zoom{position:fixed;inset:0;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;z-index:50;cursor:zoom-out}
+  #zoom img{max-width:94%;max-height:94%}
+</style>
+</head>
+<body>
+<header>
+  <h1>MONK VTON Studio</h1>
+  <span class="badge">CatVTON · Flux Fill · RTX3090</span>
+  <span class="status" id="status">● 연결 확인중…</span>
+</header>
+<div class="wrap">
+  <div class="controls">
+    <div class="group">
+      <h3>1. 모델 (Person)</h3>
+      <div class="drop" id="dropPerson"><div class="ph">클릭 또는 드래그<br>모델 사진</div><input type="file" accept="image/*" hidden></div>
+    </div>
+    <div class="group">
+      <h3>2. 의상 (Garment)</h3>
+      <div class="drop" id="dropGarment"><div class="ph">클릭 또는 드래그<br>갈아입힐 의상</div><input type="file" accept="image/*" hidden></div>
+    </div>
+    <div class="group">
+      <h3>3. 교체 범위</h3>
+      <div class="seg" id="seg">
+        <button data-mode="top" class="on">상의만</button>
+        <button data-mode="set">세트(상하)</button>
+      </div>
+      <div class="hint">상의만: 상의만 교체, 하의 유지 · 세트: 상의+하의 모두 교체</div>
+    </div>
+    <button class="run" id="run">생성하기</button>
+    <div class="prog" id="prog"><i></i></div>
+    <div class="log" id="log"></div>
+  </div>
+  <div class="stage">
+    <div class="results" id="results"><div class="empty">아직 결과가 없습니다. 모델·의상을 올리고 [생성하기]를 누르세요.</div></div>
+  </div>
+</div>
+<div id="zoom"><img></div>
+<script>
+const API = location.protocol+'//'+location.hostname+':8188';
+const CLIENT='monk_vton_studio';
+let template=null, persona={name:'_input_person_ultra.jpg',sub:'monk_vton',w:1536,h:2816},
+    garment={name:'_input_garment_underwear.jpg',sub:'monk_vton'}, mode='top', busy=false;
+
+// 좌표 프리셋 (person 기준 비율 → 실제 크기로 스케일)
+const PRESETS={
+  top:{pos:[[.5,.30],[.5,.41]], neg:[[.5,.15],[.14,.30],[.86,.30],[.5,.58],[.5,.82]]},
+  set:{pos:[[.5,.30],[.5,.61]], neg:[[.5,.15],[.5,.23],[.23,.76],[.77,.76]]}
+};
+function coords(p){return JSON.stringify(p.map(([x,y])=>({x:Math.round(x*persona.w),y:Math.round(y*persona.h)})))}
+
+const $=s=>document.querySelector(s), log=m=>{const l=$('#log');l.textContent=(m+'\n'+l.textContent).slice(0,1200)};
+async function init(){
+  try{template=await (await fetch('./template.json')).json();
+    const r=await fetch(API+'/system_stats'); if(r.ok){$('#status').innerHTML='<span style="color:var(--green)">● 엔진 연결됨</span>'}
+  }catch(e){$('#status').innerHTML='<span style="color:#ff6b6b">● 엔진 연결 실패 (터널 확인)</span>';log('연결오류: '+e.message)}
+}
+function setupDrop(el,which){
+  const inp=el.querySelector('input');
+  el.onclick=()=>inp.click();
+  inp.onchange=()=>inp.files[0]&&upload(inp.files[0],el,which);
+  el.ondragover=e=>{e.preventDefault();el.style.borderColor='var(--accent)'};
+  el.ondragleave=()=>el.style.borderColor='';
+  el.ondrop=e=>{e.preventDefault();el.style.borderColor='';e.dataTransfer.files[0]&&upload(e.dataTransfer.files[0],el,which)};
+}
+async function upload(file,el,which){
+  log((which==='person'?'모델':'의상')+' 업로드중…');
+  const fd=new FormData(); fd.append('image',file); fd.append('overwrite','true'); fd.append('subfolder','monk_vton');
+  try{
+    const r=await fetch(API+'/upload/image',{method:'POST',body:fd}); const d=await r.json();
+    const name=d.name, sub=d.subfolder||'';
+    const url=URL.createObjectURL(file);
+    el.classList.add('has'); el.innerHTML='<img src="'+url+'">';
+    if(which==='person'){
+      const im=new Image(); im.onload=()=>{persona={name,sub,w:im.naturalWidth,h:im.naturalHeight};log('모델 설정: '+name+' ('+im.naturalWidth+'×'+im.naturalHeight+')')}; im.src=url;
+    }else{garment={name,sub};log('의상 설정: '+name)}
+  }catch(e){log('업로드 실패: '+e.message)}
+}
+$('#seg').onclick=e=>{if(e.target.dataset.mode){mode=e.target.dataset.mode;[...$('#seg').children].forEach(b=>b.classList.toggle('on',b===e.target))}};
+
+$('#run').onclick=run;
+async function run(){
+  if(busy||!template)return; busy=true; $('#run').disabled=true; $('#prog').classList.add('show'); $('#prog i').style.width='8%';
+  try{
+    const p=JSON.parse(JSON.stringify(template));
+    const pn=persona.sub?persona.sub+'/'+persona.name:persona.name;
+    const gn=garment.sub?garment.sub+'/'+garment.name:garment.name;
+    p['59'].inputs.image=pn; p['50'].inputs.image=gn;
+    const pr=PRESETS[mode];
+    p['60'].inputs.coordinates=coords(pr.pos); p['60'].inputs.neg_coordinates=coords(pr.neg);
+    p['60'].inputs.points_store=JSON.stringify({positive:pr.pos.map(([x,y])=>({x:Math.round(x*persona.w),y:Math.round(y*persona.h)})),negative:pr.neg.map(([x,y])=>({x:Math.round(x*persona.w),y:Math.round(y*persona.h)}))});
+    p['60'].inputs.width=persona.w; p['60'].inputs.height=persona.h;
+    p['200'].inputs.filename_prefix='VTON_studio_'+mode;
+    log('생성 요청 ('+mode+')…');
+    const r=await fetch(API+'/prompt',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:p,client_id:CLIENT})});
+    const d=await r.json();
+    if(!d.prompt_id){log('요청 거부: '+JSON.stringify(d).slice(0,300));throw new Error('queue')}
+    log('큐 진입: '+d.prompt_id.slice(0,8)+' — 생성중(약 1분)');
+    await poll(d.prompt_id);
+  }catch(e){log('오류: '+e.message)}
+  busy=false; $('#run').disabled=false; setTimeout(()=>$('#prog').classList.remove('show'),800);
+}
+async function poll(id){
+  for(let i=0;i<90;i++){
+    await new Promise(r=>setTimeout(r,2000));
+    $('#prog i').style.width=Math.min(12+i*4,92)+'%';
+    let h; try{h=await (await fetch(API+'/history/'+id)).json()}catch(e){continue}
+    if(h[id]){
+      const st=h[id].status||{};
+      if(st.status_str==='error'){log('생성 에러 — 입력/마스크 확인');return}
+      const outs=h[id].outputs||{};
+      for(const nid in outs){for(const im of (outs[nid].images||[])){
+        if(im.type==='output'){$('#prog i').style.width='100%';addResult(im);log('완료 ✓');return}
+      }}
+    }
+  }
+  log('시간초과');
+}
+function addResult(im){
+  const url=API+'/view?filename='+encodeURIComponent(im.filename)+'&subfolder='+encodeURIComponent(im.subfolder||'')+'&type=output';
+  const res=$('#results'); if(res.querySelector('.empty'))res.innerHTML='';
+  const c=document.createElement('div'); c.className='card';
+  c.innerHTML='<img src="'+url+'"><div class="meta"><span>'+mode+' · 좌=의상 / 우=결과</span><a href="'+url+'" download>저장</a></div>';
+  c.querySelector('img').onclick=()=>{$('#zoom img').src=url;$('#zoom').style.display='flex'};
+  res.prepend(c);
+}
+$('#zoom').onclick=()=>$('#zoom').style.display='none';
+['dropPerson','dropGarment'].forEach((id,i)=>setupDrop($('#'+id),i?'garment':'person'));
+init();
+</script>
+</body>
+</html>

@@ -388,3 +388,7 @@
 ## 2026-05-31
 - 신규: memory/project_4060_main_agent.md — 4060 메인 작업자=쌍아(막내 아님), 지시서 수신자 기본값. ComfyUI/VTON 거점
 - MEMORY.md 역할인식 섹션에 4060 메인=쌍아 1행 추가
+
+## 2026-06-01
+- 신규: memory/feedback_secret_key_ops.md — 헌법 4조 운영해석. 기존 키를 GCP/secret/git에 등록=일임 업무, 금지는 챗 노출·임의 생성·placeholder뿐 (작가님 정정)
+- MEMORY.md 외장메모리 섹션에 비밀키 운영 해석 1행 추가
