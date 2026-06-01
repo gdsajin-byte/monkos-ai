@@ -64,7 +64,7 @@ NSFW 커뮤니티(Civitai 사실계)가 인체 리얼리즘을 선도하는 게 
 | Phase 0 | SSH 복구 + ComfyUI 환경 정찰 | ✅ 완료 (5/30~5/31) |
 | Phase 1 | 클라우드 타당성 검증 (Imagen4/nano 실측 → 불가 확정) | ✅ 완료 (5/31) |
 | Phase 2 | 4060 CatVTON_Wrapper 설치 + 이너웨어 PoC (1단계 검증) | ✅ 완료 (3컷, 5/31) |
-| Phase 3 | 품질 부족 시 RunPod 2단계 (CatVTON+Flux Fill / Qwen·HiDream) | ❌ 조건부 |
+| Phase 3 | 품질 부족 시 RunPod 2단계 (CatVTON+Flux Fill / Qwen·HiDream) | 🔄 진행 — 첫 컷 검증 완료(2026-06-01) |
 | Phase 4 | 워크플로우 정형화 + 상세페이지 양산 체계 | ❌ 대기 |
 
 ## 히스토리
@@ -75,3 +75,5 @@ NSFW 커뮤니티(Civitai 사실계)가 인체 리얼리즘을 선도하는 게 
 | 2026-05-31 | iMac/쌍아 | 모델 매트릭스 + 2단계 GPU 전략 반영(4060 검증→RunPod 양산). VTON SOTA=CatVTON+Flux Fill, 베이스 후보 Qwen/HiDream/Z-Image | 모델전략 섹션 | active |
 | 2026-05-31 | 4060/쌍아 | CatVTON 베이스라인 PoC — 환경구축+가중치+착장 3컷. VRAM 51%(4199MiB)/컷당 45~50초/OOM 없음. 정체성·교체 정합성 우수, 텍스처 평면화(SD1.5 한계) → RunPod 2단계 권장 | COMPLETION_20260531_4060쌍아_이너웨어VTON_CatVTON_PoC, test_outputs/VTON_PoC_20260531(3컷) | active |
 | 2026-05-31 | iMac/쌍아 | RunPod 2단계 인프라 구축(API직접제어·볼륨 e0sdw1kxku·3090 pod·SSH·CatvtonFlux노드·LoRA·HF토큰·Flux Fill다운로드 착수). pod EXITED(과금정지) | 4060 SD1.5 베이스라인=납품미달 / RunPod Flux Fill 환경 | active |
+| 2026-06-01 | iMac/쌍아 | **RunPod Flux Fill 첫 컷 성공** — 가용성 폴링으로 새 3090 pod 확보(볼륨 100GB 확장), venv 부팅, UI→API 변환기 자작(4버그 수정), SAM2 자동마스크. 캐미솔→브라렛 30steps/257초, 정체성보존·**레이스 텍스처 SD1.5 평면화 대비 개선** | cut1_camisole-to-bralette_FluxFill.png, wf_convert.py | active |
+| 2026-06-01 | iMac/쌍아 | **⭐ 품질 핵심 규명 = garment·person 포즈/각도 일치** — 측면 person엔 garment 디테일 미전사(원본 레이스 잔존), 정면-정면 매칭 시 매끈 심리스 정확 전사+색 반영. 모델 한계 아닌 입력정렬 문제. 양산규칙: 정면↔정면 페어링. MONK VTON Studio(localhost:8080, ComfyUI 노드 숨긴 전용UI) 제작 | dain11_sage_front_result.png, VTON Studio, 양산규칙 | active |
