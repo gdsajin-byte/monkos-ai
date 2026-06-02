@@ -104,7 +104,8 @@ AI 증명사진 앱 (독립 iOS 앱)        웹 서비스 (idphoto-kr/jp)
 | **05/18** | **쌍아** | **PF_PHOTOPRO → PF_IDPHOTO 승격** | 본 문서 | ✅ |
 | 05/18 | 쌍아 | **idphoto-kr PRECHECK 2.0-flash 롤백** — 2.5-flash 엄격 이슈로 사전분석 모델을 2.0으로 환원 (`ce34b4ec`) | server.js | ⚠️ |
 | 06/02 | 막내1 | **[검증] PF 현행성 검증** — Track A "✅ 완료" 표기가 KR 롤백 미반영 발견. 코드 실측: KR precheck=2.0(롤백), JP precheck=2.5(정상), KR/JP Live=2.0(미전환). Phase 현황·리스크 현행화 | 광역오더 #1 | ✅ |
-| 06/02 | 막내1 | **Gemini 2.0→2.5 긴급 전환** — KR precheck `gemini-2.5-flash`(fallback `2.5-flash-lite`) + 프롬프트 완화(엄격 이슈 방지: 체크 4항목 축소, "AI 입력 원본" 문맥). KR/JP Live `gemini-2.5-flash`. prod 배포 rev 00190-8sk. 헬스체크 확인 | `8e5b890e`, deploy.sh prod | ✅ |
+| 06/02 | 막내1 | **Gemini 2.0→2.5 긴급 전환** — KR precheck `gemini-2.5-flash`(fallback `2.5-flash-lite`) + 프롬프트 완화(엄격 이슈 방지: 체크 4항목 축소, "AI 입력 원본" 문맥). KR/JP Live `gemini-2.5-flash`. KR prod 배포 rev 00190-8sk. 헬스체크 확인 | `8e5b890e`, deploy.sh prod | ✅ |
+| 06/02 | 막내1 | **idphoto-jp prod 배포** — Live 2.0→2.5 전환 반영. rev 00116-4jc, 100% 트래픽. `idphoto-jp.monkos.ai` 헬스체크 정상. KR+JP 양국 Gemini 2.0 EOL 완전 해소 | deploy.sh prod | ✅ |
 
 ### Phase 5 — 독립 iOS 네이티브 증명사진 앱 + 결제 개편 (05/18~) **← 현재**
 
