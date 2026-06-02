@@ -1,5 +1,5 @@
-# MONKOS ID Photo KR Service - Cloud Run
-# idphoto-kr.monkos.ai | 한국 특화 AI 증명사진 (Gemini Live + Imagen + QC)
+# MONKOS ID Photo JP Service - Cloud Run
+# idphoto-jp.monkos.ai | 日本特化 AI証明写真 (Gemini Live + Imagen + QC)
 
 # Stage 1: JS 난독화 — 일시 비활성화 (카메라 충돌 원인 조사 중)
 # FROM node:20-slim AS builder

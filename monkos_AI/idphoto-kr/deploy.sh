@@ -90,6 +90,7 @@ gcloud config set project ${PROJECT_ID}
 
 # 2. Docker 이미지 빌드
 echo -e "\n${GREEN}[2/3]${NC} Docker 이미지 빌드 중..."
+cd "$SCRIPT_DIR"
 gcloud builds submit --tag gcr.io/${PROJECT_ID}/${SERVICE_NAME}
 
 # 3. Cloud Run 배포

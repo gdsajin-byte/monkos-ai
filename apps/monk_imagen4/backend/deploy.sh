@@ -13,6 +13,8 @@
 
 set -e  # 에러 발생 시 즉시 종료
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
 # 색상 코드
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -57,6 +59,7 @@ gcloud services enable storage-api.googleapis.com
 
 # 3. Docker 이미지 빌드 및 푸시 (Cloud Build 사용)
 echo -e "\n${GREEN}[3/5]${NC} Docker 이미지 빌드 중..."
+cd "$SCRIPT_DIR"
 gcloud builds submit --tag gcr.io/${PROJECT_ID}/${SERVICE_NAME}
 
 # 4. Cloud Run 배포
