@@ -77,6 +77,7 @@ domain: 인프라
 | 05/12 | iMac/쌍아 | **날짜 불일치 버그 수정** — daily-briefing.yml의 Issue/텔레그램 step이 yesterday(5/10) 참조하여 옛날 브리핑 발송. GITHUB_OUTPUT으로 target_date 전달 방식 전환 | `a9b9adcb` | ✅ |
 | 05/12 | iMac/쌍아 | **채널 전환** — 팀봇(@monkos_team_bot)→팩토리봇(@monkos_factory_bot), 팀챗→작가님DM. GCP Cloud Functions에서 토큰 추출 → GitHub Secrets 갱신 | SECRET_INVENTORY.md | ✅ |
 | 06/02 | 막내1 | **[검증] PF 현행성 검증** — Phase 2(6항목 중 5항목 완료) 및 Phase 3(5항목 중 2항목 완료)이 Phase 테이블에 ❌로 잔류 발견. Phase 현황 현행화 | 광역오더 #1 | ✅ |
+| 06/02 | 막내1 | **deploy.sh CWD 결함 전수 수정** — 5개 서비스(idphoto-kr/jp, portal, studio, monk_imagen4) `gcloud builds submit` 직전 `cd "$SCRIPT_DIR"` 추가. jp Dockerfile kr 주석 잔재 정정. 6/2 jp 오배포 INCIDENT 재발 방지 | `6034fa1f` | ✅ |
 
 ---
 
