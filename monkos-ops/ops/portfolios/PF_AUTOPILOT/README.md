@@ -78,6 +78,8 @@ domain: 인프라
 | 05/12 | iMac/쌍아 | **채널 전환** — 팀봇(@monkos_team_bot)→팩토리봇(@monkos_factory_bot), 팀챗→작가님DM. GCP Cloud Functions에서 토큰 추출 → GitHub Secrets 갱신 | SECRET_INVENTORY.md | ✅ |
 | 06/02 | 막내1 | **[검증] PF 현행성 검증** — Phase 2(6항목 중 5항목 완료) 및 Phase 3(5항목 중 2항목 완료)이 Phase 테이블에 ❌로 잔류 발견. Phase 현황 현행화 | 광역오더 #1 | ✅ |
 | 06/02 | 막내1 | **deploy.sh CWD 결함 전수 수정** — 5개 서비스(idphoto-kr/jp, portal, studio, monk_imagen4) `gcloud builds submit` 직전 `cd "$SCRIPT_DIR"` 추가. jp Dockerfile kr 주석 잔재 정정. 6/2 jp 오배포 INCIDENT 재발 방지 | `6034fa1f` | ✅ |
+| 06/02 | iMac/쌍아 | **gdocs 토큰 중앙화 (광역오더 #7-A)** — iMac 정본 token.json → GCP Secret Manager `MCP_GDOCS_TOKEN` + GitHub Secrets 3종(stdin 파이프, 값 무노출). `gdocs_mcp.sh`에 부재 시 GCP 자동복원 로직 추가. 삭제→복원 **바이트 동일·권한 600** 검증. 타 디바이스 무인증 동작 확보 | gdocs_mcp.sh, COMPLETION | ✅ |
+| 06/02 | iMac/쌍아 | **iMac .env 실측 + 인벤토리 현행화 (광역오더 #7-B)** — 유니크 34개 재집계(CF_WORKERS_AI_TOKEN 중복·CHAT 2종 편입·N8N iMac부재). SECRET_INVENTORY §J GCP Secret Manager 신설. M1 실측 비교는 작가님 M1 직접 pull로 이관 | SECRET_INVENTORY.md | ⏳ |
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 type: inventory
-date: 2026-05-11
+date: 2026-06-02
 updated_by: iMac/쌍아
 status: 현행
 ---
@@ -9,13 +9,15 @@ status: 현행
 
 > ⚠️ **이 문서에 키 값을 절대 기재하지 않는다.** 항목+위치+용도만 기록.
 > 전신: `credentials_inventory.md` (2026-02-19). 본 문서가 정본.
-> 최종 갱신: 2026-05-11
+> 최종 갱신: 2026-06-02 (광역오더 #7 — gdocs 토큰 중앙화 + iMac 실측 갭 반영)
 
 ---
 
 ## 1. 저장소별 시크릿 맵
 
-### A. monkos_AI/.env (Cloud Run 소스 — 33개)
+### A. monkos_AI/.env (Cloud Run 소스 — iMac 실측 34개 유니크)
+
+> 2026-06-02 iMac 실측: 35행(CF_WORKERS_AI_TOKEN 1행 중복) → 유니크 34개. 값 비노출 변수명 대조.
 
 | # | 변수명 | 용도 | 사용 서비스 | 비고 |
 |---|--------|------|------------|------|
@@ -26,7 +28,7 @@ status: 현행
 | 5 | GEMINI_API_KEY | Google AI Studio | idphoto-kr/jp | |
 | 6 | CF_API_TOKEN | Cloudflare API | DNS 관리 | |
 | 7 | CF_ZONE_ID | Cloudflare Zone ID | DNS 관리 | |
-| 8 | CF_WORKERS_AI_TOKEN | Workers AI 접근 | 챗봇 등 | ⭐ 누락 (2개 중복 기재) |
+| 8 | CF_WORKERS_AI_TOKEN | Workers AI 접근 | 챗봇 등 | ⚠️ .env에 2행 중복 기재 (2026-06-02 실측 재확인) — 정리 대기(작가님 승인) |
 | 9 | KAKAO_REST_API_KEY | 카카오 OAuth | portal | |
 | 10 | KAKAO_CLIENT_SECRET | 카카오 OAuth 시크릿 | portal | |
 | 11 | KAKAO_REDIRECT_URI | 카카오 리다이렉트 | portal | |
@@ -48,10 +50,12 @@ status: 현행
 | 27 | X_ACCESS_TOKEN_SECRET | X OAuth 시크릿 | n8n | |
 | 28 | X_CONSUMER_KEY | X API 컨슈머 키 | n8n | |
 | 29 | X_CONSUMER_SECRET | X API 컨슈머 시크릿 | n8n | |
-| 30 | N8N_API_KEY | n8n 자동화 API | Docker 4060 | |
+| 30 | N8N_API_KEY | n8n 자동화 API | Docker 4060 | ⚠️ 2026-06-02 iMac .env엔 **부재** — 4060 전용 추정. 위치 재확인 필요 |
 | 31 | TX_API_KEY | D1 거래 원장 인증 | portal, MONK_kr | |
 | 32 | TX_API_URL | D1 거래 원장 엔드포인트 | portal, MONK_kr | |
 | 33 | REMOVEBG_API_KEY | remove.bg 배경 제거 API | 크롭앱, 스펙스, Android | ⭐ 2026-05-25 추가. 무료 50장/월 |
+| 34 | CHAT_WORKERS_URL | 챗봇 Workers 엔드포인트 | portal | ⭐ 2026-06-02 §A 편입 (§F deploy.sh엔 기존 존재) |
+| 35 | CHAT_API_KEY | 챗봇 Workers API 인증 | portal | ⭐ 2026-06-02 §A 편입 (§3 CF Dashboard와 동일값) |
 
 ### B. 루트 .env (로컬 전용 — 2개)
 
@@ -122,6 +126,20 @@ status: 현행
 | monk-db | 루트 wrangler.toml |
 | monk-services-db | cloudflare-workers wrangler.toml |
 
+### J. GCP Secret Manager (로컬 런타임 키 표준 — project=monkos)
+
+> 2026-06-02 신설. **로컬 도구 런타임 키의 표준 저장소** (GitHub Secrets는 write-only/Actions 전용이라 로컬이 값을 못 읽음).
+> 접근: `gcloud secrets versions access latest --secret=<NAME> --project=monkos`
+
+| 시크릿명 | 용도 | 사용처 | 등록일 |
+|---------|------|--------|--------|
+| MCP_GDOCS_CLIENT_ID | gdocs MCP OAuth 클라이언트 ID | `scripts/tools/gdocs_mcp.sh` | 기존 |
+| MCP_GDOCS_CLIENT_SECRET | gdocs MCP OAuth 클라이언트 시크릿 | `scripts/tools/gdocs_mcp.sh` | 기존 |
+| MCP_GDOCS_TOKEN | gdocs MCP refresh token (token.json 전체) | gdocs_mcp.sh 자동복원 | ⭐ 2026-06-02 신설 |
+
+**gdocs 토큰 중앙화 (광역오더 #7)**: iMac 정본 `~/.config/mcp-google-docs/token.json` → `MCP_GDOCS_TOKEN`으로 등록.
+`gdocs_mcp.sh`가 token.json 부재 시 GCP에서 자동 복원 → **타 디바이스(M1 등) 무인증 동작**. 검증 완료(바이트 동일 복원·권한 600).
+
 ---
 
 ## 2. 갭 분석 (2/19 인벤토리 대비)
@@ -175,6 +193,9 @@ status: 현행
 | TELEGRAM_BOT_TOKEN | Firebase Functions (telegramWebhook) @monkos_factory_bot | — | 05-12 | 텔레그램 알림 허브 (팩토리 봇) |
 | TELEGRAM_CHAT_ID | Firebase Functions WRITER_CHAT_ID | — | 05-12 | 작가님 DM (팩토리 봇 → 작가님) |
 | PAT_TOKEN | GitHub Fine-grained PAT (MONKOS_PAT, No expiration) | — | 05-11 | cross-repo 접근 (monk_project + monkos-works + monk-kr) |
+| MCP_GDOCS_CLIENT_ID | GCP Secret Manager 동기화 | — | 06-02 | 정본 카탈로그 + 향후 Actions 확장 |
+| MCP_GDOCS_CLIENT_SECRET | GCP Secret Manager 동기화 | — | 06-02 | 정본 카탈로그 + 향후 Actions 확장 |
+| MCP_GDOCS_TOKEN | token.json 전체 (GCP와 동일 페이로드) | — | 06-02 | gdocs 토큰 카탈로그 |
 
 ### 향후 확장 (배포 자동화 시)
 
