@@ -105,7 +105,8 @@ AI 증명사진 앱 (독립 iOS 앱)        웹 서비스 (idphoto-kr/jp)
 | 05/18 | 쌍아 | **idphoto-kr PRECHECK 2.0-flash 롤백** — 2.5-flash 엄격 이슈로 사전분석 모델을 2.0으로 환원 (`ce34b4ec`) | server.js | ⚠️ |
 | 06/02 | 막내1 | **[검증] PF 현행성 검증** — Track A "✅ 완료" 표기가 KR 롤백 미반영 발견. 코드 실측: KR precheck=2.0(롤백), JP precheck=2.5(정상), KR/JP Live=2.0(미전환). Phase 현황·리스크 현행화 | 광역오더 #1 | ✅ |
 | 06/02 | 막내1 | **Gemini 2.0→2.5 긴급 전환** — KR precheck `gemini-2.5-flash`(fallback `2.5-flash-lite`) + 프롬프트 완화(엄격 이슈 방지: 체크 4항목 축소, "AI 입력 원본" 문맥). KR/JP Live `gemini-2.5-flash`. KR prod 배포 rev 00190-8sk. 헬스체크 확인 | `8e5b890e`, deploy.sh prod | ✅ |
-| 06/02 | 막내1 | **idphoto-jp prod 배포** — Live 2.0→2.5 전환 반영. rev 00116-4jc, 100% 트래픽. `idphoto-jp.monkos.ai` 헬스체크 정상. KR+JP 양국 Gemini 2.0 EOL 완전 해소 | deploy.sh prod | ✅ |
+| 06/02 | 막내1 | **🔴 INCIDENT: idphoto-jp 오배포** — rev 00116에서 kr 코드가 jp로 서빙됨(deploy.sh가 CWD 미고정 + 잘못된 디렉토리에서 실행). 일본 손님에게 한국어+한국규격 제공. 13:19~13:54 약 35분 장애 | rev 00116-4jc | 🔴 |
+| 06/02 | 막내1 | **INCIDENT 복구** — `cd idphoto-jp` 후 `./deploy.sh prod` 재실행. rev 00117-j7s, 100% 트래픽. `service: "monkos-idphoto-jp"` + 일본 규격(`証明写真`/`コーチング`) 확인. 원인: deploy.sh CWD 미고정 | deploy.sh prod | ✅ |
 
 ### Phase 5 — 독립 iOS 네이티브 증명사진 앱 + 결제 개편 (05/18~) **← 현재**
 
