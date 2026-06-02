@@ -329,7 +329,7 @@ async function connectGeminiLive(session, clientId, style = 'passport') {
 
   try {
     session.gemini = await ai.live.connect({
-      model: 'gemini-2.0-flash-live-preview-04-09',
+      model: 'gemini-2.5-flash',
       config: {
         responseModalities: ['TEXT'],
         systemInstruction: { parts: [{ text: COACHING_INSTRUCTIONS[style] || COACHING_INSTRUCTIONS.passport }] },
@@ -371,19 +371,18 @@ function extractBase64(base64Input) {
 }
 
 // === 사전분석 폴백 모델 ===
-const PRECHECK_MODELS = ['gemini-2.0-flash'];
+const PRECHECK_MODELS = ['gemini-2.5-flash', 'gemini-2.5-flash-lite'];
 
-// === 사전분석 (SPA 호환 — Gemini 2.0 Flash via Vertex AI ADC) ===
-const PRE_CHECK_INSTRUCTION = `이 사진이 증명사진 원본으로 적합한지 분석해 주세요.
+// === 사전분석 (SPA 호환 — Vertex AI ADC) ===
+const PRE_CHECK_INSTRUCTION = `이 사진이 증명사진 AI 생성의 원본으로 사용 가능한지 판단해 주세요.
+
+중요: 이것은 최종 증명사진이 아닌 AI 생성의 입력 원본입니다. 완벽하지 않아도 AI가 보정할 수 있으므로 관대하게 판정하세요. 명백한 결격(얼굴 미감지, 심한 흔들림, 눈 감음)만 불합격으로 처리합니다.
 
 [체크 항목]
-1. 얼굴 감지: 얼굴이 1개 명확하게 보이는가?
-2. 정면성: 정면을 보고 있는가? (좌우 기울기, 고개 숙임/들림)
-3. 조명: 얼굴에 심한 그림자나 역광이 없는가?
-4. 선명도: 흔들림 없이 선명한가?
-5. 얼굴 크기: 프레임 대비 얼굴이 충분히 큰가? (최소 20%)
-6. 표정: 무표정 또는 자연스러운 미소인가?
-7. 눈: 눈을 감지 않았는가?
+1. 얼굴 감지: 얼굴이 1개 보이는가?
+2. 정면성: 대략 정면인가? (약간의 기울기는 허용)
+3. 선명도: 얼굴을 식별할 수 있을 정도로 선명한가?
+4. 눈: 눈을 감지 않았는가?
 
 [응답 형식 — JSON만 출력]
 {
@@ -394,9 +393,9 @@ const PRE_CHECK_INSTRUCTION = `이 사진이 증명사진 원본으로 적합한
   "suggestion": "한줄 조언"
 }
 
-suitable: 증명사진 생성 가능 여부 (true/false)
-score: 종합 점수 (0-100, 70 이상이면 suitable=true)
-issues: 문제 목록 (빈 배열이면 문제 없음)
+suitable: AI 생성 입력으로 사용 가능 여부 (true/false). 명백한 결격이 없으면 true.
+score: 종합 점수 (0-100, 60 이상이면 suitable=true)
+issues: 명백한 결격만 기재 (빈 배열이면 문제 없음)
 suggestion: 사용자에게 보여줄 한줄 한국어 조언`;
 
 async function runPreCheck(imageBase64) {
