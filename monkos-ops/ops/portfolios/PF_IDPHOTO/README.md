@@ -104,6 +104,7 @@ AI 증명사진 앱 (독립 iOS 앱)        웹 서비스 (idphoto-kr/jp)
 | **05/18** | **쌍아** | **PF_PHOTOPRO → PF_IDPHOTO 승격** | 본 문서 | ✅ |
 | 05/18 | 쌍아 | **idphoto-kr PRECHECK 2.0-flash 롤백** — 2.5-flash 엄격 이슈로 사전분석 모델을 2.0으로 환원 (`ce34b4ec`) | server.js | ⚠️ |
 | 06/02 | 막내1 | **[검증] PF 현행성 검증** — Track A "✅ 완료" 표기가 KR 롤백 미반영 발견. 코드 실측: KR precheck=2.0(롤백), JP precheck=2.5(정상), KR/JP Live=2.0(미전환). Phase 현황·리스크 현행화 | 광역오더 #1 | ✅ |
+| 06/02 | 막내1 | **Gemini 2.0→2.5 긴급 전환** — KR precheck `gemini-2.5-flash`(fallback `2.5-flash-lite`) + 프롬프트 완화(엄격 이슈 방지: 체크 4항목 축소, "AI 입력 원본" 문맥). KR/JP Live `gemini-2.5-flash`. prod 배포 rev 00190-8sk. 헬스체크 확인 | `8e5b890e`, deploy.sh prod | ✅ |
 
 ### Phase 5 — 독립 iOS 네이티브 증명사진 앱 + 결제 개편 (05/18~) **← 현재**
 
@@ -157,9 +158,9 @@ P0 전팀 진단(500 클릭 0 결제), SEO 사각지대 발견, 광고=오가닉
 
 | 항목 | 상태 | 비고 |
 |------|------|------|
-| Track A: 2.0-flash → 2.5-flash (KR precheck) | ⚠️ | `79be913a`에서 2.5 전환 후 `ce34b4ec`(5/18)에서 **2.0 롤백** (2.5 엄격 이슈). D-day(6/1) 경과 |
-| Track A: 2.0-flash → 2.5-flash (JP precheck) | ✅ | JP는 2.5 정상 유지 |
-| Track B: Live 모델 → 3.1-flash-live-preview | ⏳ | KR/JP 모두 `gemini-2.0-flash-live-preview-04-09` 잔류. D-day(6/1) 경과 |
+| Track A: KR precheck 2.5 전환 | ✅ | `8e5b890e`(6/2) 2.5-flash 전환 + 프롬프트 완화. fallback: 2.5-flash-lite |
+| Track A: JP precheck 2.5 | ✅ | `79be913a` 이후 유지 |
+| Track B: KR/JP Live 2.5 전환 | ✅ | `8e5b890e`(6/2) gemini-2.5-flash 전환 완료 |
 
 #### 5-D. 환불정책
 
@@ -233,7 +234,7 @@ AI 생성 이미지에서 원본과 다른 인물이 나올 수 있음. 제1원�
 | Vertex AI 비용 급증 | 중 | 모니터링 + 자체 모델 백업 |
 | Apple IAP 30% 수수료 | 확정 | 웹 크레딧 20% 보너스로 웹 전환 유인 |
 | iOS 앱스토어 심사 리젝 | 중 | 기능 완성 후 즉시 제출. 리젝 사유별 대응 준비 |
-| **Gemini 2.0 서비스 종료 (D-day 6/1 경과)** | **고** | **KR precheck 2.0 롤백 상태 + KR/JP Live 2.0 잔류. 긴급 대응 필요** |
+| ~~Gemini 2.0 서비스 종료~~ | ~~고~~ | ✅ 해소 (6/2) — KR/JP precheck + Live 모두 2.5-flash 전환 완료 (`8e5b890e`) |
 | 정체성 보존 실패 | 저 | 제1원칙 세이프가드 + QC 이중 검증 |
 
 ---
