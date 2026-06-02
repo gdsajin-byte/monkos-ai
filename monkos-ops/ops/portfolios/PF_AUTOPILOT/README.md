@@ -76,6 +76,7 @@ domain: 인프라
 | 05/12 | iMac/막내1 | Phase 2 품질 보정 2차 — 노이즈 제거 6건 (날짜 표기, URL 디코딩, SEO Known Issues, RSS 키워드 필터, 피드 정체 경고, 소규모 절대수치). workflow_dispatch 검증 완료 | BRIEFING_20260509.md (보정) | ✅ |
 | 05/12 | iMac/쌍아 | **날짜 불일치 버그 수정** — daily-briefing.yml의 Issue/텔레그램 step이 yesterday(5/10) 참조하여 옛날 브리핑 발송. GITHUB_OUTPUT으로 target_date 전달 방식 전환 | `a9b9adcb` | ✅ |
 | 05/12 | iMac/쌍아 | **채널 전환** — 팀봇(@monkos_team_bot)→팩토리봇(@monkos_factory_bot), 팀챗→작가님DM. GCP Cloud Functions에서 토큰 추출 → GitHub Secrets 갱신 | SECRET_INVENTORY.md | ✅ |
+| 06/02 | 막내1 | **[검증] PF 현행성 검증** — Phase 2(6항목 중 5항목 완료) 및 Phase 3(5항목 중 2항목 완료)이 Phase 테이블에 ❌로 잔류 발견. Phase 현황 현행화 | 광역오더 #1 | ✅ |
 
 ---
 
@@ -105,30 +106,30 @@ domain: 인프라
 | 배포 결과 통합 알림 (Issue 또는 텔레그램) | ❌ | 막내 | |
 | 멀티레포 이벤트 전파 설계 (repository_dispatch) | ❌ | 쌍아 | 분리 시점 대비 |
 
-### Phase 2 — 데일리 브리핑 (PF_BRIEF 흡수)
+### Phase 2 — 데일리 브리핑 (PF_BRIEF 흡수) ✅ 완료 (05/11~05/12)
 
 > 축1(성과) + 축2(교정) 자동화. 모바일 막내 설계 기반.
 
 | 항목 | 상태 | 담당 | 비고 |
 |------|------|------|------|
-| `daily_report.py` (GA4+GSC API 호출) | ❌ | 막내 | 모바일 막내 설계 완료 |
-| `daily-report.yml` (cron 09:00 KST) | ❌ | 막내 | workflow_dispatch 겸용 |
-| GitHub Issue 자동 생성 (라벨: 일일보고) | ❌ | 막내 | 폰 푸시 |
-| SEO 자동 순회 (HEAD/hreflang/canonical/404) | ❌ | 막내 | Playwright headless |
-| 브리핑 md 적립 (`monkos-ops/ops/briefings/`) | ❌ | 막내 | PF_BRIEF 경로 계승 |
-| PF_BRIEF → completed 전환 | ❌ | 쌍아 | Phase 2 완료 시 |
+| `daily_briefing.py` (GA4+GSC+RSS 4축) | ✅ | iMac/막내2 | `05/11` + 보정 2차 (`05/12`) |
+| `daily-briefing.yml` (cron + workflow_dispatch) | ✅ | iMac/막내2 | 날짜 전달 버그 수정 `a9b9adcb` |
+| GitHub Issue 자동 생성 (라벨: 일일보고) | ✅ | iMac/막내2 | Issue #1 생성 확인 |
+| SEO 자동 순회 (HEAD/hreflang/canonical/404) | ❌ | 막내 | Playwright headless — 미착수 |
+| 브리핑 md 적립 (`monkos-ops/ops/briefings/`) | ✅ | iMac/막내2 | BRIEFING_YYYYMMDD.md 자동 생성 |
+| PF_BRIEF → completed 전환 | ✅ | 쌍아 | 05/11 병합 완료 |
 
-### Phase 3 — 에이전트 연결 (웹↔로컬)
+### Phase 3 — 에이전트 연결 (웹↔로컬) 🔄 부분 완료
 
 > Managed Agents / Routines의 산출물을 Actions가 중계하여 로컬 에이전트에 전달.
 
 | 항목 | 상태 | 담당 |
 |------|------|------|
-| Managed Agents → git commit → Issue 생성 파이프라인 | ❌ | 쌍아(설계) + 막내 |
-| Routines → 파일 적립 → Actions 후처리 트리거 | ❌ | 쌍아(설계) + 막내 |
-| 뉴스 크롤링 자동화 (정부자금/AI 모델/업계) | ❌ | 막내 |
-| 텔레그램 알림 허브 | ❌ | 막내 |
-| R&D 마감일 알림 (PF_RND 연동) | ❌ | 막내 |
+| Managed Agents → git commit → Issue 생성 파이프라인 | ❌ | 쌍아(설계) + 막내 | 미착수 |
+| Routines → 파일 적립 → Actions 후처리 트리거 | ❌ | 쌍아(설계) + 막내 | 미착수 |
+| 뉴스 크롤링 자동화 (정부자금/AI 모델/업계) | ❌ | 막내 | 미착수 |
+| 텔레그램 알림 허브 | ✅ | iMac/막내2 | `05/11` telegram_notify.py + notify.yml + 봇 전환 |
+| R&D 마감일 알림 (PF_RND 연동) | ✅ | iMac/막내3 | `05/11` rnd_deadline_check.py + Issue #3 |
 
 ### Phase 4 — 자율 운용
 

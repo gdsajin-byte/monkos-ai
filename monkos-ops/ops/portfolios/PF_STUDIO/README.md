@@ -6,7 +6,7 @@ subject: AI 생성 통합 스튜디오 — 모델 스왑 + 증명/프로필 엔�
 created: 2026-03-06
 owner: 작가님
 leads: 쌍아(설계), 막내(실행)
-status: paused
+status: active
 ---
 
 # PF_STUDIO — AI 촬영실 UX + 내부 스튜디오
