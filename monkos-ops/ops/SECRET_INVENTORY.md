@@ -252,7 +252,7 @@ status: 현행
 | **M1** | `ssh m1` | macmini | SSH 키 | ~/.ssh/config |
 | **M2** | `sshm2` / `ssh m2` | kku | 비밀번호 (1234) | ~/.bash_profile + ~/.ssh/config |
 | **M4** | `ssh m4` | hansonngyi | 비밀번호 | ~/.ssh/config |
-| **4060** | `ssh4060` / `ssh 4060` | smuse73 | 비밀번호 (akrso4060) | ~/.bash_profile + ~/.ssh/config |
+| **4060** | `ssh4060` / `ssh 4060` | smuse73 | 비밀번호 (1234) — 2026-06-03 변경(akrso4060→1234, M2와 통일). SSH 키 인증 병행 | ~/.bash_profile + ~/.ssh/config |
 
 ### 원격 빌드 파이프라인 (5/13 확립)
 
