@@ -9,7 +9,29 @@ status: 현행
 
 > ⚠️ **이 문서에 키 값을 절대 기재하지 않는다.** 항목+위치+용도만 기록.
 > 전신: `credentials_inventory.md` (2026-02-19). 본 문서가 정본.
-> 최종 갱신: 2026-06-02 (광역오더 #7 — gdocs 토큰 중앙화 + iMac 실측 갭 반영)
+> 최종 갱신: 2026-06-03 (광역오더 #8 — .env 시크릿 하이브리드 표준 적용 + GCP 일괄 등록)
+
+---
+
+## 0. 키 저장 하이브리드 표준 (광역오더 #8 — 2026-06-03 확정)
+
+> **원칙: "시크릿은 GCP 런타임, 설정은 정본 배포, GitHub은 카탈로그."**
+> 작가님 승인(2026-06-02). 모든 키는 성격에 따라 아래 세 위치 중 하나를 **표준 저장소**로 한다.
+
+| 성격 | 표준 저장소 | 근거 |
+|------|------------|------|
+| **런타임 시크릿·토큰** (API 키, OAuth secret, access token) | **GCP Secret Manager** (project=monkos) | 디바이스 무인증 복원 (gdocs로 입증) |
+| **비밀 아닌 설정값** (PROJECT_ID·LOCATION·GCS_BUCKET·리다이렉트 URI·공개 ID 등) | **.env / git** | 단순 배포 |
+| **정본 카탈로그 + Actions** | **GitHub Secrets** | write-only, 백업·이력 |
+
+### monkos_AI/.env 분류 (34 유니크 — 2026-06-03 적용)
+
+- **시크릿 → GCP Secret Manager (24종, 변수명 그대로 등록)**: GEMINI_API_KEY · CF_API_TOKEN · CHAT_API_KEY · KAKAO_REST_API_KEY · KAKAO_CLIENT_SECRET · NAVER_CLIENT_SECRET · LINE_CHANNEL_SECRET · LINE_MESSAGING_ACCESS_TOKEN · LINE_MESSAGING_CHANNEL_SECRET · TOSS_SECRET_KEY · TOSS_WEBHOOK_SECRET · LEMONSQUEEZY_API_KEY · LEMONSQUEEZY_WEBHOOK_SECRET · TELEGRAM_BOT_TOKEN · TELEGRAM_TEAM_BOT_TOKEN · TEAM_NOTIFY_SECRET · X_ACCESS_TOKEN · X_ACCESS_TOKEN_SECRET · X_CONSUMER_KEY · X_CONSUMER_SECRET · N8N_API_KEY · TX_API_KEY · REMOVEBG_API_KEY · **ADMIN_UIDS**(경계 → 보수적 시크릿)
+  - 등록 방식: `.env` 값 → stdin 파이프(`gcloud secrets create/versions add --data-file=-`), **값 무노출**. 복원 정합 해시 대조 24/24 일치 검증.
+- **설정 → .env / git (10종)**: PROJECT_ID · LOCATION · GCS_BUCKET · KAKAO_REDIRECT_URI · CHAT_WORKERS_URL · TX_API_URL · CF_ZONE_ID · NAVER_CLIENT_ID · LINE_CHANNEL_ID · TEAM_CHAT_ID
+- **정리됨**: ~~CF_WORKERS_AI_TOKEN~~ — `.env`에 `붙여넣기` placeholder 2행 중복 + 코드 참조 0건(dead). 2026-06-03 GCP·.env 양쪽 완전 제거. 향후 Workers AI 실사용 시 실제 토큰으로 신규 등록.
+
+> M1 등 타 디바이스 .env 동기화: 시크릿은 GCP에서 복원, 설정은 .env 정본 배포. **M1 갭(-20) 실측·반영은 M1 온라인 시 별도 진행**(2026-06-03 M1 offline).
 
 ---
 
@@ -17,7 +39,8 @@ status: 현행
 
 ### A. monkos_AI/.env (Cloud Run 소스 — iMac 실측 34개 유니크)
 
-> 2026-06-02 iMac 실측: 35행(CF_WORKERS_AI_TOKEN 1행 중복) → 유니크 34개. 값 비노출 변수명 대조.
+> 2026-06-02 iMac 실측: 35행(CF_WORKERS_AI_TOKEN 1행 중복) → 유니크 34개.
+> **2026-06-03 갱신(오더 #8)**: CF_WORKERS_AI_TOKEN(dead placeholder) 완전 제거 → **현 유니크 34개**(시크릿 24 + 설정 10). 분류·등록 현황은 §0. 값 비노출 변수명 대조.
 
 | # | 변수명 | 용도 | 사용 서비스 | 비고 |
 |---|--------|------|------------|------|
@@ -28,7 +51,7 @@ status: 현행
 | 5 | GEMINI_API_KEY | Google AI Studio | idphoto-kr/jp | |
 | 6 | CF_API_TOKEN | Cloudflare API | DNS 관리 | |
 | 7 | CF_ZONE_ID | Cloudflare Zone ID | DNS 관리 | |
-| 8 | CF_WORKERS_AI_TOKEN | Workers AI 접근 | 챗봇 등 | ⚠️ .env에 2행 중복 기재 (2026-06-02 실측 재확인) — 정리 대기(작가님 승인) |
+| ~~8~~ | ~~CF_WORKERS_AI_TOKEN~~ | ~~Workers AI 접근~~ | — | ✅ **2026-06-03 정리 완료** — placeholder(`붙여넣기`) 2행 중복 + 코드 미참조(dead). GCP·.env 양쪽 삭제. §0 참조 |
 | 9 | KAKAO_REST_API_KEY | 카카오 OAuth | portal | |
 | 10 | KAKAO_CLIENT_SECRET | 카카오 OAuth 시크릿 | portal | |
 | 11 | KAKAO_REDIRECT_URI | 카카오 리다이렉트 | portal | |
@@ -136,6 +159,8 @@ status: 현행
 | MCP_GDOCS_CLIENT_ID | gdocs MCP OAuth 클라이언트 ID | `scripts/tools/gdocs_mcp.sh` | 기존 |
 | MCP_GDOCS_CLIENT_SECRET | gdocs MCP OAuth 클라이언트 시크릿 | `scripts/tools/gdocs_mcp.sh` | 기존 |
 | MCP_GDOCS_TOKEN | gdocs MCP refresh token (token.json 전체) | gdocs_mcp.sh 자동복원 | ⭐ 2026-06-02 신설 |
+| ELEVENLABS_API_KEY · KIMI_API_KEY | TTS·AI 프로토타입 | 루트 .env 대응 | 기존 |
+| **monkos_AI/.env 시크릿 24종** | §0 분류 참조 (GEMINI_API_KEY·CF_API_TOKEN·CHAT_API_KEY·KAKAO_*·NAVER_CLIENT_SECRET·LINE_*·TOSS_*·LEMONSQUEEZY_*·TELEGRAM_*·TEAM_NOTIFY_SECRET·X_*·N8N_API_KEY·TX_API_KEY·REMOVEBG_API_KEY·ADMIN_UIDS) | Cloud Run 런타임 / 타 디바이스 복원 | ⭐ **2026-06-03 일괄 등록 (광역오더 #8)** — 변수명 그대로, 해시 정합 24/24 |
 
 **gdocs 토큰 중앙화 (광역오더 #7)**: iMac 정본 `~/.config/mcp-google-docs/token.json` → `MCP_GDOCS_TOKEN`으로 등록.
 `gdocs_mcp.sh`가 token.json 부재 시 GCP에서 자동 복원 → **타 디바이스(M1 등) 무인증 동작**. 검증 완료(바이트 동일 복원·권한 600).

@@ -80,6 +80,7 @@ domain: 인프라
 | 06/02 | 막내1 | **deploy.sh CWD 결함 전수 수정** — 5개 서비스(idphoto-kr/jp, portal, studio, monk_imagen4) `gcloud builds submit` 직전 `cd "$SCRIPT_DIR"` 추가. jp Dockerfile kr 주석 잔재 정정. 6/2 jp 오배포 INCIDENT 재발 방지 | `6034fa1f` | ✅ |
 | 06/02 | iMac/쌍아 | **gdocs 토큰 중앙화 (광역오더 #7-A)** — iMac 정본 token.json → GCP Secret Manager `MCP_GDOCS_TOKEN` + GitHub Secrets 3종(stdin 파이프, 값 무노출). `gdocs_mcp.sh`에 부재 시 GCP 자동복원 로직 추가. 삭제→복원 **바이트 동일·권한 600** 검증. 타 디바이스 무인증 동작 확보 | gdocs_mcp.sh, COMPLETION | ✅ |
 | 06/02 | iMac/쌍아 | **iMac .env 실측 + 인벤토리 현행화 (광역오더 #7-B)** — 유니크 34개 재집계(CF_WORKERS_AI_TOKEN 중복·CHAT 2종 편입·N8N iMac부재). SECRET_INVENTORY §J GCP Secret Manager 신설. M1 실측 비교는 작가님 M1 직접 pull로 이관 | SECRET_INVENTORY.md | ⏳ |
+| 06/03 | iMac/쌍아 | **.env 시크릿 하이브리드 표준 적용 + GCP 일괄 등록 (광역오더 #8)** — 정본 34종을 시크릿24/설정10 분류. 시크릿 24종 GCP Secret Manager 등록(변수명 그대로, stdin 파이프 값무노출) + 해시 정합 24/24 검증. **CF_WORKERS_AI_TOKEN dead placeholder 규명**(`붙여넣기` 2행·코드 미참조)→GCP·.env 완전 제거. N8N 위치 확정(iMac .env 존재). SECRET_INVENTORY §0 표준 명문화. M1 갭 동기화는 M1 offline으로 추후 | SECRET_INVENTORY.md, COMPLETION | ✅ |
 
 ---
 
