@@ -392,3 +392,7 @@
 ## 2026-06-01
 - 신규: memory/feedback_secret_key_ops.md — 헌법 4조 운영해석. 기존 키를 GCP/secret/git에 등록=일임 업무, 금지는 챗 노출·임의 생성·placeholder뿐 (작가님 정정)
 - MEMORY.md 외장메모리 섹션에 비밀키 운영 해석 1행 추가
+
+## 2026-06-03
+- 신규: memory/feedback_maintenance_session_drain.md — 유지보수·보안 과잉이 작가님 Opus 세션 소진. 사각 연쇄 발굴 금지, 루틴/막내로 내릴 것. 시작 전 과잉방어 금지(레일이지 벽 아님). 작가님 3회 반복 신호
+- MEMORY.md 외장메모리 섹션에 "유지보수=세션 소진 경계" 1행 추가
