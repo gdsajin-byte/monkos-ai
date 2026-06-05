@@ -108,6 +108,7 @@ AI 증명사진 앱 (독립 iOS 앱)        웹 서비스 (idphoto-kr/jp)
 | 06/02 | 막내1 | **🔴 INCIDENT: idphoto-jp 오배포** — rev 00116에서 kr 코드가 jp로 서빙됨(deploy.sh가 CWD 미고정 + 잘못된 디렉토리에서 실행). 일본 손님에게 한국어+한국규격 제공. 13:19~13:54 약 35분 장애 | rev 00116-4jc | 🔴 |
 | 06/02 | 막내1 | **INCIDENT 복구** — `cd idphoto-jp` 후 `./deploy.sh prod` 재실행. rev 00117-j7s, 100% 트래픽. `service: "monkos-idphoto-jp"` + 일본 규격(`証明写真`/`コーチング`) 확인. 원인: deploy.sh CWD 미고정 | deploy.sh prod | ✅ |
 | 06/05 | 막내3 | **[INCIDENT] OAuth 게시 진단** — image_pro 정적앱은 OAuth 미사용(Gemini API키+CloudRun `image.monkos.ai`) 확정. 동의화면 "MONKOS IMAGE pro" 출처=AI Studio/PWA 빌드앱(proj monkos). 게시상태 gcloud 미노출→Console 확인 필요. 처방=Testing→Production 게시(승인 게이트) | [REPORT](../../reports/2026-06/REPORT_20260605_막내3_OAuth게시.md) | ⏳ 승인대기 |
+| 06/05 | 막내2 | **[INCIDENT P0] Gemini 라이브 장애 진단** — 근본원인=**AI Studio 선결제 크레딧 소진(429 RESOURCE_EXHAUSTED)**, 키 삭제 무관. GEMINI_API_KEY=살아있는 MONKOS NEW(fp 대조 일치), gemini-3·2.5 둘다 429. 복구=작가님 콘솔 빌링 충전(undelete/키교체/재배포 무의미). 4기능(KR/JP생성·image_pro·translate) 단일키 SPOF | [REPORT](../../reports/2026-06/REPORT_20260605_막내2_GeminiKEY진단복구.md) | ⏳ 승인대기 |
 
 ### Phase 5 — 독립 iOS 네이티브 증명사진 앱 + 결제 개편 (05/18~) **← 현재**
 
