@@ -126,10 +126,14 @@ app.post('/generate', async (req, res) => {
     };
 
     // Vertex AI 호출 (protobuf Value 변환 필수)
+    // gRPC 기본 deadline(30s)이 ultra 응답시간보다 짧아 DEADLINE_EXCEEDED 발생 → 모델별 타임아웃 명시 (2026-06-05)
+    const callTimeout = model === 'ultra' ? 120000 : 60000; // ultra 120s / fast 60s
     const [response] = await predictionClient.predict({
       endpoint,
       instances: instances.map(i => helpers.toValue(i)),
       parameters: helpers.toValue(parameters)
+    }, {
+      timeout: callTimeout
     });
 
     if (!response.predictions || response.predictions.length === 0) {
