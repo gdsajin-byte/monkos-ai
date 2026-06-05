@@ -109,6 +109,7 @@ AI 증명사진 앱 (독립 iOS 앱)        웹 서비스 (idphoto-kr/jp)
 | 06/02 | 막내1 | **INCIDENT 복구** — `cd idphoto-jp` 후 `./deploy.sh prod` 재실행. rev 00117-j7s, 100% 트래픽. `service: "monkos-idphoto-jp"` + 일본 규격(`証明写真`/`コーチング`) 확인. 원인: deploy.sh CWD 미고정 | deploy.sh prod | ✅ |
 | 06/05 | 막내3 | **[INCIDENT] OAuth 게시 진단** — image_pro 정적앱은 OAuth 미사용(Gemini API키+CloudRun `image.monkos.ai`) 확정. 동의화면 "MONKOS IMAGE pro" 출처=AI Studio/PWA 빌드앱(proj monkos). 게시상태 gcloud 미노출→Console 확인 필요. 처방=Testing→Production 게시(승인 게이트) | [REPORT](../../reports/2026-06/REPORT_20260605_막내3_OAuth게시.md) | ⏳ 승인대기 |
 | 06/05 | 막내2 | **[INCIDENT P0] Gemini 라이브 장애 진단** — 근본원인=**AI Studio 선결제 크레딧 소진(429 RESOURCE_EXHAUSTED)**, 키 삭제 무관. GEMINI_API_KEY=살아있는 MONKOS NEW(fp 대조 일치), gemini-3·2.5 둘다 429. 복구=작가님 콘솔 빌링 충전(undelete/키교체/재배포 무의미). 4기능(KR/JP생성·image_pro·translate) 단일키 SPOF | [REPORT](../../reports/2026-06/REPORT_20260605_막내2_GeminiKEY진단복구.md) | ⏳ 승인대기 |
+| 06/05 | 막내2 | **[INCIDENT P0] AI Studio 결제 복구 — 지갑 경계 실측 확정** — ⭐Vertex AI(ADC)=200 정상 vs AI Studio(API키)=429. 두 지갑 분리: GCP크레딧(ANNUAL24%)은 Vertex로 살아있고 AI Studio prepay만 0. 429에 QuotaFailure 부재→rate cap 아님(spending limit 가설 소거). 생성코어 gemini-3-pro-image=Vertex 404→AI Studio 결제 불가피. Path B(번역·분석 Vertex 부분복구) 가능 | [REPORT](../../reports/2026-06/REPORT_20260605_막내2_AIStudio결제복구.md) | ⏳ 결제대기 |
 
 ### Phase 5 — 독립 iOS 네이티브 증명사진 앱 + 결제 개편 (05/18~) **← 현재**
 
