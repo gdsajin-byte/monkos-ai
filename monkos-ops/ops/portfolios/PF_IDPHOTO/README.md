@@ -107,6 +107,7 @@ AI 증명사진 앱 (독립 iOS 앱)        웹 서비스 (idphoto-kr/jp)
 | 06/02 | 막내1 | **Gemini 2.0→2.5 긴급 전환** — KR precheck `gemini-2.5-flash`(fallback `2.5-flash-lite`) + 프롬프트 완화(엄격 이슈 방지: 체크 4항목 축소, "AI 입력 원본" 문맥). KR/JP Live `gemini-2.5-flash`. KR prod 배포 rev 00190-8sk. 헬스체크 확인 | `8e5b890e`, deploy.sh prod | ✅ |
 | 06/02 | 막내1 | **🔴 INCIDENT: idphoto-jp 오배포** — rev 00116에서 kr 코드가 jp로 서빙됨(deploy.sh가 CWD 미고정 + 잘못된 디렉토리에서 실행). 일본 손님에게 한국어+한국규격 제공. 13:19~13:54 약 35분 장애 | rev 00116-4jc | 🔴 |
 | 06/02 | 막내1 | **INCIDENT 복구** — `cd idphoto-jp` 후 `./deploy.sh prod` 재실행. rev 00117-j7s, 100% 트래픽. `service: "monkos-idphoto-jp"` + 일본 규격(`証明写真`/`コーチング`) 확인. 원인: deploy.sh CWD 미고정 | deploy.sh prod | ✅ |
+| 06/05 | 막내3 | **[INCIDENT] OAuth 게시 진단** — image_pro 정적앱은 OAuth 미사용(Gemini API키+CloudRun `image.monkos.ai`) 확정. 동의화면 "MONKOS IMAGE pro" 출처=AI Studio/PWA 빌드앱(proj monkos). 게시상태 gcloud 미노출→Console 확인 필요. 처방=Testing→Production 게시(승인 게이트) | [REPORT](../../reports/2026-06/REPORT_20260605_막내3_OAuth게시.md) | ⏳ 승인대기 |
 
 ### Phase 5 — 독립 iOS 네이티브 증명사진 앱 + 결제 개편 (05/18~) **← 현재**
 
