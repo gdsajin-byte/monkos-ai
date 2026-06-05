@@ -34,22 +34,40 @@ order: ORDER_20260601_iMac쌍아_막내_VTON_Studio_어드민편입.md
 2. **ComfyUI 접속 = RunPod http 프록시 URL** `https://{podId}-8188.proxy.runpod.net` (8188=http, 22=tcp). PoC는 SSH 터널(localhost:8188)이었으나 Cloud Run은 터널 불가 → http 포트 프록시 사용. status에서 pod RUNNING 확인 후 헬스체크.
 3. 워크플로우 템플릿(catvton_workflow_template.json)은 프론트에 인라인 동봉(비밀 아님).
 
-## ⏳ 배포 대기 — 작가님 결정 필요 (미배포)
-deploy.sh·.env 무단 수정 금지(헌법 4조 1항) + 프로덕션 포털 배포는 영향범위가 커서 **배포 전 확인 요청**:
+## 🚀 dev 배포 + 키 주입 완료 (19:18~19:25 KST)
+- `./deploy.sh dev` 경유 배포 → **monkos-portal-dev revision 00028-5ft** 100% 서빙 (deploy.sh·.env 미변경)
+- `RUNPOD_API_KEY`를 `~/.runpod_key` 값으로 `monkos-portal-dev` env에 주입 (`--update-env-vars`, 값 미노출). describe로 NAME 존재 확인. `RUNPOD_POD_ID`는 미설정 → 코드 폴백 `nkw5t0uvfn0ub1` 사용.
+- AGENT_API_KEYS가 dev에 미설정·AUTH_SECRET는 Secret Manager 참조형 → CLI에서 어드민 쿠키 위조 불가. 그래서 **실제 프록시 코드(runpod.js)를 로컬 서버(테스트 AUTH_SECRET + 실 RunPod 키)로 띄워 라이브 pod에 e2e** 수행.
 
-1. **RUNPOD_API_KEY가 GCP Cloud Run 환경변수에 없음.** 현재 "GitHub secret"으로만 등록 — GitHub secret은 Cloud Run으로 자동 주입되지 않음. `deploy.sh`는 `--update-env-vars`(나열된 키만 갱신, 기존 보존)이라 TOSS 키처럼 **GCP 콘솔에 수동 설정**하면 배포 간 유지됨. 키 미설정 시 프록시는 503 반환(안전 차단).
-   - 선택지 A: 작가님이 GCP 콘솔 monkos-portal 환경변수에 `RUNPOD_API_KEY` 수동 추가 (deploy.sh 미변경) — 권장
-   - 선택지 B: deploy.sh의 `--update-env-vars`에 추가 (deploy.sh 수정 → 승인 필요)
-2. **배포 대상 env**: `dev`(monkos-portal-dev) 선검증 권장 → `prod`(monkos.ai 실서비스). prod는 라이브 포털이라 작가님 명시 승인 후 진행.
-3. **RUNPOD_POD_ID 확인**: 지시서는 `nkw5t0uvfn0ub1`. 6/1 세션에 새 3090 pod 생성 기록 있음 — 현재 유효 pod id 확인 필요(다르면 GCP env `RUNPOD_POD_ID`로 오버라이드).
-
-## 🧪 로컬 검증
+## 🧪 검증 결과
 - `node --check` 통과: config.js / runpod.js / server.js
-- 로컬 서버 부팅(PORT=8099): `/health` 200, `/admin/vton-studio.html` 200
-- 인증 게이트: `/admin/api/vton/pod/status`·`/admin/api/vton/comfy/system_stats` → **401**(어드민 세션 없으면 차단) 확인
-- ⚠️ 라이브 e2e(pod start→업로드→생성→결과)는 **미수행**: RUNPOD_API_KEY(GCP)·pod 가동(과금)·어드민 쿠키 필요. 배포 후 작가님과 함께 1컷 검증 권장.
+- 로컬·dev 모두 인증 게이트 OK: `/admin/api/vton/pod/{status,comfy}` 무인증 → **401**
+- **pod/status (라이브)** ✅ → `{podId:nkw5t0uvfn0ub1, podStatus:EXITED, running:false, comfyReady:false}` — RunPod REST + 키 정상.
+- **pod/start (라이브)** ⚠️ → RunPod 500 `"not enough free GPUs on the host machine"`. 프록시가 의도대로 에러를 잡아 `"재시도 필요"` 메시지 반환. 5회 재시도(~2분) 모두 동일.
+  - 원인: pod이 볼륨(100GB) 때문에 특정 호스트 `vb3kr2jxg062`에 바인딩 → 그 호스트에 여유 3090 없음. **코드 문제 아님, RunPod 용량 부족.**
+  - pod이 안 켜졌으므로 **과금 0**.
+- ⏳ **ComfyUI 프록시 헬스 + /object_info + 1컷 생성**: pod이 안 켜져 **미검증** (GPU 용량 풀리면 즉시 가능).
+
+## ✅ 라이브 프록시 e2e 완료 (2026-06-02 03:30~03:40 KST, GPU 용량 확보 후)
+GPU 여유 확보되어 pod 기동 → 프록시 전 경로 라이브 검증:
+- `pod/start` ✅ → RUNNING 진입 (costPerHr $0.46)
+- `pod/status` ✅ → RUNNING/comfyReady 정확 반영 (폴링 22회)
+- `pod/stop` ✅ (프록시 경유) → `{ok:true,200}` → 즉시 EXITED 확인. **과금 정지(총 ~6분 ≈ $0.05)**
+- RunPod 프록시 URL `nkw5t0uvfn0ub1-8188.proxy.runpod.net` 도달 ✅ (프록시 레이어 응답)
+
+→ **백엔드/프록시(우리 코드) 전 경로 검증 완료.** start·status·stop·인증게이트·프록시 도달 전부 OK.
+
+## ❗ 1컷 생성 블로커 = ComfyUI 미자동기동 (인프라 설정, 코드 아님)
+- pod RUNNING 3.5분+ 동안 `8188/system_stats` → **404** (포트 리스너 없음). ComfyUI가 부팅 시 자동 기동하지 않음.
+- 원인: PoC는 SSH로 수동 기동(`/opt/venv/bin/python /workspace/ComfyUI/main.py --listen --enable-cors-header`)했음. **pod 템플릿에 start command가 없음.**
+- 우리 프록시는 `comfyReady:false`로 정확히 보고 → 코드 정상. **블로커는 RunPod 템플릿 설정.**
+
+## ⏳ 남은 것 (작가님 결정)
+1. **ComfyUI 자동기동**: RunPod pod 템플릿의 "Container Start Command"에 위 venv 기동 명령 등록 → 부팅 시 ComfyUI 자동 실행. 그러면 "버튼 하나로" 완성. (대안: 2단계에서 백엔드 SSH 기동 — SSH키 관리 필요, 범위 밖)
+2. **prod 배포**: `monkos.ai` 실서비스 — 작가님 명시 승인 후. 승인 시 (a) `./deploy.sh prod` (b) prod 서비스에도 `RUNPOD_API_KEY` 주입.
+3. **커밋·푸시**: 코드는 라이브 검증 완료(인프라 블로커만 잔존). 작가님 지시 시 산출물+발행물 묶어 커밋·`mk-push`.
 
 ## 📁 범위
 - 본 작업 = 지시서 1단계(어드민 편입 + 프록시 + start버튼)만. 노드 디스플레이·파라미터 동적세팅창(2단계)은 범위 외.
 
-🔀 다음: 작가님 배포 승인(env·키 설정) → deploy.sh 경유 배포 → 라이브 1컷 검증
+🔀 다음: GPU 용량 확보 시 dev 1컷 검증 → 보고 → 작가님 prod 승인
