@@ -332,7 +332,7 @@ async function connectGeminiLive(session, clientId, style = 'passport') {
 
   try {
     session.gemini = await ai.live.connect({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-2.0-flash-live-preview-04-09',
       config: {
         responseModalities: ['TEXT'],
         systemInstruction: { parts: [{ text: COACHING_INSTRUCTIONS[style] || COACHING_INSTRUCTIONS.passport }] },
