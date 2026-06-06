@@ -36,6 +36,7 @@ import { handleKakaoChatbot } from './lib/kakao-chatbot.js';
 import { handleLineWebhook } from './lib/line-chatbot.js';
 import { handleWebChat, handleCoaching } from './lib/coaching.js';
 import { handleAgentAuth } from './lib/cms/admin-auth.js';
+import { handleDashboardSummary, handleDashboardUsers, handleDashboardCredits, handleDashboardTraffic } from './lib/cms/dashboard.js';
 import { handleBlogList, handleBlogGet, handleBlogCreate, handleBlogUpdate, handleBlogDelete } from './lib/cms/blog.js';
 import { handleFaqList, handleFaqCreate, handleFaqUpdate, handleFaqDelete } from './lib/cms/faq.js';
 import { handleGalleryList, handleGalleryCreate, handleGalleryUpdate, handleGalleryDelete } from './lib/cms/gallery.js';
@@ -45,6 +46,7 @@ import { handleTranslate } from './lib/cms/translate.js';
 import { handleSearch } from './lib/cms/search.js';
 import { renderBlogList, renderBlogPost, renderFaq, renderGallery, renderBoardList, renderBoardPost, renderBoardWrite, renderGuide, renderAiPhotoGuide, renderSitemap, renderPricing, renderSpecsList, renderSpecsDetail } from './lib/cms/render.js';
 import { renderHome, handleSettingsGet, handleSettingsPut, handleLayoutGet, handleLayoutPut } from './lib/cms/home.js';
+import { handlePodStart, handlePodStatus, handlePodStop, handleComfyProxy } from './lib/vton/runpod.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -165,6 +167,12 @@ const httpServer = createServer(async (req, res) => {
   if (urlPath === '/api/chat' && req.method === 'POST') return handleWebChat(req, res);
   if (urlPath === '/api/coaching' && req.method === 'POST') return handleCoaching(req, res);
 
+  // === Dashboard API ===
+  if (urlPath === '/api/admin/dashboard/summary' && req.method === 'GET') return handleDashboardSummary(req, res);
+  if (urlPath === '/api/admin/dashboard/users' && req.method === 'GET') return handleDashboardUsers(req, res);
+  if (urlPath === '/api/admin/dashboard/credits' && req.method === 'GET') return handleDashboardCredits(req, res);
+  if (urlPath === '/api/admin/dashboard/traffic' && req.method === 'GET') return handleDashboardTraffic(req, res);
+
   // === CMS 관리자 API ===
   if (urlPath === '/api/admin/blog' && req.method === 'GET') return handleBlogList(req, res);
   if (urlPath === '/api/admin/blog' && req.method === 'POST') return handleBlogCreate(req, res);
@@ -208,6 +216,12 @@ const httpServer = createServer(async (req, res) => {
   if (urlPath?.startsWith('/api/admin/board/') && urlPath?.endsWith('/reply') && req.method === 'POST') return handleBoardAdminReply(req, res);
   if (urlPath?.startsWith('/api/admin/board/') && urlPath?.endsWith('/toggle') && req.method === 'PUT') return handleBoardAdminToggle(req, res);
   if (urlPath?.startsWith('/api/admin/board/') && req.method === 'DELETE') return handleBoardAdminDelete(req, res);
+
+  // === VTON Studio (PF_VTON Phase4) — RunPod 프록시 ===
+  if (urlPath === '/admin/api/vton/pod/start' && req.method === 'POST') return handlePodStart(req, res);
+  if (urlPath === '/admin/api/vton/pod/status' && req.method === 'GET') return handlePodStatus(req, res);
+  if (urlPath === '/admin/api/vton/pod/stop' && req.method === 'POST') return handlePodStop(req, res);
+  if (urlPath?.startsWith('/admin/api/vton/comfy/')) return handleComfyProxy(req, res);
 
   // === 크롭앱 ===
   if (urlPath === '/crop' && req.method === 'GET') {

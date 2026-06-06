@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — MONKOS Admin</title>
+<meta name="robots" content="noindex, nofollow">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #f5f5f5; --surface: #ffffff; --surface2: #fafafa;
+  --accent: #6d28d9; --accent2: #4f46e5;
+  --text: #334155; --text-dim: #64748b; --text-bright: #0f172a;
+  --border: rgba(0, 0, 0, 0.1); --border-hover: rgba(109, 40, 217, 0.3);
+  --success: #059669; --danger: #dc2626;
+}
+body { font-family: 'Noto Sans KR', -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+a { color: var(--accent); text-decoration: none; }
+
+.nav { display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; border-bottom: 1px solid var(--border); }
+.nav-logo { font-size: 20px; font-weight: 700; color: var(--text-bright); letter-spacing: 2px; }
+.nav-back { font-size: 14px; color: var(--text-dim); }
+.nav-back:hover { color: var(--accent); }
+
+.container { max-width: 960px; margin: 0 auto; padding: 40px 24px; }
+h1 { font-size: 24px; font-weight: 700; color: var(--text-bright); margin-bottom: 32px; }
+
+.summary-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 16px; margin-bottom: 40px; }
+.summary-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+  padding: 20px; text-align: center;
+}
+.summary-card .value { font-size: 28px; font-weight: 700; color: var(--accent); }
+.summary-card .label { font-size: 13px; color: var(--text-dim); margin-top: 4px; }
+
+.section { margin-bottom: 40px; }
+.section-title { font-size: 16px; font-weight: 700; color: var(--text-bright); margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+
+.period-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+.period-tab {
+  padding: 6px 16px; border: 1px solid var(--border); border-radius: 6px;
+  background: var(--surface); color: var(--text-dim); font-size: 13px;
+  cursor: pointer; transition: all 0.2s;
+}
+.period-tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+.chart-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+.chart-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+@media (max-width: 640px) { .chart-row { grid-template-columns: 1fr; } }
+
+table { width: 100%; border-collapse: collapse; font-size: 13px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+th { background: var(--surface2); color: var(--text-dim); font-weight: 600; text-align: left; padding: 10px 12px; }
+td { padding: 10px 12px; border-top: 1px solid var(--border); }
+tr:hover td { background: var(--surface2); }
+
+.loading { text-align: center; padding: 60px 0; color: var(--text-dim); font-size: 14px; }
+.error-msg { color: var(--danger); font-size: 13px; padding: 12px; background: #fef2f2; border-radius: 8px; }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/admin/" class="nav-logo">MONKOS Admin</a>
+  <a href="/admin/" class="nav-back">&larr; CMS</a>
+</nav>
+
+<div class="container" id="main" style="display:none">
+  <h1>Dashboard</h1>
+
+  <div class="summary-grid" id="summaryGrid">
+    <div class="summary-card"><div class="value" id="totalUsers">-</div><div class="label">총 가입자</div></div>
+    <div class="summary-card"><div class="value" id="todaySignups">-</div><div class="label">오늘 가입</div></div>
+    <div class="summary-card"><div class="value" id="monthSignups">-</div><div class="label">월 가입</div></div>
+    <div class="summary-card"><div class="value" id="totalCredits">-</div><div class="label">총 크레딧</div></div>
+    <div class="summary-card"><div class="value" id="avgCredits">-</div><div class="label">인당 평균</div></div>
+    <div class="summary-card"><div class="value" id="activeToday">-</div><div class="label">오늘 활성</div></div>
+  </div>
+
+  <!-- Traffic -->
+  <div class="section">
+    <div class="section-title">트래픽 (GA4)</div>
+    <div class="period-tabs" id="trafficTabs">
+      <button class="period-tab" data-days="7">7일</button>
+      <button class="period-tab active" data-days="30">30일</button>
+      <button class="period-tab" data-days="90">90일</button>
+    </div>
+    <div class="chart-wrap"><canvas id="trafficChart" height="240"></canvas></div>
+    <div id="trafficError"></div>
+  </div>
+
+  <!-- Users -->
+  <div class="section">
+    <div class="section-title">가입자</div>
+    <div class="chart-row">
+      <div class="chart-wrap"><canvas id="signupChart" height="200"></canvas></div>
+      <div class="chart-wrap"><canvas id="providerChart" height="200"></canvas></div>
+    </div>
+    <table id="usersTable">
+      <thead><tr><th>이름</th><th>이메일</th><th>인증</th><th>크레딧</th><th>가입일</th></tr></thead>
+      <tbody id="usersBody"></tbody>
+    </table>
+  </div>
+
+  <!-- Credits -->
+  <div class="section">
+    <div class="section-title">크레딧</div>
+    <div class="chart-wrap" style="max-width:360px"><canvas id="creditChart" height="200"></canvas></div>
+    <table id="txTable">
+      <thead><tr><th>시각</th><th>사용자</th><th>금액</th><th>유형</th><th>설명</th></tr></thead>
+      <tbody id="txBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="loading" id="loadingMsg">대시보드 로딩 중...</div>
+
+<script>var region = 'kr'; var lang = 'ko';</script>
+<script src="/js/auth.js"></script>
+<script>
+const COLORS = {
+  accent: '#6d28d9', accent2: '#4f46e5', success: '#059669', danger: '#dc2626',
+  orange: '#ea580c', teal: '#0d9488', pink: '#db2777', slate: '#64748b',
+};
+let trafficChartInst, signupChartInst, providerChartInst, creditChartInst;
+
+async function apiFetch(url) {
+  const r = await fetch(url, { credentials: 'include' });
+  if (r.status === 401) { location.href = '/admin/'; throw new Error('Unauthorized'); }
+  return r.json();
+}
+
+async function loadSummary() {
+  const d = await apiFetch('/api/admin/dashboard/summary');
+  document.getElementById('totalUsers').textContent = d.totalUsers.toLocaleString();
+  document.getElementById('todaySignups').textContent = d.todaySignups;
+  document.getElementById('monthSignups').textContent = d.monthSignups;
+  document.getElementById('totalCredits').textContent = d.totalCredits.toLocaleString();
+  document.getElementById('avgCredits').textContent = d.avgCreditsPerUser;
+  document.getElementById('activeToday').textContent = d.activeUsersToday;
+}
+
+async function loadTraffic(days) {
+  const el = document.getElementById('trafficError');
+  el.innerHTML = '';
+  try {
+    const d = await apiFetch(`/api/admin/dashboard/traffic?days=${days}`);
+    const labels = d.daily.map(r => r.date.slice(5)).reverse();
+    const datasets = [
+      { label: 'Sessions', data: d.daily.map(r => r.sessions).reverse(), borderColor: COLORS.accent, backgroundColor: COLORS.accent + '22', fill: true, tension: 0.3 },
+      { label: 'New Users', data: d.daily.map(r => r.newUsers).reverse(), borderColor: COLORS.success, tension: 0.3 },
+      { label: 'Active Users', data: d.daily.map(r => r.activeUsers).reverse(), borderColor: COLORS.accent2, tension: 0.3 },
+    ];
+    if (trafficChartInst) trafficChartInst.destroy();
+    trafficChartInst = new Chart(document.getElementById('trafficChart'), {
+      type: 'line',
+      data: { labels, datasets },
+      options: { responsive: true, plugins: { legend: { position: 'bottom' } }, scales: { y: { beginAtZero: true } } },
+    });
+  } catch (err) {
+    el.innerHTML = `<div class="error-msg">트래픽 데이터 로드 실패: ${err.message}</div>`;
+  }
+}
+
+async function loadUsers(days) {
+  const d = await apiFetch(`/api/admin/dashboard/users?days=${days}`);
+
+  const labels = d.daily.map(r => r.date.slice(5)).reverse();
+  const data = d.daily.map(r => r.count).reverse();
+  if (signupChartInst) signupChartInst.destroy();
+  signupChartInst = new Chart(document.getElementById('signupChart'), {
+    type: 'bar',
+    data: { labels, datasets: [{ label: '일별 가입', data, backgroundColor: COLORS.accent + '99' }] },
+    options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } },
+  });
+
+  const providers = Object.keys(d.byProvider);
+  const pColors = [COLORS.accent, COLORS.success, COLORS.orange, COLORS.teal, COLORS.pink, COLORS.slate];
+  if (providerChartInst) providerChartInst.destroy();
+  providerChartInst = new Chart(document.getElementById('providerChart'), {
+    type: 'doughnut',
+    data: { labels: providers, datasets: [{ data: providers.map(p => d.byProvider[p]), backgroundColor: pColors.slice(0, providers.length) }] },
+    options: { responsive: true, plugins: { legend: { position: 'bottom' } } },
+  });
+
+  const tbody = document.getElementById('usersBody');
+  tbody.innerHTML = d.recentUsers.map(u =>
+    `<tr><td>${esc(u.name)}</td><td>${esc(u.email)}</td><td>${esc(u.provider)}</td><td>${u.credits}</td><td>${(u.createdAt || '').slice(0, 10)}</td></tr>`
+  ).join('');
+}
+
+async function loadCredits() {
+  const d = await apiFetch('/api/admin/dashboard/credits');
+
+  const dist = d.distribution;
+  if (creditChartInst) creditChartInst.destroy();
+  creditChartInst = new Chart(document.getElementById('creditChart'), {
+    type: 'doughnut',
+    data: {
+      labels: ['0 크레딧', '1~5', '6~20', '21+'],
+      datasets: [{ data: [dist.zero, dist.low, dist.mid, dist.high], backgroundColor: [COLORS.slate, COLORS.danger, COLORS.orange, COLORS.success] }],
+    },
+    options: { responsive: true, plugins: { legend: { position: 'bottom' } } },
+  });
+
+  const tbody = document.getElementById('txBody');
+  tbody.innerHTML = d.recentTransactions.map(t => {
+    const amtClass = t.amount > 0 ? 'color:var(--success)' : 'color:var(--danger)';
+    return `<tr><td>${(t.createdAt || '').slice(0, 16).replace('T', ' ')}</td><td>${esc(t.userId)}</td><td style="${amtClass}">${t.amount > 0 ? '+' : ''}${t.amount}</td><td>${esc(t.type)}</td><td>${esc(t.description)}</td></tr>`;
+  }).join('');
+}
+
+function esc(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+
+let currentDays = 30;
+document.getElementById('trafficTabs').addEventListener('click', e => {
+  if (!e.target.dataset.days) return;
+  currentDays = parseInt(e.target.dataset.days, 10);
+  document.querySelectorAll('.period-tab').forEach(b => b.classList.remove('active'));
+  e.target.classList.add('active');
+  loadTraffic(currentDays);
+  loadUsers(currentDays);
+});
+
+var _origUpdateAuthUI = updateAuthUI;
+updateAuthUI = function() { if (currentUser) { location.reload(); } };
+
+async function init() {
+  await loadGISWithRetry();
+  await initGoogleAuth();
+  try {
+    const r = await fetch('/api/auth/verify-cookie', { credentials: 'include' });
+    if (!r.ok) throw new Error('Not authenticated');
+
+    const adminCheck = await fetch('/api/admin/blog', { credentials: 'include' });
+    if (adminCheck.status === 401) { location.href = '/admin/'; return; }
+
+    document.getElementById('loadingMsg').style.display = 'none';
+    document.getElementById('main').style.display = 'block';
+
+    loadSummary();
+    loadTraffic(currentDays);
+    loadUsers(currentDays);
+    loadCredits();
+  } catch {
+    location.href = '/admin/';
+  }
+}
+init();
+</script>
+</body>
+</html>

@@ -62,6 +62,9 @@ export const NAVER_CLIENT_SECRET = process.env.NAVER_CLIENT_SECRET || '';
 export const GITHUB_TOKEN = process.env.GITHUB_TOKEN || '';
 export const GITHUB_REPO = process.env.GITHUB_REPO || 'gdsajin-byte/monkos-ai';
 
+// GA4
+export const GA4_PROPERTY_ID = process.env.GA4_PROPERTY_ID || '521406894';
+
 // CMS
 export const GCS_BUCKET = process.env.GCS_BUCKET || 'monk-ai-images';
 export const ADMIN_UIDS = (process.env.ADMIN_UIDS || '').split(',').filter(Boolean);
@@ -72,6 +75,11 @@ export const AGENT_API_KEYS = (process.env.AGENT_API_KEYS || '').split(',').filt
 // D1 거래 원장 (CF Workers tx.js 제거됨 — 환경변수 미설정 시 비활성)
 export const TX_API_URL = process.env.TX_API_URL || '';
 export const TX_API_KEY = process.env.TX_API_KEY || '';
+
+// VTON RunPod (PF_VTON Phase4 — 키는 백엔드 환경변수에만, 폴백 금지: 헌법 4조 1항)
+export const RUNPOD_API_KEY = process.env.RUNPOD_API_KEY || '';
+// pod id는 시크릿 아님 — 운영 중 교체 가능하도록 환경변수 우선, 미설정 시 문서화된 3090 pod
+export const RUNPOD_POD_ID = process.env.RUNPOD_POD_ID || 'nkw5t0uvfn0ub1';
 
 // === Firestore 초기화 ===
 export const firestore = new Firestore({ projectId: PROJECT_ID });
