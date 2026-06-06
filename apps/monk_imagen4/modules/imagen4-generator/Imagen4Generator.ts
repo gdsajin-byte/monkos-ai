@@ -106,12 +106,8 @@ export class Imagen4Generator implements IImageEngine {
   }
 
   private async generateDirect(params: GenerationParams): Promise<GenerationResult[]> {
-    // Integrate negative prompt into main prompt if provided
-    let finalPrompt = params.prompt;
-    if (params.negativePrompt && params.negativePrompt.trim()) {
-      finalPrompt = `${params.prompt}. Avoid: ${params.negativePrompt}`;
-    }
-    
+    const finalPrompt = params.prompt;
+
     try {
       const response = await this.ai.models.generateImages({
         model: 'imagen-4.0-generate-001',
@@ -120,7 +116,9 @@ export class Imagen4Generator implements IImageEngine {
           numberOfImages: params.imageCount || 4,
           aspectRatio: params.aspectRatio || '1:1',
           safetyFilterLevel: 'block_low_and_above',
-          personGeneration: 'allow_adult'
+          personGeneration: 'allow_adult',
+          ...(params.negativePrompt && { negativePrompt: params.negativePrompt }),
+          enhancePrompt: false,
         }
       });
 

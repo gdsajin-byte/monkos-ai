@@ -81,7 +81,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               ].map((m) => (
                 <button 
                   key={m.id} 
-                  onClick={() => { setMode(m.id as SynthesisMode); setError(null); }}
+                  onClick={() => { setMode(m.id as SynthesisMode); setError(null); clearNegativePrompt(); }}
                   className={`flex items-center gap-1.5 px-2 py-1.5 rounded-lg border text-[8px] font-black uppercase tracking-tighter transition-all ${mode === m.id ? 'bg-blue-600 border-blue-500 text-white shadow-xl' : 'bg-[#020617] border-white/5 text-slate-500 hover:border-white/10'}`}
                 >
                   <i className={`fa-solid ${m.icon} text-[10px] ${mode === m.id ? 'text-white' : 'text-slate-700'}`}></i>

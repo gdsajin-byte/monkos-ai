@@ -104,12 +104,14 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
         'x-goog-api-key': env.GEMINI_API_KEY
       },
       body: JSON.stringify({
-        prompt: negativePrompt ? `${prompt}. Avoid: ${negativePrompt}` : prompt,
+        prompt: prompt,
+        ...(negativePrompt && { negativePrompt }),
         config: {
           numberOfImages: imageCount || 4,
           aspectRatio: aspectRatio || '1:1',
           safetyFilterLevel: 'block_low_and_above',
-          personGeneration: 'allow_adult'
+          personGeneration: 'allow_adult',
+          enhancePrompt: false,
         }
       })
     });

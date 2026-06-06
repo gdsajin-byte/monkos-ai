@@ -111,6 +111,7 @@ app.post('/generate', async (req, res) => {
       {
         prompt: prompt,
         ...(negativePrompt && { negativePrompt }),
+        enhancePrompt: false,
       }
     ];
 
