@@ -31,6 +31,7 @@
 | [PF_MUSE](PF_MUSE/README.md) | MUSE | 콘텐츠 | 멀티 에이전트 토론방 — 서사적 유희 + 창작 + 아이디어 발산 | active | 05-11 |
 | **[PF_SPECS](PF_SPECS/README.md)** | **SPECS** | **전략** | **글로벌 증명사진 규격 허브 — 9언어 × 320문서 SEO/GEO 자산** | **active** | **05-22** |
 | **[PF_OPUS](PF_OPUS/README.md)** | **OPUS** | **메타(통괄)** | **콘텐츠 플라이휠 통괄 — 생산공장 완성으로 자생 유입 엔진 구축** | **active** | **06-05** |
+| **[PF_IMAGE_PRO](PF_IMAGE_PRO/README.md)** | **IMAGE_PRO** | **서비스** | **MONKOS Image Pro — image.monkos.ai** | **active** | **01-16** |
 | [PF_TEMPLATE](PF_TEMPLATE/README.md) | TEMPLATE | 메타 | 신규 PF 생성 템플릿 | — | — |
 
 ## 네이밍
