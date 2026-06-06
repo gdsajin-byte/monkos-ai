@@ -111,7 +111,6 @@ app.post('/generate', async (req, res) => {
       {
         prompt: prompt,
         ...(negativePrompt && { negativePrompt }),
-        enhancePrompt: false,
       }
     ];
 
@@ -348,7 +347,7 @@ app.post('/analyze', async (req, res) => {
     const mimeType = mimeTypeMatch ? mimeTypeMatch[1] : 'image/png';
 
     const geminiResponse = await fetch(
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent',
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent',
       {
         method: 'POST',
         headers: {
@@ -434,7 +433,7 @@ app.post('/translate', async (req, res) => {
     const langName = langNames[targetLang] || targetLang;
 
     const geminiResponse = await fetch(
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent',
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent',
       {
         method: 'POST',
         headers: {
@@ -464,6 +463,25 @@ app.post('/translate', async (req, res) => {
 
   } catch (error) {
     console.error('[Translate] Error:', error.message);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+/**
+ * 이미지 업로드 API (크래시 방지용 최소 구현)
+ * POST /api/upload
+ * v6 프론트 EXPORT 시 호출. 실제 GCS 저장은 후속 작업.
+ */
+app.post('/api/upload', async (req, res) => {
+  try {
+    console.log('[Upload] Image upload request received');
+    res.json({
+      success: true,
+      imageId: `img_${Date.now()}`,
+      imageUrl: null
+    });
+  } catch (error) {
+    console.error('[Upload] Error:', error.message);
     res.status(500).json({ success: false, error: error.message });
   }
 });
