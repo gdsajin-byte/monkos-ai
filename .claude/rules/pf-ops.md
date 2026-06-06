@@ -32,4 +32,8 @@ status: draft | active | blocked | paused | completed
 ## 비대화 관리
 - 500줄 초과 시 아카이브 트리거. 쌍아가 세션 마감 시 확인.
 
+## 메타 PF (ch4 9조 7항)
+- 메타 PF = 흐름·연결·KPI 정본. 하위 PF = 실측·실행 정본.
+- 메타 PF Phase는 하위 PF와 독립.
+
 > 상세: governance/laws/ch4_docs_structure.md 9조

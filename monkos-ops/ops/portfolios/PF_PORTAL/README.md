@@ -77,6 +77,8 @@ status: active
 | 04/24 | 작가님 승인 | **prod 배포** — idphoto-kr/jp + portal + studio (`deploy.sh prod`) | `cedadb3`, `0559d8f` | ✅ |
 | 04/25 | 민아 | **포털 4트랙 개편 기안서 발행** — 헤더(브랜드 보존+듀얼CTA) + nav 슬림화(specs 신설) + 본문 specs 5권역 카드 + 우측 사이드바 한송이 쇼츠 썸네일화 | [PROPOSAL](../proposals/PROPOSAL_20260425_민아_포털전체개편_기안서.md) | ⏳ 검토중 |
 | 04/25 | 작가님 디렉션 | **방향 전환 — iCloud.com 스타일 메인 전면 카드 그리드** (12장 내외 타일). 트랙 1·3 통합 흡수. 철창이 JSX 시안 발주. | [BRIEFING](../proposals/BRIEFING_20260425_민아→철창이_포털메인_카드그리드_JSX의뢰.md) | ⏳ 시안 대기 |
+| 06/06 | 막내1 | **어드민 대시보드 신설** — GA4 트래픽 + 가입자 + 크레딧 현황 실시간 확인. 백엔드 4 API + Chart.js 프론트 | `e8e1127a`, rev 00263 | ✅ |
+| 06/06 | 쌍아 | 대시보드 핫픽스 — Firestore Timestamp 호환 + GA4 SA 권한 가이드 | rev 00264 | ✅ |
 
 ---
 
@@ -155,10 +157,24 @@ status: active
 | T2 | 네비게이션 슬림화 — 6개 → 5개 + **/specs 신설** (갤러리·게시판 푸터 강등) | ⏳ 검토중 | 막내 실행 | B안 |
 | T4 | 우측 사이드바 — 한송이 쇼츠 썸네일 카드 (카드 그리드에 카드 #11·#12로 통합) | ⏳ 영상 URL 대기 | 작가님 영상 URL 수령 후 | 카드 #11 증명사진 사용법 / #12 크롭앱 사용법 |
 | — | 철창이 JSX 1차 시안 수령 | ⏳ 대기 | 철창이 | 작가님이 채팅 toss |
-| — | 작가님 + 민아 시안 검토 (필요 시 2~3회 반복) | ⏳ 대기 | 작가님·민아 | — |
+| — | 작가님 + 민아 시안 검토 (필요시 2~3회 반복) | ⏳ 대기 | 작가님·민아 | — |
 | — | 쌍아 영향평가 + 헌법·법률 충돌 점검 | ⏳ 대기 | 쌍아 | 통상 검토 |
 | — | 막내 컨버트 — JSX 시안 → `index.html` + `portal.css` | ⏳ 대기 | 쌍아→막내 | `monkos_AI/portal/deploy.sh prod` |
 | — | 라이브 검증 + GA 이벤트 추적 (카드별 클릭) | ⏳ 대기 | 민아 | 배포 후 |
+
+### Phase 8 — 어드민 대시보드 ✅ 완료 (06/06)
+
+> 운영 현황(트래픽·가입자·크레딧)을 어드민에서 실시간 확인할 수 있는 대시보드 신설.
+
+| 항목 | 상태 | 담당 | 비고 |
+|------|------|------|------|
+| 백엔드 4 API (summary/users/credits/traffic) | ✅ | 막내1 | `dashboard.js` 226줄 |
+| GA4 Data API 연동 (`@google-analytics/data`) | ✅ | 막내1 | ADC 인증, property 521406894 |
+| 프론트엔드 대시보드 (Chart.js CDN) | ✅ | 막내1 | `dashboard.html` 252줄 |
+| server.js 라우트 4건 + index.html Dashboard 카드 | ✅ | 막내1 | rev 00263 |
+| Firestore Timestamp 호환 핫픽스 | ✅ | 쌍아 | rev 00264 (createdAt Timestamp/string 양립) |
+| GA4 서비스 계정 권한 추가 | ✅ | 작가님 | monk-image-engine SA → GA4 뷰어 |
+| prod 배포 + 라이브 확인 | ✅ | 쌍아 | `monkos.ai/admin/dashboard.html` |
 
 ---
 
@@ -180,6 +196,10 @@ status: active
 | sitemap URL | 1 → **10** | 04-21 | CITADEL Phase 2.0/2.1 |
 | /specs 스키마 | **26국 Article+FAQPage+HowTo 완비** | 04-24 | AEO 1단계 |
 | 블로그 발행수 | 208건 (KR/JP/EN 3언어) | 04-24 | Firestore 실측 |
+| **Firestore 인증 가입자** | **135명** (카카오/구글/라인) | 06-06 | 월별: 2월 19 / 3월 16 / 4월 44 / 5월 47 / 6월 9 |
+| GA4 신규 유저 (5월) | 1,932명 | 06-06 | 실 인증 전환율 ~2.4% (47/1,932) |
+| GA4 신규 유저 (6월 1~5일) | 223명 (일평균 45) | 06-06 | 5월 하순 수준 유지 |
+| **어드민 대시보드** | `/admin/dashboard.html` 라이브 | 06-06 | GA4+가입자+크레딧 실시간 |
 
 ---
 

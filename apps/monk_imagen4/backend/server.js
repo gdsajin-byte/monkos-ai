@@ -87,8 +87,18 @@ app.post('/generate', async (req, res) => {
     // config에서도 aspectRatio 수신 (프론트엔드 호환)
     const finalAspectRatio = aspectRatio || config?.aspectRatio || '1:1';
 
+    // VARIATION 전용 fixedPrompt 오염 제거 — T2I에서는 불필요
+    if (prompt.includes('CRITICAL INSTRUCTION:')) {
+      const cleaned = prompt.replace(/CRITICAL INSTRUCTION:.*?precisely\.\s*/g, '').trim();
+      if (cleaned) {
+        req.body.prompt = cleaned;
+        console.log(`[Generate] Cleaned VARIATION fixedPrompt from T2I prompt`);
+      }
+    }
+    const cleanedPrompt = req.body.prompt || prompt;
+
     // 필수 파라미터 검증
-    if (!prompt) {
+    if (!cleanedPrompt) {
       return res.status(400).json({
         error: 'prompt is required',
         code: 'MISSING_PROMPT'
@@ -101,7 +111,7 @@ app.post('/generate', async (req, res) => {
       : 'imagen-4.0-fast-generate-001';
 
     console.log(`[Generate] Model: ${modelId} (${model})`);
-    console.log(`[Generate] Prompt: ${prompt.substring(0, 100)}...`);
+    console.log(`[Generate] Prompt: ${cleanedPrompt.substring(0, 100)}...`);
     console.log(`[Generate] Aspect Ratio: ${finalAspectRatio}`);
 
     // Vertex AI Imagen 4 요청 구성
@@ -109,7 +119,7 @@ app.post('/generate', async (req, res) => {
 
     const instances = [
       {
-        prompt: prompt,
+        prompt: cleanedPrompt,
         ...(negativePrompt && { negativePrompt }),
       }
     ];
@@ -161,7 +171,7 @@ app.post('/generate', async (req, res) => {
           metadata: {
             contentType: 'image/jpeg',
             metadata: {
-              prompt: prompt.substring(0, 500),
+              prompt: cleanedPrompt.substring(0, 500),
               aspectRatio,
               style,
               generatedAt: new Date().toISOString()

@@ -131,13 +131,16 @@ async function apiFetch(url) {
 }
 
 async function loadSummary() {
-  const d = await apiFetch('/api/admin/dashboard/summary');
-  document.getElementById('totalUsers').textContent = d.totalUsers.toLocaleString();
-  document.getElementById('todaySignups').textContent = d.todaySignups;
-  document.getElementById('monthSignups').textContent = d.monthSignups;
-  document.getElementById('totalCredits').textContent = d.totalCredits.toLocaleString();
-  document.getElementById('avgCredits').textContent = d.avgCreditsPerUser;
-  document.getElementById('activeToday').textContent = d.activeUsersToday;
+  try {
+    const d = await apiFetch('/api/admin/dashboard/summary');
+    if (d.error) throw new Error(d.error);
+    document.getElementById('totalUsers').textContent = d.totalUsers.toLocaleString();
+    document.getElementById('todaySignups').textContent = d.todaySignups;
+    document.getElementById('monthSignups').textContent = d.monthSignups;
+    document.getElementById('totalCredits').textContent = d.totalCredits.toLocaleString();
+    document.getElementById('avgCredits').textContent = d.avgCreditsPerUser;
+    document.getElementById('activeToday').textContent = d.activeUsersToday;
+  } catch (err) { console.error('summary:', err); }
 }
 
 async function loadTraffic(days) {
@@ -145,6 +148,7 @@ async function loadTraffic(days) {
   el.innerHTML = '';
   try {
     const d = await apiFetch(`/api/admin/dashboard/traffic?days=${days}`);
+    if (d.error) throw new Error(d.error);
     const labels = d.daily.map(r => r.date.slice(5)).reverse();
     const datasets = [
       { label: 'Sessions', data: d.daily.map(r => r.sessions).reverse(), borderColor: COLORS.accent, backgroundColor: COLORS.accent + '22', fill: true, tension: 0.3 },
@@ -163,7 +167,9 @@ async function loadTraffic(days) {
 }
 
 async function loadUsers(days) {
+  try {
   const d = await apiFetch(`/api/admin/dashboard/users?days=${days}`);
+  if (d.error) throw new Error(d.error);
 
   const labels = d.daily.map(r => r.date.slice(5)).reverse();
   const data = d.daily.map(r => r.count).reverse();
@@ -187,10 +193,13 @@ async function loadUsers(days) {
   tbody.innerHTML = d.recentUsers.map(u =>
     `<tr><td>${esc(u.name)}</td><td>${esc(u.email)}</td><td>${esc(u.provider)}</td><td>${u.credits}</td><td>${(u.createdAt || '').slice(0, 10)}</td></tr>`
   ).join('');
+  } catch (err) { console.error('users:', err); }
 }
 
 async function loadCredits() {
+  try {
   const d = await apiFetch('/api/admin/dashboard/credits');
+  if (d.error) throw new Error(d.error);
 
   const dist = d.distribution;
   if (creditChartInst) creditChartInst.destroy();
@@ -208,6 +217,7 @@ async function loadCredits() {
     const amtClass = t.amount > 0 ? 'color:var(--success)' : 'color:var(--danger)';
     return `<tr><td>${(t.createdAt || '').slice(0, 16).replace('T', ' ')}</td><td>${esc(t.userId)}</td><td style="${amtClass}">${t.amount > 0 ? '+' : ''}${t.amount}</td><td>${esc(t.type)}</td><td>${esc(t.description)}</td></tr>`;
   }).join('');
+  } catch (err) { console.error('credits:', err); }
 }
 
 function esc(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }

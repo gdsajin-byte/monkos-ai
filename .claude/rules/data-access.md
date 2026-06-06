@@ -1,3 +1,11 @@
+---
+description: 크레딧/고객 데이터 접근 시 적용
+paths:
+  - "scripts/credits.sh"
+  - "monkos_AI/portal/lib/credits.js"
+  - "monkos-ops/ops/audit/**"
+---
+
 # 크레딧/고객 데이터 접근 규칙 (ch4 10조)
 
 ## 직접 접근 금지 (10조 1항)

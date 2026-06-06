@@ -5,6 +5,22 @@ import { BetaAnalyticsDataClient } from '@google-analytics/data';
 const usersCol = firestore.collection('users');
 const txCol = firestore.collection('transactions');
 
+function toDateStr(val) {
+  if (!val) return '';
+  if (typeof val === 'string') return val.slice(0, 10);
+  if (val.toDate) return val.toDate().toISOString().slice(0, 10);
+  if (val._seconds) return new Date(val._seconds * 1000).toISOString().slice(0, 10);
+  return '';
+}
+
+function toISOStr(val) {
+  if (!val) return '';
+  if (typeof val === 'string') return val;
+  if (val.toDate) return val.toDate().toISOString();
+  if (val._seconds) return new Date(val._seconds * 1000).toISOString();
+  return '';
+}
+
 let analyticsClient;
 try {
   analyticsClient = new BetaAnalyticsDataClient();
@@ -47,10 +63,10 @@ export async function handleDashboardSummary(req, res) {
     snapshot.forEach(doc => {
       const data = doc.data();
       totalCredits += data.credits || 0;
-      const created = data.createdAt ? data.createdAt.slice(0, 10) : '';
+      const created = toDateStr(data.createdAt);
       if (created === today) todaySignups++;
       if (created >= monthStart) monthSignups++;
-      const lastLogin = data.lastLogin ? data.lastLogin.slice(0, 10) : '';
+      const lastLogin = toDateStr(data.lastLogin);
       if (lastLogin === today) activeUsersToday++;
     });
 
@@ -89,22 +105,23 @@ export async function handleDashboardUsers(req, res) {
       const provider = data.provider || 'unknown';
       byProvider[provider] = (byProvider[provider] || 0) + 1;
 
-      const created = data.createdAt ? data.createdAt.slice(0, 10) : '';
+      const created = toDateStr(data.createdAt);
       if (created >= since) {
         dailyMap[created] = (dailyMap[created] || 0) + 1;
       }
 
+      const createdISO = toISOStr(data.createdAt);
       recentUsers.push({
         id: doc.id,
         name: data.name || '',
         provider,
         email: data.email || '',
         credits: data.credits || 0,
-        createdAt: data.createdAt || '',
+        createdAt: createdISO,
       });
     });
 
-    recentUsers.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    recentUsers.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
 
     const daily = Object.entries(dailyMap)
       .map(([date, count]) => ({ date, count }))

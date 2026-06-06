@@ -1,37 +1,35 @@
 ---
 name: CR배포
 description: monkos.ai Cloud Run 배포 절차를 수행한다
+allowed-tools:
+  - Bash(*/deploy.sh *)
 ---
 
 > 원천: ch5 2조 (monkos.ai 배포) + ch5 3조 (prod 배포 권한)
 
-## Cloud Run 배포 절차
+## deploy.sh 위치
 
-### 1단계 — deploy.sh 경유 확인 (ch5 2조)
+!`find monkos_AI/*/deploy.sh apps/*/backend/deploy.sh -type f 2>/dev/null`
 
-1. 반드시 `deploy.sh` 경유로 배포한다.
-2. `gcloud run deploy` 직접 실행 **금지**.
-3. `gcloud builds submit` 단독 실행 **금지**.
+## 인자
 
-### 2단계 — dev 배포 실행 (ch5 2조)
+`$ARGUMENTS`에서 서비스명과 환경(dev/prod)을 파싱한다.
+- 예: `/CR배포 portal prod` → 서비스=portal, 환경=prod
+- 인자 없으면 서비스와 환경을 질문한다.
 
-1. `./deploy.sh dev` 를 실행한다 (막내 허용).
-2. 배포 타겟: 전 서비스 `us-central1`.
+## 절차
 
-### 3단계 — 동작 확인 (ch5 2조)
+1. **deploy.sh 경유 필수** — `gcloud run deploy` 직접 실행 금지.
+2. 인자에서 서비스 매핑:
 
-1. dev 배포 후 **반드시 동작 확인**을 수행한다.
-2. 동작 확인 결과를 완료 보고에 명시한다.
+| 서비스명 | deploy.sh 경로 |
+|---------|---------------|
+| portal | `monkos_AI/portal/deploy.sh` |
+| idphoto-kr | `monkos_AI/idphoto-kr/deploy.sh` |
+| idphoto-jp | `monkos_AI/idphoto-jp/deploy.sh` |
+| studio | `monkos_AI/studio/deploy.sh` |
+| image-engine | `apps/monk_imagen4/backend/deploy.sh` |
 
-### 4단계 — prod 배포 판단 (ch5 3조)
-
-1. prod 배포가 필요한 경우 완료 보고에 `⏳ 대기: prod 배포 필요`를 명시한다.
-2. `./deploy.sh prod`는 **작가님/쌍아만 실행** 가능하다.
-3. **예외**: 쌍아 지시서에 prod 배포가 명시되어 있고, 작가님-쌍아 합의를 거친 경우:
-   - 지시서에 `[특별법] 작가님-쌍아 합의에 의한 prod 배포 위임` 명기 필수.
-   - 이 명기가 없으면 막내 단독 prod 배포 **금지**.
-
-### 5단계 — 완료 보고
-
-1. dev 배포 결과 + 동작 확인 결과를 완료 보고에 포함한다.
-2. prod 배포 위임이 아닌 경우 `⏳ 대기` 상태를 명시한다.
+3. dev 배포: 막내 허용. 배포 후 동작 확인 필수.
+4. prod 배포: **작가님/쌍아만 실행**. 막내는 지시서에 `[특별법]` 명기 시에만.
+5. 완료 보고: 배포 결과 + 리비전 번호 + 동작 확인 결과.

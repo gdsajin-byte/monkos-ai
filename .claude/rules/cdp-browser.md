@@ -1,7 +1,8 @@
 ---
 description: 브라우저 제어가 필요할 때 적용
-globs:
-  - "**"
+paths:
+  - "scripts/tools/cdp*"
+  - "scripts/tools/cdp_utils.py"
 ---
 
 # CDP 브라우저 제어 규칙
