@@ -1,7 +1,7 @@
 ---
 type: changelog
 subject: 디바이스 설정 변경 로그
-last_updated: 2026-05-13
+last_updated: 2026-06-07
 ---
 
 # Device Changelog
@@ -17,3 +17,6 @@ last_updated: 2026-05-13
 | 2026-05-13 | M1 | model → `claude-opus-4-6[1m]` 통일 | iMac/쌍아 |
 | 2026-05-13 | 4060 | 설정값 전수 수집 완료 (sshpass 경유) | iMac/쌍아 |
 | 2026-05-13 | 4060 | DEVICE_PROFILE.md 갱신 (hostname, OS, CLI 버전, settings, MEMORY) | iMac/쌍아 |
+| 2026-06-07 | M2 | SSH 공개키 등록 (iMac → M2 무인증 접속 연동) | M2/쌍아 |
+| 2026-06-07 | M2 | DEVICE_PROFILE.md 전수 갱신 (시스템정보, Git, Claude Code, 개발환경) | iMac/쌍아 |
+| 2026-06-07 | M2 | 디바이스 일람표 상태 "보류" → "완료" 전환 | iMac/쌍아 |

@@ -79,6 +79,10 @@ status: active
 | 04/25 | 작가님 디렉션 | **방향 전환 — iCloud.com 스타일 메인 전면 카드 그리드** (12장 내외 타일). 트랙 1·3 통합 흡수. 철창이 JSX 시안 발주. | [BRIEFING](../proposals/BRIEFING_20260425_민아→철창이_포털메인_카드그리드_JSX의뢰.md) | ⏳ 시안 대기 |
 | 06/06 | 막내1 | **어드민 대시보드 신설** — GA4 트래픽 + 가입자 + 크레딧 현황 실시간 확인. 백엔드 4 API + Chart.js 프론트 | `e8e1127a`, rev 00263 | ✅ |
 | 06/06 | 쌍아 | 대시보드 핫픽스 — Firestore Timestamp 호환 + GA4 SA 권한 가이드 | rev 00264 | ✅ |
+| 06/07 | 쌍아 | **blog.js tags 방어 코드** — 문자열 tags를 배열로 자동 변환 (CREATE/UPDATE). 에디터 loadPost 크래시 근본 수정 | blog.js | ✅ |
+| 06/07 | 쌍아 | **Google Indexing API 연동** — 블로그 발행 시 즉시 색인 요청 (`requestIndexing()`). sitemap ping과 병행 | blog.js | ✅ |
+| 06/07 | 쌍아 | **llms.txt 자동 갱신** — 블로그 발행 시 llms.txt에 신규 글 자동 어펜드 (`appendToLlmsTxt()`). AI 엔진 인용 소스 자동 확장 | blog.js | ✅ |
+| 06/07 | 쌍아 | **IDPASS 소개 글 API 생성** — `POST /api/admin/blog` → slug `idpass-kr` 발행. 3개국어 자동 번역 트리거 | Firestore blog_posts | ✅ |
 
 ---
 

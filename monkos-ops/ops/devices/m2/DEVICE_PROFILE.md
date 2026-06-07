@@ -1,47 +1,73 @@
 ---
 type: device_profile
 id: M2
-tailscale_ip: 100.93.220.17
-tailscale_name: "(미확인)"
+tailscale_ip: 100.81.38.20
+tailscale_name: kku-macmini-m2
 ssh_host: m2
-os: macOS (추정)
+os: macOS Sequoia 15.7.4
 owner: 꾸 (와이프)
 location: 집
-primary_agents: []
-claude_code_version: "(미확인)"
-last_updated: 2026-05-13
+primary_agents: [쌍아, 코웍이]
+claude_code_version: 2.1.50
+last_updated: 2026-06-07
 ---
 
 # M2 — Device Profile
 
 ## 시스템 정보
 
-- **hostname**: 미확인
-- **OS**: macOS (추정 — Mac Mini M2)
-- **Tailscale IP**: 100.93.220.17
-- **SSH**: `ssh m2` (100.93.220.17, User: mac)
-- **Claude Code**: 미확인
+| 항목 | 값 |
+|------|-----|
+| 모델 | Mac mini (Mac14,3) |
+| 칩 | Apple M2 |
+| 메모리 | 16 GB |
+| OS | macOS Sequoia 15.7.4 (24G517) |
+| 호스트명 | KKU-MacMINI-M2ui-Macmini.local |
+| 사용자 | kku |
+| Tailscale IP | 100.81.38.20 |
+| SSH | `ssh m2` (100.81.38.20, User: kku) |
+| Claude Code | 2.1.50 |
 
-## 접속 실패 기록
+## 개발 환경
 
-```
-2026-05-13 10:53 KST — SSH 접속 시도
-결과: Operation timed out
-원인: 디바이스 offline (지시서 기재: 83일+ offline)
-```
+| 도구 | 버전 |
+|------|------|
+| Node.js | v25.6.1 |
+| npm | 11.9.0 |
+| Python | 3.9.6 |
+| Homebrew | 5.0.15 |
+
+## Git 설정
+
+| 항목 | 값 |
+|------|-----|
+| remote | git@github.com:gdsajin-byte/monk_project.git |
+| branch | main |
+| user.name | M2/코웍이 |
+| user.email | gdsajin@gmail.com |
+
+## Claude Code 설정
+
+| 항목 | 값 |
+|------|-----|
+| model | sonnet |
+| allow | Bash(*), Read, Write, Edit |
+| deny | rm -rf, git push --force, git reset --hard, git clean -f, git checkout -- |
+| 추가 디렉토리 | /Users/kku/Desktop/works |
+| Rules | 9개 |
+| Skills | 14개 |
+
+## SSH 연동 (2026-06-07 완료)
+
+- iMac 공개키 등록 완료 (`jeong-kyushin@monk.kr`)
+- iMac에서 `ssh m2`로 무인증 접속 확인
 
 ## 수집 상태
 
 | 항목 | 상태 |
 |------|------|
-| 시스템 정보 | ❌ 미수집 |
-| 글로벌 설정 | ❌ 미수집 |
+| 시스템 정보 | ✅ 완료 (2026-06-07) |
+| 글로벌 설정 | ✅ 완료 (2026-06-07) |
 | 글로벌 MCP | ❌ 미수집 |
-| 프로젝트 설정 | ❌ 미수집 |
+| 프로젝트 설정 | ✅ 완료 (2026-06-07) |
 | MEMORY.md | ❌ 미수집 |
-
-## 후속 조치 필요
-
-1. 디바이스 온라인 전환 시 재수집
-2. 꾸(와이프) 디바이스 — 마케팅/SNS 관련 설정 존재 가능
-3. `sshm2` 명령(MEMORY 기재)과 `ssh m2`의 관계 확인 필요

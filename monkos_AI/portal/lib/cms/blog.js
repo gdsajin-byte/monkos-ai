@@ -2,12 +2,53 @@
  * CMS 블로그 CRUD API 핸들러
  * Firestore blog_posts 컬렉션
  */
+import { readFileSync, writeFileSync, existsSync } from 'fs';
+import { resolve, dirname } from 'path';
+import { fileURLToPath } from 'url';
+import { GoogleAuth } from 'google-auth-library';
 import { firestore, ai, log, parseJsonBody } from '../shared/config.js';
 import { requireAdmin } from './admin-auth.js';
 import { translateAndSaveBlogPost } from './translate.js';
 import { publishBlogToGitHub } from './github-issues.js';
 
+const __dirname = dirname(fileURLToPath(import.meta.url));
 const blogCollection = firestore.collection('blog_posts');
+
+async function requestIndexing(url) {
+  try {
+    const auth = new GoogleAuth({ scopes: ['https://www.googleapis.com/auth/indexing'] });
+    const client = await auth.getClient();
+    const res = await client.request({
+      url: 'https://indexing.googleapis.com/v3/urlNotifications:publish',
+      method: 'POST',
+      data: { url, type: 'URL_UPDATED' },
+    });
+    log(`[SEO] Indexing API 성공: ${url} → ${res.status}`);
+  } catch (e) {
+    log(`[SEO] Indexing API 실패: ${url} — ${e.message}`, 'WARN');
+  }
+}
+
+function appendToLlmsTxt(slug, title) {
+  try {
+    const llmsPath = resolve(__dirname, '../../public/llms.txt');
+    if (!existsSync(llmsPath)) return;
+    const content = readFileSync(llmsPath, 'utf-8');
+    const blogUrl = `https://monkos.ai/blog/${slug}`;
+    if (content.includes(blogUrl)) return;
+    const citation = content.indexOf('## Citation');
+    const entry = `- ${title}: ${blogUrl}\n`;
+    if (citation > -1) {
+      const updated = content.slice(0, citation) + entry + '\n' + content.slice(citation);
+      writeFileSync(llmsPath, updated, 'utf-8');
+    } else {
+      writeFileSync(llmsPath, content + '\n' + entry, 'utf-8');
+    }
+    log(`[SEO] llms.txt 갱신: ${slug}`);
+  } catch (e) {
+    log(`[SEO] llms.txt 갱신 실패: ${e.message}`, 'WARN');
+  }
+}
 
 function generateSlug(title) {
   return title
@@ -157,7 +198,7 @@ export async function handleBlogCreate(req, res) {
       content,
       summary: (summary || '').substring(0, 160),
       thumbnail: thumbnail || (content ? (content.match(/<img[^>]+src="([^"]+)"/)?.[1] || '') : ''),
-      tags: tags || [],
+      tags: Array.isArray(tags) ? tags : (typeof tags === 'string' ? tags.split(',').map(t => t.trim()).filter(Boolean) : []),
       lang: lang || 'ko',
       published: published || false,
       author: author || 'MONKOS',
@@ -171,14 +212,11 @@ export async function handleBlogCreate(req, res) {
     await blogCollection.doc(slug).set(post);
     log(`[CMS] 블로그 생성: ${slug}`);
 
-    // Google 색인 등록 ping
     if (post.published) {
-      try {
-        await fetch(`https://www.google.com/ping?sitemap=https://monkos.ai/sitemap.xml`);
-        log(`[CMS] Google sitemap ping 완료: ${slug}`);
-      } catch (e) {
-        log(`[CMS] Google sitemap ping 실패: ${e.message}`, 'WARN');
-      }
+      const blogUrl = `https://monkos.ai/blog/${slug}`;
+      fetch(`https://www.google.com/ping?sitemap=https://monkos.ai/sitemap.xml`).catch(() => {});
+      requestIndexing(blogUrl);
+      appendToLlmsTxt(slug, post.title);
     }
 
     // 한국어 원본 발행 시 자동번역 → GitHub Issues (백그라운드 체이닝)
@@ -223,6 +261,9 @@ export async function handleBlogUpdate(req, res) {
     for (const field of allowedFields) {
       if (body[field] !== undefined) updates[field] = body[field];
     }
+    if (updates.tags !== undefined) {
+      updates.tags = Array.isArray(updates.tags) ? updates.tags : (typeof updates.tags === 'string' ? updates.tags.split(',').map(t => t.trim()).filter(Boolean) : []);
+    }
     if (updates.summary) updates.summary = updates.summary.substring(0, 160);
     // summary 빈값 방지 — 본문에서 자동 추출
     if (!updates.summary && updates.content) {
@@ -245,14 +286,11 @@ export async function handleBlogUpdate(req, res) {
     const updated = await blogCollection.doc(slug).get();
     const updatedData = updated.data();
 
-    // Google 색인 등록 ping
     if (updatedData.published) {
-      try {
-        await fetch(`https://www.google.com/ping?sitemap=https://monkos.ai/sitemap.xml`);
-        log(`[CMS] Google sitemap ping 완료: ${slug}`);
-      } catch (e) {
-        log(`[CMS] Google sitemap ping 실패: ${e.message}`, 'WARN');
-      }
+      const blogUrl = `https://monkos.ai/blog/${slug}`;
+      fetch(`https://www.google.com/ping?sitemap=https://monkos.ai/sitemap.xml`).catch(() => {});
+      requestIndexing(blogUrl);
+      appendToLlmsTxt(slug, updatedData.title);
     }
 
     // 한국어 원본 발행 시 자동번역 → GitHub Issues (백그라운드 체이닝)

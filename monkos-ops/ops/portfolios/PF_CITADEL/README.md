@@ -140,6 +140,9 @@ status: active
 | 5/20 | iMac/막내1 | **규격별 가이드 이미지 112개 일괄 생성** — ref.jpg 얼굴좌표 측정 + Node Canvas/Sharp로 규격별 크롭·오버레이(코너 브래킷+가이드라인 4개+치수 라벨+스펙 배지). WebP 85% 출력, 총 4.0MB. Canvas 인라인 JS→`<img>` 정적 이미지로 전환 (이미지 SEO alt 포함). 단위 테스트 10/10 통과 | `generate-guide-images.js`, `MONK_kr/images/specs/guides/*.webp` 112건, `template.js` 수정 | ✅ → 아래 교체 |
 | 5/20 | iMac/막내1 | **CropEngine Vision 기반 23개 사이즈별 가이드 이미지** — Node Canvas 추정 방식 폐기 → CropEngine.swift Vision 얼굴 감지 + crop() 실제 크롭 결과 기반. `--export-guides` CLI 모드 추가. 23 고유사이즈 × PNG export → cwebp WebP 변환 760KB(총). 112개 개별파일 → 23개 사이즈별로 통합. template.js size-WxH.webp 매핑 | `MonkosCropApp.swift` export 기능, `MONK_kr/images/specs/guides/size-*.webp` 23건, `template.js` 수정 | ✅ |
 | 5/20 | iMac/막내1 | **CropEngine.crop() 규격별 비율 보정 + 초록 오버레이** — 하드코딩 FACE_TARGET=33/45 폐기 → spec.faceTarget/heightMM 동적 계산. 51×51: 73%→65%, 50×70: 73%→50% 얼굴 비율 분화. EYE_POSITION도 높이≥60mm면 0.42. 오버레이 색상 #6c4fff→#00D4AA(IDPASS 액센트). 23장 재생성 | `CropEngine.swift` 상수→동적, `MonkosCropApp.swift` 색상, `size-*.webp` 23건 | ✅ |
+| 06/07 | 쌍아 | **Google Indexing API 블로그 자동 연동** — 블로그 발행 시 `requestIndexing()` 즉시 색인 요청. sitemap ping 대기(24-72h) → 즉시 반영. blog.js CREATE/UPDATE 양쪽 적용 | blog.js | ✅ |
+| 06/07 | 쌍아 | **llms.txt 블로그 자동 갱신** — 발행 시 `appendToLlmsTxt()` 호출, AI 엔진 인용 소스에 신규 글 자동 추가. GEO/AEO 자산 자동 확장 | blog.js | ✅ |
+| 06/07 | 쌍아 | **채널별 자동 배포 최적 방안 조사** — 7채널 전수 조사. API 직통 5채널(Reddit/X/Facebook/Instagram/네이버) + CDP 전용 2채널(note.com/Medium). 3층 구조 확정 | 세션 내 보고 | ✅ |
 
 ---
 
