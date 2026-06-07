@@ -32,6 +32,7 @@
 | **[PF_SPECS](PF_SPECS/README.md)** | **SPECS** | **전략** | **글로벌 증명사진 규격 허브 — 9언어 × 320문서 SEO/GEO 자산** | **active** | **05-22** |
 | **[PF_OPUS](PF_OPUS/README.md)** | **OPUS** | **메타(통괄)** | **콘텐츠 플라이휠 통괄 — 생산공장 완성으로 자생 유입 엔진 구축** | **active** | **06-05** |
 | **[PF_IMAGE_PRO](PF_IMAGE_PRO/README.md)** | **IMAGE_PRO** | **서비스** | **MONKOS Image Pro — image.monkos.ai** | **active** | **01-16** |
+| **[PF_KKU](PF_KKU/README.md)** | **KKU** | **콘텐츠/마케팅** | **꾸 콘텐츠 루틴 — 7채널 멀티배포 + 사진관 마케팅** | **active** | **06-07** |
 | [PF_TEMPLATE](PF_TEMPLATE/README.md) | TEMPLATE | 메타 | 신규 PF 생성 템플릿 | — | — |
 
 ## 네이밍
