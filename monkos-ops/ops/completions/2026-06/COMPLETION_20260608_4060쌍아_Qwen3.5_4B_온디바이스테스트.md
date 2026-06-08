@@ -78,6 +78,41 @@ composition, sharp focus, 8k resolution, photorealistic.
 
 ---
 
+## 3-1. Qwen 3.6-35B-A3B 비교 테스트 (Task 5)
+
+### 환경
+
+| 항목 | 값 |
+|------|-----|
+| 모델 | Qwen3.6-35B-A3B-UD-IQ2_M.gguf (unsloth, 10.73GB) |
+| 양자화 | IQ2_M (2-bit) — 8GB VRAM 제약으로 최소 양자화 |
+| VRAM | 5,763 MB / 8,192 MB (70%) |
+| 모드 | CPU+GPU 하이브리드 (ngl=20, 나머지 CPU RAM) |
+
+### 3.5 vs 3.6 비교
+
+| 시나리오 | 3.5 품질 | 3.5 시간 | **3.6 품질** | **3.6 시간** | **3.6 tok/s** |
+|----------|---------|---------|-------------|-------------|--------------|
+| SEO 제안 | 1/5 (빈 출력) | 59초 | **5/5 (완벽 JSON)** | 95초 | 25.4 |
+| 이미지 프롬프트 | 4/5 | 25초 | **4/5** | 42초 | 29.2 |
+| 글감 정리 | 4/5 | 34초 | **5/5 (매우 상세)** | 70초 | 27.9 |
+| slug 생성 | 4/5 | 49초 | **1/5 (빈 출력)** | 144초 | 27.8 |
+
+### 3.6 핵심 관찰
+
+**품질**: 3.5 대비 현저히 우수
+- SEO: **완벽한 JSON 구조** 출력 (3.5는 4000 토큰으로도 실패)
+- 글감: 이모지·마크다운·3섹션 모두 프로덕션급 품질
+- 한국어 자연스러움: 3.5 대비 눈에 띄게 개선
+
+**속도**: 3.5 대비 약 2.5배 느림
+- 25~30 tok/s (3.5: 72 tok/s) — CPU+GPU 하이브리드의 한계
+- 여전히 thinking 병목 존재 (slug에서 4000 토큰 소모)
+
+**판정**: 품질은 Gemini 2.5 Flash에 근접하나, **응답 시간 42~95초로 온디바이스 전환 불가**
+
+---
+
 ## 4. 근본 원인 분석
 
 ### Thinking 모드가 핵심 병목
@@ -116,17 +151,21 @@ Qwen 3.5는 reasoning 모델로, 모든 응답에 thinking 토큰을 대량 생�
 
 | 파일 | 경로 |
 |------|------|
-| 벤치마크 결과 | `AI_Factory/test_outputs/qwen35_4b/results.json` |
-| 테스트 스크립트 | `AI_Factory/test_qwen35_4b_server.py` |
-| GGUF 모델 | `c:/tmp/qwen35-4b-q4km.gguf` (2.55GB, 임시) |
+| 3.5 벤치마크 결과 | `AI_Factory/test_outputs/qwen35_4b/results.json` |
+| 3.6 벤치마크 결과 | `AI_Factory/test_outputs/qwen36_35b_a3b/results.json` |
+| 3.5 테스트 스크립트 | `AI_Factory/test_qwen35_4b_server.py` |
+| 3.6 테스트 스크립트 | `AI_Factory/test_qwen36_35b_a3b_server.py` |
+| GGUF 모델 (3.5) | `c:/tmp/qwen35-4b-q4km.gguf` (2.55GB, 임시) |
+| GGUF 모델 (3.6) | `c:/tmp/qwen36-35b-a3b-iq2m.gguf` (10.73GB, 임시) |
 | llama.cpp 바이너리 | `c:/tmp/llama-cpp/` (임시) |
 
 ---
 
 ## ✅❌💡⏳📁🔀
 
-- ✅ Qwen 3.5 4B 온디바이스 테스트 4종 완료
-- ❌ 온디바이스 전환 불가 판정 (thinking 병목 + 속도 초과)
+- ✅ Qwen 3.5 4B + Qwen 3.6-35B-A3B 온디바이스 테스트 4종 완료
+- ❌ 양 모델 모두 온디바이스 전환 불가 판정 (thinking 병목 + 속도 초과)
+- 💡 3.6은 품질 우수(SEO 완벽 JSON, 글감 프로덕션급)하나 속도가 치명적
 - 💡 non-reasoning 모델(Qwen3-4B, Phi-4 Mini)로 재검증 권장
 - ⏳ 없음
 - 📁 `AI_Factory/test_outputs/qwen35_4b/results.json`
