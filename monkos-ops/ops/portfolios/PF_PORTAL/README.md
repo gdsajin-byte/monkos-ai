@@ -84,6 +84,7 @@ status: active
 | 06/07 | 쌍아 | **llms.txt 자동 갱신** — 블로그 발행 시 llms.txt에 신규 글 자동 어펜드 (`appendToLlmsTxt()`). AI 엔진 인용 소스 자동 확장 | blog.js | ✅ |
 | 06/07 | 쌍아 | **IDPASS 소개 글 API 생성** — `POST /api/admin/blog` → slug `idpass-kr` 발행. 3개국어 자동 번역 트리거 | Firestore blog_posts | ✅ |
 | 06/08 | 민아 | **블로그 이미지 파이프라인 전수조사 + 썸네일 노드 실증** — 에디터 이미지 파이프라인 Explore 조사: AI 생성 호출만 부재, Gemini클라(config.js:89)/GCS저장(upload.js:126)/에디터삽입(blog-image.js) 완비. 썸네일 자동생성 노드 설계(Nano Banana, `image-generate.js` 신설안). 레딧 에세이 draft 등록(`dead-folders-to-living-system-kr`) + Canva 썸네일 GCS 적용(thumbnail PUT, draft 유지) | [세션로그](../../sessions/2026-06-08_iMac_민아.md) | ✅ |
+| 06/08 | 민아·쌍아 | **에디터 내장 에이전트 설계 합산** — 골조: ORSA(Observe-Reason-Suggest-Apply) 루프 + 서버 에이전트/thin client/비차단(민아). 인프라 보완(쌍아): **SSE(서버→클라)+POST(클라→서버)** = Cloud Run 정합(WebSocket 타임아웃 회피) / **증분 diff 관찰** + 서버 세션 문서상태(토큰 비용) / **Phase 1 우선**. 실행순서: Phase 1 버튼호출(PF_PORTAL 확장, 자동화율 0→30%, OPUS 플라이휠 첫 바퀴) → 실전 검증 → Phase 2~3 ORSA 상주는 독립 PF급 → PROPOSAL 기안. 썸네일은 sharp 자동 + Canva 프리미엄(민아 경유) 2트랙 | [세션로그](../../sessions/2026-06-08_iMac_민아.md) | ✅ |
 
 ---
 
