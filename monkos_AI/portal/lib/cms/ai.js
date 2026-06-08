@@ -239,7 +239,7 @@ Content: ${snippet}
 
 Respond in JSON format ONLY:
 {"summary": "...", "tags": "...", "ogTitle": "..."}` }] }],
-      config: { maxOutputTokens: 256, temperature: 0.3, responseMimeType: 'application/json' },
+      config: { maxOutputTokens: 2048, temperature: 0.3, responseMimeType: 'application/json' },
     });
 
     const raw = (response.candidates?.[0]?.content?.parts?.[0]?.text || '').trim();
