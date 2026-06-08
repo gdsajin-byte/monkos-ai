@@ -19,7 +19,8 @@ function escapeXml(str) {
 }
 
 function makeSlug(title) {
-  return title.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').substring(0, 40);
+  const slug = title.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '').substring(0, 40);
+  return slug || `post-${Date.now()}`;
 }
 
 async function uploadToGcs(buffer, gcsPath, contentType, metadata = {}) {
@@ -64,12 +65,14 @@ Category: ${category || 'general'}
 Style: ${styleHint}
 
 Rules:
+- FIRST determine: is this article about PEOPLE (portraits, faces, human subjects) or about THINGS/CONCEPTS (objects, backgrounds, guides, processes, abstract ideas)?
+- If about THINGS/CONCEPTS: absolutely NO people, NO faces, NO human figures. Focus purely on the subject matter (objects, colors, patterns, diagrams, spaces)
+- If about PEOPLE: people are acceptable but use generic/diverse representations, never specific real individuals
 - Output ONLY the prompt text, nothing else
 - Max 200 words
 - Be specific and visual
 - Include style direction: ${styleHint}
-- Do NOT include text/typography/words in the image
-- Avoid faces of real people` }] }],
+- Do NOT include text/typography/words in the image` }] }],
       config: { maxOutputTokens: 256, temperature: 0.7 },
     });
     const generatedPrompt = (promptResponse.candidates?.[0]?.content?.parts?.[0]?.text || '').trim();
@@ -236,7 +239,7 @@ Content: ${snippet}
 
 Respond in JSON format ONLY:
 {"summary": "...", "tags": "...", "ogTitle": "..."}` }] }],
-      config: { maxOutputTokens: 256, temperature: 0.3 },
+      config: { maxOutputTokens: 256, temperature: 0.3, responseMimeType: 'application/json' },
     });
 
     const raw = (response.candidates?.[0]?.content?.parts?.[0]?.text || '').trim();

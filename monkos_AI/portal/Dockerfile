@@ -16,6 +16,10 @@ FROM node:20-slim
 LABEL maintainer="MONK.KR"
 LABEL description="MONKOS AI Portal - monkos.ai"
 
+# 한글 폰트 — sharp SVG 텍스트 렌더링용
+RUN apt-get update && apt-get install -y --no-install-recommends fonts-noto-cjk-extra && \
+    rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
 COPY package*.json ./
