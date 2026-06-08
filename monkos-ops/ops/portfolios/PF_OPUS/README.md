@@ -74,6 +74,7 @@ domain: "메타(통괄)"
 | 06/08 | 막내1+3 | **블로그 에디터 AI Phase 1 구현 + 번역본 색인 누락 수정** — ai.js(Imagen 4 이미지생성+OG 썸네일+SEO 제안) + seo.js 분리 + translate.js 색인 체이닝 + blog-ai.js AI 탭 프론트. rev 00266 prod 배포 | `4daaac24` | ✅ |
 | 06/08 | 작가님 | **Phase 2 비전 선언 — 플라이휠 개방**: 사진 1장으로 콘텐츠 생성→배포→홍보. 검수 게이트로 오염 차단. B2C+B2B 유입 확장. OPUS=메타PF로 PORTAL+SPREAD+CITADEL 통합하는 구조 그대로, 바퀴를 유저에게 개방 | Phase 2 로드맵 적립 | ✅ |
 | 06/08 | 민아 | **콘텐츠 생산 2차 실전 + 이미지 생성 노드 실증** — 시스템 철학 대화를 레딧풍 에세이 1편으로 생산(「죽은 폴더 vs 살아있는 시스템」, draft). 생산공장의 **이미지 생성 노드 공백 식별**(에디터에 AI 생성 호출만 부재, Gemini/GCS/삽입은 완비). Canva 보조 노드 end-to-end 실증(generate 4안→create 계정저장→export 1280×720→GCS→thumbnail 적용) | blog draft `dead-folders-to-living-system-kr`, [세션로그](../../sessions/2026-06-08_iMac_민아.md) | ✅ |
+| 06/08 | 4060/쌍아 | **Qwen 3.5 4B 온디바이스 테스트** — Q4_K_M GGUF + llama.cpp로 블로그에디터 시나리오 4종 벤치마크. 72 tok/s·VRAM 3.2GB 우수하나 thinking 모드가 토큰 대량 소모(slug 6단어에 49초). **판정: 온디바이스 전환 불가 → Gemini 2.5 Flash 유지**. 후속: non-reasoning 모델(Qwen3-4B, Phi-4 Mini) 재검증 권장 | `COMPLETION_20260608_4060쌍아_Qwen3.5_4B_온디바이스테스트.md` | ✅ |
 
 ---
 

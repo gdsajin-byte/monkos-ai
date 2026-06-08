@@ -1,0 +1,38 @@
+{
+  "seo": {
+    "output": "",
+    "seconds": 59.07,
+    "tokens_per_sec": 70.5,
+    "completion_tokens": 4000,
+    "reasoning_tokens": 1819
+  },
+  "image_prompt": {
+    "output": "Professional photography guide concept, clean studio shot. A person modeling a passport photo against three distinct background options side by side. Left panel: pure white background. Center panel: soft light blue background. Right panel: neutral light gray background. High-key lighting, minimal composition, sharp focus, 8k resolution, photorealistic. Neutral color palette, professional aesthetic, suitable for a blog header. No text overlays, focus on color accuracy and clarity.",
+    "seconds": 24.59,
+    "tokens_per_sec": 71.9,
+    "completion_tokens": 1606,
+    "reasoning_tokens": 956
+  },
+  "outline": {
+    "output": "1. **제목: 📸 [AI] 증명사진 배경색 자동 변환, 사진관 비용 90% 절감하는 모바일 기술**\n\n2. **서론**\n증명사진을 찍기 위해 사진관에 들러야 하는 번거로움과 높은 비용에 고민이 많지 않나요? 이제 AI 기술이 증명사진의 배경색을 자동으로 변환하는 기술을 소개합니다.\n\n3. **본문 섹션**\n*   **ML Kit 기반의 얼굴 인식 및 배경 분리 기술**\n    *   ML Kit 을 활용한 정밀한 얼굴 인식\n    *   Subject Segmentation 으로 배경과 인물을 분리\n*   **모바일에서 실시간으로 배경색을 선택하고 변환**\n    *   사용자가 원하는 색상으로 즉시 배경 교체\n    *   모바일 환경에서 실시간 처리 가능\n*   **기존 사진관 대비 90% 비용 절감 효과**\n    *   사진관 방문 비용 및 시간 절감\n    *   AI 기술로 증명사진 제작 비용 대폭 감소\n\n4. **결론**\nAI 기술이 증명사진의 배경색 변환을 혁신적으로 개선하여, 누구나 쉽게 비용 효율적인 증명사진을 찍을 수 있게 되었습니다.",
+    "seconds": 34.12,
+    "tokens_per_sec": 71.5,
+    "completion_tokens": 2273,
+    "reasoning_tokens": 1030
+  },
+  "slug": {
+    "output": "perfect-id-photo-background-color-guide",
+    "seconds": 49.32,
+    "tokens_per_sec": 71.0,
+    "completion_tokens": 3340,
+    "reasoning_tokens": 1447
+  },
+  "meta": {
+    "model": "Qwen3.5-4B-Q4_K_M.gguf (unsloth)",
+    "quantization": "Q4_K_M",
+    "runtime": "llama.cpp b9553 (llama-server)",
+    "gpu": "NVIDIA GeForce RTX 4060 8GB",
+    "vram_used_mb": 3253,
+    "thinking_mode": "disabled (/no_think)"
+  }
+}
