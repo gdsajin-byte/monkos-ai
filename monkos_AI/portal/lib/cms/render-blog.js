@@ -283,7 +283,7 @@ export async function blogPostFragment(req, lang = null) {
   const seoMeta = `${noindexTag}
 <meta property="og:title" content="${escapeHtml(post.title)}">
 <meta property="og:description" content="${escapeHtml(getSeoDescription(post))}">
-<meta property="og:image" content="${escapeHtml(post.thumbnail || '')}">
+<meta property="og:image" content="${escapeHtml(post.ogImage || post.thumbnail || '')}">
 <meta property="og:type" content="article">
 <meta property="og:url" content="${canonicalUrl}">
 <meta property="article:published_time" content="${post.createdAt}">

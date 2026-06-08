@@ -42,6 +42,7 @@ import { handleFaqList, handleFaqCreate, handleFaqUpdate, handleFaqDelete } from
 import { handleGalleryList, handleGalleryCreate, handleGalleryUpdate, handleGalleryDelete } from './lib/cms/gallery.js';
 import { handleBoardPublicList, handleBoardPublicGet, handleBoardPublicCreate, handleBoardPublicDelete, handleBoardAdminList, handleBoardAdminReply, handleBoardAdminDelete, handleBoardAdminToggle } from './lib/cms/board.js';
 import { handleUpload, handleImageList, handleImageDelete } from './lib/cms/upload.js';
+import { handleAiImage, handleAiThumbnail, handleAiSuggest } from './lib/cms/ai.js';
 import { handleTranslate } from './lib/cms/translate.js';
 import { handleSearch } from './lib/cms/search.js';
 import { renderBlogList, renderBlogPost, renderFaq, renderGallery, renderBoardList, renderBoardPost, renderBoardWrite, renderGuide, renderAiPhotoGuide, renderSitemap, renderPricing, renderSpecsList, renderSpecsDetail } from './lib/cms/render.js';
@@ -179,6 +180,9 @@ const httpServer = createServer(async (req, res) => {
   if (urlPath?.startsWith('/api/admin/blog/') && req.method === 'GET') return handleBlogGet(req, res);
   if (urlPath?.startsWith('/api/admin/blog/') && req.method === 'PUT') return handleBlogUpdate(req, res);
   if (urlPath?.startsWith('/api/admin/blog/') && req.method === 'DELETE') return handleBlogDelete(req, res);
+  if (urlPath === '/api/admin/ai/image' && req.method === 'POST') return handleAiImage(req, res);
+  if (urlPath === '/api/admin/ai/thumbnail' && req.method === 'POST') return handleAiThumbnail(req, res);
+  if (urlPath === '/api/admin/ai/suggest' && req.method === 'POST') return handleAiSuggest(req, res);
   if (urlPath === '/api/admin/upload' && req.method === 'POST') return handleUpload(req, res);
   if (urlPath === '/api/admin/images' && req.method === 'GET') return handleImageList(req, res);
   if (urlPath?.startsWith('/api/admin/images/') && req.method === 'DELETE') return handleImageDelete(req, res);

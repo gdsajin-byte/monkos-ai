@@ -115,6 +115,7 @@
       <button class="tab active" data-tab="images" onclick="switchTab('images')">이미지</button>
       <button class="tab" data-tab="seeds" onclick="switchTab('seeds')">시드</button>
       <button class="tab" data-tab="research" onclick="switchTab('research')">리서치</button>
+      <button class="tab" data-tab="ai" onclick="switchTab('ai')">AI</button>
     </div>
     <div class="tab-content" id="tab-images">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
@@ -158,6 +159,54 @@
         <div class="research-loading" style="color:var(--text-dim)">검색어를 입력하세요</div>
       </div>
     </div>
+    <div class="tab-content" id="tab-ai" style="display:none">
+      <!-- AI 이미지 생성 -->
+      <div class="ai-section">
+        <label class="ai-section-label">AI 이미지 생성</label>
+        <div class="ai-style-row">
+          <button class="ai-style-btn active" data-style="photo">📷 사진</button>
+          <button class="ai-style-btn" data-style="illustration">🎨 일러스트</button>
+          <button class="ai-style-btn" data-style="minimal">◻️ 미니멀</button>
+          <button class="ai-style-btn" data-style="diagram">📊 다이어그램</button>
+        </div>
+        <textarea id="aiPromptText" class="ai-prompt-textarea" rows="3" placeholder="프롬프트 (자동생성됨, 수정 가능)"></textarea>
+        <div class="ai-btn-row">
+          <button id="aiGenerateBtn" class="btn btn-primary btn-sm">🎲 생성</button>
+          <button id="aiRegenerateBtn" class="btn btn-secondary btn-sm">🔄 재생성</button>
+        </div>
+        <div id="aiStatus" class="ai-status"></div>
+        <div id="aiImagePreview" class="ai-preview"></div>
+        <div id="aiImageActions" class="ai-actions" style="display:none">
+          <button id="aiInsertBtn" class="btn btn-primary btn-sm">본문 삽입</button>
+          <button id="aiThumbBtn" class="btn btn-secondary btn-sm">📌 썸네일 지정</button>
+          <button id="aiDownloadBtn" class="btn btn-secondary btn-sm">⬇ 다운로드</button>
+        </div>
+      </div>
+      <!-- OG 썸네일 -->
+      <div class="ai-section ai-section--border">
+        <label class="ai-section-label">OG 썸네일</label>
+        <div class="ai-radio-row">
+          <label><input type="radio" name="ogBgType" value="blur"> 본문 첫 이미지 블러</label>
+          <label><input type="radio" name="ogBgType" value="gradient" checked> 브랜드 그래디언트</label>
+        </div>
+        <button id="ogGenerateBtn" class="btn btn-primary btn-sm">🖼 자동 생성</button>
+        <span class="ai-hint">1200×630</span>
+        <div id="ogPreview" class="ai-preview"></div>
+        <button id="ogApplyBtn" class="btn btn-success btn-sm" style="display:none">썸네일 적용</button>
+      </div>
+      <!-- SEO 제안 -->
+      <div class="ai-section ai-section--border">
+        <label class="ai-section-label">SEO 제안</label>
+        <button id="seoGenerateBtn" class="btn btn-primary btn-sm">✨ 자동 생성</button>
+        <div class="ai-seo-fields">
+          <label class="ai-field-label">요약</label>
+          <textarea id="seoSummary" rows="2" class="ai-seo-input" placeholder="자동 생성됩니다"></textarea>
+          <label class="ai-field-label">태그</label>
+          <input id="seoTags" class="ai-seo-input" placeholder="자동 생성됩니다">
+        </div>
+        <button id="seoApplyBtn" class="btn btn-success btn-sm" style="display:none">적용</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -169,6 +218,7 @@
   import { setupImageHandlers } from './js/blog-image.js';
   import { loadSeedCatalog } from './js/blog-seed.js';
   import { initResearch } from './js/blog-research.js';
+  import { initAiTab } from './js/blog-ai.js';
   import './js/blog-share.js';
 
   // 1. 에디터 초기화 (toastui CDN 로딩 후)
@@ -178,6 +228,7 @@
   setupEditorBindings();
   setupImageHandlers();
   initResearch(switchTab);
+  initAiTab();
 
   // 3. 데이터 로딩
   loadPost();

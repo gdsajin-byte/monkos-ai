@@ -2,51 +2,40 @@
  * CMS 블로그 CRUD API 핸들러
  * Firestore blog_posts 컬렉션
  */
-import { readFileSync, writeFileSync, existsSync } from 'fs';
-import { resolve, dirname } from 'path';
-import { fileURLToPath } from 'url';
-import { GoogleAuth } from 'google-auth-library';
-import { firestore, ai, log, parseJsonBody } from '../shared/config.js';
+import sharp from 'sharp';
+import { Storage } from '@google-cloud/storage';
+import { firestore, ai, GCS_BUCKET, log, parseJsonBody } from '../shared/config.js';
 import { requireAdmin } from './admin-auth.js';
 import { translateAndSaveBlogPost } from './translate.js';
 import { publishBlogToGitHub } from './github-issues.js';
+import { requestIndexing, appendToLlmsTxt, pingSitemap } from './seo.js';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
 const blogCollection = firestore.collection('blog_posts');
+const ogStorage = new Storage();
+const ogBucket = ogStorage.bucket(GCS_BUCKET);
 
-async function requestIndexing(url) {
+async function generateOgImage(thumbnail, slug) {
   try {
-    const auth = new GoogleAuth({ scopes: ['https://www.googleapis.com/auth/indexing'] });
-    const client = await auth.getClient();
-    const res = await client.request({
-      url: 'https://indexing.googleapis.com/v3/urlNotifications:publish',
-      method: 'POST',
-      data: { url, type: 'URL_UPDATED' },
+    const imgRes = await fetch(thumbnail);
+    if (!imgRes.ok) return null;
+    const imgBuffer = Buffer.from(await imgRes.arrayBuffer());
+    const ogBuffer = await sharp(imgBuffer)
+      .resize(1200, 630, { fit: 'cover' })
+      .jpeg({ quality: 85 })
+      .toBuffer();
+    const timestamp = Date.now();
+    const gcsPath = `blog/og_${timestamp}_${slug}.jpg`;
+    const file = ogBucket.file(gcsPath);
+    await file.save(ogBuffer, {
+      metadata: { contentType: 'image/jpeg', metadata: { source: 'auto-og-resize' } },
+      public: true,
     });
-    log(`[SEO] Indexing API 성공: ${url} → ${res.status}`);
-  } catch (e) {
-    log(`[SEO] Indexing API 실패: ${url} — ${e.message}`, 'WARN');
-  }
-}
-
-function appendToLlmsTxt(slug, title) {
-  try {
-    const llmsPath = resolve(__dirname, '../../public/llms.txt');
-    if (!existsSync(llmsPath)) return;
-    const content = readFileSync(llmsPath, 'utf-8');
-    const blogUrl = `https://monkos.ai/blog/${slug}`;
-    if (content.includes(blogUrl)) return;
-    const citation = content.indexOf('## Citation');
-    const entry = `- ${title}: ${blogUrl}\n`;
-    if (citation > -1) {
-      const updated = content.slice(0, citation) + entry + '\n' + content.slice(citation);
-      writeFileSync(llmsPath, updated, 'utf-8');
-    } else {
-      writeFileSync(llmsPath, content + '\n' + entry, 'utf-8');
-    }
-    log(`[SEO] llms.txt 갱신: ${slug}`);
-  } catch (e) {
-    log(`[SEO] llms.txt 갱신 실패: ${e.message}`, 'WARN');
+    const url = `https://storage.googleapis.com/${GCS_BUCKET}/${gcsPath}`;
+    log(`[CMS] OG 이미지 자동 생성: ${gcsPath} (${(ogBuffer.length / 1024).toFixed(1)}KB)`);
+    return url;
+  } catch (err) {
+    log(`[CMS] OG 이미지 생성 실패: ${err.message}`, 'WARN');
+    return null;
   }
 }
 
@@ -209,12 +198,17 @@ export async function handleBlogCreate(req, res) {
       viewCount: 0,
     };
 
+    if (post.published && post.thumbnail) {
+      const ogUrl = await generateOgImage(post.thumbnail, slug);
+      if (ogUrl) post.ogImage = ogUrl;
+    }
+
     await blogCollection.doc(slug).set(post);
     log(`[CMS] 블로그 생성: ${slug}`);
 
     if (post.published) {
       const blogUrl = `https://monkos.ai/blog/${slug}`;
-      fetch(`https://www.google.com/ping?sitemap=https://monkos.ai/sitemap.xml`).catch(() => {});
+      pingSitemap();
       requestIndexing(blogUrl);
       appendToLlmsTxt(slug, post.title);
     }
@@ -280,6 +274,14 @@ export async function handleBlogUpdate(req, res) {
     }
     updates.updatedAt = new Date().toISOString();
 
+    const prevData = doc.data();
+    const effectiveThumbnail = updates.thumbnail ?? prevData.thumbnail;
+    const isPublished = updates.published ?? prevData.published;
+    if (isPublished && effectiveThumbnail) {
+      const ogUrl = await generateOgImage(effectiveThumbnail, slug);
+      if (ogUrl) updates.ogImage = ogUrl;
+    }
+
     await blogCollection.doc(slug).update(updates);
     log(`[CMS] 블로그 수정: ${slug}`);
 
@@ -288,7 +290,7 @@ export async function handleBlogUpdate(req, res) {
 
     if (updatedData.published) {
       const blogUrl = `https://monkos.ai/blog/${slug}`;
-      fetch(`https://www.google.com/ping?sitemap=https://monkos.ai/sitemap.xml`).catch(() => {});
+      pingSitemap();
       requestIndexing(blogUrl);
       appendToLlmsTxt(slug, updatedData.title);
     }

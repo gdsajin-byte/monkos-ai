@@ -4,6 +4,7 @@
  */
 import { ai, firestore, log } from '../shared/config.js';
 import { requireAdmin } from './admin-auth.js';
+import { requestIndexing, appendToLlmsTxt, pingSitemap } from './seo.js';
 
 function hasKorean(str) {
   return /[가-힣ㄱ-ㅎㅏ-ㅣ]/.test(str);
@@ -211,6 +212,13 @@ ${JSON_INSTRUCTION[lang] || JSON_INSTRUCTION.en}`;
           originalSlug: baseSlug,
           autoTranslated: true,
         });
+      }
+
+      if (originalDoc.published) {
+        const translatedUrl = `https://monkos.ai/blog/${translatedSlug}`;
+        requestIndexing(translatedUrl);
+        appendToLlmsTxt(translatedSlug, translated.title);
+        pingSitemap();
       }
 
       log(`[CMS] 자동번역 완료: ${slug} → ${translatedSlug} (${lang})`);

@@ -544,6 +544,28 @@
 }
 .admin-share-copy-full:hover { border-color: var(--accent); color: var(--accent); }
 
+/* ===== AI Tab ===== */
+.ai-section { margin-bottom: 16px; }
+.ai-section--border { border-top: 1px solid var(--border); padding-top: 14px; }
+.ai-section-label { display: block; font-size: 12px; font-weight: 600; color: var(--text-dim); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+.ai-style-row { display: flex; gap: 4px; margin-bottom: 8px; flex-wrap: wrap; }
+.ai-style-btn { padding: 4px 10px; font-size: 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface2); color: var(--text-dim); cursor: pointer; transition: all 0.15s; }
+.ai-style-btn:hover { border-color: var(--accent); color: var(--text); }
+.ai-style-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.ai-prompt-textarea { width: 100%; padding: 8px; font-size: 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface2); color: var(--text); resize: vertical; margin-bottom: 8px; box-sizing: border-box; }
+.ai-btn-row { display: flex; gap: 6px; margin-bottom: 8px; }
+.ai-status { font-size: 11px; color: var(--accent); margin-bottom: 8px; min-height: 16px; }
+.ai-preview { margin: 8px 0; min-height: 20px; }
+.ai-preview img { max-width: 100%; border-radius: 6px; border: 1px solid var(--border); }
+.ai-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+.ai-radio-row { display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; font-size: 12px; color: var(--text-dim); }
+.ai-radio-row label { display: flex; align-items: center; gap: 4px; cursor: pointer; }
+.ai-hint { font-size: 11px; color: var(--text-dim); margin-left: 6px; }
+.ai-seo-fields { margin: 8px 0; }
+.ai-field-label { display: block; font-size: 11px; color: var(--text-dim); margin: 6px 0 2px; }
+.ai-seo-input { width: 100%; padding: 6px 8px; font-size: 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface2); color: var(--text); box-sizing: border-box; }
+textarea.ai-seo-input { resize: vertical; }
+
 /* Responsive */
 @media (max-width: 1200px) {
   .editor-layout { grid-template-columns: 200px minmax(400px, 820px); }
