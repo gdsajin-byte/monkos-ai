@@ -64,6 +64,7 @@ status: active
 | 5/10 | 쌍아 | **광고 채널 데이터 정밀 분석** — Google Ads 4캠페인 분석: 스마트 캠페인 이탈 82%(쓰레기 트래픽 판명), JP 검색 이탈 60%(최양질). 스마트 ₩4,200→₩1,000 축소 실행. 멀티채널 숏폼 비교(네이버클립·인스타릴스·유튜브쇼츠·카카오·틱톡). 채널 전략 확정: Google검색 유지 + 네이버클립·인스타릴스 신규 + 카카오 무료활용 | RESEARCH_20260510_쌍아_광고채널_데이터분석.md | ✅ |
 | 06/07 | 작가님+쌍아 | **IDPASS 4채널 수동 배포 실전** — 네이버 블로그(KO, 작가님 직접) + note.com(JA, 초안 제공) + Reddit r/SideProject(EN) + Medium(EN 롱폼). 신작가 문체 확립. QR 코드 생성+GCS 업로드 | 네이버·Reddit·Medium 발행, note 초안 | ✅ |
 | 06/07 | 쌍아 | **채널별 API vs CDP 최적 방안 전수 조사** — 7채널 조사. 3층 구조 확정: Layer 1 API 직통(Reddit/X/Facebook/Instagram/네이버) + Layer 2 API+보완(네이버 리치서식) + Layer 3 CDP 전용(note.com/Medium 신규). CDP 한계: note.com API 미제공, Medium 신규 토큰 발급 중단, X 봇탐지 강력 | 세션 내 보고 | ✅ |
+| 06/08 | 민아 | **다채널 배포 실전 + 레딧 신규계정 장벽 교훈** — 「죽은 폴더」 에세이 Medium(EN)·note(JA)·블로그(KR/JA) 배포. **Reddit r/ai_agents→r/SideProject 2회 모두 신규계정 필터 자동제거**(원인: 신규·저karma + 동일글 단시간 반복서브=스팸신호. 어제 r/SideProject 단발은 통과). 교훈: Reddit 단기 배포 무리—계정 karma 육성 별도과제, 동일글 다중서브 연속금지. **Medium=RTF 클립보드로 마크다운 서식 이식 가능 / note=OS 파일창은 자동화 경계(작가님 수동)** | [세션로그](../../sessions/2026-06-08_iMac_민아.md) | ✅ |
 
 ---
 
