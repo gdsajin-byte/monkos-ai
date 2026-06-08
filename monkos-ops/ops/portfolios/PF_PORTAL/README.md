@@ -83,6 +83,7 @@ status: active
 | 06/07 | 쌍아 | **Google Indexing API 연동** — 블로그 발행 시 즉시 색인 요청 (`requestIndexing()`). sitemap ping과 병행 | blog.js | ✅ |
 | 06/07 | 쌍아 | **llms.txt 자동 갱신** — 블로그 발행 시 llms.txt에 신규 글 자동 어펜드 (`appendToLlmsTxt()`). AI 엔진 인용 소스 자동 확장 | blog.js | ✅ |
 | 06/07 | 쌍아 | **IDPASS 소개 글 API 생성** — `POST /api/admin/blog` → slug `idpass-kr` 발행. 3개국어 자동 번역 트리거 | Firestore blog_posts | ✅ |
+| 06/08 | 민아 | **블로그 이미지 파이프라인 전수조사 + 썸네일 노드 실증** — 에디터 이미지 파이프라인 Explore 조사: AI 생성 호출만 부재, Gemini클라(config.js:89)/GCS저장(upload.js:126)/에디터삽입(blog-image.js) 완비. 썸네일 자동생성 노드 설계(Nano Banana, `image-generate.js` 신설안). 레딧 에세이 draft 등록(`dead-folders-to-living-system-kr`) + Canva 썸네일 GCS 적용(thumbnail PUT, draft 유지) | [세션로그](../../sessions/2026-06-08_iMac_민아.md) | ✅ |
 
 ---
 
