@@ -6,6 +6,8 @@ import { SPECS_DATA } from './render-specs.js';
 
 const blogCollection = firestore.collection('blog_posts');
 
+function escXml(s) { return s ? s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;') : ''; }
+
 // GET /sitemap.xml — 동적 생성
 export async function renderSitemap(req, res) {
   try {
@@ -75,7 +77,7 @@ ${allUrls.map(u => `  <url>
     <priority>${u.priority}</priority>${u.image ? `
     <image:image>
       <image:loc>${u.image}</image:loc>
-      ${u.imageTitle ? `<image:title>${u.imageTitle}</image:title>` : ''}
+      ${u.imageTitle ? `<image:title>${escXml(u.imageTitle)}</image:title>` : ''}
     </image:image>` : ''}
   </url>`).join('\n')}
 </urlset>`;
