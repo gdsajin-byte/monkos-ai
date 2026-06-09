@@ -24,7 +24,7 @@ import {
 } from './lib/shared/config.js';
 
 // === 핸들러 모듈 ===
-import { handleKakaoAuth, handleKakaoCallback, handleLineAuth, handleLineCallback, handleGoogleAuth, handleAuthToken, handleAuthVerify, handleAuthRefresh, handleVerifyCookie, handleLogout } from './lib/auth.js';
+import { handleKakaoAuth, handleKakaoCallback, handleLineAuth, handleLineCallback, handleGoogleRedirectAuth, handleGoogleRedirectCallback, handleGoogleAuth, handleAuthToken, handleAuthVerify, handleAuthRefresh, handleVerifyCookie, handleLogout } from './lib/auth.js';
 import { handleCreditsGet, handleCreditsUse, handleCreditsRefund } from './lib/credits.js';
 import { handleCheckout, handleLemonSqueezyWebhook, handleTossConfirm, handleTossDirect, handleDownloadDirect, handleTossSuccess, handleTossFail } from './lib/payments.js';
 import { handleTelegramGateCode, handleTelegramMissionCode, handleConsentSns, handleMissionComplete, handleCreditsEvent } from './lib/events.js';
@@ -116,6 +116,8 @@ const httpServer = createServer(async (req, res) => {
   if (req.url?.startsWith('/auth/kakao/callback')) return handleKakaoCallback(req, res);
   if (req.url === '/auth/line' || req.url?.startsWith('/auth/line?')) return handleLineAuth(req, res);
   if (req.url?.startsWith('/auth/line/callback')) return handleLineCallback(req, res);
+  if (req.url === '/auth/google' || req.url?.startsWith('/auth/google?')) return handleGoogleRedirectAuth(req, res);
+  if (req.url?.startsWith('/auth/google/callback')) return handleGoogleRedirectCallback(req, res);
   if (urlPath === '/api/auth/google' && req.method === 'POST') return handleGoogleAuth(req, res);
   if (urlPath === '/api/auth/token' && req.method === 'POST') return handleAuthToken(req, res);
   if (urlPath === '/api/auth/verify' && req.method === 'GET') return handleAuthVerify(req, res);

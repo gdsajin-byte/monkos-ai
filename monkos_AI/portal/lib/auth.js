@@ -3,7 +3,8 @@
 import {
   usersCollection, log, safeJsonForScript,
   generateAuthToken, verifyAuthToken, parseCookies, parseJsonBody,
-  GOOGLE_CLIENT_ID, KAKAO_REST_API_KEY, KAKAO_REDIRECT_URI,
+  GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET,
+  KAKAO_REST_API_KEY, KAKAO_REDIRECT_URI,
   LINE_CHANNEL_ID, LINE_CHANNEL_SECRET,
   LEMONSQUEEZY_WEBHOOK_SECRET, ALLOWED_POPUP_ORIGINS, ADMIN_UIDS,
   pendingLineStates, createHmac, randomBytes, authSecret
@@ -339,6 +340,159 @@ location.href = ${JSON.stringify(returnUrl)};
   } catch (err) {
     log(`[LINE] OAuth 에러: ${err.message}`);
     res.writeHead(302, { Location: '/?error=line_auth_failed' });
+    res.end();
+  }
+}
+
+// === Google OAuth 리다이렉트 — /auth/google ===
+export async function handleGoogleRedirectAuth(req, res) {
+  const parsedUrl = new URL(req.url, `http://${req.headers.host}`);
+  const popup = parsedUrl.searchParams.get('popup') === '1';
+  const redirectApp = parsedUrl.searchParams.get('redirect_app') || '';
+  const sourcePage = parsedUrl.searchParams.get('source_page') || '';
+
+  const csrf = randomBytes(16).toString('hex');
+  const stateObj = { csrf, popup, redirectApp, sourcePage };
+  const state = Buffer.from(JSON.stringify(stateObj)).toString('base64url');
+
+  pendingLineStates.set(csrf, Date.now());
+
+  const effectiveRedirect = `https://${req.headers.host}/auth/google/callback`;
+  const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
+    `client_id=${GOOGLE_CLIENT_ID}` +
+    `&redirect_uri=${encodeURIComponent(effectiveRedirect)}` +
+    `&response_type=code` +
+    `&scope=${encodeURIComponent('openid email profile')}` +
+    `&state=${state}` +
+    `&access_type=online` +
+    `&prompt=select_account`;
+
+  res.writeHead(302, { Location: authUrl });
+  res.end();
+}
+
+// === Google OAuth Callback — /auth/google/callback ===
+export async function handleGoogleRedirectCallback(req, res) {
+  const url = new URL(req.url, `http://${req.headers.host}`);
+  const code = url.searchParams.get('code');
+  const state = url.searchParams.get('state');
+  const error = url.searchParams.get('error');
+
+  if (error || !code) {
+    log(`[Google Redirect] OAuth 에러: ${error || 'no code'}`, 'WARNING');
+    res.writeHead(302, { Location: '/?error=google_auth_failed' });
+    res.end();
+    return;
+  }
+
+  let stateData = { csrf: state, popup: false, redirectApp: '', sourcePage: '' };
+  try {
+    stateData = JSON.parse(Buffer.from(state, 'base64url').toString());
+  } catch {}
+
+  if (!stateData.csrf || !pendingLineStates.has(stateData.csrf)) {
+    log('[Google Redirect] state 검증 실패 (CSRF)', 'WARNING');
+    res.writeHead(302, { Location: '/?error=invalid_state' });
+    res.end();
+    return;
+  }
+  pendingLineStates.delete(stateData.csrf);
+
+  try {
+    const effectiveRedirect = `https://${req.headers.host}/auth/google/callback`;
+    const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        grant_type: 'authorization_code',
+        code,
+        redirect_uri: effectiveRedirect,
+        client_id: GOOGLE_CLIENT_ID,
+        client_secret: GOOGLE_CLIENT_SECRET,
+      }),
+    });
+    const tokenData = await tokenRes.json();
+    if (!tokenData.access_token) {
+      log(`[Google Redirect] 토큰 실패: ${JSON.stringify(tokenData)}`, 'WARNING');
+      throw new Error('토큰 발급 실패');
+    }
+
+    const userInfoRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+      headers: { Authorization: `Bearer ${tokenData.access_token}` },
+    });
+    const userInfo = await userInfoRes.json();
+    if (!userInfo.sub) throw new Error('사용자 정보 조회 실패');
+
+    const userRef = usersCollection.doc(userInfo.sub);
+    const userDoc = await userRef.get();
+    const isNewUser = !userDoc.exists;
+
+    const user = {
+      id: userInfo.sub,
+      provider: 'google',
+      email: userInfo.email,
+      name: userInfo.name,
+      givenName: userInfo.given_name || '',
+      familyName: userInfo.family_name || '',
+      picture: userInfo.picture,
+      locale: userInfo.locale || '',
+      emailVerified: userInfo.email_verified === true,
+      lastLogin: new Date().toISOString(),
+      ...(isNewUser ? {
+        createdAt: new Date().toISOString(),
+        credits: 10,
+        signupSource: stateData.sourcePage || '',
+      } : {}),
+    };
+
+    await userRef.set(user, { merge: true });
+    log(`[Google Redirect] ${isNewUser ? '신규 가입 (+10c)' : '로그인'}: ${user.email}`);
+
+    const finalDoc = await userRef.get();
+    const finalData = finalDoc.data();
+    const sessionUser = {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      picture: user.picture,
+      provider: 'google',
+      credits: finalData.credits ?? 0,
+      isAdmin: ADMIN_UIDS.length === 0 || ADMIN_UIDS.includes(user.id),
+    };
+
+    const { token: sessionToken } = generateAuthToken(user.id, 30 * 24 * 60 * 60 * 1000);
+    res.setHeader('Set-Cookie',
+      `monkos_session=${sessionToken}; Domain=.monkos.ai; Path=/; Secure; HttpOnly; SameSite=Lax; Max-Age=2592000`
+    );
+
+    if (stateData.popup) {
+      const targetOrigin = ALLOWED_POPUP_ORIGINS.includes(stateData.redirectApp)
+        ? stateData.redirectApp : 'https://monkos.ai';
+      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+      res.end(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>로그인 완료</title></head><body><script>
+(function() {
+  var data = { type: 'auth-success', user: ${safeJsonForScript(sessionUser)}, token: ${safeJsonForScript(sessionToken)} };
+  if (window.opener) {
+    window.opener.postMessage(data, ${safeJsonForScript(targetOrigin)});
+    window.close();
+  } else {
+    sessionStorage.setItem('monkos_user', JSON.stringify(data.user));
+    location.href = ${safeJsonForScript(stateData.redirectApp || '/')};
+  }
+})();
+</script></body></html>`);
+    } else {
+      const returnUrl = ALLOWED_POPUP_ORIGINS.includes(stateData.redirectApp) ? stateData.redirectApp : '/';
+      const userObj = JSON.stringify(sessionUser);
+      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+      res.end(`<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body><script>
+sessionStorage.setItem('monkos_user', ${JSON.stringify(userObj)});
+location.href = ${JSON.stringify(returnUrl)};
+</script></body></html>`);
+    }
+  } catch (err) {
+    log(`[Google Redirect] OAuth 에러: ${err.message}`, 'ERROR');
+    res.writeHead(302, { Location: '/?error=google_auth_failed' });
     res.end();
   }
 }

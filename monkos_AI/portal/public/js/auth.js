@@ -98,29 +98,9 @@ window.closeLoginModal = function() {
   document.getElementById('loginModal').classList.remove('active');
 };
 
-window.googleLogin = async function() {
-  if (typeof google === 'undefined' || !google.accounts) {
-    var loaded = await loadGISWithRetry();
-    if (!loaded) {
-      var errMsg = {
-        ja: 'Googleログインを読み込めませんでした。広告ブロッカーを無効にするか、ページを再読み込みしてください。',
-        ko: 'Google 로그인을 불러올 수 없습니다. 광고 차단기를 끄거나 페이지를 새로고침해 주세요.',
-        en: 'Could not load Google Sign-In. Please disable ad blockers or reload the page.'
-      };
-      alert(errMsg[lang] || errMsg.en);
-      return;
-    }
-  }
-  if (google.accounts.oauth2) {
-    var tokenClient = google.accounts.oauth2.initTokenClient({
-      client_id: GOOGLE_CLIENT_ID,
-      scope: 'openid email profile',
-      callback: handleGoogleTokenCallback,
-    });
-    tokenClient.requestAccessToken();
-  } else {
-    google.accounts.id.prompt();
-  }
+window.googleLogin = function() {
+  var params = 'source_page=' + encodeURIComponent(window.location.hostname + window.location.pathname);
+  location.href = '/auth/google?' + params;
 };
 
 async function handleGoogleTokenCallback(tokenResponse) {

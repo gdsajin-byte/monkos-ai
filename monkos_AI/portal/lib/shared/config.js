@@ -15,6 +15,8 @@ export const PORT = parseInt(process.env.PORT || '8080', 10);
 export const PROJECT_ID = process.env.PROJECT_ID || 'monkos';
 export const LOCATION = process.env.LOCATION || 'us-central1';
 export const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '933456016842-clagcrpo1juvukjif1m454jq811bd2rq.apps.googleusercontent.com';
+export const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || '';
+export const GOOGLE_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI || 'https://monkos.ai/auth/google/callback';
 
 // Lemon Squeezy (JP/글로벌)
 export const LEMONSQUEEZY_API_KEY = process.env.LEMONSQUEEZY_API_KEY || '';
