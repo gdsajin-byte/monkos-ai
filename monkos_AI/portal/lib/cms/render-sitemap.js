@@ -10,28 +10,29 @@ const blogCollection = firestore.collection('blog_posts');
 export async function renderSitemap(req, res) {
   try {
     const today = new Date().toISOString().substring(0, 10);
+    const ogImage = 'https://monkos.ai/og-image.png';
     const staticUrls = [
-      { loc: 'https://monkos.ai/', lastmod: today, changefreq: 'weekly', priority: '1.0' },
-      { loc: 'https://monkos.ai/blog', lastmod: today, changefreq: 'daily', priority: '0.8' },
+      { loc: 'https://monkos.ai/', lastmod: today, changefreq: 'weekly', priority: '1.0', image: ogImage, imageTitle: 'MONKOS AI 증명사진' },
+      { loc: 'https://monkos.ai/blog', lastmod: today, changefreq: 'daily', priority: '0.8', image: ogImage, imageTitle: 'MONKOS AI 블로그' },
       { loc: 'https://monkos.ai/faq', lastmod: today, changefreq: 'weekly', priority: '0.7' },
       { loc: 'https://monkos.ai/gallery', lastmod: today, changefreq: 'weekly', priority: '0.6' },
       { loc: 'https://monkos.ai/board', lastmod: today, changefreq: 'daily', priority: '0.5' },
       { loc: 'https://monkos.ai/pricing', lastmod: today, changefreq: 'monthly', priority: '0.6' },
       { loc: 'https://monkos.ai/guide', lastmod: today, changefreq: 'weekly', priority: '0.7' },
-      { loc: 'https://monkos.ai/guide/ai-photo', lastmod: today, changefreq: 'weekly', priority: '0.8' },
+      { loc: 'https://monkos.ai/guide/ai-photo', lastmod: today, changefreq: 'weekly', priority: '0.8', image: ogImage, imageTitle: 'MONKOS AI 증명사진 가이드' },
       { loc: 'https://monkos.ai/crop', lastmod: today, changefreq: 'weekly', priority: '0.7' },
       { loc: 'https://monkos.ai/ja/blog', lastmod: today, changefreq: 'daily', priority: '0.7' },
       { loc: 'https://monkos.ai/en/blog', lastmod: today, changefreq: 'daily', priority: '0.7' },
-      { loc: 'https://monkos.ai/ja/', lastmod: today, changefreq: 'weekly', priority: '0.9' },
-      { loc: 'https://monkos.ai/en/', lastmod: today, changefreq: 'weekly', priority: '0.9' },
+      { loc: 'https://monkos.ai/ja/', lastmod: today, changefreq: 'weekly', priority: '0.9', image: ogImage, imageTitle: 'MONKOS AI 証明写真' },
+      { loc: 'https://monkos.ai/en/', lastmod: today, changefreq: 'weekly', priority: '0.9', image: ogImage, imageTitle: 'MONKOS AI ID Photo' },
       { loc: 'https://monkos.ai/ja/faq', lastmod: today, changefreq: 'weekly', priority: '0.6' },
       { loc: 'https://monkos.ai/en/faq', lastmod: today, changefreq: 'weekly', priority: '0.6' },
       { loc: 'https://monkos.ai/ja/pricing', lastmod: today, changefreq: 'monthly', priority: '0.5' },
       { loc: 'https://monkos.ai/en/pricing', lastmod: today, changefreq: 'monthly', priority: '0.5' },
       // specs 허브 인덱스
-      { loc: 'https://monkos.ai/specs', lastmod: today, changefreq: 'monthly', priority: '0.9' },
-      { loc: 'https://monkos.ai/ja/specs', lastmod: today, changefreq: 'monthly', priority: '0.8' },
-      { loc: 'https://monkos.ai/en/specs', lastmod: today, changefreq: 'monthly', priority: '0.8' },
+      { loc: 'https://monkos.ai/specs', lastmod: today, changefreq: 'monthly', priority: '0.9', image: ogImage, imageTitle: 'MONKOS AI 증명사진 규격' },
+      { loc: 'https://monkos.ai/ja/specs', lastmod: today, changefreq: 'monthly', priority: '0.8', image: ogImage, imageTitle: 'MONKOS AI 証明写真 規格' },
+      { loc: 'https://monkos.ai/en/specs', lastmod: today, changefreq: 'monthly', priority: '0.8', image: ogImage, imageTitle: 'MONKOS AI ID Photo Specs' },
     ];
 
     // specs 개별 페이지 동적 추가
@@ -52,6 +53,8 @@ export async function renderSitemap(req, res) {
         lastmod: (data.updatedAt || data.createdAt || '').substring(0, 10),
         changefreq: 'weekly',
         priority: '0.7',
+        image: data.ogImage || data.thumbnail || '',
+        imageTitle: data.title || '',
       };
     });
 
@@ -63,12 +66,17 @@ export async function renderSitemap(req, res) {
       return true;
     });
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 ${allUrls.map(u => `  <url>
     <loc>${u.loc}</loc>
     ${u.lastmod ? `<lastmod>${u.lastmod}</lastmod>` : ''}
     <changefreq>${u.changefreq}</changefreq>
-    <priority>${u.priority}</priority>
+    <priority>${u.priority}</priority>${u.image ? `
+    <image:image>
+      <image:loc>${u.image}</image:loc>
+      ${u.imageTitle ? `<image:title>${u.imageTitle}</image:title>` : ''}
+    </image:image>` : ''}
   </url>`).join('\n')}
 </urlset>`;
 

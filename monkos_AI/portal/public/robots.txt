@@ -28,4 +28,10 @@ Allow: /
 User-agent: cohere-ai
 Allow: /
 
+User-agent: Yeti
+Allow: /
+
+User-agent: Naverbot
+Allow: /
+
 Sitemap: https://monkos.ai/sitemap.xml

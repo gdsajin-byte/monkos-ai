@@ -645,6 +645,12 @@ export function specsListFragment(forceLang = null) {
 <meta property="og:description" content="${escapeHtml(i.hubDesc)}">
 <meta property="og:type" content="website">
 <meta property="og:url" content="${canonicalUrl}">
+<meta property="og:image" content="https://monkos.ai/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="${escapeHtml(i.hubH1)} | MONKOS AI">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://monkos.ai/og-image.png">
 <meta name="theme-color" content="#05080E">
 <link rel="canonical" href="${canonicalUrl}">
 ${hreflangTags}
@@ -908,6 +914,12 @@ export function specsDetailFragment(slug, forceLang = null) {
 <meta property="og:description" content="${escapeHtml(description)}">
 <meta property="og:type" content="article">
 <meta property="og:url" content="${canonicalUrl}">
+<meta property="og:image" content="https://monkos.ai/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="${escapeHtml(title)}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://monkos.ai/og-image.png">
 <meta name="theme-color" content="#05080E">
 <link rel="canonical" href="${canonicalUrl}">
 ${hreflangTags}

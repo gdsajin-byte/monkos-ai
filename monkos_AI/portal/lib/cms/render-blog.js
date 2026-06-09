@@ -283,7 +283,10 @@ export async function blogPostFragment(req, lang = null) {
   const seoMeta = `${noindexTag}
 <meta property="og:title" content="${escapeHtml(post.title)}">
 <meta property="og:description" content="${escapeHtml(getSeoDescription(post))}">
-<meta property="og:image" content="${escapeHtml(post.ogImage || post.thumbnail || '')}">
+<meta property="og:image" content="${escapeHtml(post.ogImage || post.thumbnail || 'https://monkos.ai/og-image.png')}">
+<meta property="og:image:alt" content="${escapeHtml(post.title)}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="${escapeHtml(post.ogImage || post.thumbnail || 'https://monkos.ai/og-image.png')}">
 <meta property="og:type" content="article">
 <meta property="og:url" content="${canonicalUrl}">
 <meta property="article:published_time" content="${post.createdAt}">
