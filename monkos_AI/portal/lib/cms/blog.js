@@ -207,10 +207,11 @@ export async function handleBlogCreate(req, res) {
     log(`[CMS] 블로그 생성: ${slug}`);
 
     if (post.published) {
-      const blogUrl = `https://monkos.ai/blog/${slug}`;
+      const langPrefix = post.lang === 'ko' ? '' : `/${post.lang}`;
+      const blogUrl = `https://monkos.ai${langPrefix}/blog/${baseSlug}`;
       pingSitemap();
       requestIndexing(blogUrl);
-      appendToLlmsTxt(slug, post.title);
+      appendToLlmsTxt(baseSlug, post.title);
     }
 
     // 한국어 원본 발행 시 자동번역 → GitHub Issues (백그라운드 체이닝)
@@ -289,10 +290,12 @@ export async function handleBlogUpdate(req, res) {
     const updatedData = updated.data();
 
     if (updatedData.published) {
-      const blogUrl = `https://monkos.ai/blog/${slug}`;
+      const updatedBaseSlug = slug.replace(/-(kr|ja|en)$/, '');
+      const updatedLangPrefix = (updatedData.lang || 'ko') === 'ko' ? '' : `/${updatedData.lang}`;
+      const blogUrl = `https://monkos.ai${updatedLangPrefix}/blog/${updatedBaseSlug}`;
       pingSitemap();
       requestIndexing(blogUrl);
-      appendToLlmsTxt(slug, updatedData.title);
+      appendToLlmsTxt(updatedBaseSlug, updatedData.title);
     }
 
     // 한국어 원본 발행 시 자동번역 → GitHub Issues (백그라운드 체이닝)

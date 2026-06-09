@@ -215,9 +215,9 @@ ${JSON_INSTRUCTION[lang] || JSON_INSTRUCTION.en}`;
       }
 
       if (originalDoc.published) {
-        const translatedUrl = `https://monkos.ai/blog/${translatedSlug}`;
+        const translatedUrl = `https://monkos.ai/${lang}/blog/${baseSlug}`;
         requestIndexing(translatedUrl);
-        appendToLlmsTxt(translatedSlug, translated.title);
+        appendToLlmsTxt(baseSlug, translated.title);
         pingSitemap();
       }
 
