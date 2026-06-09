@@ -3,6 +3,9 @@
  * 인증 (Google GIS, Kakao, LINE)
  */
 
+// === WebView 감지 (Google OAuth 차단 대응) ===
+var isWebView = /NAVER\(inapp|KAKAOTALK|Instagram|FBAN|FBAV|Line\/|DaumApps|everytimeApp/i.test(navigator.userAgent);
+
 // === Google OAuth ===
 var GOOGLE_CLIENT_ID = '933456016842-clagcrpo1juvukjif1m454jq811bd2rq.apps.googleusercontent.com';
 
@@ -87,8 +90,13 @@ window.loginKakao = function() { location.href = '/auth/kakao?source_page=' + en
 window.loginLine = function() { location.href = '/auth/line?source_page=' + encodeURIComponent(window.location.hostname + window.location.pathname); };
 
 window.headerLogin = function() {
-  if (region === 'kr') {
-    document.getElementById('loginModal').classList.add('active');
+  if (region === 'kr' || isWebView) {
+    var modal = document.getElementById('loginModal');
+    if (isWebView) {
+      var googleBtn = modal.querySelector('.login-btn');
+      if (googleBtn) googleBtn.style.display = 'none';
+    }
+    modal.classList.add('active');
   } else {
     window.googleLogin();
   }
