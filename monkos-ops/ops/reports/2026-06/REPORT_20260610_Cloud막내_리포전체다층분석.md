@@ -113,7 +113,7 @@ JSON-LD 6종(포털), hreflang 양방향(ko↔ja), AI 크롤러 명시 허용 ro
 
 ## 4. 거버넌스 / 운영 문서 (건강도 75점)
 
-- **MEMORY.md 부재 (Critical)**: 헌법 5조 1항·references.md가 "매 세션 자동 로딩"으로 참조하나 루트에 없음. memory/ 폴더에 단편 2개뿐.
+- ~~**MEMORY.md 부재 (Critical)**~~ → **[오탐, 보정 이력 참조]**: MEMORY.md는 `.gitignore:126`에 등록된 디바이스 로컬 규정 문서(헌법 5조 1항 위계상 의도된 설계). 리모트 클론에만 없는 것으로 확인.
 - **정본 이중화 실증**: `20260209_monkos_japan_idphoto_strategy.md`가 `docs/corpus/claude_sessions/strategy/`와 `monkos-ops/tech/rnd/`에 MD5 동일 존재 — 헌법 3조 4항 위반.
 - **규칙 드리프트**: ch1·ch2·ch8 법률이 `.claude/rules/` 미반영 (8장 중 5장만 규칙화).
 - **PF 비대화**: PF_CROP 692줄, PF_SPREAD 513줄 — 500줄 아카이브 트리거 초과 방치 (ch4 9조).
@@ -130,7 +130,7 @@ JSON-LD 6종(포털), hreflang 양방향(ko↔ja), AI 크롤러 명시 허용 ro
 | 2 | C-2/C-3/C-4 페일클로즈 코드 수정 | 2~3일 | 보안 | |
 | 3 | 생성 API 레이트리밋 + CORS 화이트리스트 통일 | 1주 | 보안 | |
 | 4 | 블로그 HTML 구조 수정 + 검색의도 콘텐츠 5편 | 1주 | 마케팅 | |
-| 5 | MEMORY.md 복구 + 정본 이중화 정리 | 1주 | 거버넌스 | |
+| 5 | 정본 이중화 정리 (~~MEMORY.md 복구~~ 오탐 제외) | 1주 | 거버넌스 | |
 | 6 | 데드 코드 160MB 정리 (MonkosChat 포함) | 1~2주 | 아키텍처 | rm 작업 — 작가님 승인 필요 (헌법 4조 2항) |
 | 7 | GCS 증명사진 보존정책(TTL)·IAM 점검 | 2주 | 보안/법무 | PIPA |
 | 8 | GitHub Actions CI + 테스트 커버리지 | 1개월 | 아키텍처 | |
@@ -149,3 +149,12 @@ git 히스토리의 키 제거는 `git filter-repo`(파괴적 명령)로 헌법 
 - 💡 제안: 순위 2(보안 페일클로즈)는 코드 수정 범위가 작아 즉시 착수 가능
 - 📁 산출물: 본 보고서
 - 🔀 브랜치: claude/festive-hawking-gmxmuh
+
+---
+
+## 보정 이력
+
+**[2026-06-10 15:02 KST] Cloud/막내 → 작가님, 쌍아** — 쌍아 검토 반영:
+- **MEMORY.md "부재" → 오탐 정정**: `.gitignore:126`에 MEMORY.md 등록 확인. 디바이스 로컬 보관이 의도된 설계이며 리모트 클론에만 부재. 거버넌스 Critical에서 제외, 로드맵 5번에서 삭제.
+- **MonkosCrop `.build/`**: 쌍아가 동일 세션에서 추적 해제 완료 — 데드 코드 정리 항목에서 해당 부분 기완료 처리.
+- 키 회전 > 히스토리 정리 우선순위, C-2 최우선 착수 권고에 쌍아 동의 확인.
