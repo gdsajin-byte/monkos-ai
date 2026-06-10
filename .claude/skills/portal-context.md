@@ -1,15 +1,9 @@
 ---
-paths:
-  - "monkos_AI/portal/**"
-  - "monkos_AI/idphoto-kr/**"
-  - "monkos_AI/idphoto-jp/**"
-  - "monkos-ops/works/idphoto/**"
-  - "monkos-ops/works/portal_v4/**"
+name: 포털컨텍스트
+description: 포털/증명사진 서비스 작업 시 현재 상태·파일 구조·SEO·미해결 이슈를 로딩한다.
 ---
 
-# 포털 + SEO 집중 작업 컨텍스트
-
-> 이 파일은 포털/증명사진 서비스 파일 접근 시 자동 로딩된다.
+> 원천: 포털 v3/v4 운용 현황
 
 ## 현재 상태
 
@@ -56,7 +50,7 @@ monkos_AI/portal/
 - canonical: 각 서비스 자체 도메인
 - 포털 파비콘: Google 검색 결과에서 미노출 (미해결)
 
-## 미해결 이슈 (코웍이 점검 기준)
+## 미해결 이슈
 
 1. `/pricing` 404 — nav에서 JS 인터셉트인데 JS 로드 전/직접 접근 시 404
 2. `/guide` 404 — 라우트 미존재
@@ -68,5 +62,3 @@ monkos_AI/portal/
 ## 기술 참조
 
 - v4 기술명세: `monkos-ops/tech/architecture/PORTAL_V4_TECHNICAL_SPEC.md`
-- 코웍이 UI 점검: `monkos-ops/ops/cowork/2026-03/REPORT_20260314_코웍이_v4preview_비로그인영역_UI점검.md`
-- 에디터 설계 논의: `monkos-ops/ops/cowork/2026-03/REPORT_20260314_코웍이_콘텐츠통합에디터_설계배경_맥락전달서.md`
