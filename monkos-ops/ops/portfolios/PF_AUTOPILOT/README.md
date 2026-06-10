@@ -82,6 +82,7 @@ domain: 인프라
 | 06/02 | iMac/쌍아 | **iMac .env 실측 + 인벤토리 현행화 (광역오더 #7-B)** — 유니크 34개 재집계(CF_WORKERS_AI_TOKEN 중복·CHAT 2종 편입·N8N iMac부재). SECRET_INVENTORY §J GCP Secret Manager 신설. M1 실측 비교는 작가님 M1 직접 pull로 이관 | SECRET_INVENTORY.md | ⏳ |
 | 06/03 | iMac/쌍아 | **.env 시크릿 하이브리드 표준 적용 + GCP 일괄 등록 (광역오더 #8)** — 정본 34종을 시크릿24/설정10 분류. 시크릿 24종 GCP Secret Manager 등록(변수명 그대로, stdin 파이프 값무노출) + 해시 정합 24/24 검증. **CF_WORKERS_AI_TOKEN dead placeholder 규명**(`붙여넣기` 2행·코드 미참조)→GCP·.env 완전 제거. N8N 위치 확정(iMac .env 존재). SECRET_INVENTORY §0 표준 명문화. M1 갭 동기화는 M1 offline으로 추후 | SECRET_INVENTORY.md, COMPLETION | ✅ |
 | 06/10 | 웹/민아 | 데일리 E2E 루틴 시범 가동 — 리포 기반 사이클 ✅, 외부 프로브·GSC 라이브 ❌(네트워크 정책·자격증명). 4/10 curl 차단 정체 확정. 루틴 지시문 draft + 선결 과제 3건 | REPORT_20260610_웹민아_데일리E2E시범가동.md | ⚠️ |
+| 06/10 | 웹/민아 | 루틴 자립 인증·시크릿 기획 — 필요 스코프 전부 읽기 전용 실측(현행 editor SA 과잉 판정). 전용 읽기 SA 신설 + 부트스트랩 1키 + allowlist 전수 + 스크립트 드롭인 재사용 설계. 🟡 BIZINFO_API_KEY 하드코딩 발견 | PROPOSAL_20260610_웹민아_루틴자립_인증시크릿설계.md | ⏳ |
 
 ---
 
