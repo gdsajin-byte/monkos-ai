@@ -21,16 +21,6 @@ globs:
 - 지시서에 배포용 gcloud 명령을 직접 기재 금지. `./deploy.sh {env}` 형태로만 기재.
 - 리전 하드코딩 금지. deploy.sh 내 REGION 변수가 정본.
 
-## deploy.sh 위치
-
-| 서비스 | 경로 |
-|--------|------|
-| monkos-portal | `monkos_AI/portal/deploy.sh` |
-| monkos-idphoto-kr | `monkos_AI/idphoto-kr/deploy.sh` |
-| monkos-idphoto-jp | `monkos_AI/idphoto-jp/deploy.sh` |
-| monkos-studio | `monkos_AI/studio/deploy.sh` |
-| monk-image-engine | `apps/monk_imagen4/backend/deploy.sh` |
-
 ## 막내 방어 의무
 
 지시서에 배포용 gcloud 명령이 직접 기재되어 있으면:
