@@ -98,6 +98,8 @@ domain: "governance/infrastructure"
 | 2026-06-10 | iMac/막내1 | **삼권 분석 입법** — 4계층(CLAUDE.md/rules/laws/skills) 전 33파일·2,985줄 전수 감사. 헌법↔rules 중복 64줄(15%) 식별(references.md 100%중복, git-safety 61%중복). laws↔rules 불일치 0건. rules 미반영 3장(ch1·ch2·ch8) 확인. 재배치 매트릭스 45조 전건 판정. rules 재편안: 삭제 1+축소 3(−53줄), 신설 3(+65줄), 커버리지 63%→100%. CLAUDE.md 보정 3건(ch7 조수, 5조 물리위치, deployment 중복) | [REPORT_20260610_iMac막내1_삼권분석_입법.md](../../reports/2026-06/REPORT_20260610_iMac막내1_삼권분석_입법.md) | ✅ |
 | 2026-06-10 | iMac/막내3 | **삼권 분석 사법** — 헌법·법률 전 33 위반조항 집행 수단 전수 감사. 자동 2건(6%)/수동-에이전트 14건(42%)/없음 14건(42%). CI 집행 권고 8건(C1~C8): 즉시 3건(내부호칭grep·PF줄수·폴더위반), 중기 3건(정본이중화·YAML검증·rules↔laws정합). rules→skills 이관 시 3파일(git-safety·deployment·data-access) 이관금지 판정. 위성 PR 게이트 4건 권고 | [REPORT_20260610_iMac막내3_삼권분석_사법.md](../../reports/2026-06/REPORT_20260610_iMac막내3_삼권분석_사법.md) | ✅ |
 | 2026-06-10 | iMac/막내3 | **CI 즉시 3건 구현** — governance-check.yml 신설(C7 내부호칭 grep warning + C3 폴더위반 error 차단), weekly-dashboard.yml C2 PF 500줄 초과 검사 추가. 로컬 검증: C7=19건, C3=10건(기존위반분), C2=PF_CROP 692줄+PF_SPREAD 514줄 감지 | `governance-check.yml` 신설, `weekly-dashboard.yml` 수정 | ✅ |
+| 2026-06-10 | iMac/막내1 | **ch1 법률 개정 + CLAUDE.md 보정** — 웹 민아(위성 에이전트) 신설: 1조 정의 테이블+권한표, 2조 6항(위성 산출물 검증 절차), 4조 디바이스 약칭, 5조 판별 테이블(최우선 매칭), 위성 관측 한계 고지 의무 신설항. CLAUDE.md ch7 조수 5→6 보정. PETITION_20260610 전항 반영 완료 | `ch1_agent_system.md`, `CLAUDE.md` | ✅ |
+| 2026-06-10 | iMac/막내2 | **rules 정리 + skills 보정 실행** — Task 1~6 전건 완료. 삭제 3건(references, cdp-browser, portal_seo), skills 이관 2건(cdp-browser 통합, portal-context), 헌법 복붙 제거 4건, 조항번호 보정 3건, paths→globs 2건, **rules 3건 신설(agent-system·coding·branding)** — ch1 개정 반영 웹 민아 포함. rules 9→9개(삭제3+신설3), skills 14→15개 | rules 9개+skills 3개 변경, 커밋 e75a47f4+본건 | ✅ |
 
 ---
 
