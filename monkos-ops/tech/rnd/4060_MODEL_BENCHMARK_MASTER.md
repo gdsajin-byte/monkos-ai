@@ -188,12 +188,22 @@ status: active
 | Qwen 3.6 | completion만 | ❌ 도구 호출 불가 |
 | Qwen 3.5 | completion만 | ❌ 도구 호출 불가 |
 
-### 6-6. 핵심 발견
+### 6-6. `ollama launch claude` 테스트
+
+| 시도 | 설정 | 결과 |
+|------|------|------|
+| 1차 | 환경 변수 없음 | ❌ Anthropic API로 빠짐 |
+| 2차 | `ANTHROPIC_BASE_URL=localhost:11434` | ❌ Gemma4 반복 폭주 → 32K 초과 |
+| 3차 | + `MAX_OUTPUT_TOKENS=2048` + ctx 16384 | ❌ 동일 실패 |
+
+**근본 원인**: Claude Code 시스템 프롬프트+도구 정의 ≈ 13,000 토큰. 4060 최대 ctx 16,384에서 작업 공간 ≈ 3,000 토큰. 문서 권장 최소 64K. → **4060에서 구조적 불가, 5090에서 재시도**
+
+### 6-7. 핵심 발견
 
 - **Qwen 3.6 스윗스팟**: ctx 16384 + 짧은 출력 = 1.4초 정답. thinking에 종이를 주면 정확
 - **반복 붕괴(repetition collapse)**: 2-bit 양자화 전형적 증상. 중간 길이 출력에서 패턴 루프
 - **언어 혼동**: Gemma4/Qwen3.5 모두 한국어→중국어 전환. 2-bit/4-bit 양자화에서 언어 구분력 저하
-- **ollama launch claude**: 로컬 모델로 Claude Code 하네스 구동 가능 확인. 인턴 구조 경로 타당
+- **ollama launch claude**: Ollama 연결 자체는 성공. 그러나 Claude Code 하네스가 너무 무거워 4060에서 실전 불가. 인턴 구조는 **API 직접 호출(Ollama REST)** 방식이 현실적
 
 ---
 
@@ -232,7 +242,7 @@ Qwen 3.5/3.6은 reasoning 모델로, 모든 응답에 thinking 토큰을 대량 
 | 반복 붕괴 | ⚠️ IQ2_M에서 발생 | ✅ Q4_K_M으로 해소 예상 |
 | 언어 혼동 (한→중) | ⚠️ 2-bit에서 발생 | ✅ 4-bit에서 해소 예상 |
 | 블로그 한국어 창작 | ❌ 전멸 | ⚠️ Q4+32K ctx면 가능성 |
-| ollama launch claude 인턴 | ⚠️ 짧은 태스크만 | ✅ 중간 태스크까지 확장 |
+| ollama launch claude 인턴 | ❌ 하네스 13K토큰 > ctx 16K | ✅ 64K ctx로 하네스 수용 가능 |
 
 ---
 
