@@ -25,10 +25,14 @@ export const LEMONSQUEEZY_STORE_ID = '290457';
 
 // 인증 토큰 서명 (결제 시크릿과 분리)
 export const AUTH_SECRET = process.env.AUTH_SECRET || '';
-if (!AUTH_SECRET) {
-  console.warn('[AUTH] ⚠️ AUTH_SECRET 환경변수 미설정 — 프로덕션에서는 반드시 설정 필요');
+const authSecret = AUTH_SECRET || LEMONSQUEEZY_WEBHOOK_SECRET;
+if (!authSecret) {
+  console.error('[FATAL] AUTH_SECRET 또는 LEMONSQUEEZY_WEBHOOK_SECRET 미설정. 토큰 서명 불가.');
+  if (process.env.K_SERVICE) {
+    console.error('[FATAL] 프로덕션(Cloud Run)에서 시크릿 미설정 — 서비스 기동 차단');
+  }
+  process.exit(1);
 }
-const authSecret = AUTH_SECRET || LEMONSQUEEZY_WEBHOOK_SECRET || 'monkos-default-secret';
 
 // 토스페이먼츠 (KR)
 export const TOSS_SECRET_KEY = process.env.TOSS_SECRET_KEY || '';

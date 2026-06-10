@@ -11,7 +11,7 @@ export function getAdminUser(req) {
   const token = cookies.monkos_session;
   if (token) {
     const payload = verifyAuthToken(token);
-    if (payload && (ADMIN_UIDS.length === 0 || ADMIN_UIDS.includes(payload.userId))) {
+    if (payload && ADMIN_UIDS.length > 0 && ADMIN_UIDS.includes(payload.userId)) {
       return payload; // { userId, expires }
     }
   }

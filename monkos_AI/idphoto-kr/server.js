@@ -15,6 +15,7 @@ import cors from 'cors';
 import { WebSocketServer } from 'ws';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { createHmac, timingSafeEqual } from 'crypto';
 import { GoogleGenAI } from '@google/genai';
 import { saveImages, addWatermark, downloadFromGCS, getSignedUrl } from './gcs-save.js';
 
@@ -60,14 +61,46 @@ log('[Vertex AI] ADC 클라이언트 초기화 (Live)');
 log(`[Google AI Studio] Imagen 클라이언트 초기화 (API Key ${GEMINI_API_KEY ? '설정됨' : '미설정'})`);
 log(`[Portal API] ${PORTAL_API_URL}`);
 
+// === 인증 토큰 검증 (portal config.js 동일 로직) ===
+const AUTH_SECRET = process.env.AUTH_SECRET || '';
+const LEMONSQUEEZY_WEBHOOK_SECRET = process.env.LEMONSQUEEZY_WEBHOOK_SECRET || '';
+const localAuthSecret = AUTH_SECRET || LEMONSQUEEZY_WEBHOOK_SECRET;
+
+function verifySessionToken(token) {
+  if (!localAuthSecret || !token) return null;
+  try {
+    const decoded = Buffer.from(token, 'base64url').toString();
+    const parts = decoded.split(':');
+    if (parts.length !== 3) return null;
+    const [userId, expiresStr, sig] = parts;
+    const expires = parseInt(expiresStr, 10);
+    const hmac = createHmac('sha256', localAuthSecret);
+    hmac.update(`${userId}:${expiresStr}`);
+    const expectedSig = hmac.digest('hex');
+    const sigBuf = Buffer.from(sig, 'hex');
+    const expectedBuf = Buffer.from(expectedSig, 'hex');
+    if (sigBuf.length !== expectedBuf.length || !timingSafeEqual(sigBuf, expectedBuf)) return null;
+    if (Date.now() > expires) return null;
+    return { userId, expires };
+  } catch { return null; }
+}
+
+function getSessionCookie(cookieHeader) {
+  if (!cookieHeader) return null;
+  const match = cookieHeader.match(/monkos_session=([^;]+)/);
+  return match ? match[1] : null;
+}
+
 // === 크레딧 API 헬퍼 ===
-async function useCredits(userId, type) {
+async function useCredits(userId, type, cookieHeader) {
   if (!userId) return { success: false, error: '로그인 필요' };
 
   try {
+    const headers = { 'Content-Type': 'application/json' };
+    if (cookieHeader) headers['Cookie'] = cookieHeader;
     const response = await fetch(`${PORTAL_API_URL}/api/credits/use`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify({ userId, type }),
     });
     return await response.json();
@@ -77,13 +110,15 @@ async function useCredits(userId, type) {
   }
 }
 
-async function refundCredits(userId, type) {
+async function refundCredits(userId, type, cookieHeader) {
   if (!userId) return { success: false, error: '로그인 필요' };
 
   try {
+    const headers = { 'Content-Type': 'application/json' };
+    if (cookieHeader) headers['Cookie'] = cookieHeader;
     const response = await fetch(`${PORTAL_API_URL}/api/credits/refund`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify({ userId, type }),
     });
     return await response.json();
@@ -529,7 +564,7 @@ app.post('/api/idgen', async (req, res) => {
 
     // 크레딧 차감
     if (userId) {
-      const creditResult = await useCredits(userId, 'generate');
+      const creditResult = await useCredits(userId, 'generate', req.headers.cookie);
       if (!creditResult.success) {
         return res.status(402).json({
           error: creditResult.error,
@@ -573,14 +608,14 @@ app.post('/api/idgen', async (req, res) => {
       let detail = '';
       try { detail = JSON.parse(errorText)?.error?.message || errorText.substring(0, 200); } catch { detail = errorText.substring(0, 200); }
       // 생성 실패 시 크레딧 환불
-      if (bodyUserId) await refundCredits(bodyUserId, 'generate');
+      if (bodyUserId) await refundCredits(bodyUserId, 'generate', req.headers.cookie);
       throw new Error(`API ${response.status}: ${detail}`);
     }
 
     const data = await response.json();
     const imagePart = data.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
     if (!imagePart?.inlineData) {
-      if (bodyUserId) await refundCredits(bodyUserId, 'generate');
+      if (bodyUserId) await refundCredits(bodyUserId, 'generate', req.headers.cookie);
       throw new Error('이미지 생성 실패: 응답에 이미지가 없습니다');
     }
 
@@ -620,7 +655,7 @@ app.post('/api/download', async (req, res) => {
     }
 
     // 크레딧 차감 (70c)
-    const creditResult = await useCredits(userId, 'download');
+    const creditResult = await useCredits(userId, 'download', req.headers.cookie);
     if (!creditResult.success) {
       return res.status(402).json({
         error: creditResult.error,
@@ -652,7 +687,12 @@ app.post('/api/download', async (req, res) => {
 app.post('/api/credit/use', async (req, res) => {
   try {
     if (!req.body.userId) return res.status(400).json({ error: '로그인 필요' });
-    const result = await useCredits(req.body.userId, req.body.type || 'download');
+    const token = getSessionCookie(req.headers.cookie);
+    const session = verifySessionToken(token);
+    if (!session || session.userId !== req.body.userId) {
+      return res.status(403).json({ error: '인증 필요' });
+    }
+    const result = await useCredits(req.body.userId, req.body.type || 'download', req.headers.cookie);
     res.status(result.success ? 200 : 402).json(result);
   } catch (err) {
     log(`[API][credit/use] 에러: ${err.message}`, 'ERROR');
@@ -664,7 +704,12 @@ app.post('/api/credit/use', async (req, res) => {
 app.post('/api/credit/refund', async (req, res) => {
   try {
     if (!req.body.userId) return res.status(400).json({ error: '로그인 필요' });
-    const result = await refundCredits(req.body.userId, req.body.type || 'download');
+    const token = getSessionCookie(req.headers.cookie);
+    const session = verifySessionToken(token);
+    if (!session || session.userId !== req.body.userId) {
+      return res.status(403).json({ error: '인증 필요' });
+    }
+    const result = await refundCredits(req.body.userId, req.body.type || 'download', req.headers.cookie);
     res.status(result.success ? 200 : 400).json(result);
   } catch (err) {
     log(`[API][credit/refund] 에러: ${err.message}`, 'ERROR');
