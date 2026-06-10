@@ -131,7 +131,7 @@ status: 현행
 
 | SA | 이메일 | IAM 역할 | 용도 | 비고 |
 |----|--------|---------|------|------|
-| yong-a-orchestrator | yong-a-orchestrator@monkos.iam.gserviceaccount.com | **roles/editor** + aiplatform.user + storage.objectAdmin | 범용 | ⚠️ editor 과도 |
+| yong-a-orchestrator | yong-a-orchestrator@monkos.iam.gserviceaccount.com | **Agent Platform 사용자** + aiplatform.user + storage.objectAdmin | CI·관리용 | ✅ 2026-06-10 editor→Agent Platform 축소 (Recommender 적용). 키 교체: c1b7e5a702b8(6/10 발급, SM+GH 등록, 로컬 삭제). 구키 1月·5月 삭제 대기 |
 | monk-image-engine | monk-image-engine@monkos.iam.gserviceaccount.com | aiplatform.user + datastore.owner + datastore.user + iam.serviceAccountTokenCreator + storage.objectAdmin | Cloud Run 실행 SA | |
 | Compute Engine default | 933456016842-compute@developer.gserviceaccount.com | (기본) | GCE 기본 | |
 
@@ -161,6 +161,7 @@ status: 현행
 | MCP_GDOCS_TOKEN | gdocs MCP refresh token (token.json 전체) | gdocs_mcp.sh 자동복원 | ⭐ 2026-06-02 신설 |
 | ELEVENLABS_API_KEY · KIMI_API_KEY | TTS·AI 프로토타입 | 루트 .env 대응 | 기존 |
 | **monkos_AI/.env 시크릿 24종** | §0 분류 참조 (GEMINI_API_KEY·CF_API_TOKEN·CHAT_API_KEY·KAKAO_*·NAVER_CLIENT_SECRET·LINE_*·TOSS_*·LEMONSQUEEZY_*·TELEGRAM_*·TEAM_NOTIFY_SECRET·X_*·N8N_API_KEY·TX_API_KEY·REMOVEBG_API_KEY·ADMIN_UIDS) | Cloud Run 런타임 / 타 디바이스 복원 | ⭐ **2026-06-03 일괄 등록 (광역오더 #8)** — 변수명 그대로, 해시 정합 24/24 |
+| **GCP_SA_KEY** | yong-a-orchestrator SA 키 JSON (키 ID: c1b7e5a702b8) | GH Actions·웹 민아 루틴·로컬 gcloud 복원 | ⭐ **2026-06-10 등록** — 광역오더 #8 보완(SA 키 누락분). 로컬 미보관(SM=정본) |
 
 **gdocs 토큰 중앙화 (광역오더 #7)**: iMac 정본 `~/.config/mcp-google-docs/token.json` → `MCP_GDOCS_TOKEN`으로 등록.
 `gdocs_mcp.sh`가 token.json 부재 시 GCP에서 자동 복원 → **타 디바이스(M1 등) 무인증 동작**. 검증 완료(바이트 동일 복원·권한 600).
