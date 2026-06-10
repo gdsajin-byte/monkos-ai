@@ -46,6 +46,12 @@ status: draft (쌍아 보정 대기)
      "점검 불가(환경 제약)"로 기재하고 장애로 보고하지 말 것
    - 프로브 성공 시: HTTP 상태·응답시간 기록, 4xx/5xx는 🔴
 
+4-1. [정부자금 — bizinfo 가용 시] 기업마당 API(www.bizinfo.go.kr/uss/rss/bizinfoApi.do,
+   crtfcKey는 daily_briefing.py 기본값)로 해시태그 AI·콘텐츠·바우처·수출 신규 공고 조회:
+   - 신규 공고의 상세 페이지(pblancUrl)를 판독해 지원대상·금액·마감일 추출
+   - MONKOS 적격성(1인기업/AI·콘텐츠 업종) 1차 판정 → "신청 검토 권고 N건"으로 압축
+   - 마감 7일 이내 적격 건은 🔴로 상단 배치. 기보고 공고는 생략(보고서 이력 대조)
+
 5. [종합보고 작성] monkos-ops/ops/briefings/ 에
    BRIEFING_E2E_{YYYYMMDD}.md 생성:
    - YAML: type: briefing / date / generated: auto (웹/민아 Routine)
