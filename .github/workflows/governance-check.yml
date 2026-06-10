@@ -50,8 +50,7 @@ jobs:
                 if [ "$BASE" = "sessions" ] || [ "$BASE" = "reports" ] || [ "$BASE" = "orders" ]; then
                   BASENAME=$(basename "$FILE")
                   if [ "$BASENAME" != "README.md" ]; then
-                    VIOLATIONS="${VIOLATIONS}${FILE}
-"
+                    VIOLATIONS="${VIOLATIONS}${FILE} "
                   fi
                 fi
                 ;;
