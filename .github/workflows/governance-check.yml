@@ -1,0 +1,70 @@
+name: Governance Check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  governance-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: C7 — 내부 호칭 유출 검사 (헌법 4조 3항, ch8 1조)
+        run: |
+          HITS=$(grep -rn '쌍아\|막내\|소소\|용아\|민아' \
+            --include="*.html" --include="*.js" --include="*.json" \
+            MONK_kr/ monkos_AI/portal/public/ monkos_AI/idphoto-kr/public/ \
+            monkos_AI/idphoto-jp/public/ monkos_AI/studio/public/ 2>/dev/null \
+            | grep -v 'node_modules\|/admin/\|_legacy/\|_backup/\|_functions_backup\|\.min\.js' \
+            || true)
+
+          if [ -n "$HITS" ]; then
+            echo "::warning::⚠️ 사용자 대면 코드에서 내부 호칭 발견 (헌법 4조 3항)"
+            echo ""
+            echo "$HITS"
+            echo ""
+            echo "총 $(echo "$HITS" | wc -l | tr -d ' ')건 — 의도적 노출이 아니면 수정 필요"
+          else
+            echo "✅ 내부 호칭 유출 없음"
+          fi
+
+      - name: C3 — 세션로그 월별 폴더 위반 검사 (ch4 4조)
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            FILES=$(git diff --name-only --diff-filter=ACMR ${{ github.event.pull_request.base.sha }} HEAD)
+          else
+            FILES=$(git diff --name-only --diff-filter=ACMR HEAD~1 HEAD 2>/dev/null || echo "")
+          fi
+
+          VIOLATIONS=""
+          for FILE in $FILES; do
+            case "$FILE" in
+              monkos-ops/ops/sessions/*.md|monkos-ops/ops/reports/*.md|monkos-ops/ops/orders/*.md)
+                DIR=$(dirname "$FILE")
+                BASE=$(basename "$DIR")
+                if [ "$BASE" = "sessions" ] || [ "$BASE" = "reports" ] || [ "$BASE" = "orders" ]; then
+                  BASENAME=$(basename "$FILE")
+                  if [ "$BASENAME" != "README.md" ]; then
+                    VIOLATIONS="${VIOLATIONS}${FILE}
+"
+                  fi
+                fi
+                ;;
+            esac
+          done
+
+          if [ -n "$VIOLATIONS" ]; then
+            echo "::error::❌ 월별 폴더(YYYY-MM/) 밖에 파일 배치 — ch4 4조 위반"
+            echo ""
+            echo "$VIOLATIONS"
+            echo ""
+            echo "파일은 YYYY-MM/ 서브폴더에 배치해야 합니다."
+            exit 1
+          else
+            echo "✅ 월별 폴더 규칙 준수 (변경 파일 기준)"
+          fi
