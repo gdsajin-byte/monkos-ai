@@ -167,7 +167,9 @@ RTX 4060 8GB · Ollama v0.30.6 · Gemma4 12B / Qwen 3.5 4B / Qwen 3.6-35B(IQ2_M)
 
 **Thinking 함정:** Qwen 3.5/3.6은 reasoning 모델이라 thinking 토큰 폭발 + `/no_think` GGUF 미작동 → 자판기엔 non-reasoning(Gemma4·Qwen3-4B·Phi-4) 우선.
 
-**경로 발견:** `ollama launch claude` = 로컬 모델로 Claude Code 하네스 구동 가능 확인. "인턴 구조"(짧은 태스크 + 상위 검수) 실전 투입 타당.
+**경로 판정 (d928b0bc 갱신):** `ollama launch claude`(= Claude Code 하네스 *전체*를 로컬 모델로 구동)는 **4060에서 구조적 불가**. Claude Code 시스템프롬프트+도구정의 ~13K 토큰이 16K ctx를 잠식(작업공간 ~3K, 권장 64K). 5090(64K ctx)에서 재시도 가치.
+- ⚠️ **단 우리 하네스는 무거운 Claude Code가 아니라, 가벼운 Python 자판기가 Ollama API를 직접 호출하는 구조** → 13K 오버헤드 무관, 4060에서 지금 가능. 이 실패는 "Claude Code 통째 로컬화"가 아니라 **"경량 자판기 + 로컬 노드"가 정답**임을 역으로 증명한다.
+- "인턴 구조"(짧은 태스크 + 상위 검수)는 후자(경량 자판기) 기준 유효.
 
 ---
 
