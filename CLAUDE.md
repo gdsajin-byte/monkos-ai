@@ -185,7 +185,7 @@
 | 제4장 | 문서/폴더 구조 | [ch4_docs_structure.md](governance/laws/ch4_docs_structure.md) | 10조 |
 | 제5장 | 배포 규칙 | [ch5_deployment.md](governance/laws/ch5_deployment.md) | 5조 |
 | 제6장 | 브랜치/커밋 | [ch6_git.md](governance/laws/ch6_git.md) | 4조 |
-| 제7장 | 막내 행동 강령 | [ch7_makne_code.md](governance/laws/ch7_makne_code.md) | 5조 |
+| 제7장 | 막내 행동 강령 | [ch7_makne_code.md](governance/laws/ch7_makne_code.md) | 6조 |
 | 제8장 | 브랜딩/마케팅 | [ch8_branding.md](governance/laws/ch8_branding.md) | 3조 |
 
 규정 참조(모델명, API 경로, 배포 타겟 등): `.claude/rules/references.md`
