@@ -101,6 +101,90 @@
         }
       ]
     },
+    "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/cont_africa.jpg" : {
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/Resources/cont_africa.jpg"
+        }
+      ],
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/cont_africa.jpg"
+        }
+      ]
+    },
+    "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/cont_americas.jpg" : {
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/Resources/cont_americas.jpg"
+        }
+      ],
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/cont_americas.jpg"
+        }
+      ]
+    },
+    "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/cont_asia.jpg" : {
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/Resources/cont_asia.jpg"
+        }
+      ],
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/cont_asia.jpg"
+        }
+      ]
+    },
+    "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/cont_europe.jpg" : {
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/Resources/cont_europe.jpg"
+        }
+      ],
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/cont_europe.jpg"
+        }
+      ]
+    },
+    "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/cont_middleeast.jpg" : {
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/Resources/cont_middleeast.jpg"
+        }
+      ],
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/cont_middleeast.jpg"
+        }
+      ]
+    },
+    "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/cont_oceania.jpg" : {
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/Resources/cont_oceania.jpg"
+        }
+      ],
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/cont_oceania.jpg"
+        }
+      ]
+    },
     "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/countries.jsonl" : {
       "inputs" : [
         {
@@ -112,6 +196,20 @@
         {
           "kind" : "file",
           "name" : "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/countries.jsonl"
+        }
+      ]
+    },
+    "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/guides" : {
+      "inputs" : [
+        {
+          "kind" : "directory",
+          "name" : "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/Resources/guides"
+        }
+      ],
+      "outputs" : [
+        {
+          "kind" : "directory",
+          "name" : "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/guides"
         }
       ]
     },
@@ -170,6 +268,34 @@
           "name" : "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/PASSPORTUSA.jpg"
         }
       ]
+    },
+    "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/slider_after.jpg" : {
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/Resources/slider_after.jpg"
+        }
+      ],
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/slider_after.jpg"
+        }
+      ]
+    },
+    "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/slider_before.jpg" : {
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/Resources/slider_before.jpg"
+        }
+      ],
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop_MonkosCrop.bundle/slider_before.jpg"
+        }
+      ]
     }
   },
   "explicitTargetDependencyImportCheckingMode" : {
@@ -202,6 +328,14 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/DemoAnimation.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/LandingView.swift"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/MonkosCropApp.swift"
         },
         {
@@ -224,6 +358,8 @@
         "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.build/ContentView.swift.o",
         "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.build/CropEngine.swift.o",
         "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.build/CropView.swift.o",
+        "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.build/DemoAnimation.swift.o",
+        "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.build/LandingView.swift.o",
         "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.build/MonkosCropApp.swift.o",
         "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.build/SpecData.swift.o",
         "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.build/resource_bundle_accessor.swift.o"
@@ -285,6 +421,14 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.build/DemoAnimation.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.build/LandingView.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.build/MonkosCropApp.swift.o"
         },
         {
@@ -304,6 +448,8 @@
         "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/ContentView.swift",
         "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/CropEngine.swift",
         "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/CropView.swift",
+        "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/DemoAnimation.swift",
+        "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/LandingView.swift",
         "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/MonkosCropApp.swift",
         "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/SpecData.swift",
         "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.build/DerivedSources/resource_bundle_accessor.swift"
@@ -327,6 +473,8 @@
       "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/ContentView.swift",
       "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/CropEngine.swift",
       "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/CropView.swift",
+      "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/DemoAnimation.swift",
+      "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/LandingView.swift",
       "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/MonkosCropApp.swift",
       "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/SpecData.swift",
       "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.build/DerivedSources/resource_bundle_accessor.swift",

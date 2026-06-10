@@ -134,3 +134,12 @@ MEMORY.md
 # Android keystore
 *.keystore
 *.jks
+
+# Swift/Xcode 빌드 아티팩트 (MonkosCrop 등)
+**/.build/
+*.pcm
+*.swiftmodule
+*.swift.o
+
+# MediaPipe WASM 바이너리
+apps/crop-app/mediapipe/*.wasm
