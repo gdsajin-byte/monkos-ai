@@ -85,6 +85,7 @@ domain: 인프라
 | 06/10 | 웹/민아 | 루틴 자립 인증·시크릿 기획 — 필요 스코프 전부 읽기 전용 실측(현행 editor SA 과잉 판정). 전용 읽기 SA 신설 + 부트스트랩 1키 + allowlist 전수 + 스크립트 드롭인 재사용 설계. 🟡 BIZINFO_API_KEY 하드코딩 발견 | PROPOSAL_20260610_웹민아_루틴자립_인증시크릿설계.md | ⏳ |
 | 06/10 | 작가님+웹/민아 | **SA 전략 전환: 신설→축소** — yong-a 소비처 전수 실측, Cloud Run 실행 SA 별개 확인 → editor 제거가 가동 서비스 무관 확정. 기획서 3-1 개정(editor 제거+secretAccessor 추가+웹용 별도 키+검증 절차). 4/22 감사 MED#5·SECRET_INVENTORY 🔴 동시 해소 경로 | PROPOSAL 개정판 | ⏳ |
 | 06/10 | 작가님+쌍아+웹/민아 | **SA 축소 이행 완료** — IAM Recommender 실측(편집자 11,665권한 중 사용 1개) → editor 제거. 새 키 발급(c1b7e5a7)+GCP SM 정본 등록+GH Secrets 교체+로컬 삭제(쌍아). 스모크 workflow_dispatch run 27264748215 **success 47초**(웹/민아 독립 검증). allowlist 구글 API 4종 개통 실측. 잔여: 구키 2개 삭제, 자사 도메인·텔레그램 allowlist, 루틴 1회차 | 런 27264748215 | ✅ |
+| 06/10 | 작가님+웹/민아 | **루틴 "민아 일일 브리핑" 가동 개시** — 1회차(저장소 미연결, 우아한 실패) → 설정 보정 → 2회차 **합격**: 6단계 중 5단계 정상(브리핑 해석·전일 정산·메일/캘린더 트리아지·보안 순찰·TODO 제안 5건). 실질 발견: AUTH_SECRET 미배포, Google Business 게시물 삭제 통지. BRIEFING_E2E_20260610 → PR #48. 잔여: 루틴 환경 allowlist(외부 프로브·bizinfo). 매일 07:00 KST 정기 가동 | BRIEFING_E2E_20260610.md, PR #48 | ✅ |
 
 ---
 
