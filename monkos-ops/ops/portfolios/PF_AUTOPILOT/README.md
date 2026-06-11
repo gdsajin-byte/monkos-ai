@@ -81,6 +81,11 @@ domain: 인프라
 | 06/02 | iMac/쌍아 | **gdocs 토큰 중앙화 (광역오더 #7-A)** — iMac 정본 token.json → GCP Secret Manager `MCP_GDOCS_TOKEN` + GitHub Secrets 3종(stdin 파이프, 값 무노출). `gdocs_mcp.sh`에 부재 시 GCP 자동복원 로직 추가. 삭제→복원 **바이트 동일·권한 600** 검증. 타 디바이스 무인증 동작 확보 | gdocs_mcp.sh, COMPLETION | ✅ |
 | 06/02 | iMac/쌍아 | **iMac .env 실측 + 인벤토리 현행화 (광역오더 #7-B)** — 유니크 34개 재집계(CF_WORKERS_AI_TOKEN 중복·CHAT 2종 편입·N8N iMac부재). SECRET_INVENTORY §J GCP Secret Manager 신설. M1 실측 비교는 작가님 M1 직접 pull로 이관 | SECRET_INVENTORY.md | ⏳ |
 | 06/03 | iMac/쌍아 | **.env 시크릿 하이브리드 표준 적용 + GCP 일괄 등록 (광역오더 #8)** — 정본 34종을 시크릿24/설정10 분류. 시크릿 24종 GCP Secret Manager 등록(변수명 그대로, stdin 파이프 값무노출) + 해시 정합 24/24 검증. **CF_WORKERS_AI_TOKEN dead placeholder 규명**(`붙여넣기` 2행·코드 미참조)→GCP·.env 완전 제거. N8N 위치 확정(iMac .env 존재). SECRET_INVENTORY §0 표준 명문화. M1 갭 동기화는 M1 offline으로 추후 | SECRET_INVENTORY.md, COMPLETION | ✅ |
+| 06/10 | 웹/민아 | 데일리 E2E 루틴 시범 가동 — 리포 기반 사이클 ✅, 외부 프로브·GSC 라이브 ❌(네트워크 정책·자격증명). 4/10 curl 차단 정체 확정. 루틴 지시문 draft + 선결 과제 3건 | REPORT_20260610_웹민아_데일리E2E시범가동.md | ⚠️ |
+| 06/10 | 웹/민아 | 루틴 자립 인증·시크릿 기획 — 필요 스코프 전부 읽기 전용 실측(현행 editor SA 과잉 판정). 전용 읽기 SA 신설 + 부트스트랩 1키 + allowlist 전수 + 스크립트 드롭인 재사용 설계. 🟡 BIZINFO_API_KEY 하드코딩 발견 | PROPOSAL_20260610_웹민아_루틴자립_인증시크릿설계.md | ⏳ |
+| 06/10 | 작가님+웹/민아 | **SA 전략 전환: 신설→축소** — yong-a 소비처 전수 실측, Cloud Run 실행 SA 별개 확인 → editor 제거가 가동 서비스 무관 확정. 기획서 3-1 개정(editor 제거+secretAccessor 추가+웹용 별도 키+검증 절차). 4/22 감사 MED#5·SECRET_INVENTORY 🔴 동시 해소 경로 | PROPOSAL 개정판 | ⏳ |
+| 06/10 | 작가님+쌍아+웹/민아 | **SA 축소 이행 완료** — IAM Recommender 실측(편집자 11,665권한 중 사용 1개) → editor 제거. 새 키 발급(c1b7e5a7)+GCP SM 정본 등록+GH Secrets 교체+로컬 삭제(쌍아). 스모크 workflow_dispatch run 27264748215 **success 47초**(웹/민아 독립 검증). allowlist 구글 API 4종 개통 실측. 잔여: 구키 2개 삭제, 자사 도메인·텔레그램 allowlist, 루틴 1회차 | 런 27264748215 | ✅ |
+| 06/10 | 작가님+웹/민아 | **루틴 "민아 일일 브리핑" 가동 개시** — 1회차(저장소 미연결, 우아한 실패) → 설정 보정 → 2회차 **합격**: 6단계 중 5단계 정상(브리핑 해석·전일 정산·메일/캘린더 트리아지·보안 순찰·TODO 제안 5건). 실질 발견: AUTH_SECRET 미배포, Google Business 게시물 삭제 통지. BRIEFING_E2E_20260610 → PR #48. 잔여: 루틴 환경 allowlist(외부 프로브·bizinfo). 매일 07:00 KST 정기 가동 | BRIEFING_E2E_20260610.md, PR #48 | ✅ |
 
 ---
 
