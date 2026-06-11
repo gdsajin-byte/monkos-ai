@@ -35,7 +35,7 @@ import { handlePassportIssue, handleUploadMission } from './lib/tg-cs.js';
 import { handleKakaoChatbot } from './lib/kakao-chatbot.js';
 import { handleLineWebhook } from './lib/line-chatbot.js';
 import { handleWebChat, handleCoaching } from './lib/coaching.js';
-import { handleAgentAuth } from './lib/cms/admin-auth.js';
+import { handleAgentAuth, requireAdmin } from './lib/cms/admin-auth.js';
 import { handleDashboardSummary, handleDashboardUsers, handleDashboardCredits, handleDashboardTraffic } from './lib/cms/dashboard.js';
 import { handleBlogList, handleBlogGet, handleBlogCreate, handleBlogUpdate, handleBlogDelete } from './lib/cms/blog.js';
 import { handleFaqList, handleFaqCreate, handleFaqUpdate, handleFaqDelete } from './lib/cms/faq.js';
@@ -385,6 +385,12 @@ const httpServer = createServer(async (req, res) => {
   let filePath = req.url === '/' ? '/index.html' : req.url;
   filePath = filePath.split('?')[0];
   if (filePath.endsWith('/')) filePath += 'index.html';
+
+  // /admin/*.html 인증 가드 (로그인 페이지 제외)
+  if (filePath.startsWith('/admin/') && filePath.endsWith('.html') && filePath !== '/admin/index.html') {
+    if (!requireAdmin(req, res)) return;
+  }
+
   const fullPath = join(__dirname, 'public', filePath);
   const ext = extname(filePath);
 

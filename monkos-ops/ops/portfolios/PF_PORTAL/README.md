@@ -88,6 +88,7 @@ status: active
 | 06/10 | 쌍아 | **Phase 9 기획 — 마이페이지 + 인증 체계 정비**. Fable 5 보안 전수조사 → 막내1 교차 검증(18건)에서 도출: 크레딧 판매 중인데 마이페이지 부재, C-2(크레딧 무인증)·N-1(토큰 무인증 발급)·C-4(ADMIN 페일오픈)·H-5(GCS TTL 미구현+FAQ 허위 안내)가 모두 마이페이지·인증 체계 부재에서 기인. 보안 응급 패치(페일클로즈) 선행 → 마이페이지 구축 순서로 기획 | 본 PF 히스토리 | ⏳ 기획 |
 | 06/10 | 막내4 | **Phase 9 T0 — 보안 페일클로즈 응급 패치 4건**. N-1(handleAuthToken 세션 쿠키 검증 추가), C-4(ADMIN_UIDS 페일오픈→페일클로즈 4개소), C-2(크레딧 API 3핸들러+idphoto-kr/jp 인증 미들웨어+쿠키 포워딩), C-3(AUTH_SECRET 하드코딩 폴백 제거→process.exit) | auth.js, credits.js, config.js, admin-auth.js, idphoto-kr/jp server.js | ✅ |
 | 06/10 | 쌍아 | **portal prod 배포** rev 00278-h8k — 보안 페일클로즈 4건 적용. idphoto-kr/jp는 AUTH_SECRET 환경변수 추가 후 순차 배포 예정 | `deploy.sh prod` | ✅ |
+| 06/11 | 막내1 | **CMS 정밀감사 + 즉시수정 6건 + 보안·색인 3건** — 감사 Critical 1/High 2/Medium 4 식별 → maxOutputTokens 복원·llms.txt 동적화·Naver API 주입·deploy.sh --set-secrets 전환·/admin HTML 인증 가드·pingSitemap 폐기·Indexing 관측성 강화. rev 00279→00281→00284 | REPORT+COMPLETION 4건 | ✅ |
 
 ---
 
