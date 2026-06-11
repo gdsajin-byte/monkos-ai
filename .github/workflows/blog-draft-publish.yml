@@ -1,0 +1,29 @@
+name: Blog Draft Publish
+
+# PF_OPUS 생산 파이프라인 자판기 노드:
+# contents/blog/*.md 푸시 → 포털 CMS 드래프트(published:false) 업로드.
+# 공개 발행은 하지 않는다 — 최종 게이트는 작가님이 에디터에서 수행.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'monkos-ops/contents/blog/**.md'
+  workflow_dispatch:
+
+jobs:
+  upload-drafts:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Upload drafts to CMS
+        env:
+          PORTAL_AGENT_KEY: ${{ secrets.PORTAL_AGENT_KEY }}
+        run: python .github/scripts/publish_blog_drafts.py

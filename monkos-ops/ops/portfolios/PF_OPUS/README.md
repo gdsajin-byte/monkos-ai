@@ -77,6 +77,7 @@ domain: "메타(통괄)"
 | 06/08 | 4060/쌍아 | **Qwen 3.5 4B 온디바이스 테스트** — Q4_K_M GGUF + llama.cpp로 블로그에디터 시나리오 4종 벤치마크. 72 tok/s·VRAM 3.2GB 우수하나 thinking 모드가 토큰 대량 소모(slug 6단어에 49초). **판정: 온디바이스 전환 불가 → Gemini 2.5 Flash 유지**. 후속: non-reasoning 모델(Qwen3-4B, Phi-4 Mini) 재검증 권장 | `COMPLETION_20260608_4060쌍아_Qwen3.5_4B_온디바이스테스트.md` | ✅ |
 | 06/08 | 민아 | **「죽은 폴더」 에세이 다채널 배포 + 새 AI기능 4라운드 검증** — 생산: KR/EN 에세이. 배포: Medium(EN 본문·서식·토픽)+note(JA 본문·해시태그) 준비, 블로그 KR/JA 썸네일. 검증: 에디터 AI 기능(image/thumbnail/suggest/slug) 4라운드→4/4 통과. 썸네일 3종(KR/EN/JA, Canva editing으로 텍스트 교정). Reddit 보류(신규계정 필터). EN 번역 누락 근본원인(maxOutputTokens 8192) 규명 | [세션로그](../../sessions/2026-06-08_iMac_민아.md), REPORT 2건 | ✅ |
 | 06/10 | 작가님+민아 | **비어있던 "① 생산 엔진" = 블로그 하네스로 충전 확정**. 자판기(포맷·메타·라우팅)/LLM(생성·검증)/게이트(검수) 노드 분해. 생성=클라우드, 검증=로컬(4060 실측), 배포=사람. **하네스 구조 정본은 [PF_MONK_OS](../PF_MONK_OS/architecture/HARNESS_ARCHITECTURE.md) §9**, OPUS는 콘텐츠 적용처 | PF_MONK_OS §9 | ✅ |
+| 06/11 | 작가님+웹민아 | **생산 엔진 1호 가동 — 콘텐츠화 파이프라인 구축** (작가님 직접 지시: "일일 브리핑·세션·히스토리·철학적 소재의 콘텐츠화로 오토파일럿 영역 대체"). §9 노드 배치: 생성=웹/민아(클라우드 LLM, 4060 생성 전멸 대체) → 자판기=GH Action 드래프트 업로더(published:false 고정, 멱등) → 게이트=작가님 에디터(발행 시 번역·색인 자동 체이닝은 기존 시스템). 데일리 루틴 v4에 6번 [콘텐츠 생산] 신설. 실증 초안 2편 즉시 생산(최소권한 11,665→1 에세이 · 아침 순찰 설계기). 잔여: GH Secret `PORTAL_AGENT_KEY` 등록(작가님 콘솔 1건) + 쌍아 사후 추인 | `blog-draft-publish.yml` + `publish_blog_drafts.py`, contents/blog 초안 2편 + README(파이프라인 정본), ROUTINE v4 | ✅ |
 
 ---
 
@@ -103,8 +104,9 @@ domain: "메타(통괄)"
 | PT 앱 (PF_PRESENTATION) | ❌ | — | 콘텐츠 자동화 엔진 |
 | 영상 자동화 (PF_VIDEO) | ❌ | — | Phase 0 검증완료 → Phase 1 UI |
 | 블로그 에디터 크롤링 (PF_PORTAL) | ❌ | — | 소스 수집 자동화 |
-| 뉴스 브리핑 (PF_BRIEF→AUTOPILOT) | ❌ | — | 운영 중, 생산 라인 편입 |
-| 웹 버전 루틴스 | ❌ | — | 생산 스케줄링 자동화 |
+| 뉴스 브리핑 (PF_BRIEF→AUTOPILOT) | ✅ | 웹/민아 | 루틴 v4 6번이 브리핑을 콘텐츠 소재로 소비 (06-11 편입) |
+| 웹 버전 루틴스 | ✅ | 웹/민아 | 06-10 가동, 06-11 v4 콘텐츠 생산 단계 신설 |
+| **블로그 자동 생산 루프 (생성→드래프트→게이트)** | ⏳ | 웹/민아 | **06-11 구축** — 생성=웹 루틴, 자판기=GH Action(`blog-draft-publish.yml`), 게이트=작가님. 잔여: GH Secret `PORTAL_AGENT_KEY` 등록(작가님) |
 | **콘텐츠 이미지 생성 노드 (에디터 내장)** | ❌ | — | **신규 식별(06-08)** — 블로그 에디터에 Gemini/Imagen/Nano Banana 결선(생성 호출만 부재). 썸네일 자동생성부터 → 본문 인라인. Canva는 텍스트 소셜카드 보조 노드. 실행=PF_PORTAL |
 
 ### Phase 2 — 플라이휠 개방 (유저가 돌리는 바퀴) ❌ 장기 로드맵
@@ -158,7 +160,7 @@ domain: "메타(통괄)"
 | 저서 (원천 IP) | **신설 예정** | 0% | 상류 자체가 빔 |
 | PT 콘텐츠 | PF_PRESENTATION | active | 생산 라인 편입 |
 | 영상 | PF_VIDEO | Phase 0 완료 | UI·실사용 전환 |
-| 블로그 | PF_PORTAL | 에디터 95%, 발행 208건 | 자동 생산 루프 |
+| 블로그 | PF_PORTAL | 에디터 95%, 발행 208건 | 자동 생산 루프 — 06-11 가동 (웹 루틴 생성 + GH Action 드래프트, 키 등록 잔여) |
 | 소스 크롤링 | PF_PORTAL | — | 수집 자동화 |
 | 뉴스 브리핑 | PF_BRIEF→AUTOPILOT | 운영 중 | 생산 소재화 |
 
