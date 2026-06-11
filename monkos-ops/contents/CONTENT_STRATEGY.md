@@ -49,6 +49,8 @@ status: draft (작가님 승인 대기 · 쌍아 보정 대기)
 
 ## 3. 언어·채널 라우팅 (1차 생산 기준)
 
+> **배포 실행 스키마 정본**: [DISTRIBUTION_SCHEMA.md](DISTRIBUTION_SCHEMA.md) — 톤별 작성 기준 상세 + 채널 레시피 R1~R4. 아래는 개요만.
+
 ```
 KO 원본 (contents/blog) → CMS 드래프트 → 작가님 발행
                                     └─ 발행 시 자동: JA/EN 번역 + 색인 (기존 체이닝)

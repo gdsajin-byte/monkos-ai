@@ -67,6 +67,7 @@ status: active
 | 06/08 | 민아 | **다채널 배포 실전 + 레딧 신규계정 장벽 교훈** — 「죽은 폴더」 에세이 Medium(EN)·note(JA)·블로그(KR/JA) 배포. **Reddit r/ai_agents→r/SideProject 2회 모두 신규계정 필터 자동제거**(원인: 신규·저karma + 동일글 단시간 반복서브=스팸신호. 어제 r/SideProject 단발은 통과). 교훈: Reddit 단기 배포 무리—계정 karma 육성 별도과제, 동일글 다중서브 연속금지. **Medium=RTF 클립보드로 마크다운 서식 이식 가능 / note=OS 파일창은 자동화 경계(작가님 수동)** | [세션로그](../../sessions/2026-06-08_iMac_민아.md) | ✅ |
 | 06/09 | 민아 | **AI 여권사진 네이버 블로그 생산 + IDPASS 다운로드 카드 제작** — 네이버 톤 블로그 2건 draft(①AI여권사진=규격앵글: MONKOS AI생성+IDPASS규격검증 조합, ②셀카 AI증명사진 홍보). 네이버 검색 이미지 미노출 로그 추적(naver:ogtag·og:image 실측, 사이트맵 제출 미결). **네이버 AI브리핑 인용 5.3천 확인**(AEO 성과, 비공개). **App Store 다운로드 카드** 제작(Apple 공식 한국어 배지 합성)—모바일 독자 QR 한계 극복용 클릭형 | [블로그KR](../../contents/blog/blog_20260609_ai-passport-photo-spec_KR.md) · [세션로그](../../sessions/2026-06-09_iMac_민아.md) | ✅ |
 | 06/10 | 막내3 | **마케팅·SEO·브랜딩 전수 조사** — Fable 5 PR#45 지적 검증 + 전수 grep. 핵심서비스(portal/idphoto) 브랜딩 정상, monk.kr ai_lab 하위 Imagen/Gemini/용아 다수 노출 확인. 블로그 OG desc 영문고정·H1 영문고정 신규발견. SEO 즉시수정 6건 목록화. 콘텐츠 볼륨(ops 11건/JP 1건) 및 마케팅 자산 현황 파악 | [REPORT](../../reports/2026-06/REPORT_20260610_iMac막내3_마케팅SEO전수조사.md) | ✅ |
+| 06/11 | 작가님+웹민아 | **배포 스키마 정본 신설 (PF_OPUS 연결)** — 작가님 병목 진단("21채널 야망만 있고 스키마 부재 → 매번 재세팅") 수용. 본 PF §7 실측·06-07 3층 구조·06-08 채널 교훈을 톤 4종별 고정 레시피 R1~R4로 응축. 임계 돌파 채널 집중 원칙, Reddit 보류·한송이 공백 대응 명시. 채널 신규 개척 정본은 본 PF 유지, 실행 스키마는 contents/ 정본 | [DISTRIBUTION_SCHEMA](../../../contents/DISTRIBUTION_SCHEMA.md) | ⏳ 작가님 승인 대기 |
 
 ---
 
