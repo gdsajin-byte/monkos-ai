@@ -1,1 +1,7 @@
 /ai_lab/photolab/*  https://idphoto-kr.monkos.ai/:splat  301
+/specs              https://monkos.ai/specs               301
+/specs/*            https://monkos.ai/specs/:splat         301
+/ja/specs           https://monkos.ai/ja/specs             301
+/ja/specs/*         https://monkos.ai/ja/specs/:splat      301
+/en/specs           https://monkos.ai/en/specs             301
+/en/specs/*         https://monkos.ai/en/specs/:splat      301
