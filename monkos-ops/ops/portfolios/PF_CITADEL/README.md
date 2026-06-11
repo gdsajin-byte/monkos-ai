@@ -145,6 +145,8 @@ status: active
 | 06/07 | 쌍아 | **채널별 자동 배포 최적 방안 조사** — 7채널 전수 조사. API 직통 5채널(Reddit/X/Facebook/Instagram/네이버) + CDP 전용 2채널(note.com/Medium). 3층 구조 확정 | 세션 내 보고 | ✅ |
 | 06/10 | 막내1 | **보안 취약점 전수 조사** — Fable 5(PR#45) 보고 9건 교차 검증 전건 확인(오탐 0). 신규 9건 발견(Critical 1+High 2+Medium 6). 합계 18건. 공격 체인(N-1→C-4→C-2) 특정. 수정 코드 미포함(진단 전용) | [REPORT_20260610_iMac막내1_보안전수조사](../reports/2026-06/REPORT_20260610_iMac막내1_보안전수조사.md) | ✅ |
 | 06/10 | 막내4 | **보안 페일클로즈 응급 패치 (Phase 9 T0)** — 공격 체인(N-1→C-4→C-2→H-1) 4건 차단. N-1: handleAuthToken 세션 검증, C-4: ADMIN_UIDS 페일클로즈 4개소, C-2: 크레딧 API 인증(portal 3핸들러+idphoto-kr/jp), C-3: AUTH_SECRET 폴백 제거 | auth.js, credits.js, config.js, admin-auth.js, idphoto-kr/jp | ✅ |
+| 06/10 | 쌍아 | **portal prod 배포** rev 00278-h8k — 보안 페일클로즈 4건 라이브 적용. idphoto-kr/jp는 AUTH_SECRET 환경변수 미설정 → 작가님 GCP 콘솔에서 추가 후 순차 배포 필요 | `deploy.sh prod` | ✅ portal / ⏳ kr·jp |
+| 06/10 | 막내1 | **SA 권한 전수 조사** — SA 2개 운용 확인(yong-a-orchestrator=CI + monk-image-engine=런타임). yong-a-orchestrator: roles/editor 과잉 → GA4/GSC 읽기만 사용, 프로젝트 IAM 제거 가능(속성 권한만 유지). monk-image-engine: 6개 역할 최소 매핑 완료. 시나리오 A(각각 축소) 권고 | [REPORT_20260610_iMac막내1_SA권한전수조사](../reports/2026-06/REPORT_20260610_iMac막내1_SA권한전수조사.md) | ✅ |
 
 ---
 
