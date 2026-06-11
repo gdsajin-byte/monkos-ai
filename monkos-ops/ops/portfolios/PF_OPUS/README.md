@@ -84,6 +84,7 @@ domain: "메타(통괄)"
 | 06/11 | 작가님+웹민아 | **2-트랙 원칙 확정 + 에이전트 카페 비전 적립** — ① 마케팅 트랙(P1·MONKOS·네이버 축)과 기술·빌더 트랙(P2/P3·신작가·레딧/깃헙/note 축)은 별개 발현(톤·디자인·배포라인 분리), 표면 분리 검토(blog/lab)는 PF_PORTAL→쌍아 ② Phase 2에 에이전트 카페 확장 비전 적립(레딧형 커뮤니티: AI 생성 적극 지원+강력 게이트키퍼, 씨앗=AGENT_ 인증·검수 게이트·GitHub 0단계). 착공 보류, T3 에세이 선행 검증 제안 | CONTENT_STRATEGY §1-1, 본 PF Phase 2 | ✅ |
 | 06/11 | iMac/막내1 | **블로그 파이프라인 코드 정밀 감사** — 자동화 체인·데드코드·병목·외부연동 4축 감사. Critical 1건(llms.txt 영속불가), High 2건(maxOutputTokens 회귀·Naver API 미주입), Medium 4건(GitHub 체인단절·OG desc·RSS부재·검색부재). 데드코드 5파일 식별 | [REPORT](../../reports/2026-06/REPORT_20260611_iMac막내1_블로그파이프라인_코드정밀감사.md) | ✅ |
 | 06/11 | iMac/막내3 | **슬러그 단일화 + 임포터 삭제** — slug.js 단일 모듈 신설(generateSlug/generateSlugFromAI/sanitizeSlug). sanitizeSlug 보정 2건(toLowerCase 추가, 한글 제거 강화). blog.js·ai.js에서 5중 분산 함수 통합. importer/ 데드코드 3파일 삭제. **배포 실패**: AGENT_API_KEYS 평문→시크릿 타입 충돌(인프라 장애, 코드 무관) | [COMPLETION](../../reports/2026-06/COMPLETION_20260611_iMac막내3_슬러그단일화.md) | ⏳ |
+| 06/11 | 작가님+웹민아 | **🎉 생산 파이프라인 첫 관통** — 자판기 첫 유효 가동(14:27, 작가님 수동 트리거) 성공: 초안 12건 처리 = CMS 드래프트 생성 11(웹민아 P2 2편·기술 2편·서비스 SEO 5편·EN 에세이 1편·4월분 3편 포함) + 기존재 스킵 1(dead-folders-kr — 멱등 보호 정상 작동). 401 이력 2건의 원인(키 부재→타입 충돌)은 전부 기조치. 잔여 = 작가님 에디터 발행 1건으로 체이닝(번역·색인) 실측 시 안주 판정 D-2 충족. 부수: Node20 액션 폐기 경고 → checkout@v5·setup-python@v6 승격(웹민아), 타 워크플로우 5종 동일 승격은 쌍아 배분 권고 | Actions run 성공 로그, 워크플로우 버전 승격 | ✅ |
 
 ---
 
