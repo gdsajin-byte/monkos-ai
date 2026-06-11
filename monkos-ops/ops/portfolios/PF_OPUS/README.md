@@ -77,6 +77,7 @@ domain: "메타(통괄)"
 | 06/08 | 4060/쌍아 | **Qwen 3.5 4B 온디바이스 테스트** — Q4_K_M GGUF + llama.cpp로 블로그에디터 시나리오 4종 벤치마크. 72 tok/s·VRAM 3.2GB 우수하나 thinking 모드가 토큰 대량 소모(slug 6단어에 49초). **판정: 온디바이스 전환 불가 → Gemini 2.5 Flash 유지**. 후속: non-reasoning 모델(Qwen3-4B, Phi-4 Mini) 재검증 권장 | `COMPLETION_20260608_4060쌍아_Qwen3.5_4B_온디바이스테스트.md` | ✅ |
 | 06/08 | 민아 | **「죽은 폴더」 에세이 다채널 배포 + 새 AI기능 4라운드 검증** — 생산: KR/EN 에세이. 배포: Medium(EN 본문·서식·토픽)+note(JA 본문·해시태그) 준비, 블로그 KR/JA 썸네일. 검증: 에디터 AI 기능(image/thumbnail/suggest/slug) 4라운드→4/4 통과. 썸네일 3종(KR/EN/JA, Canva editing으로 텍스트 교정). Reddit 보류(신규계정 필터). EN 번역 누락 근본원인(maxOutputTokens 8192) 규명 | [세션로그](../../sessions/2026-06-08_iMac_민아.md), REPORT 2건 | ✅ |
 | 06/10 | 작가님+민아 | **비어있던 "① 생산 엔진" = 블로그 하네스로 충전 확정**. 자판기(포맷·메타·라우팅)/LLM(생성·검증)/게이트(검수) 노드 분해. 생성=클라우드, 검증=로컬(4060 실측), 배포=사람. **하네스 구조 정본은 [PF_MONK_OS](../PF_MONK_OS/architecture/HARNESS_ARCHITECTURE.md) §9**, OPUS는 콘텐츠 적용처 | PF_MONK_OS §9 | ✅ |
+| 06/11 | iMac/막내1 | **블로그 파이프라인 코드 정밀 감사** — 자동화 체인·데드코드·병목·외부연동 4축 감사. Critical 1건(llms.txt 영속불가), High 2건(maxOutputTokens 회귀·Naver API 미주입), Medium 4건(GitHub 체인단절·OG desc·RSS부재·검색부재). 데드코드 5파일 식별 | [REPORT](../../reports/2026-06/REPORT_20260611_iMac막내1_블로그파이프라인_코드정밀감사.md) | ✅ |
 
 ---
 
