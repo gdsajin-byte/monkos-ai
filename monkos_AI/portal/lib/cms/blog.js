@@ -8,7 +8,7 @@ import { firestore, ai, GCS_BUCKET, log, parseJsonBody } from '../shared/config.
 import { requireAdmin } from './admin-auth.js';
 import { translateAndSaveBlogPost } from './translate.js';
 import { publishBlogToGitHub } from './github-issues.js';
-import { requestIndexing, appendToLlmsTxt, pingSitemap } from './seo.js';
+import { requestIndexing, pingSitemap } from './seo.js';
 
 const blogCollection = firestore.collection('blog_posts');
 const ogStorage = new Storage();
@@ -211,7 +211,6 @@ export async function handleBlogCreate(req, res) {
       const blogUrl = `https://monkos.ai${langPrefix}/blog/${baseSlug}`;
       pingSitemap();
       requestIndexing(blogUrl);
-      appendToLlmsTxt(baseSlug, post.title);
     }
 
     // 한국어 원본 발행 시 자동번역 → GitHub Issues (백그라운드 체이닝)
@@ -295,7 +294,6 @@ export async function handleBlogUpdate(req, res) {
       const blogUrl = `https://monkos.ai${updatedLangPrefix}/blog/${updatedBaseSlug}`;
       pingSitemap();
       requestIndexing(blogUrl);
-      appendToLlmsTxt(updatedBaseSlug, updatedData.title);
     }
 
     // 한국어 원본 발행 시 자동번역 → GitHub Issues (백그라운드 체이닝)
