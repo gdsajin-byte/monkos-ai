@@ -132,7 +132,7 @@ status: 현행
 | SA | 이메일 | IAM 역할 | 용도 | 비고 |
 |----|--------|---------|------|------|
 | yong-a-orchestrator | yong-a-orchestrator@monkos.iam.gserviceaccount.com | **Agent Platform 사용자** + aiplatform.user + storage.objectAdmin | CI·관리용 | ✅ 2026-06-10 editor→Agent Platform 축소 (Recommender 적용). 키 교체: c1b7e5a702b8(6/10 발급, SM+GH 등록, 로컬 삭제). 구키 1月·5月 삭제 대기 |
-| monk-image-engine | monk-image-engine@monkos.iam.gserviceaccount.com | aiplatform.user + datastore.owner + datastore.user + iam.serviceAccountTokenCreator + storage.objectAdmin | Cloud Run 실행 SA | |
+| monk-image-engine | monk-image-engine@monkos.iam.gserviceaccount.com | aiplatform.user + datastore.owner + datastore.user + iam.serviceAccountTokenCreator + storage.objectAdmin + **secretmanager.secretAccessor** + **roles/indexing.publisher** | Cloud Run 실행 SA | ✅ GSC sc-domain:monkos.ai **소유자 등록 완료** (2026-06-07 작가님 수동). Indexing API 권한 충족. 2026-06-11 secretmanager.secretAccessor 부여 (deploy.sh --set-secrets 전환용) |
 | Compute Engine default | 933456016842-compute@developer.gserviceaccount.com | (기본) | GCE 기본 | |
 
 ### H. 로컬 인증 파일
