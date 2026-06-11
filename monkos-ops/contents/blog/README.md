@@ -44,6 +44,7 @@ author: 신작가 | MONKOS
 status: draft
 tags: [태그1, 태그2]
 summary: "160자 이내 요약"
+book_thread: 하네스론        # P2·P3만 — 저서 계보 태그 (CONTENT_STRATEGY §1 저서 축 운용)
 cms: skip                    # 이 파일을 CMS 업로드에서 제외할 때만
 ---
 ```
