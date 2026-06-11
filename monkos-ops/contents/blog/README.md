@@ -61,6 +61,6 @@ cms: skip                    # 이 파일을 CMS 업로드에서 제외할 때�
 
 | 항목 | 내용 | 상태 |
 |------|------|------|
-| GitHub Secret `PORTAL_AGENT_KEY` | 포털 Cloud Run 환경변수 `AGENT_API_KEYS` 값 중 1개 (AGENT_…) 등록. 콘솔 작업 = 작가님 | ⏳ |
+| GitHub Secret `PORTAL_AGENT_KEY` | 포털 Cloud Run 환경변수 `AGENT_API_KEYS` 값 중 1개 (AGENT_…) 등록. 콘솔 작업 = 작가님 | ✅ 등록 완료 (06-11 13:19 run에 주입 확인). 단 동시각 포털 배포 진행 중이라 401 — 배포 완료 후 재실행 필요 |
 
 키 미등록 상태에서는 자판기가 경고만 남기고 통과한다 (CI 적색 아님). 등록 후 `workflow_dispatch` 수동 실행으로 기존 초안 일괄 업로드 가능.
