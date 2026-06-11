@@ -69,13 +69,16 @@ status: draft (쌍아 보정 대기)
      제안일 뿐 실행하지 않는다 — 결정은 작가님 몫
    - 분량 1장. 정상 항목은 1줄로 압축. "되는 것만" 기재 (헌법 4조 4항)
 
-6. [콘텐츠 생산 — PF_OPUS] 위 1~5에서 판독한 소재(브리핑 지표 해석, 전일 세션의
-   작업 내용·철학적 대화, PF 히스토리)에서 콘텐츠 가치가 있는 소재 1건을 선별해
-   블로그 초안 1편을 작성:
+6. [콘텐츠 생산 — PF_OPUS] **먼저 monkos-ops/contents/CONTENT_STRATEGY.md를 Read**
+   (필러 4축 × 톤 4종 × 주간 믹스 P1 4:P2 2:P3 1). 이번 주 생산분(contents/blog
+   금주 파일들)과 대조해 믹스 잔량이 부족한 필러를 우선 선택:
+   - P1(서비스 SEO)이면 타깃 4종·키워드 클러스터에서 소재 선정, 톤 T1
+   - P2(빌더 서사)이면 위 1~5에서 판독한 브리핑·세션·PF의 철학적 소재, 톤 T3
+   - P3(기술 실측)이면 실측 데이터 소재, 톤 T4 — 소재 없으면 P1 대체
    - 파일: monkos-ops/contents/blog/blog_{YYYYMMDD}_{영문주제}_KR.md
      (frontmatter: slug·lang·author·status: draft·tags·summary 필수)
-   - 문체 정본: blog_20260608_dead-folders-to-living-system_KR.md
-     (신작가 문체 — 1인칭 해요체 에세이, TL;DR, 정직한 고백, 독자 질문 마무리)
+   - 톤별 문체 정본(선례 파일)은 CONTENT_STRATEGY.md §2 표를 따른다.
+     페르소나 규약 준수: T3=신작가, T1/T2/T4=MONKOS. 혼용 금지
    - 기밀 게이트 (헌법 4조 3항): 내부 호칭·기술 엔진명·계정명·키·미해결 보안
      사항 언급 금지. 외부 표기는 MONKOS 통일. 메일·고객 정보 인용 금지.
    - 발행 금지: 초안은 main 병합 시 자판기(blog-draft-publish.yml)가 CMS

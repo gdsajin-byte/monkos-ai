@@ -50,7 +50,8 @@ cms: skip                    # 이 파일을 CMS 업로드에서 제외할 때�
 
 ## 규칙
 
-- **문체 정본**: `blog_20260608_dead-folders-to-living-system_KR.md` (신작가 문체)
+- **전략 정본**: [`../CONTENT_STRATEGY.md`](../CONTENT_STRATEGY.md) — 필러 4축(P1 서비스 SEO / P2 빌더 서사 / P3 기술 실측 / P4 로컬) × 톤 4종(T1 가이드 / T2 후기 / T3 신작가 에세이 / T4 기술 실측) × 주간 믹스 P1 4:P2 2:P3 1. **작성 전 필독**
+- **문체 정본**: 톤별 선례 파일은 CONTENT_STRATEGY.md §2 표 참조
 - **기밀 게이트** (헌법 4조 3항): 내부 호칭·기술 엔진명·계정명·키·미해결 보안 사항 금지. 외부 표기 MONKOS 통일
 - **published:true 커밋 금지** — frontmatter에 published가 있어도 자판기는 무시하고 드래프트로만 올린다
 - 소재 중복 금지 — 작성 전 이 폴더의 기존 파일 대조
