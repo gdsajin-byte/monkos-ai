@@ -79,6 +79,7 @@ status: 현행
 | 33 | REMOVEBG_API_KEY | remove.bg 배경 제거 API | 크롭앱, 스펙스, Android | ⭐ 2026-05-25 추가. 무료 50장/월 |
 | 34 | CHAT_WORKERS_URL | 챗봇 Workers 엔드포인트 | portal | ⭐ 2026-06-02 §A 편입 (§F deploy.sh엔 기존 존재) |
 | 35 | CHAT_API_KEY | 챗봇 Workers API 인증 | portal | ⭐ 2026-06-02 §A 편입 (§3 CF Dashboard와 동일값) |
+| 36 | AGENT_API_KEYS | GH Actions→포털 CMS 에이전트 인증 | portal (blog-draft-publish) | ⭐ 2026-06-11 신설. SM: AGENT-API-KEYS, GH: PORTAL_AGENT_KEY. deploy.sh --set-secrets 주입 |
 
 ### B. 루트 .env (로컬 전용 — 2개)
 
