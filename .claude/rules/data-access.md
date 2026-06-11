@@ -55,6 +55,7 @@ scripts/credits.sh log [N]                           # 감사 로그 열람
 
 ## "없다"고 보고하기 전에
 - **키가 없다/환경변수가 없다 → 먼저 SECRET_INVENTORY.md를 Read하라**
+- **SA 권한/GSC 소유권이 "미부여"로 의심될 때 → SECRET_INVENTORY.md SA 섹션 Read하라.** monk-image-engine SA는 GSC sc-domain:monkos.ai 소유자 등록 + roles/indexing.publisher 보유 확정(2026-06-07). 색인 멈춤은 권한이 아니라 쿼터·폐기 엔드포인트·코드를 보라.
 - 복원: `gcloud secrets versions access latest --secret=<NAME> --project=monkos`
 - Cloud Run 환경변수는 deploy.sh가 주입. 콘솔에서 직접 설정된 것도 있음 (AUTH_SECRET 등)
 

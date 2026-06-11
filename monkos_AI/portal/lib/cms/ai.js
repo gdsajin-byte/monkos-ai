@@ -9,6 +9,7 @@ import { fileURLToPath } from 'url';
 import { Storage } from '@google-cloud/storage';
 import { ai, GCS_BUCKET, log, parseJsonBody } from '../shared/config.js';
 import { requireAdmin } from './admin-auth.js';
+import { generateSlug } from './slug.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const storage = new Storage();
@@ -16,11 +17,6 @@ const bucket = storage.bucket(GCS_BUCKET);
 
 function escapeXml(str) {
   return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
-}
-
-function makeSlug(title) {
-  const slug = title.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '').substring(0, 40);
-  return slug || `post-${Date.now()}`;
 }
 
 async function uploadToGcs(buffer, gcsPath, contentType, metadata = {}) {
@@ -100,7 +96,7 @@ Rules:
 
     // ④ GCS 업로드
     const timestamp = Date.now();
-    const slug = makeSlug(title);
+    const slug = generateSlug(title);
     const gcsPath = `blog/ai_${timestamp}_${slug}.jpg`;
     const url = await uploadToGcs(jpegBuffer, gcsPath, 'image/jpeg', {
       source: 'ai-generate',
@@ -195,7 +191,7 @@ export async function handleAiThumbnail(req, res) {
       .toBuffer();
 
     const timestamp = Date.now();
-    const slug = makeSlug(title);
+    const slug = generateSlug(title);
     const gcsPath = `blog/og_${timestamp}_${slug}.jpg`;
     const url = await uploadToGcs(result, gcsPath, 'image/jpeg', {
       source: 'ai-thumbnail',
