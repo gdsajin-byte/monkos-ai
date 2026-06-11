@@ -100,6 +100,7 @@ domain: "governance/infrastructure"
 | 2026-06-10 | iMac/막내3 | **CI 즉시 3건 구현** — governance-check.yml 신설(C7 내부호칭 grep warning + C3 폴더위반 error 차단), weekly-dashboard.yml C2 PF 500줄 초과 검사 추가. 로컬 검증: C7=19건, C3=10건(기존위반분), C2=PF_CROP 692줄+PF_SPREAD 514줄 감지 | `governance-check.yml` 신설, `weekly-dashboard.yml` 수정 | ✅ |
 | 2026-06-10 | iMac/막내1 | **ch1 법률 개정 + CLAUDE.md 보정** — 웹 민아(위성 에이전트) 신설: 1조 정의 테이블+권한표, 2조 6항(위성 산출물 검증 절차), 4조 디바이스 약칭, 5조 판별 테이블(최우선 매칭), 위성 관측 한계 고지 의무 신설항. CLAUDE.md ch7 조수 5→6 보정. PETITION_20260610 전항 반영 완료 | `ch1_agent_system.md`, `CLAUDE.md` | ✅ |
 | 2026-06-10 | iMac/막내2 | **rules 정리 + skills 보정 실행** — Task 1~6 전건 완료. 삭제 3건(references, cdp-browser, portal_seo), skills 이관 2건(cdp-browser 통합, portal-context), 헌법 복붙 제거 4건, 조항번호 보정 3건, paths→globs 2건, **rules 3건 신설(agent-system·coding·branding)** — ch1 개정 반영 웹 민아 포함. rules 9→9개(삭제3+신설3), skills 14→15개 | rules 9개+skills 3개 변경, 커밋 e75a47f4+본건 | ✅ |
+| 2026-06-11 | iMac/막내2 | **rules/session-log.md 보강 + 스킬 15종 commands/ 이동** — session-log.md 32줄→53줄(파일명 10종+정본 위치 통합+수발신 헤더+PF 귀속 규칙, globs 3→8종). `.claude/skills/*.md` 15종→`.claude/commands/` 이동(내용 무변경, skills/ 디렉토리 유지). 웹민아 실측 기반 컨텍스트 로딩 정합 개선 | [COMPLETION](../../reports/2026-06/COMPLETION_20260611_iMac막내2_rules보강+스킬형식전환.md) | ✅ |
 
 ---
 
