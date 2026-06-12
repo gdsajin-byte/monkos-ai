@@ -73,6 +73,7 @@ status: active
 | 2026-06-12 | iMac/막내1 | 3권심사 입법 완료 — UBLA 실측(monk-ai-images=Fine-Grained, factory=Uniform-Locked), 경로별 공개/비공개 판정 7경로, allUsers 제거 영향 장애점 3건(G1~G3) 식별, 4-Step 교정 워크플로우 설계, 옵션B(즉시 ACL 보정)→옵션A(장기 분리) 2단계 전략 권고 | REPORT_20260612_iMac막내1_SECURITY_GCS삼권심사_입법.md | ✅ |
 | 2026-06-12 | iMac/막내3 | 3권심사 사법 완료 — 고객 증명사진 85명 1,165건 익명 접근·열거 확인(CRITICAL), blog/* ACL 미검증 리스크 발견, 개인정보보호법 위반 소지 판정, 4-Phase 검증 체크리스트 작성, 막내1 옵션B에 조건부 동의(blog ACL 선검증 필수) | REPORT_20260612_iMac막내3_SECURITY_GCS삼권심사_사법.md | ✅ |
 | 2026-06-12 | iMac/막내2 | 3권심사 행정 완료 — 7경로 2단계 정밀 맵트리, Fine-Grained ACL 실측(allUsers 파일 레벨: ads 13건+blog slug 125건만 존재), 활성/유휴 판별(80% 유휴), 버킷 IAM 제거 시 부수피해 644건(blog flat+assets) 특정, 안전 시퀀스 제시 | REPORT_20260612_iMac막내2_SECURITY_GCS삼권심사_행정.md | ✅ |
+| 2026-06-12 | iMac/막내1 | CF 인프라 맵트리 완료 — Pages Functions 13개(api 6+specs 7) 전수 분석, 외부 Workers 3개 전부 레거시 판정, 환경변수 13개 중 7개 레거시 추정, GEMINI_API_KEY 지문 미대조 경고, D1 monk-db 바인딩 정합 확인 | REPORT_20260612_iMac막내1_인프라_CF맵트리.md | ✅ |
 
 ---
 
