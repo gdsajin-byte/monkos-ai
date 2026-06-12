@@ -1,7 +1,7 @@
 ---
 type: inventory
 date: 2026-06-12
-updated_by: 웹/민아
+updated_by: 웹/민아 + iMac/막내1 (병합)
 status: 현행
 ---
 
@@ -9,7 +9,7 @@ status: 현행
 
 > ⚠️ **이 문서에 키 값을 절대 기재하지 않는다.** 항목+위치+용도만 기록.
 > 전신: `credentials_inventory.md` (2026-02-19). 본 문서가 정본.
-> 최종 갱신: 2026-06-12 (웹/민아 — 06-19 키 마감 종결 검수: §0-1 GCP 콘솔 키 현황 신설, §3 PORTAL_AGENT_KEY·§J AGENT-API-KEYS 누락 보정, §G SA 현행화, 유휴 프로젝트 3개 종료 반영)
+> 최종 갱신: 2026-06-12 (웹/민아 검수 + 막내1 전수조사 A 병합 — §0-1 키 현황, §3 누락 보정, §G SA 실측 현행화, 구키 삭제 완결 확인)
 > 직전 갱신: 2026-06-03 (광역오더 #8 — .env 시크릿 하이브리드 표준 적용 + GCP 일괄 등록)
 
 ---
@@ -57,6 +57,7 @@ status: 현행
 
 > 2026-06-02 iMac 실측: 35행(CF_WORKERS_AI_TOKEN 1행 중복) → 유니크 34개.
 > **2026-06-03 갱신(오더 #8)**: CF_WORKERS_AI_TOKEN(dead placeholder) 완전 제거 → **현 유니크 34개**(시크릿 24 + 설정 10). 분류·등록 현황은 §0. 값 비노출 변수명 대조.
+> **2026-06-12 GCP 전수조사**: GCP API 키 전체 11→2 축소 (monkos MONKOS NEW 1개 + monkos-3c6e4 Firebase Browser 1개). Gemini 06-19 마감 충족.
 
 | # | 변수명 | 용도 | 사용 서비스 | 비고 |
 |---|--------|------|------------|------|
@@ -150,11 +151,11 @@ status: 현행
 
 | SA | 이메일 | IAM 역할 | 용도 | 비고 |
 |----|--------|---------|------|------|
-| yong-a-orchestrator | yong-a-orchestrator@monkos.iam.gserviceaccount.com | **Agent Platform 사용자** + aiplatform.user + storage.objectAdmin | CI·관리용 | ✅ 2026-06-10 editor→Agent Platform 축소 (Recommender 적용). 키 교체: c1b7e5a702b8(6/10 발급, SM+GH 등록, 로컬 삭제). 구키 1月·5月 삭제 대기 |
-| monk-image-engine | monk-image-engine@monkos.iam.gserviceaccount.com | aiplatform.user + datastore.owner + datastore.user + iam.serviceAccountTokenCreator + storage.objectAdmin + **secretmanager.secretAccessor** + **roles/indexing.publisher** | Cloud Run 실행 SA | ✅ GSC sc-domain:monkos.ai **소유자 등록 완료** (2026-06-07 작가님 수동). Indexing API 권한 충족. 2026-06-11 secretmanager.secretAccessor 부여 (deploy.sh --set-secrets 전환용) |
-| Compute Engine default | 933456016842-compute@developer.gserviceaccount.com | roles/editor (⚠️ 초과권한 11660/11666, 6개 실사용 — Cloud Run 런타임 추정) | GCE 기본 | 축소는 영향평가 후 (ORDER_20260612 Task 4) |
-| smuse73 *(startMONK)* | smuse73@gen-lang-client-0105707468.iam.gserviceaccount.com | 서비스 사용량 소비자 + Agent Platform 사용자 | 레거시 | ✅ 2026-06-12 owner 제거. USER_MANAGED 키 1개 소재 추적 중(Task 3). 프로젝트 종료 예정 |
-| monk-factory-agent *(monk-data-factory)* | monk-factory-agent@monk-data-factory.iam.gserviceaccount.com | storage.objectAdmin + Agent Platform 사용자 | 데이터 팩토리 | USER_MANAGED 키 1개 소재 추적 중(Task 3). 기본 SA 2개 편집자는 06-12 제거 |
+| yong-a-orchestrator | yong-a-orchestrator@monkos.iam.gserviceaccount.com | **Agent Platform 사용자** + aiplatform.user + storage.objectAdmin | CI·관리용 | ✅ 06-10 editor→Agent Platform 축소. 키 교체: c1b7e5a702b8(6/10 발급, SM+GH 등록, 로컬 삭제). **06-12 실측: 구키 1月·5月 삭제 완료 확인** |
+| monk-image-engine | monk-image-engine@monkos.iam.gserviceaccount.com | aiplatform.user + datastore.owner + datastore.user + iam.serviceAccountTokenCreator + storage.objectAdmin + **secretmanager.secretAccessor** + **roles/indexing.publisher**(GSC 스코프) | Cloud Run 실행 SA | ✅ GSC sc-domain:monkos.ai 소유자 등록 완료 (06-07). indexing.publisher는 GSC 스코프. 06-11 secretmanager.secretAccessor 부여 |
+| Compute Engine default | 933456016842-compute@developer.gserviceaccount.com | roles/editor (⚠️ 초과권한 11660/11666, 6개 실사용) | GCE 기본 | 06-12 실측: monk-n8n·pt 2개만 이 SA 사용. 축소는 영향평가 후 |
+| smuse73 *(startMONK)* | smuse73@gen-lang-client-0105707468.iam.gserviceaccount.com | serviceusage.serviceUsageConsumer + aiplatform.user | 레거시 | ✅ 06-12 owner 제거. ⚠️ USER_MANAGED 키 1개(67d2ab92, 2025-12-22). 프로젝트 종료 시 일괄 폐기 후보 |
+| monk-factory-agent *(monk-data-factory)* | monk-factory-agent@monk-data-factory.iam.gserviceaccount.com | storage.objectAdmin + aiplatform.user | 데이터 팩토리 | ⚠️ USER_MANAGED 키 1개(863e0af1, 2025-12-29). 기본 SA 2개 편집자 06-12 제거. 용도 재확인 후 결정 |
 
 ### H. 로컬 인증 파일
 
