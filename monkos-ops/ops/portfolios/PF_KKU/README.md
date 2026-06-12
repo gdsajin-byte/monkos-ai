@@ -38,12 +38,36 @@ domain: "콘텐츠/마케팅"
 
 1. **미국비자사진** 하나로 패턴 확립 (네이버 블로그 ↔ `/specs/us-visa` 양축)
 2. 패턴 잡히면 수백 국가·용도로 복제 (SEO/GEO 자동 업데이트)
-3. 각 specs 페이지에 크롭앱·증명생성앱을 백엔드로 붙여 콘텐츠→서비스 자연 전환 (Photo Aid 모델)
+3. 각 specs 페이지에 crop 엔진 임베드 → 콘텐츠→서비스 자연 전환
+4. **IDPASS 브랜드로 통합** → Photo Aid형 무료 도구 + AI 유료 옵션
+
+### IDPASS 비전 (2026-06-12 작가님 확정)
+
+**IDPASS = `specs(규격 DB) × crop(엔진)` — 간판/엔진 분리형 Photo Aid 모델**
+
+```
+idpass.monkos.ai (SPA 간판) → monkos.ai/specs/{국가-문서} (본진 SSR, SEO 유지)
+                                  └→ crop 엔진 임베드 (규격 파라미터 주입)
+```
+
+- 각 specs 페이지가 "그 규격 전용 미니 도구 앱"으로 격상
+- idphoto(AI 생성 프리미엄)와 별도 2라인 독립 성장
+
+**IDPASS 3티어 매출 모델:**
+
+| 티어 | 내용 | 가격 |
+|------|------|------|
+| **Free** | specs 규격 확인 + crop 크롭 | 무료 (유입 엔진) |
+| **AI** | AI 배경제거 + 보정 + 컬러 배경 | 크레딧 (유료 옵션) |
+| **Studio** | 전문가 검수 + 발급 보장 | 프리미엄 |
+
+> 꾸의 블로그가 유입을 만들고, specs 페이지가 Free 도구로 전환하고, AI/Studio가 매출을 만든다.
+> 참조: `PROPOSAL_20260612_민아_IDPASS_제품구조.md`
 
 ### specs 현황 (2026-06-12)
 
 - 총 **445개** 규격 등록 (`specs-data.json`)
-- SSR 렌더링 + 3티어 전환 퍼널 (무료크롭 → AI프리미어 → 스튜디오)
+- SSR 렌더링 + 3티어 전환 퍼널 (이미 구현, IDPASS 모델과 일치)
 - 라우트: `/specs`, `/specs/{slug}`, `/ja/specs/...`, `/en/specs/...`
 
 ### 하루 루틴
@@ -88,6 +112,8 @@ domain: "콘텐츠/마케팅"
 | 06/12 | iMac/쌍아 | 꾸 컨텍스트 스킬 생성 — 권한·위치·지침 정리 | .claude/commands/kku-context.md | ✅ |
 | 06/12 | iMac/쌍아 | 2축 전략 확정 — 네이버블로그↔specs 양축 + 미국비자 패턴확립 우선 | PF_KKU 비전 개정 | ✅ |
 | 06/12 | iMac/쌍아 | 꾸블로그+꾸스펙스 스킬 생성 — 경쟁사 5사 벤치마크(Photo Aid/Visafoto/iDPhotoDIY/Biometrisches/MakePassport) 인사이트 포함 | kku-blog.md, kku-specs.md | ✅ |
+| 06/12 | iMac/쌍아 | 꾸 역할 확장 헌법 개정 완료 — 삼권심사 만장일치, 헌법·법률·규정 반영 | PETITION_20260612 | ✅ |
+| 06/12 | 작가님 | IDPASS 비전 확정 — specs×crop 간판/엔진 분리, 3티어 매출(Free+AI유료+Studio), idphoto와 별도 2라인 | PF_KKU 비전 반영 | ✅ |
 
 ---
 
