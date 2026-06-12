@@ -45,6 +45,7 @@ portfolio: PF_SECURITY
   - `gcloud projects get-iam-policy` — 06-12 작가님 콘솔 축소 결과 반영 현행 IAM
   - `gcloud iam service-accounts list` + USER_MANAGED 키 존재 여부
 - 4-22 보고서와의 **델타 테이블** 작성 (변경/삭제/잔존).
+- **차단 사유 규명 (06-05 지시서 미결 승계)**: monk-data-factory의 구 키 2개(`검색기능key`·`data_factory_APIkey`)가 Google에 의해 차단됐던 사유 — Cloud Audit Log·Monitoring에서 차단 시점·사유 추적 (5/26 공격 연관 여부). 키는 삭제됐으나 원인 미규명 상태.
 
 ### Task 2 — 버킷 정밀 전수 (작가님 핵심 요청: "버킷 구조 정밀화")
 

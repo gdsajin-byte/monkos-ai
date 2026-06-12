@@ -1,7 +1,7 @@
 ---
 type: inventory
-date: 2026-06-02
-updated_by: iMac/쌍아
+date: 2026-06-12
+updated_by: 웹/민아
 status: 현행
 ---
 
@@ -9,7 +9,8 @@ status: 현행
 
 > ⚠️ **이 문서에 키 값을 절대 기재하지 않는다.** 항목+위치+용도만 기록.
 > 전신: `credentials_inventory.md` (2026-02-19). 본 문서가 정본.
-> 최종 갱신: 2026-06-03 (광역오더 #8 — .env 시크릿 하이브리드 표준 적용 + GCP 일괄 등록)
+> 최종 갱신: 2026-06-12 (웹/민아 — 06-19 키 마감 종결 검수: §0-1 GCP 콘솔 키 현황 신설, §3 PORTAL_AGENT_KEY·§J AGENT-API-KEYS 누락 보정, §G SA 현행화, 유휴 프로젝트 3개 종료 반영)
+> 직전 갱신: 2026-06-03 (광역오더 #8 — .env 시크릿 하이브리드 표준 적용 + GCP 일괄 등록)
 
 ---
 
@@ -34,6 +35,21 @@ status: 현행
 > M1 등 타 디바이스 .env 동기화: 시크릿은 GCP에서 복원, 설정은 .env 정본 배포. **M1 갭(-20) 실측·반영은 M1 온라인 시 별도 진행**(2026-06-03 M1 offline).
 
 ---
+
+## 0-1. GCP 콘솔 API 키 현황 (2026-06-12 작가님+웹/민아 합동 실측 — 06-19 마감 종결)
+
+> Google AI Studio "무제한 키 제한" 마감(2026-06-19) 대응 전수 점검 결과. 상세: `2026-06-12_웹_민아_수동.md` 세션 로그.
+
+| 프로젝트 | API 키 | 상태 |
+|---------|--------|------|
+| **monkos** | **MONKOS NEW API Key 1개** (생성 2026-03-30) | ✅ **전 계정 유일 생존 키.** Gemini API 제한 적용. fp 3560db307f8e = SM `GEMINI_API_KEY` (06-05 막내2 대조) |
+| monkos-3c6e4 | Browser key (Firebase 자동 생성) | ✅ Generative Language API 미활성 프로젝트 — 마감 무관. Firebase Auth용, 미조치 |
+| monk-data-factory | 0개 | 구 2개(검색기능key·data_factory_APIkey, Google 차단) 삭제됨. **차단 사유 미규명** (ORDER_20260612 Task 1) |
+| startMONK | 0개 | monk_chatbot_cloudflare 삭제됨. 프로젝트 종료 예정(버킷 2개 거취 확인 후) |
+| ~~Default Gemini Project~~ · ~~monkos-aistudio~~ · ~~My Maps Project~~ | — | 🗑️ **2026-06-12 프로젝트 종료** (30일 복원창). 키 존재 가능 공간 소거 |
+
+- 구 키 삭제 이력: monkos 3개(06-02, 유출키 monkosimagepro 포함) + 타 프로젝트 6개(06-05~06-11 작가님 일괄 정리).
+- IAM 동시 축소(06-12, Recommender): monk-data-factory 기본 SA 2개 편집자 제거, startMONK smuse73 owner 제거.
 
 ## 1. 저장소별 시크릿 맵
 
@@ -119,6 +135,8 @@ status: 현행
 | 12 | TX_API_KEY | D1 거래 원장 |
 | 13 | CHAT_API_KEY | 챗봇 Workers API 인증 (monkos.ai→Workers 서비스 간 호출) | ⭐ 2026-05-25 추가
 
+> ⚠️ **§E GEMINI_API_KEY 지문 미대조** (2026-06-12 검수): monkos_AI와 "동일값 추정"일 뿐 실측 대조된 적 없음. 만약 구 프로젝트(Default Gemini 등) 발급 키였다면 06-12 프로젝트 종료로 무효화됐을 수 있음 → **지문 대조 또는 monk.kr Gemini 폴백 라이브 검증 필요** (ORDER_20260612 Task 1 연계).
+
 ### F. Cloud Run 환경변수 (deploy.sh 경유)
 
 | 서비스 | 주입 변수 | deploy.sh |
@@ -134,7 +152,9 @@ status: 현행
 |----|--------|---------|------|------|
 | yong-a-orchestrator | yong-a-orchestrator@monkos.iam.gserviceaccount.com | **Agent Platform 사용자** + aiplatform.user + storage.objectAdmin | CI·관리용 | ✅ 2026-06-10 editor→Agent Platform 축소 (Recommender 적용). 키 교체: c1b7e5a702b8(6/10 발급, SM+GH 등록, 로컬 삭제). 구키 1月·5月 삭제 대기 |
 | monk-image-engine | monk-image-engine@monkos.iam.gserviceaccount.com | aiplatform.user + datastore.owner + datastore.user + iam.serviceAccountTokenCreator + storage.objectAdmin + **secretmanager.secretAccessor** + **roles/indexing.publisher** | Cloud Run 실행 SA | ✅ GSC sc-domain:monkos.ai **소유자 등록 완료** (2026-06-07 작가님 수동). Indexing API 권한 충족. 2026-06-11 secretmanager.secretAccessor 부여 (deploy.sh --set-secrets 전환용) |
-| Compute Engine default | 933456016842-compute@developer.gserviceaccount.com | (기본) | GCE 기본 | |
+| Compute Engine default | 933456016842-compute@developer.gserviceaccount.com | roles/editor (⚠️ 초과권한 11660/11666, 6개 실사용 — Cloud Run 런타임 추정) | GCE 기본 | 축소는 영향평가 후 (ORDER_20260612 Task 4) |
+| smuse73 *(startMONK)* | smuse73@gen-lang-client-0105707468.iam.gserviceaccount.com | 서비스 사용량 소비자 + Agent Platform 사용자 | 레거시 | ✅ 2026-06-12 owner 제거. USER_MANAGED 키 1개 소재 추적 중(Task 3). 프로젝트 종료 예정 |
+| monk-factory-agent *(monk-data-factory)* | monk-factory-agent@monk-data-factory.iam.gserviceaccount.com | storage.objectAdmin + Agent Platform 사용자 | 데이터 팩토리 | USER_MANAGED 키 1개 소재 추적 중(Task 3). 기본 SA 2개 편집자는 06-12 제거 |
 
 ### H. 로컬 인증 파일
 
@@ -163,6 +183,7 @@ status: 현행
 | ELEVENLABS_API_KEY · KIMI_API_KEY | TTS·AI 프로토타입 | 루트 .env 대응 | 기존 |
 | **monkos_AI/.env 시크릿 24종** | §0 분류 참조 (GEMINI_API_KEY·CF_API_TOKEN·CHAT_API_KEY·KAKAO_*·NAVER_CLIENT_SECRET·LINE_*·TOSS_*·LEMONSQUEEZY_*·TELEGRAM_*·TEAM_NOTIFY_SECRET·X_*·N8N_API_KEY·TX_API_KEY·REMOVEBG_API_KEY·ADMIN_UIDS) | Cloud Run 런타임 / 타 디바이스 복원 | ⭐ **2026-06-03 일괄 등록 (광역오더 #8)** — 변수명 그대로, 해시 정합 24/24 |
 | **GCP_SA_KEY** | yong-a-orchestrator SA 키 JSON (키 ID: c1b7e5a702b8) | GH Actions·웹 민아 루틴·로컬 gcloud 복원 | ⭐ **2026-06-10 등록** — 광역오더 #8 보완(SA 키 누락분). 로컬 미보관(SM=정본) |
+| **AGENT-API-KEYS** | 포털 CMS 에이전트 인증 (GH `PORTAL_AGENT_KEY` 카탈로그 동기) | portal blog-draft-publish, deploy.sh --set-secrets 주입 | ⭐ **2026-06-11 신설** — §A #36 대응 |
 
 **gdocs 토큰 중앙화 (광역오더 #7)**: iMac 정본 `~/.config/mcp-google-docs/token.json` → `MCP_GDOCS_TOKEN`으로 등록.
 `gdocs_mcp.sh`가 token.json 부재 시 GCP에서 자동 복원 → **타 디바이스(M1 등) 무인증 동작**. 검증 완료(바이트 동일 복원·권한 600).
@@ -214,7 +235,7 @@ status: 현행
 
 | GitHub Secret 이름 | 값 소스 | SA | 등록일 | 용도 |
 |--------------------|---------|-----|--------|------|
-| GCP_SA_KEY | yong-a-orchestrator 키 JSON → base64 | yong-a-orchestrator | 05-11 | Actions에서 GCP 인증 |
+| GCP_SA_KEY | yong-a-orchestrator 키 JSON → base64 | yong-a-orchestrator | 05-11 (06-10 신키 c1b7e5a702b8 교체 등록) | Actions에서 GCP 인증 |
 | GA4_PROPERTY_ID | `521406894` | — | 05-11 | 일일 보고서 |
 | GSC_SITE_URL | `sc-domain:monkos.ai` | — | 05-11 | 일일 보고서 |
 | TELEGRAM_BOT_TOKEN | Firebase Functions (telegramWebhook) @monkos_factory_bot | — | 05-12 | 텔레그램 알림 허브 (팩토리 봇) |
@@ -223,6 +244,7 @@ status: 현행
 | MCP_GDOCS_CLIENT_ID | GCP Secret Manager 동기화 | — | 06-02 | 정본 카탈로그 + 향후 Actions 확장 |
 | MCP_GDOCS_CLIENT_SECRET | GCP Secret Manager 동기화 | — | 06-02 | 정본 카탈로그 + 향후 Actions 확장 |
 | MCP_GDOCS_TOKEN | token.json 전체 (GCP와 동일 페이로드) | — | 06-02 | gdocs 토큰 카탈로그 |
+| PORTAL_AGENT_KEY | SM `AGENT-API-KEYS` 동일 페이로드 | — | 06-11 | blog-draft-publish → 포털 CMS 인증 (⚠️ 401 미해소 — Cloud Run `AGENT_API_KEYS` 값 대조 미결, 기보고 #54/#57) |
 
 ### 향후 확장 (배포 자동화 시)
 
