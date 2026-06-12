@@ -63,7 +63,7 @@
 </head>
 <body>
   <h1>배경 제거 엔진 벤치마크</h1>
-  <div class="sub">크롭앱 통합용 · 4개 엔진 실측 비교 · 브라우저 로컬 추론</div>
+  <div class="sub">크롭앱 통합용 · 5개 엔진 실측 비교 · 브라우저 + 서버 · 흰배경 합성</div>
 
   <div class="controls">
     <button class="btn btn-upload" id="btnUpload">사진 업로드</button>
@@ -125,6 +125,14 @@
         modelSize: '~0.45 MB',
         cdnUrl: 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.18',
         description: 'Google MediaPipe · 초경량 · 비디오 최적화 (사진 약세)',
+      },
+      {
+        id: 'rembg-server',
+        name: 'rembg u2net (Python 서버)',
+        version: 'server',
+        modelSize: '~170 MB (u2net full)',
+        cdnUrl: '',
+        description: 'Python rembg · u2net 풀모델 · localhost:5000 서버 필요',
       },
     ];
 
@@ -296,7 +304,7 @@
                 const mx = Math.min(Math.floor(x * scaleX), w - 1);
                 const my = Math.min(Math.floor(y * scaleY), h - 1);
                 const maskVal = mask[my * w + mx];
-                imageData.data[(y * img.width + x) * 4 + 3] = maskVal > 0 ? 255 : 0;
+                imageData.data[(y * img.width + x) * 4 + 3] = maskVal === 0 ? 255 : 0;
               }
             }
             outCtx.putImageData(imageData, 0, 0);
@@ -306,11 +314,41 @@
       });
     }
 
+    async function runRembgServer(file) {
+      setStatus('rembg-server', '서버 전송 중...');
+      const formData = new FormData();
+      formData.append('file', file);
+      const resp = await fetch('http://localhost:5000/remove-bg', {
+        method: 'POST',
+        body: formData,
+      });
+      if (!resp.ok) throw new Error(`서버 응답 ${resp.status} — localhost:5000 실행 중인지 확인`);
+      return await resp.blob();
+    }
+
+    function compositeOnWhite(blob) {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+          const c = document.createElement('canvas');
+          c.width = img.width;
+          c.height = img.height;
+          const ctx = c.getContext('2d');
+          ctx.fillStyle = '#FFFFFF';
+          ctx.fillRect(0, 0, c.width, c.height);
+          ctx.drawImage(img, 0, 0);
+          c.toBlob(resolve, 'image/png');
+        };
+        img.src = URL.createObjectURL(blob);
+      });
+    }
+
     const runners = {
       imgly: runImgly,
       transformers: runTransformers,
       rembg: runRembg,
       mediapipe: runMediaPipe,
+      'rembg-server': runRembgServer,
     };
 
     // --- Benchmark Logic ---
@@ -335,27 +373,43 @@
       resultDiv.innerHTML = '';
       timingDiv.innerHTML = '';
 
-      const timings = { cold: null, warm: [] };
+      const timings = { cold: null, warm: null };
       const runner = runners[engineId];
 
       try {
-        for (let i = 0; i < uploadedFiles.length; i++) {
-          const file = uploadedFiles[i];
+        const file = uploadedFiles[0];
+
+        // Cold run (1회차)
+        setStatus(engineId, '1회차 (Cold) 처리 중...');
+        const t0 = performance.now();
+        const blob = await runner(file);
+        timings.cold = performance.now() - t0;
+
+        if (blob) {
+          const whiteBlob = await compositeOnWhite(blob);
+          const canvas = document.createElement('canvas');
+          const img = await loadImage(new File([whiteBlob], 'result.png'));
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0);
+          resultDiv.appendChild(canvas);
+        }
+
+        // Warm run (2회차)
+        setStatus(engineId, '2회차 (Warm) 처리 중...');
+        const t1 = performance.now();
+        await runner(file);
+        timings.warm = performance.now() - t1;
+
+        // 추가 이미지가 있으면 표시
+        for (let i = 1; i < uploadedFiles.length; i++) {
           setStatus(engineId, `이미지 ${i+1}/${uploadedFiles.length} 처리 중...`);
-
-          const t0 = performance.now();
-          const blob = await runner(file);
-          const elapsed = performance.now() - t0;
-
-          if (i === 0) {
-            timings.cold = elapsed;
-          } else {
-            timings.warm.push(elapsed);
-          }
-
-          if (blob) {
+          const extraBlob = await runner(uploadedFiles[i]);
+          if (extraBlob) {
+            const whiteBlob = await compositeOnWhite(extraBlob);
             const canvas = document.createElement('canvas');
-            const img = await loadImage(new File([blob], 'result.png'));
+            const img = await loadImage(new File([whiteBlob], 'result.png'));
             canvas.width = img.width;
             canvas.height = img.height;
             const ctx = canvas.getContext('2d');
@@ -364,12 +418,10 @@
           }
         }
 
-        const warmAvg = timings.warm.length > 0
-          ? timings.warm.reduce((a, b) => a + b, 0) / timings.warm.length
-          : null;
+        const warmAvg = timings.warm;
 
         const coldSec = (timings.cold / 1000).toFixed(1);
-        const warmSec = warmAvg ? (warmAvg / 1000).toFixed(1) : '-';
+        const warmSec = warmAvg != null ? (warmAvg / 1000).toFixed(1) : '-';
         const timingClass = timings.cold < 3000 ? 'timing-good'
           : timings.cold < 8000 ? 'timing-ok' : 'timing-slow';
 

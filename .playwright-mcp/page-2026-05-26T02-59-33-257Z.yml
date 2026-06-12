@@ -1,0 +1,211 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link "MONKOS" [ref=e4] [cursor=pointer]:
+        - /url: /
+        - text: MONKOS
+      - navigation [ref=e6]:
+        - link "Blog" [ref=e7] [cursor=pointer]:
+          - /url: /blog
+        - link "FAQ" [ref=e8] [cursor=pointer]:
+          - /url: /faq
+        - link "Gallery" [ref=e9] [cursor=pointer]:
+          - /url: /gallery
+        - link "Board" [ref=e10] [cursor=pointer]:
+          - /url: /board
+        - link "Guide" [ref=e11] [cursor=pointer]:
+          - /url: /guide
+        - link "Pricing" [ref=e12] [cursor=pointer]:
+          - /url: /pricing
+  - generic [ref=e13]:
+    - generic [ref=e14]:
+      - generic [ref=e15]: 🌐 GLOBAL PHOTO SPEC GUIDE
+      - heading "증명사진 규격 가이드" [level=1] [ref=e16]
+      - paragraph [ref=e17]: 전세계 200국가 이상의 여권, 비자 등 증명사진 규격 정보 제공 및 규격 맞춤 서비스.
+      - generic [ref=e18]:
+        - generic [ref=e19]:
+          - generic [ref=e20]: 206+
+          - generic [ref=e21]: 국가
+        - generic [ref=e22]:
+          - generic [ref=e23]: 445+
+          - generic [ref=e24]: 규격
+        - generic [ref=e25]:
+          - generic [ref=e26]: 35+
+          - generic [ref=e27]: 공식 검증
+    - generic [ref=e28]:
+      - text: 🔍
+      - searchbox "국가명 검색..." [ref=e29]
+    - generic [ref=e98]:
+      - button "← 대륙 선택으로" [ref=e100] [cursor=pointer]
+      - generic [ref=e101]:
+        - link "🇰🇷 한국 여권·신분증 · 3.5 × 4.5cm" [ref=e102] [cursor=pointer]:
+          - /url: /specs/passport/korea
+          - generic [ref=e103]: 🇰🇷
+          - generic [ref=e104]: 한국
+          - generic [ref=e105]: 여권·신분증 · 3.5 × 4.5cm
+        - link "🇯🇵 日本 パスポート · 3.5 × 4.5cm" [ref=e106] [cursor=pointer]:
+          - /url: /specs/passport/japan
+          - generic [ref=e107]: 🇯🇵
+          - generic [ref=e108]: 日本
+          - generic [ref=e109]: パスポート · 3.5 × 4.5cm
+        - link "🇨🇳 중국 여권 · 3.3 × 4.8cm" [ref=e110] [cursor=pointer]:
+          - /url: /specs/passport/cn
+          - generic [ref=e111]: 🇨🇳
+          - generic [ref=e112]: 중국
+          - generic [ref=e113]: 여권 · 3.3 × 4.8cm
+        - link "🇸🇬 싱가포르 여권 · 3.5 × 4.5cm" [ref=e114] [cursor=pointer]:
+          - /url: /specs/passport/sg
+          - generic [ref=e115]: 🇸🇬
+          - generic [ref=e116]: 싱가포르
+          - generic [ref=e117]: 여권 · 3.5 × 4.5cm
+        - link "🇮🇳 인도 여권 · 3.5 × 4.5cm" [ref=e118] [cursor=pointer]:
+          - /url: /specs/passport/in
+          - generic [ref=e119]: 🇮🇳
+          - generic [ref=e120]: 인도
+          - generic [ref=e121]: 여권 · 3.5 × 4.5cm
+        - link "🇹🇼 대만 여권 · 3.5 × 4.5cm" [ref=e122] [cursor=pointer]:
+          - /url: /specs/passport/tw
+          - generic [ref=e123]: 🇹🇼
+          - generic [ref=e124]: 대만
+          - generic [ref=e125]: 여권 · 3.5 × 4.5cm
+        - link "🇭🇰 홍콩 여권 · 4 × 5cm" [ref=e126] [cursor=pointer]:
+          - /url: /specs/passport/hk
+          - generic [ref=e127]: 🇭🇰
+          - generic [ref=e128]: 홍콩
+          - generic [ref=e129]: 여권 · 4 × 5cm
+        - link "🇲🇴 마카오 여권 · 3.5 × 4.5cm" [ref=e130] [cursor=pointer]:
+          - /url: /specs/passport/mo
+          - generic [ref=e131]: 🇲🇴
+          - generic [ref=e132]: 마카오
+          - generic [ref=e133]: 여권 · 3.5 × 4.5cm
+        - link "🇹🇭 태국 여권 · 3.5 × 4.5cm" [ref=e134] [cursor=pointer]:
+          - /url: /specs/passport/th
+          - generic [ref=e135]: 🇹🇭
+          - generic [ref=e136]: 태국
+          - generic [ref=e137]: 여권 · 3.5 × 4.5cm
+        - link "🇻🇳 베트남 여권 · 4 × 6cm" [ref=e138] [cursor=pointer]:
+          - /url: /specs/passport/vn
+          - generic [ref=e139]: 🇻🇳
+          - generic [ref=e140]: 베트남
+          - generic [ref=e141]: 여권 · 4 × 6cm
+        - link "🇮🇩 인도네시아 여권 · 4 × 6cm" [ref=e142] [cursor=pointer]:
+          - /url: /specs/passport/id
+          - generic [ref=e143]: 🇮🇩
+          - generic [ref=e144]: 인도네시아
+          - generic [ref=e145]: 여권 · 4 × 6cm
+        - link "🇲🇾 말레이시아 여권 · 3.5 × 5cm" [ref=e146] [cursor=pointer]:
+          - /url: /specs/passport/my
+          - generic [ref=e147]: 🇲🇾
+          - generic [ref=e148]: 말레이시아
+          - generic [ref=e149]: 여권 · 3.5 × 5cm
+        - link "🇵🇭 필리핀 여권 · 3.5 × 4.5cm" [ref=e150] [cursor=pointer]:
+          - /url: /specs/passport/ph
+          - generic [ref=e151]: 🇵🇭
+          - generic [ref=e152]: 필리핀
+          - generic [ref=e153]: 여권 · 3.5 × 4.5cm
+        - link "🇲🇲 미얀마 여권 · 3.5 × 4.5cm" [ref=e154] [cursor=pointer]:
+          - /url: /specs/passport/mm
+          - generic [ref=e155]: 🇲🇲
+          - generic [ref=e156]: 미얀마
+          - generic [ref=e157]: 여권 · 3.5 × 4.5cm
+        - link "🇰🇭 캄보디아 여권 · 4 × 6cm" [ref=e158] [cursor=pointer]:
+          - /url: /specs/passport/kh
+          - generic [ref=e159]: 🇰🇭
+          - generic [ref=e160]: 캄보디아
+          - generic [ref=e161]: 여권 · 4 × 6cm
+        - link "🇱🇦 라오스 여권 · 4 × 6cm" [ref=e162] [cursor=pointer]:
+          - /url: /specs/passport/la
+          - generic [ref=e163]: 🇱🇦
+          - generic [ref=e164]: 라오스
+          - generic [ref=e165]: 여권 · 4 × 6cm
+        - link "🇧🇩 방글라데시 여권 · 4.5 × 5.5cm" [ref=e166] [cursor=pointer]:
+          - /url: /specs/passport/bd
+          - generic [ref=e167]: 🇧🇩
+          - generic [ref=e168]: 방글라데시
+          - generic [ref=e169]: 여권 · 4.5 × 5.5cm
+        - link "🇱🇰 스리랑카 여권 · 3.5 × 4.5cm" [ref=e170] [cursor=pointer]:
+          - /url: /specs/passport/lk
+          - generic [ref=e171]: 🇱🇰
+          - generic [ref=e172]: 스리랑카
+          - generic [ref=e173]: 여권 · 3.5 × 4.5cm
+        - link "🇳🇵 네팔 여권 · 3.5 × 4.5cm" [ref=e174] [cursor=pointer]:
+          - /url: /specs/passport/np
+          - generic [ref=e175]: 🇳🇵
+          - generic [ref=e176]: 네팔
+          - generic [ref=e177]: 여권 · 3.5 × 4.5cm
+        - link "🇵🇰 파키스탄 여권 · 3.5 × 4.5cm" [ref=e178] [cursor=pointer]:
+          - /url: /specs/passport/pk
+          - generic [ref=e179]: 🇵🇰
+          - generic [ref=e180]: 파키스탄
+          - generic [ref=e181]: 여권 · 3.5 × 4.5cm
+        - link "🇦🇫 아프가니스탄 여권 · 4 × 4.5cm" [ref=e182] [cursor=pointer]:
+          - /url: /specs/passport/af
+          - generic [ref=e183]: 🇦🇫
+          - generic [ref=e184]: 아프가니스탄
+          - generic [ref=e185]: 여권 · 4 × 4.5cm
+        - link "🇲🇳 몽골 여권 · 3.5 × 4.5cm" [ref=e186] [cursor=pointer]:
+          - /url: /specs/passport/mn
+          - generic [ref=e187]: 🇲🇳
+          - generic [ref=e188]: 몽골
+          - generic [ref=e189]: 여권 · 3.5 × 4.5cm
+        - link "🇰🇿 카자흐스탄 여권 · 3.5 × 4.5cm" [ref=e190] [cursor=pointer]:
+          - /url: /specs/passport/kz
+          - generic [ref=e191]: 🇰🇿
+          - generic [ref=e192]: 카자흐스탄
+          - generic [ref=e193]: 여권 · 3.5 × 4.5cm
+        - link "🇺🇿 우즈베키스탄 여권 · 3.5 × 4.5cm" [ref=e194] [cursor=pointer]:
+          - /url: /specs/passport/uz
+          - generic [ref=e195]: 🇺🇿
+          - generic [ref=e196]: 우즈베키스탄
+          - generic [ref=e197]: 여권 · 3.5 × 4.5cm
+        - link "🇰🇬 키르기스스탄 여권 · 4 × 6cm" [ref=e198] [cursor=pointer]:
+          - /url: /specs/passport/kg
+          - generic [ref=e199]: 🇰🇬
+          - generic [ref=e200]: 키르기스스탄
+          - generic [ref=e201]: 여권 · 4 × 6cm
+        - link "🇹🇯 타지키스탄 여권 · 3.5 × 4.5cm" [ref=e202] [cursor=pointer]:
+          - /url: /specs/passport/tj
+          - generic [ref=e203]: 🇹🇯
+          - generic [ref=e204]: 타지키스탄
+          - generic [ref=e205]: 여권 · 3.5 × 4.5cm
+        - link "🇹🇲 투르크메니스탄 여권 · 3 × 4cm" [ref=e206] [cursor=pointer]:
+          - /url: /specs/passport/tm
+          - generic [ref=e207]: 🇹🇲
+          - generic [ref=e208]: 투르크메니스탄
+          - generic [ref=e209]: 여권 · 3 × 4cm
+        - link "🇧🇳 브루나이 여권 · 4 × 5.2cm" [ref=e210] [cursor=pointer]:
+          - /url: /specs/passport/bn
+          - generic [ref=e211]: 🇧🇳
+          - generic [ref=e212]: 브루나이
+          - generic [ref=e213]: 여권 · 4 × 5.2cm
+        - link "🇹🇱 동티모르 여권 · 3.5 × 4.5cm" [ref=e214] [cursor=pointer]:
+          - /url: /specs/passport/tl
+          - generic [ref=e215]: 🇹🇱
+          - generic [ref=e216]: 동티모르
+          - generic [ref=e217]: 여권 · 3.5 × 4.5cm
+        - link "🇰🇵 북한 여권 · 3.5 × 4.5cm" [ref=e218] [cursor=pointer]:
+          - /url: /specs/passport/kp
+          - generic [ref=e219]: 🇰🇵
+          - generic [ref=e220]: 북한
+          - generic [ref=e221]: 여권 · 3.5 × 4.5cm
+        - link "🇧🇹 부탄 여권 · 3.5 × 4.5cm" [ref=e222] [cursor=pointer]:
+          - /url: /specs/passport/bt
+          - generic [ref=e223]: 🇧🇹
+          - generic [ref=e224]: 부탄
+          - generic [ref=e225]: 여권 · 3.5 × 4.5cm
+        - link "🇲🇻 몰디브 여권 · 3.5 × 4.5cm" [ref=e226] [cursor=pointer]:
+          - /url: /specs/passport/mv
+          - generic [ref=e227]: 🇲🇻
+          - generic [ref=e228]: 몰디브
+          - generic [ref=e229]: 여권 · 3.5 × 4.5cm
+    - generic [ref=e53]: © 2026 MONKOS · 규격 정보는 공식 출처 기반 검증. 최종 규정은 발급 기관 확인.
+  - contentinfo [ref=e54]:
+    - text: © 2026 MONKOS. All rights reserved.
+    - link "Terms" [ref=e55] [cursor=pointer]:
+      - /url: /terms.html
+    - text: ·
+    - link "Privacy" [ref=e56] [cursor=pointer]:
+      - /url: /privacy.html
+    - text: ·
+    - link "Refund" [ref=e57] [cursor=pointer]:
+      - /url: /refund.html

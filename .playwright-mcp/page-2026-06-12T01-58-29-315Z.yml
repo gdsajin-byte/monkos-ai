@@ -1,0 +1,851 @@
+- main [ref=e3]:
+  - generic [ref=e4]:
+    - generic [ref=e7]:
+      - generic [ref=e8]:
+        - link "Passport Photo logo" [ref=e10] [cursor=pointer]:
+          - /url: /
+          - img "Passport Photo logo" [ref=e11]
+        - list [ref=e36]:
+          - listitem [ref=e37]:
+            - button "Resources" [ref=e38] [cursor=pointer]:
+              - generic [ref=e39]: Resources
+              - img [ref=e40]
+          - listitem [ref=e43]:
+            - button "Popular Documents" [ref=e44] [cursor=pointer]:
+              - generic [ref=e45]: Popular Documents
+              - img [ref=e46]
+          - listitem [ref=e49]:
+            - button "How it Works" [ref=e50] [cursor=pointer]:
+              - generic [ref=e51]: How it Works
+              - img [ref=e52]
+          - listitem [ref=e55]:
+            - button "About" [ref=e56] [cursor=pointer]:
+              - generic [ref=e57]: About
+              - img [ref=e58]
+      - generic:
+        - generic:
+          - button "Upload photo"
+    - generic [ref=e66]:
+      - generic [ref=e67]:
+        - heading "Passport Photo Maker [+Expert Verification]" [level=1] [ref=e68]
+        - paragraph [ref=e71]: Time-saving, efficient, and stress-free—that’s how taking ID photos with our passport photo tool is! Try it now and experience the convenience of pictures done from home.
+      - generic [ref=e74]:
+        - generic [ref=e79]: Drag & drop your photo or
+        - generic [ref=e80]:
+          - button "Upload photo" [ref=e81] [cursor=pointer]
+          - button "Take photo" [ref=e82] [cursor=pointer]
+      - generic [ref=e83]:
+        - generic [ref=e85]: Excellent
+        - generic [ref=e94]: 19335 reviews on
+      - generic [ref=e96]:
+        - img "Welcome doodle 1" [ref=e98]
+        - img "Welcome doodle 2" [ref=e100]
+        - img "Welcome doodle 3" [ref=e102]
+        - generic [ref=e103]:
+          - generic [ref=e105]: 2 in
+          - generic [ref=e107]: 2 in
+          - generic [ref=e109]:
+            - img "Passport Photo Maker [+Expert Verification]" [ref=e110]
+            - img "Passport Photo Maker [+Expert Verification]" [ref=e111]
+            - generic:
+              - img
+            - slider [ref=e112]: "50"
+    - generic [ref=e119]:
+      - paragraph [ref=e120]: As seen in
+      - img "Bloomberg logo" [ref=e122]
+      - img "New York Times logo" [ref=e124]
+      - img "Forbes logo" [ref=e126]
+      - img "Business Insider logo" [ref=e128]
+      - img "USA Today logo" [ref=e130]
+      - img "INC. logo" [ref=e132]
+      - img "HuffPost logo" [ref=e134]
+      - img "CNN logo" [ref=e136]
+    - generic [ref=e145]:
+      - heading "US Passport Size Photo Requirements" [level=2] [ref=e146]
+      - paragraph [ref=e147]: Your photo must meet specific criteria set by the US government for passport photos.
+      - generic [ref=e163]:
+        - generic [ref=e164] [cursor=pointer]:
+          - img [ref=e166]
+          - generic [ref=e169]:
+            - term [ref=e170]:
+              - paragraph [ref=e171]: Print size
+            - definition [ref=e172]:
+              - paragraph [ref=e173]: 2x2 in 51x51 mm
+        - generic [ref=e174] [cursor=pointer]:
+          - img [ref=e176]
+          - generic [ref=e179]:
+            - term [ref=e180]:
+              - paragraph [ref=e181]: Digital size
+            - definition [ref=e182]:
+              - paragraph [ref=e183]: min. 600x600 pixels
+        - generic [ref=e184] [cursor=pointer]:
+          - img [ref=e186]
+          - generic [ref=e189]:
+            - term [ref=e190]:
+              - paragraph [ref=e191]: Head size
+            - definition [ref=e192]:
+              - paragraph [ref=e193]: 1 - 13/8 in 25-35 mm
+        - generic [ref=e194] [cursor=pointer]:
+          - img [ref=e196]
+          - generic [ref=e199]:
+            - term [ref=e200]:
+              - paragraph [ref=e201]: Background color
+            - definition [ref=e202]:
+              - paragraph [ref=e203]: White or off-white
+        - generic [ref=e204] [cursor=pointer]:
+          - img [ref=e206]
+          - generic [ref=e209]:
+            - term [ref=e210]:
+              - paragraph [ref=e211]: Expression
+            - definition [ref=e212]:
+              - paragraph [ref=e213]: mouth closed, eyes towards camera
+        - generic [ref=e214] [cursor=pointer]:
+          - img [ref=e216]
+          - generic [ref=e219]:
+            - term [ref=e220]:
+              - paragraph [ref=e221]: Lighting
+            - definition [ref=e222]:
+              - paragraph [ref=e223]: face evenly lit, no shadows
+      - generic [ref=e224]:
+        - 'link "Source: US Department of State" [ref=e226] [cursor=pointer]':
+          - /url: https://travel.state.gov/content/travel/en/passports/how-apply/photos.html
+        - generic [ref=e227]:
+          - generic [ref=e229] [cursor=pointer]:
+            - generic [ref=e230]: Reviewed by
+            - generic [ref=e233]: Mateusz Chodakowski
+            - generic [ref=e234]:
+              - img [ref=e236]
+              - generic [ref=e238]: Expert verified
+          - link "Learn more about our experts" [ref=e240] [cursor=pointer]:
+            - /url: https://passport-photo.online/blog/editorial-process/
+            - text: Learn more about our experts
+            - img [ref=e241]
+    - generic [ref=e250]:
+      - generic [ref=e251]: How Our US Passport Photo Tool Works
+      - generic [ref=e253]:
+        - button "Upload photo" [ref=e256] [cursor=pointer]
+        - generic [ref=e257]:
+          - generic [ref=e259] [cursor=pointer]:
+            - generic [ref=e261]: "1"
+            - generic [ref=e262]:
+              - generic [ref=e263]: Take the Shot
+              - generic [ref=e264]: Choose a self-portrait (or take a new one with your smartphone) and send it to us via the mobile app or web service.
+          - generic [ref=e268] [cursor=pointer]:
+            - generic [ref=e270]: "2"
+            - generic [ref=e271]:
+              - generic [ref=e272]: Wait for Automated Adjustments
+              - generic [ref=e273]: Our passport photo tool will crop, resize, and adjust the background for you.
+          - generic [ref=e276] [cursor=pointer]:
+            - generic [ref=e278]: "3"
+            - generic [ref=e279]:
+              - generic [ref=e280]: Receive an Expert Review
+              - generic [ref=e281]: Within 60 seconds, one of our experts will review your photo to ensure it meets US Department of State requirements.
+          - generic [ref=e284] [cursor=pointer]:
+            - generic [ref=e286]: "4"
+            - generic [ref=e287]:
+              - generic [ref=e288]: Download Your Digital Image
+              - generic [ref=e289]: Once approved, you'll receive a digital copy of your passport-size photo. If you need printouts, we also offer home delivery.
+    - generic [ref=e296]:
+      - generic [ref=e297]: Passport Photo Editor in Action
+      - generic [ref=e298]: See how our passport-size photo maker turns ordinary pictures into passport photos. Then, try uploading your own image and get a free preview.
+      - generic [ref=e299]:
+        - button "plus icon Try your own" [ref=e325] [cursor=pointer]:
+          - img "plus icon" [ref=e327]
+          - text: Try your own
+        - generic [ref=e333]:
+          - img "Icao icon" [ref=e335]
+          - generic [ref=e336]: Photos taken with Passport Photo Online comply with the standards set by the US Department of State.
+        - generic [ref=e337]:
+          - generic [ref=e340]: Face centered
+          - generic [ref=e343]: Photo cropped
+          - generic [ref=e346]: Lighting evened
+          - generic [ref=e349]: Background removed
+    - generic [ref=e355]:
+      - generic [ref=e356]: What You Get by Using Our Tool?
+      - generic [ref=e358]:
+        - generic [ref=e359]:
+          - button "Digital photo" [ref=e360] [cursor=pointer]:
+            - generic [ref=e362]: Digital photo
+          - button "Ready-to-print template" [ref=e365] [cursor=pointer]:
+            - generic [ref=e367]: Ready-to-print template
+          - button "Printout delivery (optional)" [ref=e369] [cursor=pointer]:
+            - generic [ref=e371]: Printout delivery (optional)
+        - generic [ref=e375]:
+          - paragraph [ref=e379]: You'll receive a perfectly sized digital photo, which you can attach to an online application for your first passport or a passport renewal.
+          - button "Upload photo" [ref=e380] [cursor=pointer]
+    - generic [ref=e385]:
+      - generic [ref=e386]:
+        - generic [ref=e387]: What Makes Our Passport Photo Converter Stand Out?
+        - paragraph [ref=e389]: Discover where to get passport photos in the comparison table below and see why we excel.
+      - table [ref=e393]:
+        - rowgroup [ref=e394]:
+          - row "Best deal" [ref=e395]:
+            - columnheader [ref=e396]
+            - columnheader "Best deal" [ref=e397]:
+              - generic [ref=e398]: Best deal
+            - columnheader [ref=e399]
+            - columnheader [ref=e400]
+        - rowgroup [ref=e401]:
+          - row "Passport Photo logo Person.png Your local photographer settings-line.png Other tools or DYI" [ref=e402]:
+            - cell [ref=e403]
+            - cell "Passport Photo logo" [ref=e406]:
+              - img "Passport Photo logo" [ref=e407]
+            - cell "Person.png Your local photographer" [ref=e432]:
+              - generic [ref=e433]:
+                - generic:
+                  - img "Person.png"
+                - paragraph [ref=e435]: Your local photographer
+            - cell "settings-line.png Other tools or DYI" [ref=e436]:
+              - generic [ref=e437]:
+                - generic:
+                  - img "settings-line.png"
+                - paragraph [ref=e439]: Other tools or DYI
+          - row "image-avatar.png Choose your best shot 01-Icon.png 01-Icon-red.png 01-Icon.png" [ref=e440]:
+            - cell "image-avatar.png Choose your best shot" [ref=e441]:
+              - generic [ref=e442]:
+                - img "image-avatar.png" [ref=e444]
+                - paragraph [ref=e446]: Choose your best shot
+            - cell "01-Icon.png" [ref=e447]:
+              - generic [ref=e448]:
+                - generic [ref=e449]:
+                  - img "01-Icon.png"
+                - generic:
+                  - paragraph
+            - cell "01-Icon-red.png" [ref=e450]:
+              - generic [ref=e451]:
+                - generic:
+                  - img "01-Icon-red.png"
+                - generic:
+                  - paragraph
+            - cell "01-Icon.png" [ref=e452]:
+              - generic [ref=e453]:
+                - generic:
+                  - img "01-Icon.png"
+                - generic:
+                  - paragraph
+          - row "Normal, Print.png Printed photos At home, at store or delivered from us From the photographer At home or at a store" [ref=e454]:
+            - cell "Normal, Print.png Printed photos" [ref=e455]:
+              - generic [ref=e456]:
+                - img "Normal, Print.png" [ref=e458]
+                - paragraph [ref=e460]: Printed photos
+            - cell "At home, at store or delivered from us" [ref=e461]:
+              - paragraph [ref=e464]: At home, at store or delivered from us
+            - cell "From the photographer" [ref=e465]:
+              - paragraph [ref=e468]: From the photographer
+            - cell "At home or at a store" [ref=e469]:
+              - paragraph [ref=e472]: At home or at a store
+          - row "Checkbox.png Compliance guarantee 01-Icon.png 01-Icon.png 01-Icon-red.png" [ref=e473]:
+            - cell "Checkbox.png Compliance guarantee" [ref=e474]:
+              - generic [ref=e475]:
+                - img "Checkbox.png" [ref=e477]
+                - paragraph [ref=e479]: Compliance guarantee
+            - cell "01-Icon.png" [ref=e480]:
+              - generic [ref=e481]:
+                - generic [ref=e482]:
+                  - img "01-Icon.png"
+                - generic:
+                  - paragraph
+            - cell "01-Icon.png" [ref=e483]:
+              - generic [ref=e484]:
+                - generic:
+                  - img "01-Icon.png"
+                - generic:
+                  - paragraph
+            - cell "01-Icon-red.png" [ref=e485]:
+              - generic [ref=e486]:
+                - generic:
+                  - img "01-Icon-red.png"
+                - generic:
+                  - paragraph
+          - row "interface-edit-brush-2--brush-color-colors-design-paint-painting.png Skills needed No skills required No skills required Photo editing, photography" [ref=e487]:
+            - cell "interface-edit-brush-2--brush-color-colors-design-paint-painting.png Skills needed" [ref=e488]:
+              - generic [ref=e489]:
+                - img "interface-edit-brush-2--brush-color-colors-design-paint-painting.png" [ref=e491]
+                - paragraph [ref=e493]: Skills needed
+            - cell "No skills required" [ref=e494]:
+              - paragraph [ref=e497]: No skills required
+            - cell "No skills required" [ref=e498]:
+              - paragraph [ref=e501]: No skills required
+            - cell "Photo editing, photography" [ref=e502]:
+              - paragraph [ref=e505]: Photo editing, photography
+          - row "camera-photo.png Equipment needed Smartphone Travel to the photo shop Good camera, white wall, photo editing software" [ref=e506]:
+            - cell "camera-photo.png Equipment needed" [ref=e507]:
+              - generic [ref=e508]:
+                - img "camera-photo.png" [ref=e510]
+                - paragraph [ref=e512]: Equipment needed
+            - cell "Smartphone" [ref=e513]:
+              - paragraph [ref=e516]: Smartphone
+            - cell "Travel to the photo shop" [ref=e517]:
+              - paragraph [ref=e520]: Travel to the photo shop
+            - cell "Good camera, white wall, photo editing software" [ref=e521]:
+              - paragraph [ref=e524]: Good camera, white wall, photo editing software
+          - row "hugeicons_ai-innovation-02.png Al compliance check 01-Icon.png 01-Icon-red.png 01-Icon-red.png" [ref=e525]:
+            - cell "hugeicons_ai-innovation-02.png Al compliance check" [ref=e526]:
+              - generic [ref=e527]:
+                - img "hugeicons_ai-innovation-02.png" [ref=e529]
+                - paragraph [ref=e531]: Al compliance check
+            - cell "01-Icon.png" [ref=e532]:
+              - generic [ref=e533]:
+                - generic [ref=e534]:
+                  - img "01-Icon.png"
+                - generic:
+                  - paragraph
+            - cell "01-Icon-red.png" [ref=e535]:
+              - generic [ref=e536]:
+                - generic:
+                  - img "01-Icon-red.png"
+                - generic:
+                  - paragraph
+            - cell "01-Icon-red.png" [ref=e537]:
+              - generic [ref=e538]:
+                - generic:
+                  - img "01-Icon-red.png"
+                - generic:
+                  - paragraph
+          - row "interface-user-check--actions-close-checkmark-check-geometric-human-person-single-success-up-user.png Human expert compliance check 01-Icon.png 01-Icon.png 01-Icon-red.png" [ref=e539]:
+            - cell "interface-user-check--actions-close-checkmark-check-geometric-human-person-single-success-up-user.png Human expert compliance check" [ref=e540]:
+              - generic [ref=e541]:
+                - img "interface-user-check--actions-close-checkmark-check-geometric-human-person-single-success-up-user.png" [ref=e543]
+                - paragraph [ref=e545]: Human expert compliance check
+            - cell "01-Icon.png" [ref=e546]:
+              - generic [ref=e547]:
+                - generic [ref=e548]:
+                  - img "01-Icon.png"
+                - generic:
+                  - paragraph
+            - cell "01-Icon.png" [ref=e549]:
+              - generic [ref=e550]:
+                - generic:
+                  - img "01-Icon.png"
+                - generic:
+                  - paragraph
+            - cell "01-Icon-red.png" [ref=e551]:
+              - generic [ref=e552]:
+                - generic:
+                  - img "01-Icon-red.png"
+                - generic:
+                  - paragraph
+          - row "Frame 427322449.png Time 1 min 30 min (+travel time) 4 hours" [ref=e553]:
+            - cell "Frame 427322449.png Time" [ref=e554]:
+              - generic [ref=e555]:
+                - img "Frame 427322449.png" [ref=e557]
+                - paragraph [ref=e559]: Time
+            - cell "1 min" [ref=e560]:
+              - paragraph [ref=e563]: 1 min
+            - cell "30 min (+travel time)" [ref=e564]:
+              - paragraph [ref=e567]: 30 min (+travel time)
+            - cell "4 hours" [ref=e568]:
+              - paragraph [ref=e571]: 4 hours
+        - rowgroup [ref=e572]:
+          - row "Upload photo" [ref=e573]:
+            - cell [ref=e574]
+            - cell "Upload photo" [ref=e575]:
+              - button "Upload photo" [ref=e576] [cursor=pointer]
+            - cell [ref=e577]
+            - cell [ref=e578]
+    - generic [ref=e585]:
+      - heading "More People Now Use an Online Passport Photo Editor" [level=2] [ref=e586]
+      - generic [ref=e587]:
+        - generic [ref=e588]: Tired of going to a shop for photos? That outdated process is a thing of the past. Since 2020, over 1 million people have used Passport Photo Online for their ID photos. Just take your photo at home, upload it, and get a compliant photo in minutes.
+        - generic [ref=e591]:
+          - generic [ref=e596]: Drag & drop your photo or
+          - generic [ref=e597]:
+            - button "Upload photo" [ref=e598] [cursor=pointer]
+            - button "Take photo" [ref=e599] [cursor=pointer]
+      - generic [ref=e600]:
+        - generic [ref=e601]:
+          - generic [ref=e604]: Photos taken online
+          - generic [ref=e607]: Photos taken traditionally
+        - generic [ref=e608]:
+          - generic [ref=e612]: "2019"
+          - generic [ref=e613]:
+            - paragraph [ref=e618]: over 2.2 million photos taken online!
+            - generic [ref=e620]: "2025"
+    - generic [ref=e626]:
+      - heading "See What Our Customers Say about Us" [level=2] [ref=e627]
+      - generic [ref=e629]:
+        - generic [ref=e630]:
+          - generic [ref=e633]:
+            - paragraph [ref=e634]:
+              - strong [ref=e635]: This is a superb service
+            - paragraph [ref=e636]: This is a superb service. I ordered & then realised I needed hard copy photos instead. I got onto their support who were incredibly fast & efficient. They sent me the link & made it so easy & effortless. The photos arrived very quickly. I HIGHLY RECOMMEND them.
+          - generic [ref=e640]: Trustpilot
+        - generic [ref=e642]:
+          - generic [ref=e646]:
+            - paragraph [ref=e647]:
+              - strong [ref=e648]: Great
+            - paragraph [ref=e649]: Great, simple and easy. Photos accepted by the passport office
+          - generic [ref=e653]: Trustpilot
+        - generic [ref=e655]:
+          - generic [ref=e659]:
+            - paragraph [ref=e660]:
+              - strong [ref=e661]: Quick service
+            - paragraph [ref=e662]: I needed to get a passport photo after business hours when all the stores were closed. In a pinch, I was able to upload a selfie and the site edited it for me with a white background and sent me the image file by email within 10 minutes. It was great because I received an electronic file for quick upload and a printable version with two pictures side by side.
+            - paragraph [ref=e663]: It was exactly what I needed!
+          - generic [ref=e667]: Trustpilot
+        - generic [ref=e669]:
+          - generic [ref=e673]:
+            - paragraph [ref=e674]:
+              - strong [ref=e675]: This is a superb service
+            - paragraph [ref=e676]: This is a superb service. I ordered & then realised I needed hard copy photos instead. I got onto their support who were incredibly fast & efficient. They sent me the link & made it so easy & effortless. The photos arrived very quickly. I HIGHLY RECOMMEND them.
+          - generic [ref=e680]: Trustpilot
+        - generic [ref=e682]:
+          - generic [ref=e686]:
+            - paragraph [ref=e687]:
+              - strong [ref=e688]: Great
+            - paragraph [ref=e689]: Great, simple and easy. Photos accepted by the passport office
+          - generic [ref=e693]: Trustpilot
+        - generic [ref=e695]:
+          - generic [ref=e699]:
+            - paragraph [ref=e700]:
+              - strong [ref=e701]: Quick service
+            - paragraph [ref=e702]: I needed to get a passport photo after business hours when all the stores were closed. In a pinch, I was able to upload a selfie and the site edited it for me with a white background and sent me the image file by email within 10 minutes. It was great because I received an electronic file for quick upload and a printable version with two pictures side by side.
+            - paragraph [ref=e703]: It was exactly what I needed!
+          - generic [ref=e707]: Trustpilot
+        - generic [ref=e709]:
+          - generic [ref=e713]:
+            - paragraph [ref=e714]:
+              - strong [ref=e715]: This is a superb service
+            - paragraph [ref=e716]: This is a superb service. I ordered & then realised I needed hard copy photos instead. I got onto their support who were incredibly fast & efficient. They sent me the link & made it so easy & effortless. The photos arrived very quickly. I HIGHLY RECOMMEND them.
+          - generic [ref=e720]: Trustpilot
+        - generic [ref=e722]:
+          - generic [ref=e726]:
+            - paragraph [ref=e727]:
+              - strong [ref=e728]: Great
+            - paragraph [ref=e729]: Great, simple and easy. Photos accepted by the passport office
+          - generic [ref=e733]: Trustpilot
+        - generic [ref=e735]:
+          - generic [ref=e739]:
+            - paragraph [ref=e740]:
+              - strong [ref=e741]: Quick service
+            - paragraph [ref=e742]: I needed to get a passport photo after business hours when all the stores were closed. In a pinch, I was able to upload a selfie and the site edited it for me with a white background and sent me the image file by email within 10 minutes. It was great because I received an electronic file for quick upload and a printable version with two pictures side by side.
+            - paragraph [ref=e743]: It was exactly what I needed!
+          - generic [ref=e747]: Trustpilot
+      - generic [ref=e750]:
+        - button [ref=e751] [cursor=pointer]:
+          - img [ref=e752]
+        - button [ref=e754] [cursor=pointer]:
+          - img [ref=e755]
+    - generic [ref=e762]:
+      - generic [ref=e763]: Meet Our Team
+      - generic [ref=e764]:
+        - generic [ref=e766]:
+          - generic [ref=e767]:
+            - generic [ref=e771]: Mateusz Chodakowski
+            - generic [ref=e772]: Passport Photography Expert
+            - paragraph [ref=e774]: Mateusz is a seasoned specialist in biometric photography with over 5 years of hands-on experience. As a member of the prestigious British Institute of Professional Photography (BIPP) and the Association of Photographers (AOP), he has helped thousands of clients worldwide capture compliant photos for official documents.
+          - generic [ref=e776]:
+            - text: •
+            - paragraph [ref=e778]:
+              - text: Our experts are
+              - strong [ref=e779]: available 24/7
+              - text: to assist with your photo.
+        - text: • • • • • •
+        - generic [ref=e781]:
+          - generic [ref=e782] [cursor=pointer]:
+            - generic [ref=e785]: Mateusz Chodakowski
+            - generic [ref=e786]: Passport Photography Expert
+          - generic [ref=e787] [cursor=pointer]:
+            - generic [ref=e790]: Roxana Grabowska
+            - generic [ref=e791]: Writer
+          - generic [ref=e792] [cursor=pointer]:
+            - generic [ref=e795]: Karolina Młodzka
+            - generic [ref=e796]: Passport Compliance Expert
+          - generic [ref=e797] [cursor=pointer]:
+            - generic [ref=e800]: Simon Wojtyczka
+            - generic [ref=e801]: Writer
+          - generic [ref=e802] [cursor=pointer]:
+            - generic [ref=e805]: Sylwia Green
+            - generic [ref=e806]: Writer
+          - generic [ref=e807] [cursor=pointer]:
+            - generic [ref=e810]: Dżesika (Jess) Szerszeń
+            - generic [ref=e811]: Passport Photography Expert
+    - generic [ref=e817]:
+      - heading "Why We’re like No Other Passport Photo Maker" [level=2] [ref=e818]
+      - generic [ref=e819]:
+        - generic [ref=e820]:
+          - generic [ref=e821]:
+            - generic [ref=e822]: 0%
+            - paragraph [ref=e824]:
+              - text: of photos are reviewed by our experts within
+              - strong [ref=e825]: one minute
+              - text: of purchase.
+          - generic [ref=e826]:
+            - generic [ref=e827]: 0%
+            - paragraph [ref=e829]:
+              - text: of our customers receive a compliant photo
+              - strong [ref=e830]: within 15 minutes
+              - text: of placing an order.
+          - generic [ref=e831]:
+            - generic [ref=e832]: 0K
+            - paragraph [ref=e834]:
+              - text: photos are processed
+              - strong [ref=e835]: daily
+              - text: by our passport generator on average.
+        - img "What sets us apart" [ref=e837]
+      - paragraph [ref=e839]: One of our qualified experts will manually review your submitted photo to ensure it meets official requirements. If something is off, we'll help you to fix the issue at no extra cost.
+    - generic [ref=e849]:
+      - generic [ref=e850]: "Last update: 5/8/2025"
+      - generic [ref=e852]:
+        - generic [ref=e854] [cursor=pointer]:
+          - generic [ref=e855]: Written by
+          - generic [ref=e858]: Roxana Grabowska
+        - generic [ref=e862] [cursor=pointer]:
+          - generic [ref=e863]: Reviewed by
+          - generic [ref=e866]: Mateusz Chodakowski
+          - generic [ref=e867]:
+            - img [ref=e869]
+            - generic [ref=e871]: Expert verified
+      - heading "Passport Photo Maker—All You Need to Know" [level=2] [ref=e872]
+      - generic [ref=e874]:
+        - paragraph [ref=e875]: Making appointments, traveling to the passport office, or waiting in lines are now a thing of the past. Let us introduce you to Passport Photo Online—your professional pocket-size passport photo tool.
+        - paragraph [ref=e876]: Thanks to this passport photo maker, you can prepare photos in a matter of minutes from home. And they’re just a click away—all work is on our side. Read on to discover more!
+        - heading "How to use our passport photo tool" [level=3] [ref=e877]
+        - paragraph [ref=e878]:
+          - text: Our passport photo generator is available for you as a web-based platform or a passport photo app for
+          - link "Android" [ref=e879] [cursor=pointer]:
+            - /url: https://play.google.com/store/apps/details?id=online.passportphoto.visa.id.app&hl=en_us&pli=1
+          - text: or
+          - link "iOS" [ref=e880] [cursor=pointer]:
+            - /url: https://apps.apple.com/us/app/passport-photo-id-photo-aid/id1500544448
+          - text: . The steps for getting your passport photo with us are exactly the same. Follow these instructions to ensure you’ll end up with a
+          - strong [ref=e881]: 100% compliant photo
+          - text: .
+        - 'heading "Step #1: Provide us with a photo" [level=4] [ref=e882]'
+        - paragraph [ref=e883]:
+          - text: Whether you decide to use our website or a mobile app, you must provide us with a proper photo. You don’t have to worry about the background—just find a
+          - strong [ref=e884]: well-lit spot
+          - text: and take a picture with a smartphone or a digital camera. Remember you need to keep
+          - strong [ref=e885]: your head straight
+          - text: and have a
+          - strong [ref=e886]: neutral facial expression
+          - text: .
+        - paragraph [ref=e887]:
+          - img "The passport photo maker app view."
+        - 'heading "Step #2: Go through the initial check" [level=4] [ref=e888]'
+        - paragraph [ref=e889]:
+          - text: Your photo is
+          - strong [ref=e890]: automatically checked
+          - text: by our advanced
+          - strong [ref=e891]: AI technology
+          - text: . It ensures that your image has proper dimensions (after cropping and resizing it to your desired document), your face is recognizable, and you’re the only person in the picture.
+        - paragraph [ref=e892]:
+          - text: The initial check will also show you the proper passport photo size—follow them (especially the head size) if your photo happens to be rejected at this point. You can retake your picture
+          - strong [ref=e893]: as many times
+          - text: as you want!
+        - paragraph [ref=e894]:
+          - img "The initial check of your passport photo compatibility done by our app’s AI technology."
+        - 'heading "Step #3: Go through the checkout" [level=4] [ref=e895]'
+        - paragraph [ref=e896]:
+          - text: If you’re happy with the result, proceed to checkout—there, you’ll have a choice between a digital passport image (and a ready-to-print template) or printed high-quality photos delivered to your door within 2–3 business days (
+          - strong [ref=e897]: for free
+          - text: ).
+        - paragraph [ref=e898]:
+          - text: A digital passport photo costs $16.95.
+          - strong [ref=e899]: Please note
+          - text: that if you choose “printed” in your checkout, you’ll receive a digital image at its full price
+          - strong [ref=e900]: AND
+          - text: two printed passport pictures for
+          - strong [ref=e901]: only $3.00
+          - text: . That way, you’ll pay $19.95 in total.
+        - paragraph [ref=e902]: You’ll receive your digital passport photo immediately after processing the payment. We’ll send it to you along with a 4x6-inch template to print on your email address. And you’ll receive your passport photo printouts at your door in up to 3 business days.
+        - paragraph [ref=e903]:
+          - strong [ref=e904]: Note
+          - text: ": If you need more than two photos, you can choose the option of"
+          - strong [ref=e905]: four photos
+          - text: ($2.50 extra) or
+          - strong [ref=e906]: six photos
+          - text: ($4.00 extra).
+        - paragraph [ref=e907]:
+          - img "The checkout view of our passport photo tool."
+        - 'heading "Step #4: Wait until our expert verifies your photo" [level=4] [ref=e908]'
+        - paragraph [ref=e909]:
+          - text: We want to ensure that your passport picture meets all official requirements. That’s why it also goes through an
+          - strong [ref=e910]: expert review process
+          - text: . If some of your picture’s elements are missing or not in line with the regulations, we’ll inform you about that. You can then retake your photo for free, and we’ll repeat the same process.
+        - paragraph [ref=e911]:
+          - text: Our photo experts carefully review every photograph taken with our passport photo tool. In the unfortunate case of your photo being rejected by the authorities, we guarantee a
+          - strong [ref=e912]: 200% refund
+          - text: .
+        - 'heading "Step #5: Your perfect passport photos are on the way!" [level=4] [ref=e913]'
+        - paragraph [ref=e914]: And there it is—a perfect photo for your passport is ready for delivery!
+        - paragraph [ref=e915]: You can enjoy the results immediately with a digital image sent to your inbox. It’s ready for any online application, but if you need the paper one, your high-quality passport photo printouts are only 3 business days away!
+        - paragraph [ref=e916]: We sincerely hope that our passport photo tool meets your expectations!
+        - paragraph [ref=e917]:
+          - img "The end result—fully compliant US passport photos done with our passport photo maker."
+        - heading "Benefits of using our passport size photo maker" [level=3] [ref=e918]
+        - paragraph [ref=e919]: As you can see, using Passport Photo Online is as easy as 1-2-3. But what’s hiding behind your perfect passport pictures? Let us show you how many features are compiled within this one passport photo tool.
+    - generic [ref=e928]:
+      - paragraph [ref=e930]: The passport photo online process was easy to follow, and I was surprised at how quickly my photo was reviewed to meet all requirements and then available to me for downloading.
+      - generic [ref=e931]:
+        - paragraph [ref=e934]: Tamara (US)
+        - link "View full review on" [ref=e935] [cursor=pointer]:
+          - /url: https://www.trustpilot.com/reviews/6553d5806de50ec92f2d05cd
+          - generic [ref=e936]: View full review on
+    - button "Try our service now!" [ref=e944] [cursor=pointer]
+    - generic [ref=e953]:
+      - heading "Passport size photo converter" [level=4] [ref=e954]
+      - paragraph [ref=e955]: First of all, you can transform any picture—within the official regulations—into a passport photo. You can take a photo in your garden (but be careful about the shadows), in your living room, or your office. Then, our passport photo tool will crop and resize your photograph so that it fits the requirements of your chosen document.
+      - heading "Passport photo editor" [level=4] [ref=e956]
+      - paragraph [ref=e957]: While it’s forbidden to enhance or alter your passport photo in any way, you can still edit your photo and retake it as many times as you need. Thanks to our passport photo tool, it’s possible to preview your picture and decide if you need another snapshot.
+      - heading "Passport photo background remover" [level=4] [ref=e958]
+      - paragraph [ref=e959]: No more worries about a perfectly white background—you don’t need to look for a white wall or place a white sheet behind you anymore. Our passport photo editor will remove any background and replace it with a white or off-white one as per the requirements.
+      - heading "Passport photo template generator" [level=4] [ref=e960]
+      - paragraph [ref=e961]: Prefer to print passport photos on your own? We’ve got you covered! Together with your digital passport image, you’ll receive a printable image on a 4x6-inch template. Remember to use high-quality photo paper for your passport photographs.
+      - paragraph [ref=e962]: You can take the template and print the picture at one of the popular pharmacies or retail stores for cents.
+      - heading "Pocket-size passport photo booth" [level=4] [ref=e963]
+      - paragraph [ref=e964]: Best of all—you can create your own photo studio wherever you are. Fancy staying at home? Snap a photo! Staying abroad and in need of a passport renewal? Snap a photo! Need a passport for your newborn? Snap a photo in a cozy, comfortable space!
+      - paragraph [ref=e965]: Whatever the circumstances, Passport Photo Online is here to help you achieve the best passport photo results.
+      - paragraph [ref=e966]:
+        - img "Zdjęcie paszportowe stworzone dzięki aplikacji Passport Photo Online."
+      - paragraph [ref=e967]:
+        - strong [ref=e969]: "Sources:"
+      - paragraph [ref=e970]:
+        - link "https://www.trustpilot.com/review/passport-photo.online" [ref=e971] [cursor=pointer]:
+          - /url: https://www.trustpilot.com/review/passport-photo.online
+      - paragraph [ref=e972]:
+        - link "https://tsg.phototool.state.gov/photo" [ref=e973] [cursor=pointer]:
+          - /url: https://tsg.phototool.state.gov/photo
+      - paragraph [ref=e974]:
+        - link "https://travel.state.gov/content/travel/en/passports/how-apply/photos.html" [ref=e975] [cursor=pointer]:
+          - /url: https://travel.state.gov/content/travel/en/passports/how-apply/photos.html
+    - generic [ref=e985]:
+      - generic [ref=e986]:
+        - paragraph [ref=e987]: Documents
+        - paragraph [ref=e989]: We provide photos for IDs from all over the world. You’ll find the one you are looking for!
+      - generic [ref=e991]:
+        - paragraph [ref=e992]: Most Searched
+        - generic [ref=e994]:
+          - generic [ref=e995] [cursor=pointer]:
+            - img "Passport renewal photo" [ref=e997]
+            - link "Passport renewal photo" [ref=e998]:
+              - /url: /passport-renewal-photo
+            - button "Get started" [ref=e1000]
+          - generic [ref=e1001] [cursor=pointer]:
+            - img "US Passport Photo" [ref=e1003]
+            - link "US Passport Photo" [ref=e1004]:
+              - /url: /passport-photos
+            - button "Get started" [ref=e1006]
+          - generic [ref=e1007] [cursor=pointer]:
+            - img "600x600 Photo" [ref=e1009]
+            - link "600x600 Photo" [ref=e1010]:
+              - /url: /600x600-pixels-photo
+            - button "Get started" [ref=e1012]
+      - heading "Choose your document" [level=3] [ref=e1013]
+      - generic [ref=e1015]:
+        - button "Popular Documents" [ref=e1016] [cursor=pointer]
+        - button "Related documents" [ref=e1017] [cursor=pointer]
+      - generic [ref=e1020]:
+        - generic [ref=e1021] [cursor=pointer]:
+          - img "Digital Passport Photo" [ref=e1023]
+          - link "Digital Passport Photo" [ref=e1024]:
+            - /url: /digital-passport-photo
+        - generic [ref=e1025] [cursor=pointer]:
+          - img "Passport Photo Near Me" [ref=e1027]
+          - link "Passport Photo Near Me" [ref=e1028]:
+            - /url: /us-passport-photos-near-me
+        - generic [ref=e1029] [cursor=pointer]:
+          - img "Walgreens Passport Photo" [ref=e1031]
+          - link "Walgreens Passport Photo" [ref=e1032]:
+            - /url: /walgreens-passport-photo
+        - generic [ref=e1033] [cursor=pointer]:
+          - img "Baby Passport Photo" [ref=e1035]
+          - link "Baby Passport Photo" [ref=e1036]:
+            - /url: /baby-passport-photo
+        - generic [ref=e1037] [cursor=pointer]:
+          - img "CVS Pharmacy Passport Photo" [ref=e1039]
+          - link "CVS Pharmacy Passport Photo" [ref=e1040]:
+            - /url: /cvs-pharmacy-passport-photo
+        - generic [ref=e1041] [cursor=pointer]:
+          - img "Chinese Passport Photo" [ref=e1043]
+          - link "Chinese Passport Photo" [ref=e1044]:
+            - /url: /chinese-passport-photo
+        - generic [ref=e1045] [cursor=pointer]:
+          - img "Costco Passport Photo" [ref=e1047]
+          - link "Costco Passport Photo" [ref=e1048]:
+            - /url: /costco-passport-photo
+        - generic [ref=e1049] [cursor=pointer]:
+          - img "French Passport Photo" [ref=e1051]
+          - link "French Passport Photo" [ref=e1052]:
+            - /url: /french-passport-photo
+        - generic [ref=e1053] [cursor=pointer]:
+          - img "OCI Photo" [ref=e1055]
+          - link "OCI Photo" [ref=e1056]:
+            - /url: /digital-oci-photo
+        - generic [ref=e1057] [cursor=pointer]:
+          - img "Rite Aid Passport Photo" [ref=e1059]
+          - link "Rite Aid Passport Photo" [ref=e1060]:
+            - /url: /rite-aid-passport-photo
+        - generic [ref=e1061] [cursor=pointer]:
+          - img "UPS Passport Photo" [ref=e1063]
+          - link "UPS Passport Photo" [ref=e1064]:
+            - /url: /ups-passport-photo
+        - generic [ref=e1065] [cursor=pointer]:
+          - img "USCIS Photos" [ref=e1067]
+          - link "USCIS Photos" [ref=e1068]:
+            - /url: /citizenship-application-photo
+        - generic [ref=e1069] [cursor=pointer]:
+          - img "USPS (US Postal Service) Passport Photo" [ref=e1071]
+          - link "USPS (US Postal Service) Passport Photo" [ref=e1072]:
+            - /url: /usps-passport-photo
+        - generic [ref=e1073] [cursor=pointer]:
+          - img "Walmart Passport Photo" [ref=e1075]
+          - link "Walmart Passport Photo" [ref=e1076]:
+            - /url: /walmart-passport-photo
+        - generic [ref=e1077] [cursor=pointer]:
+          - img "US Visa Photo" [ref=e1079]
+          - link "US Visa Photo" [ref=e1080]:
+            - /url: /visa-to-USA
+        - generic [ref=e1081] [cursor=pointer]:
+          - img "Green Card Photo / DV Lottery 2027" [ref=e1083]
+          - link "Green Card Photo / DV Lottery 2027" [ref=e1084]:
+            - /url: /green-card-photo
+        - generic [ref=e1085] [cursor=pointer]:
+          - img "Green Card Photo / DV Lottery 2027" [ref=e1087]
+          - link "Green Card Photo / DV Lottery 2027" [ref=e1088]:
+            - /url: /green-card-photo-usa
+        - generic [ref=e1089] [cursor=pointer]:
+          - img "Photo for Your CV" [ref=e1091]
+          - link "Photo for Your CV" [ref=e1092]:
+            - /url: /us-cv-photo
+        - generic [ref=e1093] [cursor=pointer]:
+          - img "Duane Reade Passport Photo" [ref=e1095]
+          - link "Duane Reade Passport Photo" [ref=e1096]:
+            - /url: /duane-reade-passport-photo
+        - generic [ref=e1097] [cursor=pointer]:
+          - img "Sam's Club Passport Photo" [ref=e1099]
+          - link "Sam's Club Passport Photo" [ref=e1100]:
+            - /url: /sams-club-passport-photo
+        - generic [ref=e1101] [cursor=pointer]:
+          - img "ISIC Card Photo" [ref=e1103]
+          - link "ISIC Card Photo" [ref=e1104]:
+            - /url: /isic-card-photo
+        - generic [ref=e1105] [cursor=pointer]:
+          - img "Photo 2x2 Inches" [ref=e1107]
+          - link "Photo 2x2 Inches" [ref=e1108]:
+            - /url: /photo-2x2-inch
+        - generic [ref=e1109] [cursor=pointer]:
+          - img "Photo 35x45 Milimetres (3,5 X 4,5 CM)" [ref=e1111]
+          - link "Photo 35x45 Milimetres (3,5 X 4,5 CM)" [ref=e1112]:
+            - /url: /photo-35x45-mm
+    - generic [ref=e1120]:
+      - heading "FAQ" [level=2] [ref=e1123]
+      - generic [ref=e1125]:
+        - heading "How can I convert my photo to a passport size?" [level=3] [ref=e1127]:
+          - button "How can I convert my photo to a passport size?" [ref=e1128] [cursor=pointer]: How can I convert my photo to a passport size?
+        - heading "What is the app for 2x2 photos?" [level=3] [ref=e1131]:
+          - button "What is the app for 2x2 photos?" [ref=e1132] [cursor=pointer]: What is the app for 2x2 photos?
+        - heading "How can I make a 2x2 picture online for free?" [level=3] [ref=e1135]:
+          - button "How can I make a 2x2 picture online for free?" [ref=e1136] [cursor=pointer]: How can I make a 2x2 picture online for free?
+    - generic [ref=e1147]:
+      - generic [ref=e1148]:
+        - paragraph [ref=e1150]: Are You Satisfied With Our Service?
+        - paragraph [ref=e1151]:
+          - text: Let us know how we’re doing.
+          - text: Customer feedback is always welcome.
+      - generic [ref=e1152]:
+        - paragraph [ref=e1153]: "Rate Your Reading Experience:"
+        - generic [ref=e1154]:
+          - button [ref=e1155] [cursor=pointer]
+          - button [ref=e1157] [cursor=pointer]
+          - button [ref=e1159] [cursor=pointer]
+          - button [ref=e1161] [cursor=pointer]
+          - button [ref=e1163] [cursor=pointer]
+        - paragraph [ref=e1165]: "Rating: 4.77/5"
+        - paragraph [ref=e1166]: "Number of votes: 4814"
+    - generic [ref=e1172]:
+      - link "Home" [ref=e1174] [cursor=pointer]:
+        - /url: /
+      - link "Passport Photo Tool" [ref=e1177] [cursor=pointer]:
+        - /url: /us-passport-photo
+      - link "Passport Photos Near Me" [ref=e1180] [cursor=pointer]:
+        - /url: /us-passport-photos-near-me
+      - generic [ref=e1183]: Passport Photo Maker
+    - generic [ref=e1185]:
+      - generic [ref=e1187]:
+        - generic [ref=e1188]:
+          - img "Passport Photo logo" [ref=e1189]
+          - generic [ref=e1214]:
+            - generic [ref=e1215]:
+              - generic [ref=e1216]: Resources
+              - link "Passport Photo Resizer" [ref=e1218] [cursor=pointer]:
+                - /url: https://passport-photo.online/blog/resize-photo-passport/
+              - link "How to Take a Passport Photo with an iPhone" [ref=e1220] [cursor=pointer]:
+                - /url: https://passport-photo.online/blog/passport-photo-iphone/
+              - link "How to Take a Passport Photo with Android" [ref=e1222] [cursor=pointer]:
+                - /url: https://passport-photo.online/blog/passport-photo-android/
+            - generic [ref=e1223]:
+              - generic [ref=e1224]: Popular Documents
+              - link "US Passport Photo" [ref=e1226] [cursor=pointer]:
+                - /url: https://passport-photo.online/passport-photos
+              - link "Baby Passport Photo" [ref=e1228] [cursor=pointer]:
+                - /url: https://passport-photo.online/baby-passport-photo
+              - link "USCIS Photo" [ref=e1230] [cursor=pointer]:
+                - /url: https://passport-photo.online/citizenship-application-photo
+              - link "2x2 Photo" [ref=e1232] [cursor=pointer]:
+                - /url: https://passport-photo.online/photo-2x2-inch
+              - link "Chinese Visa Photo" [ref=e1234] [cursor=pointer]:
+                - /url: https://passport-photo.online/e-visa-to-china
+              - link "See More Photos" [ref=e1236] [cursor=pointer]:
+                - /url: https://passport-photo.online
+            - generic [ref=e1237]:
+              - generic [ref=e1238]: How it Works
+              - link "How to Take a Photo" [ref=e1240] [cursor=pointer]:
+                - /url: https://passport-photo.online/how-it-works#items-section
+              - link "AI and Expert Verification" [ref=e1242] [cursor=pointer]:
+                - /url: https://passport-photo.online/how-it-works#tabs-section
+              - link "Guarantee" [ref=e1244] [cursor=pointer]:
+                - /url: https://passport-photo.online/how-it-works#two-columns-section
+              - link "Delivery" [ref=e1246] [cursor=pointer]:
+                - /url: https://passport-photo.online/how-it-works#accordion-tabs-section
+            - generic [ref=e1247]:
+              - generic [ref=e1248]: About
+              - link "About Us" [ref=e1250] [cursor=pointer]:
+                - /url: https://passport-photo.online/blog/about-us/
+              - link "Editorial Process" [ref=e1252] [cursor=pointer]:
+                - /url: https://passport-photo.online/blog/editorial-process/
+              - link "Contact" [ref=e1254] [cursor=pointer]:
+                - /url: https://passport-photo.online/contact
+        - generic [ref=e1255]:
+          - generic [ref=e1256]: Get the App!
+          - generic [ref=e1257]: Get the free app for iOS or Android.
+          - generic [ref=e1258]:
+            - link "passport photo app iPhone" [ref=e1259] [cursor=pointer]:
+              - /url: https://apps.apple.com/pl/app/apple-store/id1500544448?l=pl
+              - img "passport photo app iPhone" [ref=e1261]
+            - link "passport photo" [ref=e1262] [cursor=pointer]:
+              - /url: https://play.google.com/store/apps/details?id=online.passportphoto.visa.id.app&hl=pl
+              - img "passport photo" [ref=e1264]
+      - generic [ref=e1266]:
+        - generic [ref=e1267]:
+          - generic [ref=e1268]:
+            - generic [ref=e1269]: Passport Photo Online
+            - generic [ref=e1270]: Powered by PhotoAiD®
+          - generic [ref=e1271]:
+            - link "Privacy Policy" [ref=e1272] [cursor=pointer]:
+              - /url: /privacy
+              - paragraph [ref=e1273]: Privacy Policy
+            - link "Terms and Conditions" [ref=e1274] [cursor=pointer]:
+              - /url: /terms
+              - paragraph [ref=e1275]: Terms and Conditions
+            - link "Payment Terms" [ref=e1276] [cursor=pointer]:
+              - /url: /payment-terms
+              - paragraph [ref=e1277]: Payment Terms
+          - generic [ref=e1278]:
+            - link "Returns and Refunds" [ref=e1279] [cursor=pointer]:
+              - /url: /returns-and-refunds
+              - paragraph [ref=e1280]: Returns and Refunds
+            - link "Shipping Terms" [ref=e1281] [cursor=pointer]:
+              - /url: /shipping-terms
+              - paragraph [ref=e1282]: Shipping Terms
+          - generic [ref=e1283]:
+            - link "PhotoAiD Passport Photo Maker (Android)" [ref=e1284] [cursor=pointer]:
+              - /url: https://play.google.com/store/apps/details?id=online.passportphoto.visa.id.app&hl=en_US
+              - paragraph [ref=e1285]: PhotoAiD Passport Photo Maker (Android)
+            - link "PhotoAiD Passport Photo Maker (Apple)" [ref=e1286] [cursor=pointer]:
+              - /url: https://apps.apple.com/us/app/passport-photos-photoaid/id1500544448
+              - paragraph [ref=e1287]: PhotoAiD Passport Photo Maker (Apple)
+        - button "English (USA)" [ref=e1289] [cursor=pointer]:
+          - generic [ref=e1290]:
+            - paragraph [ref=e1291]: English (USA)
+            - img [ref=e1292]

@@ -1,0 +1,106 @@
+- generic [ref=e1]:
+  - navigation [ref=e2]:
+    - link "MONKOS Admin" [ref=e3] [cursor=pointer]:
+      - /url: /admin/
+    - generic [ref=e4]:
+      - button "임시저장" [ref=e5] [cursor=pointer]
+      - button "발행" [ref=e6] [cursor=pointer]
+      - button "미리보기" [ref=e7] [cursor=pointer]
+      - button "내 글 목록 ▾" [ref=e10] [cursor=pointer]
+      - link "← Blog List" [ref=e11] [cursor=pointer]:
+        - /url: /admin/blog-list.html
+  - generic [ref=e12]:
+    - generic [ref=e13]:
+      - generic [ref=e14]:
+        - generic [ref=e15]: 카테고리
+        - combobox [ref=e16]:
+          - option "-- 선택 --" [selected]
+          - option "사진"
+          - option "패션"
+          - option "헤어"
+          - option "메이크업"
+          - option "AI"
+          - option "News"
+          - option "기타"
+      - generic [ref=e17]:
+        - generic [ref=e18]: 언어
+        - combobox [ref=e19]:
+          - option "Korean (ko)" [selected]
+          - option "Japanese (ja)"
+          - option "English (en)"
+      - generic [ref=e20]:
+        - generic [ref=e21]: 썸네일
+        - generic [ref=e22]:
+          - textbox "이미지 URL" [ref=e23]
+          - button "업로드" [ref=e24] [cursor=pointer]
+      - generic [ref=e25]:
+        - generic [ref=e26]: URL 주소
+        - textbox "자동 생성" [ref=e27]
+        - generic [ref=e28]: 특수문자($ / 등) 사용 불가
+      - generic [ref=e29]:
+        - generic [ref=e30]: 요약 (SEO)
+        - textbox "검색 결과 요약문 (최대 160자)" [ref=e31]
+      - generic [ref=e33]:
+        - checkbox "매거진 고정" [ref=e34]
+        - generic [ref=e35] [cursor=pointer]: 매거진 고정
+      - generic [ref=e36]:
+        - generic [ref=e37]: 태그
+        - textbox "콤마 구분" [ref=e38]
+      - generic [ref=e39]:
+        - generic [ref=e40]: 미리보기
+        - generic [ref=e41]:
+          - generic [ref=e43]: 썸네일 없음
+          - generic [ref=e44]:
+            - generic [ref=e45]: 제목 미입력
+            - generic [ref=e46]: 요약 미입력
+    - generic [ref=e47]:
+      - heading "New Post" [level=1] [ref=e48]
+      - textbox "제목을 입력하세요" [ref=e49]
+      - generic [ref=e52]:
+        - generic [ref=e54]:
+          - generic [ref=e55]:
+            - button "Headings" [ref=e56] [cursor=pointer]
+            - button "Bold" [ref=e57] [cursor=pointer]
+            - button "Italic" [ref=e58] [cursor=pointer]
+            - button "Strike" [ref=e59] [cursor=pointer]
+          - generic [ref=e61]:
+            - button "Line" [ref=e62] [cursor=pointer]
+            - button "Blockquote" [ref=e63] [cursor=pointer]
+          - generic [ref=e65]:
+            - button "Unordered list" [ref=e66] [cursor=pointer]
+            - button "Ordered list" [ref=e67] [cursor=pointer]
+            - button "Task" [ref=e68] [cursor=pointer]
+            - button "Indent" [disabled] [ref=e69] [cursor=pointer]
+            - button "Outdent" [disabled] [ref=e70] [cursor=pointer]
+          - generic [ref=e72]:
+            - button "Insert table" [ref=e73] [cursor=pointer]
+            - button "Insert image" [ref=e74] [cursor=pointer]
+          - button "Inline code" [ref=e77] [cursor=pointer]
+          - button [ref=e79] [cursor=pointer]
+        - paragraph [ref=e85]
+        - generic [ref=e86]:
+          - generic [ref=e87] [cursor=pointer]: Markdown
+          - generic [ref=e88] [cursor=pointer]: WYSIWYG
+      - generic:
+        - generic: 공유
+        - link "𝕏":
+          - /url: "#"
+        - link "L":
+          - /url: "#"
+        - link "💬":
+          - /url: "#"
+        - button "🔗"
+        - button "📋 복사"
+    - generic [ref=e89]:
+      - generic [ref=e90]:
+        - button "이미지" [ref=e91] [cursor=pointer]
+        - button "시드" [ref=e92] [cursor=pointer]
+        - button "리서치" [ref=e93] [cursor=pointer]
+        - button "AI" [ref=e94] [cursor=pointer]
+      - generic [ref=e95]:
+        - generic [ref=e96]:
+          - generic [ref=e97]: 이미지 저장소
+          - generic [ref=e98]:
+            - button "+ 업로드" [ref=e99] [cursor=pointer]
+            - button "접기" [ref=e100] [cursor=pointer]
+        - generic [ref=e102]: 불러오는 중...

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>VTON Studio — MONKOS Admin</title>
+<style>
+  :root{--bg:#0d0f14;--panel:#171a22;--line:#272b36;--accent:#4a9eff;--green:#3ecf8e;--amber:#f0a83e;--red:#ff6b6b;--txt:#e8eaed;--dim:#8a92a0}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);font-family:-apple-system,system-ui,"Apple SD Gothic Neo",sans-serif}
+  .topnav{display:flex;align-items:center;justify-content:space-between;padding:12px 24px;background:#11131a;border-bottom:1px solid var(--line)}
+  .topnav a{color:var(--dim);text-decoration:none;font-size:13px}
+  .topnav .logo{color:#fff;font-weight:700;letter-spacing:1px;font-size:15px}
+  header{padding:16px 28px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px}
+  header h1{font-size:17px;margin:0;font-weight:600;letter-spacing:.3px}
+  header .badge{font-size:11px;color:var(--dim);border:1px solid var(--line);padding:3px 8px;border-radius:20px}
+  header .status{margin-left:auto;font-size:12px;color:var(--dim)}
+  .wrap{display:grid;grid-template-columns:340px 1fr;gap:0;height:calc(100vh - 110px)}
+  .controls{padding:22px;border-right:1px solid var(--line);overflow-y:auto}
+  .stage{padding:22px;overflow-y:auto}
+  .group{margin-bottom:24px}
+  .group h3{font-size:12px;text-transform:uppercase;letter-spacing:.8px;color:var(--dim);margin:0 0 10px}
+  .pod{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:24px}
+  .pod .row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+  .pod .dot{width:9px;height:9px;border-radius:50%;background:var(--dim);flex:none}
+  .pod .dot.on{background:var(--green)} .pod .dot.boot{background:var(--amber)} .pod .dot.off{background:var(--red)}
+  .pod .label{font-size:13px}
+  .pod .btns{display:flex;gap:8px}
+  .pod button{flex:1;border:1px solid var(--line);background:#1f2330;color:var(--txt);padding:9px;border-radius:9px;cursor:pointer;font-size:13px}
+  .pod button:hover{border-color:var(--accent)}
+  .pod button:disabled{opacity:.4;cursor:not-allowed}
+  .drop{border:1.5px dashed var(--line);border-radius:12px;padding:14px;text-align:center;cursor:pointer;transition:.15s;background:var(--panel)}
+  .drop:hover{border-color:var(--accent)}
+  .drop.has{border-style:solid;border-color:var(--green);padding:8px}
+  .drop img{max-width:100%;max-height:200px;border-radius:8px;display:block;margin:0 auto}
+  .drop .ph{color:var(--dim);font-size:13px;padding:24px 0}
+  .seg{display:flex;gap:8px;margin-top:6px}
+  .seg button{flex:1;background:var(--panel);border:1px solid var(--line);color:var(--txt);padding:10px;border-radius:9px;cursor:pointer;font-size:13px;transition:.15s}
+  .seg button.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+  .run{width:100%;background:var(--green);border:none;color:#06231a;font-weight:700;font-size:15px;padding:14px;border-radius:11px;cursor:pointer;margin-top:6px}
+  .run:disabled{opacity:.5;cursor:not-allowed}
+  .hint{font-size:11px;color:var(--dim);margin-top:8px;line-height:1.5}
+  .prog{height:4px;background:var(--line);border-radius:4px;overflow:hidden;margin-top:14px;display:none}
+  .prog.show{display:block}
+  .prog i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+  .log{font-size:11px;color:var(--dim);margin-top:10px;white-space:pre-wrap;font-family:ui-monospace,monospace;max-height:120px;overflow-y:auto}
+  .results{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .card img{width:100%;display:block;cursor:zoom-in}
+  .card .meta{padding:8px 12px;font-size:11px;color:var(--dim);display:flex;justify-content:space-between;align-items:center}
+  .card a{color:var(--accent);text-decoration:none}
+  .empty{color:var(--dim);text-align:center;padding:80px 0;font-size:14px}
+  #zoom{position:fixed;inset:0;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;z-index:50;cursor:zoom-out}
+  #zoom img{max-width:94%;max-height:94%}
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <a href="/admin/" class="logo">MONKOS Admin</a>
+  <a href="/admin/">&larr; Dashboard</a>
+</nav>
+<header>
+  <h1>MONK VTON Studio</h1>
+  <span class="badge">CatVTON · Flux Fill · RTX3090</span>
+  <span class="status" id="status">● 연결 확인중…</span>
+</header>
+<div class="wrap">
+  <div class="controls">
+    <div class="pod">
+      <div class="row"><span class="dot" id="podDot"></span><span class="label" id="podLabel">GPU 상태 확인중…</span></div>
+      <div class="btns">
+        <button id="podStart">깨우기</button>
+        <button id="podStop">끄기</button>
+      </div>
+      <div class="hint">RunPod GPU를 켜서 ComfyUI 준비. 작업 후 [끄기]로 과금 정지.</div>
+    </div>
+    <div class="group">
+      <h3>1. 모델 (Person)</h3>
+      <div class="drop" id="dropPerson"><div class="ph">클릭 또는 드래그<br>모델 사진</div><input type="file" accept="image/*" hidden></div>
+    </div>
+    <div class="group">
+      <h3>2. 의상 (Garment)</h3>
+      <div class="drop" id="dropGarment"><div class="ph">클릭 또는 드래그<br>갈아입힐 의상</div><input type="file" accept="image/*" hidden></div>
+    </div>
+    <div class="group">
+      <h3>3. 교체 범위</h3>
+      <div class="seg" id="seg">
+        <button data-mode="top" class="on">상의만</button>
+        <button data-mode="set">세트(상하)</button>
+      </div>
+      <div class="hint">상의만: 상의만 교체, 하의 유지 · 세트: 상의+하의 모두 교체<br>품질 핵심 — 모델·의상 각도 일치(정면↔정면).</div>
+    </div>
+    <button class="run" id="run" disabled>생성하기</button>
+    <div class="prog" id="prog"><i></i></div>
+    <div class="log" id="log"></div>
+  </div>
+  <div class="stage">
+    <div class="results" id="results"><div class="empty">아직 결과가 없습니다. GPU를 깨우고 모델·의상을 올린 뒤 [생성하기]를 누르세요.</div></div>
+  </div>
+</div>
+<div id="zoom"><img></div>
+<script>
+// ComfyUI는 백엔드 프록시 경유 (RunPod 키는 서버에만 — 브라우저 직접 호출 금지)
+const API='/admin/api/vton/comfy';
+const POD='/admin/api/vton/pod';
+const CLIENT='monk_vton_studio';
+// 워크플로우 템플릿 (catvton_workflow_template.json — 모델/좌표 검증됨)
+const TEMPLATE={"38":{"class_type":"InpaintModelConditioning","inputs":{"positive":["26",0],"negative":["7",0],"vae":["32",0],"pixels":["49",0],"mask":["49",1],"noise_mask":true}},"34":{"class_type":"DualCLIPLoader","inputs":{"clip_name1":"clip_l.safetensors","clip_name2":"t5xxl_fp8_e4m3fn.safetensors","type":"flux"}},"61":{"class_type":"DownloadAndLoadSAM2Model","inputs":{"model":"sam2_hiera_tiny.safetensors","segmentor":"video","device":"cuda","precision":"fp16"}},"59":{"class_type":"LoadImage","inputs":{"image":"monk_vton/_input_person_ultra.jpg"}},"23":{"class_type":"CLIPTextEncode","inputs":{"clip":["34",0],"text":"The pair of images highlights a clothing and its styling on a model, high resolution, 4K, 8K; [IMAGE1] Detailed product shot of a clothing [IMAGE2] The same cloth is worn by a model in a lifestyle setting."}},"7":{"class_type":"CLIPTextEncode","inputs":{"clip":["34",0],"text":""}},"26":{"class_type":"FluxGuidance","inputs":{"conditioning":["23",0],"guidance":30}},"32":{"class_type":"VAELoader","inputs":{"vae_name":"ae.sft"}},"49":{"class_type":"AddMaskForICLora","inputs":{"first_image":["50",0],"second_image":["59",0],"second_mask":["64",0],"patch_mode":"patch_right","output_length":1536,"patch_color":"#FF0000"}},"48":{"class_type":"MaskToImage","inputs":{"mask":["49",1]}},"8":{"class_type":"VAEDecode","inputs":{"samples":["3",0],"vae":["32",0]}},"47":{"class_type":"PreviewImage","inputs":{"images":["48",0]}},"64":{"class_type":"INPAINT_ExpandMask","inputs":{"mask":["62",0],"grow":7,"blur":7,"blur_type":"gaussian"}},"62":{"class_type":"Sam2Segmentation","inputs":{"sam2_model":["61",0],"image":["59",0],"coordinates_positive":["60",0],"coordinates_negative":["60",1],"keep_model_loaded":true,"individual_objects":false}},"60":{"class_type":"PointsEditor","inputs":{"bg_image":["59",0],"points_store":"{\"positive\": [{\"x\": 768, \"y\": 850}, {\"x\": 768, \"y\": 1150}], \"negative\": [{\"x\": 768, \"y\": 430}, {\"x\": 220, \"y\": 850}, {\"x\": 1320, \"y\": 850}, {\"x\": 768, \"y\": 1620}, {\"x\": 768, \"y\": 2300}]}","coordinates":"[{\"x\": 768, \"y\": 850}, {\"x\": 768, \"y\": 1150}]","neg_coordinates":"[{\"x\": 768, \"y\": 430}, {\"x\": 220, \"y\": 850}, {\"x\": 1320, \"y\": 850}, {\"x\": 768, \"y\": 1620}, {\"x\": 768, \"y\": 2300}]","bbox_store":"[{\"startX\":191.79709999999994,\"startY\":279.64309999999995}]","bboxes":"[{\"startX\":191.79709999999994,\"startY\":279.64309999999995}]","bbox_format":"xyxy","width":1536,"height":2816,"normalize":false}},"63":{"class_type":"MaskToImage","inputs":{"mask":["62",0]}},"58":{"class_type":"PreviewImage","inputs":{"images":["63",0]}},"50":{"class_type":"LoadImage","inputs":{"image":"monk_vton/_input_garment_underwear.jpg"}},"31":{"class_type":"UNETLoader","inputs":{"unet_name":"flux1-fill-dev.safetensors","weight_dtype":"default"}},"70":{"class_type":"LoraLoaderModelOnly","inputs":{"model":["31",0],"lora_name":"catvton-flux-lora-alpha.safetensors","strength_model":1}},"3":{"class_type":"KSampler","inputs":{"model":["70",0],"positive":["38",0],"negative":["38",1],"latent_image":["38",2],"seed":937617280366464,"steps":30,"cfg":1,"sampler_name":"euler","scheduler":"normal","denoise":1}},"200":{"class_type":"SaveImage","inputs":{"images":["8",0],"filename_prefix":"VTON_RunPod_cut1"}}};
+
+let persona={name:'_input_person_ultra.jpg',sub:'monk_vton',w:1536,h:2816},
+    garment={name:'_input_garment_underwear.jpg',sub:'monk_vton'}, mode='top', busy=false, comfyReady=false, podPoll=null;
+
+const PRESETS={
+  top:{pos:[[.5,.30],[.5,.41]], neg:[[.5,.15],[.14,.30],[.86,.30],[.5,.58],[.5,.82]]},
+  set:{pos:[[.5,.30],[.5,.61]], neg:[[.5,.15],[.5,.23],[.23,.76],[.77,.76]]}
+};
+function coords(p){return JSON.stringify(p.map(([x,y])=>({x:Math.round(x*persona.w),y:Math.round(y*persona.h)})))}
+
+const $=s=>document.querySelector(s), log=m=>{const l=$('#log');l.textContent=(m+'\n'+l.textContent).slice(0,1200)};
+
+// 401 → 어드민 로그인으로
+function authGuard(r){ if(r.status===401){location.href='/admin/';return true} return false }
+const api=(url,opt={})=>fetch(url,{credentials:'include',...opt});
+
+function setPod(state,label){
+  const dot=$('#podDot'); dot.className='dot'+(state?' '+state:'');
+  $('#podLabel').textContent=label;
+  comfyReady=(state==='on');
+  $('#run').disabled=!comfyReady||busy;
+  $('#status').innerHTML=comfyReady
+    ? '<span style="color:var(--green)">● 엔진 준비됨</span>'
+    : '<span style="color:var(--dim)">● 엔진 대기</span>';
+}
+
+async function refreshPod(){
+  try{
+    const r=await api(POD+'/status'); if(authGuard(r))return;
+    if(r.status===503){setPod('off','RUNPOD_API_KEY 미설정(서버)');return}
+    const d=await r.json();
+    if(!d.running) setPod('off','GPU 꺼짐 (EXITED)');
+    else if(d.comfyReady) setPod('on','준비됨 — 생성 가능');
+    else setPod('boot','GPU 켜짐 · ComfyUI 기동 대기…');
+  }catch(e){setPod('off','상태 조회 실패');log('상태 오류: '+e.message)}
+}
+
+$('#podStart').onclick=async()=>{
+  setPod('boot','부팅 요청 중…'); log('GPU 깨우는 중…');
+  try{
+    const r=await api(POD+'/start',{method:'POST'}); if(authGuard(r))return;
+    const d=await r.json();
+    if(!r.ok){setPod('off','부팅 실패 — 재시도');log('start 실패: '+(d.message||d.error||r.status));return}
+    log('부팅 요청됨 — 준비까지 1~3분 (자동 확인)');
+    if(podPoll)clearInterval(podPoll);
+    podPoll=setInterval(async()=>{ await refreshPod(); if(comfyReady){clearInterval(podPoll);podPoll=null;log('엔진 준비 완료 ✓')} },6000);
+  }catch(e){setPod('off','부팅 실패');log('오류: '+e.message)}
+};
+$('#podStop').onclick=async()=>{
+  if(!confirm('GPU를 끕니다. 진행 중 작업이 있으면 중단됩니다.'))return;
+  if(podPoll){clearInterval(podPoll);podPoll=null}
+  log('GPU 끄는 중…');
+  try{
+    const r=await api(POD+'/stop',{method:'POST'}); if(authGuard(r))return;
+    setPod('off','GPU 꺼짐 (과금 정지)'); log('정지 요청됨 ✓');
+  }catch(e){log('정지 오류: '+e.message)}
+};
+
+function setupDrop(el,which){
+  const inp=el.querySelector('input');
+  el.onclick=()=>inp.click();
+  inp.onchange=()=>inp.files[0]&&upload(inp.files[0],el,which);
+  el.ondragover=e=>{e.preventDefault();el.style.borderColor='var(--accent)'};
+  el.ondragleave=()=>el.style.borderColor='';
+  el.ondrop=e=>{e.preventDefault();el.style.borderColor='';e.dataTransfer.files[0]&&upload(e.dataTransfer.files[0],el,which)};
+}
+async function upload(file,el,which){
+  if(!comfyReady){log('먼저 GPU를 깨워주세요');return}
+  log((which==='person'?'모델':'의상')+' 업로드중…');
+  const fd=new FormData(); fd.append('image',file); fd.append('overwrite','true'); fd.append('subfolder','monk_vton');
+  try{
+    const r=await api(API+'/upload/image',{method:'POST',body:fd}); if(authGuard(r))return;
+    const d=await r.json();
+    const name=d.name, sub=d.subfolder||'';
+    const url=URL.createObjectURL(file);
+    el.classList.add('has'); el.innerHTML='<img src="'+url+'">';
+    if(which==='person'){
+      const im=new Image(); im.onload=()=>{persona={name,sub,w:im.naturalWidth,h:im.naturalHeight};log('모델 설정: '+name+' ('+im.naturalWidth+'×'+im.naturalHeight+')')}; im.src=url;
+    }else{garment={name,sub};log('의상 설정: '+name)}
+  }catch(e){log('업로드 실패: '+e.message)}
+}
+$('#seg').onclick=e=>{if(e.target.dataset.mode){mode=e.target.dataset.mode;[...$('#seg').children].forEach(b=>b.classList.toggle('on',b===e.target))}};
+
+$('#run').onclick=run;
+async function run(){
+  if(busy||!comfyReady)return; busy=true; $('#run').disabled=true; $('#prog').classList.add('show'); $('#prog i').style.width='8%';
+  try{
+    const p=JSON.parse(JSON.stringify(TEMPLATE));
+    const pn=persona.sub?persona.sub+'/'+persona.name:persona.name;
+    const gn=garment.sub?garment.sub+'/'+garment.name:garment.name;
+    p['59'].inputs.image=pn; p['50'].inputs.image=gn;
+    const pr=PRESETS[mode];
+    p['60'].inputs.coordinates=coords(pr.pos); p['60'].inputs.neg_coordinates=coords(pr.neg);
+    p['60'].inputs.points_store=JSON.stringify({positive:pr.pos.map(([x,y])=>({x:Math.round(x*persona.w),y:Math.round(y*persona.h)})),negative:pr.neg.map(([x,y])=>({x:Math.round(x*persona.w),y:Math.round(y*persona.h)}))});
+    p['60'].inputs.width=persona.w; p['60'].inputs.height=persona.h;
+    p['200'].inputs.filename_prefix='VTON_studio_'+mode;
+    log('생성 요청 ('+mode+')…');
+    const r=await api(API+'/prompt',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:p,client_id:CLIENT})});
+    if(authGuard(r))return;
+    const d=await r.json();
+    if(!d.prompt_id){log('요청 거부: '+JSON.stringify(d).slice(0,300));throw new Error('queue')}
+    log('큐 진입: '+d.prompt_id.slice(0,8)+' — 생성중(약 4~5분)');
+    await poll(d.prompt_id);
+  }catch(e){log('오류: '+e.message)}
+  busy=false; $('#run').disabled=!comfyReady; setTimeout(()=>$('#prog').classList.remove('show'),800);
+}
+async function poll(id){
+  for(let i=0;i<150;i++){
+    await new Promise(r=>setTimeout(r,2000));
+    $('#prog i').style.width=Math.min(12+i*2,92)+'%';
+    let h; try{const r=await api(API+'/history/'+id); if(authGuard(r))return; h=await r.json()}catch(e){continue}
+    if(h[id]){
+      const st=h[id].status||{};
+      if(st.status_str==='error'){log('생성 에러 — 입력/마스크 확인');return}
+      const outs=h[id].outputs||{};
+      for(const nid in outs){for(const im of (outs[nid].images||[])){
+        if(im.type==='output'){$('#prog i').style.width='100%';addResult(im);log('완료 ✓');return}
+      }}
+    }
+  }
+  log('시간초과');
+}
+function addResult(im){
+  const url=API+'/view?filename='+encodeURIComponent(im.filename)+'&subfolder='+encodeURIComponent(im.subfolder||'')+'&type=output';
+  const res=$('#results'); if(res.querySelector('.empty'))res.innerHTML='';
+  const c=document.createElement('div'); c.className='card';
+  c.innerHTML='<img src="'+url+'"><div class="meta"><span>'+mode+' · 좌=의상 / 우=결과</span><a href="'+url+'" download>저장</a></div>';
+  c.querySelector('img').onclick=()=>{$('#zoom img').src=url;$('#zoom').style.display='flex'};
+  res.prepend(c);
+}
+$('#zoom').onclick=()=>$('#zoom').style.display='none';
+['dropPerson','dropGarment'].forEach((id,i)=>setupDrop($('#'+id),i?'garment':'person'));
+refreshPod();
+</script>
+</body>
+</html>
