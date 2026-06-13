@@ -124,6 +124,8 @@ monkos-ops/tech/rnd/PDF변환 디딤돌 R&D/
 
 # Local device memory (디바이스별 로컬 전용)
 MEMORY.md
+# 예외: 웹 디바이스는 휘발 컨테이너라 MEMORY 정본을 리포에 보존 (2026-06-11 웹/민아)
+!monkos-ops/ops/devices/web/MEMORY.md
 
 # Android build cache
 **/.gradle/
