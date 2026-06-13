@@ -401,3 +401,5 @@
 - 모델 배치 섹션: 🚫 Fable 5/Mythos 5 외국인 접근 전면 차단(2026-06-12~, 미 정부 수출통제) 1행 추가. 에러 "may not have access"=쿼터 아닌 접근권 박탈, Opus 4.x가 유일 경로, 타 제품 영향 없음. 출처: Anthropic 공식 성명 6/12
 - 신규: memory/feedback_audit_is_mina_role.md — 감사·독립검증은 민아 본령(코더는 자기 가정에 시야 갇힘). 코드 작성자에게 자기 감사 금지, read-only+보고서→쌍아 재검토→막내. 작가님 06-14 GA4 측정ID오염 적발 계기
 - MEMORY.md 외장메모리 섹션에 "감사=민아 본령" 1행 추가
+- 신규: memory/feedback_docs_data_engineering.md — 기록문서는 청소·압축 아닌 데이터공학 영역(작가님 06-14 정책 선언). 죽은 문서도 옵션가치(맥락충돌 시 단서), 삭제 금지, 보존 불변·retrieval 공학으로. 민아 1차 "회수율 감사→폐기" 제안 철회
+- MEMORY.md 외장메모리 섹션에 "문서=데이터공학" 1행 추가
