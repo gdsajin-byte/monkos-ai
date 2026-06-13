@@ -8,7 +8,8 @@ import { firestore, ai, GCS_BUCKET, log, parseJsonBody } from '../shared/config.
 import { requireAdmin } from './admin-auth.js';
 import { translateAndSaveBlogPost } from './translate.js';
 import { publishBlogToGitHub } from './github-issues.js';
-import { requestIndexing, pingSitemap } from './seo.js';
+import { requestIndexing } from './seo.js';
+import { generateSlug, generateSlugFromAI, sanitizeSlug } from './slug.js';
 
 const blogCollection = firestore.collection('blog_posts');
 const ogStorage = new Storage();
@@ -37,41 +38,6 @@ async function generateOgImage(thumbnail, slug) {
     log(`[CMS] OG 이미지 생성 실패: ${err.message}`, 'WARN');
     return null;
   }
-}
-
-function generateSlug(title) {
-  return title
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '')
-    .substring(0, 100);
-}
-
-async function generateSlugFromAI(title) {
-  try {
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: [{ role: 'user', parts: [{ text: `You are an SEO expert. First TRANSLATE the blog title meaning into English, then convert to a URL slug. Do NOT romanize Korean — translate the MEANING. Lowercase, hyphens only, max 60 chars, ASCII only. Return ONLY the slug.\n\nTitle: ${title}` }] }],
-      config: { maxOutputTokens: 64, temperature: 0.1 },
-    });
-    const slug = (response.candidates?.[0]?.content?.parts?.[0]?.text || '')
-      .trim().toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/-+/g, '-').replace(/^-|-$/g, '').substring(0, 60);
-    if (slug.length >= 3) return slug;
-  } catch (err) {
-    log(`[CMS] AI slug 생성 실패: ${err.message}`, 'WARN');
-  }
-  return 'post-' + new Date().toISOString().slice(0, 19).replace(/[-:T]/g, '');
-}
-
-function sanitizeSlug(slug) {
-  return slug
-    .replace(/[\/$#\[\].]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '')
-    .substring(0, 100);
 }
 
 function hasKorean(str) {
@@ -163,7 +129,7 @@ export async function handleBlogCreate(req, res) {
 
     let baseSlug = sanitizeSlug(body.slug || generateSlug(title));
     if (!baseSlug || hasKorean(baseSlug)) {
-      baseSlug = await generateSlugFromAI(title);
+      baseSlug = await generateSlugFromAI(ai, title);
       log(`[CMS] AI slug 생성: "${title}" → "${baseSlug}"`);
     }
     if (hasKorean(baseSlug)) {
@@ -209,7 +175,6 @@ export async function handleBlogCreate(req, res) {
     if (post.published) {
       const langPrefix = post.lang === 'ko' ? '' : `/${post.lang}`;
       const blogUrl = `https://monkos.ai${langPrefix}/blog/${baseSlug}`;
-      pingSitemap();
       requestIndexing(blogUrl);
     }
 
@@ -292,7 +257,6 @@ export async function handleBlogUpdate(req, res) {
       const updatedBaseSlug = slug.replace(/-(kr|ja|en)$/, '');
       const updatedLangPrefix = (updatedData.lang || 'ko') === 'ko' ? '' : `/${updatedData.lang}`;
       const blogUrl = `https://monkos.ai${updatedLangPrefix}/blog/${updatedBaseSlug}`;
-      pingSitemap();
       requestIndexing(blogUrl);
     }
 
