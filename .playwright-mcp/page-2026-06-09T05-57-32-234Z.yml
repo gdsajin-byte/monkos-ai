@@ -1,0 +1,38 @@
+- generic [ref=e5]:
+  - main [ref=e6]:
+    - generic [ref=e7]:
+      - generic [ref=e10]:
+        - generic [ref=e12]:
+          - heading "NAVER" [level=1] [ref=e13]:
+            - link "NAVER" [ref=e14] [cursor=pointer]:
+              - /url: https://www.naver.com
+              - img "NAVER" [ref=e15]
+          - link "Search Advisor" [ref=e17] [cursor=pointer]:
+            - /url: /
+        - generic [ref=e18]:
+          - link "웹마스터 가이드" [ref=e19] [cursor=pointer]:
+            - /url: /guide
+            - generic [ref=e20]:
+              - generic [ref=e21]: list_alt
+              - text: 웹마스터 가이드
+          - link "웹마스터 도구" [ref=e22] [cursor=pointer]:
+            - /url: /console/board
+            - generic [ref=e23]:
+              - generic [ref=e24]: dvr
+              - text: 웹마스터 도구
+          - generic [ref=e27]:
+            - generic [ref=e28]: 몽크사진관
+            - button [ref=e29] [cursor=pointer]:
+              - generic [ref=e32]: power_settings_new
+      - separator [ref=e33]
+      - progressbar [ref=e37]:
+        - img [ref=e38]
+  - contentinfo [ref=e40]:
+    - generic [ref=e41]:
+      - link "이용약관" [ref=e42] [cursor=pointer]:
+        - /url: /policy/terms
+      - link "책임한계와 법적고지" [ref=e43] [cursor=pointer]:
+        - /url: https://policy.naver.com/rules/disclaimer.html
+      - link "고객센터" [ref=e44] [cursor=pointer]:
+        - /url: https://help.naver.com/alias/webmastertool/main.naver
+      - generic [ref=e45]: ©NAVER Corp.

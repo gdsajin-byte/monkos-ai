@@ -1,0 +1,562 @@
+- iframe [active] [ref=e2]:
+  - generic [active] [ref=f2e1]:
+    - generic [ref=f2e3]:
+      - generic [ref=f2e4]:
+        - link "NAVER" [ref=f2e5] [cursor=pointer]:
+          - /url: http://www.naver.com
+        - link "블로그" [ref=f2e6] [cursor=pointer]:
+          - /url: https://blog.naver.com
+      - link "MONKOS AI" [ref=f2e9] [cursor=pointer]:
+        - /url: https://blog.naver.com/PostList.naver?blogId=monkos_ai
+        - strong [ref=f2e10]: MONKOS AI
+      - search [ref=f2e11]:
+        - group "블로그 검색" [ref=f2e13]:
+          - generic [ref=f2e14]: 블로그 검색
+          - generic [ref=f2e15]:
+            - textbox "이 블로그에서 검색" [ref=f2e16]
+            - generic [ref=f2e17]: 이 블로그에서 검색
+            - button "검색" [ref=f2e18] [cursor=pointer]
+      - button "카테고리 열기" [ref=f2e21] [cursor=pointer]
+    - generic [ref=f2e28]:
+      - generic:
+        - generic [ref=f2e30]:
+          - button [ref=f2e33] [cursor=pointer]
+          - button "공감 0" [ref=f2e35]:
+            - button "공감 0" [ref=f2e37]:
+              - generic [ref=f2e38]: 공감
+              - generic [ref=f2e39]: "0"
+        - button "첫 댓글을 남겨보세요" [ref=f2e41] [cursor=pointer]:
+          - generic [ref=f2e43]:
+            - emphasis [ref=f2e44]: 첫 댓글을 남겨보세요
+            - emphasis
+      - link "공유하기" [ref=f2e45] [cursor=pointer]:
+        - /url: "#"
+        - img
+        - generic [ref=f2e46]: 공유하기
+    - generic [ref=f2e48]:
+      - link "메뉴 바로가기" [ref=f2e49] [cursor=pointer]:
+        - /url: "#blog-menu"
+      - link "본문 바로가기" [ref=f2e50] [cursor=pointer]:
+        - /url: "#post_1"
+      - list [ref=f2e53]:
+        - listitem [ref=f2e54]:
+          - link "이웃블로그" [ref=f2e55] [cursor=pointer]:
+            - /url: "#"
+        - listitem [ref=f2e56]:
+          - link "블로그 홈" [ref=f2e57] [cursor=pointer]:
+            - /url: https://section.blog.naver.com
+        - listitem [ref=f2e58]:
+          - link "내 메뉴" [ref=f2e59] [cursor=pointer]:
+            - /url: "#"
+        - listitem [ref=f2e60]:
+          - generic [ref=f2e61]:
+            - strong [ref=f2e62]: 사용자 링크
+            - list [ref=f2e63]:
+              - listitem [ref=f2e64]:
+                - link "MONKO.. 내정보 보기" [ref=f2e66] [cursor=pointer]:
+                  - /url: javascript:;
+                  - generic [ref=f2e67]: MONKO..
+                  - emphasis [ref=f2e68]: 내정보 보기
+              - listitem [ref=f2e69]:
+                - link "서비스 더보기" [ref=f2e70] [cursor=pointer]:
+                  - /url: javascript:;
+                  - generic [ref=f2e71]: 서비스 더보기
+      - generic [ref=f2e74]:
+        - generic [ref=f2e75]:
+          - table "블로그 메뉴" [ref=f2e78]:
+            - caption:
+              - generic [ref=f2e79]: 블로그 메뉴
+            - rowgroup [ref=f2e80]:
+              - row "프롤로그 블로그 new 여긴어때 나라별 비자사진 규정 지도 서재 태그 안부" [ref=f2e81]:
+                - cell "프롤로그 블로그 new 여긴어때 나라별 비자사진 규정" [ref=f2e82]:
+                  - list:
+                    - listitem [ref=f2e83]:
+                      - link "프롤로그" [ref=f2e84] [cursor=pointer]:
+                        - /url: https://blog.naver.com/prologue/PrologueList.naver?blogId=monkos_ai&skinType=&skinId=&from=menu
+                    - listitem [ref=f2e85]:
+                      - link "블로그" [ref=f2e86] [cursor=pointer]:
+                        - /url: https://blog.naver.com/PostList.naver?blogId=monkos_ai&categoryNo=19&skinType=&skinId=&from=menu
+                      - img "new" [ref=f2e87]
+                    - listitem [ref=f2e88]:
+                      - link "여긴어때" [ref=f2e89] [cursor=pointer]:
+                        - /url: https://blog.naver.com/PostList.naver?blogId=monkos_ai&categoryNo=1&skinType=&skinId=&from=menu
+                    - listitem [ref=f2e90]:
+                      - link "나라별 비자사진 규정" [ref=f2e91] [cursor=pointer]:
+                        - /url: https://blog.naver.com/PostList.naver?blogId=monkos_ai&categoryNo=13&skinType=&skinId=&from=menu
+                - cell "지도 서재 태그 안부" [ref=f2e92]:
+                  - list [ref=f2e93]:
+                    - listitem [ref=f2e94]:
+                      - link "지도" [ref=f2e95] [cursor=pointer]:
+                        - /url: https://blog.naver.com/mapview/MapView.naver?blogId=monkos_ai&skinType=&skinId=&from=menu
+                    - listitem [ref=f2e96]:
+                      - link "서재" [ref=f2e97] [cursor=pointer]:
+                        - /url: https://blog.naver.com/library/LibraryView.naver?blogId=monkos_ai&skinType=&skinId=&from=menu
+                    - listitem [ref=f2e98]:
+                      - link "태그" [ref=f2e99] [cursor=pointer]:
+                        - /url: https://blog.naver.com/BlogPrivateTagCloud.naver?blogId=monkos_ai&Redirect=Dtagcloud&skinType=&skinId=&from=menu
+                    - listitem [ref=f2e100]:
+                      - link "안부" [ref=f2e101] [cursor=pointer]:
+                        - /url: https://blog.naver.com/guestbook/GuestBookList.naver?blogId=monkos_ai&skinType=&skinId=&from=menu
+          - generic [ref=f2e102]:
+            - heading [level=1]:
+              - link:
+                - /url: https://blog.naver.com/PostList.naver?blogId=monkos_ai&categoryNo=19
+        - generic [ref=f2e104]:
+          - generic [ref=f2e106]:
+            - heading "블로그" [level=2] [ref=f2e107]
+            - generic [ref=f2e109]:
+              - generic:
+                - heading "MONKOS AI 10개의 글" [level=4] [ref=f2e110]:
+                  - button "MONKOS AI" [ref=f2e111] [cursor=pointer]:
+                    - strong [ref=f2e112]: MONKOS AI
+                  - text: 10개의 글
+                - button "MONKOS AI 목록열기" [ref=f2e113] [cursor=pointer]:
+                  - generic [ref=f2e114]: MONKOS AI
+                  - text: 목록열기
+            - generic [ref=f2e118]:
+              - table [ref=f2e119]:
+                - rowgroup [ref=f2e120]:
+                  - row [ref=f2e121]:
+                    - cell [ref=f2e122]
+                    - cell [ref=f2e123]
+                    - cell [ref=f2e124]
+              - generic [ref=f2e127]:
+                - generic [ref=f2e130]:
+                  - link "MONKOS AI" [ref=f2e132] [cursor=pointer]:
+                    - /url: /PostList.naver?blogId=monkos_ai&categoryNo=19&from=postList&parentCategoryNo=19
+                  - paragraph [ref=f2e135]:
+                    - generic [ref=f2e136]: 여권사진, 비자사진 이제 내 손에서 무료로 해결 IDPASS 증명사진
+                  - generic [ref=f2e138]:
+                    - link "프로파일" [ref=f2e140] [cursor=pointer]:
+                      - /url: https://blog.naver.com/monkos_ai
+                      - img "프로파일" [ref=f2e141]
+                    - link "MONKOS AI" [ref=f2e143] [cursor=pointer]:
+                      - /url: https://blog.naver.com/monkos_ai
+                    - generic [ref=f2e144]: ・ 9분 전
+                  - generic [ref=f2e145]:
+                    - link "URL 복사" [ref=f2e146] [cursor=pointer]:
+                      - /url: "#"
+                    - link " 통계" [ref=f2e147] [cursor=pointer]:
+                      - /url: "#"
+                      - generic [ref=f2e148]: 
+                      - text: 통계
+                    - button " 본문 기타 기능" [ref=f2e151] [cursor=pointer]:
+                      - text: 
+                      - generic [ref=f2e152]: 본문 기타 기능
+                - generic [ref=f2e153]:
+                  - generic [ref=f2e157]:
+                    - paragraph [ref=f2e158]: 안녕하세요. 오늘은 새로 개발된 따끈따끈한 "증명사진" 어플을 소개해 드릴게요.
+                    - paragraph [ref=f2e159]
+                  - blockquote [ref=f2e168]:
+                    - paragraph [ref=f2e170]:
+                      - generic [ref=f2e171]: 내 폰에 있는 사진으로 여권, 비자 사진을 만들 수 는 없을까?
+                  - generic [ref=f2e175]:
+                    - paragraph [ref=f2e176]: 이런 고민하신적이 한번쯤은 있지 않았나요?
+                    - paragraph [ref=f2e177]: 갑자기 여권이나 운전면허 사진이 필요한데 예전에 찍어둔 사진이나 맘에 드는 셀카사진이 있는데 막상 여권이나 주민등록증 사진으로 사용하려면 정확한 규격을 맞추는게 어렵죠. 그리고 배경 처리는 또 어떻구요~
+                    - paragraph [ref=f2e178]
+                    - paragraph [ref=f2e179]: 그래서 소개해 드리려고 해요. "IDPASS 증명사진"
+                    - paragraph [ref=f2e180]: 현재 애플 앱 스토어에서 검색하시면 무료로 다운로드 받으실 수 있는 어플이에요.
+                    - paragraph [ref=f2e181]
+                    - paragraph [ref=f2e182]: AI 생성 어플이냐구요??
+                    - paragraph [ref=f2e183]: 정확히 이 어플은 AI 사진 생성 어플은 아니구요. 내 사진을 증명사진 포맷으로 재단하고 배경 처리를 해주는 어플이에요.
+                    - paragraph [ref=f2e184]
+                  - blockquote [ref=f2e188]:
+                    - paragraph [ref=f2e190]:
+                      - generic [ref=f2e191]: 그래서 뭘 해주는 어플인가요?
+                  - generic [ref=f2e195]:
+                    - paragraph [ref=f2e196]: 사용법은 정말 간단해요. 딱 4단계면 끝나요.
+                    - paragraph [ref=f2e197]
+                    - paragraph [ref=f2e198]:
+                      - generic [ref=f2e200]: 1단계 — 규격 선택
+                    - paragraph [ref=f2e201]
+                  - generic [ref=f2e210]:
+                    - paragraph [ref=f2e211]
+                    - paragraph [ref=f2e212]: 여권인지, 비자인지, 운전면허인지 먼저 고르고요.
+                    - paragraph [ref=f2e213]: 나라를 선택하면 돼요. 미국 여권, 한국 여권, 일본 재류카드... 전부 규격이 다르거든요.
+                    - paragraph [ref=f2e214]: 현재 200+개국, 320개 규격을 지원하고 있어요.
+                  - generic [ref=f2e223]:
+                    - paragraph [ref=f2e224]
+                    - paragraph [ref=f2e225]
+                    - paragraph [ref=f2e226]:
+                      - generic [ref=f2e228]: 2단계 — 사진 선택
+                  - generic [ref=f2e237]:
+                    - paragraph [ref=f2e238]
+                    - paragraph [ref=f2e239]: 갤러리에서 사진을 골라주세요. 셀카든 누가 찍어준 사진이든 상관없어요.
+                    - paragraph [ref=f2e240]: 정면을 보고 있는 사진이면 충분해요.
+                    - paragraph [ref=f2e241]
+                    - paragraph [ref=f2e242]:
+                      - generic [ref=f2e244]: 3단계 — 배경 제거 + 자동 크롭
+                  - generic [ref=f2e253]:
+                    - paragraph [ref=f2e254]: 여기서부터 어플이 알아서 해줘요.
+                    - paragraph [ref=f2e255]: 배경을 깔끔하게 제거하고, 흰색이든 파란색이든 원하는 배경색을 입혀줘요.
+                    - paragraph [ref=f2e256]: 그리고 얼굴 위치랑 비율을 규격에 맞게 자동으로 잡아줘요.
+                    - paragraph [ref=f2e257]
+                  - generic [ref=f2e266]:
+                    - paragraph [ref=f2e267]
+                    - paragraph [ref=f2e268]: 사진관에서 자로 재고 포토샵으로 맞추던 그 작업 있잖아요. 그걸 AI가 해주는 거예요.
+                    - paragraph [ref=f2e269]: 눈 위치, 턱 위치, 정수리까지 전부 측정해서 규격 범위 안에 들어오는지 확인해줘요.
+                    - paragraph [ref=f2e270]: 벗어나면 경고도 띄워줘요.
+                    - paragraph [ref=f2e271]: 그리고 핵심 한가지~ 각국 규격에서 정하는 얼굴의 크기는 턱에서 정수리까지에요.
+                    - paragraph [ref=f2e272]: 일반 다른 앱들은 정수리를 헤어의 탑을 잡아요..
+                    - paragraph [ref=f2e273]: 하지만 MONKOS가 특허 출원 진행중인 IDPASS는 정확히 "두개골의 꼭대기"를 정수리로 정의해요.
+                    - paragraph [ref=f2e274]: 그게 완벽한 차별점이랍니다.
+                    - paragraph [ref=f2e275]: 다른 앱에서 돈내고 여권사진 만들었는데 막상 발급이 반려되는 가장 큰 이유중 하나랍니다.
+                    - paragraph [ref=f2e276]: IDPASS가 정확히 내 정수리를 잡아주는데요.. 막상 '실수' 가 있을 수 있답니다.
+                    - paragraph [ref=f2e277]: 사람마다 헤어 스타일이 다르고 실제 정수리가 눈에 보이지 않고 두상의 모양도 다 제각각 이기 때문이죠.
+                    - paragraph [ref=f2e278]: 물론 IDPASS는 각 수치를 실시간으로 보여주면서 정수리 위치 수정도 가능하고 얼굴 비율도 직접 조절할 수 도 있는데요.
+                    - paragraph [ref=f2e279]: 눈위치, 얼굴크기등의 수치 제공과 경고 메시지를 통해 완벽한 규정이 적용되도록 설계되어있답니다.
+                    - paragraph [ref=f2e280]: 직접 사용해보시면 확 다르다는걸 느끼실 거에요^^
+                    - paragraph [ref=f2e281]
+                    - paragraph [ref=f2e282]
+                    - paragraph [ref=f2e283]:
+                      - generic [ref=f2e285]: 4단계 — 저장
+                    - paragraph [ref=f2e286]: 끝이에요. 바로 카메라롤에 저장돼요.
+                    - paragraph [ref=f2e287]: 온라인 제출용이든 인화용이든 그대로 쓰시면 돼요.
+                    - paragraph [ref=f2e288]
+                  - paragraph [ref=f2e298]
+                  - blockquote [ref=f2e302]:
+                    - paragraph [ref=f2e304]:
+                      - generic [ref=f2e306]: 근데 진짜 무료예요?
+                  - generic [ref=f2e310]:
+                    - paragraph [ref=f2e311]
+                    - paragraph [ref=f2e312]
+                    - paragraph [ref=f2e313]: 네. 진짜 무료예요.
+                    - paragraph [ref=f2e314]: 광고도 없고, 인앱결제도 없고, 워터마크도 없어요.
+                    - paragraph [ref=f2e315]
+                    - paragraph [ref=f2e316]: 많이들 물어보시는데요, IDPASS는 저희 MONKOS AI의 기술력을 보여드리는 앱이에요.
+                    - paragraph [ref=f2e317]: AI 보정이나 촬영 코칭 같은 고급 기능은 별도 서비스로 제공하고 있고,
+                    - paragraph [ref=f2e318]: 규격 맞추기라는 기본 기능은 누구나 무료로 쓸 수 있어야 한다고 생각했어요.
+                    - paragraph [ref=f2e319]: 무료인 대신에 제발 후기는 꼭 남겨주세요.. 더욱 많은 분들께 이 좋은앱이 알려졌으면 한답니다~
+                    - paragraph [ref=f2e320]
+                    - paragraph [ref=f2e321]
+                  - blockquote [ref=f2e325]:
+                    - paragraph [ref=f2e327]:
+                      - generic [ref=f2e328]: 사진이 밖으로 나가지 않아요
+                  - generic [ref=f2e332]:
+                    - paragraph [ref=f2e333]
+                    - paragraph [ref=f2e334]
+                    - paragraph [ref=f2e335]: 이거 은근 중요한 부분인데요.
+                    - paragraph [ref=f2e336]: IDPASS는 모든 처리를 폰 안에서 해요. 서버로 사진을 보내지 않아요.
+                    - paragraph [ref=f2e337]
+                    - paragraph [ref=f2e338]: 배경 제거도 폰에서, 얼굴 인식도 폰에서, 크롭도 폰에서.
+                    - paragraph [ref=f2e339]: 증명사진이 내 손 밖으로 나가지 않는다는 거예요.
+                    - paragraph [ref=f2e340]: 증명사진만큼 민감한 사진이 없잖아요. 그래서 처음부터 이렇게 만들었어요.
+                    - paragraph [ref=f2e341]
+                    - paragraph [ref=f2e342]:
+                      - generic [ref=f2e343]: 이런 분들 꼭 써보세요
+                    - paragraph [ref=f2e344]
+                    - paragraph [ref=f2e345]: "- 여권 갱신 급한데 사진관 갈 시간이 없는 분"
+                    - paragraph [ref=f2e346]: "- 해외 비자 규격이 까다로워서 골치 아픈 분"
+                    - paragraph [ref=f2e347]: "- 이력서 사진 빠르게 준비하고 싶은 분"
+                    - paragraph [ref=f2e348]: "- 외국 규격 사진이 필요한데 국내 사진관에서 안 해주는 분"
+                  - separator [ref=f2e353]
+                  - blockquote [ref=f2e357]:
+                    - paragraph [ref=f2e359]: 정확한 규격인건 좋은데 내 사진 더 예쁘게는 안되냐구요?
+                  - generic [ref=f2e368]:
+                    - paragraph [ref=f2e369]: 그건 MONKOS.AI에서 가능해요.
+                    - paragraph [ref=f2e370]: 여기선 AI가 내사진을 완벽하게 보정도 해주고, 의상, 헤어 스타일 등도 모두 제대로 갖춘 고급 증명사진으로 만들어준답니다. 여권사진 이외에도 멋진 정장차림의 이력서 사진도 내 셀카 사진 한장으로 충분합니다!!
+                    - paragraph [ref=f2e371]
+                    - paragraph [ref=f2e372]: 20년 경력의 사진작가가 개발자에요~ 실제 사진관도 직접 운영중이어서 모든 사진관 실무가 다 학습된 AI 시스템이랍니다.
+                    - paragraph [ref=f2e373]
+                  - blockquote [ref=f2e377]:
+                    - paragraph [ref=f2e379]:
+                      - generic [ref=f2e380]: 다운로드
+                  - generic [ref=f2e384]:
+                    - paragraph [ref=f2e385]
+                    - paragraph [ref=f2e386]
+                    - paragraph [ref=f2e387]: 앱 스토어에서 "IDPASS 증명사진" 검색하시면 바로 나와요.
+                    - paragraph [ref=f2e388]: 무료 다운로드니까 한번 써보시고 판단해 주세요 :)
+                    - paragraph [ref=f2e389]
+                    - paragraph [ref=f2e390]: 안드로이드 버전은 현재 준비중입니다. 앱 스토어 출시 초기라 직접 검색해야 나오지만 정말 최고의 성능을 가진 어플이랍니다. 진짜 추천드려요^^ 광고도, 인앱 결제도 없으니 다운받아서 사용해보시고 꼭 후기 남겨주시면 감사하겠습니다.
+                    - paragraph [ref=f2e391]
+                    - paragraph [ref=f2e392]: "![IDPASS 앱스토어 다운로드 QR]"
+                    - paragraph [ref=f2e393]:
+                      - link "https://storage.googleapis.com/monk-ai-images/blog/1780809746352_idpass_appstore_qr.jpg" [ref=f2e395] [cursor=pointer]:
+                        - /url: https://storage.googleapis.com/monk-ai-images/blog/1780809746352_idpass_appstore_qr.jpg
+                  - paragraph [ref=f2e405]: "*IDPASS 증명사진 — powered by MONKOS AI*"
+                  - paragraph [ref=f2e415]
+              - generic [ref=f2e418]:
+                - strong [ref=f2e419]: 태그
+                - link "#증명사진" [ref=f2e420] [cursor=pointer]:
+                  - /url: /PostListByTagName.naver?blogId=monkos_ai&logType=mylog&tagName=%EC%A6%9D%EB%AA%85%EC%82%AC%EC%A7%84
+                  - generic [ref=f2e421]: "#증명사진"
+                - link "#여권" [ref=f2e423] [cursor=pointer]:
+                  - /url: /PostListByTagName.naver?blogId=monkos_ai&logType=mylog&tagName=%EC%97%AC%EA%B6%8C
+                  - generic [ref=f2e424]: "#여권"
+                - link "#비자" [ref=f2e426] [cursor=pointer]:
+                  - /url: /PostListByTagName.naver?blogId=monkos_ai&logType=mylog&tagName=%EB%B9%84%EC%9E%90
+                  - generic [ref=f2e427]: "#비자"
+                - link "#재발급" [ref=f2e429] [cursor=pointer]:
+                  - /url: /PostListByTagName.naver?blogId=monkos_ai&logType=mylog&tagName=%EC%9E%AC%EB%B0%9C%EA%B8%89
+                  - generic [ref=f2e430]: "#재발급"
+                - link "#시청" [ref=f2e432] [cursor=pointer]:
+                  - /url: /PostListByTagName.naver?blogId=monkos_ai&logType=mylog&tagName=%EC%8B%9C%EC%B2%AD
+                  - generic [ref=f2e433]: "#시청"
+                - link "#사진" [ref=f2e435] [cursor=pointer]:
+                  - /url: /PostListByTagName.naver?blogId=monkos_ai&logType=mylog&tagName=%EC%82%AC%EC%A7%84
+                  - generic [ref=f2e436]: "#사진"
+                - link "#증명사진무료앱" [ref=f2e438] [cursor=pointer]:
+                  - /url: /PostListByTagName.naver?blogId=monkos_ai&logType=mylog&tagName=%EC%A6%9D%EB%AA%85%EC%82%AC%EC%A7%84%EB%AC%B4%EB%A3%8C%EC%95%B1
+                  - generic [ref=f2e439]: "#증명사진무료앱"
+                - link "#배경제거" [ref=f2e441] [cursor=pointer]:
+                  - /url: /PostListByTagName.naver?blogId=monkos_ai&logType=mylog&tagName=%EB%B0%B0%EA%B2%BD%EC%A0%9C%EA%B1%B0
+                  - generic [ref=f2e442]: "#배경제거"
+                - link "#크롭" [ref=f2e444] [cursor=pointer]:
+                  - /url: /PostListByTagName.naver?blogId=monkos_ai&logType=mylog&tagName=%ED%81%AC%EB%A1%AD
+                  - generic [ref=f2e445]: "#크롭"
+                - link "#미국비자" [ref=f2e447] [cursor=pointer]:
+                  - /url: /PostListByTagName.naver?blogId=monkos_ai&logType=mylog&tagName=%EB%AF%B8%EA%B5%AD%EB%B9%84%EC%9E%90
+                  - generic [ref=f2e448]: "#미국비자"
+                - link "#중국비자" [ref=f2e450] [cursor=pointer]:
+                  - /url: /PostListByTagName.naver?blogId=monkos_ai&logType=mylog&tagName=%EC%A4%91%EA%B5%AD%EB%B9%84%EC%9E%90
+                  - generic [ref=f2e451]: "#중국비자"
+                - link "#베트남" [ref=f2e453] [cursor=pointer]:
+                  - /url: /PostListByTagName.naver?blogId=monkos_ai&logType=mylog&tagName=%EB%B2%A0%ED%8A%B8%EB%82%A8
+                  - generic [ref=f2e454]: "#베트남"
+                - link "#인도" [ref=f2e456] [cursor=pointer]:
+                  - /url: /PostListByTagName.naver?blogId=monkos_ai&logType=mylog&tagName=%EC%9D%B8%EB%8F%84
+                  - generic [ref=f2e457]: "#인도"
+                - link "#일본" [ref=f2e459] [cursor=pointer]:
+                  - /url: /PostListByTagName.naver?blogId=monkos_ai&logType=mylog&tagName=%EC%9D%BC%EB%B3%B8
+                  - generic [ref=f2e460]: "#일본"
+                - link "태그수정" [ref=f2e462] [cursor=pointer]:
+                  - /url: "#"
+                  - text: 태그수정
+              - generic [ref=f2e464]:
+                - generic [ref=f2e465]:
+                  - generic [ref=f2e466]:
+                    - generic [ref=f2e467]:
+                      - button "" [ref=f2e470] [cursor=pointer]:
+                        - generic [ref=f2e471]: 
+                      - button "공감" [ref=f2e472] [cursor=pointer]:
+                        - button "공감" [ref=f2e474]
+                    - link " 이 글에 공감한 블로거 열고 닫기" [ref=f2e475] [cursor=pointer]:
+                      - /url: "#"
+                      - generic [ref=f2e477]: 
+                      - generic [ref=f2e478]: 이 글에 공감한 블로거 열고 닫기
+                  - button " 댓글 쓰기  이 글에 댓글 단 블로거 열고 닫기" [ref=f2e481] [cursor=pointer]:
+                    - generic [ref=f2e482]: 
+                    - text: 댓글
+                    - emphasis
+                    - emphasis [ref=f2e483]: 쓰기
+                    - generic [ref=f2e485]:
+                      - generic [ref=f2e486]: 
+                      - generic [ref=f2e487]: 이 글에 댓글 단 블로거 열고 닫기
+                - generic [ref=f2e489]:
+                  - generic [ref=f2e493]:
+                    - link "카페 보내기" [ref=f2e494] [cursor=pointer]:
+                      - /url: "#"
+                      - generic [ref=f2e495]: 카페 보내기
+                    - link "Keep 보내기" [ref=f2e496] [cursor=pointer]:
+                      - /url: "#"
+                      - generic [ref=f2e497]: Keep 보내기
+                    - link "메모 보내기" [ref=f2e498] [cursor=pointer]:
+                      - /url: "#"
+                      - generic [ref=f2e499]: 메모 보내기
+                    - link "기타 보내기 펼치기" [ref=f2e500] [cursor=pointer]:
+                      - /url: "#"
+                      - generic [ref=f2e501]: 기타 보내기 펼치기
+                  - generic [ref=f2e502]:
+                    - link "수정" [ref=f2e504] [cursor=pointer]:
+                      - /url: javascript:suggestConvert(224308498142, true, false, 4)
+                      - text: 수정
+                    - link "삭제" [ref=f2e506] [cursor=pointer]:
+                      - /url: "#"
+                      - text: 삭제
+                    - link "설정 " [ref=f2e508] [cursor=pointer]:
+                      - /url: "#"
+                      - text: 설정
+                      - generic [ref=f2e509]: 
+              - text:  
+              - table [ref=f2e510]:
+                - rowgroup [ref=f2e511]:
+                  - row [ref=f2e512]:
+                    - cell [ref=f2e513]
+                    - cell [ref=f2e514]
+                    - cell [ref=f2e515]
+            - generic [ref=f2e520]:
+              - generic [ref=f2e521]:
+                - heading "이 블로그 MONKOS AI 카테고리 글" [level=4] [ref=f2e522]:
+                  - text: 이 블로그
+                  - link "MONKOS AI" [ref=f2e523] [cursor=pointer]:
+                    - /url: /PostList.naver?blogId=monkos_ai&categoryNo=19&from=postList&parentCategoryNo=0
+                    - strong [ref=f2e524]: MONKOS AI
+                  - text: 카테고리 글
+                - link "전체글 보기" [ref=f2e525] [cursor=pointer]:
+                  - /url: /PostList.naver?blogId=monkos_ai&categoryNo=19&from=postList&parentCategoryNo=0
+              - generic [ref=f2e527]:
+                - table "MONKOS AI글 목록" [ref=f2e528]:
+                  - caption:
+                    - generic [ref=f2e529]: MONKOS AI글 목록
+                  - rowgroup:
+                    - row "글 제목 작성일":
+                      - columnheader "글 제목":
+                        - generic [ref=f2e533]: 글 제목
+                      - columnheader "작성일":
+                        - generic [ref=f2e534]: 작성일
+                  - rowgroup [ref=f2e535]:
+                    - row "여권사진, 비자사진 이제 내 손에서 무료로 해결 IDPASS 증명사진 9분 전" [ref=f2e536]:
+                      - cell "여권사진, 비자사진 이제 내 손에서 무료로 해결 IDPASS 증명사진" [ref=f2e537]:
+                        - link "여권사진, 비자사진 이제 내 손에서 무료로 해결 IDPASS 증명사진" [ref=f2e540] [cursor=pointer]:
+                          - /url: /PostView.naver?blogId=monkos_ai&logNo=224308498142&parentCategoryNo=&categoryNo=19&viewDate=&isShowPopularPosts=false&from=postView
+                      - cell "9분 전" [ref=f2e542]:
+                        - generic [ref=f2e543]: 9분 전
+                    - row "셀카로 찍었는데 사진관에서 찍은 줄 알았대요 (AI 증명사진 앱 후기) 2026. 5. 28." [ref=f2e545]:
+                      - cell "셀카로 찍었는데 사진관에서 찍은 줄 알았대요 (AI 증명사진 앱 후기)" [ref=f2e546]:
+                        - link "셀카로 찍었는데 사진관에서 찍은 줄 알았대요 (AI 증명사진 앱 후기)" [ref=f2e549] [cursor=pointer]:
+                          - /url: /PostView.naver?blogId=monkos_ai&logNo=224299143758&parentCategoryNo=&categoryNo=19&viewDate=&isShowPopularPosts=false&from=postView
+                      - cell "2026. 5. 28." [ref=f2e551]:
+                        - generic [ref=f2e552]: 2026. 5. 28.
+                    - row "(1) 이직 준비 증명사진 — 취준생 사진이랑 뭐가 달라야 할까? 2026. 5. 18." [ref=f2e554]:
+                      - cell "(1) 이직 준비 증명사진 — 취준생 사진이랑 뭐가 달라야 할까?" [ref=f2e555]:
+                        - generic [ref=f2e556]:
+                          - generic [ref=f2e558]: (1)
+                          - link "이직 준비 증명사진 — 취준생 사진이랑 뭐가 달라야 할까?" [ref=f2e560] [cursor=pointer]:
+                            - /url: /PostView.naver?blogId=monkos_ai&logNo=224289097356&parentCategoryNo=&categoryNo=19&viewDate=&isShowPopularPosts=false&from=postView
+                      - cell "2026. 5. 18." [ref=f2e562]:
+                        - generic [ref=f2e563]: 2026. 5. 18.
+                    - row "여성 단발머리 취업사진 스타일 3종 2026. 5. 14." [ref=f2e565]:
+                      - cell "여성 단발머리 취업사진 스타일 3종" [ref=f2e566]:
+                        - link "여성 단발머리 취업사진 스타일 3종" [ref=f2e569] [cursor=pointer]:
+                          - /url: /PostView.naver?blogId=monkos_ai&logNo=224285355127&parentCategoryNo=&categoryNo=19&viewDate=&isShowPopularPosts=false&from=postView
+                      - cell "2026. 5. 14." [ref=f2e571]:
+                        - generic [ref=f2e572]: 2026. 5. 14.
+                    - row "여권사진 규격을 정확히 반영해주는 무료앱 추천 2026. 5. 12." [ref=f2e574]:
+                      - cell "여권사진 규격을 정확히 반영해주는 무료앱 추천" [ref=f2e575]:
+                        - link "여권사진 규격을 정확히 반영해주는 무료앱 추천" [ref=f2e578] [cursor=pointer]:
+                          - /url: /PostView.naver?blogId=monkos_ai&logNo=224283086784&parentCategoryNo=&categoryNo=19&viewDate=&isShowPopularPosts=false&from=postView
+                      - cell "2026. 5. 12." [ref=f2e580]:
+                        - generic [ref=f2e581]: 2026. 5. 12.
+                - generic [ref=f2e584]:
+                  - strong [ref=f2e585]: 페이지 이동하기
+                  - generic [ref=f2e586]:
+                    - generic [ref=f2e587]: 
+                    - text: 이전
+                    - generic [ref=f2e588]: 페이지로 이동
+                  - link "다음 페이지로 이동 " [ref=f2e589] [cursor=pointer]:
+                    - /url: "#"
+                    - text: 다음
+                    - generic [ref=f2e590]: 페이지로 이동
+                    - generic [ref=f2e591]: 
+              - button " 화면 최상단으로 이동" [ref=f2e592] [cursor=pointer]:
+                - generic [ref=f2e593]: 
+                - generic [ref=f2e594]: 화면 최상단으로 이동
+          - generic [ref=f2e598]:
+            - generic [ref=f2e600]:
+              - generic [ref=f2e601] [cursor=pointer]:
+                - heading "카테고리" [level=3] [ref=f2e602]
+                - paragraph [ref=f2e603]:
+                  - button "^" [ref=f2e605]
+              - list [ref=f2e608]:
+                - listitem [ref=f2e609]:
+                  - link "전체보기" [ref=f2e610] [cursor=pointer]:
+                    - /url: "/PostList.naver?blogId=monkos_ai&categoryNo=0&from=postList "
+                  - text: (494)
+                  - link "EDIT" [ref=f2e611] [cursor=pointer]:
+                    - /url: https://admin.blog.naver.com/AdminMain.naver?blogId=monkos_ai&Redirect=Categoryinfo
+                    - img "EDIT" [ref=f2e612]
+                - listitem [ref=f2e613]:
+                  - generic [ref=f2e614]:
+                    - link "MONKOS AI" [ref=f2e615] [cursor=pointer]:
+                      - /url: "/PostList.naver?blogId=monkos_ai&from=postList&categoryNo=19 "
+                    - img "NEW" [ref=f2e616]
+                - listitem [ref=f2e617]:
+                  - link "몽크사진관" [ref=f2e619] [cursor=pointer]:
+                    - /url: "/PostList.naver?blogId=monkos_ai&from=postList&categoryNo=23 "
+                - listitem [ref=f2e620]:
+                  - link "SHIN's AI story" [ref=f2e622] [cursor=pointer]:
+                    - /url: "/PostList.naver?blogId=monkos_ai&from=postList&categoryNo=21 "
+                - listitem [ref=f2e623]:
+                  - link "HAN's BEAUTY" [ref=f2e625] [cursor=pointer]:
+                    - /url: "/PostList.naver?blogId=monkos_ai&from=postList&categoryNo=20 "
+                - listitem [ref=f2e626]:
+                  - link "KKU's DISIGN" [ref=f2e628] [cursor=pointer]:
+                    - /url: "/PostList.naver?blogId=monkos_ai&from=postList&categoryNo=22 "
+                - listitem [ref=f2e629]:
+                  - link "Old" [ref=f2e631] [cursor=pointer]:
+                    - /url: "/PostList.naver?blogId=monkos_ai&from=postList&categoryNo=18&parentCategoryNo=18 "
+                  - img "Old 열림" [ref=f2e633] [cursor=pointer]
+                - listitem [ref=f2e634]:
+                  - link "게시판" [ref=f2e636] [cursor=pointer]:
+                    - /url: "/PostList.naver?blogId=monkos_ai&from=postList&categoryNo=11 "
+                - listitem [ref=f2e637]:
+                  - link "새로운 컨셉" [ref=f2e639] [cursor=pointer]:
+                    - /url: "/PostList.naver?blogId=monkos_ai&from=postList&categoryNo=10 "
+                - listitem [ref=f2e640]:
+                  - link "나라별 비자사진 규정" [ref=f2e642] [cursor=pointer]:
+                    - /url: "/PostList.naver?blogId=monkos_ai&from=postList&categoryNo=13 "
+                - listitem [ref=f2e643]:
+                  - link "여행" [ref=f2e645] [cursor=pointer]:
+                    - /url: "/PostList.naver?blogId=monkos_ai&from=postList&categoryNo=16 "
+                - listitem [ref=f2e646]:
+                  - generic [ref=f2e647]:
+                    - link "여긴어때" [ref=f2e648] [cursor=pointer]:
+                      - /url: "/PostList.naver?blogId=monkos_ai&from=postList&categoryNo=1 "
+                    - text: (304)
+                - listitem [ref=f2e649]:
+                  - link "우리들의일그러진일상" [ref=f2e651] [cursor=pointer]:
+                    - /url: "/PostList.naver?blogId=monkos_ai&from=postList&categoryNo=15 "
+                - listitem [ref=f2e652]:
+                  - link "커피한잔의여유" [ref=f2e654] [cursor=pointer]:
+                    - /url: "/PostList.naver?blogId=monkos_ai&from=postList&categoryNo=9 "
+                - listitem [ref=f2e655]:
+                  - link "[블챌] 체크인 챌린지" [ref=f2e657] [cursor=pointer]:
+                    - /url: "/PostList.naver?blogId=monkos_ai&from=postList&categoryNo=17 "
+            - generic [ref=f2e662]:
+              - generic [ref=f2e663]:
+                - paragraph [ref=f2e664]:
+                  - link "프로필 이미지" [ref=f2e665] [cursor=pointer]:
+                    - /url: "#"
+                    - img "프로필 이미지" [ref=f2e666]
+                - generic [ref=f2e668]:
+                  - strong [ref=f2e669]: MONKOS AI
+                  - generic [ref=f2e670]: monkos_ai
+                  - button "네이버 메이트 도움말 보기" [ref=f2e672] [cursor=pointer]:
+                    - generic [ref=f2e673]: 5천 인용
+                    - generic [ref=f2e674]: 
+                - paragraph [ref=f2e675]:
+                  - generic [ref=f2e676]:
+                    - text: 20년 사진작가, 뷰티 전문가, 디자이너가 함께 만들어가는 AI 플랫폼입니다.
+                    - text: AI 사용법부터 메이크업, 헤어, 사진관 운영까지 —
+                    - text: 각자의 전문성이 모여 새로운 이야기를 만들어갑니다.
+                    - text: monkos.ai
+                  - link "EDIT" [ref=f2e677] [cursor=pointer]:
+                    - /url: https://admin.blog.naver.com/AdminMain.naver?blogId=monkos_ai&Redirect=Basicinfo
+                    - img "EDIT" [ref=f2e678]
+                - paragraph [ref=f2e679]:
+                  - link "프로필" [ref=f2e681] [cursor=pointer]:
+                    - /url: https://blog.naver.com/profile/intro.naver?blogId=monkos_ai
+              - generic [ref=f2e683]:
+                - link "글쓰기" [ref=f2e684] [cursor=pointer]:
+                  - /url: https://blog.naver.com/monkos_ai/postwrite?categoryNo=19
+                - link "관리" [ref=f2e685] [cursor=pointer]:
+                  - /url: https://admin.blog.naver.com/monkos_ai
+                - strong [ref=f2e686]: ·
+                - link "통계" [ref=f2e687] [cursor=pointer]:
+                  - /url: https://admin.blog.naver.com/monkos_ai/stat/today
+            - generic [ref=f2e690]:
+              - link "RSS 2.0" [ref=f2e691] [cursor=pointer]:
+                - /url: https://rss.blog.naver.com/monkos_ai.xml
+                - generic [ref=f2e692]: RSS 2.0
+              - link "RSS 1.0" [ref=f2e693] [cursor=pointer]:
+                - /url: https://rss.blog.naver.com/monkos_ai.xml?rss=1.0
+                - generic [ref=f2e694]: RSS 1.0
+              - link "ATOM 0.3" [ref=f2e695] [cursor=pointer]:
+                - /url: https://rss.blog.naver.com/monkos_ai.xml?atom=0.3
+                - generic [ref=f2e696]: ATOM 0.3
+            - generic [ref=f2e700]:
+              - heading "검색" [level=3] [ref=f2e701]
+              - generic [ref=f2e702]: 글 검색
+              - textbox "글 검색" [ref=f2e703]
+              - button "검색" [ref=f2e704] [cursor=pointer]
+    - generic [ref=f2e715]:
+      - generic [ref=f2e717]:
+        - link "확인" [ref=f2e718] [cursor=pointer]:
+          - /url: "#"
+          - img "확인" [ref=f2e719]
+        - link "취소" [ref=f2e720] [cursor=pointer]:
+          - /url: "#"
+          - img "취소" [ref=f2e721]
+      - link "닫기" [ref=f2e722] [cursor=pointer]:
+        - /url: "#"
+        - img "닫기" [ref=f2e723]

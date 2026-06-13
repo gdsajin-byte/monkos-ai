@@ -6,7 +6,7 @@ subject: "IAM·SA 권한 재조정·분기 재설계 (MONKOS 보안 체계화)"
 created: 2026-04-23
 owner: 작가님
 leads: "iMac/쌍아(설계·통합), 막내(실행)"
-status: completed (merged → PF_AUTOPILOT)
+status: active
 ---
 
 # PF_SECURITY — IAM·SA 권한 재조정·분기 재설계
@@ -63,14 +63,25 @@ status: completed (merged → PF_AUTOPILOT)
 | 2026-04-23 | 작가님 | **결정**: 국소 해결 대신 IAM 전수 재설계로 승격 | 본 PF | ✅ |
 | 2026-04-23 | iMac/쌍아 | PF_SECURITY 창설 (대기 상태) | README.md (본 문서) | ✅ |
 | 2026-04-23 | iMac/쌍아 | 기준선 문서 식별 — 4/22 막내1 GCP+Firebase 감사가 SA 인벤토리 80% 완성 상태로 존재. Phase 1은 "신규 조사" → **"4/22 감사 정비·확장"**으로 경로 변경 | 본 PF §4·§5·§7 갱신 | ✅ |
+| 2026-06-12 | 웹/민아 | 작가님+웹민아 GCP 합동 콘솔 점검 — Gemini 키 마감 충족, IAM 축소, P0 monk-factory-storage 공개 재발견 | 2026-06-12_웹_민아_수동.md | ✅ |
+| 2026-06-12 | 웹/민아 | GCP 전수 정밀조사 지시서 기안 (쌍아 토스용) | ORDER_20260612_웹민아_막내들 | ✅ |
+| 2026-06-12 | iMac/쌍아 | **PF 재활성** + 지시서 3건 분할 발행 (막내1:키·IAM, 막내2:버킷, 막내3:CloudRun·종료) — 상호 교차 감사 조항 | ORDER×3 | ✅ |
+| 2026-06-12 | iMac/막내1 | GCP 전수조사 A 완료 — API 키 11→2 축소 확인, editor 권한 대량 삭제 확인, yong-a 구키 삭제 완결 확인, smuse73·monk-factory-agent 키 폐기 후보 판정, SECRET_INVENTORY §A·§G 갱신 | REPORT_20260612_iMac막내1_SECURITY_GCP키IAM전수.md | ✅ |
+| 2026-06-12 | iMac/막내3 | GCP 전수조사 C 완료 — Cloud Run 11개 SA 맵 (전용 9/기본 2), Compute 기본 SA 사용 서비스 monk-n8n·pt 특정, 종료 판정(aistudio·Gemini·MyMaps=즉시 가능, startMONK=버킷 감사 대기), 막내1 교차 감사 완료 | REPORT_20260612_iMac막내3_SECURITY_CloudRun_SA맵_종료판정.md | ✅ |
+| 2026-06-12 | iMac/막내2 | GCP 전수조사 B 완료 — 7개 프로젝트 17개 버킷 전수 실측, monk-factory-storage allUsers 7주 미집행 확인(P0), monk-ai-images 98.3% 비공개 데이터 혼재 실측, startMONK 버킷 2개 내용 감사(종료 장애물 없음), GCS_BUCKET_STRUCTURE.md 신규 작성, 막내3 교차 감사 완료 | REPORT_20260612_iMac막내2_SECURITY_GCP버킷전수.md + GCS_BUCKET_STRUCTURE.md | ✅ |
+| 2026-06-12 | iMac/막내1 | monk-ai-images 코드 참조 전수조사 완료 — 20개 파일 분석, 쓰기 경로 8종 식별, 경로 스키마 맵 작성, public/private 분리 기초자료(옵션B 권고: allUsers 제거+파일 레벨 ACL), studio 경로 혼용 이슈 발견 | REPORT_20260612_iMac막내1_SECURITY_GCS버킷코드참조전수.md | ✅ |
+| 2026-06-12 | iMac/막내1 | 3권심사 입법 완료 — UBLA 실측(monk-ai-images=Fine-Grained, factory=Uniform-Locked), 경로별 공개/비공개 판정 7경로, allUsers 제거 영향 장애점 3건(G1~G3) 식별, 4-Step 교정 워크플로우 설계, 옵션B(즉시 ACL 보정)→옵션A(장기 분리) 2단계 전략 권고 | REPORT_20260612_iMac막내1_SECURITY_GCS삼권심사_입법.md | ✅ |
+| 2026-06-12 | iMac/막내3 | 3권심사 사법 완료 — 고객 증명사진 85명 1,165건 익명 접근·열거 확인(CRITICAL), blog/* ACL 미검증 리스크 발견, 개인정보보호법 위반 소지 판정, 4-Phase 검증 체크리스트 작성, 막내1 옵션B에 조건부 동의(blog ACL 선검증 필수) | REPORT_20260612_iMac막내3_SECURITY_GCS삼권심사_사법.md | ✅ |
+| 2026-06-12 | iMac/막내2 | 3권심사 행정 완료 — 7경로 2단계 정밀 맵트리, Fine-Grained ACL 실측(allUsers 파일 레벨: ads 13건+blog slug 125건만 존재), 활성/유휴 판별(80% 유휴), 버킷 IAM 제거 시 부수피해 644건(blog flat+assets) 특정, 안전 시퀀스 제시 | REPORT_20260612_iMac막내2_SECURITY_GCS삼권심사_행정.md | ✅ |
+| 2026-06-12 | iMac/막내1 | CF 인프라 맵트리 완료 — Pages Functions 13개(api 6+specs 7) 전수 분석, 외부 Workers 3개 전부 레거시 판정, 환경변수 13개 중 7개 레거시 추정, GEMINI_API_KEY 지문 미대조 경고, D1 monk-db 바인딩 정합 확인 | REPORT_20260612_iMac막내1_인프라_CF맵트리.md | ✅ |
 
 ---
 
 ## 4. Phase 현황
 
-### Phase 0 — 대기 🕒 (현재)
+### Phase 0 — 대기 → ✅ 재활성 (2026-06-12)
 
-PF_MONK_OS Phase 0 완료까지 정지. 산출물 축적 허용(본 README·관련 제안서·메모리 참조).
+PF_MONK_OS Phase 0 완료까지 정지 상태였으나, 06-12 Gemini 키 마감(06-19) + P0 미집행 7주 재발견으로 **재활성**. 4-22 감사 이후 델타 현행화 착수.
 
 ### Phase 1 — 기준선 정비·확장 (착수 시)
 

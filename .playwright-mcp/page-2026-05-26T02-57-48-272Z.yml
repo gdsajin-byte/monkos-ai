@@ -1,0 +1,87 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link "MONKOS" [ref=e4] [cursor=pointer]:
+        - /url: /
+        - text: MONKOS
+      - navigation [ref=e6]:
+        - link "Blog" [ref=e7] [cursor=pointer]:
+          - /url: /blog
+        - link "FAQ" [ref=e8] [cursor=pointer]:
+          - /url: /faq
+        - link "Gallery" [ref=e9] [cursor=pointer]:
+          - /url: /gallery
+        - link "Board" [ref=e10] [cursor=pointer]:
+          - /url: /board
+        - link "Guide" [ref=e11] [cursor=pointer]:
+          - /url: /guide
+        - link "Pricing" [ref=e12] [cursor=pointer]:
+          - /url: /pricing
+  - generic [ref=e13]:
+    - generic [ref=e14]:
+      - generic [ref=e15]: 🌐 GLOBAL PHOTO SPEC GUIDE
+      - heading "증명사진 규격 가이드" [level=1] [ref=e16]
+      - paragraph [ref=e17]: 전세계 200국가 이상의 여권, 비자 등 증명사진 규격 정보 제공 및 규격 맞춤 서비스.
+      - generic [ref=e18]:
+        - generic [ref=e19]:
+          - generic [ref=e20]: 206+
+          - generic [ref=e21]: 국가
+        - generic [ref=e22]:
+          - generic [ref=e23]: 445+
+          - generic [ref=e24]: 규격
+        - generic [ref=e25]:
+          - generic [ref=e26]: 35+
+          - generic [ref=e27]: 공식 검증
+    - generic [ref=e28]:
+      - text: 🔍
+      - searchbox "국가명 검색..." [ref=e29]
+    - generic [ref=e58]:
+      - button "← 용도 선택으로" [ref=e60] [cursor=pointer]
+      - generic [ref=e61]:
+        - generic [ref=e62] [cursor=pointer]:
+          - img "아시아" [ref=e63]
+          - generic [ref=e64]:
+            - generic [ref=e65]: 아시아
+            - generic [ref=e66]: ASIA
+            - generic [ref=e67]: 34 개국
+        - generic [ref=e68] [cursor=pointer]:
+          - img "유럽" [ref=e69]
+          - generic [ref=e70]:
+            - generic [ref=e71]: 유럽
+            - generic [ref=e72]: EUROPE
+            - generic [ref=e73]: 50 개국
+        - generic [ref=e74] [cursor=pointer]:
+          - img "아메리카" [ref=e75]
+          - generic [ref=e76]:
+            - generic [ref=e77]: 아메리카
+            - generic [ref=e78]: AMERICAS
+            - generic [ref=e79]: 36 개국
+        - generic [ref=e80] [cursor=pointer]:
+          - img "아프리카" [ref=e81]
+          - generic [ref=e82]:
+            - generic [ref=e83]: 아프리카
+            - generic [ref=e84]: AFRICA
+            - generic [ref=e85]: 54 개국
+        - generic [ref=e86] [cursor=pointer]:
+          - img "오세아니아" [ref=e87]
+          - generic [ref=e88]:
+            - generic [ref=e89]: 오세아니아
+            - generic [ref=e90]: OCEANIA
+            - generic [ref=e91]: 17 개국
+        - generic [ref=e92] [cursor=pointer]:
+          - img "중동" [ref=e93]
+          - generic [ref=e94]:
+            - generic [ref=e95]: 중동
+            - generic [ref=e96]: MIDDLE EAST
+            - generic [ref=e97]: 14 개국
+    - generic [ref=e53]: © 2026 MONKOS · 규격 정보는 공식 출처 기반 검증. 최종 규정은 발급 기관 확인.
+  - contentinfo [ref=e54]:
+    - text: © 2026 MONKOS. All rights reserved.
+    - link "Terms" [ref=e55] [cursor=pointer]:
+      - /url: /terms.html
+    - text: ·
+    - link "Privacy" [ref=e56] [cursor=pointer]:
+      - /url: /privacy.html
+    - text: ·
+    - link "Refund" [ref=e57] [cursor=pointer]:
+      - /url: /refund.html

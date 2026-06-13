@@ -65,8 +65,22 @@
 
 | 이름 | 운용자 | 모델 | 환경 | 역할 |
 |------|--------|------|------|------|
-| **한** | 한송이 | Claude (Max Sonnet) | M4 Claude Code | SNS/마케팅, 콘텐츠 기획 |
-| **꾸** | 와이프 | Claude (Max Sonnet) | M2 Claude Code | 생활/업무 자동화 |
+| **한** | 한송이 | — | M4 (접근 불가) | ~~SNS/마케팅, 콘텐츠 기획~~ | 퇴사 (2026-05-27) |
+| **꾸** | 와이프 | Claude Opus 4.6 (1M) | M2 Claude Code | 콘텐츠/마케팅 + specs 콘텐츠 디자인 + 7채널 배포 |
+
+**꾸 권한표** (M2/쌍아 협업)
+
+| 영역 | 권한 | 비고 |
+|------|------|------|
+| 네이버 블로그 | ✅ 원본 작성·게시 | PSSR 공식, SEO/AIO 최적화 |
+| specs 콘텐츠 | ✅ `monkos_AI/portal/lib/cms/specs-data.json` 텍스트 필드만 보강 | details, faqs, rejectionReasons. 규격 수치(size/pixels/dpi) 변경 금지 |
+| specs 디자인 방향 | ⚠️ 디자인 방향 지시, 코드 수정은 M2/쌍아→막내 경유 | render-specs.js HTML/CSS |
+| 7채널 배포 | ✅ 네이버·구글·인스타·유튜브·핀터레스트·페이스북 | 원본에서 포맷 변환 |
+| 서비스 코드 | ❌ | monkos_AI/, MONK_kr/, functions/ 접근 불가 |
+| 배포 | ❌ | deploy.sh 경유 불가 — 막내 또는 iMac/쌍아 관할 |
+| 거버넌스·monkos-ops | ❌ | governance/, CLAUDE.md, monkos-ops/ 수정 불가 |
+| 크레딧/고객 데이터 | ❌ | ch4 10조 — credits.sh 환경 부재 |
+| 시크릿 | ❌ | 헌법 4조 1항 + 광역오더 #8 적용 |
 
 - 팀원 에이전트는 monk_project 헌법 전 조항을 상속하되, 자체 CLAUDE.md에서 업무 규칙을 확장한다 (위성 프로젝트 모델).
 
@@ -168,6 +182,21 @@
 > 3. 작가님의 명시적 승인
 > 4. 세션 로그에 `[긴급예외]` 태그 기록
 > 5. 장애 해소 후 24시간 내 쌍아 사후 리뷰 + INCIDENT 보고서 작성
+
+**제5-2항 (꾸 경로)**
+
+헌법 제1조(정체성) 2항 ④를 상세화한다.
+
+```
+꾸(콘텐츠 기획) + M2/쌍아(기술 지원) → 블로그 원본 + specs 콘텐츠 보강 → 작가님 확인
+```
+
+- 꾸는 HUMAN(팀원)이며, M2/쌍아가 기술 지원을 제공한다.
+- 작업 범위: 네이버 블로그 원본 작성, specs-data.json 텍스트 필드 보강, 7채널 배포.
+- specs-data.json 편집 시 규격 수치(size/pixels/dpi/background/headHeight) 변경 금지 — PF_CROP 정본 관할.
+- 서비스 코드·배포·거버넌스·monkos-ops 수정 불가 (1조 꾸 권한표).
+- 관련 PF: PF_KKU (콘텐츠 허브), PF_SPECS (콘텐츠 보강 기여).
+- 관련 스킬: `/꾸컨텍스트`, `/꾸블로그`, `/꾸스펙스`.
 
 **제6항 (위성 산출물 검증 절차)**
 

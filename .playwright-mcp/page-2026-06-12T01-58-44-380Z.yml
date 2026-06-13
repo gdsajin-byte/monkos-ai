@@ -1,0 +1,500 @@
+- main [ref=e3]:
+  - generic [ref=e4]:
+    - generic [ref=e7]:
+      - generic [ref=e8]:
+        - link "Passport Photo logo" [ref=e10] [cursor=pointer]:
+          - /url: /
+          - img "Passport Photo logo" [ref=e11]
+        - list [ref=e36]:
+          - listitem [ref=e37]:
+            - button "Resources" [ref=e38] [cursor=pointer]:
+              - generic [ref=e39]: Resources
+              - img [ref=e40]
+          - listitem [ref=e43]:
+            - button "Popular Documents" [ref=e44] [cursor=pointer]:
+              - generic [ref=e45]: Popular Documents
+              - img [ref=e46]
+          - listitem [ref=e49]:
+            - button "How it Works" [ref=e50] [cursor=pointer]:
+              - generic [ref=e51]: How it Works
+              - img [ref=e52]
+          - listitem [ref=e55]:
+            - button "About" [ref=e56] [cursor=pointer]:
+              - generic [ref=e57]: About
+              - img [ref=e58]
+      - generic:
+        - generic:
+          - button "Upload photo"
+    - generic [ref=e66]:
+      - generic [ref=e67]:
+        - generic [ref=e68]:
+          - heading "US Visa Photo Tool" [level=1] [ref=e69]
+          - generic [ref=e71]: Get your perfect photo (compliance guaranteed)
+        - generic [ref=e72]:
+          - generic [ref=e75]:
+            - generic [ref=e80]: Drag & drop your photo or
+            - generic [ref=e81]:
+              - button "Upload photo" [ref=e82] [cursor=pointer]
+              - button "Take photo" [ref=e83] [cursor=pointer]
+          - generic [ref=e84]:
+            - generic [ref=e86]: Excellent
+            - generic [ref=e95]: 19335 reviews on
+      - img "US Visa Photo Tool" [ref=e99]
+    - generic [ref=e106]:
+      - paragraph [ref=e107]: As seen in
+      - img "Bloomberg logo" [ref=e109]
+      - img "New York Times logo" [ref=e111]
+      - img "Forbes logo" [ref=e113]
+      - img "Business Insider logo" [ref=e115]
+      - img "USA Today logo" [ref=e117]
+      - img "INC. logo" [ref=e119]
+      - img "HuffPost logo" [ref=e121]
+      - img "CNN logo" [ref=e123]
+    - generic [ref=e132]:
+      - heading "US Visa Photo—Specifications" [level=2] [ref=e134]
+      - img "US Visa Photo—Specifications" [ref=e138]
+      - generic [ref=e139]:
+        - generic [ref=e140]:
+          - generic:
+            - img "printed size icon"
+          - generic [ref=e141]:
+            - term [ref=e142]:
+              - paragraph [ref=e143]:
+                - strong [ref=e144]: Size
+            - definition [ref=e145]:
+              - paragraph [ref=e147]: 2x2 in
+        - generic [ref=e148]:
+          - generic:
+            - img "digital dimensions icon"
+          - generic [ref=e149]:
+            - term [ref=e150]:
+              - paragraph [ref=e151]:
+                - strong [ref=e152]: Digital dimensions
+            - definition [ref=e153]:
+              - paragraph [ref=e155]: 600x600 px
+        - generic [ref=e156]:
+          - generic:
+            - img "Head size icon"
+          - generic [ref=e157]:
+            - term [ref=e158]:
+              - paragraph [ref=e159]:
+                - strong [ref=e160]: Head height
+            - definition [ref=e161]:
+              - paragraph [ref=e163]: 1–1 3/8 in
+        - generic [ref=e164]:
+          - generic:
+            - img "photo background color"
+          - generic [ref=e165]:
+            - term [ref=e166]:
+              - paragraph [ref=e167]:
+                - strong [ref=e168]: Background color
+            - definition [ref=e169]:
+              - paragraph [ref=e171]: White or off-white
+        - generic [ref=e172]:
+          - generic:
+            - img "passport photo resolution"
+          - generic [ref=e173]:
+            - term [ref=e174]:
+              - paragraph [ref=e175]:
+                - strong [ref=e176]: Resolution
+            - definition [ref=e177]:
+              - paragraph [ref=e179]: ≥ 300 dpi
+        - generic [ref=e180]:
+          - generic:
+            - img "photo recency"
+          - generic [ref=e181]:
+            - term [ref=e182]:
+              - paragraph [ref=e183]:
+                - strong [ref=e184]: Recency
+            - definition [ref=e185]:
+              - paragraph [ref=e187]: ≤ 6 months
+    - generic [ref=e194]:
+      - generic [ref=e195]: "Last update: 1/17/2025"
+      - generic [ref=e197]:
+        - generic [ref=e199] [cursor=pointer]:
+          - generic [ref=e200]: Written by
+          - generic [ref=e203]: Roxana Grabowska
+        - generic [ref=e207] [cursor=pointer]:
+          - generic [ref=e208]: Reviewed by
+          - generic [ref=e211]: Mateusz Chodakowski
+          - generic [ref=e212]:
+            - img [ref=e214]
+            - generic [ref=e216]: Expert verified
+      - heading "US Visa Photo—All You Need to Know" [level=2] [ref=e217]
+      - generic [ref=e219]:
+        - paragraph [ref=e220]: Are you planning on moving to the US? In this case, you may need to obtain an American visa. Discover everything you need to know about US visa photos, including their finer details (e.g., what you’re allowed to wear) and where to get them in person and online.
+        - paragraph [ref=e221]:
+          - text: Need an
+          - link "emergency visa to the US" [ref=e222] [cursor=pointer]:
+            - /url: https://passport-photo.online/blog/emergency-visa-us/
+          - text: "? See if you're eligible."
+        - heading "Understanding US visa photo requirements" [level=3] [ref=e223]
+        - paragraph [ref=e224]:
+          - text: Regardless of the visa type you need (i.e.,
+          - link "immigrant US visa" [ref=e225] [cursor=pointer]:
+            - /url: https://uk.usembassy.gov/visas/immigrant-visas/
+          - text: ", non-immigrant, and the one from the DV Program), the official regulations stay the same, both for printed and digital pictures."
+        - paragraph [ref=e226]:
+          - text: Here, we will cover the
+          - link "US Department of State requirements for visa photos" [ref=e227] [cursor=pointer]:
+            - /url: https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/photos.html
+          - text: ", as well as some useful tips concerning submitting your photographs or bringing one to your visa interview."
+        - paragraph [ref=e228]:
+          - strong [ref=e229]: "US Visa Photo Requirements: Explained"
+        - figure [ref=e230]:
+          - table [ref=e232]:
+            - rowgroup [ref=e233]:
+              - row "Requirement Prints" [ref=e234]:
+                - cell "Requirement" [ref=e235]:
+                  - strong [ref=e236]: Requirement
+                - cell "Prints" [ref=e237]:
+                  - strong [ref=e238]: Prints
+              - row "Size 2x2 inches (51x51 millimeters)" [ref=e239]:
+                - cell "Size" [ref=e240]
+                - cell "2x2 inches (51x51 millimeters)" [ref=e241]
+              - row "Color In color" [ref=e242]:
+                - cell "Color" [ref=e243]
+                - cell "In color" [ref=e244]
+              - row "Recency Last 6 months" [ref=e245]:
+                - cell "Recency" [ref=e246]
+                - cell "Last 6 months" [ref=e247]
+              - row "Image clarity Clear and sharp, without visible blurs" [ref=e248]:
+                - cell "Image clarity" [ref=e249]
+                - cell "Clear and sharp, without visible blurs" [ref=e250]
+              - row "Filters No filters allowed" [ref=e251]:
+                - cell "Filters" [ref=e252]
+                - cell "No filters allowed" [ref=e253]
+              - row "Background Plain white or off-white" [ref=e254]:
+                - cell "Background" [ref=e255]
+                - cell "Plain white or off-white" [ref=e256]
+              - row "Print Quality High-quality" [ref=e257]:
+                - cell "Print Quality" [ref=e258]
+                - cell "High-quality" [ref=e259]
+              - row "Resolution 300 DPI" [ref=e260]:
+                - cell "Resolution" [ref=e261]
+                - cell "300 DPI" [ref=e262]
+              - row "Digital Alterations No alterations allowed" [ref=e263]:
+                - cell "Digital Alterations" [ref=e264]
+                - cell "No alterations allowed" [ref=e265]
+        - paragraph [ref=e266]:
+          - strong [ref=e267]: "📝 Note #1"
+          - text: ": The online applications for visa Form DS-160, DS-1648, and the DV Program require you to submit a digital image. It must meet the following requirements:"
+        - list [ref=e268]:
+          - listitem [ref=e269]: • JPEG file format
+          - listitem [ref=e270]: • 600x600 pixels in size
+          - listitem [ref=e271]: • 240kB in file size
+        - paragraph [ref=e272]: You can also scan a printed visa photograph but remember to do so at a resolution of 300 DPI.
+        - paragraph [ref=e273]:
+          - strong [ref=e274]: "📝 Note #2"
+          - text: ": Apart from a digital visa photo ("
+          - link "photo 600x600" [ref=e275] [cursor=pointer]:
+            - /url: https://passport-photo.online/600x600-pixels-photo
+          - text: ), you must also bring
+          - strong [ref=e276]: two identical photos
+          - text: to your interview. The images should follow the regulations presented in the table above.
+        - paragraph [ref=e277]:
+          - strong [ref=e278]: Skip the trip
+          - text: to your nearest photo shop. Take your US visa photo from home and order high-quality prints delivered directly to your door. Easier than ever.
+        - paragraph [ref=e279]:
+          - img "Three steps to create a 2x2’’ US visa photo with a smartphone."
+    - button "Get your US visa photo now!" [ref=e286] [cursor=pointer]
+    - generic [ref=e295]:
+      - heading "US visa photo sizing details" [level=4] [ref=e296]
+      - paragraph [ref=e297]:
+        - text: Sizing is crucial in biometric photographs—oftentimes, incorrect size is the main reason for rejection and delays in an application process. Ensure your
+        - link "2x2 photo" [ref=e298] [cursor=pointer]:
+          - /url: https://passport-photo.online/photo-2x2-inch
+        - text: "for a US visa application has proper dimensions by following these guidelines:"
+      - list [ref=e299]:
+        - listitem [ref=e300]:
+          - text: •
+          - strong [ref=e301]: Photo size
+          - text: ": 2x2 inches (51x51 mm)"
+        - listitem [ref=e302]:
+          - text: •
+          - strong [ref=e303]: Head size
+          - text: ": between 1 inch and 1 3/8 inches (22 mm and 35 mm)"
+        - listitem [ref=e304]:
+          - text: •
+          - strong [ref=e305]: Eye height
+          - text: ": between 1 1/8 and 1 3/8 inches (28 mm and 35 mm)"
+      - 'heading "The fine details: specifics of US visa photos" [level=4] [ref=e306]'
+      - paragraph [ref=e307]: You already know the technical details of US visa photographs, but there’s more to that. Take a look at some photo examples concerning your appearance, position, and accessories to know what’s better to avoid and what’s safe to choose.
+      - paragraph [ref=e308]:
+        - img "Examples of acceptable and unacceptable US visa photos."
+      - heading "Your personal US visa photo tool" [level=3] [ref=e309]
+      - paragraph [ref=e310]:
+        - text: Yes, you can go to your nearest Walgreens, Walmart, or CVS, or find a photo provider in your area by searching “
+        - link "US visa photo near me" [ref=e311] [cursor=pointer]:
+          - /url: https://www.google.com/search?q=us%20visa%20photo%20near%20me&hl=en&lr=lang_en&cr=en&gl=US&pws=0#ip=1
+        - text: .” However, these options might be time-consuming (you’ll have to make an appointment or wait in line), a bit pricey, or just uncomfortable.
+      - paragraph [ref=e312]:
+        - strong [ref=e313]: What’s the alternative?
+      - paragraph [ref=e314]: Our pocket-size US visa photo editor. Available as a web-based platform or an application you can easily download on your smartphone. Create visa pictures anywhere, anytime!
+    - generic [ref=e323]:
+      - paragraph [ref=e325]: The app was easy to use. The photo verification and return was very fast. The returned photo was uploaded to a visa application and immediately accepted. This avoided the need to go to a photo shop.
+      - generic [ref=e326]:
+        - paragraph [ref=e329]: Satisfied customer Greg (AU)
+        - link "View full review on" [ref=e330] [cursor=pointer]:
+          - /url: https://www.trustpilot.com/reviews/660a522cae7f2ccb0305d79a
+          - generic [ref=e331]: View full review on
+    - generic [ref=e341]:
+      - paragraph [ref=e342]: Passport Photo Online will help you resize, crop, and adjust your photo so that it meets all the official requirements. We guarantee a 100% compliant photo or a 200% refund. Try our service today!
+      - paragraph [ref=e343]:
+        - text: Simply download our professional visa photo tool on
+        - link "Android" [ref=e344] [cursor=pointer]:
+          - /url: https://play.google.com/store/apps/details?id=online.passportphoto.visa.id.app&hl=en_US&gl=US&pli=1
+        - text: or
+        - link "iOS" [ref=e345] [cursor=pointer]:
+          - /url: https://apps.apple.com/us/app/passport-photo-booth-us-aid/id1500544448
+        - text: ", or take a photo with your phone or camera and upload it by using the button!"
+    - button "Get your US visa photo now!" [ref=e352] [cursor=pointer]
+    - generic [ref=e361]:
+      - paragraph [ref=e362]:
+        - strong [ref=e364]: "Sources:"
+      - paragraph [ref=e365]:
+        - link "https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/photos.html" [ref=e366] [cursor=pointer]:
+          - /url: https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/photos.html
+      - paragraph [ref=e367]:
+        - link "https://uk.usembassy.gov/visas/immigrant-visas/" [ref=e368] [cursor=pointer]:
+          - /url: https://uk.usembassy.gov/visas/immigrant-visas/
+    - generic [ref=e381]:
+      - generic [ref=e382]:
+        - paragraph [ref=e383]: Documents
+        - paragraph [ref=e385]: We provide photos for IDs from all over the world. You’ll find the one you are looking for!
+      - generic [ref=e387]:
+        - paragraph [ref=e388]: Most Searched
+        - generic [ref=e390]:
+          - generic [ref=e391] [cursor=pointer]:
+            - img "Green Card Photo / DV Lottery 2027" [ref=e393]
+            - link "Green Card Photo / DV Lottery 2027" [ref=e394]:
+              - /url: /green-card-photo-usa
+            - button "Get started" [ref=e396]
+          - generic [ref=e397] [cursor=pointer]:
+            - img "Green Card Photo / DV Lottery 2027" [ref=e399]
+            - link "Green Card Photo / DV Lottery 2027" [ref=e400]:
+              - /url: /green-card-photo
+            - button "Get started" [ref=e402]
+          - generic [ref=e403] [cursor=pointer]:
+            - img "Passport renewal photo" [ref=e405]
+            - link "Passport renewal photo" [ref=e406]:
+              - /url: /passport-renewal-photo
+            - button "Get started" [ref=e408]
+      - heading "Choose your document" [level=3] [ref=e409]
+      - generic [ref=e411]:
+        - button "Popular Documents" [ref=e412] [cursor=pointer]
+        - button "Related documents" [ref=e413] [cursor=pointer]
+      - generic [ref=e416]:
+        - generic [ref=e417] [cursor=pointer]:
+          - img "US Passport Photo" [ref=e419]
+          - link "US Passport Photo" [ref=e420]:
+            - /url: /passport-photos
+        - generic [ref=e421] [cursor=pointer]:
+          - img "600x600 Photo" [ref=e423]
+          - link "600x600 Photo" [ref=e424]:
+            - /url: /600x600-pixels-photo
+        - generic [ref=e425] [cursor=pointer]:
+          - img "Passport Photo Maker" [ref=e427]
+          - link "Passport Photo Maker" [ref=e428]:
+            - /url: /us-passport-photo
+        - generic [ref=e429] [cursor=pointer]:
+          - img "Digital Passport Photo" [ref=e431]
+          - link "Digital Passport Photo" [ref=e432]:
+            - /url: /digital-passport-photo
+        - generic [ref=e433] [cursor=pointer]:
+          - img "Passport Photo Near Me" [ref=e435]
+          - link "Passport Photo Near Me" [ref=e436]:
+            - /url: /us-passport-photos-near-me
+        - generic [ref=e437] [cursor=pointer]:
+          - img "Walgreens Passport Photo" [ref=e439]
+          - link "Walgreens Passport Photo" [ref=e440]:
+            - /url: /walgreens-passport-photo
+        - generic [ref=e441] [cursor=pointer]:
+          - img "Baby Passport Photo" [ref=e443]
+          - link "Baby Passport Photo" [ref=e444]:
+            - /url: /baby-passport-photo
+        - generic [ref=e445] [cursor=pointer]:
+          - img "CVS Pharmacy Passport Photo" [ref=e447]
+          - link "CVS Pharmacy Passport Photo" [ref=e448]:
+            - /url: /cvs-pharmacy-passport-photo
+        - generic [ref=e449] [cursor=pointer]:
+          - img "Chinese Passport Photo" [ref=e451]
+          - link "Chinese Passport Photo" [ref=e452]:
+            - /url: /chinese-passport-photo
+        - generic [ref=e453] [cursor=pointer]:
+          - img "Costco Passport Photo" [ref=e455]
+          - link "Costco Passport Photo" [ref=e456]:
+            - /url: /costco-passport-photo
+        - generic [ref=e457] [cursor=pointer]:
+          - img "French Passport Photo" [ref=e459]
+          - link "French Passport Photo" [ref=e460]:
+            - /url: /french-passport-photo
+        - generic [ref=e461] [cursor=pointer]:
+          - img "OCI Photo" [ref=e463]
+          - link "OCI Photo" [ref=e464]:
+            - /url: /digital-oci-photo
+        - generic [ref=e465] [cursor=pointer]:
+          - img "Rite Aid Passport Photo" [ref=e467]
+          - link "Rite Aid Passport Photo" [ref=e468]:
+            - /url: /rite-aid-passport-photo
+        - generic [ref=e469] [cursor=pointer]:
+          - img "UPS Passport Photo" [ref=e471]
+          - link "UPS Passport Photo" [ref=e472]:
+            - /url: /ups-passport-photo
+        - generic [ref=e473] [cursor=pointer]:
+          - img "USCIS Photos" [ref=e475]
+          - link "USCIS Photos" [ref=e476]:
+            - /url: /citizenship-application-photo
+        - generic [ref=e477] [cursor=pointer]:
+          - img "USPS (US Postal Service) Passport Photo" [ref=e479]
+          - link "USPS (US Postal Service) Passport Photo" [ref=e480]:
+            - /url: /usps-passport-photo
+        - generic [ref=e481] [cursor=pointer]:
+          - img "Walmart Passport Photo" [ref=e483]
+          - link "Walmart Passport Photo" [ref=e484]:
+            - /url: /walmart-passport-photo
+        - generic [ref=e485] [cursor=pointer]:
+          - img "Photo for Your CV" [ref=e487]
+          - link "Photo for Your CV" [ref=e488]:
+            - /url: /us-cv-photo
+        - generic [ref=e489] [cursor=pointer]:
+          - img "Duane Reade Passport Photo" [ref=e491]
+          - link "Duane Reade Passport Photo" [ref=e492]:
+            - /url: /duane-reade-passport-photo
+        - generic [ref=e493] [cursor=pointer]:
+          - img "Sam's Club Passport Photo" [ref=e495]
+          - link "Sam's Club Passport Photo" [ref=e496]:
+            - /url: /sams-club-passport-photo
+        - generic [ref=e497] [cursor=pointer]:
+          - img "ISIC Card Photo" [ref=e499]
+          - link "ISIC Card Photo" [ref=e500]:
+            - /url: /isic-card-photo
+        - generic [ref=e501] [cursor=pointer]:
+          - img "Photo 2x2 Inches" [ref=e503]
+          - link "Photo 2x2 Inches" [ref=e504]:
+            - /url: /photo-2x2-inch
+        - generic [ref=e505] [cursor=pointer]:
+          - img "Photo 35x45 Milimetres (3,5 X 4,5 CM)" [ref=e507]
+          - link "Photo 35x45 Milimetres (3,5 X 4,5 CM)" [ref=e508]:
+            - /url: /photo-35x45-mm
+    - generic [ref=e522]:
+      - heading "FAQ" [level=2] [ref=e525]
+      - generic [ref=e527]:
+        - heading "Where can I get a US visa photo?" [level=3] [ref=e529]:
+          - button "Where can I get a US visa photo?" [ref=e530] [cursor=pointer]: Where can I get a US visa photo?
+        - heading "How do I make a US visa photo?" [level=3] [ref=e533]:
+          - button "How do I make a US visa photo?" [ref=e534] [cursor=pointer]: How do I make a US visa photo?
+        - heading "Can I take my own photo for a US visa?" [level=3] [ref=e537]:
+          - button "Can I take my own photo for a US visa?" [ref=e538] [cursor=pointer]: Can I take my own photo for a US visa?
+    - generic [ref=e546]:
+      - generic [ref=e547]:
+        - paragraph [ref=e549]: Are You Satisfied With Our Service?
+        - paragraph [ref=e550]:
+          - text: Let us know how we’re doing.
+          - text: Customer feedback is always welcome.
+      - generic [ref=e551]:
+        - paragraph [ref=e552]: "Rate Your Reading Experience:"
+        - generic [ref=e553]:
+          - button [ref=e554] [cursor=pointer]
+          - button [ref=e556] [cursor=pointer]
+          - button [ref=e558] [cursor=pointer]
+          - button [ref=e560] [cursor=pointer]
+          - button [ref=e562] [cursor=pointer]
+        - paragraph [ref=e564]: "Rating: 4.7/5"
+        - paragraph [ref=e565]: "Number of votes: 397"
+    - generic [ref=e571]:
+      - link "Home" [ref=e573] [cursor=pointer]:
+        - /url: /
+      - link "Passport Photo Tool" [ref=e576] [cursor=pointer]:
+        - /url: /us-passport-photo
+      - link "Passport Photos Near Me" [ref=e579] [cursor=pointer]:
+        - /url: /us-passport-photos-near-me
+      - generic [ref=e582]: Photo for US Visa
+    - generic [ref=e584]:
+      - generic [ref=e586]:
+        - generic [ref=e587]:
+          - img "Passport Photo logo" [ref=e588]
+          - generic [ref=e613]:
+            - generic [ref=e614]:
+              - generic [ref=e615]: Resources
+              - link "Passport Photo Resizer" [ref=e617] [cursor=pointer]:
+                - /url: https://passport-photo.online/blog/resize-photo-passport/
+              - link "How to Take a Passport Photo with an iPhone" [ref=e619] [cursor=pointer]:
+                - /url: https://passport-photo.online/blog/passport-photo-iphone/
+              - link "How to Take a Passport Photo with Android" [ref=e621] [cursor=pointer]:
+                - /url: https://passport-photo.online/blog/passport-photo-android/
+            - generic [ref=e622]:
+              - generic [ref=e623]: Popular Documents
+              - link "US Passport Photo" [ref=e625] [cursor=pointer]:
+                - /url: https://passport-photo.online/passport-photos
+              - link "Baby Passport Photo" [ref=e627] [cursor=pointer]:
+                - /url: https://passport-photo.online/baby-passport-photo
+              - link "USCIS Photo" [ref=e629] [cursor=pointer]:
+                - /url: https://passport-photo.online/citizenship-application-photo
+              - link "2x2 Photo" [ref=e631] [cursor=pointer]:
+                - /url: https://passport-photo.online/photo-2x2-inch
+              - link "Chinese Visa Photo" [ref=e633] [cursor=pointer]:
+                - /url: https://passport-photo.online/e-visa-to-china
+              - link "See More Photos" [ref=e635] [cursor=pointer]:
+                - /url: https://passport-photo.online
+            - generic [ref=e636]:
+              - generic [ref=e637]: How it Works
+              - link "How to Take a Photo" [ref=e639] [cursor=pointer]:
+                - /url: https://passport-photo.online/how-it-works#items-section
+              - link "AI and Expert Verification" [ref=e641] [cursor=pointer]:
+                - /url: https://passport-photo.online/how-it-works#tabs-section
+              - link "Guarantee" [ref=e643] [cursor=pointer]:
+                - /url: https://passport-photo.online/how-it-works#two-columns-section
+              - link "Delivery" [ref=e645] [cursor=pointer]:
+                - /url: https://passport-photo.online/how-it-works#accordion-tabs-section
+            - generic [ref=e646]:
+              - generic [ref=e647]: About
+              - link "About Us" [ref=e649] [cursor=pointer]:
+                - /url: https://passport-photo.online/blog/about-us/
+              - link "Editorial Process" [ref=e651] [cursor=pointer]:
+                - /url: https://passport-photo.online/blog/editorial-process/
+              - link "Contact" [ref=e653] [cursor=pointer]:
+                - /url: https://passport-photo.online/contact
+        - generic [ref=e654]:
+          - generic [ref=e655]: Get the App!
+          - generic [ref=e656]: Get the free app for iOS or Android.
+          - generic [ref=e657]:
+            - link "passport photo app iPhone" [ref=e658] [cursor=pointer]:
+              - /url: https://apps.apple.com/pl/app/apple-store/id1500544448?l=pl
+              - img "passport photo app iPhone" [ref=e660]
+            - link "passport photo" [ref=e661] [cursor=pointer]:
+              - /url: https://play.google.com/store/apps/details?id=online.passportphoto.visa.id.app&hl=pl
+              - img "passport photo" [ref=e663]
+      - generic [ref=e665]:
+        - generic [ref=e666]:
+          - generic [ref=e667]:
+            - generic [ref=e668]: Passport Photo Online
+            - generic [ref=e669]: Powered by PhotoAiD®
+          - generic [ref=e670]:
+            - link "Privacy Policy" [ref=e671] [cursor=pointer]:
+              - /url: /privacy
+              - paragraph [ref=e672]: Privacy Policy
+            - link "Terms and Conditions" [ref=e673] [cursor=pointer]:
+              - /url: /terms
+              - paragraph [ref=e674]: Terms and Conditions
+            - link "Payment Terms" [ref=e675] [cursor=pointer]:
+              - /url: /payment-terms
+              - paragraph [ref=e676]: Payment Terms
+          - generic [ref=e677]:
+            - link "Returns and Refunds" [ref=e678] [cursor=pointer]:
+              - /url: /returns-and-refunds
+              - paragraph [ref=e679]: Returns and Refunds
+            - link "Shipping Terms" [ref=e680] [cursor=pointer]:
+              - /url: /shipping-terms
+              - paragraph [ref=e681]: Shipping Terms
+          - generic [ref=e682]:
+            - link "PhotoAiD Passport Photo Maker (Android)" [ref=e683] [cursor=pointer]:
+              - /url: https://play.google.com/store/apps/details?id=online.passportphoto.visa.id.app&hl=en_US
+              - paragraph [ref=e684]: PhotoAiD Passport Photo Maker (Android)
+            - link "PhotoAiD Passport Photo Maker (Apple)" [ref=e685] [cursor=pointer]:
+              - /url: https://apps.apple.com/us/app/passport-photos-photoaid/id1500544448
+              - paragraph [ref=e686]: PhotoAiD Passport Photo Maker (Apple)
+        - button "English (USA)" [ref=e688] [cursor=pointer]:
+          - generic [ref=e689]:
+            - paragraph [ref=e690]: English (USA)
+            - img [ref=e691]

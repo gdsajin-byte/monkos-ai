@@ -1,0 +1,338 @@
+- generic [ref=e2]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - button "기본 메뉴" [ref=e7] [cursor=pointer]:
+          - img [ref=e8]
+        - link "Google Search Console" [ref=e12] [cursor=pointer]:
+          - /url: ./search-console?resource_id=sc-domain%3Amonkos.ai
+          - img [ref=e13]
+      - generic [ref=e14]:
+        - search [ref=e16]:
+          - generic [ref=e22]:
+            - textbox [disabled] [ref=e23]: "'monkos.ai'에 있는 모든 URL 검사"
+            - combobox "monkos.ai에 있는 모든 URL 검사" [ref=e24]
+          - button "검색" [ref=e25] [cursor=pointer]:
+            - img [ref=e26]
+        - generic [ref=e29]:
+          - generic [ref=e31]:
+            - button "도움말" [ref=e33] [cursor=pointer]:
+              - generic [ref=e36]: 
+            - button "사용자 설정" [ref=e38] [cursor=pointer]:
+              - img [ref=e41]
+          - button "메시지" [ref=e45] [cursor=pointer]:
+            - generic [ref=e48]: 
+      - generic [ref=e50]:
+        - button "Google 앱" [ref=e54] [cursor=pointer]:
+          - img [ref=e55]
+        - 'button "Google 계정: 신정규 (gdsajin@gmail.com)" [ref=e60] [cursor=pointer]':
+          - img [ref=e62]
+          - img [ref=e68]
+  - dialog "navigational drawer" [ref=e72]:
+    - navigation "기본" [ref=e75]:
+      - button "속성 검색" [ref=e79] [cursor=pointer]:
+        - img "파비콘" [ref=e81]
+        - combobox "monkos.ai" [ref=e88]
+        - generic [ref=e89]: 
+      - generic [ref=e90]:
+        - generic [ref=e91]:
+          - generic [ref=e92]:
+            - link "개요" [ref=e94] [cursor=pointer]:
+              - /url: ./search-console?resource_id=sc-domain%3Amonkos.ai
+              - generic [ref=e96]: home
+              - generic [ref=e98]: 개요
+            - link "유용한 정보" [ref=e101] [cursor=pointer]:
+              - /url: ./search-console/performance/insights?resource_id=sc-domain%3Amonkos.ai
+              - generic [ref=e103]: lightbulb_2
+              - generic [ref=e105]: 유용한 정보
+            - link "실적" [ref=e108] [cursor=pointer]:
+              - /url: ./search-console/performance/search-analytics?resource_id=sc-domain%3Amonkos.ai
+              - generic [ref=e110]: trending_up
+              - generic [ref=e112]: 실적
+            - button "URL 검사" [ref=e115] [cursor=pointer]:
+              - generic [ref=e117]: search
+              - generic [ref=e119]: URL 검사
+          - generic [ref=e123]:
+            - generic [ref=e125]:
+              - generic [ref=e128]: 색인생성
+              - button "색인생성 보고서 섹션" [expanded] [ref=e130] [cursor=pointer]:
+                - generic [ref=e132]: keyboard_arrow_up
+            - generic [ref=e136]:
+              - link "페이지" [ref=e138] [cursor=pointer]:
+                - /url: ./search-console/index?resource_id=sc-domain%3Amonkos.ai
+                - generic [ref=e140]: file_copy
+                - generic [ref=e142]: 페이지
+              - link "동영상" [ref=e145] [cursor=pointer]:
+                - /url: ./search-console/video-index?resource_id=sc-domain%3Amonkos.ai
+                - generic [ref=e147]: video_library
+                - generic [ref=e149]: 동영상
+              - link "Sitemaps" [ref=e152] [cursor=pointer]:
+                - /url: ./search-console/sitemaps?resource_id=sc-domain%3Amonkos.ai
+                - generic [ref=e154]: account_tree
+                - generic [ref=e156]: Sitemaps
+              - link "삭제" [ref=e159] [cursor=pointer]:
+                - /url: ./search-console/removals?resource_id=sc-domain%3Amonkos.ai
+                - generic [ref=e161]: visibility_off
+                - generic [ref=e163]: 삭제
+          - generic [ref=e167]:
+            - generic [ref=e169]:
+              - generic [ref=e172]: 실험
+              - button "실험 보고서 섹션" [expanded] [ref=e174] [cursor=pointer]:
+                - generic [ref=e176]: keyboard_arrow_up
+            - generic [ref=e180]:
+              - link "코어 웹 바이탈" [ref=e182] [cursor=pointer]:
+                - /url: ./search-console/core-web-vitals?resource_id=sc-domain%3Amonkos.ai
+                - generic [ref=e184]: speed
+                - generic [ref=e186]: 코어 웹 바이탈
+              - link "HTTPS" [ref=e189] [cursor=pointer]:
+                - /url: ./search-console/https?resource_id=sc-domain%3Amonkos.ai
+                - generic [ref=e191]: lock
+                - generic [ref=e193]: HTTPS
+          - generic [ref=e197]:
+            - generic [ref=e199]:
+              - generic [ref=e202]: 개선사항
+              - button "개선사항 보고서 섹션" [expanded] [ref=e204] [cursor=pointer]:
+                - generic [ref=e206]: keyboard_arrow_up
+            - generic [ref=e210]:
+              - link "잦은 문의 사항" [ref=e212] [cursor=pointer]:
+                - /url: ./search-console/r/faq?resource_id=sc-domain%3Amonkos.ai
+                - generic [ref=e214]: layers
+                - generic [ref=e216]: 잦은 문의 사항
+              - link "동영상" [ref=e219] [cursor=pointer]:
+                - /url: ./search-console/r/videos?resource_id=sc-domain%3Amonkos.ai
+                - generic [ref=e221]: layers
+                - generic [ref=e223]: 동영상
+          - generic [ref=e229]:
+            - generic [ref=e232]: 보안 및 직접 조치
+            - button "보안 및 직접 조치 보고서 섹션" [ref=e234] [cursor=pointer]:
+              - generic [ref=e236]: keyboard_arrow_down
+          - generic [ref=e237]:
+            - link "링크 보고서" [ref=e239] [cursor=pointer]:
+              - /url: ./search-console/links?resource_id=sc-domain%3Amonkos.ai
+              - generic [ref=e241]: link_2
+              - generic [ref=e243]: 링크
+            - link "업적" [ref=e246] [cursor=pointer]:
+              - /url: ./search-console/achievements?resource_id=sc-domain%3Amonkos.ai
+              - generic [ref=e248]: trophy
+              - generic [ref=e250]: 업적
+            - link "설정" [ref=e253] [cursor=pointer]:
+              - /url: ./search-console/settings?resource_id=sc-domain%3Amonkos.ai
+              - generic [ref=e255]: settings
+              - generic [ref=e257]: 설정
+        - generic [ref=e259]:
+          - generic [ref=e261]:
+            - button "의견 제출하기" [ref=e263] [cursor=pointer]:
+              - generic [ref=e265]: feedback
+              - generic [ref=e267]: 의견 제출하기
+            - button "Search Console 정보" [ref=e270] [cursor=pointer]:
+              - generic [ref=e272]: info
+              - generic [ref=e274]: Search Console 정보
+          - generic [ref=e278]:
+            - link "개인정보처리방침" [ref=e279] [cursor=pointer]:
+              - /url: https://myaccount.google.com/privacypolicy?hl=ko
+            - link "약관" [ref=e280] [cursor=pointer]:
+              - /url: https://myaccount.google.com/termsofservice?hl=ko
+  - generic [ref=e282]:
+    - navigation "탐색경로" [ref=e287]:
+      - heading "개요" [level=1] [ref=e290]
+    - main [ref=e294]:
+      - generic [ref=e295]:
+        - generic [ref=e300]:
+          - generic [ref=e301]:
+            - generic [ref=e302]: lightbulb_outline
+            - generic [ref=e303]: 사이트의 Google 검색 실적에 대한 통계를 확인해 보세요.
+          - generic [ref=e306]:
+            - generic [ref=e308]: chevron_right
+            - generic [ref=e309]: 통계 살펴보기
+            - link "통계 살펴보기" [ref=e310] [cursor=pointer]:
+              - /url: ./search-console/performance/insights?resource_id=sc-domain%3Amonkos.ai
+        - generic [ref=e312]:
+          - generic [ref=e313]:
+            - generic [ref=e314]: 실적
+            - generic [ref=e317]:
+              - generic [ref=e319]: chevron_right
+              - generic [ref=e320]: 전체 보고서
+              - link "전체 보고서" [ref=e321] [cursor=pointer]:
+                - /url: ./search-console/performance/search-analytics?resource_id=sc-domain%3Amonkos.ai
+          - generic [ref=e324]:
+            - generic [ref=e329]: 총 웹 검색결과 클릭수 158회
+            - img [ref=e333]:
+              - generic [ref=e334]:
+                - generic [ref=e335]:
+                  - generic [ref=e337]: 26. 3. 8.
+                  - generic [ref=e339]: 26. 3. 20.
+                  - generic [ref=e341]: 26. 4. 1.
+                  - generic [ref=e343]: 26. 4. 13.
+                  - generic [ref=e345]: 26. 4. 25.
+                  - generic [ref=e347]: 26. 5. 7.
+                  - generic [ref=e349]: 26. 5. 19.
+                  - generic [ref=e351]: 26. 5. 31.
+                - generic [ref=e352]:
+                  - generic [ref=e354]: "6"
+                  - generic [ref=e356]: "4"
+                  - generic [ref=e358]: "2"
+                  - generic [ref=e360]: "0"
+        - generic [ref=e370]:
+          - generic [ref=e371]:
+            - generic [ref=e372]:
+              - generic [ref=e373]: 권장사항
+              - button "null" [ref=e376] [cursor=pointer]:
+                - generic [ref=e377]: 
+            - button "의견 보내기" [ref=e379] [cursor=pointer]:
+              - generic [ref=e382]: feedback
+              - generic [ref=e383]: 의견 보내기
+          - generic [ref=e385]:
+            - generic [ref=e386]:
+              - generic [ref=e387]:
+                - generic [ref=e388]: lightbulb
+                - generic [ref=e389]: 최근에 특정 페이지에서 평소보다 더 많은 노출수를 기록함
+              - generic [ref=e390]:
+                - text: 이 페이지의 성능을 확인하여 자세히 검토하세요.
+                - generic [ref=e391]:
+                  - generic [ref=e392]: https://monkos.ai/specs/korea-drivers-license
+                  - generic [ref=e393]:
+                    - generic [ref=e394]: arrow_upward
+                    - generic [ref=e395]: 178%
+            - generic [ref=e396]:
+              - generic [ref=e398] [cursor=pointer]:
+                - generic [ref=e399]: 페이지 성능 확인
+                - link "페이지 성능 확인" [ref=e400]:
+                  - /url: ./search-console/performance/search-analytics?resource_id=sc-domain%3Amonkos.ai&page=%21https%3A%2F%2Fmonkos.ai%2Fspecs%2Fkorea-drivers-license&start_date=20260528&end_date=20260603&compare_start_date=20260521&compare_end_date=20260527&metrics=IMPRESSIONS
+              - generic [ref=e401]:
+                - button "긍정적인 의견 남기기" [ref=e402] [cursor=pointer]:
+                  - generic [ref=e404]: thumb_up_filled
+                  - generic [ref=e406]: thumb_up
+                - button "부정적인 의견 남기기" [ref=e408] [cursor=pointer]:
+                  - generic [ref=e410]: thumb_down_filled
+                  - generic [ref=e412]: thumb_down
+        - generic [ref=e415]:
+          - generic [ref=e417]: 색인생성
+          - generic [ref=e418]:
+            - generic [ref=e419]:
+              - img [ref=e421]
+              - text: 페이지
+              - generic [ref=e432]:
+                - generic [ref=e434]: chevron_right
+                - generic [ref=e435]: 전체 보고서
+                - link "전체 보고서" [ref=e436] [cursor=pointer]:
+                  - /url: ./search-console/index?resource_id=sc-domain%3Amonkos.ai
+            - generic [ref=e438]:
+              - generic [ref=e440]:
+                - generic [ref=e443]: 색인이 생성되지 않은 페이지 187개
+                - generic [ref=e446]: 색인이 생성된 페이지 320개
+              - img [ref=e450]:
+                - generic [ref=e451]:
+                  - generic [ref=e452]:
+                    - generic [ref=e454]: 26. 3. 11.
+                    - generic [ref=e456]: 26. 3. 21.
+                    - generic [ref=e458]: 26. 3. 31.
+                    - generic [ref=e460]: 26. 4. 10.
+                    - generic [ref=e462]: 26. 4. 20.
+                    - generic [ref=e464]: 26. 4. 30.
+                    - generic [ref=e466]: 26. 5. 10.
+                    - generic [ref=e468]: 26. 5. 20.
+                  - generic [ref=e469]:
+                    - generic [ref=e471]: "375"
+                    - generic [ref=e473]: "250"
+                    - generic [ref=e475]: "125"
+                    - generic [ref=e477]: "0"
+            - link "동영상 색인 생성 보고서를 엽니다." [ref=e501] [cursor=pointer]:
+              - /url: ./search-console/video-index?resource_id=sc-domain%3Amonkos.ai
+              - generic [ref=e503]:
+                - img [ref=e506]
+                - generic [ref=e509]: 동영상
+                - generic [ref=e510]:
+                  - generic [ref=e511]: 색인 생성되지 않은 동영상 페이지 3개
+                  - generic [ref=e512]: 색인 생성된 동영상 0개
+                  - img [ref=e514]
+                  - img [ref=e516]
+        - generic [ref=e519]:
+          - generic [ref=e521]: 실험
+          - table [ref=e525]:
+            - rowgroup [ref=e526]:
+              - row "유형 좋음 개선 필요 느림 트렌드" [ref=e527]:
+                - columnheader "유형" [ref=e528]
+                - columnheader [ref=e529]
+                - columnheader "좋음" [ref=e530]
+                - columnheader "개선 필요" [ref=e531]
+                - columnheader "느림" [ref=e532]
+                - columnheader "트렌드" [ref=e533]
+                - columnheader [ref=e534]
+            - rowgroup [ref=e535]:
+              - row "코어 웹 바이탈 모바일 데스크톱 데이터 없음 데이터 없음 데이터 없음 데이터 없음 데이터 없음 데이터 없음" [ref=e536]:
+                - cell "코어 웹 바이탈" [ref=e537]:
+                  - generic [ref=e539]: 코어 웹 바이탈
+                - cell "모바일 데스크톱" [ref=e540]:
+                  - generic [ref=e542]:
+                    - generic [ref=e543]: 모바일
+                    - generic [ref=e544]: 데스크톱
+                - cell "데이터 없음 데이터 없음" [ref=e545]:
+                  - generic [ref=e546]:
+                    - generic [ref=e547]: 데이터 없음
+                    - generic [ref=e548]: 데이터 없음
+                - cell "데이터 없음 데이터 없음" [ref=e549]:
+                  - generic [ref=e550]:
+                    - generic [ref=e551]: 데이터 없음
+                    - generic [ref=e552]: 데이터 없음
+                - cell "데이터 없음 데이터 없음" [ref=e553]:
+                  - generic [ref=e554]:
+                    - generic [ref=e555]: 데이터 없음
+                    - generic [ref=e556]: 데이터 없음
+                - cell [ref=e557]
+              - row "HTTPS HTTPS 외" [ref=e558]:
+                - columnheader [ref=e559]
+                - columnheader [ref=e560]
+                - columnheader "HTTPS" [ref=e561]
+                - columnheader [ref=e562]
+                - columnheader "HTTPS 외" [ref=e563]
+                - columnheader [ref=e564]
+                - columnheader [ref=e565]
+              - row "HTTPS 40 0 보고서 열기" [ref=e566]:
+                - cell "HTTPS" [ref=e567]:
+                  - generic [ref=e569]: HTTPS
+                - cell [ref=e570]
+                - cell "40" [ref=e571]:
+                  - generic [ref=e573]: "40"
+                - cell [ref=e574]
+                - cell "0" [ref=e575]:
+                  - generic [ref=e577]: "0"
+                - cell [ref=e578]:
+                  - img [ref=e581]
+                - cell "보고서 열기" [ref=e584]:
+                  - button "보고서 열기" [ref=e587] [cursor=pointer]:
+                    - generic [ref=e588]: chevron_right
+        - generic [ref=e590]:
+          - generic [ref=e592]: 개선사항
+          - table [ref=e596]:
+            - rowgroup [ref=e597]:
+              - row "유형 유효 잘못됨 트렌드" [ref=e598]:
+                - columnheader "유형" [ref=e599]
+                - columnheader "유효" [ref=e600]
+                - columnheader "잘못됨" [ref=e601]
+                - columnheader "트렌드" [ref=e602]
+                - columnheader [ref=e603]
+            - rowgroup [ref=e604]:
+              - row "잦은 문의 사항 14 0 보고서 열기" [ref=e605]:
+                - cell "잦은 문의 사항" [ref=e606]:
+                  - generic [ref=e608]: 잦은 문의 사항
+                - cell "14" [ref=e609]:
+                  - generic [ref=e611]: "14"
+                - cell "0" [ref=e612]:
+                  - generic [ref=e614]: "0"
+                - cell [ref=e615]:
+                  - img [ref=e618]
+                - cell "보고서 열기" [ref=e621]:
+                  - button "보고서 열기" [ref=e624] [cursor=pointer]:
+                    - generic [ref=e625]: chevron_right
+              - row "동영상 6 0 보고서 열기" [ref=e626]:
+                - cell "동영상" [ref=e627]:
+                  - generic [ref=e629]: 동영상
+                - cell "6" [ref=e630]:
+                  - generic [ref=e632]: "6"
+                - cell "0" [ref=e633]:
+                  - generic [ref=e635]: "0"
+                - cell [ref=e636]:
+                  - img [ref=e639]
+                - cell "보고서 열기" [ref=e641]:
+                  - button "보고서 열기" [ref=e644] [cursor=pointer]:
+                    - generic [ref=e645]: chevron_right

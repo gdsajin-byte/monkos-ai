@@ -8,6 +8,7 @@
 #   scripts/credits.sh deduct <email> <amount> "<사유>"   — 크레딧 차감
 #   scripts/credits.sh user <email>                       — 고객 정보 조회
 #   scripts/credits.sh log [N]                            — 최근 감사 로그 조회 (기본 10건)
+#   scripts/credits.sh signups [일수]                     — 신규 회원가입 집계 (기본 7일, 읽기 전용)
 
 set -euo pipefail
 
@@ -259,6 +260,47 @@ cmd_log() {
   tail -n "$count" "$AUDIT_FILE"
 }
 
+# 신규 회원가입 집계 (읽기 전용, PII 미노출 — 집계만)
+cmd_signups() {
+  local days="${1:-7}"
+  if ! [[ "$days" =~ ^[0-9]+$ ]] || [ "$days" -le 0 ]; then
+    echo "❌ 기간(일)은 양의 정수여야 합니다."
+    exit 1
+  fi
+  run_node "
+    import { firestore } from './lib/shared/config.js';
+    const DAYS = ${days};
+    const since = new Date(Date.now() - DAYS * 24 * 60 * 60 * 1000);
+    const snap = await firestore.collection('users').get();
+    let total = 0;
+    const byDay = {}, byProvider = {}, bySource = {};
+    snap.forEach(d => {
+      const data = d.data();
+      const raw = data.createdAt;
+      if (!raw) return;
+      const created = new Date(raw);
+      if (isNaN(created) || created < since) return;
+      total++;
+      const day = created.toISOString().slice(0, 10);
+      byDay[day] = (byDay[day] || 0) + 1;
+      const prov = data.provider || 'unknown';
+      byProvider[prov] = (byProvider[prov] || 0) + 1;
+      const src = data.signupSource || 'unknown';
+      bySource[src] = (bySource[src] || 0) + 1;
+    });
+    const sortObj = o => Object.fromEntries(Object.entries(o).sort());
+    console.log(JSON.stringify({
+      period_days: DAYS,
+      since: since.toISOString().slice(0, 10),
+      total_signups: total,
+      by_day: sortObj(byDay),
+      by_provider: sortObj(byProvider),
+      by_source: sortObj(bySource)
+    }, null, 2));
+    process.exit(0);
+  "
+}
+
 # === 메인 ===
 
 if [ $# -lt 1 ]; then
@@ -268,6 +310,7 @@ if [ $# -lt 1 ]; then
   echo "  credits.sh deduct <email> <amount> \"<사유>\"   — 크레딧 차감"
   echo "  credits.sh user <email>                       — 고객 정보 조회"
   echo "  credits.sh log [N]                            — 최근 감사 로그 (기본 10건)"
+  echo "  credits.sh signups [일수]                     — 신규 회원가입 집계 (기본 7일)"
   exit 1
 fi
 
@@ -294,9 +337,12 @@ case "$CMD" in
   log)
     cmd_log "${1:-10}"
     ;;
+  signups)
+    cmd_signups "${1:-7}"
+    ;;
   *)
     echo "❌ 알 수 없는 명령: $CMD"
-    echo "   사용 가능: query | charge | deduct | user | log"
+    echo "   사용 가능: query | charge | deduct | user | log | signups"
     exit 1
     ;;
 esac

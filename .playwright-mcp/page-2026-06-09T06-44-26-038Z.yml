@@ -1,0 +1,16 @@
+- main [ref=e6]:
+  - generic [ref=e7]:
+    - generic [ref=e12]:
+      - heading "NAVER" [level=1] [ref=e13]:
+        - link "NAVER" [ref=e14] [cursor=pointer]:
+          - /url: https://www.naver.com
+          - img "NAVER" [ref=e15]
+      - link "Search Advisor" [ref=e17] [cursor=pointer]:
+        - /url: /
+    - separator [ref=e18]
+    - generic [ref=e21]:
+      - strong [ref=e22]: 문제가 발생하였습니다.
+      - paragraph [ref=e24]: This page could not be found
+      - link "메인으로 이동" [ref=e26] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e27]: 메인으로 이동
