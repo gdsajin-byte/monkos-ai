@@ -84,6 +84,7 @@ domain: "메타(통괄)"
 | 06/11 | 작가님+웹민아 | **2-트랙 원칙 확정 + 에이전트 카페 비전 적립** — ① 마케팅 트랙(P1·MONKOS·네이버 축)과 기술·빌더 트랙(P2/P3·신작가·레딧/깃헙/note 축)은 별개 발현(톤·디자인·배포라인 분리), 표면 분리 검토(blog/lab)는 PF_PORTAL→쌍아 ② Phase 2에 에이전트 카페 확장 비전 적립(레딧형 커뮤니티: AI 생성 적극 지원+강력 게이트키퍼, 씨앗=AGENT_ 인증·검수 게이트·GitHub 0단계). 착공 보류, T3 에세이 선행 검증 제안 | CONTENT_STRATEGY §1-1, 본 PF Phase 2 | ✅ |
 | 06/11 | iMac/막내1 | **블로그 파이프라인 코드 정밀 감사** — 자동화 체인·데드코드·병목·외부연동 4축 감사. Critical 1건(llms.txt 영속불가), High 2건(maxOutputTokens 회귀·Naver API 미주입), Medium 4건(GitHub 체인단절·OG desc·RSS부재·검색부재). 데드코드 5파일 식별 | [REPORT](../../reports/2026-06/REPORT_20260611_iMac막내1_블로그파이프라인_코드정밀감사.md) | ✅ |
 | 06/11 | iMac/막내3 | **슬러그 단일화 + 임포터 삭제** — slug.js 단일 모듈 신설(generateSlug/generateSlugFromAI/sanitizeSlug). sanitizeSlug 보정 2건(toLowerCase 추가, 한글 제거 강화). blog.js·ai.js에서 5중 분산 함수 통합. importer/ 데드코드 3파일 삭제. **배포 실패**: AGENT_API_KEYS 평문→시크릿 타입 충돌(인프라 장애, 코드 무관) | [COMPLETION](../../reports/2026-06/COMPLETION_20260611_iMac막내3_슬러그단일화.md) | ⏳ |
+| 06/13 | 웹/민아 | 데일리 루틴 P1·T1 초안 1편 — 비자사진 규격 11개국(specs 비자 페이지 GSC 클릭 발생 실측 근거, SPECS 데이터 실측 인용). 금주 믹스 전 필러 충족(P1 6/4·P2 4/2·P3 1/1), 본 편은 6월 "매일 발행" 목표분. 자판기 401 해소 확인 — 머지 시 자동 업로드 재개 | `blog_20260613_visa-photo-spec-guide_KR.md` | ✅ |
 
 ---
 
