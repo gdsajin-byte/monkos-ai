@@ -77,6 +77,8 @@
       "Bash(git -C /Users/jeong-kyushin/developer/monk_project/monkos-ops/works pull origin main --no-edit)",
       "Bash(git -C /Users/jeong-kyushin/developer/monk_project/monkos-ops/works log --oneline -3)",
       "mcp__google-search-console__search_analytics",
+      "mcp__google-search-console__index_inspect",
+      "mcp__google-search-console__list_sitemaps",
       "mcp__google-search-console__enhanced_search_analytics",
       "mcp__google-search-console__detect_quick_wins",
       "mcp__playwright__browser_click",
