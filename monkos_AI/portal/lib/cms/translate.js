@@ -4,7 +4,7 @@
  */
 import { ai, firestore, log } from '../shared/config.js';
 import { requireAdmin } from './admin-auth.js';
-import { requestIndexing, pingSitemap } from './seo.js';
+import { requestIndexing } from './seo.js';
 
 function hasKorean(str) {
   return /[가-힣ㄱ-ㅎㅏ-ㅣ]/.test(str);
@@ -217,7 +217,6 @@ ${JSON_INSTRUCTION[lang] || JSON_INSTRUCTION.en}`;
       if (originalDoc.published) {
         const translatedUrl = `https://monkos.ai/${lang}/blog/${baseSlug}`;
         requestIndexing(translatedUrl);
-        pingSitemap();
       }
 
       log(`[CMS] 자동번역 완료: ${slug} → ${translatedSlug} (${lang})`);

@@ -4,7 +4,9 @@
       "Bash(*)",
       "Read",
       "Write",
-      "Edit"
+      "Edit",
+      "Skill(update-config)",
+      "Skill(update-config:*)"
     ],
     "deny": [
       "Bash(rm -rf *)",

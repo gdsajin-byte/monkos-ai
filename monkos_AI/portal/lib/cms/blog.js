@@ -8,7 +8,7 @@ import { firestore, ai, GCS_BUCKET, log, parseJsonBody } from '../shared/config.
 import { requireAdmin } from './admin-auth.js';
 import { translateAndSaveBlogPost } from './translate.js';
 import { publishBlogToGitHub } from './github-issues.js';
-import { requestIndexing, pingSitemap } from './seo.js';
+import { requestIndexing } from './seo.js';
 import { generateSlug, generateSlugFromAI, sanitizeSlug } from './slug.js';
 
 const blogCollection = firestore.collection('blog_posts');
@@ -175,7 +175,6 @@ export async function handleBlogCreate(req, res) {
     if (post.published) {
       const langPrefix = post.lang === 'ko' ? '' : `/${post.lang}`;
       const blogUrl = `https://monkos.ai${langPrefix}/blog/${baseSlug}`;
-      pingSitemap();
       requestIndexing(blogUrl);
     }
 
@@ -258,7 +257,6 @@ export async function handleBlogUpdate(req, res) {
       const updatedBaseSlug = slug.replace(/-(kr|ja|en)$/, '');
       const updatedLangPrefix = (updatedData.lang || 'ko') === 'ko' ? '' : `/${updatedData.lang}`;
       const blogUrl = `https://monkos.ai${updatedLangPrefix}/blog/${updatedBaseSlug}`;
-      pingSitemap();
       requestIndexing(blogUrl);
     }
 

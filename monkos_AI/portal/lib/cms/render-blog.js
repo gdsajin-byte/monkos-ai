@@ -224,12 +224,16 @@ export async function renderBlogList(req, res, forceLang = null) {
 // 블로그 상세 — fragment
 export async function blogPostFragment(req, lang = null) {
   let slug;
-  if (lang === 'ja') {
-    slug = decodeURIComponent(req.url.split('/ja/blog/')[1]?.split('?')[0] || '');
-  } else if (lang === 'en') {
-    slug = decodeURIComponent(req.url.split('/en/blog/')[1]?.split('?')[0] || '');
-  } else {
-    slug = decodeURIComponent(req.url.split('/blog/')[1]?.split('?')[0] || '');
+  try {
+    if (lang === 'ja') {
+      slug = decodeURIComponent(req.url.split('/ja/blog/')[1]?.split('?')[0] || '');
+    } else if (lang === 'en') {
+      slug = decodeURIComponent(req.url.split('/en/blog/')[1]?.split('?')[0] || '');
+    } else {
+      slug = decodeURIComponent(req.url.split('/blog/')[1]?.split('?')[0] || '');
+    }
+  } catch {
+    return null;
   }
   if (!slug) return null; // 404 시그널
 

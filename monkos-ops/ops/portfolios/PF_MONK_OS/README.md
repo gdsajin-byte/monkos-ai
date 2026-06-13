@@ -103,6 +103,7 @@ domain: "governance/infrastructure"
 | 2026-06-11 | iMac/막내2 | **rules/session-log.md 보강 + 스킬 15종 commands/ 이동** — session-log.md 32줄→53줄(파일명 10종+정본 위치 통합+수발신 헤더+PF 귀속 규칙, globs 3→8종). `.claude/skills/*.md` 15종→`.claude/commands/` 이동(내용 무변경, skills/ 디렉토리 유지). 웹민아 실측 기반 컨텍스트 로딩 정합 개선 | [COMPLETION](../../reports/2026-06/COMPLETION_20260611_iMac막내2_rules보강+스킬형식전환.md) | ✅ |
 | 2026-06-11 | iMac/막내3 | **문서 배치 정합성 검수** — ch4 3조·4조 기준 전수 스캔. 총 32건 위반 식별 (즉시 15건/다음정비 17건). sessions/ 루트 직접 배치 11건, 정본 위치 이탈 5건, 파일명 패턴 위반 14건, 이중화 2건. PR #52 검증: 정상 11건, 주의 3건 | [REPORT](../../reports/2026-06/REPORT_20260611_iMac막내3_문서배치_정합성검수.md) | ✅ |
 | 2026-06-11 | iMac/막내3 | **문서 배치 정비 실행 32건** — git mv 27건(sessions 루트→월별 11건, 정본 이동 3건, 리네임 5+5+2건, 리네임+이동 2건) + git rm 1건(이중화 해소). 28건 성공, 3건 보류(에이전트 번호 판별 불가 2건, works 원본 유지 1건) | [COMPLETION](../../reports/2026-06/COMPLETION_20260611_iMac막내3_문서배치_정비실행.md) | ✅ |
+| 2026-06-12 | iMac/막내3 | **꾸 역할 확장 삼권심사 사법** — specs-data.json 규격/텍스트 혼재 리스크 중간(PR리뷰로 완화), PF 충돌 낮음(편집 범위 분리), 보안 누락 3건(monkos-ops·.claude·시크릿), 4조 충돌 제한적. **찬성(조건부)** — 파일 범위 명시+PR 리뷰 필수 | [REPORT](../../reports/2026-06/REPORT_20260612_iMac막내3_꾸역할확장_삼권심사_사법.md) | ✅ |
 
 ---
 

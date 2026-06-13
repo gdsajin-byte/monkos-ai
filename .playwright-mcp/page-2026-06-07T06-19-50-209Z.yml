@@ -1,0 +1,384 @@
+- generic [active] [ref=e1]:
+  - link "Skip to main content" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+    - generic [ref=e4]: Skip to main content
+  - generic [ref=e6]:
+    - generic:
+      - generic [ref=e7]:
+        - generic: Submit to r/SideProject
+      - banner [ref=e10]:
+        - navigation [ref=e11]:
+          - link "Home" [ref=e15] [cursor=pointer]:
+            - /url: https://www.reddit.com/
+            - img [ref=e17]
+          - search [ref=e33]:
+            - generic [ref=e35]:
+              - img [ref=e38]
+              - generic "Remove r/SideProject filter and expand search to all of Reddit" [ref=e41] [cursor=pointer]:
+                - button [pressed] [ref=e42]:
+                  - img [ref=e44]
+                  - generic [ref=e47]: r/SideProject
+                  - img [ref=e49]
+              - textbox "Remove r/SideProject filter and expand search to all of Reddit" [ref=e52]:
+                - /placeholder: Search in ⁨r/SideProject⁩
+          - generic [ref=e53]:
+            - generic [ref=e54]:
+              - link "Advertise on Reddit" [ref=e60] [cursor=pointer]:
+                - /url: https://ads.reddit.com/register?utm_source=web3x_consumer&utm_name=nav_cta
+                - img [ref=e63]
+                - generic [ref=e65]:
+                  - generic: Advertise on Reddit
+              - button "Open chat" [ref=e71] [cursor=pointer]:
+                - img [ref=e74]
+                - generic [ref=e76]:
+                  - generic: Open chat
+              - link "Create post" [ref=e81] [cursor=pointer]:
+                - /url: /r/SideProject/submit/
+                - generic [ref=e82]:
+                  - img [ref=e84]
+                  - generic [ref=e86]: Create
+                - generic [ref=e87]:
+                  - generic: Create post
+              - link "Open inbox" [ref=e91] [cursor=pointer]:
+                - /url: /notifications
+                - img [ref=e94]
+                - generic [ref=e96]:
+                  - generic: Open inbox
+            - button "User Avatar Expand user menu" [ref=e101] [cursor=pointer]:
+              - img "User Avatar" [ref=e109]
+              - generic [ref=e111]:
+                - generic: Expand user menu
+      - generic [ref=e112]:
+        - generic [ref=e113]:
+          - generic [ref=e114]:
+            - generic:
+              - generic:
+                - link "Skip to Navigation" [ref=e115] [cursor=pointer]:
+                  - /url: "#left-sidebar-container"
+                - link "Skip to Right Sidebar" [ref=e116] [cursor=pointer]:
+                  - /url: "#right-sidebar-container"
+          - generic [ref=e117]:
+            - main [ref=e118]:
+              - generic "Submit to r/SideProject"
+              - generic [ref=e119]:
+                - heading "Create post" [level=1] [ref=e120]
+                - button "Drafts" [ref=e123] [cursor=pointer]:
+                  - generic [ref=e125]: Drafts
+              - generic [ref=e126]:
+                - generic:
+                  - button "r/SideProject" [ref=e131] [cursor=pointer]:
+                    - generic [ref=e137]: r/SideProject
+                    - img [ref=e139]
+                  - tablist [ref=e142]:
+                    - tab "Text" [selected] [ref=e144] [cursor=pointer]:
+                      - generic [ref=e150]: Text
+                    - tab "Videos" [ref=e152] [cursor=pointer]:
+                      - generic [ref=e158]: Videos
+                    - tab "Link" [ref=e160] [cursor=pointer]:
+                      - generic [ref=e166]: Link
+                    - generic [ref=e167]:
+                      - tab "Poll" [disabled]:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic:
+                                - generic:
+                                  - generic: Poll
+                  - generic [ref=e168]:
+                    - group [ref=e170]:
+                      - generic [ref=e171]:
+                        - generic [ref=e176]:
+                          - generic:
+                            - generic: Title
+                            - text: "*"
+                          - textbox "Title" [ref=e178]
+                        - generic [ref=e183]: 0/300
+                      - button "Not available for this community" [ref=e187] [cursor=pointer]:
+                        - generic [ref=e189]:
+                          - generic: Add tags
+                    - group [ref=e191]:
+                      - generic [ref=e194]:
+                        - generic [ref=e195]:
+                          - paragraph [ref=e196]:
+                            - generic [ref=e197]: Body text*
+                          - textbox "Post body text field" [ref=e198]:
+                            - paragraph [ref=e199]
+                        - toolbar "text formatting toolbar" [ref=e200]:
+                          - generic [ref=e204]:
+                            - button "Bold" [ref=e207] [cursor=pointer]:
+                              - img [ref=e210]
+                              - generic [ref=e212]:
+                                - generic: Bold
+                            - button "Italic" [ref=e215] [cursor=pointer]:
+                              - img [ref=e218]
+                              - generic [ref=e220]:
+                                - generic: Italic
+                            - button "Strikethrough" [ref=e223] [cursor=pointer]:
+                              - img [ref=e226]
+                              - generic [ref=e228]:
+                                - generic: Strikethrough
+                            - button "Superscript" [ref=e231] [cursor=pointer]:
+                              - img [ref=e234]
+                              - generic [ref=e236]:
+                                - generic: Superscript
+                            - button "Heading" [ref=e239] [cursor=pointer]:
+                              - img [ref=e242]
+                              - generic [ref=e244]:
+                                - generic: Heading
+                            - button "Link" [ref=e247] [cursor=pointer]:
+                              - img [ref=e250]
+                              - generic [ref=e252]:
+                                - generic: Link
+                            - button "Video" [ref=e255] [cursor=pointer]:
+                              - img [ref=e258]
+                              - generic [ref=e260]:
+                                - generic: Video
+                            - button "Bullet List" [ref=e263] [cursor=pointer]:
+                              - img [ref=e266]
+                              - generic [ref=e268]:
+                                - generic: Bullet List
+                            - button "Number List" [ref=e271] [cursor=pointer]:
+                              - img [ref=e274]
+                              - generic [ref=e276]:
+                                - generic: Number List
+                            - button "Spoiler" [ref=e279] [cursor=pointer]:
+                              - img [ref=e282]
+                              - generic [ref=e284]:
+                                - generic: Spoiler
+                            - button "Quote Block" [ref=e287] [cursor=pointer]:
+                              - img [ref=e290]
+                              - generic [ref=e292]:
+                                - generic: Quote Block
+                            - button "Code" [ref=e295] [cursor=pointer]:
+                              - img [ref=e298]
+                              - generic [ref=e301]:
+                                - generic: Code
+                            - button "Code Block" [ref=e304] [cursor=pointer]:
+                              - img [ref=e307]
+                              - generic [ref=e309]:
+                                - generic: Code Block
+                            - button "Table" [ref=e312] [cursor=pointer]:
+                              - img [ref=e315]
+                              - generic [ref=e317]:
+                                - generic: Table
+                            - button "Switch to Markdown" [ref=e318] [cursor=pointer]:
+                              - generic [ref=e320]: Switch to Markdown
+                    - generic [ref=e322]:
+                      - generic [ref=e324]:
+                        - generic [ref=e325]:
+                          - button "Post" [disabled]:
+                            - generic:
+                              - generic: Post
+                        - generic [ref=e326]:
+                          - button "Save Draft" [disabled]:
+                            - generic:
+                              - generic: Save Draft
+                      - list
+            - list [ref=e329]:
+              - listitem [ref=e330]:
+                - link "Reddit Rules" [ref=e332] [cursor=pointer]:
+                  - /url: https://www.redditinc.com/policies/content-policy
+              - listitem [ref=e333]:
+                - link "Privacy Policy" [ref=e335] [cursor=pointer]:
+                  - /url: https://www.reddit.com/policies/privacy-policy
+              - listitem [ref=e336]:
+                - link "User Agreement" [ref=e338] [cursor=pointer]:
+                  - /url: https://www.redditinc.com/policies/user-agreement
+              - listitem [ref=e339]:
+                - link "Accessibility" [ref=e341] [cursor=pointer]:
+                  - /url: https://support.reddithelp.com/hc/sections/38303584022676-Accessibility
+                - generic [ref=e342]: •
+              - listitem [ref=e343]:
+                - link "Reddit, Inc. © 2026. All rights reserved." [ref=e344] [cursor=pointer]:
+                  - /url: https://redditinc.com
+        - generic [ref=e346]:
+          - button "Collapse Navigation" [ref=e349] [cursor=pointer]:
+            - img [ref=e352]
+            - generic [ref=e354]:
+              - generic: Collapse Navigation
+          - navigation "Primary" [ref=e359]:
+            - generic [ref=e361]:
+              - link "Home" [ref=e363] [cursor=pointer]:
+                - /url: https://www.reddit.com/?feed=home
+                - generic [ref=e364]:
+                  - img [ref=e366]
+                  - generic [ref=e369]: Home
+              - link "Popular" [ref=e371] [cursor=pointer]:
+                - /url: https://www.reddit.com/r/popular/
+                - generic [ref=e372]:
+                  - img [ref=e374]
+                  - generic [ref=e377]: Popular
+              - link "News" [ref=e378] [cursor=pointer]:
+                - /url: https://www.reddit.com/news/
+                - generic [ref=e379]:
+                  - img [ref=e381]
+                  - generic [ref=e385]: News
+              - link "Explore" [ref=e387] [cursor=pointer]:
+                - /url: https://www.reddit.com/explore/
+                - generic [ref=e388]:
+                  - img [ref=e390]
+                  - generic [ref=e393]: Explore
+              - button "Start a community" [ref=e394] [cursor=pointer]:
+                - generic [ref=e395]:
+                  - img [ref=e397]
+                  - generic [ref=e400]: Start a community
+            - separator [ref=e401]
+            - group [ref=e405]:
+              - generic "GAMES ON REDDIT" [ref=e406] [cursor=pointer]:
+                - generic [ref=e407]:
+                  - generic [ref=e412]:
+                    - generic: GAMES ON REDDIT
+                  - img [ref=e415]
+              - generic [ref=e418]:
+                - link "Featured Game" [ref=e422] [cursor=pointer]:
+                  - /url: https://www.reddit.com/r/LETTERSET/comments/1tye7y2?entry_point=games_drawer_featured_game
+                  - generic [ref=e424]:
+                    - generic [ref=e428]:
+                      - heading "LETTERSET" [level=3] [ref=e429]
+                      - paragraph [ref=e430]: Make every letter count!
+                      - paragraph [ref=e431]:
+                        - generic [ref=e432]: 128K
+                        - text: monthly players
+                    - generic [ref=e435]: NEW
+                - generic [ref=e437]:
+                  - link "Slingblade" [ref=e439] [cursor=pointer]:
+                    - /url: https://www.reddit.com/r/SlingbladeGame/comments/1tytjny?entry_point=games_drawer_personalized_game
+                    - generic [ref=e440]:
+                      - img [ref=e445]
+                      - generic [ref=e449]: Slingblade
+                  - link "Farm Merge Valley" [ref=e451] [cursor=pointer]:
+                    - /url: https://www.reddit.com/r/FarmMergeValley/comments/1tyd6jo?entry_point=games_drawer_personalized_game
+                    - generic [ref=e452]:
+                      - img [ref=e457]
+                      - generic [ref=e461]: Farm Merge Valley
+                  - link "Color Puzzle" [ref=e463] [cursor=pointer]:
+                    - /url: https://www.reddit.com/r/ColorPuzzleGame/comments/1tyvhmc?entry_point=games_drawer_personalized_game
+                    - generic [ref=e464]:
+                      - img [ref=e469]
+                      - generic [ref=e473]: Color Puzzle
+                - link "Discover More" [ref=e475] [cursor=pointer]:
+                  - /url: /r/GamesOnReddit
+                  - generic [ref=e476]:
+                    - img [ref=e478]
+                    - generic [ref=e482]: Discover More
+            - separator [ref=e483]
+            - group [ref=e485]:
+              - generic "CUSTOM FEEDS" [ref=e486] [cursor=pointer]:
+                - generic [ref=e488]:
+                  - generic [ref=e491]: CUSTOM FEEDS
+                  - img [ref=e494]
+              - button "Create Custom Feed" [ref=e500] [cursor=pointer]:
+                - generic [ref=e501]:
+                  - img [ref=e503]
+                  - generic [ref=e506]: Create Custom Feed
+            - separator [ref=e507]
+            - group [ref=e510]:
+              - generic "RECENT" [ref=e511] [cursor=pointer]:
+                - generic [ref=e512]:
+                  - generic [ref=e515]: RECENT
+                  - img [ref=e518]
+              - generic [ref=e521]:
+                - link "r/travel" [ref=e522] [cursor=pointer]:
+                  - /url: /r/travel/
+                  - generic [ref=e523]:
+                    - img [ref=e528]
+                    - generic [ref=e531]: r/travel
+                - link "r/singularity" [ref=e532] [cursor=pointer]:
+                  - /url: /r/singularity/
+                  - generic [ref=e533]:
+                    - img [ref=e538]
+                    - generic [ref=e541]: r/singularity
+                - link "r/CurseForge" [ref=e542] [cursor=pointer]:
+                  - /url: /r/CurseForge/
+                  - generic [ref=e543]:
+                    - img [ref=e548]
+                    - generic [ref=e551]: r/CurseForge
+            - group [ref=e553]:
+              - generic "COMMUNITIES" [ref=e554] [cursor=pointer]:
+                - generic [ref=e556]:
+                  - generic [ref=e559]: COMMUNITIES
+                  - img [ref=e562]
+              - link "Manage Communities" [ref=e566] [cursor=pointer]:
+                - /url: /user/No_Aide8917/communities
+                - generic [ref=e567]:
+                  - img [ref=e569]
+                  - generic [ref=e572]: Manage Communities
+            - separator [ref=e573]
+            - navigation "Reddit resources" [ref=e574]:
+              - group [ref=e576]:
+                - generic "RESOURCES" [ref=e577] [cursor=pointer]:
+                  - generic [ref=e579]:
+                    - generic [ref=e582]: RESOURCES
+                    - img [ref=e585]
+                - generic [ref=e588]:
+                  - link "About Reddit" [ref=e590] [cursor=pointer]:
+                    - /url: https://www.redditinc.com
+                    - generic [ref=e591]:
+                      - img [ref=e593]
+                      - generic [ref=e597]: About Reddit
+                  - link "Advertise" [ref=e599] [cursor=pointer]:
+                    - /url: https://ads.reddit.com/register?utm_source=web3x_consumer&utm_name=left_nav_cta
+                    - generic [ref=e600]:
+                      - img [ref=e602]
+                      - generic [ref=e606]: Advertise
+                  - link "Developer Platform" [ref=e608] [cursor=pointer]:
+                    - /url: https://developers.reddit.com/?utm_source=reddit&utm_medium=left_nav_resources
+                    - generic [ref=e609]:
+                      - img [ref=e611]
+                      - generic [ref=e615]: Developer Platform
+                  - link "Reddit Pro BETA" [ref=e617] [cursor=pointer]:
+                    - /url: /reddit-pro?utm_source=reddit&utm_medium=left_nav_resources
+                    - generic [ref=e618]:
+                      - img [ref=e620]
+                      - generic [ref=e624]:
+                        - generic [ref=e625]: Reddit Pro
+                        - generic [ref=e626]: BETA
+                  - link "Help" [ref=e628] [cursor=pointer]:
+                    - /url: https://support.reddithelp.com/hc?utm_source=reddit&utm_medium=footer&utm_campaign=evergreen
+                    - generic [ref=e629]:
+                      - img [ref=e631]
+                      - generic [ref=e635]: Help
+                  - link "Blog" [ref=e637] [cursor=pointer]:
+                    - /url: https://redditblog.com/
+                    - generic [ref=e638]:
+                      - img [ref=e640]
+                      - generic [ref=e644]: Blog
+                  - link "Careers" [ref=e646] [cursor=pointer]:
+                    - /url: https://www.redditinc.com/careers
+                    - generic [ref=e647]:
+                      - img [ref=e649]
+                      - generic [ref=e653]: Careers
+                  - link "Press" [ref=e655] [cursor=pointer]:
+                    - /url: https://www.redditinc.com/press
+                    - generic [ref=e656]:
+                      - img [ref=e658]
+                      - generic [ref=e662]: Press
+                  - separator [ref=e663]
+                  - link "Best of Reddit" [ref=e665] [cursor=pointer]:
+                    - /url: https://www.reddit.com/posts/2026/global/
+                    - generic [ref=e666]:
+                      - img [ref=e668]
+                      - generic [ref=e673]: Best of Reddit
+                  - separator [ref=e674]
+                  - link "Reddit Rules" [ref=e676] [cursor=pointer]:
+                    - /url: https://www.redditinc.com/policies/content-policy
+                    - generic [ref=e677]:
+                      - img [ref=e679]
+                      - generic [ref=e683]: Reddit Rules
+                  - link "Privacy Policy" [ref=e685] [cursor=pointer]:
+                    - /url: https://www.reddit.com/policies/privacy-policy
+                    - generic [ref=e686]:
+                      - img [ref=e688]
+                      - generic [ref=e692]: Privacy Policy
+                  - link "User Agreement" [ref=e694] [cursor=pointer]:
+                    - /url: https://www.redditinc.com/policies/user-agreement
+                    - generic [ref=e695]:
+                      - img [ref=e697]
+                      - generic [ref=e701]: User Agreement
+                  - link "Accessibility" [ref=e703] [cursor=pointer]:
+                    - /url: https://support.reddithelp.com/hc/sections/38303584022676-Accessibility
+                    - generic [ref=e704]:
+                      - img [ref=e706]
+                      - generic [ref=e711]: Accessibility
+            - link "Reddit, Inc. © 2026. All rights reserved." [ref=e713] [cursor=pointer]:
+              - /url: https://redditinc.com
