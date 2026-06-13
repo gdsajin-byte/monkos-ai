@@ -107,6 +107,7 @@ gcloud run deploy ${SERVICE_NAME} \
   --min-instances 1 \
   --max-instances ${MAX_INSTANCES} \
   --update-env-vars "PROJECT_ID=${PROJECT_ID},LOCATION=${REGION},GCS_BUCKET=${GCS_BUCKET}" \
+  --set-secrets="AUTH_SECRET=AUTH_SECRET:latest" \
   --service-account ${SERVICE_ACCOUNT}
 
 # 결과 출력

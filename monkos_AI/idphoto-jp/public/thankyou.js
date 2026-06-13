@@ -225,6 +225,8 @@ async function init() {
     sessionStorage.removeItem('monkos_pending_action');
   }
 
+  if (typeof gtag === 'function') gtag('event', 'purchase', { spec_type: store.format || '', auth_method: store.user?.provider || '', lang: document.documentElement.lang || 'ja', service: 'idphoto-jp', value: 0, currency: 'JPY', transaction_id: `ty_${Date.now()}` });
+
   Monk.log('受取画面 v6 初期化完了');
 }
 

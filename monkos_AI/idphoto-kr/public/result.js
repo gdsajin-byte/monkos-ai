@@ -183,6 +183,8 @@ function clearForRetake() {
 async function confirmAndGenerate() {
   if (!store.captured) return;
 
+  if (typeof gtag === 'function') gtag('event', 'generate_click', { spec_type: store.format || '', auth_method: store.user?.provider || '', lang: document.documentElement.lang || 'ko', service: 'idphoto-kr' });
+
   // 로그인 필수 (촬영실 게이트에서 이미 체크되지만 방어용)
   if (!store.user.id) {
     GateModule.showLoginRequired('리터칭을 진행하려면 로그인이 필요합니다\n첫 로그인 시 10c를 드려요!', () => {
@@ -291,6 +293,7 @@ async function confirmAndGenerate() {
 
       store.watermarkPreview = croppedPreview;
 
+      if (typeof gtag === 'function') gtag('event', 'preview_view', { spec_type: store.format || '', auth_method: store.user?.provider || '', lang: document.documentElement.lang || 'ko', service: 'idphoto-kr' });
     });
 
   } catch (err) {
@@ -320,6 +323,8 @@ function showGenerateError(error) {
 // ─── 다운로드 (서버단 Signed URL) ───
 async function downloadResult() {
   if (!store.generated) return;
+
+  if (typeof gtag === 'function') gtag('event', 'begin_checkout', { spec_type: store.format || '', auth_method: store.user?.provider || '', lang: document.documentElement.lang || 'ko', service: 'idphoto-kr' });
 
   // C2 핫픽스: 연속 클릭 방지
   const btn = document.querySelector('#btn-download');

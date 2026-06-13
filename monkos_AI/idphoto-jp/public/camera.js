@@ -233,6 +233,8 @@ function capturePhoto() {
   // sessionStorage에 저장
   saveSessionData('captured', captured);
 
+  if (typeof gtag === 'function') gtag('event', 'photo_upload', { spec_type: store.format || '', auth_method: store.user?.provider || '', lang: document.documentElement.lang || 'ja', service: 'idphoto-jp' });
+
   // 카메라 정리
   media.offFrame();
   media.stop();

@@ -151,6 +151,7 @@ function renderFormatPage() {
     if (!card) return;
     store.format = card.dataset.val;
     selectCard(container, store.format);
+    if (typeof gtag === 'function') gtag('event', 'spec_select', { spec_type: store.format, auth_method: store.user?.provider || '', lang: document.documentElement.lang || 'ko', service: 'idphoto-kr' });
   });
 }
 

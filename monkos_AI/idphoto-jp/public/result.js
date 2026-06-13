@@ -183,6 +183,8 @@ function clearForRetake() {
 async function confirmAndGenerate() {
   if (!store.captured) return;
 
+  if (typeof gtag === 'function') gtag('event', 'generate_click', { spec_type: store.format || '', auth_method: store.user?.provider || '', lang: document.documentElement.lang || 'ja', service: 'idphoto-jp' });
+
   // ログイン必須（撮影室ゲートで既にチェック済みだが防御用）
   if (!store.user.id) {
     GateModule.showLoginRequired('リタッチするにはログインが必要です\n初回ログインで10cプレゼント！', () => {
@@ -292,6 +294,7 @@ async function confirmAndGenerate() {
       // ウォーターマークプレビューもクロップ版
       store.watermarkPreview = croppedWatermark;
 
+      if (typeof gtag === 'function') gtag('event', 'preview_view', { spec_type: store.format || '', auth_method: store.user?.provider || '', lang: document.documentElement.lang || 'ja', service: 'idphoto-jp' });
     });
 
   } catch (err) {
@@ -321,6 +324,8 @@ function showGenerateError(error) {
 // ─── ダウンロード (サーバー側Signed URL) ───
 async function downloadResult() {
   if (!store.generated) return;
+
+  if (typeof gtag === 'function') gtag('event', 'begin_checkout', { spec_type: store.format || '', auth_method: store.user?.provider || '', lang: document.documentElement.lang || 'ja', service: 'idphoto-jp' });
 
   // C2 ホットフィックス: 連続クリック防止
   const btn = document.querySelector('#btn-download');

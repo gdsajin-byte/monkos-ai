@@ -179,6 +179,8 @@ async function init() {
     sessionStorage.removeItem('monkos_pending_action');
   }
 
+  if (typeof gtag === 'function') gtag('event', 'purchase', { spec_type: store.format || '', auth_method: store.user?.provider || '', lang: document.documentElement.lang || 'ko', service: 'idphoto-kr', value: 0, currency: 'KRW', transaction_id: `ty_${Date.now()}` });
+
   Monk.log('수령처 v6 초기화 완료');
 }
 
