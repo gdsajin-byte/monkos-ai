@@ -15,6 +15,7 @@ import cors from 'cors';
 import { WebSocketServer } from 'ws';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { createHmac, timingSafeEqual } from 'crypto';
 import { GoogleGenAI } from '@google/genai';
 import { saveImages, addWatermark, cropToSpec, downloadFromGCS, getSignedUrl } from './gcs-save.js';
 
@@ -61,14 +62,46 @@ log('[Vertex AI] ADC クライアント初期化 (Live)');
 log(`[Google AI Studio] Imagen クライアント初期化 (API Key ${GEMINI_API_KEY ? '設定済み' : '未設定'})`);
 log(`[Portal API] ${PORTAL_API_URL}`);
 
+// === 認証トークン検証 (portal config.js 同一ロジック) ===
+const AUTH_SECRET = process.env.AUTH_SECRET || '';
+const LEMONSQUEEZY_WEBHOOK_SECRET = process.env.LEMONSQUEEZY_WEBHOOK_SECRET || '';
+const localAuthSecret = AUTH_SECRET || LEMONSQUEEZY_WEBHOOK_SECRET;
+
+function verifySessionToken(token) {
+  if (!localAuthSecret || !token) return null;
+  try {
+    const decoded = Buffer.from(token, 'base64url').toString();
+    const parts = decoded.split(':');
+    if (parts.length !== 3) return null;
+    const [userId, expiresStr, sig] = parts;
+    const expires = parseInt(expiresStr, 10);
+    const hmac = createHmac('sha256', localAuthSecret);
+    hmac.update(`${userId}:${expiresStr}`);
+    const expectedSig = hmac.digest('hex');
+    const sigBuf = Buffer.from(sig, 'hex');
+    const expectedBuf = Buffer.from(expectedSig, 'hex');
+    if (sigBuf.length !== expectedBuf.length || !timingSafeEqual(sigBuf, expectedBuf)) return null;
+    if (Date.now() > expires) return null;
+    return { userId, expires };
+  } catch { return null; }
+}
+
+function getSessionCookie(cookieHeader) {
+  if (!cookieHeader) return null;
+  const match = cookieHeader.match(/monkos_session=([^;]+)/);
+  return match ? match[1] : null;
+}
+
 // === クレジット API ヘルパー ===
-async function useCredits(userId, type) {
+async function useCredits(userId, type, cookieHeader) {
   if (!userId) return { success: false, error: 'ログインが必要です' };
 
   try {
+    const headers = { 'Content-Type': 'application/json' };
+    if (cookieHeader) headers['Cookie'] = cookieHeader;
     const response = await fetch(`${PORTAL_API_URL}/api/credits/use`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify({ userId, type }),
     });
     return await response.json();
@@ -78,13 +111,15 @@ async function useCredits(userId, type) {
   }
 }
 
-async function refundCredits(userId, type) {
+async function refundCredits(userId, type, cookieHeader) {
   if (!userId) return { success: false, error: 'ログインが必要です' };
 
   try {
+    const headers = { 'Content-Type': 'application/json' };
+    if (cookieHeader) headers['Cookie'] = cookieHeader;
     const response = await fetch(`${PORTAL_API_URL}/api/credits/refund`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify({ userId, type }),
     });
     return await response.json();
@@ -576,7 +611,7 @@ app.post('/api/idgen', async (req, res) => {
 
     // クレジット差引
     if (userId) {
-      const creditResult = await useCredits(userId, 'generate');
+      const creditResult = await useCredits(userId, 'generate', req.headers.cookie);
       if (!creditResult.success) {
         return res.status(402).json({
           error: creditResult.error,
@@ -620,14 +655,14 @@ app.post('/api/idgen', async (req, res) => {
       let detail = '';
       try { detail = JSON.parse(errorText)?.error?.message || errorText.substring(0, 200); } catch { detail = errorText.substring(0, 200); }
       // 生成失敗時クレジット返金
-      if (bodyUserId) await refundCredits(bodyUserId, 'generate');
+      if (bodyUserId) await refundCredits(bodyUserId, 'generate', req.headers.cookie);
       throw new Error(`API ${response.status}: ${detail}`);
     }
 
     const data = await response.json();
     const imagePart = data.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
     if (!imagePart?.inlineData) {
-      if (bodyUserId) await refundCredits(bodyUserId, 'generate');
+      if (bodyUserId) await refundCredits(bodyUserId, 'generate', req.headers.cookie);
       throw new Error('画像生成失敗：応答に画像がありません');
     }
 
@@ -658,7 +693,12 @@ app.post('/api/idgen', async (req, res) => {
 app.post('/api/credit/use', async (req, res) => {
   try {
     if (!req.body.userId) return res.status(400).json({ error: 'ログインが必要です' });
-    const result = await useCredits(req.body.userId, req.body.type || 'download');
+    const token = getSessionCookie(req.headers.cookie);
+    const session = verifySessionToken(token);
+    if (!session || session.userId !== req.body.userId) {
+      return res.status(403).json({ error: '認証が必要です' });
+    }
+    const result = await useCredits(req.body.userId, req.body.type || 'download', req.headers.cookie);
     res.status(result.success ? 200 : 402).json(result);
   } catch (err) {
     log(`[API][credit/use] エラー: ${err.message}`, 'ERROR');
@@ -670,7 +710,12 @@ app.post('/api/credit/use', async (req, res) => {
 app.post('/api/credit/refund', async (req, res) => {
   try {
     if (!req.body.userId) return res.status(400).json({ error: 'ログインが必要です' });
-    const result = await refundCredits(req.body.userId, req.body.type || 'download');
+    const token = getSessionCookie(req.headers.cookie);
+    const session = verifySessionToken(token);
+    if (!session || session.userId !== req.body.userId) {
+      return res.status(403).json({ error: '認証が必要です' });
+    }
+    const result = await refundCredits(req.body.userId, req.body.type || 'download', req.headers.cookie);
     res.status(result.success ? 200 : 400).json(result);
   } catch (err) {
     log(`[API][credit/refund] エラー: ${err.message}`, 'ERROR');
@@ -691,7 +736,7 @@ app.post('/api/download', async (req, res) => {
     }
 
     // クレジット差引 (70c — クロップ本+原本含む)
-    const creditResult = await useCredits(userId, 'download');
+    const creditResult = await useCredits(userId, 'download', req.headers.cookie);
     if (!creditResult.success) {
       return res.status(402).json({
         error: creditResult.error,

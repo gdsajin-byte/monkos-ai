@@ -1,0 +1,71 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link "MONKOS" [ref=e4] [cursor=pointer]:
+        - /url: /
+        - text: MONKOS
+      - navigation [ref=e6]:
+        - link "Blog" [ref=e7] [cursor=pointer]:
+          - /url: /blog
+        - link "FAQ" [ref=e8] [cursor=pointer]:
+          - /url: /faq
+        - link "Gallery" [ref=e9] [cursor=pointer]:
+          - /url: /gallery
+        - link "Board" [ref=e10] [cursor=pointer]:
+          - /url: /board
+        - link "Guide" [ref=e11] [cursor=pointer]:
+          - /url: /guide
+        - link "Pricing" [ref=e12] [cursor=pointer]:
+          - /url: /pricing
+  - generic [ref=e13]:
+    - generic [ref=e14]:
+      - generic [ref=e15]: 🌐 GLOBAL PHOTO SPEC GUIDE
+      - heading "Photo Spec Guide" [level=1] [ref=e16]
+      - paragraph [ref=e17]: ID photo specifications for 200+ countries — passport, visa, and more. Free crop service included.
+      - generic [ref=e18]:
+        - generic [ref=e19]:
+          - generic [ref=e20]: 206+
+          - generic [ref=e21]: Countries
+        - generic [ref=e22]:
+          - generic [ref=e23]: 445+
+          - generic [ref=e24]: Specs
+        - generic [ref=e25]:
+          - generic [ref=e26]: 35+
+          - generic [ref=e27]: Verified
+    - generic [ref=e28]:
+      - text: 🔍
+      - searchbox "Search country..." [ref=e29]
+    - generic [ref=e30]:
+      - generic [ref=e31]: Select a purpose
+      - generic [ref=e32]:
+        - generic [ref=e33] [cursor=pointer]:
+          - img "Passport" [ref=e34]
+          - generic [ref=e35]:
+            - generic [ref=e36]: Passport
+            - generic [ref=e37]: PASSPORT
+        - generic [ref=e38] [cursor=pointer]:
+          - img "Visa" [ref=e39]
+          - generic [ref=e40]:
+            - generic [ref=e41]: Visa
+            - generic [ref=e42]: VISA
+        - generic [ref=e43] [cursor=pointer]:
+          - img "ID Card" [ref=e44]
+          - generic [ref=e45]:
+            - generic [ref=e46]: ID Card
+            - generic [ref=e47]: ID
+        - generic [ref=e48] [cursor=pointer]:
+          - img "Custom" [ref=e49]
+          - generic [ref=e50]:
+            - generic [ref=e51]: Custom
+            - generic [ref=e52]: CUSTOM
+    - generic [ref=e53]: © 2026 MONKOS · Specifications verified from official sources. Confirm final requirements with the issuing authority.
+  - contentinfo [ref=e54]:
+    - text: © 2026 MONKOS. All rights reserved.
+    - link "Terms" [ref=e55] [cursor=pointer]:
+      - /url: /terms.html
+    - text: ·
+    - link "Privacy" [ref=e56] [cursor=pointer]:
+      - /url: /privacy.html
+    - text: ·
+    - link "Refund" [ref=e57] [cursor=pointer]:
+      - /url: /refund.html

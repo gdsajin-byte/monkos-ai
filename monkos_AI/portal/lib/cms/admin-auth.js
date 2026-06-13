@@ -3,7 +3,19 @@
  * 기존 monkos_session 쿠키 + ADMIN_UIDS 화이트리스트
  * + 에이전트 API 키 Bearer 폴백 (민아/코웍이 등)
  */
+import { timingSafeEqual } from 'crypto';
 import { parseCookies, verifyAuthToken, ADMIN_UIDS, AGENT_API_KEYS, generateAuthToken, parseJsonBody, log } from '../shared/config.js';
+
+function safeCompareKey(input, registered) {
+  const a = Buffer.from(input);
+  const b = Buffer.from(registered);
+  if (a.length !== b.length) return false;
+  return timingSafeEqual(a, b);
+}
+
+function matchAgentKey(apiKey) {
+  return AGENT_API_KEYS.some(k => safeCompareKey(apiKey, k));
+}
 
 export function getAdminUser(req) {
   // 1. 기존 쿠키 인증 시도 (현행 유지)
@@ -11,7 +23,7 @@ export function getAdminUser(req) {
   const token = cookies.monkos_session;
   if (token) {
     const payload = verifyAuthToken(token);
-    if (payload && (ADMIN_UIDS.length === 0 || ADMIN_UIDS.includes(payload.userId))) {
+    if (payload && ADMIN_UIDS.length > 0 && ADMIN_UIDS.includes(payload.userId)) {
       return payload; // { userId, expires }
     }
   }
@@ -19,8 +31,8 @@ export function getAdminUser(req) {
   // 2. Bearer 토큰 폴백 (에이전트 API 키)
   const authHeader = req.headers.authorization;
   if (authHeader?.startsWith('Bearer AGENT_') && AGENT_API_KEYS.length > 0) {
-    const apiKey = authHeader.slice(7); // 'Bearer ' 제거
-    if (AGENT_API_KEYS.includes(apiKey)) {
+    const apiKey = authHeader.slice(7);
+    if (matchAgentKey(apiKey)) {
       const parts = apiKey.split('_');
       const agentName = parts.length >= 2 ? parts[1].toLowerCase() : 'unknown';
       log(`[AGENT] 에이전트 인증 성공: agent_${agentName} (Bearer)`, 'INFO');
@@ -49,7 +61,7 @@ export function requireAdmin(req, res) {
 export async function handleAgentAuth(req, res) {
   try {
     const { key } = await parseJsonBody(req);
-    if (!key || AGENT_API_KEYS.length === 0 || !AGENT_API_KEYS.includes(key)) {
+    if (!key || AGENT_API_KEYS.length === 0 || !matchAgentKey(key)) {
       res.writeHead(401, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: 'Invalid agent key' }));
       return;

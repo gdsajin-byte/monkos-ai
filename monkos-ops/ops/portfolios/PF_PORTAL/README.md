@@ -85,6 +85,11 @@ status: active
 | 06/07 | 쌍아 | **IDPASS 소개 글 API 생성** — `POST /api/admin/blog` → slug `idpass-kr` 발행. 3개국어 자동 번역 트리거 | Firestore blog_posts | ✅ |
 | 06/08 | 민아 | **블로그 이미지 파이프라인 전수조사 + 썸네일 노드 실증** — 에디터 이미지 파이프라인 Explore 조사: AI 생성 호출만 부재, Gemini클라(config.js:89)/GCS저장(upload.js:126)/에디터삽입(blog-image.js) 완비. 썸네일 자동생성 노드 설계(Nano Banana, `image-generate.js` 신설안). 레딧 에세이 draft 등록(`dead-folders-to-living-system-kr`) + Canva 썸네일 GCS 적용(thumbnail PUT, draft 유지) | [세션로그](../../sessions/2026-06-08_iMac_민아.md) | ✅ |
 | 06/08 | 민아·쌍아 | **에디터 내장 에이전트 설계 합산** — 골조: ORSA(Observe-Reason-Suggest-Apply) 루프 + 서버 에이전트/thin client/비차단(민아). 인프라 보완(쌍아): **SSE(서버→클라)+POST(클라→서버)** = Cloud Run 정합(WebSocket 타임아웃 회피) / **증분 diff 관찰** + 서버 세션 문서상태(토큰 비용) / **Phase 1 우선**. 실행순서: Phase 1 버튼호출(PF_PORTAL 확장, 자동화율 0→30%, OPUS 플라이휠 첫 바퀴) → 실전 검증 → Phase 2~3 ORSA 상주는 독립 PF급 → PROPOSAL 기안. 썸네일은 sharp 자동 + Canva 프리미엄(민아 경유) 2트랙 | [세션로그](../../sessions/2026-06-08_iMac_민아.md) | ✅ |
+| 06/10 | 쌍아 | **Phase 9 기획 — 마이페이지 + 인증 체계 정비**. Fable 5 보안 전수조사 → 막내1 교차 검증(18건)에서 도출: 크레딧 판매 중인데 마이페이지 부재, C-2(크레딧 무인증)·N-1(토큰 무인증 발급)·C-4(ADMIN 페일오픈)·H-5(GCS TTL 미구현+FAQ 허위 안내)가 모두 마이페이지·인증 체계 부재에서 기인. 보안 응급 패치(페일클로즈) 선행 → 마이페이지 구축 순서로 기획 | 본 PF 히스토리 | ⏳ 기획 |
+| 06/10 | 막내4 | **Phase 9 T0 — 보안 페일클로즈 응급 패치 4건**. N-1(handleAuthToken 세션 쿠키 검증 추가), C-4(ADMIN_UIDS 페일오픈→페일클로즈 4개소), C-2(크레딧 API 3핸들러+idphoto-kr/jp 인증 미들웨어+쿠키 포워딩), C-3(AUTH_SECRET 하드코딩 폴백 제거→process.exit) | auth.js, credits.js, config.js, admin-auth.js, idphoto-kr/jp server.js | ✅ |
+| 06/10 | 쌍아 | **portal prod 배포** rev 00278-h8k — 보안 페일클로즈 4건 적용. idphoto-kr/jp는 AUTH_SECRET 환경변수 추가 후 순차 배포 예정 | `deploy.sh prod` | ✅ |
+| 06/11 | 막내1 | **CMS 정밀감사 + 즉시수정 6건 + 보안·색인 3건** — 감사 Critical 1/High 2/Medium 4 식별 → maxOutputTokens 복원·llms.txt 동적화·Naver API 주입·deploy.sh --set-secrets 전환·/admin HTML 인증 가드·pingSitemap 폐기·Indexing 관측성 강화. rev 00279→00281→00284 | REPORT+COMPLETION 4건 | ✅ |
+| 06/12 | 민아 | **디자인 프레임워크+워크플로우 설계서 발행** (Phase 7 재개 기반) — v5 6주 정체 원인(일회성 시안→수동컨버트→종료) 진단 → 프레임워크 3층(토큰 정비/컴포넌트·타일/서비스 레지스트리) + 6단계 파이프라인(시안→검토→컨버트→preview→검증→전환, 게이트·담당 고정) 설계. 작가님 결정: **포털 파일럿→점진확장 / 코드우선(CSS토큰+순수JS)**. v5 결정 5건 답안 선반영(render확장·아이콘축소·히어로토글·예비숨김·Wave분리) | [DESIGN](monkos-ops/tech/designs/2026-06/DESIGN_20260612_디자인프레임워크_워크플로우.md) | ⏳ 작가님 확인 |
 
 ---
 
@@ -167,6 +172,34 @@ status: active
 | — | 쌍아 영향평가 + 헌법·법률 충돌 점검 | ⏳ 대기 | 쌍아 | 통상 검토 |
 | — | 막내 컨버트 — JSX 시안 → `index.html` + `portal.css` | ⏳ 대기 | 쌍아→막내 | `monkos_AI/portal/deploy.sh prod` |
 | — | 라이브 검증 + GA 이벤트 추적 (카드별 클릭) | ⏳ 대기 | 민아 | 배포 후 |
+
+### Phase 9 — 마이페이지 + 인증 체계 정비 ⏳ 기획 (06/10 기획)
+
+> **근본 문제**: 크레딧을 판매하는데 마이페이지가 없다. 사용자가 잔액·이력·사진을 관리할 수 없고, 인증 체계 미완성이 보안 취약점(C-2/N-1/C-4)의 근본 원인.
+
+**왜 이것을 하는가**
+- 보안: C-2(크레딧 무인증), N-1(토큰 무인증 발급), C-4(ADMIN 페일오픈) — 마이페이지 인증 세션이 있으면 구조적으로 해소
+- 법적: H-5 GCS 사진 "30일 삭제" FAQ 안내 vs 실제 영구 보관 불일치 — 사용자 사진 관리 UI 필요
+- 전환: 결제 사용자가 자기 크레딧·사진을 볼 수 없으면 재구매 동기 없음
+
+**스코프**
+
+| 트랙 | 항목 | 선행 조건 |
+|------|------|----------|
+| **T0 (응급)** | 보안 페일클로즈 — C-2/N-1/C-4 인증 미들웨어 추가, C-3 폴백 제거 | 없음 (즉시) |
+| **T1** | 마이페이지 UI — 프로필·크레딧 잔액·사용 이력 조회 | T0 완료 |
+| **T2** | 사진 관리 — 생성 사진 목록·다운로드·삭제 요청 | T1 + GCS 라이프사이클 |
+| **T3** | GCS TTL — 30일 라이프사이클 규칙 설정, FAQ 안내와 일치 | GCP 콘솔 (작가님) |
+
+**기술 판단**: 현행 스택(순수 JS + Node.js + Firestore + OAuth)으로 구현 가능. 새 프레임워크 불요.
+
+| 항목 | 상태 | 담당 | 비고 |
+|------|------|------|------|
+| Phase 9 기획 확정 | ⏳ | 쌍아 | 본 기획안 |
+| T0 보안 페일클로즈 지시서 | ⏳ | 쌍아→막내 | 보안 전수조사 기반 |
+| T1 마이페이지 설계서 | ⏳ | 쌍아 | T0 완료 후 |
+| T2 사진 관리 설계서 | ⏳ | 쌍아 | T1 완료 후 |
+| T3 GCS 라이프사이클 | ⏳ | 작가님 | GCP 콘솔 |
 
 ### Phase 8 — 어드민 대시보드 ✅ 완료 (06/06)
 
@@ -312,3 +345,4 @@ status: active
 | **deploy.sh 시크릿/비시크릿 혼용 재발** | 중 | portal/deploy.sh는 4/11 분리 완료. idphoto-kr/jp/studio 동일 패턴 점검 필요 (ch5 운영 점검) |
 | **Phase 7 트랙 4 (쇼츠) 영상 URL 미수령** | 저 | 트랙 1~3은 작가님 결정 즉시 진행 가능. 트랙 4는 영상 URL 수령 후 후속 분리 배포 가능 |
 | **자산-노출 시간차 재발** | 중 | 교훈 4 — SEO/AEO 자산 완성 보고에 "노출 동선 검증" 자동 체크리스트 도입 |
+| **어드민 에이전트 CDP 접근** | 중 | 6/11 /admin/*.html 인증 가드 도입 후, 에이전트가 CDP로 어드민 UI 검증 시 사전에 작가님 수동 OAuth 로그인 필요. 현재는 작가님 1회 로그인→쿠키 유지로 해소. 향후 에이전트 자율 접근이 필요해지면 AGENT_API_KEYS→세션 쿠키 교환 API 신설 검토 |

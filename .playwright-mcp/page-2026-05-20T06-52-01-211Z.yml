@@ -1,0 +1,22 @@
+- generic [active] [ref=e1]:
+  - heading "IDPASS" [level=1] [ref=e2]
+  - paragraph [ref=e3]: Guide Image Prototype — Minimal Overlay
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - generic [ref=e7]: 🇰🇷
+        - text: 대한민국 · 여권
+        - generic [ref=e8]: 35×45
+      - generic [ref=e11]: head 32~36mm · ICAO 9303
+    - generic [ref=e12]:
+      - generic [ref=e13]:
+        - generic [ref=e14]: 🇺🇸
+        - text: United States · Visa
+        - generic [ref=e15]: 51×51
+      - generic [ref=e18]: head 22~35mm · 22 CFR 51
+    - generic [ref=e19]:
+      - generic [ref=e20]:
+        - generic [ref=e21]: 🇨🇦
+        - text: Canada · Passport
+        - generic [ref=e22]: 50×70
+      - generic [ref=e25]: head 31~36mm · PPTC-203

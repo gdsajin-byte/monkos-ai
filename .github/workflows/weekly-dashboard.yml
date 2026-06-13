@@ -25,11 +25,32 @@ jobs:
       - name: PF dashboard
         run: python .github/scripts/pf_dashboard.py > /tmp/pf.md
 
+      - name: C2 — PF 500줄 초과 검사 (ch4 9조 3항)
+        run: |
+          echo "## ⚠️ PF 비대화 경고" > /tmp/pf-oversize.md
+          OVER=0
+          for f in monkos-ops/ops/portfolios/*/README.md; do
+            [ ! -f "$f" ] && continue
+            LINES=$(wc -l < "$f")
+            if [ "$LINES" -gt 500 ]; then
+              PF_NAME=$(basename "$(dirname "$f")")
+              echo "- **${PF_NAME}**: ${LINES}줄 (500줄 초과 — 아카이브 트리거)" >> /tmp/pf-oversize.md
+              OVER=1
+            fi
+          done
+          if [ "$OVER" -eq 0 ]; then
+            echo "- 초과 PF 없음" >> /tmp/pf-oversize.md
+          fi
+
       - name: Create Issue
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           BODY="$(cat /tmp/pf.md)
+
+          ---
+
+          $(cat /tmp/pf-oversize.md)
 
           ---
 

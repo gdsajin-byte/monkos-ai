@@ -20,6 +20,18 @@
     "swiftmodule": "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.build/CropView~partial.swiftmodule",
     "swift-dependencies": "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.build/CropView.swiftdeps"
   },
+  "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/DemoAnimation.swift": {
+    "dependencies": "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.build/DemoAnimation.d",
+    "object": "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.build/DemoAnimation.swift.o",
+    "swiftmodule": "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.build/DemoAnimation~partial.swiftmodule",
+    "swift-dependencies": "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.build/DemoAnimation.swiftdeps"
+  },
+  "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/LandingView.swift": {
+    "dependencies": "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.build/LandingView.d",
+    "object": "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.build/LandingView.swift.o",
+    "swiftmodule": "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.build/LandingView~partial.swiftmodule",
+    "swift-dependencies": "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.build/LandingView.swiftdeps"
+  },
   "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/MonkosCrop/MonkosCropApp.swift": {
     "dependencies": "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.build/MonkosCropApp.d",
     "object": "/Users/jeong-kyushin/developer/monk_project/apps/MonkosCrop/.build/x86_64-apple-macosx/debug/MonkosCrop.build/MonkosCropApp.swift.o",

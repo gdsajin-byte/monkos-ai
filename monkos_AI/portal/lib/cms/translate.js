@@ -4,7 +4,7 @@
  */
 import { ai, firestore, log } from '../shared/config.js';
 import { requireAdmin } from './admin-auth.js';
-import { requestIndexing, appendToLlmsTxt, pingSitemap } from './seo.js';
+import { requestIndexing } from './seo.js';
 
 function hasKorean(str) {
   return /[가-힣ㄱ-ㅎㅏ-ㅣ]/.test(str);
@@ -113,7 +113,7 @@ ${JSON_INSTRUCTION[lang] || JSON_INSTRUCTION.en}`;
         model: 'gemini-2.5-flash',
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
         config: {
-          maxOutputTokens: 8192,
+          maxOutputTokens: 32768,
           temperature: 0.3,
           responseMimeType: 'application/json',
         },
@@ -217,8 +217,6 @@ ${JSON_INSTRUCTION[lang] || JSON_INSTRUCTION.en}`;
       if (originalDoc.published) {
         const translatedUrl = `https://monkos.ai/${lang}/blog/${baseSlug}`;
         requestIndexing(translatedUrl);
-        appendToLlmsTxt(baseSlug, translated.title);
-        pingSitemap();
       }
 
       log(`[CMS] 자동번역 완료: ${slug} → ${translatedSlug} (${lang})`);

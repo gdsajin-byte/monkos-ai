@@ -35,7 +35,7 @@ import { handlePassportIssue, handleUploadMission } from './lib/tg-cs.js';
 import { handleKakaoChatbot } from './lib/kakao-chatbot.js';
 import { handleLineWebhook } from './lib/line-chatbot.js';
 import { handleWebChat, handleCoaching } from './lib/coaching.js';
-import { handleAgentAuth } from './lib/cms/admin-auth.js';
+import { handleAgentAuth, requireAdmin } from './lib/cms/admin-auth.js';
 import { handleDashboardSummary, handleDashboardUsers, handleDashboardCredits, handleDashboardTraffic } from './lib/cms/dashboard.js';
 import { handleBlogList, handleBlogGet, handleBlogCreate, handleBlogUpdate, handleBlogDelete } from './lib/cms/blog.js';
 import { handleFaqList, handleFaqCreate, handleFaqUpdate, handleFaqDelete } from './lib/cms/faq.js';
@@ -47,6 +47,7 @@ import { handleTranslate } from './lib/cms/translate.js';
 import { handleSearch } from './lib/cms/search.js';
 import { renderBlogList, renderBlogPost, renderFaq, renderGallery, renderBoardList, renderBoardPost, renderBoardWrite, renderGuide, renderAiPhotoGuide, renderSitemap, renderPricing, renderSpecsList, renderSpecsDetail } from './lib/cms/render.js';
 import { renderHome, handleSettingsGet, handleSettingsPut, handleLayoutGet, handleLayoutPut } from './lib/cms/home.js';
+import { renderLlmsTxt } from './lib/cms/render-llms.js';
 import { handlePodStart, handlePodStatus, handlePodStop, handleComfyProxy } from './lib/vton/runpod.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -302,7 +303,8 @@ const httpServer = createServer(async (req, res) => {
     '/blog/%ED%95%9C%EC%97%B0%EA%B5%AC%EC%9B%90-%EC%B9%BC%EB%9F%BC-%EC%A6%9D%EB%AA%85%EC%82%AC%EC%A7%84-%EB%A9%B4%EC%A0%91%ED%97%A4%EC%96%B4%EB%A9%94%EC%9D%B4%ED%81%AC%EC%97%85%EC%97%90-%EC%A4%91%EC%9A%94%ED%95%9C-%EA%B0%81%EC%A7%88%EC%A0%9C%EA%B1%B0-%EC%B2%AD%EA%B2%B0-%EC%8B%A0%EB%A2%B0%EA%B0%90%EC%9D%98-%EC%8B%9C%EC%9E%91': '/blog/clean-impression-first-step-exfoliation-for-id-interview',
     '/blog/%ED%95%9C%EC%97%B0%EA%B5%AC%EC%9B%90%EB%A7%A4%EA%B1%B0%EC%A7%84vol20-%ED%95%9C%EA%B5%AD-%EC%B7%A8%EC%97%85%EC%82%AC%EC%A7%84-vs-%EC%9D%BC%EB%B3%B8-%EC%B7%A8%EC%97%85%EC%82%AC%EC%A7%84-%EC%9D%B4%EB%A0%87%EA%B2%8C-%EB%8B%A4%EB%A6%85%EB%8B%88%EB%8B%A4': '/blog/korean-vs-japanese-job-application-photos-compared',
   };
-  const decodedPath = decodeURIComponent(urlPath);
+  let decodedPath;
+  try { decodedPath = decodeURIComponent(urlPath); } catch { decodedPath = urlPath; }
   const redirectTarget = blogRedirects[urlPath] || blogRedirects[decodedPath];
   if (redirectTarget) {
     res.writeHead(301, { 'Location': redirectTarget });
@@ -313,7 +315,8 @@ const httpServer = createServer(async (req, res) => {
   const langBlogMatch = urlPath.match(/^\/(en|ja)\/blog\//);
   if (langBlogMatch) {
     const koPath = urlPath.replace(/^\/(en|ja)\/blog\//, '/blog/');
-    const koDecoded = decodeURIComponent(koPath);
+    let koDecoded;
+    try { koDecoded = decodeURIComponent(koPath); } catch { koDecoded = koPath; }
     const koTarget = blogRedirects[koPath] || blogRedirects[koDecoded];
     if (koTarget) {
       res.writeHead(301, { 'Location': koTarget });
@@ -337,6 +340,7 @@ const httpServer = createServer(async (req, res) => {
   if ((urlPath === '/ja' || urlPath === '/ja/') && req.method === 'GET') return renderHome(req, res, 'ja');
   if ((urlPath === '/en' || urlPath === '/en/') && req.method === 'GET') return renderHome(req, res, 'en');
   if (urlPath === '/sitemap.xml' && req.method === 'GET') return renderSitemap(req, res);
+  if (urlPath === '/llms.txt' && req.method === 'GET') return renderLlmsTxt(req, res);
 
   // 다국어 블로그 라우트 (언어 접두사 — 기존 /blog 라우트 앞에 배치)
   if (urlPath === '/ja/blog' && req.method === 'GET') return renderBlogList(req, res, 'ja');
@@ -383,6 +387,12 @@ const httpServer = createServer(async (req, res) => {
   let filePath = req.url === '/' ? '/index.html' : req.url;
   filePath = filePath.split('?')[0];
   if (filePath.endsWith('/')) filePath += 'index.html';
+
+  // /admin/*.html 인증 가드 (로그인 페이지 제외)
+  if (filePath.startsWith('/admin/') && filePath.endsWith('.html') && filePath !== '/admin/index.html') {
+    if (!requireAdmin(req, res)) return;
+  }
+
   const fullPath = join(__dirname, 'public', filePath);
   const ext = extname(filePath);
 

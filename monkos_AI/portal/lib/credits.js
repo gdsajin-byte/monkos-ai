@@ -1,17 +1,39 @@
 /** 담당: 막내2 (리파인) */
 
-import { usersCollection, firestore, log, logTransaction, parseJsonBody } from './shared/config.js';
+import { usersCollection, firestore, log, logTransaction, parseJsonBody, verifyAuthToken, parseCookies } from './shared/config.js';
+
+function getAuthenticatedUserId(req) {
+  const cookies = parseCookies(req.headers.cookie);
+  const token = cookies.monkos_session;
+  if (!token) return null;
+  const payload = verifyAuthToken(token);
+  return payload?.userId || null;
+}
 
 /**
  * GET /api/credits — 크레딧 조회
  */
 export async function handleCreditsGet(req, res) {
+  const authUserId = getAuthenticatedUserId(req);
+  if (!authUserId) {
+    res.writeHead(403, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: '인증 필요' }));
+    return;
+  }
+
   const urlParams = new URL(req.url, `http://${req.headers.host}`);
   const userId = urlParams.searchParams.get('userId');
 
   if (!userId) {
     res.writeHead(400, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: 'userId 파라미터 필수' }));
+    return;
+  }
+
+  if (authUserId !== userId) {
+    log(`[Credits] 조회 거부: 세션(${authUserId}) ≠ 요청(${userId})`, 'WARNING');
+    res.writeHead(403, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: '본인 크레딧만 조회 가능' }));
     return;
   }
 
@@ -40,11 +62,25 @@ export async function handleCreditsGet(req, res) {
  * type: 'generate' (-10c) | 'download' (-70c) | 'extra_crop' (-10c) | 'full_original' (-10c)
  */
 export async function handleCreditsUse(req, res) {
+  const authUserId = getAuthenticatedUserId(req);
+  if (!authUserId) {
+    res.writeHead(403, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: '인증 필요' }));
+    return;
+  }
+
   try {
     const { userId, type } = await parseJsonBody(req);
     if (!userId || !type) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: 'userId, type 필드 필수' }));
+      return;
+    }
+
+    if (authUserId !== userId) {
+      log(`[Credits] 사용 거부: 세션(${authUserId}) ≠ 요청(${userId})`, 'WARNING');
+      res.writeHead(403, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: '본인 크레딧만 사용 가능' }));
       return;
     }
 
@@ -98,11 +134,25 @@ export async function handleCreditsUse(req, res) {
  * 생성 실패 등으로 차감된 크레딧을 환불
  */
 export async function handleCreditsRefund(req, res) {
+  const authUserId = getAuthenticatedUserId(req);
+  if (!authUserId) {
+    res.writeHead(403, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: '인증 필요' }));
+    return;
+  }
+
   try {
     const { userId, type } = await parseJsonBody(req);
     if (!userId || !type) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: 'userId, type 필드 필수' }));
+      return;
+    }
+
+    if (authUserId !== userId) {
+      log(`[Credits] 환불 거부: 세션(${authUserId}) ≠ 요청(${userId})`, 'WARNING');
+      res.writeHead(403, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: '본인 크레딧만 환불 가능' }));
       return;
     }
 

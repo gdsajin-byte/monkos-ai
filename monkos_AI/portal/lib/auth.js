@@ -457,7 +457,7 @@ export async function handleGoogleRedirectCallback(req, res) {
       picture: user.picture,
       provider: 'google',
       credits: finalData.credits ?? 0,
-      isAdmin: ADMIN_UIDS.length === 0 || ADMIN_UIDS.includes(user.id),
+      isAdmin: ADMIN_UIDS.length > 0 && ADMIN_UIDS.includes(user.id),
     };
 
     const { token: sessionToken } = generateAuthToken(user.id, 30 * 24 * 60 * 60 * 1000);
@@ -594,7 +594,7 @@ export async function handleGoogleAuth(req, res) {
           picture: user.picture,
           credits,
           provider: 'google',
-          isAdmin: ADMIN_UIDS.length === 0 || ADMIN_UIDS.includes(user.id),
+          isAdmin: ADMIN_UIDS.length > 0 && ADMIN_UIDS.includes(user.id),
         }
       }));
     } catch (err) {
@@ -607,6 +607,22 @@ export async function handleGoogleAuth(req, res) {
 
 // === 크로스 도메인 인증 토큰 생성 — /api/auth/token (POST) ===
 export async function handleAuthToken(req, res) {
+  // N-1 페일클로즈: 세션 쿠키로 본인 확인 후에만 토큰 발급
+  const cookies = parseCookies(req.headers.cookie);
+  const sessionToken = cookies.monkos_session;
+  if (!sessionToken) {
+    res.writeHead(403, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: '인증 필요 (세션 쿠키 없음)' }));
+    return;
+  }
+
+  const session = verifyAuthToken(sessionToken);
+  if (!session) {
+    res.writeHead(403, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: '유효하지 않은 세션' }));
+    return;
+  }
+
   let body = '';
   req.on('data', chunk => { body += chunk; });
   req.on('end', async () => {
@@ -615,6 +631,13 @@ export async function handleAuthToken(req, res) {
       if (!userId) {
         res.writeHead(400, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: 'userId 필수' }));
+        return;
+      }
+
+      if (session.userId !== userId) {
+        log(`[Auth] 토큰 발급 거부: 세션(${session.userId}) ≠ 요청(${userId})`, 'WARNING');
+        res.writeHead(403, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: '본인의 userId만 토큰 발급 가능' }));
         return;
       }
 
@@ -790,7 +813,7 @@ export async function handleVerifyCookie(req, res) {
     }
 
     const userData = userDoc.data();
-    const isAdmin = ADMIN_UIDS.length === 0 || ADMIN_UIDS.includes(result.userId);
+    const isAdmin = ADMIN_UIDS.length > 0 && ADMIN_UIDS.includes(result.userId);
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({
       user: {
