@@ -176,6 +176,7 @@ status: active
 | 05/25 | 4060/쌍아 | **RMBG-2.0 GPU 테스트 환경 세팅** — Python 3.10 venv + PyTorch CUDA 12.1 + transformers/flask 설치. rmbg2_server.py + rmbg2-test.html 작성 완료. HF 토큰 확인(환경변수). **모델 다운로드 blocked: gated repo 접근 승인 필요** | apps/crop-app/benchmark/ | ⏳ HF 승인 대기 |
 | 05/29 | iMac/쌍아 | **IDPASS ASO 진단+최적화** — iris API로 15개 언어 메타데이터 전수 점검. de-DE 프로모션 버그(영어 키워드 복붙) 수정, ko 프로모션 오타("없슴"→"없음") PATCH. 부제 15개 언어 전부 정상 확인(appInfoLocalizations). 키워드는 라이브 잠김 → 키워드 4언어 최적화안+6.9" 스크린샷 카피 구성안 적립(1.0.1 반영) | [REPORT](reports/2026-05/REPORT_20260529_iMac쌍아_IDPASS_ASO최적화패키지.md) | ⏳ 1.0.1 대기 |
 | 06/14 | 4060/쌍아 | **BiRefNet 배경 제거 PoC** — ZhengPeng7/BiRefNet(MIT 라이선스) 4060 GPU 실측. 평균 0.829s, VRAM peak 3197MB/8GB. 증명사진 경계 깔끔, 머리카락 디테일 우수. RMBG-2.0(CC BY-NC) 대비 상업 사용 무제한. Flask 서버+테스트 UI+벤치마크 5종 완료 | [COMPLETION](../../reports/2026-06/COMPLETION_20260614_4060쌍아_BiRefNet_PoC.md) | ✅ |
+| 06/14 | iMac/막내1 | **배경 제거 모델+후처리 기법 리서치** — 후처리 6종 비교(ViTMatte Apache2.0 최상), 대안 모델 6종(BiRefNet MIT 현행 최적 확인), 하이브리드 파이프라인 사례(BiRefNet→ViTMatte 2단계 프로덕션 표준). 권고: BiRefNet+ViTMatte 2단계 | [REPORT](../../reports/2026-06/REPORT_20260614_막내1_CROP_배경제거모델리서치.md) | ✅ |
 
 ---
 

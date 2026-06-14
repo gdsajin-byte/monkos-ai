@@ -6,7 +6,7 @@ from: iMac/쌍아
 to: 막내
 portfolio: PF_CROP
 priority: P2
-status: pending
+status: 완료
 ---
 
 # 배경 제거 모델 + 후처리 기법 리서치
