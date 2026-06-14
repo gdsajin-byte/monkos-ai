@@ -115,6 +115,7 @@ idpass.monkos.ai (SPA 간판) → monkos.ai/specs/{국가-문서} (본진 SSR, S
 | 06/12 | iMac/쌍아 | 꾸 역할 확장 헌법 개정 완료 — 삼권심사 만장일치, 헌법·법률·규정 반영 | PETITION_20260612 | ✅ |
 | 06/12 | 작가님 | IDPASS 비전 확정 — specs×crop 간판/엔진 분리, 3티어 매출(Free+AI유료+Studio), idphoto와 별도 2라인 | PF_KKU 비전 반영 | ✅ |
 | 06/12 | 웹/민아 | specs GEO 보강 표준 수신 — 꾸 미국비자 정본 템플릿에 인용 단문·스키마 조합·언어 단계화 반영 필요 (상세: PF_SPECS) | SPEC_20260612_specs_GEO보강표준.md | ⏳ 템플릿 반영 대기 |
+| 06/13 | 웹/민아 | 숏폼 떡상 공식 분석 엔진(SHORTS DECODER) 설계 — RADAR/DECODER/SYNTH 3레이어, kku-blog/specs 소재 공급 | DESIGN_20260613_숏폼떡상공식_분석엔진.md, PR #65 | ⏳ 작가님 승인·오픈이슈 대기 |
 
 ---
 
