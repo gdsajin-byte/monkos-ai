@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>張三李四</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;900&family=Gowun+Batang:wght@400;700&display=swap');
+  :root{ --ink:#2b2118; --bamboo:#e8dcc0; --line:#6b5840; --cinna:#b54a2b; }
+  *{box-sizing:border-box;}
+  body{margin:0;background:linear-gradient(#ddcfae,#d6c6a2);color:var(--ink);
+    font-family:'Gowun Batang',serif;min-height:100vh;}
+  #app{max-width:760px;margin:0 auto;padding:22px clamp(14px,4vw,40px);}
+  .kicker{font:600 12px 'Noto Serif KR';letter-spacing:4px;color:var(--line);}
+  h1.title{font:900 40px 'Noto Serif KR';margin:2px 0;letter-spacing:7px;line-height:1;}
+  .sub{font-size:13.5px;color:#4a3c2a;max-width:460px;}
+  .header{display:flex;justify-content:space-between;align-items:flex-end;
+    border-bottom:2px solid var(--ink);padding-bottom:13px;margin-bottom:16px;gap:10px;flex-wrap:wrap;}
+  .actBox{text-align:right;}
+  .actNum{font:600 14px 'Noto Serif KR';color:var(--line);border:1px solid var(--line);padding:4px 11px;border-radius:2px;margin-bottom:5px;}
+  .actLeft{font-size:14px;color:var(--cinna);letter-spacing:3px;}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;}
+  .stat{background:var(--bamboo);border:1px solid var(--line);border-radius:2px;padding:9px 6px;text-align:center;}
+  .statVal{font:700 22px 'Noto Serif KR';line-height:1;}
+  .statVal.accent{color:var(--cinna);}
+  .statLabel{font-size:11px;color:var(--line);margin-top:3px;}
+  .gauge{margin-bottom:18px;}
+  .gaugeLabel{display:flex;justify-content:space-between;font:600 12.5px 'Noto Serif KR';color:#4a3c2a;margin-bottom:5px;}
+  .gTrack{height:8px;background:rgba(107,88,64,.2);border-radius:4px;overflow:hidden;border:1px solid var(--line);}
+  .gFill{height:100%;background:var(--cinna);transition:width .4s;}
+  .sectLabel{font:600 12.5px 'Noto Serif KR';color:var(--line);margin-bottom:10px;letter-spacing:1px;}
+  .places{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+  .place{display:flex;flex-direction:column;gap:4px;text-align:left;padding:15px 16px;background:var(--bamboo);
+    border:1px solid var(--line);border-radius:2px;cursor:pointer;font-family:'Gowun Batang',serif;transition:all .15s;}
+  .place:hover{background:#f0e4c8;border-color:var(--cinna);transform:translateY(-2px);}
+  .placeName{font:700 17px 'Noto Serif KR';}
+  .placeDesc{font-size:12.5px;color:var(--line);line-height:1.4;}
+  .panel{background:rgba(240,228,200,.45);border:1px solid var(--line);border-radius:3px;padding:16px;margin-bottom:14px;}
+  .panelHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;border-bottom:1px dotted var(--line);padding-bottom:8px;}
+  .panelTitle{font:700 18px 'Noto Serif KR';}
+  .back{background:none;border:none;color:var(--line);cursor:pointer;font-size:13px;font-family:'Gowun Batang',serif;}
+  .enc{background:rgba(232,220,192,.6);border:1px solid var(--line);border-radius:2px;padding:12px 14px;margin-bottom:12px;}
+  .encName{font:700 19px 'Noto Serif KR';}
+  .encNote{font-size:13px;color:#4a3c2a;margin-top:4px;}
+  .rv{display:flex;flex-direction:column;gap:3px;text-align:left;padding:12px 15px;background:var(--bamboo);
+    border:1px solid var(--line);border-radius:2px;cursor:pointer;font-family:'Gowun Batang',serif;transition:all .15s;width:100%;margin-bottom:8px;}
+  .rv:hover:not(:disabled){background:#f0e4c8;border-color:var(--cinna);}
+  .rv:disabled{cursor:default;opacity:.4;border-style:dashed;background:transparent;}
+  .rv.primary{border-color:var(--cinna);border-width:1.5px;}
+  .rvLabel{font:700 15px 'Noto Serif KR';}
+  .rvSub{font-size:12px;color:var(--line);}
+  .folkRow{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px dotted var(--line);}
+  .folkFace{font:700 15px 'Noto Serif KR';}
+  .folkRole{font-size:12px;color:var(--line);margin-top:2px;}
+  .mini{padding:6px 13px;background:var(--bamboo);border:1px solid var(--line);border-radius:2px;cursor:pointer;font-family:'Gowun Batang',serif;font-size:13px;transition:all .12s;}
+  .mini:hover:not(:disabled){background:#f0e4c8;}
+  .mini:disabled{opacity:.4;cursor:default;}
+  .mini.accent{border-color:var(--cinna);color:var(--cinna);font-weight:700;}
+  .doneTag{font-size:12.5px;color:var(--cinna);font-weight:700;}
+  .seatTag{font-size:11.5px;color:var(--line);font-style:italic;}
+  .convoWho{font:700 16px 'Noto Serif KR';margin-bottom:8px;}
+  .convoScroll{max-height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;margin-bottom:10px;}
+  .convoTurn{border-left:2px solid var(--line);padding-left:10px;}
+  .convoMe{font-size:13.5px;color:#4a3c2a;}
+  .convoReply{font-size:14.5px;color:var(--ink);margin:3px 0;line-height:1.6;}
+  .convoNote{font-size:11.5px;color:var(--cinna);font-style:italic;}
+  .sayRow{display:flex;gap:7px;}
+  .sayInput{flex:1;padding:9px 12px;border:1px solid var(--line);border-radius:2px;background:#f3ead4;font-family:'Gowun Batang',serif;font-size:14px;color:var(--ink);}
+  .bondBanner{background:rgba(181,74,43,.1);border:1px solid var(--cinna);border-radius:2px;padding:10px 12px;margin:8px 0;font-size:13.5px;color:var(--cinna);}
+  .tease{font-size:12px;color:var(--line);font-style:italic;margin-top:12px;opacity:.8;}
+  .folk{margin-top:6px;background:rgba(240,228,200,.4);border:1px solid var(--line);border-radius:3px;padding:14px;}
+  .folkLabel{font:600 12px 'Noto Serif KR';letter-spacing:3px;color:var(--line);margin-bottom:10px;border-bottom:1px dotted var(--line);padding-bottom:6px;display:flex;justify-content:space-between;align-items:center;}
+  .folkScroll{max-height:260px;overflow-y:auto;display:flex;flex-direction:column;gap:11px;padding-right:6px;}
+  .entry{border-left:2px solid var(--cinna);padding-left:11px;}
+  .entryMeta{font:600 11px 'Noto Serif KR';color:var(--line);letter-spacing:1px;}
+  .chronicle{font-size:14.5px;line-height:1.7;margin:4px 0;color:var(--ink);}
+  .fameNote{font-size:11.5px;color:#6b5840;font-style:italic;}
+  .battle{background:rgba(43,33,24,.06);border:1.5px solid var(--cinna);border-radius:3px;padding:16px;margin-bottom:16px;}
+  .barLabel{display:flex;justify-content:space-between;font:600 12.5px 'Noto Serif KR';color:#4a3c2a;margin-bottom:4px;}
+  .barTrack{height:14px;background:rgba(107,88,64,.18);border-radius:3px;overflow:hidden;border:1px solid var(--line);margin-bottom:10px;}
+  .bbtn{padding:11px 15px;background:var(--bamboo);border:1px solid var(--line);border-radius:2px;cursor:pointer;font-family:'Gowun Batang',serif;font-size:14px;transition:all .12s;width:100%;margin-bottom:7px;}
+  .bbtn:hover:not(:disabled){background:#f0e4c8;}
+  .bbtn.accent{border-color:var(--cinna);color:var(--cinna);font-weight:700;}
+  .bbtn.retreat{border-color:#c0392b;color:#c0392b;}
+  .lk{display:inline-block;padding:5px 11px;border:1px dashed var(--line);border-radius:2px;color:var(--line);opacity:.5;font-size:13px;font-family:'Noto Serif KR',serif;}
+  .locked{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-top:18px;padding-top:14px;border-top:1px dotted var(--line);}
+  .busy{font-size:13px;color:var(--cinna);text-align:center;padding:8px 0;letter-spacing:2px;}
+  .err{font-size:13px;color:#c0392b;padding:8px 0;}
+  .topbar{display:flex;gap:8px;justify-content:flex-end;margin-bottom:10px;flex-wrap:wrap;}
+  .tbtn{font-size:12px;padding:5px 10px;background:transparent;border:1px solid var(--line);border-radius:2px;color:var(--line);cursor:pointer;font-family:'Gowun Batang',serif;}
+  .tbtn:hover{background:var(--bamboo);}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script type="module">
+const { useState, useEffect, useRef, createElement: h } = await import("https://esm.sh/react@18");
+const { createRoot } = await import("https://esm.sh/react-dom@18/client");
+
+/* ===== 영속 저장 ===== */
+const SAVE_KEY = "jangsam_save_v1";
+function load(){ try{ return JSON.parse(localStorage.getItem(SAVE_KEY)); }catch{ return null; } }
+function save(state){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify(state)); }catch{} }
+
+/* ===== 데이터 ===== */
+const ACTIONS_PER_ACT = 3, GOAL = 30;
+const BANDITS = [
+  {name:"굶주린 좀도둑 패",lo:4,hi:7},{name:"흩어진 황건 패잔병",lo:6,hi:10},
+  {name:"유민을 터는 도적떼",lo:7,hi:12},{name:"산속 마적",lo:9,hi:15},{name:"떠도는 부랑배",lo:3,hi:6},
+];
+const rollBandit=()=>{const b=BANDITS[Math.floor(Math.random()*BANDITS.length)];
+  const hp=b.lo+Math.floor(Math.random()*(b.hi-b.lo+1));return{name:b.name,hp,max:hp};};
+const PLACES=[
+  {id:"field",name:"들판 野",desc:"도적이 유민을 노리는 곳. 무력으로 무리를 키운다."},
+  {id:"tavern",name:"객잔 店",desc:"세상의 흐름이 모이는 곳. 정보·사람·소문."},
+  {id:"market",name:"시장 市",desc:"재화가 도는 곳. 곡식과 물자. 상인과의 거래 실적이 여기서."},
+  {id:"office",name:"관가 官",desc:"권력의 동향. 건달에겐 위태로우나 큰 소식이 있다."},
+];
+// NPC별: 임계, 합류조건(서생=대화호감 / 상인=호감+거래실적 / 떠돌이=깊은호감)
+const FOLK=[
+  {id:"scribe",face:"행색이 단정한 사내",type:"서생",role:"문(통솔·명분)",hidden:false,
+    threshold:12, joinBy:"대화 — 사람됨을 보인다", needTrade:false},
+  {id:"merchant",face:"셈이 빠른 장사치",type:"상인",role:"재(물류·자금)",hidden:false,
+    threshold:14, joinBy:"호감 + 시장 거래 실적", needTrade:true},
+  {id:"drifter",face:"구석의 말 없는 떠돌이",type:"???",role:"알 수 없다",hidden:true,
+    threshold:20, joinBy:"깊은 신뢰 — 거물일수록 늦게 연다", needTrade:false},
+  {id:"user_seat",face:"빈 평상",type:"(빈자리)",role:"누군가 앉을 자리다",userSeat:true},
+];
+
+async function llm(payload){
+  const res = await fetch('/api/llm', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({payload})
+  });
+  if (!res.ok) throw new Error('서버 응답 ' + res.status);
+  return res.json();
+}
+
+const INIT={band:8,fame:0,grain:10,minsim:5,act:1,left:ACTIONS_PER_ACT,
+  favor:{scribe:0,merchant:0,drifter:0},recruited:[],tradeCount:0,log:[]};
+
+function App(){
+  const saved = load();
+  const [s,setS]=useState(saved||INIT);
+  const [place,setPlace]=useState(null);
+  const [bandit,setBandit]=useState(rollBandit());
+  const [convo,setConvo]=useState(null);
+  const [say,setSay]=useState("");
+  const [busy,setBusy]=useState(false);
+  const [err,setErr]=useState(null);
+  const [battle,setBattle]=useState(null);
+  const logRef=useRef(null);
+
+  useEffect(()=>{ save(s); },[s]);
+  useEffect(()=>{ if(logRef.current)logRef.current.scrollTop=logRef.current.scrollHeight; },[s.log]);
+
+  const canSiege=s.band>=GOAL;
+  function spend(){ setS(p=>{const left=p.left-1;return left<=0?{...p,left:ACTIONS_PER_ACT,act:p.act+1}:{...p,left};}); }
+  function addLog(e){ setS(p=>({...p,log:[...p.log,e]})); }
+
+  /* ===== 교전 ===== */
+  function startBattle(){ setBattle({myHp:s.band,myMax:s.band,foeHp:bandit.hp,foeMax:bandit.max,
+    foeName:bandit.name,foeKnown:false,ticks:0,momentum:0,phase:"fight"}); }
+  useEffect(()=>{
+    if(!battle||battle.phase!=="fight")return;
+    const t=setTimeout(()=>setBattle(b=>{
+      if(!b||b.phase!=="fight")return b;
+      const myAtk=1+Math.random()*1.4+(b.momentum>0?0.9:0);
+      const foeAtk=(1+Math.random()*1.4)*(b.momentum>0?0.6:(b.momentum<0?0.5:1));
+      const foeHp=Math.max(0,+(b.foeHp-myAtk).toFixed(1));
+      const myHp=Math.max(0,+(b.myHp-foeAtk).toFixed(1));
+      let phase=b.phase;
+      if(foeHp<=0)phase="win"; else if(myHp<=0)phase="lose";
+      else if(foeHp<=b.foeMax*0.3&&myHp>b.myMax*0.4)phase="finisher";
+      return{...b,foeHp,myHp,ticks:b.ticks+1,momentum:0,foeKnown:true,phase};
+    }),650);
+    return ()=>clearTimeout(t);
+  },[battle]);
+  function intervene(d){ setBattle(b=>b&&b.phase==="fight"?{...b,momentum:d}:b); }
+  async function endBattle(kind){
+    setBusy(true); const b=battle;
+    let eff,desc,loot;
+    const dmg=Math.round(b.myHp-b.myMax);
+    if(kind==="finish"){eff={band:dmg+Math.round(b.foeMax*0.2),fame:6,grain:2,minsim:1};desc="끝을 보아 무리를 모두 베다";loot="곡식 +2";}
+    else if(kind==="accept"){eff={band:dmg+Math.round(b.foeMax*0.6),fame:3,grain:1,minsim:2};desc="항복을 받아 무리에 거두다";loot="항졸 흡수";}
+    else if(kind==="release"){eff={band:dmg,fame:1,grain:0,minsim:4};desc="길을 터주어 살려 보내다";loot="훗날의 인연?";}
+    else if(kind==="retreat"){eff={band:dmg-2,fame:-3,grain:0,minsim:-1};desc="형세 불리하여 물러나다";loot="목숨은 건졌다";}
+    else {eff={band:dmg-3,fame:-4,grain:0,minsim:-2};desc="패하여 무리가 흩어지다";loot="무리를 잃다";}
+    try{
+      const v=await llm(`[들판 교전 결말] "${b.foeName}"과의 싸움. 결말: ${desc}. 사서 문체로 편찬. closeable:false`);
+      setS(p=>({...p,band:Math.max(0,p.band+eff.band),fame:Math.max(0,p.fame+eff.fame),
+        grain:Math.max(0,p.grain+eff.grain),minsim:Math.min(100,Math.max(0,p.minsim+eff.minsim)),
+        log:[...p.log,{act:p.act,where:"들판",what:desc,text:v.reply,note:(v.note||"")+" · "+loot}]}));
+    }catch(e){setErr("역사가가 붓을 들지 못했다: "+e.message);}
+    setBattle(null);setBandit(rollBandit());spend();setBusy(false);
+  }
+
+  /* ===== 들판 즉시해결 ===== */
+  const QUICK=[
+    {id:"subdue",label:"굴복시켜 거둔다",cond:st=>st.fame>=8,eff:{band:8,fame:3,grain:0,minsim:1},need:"이름값 8"},
+    {id:"reconcile",label:"타일러 화해한다",cond:st=>st.fame>=16,eff:{band:5,fame:2,grain:0,minsim:5},need:"이름값 16"},
+    {id:"deal",label:"곡식으로 무마",cond:st=>st.grain>=6,eff:{band:1,fame:0,grain:-6,minsim:3},need:"곳간 6"},
+  ];
+  async function doQuick(r){
+    if(busy||!r.cond(s))return; setBusy(true);setErr(null);
+    try{
+      const v=await llm(`[들판] "${bandit.name}"을(를) "${r.label}"으로 처리. 사서 문체 편찬. closeable:false`);
+      const e=r.eff;
+      setS(p=>({...p,band:Math.max(0,p.band+e.band),fame:Math.max(0,p.fame+e.fame),
+        grain:Math.max(0,p.grain+e.grain),minsim:Math.min(100,p.minsim+e.minsim),
+        log:[...p.log,{act:p.act,where:"들판",what:r.label,text:v.reply,note:v.note}]}));
+      setBandit(rollBandit());spend();
+    }catch(e){setErr("역사가가 붓을 들지 못했다: "+e.message);}finally{setBusy(false);}
+  }
+
+  /* ===== 객잔 대화 ===== */
+  function closeable(folk){
+    const fav=s.favor[folk.id]||0;
+    if(fav < folk.threshold) return false;
+    if(folk.needTrade && s.tradeCount<1) return false;
+    return true;
+  }
+  async function talk(folk){
+    if(busy||!say.trim())return; setBusy(true);setErr(null);
+    const cl=closeable(folk);
+    try{
+      const v=await llm(`[객잔 대화] 상대:${folk.face}(${folk.type}). 이 인물이 중시하는 축: ${folk.id==="scribe"?"격·신":folk.id==="merchant"?"신·실리":"격(깊이)"}.
+건달(무리${s.band}·명성${s.fame}·곳간${s.grain}, 거래실적${s.tradeCount}회)이 말한다:"${say}"
+closeable:${cl}. ${folk.hidden?"정체는 아직 숨긴 채(단 closeable면 정체의 일단을 비춰도 좋다).":""}
+이 인물 목소리로 답하고 favor_delta(0~3) 매겨라.`);
+      const fd=Math.max(0,Math.min(3,v.favor_delta||0));
+      const accepted = cl && v.accept;
+      setS(p=>{
+        const nf={...p.favor,[folk.id]:(p.favor[folk.id]||0)+fd};
+        const nr = accepted && !p.recruited.includes(folk.id) ? [...p.recruited,folk.id] : p.recruited;
+        const nl = accepted ? [...p.log,{act:p.act,where:"객잔",what:"합류",text:v.reply,note:`${folk.type} 합류 — 마침내 뜻을 함께하다`}] : p.log;
+        return {...p,favor:nf,recruited:nr,log:nl};
+      });
+      setConvo(c=>({who:folk,lines:[...(c?.lines||[]),{me:say,reply:v.reply,note:v.note,fd,accepted}]}));
+      setSay(""); spend();
+    }catch(e){setErr("말이 통하지 않았다: "+e.message);}finally{setBusy(false);}
+  }
+
+  async function simpleAct(kind){
+    if(busy)return; setBusy(true);setErr(null);
+    try{
+      if(kind==="market"){
+        setS(p=>({...p,grain:p.grain+8,tradeCount:p.tradeCount+1,
+          log:[...p.log,{act:p.act,where:"시장",what:"곡식 거래",text:"저자에서 곡식을 사들이고 셈을 트니, 곳간이 차고 거래의 연이 생기더라.",note:"곳간 +8 · 거래 실적 +1"}]}));
+      }else{
+        const danger=Math.random()<0.35;
+        const v=await llm(`[관가 정탐] 이름없는 건달이 관가 동향을 살핀다.${danger?" 관졸 눈에 띄어 위태로웠다는 정황 포함":" 조용히 큰 정보를 얻은 정황으로"} 사서 문체 2문장. closeable:false`);
+        if(danger)setS(p=>({...p,minsim:Math.max(0,p.minsim-3)}));
+        addLog({act:s.act,where:"관가",what:"정탐",text:v.reply,note:danger?"위태로웠다(민심-3)":v.note});
+      }
+      spend();
+    }catch(e){setErr("뜻대로 되지 않았다: "+e.message);}finally{setBusy(false);}
+  }
+
+  function exportJSON(){
+    const blob=new Blob([JSON.stringify(s,null,2)],{type:"application/json"});
+    const url=URL.createObjectURL(blob);const a=document.createElement("a");
+    a.href=url;a.download=`jangsam_session_${Date.now()}.json`;a.click();URL.revokeObjectURL(url);
+  }
+  function resetGame(){ if(confirm("기록을 모두 지우고 처음부터?")){localStorage.removeItem(SAVE_KEY);setS(INIT);setPlace(null);setConvo(null);} }
+
+  const losing=battle&&battle.myHp<battle.myMax*0.45;
+  const pct=(hp,max)=>Math.max(0,Math.min(100,hp/max*100));
+
+  return h("div",null,
+    h("div",{className:"topbar"},
+      h("button",{className:"tbtn",onClick:exportJSON},"野史 내보내기 (JSON)"),
+      h("button",{className:"tbtn",onClick:resetGame},"처음부터"),
+    ),
+    h("div",{className:"header"},
+      h("div",null,
+        h("div",{className:"kicker"},"甲子年 · 鉅鹿 들판"),
+        h("h1",{className:"title"},"張三李四"),
+        h("div",{className:"sub"},"이름 없는 건달 하나 —"+(s.fame>=16?" 이제 사람들이 너를 안다.":s.fame>=8?" 조금씩 이름이 돈다.":" 아직 무명이다.")),
+      ),
+      h("div",{className:"actBox"},
+        h("div",{className:"actNum"},"第 "+s.act+" 막"),
+        h("div",{className:"actLeft"},"걸음 "+("●".repeat(s.left)+"○".repeat(ACTIONS_PER_ACT-s.left))),
+      ),
+    ),
+    h("div",{className:"stats"},
+      stat("무리(兵)",s.band,true),stat("이름값(名)",s.fame),stat("곳간(粟)",s.grain),stat("민심",s.minsim),
+    ),
+    h("div",{className:"gauge"},
+      h("div",{className:"gaugeLabel"},h("span",null,"무리를 모은다"),
+        h("span",{style:{color:canSiege?"var(--cinna)":"#6b5840"}},`${s.band}/${GOAL}${canSiege?" — 현을 노릴 만하다":""}`)),
+      h("div",{className:"gTrack"},h("div",{className:"gFill",style:{width:Math.min(100,s.band/GOAL*100)+"%"}})),
+    ),
+
+    // 교전
+    battle && h("div",{className:"battle"},
+      h("div",{style:{font:"700 17px 'Noto Serif KR'",marginBottom:"12px"}},"교전 — "+battle.foeName),
+      bar("내 무리",battle.myHp,battle.myMax,"#b54a2b",false),
+      bar(battle.foeKnown?"적":"적 (가늠 안 됨)",battle.foeKnown?battle.foeHp:battle.foeMax,battle.foeMax,"#4a3c2a",!battle.foeKnown),
+      h("div",{style:{textAlign:"center",fontSize:"12px",color:"var(--line)",margin:"8px 0"}},"제 "+battle.ticks+" 합"),
+      battle.phase==="fight" && h("div",null,
+        h("div",{style:{display:"flex",gap:"7px"}},
+          h("button",{className:"bbtn",onClick:()=>intervene(1)},"맹공"),
+          h("button",{className:"bbtn",onClick:()=>intervene(-1)},"수비")),
+        losing && h("button",{className:"bbtn retreat",onClick:()=>endBattle("retreat")},"형세가 불리하다 — 물러난다")),
+      battle.phase==="finisher" && h("div",null,
+        h("div",{style:{fontSize:"13.5px",color:"var(--cinna)",marginBottom:"8px",fontWeight:700}},"적이 무릎 꿇기 직전이다."),
+        h("button",{className:"bbtn",onClick:()=>endBattle("finish")},"끝을 본다 (명성↑·원한)"),
+        h("button",{className:"bbtn accent",onClick:()=>endBattle("accept")},"항복을 받는다 (무리 흡수)"),
+        h("button",{className:"bbtn",onClick:()=>endBattle("release")},"길을 터준다 (살려보냄)")),
+      battle.phase==="win" && h("button",{className:"bbtn accent",disabled:busy,onClick:()=>endBattle("finish")},"적을 흩었다 — 거두기"),
+      battle.phase==="lose" && h("button",{className:"bbtn retreat",disabled:busy,onClick:()=>endBattle("defeat")},"무리가 무너졌다…"),
+      busy && h("div",{className:"busy"},"역사가가 붓을 든다…"),
+    ),
+
+    // 장소 선택
+    (!place && !battle) && h("div",null,
+      h("div",{className:"sectLabel"},"어디로 발걸음을 옮길 것인가 — 한 막에 세 걸음"),
+      h("div",{className:"places"},
+        PLACES.map(p=>h("button",{key:p.id,className:"place",onClick:()=>{setPlace(p.id);setConvo(null);}},
+          h("span",{className:"placeName"},p.name),h("span",{className:"placeDesc"},p.desc)))),
+      h("div",{className:"locked"},h("span",{className:"lk"},"현을 노린다"),h("span",{className:"lk"},"통치를 편다"),
+        h("span",{style:{fontSize:"11.5px",color:"var(--line)",opacity:.6,fontStyle:"italic"}},"무리가 차면 다음 길이 열린다")),
+    ),
+
+    // 들판
+    (place==="field"&&!battle) && panel("들판 野",()=>setPlace(null),
+      h("div",{className:"enc"},h("div",{className:"encName"},bandit.name),
+        h("div",{className:"encNote"},"유민을 괴롭히는 무리. 어찌할 것인가. (적의 세는 붙어봐야 안다)")),
+      h("button",{className:"rv primary",disabled:busy,onClick:startBattle},
+        h("span",{className:"rvLabel"},"결투를 건다"),h("span",{className:"rvSub"},"실시간 교전 — 불리하면 물러설 수 있다")),
+      QUICK.map(r=>{const open=r.cond(s);return h("button",{key:r.id,className:"rv",disabled:busy||!open,onClick:()=>doQuick(r)},
+        h("span",{className:"rvLabel"},r.label),h("span",{className:"rvSub"},open?"무난하다":r.need+" 필요"));}),
+    ),
+
+    // 객잔
+    (place==="tavern"&&!battle) && panel("객잔 店",()=>{setPlace(null);setConvo(null);},
+      !convo ? h("div",null,
+        h("div",{className:"sectLabel"},"평상에 앉은 자들 · 누군가는 범상치 않을지도"),
+        FOLK.map(f=>{
+          const fav=s.favor[f.id]||0,done=s.recruited.includes(f.id);
+          return h("div",{key:f.id,className:"folkRow",style:{opacity:f.userSeat?.55:1}},
+            h("div",null,h("div",{className:"folkFace"},f.face+(f.hidden?" · ?":"")),
+              h("div",{className:"folkRole"},f.type+" · "+f.role+(f.userSeat?"":` · 호감 ${fav}`))),
+            f.userSeat?h("span",{className:"seatTag"},"멀티 예정")
+              :done?h("span",{className:"doneTag"},"합류함")
+              :h("button",{className:"mini",disabled:busy,onClick:()=>setConvo({who:f,lines:[]})},"대화"));
+        }),
+      ) : h("div",null,
+        h("button",{className:"back",style:{marginBottom:"8px",padding:0},onClick:()=>setConvo(null)},"← 자리로"),
+        h("div",{className:"convoWho"},convo.who.face+"와(과) 마주 앉다"),
+        (closeable(convo.who)&&!s.recruited.includes(convo.who.id)) &&
+          h("div",{className:"bondBanner"},"이제 그의 마음이 열릴 만하다 — 함께하기를 청해보라."),
+        s.recruited.includes(convo.who.id) &&
+          h("div",{className:"bondBanner"},"그는 이미 그대의 사람이 되었다."),
+        h("div",{className:"convoScroll"},
+          convo.lines.length===0 && h("div",{style:{fontSize:"13px",color:"var(--line)",fontStyle:"italic",padding:"12px 0"}},
+            "말을 건네보라. 너의 뜻과 사람됨이 그를 움직일 수도, 비웃음을 살 수도 있다."),
+          convo.lines.map((l,i)=>h("div",{key:i,className:"convoTurn"},
+            h("div",{className:"convoMe"},"나 — "+l.me),
+            h("div",{className:"convoReply"},convo.who.face+" — "+l.reply),
+            h("div",{className:"convoNote"},(l.note||"")+(l.accepted?" · 마침내 뜻을 함께하다!":l.fd>0?` · 호감 +${l.fd}`:" · 마음이 움직이지 않았다")))),
+        ),
+        !s.recruited.includes(convo.who.id) && h("div",{className:"sayRow"},
+          h("input",{className:"sayInput",value:say,disabled:busy,placeholder:"그에게 건넬 말 — 너의 비전이든, 떠보는 한마디든",
+            onChange:e=>setSay(e.target.value),onKeyDown:e=>e.key==="Enter"&&talk(convo.who)}),
+          h("button",{className:"mini accent",disabled:busy||!say.trim(),onClick:()=>talk(convo.who)},"말한다")),
+        h("div",{className:"tease"},"합류 조건 — "+convo.who.joinBy),
+      ),
+    ),
+
+    (place==="market"&&!battle) && panel("시장 市",()=>setPlace(null),
+      h("div",{className:"encNote"},"저자가 북적인다. 곡식을 사들이며 거래의 연을 튼다. (상인 합류엔 거래 실적이 필요하다)"),
+      h("button",{className:"rv",disabled:busy,onClick:()=>simpleAct("market"),style:{marginTop:"10px"}},
+        h("span",{className:"rvLabel"},"곡식을 사들인다"),h("span",{className:"rvSub"},"곳간 +8 · 거래 실적 +1")),
+      h("div",{className:"tease"},"현재 거래 실적: "+s.tradeCount+"회"),
+    ),
+    (place==="office"&&!battle) && panel("관가 官",()=>setPlace(null),
+      h("div",{className:"encNote"},"관아의 그림자. 얼쩡대기엔 위태롭다. 허나 큰 소식이 여기 있다."),
+      h("button",{className:"rv",disabled:busy,onClick:()=>simpleAct("office"),style:{marginTop:"10px"}},
+        h("span",{className:"rvLabel"},"관가의 동향을 살핀다"),h("span",{className:"rvSub"},"큰 정보 — 허나 눈에 띌 위험")),
+      h("div",{className:"tease"},"※ 훗날 — 현상금 게시처도, 탐관의 소굴도, 관의 부름도 될 수 있는 곳"),
+    ),
+
+    err && h("div",{className:"err"},err),
+
+    h("div",{className:"folk"},
+      h("div",{className:"folkLabel"},h("span",null,"野史 · 기록되지 않은 자의 사서"),
+        h("span",{style:{fontSize:"10px",opacity:.6}},s.log.length+"건 · 자동 저장됨")),
+      h("div",{className:"folkScroll",ref:logRef},
+        s.log.length===0 && h("div",{style:{fontSize:"13.5px",color:"var(--line)",fontStyle:"italic",padding:"16px 0",textAlign:"center"}},"아직 붓이 닿지 않았다."),
+        s.log.map((f,i)=>h("div",{key:i,className:"entry"},
+          h("div",{className:"entryMeta"},`第${f.act}막 · ${f.where} · ${f.what}`),
+          h("div",{className:"chronicle"},f.text),
+          h("div",{className:"fameNote"},"史官評 — "+f.note))),
+      ),
+    ),
+  );
+
+  function stat(label,val,accent){return h("div",{className:"stat"},
+    h("div",{className:"statVal"+(accent?" accent":"")},val),h("div",{className:"statLabel"},label));}
+  function bar(label,hp,max,color,hidden){return h("div",null,
+    h("div",{className:"barLabel"},h("span",null,label),h("span",null,(hidden?"??":Math.ceil(hp))+" / "+max)),
+    h("div",{className:"barTrack"},h("div",{style:{height:"100%",width:pct(hp,max)+"%",background:color,transition:"width .5s"}})));}
+  function panel(title,onBack,...children){return h("div",{className:"panel"},
+    h("div",{className:"panelHead"},h("span",{className:"panelTitle"},title),
+      h("button",{className:"back",onClick:onBack},"← 갈림길로")),...children);}
+}
+
+createRoot(document.getElementById("app")).render(h(App));
+</script>
+</body>
+</html>
