@@ -145,3 +145,6 @@ MEMORY.md
 
 # MediaPipe WASM 바이너리
 apps/crop-app/mediapipe/*.wasm
+
+# Playwright MCP 임시 브라우저 스냅샷 (검증 시마다 누적되는 임시 산출물)
+.playwright-mcp/
