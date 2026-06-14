@@ -1,91 +1,156 @@
 /**
  * CMS SSR — Sitemap 동적 생성
+ * sitemap index + 3 하위맵 (static / specs / blog)
  */
 import { firestore, log } from '../shared/config.js';
-import { SPECS_DATA } from './render-specs.js';
+import { SPECS_DATA, REDIRECT_MAP } from './render-specs.js';
 
 const blogCollection = firestore.collection('blog_posts');
+const DOMAIN = 'https://monkos.ai';
 
 function escXml(s) { return s ? s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;') : ''; }
 
-// GET /sitemap.xml — 동적 생성
+function urlEntry(u) {
+  let xml = `  <url>\n    <loc>${u.loc}</loc>\n`;
+  if (u.lastmod) xml += `    <lastmod>${u.lastmod}</lastmod>\n`;
+  xml += `    <changefreq>${u.changefreq}</changefreq>\n    <priority>${u.priority}</priority>\n`;
+  if (u.image) {
+    xml += `    <image:image>\n      <image:loc>${u.image}</image:loc>\n`;
+    if (u.imageTitle) xml += `      <image:title>${escXml(u.imageTitle)}</image:title>\n`;
+    xml += `    </image:image>\n`;
+  }
+  xml += `  </url>`;
+  return xml;
+}
+
+function wrapUrlset(entries) {
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+${entries.join('\n')}
+</urlset>`;
+}
+
+function sendXml(res, xml) {
+  res.writeHead(200, { 'Content-Type': 'application/xml; charset=utf-8' });
+  res.end(xml);
+}
+
+// GET /sitemap.xml — sitemap index
 export async function renderSitemap(req, res) {
   try {
     const today = new Date().toISOString().substring(0, 10);
-    const ogImage = 'https://monkos.ai/og-image.png';
-    const staticUrls = [
-      { loc: 'https://monkos.ai/', lastmod: today, changefreq: 'weekly', priority: '1.0', image: ogImage, imageTitle: 'MONKOS AI 증명사진' },
-      { loc: 'https://monkos.ai/blog', lastmod: today, changefreq: 'daily', priority: '0.8', image: ogImage, imageTitle: 'MONKOS AI 블로그' },
-      { loc: 'https://monkos.ai/faq', lastmod: today, changefreq: 'weekly', priority: '0.7' },
-      { loc: 'https://monkos.ai/gallery', lastmod: today, changefreq: 'weekly', priority: '0.6' },
-      { loc: 'https://monkos.ai/board', lastmod: today, changefreq: 'daily', priority: '0.5' },
-      { loc: 'https://monkos.ai/pricing', lastmod: today, changefreq: 'monthly', priority: '0.6' },
-      { loc: 'https://monkos.ai/guide', lastmod: today, changefreq: 'weekly', priority: '0.7' },
-      { loc: 'https://monkos.ai/guide/ai-photo', lastmod: today, changefreq: 'weekly', priority: '0.8', image: ogImage, imageTitle: 'MONKOS AI 증명사진 가이드' },
-      { loc: 'https://monkos.ai/crop', lastmod: today, changefreq: 'weekly', priority: '0.7' },
-      { loc: 'https://monkos.ai/ja/blog', lastmod: today, changefreq: 'daily', priority: '0.7' },
-      { loc: 'https://monkos.ai/en/blog', lastmod: today, changefreq: 'daily', priority: '0.7' },
-      { loc: 'https://monkos.ai/ja/', lastmod: today, changefreq: 'weekly', priority: '0.9', image: ogImage, imageTitle: 'MONKOS AI 証明写真' },
-      { loc: 'https://monkos.ai/en/', lastmod: today, changefreq: 'weekly', priority: '0.9', image: ogImage, imageTitle: 'MONKOS AI ID Photo' },
-      { loc: 'https://monkos.ai/ja/faq', lastmod: today, changefreq: 'weekly', priority: '0.6' },
-      { loc: 'https://monkos.ai/en/faq', lastmod: today, changefreq: 'weekly', priority: '0.6' },
-      { loc: 'https://monkos.ai/ja/pricing', lastmod: today, changefreq: 'monthly', priority: '0.5' },
-      { loc: 'https://monkos.ai/en/pricing', lastmod: today, changefreq: 'monthly', priority: '0.5' },
-      // specs 허브 인덱스
-      { loc: 'https://monkos.ai/specs', lastmod: today, changefreq: 'monthly', priority: '0.9', image: ogImage, imageTitle: 'MONKOS AI 증명사진 규격' },
-      { loc: 'https://monkos.ai/ja/specs', lastmod: today, changefreq: 'monthly', priority: '0.8', image: ogImage, imageTitle: 'MONKOS AI 証明写真 規格' },
-      { loc: 'https://monkos.ai/en/specs', lastmod: today, changefreq: 'monthly', priority: '0.8', image: ogImage, imageTitle: 'MONKOS AI ID Photo Specs' },
-    ];
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <sitemap>
+    <loc>${DOMAIN}/sitemap-static.xml</loc>
+    <lastmod>${today}</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>${DOMAIN}/sitemap-specs.xml</loc>
+    <lastmod>2026-05-26</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>${DOMAIN}/sitemap-blog.xml</loc>
+    <lastmod>${today}</lastmod>
+  </sitemap>
+</sitemapindex>`;
+    sendXml(res, xml);
+  } catch (err) {
+    log(`[CMS] sitemap index 에러: ${err.message}`, 'ERROR');
+    res.writeHead(500, { 'Content-Type': 'text/plain' });
+    res.end('Internal Server Error');
+  }
+}
 
-    // specs 개별 페이지 동적 추가
-    for (const slug of Object.keys(SPECS_DATA)) {
-      staticUrls.push({ loc: `https://monkos.ai/specs/${slug}`, lastmod: today, changefreq: 'monthly', priority: '0.8' });
-      staticUrls.push({ loc: `https://monkos.ai/ja/specs/${slug}`, lastmod: today, changefreq: 'monthly', priority: '0.7' });
-      staticUrls.push({ loc: `https://monkos.ai/en/specs/${slug}`, lastmod: today, changefreq: 'monthly', priority: '0.7' });
+// GET /sitemap-static.xml
+export function renderSitemapStatic(req, res) {
+  try {
+    const ogImage = `${DOMAIN}/og-image.png`;
+    const urls = [
+      { loc: `${DOMAIN}/`, lastmod: '2026-06-01', changefreq: 'weekly', priority: '1.0', image: ogImage, imageTitle: 'MONKOS AI 증명사진' },
+      { loc: `${DOMAIN}/ja/`, lastmod: '2026-06-01', changefreq: 'weekly', priority: '0.9', image: ogImage, imageTitle: 'MONKOS AI 証明写真' },
+      { loc: `${DOMAIN}/en/`, lastmod: '2026-06-01', changefreq: 'weekly', priority: '0.9', image: ogImage, imageTitle: 'MONKOS AI ID Photo' },
+      { loc: `${DOMAIN}/blog`, lastmod: '2026-06-14', changefreq: 'daily', priority: '0.8', image: ogImage, imageTitle: 'MONKOS AI 블로그' },
+      { loc: `${DOMAIN}/ja/blog`, lastmod: '2026-06-14', changefreq: 'daily', priority: '0.7' },
+      { loc: `${DOMAIN}/en/blog`, lastmod: '2026-06-14', changefreq: 'daily', priority: '0.7' },
+      { loc: `${DOMAIN}/faq`, lastmod: '2026-03-15', changefreq: 'weekly', priority: '0.7' },
+      { loc: `${DOMAIN}/ja/faq`, lastmod: '2026-03-15', changefreq: 'weekly', priority: '0.6' },
+      { loc: `${DOMAIN}/en/faq`, lastmod: '2026-03-15', changefreq: 'weekly', priority: '0.6' },
+      { loc: `${DOMAIN}/gallery`, lastmod: '2026-03-01', changefreq: 'weekly', priority: '0.6' },
+      { loc: `${DOMAIN}/board`, lastmod: '2026-06-01', changefreq: 'daily', priority: '0.5' },
+      { loc: `${DOMAIN}/pricing`, lastmod: '2026-04-27', changefreq: 'monthly', priority: '0.6' },
+      { loc: `${DOMAIN}/ja/pricing`, lastmod: '2026-04-27', changefreq: 'monthly', priority: '0.5' },
+      { loc: `${DOMAIN}/en/pricing`, lastmod: '2026-04-27', changefreq: 'monthly', priority: '0.5' },
+      { loc: `${DOMAIN}/guide`, lastmod: '2026-03-01', changefreq: 'weekly', priority: '0.7' },
+      { loc: `${DOMAIN}/guide/ai-photo`, lastmod: '2026-03-01', changefreq: 'weekly', priority: '0.8', image: ogImage, imageTitle: 'MONKOS AI 증명사진 가이드' },
+      { loc: `${DOMAIN}/crop`, lastmod: '2026-05-01', changefreq: 'weekly', priority: '0.7' },
+      { loc: `${DOMAIN}/specs`, lastmod: '2026-05-26', changefreq: 'monthly', priority: '0.9', image: ogImage, imageTitle: 'MONKOS AI 증명사진 규격' },
+      { loc: `${DOMAIN}/ja/specs`, lastmod: '2026-05-26', changefreq: 'monthly', priority: '0.8', image: ogImage, imageTitle: 'MONKOS AI 証明写真 規格' },
+      { loc: `${DOMAIN}/en/specs`, lastmod: '2026-05-26', changefreq: 'monthly', priority: '0.8', image: ogImage, imageTitle: 'MONKOS AI ID Photo Specs' },
+    ];
+    sendXml(res, wrapUrlset(urls.map(urlEntry)));
+  } catch (err) {
+    log(`[CMS] sitemap-static 에러: ${err.message}`, 'ERROR');
+    res.writeHead(500, { 'Content-Type': 'text/plain' });
+    res.end('Internal Server Error');
+  }
+}
+
+// GET /sitemap-specs.xml
+export function renderSitemapSpecs(req, res) {
+  try {
+    const urls = [];
+    const seen = new Set();
+
+    for (const [slug] of Object.entries(SPECS_DATA)) {
+      const canonical = REDIRECT_MAP[slug];
+      const path = canonical || slug;
+      if (seen.has(path)) continue;
+      seen.add(path);
+
+      const lastmod = '2026-05-26';
+      urls.push({ loc: `${DOMAIN}/specs/${path}`, lastmod, changefreq: 'monthly', priority: '0.8' });
+      urls.push({ loc: `${DOMAIN}/ja/specs/${path}`, lastmod, changefreq: 'monthly', priority: '0.7' });
+      urls.push({ loc: `${DOMAIN}/en/specs/${path}`, lastmod, changefreq: 'monthly', priority: '0.7' });
     }
 
+    sendXml(res, wrapUrlset(urls.map(urlEntry)));
+  } catch (err) {
+    log(`[CMS] sitemap-specs 에러: ${err.message}`, 'ERROR');
+    res.writeHead(500, { 'Content-Type': 'text/plain' });
+    res.end('Internal Server Error');
+  }
+}
+
+// GET /sitemap-blog.xml
+export async function renderSitemapBlog(req, res) {
+  try {
     const snapshot = await blogCollection.where('published', '==', true).orderBy('createdAt', 'desc').get();
-    const blogUrls = snapshot.docs.map(doc => {
+    const seen = new Set();
+    const urls = [];
+
+    for (const doc of snapshot.docs) {
       const data = doc.data();
       const docLang = data.lang || 'ko';
       const baseSlug = doc.id.replace(/-(?:kr|ja|en)$/, '');
       const langPrefix = docLang === 'ko' ? '' : `/${docLang}`;
-      return {
-        loc: `https://monkos.ai${langPrefix}/blog/${baseSlug}`,
+      const loc = `${DOMAIN}${langPrefix}/blog/${baseSlug}`;
+      if (seen.has(loc)) continue;
+      seen.add(loc);
+      urls.push({
+        loc,
         lastmod: (data.updatedAt || data.createdAt || '').substring(0, 10),
         changefreq: 'weekly',
         priority: '0.7',
         image: data.ogImage || data.thumbnail || '',
         imageTitle: data.title || '',
-      };
-    });
+      });
+    }
 
-    // URL 중복 제거
-    const seen = new Set();
-    const allUrls = [...staticUrls, ...blogUrls].filter(u => {
-      if (seen.has(u.loc)) return false;
-      seen.add(u.loc);
-      return true;
-    });
-    const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
-${allUrls.map(u => `  <url>
-    <loc>${u.loc}</loc>
-    ${u.lastmod ? `<lastmod>${u.lastmod}</lastmod>` : ''}
-    <changefreq>${u.changefreq}</changefreq>
-    <priority>${u.priority}</priority>${u.image ? `
-    <image:image>
-      <image:loc>${u.image}</image:loc>
-      ${u.imageTitle ? `<image:title>${escXml(u.imageTitle)}</image:title>` : ''}
-    </image:image>` : ''}
-  </url>`).join('\n')}
-</urlset>`;
-
-    res.writeHead(200, { 'Content-Type': 'application/xml; charset=utf-8' });
-    res.end(xml);
+    sendXml(res, wrapUrlset(urls.map(urlEntry)));
   } catch (err) {
-    log(`[CMS] sitemap 에러: ${err.message}`, 'ERROR');
+    log(`[CMS] sitemap-blog 에러: ${err.message}`, 'ERROR');
     res.writeHead(500, { 'Content-Type': 'text/plain' });
     res.end('Internal Server Error');
   }

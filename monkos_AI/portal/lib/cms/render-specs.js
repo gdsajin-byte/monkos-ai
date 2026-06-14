@@ -225,7 +225,7 @@ function countryFlag(countrySlug) {
 // ─── BUILD ROUTE MAPS (at module load) ──────────────────────────
 
 const ROUTE_MAP = {};
-const REDIRECT_MAP = {};
+export const REDIRECT_MAP = {};
 const COUNTRY_BEST = {};
 
 for (const [slug, spec] of Object.entries(SPECS_DATA)) {
@@ -1142,6 +1142,17 @@ export function renderSpecsDetail(req, res, forceLang = null) {
     if (remaining.length >= 2) {
       const routeKey = `${remaining[0]}/${remaining[1]}`;
       slug = ROUTE_MAP[routeKey];
+      if (!slug) {
+        const reversed = `${remaining[1]}/${remaining[0]}`;
+        slug = ROUTE_MAP[reversed];
+        if (slug) {
+          const canonical = REDIRECT_MAP[slug];
+          if (canonical) {
+            res.writeHead(301, { Location: `${prefix}/specs/${canonical}` });
+            return res.end();
+          }
+        }
+      }
     }
 
     if (!slug && remaining.length === 1) {

@@ -8,4 +8,4 @@ export { boardListFragment, renderBoardList, boardPostFragment, renderBoardPost,
 export { faqFragment, renderFaq, galleryFragment, renderGallery, guideFragment, renderGuide, aiPhotoGuideFragment, renderAiPhotoGuide } from './render-static.js';
 export { specsListFragment, specsDetailFragment, renderSpecsList, renderSpecsDetail } from './render-specs.js';
 export { pricingFragment, renderPricing } from './render-pricing.js';
-export { renderSitemap } from './render-sitemap.js';
+export { renderSitemap, renderSitemapStatic, renderSitemapSpecs, renderSitemapBlog } from './render-sitemap.js';

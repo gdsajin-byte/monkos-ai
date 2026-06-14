@@ -3,7 +3,6 @@ Allow: /
 
 # Sitemap
 Sitemap: https://monk.kr/sitemap.xml
-Sitemap: https://monk.kr/specs/sitemap.xml
 
 # Naver
 User-agent: Yeti

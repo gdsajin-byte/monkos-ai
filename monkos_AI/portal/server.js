@@ -45,7 +45,7 @@ import { handleUpload, handleImageList, handleImageDelete } from './lib/cms/uplo
 import { handleAiImage, handleAiThumbnail, handleAiSuggest } from './lib/cms/ai.js';
 import { handleTranslate } from './lib/cms/translate.js';
 import { handleSearch } from './lib/cms/search.js';
-import { renderBlogList, renderBlogPost, renderFaq, renderGallery, renderBoardList, renderBoardPost, renderBoardWrite, renderGuide, renderAiPhotoGuide, renderSitemap, renderPricing, renderSpecsList, renderSpecsDetail } from './lib/cms/render.js';
+import { renderBlogList, renderBlogPost, renderFaq, renderGallery, renderBoardList, renderBoardPost, renderBoardWrite, renderGuide, renderAiPhotoGuide, renderSitemap, renderSitemapStatic, renderSitemapSpecs, renderSitemapBlog, renderPricing, renderSpecsList, renderSpecsDetail } from './lib/cms/render.js';
 import { renderHome, handleSettingsGet, handleSettingsPut, handleLayoutGet, handleLayoutPut } from './lib/cms/home.js';
 import { renderLlmsTxt } from './lib/cms/render-llms.js';
 import { handlePodStart, handlePodStatus, handlePodStop, handleComfyProxy } from './lib/vton/runpod.js';
@@ -340,6 +340,9 @@ const httpServer = createServer(async (req, res) => {
   if ((urlPath === '/ja' || urlPath === '/ja/') && req.method === 'GET') return renderHome(req, res, 'ja');
   if ((urlPath === '/en' || urlPath === '/en/') && req.method === 'GET') return renderHome(req, res, 'en');
   if (urlPath === '/sitemap.xml' && req.method === 'GET') return renderSitemap(req, res);
+  if (urlPath === '/sitemap-static.xml' && req.method === 'GET') return renderSitemapStatic(req, res);
+  if (urlPath === '/sitemap-specs.xml' && req.method === 'GET') return renderSitemapSpecs(req, res);
+  if (urlPath === '/sitemap-blog.xml' && req.method === 'GET') return renderSitemapBlog(req, res);
   if (urlPath === '/llms.txt' && req.method === 'GET') return renderLlmsTxt(req, res);
 
   // 다국어 블로그 라우트 (언어 접두사 — 기존 /blog 라우트 앞에 배치)
