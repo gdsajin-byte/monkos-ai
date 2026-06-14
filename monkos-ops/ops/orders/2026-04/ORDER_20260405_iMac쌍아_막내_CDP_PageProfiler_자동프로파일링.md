@@ -5,6 +5,7 @@ to: iMac/막내
 date: 2026-04-05
 subject: CDP PageProfiler — 런타임 자동 프로파일링 + 캐시 레이어
 status: 대기
+portfolio: PF_CDP
 priority: high
 pf: PF_CDP
 ---

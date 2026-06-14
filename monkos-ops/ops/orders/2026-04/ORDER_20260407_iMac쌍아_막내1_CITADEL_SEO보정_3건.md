@@ -3,6 +3,7 @@ type: ORDER
 date: 2026-04-07
 from: iMac/쌍아 → to: iMac/막내1
 status: 대기
+portfolio: PF_CITADEL
 priority: P0
 ref: ORDER_20260405_M1쌍아_막내_CITADEL_SEO보정_3건.md
 pf: PF_CITADEL

@@ -7,6 +7,7 @@ subject: PF_CITADEL 전 Phase 현황 정밀 감사 + 미실행 항목 + 다음 �
 priority: 높음
 pf: PF_CITADEL
 phase: 감사
+portfolio: PF_CITADEL
 ---
 
 # PF_CITADEL 전 Phase 현황 감사 + 미실행 보고서

@@ -7,6 +7,7 @@ priority: P1
 subject: PF_CDP Phase 2 — Playwright MCP 통합 + 접근성 트리 전환
 tags: [cdp, playwright, mcp, phase2]
 status: open
+portfolio: PF_CDP
 origin: PROPOSAL_20260405_CDP_Phase2_차세대브라우저자동화 (민아) → 쌍아 설계 → 작가님 즉시진행 승인
 ---
 

@@ -7,6 +7,7 @@ priority: P0
 subject: CITADEL SEO 기술 보정 3건 — JA/EN 메타 현지화 + Crop hreflang/H1 + Blog JSON-LD
 tags: [portal, seo, citadel]
 status: open
+portfolio: PF_CITADEL
 origin: M1/민아 SEO 진단 (ORDER_20260405_CITADEL_SEO보정_4건.md) → 쌍아 코드 검증 후 3건 확정
 ---
 

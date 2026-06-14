@@ -11,6 +11,7 @@ ref:
   - MARKETING_MASTER_STRATEGY_20260304.md
   - COOPERATION_20260225_철창_marketing_pipeline_v2.md
 status: 완료
+portfolio: PF_SPREAD
 ---
 
 # SPREAD 통합 리서치 보고서

@@ -7,6 +7,7 @@ priority: P0
 subject: CITADEL Phase 1.8 — hreflang 유령 URL 근절 + blogRedirects 누락 6건 추가
 tags: [portal, seo, citadel, hreflang, sitemap, 404]
 status: pending
+portfolio: PF_CITADEL
 review: 쌍아 검토 후 진행
 origin: iMac/민아 GSC 404 패턴 분석 — 31건 중 17건이 hreflang 기인 반복 생산 구조
 ---

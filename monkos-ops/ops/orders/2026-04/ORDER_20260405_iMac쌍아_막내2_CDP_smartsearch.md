@@ -5,6 +5,7 @@ to: iMac/막내2
 date: 2026-04-05
 subject: CDP smart_search() — 검색 통합 패턴
 status: 대기
+portfolio: PF_CDP
 priority: important
 pf: PF_CDP
 ---

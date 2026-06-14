@@ -5,6 +5,7 @@ to: iMac/막내3
 date: 2026-04-05
 subject: CDP smart_extract() — 텍스트 구조화 추출
 status: 대기
+portfolio: PF_CDP
 priority: important
 pf: PF_CDP
 ---

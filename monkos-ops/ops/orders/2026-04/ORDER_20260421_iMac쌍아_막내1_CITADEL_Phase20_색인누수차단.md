@@ -5,6 +5,7 @@ from: iMac/쌍아
 to: iMac/막내1
 priority: HIGH
 deadline: 2026-04-21 18:00 KST
+portfolio: PF_CITADEL
 ---
 
 # 지시서 — PF_CITADEL Phase 2.0: 색인 누수 차단

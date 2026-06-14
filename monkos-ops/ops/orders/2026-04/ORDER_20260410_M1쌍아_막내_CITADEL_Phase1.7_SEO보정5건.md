@@ -8,6 +8,7 @@ phase: "1.7"
 subject: "4/9 CDP 진단 이슈 보정 4건 — hreflang, canonical, 깨진이미지, specs 혼입 (/en/about 제외)"
 priority: high
 status: done
+portfolio: PF_CITADEL
 ---
 
 # CITADEL Phase 1.7 — SEO 보정 5건

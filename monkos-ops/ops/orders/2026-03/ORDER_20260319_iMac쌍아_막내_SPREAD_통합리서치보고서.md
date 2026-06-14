@@ -5,6 +5,7 @@ to: iMac/막내 (복수 투입 가능)
 date: 2026-03-19
 priority: 전략
 project: SPREAD
+portfolio: PF_SPREAD
 ---
 
 # ORDER_20260319 — SPREAD 통합 리서치 보고서 작성

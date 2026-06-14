@@ -4,6 +4,7 @@ date: 2026-05-03
 from: iMac/키미
 to: iMac/쌍아
 subject: CDP 도구 학습 + GA4 데이터 분석
+portfolio: PF_CDP
 ---
 
 # CDP 도구 학습 + GA4 데이터 분석 보고

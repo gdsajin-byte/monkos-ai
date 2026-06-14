@@ -3,6 +3,7 @@ type: ORDER
 date: 2026-04-07
 from: iMac/쌍아 → to: iMac/막내1
 status: 대기
+portfolio: PF_CITADEL
 priority: P0
 pf: PF_CITADEL
 ---

@@ -4,6 +4,7 @@ id: DESIGN_RND_STRATEGY_FRAMEWORK
 date: 2026-02-28 13:31 KST
 from: iMac/쌍아
 status: draft
+portfolio: PF_RND
 tags: [r&d, strategy, governance, ch9, framework]
 ---
 

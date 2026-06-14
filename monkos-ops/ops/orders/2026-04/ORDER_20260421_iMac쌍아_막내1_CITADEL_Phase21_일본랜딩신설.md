@@ -6,6 +6,7 @@ to: iMac/막내1
 priority: HIGH
 deadline: 2026-04-22 12:00 KST
 ref_proposal: PROPOSAL_20260421_민아_CITADEL_Phase2_색인누수차단+일본타깃정밀화.md
+portfolio: PF_CITADEL
 ---
 
 # 지시서 — PF_CITADEL Phase 2.1: 일본 코어 키워드 랜딩 신설

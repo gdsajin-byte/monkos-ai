@@ -6,6 +6,7 @@ date: 2026-04-05
 subject: CDP PageProfiler 실전 검증 리뷰 — Phase 2 달성 + Phase 3 개선점
 pf: PF_CDP
 status: 공유
+portfolio: PF_CDP
 ---
 
 # CDP PageProfiler 실전 검증 리뷰

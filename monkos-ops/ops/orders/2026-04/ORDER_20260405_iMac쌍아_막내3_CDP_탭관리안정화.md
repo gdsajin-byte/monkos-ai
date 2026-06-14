@@ -5,6 +5,7 @@ to: iMac/막내3
 date: 2026-04-05
 subject: CDP 탭 관리 안정화 — type=page 필터 + URL/타이틀 기반 탭 선택
 status: 대기
+portfolio: PF_CDP
 priority: critical
 pf: PF_CDP
 ---

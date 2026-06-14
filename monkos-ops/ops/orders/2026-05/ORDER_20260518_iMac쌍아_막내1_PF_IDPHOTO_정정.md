@@ -4,6 +4,7 @@ date: 2026-05-18
 from: iMac/쌍아
 to: 막내1
 status: 긴급정정
+portfolio: PF_IDPHOTO
 ---
 
 # 긴급 정정: PF_IDPHOTO 개설 지시서 오류 수정

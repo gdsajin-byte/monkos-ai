@@ -4,6 +4,7 @@ from: iMac/막내3
 date: 2026-04-05
 subject: CDP PageProfiler — 성능 측정 결과
 pf: PF_CDP
+portfolio: PF_CDP
 ---
 
 # CDP PageProfiler — 성능 측정 결과

@@ -5,6 +5,7 @@ to: iMac/막내1
 date: 2026-04-05
 subject: CDP smart_click 드롭다운 depth=2 탐색
 status: 대기
+portfolio: PF_CDP
 priority: important
 pf: PF_CDP
 ---

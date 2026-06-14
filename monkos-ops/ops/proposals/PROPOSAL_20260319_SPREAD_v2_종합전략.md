@@ -6,6 +6,7 @@ date: 2026-03-19
 from: iMac/쌍아
 to: 작가님
 status: 기안
+portfolio: PF_SPREAD
 priority: 최상
 supersedes: SPREAD v1, MINA PROJECT, 콘텐츠자동배포파이프라인, GEO전략, 마케팅마스터전략(채널부분)
 ref: 철창이 채널리포트, 한송이 JP전략, 에피소드카탈로그, n8n인프라, CMS자동번역

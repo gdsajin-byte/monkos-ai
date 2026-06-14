@@ -5,6 +5,7 @@ to: iMac/막내2
 date: 2026-04-05
 subject: CDP 에디터 자동감지 — TinyMCE/Toast UI/ProseMirror/CKEditor/Quill
 status: 대기
+portfolio: PF_CDP
 priority: critical
 pf: PF_CDP
 ---

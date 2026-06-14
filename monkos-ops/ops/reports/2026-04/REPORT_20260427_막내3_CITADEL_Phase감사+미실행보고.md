@@ -6,6 +6,7 @@ to: iMac/쌍아, 작가님
 subject: PF_CITADEL 전 Phase 정밀 감사 + 미실행·미완료·잔존 총집합 + GSC 실측 + 다음 페이즈 제안
 pf: PF_CITADEL
 phase: 감사
+portfolio: PF_CITADEL
 ---
 
 # PF_CITADEL 전 Phase 정밀 감사 보고서

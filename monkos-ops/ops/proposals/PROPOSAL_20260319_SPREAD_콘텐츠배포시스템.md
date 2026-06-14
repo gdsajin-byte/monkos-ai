@@ -6,6 +6,7 @@ date: 2026-03-19
 from: iMac/쌍아
 to: 작가님
 status: 기안
+portfolio: PF_SPREAD
 priority: 전략
 supersedes: PROPOSAL_20260316_콘텐츠자동배포파이프라인 (n8n 방식 → 코웍이 방식으로 전환)
 ref: GEO 전략 (PROPOSAL_20260316), MINA PROJECT, 2026-03-19 작가님 전략 전환 선언

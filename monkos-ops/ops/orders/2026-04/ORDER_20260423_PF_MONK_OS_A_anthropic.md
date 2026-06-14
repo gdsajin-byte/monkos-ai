@@ -4,6 +4,7 @@ date: 2026-04-23
 from: iMac/쌍아
 to: iMac/막내1
 status: 대기
+portfolio: PF_MONK_OS
 pf: PF_MONK_OS
 track: A
 parallel_with: ["B → 막내2", "C → 막내3", "D → 막내4"]

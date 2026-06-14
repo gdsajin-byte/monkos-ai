@@ -6,6 +6,7 @@ to: 막내1
 subject: PHOTOPRO 실플로우 재현 — CDP 기반 랜딩~결제 전 단계 병목 탐지
 priority: P0
 tags: [order, photopro, diagnosis, cdp, flow, ux, mobile]
+portfolio: PF_CDP
 ---
 
 # [지시서] PHOTOPRO 실플로우 재현 — 랜딩~결제 전 단계 병목 탐지

@@ -6,6 +6,7 @@ date: 2026-04-05
 subject: CDP Phase 2.5 Important 4건 구현 통합 보고
 pf: PF_CDP
 status: 완료
+portfolio: PF_CDP
 ---
 
 **[2026-04-05 19:01 KST] iMac/쌍아 → 작가님**

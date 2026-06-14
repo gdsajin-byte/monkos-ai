@@ -4,6 +4,7 @@ date: 2026-04-24
 from: iMac/쌍아
 to: iMac/막내
 status: 대기
+portfolio: PF_RND
 priority: 1
 ---
 

@@ -4,6 +4,7 @@ date: 2026-03-08
 from: 막내2
 to: 쌍아
 status: completed
+portfolio: PF_CHATBOT
 ---
 
 # KR/JP UX 멘트 + CS 챗봇 분기 전략 보고서

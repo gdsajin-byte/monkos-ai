@@ -4,6 +4,7 @@ date: 2026-04-23
 from: iMac/쌍아
 to: iMac/민아
 status: 대기
+portfolio: PF_MONK_OS
 pf: PF_MONK_OS
 track: H-7 선행 조사
 priority: P1

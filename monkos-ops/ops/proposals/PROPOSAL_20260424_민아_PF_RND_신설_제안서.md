@@ -5,6 +5,7 @@ date: 2026-04-24
 author: iMac/민아
 subject: PF_RND 신설 — 정부 R&D·IP·창업 지원사업 통합 추적 포트폴리오
 status: 기안 (작가님 검토·승인 대기)
+portfolio: PF_RND
 priority: high
 affects: monkos-ops/ops/portfolios/, proposals/, 기존 강한소상공인 v8 트랙
 ---

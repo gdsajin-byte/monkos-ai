@@ -3,6 +3,7 @@ type: ORDER
 date: 2026-04-07
 from: iMac/쌍아 → to: iMac/막내4
 status: 대기
+portfolio: PF_SPREAD
 priority: P1
 pf: PF_SPREAD
 ---

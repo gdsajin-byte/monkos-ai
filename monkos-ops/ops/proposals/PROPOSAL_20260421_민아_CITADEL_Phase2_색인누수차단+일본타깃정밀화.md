@@ -7,6 +7,7 @@ subject: PF_CITADEL Phase 2 — 색인 누수 차단 + 일본 타깃 정밀화
 priority: 높음
 pf: PF_CITADEL
 phase: 2
+portfolio: PF_CITADEL
 ---
 
 # PF_CITADEL Phase 2 제안서

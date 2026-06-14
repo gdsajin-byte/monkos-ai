@@ -5,6 +5,7 @@ to: iMac/막내4
 date: 2026-04-05
 subject: CDP smart_scroll() — 섹션맵 기반 스크롤
 status: 대기
+portfolio: PF_CDP
 priority: important
 pf: PF_CDP
 ---

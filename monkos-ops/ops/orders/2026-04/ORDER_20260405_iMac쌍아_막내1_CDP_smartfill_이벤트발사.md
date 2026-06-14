@@ -5,6 +5,7 @@ to: iMac/막내1
 date: 2026-04-05
 subject: CDP smart_fill 이벤트 발사 내장 — React/Vue/Angular 프레임워크 호환
 status: 대기
+portfolio: PF_CDP
 priority: critical
 pf: PF_CDP
 ---
