@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BiRefNet GPU 테스트</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, 'Segoe UI', sans-serif; background: #0a0a0a; color: #e0e0e0; min-height: 100vh; }
+.header { padding: 20px; text-align: center; border-bottom: 1px solid #222; }
+.header h1 { font-size: 24px; font-weight: 700; }
+.header .badge { display: inline-block; background: #1a2a3a; color: #60a5fa; font-size: 12px; padding: 2px 8px; border-radius: 4px; margin-left: 8px; }
+.header .license { display: inline-block; background: #1a3a1a; color: #4ade80; font-size: 11px; padding: 2px 6px; border-radius: 4px; margin-left: 4px; }
+.header .sub { color: #888; font-size: 13px; margin-top: 4px; }
+.status { padding: 8px 20px; background: #111; font-size: 12px; color: #888; display: flex; gap: 16px; align-items: center; }
+.status .dot { width: 8px; height: 8px; border-radius: 50%; background: #555; }
+.status .dot.online { background: #60a5fa; }
+.main { max-width: 1200px; margin: 0 auto; padding: 20px; }
+.upload-zone { border: 2px dashed #333; border-radius: 12px; padding: 40px; text-align: center; cursor: pointer; transition: border-color 0.2s; margin-bottom: 20px; }
+.upload-zone:hover { border-color: #60a5fa; }
+.upload-zone.dragging { border-color: #60a5fa; background: rgba(96, 165, 250, 0.05); }
+.upload-zone input { display: none; }
+.upload-zone .icon { font-size: 48px; margin-bottom: 12px; }
+.upload-zone .label { font-size: 16px; font-weight: 600; }
+.upload-zone .hint { font-size: 12px; color: #666; margin-top: 8px; }
+.btn-row { display: flex; gap: 8px; justify-content: center; margin-bottom: 20px; flex-wrap: wrap; }
+.btn { padding: 8px 16px; border-radius: 8px; border: 1px solid #333; background: #1a1a1a; color: #e0e0e0; font-size: 13px; cursor: pointer; }
+.btn:hover { border-color: #60a5fa; }
+.btn.active { background: #1a2a3a; border-color: #60a5fa; color: #60a5fa; }
+.compare { display: flex; gap: 16px; margin-bottom: 20px; }
+.compare .panel { flex: 1; background: #111; border-radius: 8px; overflow: hidden; position: relative; }
+.compare .panel .label { position: absolute; top: 8px; left: 8px; background: rgba(0,0,0,0.7); padding: 2px 8px; border-radius: 4px; font-size: 11px; z-index: 2; }
+.compare .panel img { width: 100%; display: block; }
+.compare .panel .placeholder { height: 400px; display: flex; align-items: center; justify-content: center; color: #444; font-size: 14px; }
+.slider-wrap { position: relative; margin-bottom: 20px; border-radius: 8px; overflow: hidden; display: none; user-select: none; }
+.slider-wrap img { width: 100%; display: block; }
+.slider-wrap .overlay { position: absolute; top: 0; left: 0; height: 100%; overflow: hidden; }
+.slider-wrap .overlay img { position: absolute; top: 0; left: 0; height: 100%; }
+.slider-wrap .handle { position: absolute; top: 0; width: 3px; height: 100%; background: #60a5fa; cursor: ew-resize; z-index: 3; }
+.slider-wrap .handle::after { content: '\25C0\25B6'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #60a5fa; color: #000; font-size: 10px; padding: 4px 6px; border-radius: 4px; white-space: nowrap; }
+.info-bar { background: #111; border-radius: 8px; padding: 12px 16px; display: flex; gap: 24px; margin-bottom: 20px; font-size: 13px; flex-wrap: wrap; }
+.info-bar .item { display: flex; gap: 6px; }
+.info-bar .item .key { color: #888; }
+.info-bar .item .val { color: #60a5fa; font-weight: 600; font-family: monospace; }
+.bench-section { background: #111; border-radius: 8px; padding: 16px; margin-bottom: 20px; display: none; }
+.bench-section h3 { font-size: 14px; margin-bottom: 12px; color: #60a5fa; }
+.bench-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.bench-table th { text-align: left; padding: 6px 8px; color: #888; border-bottom: 1px solid #222; }
+.bench-table td { padding: 6px 8px; border-bottom: 1px solid #1a1a1a; }
+.bench-table td.num { font-family: monospace; color: #60a5fa; }
+.history { margin-top: 20px; }
+.history h3 { font-size: 14px; margin-bottom: 8px; color: #888; }
+.history-grid { display: flex; gap: 8px; flex-wrap: wrap; }
+.history-grid .thumb { width: 80px; height: 80px; border-radius: 6px; overflow: hidden; cursor: pointer; border: 2px solid transparent; }
+.history-grid .thumb:hover { border-color: #60a5fa; }
+.history-grid .thumb img { width: 100%; height: 100%; object-fit: cover; }
+.loading { display: none; text-align: center; padding: 40px; }
+.loading .spinner { width: 40px; height: 40px; border: 3px solid #333; border-top-color: #60a5fa; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.bg-toggle { display: flex; gap: 4px; }
+.bg-toggle .opt { padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; border: 1px solid #333; }
+.bg-toggle .opt.active { background: #1a2a3a; border-color: #60a5fa; color: #60a5fa; }
+.checkerboard { background-image: linear-gradient(45deg, #1a1a1a 25%, transparent 25%), linear-gradient(-45deg, #1a1a1a 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #1a1a1a 75%), linear-gradient(-45deg, transparent 75%, #1a1a1a 75%); background-size: 20px 20px; background-position: 0 0, 0 10px, 10px -10px, -10px 0px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+    <h1>BiRefNet <span class="badge">GPU</span> <span class="license">Apache 2.0</span></h1>
+    <div class="sub">RTX 4060 · ZhengPeng7/BiRefNet · 1024x1024</div>
+</div>
+<div class="status" id="status">
+    <span class="dot" id="statusDot"></span>
+    <span id="statusText">연결 확인 중...</span>
+</div>
+
+<div class="main">
+    <div class="upload-zone" id="dropZone">
+        <input type="file" id="fileInput" accept="image/*" capture="environment">
+        <div class="icon">✂️</div>
+        <div class="label">사진을 드래그하거나 클릭해서 업로드</div>
+        <div class="hint">증명사진 배경 제거 테스트 · 카메라 촬영 가능</div>
+    </div>
+
+    <div class="btn-row">
+        <button class="btn" onclick="document.getElementById('fileInput').click()">📷 촬영/업로드</button>
+        <button class="btn" id="btnDownload" style="display:none" onclick="downloadResult()">💾 다운로드</button>
+        <div class="bg-toggle" id="bgToggle" style="display:none">
+            <div class="opt active" onclick="setBg(this, 'white')">흰배경</div>
+            <div class="opt" onclick="setBg(this, 'transparent')">투명</div>
+        </div>
+    </div>
+
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <div>BiRefNet 처리 중...</div>
+    </div>
+
+    <div class="compare" id="compareView" style="display:none">
+        <div class="panel">
+            <div class="label">원본</div>
+            <img id="origImg">
+        </div>
+        <div class="panel" id="resultPanel">
+            <div class="label">BiRefNet 결과</div>
+            <img id="resultImg">
+        </div>
+    </div>
+
+    <div class="slider-wrap" id="sliderView">
+        <img id="sliderBg">
+        <div class="overlay" id="sliderOverlay">
+            <img id="sliderFg">
+        </div>
+        <div class="handle" id="sliderHandle"></div>
+    </div>
+
+    <div class="info-bar" id="infoBar" style="display:none">
+        <div class="item"><span class="key">처리시간</span><span class="val" id="infoTime">—</span></div>
+        <div class="item"><span class="key">VRAM</span><span class="val" id="infoVram">—</span></div>
+        <div class="item"><span class="key">원본크기</span><span class="val" id="infoSize">—</span></div>
+        <div class="item"><span class="key">디바이스</span><span class="val" id="infoDevice">—</span></div>
+    </div>
+
+    <div class="btn-row" id="viewToggle" style="display:none">
+        <button class="btn active" onclick="showView(this, 'compare')">나란히</button>
+        <button class="btn" onclick="showView(this, 'slider')">슬라이더</button>
+    </div>
+
+    <div class="bench-section" id="benchSection">
+        <h3>벤치마크 결과</h3>
+        <table class="bench-table">
+            <thead><tr><th>#</th><th>파일명</th><th>입력 크기</th><th>추론 시간</th><th>VRAM Peak</th></tr></thead>
+            <tbody id="benchBody"></tbody>
+        </table>
+    </div>
+
+    <div class="history" id="historySection" style="display:none">
+        <h3>히스토리</h3>
+        <div class="history-grid" id="historyGrid"></div>
+    </div>
+</div>
+
+<script>
+const API = new URLSearchParams(location.search).get('api')
+    || (location.hostname === 'localhost' || location.hostname === '127.0.0.1'
+        ? 'http://localhost:5001'
+        : `http://${location.hostname}:5001`);
+let currentResult = null;
+let bgMode = 'white';
+const history = [];
+const benchResults = [];
+
+async function checkHealth() {
+    try {
+        const r = await fetch(API + '/health');
+        const j = await r.json();
+        document.getElementById('statusDot').classList.add('online');
+        let txt = `온라인 — ${j.model} (${j.device})`;
+        if (j.gpu_name) txt += ` · ${j.gpu_name}`;
+        if (j.vram_total_mb) txt += ` · VRAM ${j.vram_total_mb}MB`;
+        document.getElementById('statusText').textContent = txt;
+        document.getElementById('infoDevice').textContent = j.device;
+    } catch {
+        document.getElementById('statusText').textContent = '오프라인 — 서버를 시작하세요 (port 5001)';
+    }
+}
+checkHealth();
+
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+
+dropZone.addEventListener('click', () => fileInput.click());
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragging'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragging'));
+dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('dragging'); if (e.dataTransfer.files[0]) processFile(e.dataTransfer.files[0]); });
+fileInput.addEventListener('change', () => { if (fileInput.files[0]) processFile(fileInput.files[0]); });
+
+async function processFile(file) {
+    document.getElementById('loading').style.display = 'block';
+    document.getElementById('compareView').style.display = 'none';
+    document.getElementById('sliderView').style.display = 'none';
+
+    const origUrl = URL.createObjectURL(file);
+    document.getElementById('origImg').src = origUrl;
+    document.getElementById('sliderBg').src = origUrl;
+
+    const img = new Image();
+    img.onload = () => { document.getElementById('infoSize').textContent = `${img.width}×${img.height}`; };
+    img.src = origUrl;
+
+    try {
+        const formData = new FormData();
+        formData.append('file', file);
+        const r = await fetch(API + '/benchmark', { method: 'POST', body: formData });
+        const j = await r.json();
+
+        const resultBlob = await fetch('data:image/png;base64,' + j.result_png_b64).then(r => r.blob());
+        currentResult = URL.createObjectURL(resultBlob);
+
+        document.getElementById('resultImg').src = currentResult;
+        document.getElementById('sliderFg').src = currentResult;
+        document.getElementById('infoTime').textContent = j.elapsed_sec + 's';
+        document.getElementById('infoVram').textContent = j.vram_peak_mb + 'MB';
+
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('compareView').style.display = 'flex';
+        document.getElementById('infoBar').style.display = 'flex';
+        document.getElementById('viewToggle').style.display = 'flex';
+        document.getElementById('btnDownload').style.display = '';
+        document.getElementById('bgToggle').style.display = 'flex';
+        applyBg();
+
+        benchResults.push({
+            name: file.name,
+            input_size: j.input_size,
+            elapsed_sec: j.elapsed_sec,
+            vram_peak_mb: j.vram_peak_mb,
+        });
+        renderBench();
+
+        history.unshift({ orig: origUrl, result: currentResult, name: file.name });
+        renderHistory();
+    } catch (err) {
+        document.getElementById('loading').style.display = 'none';
+        alert('처리 실패: ' + err.message);
+    }
+}
+
+function renderBench() {
+    const body = document.getElementById('benchBody');
+    body.innerHTML = '';
+    benchResults.forEach((b, i) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${i + 1}</td><td>${b.name}</td><td class="num">${b.input_size}</td><td class="num">${b.elapsed_sec}s</td><td class="num">${b.vram_peak_mb}MB</td>`;
+        body.appendChild(tr);
+    });
+    if (benchResults.length > 1) {
+        const avg = benchResults.reduce((s, b) => s + b.elapsed_sec, 0) / benchResults.length;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td colspan="3" style="color:#888">평균</td><td class="num" style="color:#facc15">${avg.toFixed(3)}s</td><td></td>`;
+        body.appendChild(tr);
+    }
+    document.getElementById('benchSection').style.display = '';
+}
+
+function showView(el, mode) {
+    document.querySelectorAll('#viewToggle .btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    if (mode === 'compare') {
+        document.getElementById('compareView').style.display = 'flex';
+        document.getElementById('sliderView').style.display = 'none';
+    } else {
+        document.getElementById('compareView').style.display = 'none';
+        document.getElementById('sliderView').style.display = 'block';
+        initSlider();
+    }
+}
+
+function initSlider() {
+    const wrap = document.getElementById('sliderView');
+    const handle = document.getElementById('sliderHandle');
+    const overlay = document.getElementById('sliderOverlay');
+    let dragging = false;
+
+    function update(x) {
+        const rect = wrap.getBoundingClientRect();
+        const pct = Math.max(0, Math.min(1, (x - rect.left) / rect.width));
+        handle.style.left = (pct * 100) + '%';
+        overlay.style.width = (pct * 100) + '%';
+    }
+    update(wrap.getBoundingClientRect().left + wrap.getBoundingClientRect().width / 2);
+
+    handle.onmousedown = () => dragging = true;
+    wrap.onmousemove = e => { if (dragging) update(e.clientX); };
+    document.onmouseup = () => dragging = false;
+    wrap.ontouchstart = () => dragging = true;
+    wrap.ontouchmove = e => { if (dragging) update(e.touches[0].clientX); };
+    wrap.ontouchend = () => dragging = false;
+}
+
+function setBg(el, mode) {
+    bgMode = mode;
+    document.querySelectorAll('#bgToggle .opt').forEach(o => o.classList.remove('active'));
+    el.classList.add('active');
+    applyBg();
+}
+
+function applyBg() {
+    const panel = document.getElementById('resultPanel');
+    if (bgMode === 'transparent') {
+        panel.classList.add('checkerboard');
+        panel.style.background = '';
+    } else {
+        panel.classList.remove('checkerboard');
+        panel.style.background = '#fff';
+    }
+}
+
+function downloadResult() {
+    if (!currentResult) return;
+    const a = document.createElement('a');
+    a.href = currentResult;
+    a.download = 'birefnet_result.png';
+    a.click();
+}
+
+function renderHistory() {
+    const grid = document.getElementById('historyGrid');
+    grid.innerHTML = '';
+    document.getElementById('historySection').style.display = history.length ? '' : 'none';
+    history.forEach(h => {
+        const div = document.createElement('div');
+        div.className = 'thumb';
+        div.innerHTML = `<img src="${h.result}">`;
+        div.onclick = () => {
+            document.getElementById('origImg').src = h.orig;
+            document.getElementById('resultImg').src = h.result;
+            document.getElementById('sliderBg').src = h.orig;
+            document.getElementById('sliderFg').src = h.result;
+            currentResult = h.result;
+        };
+        grid.appendChild(div);
+    });
+}
+</script>
+</body>
+</html>
