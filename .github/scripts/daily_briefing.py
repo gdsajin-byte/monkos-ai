@@ -76,6 +76,8 @@ def fetch_ga4(key_json, property_id, target_date, compare_date):
     creds = Credentials.from_service_account_info(key_json, scopes=SCOPES_GA4)
     client = BetaAnalyticsDataClient(credentials=creds)
 
+    prop = f"properties/{property_id}"
+
     metrics = [
         Metric(name="sessions"),
         Metric(name="totalUsers"),
@@ -85,7 +87,7 @@ def fetch_ga4(key_json, property_id, target_date, compare_date):
 
     def run_for_date(d):
         req = RunReportRequest(
-            property=f"properties/{property_id}",
+            property=prop,
             date_ranges=[DateRange(start_date=d, end_date=d)],
             metrics=metrics,
         )
@@ -97,7 +99,62 @@ def fetch_ga4(key_json, property_id, target_date, compare_date):
 
     today_data = run_for_date(target_date)
     compare_data = run_for_date(compare_date)
-    return today_data, compare_data
+
+    channel_data = _fetch_ga4_channels(client, prop, target_date)
+    funnel_data = _fetch_ga4_funnel(client, prop, target_date)
+
+    return today_data, compare_data, channel_data, funnel_data
+
+
+def _fetch_ga4_channels(client, prop, d):
+    req = RunReportRequest(
+        property=prop,
+        date_ranges=[DateRange(start_date=d, end_date=d)],
+        dimensions=[Dimension(name="sessionDefaultChannelGroup")],
+        metrics=[Metric(name="sessions"), Metric(name="newUsers")],
+    )
+    resp = client.run_report(req)
+    rows = []
+    for row in resp.rows:
+        rows.append({
+            "channel": row.dimension_values[0].value,
+            "sessions": int(row.metric_values[0].value),
+            "newUsers": int(row.metric_values[1].value),
+        })
+    rows.sort(key=lambda r: r["sessions"], reverse=True)
+    return rows
+
+
+FUNNEL_EVENTS = [
+    "spec_select", "photo_upload", "generate_click",
+    "preview_view", "begin_checkout", "purchase",
+]
+
+
+def _fetch_ga4_funnel(client, prop, d):
+    from google.analytics.data_v1beta.types import Filter, FilterExpression
+
+    req = RunReportRequest(
+        property=prop,
+        date_ranges=[DateRange(start_date=d, end_date=d)],
+        dimensions=[Dimension(name="eventName")],
+        metrics=[Metric(name="eventCount"), Metric(name="totalUsers")],
+        dimension_filter=FilterExpression(
+            filter=Filter(
+                field_name="eventName",
+                in_list_filter=Filter.InListFilter(values=FUNNEL_EVENTS),
+            )
+        ),
+    )
+    resp = client.run_report(req)
+    event_map = {}
+    for row in resp.rows:
+        name = row.dimension_values[0].value
+        event_map[name] = {
+            "count": int(row.metric_values[0].value),
+            "users": int(row.metric_values[1].value),
+        }
+    return [{"event": e, **event_map.get(e, {"count": 0, "users": 0})} for e in FUNNEL_EVENTS]
 
 
 def fetch_gsc(key_json, site_url, target_date, compare_date):
@@ -134,7 +191,9 @@ def fetch_gsc(key_json, site_url, target_date, compare_date):
     compare_totals = totals(compare_date)
     top_queries = query(target_date, ["query"], 10)
     top_pages = query(target_date, ["page"], 10)
-    return today_totals, compare_totals, top_queries, top_pages
+    page_query = query(target_date, ["page", "query"], 1000)[:20]
+    country = query(target_date, ["country"], 20)
+    return today_totals, compare_totals, top_queries, top_pages, page_query, country
 
 
 def seo_scan():
@@ -227,7 +286,8 @@ def fetch_bizinfo(url, keywords):
                 if title and detail_url and len(items) < 3:
                     if not any(i["url"] == detail_url for i in items):
                         items.append({"title": title[:80], "url": detail_url, "date": pub_date})
-        except Exception:
+        except Exception as e:
+            print(f"WARNING: bizinfo 키워드 '{kw}' 수집 실패 — {e}", file=sys.stderr)
             continue
         if len(items) >= 3:
             break
@@ -270,7 +330,9 @@ def pct_change(now, before):
 
 def generate_briefing(ga4_today, ga4_compare, gsc_today, gsc_compare,
                       top_queries, top_pages, seo_result, news, alerts,
-                      target_date, compare_date, stale_sources=None):
+                      target_date, compare_date, stale_sources=None,
+                      channel_data=None, funnel_data=None,
+                      page_query=None, country_data=None):
     lines = []
     lines.append("---")
     lines.append("type: briefing")
@@ -299,6 +361,26 @@ def generate_briefing(ga4_today, ga4_compare, gsc_today, gsc_compare,
     lines.append(f"| GA4 신규 사용자 | {ga4_today['newUsers']} | {ga4_compare['newUsers']} | {pct_change(ga4_today['newUsers'], ga4_compare['newUsers'])} |")
     lines.append("")
 
+    if channel_data:
+        total_sessions = sum(r["sessions"] for r in channel_data) or 1
+        lines.append("### 채널별 (GA4)")
+        lines.append("| 채널 | 세션 | 신규 | 비율 |")
+        lines.append("|------|------|------|------|")
+        for r in channel_data:
+            pct = r["sessions"] / total_sessions * 100
+            lines.append(f"| {r['channel']} | {r['sessions']} | {r['newUsers']} | {pct:.0f}% |")
+        lines.append("")
+
+    if funnel_data:
+        top_users = max((f["users"] for f in funnel_data), default=0) or 1
+        lines.append("### 퍼널 (GA4, idphoto-kr)")
+        lines.append("| 단계 | 이벤트 수 | 유저 수 | 전환율 |")
+        lines.append("|------|----------|---------|--------|")
+        for f in funnel_data:
+            cvr = f["users"] / top_users * 100
+            lines.append(f"| {f['event']} | {f['count']} | {f['users']} | {cvr:.0f}% |")
+        lines.append("")
+
     # GSC 상위 검색어
     lines.append("### GSC 상위 검색어 (Top 10)")
     lines.append("| 검색어 | 클릭 | 노출 | CTR | 순위 |")
@@ -316,6 +398,24 @@ def generate_briefing(ga4_today, ga4_compare, gsc_today, gsc_compare,
         p = unquote(row["keys"][0].replace("https://monkos.ai", "").replace("https://monk.kr", "monk.kr")) or "/"
         lines.append(f"| {p} | {row['clicks']:.0f} | {row['impressions']:.0f} | {row['ctr']*100:.1f}% |")
     lines.append("")
+
+    if page_query:
+        lines.append("### 페이지×키워드 (GSC, Top 20)")
+        lines.append("| 페이지 | 키워드 | 클릭 | 노출 | CTR |")
+        lines.append("|--------|--------|------|------|-----|")
+        for row in page_query:
+            p = unquote(row["keys"][0].replace("https://monkos.ai", "").replace("https://monk.kr", "monk.kr")) or "/"
+            q = row["keys"][1]
+            lines.append(f"| {p} | {q} | {row['clicks']:.0f} | {row['impressions']:.0f} | {row['ctr']*100:.1f}% |")
+        lines.append("")
+
+    if country_data:
+        lines.append("### 국가별 (GSC)")
+        lines.append("| 국가 | 클릭 | 노출 | CTR |")
+        lines.append("|------|------|------|-----|")
+        for row in country_data:
+            lines.append(f"| {row['keys'][0]} | {row['clicks']:.0f} | {row['impressions']:.0f} | {row['ctr']*100:.1f}% |")
+        lines.append("")
 
     # SEO
     lines.append("## 🔧 SEO 스캔")
@@ -381,8 +481,10 @@ def main():
 
     # 축1: GA4
     print("[1/4] GA4 수집...")
+    channel_data = []
+    funnel_data = []
     try:
-        ga4_today, ga4_compare = fetch_ga4(key_json, property_id, target_date, compare_date)
+        ga4_today, ga4_compare, channel_data, funnel_data = fetch_ga4(key_json, property_id, target_date, compare_date)
     except Exception as e:
         print(f"WARNING: GA4 수집 실패 — {e}", file=sys.stderr)
         ga4_today = {"sessions": 0, "totalUsers": 0, "newUsers": 0, "screenPageViews": 0}
@@ -390,8 +492,10 @@ def main():
 
     # 축1: GSC
     print("[2/4] GSC 수집...")
+    page_query = []
+    country_data = []
     try:
-        gsc_today, gsc_compare, top_queries, top_pages = fetch_gsc(
+        gsc_today, gsc_compare, top_queries, top_pages, page_query, country_data = fetch_gsc(
             key_json, site_url, target_date, compare_date
         )
     except Exception as e:
@@ -415,7 +519,8 @@ def main():
     content = generate_briefing(
         ga4_today, ga4_compare, gsc_today, gsc_compare,
         top_queries, top_pages, seo_result, news, alerts,
-        target_date, compare_date, stale_sources
+        target_date, compare_date, stale_sources,
+        channel_data, funnel_data, page_query, country_data
     )
 
     output_dir = Path("monkos-ops/ops/briefings")

@@ -92,6 +92,7 @@ domain: 인프라
 | 06/12 | 웹/민아 | **자동 검증 3층 방어 제안 (작가님 지시)** — idphoto 사고 교훈: 순찰=사후·표면200으로 핵심여정 장애 미감지 실증. ① 배포 영향 게이트(예방, ch5+order-write 개정) ② 합성 모니터(로그인→크레딧→생성직전 자동주파, GH Actions/로컬) ③ 프로브 심화. REVIEW #8 합류 | [PROPOSAL](../../proposals/PROPOSAL_20260612_웹민아_자동검증_3층방어.md) | ⏳ 작가님 승인 대기 |
 | 06/13 | 웹/민아 | 🟡 자동 브리핑 정부자금 무음 실패 **3건째** (06-10 소실·06-12·06-13 "(수집 건 없음)") — 동시각 직접 API 정상 응답으로 교차 실증, fetch_bizinfo 가드 부재 지속. 전일 🔴 2건(Gemini 키 마감·자판기 401)은 해소 교차 확인 | [BRIEFING_E2E_20260613](../../briefings/BRIEFING_E2E_20260613.md) | ⏳ |
 | 06/14 | 웹/민아 | 🔴 **E2E 루틴 06:00 차단** — Routines 콘솔 모델이 Fable 5로 장착돼 수출통제(06-12~)로 세션 거부. AUTOPILOT(Python GH Action)은 정상 가동(BRIEFING_20260610 05:59 생성). 작가님 직접 지시로 Opus 4.8 수동 복구 실행, 자동 사이클 무손실. 🟡 정부자금 무음 실패 **4건째**(06-09·06-10 자동분, 금일 직접 보충도 환경제약[키거부·DNS차단]으로 불가). JP 보상메일 2번째 반송 발견 | [BRIEFING_E2E_20260614](../../briefings/BRIEFING_E2E_20260614.md) | ⚠️ |
+| 06/14 | 막내2 | **브리핑 쿼리 확장** — GA4 채널별(sessionDefaultChannelGroup)+퍼널(6단계 eventName InListFilter)+GSC 페이지×키워드(rowLimit 1000)+국가별 4개 섹션 추가. bizinfo 무음 실패 수정(except→WARNING 출력). 기존 출력 무변경 | [COMPLETION](../../reports/2026-06/COMPLETION_20260614_iMac막내2_AUTOPILOT_브리핑쿼리확장.md) | ✅ |
 
 ---
 
