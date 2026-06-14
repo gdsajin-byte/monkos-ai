@@ -303,6 +303,7 @@ SEO 콘텐츠가 있는 문서 → 풀 페이지 (FAQ + 반려사유 + 촬영가
 | 05/25 | 쌍아 | **JSON-LD 3종 설계** — L1(CollectionPage) + L2(ItemList) + L3(Article+FAQPage+HowTo). 15개 언어 hreflang | 설계서 반영 | ✅ |
 | 05/26 | 막내1 | **허브 리빌드 + 3티어 CTA** — IDPASS 카드 UI(용도→대륙→국가 퍼널), 다크 테마(#05080E), `/specs/:type/:country` URL 전환, 기존 slug 301 리다이렉트, 3단 티어 CTA(무료 활성), 대륙·카드 이미지 10장 WebP. render-specs.js 전면 리빌드 | render-specs.js + images/continents/ 6장 + images/cards/ 4장 | ✅ |
 | 06/12 | 웹/민아 | **GEO 보강 표준 확정** (작가님 전략 대화) — 인용 단문 원칙·Product/Offer 스키마 추가·다국어 단계화(KO/EN/JA/ZH 선행, scaled abuse 가드)·인덱싱률 KPI 등재. 05-25 설계의 보강 델타. 꾸 미국비자 정본 템플릿(경로④)부터 적용 | SPEC_20260612_specs_GEO보강표준.md | ✅ |
+| 06/14 | 웹/민아 | **사이트맵 재정리 제안** (작가님·쌍아 공동 분석) — 실측: monkos.ai 단일 평면 1,584 URL 중 색인 302(19%)·전 URL lastmod=today·monk.kr specs 크로스도메인 중복(self-canonical). 작가님 결정: **specs 정본=monkos.ai, monk.kr/specs=301**. 단계0 매핑감사→301·canonical→사이트맵 분할→실 lastmod. GA4 측정ID 분리와 묶어 차주 P0 권고 | [PROPOSAL](../../proposals/PROPOSAL_20260614_웹민아_사이트맵재정리_색인복구.md) | ⏳ 쌍아 설계 대기 |
 
 ---
 
