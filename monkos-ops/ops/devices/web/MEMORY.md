@@ -67,5 +67,6 @@ status: active
 - ⏳ **쌍아**: 전략 정본 3종(CONTENT_STRATEGY·DISTRIBUTION_SCHEMA·30분 기준선) 추인 —
   PROPOSAL_20260611_웹민아_OPUS안주_잔여작업 B항
 - ⏳ **R5 선결**: allowlist(reddit/note) 추가(작가님) · 계정 핸들 확정 · 루틴 편입 설계(쌍아)
-- ⏳ 웹 인스턴스 PR 3건 정리: #53(수동 세션2 — 본 통합 MEMORY 포함) · #54(13:28 부록+P1 초안) ·
-  #55(13:57 MEMORY 복구) — **#53이 상위집합, 충돌 시 #53 채택** · AUTH_SECRET(중기) · Merchant 판매 국가
+- ~~웹 인스턴스 PR 3건 정리(#53·#54·#55)~~ (06-14 02:37 정리 완료 확인 — 실측상 모두 closed)
+- ⏳ AUTH_SECRET(중기) · Merchant 판매 국가
+- ⏳ **PR #65** SHORTS DECODER 설계서(DRAFT, `claude/epic-cori-xg0oe7`) — 머지 별도 진행 가능
