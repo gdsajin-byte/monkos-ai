@@ -1,4 +1,17 @@
 {
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[MONK 헌법 3조·2조] 매 턴 date 실행 + 텍스트 출력에 수발신 헤더 필수: **[YYYY-MM-DD HH:MM KST]** {디바이스}/{에이전트} → {수신자}'"
+          }
+        ]
+      }
+    ]
+  },
   "permissions": {
     "allow": [
       "Bash(*)",

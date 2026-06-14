@@ -5,6 +5,7 @@ from: iMac/쌍아
 to: iMac/막내1
 status: 대기
 priority: P1
+portfolio: PF_CITADEL
 pf: PF_CITADEL
 ---
 
