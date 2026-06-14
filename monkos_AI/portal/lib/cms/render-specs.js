@@ -601,7 +601,7 @@ function buildHubData(lang) {
     if (seen[dedupKey]) continue;
     seen[dedupKey] = true;
 
-    const countryName = lang === 'en' ? (spec.countryEn || spec.country) : (lang === 'ja' ? (spec.country) : spec.country);
+    const countryName = lang === 'en' ? (spec.countryEn || spec.country) : (lang === 'ja' ? (spec.countryJa || spec.country) : spec.country);
     const typeName = lang === 'ja' ? (spec.typeJa || spec.type) : (lang === 'en' ? (spec.typeEn || spec.type) : spec.type);
 
     result[category][continent].push({
@@ -861,7 +861,11 @@ export function specsDetailFragment(slug, forceLang = null) {
   const newPath = `${typeSlug}/${countrySlug}`;
 
   const typeName = lang === 'ja' ? (specData.typeJa || specData.type) : (lang === 'en' ? specData.typeEn : specData.type);
-  const countryName = lang === 'en' ? specData.countryEn : specData.country;
+  const countryName = lang === 'en'
+    ? (specData.countryEn || specData.country)
+    : lang === 'ja'
+      ? (specData.countryJa || specData.country)
+      : specData.country;
   const title = (specData.seoTitle && specData.seoTitle[lang]) || `2026 ${countryName} ${typeName} ${i.detailSuffix}`;
   const description = (specData.seoDescription && specData.seoDescription[lang]) || (specData.details && (specData.details[lang] || specData.details.ko || specData.details.en)) || '';
 
@@ -880,6 +884,7 @@ export function specsDetailFragment(slug, forceLang = null) {
       "@context": "https://schema.org",
       "@type": "Article",
       "headline": title,
+      "inLanguage": lang,
       "author": { "@type": "Person", "name": "Shin JeongKyu", "jobTitle": "Photographer & AI Architect" },
       "publisher": { "@type": "Organization", "name": "Monk Studio" },
       "datePublished": "2026-03-26",
@@ -901,7 +906,7 @@ export function specsDetailFragment(slug, forceLang = null) {
              : lang === 'en' ? `How to prepare a ${typeName} photo`
              : `${typeName} 규격에 맞게 사진 준비하는 법`,
       "step": [
-        { "@type": "HowToStep", "position": 1, "name": lang === 'ja' ? '規格確認' : lang === 'en' ? 'Check specs' : '규격 확인', "text": `${specData.size} / ${specData.background}` },
+        { "@type": "HowToStep", "position": 1, "name": lang === 'ja' ? '規格確認' : lang === 'en' ? 'Check specs' : '규격 확인', "text": `${locField(specData, 'size', lang)} / ${locField(specData, 'background', lang)}` },
         { "@type": "HowToStep", "position": 2, "name": lang === 'ja' ? 'セルフィー撮影' : lang === 'en' ? 'Take a selfie' : '셀카 촬영', "text": lang === 'ja' ? '明るい場所で白い背景の前で撮影' : lang === 'en' ? 'Take a photo in a bright area with a white background' : '밝은 곳에서 흰 배경 앞에 촬영' },
         { "@type": "HowToStep", "position": 3, "name": lang === 'ja' ? 'AI補正またはクロップ' : lang === 'en' ? 'AI retouch or crop' : 'AI 보정 또는 크롭', "text": lang === 'ja' ? 'MONKOS AIまたは無料クロップアプリで規格に合わせる' : lang === 'en' ? 'Use MONKOS AI or the free crop app to fit the specs' : 'MONKOS AI 또는 무료 크롭앱으로 규격 맞춤' },
         { "@type": "HowToStep", "position": 4, "name": lang === 'ja' ? 'ダウンロード' : lang === 'en' ? 'Download' : '다운로드', "text": lang === 'ja' ? '完成写真をダウンロード' : lang === 'en' ? 'Download the finished photo' : '완성 사진 다운로드' },
