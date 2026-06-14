@@ -305,6 +305,7 @@ SEO 콘텐츠가 있는 문서 → 풀 페이지 (FAQ + 반려사유 + 촬영가
 | 06/12 | 웹/민아 | **GEO 보강 표준 확정** (작가님 전략 대화) — 인용 단문 원칙·Product/Offer 스키마 추가·다국어 단계화(KO/EN/JA/ZH 선행, scaled abuse 가드)·인덱싱률 KPI 등재. 05-25 설계의 보강 델타. 꾸 미국비자 정본 템플릿(경로④)부터 적용 | SPEC_20260612_specs_GEO보강표준.md | ✅ |
 | 06/14 | 웹/민아 | **사이트맵 재정리 제안** (작가님·쌍아 공동 분석) — 실측: monkos.ai 단일 평면 1,584 URL 중 색인 302(19%)·전 URL lastmod=today·monk.kr specs 크로스도메인 중복(self-canonical). 작가님 결정: **specs 정본=monkos.ai, monk.kr/specs=301**. 단계0 매핑감사→301·canonical→사이트맵 분할→실 lastmod. GA4 측정ID 분리와 묶어 차주 P0 권고 | [PROPOSAL](../../proposals/PROPOSAL_20260614_웹민아_사이트맵재정리_색인복구.md) | ⏳ 쌍아 설계 대기 |
 | 06/14 | iMac/막내1 | **사이트맵 재정리 Phase 1 실행** — 매핑 감사(327건 monk.kr↔monkos.ai 대조) + monk.kr 301 역방향 라우팅 보강 + robots.txt specs sitemap 제거 + 사이트맵 인덱스 3분할(static/specs/blog) + lastmod today 박제 해소 | SPECS_URL_MAPPING.md, render-sitemap.js 리팩터, render-specs.js 보강 | ⏳ 배포 대기 |
+| 06/14 | monkos-ai/막내 | SPECS 구조화데이터 언어분기 감사 지시서 확인 — 기존 막내2 보고서 확인 완료, 중복 감사 회피 | COMPLETION_20260614_monkos-ai막내_SPECS_구조화데이터_언어분기감사_확인.md | ✅ |
 | 06/14 | 막내2 | **구조화 데이터+UI 언어 미분기 전수 감사** — 코드+prod 양축 실측. 🔴P0 3건: ① HowTo JSON-LD step[0] `specData.background` 한국어 하드코딩(EN/JA 890p), ② JA countryName 한국어(438p), ③ Article inLanguage 누락(1,335p). 🟡P1: validity/fileSpec/headHeight EN/JA 번역 커버리지 4~59%. 사이트맵 hreflang 미포함 | [REPORT](../../reports/2026-06/REPORT_20260614_iMac막내2_SPECS_구조화데이터_언어분기감사.md) | ✅ |
 
 ---
