@@ -3,6 +3,7 @@
  * 사이트맵 출력(render-sitemap.js)과 페이지 noindex(render-blog.js)가 공유한다.
  */
 import { BLOG_REDIRECTS } from './redirects.js';
+import { isWeakSlug } from './slug.js';
 
 // noindex 메타를 붙일 슬러그 (검색 색인 제외 의도)
 export const NOINDEX_SLUGS = new Set([
@@ -20,7 +21,8 @@ export const SITEMAP_EXCLUDE_SLUGS = new Set([
 export const BLOG_REDIRECT_SOURCE_PATHS = new Set(Object.keys(BLOG_REDIRECTS));
 
 // 유효 블로그 슬러그: 영숫자로 시작 + 최소 3자 + [a-z0-9-]만 허용.
-// `3`, `ai`, `14-vs`, `5-10`, `https:...` 같은 깨진 슬러그를 걸러낸다.
+// `https:...`(콜론) 같은 형식 깨짐을 걸러낸다. 단, 숫자시작 허용이라
+// `14-vs`·`5-10` 같은 영문자 잔해 정크는 통과하므로 isWeakSlug로 별도 차단한다.
 const VALID_SLUG_RE = /^[a-z0-9][a-z0-9-]{2,}$/;
 
 /**
@@ -30,6 +32,9 @@ const VALID_SLUG_RE = /^[a-z0-9][a-z0-9-]{2,}$/;
  */
 export function isIndexableBlogUrl(baseSlug, path) {
   if (!VALID_SLUG_RE.test(baseSlug)) return false;
+  // 영문자 잔해 정크(`14-vs`,`5-10`,`47-20x`) 배제 — 숫자시작 정상글(`20-year-…`)은 통과.
+  // 생성시점(blog.js)뿐 아니라 기존 Firestore 글 사이트맵 출력에도 동일 기준 적용.
+  if (isWeakSlug(baseSlug)) return false;
   if (NOINDEX_SLUGS.has(baseSlug)) return false;
   if (SITEMAP_EXCLUDE_SLUGS.has(baseSlug)) return false;
   if (BLOG_REDIRECT_SOURCE_PATHS.has(path)) return false;
