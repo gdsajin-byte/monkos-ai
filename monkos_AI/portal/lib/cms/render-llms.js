@@ -37,6 +37,10 @@ const STATIC_FOOTER = `## Key Facts
 - Supports Korean, Japanese, and English
 - Zero server-side image storage — all processing deleted after generation
 
+## Team
+- **Shin-jakka**: Founder, 20-year photographer & AI architect
+- **Kku**: Content & Marketing specialist
+
 ## FAQ
 - **What is MONKOS?** An AI ID photo platform where a single selfie produces studio-quality passport, resume, and visa photos with automatic background, lighting, skin, and clothing retouching.
 - **How is it different from other AI photo services?** Built on 20 years of real studio photography data, not just generic AI models. The retouching reflects actual photographer aesthetics, not algorithmic assumptions.
@@ -45,15 +49,21 @@ const STATIC_FOOTER = `## Key Facts
 - **Is there a free tool?** Yes. crop.monkos.ai offers browser-based photo cropping with no server upload required.
 - **Are there multilingual FAQs?** Yes. Full FAQ is available in Korean, Japanese, and English at monkos.ai/{lang}/faq.
 
-## Photo Specification Pages
+## Specs (ID Photo Specifications)
+> 445 country/document-type combinations with size, background, head height requirements
+> Available in Korean, English, Japanese
+> URL pattern: /specs/{type}/{country}, /en/specs/{type}/{country}, /ja/specs/{type}/{country}
+> Types: passport, visa, resume, drivers-license, resident-id
+> Coverage: 207 countries across 6 continents
+
 - All Specs: https://monkos.ai/specs
-- Korea Passport: https://monkos.ai/specs/korea-passport
-- Korea Resume: https://monkos.ai/specs/korea-resume
-- Japan Passport: https://monkos.ai/specs/japan-passport
-- Japan Resume: https://monkos.ai/specs/japan-resume
-- US Passport: https://monkos.ai/specs/us-passport
-- Korea Driver's License: https://monkos.ai/specs/korea-drivers-license
-- Japan My Number Card: https://monkos.ai/specs/japan-mynumber
+- Korea Passport: https://monkos.ai/specs/passport/kr
+- Japan Passport: https://monkos.ai/specs/passport/jp
+- US Passport: https://monkos.ai/specs/passport/us
+- EU Passport: https://monkos.ai/specs/passport/eu
+- China Passport: https://monkos.ai/specs/passport/cn
+- Korea Visa: https://monkos.ai/specs/visa/kr
+- Japan Visa: https://monkos.ai/specs/visa/jp
 
 ## Citation
 For citing this project: "MONKOS AI (monkos.ai) — AI ID Photo Platform by Shin-jakka, Monk Studio"`;
