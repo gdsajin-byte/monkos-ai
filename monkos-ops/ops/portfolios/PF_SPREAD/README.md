@@ -71,6 +71,7 @@ status: active
 | 06/12 | 웹/민아 | **CMS 백카탈로그 멀티채널 배포 로드맵 제안 (작가님 직접 지시)** — 발행 208건+드래프트 재고를 X·Threads(신규 R6 후보)·note·Medium으로 3 Phase 배포. 선결 4건(자판기 401·스키마 승인·Threads 수단검증·allowlist), 선별 룰(P2·P3 전량+P1 에버그린 톱10), 작가님 공정 일 15분 박스, UTM 환류 | [PROPOSAL](../../proposals/PROPOSAL_20260612_웹민아_CMS백카탈로그_멀티채널배포로드맵.md) | ⏳ 작가님 승인 대기 |
 | 06/15 | 작가님+웹/민아 | **발행→유통→실측 전략 (업계 최전선 조사)** — 현행 발행=구글 단일채널+Indexing API 헛스윙(JobPosting 전용) 진단. 최전선 10축 종합: ⭐IndexNow(네이버·빙·얀덱스·Seznam·Yep 1콜+ChatGPT/Perplexity 간접via Bing), 구글=sitemap/GSC 정도, AI검색=Bing인덱스+JSON-LD+llms.txt+검색봇 허용, 네이버 C-Rank(외부유입·체류3분→+5단계), 신디케이션 canonical. 로드맵 P0(IndexNow+specs확장+sitemap재정리)→P1(JSON-LD전면+AEO)→P2(WebSub+크로스포스팅)→P3(AI인용 측정). 색인복구 P0의 실행무기 | [REPORT](../../reports/2026-06/REPORT_20260615_웹민아_발행유통_멀티디스트리뷰션_전략.md) | ⏳ 쌍아 설계 |
 | 06/15 | 막내2 | **발행→유통 파이프라인 구현 (5축 감사 + IndexNow)** — CF봇차단·robots.txt·Indexing코드·sitemap·딥리서치 5축 병렬 감사. 🔴CF robots.txt Disallow 주입 발견(대시보드 수정 필요). IndexNow 구현(seo.js+blog.js+translate.js — 블로그 발행 시 네이버·빙·얀덱스·Seznam·Yep 5엔진 동시 통지). robots.txt 양 도메인 검색봇 5종 추가+훈련봇 3종 차단. sitemap index today 박제 해소. monk.kr .html 308 해소 | [REPORT](../../reports/2026-06/REPORT_20260615_iMac막내2_SPREAD_발행유통_감사결과.md) | ✅ 배포 대기 |
+| 06/15 | 막내1 | **GEO P1 구조화 데이터 전면 보강** — ① 블로그 Article inLanguage 추가, ② 블로그+specs BreadcrumbList JSON-LD 신설(3언어), ③ llms.txt specs 445건 카탈로그+blog 섹션 추가. rev 00292-zzw 배포. prod 실측 통과 | render-blog.js, render-specs.js, render-llms.js | ✅ |
 
 ---
 
