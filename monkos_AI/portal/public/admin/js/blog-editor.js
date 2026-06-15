@@ -236,9 +236,9 @@ function preview() {
 
 /* ===== 이벤트 바인딩 셋업 ===== */
 export function setupEditorBindings() {
-  // Slug sanitize
+  // Slug sanitize — 소문자 + [a-z0-9-]만 허용 (URL 통째 붙여넣기/특수문자 차단)
   document.getElementById('slug').addEventListener('input', (e) => {
-    e.target.value = e.target.value.replace(/[\/$#\[\].]/g, '');
+    e.target.value = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/-+/g, '-');
   });
 
   // Preview event bindings

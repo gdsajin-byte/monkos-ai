@@ -4,9 +4,14 @@
  */
 import { firestore, log } from '../shared/config.js';
 import { SPECS_DATA, REDIRECT_MAP } from './render-specs.js';
+import { isIndexableBlogUrl } from './seo-exclude.js';
 
 const blogCollection = firestore.collection('blog_posts');
 const DOMAIN = 'https://monkos.ai';
+
+// lastmod 정본 상수 — 인덱스와 하위 사이트맵의 날짜 드리프트 방지
+const STATIC_LASTMOD = '2026-06-15';
+const SPECS_LASTMOD = '2026-05-26';
 
 function escXml(s) { return s ? s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;') : ''; }
 
@@ -52,11 +57,11 @@ export async function renderSitemap(req, res) {
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <sitemap>
     <loc>${DOMAIN}/sitemap-static.xml</loc>
-    <lastmod>2026-06-14</lastmod>
+    <lastmod>${STATIC_LASTMOD}</lastmod>
   </sitemap>
   <sitemap>
     <loc>${DOMAIN}/sitemap-specs.xml</loc>
-    <lastmod>2026-05-26</lastmod>
+    <lastmod>${SPECS_LASTMOD}</lastmod>
   </sitemap>
   <sitemap>
     <loc>${DOMAIN}/sitemap-blog.xml</loc>
@@ -117,7 +122,7 @@ export function renderSitemapSpecs(req, res) {
       if (seen.has(path)) continue;
       seen.add(path);
 
-      const lastmod = '2026-05-26';
+      const lastmod = SPECS_LASTMOD;
       urls.push({ loc: `${DOMAIN}/specs/${path}`, lastmod, changefreq: 'monthly', priority: '0.8' });
       urls.push({ loc: `${DOMAIN}/ja/specs/${path}`, lastmod, changefreq: 'monthly', priority: '0.7' });
       urls.push({ loc: `${DOMAIN}/en/specs/${path}`, lastmod, changefreq: 'monthly', priority: '0.7' });
@@ -143,9 +148,12 @@ export async function renderSitemapBlog(req, res) {
       const docLang = data.lang || 'ko';
       const baseSlug = doc.id.replace(/-(?:kr|ja|en)$/, '');
       const langPrefix = docLang === 'ko' ? '' : `/${docLang}`;
-      const loc = `${DOMAIN}${langPrefix}/blog/${baseSlug}`;
+      const path = `${langPrefix}/blog/${baseSlug}`;
+      const loc = `${DOMAIN}${path}`;
       if (seen.has(loc)) continue;
       seen.add(loc);
+      // 방어 필터: 깨진 슬러그·301 소스·noindex·404 확정분은 사이트맵에서 제외
+      if (!isIndexableBlogUrl(baseSlug, path)) continue;
       urls.push({
         loc,
         lastmod: (data.updatedAt || data.createdAt || '').substring(0, 10),

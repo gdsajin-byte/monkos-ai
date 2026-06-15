@@ -9,7 +9,7 @@ import { requireAdmin } from './admin-auth.js';
 import { translateAndSaveBlogPost } from './translate.js';
 import { publishBlogToGitHub } from './github-issues.js';
 import { notifySearchEngines } from './seo.js';
-import { generateSlug, generateSlugFromAI, sanitizeSlug } from './slug.js';
+import { generateSlug, generateSlugFromAI, sanitizeSlug, isWeakSlug } from './slug.js';
 
 const blogCollection = firestore.collection('blog_posts');
 const ogStorage = new Storage();
@@ -128,7 +128,7 @@ export async function handleBlogCreate(req, res) {
     const suffix = langSuffix(postLang);
 
     let baseSlug = sanitizeSlug(body.slug || generateSlug(title));
-    if (!baseSlug || hasKorean(baseSlug)) {
+    if (!baseSlug || hasKorean(baseSlug) || isWeakSlug(baseSlug)) {
       baseSlug = await generateSlugFromAI(ai, title);
       log(`[CMS] AI slug 생성: "${title}" → "${baseSlug}"`);
     }
