@@ -93,6 +93,7 @@ domain: 인프라
 | 06/13 | 웹/민아 | 🟡 자동 브리핑 정부자금 무음 실패 **3건째** (06-10 소실·06-12·06-13 "(수집 건 없음)") — 동시각 직접 API 정상 응답으로 교차 실증, fetch_bizinfo 가드 부재 지속. 전일 🔴 2건(Gemini 키 마감·자판기 401)은 해소 교차 확인 | [BRIEFING_E2E_20260613](../../briefings/BRIEFING_E2E_20260613.md) | ⏳ |
 | 06/14 | 웹/민아 | 🔴 **E2E 루틴 06:00 차단** — Routines 콘솔 모델이 Fable 5로 장착돼 수출통제(06-12~)로 세션 거부. AUTOPILOT(Python GH Action)은 정상 가동(BRIEFING_20260610 05:59 생성). 작가님 직접 지시로 Opus 4.8 수동 복구 실행, 자동 사이클 무손실. 🟡 정부자금 무음 실패 **4건째**(06-09·06-10 자동분, 금일 직접 보충도 환경제약[키거부·DNS차단]으로 불가). JP 보상메일 2번째 반송 발견 | [BRIEFING_E2E_20260614](../../briefings/BRIEFING_E2E_20260614.md) | ⚠️ |
 | 06/14 | 막내2 | **브리핑 쿼리 확장** — GA4 채널별(sessionDefaultChannelGroup)+퍼널(6단계 eventName InListFilter)+GSC 페이지×키워드(rowLimit 1000)+국가별 4개 섹션 추가. bizinfo 무음 실패 수정(except→WARNING 출력). 기존 출력 무변경 | [COMPLETION](../../reports/2026-06/COMPLETION_20260614_iMac막내2_AUTOPILOT_브리핑쿼리확장.md) | ✅ |
+| 06/15 | 웹/민아(루틴) | 이상 발견 — ① 🔴 **루틴 모델 Fable 차단 재발**(06-14 연속): 본 세션도 Fable 5 기동→작가님 Opus 4.8 수동 전환 복구. 콘솔 모델 미교체 = 매일 재차단 ② 🟡 **Google 비즈니스 프로필 게시물 5건 일괄 삭제**(06-14 07:18~07:24, 콘텐츠 정책 위반) — 데일리 구글 게시물 루틴 거부, 반복 시 프로필 패널티. AUTOPILOT(05:57 KST BRIEFING_20260611 커밋)·서비스 5/5·보안 0건 정상. **bizinfo 직접 조회 성공**(무음실패=코드/파싱 확정, 06-14 막내2 수정분 효과 추정) | [BRIEFING_E2E_20260615](../../briefings/BRIEFING_E2E_20260615.md) | ⚠️ |
 
 ---
 
