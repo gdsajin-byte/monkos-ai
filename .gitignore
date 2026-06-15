@@ -153,3 +153,6 @@ apps/crop-app/benchmark/refine_outputs/
 
 # Playwright MCP 임시 브라우저 스냅샷 (검증 시마다 누적되는 임시 산출물)
 .playwright-mcp/
+
+# Retrieval 인덱스 DB (재생성 가능)
+scripts/retrieval/monk_index.db

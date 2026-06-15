@@ -22,7 +22,7 @@ created: 2026-06-14
 | Phase | 내용 | 상태 |
 |-------|------|------|
 | **P0 스키마 정돈** | `portfolio:` frontmatter 소급 보강 (활성 PF 21개 우선) | ✅ 완료 |
-| P1 관계 인덱스 MVP | frontmatter→그래프 엣지 materialize + BM25 + 메타필터 | ⚪ 대기 |
+| **P1 관계 인덱스 MVP** | frontmatter→그래프 엣지 materialize + BM25 + 메타필터 | ✅ 완료 |
 | P2 의미검색 | 임베딩 + 하이브리드(BM25+vector) | ⚪ 대기 |
 | P3 agentic MCP | MCP 서버 노출 → 전 디바이스 접근 | ⚪ 대기 |
 | 축B git 위생 | .gitignore·LFS·아카이브 분리 (문서 무관, 바이너리만) | ⚪ 독립 트랙 |
@@ -39,6 +39,7 @@ created: 2026-06-14
 | 06/14 | iMac/막내1 | P0 스키마 정돈 실행 — 41건 portfolio: 소급 삽입 완료 | 스크립트+41건 변경+COMPLETION | ✅ |
 | 06/14 | iMac/민아 | P0 감사 — 58 vs 41 편차 정산(민아 상한추정 과대 자인), 막내1 결과 추인 | 감사 결과 | ✅ |
 | 06/14 | iMac/쌍아 | 다중매칭 3건 판정(주제>도구 원칙) + 수동 삽입 1건(CITADEL_SEO_CDP) + 판정 원칙 명문화 | 1건 삽입+원칙 명문화 | ✅ |
+| 06/15 | iMac/막내2 | P1 관계 인덱스 MVP 구현 — SQLite+FTS5 인덱서+검색CLI (2619문서, 33PF, 446링크) | build_index.js+search.js+COMPLETION | ✅ |
 
 ---
 

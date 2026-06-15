@@ -1,0 +1,14 @@
+{
+  "name": "monk-retrieval",
+  "version": "1.0.0",
+  "private": true,
+  "description": "MONK OS 문서 인덱스 — frontmatter + BM25 검색",
+  "scripts": {
+    "build": "node build_index.js",
+    "search": "node search.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.0.0",
+    "gray-matter": "^4.0.3"
+  }
+}
