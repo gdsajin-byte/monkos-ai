@@ -13,18 +13,18 @@ subject: "블로그 콘텐츠 생산 파이프라인 — repo 초안 → CMS 드
 ## 파이프라인 (하네스 §9 적용 — 2026-06-11 가동)
 
 ```
-🤖 생성 (웹/민아 데일리 루틴 6번 또는 수동 세션)
-    │  소재: 일일 브리핑 · 세션 작업내용 · PF 히스토리 · 철학적 대화
-    │  → blog_{YYYYMMDD}_{주제}_KR.md 커밋 (PR 경유)
-    ▼
-🔧 자판기 (.github/workflows/blog-draft-publish.yml)
-    │  main 병합 감지 → frontmatter 파싱 → POST /api/admin/blog
-    │  published:false 고정 · slug 중복 시 건너뜀(멱등, 에디터 수정본 보존)
-    ▼
-👤 게이트 (작가님 — 에디터에서 검수·발행)
-    │  발행 시 기존 시스템이 자동 체이닝:
-    ▼
-   OG 이미지 → 자동 번역(JA/EN) → 사이트맵 핑 → 색인 요청 → llms.txt
+ 생성 (웹/민아 데일리 루틴 6번 또는 수동 세션)
+ │ 소재: 일일 브리핑 · 세션 작업내용 · PF 히스토리 · 철학적 대화
+ │ → blog_{YYYYMMDD}_{주제}_KR.md 커밋 (PR 경유)
+ ▼
+ 자판기 (.github/workflows/blog-draft-publish.yml)
+ │ main 병합 감지 → frontmatter 파싱 → POST /api/admin/blog
+ │ published:false 고정 · slug 중복 시 건너뜀(멱등, 에디터 수정본 보존)
+ ▼
+ 게이트 (작가님 — 에디터에서 검수·발행)
+ │ 발행 시 기존 시스템이 자동 체이닝:
+ ▼
+ OG 이미지 → 자동 번역(JA/EN) → 사이트맵 핑 → 색인 요청 → llms.txt
 ```
 
 - 생성(클라우드 LLM) = 웹/민아 — 4060 로컬 생성 불가 판정(PF_FACTORY)의 대체.
@@ -37,15 +37,15 @@ subject: "블로그 콘텐츠 생산 파이프라인 — repo 초안 → CMS 드
 ---
 type: blog
 date: YYYY-MM-DD
-slug: english-slug-here      # 필수. 영문 소문자-하이픈
-lang: KR | JA | EN           # 필수 (ko/ja/en도 허용)
-title: "..."                 # 생략 시 본문 첫 H1 사용
+slug: english-slug-here # 필수. 영문 소문자-하이픈
+lang: KR | JA | EN # 필수 (ko/ja/en도 허용)
+title: "..." # 생략 시 본문 첫 H1 사용
 author: 신작가 | MONKOS
 status: draft
 tags: [태그1, 태그2]
 summary: "160자 이내 요약"
-book_thread: 하네스론        # P2·P3만 — 저서 계보 태그 (CONTENT_STRATEGY §1 저서 축 운용)
-cms: skip                    # 이 파일을 CMS 업로드에서 제외할 때만
+book_thread: 하네스론 # P2·P3만 — 저서 계보 태그 (CONTENT_STRATEGY §1 저서 축 운용)
+cms: skip # 이 파일을 CMS 업로드에서 제외할 때만
 ---
 ```
 
@@ -61,6 +61,6 @@ cms: skip                    # 이 파일을 CMS 업로드에서 제외할 때�
 
 | 항목 | 내용 | 상태 |
 |------|------|------|
-| GitHub Secret `PORTAL_AGENT_KEY` | 포털 Cloud Run 환경변수 `AGENT_API_KEYS` 값 중 1개 (AGENT_…) 등록. 콘솔 작업 = 작가님 | ✅ 등록 완료 (06-11 13:19 run에 주입 확인). 단 동시각 포털 배포 진행 중이라 401 — 배포 완료 후 재실행 필요 |
+| GitHub Secret `PORTAL_AGENT_KEY` | 포털 Cloud Run 환경변수 `AGENT_API_KEYS` 값 중 1개 (AGENT_…) 등록. 콘솔 작업 = 작가님 | 등록 완료 (06-11 13:19 run에 주입 확인). 단 동시각 포털 배포 진행 중이라 401 -- 배포 완료 후 재실행 필요 |
 
 키 미등록 상태에서는 자판기가 경고만 남기고 통과한다 (CI 적색 아님). 등록 후 `workflow_dispatch` 수동 실행으로 기존 초안 일괄 업로드 가능.

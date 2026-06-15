@@ -110,6 +110,6 @@ That was long. To recap — I started with three layers (procedures, records, pr
 
 I want to ask you: has anyone here treated a project as **a single data structure (a first-class object)** like this? If so, what do you call it? And if anyone has automated the *judgment of when to condense* — I'd love to hear it. That's exactly where I'm stuck.
 
-Thanks for reading. 🙏
+Thanks for reading. 
 
 > *The writer went from photography to building a small business with AI tools.*
