@@ -146,8 +146,10 @@ MEMORY.md
 # MediaPipe WASM 바이너리
 apps/crop-app/mediapipe/*.wasm
 
-# BiRefNet 벤치마크 출력 (PNG 산출물)
+# 벤치마크 출력 (PNG 산출물)
 apps/crop-app/benchmark/birefnet_outputs/
+apps/crop-app/benchmark/rmbg2_outputs/
+apps/crop-app/benchmark/refine_outputs/
 
 # Playwright MCP 임시 브라우저 스냅샷 (검증 시마다 누적되는 임시 산출물)
 .playwright-mcp/
