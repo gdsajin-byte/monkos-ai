@@ -308,6 +308,7 @@ SEO 콘텐츠가 있는 문서 → 풀 페이지 (FAQ + 반려사유 + 촬영가
 | 06/14 | monkos-ai/막내 | SPECS 구조화데이터 언어분기 감사 지시서 확인 — 기존 막내2 보고서 확인 완료, 중복 감사 회피 | COMPLETION_20260614_monkos-ai막내_SPECS_구조화데이터_언어분기감사_확인.md | ✅ |
 | 06/14 | 막내2 | **구조화 데이터+UI 언어 미분기 전수 감사** — 코드+prod 양축 실측. 🔴P0 3건: ① HowTo JSON-LD step[0] `specData.background` 한국어 하드코딩(EN/JA 890p), ② JA countryName 한국어(438p), ③ Article inLanguage 누락(1,335p). 🟡P1: validity/fileSpec/headHeight EN/JA 번역 커버리지 4~59%. 사이트맵 hreflang 미포함 | [REPORT](../../reports/2026-06/REPORT_20260614_iMac막내2_SPECS_구조화데이터_언어분기감사.md) | ✅ |
 | 06/14 | 막내2 | **구조화 데이터 P0 3건 수정** — ① HowTo step[0] `locField()` 경유 전환, ② JA countryName `countryJa` 분기 추가(상세+허브), ③ Article `inLanguage` 추가. portal prod 배포(rev 00288-4kw). curl 3건 실측: EN/JA HowTo 영·일문 전환 확인, inLanguage 정상 | [COMPLETION](../../reports/2026-06/COMPLETION_20260614_iMac막내2_SPECS_구조화데이터_언어분기수정.md) | ✅ |
+| 06/15 | 막내1 | **다국어 번역 데이터 P1 보강** — validity(9건)/fileSpec(22건)/headHeight(18건) EN/JA 소급 번역. 커버리지 100% 달성. 패턴 기반 일괄 변환 스크립트 작성 | specs-data.json, scripts/translate_specs_fields.js | ✅ |
 
 ---
 

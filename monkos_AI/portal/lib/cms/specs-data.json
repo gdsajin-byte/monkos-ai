@@ -299,7 +299,13 @@
     },
     "ctaService": "idphoto-jp",
     "priority": 6,
-    "continent": "asia"
+    "continent": "asia",
+    "validityEn": "Within 6 months",
+    "validityJa": "6ヶ月以内",
+    "fileSpecEn": "JPEG, max 600KB",
+    "fileSpecJa": "JPEG、600KB以下",
+    "headHeightEn": "34±2mm (70-80% of face)",
+    "headHeightJa": "34±2mm（顔の70〜80%）"
   },
   "japan-resume": {
     "slug": "japan-resume",
@@ -373,7 +379,13 @@
     },
     "ctaService": "idphoto-jp",
     "priority": 9,
-    "continent": "asia"
+    "continent": "asia",
+    "validityEn": "Within 3 months recommended",
+    "validityJa": "3ヶ月以内推奨",
+    "fileSpecEn": "JPEG",
+    "fileSpecJa": "JPEG",
+    "headHeightEn": "2.8-3.2cm",
+    "headHeightJa": "2.8~3.2cm"
   },
   "us-passport": {
     "slug": "us-passport",
@@ -449,7 +461,11 @@
     "priority": 11,
     "fileSpecEn": "JPEG (Visa: max 240KB / Passport renewal: 54KB-10MB)",
     "fileSpecJa": "JPEG（ビザ: 240KB以下 / パスポート更新: 54KB〜10MB）",
-    "continent": "americas"
+    "continent": "americas",
+    "validityEn": "Within 6 months",
+    "validityJa": "6ヶ月以内",
+    "headHeightEn": "1-1⅜ inches (25-35mm)",
+    "headHeightJa": "1〜1⅜インチ（25〜35mm）"
   },
   "korea-drivers-license": {
     "slug": "korea-drivers-license",
@@ -535,7 +551,9 @@
       "ja": "韓国運転免許証写真 3.5×4.5cm。オンライン提出は350×450px、250KB以下。無料AIツールで作成。",
       "en": "Korea driver's license photo 3.5×4.5cm, online submission 350×450px max 250KB. Same as passport size. Make it free with AI."
     },
-    "continent": "asia"
+    "continent": "asia",
+    "headHeightEn": "3.2-3.6cm",
+    "headHeightJa": "3.2~3.6cm"
   },
   "japan-mynumber": {
     "slug": "japan-mynumber",
@@ -605,7 +623,13 @@
     },
     "ctaService": "idphoto-jp",
     "priority": 7,
-    "continent": "asia"
+    "continent": "asia",
+    "validityEn": "Within 6 months",
+    "validityJa": "6ヶ月以内",
+    "fileSpecEn": "JPEG, 20KB-7MB",
+    "fileSpecJa": "JPEG、20KB〜7MB",
+    "headHeightEn": "34±2mm",
+    "headHeightJa": "34±2mm"
   },
   "korea-halfcard": {
     "slug": "korea-halfcard",
@@ -661,7 +685,9 @@
     "validityJa": "提出先により異なる",
     "backgroundEn": "White",
     "backgroundJa": "白",
-    "continent": "asia"
+    "continent": "asia",
+    "fileSpecEn": "JPEG",
+    "fileSpecJa": "JPEG"
   },
   "korea-resident": {
     "slug": "korea-resident",
@@ -724,7 +750,11 @@
       "ja": "韓国住民登録証写真 35×45mm。パスポートと同一規格。無料AIツールで作成可能。",
       "en": "Korea resident ID photo 35×45mm. Same specs as passport. Make it free with MONKOS AI."
     },
-    "continent": "asia"
+    "continent": "asia",
+    "fileSpecEn": "JPEG",
+    "fileSpecJa": "JPEG",
+    "headHeightEn": "3.2-3.6cm",
+    "headHeightJa": "3.2~3.6cm"
   },
   "japan-halfcard": {
     "slug": "japan-halfcard",
@@ -763,7 +793,13 @@
     },
     "ctaService": "idphoto-jp",
     "priority": 10,
-    "continent": "asia"
+    "continent": "asia",
+    "validityEn": "Depends on submission destination",
+    "validityJa": "提出先による",
+    "fileSpecEn": "JPEG",
+    "fileSpecJa": "JPEG",
+    "headHeightEn": "Depends on submission destination",
+    "headHeightJa": "提出先による"
   },
   "japan-zairyu": {
     "slug": "japan-zairyu",
@@ -816,7 +852,9 @@
     "validityJa": "3ヶ月以内",
     "backgroundEn": "White",
     "backgroundJa": "白",
-    "continent": "asia"
+    "continent": "asia",
+    "fileSpecEn": "JPEG",
+    "fileSpecJa": "JPEG"
   },
   "usa-headshot": {
     "slug": "usa-headshot",
@@ -851,7 +889,13 @@
     "priority": 12,
     "backgroundEn": "Solid color",
     "backgroundJa": "単色",
-    "continent": "americas"
+    "continent": "americas",
+    "validityEn": "-",
+    "validityJa": "-",
+    "fileSpecEn": "JPEG/PNG",
+    "fileSpecJa": "JPEG/PNG",
+    "headHeightEn": "-",
+    "headHeightJa": "-"
   },
   "eu-passport": {
     "slug": "eu-passport",
@@ -895,7 +939,11 @@
     "validityJa": "6ヶ月以内",
     "backgroundEn": "White/gray",
     "backgroundJa": "白/グレー",
-    "continent": "europe"
+    "continent": "europe",
+    "fileSpecEn": "JPEG",
+    "fileSpecJa": "JPEG",
+    "headHeightEn": "32-36mm",
+    "headHeightJa": "32~36mm"
   },
   "spain-passport": {
     "slug": "spain-passport",
@@ -936,7 +984,9 @@
     "validityJa": "6ヶ月以内",
     "backgroundEn": "White",
     "backgroundJa": "白",
-    "continent": "europe"
+    "continent": "europe",
+    "fileSpecEn": "JPEG",
+    "fileSpecJa": "JPEG"
   },
   "germany-resume": {
     "slug": "germany-resume",
@@ -971,7 +1021,13 @@
     "priority": 15,
     "backgroundEn": "Light background",
     "backgroundJa": "明るい背景",
-    "continent": "europe"
+    "continent": "europe",
+    "validityEn": "-",
+    "validityJa": "-",
+    "fileSpecEn": "JPEG",
+    "fileSpecJa": "JPEG",
+    "headHeightEn": "-",
+    "headHeightJa": "-"
   },
   "eu-resume": {
     "slug": "eu-resume",
@@ -1006,7 +1062,13 @@
     "priority": 16,
     "backgroundEn": "Solid color",
     "backgroundJa": "単色",
-    "continent": "europe"
+    "continent": "europe",
+    "validityEn": "-",
+    "validityJa": "-",
+    "fileSpecEn": "JPEG",
+    "fileSpecJa": "JPEG",
+    "headHeightEn": "-",
+    "headHeightJa": "-"
   },
   "uk-passport": {
     "slug": "uk-passport",
@@ -1048,7 +1110,9 @@
     "validityJa": "6ヶ月以内",
     "backgroundEn": "Cream or light grey",
     "backgroundJa": "クリームまたは薄灰色",
-    "continent": "europe"
+    "continent": "europe",
+    "fileSpecEn": "JPEG",
+    "fileSpecJa": "JPEG"
   },
   "australia-passport": {
     "slug": "australia-passport",
@@ -1087,7 +1151,11 @@
     "validityJa": "6ヶ月以内",
     "backgroundEn": "White",
     "backgroundJa": "白",
-    "continent": "oceania"
+    "continent": "oceania",
+    "fileSpecEn": "JPEG",
+    "fileSpecJa": "JPEG",
+    "headHeightEn": "32-36mm",
+    "headHeightJa": "32~36mm"
   },
   "canada-passport": {
     "slug": "canada-passport",
@@ -1126,7 +1194,11 @@
     "validityJa": "6ヶ月以内",
     "backgroundEn": "White",
     "backgroundJa": "白",
-    "continent": "americas"
+    "continent": "americas",
+    "fileSpecEn": "JPEG",
+    "fileSpecJa": "JPEG",
+    "headHeightEn": "31-36mm",
+    "headHeightJa": "31~36mm"
   },
   "singapore-passport": {
     "slug": "singapore-passport",
@@ -1163,7 +1235,11 @@
     "validityJa": "6ヶ月以内",
     "backgroundEn": "White",
     "backgroundJa": "白",
-    "continent": "asia"
+    "continent": "asia",
+    "fileSpecEn": "JPEG",
+    "fileSpecJa": "JPEG",
+    "headHeightEn": "32-36mm",
+    "headHeightJa": "32~36mm"
   },
   "thailand-passport": {
     "slug": "thailand-passport",
@@ -1200,7 +1276,11 @@
     "validityJa": "6ヶ月以内",
     "backgroundEn": "White",
     "backgroundJa": "白",
-    "continent": "asia"
+    "continent": "asia",
+    "fileSpecEn": "JPEG",
+    "fileSpecJa": "JPEG",
+    "headHeightEn": "32-36mm",
+    "headHeightJa": "32~36mm"
   },
   "india-passport": {
     "slug": "india-passport",
@@ -1239,7 +1319,9 @@
     "validityJa": "6ヶ月以内",
     "backgroundEn": "White",
     "backgroundJa": "白",
-    "continent": "asia"
+    "continent": "asia",
+    "fileSpecEn": "JPEG",
+    "fileSpecJa": "JPEG"
   },
   "china-passport": {
     "slug": "china-passport",
@@ -1278,7 +1360,11 @@
     "validityJa": "6ヶ月以内",
     "backgroundEn": "White",
     "backgroundJa": "白",
-    "continent": "asia"
+    "continent": "asia",
+    "fileSpecEn": "JPEG",
+    "fileSpecJa": "JPEG",
+    "headHeightEn": "28-33mm",
+    "headHeightJa": "28~33mm"
   },
   "china-resume": {
     "slug": "china-resume",
@@ -1315,7 +1401,13 @@
     "backgroundJa": "白・青",
     "sizeEn": "1-inch / 2-inch (multiple sizes)",
     "sizeJa": "1寸・2寸（複数規格）",
-    "continent": "asia"
+    "continent": "asia",
+    "validityEn": "-",
+    "validityJa": "-",
+    "fileSpecEn": "JPEG",
+    "fileSpecJa": "JPEG",
+    "headHeightEn": "-",
+    "headHeightJa": "-"
   },
   "vietnam-passport": {
     "slug": "vietnam-passport",
@@ -1352,7 +1444,11 @@
     "validityJa": "6ヶ月以内",
     "backgroundEn": "White",
     "backgroundJa": "白",
-    "continent": "asia"
+    "continent": "asia",
+    "fileSpecEn": "JPEG",
+    "fileSpecJa": "JPEG",
+    "headHeightEn": "32-36mm",
+    "headHeightJa": "32~36mm"
   },
   "indonesia-passport": {
     "slug": "indonesia-passport",
@@ -1391,7 +1487,9 @@
     "validityJa": "6ヶ月以内",
     "backgroundEn": "White",
     "backgroundJa": "白",
-    "continent": "asia"
+    "continent": "asia",
+    "fileSpecEn": "JPEG",
+    "fileSpecJa": "JPEG"
   },
   "kr-passport": {
     "slug": "kr-passport",
