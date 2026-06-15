@@ -9,17 +9,42 @@ Allow: /crop
 Disallow: /admin
 Disallow: /api/
 
-# AI Crawlers — Welcome
-User-agent: GPTBot
+# Search Engines
+User-agent: Googlebot
+Allow: /
+
+User-agent: Yeti
+Allow: /
+
+User-agent: Naverbot
+Allow: /
+
+# AI Search Bots — 검색 인용용 (허용)
+User-agent: OAI-SearchBot
 Allow: /
 
 User-agent: ChatGPT-User
 Allow: /
 
-User-agent: ClaudeBot
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: Claude-User
 Allow: /
 
 User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
 Allow: /
 
 User-agent: Google-Extended
@@ -28,10 +53,14 @@ Allow: /
 User-agent: cohere-ai
 Allow: /
 
-User-agent: Yeti
-Allow: /
+# AI Training Bots — 훈련용 (차단)
+User-agent: CCBot
+Disallow: /
 
-User-agent: Naverbot
-Allow: /
+User-agent: Bytespider
+Disallow: /
+
+User-agent: Meta-ExternalAgent
+Disallow: /
 
 Sitemap: https://monkos.ai/sitemap.xml

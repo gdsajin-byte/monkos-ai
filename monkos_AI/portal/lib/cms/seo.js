@@ -1,8 +1,15 @@
 /**
- * SEO 유틸 — Google Indexing API
+ * SEO 유틸 — Google Indexing API + IndexNow
+ *
+ * Google Indexing API: 공식적으로 JobPosting/BroadcastEvent 전용.
+ * 블로그·specs 등 비대상 URL에는 실질 효과 미확인이나 병행 유지.
+ * IndexNow: 네이버·빙·얀덱스·Seznam·Yep 5개 엔진 동시 통지.
  */
 import { GoogleAuth } from 'google-auth-library';
 import { log } from '../shared/config.js';
+
+const INDEXNOW_KEY = '4d5a87a9-af3e-44ee-a08c-0d9d63e5ac4e';
+const INDEXNOW_ENDPOINT = 'https://api.indexnow.org/indexnow';
 
 let indexingCount = 0;
 let indexingCountDate = new Date().toISOString().substring(0, 10);
@@ -37,4 +44,50 @@ export async function requestIndexing(url) {
       log(`[SEO] Indexing API 실패(${status || 'unknown'}): ${url} — ${e.message}`, 'WARN');
     }
   }
+}
+
+/**
+ * IndexNow — 네이버·빙·얀덱스·Seznam·Yep 동시 통지
+ * @param {string|string[]} urls - 단일 URL 또는 URL 배열 (최대 10,000)
+ */
+export async function requestIndexNow(urls) {
+  const urlList = Array.isArray(urls) ? urls : [urls];
+  if (urlList.length === 0) return;
+
+  const host = new URL(urlList[0]).host;
+  const keyLocation = `https://${host}/${INDEXNOW_KEY}.txt`;
+
+  try {
+    const res = await fetch(INDEXNOW_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json; charset=utf-8' },
+      body: JSON.stringify({
+        host,
+        key: INDEXNOW_KEY,
+        keyLocation,
+        urlList,
+      }),
+    });
+
+    if (res.ok || res.status === 202) {
+      log(`[SEO] IndexNow 성공 (${urlList.length}건): ${urlList[0]}${urlList.length > 1 ? ` 외 ${urlList.length - 1}건` : ''} → ${res.status}`);
+    } else {
+      const body = await res.text().catch(() => '');
+      log(`[SEO] IndexNow 실패(${res.status}): ${urlList[0]} — ${body}`, 'WARN');
+    }
+  } catch (e) {
+    log(`[SEO] IndexNow 에러: ${urlList[0]} — ${e.message}`, 'WARN');
+  }
+}
+
+/**
+ * 검색엔진 통합 통지 — Google Indexing API + IndexNow 병렬 호출
+ * @param {string|string[]} urls - 단일 URL 또는 URL 배열
+ */
+export async function notifySearchEngines(urls) {
+  const urlList = Array.isArray(urls) ? urls : [urls];
+  await Promise.allSettled([
+    ...urlList.map(u => requestIndexing(u)),
+    requestIndexNow(urlList),
+  ]);
 }

@@ -123,6 +123,15 @@ AI 증명사진 앱 (독립 iOS 앱)        웹 서비스 (idphoto-kr/jp)
 > 신규 시작점. IDPASS와 별도의 독립 앱으로 AI 증명사진 생성 서비스 출시.
 > IDPASS 코드 자산(Vision, 규격 데이터 등)은 참조/공유 가능하나, IDPASS 앱 자체를 확장하는 것이 아님.
 
+| 날짜 | 주체 | 내용 | 산출물 | 상태 |
+|------|------|------|--------|------|
+| 05/18 | 쌍아→막내 | **PhotoMonk PoC 착수** — 웹 Gemini Live 코칭을 Apple Vision 온디바이스로 대체하는 실험. 비용0·레이턴시0·오프라인가능. IDPASS와 별도 프로젝트 | [ORDER](../../orders/2026-05/ORDER_20260518_iMac쌍아_막내_PhotoMonk_Vision코칭_PoC.md) | ✅ |
+| 05/18 | 막내 | **PhotoMonk PoC 완성** — Vision 실시간 코칭 + 촬영 시퀀스 iPhone 실기기 구동 확인 | `apps/PhotoMonk/` | ✅ |
+| 05/18 | 작가님 | **TestFlight 실기기 테스트** — 촬영 코칭 플로우 동작 확인 | — | ✅ |
+| 06/15 | 작가님 | **TestFlight 재검증** — 촬영실 새 버전 iPhone 실기기 확인 진행 중 | — | ⏳ |
+
+> 📄 PhotoMonk PoC 상세: [PHOTOMONK_POC.md](PHOTOMONK_POC.md)
+
 ---
 
 ## 3. Phase 현황

@@ -39,12 +39,20 @@ function sendXml(res, xml) {
 // GET /sitemap.xml — sitemap index
 export async function renderSitemap(req, res) {
   try {
-    const today = new Date().toISOString().substring(0, 10);
+    let blogLastmod = '2026-06-14';
+    try {
+      const latest = await blogCollection.where('published', '==', true).orderBy('updatedAt', 'desc').limit(1).get();
+      if (!latest.empty) {
+        const d = latest.docs[0].data();
+        blogLastmod = (d.updatedAt || d.createdAt || blogLastmod).substring(0, 10);
+      }
+    } catch { /* Firestore 접근 실패 시 폴백 */ }
+
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <sitemap>
     <loc>${DOMAIN}/sitemap-static.xml</loc>
-    <lastmod>${today}</lastmod>
+    <lastmod>2026-06-14</lastmod>
   </sitemap>
   <sitemap>
     <loc>${DOMAIN}/sitemap-specs.xml</loc>
@@ -52,7 +60,7 @@ export async function renderSitemap(req, res) {
   </sitemap>
   <sitemap>
     <loc>${DOMAIN}/sitemap-blog.xml</loc>
-    <lastmod>${today}</lastmod>
+    <lastmod>${blogLastmod}</lastmod>
   </sitemap>
 </sitemapindex>`;
     sendXml(res, xml);
