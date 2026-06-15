@@ -69,6 +69,7 @@ status: active
 | 06/10 | 막내3 | **마케팅·SEO·브랜딩 전수 조사** — Fable 5 PR#45 지적 검증 + 전수 grep. 핵심서비스(portal/idphoto) 브랜딩 정상, monk.kr ai_lab 하위 Imagen/Gemini/용아 다수 노출 확인. 블로그 OG desc 영문고정·H1 영문고정 신규발견. SEO 즉시수정 6건 목록화. 콘텐츠 볼륨(ops 11건/JP 1건) 및 마케팅 자산 현황 파악 | [REPORT](../../reports/2026-06/REPORT_20260610_iMac막내3_마케팅SEO전수조사.md) | ✅ |
 | 06/11 | 작가님+웹민아 | **배포 스키마 정본 신설 (PF_OPUS 연결)** — 작가님 병목 진단("21채널 야망만 있고 스키마 부재 → 매번 재세팅") 수용. 본 PF §7 실측·06-07 3층 구조·06-08 채널 교훈을 톤 4종별 고정 레시피 R1~R4로 응축. 임계 돌파 채널 집중 원칙, Reddit 보류·한송이 공백 대응 명시. 채널 신규 개척 정본은 본 PF 유지, 실행 스키마는 contents/ 정본 | [DISTRIBUTION_SCHEMA](../../../contents/DISTRIBUTION_SCHEMA.md) | ⏳ 작가님 승인 대기 |
 | 06/12 | 웹/민아 | **CMS 백카탈로그 멀티채널 배포 로드맵 제안 (작가님 직접 지시)** — 발행 208건+드래프트 재고를 X·Threads(신규 R6 후보)·note·Medium으로 3 Phase 배포. 선결 4건(자판기 401·스키마 승인·Threads 수단검증·allowlist), 선별 룰(P2·P3 전량+P1 에버그린 톱10), 작가님 공정 일 15분 박스, UTM 환류 | [PROPOSAL](../../proposals/PROPOSAL_20260612_웹민아_CMS백카탈로그_멀티채널배포로드맵.md) | ⏳ 작가님 승인 대기 |
+| 06/15 | 작가님+웹/민아 | **발행→유통→실측 전략 (업계 최전선 조사)** — 현행 발행=구글 단일채널+Indexing API 헛스윙(JobPosting 전용) 진단. 최전선 10축 종합: ⭐IndexNow(네이버·빙·얀덱스·Seznam·Yep 1콜+ChatGPT/Perplexity 간접via Bing), 구글=sitemap/GSC 정도, AI검색=Bing인덱스+JSON-LD+llms.txt+검색봇 허용, 네이버 C-Rank(외부유입·체류3분→+5단계), 신디케이션 canonical. 로드맵 P0(IndexNow+specs확장+sitemap재정리)→P1(JSON-LD전면+AEO)→P2(WebSub+크로스포스팅)→P3(AI인용 측정). 색인복구 P0의 실행무기 | [REPORT](../../reports/2026-06/REPORT_20260615_웹민아_발행유통_멀티디스트리뷰션_전략.md) | ⏳ 쌍아 설계 |
 
 ---
 
