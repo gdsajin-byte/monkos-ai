@@ -19,9 +19,9 @@ export const SITEMAP_EXCLUDE_SLUGS = new Set([
 // 리다이렉트 출발 경로 집합 — 사이트맵에 301 소스 URL을 싣지 않기 위함
 export const BLOG_REDIRECT_SOURCE_PATHS = new Set(Object.keys(BLOG_REDIRECTS));
 
-// 유효 블로그 슬러그: 영문자로 시작 + 최소 3자 + [a-z0-9-]만 허용.
+// 유효 블로그 슬러그: 영숫자로 시작 + 최소 3자 + [a-z0-9-]만 허용.
 // `3`, `ai`, `14-vs`, `5-10`, `https:...` 같은 깨진 슬러그를 걸러낸다.
-const VALID_SLUG_RE = /^[a-z][a-z0-9-]{2,}$/;
+const VALID_SLUG_RE = /^[a-z0-9][a-z0-9-]{2,}$/;
 
 /**
  * 사이트맵에 실어도 되는 색인 가능 블로그 URL인지 판정.
