@@ -147,6 +147,17 @@ status: active
 | 06/10 | 막내4 | **보안 페일클로즈 응급 패치 (Phase 9 T0)** — 공격 체인(N-1→C-4→C-2→H-1) 4건 차단. N-1: handleAuthToken 세션 검증, C-4: ADMIN_UIDS 페일클로즈 4개소, C-2: 크레딧 API 인증(portal 3핸들러+idphoto-kr/jp), C-3: AUTH_SECRET 폴백 제거 | auth.js, credits.js, config.js, admin-auth.js, idphoto-kr/jp | ✅ |
 | 06/10 | 쌍아 | **portal prod 배포** rev 00278-h8k — 보안 페일클로즈 4건 라이브 적용. idphoto-kr/jp는 AUTH_SECRET 환경변수 미설정 → 작가님 GCP 콘솔에서 추가 후 순차 배포 필요 | `deploy.sh prod` | ✅ portal / ⏳ kr·jp |
 | 06/10 | 막내1 | **SA 권한 전수 조사** — SA 2개 운용 확인(yong-a-orchestrator=CI + monk-image-engine=런타임). yong-a-orchestrator: roles/editor 과잉 → GA4/GSC 읽기만 사용, 프로젝트 IAM 제거 가능(속성 권한만 유지). monk-image-engine: 6개 역할 최소 매핑 완료. 시나리오 A(각각 축소) 권고 | [REPORT_20260610_iMac막내1_SA권한전수조사](../reports/2026-06/REPORT_20260610_iMac막내1_SA권한전수조사.md) | ✅ |
+| 06/14 | 막내1 | **사이트맵 재정리 Phase 1** — sitemap index 분할(static/specs/blog), lastmod today 박제 해소, specs 정본 monkos.ai 통일 | COMPLETION | ✅ |
+| 06/14 | 막내2 | **specs 구조화 데이터 P0 수정** — HowTo locField 전환 + Article inLanguage 추가 + JA countryJa 분기. 1,335 URL 전수 반영. prod 배포 rev 00288 | render-specs.js | ✅ |
+| 06/15 | 막내2 | **GEO P0 — IndexNow + robots.txt** — seo.js IndexNow 구현(발행→5엔진 동시 통지), robots.txt 검색봇 5종 + 훈련봇 3종, sitemap today 박제 해소. prod 배포 | seo.js, blog.js, robots.txt | ✅ |
+| 06/15 | 막내3 | **specs 1,335 URL 전수 품질 감사** — 색인 장애 근본원인 4건: FAQ 98% 부재·seoTitle 99% 동일·JA 한국어 잔류 21건·데이터 두 세대 | [REPORT](../reports/2026-06/REPORT_20260615_iMac막내3_SPECS_1335페이지_전수품질감사.md) | ✅ |
+| 06/15 | 막내1 | **specs 공통FAQ 445건 + seoTitle 445건 + countryJa 445건** — 색인 장애 R1·R2·R3 해소. prod 배포 | specs-data.json | ✅ |
+| 06/15 | 막내1 | **GEO P1 — BreadcrumbList + inLanguage + llms.txt** — 블로그+specs 전면 BreadcrumbList, 블로그 inLanguage 추가, llms.txt specs 카탈로그 반영. prod 배포 rev 00292 | render-blog.js, render-specs.js, render-llms.js | ✅ |
+| 06/15 | 웹/민아 | **슬러그 위생 + 레거시 410** — seo-exclude.js 사이트맵 필터 + slug.js isWeakSlug + server.js 410 + redirects.js DRY. 막내3 검수→regex 버그 발견→민아 회귀 수정(PR #74). prod 배포 | 10파일 | ✅ |
+| 06/15 | 작가님 | **GSC sitemap 3건 개별 제출** — static(20)+blog(217)+specs(1,335) 명시 등록. 오류 2건 삭제 | GSC | ✅ |
+| 06/15 | 쌍아 | **IndexNow specs 1,335건 전수 배치 통지** — 빙·네이버·얀덱스·Seznam·Yep 동시. 3배치 200 OK | curl | ✅ |
+| 06/15 | 웹/민아 | **6/14~15 색인작업 종합 검수** — 9개 워크스트림 라이브 실측 교차. 취지 반영도 높음 확인. 잔여: 정크 리슬러그·측정 루프 | [REPORT+PR#75](../reports/2026-06/REPORT_20260615_웹민아_색인작업_종합검수.md) | ✅ |
+| 06/15 | 웹/민아 | **PF_CITADEL 완성도 평가** — 65~70%. 인프라 90%·지표 55%·전환 30%·운영정합 40%. "성채는 쌓았으나 세금 못 걷는다" | 평가 보고 | ✅ |
 
 ---
 

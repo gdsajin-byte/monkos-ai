@@ -85,7 +85,7 @@
       "mcp__playwright__browser_fill_form",
       "mcp__playwright__browser_evaluate",
       "mcp__playwright__browser_handle_dialog",
-      "WebFetch(domain:monkos.ai)"
+      "mcp__claude_ai_Gmail__create_draft"
     ],
     "deny": [
       "Bash(rm -rf *)",
