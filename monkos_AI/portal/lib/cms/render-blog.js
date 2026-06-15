@@ -324,7 +324,19 @@ ${JSON.stringify({
   },
   "datePublished": post.createdAt,
   "dateModified": post.updatedAt,
-  "description": getSeoDescription(post)
+  "description": getSeoDescription(post),
+  "inLanguage": htmlLang
+}, null, 0)}
+</script>
+<script type="application/ld+json">
+${JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "MONKOS", "item": "https://monkos.ai" },
+    { "@type": "ListItem", "position": 2, "name": { ko: '블로그', en: 'Blog', ja: 'ブログ' }[htmlLang] || 'Blog', "item": `https://monkos.ai${lang ? '/' + lang : ''}/blog` },
+    { "@type": "ListItem", "position": 3, "name": post.title }
+  ]
 })}
 </script>`;
 

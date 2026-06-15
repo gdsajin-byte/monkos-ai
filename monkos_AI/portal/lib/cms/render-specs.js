@@ -879,7 +879,17 @@ export function specsDetailFragment(slug, forceLang = null) {
 
   const faqs = (specData.faqs && (specData.faqs[lang] || specData.faqs.ko)) || [];
 
+  const specsLabel = { ko: '규격', en: 'Specs', ja: '規格' }[lang] || 'Specs';
   const specsJsonLdArr = [
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "MONKOS", "item": "https://monkos.ai" },
+        { "@type": "ListItem", "position": 2, "name": specsLabel, "item": `https://monkos.ai${lang === 'ko' ? '' : '/' + lang}/specs` },
+        { "@type": "ListItem", "position": 3, "name": `${countryName} ${typeName}` }
+      ]
+    },
     {
       "@context": "https://schema.org",
       "@type": "Article",
