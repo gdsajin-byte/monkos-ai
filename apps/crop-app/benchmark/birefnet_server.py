@@ -4,8 +4,10 @@ from transformers import AutoModelForImageSegmentation
 from torchvision import transforms
 from PIL import Image
 import torch
+import numpy as np
 import io
 import time
+from refine import refine_mask
 
 app = Flask(__name__)
 CORS(app)
@@ -27,30 +29,38 @@ transform = transforms.Compose([
     transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
 ])
 
+def _predict_mask(img):
+    """BiRefNet 추론 → numpy mask (0~1 float) 반환"""
+    orig_size = img.size
+    input_tensor = transform(img).unsqueeze(0).to(device)
+    with torch.no_grad():
+        preds = model(input_tensor)[-1].sigmoid()
+    mask = transforms.functional.resize(preds[0], list(reversed(orig_size)))
+    return mask.squeeze().cpu().numpy()
+
 @app.route('/remove-bg', methods=['POST'])
 def remove_bg():
     if device == 'cuda':
         torch.cuda.reset_peak_memory_stats()
 
     t0 = time.time()
+    do_refine = request.args.get('refine', 'false').lower() == 'true'
 
     if 'file' in request.files:
         img = Image.open(request.files['file']).convert('RGB')
     else:
         img = Image.open(io.BytesIO(request.get_data())).convert('RGB')
 
-    orig_size = img.size
-    input_tensor = transform(img).unsqueeze(0).to(device)
+    mask_np = _predict_mask(img)
 
-    with torch.no_grad():
-        preds = model(input_tensor)[-1].sigmoid()
-
-    mask = transforms.functional.resize(preds[0], list(reversed(orig_size)))
-    mask = (mask > 0.5).float()
-
-    img_rgba = img.copy().convert('RGBA')
-    alpha = transforms.functional.to_pil_image(mask.squeeze(), mode='L')
-    img_rgba.putalpha(alpha)
+    if do_refine:
+        mask_binary = (mask_np > 0.5).astype(np.float32)
+        img_rgba, _ = refine_mask(img, mask_binary)
+    else:
+        mask_binary = (mask_np > 0.5).astype(np.float32)
+        alpha = Image.fromarray((mask_binary * 255).astype(np.uint8), mode='L')
+        img_rgba = img.copy().convert('RGBA')
+        img_rgba.putalpha(alpha)
 
     buf = io.BytesIO()
     img_rgba.save(buf, format='PNG')
@@ -58,7 +68,8 @@ def remove_bg():
 
     elapsed = time.time() - t0
     vram_mb = torch.cuda.max_memory_allocated() / 1024 / 1024 if device == 'cuda' else 0
-    print(f'처리 완료: {elapsed:.2f}s, VRAM peak: {vram_mb:.0f}MB ({device})')
+    mode_str = 'refined' if do_refine else 'raw'
+    print(f'처리 완료 ({mode_str}): {elapsed:.2f}s, VRAM peak: {vram_mb:.0f}MB ({device})')
 
     return send_file(
         buf, mimetype='image/png',
@@ -73,6 +84,7 @@ def benchmark():
         torch.cuda.reset_peak_memory_stats()
         torch.cuda.synchronize()
 
+    do_refine = request.args.get('refine', 'false').lower() == 'true'
     t0 = time.time()
 
     if 'file' in request.files:
@@ -81,20 +93,24 @@ def benchmark():
         img = Image.open(io.BytesIO(request.get_data())).convert('RGB')
 
     orig_size = img.size
-    input_tensor = transform(img).unsqueeze(0).to(device)
-
-    with torch.no_grad():
-        preds = model(input_tensor)[-1].sigmoid()
+    mask_np = _predict_mask(img)
 
     if device == 'cuda':
         torch.cuda.synchronize()
 
-    mask = transforms.functional.resize(preds[0], list(reversed(orig_size)))
-    mask = (mask > 0.5).float()
+    t_infer = time.time() - t0
 
-    img_rgba = img.copy().convert('RGBA')
-    alpha = transforms.functional.to_pil_image(mask.squeeze(), mode='L')
-    img_rgba.putalpha(alpha)
+    if do_refine:
+        t_ref0 = time.time()
+        mask_binary = (mask_np > 0.5).astype(np.float32)
+        img_rgba, _ = refine_mask(img, mask_binary)
+        t_refine = time.time() - t_ref0
+    else:
+        t_refine = 0
+        mask_binary = (mask_np > 0.5).astype(np.float32)
+        alpha = Image.fromarray((mask_binary * 255).astype(np.uint8), mode='L')
+        img_rgba = img.copy().convert('RGBA')
+        img_rgba.putalpha(alpha)
 
     buf = io.BytesIO()
     img_rgba.save(buf, format='PNG')
@@ -108,6 +124,9 @@ def benchmark():
 
     return jsonify({
         'elapsed_sec': round(elapsed, 3),
+        'infer_sec': round(t_infer, 3),
+        'refine_sec': round(t_refine, 3),
+        'refined': do_refine,
         'vram_peak_mb': round(vram_mb, 1),
         'input_size': f'{orig_size[0]}x{orig_size[1]}',
         'device': device,

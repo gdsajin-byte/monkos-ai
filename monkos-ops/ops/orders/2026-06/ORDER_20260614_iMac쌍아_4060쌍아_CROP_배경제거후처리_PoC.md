@@ -6,7 +6,7 @@ from: iMac/쌍아
 to: 4060/쌍아
 portfolio: PF_CROP
 priority: P1
-status: pending
+status: done
 ---
 
 # BiRefNet 배경 제거 후처리 파이프라인 PoC
