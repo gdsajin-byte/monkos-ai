@@ -61,4 +61,9 @@ export const BLOG_REDIRECTS = {
   '/blog/%ED%95%9C%EC%97%B0%EA%B5%AC%EC%9B%90-%EB%A7%A4%EA%B1%B0%EC%A7%84-vol23-%EC%B7%A8%EC%A4%80%EC%83%9D%EC%9D%B4-%EA%B0%80%EC%9E%A5-%EB%A7%8E%EC%9D%B4-%EB%AC%BB%EB%8A%94-%EC%A6%9D%EB%AA%85%EC%82%AC%EC%A7%84-qa-5%EA%B0%80%EC%A7%80': '/blog/researcher-magazine-vol-23-top-5-resume-photo-questions',
   '/blog/%ED%95%9C%EC%97%B0%EA%B5%AC%EC%9B%90-%EC%B9%BC%EB%9F%BC-%EC%A6%9D%EB%AA%85%EC%82%AC%EC%A7%84-%EB%A9%B4%EC%A0%91%ED%97%A4%EC%96%B4%EB%A9%94%EC%9D%B4%ED%81%AC%EC%97%85%EC%97%90-%EC%A4%91%EC%9A%94%ED%95%9C-%EA%B0%81%EC%A7%88%EC%A0%9C%EA%B1%B0-%EC%B2%AD%EA%B2%B0-%EC%8B%A0%EB%A2%B0%EA%B0%90%EC%9D%98-%EC%8B%9C%EC%9E%91': '/blog/clean-impression-first-step-exfoliation-for-id-interview',
   '/blog/%ED%95%9C%EC%97%B0%EA%B5%AC%EC%9B%90%EB%A7%A4%EA%B1%B0%EC%A7%84vol20-%ED%95%9C%EA%B5%AD-%EC%B7%A8%EC%97%85%EC%82%AC%EC%A7%84-vs-%EC%9D%BC%EB%B3%B8-%EC%B7%A8%EC%97%85%EC%82%AC%EC%A7%84-%EC%9D%B4%EB%A0%87%EA%B2%8C-%EB%8B%A4%EB%A6%85%EB%8B%88%EB%8B%A4': '/blog/korean-vs-japanese-job-application-photos-compared',
+
+  // === 정크 슬러그 리슬러그 (2026-06-15 색인 최적화) ===
+  '/blog/47-20x': '/blog/claude-opus-47-what-went-wrong-max-20x-user-kr',
+  '/blog/14-vs': '/blog/korea-vs-japan-job-photo-hairstyle-difference-kr',
+  '/blog/5-10': '/blog/interview-updo-hairstyle-5-steps-10-year-pro-tips-kr',
 };
