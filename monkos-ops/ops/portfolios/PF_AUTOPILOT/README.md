@@ -95,6 +95,7 @@ domain: 인프라
 | 06/14 | 막내2 | **브리핑 쿼리 확장** — GA4 채널별(sessionDefaultChannelGroup)+퍼널(6단계 eventName InListFilter)+GSC 페이지×키워드(rowLimit 1000)+국가별 4개 섹션 추가. bizinfo 무음 실패 수정(except→WARNING 출력). 기존 출력 무변경 | [COMPLETION](../../reports/2026-06/COMPLETION_20260614_iMac막내2_AUTOPILOT_브리핑쿼리확장.md) | ✅ |
 | 06/15 | 웹/민아(루틴) | 이상 발견 — ① 🔴 **루틴 모델 Fable 차단 재발**(06-14 연속): 본 세션도 Fable 5 기동→작가님 Opus 4.8 수동 전환 복구. 콘솔 모델 미교체 = 매일 재차단 ② 🟡 **Google 비즈니스 프로필 게시물 5건 일괄 삭제**(06-14 07:18~07:24, 콘텐츠 정책 위반) — 데일리 구글 게시물 루틴 거부, 반복 시 프로필 패널티. AUTOPILOT(05:57 KST BRIEFING_20260611 커밋)·서비스 5/5·보안 0건 정상. **bizinfo 직접 조회 성공**(무음실패=코드/파싱 확정, 06-14 막내2 수정분 효과 추정) | [BRIEFING_E2E_20260615](../../briefings/BRIEFING_E2E_20260615.md) | ⚠️ |
 | 06/16 | 웹/민아(루틴) | 이상 발견 — ① 🔴 신규 **Imagen 4 모델 엔드포인트 폐기 통지**(Google, Aug 17 마감) 메일 인입: 프로덕션 이미지 생성 영향 가능, 영향평가 권고 ② 🟡 JP 보상메일 **4번째 영구 반송(Failure 확정)**, 이메일 채널 종결 단계 ③ 📉 자동 브리핑 **데이터 랙 5일**(최신 06-11) + 06-12~14 자동분이 현 main 부재(origin/main 강제갱신 이력 재작성) — 산출물 보존 점검 권고. **루틴 모델 Fable 차단 해소**(Opus 자동 기동 실증)·서비스 5/5 200·보안 0건·bizinfo AI 해시태그 조회 정상 | [BRIEFING_E2E_20260616](../../briefings/BRIEFING_E2E_20260616.md) | ⚠️ |
+| 06/17 | 웹민아 | **데이터 랙 재정의(이상)** — 자동 브리핑 데이터 기준일 06-13(랙 4일🔴)이나 GH Action `daily-briefing.yml`은 오늘 07:03 KST run success. "산출물 소실" 아닌 "데이터 신선도 지연"으로 재정의 — 점검 초점을 크론→GSC 수집 윈도우로 이동 권고 | `BRIEFING_E2E_20260617.md` | ⏳ |
 
 ---
 
