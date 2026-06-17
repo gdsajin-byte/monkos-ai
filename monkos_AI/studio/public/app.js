@@ -182,6 +182,11 @@ document.querySelectorAll('.opt-chips').forEach(group => {
       state.hair = 'default';
     }
 
+    if (field === 'gender' && state.gender === 'f') {
+      state.tieColor = 'notie';
+      state.tiePattern = '';
+    }
+
     if (field === 'format' && state.format === 'passport') {
       state.bgColor = PASSPORT_FORCED_BG;
     }
@@ -306,28 +311,30 @@ function renderSuitSuboption() {
   });
   html += '</div>';
 
-  html += '<div class="sub-label">넥타이</div><div class="acc-cards">';
-  V5_OPTIONS.tieColor.forEach(val => {
-    const sel = state.tieColor === val ? ' selected' : '';
-    const chipHtml = val === 'notie'
-      ? '<div style="font-size:16px;margin-bottom:4px;">✕</div>'
-      : `<span class="color-chip" style="background:${COLOR_MAP[val]}"></span>`;
-    html += `<button class="acc-card${sel}" data-val="${val}" data-field="tieColor">
-      ${chipHtml}
-      <div class="acc-card-title">${LABELS.tieColor[val]}</div>
-    </button>`;
-  });
-  html += '</div>';
-
-  if (state.tieColor && state.tieColor !== 'notie') {
-    html += '<div class="sub-label">넥타이 무늬</div><div class="acc-cards">';
-    V5_OPTIONS.tiePattern.forEach(val => {
-      const sel = state.tiePattern === val ? ' selected' : '';
-      html += `<button class="acc-card${sel}" data-val="${val}" data-field="tiePattern">
-        <div class="acc-card-title">${LABELS.tiePattern[val]}</div>
+  if (state.gender !== 'f') {
+    html += '<div class="sub-label">넥타이</div><div class="acc-cards">';
+    V5_OPTIONS.tieColor.forEach(val => {
+      const sel = state.tieColor === val ? ' selected' : '';
+      const chipHtml = val === 'notie'
+        ? '<div style="font-size:16px;margin-bottom:4px;">✕</div>'
+        : `<span class="color-chip" style="background:${COLOR_MAP[val]}"></span>`;
+      html += `<button class="acc-card${sel}" data-val="${val}" data-field="tieColor">
+        ${chipHtml}
+        <div class="acc-card-title">${LABELS.tieColor[val]}</div>
       </button>`;
     });
     html += '</div>';
+
+    if (state.tieColor && state.tieColor !== 'notie') {
+      html += '<div class="sub-label">넥타이 무늬</div><div class="acc-cards">';
+      V5_OPTIONS.tiePattern.forEach(val => {
+        const sel = state.tiePattern === val ? ' selected' : '';
+        html += `<button class="acc-card${sel}" data-val="${val}" data-field="tiePattern">
+          <div class="acc-card-title">${LABELS.tiePattern[val]}</div>
+        </button>`;
+      });
+      html += '</div>';
+    }
   }
 
   return html;

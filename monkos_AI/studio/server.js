@@ -276,8 +276,8 @@ function buildPromptV5(body) {
       tieClause = ` and a ${pattern} ${tieColor} tie`;
     }
     if (gender === 'f') {
-      const topItem = 'silk blouse';
-      parts.push(`[OUTFIT] Dress this person in a ${suit} formal business blazer with a ${shirt} ${topItem}${tieClause}.`);
+      const topItem = 'buttoned-up collared blouse';
+      parts.push(`[OUTFIT] Dress this person in a ${suit} formal business blazer with a ${shirt} ${topItem}.`);
     } else {
       const topItem = 'collared dress shirt';
       parts.push(`[OUTFIT] Dress this person in a ${suit} formal business suit with a ${shirt} ${topItem}${tieClause}.`);
