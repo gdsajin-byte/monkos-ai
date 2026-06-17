@@ -11,6 +11,36 @@ export const SPECS_DATA = _require('./specs-data.json');
 
 // ─── I18N ───────────────────────────────────────────────────────
 
+const COMMON_RULES = {
+  ko: [
+    '촬영한지 6개월 이내의 사진이어야 합니다.',
+    '이마, 눈썹, 귀까지 얼굴전체가 나와야 합니다.',
+    '어깨선이 나올수 있도록 머리는 뒤로 넘기는게 좋습니다.',
+    '컬러렌즈, 반짝임이 심한 악세사리는 피하는게 좋습니다.',
+    '시선은 정면을 응시해야 합니다.',
+    '치아가 보이면 안됩니다.',
+    '흰색 또는 밝은색 상의는 배경과 구분이 어려울 수 있으므로 피하는 것이 좋습니다.',
+  ],
+  ja: [
+    '撮影から6ヶ月以内の写真でなければなりません。',
+    '額、眉、耳まで顔全体が写っている必要があります。',
+    '肩のラインが見えるよう、髪は後ろに流すのが望ましいです。',
+    'カラーコンタクト、光沢の強いアクセサリーは避けてください。',
+    '視線は正面を向いてください。',
+    '歯が見えてはいけません。',
+    '白色や明るい色の上着は背景と区別がつきにくいため、避けることをお勧めします。',
+  ],
+  en: [
+    'The photo must be taken within the last 6 months.',
+    'Your full face including forehead, eyebrows, and ears must be visible.',
+    'Hair should be swept back so that the shoulder line is visible.',
+    'Avoid colored contact lenses and reflective accessories.',
+    'Eyes must be looking directly at the camera.',
+    'Teeth must not be visible.',
+    'White or light-colored tops may blend with the background and should be avoided.',
+  ],
+};
+
 const SPECS_I18N = {
   ko: {
     hubTitle: '증명사진 규격 가이드 — 국가별·용도별 사이즈 총정리 | MONKOS',
@@ -19,7 +49,8 @@ const SPECS_I18N = {
     hubSub: '전세계 200국가 이상의 여권, 비자 등 증명사진 규격 정보',
     detailSuffix: '규격 — 사이즈·배경·복장 완벽 가이드 | MONKOS',
     tableHeaders: { size: '사이즈', pixels: '해상도', dpi: 'DPI', background: '배경', headHeight: '머리 높이', validity: '유효기간', fileSpec: '파일 규격' },
-    detailsTitle: '상세 규정',
+    commonRulesTitle: '공통 규정',
+    detailsTitle: '세부 규정',
     rejectionTitle: '반려 사유 TOP 5',
     faqTitle: '자주 묻는 질문',
     ctaAI: 'AI로 촬영하기 →',
@@ -33,7 +64,7 @@ const SPECS_I18N = {
     ],
     sameCountryLabel: '같은 국가 다른 규격',
     specLabel: '규격 보기',
-    heroGlobal: '🌐 GLOBAL PHOTO SPEC GUIDE',
+    heroGlobal: 'GLOBAL PHOTO SPEC GUIDE',
     heroTitle: '증명사진 규격 가이드',
     heroSub: '전세계 200국가 이상의 여권, 비자 등 증명사진 규격 정보 제공 및 규격 맞춤 서비스.',
     statCountries: '국가', statSpecs: '규격', statVerified: '공식 검증',
@@ -44,19 +75,19 @@ const SPECS_I18N = {
     backToContinent: '← 대륙 선택으로',
     backToPurpose: '← 용도 선택으로',
     countriesCount: '개국',
-    tierFreeTitle: '📸 무료 크롭',
+    tierFreeTitle: '무료 크롭',
     tierFreeSub: '브라우저에서 바로 처리',
     tierFreeDesc: '배경 제거 + 규격 크롭',
     tierFreeCta: '무료로 시작 →',
-    tierAITitle: '🤖 AI 프리미어',
+    tierAITitle: 'AI 프리미어',
     tierAISub: 'GPU 배경 제거 + AI 규격 검수',
     tierAIDesc: '컬러 배경 선택',
     tierAICta: '크레딧으로 이용 →',
-    tierStudioTitle: '👤 스튜디오 검수',
+    tierStudioTitle: '스튜디오 검수',
     tierStudioSub: '전문가 정밀 보정',
     tierStudioDesc: '발급 보장',
     tierStudioCta: '스튜디오 의뢰 →',
-    tierRecommend: '★ 추천',
+    tierRecommend: '추천',
     tierComingSoon: '준비 중',
     tierSectionTitle: '이 규격으로 사진 만들기',
   },
@@ -67,6 +98,7 @@ const SPECS_I18N = {
     hubSub: '世界200カ国以上のパスポート・ビザなど証明写真規格情報',
     detailSuffix: '規格 — サイズ・背景・服装 完全ガイド | MONKOS',
     tableHeaders: { size: 'サイズ', pixels: '解像度', dpi: 'DPI', background: '背景', headHeight: '頭の高さ', validity: '有効期限', fileSpec: 'ファイル規格' },
+    commonRulesTitle: '共通規定',
     detailsTitle: '詳細規定',
     rejectionTitle: '却下理由 TOP 5',
     faqTitle: 'よくある質問',
@@ -81,7 +113,7 @@ const SPECS_I18N = {
     ],
     sameCountryLabel: '同じ国の別の規格',
     specLabel: '規格を見る',
-    heroGlobal: '🌐 GLOBAL PHOTO SPEC GUIDE',
+    heroGlobal: 'GLOBAL PHOTO SPEC GUIDE',
     heroTitle: '証明写真 規格ガイド',
     heroSub: '世界200カ国以上のパスポート・ビザなど証明写真規格情報と規格合わせサービス。',
     statCountries: 'カ国', statSpecs: '規格', statVerified: '公式検証',
@@ -92,19 +124,19 @@ const SPECS_I18N = {
     backToContinent: '← 大陸選択へ',
     backToPurpose: '← 用途選択へ',
     countriesCount: 'カ国',
-    tierFreeTitle: '📸 無料クロップ',
+    tierFreeTitle: '無料クロップ',
     tierFreeSub: 'ブラウザで即処理',
     tierFreeDesc: '背景除去 + 規格クロップ',
     tierFreeCta: '無料で始める →',
-    tierAITitle: '🤖 AI プレミア',
+    tierAITitle: 'AI プレミア',
     tierAISub: 'GPU背景除去 + AI規格検査',
     tierAIDesc: 'カラー背景選択',
     tierAICta: 'クレジットで利用 →',
-    tierStudioTitle: '👤 スタジオ検収',
+    tierStudioTitle: 'スタジオ検収',
     tierStudioSub: '専門家精密補正',
     tierStudioDesc: '発行保証',
     tierStudioCta: 'スタジオ依頼 →',
-    tierRecommend: '★ おすすめ',
+    tierRecommend: 'おすすめ',
     tierComingSoon: '準備中',
     tierSectionTitle: 'この規格で写真を作る',
   },
@@ -115,6 +147,7 @@ const SPECS_I18N = {
     hubSub: 'ID photo specifications for 200+ countries — passport, visa, and more.',
     detailSuffix: 'Specs — Size, Background & Dress Code Complete Guide | MONKOS',
     tableHeaders: { size: 'Size', pixels: 'Resolution', dpi: 'DPI', background: 'Background', headHeight: 'Head Height', validity: 'Validity', fileSpec: 'File Spec' },
+    commonRulesTitle: 'Common Requirements',
     detailsTitle: 'Detailed Requirements',
     rejectionTitle: 'Top 5 Rejection Reasons',
     faqTitle: 'Frequently Asked Questions',
@@ -129,7 +162,7 @@ const SPECS_I18N = {
     ],
     sameCountryLabel: 'Other specs for the same country',
     specLabel: 'View specs',
-    heroGlobal: '🌐 GLOBAL PHOTO SPEC GUIDE',
+    heroGlobal: 'GLOBAL PHOTO SPEC GUIDE',
     heroTitle: 'Photo Spec Guide',
     heroSub: 'ID photo specifications for 200+ countries — passport, visa, and more. Free crop service included.',
     statCountries: 'Countries', statSpecs: 'Specs', statVerified: 'Verified',
@@ -140,19 +173,19 @@ const SPECS_I18N = {
     backToContinent: '← Back to continents',
     backToPurpose: '← Back to purposes',
     countriesCount: 'countries',
-    tierFreeTitle: '📸 Free Crop',
+    tierFreeTitle: 'Free Crop',
     tierFreeSub: 'Process in your browser',
     tierFreeDesc: 'Background removal + spec crop',
     tierFreeCta: 'Start free →',
-    tierAITitle: '🤖 AI Premier',
+    tierAITitle: 'AI Premier',
     tierAISub: 'GPU background removal + AI inspection',
     tierAIDesc: 'Color background options',
     tierAICta: 'Use with credits →',
-    tierStudioTitle: '👤 Studio Review',
+    tierStudioTitle: 'Studio Review',
     tierStudioSub: 'Expert precision editing',
     tierStudioDesc: 'Issuance guaranteed',
     tierStudioCta: 'Request studio →',
-    tierRecommend: '★ Recommended',
+    tierRecommend: 'Recommended',
     tierComingSoon: 'Coming soon',
     tierSectionTitle: 'Create your photo with this spec',
   },
@@ -172,10 +205,10 @@ const CONTINENT_META = [
 // ─── TYPE CATEGORIES (4 purposes) ───────────────────────────────
 
 const TYPE_CATEGORIES = [
-  { id: 'passport', ko: '여권', ja: 'パスポート', en: 'Passport', sub: 'PASSPORT', icon: '📘', image: 'card_passport', slugs: ['passport'] },
-  { id: 'visa', ko: '비자', ja: 'ビザ', en: 'Visa', sub: 'VISA', icon: '📋', image: 'card_visa', slugs: ['visa', 'schengen-visa', 'e-visa'] },
-  { id: 'id', ko: '신분증', ja: '身分証', en: 'ID Card', sub: 'ID', icon: '🪪', image: 'card_license', slugs: ['id', 'drivers-license', 'license', 'intl-license', 'mynumber', 'halfcard', 'resident', 'zairyu', 'exam', 'youth-id', 'taxi', 'marine'] },
-  { id: 'custom', ko: '기타', ja: 'その他', en: 'Custom', sub: 'CUSTOM', icon: '📸', image: 'card_custom', slugs: ['resume', 'headshot'] },
+  { id: 'passport', ko: '여권', ja: 'パスポート', en: 'Passport', sub: 'PASSPORT', icon: '', image: 'card_passport', slugs: ['passport'] },
+  { id: 'visa', ko: '비자', ja: 'ビザ', en: 'Visa', sub: 'VISA', icon: '', image: 'card_visa', slugs: ['visa', 'schengen-visa', 'e-visa'] },
+  { id: 'id', ko: '신분증', ja: '身分証', en: 'ID Card', sub: 'ID', icon: '', image: 'card_license', slugs: ['id', 'drivers-license', 'license', 'intl-license', 'mynumber', 'halfcard', 'resident', 'zairyu', 'exam', 'youth-id', 'taxi', 'marine'] },
+  { id: 'custom', ko: '기타', ja: 'その他', en: 'Custom', sub: 'CUSTOM', icon: '', image: 'card_custom', slugs: ['resume', 'headshot'] },
 ];
 
 // ─── SLUG PARSING ───────────────────────────────────────────────
@@ -429,6 +462,18 @@ a:hover { color: #00F4C4; }
 .specs-table td { color: #888; }
 .specs-table tr:not(:last-child) th,
 .specs-table tr:not(:last-child) td { border-bottom: 1px solid rgba(0,0,0,0.08); }
+
+/* === Detail — Common Rules === */
+.specs-common-rules {
+  list-style: none; padding: 0; margin: 0;
+  background: #ffffff; border: 1px solid rgba(0,0,0,0.08); border-radius: 12px;
+  overflow: hidden;
+}
+.specs-common-rule {
+  padding: 14px 20px; font-size: 14px; color: #444; line-height: 1.6;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+.specs-common-rule:last-child { border-bottom: none; }
 
 /* === Detail — Section === */
 .specs-section { margin-bottom: 32px; }
@@ -941,7 +986,6 @@ ${hreflangTags}
 <script type="application/ld+json">${specsJsonLd}</script>`;
 
   const h = i.tableHeaders;
-  const tableIconMap = { size: '📐', pixels: '🖥️', dpi: '🔍', background: '🎨', headHeight: '📏', validity: '📅', fileSpec: '📁' };
   const tableRows = [
     ['size', h.size, locField(specData, 'size', lang)],
     ['pixels', h.pixels, locField(specData, 'pixels', lang)],
@@ -950,13 +994,17 @@ ${hreflangTags}
     ['headHeight', h.headHeight, locField(specData, 'headHeight', lang)],
     ['validity', h.validity, locField(specData, 'validity', lang)],
     ['fileSpec', h.fileSpec, locField(specData, 'fileSpec', lang)],
-  ].map(([key, label, val]) => `<tr><th>${tableIconMap[key] || ''} ${escapeHtml(label)}</th><td>${escapeHtml(val)}</td></tr>`).join('\n      ');
+  ].map(([key, label, val]) => `<tr><th>${escapeHtml(label)}</th><td>${escapeHtml(val)}</td></tr>`).join('\n      ');
 
-  const detailIcons = ['😐', '👓', '💇', '👂', '👔', '📸'];
   const detailText = (specData.details && (specData.details[lang] || specData.details.ko)) || '';
   const detailLines = detailText.split(/[.。]\s*/).filter(d => d.trim().length > 0);
-  const detailGridHtml = detailLines.map((line, idx) =>
-    `<div class="specs-detail-item"><span class="sdi-icon">${detailIcons[idx] || '📋'}</span><span>${escapeHtml(line.trim())}</span></div>`
+  const detailGridHtml = detailLines.map((line) =>
+    `<div class="specs-detail-item"><span>${escapeHtml(line.trim())}</span></div>`
+  ).join('\n        ');
+
+  const commonRules = COMMON_RULES[lang] || COMMON_RULES.ko;
+  const commonRulesHtml = commonRules.map((rule, idx) =>
+    `<li class="specs-common-rule">${idx + 1}. ${escapeHtml(rule)}</li>`
   ).join('\n        ');
 
   const rejections = (specData.rejectionReasons && (specData.rejectionReasons[lang] || specData.rejectionReasons.ko)) || [];
@@ -989,8 +1037,8 @@ ${hreflangTags}
 
   const backLabel = lang === 'ja' ? '← 全規格一覧' : lang === 'en' ? '← All Specifications' : '← 전체 규격 목록';
 
-  const oxGoodLabel = lang === 'ja' ? '✅ 適合写真' : lang === 'en' ? '✅ Acceptable Photo' : '✅ 적합한 사진';
-  const oxBadLabel = lang === 'ja' ? '❌ 却下される写真' : lang === 'en' ? '❌ Rejected Photo' : '❌ 반려되는 사진';
+  const oxGoodLabel = lang === 'ja' ? '適合写真' : lang === 'en' ? 'Acceptable Photo' : '적합한 사진';
+  const oxBadLabel = lang === 'ja' ? '却下される写真' : lang === 'en' ? 'Rejected Photo' : '반려되는 사진';
   const oxGoodCaption = lang === 'ja' ? '正面・無表情・白背景' : lang === 'en' ? 'Front-facing · Neutral · White BG' : '정면 · 무표정 · 흰배경';
   const oxBadCaption = lang === 'ja' ? '傾き・影・髪' : lang === 'en' ? 'Tilted · Shadow · Hair' : '기울어짐 · 그림자 · 머리카락';
 
@@ -1012,18 +1060,15 @@ ${hreflangTags}
     <div class="specs-diagram">
       <div class="specs-photo-frame">
         ${(() => {
+          const countryImg = `/images/guides/${slug}.webp`;
           const sizeMm = parseSizeMm(specData.size);
-          if (sizeMm) {
-            return `<img src="/images/guides/${sizeMm}.webp"
-             alt="${escapeHtml(countryName)} ${escapeHtml(typeName)} ${sizeMm.replace('x','×')}mm"
+          const fallbackImg = sizeMm ? `/images/guides/${sizeMm}.webp` : '';
+          const altText = `${countryName} ${typeName}`;
+          return `<img src="${countryImg}"
+             alt="${escapeHtml(altText)}"
              width="200" loading="lazy"
-             onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+             onerror="this.src='${fallbackImg}';this.onerror=function(){this.style.display='none';this.nextElementSibling.style.display='block'}">
         <svg viewBox="0 0 120 160" width="100" height="133" fill="currentColor" style="display:none">
-          <ellipse cx="60" cy="45" rx="30" ry="38"/>
-          <ellipse cx="60" cy="140" rx="50" ry="45"/>
-        </svg>`;
-          }
-          return `<svg viewBox="0 0 120 160" width="100" height="133" fill="currentColor">
           <ellipse cx="60" cy="45" rx="30" ry="38"/>
           <ellipse cx="60" cy="140" rx="50" ry="45"/>
         </svg>`;
@@ -1042,7 +1087,15 @@ ${hreflangTags}
     </tbody>
   </table>
 
-  <!-- 상세 규정 그리드 -->
+  <!-- 공통 규정 -->
+  <div class="specs-section">
+    <h2>${escapeHtml(i.commonRulesTitle)}</h2>
+    <ol class="specs-common-rules">
+      ${commonRulesHtml}
+    </ol>
+  </div>
+
+  <!-- 세부 규정 -->
   ${detailLines.length ? `<div class="specs-section">
     <h2>${escapeHtml(i.detailsTitle)}</h2>
     <div class="specs-details-grid">
@@ -1070,7 +1123,7 @@ ${hreflangTags}
   ${specData.officialSource ? `<div class="specs-section">
     <h2>${escapeHtml(i.officialSourceTitle)}</h2>
     <a href="${escapeHtml(specData.officialSource.url)}" target="_blank" rel="noopener noreferrer" class="specs-official-link">
-      <span>🏛️</span>
+      <span></span>
       <span>${escapeHtml((specData.officialSource.label && (specData.officialSource.label[lang] || specData.officialSource.label.ko)) || specData.officialSource.url)}</span>
       <span class="specs-external-icon">↗</span>
     </a>
