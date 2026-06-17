@@ -75,6 +75,7 @@ status: active
 | 2026-06-12 | iMac/막내2 | 3권심사 행정 완료 — 7경로 2단계 정밀 맵트리, Fine-Grained ACL 실측(allUsers 파일 레벨: ads 13건+blog slug 125건만 존재), 활성/유휴 판별(80% 유휴), 버킷 IAM 제거 시 부수피해 644건(blog flat+assets) 특정, 안전 시퀀스 제시 | REPORT_20260612_iMac막내2_SECURITY_GCS삼권심사_행정.md | ✅ |
 | 2026-06-12 | iMac/막내1 | CF 인프라 맵트리 완료 — Pages Functions 13개(api 6+specs 7) 전수 분석, 외부 Workers 3개 전부 레거시 판정, 환경변수 13개 중 7개 레거시 추정, GEMINI_API_KEY 지문 미대조 경고, D1 monk-db 바인딩 정합 확인 | REPORT_20260612_iMac막내1_인프라_CF맵트리.md | ✅ |
 | 2026-06-17 | iMac/막내2 | 노출 표면 4건 보강 — /health 모델명 제거(3서비스), err.message 직통 반환 15곳 교체, /api/info styles 키 제거, admin AI prompt 응답 필드 제거. 3개 서비스 배포+실측 완료 | COMPLETION_20260617_iMac막내2_SECURITY_노출표면보강.md | ✅ |
+| 2026-06-17 | 웹/민아 | 시크릿 위생 전수 감사 — git history 무유출 확인(.env 무커밋), 로컬 잔존 5파일·토스 test키 3중복제·photo-coach .pem(history) 적발, INVENTORY 정합성 갭. 막내1 정리로 로컬 5파일 삭제 종결 | [감사보고서](../../reports/2026-06/REPORT_20260617_웹민아_시크릿위생_전수감사.md) | ✅ |
 
 ---
 
