@@ -159,6 +159,7 @@ status: active
 | 06/15 | 웹/민아 | **6/14~15 색인작업 종합 검수** — 9개 워크스트림 라이브 실측 교차. 취지 반영도 높음 확인. 잔여: 정크 리슬러그·측정 루프 | [REPORT+PR#75](../reports/2026-06/REPORT_20260615_웹민아_색인작업_종합검수.md) | ✅ |
 | 06/15 | 웹/민아 | **PF_CITADEL 완성도 평가** — 65~70%. 인프라 90%·지표 55%·전환 30%·운영정합 40%. "성채는 쌓았으나 세금 못 걷는다" | 평가 보고 | ✅ |
 | 06/15 | 웹/민아 | **Phase 현황 현행화 + 라이브 재검증** — Phase 1 "배포중"→완료 보정, 6/14~15을 Phase 2.4로 편입, §4 측정공백 명시. 재배포 실측: 정크 14-vs·5-10·47-20x **0**(O-1 해소)·IndexNow specs 배치(O-4 해소)·GSC 재제출(측정 재개). 운영정합 40%→상향 | 본 README | ✅ |
+| 06/17 | iMac/막내3 | **GEO P2 — 사이트맵 hreflang 교차링크** — sitemap-specs.xml 전 URL에 ko/en/ja/x-default 4개 alternate(5,340개 태그), sitemap-blog.xml 번역 존재 글만 동적 hreflang(588개 태그). guide/ai-photo ja/en 라우트 미존재 확인→현행 정상. prod 배포 rev 00297-9gn | render-sitemap.js | ✅ |
 
 ---
 

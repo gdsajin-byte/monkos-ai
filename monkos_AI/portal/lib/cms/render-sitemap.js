@@ -17,6 +17,11 @@ function escXml(s) { return s ? s.replace(/&/g, '&amp;').replace(/</g, '&lt;').r
 
 function urlEntry(u) {
   let xml = `  <url>\n    <loc>${u.loc}</loc>\n`;
+  if (u.alternates) {
+    for (const alt of u.alternates) {
+      xml += `    <xhtml:link rel="alternate" hreflang="${alt.lang}" href="${alt.href}"/>\n`;
+    }
+  }
   if (u.lastmod) xml += `    <lastmod>${u.lastmod}</lastmod>\n`;
   xml += `    <changefreq>${u.changefreq}</changefreq>\n    <priority>${u.priority}</priority>\n`;
   if (u.image) {
@@ -31,7 +36,8 @@ function urlEntry(u) {
 function wrapUrlset(entries) {
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
 ${entries.join('\n')}
 </urlset>`;
 }
@@ -123,9 +129,15 @@ export function renderSitemapSpecs(req, res) {
       seen.add(path);
 
       const lastmod = SPECS_LASTMOD;
-      urls.push({ loc: `${DOMAIN}/specs/${path}`, lastmod, changefreq: 'monthly', priority: '0.8' });
-      urls.push({ loc: `${DOMAIN}/ja/specs/${path}`, lastmod, changefreq: 'monthly', priority: '0.7' });
-      urls.push({ loc: `${DOMAIN}/en/specs/${path}`, lastmod, changefreq: 'monthly', priority: '0.7' });
+      const alternates = [
+        { lang: 'ko', href: `${DOMAIN}/specs/${path}` },
+        { lang: 'en', href: `${DOMAIN}/en/specs/${path}` },
+        { lang: 'ja', href: `${DOMAIN}/ja/specs/${path}` },
+        { lang: 'x-default', href: `${DOMAIN}/specs/${path}` },
+      ];
+      urls.push({ loc: `${DOMAIN}/specs/${path}`, lastmod, changefreq: 'monthly', priority: '0.8', alternates });
+      urls.push({ loc: `${DOMAIN}/ja/specs/${path}`, lastmod, changefreq: 'monthly', priority: '0.7', alternates });
+      urls.push({ loc: `${DOMAIN}/en/specs/${path}`, lastmod, changefreq: 'monthly', priority: '0.7', alternates });
     }
 
     sendXml(res, wrapUrlset(urls.map(urlEntry)));
@@ -143,6 +155,15 @@ export async function renderSitemapBlog(req, res) {
     const seen = new Set();
     const urls = [];
 
+    const slugLangs = new Map();
+    for (const doc of snapshot.docs) {
+      const data = doc.data();
+      const docLang = data.lang || 'ko';
+      const baseSlug = doc.id.replace(/-(?:kr|ja|en)$/, '');
+      if (!slugLangs.has(baseSlug)) slugLangs.set(baseSlug, new Set());
+      slugLangs.get(baseSlug).add(docLang);
+    }
+
     for (const doc of snapshot.docs) {
       const data = doc.data();
       const docLang = data.lang || 'ko';
@@ -152,8 +173,20 @@ export async function renderSitemapBlog(req, res) {
       const loc = `${DOMAIN}${path}`;
       if (seen.has(loc)) continue;
       seen.add(loc);
-      // 방어 필터: 깨진 슬러그·301 소스·noindex·404 확정분은 사이트맵에서 제외
       if (!isIndexableBlogUrl(baseSlug, path)) continue;
+
+      const existingLangs = slugLangs.get(baseSlug) || new Set();
+      const alternates = [];
+      for (const lang of ['ko', 'en', 'ja']) {
+        if (existingLangs.has(lang)) {
+          const prefix = lang === 'ko' ? '' : `/${lang}`;
+          alternates.push({ lang, href: `${DOMAIN}${prefix}/blog/${baseSlug}` });
+        }
+      }
+      if (existingLangs.has('ko')) {
+        alternates.push({ lang: 'x-default', href: `${DOMAIN}/blog/${baseSlug}` });
+      }
+
       urls.push({
         loc,
         lastmod: (data.updatedAt || data.createdAt || '').substring(0, 10),
@@ -161,6 +194,7 @@ export async function renderSitemapBlog(req, res) {
         priority: '0.7',
         image: data.ogImage || data.thumbnail || '',
         imageTitle: data.title || '',
+        alternates: alternates.length > 1 ? alternates : undefined,
       });
     }
 
