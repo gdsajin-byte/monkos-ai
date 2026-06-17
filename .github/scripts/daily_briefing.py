@@ -332,15 +332,19 @@ def generate_briefing(ga4_today, ga4_compare, gsc_today, gsc_compare,
                       top_queries, top_pages, seo_result, news, alerts,
                       target_date, compare_date, stale_sources=None,
                       channel_data=None, funnel_data=None,
-                      page_query=None, country_data=None):
+                      page_query=None, country_data=None,
+                      run_date=None):
+    run_date = run_date or target_date
     lines = []
     lines.append("---")
     lines.append("type: briefing")
-    lines.append(f"date: {target_date}")
+    lines.append(f"date: {run_date}")
+    lines.append(f"data_date: {target_date}")
     lines.append("generated: auto (PF_AUTOPILOT)")
     lines.append("---")
     lines.append("")
-    lines.append(f"# 데일리 브리핑 {target_date}")
+    lines.append(f"# 데일리 브리핑 {run_date}")
+    lines.append(f"> 데이터 기준일: {target_date} / 비교일: {compare_date} (GSC·GA4 데이터 래그 감안)")
     lines.append("")
 
     # 긴급
@@ -471,13 +475,15 @@ def main():
         print("ERROR: GA4_PROPERTY_ID or GSC_SITE_URL not set", file=sys.stderr)
         sys.exit(1)
 
-    target = date.today() - timedelta(days=3)
+    run_date = date.today()
+    target = run_date - timedelta(days=3)
     compare = target - timedelta(days=7)
 
+    run_date_str = run_date.isoformat()
     target_date = target.isoformat()
     compare_date = compare.isoformat()
 
-    print(f"[BRIEFING] 대상일: {target_date}, 비교일: {compare_date}")
+    print(f"[BRIEFING] 실행일: {run_date_str}, 데이터 기준일: {target_date}, 비교일: {compare_date}")
 
     # 축1: GA4
     print("[1/4] GA4 수집...")
@@ -520,12 +526,13 @@ def main():
         ga4_today, ga4_compare, gsc_today, gsc_compare,
         top_queries, top_pages, seo_result, news, alerts,
         target_date, compare_date, stale_sources,
-        channel_data, funnel_data, page_query, country_data
+        channel_data, funnel_data, page_query, country_data,
+        run_date=run_date_str,
     )
 
     output_dir = Path("monkos-ops/ops/briefings")
     output_dir.mkdir(parents=True, exist_ok=True)
-    output_file = output_dir / f"BRIEFING_{target.strftime('%Y%m%d')}.md"
+    output_file = output_dir / f"BRIEFING_{run_date.strftime('%Y%m%d')}.md"
     output_file.write_text(content, encoding="utf-8")
 
     print(f"[DONE] {output_file} 생성 완료 ({len(content)} bytes)")
@@ -533,6 +540,7 @@ def main():
     github_output = os.environ.get("GITHUB_OUTPUT")
     if github_output:
         with open(github_output, "a") as f:
+            f.write(f"run_date={run_date_str}\n")
             f.write(f"target_date={target_date}\n")
             f.write(f"briefing_file={output_file}\n")
 

@@ -43,7 +43,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          DATE="${{ steps.gen.outputs.target_date }}"
+          DATE="${{ steps.gen.outputs.run_date }}"
           FILE="${{ steps.gen.outputs.briefing_file }}"
           if [ -f "$FILE" ]; then
             BODY=$(cat "$FILE")
@@ -62,7 +62,7 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
-          DATE="${{ steps.gen.outputs.target_date }}"
+          DATE="${{ steps.gen.outputs.run_date }}"
           FILE="${{ steps.gen.outputs.briefing_file }}"
           ALERTS=$(grep "^- 🔴\|^- 🟡" "$FILE" 2>/dev/null || echo "없음")
           ISSUE_URL="${{ steps.issue.outputs.url }}"
