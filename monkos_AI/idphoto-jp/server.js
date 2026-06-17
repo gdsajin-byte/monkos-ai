@@ -470,7 +470,7 @@ async function runPreCheck(imageBase64) {
     } catch (err) {
       log(`[事前分析][${model}] 失敗: ${err.message} → フォールバック`);
       if (model === PRECHECK_MODELS[PRECHECK_MODELS.length - 1]) {
-        return { suitable: true, score: 0, note: `分析失敗: ${err.message}` };
+        return { suitable: true, score: 0, note: '分析失敗' };
       }
     }
   }
@@ -547,12 +547,7 @@ app.get('/health', (req, res) => {
   res.json({
     status: 'healthy',
     service: 'monkos-idphoto-jp',
-    version: '3.0.0',
     timestamp: new Date().toISOString(),
-    auth: 'Hybrid (ADC + API Key)',
-    geminiLive: 'ready (ADC)',
-    imagen: GEMINI_API_KEY ? 'active (API Key)' : 'NO API KEY',
-    preCheck: 'active (gemini-2.5-flash)',
   });
 });
 
@@ -562,7 +557,6 @@ app.get('/api/info', (req, res) => {
     service: 'MONKOS AI 証明写真',
     domain: 'idphoto-jp.monkos.ai',
     features: ['AI コーチング (WS)', 'AI 事前分析', 'AI 証明写真生成'],
-    styles: Object.keys(STYLE_PROMPTS),
   });
 });
 
@@ -574,7 +568,7 @@ app.post('/api/pre-check', async (req, res) => {
     res.json(result);
   } catch (err) {
     log(`[API][pre-check] エラー: ${err.message}`, 'ERROR');
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: '処理中にエラーが発生しました', code: 'INTERNAL_ERROR' });
   }
 });
 
@@ -586,7 +580,7 @@ app.post('/api/precheck', async (req, res) => {
     res.json(result);
   } catch (err) {
     log(`[API][precheck] エラー: ${err.message}`, 'ERROR');
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: '処理中にエラーが発生しました', code: 'INTERNAL_ERROR' });
   }
 });
 
@@ -685,7 +679,7 @@ app.post('/api/idgen', async (req, res) => {
     }
   } catch (err) {
     log(`[API][idgen] エラー: ${err.message}`, 'ERROR');
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: '処理中にエラーが発生しました', code: 'INTERNAL_ERROR' });
   }
 });
 
@@ -702,7 +696,7 @@ app.post('/api/credit/use', async (req, res) => {
     res.status(result.success ? 200 : 402).json(result);
   } catch (err) {
     log(`[API][credit/use] エラー: ${err.message}`, 'ERROR');
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: '処理中にエラーが発生しました', code: 'INTERNAL_ERROR' });
   }
 });
 
@@ -719,7 +713,7 @@ app.post('/api/credit/refund', async (req, res) => {
     res.status(result.success ? 200 : 400).json(result);
   } catch (err) {
     log(`[API][credit/refund] エラー: ${err.message}`, 'ERROR');
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: '処理中にエラーが発生しました', code: 'INTERNAL_ERROR' });
   }
 });
 
@@ -760,7 +754,7 @@ app.post('/api/download', async (req, res) => {
     });
   } catch (err) {
     log(`[API][download] エラー: ${err.message}`, 'ERROR');
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: '処理中にエラーが発生しました', code: 'INTERNAL_ERROR' });
   }
 });
 

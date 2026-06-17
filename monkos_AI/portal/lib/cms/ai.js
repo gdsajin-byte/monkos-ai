@@ -107,11 +107,11 @@ Rules:
 
     // ⑤ URL 반환
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ url, prompt: generatedPrompt }));
+    res.end(JSON.stringify({ url }));
   } catch (err) {
     log(`[AI] 이미지 생성 에러: ${err.message}`, 'ERROR');
     res.writeHead(500, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: err.message }));
+    res.end(JSON.stringify({ error: '처리 중 오류가 발생했습니다', code: 'INTERNAL_ERROR' }));
   }
 }
 
@@ -204,7 +204,7 @@ export async function handleAiThumbnail(req, res) {
   } catch (err) {
     log(`[AI] 썸네일 생성 에러: ${err.message}`, 'ERROR');
     res.writeHead(500, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: err.message }));
+    res.end(JSON.stringify({ error: '처리 중 오류가 발생했습니다', code: 'INTERNAL_ERROR' }));
   }
 }
 
@@ -258,6 +258,6 @@ Respond in JSON format ONLY:
   } catch (err) {
     log(`[AI] SEO 제안 에러: ${err.message}`, 'ERROR');
     res.writeHead(500, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: err.message }));
+    res.end(JSON.stringify({ error: '처리 중 오류가 발생했습니다', code: 'INTERNAL_ERROR' }));
   }
 }

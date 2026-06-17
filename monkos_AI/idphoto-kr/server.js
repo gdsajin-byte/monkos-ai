@@ -465,7 +465,7 @@ async function runPreCheck(imageBase64) {
     } catch (err) {
       log(`[사전분석][${model}] 실패: ${err.message} → 폴백`);
       if (model === PRECHECK_MODELS[PRECHECK_MODELS.length - 1]) {
-        return { suitable: true, score: 0, note: `분석 실패: ${err.message}` };
+        return { suitable: true, score: 0, note: '분석 실패' };
       }
     }
   }
@@ -500,12 +500,7 @@ app.get('/health', (req, res) => {
   res.json({
     status: 'healthy',
     service: 'monkos-idphoto-kr',
-    version: '3.0.0',
     timestamp: new Date().toISOString(),
-    auth: 'Hybrid (ADC + API Key)',
-    geminiLive: 'ready (ADC)',
-    imagen: GEMINI_API_KEY ? 'active (API Key)' : 'NO API KEY',
-    preCheck: 'active (gemini-2.5-flash)',
   });
 });
 
@@ -515,7 +510,6 @@ app.get('/api/info', (req, res) => {
     service: 'MONKOS AI 증명사진',
     domain: 'idphoto-kr.monkos.ai',
     features: ['AI 코칭 (WS)', 'AI 사전분석', 'AI 증명사진 생성'],
-    styles: Object.keys(STYLE_PROMPTS),
   });
 });
 
@@ -527,7 +521,7 @@ app.post('/api/pre-check', async (req, res) => {
     res.json(result);
   } catch (err) {
     log(`[API][pre-check] 에러: ${err.message}`, 'ERROR');
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: '처리 중 오류가 발생했습니다', code: 'INTERNAL_ERROR' });
   }
 });
 
@@ -539,7 +533,7 @@ app.post('/api/precheck', async (req, res) => {
     res.json(result);
   } catch (err) {
     log(`[API][precheck] 에러: ${err.message}`, 'ERROR');
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: '처리 중 오류가 발생했습니다', code: 'INTERNAL_ERROR' });
   }
 });
 
@@ -638,7 +632,7 @@ app.post('/api/idgen', async (req, res) => {
     }
   } catch (err) {
     log(`[API][idgen] 에러: ${err.message}`, 'ERROR');
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: '처리 중 오류가 발생했습니다', code: 'INTERNAL_ERROR' });
   }
 });
 
@@ -679,7 +673,7 @@ app.post('/api/download', async (req, res) => {
     });
   } catch (err) {
     log(`[API][download] 에러: ${err.message}`, 'ERROR');
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: '처리 중 오류가 발생했습니다', code: 'INTERNAL_ERROR' });
   }
 });
 
@@ -696,7 +690,7 @@ app.post('/api/credit/use', async (req, res) => {
     res.status(result.success ? 200 : 402).json(result);
   } catch (err) {
     log(`[API][credit/use] 에러: ${err.message}`, 'ERROR');
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: '처리 중 오류가 발생했습니다', code: 'INTERNAL_ERROR' });
   }
 });
 
@@ -713,7 +707,7 @@ app.post('/api/credit/refund', async (req, res) => {
     res.status(result.success ? 200 : 400).json(result);
   } catch (err) {
     log(`[API][credit/refund] 에러: ${err.message}`, 'ERROR');
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: '처리 중 오류가 발생했습니다', code: 'INTERNAL_ERROR' });
   }
 });
 

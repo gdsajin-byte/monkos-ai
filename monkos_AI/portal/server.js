@@ -80,7 +80,7 @@ const httpServer = createServer(async (req, res) => {
   // === 헬스체크 ===
   if (req.url === '/health') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ status: 'healthy', service: 'monkos-portal', version: '1.0.0', timestamp: new Date().toISOString(), auth: 'Vertex AI ADC', chatbot: 'gemini-2.5-flash' }));
+    res.end(JSON.stringify({ status: 'healthy', service: 'monkos-portal', timestamp: new Date().toISOString() }));
     return;
   }
 
@@ -92,9 +92,9 @@ const httpServer = createServer(async (req, res) => {
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ totalUsers, timestamp: new Date().toISOString() }));
     } catch (err) {
-      log(`[Stats] 에러: ${err.message}`);
+      log(`[Stats] 에러: ${err.message}`, 'ERROR');
       res.writeHead(500, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: err.message }));
+      res.end(JSON.stringify({ error: '처리 중 오류가 발생했습니다', code: 'INTERNAL_ERROR' }));
     }
     return;
   }
