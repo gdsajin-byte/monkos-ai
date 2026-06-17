@@ -200,6 +200,28 @@ DO NOT:
 
 GOAL: "This is ME, but on my best day" - perfectly front-facing, studio flat lighting, 90% accuracy, 10% professional retouching.`;
 
+const IDENTITY_PRESERVATION_PROFILE = `IDENTITY RULE: 90% SAME PERSON + 10% STYLE ADAPTATION
+
+PRESERVE (90%):
+- Face shape, eye shape, nose, lips, skin tone
+- Overall facial structure and unique characteristics
+- The person must be clearly recognizable as the SAME individual
+
+ADAPT (10% creative freedom):
+- Pose and body angle CAN change to match the reference style (3/4 turn, arms crossed, natural lean — all allowed)
+- Lighting and mood CAN change to match the reference atmosphere
+- Clothing and hair CAN change to match the reference style
+- Expression CAN shift to be more natural, confident, or approachable
+
+DO NOT:
+- Change gender, ethnicity, or age by more than 2-3 years
+- Alter fundamental facial features
+- Make them unrecognizable
+- Force rigid front-facing pose — allow natural professional poses
+
+GOAL: "This is ME, styled like THAT reference" - face is mine, everything else adapts to the reference style. Natural, confident, professional.`;
+
+
 const IDENTITY_PRESERVATION_BABY = `IDENTITY RULE: 95% SAME CHILD + 5% CLEANUP
 
 PRESERVE (95%):
@@ -329,19 +351,23 @@ function buildProfilePrompt(body) {
 
   if (hasMaster) {
     const parts = [];
-    parts.push('[MASTER] Apply EVERYTHING from the MASTER REFERENCE image — pose, framing, clothing, hair, makeup, background, lighting, and overall mood.');
-    if (hasOverride('fashion')) parts.push('[FASHION OVERRIDE] Use the clothing/outfit from the FASHION OVERRIDE image INSTEAD of the master reference clothing.');
+    parts.push(IDENTITY_PRESERVATION_PROFILE);
+    parts.push('\n[IMAGE-TO-IMAGE STYLE TRANSFER]');
+    parts.push('[PRIORITY 1 — IDENTITY] Image 1 is the SUBJECT. Preserve their face, facial structure, skin tone, and identity exactly. They must be clearly recognizable as the SAME person.');
+    parts.push('[PRIORITY 2 — STYLE] From the MASTER REFERENCE image, extract and apply the STYLE: clothing style, pose type, framing, lighting mood, background atmosphere, and overall aesthetic. Do NOT copy the face or body from the reference — only interpret its style onto the subject.');
+    if (hasOverride('fashion')) parts.push('[FASHION OVERRIDE] Use the clothing/outfit STYLE from the FASHION OVERRIDE image INSTEAD of the master reference clothing. Interpret the style, do not copy the image.');
     if (hasOverride('hair')) parts.push('[HAIR OVERRIDE] Use the hairstyle from the HAIR OVERRIDE image INSTEAD of the master reference hair.');
     if (hasOverride('makeup')) parts.push('[MAKEUP OVERRIDE] Use the makeup style from the MAKEUP OVERRIDE image INSTEAD of the master reference makeup.');
     if (hasOverride('background')) parts.push('[BACKGROUND OVERRIDE] Use the background/setting from the BACKGROUND OVERRIDE image INSTEAD of the master reference background.');
     if (customPrompt) parts.push(`[ADDITIONAL] ${customPrompt}`);
-    parts.push('[CONSTRAINT] Keep the person\'s face and identity exactly the same — only apply the specified styling.');
+    parts.push('[ABSOLUTE RULE] The output must look like Image 1 person styled differently — NOT like the reference person. If in doubt, prioritize identity over style accuracy.');
     return parts.join('\n');
   }
 
   const purposePrompt = PURPOSE_PROMPT_MAP[body.purpose] || '';
-  return `${purposePrompt}\n${customPrompt || ''}`.trim()
+  const promptText = `${purposePrompt}\n${customPrompt || ''}`.trim()
     || 'Generate a professional portrait photo.';
+  return `${IDENTITY_PRESERVATION_PROFILE}\n\n[IMAGE-TO-IMAGE TRANSFORM]\n${promptText}`;
 }
 
 // === Base64 추출 헬퍼 ===
