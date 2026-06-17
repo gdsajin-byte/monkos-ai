@@ -162,6 +162,7 @@ status: active
 | 06/17 | iMac/막내3 | **GEO P2 — 사이트맵 hreflang 교차링크** — sitemap-specs.xml 전 URL에 ko/en/ja/x-default 4개 alternate(5,340개 태그), sitemap-blog.xml 번역 존재 글만 동적 hreflang(588개 태그). guide/ai-photo ja/en 라우트 미존재 확인→현행 정상. prod 배포 rev 00297-9gn | render-sitemap.js | ✅ |
 | 06/17 | iMac/민아 | **오가닉 상승 실측 검증 (GA4 교차검증)** — 직전 28일比 오가닉검색 세션 108→228(**+111%**)·활성 87→198(+128%)·신규 82→194(+137%). 주별 W19~24 우상향(25→32→30→37→46→82, W25는 미완주간). 유료 축소(Display 937→321·Paid Search 819→670)에도 오가닉 자생 2배 → "광고=오가닉부스터" 작동 실증. 06/15 평가의 "성채는 쌓았으나 세금 못 걷는다"에 대한 **세금 유입 시작 신호** | GA4 prop 521406894 / [세션로그](../../sessions/2026-06/2026-06-17_iMac_민아.md) | ✅ |
 | 06/17 | iMac/막내3 | **GEO P2 — 사이트맵 hreflang 교차링크 구현**. sitemap-specs.xml 5,340태그 + sitemap-blog.xml 588태그(번역존재분 동적). prod 배포·실측 | COMPLETION_20260617, `94fd5b1f` | ✅ |
+| 06/17 | 웹/민아 | **"AI 증명사진" 헤드텀 정밀 경쟁분석** — 색인 1,580 급증(specs 다국어 침투) 해석 + 자기잠식 적발(우리 5페이지 분산: app 62·blog 146·guide 11·루트 96) + 증명한컷(idcut.kr) **빈집 실측**(playwright SERP — 토종 정조준 유일, 나머지 글로벌 번역체) + 광고중단 가설 반증(GSC상 광고무관 요동) + 헤드텀 거버넌스 처방 | [경쟁분석](../../reports/2026-06/REPORT_20260617_웹민아_AI증명사진_헤드텀_경쟁분석.md) | ✅ |
 
 ---
 
