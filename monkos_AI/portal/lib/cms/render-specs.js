@@ -295,7 +295,7 @@ function parseSizeMm(sizeStr) {
 // ─── DARK THEME CSS ─────────────────────────────────────────────
 
 const SPECS_PAGE_STYLE = `
-body { background: #f6f7fb !important; color: #1a1a1a !important; }
+body { background: #ffffff !important; color: #1a1a1a !important; }
 .container { max-width: 1000px; }
 a { color: #00D4AA; }
 a:hover { color: #00F4C4; }
@@ -402,221 +402,401 @@ a:hover { color: #00F4C4; }
 /* === Hub Footer === */
 .specs-hub-footer { text-align: center; padding: 24px 0; margin-top: 32px; font-size: 12px; color: #888; border-top: 1px solid rgba(0,0,0,0.08); }
 
+/* ================================================================
+   DETAIL PAGE — Clean White Design, Full-width Section Bands
+   Accent: #00D4AA | Sections divided by alternating bg color
+   ================================================================ */
+
+/* === Section cards on white bg === */
+.specs-band { margin: 0 auto 24px; padding: 36px 32px; max-width: 1000px; background: #f4f5f7; border-radius: 16px; }
+.specs-band .band-inner { }
+.specs-band-white { background: #f4f5f7; }
+.specs-band-gray { background: #f4f5f7; }
+.specs-band-dark { background: linear-gradient(135deg, #0b1120 0%, #162032 50%, #0f2a3d 100%); border-radius: 16px; }
+
 /* === Detail — Back link === */
-.specs-back { display: inline-block; margin-bottom: 20px; font-size: 13px; color: #00D4AA; text-decoration: none; }
+.specs-back {
+  display: inline-flex; align-items: center; gap: 6px;
+  margin-bottom: 16px; font-size: 13px; font-weight: 500;
+  color: #00D4AA; text-decoration: none; letter-spacing: 0.2px;
+}
 .specs-back:hover { text-decoration: underline; }
 
-/* === Detail — Hero 2열 === */
-.specs-hero { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; margin-bottom: 40px; }
-.specs-hero-text h1 { font-size: 28px; font-weight: 700; color: #1a1a1a; line-height: 1.3; margin-bottom: 12px; }
-.specs-hero-text .specs-hero-desc { color: #888; font-size: 15px; line-height: 1.7; margin-bottom: 16px; }
+/* === Detail — Hero (white, clean) === */
+.specs-hero-wrap {
+  background: #ffffff; margin: -20px -20px 0; padding: 0 20px 48px;
+}
+.specs-hero {
+  display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 48px;
+  align-items: center; max-width: 1000px; margin: 0 auto;
+}
+.specs-hero-text h1 {
+  font-size: 38px; font-weight: 500; color: #1a1a1a;
+  line-height: 1.35; margin-bottom: 16px;
+}
+.specs-hero-text .specs-hero-desc {
+  color: #666; font-size: 15px; line-height: 1.8; margin-bottom: 24px;
+}
 .specs-hero-tags { display: flex; gap: 8px; flex-wrap: wrap; }
 .specs-hero-tags span {
-  background: rgba(0,212,170,0.1); color: #00D4AA; padding: 4px 12px;
-  border-radius: 20px; font-size: 13px; font-weight: 500;
+  background: rgba(0,212,170,0.08); color: #00D4AA;
+  padding: 6px 16px; border-radius: 24px; font-size: 13px;
+  font-weight: 600; border: 1px solid rgba(0,212,170,0.15);
 }
 
-/* === Detail — Diagram === */
+/* === Detail — Photo Diagram === */
 .specs-diagram {
-  background: #ffffff; border: 1px solid rgba(0,0,0,0.08); border-radius: 16px;
-  padding: 32px; display: flex; justify-content: center; align-items: center; position: relative;
+  background: transparent; border-radius: 0; padding: 20px 60px 40px 50px;
+  display: flex; justify-content: center; align-items: center;
+  position: relative;
 }
 .specs-photo-frame {
-  width: 175px; height: 225px; background: #f0f1f4;
-  border: 2px dashed #00D4AA; border-radius: 4px; position: relative;
-  display: flex; align-items: center; justify-content: center;
+  width: 175px; height: 225px; background: #e0e2e6;
+  border: 1px solid rgba(0,0,0,0.08); border-radius: 4px;
+  position: relative; display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  overflow: hidden;
 }
-.specs-photo-frame svg { opacity: 0.15; }
+.specs-photo-frame img {
+  object-fit: cover; width: 100%; height: 100%; display: block;
+}
+.specs-photo-frame svg { opacity: 0.12; }
+
+/* Guide lines */
 .specs-guide-w {
-  position: absolute; bottom: -28px; left: 0; right: 0; text-align: center;
-  font-size: 12px; color: #00D4AA; font-weight: 600;
+  position: absolute; bottom: -28px; left: 0; right: 0;
+  text-align: center; font-size: 12px; color: #00D4AA; font-weight: 600;
 }
 .specs-guide-h {
   position: absolute; top: 0; bottom: 0; right: -50px;
-  display: flex; align-items: center; font-size: 12px; color: #00D4AA; font-weight: 600;
-  writing-mode: vertical-rl;
+  display: flex; align-items: center; font-size: 12px;
+  color: #00D4AA; font-weight: 600; writing-mode: vertical-rl;
 }
 .specs-guide-h::before {
-  content: ''; position: absolute; top: 0; bottom: 0; left: -8px; width: 1px; background: #00D4AA;
+  content: ''; position: absolute; top: 0; bottom: 0; left: -8px;
+  width: 1px; background: rgba(0,212,170,0.4);
 }
 .specs-head-guide {
-  position: absolute; top: 20px; left: -45px; height: 144px;
-  display: flex; align-items: center; font-size: 11px; color: #ef4444; font-weight: 500;
-  writing-mode: vertical-rl;
+  position: absolute; top: 18px; left: -45px; height: 144px;
+  display: flex; align-items: center; font-size: 11px;
+  color: #ef4444; font-weight: 500; writing-mode: vertical-rl;
 }
 .specs-head-guide::before {
-  content: ''; position: absolute; top: 0; bottom: 0; right: -6px; width: 1px;
-  background: #ef4444; opacity: 0.5;
+  content: ''; position: absolute; top: 0; bottom: 0; right: -8px;
+  width: 1px; background: rgba(239,68,68,0.3);
 }
 
-/* === Detail — Table === */
-.specs-table {
-  width: 100%; border-collapse: separate; border-spacing: 0; margin-bottom: 32px;
-  background: #ffffff; border: 1px solid rgba(0,0,0,0.08); border-radius: 12px; overflow: hidden;
-}
-.specs-table th, .specs-table td { padding: 10px 14px; text-align: left; font-size: 14px; }
-.specs-table th {
-  background: #f0f1f4; font-weight: 600; color: #1a1a1a; width: 110px; font-size: 13px;
-  border-right: 1px solid rgba(0,0,0,0.08);
-}
-.specs-table td { color: #888; }
-.specs-table tr:not(:last-child) th,
-.specs-table tr:not(:last-child) td { border-bottom: 1px solid rgba(0,0,0,0.08); }
-
-/* === Detail — Common Rules === */
+/* === Detail — Common Rules (inside gray card, no extra box) === */
 .specs-common-rules {
-  list-style: none; padding: 0; margin: 0;
-  background: #ffffff; border: 1px solid rgba(0,0,0,0.08); border-radius: 12px;
-  overflow: hidden;
+  list-style: none; padding: 0; margin: 0 0 32px;
 }
 .specs-common-rule {
-  padding: 14px 20px; font-size: 14px; color: #444; line-height: 1.6;
-  border-bottom: 1px solid rgba(0,0,0,0.05);
+  padding: 14px 0; font-size: 16px; color: #333;
+  line-height: 1.7; border-bottom: 1px solid rgba(0,0,0,0.06);
 }
 .specs-common-rule:last-child { border-bottom: none; }
 
-/* === Detail — Section === */
-.specs-section { margin-bottom: 32px; }
-.specs-section h2 { font-size: 18px; font-weight: 700; color: #1a1a1a; margin-bottom: 16px; }
-.specs-section p { font-size: 14px; color: #888; line-height: 1.8; }
-.specs-details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.specs-detail-item {
-  display: flex; align-items: flex-start; gap: 10px; padding: 12px;
-  background: #ffffff; border-radius: 8px; font-size: 14px; color: #888;
+/* === Detail — Section wrapper === */
+.specs-section { margin-bottom: 48px; }
+.specs-section h2 {
+  font-size: 21px; font-weight: 800; color: #1a1a1a;
+  margin-bottom: 24px; padding-bottom: 14px;
+  border-bottom: 2px solid #00D4AA; display: inline-block;
+  letter-spacing: -0.2px;
 }
-.specs-detail-item .sdi-icon { flex-shrink: 0; font-size: 16px; width: 24px; text-align: center; }
+.specs-section p { font-size: 14px; color: #666; line-height: 1.8; }
+
+/* AI summary box */
+.specs-ai-summary {
+  background: linear-gradient(135deg, rgba(0,212,170,0.05) 0%, rgba(0,212,170,0.015) 100%);
+  border-left: 3px solid #00D4AA; padding: 20px 24px;
+  border-radius: 0 14px 14px 0; margin-bottom: 24px;
+  font-size: 14px; color: #333; line-height: 1.85;
+}
+
+/* Specs table */
+.specs-table {
+  width: 100%; border-collapse: collapse; border-spacing: 0;
+  margin-bottom: 24px; background: transparent;
+}
+.specs-table th, .specs-table td {
+  padding: 15px 22px; text-align: left; font-size: 16px;
+}
+.specs-table th {
+  background: transparent; font-weight: 700; color: #1a1a1a;
+  width: 120px; font-size: 13px;
+}
+.specs-table td { color: #555; font-weight: 500; }
+.specs-table tr:not(:last-child) th,
+.specs-table tr:not(:last-child) td {
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+}
+
+/* Detail items grid */
+.specs-details-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+}
+.specs-detail-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 16px 18px; background: #ffffff; border-radius: 12px;
+  font-size: 14px; color: #555;
+  border: 1px solid rgba(0,0,0,0.06);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.specs-detail-item:hover {
+  border-color: rgba(0,212,170,0.25);
+  box-shadow: 0 2px 8px rgba(0,212,170,0.06);
+}
 
 /* === Detail — O/X Compare === */
-.specs-ox-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 32px; }
+.specs-ox-compare {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+  margin-bottom: 36px;
+}
 .specs-ox-card {
-  background: #ffffff; border-radius: 12px; overflow: hidden; border: 2px solid rgba(0,0,0,0.08);
-}
-.specs-ox-card.ox-good { border-color: #22c55e; }
-.specs-ox-card.ox-bad { border-color: #ef4444; }
-.specs-ox-header { padding: 10px 16px; font-weight: 700; font-size: 14px; display: flex; align-items: center; gap: 8px; }
-.specs-ox-card.ox-good .specs-ox-header { background: rgba(34,197,94,0.1); color: #4ade80; }
-.specs-ox-card.ox-bad .specs-ox-header { background: rgba(239,68,68,0.1); color: #f87171; }
-.specs-ox-body {
-  padding: 20px; display: flex; justify-content: center; align-items: center;
-  background: #f0f1f4; min-height: 180px;
-}
-.specs-ox-photo {
-  width: 120px; height: 154px; background: #ffffff; border: 2px dashed #ccc;
-  border-radius: 4px; display: flex; align-items: center; justify-content: center;
-}
-.specs-ox-card.ox-good .specs-ox-photo { border-color: #22c55e; }
-.specs-ox-card.ox-bad .specs-ox-photo { border-color: #ef4444; }
-.specs-ox-photo svg { opacity: 0.3; }
-.specs-ox-caption { margin-top: 10px; font-size: 12px; color: #888; text-align: center; }
-.specs-ox-points { padding: 12px 16px; border-top: 1px solid rgba(0,0,0,0.08); list-style: none; margin: 0; }
-.specs-ox-points li {
-  font-size: 13px; color: #888; padding: 3px 0; display: flex; align-items: center; gap: 6px;
-}
-
-/* === Detail — Rejection === */
-.specs-rejection-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; list-style: none; padding: 0; }
-.specs-rejection-card {
-  background: #ffffff; border: 1px solid rgba(0,0,0,0.08); border-radius: 12px;
-  padding: 20px; display: flex; gap: 14px; align-items: flex-start;
+  background: #ffffff; border-radius: 14px; overflow: hidden;
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.02);
   transition: box-shadow 0.2s;
 }
-.specs-rejection-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
-.specs-rj-badge {
-  flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  background: #ef4444; color: #fff; font-weight: 700; font-size: 14px;
+.specs-ox-card:hover {
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
 }
-.specs-rj-info h4 { font-size: 14px; font-weight: 600; color: #1a1a1a; margin: 0 0 4px 0; }
-.specs-rj-info p { font-size: 13px; color: #888; margin: 0; line-height: 1.5; }
+.specs-ox-card.ox-good { border-color: rgba(34,197,94,0.3); }
+.specs-ox-card.ox-bad { border-color: rgba(239,68,68,0.3); }
+.specs-ox-header {
+  padding: 12px 18px; font-weight: 700; font-size: 14px;
+  display: flex; align-items: center; gap: 8px;
+}
+.specs-ox-card.ox-good .specs-ox-header {
+  background: rgba(34,197,94,0.06); color: #16a34a;
+}
+.specs-ox-card.ox-bad .specs-ox-header {
+  background: rgba(239,68,68,0.06); color: #dc2626;
+}
+.specs-ox-body {
+  padding: 24px; display: flex; flex-direction: column;
+  justify-content: center; align-items: center;
+  background: #f8f9fb; min-height: 180px;
+}
+.specs-ox-photo {
+  width: 120px; height: 154px; background: #e0e2e6;
+  border: 1px solid rgba(0,0,0,0.08); border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+.specs-ox-card.ox-good .specs-ox-photo { border-color: rgba(34,197,94,0.4); }
+.specs-ox-card.ox-bad .specs-ox-photo { border-color: rgba(239,68,68,0.4); }
+.specs-ox-photo svg { opacity: 0.2; }
+.specs-ox-caption {
+  margin-top: 10px; font-size: 12px; color: #888; text-align: center;
+}
+.specs-ox-points {
+  padding: 14px 18px; border-top: 1px solid rgba(0,0,0,0.05);
+  list-style: none; margin: 0;
+}
+.specs-ox-points li {
+  font-size: 13px; color: #666; padding: 4px 0;
+  display: flex; align-items: center; gap: 6px;
+}
 
-/* === Detail — FAQ === */
+/* === Detail — Rejection Cards === */
+.specs-rejection-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+  list-style: none; padding: 0;
+}
+.specs-rejection-card {
+  background: #ffffff; border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 14px; padding: 20px 22px;
+  display: flex; gap: 16px; align-items: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.02);
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.specs-rejection-card:hover {
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+  transform: translateY(-1px);
+}
+.specs-rj-badge {
+  flex-shrink: 0; width: 34px; height: 34px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: #fff; font-weight: 700; font-size: 14px;
+  box-shadow: 0 2px 8px rgba(239,68,68,0.25);
+}
+.specs-rj-info h4 {
+  font-size: 14px; font-weight: 600; color: #1a1a1a;
+  margin: 0 0 4px 0; line-height: 1.4;
+}
+.specs-rj-info p {
+  font-size: 13px; color: #888; margin: 0; line-height: 1.6;
+}
+
+/* === Detail — FAQ Accordion === */
 .specs-faq { list-style: none; padding: 0; }
 .specs-faq-item {
-  background: #ffffff; border: 1px solid rgba(0,0,0,0.08); border-radius: 10px;
-  margin-bottom: 8px; overflow: hidden;
+  background: #ffffff; border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 14px; margin-bottom: 10px; overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+  transition: box-shadow 0.2s;
+}
+.specs-faq-item:hover {
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 .specs-faq-q {
-  padding: 16px 20px; font-weight: 600; font-size: 15px; color: #1a1a1a;
-  cursor: pointer; display: flex; align-items: center; gap: 10px; user-select: none;
+  padding: 18px 22px; font-weight: 600; font-size: 15px; color: #1a1a1a;
+  cursor: pointer; display: flex; align-items: center; gap: 12px;
+  user-select: none; transition: background 0.15s;
 }
-.specs-faq-q::before { content: "Q"; color: #00D4AA; font-weight: 700; font-size: 14px; }
+.specs-faq-q:hover { background: rgba(0,0,0,0.015); }
+.specs-faq-q::before {
+  content: "Q"; color: #00D4AA; font-weight: 800; font-size: 14px;
+  flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%;
+  background: rgba(0,212,170,0.08); display: flex;
+  align-items: center; justify-content: center;
+}
 .specs-faq-q::after {
-  content: "\\25BE"; margin-left: auto; color: #888; font-size: 12px;
-  transition: transform 0.2s;
+  content: "\\25BE"; margin-left: auto; color: #aaa; font-size: 14px;
+  transition: transform 0.25s ease;
 }
 .specs-faq-item.open .specs-faq-q::after { transform: rotate(180deg); }
 .specs-faq-a {
-  padding: 0 20px 16px 46px; font-size: 14px; color: #888;
-  line-height: 1.7; display: none;
+  padding: 0 22px 20px 60px; font-size: 14px; color: #666;
+  line-height: 1.8; display: none;
 }
 .specs-faq-item.open .specs-faq-a { display: block; }
 
 /* === Official Source Link === */
 .specs-official-link {
-  display: flex; align-items: center; gap: 12px; padding: 16px 20px;
-  background: #ffffff; border: 1px solid rgba(0,0,0,0.08); border-radius: 12px;
+  display: flex; align-items: center; gap: 14px;
+  padding: 18px 22px; background: #ffffff;
+  border: 1px solid rgba(0,0,0,0.06); border-radius: 14px;
   color: #1a1a1a; text-decoration: none; font-size: 14px; font-weight: 500;
-  transition: border-color 0.2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
-.specs-official-link:hover { border-color: #00D4AA; }
-.specs-external-icon { margin-left: auto; color: #00D4AA; font-size: 16px; }
+.specs-official-link:hover {
+  border-color: rgba(0,212,170,0.3);
+  box-shadow: 0 2px 12px rgba(0,212,170,0.08);
+}
+.specs-external-icon {
+  margin-left: auto; color: #00D4AA; font-size: 18px;
+  transition: transform 0.2s;
+}
+.specs-official-link:hover .specs-external-icon {
+  transform: translate(2px, -2px);
+}
 
 /* === Detail — 3-Tier CTA === */
-.tier-section { margin: 40px 0 32px; }
-.tier-section h2 { font-size: 18px; font-weight: 700; color: #1a1a1a; margin-bottom: 16px; }
-.tier-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.tier-section {
+  margin: 32px 0 0; padding: 0;
+}
+.tier-section h2 {
+  font-size: 20px; font-weight: 800; color: #ffffff;
+  margin-bottom: 24px;
+}
+.tier-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+}
 .tier-card {
-  background: #ffffff; border: 1px solid rgba(0,0,0,0.08); border-radius: 12px;
-  padding: 24px 20px; position: relative; transition: border-color 0.2s;
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 14px; padding: 32px 24px; position: relative;
+  cursor: pointer; text-decoration: none; display: block;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
 }
-.tier-card:hover { border-color: rgba(0,0,0,0.12); }
-.tier-card.recommended { border-color: #00D4AA; }
+.tier-card:hover {
+  background: rgba(255,255,255,0.1);
+  transform: translateY(-2px);
+}
+.tier-card.recommended {
+  border-color: #00D4AA; background: rgba(0,212,170,0.08);
+}
+.tier-card.recommended:hover {
+  background: rgba(0,212,170,0.12);
+}
 .tier-badge {
-  position: absolute; top: -10px; right: 16px; background: #00D4AA; color: #fff;
-  font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 10px;
+  position: absolute; top: -11px; right: 18px;
+  background: #00D4AA; color: #fff; font-size: 12px; font-weight: 700;
+  padding: 4px 14px; border-radius: 12px;
 }
-.tier-card h3 { font-size: 16px; font-weight: 700; color: #1a1a1a; margin-bottom: 8px; }
-.tier-card .tier-sub { font-size: 13px; color: #00D4AA; margin-bottom: 6px; }
-.tier-card .tier-desc { font-size: 13px; color: #888; margin-bottom: 16px; }
+.tier-card h3 {
+  font-size: 20px; font-weight: 700; color: #ffffff; margin-bottom: 10px;
+}
+.tier-card .tier-sub {
+  font-size: 15px; color: #00D4AA; font-weight: 600; margin-bottom: 10px;
+}
+.tier-card .tier-desc {
+  font-size: 14px; color: rgba(255,255,255,0.5); line-height: 1.6; margin-bottom: 20px;
+}
 .tier-card .tier-cta {
-  display: inline-block; padding: 10px 20px; border-radius: 8px; font-size: 13px;
-  font-weight: 600; text-decoration: none; transition: all 0.2s;
+  display: inline-block; padding: 12px 24px; border-radius: 10px;
+  font-size: 15px; font-weight: 600; text-decoration: none;
+  transition: all 0.2s;
 }
-.tier-card:first-child .tier-cta { background: #00D4AA; color: #fff; }
-.tier-card:first-child .tier-cta:hover { background: #00F4C4; }
-.tier-card:nth-child(2) .tier-cta, .tier-card:nth-child(3) .tier-cta {
-  background: rgba(0,0,0,0.05); color: #888; cursor: default;
+.tier-card:first-child .tier-cta {
+  background: #00D4AA; color: #fff;
 }
-.tier-coming { font-size: 11px; color: #888; margin-top: 6px; }
+.tier-card:first-child .tier-cta:hover {
+  background: #00E4BA;
+}
+.tier-card:nth-child(2) .tier-cta,
+.tier-card:nth-child(3) .tier-cta {
+  background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.4); cursor: default;
+}
+.tier-coming {
+  font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 8px; font-weight: 500;
+}
 
-/* === Detail — Related === */
+/* === Detail — Related Content === */
 .specs-related {
-  margin-top: 32px; padding: 20px 24px;
-  background: #ffffff; border: 1px solid rgba(0,0,0,0.08); border-radius: 12px;
+  margin-top: 40px; padding: 0;
+  background: transparent; border: none; border-radius: 0;
+  box-shadow: none;
 }
-.specs-related h3 { font-size: 15px; font-weight: 600; color: #1a1a1a; margin-bottom: 12px; }
+.specs-related h3 {
+  font-size: 16px; font-weight: 700; color: rgba(255,255,255,0.8);
+  margin-bottom: 14px;
+}
 .specs-related-links { display: flex; flex-wrap: wrap; gap: 10px; }
 .specs-related-links a {
-  font-size: 13px; color: #00D4AA; text-decoration: none; padding: 6px 14px;
-  background: rgba(0,212,170,0.06); border-radius: 8px; transition: all 0.2s;
-  border: 1px solid transparent;
+  font-size: 13px; color: #00D4AA; text-decoration: none;
+  padding: 7px 16px; background: rgba(0,212,170,0.1);
+  border-radius: 10px; transition: all 0.2s;
+  border: 1px solid rgba(0,212,170,0.15); font-weight: 500;
 }
-.specs-related-links a:hover { background: rgba(0,212,170,0.12); border-color: #00D4AA; }
+.specs-related-links a:hover {
+  background: rgba(0,212,170,0.2); border-color: rgba(0,212,170,0.3);
+}
 
-/* === Responsive === */
+/* === Responsive — Detail page === */
 @media (max-width: 768px) {
-  .specs-hero { grid-template-columns: 1fr; }
-  .specs-diagram { order: -1; }
+  .specs-hero-wrap { margin: -20px -20px 36px; padding: 36px 18px 44px; }
+  .specs-hero { grid-template-columns: 1fr; gap: 32px; }
+  .specs-hero-text h1 { font-size: 26px; }
+  .specs-diagram { margin-bottom: 8px; padding: 32px 36px; }
   .specs-details-grid { grid-template-columns: 1fr; }
   .specs-ox-compare { grid-template-columns: 1fr; }
   .specs-rejection-grid { grid-template-columns: 1fr; }
-  .tier-grid { grid-template-columns: 1fr; }
+  .tier-grid { grid-template-columns: 1fr; gap: 14px; }
+  .tier-card { padding: 24px 20px; }
+  .tier-section { margin: 36px 0 32px; }
+  .specs-related { padding: 20px 22px; }
+  .specs-common-rule { padding: 16px 20px; }
+  .specs-faq-q { padding: 16px 18px; }
+  .specs-faq-a { padding: 0 18px 18px 52px; }
+}
+/* === Responsive — Hub page === */
+@media (max-width: 768px) {
   .purpose-grid { grid-template-columns: 1fr 1fr; }
   .continent-grid { grid-template-columns: 1fr; }
   .country-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 480px) {
   .purpose-grid { grid-template-columns: 1fr; }
+  .specs-hero-text h1 { font-size: 22px; }
+  .specs-diagram { padding: 28px 24px; }
+  .specs-photo-frame { width: 140px; height: 180px; }
+  .specs-guide-h { right: -44px; }
+  .specs-head-guide { left: -38px; }
 }
 `;
 
@@ -1042,13 +1222,20 @@ ${hreflangTags}
   const oxGoodCaption = lang === 'ja' ? '正面・無表情・白背景' : lang === 'en' ? 'Front-facing · Neutral · White BG' : '정면 · 무표정 · 흰배경';
   const oxBadCaption = lang === 'ja' ? '傾き・影・髪' : lang === 'en' ? 'Tilted · Shadow · Hair' : '기울어짐 · 그림자 · 머리카락';
 
+  const aiSummary = lang === 'ja'
+    ? `${escapeHtml(countryName)}の${escapeHtml(typeName)}は${escapeHtml(locField(specData, 'size', lang))}、${escapeHtml(locField(specData, 'background', lang))}背景、${escapeHtml(locField(specData, 'validity', lang))}以内の撮影が必要です。`
+    : lang === 'en'
+    ? `${escapeHtml(countryName)} ${escapeHtml(typeName)} requires ${escapeHtml(locField(specData, 'size', lang))}, ${escapeHtml(locField(specData, 'background', lang)).toLowerCase()} background, taken within ${escapeHtml(locField(specData, 'validity', lang)).toLowerCase()}.`
+    : `${escapeHtml(countryName)} ${escapeHtml(typeName)}은 ${escapeHtml(locField(specData, 'size', lang))}, ${escapeHtml(locField(specData, 'background', lang))} 배경이며 ${escapeHtml(locField(specData, 'validity', lang))} 촬영이 필요합니다.`;
+
   const bodyContent = `
+  <div class="specs-hero-wrap">
   <a href="${prefix}/specs" class="specs-back">${escapeHtml(backLabel)}</a>
 
-  <!-- Hero 2열 -->
+  <!-- Hero 풀와이드 -->
   <section class="specs-hero">
     <div class="specs-hero-text">
-      <h1>${countryFlag(countrySlug)} ${escapeHtml(countryName)} ${escapeHtml(typeName)}</h1>
+      <h1>${countryFlag(countrySlug)} ${escapeHtml(countryName)} ${escapeHtml(typeName)} ${lang === 'ja' ? '規定案内' : lang === 'en' ? 'Requirements Guide' : '규정안내'}</h1>
       <p class="specs-hero-desc">${escapeHtml(description)}</p>
       <div class="specs-hero-tags">
         <span>${escapeHtml(locField(specData, 'size', lang))}</span>
@@ -1074,99 +1261,100 @@ ${hreflangTags}
         </svg>`;
         })()}
         <div class="specs-head-guide">${escapeHtml(locField(specData, 'headHeight', lang))}</div>
-        <div class="specs-guide-w">${escapeHtml((() => { const s = locField(specData, 'size', lang).split('×')[0].trim(); return /\d$/.test(s) ? s + 'mm' : s; })())}</div>
+        <div class="specs-guide-w">${escapeHtml(locField(specData, 'size', lang).split('×')[0].trim())}</div>
       </div>
-      <div class="specs-guide-h">${escapeHtml((() => { const s = (locField(specData, 'size', lang).split('×')[1] || '45 mm').trim(); return /\d$/.test(s) ? s + 'mm' : s; })())}</div>
+      <div class="specs-guide-h">${escapeHtml((locField(specData, 'size', lang).split('×')[1] || '4.5cm').trim())}</div>
     </div>
   </section>
-
-  <!-- 규격 테이블 -->
-  <table class="specs-table">
-    <tbody>
-      ${tableRows}
-    </tbody>
-  </table>
-
-  <!-- 공통 규정 -->
-  <div class="specs-section">
-    <h2>${escapeHtml(i.commonRulesTitle)}</h2>
-    <ol class="specs-common-rules">
-      ${commonRulesHtml}
-    </ol>
   </div>
 
-  <!-- 세부 규정 -->
-  ${detailLines.length ? `<div class="specs-section">
-    <h2>${escapeHtml(i.detailsTitle)}</h2>
-    <div class="specs-details-grid">
-      ${detailGridHtml}
-    </div>
-  </div>` : ''}
+  <!-- BAND: 규정 영역 (회색 배경) -->
+  <div class="specs-band specs-band-gray">
+    <div class="band-inner">
+      <ol class="specs-common-rules">
+        ${commonRulesHtml}
+      </ol>
 
-  <!-- 반려 사유 -->
-  ${rejections.length ? `<div class="specs-section">
-    <h2>${escapeHtml(i.rejectionTitle)}</h2>
-    <ul class="specs-rejection-grid">
-      ${rejectionHtml}
-    </ul>
-  </div>` : ''}
-
-  <!-- FAQ 아코디언 -->
-  ${faqs.length ? `<div class="specs-section">
-    <h2>${escapeHtml(i.faqTitle)}</h2>
-    <div class="specs-faq">
-      ${faqHtml}
-    </div>
-  </div>` : ''}
-
-  <!-- 공식 발급 안내 -->
-  ${specData.officialSource ? `<div class="specs-section">
-    <h2>${escapeHtml(i.officialSourceTitle)}</h2>
-    <a href="${escapeHtml(specData.officialSource.url)}" target="_blank" rel="noopener noreferrer" class="specs-official-link">
-      <span></span>
-      <span>${escapeHtml((specData.officialSource.label && (specData.officialSource.label[lang] || specData.officialSource.label.ko)) || specData.officialSource.url)}</span>
-      <span class="specs-external-icon">↗</span>
-    </a>
-  </div>` : ''}
-
-  <!-- 3단 티어 CTA -->
-  <div class="tier-section">
-    <h2>${escapeHtml(i.tierSectionTitle)}</h2>
-    <div class="tier-grid">
-      <div class="tier-card">
-        <h3>${i.tierFreeTitle}</h3>
-        <div class="tier-sub">${escapeHtml(i.tierFreeSub)}</div>
-        <div class="tier-desc">${escapeHtml(i.tierFreeDesc)}</div>
-        <a href="/crop" class="tier-cta">${escapeHtml(i.tierFreeCta)}</a>
-      </div>
-      <div class="tier-card recommended">
-        <span class="tier-badge">${escapeHtml(i.tierRecommend)}</span>
-        <h3>${i.tierAITitle}</h3>
-        <div class="tier-sub">${escapeHtml(i.tierAISub)}</div>
-        <div class="tier-desc">${escapeHtml(i.tierAIDesc)}</div>
-        <a href="#" class="tier-cta">${escapeHtml(i.tierAICta)}</a>
-        <div class="tier-coming">${escapeHtml(i.tierComingSoon)}</div>
-      </div>
-      <div class="tier-card">
-        <h3>${i.tierStudioTitle}</h3>
-        <div class="tier-sub">${escapeHtml(i.tierStudioSub)}</div>
-        <div class="tier-desc">${escapeHtml(i.tierStudioDesc)}</div>
-        <a href="#" class="tier-cta">${escapeHtml(i.tierStudioCta)}</a>
-        <div class="tier-coming">${escapeHtml(i.tierComingSoon)}</div>
+      <div class="specs-section" style="margin-top:40px;">
+        <h2>${escapeHtml(i.detailsTitle)}</h2>
+        <div class="specs-ai-summary">${aiSummary}</div>
+        <table class="specs-table">
+          <tbody>
+            ${tableRows}
+          </tbody>
+        </table>
+        ${detailLines.length ? `<div class="specs-details-grid" style="margin-top:16px;">
+          ${detailGridHtml}
+        </div>` : ''}
       </div>
     </div>
   </div>
 
-  <!-- 관련 콘텐츠 -->
-  <div class="specs-related">
-    <h3>${escapeHtml(i.relatedTitle)}</h3>
-    <div class="specs-related-links">
-      ${relatedLinksHtml}
+  <!-- BAND: 참고 영역 (흰색 배경) -->
+  <div class="specs-band specs-band-white">
+    <div class="band-inner">
+      ${rejections.length ? `<div class="specs-section">
+        <h2>${escapeHtml(i.rejectionTitle)}</h2>
+        <ul class="specs-rejection-grid">
+          ${rejectionHtml}
+        </ul>
+      </div>` : ''}
+
+      ${faqs.length ? `<div class="specs-section">
+        <h2>${escapeHtml(i.faqTitle)}</h2>
+        <div class="specs-faq">
+          ${faqHtml}
+        </div>
+      </div>` : ''}
+
+      ${specData.officialSource ? `<a href="${escapeHtml(specData.officialSource.url)}" target="_blank" rel="noopener noreferrer" class="specs-official-link">
+        <span>${escapeHtml((specData.officialSource.label && (specData.officialSource.label[lang] || specData.officialSource.label.ko)) || specData.officialSource.url)}</span>
+        <span class="specs-external-icon">↗</span>
+      </a>` : ''}
     </div>
-    ${sameCountry.length > 0 ? `<h3 style="margin-top:16px;">${escapeHtml(i.sameCountryLabel)}</h3>
-    <div class="specs-related-links">
-      ${sameCountryLinks}
-    </div>` : ''}
+  </div>
+
+  <!-- BAND: CTA 영역 (다크 배경) -->
+  <div class="specs-band specs-band-dark">
+    <div class="band-inner">
+      <div class="tier-section">
+        <h2>${escapeHtml(i.tierSectionTitle)}</h2>
+        <div class="tier-grid">
+          <div class="tier-card">
+            <h3>${i.tierFreeTitle}</h3>
+            <div class="tier-sub">${escapeHtml(i.tierFreeSub)}</div>
+            <div class="tier-desc">${escapeHtml(i.tierFreeDesc)}</div>
+            <a href="/crop" class="tier-cta">${escapeHtml(i.tierFreeCta)}</a>
+          </div>
+          <div class="tier-card recommended">
+            <span class="tier-badge">${escapeHtml(i.tierRecommend)}</span>
+            <h3>${i.tierAITitle}</h3>
+            <div class="tier-sub">${escapeHtml(i.tierAISub)}</div>
+            <div class="tier-desc">${escapeHtml(i.tierAIDesc)}</div>
+            <a href="#" class="tier-cta">${escapeHtml(i.tierAICta)}</a>
+            <div class="tier-coming">${escapeHtml(i.tierComingSoon)}</div>
+          </div>
+          <div class="tier-card">
+            <h3>${i.tierStudioTitle}</h3>
+            <div class="tier-sub">${escapeHtml(i.tierStudioSub)}</div>
+            <div class="tier-desc">${escapeHtml(i.tierStudioDesc)}</div>
+            <a href="#" class="tier-cta">${escapeHtml(i.tierStudioCta)}</a>
+            <div class="tier-coming">${escapeHtml(i.tierComingSoon)}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="specs-related">
+        <h3>${escapeHtml(i.relatedTitle)}</h3>
+        <div class="specs-related-links">
+          ${relatedLinksHtml}
+        </div>
+        ${sameCountry.length > 0 ? `<h3 style="margin-top:16px;">${escapeHtml(i.sameCountryLabel)}</h3>
+        <div class="specs-related-links">
+          ${sameCountryLinks}
+        </div>` : ''}
+      </div>
+    </div>
   </div>`;
 
   return {
