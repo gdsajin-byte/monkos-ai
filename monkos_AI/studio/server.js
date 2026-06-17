@@ -231,9 +231,13 @@ const EXPRESSION_PROMPTS = {
 
 // === v5 프롬프트 빌더 (idphoto-kr 정본 — 수정 금지) ===
 function buildPromptV5(body) {
-  const { format, gender, age, clothing, clothingColor,
+  let { format, gender, age, clothing, clothingColor,
           suitColor, shirtColor, tieColor, tiePattern,
           hair, bgColor, expression } = body;
+
+  if ((age === 'baby' || age === 'child') && clothing === 'suit') {
+    clothing = 'default';
+  }
 
   const parts = [];
 
@@ -258,7 +262,9 @@ function buildPromptV5(body) {
   if (!clothing || clothing === 'default') {
     parts.push('[OUTFIT] Keep current clothing as-is. Only ensure it looks neat and tidy.');
   } else if (clothing === 'change') {
-    parts.push(`[OUTFIT] Dress this child in a clean ${clothingColor || 'white'} top, age-appropriate and neat.`);
+    const isChild = (age === 'baby' || age === 'child');
+    const subject = isChild ? 'this child' : 'this person';
+    parts.push(`[OUTFIT] Dress ${subject} in a clean ${clothingColor || 'white'} top, ${isChild ? 'age-appropriate and ' : ''}neat.`);
   } else if (clothing === 'casual') {
     parts.push(`[OUTFIT] Dress this person in a ${clothingColor || 'beige'} smart casual top, clean and neat.`);
   } else if (clothing === 'suit') {
@@ -269,8 +275,13 @@ function buildPromptV5(body) {
       const pattern = tiePattern === 'stripe' ? 'striped' : 'solid';
       tieClause = ` and a ${pattern} ${tieColor} tie`;
     }
-    const top = 'collared dress shirt';
-    parts.push(`[OUTFIT] Dress this person in a ${suit} formal business suit with a ${shirt} ${top}${tieClause}.`);
+    if (gender === 'f') {
+      const topItem = 'silk blouse';
+      parts.push(`[OUTFIT] Dress this person in a ${suit} formal business blazer with a ${shirt} ${topItem}${tieClause}.`);
+    } else {
+      const topItem = 'collared dress shirt';
+      parts.push(`[OUTFIT] Dress this person in a ${suit} formal business suit with a ${shirt} ${topItem}${tieClause}.`);
+    }
   }
 
   if (hair && hair !== 'default') {
