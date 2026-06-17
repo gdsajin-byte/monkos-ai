@@ -76,6 +76,7 @@ status: active
 | 2026-06-12 | iMac/막내1 | CF 인프라 맵트리 완료 — Pages Functions 13개(api 6+specs 7) 전수 분석, 외부 Workers 3개 전부 레거시 판정, 환경변수 13개 중 7개 레거시 추정, GEMINI_API_KEY 지문 미대조 경고, D1 monk-db 바인딩 정합 확인 | REPORT_20260612_iMac막내1_인프라_CF맵트리.md | ✅ |
 | 2026-06-17 | iMac/막내2 | 노출 표면 4건 보강 — /health 모델명 제거(3서비스), err.message 직통 반환 15곳 교체, /api/info styles 키 제거, admin AI prompt 응답 필드 제거. 3개 서비스 배포+실측 완료 | COMPLETION_20260617_iMac막내2_SECURITY_노출표면보강.md | ✅ |
 | 2026-06-17 | 웹/민아 | 시크릿 위생 전수 감사 — git history 무유출 확인(.env 무커밋), 로컬 잔존 5파일·토스 test키 3중복제·photo-coach .pem(history) 적발, INVENTORY 정합성 갭. 막내1 정리로 로컬 5파일 삭제 종결 | [감사보고서](../../reports/2026-06/REPORT_20260617_웹민아_시크릿위생_전수감사.md) | ✅ |
+| 06/17 | iMac/막내2 | 보안 노출 표면 4건 보강 — /health 모델명 제거·err.message 일반화 15곳·/api/info styles 제거·admin 프롬프트 반환 제거. 3개 서비스(idphoto-kr/jp/portal) prod 배포·실측 | COMPLETION_20260617, `ba32dcea` | ✅ |
 
 ---
 
