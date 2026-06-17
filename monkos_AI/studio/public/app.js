@@ -291,12 +291,20 @@ function renderColorSuboption() {
 function renderSuitSuboption() {
   let html = '';
 
-  html += '<div class="sub-label">수트 컬러</div><div class="acc-cards">';
+  const FEMALE_STYLE_LABELS = {
+    navy: '모던 (네이비)', brown: '모던 (브라운)',
+    gray: '프로페셔널 (그레이)', black: '클래식 (블랙)',
+  };
+  const isFemale = state.gender === 'f';
+  const suitLabel = isFemale ? '스타일' : '수트 컬러';
+
+  html += `<div class="sub-label">${suitLabel}</div><div class="acc-cards">`;
   V5_OPTIONS.suitColor.forEach(val => {
     const sel = state.suitColor === val ? ' selected' : '';
+    const label = isFemale ? (FEMALE_STYLE_LABELS[val] || LABELS.suitColor[val]) : LABELS.suitColor[val];
     html += `<button class="acc-card${sel}" data-val="${val}" data-field="suitColor">
       <span class="color-chip" style="background:${COLOR_MAP[val]}"></span>
-      <div class="acc-card-title">${LABELS.suitColor[val]}</div>
+      <div class="acc-card-title">${label}</div>
     </button>`;
   });
   html += '</div>';

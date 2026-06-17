@@ -91,7 +91,7 @@ API 명세서는 양사 기술 미팅에서 인크루트 시스템 요구사항�
 
 MONKOS 팀
 서비스: monkos.ai
-이메일: contact@monkos.ai
+이메일: info@monkos.ai
 전화: 010-9899-6215
 
 ---
