@@ -42,6 +42,7 @@ import { handleFaqList, handleFaqCreate, handleFaqUpdate, handleFaqDelete } from
 import { handleGalleryList, handleGalleryCreate, handleGalleryUpdate, handleGalleryDelete } from './lib/cms/gallery.js';
 import { handleBoardPublicList, handleBoardPublicGet, handleBoardPublicCreate, handleBoardPublicDelete, handleBoardAdminList, handleBoardAdminReply, handleBoardAdminDelete, handleBoardAdminToggle } from './lib/cms/board.js';
 import { handleUpload, handleImageList, handleImageDelete } from './lib/cms/upload.js';
+import { handleIdphotoResults } from './lib/cms/idphoto-review.js';
 import { handleAiImage, handleAiThumbnail, handleAiSuggest } from './lib/cms/ai.js';
 import { handleTranslate } from './lib/cms/translate.js';
 import { handleSearch } from './lib/cms/search.js';
@@ -192,6 +193,7 @@ const httpServer = createServer(async (req, res) => {
   if (urlPath?.startsWith('/api/admin/images/') && req.method === 'DELETE') return handleImageDelete(req, res);
   if (urlPath?.endsWith('/translate') && urlPath?.startsWith('/api/admin/blog/') && req.method === 'POST') return handleTranslate(req, res);
   if (urlPath === '/api/admin/search' && req.method === 'GET') return handleSearch(req, res);
+  if (urlPath === '/api/admin/idphoto/results' && req.method === 'GET') return handleIdphotoResults(req, res);
 
   // === CMS 사이트 설정 API ===
   if (urlPath === '/api/admin/settings' && req.method === 'GET') return handleSettingsGet(req, res);
