@@ -24,12 +24,12 @@ const TECH_PRIVACY_JA = `[重要: 内部技術名の非公開]
 - 「MONKOS AI」「独自AIエンジン」「プロ写真スタジオのノウハウを学習したAI」と表現`;
 
 const SERVICES_KO = `[서비스]
-- AI 증명사진 (한국어): https://idphoto-kr.monkos.ai/app
+- AI 증명사진 (한국어): https://idphoto-kr.monkos.ai/
   - AI 실시간 촬영 코칭 → AI 사진 생성(리터칭) → AI 품질 검증(QC)
   - 여권, 이력서, 증명사진 대응
   - 실시간 카메라 촬영만 가능 (갤러리 업로드 차단 — 딥페이크 방지)
   - 정체성 일치율 90% 이상 보장
-- AI 증명사진 (일본어): https://idphoto-jp.monkos.ai/app
+- AI 증명사진 (일본어): https://idphoto-jp.monkos.ai/
 - 증명사진 규격 정보 (200+국가): https://monkos.ai/specs
   - 한국(5)/일본(5)/미국(2)/유럽(5)/기타(9) 각국 규격 상세
   - 다국어 지원: /ja/specs (일본어), /en/specs (영어)
@@ -40,12 +40,12 @@ const SERVICES_KO = `[서비스]
 - 다국어 페이지: /ja/ (일본어), /en/ (영어) 접두사로 접근 가능`;
 
 const SERVICES_JA = `[サービス]
-- AI証明写真 (日本語): https://idphoto-jp.monkos.ai/app
+- AI証明写真 (日本語): https://idphoto-jp.monkos.ai/
   - AIリアルタイム撮影コーチング → AI写真生成(リタッチ) → AI品質検証(QC)
   - パスポート(35x45mm)、証明写真(30x40mm)対応
   - リアルタイムカメラ撮影のみ可能（ギャラリーアップロード不可 — ディープフェイク防止）
   - 正体性一致率90%以上保証
-- AI証明写真 (韓国語): https://idphoto-kr.monkos.ai/app
+- AI証明写真 (韓国語): https://idphoto-kr.monkos.ai/
 - 証明写真規格情報 (200+ヵ国): https://monkos.ai/specs
   - 日本(5)/韓国(5)/米国(2)/欧州(5)/その他(9) 各国規格詳細
   - 多言語対応: /ja/specs (日本語), /en/specs (英語)
@@ -147,7 +147,7 @@ export const PROMPT_MONK = `당신은 몽크사진관(MONK STUDIO)의 공식 어
 [AI 서비스 — MONKOS AI]
 - 몽크사진관의 노하우를 담은 AI 증명사진 서비스도 운영 중
 - 방문이 어려운 경우 AI로 증명사진 제작 가능
-- AI 증명사진: https://idphoto-kr.monkos.ai/app
+- AI 증명사진: https://idphoto-kr.monkos.ai/
 - 무료 크롭앱: https://monkos.ai/crop (ICAO 규격 자동 크롭, 완전 무료)
 - 증명사진 규격 정보 (200+국가): https://monkos.ai/specs
 

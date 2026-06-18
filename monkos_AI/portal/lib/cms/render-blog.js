@@ -243,6 +243,14 @@ export async function blogPostFragment(req, lang = null) {
   const post = doc.data();
   const htmlLang = lang || post.lang || 'ko';
 
+  const SEO_TITLE_OVERRIDES = {
+    'vol38-ai-kr': '셀카로 증명사진 찍을 때 꼭 알아야 할 것',
+    'ai-kr': '사진관이 만든 AI 플랫폼, MONKOS의 시작',
+  };
+  if (SEO_TITLE_OVERRIDES[slug]) {
+    post.title = SEO_TITLE_OVERRIDES[slug];
+  }
+
   // viewCount 비동기 증가
   blogCollection.doc(docId).update({ viewCount: (post.viewCount || 0) + 1 }).catch(() => {});
 
@@ -408,7 +416,7 @@ ${JSON.stringify({
       ${tagsHtml ? `<div class="post-tags">${tagsHtml}</div>` : ''}
     </div>
     ${post.thumbnail ? `<div class="post-thumb"><img src="${escapeHtml(post.thumbnail)}" alt="${escapeHtml(post.title)}"></div>` : ''}
-    <div class="post-content">${contentHtml}</div>
+    <div class="post-content">${contentHtml}${SEO_TITLE_OVERRIDES[slug] ? `<p style="margin-top:32px;padding:20px 24px;background:rgba(108,79,255,0.06);border-radius:12px;border-left:4px solid var(--accent);"><strong>AI 증명사진을 직접 체험해보세요</strong><br><a href="https://idphoto-kr.monkos.ai/" style="color:var(--accent);font-weight:500;">MONKOS AI 증명사진 바로가기 &rarr;</a></p>` : ''}</div>
   </article>
   <div class="share-buttons">
     <span class="share-label">${shareLabel}</span>

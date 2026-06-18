@@ -478,7 +478,7 @@ export function aiPhotoGuideFragment(forceLang = null) {
       ctaTitle: '지금 바로 만들어 보세요',
       ctaBtn1: 'AI 증명사진 만들기',
       ctaBtn2: '무료 크롭 앱',
-      ctaBtn1Url: 'https://idphoto-kr.monkos.ai/app',
+      ctaBtn1Url: 'https://idphoto-kr.monkos.ai/',
       ctaBtn2Url: 'https://monkos.ai/crop',
     },
   };

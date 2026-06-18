@@ -89,8 +89,8 @@ const documents = [
     title: '서비스 URL 안내',
     content: `MONKOS AI 서비스 링크:
 - 포털 (메인): https://monkos.ai
-- AI 증명사진 (일본어): https://idphoto-jp.monkos.ai/app
-- AI 증명사진 (한국어): https://idphoto-kr.monkos.ai/app
+- AI 증명사진 (일본어): https://idphoto-jp.monkos.ai/
+- AI 증명사진 (한국어): https://idphoto-kr.monkos.ai/
 - 고객지원 이메일: info@monkos.ai
 - 텔레그램 CS: @monkos_support_bot`,
     keywords: ['url', 'link', 'リンク', '링크', '주소', 'address', 'サイト', '사이트', 'website'],

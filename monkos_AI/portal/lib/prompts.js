@@ -68,12 +68,12 @@ ${lines}
 
 // === 공통 블록: 서비스 목록 + 할루시네이션 차단 ===
 const SERVICES_BLOCK_KO = `[서비스]
-- AI 증명사진 (한국어): https://idphoto-kr.monkos.ai/app
+- AI 증명사진 (한국어): https://idphoto-kr.monkos.ai/
   - AI 실시간 촬영 코칭 → AI 사진 생성(리터칭) → AI 품질 검증(QC)
   - 여권, 이력서, 증명사진 대응
   - 실시간 카메라 촬영만 가능 (갤러리 업로드 차단 — 딥페이크 방지)
   - 정체성 일치율 90% 이상 보장
-- AI 증명사진 (일본어): https://idphoto-jp.monkos.ai/app
+- AI 증명사진 (일본어): https://idphoto-jp.monkos.ai/
 - 증명사진 규격 정보 (26종): https://monkos.ai/specs
   - 한국(5)/일본(5)/미국(2)/유럽(5)/기타(9) 각국 규격 상세
   - 다국어 지원: /ja/specs (일본어), /en/specs (영어)
@@ -84,12 +84,12 @@ const SERVICES_BLOCK_KO = `[서비스]
 - 다국어 페이지: /ja/ (일본어), /en/ (영어) 접두사로 접근 가능`;
 
 const SERVICES_BLOCK_JA = `[サービス]
-- AI証明写真 (日本語): https://idphoto-jp.monkos.ai/app
+- AI証明写真 (日本語): https://idphoto-jp.monkos.ai/
   - AIリアルタイム撮影コーチング → AI写真生成(リタッチ) → AI品質検証(QC)
   - パスポート(35x45mm)、証明写真(30x40mm)対応
   - リアルタイムカメラ撮影のみ可能（ギャラリーアップロード不可 — ディープフェイク防止）
   - 正体性一致率90%以上保証
-- AI証明写真 (韓国語): https://idphoto-kr.monkos.ai/app
+- AI証明写真 (韓国語): https://idphoto-kr.monkos.ai/
 - 証明写真規格情報 (26種): https://monkos.ai/specs
   - 日本(5)/韓国(5)/米国(2)/欧州(5)/その他(9) 各国規格詳細
   - 多言語対応: /ja/specs (日本語), /en/specs (英語)

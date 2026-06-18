@@ -135,8 +135,8 @@ var t = i18n[lang];
 // region 기반 CTA URL
 function getCtaUrl() {
   return (region === 'kr')
-    ? 'https://idphoto-kr.monkos.ai/app'
-    : 'https://idphoto-jp.monkos.ai/app';
+    ? 'https://idphoto-kr.monkos.ai/'
+    : 'https://idphoto-jp.monkos.ai/';
 }
 
 // 언어 전환 (KO → region=kr, JA/EN → region=global)

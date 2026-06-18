@@ -40,8 +40,8 @@ const sections = [
     data: {
       cta: { ko: '촬영 시작하기', ja: '証明写真を撮る', en: 'Take ID Photo' },
       ctaUrl: {
-        kr: 'https://idphoto-kr.monkos.ai/app',
-        global: 'https://idphoto-jp.monkos.ai/app',
+        kr: 'https://idphoto-kr.monkos.ai/',
+        global: 'https://idphoto-jp.monkos.ai/',
       },
       showLangSwitch: true,
       showLogin: true,
