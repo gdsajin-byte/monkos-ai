@@ -147,109 +147,6 @@
     },
     "countryJa": "韓国"
   },
-  "korea-resume": {
-    "slug": "korea-resume",
-    "country": "한국",
-    "countryEn": "Korea",
-    "type": "반명함 (3×4)",
-    "typeEn": "Half-size (3×4)",
-    "typeJa": "半名刺（3×4）",
-    "size": "3 × 4cm",
-    "pixels": "제출처에 따라 상이",
-    "dpi": "-",
-    "background": "흰색 또는 연파란 (관행)",
-    "headHeight": "제출처에 따라 상이",
-    "validity": "제출처에 따라 상이",
-    "fileSpec": "제출처에 따라 상이",
-    "details": {
-      "ko": "이력서, 학생증, 자격증 등 사기관 제출용. 사이즈(3×4cm)만 통일되어 있으며 픽셀·배경·파일 등 세부 규격은 공식 규정 없음. 제출처 요구사항을 확인할 것.",
-      "ja": "履歴書、学生証、資格証など各機関提出用。サイズ（3×4cm）のみ統一で、公式な細則は定められていない。提出先の要件を確認すること。",
-      "en": "For resumes, student IDs, certificates. Only the size (3×4cm) is standardized — no official regulation for pixels, background, or file specs. Check requirements of the submitting institution."
-    },
-    "rejectionReasons": {
-      "ko": [
-        "사이즈 불일치 (여권 규격과 혼동)",
-        "배경 불균일",
-        "머리 잘림",
-        "표정 부적합",
-        "해상도 부족"
-      ],
-      "ja": [
-        "サイズ不一致",
-        "背景不均一",
-        "頭切れ",
-        "表情不適合",
-        "解像度不足"
-      ],
-      "en": [
-        "Wrong size (confused with passport)",
-        "Uneven background",
-        "Head cropped",
-        "Inappropriate expression",
-        "Low resolution"
-      ]
-    },
-    "faqs": {
-      "ko": [
-        {
-          "q": "반명함과 여권사진 차이가 뭔가요?",
-          "a": "사이즈가 다릅니다. 여권사진은 3.5×4.5cm, 반명함은 3×4cm입니다. 반명함은 공식 규정이 없어 제출처마다 요구사항이 다를 수 있습니다."
-        },
-        {
-          "q": "이력서 사진도 정장을 입어야 하나요?",
-          "a": "필수는 아니지만 권장됩니다. 비즈니스 캐주얼 이상이 일반적입니다."
-        },
-        {
-          "q": "반명함 사진을 온라인으로 제출할 수 있나요?",
-          "a": "네, MONKOS에서 디지털 파일로 다운로드하여 온라인 제출이 가능합니다."
-        }
-      ],
-      "ja": [
-        {
-          "q": "半名刺とパスポート写真の違いは？",
-          "a": "サイズのみ異なります。パスポートは3.5×4.5cm、半名刺（履歴書）は3×4cmです。"
-        },
-        {
-          "q": "履歴書写真はスーツ必須ですか？",
-          "a": "必須ではありませんが、ビジネスカジュアル以上が推奨されます。"
-        }
-      ],
-      "en": [
-        {
-          "q": "What's the difference between resume and passport photo?",
-          "a": "Only the size differs. Passport is 3.5×4.5cm, resume is 3×4cm."
-        },
-        {
-          "q": "Do I need to wear a suit for a resume photo?",
-          "a": "Not required, but business casual or above is recommended."
-        }
-      ]
-    },
-    "ctaService": "idphoto-kr",
-    "priority": 2,
-    "pixelsEn": "Varies by institution",
-    "pixelsJa": "提出先により異なる",
-    "headHeightEn": "Varies by institution",
-    "headHeightJa": "提出先により異なる",
-    "validityEn": "Varies by institution",
-    "validityJa": "提出先により異なる",
-    "fileSpecEn": "Varies by institution",
-    "fileSpecJa": "提出先により異なる",
-    "backgroundEn": "White or light blue (convention)",
-    "backgroundJa": "白または薄い青（慣行）",
-    "continent": "asia",
-    "countryJa": "韓国",
-    "seoTitle": {
-      "ko": "한국 반명함 (3×4) 사진 규격 3 × 4cm — 배경·복장 가이드 | MONKOS",
-      "en": "Korea Half-size (3×4) Photo Size 3 × 4cm — Background & Dress Code | MONKOS",
-      "ja": "韓国 半名刺（3×4）写真規格 3 × 4cm — 背景・服装ガイド | MONKOS"
-    },
-    "seoDescription": {
-      "ko": "한국 반명함 (3×4) 사진 규격(3 × 4cm, 흰색 또는 연파란 (관행)). 규정·촬영 팁·AI 자동 크롭까지.",
-      "en": "Korea Half-size (3×4) photo specs (3 × 4cm, White or light blue (convention)). Requirements, tips & AI auto crop.",
-      "ja": "韓国 半名刺（3×4）写真規格（3 × 4cm、白または薄い青（慣行））。規定・撮影のコツ・AI自動クロップ。"
-    }
-  },
   "japan-passport": {
     "slug": "japan-passport",
     "country": "日本",
@@ -719,7 +616,7 @@
     "slug": "korea-halfcard",
     "country": "한국",
     "countryEn": "Korea",
-    "type": "반명함 (이력서·서류)",
+    "type": "반명함 (3×4)",
     "typeEn": "Half-size Photo",
     "typeJa": "半名刺写真",
     "size": "30 × 40 mm",

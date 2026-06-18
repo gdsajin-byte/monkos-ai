@@ -62,7 +62,7 @@ const SPECS_I18N = {
       { label: '무료 크롭앱', href: '/crop' },
       { label: 'FAQ', href: '/faq' },
     ],
-    sameCountryLabel: '같은 국가 다른 규격',
+    sameCountryLabel: '다른 사이즈 증명사진',
     specLabel: '규격 보기',
     heroGlobal: 'GLOBAL PHOTO SPEC GUIDE',
     heroTitle: '증명사진 규격 가이드',
@@ -113,7 +113,7 @@ const SPECS_I18N = {
       { label: '無料クロップアプリ', href: '/crop' },
       { label: 'FAQ', href: '/ja/faq' },
     ],
-    sameCountryLabel: '同じ国の別の規格',
+    sameCountryLabel: '他サイズの証明写真',
     specLabel: '規格を見る',
     heroGlobal: 'GLOBAL PHOTO SPEC GUIDE',
     heroTitle: '証明写真 規格ガイド',
@@ -164,7 +164,7 @@ const SPECS_I18N = {
       { label: 'Free Crop App', href: '/crop' },
       { label: 'FAQ', href: '/en/faq' },
     ],
-    sameCountryLabel: 'Other specs for the same country',
+    sameCountryLabel: 'Other Size ID Photos',
     specLabel: 'View specs',
     heroGlobal: 'GLOBAL PHOTO SPEC GUIDE',
     heroTitle: 'Photo Spec Guide',
@@ -420,12 +420,15 @@ a:hover { color: #00F4C4; }
    Accent: #00D4AA | Sections divided by alternating bg color
    ================================================================ */
 
-/* === Section cards on white bg === */
-.specs-band { margin: 0 auto 16px; padding: 28px 32px; max-width: 1000px; background: #f4f5f7; border-radius: 16px; }
-.specs-band .band-inner { }
-.specs-band-white { background: #f4f5f7; }
-.specs-band-gray { background: #f4f5f7; }
-.specs-band-dark { background: linear-gradient(135deg, #0b1120 0%, #162032 50%, #0f2a3d 100%); border-radius: 16px; }
+/* === Section bands — full-width alternating === */
+.specs-band {
+  margin: 0; padding: 60px 32px; background: #ffffff;
+  border-radius: 0;
+}
+.specs-band .band-inner { max-width: 1000px; margin: 0 auto; }
+.specs-band-white { background: #ffffff; }
+.specs-band-gray { background: #f5f5f5; }
+.specs-band-dark { background: linear-gradient(135deg, #0b1120 0%, #162032 50%, #0f2a3d 100%); }
 
 /* === Detail — Back link === */
 .specs-back {
@@ -437,8 +440,8 @@ a:hover { color: #00F4C4; }
 
 /* === Detail — Hero (white, clean) === */
 .specs-hero-wrap {
-  background: #ffffff; margin: -20px -20px 0; padding: 0 20px 16px;
-  min-height: 682px; max-width: 1440px; margin-left: auto; margin-right: auto;
+  background: #ffffff; padding: 40px 48px 32px;
+  min-height: 682px; max-width: 1200px; margin: 0 auto;
   display: flex; flex-direction: column; justify-content: center;
   box-sizing: border-box;
 }
@@ -447,17 +450,18 @@ a:hover { color: #00F4C4; }
   align-items: center; max-width: 1000px; margin: 0 auto;
 }
 .specs-hero-text h1 {
-  font-size: 38px; font-weight: 500; color: #1a1a1a;
+  font-size: 42px; font-weight: 700; color: #1a1a1a;
   line-height: 1.35; margin-bottom: 16px;
 }
 .specs-hero-text .specs-hero-desc {
   color: #666; font-size: 15px; line-height: 1.6; margin-bottom: 24px;
 }
 .specs-hero-tags { display: flex; gap: 8px; flex-wrap: wrap; }
-.specs-hero-tags span {
+.specs-hero-tags span, .specs-hero-tags a span {
   background: rgba(0,212,170,0.08); color: #00D4AA;
-  padding: 6px 16px; border-radius: 24px; font-size: 13px;
+  padding: 6px 12px; border-radius: 20px; font-size: 13px;
   font-weight: 600; border: 1px solid rgba(0,212,170,0.15);
+  white-space: nowrap;
 }
 .specs-hero-label {
   font-size: 12px; letter-spacing: 2.5px; color: #00D4AA; font-weight: 600;
@@ -493,10 +497,29 @@ a:hover { color: #00F4C4; }
 }
 .specs-ba-label-after { color: #00D4AA; }
 
-/* === Crop tool mobile === */
+/* === Crop tool === */
+.specs-crop-tool { display: flex; gap: 12px; align-items: stretch; justify-content: center; }
+.specs-crop-upload {
+  width: 300px; height: 300px; flex-shrink: 0; background: #ffffff;
+  border: 2px dashed rgba(0,0,0,0.12); border-radius: 14px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  cursor: pointer; box-sizing: border-box;
+}
+.specs-crop-ba { display: flex; gap: 0; width: 600px; height: 300px; flex-shrink: 0; border-radius: 14px; overflow: hidden; }
+.specs-crop-ba-item { width: 300px; height: 300px; position: relative; }
+.specs-crop-ba-item img { width: 100%; height: 100%; object-fit: cover; object-position: center top; display: block; }
+.specs-crop-ba-label {
+  position: absolute; bottom: 0; left: 0; right: 0; padding: 8px 0;
+  text-align: center; background: rgba(0,0,0,0.5); color: #fff;
+  font-size: 11px; font-weight: 700; letter-spacing: 2px;
+}
+.specs-crop-ba-after { background: rgba(0,212,170,0.7); }
+
 @media (max-width: 768px) {
-  .specs-crop-tool { grid-template-columns: 1fr !important; }
-  .specs-ba-img { height: 200px; }
+  .specs-crop-tool { flex-direction: column; align-items: center; }
+  .specs-crop-upload { width: 100%; height: auto; min-height: 200px; padding: 32px 20px; }
+  .specs-crop-ba { width: 100%; height: 220px; }
+  .specs-crop-ba-item { width: 50%; height: 100%; }
 }
 
 /* === Detail — Photo Diagram === */
@@ -556,10 +579,8 @@ a:hover { color: #00F4C4; }
 /* === Detail — Section wrapper === */
 .specs-section { margin-bottom: 48px; }
 .specs-section h2 {
-  font-size: 21px; font-weight: 800; color: #1a1a1a;
-  margin-bottom: 24px; padding-bottom: 14px;
-  border-bottom: 2px solid #00D4AA; display: inline-block;
-  letter-spacing: -0.2px;
+  font-size: 32px; font-weight: 700; color: #1a1a1a;
+  margin-bottom: 32px; letter-spacing: -0.3px;
 }
 .specs-section p { font-size: 14px; color: #666; line-height: 1.8; }
 
@@ -758,11 +779,16 @@ a:hover { color: #00F4C4; }
   background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
   border-radius: 14px; padding: 32px 24px; position: relative;
   cursor: pointer; text-decoration: none; display: block;
-  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+  transition: all 0.25s;
 }
 .tier-card:hover {
-  background: rgba(255,255,255,0.1);
-  transform: translateY(-2px);
+  background: rgba(255,255,255,0.12);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  border-color: rgba(255,255,255,0.2);
+}
+.tier-card:active {
+  transform: translateY(0);
 }
 .tier-card.recommended {
   border-color: #00D4AA; background: rgba(0,212,170,0.08);
@@ -826,10 +852,14 @@ a:hover { color: #00F4C4; }
 
 /* === Responsive — Detail page === */
 @media (max-width: 768px) {
-  .specs-hero-wrap { margin: -20px -20px 36px; padding: 36px 18px 44px; }
-  .specs-hero { grid-template-columns: 1fr; gap: 32px; }
-  .specs-hero-text h1 { font-size: 26px; }
-  .specs-diagram { margin-bottom: 8px; padding: 32px 36px; }
+  .specs-hero-wrap { margin: 0; padding: 24px 20px 32px; }
+  .specs-hero { grid-template-columns: 1fr; gap: 24px; }
+  .specs-hero-text { text-align: center; }
+  .specs-hero-text h1 { font-size: 28px; }
+  .specs-hero-text .specs-hero-desc { text-align: left; }
+  .specs-hero-tags { justify-content: center; }
+  .specs-back { display: block; text-align: center; margin-bottom: 12px; }
+  .specs-diagram { margin-bottom: 8px; padding: 20px 36px; }
   .specs-details-grid { grid-template-columns: 1fr; }
   .specs-ox-compare { grid-template-columns: 1fr; }
   .specs-rejection-grid { grid-template-columns: 1fr; }
@@ -1290,6 +1320,7 @@ ${hreflangTags}
 
   const bodyContent = `
   <div class="specs-hero-wrap">
+  <div class="band-inner">
   <a href="${prefix}/specs" class="specs-back">${escapeHtml(backLabel)}</a>
 
   <!-- Hero 풀와이드 -->
@@ -1297,14 +1328,6 @@ ${hreflangTags}
     <div class="specs-hero-text">
       <h1>${countryFlag(countrySlug, 40)} ${(specData.heroTitle && specData.heroTitle[lang]) ? escapeHtml(specData.heroTitle[lang]) : `${escapeHtml(countryName)} ${escapeHtml(typeName)} ${lang === 'ja' ? '規定案内' : lang === 'en' ? 'Requirements Guide' : '규정안내'}`}</h1>
       <p class="specs-hero-desc">${escapeHtml(heroDescription)}</p>
-      ${sameCountry.length > 0 ? `<div style="margin-top:20px;">
-        <div style="font-size:13px;font-weight:700;color:#888;margin-bottom:4px;">${escapeHtml(i.sameCountryLabel)}</div>
-        <div class="specs-hero-tags">${sameCountry.map(s => {
-          const name = lang === 'ja' ? (s.typeJa || s.type) : (lang === 'en' ? s.typeEn : s.type);
-          const { typeSlug: ts, countrySlug: cs } = parseSlug(s.slug);
-          return '<a href="' + prefix + '/specs/' + ts + '/' + cs + '" style="text-decoration:none;"><span>' + escapeHtml(name) + '</span></a>';
-        }).join('')}</div>
-      </div>` : ''}
     </div>
     <div class="specs-diagram">
       <div class="specs-photo-frame">
@@ -1326,42 +1349,43 @@ ${hreflangTags}
         <div class="specs-guide-w">${escapeHtml(locField(specData, 'size', lang).split('×')[0].trim())}</div>
       </div>
       <div class="specs-guide-h">${escapeHtml((locField(specData, 'size', lang).split('×')[1] || '4.5cm').trim())}</div>
-      <svg class="specs-stamp" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" style="position:absolute;bottom:-10px;right:-30px;width:220px;height:220px;transform:rotate(-22deg);opacity:0.7;z-index:50;pointer-events:none;filter:drop-shadow(1px 1px 0 rgba(139,26,26,0.3)) drop-shadow(-1px -1px 0 rgba(255,255,255,0.4));">
-        <circle cx="60" cy="60" r="54" fill="none" stroke="#8B1A1A" stroke-width="5"/>
-        <circle cx="60" cy="60" r="46" fill="none" stroke="#8B1A1A" stroke-width="2"/>
-        <line x1="8" y1="52" x2="112" y2="52" stroke="#8B1A1A" stroke-width="3"/>
-        <line x1="8" y1="72" x2="112" y2="72" stroke="#8B1A1A" stroke-width="3"/>
-        <rect x="8" y="52" width="104" height="20" fill="#8B1A1A" opacity="0.15"/>
-        <text x="60" y="67.5" text-anchor="middle" font-size="20" font-weight="900" fill="#8B1A1A" font-family="Pretendard,sans-serif" letter-spacing="4">PASSED</text>
-        <path d="M 24 46 Q 60 18 96 46" fill="none" stroke="none" id="stamp-at"/>
-        <text font-size="10" fill="#8B1A1A" font-weight="800" letter-spacing="5"><textPath href="#stamp-at" startOffset="50%" text-anchor="middle">PASSED</textPath></text>
-        <path d="M 24 78 Q 60 106 96 78" fill="none" stroke="none" id="stamp-ab"/>
-        <text font-size="10" fill="#8B1A1A" font-weight="800" letter-spacing="5"><textPath href="#stamp-ab" startOffset="50%" text-anchor="middle">PASSED</textPath></text>
-      </svg>
     </div>
   </section>
   </div>
+  </div>
 
-  <!-- BAND: 규격 맞춤 도구 (히어로 바로 아래) -->
-  <div class="specs-band specs-band-white">
+  ${sameCountry.length > 0 ? `<!-- BAND: 다른 용도 규격 -->
+  <div class="specs-band specs-band-dark" style="padding:32px 32px;">
+    <div class="band-inner">
+      <div style="font-size:14px;font-weight:600;color:rgba(255,255,255,0.6);margin-bottom:12px;">${escapeHtml(i.sameCountryLabel)}</div>
+      <div class="specs-hero-tags">${sameCountry.map(s => {
+        const name = lang === 'ja' ? (s.typeJa || s.type) : (lang === 'en' ? s.typeEn : s.type);
+        const { typeSlug: ts, countrySlug: cs } = parseSlug(s.slug);
+        return '<a href="' + prefix + '/specs/' + ts + '/' + cs + '" style="text-decoration:none;"><span>' + escapeHtml(name) + '</span></a>';
+      }).join('')}</div>
+    </div>
+  </div>` : ''}
+
+  <!-- BAND: 규격 맞춤 도구 -->
+  <div class="specs-band specs-band-gray">
     <div class="band-inner">
       <div class="specs-section">
         <h2>${lang === 'ja' ? `${escapeHtml(typeName)} 規定写真を作る` : lang === 'en' ? `Make ${escapeHtml(typeName)} Photo` : `${escapeHtml(typeName)} 규정 사진 만들기`}</h2>
-        <div class="specs-crop-tool" id="specs-crop-embed" style="display:flex;gap:12px;align-items:stretch;">
-          <div style="flex:1;min-height:280px;background:#f8f9fb;border:2px dashed rgba(0,0,0,0.12);border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;box-sizing:border-box;">
+        <div class="specs-crop-tool" id="specs-crop-embed">
+          <div class="specs-crop-upload">
             <div style="font-size:32px;color:#aaa;margin-bottom:12px;">&#8615;</div>
             <div style="font-size:15px;color:#555;font-weight:600;margin-bottom:8px;">${lang === 'ja' ? '写真をドラッグ＆ドロップ' : lang === 'en' ? 'Drag and drop photo' : '사진을 끌어다 놓으세요'}</div>
             <div style="margin:12px 0;padding:10px 24px;border:1.5px solid #00D4AA;border-radius:8px;color:#00D4AA;font-size:14px;font-weight:600;">${lang === 'ja' ? '写真を選択' : lang === 'en' ? 'Choose photo' : '사진 선택'}</div>
             <div style="font-size:12px;color:#aaa;margin-top:8px;">JPG, PNG, HEIC / max 10MB</div>
           </div>
-          <div style="display:flex;gap:0;flex:2;border-radius:14px;overflow:hidden;height:280px;">
-            <div style="flex:1;position:relative;">
-              <img src="/images/guides/sample-before-kr.png" alt="Before" style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block;">
-              <div style="position:absolute;bottom:0;left:0;right:0;padding:8px 0;text-align:center;background:rgba(0,0,0,0.5);color:#fff;font-size:11px;font-weight:700;letter-spacing:2px;">BEFORE</div>
+          <div class="specs-crop-ba">
+            <div class="specs-crop-ba-item">
+              <img src="/images/guides/sample-before-kr.png" alt="Before">
+              <div class="specs-crop-ba-label">BEFORE</div>
             </div>
-            <div style="flex:1;position:relative;">
-              <img src="/images/guides/sample-after-kr.webp" alt="After" style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block;">
-              <div style="position:absolute;bottom:0;left:0;right:0;padding:8px 0;text-align:center;background:rgba(0,212,170,0.7);color:#fff;font-size:11px;font-weight:700;letter-spacing:2px;">AFTER</div>
+            <div class="specs-crop-ba-item">
+              <img src="/images/guides/sample-after-kr.webp" alt="After">
+              <div class="specs-crop-ba-label specs-crop-ba-after">AFTER</div>
             </div>
           </div>
         </div>
@@ -1369,54 +1393,74 @@ ${hreflangTags}
     </div>
   </div>
 
-  <!-- BAND: 규정 영역 (회색 배경) -->
-  <div class="specs-band specs-band-gray">
+  <!-- BAND: 규격 정보 -->
+  <div class="specs-band specs-band-white">
     <div class="band-inner">
-      <div class="specs-ai-summary">${aiSummary}</div>
-      <table class="specs-table">
-        <tbody>
-          ${tableRows}
-        </tbody>
-      </table>
-      ${detailLines.length ? `<div class="specs-section" style="margin-top:32px;">
-        <h2>${escapeHtml(i.detailsTitle)}</h2>
-        <div class="specs-details-grid">
-          ${detailGridHtml}
-        </div>
-      </div>` : ''}
+      <div class="specs-section">
+        <h2>${lang === 'ja' ? '規格情報' : lang === 'en' ? 'Specifications' : '규격 정보'}</h2>
+        <div class="specs-ai-summary">${aiSummary}</div>
+        <table class="specs-table">
+          <tbody>
+            ${tableRows}
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 
-  <!-- BAND: 참고 영역 (흰색 배경) -->
+  ${detailLines.length ? `<!-- BAND: 촬영 주의사항 -->
+  <div class="specs-band specs-band-gray">
+    <div class="band-inner">
+      <div class="specs-section">
+        <h2>${lang === 'ja' ? '撮影時の注意事項' : lang === 'en' ? 'Photo Requirements' : '촬영 주의사항'}</h2>
+        <div class="specs-details-grid">
+          ${detailGridHtml}
+        </div>
+      </div>
+    </div>
+  </div>` : ''}
+
+  ${rejections.length ? `<!-- BAND: 반려 사유 -->
   <div class="specs-band specs-band-white">
     <div class="band-inner">
-      ${rejections.length ? `<div class="specs-section">
+      <div class="specs-section">
         <h2>${escapeHtml(i.rejectionTitle)}</h2>
         <ul class="specs-rejection-grid">
           ${rejectionHtml}
         </ul>
-      </div>` : ''}
+      </div>
+    </div>
+  </div>` : ''}
 
-      ${faqs.length ? `<div class="specs-section">
+  ${specData.officialSource ? `<!-- BAND: 공식 안내 -->
+  <div class="specs-band specs-band-gray">
+    <div class="band-inner">
+      <a href="${escapeHtml(specData.officialSource.url)}" target="_blank" rel="noopener noreferrer" class="specs-official-link">
+        <span>${escapeHtml((specData.officialSource.label && (specData.officialSource.label[lang] || specData.officialSource.label.ko)) || specData.officialSource.url)}</span>
+        <span class="specs-external-icon">↗</span>
+      </a>
+    </div>
+  </div>` : ''}
+
+  ${faqs.length ? `<!-- BAND: 자주 묻는 질문 -->
+  <div class="specs-band specs-band-gray">
+    <div class="band-inner">
+      <div class="specs-section">
         <h2>${escapeHtml(i.faqTitle)}</h2>
         <div class="specs-faq">
           ${faqHtml}
         </div>
-      </div>` : ''}
-
-      ${specData.officialSource ? `<a href="${escapeHtml(specData.officialSource.url)}" target="_blank" rel="noopener noreferrer" class="specs-official-link">
-        <span>${escapeHtml((specData.officialSource.label && (specData.officialSource.label[lang] || specData.officialSource.label.ko)) || specData.officialSource.url)}</span>
-        <span class="specs-external-icon">↗</span>
-      </a>` : ''}
+      </div>
     </div>
-  </div>
+  </div>` : ''}
 
-  <!-- BAND: CTA 영역 (다크 배경) -->
+  <!-- BAND: CTA 영역 (다크 배경, 맨 하단) -->
   <div class="specs-band specs-band-dark">
     <div class="band-inner">
       <div class="tier-section">
         <div class="tier-grid">
           <div class="tier-card">
+            <img src="/images/idpass-icon.png" alt="ID PASS" style="width:48px;height:48px;border-radius:10px;margin-bottom:12px;">
             <h3>${i.tierFreeTitle}</h3>
             <div class="tier-sub">${escapeHtml(i.tierFreeSub)}</div>
             <div class="tier-desc">${escapeHtml(i.tierFreeDesc)}</div>
@@ -1440,18 +1484,10 @@ ${hreflangTags}
         </div>
       </div>
 
-      <div class="specs-related">
-        <h3>${escapeHtml(i.relatedTitle)}</h3>
-        <div class="specs-related-links">
-          ${relatedLinksHtml}
-        </div>
-        ${sameCountry.length > 0 ? `<h3 style="margin-top:16px;">${escapeHtml(i.sameCountryLabel)}</h3>
-        <div class="specs-related-links">
-          ${sameCountryLinks}
-        </div>` : ''}
-      </div>
     </div>
-  </div>`;
+  </div>
+
+`;
 
   return {
     title,
