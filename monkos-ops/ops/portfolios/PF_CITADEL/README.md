@@ -165,6 +165,8 @@ status: active
 | 06/17 | 웹/민아 | **"AI 증명사진" 헤드텀 정밀 경쟁분석** — 색인 1,580 급증(specs 다국어 침투) 해석 + 자기잠식 적발(우리 5페이지 분산: app 62·blog 146·guide 11·루트 96) + 증명한컷(idcut.kr) **빈집 실측**(playwright SERP — 토종 정조준 유일, 나머지 글로벌 번역체) + 광고중단 가설 반증(GSC상 광고무관 요동) + 헤드텀 거버넌스 처방 | [경쟁분석](../../reports/2026-06/REPORT_20260617_웹민아_AI증명사진_헤드텀_경쟁분석.md) | ✅ |
 | 06/18 | iMac/쌍아 | **헤드텀 거버넌스 + 블로그 축 전환 제안서** — 웹/민아 "5페이지 잠식" 과잉진단 보정(서브도메인=별도전선, 진짜 잠식은 포털 내 3페이지) + idphoto-kr canonical 모순 적발(app/루트 삼중충돌) + monkos.ai 블로그 축 AI/바이브코딩으로 전환 + 헤드텀 레지스트리 신설 제안. 민아 교차검증 대기 | [제안서](../../proposals/PROPOSAL_20260618_iMac쌍아_헤드텀거버넌스_블로그축전환.md) | ✅ 민아 검증 완료 |
 | 06/18 | 웹/민아 | **제안서 교차검증 + 전수조사** — "왜 /app이 떴나" 라이브 HTML로 규명(canonical+hreflang이 /app 가리켜 루트 신호 강제송금, robots 무죄) → **대표=루트 확정 권고**. 보완 2건 적발: 제안서 hreflang 누락(KR/JP index.html 6줄) + guide@11 보호(헤드텀 제거 대상서 제외). 전수조사 A~E(KR/JP index.html·포털 CTA/RAG 내부링크·Ads·GSC) | [교차검증](../../reports/2026-06/REPORT_20260618_웹민아_헤드텀제안_교차검증.md) | ✅ 쌍아 토스 |
+| 06/18 | 쌍아→막내 | **헤드텀 루트 통일 실행+배포** — KR/JP canonical+hreflang /app→/ (3줄씩) + 포털/functions CTA·RAG 내부링크 9개소 /app→/ + 블로그 title 헤드텀 제거(render-blog SEO_TITLE_OVERRIDES, guide 미접촉) + CTA블록. 4건 배포(idphoto-kr·jp·portal·CF Pages) | 막내 배포 | ✅ |
+| 06/18 | 웹/민아 | **배포 후 라이브 검증 7/7 통과** — ①②KR /·/app canonical+hreflang 루트 ③JP 루트+KO↔JP 상호참조 정합 ④guide/ai-photo title 무변동(11위 보호) ⑤vol38·⑥ai-kr 헤드텀 제거 확인 ⑦포털 /app→idphoto루트 302 정상(오라우팅 無). og:url·x-default·robots 무변동. **§3.C 자기교정**: 내 인벤토리가 functions/ RAG·JP짝 누락 → 쌍아 9개소 상위집합이 더 완전 | 라이브 curl 실측 | ✅ |
 
 ---
 
