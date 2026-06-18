@@ -7,6 +7,10 @@ cd "$(git rev-parse --show-toplevel)"
 
 WORKS_OK=true
 
+echo "=== [0/3] retrieval 인덱스 리빌드 ==="
+(cd scripts/retrieval && node build_index.js) || echo "⚠️ 인덱스 빌드 실패 — push는 계속"
+echo ""
+
 echo "=== [1/3] works submodule push ==="
 cd monkos-ops/works
 git add -A

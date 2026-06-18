@@ -4,7 +4,11 @@ const fs = require('fs');
 const Database = require('better-sqlite3');
 const matter = require('gray-matter');
 
-const ROOT = path.resolve(__dirname, '../../monkos-ops');
+const SCAN_DIRS = [
+  path.resolve(__dirname, '../../monkos-ops'),
+  path.resolve(__dirname, '../../governance'),
+  path.resolve(__dirname, '../../docs'),
+];
 const DB_PATH = path.join(__dirname, 'monk_index.db');
 
 const PF_PATTERN = /PF_([A-Z0-9_]+)/g;
@@ -109,7 +113,12 @@ function buildIndex() {
     INSERT INTO doc_portfolios (doc_id, portfolio) VALUES (?, ?)
   `);
 
-  const files = scanMarkdownFiles(ROOT);
+  const files = [];
+  for (const dir of SCAN_DIRS) {
+    if (fs.existsSync(dir)) {
+      files.push(...scanMarkdownFiles(dir));
+    }
+  }
   let indexed = 0;
 
   const insertAll = db.transaction(() => {
