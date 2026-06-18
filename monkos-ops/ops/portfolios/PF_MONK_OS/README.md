@@ -105,6 +105,7 @@ domain: "governance/infrastructure"
 | 2026-06-11 | iMac/막내3 | **문서 배치 정비 실행 32건** — git mv 27건(sessions 루트→월별 11건, 정본 이동 3건, 리네임 5+5+2건, 리네임+이동 2건) + git rm 1건(이중화 해소). 28건 성공, 3건 보류(에이전트 번호 판별 불가 2건, works 원본 유지 1건) | [COMPLETION](../../reports/2026-06/COMPLETION_20260611_iMac막내3_문서배치_정비실행.md) | ✅ |
 | 2026-06-12 | iMac/막내3 | **꾸 역할 확장 삼권심사 사법** — specs-data.json 규격/텍스트 혼재 리스크 중간(PR리뷰로 완화), PF 충돌 낮음(편집 범위 분리), 보안 누락 3건(monkos-ops·.claude·시크릿), 4조 충돌 제한적. **찬성(조건부)** — 파일 범위 명시+PR 리뷰 필수 | [REPORT](../../reports/2026-06/REPORT_20260612_iMac막내3_꾸역할확장_삼권심사_사법.md) | ✅ |
 | 2026-06-17 | iMac/쌍아 | **Phase 2 부서제(DIVISION) 설계서 기안** — 6개 부서(MKT·CNT·SEC·ENG·RND·BIZ) 편제, 활성 PF 22개 배치, 3단계 진화(부서장→임원→이사회), 양축 분리(외향/내향). 하네스 상품화 코어 모듈로 위치. 작가님 전략 대화에서 도출: "인간 관리체계로 수렴" + "기능·품질 우선, 효율화는 패턴 잡힌 후 자율 제안" + "내부 호칭→일반 직함 치환 = 상품화" | [설계서](../../../tech/designs/2026-06/DESIGN_20260617_부서제_에이전트체계_DIVISION.md) | ✅ |
+| 2026-06-18 | iMac/민아 | **IRGEN(딸깍 IR 생성로직) 엔진 편입** — Phase 2 DIVISION의 BIZ/임원급(2-C) 산출 역량. 디딤돌 탈락 8지적=전부 "오독" 분석 → 오독방어 게이트 6종 + Evidence DB(4Tier 위계·스키마·소스 카탈로그) + 생성 9섹션. 첫 시범출력 IR_PROFILES_v1(→PF_PROFILES). 작가님 승인: 신규 PF 미신설(PF 남발 경계), MONK_OS 메타 귀속 | [PROPOSAL_IRGEN](../../proposals/PROPOSAL_20260618_iMac민아_IRGEN_딸깍IR생성로직.md) | ⏳ |
 
 ---
 
