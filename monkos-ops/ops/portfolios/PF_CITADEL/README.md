@@ -167,6 +167,7 @@ status: active
 | 06/18 | 웹/민아 | **제안서 교차검증 + 전수조사** — "왜 /app이 떴나" 라이브 HTML로 규명(canonical+hreflang이 /app 가리켜 루트 신호 강제송금, robots 무죄) → **대표=루트 확정 권고**. 보완 2건 적발: 제안서 hreflang 누락(KR/JP index.html 6줄) + guide@11 보호(헤드텀 제거 대상서 제외). 전수조사 A~E(KR/JP index.html·포털 CTA/RAG 내부링크·Ads·GSC) | [교차검증](../../reports/2026-06/REPORT_20260618_웹민아_헤드텀제안_교차검증.md) | ✅ 쌍아 토스 |
 | 06/18 | 쌍아→막내 | **헤드텀 루트 통일 실행+배포** — KR/JP canonical+hreflang /app→/ (3줄씩) + 포털/functions CTA·RAG 내부링크 9개소 /app→/ + 블로그 title 헤드텀 제거(render-blog SEO_TITLE_OVERRIDES, guide 미접촉) + CTA블록. 4건 배포(idphoto-kr·jp·portal·CF Pages) | 막내 배포 | ✅ |
 | 06/18 | 웹/민아 | **배포 후 라이브 검증 7/7 통과** — ①②KR /·/app canonical+hreflang 루트 ③JP 루트+KO↔JP 상호참조 정합 ④guide/ai-photo title 무변동(11위 보호) ⑤vol38·⑥ai-kr 헤드텀 제거 확인 ⑦포털 /app→idphoto루트 302 정상(오라우팅 無). og:url·x-default·robots 무변동. **§3.C 자기교정**: 내 인벤토리가 functions/ RAG·JP짝 누락 → 쌍아 9개소 상위집합이 더 완전 | 라이브 curl 실측 | ✅ |
+| 06/18 | 웹/민아 | **글로벌(EN/JA) 도달+측정 진단** — 측정 인프라 완비(GSC country/page+GA4 geo, 단 웹 ADC 한계로 iMac 경유). 도달 정석(hreflang): /en//ja/ 200 라이브, en/ja specs 각 445+en blog 70페이지, US/UK/JP 핵심페이지 실재. 새 en 서브도메인 불필요(글로벌=jp 단일종착·번역기반, 레몬 통화¥ 미스매치없음). 404 오판 2건 자기교정(슬러그 구조) | [글로벌도달·측정](../../reports/2026-06/REPORT_20260618_웹민아_글로벌도달_측정진단.md) | ✅ |
 
 ---
 
