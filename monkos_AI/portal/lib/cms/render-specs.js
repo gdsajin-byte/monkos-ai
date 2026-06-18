@@ -90,6 +90,8 @@ const SPECS_I18N = {
     tierRecommend: '추천',
     tierComingSoon: '준비 중',
     tierSectionTitle: '이 규격으로 사진 만들기',
+    heroLabel: 'PHOTO SPEC GUIDE',
+    heroCta: '무료 규격 맞춤 →',
   },
   ja: {
     hubTitle: '証明写真 規格ガイド — 国別・用途別サイズ総まとめ | MONKOS',
@@ -139,6 +141,8 @@ const SPECS_I18N = {
     tierRecommend: 'おすすめ',
     tierComingSoon: '準備中',
     tierSectionTitle: 'この規格で写真を作る',
+    heroLabel: 'PHOTO SPEC GUIDE',
+    heroCta: '無料で規格に合わせる →',
   },
   en: {
     hubTitle: 'ID Photo Specifications Guide — Size & Requirements by Country | MONKOS',
@@ -188,6 +192,8 @@ const SPECS_I18N = {
     tierRecommend: 'Recommended',
     tierComingSoon: 'Coming soon',
     tierSectionTitle: 'Create your photo with this spec',
+    heroLabel: 'PHOTO SPEC GUIDE',
+    heroCta: 'Crop to this spec for free →',
   },
 };
 
@@ -249,10 +255,12 @@ function canonicalCountry(countrySlug) {
   return COUNTRY_SLUG_TO_ISO[countrySlug] || countrySlug;
 }
 
-function countryFlag(countrySlug) {
-  const code = (COUNTRY_SLUG_TO_ISO[countrySlug] || countrySlug).toUpperCase();
+function countryFlag(countrySlug, size = 32) {
+  const code = (COUNTRY_SLUG_TO_ISO[countrySlug] || countrySlug).toLowerCase();
   if (code.length !== 2) return '';
-  return String.fromCodePoint(0x1F1E6 + code.charCodeAt(0) - 65, 0x1F1E6 + code.charCodeAt(1) - 65);
+  const w = size;
+  const h = Math.round(size * 0.75);
+  return `<img src="https://flagcdn.com/w${w * 2}/${code}.webp" alt="${code}" width="${w}" height="${h}" class="flag-icon" loading="lazy">`;
 }
 
 // ─── BUILD ROUTE MAPS (at module load) ──────────────────────────
@@ -295,7 +303,8 @@ function parseSizeMm(sizeStr) {
 // ─── DARK THEME CSS ─────────────────────────────────────────────
 
 const SPECS_PAGE_STYLE = `
-body { background: #ffffff !important; color: #1a1a1a !important; }
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
+body { background: #ffffff !important; color: #1a1a1a !important; font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif !important; }
 .container { max-width: 1000px; }
 a { color: #00D4AA; }
 a:hover { color: #00F4C4; }
@@ -396,7 +405,11 @@ a:hover { color: #00F4C4; }
 }
 .specs-search-item:hover { background: rgba(0,212,170,0.08); }
 .specs-search-item:last-child { border-bottom: none; }
-.specs-search-item .si-flag { font-size: 18px; }
+.flag-icon { border-radius: 4px; vertical-align: middle; display: inline-block; object-fit: cover; }
+.specs-search-item .si-flag { font-size: 18px; line-height: 0; }
+.specs-search-item .flag-icon { width: 24px; height: 18px; border-radius: 3px; }
+.cc-flag .flag-icon { width: 32px; height: 24px; border-radius: 4px; }
+.specs-hero-text h1 .flag-icon { height: 40px; width: auto; border-radius: 5px; margin-right: 8px; vertical-align: middle; position: relative; top: -0.1em; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
 .specs-search-item .si-meta { font-size: 12px; color: #888; margin-left: auto; }
 
 /* === Hub Footer === */
@@ -408,7 +421,7 @@ a:hover { color: #00F4C4; }
    ================================================================ */
 
 /* === Section cards on white bg === */
-.specs-band { margin: 0 auto 24px; padding: 36px 32px; max-width: 1000px; background: #f4f5f7; border-radius: 16px; }
+.specs-band { margin: 0 auto 16px; padding: 28px 32px; max-width: 1000px; background: #f4f5f7; border-radius: 16px; }
 .specs-band .band-inner { }
 .specs-band-white { background: #f4f5f7; }
 .specs-band-gray { background: #f4f5f7; }
@@ -424,7 +437,10 @@ a:hover { color: #00F4C4; }
 
 /* === Detail — Hero (white, clean) === */
 .specs-hero-wrap {
-  background: #ffffff; margin: -20px -20px 0; padding: 0 20px 48px;
+  background: #ffffff; margin: -20px -20px 0; padding: 0 20px 16px;
+  min-height: 682px; max-width: 1440px; margin-left: auto; margin-right: auto;
+  display: flex; flex-direction: column; justify-content: center;
+  box-sizing: border-box;
 }
 .specs-hero {
   display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 48px;
@@ -435,13 +451,52 @@ a:hover { color: #00F4C4; }
   line-height: 1.35; margin-bottom: 16px;
 }
 .specs-hero-text .specs-hero-desc {
-  color: #666; font-size: 15px; line-height: 1.8; margin-bottom: 24px;
+  color: #666; font-size: 15px; line-height: 1.6; margin-bottom: 24px;
 }
 .specs-hero-tags { display: flex; gap: 8px; flex-wrap: wrap; }
 .specs-hero-tags span {
   background: rgba(0,212,170,0.08); color: #00D4AA;
   padding: 6px 16px; border-radius: 24px; font-size: 13px;
   font-weight: 600; border: 1px solid rgba(0,212,170,0.15);
+}
+.specs-hero-label {
+  font-size: 12px; letter-spacing: 2.5px; color: #00D4AA; font-weight: 600;
+  font-family: monospace; margin-bottom: 12px; text-transform: uppercase;
+}
+.specs-hero-cta {
+  display: inline-block; margin-top: 24px; padding: 14px 32px;
+  background: #00D4AA; color: #fff; font-size: 15px; font-weight: 600;
+  border-radius: 10px; text-decoration: none;
+  transition: background 0.2s, transform 0.15s;
+}
+.specs-hero-cta:hover { background: #00E4BA; transform: translateY(-1px); }
+
+/* === PASSED stamp overlay === */
+.specs-stamp {
+  position: absolute; bottom: 10px; right: -20px;
+  width: 216px; height: 216px;
+  transform: rotate(-18deg);
+  pointer-events: none; z-index: 20;
+  opacity: 0.7;
+}
+.specs-stamp svg { width: 100%; height: 100%; }
+
+/* === Before/After === */
+.specs-ba-item { text-align: center; }
+.specs-ba-img {
+  width: 100%; height: 240px; object-fit: cover; object-position: center top;
+  border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); display: block;
+}
+.specs-ba-label {
+  margin-top: 8px; font-size: 11px; font-weight: 700; color: #888;
+  letter-spacing: 2px;
+}
+.specs-ba-label-after { color: #00D4AA; }
+
+/* === Crop tool mobile === */
+@media (max-width: 768px) {
+  .specs-crop-tool { grid-template-columns: 1fr !important; }
+  .specs-ba-img { height: 200px; }
 }
 
 /* === Detail — Photo Diagram === */
@@ -455,8 +510,10 @@ a:hover { color: #00F4C4; }
   border: 1px solid rgba(0,0,0,0.08); border-radius: 4px;
   position: relative; display: flex; align-items: center; justify-content: center;
   box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-  overflow: hidden;
+  overflow: visible;
 }
+.specs-photo-frame img { border-radius: 4px; position: relative; z-index: 1; }
+.specs-stamp { z-index: 20 !important; }
 .specs-photo-frame img {
   object-fit: cover; width: 100%; height: 100%; display: block;
 }
@@ -509,9 +566,9 @@ a:hover { color: #00F4C4; }
 /* AI summary box */
 .specs-ai-summary {
   background: linear-gradient(135deg, rgba(0,212,170,0.05) 0%, rgba(0,212,170,0.015) 100%);
-  border-left: 3px solid #00D4AA; padding: 20px 24px;
-  border-radius: 0 14px 14px 0; margin-bottom: 24px;
-  font-size: 14px; color: #333; line-height: 1.85;
+  border-left: 3px solid #00D4AA; padding: 16px 20px;
+  border-radius: 0 14px 14px 0; margin-bottom: 20px;
+  font-size: 14px; color: #333; line-height: 1.6;
 }
 
 /* Specs table */
@@ -520,7 +577,7 @@ a:hover { color: #00F4C4; }
   margin-bottom: 24px; background: transparent;
 }
 .specs-table th, .specs-table td {
-  padding: 15px 22px; text-align: left; font-size: 16px;
+  padding: 11px 18px; text-align: left; font-size: 16px;
 }
 .specs-table th {
   background: transparent; font-weight: 700; color: #1a1a1a;
@@ -534,12 +591,12 @@ a:hover { color: #00F4C4; }
 
 /* Detail items grid */
 .specs-details-grid {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
 }
 .specs-detail-item {
-  display: flex; align-items: center; gap: 12px;
-  padding: 16px 18px; background: #ffffff; border-radius: 12px;
-  font-size: 14px; color: #555;
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 16px; background: #ffffff; border-radius: 10px;
+  font-size: 14px; color: #555; line-height: 1.4;
   border: 1px solid rgba(0,0,0,0.06);
   transition: border-color 0.2s, box-shadow 0.2s;
 }
@@ -1093,6 +1150,7 @@ export function specsDetailFragment(slug, forceLang = null) {
       : specData.country;
   const title = (specData.seoTitle && specData.seoTitle[lang]) || `2026 ${countryName} ${typeName} ${i.detailSuffix}`;
   const description = (specData.seoDescription && specData.seoDescription[lang]) || (specData.details && (specData.details[lang] || specData.details.ko || specData.details.en)) || '';
+  const heroDescription = (specData.heroDesc && specData.heroDesc[lang]) || description;
 
   const canonicalUrl = lang === 'ko' ? `https://monkos.ai/specs/${newPath}` : `https://monkos.ai/${lang}/specs/${newPath}`;
   const hreflangTags = [
@@ -1222,7 +1280,9 @@ ${hreflangTags}
   const oxGoodCaption = lang === 'ja' ? '正面・無表情・白背景' : lang === 'en' ? 'Front-facing · Neutral · White BG' : '정면 · 무표정 · 흰배경';
   const oxBadCaption = lang === 'ja' ? '傾き・影・髪' : lang === 'en' ? 'Tilted · Shadow · Hair' : '기울어짐 · 그림자 · 머리카락';
 
-  const aiSummary = lang === 'ja'
+  const aiSummary = (specData.aiSummary && specData.aiSummary[lang])
+    ? escapeHtml(specData.aiSummary[lang])
+    : lang === 'ja'
     ? `${escapeHtml(countryName)}の${escapeHtml(typeName)}は${escapeHtml(locField(specData, 'size', lang))}、${escapeHtml(locField(specData, 'background', lang))}背景、${escapeHtml(locField(specData, 'validity', lang))}以内の撮影が必要です。`
     : lang === 'en'
     ? `${escapeHtml(countryName)} ${escapeHtml(typeName)} requires ${escapeHtml(locField(specData, 'size', lang))}, ${escapeHtml(locField(specData, 'background', lang)).toLowerCase()} background, taken within ${escapeHtml(locField(specData, 'validity', lang)).toLowerCase()}.`
@@ -1235,14 +1295,16 @@ ${hreflangTags}
   <!-- Hero 풀와이드 -->
   <section class="specs-hero">
     <div class="specs-hero-text">
-      <h1>${countryFlag(countrySlug)} ${escapeHtml(countryName)} ${escapeHtml(typeName)} ${lang === 'ja' ? '規定案内' : lang === 'en' ? 'Requirements Guide' : '규정안내'}</h1>
-      <p class="specs-hero-desc">${escapeHtml(description)}</p>
-      <div class="specs-hero-tags">
-        <span>${escapeHtml(locField(specData, 'size', lang))}</span>
-        <span>${escapeHtml(locField(specData, 'background', lang))}</span>
-        <span>${escapeHtml(locField(specData, 'validity', lang))}</span>
-        <span>${specData.dpi} DPI</span>
-      </div>
+      <h1>${countryFlag(countrySlug, 40)} ${(specData.heroTitle && specData.heroTitle[lang]) ? escapeHtml(specData.heroTitle[lang]) : `${escapeHtml(countryName)} ${escapeHtml(typeName)} ${lang === 'ja' ? '規定案内' : lang === 'en' ? 'Requirements Guide' : '규정안내'}`}</h1>
+      <p class="specs-hero-desc">${escapeHtml(heroDescription)}</p>
+      ${sameCountry.length > 0 ? `<div style="margin-top:20px;">
+        <div style="font-size:13px;font-weight:700;color:#888;margin-bottom:4px;">${escapeHtml(i.sameCountryLabel)}</div>
+        <div class="specs-hero-tags">${sameCountry.map(s => {
+          const name = lang === 'ja' ? (s.typeJa || s.type) : (lang === 'en' ? s.typeEn : s.type);
+          const { typeSlug: ts, countrySlug: cs } = parseSlug(s.slug);
+          return '<a href="' + prefix + '/specs/' + ts + '/' + cs + '" style="text-decoration:none;"><span>' + escapeHtml(name) + '</span></a>';
+        }).join('')}</div>
+      </div>` : ''}
     </div>
     <div class="specs-diagram">
       <div class="specs-photo-frame">
@@ -1264,29 +1326,64 @@ ${hreflangTags}
         <div class="specs-guide-w">${escapeHtml(locField(specData, 'size', lang).split('×')[0].trim())}</div>
       </div>
       <div class="specs-guide-h">${escapeHtml((locField(specData, 'size', lang).split('×')[1] || '4.5cm').trim())}</div>
+      <svg class="specs-stamp" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" style="position:absolute;bottom:-10px;right:-30px;width:220px;height:220px;transform:rotate(-22deg);opacity:0.7;z-index:50;pointer-events:none;filter:drop-shadow(1px 1px 0 rgba(139,26,26,0.3)) drop-shadow(-1px -1px 0 rgba(255,255,255,0.4));">
+        <circle cx="60" cy="60" r="54" fill="none" stroke="#8B1A1A" stroke-width="5"/>
+        <circle cx="60" cy="60" r="46" fill="none" stroke="#8B1A1A" stroke-width="2"/>
+        <line x1="8" y1="52" x2="112" y2="52" stroke="#8B1A1A" stroke-width="3"/>
+        <line x1="8" y1="72" x2="112" y2="72" stroke="#8B1A1A" stroke-width="3"/>
+        <rect x="8" y="52" width="104" height="20" fill="#8B1A1A" opacity="0.15"/>
+        <text x="60" y="67.5" text-anchor="middle" font-size="20" font-weight="900" fill="#8B1A1A" font-family="Pretendard,sans-serif" letter-spacing="4">PASSED</text>
+        <path d="M 24 46 Q 60 18 96 46" fill="none" stroke="none" id="stamp-at"/>
+        <text font-size="10" fill="#8B1A1A" font-weight="800" letter-spacing="5"><textPath href="#stamp-at" startOffset="50%" text-anchor="middle">PASSED</textPath></text>
+        <path d="M 24 78 Q 60 106 96 78" fill="none" stroke="none" id="stamp-ab"/>
+        <text font-size="10" fill="#8B1A1A" font-weight="800" letter-spacing="5"><textPath href="#stamp-ab" startOffset="50%" text-anchor="middle">PASSED</textPath></text>
+      </svg>
     </div>
   </section>
+  </div>
+
+  <!-- BAND: 규격 맞춤 도구 (히어로 바로 아래) -->
+  <div class="specs-band specs-band-white">
+    <div class="band-inner">
+      <div class="specs-section">
+        <h2>${lang === 'ja' ? `${escapeHtml(typeName)} 規定写真を作る` : lang === 'en' ? `Make ${escapeHtml(typeName)} Photo` : `${escapeHtml(typeName)} 규정 사진 만들기`}</h2>
+        <div class="specs-crop-tool" id="specs-crop-embed" style="display:flex;gap:12px;align-items:stretch;">
+          <div style="flex:1;min-height:280px;background:#f8f9fb;border:2px dashed rgba(0,0,0,0.12);border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;box-sizing:border-box;">
+            <div style="font-size:32px;color:#aaa;margin-bottom:12px;">&#8615;</div>
+            <div style="font-size:15px;color:#555;font-weight:600;margin-bottom:8px;">${lang === 'ja' ? '写真をドラッグ＆ドロップ' : lang === 'en' ? 'Drag and drop photo' : '사진을 끌어다 놓으세요'}</div>
+            <div style="margin:12px 0;padding:10px 24px;border:1.5px solid #00D4AA;border-radius:8px;color:#00D4AA;font-size:14px;font-weight:600;">${lang === 'ja' ? '写真を選択' : lang === 'en' ? 'Choose photo' : '사진 선택'}</div>
+            <div style="font-size:12px;color:#aaa;margin-top:8px;">JPG, PNG, HEIC / max 10MB</div>
+          </div>
+          <div style="display:flex;gap:0;flex:2;border-radius:14px;overflow:hidden;height:280px;">
+            <div style="flex:1;position:relative;">
+              <img src="/images/guides/sample-before-kr.png" alt="Before" style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block;">
+              <div style="position:absolute;bottom:0;left:0;right:0;padding:8px 0;text-align:center;background:rgba(0,0,0,0.5);color:#fff;font-size:11px;font-weight:700;letter-spacing:2px;">BEFORE</div>
+            </div>
+            <div style="flex:1;position:relative;">
+              <img src="/images/guides/sample-after-kr.webp" alt="After" style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block;">
+              <div style="position:absolute;bottom:0;left:0;right:0;padding:8px 0;text-align:center;background:rgba(0,212,170,0.7);color:#fff;font-size:11px;font-weight:700;letter-spacing:2px;">AFTER</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- BAND: 규정 영역 (회색 배경) -->
   <div class="specs-band specs-band-gray">
     <div class="band-inner">
-      <ol class="specs-common-rules">
-        ${commonRulesHtml}
-      </ol>
-
-      <div class="specs-section" style="margin-top:40px;">
+      <div class="specs-ai-summary">${aiSummary}</div>
+      <table class="specs-table">
+        <tbody>
+          ${tableRows}
+        </tbody>
+      </table>
+      ${detailLines.length ? `<div class="specs-section" style="margin-top:32px;">
         <h2>${escapeHtml(i.detailsTitle)}</h2>
-        <div class="specs-ai-summary">${aiSummary}</div>
-        <table class="specs-table">
-          <tbody>
-            ${tableRows}
-          </tbody>
-        </table>
-        ${detailLines.length ? `<div class="specs-details-grid" style="margin-top:16px;">
+        <div class="specs-details-grid">
           ${detailGridHtml}
-        </div>` : ''}
-      </div>
+        </div>
+      </div>` : ''}
     </div>
   </div>
 
@@ -1318,7 +1415,6 @@ ${hreflangTags}
   <div class="specs-band specs-band-dark">
     <div class="band-inner">
       <div class="tier-section">
-        <h2>${escapeHtml(i.tierSectionTitle)}</h2>
         <div class="tier-grid">
           <div class="tier-card">
             <h3>${i.tierFreeTitle}</h3>
