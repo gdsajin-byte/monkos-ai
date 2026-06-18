@@ -312,6 +312,8 @@ SEO 콘텐츠가 있는 문서 → 풀 페이지 (FAQ + 반려사유 + 촬영가
 | 06/15 | 막내3 | **1,335페이지 전수 품질 감사** — 3언어×445건 라이브 curl 실측. 🔴 FAQPage 436건 누락, seoTitle 442건 공란, JA 한국어 잔류 21p/74건. 🟡 JA thin content 219건(49%), EN 한국어 3건. 기술 인프라(canonical·hreflang·HTTP) 전수 정상. 색인 장애 근본원인: 콘텐츠 차별화 부족+FAQ 부재+JA 언어혼재 | [REPORT](../../reports/2026-06/REPORT_20260615_iMac막내3_SPECS_1335페이지_전수품질감사.md) | ✅ |
 | 06/15 | 막내1 | **공통FAQ·seoTitle·countryJa 일괄 보강** — FAQ 436건 3언어 생성(100%), seoTitle/Desc 442건 3언어, countryJa 26건, JA 한국어 잔류 0건. 색인 장애 R1·R2·R3 해소. rev 00290-65g 배포 | specs-data.json, scripts/enrich_specs_faq_seo.js | ✅ |
 | 06/15 | 막내2 | **portal 배포 + 정크 슬러그 3건 리슬러그** — 47-20x/14-vs/5-10 → SEO 친화 영문 슬러그 + 301 리다이렉트. Firestore 변경 + redirects.js. 배포 2회(rev 00293, 00294) | redirects.js, reslug_blog.js | ✅ |
+| 06/17 | M2/쌍아 | **specs 상세 디자인 개편 WIP 1차** — 흰색 배경 3분할 구조, CTA 다크 그라데이션, 공통규정 7개, 이모지 제거, 한국인 모델 이미지, 나라별 이미지 대응 | render-specs.js, korea-passport.webp | ⏳ |
+| 06/18 | M2/쌍아+꾸 | **specs 상세 디자인 개편 2~4차** — flagcdn 국기, Pretendard, 히어로 개편(ICAO 설명문+커스텀 제목), 크롭도구 플레이스홀더+전후비교, 공통규정 제거(세부통합), 섹션 풀와이드 밴드 분리(idcut.kr 참고), 모바일 반응형, korea-resume 중복삭제, 외교부 기준 콘텐츠 보강(FAQ 8개+상세규정+AIO). 병목: 이미지↔코드 갭, 미리보기 사이클 느림 → specs-preview.sh 생성 | render-specs.js, specs-data.json, 이미지 4장, specs-preview.sh | ⏳ 배포 대기 |
 
 ---
 
