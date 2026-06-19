@@ -77,6 +77,7 @@ status: active
 | 2026-06-17 | iMac/막내2 | 노출 표면 4건 보강 — /health 모델명 제거(3서비스), err.message 직통 반환 15곳 교체, /api/info styles 키 제거, admin AI prompt 응답 필드 제거. 3개 서비스 배포+실측 완료 | COMPLETION_20260617_iMac막내2_SECURITY_노출표면보강.md | ✅ |
 | 2026-06-17 | 웹/민아 | 시크릿 위생 전수 감사 — git history 무유출 확인(.env 무커밋), 로컬 잔존 5파일·토스 test키 3중복제·photo-coach .pem(history) 적발, INVENTORY 정합성 갭. 막내1 정리로 로컬 5파일 삭제 종결 | [감사보고서](../../reports/2026-06/REPORT_20260617_웹민아_시크릿위생_전수감사.md) | ✅ |
 | 06/17 | iMac/막내2 | 보안 노출 표면 4건 보강 — /health 모델명 제거·err.message 일반화 15곳·/api/info styles 제거·admin 프롬프트 반환 제거. 3개 서비스(idphoto-kr/jp/portal) prod 배포·실측 | COMPLETION_20260617, `ba32dcea` | ✅ |
+| 06/19 | 웹/민아 | **배포 권한 위협모델 검증 + 정본 보정** — `GCP_SA_KEY`=yong-a-orchestrator 규명, editor·run.admin·secretAccessor 부재 확인→키 유출돼도 배포·파괴·권한상승 불가. **작가님 직접 editor 삭제 확정**으로 INVENTORY 154↔227 모순 해소. 잔여위험: objectAdmin(버킷 R/W/삭제)·aiplatform.user는 🟡, objectViewer 축소 권고 | [COMPLETION](../../reports/2026-06/COMPLETION_20260619_웹민아_IDPHOTO어드민리뷰_퍼널진단.md), `86320205` | ✅ |
 
 ---
 
