@@ -314,6 +314,7 @@ SEO 콘텐츠가 있는 문서 → 풀 페이지 (FAQ + 반려사유 + 촬영가
 | 06/15 | 막내2 | **portal 배포 + 정크 슬러그 3건 리슬러그** — 47-20x/14-vs/5-10 → SEO 친화 영문 슬러그 + 301 리다이렉트. Firestore 변경 + redirects.js. 배포 2회(rev 00293, 00294) | redirects.js, reslug_blog.js | ✅ |
 | 06/17 | M2/쌍아 | **specs 상세 디자인 개편 WIP 1차** — 흰색 배경 3분할 구조, CTA 다크 그라데이션, 공통규정 7개, 이모지 제거, 한국인 모델 이미지, 나라별 이미지 대응 | render-specs.js, korea-passport.webp | ⏳ |
 | 06/18 | M2/쌍아+꾸 | **specs 상세 디자인 개편 2~4차** — flagcdn 국기, Pretendard, 히어로 개편(ICAO 설명문+커스텀 제목), 크롭도구 플레이스홀더+전후비교, 공통규정 제거(세부통합), 섹션 풀와이드 밴드 분리(idcut.kr 참고), 모바일 반응형, korea-resume 중복삭제, 외교부 기준 콘텐츠 보강(FAQ 8개+상세규정+AIO). 병목: 이미지↔코드 갭, 미리보기 사이클 느림 → specs-preview.sh 생성 | render-specs.js, specs-data.json, 이미지 4장, specs-preview.sh | ⏳ 배포 대기 |
+| 06/19 | M2/쌍아+꾸 | **반려사유 체크포인트 스타일 + 섹션 순서 변경** — 반려사유 2열 카드→1열 체크리스트(빨간 x 아이콘), 밴드 순서 변경(공식안내→반려사유→FAQ). CTA 검토: IDpass 아이폰앱이라 웹 CTA 부적합, 3티어 중 2개 준비중 → 재설계 필요. 작가님 확인용 dev 서버 LAN 공유 | render-specs.js | ⏳ CTA 재설계 대기 |
 
 ---
 

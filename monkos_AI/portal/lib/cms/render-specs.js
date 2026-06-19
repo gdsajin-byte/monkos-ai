@@ -678,35 +678,22 @@ a:hover { color: #00F4C4; }
   display: flex; align-items: center; gap: 6px;
 }
 
-/* === Detail — Rejection Cards === */
-.specs-rejection-grid {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
-  list-style: none; padding: 0;
+/* === Detail — Rejection Checklist === */
+.specs-rejection-list {
+  list-style: none; padding: 0; margin: 0;
 }
-.specs-rejection-card {
-  background: #ffffff; border: 1px solid rgba(0,0,0,0.06);
-  border-radius: 14px; padding: 20px 22px;
-  display: flex; gap: 16px; align-items: center;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.02);
-  transition: box-shadow 0.2s, transform 0.2s;
+.specs-rejection-item {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  font-size: 15px; color: #333; line-height: 1.5;
 }
-.specs-rejection-card:hover {
-  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
-  transform: translateY(-1px);
-}
-.specs-rj-badge {
-  flex-shrink: 0; width: 34px; height: 34px; border-radius: 50%;
+.specs-rejection-item:last-child { border-bottom: none; }
+.specs-rj-x {
+  flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  background: linear-gradient(135deg, #ef4444, #dc2626);
-  color: #fff; font-weight: 700; font-size: 14px;
-  box-shadow: 0 2px 8px rgba(239,68,68,0.25);
-}
-.specs-rj-info h4 {
-  font-size: 14px; font-weight: 600; color: #1a1a1a;
-  margin: 0 0 4px 0; line-height: 1.4;
-}
-.specs-rj-info p {
-  font-size: 13px; color: #888; margin: 0; line-height: 1.6;
+  background: rgba(239,68,68,0.08);
+  color: #dc2626; font-weight: 700; font-size: 16px;
 }
 
 /* === Detail — FAQ Accordion === */
@@ -862,7 +849,7 @@ a:hover { color: #00F4C4; }
   .specs-diagram { margin-bottom: 8px; padding: 20px 36px; }
   .specs-details-grid { grid-template-columns: 1fr; }
   .specs-ox-compare { grid-template-columns: 1fr; }
-  .specs-rejection-grid { grid-template-columns: 1fr; }
+  .specs-rejection-item { padding: 14px 0; font-size: 14px; }
   .tier-grid { grid-template-columns: 1fr; gap: 14px; }
   .tier-card { padding: 24px 20px; }
   .tier-section { margin: 36px 0 32px; }
@@ -1276,10 +1263,10 @@ ${hreflangTags}
   ).join('\n        ');
 
   const rejections = (specData.rejectionReasons && (specData.rejectionReasons[lang] || specData.rejectionReasons.ko)) || [];
-  const rejectionHtml = rejections.map((r, idx) =>
-    `<li class="specs-rejection-card">
-          <span class="specs-rj-badge">${idx + 1}</span>
-          <div class="specs-rj-info"><h4>${escapeHtml(r)}</h4></div>
+  const rejectionHtml = rejections.map((r) =>
+    `<li class="specs-rejection-item">
+          <span class="specs-rj-x">&times;</span>
+          <span>${escapeHtml(r)}</span>
         </li>`
   ).join('\n        ');
 
@@ -1420,18 +1407,6 @@ ${hreflangTags}
     </div>
   </div>` : ''}
 
-  ${rejections.length ? `<!-- BAND: 반려 사유 -->
-  <div class="specs-band specs-band-white">
-    <div class="band-inner">
-      <div class="specs-section">
-        <h2>${escapeHtml(i.rejectionTitle)}</h2>
-        <ul class="specs-rejection-grid">
-          ${rejectionHtml}
-        </ul>
-      </div>
-    </div>
-  </div>` : ''}
-
   ${specData.officialSource ? `<!-- BAND: 공식 안내 -->
   <div class="specs-band specs-band-gray">
     <div class="band-inner">
@@ -1439,6 +1414,18 @@ ${hreflangTags}
         <span>${escapeHtml((specData.officialSource.label && (specData.officialSource.label[lang] || specData.officialSource.label.ko)) || specData.officialSource.url)}</span>
         <span class="specs-external-icon">↗</span>
       </a>
+    </div>
+  </div>` : ''}
+
+  ${rejections.length ? `<!-- BAND: 반려 사유 -->
+  <div class="specs-band specs-band-white">
+    <div class="band-inner">
+      <div class="specs-section">
+        <h2>${escapeHtml(i.rejectionTitle)}</h2>
+        <ul class="specs-rejection-list">
+          ${rejectionHtml}
+        </ul>
+      </div>
     </div>
   </div>` : ''}
 
