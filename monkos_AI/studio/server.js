@@ -156,21 +156,31 @@ const MAKEUP_KEYWORDS = {
 };
 
 const PURPOSE_ASPECT_MAP = {
-  'linkedin':     '1:1',
-  'professional': '3:4',
-  'executive':    '3:4',
-  'artist':       '3:4',
-  'beauty':       '1:1',
-  'fitting':      '3:4',
+  'linkedin_pro':      '1:1',
+  'corporate':         '3:4',
+  'creative':          '3:4',
+  'realtor':           '3:4',
+  'dating':            '3:4',
+  'linkedin':          '1:1',
+  'professional':      '3:4',
+  'executive':         '3:4',
+  'artist':            '3:4',
+  'beauty':            '1:1',
+  'fitting':           '3:4',
 };
 
 const PURPOSE_PROMPT_MAP = {
-  'linkedin':     'Professional LinkedIn headshot. Bust shot, soft studio lighting, clean neutral background. Confident, approachable expression.',
-  'professional': 'Professional portrait for expert/specialist. Upper body, arms crossed or confident pose. Clean studio background.',
-  'executive':    'Executive portrait. Bust to upper body, authoritative but approachable. Premium studio lighting, subtle gradient background.',
-  'artist':       'Creative artist portrait. Free framing, emotional mood lighting. Dramatic or editorial feel.',
-  'beauty':       'Beauty close-up portrait. Face fills 80% of frame. Flawless skin, professional makeup. Soft diffused lighting.',
-  'fitting':      'Model fitting portrait. Full body to upper body, clothing-focused. Clean studio background, even lighting.',
+  'linkedin_pro':  'Professional LinkedIn headshot. Square 1:1 crop. Head and shoulders only, tight framing. Clean solid light gray studio background. Polished professional attire appropriate for the person\'s gender and style. Soft diffused studio lighting, no harsh shadows. Natural confident smile with relaxed eyes. Face fills 70% of frame.',
+  'corporate':     'Corporate team headshot for company website. Waist-up portrait, 3/4 body angle turned slightly. Solid medium gray seamless background. Formal business attire suitable for a senior professional. Premium Rembrandt studio lighting with subtle rim light. Authoritative yet approachable expression.',
+  'creative':      'Creative professional portrait. Waist-up, relaxed natural pose leaning slightly. Warm golden-hour window light from the side, soft bokeh background of blurred indoor greenery. Smart casual style — relaxed, modern, effortlessly put-together. Genuine warm smile, approachable and personable. Editorial magazine feel.',
+  'realtor':       'Approachable business professional headshot. Waist-up, body angled 30 degrees with face toward camera. Bright clean white background. Neat professional look with a welcoming vibe. Bright even studio lighting, energetic and trustworthy smile showing teeth. Friendly, confident, ready-to-help expression.',
+  'dating':        'Attractive dating profile photo. Waist-up, natural relaxed pose. Outdoor golden hour backlight with warm soft bokeh. Stylish casual outfit that suits the person. Genuine happy smile with eye crinkle, looking directly at camera. Natural and authentic — NOT posed or stiff. Warm inviting mood.',
+  'linkedin':      'Professional LinkedIn headshot. Bust shot, soft studio lighting, clean neutral background. Confident, approachable expression.',
+  'professional':  'Professional portrait for expert/specialist. Upper body, arms crossed or confident pose. Clean studio background.',
+  'executive':     'Executive portrait. Bust to upper body, authoritative but approachable. Premium studio lighting, subtle gradient background.',
+  'artist':        'Creative artist portrait. Free framing, emotional mood lighting. Dramatic or editorial feel.',
+  'beauty':        'Beauty close-up portrait. Face fills 80% of frame. Flawless skin, professional makeup. Soft diffused lighting.',
+  'fitting':       'Model fitting portrait. Full body to upper body, clothing-focused. Clean studio background, even lighting.',
 };
 
 const PROFILE_MODEL_MAP = {

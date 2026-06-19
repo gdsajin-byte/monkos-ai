@@ -48,6 +48,7 @@ import { handleSearch } from './lib/cms/search.js';
 import { renderBlogList, renderBlogPost, renderFaq, renderGallery, renderBoardList, renderBoardPost, renderBoardWrite, renderGuide, renderAiPhotoGuide, renderSitemap, renderSitemapStatic, renderSitemapSpecs, renderSitemapBlog, renderPricing, renderSpecsList, renderSpecsDetail } from './lib/cms/render.js';
 import { renderHome, handleSettingsGet, handleSettingsPut, handleLayoutGet, handleLayoutPut } from './lib/cms/home.js';
 import { renderLlmsTxt } from './lib/cms/render-llms.js';
+import { renderHeadshot, renderHeadshotResult } from './lib/cms/render-headshot.js';
 import { BLOG_REDIRECTS } from './lib/cms/redirects.js';
 import { handlePodStart, handlePodStatus, handlePodStop, handleComfyProxy } from './lib/vton/runpod.js';
 
@@ -136,6 +137,75 @@ const httpServer = createServer(async (req, res) => {
   if (urlPath === '/api/credits/refund' && req.method === 'POST') return handleCreditsRefund(req, res);
   if (urlPath === '/api/credits/mission-complete' && req.method === 'POST') return handleMissionComplete(req, res);
   if (urlPath === '/api/credits/event' && req.method === 'POST') return handleCreditsEvent(req, res);
+
+  // === AI 헤드샷 생성 프록시 ===
+  if (urlPath === '/api/headshot/generate' && req.method === 'POST') {
+    try {
+      const { verifyAuthToken, parseCookies, parseJsonBody } = await import('./lib/shared/config.js');
+      const cookies = parseCookies(req.headers.cookie);
+      const token = cookies.monkos_session;
+      if (!token) {
+        res.writeHead(401, { 'Content-Type': 'application/json' });
+        return res.end(JSON.stringify({ error: '인증 필요' }));
+      }
+      const payload = verifyAuthToken(token);
+      const userId = payload?.userId;
+      if (!userId) {
+        res.writeHead(401, { 'Content-Type': 'application/json' });
+        return res.end(JSON.stringify({ error: '인증 만료' }));
+      }
+
+      const body = await parseJsonBody(req);
+      const { image, purpose, model } = body;
+      if (!image) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        return res.end(JSON.stringify({ error: '이미지 필수' }));
+      }
+
+      const creditRes = await fetch(`http://localhost:${PORT}/api/credits/use`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Cookie': req.headers.cookie },
+        body: JSON.stringify({ userId, type: 'generate' }),
+      });
+      const creditData = await creditRes.json();
+      if (!creditRes.ok) {
+        res.writeHead(creditRes.status, { 'Content-Type': 'application/json' });
+        return res.end(JSON.stringify(creditData));
+      }
+
+      const studioUrl = process.env.STUDIO_API_URL || 'https://monkos-studio-933456016842.us-central1.run.app';
+      const studioRes = await fetch(`${studioUrl}/api/profiles/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          image,
+          purpose: purpose || 'linkedin',
+          model: model || 'nano-banana-pro',
+          customPrompt: 'Waist-up portrait, crop above the navel. Do NOT show full body, legs, or desk/furniture below waist. Keep the subject\'s hairstyle exactly as-is, only tidy and groom. Clean professional studio background. The subject must be clearly recognizable as the SAME person in the input photo.',
+        }),
+      });
+      const studioData = await studioRes.json();
+
+      if (!studioRes.ok || !studioData.image) {
+        await fetch(`http://localhost:${PORT}/api/credits/refund`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Cookie': req.headers.cookie },
+          body: JSON.stringify({ userId, type: 'generate' }),
+        });
+        log(`[Headshot] 생성 실패 → 크레딧 환불: ${userId}`, 'WARNING');
+        res.writeHead(studioRes.status || 500, { 'Content-Type': 'application/json' });
+        return res.end(JSON.stringify({ error: studioData.error || '생성 실패' }));
+      }
+
+      log(`[Headshot] 생성 완료: ${userId}, 스타일: ${purpose}`);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ image: studioData.image, credits: creditData.credits }));
+    } catch (err) {
+      log(`[Headshot] 프록시 에러: ${err.message}`, 'ERROR');
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ error: '서버 오류' }));
+    }
+  }
 
   // === 결제 ===
   if (urlPath === '/api/checkout' && req.method === 'POST') return handleCheckout(req, res);
@@ -313,6 +383,13 @@ const httpServer = createServer(async (req, res) => {
   if (urlPath === '/ja/pricing' && req.method === 'GET') return renderPricing(req, res, 'ja');
   if (urlPath === '/en/pricing' && req.method === 'GET') return renderPricing(req, res, 'en');
   if (urlPath === '/pricing' && req.method === 'GET') return renderPricing(req, res);
+  // === AI 헤드샷 ===
+  if (urlPath === '/headshot' && req.method === 'GET') return renderHeadshot(req, res);
+  if (urlPath === '/headshot/result' && req.method === 'GET') return renderHeadshotResult(req, res);
+  if (urlPath === '/en/headshot' && req.method === 'GET') return renderHeadshot(req, res, 'en');
+  if (urlPath === '/en/headshot/result' && req.method === 'GET') return renderHeadshotResult(req, res, 'en');
+  if (urlPath === '/ja/headshot' && req.method === 'GET') return renderHeadshot(req, res, 'ja');
+  if (urlPath === '/ja/headshot/result' && req.method === 'GET') return renderHeadshotResult(req, res, 'ja');
   // === Specs (규격 허브) ===
   if (urlPath === '/specs' && req.method === 'GET') return renderSpecsList(req, res);
   if (urlPath?.startsWith('/specs/') && req.method === 'GET') return renderSpecsDetail(req, res);
