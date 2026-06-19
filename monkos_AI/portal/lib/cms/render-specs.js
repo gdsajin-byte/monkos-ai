@@ -75,21 +75,12 @@ const SPECS_I18N = {
     backToContinent: '← 대륙 선택으로',
     backToPurpose: '← 용도 선택으로',
     countriesCount: '개국',
-    tierFreeTitle: '무료 크롭',
-    tierFreeSub: '브라우저에서 바로 처리',
-    tierFreeDesc: '배경 제거 + 규격 크롭',
-    tierFreeCta: '무료로 시작 →',
-    tierAITitle: 'AI 프리미어',
-    tierAISub: 'GPU 배경 제거 + AI 규격 검수',
-    tierAIDesc: '컬러 배경 선택',
-    tierAICta: '크레딧으로 이용 →',
-    tierStudioTitle: '스튜디오 검수',
-    tierStudioSub: '전문가 정밀 보정',
-    tierStudioDesc: '발급 보장',
-    tierStudioCta: '스튜디오 의뢰 →',
-    tierRecommend: '추천',
-    tierComingSoon: '준비 중',
-    tierSectionTitle: '이 규격으로 사진 만들기',
+    ctaBadge: '20년 경력 사진작가의 AI · 3분이면 완성',
+    ctaHeadline1: '셀카 한 장으로',
+    ctaHeadline2: '증명사진 완성',
+    ctaSub: '사진관 안 가도 됩니다. 여권·이력서·비자 규격 자동 대응.\nAI가 배경·조명·피부를 사진관 수준으로 보정합니다.',
+    ctaBtn: '무료로 체험하기 →',
+    ctaPrice: '첫 로그인 시 무료 체험 · 이후 1장 ₩9,900',
     heroLabel: 'PHOTO SPEC GUIDE',
     heroCta: '무료 규격 맞춤 →',
   },
@@ -126,21 +117,12 @@ const SPECS_I18N = {
     backToContinent: '← 大陸選択へ',
     backToPurpose: '← 用途選択へ',
     countriesCount: 'カ国',
-    tierFreeTitle: '無料クロップ',
-    tierFreeSub: 'ブラウザで即処理',
-    tierFreeDesc: '背景除去 + 規格クロップ',
-    tierFreeCta: '無料で始める →',
-    tierAITitle: 'AI プレミア',
-    tierAISub: 'GPU背景除去 + AI規格検査',
-    tierAIDesc: 'カラー背景選択',
-    tierAICta: 'クレジットで利用 →',
-    tierStudioTitle: 'スタジオ検収',
-    tierStudioSub: '専門家精密補正',
-    tierStudioDesc: '発行保証',
-    tierStudioCta: 'スタジオ依頼 →',
-    tierRecommend: 'おすすめ',
-    tierComingSoon: '準備中',
-    tierSectionTitle: 'この規格で写真を作る',
+    ctaBadge: 'プロカメラマン20年のAI · 3分で完成',
+    ctaHeadline1: 'セルフィー1枚で',
+    ctaHeadline2: '証明写真完成',
+    ctaSub: '写真館に行かなくても大丈夫。パスポート・履歴書・ビザ規格に自動対応。\nAIが背景・照明・肌を写真館レベルに補正します。',
+    ctaBtn: '無料で体験する →',
+    ctaPrice: '初回ログイン時 無料体験 · 以降1枚 ¥990',
     heroLabel: 'PHOTO SPEC GUIDE',
     heroCta: '無料で規格に合わせる →',
   },
@@ -177,21 +159,12 @@ const SPECS_I18N = {
     backToContinent: '← Back to continents',
     backToPurpose: '← Back to purposes',
     countriesCount: 'countries',
-    tierFreeTitle: 'Free Crop',
-    tierFreeSub: 'Process in your browser',
-    tierFreeDesc: 'Background removal + spec crop',
-    tierFreeCta: 'Start free →',
-    tierAITitle: 'AI Premier',
-    tierAISub: 'GPU background removal + AI inspection',
-    tierAIDesc: 'Color background options',
-    tierAICta: 'Use with credits →',
-    tierStudioTitle: 'Studio Review',
-    tierStudioSub: 'Expert precision editing',
-    tierStudioDesc: 'Issuance guaranteed',
-    tierStudioCta: 'Request studio →',
-    tierRecommend: 'Recommended',
-    tierComingSoon: 'Coming soon',
-    tierSectionTitle: 'Create your photo with this spec',
+    ctaBadge: '20 Years of Photography Expertise in AI · Done in 3 min',
+    ctaHeadline1: 'One Selfie,',
+    ctaHeadline2: 'Perfect ID Photo',
+    ctaSub: 'No photo studio needed. Auto-fit for passport, resume & visa specs.\nAI retouches background, lighting & skin to studio quality.',
+    ctaBtn: 'Try Free →',
+    ctaPrice: 'Free on first login · $7.99 per photo after',
     heroLabel: 'PHOTO SPEC GUIDE',
     heroCta: 'Crop to this spec for free →',
   },
@@ -200,7 +173,7 @@ const SPECS_I18N = {
 // ─── CONTINENT META ─────────────────────────────────────────────
 
 const CONTINENT_META = [
-  { id: 'asia', ko: '아시아', ja: 'アジア', en: 'Asia', gradient: ['#1A3A2A', '#2D5A3A'], dot: '#00D4AA', image: 'cont_asia' },
+  { id: 'asia', ko: '아시아', ja: 'アジア', en: 'Asia', gradient: ['#1A3A2A', '#2D5A3A'], dot: '#6c4fff', image: 'cont_asia' },
   { id: 'europe', ko: '유럽', ja: 'ヨーロッパ', en: 'Europe', gradient: ['#1A1A3A', '#3A2A5A'], dot: '#A78BFA', image: 'cont_europe' },
   { id: 'americas', ko: '아메리카', ja: 'アメリカ大陸', en: 'Americas', gradient: ['#1A2A3A', '#2A3A5A'], dot: '#3B82F6', image: 'cont_americas' },
   { id: 'africa', ko: '아프리카', ja: 'アフリカ', en: 'Africa', gradient: ['#3A2A1A', '#5A3A1A'], dot: '#FFB020', image: 'cont_africa' },
@@ -306,20 +279,20 @@ const SPECS_PAGE_STYLE = `
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
 body { background: #ffffff !important; color: #1a1a1a !important; font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif !important; }
 .container { max-width: 1000px; }
-a { color: #00D4AA; }
-a:hover { color: #00F4C4; }
+a { color: #6c4fff; }
+a:hover { color: #5a3de6; }
 
 /* === Hub Hero === */
 .specs-hub-hero { text-align: center; padding: 48px 20px 32px; }
 .specs-hub-hero .hero-global {
-  font-size: 12px; letter-spacing: 3px; color: #00D4AA; font-weight: 600;
+  font-size: 12px; letter-spacing: 3px; color: #6c4fff; font-weight: 600;
   font-family: monospace; margin-bottom: 14px;
 }
 .specs-hub-hero h1 { font-size: 32px; font-weight: 800; color: #1a1a1a; margin-bottom: 12px; }
 .specs-hub-hero .hero-sub { font-size: 15px; color: #888; line-height: 1.7; max-width: 520px; margin: 0 auto 28px; }
 .specs-hub-stats { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; }
 .specs-hub-stat { text-align: center; }
-.specs-hub-stat .stat-num { font-size: 32px; font-weight: 800; color: #00D4AA; font-family: monospace; }
+.specs-hub-stat .stat-num { font-size: 32px; font-weight: 800; color: #6c4fff; font-family: monospace; }
 .specs-hub-stat .stat-label { font-size: 12px; color: #888; margin-top: 2px; }
 
 /* === Purpose Cards (2×2) === */
@@ -329,8 +302,8 @@ a:hover { color: #00F4C4; }
   cursor: pointer; border: 1px solid rgba(0,0,0,0.08);
   transition: border-color 0.2s, transform 0.15s;
 }
-.purpose-card:hover { border-color: rgba(0,212,170,0.3); transform: translateY(-2px); }
-.purpose-card.active { border-color: #00D4AA; box-shadow: 0 0 20px rgba(0,212,170,0.15); }
+.purpose-card:hover { border-color: rgba(108,79,255,0.3); transform: translateY(-2px); }
+.purpose-card.active { border-color: #6c4fff; box-shadow: 0 0 20px rgba(108,79,255,0.15); }
 .purpose-card img {
   position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
 }
@@ -340,12 +313,12 @@ a:hover { color: #00F4C4; }
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
 }
 .purpose-card .p-name { font-size: 18px; font-weight: 800; color: #1a1a1a; }
-.purpose-card .p-sub { font-size: 10px; font-weight: 700; color: #00D4AA; letter-spacing: 2px; font-family: monospace; }
+.purpose-card .p-sub { font-size: 10px; font-weight: 700; color: #6c4fff; letter-spacing: 2px; font-family: monospace; }
 
 /* === Continent Cards (2×3) === */
 .section-title { font-size: 13px; color: #888; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
 .section-title .back-btn {
-  color: #00D4AA; cursor: pointer; font-size: 13px; border: none; background: none;
+  color: #6c4fff; cursor: pointer; font-size: 13px; border: none; background: none;
   font-family: inherit; padding: 0;
 }
 .section-title .back-btn:hover { text-decoration: underline; }
@@ -374,7 +347,7 @@ a:hover { color: #00F4C4; }
   padding: 16px; cursor: pointer; text-decoration: none; display: block; color: inherit;
   transition: border-color 0.2s, transform 0.15s;
 }
-.country-card:hover { border-color: rgba(0,212,170,0.3); transform: translateY(-1px); color: inherit; }
+.country-card:hover { border-color: rgba(108,79,255,0.3); transform: translateY(-1px); color: inherit; }
 .country-card .cc-flag { font-size: 24px; margin-bottom: 6px; }
 .country-card .cc-name { font-size: 15px; font-weight: 700; color: #1a1a1a; margin-bottom: 3px; }
 .country-card .cc-meta { font-size: 12px; color: #888; }
@@ -387,7 +360,7 @@ a:hover { color: #00F4C4; }
   background: #ffffff; color: #1a1a1a; outline: none; box-sizing: border-box;
   transition: border-color 0.2s;
 }
-.specs-search-wrap input:focus { border-color: #00D4AA; }
+.specs-search-wrap input:focus { border-color: #6c4fff; }
 .specs-search-wrap::before {
   content: '\\1F50D'; position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
   font-size: 16px; pointer-events: none;
@@ -403,7 +376,7 @@ a:hover { color: #00F4C4; }
   padding: 12px 16px; cursor: pointer; font-size: 14px; color: #1a1a1a;
   border-bottom: 1px solid rgba(0,0,0,0.04); display: flex; align-items: center; gap: 10px;
 }
-.specs-search-item:hover { background: rgba(0,212,170,0.08); }
+.specs-search-item:hover { background: rgba(108,79,255,0.08); }
 .specs-search-item:last-child { border-bottom: none; }
 .flag-icon { border-radius: 4px; vertical-align: middle; display: inline-block; object-fit: cover; }
 .specs-search-item .si-flag { font-size: 18px; line-height: 0; }
@@ -417,7 +390,7 @@ a:hover { color: #00F4C4; }
 
 /* ================================================================
    DETAIL PAGE — Clean White Design, Full-width Section Bands
-   Accent: #00D4AA | Sections divided by alternating bg color
+   Accent: #6c4fff | Sections divided by alternating bg color
    ================================================================ */
 
 /* === Section bands — full-width alternating === */
@@ -434,7 +407,7 @@ a:hover { color: #00F4C4; }
 .specs-back {
   display: inline-flex; align-items: center; gap: 6px;
   margin-bottom: 16px; font-size: 13px; font-weight: 500;
-  color: #00D4AA; text-decoration: none; letter-spacing: 0.2px;
+  color: #6c4fff; text-decoration: none; letter-spacing: 0.2px;
 }
 .specs-back:hover { text-decoration: underline; }
 
@@ -454,26 +427,31 @@ a:hover { color: #00F4C4; }
   line-height: 1.35; margin-bottom: 16px;
 }
 .specs-hero-text .specs-hero-desc {
-  color: #666; font-size: 15px; line-height: 1.6; margin-bottom: 24px;
+  color: #666; font-size: 17px; line-height: 1.7; margin-bottom: 24px;
 }
 .specs-hero-tags { display: flex; gap: 8px; flex-wrap: wrap; }
 .specs-hero-tags span, .specs-hero-tags a span {
-  background: rgba(0,212,170,0.08); color: #00D4AA;
+  background: rgba(108,79,255,0.1); color: #6c4fff;
   padding: 6px 12px; border-radius: 20px; font-size: 13px;
-  font-weight: 600; border: 1px solid rgba(0,212,170,0.15);
+  font-weight: 600; border: 1px solid rgba(108,79,255,0.2);
   white-space: nowrap;
 }
+.specs-band-dark .specs-hero-tags span,
+.specs-band-dark .specs-hero-tags a span {
+  background: rgba(255,255,255,0.08); color: #ffffff;
+  border: 1px solid rgba(255,255,255,0.2);
+}
 .specs-hero-label {
-  font-size: 12px; letter-spacing: 2.5px; color: #00D4AA; font-weight: 600;
+  font-size: 12px; letter-spacing: 2.5px; color: #6c4fff; font-weight: 600;
   font-family: monospace; margin-bottom: 12px; text-transform: uppercase;
 }
 .specs-hero-cta {
   display: inline-block; margin-top: 24px; padding: 14px 32px;
-  background: #00D4AA; color: #fff; font-size: 15px; font-weight: 600;
+  background: #6c4fff; color: #fff; font-size: 15px; font-weight: 600;
   border-radius: 10px; text-decoration: none;
   transition: background 0.2s, transform 0.15s;
 }
-.specs-hero-cta:hover { background: #00E4BA; transform: translateY(-1px); }
+.specs-hero-cta:hover { background: #5a3de6; transform: translateY(-1px); }
 
 /* === PASSED stamp overlay === */
 .specs-stamp {
@@ -495,31 +473,42 @@ a:hover { color: #00F4C4; }
   margin-top: 8px; font-size: 11px; font-weight: 700; color: #888;
   letter-spacing: 2px;
 }
-.specs-ba-label-after { color: #00D4AA; }
+.specs-ba-label-after { color: #6c4fff; }
 
-/* === Crop tool === */
-.specs-crop-tool { display: flex; gap: 12px; align-items: stretch; justify-content: center; }
-.specs-crop-upload {
-  width: 300px; height: 300px; flex-shrink: 0; background: #ffffff;
-  border: 2px dashed rgba(0,0,0,0.12); border-radius: 14px;
+/* === Crop tool — 3-panel === */
+.specs-crop-tool { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.specs-crop-panel {
+  height: 300px; border-radius: 14px; overflow: hidden;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  cursor: pointer; box-sizing: border-box;
+  position: relative; box-sizing: border-box;
 }
-.specs-crop-ba { display: flex; gap: 0; width: 600px; height: 300px; flex-shrink: 0; border-radius: 14px; overflow: hidden; }
-.specs-crop-ba-item { width: 300px; height: 300px; position: relative; }
-.specs-crop-ba-item img { width: 100%; height: 100%; object-fit: cover; object-position: center top; display: block; }
-.specs-crop-ba-label {
+.specs-crop-upload {
+  background: #ffffff; border: 2px dashed rgba(0,0,0,0.12);
+  cursor: pointer;
+}
+.specs-crop-preview {
+  background: #f0f1f5; border: 1px solid rgba(0,0,0,0.06);
+}
+.specs-crop-preview img {
+  width: 100%; height: 100%; object-fit: cover; object-position: center top; display: block;
+}
+.specs-crop-preview .crop-placeholder {
+  color: #bbb; font-size: 14px; text-align: center;
+}
+.specs-crop-preview .crop-placeholder-icon {
+  font-size: 40px; margin-bottom: 8px; opacity: 0.3;
+}
+.specs-crop-label {
   position: absolute; bottom: 0; left: 0; right: 0; padding: 8px 0;
   text-align: center; background: rgba(0,0,0,0.5); color: #fff;
   font-size: 11px; font-weight: 700; letter-spacing: 2px;
 }
-.specs-crop-ba-after { background: rgba(0,212,170,0.7); }
+.specs-crop-label-after { background: rgba(108,79,255,0.7); }
 
 @media (max-width: 768px) {
-  .specs-crop-tool { flex-direction: column; align-items: center; }
-  .specs-crop-upload { width: 100%; height: auto; min-height: 200px; padding: 32px 20px; }
-  .specs-crop-ba { width: 100%; height: 220px; }
-  .specs-crop-ba-item { width: 50%; height: 100%; }
+  .specs-crop-tool { grid-template-columns: 1fr; gap: 10px; }
+  .specs-crop-panel { height: 240px; }
+  .specs-crop-upload { height: auto; min-height: 200px; padding: 32px 20px; }
 }
 
 /* === Detail — Photo Diagram === */
@@ -545,16 +534,16 @@ a:hover { color: #00F4C4; }
 /* Guide lines */
 .specs-guide-w {
   position: absolute; bottom: -28px; left: 0; right: 0;
-  text-align: center; font-size: 12px; color: #00D4AA; font-weight: 600;
+  text-align: center; font-size: 12px; color: #6c4fff; font-weight: 600;
 }
 .specs-guide-h {
   position: absolute; top: 0; bottom: 0; right: -50px;
   display: flex; align-items: center; font-size: 12px;
-  color: #00D4AA; font-weight: 600; writing-mode: vertical-rl;
+  color: #6c4fff; font-weight: 600; writing-mode: vertical-rl;
 }
 .specs-guide-h::before {
   content: ''; position: absolute; top: 0; bottom: 0; left: -8px;
-  width: 1px; background: rgba(0,212,170,0.4);
+  width: 1px; background: rgba(108,79,255,0.4);
 }
 .specs-head-guide {
   position: absolute; top: 18px; left: -45px; height: 144px;
@@ -584,12 +573,37 @@ a:hover { color: #00F4C4; }
 }
 .specs-section p { font-size: 14px; color: #666; line-height: 1.8; }
 
+/* Detail sections (categorized) */
+.specs-detail-sections { margin-top: 40px; }
+.specs-detail-cat { margin-bottom: 32px; }
+.specs-detail-cat:last-child { margin-bottom: 0; }
+.specs-detail-cat h3 {
+  font-size: 18px; font-weight: 700; color: #1a1a1a;
+  margin-bottom: 16px; padding-bottom: 8px;
+  border-bottom: 2px solid #6c4fff;
+  display: inline-block;
+}
+.specs-detail-cat ul {
+  list-style: none; padding: 0; margin: 0;
+}
+.specs-detail-cat li {
+  padding: 12px 0; font-size: 16px; color: #555;
+  line-height: 1.7; border-bottom: 1px solid rgba(0,0,0,0.04);
+  padding-left: 18px; position: relative;
+}
+.specs-detail-cat li:last-child { border-bottom: none; }
+.specs-detail-cat li::before {
+  content: ''; position: absolute; left: 0; top: 18px;
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #6c4fff;
+}
+
 /* AI summary box */
 .specs-ai-summary {
-  background: linear-gradient(135deg, rgba(0,212,170,0.05) 0%, rgba(0,212,170,0.015) 100%);
-  border-left: 3px solid #00D4AA; padding: 16px 20px;
-  border-radius: 0 14px 14px 0; margin-bottom: 20px;
-  font-size: 14px; color: #333; line-height: 1.6;
+  background: linear-gradient(135deg, rgba(108,79,255,0.05) 0%, rgba(108,79,255,0.015) 100%);
+  border-left: 3px solid #6c4fff; padding: 18px 22px;
+  border-radius: 0 14px 14px 0; margin-bottom: 24px;
+  font-size: 16px; color: #333; line-height: 1.7;
 }
 
 /* Specs table */
@@ -598,11 +612,11 @@ a:hover { color: #00F4C4; }
   margin-bottom: 24px; background: transparent;
 }
 .specs-table th, .specs-table td {
-  padding: 11px 18px; text-align: left; font-size: 16px;
+  padding: 14px 20px; text-align: left; font-size: 17px;
 }
 .specs-table th {
   background: transparent; font-weight: 700; color: #1a1a1a;
-  width: 120px; font-size: 13px;
+  width: 130px; font-size: 15px;
 }
 .specs-table td { color: #555; font-weight: 500; }
 .specs-table tr:not(:last-child) th,
@@ -616,14 +630,14 @@ a:hover { color: #00F4C4; }
 }
 .specs-detail-item {
   display: flex; align-items: center; gap: 10px;
-  padding: 12px 16px; background: #ffffff; border-radius: 10px;
-  font-size: 14px; color: #555; line-height: 1.4;
+  padding: 14px 18px; background: #ffffff; border-radius: 10px;
+  font-size: 16px; color: #555; line-height: 1.5;
   border: 1px solid rgba(0,0,0,0.06);
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 .specs-detail-item:hover {
-  border-color: rgba(0,212,170,0.25);
-  box-shadow: 0 2px 8px rgba(0,212,170,0.06);
+  border-color: rgba(108,79,255,0.25);
+  box-shadow: 0 2px 8px rgba(108,79,255,0.06);
 }
 
 /* === Detail — O/X Compare === */
@@ -686,7 +700,7 @@ a:hover { color: #00F4C4; }
   display: flex; align-items: center; gap: 14px;
   padding: 16px 0;
   border-bottom: 1px solid rgba(0,0,0,0.06);
-  font-size: 15px; color: #333; line-height: 1.5;
+  font-size: 17px; color: #333; line-height: 1.5;
 }
 .specs-rejection-item:last-child { border-bottom: none; }
 .specs-rj-x {
@@ -708,15 +722,15 @@ a:hover { color: #00F4C4; }
   box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 .specs-faq-q {
-  padding: 18px 22px; font-weight: 600; font-size: 15px; color: #1a1a1a;
+  padding: 18px 22px; font-weight: 600; font-size: 17px; color: #1a1a1a;
   cursor: pointer; display: flex; align-items: center; gap: 12px;
   user-select: none; transition: background 0.15s;
 }
 .specs-faq-q:hover { background: rgba(0,0,0,0.015); }
 .specs-faq-q::before {
-  content: "Q"; color: #00D4AA; font-weight: 800; font-size: 14px;
+  content: "Q"; color: #6c4fff; font-weight: 800; font-size: 14px;
   flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%;
-  background: rgba(0,212,170,0.08); display: flex;
+  background: rgba(108,79,255,0.08); display: flex;
   align-items: center; justify-content: center;
 }
 .specs-faq-q::after {
@@ -725,7 +739,7 @@ a:hover { color: #00F4C4; }
 }
 .specs-faq-item.open .specs-faq-q::after { transform: rotate(180deg); }
 .specs-faq-a {
-  padding: 0 22px 20px 60px; font-size: 14px; color: #666;
+  padding: 0 22px 20px 60px; font-size: 16px; color: #666;
   line-height: 1.8; display: none;
 }
 .specs-faq-item.open .specs-faq-a { display: block; }
@@ -740,81 +754,48 @@ a:hover { color: #00F4C4; }
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 .specs-official-link:hover {
-  border-color: rgba(0,212,170,0.3);
-  box-shadow: 0 2px 12px rgba(0,212,170,0.08);
+  border-color: rgba(108,79,255,0.3);
+  box-shadow: 0 2px 12px rgba(108,79,255,0.08);
 }
 .specs-external-icon {
-  margin-left: auto; color: #00D4AA; font-size: 18px;
+  margin-left: auto; color: #6c4fff; font-size: 18px;
   transition: transform 0.2s;
 }
 .specs-official-link:hover .specs-external-icon {
   transform: translate(2px, -2px);
 }
 
-/* === Detail — 3-Tier CTA === */
-.tier-section {
-  margin: 32px 0 0; padding: 0;
+/* === Detail — CTA Banner === */
+.specs-cta-banner {
+  text-align: center; padding: 20px 0;
 }
-.tier-section h2 {
-  font-size: 20px; font-weight: 800; color: #ffffff;
-  margin-bottom: 24px;
+.specs-cta-badge {
+  display: inline-block; font-size: 13px; color: #b4a0ff;
+  margin-bottom: 20px; font-weight: 500;
 }
-.tier-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+.specs-cta-banner h2 {
+  font-size: 28px; font-weight: 800; color: #ffffff;
+  line-height: 1.4; margin-bottom: 8px;
 }
-.tier-card {
-  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 14px; padding: 32px 24px; position: relative;
-  cursor: pointer; text-decoration: none; display: block;
-  transition: all 0.25s;
+.specs-cta-banner h2 span {
+  color: #b4a0ff;
 }
-.tier-card:hover {
-  background: rgba(255,255,255,0.12);
-  transform: translateY(-3px);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-  border-color: rgba(255,255,255,0.2);
+.specs-cta-sub {
+  font-size: 14px; color: rgba(255,255,255,0.6);
+  line-height: 1.7; margin-bottom: 28px;
 }
-.tier-card:active {
-  transform: translateY(0);
+.specs-cta-btn {
+  display: inline-block; padding: 16px 40px;
+  background: #6c4fff; color: #fff; font-size: 16px; font-weight: 700;
+  border-radius: 12px; text-decoration: none;
+  transition: background 0.2s, transform 0.15s;
+  box-shadow: 0 4px 16px rgba(124,58,237,0.3);
 }
-.tier-card.recommended {
-  border-color: #00D4AA; background: rgba(0,212,170,0.08);
+.specs-cta-btn:hover { background: #5a3de6; transform: translateY(-2px); }
+.specs-cta-price {
+  margin-top: 14px; font-size: 13px; color: rgba(255,255,255,0.5);
 }
-.tier-card.recommended:hover {
-  background: rgba(0,212,170,0.12);
-}
-.tier-badge {
-  position: absolute; top: -11px; right: 18px;
-  background: #00D4AA; color: #fff; font-size: 12px; font-weight: 700;
-  padding: 4px 14px; border-radius: 12px;
-}
-.tier-card h3 {
-  font-size: 20px; font-weight: 700; color: #ffffff; margin-bottom: 10px;
-}
-.tier-card .tier-sub {
-  font-size: 15px; color: #00D4AA; font-weight: 600; margin-bottom: 10px;
-}
-.tier-card .tier-desc {
-  font-size: 14px; color: rgba(255,255,255,0.5); line-height: 1.6; margin-bottom: 20px;
-}
-.tier-card .tier-cta {
-  display: inline-block; padding: 12px 24px; border-radius: 10px;
-  font-size: 15px; font-weight: 600; text-decoration: none;
-  transition: all 0.2s;
-}
-.tier-card:first-child .tier-cta {
-  background: #00D4AA; color: #fff;
-}
-.tier-card:first-child .tier-cta:hover {
-  background: #00E4BA;
-}
-.tier-card:nth-child(2) .tier-cta,
-.tier-card:nth-child(3) .tier-cta {
-  background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.4); cursor: default;
-}
-.tier-coming {
-  font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 8px; font-weight: 500;
-}
+.specs-cta-price strong { color: rgba(255,255,255,0.8); }
 
 /* === Detail — Related Content === */
 .specs-related {
@@ -828,13 +809,13 @@ a:hover { color: #00F4C4; }
 }
 .specs-related-links { display: flex; flex-wrap: wrap; gap: 10px; }
 .specs-related-links a {
-  font-size: 13px; color: #00D4AA; text-decoration: none;
-  padding: 7px 16px; background: rgba(0,212,170,0.1);
+  font-size: 13px; color: #6c4fff; text-decoration: none;
+  padding: 7px 16px; background: rgba(108,79,255,0.1);
   border-radius: 10px; transition: all 0.2s;
-  border: 1px solid rgba(0,212,170,0.15); font-weight: 500;
+  border: 1px solid rgba(108,79,255,0.15); font-weight: 500;
 }
 .specs-related-links a:hover {
-  background: rgba(0,212,170,0.2); border-color: rgba(0,212,170,0.3);
+  background: rgba(108,79,255,0.2); border-color: rgba(108,79,255,0.3);
 }
 
 /* === Responsive — Detail page === */
@@ -850,9 +831,8 @@ a:hover { color: #00F4C4; }
   .specs-details-grid { grid-template-columns: 1fr; }
   .specs-ox-compare { grid-template-columns: 1fr; }
   .specs-rejection-item { padding: 14px 0; font-size: 14px; }
-  .tier-grid { grid-template-columns: 1fr; gap: 14px; }
-  .tier-card { padding: 24px 20px; }
-  .tier-section { margin: 36px 0 32px; }
+  .specs-cta-banner h2 { font-size: 22px; }
+  .specs-cta-btn { padding: 14px 32px; font-size: 15px; }
   .specs-related { padding: 20px 22px; }
   .specs-common-rule { padding: 16px 20px; }
   .specs-faq-q { padding: 16px 18px; }
@@ -1305,6 +1285,17 @@ ${hreflangTags}
     ? `${escapeHtml(countryName)} ${escapeHtml(typeName)} requires ${escapeHtml(locField(specData, 'size', lang))}, ${escapeHtml(locField(specData, 'background', lang)).toLowerCase()} background, taken within ${escapeHtml(locField(specData, 'validity', lang)).toLowerCase()}.`
     : `${escapeHtml(countryName)} ${escapeHtml(typeName)}은 ${escapeHtml(locField(specData, 'size', lang))}, ${escapeHtml(locField(specData, 'background', lang))} 배경이며 ${escapeHtml(locField(specData, 'validity', lang))} 촬영이 필요합니다.`;
 
+  const detailSections = (specData.detailSections && specData.detailSections[lang]) || [];
+  const detailSectionsHtml = detailSections.length ? `
+        <div class="specs-detail-sections">
+          ${detailSections.map(sec => `<div class="specs-detail-cat">
+            <h3>${escapeHtml(sec.title)}</h3>
+            <ul>${sec.items.map(item => `
+              <li>${escapeHtml(item)}</li>`).join('')}
+            </ul>
+          </div>`).join('\n          ')}
+        </div>` : '';
+
   const bodyContent = `
   <div class="specs-hero-wrap">
   <div class="band-inner">
@@ -1359,21 +1350,19 @@ ${hreflangTags}
       <div class="specs-section">
         <h2>${lang === 'ja' ? `${escapeHtml(typeName)} 規定写真を作る` : lang === 'en' ? `Make ${escapeHtml(typeName)} Photo` : `${escapeHtml(typeName)} 규정 사진 만들기`}</h2>
         <div class="specs-crop-tool" id="specs-crop-embed">
-          <div class="specs-crop-upload">
+          <div class="specs-crop-panel specs-crop-upload">
             <div style="font-size:32px;color:#aaa;margin-bottom:12px;">&#8615;</div>
             <div style="font-size:15px;color:#555;font-weight:600;margin-bottom:8px;">${lang === 'ja' ? '写真をドラッグ＆ドロップ' : lang === 'en' ? 'Drag and drop photo' : '사진을 끌어다 놓으세요'}</div>
-            <div style="margin:12px 0;padding:10px 24px;border:1.5px solid #00D4AA;border-radius:8px;color:#00D4AA;font-size:14px;font-weight:600;">${lang === 'ja' ? '写真を選択' : lang === 'en' ? 'Choose photo' : '사진 선택'}</div>
+            <div style="margin:12px 0;padding:10px 24px;border:1.5px solid #6c4fff;border-radius:8px;color:#6c4fff;font-size:14px;font-weight:600;">${lang === 'ja' ? '写真を選択' : lang === 'en' ? 'Choose photo' : '사진 선택'}</div>
             <div style="font-size:12px;color:#aaa;margin-top:8px;">JPG, PNG, HEIC / max 10MB</div>
           </div>
-          <div class="specs-crop-ba">
-            <div class="specs-crop-ba-item">
-              <img src="/images/guides/sample-before-kr.png" alt="Before">
-              <div class="specs-crop-ba-label">BEFORE</div>
-            </div>
-            <div class="specs-crop-ba-item">
-              <img src="/images/guides/sample-after-kr.webp" alt="After">
-              <div class="specs-crop-ba-label specs-crop-ba-after">AFTER</div>
-            </div>
+          <div class="specs-crop-panel specs-crop-preview">
+            <img src="/images/guides/sample-before-kr.png" alt="Before">
+            <div class="specs-crop-label">BEFORE</div>
+          </div>
+          <div class="specs-crop-panel specs-crop-preview">
+            <img src="/images/guides/sample-after-kr.webp" alt="After">
+            <div class="specs-crop-label specs-crop-label-after">AFTER</div>
           </div>
         </div>
       </div>
@@ -1391,6 +1380,7 @@ ${hreflangTags}
             ${tableRows}
           </tbody>
         </table>
+        ${detailSectionsHtml}
       </div>
     </div>
   </div>
@@ -1441,36 +1431,16 @@ ${hreflangTags}
     </div>
   </div>` : ''}
 
-  <!-- BAND: CTA 영역 (다크 배경, 맨 하단) -->
+  <!-- BAND: CTA 배너 (다크 배경, 맨 하단) -->
   <div class="specs-band specs-band-dark">
     <div class="band-inner">
-      <div class="tier-section">
-        <div class="tier-grid">
-          <div class="tier-card">
-            <img src="/images/idpass-icon.png" alt="ID PASS" style="width:48px;height:48px;border-radius:10px;margin-bottom:12px;">
-            <h3>${i.tierFreeTitle}</h3>
-            <div class="tier-sub">${escapeHtml(i.tierFreeSub)}</div>
-            <div class="tier-desc">${escapeHtml(i.tierFreeDesc)}</div>
-            <a href="/crop" class="tier-cta">${escapeHtml(i.tierFreeCta)}</a>
-          </div>
-          <div class="tier-card recommended">
-            <span class="tier-badge">${escapeHtml(i.tierRecommend)}</span>
-            <h3>${i.tierAITitle}</h3>
-            <div class="tier-sub">${escapeHtml(i.tierAISub)}</div>
-            <div class="tier-desc">${escapeHtml(i.tierAIDesc)}</div>
-            <a href="#" class="tier-cta">${escapeHtml(i.tierAICta)}</a>
-            <div class="tier-coming">${escapeHtml(i.tierComingSoon)}</div>
-          </div>
-          <div class="tier-card">
-            <h3>${i.tierStudioTitle}</h3>
-            <div class="tier-sub">${escapeHtml(i.tierStudioSub)}</div>
-            <div class="tier-desc">${escapeHtml(i.tierStudioDesc)}</div>
-            <a href="#" class="tier-cta">${escapeHtml(i.tierStudioCta)}</a>
-            <div class="tier-coming">${escapeHtml(i.tierComingSoon)}</div>
-          </div>
-        </div>
+      <div class="specs-cta-banner">
+        <div class="specs-cta-badge">${escapeHtml(i.ctaBadge)}</div>
+        <h2>${escapeHtml(i.ctaHeadline1)}<br><span>${escapeHtml(i.ctaHeadline2)}</span></h2>
+        <p class="specs-cta-sub">${escapeHtml(i.ctaSub).replace(/\n/g, '<br>')}</p>
+        <a href="https://monkos.ai" class="specs-cta-btn">${escapeHtml(i.ctaBtn)}</a>
+        <p class="specs-cta-price">${i.ctaPrice.replace(/(무료 체험|無料体験|Free)/g, '<strong>$1</strong>')}</p>
       </div>
-
     </div>
   </div>
 
