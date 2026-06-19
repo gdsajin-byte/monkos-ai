@@ -765,6 +765,36 @@ a:hover { color: #5a3de6; }
   transform: translate(2px, -2px);
 }
 
+/* === Detail — Online Guide === */
+.specs-online-guide { margin-top: 8px; }
+.specs-online-section { margin-bottom: 28px; }
+.specs-online-section:last-child { margin-bottom: 0; }
+.specs-online-section h3 {
+  font-size: 18px; font-weight: 700; color: #1a1a1a;
+  margin-bottom: 14px; padding-bottom: 8px;
+  border-bottom: 2px solid #6c4fff; display: inline-block;
+}
+.specs-online-section ul { list-style: none; padding: 0; margin: 0; }
+.specs-online-section li {
+  padding: 10px 0; font-size: 16px; color: #555;
+  line-height: 1.7; border-bottom: 1px solid rgba(0,0,0,0.04);
+  padding-left: 18px; position: relative;
+}
+.specs-online-section li:last-child { border-bottom: none; }
+.specs-online-section li::before {
+  content: ''; position: absolute; left: 0; top: 18px;
+  width: 6px; height: 6px; border-radius: 50%; background: #6c4fff;
+}
+.specs-online-source {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 18px; background: #ffffff;
+  border: 1px solid rgba(0,0,0,0.06); border-radius: 12px;
+  color: #1a1a1a; text-decoration: none; font-size: 14px; font-weight: 500;
+  margin-top: 20px; transition: border-color 0.2s;
+}
+.specs-online-source:hover { border-color: rgba(108,79,255,0.3); }
+.specs-online-source .specs-external-icon { margin-left: auto; color: #6c4fff; }
+
 /* === Detail — CTA Banner === */
 .specs-cta-banner {
   text-align: center; padding: 20px 0;
@@ -1296,6 +1326,21 @@ ${hreflangTags}
           </div>`).join('\n          ')}
         </div>` : '';
 
+  const onlineGuide = (specData.onlineGuide && specData.onlineGuide[lang]) || null;
+  const onlineGuideHtml = onlineGuide ? `
+        <div class="specs-online-guide">
+          ${onlineGuide.sections.map(sec => `<div class="specs-online-section">
+            <h3>${escapeHtml(sec.subtitle)}</h3>
+            <ul>${sec.items.map(item => `
+              <li>${escapeHtml(item)}</li>`).join('')}
+            </ul>
+          </div>`).join('\n          ')}
+          ${onlineGuide.source ? `<a href="${escapeHtml(onlineGuide.source.url)}" target="_blank" rel="noopener noreferrer" class="specs-online-source">
+            <span>${escapeHtml(onlineGuide.source.label)}</span>
+            <span class="specs-external-icon">↗</span>
+          </a>` : ''}
+        </div>` : '';
+
   const bodyContent = `
   <div class="specs-hero-wrap">
   <div class="band-inner">
@@ -1415,6 +1460,16 @@ ${hreflangTags}
         <ul class="specs-rejection-list">
           ${rejectionHtml}
         </ul>
+      </div>
+    </div>
+  </div>` : ''}
+
+  ${onlineGuideHtml ? `<!-- BAND: 온라인 신청 안내 -->
+  <div class="specs-band specs-band-gray">
+    <div class="band-inner">
+      <div class="specs-section">
+        <h2>${escapeHtml(onlineGuide.title)}</h2>
+        ${onlineGuideHtml}
       </div>
     </div>
   </div>` : ''}

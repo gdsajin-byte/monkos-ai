@@ -492,9 +492,9 @@
     "standard": "ICAO 9303",
     "continent": "asia",
     "details": {
-      "ko": "ICAO 9303 기준을 따릅니다. 흰색 배경, 정면 응시, 무표정.",
-      "ja": "ICAO 9303基準に準拠。白背景、正面、無表情。",
-      "en": "Follows ICAO 9303 standard. White background, frontal view, neutral expression."
+      "ko": "",
+      "ja": "",
+      "en": ""
     },
     "rejectionReasons": {
       "ko": [
@@ -646,6 +646,37 @@
         "ko": "대한민국 여권 안내 (외교부)",
         "en": "Republic of Korea Passport Guide (MOFA)",
         "ja": "大韓民国パスポート案内（外交部）"
+      }
+    },
+    "onlineGuide": {
+      "ko": {
+        "title": "온라인 여권 신청 · 재발급 안내",
+        "sections": [
+          {
+            "subtitle": "온라인 신청용 사진 규격",
+            "items": [
+              "권장 사이즈: 413 × 531 픽셀 (가로 395~431, 세로 507~550px 범위)",
+              "파일 형식: JPEG",
+              "파일 크기: 500KB 이하",
+              "해상도: 300DPI 이상 권장",
+              "6개월 이내 촬영한 사진만 사용 가능"
+            ]
+          },
+          {
+            "subtitle": "온라인 재발급 절차",
+            "items": [
+              "정부24(gov.kr) 접속 → 여권 → 온라인 신청",
+              "기존 전자여권 발급 이력이 있는 국민만 가능",
+              "수수료: 10년 복수여권 53,000원 / 5년 복수여권 45,000원 (만 18세 이상)",
+              "소요 기간: 4~7일 (긴급 여권 당일~익일)",
+              "수령: 본인 직접 방문 (기존 여권 지참)"
+            ]
+          }
+        ],
+        "source": {
+          "label": "정부24 여권 재발급 온라인 신청",
+          "url": "https://www.gov.kr/portal/service/serviceInfo/126200000030"
+        }
       }
     }
   },
