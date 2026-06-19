@@ -429,7 +429,7 @@ a:hover { color: #5a3de6; }
 .specs-hero-text .specs-hero-desc {
   color: #666; font-size: 17px; line-height: 1.7; margin-bottom: 24px;
 }
-.specs-hero-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+.specs-hero-tags { display: flex; gap: 10px; flex-wrap: wrap; row-gap: 20px; }
 .specs-hero-tags span, .specs-hero-tags a span {
   background: rgba(108,79,255,0.1); color: #6c4fff;
   padding: 6px 12px; border-radius: 20px; font-size: 13px;
@@ -506,9 +506,9 @@ a:hover { color: #5a3de6; }
 .specs-crop-label-after { background: rgba(108,79,255,0.7); }
 
 @media (max-width: 768px) {
-  .specs-crop-tool { grid-template-columns: 1fr; gap: 10px; }
-  .specs-crop-panel { height: 240px; }
-  .specs-crop-upload { height: auto; min-height: 200px; padding: 32px 20px; }
+  .specs-crop-tool { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .specs-crop-upload { grid-column: 1 / -1; height: auto; min-height: 160px; padding: 24px 20px; }
+  .specs-crop-panel { height: 200px; }
 }
 
 /* === Detail — Photo Diagram === */
@@ -852,11 +852,12 @@ a:hover { color: #5a3de6; }
 @media (max-width: 768px) {
   .specs-hero-wrap { margin: 0; padding: 24px 20px 32px; }
   .specs-hero { grid-template-columns: 1fr; gap: 24px; }
-  .specs-hero-text { text-align: center; }
+  .specs-hero-text { text-align: left; }
   .specs-hero-text h1 { font-size: 28px; }
   .specs-hero-text .specs-hero-desc { text-align: left; }
-  .specs-hero-tags { justify-content: center; }
-  .specs-back { display: block; text-align: center; margin-bottom: 12px; }
+  .specs-hero-tags { justify-content: flex-start; gap: 8px; row-gap: 18px; }
+  .specs-hero-tags span, .specs-hero-tags a span { font-size: 12px; padding: 5px 10px; }
+  .specs-back { display: block; text-align: left; margin-bottom: 12px; }
   .specs-diagram { margin-bottom: 8px; padding: 20px 36px; }
   .specs-details-grid { grid-template-columns: 1fr; }
   .specs-ox-compare { grid-template-columns: 1fr; }
@@ -1378,7 +1379,7 @@ ${hreflangTags}
   </div>
 
   ${sameCountry.length > 0 ? `<!-- BAND: 다른 용도 규격 -->
-  <div class="specs-band specs-band-dark" style="padding:32px 32px;">
+  <div class="specs-band specs-band-dark" style="padding:32px 20px;">
     <div class="band-inner">
       <div style="font-size:14px;font-weight:600;color:rgba(255,255,255,0.6);margin-bottom:12px;">${escapeHtml(i.sameCountryLabel)}</div>
       <div class="specs-hero-tags">${sameCountry.map(s => {
