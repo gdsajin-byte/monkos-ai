@@ -2,11 +2,11 @@
 type: portfolio
 id: PF_PROFILES
 name: "PROFILES"
-subject: "AI 프로필 사진 독립 서비스 — 스타일링 템플릿 기반"
+subject: "AI Professional Headshot — monkos.ai/headshot 포털 서브디렉토리, 영어권 우선, $10/100c 통합 크레딧"
 created: 2026-04-28
 owner: 작가님
 leads: "쌍아(설계), 막내(구현)"
-status: draft
+status: active
 domain: "monkos-ai/service"
 ---
 
@@ -46,6 +46,11 @@ domain: "monkos-ai/service"
 | 06/17 | iMac/쌍아 | Phase 0 설계 방향 확정 — profiles.monkos.ai 독립, 증명=심플/프로필=프리미엄, 이미지프로 fixedPrompt 스택 이식 방향. 포털 v5 서비스 카드 구조 확정 | 세션로그 | ⏳ |
 | 06/18 | iMac/민아 | 전략 공백(Where 레이어) 진단 + 경쟁·수요 1차 조사. 발견: 한국어 커리어 프로필=빈 시장, 취업키워드 GSC 상위(취업사진 안경 1.2위), Remini=매스마켓($93M)/우리=신뢰 포지션. 기술구현 선행구조로 IRGEN(딸깍 IR 생성로직) 제안서 기안 → 포지셔닝 확정은 IR 산출 후 | PROPOSAL_20260618_IRGEN | ⏳ |
 | 06/18 | iMac/민아 | 시장 재진단(네이버 절대검색·일미 정밀분석): 한국 개인 디지털 헤드샷 직판 死(검색 클릭률 0.5%, 인화만 생존 8.38%), 미국 포화나 거인없음(HeadshotPro 솔로 0.1%점유). **진입로=개인직판 아닌 B2B(사원증/팀)로 한미 수렴**, IDPASS 영어앱=미국 다리. AI헤드샷 경쟁사 12개 전수분석 → 공통약점(정체성보존실패·백인얼굴), B2B=수익본진(매출39%), 해자=HR워크플로통합 | [REPORT_경쟁사전수분석](../../reports/2026-06/REPORT_20260618_iMac민아_AI헤드샷_경쟁사전수분석.md) | ⏳ |
+| 06/19 | iMac/쌍아 | **방향 대전환**: 독립 서브도메인 → **포털 서브디렉토리(monkos.ai/headshot)** 확정. 영어 기본, 모바일 퍼스트, 포털 인증·크레딧 100% 재사용, 스튜디오 API 프록시. 분위기 프리셋 5개(LinkedIn/Corporate/Creative/Business Pro/Dating). 프롬프트 의상 고정 제거 → 스타일 무드만 지정. Vertex AI ADC 크레딧 적용 확인 | [DESIGN_HEADSHOT](../../tech/designs/2026-06/DESIGN_20260619_HEADSHOT_포털서브디렉토리_설계.md) | ✅ |
+| 06/19 | iMac/막내3 | **헤드샷 서비스 라이브**: render-headshot.js(SSR) + headshot.js(클라이언트) + headshot.css + server.js 라우트/프록시. 3개국어(en/ko/ja). 프로덕션 배포 portal rev 00300~00304 | 포털 코드 4파일 | ✅ |
+| 06/19 | iMac/쌍아 | **작가님 실측 검증**: 5프리셋 전수 테스트. 정체성 보존 양호, 크롭 배꼽위 라인 적용, 의상 자연스러움 확인. 프리셋별 차이 선명화 완료(배경·조명·무드 4축 분화) | 작가님 스크린샷 5건 | ✅ |
+| 06/19 | iMac/쌍아 | **2라운드 아키텍처 설계**: 전 서비스 포털 통합(5→2 Cloud Run), $10/100c 통일 크레딧, 카드 기반 메인, Special Order(50c 프리미엄 커스텀 제작), 영어권 검색 공략 3축(specs CTA→pSEO→$10 진입) | [DESIGN_2라운드](../../tech/designs/2026-06/DESIGN_20260619_MONKOS_포털통합_2라운드아키텍처.md) | ✅ |
+| 06/19 | iMac/쌍아 | **Vertex AI ADC 전환** — idphoto-kr(rev 00199) + idphoto-jp(rev 00124) 나노바나나 프로 AI Studio 키 → Vertex AI ADC. GenAI App Builder 크레딧(₩147만) 적용 가능 | server.js kr+jp | ✅ |
 
 ---
 

@@ -45,9 +45,9 @@ function log(msg, severity = 'INFO', meta = {}) {
   }
 }
 
-// === ハイブリッド認証 ===
-// Live コーチング → Vertex AI ADC
-// Imagen I2I 生成 → Google AI Studio API Key (gemini-3-pro-image-previewはVertex AI未対応)
+// === Vertex AI ADC 統合認証 ===
+// gemini-3-pro-image-preview Vertex AI 登録確認 (2026-06-19)
+// AI Studio API Key 依存除去 → 全モデル Vertex AI ADCに統合
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
 
 const ai = new GoogleGenAI({
@@ -56,10 +56,13 @@ const ai = new GoogleGenAI({
   location: LOCATION,
 });
 
-const imagenAI = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+const imageAI = new GoogleGenAI({
+  vertexai: true,
+  project: PROJECT_ID,
+  location: 'global',
+});
 
-log('[Vertex AI] ADC クライアント初期化 (Live)');
-log(`[Google AI Studio] Imagen クライアント初期化 (API Key ${GEMINI_API_KEY ? '設定済み' : '未設定'})`);
+log('[Vertex AI] ADC クライアント初期化 (Live + Image)');
 log(`[Portal API] ${PORTAL_API_URL}`);
 
 // === 認証トークン検証 (portal config.js 同一ロジック) ===
@@ -588,9 +591,6 @@ app.post('/api/precheck', async (req, res) => {
 app.post('/api/idgen', async (req, res) => {
   let bodyUserId = null;
   try {
-    const apiKey = GEMINI_API_KEY;
-    if (!apiKey) return res.status(500).json({ error: 'APIキー未設定' });
-
     const body = req.body;
     const { image, userId } = body;
     bodyUserId = userId;
@@ -623,38 +623,25 @@ app.post('/api/idgen', async (req, res) => {
     }
     const instruction = buildPromptV5(body);
 
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image-preview:generateContent?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [
-            { inlineData: { mimeType: 'image/jpeg', data: base64Data } },
-            { text: instruction },
-          ]}],
-          generationConfig: { imageConfig: { aspectRatio: '3:4' } },
-          safetySettings: [
-            { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
-            { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
-            { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
-            { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
-          ],
-        }),
-      }
-    );
+    const response = await imageAI.models.generateContent({
+      model: 'gemini-3-pro-image-preview',
+      contents: [{ role: 'user', parts: [
+        { inlineData: { mimeType: 'image/jpeg', data: base64Data } },
+        { text: instruction },
+      ]}],
+      config: {
+        responseModalities: ['TEXT', 'IMAGE'],
+        imageConfig: { aspectRatio: '3:4' },
+        safetySettings: [
+          { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
+          { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
+          { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
+          { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
+        ],
+      },
+    });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      let detail = '';
-      try { detail = JSON.parse(errorText)?.error?.message || errorText.substring(0, 200); } catch { detail = errorText.substring(0, 200); }
-      // 生成失敗時クレジット返金
-      if (bodyUserId) await refundCredits(bodyUserId, 'generate', req.headers.cookie);
-      throw new Error(`API ${response.status}: ${detail}`);
-    }
-
-    const data = await response.json();
-    const imagePart = data.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
+    const imagePart = response.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
     if (!imagePart?.inlineData) {
       if (bodyUserId) await refundCredits(bodyUserId, 'generate', req.headers.cookie);
       throw new Error('画像生成失敗：応答に画像がありません');
