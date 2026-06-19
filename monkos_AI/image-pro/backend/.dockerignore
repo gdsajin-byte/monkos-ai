@@ -1,0 +1,51 @@
+# Node.js
+node_modules
+npm-debug.log
+yarn-error.log
+
+# 환경 설정
+.env
+.env.local
+.env.*.local
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 문서
+README.md
+*.md
+docs/
+
+# 테스트
+test/
+tests/
+*.test.js
+*.spec.js
+
+# CI/CD
+.github
+.gitlab-ci.yml
+.travis.yml
+
+# Docker
+Dockerfile
+.dockerignore
+docker-compose*.yml
+
+# 기타
+.editorconfig
+.eslintrc*
+.prettierrc*
