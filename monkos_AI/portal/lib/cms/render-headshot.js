@@ -14,10 +14,10 @@ const I18N = {
     styleTitle: '스타일 선택',
     styles: {
       linkedin_pro: '링크드인',
-      corporate: '기업 프로필',
+      corporate: '코포레이트',
       creative: '크리에이티브',
-      realtor: '비즈니스 프로',
-      dating: '데이팅 프로필',
+      professional: '프로페셔널',
+      dating: '데일리',
     },
     generateBtn: '헤드샷 생성하기',
     creditCost: '10c',
@@ -58,7 +58,7 @@ const I18N = {
       linkedin_pro: 'LinkedIn',
       corporate: 'Corporate',
       creative: 'Creative',
-      realtor: 'Business Pro',
+      professional: 'Professional',
       dating: 'Dating Profile',
     },
     generateBtn: 'Generate Headshot',
@@ -100,8 +100,8 @@ const I18N = {
       linkedin_pro: 'LinkedIn',
       corporate: 'コーポレート',
       creative: 'クリエイティブ',
-      realtor: 'ビジネスプロ',
-      dating: 'デートプロフィール',
+      professional: 'プロフェッショナル',
+      dating: 'デイリー',
     },
     generateBtn: 'ヘッドショットを生成',
     creditCost: '10c',
@@ -285,6 +285,7 @@ export function renderHeadshot(req, res, forceLang = null) {
 </section>`;
 
     const html = `${layoutHead(`${d.title} | MONKOS AI`, d.metaDesc, seoMeta, lang)}
+<link rel="stylesheet" href="/css/portal.css">
 <link rel="stylesheet" href="/css/headshot.css">
 </head>
 <body>

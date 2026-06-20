@@ -52,6 +52,7 @@ domain: "monkos-ai/service"
 | 06/19 | iMac/쌍아 | **2라운드 아키텍처 설계**: 전 서비스 포털 통합(5→2 Cloud Run), $10/100c 통일 크레딧, 카드 기반 메인, Special Order(50c 프리미엄 커스텀 제작), 영어권 검색 공략 3축(specs CTA→pSEO→$10 진입) | [DESIGN_2라운드](../../tech/designs/2026-06/DESIGN_20260619_MONKOS_포털통합_2라운드아키텍처.md) | ✅ |
 | 06/19 | iMac/쌍아 | **Vertex AI ADC 전환** — idphoto-kr(rev 00199) + idphoto-jp(rev 00124) 나노바나나 프로 AI Studio 키 → Vertex AI ADC. GenAI App Builder 크레딧(₩147만) 적용 가능 | server.js kr+jp | ✅ |
 | 06/20 | iMac/막내2 | **프리셋 프롬프트 분기**: 5프리셋(LinkedIn/Corporate/Creative/Realtor/Dating) 각각 배경·조명·분위기·무드 4축 수식어 추가. 기존 단일 프롬프트→purpose별 분기. 로그인 모달 CSS 정상 확인(변경불필요). portal rev 00306 배포 | server.js | ✅ |
+| 06/20 | iMac/막내2 | **프리셋 전면 재설계**: 4축(배경·포멀도·헤어·메이크업) 스키마. realtor→professional 리네이밍. KR dating→데일리, JA→デイリー. basePrompt에 메이크업 가드 추가. portal.css 링크 확인(쌍아 선수정). portal rev 00307 배포 | server.js, render-headshot.js | ✅ |
 
 ---
 
