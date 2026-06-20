@@ -12,6 +12,7 @@ status: draft (쌍아 보정 대기)
 > **용도**: claude.ai/code/routines 에서 데일리 루틴 생성 시 아래 "루틴 프롬프트" 블록을 지시문으로 사용한다.
 > **트리거**: 스케줄 — 매일 06:00 KST (AUTOPILOT 원시 수집 05:00 KST 이후)
 > **개정 v4 (2026-06-11, 작가님 직접 지시)**: 6번 [콘텐츠 생산 — PF_OPUS] 신설 — 브리핑·세션·PF 소재의 콘텐츠화. 기존 Routine 지시문을 본 블록으로 교체 필요.
+> **개정 v4.3 (2026-06-20, 전략 대정합)**: 6번 소재 선택 기준 접목 — 사진 단일 엔티티 집중(P1 사진 위주, P2/P3 보류), 관문 키워드 캘린더(네이버 실측) 우선, 헤드텀 게이트 경고형, 미검증 축C(전문직) 보류. 방침: 다음 레이어(RAG) 완성을 전제하지 않고 기존 루틴에 결정 접목 → 실전 성과 모니터링.
 > **전제**: 2026-06-10 시범 가동 결과(REPORT_20260610_웹민아_데일리E2E시범가동.md) 기준.
 > 외부 프로브·GSC 라이브는 선결 과제 해소 전까지 폴백 경로로 동작한다.
 
@@ -72,16 +73,24 @@ status: draft (쌍아 보정 대기)
      제안일 뿐 실행하지 않는다 — 결정은 작가님 몫
    - 분량 1장. 정상 항목은 1줄로 압축. "되는 것만" 기재 (헌법 4조 4항)
 
-6. [콘텐츠 생산 — PF_OPUS] **먼저 monkos-ops/contents/CONTENT_STRATEGY.md를 Read**
-   (필러 4축 × 톤 4종 × 주간 믹스 P1 4:P2 2:P3 1). 이번 주 생산분(contents/blog
-   금주 파일들)과 대조해 믹스 잔량이 부족한 필러를 우선 선택:
-   - P1(서비스 SEO)이면 타깃 4종·키워드 클러스터에서 소재 선정, 톤 T1
-   - P2(빌더 서사)이면 위 1~5에서 판독한 브리핑·세션·PF의 철학적 소재, 톤 T3
-   - P3(기술 실측)이면 실측 데이터 소재, 톤 T4 — 소재 없으면 P1 대체
+6. [콘텐츠 생산 — PF_OPUS] **[v4.3 전략 접목]** 먼저 다음을 Read:
+   monkos-ops/contents/CONTENT_STRATEGY.md +
+   monkos-ops/contents/CONTENT_CALENDAR_관문기반.md +
+   monkos-ops/marketing/seo/KEYWORD_GATEWAY_사진수요관문.md +
+   monkos-ops/marketing/seo/HEADTERM_REGISTRY.md.
+   **소재 선택 기준 (사진 단일 엔티티 집중)**:
+   - **P1(사진) 우선·집중** — 관문 캘린더의 네이버 실측 검색량 상위·공백 우선
+     (예: 근처사진관 24,310·여권사진옷 19,900·영정 7,660·졸업 6,960·취업+이력서 11,760).
+     톤 T1(가이드)/T2(후기). 관문 콘텐츠 안에 사진 CTA→랜딩(/id-photo·/headshot·Special Order) 삽입.
+   - **P2(빌더 서사)·P3(기술 실측) 보류** — 사진 엔티티 자리잡기 전까지 monkos.ai 발행 보류.
+     단 소재 가치 큰 건은 draft 생산·보관 가능(외부 note/Medium 발행은 작가님 판단).
+   - **미검증 축C(전문직 명함/여정) 보류** — 네이버 전수실측 통과 전 신규 생산 금지.
+   - **헤드텀 게이트(경고형)**: 작성 전 HEADTERM_REGISTRY 대조 — blog에서 서비스 헤드텀
+     ("AI 증명사진" 등) 금지, 동일 도메인 동일 키워드 대표노드 중복 시 경고·다른 앵글로만.
    - 파일: monkos-ops/contents/blog/blog_{YYYYMMDD}_{영문주제}_KR.md
      (frontmatter: slug·lang·author·status: draft·tags·summary 필수)
    - 톤별 문체 정본(선례 파일)은 CONTENT_STRATEGY.md §2 표를 따른다.
-     페르소나 규약 준수: T3=신작가, T1/T2/T4=MONKOS. 혼용 금지
+     페르소나 규약 준수: T1/T2=MONKOS. 혼용 금지
    - 기밀 게이트 (헌법 4조 3항): 내부 호칭·기술 엔진명·계정명·키·미해결 보안
      사항 언급 금지. 외부 표기는 MONKOS 통일. 메일·고객 정보 인용 금지.
    - 발행 금지: 초안은 main 병합 시 자판기(blog-draft-publish.yml)가 CMS
