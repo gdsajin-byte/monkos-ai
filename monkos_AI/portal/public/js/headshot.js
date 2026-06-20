@@ -234,10 +234,55 @@
       return;
     }
     historySection.style.display = 'block';
-    historyGrid.innerHTML = history.map(function(h) {
-      return '<img src="' + h.result + '" alt="headshot">';
+    historyGrid.innerHTML = history.map(function(h, idx) {
+      return '<img src="' + h.result + '" alt="headshot" data-idx="' + idx + '">';
     }).join('');
+
+    historyGrid.querySelectorAll('img').forEach(function(img) {
+      img.addEventListener('click', function() {
+        openLightbox(this.src);
+      });
+    });
   }
+
+  var lightbox = document.getElementById('hsLightbox');
+  var lightboxImg = document.getElementById('hsLightboxImg');
+  var lightboxDownload = document.getElementById('hsLightboxDownload');
+  var lightboxClose = document.getElementById('hsLightboxClose');
+  var downloadAllBtn = document.getElementById('hsDownloadAll');
+
+  function openLightbox(src) {
+    lightboxImg.src = src;
+    lightbox.classList.add('active');
+  }
+
+  function closeLightbox() {
+    lightbox.classList.remove('active');
+    lightboxImg.src = '';
+  }
+
+  if (lightboxClose) lightboxClose.addEventListener('click', closeLightbox);
+  if (lightbox) lightbox.addEventListener('click', function(e) {
+    if (e.target === lightbox) closeLightbox();
+  });
+
+  if (lightboxDownload) lightboxDownload.addEventListener('click', function() {
+    var a = document.createElement('a');
+    a.href = lightboxImg.src;
+    a.download = 'monkos-headshot-' + Date.now() + '.png';
+    a.click();
+  });
+
+  if (downloadAllBtn) downloadAllBtn.addEventListener('click', function() {
+    history.forEach(function(h, idx) {
+      setTimeout(function() {
+        var a = document.createElement('a');
+        a.href = h.result;
+        a.download = 'monkos-headshot-' + (idx + 1) + '.png';
+        a.click();
+      }, idx * 300);
+    });
+  });
 
   var checkSessionInterval = setInterval(function() {
     if (typeof currentUser !== 'undefined') {

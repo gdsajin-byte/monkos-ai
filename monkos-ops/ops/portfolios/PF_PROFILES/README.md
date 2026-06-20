@@ -53,6 +53,8 @@ domain: "monkos-ai/service"
 | 06/19 | iMac/쌍아 | **Vertex AI ADC 전환** — idphoto-kr(rev 00199) + idphoto-jp(rev 00124) 나노바나나 프로 AI Studio 키 → Vertex AI ADC. GenAI App Builder 크레딧(₩147만) 적용 가능 | server.js kr+jp | ✅ |
 | 06/20 | iMac/막내2 | **프리셋 프롬프트 분기**: 5프리셋(LinkedIn/Corporate/Creative/Realtor/Dating) 각각 배경·조명·분위기·무드 4축 수식어 추가. 기존 단일 프롬프트→purpose별 분기. 로그인 모달 CSS 정상 확인(변경불필요). portal rev 00306 배포 | server.js | ✅ |
 | 06/20 | iMac/막내2 | **프리셋 전면 재설계**: 4축(배경·포멀도·헤어·메이크업) 스키마. realtor→professional 리네이밍. KR dating→데일리, JA→デイリー. basePrompt에 메이크업 가드 추가. portal.css 링크 확인(쌍아 선수정). portal rev 00307 배포 | server.js, render-headshot.js | ✅ |
+| 06/20 | iMac/쌍아 | **히스토리 UX 개선** — 라이트박스 팝업(클릭→원본사이즈+다운로드) + Download All 버튼. **Professional 프롬프트 보정**(옷 중첩·근엄 해소) + **Dating 프롬프트 한국 감성 전환**(교외→도심 세련). 작가님 실측 기반 3회 배포 | headshot.js, headshot.css, render-headshot.js, server.js | ✅ |
+| 06/20 | iMac/쌍아 | **포털 히어로 H1 확정** — KR "전문 스튜디오가 개발한 AI 증명사진 서비스" / EN "AI ID Photos & Headshots — Built by a Professional Studio". 시타델 적합성 검증 통과 | 설계 확정(코드 적용 대기) | ⏳ |
 
 ---
 

@@ -259,9 +259,21 @@ export function renderHeadshot(req, res, forceLang = null) {
 </section>
 
 <section class="hs-history" id="hsHistory" style="display:none;">
-  <h2 class="hs-section-title">${escapeHtml(d.historyTitle)}</h2>
+  <div class="hs-history-header">
+    <h2 class="hs-section-title">${escapeHtml(d.historyTitle)}</h2>
+    <button class="hs-btn hs-btn-secondary hs-btn-sm" id="hsDownloadAll">↓ Download All</button>
+  </div>
   <div class="hs-history-grid" id="hsHistoryGrid"></div>
 </section>
+<div class="hs-lightbox" id="hsLightbox">
+  <div class="hs-lightbox-content">
+    <img id="hsLightboxImg" src="" alt="headshot full">
+    <div class="hs-lightbox-actions">
+      <button class="hs-btn hs-btn-primary" id="hsLightboxDownload">↓ Download</button>
+      <button class="hs-btn hs-btn-secondary" id="hsLightboxClose">${lang === 'ko' ? '닫기' : lang === 'ja' ? '閉じる' : 'Close'}</button>
+    </div>
+  </div>
+</div>
 
 <section class="hs-how">
   <h2 class="hs-section-title">${escapeHtml(d.howItWorks)}</h2>
