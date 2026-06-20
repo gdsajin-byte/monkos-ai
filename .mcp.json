@@ -36,6 +36,12 @@
       "args": [
         "scripts/tools/gdocs_mcp.sh"
       ]
+    },
+    "monk-retrieval": {
+      "command": "node",
+      "args": [
+        "scripts/retrieval/mcp_server.js"
+      ]
     }
   }
 }

@@ -25,7 +25,7 @@ created: 2026-06-14
 | **P1 관계 인덱스 MVP** | frontmatter→그래프 엣지 materialize + BM25 + 메타필터 | ✅ 완료 |
 | **P1.5 자동 갱신** | mk-push.sh 연동 + 스캔 범위 확장(governance/docs) | ✅ 완료 |
 | P2 의미검색 | Vertex AI 임베딩 + 하이브리드(BM25+vector RRF) | ✅ 완료 |
-| P3 agentic MCP | MCP 서버 노출 → 전 디바이스 접근 | ⚪ 대기 |
+| P3 agentic MCP | MCP 서버 노출 → 전 디바이스 접근 | ✅ 완료 |
 | 축B git 위생 | .gitignore·LFS·아카이브 분리 (문서 무관, 바이너리만) | ⚪ 독립 트랙 |
 
 ---
@@ -45,6 +45,7 @@ created: 2026-06-14
 | 06/18 | iMac/쌍아 | **P2 의미검색 설계서** — Vertex AI text-multilingual-embedding-002 + SQLite 하이브리드(BM25+vector RRF). 증분 임베딩 설계 | DESIGN_20260618 | ⏳ 지시서 대기 |
 | 06/18 | iMac/막내2 | P1.5 자동 갱신 — mk-push.sh 연동+스캔 범위 확장(governance/docs) (3206문서, 35PF, 499링크) | mk-push.sh·build_index.js 수정+COMPLETION | ✅ |
 | 06/20 | iMac/막내1 | **P2 의미검색 구현** — Vertex AI embedding(3232건)+하이브리드 검색(BM25+Vector RRF)+증분 캐시 | embeddings.js·build_index.js·search.js 확장+COMPLETION | ✅ |
+| 06/20 | iMac/막내1 | **P3 MCP 서버 구현** — lib.js 모듈화+mcp_server.js 4도구(search/lookup/relations/stats)+.mcp.json 등록 | lib.js·mcp_server.js 신규+search.js 리팩토링+COMPLETION | ✅ |
 
 ---
 
