@@ -173,15 +173,26 @@ const httpServer = createServer(async (req, res) => {
         return res.end(JSON.stringify(creditData));
       }
 
+      const styleModifiers = {
+        linkedin_pro: 'Confident, approachable expression. Soft neutral studio background (light gray or off-white). Even, diffused lighting. Conservative professional attire mood — no specific garment prescribed, let the style feel naturally formal.',
+        corporate: 'Composed, authoritative expression. Clean solid-color backdrop (dark navy or charcoal gray). Dramatic studio lighting with subtle rim light. Executive boardroom atmosphere.',
+        creative: 'Relaxed, genuine smile. Warm-toned environment or textured backdrop. Natural window-style lighting with soft shadows. Smart-casual creative industry vibe.',
+        realtor: 'Warm, trustworthy smile. Modern office or neutral gradient background. Bright, even lighting. Polished business-professional mood, approachable yet established.',
+        dating: 'Natural, warm expression with a relaxed smile. Soft golden-hour outdoor-style lighting. Blurred lifestyle background (café, park, urban). Casual-chic styling mood.',
+      };
+      const basePrompt = 'Waist-up portrait, crop above the navel. Do NOT show full body, legs, or desk/furniture below waist. Keep the subject\'s hairstyle exactly as-is, only tidy and groom. The subject must be clearly recognizable as the SAME person in the input photo.';
+      const styleMod = styleModifiers[purpose] || styleModifiers.linkedin_pro;
+      const customPrompt = basePrompt + ' ' + styleMod;
+
       const studioUrl = process.env.STUDIO_API_URL || 'https://monkos-studio-933456016842.us-central1.run.app';
       const studioRes = await fetch(`${studioUrl}/api/profiles/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           image,
-          purpose: purpose || 'linkedin',
+          purpose: purpose || 'linkedin_pro',
           model: model || 'nano-banana-pro',
-          customPrompt: 'Waist-up portrait, crop above the navel. Do NOT show full body, legs, or desk/furniture below waist. Keep the subject\'s hairstyle exactly as-is, only tidy and groom. Clean professional studio background. The subject must be clearly recognizable as the SAME person in the input photo.',
+          customPrompt,
         }),
       });
       const studioData = await studioRes.json();
