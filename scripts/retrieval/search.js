@@ -30,6 +30,15 @@ function parseArgs(argv) {
   return args;
 }
 
+function hasEmbeddings(db) {
+  const table = db.prepare(
+    `SELECT name FROM sqlite_master WHERE type='table' AND name='doc_embeddings'`
+  ).get();
+  if (!table) return false;
+  const cnt = db.prepare('SELECT COUNT(*) as cnt FROM doc_embeddings').get().cnt;
+  return cnt > 0;
+}
+
 function searchByFilters(db, args) {
   const conditions = [];
   const params = [];
@@ -64,12 +73,12 @@ function searchByFilters(db, args) {
   return db.prepare(sql).all(...params);
 }
 
-function searchByQuery(db, query, args) {
+function searchBM25(db, query, args) {
   const conditions = [];
   const params = [];
 
   let baseSql = `
-    SELECT d.path, d.type, d.date, d.subject, rank
+    SELECT d.id, d.path, d.type, d.date, d.subject, rank
     FROM documents_fts fts
     JOIN documents d ON d.id = fts.rowid
     WHERE documents_fts MATCH ?
@@ -101,6 +110,63 @@ function searchByQuery(db, query, args) {
   return db.prepare(baseSql).all(...params);
 }
 
+function cosineSimilarity(a, b) {
+  let dot = 0, normA = 0, normB = 0;
+  for (let i = 0; i < a.length; i++) {
+    dot += a[i] * b[i];
+    normA += a[i] * a[i];
+    normB += b[i] * b[i];
+  }
+  return dot / (Math.sqrt(normA) * Math.sqrt(normB));
+}
+
+async function searchVector(db, query, limit = 20) {
+  const { embedQuery } = require('./embeddings');
+  const queryVec = await embedQuery(query);
+
+  const rows = db.prepare(`
+    SELECT e.doc_id, e.embedding, d.path, d.type, d.date, d.subject
+    FROM doc_embeddings e JOIN documents d ON d.id = e.doc_id
+  `).all();
+
+  const scored = rows.map(row => {
+    const docVec = new Float32Array(row.embedding.buffer, row.embedding.byteOffset, row.embedding.length / 4);
+    const similarity = cosineSimilarity(queryVec, docVec);
+    return { id: row.doc_id, path: row.path, type: row.type, date: row.date, subject: row.subject, similarity };
+  });
+
+  scored.sort((a, b) => b.similarity - a.similarity);
+  return scored.slice(0, limit);
+}
+
+function rrfFusion(bm25Results, vectorResults, k = 60) {
+  const scores = new Map();
+  const meta = new Map();
+
+  bm25Results.forEach((r, idx) => {
+    const rank = idx + 1;
+    scores.set(r.id, (scores.get(r.id) || 0) + 1 / (k + rank));
+    meta.set(r.id, { path: r.path, type: r.type, date: r.date, subject: r.subject });
+  });
+
+  vectorResults.forEach((r, idx) => {
+    const rank = idx + 1;
+    scores.set(r.id, (scores.get(r.id) || 0) + 1 / (k + rank));
+    if (!meta.has(r.id)) {
+      meta.set(r.id, { path: r.path, type: r.type, date: r.date, subject: r.subject });
+    }
+  });
+
+  const fused = [];
+  for (const [id, score] of scores) {
+    const m = meta.get(id);
+    fused.push({ id, path: m.path, type: m.type, date: m.date, subject: m.subject, rrfScore: score });
+  }
+
+  fused.sort((a, b) => b.rrfScore - a.rrfScore);
+  return fused.slice(0, 20);
+}
+
 function searchRelations(db, pfName) {
   const sql = `
     SELECT dp2.portfolio, COUNT(*) as shared_docs
@@ -127,7 +193,7 @@ function formatResults(results) {
   console.log(`\n  총 ${results.length}건`);
 }
 
-function main() {
+async function main() {
   const args = parseArgs(process.argv);
   const db = openDB();
 
@@ -146,9 +212,37 @@ function main() {
   }
 
   if (args.query) {
-    console.log(`\n🔍 BM25 검색: "${args.query}"\n`);
-    const results = searchByQuery(db, args.query, args);
-    formatResults(results);
+    const embAvailable = hasEmbeddings(db);
+    const mode = args.mode || (embAvailable ? 'hybrid' : 'bm25');
+
+    if (mode === 'bm25') {
+      console.log(`\n🔍 BM25 검색: "${args.query}"\n`);
+      const results = searchBM25(db, args.query, args);
+      formatResults(results);
+
+    } else if (mode === 'vector') {
+      if (!embAvailable) {
+        console.error('❌ 임베딩 없음. build_index.js --embed를 먼저 실행하세요.');
+        db.close();
+        process.exit(1);
+      }
+      console.log(`\n🔍 벡터 검색: "${args.query}"\n`);
+      const results = await searchVector(db, args.query);
+      formatResults(results);
+
+    } else {
+      if (!embAvailable) {
+        console.log(`\n🔍 BM25 검색: "${args.query}" (임베딩 없음 — BM25 폴백)\n`);
+        const results = searchBM25(db, args.query, args);
+        formatResults(results);
+      } else {
+        console.log(`\n🔍 하이브리드 검색: "${args.query}" (BM25 + Vector RRF)\n`);
+        const bm25Results = searchBM25(db, args.query, args);
+        const vectorResults = await searchVector(db, args.query);
+        const fused = rrfFusion(bm25Results, vectorResults);
+        formatResults(fused);
+      }
+    }
   } else if (args.pf || args.type || args.from || args.to || args.agent || args.device) {
     const filters = [];
     if (args.pf) filters.push(`PF=${args.pf}`);
@@ -164,6 +258,10 @@ function main() {
   node search.js --pf PF_SPREAD
   node search.js --from 2026-06-14 --to 2026-06-15
   node search.js --query "IndexNow sitemap"
+  node search.js --query "증명사진 품질"                    # hybrid (임베딩 있으면)
+  node search.js --query "증명사진 품질" --mode bm25        # BM25만
+  node search.js --query "증명사진 품질" --mode vector      # 벡터만
+  node search.js --query "증명사진 품질" --mode hybrid      # 명시적 hybrid
   node search.js --pf PF_IDPHOTO --type order
   node search.js --relations PF_OPUS
     `);

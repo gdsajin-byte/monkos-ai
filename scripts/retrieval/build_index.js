@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 const path = require('path');
 const fs = require('fs');
+const crypto = require('crypto');
 const Database = require('better-sqlite3');
 const matter = require('gray-matter');
 
@@ -14,6 +15,8 @@ const DB_PATH = path.join(__dirname, 'monk_index.db');
 const PF_PATTERN = /PF_([A-Z0-9_]+)/g;
 const DATE_FROM_FOLDER = /(\d{4}-\d{2})/;
 const DATE_FROM_FILENAME = /(\d{8})/;
+
+const embedMode = process.argv.includes('--embed');
 
 function scanMarkdownFiles(dir) {
   const results = [];
@@ -61,7 +64,38 @@ function parsePortfolioField(val) {
   return String(val).split(',').map(v => v.trim()).filter(Boolean);
 }
 
-function buildIndex() {
+function loadExistingEmbeddings() {
+  if (!fs.existsSync(DB_PATH)) return new Map();
+  try {
+    const oldDb = new Database(DB_PATH, { readonly: true });
+    const hasTable = oldDb.prepare(
+      `SELECT name FROM sqlite_master WHERE type='table' AND name='doc_embeddings'`
+    ).get();
+    if (!hasTable) { oldDb.close(); return new Map(); }
+
+    const rows = oldDb.prepare(`
+      SELECT d.path, e.embedding, e.content_hash
+      FROM doc_embeddings e JOIN documents d ON d.id = e.doc_id
+    `).all();
+    oldDb.close();
+
+    const cache = new Map();
+    for (const row of rows) {
+      cache.set(row.path, { embedding: row.embedding, contentHash: row.content_hash });
+    }
+    return cache;
+  } catch {
+    return new Map();
+  }
+}
+
+function contentHash(text) {
+  return crypto.createHash('sha256').update(text).digest('hex');
+}
+
+async function buildIndex() {
+  const embeddingCache = embedMode ? loadExistingEmbeddings() : new Map();
+
   if (fs.existsSync(DB_PATH)) fs.unlinkSync(DB_PATH);
 
   const db = new Database(DB_PATH);
@@ -104,6 +138,16 @@ function buildIndex() {
     CREATE INDEX idx_dp_doc_id ON doc_portfolios(doc_id);
   `);
 
+  if (embedMode) {
+    db.exec(`
+      CREATE TABLE doc_embeddings (
+        doc_id INTEGER PRIMARY KEY REFERENCES documents(id),
+        embedding BLOB NOT NULL,
+        content_hash TEXT NOT NULL
+      );
+    `);
+  }
+
   const insertDoc = db.prepare(`
     INSERT INTO documents (path, filename, type, date, device, agent, status, subject, from_agent, to_agent, content_preview)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -119,7 +163,8 @@ function buildIndex() {
       files.push(...scanMarkdownFiles(dir));
     }
   }
-  let indexed = 0;
+
+  const docRecords = [];
 
   const insertAll = db.transaction(() => {
     for (const fullPath of files) {
@@ -179,7 +224,9 @@ function buildIndex() {
         insertPF.run(docId, pf);
       }
 
-      indexed++;
+      if (embedMode) {
+        docRecords.push({ docId, path: relPath, contentPreview });
+      }
     }
   });
 
@@ -192,9 +239,66 @@ function buildIndex() {
   console.log(`✅ 인덱스 빌드 완료`);
   console.log(`   문서: ${docCount}건`);
   console.log(`   PF 링크: ${pfLinks}건 (${uniquePFs}개 PF)`);
-  console.log(`   DB: ${DB_PATH}`);
 
+  if (embedMode) {
+    await buildEmbeddings(db, docRecords, embeddingCache);
+  }
+
+  console.log(`   DB: ${DB_PATH}`);
   db.close();
+}
+
+async function buildEmbeddings(db, docRecords, cache) {
+  const { embedTexts } = require('./embeddings');
+  const insertEmb = db.prepare(
+    `INSERT INTO doc_embeddings (doc_id, embedding, content_hash) VALUES (?, ?, ?)`
+  );
+
+  const needEmbed = [];
+  const reused = [];
+
+  for (const rec of docRecords) {
+    const hash = contentHash(rec.contentPreview || '');
+    const cached = cache.get(rec.path);
+    if (cached && cached.contentHash === hash) {
+      reused.push({ docId: rec.docId, embedding: cached.embedding, hash });
+    } else {
+      needEmbed.push({ docId: rec.docId, text: rec.contentPreview || '', hash });
+    }
+  }
+
+  console.log(`\n🧠 임베딩 진행: ${docRecords.length}건 (신규/변경 ${needEmbed.length}건, 캐시 ${reused.length}건)`);
+
+  const insertCached = db.transaction(() => {
+    for (const r of reused) {
+      insertEmb.run(r.docId, r.embedding, r.hash);
+    }
+  });
+  insertCached();
+
+  if (needEmbed.length > 0) {
+    const BATCH = 100;
+    for (let i = 0; i < needEmbed.length; i += BATCH) {
+      const batch = needEmbed.slice(i, i + BATCH);
+      const texts = batch.map(b => b.text);
+      const embeddings = await embedTexts(texts);
+
+      const insertBatch = db.transaction(() => {
+        for (let j = 0; j < batch.length; j++) {
+          const buf = Buffer.from(embeddings[j].buffer);
+          insertEmb.run(batch[j].docId, buf, batch[j].hash);
+        }
+      });
+      insertBatch();
+
+      const done = Math.min(i + BATCH, needEmbed.length);
+      process.stdout.write(`   임베딩: ${done}/${needEmbed.length}\r`);
+    }
+    console.log(`   임베딩: ${needEmbed.length}/${needEmbed.length} 완료`);
+  }
+
+  const embCount = db.prepare('SELECT COUNT(*) as cnt FROM doc_embeddings').get().cnt;
+  console.log(`   임베딩 벡터: ${embCount}건`);
 }
 
 buildIndex();
