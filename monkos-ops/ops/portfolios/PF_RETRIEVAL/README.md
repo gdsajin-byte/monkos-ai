@@ -26,6 +26,8 @@ created: 2026-06-14
 | **P1.5 자동 갱신** | mk-push.sh 연동 + 스캔 범위 확장(governance/docs) | ✅ 완료 |
 | P2 의미검색 | Vertex AI 임베딩 + 하이브리드(BM25+vector RRF) | ✅ 완료 |
 | P3 agentic MCP | MCP 서버 노출 → 전 디바이스 접근 | ✅ 완료 |
+| P4 원격 접근 | 검색 API 배포(Cloud Run/Functions) → 웹민아·외부 접근 | ⚪ 대기 |
+| P5 자가 진화 | 사용 피드백 루프 → 관계 가중치 갱신·portfolio 자동 추론 | ⚪ 대기 (P3 운용 실적 선행) |
 | 축B git 위생 | .gitignore·LFS·아카이브 분리 (문서 무관, 바이너리만) | ⚪ 독립 트랙 |
 
 ---
