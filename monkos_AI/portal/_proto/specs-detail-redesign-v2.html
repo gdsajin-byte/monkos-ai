@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>대한민국 여권 사진 규격 — MONKOS</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0E1116;
+    --ink-2: #161A21;
+    --ink-line: rgba(255,255,255,0.08);
+    --paper: #FAFAF7;
+    --paper-2: #F2F2EC;
+    --line: rgba(14,17,22,0.10);
+    --line-strong: rgba(14,17,22,0.18);
+    --text: #14181F;
+    --text-dim: #5C6168;
+    --text-faint: #8A8F96;
+    --accent: #00C896;
+    --accent-deep: #00A37A;
+    --accent-ink: #6CF2CE;
+    --danger: #E5484D;
+    --mono: ui-monospace, "SF Mono", "JetBrains Mono", "Menlo", monospace;
+    --sans: "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+  body { font-family: var(--sans); background: var(--paper); color: var(--text); line-height: 1.6; }
+  .wrap { max-width: 1140px; margin: 0 auto; padding: 0 40px; }
+  a { color: inherit; text-decoration: none; }
+  .mono { font-family: var(--mono); font-feature-settings: "tnum"; }
+
+  /* NAV */
+  nav { position: sticky; top:0; z-index:50; background: rgba(250,250,247,0.82); backdrop-filter: saturate(180%) blur(14px); border-bottom: 1px solid var(--line); }
+  .nav-in { display:flex; align-items:center; justify-content:space-between; height: 64px; }
+  .brand { font-weight: 700; letter-spacing: -0.02em; font-size: 17px; display:flex; align-items:center; gap:8px; }
+  .brand .dot { width:7px; height:7px; border-radius:50%; background: var(--accent); display:inline-block; }
+  .nav-links { display:flex; gap:30px; font-size: 14px; color: var(--text-dim); }
+  .nav-links a:hover { color: var(--text); }
+  .nav-cta { font-size:13px; font-weight:600; padding:9px 16px; border:1px solid var(--line-strong); border-radius: 8px; }
+  .nav-cta:hover { border-color: var(--text); }
+
+  /* HERO */
+  .hero { background: var(--ink); color: #fff; position: relative; overflow: hidden; }
+  .hero::before { content:""; position:absolute; inset:0;
+    background-image: linear-gradient(var(--ink-line) 1px, transparent 1px), linear-gradient(90deg, var(--ink-line) 1px, transparent 1px);
+    background-size: 44px 44px; mask-image: radial-gradient(circle at 70% 40%, #000 0%, transparent 72%); }
+  .hero-in { position:relative; display:grid; grid-template-columns: 1.05fr 0.95fr; gap: 56px; align-items:center; padding: 84px 0 96px; }
+  .crumb { font-size:12.5px; letter-spacing:0.04em; color: rgba(255,255,255,0.46); margin-bottom: 30px; text-transform: uppercase; }
+  .crumb .sep { margin:0 9px; opacity:0.5; }
+  .flag-line { display:flex; align-items:center; gap:12px; margin-bottom: 18px; }
+  .flag { font-size: 30px; line-height:1; }
+  .doc-tag { font-size:12px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color: var(--accent-ink); border:1px solid rgba(0,200,150,0.35); padding:4px 10px; border-radius: 6px; }
+  h1 { font-size: 56px; line-height: 1.04; letter-spacing: -0.035em; font-weight: 800; margin-bottom: 22px; }
+  .lede { font-size: 17px; line-height:1.65; color: rgba(255,255,255,0.66); max-width: 440px; margin-bottom: 36px; }
+  .key-row { display:flex; gap: 0; border-top:1px solid var(--ink-line); }
+  .key { flex:1; padding: 18px 0; border-right:1px solid var(--ink-line); }
+  .key:last-child { border-right:0; }
+  .key .k-label { font-size:11px; letter-spacing:0.06em; text-transform:uppercase; color: rgba(255,255,255,0.4); margin-bottom:7px; }
+  .key .k-val { font-size:20px; font-weight:700; letter-spacing:-0.01em; }
+  .key .k-val span { font-size:13px; color: rgba(255,255,255,0.5); font-weight:500; }
+
+  /* BLUEPRINT DIAGRAM */
+  .blueprint { position:relative; aspect-ratio: 4/4.6; background: var(--ink-2); border:1px solid var(--ink-line); border-radius: 14px; padding: 30px; display:flex; align-items:center; justify-content:center; }
+  .bp-corner { position:absolute; width:14px; height:14px; border:1.5px solid var(--accent); opacity:0.7; }
+  .bp-corner.tl { top:14px; left:14px; border-right:0; border-bottom:0; }
+  .bp-corner.tr { top:14px; right:14px; border-left:0; border-bottom:0; }
+  .bp-corner.bl { bottom:14px; left:14px; border-right:0; border-top:0; }
+  .bp-corner.br { bottom:14px; right:14px; border-left:0; border-top:0; }
+
+  /* SECTION SHELL */
+  section { padding: 88px 0; border-bottom: 1px solid var(--line); }
+  .sec-head { display:flex; align-items:baseline; gap:16px; margin-bottom: 40px; }
+  .sec-no { font-family:var(--mono); font-size:13px; color: var(--accent-deep); font-weight:600; }
+  .sec-title { font-size: 28px; font-weight:750; letter-spacing:-0.025em; }
+  .sec-sub { font-size:14.5px; color: var(--text-dim); margin-left:auto; }
+
+  /* SPEC SHEET */
+  .sheet { border:1px solid var(--line); border-radius: 14px; overflow:hidden; background:#fff; }
+  .sheet-row { display:grid; grid-template-columns: 220px 1fr; border-bottom:1px solid var(--line); }
+  .sheet-row:last-child { border-bottom:0; }
+  .sheet-row:hover { background: var(--paper-2); }
+  .sh-label { padding: 20px 26px; font-size:14px; color: var(--text-dim); font-weight:600; display:flex; align-items:center; gap:10px; border-right:1px solid var(--line); }
+  .sh-label i { color: var(--accent-deep); font-size:17px; }
+  .sh-val { padding: 20px 26px; display:flex; align-items:center; gap:14px; }
+  .sh-primary { font-size:18px; font-weight:700; letter-spacing:-0.01em; }
+  .sh-note { font-size:13px; color: var(--text-faint); }
+  .ai-summary { margin-top: 22px; display:flex; gap:14px; align-items:flex-start; padding: 20px 22px; border:1px solid rgba(0,200,150,0.3); background: rgba(0,200,150,0.05); border-radius: 12px; }
+  .ai-summary .ai-icon { width:30px; height:30px; flex-shrink:0; border-radius:8px; background: var(--accent); color: var(--ink); display:flex; align-items:center; justify-content:center; font-size:16px; }
+  .ai-summary p { font-size:14.5px; color: var(--text); line-height:1.65; }
+  .ai-summary b { color: var(--accent-deep); font-weight:700; }
+
+  /* O/X COMPARE */
+  .ox-grid { display:grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .ox { border:1px solid var(--line); border-radius:14px; overflow:hidden; background:#fff; }
+  .ox-top { display:flex; align-items:center; gap:9px; padding: 15px 20px; font-size:14px; font-weight:700; border-bottom:1px solid var(--line); }
+  .ox.good .ox-top { color: var(--accent-deep); background: rgba(0,200,150,0.06); }
+  .ox.bad .ox-top { color: var(--danger); background: rgba(229,72,77,0.05); }
+  .ox-photo { aspect-ratio: 35/45; max-width: 168px; margin: 26px auto 20px; border-radius:8px; position:relative; overflow:hidden; }
+  .ox.good .ox-photo { outline: 2px solid var(--accent); outline-offset:3px; }
+  .ox.bad .ox-photo { outline: 2px solid rgba(229,72,77,0.5); outline-offset:3px; }
+  .ox-points { padding: 0 22px 24px; }
+  .ox-points li { list-style:none; font-size:13.5px; color: var(--text-dim); padding: 5px 0; display:flex; gap:8px; align-items:center; }
+  .ox-points i { font-size:15px; }
+  .ox.good i { color: var(--accent-deep); }
+  .ox.bad i { color: var(--danger); }
+
+  /* REJECT LIST */
+  .rej-grid { display:grid; grid-template-columns: 1fr 1fr; gap: 12px 40px; }
+  .rej { display:flex; gap:16px; align-items:flex-start; padding: 18px 0; border-bottom:1px solid var(--line); }
+  .rej-no { font-family:var(--mono); font-size:13px; font-weight:700; color:#fff; background: var(--danger); width:24px; height:24px; border-radius:6px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .rej-txt strong { display:block; font-size:15px; font-weight:650; margin-bottom:3px; }
+  .rej-txt span { font-size:13.5px; color: var(--text-dim); }
+
+  /* FAQ */
+  .faq-item { border-bottom:1px solid var(--line); }
+  .faq-q { padding: 22px 0; display:flex; align-items:center; gap:14px; cursor:pointer; font-size:16px; font-weight:600; }
+  .faq-q .q-mark { font-family:var(--mono); color: var(--accent-deep); font-weight:700; }
+  .faq-q i { margin-left:auto; color: var(--text-faint); transition: transform .2s; }
+  .faq-item.open .faq-q i { transform: rotate(180deg); }
+  .faq-a { font-size:14.5px; color: var(--text-dim); line-height:1.7; padding: 0 0 22px 30px; max-width: 760px; }
+
+  /* CTA */
+  .cta { background: var(--ink); color:#fff; border:0; position:relative; overflow:hidden; }
+  .cta::before { content:""; position:absolute; inset:0;
+    background-image: linear-gradient(var(--ink-line) 1px, transparent 1px), linear-gradient(90deg, var(--ink-line) 1px, transparent 1px);
+    background-size: 44px 44px; mask-image: radial-gradient(circle at 30% 50%, #000 0%, transparent 70%); }
+  .cta-in { position:relative; padding: 96px 0; text-align:center; }
+  .cta-badge { display:inline-flex; align-items:center; gap:8px; font-size:12.5px; font-weight:600; letter-spacing:0.04em; color: var(--accent-ink); border:1px solid rgba(0,200,150,0.35); padding:6px 14px; border-radius:999px; margin-bottom:28px; }
+  .cta h2 { font-size: 44px; line-height:1.1; letter-spacing:-0.03em; font-weight:800; margin-bottom:18px; }
+  .cta p { font-size:17px; color: rgba(255,255,255,0.6); margin-bottom:36px; }
+  .cta-btn { display:inline-flex; align-items:center; gap:10px; background: var(--accent); color: var(--ink); font-size:16px; font-weight:700; padding: 16px 32px; border-radius: 12px; }
+  .cta-btn:hover { background: var(--accent-ink); }
+  .cta-meta { margin-top: 20px; font-size:13.5px; color: rgba(255,255,255,0.45); }
+
+  footer { background: var(--ink); color: rgba(255,255,255,0.4); padding: 40px 0; font-size:13px; text-align:center; }
+  footer a { color: rgba(255,255,255,0.55); margin:0 10px; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap nav-in">
+    <div class="brand"><span class="dot"></span>MONKOS</div>
+    <div class="nav-links">
+      <a href="#">규격 가이드</a><a href="#">Blog</a><a href="#">Gallery</a><a href="#">FAQ</a>
+    </div>
+    <a class="nav-cta" href="#">증명사진 만들기</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap hero-in">
+    <div>
+      <div class="crumb">규격 가이드 <span class="sep">/</span> 아시아 <span class="sep">/</span> 대한민국 <span class="sep">/</span> 여권</div>
+      <div class="flag-line">
+        <span class="flag">🇰🇷</span>
+        <span class="doc-tag">Passport · 여권</span>
+      </div>
+      <h1>대한민국<br>여권 사진 규격</h1>
+      <p class="lede">외교부 여권법 시행규칙 기준. 35×45mm 규격, 흰색 배경, 정면 무표정. 셀카 한 장이면 규격에 맞춰 자동 보정됩니다.</p>
+      <div class="key-row">
+        <div class="key"><div class="k-label">사이즈</div><div class="k-val mono">35×45 <span>mm</span></div></div>
+        <div class="key"><div class="k-label">해상도</div><div class="k-val mono">413×531 <span>px</span></div></div>
+        <div class="key"><div class="k-label">머리 높이</div><div class="k-val mono">32–36 <span>mm</span></div></div>
+      </div>
+    </div>
+    <div class="blueprint">
+      <span class="bp-corner tl"></span><span class="bp-corner tr"></span>
+      <span class="bp-corner bl"></span><span class="bp-corner br"></span>
+      <svg viewBox="0 0 300 360" width="100%" style="max-width:260px;">
+        <defs>
+          <linearGradient id="sil" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#2A313C"/><stop offset="1" stop-color="#1A1F27"/>
+          </linearGradient>
+        </defs>
+        <!-- photo frame -->
+        <rect x="40" y="20" width="220" height="300" rx="6" fill="#0B0E13" stroke="rgba(255,255,255,0.14)"/>
+        <!-- silhouette -->
+        <ellipse cx="150" cy="150" rx="62" ry="74" fill="url(#sil)"/>
+        <path d="M62 320 Q62 232 150 232 Q238 232 238 320 Z" fill="url(#sil)"/>
+        <!-- head height guide -->
+        <line x1="150" y1="76" x2="150" y2="224" stroke="#00C896" stroke-width="1" stroke-dasharray="3 3" opacity="0.7"/>
+        <line x1="284" y1="76" x2="284" y2="224" stroke="#00C896" stroke-width="1"/>
+        <line x1="278" y1="76" x2="290" y2="76" stroke="#00C896" stroke-width="1"/>
+        <line x1="278" y1="224" x2="290" y2="224" stroke="#00C896" stroke-width="1"/>
+        <text x="296" y="154" fill="#6CF2CE" font-size="11" font-family="monospace" transform="rotate(90 296 154)" text-anchor="middle">34mm</text>
+        <!-- width guide -->
+        <line x1="40" y1="338" x2="260" y2="338" stroke="#00C896" stroke-width="1"/>
+        <line x1="40" y1="332" x2="40" y2="344" stroke="#00C896" stroke-width="1"/>
+        <line x1="260" y1="332" x2="260" y2="344" stroke="#00C896" stroke-width="1"/>
+        <text x="150" y="354" fill="#6CF2CE" font-size="11" font-family="monospace" text-anchor="middle">35mm</text>
+      </svg>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-no">01</span><span class="sec-title">규격 명세</span><span class="sec-sub">외교부 여권법 시행규칙 · 최종 확인 2026.06</span></div>
+    <div class="sheet">
+      <div class="sheet-row"><div class="sh-label"><i class="ti ti-ruler-2"></i>사이즈</div><div class="sh-val"><span class="sh-primary mono">35 × 45 mm</span><span class="sh-note">국제 여권 표준</span></div></div>
+      <div class="sheet-row"><div class="sh-label"><i class="ti ti-photo"></i>해상도</div><div class="sh-val"><span class="sh-primary mono">413 × 531 px</span><span class="sh-note">300 DPI 기준</span></div></div>
+      <div class="sheet-row"><div class="sh-label"><i class="ti ti-user-square"></i>머리 높이</div><div class="sh-val"><span class="sh-primary mono">32 – 36 mm</span><span class="sh-note">정수리부터 턱끝까지</span></div></div>
+      <div class="sheet-row"><div class="sh-label"><i class="ti ti-background"></i>배경</div><div class="sh-val"><span class="sh-primary">흰색 무지</span><span class="sh-note">그림자·무늬 없음</span></div></div>
+      <div class="sheet-row"><div class="sh-label"><i class="ti ti-calendar"></i>유효 기간</div><div class="sh-val"><span class="sh-primary">6개월 이내</span><span class="sh-note">촬영일 기준</span></div></div>
+      <div class="sheet-row"><div class="sh-label"><i class="ti ti-file-zip"></i>파일 규격</div><div class="sh-val"><span class="sh-primary mono">JPEG · ≤300KB</span></div></div>
+    </div>
+    <div class="ai-summary">
+      <span class="ai-icon"><i class="ti ti-sparkles"></i></span>
+      <p><b>핵심 한 줄.</b> 35×45mm · 흰 배경 · 정면 무표정 · 머리 높이 34mm 안팎. 안경 착용 시 반사·테 가림 주의. MONKOS AI가 셀카를 자동으로 이 규격에 맞춥니다.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-no">02</span><span class="sec-title">적합 / 반려 예시</span></div>
+    <div class="ox-grid">
+      <div class="ox good">
+        <div class="ox-top"><i class="ti ti-circle-check"></i>적합한 사진</div>
+        <div class="ox-photo"><svg viewBox="0 0 140 180" width="100%"><rect width="140" height="180" fill="#EDEDE8"/><ellipse cx="70" cy="74" rx="34" ry="40" fill="#C9CBC4"/><path d="M22 180 Q22 120 70 120 Q118 120 118 180 Z" fill="#C9CBC4"/></svg></div>
+        <ul class="ox-points">
+          <li><i class="ti ti-check"></i>정면·무표정, 두 눈 선명</li>
+          <li><i class="ti ti-check"></i>균일한 흰 배경, 그림자 없음</li>
+          <li><i class="ti ti-check"></i>머리 높이 규격 내</li>
+        </ul>
+      </div>
+      <div class="ox bad">
+        <div class="ox-top"><i class="ti ti-circle-x"></i>반려되는 사진</div>
+        <div class="ox-photo"><svg viewBox="0 0 140 180" width="100%"><rect width="140" height="180" fill="#D8D4CC"/><ellipse cx="78" cy="70" rx="32" ry="38" fill="#B7B3AA" transform="rotate(8 78 70)"/><path d="M30 180 Q30 118 78 118 Q126 118 126 180 Z" fill="#B7B3AA"/><rect x="0" y="0" width="44" height="180" fill="rgba(0,0,0,0.12)"/></svg></div>
+        <ul class="ox-points">
+          <li><i class="ti ti-x"></i>얼굴 기울어짐 · 측면</li>
+          <li><i class="ti ti-x"></i>배경 그림자 · 음영</li>
+          <li><i class="ti ti-x"></i>머리·어깨 비율 벗어남</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-no">03</span><span class="sec-title">반려 사유 TOP 5</span><span class="sec-sub">접수처 통계 기준</span></div>
+    <div class="rej-grid">
+      <div class="rej"><span class="rej-no mono">1</span><div class="rej-txt"><strong>배경 그림자</strong><span>벽과 거리를 두고 균일 조명으로 촬영</span></div></div>
+      <div class="rej"><span class="rej-no mono">2</span><div class="rej-txt"><strong>머리 크기 부적합</strong><span>32–36mm 범위를 벗어난 경우</span></div></div>
+      <div class="rej"><span class="rej-no mono">3</span><div class="rej-txt"><strong>안경 반사 · 테 가림</strong><span>렌즈 반사·눈동자 가림 불가</span></div></div>
+      <div class="rej"><span class="rej-no mono">4</span><div class="rej-txt"><strong>표정 · 입 벌어짐</strong><span>무표정, 입 다물기</span></div></div>
+      <div class="rej"><span class="rej-no mono">5</span><div class="rej-txt"><strong>사이즈 미달</strong><span>413×531px 미만 저해상도</span></div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-no">04</span><span class="sec-title">자주 묻는 질문</span></div>
+    <div class="faq-item open">
+      <div class="faq-q"><span class="q-mark">Q</span>여권 사진은 흑백도 가능한가요?<i class="ti ti-chevron-down"></i></div>
+      <div class="faq-a">불가합니다. 자연스러운 피부톤이 드러나는 컬러 사진만 허용되며, 색보정으로 인상이 바뀐 사진도 반려될 수 있습니다.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q"><span class="q-mark">Q</span>안경을 쓰고 촬영해도 되나요?<i class="ti ti-chevron-down"></i></div>
+      <div class="faq-a">착용은 가능하나 렌즈 반사·테가 눈을 가리면 반려됩니다. 가능하면 벗는 것을 권장합니다.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q"><span class="q-mark">Q</span>배경색은 반드시 흰색이어야 하나요?<i class="ti ti-chevron-down"></i></div>
+      <div class="faq-a">네. 균일한 흰색 무배경이 원칙입니다. MONKOS AI가 배경을 자동으로 규격에 맞게 처리합니다.</div>
+    </div>
+  </div>
+</section>
+
+<section class="cta">
+  <div class="wrap cta-in">
+    <div class="cta-badge"><i class="ti ti-camera"></i>20년 경력 사진작가 AI</div>
+    <h2>셀카 한 장으로<br>여권 사진 완성</h2>
+    <p>규격 확인은 끝났습니다. 이제 사진만 올리면 됩니다.</p>
+    <a class="cta-btn" href="#">이 규격으로 만들기<i class="ti ti-arrow-right"></i></a>
+    <div class="cta-meta">첫 로그인 무료 · 30초 완성 · 결제 전 미리보기</div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    © 2026 MONKOS · 규격 정보는 공식 출처 기반, 최종 제출 전 발급 기관 확인 권장.<br><br>
+    <a href="#">Terms</a><a href="#">Privacy</a><a href="#">Refund</a>
+  </div>
+</footer>
+
+<link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.0.0/tabler-icons.min.css" rel="stylesheet">
+</body>
+</html>
