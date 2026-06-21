@@ -86,8 +86,14 @@ async function initGoogleAuth() {
   });
 }
 
-window.loginKakao = function() { location.href = '/auth/kakao?source_page=' + encodeURIComponent(window.location.hostname + window.location.pathname); };
-window.loginLine = function() { location.href = '/auth/line?source_page=' + encodeURIComponent(window.location.hostname + window.location.pathname); };
+window.loginKakao = function() {
+  location.href = '/auth/kakao?source_page=' + encodeURIComponent(window.location.hostname + window.location.pathname)
+    + '&redirect_app=' + encodeURIComponent(window.location.pathname);
+};
+window.loginLine = function() {
+  location.href = '/auth/line?source_page=' + encodeURIComponent(window.location.hostname + window.location.pathname)
+    + '&redirect_app=' + encodeURIComponent(window.location.pathname);
+};
 
 window.headerLogin = function() {
   if (region === 'kr' || isWebView) {
@@ -107,7 +113,8 @@ window.closeLoginModal = function() {
 };
 
 window.googleLogin = function() {
-  var params = 'source_page=' + encodeURIComponent(window.location.hostname + window.location.pathname);
+  var params = 'source_page=' + encodeURIComponent(window.location.hostname + window.location.pathname)
+    + '&redirect_app=' + encodeURIComponent(window.location.pathname);
   location.href = '/auth/google?' + params;
 };
 

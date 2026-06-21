@@ -46,7 +46,7 @@ export async function handleKakaoCallback(req, res) {
       code,
       ...(process.env.KAKAO_CLIENT_SECRET ? { client_secret: process.env.KAKAO_CLIENT_SECRET } : {}),
     };
-    log(`[Kakao] 토큰 요청: client_id=${KAKAO_REST_API_KEY}, secret=${process.env.KAKAO_CLIENT_SECRET ? 'YES(' + process.env.KAKAO_CLIENT_SECRET + ')' : 'NO'}, redirect=${KAKAO_REDIRECT_URI}, code=${code}`);
+    log(`[Kakao] 토큰 요청: client_id=${KAKAO_REST_API_KEY}, secret=${process.env.KAKAO_CLIENT_SECRET ? 'YES' : 'NO'}, redirect=${effectiveRedirect}`);
     const tokenRes = await fetch('https://kauth.kakao.com/oauth/token', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -152,7 +152,10 @@ export async function handleKakaoCallback(req, res) {
       res.setHeader('Set-Cookie',
         `monkos_session=${sessionToken}; Domain=.monkos.ai; Path=/; Secure; HttpOnly; SameSite=Lax; Max-Age=2592000`
       );
-      const returnUrl = ALLOWED_POPUP_ORIGINS.includes(redirectApp) ? redirectApp : '/';
+      const isSafeInternalPath = redirectApp.startsWith('/') && !redirectApp.startsWith('//');
+      const returnUrl = isSafeInternalPath ? redirectApp
+        : ALLOWED_POPUP_ORIGINS.includes(redirectApp) ? redirectApp
+        : '/';
       const userObj = JSON.stringify(userInfo);
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
       res.end(`<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body><script>
@@ -319,7 +322,11 @@ export async function handleLineCallback(req, res) {
       res.setHeader('Set-Cookie',
         `monkos_session=${sessionToken}; Domain=.monkos.ai; Path=/; Secure; HttpOnly; SameSite=Lax; Max-Age=2592000`
       );
-      const returnUrl = ALLOWED_POPUP_ORIGINS.includes(lineStateData.redirectApp) ? lineStateData.redirectApp : '/';
+      const lineRedirectApp = lineStateData.redirectApp || '';
+      const isLineSafeInternalPath = lineRedirectApp.startsWith('/') && !lineRedirectApp.startsWith('//');
+      const returnUrl = isLineSafeInternalPath ? lineRedirectApp
+        : ALLOWED_POPUP_ORIGINS.includes(lineRedirectApp) ? lineRedirectApp
+        : '/';
       const userObj = JSON.stringify(userInfo);
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
       res.end(`<!DOCTYPE html><html><head><meta charset="UTF-8">
@@ -482,7 +489,11 @@ export async function handleGoogleRedirectCallback(req, res) {
 })();
 </script></body></html>`);
     } else {
-      const returnUrl = ALLOWED_POPUP_ORIGINS.includes(stateData.redirectApp) ? stateData.redirectApp : '/';
+      const googleRedirectApp = stateData.redirectApp || '';
+      const isGoogleSafeInternalPath = googleRedirectApp.startsWith('/') && !googleRedirectApp.startsWith('//');
+      const returnUrl = isGoogleSafeInternalPath ? googleRedirectApp
+        : ALLOWED_POPUP_ORIGINS.includes(googleRedirectApp) ? googleRedirectApp
+        : '/';
       const userObj = JSON.stringify(sessionUser);
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
       res.end(`<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body><script>
