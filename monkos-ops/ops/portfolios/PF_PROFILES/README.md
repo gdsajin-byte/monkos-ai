@@ -56,6 +56,7 @@ parent: PF_STYLER
 | 06/20 | iMac/막내2 | **프리셋 전면 재설계**: 4축(배경·포멀도·헤어·메이크업) 스키마. realtor→professional 리네이밍. KR dating→데일리, JA→デイリー. basePrompt에 메이크업 가드 추가. portal.css 링크 확인(쌍아 선수정). portal rev 00307 배포 | server.js, render-headshot.js | ✅ |
 | 06/20 | iMac/쌍아 | **히스토리 UX 개선** — 라이트박스 팝업(클릭→원본사이즈+다운로드) + Download All 버튼. **Professional 프롬프트 보정**(옷 중첩·근엄 해소) + **Dating 프롬프트 한국 감성 전환**(교외→도심 세련). 작가님 실측 기반 3회 배포 | headshot.js, headshot.css, render-headshot.js, server.js | ✅ |
 | 06/20 | iMac/쌍아 | **포털 히어로 H1 확정** — KR "전문 스튜디오가 개발한 AI 증명사진 서비스" / EN "AI ID Photos & Headshots — Built by a Professional Studio". 시타델 적합성 검증 통과 | 설계 확정(코드 적용 대기) | ⏳ |
+| 06/21 | iMac/쌍아+막내1 | **로그인 리다이렉트 수정**(redirect_app 전달+open redirect 방지) + **무료 1컷 메시지** + **Kakao·LINE 버튼 추가** + 포털 nav Headshot CTA(SSR) + Kakao 시크릿 로그 수정. 가격 체계 설계(10c 통합, 70c 벽 제거) | auth.js, render-headshot.js, home.js | ✅ |
 
 ---
 

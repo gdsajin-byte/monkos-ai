@@ -6,3 +6,5 @@
 |------|---------|------|------|--------|--------|------|
 | 2026-05-18 13:17 KST | iMac | charge | gdsajin@gmail.com | 0c | 440c | Lemon 스토어 심사 자동환불 복원 (5/12 테스트결제 환불분) |
 | 2026-05-28 16:52 KST | iMac | charge | gdsajin@gmail.com | 260c | 760c | 작가님 직접 지시 — 5/28 세션 충전 |
+| 2026-06-21 14:35 KST | iMac | charge | gdsajin@gmail.com | 0c | 100c | 테스트용 크레딧 충전 (작가님 지시, 헤드샷 생성 테스트) |
+| 2026-06-21 19:13 KST | iMac | charge | gdsajin@gmail.com | 0c | 500c | 작가님 지시 — 테스트 및 운영용 500c 충전 |
