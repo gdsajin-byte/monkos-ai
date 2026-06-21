@@ -8,6 +8,7 @@ owner: 작가님
 leads: "쌍아(설계), 막내(구현)"
 status: active
 domain: "monkos-ai/service"
+parent: PF_STYLER
 ---
 
 # PF_PROFILES — AI 프로필 사진 서비스

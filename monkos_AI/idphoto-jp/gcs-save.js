@@ -1,15 +1,15 @@
 /**
  * GCS 画像保存 + ウォーターマーク合成 + Signed URL 発行
- * バケット: monk-ai-images (環境変数 GCS_BUCKET)
+ * バケット: monk-customer-photos (環境変数 CUSTOMER_GCS_BUCKET)
  * パス: service/idphoto/jp/{userId}/{timestamp}_{type}.{ext}
  */
 
 import { Storage } from '@google-cloud/storage';
 import sharp from 'sharp';
 
-const GCS_BUCKET = process.env.GCS_BUCKET || 'monk-ai-images';
+const CUSTOMER_GCS_BUCKET = process.env.CUSTOMER_GCS_BUCKET || 'monk-customer-photos';
 const storage = new Storage();
-const bucket = storage.bucket(GCS_BUCKET);
+const bucket = storage.bucket(CUSTOMER_GCS_BUCKET);
 
 function log(msg, severity = 'INFO', meta = {}) {
   const entry = { severity, message: msg, timestamp: new Date().toISOString(), ...meta };

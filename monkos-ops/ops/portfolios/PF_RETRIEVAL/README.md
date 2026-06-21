@@ -48,6 +48,7 @@ created: 2026-06-14
 | 06/18 | iMac/막내2 | P1.5 자동 갱신 — mk-push.sh 연동+스캔 범위 확장(governance/docs) (3206문서, 35PF, 499링크) | mk-push.sh·build_index.js 수정+COMPLETION | ✅ |
 | 06/20 | iMac/막내1 | **P2 의미검색 구현** — Vertex AI embedding(3232건)+하이브리드 검색(BM25+Vector RRF)+증분 캐시 | embeddings.js·build_index.js·search.js 확장+COMPLETION | ✅ |
 | 06/20 | iMac/막내1 | **P3 MCP 서버 구현** — lib.js 모듈화+mcp_server.js 4도구(search/lookup/relations/stats)+.mcp.json 등록 | lib.js·mcp_server.js 신규+search.js 리팩토링+COMPLETION | ✅ |
+| 06/21 | iMac/쌍아 | PF_STYLER·PF_INFRA 신설 → 인덱스 리빌드 (3252문서, 37PF, 523링크) | build_index.js 실행 | ✅ |
 
 ---
 

@@ -7,6 +7,7 @@ created: 2026-03-06
 owner: 작가님
 leads: 쌍아(설계), 막내(실행)
 status: active
+parent: PF_STYLER
 ---
 
 # PF_STUDIO — AI 촬영실 UX + 내부 스튜디오

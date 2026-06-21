@@ -7,6 +7,7 @@ created: 2026-05-31
 owner: 작가님
 leads: 쌍아(설계), 4060막내(구현)
 status: active
+parent: PF_STYLER
 ---
 
 # PF_VTON — 패션/이너웨어 가상착장 사업화

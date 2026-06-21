@@ -1,15 +1,15 @@
 /**
  * GCS 이미지 저장 + 워터마크 합성 + Signed URL 발급
- * 버킷: monk-ai-images (환경변수 GCS_BUCKET)
+ * 버킷: monk-customer-photos (환경변수 CUSTOMER_GCS_BUCKET)
  * 경로: service/idphoto/kr/{userId}/{timestamp}_{type}.{ext}
  */
 
 import { Storage } from '@google-cloud/storage';
 import sharp from 'sharp';
 
-const GCS_BUCKET = process.env.GCS_BUCKET || 'monk-ai-images';
+const CUSTOMER_GCS_BUCKET = process.env.CUSTOMER_GCS_BUCKET || 'monk-customer-photos';
 const storage = new Storage();
-const bucket = storage.bucket(GCS_BUCKET);
+const bucket = storage.bucket(CUSTOMER_GCS_BUCKET);
 
 function log(msg, severity = 'INFO', meta = {}) {
   const entry = { severity, message: msg, timestamp: new Date().toISOString(), ...meta };

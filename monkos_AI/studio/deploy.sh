@@ -33,6 +33,7 @@ fi
 PROJECT_ID="monkos"
 REGION="us-central1"
 GCS_BUCKET="monk-ai-images"
+CUSTOMER_GCS_BUCKET="monk-customer-photos"
 SERVICE_ACCOUNT="monk-image-engine@${PROJECT_ID}.iam.gserviceaccount.com"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
@@ -91,7 +92,7 @@ gcloud run deploy ${SERVICE_NAME} \
   --concurrency 80 \
   --min-instances 0 \
   --max-instances ${MAX_INSTANCES} \
-  --update-env-vars "PROJECT_ID=${PROJECT_ID},LOCATION=${REGION},GCS_BUCKET=${GCS_BUCKET}" \
+  --update-env-vars "PROJECT_ID=${PROJECT_ID},LOCATION=${REGION},GCS_BUCKET=${GCS_BUCKET},CUSTOMER_GCS_BUCKET=${CUSTOMER_GCS_BUCKET}" \
   --service-account ${SERVICE_ACCOUNT}
 
 # 결과 출력

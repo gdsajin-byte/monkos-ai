@@ -103,7 +103,7 @@ status: 현행
 | # | 변수명 | 용도 | 비고 |
 |---|--------|------|------|
 | 1 | ELEVENLABS_API_KEY | ElevenLabs TTS | ⭐ 누락. 프로토타입용 |
-| 2 | KIMI_API_KEY | Kimi AI API | ⭐ 누락. 프로토타입용 |
+| 2 | KIMI_API_KEY | Kimi AI API | ✅ Secret Manager 등록 완료 (v2, 2026-06-21). 로컬 평문 파일 삭제됨 |
 
 ### C. apps/monk_imagen4/backend/.env (2개)
 

@@ -7,6 +7,7 @@ created: 2026-01-16
 owner: 작가님
 leads: 쌍아(설계), 막내(실행)
 status: active
+parent: PF_STYLER
 ---
 
 # PF_IMAGE_PRO — MONKOS Image Pro

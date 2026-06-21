@@ -35,6 +35,8 @@
 | **[PF_KKU](PF_KKU/README.md)** | **KKU** | **콘텐츠/마케팅** | **꾸 콘텐츠 루틴 — 7채널 멀티배포 + 사진관 마케팅** | **active** | **06-07** |
 | **[PF_RETRIEVAL](PF_RETRIEVAL/README.md)** | **RETRIEVAL** | **메타(인프라)** | **관계 retrieval(네비게이션 DB) + 스토리지 최적화 — 1인 운영 지속가능성** | **active** | **06-14** |
 | **[PF_PARTNER](PF_PARTNER/README.md)** | **PARTNER** | **사업/제휴** | **B2B 코브랜딩 입점 채널 — 인크루트 Phase 1, 멀티 플랫폼 확장** | **active** | **06-17** |
+| **[PF_STYLER](PF_STYLER/README.md)** | **STYLER** | **메타(서비스)** | **서비스 진화 로드맵 — 증명사진→헤드샷→모델스→앱→커머스 중개** | **active** | **06-21** |
+| **[PF_INFRA](PF_INFRA/README.md)** | **INFRA** | **인프라** | **서비스 기반 인프라 — GCS 버킷·Drive 워크벤치·배포·SA·에셋 레지스트리** | **active** | **06-21** |
 | [PF_TEMPLATE](PF_TEMPLATE/README.md) | TEMPLATE | 메타 | 신규 PF 생성 템플릿 | — | — |
 
 ## 네이밍
