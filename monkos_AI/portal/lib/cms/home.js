@@ -178,6 +178,7 @@ export async function renderHome(req, res, forceLang = null) {
       { href: '/blog', label: { ko: '블로그', ja: 'ブログ', en: 'Blog' } },
       { href: '/faq', label: { ko: 'FAQ', ja: 'FAQ', en: 'FAQ' } },
       { href: '/pricing', label: { ko: '가격', ja: '料金', en: 'Pricing' } },
+      { href: '/headshot', label: { ko: 'Headshot', ja: 'Headshot', en: 'Headshot' } },
     ];
     const navLinks = navItems.map(item => {
       const cls = item.active ? ' class="active"' : '';
