@@ -90,6 +90,7 @@ status: active
 | 06/10 | 쌍아 | **portal prod 배포** rev 00278-h8k — 보안 페일클로즈 4건 적용. idphoto-kr/jp는 AUTH_SECRET 환경변수 추가 후 순차 배포 예정 | `deploy.sh prod` | ✅ |
 | 06/11 | 막내1 | **CMS 정밀감사 + 즉시수정 6건 + 보안·색인 3건** — 감사 Critical 1/High 2/Medium 4 식별 → maxOutputTokens 복원·llms.txt 동적화·Naver API 주입·deploy.sh --set-secrets 전환·/admin HTML 인증 가드·pingSitemap 폐기·Indexing 관측성 강화. rev 00279→00281→00284 | REPORT+COMPLETION 4건 | ✅ |
 | 06/12 | 민아 | **디자인 프레임워크+워크플로우 설계서 발행** (Phase 7 재개 기반) — v5 6주 정체 원인(일회성 시안→수동컨버트→종료) 진단 → 프레임워크 3층(토큰 정비/컴포넌트·타일/서비스 레지스트리) + 6단계 파이프라인(시안→검토→컨버트→preview→검증→전환, 게이트·담당 고정) 설계. 작가님 결정: **포털 파일럿→점진확장 / 코드우선(CSS토큰+순수JS)**. v5 결정 5건 답안 선반영(render확장·아이콘축소·히어로토글·예비숨김·Wave분리) | [DESIGN](monkos-ops/tech/designs/2026-06/DESIGN_20260612_디자인프레임워크_워크플로우.md) | ⏳ 작가님 확인 |
+| 06/22 | 웹민아 | **언어 분기 정밀 분석 + 수정 코드 검수** — 메인 복귀 한국어 리셋 버그 근본원인(layoutNav 무접두사 하드코딩) 규명 + 2축 모델(언어=Accept-Language·결제=geoip) 정립. 쌍아/막내 수정 3커밋(layoutNav인자화·서버감지+쿠키·홈텍스트팩) 검수: 머지OK + 후속6건(🔴F1 결제region 언어파생=geoip미반영·F2 Vary헤더·F3 canonical불일치·F4~6 minor) | REPORT(언어분기분석)·REVIEW(언어코드검수) | ⏳ 쌍아 F1 처리 |
 
 ---
 
