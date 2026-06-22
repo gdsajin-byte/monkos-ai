@@ -228,6 +228,25 @@ function canonicalCountry(countrySlug) {
   return COUNTRY_SLUG_TO_ISO[countrySlug] || countrySlug;
 }
 
+// 6/19 슬러그 체계 변경(fe0a38f3)으로 통폐합된 옛 type → 새 type.
+// 색인된 옛 URL(/specs/korea-drivers-license 등) 301 복구용. 검증되는 대로 확장.
+const TYPE_ALIASES = {
+  'drivers-license': 'license',   // 운전면허
+  'resident': 'id',               // 주민등록증 → 신분증
+  'mynumber': 'id',               // 마이넘버카드 → 신분증
+  'zairyu': 'residence',          // 재류카드 → 거주
+  // 'halfcard'(반명함)는 신규 데이터에 정본 없음 → 404(noindex) 유지
+};
+
+// 404 시 text/plain 대신 HTML 반환 — 모바일 Safari의 .txt 다운로드 오인 방지 + UX
+function specs404Html(prefix, lang) {
+  const msg = lang === 'ja' ? 'お探しの規格ページが見つかりません。'
+    : lang === 'en' ? 'The requested spec page was not found.'
+    : '요청하신 규격 페이지를 찾을 수 없습니다.';
+  const cta = lang === 'ja' ? '証明写真の規格一覧へ' : lang === 'en' ? 'Browse all photo specs' : '증명사진 규격 전체 보기';
+  return `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><meta name="robots" content="noindex"><meta name="viewport" content="width=device-width,initial-scale=1"><title>404 · MONKOS</title></head><body style="font-family:system-ui,-apple-system,sans-serif;text-align:center;padding:64px 20px;color:#222"><h1 style="font-size:48px;margin:0">404</h1><p style="color:#666">${msg}</p><p><a href="${prefix}/specs" style="color:#6b4eff;text-decoration:none">${cta} →</a></p></body></html>`;
+}
+
 function countryFlag(countrySlug, size = 32) {
   const code = (COUNTRY_SLUG_TO_ISO[countrySlug] || countrySlug).toLowerCase();
   if (code.length !== 2) return '';
@@ -1571,14 +1590,30 @@ export function renderSpecsDetail(req, res, forceLang = null) {
     }
 
     if (!slug || !SPECS_DATA[slug]) {
-      res.writeHead(404, { 'Content-Type': 'text/plain' });
-      return res.end('Not Found');
+      // 6/19 슬러그 체계 변경(fe0a38f3) 복구: 옛 URL(국가명/구type) → 새 정본 301
+      let oldType = null, oldCountry = null;
+      if (remaining.length === 1) {
+        ({ typeSlug: oldType, countrySlug: oldCountry } = parseSlug(remaining[0]));
+      } else if (remaining.length >= 2) {
+        oldType = remaining[0];
+        oldCountry = remaining[1];
+      }
+      if (oldType && oldCountry) {
+        const iso = canonicalCountry(oldCountry);
+        const newType = TYPE_ALIASES[oldType] || oldType;
+        if (SPECS_DATA[`${iso}-${newType}`]) {
+          res.writeHead(301, { Location: `${prefix}/specs/${newType}/${iso}` });
+          return res.end();
+        }
+      }
+      res.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8' });
+      return res.end(specs404Html(prefix, lang));
     }
 
     const parts = specsDetailFragment(slug, forceLang);
     if (!parts) {
-      res.writeHead(404, { 'Content-Type': 'text/plain' });
-      return res.end('Not Found');
+      res.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8' });
+      return res.end(specs404Html(prefix, lang));
     }
     parts.paymentRegion = req.paymentRegion;
     const html = layoutShell(parts);

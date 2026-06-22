@@ -316,6 +316,7 @@ SEO 콘텐츠가 있는 문서 → 풀 페이지 (FAQ + 반려사유 + 촬영가
 | 06/17 | M2/쌍아 | **specs 상세 디자인 개편 WIP 1차** — 흰색 배경 3분할 구조, CTA 다크 그라데이션, 공통규정 7개, 이모지 제거, 한국인 모델 이미지, 나라별 이미지 대응 | render-specs.js, korea-passport.webp | ⏳ |
 | 06/18 | M2/쌍아+꾸 | **specs 상세 디자인 개편 2~4차** — flagcdn 국기, Pretendard, 히어로 개편(ICAO 설명문+커스텀 제목), 크롭도구 플레이스홀더+전후비교, 공통규정 제거(세부통합), 섹션 풀와이드 밴드 분리(idcut.kr 참고), 모바일 반응형, korea-resume 중복삭제, 외교부 기준 콘텐츠 보강(FAQ 8개+상세규정+AIO). 병목: 이미지↔코드 갭, 미리보기 사이클 느림 → specs-preview.sh 생성 | render-specs.js, specs-data.json, 이미지 4장, specs-preview.sh | ⏳ 배포 대기 |
 | 06/19 | M2/쌍아+꾸 | **specs 디자인 5차 + 데이터 대규모 정리** — 반려사유 체크포인트, CTA 단일 배너(monkos.ai), 외교부 상세규정 추가, 폰트 업, 포인트색 보라 통일, 크롭 3파트. specs-data 정리: 중복 삭제(444→425건), 단위 통일(mm→cm/inch), headHeight 전수 채움, 나라이름 통일. TSV 1,010행(202국×5종) 생성. 머리사이즈 25건 조사 지시서 발행 | render-specs.js, specs-data.json, 지시서, TSV | ⏳ 지시서 토스 대기 |
+| 06/23 | iMac/민아 | **🔴 슬러그 회귀 색인자산 사고 발견·복구** — 6/19 슬러그 통합(국가명→ISO) 시 301 누락으로 색인 URL **120개 404**(운전면허 418노출·여권 448노출 등 레거시 최고권위). render-specs.js 정규화 fallback(canonicalCountry+TYPE_ALIASES) → **102/120 즉시 301 복구**(halfcard·china-resume 18건 정본부재로 404 유지). 404→HTML(noindex). prod 배포·검증 완료. 재발방지 PROTOCOL 정본화 | [REPORT](../../reports/2026-06/REPORT_20260623_민아_SPECS_슬러그회귀_색인자산손실.md) · [PROTOCOL](../PF_CITADEL/PROTOCOL_url_slug_safety.md) | ✅ |
 
 ---
 

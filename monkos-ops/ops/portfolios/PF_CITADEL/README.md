@@ -167,6 +167,7 @@ status: active
 | 06/18 | iMac/쌍아 | **헤드텀 거버넌스 + 블로그 축 전환 제안서** — 웹/민아 "5페이지 잠식" 과잉진단 보정(서브도메인=별도전선, 진짜 잠식은 포털 내 3페이지) + idphoto-kr canonical 모순 적발(app/루트 삼중충돌) + monkos.ai 블로그 축 AI/바이브코딩으로 전환 + 헤드텀 레지스트리 신설 제안. 민아 교차검증 완료 → 지시서 발행 → 배포 완료. 증명한컷 벤치마크 보고서 추가 | [제안서](../../proposals/PROPOSAL_20260618_iMac쌍아_헤드텀거버넌스_블로그축전환.md) [벤치마크](../../reports/2026-06/REPORT_20260618_iMac쌍아_증명한컷_경쟁사벤치마크.md) | ✅ |
 | 06/19 | iMac/쌍아 | **헤드텀 레지스트리 초안 작성 (Phase 2.5)** — KR/JP/EN 3시장 노드 맵. 발행 게이트 5단계, 채널 역할표(9채널), 충돌 판정 기준, 데이터 Tier 위계. EN 본격 확장: AI headshot 헤드텀 8건 + B2B 5건 + ASO 6건 + pSEO 복제 패턴(HeadshotPro). 금지 조합 KR 4건 + EN 4건. 6/18 전략 대전환(B2B+영어권앱) 반영 | [HEADTERM_REGISTRY](../../marketing/seo/HEADTERM_REGISTRY.md) | ✅ |
 | 06/20 | iMac/쌍아 | **네이버 검색광고 API 연동 — 절대 검색량 인프라 구축**. 네이버 데이터랩(상대트렌드) + 검색광고 키워드도구(절대량) 2종 확보. GCP Secret Manager 3종 등록(NAVER_SEARCHAD_*). 축 C(전문직 B2C) 실측: "공인중개사" 월 26,460 / "세무사" 37,740 / "증명사진" 53,210. 축 C 전략 확정 — 전문직 대분류 키워드 여정 콘텐츠 내 프로필 사진 CTA 삽입 | SECRET_INVENTORY 갱신 | ✅ |
+| 06/23 | iMac/민아 | **URL·슬러그 변경 SEO 안전 프로토콜 정본화** — 6/19 specs 슬러그 회귀 사고(120 URL 색인자산 손실) 재발방지. ① 자동변환 중복검사 ② 슬러그 삭제 완료조건(301+sitemap+GSC) ③ 중복 상시감지 ④ 배포 후 실측. PF_SPECS 작업 시 필수 준수 | [PROTOCOL](PROTOCOL_url_slug_safety.md) · [REPORT](../../reports/2026-06/REPORT_20260623_민아_SPECS_슬러그회귀_색인자산손실.md) | ✅ |
 
 ---
 
