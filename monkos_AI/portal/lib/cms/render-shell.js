@@ -154,15 +154,18 @@ export function layoutFooter(lang = 'ko') {
  * v4에서 3컬럼 레이아웃으로 교체될 진입점
  */
 export function layoutShell({ title, description, seoMeta, htmlLang, pageStyle, bodyContent, pageScript }) {
-  return `${layoutHead(title, description, seoMeta || '', htmlLang || 'ko')}
+  const lang = htmlLang || 'ko';
+  const region = lang === 'ko' ? 'kr' : 'global';
+  return `${layoutHead(title, description, seoMeta || '', lang)}
 ${pageStyle ? `<style>${pageStyle}</style>` : ''}
 </head>
 <body>
-${layoutNav(htmlLang || 'ko')}
+${layoutNav(lang)}
 <div class="container">
   ${bodyContent}
 </div>
-${layoutFooter(htmlLang || 'ko')}
+${layoutFooter(lang)}
+<script>window.__LANG__='${lang}';window.__REGION__='${region}';</script>
 ${pageScript ? `<script>${pageScript}</script>` : ''}
 </body>
 </html>`;

@@ -21,6 +21,7 @@ import {
   KAKAO_REST_API_KEY, KAKAO_CHANNEL_ID, LINE_CHANNEL_ID,
   LINE_MESSAGING_ACCESS_TOKEN,
   ADMIN_UIDS, AGENT_API_KEYS, NAVER_CLIENT_ID,
+  parseCookies,
 } from './lib/shared/config.js';
 
 // === 핸들러 모듈 ===
@@ -56,6 +57,21 @@ import { handlePodStart, handlePodStatus, handlePodStop, handleComfyProxy } from
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
+function detectLang(req) {
+  const urlMatch = req.url.match(/^\/(ja|en)(\/|$|\?)/);
+  if (urlMatch) return urlMatch[1];
+
+  const cookies = parseCookies(req.headers.cookie);
+  if (cookies.monkos_lang && ['ko', 'ja', 'en'].includes(cookies.monkos_lang)) {
+    return cookies.monkos_lang;
+  }
+
+  const accept = (req.headers['accept-language'] || '').toLowerCase();
+  if (accept.startsWith('ja')) return 'ja';
+  if (accept.startsWith('en')) return 'en';
+  return 'ko';
+}
+
 // === HTTP 서버 ===
 const httpServer = createServer(async (req, res) => {
   // 보안 헤더
@@ -76,6 +92,14 @@ const httpServer = createServer(async (req, res) => {
     res.writeHead(204);
     res.end();
     return;
+  }
+
+  if (req.method === 'GET') {
+    req.lang = detectLang(req);
+    const cookies = parseCookies(req.headers.cookie);
+    if (cookies.monkos_lang !== req.lang) {
+      res.setHeader('Set-Cookie', `monkos_lang=${req.lang};Domain=.monkos.ai;Path=/;Max-Age=31536000;SameSite=Lax`);
+    }
   }
 
   const urlPath = req.url?.split('?')[0];

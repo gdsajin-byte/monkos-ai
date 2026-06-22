@@ -98,14 +98,6 @@ const consentTexts = {
   }
 };
 
-// === 리전 감지 ===
-function detectRegion() {
-  var tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  var navLang = (navigator.language || '').toLowerCase();
-  if (tz === 'Asia/Seoul' || navLang.startsWith('ko')) return 'kr';
-  return 'global';
-}
-
 function getCookie(name) {
   var match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
   return match ? match[2] : null;
@@ -115,21 +107,8 @@ function setCookie(name, value) {
   document.cookie = name + '=' + value + ';domain=.monkos.ai;path=/;max-age=31536000;SameSite=Lax';
 }
 
-var region = getCookie('monkos_region');
-if (!region) {
-  region = detectRegion();
-  setCookie('monkos_region', region);
-}
-
-// 리전 → 언어 자동 추론 (보정 B)
-function detectLang() {
-  if (region === 'kr') return 'ko';
-  var navLang = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
-  if (navLang.startsWith('ja')) return 'ja';
-  return 'en';
-}
-
-var lang = (region === 'kr') ? 'ko' : (localStorage.getItem('monkos_lang') || detectLang());
+var lang = window.__LANG__ || getCookie('monkos_lang') || 'ko';
+var region = window.__REGION__ || (lang === 'ko' ? 'kr' : 'global');
 var t = i18n[lang];
 
 // region 기반 CTA URL
@@ -139,27 +118,13 @@ function getCtaUrl() {
     : 'https://idphoto-jp.monkos.ai/';
 }
 
-// 언어 전환 (KO → region=kr, JA/EN → region=global)
 window.setLang = function(newLang) {
   lang = newLang;
   t = i18n[lang];
-  localStorage.setItem('monkos_lang', lang);
-  // 리전 자동 추론
-  if (lang === 'ko') {
-    region = 'kr';
-  } else {
-    region = 'global';
-  }
-  setCookie('monkos_region', region);
-  // 홈 페이지에서 언어 변경 시 SSR 콘텐츠 리로드
-  if (window.location.pathname === '/' || window.location.pathname === '/index.html'
-      || window.location.pathname === '/ja/' || window.location.pathname === '/ja'
-      || window.location.pathname === '/en/' || window.location.pathname === '/en') {
-    if (newLang === 'ko') window.location.href = '/';
-    else window.location.href = '/' + newLang + '/';
-    return;
-  }
-  applyLang();
+  region = (lang === 'ko') ? 'kr' : 'global';
+  setCookie('monkos_lang', lang);
+  if (newLang === 'ko') window.location.href = '/';
+  else window.location.href = '/' + newLang + '/';
 };
 
 // === 언어 적용 (v4 DOM) ===
