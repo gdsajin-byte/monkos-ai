@@ -163,9 +163,12 @@ function navHtml(d, lang, prefix) {
       <span class="mk-logo-text">MONKOS <i class="mk-teal">AI</i></span>
     </a>
     <div class="mk-nav-links">
-      <a href="${prefix}/specs">${esc(d.navSpecs)}</a>
-      <a href="${prefix}/pricing">${esc(d.navPricing)}</a>
-      <a href="${prefix}/headshot">Headshot</a>
+      <a href="${prefix}/blog">Blog</a>
+      <a href="${prefix}/faq">FAQ</a>
+      <a href="${prefix}/gallery">Gallery</a>
+      <a href="${prefix}/board">Board</a>
+      <a href="${prefix}/guide">Guide</a>
+      <a href="${prefix}/pricing">Pricing</a>
     </div>
   </div>
   <div class="mk-nav-right">
