@@ -301,11 +301,11 @@ export function renderHeadshot(req, res, forceLang = null) {
 <link rel="stylesheet" href="/css/headshot.css">
 </head>
 <body>
-${layoutNav()}
+${layoutNav(lang)}
 <div class="container" style="max-width:640px;">
   ${bodyContent}
 </div>
-${layoutFooter()}
+${layoutFooter(lang)}
 <!-- Login Modal -->
 <div class="modal-overlay" id="loginModal">
   <div class="modal-box">
@@ -326,6 +326,16 @@ ${layoutFooter()}
       </button>` : ''}
     </div>
     <button class="modal-close-btn" id="loginModalClose" onclick="closeLoginModal()">${lang === 'ko' ? '닫기' : lang === 'ja' ? '閉じる' : 'Close'}</button>
+  </div>
+</div>
+<!-- Credit Shop Modal -->
+<div class="modal-overlay" id="creditShopModal">
+  <div class="modal-box">
+    <h3 id="shopTitle">크레딧 충전</h3>
+    <p id="shopCurrentLabel"></p>
+    <p id="shopCurrentCredits" style="display:none;"></p>
+    <div id="shopItems"></div>
+    <button class="modal-close-btn" id="shopCloseBtn" onclick="closeCreditShop()">닫기</button>
   </div>
 </div>
 <script src="/js/i18n.js"></script>

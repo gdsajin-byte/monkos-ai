@@ -52,18 +52,30 @@
 
   function handleFile(file) {
     if (!file || !file.type.startsWith('image/')) return;
-    if (file.size > 10 * 1024 * 1024) {
-      alert('10MB 이하 이미지만 업로드 가능합니다');
-      return;
-    }
     var reader = new FileReader();
     reader.onload = function(e) {
-      uploadedImage = e.target.result;
-      previewImg.src = uploadedImage;
-      uploadPlaceholder.style.display = 'none';
-      uploadPreview.style.display = 'block';
-      updateStepIndicators();
-      updateGenerateBtn();
+      var img = new Image();
+      img.onload = function() {
+        var MAX_SIDE = 1536;
+        var w = img.width, h = img.height;
+        if (w > MAX_SIDE || h > MAX_SIDE) {
+          var ratio = Math.min(MAX_SIDE / w, MAX_SIDE / h);
+          w = Math.round(w * ratio);
+          h = Math.round(h * ratio);
+        }
+        var canvas = document.createElement('canvas');
+        canvas.width = w;
+        canvas.height = h;
+        var ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        uploadedImage = canvas.toDataURL('image/jpeg', 0.85);
+        previewImg.src = uploadedImage;
+        uploadPlaceholder.style.display = 'none';
+        uploadPreview.style.display = 'block';
+        updateStepIndicators();
+        updateGenerateBtn();
+      };
+      img.src = e.target.result;
     };
     reader.readAsDataURL(file);
   }
