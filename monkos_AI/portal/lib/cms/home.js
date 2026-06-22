@@ -275,7 +275,7 @@ function idpassHtml(d) {
       <span class="mk-rating-info"><b>${esc(d.dlSize)}</b> · ${esc(d.dlReq)}</span>
     </div>
     <div class="mk-idpass-dl">
-      <a href="#" class="mk-appstore-badge"><span class="mk-appstore-icon"></span><span class="mk-appstore-text"><span class="mk-appstore-small">Download on the</span><span class="mk-appstore-big">App Store</span></span></a>
+      <a href="https://apps.apple.com/app/id6768868041" target="_blank" rel="noopener" class="mk-appstore-badge"><span class="mk-appstore-icon"></span><span class="mk-appstore-text"><span class="mk-appstore-small">Download on the</span><span class="mk-appstore-big">App Store</span></span></a>
     </div>
   </div>
   <div class="mk-graphite mk-billboard">
