@@ -46868,5 +46868,264 @@
       "en": "Germany Application Photo photo specs (35 × 45 mm, Light background). Requirements, tips & AI auto crop.",
       "ja": "ドイツ 応募写真規格（35 × 45 mm、明るい背景）。規定・撮影のコツ・AI自動クロップ。"
     }
+  },
+  "kr-halfcard": {
+    "slug": "kr-halfcard",
+    "country": "한국",
+    "countryEn": "Korea",
+    "type": "반명함 (3×4)",
+    "typeEn": "Half-size Photo",
+    "typeJa": "半名刺写真",
+    "size": "30 × 40 mm",
+    "pixels": "354 × 472px",
+    "dpi": 300,
+    "background": "흰색",
+    "headHeight": "제출처에 따라 상이",
+    "validity": "제출처에 따라 상이",
+    "fileSpec": "JPEG",
+    "details": {
+      "ko": "이력서, 학생증, 자격증 등 각종 서류 제출용. 3×4cm 사이즈만 통일, 세부 규격은 제출처마다 상이.",
+      "ja": "履歴書、学生証、資格証など各種書類提出用。3×4cmのみ統一。",
+      "en": "For resumes, student IDs, certificates. Only 3×4cm size is standardized."
+    },
+    "rejectionReasons": {
+      "ko": [
+        "사이즈 불일치",
+        "배경 불균일",
+        "머리 잘림"
+      ],
+      "ja": [
+        "サイズ不一致",
+        "背景不均一",
+        "頭切れ"
+      ],
+      "en": [
+        "Wrong size",
+        "Uneven background",
+        "Head cropped"
+      ]
+    },
+    "faqs": {
+      "ko": [
+        {
+          "q": "반명함과 여권사진 차이가 뭔가요?",
+          "a": "사이즈가 다릅니다. 여권 3.5×4.5cm, 반명함 3×4cm입니다."
+        }
+      ],
+      "ja": [],
+      "en": []
+    },
+    "ctaService": "idphoto-kr",
+    "priority": 3,
+    "headHeightEn": "Varies by institution",
+    "headHeightJa": "提出先により異なる",
+    "validityEn": "Varies by institution",
+    "validityJa": "提出先により異なる",
+    "backgroundEn": "White",
+    "backgroundJa": "白",
+    "continent": "asia",
+    "fileSpecEn": "JPEG",
+    "fileSpecJa": "JPEG",
+    "countryJa": "韓国",
+    "seoTitle": {
+      "ko": "한국 반명함 (이력서·서류) 사진 규격 30 × 40 mm — 배경·복장 가이드 | MONKOS",
+      "en": "Korea Half-size Photo Photo Size 30 × 40 mm — Background & Dress Code | MONKOS",
+      "ja": "韓国 半名刺写真規格 30 × 40 mm — 背景・服装ガイド | MONKOS"
+    },
+    "seoDescription": {
+      "ko": "한국 반명함 (이력서·서류) 사진 규격(30 × 40 mm, 흰색). 규정·촬영 팁·AI 자동 크롭까지.",
+      "en": "Korea Half-size Photo photo specs (30 × 40 mm, White). Requirements, tips & AI auto crop.",
+      "ja": "韓国 半名刺写真規格（30 × 40 mm、白）。規定・撮影のコツ・AI自動クロップ。"
+    }
+  },
+  "jp-halfcard": {
+    "slug": "jp-halfcard",
+    "country": "日本",
+    "countryEn": "Japan",
+    "type": "半名刺写真",
+    "typeEn": "Half-size Photo",
+    "typeJa": "半名刺写真",
+    "size": "30 × 40 mm",
+    "pixels": "354 × 472px",
+    "dpi": 300,
+    "background": "白/単色",
+    "headHeight": "提出先による",
+    "validity": "提出先による",
+    "fileSpec": "JPEG",
+    "details": {
+      "ko": "일본 반명함 사진. 이력서·자격증 등 제출용. 30×40mm.",
+      "ja": "各種提出書類用の半名刺写真。30×40mm。",
+      "en": "Japanese half-size photo for documents. 30×40mm."
+    },
+    "rejectionReasons": {
+      "ko": [
+        "사이즈 불일치"
+      ],
+      "ja": [
+        "サイズ不一致"
+      ],
+      "en": [
+        "Wrong size"
+      ]
+    },
+    "ctaService": "idphoto-jp",
+    "priority": 10,
+    "continent": "asia",
+    "validityEn": "Depends on submission destination",
+    "validityJa": "提出先による",
+    "fileSpecEn": "JPEG",
+    "fileSpecJa": "JPEG",
+    "headHeightEn": "Depends on submission destination",
+    "headHeightJa": "提出先による",
+    "countryJa": "日本",
+    "backgroundEn": "White or solid color",
+    "backgroundJa": "白/単色",
+    "faqs": {
+      "ko": [
+        {
+          "q": "일본 半名刺写真 사진 크기는?",
+          "a": "일본 半名刺写真 사진 규격은 30 × 40 mm입니다. 배경은 白/単色이어야 합니다."
+        },
+        {
+          "q": "일본 半名刺写真 사진을 집에서 찍을 수 있나요?",
+          "a": "네, 규격(30 × 40 mm)과 배경(白/単色) 조건만 맞으면 셀프 촬영이 가능합니다. MONKOS AI를 사용하면 배경 제거와 규격 크롭을 자동으로 처리합니다."
+        },
+        {
+          "q": "일본 半名刺写真 사진 배경색 규정은?",
+          "a": "일본 半名刺写真 사진은 白/単色 배경이 필요합니다. 그림자나 무늬가 있으면 반려될 수 있습니다."
+        }
+      ],
+      "en": [
+        {
+          "q": "What size is a Japan Half-size Photo photo?",
+          "a": "The Japan Half-size Photo photo size is 30 × 40 mm. The background must be White or solid color."
+        },
+        {
+          "q": "Can I take a Japan Half-size Photo photo at home?",
+          "a": "Yes, as long as you meet the size (30 × 40 mm) and background (White or solid color) requirements. MONKOS AI automatically removes the background and crops to the correct specs."
+        },
+        {
+          "q": "What is the background color for a Japan Half-size Photo photo?",
+          "a": "A Japan Half-size Photo photo requires a White or solid color background. Shadows or patterns may cause rejection."
+        }
+      ],
+      "ja": [
+        {
+          "q": "日本の半名刺写真のサイズは？",
+          "a": "日本の半名刺写真の規格は30 × 40 mmです。背景は白/単色が必要です。"
+        },
+        {
+          "q": "日本の半名刺写真を自宅で撮れますか？",
+          "a": "はい、サイズ（30 × 40 mm）と背景（白/単色）の条件を満たせば自宅撮影も可能です。MONKOS AIを使えば背景除去と規格クロップが自動で処理されます。"
+        },
+        {
+          "q": "日本の半名刺写真の背景色の規定は？",
+          "a": "日本の半名刺写真は白/単色の背景が必要です。影や模様があると不合格になる場合があります。"
+        }
+      ]
+    },
+    "seoTitle": {
+      "ko": "일본 半名刺写真 사진 규격 30 × 40 mm — 배경·복장 가이드 | MONKOS",
+      "en": "Japan Half-size Photo Photo Size 30 × 40 mm — Background & Dress Code | MONKOS",
+      "ja": "日本 半名刺写真規格 30 × 40 mm — 背景・服装ガイド | MONKOS"
+    },
+    "seoDescription": {
+      "ko": "일본 半名刺写真 사진 규격(30 × 40 mm, 白/単色). 규정·촬영 팁·AI 자동 크롭까지.",
+      "en": "Japan Half-size Photo photo specs (30 × 40 mm, White or solid color). Requirements, tips & AI auto crop.",
+      "ja": "日本 半名刺写真規格（30 × 40 mm、白/単色）。規定・撮影のコツ・AI自動クロップ。"
+    }
+  },
+  "cn-resume": {
+    "slug": "cn-resume",
+    "country": "중국",
+    "countryEn": "China",
+    "type": "简历照片",
+    "typeEn": "Resume Photo",
+    "typeJa": "履歴書写真",
+    "size": "1寸 · 2寸 복수 규격",
+    "pixels": "25×35 / 35×49 mm",
+    "dpi": 300,
+    "background": "흰색·파란 배경",
+    "headHeight": "-",
+    "validity": "-",
+    "fileSpec": "JPEG",
+    "details": {
+      "ko": "중국 취업·유학·관공서 제출용. 1寸/2寸 복수 규격.",
+      "ja": "中国就職・留学・官公庁提出用。",
+      "en": "Chinese resume photo. Multiple sizes (1-inch/2-inch)."
+    },
+    "rejectionReasons": {
+      "ko": [],
+      "ja": [],
+      "en": []
+    },
+    "ctaService": "idphoto-kr",
+    "priority": 24,
+    "backgroundEn": "White or blue",
+    "backgroundJa": "白・青",
+    "sizeEn": "1-inch / 2-inch (multiple sizes)",
+    "sizeJa": "1寸・2寸（複数規格）",
+    "continent": "asia",
+    "validityEn": "-",
+    "validityJa": "-",
+    "fileSpecEn": "JPEG",
+    "fileSpecJa": "JPEG",
+    "headHeightEn": "-",
+    "headHeightJa": "-",
+    "countryJa": "中国",
+    "faqs": {
+      "ko": [
+        {
+          "q": "중국 简历照片 사진 크기는?",
+          "a": "중국 简历照片 사진 규격은 1寸 · 2寸 복수 규격입니다. 배경은 흰색·파란 배경이어야 합니다."
+        },
+        {
+          "q": "중국 简历照片 사진을 집에서 찍을 수 있나요?",
+          "a": "네, 규격(1寸 · 2寸 복수 규격)과 배경(흰색·파란 배경) 조건만 맞으면 셀프 촬영이 가능합니다. MONKOS AI를 사용하면 배경 제거와 규격 크롭을 자동으로 처리합니다."
+        },
+        {
+          "q": "중국 简历照片 사진 배경색 규정은?",
+          "a": "중국 简历照片 사진은 흰색·파란 배경 배경이 필요합니다. 그림자나 무늬가 있으면 반려될 수 있습니다."
+        }
+      ],
+      "en": [
+        {
+          "q": "What size is a China Resume Photo photo?",
+          "a": "The China Resume Photo photo size is 1-inch / 2-inch (multiple sizes). The background must be White or blue."
+        },
+        {
+          "q": "Can I take a China Resume Photo photo at home?",
+          "a": "Yes, as long as you meet the size (1-inch / 2-inch (multiple sizes)) and background (White or blue) requirements. MONKOS AI automatically removes the background and crops to the correct specs."
+        },
+        {
+          "q": "What is the background color for a China Resume Photo photo?",
+          "a": "A China Resume Photo photo requires a White or blue background. Shadows or patterns may cause rejection."
+        }
+      ],
+      "ja": [
+        {
+          "q": "中国の履歴書写真のサイズは？",
+          "a": "中国の履歴書写真の規格は1寸・2寸（複数規格）です。背景は白・青が必要です。"
+        },
+        {
+          "q": "中国の履歴書写真を自宅で撮れますか？",
+          "a": "はい、サイズ（1寸・2寸（複数規格））と背景（白・青）の条件を満たせば自宅撮影も可能です。MONKOS AIを使えば背景除去と規格クロップが自動で処理されます。"
+        },
+        {
+          "q": "中国の履歴書写真の背景色の規定は？",
+          "a": "中国の履歴書写真は白・青の背景が必要です。影や模様があると不合格になる場合があります。"
+        }
+      ]
+    },
+    "seoTitle": {
+      "ko": "중국 简历照片 사진 규격 1寸 · 2寸 복수 규격 — 배경·복장 가이드 | MONKOS",
+      "en": "China Resume Photo Photo Size 1-inch / 2-inch (multiple sizes) — Background & Dress Code | MONKOS",
+      "ja": "中国 履歴書写真規格 1寸・2寸（複数規格） — 背景・服装ガイド | MONKOS"
+    },
+    "seoDescription": {
+      "ko": "중국 简历照片 사진 규격(1寸 · 2寸 복수 규격, 흰색·파란 배경). 규정·촬영 팁·AI 자동 크롭까지.",
+      "en": "China Resume Photo photo specs (1-inch / 2-inch (multiple sizes), White or blue). Requirements, tips & AI auto crop.",
+      "ja": "中国 履歴書写真規格（1寸・2寸（複数規格）、白・青）。規定・撮影のコツ・AI自動クロップ。"
+    }
   }
 }

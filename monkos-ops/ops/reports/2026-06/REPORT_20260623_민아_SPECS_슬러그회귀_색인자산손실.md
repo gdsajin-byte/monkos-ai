@@ -37,8 +37,17 @@ status: 마감
 
 ## 5. 복구 (적용 완료)
 - `render-specs.js` `renderSpecsDetail`에 정규화 fallback: 매칭 실패 → `canonicalCountry`(국가명→ISO) + `TYPE_ALIASES`(drivers-license→license·resident→id·mynumber→id·zairyu→residence) → **301**. 404는 HTML(noindex)로 전환(모바일 다운로드 차단).
-- **102/120 즉시 복구**(운전면허·여권·이력서 등 노출 큰 것 전부). 나머지 18(halfcard 12·china-resume 6)은 신규 데이터에 정본 부재 → 404 유지, **추후 데이터 보강 시 자동 복구**.
+- **102/120 즉시 복구**(운전면허·여권·이력서 등 노출 큰 것 전부).
 - 사이트맵·데이터는 이미 정본 통합 완료(손 안 댐). 코드 301만 보강.
+
+### 5-1. 나머지 18건(halfcard 12·china-resume 6) — 정본 부재 원인 규명 + 복원
+- **왜 이 18건만 ISO 정본이 없었나** (6/19 문서에 미기록 → 규명):
+  - `scripts/convert-specs-data.js`의 `TYPE_MAP`이 **표준 7 type만 정의**(passport·visa·license·resume·intl_license·taxi_license·marine_license). `halfcard`(반명함)는 TYPE_MAP에 없어 5/25 202개국 자동변환에서 **ISO 생성 누락** → `kr-halfcard` 애초에 미생성.
+  - 6/19 M2가 국가명(`korea-halfcard`)을 "머지"로 일괄삭제했으나 ISO 짝이 없어 **머지가 아니라 실질 폐기**가 됨.
+  - **의도적 제거가 아님** — 자동변환 누락 + 일괄삭제의 부작용. (china-resume도 동일 계열: resume는 표준이나 중국분 ISO 미생성)
+- **복원**(2026-06-23): git `fe0a38f3^`에 콘텐츠 보존 확인(반명함 3×4 등 다국어 SEO·FAQ 완비) → ISO 슬러그로 재삽입: `kr-halfcard·jp-halfcard·cn-resume`(china-resume의 country "기타 Others"→"중국" 교정). specs-data.json 425→428건.
+- 결과: **120/120 전부 복구**. 옛 URL은 §5 fallback이 자동 301, 새 정본 URL(`/specs/halfcard/kr` 등) 200.
+- **재발 방지 추가**: PROTOCOL §1에 "자동변환 시 **비표준 type 누락 검사**"(TYPE_MAP에 없는 기존 슬러그 경고) 항목 보강 필요.
 
 ## 6. 진단 과정 교훈 (자기감사)
 민아가 진단 중 2회 빗나감: ① 엉뚱한 URL(`passport/korea` 2단)을 테스트 ② "어제 아님/dev 작동"을 코드회귀로 오판(실제는 dev가 배포 실패로 6/18 옛버전이라 작동한 착시). **작가님의 GSC 노출 실측이 매번 교정.** → 코더는 자기 가정에 시야 갇힌다([[feedback_audit_is_mina_role]]). 실측 데이터 우선.
