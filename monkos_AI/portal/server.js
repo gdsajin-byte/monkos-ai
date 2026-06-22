@@ -9,6 +9,7 @@ import { createServer } from 'http';
 import { readFileSync } from 'fs';
 import { join, dirname, extname } from 'path';
 import { fileURLToPath } from 'url';
+import crypto from 'crypto';
 import geoip from 'geoip-lite';
 
 // === 공통 인프라 ===
@@ -22,7 +23,7 @@ import {
   KAKAO_REST_API_KEY, KAKAO_CHANNEL_ID, LINE_CHANNEL_ID,
   LINE_MESSAGING_ACCESS_TOKEN,
   ADMIN_UIDS, AGENT_API_KEYS, NAVER_CLIENT_ID,
-  parseCookies,
+  parseCookies, parseJsonBody,
 } from './lib/shared/config.js';
 
 // === 핸들러 모듈 ===
@@ -38,6 +39,7 @@ import { handleKakaoChatbot } from './lib/kakao-chatbot.js';
 import { handleLineWebhook } from './lib/line-chatbot.js';
 import { handleWebChat, handleCoaching } from './lib/coaching.js';
 import { generateHeadshot } from './lib/headshot-generate.js';
+import { trackEvent } from './lib/tracking.js';
 import { saveImages } from './lib/gcs-save.js';
 import { handleAgentAuth, requireAdmin } from './lib/cms/admin-auth.js';
 import { handleDashboardSummary, handleDashboardUsers, handleDashboardCredits, handleDashboardTraffic } from './lib/cms/dashboard.js';
@@ -105,8 +107,19 @@ const httpServer = createServer(async (req, res) => {
     req.lang = detectLang(req);
     req.paymentRegion = detectPaymentRegion(req);
     const cookies = parseCookies(req.headers.cookie);
+    const setCookies = [];
     if (cookies.monkos_lang !== req.lang) {
-      res.setHeader('Set-Cookie', `monkos_lang=${req.lang};Domain=.monkos.ai;Path=/;Max-Age=31536000;SameSite=Lax`);
+      setCookies.push(`monkos_lang=${req.lang};Domain=.monkos.ai;Path=/;Max-Age=31536000;SameSite=Lax`);
+    }
+    if (!cookies.monkos_sid) {
+      const sid = crypto.randomUUID();
+      setCookies.push(`monkos_sid=${sid};Domain=.monkos.ai;Path=/;Max-Age=63072000;SameSite=Lax`);
+      req.sessionId = sid;
+    } else {
+      req.sessionId = cookies.monkos_sid;
+    }
+    if (setCookies.length > 0) {
+      res.setHeader('Set-Cookie', setCookies);
     }
   }
 
@@ -285,6 +298,36 @@ const httpServer = createServer(async (req, res) => {
   // === 챗봇/코칭 ===
   if (urlPath === '/api/chat' && req.method === 'POST') return handleWebChat(req, res);
   if (urlPath === '/api/coaching' && req.method === 'POST') return handleCoaching(req, res);
+
+  // === 유저 트래킹 ===
+  if (urlPath === '/api/track' && req.method === 'POST') {
+    const body = await parseJsonBody(req);
+    const events = body.events || [];
+    const ALLOWED_EVENTS = [
+      'click_cta', 'upload_image', 'select_style',
+      'open_credit_shop', 'start_payment', 'session_end',
+    ];
+    const cookies = parseCookies(req.headers.cookie);
+    const sessionId = cookies.monkos_sid || null;
+    for (const evt of events) {
+      if (!ALLOWED_EVENTS.includes(evt.event_name)) continue;
+      trackEvent({
+        eventName: evt.event_name,
+        userId: evt.user_id || null,
+        sessionId,
+        pagePath: evt.page_path || null,
+        lang: evt.lang || null,
+        region: evt.region || null,
+        service: evt.service || 'portal',
+        referer: req.headers.referer || null,
+        userAgent: req.headers['user-agent'] || null,
+        ipCountry: req.paymentRegion || null,
+        params: evt.params || null,
+      }).catch(() => {});
+    }
+    res.writeHead(204);
+    return res.end();
+  }
 
   // === Dashboard API ===
   if (urlPath === '/api/admin/dashboard/summary' && req.method === 'GET') return handleDashboardSummary(req, res);

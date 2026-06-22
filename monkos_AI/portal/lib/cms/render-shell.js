@@ -166,6 +166,7 @@ ${layoutNav(lang)}
 </div>
 ${layoutFooter(lang)}
 <script>window.__LANG__='${lang}';window.__REGION__='${region}';</script>
+<script src="/js/track.js"></script>
 ${pageScript ? `<script>${pageScript}</script>` : ''}
 </body>
 </html>`;

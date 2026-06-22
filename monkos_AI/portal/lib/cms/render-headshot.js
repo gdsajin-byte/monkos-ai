@@ -356,6 +356,7 @@ ${layoutFooter(lang)}
   })};
 </script>
 <script src="/js/headshot.js"></script>
+<script src="/js/track.js"></script>
 </body>
 </html>`;
 
