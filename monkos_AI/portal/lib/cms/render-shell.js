@@ -124,26 +124,28 @@ a:hover { color: var(--accent2); }
 </style>`;
 }
 
-export function layoutNav() {
+export function layoutNav(lang = 'ko') {
+  const prefix = (lang === 'ko') ? '' : `/${lang}`;
   return `<header class="site-header">
   <div class="header-top">
-    <a href="/" class="logo"><span class="logo-dot"></span>MONKOS</a>
+    <a href="${prefix}/" class="logo"><span class="logo-dot"></span>MONKOS</a>
     <nav class="header-nav">
-      <a href="/blog">Blog</a>
-      <a href="/faq">FAQ</a>
-      <a href="/gallery">Gallery</a>
-      <a href="/board">Board</a>
-      <a href="/guide">Guide</a>
-      <a href="/pricing">Pricing</a>
+      <a href="${prefix}/blog">Blog</a>
+      <a href="${prefix}/faq">FAQ</a>
+      <a href="${prefix}/gallery">Gallery</a>
+      <a href="${prefix}/board">Board</a>
+      <a href="${prefix}/guide">Guide</a>
+      <a href="${prefix}/pricing">Pricing</a>
     </nav>
   </div>
 </header>`;
 }
 
-export function layoutFooter() {
+export function layoutFooter(lang = 'ko') {
+  const prefix = (lang === 'ko') ? '' : `/${lang}`;
   return `<footer class="footer">
   &copy; ${new Date().getFullYear()} MONKOS. All rights reserved.
-  <br><a href="/terms.html">Terms</a> &middot; <a href="/privacy.html">Privacy</a> &middot; <a href="/refund.html">Refund</a>
+  <br><a href="${prefix}/terms.html">Terms</a> &middot; <a href="${prefix}/privacy.html">Privacy</a> &middot; <a href="${prefix}/refund.html">Refund</a>
 </footer>`;
 }
 
@@ -156,11 +158,11 @@ export function layoutShell({ title, description, seoMeta, htmlLang, pageStyle, 
 ${pageStyle ? `<style>${pageStyle}</style>` : ''}
 </head>
 <body>
-${layoutNav()}
+${layoutNav(htmlLang || 'ko')}
 <div class="container">
   ${bodyContent}
 </div>
-${layoutFooter()}
+${layoutFooter(htmlLang || 'ko')}
 ${pageScript ? `<script>${pageScript}</script>` : ''}
 </body>
 </html>`;

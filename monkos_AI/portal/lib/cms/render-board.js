@@ -95,11 +95,11 @@ export async function renderBoardList(req, res) {
 ${parts.pageStyle ? `<style>${parts.pageStyle}</style>` : ''}
 </head>
 <body>
-${layoutNav()}
+${layoutNav(parts.htmlLang || 'ko')}
 <div class="container" style="max-width:900px;">
   ${parts.bodyContent}
 </div>
-${layoutFooter()}
+${layoutFooter(parts.htmlLang || 'ko')}
 </body>
 </html>`;
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });

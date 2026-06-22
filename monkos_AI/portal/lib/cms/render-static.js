@@ -125,11 +125,11 @@ export async function renderFaq(req, res, forceLang = null) {
 ${parts.pageStyle ? `<style>${parts.pageStyle}</style>` : ''}
 </head>
 <body>
-${layoutNav()}
+${layoutNav(parts.htmlLang || 'ko')}
 <div class="container" style="max-width:800px;">
   ${parts.bodyContent}
 </div>
-${layoutFooter()}
+${layoutFooter(parts.htmlLang || 'ko')}
 ${parts.pageScript ? `<script>${parts.pageScript}</script>` : ''}
 </body>
 </html>`;
@@ -242,10 +242,10 @@ export async function renderGallery(req, res) {
 ${parts.pageStyle ? `<style>${parts.pageStyle}</style>` : ''}
 </head>
 <body>
-${layoutNav()}
+${layoutNav(parts.htmlLang || 'ko')}
 <div class="container">
   ${parts.bodyContent}
-${layoutFooter()}
+${layoutFooter(parts.htmlLang || 'ko')}
 ${parts.pageScript ? `<script>${parts.pageScript}</script>` : ''}
 </body>
 </html>`;
