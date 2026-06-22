@@ -1,539 +1,445 @@
-/**
- * 홈 SSR 렌더링 + site_config API
- * index.html 템플릿에 Firestore 데이터 주입
- */
-import { readFileSync } from 'fs';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
 import { firestore, log, parseJsonBody } from '../shared/config.js';
 import { requireAdmin } from './admin-auth.js';
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const templatePath = join(__dirname, '../../public/index.html');
-let templateHtml = null;
+import { escapeHtml } from './render-shell.js';
 
 const blogCollection = firestore.collection('blog_posts');
-const galleryCollection = firestore.collection('gallery_items');
 const siteConfigRef = firestore.collection('site_config').doc('main');
+const layoutConfigRef = firestore.collection('site_config').doc('layout');
+
+function esc(s) { return escapeHtml(s); }
+function fmtDate(d) { return d ? d.substring(5, 10).replace('-', '.') : ''; }
 
 const HOME_I18N = {
   ko: {
-    intro: '<strong>MONKOS AI</strong>는 20년 경력 사진작가가 만든 <strong>AI 증명사진</strong> 플랫폼입니다. 여권사진, 이력서사진을 셀카 한 장으로 완성합니다. 리얼 스튜디오의 실무와 노하우를 학습한 AI가 촬영, 배경과 조명 세팅, 피부부터 의상, 헤어 세팅까지 완벽하게 맞춤 처리하며, <strong>ICAO 국제 규격</strong>에 부합하는 증명사진을 제공합니다.',
-    ctaShoot: '촬영 시작하기',
-    svcIdTitle: 'AI 증명사진', svcIdDesc: '여권·이력서 — 사진관 품질 AI 리터칭. ICAO 국제 규격.', svcIdLink: '촬영 시작 →',
-    svcCropTitle: '무료 크롭앱', svcCropDesc: '규격 크롭·배경 제거·배경 교체. 서버 전송 없음.', svcCropLink: '/crop →',
-    secHowto: '증명사진 앱 활용법', secFaq: '자주 묻는 질문', secBoard: '고객 게시판', secBlog: '최근 블로그',
-    viewAll: '전체보기 →',
-    howto1: '규격 선택', howto1d: '여권/신분증 또는 반명함 선택',
-    howto2: '셀카 촬영', howto2d: 'AI 코칭 가이드로 완벽 촬영',
-    howto3: 'AI 리터칭', howto3d: '배경·조명·피부·의상 자동 보정',
-    boardAnswered: '답변완료', boardWaiting: '대기중', boardLoading: '게시글을 불러오는 중...',
+    badge: '200+국가 규격 검수 · ICAO 준수 · 5가지 스타일',
+    h1: '전문 스튜디오가 개발한', h1Accent: 'AI 증명사진', h1Suffix: '서비스',
+    heroSub: '여권·비자·규격 대응 <b style="color:#c2cad6;font-weight:700;">+</b><br>링크드인·프로페셔널·이력서 헤드샷.<br>셀카 한 장이면 끝.',
+    stat1: '200+개국', stat1l: '여권·비자 규격', stat2: 'ICAO', stat2l: '국제 표준 준수', stat3: '5가지', stat3l: '헤드샷 스타일',
+    idTitle: '증명사진', idTag: '규격 · 200+개국',
+    idDesc: '여권·비자·신분증·이력서. AI가 각국 규격(px·배경·여백)에 정확히 맞춰 출력 — 한 번에 통과하는 한 장.',
+    idChips: ['흰 배경', 'ICAO', '정수리 크롭'],
+    idCta: '증명사진 만들기 →',
+    hsEyebrow: 'AI HEADSHOT',
+    hsTitle: '전문가의 품격, 한컷의 사진으로',
+    hsSide: '규격이 필요한 <b style="color:#9aa3b2;">증명사진</b>은 위에서, 보여주고 싶은 <b style="color:#9aa3b2;">헤드샷</b>은 여기서.',
+    hsPanelTitle: '헤드샷', hsPanelTag: 'NEW · 세미프로필',
+    hsPanelDesc: '링크드인·이력서·회사 소개용 비즈니스 프로필. 셀카 한 장으로 5가지 컨셉을 골라 30초 만에<br>— 링크드인부터 데이팅 프로필까지.',
+    hsCta: '헤드샷 만들기 →', hsCtaSub: '30초 · 비즈니스 프로필',
+    hsPopular: '인기',
+    dlTitle: 'Download <span style="color:#00D4AA;">IDPASS</span>',
+    dlDesc: '완벽한 배경제거 및 변경<br>전 세계 규격 DB 크롭<br>완전한 무료 다운로드 NO 광고<br>모든 것은 내폰 안에서만~',
+    dlSize: '5.5MB', dlReq: 'iOS 16+ 전용',
+    bb1Eye: 'FREE · NO LOGIN', bb1H: '증명사진,<br>다 통과.',
+    bb2Eye: '200+ COUNTRIES', bb2H: '여권·비자<br>규격 자동',
+    bb3Eye: 'ON-DEVICE', bb3H: '서버 전송 없이<br>안전하게.',
+    resEyebrow: 'RESOURCES', resTitle: '궁금한 점, 먼저 풀어드려요',
+    specsCard: '📑 증명사진 규격 가이드', specsDesc: '여권·비자·신분증 — 국가별 px·배경·여백 기준을 한곳에서 확인하세요.', specsCta: '규격 DB 보기 →',
+    boardTitle: '고객 게시판', viewAll: '전체보기 →', blogTitle: '최근 블로그',
     blogEmpty: '아직 포스트가 없습니다',
-    sbMagazine: '매거진', sbTags: '태그', sbMore: '더보기 ▼', sbLess: '접기 ▲',
-    sbShorts: 'MONKOS AI 쇼츠', sbCredit: '크레딧 안내',
-    specOthers: '호주·캐나다·중국·베트남 외 8국',
-    relJust: '방금 전', relMin: '분 전', relHour: '시간 전', relDay: '일 전',
+    navIdpass: 'IDPASS', navSpecs: '규격', navPricing: '가격',
+    credits: '크레딧', login: '로그인',
+    footerPowered: 'powered by <b style="color:#d4e8e4;font-weight:800">MONKOS AI</b>',
+    footerLegal: 'MONKOS는 통신판매중개자가 아닌 통신판매업자로서 자체 제공 서비스에 대한 책임을 집니다. 결제·환불 및 이용 관련 문의는 고객센터로 연락 주시기 바랍니다.',
+    metaTitle: 'MONKOS AI | AI 증명사진 · 여권사진 · 이력서사진',
+    metaDesc: 'AI 실시간 코칭으로 완벽한 증명사진을 촬영하세요. 여권, 비자, 이력서, 취업사진 지원.',
+    htmlLang: 'ko', locale: 'ko_KR', canonical: 'https://monkos.ai/',
   },
   en: {
-    intro: '<strong>MONKOS AI</strong> is an <strong>AI ID photo</strong> platform built by a photographer with 20 years of experience. Create passport and resume photos from a single selfie. Our AI, trained on real studio expertise, handles background, lighting, skin, clothing, and hair — delivering <strong>ICAO-compliant</strong> ID photos.',
-    ctaShoot: 'Start Shooting',
-    svcIdTitle: 'AI ID Photos', svcIdDesc: 'Passport · Resume — Studio-quality AI retouching. ICAO international standard.', svcIdLink: 'Start →',
-    svcCropTitle: 'Free Crop App', svcCropDesc: 'Spec crop · Background removal · Background swap. No server upload.', svcCropLink: '/crop →',
-    secHowto: 'How to Use', secFaq: 'FAQ', secBoard: 'Community Board', secBlog: 'Recent Blog',
-    viewAll: 'View All →',
-    howto1: 'Choose Spec', howto1d: 'Select passport/ID or resume format',
-    howto2: 'Take a Selfie', howto2d: 'AI coaching guides your perfect shot',
-    howto3: 'AI Retouch', howto3d: 'Auto-correct background, lighting, skin & outfit',
-    boardAnswered: 'Answered', boardWaiting: 'Pending', boardLoading: 'Loading posts...',
+    badge: '200+ Country Specs · ICAO · 5 Styles',
+    h1: 'AI ID Photos & Headshots', h1Accent: '', h1Suffix: '— Built by a Professional Studio',
+    heroSub: 'Passport · Visa · 200+ country specs <b style="color:#c2cad6;font-weight:700;">+</b><br>LinkedIn · Corporate · Resume headshots.<br>One selfie is all you need.',
+    stat1: '200+', stat1l: 'Passport & Visa Specs', stat2: 'ICAO', stat2l: 'International Standard', stat3: '5 Styles', stat3l: 'Headshot Styles',
+    idTitle: 'ID Photo', idTag: 'Specs · 200+',
+    idDesc: 'Passport · Visa · ID · Resume. AI precisely matches each country\'s specs (px, background, margins) — one shot that passes.',
+    idChips: ['White BG', 'ICAO', 'Crown Crop'],
+    idCta: 'Create ID Photo →',
+    hsEyebrow: 'AI HEADSHOT',
+    hsTitle: 'Professional presence, in a single shot',
+    hsSide: 'Need specs? <b style="color:#9aa3b2;">ID photos</b> above. Want to impress? <b style="color:#9aa3b2;">Headshots</b> here.',
+    hsPanelTitle: 'Headshot', hsPanelTag: 'NEW · Semi-Profile',
+    hsPanelDesc: 'Business profiles for LinkedIn, resumes & company bios. Pick from 5 concepts with just one selfie in 30 seconds<br>— from LinkedIn to Dating Profile.',
+    hsCta: 'Create Headshot →', hsCtaSub: '30s · Business Profile',
+    hsPopular: 'Popular',
+    dlTitle: 'Download <span style="color:#00D4AA;">IDPASS</span>',
+    dlDesc: 'Perfect background removal & change<br>Worldwide spec DB crop<br>Completely free, NO ads<br>Everything stays on your phone~',
+    dlSize: '5.5MB', dlReq: 'iOS 16+ only',
+    bb1Eye: 'FREE · NO LOGIN', bb1H: 'ID Photos,<br>All Pass.',
+    bb2Eye: '200+ COUNTRIES', bb2H: 'Passport · Visa<br>Auto Specs',
+    bb3Eye: 'ON-DEVICE', bb3H: 'No server upload.<br>Safe & secure.',
+    resEyebrow: 'RESOURCES', resTitle: 'Got questions? We\'ve got answers',
+    specsCard: '📑 ID Photo Specs Guide', specsDesc: 'Passport · Visa · ID — Check specs (px, background, margins) for every country in one place.', specsCta: 'View Specs DB →',
+    boardTitle: 'Community Board', viewAll: 'View All →', blogTitle: 'Recent Blog',
     blogEmpty: 'No posts yet',
-    sbMagazine: 'Magazine', sbTags: 'Tags', sbMore: 'More ▼', sbLess: 'Less ▲',
-    sbShorts: 'MONKOS AI Shorts', sbCredit: 'Credit Info',
-    specOthers: 'AU · CA · CN · VN + 8 more',
-    relJust: 'just now', relMin: 'm ago', relHour: 'h ago', relDay: 'd ago',
+    navIdpass: 'IDPASS', navSpecs: 'Specs', navPricing: 'Pricing',
+    credits: 'Credits', login: 'Login',
+    footerPowered: 'powered by <b style="color:#d4e8e4;font-weight:800">MONKOS AI</b>',
+    footerLegal: 'MONKOS is a direct seller responsible for all services provided. For payment, refund, and usage inquiries, please contact customer support.',
+    metaTitle: 'MONKOS AI | AI ID Photos · Passport Photos · Resume Photos',
+    metaDesc: 'Capture perfect ID photos with AI real-time coaching. Passport, visa, resume photos supported.',
+    htmlLang: 'en', locale: 'en_US', canonical: 'https://monkos.ai/en/',
   },
   ja: {
-    intro: '<strong>MONKOS AI</strong>は20年のキャリアを持つ写真家が作った<strong>AI証明写真</strong>プラットフォームです。パスポート写真、履歴書写真をセルフィー1枚で完成。リアルスタジオの実務とノウハウを学習したAIが背景、照明、肌、衣装、ヘアまで完璧に調整し、<strong>ICAO国際規格</strong>に準拠した証明写真を提供します。',
-    ctaShoot: '撮影を開始',
-    svcIdTitle: 'AI証明写真', svcIdDesc: 'パスポート·履歴書 — スタジオ品質AIリタッチ。ICAO国際規格。', svcIdLink: '撮影開始 →',
-    svcCropTitle: '無料クロップアプリ', svcCropDesc: '規格クロップ·背景除去·背景交換。サーバー送信なし。', svcCropLink: '/crop →',
-    secHowto: '証明写真アプリの使い方', secFaq: 'よくある質問', secBoard: 'お客様掲示板', secBlog: '最新ブログ',
-    viewAll: '全て見る →',
-    howto1: '規格選択', howto1d: 'パスポート/身分証または履歴書を選択',
-    howto2: 'セルフィー撮影', howto2d: 'AIコーチングで完璧に撮影',
-    howto3: 'AIリタッチ', howto3d: '背景·照明·肌·衣装を自動補正',
-    boardAnswered: '回答済み', boardWaiting: '待機中', boardLoading: '投稿を読み込み中...',
+    badge: '200+カ国規格検査 · ICAO準拠 · 5つのスタイル',
+    h1: 'プロスタジオが開発した', h1Accent: 'AI証明写真', h1Suffix: 'サービス',
+    heroSub: 'パスポート·ビザ·規格対応 <b style="color:#c2cad6;font-weight:700;">+</b><br>LinkedIn·プロフェッショナル·履歴書ヘッドショット。<br>セルフィー1枚で完了。',
+    stat1: '200+カ国', stat1l: 'パスポート·ビザ規格', stat2: 'ICAO', stat2l: '国際標準準拠', stat3: '5種類', stat3l: 'ヘッドショットスタイル',
+    idTitle: '証明写真', idTag: '規格 · 200+カ国',
+    idDesc: 'パスポート·ビザ·身分証·履歴書。AIが各国の規格(px·背景·余白)に正確に合わせて出力 — 一発で通る一枚。',
+    idChips: ['白背景', 'ICAO', '頭頂クロップ'],
+    idCta: '証明写真を作る →',
+    hsEyebrow: 'AI HEADSHOT',
+    hsTitle: 'プロの品格、一枚の写真で',
+    hsSide: '規格が必要な<b style="color:#9aa3b2;">証明写真</b>は上で、見せたい<b style="color:#9aa3b2;">ヘッドショット</b>はここで。',
+    hsPanelTitle: 'ヘッドショット', hsPanelTag: 'NEW · セミプロフィール',
+    hsPanelDesc: 'LinkedIn·履歴書·会社紹介用ビジネスプロフィール。セルフィー1枚で5つのコンセプトから選んで30秒で<br>— LinkedInからデーティングプロフィールまで。',
+    hsCta: 'ヘッドショットを作る →', hsCtaSub: '30秒 · ビジネスプロフィール',
+    hsPopular: '人気',
+    dlTitle: 'Download <span style="color:#00D4AA;">IDPASS</span>',
+    dlDesc: '完璧な背景除去・変更<br>世界規格DBクロップ<br>完全無料・広告なし<br>すべてはスマホの中だけ~',
+    dlSize: '5.5MB', dlReq: 'iOS 16+専用',
+    bb1Eye: 'FREE · NO LOGIN', bb1H: '証明写真、<br>全部パス。',
+    bb2Eye: '200+ COUNTRIES', bb2H: 'パスポート·ビザ<br>規格自動',
+    bb3Eye: 'ON-DEVICE', bb3H: 'サーバー送信なし<br>安全に。',
+    resEyebrow: 'RESOURCES', resTitle: '気になること、先にお答えします',
+    specsCard: '📑 証明写真規格ガイド', specsDesc: 'パスポート·ビザ·身分証 — 国別px·背景·余白基準を一カ所で確認。', specsCta: '規格DB →',
+    boardTitle: 'お客様掲示板', viewAll: '全て見る →', blogTitle: '最新ブログ',
     blogEmpty: 'まだ投稿がありません',
-    sbMagazine: 'マガジン', sbTags: 'タグ', sbMore: 'もっと見る ▼', sbLess: '閉じる ▲',
-    sbShorts: 'MONKOS AI ショート', sbCredit: 'クレジット案内',
-    specOthers: '豪·加·中·越 他8カ国',
-    relJust: 'たった今', relMin: '分前', relHour: '時間前', relDay: '日前',
+    navIdpass: 'IDPASS', navSpecs: '規格', navPricing: '料金',
+    credits: 'クレジット', login: 'ログイン',
+    footerPowered: 'powered by <b style="color:#d4e8e4;font-weight:800">MONKOS AI</b>',
+    footerLegal: 'MONKOSは通信販売仲介業者ではなく通信販売業者として自社提供サービスに責任を負います。決済・返金・利用に関するお問い合わせはカスタマーセンターまでご連絡ください。',
+    metaTitle: 'MONKOS AI | AI証明写真 · パスポート写真 · 履歴書写真',
+    metaDesc: 'AIリアルタイムコーチングで完璧な証明写真を撮影。パスポート、ビザ、履歴書対応。',
+    htmlLang: 'ja', locale: 'ja_JP', canonical: 'https://monkos.ai/ja/',
   },
 };
 
-const EMOJI = { '사진': '📸', '패션': '👗', '헤어': '💇', '메이크업': '💄', 'AI': '🤖', 'news': '📰', '기타': '💡', 'default': '💡' };
-const GRADIENTS = [
-  'linear-gradient(135deg,#f0eee8,#e8e5de)',
-  'linear-gradient(135deg,#eef0f8,#e0e4f0)',
-  'linear-gradient(135deg,#f5f0e8,#efe8d8)',
-  'linear-gradient(135deg,#f0eef5,#e8e4f0)',
+const HEADSHOT_STYLES = [
+  { key: 'linkedin_pro', label: 'LinkedIn', img: '/assets/headshot-linkedin.jpg', pos: '50% 18%' },
+  { key: 'corporate', label: 'Corporate', img: '/assets/headshot-corporate.jpg', pos: '50% 14%' },
+  { key: 'creative', label: 'Creative', img: '/assets/headshot-creative.png', pos: '50% 16%' },
+  { key: 'professional', label: 'Professional', img: '/assets/headshot-professional.jpg', pos: '50% 16%' },
+  { key: 'dating', label: 'Dating Profile', img: '/assets/headshot-dating.jpg', pos: '50% 12%' },
 ];
 
-function esc(str) {
-  if (!str) return '';
-  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+function headHtml(d) {
+  return `<!DOCTYPE html>
+<html lang="${d.htmlLang}">
+<head>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-JPZWSJ3323"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-JPZWSJ3323');gtag('config','G-FKG0CPTC14');</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>${esc(d.metaTitle)}</title>
+<meta name="description" content="${esc(d.metaDesc)}">
+<meta name="theme-color" content="#DFE0E3">
+<meta property="og:title" content="${esc(d.metaTitle)}">
+<meta property="og:description" content="${esc(d.metaDesc)}">
+<meta property="og:type" content="website">
+<meta property="og:url" content="${d.canonical}">
+<meta property="og:locale" content="${d.locale}">
+<link rel="canonical" href="${d.canonical}">
+<link rel="alternate" hreflang="ko" href="https://monkos.ai/">
+<link rel="alternate" hreflang="en" href="https://monkos.ai/en/">
+<link rel="alternate" hreflang="ja" href="https://monkos.ai/ja/">
+<link rel="alternate" hreflang="x-default" href="https://monkos.ai/">
+<link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/favicon-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;0,9..40,800;0,9..40,900;1,9..40,500&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/home.css">
+</head>
+<body class="mk-home">`;
 }
 
-function relTime(dateStr, d) {
-  if (!dateStr) return '';
-  const ms = Date.now() - new Date(dateStr).getTime();
-  const m = Math.floor(ms / 60000);
-  if (m < 1) return d.relJust;
-  if (m < 60) return `${m}${d.relMin}`;
-  const h = Math.floor(m / 60);
-  if (h < 24) return `${h}${d.relHour}`;
-  return `${Math.floor(h / 24)}${d.relDay}`;
+function navHtml(d, lang, prefix) {
+  return `
+<nav class="mk-nav">
+  <div class="mk-nav-left">
+    <a href="${prefix}/" class="mk-logo">
+      <img src="/assets/monkos-icon.svg" alt="MONKOS" class="mk-logo-icon">
+      <span class="mk-logo-text">MONKOS <i class="mk-teal">AI</i></span>
+    </a>
+    <div class="mk-nav-links">
+      <a href="${prefix}/specs">${esc(d.navSpecs)}</a>
+      <a href="${prefix}/pricing">${esc(d.navPricing)}</a>
+      <a href="${prefix}/headshot">Headshot</a>
+    </div>
+  </div>
+  <div class="mk-nav-right">
+    <span class="mk-lang-sw">
+      <button onclick="setLang('ko')"${lang === 'ko' ? ' class="active"' : ''}>KO</button>
+      <button onclick="setLang('en')"${lang === 'en' ? ' class="active"' : ''}>EN</button>
+      <button onclick="setLang('ja')"${lang === 'ja' ? ' class="active"' : ''}>JA</button>
+    </span>
+    <div class="mk-credit-pill" id="creditBadge" onclick="openCreditShop()">
+      <span class="mk-coin"></span><span class="mk-credit-amt" id="creditCount">0</span><span class="mk-credit-label">${esc(d.credits)}</span>
+    </div>
+    <button class="mk-login-btn" id="headerLoginBtn" onclick="headerLogin()">${esc(d.login)}</button>
+  </div>
+</nav>`;
 }
 
-function fmtDate(d) { return d ? d.substring(5, 10).replace('-', '.') : ''; }
-
-function getTemplate() {
-  if (!templateHtml) templateHtml = readFileSync(templatePath, 'utf-8');
-  return templateHtml;
+function heroHtml(d, idphotoUrl) {
+  const chipsHtml = d.idChips.map(c => `<span class="mk-chip">${esc(c)}</span>`).join('');
+  return `
+<section class="mk-panel mk-hero">
+  <div class="mk-hero-copy">
+    <div class="mk-badge"><span class="mk-badge-dot"></span>${esc(d.badge)}</div>
+    <h1 class="mk-h1">${esc(d.h1)}${d.h1Accent ? `<br><span class="mk-teal">${esc(d.h1Accent)}</span>` : ''} ${esc(d.h1Suffix)}</h1>
+    <p class="mk-hero-sub">${d.heroSub}</p>
+    <div class="mk-stats">
+      <div class="mk-stat"><div class="mk-stat-num">${esc(d.stat1)}</div><div class="mk-stat-label">${esc(d.stat1l)}</div></div>
+      <div class="mk-stat-divider"></div>
+      <div class="mk-stat"><div class="mk-stat-num">${esc(d.stat2)}</div><div class="mk-stat-label">${esc(d.stat2l)}</div></div>
+      <div class="mk-stat-divider"></div>
+      <div class="mk-stat"><div class="mk-stat-num">${esc(d.stat3)}</div><div class="mk-stat-label">${esc(d.stat3l)}</div></div>
+    </div>
+  </div>
+  <div class="mk-hero-visual">
+    <div class="mk-acrylic-frame">
+      <div class="mk-graphite mk-id-card">
+        <div class="mk-id-images">
+          <div class="mk-id-before"><img src="/assets/idphoto-before.jpg" alt="before"><span class="mk-id-label">BEFORE</span></div>
+          <div class="mk-id-after"><img src="/assets/idphoto-after.jpg" alt="after"><span class="mk-pass-badge">PASS ✓</span><div class="mk-guide-h"></div><div class="mk-guide-v"></div></div>
+        </div>
+        <div class="mk-id-body">
+          <div class="mk-id-header"><span class="mk-id-title">${esc(d.idTitle)}</span><span class="mk-id-tag">${esc(d.idTag)}</span></div>
+          <p class="mk-id-desc">${esc(d.idDesc)}</p>
+          <div class="mk-id-chips">${chipsHtml}</div>
+          <div class="mk-id-footer"><a href="${idphotoUrl}" class="mk-btn-solid">${esc(d.idCta)}</a><span class="mk-id-domain">idphoto.monkos.ai</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>`;
 }
 
-function magCard(p, i, d) {
-  const emoji = EMOJI[p.category] || EMOJI.default;
-  const tag = p.tags?.[0] ? `<span class="tag tip">${esc(p.tags[0])}</span>` : '';
-  const summary = (p.summary || '').substring(0, 30);
-  const thumbStyle = p.thumbnail
-    ? `background:url('${esc(p.thumbnail)}') center/cover no-repeat; background-color:${GRADIENTS[i % 4].match(/#\w+/)?.[0] || '#f0eee8'}`
-    : `background:${GRADIENTS[i % 4]}`;
-  const thumbContent = p.thumbnail ? tag : `<span class="icon">${emoji}</span>${tag}`;
-  return `      <a href="/blog/${esc(p.slug)}" class="mag-card"><div class="mag-img" style="${thumbStyle}">${thumbContent}</div><div class="mag-body"><h4>${esc(p.title)}</h4><p>${esc(summary)}</p><div class="meta">${esc(p.author || 'MONKOS')} · ${relTime(p.createdAt, d)}</div></div></a>`;
+function headshotHtml(d, prefix) {
+  const tiles = HEADSHOT_STYLES.map((s, i) =>
+    `<div class="mk-hs-tile${i === 0 ? ' mk-hs-featured' : ''}">
+      <img src="${s.img}" alt="${s.label}" style="object-position:${s.pos};">
+      <div class="mk-hs-grad"></div>
+      ${i === 0 ? `<span class="mk-hs-pop">${esc(d.hsPopular)}</span>` : ''}
+      <span class="mk-hs-label">${esc(s.label)}</span>
+    </div>`
+  ).join('\n');
+  return `
+<section class="mk-panel mk-headshot">
+  <div class="mk-hs-header">
+    <div><div class="mk-eyebrow">${esc(d.hsEyebrow)}</div><div class="mk-sec-title">${esc(d.hsTitle)}</div></div>
+    <p class="mk-hs-side">${d.hsSide}</p>
+  </div>
+  <div class="mk-graphite mk-hs-panel">
+    <div class="mk-hs-panel-header">
+      <div>
+        <div class="mk-hs-panel-title"><span>${esc(d.hsPanelTitle)}</span><span class="mk-hs-tag">${esc(d.hsPanelTag)}</span></div>
+        <p class="mk-hs-panel-desc">${d.hsPanelDesc}</p>
+      </div>
+      <div class="mk-hs-cta-wrap">
+        <a href="${prefix}/headshot" class="mk-btn-solid">${esc(d.hsCta)}</a>
+        <span class="mk-hs-cta-sub">${esc(d.hsCtaSub)}</span>
+      </div>
+    </div>
+    <div class="mk-hs-gallery">${tiles}</div>
+  </div>
+</section>`;
 }
 
-function blogCard(p, langPrefix) {
-  const emoji = EMOJI[p.category] || EMOJI.default;
-  const thumb = p.thumbnail
-    ? `<div class="bi-thumb" style="background-image:url('${esc(p.thumbnail)}');background-size:cover;background-position:center"></div>`
-    : `<div class="bi-thumb">${emoji}</div>`;
-  return `      <a href="${langPrefix}/blog/${esc(p.slug)}" class="bi">${thumb}<div class="bi-info"><h3>${esc(p.title)}</h3><p>${esc(p.summary || '')}</p><div class="meta"><span class="lt">${esc((p.lang || 'ko').toUpperCase())}</span> ${esc(p.author || 'MONKOS')} · ${fmtDate(p.createdAt)}</div></div></a>`;
+function idpassHtml(d) {
+  return `
+<section class="mk-panel mk-idpass">
+  <div class="mk-idpass-header">
+    <div class="mk-idpass-icon-row">
+      <img src="/assets/idpass-icon.png" alt="IDPASS" class="mk-idpass-icon">
+      <div class="mk-idpass-title">${d.dlTitle}</div>
+    </div>
+    <p class="mk-idpass-desc">${d.dlDesc}</p>
+    <div class="mk-idpass-rating">
+      <span class="mk-stars">★★★★★</span><span class="mk-rating-num">4.9</span><span class="mk-rating-store">App Store</span>
+      <span class="mk-rating-sep"></span>
+      <span class="mk-rating-info"><b>${esc(d.dlSize)}</b> · ${esc(d.dlReq)}</span>
+    </div>
+    <div class="mk-idpass-dl">
+      <a href="#" class="mk-appstore-badge"><span class="mk-appstore-icon"></span><span class="mk-appstore-text"><span class="mk-appstore-small">Download on the</span><span class="mk-appstore-big">App Store</span></span></a>
+    </div>
+  </div>
+  <div class="mk-graphite mk-billboard">
+    <div class="mk-bb-panel"><div class="mk-bb-copy"><div class="mk-bb-eye">${esc(d.bb1Eye)}</div><div class="mk-bb-h">${d.bb1H}</div></div><div class="mk-bb-phone"><img src="/assets/store_01.jpg" alt=""></div></div>
+    <div class="mk-bb-panel"><div class="mk-bb-copy"><div class="mk-bb-eye">${esc(d.bb2Eye)}</div><div class="mk-bb-h">${d.bb2H}</div></div><div class="mk-bb-phone"><img src="/assets/store_03.jpg" alt=""></div></div>
+    <div class="mk-bb-panel"><div class="mk-bb-copy"><div class="mk-bb-eye">${esc(d.bb3Eye)}</div><div class="mk-bb-h">${d.bb3H}</div></div><div class="mk-bb-phone"><img src="/assets/store_05.jpg" alt=""></div></div>
+  </div>
+</section>`;
 }
 
-// ========== Home SSR ==========
+function resourcesHtml(d, prefix, faqHtml, boardHtml, blogHtml) {
+  return `
+<section class="mk-panel mk-resources">
+  <div class="mk-res-header">
+    <div class="mk-eyebrow">${esc(d.resEyebrow)}</div>
+    <div class="mk-res-title">${esc(d.resTitle)}</div>
+  </div>
+  <div class="mk-res-grid">
+    <div class="mk-faq-list">${faqHtml}</div>
+    <div class="mk-res-side">
+      <div class="mk-side-card">
+        <div class="mk-side-card-title">${esc(d.specsCard)}</div>
+        <p class="mk-side-card-desc">${esc(d.specsDesc)}</p>
+        <a href="${prefix}/specs" class="mk-btn-solid">${esc(d.specsCta)}</a>
+      </div>
+      <div class="mk-side-card">
+        <div class="mk-board-header"><span class="mk-side-card-title">${esc(d.boardTitle)}</span><a href="${prefix}/board" class="mk-view-all">${esc(d.viewAll)}</a></div>
+        ${boardHtml}
+      </div>
+    </div>
+  </div>
+  <div class="mk-blog-section">
+    <div class="mk-blog-header"><span class="mk-blog-title">${esc(d.blogTitle)}</span><a href="${prefix}/blog" class="mk-view-all-dark">${esc(d.viewAll)}</a></div>
+    <div class="mk-blog-grid">${blogHtml}</div>
+  </div>
+</section>`;
+}
+
+function footerHtml(d, prefix) {
+  return `
+<footer class="mk-footer">
+  <div class="mk-footer-top">
+    <div class="mk-footer-logo">
+      <img src="/assets/monkos-icon.svg" alt="MONKOS" width="28" height="28" style="border-radius:8px;">
+      <span>${d.footerPowered}</span>
+    </div>
+    <div class="mk-footer-links">
+      <a href="${prefix}/specs">${esc(d.navSpecs)}</a>
+      <a href="${prefix}/headshot">Headshot</a>
+      <a href="${prefix}/terms.html">Terms</a>
+      <a href="${prefix}/privacy.html">Privacy</a>
+    </div>
+    <div class="mk-footer-copy">© 2026 MONK STUDIO</div>
+  </div>
+  <div class="mk-footer-legal">
+    <div class="mk-biz-info">
+      <span><b>상호</b> 몽코스 스튜디오(MONK STUDIO)</span>
+      <span><b>대표</b> 신정규</span>
+      <span><b>사업자등록번호</b> 169-27-02081</span>
+      <span><b>이메일</b> info@monkos.ai</span>
+    </div>
+    <p class="mk-legal-note">${esc(d.footerLegal)}</p>
+  </div>
+</footer>`;
+}
+
+function tailHtml(lang) {
+  const region = lang === 'ko' ? 'kr' : 'global';
+  return `
+<div class="modal-overlay" id="loginModal">
+  <div class="modal-box">
+    <h3 id="loginModalTitle">${lang === 'ko' ? '로그인' : lang === 'ja' ? 'ログイン' : 'Sign In'}</h3>
+    <p style="text-align:center;margin:8px 0 16px;color:#00D4AA;font-weight:600;font-size:0.95rem;">
+      ${lang === 'ko' ? '🎁 가입하면 첫 1컷 무료 (10c 즉시 지급)' : lang === 'ja' ? '🎁 登録で1枚無料（10c即時付与）' : '🎁 Sign up & get your first headshot FREE (10c bonus)'}
+    </p>
+    <div class="login-buttons">
+      <button class="login-btn" onclick="googleLogin();closeLoginModal();">
+        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59a14.5 14.5 0 0 1 0-9.18l-7.98-6.19a24.014 24.014 0 0 0 0 21.56l7.98-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-2.77c-.98.66-2.23 1.06-3.71 1.06-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+        <span>Google</span>
+      </button>
+      ${lang === 'ko' ? '<button class="login-btn" onclick="loginKakao();closeLoginModal();" style="background:#FEE500;color:#191919;border:none;"><span>카카오</span></button>' : ''}
+      ${lang === 'ja' ? '<button class="login-btn" onclick="loginLine();closeLoginModal();" style="background:#06C755;color:#fff;border:none;"><span>LINE</span></button>' : ''}
+    </div>
+    <button class="modal-close-btn" id="loginModalClose" onclick="closeLoginModal()">${lang === 'ko' ? '닫기' : lang === 'ja' ? '閉じる' : 'Close'}</button>
+  </div>
+</div>
+<div class="modal-overlay" id="creditShopModal">
+  <div class="modal-box"><h3 id="shopTitle">Credit Shop</h3><p id="shopCurrentLabel"></p><p id="shopCurrentCredits" style="display:none"></p><div id="shopItems"></div><button class="modal-close-btn" id="shopCloseBtn" onclick="closeCreditShop()">Close</button></div>
+</div>
+<script>window.__LANG__='${lang}';window.__REGION__='${region}';</script>
+<script src="/js/i18n.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/credits.js"></script>
+<script src="/js/main.js"></script>
+<script src="/js/track.js"></script>
+<script>
+document.querySelectorAll('.mk-faq-item').forEach(function(el,i){
+  el.addEventListener('click',function(){
+    var wasOpen=el.classList.contains('open');
+    document.querySelectorAll('.mk-faq-item.open').forEach(function(o){o.classList.remove('open')});
+    if(!wasOpen)el.classList.add('open');
+  });
+  if(i===0)el.classList.add('open');
+});
+</script>
+</body>
+</html>`;
+}
+
 export async function renderHome(req, res, forceLang = null) {
   try {
-    let html = getTemplate();
+    const lang = forceLang || req.lang || 'ko';
+    const d = HOME_I18N[lang] || HOME_I18N.ko;
+    const prefix = lang === 'ko' ? '' : `/${lang}`;
+    const idphotoUrl = lang === 'ja' ? 'https://idphoto-jp.monkos.ai/' : 'https://idphoto-kr.monkos.ai/';
 
-    const [configSnap, postsSnap, gallerySnap, layoutSnap] = await Promise.all([
-      siteConfigRef.get().catch(() => null),
+    const [postsSnap, faqSnap, boardSnap] = await Promise.all([
       blogCollection.where('published', '==', true).orderBy('createdAt', 'desc').get().catch(() => ({ docs: [] })),
-      galleryCollection.where('published', '==', true).orderBy('order', 'asc').get().catch(() => ({ docs: [] })),
-      layoutConfigRef.get().catch(() => null),
+      firestore.collection('faq_items').where('published', '==', true).where('lang', '==', lang).orderBy('order', 'asc').limit(4).get().catch(() => ({ docs: [] })),
+      firestore.collection('board_posts').where('published', '==', true).orderBy('createdAt', 'desc').limit(1).get().catch(() => ({ docs: [] })),
     ]);
 
-    const allPosts = postsSnap.docs.map(d => ({ slug: d.id, ...d.data() }));
+    const allPosts = postsSnap.docs.map(doc => ({ slug: doc.id, ...doc.data() }));
+    const langPosts = allPosts.filter(p => p.lang === lang && !p.autoTranslated);
+    const displayPosts = (langPosts.length > 0 ? langPosts : allPosts.filter(p => !p.autoTranslated)).slice(0, 3);
 
-    const reqUrl = new URL(req.url, 'http://localhost');
-    const lang = forceLang || req.lang || reqUrl.searchParams.get('lang') || 'ko';
-    const d = HOME_I18N[lang] || HOME_I18N.ko;
-    const langPrefix = lang === 'ko' ? '' : `/${lang}`;
-    const langPosts = allPosts.filter(p => p.lang === lang);
-    const displayPosts = (langPosts.length > 0 ? langPosts : allPosts)
-      .filter(p => !p.autoTranslated)
-      .filter(p => p.thumbnail && p.thumbnail.length > 0);
+    const faqItems = faqSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const faqHtml = faqItems.length > 0
+      ? faqItems.map(f => {
+          const short = (f.answer || '').substring(0, 120) + (f.answer?.length > 120 ? '…' : '');
+          return `<div class="mk-faq-item"><div class="mk-faq-q"><span>${esc(f.question)}</span><span class="mk-faq-toggle">+</span></div><div class="mk-faq-a">${esc(short)}</div></div>`;
+        }).join('')
+      : '';
 
-    // Layout 블록 헬퍼 (fallback: layout 없으면 기존 하드코딩 유지)
-    const layoutSections = layoutSnap?.exists ? (layoutSnap.data().sections || []) : [];
-    function getBlock(id) { return layoutSections.find(s => s.id === id); }
-    function lt(obj) { return (obj && obj[lang]) || obj?.ko || ''; }
+    const boardItems = boardSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const boardHtml = boardItems.length > 0
+      ? boardItems.map(b => `<div class="mk-board-row"><span class="mk-board-title">${esc(b.title)}</span><span class="mk-board-meta">${esc(b.author || '')} · ${fmtDate(b.createdAt)}</span></div>`).join('')
+      : '';
 
-    // 0-pre. 메타 태그 언어별 치환 (SEO: JA/EN 현지화)
-    const metaMap = {
-      ko: {
-        title: 'MONKOS AI | AI 증명사진 · 여권사진 · 이력서사진',
-        desc: 'AI 실시간 코칭으로 완벽한 증명사진을 촬영하세요. 여권, 비자, 이력서, 취업사진 지원. 고품질 AI 증명사진 생성.',
-        ogTitle: 'MONKOS AI | AI 증명사진',
-        ogDesc: 'AI 코치가 촬영을 실시간 가이드. 증명사진 · 여권사진 · 이력서사진 촬영.',
-        canonical: 'https://monkos.ai/',
-        locale: 'ko_KR',
-        htmlLang: 'ko'
-      },
-      ja: {
-        title: 'MONKOS AI | AI証明写真 · パスポート写真 · 履歴書写真',
-        desc: 'AIリアルタイムコーチングで完璧な証明写真を撮影。パスポート、ビザ、履歴書対応。高品質AI証明写真生成。',
-        ogTitle: 'MONKOS AI | AI証明写真',
-        ogDesc: 'AIコーチがリアルタイムガイド。証明写真・パスポート写真・履歴書写真の撮影。',
-        canonical: 'https://monkos.ai/ja/',
-        locale: 'ja_JP',
-        htmlLang: 'ja'
-      },
-      en: {
-        title: 'MONKOS AI | AI ID Photos · Passport Photos · Resume Photos',
-        desc: 'Capture perfect ID photos with AI real-time coaching. Passport, visa, resume photos supported. High-quality AI photo generation.',
-        ogTitle: 'MONKOS AI | AI ID Photos',
-        ogDesc: 'AI coach guides your photo session in real time. ID · Passport · Resume photos.',
-        canonical: 'https://monkos.ai/en/',
-        locale: 'en_US',
-        htmlLang: 'en'
-      }
-    };
-    const m = metaMap[lang] || metaMap.ko;
+    const blogHtml = displayPosts.length > 0
+      ? displayPosts.map(p => {
+          const mono = (p.title || '?')[0];
+          const tag = p.tags?.[0] || p.category || '';
+          const excerpt = (p.summary || '').substring(0, 60);
+          const thumbHtml = p.thumbnail
+            ? `<div class="mk-blog-thumb" style="background-image:url('${esc(p.thumbnail)}')"><span class="mk-blog-tag">${esc(tag)}</span></div>`
+            : `<div class="mk-blog-thumb mk-blog-mono"><span class="mk-mono-char">${esc(mono)}</span><span class="mk-blog-tag">${esc(tag)}</span></div>`;
+          return `<a href="${prefix}/blog/${esc(p.slug)}" class="mk-blog-card">${thumbHtml}<div class="mk-blog-body"><div class="mk-blog-card-title">${esc(p.title)}</div><p class="mk-blog-excerpt">${esc(excerpt)}</p><div class="mk-blog-meta">MONKOS · ${fmtDate(p.createdAt)}</div></div></a>`;
+        }).join('')
+      : `<p class="mk-blog-empty">${esc(d.blogEmpty)}</p>`;
 
-    html = html.replace(/<html lang="ko">/, `<html lang="${m.htmlLang}">`);
-    html = html.replace(/<title>[^<]+<\/title>/, `<title>${m.title}</title>`);
-    html = html.replace(/<meta name="description" content="[^"]*">/, `<meta name="description" content="${m.desc}">`);
-    html = html.replace(/<meta property="og:title" content="[^"]*">/, `<meta property="og:title" content="${m.ogTitle}">`);
-    html = html.replace(/<meta property="og:description" content="[^"]*">/, `<meta property="og:description" content="${m.ogDesc}">`);
-    html = html.replace(/<meta property="og:url" content="[^"]*">/, `<meta property="og:url" content="${m.canonical}">`);
-    html = html.replace(/<meta property="og:locale" content="[^"]*">/, `<meta property="og:locale" content="${m.locale}">`);
-    html = html.replace(/<link rel="canonical" href="[^"]*">/, `<link rel="canonical" href="${m.canonical}">`);
-    html = html.replace(/<meta name="twitter:title" content="[^"]*">/, `<meta name="twitter:title" content="${m.ogTitle}">`);
-    html = html.replace(/<meta name="twitter:description" content="[^"]*">/, `<meta name="twitter:description" content="${m.ogDesc}">`);
+    const faqJsonLd = faqItems.length > 0 ? `<script type="application/ld+json">${JSON.stringify({
+      "@context": "https://schema.org", "@type": "FAQPage",
+      "mainEntity": faqItems.map(f => ({ "@type": "Question", "name": f.question, "acceptedAnswer": { "@type": "Answer", "text": f.answer } })),
+    })}</script>` : '';
 
-    // 0-a. 템플릿 내 하드코딩 텍스트 i18n 치환
-    html = html.replace(/<p class="intro-text">[\s\S]*?<\/p>/, `<p class="intro-text">${d.intro}</p>`);
-    html = html.replace(/<button class="btn-shoot">[^<]*<\/button>/, `<button class="btn-shoot">${esc(d.ctaShoot)}</button>`);
-    html = html.replace(/>AI 증명사진<\/h3>/, `>${esc(d.svcIdTitle)}</h3>`);
-    html = html.replace(/여권·이력서 — 사진관 품질 AI 리터칭\. ICAO 국제 규격\./, esc(d.svcIdDesc));
-    html = html.replace(/촬영 시작 →/, esc(d.svcIdLink));
-    html = html.replace(/>무료 크롭앱<\/h3>/, `>${esc(d.svcCropTitle)}</h3>`);
-    html = html.replace(/규격 크롭·배경 제거·배경 교체\. 서버 전송 없음\./, esc(d.svcCropDesc));
-    html = html.replace(/<h2>증명사진 앱 활용법<\/h2><a href="\/guide">전체보기 →<\/a>/, `<h2>${esc(d.secHowto)}</h2><a href="${langPrefix}/guide">${esc(d.viewAll)}</a>`);
-    html = html.replace(/<h4>규격 선택<\/h4><p>여권\/신분증 또는 반명함 선택<\/p>/, `<h4>${esc(d.howto1)}</h4><p>${esc(d.howto1d)}</p>`);
-    html = html.replace(/<h4>셀카 촬영<\/h4><p>AI 코칭 가이드로 완벽 촬영<\/p>/, `<h4>${esc(d.howto2)}</h4><p>${esc(d.howto2d)}</p>`);
-    html = html.replace(/<h4>AI 리터칭<\/h4><p>배경·조명·피부·의상 자동 보정<\/p>/, `<h4>${esc(d.howto3)}</h4><p>${esc(d.howto3d)}</p>`);
-    html = html.replace(/<h2>자주 묻는 질문<\/h2><a href="\/faq">전체보기 →<\/a>/, `<h2>${esc(d.secFaq)}</h2><a href="${langPrefix}/faq">${esc(d.viewAll)}</a>`);
-    html = html.replace(/<h2>고객 게시판<\/h2><a href="\/board">전체보기 →<\/a>/, `<h2>${esc(d.secBoard)}</h2><a href="${langPrefix}/board">${esc(d.viewAll)}</a>`);
-    html = html.replace(/<h2>최근 블로그<\/h2><a href="\/blog">전체보기 →<\/a>/, `<h2>${esc(d.secBlog)}</h2><a href="${langPrefix}/blog">${esc(d.viewAll)}</a>`);
-    html = html.replace(/게시글을 불러오는 중\.\.\./, esc(d.boardLoading));
-    html = html.replace(/>매거진<\/div>/, `>${esc(d.sbMagazine)}</div>`);
-    html = html.replace(/<div class="sb-t" id="sb-tags">태그<\/div>/, `<div class="sb-t" id="sb-tags">${esc(d.sbTags)}</div>`);
-    html = html.replace(/>더보기 ▼<\/button>/, `>${esc(d.sbMore)}</button>`);
-    html = html.replace(/접기 ▲/, esc(d.sbLess));
-    html = html.replace(/<div class="sb-t">MONKOS AI 쇼츠<\/div>/, `<div class="sb-t">${esc(d.sbShorts)}</div>`);
-    html = html.replace(/<div class="sb-t" id="sb-credit">크레딧 안내<\/div>/, `<div class="sb-t" id="sb-credit">${esc(d.sbCredit)}</div>`);
-    html = html.replace(/호주·캐나다·중국·베트남 외 8국/, esc(d.specOthers));
-    // __LANG__/__REGION__ 주입 (i18n.js 연동)
-    html = html.replace('</body>', `<script>window.__LANG__='${lang}';window.__REGION__='${req.paymentRegion || (lang === 'ko' ? 'kr' : 'global')}';</script>\n</body>`);
-    // 다국어 nav 링크 경로 보정
-    if (lang !== 'ko') {
-      html = html.replace(/href="\/specs"/g, `href="${langPrefix}/specs"`);
-      html = html.replace(/href="\/blog"/g, `href="${langPrefix}/blog"`);
-      html = html.replace(/href="\/faq"/g, `href="${langPrefix}/faq"`);
-      html = html.replace(/href="\/pricing"/g, `href="${langPrefix}/pricing"`);
-      html = html.replace(/href="\/headshot"/g, `href="${langPrefix}/headshot"`);
-      html = html.replace(/href="\/guide"/g, `href="${langPrefix}/guide"`);
-    }
-
-    // 0. Gallery strip (Firestore → 동적, layout maxItems 적용)
-    const galleryBlock = getBlock('gallery-strip');
-    const galleryMax = galleryBlock?.data?.maxItems || 12;
-    const galleryItems = gallerySnap.docs.map(d => d.data());
-    if (galleryItems.length > 0) {
-      const stripHtml = galleryItems.slice(0, galleryMax).map(item =>
-        `  <div class="gi"><img class="gi-img" src="${esc(item.imageUrl)}" alt="${esc(item.caption || 'AI 증명사진')}" loading="lazy"></div>`
-      ).join('\n');
-      html = html.replace(
-        /(<div class="gallery-track" id="gt">)\n[\s\S]*?(<\/div><\/div>\n\n<!-- Sticky Nav -->)/,
-        `$1\n${stripHtml}\n</div></div>\n\n<!-- Sticky Nav -->`
-      );
-    }
-
-    // 1. Hero
-    const heroBlock = getBlock('hero');
-    if (heroBlock?.visible && heroBlock.data) {
-      const hd = heroBlock.data;
-      const heroSubMap = { ko: 'AI 증명사진 · 26개국 규격', ja: 'AI証明写真 · 26カ国規格', en: 'AI ID Photos · 26 Countries' };
-      const heroHtml = `<div class="hero"><div class="hero-inner">\n  <div class="hero-label">${hd.label || 'AI CREATIVE PLATFORM'}</div>\n  <h1>${hd.title || 'MONKOS <em>AI</em>'}</h1>\n  <p class="hero-sub" data-i18n="hero_sub">${heroSubMap[lang] || heroSubMap.ko}</p>\n</div></div>`;
-      html = html.replace(
-        /<div class="hero"><div class="hero-inner">\n[\s\S]*?<\/div><\/div>\n\n<!-- User Bar -->/,
-        `${heroHtml}\n\n<!-- User Bar -->`
-      );
-    }
-
-    // 2. User-bar CTA text only (onclick·class 보존)
-    const userBarBlock = getBlock('user-bar');
-    if (userBarBlock?.visible && userBarBlock.data?.cta) {
-      html = html.replace(
-        /<button class="btn-shoot">[^<]*<\/button>/,
-        `<button class="btn-shoot">${esc(lt(userBarBlock.data.cta))}</button>`
-      );
-    }
-
-    // 3. Nav (고정 5항목 — specs 경로 확보)
-    const navItems = [
-      { href: '/', label: { ko: '홈', ja: 'ホーム', en: 'Home' }, active: true },
-      { href: '/specs', label: { ko: '규격', ja: '規格', en: 'Specs' } },
-      { href: '/blog', label: { ko: '블로그', ja: 'ブログ', en: 'Blog' } },
-      { href: '/faq', label: { ko: 'FAQ', ja: 'FAQ', en: 'FAQ' } },
-      { href: '/pricing', label: { ko: '가격', ja: '料金', en: 'Pricing' } },
-      { href: '/headshot', label: { ko: 'Headshot', ja: 'Headshot', en: 'Headshot' } },
-    ];
-    const navLinks = navItems.map(item => {
-      const cls = item.active ? ' class="active"' : '';
-      return `  <a href="${esc(item.href)}"${cls}>${esc(item.label[lang] || item.label.ko)}</a>`;
-    }).join('\n');
-    html = html.replace(
-      /(<nav><div class="n-links">)\n[\s\S]*?\n(<\/div><\/nav>)/,
-      `$1\n${navLinks}\n$2`
-    );
-
-    // 4. Intro text (layout 블록 우선, fallback: site_config/main)
-    const introBlock = getBlock('intro-text');
-    if (introBlock?.visible && introBlock.data?.text) {
-      const introHtml = lt(introBlock.data.text);
-      if (introHtml) html = html.replace(/<p class="intro-text">[\s\S]*?<\/p>/, `<p class="intro-text">${introHtml}</p>`);
-    } else if (configSnap?.exists && configSnap.data().intro) {
-      html = html.replace(/<p class="intro-text">[\s\S]*?<\/p>/, `<p class="intro-text">${configSnap.data().intro}</p>`);
-    }
-
-    // 5. Service cards (.svc.live, .svc-link class 보존)
-    const svcBlock = getBlock('service-cards');
-    if (svcBlock?.visible && svcBlock.items) {
-      const svcHtml = svcBlock.items.map(item => {
-        const title = lt(item.title);
-        const desc = lt(item.desc);
-        const link = lt(item.link);
-        const icon = item.icon || '';
-        const badgeHtml = item.badge ? `<span class="svc-bdg ${item.badge.class || ''}">${item.badge.text || ''}</span>` : '';
-        if (item.cardClass === 'live') {
-          return `      <div class="svc live"><div class="svc-top"><span class="svc-icon">${icon}</span>${badgeHtml}</div><h3>${esc(title)}</h3><p>${esc(desc)}</p><span class="svc-link">${esc(link)}</span></div>`;
-        }
-        return `      <a href="${esc(item.url || '#')}" class="svc ${esc(item.cardClass || '')}" style="text-decoration:none;color:inherit"><div class="svc-top"><span class="svc-icon">${icon}</span>${badgeHtml}</div><h3>${esc(title)}</h3><p>${esc(desc)}</p><span class="svc-link">${esc(link)}</span></a>`;
-      }).join('\n');
-      html = html.replace(
-        /(<div class="svc-grid">)\n[\s\S]*?(<\/div>\n\n\s*<div class="sec-h" id="sec-howto">)/,
-        `$1\n${svcHtml}\n    $2`
-      );
-    }
-
-    // 6. Howto
-    const howtoBlock = getBlock('howto');
-    if (howtoBlock?.visible) {
-      if (howtoBlock.header) {
-        html = html.replace(
-          /<div class="sec-h" id="sec-howto"><h2>[^<]*<\/h2><a[^>]*>[^<]*<\/a><\/div>/,
-          `<div class="sec-h" id="sec-howto"><h2>${esc(lt(howtoBlock.header.title))}</h2><a href="${esc(howtoBlock.header.href || '/guide')}">${esc(lt(howtoBlock.header.link))}</a></div>`
-        );
-      }
-      if (howtoBlock.items) {
-        const howtoHtml = howtoBlock.items.map(item =>
-          `      <div class="howto"><div class="num">${esc(item.num)}</div><h4>${esc(lt(item.title))}</h4><p>${esc(lt(item.desc))}</p></div>`
-        ).join('\n');
-        html = html.replace(
-          /(<div class="howto-grid">)\n[\s\S]*?(<\/div>\n\n\s*<div class="sec-h" id="sec-faq">)/,
-          `$1\n${howtoHtml}\n    $2`
-        );
-      }
-    }
-
-    // 7. Magazine cards (pinned → fallback latest, layout maxItems 적용)
-    const magBlock = getBlock('magazine');
-    const magMax = magBlock?.data?.maxItems || 4;
-    const pinned = displayPosts.filter(p => p.pinned).slice(0, magMax);
-    const mags = pinned.length > 0 ? pinned : displayPosts.slice(0, magMax);
-    if (mags.length > 0) {
-      const magHtml = mags.map((p, i) => magCard(p, i, d)).join('\n');
-      html = html.replace(
-        /(<div class="sb-t" id="sb-magazine">[^<]*<\/div>)\n[\s\S]*?(\n\s*<\/div>\n\s*<div class="sb-sec"><div class="sb-t" id="sb-tags">)/,
-        `$1\n${magHtml}\n$2`
-      );
-    }
-
-    // 8. Tags (aggregated, layout maxTags 적용)
-    const tagsBlock = getBlock('tags');
-    const maxTags = tagsBlock?.data?.maxTags || 16;
-    const tagMap = {};
-    for (const p of displayPosts) for (const t of (p.tags || [])) tagMap[t] = (tagMap[t] || 0) + 1;
-    const tags = Object.keys(tagMap).sort((a, b) => tagMap[b] - tagMap[a]).slice(0, maxTags);
-    if (tags.length > 0) {
-      html = html.replace(
-        /<div class="sb-tags"[^>]*>[\s\S]*?<\/div>/,
-        `<div class="sb-tags" id="sbTags">\n        ${tags.map(t => `<span class="sb-tag">${esc(t)}</span>`).join('')}\n      </div>`
-      );
-    }
-
-    // 9. Blog cards (latest N, layout maxItems 적용)
-    const blogBlock = getBlock('blog-cards');
-    const blogMax = blogBlock?.data?.maxItems || 4;
-    const blogs = displayPosts.slice(0, blogMax);
-    const blogHtml = blogs.length > 0
-      ? blogs.map(p => blogCard(p, langPrefix)).join('\n')
-      : `      <p style="color:var(--ink-m);padding:24px 0">${esc(d.blogEmpty)}</p>`;
-    html = html.replace(
-      /(최근 블로그<\/h2><a[^>]*>[^<]*<\/a><\/div>\n\s*<div class="blog-list">\n)[\s\S]*?(\n\s*<\/div>\n\s*<\/main>)/,
-      `$1${blogHtml}$2`
-    );
-
-    // 10. FAQ preview (layout maxItems 적용)
-    const faqBlock = getBlock('faq-preview');
-    const faqMax = faqBlock?.data?.maxItems || 3;
-    const faqSnap = await firestore.collection('faq_items')
-      .where('published', '==', true)
-      .where('lang', '==', lang)
-      .orderBy('order', 'asc')
-      .limit(faqMax)
-      .get()
-      .catch(() => ({ docs: [] }));
-    if (faqSnap.docs.length > 0) {
-      const faqPrefix = lang === 'ko' ? '/faq' : `/${lang}/faq`;
-      const faqItems = faqSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-      const faqHtml = faqItems.map(f => {
-        const short = (f.answer || '').substring(0, 80) + (f.answer?.length > 80 ? '…' : '');
-        return `      <a href="${faqPrefix}#faq-${esc(f.id)}" class="faq-item"><h4>${esc(f.question)}</h4><p>${esc(short)}</p></a>`;
-      }).join('\n');
-      html = html.replace(
-        /(<div class="faq-list" id="faqPreview">)\n[\s\S]*?(<\/div>\n\n\s*<div class="sec-h" id="sec-board"><h2>고객 게시판)/,
-        `$1\n${faqHtml}\n    $2`
-      );
-
-      // FAQ 프리뷰 JSON-LD 삽입 (서치콘솔 mainEntity 오류 수정)
-      const faqJsonLd = JSON.stringify({
-        "@context": "https://schema.org",
-        "@type": "FAQPage",
-        "mainEntity": faqItems.map(f => ({
-          "@type": "Question",
-          "name": f.question,
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": f.answer
-          }
-        }))
-      });
-      html = html.replace(
-        '</head>',
-        `<script type="application/ld+json">${faqJsonLd}</script>\n</head>`
-      );
-    }
-
-    // 10-b. specs 링크 삽입 (FAQ 프리뷰 하단)
-    const specsPrefix = lang === 'ko' ? '/specs' : `/${lang}/specs`;
-    const specsLabel = lang === 'ja' ? '📋 証明写真 規格ガイド →' : lang === 'en' ? '📋 ID Photo Specs Guide →' : '📋 증명사진 규격 가이드 →';
-    html = html.replace(
-      '<div class="sec-h" id="sec-board">',
-      `<div style="text-align:center;margin:12px 0 24px;"><a href="${specsPrefix}" style="color:#6c4fff;font-size:14px;font-weight:600;text-decoration:none;">${specsLabel}</a></div>\n    <div class="sec-h" id="sec-board">`
-    );
-
-    // 11. Board preview (layout maxItems 적용, 답변 여부 표시)
-    const boardBlock = getBlock('board-preview');
-    const boardMax = boardBlock?.data?.maxItems || 5;
-    const boardSnap = await firestore.collection('board_posts')
-      .where('published', '==', true)
-      .orderBy('createdAt', 'desc')
-      .limit(boardMax)
-      .get()
-      .catch(() => ({ docs: [] }));
-
-    if (boardSnap.docs.length > 0) {
-      const boardHtml = boardSnap.docs.map(d => {
-        const b = d.data();
-        const hasReply = Array.isArray(b.replies) && b.replies.length > 0;
-        const badge = hasReply
-          ? `<span class="board-item-badge answered">${esc(d.boardAnswered)}</span>`
-          : `<span class="board-item-badge">${esc(d.boardWaiting)}</span>`;
-        return `      <a href="/board#${d.id}" class="board-item"><span class="board-item-title">${esc(b.title)}</span>${badge}<span class="board-item-meta">${fmtDate(b.createdAt)}</span></a>`;
-      }).join('\n');
-      html = html.replace(
-        /(<div class="board-preview" id="boardPreview">)\n[\s\S]*?(<\/div>\n\n\s*<div class="sec-h" id="sec-blog"><h2>최근 블로그)/,
-        `$1\n${boardHtml}\n    $2`
-      );
-    } else {
-      // 게시글 없으면 섹션 자체 숨김
-      html = html.replace(
-        /\s*<div class="sec-h" id="sec-board"><h2>고객 게시판<\/h2>[\s\S]*?<\/div>\n\n(\s*<div class="sec-h" id="sec-blog"><h2>최근 블로그)/,
-        '\n    $1'
-      );
-    }
-
-    // 12. Section headers i18n (FAQ·Board·Blog — 콘텐츠 regex 이후에 실행)
-    if (faqBlock?.data?.header) {
-      html = html.replace(
-        /<div class="sec-h" id="sec-faq"><h2>[^<]*<\/h2><a[^>]*>[^<]*<\/a><\/div>/,
-        `<div class="sec-h" id="sec-faq"><h2>${esc(lt(faqBlock.data.header.title))}</h2><a href="${esc(faqBlock.data.header.href || '/faq')}">${esc(lt(faqBlock.data.header.link))}</a></div>`
-      );
-    }
-    if (boardBlock?.data?.header) {
-      html = html.replace(
-        /<div class="sec-h" id="sec-board"><h2>[^<]*<\/h2><a[^>]*>[^<]*<\/a><\/div>/,
-        `<div class="sec-h" id="sec-board"><h2>${esc(lt(boardBlock.data.header.title))}</h2><a href="${esc(boardBlock.data.header.href || '/board')}">${esc(lt(boardBlock.data.header.link))}</a></div>`
-      );
-    }
-    if (blogBlock?.data?.header) {
-      html = html.replace(
-        /<div class="sec-h" id="sec-blog"><h2>[^<]*<\/h2><a[^>]*>[^<]*<\/a><\/div>/,
-        `<div class="sec-h" id="sec-blog"><h2>${esc(lt(blogBlock.data.header.title))}</h2><a href="${esc(blogBlock.data.header.href || '/blog')}">${esc(lt(blogBlock.data.header.link))}</a></div>`
-      );
-    }
-
-    // 13. Guide cards (ID 기반 텍스트 교체)
-    const guideBlock = getBlock('guide');
-    if (guideBlock?.visible && guideBlock.items) {
-      for (let i = 0; i < guideBlock.items.length; i++) {
-        const g = guideBlock.items[i];
-        const n = i + 1;
-        html = html.replace(new RegExp(`(<h4 id="guide${n}-title">)[^<]*(</h4>)`), (_, g1, g2) => g1 + esc(lt(g.title)) + g2);
-        html = html.replace(new RegExp(`(<p id="guide${n}-desc">)[^<]*(</p>)`), (_, g1, g2) => g1 + esc(lt(g.desc)) + g2);
-        html = html.replace(new RegExp(`(<div class="now" id="guide${n}-status"[^>]*>)[^<]*(</div>)`), (_, g1, g2) => g1 + esc(lt(g.status)) + g2);
-      }
-    }
-
-    // 14. Credit info ($ 기호 포함 → function 기반 replace)
-    const creditBlock = getBlock('credit-info');
-    if (creditBlock?.visible && creditBlock.data) {
-      const cd = creditBlock.data;
-      if (cd.exchange) {
-        html = html.replace(/(<div class="credit-info-title" id="credit-exchange">)[^<]*(<\/div>)/, (_, g1, g2) => g1 + esc(lt(cd.exchange)) + g2);
-      }
-      if (cd.rows) {
-        for (const row of cd.rows) {
-          const lbl = esc(lt(row.label));
-          if (row.label?.ko === 'AI 생성') html = html.replace(/(<span id="credit-gen-label">)[^<]*(<\/span>)/, (_, g1, g2) => g1 + lbl + g2);
-          else if (row.label?.ko === '다운로드') html = html.replace(/(<span id="credit-dl-label">)[^<]*(<\/span>)/, (_, g1, g2) => g1 + lbl + g2);
-          else if (row.label?.ko === '1장 완성') html = html.replace(/(<span id="credit-total-label">)[^<]*(<\/span>)/, (_, g1, g2) => g1 + lbl + g2);
-        }
-      }
-      if (cd.promo) {
-        if (cd.promo.oldPrice) html = html.replace(/(<span class="old" id="credit-old-price">)[^<]*(<\/span>)/, (_, g1, g2) => g1 + esc(lt(cd.promo.oldPrice)) + g2);
-        if (cd.promo.newPrice) html = html.replace(/(<span class="price" id="credit-new-price">)[^<]*(<\/span>)/, (_, g1, g2) => g1 + esc(lt(cd.promo.newPrice)) + g2);
-        if (cd.promo.bonus) html = html.replace(/(<div class="note" id="credit-bonus">)[^<]*(<\/div>)/, (_, g1, g2) => g1 + esc(lt(cd.promo.bonus)) + g2);
-      }
-    }
-
-    // 15. Footer
-    const footerBlock = getBlock('footer');
-    if (footerBlock?.visible && footerBlock.data) {
-      const fd = footerBlock.data;
-      if (fd.links) {
-        const ftLinks = fd.links.map(l => `    <a href="${esc(l.href)}">${esc(l.label)}</a>`).join('\n');
-        html = html.replace(
-          /(<footer[^>]*>\n\s*<div class="ft-links">)\n[\s\S]*?(<\/div>\n\s*<div class="ft-copy">)/,
-          `$1\n${ftLinks}\n  $2`
-        );
-      }
-      if (fd.copyright) {
-        html = html.replace(/(<div class="ft-copy">)[^<]*(<\/div>)/, (_, g1, g2) => g1 + esc(fd.copyright) + g2);
-      }
-    }
+    const html = headHtml(d)
+      + faqJsonLd
+      + navHtml(d, lang, prefix)
+      + heroHtml(d, idphotoUrl)
+      + headshotHtml(d, prefix)
+      + idpassHtml(d)
+      + resourcesHtml(d, prefix, faqHtml, boardHtml, blogHtml)
+      + footerHtml(d, prefix)
+      + tailHtml(lang);
 
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
     res.end(html);
   } catch (err) {
     log(`[Home] SSR error: ${err.message}`, 'ERROR');
-    // Fallback: serve static template
-    try {
-      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-      res.end(getTemplate());
-    } catch {
-      res.writeHead(500, { 'Content-Type': 'text/plain' });
-      res.end('Internal Server Error');
-    }
+    res.writeHead(500, { 'Content-Type': 'text/plain' });
+    res.end('Internal Server Error');
   }
 }
 
 // ========== Layout API ==========
-const layoutConfigRef = firestore.collection('site_config').doc('layout');
-
 export async function handleLayoutGet(req, res) {
   const admin = requireAdmin(req, res);
   if (!admin) return;
