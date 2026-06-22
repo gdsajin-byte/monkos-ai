@@ -318,10 +318,22 @@ const httpServer = createServer(async (req, res) => {
   if (urlPath === '/api/chat' && req.method === 'POST') return handleWebChat(req, res);
   if (urlPath === '/api/coaching' && req.method === 'POST') return handleCoaching(req, res);
 
-  // === 유저 트래킹 ===
+  // === 유저 트래킹 (rate-limit + payload cap) ===
   if (urlPath === '/api/track' && req.method === 'POST') {
+    const trackIp = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket.remoteAddress;
+    const now = Date.now();
+    if (!global._trackRL) global._trackRL = {};
+    const rl = global._trackRL[trackIp] || { count: 0, reset: now + 60000 };
+    if (now > rl.reset) { rl.count = 0; rl.reset = now + 60000; }
+    rl.count++;
+    global._trackRL[trackIp] = rl;
+    if (rl.count > 60) { res.writeHead(429); return res.end(); }
+
+    const contentLength = parseInt(req.headers['content-length'] || '0');
+    if (contentLength > 1048576) { res.writeHead(413); return res.end(); }
+
     const body = await parseJsonBody(req);
-    const events = body.events || [];
+    const events = (body.events || []).slice(0, 10);
     const ALLOWED_EVENTS = [
       'click_cta', 'upload_image', 'select_style',
       'open_credit_shop', 'start_payment', 'session_end',
