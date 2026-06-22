@@ -90,6 +90,14 @@ status: active
 | 06/10 | 쌍아 | **portal prod 배포** rev 00278-h8k — 보안 페일클로즈 4건 적용. idphoto-kr/jp는 AUTH_SECRET 환경변수 추가 후 순차 배포 예정 | `deploy.sh prod` | ✅ |
 | 06/11 | 막내1 | **CMS 정밀감사 + 즉시수정 6건 + 보안·색인 3건** — 감사 Critical 1/High 2/Medium 4 식별 → maxOutputTokens 복원·llms.txt 동적화·Naver API 주입·deploy.sh --set-secrets 전환·/admin HTML 인증 가드·pingSitemap 폐기·Indexing 관측성 강화. rev 00279→00281→00284 | REPORT+COMPLETION 4건 | ✅ |
 | 06/12 | 민아 | **디자인 프레임워크+워크플로우 설계서 발행** (Phase 7 재개 기반) — v5 6주 정체 원인(일회성 시안→수동컨버트→종료) 진단 → 프레임워크 3층(토큰 정비/컴포넌트·타일/서비스 레지스트리) + 6단계 파이프라인(시안→검토→컨버트→preview→검증→전환, 게이트·담당 고정) 설계. 작가님 결정: **포털 파일럿→점진확장 / 코드우선(CSS토큰+순수JS)**. v5 결정 5건 답안 선반영(render확장·아이콘축소·히어로토글·예비숨김·Wave분리) | [DESIGN](monkos-ops/tech/designs/2026-06/DESIGN_20260612_디자인프레임워크_워크플로우.md) | ⏳ 작가님 확인 |
+| 06/22 | iMac/쌍아+막내2 | **layoutNav·Footer 언어 인자화 P0** — 내부 페이지 네비 한국어 튕김 해소. 포털 00318 배포 | render-shell.js 외 5파일 | ✅ |
+| 06/22 | iMac/쌍아+막내1 | **서버단 언어 감지 + 쿠키 통합 P1-a** — Accept-Language SSR 통합, 3개 메커니즘→1개 수렴(detectLang+monkos_lang쿠키), i18n.js 자체감지 제거. 포털 00322 배포 | server.js, i18n.js, render-shell.js, render-headshot.js | ✅ |
+| 06/22 | iMac/쌍아+막내1 | **홈 텍스트팩 분리 P1-b** — ko/en/ja 50+키 I18N, relTime 다국어화. 포털 00323 배포. ⚠️ replace 방식 한계로 FAQ·블로그 한글 잔존 — home.js 렌더 구조 정리 필요 | home.js | ⏳ 잔존 보정 |
+| 06/22 | iMac/쌍아+막내2 | **geoip-lite 결제 국가 판별 P1-c** — IP 기반 detectPaymentRegion, __REGION__ 전환. 2축 분리(언어=Accept-Language/결제=IP) 완성. 포털 00324 배포 | server.js 외 10파일 | ✅ |
+| 06/22 | iMac/쌍아 | **언어·결제·GCS 통합 설계서** + **유저트래킹 제안서** → 민아 설계 위임 | 설계서+제안서 | ✅ |
+| 06/22 | iMac/민아 | **유저트래킹 BQ 설계서** — BQ 단일 스트림, D1~D7 구현 단계, 쌍아 검수 통과, BQ=monkos 확정 | 설계서 | ✅ |
+| 06/22 | iMac/막내1 | **BQ D1+D2** — 데이터셋·테이블·SA 권한 + /api/track + monkos_sid 세션쿠키 + track.js 비콘 헬퍼. 배포 진행 중 | tracking.js(신규), track.js(신규), server.js | ⏳ |
+| 06/22 | iMac/막내2+3 | **BQ D3+D4** — 서버이벤트6종 적재 + 헤드샷 퍼널 클라 계측. 진행 중 | server.js, payments.js, credits.js, headshot.js | ⏳ |
 
 ---
 

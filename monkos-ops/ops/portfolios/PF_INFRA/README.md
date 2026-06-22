@@ -111,6 +111,8 @@ gs://monk-ai-images/
 | 06/21 | iMac/막내1 | monk-customer-photos 버킷 신설 + 데이터 복사 1,320건 + 코드 변경 (배포 보류) | 지시서+코드변경 | ⏳ |
 | 06/21 | iMac/막내2 | 로컬 에셋 전수 조사 — 661개/1.19GB, 중복 210개(32%) + 워크벤치 구성안 기안 | 보고서+제안서 | ✅ |
 | 06/21 | 작가님+쌍아 | 에셋 3층 구조 설계 (로컬↔Drive↔GCS) + PF_INFRA 신설 | PF_INFRA/README.md | ✅ |
+| 06/22 | iMac/막내3 | **GCS 스키마 교정 + 결제 리다이렉트 + 버킷 전환** — `studio-profiles` 하드코딩 → `{서비스}/{userId}/` 유저별 폴더(gcs-save.js 시그니처 변경). 결제 완료 후 returnUrl 복귀(credits.js+payments.js). 증명앱 자체 GCS 구스키마 미교정 확인(후속). 구 버킷(`monk-ai-images`) 시계열 보존 확정. Studio 00020 + Portal 00319 배포 | gcs-save.js, studio/server.js, portal/server.js, credits.js, payments.js | ✅ |
+| 06/22 | iMac/쌍아 | **언어·결제 분기 + GCS 스키마 통합 설계서** — 3→1 수렴(Accept-Language+쿠키 단일흐름), 2축 모델(언어=Accept-Language/결제=geoip-lite), GCS prefix 구조 확정(`{서비스}/{userId}/`), SEO 안전장치 | 설계서 | ✅ |
 
 ---
 

@@ -58,7 +58,7 @@ append_audit() {
 
 # Node.js 실행 래퍼
 run_node() {
-  cd "$PORTAL_DIR" && node --input-type=module -e "$1" 2>&1 | grep -v "^\[AUTH\]\|^\[.*INFO\]"
+  cd "$PORTAL_DIR" && node --env-file=.env --input-type=module -e "$1" 2>&1 | grep -v "^\[AUTH\]\|^\[.*INFO\]"
 }
 
 # === 명령어 ===
