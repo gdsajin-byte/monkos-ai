@@ -316,13 +316,15 @@ function footerHtml(d, prefix) {
       <a href="${prefix}/terms.html">Terms</a>
       <a href="${prefix}/privacy.html">Privacy</a>
     </div>
-    <div class="mk-footer-copy">© 2026 MONK STUDIO</div>
+    <div class="mk-footer-copy">© 2026 몽크사진관</div>
   </div>
   <div class="mk-footer-legal">
     <div class="mk-biz-info">
-      <span><b>상호</b> 몽코스 스튜디오(MONK STUDIO)</span>
+      <span><b>상호</b> 몽크사진관</span>
       <span><b>대표</b> 신정규</span>
-      <span><b>사업자등록번호</b> 169-27-02081</span>
+      <span><b>사업자등록번호</b> 636-15-00574</span>
+      <span><b>전화</b> 031-791-5030</span>
+      <span><b>주소</b> 경기도 하남시 미사강변동로 95 (망월동) B1029</span>
       <span><b>이메일</b> info@monkos.ai</span>
     </div>
     <p class="mk-legal-note">${esc(d.footerLegal)}</p>
