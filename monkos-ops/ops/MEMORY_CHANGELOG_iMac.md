@@ -413,3 +413,11 @@
 ### 변경
 - 신규: `memory/feedback-market-analysis-find-the-gap.md`
 - MEMORY.md 외장메모리 섹션에 "시장분석=틈찾기 ⭐" 1행 추가
+
+## 2026-06-22 19:09 KST — iMac/민아
+- iMac/민아 6/22 세션: 결제블로커 진단 중 쌍아가 병렬로 같은 건 처리(d3e7df30) → 1시간 진단 중복 발생
+- 핵심: 착수 전 git log로 타 에이전트 병렬작업 확인. 중복 발견 시 진단→검수로 전환
+
+### 변경
+- 신규: `memory/feedback_parallel_agent_overlap.md`
+- MEMORY.md 외장메모리 섹션에 "병렬 에이전트 작업 중복 주의 ⭐" 1행 추가
