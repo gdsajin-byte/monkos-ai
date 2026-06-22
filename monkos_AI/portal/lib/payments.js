@@ -390,6 +390,8 @@ export async function handleTossSuccess(req, res) {
   const orderId = esc(params.get('orderId'));
   const amount = parseInt(params.get('amount')) || 0;
   const userId = esc(params.get('userId'));
+  const rawReturn = params.get('returnUrl') || '/';
+  const returnUrl = rawReturn.startsWith('/') ? esc(rawReturn) : '/';
 
   const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>결제 확인 중...</title>
@@ -406,12 +408,12 @@ export async function handleTossSuccess(req, res) {
       body:JSON.stringify({paymentKey:'${paymentKey}',orderId:'${orderId}',amount:${amount},userId:'${userId}'})});
     const data=await res.json();
     if(data.success){
-      box.innerHTML='<div class="ok">\\u2705 결제 완료!</div><div class="msg" style="margin-top:12px">'+data.creditsAdded+' 크레딧이 추가되었습니다</div><div class="sub">현재 잔액: '+data.credits+'c</div><div class="sub" style="margin-top:16px"><a href="/" style="color:#a78bfa">포털로 돌아가기</a></div>';
+      box.innerHTML='<div class="ok">\\u2705 결제 완료!</div><div class="msg" style="margin-top:12px">'+data.creditsAdded+' 크레딧이 추가되었습니다</div><div class="sub">현재 잔액: '+data.credits+'c</div><div class="sub" style="margin-top:16px"><a href="${returnUrl}" style="color:#a78bfa">돌아가기</a></div>';
     }else{
-      box.innerHTML='<div class="err">결제 확인 실패</div><div class="sub" style="margin-top:8px">'+(data.error||'알 수 없는 오류')+'</div><div class="sub" style="margin-top:16px"><a href="/" style="color:#a78bfa">포털로 돌아가기</a></div>';
+      box.innerHTML='<div class="err">결제 확인 실패</div><div class="sub" style="margin-top:8px">'+(data.error||'알 수 없는 오류')+'</div><div class="sub" style="margin-top:16px"><a href="${returnUrl}" style="color:#a78bfa">돌아가기</a></div>';
     }
   }catch(e){
-    box.innerHTML='<div class="err">네트워크 오류</div><div class="sub" style="margin-top:8px">'+e.message+'</div><div class="sub" style="margin-top:16px"><a href="/" style="color:#a78bfa">포털로 돌아가기</a></div>';
+    box.innerHTML='<div class="err">네트워크 오류</div><div class="sub" style="margin-top:8px">'+e.message+'</div><div class="sub" style="margin-top:16px"><a href="${returnUrl}" style="color:#a78bfa">돌아가기</a></div>';
   }
 })();
 </script></body></html>`;
@@ -427,12 +429,14 @@ export async function handleTossFail(req, res) {
   const params = new URL(req.url, `http://${req.headers.host}`).searchParams;
   const escFail = (s) => (s || '').replace(/[&<>"'`]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#x27;','`':'&#x60;'}[c]));
   const message = escFail(params.get('message')) || '결제가 취소되었습니다';
+  const rawReturn = params.get('returnUrl') || '/';
+  const returnUrl = rawReturn.startsWith('/') ? escFail(rawReturn) : '/';
 
   const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>결제 실패</title>
 <style>body{background:#0a0a1a;color:#e2e8f0;font-family:sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0}
 .box{text-align:center;padding:40px}.err{color:#f87171;font-size:1.2rem;margin-bottom:12px}.sub{color:#8892a8;font-size:0.85rem}</style></head>
-<body><div class="box"><div class="err">결제 실패</div><div class="sub">${message}</div><div class="sub" style="margin-top:16px"><a href="/" style="color:#a78bfa">포털로 돌아가기</a></div></div></body></html>`;
+<body><div class="box"><div class="err">결제 실패</div><div class="sub">${message}</div><div class="sub" style="margin-top:16px"><a href="${returnUrl}" style="color:#a78bfa">돌아가기</a></div></div></body></html>`;
 
   res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
   res.end(html);

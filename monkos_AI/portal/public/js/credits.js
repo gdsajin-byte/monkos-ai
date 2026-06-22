@@ -103,5 +103,6 @@ function loadTossSDK() {
 
 window.buyToss = function(amount) {
   window.closeCreditShop();
-  window.location.href = '/credits';
+  var returnUrl = encodeURIComponent(window.location.pathname);
+  window.location.href = '/credits?returnUrl=' + returnUrl;
 };

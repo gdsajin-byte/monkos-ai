@@ -1,7 +1,7 @@
 /**
  * GCS 이미지 저장 + 워터마크 합성 + Signed URL 발급
  * 버킷: monk-customer-photos (환경변수 CUSTOMER_GCS_BUCKET)
- * 경로: service/idphoto/kr/{userId}/{timestamp}_{type}.{ext}
+ * 경로: {service}/{userId}/{timestamp}_{style}_{type}.{ext}
  */
 
 import { Storage } from '@google-cloud/storage';
@@ -32,13 +32,13 @@ function toBuffer(base64) {
  * 촬영 원본 + AI 생성 이미지를 GCS에 병렬 저장
  * @returns {{ generatedPath: string, originalPath: string }} GCS 경로
  */
-export async function saveImages(userId, originalImage, generatedImage) {
-  const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-  const basePath = `service/idphoto/kr/${userId}`;
+export async function saveImages(service, userId, style, originalImage, generatedImage) {
+  const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+  const basePath = `${service}/${userId}`;
 
-  const originalPath = `${basePath}/${timestamp}_original.jpg`;
-  const generatedPath = `${basePath}/${timestamp}_generated.png`;
-  const meta = { userId, source: 'idphoto-kr', createdAt: new Date().toISOString() };
+  const originalPath = `${basePath}/${timestamp}_${style}_original.jpg`;
+  const generatedPath = `${basePath}/${timestamp}_${style}_generated.png`;
+  const meta = { userId, service, style, createdAt: new Date().toISOString() };
 
   // 2건 병렬 업로드
   await Promise.all([

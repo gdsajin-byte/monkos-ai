@@ -529,7 +529,7 @@ app.post('/api/idgen', async (req, res) => {
 
     // GCS 저장 (내부 샘플 보관용 — studio 폴더)
     try {
-      await saveImages('studio-internal', image, generatedBase64);
+      await saveImages('idphoto', body.userId || 'anonymous', body.purpose || 'passport', image, generatedBase64);
       log('[GCS] 스튜디오 샘플 저장 완료');
     } catch (e) {
       log(`[GCS] 저장 실패 (무시): ${e.message}`, 'WARNING');
@@ -548,7 +548,7 @@ app.post('/api/idgen', async (req, res) => {
 app.post('/api/profiles/generate', async (req, res) => {
   try {
     const body = req.body;
-    const { image, model, purpose, referenceImages } = body;
+    const { image, model, purpose, referenceImages, userId } = body;
 
     if (!image && !referenceImages?.length) {
       return res.status(400).json({ error: '내 사진 또는 레퍼런스 이미지가 필요합니다' });
@@ -634,7 +634,7 @@ app.post('/api/profiles/generate', async (req, res) => {
     const generatedBase64 = imagePart.inlineData.data;
 
     try {
-      await saveImages('studio-profiles', image || 'freestyle-no-user-photo', generatedBase64);
+      await saveImages('headshot', body.userId || 'anonymous', purpose || 'linkedin_pro', image || 'no-user-photo', generatedBase64);
       log('[GCS] 프로필 샘플 저장 완료');
     } catch (e) {
       log(`[GCS] 저장 실패 (무시): ${e.message}`, 'WARNING');

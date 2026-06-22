@@ -58,6 +58,9 @@ parent: PF_STYLER
 | 06/20 | iMac/쌍아 | **포털 히어로 H1 확정** — KR "전문 스튜디오가 개발한 AI 증명사진 서비스" / EN "AI ID Photos & Headshots — Built by a Professional Studio". 시타델 적합성 검증 통과 | 설계 확정(코드 적용 대기) | ⏳ |
 | 06/21 | iMac/쌍아+막내1 | **로그인 리다이렉트 수정**(redirect_app 전달+open redirect 방지) + **무료 1컷 메시지** + **Kakao·LINE 버튼 추가** + 포털 nav Headshot CTA(SSR) + Kakao 시크릿 로그 수정. 가격 체계 설계(10c 통합, 70c 벽 제거) | auth.js, render-headshot.js, home.js | ✅ |
 | 06/22 | iMac/막내1 | **클라이언트 리사이즈 + 크레딧 모달 수정** — 5MB+ 파일 거부 버그 해소(Canvas 장변1536px/JPEG85% 리사이즈, 파일 크기 제한 제거) + 크레딧 소진 시 충전 모달 미표시 버그 해소(creditShopModal HTML 추가). API 입력 과금 고정토큰 확인 → 리사이즈로 비용 차이 없음 | headshot.js, render-headshot.js | ✅ |
+| 06/22 | iMac/막내2 | **layoutNav 언어 인자화 P0** — 내부 페이지에서 네비 클릭 시 한국어 튕김 해소. layoutNav(lang)+layoutFooter(lang) 인자화 + 호출처 전수 lang 전달 | render-shell.js 외 5파일 | ✅ |
+| 06/22 | iMac/막내3 | **GCS 스키마 교정 + 결제 리다이렉트** — studio-profiles 하드코딩 → {서비스}/{userId}/ 유저별 폴더. 결제 완료 후 원래 서비스 페이지 복귀(returnUrl). Studio 00020 + Portal 00319 배포 | gcs-save.js, studio/server.js, portal/server.js, credits.js, payments.js | ✅ |
+| 06/22 | iMac/막내2 | **헤드샷 Studio 독립** — 포털 Vertex AI 직접 호출로 전환(headshot-generate.js+gcs-save.js 신설). Studio 프록시 제거 → 콜드 스타트 해소 + R&D 독립. global 리전 핫픽스 포함. Portal 00321 배포 | headshot-generate.js(신규), portal/gcs-save.js(신규), server.js | ✅ |
 
 ---
 

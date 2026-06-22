@@ -225,7 +225,7 @@ var widgetReady = false;
 window.addEventListener('DOMContentLoaded', async function() {
   // from 파라미터 → sessionStorage 보존 (Toss 리다이렉트 생존)
   var params = new URLSearchParams(window.location.search);
-  var from = params.get('from');
+  var from = params.get('from') || params.get('returnUrl');
   if (from) {
     sessionStorage.setItem('monkos_credits_from', from);
   }
