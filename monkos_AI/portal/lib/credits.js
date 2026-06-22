@@ -1,6 +1,7 @@
 /** 담당: 막내2 (리파인) */
 
 import { usersCollection, firestore, log, logTransaction, parseJsonBody, verifyAuthToken, parseCookies } from './shared/config.js';
+import { trackEvent } from './tracking.js';
 
 function getAuthenticatedUserId(req) {
   const cookies = parseCookies(req.headers.cookie);
@@ -120,6 +121,10 @@ export async function handleCreditsUse(req, res) {
 
     log(`[Credits] 사용: ${userId} -${cost}c (${type}) → ${result.credits}c`);
     logTransaction({ userId, amount: -cost, type: 'use', provider: 'system', balanceAfter: result.credits, description: `${type} 사용 (-${cost}c)` });
+    trackEvent({
+      eventName: 'credit_use', userId,
+      service: 'portal', params: { amount: cost, use_type: type },
+    }).catch(() => {});
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(result));
   } catch (err) {

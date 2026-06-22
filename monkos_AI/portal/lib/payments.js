@@ -1,6 +1,7 @@
 /** 담당: 막내2 (리파인) */
 
-import { usersCollection, firestore, log, logTransaction, parseJsonBody, parseRawBody, createHmac, randomBytes, directTokens, sendTelegramMessage, TELEGRAM_TEAM_API, TEAM_CHAT_ID, LEMONSQUEEZY_API_KEY, LEMONSQUEEZY_WEBHOOK_SECRET, LEMONSQUEEZY_STORE_ID, TOSS_SECRET_KEY, VARIANT_CREDITS, TOSS_AMOUNT_CREDITS, PRODUCTS } from './shared/config.js';
+import { usersCollection, firestore, log, logTransaction, parseJsonBody, parseRawBody, createHmac, randomBytes, directTokens, sendTelegramMessage, TELEGRAM_TEAM_API, TEAM_CHAT_ID, LEMONSQUEEZY_API_KEY, LEMONSQUEEZY_WEBHOOK_SECRET, LEMONSQUEEZY_STORE_ID, TOSS_SECRET_KEY, VARIANT_CREDITS, TOSS_AMOUNT_CREDITS, PRODUCTS, parseCookies } from './shared/config.js';
+import { trackEvent } from './tracking.js';
 
 /**
  * POST /api/checkout — Lemon Squeezy 체크아웃 URL 생성
@@ -127,6 +128,10 @@ export async function handleLemonSqueezyWebhook(req, res) {
       log(`[Webhook] 크레딧 지급: ${userId} +${credits}c (variant ${variantId}, $${attrs?.total_formatted || '?'})`);
       if (newBalance !== null) {
         logTransaction({ userId, amount: credits, type: 'charge', provider: 'lemon', balanceAfter: newBalance, description: `Lemon 결제 (+${credits}c)`, referenceId: variantId, metadata: { total: attrs?.total_formatted } });
+        trackEvent({
+          eventName: 'credit_charge', userId,
+          service: 'portal', params: { amount: credits, provider: 'lemon', variant_id: variantId, price: attrs?.total_formatted },
+        }).catch(() => {});
       }
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ received: true, action: 'credits_added', credits }));
@@ -274,6 +279,11 @@ export async function handleTossConfirm(req, res) {
     }
 
     logTransaction({ userId, amount: credits, type: 'charge', provider: 'toss', balanceAfter: result, description: `토스 결제 (+${credits}c, ₩${amount})`, referenceId: orderId, metadata: { paymentKey, amount, creditsBase: product?.credits, bonus: product?.bonus } });
+    const cookies = parseCookies(req.headers.cookie);
+    trackEvent({
+      eventName: 'credit_charge', userId, sessionId: cookies.monkos_sid || null,
+      service: 'portal', params: { amount: credits, provider: 'toss', order_id: orderId, price: amount },
+    }).catch(() => {});
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({
       success: true,

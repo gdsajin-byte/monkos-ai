@@ -9,6 +9,7 @@ import {
   LEMONSQUEEZY_WEBHOOK_SECRET, ALLOWED_POPUP_ORIGINS, ADMIN_UIDS,
   pendingLineStates, createHmac, randomBytes, authSecret
 } from './shared/config.js';
+import { trackEvent, linkIdentity } from './tracking.js';
 
 // === 카카오 OAuth (KR) — /auth/kakao ===
 export async function handleKakaoAuth(req, res) {
@@ -110,6 +111,7 @@ export async function handleKakaoCallback(req, res) {
       log(`[Kakao] 로그인: ${docId}`);
     }
 
+    const isNewUser = !userDoc.exists;
     const finalDoc = await userRef.get();
     const finalData = finalDoc.data();
     const userInfo = {
@@ -120,6 +122,13 @@ export async function handleKakaoCallback(req, res) {
       provider: 'kakao',
       credits: finalData.credits ?? 0,
     };
+
+    trackEvent({
+      eventName: isNewUser ? 'auth_signup' : 'auth_login',
+      userId: docId, sessionId: req.sessionId, pagePath: '/auth/kakao/callback',
+      service: 'portal', params: { provider: 'kakao' },
+    }).catch(() => {});
+    linkIdentity(req.sessionId, docId).catch(() => {});
 
     if (popupMode) {
       // 팝업 모드: postMessage로 부모 윈도우에 전달 후 자동 닫힘
@@ -280,6 +289,7 @@ export async function handleLineCallback(req, res) {
       log(`[LINE] 로그인: ${docId}`);
     }
 
+    const isNewUser = !userDoc.exists;
     const finalDoc = await userRef.get();
     const finalData = finalDoc.data();
     const userInfo = {
@@ -290,6 +300,13 @@ export async function handleLineCallback(req, res) {
       provider: 'line',
       credits: finalData.credits ?? 0,
     };
+
+    trackEvent({
+      eventName: isNewUser ? 'auth_signup' : 'auth_login',
+      userId: docId, sessionId: req.sessionId, pagePath: '/auth/line/callback',
+      service: 'portal', params: { provider: 'line' },
+    }).catch(() => {});
+    linkIdentity(req.sessionId, docId).catch(() => {});
 
     if (lineStateData.popup) {
       // 팝업 모드: postMessage로 부모 윈도우에 전달 후 자동 닫힘
@@ -454,6 +471,13 @@ export async function handleGoogleRedirectCallback(req, res) {
 
     await userRef.set(user, { merge: true });
     log(`[Google Redirect] ${isNewUser ? '신규 가입 (+10c)' : '로그인'}: ${user.email}`);
+
+    trackEvent({
+      eventName: isNewUser ? 'auth_signup' : 'auth_login',
+      userId: user.id, sessionId: req.sessionId, pagePath: '/auth/google/callback',
+      service: 'portal', params: { provider: 'google' },
+    }).catch(() => {});
+    linkIdentity(req.sessionId, user.id).catch(() => {});
 
     const finalDoc = await userRef.get();
     const finalData = finalDoc.data();

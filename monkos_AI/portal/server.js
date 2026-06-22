@@ -39,7 +39,7 @@ import { handleKakaoChatbot } from './lib/kakao-chatbot.js';
 import { handleLineWebhook } from './lib/line-chatbot.js';
 import { handleWebChat, handleCoaching } from './lib/coaching.js';
 import { generateHeadshot } from './lib/headshot-generate.js';
-import { trackEvent } from './lib/tracking.js';
+import { trackEvent, linkIdentity } from './lib/tracking.js';
 import { saveImages } from './lib/gcs-save.js';
 import { handleAgentAuth, requireAdmin } from './lib/cms/admin-auth.js';
 import { handleDashboardSummary, handleDashboardUsers, handleDashboardCredits, handleDashboardTraffic } from './lib/cms/dashboard.js';
@@ -79,6 +79,21 @@ function detectPaymentRegion(req) {
   const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket.remoteAddress;
   const geo = geoip.lookup(ip);
   return (geo?.country === 'KR') ? 'kr' : 'global';
+}
+
+function trackPageView(req) {
+  trackEvent({
+    eventName: 'page_view',
+    userId: req.userId || null,
+    sessionId: req.sessionId,
+    pagePath: req.url.split('?')[0],
+    lang: req.lang,
+    region: req.paymentRegion,
+    service: 'portal',
+    referer: req.headers.referer || null,
+    userAgent: req.headers['user-agent'] || null,
+    ipCountry: req.paymentRegion,
+  }).catch(() => {});
 }
 
 // === HTTP 서버 ===
@@ -255,6 +270,10 @@ const httpServer = createServer(async (req, res) => {
       }
 
       log(`[Headshot] 생성 완료: ${userId}, 스타일: ${purpose}`);
+      trackEvent({
+        eventName: 'api_generate', userId, sessionId: req.sessionId,
+        service: 'headshot', params: { style: purpose, model: model },
+      }).catch(() => {});
       res.writeHead(200, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify({ image: generatedBase64, credits: creditData.credits }));
     } catch (err) {
@@ -306,6 +325,7 @@ const httpServer = createServer(async (req, res) => {
     const ALLOWED_EVENTS = [
       'click_cta', 'upload_image', 'select_style',
       'open_credit_shop', 'start_payment', 'session_end',
+      'generate_complete',
     ];
     const cookies = parseCookies(req.headers.cookie);
     const sessionId = cookies.monkos_sid || null;
@@ -439,6 +459,11 @@ const httpServer = createServer(async (req, res) => {
   if (/^\/(monk_studio|ai_lab|Academy|b2b|debate)(\/|$)/.test(urlPath) && req.method === 'GET') {
     res.writeHead(410, { 'Content-Type': 'text/plain; charset=utf-8' });
     return res.end('Gone');
+  }
+
+  // SSR page_view 트래킹 (API·정적·sitemap 제외)
+  if (req.method === 'GET' && !urlPath.startsWith('/api/') && !urlPath.startsWith('/admin/') && !urlPath.endsWith('.xml') && !urlPath.endsWith('.txt')) {
+    trackPageView(req);
   }
 
   if ((urlPath === '/' || urlPath === '/index.html') && req.method === 'GET') return renderHome(req, res);
