@@ -98,6 +98,7 @@ status: active
 | 06/22 | iMac/민아 | **유저트래킹 BQ 설계서** — BQ 단일 스트림, D1~D7 구현 단계, 쌍아 검수 통과, BQ=monkos 확정 | 설계서 | ✅ |
 | 06/22 | iMac/막내1 | **BQ D1+D2** — 데이터셋·테이블·SA 권한 + /api/track + monkos_sid 세션쿠키 + track.js 비콘 헬퍼. 배포 진행 중 | tracking.js(신규), track.js(신규), server.js | ⏳ |
 | 06/22 | iMac/막내2+3 | **BQ D3+D4** — 서버이벤트6종 적재 + 헤드샷 퍼널 클라 계측. 진행 중 | server.js, payments.js, credits.js, headshot.js | ⏳ |
+| 06/22 | iMac/민아 | **D1~D4 구현 검증** — 보안핵심3개(클라-BQ격리·PII미적재·시크릿무하드코딩) 합격, identity_map D7→D3 선구현. 🔴`/api/track` rate-limit+페이로드캡 부재(헌법4조4항) 적발 → D7 앞당김 권고 | 검증보고 | ⚠️ |
 
 ---
 
