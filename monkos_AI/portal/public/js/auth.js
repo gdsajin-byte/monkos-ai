@@ -204,7 +204,7 @@ function updateAuthUI() {
       if (popoverName) popoverName.textContent = currentUser.name || currentUser.email || '';
 
       if (currentUser.picture) {
-        providerIconInner.innerHTML = '<img src="' + currentUser.picture + '" alt="">';
+        providerIconInner.innerHTML = '<img src="' + currentUser.picture + '" alt="" style="width:28px;height:28px;border-radius:50%;object-fit:cover">';
       } else if (currentUser.provider === 'line') {
         providerIconInner.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 2C6.48 2 2 5.83 2 10.5c0 4.08 3.39 7.5 7.96 8.33.31.07.73.2.84.47.1.24.06.62.03.87l-.14.82c-.04.24-.19.94.82.51s5.46-3.21 7.44-5.5C21.23 13.37 22 11.98 22 10.5 22 5.83 17.52 2 12 2z" fill="#fff"/></svg>';
       } else if (currentUser.provider === 'kakao') {
