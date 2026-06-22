@@ -16,6 +16,60 @@ const blogCollection = firestore.collection('blog_posts');
 const galleryCollection = firestore.collection('gallery_items');
 const siteConfigRef = firestore.collection('site_config').doc('main');
 
+const HOME_I18N = {
+  ko: {
+    intro: '<strong>MONKOS AI</strong>는 20년 경력 사진작가가 만든 <strong>AI 증명사진</strong> 플랫폼입니다. 여권사진, 이력서사진을 셀카 한 장으로 완성합니다. 리얼 스튜디오의 실무와 노하우를 학습한 AI가 촬영, 배경과 조명 세팅, 피부부터 의상, 헤어 세팅까지 완벽하게 맞춤 처리하며, <strong>ICAO 국제 규격</strong>에 부합하는 증명사진을 제공합니다.',
+    ctaShoot: '촬영 시작하기',
+    svcIdTitle: 'AI 증명사진', svcIdDesc: '여권·이력서 — 사진관 품질 AI 리터칭. ICAO 국제 규격.', svcIdLink: '촬영 시작 →',
+    svcCropTitle: '무료 크롭앱', svcCropDesc: '규격 크롭·배경 제거·배경 교체. 서버 전송 없음.', svcCropLink: '/crop →',
+    secHowto: '증명사진 앱 활용법', secFaq: '자주 묻는 질문', secBoard: '고객 게시판', secBlog: '최근 블로그',
+    viewAll: '전체보기 →',
+    howto1: '규격 선택', howto1d: '여권/신분증 또는 반명함 선택',
+    howto2: '셀카 촬영', howto2d: 'AI 코칭 가이드로 완벽 촬영',
+    howto3: 'AI 리터칭', howto3d: '배경·조명·피부·의상 자동 보정',
+    boardAnswered: '답변완료', boardWaiting: '대기중', boardLoading: '게시글을 불러오는 중...',
+    blogEmpty: '아직 포스트가 없습니다',
+    sbMagazine: '매거진', sbTags: '태그', sbMore: '더보기 ▼', sbLess: '접기 ▲',
+    sbShorts: 'MONKOS AI 쇼츠', sbCredit: '크레딧 안내',
+    specOthers: '호주·캐나다·중국·베트남 외 8국',
+    relJust: '방금 전', relMin: '분 전', relHour: '시간 전', relDay: '일 전',
+  },
+  en: {
+    intro: '<strong>MONKOS AI</strong> is an <strong>AI ID photo</strong> platform built by a photographer with 20 years of experience. Create passport and resume photos from a single selfie. Our AI, trained on real studio expertise, handles background, lighting, skin, clothing, and hair — delivering <strong>ICAO-compliant</strong> ID photos.',
+    ctaShoot: 'Start Shooting',
+    svcIdTitle: 'AI ID Photos', svcIdDesc: 'Passport · Resume — Studio-quality AI retouching. ICAO international standard.', svcIdLink: 'Start →',
+    svcCropTitle: 'Free Crop App', svcCropDesc: 'Spec crop · Background removal · Background swap. No server upload.', svcCropLink: '/crop →',
+    secHowto: 'How to Use', secFaq: 'FAQ', secBoard: 'Community Board', secBlog: 'Recent Blog',
+    viewAll: 'View All →',
+    howto1: 'Choose Spec', howto1d: 'Select passport/ID or resume format',
+    howto2: 'Take a Selfie', howto2d: 'AI coaching guides your perfect shot',
+    howto3: 'AI Retouch', howto3d: 'Auto-correct background, lighting, skin & outfit',
+    boardAnswered: 'Answered', boardWaiting: 'Pending', boardLoading: 'Loading posts...',
+    blogEmpty: 'No posts yet',
+    sbMagazine: 'Magazine', sbTags: 'Tags', sbMore: 'More ▼', sbLess: 'Less ▲',
+    sbShorts: 'MONKOS AI Shorts', sbCredit: 'Credit Info',
+    specOthers: 'AU · CA · CN · VN + 8 more',
+    relJust: 'just now', relMin: 'm ago', relHour: 'h ago', relDay: 'd ago',
+  },
+  ja: {
+    intro: '<strong>MONKOS AI</strong>は20年のキャリアを持つ写真家が作った<strong>AI証明写真</strong>プラットフォームです。パスポート写真、履歴書写真をセルフィー1枚で完成。リアルスタジオの実務とノウハウを学習したAIが背景、照明、肌、衣装、ヘアまで完璧に調整し、<strong>ICAO国際規格</strong>に準拠した証明写真を提供します。',
+    ctaShoot: '撮影を開始',
+    svcIdTitle: 'AI証明写真', svcIdDesc: 'パスポート·履歴書 — スタジオ品質AIリタッチ。ICAO国際規格。', svcIdLink: '撮影開始 →',
+    svcCropTitle: '無料クロップアプリ', svcCropDesc: '規格クロップ·背景除去·背景交換。サーバー送信なし。', svcCropLink: '/crop →',
+    secHowto: '証明写真アプリの使い方', secFaq: 'よくある質問', secBoard: 'お客様掲示板', secBlog: '最新ブログ',
+    viewAll: '全て見る →',
+    howto1: '規格選択', howto1d: 'パスポート/身分証または履歴書を選択',
+    howto2: 'セルフィー撮影', howto2d: 'AIコーチングで完璧に撮影',
+    howto3: 'AIリタッチ', howto3d: '背景·照明·肌·衣装を自動補正',
+    boardAnswered: '回答済み', boardWaiting: '待機中', boardLoading: '投稿を読み込み中...',
+    blogEmpty: 'まだ投稿がありません',
+    sbMagazine: 'マガジン', sbTags: 'タグ', sbMore: 'もっと見る ▼', sbLess: '閉じる ▲',
+    sbShorts: 'MONKOS AI ショート', sbCredit: 'クレジット案内',
+    specOthers: '豪·加·中·越 他8カ国',
+    relJust: 'たった今', relMin: '分前', relHour: '時間前', relDay: '日前',
+  },
+};
+
 const EMOJI = { '사진': '📸', '패션': '👗', '헤어': '💇', '메이크업': '💄', 'AI': '🤖', 'news': '📰', '기타': '💡', 'default': '💡' };
 const GRADIENTS = [
   'linear-gradient(135deg,#f0eee8,#e8e5de)',
@@ -29,15 +83,15 @@ function esc(str) {
   return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-function relTime(dateStr) {
+function relTime(dateStr, d) {
   if (!dateStr) return '';
   const ms = Date.now() - new Date(dateStr).getTime();
   const m = Math.floor(ms / 60000);
-  if (m < 1) return '방금 전';
-  if (m < 60) return `${m}분 전`;
+  if (m < 1) return d.relJust;
+  if (m < 60) return `${m}${d.relMin}`;
   const h = Math.floor(m / 60);
-  if (h < 24) return `${h}시간 전`;
-  return `${Math.floor(h / 24)}일 전`;
+  if (h < 24) return `${h}${d.relHour}`;
+  return `${Math.floor(h / 24)}${d.relDay}`;
 }
 
 function fmtDate(d) { return d ? d.substring(5, 10).replace('-', '.') : ''; }
@@ -47,7 +101,7 @@ function getTemplate() {
   return templateHtml;
 }
 
-function magCard(p, i) {
+function magCard(p, i, d) {
   const emoji = EMOJI[p.category] || EMOJI.default;
   const tag = p.tags?.[0] ? `<span class="tag tip">${esc(p.tags[0])}</span>` : '';
   const summary = (p.summary || '').substring(0, 30);
@@ -55,15 +109,15 @@ function magCard(p, i) {
     ? `background:url('${esc(p.thumbnail)}') center/cover no-repeat; background-color:${GRADIENTS[i % 4].match(/#\w+/)?.[0] || '#f0eee8'}`
     : `background:${GRADIENTS[i % 4]}`;
   const thumbContent = p.thumbnail ? tag : `<span class="icon">${emoji}</span>${tag}`;
-  return `      <a href="/blog/${esc(p.slug)}" class="mag-card"><div class="mag-img" style="${thumbStyle}">${thumbContent}</div><div class="mag-body"><h4>${esc(p.title)}</h4><p>${esc(summary)}</p><div class="meta">${esc(p.author || 'MONKOS')} · ${relTime(p.createdAt)}</div></div></a>`;
+  return `      <a href="/blog/${esc(p.slug)}" class="mag-card"><div class="mag-img" style="${thumbStyle}">${thumbContent}</div><div class="mag-body"><h4>${esc(p.title)}</h4><p>${esc(summary)}</p><div class="meta">${esc(p.author || 'MONKOS')} · ${relTime(p.createdAt, d)}</div></div></a>`;
 }
 
-function blogCard(p) {
+function blogCard(p, langPrefix) {
   const emoji = EMOJI[p.category] || EMOJI.default;
   const thumb = p.thumbnail
     ? `<div class="bi-thumb" style="background-image:url('${esc(p.thumbnail)}');background-size:cover;background-position:center"></div>`
     : `<div class="bi-thumb">${emoji}</div>`;
-  return `      <a href="/blog/${esc(p.slug)}" class="bi">${thumb}<div class="bi-info"><h3>${esc(p.title)}</h3><p>${esc(p.summary || '')}</p><div class="meta"><span class="lt">${esc((p.lang || 'ko').toUpperCase())}</span> ${esc(p.author || 'MONKOS')} · ${fmtDate(p.createdAt)}</div></div></a>`;
+  return `      <a href="${langPrefix}/blog/${esc(p.slug)}" class="bi">${thumb}<div class="bi-info"><h3>${esc(p.title)}</h3><p>${esc(p.summary || '')}</p><div class="meta"><span class="lt">${esc((p.lang || 'ko').toUpperCase())}</span> ${esc(p.author || 'MONKOS')} · ${fmtDate(p.createdAt)}</div></div></a>`;
 }
 
 // ========== Home SSR ==========
@@ -80,9 +134,10 @@ export async function renderHome(req, res, forceLang = null) {
 
     const allPosts = postsSnap.docs.map(d => ({ slug: d.id, ...d.data() }));
 
-    // 언어별 필터 (쿼리 파라미터 ?lang= 기반, 기본값 ko)
     const reqUrl = new URL(req.url, 'http://localhost');
-    const lang = forceLang || reqUrl.searchParams.get('lang') || 'ko';
+    const lang = forceLang || req.lang || reqUrl.searchParams.get('lang') || 'ko';
+    const d = HOME_I18N[lang] || HOME_I18N.ko;
+    const langPrefix = lang === 'ko' ? '' : `/${lang}`;
     const langPosts = allPosts.filter(p => p.lang === lang);
     const displayPosts = (langPosts.length > 0 ? langPosts : allPosts)
       .filter(p => !p.autoTranslated)
@@ -135,6 +190,41 @@ export async function renderHome(req, res, forceLang = null) {
     html = html.replace(/<link rel="canonical" href="[^"]*">/, `<link rel="canonical" href="${m.canonical}">`);
     html = html.replace(/<meta name="twitter:title" content="[^"]*">/, `<meta name="twitter:title" content="${m.ogTitle}">`);
     html = html.replace(/<meta name="twitter:description" content="[^"]*">/, `<meta name="twitter:description" content="${m.ogDesc}">`);
+
+    // 0-a. 템플릿 내 하드코딩 텍스트 i18n 치환
+    html = html.replace(/<p class="intro-text">[\s\S]*?<\/p>/, `<p class="intro-text">${d.intro}</p>`);
+    html = html.replace(/<button class="btn-shoot">[^<]*<\/button>/, `<button class="btn-shoot">${esc(d.ctaShoot)}</button>`);
+    html = html.replace(/>AI 증명사진<\/h3>/, `>${esc(d.svcIdTitle)}</h3>`);
+    html = html.replace(/여권·이력서 — 사진관 품질 AI 리터칭\. ICAO 국제 규격\./, esc(d.svcIdDesc));
+    html = html.replace(/촬영 시작 →/, esc(d.svcIdLink));
+    html = html.replace(/>무료 크롭앱<\/h3>/, `>${esc(d.svcCropTitle)}</h3>`);
+    html = html.replace(/규격 크롭·배경 제거·배경 교체\. 서버 전송 없음\./, esc(d.svcCropDesc));
+    html = html.replace(/<h2>증명사진 앱 활용법<\/h2><a href="\/guide">전체보기 →<\/a>/, `<h2>${esc(d.secHowto)}</h2><a href="${langPrefix}/guide">${esc(d.viewAll)}</a>`);
+    html = html.replace(/<h4>규격 선택<\/h4><p>여권\/신분증 또는 반명함 선택<\/p>/, `<h4>${esc(d.howto1)}</h4><p>${esc(d.howto1d)}</p>`);
+    html = html.replace(/<h4>셀카 촬영<\/h4><p>AI 코칭 가이드로 완벽 촬영<\/p>/, `<h4>${esc(d.howto2)}</h4><p>${esc(d.howto2d)}</p>`);
+    html = html.replace(/<h4>AI 리터칭<\/h4><p>배경·조명·피부·의상 자동 보정<\/p>/, `<h4>${esc(d.howto3)}</h4><p>${esc(d.howto3d)}</p>`);
+    html = html.replace(/<h2>자주 묻는 질문<\/h2><a href="\/faq">전체보기 →<\/a>/, `<h2>${esc(d.secFaq)}</h2><a href="${langPrefix}/faq">${esc(d.viewAll)}</a>`);
+    html = html.replace(/<h2>고객 게시판<\/h2><a href="\/board">전체보기 →<\/a>/, `<h2>${esc(d.secBoard)}</h2><a href="${langPrefix}/board">${esc(d.viewAll)}</a>`);
+    html = html.replace(/<h2>최근 블로그<\/h2><a href="\/blog">전체보기 →<\/a>/, `<h2>${esc(d.secBlog)}</h2><a href="${langPrefix}/blog">${esc(d.viewAll)}</a>`);
+    html = html.replace(/게시글을 불러오는 중\.\.\./, esc(d.boardLoading));
+    html = html.replace(/>매거진<\/div>/, `>${esc(d.sbMagazine)}</div>`);
+    html = html.replace(/<div class="sb-t" id="sb-tags">태그<\/div>/, `<div class="sb-t" id="sb-tags">${esc(d.sbTags)}</div>`);
+    html = html.replace(/>더보기 ▼<\/button>/, `>${esc(d.sbMore)}</button>`);
+    html = html.replace(/접기 ▲/, esc(d.sbLess));
+    html = html.replace(/<div class="sb-t">MONKOS AI 쇼츠<\/div>/, `<div class="sb-t">${esc(d.sbShorts)}</div>`);
+    html = html.replace(/<div class="sb-t" id="sb-credit">크레딧 안내<\/div>/, `<div class="sb-t" id="sb-credit">${esc(d.sbCredit)}</div>`);
+    html = html.replace(/호주·캐나다·중국·베트남 외 8국/, esc(d.specOthers));
+    // __LANG__/__REGION__ 주입 (i18n.js 연동)
+    html = html.replace('</body>', `<script>window.__LANG__='${lang}';window.__REGION__='${lang === 'ko' ? 'kr' : 'global'}';</script>\n</body>`);
+    // 다국어 nav 링크 경로 보정
+    if (lang !== 'ko') {
+      html = html.replace(/href="\/specs"/g, `href="${langPrefix}/specs"`);
+      html = html.replace(/href="\/blog"/g, `href="${langPrefix}/blog"`);
+      html = html.replace(/href="\/faq"/g, `href="${langPrefix}/faq"`);
+      html = html.replace(/href="\/pricing"/g, `href="${langPrefix}/pricing"`);
+      html = html.replace(/href="\/headshot"/g, `href="${langPrefix}/headshot"`);
+      html = html.replace(/href="\/guide"/g, `href="${langPrefix}/guide"`);
+    }
 
     // 0. Gallery strip (Firestore → 동적, layout maxItems 적용)
     const galleryBlock = getBlock('gallery-strip');
@@ -244,7 +334,7 @@ export async function renderHome(req, res, forceLang = null) {
     const pinned = displayPosts.filter(p => p.pinned).slice(0, magMax);
     const mags = pinned.length > 0 ? pinned : displayPosts.slice(0, magMax);
     if (mags.length > 0) {
-      const magHtml = mags.map((p, i) => magCard(p, i)).join('\n');
+      const magHtml = mags.map((p, i) => magCard(p, i, d)).join('\n');
       html = html.replace(
         /(<div class="sb-t" id="sb-magazine">[^<]*<\/div>)\n[\s\S]*?(\n\s*<\/div>\n\s*<div class="sb-sec"><div class="sb-t" id="sb-tags">)/,
         `$1\n${magHtml}\n$2`
@@ -269,8 +359,8 @@ export async function renderHome(req, res, forceLang = null) {
     const blogMax = blogBlock?.data?.maxItems || 4;
     const blogs = displayPosts.slice(0, blogMax);
     const blogHtml = blogs.length > 0
-      ? blogs.map(p => blogCard(p)).join('\n')
-      : '      <p style="color:var(--ink-m);padding:24px 0">아직 포스트가 없습니다</p>';
+      ? blogs.map(p => blogCard(p, langPrefix)).join('\n')
+      : `      <p style="color:var(--ink-m);padding:24px 0">${esc(d.blogEmpty)}</p>`;
     html = html.replace(
       /(최근 블로그<\/h2><a[^>]*>[^<]*<\/a><\/div>\n\s*<div class="blog-list">\n)[\s\S]*?(\n\s*<\/div>\n\s*<\/main>)/,
       `$1${blogHtml}$2`
@@ -340,8 +430,8 @@ export async function renderHome(req, res, forceLang = null) {
         const b = d.data();
         const hasReply = Array.isArray(b.replies) && b.replies.length > 0;
         const badge = hasReply
-          ? '<span class="board-item-badge answered">답변완료</span>'
-          : '<span class="board-item-badge">대기중</span>';
+          ? `<span class="board-item-badge answered">${esc(d.boardAnswered)}</span>`
+          : `<span class="board-item-badge">${esc(d.boardWaiting)}</span>`;
         return `      <a href="/board#${d.id}" class="board-item"><span class="board-item-title">${esc(b.title)}</span>${badge}<span class="board-item-meta">${fmtDate(b.createdAt)}</span></a>`;
       }).join('\n');
       html = html.replace(
