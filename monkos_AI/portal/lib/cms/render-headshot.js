@@ -338,7 +338,7 @@ ${layoutFooter(lang)}
     <button class="modal-close-btn" id="shopCloseBtn" onclick="closeCreditShop()">닫기</button>
   </div>
 </div>
-<script>window.__LANG__='${lang}';window.__REGION__='${lang === 'ko' ? 'kr' : 'global'}';</script>
+<script>window.__LANG__='${lang}';window.__REGION__='${req.paymentRegion || (lang === 'ko' ? 'kr' : 'global')}';</script>
 <script src="/js/i18n.js"></script>
 <script src="/js/auth.js"></script>
 <script src="/js/main.js"></script>

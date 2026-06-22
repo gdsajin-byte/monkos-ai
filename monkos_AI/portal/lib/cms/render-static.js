@@ -130,6 +130,7 @@ ${layoutNav(parts.htmlLang || 'ko')}
   ${parts.bodyContent}
 </div>
 ${layoutFooter(parts.htmlLang || 'ko')}
+<script>window.__LANG__='${parts.htmlLang || 'ko'}';window.__REGION__='${req.paymentRegion || (parts.htmlLang === 'ko' ? 'kr' : 'global')}';</script>
 ${parts.pageScript ? `<script>${parts.pageScript}</script>` : ''}
 </body>
 </html>`;
@@ -246,6 +247,7 @@ ${layoutNav(parts.htmlLang || 'ko')}
 <div class="container">
   ${parts.bodyContent}
 ${layoutFooter(parts.htmlLang || 'ko')}
+<script>window.__LANG__='${parts.htmlLang || 'ko'}';window.__REGION__='${req.paymentRegion || 'global'}';</script>
 ${parts.pageScript ? `<script>${parts.pageScript}</script>` : ''}
 </body>
 </html>`;
@@ -427,6 +429,7 @@ export async function guideFragment(req) {
 export async function renderGuide(req, res) {
   try {
     const parts = await guideFragment(req);
+    parts.paymentRegion = req.paymentRegion;
     const html = layoutShell(parts);
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
     res.end(html);
@@ -593,6 +596,7 @@ export function aiPhotoGuideFragment(forceLang = null) {
 export function renderAiPhotoGuide(req, res, forceLang = null) {
   try {
     const parts = aiPhotoGuideFragment(forceLang);
+    parts.paymentRegion = req.paymentRegion;
     const html = layoutShell(parts);
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
     res.end(html);

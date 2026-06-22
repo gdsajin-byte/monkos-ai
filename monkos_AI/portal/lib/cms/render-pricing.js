@@ -261,6 +261,7 @@ ${layoutNav(parts.htmlLang || 'ko')}
   ${parts.bodyContent}
 </div>
 ${layoutFooter(parts.htmlLang || 'ko')}
+<script>window.__LANG__='${parts.htmlLang || 'ko'}';window.__REGION__='${req.paymentRegion || (parts.htmlLang === 'ko' ? 'kr' : 'global')}';</script>
 </body>
 </html>`;
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });

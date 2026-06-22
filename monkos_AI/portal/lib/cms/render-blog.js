@@ -203,6 +203,7 @@ ${JSON.stringify({
 export async function renderBlogList(req, res, forceLang = null) {
   try {
     const parts = await blogListFragment(req, forceLang);
+    parts.paymentRegion = req.paymentRegion;
     const html = layoutShell(parts);
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
     res.end(html);
@@ -440,6 +441,7 @@ export async function renderBlogPost(req, res, lang = null) {
       res.writeHead(404, { 'Content-Type': 'text/plain' });
       return res.end('Not Found');
     }
+    parts.paymentRegion = req.paymentRegion;
     const html = layoutShell(parts);
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
     res.end(html);

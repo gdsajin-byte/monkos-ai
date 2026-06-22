@@ -9,6 +9,7 @@ import { createServer } from 'http';
 import { readFileSync } from 'fs';
 import { join, dirname, extname } from 'path';
 import { fileURLToPath } from 'url';
+import geoip from 'geoip-lite';
 
 // === 공통 인프라 ===
 import {
@@ -72,6 +73,12 @@ function detectLang(req) {
   return 'ko';
 }
 
+function detectPaymentRegion(req) {
+  const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket.remoteAddress;
+  const geo = geoip.lookup(ip);
+  return (geo?.country === 'KR') ? 'kr' : 'global';
+}
+
 // === HTTP 서버 ===
 const httpServer = createServer(async (req, res) => {
   // 보안 헤더
@@ -96,6 +103,7 @@ const httpServer = createServer(async (req, res) => {
 
   if (req.method === 'GET') {
     req.lang = detectLang(req);
+    req.paymentRegion = detectPaymentRegion(req);
     const cookies = parseCookies(req.headers.cookie);
     if (cookies.monkos_lang !== req.lang) {
       res.setHeader('Set-Cookie', `monkos_lang=${req.lang};Domain=.monkos.ai;Path=/;Max-Age=31536000;SameSite=Lax`);

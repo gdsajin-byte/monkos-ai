@@ -153,9 +153,9 @@ export function layoutFooter(lang = 'ko') {
  * 전체 HTML 페이지를 래핑하는 셸 함수
  * v4에서 3컬럼 레이아웃으로 교체될 진입점
  */
-export function layoutShell({ title, description, seoMeta, htmlLang, pageStyle, bodyContent, pageScript }) {
+export function layoutShell({ title, description, seoMeta, htmlLang, pageStyle, bodyContent, pageScript, paymentRegion }) {
   const lang = htmlLang || 'ko';
-  const region = lang === 'ko' ? 'kr' : 'global';
+  const region = paymentRegion || (lang === 'ko' ? 'kr' : 'global');
   return `${layoutHead(title, description, seoMeta || '', lang)}
 ${pageStyle ? `<style>${pageStyle}</style>` : ''}
 </head>

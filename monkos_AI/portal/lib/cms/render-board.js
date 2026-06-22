@@ -100,6 +100,7 @@ ${layoutNav(parts.htmlLang || 'ko')}
   ${parts.bodyContent}
 </div>
 ${layoutFooter(parts.htmlLang || 'ko')}
+<script>window.__LANG__='${parts.htmlLang || 'ko'}';window.__REGION__='${req.paymentRegion || 'global'}';</script>
 </body>
 </html>`;
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
@@ -197,6 +198,7 @@ export async function renderBoardPost(req, res) {
       res.writeHead(404, { 'Content-Type': 'text/plain' });
       return res.end('Not Found');
     }
+    parts.paymentRegion = req.paymentRegion;
     const html = layoutShell(parts);
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
     res.end(html);
@@ -308,6 +310,7 @@ async function submitPost() {
 export async function renderBoardWrite(req, res) {
   try {
     const parts = await boardWriteFragment(req);
+    parts.paymentRegion = req.paymentRegion;
     const html = layoutShell(parts);
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
     res.end(html);

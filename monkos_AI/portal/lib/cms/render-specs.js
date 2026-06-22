@@ -1518,6 +1518,7 @@ ${hreflangTags}
 export function renderSpecsList(req, res, forceLang = null) {
   try {
     const parts = specsListFragment(forceLang);
+    parts.paymentRegion = req.paymentRegion;
     const html = layoutShell(parts);
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
     res.end(html);
@@ -1579,6 +1580,7 @@ export function renderSpecsDetail(req, res, forceLang = null) {
       res.writeHead(404, { 'Content-Type': 'text/plain' });
       return res.end('Not Found');
     }
+    parts.paymentRegion = req.paymentRegion;
     const html = layoutShell(parts);
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
     res.end(html);

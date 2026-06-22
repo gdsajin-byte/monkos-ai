@@ -215,7 +215,7 @@ export async function renderHome(req, res, forceLang = null) {
     html = html.replace(/<div class="sb-t" id="sb-credit">크레딧 안내<\/div>/, `<div class="sb-t" id="sb-credit">${esc(d.sbCredit)}</div>`);
     html = html.replace(/호주·캐나다·중국·베트남 외 8국/, esc(d.specOthers));
     // __LANG__/__REGION__ 주입 (i18n.js 연동)
-    html = html.replace('</body>', `<script>window.__LANG__='${lang}';window.__REGION__='${lang === 'ko' ? 'kr' : 'global'}';</script>\n</body>`);
+    html = html.replace('</body>', `<script>window.__LANG__='${lang}';window.__REGION__='${req.paymentRegion || (lang === 'ko' ? 'kr' : 'global')}';</script>\n</body>`);
     // 다국어 nav 링크 경로 보정
     if (lang !== 'ko') {
       html = html.replace(/href="\/specs"/g, `href="${langPrefix}/specs"`);
