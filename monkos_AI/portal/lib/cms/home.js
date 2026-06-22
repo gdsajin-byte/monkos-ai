@@ -177,6 +177,15 @@ function navHtml(d, lang, prefix) {
     <div class="mk-credit-pill" id="creditBadge" onclick="openCreditShop()">
       <span class="mk-coin"></span><span class="mk-credit-amt" id="creditCount">0</span><span class="mk-credit-label">${esc(d.credits)}</span>
     </div>
+    <span class="mk-user-name" id="userName" style="display:none"></span>
+    <div class="mk-provider-badge" id="providerBadge" onclick="toggleLogoutPopover()" style="display:none">
+      <div id="providerIconInner"></div>
+      <div class="mk-logout-popover" id="logoutPopover">
+        <div class="mk-popover-name" id="popoverName"></div>
+        <a href="/admin/" class="mk-popover-btn" id="adminLink" style="display:none">Admin</a>
+        <button class="mk-popover-btn" onclick="logout()">${lang === 'ko' ? '로그아웃' : lang === 'ja' ? 'ログアウト' : 'Logout'}</button>
+      </div>
+    </div>
     <button class="mk-login-btn" id="headerLoginBtn" onclick="headerLogin()">${esc(d.login)}</button>
   </div>
 </nav>`;

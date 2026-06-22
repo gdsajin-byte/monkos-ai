@@ -44,6 +44,13 @@
 .mk-credit-pill { display:flex; align-items:center; gap:7px; font-size:13px; font-weight:700; color:var(--text-strong); border:1px solid rgba(45,49,57,.18); border-radius:10px; padding:8px 14px; white-space:nowrap; background:rgba(255,255,255,.6); cursor:pointer; }
 .mk-coin { width:12px; height:12px; border-radius:50%; background:linear-gradient(145deg,#00D4AA,#00a986); box-shadow:0 0 7px rgba(0,212,170,.45); }
 .mk-credit-label { color:#71767e; font-weight:500; }
+.mk-user-name { font-size:13px; font-weight:600; color:var(--text-muted); }
+.mk-provider-badge { position:relative; width:32px; height:32px; border-radius:50%; background:rgba(255,255,255,.6); border:1px solid rgba(45,49,57,.12); display:flex; align-items:center; justify-content:center; cursor:pointer; }
+.mk-logout-popover { display:none; position:absolute; top:42px; right:0; background:#fff; border-radius:12px; box-shadow:0 12px 32px rgba(0,0,0,.15); padding:12px; min-width:160px; z-index:100; }
+.mk-logout-popover.open { display:block; }
+.mk-popover-name { font-size:12px; color:var(--text-muted); margin-bottom:8px; padding-bottom:8px; border-bottom:1px solid #eee; }
+.mk-popover-btn { display:block; width:100%; font-size:13px; font-weight:600; color:var(--text-strong); background:none; border:none; padding:8px; border-radius:8px; cursor:pointer; text-align:center; text-decoration:none; }
+.mk-popover-btn:hover { background:rgba(0,0,0,.05); }
 .mk-login-btn { font-size:13px; font-weight:700; color:#fff; border:none; border-radius:10px; padding:8px 16px; white-space:nowrap; background:var(--btn-solid-bg); box-shadow:0 6px 16px rgba(45,49,57,.2); cursor:pointer; }
 
 /* — PANEL (shared acrylic) — */
