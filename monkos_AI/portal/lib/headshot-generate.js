@@ -1,4 +1,13 @@
-import { ai, log } from './shared/config.js';
+import { GoogleGenAI } from '@google/genai';
+import { log } from './shared/config.js';
+
+const PROJECT_ID = process.env.PROJECT_ID || 'monkos';
+
+const imageAI = new GoogleGenAI({
+  vertexai: true,
+  project: PROJECT_ID,
+  location: 'global',
+});
 
 const PROFILE_MODEL_MAP = {
   'nano-banana-2':   'gemini-3.1-flash-image-preview',
@@ -69,7 +78,7 @@ export async function generateHeadshot({ image, purpose, model, customPrompt, us
     { text: instruction },
   ];
 
-  const response = await ai.models.generateContent({
+  const response = await imageAI.models.generateContent({
     model: modelId,
     contents: [{ role: 'user', parts: contentParts }],
     config: {
