@@ -35,6 +35,8 @@ import { handlePassportIssue, handleUploadMission } from './lib/tg-cs.js';
 import { handleKakaoChatbot } from './lib/kakao-chatbot.js';
 import { handleLineWebhook } from './lib/line-chatbot.js';
 import { handleWebChat, handleCoaching } from './lib/coaching.js';
+import { generateHeadshot } from './lib/headshot-generate.js';
+import { saveImages } from './lib/gcs-save.js';
 import { handleAgentAuth, requireAdmin } from './lib/cms/admin-auth.js';
 import { handleDashboardSummary, handleDashboardUsers, handleDashboardCredits, handleDashboardTraffic } from './lib/cms/dashboard.js';
 import { handleBlogList, handleBlogGet, handleBlogCreate, handleBlogUpdate, handleBlogDelete } from './lib/cms/blog.js';
@@ -138,7 +140,7 @@ const httpServer = createServer(async (req, res) => {
   if (urlPath === '/api/credits/mission-complete' && req.method === 'POST') return handleMissionComplete(req, res);
   if (urlPath === '/api/credits/event' && req.method === 'POST') return handleCreditsEvent(req, res);
 
-  // === AI 헤드샷 생성 프록시 ===
+  // === AI 헤드샷 생성 (Vertex AI 직접) ===
   if (urlPath === '/api/headshot/generate' && req.method === 'POST') {
     try {
       const { verifyAuthToken, parseCookies, parseJsonBody } = await import('./lib/shared/config.js');
@@ -184,35 +186,34 @@ const httpServer = createServer(async (req, res) => {
       const styleMod = styleModifiers[purpose] || styleModifiers.linkedin_pro;
       const customPrompt = basePrompt + ' ' + styleMod;
 
-      const studioUrl = process.env.STUDIO_API_URL || 'https://monkos-studio-933456016842.us-central1.run.app';
-      const studioRes = await fetch(`${studioUrl}/api/profiles/generate`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          image,
-          purpose: purpose || 'linkedin_pro',
-          model: model || 'nano-banana-pro',
-          customPrompt,
-        }),
-      });
-      const studioData = await studioRes.json();
-
-      if (!studioRes.ok || !studioData.image) {
+      let generatedBase64;
+      try {
+        generatedBase64 = await generateHeadshot({
+          image, purpose: purpose || 'linkedin_pro', model: model || 'nano-banana-pro', customPrompt, userId,
+        });
+      } catch (genErr) {
         await fetch(`http://localhost:${PORT}/api/credits/refund`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Cookie': req.headers.cookie },
           body: JSON.stringify({ userId, type: 'generate' }),
         });
-        log(`[Headshot] 생성 실패 → 크레딧 환불: ${userId}`, 'WARNING');
-        res.writeHead(studioRes.status || 500, { 'Content-Type': 'application/json' });
-        return res.end(JSON.stringify({ error: studioData.error || '생성 실패' }));
+        log(`[Headshot] 생성 실패 → 크레딧 환불: ${userId} (${genErr.message})`, 'WARNING');
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        return res.end(JSON.stringify({ error: genErr.message || '생성 실패' }));
+      }
+
+      try {
+        await saveImages('headshot', userId, purpose || 'linkedin_pro', image, generatedBase64);
+        log(`[Headshot] GCS 저장 완료: ${userId}`);
+      } catch (e) {
+        log(`[Headshot] GCS 저장 실패 (무시): ${e.message}`, 'WARNING');
       }
 
       log(`[Headshot] 생성 완료: ${userId}, 스타일: ${purpose}`);
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      return res.end(JSON.stringify({ image: studioData.image, credits: creditData.credits }));
+      return res.end(JSON.stringify({ image: generatedBase64, credits: creditData.credits }));
     } catch (err) {
-      log(`[Headshot] 프록시 에러: ${err.message}`, 'ERROR');
+      log(`[Headshot] 에러: ${err.message}`, 'ERROR');
       res.writeHead(500, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify({ error: '서버 오류' }));
     }
