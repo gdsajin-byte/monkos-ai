@@ -84,7 +84,7 @@
 .mk-chip { font-size:10px; color:#cfd6e0; background:rgba(255,255,255,.04); border:1px solid #232c3a; border-radius:6px; padding:4px 9px; }
 .mk-id-footer { display:flex; align-items:center; justify-content:space-between; }
 .mk-id-domain { font-size:11px; color:var(--text-muted); }
-.mk-btn-solid { font-size:13px; font-weight:700; color:#fff; background:var(--btn-solid-bg); border:none; border-radius:10px; padding:10px 16px; white-space:nowrap; cursor:pointer; text-decoration:none; display:inline-block; }
+.mk-btn-solid, a.mk-btn-solid { font-size:13px; font-weight:700; color:#fff !important; background:var(--btn-solid-bg); border:none; border-radius:10px; padding:10px 16px; white-space:nowrap; cursor:pointer; text-decoration:none; display:inline-block; }
 .mk-btn-solid:hover { opacity:.9; }
 
 /* — HEADSHOT — */
