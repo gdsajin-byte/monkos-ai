@@ -1,6 +1,6 @@
 /** 담당: 막내2 (리파인) */
 
-import { usersCollection, firestore, log, logTransaction, parseJsonBody, parseRawBody, createHmac, randomBytes, directTokens, sendTelegramMessage, TELEGRAM_TEAM_API, TEAM_CHAT_ID, LEMONSQUEEZY_API_KEY, LEMONSQUEEZY_WEBHOOK_SECRET, LEMONSQUEEZY_STORE_ID, TOSS_SECRET_KEY, VARIANT_CREDITS, TOSS_AMOUNT_CREDITS, PRODUCTS, parseCookies } from './shared/config.js';
+import { usersCollection, firestore, log, logTransaction, parseJsonBody, parseRawBody, createHmac, randomBytes, directTokens, sendTelegramMessage, TELEGRAM_TEAM_API, TEAM_CHAT_ID, LEMONSQUEEZY_API_KEY, LEMONSQUEEZY_WEBHOOK_SECRET, LEMONSQUEEZY_WEBHOOK_SECRET_GLOBAL, LEMONSQUEEZY_STORE_ID, LEMONSQUEEZY_STORE_ID_JP, TOSS_SECRET_KEY, VARIANT_CREDITS, TOSS_AMOUNT_CREDITS, PRODUCTS, parseCookies } from './shared/config.js';
 import { trackEvent } from './tracking.js';
 
 /**
@@ -75,14 +75,22 @@ export async function handleLemonSqueezyWebhook(req, res) {
   try {
     const body = await parseRawBody(req);
 
-    // 서명 검증
+    // 서명 검증 — 글로벌/JP 듀얼 시크릿
     const signature = req.headers['x-signature'];
-    if (LEMONSQUEEZY_WEBHOOK_SECRET && signature) {
-      const hmac = createHmac('sha256', LEMONSQUEEZY_WEBHOOK_SECRET);
-      hmac.update(body);
-      const digest = hmac.digest('hex');
-      if (digest !== signature) {
-        log('[Webhook] 서명 검증 실패');
+    if (signature) {
+      const secrets = [
+        LEMONSQUEEZY_WEBHOOK_SECRET_GLOBAL,
+        LEMONSQUEEZY_WEBHOOK_SECRET,
+      ].filter(Boolean);
+
+      const verified = secrets.some(secret => {
+        const hmac = createHmac('sha256', secret);
+        hmac.update(body);
+        return hmac.digest('hex') === signature;
+      });
+
+      if (!verified) {
+        log('[Webhook] 서명 검증 실패 (글로벌/JP 모두 불일치)');
         res.writeHead(401, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: '서명 불일치' }));
         return;

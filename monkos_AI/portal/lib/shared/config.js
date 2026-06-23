@@ -21,7 +21,9 @@ export const GOOGLE_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI || 'https://m
 // Lemon Squeezy (JP/글로벌)
 export const LEMONSQUEEZY_API_KEY = process.env.LEMONSQUEEZY_API_KEY || '';
 export const LEMONSQUEEZY_WEBHOOK_SECRET = process.env.LEMONSQUEEZY_WEBHOOK_SECRET || '';
-export const LEMONSQUEEZY_STORE_ID = '415328';
+export const LEMONSQUEEZY_WEBHOOK_SECRET_GLOBAL = process.env.LEMONSQUEEZY_WEBHOOK_SECRET_GLOBAL || '';
+export const LEMONSQUEEZY_STORE_ID = '415328';       // 글로벌 USD
+export const LEMONSQUEEZY_STORE_ID_JP = '290457';    // JP ¥ (레거시)
 
 // 인증 토큰 서명 (결제 시크릿과 분리)
 export const AUTH_SECRET = process.env.AUTH_SECRET || '';
