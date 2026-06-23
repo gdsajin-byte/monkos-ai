@@ -17,9 +17,8 @@ export async function handleCheckout(req, res) {
 
     // LS 체크아웃 생성
     const attributes = {
-      checkout_options: { locale: 'ja' },
+      checkout_options: {},
       checkout_data: {
-        billing_address: { country: 'JP' },
         custom: { user_id: userId },
         email: email || undefined,
       },

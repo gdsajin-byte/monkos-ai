@@ -21,7 +21,7 @@ export const GOOGLE_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI || 'https://m
 // Lemon Squeezy (JP/글로벌)
 export const LEMONSQUEEZY_API_KEY = process.env.LEMONSQUEEZY_API_KEY || '';
 export const LEMONSQUEEZY_WEBHOOK_SECRET = process.env.LEMONSQUEEZY_WEBHOOK_SECRET || '';
-export const LEMONSQUEEZY_STORE_ID = '290457';
+export const LEMONSQUEEZY_STORE_ID = '415328';
 
 // 인증 토큰 서명 (결제 시크릿과 분리)
 export const AUTH_SECRET = process.env.AUTH_SECRET || '';
@@ -105,12 +105,12 @@ export const TELEGRAM_TEAM_API = `https://api.telegram.org/bot${TELEGRAM_TEAM_BO
 
 // === 크레딧 매핑 ===
 export const VARIANT_CREDITS = {
-  // JP v3 상품 (Lemon Squeezy Variant ID → 총 크레딧)
-  '1382355': 10,    // topup_10: ¥150, 10c+0
-  '1382367': 80,    // single_70: ¥990, 70c+10
-  '1382348': 130,   // package_100: ¥1,490, 100c+30
-  '1382362': 420,   // package_300: ¥3,990, 300c+120
-  '1382436': 750,   // package_500: ¥5,990, 500c+250
+  // Global USD 상품 (store#415328, test mode — 라이브 전환 시 ID 재확인)
+  '1825695': 40,    // 40 credits: $3.90
+  '1825706': 80,    // 80 credits: $6.90
+  '1825708': 130,   // 130 credits: $9.90
+  '1825711': 420,   // 420 credits: $26.90
+  '1825713': 750,   // 750 credits: $39.90
 };
 
 // v3 상품 정의 — 상품c와 보너스c 분리
