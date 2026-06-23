@@ -87,6 +87,9 @@ _saga/BWYA_Academy/강의실(B.W.Y.A)/**/*.docx
 !**/favicon-32.png
 !**/favicon-192.png
 !**/apple-touch-icon.png
+# 포털 홈 정적 에셋 (배포 빌드 컨텍스트 포함 + 디바이스 동기화 — git 미추적 시 배포마다 이미지 누락)
+!monkos_AI/portal/public/assets/*.jpg
+!monkos_AI/portal/public/assets/*.png
 !**/og-image.png
 _archive/
 
