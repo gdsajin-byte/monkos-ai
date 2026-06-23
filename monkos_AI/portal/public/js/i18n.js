@@ -113,9 +113,9 @@ var t = i18n[lang];
 
 // region 기반 CTA URL
 function getCtaUrl() {
-  return (region === 'kr')
-    ? 'https://idphoto-kr.monkos.ai/'
-    : 'https://idphoto-jp.monkos.ai/';
+  if (region === 'kr') return 'https://idphoto-kr.monkos.ai/';
+  var prefix = (lang === 'ko') ? '' : '/' + lang;
+  return prefix + '/headshot';
 }
 
 window.setLang = function(newLang) {
