@@ -156,6 +156,7 @@ secret env               # SM → .env 일괄 동기화
 | 06/22 | iMac/막내3 | **GCS 스키마 교정 + 결제 리다이렉트 + 버킷 전환** — `studio-profiles` 하드코딩 → `{서비스}/{userId}/` 유저별 폴더(gcs-save.js 시그니처 변경). 결제 완료 후 returnUrl 복귀(credits.js+payments.js). 증명앱 자체 GCS 구스키마 미교정 확인(후속). 구 버킷(`monk-ai-images`) 시계열 보존 확정. Studio 00020 + Portal 00319 배포 | gcs-save.js, studio/server.js, portal/server.js, credits.js, payments.js | ✅ |
 | 06/22 | iMac/쌍아 | **언어·결제 분기 + GCS 스키마 통합 설계서** — 3→1 수렴(Accept-Language+쿠키 단일흐름), 2축 모델(언어=Accept-Language/결제=geoip-lite), GCS prefix 구조 확정(`{서비스}/{userId}/`), SEO 안전장치 | 설계서 | ✅ |
 | 06/23 | M1/쌍아 | **시크릿 입력 단순화** — `scripts/secret.sh` CLI + `MONKOS 시크릿 등록.app` GUI 신설(둘 다 클립보드 자동읽기). 글로벌 커맨드 `secret`, rules/data-access.md 에이전트 프로토콜 등재, PF_INFRA §2-5 체계 정리 | secret.sh + .app + 설계서 + rules 갱신 | ✅ |
+| 06/23 | iMac/민아 | **🔴 포털 홈 이미지 누락 사고 복구 + 배포 안전망 제안** — 이미지(.jpg/.png)가 .gitignore로 git 미추적 → 빌드 컨텍스트 누락 → specs prod 배포가 이미지 없는 컨테이너로 교체(/assets/*.jpg 404). 복구: .gitignore 예외 + 에셋 11개(8.6MB) git 추적 → 재배포(스모크 18URL 200). 근본=배포 안전망 부재(슬러그·이미지 두 사고 공통). 안전망 3종(스모크검증·preview선검증·git자산점검) 제안, 경계 정본=ch5 배포규칙(개정 초안 예정) | `3390720f`·`4e519257`, [REPORT](../../reports/2026-06/REPORT_20260623_민아_포털이미지누락_배포안전망.md) | ✅ |
 
 ---
 
