@@ -20,7 +20,7 @@ const I18N = {
       dating: '데일리',
     },
     generateBtn: '헤드샷 생성하기',
-    creditCost: '10c',
+    creditCost: '10 credits',
     balanceLabel: '잔액',
     loginRequired: '로그인이 필요합니다',
     loginBtn: '구글로 로그인',
@@ -62,7 +62,7 @@ const I18N = {
       dating: 'Dating Profile',
     },
     generateBtn: 'Generate Headshot',
-    creditCost: '10c',
+    creditCost: '10 credits',
     balanceLabel: 'Balance',
     loginRequired: 'Login required',
     loginBtn: 'Sign in with Google',
@@ -104,7 +104,7 @@ const I18N = {
       dating: 'デイリー',
     },
     generateBtn: 'ヘッドショットを生成',
-    creditCost: '10c',
+    creditCost: '10 credits',
     balanceLabel: '残高',
     loginRequired: 'ログインが必要です',
     loginBtn: 'Googleでログイン',
@@ -182,6 +182,7 @@ function buildStyleButtons(styles) {
 export function renderHeadshot(req, res, forceLang = null) {
   try {
     const lang = forceLang || 'en';
+    const paymentRegion = req.paymentRegion || 'global';
     const d = I18N[lang] || I18N.ko;
     const seoMeta = getSeoMeta(lang);
 
@@ -311,17 +312,17 @@ ${layoutFooter(lang)}
   <div class="modal-box">
     <h3 id="loginModalTitle">${lang === 'ko' ? '로그인' : lang === 'ja' ? 'ログイン' : 'Sign In'}</h3>
     <p style="text-align:center;margin:8px 0 16px;color:#a78bfa;font-weight:600;font-size:0.95rem;">
-      ${lang === 'ko' ? '🎁 가입하면 첫 1컷 무료 (10c 즉시 지급)' : lang === 'ja' ? '🎁 登録で1枚無料（10c即時付与）' : '🎁 Sign up & get your first headshot FREE (10c bonus)'}
+      ${lang === 'ko' ? '🎁 가입하면 첫 1컷 무료 (10 크레딧 즉시 지급)' : lang === 'ja' ? '🎁 登録で1枚無料（10クレジット即時付与）' : '🎁 Sign up & get your first headshot FREE (10 credits bonus)'}
     </p>
     <div class="login-buttons">
       <button class="login-btn" onclick="googleLogin(); closeLoginModal();">
         <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59a14.5 14.5 0 0 1 0-9.18l-7.98-6.19a24.014 24.014 0 0 0 0 21.56l7.98-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-2.77c-.98.66-2.23 1.06-3.71 1.06-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
         <span>${lang === 'ko' ? 'Google로 로그인' : lang === 'ja' ? 'Googleでログイン' : 'Sign in with Google'}</span>
       </button>
-      ${lang === 'ko' ? `<button class="login-btn" onclick="loginKakao(); closeLoginModal();" style="background:#FEE500;color:#191919;border:none;">
+      ${paymentRegion === 'kr' ? `<button class="login-btn" onclick="loginKakao(); closeLoginModal();" style="background:#FEE500;color:#191919;border:none;">
         <span>카카오로 로그인</span>
       </button>` : ''}
-      ${lang === 'ja' ? `<button class="login-btn" onclick="loginLine(); closeLoginModal();" style="background:#06C755;color:#fff;border:none;">
+      ${paymentRegion === 'jp' ? `<button class="login-btn" onclick="loginLine(); closeLoginModal();" style="background:#06C755;color:#fff;border:none;">
         <span>LINEでログイン</span>
       </button>` : ''}
     </div>

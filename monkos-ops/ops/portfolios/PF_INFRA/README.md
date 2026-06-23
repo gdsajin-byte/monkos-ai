@@ -2,7 +2,7 @@
 type: portfolio
 id: PF_INFRA
 name: "INFRA"
-subject: "서비스 기반 인프라 — GCS 버킷·Drive 워크벤치·배포 파이프라인·SA 권한·에셋 레지스트리"
+subject: "서비스 기반 인프라 — GCS 버킷·Drive 워크벤치·배포 파이프라인·SA 권한·에셋 레지스트리·시크릿 관리"
 created: 2026-06-21
 owner: 작가님
 leads: "쌍아(설계)"
@@ -78,9 +78,51 @@ gs://monk-ai-images/
 | monk.kr | CF Pages (자동) | MONK_kr/ |
 | pt.monkos.ai | gcloud 직접 (2조 한시적 예외) | — |
 
-### 2-5. 시크릿
+### 2-5. 시크릿 관리 체계 (2026-06-23 확정)
 
-정본: `monkos-ops/ops/SECRET_INVENTORY.md` (24종 등록, GCP Secret Manager 기반)
+**정본**: GCP Secret Manager (project=monkos) — 단일 정본. 현재 35종 등록.
+**메타**: `monkos-ops/ops/SECRET_INVENTORY.md` — 이름·용도·날짜만. 값 절대 금지.
+**도구**: `scripts/secret.sh` (글로벌 커맨드 `secret`)
+
+#### 등록 플로우
+
+**GUI (일반)**: 키 복사(Cmd+C) → 바탕화면 `MONKOS 시크릿 등록.app` 더블클릭 → 이름 입력 → 등록 클릭
+**CLI (터미널)**: 키 복사(Cmd+C) → `secret` → Enter → 이름 입력 → 끝
+
+둘 다 클립보드(pbpaste)에서 값을 자동 읽음. 붙여넣기 불필요.
+
+#### 에이전트 프로토콜 (rules/data-access.md 등재)
+
+```
+에이전트: "시크릿 등록이 필요합니다. 터미널에서 secret 실행해주세요."
+         이름: {NAME}  /  발급처: {어디서 복사}
+작가님:   secret 실행 → 등록
+에이전트: secret check {NAME} → 존재 확인 → 코드 작업 계속
+```
+
+- 에이전트는 **값에 절대 접촉하지 않음** — 존재 여부(`check`)만 확인
+- `gcloud secrets` 직접 실행 금지 — `secret` 커맨드 경유 필수
+
+#### 자동화 범위
+
+| 단계 | 자동 | 수동 |
+|------|------|------|
+| 값 발급 | — | 작가님 (외부 대시보드) |
+| SM 등록 | ✅ `secret` | 작가님 Enter |
+| 인벤토리 메타 | ✅ 에이전트 | — |
+| deploy.sh 반영 | ✅ 에이전트 | — |
+| .env 동기화 | ✅ `secret env` | — |
+| 타 디바이스 설치 | 1회: `ln -sf .../secret.sh ~/.local/bin/secret` | — |
+| GUI 앱 배포 | `Desktop/MONKOS 시크릿 등록.app` (AppleScript) | — |
+
+#### 기타 명령
+
+```bash
+secret list              # SM 전체 목록
+secret check <NAME>      # 존재 + 버전 확인
+secret get <NAME>        # 값 조회 (에이전트 복원용)
+secret env               # SM → .env 일괄 동기화
+```
 
 ### 2-6. SA 권한
 
@@ -113,6 +155,7 @@ gs://monk-ai-images/
 | 06/21 | 작가님+쌍아 | 에셋 3층 구조 설계 (로컬↔Drive↔GCS) + PF_INFRA 신설 | PF_INFRA/README.md | ✅ |
 | 06/22 | iMac/막내3 | **GCS 스키마 교정 + 결제 리다이렉트 + 버킷 전환** — `studio-profiles` 하드코딩 → `{서비스}/{userId}/` 유저별 폴더(gcs-save.js 시그니처 변경). 결제 완료 후 returnUrl 복귀(credits.js+payments.js). 증명앱 자체 GCS 구스키마 미교정 확인(후속). 구 버킷(`monk-ai-images`) 시계열 보존 확정. Studio 00020 + Portal 00319 배포 | gcs-save.js, studio/server.js, portal/server.js, credits.js, payments.js | ✅ |
 | 06/22 | iMac/쌍아 | **언어·결제 분기 + GCS 스키마 통합 설계서** — 3→1 수렴(Accept-Language+쿠키 단일흐름), 2축 모델(언어=Accept-Language/결제=geoip-lite), GCS prefix 구조 확정(`{서비스}/{userId}/`), SEO 안전장치 | 설계서 | ✅ |
+| 06/23 | M1/쌍아 | **시크릿 입력 단순화** — `scripts/secret.sh` CLI + `MONKOS 시크릿 등록.app` GUI 신설(둘 다 클립보드 자동읽기). 글로벌 커맨드 `secret`, rules/data-access.md 에이전트 프로토콜 등재, PF_INFRA §2-5 체계 정리 | secret.sh + .app + 설계서 + rules 갱신 | ✅ |
 
 ---
 

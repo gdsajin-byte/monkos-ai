@@ -344,22 +344,22 @@ function footerHtml(d, prefix) {
 </footer>`;
 }
 
-function tailHtml(lang) {
+function tailHtml(lang, req) {
   const region = lang === 'ko' ? 'kr' : 'global';
   return `
 <div class="modal-overlay" id="loginModal">
   <div class="modal-box">
     <h3 id="loginModalTitle">${lang === 'ko' ? '로그인' : lang === 'ja' ? 'ログイン' : 'Sign In'}</h3>
     <p style="text-align:center;margin:8px 0 16px;color:#00D4AA;font-weight:600;font-size:0.95rem;">
-      ${lang === 'ko' ? '🎁 가입하면 첫 1컷 무료 (10c 즉시 지급)' : lang === 'ja' ? '🎁 登録で1枚無料（10c即時付与）' : '🎁 Sign up & get your first headshot FREE (10c bonus)'}
+      ${lang === 'ko' ? '🎁 가입하면 첫 1컷 무료 (10 크레딧 즉시 지급)' : lang === 'ja' ? '🎁 登録で1枚無料（10クレジット即時付与）' : '🎁 Sign up & get your first headshot FREE (10 credits bonus)'}
     </p>
     <div class="login-buttons">
       <button class="login-btn" onclick="googleLogin();closeLoginModal();">
         <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59a14.5 14.5 0 0 1 0-9.18l-7.98-6.19a24.014 24.014 0 0 0 0 21.56l7.98-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-2.77c-.98.66-2.23 1.06-3.71 1.06-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
         <span>Google</span>
       </button>
-      ${lang === 'ko' ? '<button class="login-btn" onclick="loginKakao();closeLoginModal();" style="background:#FEE500;color:#191919;border:none;"><span>카카오</span></button>' : ''}
-      ${lang === 'ja' ? '<button class="login-btn" onclick="loginLine();closeLoginModal();" style="background:#06C755;color:#fff;border:none;"><span>LINE</span></button>' : ''}
+      ${req.paymentRegion === 'kr' ? '<button class="login-btn" onclick="loginKakao();closeLoginModal();" style="background:#FEE500;color:#191919;border:none;"><span>카카오</span></button>' : ''}
+      ${req.paymentRegion === 'jp' ? '<button class="login-btn" onclick="loginLine();closeLoginModal();" style="background:#06C755;color:#fff;border:none;"><span>LINE</span></button>' : ''}
     </div>
     <button class="modal-close-btn" id="loginModalClose" onclick="closeLoginModal()">${lang === 'ko' ? '닫기' : lang === 'ja' ? '閉じる' : 'Close'}</button>
   </div>
@@ -392,7 +392,9 @@ export async function renderHome(req, res, forceLang = null) {
     const lang = forceLang || req.lang || 'ko';
     const d = HOME_I18N[lang] || HOME_I18N.ko;
     const prefix = lang === 'ko' ? '' : `/${lang}`;
-    const idphotoUrl = lang === 'ja' ? 'https://idphoto-jp.monkos.ai/' : 'https://idphoto-kr.monkos.ai/';
+    const idphotoUrl = req.paymentRegion === 'kr' ? 'https://idphoto-kr.monkos.ai/'
+      : req.paymentRegion === 'jp' ? 'https://idphoto-jp.monkos.ai/'
+      : `${prefix}/headshot`;
 
     const [postsSnap, faqSnap, boardSnap] = await Promise.all([
       blogCollection.where('published', '==', true).orderBy('createdAt', 'desc').get().catch(() => ({ docs: [] })),
@@ -442,7 +444,7 @@ export async function renderHome(req, res, forceLang = null) {
       + idpassHtml(d)
       + resourcesHtml(d, prefix, faqHtml, boardHtml, blogHtml)
       + footerHtml(d, prefix)
-      + tailHtml(lang);
+      + tailHtml(lang, req);
 
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
     res.end(html);

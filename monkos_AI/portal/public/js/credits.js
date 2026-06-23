@@ -37,7 +37,7 @@ function renderShopItems() {
 
   if (region === 'kr') {
     if (titleEl) titleEl.textContent = '크레딧 충전';
-    if (labelEl) labelEl.innerHTML = '현재: <strong>' + credits + '</strong>c';
+    if (labelEl) labelEl.innerHTML = '현재: <strong>' + credits + '</strong> 크레딧';
     if (closeBtn) closeBtn.textContent = '닫기';
     container.innerHTML =
       '<button class="shop-item" onclick="buyToss(9900)"><span>70c <small style="color:var(--ink-m)">(+10 bonus)</small></span><span class="amount">₩9,900</span></button>' +
@@ -48,15 +48,15 @@ function renderShopItems() {
   } else {
     if (titleEl) titleEl.textContent = (lang === 'ja') ? 'クレジットチャージ' : 'Credit Charge';
     if (labelEl) labelEl.innerHTML = (lang === 'ja')
-      ? '現在: <strong>' + credits + '</strong>c'
-      : 'Current: <strong>' + credits + '</strong>c';
+      ? '現在: <strong>' + credits + '</strong> クレジット'
+      : 'Current: <strong>' + credits + '</strong> credits';
     if (closeBtn) closeBtn.textContent = (lang === 'ja') ? '閉じる' : 'Close';
     container.innerHTML =
-      '<button class="shop-item" onclick="buyCreditsLS(\'1382367\')"><span>70c <small style="color:var(--ink-m)">(+10 bonus)</small></span><span class="amount">¥990</span></button>' +
-      '<button class="shop-item best" onclick="buyCreditsLS(\'1382348\')"><span>100c <small style="color:var(--ink-m)">(+30 bonus)</small></span><span class="amount">¥1,490 <small style="color:var(--green)">BEST</small></span></button>' +
-      '<button class="shop-item" onclick="buyCreditsLS(\'1382362\')"><span>300c <small style="color:var(--ink-m)">(+120 bonus)</small></span><span class="amount">¥3,990</span></button>' +
-      '<button class="shop-item" onclick="buyCreditsLS(\'1382436\')"><span>500c <small style="color:var(--ink-m)">(+250 bonus)</small></span><span class="amount">¥5,990</span></button>' +
-      '<button class="shop-item" onclick="buyCreditsLS(\'1382355\')"><span>10c</span><span class="amount">¥150</span></button>';
+      '<button class="shop-item" onclick="buyCreditsLS(\'1825695\')"><span>40 credits</span><span class="amount">$3.90</span></button>' +
+      '<button class="shop-item" onclick="buyCreditsLS(\'1825706\')"><span>80 credits</span><span class="amount">$6.90</span></button>' +
+      '<button class="shop-item best" onclick="buyCreditsLS(\'1825708\')"><span>130 credits</span><span class="amount">$9.90 <small style="color:var(--green)">BEST</small></span></button>' +
+      '<button class="shop-item" onclick="buyCreditsLS(\'1825711\')"><span>420 credits</span><span class="amount">$26.90</span></button>' +
+      '<button class="shop-item" onclick="buyCreditsLS(\'1825713\')"><span>750 credits</span><span class="amount">$39.90</span></button>';
   }
 }
 

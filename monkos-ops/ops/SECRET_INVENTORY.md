@@ -81,7 +81,8 @@ status: 현행
 | 18 | TOSS_SECRET_KEY | 토스페이먼츠 | portal (KR 결제) | |
 | 19 | TOSS_WEBHOOK_SECRET | 토스 웹훅 검증 | portal | |
 | 20 | LEMONSQUEEZY_API_KEY | Lemon Squeezy API | portal (JP/글로벌 결제) | |
-| 21 | LEMONSQUEEZY_WEBHOOK_SECRET | Lemon Squeezy 웹훅 | portal | |
+| 21 | LEMONSQUEEZY_WEBHOOK_SECRET | Lemon Squeezy 웹훅 (JP store#290457) | portal | |
+| 21-G | LEMONSQUEEZY_WEBHOOK_SECRET_GLOBAL | Lemon Squeezy 웹훅 (Global store#415328) | portal | 2026-06-23 |
 | 22 | TELEGRAM_BOT_TOKEN | CS 봇 @monkos_support_bot | portal | |
 | 23 | TELEGRAM_TEAM_BOT_TOKEN | 팀 전용 봇 | 내부 알림 | ⭐ 누락 |
 | 24 | TEAM_CHAT_ID | 텔레그램 팀 채팅 ID | 내부 알림 | ⭐ 누락 |
