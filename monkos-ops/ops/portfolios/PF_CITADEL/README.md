@@ -168,6 +168,8 @@ status: active
 | 06/19 | iMac/쌍아 | **헤드텀 레지스트리 초안 작성 (Phase 2.5)** — KR/JP/EN 3시장 노드 맵. 발행 게이트 5단계, 채널 역할표(9채널), 충돌 판정 기준, 데이터 Tier 위계. EN 본격 확장: AI headshot 헤드텀 8건 + B2B 5건 + ASO 6건 + pSEO 복제 패턴(HeadshotPro). 금지 조합 KR 4건 + EN 4건. 6/18 전략 대전환(B2B+영어권앱) 반영 | [HEADTERM_REGISTRY](../../marketing/seo/HEADTERM_REGISTRY.md) | ✅ |
 | 06/20 | iMac/쌍아 | **네이버 검색광고 API 연동 — 절대 검색량 인프라 구축**. 네이버 데이터랩(상대트렌드) + 검색광고 키워드도구(절대량) 2종 확보. GCP Secret Manager 3종 등록(NAVER_SEARCHAD_*). 축 C(전문직 B2C) 실측: "공인중개사" 월 26,460 / "세무사" 37,740 / "증명사진" 53,210. 축 C 전략 확정 — 전문직 대분류 키워드 여정 콘텐츠 내 프로필 사진 CTA 삽입 | SECRET_INVENTORY 갱신 | ✅ |
 | 06/23 | iMac/민아 | **URL·슬러그 변경 SEO 안전 프로토콜 정본화** — 6/19 specs 슬러그 회귀 사고(120 URL 색인자산 손실) 재발방지. ① 자동변환 중복검사 ② 슬러그 삭제 완료조건(301+sitemap+GSC) ③ 중복 상시감지 ④ 배포 후 실측. PF_SPECS 작업 시 필수 준수 | [PROTOCOL](PROTOCOL_url_slug_safety.md) · [REPORT](../../reports/2026-06/REPORT_20260623_민아_SPECS_슬러그회귀_색인자산손실.md) | ✅ |
+| 06/24 | iMac/막내3 | **SEO 내부 경합 종합 감사 + 시타델 작동 검증** — GSC/GA4 실측. "ai 증명사진" 3-way 경합(app/guide/blog) 확인, 포털 메인 / 노출 0회. 6/18 canonical 통일 후 신호 이전 미발생(서브도메인 구조상 불가). 시타델 판정: 부분 작동(외곽·성벽 OK, 킵 헤드텀 장악 미작동). P0: 블로그 전체 CTA 자동삽입 확대 + 남자증명사진 CTR 개선. P1: 대표URL 단일화(/guide 권고) | [REPORT](../../reports/2026-06/REPORT_20260624_iMac막내3_SEO내부경합종합감사.md) | ✅ |
+| 06/24 | iMac/막내 | **SEO 내부 경합 종합감사 막내3 보강** — 웹사이트 구조 실측. 메인/idphoto H1 공백 누락 2건 추가 발견. /specs/*/korea → /kr 301 + canonical ISO 정상 복구 확인. /guide/ai-photo hreflang ko/x-default만 존재 재확인. 시타델 판정: 부분작동 유지. P0: H1 공백 수정 + 블로그 CTA 확대. | [REPORT](../../reports/2026-06/REPORT_20260624_iMac막내_SEO내부경합종합감사.md) | ✅ |
 
 ---
 
