@@ -144,6 +144,10 @@ export async function loadPost() {
     document.getElementById('lang').value = post.lang || 'ko';
     document.getElementById('category').value = post.category || '';
     document.getElementById('pinned').checked = post.pinned || false;
+    document.getElementById('ctaEnabled').checked = post.ctaEnabled !== false;
+    document.getElementById('ctaImage').value = post.ctaImage || '';
+    document.getElementById('ctaTitle').value = post.ctaTitle || '';
+    document.getElementById('ctaLink').value = post.ctaLink || '';
     currentPublished = post.published || false;
     editor.setMarkdown(post.content || '');
     setTimeout(() => { updatePreview(); updateShareButtons(currentPublished); }, 100);
@@ -190,6 +194,10 @@ async function save(published) {
     pinned: document.getElementById('pinned').checked,
     published,
     author: 'MONKOS',
+    ctaEnabled: document.getElementById('ctaEnabled').checked,
+    ctaImage: document.getElementById('ctaImage').value.trim(),
+    ctaTitle: document.getElementById('ctaTitle').value.trim(),
+    ctaLink: document.getElementById('ctaLink').value.trim(),
   };
 
   try {

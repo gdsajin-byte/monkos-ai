@@ -78,6 +78,16 @@
       <label>태그</label>
       <input type="text" id="tags" placeholder="콤마 구분">
     </div>
+    <div class="sidebar-section">
+      <label>CTA 카드</label>
+      <div class="pinned-row">
+        <input type="checkbox" id="ctaEnabled" checked>
+        <label for="ctaEnabled">하단 CTA 표시</label>
+      </div>
+      <input type="text" id="ctaImage" placeholder="이미지 URL (비우면 기본값)" style="margin-top:6px">
+      <input type="text" id="ctaTitle" placeholder="타이틀 (비우면 기본값)" style="margin-top:4px">
+      <input type="text" id="ctaLink" placeholder="링크 URL (비우면 기본값)" style="margin-top:4px">
+    </div>
     <div class="sidebar-section" id="previewCard">
       <label>미리보기</label>
       <div style="border:1px solid var(--border);border-radius:6px;overflow:hidden;background:var(--surface2)">

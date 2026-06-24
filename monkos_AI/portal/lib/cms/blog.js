@@ -107,7 +107,7 @@ export async function handleBlogCreate(req, res) {
 
   try {
     const body = await parseJsonBody(req);
-    const { title, content, summary, thumbnail, tags, lang, published, author, pinned, category } = body;
+    const { title, content, summary, thumbnail, tags, lang, published, author, pinned, category, ctaEnabled, ctaImage, ctaTitle, ctaDescription, ctaButtonText, ctaLink } = body;
 
     if (!title || !content) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -162,6 +162,12 @@ export async function handleBlogCreate(req, res) {
       createdAt: now,
       updatedAt: now,
       viewCount: 0,
+      ctaEnabled: ctaEnabled !== false,
+      ctaImage: ctaImage || '',
+      ctaTitle: ctaTitle || '',
+      ctaDescription: ctaDescription || '',
+      ctaButtonText: ctaButtonText || '',
+      ctaLink: ctaLink || '',
     };
 
     if (post.published && post.thumbnail) {
@@ -216,7 +222,7 @@ export async function handleBlogUpdate(req, res) {
 
     const body = await parseJsonBody(req);
     const updates = {};
-    const allowedFields = ['title', 'content', 'summary', 'thumbnail', 'tags', 'lang', 'published', 'author', 'pinned', 'category'];
+    const allowedFields = ['title', 'content', 'summary', 'thumbnail', 'tags', 'lang', 'published', 'author', 'pinned', 'category', 'ctaEnabled', 'ctaImage', 'ctaTitle', 'ctaDescription', 'ctaButtonText', 'ctaLink'];
     for (const field of allowedFields) {
       if (body[field] !== undefined) updates[field] = body[field];
     }

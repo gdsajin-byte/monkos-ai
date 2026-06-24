@@ -7,6 +7,24 @@ import { NOINDEX_SLUGS } from './seo-exclude.js';
 import { getAdminUser } from './admin-auth.js';
 
 const blogCollection = firestore.collection('blog_posts');
+const blogSettingsCollection = firestore.collection('blog_settings');
+
+let ctaDefaultCache = null;
+let ctaDefaultCacheTime = 0;
+const CTA_CACHE_TTL = 5 * 60 * 1000;
+
+async function getCtaDefault() {
+  const now = Date.now();
+  if (ctaDefaultCache && now - ctaDefaultCacheTime < CTA_CACHE_TTL) return ctaDefaultCache;
+  try {
+    const doc = await blogSettingsCollection.doc('cta_default').get();
+    ctaDefaultCache = doc.exists ? doc.data() : null;
+    ctaDefaultCacheTime = now;
+  } catch {
+    ctaDefaultCache = null;
+  }
+  return ctaDefaultCache;
+}
 
 // 블로그 목록 — fragment (데이터 조회 + HTML 생성)
 export async function blogListFragment(req, forceLang = null) {
@@ -258,6 +276,24 @@ export async function blogPostFragment(req, lang = null) {
   blogCollection.doc(docId).update({ viewCount: (post.viewCount || 0) + 1 }).catch(() => {});
 
   const contentHtml = marked(post.content || '', { renderer: blogRenderer });
+
+  // CTA 카드 빌드
+  let ctaHtml = '';
+  const ctaEnabled = post.ctaEnabled !== false;
+  if (ctaEnabled) {
+    const ctaConfig = await getCtaDefault();
+    if (ctaConfig?.enabled) {
+      const ctaImg = post.ctaImage || ctaConfig.image || '';
+      const ctaTitle = post.ctaTitle || ctaConfig.title?.[htmlLang] || ctaConfig.title?.ko || '';
+      const ctaDesc = post.ctaDescription || ctaConfig.description?.[htmlLang] || ctaConfig.description?.ko || '';
+      const ctaBtn = post.ctaButtonText || ctaConfig.buttonText?.[htmlLang] || ctaConfig.buttonText?.ko || '';
+      const ctaLink = post.ctaLink || ctaConfig.link?.[htmlLang] || ctaConfig.link?.ko || '';
+      if (ctaLink) {
+        ctaHtml = `<div class="blog-cta-card"><a href="${escapeHtml(ctaLink)}" class="blog-cta-link" rel="noopener">${ctaImg ? `<div class="blog-cta-image" style="background-image:url('${escapeHtml(ctaImg)}')"></div>` : ''}<div class="blog-cta-body">${ctaTitle ? `<div class="blog-cta-title">${escapeHtml(ctaTitle)}</div>` : ''}${ctaDesc ? `<p class="blog-cta-desc">${escapeHtml(ctaDesc)}</p>` : ''}${ctaBtn ? `<span class="blog-cta-btn">${escapeHtml(ctaBtn)}</span>` : ''}</div></a></div>`;
+      }
+    }
+  }
+
   const baseSlug = slug;
 
   // hreflang — 실제 존재+published 언어 버전만 출력 (2026-04-14 유령URL 근절)
@@ -440,11 +476,21 @@ ${JSON.stringify({
 .share-btn:hover { border-color: var(--accent); color: var(--accent); }
 .share-copy { font-family: inherit; }
 .share-more { display: none; }
+.blog-cta-card { max-width: 800px; margin: 32px auto; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; background: var(--surface); }
+.blog-cta-link { display: flex; text-decoration: none; color: inherit; }
+.blog-cta-image { width: 200px; min-height: 120px; background-size: cover; background-position: center; flex-shrink: 0; }
+.blog-cta-body { padding: 20px; display: flex; flex-direction: column; justify-content: center; }
+.blog-cta-title { font-size: 18px; font-weight: 700; color: var(--text-bright); margin-bottom: 8px; }
+.blog-cta-desc { font-size: 14px; color: var(--text-dim); margin: 0 0 12px; }
+.blog-cta-btn { display: inline-block; background: #6C4FFF; color: #fff; padding: 8px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; }
+.blog-cta-btn:hover { background: #5a3de6; }
 @media (max-width: 600px) {
   .post-header h1 { font-size: 24px; }
   .post-content { font-size: 15px; padding: 24px 16px; }
   .post-content th, .post-content td { padding: 8px 10px; font-size: 13px; }
   .share-more { display: inline-flex; }
+  .blog-cta-link { flex-direction: column; }
+  .blog-cta-image { width: 100%; aspect-ratio: 1200/630; }
 }`;
 
   const backLabel = { ko: '블로그 목록으로', ja: 'ブログ一覧へ', en: 'Back to Blog' };
@@ -462,7 +508,8 @@ ${JSON.stringify({
       ${tagsHtml ? `<div class="post-tags">${tagsHtml}</div>` : ''}
     </div>
     ${post.thumbnail ? `<div class="post-thumb"><img src="${escapeHtml(post.thumbnail)}" alt="${escapeHtml(post.title)}"></div>` : ''}
-    <div class="post-content">${contentHtml}${SEO_TITLE_OVERRIDES[slug] ? `<p style="margin-top:32px;padding:20px 24px;background:rgba(108,79,255,0.06);border-radius:12px;border-left:4px solid var(--accent);"><strong>AI 증명사진을 직접 체험해보세요</strong><br><a href="https://idphoto-kr.monkos.ai/" style="color:var(--accent);font-weight:500;">MONKOS AI 증명사진 바로가기 &rarr;</a></p>` : ''}</div>
+    <div class="post-content">${contentHtml}</div>
+    ${ctaHtml}
   </article>
   <div class="share-buttons">
     <span class="share-label">${shareLabel}</span>

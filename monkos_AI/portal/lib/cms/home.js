@@ -428,7 +428,8 @@ export async function renderHome(req, res, forceLang = null) {
           const thumbHtml = p.thumbnail
             ? `<div class="mk-blog-thumb" style="background-image:url('${esc(p.thumbnail)}')"><span class="mk-blog-tag">${esc(tag)}</span></div>`
             : `<div class="mk-blog-thumb mk-blog-mono"><span class="mk-mono-char">${esc(mono)}</span><span class="mk-blog-tag">${esc(tag)}</span></div>`;
-          return `<a href="${prefix}/blog/${esc(p.slug)}" class="mk-blog-card">${thumbHtml}<div class="mk-blog-body"><div class="mk-blog-card-title">${esc(p.title)}</div><p class="mk-blog-excerpt">${esc(excerpt)}</p><div class="mk-blog-meta">MONKOS · ${fmtDate(p.createdAt)}</div></div></a>`;
+          const baseSlug = p.baseSlug || p.originalSlug || p.slug.replace(/-(kr|ja|en)$/, '');
+          return `<a href="${prefix}/blog/${esc(baseSlug)}" class="mk-blog-card">${thumbHtml}<div class="mk-blog-body"><div class="mk-blog-card-title">${esc(p.title)}</div><p class="mk-blog-excerpt">${esc(excerpt)}</p><div class="mk-blog-meta">MONKOS · ${fmtDate(p.createdAt)}</div></div></a>`;
         }).join('')
       : `<p class="mk-blog-empty">${esc(d.blogEmpty)}</p>`;
 
