@@ -54,7 +54,7 @@ export async function handleCreditsGet(req, res) {
   } catch (err) {
     log(`[Credits] 조회 에러: ${err.message}`);
     res.writeHead(500, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: err.message }));
+    res.end(JSON.stringify({ error: '처리 중 오류가 발생했습니다', code: 'INTERNAL_ERROR' }));
   }
 }
 
@@ -130,7 +130,7 @@ export async function handleCreditsUse(req, res) {
   } catch (err) {
     log(`[Credits] 사용 에러: ${err.message}`);
     res.writeHead(500, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: err.message }));
+    res.end(JSON.stringify({ error: '처리 중 오류가 발생했습니다', code: 'INTERNAL_ERROR' }));
   }
 }
 
@@ -186,6 +186,6 @@ export async function handleCreditsRefund(req, res) {
   } catch (err) {
     log(`[Credits] 환불 에러: ${err.message}`);
     res.writeHead(500, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: err.message }));
+    res.end(JSON.stringify({ error: '처리 중 오류가 발생했습니다', code: 'INTERNAL_ERROR' }));
   }
 }

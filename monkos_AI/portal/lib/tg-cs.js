@@ -129,7 +129,7 @@ export async function handlePassportIssue(req, res) {
   } catch (err) {
     log(`[TG-CS] passport-issue 에러: ${err.message}`, 'ERROR');
     res.writeHead(500, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: err.message }));
+    res.end(JSON.stringify({ error: '처리 중 오류가 발생했습니다', code: 'INTERNAL_ERROR' }));
   }
 }
 
@@ -204,6 +204,6 @@ export async function handleUploadMission(req, res) {
   } catch (err) {
     log(`[TG-CS] upload-mission 에러: ${err.message}`, 'ERROR');
     res.writeHead(500, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: err.message }));
+    res.end(JSON.stringify({ error: '처리 중 오류가 발생했습니다', code: 'INTERNAL_ERROR' }));
   }
 }

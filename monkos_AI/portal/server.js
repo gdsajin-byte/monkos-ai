@@ -147,8 +147,9 @@ const httpServer = createServer(async (req, res) => {
     return;
   }
 
-  // === 가입자 통계 ===
+  // === 가입자 통계 (admin 전용) ===
   if (req.url === '/api/stats' && req.method === 'GET') {
+    if (!requireAdmin(req, res)) return;
     try {
       const snapshot = await usersCollection.count().get();
       const totalUsers = snapshot.data().count;

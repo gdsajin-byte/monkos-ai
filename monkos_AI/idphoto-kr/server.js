@@ -23,7 +23,11 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const PORT = parseInt(process.env.PORT || '8080', 10);
 
 // === 환경변수 ===
-const PROJECT_ID = process.env.PROJECT_ID || 'monkos';
+const REQUIRED_ENV = ['PROJECT_ID'];
+for (const key of REQUIRED_ENV) {
+  if (!process.env[key]) throw new Error(`필수 환경변수 ${key} 미설정`);
+}
+const PROJECT_ID = process.env.PROJECT_ID;
 const LOCATION = process.env.LOCATION || 'us-central1';
 const PORTAL_API_URL = process.env.PORTAL_API_URL || 'https://monkos.ai';
 

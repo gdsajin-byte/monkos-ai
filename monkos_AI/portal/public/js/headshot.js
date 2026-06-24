@@ -72,6 +72,13 @@
         previewImg.src = uploadedImage;
         uploadPlaceholder.style.display = 'none';
         uploadPreview.style.display = 'block';
+        if (typeof monkTrack === 'function') {
+          monkTrack('upload_image', {
+            file_size: file.size,
+            resized_size: uploadedImage.length,
+            source: file.name ? 'gallery' : 'camera',
+          });
+        }
         updateStepIndicators();
         updateGenerateBtn();
       };
@@ -129,6 +136,9 @@
       document.querySelectorAll('.hs-style-btn').forEach(function(b) { b.classList.remove('selected'); });
       btn.classList.add('selected');
       selectedStyle = btn.dataset.style;
+      if (typeof monkTrack === 'function') {
+        monkTrack('select_style', { style: selectedStyle });
+      }
       updateStepIndicators();
       updateGenerateBtn();
     });
@@ -136,6 +146,9 @@
 
   generateBtn.addEventListener('click', async function() {
     if (!uploadedImage || !selectedStyle) return;
+    if (typeof monkTrack === 'function') {
+      monkTrack('click_cta', { button_id: 'generate', style: selectedStyle });
+    }
 
     if (typeof currentUser === 'undefined' || !currentUser) {
       if (typeof headerLogin === 'function') {
@@ -148,6 +161,9 @@
 
     var credits = currentUser.credits || 0;
     if (credits < 10) {
+      if (typeof monkTrack === 'function') {
+        monkTrack('open_credit_shop', { current_credits: credits, page: 'headshot' });
+      }
       if (typeof openCreditShop === 'function') {
         openCreditShop();
       } else {
@@ -188,6 +204,9 @@
         loadingEl.style.display = 'none';
         resultEl.style.display = 'block';
 
+        if (typeof monkTrack === 'function') {
+          monkTrack('generate_complete', { style: selectedStyle });
+        }
         history.unshift({ original: uploadedImage, result: resultSrc, style: selectedStyle, time: Date.now() });
         renderHistory();
 
@@ -219,6 +238,9 @@
   });
 
   downloadBtn.addEventListener('click', function() {
+    if (typeof monkTrack === 'function') {
+      monkTrack('click_cta', { button_id: 'download', page: 'headshot' });
+    }
     var src = resultImg.src;
     if (!src) return;
     var a = document.createElement('a');

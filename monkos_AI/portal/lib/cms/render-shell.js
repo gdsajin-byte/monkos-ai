@@ -11,6 +11,9 @@ blogRenderer.heading = function({ tokens, depth }) {
   const level = Math.min(depth + 1, 6);
   return `<h${level}>${text}</h${level}>`;
 };
+blogRenderer.table = function(token) {
+  return `<div class="table-wrap">${marked.Renderer.prototype.table.call(this, token)}</div>`;
+};
 
 export { blogRenderer, marked };
 

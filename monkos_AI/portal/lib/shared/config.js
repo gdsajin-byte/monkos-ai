@@ -12,7 +12,8 @@ import { Firestore } from '@google-cloud/firestore';
 
 // === 환경변수 (24개 전수) ===
 export const PORT = parseInt(process.env.PORT || '8080', 10);
-export const PROJECT_ID = process.env.PROJECT_ID || 'monkos';
+if (!process.env.PROJECT_ID) throw new Error('필수 환경변수 PROJECT_ID 미설정');
+export const PROJECT_ID = process.env.PROJECT_ID;
 export const LOCATION = process.env.LOCATION || 'us-central1';
 export const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '933456016842-clagcrpo1juvukjif1m454jq811bd2rq.apps.googleusercontent.com';
 export const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || '';
@@ -74,7 +75,8 @@ export const GITHUB_REPO = process.env.GITHUB_REPO || 'gdsajin-byte/monkos-ai';
 export const GA4_PROPERTY_ID = process.env.GA4_PROPERTY_ID || '521406894';
 
 // CMS
-export const GCS_BUCKET = process.env.GCS_BUCKET || 'monk-ai-images';
+if (!process.env.GCS_BUCKET) throw new Error('필수 환경변수 GCS_BUCKET 미설정');
+export const GCS_BUCKET = process.env.GCS_BUCKET;
 export const ADMIN_UIDS = (process.env.ADMIN_UIDS || '').split(',').filter(Boolean);
 
 // 에이전트 API 키 (민아/코웍이 등 — Cloud Run 환경변수에서 설정)

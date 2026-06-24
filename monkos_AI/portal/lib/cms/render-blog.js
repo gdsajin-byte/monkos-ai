@@ -4,6 +4,7 @@
 import { escapeHtml, stripHtml, getSeoDescription, layoutShell, blogRenderer, marked } from './render-shell.js';
 import { firestore, log } from '../shared/config.js';
 import { NOINDEX_SLUGS } from './seo-exclude.js';
+import { getAdminUser } from './admin-auth.js';
 
 const blogCollection = firestore.collection('blog_posts');
 
@@ -234,12 +235,13 @@ export async function blogPostFragment(req, lang = null) {
   }
   if (!slug) return null; // 404 시그널
 
+  const isPreview = req.url?.includes('preview=true') && !!getAdminUser(req);
   const docId = lang ? `${slug}-${lang}` : `${slug}-kr`;
   let doc = await blogCollection.doc(docId).get();
-  if ((!doc.exists || !doc.data().published) && !lang) {
+  if ((!doc.exists || (!doc.data().published && !isPreview)) && !lang) {
     doc = await blogCollection.doc(slug).get();
   }
-  if (!doc.exists || !doc.data().published) return null;
+  if (!doc.exists || (!doc.data().published && !isPreview)) return null;
 
   const post = doc.data();
   const htmlLang = lang || post.lang || 'ko';
@@ -378,7 +380,12 @@ ${JSON.stringify({
 .post-content ul, .post-content ol { padding-left: 24px; margin-bottom: 16px; }
 .post-content li { margin-bottom: 8px; }
 .post-content a { color: var(--accent); text-decoration: underline; }
-.post-content table { width: 100%; display: block; overflow-x: auto; }
+.post-content table { width: 100%; border-collapse: collapse; margin: 24px 0; font-size: 15px; }
+.post-content thead th { background: #2a2d48; color: #fff; font-weight: 600; text-align: left; }
+.post-content th, .post-content td { padding: 12px 16px; border: 1px solid var(--border); vertical-align: top; }
+.post-content tbody tr:nth-child(even) { background: rgba(108,79,255,0.03); }
+.post-content tbody tr:hover { background: rgba(108,79,255,0.06); }
+.post-content .table-wrap { width: 100%; overflow-x: auto; margin: 24px 0; }
 .post-content iframe { max-width: 100%; height: auto; }
 .post-back { display: inline-block; margin-bottom: 24px; color: var(--text-dim); font-size: 14px; }
 .post-back:hover { color: var(--accent); }
@@ -398,7 +405,8 @@ ${JSON.stringify({
 .share-more { display: none; }
 @media (max-width: 600px) {
   .post-header h1 { font-size: 24px; }
-  .post-content { font-size: 15px; }
+  .post-content { font-size: 15px; padding: 24px 16px; }
+  .post-content th, .post-content td { padding: 8px 10px; font-size: 13px; }
   .share-more { display: inline-flex; }
 }`;
 
@@ -443,7 +451,9 @@ export async function renderBlogPost(req, res, lang = null) {
     }
     parts.paymentRegion = req.paymentRegion;
     const html = layoutShell(parts);
-    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+    const headers = { 'Content-Type': 'text/html; charset=utf-8' };
+    if (req.url?.includes('preview=true')) headers['Cache-Control'] = 'no-store';
+    res.writeHead(200, headers);
     res.end(html);
   } catch (err) {
     log(`[CMS] 상세 렌더 에러: ${err.message}`, 'ERROR');

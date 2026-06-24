@@ -100,6 +100,7 @@ status: active
 | 06/22 | iMac/막내2+3 | **BQ D3+D4** — 서버이벤트6종 적재 + 헤드샷 퍼널 클라 계측 + rate-limit 가드. 포털 00326~00328 배포 | server.js, payments.js, credits.js, headshot.js, auth.js | ✅ |
 | 06/22 | iMac/막내1+쌍아 | **포털 홈 리스킨** — 아크릴 벤토 디자인 전면 적용. home.js 전면 재작성(replace 체인 제거), home.css 신설, 에셋 12개. 후속 핫픽스 7건(푸터 사업자정보·버튼색·로그인UI·네비·앱스토어링크·프로필사진). 포털 00329~00336 배포 | home.js, home.css, auth.js, assets/ | ✅ |
 | 06/22 | iMac/민아 | **D1~D4 구현 검증** — 보안핵심3개(클라-BQ격리·PII미적재·시크릿무하드코딩) 합격, identity_map D7→D3 선구현. 🔴`/api/track` rate-limit+페이로드캡 부재(헌법4조4항) 적발 → D7 앞당김 권고 | 검증보고 | ⚠️ |
+| 06/24 | iMac/쌍아 | **블로그 테이블 렌더링 수정 + S4 보안 잔존 수정** — ① 발행 후 표 깨짐 근인: `.post-content table`에 `display:block`+셀스타일 전무 → `border-collapse`+`th/td` 패딩·보더·헤더배경 추가, `table-wrap` 래퍼(모바일 스크롤). 에디터↔발행 렌더링 간극 해소. 기존 글 전체 일괄 적용(SSR 실시간 렌더링 구조). ② S4 V2 portal 에러 제네릭화 9개소 + V3 env 필수화 + V4 `/api/stats` admin 인증 게이트 | render-blog.js, render-shell.js, payments.js, credits.js, tg-cs.js, config.js, server.js | ✅ rev00345 |
 
 ---
 

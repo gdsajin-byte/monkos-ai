@@ -230,7 +230,7 @@ function preview() {
   const lang = document.getElementById('lang').value;
   const base = slug.replace(/-(kr|ja|en)$/, '');
   const prefix = lang === 'ja' ? '/ja' : lang === 'en' ? '/en' : '';
-  if (base) window.open(`${prefix}/blog/${base}`, '_blank');
+  if (base) window.open(`${prefix}/blog/${base}?preview=true`, '_blank');
   else showToast('Save first to preview', true);
 }
 

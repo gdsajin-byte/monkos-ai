@@ -63,7 +63,7 @@ export async function handleCheckout(req, res) {
   } catch (err) {
     log(`[Checkout] 에러: ${err.message}`, 'ERROR', { error: err.stack });
     res.writeHead(500, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: err.message }));
+    res.end(JSON.stringify({ error: '처리 중 오류가 발생했습니다', code: 'INTERNAL_ERROR' }));
   }
 }
 
@@ -177,7 +177,7 @@ export async function handleLemonSqueezyWebhook(req, res) {
   } catch (err) {
     log(`[Webhook] 에러: ${err.message}`, 'ERROR', { error: err.stack });
     res.writeHead(500, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: err.message }));
+    res.end(JSON.stringify({ error: '처리 중 오류가 발생했습니다', code: 'INTERNAL_ERROR' }));
   }
 }
 
@@ -304,7 +304,7 @@ export async function handleTossConfirm(req, res) {
       sendTelegramMessage(TEAM_CHAT_ID, `🚨 *토스 결제 서버 에러*\n${err.message}`, TELEGRAM_TEAM_API).catch(() => {});
     }
     res.writeHead(500, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: err.message }));
+    res.end(JSON.stringify({ error: '처리 중 오류가 발생했습니다', code: 'INTERNAL_ERROR' }));
   }
 }
 
@@ -366,7 +366,7 @@ export async function handleTossDirect(req, res) {
   } catch (err) {
     log(`[Toss-Direct] 에러: ${err.message}`, 'ERROR', { error: err.stack });
     res.writeHead(500, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: err.message }));
+    res.end(JSON.stringify({ error: '처리 중 오류가 발생했습니다', code: 'INTERNAL_ERROR' }));
   }
 }
 

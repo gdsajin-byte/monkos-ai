@@ -7,7 +7,8 @@
 import { Storage } from '@google-cloud/storage';
 import sharp from 'sharp';
 
-const CUSTOMER_GCS_BUCKET = process.env.CUSTOMER_GCS_BUCKET || 'monk-customer-photos';
+if (!process.env.CUSTOMER_GCS_BUCKET) throw new Error('필수 환경변수 CUSTOMER_GCS_BUCKET 미설정');
+const CUSTOMER_GCS_BUCKET = process.env.CUSTOMER_GCS_BUCKET;
 const storage = new Storage();
 const bucket = storage.bucket(CUSTOMER_GCS_BUCKET);
 
