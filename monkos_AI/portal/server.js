@@ -39,6 +39,7 @@ import { handleKakaoChatbot } from './lib/kakao-chatbot.js';
 import { handleLineWebhook } from './lib/line-chatbot.js';
 import { handleWebChat, handleCoaching } from './lib/coaching.js';
 import { generateHeadshot } from './lib/headshot-generate.js';
+import { generateIdPhoto } from './lib/idphoto-generate.js';
 import { trackEvent, linkIdentity } from './lib/tracking.js';
 import { saveImages } from './lib/gcs-save.js';
 import { handleAgentAuth, requireAdmin } from './lib/cms/admin-auth.js';
@@ -281,6 +282,99 @@ const httpServer = createServer(async (req, res) => {
       log(`[Headshot] 에러: ${err.message}`, 'ERROR');
       res.writeHead(500, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify({ error: '서버 오류' }));
+    }
+  }
+
+  // === 증명사진 규격 검수 ===
+  if (urlPath === '/api/idphoto/precheck' && req.method === 'POST') {
+    try {
+      const { parseJsonBody, log: slog } = await import('./lib/shared/config.js');
+      const { GoogleGenAI } = await import('@google/genai');
+      const body = await parseJsonBody(req);
+      if (!body.image) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        return res.end(JSON.stringify({ error: '이미지 필수' }));
+      }
+      const base64Data = body.image.includes(',') ? body.image.split(',')[1] : body.image;
+      const ai = new GoogleGenAI({ vertexai: true, project: process.env.PROJECT_ID, location: 'us-central1' });
+      const result = await ai.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: [{ role: 'user', parts: [
+          { inlineData: { mimeType: 'image/jpeg', data: base64Data } },
+          { text: `You are a strict Korean passport photo inspector. Evaluate this photo against official Korean passport photo regulations. Be STRICT — when in doubt, FAIL the item.
+
+ITEM 1 — "정면 응시" (Frontal face):
+- FAIL if: face is turned more than ~5 degrees left/right, head is tilted, body is angled/turned to the side, the person is in a 3/4 pose, or shoulders are visibly angled rather than square to the camera.
+- PASS only if: face AND shoulders are directly facing the camera, eyes looking straight at the lens.
+
+ITEM 2 — "눈썹 노출" (Eyebrows visible):
+- FAIL if: bangs or hair cover ANY part of either eyebrow. Even partial coverage = FAIL.
+- PASS only if: both eyebrows are FULLY visible from end to end with no hair obstruction.
+
+ITEM 3 — "배경 적합" (Background):
+- FAIL if: background contains objects, patterns, other people, or is very dark. Also FAIL if background is pure white and clothing is also white (no contrast).
+- WARN if: background is a single light color but not perfectly uniform (acceptable for AI processing — we can fix this).
+- PASS if: background is plain, light, and uniform.
+
+ITEM 4 — "그림자 없음" (No shadows):
+- FAIL if: there are strong shadows on the face (under nose, on one side of face) or cast shadows on the background.
+- PASS if: lighting is even, no harsh shadows visible.
+
+ITEM 5 — "표정 적합" (Expression):
+- FAIL if: teeth are showing AT ALL, mouth is open, person is laughing, grinning, or making an exaggerated expression. Even a slight smile showing teeth = FAIL.
+- WARN if: very slight closed-mouth smile (acceptable but borderline).
+- PASS if: neutral closed-mouth expression, lips together, no teeth visible.
+
+ITEM 6 — "상의 색상" (Clothing color):
+- FAIL if: the visible clothing/top near the shoulders is pure white (will blend with white background).
+- PASS if: clothing is any color other than white, or if no clothing is visible in the frame.
+
+ITEM 7 — "안경" (Glasses):
+- FAIL if: wearing sunglasses, tinted glasses, or colored contact lenses. Also FAIL if glasses have visible light reflection/glare on lenses.
+- WARN if: wearing clear prescription glasses with no glare (acceptable for passport, but no-glasses is preferred for driving license).
+- PASS if: no glasses at all.
+
+Respond in JSON only:
+{"checks":[{"id":"frontal","label":"정면 응시","pass":bool,"warn":bool},{"id":"eyebrow","label":"눈썹 완전 노출","pass":bool,"warn":bool},{"id":"background","label":"배경 적합","pass":bool,"warn":bool},{"id":"shadow","label":"그림자 없음","pass":bool,"warn":bool},{"id":"expression","label":"표정 적합","pass":bool,"warn":bool},{"id":"clothing","label":"상의 색상 적합","pass":bool,"warn":bool},{"id":"glasses","label":"안경/렌즈","pass":bool,"warn":bool}]}` }
+        ]}],
+        config: { responseMimeType: 'application/json' },
+      });
+      const text = result.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
+      let parsed;
+      try { parsed = JSON.parse(text); } catch { parsed = { checks: [] }; }
+      slog(`[IDPhoto][precheck] 검수 완료: ${parsed.checks?.length || 0}항목`);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify(parsed));
+    } catch (err) {
+      log(`[IDPhoto][precheck] 에러: ${err.message}`, 'ERROR');
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ error: '검수 중 오류가 발생했습니다', code: 'INTERNAL_ERROR' }));
+    }
+  }
+
+  // === 증명사진 생성 ===
+  if (urlPath === '/api/idphoto/generate' && req.method === 'POST') {
+    try {
+      const { parseJsonBody } = await import('./lib/shared/config.js');
+      const body = await parseJsonBody(req);
+      const { image, format, gender, age, model } = body;
+      if (!image) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        return res.end(JSON.stringify({ error: '이미지 필수' }));
+      }
+      const generatedBase64 = await generateIdPhoto({ image, format: format || 'passport', gender, age, model: model || 'nano-banana-pro', userId: 'specs-visitor' });
+      try {
+        await saveImages('idphoto', 'specs-visitor', format || 'passport', image, generatedBase64);
+      } catch (e) {
+        log(`[IDPhoto] GCS 저장 실패 (무시): ${e.message}`, 'WARNING');
+      }
+      log(`[IDPhoto] 생성 완료: 규격=${format || 'passport'}`);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ image: generatedBase64 }));
+    } catch (err) {
+      log(`[IDPhoto] 에러: ${err.message}`, 'ERROR');
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ error: '처리 중 오류가 발생했습니다', code: 'INTERNAL_ERROR' }));
     }
   }
 

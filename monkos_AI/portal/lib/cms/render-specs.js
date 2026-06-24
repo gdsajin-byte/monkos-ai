@@ -1179,7 +1179,809 @@ ${hreflangTags}
 
 // ─── DETAIL PAGE (/specs/:type/:country) ────────────────────────
 
+// ─── SPECS V2 — kr-passport 카드형 리디자인 ────────────────────
+
+const V2_SLUGS = new Set(['kr-passport']);
+
+const SPECS_V2_STYLE = `
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
+body { background: #ffffff !important; color: #1a1a1a !important; font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif !important; }
+.container { max-width: 1000px; }
+a { color: #6c4fff; }
+a:hover { color: #5a3de6; }
+
+.v2-wrap { max-width: 960px; margin: 0 auto; padding: 40px 24px 0; }
+.v2-breadcrumb { font-size: 13px; color: #888; margin-bottom: 16px; }
+.v2-breadcrumb a { color: #6c4fff; text-decoration: none; }
+.v2-breadcrumb a:hover { text-decoration: underline; }
+.v2-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.v2-tag {
+  background: rgba(108,79,255,0.08); color: #6c4fff; padding: 5px 14px;
+  border-radius: 20px; font-size: 13px; font-weight: 600; text-decoration: none;
+  border: 1px solid rgba(108,79,255,0.15);
+}
+.v2-tag:hover { background: rgba(108,79,255,0.15); }
+.v2-header h1 { font-size: 36px; font-weight: 800; color: #1a1a1a; margin-bottom: 8px; line-height: 1.3; }
+.v2-header .v2-sub { font-size: 15px; color: #888; margin-bottom: 40px; }
+
+/* 핵심 규격 카드 — 2컬럼 */
+.v2-spec-card {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 32px;
+  background: #ffffff; border: 1px solid rgba(0,0,0,0.08); border-radius: 16px;
+  padding: 32px; margin-bottom: 48px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+}
+.v2-spec-table { width: 100%; border-collapse: collapse; }
+.v2-spec-table tr { border-bottom: 1px solid rgba(0,0,0,0.05); }
+.v2-spec-table tr:last-child { border-bottom: none; }
+.v2-spec-table th {
+  text-align: left; padding: 12px 0; font-size: 14px; color: #888;
+  font-weight: 500; width: 110px; vertical-align: top;
+}
+.v2-spec-table td { padding: 12px 0; font-size: 15px; color: #1a1a1a; font-weight: 600; }
+.v2-badge {
+  display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 4px;
+  font-weight: 600; margin-left: 8px; vertical-align: middle;
+}
+.v2-badge-a { background: rgba(108,79,255,0.1); color: #6c4fff; }
+.v2-badge-req { background: rgba(239,68,68,0.1); color: #dc2626; }
+
+/* 규격 다이어그램 */
+.v2-diagram-wrap {
+  display: flex; align-items: center; justify-content: center;
+  position: relative; min-height: 280px;
+}
+.v2-photo-frame {
+  width: 160px; height: 206px; background: #e8e9ed; border-radius: 6px;
+  border: 1px solid rgba(0,0,0,0.08); position: relative;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+.v2-photo-frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.v2-dim-w {
+  position: absolute; bottom: -24px; left: 0; right: 0; text-align: center;
+  font-size: 12px; color: #6c4fff; font-weight: 700;
+}
+.v2-dim-w::before {
+  content: ''; position: absolute; bottom: 8px; left: 10%; right: 10%;
+  height: 1px; background: rgba(108,79,255,0.3);
+}
+.v2-dim-h {
+  position: absolute; top: 0; bottom: 0; right: -40px;
+  display: flex; align-items: center; font-size: 12px;
+  color: #6c4fff; font-weight: 700; writing-mode: vertical-rl;
+}
+.v2-dim-h::before {
+  content: ''; position: absolute; top: 5%; bottom: 5%; left: -8px;
+  width: 1px; background: rgba(108,79,255,0.3);
+}
+.v2-dim-head {
+  position: absolute; top: 10px; left: -36px; height: 130px;
+  display: flex; align-items: center; font-size: 11px;
+  color: #ef4444; font-weight: 600; writing-mode: vertical-rl;
+}
+.v2-dim-head::before {
+  content: ''; position: absolute; top: 0; bottom: 0; right: -6px;
+  width: 1px; background: rgba(239,68,68,0.3);
+}
+
+/* 3스텝 플로우 */
+.v2-steps-section {
+  background: #f7f7fb; border-radius: 20px; padding: 40px 32px;
+  margin-bottom: 48px;
+}
+.v2-steps-title { font-size: 24px; font-weight: 800; color: #1a1a1a; margin-bottom: 6px; }
+.v2-steps-sub { font-size: 14px; color: #888; margin-bottom: 8px; }
+.v2-steps-badge {
+  display: inline-block; background: rgba(108,79,255,0.1); color: #6c4fff;
+  font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 12px;
+  margin-bottom: 28px;
+}
+.v2-check-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; }
+.v2-photo-side { display: flex; flex-direction: column; align-items: center; }
+.v2-checklist-side {
+  background: #fff; border: 1px solid rgba(0,0,0,0.08); border-radius: 14px;
+  padding: 24px; min-height: 280px;
+}
+.v2-checklist-title { font-size: 14px; font-weight: 700; color: #1a1a1a; margin-bottom: 16px; letter-spacing: 0.5px; }
+.v2-checklist-loading { display: flex; align-items: center; gap: 10px; padding: 16px 0; }
+.v2-checklist-items { list-style: none; padding: 0; margin: 0; }
+.v2-checklist-items li {
+  display: flex; align-items: center; gap: 10px; padding: 8px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.04); font-size: 14px; color: #333;
+}
+.v2-checklist-items li:last-child { border-bottom: none; }
+.v2-check-icon { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+.v2-check-pass { background: rgba(34,197,94,0.12); color: #16a34a; }
+.v2-check-fail { background: rgba(239,68,68,0.12); color: #dc2626; }
+.v2-check-warn { background: rgba(245,158,11,0.12); color: #d97706; }
+.v2-checklist-summary { margin-top: 16px; padding: 12px; border-radius: 8px; font-size: 13px; font-weight: 600; text-align: center; }
+.v2-summary-pass { background: rgba(34,197,94,0.08); color: #16a34a; }
+.v2-summary-fail { background: rgba(239,68,68,0.08); color: #dc2626; }
+.v2-action-buttons { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+.v2-action-btn {
+  flex: 1; min-width: 100px; padding: 12px 8px; border-radius: 10px; font-size: 13px;
+  font-weight: 600; cursor: pointer; border: 1px solid rgba(0,0,0,0.1);
+  background: #fff; color: #333; transition: all 0.2s; text-align: center;
+}
+.v2-action-btn:hover { border-color: #6c4fff; color: #6c4fff; }
+.v2-btn-retouch { background: #6c4fff; color: #fff !important; border-color: #6c4fff; }
+.v2-btn-retouch:hover { background: #5a3de6; }
+.v2-btn-premier { background: #1a1a1a; color: #fff !important; border-color: #1a1a1a; }
+.v2-btn-premier:hover { background: #333; }
+.v2-credit { font-size: 11px; opacity: 0.8; margin-left: 4px; }
+
+/* Phase 2: 결제 */
+.v2-pay-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; }
+.v2-pay-preview { text-align: center; }
+.v2-pay-preview img { max-width: 200px; max-height: 260px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.08); }
+.v2-change-photo { margin-top: 12px; background: none; border: 1px solid rgba(0,0,0,0.15); border-radius: 8px; padding: 6px 16px; font-size: 12px; color: #666; cursor: pointer; }
+.v2-change-photo:hover { border-color: #6c4fff; color: #6c4fff; }
+.v2-pay-options { display: flex; flex-direction: column; gap: 12px; }
+.v2-pay-btn {
+  width: 100%; padding: 20px 24px; border-radius: 14px; cursor: pointer;
+  text-align: left; border: 2px solid rgba(0,0,0,0.08); background: #fff; transition: all 0.2s;
+}
+.v2-pay-btn:hover { border-color: #6c4fff; box-shadow: 0 4px 16px rgba(108,79,255,0.1); }
+.v2-pay-instant { border-color: #6c4fff; }
+.v2-pay-title { font-size: 16px; font-weight: 700; color: #1a1a1a; margin-bottom: 4px; }
+.v2-pay-price { font-size: 24px; font-weight: 800; color: #6c4fff; margin-bottom: 6px; }
+.v2-pay-desc { font-size: 12px; color: #888; }
+.v2-pay-divider { text-align: center; color: #ccc; font-size: 12px; position: relative; }
+.v2-pay-divider span { background: #f5f5f7; padding: 0 12px; position: relative; z-index: 1; }
+.v2-pay-divider::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; border-top: 1px solid #e5e5e5; }
+
+/* Phase 3: 생성 중 */
+.v2-generating { text-align: center; padding: 60px 0; }
+.v2-gen-text { font-size: 16px; font-weight: 600; color: #1a1a1a; margin-top: 16px; }
+.v2-gen-sub { font-size: 13px; color: #888; margin-top: 6px; }
+
+/* Phase 4: 결과 */
+.v2-result-grid { display: flex; align-items: center; justify-content: center; gap: 24px; margin-bottom: 24px; }
+.v2-result-before, .v2-result-after { text-align: center; }
+.v2-result-label { font-size: 12px; font-weight: 600; color: #888; margin-bottom: 8px; }
+.v2-result-before img, .v2-result-after img { max-width: 180px; max-height: 240px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.08); }
+.v2-result-arrow { font-size: 28px; color: #ccc; font-weight: 300; }
+.v2-result-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.v2-download-btn {
+  background: #6c4fff; color: #fff; border: none; padding: 14px 40px;
+  border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer;
+}
+.v2-download-btn:hover { background: #5a3de6; }
+
+/* 스텝1 — 업로드 */
+.v2-upload-zone {
+  width: 100%; border: 2px dashed rgba(108,79,255,0.25); border-radius: 12px;
+  padding: 32px 16px; cursor: pointer; transition: border-color 0.2s, background 0.2s;
+  display: flex; flex-direction: column; align-items: center;
+}
+.v2-upload-zone:hover, .v2-upload-zone.dragover { border-color: #6c4fff; background: rgba(108,79,255,0.03); }
+.v2-upload-zone .v2-upload-icon { font-size: 32px; color: #bbb; margin-bottom: 8px; }
+.v2-upload-zone .v2-upload-btn {
+  padding: 8px 20px; border: 1.5px solid #6c4fff; border-radius: 8px;
+  color: #6c4fff; font-size: 13px; font-weight: 600; background: none; cursor: pointer;
+  margin-top: 8px;
+}
+.v2-upload-zone .v2-upload-hint { font-size: 11px; color: #bbb; margin-top: 6px; }
+
+/* 스텝2 — 프리뷰 */
+.v2-preview-box {
+  width: 140px; height: 180px; background: #f0f1f5; border-radius: 8px;
+  border: 1px solid rgba(0,0,0,0.06); position: relative;
+  display: flex; align-items: center; justify-content: center; overflow: hidden;
+}
+.v2-preview-box img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.v2-preview-overlay {
+  position: absolute; top: 8px; right: 8px; background: rgba(108,79,255,0.85);
+  color: #fff; font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 4px;
+}
+.v2-preview-check {
+  position: absolute; bottom: 8px; right: 8px; width: 24px; height: 24px;
+  background: #22c55e; border-radius: 50%; color: #fff; font-size: 14px;
+  display: none; align-items: center; justify-content: center;
+}
+.v2-preview-check.show { display: flex; }
+
+/* 스텝3 — 다운로드 */
+.v2-download-btn {
+  display: none; padding: 12px 28px; background: #6c4fff; color: #fff;
+  font-size: 14px; font-weight: 700; border: none; border-radius: 10px;
+  cursor: pointer; transition: background 0.2s;
+}
+.v2-download-btn:hover { background: #5a3de6; }
+.v2-download-btn.show { display: inline-block; }
+
+/* 스텝 로딩 */
+.v2-step-loading {
+  display: none; flex-direction: column; align-items: center; gap: 10px;
+}
+.v2-step-loading.show { display: flex; }
+.v2-spinner {
+  width: 32px; height: 32px; border: 3px solid rgba(108,79,255,0.2);
+  border-top-color: #6c4fff; border-radius: 50%; animation: v2spin 0.8s linear infinite;
+}
+@keyframes v2spin { to { transform: rotate(360deg); } }
+
+/* 상세규정 + 반려사유 2컬럼 */
+.v2-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-bottom: 48px; }
+.v2-detail-card {
+  background: #ffffff; border: 1px solid rgba(0,0,0,0.06); border-radius: 16px;
+  padding: 28px; box-shadow: 0 1px 6px rgba(0,0,0,0.03);
+}
+.v2-detail-card h3 { font-size: 20px; font-weight: 700; color: #1a1a1a; margin-bottom: 20px; }
+.v2-detail-list { list-style: none; padding: 0; margin: 0; }
+.v2-detail-list li {
+  padding: 10px 0; font-size: 14px; color: #555; line-height: 1.7;
+  border-bottom: 1px solid rgba(0,0,0,0.04); padding-left: 16px; position: relative;
+}
+.v2-detail-list li:last-child { border-bottom: none; }
+.v2-detail-list li::before {
+  content: ''; position: absolute; left: 0; top: 16px;
+  width: 5px; height: 5px; border-radius: 50%; background: #6c4fff;
+}
+.v2-reject-list { list-style: none; padding: 0; margin: 0; counter-reset: rj; }
+.v2-reject-list li {
+  padding: 12px 0; border-bottom: 1px solid rgba(0,0,0,0.04);
+  counter-increment: rj;
+}
+.v2-reject-list li:last-child { border-bottom: none; }
+.v2-rj-title {
+  font-size: 15px; font-weight: 700; color: #1a1a1a; margin-bottom: 2px;
+  display: flex; align-items: center; gap: 8px;
+}
+.v2-rj-title::before {
+  content: counter(rj); flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%;
+  background: rgba(239,68,68,0.08); color: #dc2626; font-size: 12px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+.v2-rj-desc { font-size: 13px; color: #888; padding-left: 30px; }
+
+/* 같은 규격 서류 */
+.v2-same-section { margin-bottom: 48px; }
+.v2-same-section h2 { font-size: 24px; font-weight: 800; color: #1a1a1a; margin-bottom: 6px; }
+.v2-same-sub { font-size: 14px; color: #888; margin-bottom: 20px; }
+.v2-same-grid { display: flex; gap: 12px; flex-wrap: wrap; }
+.v2-same-card {
+  background: #ffffff; border: 1px solid rgba(0,0,0,0.08); border-radius: 12px;
+  padding: 16px 20px; text-decoration: none; color: #1a1a1a;
+  display: flex; align-items: center; gap: 10px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.v2-same-card:hover { border-color: rgba(108,79,255,0.3); box-shadow: 0 2px 10px rgba(108,79,255,0.08); }
+.v2-same-icon { font-size: 20px; }
+.v2-same-name { font-size: 14px; font-weight: 600; }
+.v2-same-size { font-size: 12px; color: #888; }
+.v2-same-note { font-size: 11px; color: #ef4444; }
+
+/* FAQ */
+.v2-faq-section { margin-bottom: 48px; }
+.v2-faq-section h2 { font-size: 24px; font-weight: 800; color: #1a1a1a; margin-bottom: 20px; }
+.v2-faq-item {
+  background: #ffffff; border: 1px solid rgba(0,0,0,0.06); border-radius: 12px;
+  margin-bottom: 8px; overflow: hidden;
+}
+.v2-faq-q {
+  padding: 16px 20px; font-weight: 600; font-size: 15px; color: #1a1a1a;
+  cursor: pointer; display: flex; align-items: center; gap: 10px; user-select: none;
+}
+.v2-faq-q:hover { background: rgba(0,0,0,0.015); }
+.v2-faq-q::before {
+  content: 'Q'; color: #6c4fff; font-weight: 800; font-size: 12px;
+  flex-shrink: 0; width: 24px; height: 24px; border-radius: 50%;
+  background: rgba(108,79,255,0.08); display: flex;
+  align-items: center; justify-content: center;
+}
+.v2-faq-q::after {
+  content: '\\25BE'; margin-left: auto; color: #aaa; font-size: 13px;
+  transition: transform 0.25s;
+}
+.v2-faq-item.open .v2-faq-q::after { transform: rotate(180deg); }
+.v2-faq-a {
+  padding: 0 20px 16px 54px; font-size: 14px; color: #666;
+  line-height: 1.8; display: none;
+}
+.v2-faq-item.open .v2-faq-a { display: block; }
+
+/* CTA 배너 */
+.v2-cta-banner {
+  background: linear-gradient(135deg, #6c4fff 0%, #9f7afe 100%);
+  border-radius: 20px; padding: 48px 32px; text-align: center; margin-bottom: 48px;
+}
+.v2-cta-banner h2 { font-size: 26px; font-weight: 800; color: #fff; margin-bottom: 8px; }
+.v2-cta-banner .v2-cta-sub { font-size: 14px; color: rgba(255,255,255,0.8); margin-bottom: 24px; }
+.v2-cta-btn-main {
+  display: inline-block; padding: 14px 36px; background: #fff; color: #6c4fff;
+  font-size: 15px; font-weight: 700; border-radius: 10px; text-decoration: none;
+  transition: transform 0.15s; box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+.v2-cta-btn-main:hover { transform: translateY(-2px); }
+
+/* 에러 메시지 */
+.v2-error-msg { display: none; color: #dc2626; font-size: 13px; margin-top: 8px; text-align: center; }
+.v2-error-msg.show { display: block; }
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .v2-wrap { padding: 24px 16px 0; }
+  .v2-header h1 { font-size: 26px; }
+  .v2-spec-card { grid-template-columns: 1fr; gap: 24px; }
+  .v2-check-layout { grid-template-columns: 1fr; }
+  .v2-action-buttons { flex-direction: column; }
+  .v2-pay-grid { grid-template-columns: 1fr; }
+  .v2-result-grid { flex-direction: column; }
+  .v2-result-arrow { transform: rotate(90deg); }
+  .v2-steps-section { padding: 28px 20px; }
+  .v2-detail-grid { grid-template-columns: 1fr; }
+  .v2-same-grid { flex-direction: column; }
+}
+`;
+
+const V2_REJECTIONS_KO = [
+  { title: '배경 그림자 / 음영', desc: '얼굴 앞·뒤로 그림자가 생긴 경우' },
+  { title: '머리 높이 규격 초과', desc: '정수리~턱이 32-36mm 범위를 벗어남' },
+  { title: '표정 · 미소', desc: '입을 벌리거나 치아가 보이는 사진' },
+  { title: '안경 반사 / 컬러렌즈', desc: '렌즈에 빛 반사 또는 색조 렌즈 착용' },
+  { title: '앞머리·장신구로 얼굴 가림', desc: '이마·눈썹·귀 윤곽이 가려진 경우' },
+];
+
+const V2_DETAILS_KO = [
+  '촬영 6개월 이내, 정면을 응시한 상반신 사진',
+  '균일한 흰색 배경, 그림자·무늬·테두리 없음',
+  '입은 다물고 무표정 — 치아가 보이면 반려',
+  '안경 착용 시 빛 반사·뿔테로 눈 가림 금지 (운전면허는 무안경 권장)',
+  '머리카락·장신구로 얼굴 윤곽을 가리지 않을 것',
+  '컬러 사진, 자연스러운 피부 톤 · 과도한 보정 금지',
+];
+
+const V2_FAQ_FALLBACK = [
+  { q: '여권사진과 운전면허증 사진이 같나요?', a: '네, 대한민국 여권과 운전면허증은 모두 35×45mm 규격으로 동일합니다. 다만 운전면허증은 안경 미착용을 권장합니다.' },
+  { q: 'AI로 만든 얼굴 사진을 제출해도 되나요?', a: '아니요. AI 생성 이미지(딥페이크 등)는 제출 불가합니다. MONKOS AI는 실제 사진의 배경·크기·밝기를 규격에 맞게 보정하는 것이지, 얼굴을 생성하지 않습니다.' },
+  { q: '온라인 신청용 파일 규격은 어떻게 되나요?', a: '가로 413 × 세로 531 픽셀, JPEG 형식, 500KB 이하, 300DPI 이상을 권장합니다.' },
+];
+
+function specsDetailV2Fragment(slug, forceLang = null) {
+  const lang = forceLang || 'ko';
+  const i = SPECS_I18N[lang] || SPECS_I18N.ko;
+  const prefix = lang === 'ko' ? '' : `/${lang}`;
+  const specData = SPECS_DATA[slug];
+  if (!specData) return null;
+
+  const { typeSlug, countrySlug } = parseSlug(slug);
+  const newPath = `${typeSlug}/${countrySlug}`;
+  const countryName = lang === 'en' ? (specData.countryEn || specData.country) : lang === 'ja' ? (specData.countryJa || specData.country) : specData.country;
+  const typeName = lang === 'ja' ? (specData.typeJa || specData.type) : (lang === 'en' ? specData.typeEn : specData.type);
+  const title = (specData.seoTitle && specData.seoTitle[lang]) || `2026 ${countryName} ${typeName} ${i.detailSuffix}`;
+  const description = (specData.seoDescription && specData.seoDescription[lang]) || '';
+
+  const canonicalUrl = lang === 'ko' ? `https://monkos.ai/specs/${newPath}` : `https://monkos.ai/${lang}/specs/${newPath}`;
+  const hreflangTags = [
+    `<link rel="alternate" hreflang="ko" href="https://monkos.ai/specs/${newPath}">`,
+    `<link rel="alternate" hreflang="ja" href="https://monkos.ai/ja/specs/${newPath}">`,
+    `<link rel="alternate" hreflang="en" href="https://monkos.ai/en/specs/${newPath}">`,
+    `<link rel="alternate" hreflang="x-default" href="https://monkos.ai/specs/${newPath}">`,
+  ].join('\n');
+
+  const faqs = (specData.faqs && (specData.faqs[lang] || specData.faqs.ko)) || V2_FAQ_FALLBACK;
+  const specsLabel = { ko: '규격', en: 'Specs', ja: '規格' }[lang] || 'Specs';
+
+  const specsJsonLdArr = [
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "MONKOS", "item": "https://monkos.ai" },
+        { "@type": "ListItem", "position": 2, "name": specsLabel, "item": `https://monkos.ai${lang === 'ko' ? '' : '/' + lang}/specs` },
+        { "@type": "ListItem", "position": 3, "name": `${countryName} ${typeName}` }
+      ]
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": title,
+      "inLanguage": lang,
+      "author": { "@type": "Person", "name": "Shin JeongKyu", "jobTitle": "Photographer & AI Architect" },
+      "publisher": { "@type": "Organization", "name": "Monk Studio" },
+      "datePublished": "2026-03-26",
+      "dateModified": "2026-06-24",
+    },
+    ...(faqs.length ? [{
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": faqs.map(f => ({
+        "@type": "Question",
+        "name": f.q,
+        "acceptedAnswer": { "@type": "Answer", "text": f.a },
+      })),
+    }] : []),
+  ];
+
+  const seoMeta = `<meta property="og:title" content="${escapeHtml(title)}">
+<meta property="og:description" content="${escapeHtml(description)}">
+<meta property="og:type" content="article">
+<meta property="og:url" content="${canonicalUrl}">
+<meta property="og:image" content="https://monkos.ai/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#ffffff">
+<link rel="canonical" href="${canonicalUrl}">
+${hreflangTags}
+<script type="application/ld+json">${JSON.stringify(specsJsonLdArr)}</script>`;
+
+  const h = i.tableHeaders;
+  const specRows = [
+    [h.size, locField(specData, 'size', lang), '<span class="v2-badge v2-badge-a">그룹 A</span>'],
+    [h.pixels, locField(specData, 'pixels', lang), ''],
+    [h.dpi, String(specData.dpi) + ' 이상', ''],
+    [h.background, locField(specData, 'background', lang), ''],
+    [h.headHeight, locField(specData, 'headHeight', lang), '<span class="v2-badge v2-badge-req">필수</span>'],
+    [h.validity, locField(specData, 'validity', lang), ''],
+    ['파일 용량', '500KB 이하', ''],
+    ['파일 형식', 'JPEG', ''],
+  ].map(([label, val, badge]) =>
+    `<tr><th>${escapeHtml(label)}</th><td>${escapeHtml(val)}${badge}</td></tr>`
+  ).join('');
+
+  const sizeMm = parseSizeMm(specData.size);
+  const sizeW = locField(specData, 'size', lang).split('×')[0].trim();
+  const sizeH = (locField(specData, 'size', lang).split('×')[1] || '4.5cm').trim();
+  const imgSrc = `/images/guides/${slug}.webp`;
+  const fallbackSrc = sizeMm ? `/images/guides/${sizeMm}.webp` : '';
+
+  const detailItems = (specData.detailSections && specData.detailSections[lang])
+    ? specData.detailSections[lang].flatMap(s => s.items)
+    : V2_DETAILS_KO;
+  const detailHtml = detailItems.map(d => `<li>${escapeHtml(d)}</li>`).join('');
+
+  const rejections = V2_REJECTIONS_KO;
+  const rejectHtml = rejections.map(r =>
+    `<li><div class="v2-rj-title">${escapeHtml(r.title)}</div><div class="v2-rj-desc">${escapeHtml(r.desc)}</div></li>`
+  ).join('');
+
+  const sameSize = Object.values(SPECS_DATA)
+    .filter(s => s.country === specData.country && s.slug !== slug)
+    .sort((a, b) => a.priority - b.priority);
+  const sameHtml = sameSize.map(s => {
+    const name = lang === 'ja' ? (s.typeJa || s.type) : (lang === 'en' ? s.typeEn : s.type);
+    const { typeSlug: ts, countrySlug: cs } = parseSlug(s.slug);
+    const note = name.includes('운전면허') ? '<div class="v2-same-note">무안경 권장</div>' : '';
+    return `<a href="${prefix}/specs/${ts}/${cs}" class="v2-same-card">
+      <span class="v2-same-icon">📄</span>
+      <div><div class="v2-same-name">${escapeHtml(name)}</div><div class="v2-same-size">${escapeHtml(locField(s, 'size', lang))}</div>${note}</div>
+    </a>`;
+  }).join('');
+
+  const faqHtml = faqs.map((f, idx) =>
+    `<div class="v2-faq-item${idx === 0 ? ' open' : ''}">
+      <div class="v2-faq-q" onclick="this.parentElement.classList.toggle('open')">${escapeHtml(f.q)}</div>
+      <div class="v2-faq-a">${escapeHtml(f.a)}</div>
+    </div>`
+  ).join('');
+
+  const bodyContent = `
+  <div class="v2-wrap">
+    <!-- 1. 헤더 -->
+    <nav class="v2-breadcrumb">
+      <a href="${prefix}/specs">${escapeHtml(specsLabel)} 가이드</a> &gt; ${escapeHtml(countryName)} &gt; ${escapeHtml(typeName)}
+    </nav>
+    <div class="v2-tags">
+      <span class="v2-tag">${escapeHtml(countryName)}</span>
+      <span class="v2-tag">${escapeHtml(typeName)}</span>
+      ${sameSize.map(s => {
+        const n = lang === 'ja' ? (s.typeJa || s.type) : (lang === 'en' ? s.typeEn : s.type);
+        const { typeSlug: ts, countrySlug: cs } = parseSlug(s.slug);
+        return `<a href="${prefix}/specs/${ts}/${cs}" class="v2-tag">${escapeHtml(n)}</a>`;
+      }).join('')}
+    </div>
+    <div class="v2-header">
+      <h1>${escapeHtml(countryName)} ${escapeHtml(typeName)}</h1>
+      <div class="v2-sub">${escapeHtml(specData.countryEn || countryName)} ${escapeHtml(specData.typeEn || typeName)} Photo Specification</div>
+    </div>
+
+    <!-- 2. 핵심 규격 카드 -->
+    <div class="v2-spec-card">
+      <div>
+        <table class="v2-spec-table">
+          ${specRows}
+        </table>
+      </div>
+      <div class="v2-diagram-wrap">
+        <div class="v2-photo-frame">
+          <img src="${imgSrc}" alt="${escapeHtml(countryName)} ${escapeHtml(typeName)}"
+               onerror="this.src='${fallbackSrc}';this.onerror=function(){this.style.display='none'}">
+          <div class="v2-dim-head">${escapeHtml(locField(specData, 'headHeight', lang))}</div>
+          <div class="v2-dim-w">${escapeHtml(sizeW)}</div>
+        </div>
+        <div class="v2-dim-h">${escapeHtml(sizeH)}</div>
+      </div>
+    </div>
+
+    <!-- 3. 여권사진 만들기 -->
+    <div class="v2-steps-section" id="v2-steps">
+      <div class="v2-steps-title">${escapeHtml(countryName)} ${escapeHtml(typeName)} 사진 만들기</div>
+      <div class="v2-steps-sub">셀카 한 장이면 ${escapeHtml(locField(specData, 'size', lang))} 규격 증명사진이 완성됩니다.</div>
+
+      <!-- Phase 1: 업로드 -->
+      <div class="v2-make-layout" id="v2-phase-upload">
+        <div class="v2-upload-zone" id="v2-dropzone">
+          <div class="v2-upload-icon">&#8615;</div>
+          <div class="v2-upload-main-text">사진을 끌어다 놓거나</div>
+          <button type="button" class="v2-upload-btn">사진 선택</button>
+          <input type="file" id="v2-file-input" accept="image/*" style="display:none">
+          <div class="v2-upload-hint">JPG, PNG, HEIC / max 10MB</div>
+        </div>
+        <div class="v2-error-msg" id="v2-error"></div>
+      </div>
+
+      <!-- Phase 1.5: 검수 결과 -->
+      <div class="v2-make-layout" id="v2-phase-check" style="display:none;">
+        <div class="v2-pay-grid">
+          <div class="v2-pay-preview">
+            <img id="v2-check-img" src="" alt="검수 사진">
+          </div>
+          <div class="v2-checklist-side">
+            <div class="v2-checklist-title">규정 체크</div>
+            <div class="v2-checklist-loading" id="v2-loading">
+              <div class="v2-spinner"></div>
+              <span>AI 검수 중...</span>
+            </div>
+            <ul class="v2-checklist-items" id="v2-checklist-items"></ul>
+            <div class="v2-checklist-summary" id="v2-summary"></div>
+            <div class="v2-action-buttons" id="v2-check-actions" style="display:none;">
+              <button class="v2-action-btn v2-btn-retry" id="v2-btn-change">다른 사진</button>
+              <button class="v2-action-btn v2-btn-retouch" id="v2-btn-proceed">진행하기</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phase 2: 결제 선택 -->
+      <div class="v2-make-layout" id="v2-phase-pay" style="display:none;">
+        <div class="v2-pay-grid">
+          <div class="v2-pay-preview">
+            <img id="v2-preview-img" src="" alt="미리보기">
+            <button class="v2-change-photo" id="v2-change-photo">다른 사진</button>
+          </div>
+          <div class="v2-pay-options">
+            <button class="v2-pay-btn v2-pay-instant" id="v2-pay-instant">
+              <div class="v2-pay-title">여권사진 만들기</div>
+              <div class="v2-pay-price">₩2,000</div>
+              <div class="v2-pay-desc">카드/토스 즉시결제 · 로그인 불필요</div>
+            </button>
+            <div class="v2-pay-divider"><span>또는</span></div>
+            <button class="v2-pay-btn v2-pay-credit" id="v2-pay-credit">
+              <div class="v2-pay-title">크레딧으로 만들기 <span class="v2-badge v2-badge-a">39% 할인</span></div>
+              <div class="v2-pay-price">10c <span style="font-size:13px;color:#888;font-weight:400;">(약 ₩1,225)</span></div>
+              <div class="v2-pay-desc">간편로그인 시 10c 무료 지급 · 추가 충전 40c ₩4,900</div>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phase 3: 생성 중 -->
+      <div class="v2-make-layout" id="v2-phase-generating" style="display:none;">
+        <div class="v2-generating">
+          <div class="v2-spinner"></div>
+          <div class="v2-gen-text">AI가 여권사진을 만들고 있습니다...</div>
+          <div class="v2-gen-sub">약 30초 소요</div>
+        </div>
+      </div>
+
+      <!-- Phase 4: 결과 + 다운로드 -->
+      <div class="v2-make-layout" id="v2-phase-result" style="display:none;">
+        <div class="v2-result-grid">
+          <div class="v2-result-before">
+            <div class="v2-result-label">원본</div>
+            <img id="v2-result-before-img" src="" alt="원본">
+          </div>
+          <div class="v2-result-arrow">→</div>
+          <div class="v2-result-after">
+            <div class="v2-result-label">완성</div>
+            <img id="v2-result-after-img" src="" alt="완성">
+          </div>
+        </div>
+        <div class="v2-result-actions">
+          <button class="v2-download-btn" id="v2-download">다운로드</button>
+          <button class="v2-action-btn v2-btn-retry" id="v2-btn-retry2">다른 사진으로 만들기</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. 상세규정 + 반려사유 -->
+    <div class="v2-detail-grid">
+      <div class="v2-detail-card">
+        <h3>상세 규정</h3>
+        <ul class="v2-detail-list">${detailHtml}</ul>
+      </div>
+      <div class="v2-detail-card">
+        <h3>반려사유 TOP 5</h3>
+        <ol class="v2-reject-list">${rejectHtml}</ol>
+      </div>
+    </div>
+
+    ${sameSize.length > 0 ? `<!-- 5. 같은 사진으로 제출 가능한 서류 -->
+    <div class="v2-same-section">
+      <h2>같은 사진으로 제출 가능한 서류</h2>
+      <div class="v2-same-sub">아래 서류는 ${escapeHtml(countryName)} ${escapeHtml(typeName)}과(와) 동일 규격(${escapeHtml(locField(specData, 'size', lang))})입니다.</div>
+      <div class="v2-same-grid">${sameHtml}</div>
+    </div>` : ''}
+
+    <!-- 6. FAQ -->
+    <div class="v2-faq-section">
+      <h2>자주 묻는 질문</h2>
+      ${faqHtml}
+    </div>
+
+    <!-- 7. CTA 배너 -->
+    <div class="v2-cta-banner">
+      <h2>규격에 맞는 여권사진, AI로 자동 완성</h2>
+      <div class="v2-cta-sub">셀카 한 장이면 ${escapeHtml(locField(specData, 'size', lang).replace('cm', 'mm').replace('3.5', '35').replace('4.5', '45'))} · 균일 흰색 배경으로 30초 만에 변환</div>
+      <a href="#v2-steps" class="v2-cta-btn-main">지금 만들기 →</a>
+    </div>
+  </div>
+`;
+
+  const pageScript = `
+(function(){
+  var dropzone = document.getElementById('v2-dropzone');
+  var fileInput = document.getElementById('v2-file-input');
+  var preview = document.getElementById('v2-preview');
+  var loading = document.getElementById('v2-loading');
+  var errorMsg = document.getElementById('v2-error');
+  var phaseUpload = document.getElementById('v2-phase-upload');
+  var phaseCheck = document.getElementById('v2-phase-check');
+  var phasePay = document.getElementById('v2-phase-pay');
+  var phaseGen = document.getElementById('v2-phase-generating');
+  var phaseResult = document.getElementById('v2-phase-result');
+  var uploadedBase64 = null;
+
+  if(!dropzone) return;
+
+  function showPhase(phase){
+    [phaseUpload, phaseCheck, phasePay, phaseGen, phaseResult].forEach(function(p){ if(p) p.style.display='none'; });
+    if(phase) phase.style.display='';
+  }
+
+  dropzone.querySelector('.v2-upload-btn').addEventListener('click', function(e){ e.stopPropagation(); fileInput.click(); });
+  dropzone.addEventListener('click', function(){ fileInput.click(); });
+  dropzone.addEventListener('dragover', function(e){ e.preventDefault(); dropzone.classList.add('dragover'); });
+  dropzone.addEventListener('dragleave', function(){ dropzone.classList.remove('dragover'); });
+  dropzone.addEventListener('drop', function(e){
+    e.preventDefault(); dropzone.classList.remove('dragover');
+    if(e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+  });
+  fileInput.addEventListener('change', function(){ if(fileInput.files.length) handleFile(fileInput.files[0]); });
+
+  function showError(msg){ errorMsg.textContent = msg; errorMsg.classList.add('show'); }
+  function hideError(){ errorMsg.classList.remove('show'); }
+
+  function handleFile(file){
+    hideError();
+    if(!file.type.match(/image\\/(jpeg|png|heic|heif|webp)/i)) return showError('JPG, PNG, HEIC 파일만 업로드 가능합니다.');
+    if(file.size > 10*1024*1024) return showError('10MB 이하 파일만 업로드 가능합니다.');
+    var reader = new FileReader();
+    reader.onload = function(ev){
+      uploadedBase64 = ev.target.result;
+      document.getElementById('v2-check-img').src = uploadedBase64;
+      showPhase(phaseCheck);
+
+      var checklistItems = document.getElementById('v2-checklist-items');
+      var checkLoading = document.getElementById('v2-loading');
+      var summary = document.getElementById('v2-summary');
+      var checkActions = document.getElementById('v2-check-actions');
+      checklistItems.innerHTML = '';
+      summary.innerHTML = '';
+      summary.className = 'v2-checklist-summary';
+      checkActions.style.display = 'none';
+      checkLoading.style.display = 'flex';
+
+      fetch('/api/idphoto/precheck', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ image: uploadedBase64 })
+      })
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        checkLoading.style.display = 'none';
+        if(data.checks){
+          var allPass = true;
+          data.checks.forEach(function(c){
+            var li = document.createElement('li');
+            var icon = document.createElement('span');
+            icon.className = 'v2-check-icon ' + (c.pass ? 'v2-check-pass' : c.warn ? 'v2-check-warn' : 'v2-check-fail');
+            icon.textContent = c.pass ? '✓' : c.warn ? '!' : '✗';
+            li.appendChild(icon);
+            li.appendChild(document.createTextNode(c.label));
+            checklistItems.appendChild(li);
+            if(!c.pass && !c.warn) allPass = false;
+          });
+          summary.className = 'v2-checklist-summary ' + (allPass ? 'v2-summary-pass' : 'v2-summary-fail');
+          summary.textContent = allPass ? '규격 적합! 진행하기를 눌러주세요.' : '일부 항목이 부적합합니다. 다른 사진을 권장합니다.';
+          checkActions.style.display = 'flex';
+        } else {
+          showError(data.error || '검수 실패');
+          showPhase(phaseUpload);
+        }
+      })
+      .catch(function(){ showError('검수 오류'); showPhase(phaseUpload); });
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // 검수: 다른 사진
+  document.getElementById('v2-btn-change').addEventListener('click', function(){
+    uploadedBase64 = null;
+    showPhase(phaseUpload);
+  });
+  // 검수: 진행하기 → 결제
+  document.getElementById('v2-btn-proceed').addEventListener('click', function(){
+    document.getElementById('v2-preview-img').src = uploadedBase64;
+    showPhase(phasePay);
+  });
+
+  // 결제: 다른 사진
+  document.getElementById('v2-change-photo').addEventListener('click', function(){
+    uploadedBase64 = null;
+    showPhase(phaseUpload);
+  });
+
+  // 즉시 결제 (₩2,000 토스)
+  document.getElementById('v2-pay-instant').addEventListener('click', function(){
+    if(!uploadedBase64) return;
+    showPhase(phaseGen);
+    fetch('/api/idphoto/generate', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ image: uploadedBase64, format:'passport', gender:'m', age:'adult' })
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      if(data.image){
+        document.getElementById('v2-result-before-img').src = uploadedBase64;
+        document.getElementById('v2-result-after-img').src = 'data:image/png;base64,'+data.image;
+        showPhase(phaseResult);
+      } else {
+        showError(data.error || '생성 실패');
+        showPhase(phasePay);
+      }
+    })
+    .catch(function(){ showError('오류 발생'); showPhase(phasePay); });
+  });
+
+  // 크레딧 결제
+  document.getElementById('v2-pay-credit').addEventListener('click', function(){
+    window.location.href = '/headshot?from=specs';
+  });
+
+  // 다운로드
+  document.getElementById('v2-download').addEventListener('click', function(){
+    var img = document.getElementById('v2-result-after-img');
+    if(!img.src) return;
+    var a = document.createElement('a');
+    a.href = img.src; a.download = 'monkos-passport.jpg';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  });
+
+  // 다른 사진으로 만들기
+  document.getElementById('v2-btn-retry2').addEventListener('click', function(){
+    uploadedBase64 = null;
+    showPhase(phaseUpload);
+  });
+})();
+`;
+
+  return {
+    title,
+    description,
+    seoMeta,
+    htmlLang: lang,
+    pageStyle: SPECS_V2_STYLE,
+    bodyContent,
+    pageScript,
+  };
+}
+
+// ─── SPECS DETAIL (v1 — 기존 전체 사용) ─────────────────────
+
 export function specsDetailFragment(slug, forceLang = null) {
+  if (V2_SLUGS.has(slug)) return specsDetailV2Fragment(slug, forceLang);
+
   const lang = forceLang || 'ko';
   const i = SPECS_I18N[lang] || SPECS_I18N.ko;
   const prefix = lang === 'ko' ? '' : `/${lang}`;
@@ -1579,11 +2381,13 @@ export function renderSpecsDetail(req, res, forceLang = null) {
     if (!slug && remaining.length === 1) {
       const oldSlug = remaining[0];
       if (SPECS_DATA[oldSlug]) {
-        const redirect = REDIRECT_MAP[oldSlug];
-        if (redirect) {
-          const newUrl = `${prefix}/specs/${redirect}`;
-          res.writeHead(301, { Location: newUrl });
-          return res.end();
+        if (!V2_SLUGS.has(oldSlug)) {
+          const redirect = REDIRECT_MAP[oldSlug];
+          if (redirect) {
+            const newUrl = `${prefix}/specs/${redirect}`;
+            res.writeHead(301, { Location: newUrl });
+            return res.end();
+          }
         }
       }
       slug = oldSlug;
