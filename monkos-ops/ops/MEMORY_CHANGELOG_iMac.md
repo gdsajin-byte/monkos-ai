@@ -421,3 +421,6 @@
 ### 변경
 - 신규: `memory/feedback_parallel_agent_overlap.md`
 - MEMORY.md 외장메모리 섹션에 "병렬 에이전트 작업 중복 주의 ⭐" 1행 추가
+
+## [2026-06-24 19:25 KST] iMac/민아
+- ADD: feedback_session_log_concurrent_overwrite — 세션로그 직하생성 금지(동시세션 add-A 덮어쓰기 사고 재발방지). MEMORY.md 외장메모리 인덱스 1행 추가.
