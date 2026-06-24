@@ -498,7 +498,11 @@ const httpServer = createServer(async (req, res) => {
   // 기존 라우트 (한국어 = 기본, 접두사 없음)
   if (urlPath === '/blog' && req.method === 'GET') return renderBlogList(req, res);
   if (urlPath?.startsWith('/blog/') && req.method === 'GET') return renderBlogPost(req, res);
+  if (urlPath === '/ja/guide/ai-photo' && req.method === 'GET') return renderAiPhotoGuide(req, res, 'ja');
+  if (urlPath === '/en/guide/ai-photo' && req.method === 'GET') return renderAiPhotoGuide(req, res, 'en');
   if (urlPath === '/guide/ai-photo' && req.method === 'GET') return renderAiPhotoGuide(req, res);
+  if (urlPath === '/ja/guide' && req.method === 'GET') return renderGuide(req, res);
+  if (urlPath === '/en/guide' && req.method === 'GET') return renderGuide(req, res);
   if (urlPath === '/guide' && req.method === 'GET') return renderGuide(req, res);
   // 다국어 FAQ 라우트
   if (urlPath === '/ja/faq' && req.method === 'GET') return renderFaq(req, res, 'ja');
@@ -523,7 +527,11 @@ const httpServer = createServer(async (req, res) => {
   if (urlPath === '/en/specs' && req.method === 'GET') return renderSpecsList(req, res, 'en');
   if (urlPath?.startsWith('/en/specs/') && req.method === 'GET') return renderSpecsDetail(req, res, 'en');
 
+  if (urlPath === '/ja/gallery' && req.method === 'GET') return renderGallery(req, res);
+  if (urlPath === '/en/gallery' && req.method === 'GET') return renderGallery(req, res);
   if (urlPath === '/gallery' && req.method === 'GET') return renderGallery(req, res);
+  if (urlPath === '/ja/board' && req.method === 'GET') return renderBoardList(req, res);
+  if (urlPath === '/en/board' && req.method === 'GET') return renderBoardList(req, res);
   if (urlPath === '/board' && req.method === 'GET') return renderBoardList(req, res);
   if (urlPath === '/board/write' && req.method === 'GET') return renderBoardWrite(req, res);
   if (urlPath?.startsWith('/board/') && req.method === 'GET') return renderBoardPost(req, res);

@@ -290,6 +290,30 @@ export async function blogPostFragment(req, lang = null) {
   const prefix = lang ? `/${lang}` : '';
   const canonicalUrl = `https://monkos.ai${prefix}/blog/${escapeHtml(baseSlug)}`;
 
+  const wordCount = stripHtml(post.content || '').length;
+  const readMinutes = Math.max(1, Math.ceil(wordCount / 500));
+
+  const faqItems = [];
+  try {
+    const faqMatch = (post.content || '').match(/##\s*(?:자주\s*묻는\s*질문\s*\(?FAQ\)?|FAQ)\s*\n([\s\S]*?)(?=\n##\s|$)/i);
+    if (faqMatch) {
+      const lines = faqMatch[1].split('\n');
+      let curQ = null, curA = null;
+      for (const line of lines) {
+        const qm = line.match(/^\s*(?:\*\*)?Q\.\s*(?:\*\*)?\s*(.+)/);
+        const am = line.match(/^\s*(?:\*\*)?A\.\s*(?:\*\*)?\s*(.+)/);
+        if (qm) {
+          if (curQ && curA) faqItems.push({ q: curQ, a: curA });
+          curQ = stripHtml(qm[1]);
+          curA = null;
+        } else if (am && curQ) {
+          curA = stripHtml(am[1]);
+        }
+      }
+      if (curQ && curA) faqItems.push({ q: curQ, a: curA });
+    }
+  } catch (e) { /* FAQ 파싱 실패 시 silent skip */ }
+
   const noindexTag = NOINDEX_SLUGS.has(baseSlug) ? '\n<meta name="robots" content="noindex">' : '';
   const seoMeta = `${noindexTag}
 <meta property="og:title" content="${escapeHtml(post.title)}">
@@ -310,7 +334,7 @@ ${hreflangTags}
 <script type="application/ld+json">
 ${JSON.stringify({
   "@context": "https://schema.org",
-  "@type": "Article",
+  "@type": "BlogPosting",
   "headline": post.title,
   "image": post.thumbnail || '',
   "author": {
@@ -336,9 +360,22 @@ ${JSON.stringify({
   "datePublished": post.createdAt,
   "dateModified": post.updatedAt,
   "description": getSeoDescription(post),
+  "wordCount": wordCount,
+  "timeRequired": `PT${readMinutes}M`,
   "inLanguage": htmlLang
 }, null, 0)}
 </script>
+${faqItems.length > 0 ? `<script type="application/ld+json">
+${JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqItems.map(f => ({
+    "@type": "Question",
+    "name": f.q,
+    "acceptedAnswer": { "@type": "Answer", "text": f.a }
+  }))
+})}
+</script>` : ''}
 <script type="application/ld+json">
 ${JSON.stringify({
   "@context": "https://schema.org",

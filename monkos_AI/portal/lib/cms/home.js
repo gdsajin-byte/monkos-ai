@@ -39,7 +39,7 @@ const HOME_I18N = {
     navIdpass: 'IDPASS', navSpecs: '규격', navPricing: '가격',
     credits: '크레딧', login: '로그인',
     footerPowered: 'powered by <b style="color:#d4e8e4;font-weight:800">MONKOS AI</b>',
-    footerLegal: 'MONKOS는 통신판매중개자가 아닌 통신판매업자로서 자체 제공 서비스에 대한 책임을 집니다. 결제·환불 및 이용 관련 문의는 고객센터로 연락 주시기 바랍니다.',
+    footerLegal: '',
     metaTitle: 'MONKOS AI | AI 증명사진 · 여권사진 · 이력서사진',
     metaDesc: 'AI 실시간 코칭으로 완벽한 증명사진을 촬영하세요. 여권, 비자, 이력서, 취업사진 지원.',
     htmlLang: 'ko', locale: 'ko_KR', canonical: 'https://monkos.ai/',
@@ -73,7 +73,7 @@ const HOME_I18N = {
     navIdpass: 'IDPASS', navSpecs: 'Specs', navPricing: 'Pricing',
     credits: 'Credits', login: 'Login',
     footerPowered: 'powered by <b style="color:#d4e8e4;font-weight:800">MONKOS AI</b>',
-    footerLegal: 'MONKOS is a direct seller responsible for all services provided. For payment, refund, and usage inquiries, please contact customer support.',
+    footerLegal: '',
     metaTitle: 'MONKOS AI | AI ID Photos · Passport Photos · Resume Photos',
     metaDesc: 'Capture perfect ID photos with AI real-time coaching. Passport, visa, resume photos supported.',
     htmlLang: 'en', locale: 'en_US', canonical: 'https://monkos.ai/en/',
@@ -107,7 +107,7 @@ const HOME_I18N = {
     navIdpass: 'IDPASS', navSpecs: '規格', navPricing: '料金',
     credits: 'クレジット', login: 'ログイン',
     footerPowered: 'powered by <b style="color:#d4e8e4;font-weight:800">MONKOS AI</b>',
-    footerLegal: 'MONKOSは通信販売仲介業者ではなく通信販売業者として自社提供サービスに責任を負います。決済・返金・利用に関するお問い合わせはカスタマーセンターまでご連絡ください。',
+    footerLegal: '',
     metaTitle: 'MONKOS AI | AI証明写真 · パスポート写真 · 履歴書写真',
     metaDesc: 'AIリアルタイムコーチングで完璧な証明写真を撮影。パスポート、ビザ、履歴書対応。',
     htmlLang: 'ja', locale: 'ja_JP', canonical: 'https://monkos.ai/ja/',
@@ -328,18 +328,19 @@ function footerHtml(d, prefix) {
       <a href="${prefix}/terms.html">Terms</a>
       <a href="${prefix}/privacy.html">Privacy</a>
     </div>
-    <div class="mk-footer-copy">© 2026 몽크사진관</div>
+    <div class="mk-footer-copy">© 2026 Monk Studio</div>
   </div>
   <div class="mk-footer-legal">
     <div class="mk-biz-info">
-      <span><b>상호</b> 몽크사진관</span>
-      <span><b>대표</b> 신정규</span>
-      <span><b>사업자등록번호</b> 636-15-00574</span>
-      <span><b>전화</b> 031-791-5030</span>
-      <span><b>주소</b> 경기도 하남시 미사강변동로 95 (망월동) B1029</span>
-      <span><b>이메일</b> info@monkos.ai</span>
+      <span><b>Business</b> Monk Studio</span>
+      <span><b>CEO</b> Jeong-Kyu Shin</span>
+      <span><b>Reg. No.</b> 636-15-00574</span>
+      <span><b>E-Commerce No.</b> 2025-경기하남-1737</span>
+      <span><b>Tel</b> 031-791-5030</span>
+      <span><b>Address</b> B1029, 95 Misagangbyeon-dong-ro, Hanam-si, Gyeonggi-do, Korea</span>
+      <span><b>Email</b> info@monkos.ai</span>
     </div>
-    <p class="mk-legal-note">${esc(d.footerLegal)}</p>
+    ${d.footerLegal ? `<p class="mk-legal-note">${esc(d.footerLegal)}</p>` : ''}
   </div>
 </footer>`;
 }
@@ -403,8 +404,8 @@ export async function renderHome(req, res, forceLang = null) {
     ]);
 
     const allPosts = postsSnap.docs.map(doc => ({ slug: doc.id, ...doc.data() }));
-    const langPosts = allPosts.filter(p => p.lang === lang && !p.autoTranslated);
-    const displayPosts = (langPosts.length > 0 ? langPosts : allPosts.filter(p => !p.autoTranslated)).slice(0, 3);
+    const langPosts = allPosts.filter(p => p.lang === lang);
+    const displayPosts = (langPosts.length > 0 ? langPosts : allPosts).slice(0, 3);
 
     const faqItems = faqSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     const faqHtml = faqItems.length > 0

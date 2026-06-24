@@ -238,16 +238,17 @@ function closeLightbox() {
 export async function renderGallery(req, res) {
   try {
     const parts = await galleryFragment(req);
+    const lang = req.lang || parts.htmlLang || 'ko';
     // 갤러리는 lightbox가 container 밖에 있으므로 커스텀 셸 사용
-    const html = `${layoutHead(parts.title, parts.description, parts.seoMeta || '', parts.htmlLang || 'ko')}
+    const html = `${layoutHead(parts.title, parts.description, parts.seoMeta || '', lang)}
 ${parts.pageStyle ? `<style>${parts.pageStyle}</style>` : ''}
 </head>
 <body>
-${layoutNav(parts.htmlLang || 'ko')}
+${layoutNav(lang)}
 <div class="container">
   ${parts.bodyContent}
-${layoutFooter(parts.htmlLang || 'ko')}
-<script>window.__LANG__='${parts.htmlLang || 'ko'}';window.__REGION__='${req.paymentRegion || 'global'}';</script>
+${layoutFooter(lang)}
+<script>window.__LANG__='${lang}';window.__REGION__='${req.paymentRegion || 'global'}';</script>
 ${parts.pageScript ? `<script>${parts.pageScript}</script>` : ''}
 </body>
 </html>`;

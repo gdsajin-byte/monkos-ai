@@ -90,17 +90,18 @@ export async function boardListFragment(req) {
 export async function renderBoardList(req, res) {
   try {
     const parts = await boardListFragment(req);
+    const lang = req.lang || parts.htmlLang || 'ko';
     // Board는 container max-width가 다름
-    const html = `${layoutHead(parts.title, parts.description, parts.seoMeta || '', parts.htmlLang || 'ko')}
+    const html = `${layoutHead(parts.title, parts.description, parts.seoMeta || '', lang)}
 ${parts.pageStyle ? `<style>${parts.pageStyle}</style>` : ''}
 </head>
 <body>
-${layoutNav(parts.htmlLang || 'ko')}
+${layoutNav(lang)}
 <div class="container" style="max-width:900px;">
   ${parts.bodyContent}
 </div>
-${layoutFooter(parts.htmlLang || 'ko')}
-<script>window.__LANG__='${parts.htmlLang || 'ko'}';window.__REGION__='${req.paymentRegion || 'global'}';</script>
+${layoutFooter(lang)}
+<script>window.__LANG__='${lang}';window.__REGION__='${req.paymentRegion || 'global'}';</script>
 </body>
 </html>`;
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
