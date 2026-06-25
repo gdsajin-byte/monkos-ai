@@ -1411,7 +1411,17 @@ a:hover { color: #5a3de6; }
   background: #ffffff; border: 1px solid rgba(0,0,0,0.06); border-radius: 16px;
   padding: 28px; box-shadow: 0 1px 6px rgba(0,0,0,0.03);
 }
-.v2-detail-card h3 { font-size: 20px; font-weight: 700; color: #1a1a1a; margin-bottom: 20px; }
+.v2-detail-card h3 {
+  font-size: 20px; font-weight: 700; color: #1a1a1a; margin-bottom: 0;
+  cursor: pointer; display: flex; align-items: center; user-select: none;
+}
+.v2-detail-card h3::after {
+  content: '\\25BE'; margin-left: auto; color: #aaa; font-size: 13px;
+  transition: transform 0.25s;
+}
+.v2-detail-card.open h3::after { transform: rotate(180deg); }
+.v2-detail-card .v2-detail-body { display: none; margin-top: 20px; }
+.v2-detail-card.open .v2-detail-body { display: block; }
 .v2-detail-list { list-style: none; padding: 0; margin: 0; }
 .v2-detail-list li {
   padding: 10px 0; font-size: 14px; color: #555; line-height: 1.7;
@@ -1611,7 +1621,7 @@ ${hreflangTags}
 
   const h = i.tableHeaders;
   const specRows = [
-    [h.size, locField(specData, 'size', lang), '<span class="v2-badge v2-badge-a">그룹 A</span>'],
+    [h.size, locField(specData, 'size', lang), ''],
     [h.pixels, locField(specData, 'pixels', lang), ''],
     [h.dpi, String(specData.dpi) + ' 이상', ''],
     [h.background, locField(specData, 'background', lang), ''],
@@ -1640,7 +1650,7 @@ ${hreflangTags}
   ).join('');
 
   const sameSize = Object.values(SPECS_DATA)
-    .filter(s => s.country === specData.country && s.slug !== slug)
+    .filter(s => s.country === specData.country && s.size === specData.size && s.slug !== slug)
     .sort((a, b) => a.priority - b.priority);
   const sameHtml = sameSize.map(s => {
     const name = lang === 'ja' ? (s.typeJa || s.type) : (lang === 'en' ? s.typeEn : s.type);
@@ -1665,6 +1675,10 @@ ${hreflangTags}
     <nav class="v2-breadcrumb">
       <a href="${prefix}/specs">${escapeHtml(specsLabel)} 가이드</a> &gt; ${escapeHtml(countryName)} &gt; ${escapeHtml(typeName)}
     </nav>
+    <div class="v2-header">
+      <h1>${escapeHtml(countryName)} ${escapeHtml(typeName)}</h1>
+      <div class="v2-sub">${escapeHtml(specData.countryEn || countryName)} ${escapeHtml(specData.typeEn || typeName)} Photo Specification</div>
+    </div>
     <div class="v2-tags">
       <span class="v2-tag">${escapeHtml(countryName)}</span>
       <span class="v2-tag">${escapeHtml(typeName)}</span>
@@ -1673,10 +1687,6 @@ ${hreflangTags}
         const { typeSlug: ts, countrySlug: cs } = parseSlug(s.slug);
         return `<a href="${prefix}/specs/${ts}/${cs}" class="v2-tag">${escapeHtml(n)}</a>`;
       }).join('')}
-    </div>
-    <div class="v2-header">
-      <h1>${escapeHtml(countryName)} ${escapeHtml(typeName)}</h1>
-      <div class="v2-sub">${escapeHtml(specData.countryEn || countryName)} ${escapeHtml(specData.typeEn || typeName)} Photo Specification</div>
     </div>
 
     <!-- 2. 핵심 규격 카드 -->
@@ -1788,15 +1798,15 @@ ${hreflangTags}
       </div>
     </div>
 
-    <!-- 4. 상세규정 + 반려사유 -->
+    <!-- 4. 상세규정 + 반려사유 (아코디언) -->
     <div class="v2-detail-grid">
-      <div class="v2-detail-card">
+      <div class="v2-detail-card" onclick="this.classList.toggle('open')">
         <h3>상세 규정</h3>
-        <ul class="v2-detail-list">${detailHtml}</ul>
+        <div class="v2-detail-body"><ul class="v2-detail-list">${detailHtml}</ul></div>
       </div>
-      <div class="v2-detail-card">
+      <div class="v2-detail-card" onclick="this.classList.toggle('open')">
         <h3>반려사유 TOP 5</h3>
-        <ol class="v2-reject-list">${rejectHtml}</ol>
+        <div class="v2-detail-body"><ol class="v2-reject-list">${rejectHtml}</ol></div>
       </div>
     </div>
 
@@ -1813,11 +1823,24 @@ ${hreflangTags}
       ${faqHtml}
     </div>
 
-    <!-- 7. CTA 배너 -->
-    <div class="v2-cta-banner">
-      <h2>규격에 맞는 여권사진, AI로 자동 완성</h2>
-      <div class="v2-cta-sub">셀카 한 장이면 ${escapeHtml(locField(specData, 'size', lang).replace('cm', 'mm').replace('3.5', '35').replace('4.5', '45'))} · 균일 흰색 배경으로 30초 만에 변환</div>
-      <a href="#v2-steps" class="v2-cta-btn-main">지금 만들기 →</a>
+    <!-- 7. 크로스셀 카드 -->
+    <div class="v2-same-section">
+      <h2>다른 MONKOS 서비스</h2>
+      <div class="v2-same-sub">증명사진 외에도 다양한 AI 사진 서비스를 이용해보세요.</div>
+      <div class="v2-same-grid">
+        <a href="/headshot" class="v2-same-card">
+          <span class="v2-same-icon">💼</span>
+          <div><div class="v2-same-name">취업·이력서 사진</div><div class="v2-same-size">AI 헤드샷으로 완성</div></div>
+        </a>
+        <a href="/" class="v2-same-card">
+          <span class="v2-same-icon">📷</span>
+          <div><div class="v2-same-name">프로필 사진</div><div class="v2-same-size">SNS·링크드인용</div></div>
+        </a>
+        <a href="${prefix}/specs" class="v2-same-card">
+          <span class="v2-same-icon">📐</span>
+          <div><div class="v2-same-name">증명사진 전체 규격</div><div class="v2-same-size">국가별·용도별 규격 가이드</div></div>
+        </a>
+      </div>
     </div>
   </div>
 `;
