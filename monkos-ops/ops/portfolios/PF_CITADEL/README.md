@@ -172,6 +172,7 @@ status: active
 | 06/24 | iMac/막내 | **SEO 내부 경합 종합감사 막내3 보강** — 웹사이트 구조 실측. 메인/idphoto H1 공백 누락 2건 추가 발견. /specs/*/korea → /kr 301 + canonical ISO 정상 복구 확인. /guide/ai-photo hreflang ko/x-default만 존재 재확인. 시타델 판정: 부분작동 유지. P0: H1 공백 수정 + 블로그 CTA 확대. | [REPORT](../../reports/2026-06/REPORT_20260624_iMac막내_SEO내부경합종합감사.md) | ✅ |
 | 06/24 | iMac/민아 | **포털 라우팅 헬스 전수 + 전환동선 링크시스템 설계** — 라이브 54 URL 헬스(전 라우트 정상, /pricing·/guide 404 이슈 해소 확인) + GA4/GSC 실측 + 인기/유입 13페이지 병렬 감사(ultracode 워크플로우). funnelVerdict **broken 5/partial 8/good 0**. broken 공통원인 2개: ① 블로그 CTA 화이트리스트 게이트(막내 소유) ② specs CTA bare 홈 하드코딩(render-specs.js L1516). P0~P2 액션 + 역할분담(render-blog.js=막내, 타 렌더러=쌍아→막내) | [REPORT](../../reports/2026-06/REPORT_20260624_iMac민아_포털전환동선링크시스템설계.md) | ✅ |
 | 06/25 | iMac/민아 | **P0-2 실행 완료 — specs 상세 CTA 홈→촬영실 직진** (민아 단독 풀사이클: 기획→실행→preview검증→prod승격→실도메인검증). render-specs.js i객체 언어별 ctaHref(ko·en→idphoto-kr, ja→idphoto-jp)+L2321 교체. 모든 구버전 specs 상세 일괄. rev 00377-feh 트래픽100%. ⚠️deploy.sh 동일소스 트래픽미승격 이슈 발견·update-traffic 해소 | [세션로그](../../sessions/2026-06/2026-06-25_iMac_민아.md) | ✅ prod |
+| 06/25 | iMac/민아 | **specs 전환 후속 — STATUS 체계 + 가이드 설계 + 레몬 승인** — ① STATUS_pricing 신설(가격 현재상태 잔액문서: 세션로그=원본/as-of 캐시, 레몬승인 반영 첫 갱신) ② specs 가이드 이미지 설계(인종사진⊥측정선 분리, crop.js+specs-data.json 정본, 한국여권 prof.jpg 파일럿) ③ Lemon Squeezy 승인→코드·시크릿 완비 확인, 외부 결제 블로커0 | [STATUS](../../status/STATUS_pricing.md) · [DESIGN](../../tech/designs/2026-06/DESIGN_20260625_specs_가이드이미지체계.md) | ✅ 설계·진단 |
 
 ---
 

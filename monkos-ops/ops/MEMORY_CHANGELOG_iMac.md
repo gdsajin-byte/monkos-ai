@@ -429,3 +429,7 @@
 - ADD: feedback_no_remote_clone — 원격 디바이스 Tailscale SSH 접속 시 새 clone 생성 금지. M1 듀얼레포 사고(06-23) 교훈.
 - ADD: project_specs_v2_url_structure — V2 URL=/specs/kr-passport (1-segment), /kr/specs/ 404. V2_SLUGS 등록 슬러그만 301 건너뜀.
 - UPDATE: MEMORY.md — 위 2건 인덱스 추가.
+
+## [2026-06-25 19:18 KST] iMac/민아
+- ADD 5건: project_builder_role_model_leverage(빌더=모델능력최대화·3원칙) · project_progressive_delegation_pipeline(위계점진위임·임원부서장에이전트) · project_photo_instant_interaction_architecture(사진 단일인터랙션·specs경량분산) · feedback_grasp_inflight_work_before_acting(미완성 진행작업 방향부터 파악) · feedback_deploy_infra_outside_mina_scope(트래픽 --to-latest·deploy인프라 민아스코프밖)
+- MEMORY.md 외장메모리 인덱스 5행 추가. ⚠️ 200줄 캡 근접 — 다음 세션 consolidate 필요
