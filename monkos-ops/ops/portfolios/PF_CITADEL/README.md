@@ -171,6 +171,7 @@ status: active
 | 06/24 | iMac/막내3 | **SEO 내부 경합 종합 감사 + 시타델 작동 검증** — GSC/GA4 실측. "ai 증명사진" 3-way 경합(app/guide/blog) 확인, 포털 메인 / 노출 0회. 6/18 canonical 통일 후 신호 이전 미발생(서브도메인 구조상 불가). 시타델 판정: 부분 작동(외곽·성벽 OK, 킵 헤드텀 장악 미작동). P0: 블로그 전체 CTA 자동삽입 확대 + 남자증명사진 CTR 개선. P1: 대표URL 단일화(/guide 권고) | [REPORT](../../reports/2026-06/REPORT_20260624_iMac막내3_SEO내부경합종합감사.md) | ✅ |
 | 06/24 | iMac/막내 | **SEO 내부 경합 종합감사 막내3 보강** — 웹사이트 구조 실측. 메인/idphoto H1 공백 누락 2건 추가 발견. /specs/*/korea → /kr 301 + canonical ISO 정상 복구 확인. /guide/ai-photo hreflang ko/x-default만 존재 재확인. 시타델 판정: 부분작동 유지. P0: H1 공백 수정 + 블로그 CTA 확대. | [REPORT](../../reports/2026-06/REPORT_20260624_iMac막내_SEO내부경합종합감사.md) | ✅ |
 | 06/24 | iMac/민아 | **포털 라우팅 헬스 전수 + 전환동선 링크시스템 설계** — 라이브 54 URL 헬스(전 라우트 정상, /pricing·/guide 404 이슈 해소 확인) + GA4/GSC 실측 + 인기/유입 13페이지 병렬 감사(ultracode 워크플로우). funnelVerdict **broken 5/partial 8/good 0**. broken 공통원인 2개: ① 블로그 CTA 화이트리스트 게이트(막내 소유) ② specs CTA bare 홈 하드코딩(render-specs.js L1516). P0~P2 액션 + 역할분담(render-blog.js=막내, 타 렌더러=쌍아→막내) | [REPORT](../../reports/2026-06/REPORT_20260624_iMac민아_포털전환동선링크시스템설계.md) | ✅ |
+| 06/25 | iMac/민아 | **P0-2 실행 완료 — specs 상세 CTA 홈→촬영실 직진** (민아 단독 풀사이클: 기획→실행→preview검증→prod승격→실도메인검증). render-specs.js i객체 언어별 ctaHref(ko·en→idphoto-kr, ja→idphoto-jp)+L2321 교체. 모든 구버전 specs 상세 일괄. rev 00377-feh 트래픽100%. ⚠️deploy.sh 동일소스 트래픽미승격 이슈 발견·update-traffic 해소 | [세션로그](../../sessions/2026-06/2026-06-25_iMac_민아.md) | ✅ prod |
 
 ---
 
