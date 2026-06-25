@@ -301,48 +301,56 @@ const httpServer = createServer(async (req, res) => {
         model: 'gemini-2.5-flash',
         contents: [{ role: 'user', parts: [
           { inlineData: { mimeType: 'image/jpeg', data: base64Data } },
-          { text: `You are a strict Korean passport photo inspector. Evaluate this photo against official Korean passport photo regulations. Be STRICT — when in doubt, FAIL the item.
+          { text: `You are a STRICT photo evaluator for MONKOS AI passport photo service. The user uploads a photo that AI will retouch into a passport photo. You must evaluate whether this input photo is SUITABLE for AI processing. Be strict — AI can fix backgrounds and lighting, but it CANNOT fix fundamentally unsuitable inputs.
+
+CRITICAL RULES:
+- This must be a PORTRAIT photo of a SINGLE PERSON showing their FACE clearly.
+- The person must be wearing appropriate clothing (at minimum a top/shirt covering shoulders).
+- Swimwear, underwear, lingerie, bare chest, costumes, or inappropriate clothing = IMMEDIATE FAIL for clothing AND suitability.
+- Face must be roughly frontal and occupy a significant portion of the image.
+
+Every item must include a "warnMsg" field: null if pass, a short Korean explanation if warn or fail.
 
 ITEM 1 — "정면 응시" (Frontal face):
-- FAIL if: face is turned more than ~5 degrees left/right, head is tilted, body is angled/turned to the side, the person is in a 3/4 pose, or shoulders are visibly angled rather than square to the camera.
-- PASS only if: face AND shoulders are directly facing the camera, eyes looking straight at the lens.
+- PASS if: face is roughly frontal (within ~10 degrees), shoulders relatively square.
+- WARN if: face or shoulders noticeably angled (10-25 degrees). Set warnMsg: "측면 각도가 커서 AI 보정 시 실물과 다를 수 있습니다."
+- FAIL if: 3/4 pose, profile view, extreme angle, or back of head. Set warnMsg: "정면에 가까운 사진을 올려주세요."
 
 ITEM 2 — "눈썹 노출" (Eyebrows visible):
-- FAIL if: bangs or hair cover ANY part of either eyebrow. Even partial coverage = FAIL.
-- PASS only if: both eyebrows are FULLY visible from end to end with no hair obstruction.
+- PASS if: both eyebrows mostly visible.
+- WARN if: bangs partially cover eyebrows. Set warnMsg: "앞머리가 눈썹을 가려 AI가 추정 보정합니다."
+- FAIL if: face obscured by hair/hat/mask/hand. Set warnMsg: "얼굴이 가려지지 않은 사진을 올려주세요."
 
-ITEM 3 — "배경 적합" (Background):
-- FAIL if: background contains objects, patterns, other people, or is very dark. Also FAIL if background is pure white and clothing is also white (no contrast).
-- WARN if: background is a single light color but not perfectly uniform (acceptable for AI processing — we can fix this).
-- PASS if: background is plain, light, and uniform.
+ITEM 3 — "배경" (Background):
+- PASS if: any background — AI will replace it.
+- WARN if: extremely cluttered background with objects overlapping the person. Set warnMsg: "복잡한 배경은 AI 제거 시 경계가 부자연스러울 수 있습니다."
 
-ITEM 4 — "그림자 없음" (No shadows):
-- FAIL if: there are strong shadows on the face (under nose, on one side of face) or cast shadows on the background.
-- PASS if: lighting is even, no harsh shadows visible.
+ITEM 4 — "조명" (Lighting):
+- PASS if: face reasonably lit.
+- WARN if: strong one-sided shadows or backlighting. Set warnMsg: "강한 그림자로 AI 보정 후 얼굴 톤이 달라질 수 있습니다."
+- FAIL if: face in complete darkness/silhouette. Set warnMsg: "얼굴이 밝게 보이는 사진을 올려주세요."
 
-ITEM 5 — "표정 적합" (Expression):
-- FAIL if: teeth are showing AT ALL, mouth is open, person is laughing, grinning, or making an exaggerated expression. Even a slight smile showing teeth = FAIL.
-- WARN if: very slight closed-mouth smile (acceptable but borderline).
-- PASS if: neutral closed-mouth expression, lips together, no teeth visible.
+ITEM 5 — "표정" (Expression):
+- PASS if: neutral or slight closed-mouth smile.
+- WARN if: teeth showing or laughing. Set warnMsg: "입을 다문 표정으로 AI가 보정합니다. 실물과 다를 수 있습니다."
 
-ITEM 6 — "상의 색상" (Clothing color):
-- FAIL if: the visible clothing/top near the shoulders is pure white (will blend with white background).
-- PASS if: clothing is any color other than white, or if no clothing is visible in the frame.
+ITEM 6 — "상의" (Clothing):
+- PASS if: normal clothing (shirt, jacket, blouse, etc.) covering shoulders.
+- WARN if: white top (will blend with white background). Set warnMsg: "흰색 상의는 흰 배경과 경계가 불분명할 수 있습니다."
+- FAIL if: underwear, lingerie, swimwear, bare chest/shoulders, costume, or no clothing visible above chest. Set warnMsg: "증명사진에 적합한 상의를 착용한 사진을 올려주세요."
 
-ITEM 7 — "안경" (Glasses):
-- FAIL if: wearing sunglasses, tinted glasses, or colored contact lenses. Also FAIL if glasses have visible light reflection/glare on lenses.
-- WARN if: wearing clear prescription glasses with no glare (acceptable for passport, but no-glasses is preferred for driving license).
-- PASS if: no glasses at all.
+ITEM 7 — "안경/렌즈" (Glasses):
+- PASS if: no glasses or clear glasses without glare.
+- WARN if: glasses with light reflection. Set warnMsg: "안경 반사를 AI가 제거합니다. 눈 주변이 실물과 다를 수 있습니다."
+- FAIL if: dark sunglasses or colored lenses. Set warnMsg: "선글라스/컬러렌즈를 벗고 촬영한 사진을 올려주세요."
 
 ITEM 8 — "사진 적합성" (Photo suitability):
-- FAIL if: multiple faces detected, face occupies less than ~20% of image area, face is not clearly identifiable (too blurry, too dark, or too distant), image resolution is extremely low (under 200px on shorter side), or it's a full-body/group photo where the face is small.
-- WARN if: face is somewhat small but still identifiable (~20-30% of image), slight blur but features are distinguishable. If warn, set warnMsg to: "얼굴 비중이 작아 AI 보정 시 본인과 다르게 나올 수 있습니다. 가슴 위까지 나온 사진을 권장합니다."
-- PASS if: single face, clearly visible, face occupies roughly 30%+ of image, adequate resolution.
-
-For this item only, include a "warnMsg" field (string or null). All other items should have warnMsg: null.
+- PASS if: single person, face clearly visible, face occupies ~30%+ of image, bust-up framing.
+- WARN if: face somewhat small (20-30%), slight blur. Set warnMsg: "얼굴 비중이 작아 AI 보정 시 실물과 다를 수 있습니다. 가슴 위까지 나온 사진을 권장합니다."
+- FAIL if: multiple people, face <20% of image, full-body shot, extremely blurry, no face, or waist-down visible. Set warnMsg: "1인 정면 얼굴(가슴 위 구도) 사진을 올려주세요."
 
 Respond in JSON only:
-{"checks":[{"id":"frontal","label":"정면 응시","pass":bool,"warn":bool,"warnMsg":null},{"id":"eyebrow","label":"눈썹 완전 노출","pass":bool,"warn":bool,"warnMsg":null},{"id":"background","label":"배경 적합","pass":bool,"warn":bool,"warnMsg":null},{"id":"shadow","label":"그림자 없음","pass":bool,"warn":bool,"warnMsg":null},{"id":"expression","label":"표정 적합","pass":bool,"warn":bool,"warnMsg":null},{"id":"clothing","label":"상의 색상 적합","pass":bool,"warn":bool,"warnMsg":null},{"id":"glasses","label":"안경/렌즈","pass":bool,"warn":bool,"warnMsg":null},{"id":"suitability","label":"사진 적합성","pass":bool,"warn":bool,"warnMsg":"string or null"}]}` }
+{"checks":[{"id":"frontal","label":"정면 응시","pass":bool,"warn":bool,"warnMsg":"string or null"},{"id":"eyebrow","label":"눈썹 노출","pass":bool,"warn":bool,"warnMsg":"string or null"},{"id":"background","label":"배경","pass":bool,"warn":bool,"warnMsg":"string or null"},{"id":"lighting","label":"조명","pass":bool,"warn":bool,"warnMsg":"string or null"},{"id":"expression","label":"표정","pass":bool,"warn":bool,"warnMsg":"string or null"},{"id":"clothing","label":"상의","pass":bool,"warn":bool,"warnMsg":"string or null"},{"id":"glasses","label":"안경/렌즈","pass":bool,"warn":bool,"warnMsg":"string or null"},{"id":"suitability","label":"사진 적합성","pass":bool,"warn":bool,"warnMsg":"string or null"}]}` }
         ]}],
         config: { responseMimeType: 'application/json' },
       });

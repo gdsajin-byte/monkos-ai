@@ -424,3 +424,8 @@
 
 ## [2026-06-24 19:25 KST] iMac/민아
 - ADD: feedback_session_log_concurrent_overwrite — 세션로그 직하생성 금지(동시세션 add-A 덮어쓰기 사고 재발방지). MEMORY.md 외장메모리 인덱스 1행 추가.
+
+## [2026-06-25 19:18 KST] iMac/쌍아
+- ADD: feedback_no_remote_clone — 원격 디바이스 Tailscale SSH 접속 시 새 clone 생성 금지. M1 듀얼레포 사고(06-23) 교훈.
+- ADD: project_specs_v2_url_structure — V2 URL=/specs/kr-passport (1-segment), /kr/specs/ 404. V2_SLUGS 등록 슬러그만 301 건너뜀.
+- UPDATE: MEMORY.md — 위 2건 인덱스 추가.

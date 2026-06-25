@@ -20,3 +20,5 @@ last_updated: 2026-06-07
 | 2026-06-07 | M2 | SSH 공개키 등록 (iMac → M2 무인증 접속 연동) | M2/쌍아 |
 | 2026-06-07 | M2 | DEVICE_PROFILE.md 전수 갱신 (시스템정보, Git, Claude Code, 개발환경) | iMac/쌍아 |
 | 2026-06-07 | M2 | 디바이스 일람표 상태 "보류" → "완료" 전환 | iMac/쌍아 |
+| 2026-06-23 | M1 | 듀얼 레포 구조 발견 — 쌍아본(`/Users/macmini/`) vs 정본(`/Users/developer/`) 경로 혼동 | M1/쌍아 |
+| 2026-06-25 | M1 | 듀얼 레포 해소 반영 — 쌍아 작업본 삭제 완료, 정본 단일화 확정, DEVICE_PROFILE 갱신 | iMac/쌍아 |

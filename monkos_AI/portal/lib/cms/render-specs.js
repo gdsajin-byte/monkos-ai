@@ -1366,6 +1366,18 @@ a:hover { color: #5a3de6; }
   margin-top: 8px;
 }
 .v2-upload-zone .v2-upload-hint { font-size: 11px; color: #bbb; margin-top: 6px; }
+.v2-upload-with-guides { display: flex; align-items: center; gap: 24px; justify-content: center; }
+.v2-guide-img-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; flex-shrink: 0; }
+.v2-guide-img { width: 100px; height: 100px; border-radius: 12px; object-fit: cover; opacity: 0.7; border: 2px dashed rgba(108,79,255,0.25); }
+.v2-guide-label { font-size: 11px; color: #888; font-weight: 500; }
+.v2-upload-guide { margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(0,0,0,0.06); }
+.v2-guide-items { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+.v2-guide-items span { font-size: 11px; color: #888; background: rgba(108,79,255,0.06); padding: 3px 8px; border-radius: 10px; }
+@media (max-width: 700px) {
+  .v2-upload-with-guides { flex-direction: column; gap: 16px; }
+  .v2-guide-img-wrap { flex-direction: row; gap: 12px; }
+  .v2-guide-img { width: 60px; height: 60px; }
+}
 
 /* 스텝2 — 프리뷰 */
 .v2-preview-box {
@@ -1385,14 +1397,7 @@ a:hover { color: #5a3de6; }
 }
 .v2-preview-check.show { display: flex; }
 
-/* 스텝3 — 다운로드 */
-.v2-download-btn {
-  display: none; padding: 12px 28px; background: #6c4fff; color: #fff;
-  font-size: 14px; font-weight: 700; border: none; border-radius: 10px;
-  cursor: pointer; transition: background 0.2s;
-}
-.v2-download-btn:hover { background: #5a3de6; }
-.v2-download-btn.show { display: inline-block; }
+/* 스텝3 — 다운로드 (결과 Phase에서 항상 표시) */
 
 /* 스텝 로딩 */
 .v2-step-loading {
@@ -1717,12 +1722,30 @@ ${hreflangTags}
 
       <!-- Phase 1: 업로드 -->
       <div class="v2-make-layout" id="v2-phase-upload">
-        <div class="v2-upload-zone" id="v2-dropzone">
-          <div class="v2-upload-icon">&#8615;</div>
-          <div class="v2-upload-main-text">사진을 끌어다 놓거나</div>
-          <button type="button" class="v2-upload-btn">사진 선택</button>
-          <input type="file" id="v2-file-input" accept="image/*" style="display:none">
-          <div class="v2-upload-hint">JPG, PNG, HEIC / max 10MB</div>
+        <div class="v2-upload-with-guides">
+          <div class="v2-guide-img-wrap">
+            <img src="/images/guides/guide-selfie.jpg" alt="셀카 예시" class="v2-guide-img">
+            <span class="v2-guide-label">✓ 셀카</span>
+          </div>
+          <div class="v2-upload-zone" id="v2-dropzone">
+            <div class="v2-upload-icon">&#8615;</div>
+            <div class="v2-upload-main-text">사진을 끌어다 놓거나</div>
+            <button type="button" class="v2-upload-btn">사진 선택</button>
+            <input type="file" id="v2-file-input" accept="image/*" style="display:none">
+            <div class="v2-upload-hint">JPG, PNG, HEIC / max 10MB</div>
+            <div class="v2-upload-guide">
+              <div class="v2-guide-items">
+                <span>정면 얼굴</span>
+                <span>가슴 위 구도</span>
+                <span>1인</span>
+                <span>선명한 화질</span>
+              </div>
+            </div>
+          </div>
+          <div class="v2-guide-img-wrap">
+            <img src="/images/guides/guide-profile.jpg" alt="프로필 예시" class="v2-guide-img">
+            <span class="v2-guide-label">✓ 프로필</span>
+          </div>
         </div>
         <div class="v2-error-msg" id="v2-error"></div>
       </div>
@@ -1764,9 +1787,10 @@ ${hreflangTags}
             </button>
             <div class="v2-pay-divider"><span>또는</span></div>
             <button class="v2-pay-btn v2-pay-credit" id="v2-pay-credit">
-              <div class="v2-pay-title">크레딧으로 만들기 <span class="v2-badge v2-badge-a">39% 할인</span></div>
-              <div class="v2-pay-price">10c <span style="font-size:13px;color:#888;font-weight:400;">(약 ₩1,225)</span></div>
-              <div class="v2-pay-desc">간편로그인 시 10c 무료 지급 · 추가 충전 40c ₩4,900</div>
+              <div class="v2-pay-title">크레딧으로 만들기</div>
+              <div class="v2-pay-price">10c <span style="font-size:13px;color:#888;font-weight:400;">(₩1,500)</span></div>
+              <div class="v2-pay-desc">간편로그인 시 10c 무료 지급</div>
+              <div class="v2-pay-desc" style="font-size:12px;margin-top:4px;">추가 충전: 40c <span style="text-decoration:line-through;color:#bbb;">₩6,000</span> ₩4,900</div>
             </button>
           </div>
         </div>

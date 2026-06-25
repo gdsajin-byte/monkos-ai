@@ -9,8 +9,8 @@ os: macOS 15.x (Darwin 25.2.0, ARM64 T8103)
 owner: 작가님
 location: 집
 primary_agents: [쌍아, 막내N, 민아, 소넷이]
-claude_code_version: "(미설치)"
-last_updated: 2026-05-13
+claude_code_version: "2.1.140"
+last_updated: 2026-06-25
 ---
 
 # M1 — Device Profile
@@ -21,8 +21,8 @@ last_updated: 2026-05-13
 - **OS**: Darwin 25.2.0 (macOS, ARM64 M1 — T8103)
 - **Tailscale IP**: 100.76.80.99 / fd7a:115c:a1e0::6d01:5097
 - **SSH**: `ssh m1` (100.76.80.99, User: macmini)
-- **Claude Code**: 미설치 (명령어 없음)
-- **monk_project 경로**: `/Users/developer/monk_project/`
+- **Claude Code**: 2.1.140 (2026-05-13 설치)
+- **monk_project 경로**: `/Users/developer/monk_project/` (정본 단일 — 아래 듀얼 레포 사고 참조)
 
 ## 글로벌 설정 — `~/.claude/settings.json`
 
@@ -94,11 +94,15 @@ last_updated: 2026-05-13
 | `feedback_blue_links.md` | 피드백 |
 
 ## 특이사항
-- Claude Code CLI 미설치 — VSCode 확장으로만 운용 중인 것으로 추정
-- model: `claude-opus-4-6` (1M 컨텍스트 미지정)
+- model: `claude-opus-4-6` (1M 컨텍스트 미지정 → 통일 필요)
 - effortLevel: `high` (iMac에는 없는 필드)
 - MCP 서버 미설정
 - 권한: 최소한 — dig, grep, Read, GSC만 허용
 - memory 파일 28개로 iMac(3개) 대비 훨씬 풍부 — M1이 주 운용 디바이스였던 이력 반영
-- worktree 잔재 존재: `bold-euler`, `tender-engelbart`, `vigilant-bassi`
-- 중첩 클론: `/Users/developer/monk_project/monk_project/` 존재
+
+## 듀얼 레포 사고 (해소 완료)
+- **원인**: iMac/쌍아가 Tailscale SSH로 M1 접속하여 Apple 빌드 시, 정본(`/Users/developer/monk_project/`)을 사용하지 않고 `/Users/macmini/` 경로에 새 클론 생성. 이후 쌍아(VSCode)는 새 경로, 막내(iTerm)는 정본 경로를 바라보며 소통 단절.
+- **발견**: 2026-06-23 M1/쌍아 세션 — 막내가 경로 혼동 원인 추적하여 듀얼 레포 구조 발견.
+- **해소**: 작가님이 쌍아 작업본(`/Users/macmini/`) 삭제, 정본 `/Users/developer/monk_project/` 단일화 확정.
+- **worktree 잔재**: `bold-euler`, `tender-engelbart`, `vigilant-bassi` — 삭제 여부 미확인.
+- **교훈**: 원격 디바이스 접속 시 새 클론 생성 금지. 기존 정본 경로 사용 필수.

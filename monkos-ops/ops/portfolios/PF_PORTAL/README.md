@@ -106,6 +106,7 @@ status: active
 | 06/25 | iMac/막내1 | **Specs v2 P1 — 크롭앱 인라인 임베드** — FaceMesh 기반 얼굴감지+규격맞춤 크롭을 V2에 직접 임베드. 업로드→크롭조정→AI검수→결제 동선 전환. 크롭 다운로드 무료 | render-specs.js (+658줄) | ✅ rev00366 |
 | 06/25 | iMac/막내1 | **Specs v2 P1.5 — Gemini 좌표 보정** — FaceMesh 감지 후 ICAO 범위 밖이면 Gemini Flash로 정수리·턱·눈 좌표 보정. `/api/idphoto/align` 신설. confidence<0.5 무시 | server.js + render-specs.js | ✅ rev00368 |
 | 06/25 | iMac/막내1 | **Specs v2 P2 — 크롭 제거 + 검수 강화** — P1/P1.5 크롭 전량 제거(-762줄). 동선 단순화(업로드→AI검수→결제). precheck ITEM 8 사진적합성 추가 + warnMsg UI. align API 삭제 | server.js + render-specs.js | ✅ rev00370 |
+| 06/25 | iMac/쌍아 | **precheck 프롬프트 3회 전면 재작성** — ① "여권규격심사"→"AI 입력 적합성" 전환 ② 노출/속옷 FAIL 강제 ③ 정면성 10도 엄격화. 업로드 가이드 이미지 배치(셀카+프로필). 다운로드 버튼 CSS 수정. 가격 10c=₩1,500 정정 | server.js + render-specs.js | ⏳ 로컬 미배포 |
 
 ---
 
