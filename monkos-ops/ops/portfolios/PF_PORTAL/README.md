@@ -105,6 +105,7 @@ status: active
 | 06/25 | iMac/막내1 | **Specs v2 kr-passport UI 정비 5건** — ① 태그 H1 아래 이동 ② 그룹A 배지 삭제 ③ 상세규정/반려사유 아코디언 전환 ④ 같은사진 사이즈 필터 추가 ⑤ 하단CTA→크로스셀카드 교체 | render-specs.js | ✅ rev00377 |
 | 06/25 | iMac/막내1 | **Specs v2 P1 — 크롭앱 인라인 임베드** — FaceMesh 기반 얼굴감지+규격맞춤 크롭을 V2에 직접 임베드. 업로드→크롭조정→AI검수→결제 동선 전환. 크롭 다운로드 무료 | render-specs.js (+658줄) | ✅ rev00366 |
 | 06/25 | iMac/막내1 | **Specs v2 P1.5 — Gemini 좌표 보정** — FaceMesh 감지 후 ICAO 범위 밖이면 Gemini Flash로 정수리·턱·눈 좌표 보정. `/api/idphoto/align` 신설. confidence<0.5 무시 | server.js + render-specs.js | ✅ rev00368 |
+| 06/25 | iMac/막내1 | **Specs v2 P2 — 크롭 제거 + 검수 강화** — P1/P1.5 크롭 전량 제거(-762줄). 동선 단순화(업로드→AI검수→결제). precheck ITEM 8 사진적합성 추가 + warnMsg UI. align API 삭제 | server.js + render-specs.js | ✅ rev00370 |
 
 ---
 
