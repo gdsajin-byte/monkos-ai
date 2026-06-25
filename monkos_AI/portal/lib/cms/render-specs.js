@@ -2380,6 +2380,65 @@ ${hreflangTags}
     cropDragging = null; cropDragStart = null;
   }
 
+  /* ─── Gemini align (조건부 좌표 보정) ─── */
+  function tryGeminiAlign(raw, extracted, natW, natH, imgDataUrl, loadingEl) {
+    var MM = getMM();
+    var faceMm = (cropPts.chin.y - cropPts.crown.y) / MM;
+    var eyeRatio = ((cropPts.leftPupil.y + cropPts.rightPupil.y) / 2) / FH;
+    var needsAlign = faceMm < V2_SPEC.faceMin || faceMm > V2_SPEC.faceMax || eyeRatio < 0.40 || eyeRatio > 0.48;
+    if (!needsAlign) return;
+
+    loadingEl.classList.remove('hidden');
+    loadingEl.querySelector('span').textContent = 'AI 보정 중...';
+
+    var crownYNorm = raw[FM_IDX.LEFT_PUPIL].y - (raw[FM_IDX.CHIN].y - raw[FM_IDX.LEFT_PUPIL].y);
+    var alignBody = {
+      image: imgDataUrl,
+      facemesh: {
+        crown: { y: crownYNorm },
+        chin: { y: raw[FM_IDX.CHIN].y },
+        leftPupil: { y: raw[FM_IDX.LEFT_PUPIL].y },
+        rightPupil: { y: raw[FM_IDX.RIGHT_PUPIL].y }
+      }
+    };
+
+    fetch('/api/idphoto/align', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(alignBody)
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      loadingEl.classList.add('hidden');
+      loadingEl.querySelector('span').textContent = '얼굴 분석 중...';
+      if (!data.crown_y || !data.chin_y || (data.confidence != null && data.confidence < 0.5)) return;
+
+      var corrCrown = { x: data.face_center_x * natW, y: data.crown_y * natH };
+      var corrChin = { x: data.face_center_x * natW, y: data.chin_y * natH };
+      var corrLeftPupil = { x: extracted.leftPupil.x, y: data.left_eye_y * natH };
+      var corrRightPupil = { x: extracted.rightPupil.x, y: data.right_eye_y * natH };
+      var eyeCY = (corrLeftPupil.y + corrRightPupil.y) / 2;
+      var eyeCX = (corrLeftPupil.x + corrRightPupil.x) / 2;
+      var tlC = { x: extracted.leftCheek.x + (eyeCX - extracted.leftCheek.x) * 0.3, y: corrCrown.y + (extracted.leftCheek.y - corrCrown.y) * 0.4 };
+      var trC = { x: extracted.rightCheek.x + (eyeCX - extracted.rightCheek.x) * 0.3, y: corrCrown.y + (extracted.rightCheek.y - corrCrown.y) * 0.4 };
+      var blC = { x: extracted.leftCheek.x + (corrChin.x - extracted.leftCheek.x) * 0.3, y: extracted.leftCheek.y + (corrChin.y - extracted.leftCheek.y) * 0.6 };
+      var brC = { x: extracted.rightCheek.x + (corrChin.x - extracted.rightCheek.x) * 0.3, y: extracted.rightCheek.y + (corrChin.y - extracted.rightCheek.y) * 0.6 };
+
+      var corrected = {
+        crown: corrCrown, chin: corrChin,
+        leftPupil: corrLeftPupil, rightPupil: corrRightPupil,
+        leftCheek: extracted.leftCheek, rightCheek: extracted.rightCheek,
+        tlCorner: tlC, trCorner: trC, blCorner: blC, brCorner: brC
+      };
+      cropLastLandmarks = { landmarks: corrected, natW: natW, natH: natH };
+      cropPts = autoPlace(corrected, natW, natH);
+      renderCrop();
+    })
+    .catch(function() {
+      loadingEl.classList.add('hidden');
+      loadingEl.querySelector('span').textContent = '얼굴 분석 중...';
+    });
+  }
+
   /* ─── Crop phase entry ─── */
   function enterCropPhase(imgDataUrl) {
     showPhase(phaseCrop);
@@ -2399,6 +2458,16 @@ ${hreflangTags}
       var natW = img.naturalWidth, natH = img.naturalHeight;
       renderCrop();
 
+      function onFaceMeshDone(raw, loadingEl) {
+        if (raw) {
+          var extracted = extractLandmarks(raw, natW, natH);
+          cropLastLandmarks = { landmarks: extracted, natW: natW, natH: natH };
+          cropPts = autoPlace(extracted, natW, natH);
+          renderCrop();
+          tryGeminiAlign(raw, extracted, natW, natH, imgDataUrl, loadingEl);
+        }
+      }
+
       if (!cropFaceMeshReady) {
         var loadingEl = document.getElementById('v2-facemesh-loading');
         loadingEl.classList.remove('hidden');
@@ -2406,12 +2475,7 @@ ${hreflangTags}
           if (cropFaceMeshReady) {
             detectCropLandmarks(img).then(function(raw) {
               loadingEl.classList.add('hidden');
-              if (raw) {
-                var extracted = extractLandmarks(raw, natW, natH);
-                cropLastLandmarks = { landmarks: extracted, natW: natW, natH: natH };
-                cropPts = autoPlace(extracted, natW, natH);
-                renderCrop();
-              }
+              onFaceMeshDone(raw, loadingEl);
             });
           } else { loadingEl.classList.add('hidden'); }
         });
@@ -2420,12 +2484,7 @@ ${hreflangTags}
         loadingEl2.classList.remove('hidden');
         detectCropLandmarks(img).then(function(raw) {
           loadingEl2.classList.add('hidden');
-          if (raw) {
-            var extracted = extractLandmarks(raw, natW, natH);
-            cropLastLandmarks = { landmarks: extracted, natW: natW, natH: natH };
-            cropPts = autoPlace(extracted, natW, natH);
-            renderCrop();
-          }
+          onFaceMeshDone(raw, loadingEl2);
         });
       }
     };

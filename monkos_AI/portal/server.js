@@ -352,6 +352,57 @@ Respond in JSON only:
     }
   }
 
+  // === 좌표 보정 (Gemini) ===
+  if (urlPath === '/api/idphoto/align' && req.method === 'POST') {
+    try {
+      const { parseJsonBody, log: slog } = await import('./lib/shared/config.js');
+      const { GoogleGenAI } = await import('@google/genai');
+      const body = await parseJsonBody(req);
+      if (!body.image) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        return res.end(JSON.stringify({ error: '이미지 필수' }));
+      }
+      const base64Data = body.image.includes(',') ? body.image.split(',')[1] : body.image;
+      const fm = body.facemesh || {};
+      const ai = new GoogleGenAI({ vertexai: true, project: process.env.PROJECT_ID, location: 'us-central1' });
+      const result = await ai.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: [{ role: 'user', parts: [
+          { inlineData: { mimeType: 'image/jpeg', data: base64Data } },
+          { text: `You are a precise photo measurement AI. Given a portrait photo, identify the exact positions of these facial landmarks as normalized coordinates (0.0 to 1.0, where 0,0 is top-left):
+
+1. crown_y: The very top of the head (top of hair/scalp), NOT the forehead
+2. chin_y: The bottommost point of the chin
+3. left_eye_y: Center of the left eye (from viewer's perspective)
+4. right_eye_y: Center of the right eye
+5. face_center_x: Horizontal center of the face
+
+The client detected these positions but they may be inaccurate:
+- Crown: y=${fm.crown?.y ?? 'unknown'}
+- Chin: y=${fm.chin?.y ?? 'unknown'}
+- Left eye: y=${fm.leftPupil?.y ?? 'unknown'}
+- Right eye: y=${fm.rightPupil?.y ?? 'unknown'}
+
+Please verify and correct these positions based on what you see in the actual image.
+
+Respond in JSON only:
+{"crown_y": float, "chin_y": float, "left_eye_y": float, "right_eye_y": float, "face_center_x": float, "confidence": float}` }
+        ]}],
+        config: { responseMimeType: 'application/json' },
+      });
+      const text = result.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
+      let parsed;
+      try { parsed = JSON.parse(text); } catch { parsed = {}; }
+      slog(`[IDPhoto][align] 보정 완료: confidence=${parsed.confidence ?? 'N/A'}`);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify(parsed));
+    } catch (err) {
+      log(`[IDPhoto][align] 에러: ${err.message}`, 'ERROR');
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ error: '보정 중 오류가 발생했습니다', code: 'INTERNAL_ERROR' }));
+    }
+  }
+
   // === 증명사진 생성 ===
   if (urlPath === '/api/idphoto/generate' && req.method === 'POST') {
     try {
