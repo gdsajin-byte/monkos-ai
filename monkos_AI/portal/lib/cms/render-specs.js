@@ -1528,92 +1528,8 @@ a:hover { color: #5a3de6; }
   .v2-same-grid { flex-direction: column; }
 }
 
-/* 크롭 Phase */
-.v2-crop-container { max-width: 480px; margin: 0 auto; }
-.v2-crop-frame {
-  position: relative; overflow: hidden; touch-action: none;
-  user-select: none; -webkit-user-select: none;
-  border: 2px solid #6c4fff; border-radius: 6px; background: #0a0e17;
-  margin-bottom: 16px; cursor: grab;
-}
-.v2-crop-frame.grabbing { cursor: grabbing; }
-.v2-crop-photo {
-  position: absolute; left: 50%; top: 50%;
-  width: 100%; height: 100%; object-fit: cover;
-  user-select: none; -webkit-user-drag: none; pointer-events: none;
-}
-.v2-crop-overlay { position: absolute; inset: 0; pointer-events: none; z-index: 10; }
-.v2-crop-pin {
-  position: absolute; transform: translateX(-50%);
-  width: 9px; height: 9px; border-radius: 50%; border: 2.5px solid #fff;
-  z-index: 22; cursor: ns-resize;
-  padding: 19px; margin: -19px; box-sizing: content-box;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 12px; color: #fff; font-weight: 800;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.6);
-}
-.v2-crop-scale {
-  position: absolute; z-index: 22; cursor: nwse-resize;
-  width: 20px; height: 20px; border-radius: 50%;
-  background: #6c4fff; border: 2px solid #fff;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 10px; color: #fff;
-}
-.v2-crop-badge {
-  position: absolute; top: 8px; left: 8px; z-index: 20;
-  background: rgba(10,14,23,0.9); border-radius: 6px;
-  padding: 4px 10px; font-size: 12px; font-weight: 700;
-  display: flex; align-items: center; gap: 4px;
-}
-.v2-crop-status {
-  position: absolute; top: 8px; right: 8px; z-index: 20;
-  border-radius: 6px; padding: 4px 10px; font-size: 11px; font-weight: 600;
-}
-.v2-crop-loading {
-  position: absolute; inset: 0; z-index: 30;
-  background: rgba(10,14,23,0.8); display: flex;
-  flex-direction: column; align-items: center; justify-content: center; gap: 10px;
-  color: #fff; font-size: 13px;
-}
-.v2-crop-loading.hidden { display: none; }
-.v2-crop-metrics {
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px;
-}
-.v2-crop-metric {
-  background: #fff; border: 1px solid rgba(0,0,0,0.06); border-radius: 10px;
-  padding: 10px 8px; text-align: center;
-}
-.v2-crop-metric span:first-child { display: block; font-size: 11px; color: #888; margin-bottom: 4px; }
-.v2-crop-metric span:last-child { display: block; font-size: 15px; font-weight: 700; color: #1a1a1a; }
-.v2-crop-range { margin-bottom: 12px; }
-.v2-range-header { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px; }
-.v2-range-header span:first-child { color: #888; }
-.v2-range-track {
-  height: 6px; background: rgba(0,0,0,0.06); border-radius: 3px; position: relative;
-}
-.v2-range-fill {
-  position: absolute; height: 100%; background: rgba(108,79,255,0.2); border-radius: 3px;
-}
-.v2-range-dot {
-  position: absolute; top: -4px; width: 14px; height: 14px;
-  border-radius: 50%; transform: translateX(-50%);
-}
-.v2-crop-warn {
-  background: rgba(225,112,85,0.1); border: 1px solid rgba(225,112,85,0.3);
-  color: #E17055; border-radius: 8px; padding: 10px 14px;
-  font-size: 13px; margin-bottom: 12px;
-}
-.v2-crop-warn.hidden { display: none; }
-.v2-crop-actions { display: flex; gap: 10px; flex-wrap: wrap; }
-.v2-btn-download {
-  background: #fff; border: 1.5px solid #6c4fff; color: #6c4fff;
-}
-.v2-btn-download:hover { background: rgba(108,79,255,0.05); }
-@media (max-width: 768px) {
-  .v2-crop-container { max-width: 100%; }
-  .v2-crop-metrics { grid-template-columns: repeat(2, 1fr); }
-  .v2-crop-actions { flex-direction: column; }
-}
+/* 검수 경고 메시지 */
+.v2-check-warn-msg { font-size: 12px; color: #d97706; padding: 6px 0 0 32px; line-height: 1.5; }
 `;
 
 const V2_REJECTIONS_KO = [
@@ -1721,18 +1637,6 @@ ${hreflangTags}
   ).join('');
 
   const sizeMm = parseSizeMm(specData.size);
-
-  // V2 크롭 데이터 추출
-  const sizeParts = (specData.size || '').match(/([\d.]+)\s*[×x]\s*([\d.]+)/);
-  const v2wMm = sizeParts ? Math.round(parseFloat(sizeParts[1]) * (specData.size.includes('cm') ? 10 : 1)) : 35;
-  const v2hMm = sizeParts ? Math.round(parseFloat(sizeParts[2]) * (specData.size.includes('cm') ? 10 : 1)) : 45;
-  const pxParts = (specData.pixels || '').match(/(\d+)\s*[×x]\s*(\d+)/);
-  const v2pxW = pxParts ? parseInt(pxParts[1]) : 413;
-  const v2pxH = pxParts ? parseInt(pxParts[2]) : 531;
-  const v2faceMin = specData.faceMin || 32;
-  const v2faceMax = specData.faceMax || 36;
-  const v2faceTarget = specData.faceTarget || Math.round((v2faceMin + v2faceMax) / 2);
-
   const sizeW = locField(specData, 'size', lang).split('×')[0].trim();
   const sizeH = (locField(specData, 'size', lang).split('×')[1] || '4.5cm').trim();
   const imgSrc = `/images/guides/${slug}.webp`;
@@ -1823,47 +1727,7 @@ ${hreflangTags}
         <div class="v2-error-msg" id="v2-error"></div>
       </div>
 
-      <!-- Phase 2: 크롭 조정 -->
-      <div class="v2-make-layout" id="v2-phase-crop" style="display:none;">
-        <div class="v2-crop-container">
-          <div class="v2-crop-frame" id="v2-crop-frame">
-            <img class="v2-crop-photo" id="v2-crop-photo" src="" alt="" draggable="false">
-            <svg class="v2-crop-overlay" id="v2-crop-svg"></svg>
-            <div class="v2-crop-pin" id="v2-crown-pin">&#8597;</div>
-            <div class="v2-crop-scale" id="v2-scale-handle">&#10530;</div>
-            <div class="v2-crop-badge" id="v2-badge-face"></div>
-            <div class="v2-crop-status" id="v2-badge-status"></div>
-            <div class="v2-crop-loading hidden" id="v2-facemesh-loading">
-              <div class="v2-spinner"></div>
-              <span>얼굴 분석 중...</span>
-            </div>
-          </div>
-          <div class="v2-crop-metrics">
-            <div class="v2-crop-metric"><span>상단</span><span id="v2-m-top">&mdash;</span></div>
-            <div class="v2-crop-metric"><span>얼굴</span><span id="v2-m-face">&mdash;</span></div>
-            <div class="v2-crop-metric"><span>하단</span><span id="v2-m-bottom">&mdash;</span></div>
-            <div class="v2-crop-metric"><span>눈위치</span><span id="v2-m-eye">&mdash;</span></div>
-          </div>
-          <div class="v2-crop-range">
-            <div class="v2-range-header">
-              <span>ICAO 허용범위</span>
-              <span id="v2-range-value"></span>
-            </div>
-            <div class="v2-range-track">
-              <div class="v2-range-fill" id="v2-range-fill"></div>
-              <div class="v2-range-dot" id="v2-range-dot"></div>
-            </div>
-          </div>
-          <div class="v2-crop-warn hidden" id="v2-crop-warn"></div>
-          <div class="v2-crop-actions">
-            <button class="v2-action-btn v2-btn-retry" id="v2-crop-change">다른 사진</button>
-            <button class="v2-action-btn v2-btn-download" id="v2-crop-download">크롭 다운로드 (무료)</button>
-            <button class="v2-action-btn v2-btn-retouch" id="v2-crop-check">AI 규정검수 (무료) &rarr;</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Phase 1.5: 검수 결과 -->
+      <!-- Phase 2: AI 검수 결과 -->
       <div class="v2-make-layout" id="v2-phase-check" style="display:none;">
         <div class="v2-pay-grid">
           <div class="v2-pay-preview">
@@ -1982,520 +1846,29 @@ ${hreflangTags}
       </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous"></script>
   </div>
 `;
 
   const pageScript = `
 (function(){
-  /* ─── V2_SPEC injection ─── */
-  var V2_SPEC = {
-    wMm: ${v2wMm}, hMm: ${v2hMm},
-    faceMin: ${v2faceMin}, faceMax: ${v2faceMax}, faceTarget: ${v2faceTarget},
-    pxW: ${v2pxW}, pxH: ${v2pxH}, dpi: ${specData.dpi || 300}
-  };
-
-  /* ─── Constants ─── */
-  var FH = 400;
-  var FM_IDX = { LEFT_PUPIL: 159, RIGHT_PUPIL: 386, CHIN: 152, LEFT_CHEEK: 234, RIGHT_CHEEK: 454 };
-  var COLORS = {
-    green: '#00B894', greenDim: 'rgba(0,184,148,0.15)',
-    yellow: '#FDCB6E', yellowDim: 'rgba(253,203,110,0.15)',
-    red: '#E17055', redDim: 'rgba(225,112,85,0.15)',
-    accent: '#6c4fff', muted: '#4A5568', bg: '#0a0e17'
-  };
-  var SAMPLE_POINTS = {
-    leftPupil:  { x: 0.424, y: 0.508 }, rightPupil: { x: 0.576, y: 0.508 },
-    chin:       { x: 0.500, y: 0.714 }, leftCheek:  { x: 0.226, y: 0.580 },
-    rightCheek: { x: 0.774, y: 0.580 }, tlCorner:   { x: 0.310, y: 0.395 },
-    trCorner:   { x: 0.690, y: 0.395 }, blCorner:   { x: 0.274, y: 0.686 },
-    brCorner:   { x: 0.726, y: 0.686 }
-  };
-
-  /* ─── Color functions ─── */
-  function getFaceColor(faceMm) {
-    if (faceMm >= 33 && faceMm <= 35) return COLORS.green;
-    if (faceMm >= V2_SPEC.faceMin && faceMm <= V2_SPEC.faceMax) return COLORS.yellow;
-    return COLORS.red;
-  }
-  function getEyeColor(eyeRatio) {
-    if (eyeRatio >= 0.43 && eyeRatio <= 0.45) return COLORS.green;
-    if (eyeRatio >= 0.40 && eyeRatio <= 0.48) return COLORS.yellow;
-    return COLORS.red;
-  }
-  function isBlocked(faceMm, eyeRatio) {
-    return faceMm < V2_SPEC.faceMin || faceMm > V2_SPEC.faceMax || eyeRatio < 0.40 || eyeRatio > 0.48;
-  }
-
-  /* ─── Crop state ─── */
-  var cropImgPos = { x: 0, y: 0 };
-  var cropImgScale = 1;
-  var cropPts = {};
-  var cropDragging = null;
-  var cropDragStart = null;
-  var cropLoadedImg = null;
-  var cropFaceMeshInstance = null;
-  var cropFaceMeshReady = false;
-  var cropFaceMeshResults = null;
-  var cropLastLandmarks = null;
-  var cropSvgBuilt = false;
-
-  function getFW() { return Math.round(FH * V2_SPEC.wMm / V2_SPEC.hMm); }
-  function getMM() { return FH / V2_SPEC.hMm; }
-
-  /* ─── DOM refs ─── */
   var dropzone = document.getElementById('v2-dropzone');
   var fileInput = document.getElementById('v2-file-input');
   var errorMsg = document.getElementById('v2-error');
   var phaseUpload = document.getElementById('v2-phase-upload');
-  var phaseCrop = document.getElementById('v2-phase-crop');
   var phaseCheck = document.getElementById('v2-phase-check');
   var phasePay = document.getElementById('v2-phase-pay');
   var phaseGen = document.getElementById('v2-phase-generating');
   var phaseResult = document.getElementById('v2-phase-result');
   var uploadedBase64 = null;
-  var croppedBase64 = null;
 
   if(!dropzone) return;
 
   function showPhase(phase){
-    [phaseUpload, phaseCrop, phaseCheck, phasePay, phaseGen, phaseResult].forEach(function(p){ if(p) p.style.display='none'; });
+    [phaseUpload, phaseCheck, phasePay, phaseGen, phaseResult].forEach(function(p){ if(p) p.style.display='none'; });
     if(phase) phase.style.display='';
   }
 
-  /* ─── Overlay init ─── */
-  function initOverlay() {
-    var fw = getFW();
-    var p = SAMPLE_POINTS;
-    var chinPx = p.chin.y * FH;
-    var eyePx = ((p.leftPupil.y + p.rightPupil.y) / 2) * FH;
-    var crownPx = eyePx - (chinPx - eyePx);
-    return {
-      crown:      { x: fw / 2,              y: crownPx },
-      chin:       { x: fw / 2,              y: chinPx },
-      leftPupil:  { x: p.leftPupil.x * fw,  y: p.leftPupil.y * FH },
-      rightPupil: { x: p.rightPupil.x * fw, y: p.rightPupil.y * FH },
-      leftCheek:  { x: p.leftCheek.x * fw,  y: p.leftCheek.y * FH },
-      rightCheek: { x: p.rightCheek.x * fw, y: p.rightCheek.y * FH },
-      tlCorner:   { x: p.tlCorner.x * fw,   y: p.tlCorner.y * FH },
-      trCorner:   { x: p.trCorner.x * fw,   y: p.trCorner.y * FH },
-      blCorner:   { x: p.blCorner.x * fw,   y: p.blCorner.y * FH },
-      brCorner:   { x: p.brCorner.x * fw,   y: p.brCorner.y * FH }
-    };
-  }
 
-  /* ─── Spline path ─── */
-  function splinePath() {
-    var cr = cropPts.crown, ch = cropPts.chin, lc = cropPts.leftCheek, rc = cropPts.rightCheek;
-    var tl = cropPts.tlCorner, tr = cropPts.trCorner, bl = cropPts.blCorner, br = cropPts.brCorner;
-    var cp = 0.55;
-    var w = rc.x - lc.x;
-    var h = ch.y - cr.y;
-    return 'M ' + cr.x + ' ' + cr.y
-      + ' C ' + tr.x + ' ' + (cr.y + h * cp * 0.3) + ', ' + (rc.x + w * 0.05) + ' ' + (rc.y - h * cp * 0.3) + ', ' + rc.x + ' ' + rc.y
-      + ' C ' + (rc.x + w * 0.05) + ' ' + (rc.y + h * cp * 0.3) + ', ' + br.x + ' ' + (ch.y - h * cp * 0.3) + ', ' + ch.x + ' ' + ch.y
-      + ' C ' + bl.x + ' ' + (ch.y - h * cp * 0.3) + ', ' + (lc.x - w * 0.05) + ' ' + (lc.y + h * cp * 0.3) + ', ' + lc.x + ' ' + lc.y
-      + ' C ' + (lc.x - w * 0.05) + ' ' + (lc.y - h * cp * 0.3) + ', ' + tl.x + ' ' + (cr.y + h * cp * 0.3) + ', ' + cr.x + ' ' + cr.y
-      + ' Z';
-  }
-
-  function setAttrs(id, attrs) {
-    var el = document.getElementById(id);
-    if (!el) return;
-    for (var k in attrs) { if (attrs.hasOwnProperty(k)) el.setAttribute(k, attrs[k]); }
-  }
-
-  /* ─── Build SVG (dynamic, once per crop entry) ─── */
-  function buildCropSvg() {
-    var svg = document.getElementById('v2-crop-svg');
-    if (!svg) return;
-    var FW = getFW();
-    svg.setAttribute('width', FW);
-    svg.setAttribute('height', FH);
-    svg.setAttribute('viewBox', '0 0 ' + FW + ' ' + FH);
-    svg.innerHTML = '<defs>'
-      + '<mask id="v2-crop-mask"><rect width="' + FW + '" height="' + FH + '" fill="white"/>'
-      + '<rect id="v2-maskTop" x="0" y="0" width="' + FW + '" height="0" fill="black"/>'
-      + '<rect id="v2-maskBottom" x="0" y="' + FH + '" width="' + FW + '" height="0" fill="black"/></mask></defs>'
-      + '<rect id="v2-maskTopR" x="0" y="0" width="' + FW + '" height="0" fill="rgba(10,14,23,0.45)"/>'
-      + '<rect id="v2-maskBottomR" x="0" y="' + FH + '" width="' + FW + '" height="0" fill="rgba(10,14,23,0.45)"/>'
-      + '<line id="v2-crossH" stroke="rgba(255,255,255,0.15)" stroke-width="1" stroke-dasharray="6,6"/>'
-      + '<line id="v2-crossV" stroke="rgba(255,255,255,0.30)" stroke-width="1.5"/>'
-      + '<path id="v2-ellipsePath" fill="none" stroke="' + COLORS.accent + '70" stroke-width="1.5"/>'
-      + '<line id="v2-crownLine" stroke="' + COLORS.green + '" stroke-width="1.5" stroke-dasharray="6,4"/>'
-      + '<line id="v2-chinLine" stroke="' + COLORS.muted + '60" stroke-width="1" stroke-dasharray="4,6"/>'
-      + '<line id="v2-eyeLine" stroke="' + COLORS.green + '" stroke-width="1" stroke-dasharray="4,4"/>'
-      + '<line id="v2-dimLineV" stroke="' + COLORS.green + '" stroke-width="1"/>'
-      + '<line id="v2-dimLineTopH" stroke="' + COLORS.green + '" stroke-width="1"/>'
-      + '<line id="v2-dimLineBotH" stroke="' + COLORS.green + '" stroke-width="1"/>'
-      + '<circle id="v2-pupilL" r="3" fill="' + COLORS.green + '"/>'
-      + '<circle id="v2-pupilR" r="3" fill="' + COLORS.green + '"/>'
-      + '<rect id="v2-crownLabelBg" rx="3" fill="rgba(10,14,23,0.8)"/>'
-      + '<text id="v2-crownLabelText" font-size="9" font-weight="600" fill="' + COLORS.green + '">정수리</text>'
-      + '<rect id="v2-chinLabelBg" rx="3" fill="rgba(10,14,23,0.8)"/>'
-      + '<text id="v2-chinLabelText" font-size="9" font-weight="600" fill="' + COLORS.muted + '">턱끝</text>'
-      + '<rect id="v2-eyeLabelBg" rx="3" fill="rgba(10,14,23,0.8)"/>'
-      + '<text id="v2-eyeLabelText" font-size="9" font-weight="600" fill="' + COLORS.green + '"></text>';
-    cropSvgBuilt = true;
-  }
-
-  /* ─── Render crop ─── */
-  function renderCrop() {
-    if (!cropPts.crown) return;
-    var FW = getFW();
-    var MM = getMM();
-    var faceMm = (cropPts.chin.y - cropPts.crown.y) / MM;
-    var topMm = cropPts.crown.y / MM;
-    var bottomMm = V2_SPEC.hMm - topMm - faceMm;
-    var eyeY = (cropPts.leftPupil.y + cropPts.rightPupil.y) / 2;
-    var eyeRatio = eyeY / FH;
-    var eyePct = (eyeRatio * 100).toFixed(0);
-    var fc = getFaceColor(faceMm);
-    var ec = getEyeColor(eyeRatio);
-    var faceInRange = faceMm >= V2_SPEC.faceMin && faceMm <= V2_SPEC.faceMax;
-
-    var frame = document.getElementById('v2-crop-frame');
-    frame.style.width = FW + 'px';
-    frame.style.height = FH + 'px';
-
-    var photo = document.getElementById('v2-crop-photo');
-    photo.style.transform = 'translate(calc(-50% + ' + cropImgPos.x + 'px), calc(-50% + ' + cropImgPos.y + 'px)) scale(' + cropImgScale + ')';
-
-    var svg = document.getElementById('v2-crop-svg');
-    svg.setAttribute('width', FW);
-    svg.setAttribute('height', FH);
-
-    setAttrs('v2-maskTopR', { x: 0, y: 0, width: FW, height: Math.max(0, cropPts.crown.y) });
-    setAttrs('v2-maskBottomR', { x: 0, y: cropPts.chin.y, width: FW, height: Math.max(0, FH - cropPts.chin.y) });
-    setAttrs('v2-crossH', { x1: 0, y1: FH / 2, x2: FW, y2: FH / 2 });
-    setAttrs('v2-crossV', { x1: FW / 2, y1: 0, x2: FW / 2, y2: FH });
-
-    var ep = document.getElementById('v2-ellipsePath');
-    if (ep) { ep.setAttribute('d', splinePath()); ep.setAttribute('stroke', COLORS.accent + '70'); }
-
-    setAttrs('v2-crownLine', { x1: 0, y1: cropPts.crown.y, x2: FW, y2: cropPts.crown.y, stroke: fc });
-    setAttrs('v2-chinLine', { x1: 0, y1: cropPts.chin.y, x2: FW, y2: cropPts.chin.y });
-    setAttrs('v2-eyeLine', { x1: 10, y1: eyeY, x2: FW - 10, y2: eyeY, stroke: ec });
-    setAttrs('v2-dimLineV', { x1: FW - 9, y1: cropPts.crown.y, x2: FW - 9, y2: cropPts.chin.y, stroke: fc });
-    setAttrs('v2-dimLineTopH', { x1: FW - 13, y1: cropPts.crown.y, x2: FW - 5, y2: cropPts.crown.y, stroke: fc });
-    setAttrs('v2-dimLineBotH', { x1: FW - 13, y1: cropPts.chin.y, x2: FW - 5, y2: cropPts.chin.y, stroke: fc });
-    setAttrs('v2-pupilL', { cx: cropPts.leftPupil.x, cy: cropPts.leftPupil.y, fill: ec });
-    setAttrs('v2-pupilR', { cx: cropPts.rightPupil.x, cy: cropPts.rightPupil.y, fill: ec });
-
-    setAttrs('v2-crownLabelBg', { x: 3, y: cropPts.crown.y - 16, width: 34, height: 13 });
-    setAttrs('v2-crownLabelText', { x: 5, y: cropPts.crown.y - 6, fill: fc });
-    setAttrs('v2-chinLabelBg', { x: 3, y: cropPts.chin.y + 3, width: 24, height: 13 });
-    setAttrs('v2-chinLabelText', { x: 5, y: cropPts.chin.y + 13 });
-    setAttrs('v2-eyeLabelBg', { x: FW - 38, y: eyeY - 15, width: 35, height: 13 });
-    var eyeLabel = document.getElementById('v2-eyeLabelText');
-    if (eyeLabel) { eyeLabel.textContent = '눈 ' + eyePct + '%'; setAttrs('v2-eyeLabelText', { x: FW - 36, y: eyeY - 5, fill: ec }); }
-
-    /* pins */
-    var crownPin = document.getElementById('v2-crown-pin');
-    crownPin.style.left = cropPts.crown.x + 'px';
-    crownPin.style.top = (cropPts.crown.y - 4.5) + 'px';
-    crownPin.style.background = fc;
-    crownPin.style.boxShadow = '0 0 12px ' + fc + 'BB';
-
-    var sh = document.getElementById('v2-scale-handle');
-    sh.style.left = Math.min(FW - 25, Math.max(15, cropPts.brCorner.x + 15)) + 'px';
-    sh.style.top = Math.min(FH - 25, Math.max(15, cropPts.brCorner.y + 15)) + 'px';
-    sh.style.boxShadow = '0 0 10px ' + COLORS.accent + 'BB';
-
-    /* badges */
-    var bf = document.getElementById('v2-badge-face');
-    bf.style.background = COLORS.bg + 'EE';
-    bf.style.border = '1px solid ' + fc;
-    bf.style.color = fc;
-    bf.innerHTML = '<span>' + faceMm.toFixed(1) + 'mm</span><span style="opacity:0.6;font-size:10px">/' + V2_SPEC.faceMin + '~' + V2_SPEC.faceMax + '</span>';
-
-    var bs = document.getElementById('v2-badge-status');
-    bs.style.background = faceInRange ? COLORS.green + '20' : COLORS.red + '20';
-    bs.style.border = '1px solid ' + fc + '50';
-    bs.style.color = fc;
-    bs.textContent = faceInRange ? '\\u2713 규격 내' : '\\u2717 범위 초과';
-
-    /* metrics */
-    document.getElementById('v2-m-top').textContent = topMm.toFixed(1) + 'mm';
-    document.getElementById('v2-m-face').textContent = faceMm.toFixed(1) + 'mm';
-    document.getElementById('v2-m-face').style.color = fc;
-    document.getElementById('v2-m-bottom').textContent = bottomMm.toFixed(1) + 'mm';
-    document.getElementById('v2-m-eye').textContent = eyePct + '%';
-    document.getElementById('v2-m-eye').style.color = ec;
-
-    /* ICAO range bar */
-    var rangeMin = V2_SPEC.faceMin / V2_SPEC.hMm * 100;
-    var rangeMax = V2_SPEC.faceMax / V2_SPEC.hMm * 100;
-    var dotPos = Math.min(97, Math.max(3, faceMm / V2_SPEC.hMm * 100));
-    document.getElementById('v2-range-value').textContent = (faceInRange ? '\\u2713 ' : '\\u2717 ') + faceMm.toFixed(1) + 'mm';
-    document.getElementById('v2-range-value').style.color = fc;
-    var fill = document.getElementById('v2-range-fill');
-    fill.style.left = rangeMin + '%';
-    fill.style.width = (rangeMax - rangeMin) + '%';
-    var dot = document.getElementById('v2-range-dot');
-    dot.style.left = dotPos + '%';
-    dot.style.background = fc;
-    dot.style.boxShadow = '0 0 8px ' + fc;
-
-    /* warnings */
-    var warnEl = document.getElementById('v2-crop-warn');
-    var warns = [];
-    if (faceMm < V2_SPEC.faceMin) warns.push('얼굴 크기 ' + faceMm.toFixed(1) + 'mm — 허용범위(' + V2_SPEC.faceMin + '~' + V2_SPEC.faceMax + 'mm) 미달. 확대하세요.');
-    if (faceMm > V2_SPEC.faceMax) warns.push('얼굴 크기 ' + faceMm.toFixed(1) + 'mm — 허용범위(' + V2_SPEC.faceMin + '~' + V2_SPEC.faceMax + 'mm) 초과. 축소하세요.');
-    if (eyeRatio < 0.40) warns.push('눈 위치 ' + eyePct + '% — 허용범위(40~48%) 미달.');
-    if (eyeRatio > 0.48) warns.push('눈 위치 ' + eyePct + '% — 허용범위(40~48%) 초과.');
-    if (warns.length) { warnEl.classList.remove('hidden'); warnEl.textContent = warns.join(' '); }
-    else { warnEl.classList.add('hidden'); }
-  }
-
-  /* ─── FaceMesh ─── */
-  function checkWebGL() {
-    try { var c = document.createElement('canvas'); return !!(c.getContext('webgl2') || c.getContext('webgl')); } catch(e) { return false; }
-  }
-
-  function initCropFaceMesh() {
-    if (typeof FaceMesh === 'undefined') { console.warn('[V2 FaceMesh] lib not loaded'); return Promise.resolve(); }
-    if (!checkWebGL()) { console.warn('[V2 FaceMesh] no WebGL'); return Promise.resolve(); }
-    return new Promise(function(resolve) {
-      try {
-        cropFaceMeshInstance = new FaceMesh({ locateFile: function(f) { return 'https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/' + f; } });
-        cropFaceMeshInstance.setOptions({ maxNumFaces: 1, refineLandmarks: true, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 });
-        cropFaceMeshInstance.onResults(function(r) { cropFaceMeshResults = r; });
-        cropFaceMeshReady = true;
-        resolve();
-      } catch(e) { console.warn('[V2 FaceMesh] init fail:', e.message); cropFaceMeshReady = false; resolve(); }
-    });
-  }
-
-  function detectCropLandmarks(imgEl) {
-    if (!cropFaceMeshReady || !cropFaceMeshInstance) return Promise.resolve(null);
-    return new Promise(function(resolve) {
-      cropFaceMeshResults = null;
-      cropFaceMeshInstance.send({ image: imgEl }).then(function() {
-        if (!cropFaceMeshResults || !cropFaceMeshResults.multiFaceLandmarks || cropFaceMeshResults.multiFaceLandmarks.length === 0) return resolve(null);
-        resolve(cropFaceMeshResults.multiFaceLandmarks[0]);
-      }).catch(function(e) { console.warn('[V2 FaceMesh] detect fail:', e.message); resolve(null); });
-    });
-  }
-
-  function extractLandmarks(raw, natW, natH) {
-    var lp = raw[FM_IDX.LEFT_PUPIL], rp = raw[FM_IDX.RIGHT_PUPIL], ch = raw[FM_IDX.CHIN], lc = raw[FM_IDX.LEFT_CHEEK], rc = raw[FM_IDX.RIGHT_CHEEK];
-    var leftPupil = { x: lp.x * natW, y: lp.y * natH };
-    var rightPupil = { x: rp.x * natW, y: rp.y * natH };
-    var chin = { x: ch.x * natW, y: ch.y * natH };
-    var leftCheek = { x: lc.x * natW, y: lc.y * natH };
-    var rightCheek = { x: rc.x * natW, y: rc.y * natH };
-    var eyeCenterY = (leftPupil.y + rightPupil.y) / 2;
-    var eyeCenterX = (leftPupil.x + rightPupil.x) / 2;
-    var crownY = eyeCenterY - (chin.y - eyeCenterY);
-    var crown = { x: eyeCenterX, y: crownY };
-    var tlCorner = { x: leftCheek.x + (crown.x - leftCheek.x) * 0.3, y: crown.y + (leftCheek.y - crown.y) * 0.4 };
-    var trCorner = { x: rightCheek.x + (crown.x - rightCheek.x) * 0.3, y: crown.y + (rightCheek.y - crown.y) * 0.4 };
-    var blCorner = { x: leftCheek.x + (chin.x - leftCheek.x) * 0.3, y: leftCheek.y + (chin.y - leftCheek.y) * 0.6 };
-    var brCorner = { x: rightCheek.x + (chin.x - rightCheek.x) * 0.3, y: rightCheek.y + (chin.y - rightCheek.y) * 0.6 };
-    return { crown: crown, chin: chin, leftPupil: leftPupil, rightPupil: rightPupil, leftCheek: leftCheek, rightCheek: rightCheek, tlCorner: tlCorner, trCorner: trCorner, blCorner: blCorner, brCorner: brCorner };
-  }
-
-  function autoPlace(imgLandmarks, natW, natH) {
-    var FW = getFW();
-    var MM = getMM();
-    var coverScale = Math.max(FW / natW, FH / natH);
-    var displayW = natW * coverScale, displayH = natH * coverScale;
-    var offsetX = (displayW - FW) / 2, offsetY = (displayH - FH) / 2;
-    function toCover(pt) { return { x: pt.x * coverScale - offsetX, y: pt.y * coverScale - offsetY }; }
-    var crownCover = toCover(imgLandmarks.crown), chinCover = toCover(imgLandmarks.chin);
-    var eyeLCover = toCover(imgLandmarks.leftPupil), eyeRCover = toCover(imgLandmarks.rightPupil);
-    var eyeYCover = (eyeLCover.y + eyeRCover.y) / 2;
-    var faceHCover = chinCover.y - crownCover.y;
-    var targetFacePx = V2_SPEC.faceTarget * MM;
-    var newScale = targetFacePx / faceHCover;
-    var newPosY = 0.43 * FH - FH / 2 - (eyeYCover - FH / 2) * newScale;
-    var faceCenterXCover = (eyeLCover.x + eyeRCover.x) / 2;
-    var newPosX = -(faceCenterXCover - FW / 2) * newScale;
-    cropImgScale = newScale;
-    cropImgPos = { x: newPosX, y: newPosY };
-    var result = {};
-    for (var key in imgLandmarks) {
-      if (!imgLandmarks.hasOwnProperty(key)) continue;
-      var cover = toCover(imgLandmarks[key]);
-      result[key] = { x: FW / 2 + (cover.x - FW / 2) * newScale + newPosX, y: FH / 2 + (cover.y - FH / 2) * newScale + newPosY };
-    }
-    return result;
-  }
-
-  /* ─── Perform crop (Canvas) ─── */
-  function performCrop() {
-    if (!cropLoadedImg) return null;
-    var FW = getFW();
-    var outScale = V2_SPEC.pxH / FH;
-    var canvas = document.createElement('canvas');
-    canvas.width = V2_SPEC.pxW;
-    canvas.height = V2_SPEC.pxH;
-    var ctx = canvas.getContext('2d');
-    ctx.scale(outScale, outScale);
-    ctx.translate(FW / 2 + cropImgPos.x, FH / 2 + cropImgPos.y);
-    ctx.scale(cropImgScale, cropImgScale);
-    ctx.translate(-FW / 2, -FH / 2);
-    var natW = cropLoadedImg.naturalWidth, natH = cropLoadedImg.naturalHeight;
-    var coverScale = Math.max(FW / natW, FH / natH);
-    var dw = natW * coverScale, dh = natH * coverScale;
-    ctx.drawImage(cropLoadedImg, (FW - dw) / 2, (FH - dh) / 2, dw, dh);
-    return canvas;
-  }
-
-  /* ─── Drag handlers ─── */
-  function onCropPtrDown(e, type) {
-    e.preventDefault(); e.stopPropagation();
-    cropDragging = type;
-    cropDragStart = { clientX: e.clientX, clientY: e.clientY, imgPos: { x: cropImgPos.x, y: cropImgPos.y }, imgScale: cropImgScale, pts: JSON.parse(JSON.stringify(cropPts)) };
-    if (type === 'img') document.getElementById('v2-crop-frame').classList.add('grabbing');
-  }
-  function onCropPtrMove(e) {
-    if (!cropDragging || !cropDragStart) return;
-    var dx = e.clientX - cropDragStart.clientX, dy = e.clientY - cropDragStart.clientY;
-    var FW = getFW();
-    if (cropDragging === 'img') {
-      cropImgPos = { x: cropDragStart.imgPos.x + dx, y: cropDragStart.imgPos.y + dy };
-      var next = {};
-      for (var k in cropDragStart.pts) { if (cropDragStart.pts.hasOwnProperty(k)) next[k] = { x: cropDragStart.pts[k].x + dx, y: cropDragStart.pts[k].y + dy }; }
-      cropPts = next;
-    } else if (cropDragging === 'crown') {
-      var newY = Math.max(2, Math.min(cropDragStart.pts.chin.y - 20, cropDragStart.pts.crown.y + dy));
-      cropPts = Object.assign({}, cropPts, { crown: { x: cropPts.crown.x, y: newY } });
-    } else if (cropDragging === 'scale') {
-      var dist = Math.sqrt(dx * dx + dy * dy);
-      var sign = (dx + dy) > 0 ? 1 : -1;
-      var newScale = Math.max(0.3, Math.min(4, cropDragStart.imgScale + sign * dist * 0.004));
-      var ratio = newScale / cropDragStart.imgScale;
-      cropImgScale = newScale;
-      var cx = FW / 2 + cropDragStart.imgPos.x, cy = FH / 2 + cropDragStart.imgPos.y;
-      var sn = {};
-      for (var sk in cropDragStart.pts) { if (cropDragStart.pts.hasOwnProperty(sk)) sn[sk] = { x: cx + (cropDragStart.pts[sk].x - cx) * ratio, y: cy + (cropDragStart.pts[sk].y - cy) * ratio }; }
-      cropPts = sn;
-    }
-    renderCrop();
-  }
-  function onCropPtrUp() {
-    if (cropDragging === 'img') document.getElementById('v2-crop-frame').classList.remove('grabbing');
-    cropDragging = null; cropDragStart = null;
-  }
-
-  /* ─── Gemini align (조건부 좌표 보정) ─── */
-  function tryGeminiAlign(raw, extracted, natW, natH, imgDataUrl, loadingEl) {
-    var MM = getMM();
-    var faceMm = (cropPts.chin.y - cropPts.crown.y) / MM;
-    var eyeRatio = ((cropPts.leftPupil.y + cropPts.rightPupil.y) / 2) / FH;
-    var needsAlign = faceMm < V2_SPEC.faceMin || faceMm > V2_SPEC.faceMax || eyeRatio < 0.40 || eyeRatio > 0.48;
-    if (!needsAlign) return;
-
-    loadingEl.classList.remove('hidden');
-    loadingEl.querySelector('span').textContent = 'AI 보정 중...';
-
-    var crownYNorm = raw[FM_IDX.LEFT_PUPIL].y - (raw[FM_IDX.CHIN].y - raw[FM_IDX.LEFT_PUPIL].y);
-    var alignBody = {
-      image: imgDataUrl,
-      facemesh: {
-        crown: { y: crownYNorm },
-        chin: { y: raw[FM_IDX.CHIN].y },
-        leftPupil: { y: raw[FM_IDX.LEFT_PUPIL].y },
-        rightPupil: { y: raw[FM_IDX.RIGHT_PUPIL].y }
-      }
-    };
-
-    fetch('/api/idphoto/align', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(alignBody)
-    })
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      loadingEl.classList.add('hidden');
-      loadingEl.querySelector('span').textContent = '얼굴 분석 중...';
-      if (!data.crown_y || !data.chin_y || (data.confidence != null && data.confidence < 0.5)) return;
-
-      var corrCrown = { x: data.face_center_x * natW, y: data.crown_y * natH };
-      var corrChin = { x: data.face_center_x * natW, y: data.chin_y * natH };
-      var corrLeftPupil = { x: extracted.leftPupil.x, y: data.left_eye_y * natH };
-      var corrRightPupil = { x: extracted.rightPupil.x, y: data.right_eye_y * natH };
-      var eyeCY = (corrLeftPupil.y + corrRightPupil.y) / 2;
-      var eyeCX = (corrLeftPupil.x + corrRightPupil.x) / 2;
-      var tlC = { x: extracted.leftCheek.x + (eyeCX - extracted.leftCheek.x) * 0.3, y: corrCrown.y + (extracted.leftCheek.y - corrCrown.y) * 0.4 };
-      var trC = { x: extracted.rightCheek.x + (eyeCX - extracted.rightCheek.x) * 0.3, y: corrCrown.y + (extracted.rightCheek.y - corrCrown.y) * 0.4 };
-      var blC = { x: extracted.leftCheek.x + (corrChin.x - extracted.leftCheek.x) * 0.3, y: extracted.leftCheek.y + (corrChin.y - extracted.leftCheek.y) * 0.6 };
-      var brC = { x: extracted.rightCheek.x + (corrChin.x - extracted.rightCheek.x) * 0.3, y: extracted.rightCheek.y + (corrChin.y - extracted.rightCheek.y) * 0.6 };
-
-      var corrected = {
-        crown: corrCrown, chin: corrChin,
-        leftPupil: corrLeftPupil, rightPupil: corrRightPupil,
-        leftCheek: extracted.leftCheek, rightCheek: extracted.rightCheek,
-        tlCorner: tlC, trCorner: trC, blCorner: blC, brCorner: brC
-      };
-      cropLastLandmarks = { landmarks: corrected, natW: natW, natH: natH };
-      cropPts = autoPlace(corrected, natW, natH);
-      renderCrop();
-    })
-    .catch(function() {
-      loadingEl.classList.add('hidden');
-      loadingEl.querySelector('span').textContent = '얼굴 분석 중...';
-    });
-  }
-
-  /* ─── Crop phase entry ─── */
-  function enterCropPhase(imgDataUrl) {
-    showPhase(phaseCrop);
-    var photo = document.getElementById('v2-crop-photo');
-    photo.src = imgDataUrl;
-
-    if (!cropSvgBuilt) buildCropSvg();
-    cropPts = initOverlay();
-    cropImgPos = { x: 0, y: 0 };
-    cropImgScale = 1;
-
-    var img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.src = imgDataUrl;
-    img.onload = function() {
-      cropLoadedImg = img;
-      var natW = img.naturalWidth, natH = img.naturalHeight;
-      renderCrop();
-
-      function onFaceMeshDone(raw, loadingEl) {
-        if (raw) {
-          var extracted = extractLandmarks(raw, natW, natH);
-          cropLastLandmarks = { landmarks: extracted, natW: natW, natH: natH };
-          cropPts = autoPlace(extracted, natW, natH);
-          renderCrop();
-          tryGeminiAlign(raw, extracted, natW, natH, imgDataUrl, loadingEl);
-        }
-      }
-
-      if (!cropFaceMeshReady) {
-        var loadingEl = document.getElementById('v2-facemesh-loading');
-        loadingEl.classList.remove('hidden');
-        initCropFaceMesh().then(function() {
-          if (cropFaceMeshReady) {
-            detectCropLandmarks(img).then(function(raw) {
-              loadingEl.classList.add('hidden');
-              onFaceMeshDone(raw, loadingEl);
-            });
-          } else { loadingEl.classList.add('hidden'); }
-        });
-      } else {
-        var loadingEl2 = document.getElementById('v2-facemesh-loading');
-        loadingEl2.classList.remove('hidden');
-        detectCropLandmarks(img).then(function(raw) {
-          loadingEl2.classList.add('hidden');
-          onFaceMeshDone(raw, loadingEl2);
-        });
-      }
-    };
-
-    /* drag event bindings */
-    document.getElementById('v2-crop-frame').onpointerdown = function(e) { onCropPtrDown(e, 'img'); };
-    document.getElementById('v2-crown-pin').onpointerdown = function(e) { onCropPtrDown(e, 'crown'); };
-    document.getElementById('v2-scale-handle').onpointerdown = function(e) { onCropPtrDown(e, 'scale'); };
-    window.addEventListener('pointermove', onCropPtrMove);
-    window.addEventListener('pointerup', onCropPtrUp);
-  }
 
   /* ─── Upload handlers ─── */
   dropzone.querySelector('.v2-upload-btn').addEventListener('click', function(e){ e.stopPropagation(); fileInput.click(); });
@@ -2518,109 +1891,84 @@ ${hreflangTags}
     var reader = new FileReader();
     reader.onload = function(ev){
       uploadedBase64 = ev.target.result;
-      croppedBase64 = null;
-      enterCropPhase(uploadedBase64);
+      document.getElementById('v2-check-img').src = uploadedBase64;
+      showPhase(phaseCheck);
+
+      var checklistItems = document.getElementById('v2-checklist-items');
+      var checkLoading = document.getElementById('v2-loading');
+      var summary = document.getElementById('v2-summary');
+      var checkActions = document.getElementById('v2-check-actions');
+      checklistItems.innerHTML = '';
+      summary.innerHTML = '';
+      summary.className = 'v2-checklist-summary';
+      checkActions.style.display = 'none';
+      checkLoading.style.display = 'flex';
+
+      fetch('/api/idphoto/precheck', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ image: uploadedBase64 })
+      })
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        checkLoading.style.display = 'none';
+        if(data.checks){
+          var allPass = true;
+          data.checks.forEach(function(c){
+            var li = document.createElement('li');
+            var icon = document.createElement('span');
+            icon.className = 'v2-check-icon ' + (c.pass ? 'v2-check-pass' : c.warn ? 'v2-check-warn' : 'v2-check-fail');
+            icon.textContent = c.pass ? '\\u2713' : c.warn ? '!' : '\\u2717';
+            li.appendChild(icon);
+            li.appendChild(document.createTextNode(c.label));
+            checklistItems.appendChild(li);
+            if(c.warnMsg){
+              var wm = document.createElement('div');
+              wm.className = 'v2-check-warn-msg';
+              wm.textContent = c.warnMsg;
+              li.appendChild(wm);
+            }
+            if(!c.pass && !c.warn) allPass = false;
+          });
+          summary.className = 'v2-checklist-summary ' + (allPass ? 'v2-summary-pass' : 'v2-summary-fail');
+          summary.textContent = allPass ? '규격 적합! 진행하기를 눌러주세요.' : '일부 항목이 부적합합니다. 다른 사진을 권장합니다.';
+          checkActions.style.display = 'flex';
+        } else {
+          showError(data.error || '검수 실패');
+          showPhase(phaseUpload);
+        }
+      })
+      .catch(function(){ showError('검수 오류'); showPhase(phaseUpload); });
     };
     reader.readAsDataURL(file);
   }
 
-  /* ─── Crop actions ─── */
-  document.getElementById('v2-crop-change').addEventListener('click', function(){
-    uploadedBase64 = null; croppedBase64 = null;
-    showPhase(phaseUpload);
-  });
-
-  document.getElementById('v2-crop-download').addEventListener('click', function(){
-    var canvas = performCrop();
-    if (!canvas) return;
-    canvas.toBlob(function(blob) {
-      if (!blob) return;
-      var url = URL.createObjectURL(blob);
-      var a = document.createElement('a');
-      a.href = url;
-      a.download = 'MONKOS_crop_' + V2_SPEC.pxW + 'x' + V2_SPEC.pxH + '.jpg';
-      document.body.appendChild(a); a.click(); document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }, 'image/jpeg', 0.95);
-  });
-
-  document.getElementById('v2-crop-check').addEventListener('click', function(){
-    var canvas = performCrop();
-    if (!canvas) return;
-    croppedBase64 = canvas.toDataURL('image/jpeg', 0.92);
-
-    document.getElementById('v2-check-img').src = croppedBase64;
-    showPhase(phaseCheck);
-
-    var checklistItems = document.getElementById('v2-checklist-items');
-    var checkLoading = document.getElementById('v2-loading');
-    var summary = document.getElementById('v2-summary');
-    var checkActions = document.getElementById('v2-check-actions');
-    checklistItems.innerHTML = '';
-    summary.innerHTML = '';
-    summary.className = 'v2-checklist-summary';
-    checkActions.style.display = 'none';
-    checkLoading.style.display = 'flex';
-
-    fetch('/api/idphoto/precheck', {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ image: croppedBase64 })
-    })
-    .then(function(r){ return r.json(); })
-    .then(function(data){
-      checkLoading.style.display = 'none';
-      if(data.checks){
-        var allPass = true;
-        data.checks.forEach(function(c){
-          var li = document.createElement('li');
-          var icon = document.createElement('span');
-          icon.className = 'v2-check-icon ' + (c.pass ? 'v2-check-pass' : c.warn ? 'v2-check-warn' : 'v2-check-fail');
-          icon.textContent = c.pass ? '\\u2713' : c.warn ? '!' : '\\u2717';
-          li.appendChild(icon);
-          li.appendChild(document.createTextNode(c.label));
-          checklistItems.appendChild(li);
-          if(!c.pass && !c.warn) allPass = false;
-        });
-        summary.className = 'v2-checklist-summary ' + (allPass ? 'v2-summary-pass' : 'v2-summary-fail');
-        summary.textContent = allPass ? '규격 적합! 진행하기를 눌러주세요.' : '일부 항목이 부적합합니다. 다른 사진을 권장합니다.';
-        checkActions.style.display = 'flex';
-      } else {
-        showError(data.error || '검수 실패');
-        showPhase(phaseUpload);
-      }
-    })
-    .catch(function(){ showError('검수 오류'); showPhase(phaseUpload); });
-  });
-
   /* ─── Check phase actions ─── */
   document.getElementById('v2-btn-change').addEventListener('click', function(){
-    uploadedBase64 = null; croppedBase64 = null;
+    uploadedBase64 = null;
     showPhase(phaseUpload);
   });
   document.getElementById('v2-btn-proceed').addEventListener('click', function(){
-    var imgToUse = croppedBase64 || uploadedBase64;
-    document.getElementById('v2-preview-img').src = imgToUse;
+    document.getElementById('v2-preview-img').src = uploadedBase64;
     showPhase(phasePay);
   });
 
   /* ─── Pay phase ─── */
   document.getElementById('v2-change-photo').addEventListener('click', function(){
-    uploadedBase64 = null; croppedBase64 = null;
+    uploadedBase64 = null;
     showPhase(phaseUpload);
   });
 
   document.getElementById('v2-pay-instant').addEventListener('click', function(){
-    var imgToUse = croppedBase64 || uploadedBase64;
-    if(!imgToUse) return;
+    if(!uploadedBase64) return;
     showPhase(phaseGen);
     fetch('/api/idphoto/generate', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ image: imgToUse, format:'passport', gender:'m', age:'adult' })
+      body: JSON.stringify({ image: uploadedBase64, format:'passport', gender:'m', age:'adult' })
     })
     .then(function(r){ return r.json(); })
     .then(function(data){
       if(data.image){
-        document.getElementById('v2-result-before-img').src = imgToUse;
+        document.getElementById('v2-result-before-img').src = uploadedBase64;
         document.getElementById('v2-result-after-img').src = 'data:image/png;base64,'+data.image;
         showPhase(phaseResult);
       } else {
@@ -2645,7 +1993,7 @@ ${hreflangTags}
   });
 
   document.getElementById('v2-btn-retry2').addEventListener('click', function(){
-    uploadedBase64 = null; croppedBase64 = null;
+    uploadedBase64 = null;
     showPhase(phaseUpload);
   });
 })();

@@ -334,8 +334,15 @@ ITEM 7 — "안경" (Glasses):
 - WARN if: wearing clear prescription glasses with no glare (acceptable for passport, but no-glasses is preferred for driving license).
 - PASS if: no glasses at all.
 
+ITEM 8 — "사진 적합성" (Photo suitability):
+- FAIL if: multiple faces detected, face occupies less than ~20% of image area, face is not clearly identifiable (too blurry, too dark, or too distant), image resolution is extremely low (under 200px on shorter side), or it's a full-body/group photo where the face is small.
+- WARN if: face is somewhat small but still identifiable (~20-30% of image), slight blur but features are distinguishable. If warn, set warnMsg to: "얼굴 비중이 작아 AI 보정 시 본인과 다르게 나올 수 있습니다. 가슴 위까지 나온 사진을 권장합니다."
+- PASS if: single face, clearly visible, face occupies roughly 30%+ of image, adequate resolution.
+
+For this item only, include a "warnMsg" field (string or null). All other items should have warnMsg: null.
+
 Respond in JSON only:
-{"checks":[{"id":"frontal","label":"정면 응시","pass":bool,"warn":bool},{"id":"eyebrow","label":"눈썹 완전 노출","pass":bool,"warn":bool},{"id":"background","label":"배경 적합","pass":bool,"warn":bool},{"id":"shadow","label":"그림자 없음","pass":bool,"warn":bool},{"id":"expression","label":"표정 적합","pass":bool,"warn":bool},{"id":"clothing","label":"상의 색상 적합","pass":bool,"warn":bool},{"id":"glasses","label":"안경/렌즈","pass":bool,"warn":bool}]}` }
+{"checks":[{"id":"frontal","label":"정면 응시","pass":bool,"warn":bool,"warnMsg":null},{"id":"eyebrow","label":"눈썹 완전 노출","pass":bool,"warn":bool,"warnMsg":null},{"id":"background","label":"배경 적합","pass":bool,"warn":bool,"warnMsg":null},{"id":"shadow","label":"그림자 없음","pass":bool,"warn":bool,"warnMsg":null},{"id":"expression","label":"표정 적합","pass":bool,"warn":bool,"warnMsg":null},{"id":"clothing","label":"상의 색상 적합","pass":bool,"warn":bool,"warnMsg":null},{"id":"glasses","label":"안경/렌즈","pass":bool,"warn":bool,"warnMsg":null},{"id":"suitability","label":"사진 적합성","pass":bool,"warn":bool,"warnMsg":"string or null"}]}` }
         ]}],
         config: { responseMimeType: 'application/json' },
       });
@@ -349,57 +356,6 @@ Respond in JSON only:
       log(`[IDPhoto][precheck] 에러: ${err.message}`, 'ERROR');
       res.writeHead(500, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify({ error: '검수 중 오류가 발생했습니다', code: 'INTERNAL_ERROR' }));
-    }
-  }
-
-  // === 좌표 보정 (Gemini) ===
-  if (urlPath === '/api/idphoto/align' && req.method === 'POST') {
-    try {
-      const { parseJsonBody, log: slog } = await import('./lib/shared/config.js');
-      const { GoogleGenAI } = await import('@google/genai');
-      const body = await parseJsonBody(req);
-      if (!body.image) {
-        res.writeHead(400, { 'Content-Type': 'application/json' });
-        return res.end(JSON.stringify({ error: '이미지 필수' }));
-      }
-      const base64Data = body.image.includes(',') ? body.image.split(',')[1] : body.image;
-      const fm = body.facemesh || {};
-      const ai = new GoogleGenAI({ vertexai: true, project: process.env.PROJECT_ID, location: 'us-central1' });
-      const result = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
-        contents: [{ role: 'user', parts: [
-          { inlineData: { mimeType: 'image/jpeg', data: base64Data } },
-          { text: `You are a precise photo measurement AI. Given a portrait photo, identify the exact positions of these facial landmarks as normalized coordinates (0.0 to 1.0, where 0,0 is top-left):
-
-1. crown_y: The very top of the head (top of hair/scalp), NOT the forehead
-2. chin_y: The bottommost point of the chin
-3. left_eye_y: Center of the left eye (from viewer's perspective)
-4. right_eye_y: Center of the right eye
-5. face_center_x: Horizontal center of the face
-
-The client detected these positions but they may be inaccurate:
-- Crown: y=${fm.crown?.y ?? 'unknown'}
-- Chin: y=${fm.chin?.y ?? 'unknown'}
-- Left eye: y=${fm.leftPupil?.y ?? 'unknown'}
-- Right eye: y=${fm.rightPupil?.y ?? 'unknown'}
-
-Please verify and correct these positions based on what you see in the actual image.
-
-Respond in JSON only:
-{"crown_y": float, "chin_y": float, "left_eye_y": float, "right_eye_y": float, "face_center_x": float, "confidence": float}` }
-        ]}],
-        config: { responseMimeType: 'application/json' },
-      });
-      const text = result.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
-      let parsed;
-      try { parsed = JSON.parse(text); } catch { parsed = {}; }
-      slog(`[IDPhoto][align] 보정 완료: confidence=${parsed.confidence ?? 'N/A'}`);
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      return res.end(JSON.stringify(parsed));
-    } catch (err) {
-      log(`[IDPhoto][align] 에러: ${err.message}`, 'ERROR');
-      res.writeHead(500, { 'Content-Type': 'application/json' });
-      return res.end(JSON.stringify({ error: '보정 중 오류가 발생했습니다', code: 'INTERNAL_ERROR' }));
     }
   }
 
