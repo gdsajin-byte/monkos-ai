@@ -80,6 +80,7 @@ const SPECS_I18N = {
     ctaHeadline2: '증명사진 완성',
     ctaSub: '사진관 안 가도 됩니다. 여권·이력서·비자 규격 자동 대응.\nAI가 배경·조명·피부를 사진관 수준으로 보정합니다.',
     ctaBtn: '무료로 체험하기 →',
+    ctaHref: 'https://idphoto-kr.monkos.ai/',
     ctaPrice: '첫 로그인 시 무료 체험 · 이후 1장 ₩9,900',
     heroLabel: 'PHOTO SPEC GUIDE',
     heroCta: '무료 규격 맞춤 →',
@@ -122,6 +123,7 @@ const SPECS_I18N = {
     ctaHeadline2: '証明写真完成',
     ctaSub: '写真館に行かなくても大丈夫。パスポート・履歴書・ビザ規格に自動対応。\nAIが背景・照明・肌を写真館レベルに補正します。',
     ctaBtn: '無料で体験する →',
+    ctaHref: 'https://idphoto-jp.monkos.ai/',
     ctaPrice: '初回ログイン時 無料体験 · 以降1枚 ¥990',
     heroLabel: 'PHOTO SPEC GUIDE',
     heroCta: '無料で規格に合わせる →',
@@ -164,6 +166,7 @@ const SPECS_I18N = {
     ctaHeadline2: 'Perfect ID Photo',
     ctaSub: 'No photo studio needed. Auto-fit for passport, resume & visa specs.\nAI retouches background, lighting & skin to studio quality.',
     ctaBtn: 'Try Free →',
+    ctaHref: 'https://idphoto-kr.monkos.ai/',
     ctaPrice: 'Free on first login · $7.99 per photo after',
     heroLabel: 'PHOTO SPEC GUIDE',
     heroCta: 'Crop to this spec for free →',
@@ -2315,7 +2318,7 @@ ${hreflangTags}
         <div class="specs-cta-badge">${escapeHtml(i.ctaBadge)}</div>
         <h2>${escapeHtml(i.ctaHeadline1)}<br><span>${escapeHtml(i.ctaHeadline2)}</span></h2>
         <p class="specs-cta-sub">${escapeHtml(i.ctaSub).replace(/\n/g, '<br>')}</p>
-        <a href="https://monkos.ai" class="specs-cta-btn">${escapeHtml(i.ctaBtn)}</a>
+        <a href="${i.ctaHref}" class="specs-cta-btn" data-cta="specs-detail" rel="noopener">${escapeHtml(i.ctaBtn)}</a>
         <p class="specs-cta-price">${i.ctaPrice.replace(/(무료 체험|無料体験|Free)/g, '<strong>$1</strong>')}</p>
       </div>
     </div>
