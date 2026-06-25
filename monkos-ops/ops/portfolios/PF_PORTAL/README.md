@@ -102,6 +102,7 @@ status: active
 | 06/22 | iMac/민아 | **D1~D4 구현 검증** — 보안핵심3개(클라-BQ격리·PII미적재·시크릿무하드코딩) 합격, identity_map D7→D3 선구현. 🔴`/api/track` rate-limit+페이로드캡 부재(헌법4조4항) 적발 → D7 앞당김 권고 | 검증보고 | ⚠️ |
 | 06/24 | iMac/쌍아 | **블로그 테이블 렌더링 수정 + S4 보안 잔존 수정** — ① 발행 후 표 깨짐 근인: `.post-content table`에 `display:block`+셀스타일 전무 → `border-collapse`+`th/td` 패딩·보더·헤더배경 추가, `table-wrap` 래퍼(모바일 스크롤). 에디터↔발행 렌더링 간극 해소. 기존 글 전체 일괄 적용(SSR 실시간 렌더링 구조). ② S4 V2 portal 에러 제네릭화 9개소 + V3 env 필수화 + V4 `/api/stats` admin 인증 게이트 | render-blog.js, render-shell.js, payments.js, credits.js, tg-cs.js, config.js, server.js | ✅ rev00345 |
 | 06/24 | iMac/쌍아+막내2+3 | **블로그 CMS 집중 개선 9건** — ③ 비발행 미리보기(`?preview=true`+admin인증) ④ 구조화데이터(Article→BlogPosting, FAQ자동감지, wordCount) ⑤ 푸터 영어통일+footerLegal삭제 ⑥ 홈 블로그카드 autoTranslated필터제거+OG비율정규화 ⑦ gallery/board/guide 다국어라우트 8경로추가 ⑧ CTA카드시스템(에디터연동+전역기본값+SSR렌더링) ⑨ 홈 블로그카드 slug 이중접미사수정 ⑩ SEO내부경합종합감사 보고서 | portal 전역 | ✅ rev00346→00353 |
+| 06/25 | iMac/막내1 | **Specs v2 kr-passport UI 정비 5건** — ① 태그 H1 아래 이동 ② 그룹A 배지 삭제 ③ 상세규정/반려사유 아코디언 전환 ④ 같은사진 사이즈 필터 추가 ⑤ 하단CTA→크로스셀카드 교체 | render-specs.js | ✅ rev00377 |
 
 ---
 
