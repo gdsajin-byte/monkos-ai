@@ -104,6 +104,7 @@ status: active
 | 06/24 | iMac/쌍아+막내2+3 | **블로그 CMS 집중 개선 9건** — ③ 비발행 미리보기(`?preview=true`+admin인증) ④ 구조화데이터(Article→BlogPosting, FAQ자동감지, wordCount) ⑤ 푸터 영어통일+footerLegal삭제 ⑥ 홈 블로그카드 autoTranslated필터제거+OG비율정규화 ⑦ gallery/board/guide 다국어라우트 8경로추가 ⑧ CTA카드시스템(에디터연동+전역기본값+SSR렌더링) ⑨ 홈 블로그카드 slug 이중접미사수정 ⑩ SEO내부경합종합감사 보고서 | portal 전역 | ✅ rev00346→00353 |
 | 06/25 | iMac/막내1 | **Specs v2 kr-passport UI 정비 5건** — ① 태그 H1 아래 이동 ② 그룹A 배지 삭제 ③ 상세규정/반려사유 아코디언 전환 ④ 같은사진 사이즈 필터 추가 ⑤ 하단CTA→크로스셀카드 교체 | render-specs.js | ✅ rev00377 |
 | 06/25 | iMac/막내1 | **Specs v2 P1 — 크롭앱 인라인 임베드** — FaceMesh 기반 얼굴감지+규격맞춤 크롭을 V2에 직접 임베드. 업로드→크롭조정→AI검수→결제 동선 전환. 크롭 다운로드 무료 | render-specs.js (+658줄) | ✅ rev00366 |
+| 06/25 | iMac/막내1 | **Specs v2 P1.5 — Gemini 좌표 보정** — FaceMesh 감지 후 ICAO 범위 밖이면 Gemini Flash로 정수리·턱·눈 좌표 보정. `/api/idphoto/align` 신설. confidence<0.5 무시 | server.js + render-specs.js | ✅ rev00368 |
 
 ---
 
