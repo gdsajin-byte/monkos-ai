@@ -3,8 +3,16 @@
  * IDPASS 카드 UI + 다크 테마 + 3티어 전환 퍼널
  */
 import { createRequire } from 'module';
+import { readdirSync } from 'fs';
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
 import { escapeHtml, layoutShell } from './render-shell.js';
 import { log } from '../shared/config.js';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const GUIDE_IMAGES = new Set(
+  readdirSync(join(__dirname, '../../public/images/guides')).filter(f => f.endsWith('.webp')).map(f => f.replace('.webp', ''))
+);
 
 const _require = createRequire(import.meta.url);
 export const SPECS_DATA = _require('./specs-data.json');
@@ -1583,6 +1591,8 @@ function specsDetailV2Fragment(slug, forceLang = null) {
   ].join('\n');
 
   const faqs = (specData.faqs && (specData.faqs[lang] || specData.faqs.ko)) || V2_FAQ_FALLBACK;
+  const ogGuideKey = GUIDE_IMAGES.has(slug) ? slug : (parseSizeMm(specData.size) || 'kr-passport');
+  const ogImageAbsolute = `https://monkos.ai/images/guides/${ogGuideKey}.webp`;
   const specsLabel = { ko: '규격', en: 'Specs', ja: '規格' }[lang] || 'Specs';
 
   const specsJsonLdArr = [
@@ -1599,6 +1609,7 @@ function specsDetailV2Fragment(slug, forceLang = null) {
       "@context": "https://schema.org",
       "@type": "Article",
       "headline": title,
+      "image": ogImageAbsolute,
       "inLanguage": lang,
       "author": { "@type": "Person", "name": "Shin JeongKyu", "jobTitle": "Photographer & AI Architect" },
       "publisher": { "@type": "Organization", "name": "Monk Studio" },
@@ -1620,7 +1631,10 @@ function specsDetailV2Fragment(slug, forceLang = null) {
 <meta property="og:description" content="${escapeHtml(description)}">
 <meta property="og:type" content="article">
 <meta property="og:url" content="${canonicalUrl}">
-<meta property="og:image" content="https://monkos.ai/og-image.png">
+<meta property="og:image" content="${ogImageAbsolute}">
+<meta property="og:image:width" content="600">
+<meta property="og:image:height" content="600">
+<meta property="og:image:alt" content="${escapeHtml(title)}">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#ffffff">
 <link rel="canonical" href="${canonicalUrl}">
@@ -2012,7 +2026,7 @@ ${hreflangTags}
     var img = document.getElementById('v2-result-after-img');
     if(!img.src) return;
     var a = document.createElement('a');
-    a.href = img.src; a.download = 'monkos-passport.jpg';
+    a.href = img.src; a.download = '${escapeHtml(countryName)}_${escapeHtml(typeName)}_${escapeHtml(locField(specData, 'size', lang).replace(/\s/g,''))}_MONKOS.jpg';
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
   });
 
@@ -2067,6 +2081,8 @@ export function specsDetailFragment(slug, forceLang = null) {
   ].join('\n');
 
   const faqs = (specData.faqs && (specData.faqs[lang] || specData.faqs.ko)) || [];
+  const v1OgGuideKey = GUIDE_IMAGES.has(slug) ? slug : (parseSizeMm(specData.size) || 'kr-passport');
+  const v1OgImage = `https://monkos.ai/images/guides/${v1OgGuideKey}.webp`;
 
   const specsLabel = { ko: '규격', en: 'Specs', ja: '規格' }[lang] || 'Specs';
   const specsJsonLdArr = [
@@ -2083,6 +2099,7 @@ export function specsDetailFragment(slug, forceLang = null) {
       "@context": "https://schema.org",
       "@type": "Article",
       "headline": title,
+      "image": v1OgImage,
       "inLanguage": lang,
       "author": { "@type": "Person", "name": "Shin JeongKyu", "jobTitle": "Photographer & AI Architect" },
       "publisher": { "@type": "Organization", "name": "Monk Studio" },
@@ -2118,12 +2135,12 @@ export function specsDetailFragment(slug, forceLang = null) {
 <meta property="og:description" content="${escapeHtml(description)}">
 <meta property="og:type" content="article">
 <meta property="og:url" content="${canonicalUrl}">
-<meta property="og:image" content="https://monkos.ai/og-image.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
+<meta property="og:image" content="${v1OgImage}">
+<meta property="og:image:width" content="600">
+<meta property="og:image:height" content="600">
 <meta property="og:image:alt" content="${escapeHtml(title)}">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://monkos.ai/og-image.png">
+<meta name="twitter:image" content="${v1OgImage}">
 <meta name="theme-color" content="#05080E">
 <link rel="canonical" href="${canonicalUrl}">
 ${hreflangTags}
