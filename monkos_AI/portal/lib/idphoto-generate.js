@@ -2,11 +2,18 @@ import { GoogleGenAI } from '@google/genai';
 import { log } from './shared/config.js';
 
 const PROJECT_ID = process.env.PROJECT_ID;
+const LOCATION = process.env.LOCATION || 'us-central1';
 
 const imageAI = new GoogleGenAI({
   vertexai: true,
   project: PROJECT_ID,
   location: 'global',
+});
+
+const regionAI = new GoogleGenAI({
+  vertexai: true,
+  project: PROJECT_ID,
+  location: LOCATION,
 });
 
 const IDENTITY_PRESERVATION = `IDENTITY RULE: 90% SAME PERSON + 10% ENHANCEMENT
@@ -57,10 +64,36 @@ const EXPRESSION_PROMPTS = {
   neutral: 'natural calm resting face with soft relaxed eyes, at ease and composed',
 };
 
-function buildPromptV5(body) {
+const ZERO_TOUCH_PROMPT = `[STRICT PASSPORT PHOTO CONVERSION — ZERO MODIFICATION]
+
+You are converting a casual photo into an official passport/ID photo.
+
+YOUR ONLY JOBS:
+1. Replace the background with pure white (#FFFFFF)
+2. Crop/frame to passport format: head centered, face 70-80% of frame height, 3:4 ratio
+
+ABSOLUTELY DO NOT CHANGE:
+- Face, skin, features — NOTHING. Not even "enhancement" or "improvement"
+- Hair — do not restyle, shorten, lengthen, recolor, or rearrange
+- Gender presentation — the person looks exactly as they are
+- Age appearance — no aging or de-aging
+- Clothing — keep exactly as-is
+- Expression — keep exactly as-is (open mouth stays open, smile stays smile)
+- Skin tone, texture, blemishes — keep all of it
+- Glasses, accessories — keep as-is
+- Body shape, posture — keep as-is
+
+Think of this as: CROP + BACKGROUND REMOVAL. Nothing else.
+The output must be the SAME PERSON with the SAME APPEARANCE, just on a white background in passport framing.`;
+
+function buildPromptV5(body, model) {
   let { format, gender, age } = body;
   gender = gender || 'm';
   age = age || 'adult';
+
+  if (model === 'gemini-2.5-flash') {
+    return ZERO_TOUCH_PROMPT;
+  }
 
   const parts = [];
   parts.push('[FORMAT] Official passport/visa photo. Head centered, face taking 70-80% of frame height. Forehead and eyebrows must be visible. White background mandatory.');
@@ -98,7 +131,10 @@ function extractBase64(base64Input) {
 const MODEL_MAP = {
   'nano-banana-2':   'gemini-3.1-flash-image-preview',
   'nano-banana-pro': 'gemini-3-pro-image-preview',
+  'gemini-2.5-flash': 'gemini-2.5-flash-image',
 };
+
+const REGIONAL_MODELS = new Set(['gemini-2.5-flash-image']);
 
 export async function generateIdPhoto({ image, format, gender, age, model, userId }) {
   if (!image) throw new Error('이미지 필수');
@@ -112,9 +148,10 @@ export async function generateIdPhoto({ image, format, gender, age, model, userI
     throw new Error('이미지가 너무 큽니다 (7MB 이하)');
   }
 
-  const instruction = buildPromptV5({ format: format || 'passport', gender, age });
+  const instruction = buildPromptV5({ format: format || 'passport', gender, age }, model);
 
-  const response = await imageAI.models.generateContent({
+  const client = REGIONAL_MODELS.has(modelId) ? regionAI : imageAI;
+  const response = await client.models.generateContent({
     model: modelId,
     contents: [{ role: 'user', parts: [
       { inlineData: { mimeType: 'image/jpeg', data: base64Data } },

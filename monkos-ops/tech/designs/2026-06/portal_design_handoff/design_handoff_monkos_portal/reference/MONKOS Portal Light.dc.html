@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;0,9..40,800;0,9..40,900;1,9..40,500&amp;family=Noto+Sans+KR:wght@400;500;700;900&amp;display=swap" rel="stylesheet">
+<style>
+  body { margin:0; background:#DFE0E3; }
+  *::-webkit-scrollbar { width:11px; height:11px; }
+  *::-webkit-scrollbar-track { background:#DFE0E3; }
+  *::-webkit-scrollbar-thumb { background:#b4b7bd; border-radius:6px; }
+  @keyframes mk-blink { 0%,100%{opacity:1} 50%{opacity:.25} }
+  @keyframes mk-float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+  @keyframes mk-float2 { 0%,100%{transform:translateY(0) rotate(-4deg)} 50%{transform:translateY(-9px) rotate(-4deg)} }
+</style>
+</helmet>
+
+<div style="background: linear-gradient(180deg,#E4E5E8,#D7D8DC); color: #23272e; font-family: 'DM Sans','Noto Sans KR',sans-serif; min-height: 100vh; overflow: hidden; position: relative;">
+
+  <!-- ambient glows -->
+  <div style="position:absolute;top:-260px;left:50%;transform:translateX(-50%);width:1100px;height:760px;background:radial-gradient(ellipse at center,rgba(255,255,255,.65) 0%,rgba(255,255,255,0) 62%);pointer-events:none;z-index:0;"></div>
+  <div style="position:absolute;top:1180px;left:-200px;width:760px;height:760px;background:radial-gradient(circle at center,rgba(255,255,255,.5) 0%,rgba(255,255,255,0) 65%);pointer-events:none;z-index:0;"></div>
+
+  <!-- ================= NAV ================= -->
+  <div style="position:relative;z-index:5;max-width:1240px;margin:0 auto;padding:24px clamp(20px,4vw,40px);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px 20px;">
+    <div style="display:flex;align-items:center;flex-wrap:wrap;gap:16px 40px;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <img src="assets/monkos-icon.svg" alt="MONKOS" style="width:34px;height:34px;border-radius:9px;display:block;box-shadow:0 0 22px rgba(167,139,250,.35);">
+        <div style="font-weight:800;font-size:18px;letter-spacing:.5px;">MONKOS <span style="font-style:italic;font-weight:500;color:#00D4AA;">AI</span></div>
+      </div>
+      <div style="display:flex;gap:26px;font-size:13.5px;font-weight:500;color:#8b93a1;">
+        <span style="color:#1b2532;font-weight:700;"><br><br></span>
+        <span>IDPASS</span>
+        <span>규격</span>
+        <span>가격</span>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:14px;">
+      <span style="font-size:12px;font-weight:600;color:#6B7280;letter-spacing:.5px;white-space:nowrap;">KO · EN · JA</span>
+      <div style="display:flex;align-items:center;gap:7px;font-size:13px;font-weight:700;color:#23272e;border:1px solid rgba(45,49,57,.18);border-radius:10px;padding:8px 14px;white-space:nowrap;background:rgba(255,255,255,.6);">
+        <span style="width:12px;height:12px;border-radius:50%;background:linear-gradient(145deg,#00D4AA,#00a986);display:inline-block;box-shadow:0 0 7px rgba(0,212,170,.45);"></span>120<span style="color:#71767e;font-weight:500;">크레딧</span>
+      </div>
+      <span style="font-size:13px;font-weight:700;color:#fff;border-radius:10px;padding:8px 16px;white-space:nowrap;background:#2c3037;box-shadow:0 6px 16px rgba(45,49,57,.2);">로그인</span>
+    </div>
+  </div>
+
+  <!-- ================= HERO ================= -->
+  <div style="position:relative;z-index:2;width:min(1240px,100% - 28px);margin:14px auto 30px;padding:clamp(28px,4vw,46px) clamp(20px,4vw,40px) clamp(36px,4vw,56px);border-radius:28px;border:1px solid rgba(255,255,255,.7);border-top-color:rgba(255,255,255,.95);background:rgba(255,255,255,.46);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:0 26px 62px rgba(45,49,57,.15),inset 0 1px 0 rgba(255,255,255,.6);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr));gap:40px;align-items:center;">
+    <div>
+      <div style="display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 700; letter-spacing: 1.8px; color: #050505; border: 1px solid rgba(0,212,170,.28); padding: 8px 18px; border-radius: 20px; margin-bottom: 30px">
+        <span style="width:7px;height:7px;border-radius:50%;background:#00D4AA;animation:mk-blink 2s infinite;"></span>200+국가 규격 검수 · ICAO 준수 · 5가지 스타일
+      </div>
+      <div style="font-size: clamp(30px,4vw,56px); font-weight: 900; line-height: 1.12; letter-spacing: -1.6px; margin-bottom: 22px;"><span style="font-weight: normal; font-family: Arial">
+        전문 스튜디오가 개발한<br><span style="color: rgb(0, 212, 170);" data-cc-id="cc-7">AI 증명사진</span> 서비스
+      </span></div>
+      <div style="font-size:18px;line-height:1.6;color:#566070;max-width:500px;margin-bottom:32px;">
+        여권·비자·규격 대응 <b style="color: rgb(194, 202, 214); font-weight: 700;">+</b><div> 링크드인·프로페셔널·이력서 헤드샷.<br>셀카 한 장이면 끝.
+      </div></div>
+      
+      <div style="display:flex;flex-wrap:wrap;gap:24px 32px;margin-top:44px;">
+        <div><div style="font-size: 30px; font-weight: 600">200+개국</div><div style="font-size:13px;color:#6B7280;margin-top:3px;">여권·비자 규격</div></div>
+        <div style="width:1px;background:#d4d9e0;"></div>
+        <div><div style="font-size: 30px; font-weight: 600">ICAO</div><div style="font-size:13px;color:#6B7280;margin-top:3px;">국제 표준 준수</div></div>
+        <div style="width:1px;background:#d4d9e0;"></div>
+        <div><div style="font-size: 30px; font-weight: 600">5가지</div><div style="font-size:13px;color:#6B7280;margin-top:3px;">헤드샷 스타일</div></div>
+      </div>
+    </div>
+    <!-- hero visual: AI service results (증명 + 헤드샷) -->
+    <div style="position:relative;border:1px solid rgba(255,255,255,.65);border-radius:28px;background:rgba(255,255,255,.4);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);padding:22px;display:flex;justify-content:center;box-shadow:0 26px 60px rgba(45,49,57,.16);">
+      
+      <div style="position:absolute;inset:-40px;background:radial-gradient(circle at 55% 45%,rgba(255,255,255,.55),transparent 62%);pointer-events:none;"></div>
+      <!-- 증명사진 service card (moved to hero) -->
+      <div style="position:relative;width:100%;max-width:392px;border:1px solid rgba(255,255,255,.1);border-radius:18px;background:linear-gradient(180deg,#26282d,#1b1d21);color:#e8eaee;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 18px 44px rgba(35,39,46,.30);">
+        <div style="position:relative;height:214px;display:flex;">
+          <div style="flex:1;position:relative;overflow:hidden;"><img src="assets/idphoto-before.jpg" style="width:100%;height:100%;object-fit:cover;object-position:50% 18%;filter:saturate(.85);"><div style="position:absolute;bottom:10px;left:10px;font-size:9px;font-weight:700;letter-spacing:1px;color:#cfd6e0;background:rgba(0,0,0,.55);border-radius:5px;padding:3px 7px;">BEFORE</div></div>
+          <div style="flex:1;position:relative;overflow:hidden;border-left:2px solid #00D4AA;"><img src="assets/idphoto-after.jpg" style="width:100%;height:100%;object-fit:cover;object-position:50% 18%;">
+            <div style="position:absolute;top:10px;right:10px;display:flex;flex-direction:column;align-items:flex-end;gap:4px;"><span style="font-size:8px;font-weight:800;letter-spacing:.5px;color:#05080E;background:#00D4AA;border-radius:5px;padding:3px 7px;">PASS ✓</span></div>
+            <div style="position:absolute;left:6px;right:6px;top:50%;height:1px;background:rgba(0,212,170,.45);"></div>
+            <div style="position:absolute;top:6px;bottom:6px;left:50%;width:1px;background:rgba(0,212,170,.25);"></div>
+          </div>
+        </div>
+        <div style="padding:22px;display:flex;flex-direction:column;flex:1;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:9px;"><div style="font-size:19px;font-weight:800;">증명사진</div><span style="font-size:9px;font-weight:800;letter-spacing:1px;color:#00D4AA;border:1px solid rgba(0,212,170,.35);border-radius:5px;padding:2px 6px;white-space:nowrap;">규격 · 200+개국</span></div>
+          <div style="font-size:13px;line-height:1.55;color:#9aa3b2;margin-bottom:16px;flex:1;">여권·비자·신분증·이력서. AI가 각국 규격(px·배경·여백)에 정확히 맞춰 출력 — 한 번에 통과하는 한 장.</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px;">
+            <span style="font-size:10px;color:#cfd6e0;background:rgba(255,255,255,.04);border:1px solid #232c3a;border-radius:6px;padding:4px 9px;">흰 배경</span>
+            <span style="font-size:10px;color:#cfd6e0;background:rgba(255,255,255,.04);border:1px solid #232c3a;border-radius:6px;padding:4px 9px;">ICAO</span>
+            <span style="font-size:10px;color:#cfd6e0;background:rgba(255,255,255,.04);border:1px solid #232c3a;border-radius:6px;padding:4px 9px;">정수리 크롭</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;"><span style="font-size:13px;font-weight:700;color:#fff;background:#2c3037;border-radius:10px;padding:10px 16px;white-space:nowrap;">증명사진 만들기 →</span><span style="font-size:11px;color:#6B7280;">idphoto.monkos.ai</span></div>
+        </div>
+      </div>
+      
+      <!-- floating result card · 헤드샷 -->
+      
+    </div>
+  </div>
+
+  <!-- ================= PRODUCTS ================= -->
+  <div style="position:relative;z-index:2;width:min(1240px,100% - 28px);margin:0 auto 30px;padding:clamp(24px,4vw,36px) clamp(20px,4vw,40px) clamp(28px,4vw,40px);border-radius:28px;border:1px solid rgba(255,255,255,.7);border-top-color:rgba(255,255,255,.95);background:rgba(255,255,255,.46);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:0 26px 62px rgba(45,49,57,.15),inset 0 1px 0 rgba(255,255,255,.6);overflow:hidden;">
+    <div style="position:absolute;top:60px;right:-80px;width:620px;height:520px;background:radial-gradient(circle at center,rgba(255,255,255,.55),transparent 64%);pointer-events:none;z-index:0;"></div>
+    <div style="position:relative;z-index:1;display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+      <div>
+        <div style="font-size:12px;font-weight:700;letter-spacing:2px;color:#71767e;margin-bottom:8px;">AI HEADSHOT</div>
+        <div style="font-size: clamp(22px,4.6vw,30px); font-weight: 500; letter-spacing: -.5px">전문가의 품격,&nbsp; 한컷의 사진으로</div>
+      </div>
+      <div style="font-size:13px;color:#6B7280;max-width:360px;text-align:right;line-height:1.5;">규격이 필요한 <b style="color:#9aa3b2;">증명사진</b>은 위에서, 보여주고 싶은 <b style="color:#9aa3b2;">헤드샷</b>은 여기서.</div>
+    </div>
+
+    <!-- SERVICE 2 · 헤드샷 (세미프로필) — full width, multi-concept -->
+    <div style="border:1px solid rgba(255,255,255,.14);border-radius:22px;background:linear-gradient(135deg,#34373d,#26282d);color:#e8eaee;overflow:hidden;position:relative;box-shadow:0 30px 64px rgba(40,44,52,.28),inset 0 1px 0 rgba(255,255,255,.06);">
+      <div style="position:absolute;inset:0;background:radial-gradient(circle at 50% -20%,rgba(255,255,255,.10),transparent 55%);pointer-events:none;"></div>
+      <div style="position:relative;display:flex;align-items:flex-end;justify-content:space-between;gap:20px;padding:26px 28px 18px;flex-wrap:wrap;">
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;"><div style="font-size:22px;font-weight:800;">헤드샷</div><span style="font-size:9px;font-weight:800;letter-spacing:1px;color:#c8ccd2;border:1px solid rgba(255,255,255,.25);border-radius:5px;padding:2px 6px;white-space:nowrap;">NEW · 세미프로필</span></div>
+          <div style="font-size:13.5px;line-height:1.55;color:#9aa3b2;max-width:580px;">링크드인·이력서·회사 소개용 비즈니스 프로필. 셀카 한 장으로 5가지 컨셉을 골라 30초 만에&nbsp;<div>— 링크드인부터 데이팅 프로필까지.</div></div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
+          <span style="font-size: 13px; font-weight: 700; color: #fff; border-radius: 10px; padding: 11px 18px; white-space: nowrap; background-color: #6b707a">헤드샷 만들기 →</span>
+          <span style="font-size:11px;color:#6B7280;white-space:nowrap;">30초 · 비즈니스 프로필</span>
+        </div>
+      </div>
+      <!-- concept gallery · 5 styles -->
+      <div style="position:relative;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(130px,100%),1fr));gap:10px;padding:6px clamp(16px,3vw,28px) 28px;">
+        <div style="position:relative;border-radius:13px;overflow:hidden;border:1.5px solid #4a4f57;aspect-ratio:3/4;box-shadow:0 0 0 3px rgba(74,79,87,.18);">
+          <img src="assets/headshot-linkedin.jpg" style="width:100%;height:100%;object-fit:cover;object-position:50% 18%;">
+          <div style="position:absolute;inset:0;background:linear-gradient(180deg,transparent 58%,rgba(8,6,18,.85));"></div>
+          <div style="position:absolute;top:9px;right:9px;font-size:8px;font-weight:800;letter-spacing:.5px;color:#fff;background:#2c3037;border-radius:5px;padding:2px 6px;">인기</div>
+          <div style="position:absolute;bottom:10px;left:11px;font-size:12px;font-weight:700;color:#fff;white-space:nowrap;">LinkedIn</div>
+        </div>
+        <div style="position:relative;border-radius:13px;overflow:hidden;border:1px solid #241f3a;aspect-ratio:3/4;">
+          <img src="assets/headshot-corporate.jpg" style="width:100%;height:100%;object-fit:cover;object-position:50% 14%;">
+          <div style="position:absolute;inset:0;background:linear-gradient(180deg,transparent 58%,rgba(8,6,18,.85));"></div>
+          <div style="position:absolute;bottom:10px;left:11px;font-size:12px;font-weight:700;color:#fff;white-space:nowrap;">Corporate</div>
+        </div>
+        <div style="position:relative;border-radius:13px;overflow:hidden;border:1px solid #241f3a;aspect-ratio:3/4;">
+          <img src="assets/headshot-creative.png" style="width:100%;height:100%;object-fit:cover;object-position:50% 16%;">
+          <div style="position:absolute;inset:0;background:linear-gradient(180deg,transparent 58%,rgba(8,6,18,.85));"></div>
+          <div style="position:absolute;bottom:10px;left:11px;font-size:12px;font-weight:700;color:#fff;white-space:nowrap;">Creative</div>
+        </div>
+        <div style="position:relative;border-radius:13px;overflow:hidden;border:1px solid #241f3a;aspect-ratio:3/4;">
+          <img src="assets/headshot-professional.jpg" style="width:100%;height:100%;object-fit:cover;object-position:50% 16%;">
+          <div style="position:absolute;inset:0;background:linear-gradient(180deg,transparent 58%,rgba(8,6,18,.85));"></div>
+          <div style="position:absolute;bottom:10px;left:11px;font-size:12px;font-weight:700;color:#fff;white-space:nowrap;">Professional</div>
+        </div>
+        <div style="position:relative;border-radius:13px;overflow:hidden;border:1px solid #241f3a;aspect-ratio:3/4;">
+          <img src="assets/headshot-dating.jpg" style="width:100%;height:100%;object-fit:cover;object-position:50% 12%;">
+          <div style="position:absolute;inset:0;background:linear-gradient(180deg,transparent 58%,rgba(8,6,18,.85));"></div>
+          <div style="position:absolute;bottom:10px;left:11px;font-size:12px;font-weight:700;color:#fff;white-space:nowrap;">Dating Profile</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= IDPASS DOWNLOAD / APP STORE SHOWCASE ================= -->
+  <div style="position:relative;z-index:2;width:min(1240px,100% - 28px);margin:0 auto 30px;border-radius:28px;border:1px solid rgba(255,255,255,.7);border-top-color:rgba(255,255,255,.95);background:rgba(255,255,255,.46);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);color:#23272e;box-shadow:0 26px 62px rgba(45,49,57,.15),inset 0 1px 0 rgba(255,255,255,.6);overflow:hidden;">
+    <div style="max-width:1240px;margin:0 auto;padding:clamp(40px,5vw,64px) clamp(20px,4vw,40px) clamp(44px,5vw,70px);">
+      <div style="display:flex;flex-direction:column;align-items:center;text-align:center;margin-bottom:46px;">
+        <div style="display:inline-flex;align-items:center;gap:8px;margin-bottom:18px;">
+          <img src="assets/idpass-icon.png" alt="IDPASS" style="width:46px;height:46px;border-radius:12px;display:block;box-shadow:0 0 26px rgba(0,212,170,.3);">
+
+          <div style="font-size:30px;font-weight:900;letter-spacing:.5px;">Download <span style="color:#00D4AA;">IDPASS</span></div>
+        </div>
+        <div style="font-size:16px;color:#566070;max-width:520px;line-height:1.6;">완벽한 배경제거 및 변경<div>전 세계 규격 DB 크롭</div><div>완전한 무료 다운로드 NO 광고<div>모든 것은 내폰 안에서만~</div></div></div>
+        <sc-if value="{{ showRating }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;align-items:center;gap:14px;margin-top:20px;">
+          <div style="display:flex;align-items:center;gap:6px;"><span style="color:#00D4AA;font-size:15px;letter-spacing:2px;">★★★★★</span><span style="font-size:13px;font-weight:700;">4.9</span><span style="font-size:12px;color:#6B7280;">App Store</span></div>
+          <div style="width:1px;height:16px;background:#1b2330;"></div>
+          <div style="font-size:13px;color:#9aa3b2;"><b style="color:#F0F0F0;">5.5MB</b> · iOS 16+ 전용</div>
+        </div>
+        </sc-if>
+        <div style="display:flex;gap:13px;margin-top:26px;">
+          <span style="display: flex; align-items: center; gap: 9px; color: #ffffff; border-radius: 13px; padding: 12px 22px; background-color: #000000"><span style="font-size:22px;line-height:1;"></span><span style="text-align:left;"><span style="display:block;font-size:9px;font-weight:600;letter-spacing:.5px;">Download on the</span><span style="display:block;font-size:16px;font-weight:800;line-height:1.1;">App Store</span></span></span>
+        </div>
+      </div>
+
+      <!-- Unified App Store creative: first 3 screenshots designed as one connected billboard -->
+      
+      <div style="position:relative;border-radius:30px;overflow:hidden;border:1px solid rgba(255,255,255,.08);background:linear-gradient(118deg,#26282d 0%,#1a1c20 50%,#24262b 100%);box-shadow:0 26px 60px rgba(40,44,52,.28),inset 0 1px 0 rgba(255,255,255,.06);">
+        <!-- one glow flowing across all three -->
+        <div style="position:absolute;top:-150px;left:50%;transform:translateX(-50%);width:1000px;height:600px;background:radial-gradient(ellipse at center,rgba(255,255,255,.06),transparent 62%);pointer-events:none;"></div>
+        <div style="position:absolute;bottom:-200px;right:-80px;width:560px;height:560px;background:radial-gradient(circle at center,rgba(255,255,255,.04),transparent 66%);pointer-events:none;"></div>
+        <div style="position:relative;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));">
+          <!-- panel 1 -->
+          <div style="padding:44px 30px 0;display:flex;flex-direction:column;align-items:center;min-height:560px;border-right:1px solid rgba(255,255,255,.05);">
+            <div style="text-align:center;margin-bottom:26px;">
+              <div style="font-size: 11px; font-weight: 800; letter-spacing: 2px; color: #f2f5f5; margin-bottom: 11px">FREE · NO LOGIN</div>
+              <div style="font-size:30px;font-weight:900;line-height:1.1;letter-spacing:-.5px;">증명사진,<br><span style="color: #ffffff">다 통과.</span></div>
+            </div>
+            <div style="width:196px;border-radius:30px 30px 0 0;overflow:hidden;border:6px solid #161d2a;border-bottom:none;box-shadow:0 -14px 60px rgba(0,212,170,.14);margin-top:auto;position:relative;">
+              <div style="position:absolute;top:9px;left:50%;transform:translateX(-50%);width:56px;height:15px;background:#05080E;border-radius:9px;z-index:3;"></div>
+              <img src="assets/store_01.jpg" style="display:block;width:100%;height:auto;">
+            </div>
+          </div>
+          <!-- panel 2 -->
+          <div style="padding:44px 30px 0;display:flex;flex-direction:column;align-items:center;min-height:560px;border-right:1px solid rgba(255,255,255,.05);">
+            <div style="text-align:center;margin-bottom:26px;">
+              <div style="font-size: 11px; font-weight: 800; letter-spacing: 2px; color: #f4f4f4; margin-bottom: 11px">200+ COUNTRIES</div>
+              <div style="font-size:30px;font-weight:900;line-height:1.1;letter-spacing:-.5px;">여권·비자<br><span style="color: #fafafa">규격 자동</span></div>
+            </div>
+            <div style="width:196px;border-radius:30px 30px 0 0;overflow:hidden;border:6px solid #161d2a;border-bottom:none;box-shadow:0 -14px 60px rgba(0,212,170,.14);margin-top:auto;position:relative;">
+              <div style="position:absolute;top:9px;left:50%;transform:translateX(-50%);width:56px;height:15px;background:#05080E;border-radius:9px;z-index:3;"></div>
+              <img src="assets/store_03.jpg" style="display:block;width:100%;height:auto;">
+            </div>
+          </div>
+          <!-- panel 3 -->
+          <div style="padding:44px 30px 0;display:flex;flex-direction:column;align-items:center;min-height:560px;">
+            <div style="text-align:center;margin-bottom:26px;">
+              <div style="font-size: 11px; font-weight: 800; letter-spacing: 2px; color: #fdfdfd; margin-bottom: 11px">ON-DEVICE</div>
+              <div style="font-size: 30px; font-weight: 900; line-height: 1.1; letter-spacing: -.5px; color: #ffffff">서버 전송 없이<br><span style="color: #ffffff">안전하게.</span></div>
+            </div>
+            <div style="width:196px;border-radius:30px 30px 0 0;overflow:hidden;border:6px solid #161d2a;border-bottom:none;box-shadow:0 -14px 60px rgba(0,212,170,.14);margin-top:auto;position:relative;">
+              <div style="position:absolute;top:9px;left:50%;transform:translateX(-50%);width:56px;height:15px;background:#05080E;border-radius:9px;z-index:3;"></div>
+              <img src="assets/store_05.jpg" style="display:block;width:100%;height:auto;">
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+
+  <!-- ================= RESOURCES · FAQ + 게시판 ================= -->
+  <div style="position:relative;z-index:2;width:min(1240px,100% - 28px);margin:0 auto 30px;border-radius:28px;border:1px solid rgba(255,255,255,.7);border-top-color:rgba(255,255,255,.95);background:rgba(255,255,255,.5);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:0 26px 62px rgba(45,49,57,.16),inset 0 1px 0 rgba(255,255,255,.6);overflow:hidden;">
+    <div style="position:absolute;top:-60px;left:-120px;width:680px;height:560px;background:radial-gradient(circle at center,rgba(255,255,255,.6),transparent 62%);pointer-events:none;z-index:0;"></div>
+    <div style="position:relative;z-index:1;max-width:1240px;margin:0 auto;padding:clamp(40px,5vw,64px) clamp(20px,4vw,40px) 24px;">
+      <div style="margin-bottom:30px;">
+        <div style="font-size:12px;font-weight:700;letter-spacing:2px;color:#71767e;margin-bottom:8px;">RESOURCES</div>
+        <div style="font-size:30px;font-weight:800;letter-spacing:-.5px;">궁금한 점, 먼저 풀어드려요</div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:22px;align-items:start;">
+        <!-- FAQ accordion -->
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <sc-for list="{{ faqList }}" as="f" hint-placeholder-count="4">
+            <div onClick="{{ f.toggle }}" style="border:1px solid rgba(255,255,255,.7);border-radius:14px;background:rgba(255,255,255,.5);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding:18px 20px;cursor:pointer;box-shadow:0 8px 26px rgba(45,49,57,.08);">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;">
+                <span style="font-size:15px;font-weight:700;color:#1b2532;">{{ f.q }}</span>
+                <span style="font-size:20px;font-weight:400;color:#4a4f57;line-height:1;flex:none;">{{ f.sign }}</span>
+              </div>
+              <sc-if value="{{ f.isOpen }}" hint-placeholder-val="{{ false }}">
+                <div style="font-size:13.5px;line-height:1.65;color:#566070;margin-top:13px;padding-top:13px;border-top:1px solid #eceff3;">{{ f.a }}</div>
+              </sc-if>
+            </div>
+          </sc-for>
+        </div>
+
+        <!-- side: 규격 가이드 + 고객 게시판 -->
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div style="border:1px solid rgba(255,255,255,.7);border-radius:16px;background:rgba(255,255,255,.5);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding:22px;box-shadow:0 10px 30px rgba(45,49,57,.1);">
+            <div style="font-size:15px;font-weight:800;margin-bottom:6px;color:#23272e;">📑 증명사진 규격 가이드</div>
+            <div style="font-size:13px;line-height:1.55;color:#566070;margin-bottom:16px;">여권·비자·신분증 — 국가별 px·배경·여백 기준을 한곳에서 확인하세요.</div>
+            <span style="font-size: 13px; font-weight: 700; color: #fff; border-radius: 10px; padding: 9px 16px; white-space: nowrap; background-color: #2255ad">규격 DB 보기 →</span>
+          </div>
+
+          <div style="border:1px solid rgba(255,255,255,.7);border-radius:16px;background:rgba(255,255,255,.5);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding:20px 22px;box-shadow:0 8px 26px rgba(45,49,57,.07);">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+              <span style="font-size:14px;font-weight:800;color:#1b2532;">고객 게시판</span>
+              <span style="font-size:12px;font-weight:600;color:#8a93a1;white-space:nowrap;">전체보기 →</span>
+            </div>
+            <sc-for list="{{ boardList }}" as="p" hint-placeholder-count="1">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 0;border-top:1px solid #eceff3;">
+                <span style="font-size:13px;color:#3a4453;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ p.title }}</span>
+                <span style="font-size:11px;color:#8a93a1;flex:none;">{{ p.author }} · {{ p.date }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 최근 블로그 ── -->
+    <div style="max-width:1240px;margin:0 auto;padding:26px clamp(20px,4vw,40px) 64px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+        <div style="font-size:20px;font-weight:800;letter-spacing:-.3px;">최근 블로그</div>
+        <span style="font-size: 13px; font-weight: 600; color: #000000; white-space: nowrap">전체보기 →</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:16px;">
+        <sc-for list="{{ blogList }}" as="b" hint-placeholder-count="3">
+          <div style="border:1px solid rgba(255,255,255,.7);border-radius:16px;background:rgba(255,255,255,.5);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);overflow:hidden;display:flex;flex-direction:column;cursor:pointer;box-shadow:0 8px 26px rgba(45,49,57,.08);">
+            <div style="height:92px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,rgba(120,124,132,.20),rgba(90,94,102,.12));border-bottom:1px solid #e6e8ec;position:relative;">
+              <span style="font-size:34px;font-weight:900;color:#23272e;opacity:.78;">{{ b.mono }}</span>
+              <span style="position: absolute; top: 10px; left: 12px; font-size: 9px; font-weight: 800; letter-spacing: 1px; color: #ffffff; background: {{ b.accent }}; border-radius: 5px; padding: 3px 8px">{{ b.tag }}</span>
+            </div>
+            <div style="padding:16px 18px 18px;display:flex;flex-direction:column;flex:1;">
+              <div style="font-size:14.5px;font-weight:700;line-height:1.4;color:#1b2532;margin-bottom:9px;">{{ b.title }}</div>
+              <div style="font-size:12.5px;line-height:1.6;color:#697282;margin-bottom:14px;flex:1;">{{ b.excerpt }}</div>
+              <div style="font-size:11px;color:#8a93a1;font-weight:600;">MONKOS · {{ b.date }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= FOOTER ================= -->
+  <div style="position:relative;z-index:2;border-top:1px solid #11161f;background:#05080E;">
+    <div style="max-width:1240px;margin:0 auto;padding:34px 40px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <img src="assets/monkos-icon.svg" alt="MONKOS" style="width:28px;height:28px;border-radius:8px;display:block;">
+        <span style="font-size:13px;color:#6B7280;">powered by <b style="color: #d4e8e4; font-weight: 800">MONKOS AI</b></span>
+      </div>
+      <div style="display:flex;gap:22px;font-size:12.5px;color:#6B7280;font-weight:500;">
+        <span>idphoto</span><span>IDPASS</span><span>규격 DB</span><span>Terms</span><span>Privacy</span>
+      </div>
+      <div style="font-size:11px;color:#3a4250;letter-spacing:.5px;">© 2026 MONK STUDIO</div>
+    </div>
+
+    <!-- 사업자 정보 (business / legal) -->
+    <div style="border-top:1px solid #0d1219;">
+      <div style="max-width:1240px;margin:0 auto;padding:24px 40px 38px;">
+        <div style="display:flex;flex-wrap:wrap;column-gap:24px;row-gap:7px;font-size:11.5px;line-height:1.6;color:#4a5260;">
+          <span><b style="color:#6B7280;font-weight:600;">상호</b> 몽코스 스튜디오(MONK STUDIO)</span>
+          <span><b style="color:#6B7280;font-weight:600;">대표</b> 홍길동</span>
+          <span><b style="color:#6B7280;font-weight:600;">사업자등록번호</b> 000-00-00000</span>
+          <span><b style="color:#6B7280;font-weight:600;">통신판매업신고</b> 제2026-서울00-0000호</span>
+          <span style="flex-basis:100%;"><b style="color:#6B7280;font-weight:600;">주소</b> 서울특별시 ○○구 ○○로 00, 0층</span>
+          <span><b style="color:#6B7280;font-weight:600;">개인정보보호책임자</b> 홍길동</span>
+          <span><b style="color:#6B7280;font-weight:600;">이메일</b> help@monkos.ai</span>
+          <span><b style="color:#6B7280;font-weight:600;">고객문의</b> 00-0000-0000</span>
+        </div>
+        <div style="margin-top:14px;font-size:11px;color:#3a4250;line-height:1.6;">
+          MONKOS는 통신판매중개자가 아닌 통신판매업자로서 자체 제공 서비스에 대한 책임을 집니다. 결제·환불 및 이용 관련 문의는 고객센터로 연락 주시기 바랍니다.
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:1720},&quot;showRating&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;}}">
+class Component extends DCLogic {
+  state = { openFaq: 0 };
+
+  renderVals() {
+    // ── CMS-backed content (replace these arrays with Firestore queries) ──
+    const faqSource = [
+      { q: 'MONKOS AI는 어떤 서비스인가요?', a: 'AI 기반 증명사진·헤드샷을 비롯해 Photo·Beauty·LookBook 등 이미지 솔루션을 제공하는 플랫폼입니다. 전문 스튜디오 품질을 셀카 한 장으로.' },
+      { q: '증명사진은 어떤 규격을 지원하나요?', a: 'ICAO 기준 여권사진(3.5×4.5cm)부터 비자·신분증·반명함·이력서까지, 200+국가 규격 DB를 자동 적용합니다.' },
+      { q: '헤드샷은 증명사진과 무엇이 다른가요?', a: '규격이 필요한 증명사진과 달리, 헤드샷은 링크드인·프로페셔널·이력서용 비즈니스 프로필입니다. 5가지 스타일 중 골라 30초 만에 완성됩니다.' },
+      { q: '내 사진은 안전하게 처리되나요?', a: 'IDPASS 앱의 크롭·배경제거는 모두 기기 안(온디바이스)에서 처리되어 서버로 전송되지 않습니다.' },
+    ];
+    const faqList = faqSource.map((f, i) => ({
+      q: f.q,
+      a: f.a,
+      isOpen: i === this.state.openFaq,
+      sign: i === this.state.openFaq ? '–' : '+',
+      toggle: () => this.setState(s => ({ openFaq: s.openFaq === i ? -1 : i })),
+    }));
+
+    const blogSource = [
+      { tag: 'GUIDE', mono: '비', title: '비자사진 규격 총정리 — 미국·중국·일본·유럽 (2026)', excerpt: '미국 비자는 5.1×5.1cm 정사각형, 중국은 3.3×4.8cm, 솅겐은 3.5×4.5cm — 나라마다 다른 11개국 규격을 한 번에.', date: '06.13', accent: '#2c3037' },
+      { tag: 'STYLE', mono: '취', title: '여성 단발머리 취업사진 스타일 3종', excerpt: '단정한 인상을 만드는 단발 헤어와 의상 매칭. 합격을 부르는 취업사진 스타일 가이드.', date: '06.09', accent: '#5a5f67' },
+      { tag: 'TIP', mono: '앞', title: '취활사진, 앞머리 꼭 없애야 하나?', excerpt: '이마 노출과 인상의 관계, 직군별 권장 헤어라인까지 — 앞머리에 대한 오해와 진실.', date: '06.04', accent: '#2c3037' },
+    ];
+
+    const boardSource = [
+      { author: '대길중', title: 'MONKOS AI에 오신 것을 환영합니다.', date: '03.13' },
+    ];
+
+    const shotData = [
+      { src: 'assets/store_01.jpg', cap: 'ID photos, all pass', sub: '여권·비자·면허·커스텀' },
+      { src: 'assets/store_02.jpg', cap: '대륙으로 시작', sub: '6개 권역에서 빠르게' },
+      { src: 'assets/store_03.jpg', cap: '국가별 규격', sub: '26개국 px·배경 자동' },
+      { src: 'assets/store_04.jpg', cap: '사진 업로드', sub: '갤러리에서 한 장' },
+      { src: 'assets/store_05.jpg', cap: '규격 크롭 + 검수', sub: 'ICAO · 정수리 크롭' },
+    ];
+    return {
+      shotData,
+      faqList,
+      blogList: blogSource,
+      boardList: boardSource,
+      showRating: this.props.showRating ?? true,
+    };
+  }
+}
+</script>
+</body>
+</html>

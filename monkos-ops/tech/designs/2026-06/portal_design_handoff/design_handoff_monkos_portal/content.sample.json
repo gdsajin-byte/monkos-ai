@@ -1,0 +1,41 @@
+{
+  "_comment": "MONKOS 포털 동적 콘텐츠 샘플. 디자인 시안에서는 컴포넌트 로직 안에 하드코딩되어 있으나, 프로덕션에서는 Firestore에서 읽어 SSR 템플릿에 주입한다. 컬렉션/필드명은 팀 규칙에 맞게 조정.",
+
+  "nav": {
+    "credits": 120,
+    "languages": ["KO", "EN", "JA"]
+  },
+
+  "faqs": {
+    "_collection": "faqs",
+    "_order": "order asc",
+    "items": [
+      { "id": "what-is", "order": 1, "q": "MONKOS AI는 어떤 서비스인가요?", "a": "AI 기반 증명사진·헤드샷을 비롯해 Photo·Beauty·LookBook 등 이미지 솔루션을 제공하는 플랫폼입니다. 전문 스튜디오 품질을 셀카 한 장으로." },
+      { "id": "id-specs", "order": 2, "q": "증명사진은 어떤 규격을 지원하나요?", "a": "ICAO 기준 여권사진(3.5×4.5cm)부터 비자·신분증·반명함·이력서까지, 200+국가 규격 DB를 자동 적용합니다." },
+      { "id": "headshot-diff", "order": 3, "q": "헤드샷은 증명사진과 무엇이 다른가요?", "a": "규격이 필요한 증명사진과 달리, 헤드샷은 링크드인·프로페셔널·이력서용 비즈니스 프로필입니다. 5가지 스타일 중 골라 30초 만에 완성됩니다." },
+      { "id": "privacy", "order": 4, "q": "내 사진은 안전하게 처리되나요?", "a": "IDPASS 앱의 크롭·배경제거는 모두 기기 안(온디바이스)에서 처리되어 서버로 전송되지 않습니다." }
+    ],
+    "_ui_note": "기본적으로 첫 번째 항목(order 1)이 펼쳐진 상태. 한 번에 하나만 열림(아코디언). 같은 항목 재클릭 시 전부 닫힘."
+  },
+
+  "posts": {
+    "_collection": "posts",
+    "_order": "publishedAt desc",
+    "_limit_on_portal": 3,
+    "items": [
+      { "id": "visa-specs-2026", "tag": "GUIDE", "mono": "비", "title": "비자사진 규격 총정리 — 미국·중국·일본·유럽 (2026)", "excerpt": "미국 비자는 5.1×5.1cm 정사각형, 중국은 3.3×4.8cm, 솅겐은 3.5×4.5cm — 나라마다 다른 11개국 규격을 한 번에.", "date": "06.13", "accent": "#2c3037", "thumbnailUrl": null },
+      { "id": "bob-job-styles", "tag": "STYLE", "mono": "취", "title": "여성 단발머리 취업사진 스타일 3종", "excerpt": "단정한 인상을 만드는 단발 헤어와 의상 매칭. 합격을 부르는 취업사진 스타일 가이드.", "date": "06.09", "accent": "#5a5f67", "thumbnailUrl": null },
+      { "id": "bangs-or-not", "tag": "TIP", "mono": "앞", "title": "취활사진, 앞머리 꼭 없애야 하나?", "excerpt": "이마 노출과 인상의 관계, 직군별 권장 헤어라인까지 — 앞머리에 대한 오해와 진실.", "date": "06.04", "accent": "#2c3037", "thumbnailUrl": null }
+    ],
+    "_ui_note": "mono는 썸네일이 없을 때 표시하는 1글자 모노그램. thumbnailUrl이 있으면 그 이미지를 우선 사용. accent는 태그 배지 배경색(모노톤 그래파이트 권장)."
+  },
+
+  "board": {
+    "_collection": "board",
+    "_order": "createdAt desc",
+    "_limit_on_portal": 1,
+    "items": [
+      { "id": "welcome", "author": "대길중", "title": "MONKOS AI에 오신 것을 환영합니다.", "date": "03.13" }
+    ]
+  }
+}

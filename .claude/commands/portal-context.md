@@ -52,12 +52,16 @@ monkos_AI/portal/
 
 ## 미해결 이슈
 
-1. `/pricing` 404 — nav에서 JS 인터셉트인데 JS 로드 전/직접 접근 시 404
-2. `/guide` 404 — 라우트 미존재
-3. `/blog` 데이터 끊김 — 홈에 정적 목업 4건, /blog는 Firestore 읽기인데 데이터 없음
-4. 히어로 CTA 부재 — 촬영실 앱에는 있고 포털에는 없음
-5. Before/After 갤러리 플레이스홀더 — 실 사진 미적용
-6. 블로그 썸네일 크기 부족
+1. Before/After 갤러리 — 실 사진 적용 여부 미검증 (디자인 품질 사안)
+2. 블로그 썸네일 크기 — 실 썸네일(GCS 이미지)은 적용됨, 표시 크기 적정성은 디자인 폴리시 잔여 항목
+3. 포털 파비콘 — Google 검색 결과 미노출 (SEO 현황 참조)
+
+## 해소됨 (2026-06-25 라이브 실측, monkos.ai)
+
+- ✅ `/pricing` — server.js:608 `renderPricing` 라우트 존재, 라이브 200
+- ✅ `/guide` — server.js:600 `renderGuide` 라우트 존재, 라이브 200
+- ✅ `/blog` 데이터 — server.js:593 `renderBlogList`, 라이브 200 (홈 6카드 + 목록 12카드, 실 GCS 썸네일 표출)
+- ✅ 히어로 CTA — 홈 히어로에 solid CTA 3개 (idphoto-kr · /headshot · /specs)
 
 ## 기술 참조
 

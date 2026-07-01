@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800;900&amp;family=Noto+Sans+KR:wght@400;500;700;900&amp;display=swap" rel="stylesheet">
+<style>
+  body { margin:0; background:#e7e5df; }
+</style>
+</helmet>
+
+<div style="width:max-content;min-width:100%;min-height:100vh;box-sizing:border-box;padding:48px;background:#e7e5df;font-family:'DM Sans','Noto Sans KR',sans-serif;">
+  <div style="font-size:12px;font-weight:700;letter-spacing:2px;color:#8a8a82;margin-bottom:8px;">MONKOS PORTAL · 반응형 검증</div>
+  <div style="font-size:26px;font-weight:800;color:#23272e;letter-spacing:-.5px;margin-bottom:6px;">데스크탑 ↔ 모바일 동시 확인</div>
+  <div style="font-size:14px;color:#75756d;margin-bottom:34px;max-width:680px;line-height:1.55;">같은 한 파일이 폭에 따라 어떻게 흐르는지 — 각 프레임은 실제 살아있는 화면입니다. 안에서 스크롤하며 확인하세요.</div>
+
+  <div style="display:flex;gap:56px;align-items:flex-start;">
+
+    <!-- DESKTOP -->
+    <div style="flex:none;">
+      <div style="display:flex;align-items:center;gap:9px;margin-bottom:14px;">
+        <span style="font-size:13px;font-weight:800;color:#23272e;">Desktop</span>
+        <span style="font-size:11px;font-weight:600;color:#9a9a92;background:#fff;border:1px solid #d9d9d1;border-radius:20px;padding:3px 10px;">1280 px</span>
+      </div>
+      <div style="width:768px;height:880px;overflow:hidden;border-radius:12px;border:1px solid #d2d2ca;box-shadow:0 24px 60px rgba(0,0,0,.16);background:#DFE0E3;">
+        <iframe src="MONKOS%20Portal%20Light.dc.html" title="desktop" style="width:1280px;height:1467px;border:0;transform:scale(.6);transform-origin:top left;"></iframe>
+      </div>
+    </div>
+
+    <!-- MOBILE -->
+    <div style="flex:none;">
+      <div style="display:flex;align-items:center;gap:9px;margin-bottom:14px;">
+        <span style="font-size:13px;font-weight:800;color:#23272e;">Mobile</span>
+        <span style="font-size:11px;font-weight:600;color:#9a9a92;background:#fff;border:1px solid #d9d9d1;border-radius:20px;padding:3px 10px;">390 px</span>
+      </div>
+      <div style="width:412px;height:880px;border-radius:44px;border:11px solid #1c1d22;box-shadow:0 24px 60px rgba(0,0,0,.22);background:#DFE0E3;overflow:hidden;position:relative;">
+        <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:150px;height:26px;background:#1c1d22;border-radius:0 0 16px 16px;z-index:5;"></div>
+        <iframe src="MONKOS%20Portal%20Light.dc.html" title="mobile" style="width:390px;height:858px;border:0;display:block;"></iframe>
+      </div>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+</body>
+</html>
