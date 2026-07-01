@@ -90,24 +90,7 @@ status: active
 | 06/10 | 쌍아 | **portal prod 배포** rev 00278-h8k — 보안 페일클로즈 4건 적용. idphoto-kr/jp는 AUTH_SECRET 환경변수 추가 후 순차 배포 예정 | `deploy.sh prod` | ✅ |
 | 06/11 | 막내1 | **CMS 정밀감사 + 즉시수정 6건 + 보안·색인 3건** — 감사 Critical 1/High 2/Medium 4 식별 → maxOutputTokens 복원·llms.txt 동적화·Naver API 주입·deploy.sh --set-secrets 전환·/admin HTML 인증 가드·pingSitemap 폐기·Indexing 관측성 강화. rev 00279→00281→00284 | REPORT+COMPLETION 4건 | ✅ |
 | 06/12 | 민아 | **디자인 프레임워크+워크플로우 설계서 발행** (Phase 7 재개 기반) — v5 6주 정체 원인(일회성 시안→수동컨버트→종료) 진단 → 프레임워크 3층(토큰 정비/컴포넌트·타일/서비스 레지스트리) + 6단계 파이프라인(시안→검토→컨버트→preview→검증→전환, 게이트·담당 고정) 설계. 작가님 결정: **포털 파일럿→점진확장 / 코드우선(CSS토큰+순수JS)**. v5 결정 5건 답안 선반영(render확장·아이콘축소·히어로토글·예비숨김·Wave분리) | [DESIGN](monkos-ops/tech/designs/2026-06/DESIGN_20260612_디자인프레임워크_워크플로우.md) | ⏳ 작가님 확인 |
-| 06/22 | iMac/쌍아+막내2 | **layoutNav·Footer 언어 인자화 P0** — 내부 페이지 네비 한국어 튕김 해소. 포털 00318 배포 | render-shell.js 외 5파일 | ✅ |
-| 06/22 | iMac/쌍아+막내1 | **서버단 언어 감지 + 쿠키 통합 P1-a** — Accept-Language SSR 통합, 3개 메커니즘→1개 수렴(detectLang+monkos_lang쿠키), i18n.js 자체감지 제거. 포털 00322 배포 | server.js, i18n.js, render-shell.js, render-headshot.js | ✅ |
-| 06/22 | iMac/쌍아+막내1 | **홈 텍스트팩 분리 P1-b** — ko/en/ja 50+키 I18N, relTime 다국어화. 포털 00323 배포. ⚠️ replace 방식 한계로 FAQ·블로그 한글 잔존 — home.js 렌더 구조 정리 필요 | home.js | ⏳ 잔존 보정 |
-| 06/22 | iMac/쌍아+막내2 | **geoip-lite 결제 국가 판별 P1-c** — IP 기반 detectPaymentRegion, __REGION__ 전환. 2축 분리(언어=Accept-Language/결제=IP) 완성. 포털 00324 배포 | server.js 외 10파일 | ✅ |
-| 06/22 | iMac/쌍아 | **언어·결제·GCS 통합 설계서** + **유저트래킹 제안서** → 민아 설계 위임 | 설계서+제안서 | ✅ |
-| 06/22 | iMac/민아 | **유저트래킹 BQ 설계서** — BQ 단일 스트림, D1~D7 구현 단계, 쌍아 검수 통과, BQ=monkos 확정 | 설계서 | ✅ |
-| 06/22 | iMac/막내1 | **BQ D1+D2** — 데이터셋·테이블·SA 권한 + /api/track + monkos_sid 세션쿠키 + track.js 비콘 헬퍼. 배포 진행 중 | tracking.js(신규), track.js(신규), server.js | ⏳ |
-| 06/22 | iMac/막내2+3 | **BQ D3+D4** — 서버이벤트6종 적재 + 헤드샷 퍼널 클라 계측 + rate-limit 가드. 포털 00326~00328 배포 | server.js, payments.js, credits.js, headshot.js, auth.js | ✅ |
-| 06/26 | iMac/쌍아 | **og:image SEO + 다운로드 파일명 개선** — 페이지별 규격 이미지 og:image, JSON-LD image 필드, 다운로드 파일명 다국어 자동 분기. 포털 00372~00373 배포 | render-specs.js | ✅ |
-| 06/22 | iMac/막내1+쌍아 | **포털 홈 리스킨** — 아크릴 벤토 디자인 전면 적용. home.js 전면 재작성(replace 체인 제거), home.css 신설, 에셋 12개. 후속 핫픽스 7건(푸터 사업자정보·버튼색·로그인UI·네비·앱스토어링크·프로필사진). 포털 00329~00336 배포 | home.js, home.css, auth.js, assets/ | ✅ |
-| 06/22 | iMac/민아 | **D1~D4 구현 검증** — 보안핵심3개(클라-BQ격리·PII미적재·시크릿무하드코딩) 합격, identity_map D7→D3 선구현. 🔴`/api/track` rate-limit+페이로드캡 부재(헌법4조4항) 적발 → D7 앞당김 권고 | 검증보고 | ⚠️ |
-| 06/24 | iMac/쌍아 | **블로그 테이블 렌더링 수정 + S4 보안 잔존 수정** — ① 발행 후 표 깨짐 근인: `.post-content table`에 `display:block`+셀스타일 전무 → `border-collapse`+`th/td` 패딩·보더·헤더배경 추가, `table-wrap` 래퍼(모바일 스크롤). 에디터↔발행 렌더링 간극 해소. 기존 글 전체 일괄 적용(SSR 실시간 렌더링 구조). ② S4 V2 portal 에러 제네릭화 9개소 + V3 env 필수화 + V4 `/api/stats` admin 인증 게이트 | render-blog.js, render-shell.js, payments.js, credits.js, tg-cs.js, config.js, server.js | ✅ rev00345 |
-| 06/24 | iMac/쌍아+막내2+3 | **블로그 CMS 집중 개선 9건** — ③ 비발행 미리보기(`?preview=true`+admin인증) ④ 구조화데이터(Article→BlogPosting, FAQ자동감지, wordCount) ⑤ 푸터 영어통일+footerLegal삭제 ⑥ 홈 블로그카드 autoTranslated필터제거+OG비율정규화 ⑦ gallery/board/guide 다국어라우트 8경로추가 ⑧ CTA카드시스템(에디터연동+전역기본값+SSR렌더링) ⑨ 홈 블로그카드 slug 이중접미사수정 ⑩ SEO내부경합종합감사 보고서 | portal 전역 | ✅ rev00346→00353 |
-| 06/25 | iMac/막내1 | **Specs v2 kr-passport UI 정비 5건** — ① 태그 H1 아래 이동 ② 그룹A 배지 삭제 ③ 상세규정/반려사유 아코디언 전환 ④ 같은사진 사이즈 필터 추가 ⑤ 하단CTA→크로스셀카드 교체 | render-specs.js | ✅ rev00377 |
-| 06/25 | iMac/막내1 | **Specs v2 P1 — 크롭앱 인라인 임베드** — FaceMesh 기반 얼굴감지+규격맞춤 크롭을 V2에 직접 임베드. 업로드→크롭조정→AI검수→결제 동선 전환. 크롭 다운로드 무료 | render-specs.js (+658줄) | ✅ rev00366 |
-| 06/25 | iMac/막내1 | **Specs v2 P1.5 — Gemini 좌표 보정** — FaceMesh 감지 후 ICAO 범위 밖이면 Gemini Flash로 정수리·턱·눈 좌표 보정. `/api/idphoto/align` 신설. confidence<0.5 무시 | server.js + render-specs.js | ✅ rev00368 |
-| 06/25 | iMac/막내1 | **Specs v2 P2 — 크롭 제거 + 검수 강화** — P1/P1.5 크롭 전량 제거(-762줄). 동선 단순화(업로드→AI검수→결제). precheck ITEM 8 사진적합성 추가 + warnMsg UI. align API 삭제 | server.js + render-specs.js | ✅ rev00370 |
-| 06/25 | iMac/쌍아 | **precheck 프롬프트 3회 전면 재작성** — ① "여권규격심사"→"AI 입력 적합성" 전환 ② 노출/속옷 FAIL 강제 ③ 정면성 10도 엄격화. 업로드 가이드 이미지 배치(셀카+프로필). 다운로드 버튼 CSS 수정. 가격 10c=₩1,500 정정 | server.js + render-specs.js | ⏳ 로컬 미배포 |
+| 06/19 | 웹/민아 | **어드민 idphoto 리뷰 페이지 신설** — `/admin/idphoto-review.html` + `GET /api/admin/idphoto/results`(requireAdmin). 버킷 원본↔결과물 짝맞춤·Signed URL(1h)·KR/JP 토글. 기존 패턴(getFiles·requireAdmin·dashboard 인증) 재사용, 스키마 변경 0 | [COMPLETION](../../reports/2026-06/COMPLETION_20260619_웹민아_IDPHOTO어드민리뷰_퍼널진단.md), PR #86 `0fb98c47` | ⏳ 배포대기(맥) |
 
 ---
 

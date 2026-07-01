@@ -225,7 +225,8 @@ status: 현행
 
 | 이슈 | 심각도 | 대응 |
 |------|--------|------|
-| yong-a-orchestrator에 roles/editor 부여 | 🔴 높음 | 최소 권한으로 축소 필요 |
+| ~~yong-a-orchestrator에 roles/editor 부여~~ | ✅ 해소 | **2026-06-19 작가님 직접 editor 삭제 확정** (06-10 Agent Platform 축소의 후속, 본 행 정본 보정). 현 권한: Agent Platform + aiplatform.user + storage.objectAdmin → GCP_SA_KEY 유출 시에도 Cloud Run 배포·삭제 불가 |
+| yong-a-orchestrator storage.objectAdmin (GA4·집계 read 용도엔 과권한) | 🟡 중간 | 유출 시 monk-ai-images 고객사진 R/W/삭제 노출. 읽기전용이면 objectViewer로 축소 검토 |
 | CF Dashboard에 SA JSON 문자열 직접 저장 | 🟡 중간 | 현재 CF 표준 방식. 대안 제한적 |
 | .env 파일 4대 디바이스 수동 동기화 | 🟡 중간 | GitHub Secrets 도입 시 개선 |
 
