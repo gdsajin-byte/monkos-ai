@@ -80,7 +80,7 @@ status: 현행
 | 17 | LINE_MESSAGING_CHANNEL_SECRET | LINE 메시징 채널 시크릿 | portal | ⭐ 누락 |
 | 18 | TOSS_SECRET_KEY | 토스페이먼츠 | portal (KR 결제) | |
 | 19 | TOSS_WEBHOOK_SECRET | 토스 웹훅 검증 | portal | |
-| 20 | LEMONSQUEEZY_API_KEY | Lemon Squeezy API | portal (JP/글로벌 결제) | |
+| 20 | LEMONSQUEEZY_API_KEY | Lemon Squeezy API | portal (JP/글로벌 결제) | 2026-07-02 v2 로테이션 (키노출 인시던트) |
 | 21 | LEMONSQUEEZY_WEBHOOK_SECRET | Lemon Squeezy 웹훅 (JP store#290457) | portal | |
 | 21-G | LEMONSQUEEZY_WEBHOOK_SECRET_GLOBAL | Lemon Squeezy 웹훅 (Global store#415328) | portal | 2026-06-23 |
 | 22 | TELEGRAM_BOT_TOKEN | CS 봇 @monkos_support_bot | portal | |
