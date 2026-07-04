@@ -433,3 +433,8 @@
 ## [2026-06-25 19:18 KST] iMac/민아
 - ADD 5건: project_builder_role_model_leverage(빌더=모델능력최대화·3원칙) · project_progressive_delegation_pipeline(위계점진위임·임원부서장에이전트) · project_photo_instant_interaction_architecture(사진 단일인터랙션·specs경량분산) · feedback_grasp_inflight_work_before_acting(미완성 진행작업 방향부터 파악) · feedback_deploy_infra_outside_mina_scope(트래픽 --to-latest·deploy인프라 민아스코프밖)
 - MEMORY.md 외장메모리 인덱스 5행 추가. ⚠️ 200줄 캡 근접 — 다음 세션 consolidate 필요
+
+## [2026-07-04 16:38 KST] iMac/쌍아
+- ADD: feedback_min_instances_conversion_guard — 프로덕션 min-instances=1은 콜드스타트 이탈 방지 전환 장치(작가님 실측 고지). min=0 제안 금지.
+- CONSOLIDATE: MEMORY.md 161줄 → 95줄. 내용 삭제 없이 상세를 토픽 파일 4건으로 이관: project_role_recognition(역할 자동 인식) · feedback_ssanga_duties_order_ops(쌍아 본분+지시서 운용) · project_session_ops_procedures(세션로그·시작마감·works) · project_model_placement(모델 배치+리소스 운용). 인덱스는 1행 요약+링크로 축약.
+- REMOVE (같은 세션): feedback_min_instances_conversion_guard — 작가님 "영구 기억할 정도는 아님" 격하 지시로 삭제. 맥락(콜드스타트 이탈→min=1 전환, 3~4월)은 세션 로그에만 남김.
