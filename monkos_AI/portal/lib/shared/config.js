@@ -39,6 +39,15 @@ if (!authSecret) {
 
 // 토스페이먼츠 (KR)
 export const TOSS_SECRET_KEY = process.env.TOSS_SECRET_KEY || '';
+// 토스 클라이언트 키 (공개키 — dev 테스트키/prod 라이브키 env 분기, 하드코딩 금지)
+export const TOSS_CLIENT_KEY = process.env.TOSS_CLIENT_KEY || '';
+
+// 레몬 specs 단건 $2 variant (env 주입 — 미설정 시 해당 시장 단건 결제 비활성)
+export const LEMONSQUEEZY_VARIANT_SPECS_SINGLE = process.env.LEMONSQUEEZY_VARIANT_SPECS_SINGLE || '';
+export const LEMONSQUEEZY_VARIANT_SPECS_SINGLE_JP = process.env.LEMONSQUEEZY_VARIANT_SPECS_SINGLE_JP || '';
+export const SINGLE_DOWNLOAD_VARIANTS = new Set(
+  [LEMONSQUEEZY_VARIANT_SPECS_SINGLE, LEMONSQUEEZY_VARIANT_SPECS_SINGLE_JP].filter(Boolean)
+);
 
 // Telegram
 export const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '';
@@ -131,6 +140,15 @@ export const TOSS_AMOUNT_CREDITS = Object.fromEntries(
   Object.values(PRODUCTS).map(p => [p.price, p.credits + p.bonus])
 );
 
+// === specs 단건 직접결제 (T1) — 시장별 가격 정본 (클라이언트 금액 불신) ===
+export const DIRECT_PRICING = {
+  kr:     { provider: 'toss',  amount: 2000, currency: 'KRW' },  // ₩2,000 서버 고정
+  global: { provider: 'lemon' },  // $2 — 금액 정본은 레몬 variant
+  jp:     { provider: 'lemon' },  // ¥300 상당 — 금액 정본은 레몬 variant (store#290457)
+};
+export const DIRECT_TOKEN_TTL_MS = 24 * 60 * 60 * 1000;  // 결제 후 다운로드 여유 24h
+export const DIRECT_TOKEN_MAX_GENERATES = 3;              // 생성 재시도 허용 횟수 (다운로드에서 최종 소모)
+
 // === CORS ===
 export const ALLOWED_ORIGINS = [
   'https://monkos.ai',
@@ -169,14 +187,8 @@ export const MIME_TYPES = {
 };
 
 // === 인메모리 저장소 ===
-export const directTokens = new Map();
-const DIRECT_TOKEN_TTL = 5 * 60 * 1000;
-setInterval(() => {
-  const now = Date.now();
-  for (const [token, data] of directTokens) {
-    if (now - data.created > DIRECT_TOKEN_TTL) directTokens.delete(token);
-  }
-}, 60 * 1000);
+// directTokens 인메모리 Map 제거 (2026-07-04) — Firestore `directTokens` 컬렉션으로 전환.
+// 다중 인스턴스/재시작 시 토큰 유실 문제 해소. 소모는 payments.js 트랜잭션 경유.
 
 export const pendingLineStates = new Map();
 

@@ -1,6 +1,6 @@
 /** 담당: 막내2 (리파인) */
 
-import { usersCollection, firestore, log, logTransaction, parseJsonBody, parseRawBody, createHmac, randomBytes, directTokens, sendTelegramMessage, TELEGRAM_TEAM_API, TEAM_CHAT_ID, LEMONSQUEEZY_API_KEY, LEMONSQUEEZY_WEBHOOK_SECRET, LEMONSQUEEZY_WEBHOOK_SECRET_GLOBAL, LEMONSQUEEZY_STORE_ID, LEMONSQUEEZY_STORE_ID_JP, TOSS_SECRET_KEY, VARIANT_CREDITS, TOSS_AMOUNT_CREDITS, PRODUCTS, parseCookies } from './shared/config.js';
+import { usersCollection, firestore, log, logTransaction, parseJsonBody, parseRawBody, createHmac, randomBytes, sendTelegramMessage, TELEGRAM_TEAM_API, TEAM_CHAT_ID, LEMONSQUEEZY_API_KEY, LEMONSQUEEZY_WEBHOOK_SECRET, LEMONSQUEEZY_WEBHOOK_SECRET_GLOBAL, LEMONSQUEEZY_STORE_ID, LEMONSQUEEZY_STORE_ID_JP, LEMONSQUEEZY_VARIANT_SPECS_SINGLE, LEMONSQUEEZY_VARIANT_SPECS_SINGLE_JP, SINGLE_DOWNLOAD_VARIANTS, TOSS_SECRET_KEY, TOSS_CLIENT_KEY, VARIANT_CREDITS, TOSS_AMOUNT_CREDITS, PRODUCTS, DIRECT_PRICING, DIRECT_TOKEN_TTL_MS, DIRECT_TOKEN_MAX_GENERATES, parseCookies } from './shared/config.js';
 import { trackEvent } from './tracking.js';
 
 /**
@@ -75,26 +75,41 @@ export async function handleLemonSqueezyWebhook(req, res) {
   try {
     const body = await parseRawBody(req);
 
-    // 서명 검증 — 글로벌/JP 듀얼 시크릿
+    // 서명 검증 필수 — 글로벌/JP 듀얼 시크릿
+    // [보안 P0] 무서명 요청은 무조건 거부. if(signature) 가드로 검증을 스킵하면
+    // 위조 order_created로 무결제 토큰/크레딧 발급이 가능하므로 fail-closed.
     const signature = req.headers['x-signature'];
-    if (signature) {
-      const secrets = [
-        LEMONSQUEEZY_WEBHOOK_SECRET_GLOBAL,
-        LEMONSQUEEZY_WEBHOOK_SECRET,
-      ].filter(Boolean);
+    if (!signature || typeof signature !== 'string') {
+      log('[Webhook] x-signature 헤더 부재 — 무서명 요청 거부', 'WARNING');
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: '서명 필수' }));
+      return;
+    }
 
-      const verified = secrets.some(secret => {
-        const hmac = createHmac('sha256', secret);
-        hmac.update(body);
-        return hmac.digest('hex') === signature;
-      });
+    const secrets = [
+      LEMONSQUEEZY_WEBHOOK_SECRET_GLOBAL,
+      LEMONSQUEEZY_WEBHOOK_SECRET,
+    ].filter(Boolean);
 
-      if (!verified) {
-        log('[Webhook] 서명 검증 실패 (글로벌/JP 모두 불일치)');
-        res.writeHead(401, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: '서명 불일치' }));
-        return;
-      }
+    if (secrets.length === 0) {
+      // 시크릿 미설정 = 검증 불가 → 전부 거부 (묵인 처리 금지)
+      log('[Webhook] 웹훅 시크릿 미설정 — 검증 불가로 거부 (fail-closed)', 'ERROR');
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: '서명 검증 불가' }));
+      return;
+    }
+
+    const verified = secrets.some(secret => {
+      const hmac = createHmac('sha256', secret);
+      hmac.update(body);
+      return hmac.digest('hex') === signature;
+    });
+
+    if (!verified) {
+      log('[Webhook] 서명 검증 실패 (글로벌/JP 모두 불일치)');
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: '서명 불일치' }));
+      return;
     }
 
     const payload = JSON.parse(body);
@@ -106,6 +121,78 @@ export async function handleLemonSqueezyWebhook(req, res) {
       const attrs = payload.data?.attributes;
       const userId = payload.meta?.custom_data?.user_id;
       const variantId = attrs?.first_order_item?.variant_id?.toString();
+
+      // specs 단건 $2 variant → 크레딧 대신 다운로드 토큰 발급 (env 미설정 시 분기 자체 비활성)
+      if (variantId && SINGLE_DOWNLOAD_VARIANTS.has(variantId)) {
+        const lemonOrderId = payload.data?.id?.toString() || null;
+        const orderRef = payload.meta?.custom_data?.order_ref || null;
+
+        // 멱등: 레몬 웹훅 재전송 시 토큰 이중 발급 차단 (lemon order id 기준)
+        if (lemonOrderId) {
+          const dup = await firestore.collection('payments')
+            .where('lemonOrderId', '==', lemonOrderId)
+            .where('type', '==', 'direct')
+            .limit(1).get();
+          if (!dup.empty) {
+            log(`[Webhook] 단건 중복 수신 무시: lemonOrderId=${lemonOrderId}`);
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ received: true, action: 'duplicate' }));
+            return;
+          }
+        }
+
+        // 주문 문서에서 slug·시장 회수 (init 경유 주문)
+        let order = null;
+        if (orderRef) {
+          try {
+            const orderDoc = await firestore.collection('directOrders').doc(orderRef).get();
+            if (orderDoc.exists) order = orderDoc.data();
+          } catch (e) {
+            log(`[Webhook] 단건 주문 조회 실패(진행): ${e.message}`, 'WARNING');
+          }
+        }
+        const market = order?.market || (variantId === LEMONSQUEEZY_VARIANT_SPECS_SINGLE_JP ? 'jp' : 'global');
+
+        const { token, expiresAt } = await issueDirectToken({
+          orderId: orderRef, slug: order?.slug || null, market,
+          amount: attrs?.total ?? null, currency: attrs?.currency || null, provider: 'lemon',
+        });
+
+        if (orderRef) {
+          try {
+            await firestore.collection('directOrders').doc(orderRef).update({
+              status: 'paid', paymentToken: token, tokenExpiresAt: expiresAt,
+              lemonOrderId, paidAt: new Date().toISOString(),
+            });
+          } catch (e) {
+            log(`[Webhook] 단건 주문 상태 갱신 실패: ${e.message}`, 'WARNING');
+          }
+        }
+
+        try {
+          await firestore.collection('payments').add({
+            type: 'direct',
+            provider: 'lemon',
+            lemonOrderId,
+            orderId: orderRef,
+            slug: order?.slug || null,
+            market,
+            amount: attrs?.total ?? null,
+            currency: attrs?.currency || null,
+            variantId,
+            downloadToken: token,
+            createdAt: new Date().toISOString(),
+          });
+        } catch (logErr) {
+          log(`[Webhook] 단건 결제 로그 저장 실패: ${logErr.message}`, 'WARNING');
+        }
+
+        log(`[Webhook] 단건 토큰 발급: variant=${variantId}, orderRef=${orderRef}, market=${market}`);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ received: true, action: 'direct_token_issued' }));
+        return;
+      }
+
       const credits = VARIANT_CREDITS[variantId] || 0;
 
       if (!userId || credits === 0) {
@@ -149,6 +236,35 @@ export async function handleLemonSqueezyWebhook(req, res) {
     if (eventName === 'order_refunded') {
       const userId = payload.meta?.custom_data?.user_id;
       const variantId = payload.data?.attributes?.first_order_item?.variant_id?.toString();
+
+      // specs 단건 variant 환불 → 미사용 토큰 무효화 (이미 소모된 경우 로그만)
+      if (variantId && SINGLE_DOWNLOAD_VARIANTS.has(variantId)) {
+        const lemonOrderId = payload.data?.id?.toString() || null;
+        let revoked = false;
+        if (lemonOrderId) {
+          const paySnap = await firestore.collection('payments')
+            .where('lemonOrderId', '==', lemonOrderId)
+            .where('type', '==', 'direct')
+            .limit(1).get();
+          const token = paySnap.empty ? null : paySnap.docs[0].data().downloadToken;
+          if (token) {
+            const tokenRef = firestore.collection('directTokens').doc(token);
+            revoked = await firestore.runTransaction(async (tx) => {
+              const doc = await tx.get(tokenRef);
+              if (!doc.exists) return false;
+              const d = doc.data();
+              if (d.status !== 'active' || d.downloaded) return false; // 이미 소모 — 회수 불가
+              tx.update(tokenRef, { status: 'revoked', revokedAt: new Date().toISOString() });
+              return true;
+            });
+          }
+        }
+        log(`[Webhook] 단건 환불: lemonOrderId=${lemonOrderId}, 토큰 무효화=${revoked ? '완료' : '불가(미발급/이미 사용)'}`);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ received: true, action: revoked ? 'direct_token_revoked' : 'direct_token_already_used' }));
+        return;
+      }
+
       const credits = VARIANT_CREDITS[variantId] || 0;
 
       if (userId && credits > 0) {
@@ -308,22 +424,315 @@ export async function handleTossConfirm(req, res) {
   }
 }
 
+// ============================================================
+// specs 단건 직접결제 (T1) — 서버 머니패스
+// 주문 정본: Firestore `directOrders` (doc id = orderId)
+// 토큰 정본: Firestore `directTokens` (doc id = token, 1회성 소모 트랜잭션)
+// ============================================================
+
+const ORDER_ID_RE = /^SPECS-(kr|global|jp)-[a-z0-9]+-[a-f0-9]{8}$/;
+const SLUG_RE = /^[a-z0-9][a-z0-9-]{0,63}$/;
+const TOKEN_RE = /^[a-f0-9]{64}$/;
+
 /**
- * POST /api/payments/toss/direct — 비로그인 직접결제 (토스)
+ * 다운로드 토큰 발급 (Firestore directTokens)
+ * 생성 N회(DIRECT_TOKEN_MAX_GENERATES) 허용 → 다운로드에서 최종 소모.
  */
-export async function handleTossDirect(req, res) {
+export async function issueDirectToken({ orderId, slug, market, amount, currency, provider }) {
+  const token = randomBytes(32).toString('hex');
+  const now = Date.now();
+  const expiresAt = now + DIRECT_TOKEN_TTL_MS;
+  await firestore.collection('directTokens').doc(token).set({
+    orderId: orderId || null,
+    slug: slug || null,
+    market: market || null,
+    amount: amount ?? null,
+    currency: currency || null,
+    provider: provider || null,
+    status: 'active',          // active | used | revoked
+    generateCount: 0,
+    maxGenerates: DIRECT_TOKEN_MAX_GENERATES,
+    downloaded: false,
+    createdAt: new Date(now).toISOString(),
+    expiresAt,                 // epoch ms — TTL 24h
+  });
+  return { token, expiresAt };
+}
+
+/**
+ * generate 결제 게이트 — 토큰 생성 쿼터 1회 소모 (트랜잭션, 다중 인스턴스 안전)
+ * @returns {ok, status, error, code, remainingGenerates, tokenData}
+ */
+export async function consumeGenerateQuota(paymentToken) {
+  if (!paymentToken || typeof paymentToken !== 'string' || !TOKEN_RE.test(paymentToken)) {
+    return { ok: false, status: 402, error: '결제가 필요합니다', code: 'PAYMENT_REQUIRED' };
+  }
+  const tokenRef = firestore.collection('directTokens').doc(paymentToken);
   try {
-    const { paymentKey, orderId, amount } = await parseJsonBody(req);
-    if (!paymentKey || !orderId || !amount) {
+    return await firestore.runTransaction(async (tx) => {
+      const doc = await tx.get(tokenRef);
+      if (!doc.exists) {
+        return { ok: false, status: 402, error: '유효하지 않은 결제 토큰입니다', code: 'INVALID_TOKEN' };
+      }
+      const d = doc.data();
+      if (d.status !== 'active' || d.downloaded) {
+        return { ok: false, status: 402, error: '이미 사용된 결제 토큰입니다', code: 'TOKEN_USED' };
+      }
+      if (typeof d.expiresAt === 'number' && Date.now() > d.expiresAt) {
+        return { ok: false, status: 402, error: '만료된 결제 토큰입니다', code: 'TOKEN_EXPIRED' };
+      }
+      const count = d.generateCount ?? 0;
+      const max = d.maxGenerates ?? DIRECT_TOKEN_MAX_GENERATES;
+      if (count >= max) {
+        return { ok: false, status: 402, error: '생성 재시도 횟수를 초과했습니다. 고객센터로 문의해주세요.', code: 'GENERATE_LIMIT' };
+      }
+      tx.update(tokenRef, { generateCount: count + 1, lastGenerateAt: new Date().toISOString() });
+      return { ok: true, remainingGenerates: max - count - 1, tokenData: d };
+    });
+  } catch (err) {
+    log(`[Direct-Gate] 토큰 검증 에러: ${err.message}`, 'ERROR', { error: err.stack });
+    return { ok: false, status: 500, error: '처리 중 오류가 발생했습니다', code: 'INTERNAL_ERROR' };
+  }
+}
+
+/**
+ * 생성 실패 시 쿼터 반환 (best-effort — 서버측 생성 에러에만 사용)
+ */
+export async function refundGenerateQuota(paymentToken) {
+  if (!paymentToken || !TOKEN_RE.test(paymentToken)) return;
+  const tokenRef = firestore.collection('directTokens').doc(paymentToken);
+  try {
+    await firestore.runTransaction(async (tx) => {
+      const doc = await tx.get(tokenRef);
+      if (!doc.exists) return;
+      const count = doc.data().generateCount ?? 0;
+      if (count > 0) tx.update(tokenRef, { generateCount: count - 1 });
+    });
+  } catch (err) {
+    log(`[Direct-Gate] 쿼터 반환 실패(무시): ${err.message}`, 'WARNING');
+  }
+}
+
+/**
+ * POST /api/payments/direct/init — 비로그인 단건 결제 시작 (orderId 서버 발급)
+ * body: { slug, market: 'kr'|'global'|'jp', redirectUrl? }
+ * 금액은 서버가 시장별로 확정 — 클라이언트 금액 불신.
+ */
+export async function handleDirectInit(req, res) {
+  try {
+    const body = await parseJsonBody(req);
+    const { slug, market, redirectUrl } = body;
+
+    if (!slug || typeof slug !== 'string' || !SLUG_RE.test(slug)) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: 'paymentKey, orderId, amount 필수' }));
+      res.end(JSON.stringify({ error: '유효하지 않은 slug', code: 'INVALID_SLUG' }));
+      return;
+    }
+    const pricing = DIRECT_PRICING[market];
+    if (!pricing) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: '유효하지 않은 market (kr|global|jp)', code: 'INVALID_MARKET' }));
       return;
     }
 
-    // 토스 API 결제 승인
-    const secretKey = TOSS_SECRET_KEY;
-    const authHeader = 'Basic ' + Buffer.from(secretKey + ':').toString('base64');
+    // orderId 서버 발급 — 토스 제약(6~64자, 영숫자·-·_) 충족
+    const orderId = `SPECS-${market}-${Date.now().toString(36)}-${randomBytes(4).toString('hex')}`;
+    const now = new Date().toISOString();
 
+    if (pricing.provider === 'toss') {
+      // [KR] 토스 — 금액 서버 고정 ₩2,000
+      await firestore.collection('directOrders').doc(orderId).set({
+        orderId, slug, market,
+        provider: 'toss',
+        amount: pricing.amount,
+        currency: pricing.currency,
+        status: 'pending',       // pending | paid | failed | amount_mismatch | refunded
+        createdAt: now,
+      });
+      log(`[Direct-Init] 주문 생성: ${orderId} (${slug}, ₩${pricing.amount})`);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({
+        orderId,
+        provider: 'toss',
+        amount: pricing.amount,
+        currency: pricing.currency,
+        orderName: `MONKOS 증명사진 (${slug})`,
+        clientKey: TOSS_CLIENT_KEY,
+      }));
+      return;
+    }
+
+    // [글로벌/JP] 레몬 단건 $2 — variant env 미설정 시 비활성
+    const variantId = market === 'jp' ? LEMONSQUEEZY_VARIANT_SPECS_SINGLE_JP : LEMONSQUEEZY_VARIANT_SPECS_SINGLE;
+    if (!variantId) {
+      res.writeHead(503, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: '해당 시장 결제가 아직 준비되지 않았습니다', code: 'LEMON_VARIANT_UNSET' }));
+      return;
+    }
+    const storeId = market === 'jp' ? LEMONSQUEEZY_STORE_ID_JP : LEMONSQUEEZY_STORE_ID;
+
+    // redirect_url 검증 — monkos.ai 계열만 허용
+    let safeRedirect;
+    try {
+      if (redirectUrl) {
+        const u = new URL(redirectUrl);
+        if (u.protocol === 'https:' && (u.hostname === 'monkos.ai' || u.hostname.endsWith('.monkos.ai') || u.hostname.endsWith('.run.app'))) {
+          safeRedirect = redirectUrl;
+        }
+      }
+    } catch { /* 무시 — redirect 없이 진행 */ }
+
+    const attributes = {
+      checkout_options: {},
+      checkout_data: {
+        custom: { order_ref: orderId },
+      },
+    };
+    if (safeRedirect) attributes.product_options = { redirect_url: safeRedirect };
+
+    const checkoutRes = await fetch('https://api.lemonsqueezy.com/v1/checkouts', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${LEMONSQUEEZY_API_KEY}`,
+        'Accept': 'application/vnd.api+json',
+        'Content-Type': 'application/vnd.api+json',
+      },
+      body: JSON.stringify({
+        data: {
+          type: 'checkouts',
+          attributes,
+          relationships: {
+            store: { data: { type: 'stores', id: storeId } },
+            variant: { data: { type: 'variants', id: String(variantId) } },
+          },
+        },
+      }),
+    });
+    const checkoutData = await checkoutRes.json();
+    if (!checkoutRes.ok) {
+      log(`[Direct-Init] 레몬 체크아웃 실패: ${JSON.stringify(checkoutData.errors || checkoutData)}`, 'ERROR');
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: '체크아웃 생성 실패', code: 'CHECKOUT_FAILED' }));
+      return;
+    }
+
+    await firestore.collection('directOrders').doc(orderId).set({
+      orderId, slug, market,
+      provider: 'lemon',
+      variantId: String(variantId),
+      storeId,
+      status: 'pending',
+      createdAt: now,
+    });
+    log(`[Direct-Init] 레몬 주문 생성: ${orderId} (${slug}, ${market}, variant ${variantId})`);
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({
+      orderId,
+      provider: 'lemon',
+      checkoutUrl: checkoutData.data?.attributes?.url,
+    }));
+  } catch (err) {
+    log(`[Direct-Init] 에러: ${err.message}`, 'ERROR', { error: err.stack });
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: '처리 중 오류가 발생했습니다', code: 'INTERNAL_ERROR' }));
+  }
+}
+
+/**
+ * GET /api/payments/direct/status?orderId= — 결제 상태 폴링 (레몬 웹훅 비동기 대응, 토스도 사용 가능)
+ */
+export async function handleDirectStatus(req, res) {
+  try {
+    const urlParams = new URL(req.url, `http://${req.headers.host}`);
+    const orderId = urlParams.searchParams.get('orderId') || '';
+    if (!ORDER_ID_RE.test(orderId)) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: '유효하지 않은 orderId', code: 'INVALID_ORDER_ID' }));
+      return;
+    }
+    const doc = await firestore.collection('directOrders').doc(orderId).get();
+    if (!doc.exists) {
+      res.writeHead(404, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: '주문 없음', code: 'ORDER_NOT_FOUND' }));
+      return;
+    }
+    const d = doc.data();
+    const out = { orderId, status: d.status };
+    if (d.status === 'paid' && d.paymentToken) {
+      out.paymentToken = d.paymentToken;
+      out.tokenExpiresAt = d.tokenExpiresAt || null;
+    }
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(out));
+  } catch (err) {
+    log(`[Direct-Status] 에러: ${err.message}`, 'ERROR', { error: err.stack });
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: '처리 중 오류가 발생했습니다', code: 'INTERNAL_ERROR' }));
+  }
+}
+
+/**
+ * POST /api/payments/toss/direct — 비로그인 직접결제 confirm (토스)
+ * 서버가 주문 기록 금액(₩2,000)을 강제 — 클라이언트 amount 불신.
+ * 멱등: 동일 orderId 재confirm 시 기존 토큰 재응답 (성공 페이지 새로고침 보호).
+ */
+export async function handleTossDirect(req, res) {
+  try {
+    const body = await parseJsonBody(req);
+    const { paymentKey, orderId } = body;
+    if (!paymentKey || !orderId) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'paymentKey, orderId 필수' }));
+      return;
+    }
+
+    // 멱등성 — confirm보다 먼저 (이중 confirm → 토스 400 방지)
+    const existingPayments = await firestore.collection('payments')
+      .where('orderId', '==', orderId)
+      .where('type', '==', 'direct')
+      .limit(1).get();
+    if (!existingPayments.empty) {
+      const existing = existingPayments.docs[0].data();
+      log(`[Toss-Direct] 중복 confirm — orderId=${orderId} 기존 토큰 재응답`);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({
+        success: true,
+        paymentToken: existing.downloadToken,
+        downloadToken: existing.downloadToken,
+        orderId,
+        duplicated: true,
+      }));
+      return;
+    }
+
+    // 주문 정본 조회 — 서버 발급 orderId만 승인
+    const orderRef = firestore.collection('directOrders').doc(orderId);
+    const orderDoc = await orderRef.get();
+    if (!orderDoc.exists) {
+      log(`[Toss-Direct] 알 수 없는 orderId: ${orderId}`, 'WARNING');
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: '유효하지 않은 주문입니다', code: 'ORDER_NOT_FOUND' }));
+      return;
+    }
+    const order = orderDoc.data();
+    if (order.provider !== 'toss') {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: '토스 주문이 아닙니다', code: 'PROVIDER_MISMATCH' }));
+      return;
+    }
+    const amount = order.amount; // 서버 정본 (₩2,000)
+
+    // 클라이언트가 amount를 보냈고 서버 정본과 다르면 = 조작 시도 → 거부·기록
+    if (body.amount !== undefined && Number(body.amount) !== amount) {
+      log(`[Toss-Direct] 금액 조작 시도 거부: orderId=${orderId}, client=${body.amount}, server=${amount}`, 'ERROR');
+      try { await orderRef.update({ status: 'amount_mismatch', clientAmount: Number(body.amount), failedAt: new Date().toISOString() }); } catch {}
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: '결제 금액이 일치하지 않습니다', code: 'AMOUNT_MISMATCH' }));
+      return;
+    }
+
+    // 토스 API 결제 승인 — 금액은 서버 정본으로 전달
+    const authHeader = 'Basic ' + Buffer.from(TOSS_SECRET_KEY + ':').toString('base64');
     const tossRes = await fetch('https://api.tosspayments.com/v1/payments/confirm', {
       method: 'POST',
       headers: {
@@ -332,37 +741,59 @@ export async function handleTossDirect(req, res) {
       },
       body: JSON.stringify({ paymentKey, orderId, amount }),
     });
-
     const tossData = await tossRes.json();
 
     if (!tossRes.ok) {
       log(`[Toss-Direct] 결제 승인 실패: ${tossData.code} - ${tossData.message}`, 'ERROR', { amount, orderId });
+      try { await orderRef.update({ status: 'failed', failReason: `${tossData.code}: ${tossData.message}`, failedAt: new Date().toISOString() }); } catch {}
       res.writeHead(400, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: tossData.message || '결제 승인 실패' }));
       return;
     }
 
-    // 일회용 다운로드 토큰 생성
-    const downloadToken = randomBytes(32).toString('hex');
-    directTokens.set(downloadToken, { created: Date.now(), orderId, amount });
+    // 승인 응답 금액 대조 (이중 안전망)
+    if (typeof tossData.totalAmount === 'number' && tossData.totalAmount !== amount) {
+      log(`[Toss-Direct] 승인 금액 불일치: orderId=${orderId}, toss=${tossData.totalAmount}, server=${amount}`, 'ERROR');
+      if (TEAM_CHAT_ID) {
+        sendTelegramMessage(TEAM_CHAT_ID, `🚨 *토스 direct 금액 불일치*\norderId: ${orderId}\n승인: ₩${tossData.totalAmount} / 정본: ₩${amount}`, TELEGRAM_TEAM_API).catch(() => {});
+      }
+      try { await orderRef.update({ status: 'amount_mismatch', tossAmount: tossData.totalAmount, failedAt: new Date().toISOString() }); } catch {}
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: '결제 금액이 일치하지 않습니다', code: 'AMOUNT_MISMATCH' }));
+      return;
+    }
 
-    // 결제 기록 로깅 (Firestore payments/ 컬렉션)
+    // 다운로드 토큰 발급 (Firestore, 1회성 소모·TTL 24h)
+    const { token, expiresAt } = await issueDirectToken({
+      orderId, slug: order.slug, market: order.market, amount, currency: order.currency, provider: 'toss',
+    });
+
+    try {
+      await orderRef.update({ status: 'paid', paymentKey, paymentToken: token, tokenExpiresAt: expiresAt, paidAt: new Date().toISOString() });
+    } catch (updErr) {
+      log(`[Toss-Direct] 주문 상태 갱신 실패: ${updErr.message}`, 'WARNING');
+    }
+
+    // 결제 기록 (Firestore payments/ 컬렉션 — slug·시장 식별 포함)
     try {
       await firestore.collection('payments').add({
         type: 'direct',
+        provider: 'toss',
         orderId,
+        slug: order.slug || null,
+        market: order.market || null,
         amount,
         paymentKey,
-        downloadToken,
+        downloadToken: token,
         createdAt: new Date().toISOString(),
       });
     } catch (logErr) {
       log(`[Toss-Direct] 결제 로그 저장 실패: ${logErr.message}`, 'WARNING');
     }
 
-    log(`[Toss-Direct] 결제 완료: orderId=${orderId}, ₩${amount} → token 발급`);
+    log(`[Toss-Direct] 결제 완료: orderId=${orderId}, ₩${amount} (${order.slug}/${order.market}) → token 발급`);
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ success: true, downloadToken }));
+    res.end(JSON.stringify({ success: true, paymentToken: token, downloadToken: token, orderId, tokenExpiresAt: expiresAt }));
   } catch (err) {
     log(`[Toss-Direct] 에러: ${err.message}`, 'ERROR', { error: err.stack });
     res.writeHead(500, { 'Content-Type': 'application/json' });
@@ -371,30 +802,44 @@ export async function handleTossDirect(req, res) {
 }
 
 /**
- * GET /api/download/direct — 비로그인 직접결제 다운로드 검증
+ * GET /api/download/direct — 다운로드 시 토큰 최종 소모 (1회성, Firestore 트랜잭션)
  */
 export async function handleDownloadDirect(req, res) {
   const urlParams = new URL(req.url, `http://${req.headers.host}`);
   const token = urlParams.searchParams.get('token');
 
-  if (!token) {
+  if (!token || !TOKEN_RE.test(token)) {
     res.writeHead(400, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ success: false, error: '토큰 필수' }));
     return;
   }
 
-  const tokenData = directTokens.get(token);
-  if (!tokenData) {
-    res.writeHead(404, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ success: false, error: '만료된 토큰' }));
-    return;
-  }
+  try {
+    const tokenRef = firestore.collection('directTokens').doc(token);
+    const result = await firestore.runTransaction(async (tx) => {
+      const doc = await tx.get(tokenRef);
+      if (!doc.exists) return { ok: false, status: 404, error: '유효하지 않은 토큰' };
+      const d = doc.data();
+      if (d.status !== 'active' || d.downloaded) return { ok: false, status: 409, error: '이미 사용된 토큰' };
+      if (typeof d.expiresAt === 'number' && Date.now() > d.expiresAt) return { ok: false, status: 404, error: '만료된 토큰' };
+      tx.update(tokenRef, { downloaded: true, status: 'used', usedAt: new Date().toISOString() });
+      return { ok: true, orderId: d.orderId, slug: d.slug, market: d.market };
+    });
 
-  // 토큰 삭제 (1회용)
-  directTokens.delete(token);
-  log(`[Direct-Download] 토큰 사용: orderId=${tokenData.orderId}`);
-  res.writeHead(200, { 'Content-Type': 'application/json' });
-  res.end(JSON.stringify({ success: true }));
+    if (!result.ok) {
+      res.writeHead(result.status, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ success: false, error: result.error }));
+      return;
+    }
+
+    log(`[Direct-Download] 토큰 최종 소모: orderId=${result.orderId} (${result.slug}/${result.market})`);
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ success: true, orderId: result.orderId }));
+  } catch (err) {
+    log(`[Direct-Download] 에러: ${err.message}`, 'ERROR', { error: err.stack });
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ success: false, error: '처리 중 오류가 발생했습니다', code: 'INTERNAL_ERROR' }));
+  }
 }
 
 /**

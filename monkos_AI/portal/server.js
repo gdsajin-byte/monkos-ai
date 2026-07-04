@@ -29,7 +29,7 @@ import {
 // === 핸들러 모듈 ===
 import { handleKakaoAuth, handleKakaoCallback, handleLineAuth, handleLineCallback, handleGoogleRedirectAuth, handleGoogleRedirectCallback, handleGoogleAuth, handleAuthToken, handleAuthVerify, handleAuthRefresh, handleVerifyCookie, handleLogout } from './lib/auth.js';
 import { handleCreditsGet, handleCreditsUse, handleCreditsRefund } from './lib/credits.js';
-import { handleCheckout, handleLemonSqueezyWebhook, handleTossConfirm, handleTossDirect, handleDownloadDirect, handleTossSuccess, handleTossFail } from './lib/payments.js';
+import { handleCheckout, handleLemonSqueezyWebhook, handleTossConfirm, handleTossDirect, handleDownloadDirect, handleTossSuccess, handleTossFail, handleDirectInit, handleDirectStatus, consumeGenerateQuota, refundGenerateQuota } from './lib/payments.js';
 import { handleTelegramGateCode, handleTelegramMissionCode, handleConsentSns, handleMissionComplete, handleCreditsEvent } from './lib/events.js';
 import { handleTelegramCSWebhook, handleTelegramEventWebhook } from './lib/telegram.js';
 import { handleTelegramTeamWebhook, handleTeamNotify } from './lib/telegram-team.js';
@@ -81,6 +81,23 @@ function detectPaymentRegion(req) {
   const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket.remoteAddress;
   const geo = geoip.lookup(ip);
   return (geo?.country === 'KR') ? 'kr' : 'global';
+}
+
+/**
+ * 인메모리 IP 레이트리밋 (버킷별 윈도 카운터)
+ * Cloud Run 인스턴스별 독립 — dev 검증 기준 방어, prod 다중 인스턴스에선 완화됨.
+ * @returns true = 허용, false = 초과(429 처리 필요)
+ */
+function checkRateLimit(req, bucket, limit, windowMs = 60000) {
+  const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket.remoteAddress;
+  const now = Date.now();
+  if (!global._rateLimits) global._rateLimits = {};
+  const key = `${bucket}:${ip}`;
+  const rl = global._rateLimits[key] || { count: 0, reset: now + windowMs };
+  if (now > rl.reset) { rl.count = 0; rl.reset = now + windowMs; }
+  rl.count++;
+  global._rateLimits[key] = rl;
+  return rl.count <= limit;
 }
 
 function trackPageView(req) {
@@ -286,8 +303,12 @@ const httpServer = createServer(async (req, res) => {
     }
   }
 
-  // === 증명사진 규격 검수 ===
+  // === 증명사진 규격 검수 (무료 — IP 레이트리밋만) ===
   if (urlPath === '/api/idphoto/precheck' && req.method === 'POST') {
+    if (!checkRateLimit(req, 'precheck', 10)) {
+      res.writeHead(429, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ error: '요청이 너무 많습니다. 잠시 후 다시 시도해주세요.', code: 'RATE_LIMITED' }));
+    }
     try {
       const { parseJsonBody, log: slog } = await import('./lib/shared/config.js');
       const { GoogleGenAI } = await import('@google/genai');
@@ -368,25 +389,82 @@ Respond in JSON only:
     }
   }
 
-  // === 증명사진 생성 ===
+  // === 증명사진 생성 (결제 게이트 — paymentToken 또는 로그인 크레딧 필수) ===
   if (urlPath === '/api/idphoto/generate' && req.method === 'POST') {
+    if (!checkRateLimit(req, 'generate', 10)) {
+      res.writeHead(429, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ error: '요청이 너무 많습니다. 잠시 후 다시 시도해주세요.', code: 'RATE_LIMITED' }));
+    }
     try {
-      const { parseJsonBody } = await import('./lib/shared/config.js');
+      const { parseJsonBody, parseCookies: pc, verifyAuthToken } = await import('./lib/shared/config.js');
       const body = await parseJsonBody(req);
-      const { image, format, gender, age, model } = body;
+      const { image, format, gender, age, model, paymentToken } = body;
       if (!image) {
         res.writeHead(400, { 'Content-Type': 'application/json' });
         return res.end(JSON.stringify({ error: '이미지 필수' }));
       }
-      const generatedBase64 = await generateIdPhoto({ image, format: format || 'passport', gender, age, model: model || 'nano-banana-pro', userId: 'specs-visitor' });
+
+      // 결제 게이트: ① 결제 토큰(비로그인 단건) ② 로그인 크레딧 — 둘 다 없으면 402
+      let gateMode = null;
+      let gateUserId = 'specs-visitor';
+      let remainingGenerates = null;
+      if (paymentToken) {
+        const gate = await consumeGenerateQuota(paymentToken);
+        if (!gate.ok) {
+          res.writeHead(gate.status, { 'Content-Type': 'application/json' });
+          return res.end(JSON.stringify({ error: gate.error, code: gate.code }));
+        }
+        gateMode = 'token';
+        remainingGenerates = gate.remainingGenerates;
+      } else {
+        const cookies = pc(req.headers.cookie);
+        const session = cookies.monkos_session ? verifyAuthToken(cookies.monkos_session) : null;
+        if (!session?.userId) {
+          res.writeHead(402, { 'Content-Type': 'application/json' });
+          return res.end(JSON.stringify({ error: '결제가 필요합니다', code: 'PAYMENT_REQUIRED' }));
+        }
+        // 로그인 크레딧 차감 (generate 10c — 기존 credits.js 경로 준용)
+        const creditRes = await fetch(`http://localhost:${PORT}/api/credits/use`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Cookie': req.headers.cookie },
+          body: JSON.stringify({ userId: session.userId, type: 'generate' }),
+        });
+        const creditData = await creditRes.json();
+        if (!creditRes.ok) {
+          res.writeHead(creditRes.status, { 'Content-Type': 'application/json' });
+          return res.end(JSON.stringify(creditData));
+        }
+        gateMode = 'credits';
+        gateUserId = session.userId;
+      }
+
+      let generatedBase64;
       try {
-        await saveImages('idphoto', 'specs-visitor', format || 'passport', image, generatedBase64);
+        generatedBase64 = await generateIdPhoto({ image, format: format || 'passport', gender, age, model: model || 'nano-banana-pro', userId: gateUserId === 'specs-visitor' ? 'specs-visitor' : gateUserId });
+      } catch (genErr) {
+        // 서버측 생성 실패 → 소모분 반환 (토큰 쿼터 / 크레딧)
+        if (gateMode === 'token') {
+          refundGenerateQuota(paymentToken).catch(() => {});
+        } else if (gateMode === 'credits') {
+          fetch(`http://localhost:${PORT}/api/credits/refund`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Cookie': req.headers.cookie },
+            body: JSON.stringify({ userId: gateUserId, type: 'generate' }),
+          }).catch(() => {});
+        }
+        log(`[IDPhoto] 생성 실패 → 소모분 반환(${gateMode}): ${genErr.message}`, 'WARNING');
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        return res.end(JSON.stringify({ error: '생성에 실패했습니다. 다시 시도해주세요.', code: 'GENERATE_FAILED' }));
+      }
+
+      try {
+        await saveImages('idphoto', gateUserId, format || 'passport', image, generatedBase64);
       } catch (e) {
         log(`[IDPhoto] GCS 저장 실패 (무시): ${e.message}`, 'WARNING');
       }
-      log(`[IDPhoto] 생성 완료: 규격=${format || 'passport'}`);
+      log(`[IDPhoto] 생성 완료: 규격=${format || 'passport'}, 게이트=${gateMode}`);
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      return res.end(JSON.stringify({ image: generatedBase64 }));
+      return res.end(JSON.stringify({ image: generatedBase64, remainingGenerates }));
     } catch (err) {
       log(`[IDPhoto] 에러: ${err.message}`, 'ERROR');
       res.writeHead(500, { 'Content-Type': 'application/json' });
@@ -398,6 +476,20 @@ Respond in JSON only:
   if (urlPath === '/api/checkout' && req.method === 'POST') return handleCheckout(req, res);
   if (urlPath === '/api/webhooks/lemonsqueezy' && req.method === 'POST') return handleLemonSqueezyWebhook(req, res);
   if (urlPath === '/api/payments/toss/confirm' && req.method === 'POST') return handleTossConfirm(req, res);
+  if (urlPath === '/api/payments/direct/init' && req.method === 'POST') {
+    if (!checkRateLimit(req, 'direct-init', 10)) {
+      res.writeHead(429, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ error: '요청이 너무 많습니다. 잠시 후 다시 시도해주세요.', code: 'RATE_LIMITED' }));
+    }
+    return handleDirectInit(req, res);
+  }
+  if (urlPath === '/api/payments/direct/status' && req.method === 'GET') {
+    if (!checkRateLimit(req, 'direct-status', 60)) {
+      res.writeHead(429, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ error: '요청이 너무 많습니다. 잠시 후 다시 시도해주세요.', code: 'RATE_LIMITED' }));
+    }
+    return handleDirectStatus(req, res);
+  }
   if (urlPath === '/api/payments/toss/direct' && req.method === 'POST') return handleTossDirect(req, res);
   if (urlPath === '/api/download/direct' && req.method === 'GET') return handleDownloadDirect(req, res);
   if (req.url?.startsWith('/toss-success')) return handleTossSuccess(req, res);
@@ -431,14 +523,7 @@ Respond in JSON only:
 
   // === 유저 트래킹 (rate-limit + payload cap) ===
   if (urlPath === '/api/track' && req.method === 'POST') {
-    const trackIp = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket.remoteAddress;
-    const now = Date.now();
-    if (!global._trackRL) global._trackRL = {};
-    const rl = global._trackRL[trackIp] || { count: 0, reset: now + 60000 };
-    if (now > rl.reset) { rl.count = 0; rl.reset = now + 60000; }
-    rl.count++;
-    global._trackRL[trackIp] = rl;
-    if (rl.count > 60) { res.writeHead(429); return res.end(); }
+    if (!checkRateLimit(req, 'track', 60)) { res.writeHead(429); return res.end(); }
 
     const contentLength = parseInt(req.headers['content-length'] || '0');
     if (contentLength > 1048576) { res.writeHead(413); return res.end(); }

@@ -7,7 +7,7 @@ import { readdirSync } from 'fs';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { escapeHtml, layoutShell } from './render-shell.js';
-import { log } from '../shared/config.js';
+import { log, LEMONSQUEEZY_VARIANT_SPECS_SINGLE, LEMONSQUEEZY_VARIANT_SPECS_SINGLE_JP } from '../shared/config.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const GUIDE_IMAGES = new Set(
@@ -92,6 +92,65 @@ const SPECS_I18N = {
     ctaPrice: '첫 로그인 시 무료 체험 · 이후 1장 ₩9,900',
     heroLabel: 'PHOTO SPEC GUIDE',
     heroCta: '무료 규격 맞춤 →',
+    // v2 플로우 문구 (2026-07-04 결제연동트랙 — 업로드/검수/결제/생성/결과)
+    v2: {
+      breadcrumbGuide: '규격 가이드',
+      makeTitle: '{name} 사진 만들기',
+      makeSub: '셀카 한 장이면 {size} 규격 증명사진이 완성됩니다.',
+      altSelfie: '셀카 예시', labelSelfie: '✓ 셀카',
+      altProfile: '프로필 예시', labelProfile: '✓ 프로필',
+      dropText: '사진을 끌어다 놓거나', selectBtn: '사진 선택',
+      guideChips: ['정면 얼굴', '가슴 위 구도', '1인', '선명한 화질'],
+      altCheck: '검수 사진', checkTitle: '규정 체크', checking: 'AI 검수 중...',
+      btnOtherPhoto: '다른 사진', btnProceed: '진행하기',
+      altPreview: '미리보기',
+      payTitle: '{type} 사진 만들기',
+      payPrice: '₩2,000',
+      payDesc: '카드/토스 즉시결제 · 로그인 불필요',
+      orDivider: '또는',
+      creditTitle: '크레딧으로 만들기',
+      creditDesc: '간편로그인 시 10c 무료 지급',
+      creditTopup: '추가 충전: 40c <span style="text-decoration:line-through;color:#bbb;">₩6,000</span> ₩4,900',
+      genText: 'AI가 {type} 사진을 만들고 있습니다...',
+      genSub: '약 30초 소요',
+      labelBefore: '원본', labelAfter: '완성',
+      btnDownload: '다운로드', btnRetry: '다른 사진으로 만들기',
+      detailsTitle: '상세 규정', rejectionTitle: '반려사유 TOP 5', faqTitle: '자주 묻는 질문',
+      sameTitle: '같은 사진으로 제출 가능한 서류',
+      sameSub: '아래 서류는 {name}과(와) 동일 규격({size})입니다.',
+      noGlasses: '무안경 권장',
+      crossTitle: '다른 MONKOS 서비스',
+      crossSub: '증명사진 외에도 다양한 AI 사진 서비스를 이용해보세요.',
+      crossHeadshot: '취업·이력서 사진', crossHeadshotSub: 'AI 헤드샷으로 완성',
+      crossProfile: '프로필 사진', crossProfileSub: 'SNS·링크드인용',
+      crossSpecs: '증명사진 전체 규격', crossSpecsSub: '국가별·용도별 규격 가이드',
+      js: {
+        errFileType: 'JPG, PNG, HEIC 파일만 업로드 가능합니다.',
+        errFileSize: '10MB 이하 파일만 업로드 가능합니다.',
+        checkPass: '규격 적합! 진행하기를 눌러주세요.',
+        checkFail: '일부 항목이 부적합합니다. 다른 사진을 권장합니다.',
+        errCheck: '검수 실패',
+        errCheckNet: '검수 오류',
+        errGen: '생성 실패',
+        errNet: '오류가 발생했습니다. 다시 시도해주세요.',
+        rateLimited: '요청이 많습니다. 잠시 후 다시 시도해주세요.',
+        payInitFail: '결제 시작에 실패했습니다. 잠시 후 다시 시도해주세요.',
+        payUnavailable: '이 지역의 결제는 준비 중입니다. 잠시 후 다시 확인해주세요.',
+        payCancelled: '결제가 취소되었습니다.',
+        payConfirming: '결제 확인 중...',
+        payConfirmFail: '결제 확인에 실패했습니다. 문제가 지속되면 info@monkos.ai로 문의해주세요.',
+        payWaiting: '결제 완료를 기다리는 중입니다...',
+        payWaitingHint: '결제창에서 결제를 마치면 자동으로 진행됩니다.',
+        payTimeout: '결제 확인이 지연되고 있습니다. 결제를 완료하셨다면 잠시 후 이 페이지를 새로고침해주세요.',
+        payFailed: '결제가 완료되지 않았습니다. 다시 시도해주세요.',
+        imgLost: '결제가 확인되었습니다. 사용하신 사진을 다시 업로드하면 바로 생성됩니다.',
+        tokenInvalid: '결제 정보가 유효하지 않습니다. info@monkos.ai로 문의해주세요.',
+        tokenUsed: '이미 사용 완료된 결제입니다. info@monkos.ai로 문의해주세요.',
+        tokenExpired: '결제 유효기간(24시간)이 지났습니다. info@monkos.ai로 문의해주세요.',
+        genLimit: '재생성 한도(3회)를 모두 사용했습니다. info@monkos.ai로 문의해주세요.',
+        downloadFail: '다운로드 처리에 실패했습니다. info@monkos.ai로 문의해주세요.',
+      },
+    },
   },
   ja: {
     hubTitle: '証明写真 規格ガイド — 国別・用途別サイズ総まとめ | MONKOS',
@@ -135,6 +194,61 @@ const SPECS_I18N = {
     ctaPrice: '初回ログイン時 無料体験 · 以降1枚 ¥990',
     heroLabel: 'PHOTO SPEC GUIDE',
     heroCta: '無料で規格に合わせる →',
+    v2: {
+      breadcrumbGuide: '規格ガイド',
+      makeTitle: '{name}写真を作る',
+      makeSub: 'セルフィー1枚で{size}規格の証明写真が完成します。',
+      altSelfie: 'セルフィー例', labelSelfie: '✓ セルフィー',
+      altProfile: 'プロフィール例', labelProfile: '✓ プロフィール',
+      dropText: '写真をドラッグ＆ドロップ、または', selectBtn: '写真を選択',
+      guideChips: ['正面の顔', '胸から上の構図', '1人', '鮮明な画質'],
+      altCheck: '検査写真', checkTitle: '規定チェック', checking: 'AI検査中...',
+      btnOtherPhoto: '別の写真', btnProceed: '進める',
+      altPreview: 'プレビュー',
+      payTitle: '{type}写真を作成',
+      payPrice: '$2 <span style="font-size:14px;color:#888;font-weight:600;">(約¥300)</span>',
+      payDesc: 'カード即時決済 · ログイン不要',
+      orDivider: 'または',
+      genText: 'AIが{type}写真を作成しています...',
+      genSub: '約30秒かかります',
+      labelBefore: '元の写真', labelAfter: '完成',
+      btnDownload: 'ダウンロード', btnRetry: '別の写真で作る',
+      detailsTitle: '詳細規定', rejectionTitle: '却下理由 TOP 5', faqTitle: 'よくある質問',
+      sameTitle: '同じ写真で提出できる書類',
+      sameSub: '以下の書類は{name}と同一規格（{size}）です。',
+      noGlasses: '眼鏡なし推奨',
+      crossTitle: 'その他のMONKOSサービス',
+      crossSub: '証明写真のほかにも、さまざまなAI写真サービスをご利用いただけます。',
+      crossHeadshot: '就活・履歴書写真', crossHeadshotSub: 'AIヘッドショットで完成',
+      crossProfile: 'プロフィール写真', crossProfileSub: 'SNS・LinkedIn用',
+      crossSpecs: '証明写真の全規格', crossSpecsSub: '国別・用途別規格ガイド',
+      js: {
+        errFileType: 'JPG、PNG、HEICファイルのみアップロードできます。',
+        errFileSize: '10MB以下のファイルのみアップロードできます。',
+        checkPass: '規格適合！「進める」を押してください。',
+        checkFail: '一部の項目が不適合です。別の写真をお勧めします。',
+        errCheck: '検査に失敗しました',
+        errCheckNet: '検査エラー',
+        errGen: '生成に失敗しました',
+        errNet: 'エラーが発生しました。もう一度お試しください。',
+        rateLimited: 'リクエストが集中しています。しばらくしてからお試しください。',
+        payInitFail: '決済を開始できませんでした。しばらくしてからお試しください。',
+        payUnavailable: 'この地域の決済は準備中です。しばらくお待ちください。',
+        payCancelled: '決済がキャンセルされました。',
+        payConfirming: '決済を確認しています...',
+        payConfirmFail: '決済の確認に失敗しました。解決しない場合は info@monkos.ai までご連絡ください。',
+        payWaiting: '決済の完了を待っています...',
+        payWaitingHint: '決済が完了すると自動的に進みます。',
+        payTimeout: '決済確認に時間がかかっています。決済を完了された場合は、しばらくしてからこのページを再読み込みしてください。',
+        payFailed: '決済が完了しませんでした。もう一度お試しください。',
+        imgLost: '決済を確認しました。同じ写真を再アップロードするとすぐに生成されます。',
+        tokenInvalid: '決済情報が無効です。info@monkos.ai までご連絡ください。',
+        tokenUsed: 'この決済はすでに使用済みです。info@monkos.ai までご連絡ください。',
+        tokenExpired: '決済の有効期限（24時間）が切れました。info@monkos.ai までご連絡ください。',
+        genLimit: '再生成の上限（3回）に達しました。info@monkos.ai までご連絡ください。',
+        downloadFail: 'ダウンロード処理に失敗しました。info@monkos.ai までご連絡ください。',
+      },
+    },
   },
   en: {
     hubTitle: 'ID Photo Specifications Guide — Size & Requirements by Country | MONKOS',
@@ -178,6 +292,61 @@ const SPECS_I18N = {
     ctaPrice: 'Free on first login · $7.99 per photo after',
     heroLabel: 'PHOTO SPEC GUIDE',
     heroCta: 'Crop to this spec for free →',
+    v2: {
+      breadcrumbGuide: 'Specs Guide',
+      makeTitle: 'Create Your {name} Photo',
+      makeSub: 'One selfie is all it takes — a {size} compliant ID photo in minutes.',
+      altSelfie: 'Selfie example', labelSelfie: '✓ Selfie',
+      altProfile: 'Profile example', labelProfile: '✓ Profile',
+      dropText: 'Drag & drop a photo, or', selectBtn: 'Choose Photo',
+      guideChips: ['Front-facing', 'Chest-up framing', 'One person', 'Sharp focus'],
+      altCheck: 'Photo under review', checkTitle: 'Compliance Check', checking: 'AI is checking...',
+      btnOtherPhoto: 'Another Photo', btnProceed: 'Continue',
+      altPreview: 'Preview',
+      payTitle: 'Create {type} Photo',
+      payPrice: '$2',
+      payDesc: 'Instant card checkout · No login required',
+      orDivider: 'or',
+      genText: 'AI is creating your {type} photo...',
+      genSub: 'Takes about 30 seconds',
+      labelBefore: 'Original', labelAfter: 'Result',
+      btnDownload: 'Download', btnRetry: 'Try Another Photo',
+      detailsTitle: 'Detailed Requirements', rejectionTitle: 'Top 5 Rejection Reasons', faqTitle: 'Frequently Asked Questions',
+      sameTitle: 'Documents Accepting the Same Photo',
+      sameSub: 'The documents below use the same spec ({size}) as {name}.',
+      noGlasses: 'No glasses recommended',
+      crossTitle: 'More MONKOS Services',
+      crossSub: 'Explore more AI photo services beyond ID photos.',
+      crossHeadshot: 'Job & Resume Photos', crossHeadshotSub: 'Polished AI headshots',
+      crossProfile: 'Profile Photos', crossProfileSub: 'For SNS & LinkedIn',
+      crossSpecs: 'All ID Photo Specs', crossSpecsSub: 'Specs by country & purpose',
+      js: {
+        errFileType: 'Only JPG, PNG, and HEIC files are supported.',
+        errFileSize: 'Please upload a file under 10MB.',
+        checkPass: 'Spec compliant! Press Continue.',
+        checkFail: 'Some checks did not pass. We recommend another photo.',
+        errCheck: 'Check failed',
+        errCheckNet: 'Check error',
+        errGen: 'Generation failed',
+        errNet: 'Something went wrong. Please try again.',
+        rateLimited: 'Too many requests. Please try again shortly.',
+        payInitFail: 'Could not start the payment. Please try again shortly.',
+        payUnavailable: 'Payment is not yet available for this region. Please check back soon.',
+        payCancelled: 'Payment was cancelled.',
+        payConfirming: 'Confirming your payment...',
+        payConfirmFail: 'Payment confirmation failed. If this persists, contact info@monkos.ai.',
+        payWaiting: 'Waiting for your payment...',
+        payWaitingHint: 'This page will continue automatically once checkout is complete.',
+        payTimeout: 'Payment confirmation is taking longer than expected. If you completed checkout, refresh this page shortly.',
+        payFailed: 'The payment was not completed. Please try again.',
+        imgLost: 'Payment confirmed. Re-upload the same photo to generate right away.',
+        tokenInvalid: 'Payment info is invalid. Contact info@monkos.ai.',
+        tokenUsed: 'This payment has already been used. Contact info@monkos.ai.',
+        tokenExpired: 'This payment expired (24h). Contact info@monkos.ai.',
+        genLimit: 'All 3 retries have been used. Contact info@monkos.ai.',
+        downloadFail: 'Download failed. Contact info@monkos.ai.',
+      },
+    },
   },
 };
 
@@ -1217,10 +1386,16 @@ function isEngineCompatibleSpec(specData) {
 }
 
 // 렌더 분기: 파일럿(kr-passport)은 en/ja 포함 기존 동작 보존, 그 외는 ko 언어 한정 +
-// 생성 엔진 호환 규격에만 v2. en/ja는 글로벌 가격 미정으로 v1 유지 (DESIGN §2).
+// 생성 엔진 호환 규격에만 v2.
+// en/ja는 레몬 단건 variant env가 설정된 경우에만 v2 확장 (DESIGN_20260704_결제연동트랙 §2-D).
+// env 미설정(기본 '') → v1 유지 = 코드 배포만으로는 en/ja 표면 변화 없음 (반쪽 롤아웃 방지).
 function isV2Spec(slug, lang) {
   if (V2_DIRECT_SLUGS.has(slug)) return true;
-  return lang === 'ko' && isEngineCompatibleSpec(SPECS_DATA[slug]);
+  if (!isEngineCompatibleSpec(SPECS_DATA[slug])) return false;
+  if (lang === 'ko') return true;
+  if (lang === 'en') return Boolean(LEMONSQUEEZY_VARIANT_SPECS_SINGLE);
+  if (lang === 'ja') return Boolean(LEMONSQUEEZY_VARIANT_SPECS_SINGLE_JP);
+  return false;
 }
 
 const SPECS_V2_STYLE = `
@@ -1582,32 +1757,83 @@ a:hover { color: #5a3de6; }
 .v2-check-warn-msg { font-size: 12px; color: #d97706; padding: 6px 0 0 32px; line-height: 1.5; }
 `;
 
-const V2_REJECTIONS_KO = [
-  { title: '배경 그림자 / 음영', desc: '얼굴 앞·뒤로 그림자가 생긴 경우' },
-  { title: '머리 높이 규격 초과', desc: '정수리~턱이 32-36mm 범위를 벗어남' },
-  { title: '표정 · 미소', desc: '입을 벌리거나 치아가 보이는 사진' },
-  { title: '안경 반사 / 컬러렌즈', desc: '렌즈에 빛 반사 또는 색조 렌즈 착용' },
-  { title: '앞머리·장신구로 얼굴 가림', desc: '이마·눈썹·귀 윤곽이 가려진 경우' },
-];
+// kr-passport 파일럿 전용 폴백 상수 — en/ja 페이지에서도 한국어가 노출되지 않도록 3언어화
+const V2_REJECTIONS = {
+  ko: [
+    { title: '배경 그림자 / 음영', desc: '얼굴 앞·뒤로 그림자가 생긴 경우' },
+    { title: '머리 높이 규격 초과', desc: '정수리~턱이 32-36mm 범위를 벗어남' },
+    { title: '표정 · 미소', desc: '입을 벌리거나 치아가 보이는 사진' },
+    { title: '안경 반사 / 컬러렌즈', desc: '렌즈에 빛 반사 또는 색조 렌즈 착용' },
+    { title: '앞머리·장신구로 얼굴 가림', desc: '이마·눈썹·귀 윤곽이 가려진 경우' },
+  ],
+  ja: [
+    { title: '背景の影', desc: '顔の前後に影がある場合' },
+    { title: '頭の高さが規格外', desc: '頭頂〜顎が32-36mmの範囲外' },
+    { title: '表情・笑顔', desc: '口が開いている、歯が見える写真' },
+    { title: '眼鏡の反射・カラーコンタクト', desc: 'レンズの光反射やカラーコンタクトの着用' },
+    { title: '前髪・アクセサリーで顔が隠れる', desc: '額・眉・耳の輪郭が隠れている場合' },
+  ],
+  en: [
+    { title: 'Background shadows', desc: 'Shadows in front of or behind the face' },
+    { title: 'Head height out of range', desc: 'Crown-to-chin outside the 32-36mm range' },
+    { title: 'Expression / smile', desc: 'Open mouth or visible teeth' },
+    { title: 'Glasses glare / colored lenses', desc: 'Light reflecting on lenses or tinted contacts' },
+    { title: 'Face covered by hair or accessories', desc: 'Forehead, eyebrows, or ears obscured' },
+  ],
+};
 
-const V2_DETAILS_KO = [
-  '촬영 6개월 이내, 정면을 응시한 상반신 사진',
-  '균일한 흰색 배경, 그림자·무늬·테두리 없음',
-  '입은 다물고 무표정 — 치아가 보이면 반려',
-  '안경 착용 시 빛 반사·뿔테로 눈 가림 금지 (운전면허는 무안경 권장)',
-  '머리카락·장신구로 얼굴 윤곽을 가리지 않을 것',
-  '컬러 사진, 자연스러운 피부 톤 · 과도한 보정 금지',
-];
+const V2_DETAILS = {
+  ko: [
+    '촬영 6개월 이내, 정면을 응시한 상반신 사진',
+    '균일한 흰색 배경, 그림자·무늬·테두리 없음',
+    '입은 다물고 무표정 — 치아가 보이면 반려',
+    '안경 착용 시 빛 반사·뿔테로 눈 가림 금지 (운전면허는 무안경 권장)',
+    '머리카락·장신구로 얼굴 윤곽을 가리지 않을 것',
+    '컬러 사진, 자연스러운 피부 톤 · 과도한 보정 금지',
+  ],
+  ja: [
+    '撮影から6ヶ月以内、正面を向いた上半身の写真',
+    '均一な白背景、影・模様・縁取りなし',
+    '口を閉じて無表情 — 歯が見えると却下',
+    '眼鏡着用時は光の反射・太いフレームで目を隠さないこと（運転免許は眼鏡なし推奨）',
+    '髪やアクセサリーで顔の輪郭を隠さないこと',
+    'カラー写真、自然な肌トーン · 過度な補正禁止',
+  ],
+  en: [
+    'Taken within the last 6 months, upper body facing the camera',
+    'Uniform white background with no shadows, patterns, or borders',
+    'Mouth closed, neutral expression — visible teeth cause rejection',
+    'If wearing glasses, no glare or thick frames covering the eyes (no glasses recommended for driver licenses)',
+    'Hair and accessories must not cover the outline of the face',
+    'Color photo with natural skin tone · no excessive retouching',
+  ],
+};
 
-const V2_FAQ_FALLBACK = [
-  { q: '여권사진과 운전면허증 사진이 같나요?', a: '네, 대한민국 여권과 운전면허증은 모두 35×45mm 규격으로 동일합니다. 다만 운전면허증은 안경 미착용을 권장합니다.' },
-  { q: 'AI로 만든 얼굴 사진을 제출해도 되나요?', a: '아니요. AI 생성 이미지(딥페이크 등)는 제출 불가합니다. MONKOS AI는 실제 사진의 배경·크기·밝기를 규격에 맞게 보정하는 것이지, 얼굴을 생성하지 않습니다.' },
-  { q: '온라인 신청용 파일 규격은 어떻게 되나요?', a: '가로 413 × 세로 531 픽셀, JPEG 형식, 500KB 이하, 300DPI 이상을 권장합니다.' },
-];
+const V2_FAQ_FALLBACK = {
+  ko: [
+    { q: '여권사진과 운전면허증 사진이 같나요?', a: '네, 대한민국 여권과 운전면허증은 모두 35×45mm 규격으로 동일합니다. 다만 운전면허증은 안경 미착용을 권장합니다.' },
+    { q: 'AI로 만든 얼굴 사진을 제출해도 되나요?', a: '아니요. AI 생성 이미지(딥페이크 등)는 제출 불가합니다. MONKOS AI는 실제 사진의 배경·크기·밝기를 규격에 맞게 보정하는 것이지, 얼굴을 생성하지 않습니다.' },
+    { q: '온라인 신청용 파일 규격은 어떻게 되나요?', a: '가로 413 × 세로 531 픽셀, JPEG 형식, 500KB 이하, 300DPI 이상을 권장합니다.' },
+  ],
+  ja: [
+    { q: 'パスポート写真と運転免許証の写真は同じですか？', a: 'はい、韓国のパスポートと運転免許証はどちらも35×45mmの同一規格です。ただし、運転免許証は眼鏡なしを推奨します。' },
+    { q: 'AIで作った顔写真を提出してもいいですか？', a: 'いいえ。AI生成画像（ディープフェイクなど）は提出できません。MONKOS AIは実際の写真の背景・サイズ・明るさを規格に合わせて補正するもので、顔を生成するものではありません。' },
+    { q: 'オンライン申請用のファイル規格は？', a: '幅413 × 高さ531ピクセル、JPEG形式、500KB以下、300DPI以上を推奨します。' },
+  ],
+  en: [
+    { q: 'Are passport and driver license photos the same?', a: 'Yes, Korean passports and driver licenses both use the same 35×45mm spec. However, no glasses are recommended for driver license photos.' },
+    { q: 'Can I submit an AI-generated face photo?', a: 'No. AI-generated images (deepfakes, etc.) cannot be submitted. MONKOS AI adjusts the background, size, and brightness of your real photo to meet the spec — it does not generate faces.' },
+    { q: 'What is the file spec for online applications?', a: '413 × 531 pixels, JPEG format, under 500KB, and 300DPI or higher are recommended.' },
+  ],
+};
 
 function specsDetailV2Fragment(slug, forceLang = null) {
   const lang = forceLang || 'ko';
   const i = SPECS_I18N[lang] || SPECS_I18N.ko;
+  const v2 = i.v2 || SPECS_I18N.ko.v2;
+  // 시장 판별: 결제 PG 분기 정본 (kr=토스, jp=레몬 JP 스토어, global=레몬 글로벌)
+  const market = lang === 'ja' ? 'jp' : lang === 'en' ? 'global' : 'kr';
+  const fmtV2 = (tpl, vars) => String(tpl).replace(/\{(\w+)\}/g, (m, k) => (vars[k] != null ? vars[k] : m));
   const prefix = lang === 'ko' ? '' : `/${lang}`;
   const specData = SPECS_DATA[slug];
   if (!specData) return null;
@@ -1627,7 +1853,7 @@ function specsDetailV2Fragment(slug, forceLang = null) {
     `<link rel="alternate" hreflang="x-default" href="https://monkos.ai/specs/${newPath}">`,
   ].join('\n');
 
-  const faqs = (specData.faqs && (specData.faqs[lang] || specData.faqs.ko)) || V2_FAQ_FALLBACK;
+  const faqs = (specData.faqs && (specData.faqs[lang] || specData.faqs.ko)) || (V2_FAQ_FALLBACK[lang] || V2_FAQ_FALLBACK.ko);
   const ogGuideKey = GUIDE_IMAGES.has(slug) ? slug : (parseSizeMm(specData.size) || 'kr-passport');
   const ogImageAbsolute = `https://monkos.ai/images/guides/${ogGuideKey}.webp`;
   const specsLabel = { ko: '규격', en: 'Specs', ja: '規格' }[lang] || 'Specs';
@@ -1702,12 +1928,12 @@ ${hreflangTags}
   const fallbackSrc = sizeMm ? `/images/guides/${sizeMm}.webp` : '';
 
   // 상세 규정 — 정본 데이터 우선: detailSections > (kr-passport 파일럿 문구) > details 문장 분해 > 공통 규정.
-  // V2_DETAILS_KO는 한국 일반 규정이므로 kr-passport 외 슬러그에 폴백 금지 (타국 오정보 방지)
+  // V2_DETAILS는 한국 일반 규정이므로 kr-passport 외 슬러그에 폴백 금지 (타국 오정보 방지)
   const detailText = (specData.details && (specData.details[lang] || specData.details.ko)) || '';
   const detailLines = detailText.split(/[.。]\s*/).map(d => d.trim()).filter(Boolean);
   const detailItems = (specData.detailSections && specData.detailSections[lang])
     ? specData.detailSections[lang].flatMap(s => s.items)
-    : slug === 'kr-passport' ? V2_DETAILS_KO
+    : slug === 'kr-passport' ? (V2_DETAILS[lang] || V2_DETAILS.ko)
     : detailLines.length ? detailLines
     : (COMMON_RULES[lang] || COMMON_RULES.ko);
   const detailHtml = detailItems.map(d => `<li>${escapeHtml(d)}</li>`).join('');
@@ -1715,7 +1941,7 @@ ${hreflangTags}
   // 반려사유 — kr-passport는 파일럿 상세본(desc 포함) 유지, 그 외는 정본 데이터(rejectionReasons: 문자열 배열)
   const dataRejections = (specData.rejectionReasons && (specData.rejectionReasons[lang] || specData.rejectionReasons.ko)) || [];
   const rejections = slug === 'kr-passport'
-    ? V2_REJECTIONS_KO
+    ? (V2_REJECTIONS[lang] || V2_REJECTIONS.ko)
     : dataRejections.slice(0, 5).map(r => ({ title: r, desc: '' }));
   const rejectHtml = rejections.map(r =>
     `<li><div class="v2-rj-title">${escapeHtml(r.title)}</div>${r.desc ? `<div class="v2-rj-desc">${escapeHtml(r.desc)}</div>` : ''}</li>`
@@ -1727,7 +1953,8 @@ ${hreflangTags}
   const sameHtml = sameSize.map(s => {
     const name = lang === 'ja' ? (s.typeJa || s.type) : (lang === 'en' ? s.typeEn : s.type);
     const { typeSlug: ts, countrySlug: cs } = parseSlug(s.slug);
-    const note = name.includes('운전면허') ? '<div class="v2-same-note">무안경 권장</div>' : '';
+    // 언어 무관 slug 기준 판정 (구: 한국어 typeName 문자열 비교 — en/ja에서 항상 false였음)
+    const note = (ts === 'license' || ts === 'drivers-license') ? `<div class="v2-same-note">${escapeHtml(v2.noGlasses)}</div>` : '';
     return `<a href="${prefix}/specs/${ts}/${cs}" class="v2-same-card">
       <span class="v2-same-icon">📄</span>
       <div><div class="v2-same-name">${escapeHtml(name)}</div><div class="v2-same-size">${escapeHtml(locField(s, 'size', lang))}</div>${note}</div>
@@ -1749,11 +1976,13 @@ ${hreflangTags}
     : '반려 걱정 없이 — 발급보장 ₩9,900 →';
   const upsellHtml = `<div class="v2-upsell"><a href="${upsellHref}" data-cta="specs-upsell" rel="noopener">${escapeHtml(upsellLabel)}</a></div>`;
 
+  const fullName = `${countryName} ${typeName}`;
   const bodyContent = `
+  ${market === 'kr' ? '<script src="https://js.tosspayments.com/v2/standard"></script>' : ''}
   <div class="v2-wrap">
     <!-- 1. 헤더 -->
     <nav class="v2-breadcrumb">
-      <a href="${prefix}/specs">${escapeHtml(specsLabel)} 가이드</a> &gt; ${escapeHtml(countryName)} &gt; ${escapeHtml(typeName)}
+      <a href="${prefix}/specs">${escapeHtml(v2.breadcrumbGuide)}</a> &gt; ${escapeHtml(countryName)} &gt; ${escapeHtml(typeName)}
     </nav>
     <div class="v2-header">
       <h1>${escapeHtml(countryName)} ${escapeHtml(typeName)}</h1>
@@ -1787,36 +2016,33 @@ ${hreflangTags}
       </div>
     </div>
 
-    <!-- 3. 사진 만들기 (T1 셀프서브 ₩2,000) -->
+    <!-- 3. 사진 만들기 (T1 셀프서브 즉시결제) -->
     <div class="v2-steps-section" id="v2-steps">
-      <div class="v2-steps-title">${escapeHtml(countryName)} ${escapeHtml(typeName)} 사진 만들기</div>
-      <div class="v2-steps-sub">셀카 한 장이면 ${escapeHtml(locField(specData, 'size', lang))} 규격 증명사진이 완성됩니다.</div>
+      <div class="v2-steps-title">${escapeHtml(fmtV2(v2.makeTitle, { name: fullName }))}</div>
+      <div class="v2-steps-sub">${escapeHtml(fmtV2(v2.makeSub, { size: locField(specData, 'size', lang) }))}</div>
 
       <!-- Phase 1: 업로드 -->
       <div class="v2-make-layout" id="v2-phase-upload">
         <div class="v2-upload-with-guides">
           <div class="v2-guide-img-wrap">
-            <img src="/images/guides/guide-selfie.jpg" alt="셀카 예시" class="v2-guide-img">
-            <span class="v2-guide-label">✓ 셀카</span>
+            <img src="/images/guides/guide-selfie.jpg" alt="${escapeHtml(v2.altSelfie)}" class="v2-guide-img">
+            <span class="v2-guide-label">${escapeHtml(v2.labelSelfie)}</span>
           </div>
           <div class="v2-upload-zone" id="v2-dropzone">
             <div class="v2-upload-icon">&#8615;</div>
-            <div class="v2-upload-main-text">사진을 끌어다 놓거나</div>
-            <button type="button" class="v2-upload-btn">사진 선택</button>
+            <div class="v2-upload-main-text">${escapeHtml(v2.dropText)}</div>
+            <button type="button" class="v2-upload-btn">${escapeHtml(v2.selectBtn)}</button>
             <input type="file" id="v2-file-input" accept="image/*" style="display:none">
             <div class="v2-upload-hint">JPG, PNG, HEIC / max 10MB</div>
             <div class="v2-upload-guide">
               <div class="v2-guide-items">
-                <span>정면 얼굴</span>
-                <span>가슴 위 구도</span>
-                <span>1인</span>
-                <span>선명한 화질</span>
+                ${v2.guideChips.map(c => `<span>${escapeHtml(c)}</span>`).join('\n                ')}
               </div>
             </div>
           </div>
           <div class="v2-guide-img-wrap">
-            <img src="/images/guides/guide-profile.jpg" alt="프로필 예시" class="v2-guide-img">
-            <span class="v2-guide-label">✓ 프로필</span>
+            <img src="/images/guides/guide-profile.jpg" alt="${escapeHtml(v2.altProfile)}" class="v2-guide-img">
+            <span class="v2-guide-label">${escapeHtml(v2.labelProfile)}</span>
           </div>
         </div>
         <div class="v2-error-msg" id="v2-error"></div>
@@ -1826,19 +2052,19 @@ ${hreflangTags}
       <div class="v2-make-layout" id="v2-phase-check" style="display:none;">
         <div class="v2-pay-grid">
           <div class="v2-pay-preview">
-            <img id="v2-check-img" src="" alt="검수 사진">
+            <img id="v2-check-img" src="" alt="${escapeHtml(v2.altCheck)}">
           </div>
           <div class="v2-checklist-side">
-            <div class="v2-checklist-title">규정 체크</div>
+            <div class="v2-checklist-title">${escapeHtml(v2.checkTitle)}</div>
             <div class="v2-checklist-loading" id="v2-loading">
               <div class="v2-spinner"></div>
-              <span>AI 검수 중...</span>
+              <span>${escapeHtml(v2.checking)}</span>
             </div>
             <ul class="v2-checklist-items" id="v2-checklist-items"></ul>
             <div class="v2-checklist-summary" id="v2-summary"></div>
             <div class="v2-action-buttons" id="v2-check-actions" style="display:none;">
-              <button class="v2-action-btn v2-btn-retry" id="v2-btn-change">다른 사진</button>
-              <button class="v2-action-btn v2-btn-retouch" id="v2-btn-proceed">진행하기</button>
+              <button class="v2-action-btn v2-btn-retry" id="v2-btn-change">${escapeHtml(v2.btnOtherPhoto)}</button>
+              <button class="v2-action-btn v2-btn-retouch" id="v2-btn-proceed">${escapeHtml(v2.btnProceed)}</button>
             </div>
           </div>
         </div>
@@ -1848,22 +2074,22 @@ ${hreflangTags}
       <div class="v2-make-layout" id="v2-phase-pay" style="display:none;">
         <div class="v2-pay-grid">
           <div class="v2-pay-preview">
-            <img id="v2-preview-img" src="" alt="미리보기">
-            <button class="v2-change-photo" id="v2-change-photo">다른 사진</button>
+            <img id="v2-preview-img" src="" alt="${escapeHtml(v2.altPreview)}">
+            <button class="v2-change-photo" id="v2-change-photo">${escapeHtml(v2.btnOtherPhoto)}</button>
           </div>
           <div class="v2-pay-options">
             <button class="v2-pay-btn v2-pay-instant" id="v2-pay-instant">
-              <div class="v2-pay-title">${escapeHtml(typeName)} 사진 만들기</div>
-              <div class="v2-pay-price">₩2,000</div>
-              <div class="v2-pay-desc">카드/토스 즉시결제 · 로그인 불필요</div>
+              <div class="v2-pay-title">${escapeHtml(fmtV2(v2.payTitle, { type: typeName }))}</div>
+              <div class="v2-pay-price">${v2.payPrice}</div>
+              <div class="v2-pay-desc">${escapeHtml(v2.payDesc)}</div>
             </button>
-            <div class="v2-pay-divider"><span>또는</span></div>
+            ${lang === 'ko' ? `<div class="v2-pay-divider"><span>${escapeHtml(v2.orDivider)}</span></div>
             <button class="v2-pay-btn v2-pay-credit" id="v2-pay-credit">
-              <div class="v2-pay-title">크레딧으로 만들기</div>
+              <div class="v2-pay-title">${escapeHtml(v2.creditTitle)}</div>
               <div class="v2-pay-price">10c <span style="font-size:13px;color:#888;font-weight:400;">(₩1,500)</span></div>
-              <div class="v2-pay-desc">간편로그인 시 10c 무료 지급</div>
-              <div class="v2-pay-desc" style="font-size:12px;margin-top:4px;">추가 충전: 40c <span style="text-decoration:line-through;color:#bbb;">₩6,000</span> ₩4,900</div>
-            </button>
+              <div class="v2-pay-desc">${escapeHtml(v2.creditDesc)}</div>
+              <div class="v2-pay-desc" style="font-size:12px;margin-top:4px;">${v2.creditTopup}</div>
+            </button>` : ''}
             ${upsellHtml}
           </div>
         </div>
@@ -1873,8 +2099,8 @@ ${hreflangTags}
       <div class="v2-make-layout" id="v2-phase-generating" style="display:none;">
         <div class="v2-generating">
           <div class="v2-spinner"></div>
-          <div class="v2-gen-text">AI가 ${escapeHtml(typeName)} 사진을 만들고 있습니다...</div>
-          <div class="v2-gen-sub">약 30초 소요</div>
+          <div class="v2-gen-text" id="v2-gen-text">${escapeHtml(fmtV2(v2.genText, { type: typeName }))}</div>
+          <div class="v2-gen-sub" id="v2-gen-sub">${escapeHtml(v2.genSub)}</div>
         </div>
       </div>
 
@@ -1882,18 +2108,18 @@ ${hreflangTags}
       <div class="v2-make-layout" id="v2-phase-result" style="display:none;">
         <div class="v2-result-grid">
           <div class="v2-result-before">
-            <div class="v2-result-label">원본</div>
-            <img id="v2-result-before-img" src="" alt="원본">
+            <div class="v2-result-label">${escapeHtml(v2.labelBefore)}</div>
+            <img id="v2-result-before-img" src="" alt="${escapeHtml(v2.labelBefore)}">
           </div>
           <div class="v2-result-arrow">→</div>
           <div class="v2-result-after">
-            <div class="v2-result-label">완성</div>
-            <img id="v2-result-after-img" src="" alt="완성">
+            <div class="v2-result-label">${escapeHtml(v2.labelAfter)}</div>
+            <img id="v2-result-after-img" src="" alt="${escapeHtml(v2.labelAfter)}">
           </div>
         </div>
         <div class="v2-result-actions">
-          <button class="v2-download-btn" id="v2-download">다운로드</button>
-          <button class="v2-action-btn v2-btn-retry" id="v2-btn-retry2">다른 사진으로 만들기</button>
+          <button class="v2-download-btn" id="v2-download">${escapeHtml(v2.btnDownload)}</button>
+          <button class="v2-action-btn v2-btn-retry" id="v2-btn-retry2">${escapeHtml(v2.btnRetry)}</button>
         </div>
       </div>
 
@@ -1904,44 +2130,44 @@ ${hreflangTags}
     <!-- 4. 상세규정 + 반려사유 (아코디언) -->
     <div class="v2-detail-grid">
       <div class="v2-detail-card" onclick="this.classList.toggle('open')">
-        <h3>상세 규정</h3>
+        <h3>${escapeHtml(v2.detailsTitle)}</h3>
         <div class="v2-detail-body"><ul class="v2-detail-list">${detailHtml}</ul></div>
       </div>
       ${rejectHtml ? `<div class="v2-detail-card" onclick="this.classList.toggle('open')">
-        <h3>반려사유 TOP 5</h3>
+        <h3>${escapeHtml(v2.rejectionTitle)}</h3>
         <div class="v2-detail-body"><ol class="v2-reject-list">${rejectHtml}</ol></div>
       </div>` : ''}
     </div>
 
     ${sameSize.length > 0 ? `<!-- 5. 같은 사진으로 제출 가능한 서류 -->
     <div class="v2-same-section">
-      <h2>같은 사진으로 제출 가능한 서류</h2>
-      <div class="v2-same-sub">아래 서류는 ${escapeHtml(countryName)} ${escapeHtml(typeName)}과(와) 동일 규격(${escapeHtml(locField(specData, 'size', lang))})입니다.</div>
+      <h2>${escapeHtml(v2.sameTitle)}</h2>
+      <div class="v2-same-sub">${escapeHtml(fmtV2(v2.sameSub, { name: fullName, size: locField(specData, 'size', lang) }))}</div>
       <div class="v2-same-grid">${sameHtml}</div>
     </div>` : ''}
 
     <!-- 6. FAQ -->
     <div class="v2-faq-section">
-      <h2>자주 묻는 질문</h2>
+      <h2>${escapeHtml(v2.faqTitle)}</h2>
       ${faqHtml}
     </div>
 
     <!-- 7. 크로스셀 카드 -->
     <div class="v2-same-section">
-      <h2>다른 MONKOS 서비스</h2>
-      <div class="v2-same-sub">증명사진 외에도 다양한 AI 사진 서비스를 이용해보세요.</div>
+      <h2>${escapeHtml(v2.crossTitle)}</h2>
+      <div class="v2-same-sub">${escapeHtml(v2.crossSub)}</div>
       <div class="v2-same-grid">
         <a href="/headshot" class="v2-same-card">
           <span class="v2-same-icon">💼</span>
-          <div><div class="v2-same-name">취업·이력서 사진</div><div class="v2-same-size">AI 헤드샷으로 완성</div></div>
+          <div><div class="v2-same-name">${escapeHtml(v2.crossHeadshot)}</div><div class="v2-same-size">${escapeHtml(v2.crossHeadshotSub)}</div></div>
         </a>
         <a href="/" class="v2-same-card">
           <span class="v2-same-icon">📷</span>
-          <div><div class="v2-same-name">프로필 사진</div><div class="v2-same-size">SNS·링크드인용</div></div>
+          <div><div class="v2-same-name">${escapeHtml(v2.crossProfile)}</div><div class="v2-same-size">${escapeHtml(v2.crossProfileSub)}</div></div>
         </a>
         <a href="${prefix}/specs" class="v2-same-card">
           <span class="v2-same-icon">📐</span>
-          <div><div class="v2-same-name">증명사진 전체 규격</div><div class="v2-same-size">국가별·용도별 규격 가이드</div></div>
+          <div><div class="v2-same-name">${escapeHtml(v2.crossSpecs)}</div><div class="v2-same-size">${escapeHtml(v2.crossSpecsSub)}</div></div>
         </a>
       </div>
     </div>
@@ -1949,8 +2175,19 @@ ${hreflangTags}
   </div>
 `;
 
+  // 클라이언트 설정 주입 — JSON.stringify 경유(이스케이프 사고 방지). 시크릿 값 없음(문구·slug·시장뿐).
+  const v2ClientCfg = {
+    slug,
+    format: typeSlug,
+    market,
+    downloadName: `${countryName}_${typeName}_${locField(specData, 'size', lang).replace(/\s/g, '')}_MONKOS.jpg`,
+    t: v2.js,
+  };
+
   const pageScript = `
 (function(){
+  var CFG = ${JSON.stringify(v2ClientCfg)};
+  var T = CFG.t;
   var dropzone = document.getElementById('v2-dropzone');
   var fileInput = document.getElementById('v2-file-input');
   var errorMsg = document.getElementById('v2-error');
@@ -1959,16 +2196,78 @@ ${hreflangTags}
   var phasePay = document.getElementById('v2-phase-pay');
   var phaseGen = document.getElementById('v2-phase-generating');
   var phaseResult = document.getElementById('v2-phase-result');
+  var genTextEl = document.getElementById('v2-gen-text');
+  var genSubEl = document.getElementById('v2-gen-sub');
   var uploadedBase64 = null;
+  var payBusy = false;
+  var pollTimer = null;
+  // 결제 상태: token = generate용 paymentToken, remaining = 남은 재생성(null=미확정), consumed = 다운로드로 최종 소모됨
+  var pay = { orderId: null, token: null, remaining: null, consumed: false };
 
   if(!dropzone) return;
+
+  var GEN_TEXT_DEFAULT = genTextEl ? genTextEl.textContent : '';
+  var GEN_SUB_DEFAULT = genSubEl ? genSubEl.textContent : '';
+  var ORDER_KEY = 'monkos_specs_order';
+  var IMG_KEY = 'monkos_specs_img';
 
   function showPhase(phase){
     [phaseUpload, phaseCheck, phasePay, phaseGen, phaseResult].forEach(function(p){ if(p) p.style.display='none'; });
     if(phase) phase.style.display='';
   }
+  function setGenMessage(text, sub){
+    if(genTextEl) genTextEl.textContent = text;
+    if(genSubEl) genSubEl.textContent = sub || '';
+  }
+  function showError(msg){ errorMsg.textContent = msg; errorMsg.classList.add('show'); }
+  function hideError(){ errorMsg.classList.remove('show'); }
+  function returnBase(){ return location.origin + location.pathname; }
+  function hasUsableToken(){ return !!(pay.token && !pay.consumed && (pay.remaining === null || pay.remaining > 0)); }
 
-
+  /* ─── 리다이렉트 생존 저장소 (sessionStorage) ─── */
+  function persistOrder(){
+    try{ sessionStorage.setItem(ORDER_KEY, JSON.stringify({ orderId: pay.orderId, token: pay.token, remaining: pay.remaining, slug: CFG.slug, ts: Date.now() })); }catch(e){}
+  }
+  function loadOrder(){
+    try{
+      var d = JSON.parse(sessionStorage.getItem(ORDER_KEY) || 'null');
+      return (d && d.slug === CFG.slug) ? d : null;
+    }catch(e){ return null; }
+  }
+  function clearStored(){
+    try{ sessionStorage.removeItem(ORDER_KEY); sessionStorage.removeItem(IMG_KEY); }catch(e){}
+  }
+  // 10MB 원본 base64는 sessionStorage 쿼터(~5MB) 초과 — 저장 전 리사이즈·JPEG 재압축 필수
+  function compressImage(dataUrl, cb){
+    try{
+      var img = new Image();
+      img.onload = function(){
+        try{
+          var max = 1536;
+          var w = img.naturalWidth, h = img.naturalHeight;
+          var scale = Math.min(1, max / Math.max(w, h));
+          var canvas = document.createElement('canvas');
+          canvas.width = Math.max(1, Math.round(w * scale));
+          canvas.height = Math.max(1, Math.round(h * scale));
+          canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+          cb(canvas.toDataURL('image/jpeg', 0.85));
+        }catch(e){ cb(null); }
+      };
+      img.onerror = function(){ cb(null); };
+      img.src = dataUrl;
+    }catch(e){ cb(null); }
+  }
+  function persistImage(cb){
+    if(!uploadedBase64) return cb();
+    compressImage(uploadedBase64, function(small){
+      try{ sessionStorage.setItem(IMG_KEY, small || uploadedBase64); }catch(e){
+        // 저장 실패(HEIC 디코드 불가 + 쿼터 초과 등) — 결제는 진행하고 복귀 시 재업로드 안내(imgLost)
+        try{ sessionStorage.removeItem(IMG_KEY); }catch(e2){}
+      }
+      cb();
+    });
+  }
+  function loadImage(){ try{ return sessionStorage.getItem(IMG_KEY); }catch(e){ return null; } }
 
   /* ─── Upload handlers ─── */
   dropzone.querySelector('.v2-upload-btn').addEventListener('click', function(e){ e.stopPropagation(); fileInput.click(); });
@@ -1981,13 +2280,10 @@ ${hreflangTags}
   });
   fileInput.addEventListener('change', function(){ if(fileInput.files.length) handleFile(fileInput.files[0]); });
 
-  function showError(msg){ errorMsg.textContent = msg; errorMsg.classList.add('show'); }
-  function hideError(){ errorMsg.classList.remove('show'); }
-
   function handleFile(file){
     hideError();
-    if(!file.type.match(/image\\/(jpeg|png|heic|heif|webp)/i)) return showError('JPG, PNG, HEIC 파일만 업로드 가능합니다.');
-    if(file.size > 10*1024*1024) return showError('10MB 이하 파일만 업로드 가능합니다.');
+    if(!file.type.match(/image\\/(jpeg|png|heic|heif|webp)/i)) return showError(T.errFileType);
+    if(file.size > 10*1024*1024) return showError(T.errFileSize);
     var reader = new FileReader();
     reader.onload = function(ev){
       uploadedBase64 = ev.target.result;
@@ -2030,14 +2326,14 @@ ${hreflangTags}
             if(!c.pass && !c.warn) allPass = false;
           });
           summary.className = 'v2-checklist-summary ' + (allPass ? 'v2-summary-pass' : 'v2-summary-fail');
-          summary.textContent = allPass ? '규격 적합! 진행하기를 눌러주세요.' : '일부 항목이 부적합합니다. 다른 사진을 권장합니다.';
+          summary.textContent = allPass ? T.checkPass : T.checkFail;
           checkActions.style.display = 'flex';
         } else {
-          showError(data.error || '검수 실패');
+          showError(data.code === 'RATE_LIMITED' ? T.rateLimited : (data.error || T.errCheck));
           showPhase(phaseUpload);
         }
       })
-      .catch(function(){ showError('검수 오류'); showPhase(phaseUpload); });
+      .catch(function(){ showError(T.errCheckNet); showPhase(phaseUpload); });
     };
     reader.readAsDataURL(file);
   }
@@ -2049,6 +2345,8 @@ ${hreflangTags}
   });
   document.getElementById('v2-btn-proceed').addEventListener('click', function(){
     document.getElementById('v2-preview-img').src = uploadedBase64;
+    // 이미 결제된 토큰(재생성 잔여)이 있으면 재결제 없이 바로 생성
+    if(hasUsableToken()) return doGenerate();
     showPhase(phasePay);
   });
 
@@ -2059,43 +2357,256 @@ ${hreflangTags}
   });
 
   document.getElementById('v2-pay-instant').addEventListener('click', function(){
-    if(!uploadedBase64) return;
-    showPhase(phaseGen);
-    fetch('/api/idphoto/generate', {
+    if(!uploadedBase64 || payBusy) return;
+    // 결제 완료 토큰 보유 시 이중 결제 방지 — 바로 생성
+    if(hasUsableToken()) return doGenerate();
+    hideError();
+    payBusy = true;
+    var initBody = { slug: CFG.slug, market: CFG.market };
+    if(CFG.market !== 'kr') initBody.redirectUrl = returnBase() + '?lemon=return';
+    // 팝업 차단 회피: 클릭 제스처 안에서 창을 먼저 열고 init 후 주소 지정 (레몬 경로)
+    var lemonWin = null;
+    if(CFG.market !== 'kr'){
+      try{ lemonWin = window.open('', '_blank'); }catch(e){}
+    }
+    fetch('/api/payments/direct/init', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ image: uploadedBase64, format:'${typeSlug}', gender:'m', age:'adult' })
+      body: JSON.stringify(initBody)
     })
-    .then(function(r){ return r.json(); })
-    .then(function(data){
-      if(data.image){
-        document.getElementById('v2-result-before-img').src = uploadedBase64;
-        document.getElementById('v2-result-after-img').src = 'data:image/png;base64,'+data.image;
-        showPhase(phaseResult);
-      } else {
-        showError(data.error || '생성 실패');
-        showPhase(phasePay);
+    .then(function(r){ return r.json().then(function(d){ return { ok: r.ok, status: r.status, d: d }; }); })
+    .then(function(res){
+      if(!res.ok){
+        payBusy = false;
+        if(lemonWin){ try{ lemonWin.close(); }catch(e){} }
+        if(res.status === 503) showError(T.payUnavailable);
+        else if(res.status === 429) showError(T.rateLimited);
+        else showError((res.d && res.d.error) || T.payInitFail);
+        return;
       }
+      var d = res.d;
+      pay.orderId = d.orderId; pay.token = null; pay.remaining = null; pay.consumed = false;
+      persistOrder();
+      persistImage(function(){
+        if(d.provider === 'toss') startToss(d, lemonWin);
+        else startLemon(d, lemonWin);
+      });
     })
-    .catch(function(){ showError('오류 발생'); showPhase(phasePay); });
+    .catch(function(){
+      payBusy = false;
+      if(lemonWin){ try{ lemonWin.close(); }catch(e){} }
+      showError(T.errNet);
+    });
   });
 
-  document.getElementById('v2-pay-credit').addEventListener('click', function(){
-    window.location.href = '/headshot?from=specs';
-  });
+  function startToss(d, extraWin){
+    if(extraWin){ try{ extraWin.close(); }catch(e){} }
+    if(!window.TossPayments){ payBusy = false; showError(T.payInitFail); return; }
+    try{
+      var payment = window.TossPayments(d.clientKey).payment({ customerKey: window.TossPayments.ANONYMOUS });
+      var base = returnBase();
+      payment.requestPayment({
+        method: 'CARD',
+        amount: { currency: d.currency || 'KRW', value: d.amount },
+        orderId: d.orderId,
+        orderName: d.orderName,
+        successUrl: base + '?toss=direct',
+        failUrl: base + '?toss=fail',
+        card: { useEscrow: false, flowMode: 'DEFAULT', useCardPoint: false, useAppCardOnly: false }
+      }).catch(function(err){
+        payBusy = false;
+        showError(err && err.code === 'USER_CANCEL' ? T.payCancelled : ((err && err.message) || T.payInitFail));
+        showPhase(phasePay);
+      });
+    }catch(e){ payBusy = false; showError(T.payInitFail); showPhase(phasePay); }
+  }
+
+  function startLemon(d, lemonWin){
+    showPhase(phaseGen);
+    setGenMessage(T.payWaiting, T.payWaitingHint);
+    if(lemonWin && !lemonWin.closed){
+      try{ lemonWin.location = d.checkoutUrl; }catch(e){ lemonWin = null; }
+    } else { lemonWin = null; }
+    if(!lemonWin){
+      // 팝업 불가 — 같은 탭 리다이렉트 (상태는 sessionStorage에 보존, redirectUrl로 복귀)
+      location.href = d.checkoutUrl;
+      return;
+    }
+    startPolling(d.orderId);
+  }
+
+  function stopPolling(){ if(pollTimer){ clearInterval(pollTimer); pollTimer = null; } }
+
+  function startPolling(orderId){
+    stopPolling();
+    var tries = 0;
+    pollTimer = setInterval(function(){
+      tries++;
+      if(tries > 240){ // 2.5초 × 240 = 10분
+        stopPolling(); payBusy = false;
+        showError(T.payTimeout);
+        showPhase(uploadedBase64 ? phasePay : phaseUpload);
+        return;
+      }
+      fetch('/api/payments/direct/status?orderId=' + encodeURIComponent(orderId))
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        if(d.status === 'paid' && d.paymentToken){
+          stopPolling(); payBusy = false;
+          pay.orderId = orderId; pay.token = d.paymentToken; pay.remaining = null; pay.consumed = false;
+          persistOrder();
+          if(uploadedBase64) doGenerate(); else needReupload();
+        } else if(d.status === 'failed' || d.status === 'amount_mismatch' || d.status === 'refunded'){
+          stopPolling(); payBusy = false;
+          showError(T.payFailed);
+          showPhase(uploadedBase64 ? phasePay : phaseUpload);
+        }
+      })
+      .catch(function(){});
+    }, 2500);
+  }
+
+  // 결제는 확인됐지만 이미지가 유실된 경우(리다이렉트 생존 실패) — 재업로드 후 무결제 생성
+  function needReupload(){
+    showPhase(phaseUpload);
+    showError(T.imgLost);
+  }
+
+  /* ─── 생성 (결제 토큰 경유) ─── */
+  function doGenerate(){
+    hideError();
+    payBusy = false;
+    showPhase(phaseGen);
+    setGenMessage(GEN_TEXT_DEFAULT, GEN_SUB_DEFAULT);
+    var body = { image: uploadedBase64, format: CFG.format, gender: 'm', age: 'adult' };
+    if(pay.token) body.paymentToken = pay.token;
+    fetch('/api/idphoto/generate', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(body)
+    })
+    .then(function(r){ return r.json().then(function(d){ return { status: r.status, d: d }; }); })
+    .then(function(res){
+      var data = res.d;
+      if(data.image){
+        if(typeof data.remainingGenerates === 'number'){ pay.remaining = data.remainingGenerates; persistOrder(); }
+        document.getElementById('v2-result-before-img').src = uploadedBase64;
+        document.getElementById('v2-result-after-img').src = 'data:image/png;base64,' + data.image;
+        showPhase(phaseResult);
+      } else {
+        var code = data.code || '';
+        var msg = code === 'TOKEN_EXPIRED' ? T.tokenExpired
+          : code === 'TOKEN_USED' ? T.tokenUsed
+          : code === 'INVALID_TOKEN' ? T.tokenInvalid
+          : code === 'GENERATE_LIMIT' ? T.genLimit
+          : code === 'RATE_LIMITED' ? T.rateLimited
+          : (data.error || T.errGen);
+        if(code === 'TOKEN_EXPIRED' || code === 'TOKEN_USED' || code === 'INVALID_TOKEN'){
+          pay.token = null; pay.remaining = null; clearStored();
+        } else if(code === 'GENERATE_LIMIT'){
+          pay.remaining = 0; persistOrder();
+        }
+        showError(msg);
+        showPhase(uploadedBase64 ? phasePay : phaseUpload);
+      }
+    })
+    .catch(function(){ showError(T.errNet); showPhase(uploadedBase64 ? phasePay : phaseUpload); });
+  }
+
+  var payCreditBtn = document.getElementById('v2-pay-credit');
+  if(payCreditBtn){
+    payCreditBtn.addEventListener('click', function(){
+      window.location.href = '/headshot?from=specs';
+    });
+  }
 
   /* ─── Result phase ─── */
   document.getElementById('v2-download').addEventListener('click', function(){
     var img = document.getElementById('v2-result-after-img');
     if(!img.src) return;
-    var a = document.createElement('a');
-    a.href = img.src; a.download = '${escapeHtml(countryName)}_${escapeHtml(typeName)}_${escapeHtml(locField(specData, 'size', lang).replace(/\s/g,''))}_MONKOS.jpg';
-    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    function trigger(){
+      var a = document.createElement('a');
+      a.href = img.src; a.download = CFG.downloadName;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    }
+    // 결제 토큰 경로: 다운로드 직전 1회성 최종 소모 API 호출 성공 후 실제 다운로드 (서버 계약 5번)
+    if(!pay.token || pay.consumed) return trigger();
+    fetch('/api/download/direct?token=' + encodeURIComponent(pay.token))
+    .then(function(r){ return r.json().then(function(d){ return { ok: r.ok, status: r.status, d: d }; }).catch(function(){ return { ok: r.ok, status: r.status, d: {} }; }); })
+    .then(function(res){
+      if(res.ok && res.d && res.d.success){
+        pay.consumed = true; clearStored(); trigger();
+      } else if(res.status === 409){
+        // 이미 소모된 토큰 — 화면에 있는 이미지는 그대로 제공
+        pay.consumed = true; trigger();
+      } else {
+        showError(T.downloadFail);
+      }
+    })
+    .catch(function(){ showError(T.downloadFail); });
   });
 
   document.getElementById('v2-btn-retry2').addEventListener('click', function(){
+    // 토큰(재생성 잔여)은 유지 — 진행하기에서 재결제 없이 생성
     uploadedBase64 = null;
+    hideError();
     showPhase(phaseUpload);
   });
+
+  /* ─── 결제 복귀 처리 (토스 리다이렉트 / 레몬 리턴) ─── */
+  (function resume(){
+    var qs;
+    try{ qs = new URLSearchParams(location.search); }catch(e){ return; }
+    var mode = qs.get('toss') || (qs.get('lemon') ? 'lemon' : null);
+    if(!mode) return;
+    var pk = qs.get('paymentKey');
+    var oid = qs.get('orderId');
+    var failMsg = qs.get('message');
+    try{ history.replaceState(null, '', location.pathname); }catch(e){}
+
+    var savedImg = loadImage();
+    if(savedImg){
+      uploadedBase64 = savedImg;
+      document.getElementById('v2-check-img').src = savedImg;
+      document.getElementById('v2-preview-img').src = savedImg;
+    }
+    var saved = loadOrder();
+    if(saved){
+      pay.orderId = saved.orderId;
+      pay.token = saved.token || null;
+      pay.remaining = (typeof saved.remaining === 'number') ? saved.remaining : null;
+    }
+
+    if(mode === 'direct' && pk && oid){
+      showPhase(phaseGen);
+      setGenMessage(T.payConfirming, '');
+      fetch('/api/payments/toss/direct', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ paymentKey: pk, orderId: oid })
+      })
+      .then(function(r){ return r.json().then(function(d){ return { ok: r.ok, d: d }; }); })
+      .then(function(res){
+        if(res.ok && res.d && res.d.paymentToken){
+          pay.orderId = oid; pay.token = res.d.paymentToken; pay.consumed = false;
+          persistOrder();
+          if(uploadedBase64) doGenerate(); else needReupload();
+        } else {
+          showError((res.d && res.d.error) || T.payConfirmFail);
+          showPhase(uploadedBase64 ? phasePay : phaseUpload);
+        }
+      })
+      .catch(function(){ showError(T.payConfirmFail); showPhase(uploadedBase64 ? phasePay : phaseUpload); });
+    } else if(mode === 'fail'){
+      showError(failMsg || T.payCancelled);
+      showPhase(uploadedBase64 ? phasePay : phaseUpload);
+    } else if(mode === 'lemon'){
+      if(pay.token){
+        if(uploadedBase64) doGenerate(); else needReupload();
+      } else if(saved && saved.orderId){
+        showPhase(phaseGen);
+        setGenMessage(T.payWaiting, T.payWaitingHint);
+        startPolling(saved.orderId);
+      }
+    }
+  })();
 })();
 `;
 

@@ -5,7 +5,7 @@ device: iMac
 agent: 민아
 from: 작가님
 to: iMac/민아
-status: 진행
+status: 완료
 portfolio: PF_SPECS
 ---
 
