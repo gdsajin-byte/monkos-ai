@@ -1192,7 +1192,36 @@ ${hreflangTags}
 
 // ─── SPECS V2 — kr-passport 카드형 리디자인 ────────────────────
 
-const V2_SLUGS = new Set(['kr-passport']);
+// V2 롤아웃 게이트 (2026-07-04 DESIGN_specs_2tier)
+// - V2_DIRECT_SLUGS: 옛 1-segment URL(/specs/kr-passport)을 301 없이 200으로 직접 서빙하는 파일럿 슬러그.
+//   확장 게이트를 여기에 그대로 쓰면 1-segment 428건의 301이 전부 해제되어 canonical(2-segment)과
+//   중복 서빙되므로 렌더 게이트와 분리 유지. 나머지 슬러그는 계속 2-segment 정본으로 301.
+const V2_DIRECT_SLUGS = new Set(['kr-passport']);
+
+// 생성 엔진 호환성 게이트 (2026-07-04 감사 P0 대응)
+// 생성 엔진(idphoto-generate.js)은 3:4 비율·흰색 배경으로 고정 출력한다.
+// v2 페이지는 '셀카 한 장이면 {해당 규격} 규격 증명사진이 완성됩니다'를 약속하므로,
+// 엔진이 충족할 수 없는 규격(정방형 등 비율 불일치, 비백색 배경)은 v2에서 제외하고
+// v1(생성 CTA 없음)을 유지한다 — 규격 위반 결과물을 규격 적합으로 안내하는 사고 차단.
+// - 비율: size의 세로/가로 ≥ 1.15 (3:4=1.333 근사 허용). 파싱 불가(cn-resume 등)는 제외.
+// - 배경: '흰'/'White'로 시작하는 값만 허용 (흰/회색·흰색·파란 배경 등 흰색 허용 규격 포함).
+function isEngineCompatibleSpec(specData) {
+  if (!specData) return false;
+  const m = String(specData.size || '').match(/([0-9.]+)\s*[×x]\s*([0-9.]+)/);
+  if (!m) return false;
+  const w = parseFloat(m[1]);
+  const h = parseFloat(m[2]);
+  if (!w || !h || h / w < 1.15) return false;
+  const bg = String(specData.background || '').trim();
+  return bg.startsWith('흰') || /^white/i.test(bg);
+}
+
+// 렌더 분기: 파일럿(kr-passport)은 en/ja 포함 기존 동작 보존, 그 외는 ko 언어 한정 +
+// 생성 엔진 호환 규격에만 v2. en/ja는 글로벌 가격 미정으로 v1 유지 (DESIGN §2).
+function isV2Spec(slug, lang) {
+  if (V2_DIRECT_SLUGS.has(slug)) return true;
+  return lang === 'ko' && isEngineCompatibleSpec(SPECS_DATA[slug]);
+}
 
 const SPECS_V2_STYLE = `
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
@@ -1526,6 +1555,14 @@ a:hover { color: #5a3de6; }
 .v2-error-msg { display: none; color: #dc2626; font-size: 13px; margin-top: 8px; text-align: center; }
 .v2-error-msg.show { display: block; }
 
+/* T2 업셀 — 발급보장 (2티어 CTA) */
+.v2-upsell { text-align: center; margin-top: 20px; }
+.v2-upsell a {
+  font-size: 13px; color: #888; text-decoration: none;
+  border-bottom: 1px dashed rgba(0,0,0,0.2); padding-bottom: 2px;
+}
+.v2-upsell a:hover { color: #6c4fff; border-bottom-color: #6c4fff; }
+
 /* 반응형 */
 @media (max-width: 768px) {
   .v2-wrap { padding: 24px 16px 0; }
@@ -1642,16 +1679,19 @@ ${hreflangTags}
 <script type="application/ld+json">${JSON.stringify(specsJsonLdArr)}</script>`;
 
   const h = i.tableHeaders;
+  // 파일 규격은 정본 데이터(fileSpec) 사용 — 한국 여권 온라인 신청 규격(500KB/JPEG) 하드코딩 금지
+  const dpiSuffix = lang === 'ja' ? '以上' : lang === 'en' ? 'or higher' : '이상';
+  const reqBadgeLabel = lang === 'ja' ? '必須' : lang === 'en' ? 'Required' : '필수';
   const specRows = [
     [h.size, locField(specData, 'size', lang), ''],
     [h.pixels, locField(specData, 'pixels', lang), ''],
-    [h.dpi, String(specData.dpi) + ' 이상', ''],
+    [h.dpi, specData.dpi ? `${specData.dpi} ${dpiSuffix}` : '', ''],
     [h.background, locField(specData, 'background', lang), ''],
-    [h.headHeight, locField(specData, 'headHeight', lang), '<span class="v2-badge v2-badge-req">필수</span>'],
+    [h.headHeight, locField(specData, 'headHeight', lang), `<span class="v2-badge v2-badge-req">${reqBadgeLabel}</span>`],
     [h.validity, locField(specData, 'validity', lang), ''],
-    ['파일 용량', '500KB 이하', ''],
-    ['파일 형식', 'JPEG', ''],
-  ].map(([label, val, badge]) =>
+    [h.fileSpec, locField(specData, 'fileSpec', lang), ''],
+  ].filter(([, val]) => val && String(val).trim())
+   .map(([label, val, badge]) =>
     `<tr><th>${escapeHtml(label)}</th><td>${escapeHtml(val)}${badge}</td></tr>`
   ).join('');
 
@@ -1661,14 +1701,24 @@ ${hreflangTags}
   const imgSrc = `/images/guides/${slug}.webp`;
   const fallbackSrc = sizeMm ? `/images/guides/${sizeMm}.webp` : '';
 
+  // 상세 규정 — 정본 데이터 우선: detailSections > (kr-passport 파일럿 문구) > details 문장 분해 > 공통 규정.
+  // V2_DETAILS_KO는 한국 일반 규정이므로 kr-passport 외 슬러그에 폴백 금지 (타국 오정보 방지)
+  const detailText = (specData.details && (specData.details[lang] || specData.details.ko)) || '';
+  const detailLines = detailText.split(/[.。]\s*/).map(d => d.trim()).filter(Boolean);
   const detailItems = (specData.detailSections && specData.detailSections[lang])
     ? specData.detailSections[lang].flatMap(s => s.items)
-    : V2_DETAILS_KO;
+    : slug === 'kr-passport' ? V2_DETAILS_KO
+    : detailLines.length ? detailLines
+    : (COMMON_RULES[lang] || COMMON_RULES.ko);
   const detailHtml = detailItems.map(d => `<li>${escapeHtml(d)}</li>`).join('');
 
-  const rejections = V2_REJECTIONS_KO;
+  // 반려사유 — kr-passport는 파일럿 상세본(desc 포함) 유지, 그 외는 정본 데이터(rejectionReasons: 문자열 배열)
+  const dataRejections = (specData.rejectionReasons && (specData.rejectionReasons[lang] || specData.rejectionReasons.ko)) || [];
+  const rejections = slug === 'kr-passport'
+    ? V2_REJECTIONS_KO
+    : dataRejections.slice(0, 5).map(r => ({ title: r, desc: '' }));
   const rejectHtml = rejections.map(r =>
-    `<li><div class="v2-rj-title">${escapeHtml(r.title)}</div><div class="v2-rj-desc">${escapeHtml(r.desc)}</div></li>`
+    `<li><div class="v2-rj-title">${escapeHtml(r.title)}</div>${r.desc ? `<div class="v2-rj-desc">${escapeHtml(r.desc)}</div>` : ''}</li>`
   ).join('');
 
   const sameSize = Object.values(SPECS_DATA)
@@ -1690,6 +1740,14 @@ ${hreflangTags}
       <div class="v2-faq-a">${escapeHtml(f.a)}</div>
     </div>`
   ).join('');
+
+  // 2-티어 CTA (DESIGN_20260704_specs_2tier): T1 = ₩2,000 즉시결제(주 CTA), T2 = 발급보장 업셀 링크.
+  // 보장 상세 약속 문구 금지 — 규정 미승인 상태(작가님 승인 대기), 한 줄 절제 표기만.
+  const upsellHref = lang === 'ja' ? 'https://idphoto-jp.monkos.ai/' : 'https://idphoto-kr.monkos.ai/';
+  const upsellLabel = lang === 'ja' ? '却下の心配なく — 発行保証 ¥990 →'
+    : lang === 'en' ? 'No rejection worries — guaranteed issue ₩9,900 →'
+    : '반려 걱정 없이 — 발급보장 ₩9,900 →';
+  const upsellHtml = `<div class="v2-upsell"><a href="${upsellHref}" data-cta="specs-upsell" rel="noopener">${escapeHtml(upsellLabel)}</a></div>`;
 
   const bodyContent = `
   <div class="v2-wrap">
@@ -1729,7 +1787,7 @@ ${hreflangTags}
       </div>
     </div>
 
-    <!-- 3. 여권사진 만들기 -->
+    <!-- 3. 사진 만들기 (T1 셀프서브 ₩2,000) -->
     <div class="v2-steps-section" id="v2-steps">
       <div class="v2-steps-title">${escapeHtml(countryName)} ${escapeHtml(typeName)} 사진 만들기</div>
       <div class="v2-steps-sub">셀카 한 장이면 ${escapeHtml(locField(specData, 'size', lang))} 규격 증명사진이 완성됩니다.</div>
@@ -1795,7 +1853,7 @@ ${hreflangTags}
           </div>
           <div class="v2-pay-options">
             <button class="v2-pay-btn v2-pay-instant" id="v2-pay-instant">
-              <div class="v2-pay-title">여권사진 만들기</div>
+              <div class="v2-pay-title">${escapeHtml(typeName)} 사진 만들기</div>
               <div class="v2-pay-price">₩2,000</div>
               <div class="v2-pay-desc">카드/토스 즉시결제 · 로그인 불필요</div>
             </button>
@@ -1806,6 +1864,7 @@ ${hreflangTags}
               <div class="v2-pay-desc">간편로그인 시 10c 무료 지급</div>
               <div class="v2-pay-desc" style="font-size:12px;margin-top:4px;">추가 충전: 40c <span style="text-decoration:line-through;color:#bbb;">₩6,000</span> ₩4,900</div>
             </button>
+            ${upsellHtml}
           </div>
         </div>
       </div>
@@ -1814,7 +1873,7 @@ ${hreflangTags}
       <div class="v2-make-layout" id="v2-phase-generating" style="display:none;">
         <div class="v2-generating">
           <div class="v2-spinner"></div>
-          <div class="v2-gen-text">AI가 여권사진을 만들고 있습니다...</div>
+          <div class="v2-gen-text">AI가 ${escapeHtml(typeName)} 사진을 만들고 있습니다...</div>
           <div class="v2-gen-sub">약 30초 소요</div>
         </div>
       </div>
@@ -1837,6 +1896,9 @@ ${hreflangTags}
           <button class="v2-action-btn v2-btn-retry" id="v2-btn-retry2">다른 사진으로 만들기</button>
         </div>
       </div>
+
+      <!-- T2 업셀 — 발급보장 (상시 노출) -->
+      ${upsellHtml}
     </div>
 
     <!-- 4. 상세규정 + 반려사유 (아코디언) -->
@@ -1845,10 +1907,10 @@ ${hreflangTags}
         <h3>상세 규정</h3>
         <div class="v2-detail-body"><ul class="v2-detail-list">${detailHtml}</ul></div>
       </div>
-      <div class="v2-detail-card" onclick="this.classList.toggle('open')">
+      ${rejectHtml ? `<div class="v2-detail-card" onclick="this.classList.toggle('open')">
         <h3>반려사유 TOP 5</h3>
         <div class="v2-detail-body"><ol class="v2-reject-list">${rejectHtml}</ol></div>
-      </div>
+      </div>` : ''}
     </div>
 
     ${sameSize.length > 0 ? `<!-- 5. 같은 사진으로 제출 가능한 서류 -->
@@ -2001,7 +2063,7 @@ ${hreflangTags}
     showPhase(phaseGen);
     fetch('/api/idphoto/generate', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ image: uploadedBase64, format:'passport', gender:'m', age:'adult' })
+      body: JSON.stringify({ image: uploadedBase64, format:'${typeSlug}', gender:'m', age:'adult' })
     })
     .then(function(r){ return r.json(); })
     .then(function(data){
@@ -2051,7 +2113,7 @@ ${hreflangTags}
 // ─── SPECS DETAIL (v1 — 기존 전체 사용) ─────────────────────
 
 export function specsDetailFragment(slug, forceLang = null) {
-  if (V2_SLUGS.has(slug)) return specsDetailV2Fragment(slug, forceLang);
+  if (isV2Spec(slug, forceLang || 'ko')) return specsDetailV2Fragment(slug, forceLang);
 
   const lang = forceLang || 'ko';
   const i = SPECS_I18N[lang] || SPECS_I18N.ko;
@@ -2455,7 +2517,7 @@ export function renderSpecsDetail(req, res, forceLang = null) {
     if (!slug && remaining.length === 1) {
       const oldSlug = remaining[0];
       if (SPECS_DATA[oldSlug]) {
-        if (!V2_SLUGS.has(oldSlug)) {
+        if (!V2_DIRECT_SLUGS.has(oldSlug)) {
           const redirect = REDIRECT_MAP[oldSlug];
           if (redirect) {
             const newUrl = `${prefix}/specs/${redirect}`;
