@@ -439,3 +439,6 @@
 - CONSOLIDATE: MEMORY.md 161줄 → 95줄. 내용 삭제 없이 상세를 토픽 파일 4건으로 이관: project_role_recognition(역할 자동 인식) · feedback_ssanga_duties_order_ops(쌍아 본분+지시서 운용) · project_session_ops_procedures(세션로그·시작마감·works) · project_model_placement(모델 배치+리소스 운용). 인덱스는 1행 요약+링크로 축약.
 - REMOVE (같은 세션): feedback_min_instances_conversion_guard — 작가님 "영구 기억할 정도는 아님" 격하 지시로 삭제. 맥락(콜드스타트 이탈→min=1 전환, 3~4월)은 세션 로그에만 남김.
 - UPDATE: project_model_placement — Fable 5 차단 해제 실측(07-04) 반영, 구 차단 기록 폐기. 7/7 구독 이탈($10/$50 종량, 일시 조치·복귀 예정) + 이후 운용 방침(Opus 4.8 오케스트레이터+단계별 모델 배분) 기록. MEMORY.md 인덱스 동기화.
+
+## [2026-07-04 20:21 KST] iMac/민아 (세션 마감 확정)
+- 금일 변경 요약: MEMORY.md 161→95줄 압축(토픽 4건 이관: role_recognition·ssanga_duties_order_ops·session_ops_procedures·model_placement) + model_placement 갱신(Fable 차단 해제 실측, 7/7 구독 이탈·운용 방침) + min_instances 메모리 생성 후 작가님 격하 지시로 삭제. 상세는 본 로그 상단 금일 항목 참조.
