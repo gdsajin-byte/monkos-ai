@@ -2364,6 +2364,9 @@ ${hreflangTags}
           summary.className = 'v2-checklist-summary ' + (allPass ? 'v2-summary-pass' : 'v2-summary-fail');
           summary.textContent = allPass ? T.checkPass : T.checkFail;
           checkActions.style.display = 'flex';
+          // 이미지 저장을 검수 시점에 선행 — 결제 클릭 체인에서 캔버스 압축을 제거해
+          // 토스 결제창의 user activation 만료(팝업 차단)를 방지 (2026-07-05 E2E 실패 수정)
+          persistImage(function(){});
         } else {
           showError(data.code === 'RATE_LIMITED' ? T.rateLimited : (data.error || T.errCheck));
           showPhase(phaseUpload);
@@ -2424,10 +2427,10 @@ ${hreflangTags}
       // orderId 확보 후 주문 단위 1회 발화 — 에러 후 재클릭 중복 방지 + purchase와 쌍 정합
       gaTrackOrder('begin_checkout', d.orderId, { payment_provider: GA_PAY.payment_provider, currency: GA_PAY.currency, value: GA_PAY.value });
       persistOrder();
-      persistImage(function(){
-        if(d.provider === 'toss') startToss(d, lemonWin);
-        else startLemon(d, lemonWin);
-      });
+      // 이미지 저장은 검수 통과 시점에 선행 완료 — 여기서 캔버스 압축을 돌리면
+      // user activation이 만료돼 토스 결제창이 팝업 차단됨 (2026-07-05 E2E 실패 원인)
+      if(d.provider === 'toss') startToss(d, lemonWin);
+      else startLemon(d, lemonWin);
     })
     .catch(function(){
       payBusy = false;
