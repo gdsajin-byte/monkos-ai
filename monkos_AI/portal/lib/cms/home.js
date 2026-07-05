@@ -325,8 +325,8 @@ function footerHtml(d, prefix) {
     <div class="mk-footer-links">
       <a href="${prefix}/specs">${esc(d.navSpecs)}</a>
       <a href="${prefix}/headshot">Headshot</a>
-      <a href="${prefix}/terms.html">Terms</a>
-      <a href="${prefix}/privacy.html">Privacy</a>
+      <a href="/terms.html">Terms</a>
+      <a href="/privacy.html">Privacy</a>
     </div>
     <div class="mk-footer-copy">© 2026 Monk Studio</div>
   </div>

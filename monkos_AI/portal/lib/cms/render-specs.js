@@ -2207,6 +2207,40 @@ ${hreflangTags}
 
   if(!dropzone) return;
 
+  /* ─── GA4 퍼널 계측 (v1 idphoto-kr 파라미터 구조 준용) ───
+     - typeof gtag 가드 + 페이지 로드당 1회 발화 가드(generate_click은 재생성 포함 매회)
+     - paymentToken 등 인증 토큰·시크릿은 이벤트 파라미터에 절대 미포함 (transaction_id = orderId) */
+  var gaFired = {};
+  var GA_PAY = CFG.market === 'kr'
+    ? { payment_provider: 'toss', currency: 'KRW', value: 2000 }
+    : { payment_provider: 'lemon', currency: 'USD', value: 2 };
+  function gaTrack(name, params, repeat){
+    if(typeof gtag !== 'function') return;
+    if(!repeat && gaFired[name]) return;
+    gaFired[name] = true;
+    var p = { spec_type: CFG.slug, auth_method: '', lang: document.documentElement.lang || 'ko', service: 'specs-v2', market: CFG.market };
+    if(params){ for(var k in params){ if(Object.prototype.hasOwnProperty.call(params, k)) p[k] = params[k]; } }
+    gtag('event', name, p);
+  }
+  // 결제 이벤트는 페이지 로드가 아닌 주문(orderId) 단위 1회 가드 — 같은 페이지에서
+  // 2번째 실결제(다운로드 소모 후 다시 만들기 / GENERATE_LIMIT 후 재결제, 레몬 팝업 경로)가
+  // 리로드 없이 발생하므로 이벤트명 가드만으로는 실매출 purchase가 소실된다.
+  var gaOrderFired = {};
+  function gaTrackOrder(name, orderId, params){
+    var key = name + ':' + orderId;
+    if(gaOrderFired[key]) return;
+    gaOrderFired[key] = true;
+    gaTrack(name, params, true);
+  }
+  function gaTrackPurchase(orderId){
+    gaTrackOrder('purchase', orderId, { transaction_id: orderId, payment_provider: GA_PAY.payment_provider, currency: GA_PAY.currency, value: GA_PAY.value });
+  }
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', function(){ gaTrack('spec_select'); });
+  } else {
+    gaTrack('spec_select');
+  }
+
   var GEN_TEXT_DEFAULT = genTextEl ? genTextEl.textContent : '';
   var GEN_SUB_DEFAULT = genSubEl ? genSubEl.textContent : '';
   var ORDER_KEY = 'monkos_specs_order';
@@ -2290,6 +2324,7 @@ ${hreflangTags}
       uploadedBase64 = ev.target.result;
       document.getElementById('v2-check-img').src = uploadedBase64;
       showPhase(phaseCheck);
+      gaTrack('photo_upload');
 
       var checklistItems = document.getElementById('v2-checklist-items');
       var checkLoading = document.getElementById('v2-loading');
@@ -2386,6 +2421,8 @@ ${hreflangTags}
       }
       var d = res.d;
       pay.orderId = d.orderId; pay.token = null; pay.remaining = null; pay.consumed = false;
+      // orderId 확보 후 주문 단위 1회 발화 — 에러 후 재클릭 중복 방지 + purchase와 쌍 정합
+      gaTrackOrder('begin_checkout', d.orderId, { payment_provider: GA_PAY.payment_provider, currency: GA_PAY.currency, value: GA_PAY.value });
       persistOrder();
       persistImage(function(){
         if(d.provider === 'toss') startToss(d, lemonWin);
@@ -2455,6 +2492,7 @@ ${hreflangTags}
           stopPolling(); payBusy = false;
           pay.orderId = orderId; pay.token = d.paymentToken; pay.remaining = null; pay.consumed = false;
           persistOrder();
+          gaTrackPurchase(orderId);
           if(uploadedBase64) doGenerate(); else needReupload();
         } else if(d.status === 'failed' || d.status === 'amount_mismatch' || d.status === 'refunded'){
           stopPolling(); payBusy = false;
@@ -2476,6 +2514,7 @@ ${hreflangTags}
   function doGenerate(){
     hideError();
     payBusy = false;
+    gaTrack('generate_click', null, true); // 재생성 포함 매회 발화
     showPhase(phaseGen);
     setGenMessage(GEN_TEXT_DEFAULT, GEN_SUB_DEFAULT);
     var body = { image: uploadedBase64, format: CFG.format, gender: 'm', age: 'adult' };
@@ -2492,6 +2531,7 @@ ${hreflangTags}
         document.getElementById('v2-result-before-img').src = uploadedBase64;
         document.getElementById('v2-result-after-img').src = 'data:image/png;base64,' + data.image;
         showPhase(phaseResult);
+        gaTrack('preview_view');
       } else {
         var code = data.code || '';
         var msg = code === 'TOKEN_EXPIRED' ? T.tokenExpired
@@ -2588,6 +2628,7 @@ ${hreflangTags}
         if(res.ok && res.d && res.d.paymentToken){
           pay.orderId = oid; pay.token = res.d.paymentToken; pay.consumed = false;
           persistOrder();
+          gaTrackPurchase(oid);
           if(uploadedBase64) doGenerate(); else needReupload();
         } else {
           showError((res.d && res.d.error) || T.payConfirmFail);

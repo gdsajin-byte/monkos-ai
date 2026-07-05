@@ -145,10 +145,9 @@ export function layoutNav(lang = 'ko') {
 }
 
 export function layoutFooter(lang = 'ko') {
-  const prefix = (lang === 'ko') ? '' : `/${lang}`;
   return `<footer class="footer">
   &copy; ${new Date().getFullYear()} MONKOS. All rights reserved.
-  <br><a href="${prefix}/terms.html">Terms</a> &middot; <a href="${prefix}/privacy.html">Privacy</a> &middot; <a href="${prefix}/refund.html">Refund</a>
+  <br><a href="/terms.html">Terms</a> &middot; <a href="/privacy.html">Privacy</a> &middot; <a href="/refund.html">Refund</a>
 </footer>`;
 }
 

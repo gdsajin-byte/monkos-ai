@@ -640,6 +640,13 @@ Respond in JSON only:
     return res.end();
   }
 
+  // EN/JA 정책 페이지 → 루트 정본 301 (정책 HTML은 루트에만 존재. GSC 404 해소 2026-07-05)
+  const policyMatch = urlPath.match(/^\/(en|ja)\/(terms|privacy|refund)\.html$/);
+  if (policyMatch) {
+    res.writeHead(301, { 'Location': `/${policyMatch[2]}.html` });
+    return res.end();
+  }
+
   // EN/JA 한글슬러그 → KO 영문슬러그 폴백 301 (hreflang 유령 URL 근절)
   const langBlogMatch = urlPath.match(/^\/(en|ja)\/blog\//);
   if (langBlogMatch) {
