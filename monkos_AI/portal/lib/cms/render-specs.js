@@ -2585,7 +2585,23 @@ ${hreflangTags}
   var payCreditBtn = document.getElementById('v2-pay-credit');
   if(payCreditBtn){
     payCreditBtn.addEventListener('click', function(){
-      window.location.href = '/headshot?from=specs';
+      // 크레딧 경로 (6/24 임시 /headshot 리다이렉트 교체, 2026-07-05 작가님):
+      // 로그인+잔액 10c↑ → 이 페이지에서 바로 생성(서버 세션 크레딧 차감).
+      // 비로그인/부족 → 이미지 보존 후 충전 페이지(로그인·신규 10c·충전 → returnUrl 복귀).
+      if(!uploadedBase64 || payBusy) return;
+      hideError();
+      var toCharge = function(){
+        persistImage(function(){
+          window.location.href = '/credits.html?from=' + encodeURIComponent(location.pathname + '?credits=return');
+        });
+      };
+      fetch('/api/credits', { credentials: 'same-origin' })
+        .then(function(r){ return r.ok ? r.json() : null; })
+        .then(function(d){
+          if(d && typeof d.credits === 'number' && d.credits >= 10) doGenerate();
+          else toCharge();
+        })
+        .catch(toCharge);
     });
   }
 
@@ -2626,7 +2642,7 @@ ${hreflangTags}
   (function resume(){
     var qs;
     try{ qs = new URLSearchParams(location.search); }catch(e){ return; }
-    var mode = qs.get('toss') || (qs.get('lemon') ? 'lemon' : null);
+    var mode = qs.get('toss') || (qs.get('lemon') ? 'lemon' : (qs.get('credits') ? 'credits' : null));
     if(!mode) return;
     var pk = qs.get('paymentKey');
     var oid = qs.get('orderId');
@@ -2677,6 +2693,16 @@ ${hreflangTags}
         setGenMessage(T.payWaiting, T.payWaitingHint);
         startPolling(saved.orderId);
       }
+    } else if(mode === 'credits'){
+      // 충전 페이지 복귀 — 잔액 재확인 후 크레딧 생성, 미달이면 결제 선택 화면 유지
+      if(!uploadedBase64){ needReupload(); return; }
+      fetch('/api/credits', { credentials: 'same-origin' })
+        .then(function(r){ return r.ok ? r.json() : null; })
+        .then(function(d){
+          if(d && typeof d.credits === 'number' && d.credits >= 10) doGenerate();
+          else showPhase(phasePay);
+        })
+        .catch(function(){ showPhase(phasePay); });
     }
   })();
 })();
