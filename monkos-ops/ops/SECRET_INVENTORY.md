@@ -244,6 +244,7 @@ status: 현행
 | TELEGRAM_BOT_TOKEN | Firebase Functions (telegramWebhook) @monkos_factory_bot | — | 05-12 | 텔레그램 알림 허브 (팩토리 봇) |
 | TELEGRAM_CHAT_ID | Firebase Functions WRITER_CHAT_ID | — | 05-12 | 작가님 DM (팩토리 봇 → 작가님) |
 | PAT_TOKEN | GitHub Fine-grained PAT (MONKOS_PAT, No expiration) | — | 05-11 | cross-repo 접근 (monk_project + monkos-works + monk-kr) |
+| ~~MONKOS-CDP~~ | GitHub Fine-grained PAT — 코웍이 깃 접근용(한송이 재직기 발급). CDP 브라우저 자동화·로컬 git(SSH)·Actions 전부 무의존 확인 | — | 07-05 | **만료 방치 처분 (2026-07-06 만료, 작가님 확정)**. 만료 후 401 발생 시 숨은 소비처 역추적 |
 | MCP_GDOCS_CLIENT_ID | GCP Secret Manager 동기화 | — | 06-02 | 정본 카탈로그 + 향후 Actions 확장 |
 | MCP_GDOCS_CLIENT_SECRET | GCP Secret Manager 동기화 | — | 06-02 | 정본 카탈로그 + 향후 Actions 확장 |
 | MCP_GDOCS_TOKEN | token.json 전체 (GCP와 동일 페이로드) | — | 06-02 | gdocs 토큰 카탈로그 |
