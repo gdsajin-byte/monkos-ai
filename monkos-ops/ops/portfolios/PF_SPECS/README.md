@@ -338,6 +338,7 @@ SEO 콘텐츠가 있는 문서 → 풀 페이지 (FAQ + 반려사유 + 촬영가
 | 07/05 | iMac/민아+Workflow | **v2 GA4 퍼널 계측 이식 (막내 대체 3호, P0)** — 퍼널 6종(spec_select→purchase) v2 인라인 JS 삽입, orderId 단위 purchase 가드(레몬 팝업 2차 결제 언더카운트 리뷰 검출→수정), transaction_id=orderId(토큰 미노출 테스트 강제), 기존 GA4 ID 재사용. jest 51/51(신규 8), dev rev 00039-7jk 검증. 퍼널 0 관찰 국면 종결 코드 준비 — prod 반영은 결제 열차 동승 | [COMPLETION](../../reports/2026-07/COMPLETION_20260705_iMac민아_77마감스프린트.md) | ⏳ prod 게이트 대기 |
 | 07/05 | iMac/민아 | **prod 배포 rev 00376-2n7** — 시크릿 2건(LEMONSQUEEZY_VARIANT_SPECS_SINGLE, TOSS_CLIENT_KEY) 주입, 레몬 웹훅 등록, 스모크 전 항목 통과 | — | ✅ |
 | 07/05 | iMac/쌍아 | **시크릿 등록 + 결제 E2E 실패 진단** — 작가님 secret.sh로 시크릿 2건 GCP SM 등록. prod E2E 테스트: v2 phase 전환 깨짐(전 phase display:none)으로 ₩2,000 결제 미작동. 민아 진단 협조문 발행 | [ORDER](../../orders/2026-07/ORDER_20260705_iMac쌍아_민아_결제게이트_E2E실패진단.md) | ⏳ 민아 진단 대기 |
+| 07/05 | iMac/민아 | **E2E 실패 진단·수정 마감 (쌍아 오더)** — ① "무결제 생성"=402 게이트 이전 구 리비전(00375)에서의 14:17~18 생성 2건으로 판명, 현행 게이트 402 차단 실측(우회 아님) ② "₩2,000 무반응"=compressImage 비동기 체인 user activation 만료→토스 팝업 무음 차단(init 10연발 로그 정합) → persistImage 검수 시점 선행·클릭→startToss 직결 수정 ③ phase none 콘솔값=타 탭 콘솔 추정(신선 로드 정상 실측). jest 51/51, dev 00042 → **prod 00377-tfk** | [COMPLETION](../../reports/2026-07/COMPLETION_20260705_iMac민아_결제게이트E2E실패진단.md) | ⏳ 작가님 재테스트 |
 
 ---
 
