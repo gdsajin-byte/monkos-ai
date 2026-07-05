@@ -43,6 +43,25 @@ const I18N = {
     step2Desc: '용도에 맞는 스타일을 고르세요',
     step3: 'AI 생성',
     step3Desc: '30초 만에 프로 헤드샷 완성',
+    pay: {
+      title: '결제 방법 선택',
+      instant: '회원가입 없이 바로 생성',
+      desc: '1회 결제로 헤드샷 생성 (재생성 3회 포함)',
+      orLogin: '로그인하고 첫 1컷 무료 받기',
+      confirmSuffix: '결제하기',
+      waiting: '결제 확인 중...',
+      waitingHint: '결제 창에서 결제를 완료해주세요',
+      confirming: '결제 승인 중...',
+      failed: '결제에 실패했습니다. 다시 시도해주세요.',
+      cancelled: '결제가 취소되었습니다.',
+      initFail: '결제를 시작할 수 없습니다. 잠시 후 다시 시도해주세요.',
+      timeout: '결제 확인 시간이 초과되었습니다. 다시 시도해주세요.',
+      imgLost: '결제가 확인되었습니다. 사진을 다시 올리고 스타일을 선택해주세요 (추가 결제 없음).',
+      tokenExpired: '결제 유효기간(24시간)이 지났습니다. 다시 결제해주세요.',
+      tokenUsed: '이미 사용된 결제입니다. 다시 결제해주세요.',
+      genLimit: '재생성 횟수를 모두 사용했습니다. 새로 결제해주세요.',
+      errNet: '네트워크 오류가 발생했습니다. 다시 시도해주세요.',
+    },
   },
   en: {
     title: 'AI Professional Headshot',
@@ -85,6 +104,25 @@ const I18N = {
     step2Desc: 'Pick the right style for your needs',
     step3: 'AI Generate',
     step3Desc: 'Pro headshot ready in 30 seconds',
+    pay: {
+      title: 'Choose Payment',
+      instant: 'Generate now — no signup',
+      desc: 'One-time payment (includes 3 regenerations)',
+      orLogin: 'Sign in & get your first headshot free',
+      confirmSuffix: 'Pay',
+      waiting: 'Waiting for payment...',
+      waitingHint: 'Complete the payment in the checkout window',
+      confirming: 'Confirming payment...',
+      failed: 'Payment failed. Please try again.',
+      cancelled: 'Payment was cancelled.',
+      initFail: 'Could not start payment. Please try again shortly.',
+      timeout: 'Payment confirmation timed out. Please try again.',
+      imgLost: 'Payment confirmed. Please re-upload your photo and pick a style (no extra charge).',
+      tokenExpired: 'Payment expired (24h). Please pay again.',
+      tokenUsed: 'This payment was already used. Please pay again.',
+      genLimit: 'All regenerations used. Please purchase again.',
+      errNet: 'Network error. Please try again.',
+    },
   },
   ja: {
     title: 'AIプロフェッショナルヘッドショット',
@@ -127,6 +165,25 @@ const I18N = {
     step2Desc: '用途に合ったスタイルを選択',
     step3: 'AI生成',
     step3Desc: '30秒でプロ仕様の完成',
+    pay: {
+      title: 'お支払い方法を選択',
+      instant: '登録なしですぐ生成',
+      desc: '1回のお支払いで生成（再生成3回含む）',
+      orLogin: 'ログインして初回1枚無料',
+      confirmSuffix: '支払う',
+      waiting: '決済を確認中...',
+      waitingHint: '決済ウィンドウでお支払いを完了してください',
+      confirming: '決済を承認中...',
+      failed: '決済に失敗しました。もう一度お試しください。',
+      cancelled: '決済がキャンセルされました。',
+      initFail: '決済を開始できません。しばらくしてからお試しください。',
+      timeout: '決済確認がタイムアウトしました。もう一度お試しください。',
+      imgLost: '決済を確認しました。写真を再アップロードしてスタイルを選択してください（追加料金なし）。',
+      tokenExpired: '決済の有効期限（24時間）が切れました。再度お支払いください。',
+      tokenUsed: 'この決済は既に使用されています。再度お支払いください。',
+      genLimit: '再生成回数を使い切りました。再度ご購入ください。',
+      errNet: 'ネットワークエラーが発生しました。もう一度お試しください。',
+    },
   },
 };
 
@@ -181,8 +238,12 @@ function buildStyleButtons(styles) {
 
 export function renderHeadshot(req, res, forceLang = null) {
   try {
-    const lang = forceLang || 'en';
+    // 라우트 /headshot = ko 기본 (hreflang 정합 — /en/headshot, /ja/headshot는 forceLang 주입)
+    const lang = forceLang || 'ko';
     const paymentRegion = req.paymentRegion || 'global';
+    // 시장 판별: specs v2와 동일 소스 (render-specs.js:1837) — kr=토스 위젯, jp/global=레몬
+    const market = lang === 'ja' ? 'jp' : lang === 'en' ? 'global' : 'kr';
+    const priceLabel = market === 'kr' ? '₩2,000' : '$1.99';
     const d = I18N[lang] || I18N.ko;
     const seoMeta = getSeoMeta(lang);
 
@@ -231,6 +292,22 @@ export function renderHeadshot(req, res, forceLang = null) {
     ${escapeHtml(d.generateBtn)} — ${d.creditCost}
   </button>
   <p class="hs-balance" id="hsBalance"></p>
+</section>
+
+<!-- 비로그인 직접결제 (T1 — specs v2 패턴 이식, 2026-07-05) -->
+<section class="hs-section" id="hsPaySection" style="display:none;">
+  <h2 class="hs-section-title">${escapeHtml(d.pay.title)}</h2>
+  <button class="hs-btn hs-btn-generate" id="hsPayInstant">
+    ${escapeHtml(d.pay.instant)} — ${priceLabel}
+  </button>
+  <p class="hs-section-desc">${escapeHtml(d.pay.desc)}</p>
+  <div id="hsTossWidget" style="display:none;">
+    <div id="hs-pm"></div>
+    <div id="hs-agree"></div>
+    <button class="hs-btn hs-btn-primary" id="hsPayConfirm" style="width:100%;margin-top:12px;"></button>
+  </div>
+  <button class="hs-btn hs-btn-secondary" id="hsPayLogin" style="margin-top:8px;">${escapeHtml(d.pay.orLogin)}</button>
+  <p id="hsPayError" style="display:none;color:#ef4444;margin-top:8px;font-size:0.9rem;"></p>
 </section>
 
 <div class="hs-loading" id="hsLoading" style="display:none;">
@@ -344,6 +421,7 @@ ${layoutFooter(lang)}
 <script src="/js/auth.js"></script>
 <script src="/js/main.js"></script>
 <script src="/js/credits.js"></script>
+${market === 'kr' ? '<script src="https://js.tosspayments.com/v2/standard"></script>' : ''}
 <script>
   window.__HS_LANG__ = '${lang}';
   window.__HS_I18N__ = ${JSON.stringify({
@@ -354,6 +432,12 @@ ${layoutFooter(lang)}
     errorRetry: d.errorRetry,
     balanceLabel: d.balanceLabel,
     creditCost: d.creditCost,
+  })};
+  window.__HS_PAY__ = ${JSON.stringify({
+    market,
+    slug: 'headshot',
+    priceLabel,
+    i18n: d.pay,
   })};
 </script>
 <script src="/js/headshot.js"></script>

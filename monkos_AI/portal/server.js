@@ -38,7 +38,7 @@ import { handlePassportIssue, handleUploadMission } from './lib/tg-cs.js';
 import { handleKakaoChatbot } from './lib/kakao-chatbot.js';
 import { handleLineWebhook } from './lib/line-chatbot.js';
 import { handleWebChat, handleCoaching } from './lib/coaching.js';
-import { generateHeadshot } from './lib/headshot-generate.js';
+import { handleHeadshotGenerate } from './lib/headshot-route.js';
 import { generateIdPhoto } from './lib/idphoto-generate.js';
 import { trackEvent, linkIdentity } from './lib/tracking.js';
 import { saveImages } from './lib/gcs-save.js';
@@ -220,87 +220,13 @@ const httpServer = createServer(async (req, res) => {
   if (urlPath === '/api/credits/mission-complete' && req.method === 'POST') return handleMissionComplete(req, res);
   if (urlPath === '/api/credits/event' && req.method === 'POST') return handleCreditsEvent(req, res);
 
-  // === AI 헤드샷 생성 (Vertex AI 직접) ===
+  // === AI 헤드샷 생성 (결제 게이트 — paymentToken 또는 로그인 크레딧, lib/headshot-route.js) ===
   if (urlPath === '/api/headshot/generate' && req.method === 'POST') {
-    try {
-      const { verifyAuthToken, parseCookies, parseJsonBody } = await import('./lib/shared/config.js');
-      const cookies = parseCookies(req.headers.cookie);
-      const token = cookies.monkos_session;
-      if (!token) {
-        res.writeHead(401, { 'Content-Type': 'application/json' });
-        return res.end(JSON.stringify({ error: '인증 필요' }));
-      }
-      const payload = verifyAuthToken(token);
-      const userId = payload?.userId;
-      if (!userId) {
-        res.writeHead(401, { 'Content-Type': 'application/json' });
-        return res.end(JSON.stringify({ error: '인증 만료' }));
-      }
-
-      const body = await parseJsonBody(req);
-      const { image, purpose, model } = body;
-      if (!image) {
-        res.writeHead(400, { 'Content-Type': 'application/json' });
-        return res.end(JSON.stringify({ error: '이미지 필수' }));
-      }
-
-      const creditRes = await fetch(`http://localhost:${PORT}/api/credits/use`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Cookie': req.headers.cookie },
-        body: JSON.stringify({ userId, type: 'generate' }),
-      });
-      const creditData = await creditRes.json();
-      if (!creditRes.ok) {
-        res.writeHead(creditRes.status, { 'Content-Type': 'application/json' });
-        return res.end(JSON.stringify(creditData));
-      }
-
-      const styleModifiers = {
-        corporate: 'Composed, authoritative expression. Clean solid-color backdrop (dark navy or charcoal gray). Dramatic studio lighting with subtle rim light. Executive boardroom atmosphere. Neatly styled hair as if freshly blow-dried — same hairstyle but tidier. Polished, refined makeup if present in original — do not add makeup not in original. Full formal attire mood.',
-        linkedin_pro: 'Confident, approachable expression with a natural smile. Modern office environment with soft bokeh background (blurred bookshelves, window light, office plants). Natural window-style lighting. Lightly groomed hair — maintain original style but neater. Clean, natural-looking makeup if present. Smart professional attire mood — blazer with shirt, no tie necessary.',
-        professional: 'Warm, approachable expression with a gentle confident smile. Bright neutral studio background (light gray or off-white). Even, diffused lighting. Naturally tidy hair — original style maintained with subtle polish. Neat, understated makeup if present. Light business-casual styling — clean shirt with a soft unstructured blazer, not heavy or overly formal. The outfit should look natural and coherent, not layered over existing clothing.',
-        creative: 'Relaxed, genuine smile showing personality. Warm-toned environment or textured backdrop (exposed brick, artistic studio, warm wood). Natural window-style lighting with soft shadows. Hair kept exactly as original — embrace the natural look. Minimal makeup, natural skin. Smart-casual creative industry vibe — individuality over formality.',
-        dating: 'Natural, confident expression with a charming relaxed smile. Stylish urban lifestyle setting — trendy café interior with warm ambient lighting, modern boutique storefront, or chic city street with soft bokeh. Hair styled with effortless intention — looks natural but clearly groomed. Fresh, dewy makeup if present. Fashionable smart-casual outfit — current trend-aware styling, well-coordinated colors, the kind of outfit you would carefully choose for a first date in Gangnam or Hongdae. Sophisticated but not overdressed.',
-      };
-      const basePrompt = 'Waist-up portrait, crop above the navel. Do NOT show full body, legs, or desk/furniture below waist. Keep the subject\'s hairstyle exactly as-is, only tidy and groom. The subject must be clearly recognizable as the SAME person in the input photo. Enhance existing makeup to match the style level if makeup is present in the original photo. Do NOT add makeup that is not present in the original.';
-      const styleMod = styleModifiers[purpose] || styleModifiers.linkedin_pro;
-      const customPrompt = basePrompt + ' ' + styleMod;
-
-      let generatedBase64;
-      try {
-        generatedBase64 = await generateHeadshot({
-          image, purpose: purpose || 'linkedin_pro', model: model || 'nano-banana-pro', customPrompt, userId,
-        });
-      } catch (genErr) {
-        await fetch(`http://localhost:${PORT}/api/credits/refund`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Cookie': req.headers.cookie },
-          body: JSON.stringify({ userId, type: 'generate' }),
-        });
-        log(`[Headshot] 생성 실패 → 크레딧 환불: ${userId} (${genErr.message})`, 'WARNING');
-        res.writeHead(500, { 'Content-Type': 'application/json' });
-        return res.end(JSON.stringify({ error: genErr.message || '생성 실패' }));
-      }
-
-      try {
-        await saveImages('headshot', userId, purpose || 'linkedin_pro', image, generatedBase64);
-        log(`[Headshot] GCS 저장 완료: ${userId}`);
-      } catch (e) {
-        log(`[Headshot] GCS 저장 실패 (무시): ${e.message}`, 'WARNING');
-      }
-
-      log(`[Headshot] 생성 완료: ${userId}, 스타일: ${purpose}`);
-      trackEvent({
-        eventName: 'api_generate', userId, sessionId: req.sessionId,
-        service: 'headshot', params: { style: purpose, model: model },
-      }).catch(() => {});
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      return res.end(JSON.stringify({ image: generatedBase64, credits: creditData.credits }));
-    } catch (err) {
-      log(`[Headshot] 에러: ${err.message}`, 'ERROR');
-      res.writeHead(500, { 'Content-Type': 'application/json' });
-      return res.end(JSON.stringify({ error: '서버 오류' }));
+    if (!checkRateLimit(req, 'hs-generate', 10)) {
+      res.writeHead(429, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ error: '요청이 너무 많습니다. 잠시 후 다시 시도해주세요.', code: 'RATE_LIMITED' }));
     }
+    return handleHeadshotGenerate(req, res);
   }
 
   // === 증명사진 규격 검수 (무료 — IP 레이트리밋만) ===
