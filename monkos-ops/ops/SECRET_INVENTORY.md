@@ -186,6 +186,8 @@ status: 현행
 | **monkos_AI/.env 시크릿 24종** | §0 분류 참조 (GEMINI_API_KEY·CF_API_TOKEN·CHAT_API_KEY·KAKAO_*·NAVER_CLIENT_SECRET·LINE_*·TOSS_*·LEMONSQUEEZY_*·TELEGRAM_*·TEAM_NOTIFY_SECRET·X_*·N8N_API_KEY·TX_API_KEY·REMOVEBG_API_KEY·ADMIN_UIDS) | Cloud Run 런타임 / 타 디바이스 복원 | ⭐ **2026-06-03 일괄 등록 (광역오더 #8)** — 변수명 그대로, 해시 정합 24/24 |
 | **GCP_SA_KEY** | yong-a-orchestrator SA 키 JSON (키 ID: c1b7e5a702b8) | GH Actions·웹 민아 루틴·로컬 gcloud 복원 | ⭐ **2026-06-10 등록** — 광역오더 #8 보완(SA 키 누락분). 로컬 미보관(SM=정본) |
 | **AGENT-API-KEYS** | 포털 CMS 에이전트 인증 (GH `PORTAL_AGENT_KEY` 카탈로그 동기) | portal blog-draft-publish, deploy.sh --set-secrets 주입 | ⭐ **2026-06-11 신설** — §A #36 대응 |
+| **LEMONSQUEEZY_VARIANT_SPECS_SINGLE** | Lemon Squeezy 글로벌 스토어 specs 단건 variant ID | portal (specs 글로벌 결제) | ⭐ **2026-07-05 신설** — USD $1.99 통일 |
+| **TOSS_CLIENT_KEY** | 토스페이먼츠 라이브 클라이언트 키 (결제위젯 SDK용) | portal (KR 결제) | ⭐ **2026-07-05 신설** — specs KR 결제 연동 |
 
 **gdocs 토큰 중앙화 (광역오더 #7)**: iMac 정본 `~/.config/mcp-google-docs/token.json` → `MCP_GDOCS_TOKEN`으로 등록.
 `gdocs_mcp.sh`가 token.json 부재 시 GCP에서 자동 복원 → **타 디바이스(M1 등) 무인증 동작**. 검증 완료(바이트 동일 복원·권한 600).
