@@ -24,11 +24,13 @@ from google.oauth2.service_account import Credentials
 SCOPES_GA4 = ["https://www.googleapis.com/auth/analytics.readonly"]
 SCOPES_GSC = ["https://www.googleapis.com/auth/webmasters.readonly"]
 
-KNOWN_SEO_ISSUES = {
-    "https://monkos.ai/kr": 404,
-    "https://monkos.ai/jp": 404,
-    "https://monk.kr": 403,
-    "https://monk.kr/blog": 403,
+KNOWN_SEO_ISSUES = {}
+
+# CF가 데이터센터 IP(GitHub Actions)를 차단해 403이 나는 URL.
+# 브라우저·Googlebot은 200 정상 (2026-07-05 iMac 실측 + GSC 클릭 실적으로 확인) — 이슈 아님.
+EXPECTED_BOT_BLOCKED = {
+    "https://monk.kr",
+    "https://monk.kr/blog",
 }
 
 PAGES = [
@@ -200,11 +202,15 @@ def seo_scan():
     new_issues = []
     known_issues = []
     recovered = []
+    bot_blocked = []
+    headers = {"User-Agent": "Mozilla/5.0 (compatible; MONKOS-HealthCheck/1.0)"}
     for url in PAGES:
         try:
-            resp = requests.head(url, timeout=10, allow_redirects=True)
+            resp = requests.head(url, timeout=10, allow_redirects=True, headers=headers)
             if resp.status_code != 200:
-                if url in KNOWN_SEO_ISSUES and KNOWN_SEO_ISSUES[url] == resp.status_code:
+                if url in EXPECTED_BOT_BLOCKED and resp.status_code == 403:
+                    bot_blocked.append(f"{url} 403")
+                elif url in KNOWN_SEO_ISSUES and KNOWN_SEO_ISSUES[url] == resp.status_code:
                     known_issues.append(f"{url} {resp.status_code}")
                 else:
                     new_issues.append(f"- 🔴 `{url}` → HTTP {resp.status_code}")
@@ -212,7 +218,7 @@ def seo_scan():
                 recovered.append(f"- ✅ `{url}` 복구됨 (기존 {KNOWN_SEO_ISSUES[url]} → 200)")
         except requests.RequestException as e:
             new_issues.append(f"- 🔴 `{url}` → 연결 실패: {e}")
-    return {"new": new_issues, "known": known_issues, "recovered": recovered}
+    return {"new": new_issues, "known": known_issues, "recovered": recovered, "bot_blocked": bot_blocked}
 
 
 def fetch_news():
@@ -434,6 +440,9 @@ def generate_briefing(ga4_today, ga4_compare, gsc_today, gsc_compare,
         lines.extend(recovered_seo)
     if known_seo:
         lines.append(f"- 🟡 기존 이슈 {len(known_seo)}건 유지 ({', '.join(known_seo)})")
+    bot_blocked = seo_result.get("bot_blocked", [])
+    if bot_blocked:
+        lines.append(f"- 🟢 CF 봇 차단 {len(bot_blocked)}건 — 스캐너만 차단, 실사용자·Googlebot 정상 (이슈 아님)")
     lines.append("")
 
     # 뉴스
@@ -462,6 +471,37 @@ def generate_briefing(ga4_today, ga4_compare, gsc_today, gsc_compare,
     lines.append("## 🟡 참고")
     lines.append("- 자동 생성 (PF_AUTOPILOT Phase 2)")
     lines.append("")
+
+    return "\n".join(lines)
+
+
+def build_telegram_summary(ga4_today, ga4_compare, gsc_today, gsc_compare,
+                           alerts, seo_result, target_date, run_date):
+    """텔레그램 본문형 요약 — 링크 없이 읽고 끝나는 동선형 메시지."""
+    lines = [f"📊 <b>데일리 브리핑 {run_date}</b> (데이터 {target_date})", ""]
+
+    if alerts:
+        lines.append("🔴 <b>긴급</b>")
+        for a in alerts:
+            lines.append(a.replace("- ", "· "))
+    else:
+        lines.append("🔴 긴급: 없음")
+    lines.append("")
+
+    lines.append(
+        f"📈 클릭 {gsc_today['clicks']:.0f}({pct_change(gsc_today['clicks'], gsc_compare['clicks'])})"
+        f" · 노출 {gsc_today['impressions']:.0f}({pct_change(gsc_today['impressions'], gsc_compare['impressions'])})"
+        f" · 세션 {ga4_today['sessions']}({pct_change(ga4_today['sessions'], ga4_compare['sessions'])})"
+        f" · 신규 {ga4_today['newUsers']}({pct_change(ga4_today['newUsers'], ga4_compare['newUsers'])})"
+    )
+
+    new_seo = seo_result["new"]
+    if new_seo:
+        lines.append(f"🔧 SEO 신규 이상 {len(new_seo)}건:")
+        for s in new_seo:
+            lines.append(s.replace("- ", "· ").replace("`", ""))
+    else:
+        lines.append("🔧 SEO: 신규 이상 없음")
 
     return "\n".join(lines)
 
@@ -537,12 +577,20 @@ def main():
 
     print(f"[DONE] {output_file} 생성 완료 ({len(content)} bytes)")
 
+    summary = build_telegram_summary(
+        ga4_today, ga4_compare, gsc_today, gsc_compare,
+        alerts, seo_result, target_date, run_date_str,
+    )
+    summary_file = Path("telegram_summary.txt")
+    summary_file.write_text(summary, encoding="utf-8")
+
     github_output = os.environ.get("GITHUB_OUTPUT")
     if github_output:
         with open(github_output, "a") as f:
             f.write(f"run_date={run_date_str}\n")
             f.write(f"target_date={target_date}\n")
             f.write(f"briefing_file={output_file}\n")
+            f.write(f"summary_file={summary_file}\n")
 
 
 if __name__ == "__main__":

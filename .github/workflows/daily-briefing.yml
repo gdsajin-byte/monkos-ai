@@ -55,6 +55,19 @@ jobs:
             --body "$BODY" \
             --label "일일보고")
           echo "url=$ISSUE_URL" >> $GITHUB_OUTPUT
+          echo "number=${ISSUE_URL##*/}" >> $GITHUB_OUTPUT
+
+      - name: Close previous briefing issues
+        if: success()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          NEW="${{ steps.issue.outputs.number }}"
+          gh issue list --label "일일보고" --state open --json number -q '.[].number' | while read -r n; do
+            if [ "$n" != "$NEW" ]; then
+              gh issue close "$n" --comment "익일 브리핑 발행으로 자동 마감 (→ #${NEW})"
+            fi
+          done
 
       - name: Telegram notification
         if: success()
@@ -62,9 +75,14 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
-          DATE="${{ steps.gen.outputs.run_date }}"
-          FILE="${{ steps.gen.outputs.briefing_file }}"
-          ALERTS=$(grep "^- 🔴\|^- 🟡" "$FILE" 2>/dev/null || echo "없음")
+          SUMMARY_FILE="${{ steps.gen.outputs.summary_file }}"
           ISSUE_URL="${{ steps.issue.outputs.url }}"
-          MSG=$(printf '📊 <b>데일리 브리핑 %s</b>\n\n%s\n\n전문: %s' "$DATE" "$ALERTS" "$ISSUE_URL")
+          if [ -f "$SUMMARY_FILE" ]; then
+            MSG=$(printf '%s\n\n전문: %s' "$(cat "$SUMMARY_FILE")" "$ISSUE_URL")
+          else
+            DATE="${{ steps.gen.outputs.run_date }}"
+            FILE="${{ steps.gen.outputs.briefing_file }}"
+            ALERTS=$(grep "^- 🔴\|^- 🟡" "$FILE" 2>/dev/null || echo "없음")
+            MSG=$(printf '📊 <b>데일리 브리핑 %s</b>\n\n%s\n\n전문: %s' "$DATE" "$ALERTS" "$ISSUE_URL")
+          fi
           python .github/scripts/telegram_notify.py "$MSG"

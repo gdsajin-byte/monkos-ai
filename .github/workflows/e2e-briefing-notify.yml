@@ -1,0 +1,36 @@
+name: E2E Briefing Telegram
+
+# 웹/민아 E2E 데일리 종합보고가 main에 푸시되면
+# 🔴 긴급 + ✅ 오늘의 TODO 제안 섹션을 텔레그램 본문으로 발송한다.
+# 링크 클릭 없이 아침 메시지만 읽어도 오늘의 동선이 잡히게 하는 것이 목적.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'monkos-ops/ops/briefings/BRIEFING_E2E_*.md'
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - run: pip install requests
+
+      - name: Build and send digest
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          FILE=$(ls monkos-ops/ops/briefings/BRIEFING_E2E_*.md | sort | tail -1)
+          DATE=$(basename "$FILE" .md | sed 's/BRIEFING_E2E_//')
+          URGENT=$(awk '/^## 🔴/{f=1;next} /^## /{f=0} f' "$FILE")
+          TODO=$(awk '/^## ✅/{f=1;next} /^## /{f=0} f' "$FILE")
+          MSG=$(printf '🌅 <b>오늘의 동선 %s</b> (웹/민아 E2E)\n\n🔴 긴급\n%s\n\n✅ 오늘의 TODO\n%s' "$DATE" "$URGENT" "$TODO")
+          MSG=$(printf '%s' "$MSG" | head -c 3800)
+          python .github/scripts/telegram_notify.py "$MSG"
