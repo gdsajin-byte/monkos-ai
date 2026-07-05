@@ -98,6 +98,7 @@ domain: 인프라
 | 06/16 | 웹/민아(루틴) | 이상 발견 — ① 🔴 신규 **Imagen 4 모델 엔드포인트 폐기 통지**(Google, Aug 17 마감) 메일 인입: 프로덕션 이미지 생성 영향 가능, 영향평가 권고 ② 🟡 JP 보상메일 **4번째 영구 반송(Failure 확정)**, 이메일 채널 종결 단계 ③ 📉 자동 브리핑 **데이터 랙 5일**(최신 06-11) + 06-12~14 자동분이 현 main 부재(origin/main 강제갱신 이력 재작성) — 산출물 보존 점검 권고. **루틴 모델 Fable 차단 해소**(Opus 자동 기동 실증)·서비스 5/5 200·보안 0건·bizinfo AI 해시태그 조회 정상 | [BRIEFING_E2E_20260616](../../briefings/BRIEFING_E2E_20260616.md) | ⚠️ |
 | 06/17 | 웹민아 | **데이터 랙 재정의(이상)** — 자동 브리핑 데이터 기준일 06-13(랙 4일🔴)이나 GH Action `daily-briefing.yml`은 오늘 07:03 KST run success. "산출물 소실" 아닌 "데이터 신선도 지연"으로 재정의 — 점검 초점을 크론→GSC 수집 윈도우로 이동 권고 | `BRIEFING_E2E_20260617.md` | ⏳ |
 | 06/23 | iMac/민아 | **dev 포털 배포 정합 — 평문→secret 타입 잔재 청소** — 6/11 deploy.sh가 평문 env→Secret Manager 참조(4종: CHAT_API_KEY·NAVER_CLIENT_SECRET·ADMIN_UIDS·AGENT_API_KEYS)로 전환했으나 dev만 재배포 없어 전 변수 평문 잔재 → Cloud Run 타입변경 거부로 6/18~ dev 배포 실패. dev 평문 잔재(CHAT_API_KEY·ADMIN_UIDS) 제거 후 재배포 → secret 4종 정상 적용(rev 00033, dev 200). 코드·deploy.sh 무수정. CHAT_API_KEY=포털↔CF Workers 챗봇(gemma) 서비스 인증키로 실사용 확정 | dev 서비스(런타임만) | ✅ |
+| 07/05 | iMac/민아 | **브리핑 실효성 개편 (작가님 "느낌 없는 메시지" 문제 제기)** — ① daily_briefing.py 텔레그램 본문형 요약(지표+긴급+SEO, 링크 의존 제거) ② daily-briefing.yml 전일 이슈 자동 close ③ e2e-briefing-notify.yml 신설: 웹민아 E2E 보고 푸시→🔴긴급+✅TODO 전문 발송(동선형 아침 메시지) ④ 브리핑 이슈 백로그 70건 일괄 close(잔존 #124·#111) ⑤ monk.kr 403 오탐 분류(EXPECTED_BOT_BLOCKED) — 5월부터 이월 종결 | daily_briefing.py, daily-briefing.yml, e2e-briefing-notify.yml | ✅ (익일 사이클 실증 대기) |
 
 ---
 
