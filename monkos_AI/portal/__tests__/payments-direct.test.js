@@ -187,7 +187,7 @@ describe('POST /api/payments/direct/init (KR 토스)', () => {
     expect(res2.statusCode).toBe(400);
   });
 
-  test('글로벌/JP — 레몬 체크아웃 생성 (custom order_ref 전달, JP는 store#290457)', async () => {
+  test('글로벌/JP — 레몬 체크아웃 생성 (custom order_ref 전달, JP도 글로벌 스토어 USD 단일 — 2026-07-05 통일)', async () => {
     global.fetch.mockResolvedValue({
       ok: true,
       json: async () => ({ data: { attributes: { url: 'https://checkout.lemonsqueezy.com/xyz' } } }),
@@ -201,8 +201,8 @@ describe('POST /api/payments/direct/init (KR 토스)', () => {
 
     const sent = JSON.parse(global.fetch.mock.calls[0][1].body);
     expect(sent.data.attributes.checkout_data.custom.order_ref).toBe(res.body.orderId);
-    expect(sent.data.relationships.store.data.id).toBe('290457');
-    expect(sent.data.relationships.variant.data.id).toBe(VARIANT_SINGLE_JP);
+    expect(sent.data.relationships.store.data.id).toBe('415328');
+    expect(sent.data.relationships.variant.data.id).toBe(VARIANT_SINGLE);
   });
 });
 

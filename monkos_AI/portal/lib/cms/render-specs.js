@@ -206,7 +206,7 @@ const SPECS_I18N = {
       btnOtherPhoto: '別の写真', btnProceed: '進める',
       altPreview: 'プレビュー',
       payTitle: '{type}写真を作成',
-      payPrice: '$2 <span style="font-size:14px;color:#888;font-weight:600;">(約¥300)</span>',
+      payPrice: '$1.99 <span style="font-size:14px;color:#888;font-weight:600;">(USD)</span>',
       payDesc: 'カード即時決済 · ログイン不要',
       orDivider: 'または',
       genText: 'AIが{type}写真を作成しています...',
@@ -304,7 +304,7 @@ const SPECS_I18N = {
       btnOtherPhoto: 'Another Photo', btnProceed: 'Continue',
       altPreview: 'Preview',
       payTitle: 'Create {type} Photo',
-      payPrice: '$2',
+      payPrice: '$1.99',
       payDesc: 'Instant card checkout · No login required',
       orDivider: 'or',
       genText: 'AI is creating your {type} photo...',
@@ -1394,8 +1394,8 @@ function isV2Spec(slug, lang) {
   if (V2_DIRECT_SLUGS.has(slug)) return true;
   if (!isEngineCompatibleSpec(SPECS_DATA[slug])) return false;
   if (lang === 'ko') return true;
-  if (lang === 'en') return Boolean(LEMONSQUEEZY_VARIANT_SPECS_SINGLE);
-  if (lang === 'ja') return Boolean(LEMONSQUEEZY_VARIANT_SPECS_SINGLE_JP);
+  // en/ja 공통: 글로벌 USD 단일 variant 기준 (2026-07-05 USD 통일 — JP 별도 variant 폐지)
+  if (lang === 'en' || lang === 'ja') return Boolean(LEMONSQUEEZY_VARIANT_SPECS_SINGLE);
   return false;
 }
 
@@ -2213,7 +2213,7 @@ ${hreflangTags}
   var gaFired = {};
   var GA_PAY = CFG.market === 'kr'
     ? { payment_provider: 'toss', currency: 'KRW', value: 2000 }
-    : { payment_provider: 'lemon', currency: 'USD', value: 2 };
+    : { payment_provider: 'lemon', currency: 'USD', value: 1.99 };
   function gaTrack(name, params, repeat){
     if(typeof gtag !== 'function') return;
     if(!repeat && gaFired[name]) return;

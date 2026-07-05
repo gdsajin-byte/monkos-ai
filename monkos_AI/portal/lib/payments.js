@@ -562,14 +562,15 @@ export async function handleDirectInit(req, res) {
       return;
     }
 
-    // [글로벌/JP] 레몬 단건 $2 — variant env 미설정 시 비활성
-    const variantId = market === 'jp' ? LEMONSQUEEZY_VARIANT_SPECS_SINGLE_JP : LEMONSQUEEZY_VARIANT_SPECS_SINGLE;
+    // [글로벌·JP] 레몬 단건 $1.99 — 신규 트랙은 시장 불문 글로벌 스토어 USD 단일 (2026-07-05 작가님 확정.
+    // JP 엔화 분기는 촬영실(idphoto-jp) 크레딧 레거시에만 존속. variant env 미설정 시 비활성)
+    const variantId = LEMONSQUEEZY_VARIANT_SPECS_SINGLE;
     if (!variantId) {
       res.writeHead(503, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: '해당 시장 결제가 아직 준비되지 않았습니다', code: 'LEMON_VARIANT_UNSET' }));
       return;
     }
-    const storeId = market === 'jp' ? LEMONSQUEEZY_STORE_ID_JP : LEMONSQUEEZY_STORE_ID;
+    const storeId = LEMONSQUEEZY_STORE_ID;
 
     // redirect_url 검증 — monkos.ai 계열만 허용
     let safeRedirect;

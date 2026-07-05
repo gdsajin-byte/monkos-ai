@@ -143,8 +143,8 @@ export const TOSS_AMOUNT_CREDITS = Object.fromEntries(
 // === specs 단건 직접결제 (T1) — 시장별 가격 정본 (클라이언트 금액 불신) ===
 export const DIRECT_PRICING = {
   kr:     { provider: 'toss',  amount: 2000, currency: 'KRW' },  // ₩2,000 서버 고정
-  global: { provider: 'lemon' },  // $2 — 금액 정본은 레몬 variant
-  jp:     { provider: 'lemon' },  // ¥300 상당 — 금액 정본은 레몬 variant (store#290457)
+  global: { provider: 'lemon' },  // $1.99 — 금액 정본은 레몬 variant (글로벌 스토어 #415328)
+  jp:     { provider: 'lemon' },  // $1.99 USD 통일 (2026-07-05 작가님) — JP 엔화는 촬영실 레거시에만 존속
 };
 export const DIRECT_TOKEN_TTL_MS = 24 * 60 * 60 * 1000;  // 결제 후 다운로드 여유 24h
 export const DIRECT_TOKEN_MAX_GENERATES = 3;              // 생성 재시도 허용 횟수 (다운로드에서 최종 소모)

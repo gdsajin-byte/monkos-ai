@@ -58,10 +58,10 @@ describe('specs v2 GA4 계측', () => {
     expect(parts.pageScript).toContain('market: CFG.market');
   });
 
-  test('시장별 결제 파라미터: kr=toss/KRW/2000, 그 외=lemon/USD/2', () => {
+  test('시장별 결제 파라미터: kr=toss/KRW/2000, 그 외=lemon/USD/1.99', () => {
     const ko = specsDetailFragment('kr-passport').pageScript;
     expect(ko).toContain("payment_provider: 'toss', currency: 'KRW', value: 2000");
-    expect(ko).toContain("payment_provider: 'lemon', currency: 'USD', value: 2");
+    expect(ko).toContain("payment_provider: 'lemon', currency: 'USD', value: 1.99");
   });
 
   test('최종 HTML에 gtag.js 스니펫 존재 (공통 레이아웃 경유, 중복 없음)', () => {
