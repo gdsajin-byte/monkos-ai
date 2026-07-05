@@ -118,12 +118,19 @@ export const TELEGRAM_TEAM_API = `https://api.telegram.org/bot${TELEGRAM_TEAM_BO
 
 // === 크레딧 매핑 ===
 export const VARIANT_CREDITS = {
-  // Global USD 상품 (store#415328, test mode — 라이브 전환 시 ID 재확인)
+  // Global USD 상품 (store#415328, ⚠️ test mode ID — 라이브에 미존재. 글로벌USD통합 기안(07-05) 실행 시 라이브 ID로 교체)
   '1825695': 40,    // 40 credits: $3.90
   '1825706': 80,    // 80 credits: $6.90
   '1825708': 130,   // 130 credits: $9.90
   '1825711': 420,   // 420 credits: $26.90
   '1825713': 750,   // 750 credits: $39.90
+  // JP ¥ 상품 (store#290457, 라이브 published) — 06-23 전환(667ccdd6) 때 소실 → 07-05 응급 복원.
+  // 미복원 시 JP 충전 결제가 "돈만 받고 크레딧 미지급"이 됨. 글로벌USD통합 완료 전까지 유지.
+  '1382355': 10,    // topup_10: ¥150, 10c+0
+  '1382367': 80,    // single_70: ¥990, 70c+10
+  '1382348': 130,   // package_100: ¥1,490, 100c+30
+  '1382362': 420,   // package_300: ¥3,990, 300c+120
+  '1382436': 750,   // package_500: ¥5,990, 500c+250
 };
 
 // v3 상품 정의 — 상품c와 보너스c 분리
