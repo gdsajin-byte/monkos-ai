@@ -154,7 +154,7 @@ export const DIRECT_PRICING = {
   jp:     { provider: 'lemon' },  // $1.99 USD 통일 (2026-07-05 작가님) — JP 엔화는 촬영실 레거시에만 존속
 };
 export const DIRECT_TOKEN_TTL_MS = 24 * 60 * 60 * 1000;  // 결제 후 다운로드 여유 24h
-export const DIRECT_TOKEN_MAX_GENERATES = 3;              // 생성 재시도 허용 횟수 (다운로드에서 최종 소모)
+export const DIRECT_TOKEN_MAX_GENERATES = 1;              // 1결제 1생성 — 재생성 폐지 (2026-07-05 작가님: 재생성=룰렛, 사다리 붕괴. 무료 체험은 로그인 10c 경로 담당)
 
 // === CORS ===
 export const ALLOWED_ORIGINS = [

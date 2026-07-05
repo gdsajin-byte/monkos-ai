@@ -86,7 +86,7 @@ jest.unstable_mockModule('../lib/shared/config.js', () => ({
     jp: { provider: 'lemon' },
   },
   DIRECT_TOKEN_TTL_MS: 24 * 60 * 60 * 1000,
-  DIRECT_TOKEN_MAX_GENERATES: 3,
+  DIRECT_TOKEN_MAX_GENERATES: 1,
 }));
 
 const generateHeadshotMock = jest.fn(async () => 'GEN_B64');
@@ -145,7 +145,7 @@ describe('POST /api/headshot/generate — 결제 게이트', () => {
 
     expect(res.statusCode).toBe(200);
     expect(res.body.image).toBe('GEN_B64');
-    expect(res.body.remainingGenerates).toBe(2);
+    expect(res.body.remainingGenerates).toBe(0); // 1결제 1생성 (07-05)
     expect(res.body.credits).toBeUndefined();
     expect(generateHeadshotMock).toHaveBeenCalledTimes(1);
     // 크레딧 경로(/api/credits/use fetch) 미진입 — 크레딧 미차감

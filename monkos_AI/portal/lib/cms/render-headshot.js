@@ -46,7 +46,7 @@ const I18N = {
     pay: {
       title: '결제 방법 선택',
       instant: '회원가입 없이 바로 생성',
-      desc: '1회 결제로 헤드샷 생성 (재생성 3회 포함)',
+      desc: '1회 결제로 헤드샷 1컷 생성',
       orLogin: '로그인하고 첫 1컷 무료 받기',
       orCharge: '또는 크레딧 충전하기 (충전할수록 할인)',
       confirmSuffix: '결제하기',
@@ -108,7 +108,7 @@ const I18N = {
     pay: {
       title: 'Choose Payment',
       instant: 'Generate now — no signup',
-      desc: 'One-time payment (includes 3 regenerations)',
+      desc: 'One payment, one headshot',
       orLogin: 'Sign in & get your first headshot free',
       orCharge: 'Or top up credits (bulk discounts)',
       confirmSuffix: 'Pay',
@@ -170,7 +170,7 @@ const I18N = {
     pay: {
       title: 'お支払い方法を選択',
       instant: '登録なしですぐ生成',
-      desc: '1回のお支払いで生成（再生成3回含む）',
+      desc: '1回のお支払いで1枚生成',
       orLogin: 'ログインして初回1枚無料',
       orCharge: 'またはクレジットをチャージ（まとめ買い割引）',
       confirmSuffix: '支払う',

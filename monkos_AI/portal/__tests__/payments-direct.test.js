@@ -2,7 +2,7 @@
  * specs 단건 직접결제(T1) 머니패스 테스트
  * - 금액 조작 거부 (서버 ₩2,000 고정)
  * - orderId 멱등성 (중복 confirm 차단)
- * - 토큰 생성 쿼터(3회) + 다운로드 1회성 소모
+ * - 토큰 생성 쿼터(1회 — 1결제 1생성) + 다운로드 1회성 소모
  * - 무결제 generate 402 게이트
  * - 레몬 단건 웹훅 (토큰 발급·멱등·환불 무효화)
  * 외부 API(토스/레몬)·Firestore는 전부 모킹.
@@ -121,7 +121,7 @@ jest.unstable_mockModule('../lib/shared/config.js', () => ({
     jp: { provider: 'lemon' },
   },
   DIRECT_TOKEN_TTL_MS: 24 * 60 * 60 * 1000,
-  DIRECT_TOKEN_MAX_GENERATES: 3,
+  DIRECT_TOKEN_MAX_GENERATES: 1,
   parseCookies: () => ({}),
 }));
 
@@ -297,20 +297,16 @@ describe('결제 게이트 — consumeGenerateQuota / handleDownloadDirect', () 
     expect(forged.code).toBe('INVALID_TOKEN');
   });
 
-  test('생성 쿼터 3회 허용, 4회째 거부', async () => {
+  test('생성 쿼터 1회 허용, 2회째 거부 (1결제 1생성 — 07-05 재생성 폐지)', async () => {
     const { token } = await payments.issueDirectToken({ orderId: 'SPECS-kr-x-aaaaaaaa', slug: 'kr-passport', market: 'kr', amount: 2000, currency: 'KRW', provider: 'toss' });
 
     const g1 = await payments.consumeGenerateQuota(token);
-    const g2 = await payments.consumeGenerateQuota(token);
-    const g3 = await payments.consumeGenerateQuota(token);
-    expect(g1).toMatchObject({ ok: true, remainingGenerates: 2 });
-    expect(g2).toMatchObject({ ok: true, remainingGenerates: 1 });
-    expect(g3).toMatchObject({ ok: true, remainingGenerates: 0 });
+    expect(g1).toMatchObject({ ok: true, remainingGenerates: 0 });
 
-    const g4 = await payments.consumeGenerateQuota(token);
-    expect(g4.ok).toBe(false);
-    expect(g4.status).toBe(402);
-    expect(g4.code).toBe('GENERATE_LIMIT');
+    const g2 = await payments.consumeGenerateQuota(token);
+    expect(g2.ok).toBe(false);
+    expect(g2.status).toBe(402);
+    expect(g2.code).toBe('GENERATE_LIMIT');
   });
 
   test('생성 실패 시 refundGenerateQuota로 쿼터 반환', async () => {
