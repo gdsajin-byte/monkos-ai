@@ -374,6 +374,7 @@ const TYPE_CATEGORIES = [
 
 const TYPE_SLUG_PATTERNS = [
   'schengen-visa', 'intl-license', 'drivers-license', 'youth-id',
+  'visa-evisa', 'visa-bls', // 복합 type — 미등재 시 parseSlug가 country를 'in-visa'로 오분해 → canonical 301 루프
   'passport', 'visa', 'e-visa', 'resume', 'halfcard', 'headshot',
   'mynumber', 'resident', 'zairyu', 'license', 'taxi', 'marine', 'exam', 'id',
 ];
@@ -3052,8 +3053,11 @@ export function renderSpecsDetail(req, res, forceLang = null) {
       if (oldType && oldCountry) {
         const iso = canonicalCountry(oldCountry);
         const newType = TYPE_ALIASES[oldType] || oldType;
-        if (SPECS_DATA[`${iso}-${newType}`]) {
-          res.writeHead(301, { Location: `${prefix}/specs/${newType}/${iso}` });
+        // Location은 REDIRECT_MAP 정본 라우트 기준 — `${newType}/${iso}` 재조립은 복합 type에서 자기 자신을 가리켜 301 루프
+        const canonical = REDIRECT_MAP[`${iso}-${newType}`];
+        const target = canonical ? `${prefix}/specs/${canonical}` : null;
+        if (target && target !== url.pathname) {
+          res.writeHead(301, { Location: target });
           return res.end();
         }
       }
