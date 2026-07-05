@@ -442,3 +442,6 @@
 
 ## [2026-07-04 20:21 KST] iMac/민아 (세션 마감 확정)
 - 금일 변경 요약: MEMORY.md 161→95줄 압축(토픽 4건 이관: role_recognition·ssanga_duties_order_ops·session_ops_procedures·model_placement) + model_placement 갱신(Fable 차단 해제 실측, 7/7 구독 이탈·운용 방침) + min_instances 메모리 생성 후 작가님 격하 지시로 삭제. 상세는 본 로그 상단 금일 항목 참조.
+
+## 2026-07-05 (민아)
+- 추가: project_orchestrator_agent_intent.md — 작가님 "전체 운영 에이전트" 구현 의향 + Fable급 하네스 세팅 중시 (07-05 마감 대화). MEMORY.md 인사이트 섹션 1행 추가.
