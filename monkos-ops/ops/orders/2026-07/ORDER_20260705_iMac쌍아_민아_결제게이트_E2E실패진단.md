@@ -43,6 +43,13 @@ status: 긴급
 - server.js:411 `if(paymentToken)` → else → session/cookie 확인 → 로그인 시 크레딧 차감
 - 작가님 로그인 상태라면 paymentToken 없이도 크레딧으로 생성됨 (설계 의도일 수 있으나, v2 결제 플로우가 아닌 경로)
 
+## URL 구조 참고
+
+- **v2 (1-segment, 결제 탑재)**: `/specs/kr-passport` — `isV2Spec()` 게이트 통과 시 v2 렌더
+- **v1 (2-segment, 기존)**: `/specs/passport/kr` — 결제 위젯 없는 기존 페이지
+- **레거시 slug**: `/specs/korea-passport` → 301 → `/specs/passport/kr` (v1으로 리다이렉트)
+- 작가님 테스트 URL: `monkos.ai/specs/kr-passport` (v2 확인 완료, ₩2,000 버튼 렌더됨)
+
 ## 요청 사항
 
 1. **prod에서 결제 플로우 재현 테스트** — 시크릿 모드 브라우저(비로그인)로 `monkos.ai/specs/kr-passport` 접속 → 업로드 → ₩2,000 클릭 → 토스 결제창 뜨는지 확인
