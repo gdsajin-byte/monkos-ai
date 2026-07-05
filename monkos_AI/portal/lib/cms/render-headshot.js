@@ -13,11 +13,11 @@ const I18N = {
     dragText: '또는 여기에 드래그',
     styleTitle: '스타일 선택',
     styles: {
-      linkedin_pro: '링크드인',
-      corporate: '코포레이트',
-      creative: '크리에이티브',
-      professional: '프로페셔널',
-      dating: '데일리',
+      linkedin_pro: '링크드인 · 비즈니스',
+      corporate: '임원 · 기업 프로필',
+      creative: '크리에이터 · 자유직',
+      professional: '취업 · 이력서',
+      dating: '데일리 · 소개팅',
     },
     generateBtn: '헤드샷 생성하기',
     creditCost: '10 credits',
@@ -137,11 +137,11 @@ const I18N = {
     dragText: 'またはここにドラッグ',
     styleTitle: 'スタイルを選択',
     styles: {
-      linkedin_pro: 'LinkedIn',
-      corporate: 'コーポレート',
-      creative: 'クリエイティブ',
-      professional: 'プロフェッショナル',
-      dating: 'デイリー',
+      linkedin_pro: 'LinkedIn · ビジネス',
+      corporate: '役員 · 企業プロフィール',
+      creative: 'クリエイター',
+      professional: '就活 · 履歴書',
+      dating: 'デイリー · マッチング',
     },
     generateBtn: 'ヘッドショットを生成',
     creditCost: '10 credits',
@@ -229,7 +229,7 @@ function getSeoMeta(lang) {
 
 function buildStyleButtons(styles) {
   const icons = {
-    linkedin: '💼', resume: '📄', corporate: '🏢', professional: '👔', casual: '😊',
+    linkedin_pro: '💼', corporate: '🏢', creative: '🎨', professional: '📄', dating: '😊',
   };
   return Object.entries(styles).map(([key, label]) =>
     `<button class="hs-style-btn" data-style="${key}">
@@ -291,9 +291,14 @@ export function renderHeadshot(req, res, forceLang = null) {
 </section>
 
 <section class="hs-section" id="hsGenerateSection">
-  <button class="hs-btn hs-btn-generate" id="hsGenerateBtn" disabled>
-    ${escapeHtml(d.generateBtn)} — ${d.creditCost}
+  <!-- 유료 우선 노출 (2026-07-05 작가님): 기본 라벨 = 시장가. 로그인+크레딧 충분 시에만 JS가 크레딧 라벨로 전환 -->
+  <button class="hs-btn hs-btn-generate" id="hsGenerateBtn" disabled
+    data-label-pay="${escapeHtml(d.generateBtn)} — ${priceLabel}"
+    data-label-credit="${escapeHtml(d.generateBtn)} — ${d.creditCost}">
+    ${escapeHtml(d.generateBtn)} — ${priceLabel}
   </button>
+  <p class="hs-section-desc" style="margin-top:6px;">${escapeHtml(d.pay.desc)}</p>
+  <button class="hs-btn hs-btn-secondary" id="hsFreeLogin" style="margin-top:8px;">🎁 ${escapeHtml(d.pay.orLogin)}</button>
   <p class="hs-balance" id="hsBalance"></p>
 </section>
 

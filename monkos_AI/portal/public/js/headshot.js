@@ -126,11 +126,19 @@
   }
 
   function updateBalance() {
+    // 유료 우선 노출 (2026-07-05): 기본 = 시장가 라벨. 로그인+크레딧 충분 시에만 크레딧 라벨.
+    var payLbl = generateBtn.getAttribute('data-label-pay');
+    var credLbl = generateBtn.getAttribute('data-label-credit');
+    var freeBtn = document.getElementById('hsFreeLogin');
     if (typeof currentUser !== 'undefined' && currentUser) {
       var credits = currentUser.credits || 0;
       balanceEl.textContent = (i18n.balanceLabel || 'Balance') + ': ' + credits + 'c';
+      if (freeBtn) freeBtn.style.display = 'none';
+      generateBtn.textContent = (credits >= 10 && credLbl) ? credLbl : (payLbl || generateBtn.textContent);
     } else {
       balanceEl.textContent = '';
+      if (freeBtn) freeBtn.style.display = '';
+      if (payLbl) generateBtn.textContent = payLbl;
     }
   }
 
@@ -372,6 +380,11 @@
   });
 
   /* ─── T1 직접결제 플로우 (specs v2 패턴 이식) ─── */
+  var freeLoginBtn = document.getElementById('hsFreeLogin');
+  if (freeLoginBtn) freeLoginBtn.addEventListener('click', function() {
+    if (typeof headerLogin === 'function') headerLogin();
+  });
+
   if (payLoginBtn) payLoginBtn.addEventListener('click', function() {
     // 크레딧 부족 로그인 사용자 모드 — 보조 버튼이 크레딧 충전으로 전환됨
     if (payLoginBtn.getAttribute('data-mode') === 'charge') {
