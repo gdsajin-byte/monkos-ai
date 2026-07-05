@@ -109,6 +109,18 @@ All future tiers (background removal, background replacement, spec database expa
 - ❓ [FAQ](https://monkos.ai/faq) — Frequently asked questions
 - 📧 info@monkos.ai
 
+## Open Source Tools
+
+### [secret — GCP Secret Manager CLI Wrapper](tools/gcp-secret/)
+
+One command to manage GCP secrets. Clipboard-based input keeps your API keys out of shell history.
+
+```bash
+secret add MY_API_KEY    # Clipboard → Secret Manager
+secret get MY_API_KEY    # Retrieve value
+secret env               # Sync SM → .env
+```
+
 ## License
 
 Service and brand © MONKOS. All rights reserved.
