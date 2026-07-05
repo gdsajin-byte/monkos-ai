@@ -340,10 +340,23 @@
       return;
     }
 
-    // 로그인 사용자 — 기존 크레딧 경로 유지 (크레딧 보유 시 크레딧 우선)
+    // 로그인 사용자 — 크레딧 보유 시 크레딧 우선
     var credits = currentUser.credits || 0;
     if (credits < 10) {
       if (hasUsableToken()) return runGenerate(true);
+      // 크레딧 부족 — 직접결제(₩2,000/$1.99)를 1안으로 노출, 크레딧 충전은 보조 버튼 (2026-07-05 작가님)
+      if (PAY && PAY.market && paySection) {
+        if (typeof monkTrack === 'function') {
+          monkTrack('show_direct_pay', { current_credits: credits, page: 'headshot' });
+        }
+        persistPayState();
+        if (payLoginBtn && PAY.i18n && PAY.i18n.orCharge) {
+          payLoginBtn.textContent = PAY.i18n.orCharge;
+          payLoginBtn.setAttribute('data-mode', 'charge');
+        }
+        showPaySection();
+        return;
+      }
       if (typeof monkTrack === 'function') {
         monkTrack('open_credit_shop', { current_credits: credits, page: 'headshot' });
       }
@@ -360,6 +373,11 @@
 
   /* ─── T1 직접결제 플로우 (specs v2 패턴 이식) ─── */
   if (payLoginBtn) payLoginBtn.addEventListener('click', function() {
+    // 크레딧 부족 로그인 사용자 모드 — 보조 버튼이 크레딧 충전으로 전환됨
+    if (payLoginBtn.getAttribute('data-mode') === 'charge') {
+      if (typeof openCreditShop === 'function') openCreditShop();
+      return;
+    }
     if (typeof headerLogin === 'function') headerLogin();
   });
 
