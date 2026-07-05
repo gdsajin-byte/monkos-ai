@@ -30,7 +30,6 @@
   /* ─── T1 직접결제 상태 ─── */
   var paySection = document.getElementById('hsPaySection');
   var payInstantBtn = document.getElementById('hsPayInstant');
-  var payLoginBtn = document.getElementById('hsPayLogin');
   var payErrorEl = document.getElementById('hsPayError');
   var tossWidgetWrap = document.getElementById('hsTossWidget');
   var payConfirmBtn = document.getElementById('hsPayConfirm');
@@ -126,19 +125,11 @@
   }
 
   function updateBalance() {
-    // 유료 우선 노출 (2026-07-05): 기본 = 시장가 라벨. 로그인+크레딧 충분 시에만 크레딧 라벨.
-    var payLbl = generateBtn.getAttribute('data-label-pay');
-    var credLbl = generateBtn.getAttribute('data-label-credit');
-    var freeBtn = document.getElementById('hsFreeLogin');
     if (typeof currentUser !== 'undefined' && currentUser) {
       var credits = currentUser.credits || 0;
       balanceEl.textContent = (i18n.balanceLabel || 'Balance') + ': ' + credits + 'c';
-      if (freeBtn) freeBtn.style.display = 'none';
-      generateBtn.textContent = (credits >= 10 && credLbl) ? credLbl : (payLbl || generateBtn.textContent);
     } else {
       balanceEl.textContent = '';
-      if (freeBtn) freeBtn.style.display = '';
-      if (payLbl) generateBtn.textContent = payLbl;
     }
   }
 
@@ -331,67 +322,50 @@
       monkTrack('click_cta', { button_id: 'generate', style: selectedStyle });
     }
 
-    if (typeof currentUser === 'undefined' || !currentUser) {
-      // 비로그인 — 직접결제 경로 (T1). 이미 결제한 토큰이 있으면 재결제 없이 생성.
-      if (PAY && PAY.market && paySection) {
-        if (hasUsableToken()) return runGenerate(true);
-        persistPayState(); // 결제 전 선행 저장 (리다이렉트 생존) — 결제 클릭 체인 밖
-        showPaySection();
-        return;
+    var loggedIn = (typeof currentUser !== 'undefined' && !!currentUser);
+    var credits = loggedIn ? (currentUser.credits || 0) : 0;
+
+    // 크레딧 충분한 로그인 사용자 — 선택 화면 없이 즉시 크레딧 생성
+    if (loggedIn && credits >= 10) return runGenerate(false);
+    // 기결제 토큰 보유 — 재결제 없이 생성
+    if (hasUsableToken()) return runGenerate(true);
+
+    // 결제 선택 화면: ① 첫 로그인 무료 체험(로그인 시 충전 라벨) ② 바로 결제 (2026-07-05 작가님)
+    if (PAY && PAY.market && paySection) {
+      persistPayState(); // 결제 전 선행 저장 (리다이렉트 생존) — 결제 클릭 체인 밖
+      var optBtn = document.getElementById('hsOptFree');
+      var optTitle = document.getElementById('hsOptFreeTitle');
+      if (optBtn && optTitle) {
+        var t = loggedIn ? optBtn.getAttribute('data-title-charge') : optBtn.getAttribute('data-title-free');
+        if (t) optTitle.textContent = t;
       }
-      // 폴백: 결제 설정 미주입 시 기존 로그인 모달
-      if (typeof headerLogin === 'function') {
-        headerLogin();
-      } else {
-        alert(i18n.loginRequired || 'Login required');
-      }
+      showPaySection();
       return;
     }
 
-    // 로그인 사용자 — 크레딧 보유 시 크레딧 우선
-    var credits = currentUser.credits || 0;
-    if (credits < 10) {
-      if (hasUsableToken()) return runGenerate(true);
-      // 크레딧 부족 — 직접결제(₩2,000/$1.99)를 1안으로 노출, 크레딧 충전은 보조 버튼 (2026-07-05 작가님)
-      if (PAY && PAY.market && paySection) {
-        if (typeof monkTrack === 'function') {
-          monkTrack('show_direct_pay', { current_credits: credits, page: 'headshot' });
-        }
-        persistPayState();
-        if (payLoginBtn && PAY.i18n && PAY.i18n.orCharge) {
-          payLoginBtn.textContent = PAY.i18n.orCharge;
-          payLoginBtn.setAttribute('data-mode', 'charge');
-        }
-        showPaySection();
-        return;
-      }
-      if (typeof monkTrack === 'function') {
-        monkTrack('open_credit_shop', { current_credits: credits, page: 'headshot' });
-      }
-      if (typeof openCreditShop === 'function') {
-        openCreditShop();
-      } else {
-        alert(i18n.insufficientCredits || 'Insufficient credits');
-      }
+    // 폴백: 결제 설정 미주입
+    if (!loggedIn) {
+      if (typeof headerLogin === 'function') headerLogin();
+      else alert(i18n.loginRequired || 'Login required');
       return;
     }
-
-    runGenerate(false);
+    if (typeof openCreditShop === 'function') openCreditShop();
+    else alert(i18n.insufficientCredits || 'Insufficient credits');
   });
 
   /* ─── T1 직접결제 플로우 (specs v2 패턴 이식) ─── */
-  var freeLoginBtn = document.getElementById('hsFreeLogin');
-  if (freeLoginBtn) freeLoginBtn.addEventListener('click', function() {
-    if (typeof headerLogin === 'function') headerLogin();
-  });
-
-  if (payLoginBtn) payLoginBtn.addEventListener('click', function() {
-    // 크레딧 부족 로그인 사용자 모드 — 보조 버튼이 크레딧 충전으로 전환됨
-    if (payLoginBtn.getAttribute('data-mode') === 'charge') {
-      if (typeof openCreditShop === 'function') openCreditShop();
+  // 선택지 ① — 비로그인: 로그인(신규 10c) / 로그인(크레딧 부족): 충전 샵
+  var optFreeBtn = document.getElementById('hsOptFree');
+  if (optFreeBtn) optFreeBtn.addEventListener('click', function() {
+    var loggedIn = (typeof currentUser !== 'undefined' && !!currentUser);
+    if (!loggedIn) {
+      if (typeof headerLogin === 'function') headerLogin();
       return;
     }
-    if (typeof headerLogin === 'function') headerLogin();
+    if (typeof monkTrack === 'function') {
+      monkTrack('open_credit_shop', { current_credits: (currentUser.credits || 0), page: 'headshot' });
+    }
+    if (typeof openCreditShop === 'function') openCreditShop();
   });
 
   if (payInstantBtn) payInstantBtn.addEventListener('click', function() {

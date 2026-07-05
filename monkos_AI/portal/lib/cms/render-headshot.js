@@ -16,7 +16,7 @@ const I18N = {
       linkedin_pro: '링크드인 · 비즈니스',
       corporate: '임원 · 기업 프로필',
       creative: '크리에이터 · 자유직',
-      professional: '취업 · 이력서',
+      professional: '전문직 프로필',
       dating: '데일리 · 소개팅',
     },
     generateBtn: '헤드샷 생성하기',
@@ -45,8 +45,12 @@ const I18N = {
     step3Desc: '30초 만에 프로 헤드샷 완성',
     pay: {
       title: '결제 방법 선택',
-      instant: '회원가입 없이 바로 생성',
+      instant: '바로 결제 (회원가입 불필요)',
       desc: '1회 결제로 헤드샷 1컷 생성',
+      makeBtn: '이 사진으로 만들기',
+      freeTitle: '🎁 첫 로그인 무료 체험 — 10c(1컷) 지급',
+      freeSub: '크레딧 충전 시 패키지 할인',
+      chargeTitle: '크레딧 충전하기 (충전할수록 할인)',
       orLogin: '로그인하고 첫 1컷 무료 받기',
       orCharge: '또는 크레딧 충전하기 (충전할수록 할인)',
       confirmSuffix: '결제하기',
@@ -107,8 +111,12 @@ const I18N = {
     step3Desc: 'Pro headshot ready in 30 seconds',
     pay: {
       title: 'Choose Payment',
-      instant: 'Generate now — no signup',
+      instant: 'Pay now (no signup)',
       desc: 'One payment, one headshot',
+      makeBtn: 'Create with this photo',
+      freeTitle: '🎁 First sign-in free — 10 credits (1 headshot)',
+      freeSub: 'Bulk discounts on credit top-ups',
+      chargeTitle: 'Top up credits (bulk discounts)',
       orLogin: 'Sign in & get your first headshot free',
       orCharge: 'Or top up credits (bulk discounts)',
       confirmSuffix: 'Pay',
@@ -140,7 +148,7 @@ const I18N = {
       linkedin_pro: 'LinkedIn · ビジネス',
       corporate: '役員 · 企業プロフィール',
       creative: 'クリエイター',
-      professional: '就活 · 履歴書',
+      professional: '専門職プロフィール',
       dating: 'デイリー · マッチング',
     },
     generateBtn: 'ヘッドショットを生成',
@@ -169,8 +177,12 @@ const I18N = {
     step3Desc: '30秒でプロ仕様の完成',
     pay: {
       title: 'お支払い方法を選択',
-      instant: '登録なしですぐ生成',
+      instant: '今すぐ支払う（登録不要）',
       desc: '1回のお支払いで1枚生成',
+      makeBtn: 'この写真で作成',
+      freeTitle: '🎁 初回ログイン無料 — 10c（1枚）付与',
+      freeSub: 'クレジットチャージでまとめ買い割引',
+      chargeTitle: 'クレジットをチャージ（まとめ買い割引）',
       orLogin: 'ログインして初回1枚無料',
       orCharge: 'またはクレジットをチャージ（まとめ買い割引）',
       confirmSuffix: '支払う',
@@ -291,21 +303,25 @@ export function renderHeadshot(req, res, forceLang = null) {
 </section>
 
 <section class="hs-section" id="hsGenerateSection">
-  <!-- 유료 우선 노출 (2026-07-05 작가님): 기본 라벨 = 시장가. 로그인+크레딧 충분 시에만 JS가 크레딧 라벨로 전환 -->
-  <button class="hs-btn hs-btn-generate" id="hsGenerateBtn" disabled
-    data-label-pay="${escapeHtml(d.generateBtn)} — ${priceLabel}"
-    data-label-credit="${escapeHtml(d.generateBtn)} — ${d.creditCost}">
-    ${escapeHtml(d.generateBtn)} — ${priceLabel}
+  <!-- 중립 CTA (2026-07-05 작가님): 가격 없는 "이 사진으로 만들기" → 클릭 시 결제 선택 화면.
+       로그인+크레딧 충분 사용자만 JS가 즉시 크레딧 생성으로 직결 -->
+  <button class="hs-btn hs-btn-generate" id="hsGenerateBtn" disabled>
+    ${escapeHtml(d.pay.makeBtn)}
   </button>
-  <p class="hs-section-desc" style="margin-top:6px;">${escapeHtml(d.pay.desc)}</p>
-  <button class="hs-btn hs-btn-secondary" id="hsFreeLogin" style="margin-top:8px;">🎁 ${escapeHtml(d.pay.orLogin)}</button>
   <p class="hs-balance" id="hsBalance"></p>
 </section>
 
 <!-- 비로그인 직접결제 (T1 — specs v2 패턴 이식, 2026-07-05) -->
 <section class="hs-section" id="hsPaySection" style="display:none;">
   <h2 class="hs-section-title">${escapeHtml(d.pay.title)}</h2>
-  <button class="hs-btn hs-btn-generate" id="hsPayInstant">
+  <!-- 선택지 ① 첫 로그인 무료 체험(크레딧 경로) — 로그인+크레딧부족 상태에선 JS가 충전 라벨로 전환 -->
+  <button class="hs-btn hs-btn-secondary" id="hsOptFree" style="width:100%;text-align:center;"
+    data-title-free="${escapeHtml(d.pay.freeTitle)}" data-title-charge="${escapeHtml(d.pay.chargeTitle)}">
+    <span id="hsOptFreeTitle">${escapeHtml(d.pay.freeTitle)}</span>
+    <span style="display:block;font-size:0.82rem;color:#888;margin-top:2px;">${escapeHtml(d.pay.freeSub)}</span>
+  </button>
+  <!-- 선택지 ② 바로 결제 (비회원 직접결제) -->
+  <button class="hs-btn hs-btn-generate" id="hsPayInstant" style="margin-top:10px;">
     ${escapeHtml(d.pay.instant)} — ${priceLabel}
   </button>
   <p class="hs-section-desc">${escapeHtml(d.pay.desc)}</p>
@@ -314,7 +330,6 @@ export function renderHeadshot(req, res, forceLang = null) {
     <div id="hs-agree"></div>
     <button class="hs-btn hs-btn-primary" id="hsPayConfirm" style="width:100%;margin-top:12px;"></button>
   </div>
-  <button class="hs-btn hs-btn-secondary" id="hsPayLogin" style="margin-top:8px;">${escapeHtml(d.pay.orLogin)}</button>
   <p id="hsPayError" style="display:none;color:#ef4444;margin-top:8px;font-size:0.9rem;"></p>
 </section>
 
