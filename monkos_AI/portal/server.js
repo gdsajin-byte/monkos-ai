@@ -475,6 +475,8 @@ Respond in JSON only:
   // === 결제 ===
   if (urlPath === '/api/checkout' && req.method === 'POST') return handleCheckout(req, res);
   if (urlPath === '/api/webhooks/lemonsqueezy' && req.method === 'POST') return handleLemonSqueezyWebhook(req, res);
+  // 별칭: 레몬 대시보드가 경로에 'lemonsqueezy' 포함 URL을 거부(피싱 방지 검증)해 /api/webhooks로 등록됨 (2026-07-05)
+  if (urlPath === '/api/webhooks' && req.method === 'POST') return handleLemonSqueezyWebhook(req, res);
   if (urlPath === '/api/payments/toss/confirm' && req.method === 'POST') return handleTossConfirm(req, res);
   if (urlPath === '/api/payments/direct/init' && req.method === 'POST') {
     if (!checkRateLimit(req, 'direct-init', 10)) {
