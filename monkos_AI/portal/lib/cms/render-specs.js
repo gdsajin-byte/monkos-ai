@@ -1540,6 +1540,7 @@ a:hover { color: #5a3de6; }
 }
 .v2-pay-btn:hover { border-color: #6c4fff; box-shadow: 0 4px 16px rgba(108,79,255,0.1); }
 .v2-pay-instant { border-color: #6c4fff; }
+.v2-toss-widget { margin-top: 16px; background: #fff; border-radius: 12px; padding: 4px 0; }
 .v2-pay-title { font-size: 16px; font-weight: 700; color: #1a1a1a; margin-bottom: 4px; }
 .v2-pay-price { font-size: 24px; font-weight: 800; color: #6c4fff; margin-bottom: 6px; }
 .v2-pay-desc { font-size: 12px; color: #888; }
@@ -2091,6 +2092,11 @@ ${hreflangTags}
               <div class="v2-pay-desc">${escapeHtml(v2.creditDesc)}</div>
               <div class="v2-pay-desc" style="font-size:12px;margin-top:4px;">${v2.creditTopup}</div>
             </button>` : ''}
+            <div class="v2-toss-widget" id="v2-toss-widget" style="display:none;">
+              <div id="v2-pm"></div>
+              <div id="v2-agree"></div>
+              <button class="v2-action-btn v2-btn-retouch" id="v2-pay-confirm" style="width:100%;margin-top:12px;"></button>
+            </div>
             ${upsellHtml}
           </div>
         </div>
@@ -2439,26 +2445,47 @@ ${hreflangTags}
     });
   });
 
+  // 토스 결제위젯 방식 (2026-07-05 전환) — 상점 라이브 계약이 위젯 연동(live_gck)에만 있음.
+  // 구 결제창(payment/live_ck) 방식은 API 개별연동 MID 계약 미완료로 라이브 결제 불가 (2026-03 위젯 전환 이력).
+  var tossWidgets = null, tossWidgetRendered = false;
   function startToss(d, extraWin){
     if(extraWin){ try{ extraWin.close(); }catch(e){} }
     if(!window.TossPayments){ payBusy = false; showError(T.payInitFail); return; }
+    var wrap = document.getElementById('v2-toss-widget');
+    var btn = document.getElementById('v2-pay-confirm');
     try{
-      var payment = window.TossPayments(d.clientKey).payment({ customerKey: window.TossPayments.ANONYMOUS });
-      var base = returnBase();
-      payment.requestPayment({
-        method: 'CARD',
-        amount: { currency: d.currency || 'KRW', value: d.amount },
-        orderId: d.orderId,
-        orderName: d.orderName,
-        successUrl: base + '?toss=direct',
-        failUrl: base + '?toss=fail',
-        card: { useEscrow: false, flowMode: 'DEFAULT', useCardPoint: false, useAppCardOnly: false }
-      }).catch(function(err){
-        payBusy = false;
-        showError(err && err.code === 'USER_CANCEL' ? T.payCancelled : ((err && err.message) || T.payInitFail));
-        showPhase(phasePay);
-      });
-    }catch(e){ payBusy = false; showError(T.payInitFail); showPhase(phasePay); }
+      if(!tossWidgets){
+        tossWidgets = window.TossPayments(d.clientKey).widgets({ customerKey: window.TossPayments.ANONYMOUS });
+      }
+      btn.textContent = '₩' + String(d.amount).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' 결제하기';
+      wrap.style.display = 'block';
+      tossWidgets.setAmount({ currency: d.currency || 'KRW', value: d.amount })
+        .then(function(){
+          if(tossWidgetRendered) return;
+          return tossWidgets.renderPaymentMethods({ selector: '#v2-pm' })
+            .then(function(){ return tossWidgets.renderAgreement({ selector: '#v2-agree' }); })
+            .then(function(){ tossWidgetRendered = true; });
+        })
+        .then(function(){
+          payBusy = false;
+          wrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        })
+        .catch(function(e){
+          payBusy = false; wrap.style.display = 'none';
+          showError((e && e.message) || T.payInitFail);
+        });
+      btn.onclick = function(){
+        var base = returnBase();
+        tossWidgets.requestPayment({
+          orderId: d.orderId,
+          orderName: d.orderName,
+          successUrl: base + '?toss=direct',
+          failUrl: base + '?toss=fail'
+        }).catch(function(err){
+          showError(err && err.code === 'USER_CANCEL' ? T.payCancelled : ((err && err.message) || T.payInitFail));
+        });
+      };
+    }catch(e){ payBusy = false; showError(T.payInitFail); }
   }
 
   function startLemon(d, lemonWin){
