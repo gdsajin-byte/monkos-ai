@@ -1385,7 +1385,10 @@ function isEngineCompatibleSpec(specData) {
   if (!m) return false;
   const w = parseFloat(m[1]);
   const h = parseFloat(m[2]);
-  if (!w || !h || h / w < 1.15) return false;
+  // 정사각(1:1)까지 허용 — 규격 안착 크롭 파이프라인(crop-engine v2)이 비율을 보장 (2026-07-06 게이트 완화).
+  // 종전 h/w ≥ 1.15는 크롭 부재 시절의 보수 게이트 (07-04 감사 P0). 가로형(h<w)만 계속 제외.
+  if (!w || !h || h / w < 1.0) return false;
+  // 유색 배경은 잔존 제외 — 생성 엔진이 순백 고정 (배경 재채색 미구현)
   const bg = String(specData.background || '').trim();
   return bg.startsWith('흰') || /^white/i.test(bg);
 }
