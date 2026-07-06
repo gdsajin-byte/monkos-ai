@@ -300,6 +300,20 @@
           updateGenerateBtn();
           return;
         }
+        // 크레딧 부족 402 — 화면 잔액이 스테일한 경우(결제 취소 회수 등): 오류 팝업 대신 결제 위저드로 안내
+        if (!useToken && res.status === 402) {
+          if (typeof currentUser !== 'undefined' && currentUser && typeof data.credits === 'number') {
+            currentUser.credits = data.credits;
+            if (typeof updateBalance === 'function') updateBalance();
+          }
+          showMainSections();
+          persistPayState();
+          setPayMode('direct');
+          showPaySection();
+          generateBtn.disabled = false;
+          updateGenerateBtn();
+          return;
+        }
         throw new Error(data.error || 'Generation failed');
       }
 
