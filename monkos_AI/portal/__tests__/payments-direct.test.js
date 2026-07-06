@@ -114,7 +114,7 @@ jest.unstable_mockModule('../lib/shared/config.js', () => ({
   TOSS_CLIENT_KEY: 'test_ck_dummy',
   VARIANT_CREDITS: { '1825695': 40 },
   TOSS_AMOUNT_CREDITS: {},
-  PRODUCTS: { topup_10: { price: 1450, credits: 10, bonus: 0 } },
+  PRODUCTS: { topup_10: { price: 1500, credits: 10, bonus: 0 } },
   DIRECT_PRICING: {
     kr: { provider: 'toss', amount: 2000, currency: 'KRW' },
     global: { provider: 'lemon' },

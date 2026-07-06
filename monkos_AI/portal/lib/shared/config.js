@@ -139,7 +139,7 @@ export const PRODUCTS = {
   package_100: { price: 12900, credits: 100, bonus: 30 },
   package_300: { price: 34900, credits: 300, bonus: 120 },
   package_500: { price: 49900, credits: 500, bonus: 250 },
-  topup_10:    { price: 1450,  credits: 10,  bonus: 0 },
+  topup_10:    { price: 1500,  credits: 10,  bonus: 0 },  // 10c = $1 = ₩1,500 (2026-07-06 작가님 확정)
 };
 
 // 하위호환: amount → 총 크레딧 매핑 (payments.js 역참조용)

@@ -9,7 +9,7 @@ const PRODUCTS = {
   package_100: { price: 12900, credits: 100, bonus: 30 },
   package_300: { price: 34900, credits: 300, bonus: 120 },
   package_500: { price: 49900, credits: 500, bonus: 250 },
-  topup_10:    { price: 1450,  credits: 10,  bonus: 0 },
+  topup_10:    { price: 1500,  credits: 10,  bonus: 0 },
 };
 
 // 하위호환 매핑 (config.js 동일)
@@ -35,7 +35,7 @@ describe('v3 TOSS_AMOUNT_CREDITS 매핑', () => {
   });
 
   test('₩1,450 → 10c (소액)', () => {
-    expect(TOSS_AMOUNT_CREDITS[1450]).toBe(10);
+    expect(TOSS_AMOUNT_CREDITS[1500]).toBe(10);
   });
 
   test('미등록 금액 → undefined', () => {

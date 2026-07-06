@@ -44,7 +44,7 @@ function renderShopItems() {
       '<button class="shop-item" onclick="buyToss(12900)"><span>100c <small style="color:var(--ink-m)">(+30 bonus)</small></span><span class="amount">₩12,900</span></button>' +
       '<button class="shop-item best" onclick="buyToss(34900)"><span>300c <small style="color:var(--ink-m)">(+120 bonus)</small></span><span class="amount">₩34,900 <small style="color:var(--green)">BEST</small></span></button>' +
       '<button class="shop-item" onclick="buyToss(49900)"><span>500c <small style="color:var(--ink-m)">(+250 bonus)</small></span><span class="amount">₩49,900</span></button>' +
-      '<button class="shop-item" onclick="buyToss(1450)"><span>10c</span><span class="amount">₩1,450</span></button>';
+      '<button class="shop-item" onclick="buyToss(1500)"><span>10c</span><span class="amount">₩1,500</span></button>';
   } else {
     if (titleEl) titleEl.textContent = (lang === 'ja') ? 'クレジットチャージ' : 'Credit Charge';
     if (labelEl) labelEl.innerHTML = (lang === 'ja')

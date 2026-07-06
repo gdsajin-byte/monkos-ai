@@ -332,14 +332,14 @@ export async function handleTossConfirm(req, res) {
     const product = Object.values(PRODUCTS).find(p => p.price === amount);
     let credits = product ? product.credits + product.bonus : null;
 
-    // 맞춤 충전: 패키지 매핑에 없으면 정가(₩145/c) 기준 10c 배수 검증
+    // 맞춤 충전: 패키지 매핑에 없으면 정가(₩150/c = 10c당 ₩1,500 = $1) 기준 10c 배수 검증 (2026-07-06 확정)
     if (!credits) {
-      const customCredits = amount / 145;
+      const customCredits = amount / 150;
       if (customCredits >= 10 && Number.isInteger(customCredits) && customCredits % 10 === 0) {
         credits = customCredits;
       } else {
         res.writeHead(400, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: `유효하지 않은 결제 금액: ${amount} (패키지 또는 ₩145 × 10c 배수만 가능)` }));
+        res.end(JSON.stringify({ error: `유효하지 않은 결제 금액: ${amount} (패키지 또는 ₩150 × 10c 배수만 가능)` }));
         return;
       }
     }

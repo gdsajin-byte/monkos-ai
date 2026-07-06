@@ -10,7 +10,7 @@ const PRICING = {
     retouch: 10, download: 70, bonus: 10,
     packages: [
       { credits: 80, price: 9900, label: '📸 1장 팩', detail: '70c + 보너스 10c' },
-      { credits: 10, price: 1450, label: '10c 충전', detail: '' },
+      { credits: 10, price: 1500, label: '10c 충전', detail: '' },
       { credits: 130, price: 12900, label: '130c 패키지', detail: '100c + 보너스 30c' },
       { credits: 420, price: 34900, label: '420c 패키지', detail: '300c + 보너스 120c — 추천' },
       { credits: 750, price: 49900, label: '750c 패키지', detail: '500c + 보너스 250c' },

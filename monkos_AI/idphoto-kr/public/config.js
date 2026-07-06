@@ -133,7 +133,7 @@ export const CHARGE_OPTIONS = [
   { key: 'package_500', label: '500 크레딧', price: 49900, credits: 500, bonus: 250, best: true },
 ];
 
-export const KRW_PER_CREDIT = 145;
+export const KRW_PER_CREDIT = 150; // 10c = ₩1,500 = $1 (2026-07-06 확정)
 
 // 스키마 버전
 export const SCHEMA_VERSION = 'v5';

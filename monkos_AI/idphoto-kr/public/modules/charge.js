@@ -8,7 +8,7 @@ import { store, Monk, TOSS_CLIENT_KEY, closeCreditModal, buyCreditsKR, CHARGE_OP
 
 // ─── 소액충전 스테퍼 ───
 const STEP_UNIT = 10;    // credits per step
-const STEP_PRICE = 1450; // KRW per 10c
+const STEP_PRICE = 1500; // KRW per 10c
 const STEP_MIN = 1;      // 10c
 const STEP_MAX = 10;     // 100c
 
