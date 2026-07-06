@@ -334,11 +334,9 @@
     updateGenerateBtn();
   }
 
-  generateBtn.addEventListener('click', function() {
+  // 생성 게이트 (만들기 CTA · 다시 생성 공용): 크레딧 → 기결제 토큰 → 결제 위저드
+  function startGenerateFlow() {
     if (!uploadedImage || !selectedStyle) return;
-    if (typeof monkTrack === 'function') {
-      monkTrack('click_cta', { button_id: 'generate', style: selectedStyle });
-    }
 
     var loggedIn = (typeof currentUser !== 'undefined' && !!currentUser);
     var credits = loggedIn ? (currentUser.credits || 0) : 0;
@@ -364,6 +362,14 @@
     }
     if (typeof openCreditShop === 'function') openCreditShop();
     else alert(i18n.insufficientCredits || 'Insufficient credits');
+  }
+
+  generateBtn.addEventListener('click', function() {
+    if (!uploadedImage || !selectedStyle) return;
+    if (typeof monkTrack === 'function') {
+      monkTrack('click_cta', { button_id: 'generate', style: selectedStyle });
+    }
+    startGenerateFlow();
   });
 
   /* ─── T1 직접결제 플로우 (specs v2 패턴 이식) ─── */
@@ -656,12 +662,14 @@
     }
   })();
 
+  // 다시 생성: 선택 스타일·사진 그대로 재생성 (크레딧/토큰 없으면 결제 위저드)
   retryBtn.addEventListener('click', function() {
+    if (!uploadedImage || !selectedStyle) return;
+    if (typeof monkTrack === 'function') {
+      monkTrack('click_cta', { button_id: 'regenerate', style: selectedStyle });
+    }
     resultEl.style.display = 'none';
-    document.getElementById('hsUploadSection').style.display = 'block';
-    document.getElementById('hsStyleSection').style.display = 'block';
-    document.getElementById('hsGenerateSection').style.display = 'block';
-    updateGenerateBtn();
+    startGenerateFlow();
   });
 
   downloadBtn.addEventListener('click', function() {
