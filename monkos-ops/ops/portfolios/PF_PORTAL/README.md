@@ -91,6 +91,7 @@ status: active
 | 06/11 | 막내1 | **CMS 정밀감사 + 즉시수정 6건 + 보안·색인 3건** — 감사 Critical 1/High 2/Medium 4 식별 → maxOutputTokens 복원·llms.txt 동적화·Naver API 주입·deploy.sh --set-secrets 전환·/admin HTML 인증 가드·pingSitemap 폐기·Indexing 관측성 강화. rev 00279→00281→00284 | REPORT+COMPLETION 4건 | ✅ |
 | 06/12 | 민아 | **디자인 프레임워크+워크플로우 설계서 발행** (Phase 7 재개 기반) — v5 6주 정체 원인(일회성 시안→수동컨버트→종료) 진단 → 프레임워크 3층(토큰 정비/컴포넌트·타일/서비스 레지스트리) + 6단계 파이프라인(시안→검토→컨버트→preview→검증→전환, 게이트·담당 고정) 설계. 작가님 결정: **포털 파일럿→점진확장 / 코드우선(CSS토큰+순수JS)**. v5 결정 5건 답안 선반영(render확장·아이콘축소·히어로토글·예비숨김·Wave분리) | [DESIGN](monkos-ops/tech/designs/2026-06/DESIGN_20260612_디자인프레임워크_워크플로우.md) | ⏳ 작가님 확인 |
 | 06/19 | 웹/민아 | **어드민 idphoto 리뷰 페이지 신설** — `/admin/idphoto-review.html` + `GET /api/admin/idphoto/results`(requireAdmin). 버킷 원본↔결과물 짝맞춤·Signed URL(1h)·KR/JP 토글. 기존 패턴(getFiles·requireAdmin·dashboard 인증) 재사용, 스키마 변경 0 | [COMPLETION](../../reports/2026-06/COMPLETION_20260619_웹민아_IDPHOTO어드민리뷰_퍼널진단.md), PR #86 `0fb98c47` | ⏳ 배포대기(맥) |
+| 07/06 | 민아 | **결제 취소/환불 회수 체계 봉합** (작가님 실증 발단: 토스 취소에도 크레딧 잔존) — 총점검 6건 발견·당일 봉합: ①토스 취소 웹훅 `/api/webhooks/toss` 신설(조회 API 재검증, 충전 회수 0하한·단건 토큰 revoke·멱등) ②`/api/credits/refund` 무증빙 셀프환불(+70c 무한) → lastUse 차감대조 가드 ③confirm 세션 바인딩 ④krwRate 150 정정 ⑤텔레그램 경보 침묵 실패(Markdown 파스 400 유실) 해소 ⑥크레딧 402 시 결제 위저드 안내. 토스 대시보드 웹훅 등록(작가님). **라이브 실증: 토스 충전 취소 80c 자동 회수(17:04)·레몬 단건 환불 토큰 무효화(07-05 로그)**. jest 79/79(+18), prod 00398~00400 | [REPORT](../../reports/2026-07/REPORT_20260706_iMac민아_크레딧결제시스템총점검.md), 커밋 51d7e8da·7ecf2bab·d6c25c5e | ✅ |
 
 ---
 
