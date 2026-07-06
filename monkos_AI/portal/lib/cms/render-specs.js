@@ -1455,7 +1455,8 @@ a:hover { color: #5a3de6; }
   position: relative; min-height: 280px;
 }
 .v2-photo-frame {
-  width: 160px; height: 206px; background: #e8e9ed; border-radius: 6px;
+  /* 프레임 비율 = 규격 비율 (인라인 --spec-ar로 페이지별 주입, 2026-07-06 정합 — 종전 160×206 고정이 정사각 규격을 세로로 왜곡) */
+  width: 160px; aspect-ratio: var(--spec-ar, 35/45); background: #e8e9ed; border-radius: 6px;
   border: 1px solid rgba(0,0,0,0.08); position: relative;
   display: flex; align-items: center; justify-content: center;
   overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.08);
@@ -2015,7 +2016,11 @@ ${hreflangTags}
         </table>
       </div>
       <div class="v2-diagram-wrap">
-        <div class="v2-photo-frame">
+        <div class="v2-photo-frame"${(() => {
+          // 규격 비율을 프레임에 주입 — 정사각(51x51)이 세로 틀로 왜곡되던 정합 사고 (2026-07-06)
+          const mm = (sizeMm || '').split('x').map(Number);
+          return (mm.length === 2 && mm[0] > 0 && mm[1] > 0) ? ` style="--spec-ar:${mm[0]}/${mm[1]}"` : '';
+        })()}>
           <img src="${imgSrc}" alt="${escapeHtml(countryName)} ${escapeHtml(typeName)}"
                onerror="this.src='${fallbackSrc}';this.onerror=function(){this.style.display='none'}">
           <div class="v2-dim-head">${escapeHtml(locField(specData, 'headHeight', lang))}</div>
