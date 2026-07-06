@@ -385,3 +385,28 @@
   .hs-lightbox-content img { max-height: 60vh; }
   .hs-history-header { flex-wrap: wrap; gap: 8px; }
 }
+
+/* === 실사 스타일 카드 + 결제 위저드 (2026-07-06 클로드 디자인 시안 이식) === */
+.hs-style-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; }
+.hs-style-card { padding: 0 0 12px; overflow: hidden; text-align: center; }
+.hs-style-img {
+  width: 100%; aspect-ratio: 4 / 5; object-fit: cover; display: block;
+  border-radius: 10px 10px 0 0; margin-bottom: 8px;
+}
+.hs-style-card .hs-style-label { font-size: 13px; padding: 0 8px; }
+.hs-style-desc { font-size: 11px; color: var(--text-dim, #888); padding: 0 10px; line-height: 1.4; }
+.hs-style-card.selected { box-shadow: 0 0 0 3px rgba(108, 79, 255, 0.35); }
+.hs-pay-back {
+  background: none; border: none; color: var(--accent, #6c4fff);
+  font-size: 0.85rem; cursor: pointer; padding: 0; margin-bottom: 10px;
+}
+.hs-pay-back:hover { text-decoration: underline; }
+.hs-pay-sel {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
+  padding: 8px 10px; border-radius: 10px; background: rgba(108, 79, 255, 0.06);
+}
+.hs-pay-sel img { border-radius: 6px; object-fit: cover; }
+.hs-pay-sel span { font-size: 0.9rem; font-weight: 600; color: var(--text-bright); }
+@media (max-width: 560px) {
+  .hs-style-grid { grid-template-columns: repeat(2, 1fr); }
+}

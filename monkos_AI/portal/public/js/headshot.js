@@ -61,13 +61,21 @@
   }
   function showPaySection(msg) {
     if (!paySection) return;
+    // 위저드 전환 (2026-07-06 작가님): 업로드·스타일·CTA 화면을 접고 결제 화면만 표시.
+    // 선택 스타일 썸네일+이름 칩으로 맥락 유지, 뒤로가기는 hsPayBack.
+    document.getElementById('hsUploadSection').style.display = 'none';
+    document.getElementById('hsStyleSection').style.display = 'none';
+    document.getElementById('hsGenerateSection').style.display = 'none';
+    var selImg = document.getElementById('hsPaySelImg');
+    var selName = document.getElementById('hsPaySelName');
+    if (selImg && selectedStyle) selImg.src = '/images/headshot/style-' + selectedStyle + '.webp';
+    if (selName && selectedStyle) {
+      var card = document.querySelector('.hs-style-btn[data-style="' + selectedStyle + '"] .hs-style-label');
+      selName.textContent = card ? card.textContent : '';
+    }
     paySection.style.display = 'block';
     if (msg) showPayError(msg); else hidePayError();
-    // 확실한 이동 + 짧은 강조 — CTA 클릭이 "무반응"으로 느껴지는 문제 방지 (2026-07-06 작가님)
-    paySection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    paySection.style.transition = 'box-shadow 0.3s';
-    paySection.style.boxShadow = '0 0 0 3px rgba(108,79,255,0.45)';
-    setTimeout(function() { paySection.style.boxShadow = 'none'; }, 900);
+    paySection.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   /* ─── GA4 퍼널 (주문 단위 1회 가드 — paymentToken 절대 미포함, transaction_id=orderId) ─── */
@@ -125,7 +133,11 @@
   }
 
   function updateGenerateBtn() {
-    generateBtn.disabled = !(uploadedImage && selectedStyle);
+    var ready = !!(uploadedImage && selectedStyle);
+    generateBtn.disabled = !ready;
+    // CTA 상태 라벨: 준비 전 "스타일을 선택해 주세요" → 준비 후 "이 스타일로 헤드샷 만들기" (2026-07-06 시안)
+    var lbl = ready ? generateBtn.getAttribute('data-label-make') : generateBtn.getAttribute('data-label-select');
+    if (lbl) generateBtn.textContent = lbl;
   }
 
   function updateBalance() {
@@ -243,6 +255,7 @@
 
   function showMainSections() {
     loadingEl.style.display = 'none';
+    if (paySection) paySection.style.display = 'none';
     document.getElementById('hsUploadSection').style.display = 'block';
     document.getElementById('hsStyleSection').style.display = 'block';
     document.getElementById('hsGenerateSection').style.display = 'block';
@@ -361,7 +374,14 @@
   });
 
   /* ─── T1 직접결제 플로우 (specs v2 패턴 이식) ─── */
-  // 선택지 ① — 비로그인: 로그인(신규 10c) / 로그인(크레딧 부족): 충전 샵
+  // 위저드 뒤로가기 — 결제 화면 → 스타일 선택 복귀
+  var payBackBtn = document.getElementById('hsPayBack');
+  if (payBackBtn) payBackBtn.addEventListener('click', function() {
+    showMainSections();
+    document.getElementById('hsStyleSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  // 선택지 ② — 비로그인: 로그인(신규 10c) / 로그인(크레딧 부족): 충전 샵
   var optFreeBtn = document.getElementById('hsOptFree');
   if (optFreeBtn) optFreeBtn.addEventListener('click', function() {
     var loggedIn = (typeof currentUser !== 'undefined' && !!currentUser);

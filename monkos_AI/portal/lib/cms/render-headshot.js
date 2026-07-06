@@ -19,6 +19,13 @@ const I18N = {
       professional: '전문직 프로필',
       dating: '데일리 · 소개팅',
     },
+    styleDesc: {
+      linkedin_pro: '밝은 오피스, 신뢰감 있는 톤',
+      corporate: '스튜디오 조명, 격식 있는 무드',
+      creative: '자연광, 편안하고 감각적인 분위기',
+      professional: '깔끔한 배경, 단정한 인상',
+      dating: '따뜻한 야외 감성, 자연스러운 미소',
+    },
     generateBtn: '헤드샷 생성하기',
     creditCost: '10 credits',
     balanceLabel: '잔액',
@@ -47,6 +54,9 @@ const I18N = {
       title: '결제 방법 선택',
       instant: '바로 결제 (회원가입 불필요)',
       desc: '1회 결제로 헤드샷 1컷 생성',
+      ctaSelect: '스타일을 선택해 주세요',
+      ctaMake: '이 스타일로 헤드샷 만들기',
+      back: '스타일 다시 고르기',
       makeBtn: '이 사진으로 만들기',
       freeTitle: '🎁 첫 로그인 무료 체험 — 10c(1컷) 지급',
       freeSub: '크레딧 충전 시 패키지 할인',
@@ -85,6 +95,13 @@ const I18N = {
       professional: 'Professional',
       dating: 'Dating Profile',
     },
+    styleDesc: {
+      linkedin_pro: 'Bright office, trustworthy tone',
+      corporate: 'Studio lighting, formal mood',
+      creative: 'Natural light, relaxed and expressive',
+      professional: 'Clean backdrop, polished look',
+      dating: 'Warm outdoor vibe, natural smile',
+    },
     generateBtn: 'Generate Headshot',
     creditCost: '10 credits',
     balanceLabel: 'Balance',
@@ -113,6 +130,9 @@ const I18N = {
       title: 'Choose Payment',
       instant: 'Pay now (no signup)',
       desc: 'One payment, one headshot',
+      ctaSelect: 'Choose a style first',
+      ctaMake: 'Create my headshot in this style',
+      back: 'Choose a different style',
       makeBtn: 'Create with this photo',
       freeTitle: '🎁 First sign-in free — 10 credits (1 headshot)',
       freeSub: 'Bulk discounts on credit top-ups',
@@ -151,6 +171,13 @@ const I18N = {
       professional: '専門職プロフィール',
       dating: 'デイリー · マッチング',
     },
+    styleDesc: {
+      linkedin_pro: '明るいオフィス、信頼感のあるトーン',
+      corporate: 'スタジオ照明、フォーマルなムード',
+      creative: '自然光、リラックスした雰囲気',
+      professional: '清潔な背景、端正な印象',
+      dating: '暖かい屋外の空気感、自然な笑顔',
+    },
     generateBtn: 'ヘッドショットを生成',
     creditCost: '10 credits',
     balanceLabel: '残高',
@@ -179,6 +206,9 @@ const I18N = {
       title: 'お支払い方法を選択',
       instant: '今すぐ支払う（登録不要）',
       desc: '1回のお支払いで1枚生成',
+      ctaSelect: 'スタイルを選んでください',
+      ctaMake: 'このスタイルで作成',
+      back: 'スタイルを選び直す',
       makeBtn: 'この写真で作成',
       freeTitle: '🎁 初回ログイン無料 — 10c（1枚）付与',
       freeSub: 'クレジットチャージでまとめ買い割引',
@@ -239,14 +269,13 @@ function getSeoMeta(lang) {
 <script type="application/ld+json">${jsonLd}</script>`;
 }
 
-function buildStyleButtons(styles) {
-  const icons = {
-    linkedin_pro: '💼', corporate: '🏢', creative: '🎨', professional: '📄', dating: '😊',
-  };
+function buildStyleButtons(styles, descs = {}) {
+  // 실사 카드 (2026-07-06 클로드 디자인 시안 이식) — 이모지 → 스타일별 결과 예시 사진
   return Object.entries(styles).map(([key, label]) =>
-    `<button class="hs-style-btn" data-style="${key}">
-      <span class="hs-style-icon">${icons[key] || ''}</span>
+    `<button class="hs-style-btn hs-style-card" data-style="${key}">
+      <img class="hs-style-img" src="/images/headshot/style-${key}.webp" alt="${escapeHtml(label)}" loading="lazy" width="480" height="600">
       <span class="hs-style-label">${escapeHtml(label)}</span>
+      <span class="hs-style-desc">${escapeHtml(descs[key] || '')}</span>
     </button>`
   ).join('\n');
 }
@@ -298,33 +327,39 @@ export function renderHeadshot(req, res, forceLang = null) {
 <section class="hs-section" id="hsStyleSection">
   <h2 class="hs-section-title">${escapeHtml(d.styleTitle)}</h2>
   <div class="hs-style-grid">
-    ${buildStyleButtons(d.styles)}
+    ${buildStyleButtons(d.styles, d.styleDesc)}
   </div>
 </section>
 
 <section class="hs-section" id="hsGenerateSection">
   <!-- 중립 CTA (2026-07-05 작가님): 가격 없는 "이 사진으로 만들기" → 클릭 시 결제 선택 화면.
        로그인+크레딧 충분 사용자만 JS가 즉시 크레딧 생성으로 직결 -->
-  <button class="hs-btn hs-btn-generate" id="hsGenerateBtn" disabled>
-    ${escapeHtml(d.pay.makeBtn)}
+  <button class="hs-btn hs-btn-generate" id="hsGenerateBtn" disabled
+    data-label-select="${escapeHtml(d.pay.ctaSelect)}" data-label-make="${escapeHtml(d.pay.ctaMake)}">
+    ${escapeHtml(d.pay.ctaSelect)}
   </button>
   <p class="hs-balance" id="hsBalance"></p>
 </section>
 
 <!-- 비로그인 직접결제 (T1 — specs v2 패턴 이식, 2026-07-05) -->
 <section class="hs-section" id="hsPaySection" style="display:none;">
+  <button type="button" class="hs-pay-back" id="hsPayBack">← ${escapeHtml(d.pay.back)}</button>
+  <div class="hs-pay-sel">
+    <img id="hsPaySelImg" src="" alt="" width="48" height="60">
+    <span id="hsPaySelName"></span>
+  </div>
   <h2 class="hs-section-title">${escapeHtml(d.pay.title)}</h2>
-  <!-- 선택지 ① 첫 로그인 무료 체험(크레딧 경로) — 로그인+크레딧부족 상태에선 JS가 충전 라벨로 전환 -->
-  <button class="hs-btn hs-btn-secondary" id="hsOptFree" style="width:100%;text-align:center;"
+  <!-- 선택지 ① 바로 결제 (비회원 직접결제, 주 CTA — 2차 시안 강조 순서) -->
+  <button class="hs-btn hs-btn-generate" id="hsPayInstant">
+    ${escapeHtml(d.pay.instant)} — ${priceLabel}
+  </button>
+  <p class="hs-section-desc">${escapeHtml(d.pay.desc)}</p>
+  <!-- 선택지 ② 크레딧 경로 — 비로그인: 첫 로그인 무료 체험 / 로그인+부족: 충전 라벨로 전환 -->
+  <button class="hs-btn hs-btn-secondary" id="hsOptFree" style="width:100%;text-align:center;margin-top:10px;"
     data-title-free="${escapeHtml(d.pay.freeTitle)}" data-title-charge="${escapeHtml(d.pay.chargeTitle)}">
     <span id="hsOptFreeTitle">${escapeHtml(d.pay.freeTitle)}</span>
     <span id="hsOptFreeSub" style="display:block;font-size:0.82rem;color:#888;margin-top:2px;">${escapeHtml(d.pay.freeSub)}</span>
   </button>
-  <!-- 선택지 ② 바로 결제 (비회원 직접결제) -->
-  <button class="hs-btn hs-btn-generate" id="hsPayInstant" style="margin-top:10px;">
-    ${escapeHtml(d.pay.instant)} — ${priceLabel}
-  </button>
-  <p class="hs-section-desc">${escapeHtml(d.pay.desc)}</p>
   <div id="hsTossWidget" style="display:none;">
     <div id="hs-pm"></div>
     <div id="hs-agree"></div>
