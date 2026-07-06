@@ -234,6 +234,7 @@ monkos-ops/는 4부서 체제로 재편 중이며, 과도기에는 번호 폴더
 | `photolab` | monk.kr 프로덕션 증명사진 | Cloudflare Pages: monk-kr |
 | `monk-kr` | monk.kr 포털 | Cloudflare Pages: monk-kr |
 | `image-engine` | Imagen API 서비스 | Cloud Run: monk-image-engine |
+| `crop-engine` | 규격 안착 크롭 엔진 (FaceMesh) | Cloud Run: monkos-crop-engine (asia-northeast3) |
 | `ops` | 운영 체계 (monkos-ops) | 비배포 (인프라) |
 
 - 신규 서비스 추가 시 이 테이블에 등록 필수.
