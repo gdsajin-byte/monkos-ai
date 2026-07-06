@@ -227,6 +227,8 @@
     uploadPreview.style.display = 'none';
     fileInput.value = '';
     cameraInput.value = '';
+    // 저장 초안도 함께 제거 — 안 지우면 restoreDraft가 새로고침마다 사진을 되살림
+    try { sessionStorage.removeItem(IMG_KEY); } catch (err) {}
     updateStepIndicators();
     updateGenerateBtn();
   });
