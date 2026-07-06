@@ -223,7 +223,7 @@ describe('렌더 — /headshot ko 기본 + 결제 UI', () => {
     expect(html).toContain('id="hs-pm"');
     expect(html).toContain('id="hs-agree"');
     expect(html).toContain('id="hsPayConfirm"');
-    expect(html).toContain('id="hsPayInstant"');
+    expect(html).toContain('id="hsPayGo"'); // 2카드+상태 CTA (07-06 시안)
   });
 
   test('ko = kr 시장 — ₩2,000 표기 + 토스 위젯 SDK(v2/standard) 로드', () => {
@@ -246,6 +246,6 @@ describe('렌더 — /headshot ko 기본 + 결제 UI', () => {
     expect(html).toContain('<html lang="ja">');
     expect(html).toContain('$1.99');
     expect(html).toContain('"market":"jp"');
-    expect(html).toContain('お支払い方法を選択');
+    expect(html).toContain('お支払い方法');
   });
 });

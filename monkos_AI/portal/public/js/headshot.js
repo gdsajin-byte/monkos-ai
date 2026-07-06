@@ -29,7 +29,6 @@
 
   /* ─── T1 직접결제 상태 ─── */
   var paySection = document.getElementById('hsPaySection');
-  var payInstantBtn = document.getElementById('hsPayInstant');
   var payErrorEl = document.getElementById('hsPayError');
   var tossWidgetWrap = document.getElementById('hsTossWidget');
   var payConfirmBtn = document.getElementById('hsPayConfirm');
@@ -349,18 +348,10 @@
     // 기결제 토큰 보유 — 재결제 없이 생성
     if (hasUsableToken()) return runGenerate(true);
 
-    // 결제 선택 화면: ① 첫 로그인 무료 체험(로그인 시 충전 라벨) ② 바로 결제 (2026-07-05 작가님)
+    // 결제 화면 전환 (2카드 선택식 — 클로드 디자인 시안, 2026-07-06)
     if (PAY && PAY.market && paySection) {
       persistPayState(); // 결제 전 선행 저장 (리다이렉트 생존) — 결제 클릭 체인 밖
-      var optBtn = document.getElementById('hsOptFree');
-      var optTitle = document.getElementById('hsOptFreeTitle');
-      var optSub = document.getElementById('hsOptFreeSub');
-      if (optBtn && optTitle) {
-        var t = loggedIn ? optBtn.getAttribute('data-title-charge') : optBtn.getAttribute('data-title-free');
-        if (t) optTitle.textContent = t;
-        // 충전 모드에선 부제(무료 체험 문구) 숨김 — 문구 이어붙음 방지
-        if (optSub) optSub.style.display = loggedIn ? 'none' : 'block';
-      }
+      setPayMode('direct');
       showPaySection();
       return;
     }
@@ -383,9 +374,38 @@
     document.getElementById('hsStyleSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 
-  // 선택지 ② — 비로그인: 로그인(신규 10c) / 로그인(크레딧 부족): 충전 샵
-  var optFreeBtn = document.getElementById('hsOptFree');
-  if (optFreeBtn) optFreeBtn.addEventListener('click', function() {
+  // ─── 결제 방식 2카드 선택 + 상태 CTA (클로드 디자인 시안) ───
+  var payMode = 'direct';
+  var payGoBtn = document.getElementById('hsPayGo');
+  var payGoSub = document.getElementById('hsPayGoSub');
+  var payCardD = document.getElementById('hsPayCardDirect');
+  var payCardC = document.getElementById('hsPayCardCredit');
+
+  function setPayMode(m) {
+    payMode = m;
+    if (payCardD) payCardD.classList.toggle('selected', m === 'direct');
+    if (payCardC) payCardC.classList.toggle('selected', m === 'credit');
+    updatePayGo();
+  }
+  function updatePayGo() {
+    if (!payGoBtn) return;
+    var loggedIn = (typeof currentUser !== 'undefined' && !!currentUser);
+    if (payMode === 'direct') {
+      payGoBtn.textContent = payGoBtn.getAttribute('data-label-direct') || payGoBtn.textContent;
+      if (payGoSub) payGoSub.textContent = payGoBtn.getAttribute('data-sub-direct') || '';
+    } else {
+      payGoBtn.textContent = payGoBtn.getAttribute(loggedIn ? 'data-label-credit-charge' : 'data-label-credit-login') || payGoBtn.textContent;
+      if (payGoSub) payGoSub.textContent = payGoBtn.getAttribute('data-sub-credit') || '';
+    }
+    var bal = document.getElementById('hsPayCredBal');
+    if (bal) bal.textContent = (loggedIn ? (currentUser.credits || 0) : 0) + 'c';
+  }
+  if (payCardD) payCardD.addEventListener('click', function() { setPayMode('direct'); });
+  if (payCardC) payCardC.addEventListener('click', function() { setPayMode('credit'); });
+
+  if (payGoBtn) payGoBtn.addEventListener('click', function() {
+    if (payMode === 'direct') return startDirectPay();
+    // 크레딧 경로 — 비로그인: 간편로그인(신규 10c) / 로그인: 충전 샵 (모달 미가용 시 충전 페이지 폴백)
     var loggedIn = (typeof currentUser !== 'undefined' && !!currentUser);
     if (!loggedIn) {
       if (typeof headerLogin === 'function') headerLogin();
@@ -394,7 +414,6 @@
     if (typeof monkTrack === 'function') {
       monkTrack('open_credit_shop', { current_credits: (currentUser.credits || 0), page: 'headshot' });
     }
-    // 모달 미가용 시 충전 페이지로 폴백 (무반응 방지) — 이미지 보존 후 복귀 경로 부여
     if (typeof openCreditShop === 'function' && document.getElementById('creditShopModal')) {
       openCreditShop();
     } else {
@@ -403,7 +422,7 @@
     }
   });
 
-  if (payInstantBtn) payInstantBtn.addEventListener('click', function() {
+  function startDirectPay() {
     if (!uploadedImage || !selectedStyle || payBusy) return;
     // 결제 완료 토큰 보유 시 이중 결제 방지 — 바로 생성
     if (hasUsableToken()) return runGenerate(true);
@@ -441,7 +460,7 @@
       if (lemonWin) { try { lemonWin.close(); } catch (e) {} }
       showPayError(PT.errNet);
     });
-  });
+  }
 
   // 토스 결제위젯 방식 필수 — 상점 라이브 계약이 위젯(live_gck)에만 있음. 구 결제창(payment()) 금지.
   var tossWidgets = null, tossWidgetRendered = false;

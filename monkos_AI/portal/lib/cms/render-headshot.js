@@ -4,14 +4,15 @@ import { log } from '../shared/config.js';
 const I18N = {
   ko: {
     title: 'AI 프로페셔널 헤드샷',
-    subtitle: '30초 만에 완성하는 비즈니스 프로필 사진',
+    subtitle: '셀카 한 장이면 충분해요. 30초 뒤, 스튜디오급 프로필이 완성됩니다.',
     metaDesc: 'AI로 프로페셔널 헤드샷을 30초 만에 생성하세요. 링크드인, 이력서, 기업 프로필에 최적화된 비즈니스 사진.',
     uploadTitle: '내 사진 업로드',
-    uploadDesc: '정면 셀카 또는 상반신 사진을 올려주세요',
-    uploadBtn: '사진 선택',
-    cameraBtn: '카메라 촬영',
-    dragText: '또는 여기에 드래그',
+    uploadDesc: '얼굴이 잘 보이는 정면 셀카 한 장이면 돼요',
+    uploadBtn: '사진 올리기',
+    cameraBtn: '카메라로 찍기',
+    dragText: '파일을 여기로 끌어다 놓아도 돼요',
     styleTitle: '스타일 선택',
+    styleSubtitle: '어디에 쓸 프로필인가요? 용도에 맞는 스타일을 골라주세요',
     styles: {
       linkedin_pro: '링크드인 · 비즈니스',
       corporate: '임원 · 기업 프로필',
@@ -51,7 +52,22 @@ const I18N = {
     step3: 'AI 생성',
     step3Desc: '30초 만에 프로 헤드샷 완성',
     pay: {
-      title: '결제 방법 선택',
+      title: '결제 방법',
+      subtitle: '한 번만 써볼지, 여러 컷 만들지에 따라 골라주세요',
+      cardDirect: '바로 결제',
+      badgeNoSignup: '회원가입 불필요',
+      unitOne: '헤드샷 1컷',
+      cardDirectDesc: '지금 이 사진 한 장만 빠르게 만들 때',
+      cardCredit: '크레딧 충전',
+      badgeBulk: '충전할수록 할인',
+      creditFrom: '₩1,240',
+      unitFrom: '컷부터',
+      cardCreditDesc: '카카오 · 구글 간편로그인 후 여러 컷 만들 때',
+      balance: '보유 크레딧',
+      ctaDirect: '{price} 결제하고 헤드샷 만들기',
+      ctaCreditLogin: '간편로그인하고 크레딧 충전하기',
+      ctaCreditCharge: '크레딧 충전하고 만들기',
+      subCredit: '충전 크레딧은 기한 없이 사용할 수 있어요',
       instant: '바로 결제 (회원가입 불필요)',
       desc: '1회 결제로 헤드샷 1컷 생성',
       ctaSelect: '스타일을 선택해 주세요',
@@ -81,14 +97,15 @@ const I18N = {
   },
   en: {
     title: 'AI Professional Headshot',
-    subtitle: 'Business profile photo in 30 seconds',
+    subtitle: 'One selfie is all it takes — a studio-grade profile in 30 seconds.',
     metaDesc: 'Generate professional AI headshots in 30 seconds. Optimized for LinkedIn, resumes, and corporate profiles.',
     uploadTitle: 'Upload Your Photo',
-    uploadDesc: 'Front-facing selfie or upper body photo',
-    uploadBtn: 'Choose Photo',
+    uploadDesc: 'A clear front-facing selfie is all you need',
+    uploadBtn: 'Upload Photo',
     cameraBtn: 'Take Photo',
-    dragText: 'or drag & drop here',
+    dragText: 'or drag & drop your file here',
     styleTitle: 'Choose Style',
+    styleSubtitle: 'Where will you use it? Pick the style that fits',
     styles: {
       linkedin_pro: 'LinkedIn',
       corporate: 'Corporate',
@@ -128,7 +145,22 @@ const I18N = {
     step3: 'AI Generate',
     step3Desc: 'Pro headshot ready in 30 seconds',
     pay: {
-      title: 'Choose Payment',
+      title: 'Payment',
+      subtitle: 'One-off or multiple headshots — pick what fits',
+      cardDirect: 'Pay once',
+      badgeNoSignup: 'No signup',
+      unitOne: 'per headshot',
+      cardDirectDesc: 'Fastest way to create just this one photo',
+      cardCredit: 'Credits',
+      badgeBulk: 'Bulk discounts',
+      creditFrom: '$0.99',
+      unitFrom: 'per cut from',
+      cardCreditDesc: 'Sign in and create multiple headshots',
+      balance: 'Balance',
+      ctaDirect: 'Pay {price} & create my headshot',
+      ctaCreditLogin: 'Sign in & top up credits',
+      ctaCreditCharge: 'Top up & create',
+      subCredit: 'Credits never expire',
       instant: 'Pay now (no signup)',
       desc: 'One payment, one headshot',
       ctaSelect: 'Choose a style first',
@@ -158,14 +190,15 @@ const I18N = {
   },
   ja: {
     title: 'AIプロフェッショナルヘッドショット',
-    subtitle: '30秒でビジネスプロフィール写真を完成',
+    subtitle: 'セルフィー1枚で十分。30秒でスタジオ級のプロフィールが完成します。',
     metaDesc: 'AIでプロフェッショナルなヘッドショットを30秒で生成。LinkedIn、履歴書、企業プロフィールに最適化。',
     uploadTitle: '写真をアップロード',
-    uploadDesc: '正面のセルフィーまたは上半身の写真',
-    uploadBtn: '写真を選択',
-    cameraBtn: 'カメラで撮影',
-    dragText: 'またはここにドラッグ',
+    uploadDesc: '顔がはっきり見える正面のセルフィー1枚でOK',
+    uploadBtn: '写真をアップ',
+    cameraBtn: 'カメラで撮る',
+    dragText: 'ファイルをここにドラッグ&ドロップでもOK',
     styleTitle: 'スタイルを選択',
+    styleSubtitle: 'どこで使うプロフィールですか？用途に合うスタイルを選んでください',
     styles: {
       linkedin_pro: 'LinkedIn · ビジネス',
       corporate: '役員 · 企業プロフィール',
@@ -205,7 +238,22 @@ const I18N = {
     step3: 'AI生成',
     step3Desc: '30秒でプロ仕様の完成',
     pay: {
-      title: 'お支払い方法を選択',
+      title: 'お支払い方法',
+      subtitle: '1回だけ試すか、複数枚つくるかで選んでください',
+      cardDirect: '今すぐ支払う',
+      badgeNoSignup: '登録不要',
+      unitOne: '1枚',
+      cardDirectDesc: 'この1枚だけをすぐ作りたいとき',
+      cardCredit: 'クレジット',
+      badgeBulk: 'まとめ買い割引',
+      creditFrom: '$0.99',
+      unitFrom: '1枚あたり〜',
+      cardCreditDesc: 'ログインして複数枚つくるとき',
+      balance: '保有クレジット',
+      ctaDirect: '{price} 支払って作成する',
+      ctaCreditLogin: 'ログインしてチャージ',
+      ctaCreditCharge: 'チャージして作成',
+      subCredit: 'クレジットに有効期限はありません',
       instant: '今すぐ支払う（登録不要）',
       desc: '1回のお支払いで1枚生成',
       ctaSelect: 'スタイルを選んでください',
@@ -329,6 +377,7 @@ export function renderHeadshot(req, res, forceLang = null) {
 
 <section class="hs-section" id="hsStyleSection">
   <h2 class="hs-section-title">${escapeHtml(d.styleTitle)}</h2>
+  <p class="hs-section-desc">${escapeHtml(d.styleSubtitle)}</p>
   <div class="hs-style-grid">
     ${buildStyleButtons(d.styles, d.styleDesc)}
   </div>
@@ -352,17 +401,35 @@ export function renderHeadshot(req, res, forceLang = null) {
     <span id="hsPaySelName"></span>
   </div>
   <h2 class="hs-section-title">${escapeHtml(d.pay.title)}</h2>
-  <!-- 선택지 ① 바로 결제 (비회원 직접결제, 주 CTA — 2차 시안 강조 순서) -->
-  <button class="hs-btn hs-btn-generate" id="hsPayInstant">
-    ${escapeHtml(d.pay.instant)} — ${priceLabel}
+  <p class="hs-section-desc">${escapeHtml(d.pay.subtitle)}</p>
+  <!-- 결제 방식 2카드 선택식 (클로드 디자인 시안) — CTA 라벨이 선택에 따라 변함 -->
+  <div class="hs-pay-cards">
+    <div class="hs-pay-card selected" id="hsPayCardDirect" role="button" tabindex="0">
+      <div class="hs-pay-card-top">
+        <span class="hs-pay-card-title">${escapeHtml(d.pay.cardDirect)}</span>
+        <span class="hs-badge hs-badge-purple">${escapeHtml(d.pay.badgeNoSignup)}</span>
+      </div>
+      <div class="hs-pay-price"><b>${priceLabel}</b><span> / ${escapeHtml(d.pay.unitOne)}</span></div>
+      <p class="hs-pay-card-desc">${escapeHtml(d.pay.cardDirectDesc)}</p>
+    </div>
+    <div class="hs-pay-card" id="hsPayCardCredit" role="button" tabindex="0">
+      <div class="hs-pay-card-top">
+        <span class="hs-pay-card-title">${escapeHtml(d.pay.cardCredit)}</span>
+        <span class="hs-badge hs-badge-green">${escapeHtml(d.pay.badgeBulk)}</span>
+      </div>
+      <div class="hs-pay-price"><b>${escapeHtml(d.pay.creditFrom)}</b><span> / ${escapeHtml(d.pay.unitFrom)}</span></div>
+      <p class="hs-pay-card-desc">${escapeHtml(d.pay.cardCreditDesc)}</p>
+      <p class="hs-pay-bal">${escapeHtml(d.pay.balance)} <b id="hsPayCredBal">0c</b></p>
+    </div>
+  </div>
+  <button class="hs-btn hs-btn-generate" id="hsPayGo" style="margin-top:16px;"
+    data-label-direct="${escapeHtml(d.pay.ctaDirect.replace('{price}', priceLabel))}"
+    data-label-credit-login="${escapeHtml(d.pay.ctaCreditLogin)}"
+    data-label-credit-charge="${escapeHtml(d.pay.ctaCreditCharge)}"
+    data-sub-direct="${escapeHtml(d.pay.desc)}" data-sub-credit="${escapeHtml(d.pay.subCredit)}">
+    ${escapeHtml(d.pay.ctaDirect.replace('{price}', priceLabel))}
   </button>
-  <p class="hs-section-desc">${escapeHtml(d.pay.desc)}</p>
-  <!-- 선택지 ② 크레딧 경로 — 비로그인: 첫 로그인 무료 체험 / 로그인+부족: 충전 라벨로 전환 -->
-  <button class="hs-btn hs-btn-secondary" id="hsOptFree" style="width:100%;text-align:center;margin-top:10px;"
-    data-title-free="${escapeHtml(d.pay.freeTitle)}" data-title-charge="${escapeHtml(d.pay.chargeTitle)}">
-    <span id="hsOptFreeTitle">${escapeHtml(d.pay.freeTitle)}</span>
-    <span id="hsOptFreeSub" style="display:block;font-size:0.82rem;color:#888;margin-top:2px;">${escapeHtml(d.pay.freeSub)}</span>
-  </button>
+  <p class="hs-section-desc" id="hsPayGoSub">${escapeHtml(d.pay.desc)}</p>
   <div id="hsTossWidget" style="display:none;">
     <div id="hs-pm"></div>
     <div id="hs-agree"></div>
