@@ -551,6 +551,27 @@
   }
 
   /* ─── 결제 복귀 처리 (토스 리다이렉트 / 레몬 리턴) ─── */
+  // 작업 상태 복원 — 쿼리 없는 일반 복귀 포함 (크레딧 충전 왕복 후 초기화 사고, 2026-07-06 작가님).
+  // 직접결제 복귀는 아래 resumePay가 처리하지만, 충전 모달/충전 페이지 왕복은 쿼리가 없어 여기서 복원.
+  (function restoreDraft() {
+    if (uploadedImage) return;
+    var img = null, style = null;
+    try { img = sessionStorage.getItem(IMG_KEY); style = sessionStorage.getItem(STYLE_KEY); } catch (e) {}
+    if (img) {
+      uploadedImage = img;
+      previewImg.src = img;
+      uploadPlaceholder.style.display = 'none';
+      uploadPreview.style.display = 'block';
+    }
+    if (style) {
+      selectedStyle = style;
+      document.querySelectorAll('.hs-style-btn').forEach(function(b) {
+        b.classList.toggle('selected', b.dataset.style === style);
+      });
+    }
+    if (img || style) { updateStepIndicators(); updateGenerateBtn(); }
+  })();
+
   (function resumePay() {
     if (!PAY || !paySection) return;
     var qs;
