@@ -63,6 +63,7 @@ const I18N = {
       creditFrom: '₩1,240',
       unitFrom: '컷부터',
       cardCreditDesc: '카카오 · 구글 간편로그인 후 여러 컷 만들 때',
+      perCut: '한 컷 생성 10c',
       balance: '보유 크레딧',
       ctaDirect: '{price} 결제하고 헤드샷 만들기',
       ctaCreditLogin: '간편로그인하고 크레딧 충전하기',
@@ -156,6 +157,7 @@ const I18N = {
       creditFrom: '$0.99',
       unitFrom: 'per cut from',
       cardCreditDesc: 'Sign in and create multiple headshots',
+      perCut: '10 credits per headshot',
       balance: 'Balance',
       ctaDirect: 'Pay {price} & create my headshot',
       ctaCreditLogin: 'Sign in & top up credits',
@@ -249,6 +251,7 @@ const I18N = {
       creditFrom: '$0.99',
       unitFrom: '1枚あたり〜',
       cardCreditDesc: 'ログインして複数枚つくるとき',
+      perCut: '1枚 = 10c',
       balance: '保有クレジット',
       ctaDirect: '{price} 支払って作成する',
       ctaCreditLogin: 'ログインしてチャージ',
@@ -419,7 +422,7 @@ export function renderHeadshot(req, res, forceLang = null) {
       </div>
       <div class="hs-pay-price"><b>${escapeHtml(d.pay.creditFrom)}</b><span> / ${escapeHtml(d.pay.unitFrom)}</span></div>
       <p class="hs-pay-card-desc">${escapeHtml(d.pay.cardCreditDesc)}</p>
-      <p class="hs-pay-bal">${escapeHtml(d.pay.balance)} <b id="hsPayCredBal">0c</b></p>
+      <p class="hs-pay-bal">${escapeHtml(d.pay.perCut)} · ${escapeHtml(d.pay.balance)} <b id="hsPayCredBal">0c</b></p>
     </div>
   </div>
   <button class="hs-btn hs-btn-generate" id="hsPayGo" style="margin-top:16px;"

@@ -395,8 +395,14 @@
   width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; display: block;
   border-radius: 10px 10px 0 0; margin-bottom: 8px;
 }
-.hs-style-card .hs-style-label { font-size: 13px; padding: 0 8px; }
-.hs-style-desc { font-size: 11px; color: var(--text-dim, #888); padding: 0 10px; line-height: 1.4; }
+.hs-style-card .hs-style-label {
+  font-size: 13px; padding: 0 8px; line-height: 1.3;
+  min-height: 2.6em; display: flex; align-items: center; justify-content: center;
+}
+.hs-style-desc {
+  font-size: 11px; color: var(--text-dim, #888); padding: 0 10px; line-height: 1.4;
+  min-height: 3.1em;
+}
 .hs-style-card.selected { box-shadow: 0 0 0 3px rgba(108, 79, 255, 0.35); }
 .hs-pay-back {
   background: none; border: none; color: var(--accent, #6c4fff);
