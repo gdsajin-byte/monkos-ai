@@ -538,11 +538,11 @@ a:hover { color: #5a3de6; }
 }
 .continent-card .overlay {
   position: absolute; inset: 0; display: flex; flex-direction: column;
-  align-items: center; justify-content: center; gap: 4px;
+  align-items: flex-start; justify-content: flex-end; padding: 12px 14px; gap: 2px;
 }
-.continent-card .c-name { font-size: 18px; font-weight: 800; color: #1a1a1a; text-shadow: 0 1px 4px rgba(0,0,0,0.5); }
-.continent-card .c-name-en { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.7); letter-spacing: 1px; text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
-.continent-card .c-count { font-size: 12px; color: rgba(255,255,255,0.6); margin-top: 2px; text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
+.continent-card .c-name { font-size: 20px; font-weight: 800; color: #ffffff; text-shadow: 0 1px 6px rgba(0,0,0,0.7); line-height: 1.1; }
+.continent-card .c-name-en { display: none; }
+.continent-card .c-count { font-size: 11px; color: rgba(255,255,255,0.75); text-shadow: 0 1px 4px rgba(0,0,0,0.7); }
 
 /* === Country Cards === */
 .country-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 32px; }
@@ -1187,7 +1187,7 @@ ${hreflangTags}
     return `<div class="continent-card" data-cont="${cm.id}" style="display:none">
       <img src="/images/continents/${cm.image}.webp" alt="${escapeHtml(name)}" width="300" height="120" loading="lazy"
            onerror="this.style.display='none'">
-      <div class="overlay" style="background:linear-gradient(135deg,${cm.gradient[0]}33,${cm.gradient[1]}33)">
+      <div class="overlay" style="background:linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 60%)">
         <span class="c-name">${escapeHtml(name)}</span>
         <span class="c-name-en">${cm.en.toUpperCase()}</span>
         <span class="c-count" data-cont-count="${cm.id}"></span>
