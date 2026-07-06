@@ -436,10 +436,10 @@
     if (typeof monkTrack === 'function') {
       monkTrack('open_credit_shop', { current_credits: (currentUser.credits || 0), page: 'headshot' });
     }
+    persistPayState(); // 모달·페이지 어느 경로든 왕복 복원 대비 선행 저장
     if (typeof openCreditShop === 'function' && document.getElementById('creditShopModal')) {
       openCreditShop();
     } else {
-      persistPayState();
       window.location.href = '/credits.html?from=' + encodeURIComponent(location.pathname + '?credits=return');
     }
   });
@@ -575,10 +575,17 @@
   /* ─── 결제 복귀 처리 (토스 리다이렉트 / 레몬 리턴) ─── */
   // 작업 상태 복원 — 쿼리 없는 일반 복귀 포함 (크레딧 충전 왕복 후 초기화 사고, 2026-07-06 작가님).
   // 직접결제 복귀는 아래 resumePay가 처리하지만, 충전 모달/충전 페이지 왕복은 쿼리가 없어 여기서 복원.
+  // 1회성 소비: 복원 즉시 저장분 제거 — 왕복 복귀 첫 로드만 복원하고, 이후 일반 새로고침은 백지
+  // (무조건 복원 유지 시 새로고침마다 사진 부활, 2026-07-06 작가님 지적).
   (function restoreDraft() {
     if (uploadedImage) return;
     var img = null, style = null;
-    try { img = sessionStorage.getItem(IMG_KEY); style = sessionStorage.getItem(STYLE_KEY); } catch (e) {}
+    try {
+      img = sessionStorage.getItem(IMG_KEY);
+      style = sessionStorage.getItem(STYLE_KEY);
+      sessionStorage.removeItem(IMG_KEY);
+      sessionStorage.removeItem(STYLE_KEY);
+    } catch (e) {}
     if (img) {
       uploadedImage = img;
       previewImg.src = img;
