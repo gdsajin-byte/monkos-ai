@@ -391,7 +391,8 @@
 @media (max-width: 900px) { .hs-style-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 .hs-style-card { padding: 0 0 12px; overflow: hidden; text-align: center; }
 .hs-style-img {
-  width: 100%; aspect-ratio: 3 / 4; object-fit: cover; display: block;
+  /* height:auto 필수 — HTML height 속성이 살아남으면 aspect-ratio가 무시돼 세로 스트립이 됨 (07-06 실사고) */
+  width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; display: block;
   border-radius: 10px 10px 0 0; margin-bottom: 8px;
 }
 .hs-style-card .hs-style-label { font-size: 13px; padding: 0 8px; }
