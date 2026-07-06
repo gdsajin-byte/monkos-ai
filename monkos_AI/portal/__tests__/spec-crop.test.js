@@ -9,6 +9,9 @@ import sharp from 'sharp';
 
 jest.unstable_mockModule('../lib/shared/config.js', () => ({
   log: jest.fn(),
+  sendTelegramMessage: jest.fn(),
+  TELEGRAM_TEAM_API: '',
+  TEAM_CHAT_ID: '',
 }));
 
 const { getSpecCropParams, cropToSpec } = await import('../lib/spec-crop.js');

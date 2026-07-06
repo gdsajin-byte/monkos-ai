@@ -34,21 +34,39 @@ export async function initFaceDetector() {
 
 /**
  * 이미지 버퍼에서 얼굴 랜드마크 추출
+ *
+ * 멀티스케일 재시도 (2026-07-07): FaceMesh는 동일 인물·유사 구도에서도 원치수에서
+ * 간헐적으로 감지를 놓친다 (07-06 새벽 us-visa 실사고 — 비결정적 미스 → 커버 폴백 출고).
+ * 원치수 실패 시 640px·448px 다운스케일로 재시도하고 좌표를 원치수로 환산한다.
+ *
  * @param {Buffer} imageBuffer - PNG/JPEG 이미지 버퍼
- * @returns {object|null} 핵심 랜드마크 좌표 (픽셀 단위) 또는 null
+ * @returns {object|null} 핵심 랜드마크 좌표 (원본 픽셀 단위) 또는 null
  */
 export async function detectFace(imageBuffer) {
   if (!detector) {
     throw new Error('[FaceDetect] 모델 미초기화. initFaceDetector() 먼저 호출');
   }
 
+  const origMeta = await sharp(imageBuffer).metadata();
+  const tryWidths = [null, 640, 448]; // null = 원치수
+  for (const w of tryWidths) {
+    if (w && origMeta.width <= w) continue; // 이미 그보다 작으면 스킵
+    const result = await detectAtScale(imageBuffer, w, origMeta);
+    if (result) {
+      if (w) console.log(`[FaceDetect] ${w}px 재시도 성공 (원치수 미스 폴백)`);
+      return result;
+    }
+  }
+  console.log('[FaceDetect] 얼굴 감지 실패 (멀티스케일 전부)');
+  return null;
+}
+
+async function detectAtScale(imageBuffer, targetWidth, origMeta) {
   let tensor;
   try {
-    // sharp → raw RGB 픽셀 → tf.tensor3d
-    const { data, info } = await sharp(imageBuffer)
-      .removeAlpha()
-      .raw()
-      .toBuffer({ resolveWithObject: true });
+    let pipeline = sharp(imageBuffer).removeAlpha();
+    if (targetWidth) pipeline = pipeline.resize({ width: targetWidth });
+    const { data, info } = await pipeline.raw().toBuffer({ resolveWithObject: true });
 
     tensor = tf.tensor3d(
       new Uint8Array(data),
@@ -57,10 +75,15 @@ export async function detectFace(imageBuffer) {
 
     const faces = await detector.estimateFaces(tensor);
 
-    if (!faces || faces.length === 0) {
-      console.log('[FaceDetect] 얼굴 감지 실패');
-      return null;
+    if (!faces || faces.length === 0) return null;
+
+    // 다운스케일 감지 시 좌표를 원치수로 환산
+    const ratio = targetWidth ? origMeta.width / info.width : 1;
+    if (ratio !== 1) {
+      for (const kp of faces[0].keypoints) { kp.x *= ratio; kp.y *= ratio; }
     }
+    info.width = origMeta.width;
+    info.height = origMeta.height;
 
     const keypoints = faces[0].keypoints;
     const forehead = keypoints[LANDMARKS.FOREHEAD_TOP];

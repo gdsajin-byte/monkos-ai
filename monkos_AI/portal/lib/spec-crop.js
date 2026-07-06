@@ -9,7 +9,7 @@
  */
 import sharp from 'sharp';
 import { createRequire } from 'module';
-import { log } from './shared/config.js';
+import { log, sendTelegramMessage, TELEGRAM_TEAM_API, TEAM_CHAT_ID } from './shared/config.js';
 
 const SPECS_DATA = createRequire(import.meta.url)('./cms/specs-data.json');
 
@@ -105,24 +105,40 @@ export async function cropToSpec(imageB64, slug) {
   if (!spec) return { image: imageB64, cropped: false, engine: 'none' };
 
   if (CROP_ENGINE_URL) {
-    try {
-      const ctrl = new AbortController();
-      const timer = setTimeout(() => ctrl.abort(), CROP_TIMEOUT_MS);
-      const res = await fetch(`${CROP_ENGINE_URL}/api/crop-spec`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image: imageB64, spec }),
-        signal: ctrl.signal,
-      });
-      clearTimeout(timer);
-      const data = await res.json();
-      if (res.ok && data.success && data.cropped) {
-        log(`[SpecCrop] ${slug}: ${data.fallback ? '엔진 폴백(커버)' : `안착 face=${data.meta?.faceMM}mm top=${data.meta?.topMarginMM}mm`}`);
-        return { image: data.cropped, cropped: true, engine: data.fallback ? 'cover' : 'facemesh', meta: data.meta };
+    // 감지 실패형 폴백(fallback:true)은 비결정적 미스일 수 있어 1회 재시도.
+    // 재시도 후에도 안착 실패 = 규격 미보장 출고 → 반드시 경보 (조용한 폴백 금지, 2026-07-07 작가님 교정)
+    for (let attempt = 1; attempt <= 2; attempt++) {
+      try {
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), CROP_TIMEOUT_MS);
+        const res = await fetch(`${CROP_ENGINE_URL}/api/crop-spec`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ image: imageB64, spec }),
+          signal: ctrl.signal,
+        });
+        clearTimeout(timer);
+        const data = await res.json();
+        if (res.ok && data.success && data.cropped) {
+          if (!data.fallback) {
+            log(`[SpecCrop] ${slug}: 안착 face=${data.meta?.faceMM}mm crown=${data.meta?.crownMarginMM}mm eye=${data.meta?.eyePositionPercent}%`);
+            return { image: data.cropped, cropped: true, engine: 'facemesh', meta: data.meta };
+          }
+          if (attempt === 1) { log(`[SpecCrop] ${slug}: 감지 실패 폴백 → 재시도 1회`, 'WARNING'); continue; }
+          log(`[SpecCrop] ${slug}: 재시도에도 감지 실패 — 커버 크롭 출고 (규격 미보장)`, 'ERROR');
+          if (TEAM_CHAT_ID) {
+            sendTelegramMessage(TEAM_CHAT_ID, `🚨 *스펙스 규격 미보장 출고*\nslug: ${slug}\n얼굴 감지 재시도 실패 → 비율만 맞춘 커버 크롭 발송\n→ GCS 결과물 확인·수동 대응 필요`, TELEGRAM_TEAM_API).catch(() => {});
+          }
+          return { image: data.cropped, cropped: true, engine: 'cover', meta: data.meta };
+        }
+        log(`[SpecCrop] ${slug}: 엔진 응답 이상 (${data.error || res.status})`, 'WARNING');
+      } catch (err) {
+        log(`[SpecCrop] ${slug}: 엔진 호출 실패 (${err.message})`, 'WARNING');
       }
-      log(`[SpecCrop] ${slug}: 엔진 응답 이상 (${data.error || res.status}) → 로컬 커버 폴백`, 'WARNING');
-    } catch (err) {
-      log(`[SpecCrop] ${slug}: 엔진 호출 실패 (${err.message}) → 로컬 커버 폴백`, 'WARNING');
+    }
+    log(`[SpecCrop] ${slug}: 엔진 불통 → 로컬 커버 폴백 (규격 미보장)`, 'ERROR');
+    if (TEAM_CHAT_ID) {
+      sendTelegramMessage(TEAM_CHAT_ID, `🚨 *스펙스 크롭 엔진 불통*\nslug: ${slug}\n로컬 커버 크롭 발송 — crop-engine 상태 확인 필요`, TELEGRAM_TEAM_API).catch(() => {});
     }
   }
 

@@ -1761,6 +1761,31 @@ a:hover { color: #5a3de6; }
   .v2-steps-section { padding: 28px 20px; }
   .v2-detail-grid { grid-template-columns: 1fr; }
   .v2-same-grid { flex-direction: column; }
+
+  /* ── 모바일 가독성 1차 패스 (2026-07-07 작가님: 소형 활자·저대비로 판독 불가) ──
+     11~13px 계열을 14px+ 로, #888 계열 회색을 진하게. 총체 재설계 전 응급 상향. */
+  .v2-header .v2-sub { font-size: 16px; color: #555; }
+  .v2-breadcrumb { font-size: 14px; color: #666; }
+  .v2-tag { font-size: 14px; }
+  .v2-spec-table td { font-size: 16px; }
+  .v2-spec-table td:first-child { color: #555; }
+  .v2-badge { font-size: 13px; }
+  .v2-dim-w, .v2-dim-h { font-size: 14px; }
+  .v2-dim-head { font-size: 13px; }
+  .v2-steps-badge { font-size: 14px; }
+  .v2-check-warn-msg { font-size: 14px; }
+  .v2-checklist-summary { font-size: 15px; }
+  .v2-action-btn { font-size: 15px; padding: 14px 10px; }
+  .v2-change-photo { font-size: 14px; color: #555; padding: 8px 18px; }
+  .v2-pay-title { font-size: 17px; }
+  .v2-pay-desc { font-size: 14px; color: #666; }
+  .v2-pay-divider { font-size: 14px; color: #999; }
+  .v2-gen-sub { font-size: 15px; color: #666; }
+  .v2-result-label { font-size: 14px; color: #666; }
+  .v2-detail-card li, .v2-detail-card p { font-size: 15px; color: #444; }
+  .v2-upload-zone .v2-upload-btn { font-size: 15px; }
+  .v2-guide-label { font-size: 14px; color: #555; }
+  .v2-credit { font-size: 13px; }
 }
 
 /* 검수 경고 메시지 */
@@ -1932,8 +1957,10 @@ ${hreflangTags}
   ).join('');
 
   const sizeMm = parseSizeMm(specData.size);
-  const sizeW = locField(specData, 'size', lang).split('×')[0].trim();
-  const sizeH = (locField(specData, 'size', lang).split('×')[1] || '4.5cm').trim();
+  // 치수 라벨은 mm 정본에서 생성 — 원문 split은 "2 × 2 inch (51 × 51mm)"처럼 ×가 2개면 잘림 (2026-07-07 실사고)
+  const mmParts = (sizeMm || '').split('x');
+  const sizeW = mmParts[0] ? `${mmParts[0]}mm` : locField(specData, 'size', lang).split('×')[0].trim();
+  const sizeH = mmParts[1] ? `${mmParts[1]}mm` : (locField(specData, 'size', lang).split('×')[1] || '').trim();
   const imgSrc = `/images/guides/${slug}.webp`;
   const fallbackSrc = sizeMm ? `/images/guides/${sizeMm}.webp` : '';
 
