@@ -433,7 +433,11 @@ function countryFlag(countrySlug, size = 32) {
   if (code.length !== 2) return '';
   const w = size;
   const h = Math.round(size * 0.75);
-  return `<img src="https://flagcdn.com/w${w * 2}/${code}.webp" alt="${code}" width="${w}" height="${h}" class="flag-icon" loading="lazy">`;
+  // flagcdn.com 지원 너비: 20, 40, 80, 160, 320, 640 (2025년 이후 64 등 비표준 404)
+  const VALID_WIDTHS = [20, 40, 80, 160, 320, 640];
+  const target = w * 2;
+  const cdnW = VALID_WIDTHS.find(s => s >= target) || 640;
+  return `<img src="https://flagcdn.com/w${cdnW}/${code}.webp" alt="${code}" width="${w}" height="${h}" class="flag-icon" loading="lazy" onerror="this.style.display='none'">`;
 }
 
 // ─── BUILD ROUTE MAPS (at module load) ──────────────────────────
@@ -1183,7 +1187,7 @@ ${hreflangTags}
     return `<div class="continent-card" data-cont="${cm.id}" style="display:none">
       <img src="/images/continents/${cm.image}.webp" alt="${escapeHtml(name)}" width="300" height="120" loading="lazy"
            onerror="this.style.display='none'">
-      <div class="overlay" style="background:linear-gradient(135deg,${cm.gradient[0]}CC,${cm.gradient[1]}CC)">
+      <div class="overlay" style="background:linear-gradient(135deg,${cm.gradient[0]}88,${cm.gradient[1]}88)">
         <span class="c-name">${escapeHtml(name)}</span>
         <span class="c-name-en">${cm.en.toUpperCase()}</span>
         <span class="c-count" data-cont-count="${cm.id}"></span>
