@@ -513,11 +513,11 @@ a:hover { color: #5a3de6; }
 }
 .purpose-card .overlay {
   position: absolute; inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.7), rgba(0,0,0,0.3));
+  background: linear-gradient(to top, rgba(0,0,0,0.15), rgba(0,0,0,0.05));
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
 }
-.purpose-card .p-name { font-size: 18px; font-weight: 800; color: #1a1a1a; }
-.purpose-card .p-sub { font-size: 10px; font-weight: 700; color: #6c4fff; letter-spacing: 2px; font-family: monospace; }
+.purpose-card .p-name { font-size: 18px; font-weight: 800; color: #ffffff; text-shadow: 0 1px 6px rgba(0,0,0,0.7); }
+.purpose-card .p-sub { font-size: 10px; font-weight: 700; color: #ffffff; letter-spacing: 2px; font-family: monospace; text-shadow: 0 1px 4px rgba(0,0,0,0.8); opacity: 0.85; }
 
 /* === Continent Cards (2×3) === */
 .section-title { font-size: 13px; color: #888; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
@@ -1187,7 +1187,7 @@ ${hreflangTags}
     return `<div class="continent-card" data-cont="${cm.id}" style="display:none">
       <img src="/images/continents/${cm.image}.webp" alt="${escapeHtml(name)}" width="300" height="120" loading="lazy"
            onerror="this.style.display='none'">
-      <div class="overlay" style="background:linear-gradient(135deg,${cm.gradient[0]}88,${cm.gradient[1]}88)">
+      <div class="overlay" style="background:linear-gradient(135deg,${cm.gradient[0]}33,${cm.gradient[1]}33)">
         <span class="c-name">${escapeHtml(name)}</span>
         <span class="c-name-en">${cm.en.toUpperCase()}</span>
         <span class="c-count" data-cont-count="${cm.id}"></span>
