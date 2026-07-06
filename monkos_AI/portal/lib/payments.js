@@ -1,6 +1,6 @@
 /** 담당: 막내2 (리파인) */
 
-import { usersCollection, firestore, log, logTransaction, parseJsonBody, parseRawBody, createHmac, randomBytes, sendTelegramMessage, TELEGRAM_TEAM_API, TEAM_CHAT_ID, LEMONSQUEEZY_API_KEY, LEMONSQUEEZY_WEBHOOK_SECRET, LEMONSQUEEZY_WEBHOOK_SECRET_GLOBAL, LEMONSQUEEZY_STORE_ID, LEMONSQUEEZY_STORE_ID_JP, LEMONSQUEEZY_VARIANT_SPECS_SINGLE, LEMONSQUEEZY_VARIANT_SPECS_SINGLE_JP, SINGLE_DOWNLOAD_VARIANTS, TOSS_SECRET_KEY, TOSS_CLIENT_KEY, VARIANT_CREDITS, TOSS_AMOUNT_CREDITS, PRODUCTS, DIRECT_PRICING, DIRECT_TOKEN_TTL_MS, DIRECT_TOKEN_MAX_GENERATES, parseCookies } from './shared/config.js';
+import { usersCollection, firestore, log, logTransaction, parseJsonBody, parseRawBody, createHmac, randomBytes, sendTelegramMessage, verifyAuthToken, TELEGRAM_TEAM_API, TEAM_CHAT_ID, LEMONSQUEEZY_API_KEY, LEMONSQUEEZY_WEBHOOK_SECRET, LEMONSQUEEZY_WEBHOOK_SECRET_GLOBAL, LEMONSQUEEZY_STORE_ID, LEMONSQUEEZY_STORE_ID_JP, LEMONSQUEEZY_VARIANT_SPECS_SINGLE, LEMONSQUEEZY_VARIANT_SPECS_SINGLE_JP, SINGLE_DOWNLOAD_VARIANTS, TOSS_SECRET_KEY, TOSS_CLIENT_KEY, VARIANT_CREDITS, TOSS_AMOUNT_CREDITS, PRODUCTS, DIRECT_PRICING, DIRECT_TOKEN_TTL_MS, DIRECT_TOKEN_MAX_GENERATES, parseCookies } from './shared/config.js';
 import { trackEvent } from './tracking.js';
 
 /**
@@ -298,6 +298,143 @@ export async function handleLemonSqueezyWebhook(req, res) {
 }
 
 /**
+ * POST /api/webhooks/toss — 토스페이먼츠 웹훅 (결제 취소 회수, 2026-07-06 F1)
+ *
+ * 페이로드 불신 원칙: body에서 paymentKey만 취하고, 토스 조회 API로 상태를 재검증한다.
+ * (토스 웹훅은 서명이 없어 재조회가 유일한 위조 방어 — 시크릿 등록 불요)
+ * CANCELED/PARTIAL_CANCELED 확인 시:
+ *   ① toss_confirm(크레딧 충전) → 크레딧 회수 (0 하한, 부족분 팀 경보)
+ *   ② direct(단건 ₩2,000) → 미소모 downloadToken revoke (이미 소모 시 팀 경보)
+ * 멱등: payments 문서 cancelProcessed 플래그. 처리 불능 오류만 500(토스 재시도 유도).
+ */
+export async function handleTossWebhook(req, res) {
+  let paymentKey = null;
+  try {
+    const body = await parseJsonBody(req);
+    paymentKey = body?.data?.paymentKey || body?.paymentKey || null;
+    if (!paymentKey || typeof paymentKey !== 'string') {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ received: true, action: 'ignored_no_payment_key' }));
+      return;
+    }
+
+    // 토스 조회 API 재검증 — 웹훅 페이로드의 상태는 신뢰하지 않는다
+    const authHeader = 'Basic ' + Buffer.from(TOSS_SECRET_KEY + ':').toString('base64');
+    const tossRes = await fetch(`https://api.tosspayments.com/v1/payments/${encodeURIComponent(paymentKey)}`, {
+      headers: { 'Authorization': authHeader },
+    });
+    if (!tossRes.ok) {
+      log(`[Toss-Webhook] 조회 실패(${tossRes.status}) — 위조/오배송 무시: paymentKey=${paymentKey}`, 'WARNING');
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ received: true, action: 'ignored_unverifiable' }));
+      return;
+    }
+    const payment = await tossRes.json();
+    const status = payment.status;
+    if (status !== 'CANCELED' && status !== 'PARTIAL_CANCELED') {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ received: true, action: `ignored_status_${status}` }));
+      return;
+    }
+
+    // ① 크레딧 충전 취소 → 크레딧 회수
+    const confirmSnap = await firestore.collection('payments')
+      .where('paymentKey', '==', paymentKey)
+      .where('type', '==', 'toss_confirm')
+      .limit(1).get();
+    if (!confirmSnap.empty) {
+      const payRef = confirmSnap.docs[0].ref;
+      const pay = confirmSnap.docs[0].data();
+
+      if (status === 'PARTIAL_CANCELED') {
+        // 크레딧 팩 부분 취소는 자동 회수 기준이 모호 — 수동 처리로 경보만
+        log(`[Toss-Webhook] 충전 부분 취소 — 수동 처리 필요: orderId=${pay.orderId}, user=${pay.userId}`, 'WARNING');
+        if (TEAM_CHAT_ID) {
+          sendTelegramMessage(TEAM_CHAT_ID, `⚠️ *토스 충전 부분 취소 — 수동 회수 필요*\nuser: ${pay.userId}\norderId: ${pay.orderId}\n원충전: +${pay.creditsAdded}c (₩${pay.amount})\n→ credits.sh deduct로 비례 회수 판단 요망`, TELEGRAM_TEAM_API).catch(() => {});
+        }
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ received: true, action: 'partial_cancel_alerted' }));
+        return;
+      }
+
+      const userRef = usersCollection.doc(pay.userId);
+      const outcome = await firestore.runTransaction(async (tx) => {
+        const payDoc = await tx.get(payRef);
+        if (payDoc.data()?.cancelProcessed) return { duplicate: true };
+        const userDoc = await tx.get(userRef);
+        const revoke = Number(payDoc.data()?.creditsAdded) || 0;
+        if (!userDoc.exists || revoke <= 0) {
+          tx.update(payRef, { cancelProcessed: true, canceledAt: new Date().toISOString(), revokedCredits: 0 });
+          return { noUser: true };
+        }
+        const current = userDoc.data()?.credits ?? 0;
+        const deducted = Math.min(current, revoke);
+        tx.update(userRef, { credits: current - deducted });
+        tx.update(payRef, { cancelProcessed: true, canceledAt: new Date().toISOString(), revokedCredits: deducted });
+        return { deducted, shortfall: revoke - deducted, balanceAfter: current - deducted };
+      });
+
+      if (outcome.duplicate) {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ received: true, action: 'already_processed' }));
+        return;
+      }
+      if (outcome.noUser) {
+        log(`[Toss-Webhook] 취소 회수 불가(사용자/금액 없음): orderId=${pay.orderId}`, 'WARNING');
+      } else {
+        log(`[Toss-Webhook] 결제 취소 크레딧 회수: ${pay.userId} -${outcome.deducted}c (orderId=${pay.orderId})${outcome.shortfall > 0 ? ` — 부족분 ${outcome.shortfall}c (이미 소진)` : ''}`);
+        logTransaction({ userId: pay.userId, amount: -outcome.deducted, type: 'refund', provider: 'toss', balanceAfter: outcome.balanceAfter, description: `토스 결제 취소 회수 (-${outcome.deducted}c)`, referenceId: pay.orderId, metadata: { paymentKey, shortfall: outcome.shortfall } });
+      }
+      if (TEAM_CHAT_ID) {
+        sendTelegramMessage(TEAM_CHAT_ID, `↩️ *토스 결제 취소 처리*\nuser: ${pay.userId}\norderId: ${pay.orderId}\n회수: -${outcome.deducted ?? 0}c / 원충전 +${pay.creditsAdded}c (₩${pay.amount})${outcome.shortfall > 0 ? `\n⚠️ 부족분 ${outcome.shortfall}c — 이미 소진, 수동 판단 필요` : ''}`, TELEGRAM_TEAM_API).catch(() => {});
+      }
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ received: true, action: 'credits_revoked' }));
+      return;
+    }
+
+    // ② 단건 직접결제 취소 → 토큰 revoke
+    const directSnap = await firestore.collection('payments')
+      .where('paymentKey', '==', paymentKey)
+      .where('type', '==', 'direct')
+      .limit(1).get();
+    if (!directSnap.empty) {
+      const payRef = directSnap.docs[0].ref;
+      const pay = directSnap.docs[0].data();
+      const token = pay.downloadToken || null;
+      let revoked = false;
+      if (token) {
+        const tokenRef = firestore.collection('directTokens').doc(token);
+        revoked = await firestore.runTransaction(async (tx) => {
+          const doc = await tx.get(tokenRef);
+          if (!doc.exists) return false;
+          const d = doc.data();
+          if (d.status !== 'active' || d.downloaded) return false; // 이미 소모 — 회수 불가
+          tx.update(tokenRef, { status: 'revoked', revokedAt: new Date().toISOString() });
+          return true;
+        });
+      }
+      try { await payRef.update({ cancelProcessed: true, canceledAt: new Date().toISOString(), tokenRevoked: revoked }); } catch {}
+      log(`[Toss-Webhook] 단건 취소: orderId=${pay.orderId}, 토큰 무효화=${revoked ? '완료' : '불가(미발급/이미 사용)'}`);
+      if (TEAM_CHAT_ID && !revoked) {
+        sendTelegramMessage(TEAM_CHAT_ID, `⚠️ *토스 단건 취소 — 토큰 이미 소모*\norderId: ${pay.orderId} (₩${pay.amount}, ${pay.slug || '?'})\n생성/다운로드 완료 후 취소된 건 — 수동 판단 필요`, TELEGRAM_TEAM_API).catch(() => {});
+      }
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ received: true, action: revoked ? 'direct_token_revoked' : 'direct_token_already_used' }));
+      return;
+    }
+
+    log(`[Toss-Webhook] 취소 수신했으나 매칭 결제 기록 없음: paymentKey=${paymentKey}, orderId=${payment.orderId || '?'}`, 'WARNING');
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ received: true, action: 'no_matching_payment' }));
+  } catch (err) {
+    log(`[Toss-Webhook] 에러: ${err.message}`, 'ERROR', { error: err.stack, paymentKey });
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: '처리 중 오류가 발생했습니다', code: 'INTERNAL_ERROR' }));
+  }
+}
+
+/**
  * POST /api/payments/toss/confirm — 토스페이먼츠 결제 확인 (KR 전용)
  */
 export async function handleTossConfirm(req, res) {
@@ -306,6 +443,16 @@ export async function handleTossConfirm(req, res) {
     if (!paymentKey || !orderId || !amount || !userId) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: 'paymentKey, orderId, amount, userId 필수' }));
+      return;
+    }
+
+    // 세션-계정 바인딩 (2026-07-06 F3): 결제 크레딧은 세션 본인 계정에만 적립
+    const sessionCookies = parseCookies(req.headers.cookie);
+    const session = sessionCookies.monkos_session ? verifyAuthToken(sessionCookies.monkos_session) : null;
+    if (!session?.userId || session.userId !== userId) {
+      log(`[Toss] confirm 거부: 세션(${session?.userId || '없음'}) ≠ 요청(${userId})`, 'WARNING');
+      res.writeHead(403, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: '본인 계정으로만 결제 확인 가능' }));
       return;
     }
 

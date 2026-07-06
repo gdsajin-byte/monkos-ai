@@ -123,6 +123,7 @@ jest.unstable_mockModule('../lib/shared/config.js', () => ({
   DIRECT_TOKEN_TTL_MS: 24 * 60 * 60 * 1000,
   DIRECT_TOKEN_MAX_GENERATES: 1,
   parseCookies: () => ({}),
+  verifyAuthToken: jest.fn(() => null),
 }));
 
 jest.unstable_mockModule('../lib/tracking.js', () => ({

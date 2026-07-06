@@ -57,3 +57,19 @@ status: 마감
 2. **F1 웹훅 신설** (핸들러 코드 + 작가님 토스 대시보드 등록 1회)
 3. F3·F4 동승 처리 (같은 파일 반경)
 4. 이번 취소분 80c 처분 결정 (작가님)
+
+---
+
+## 처리 결과 (2026-07-06 16:43 KST 어펜드 — 작가님 승인 후 당일 봉합)
+
+**[2026-07-06 16:43 KST]** iMac/민아 → 작가님
+
+- ✅ **F2 봉합**: 환불을 "직전 차감(lastUse) 대조"로만 지급 — use 시 user 문서에 `lastUse{type,cost,at,refunded}` 기록, refund는 같은 type·미환불·10분 이내일 때만 그 cost를 복원(fail-closed, 거부 시 409 + 팀 텔레그램 경보). 무증빙 셀프 환불 원천 차단.
+- ✅ **F1 신설**: `POST /api/webhooks/toss` — 페이로드 불신, paymentKey만 취해 토스 조회 API로 재검증(무서명 웹훅의 유일한 위조 방어). CANCELED 확인 시 충전→크레딧 회수(0 하한, 부족분 경보), 단건→미소모 토큰 revoke(소모 후 취소는 경보). PARTIAL_CANCELED는 자동 회수 없이 수동 경보. `cancelProcessed` 플래그로 멱등.
+- ✅ **F3**: toss/confirm에 세션-userId 바인딩 (무세션/타계정 403). idphoto-kr 크로스 오리진 confirm은 `Domain=.monkos.ai` + `credentials:include` + same-site라 쿠키 전달 유지 — 기존 credits/use 인증 경로와 동일 조건으로 실전 검증돼 있음.
+- ✅ **F4**: `krwRate: 145 → 150` 정정.
+- ✅ 테스트: 신규 2스위트 18케이스(환불 가드 왕복·중복·창만료 / 웹훅 회수·클램프·멱등·위조 방어) 포함 **jest 79/79**.
+- ✅ 배포: dev 00062 실측(웹훅 위조 방어·무세션 403) → **prod 00398-rgh**, monkos.ai 실서빙 3개 수정점 실측 완료.
+- ⏳ **잔여 — 작가님 액션 1건**: 토스 개발자센터(상점 웹훅 설정)에 `https://monkos.ai/api/webhooks/toss` 등록. 등록 전까지는 취소가 발생해도 통지가 안 오므로, 취소 시 수동 회수(credits.sh deduct) 유지.
+- 💡 이번 취소분 80c는 작가님 본인 결제분이라 존치 (작가님 확정).
+- 💡 한계 기록: 동시 다중 생성 중 한쪽 실패 시 lastUse가 최신 차감으로 덮여 환불 1건이 거부될 수 있음 — 거부는 경보로 드러나므로 수동 보정 (fail-closed 설계상 감수).

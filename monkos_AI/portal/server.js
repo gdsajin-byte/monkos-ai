@@ -29,7 +29,7 @@ import {
 // === 핸들러 모듈 ===
 import { handleKakaoAuth, handleKakaoCallback, handleLineAuth, handleLineCallback, handleGoogleRedirectAuth, handleGoogleRedirectCallback, handleGoogleAuth, handleAuthToken, handleAuthVerify, handleAuthRefresh, handleVerifyCookie, handleLogout } from './lib/auth.js';
 import { handleCreditsGet, handleCreditsUse, handleCreditsRefund } from './lib/credits.js';
-import { handleCheckout, handleLemonSqueezyWebhook, handleTossConfirm, handleTossDirect, handleDownloadDirect, handleTossSuccess, handleTossFail, handleDirectInit, handleDirectStatus, consumeGenerateQuota, refundGenerateQuota } from './lib/payments.js';
+import { handleCheckout, handleLemonSqueezyWebhook, handleTossWebhook, handleTossConfirm, handleTossDirect, handleDownloadDirect, handleTossSuccess, handleTossFail, handleDirectInit, handleDirectStatus, consumeGenerateQuota, refundGenerateQuota } from './lib/payments.js';
 import { handleTelegramGateCode, handleTelegramMissionCode, handleConsentSns, handleMissionComplete, handleCreditsEvent } from './lib/events.js';
 import { handleTelegramCSWebhook, handleTelegramEventWebhook } from './lib/telegram.js';
 import { handleTelegramTeamWebhook, handleTeamNotify } from './lib/telegram-team.js';
@@ -403,6 +403,8 @@ Respond in JSON only:
   if (urlPath === '/api/webhooks/lemonsqueezy' && req.method === 'POST') return handleLemonSqueezyWebhook(req, res);
   // 별칭: 레몬 대시보드가 경로에 'lemonsqueezy' 포함 URL을 거부(피싱 방지 검증)해 /api/webhooks로 등록됨 (2026-07-05)
   if (urlPath === '/api/webhooks' && req.method === 'POST') return handleLemonSqueezyWebhook(req, res);
+  // 토스 취소 회수 웹훅 (2026-07-06 F1) — 토스 개발자센터에 이 URL 등록 필요
+  if (urlPath === '/api/webhooks/toss' && req.method === 'POST') return handleTossWebhook(req, res);
   if (urlPath === '/api/payments/toss/confirm' && req.method === 'POST') return handleTossConfirm(req, res);
   if (urlPath === '/api/payments/direct/init' && req.method === 'POST') {
     if (!checkRateLimit(req, 'direct-init', 10)) {

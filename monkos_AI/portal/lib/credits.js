@@ -1,7 +1,24 @@
 /** 담당: 막내2 (리파인) */
 
-import { usersCollection, firestore, log, logTransaction, parseJsonBody, verifyAuthToken, parseCookies } from './shared/config.js';
+import { usersCollection, firestore, log, logTransaction, parseJsonBody, verifyAuthToken, parseCookies, sendTelegramMessage, TELEGRAM_TEAM_API, TEAM_CHAT_ID } from './shared/config.js';
 import { trackEvent } from './tracking.js';
+
+// === 환불 가드 (2026-07-06 F2 봉합) ===
+// 환불은 "직전 차감(lastUse) 대조"로만 허용 — 무증빙 셀프 환불 차단.
+// use 성공 시 user 문서에 lastUse{type,cost,at,refunded}를 남기고,
+// refund는 같은 type의 미환불 lastUse가 10분 이내일 때만 그 cost를 되돌린다.
+export const REFUND_WINDOW_MS = 10 * 60 * 1000;
+
+export function refundEligibility(lastUse, type, nowMs) {
+  if (!lastUse || typeof lastUse !== 'object') return { ok: false, reason: 'NO_MATCHING_USE' };
+  if (lastUse.type !== type) return { ok: false, reason: 'TYPE_MISMATCH' };
+  if (lastUse.refunded) return { ok: false, reason: 'ALREADY_REFUNDED' };
+  const at = Date.parse(lastUse.at || '');
+  if (!Number.isFinite(at) || nowMs - at > REFUND_WINDOW_MS) return { ok: false, reason: 'WINDOW_EXPIRED' };
+  const cost = Number(lastUse.cost);
+  if (!Number.isFinite(cost) || cost <= 0) return { ok: false, reason: 'INVALID_COST' };
+  return { ok: true, cost };
+}
 
 function getAuthenticatedUserId(req) {
   const cookies = parseCookies(req.headers.cookie);
@@ -50,7 +67,7 @@ export async function handleCreditsGet(req, res) {
 
     const credits = userDoc.data()?.credits ?? 0;
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ credits, userId, unit: '$0.10/c', krwRate: 145 }));
+    res.end(JSON.stringify({ credits, userId, unit: '$0.10/c', krwRate: 150 }));
   } catch (err) {
     log(`[Credits] 조회 에러: ${err.message}`);
     res.writeHead(500, { 'Content-Type': 'application/json' });
@@ -108,7 +125,11 @@ export async function handleCreditsUse(req, res) {
       }
 
       const newCredits = currentCredits - cost;
-      tx.update(userRef, { credits: newCredits });
+      tx.update(userRef, {
+        credits: newCredits,
+        // 환불 가드 원장 — refund는 이 기록 대조로만 지급
+        lastUse: { type, cost, at: new Date().toISOString(), refunded: false },
+      });
       return { success: true, credits: newCredits, used: cost, type };
     });
 
@@ -161,9 +182,8 @@ export async function handleCreditsRefund(req, res) {
       return;
     }
 
-    const REFUND_MAP = { generate: 10, download: 70, extra_crop: 10, full_original: 10 };
-    const refund = REFUND_MAP[type] || 0;
-    if (refund === 0) {
+    const REFUNDABLE_TYPES = new Set(['generate', 'download', 'extra_crop', 'full_original']);
+    if (!REFUNDABLE_TYPES.has(type)) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: '유효하지 않은 type' }));
       return;
@@ -173,14 +193,27 @@ export async function handleCreditsRefund(req, res) {
     const result = await firestore.runTransaction(async (tx) => {
       const userDoc = await tx.get(userRef);
       if (!userDoc.exists) throw new Error('사용자 없음');
-      const current = userDoc.data()?.credits ?? 0;
-      const newCredits = current + refund;
-      tx.update(userRef, { credits: newCredits });
-      return { success: true, credits: newCredits, refunded: refund, type };
+      const data = userDoc.data() || {};
+      const elig = refundEligibility(data.lastUse, type, Date.now());
+      if (!elig.ok) return { success: false, reason: elig.reason, credits: data.credits ?? 0 };
+      const newCredits = (data.credits ?? 0) + elig.cost;
+      tx.update(userRef, { credits: newCredits, lastUse: { ...data.lastUse, refunded: true } });
+      return { success: true, credits: newCredits, refunded: elig.cost, type };
     });
 
-    log(`[Credits] 환불: ${userId} +${refund}c (${type}) → ${result.credits}c`);
-    logTransaction({ userId, amount: refund, type: 'refund', provider: 'system', balanceAfter: result.credits, description: `${type} 환불 (+${refund}c)` });
+    if (!result.success) {
+      // fail-closed: 대조 실패 시 미지급 — 정상 흐름(생성 실패 직후 환불)에선 나오지 않는 신호라 팀 경보
+      log(`[Credits] 환불 거부(${result.reason}): ${userId} (${type})`, 'WARNING');
+      if (TEAM_CHAT_ID) {
+        sendTelegramMessage(TEAM_CHAT_ID, `⚠️ *크레딧 환불 거부*\nuser: ${userId}\ntype: ${type}\n사유: ${result.reason}\n(악용 시도 또는 정상 환불 흐름 파손 — 확인 필요)`, TELEGRAM_TEAM_API).catch(() => {});
+      }
+      res.writeHead(409, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: '환불 대상 차감 기록이 없습니다', code: result.reason }));
+      return;
+    }
+
+    log(`[Credits] 환불: ${userId} +${result.refunded}c (${type}) → ${result.credits}c`);
+    logTransaction({ userId, amount: result.refunded, type: 'refund', provider: 'system', balanceAfter: result.credits, description: `${type} 환불 (+${result.refunded}c)` });
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(result));
   } catch (err) {
