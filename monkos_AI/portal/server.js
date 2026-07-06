@@ -40,6 +40,7 @@ import { handleLineWebhook } from './lib/line-chatbot.js';
 import { handleWebChat, handleCoaching } from './lib/coaching.js';
 import { handleHeadshotGenerate } from './lib/headshot-route.js';
 import { generateIdPhoto } from './lib/idphoto-generate.js';
+import { cropToSpec, warmupCropEngine } from './lib/spec-crop.js';
 import { trackEvent, linkIdentity } from './lib/tracking.js';
 import { saveImages } from './lib/gcs-save.js';
 import { handleAgentAuth, requireAdmin } from './lib/cms/admin-auth.js';
@@ -325,6 +326,8 @@ Respond in JSON only:
       const { parseJsonBody, parseCookies: pc, verifyAuthToken } = await import('./lib/shared/config.js');
       const body = await parseJsonBody(req);
       const { image, format, gender, age, model, paymentToken } = body;
+      // specs 페이지 요청: slug로 규격 식별 → 무보정 모델 + 생성 후 규격 안착 크롭 (2026-07-06)
+      const slug = (typeof body.slug === 'string' && /^[a-z0-9][a-z0-9-]{0,63}$/.test(body.slug)) ? body.slug : null;
       if (!image) {
         res.writeHead(400, { 'Content-Type': 'application/json' });
         return res.end(JSON.stringify({ error: '이미지 필수' }));
@@ -364,9 +367,14 @@ Respond in JSON only:
         gateUserId = session.userId;
       }
 
+      // 크롭 엔진 예열 — AI 생성과 병렬로 콜드스타트 흡수 (fire-and-forget)
+      if (slug) warmupCropEngine();
+
       let generatedBase64;
       try {
-        generatedBase64 = await generateIdPhoto({ image, format: format || 'passport', gender, age, model: model || 'nano-banana-pro', userId: gateUserId === 'specs-visitor' ? 'specs-visitor' : gateUserId });
+        // specs(slug 보유)는 무보정 배경제거 정본 = gemini-2.5-flash (작가님 2026-07-06: 보정 없이 틀만)
+        const effectiveModel = model || (slug ? 'gemini-2.5-flash' : 'nano-banana-pro');
+        generatedBase64 = await generateIdPhoto({ image, format: format || 'passport', gender, age, model: effectiveModel, userId: gateUserId === 'specs-visitor' ? 'specs-visitor' : gateUserId });
       } catch (genErr) {
         // 서버측 생성 실패 → 소모분 반환 (토큰 쿼터 / 크레딧)
         if (gateMode === 'token') {
@@ -383,14 +391,23 @@ Respond in JSON only:
         return res.end(JSON.stringify({ error: '생성에 실패했습니다. 다시 시도해주세요.', code: 'GENERATE_FAILED' }));
       }
 
+      // specs: 규격 안착 크롭 (FaceMesh 엔진, 실패 시 커버 폴백 — 결과는 항상 규격 비율)
+      let finalBase64 = generatedBase64;
+      let cropEngine = null;
+      if (slug) {
+        const cropRes = await cropToSpec(generatedBase64, slug);
+        finalBase64 = cropRes.image;
+        cropEngine = cropRes.engine;
+      }
+
       try {
-        await saveImages('idphoto', gateUserId, format || 'passport', image, generatedBase64);
+        await saveImages('idphoto', gateUserId, slug || format || 'passport', image, finalBase64);
       } catch (e) {
         log(`[IDPhoto] GCS 저장 실패 (무시): ${e.message}`, 'WARNING');
       }
-      log(`[IDPhoto] 생성 완료: 규격=${format || 'passport'}, 게이트=${gateMode}`);
+      log(`[IDPhoto] 생성 완료: 규격=${slug || format || 'passport'}, 게이트=${gateMode}${cropEngine ? `, 크롭=${cropEngine}` : ''}`);
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      return res.end(JSON.stringify({ image: generatedBase64, remainingGenerates }));
+      return res.end(JSON.stringify({ image: finalBase64, remainingGenerates }));
     } catch (err) {
       log(`[IDPhoto] 에러: ${err.message}`, 'ERROR');
       res.writeHead(500, { 'Content-Type': 'application/json' });

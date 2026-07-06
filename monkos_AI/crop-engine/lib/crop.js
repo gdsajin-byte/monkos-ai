@@ -189,6 +189,96 @@ async function cropWithPadding(imageBuffer, scale, extractTop, extractLeft, fram
 }
 
 /**
+ * 규격 안착 크롭 v2 — 순백 배경 전제 (스펙스 파이프라인 전용, 2026-07-06)
+ *
+ * AI 배경제거 출력(순백 #FFF)이 입력이므로 피사체 상단(머리끝)을 픽셀 실측할 수 있다.
+ * v1의 해부학 정수리 추정(눈~턱 반전 + 헤어볼륨 8%)은 헤어스타일에 따라 실측과 어긋나
+ * 상단 여백 0mm 밀착이 발생(2026-07-06 Phase 0 실측) — v2는 실측 앵커로 대체.
+ *
+ * 배치: face = 실측 머리끝 ~ FaceMesh 턱을 spec.faceTargetMm으로 스케일,
+ *       머리끝을 spec.topMarginMm에 안착, 양 눈 중심을 수평 중앙 정렬.
+ *
+ * @param {Buffer} imageBuffer - 순백 배경 이미지
+ * @param {object} landmarks - detectFace() 반환값
+ * @param {object} spec - { frameW, frameH (px), frameHmm, faceTargetMm, topMarginMm }
+ */
+export async function cropToSpecV2(imageBuffer, landmarks, spec) {
+  const { frameW, frameH, frameHmm, faceTargetMm, topMarginMm } = spec;
+  if (!frameW || !frameH || !frameHmm || !faceTargetMm) {
+    throw new Error('[CropV2] spec 필수 필드 누락 (frameW/frameH/frameHmm/faceTargetMm)');
+  }
+  const mmPx = frameH / frameHmm;
+  const topMm = (typeof topMarginMm === 'number') ? topMarginMm : frameHmm * 0.078;
+
+  const hairTop = await subjectTopRow(imageBuffer);
+  const { chin, leftEye, rightEye, imageWidth, imageHeight } = landmarks;
+  const facePx = chin.y - hairTop;
+  if (facePx <= 0) throw new Error('[CropV2] 유효하지 않은 얼굴 높이 (머리끝 실측 실패 가능)');
+
+  const scale = (faceTargetMm * mmPx) / facePx;
+  const eyeCenterX = (leftEye.x + rightEye.x) / 2;
+  const scaledW = Math.round(imageWidth * scale);
+  const scaledH = Math.round(imageHeight * scale);
+
+  let extractTop = Math.round(hairTop * scale - topMm * mmPx);
+  let extractLeft = Math.round(eyeCenterX * scale - frameW / 2);
+
+  // 스케일 결과가 프레임보다 작으면 흰 패딩 — 클램프 전 원시 좌표 유지 (음수 = 패딩량, 중앙정렬 보존)
+  if (scaledW < frameW || scaledH < frameH) {
+    const meta = {
+      faceMM: (facePx * scale / mmPx).toFixed(1),
+      topMarginMM: ((hairTop * scale - extractTop) / mmPx).toFixed(1),
+      eyePositionPercent: ((((leftEye.y + rightEye.y) / 2) * scale - extractTop) / frameH * 100).toFixed(1),
+      scale: Math.round(scale * 100) / 100,
+      padded: true,
+    };
+    const padded = await cropWithPadding(imageBuffer, scale, extractTop, extractLeft, frameW, frameH, scaledW, scaledH);
+    return { buffer: padded.buffer, meta };
+  }
+
+  extractTop = Math.max(0, Math.min(extractTop, scaledH - frameH));
+  extractLeft = Math.max(0, Math.min(extractLeft, scaledW - frameW));
+
+  const meta = {
+    faceMM: (facePx * scale / mmPx).toFixed(1),
+    topMarginMM: ((hairTop * scale - extractTop) / mmPx).toFixed(1),
+    eyePositionPercent: ((((leftEye.y + rightEye.y) / 2) * scale - extractTop) / frameH * 100).toFixed(1),
+    scale: Math.round(scale * 100) / 100,
+  };
+
+  const buffer = await sharp(imageBuffer)
+    .resize(scaledW, scaledH, { fit: 'fill' })
+    .extract({ left: extractLeft, top: extractTop, width: frameW, height: frameH })
+    .flatten({ background: { r: 255, g: 255, b: 255 } })
+    .withMetadata({ density: 300 })
+    .png()
+    .toBuffer();
+
+  console.log(`[CropV2] face=${meta.faceMM}mm top=${meta.topMarginMM}mm eye=${meta.eyePositionPercent}%`);
+  return { buffer, meta };
+}
+
+/**
+ * 순백 배경에서 피사체 상단(머리끝) 행 실측 — 행의 2% 이상 비백색이면 피사체 시작
+ */
+async function subjectTopRow(imageBuffer) {
+  const { data, info } = await sharp(imageBuffer).removeAlpha().raw().toBuffer({ resolveWithObject: true });
+  const { width: W, height: H, channels: C } = info;
+  const threshold = Math.max(3, Math.floor(W * 0.02));
+  for (let y = 0; y < H; y++) {
+    let nonWhite = 0;
+    for (let x = 0; x < W; x++) {
+      const i = (y * W + x) * C;
+      if (data[i] < 240 || data[i + 1] < 240 || data[i + 2] < 240) {
+        if (++nonWhite >= threshold) break;
+      }
+    }
+    if (nonWhite >= threshold) return y;
+  }
+  return 0;
+}
+
+/**
  * 폴백 크롭 — 얼굴 감지 실패 시 상단 중앙 기준 커버 크롭
  */
 export async function fallbackCrop(imageBuffer, options = {}) {

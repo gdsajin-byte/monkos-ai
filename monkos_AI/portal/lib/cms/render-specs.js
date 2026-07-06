@@ -2551,7 +2551,7 @@ ${hreflangTags}
     gaTrack('generate_click', null, true); // 재생성 포함 매회 발화
     showPhase(phaseGen);
     setGenMessage(GEN_TEXT_DEFAULT, GEN_SUB_DEFAULT);
-    var body = { image: uploadedBase64, format: CFG.format, gender: 'm', age: 'adult' };
+    var body = { image: uploadedBase64, format: CFG.format, gender: 'm', age: 'adult', slug: CFG.slug };
     if(pay.token) body.paymentToken = pay.token;
     fetch('/api/idphoto/generate', {
       method:'POST', headers:{'Content-Type':'application/json'},

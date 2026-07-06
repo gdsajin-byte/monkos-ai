@@ -1,6 +1,6 @@
 import http from 'node:http';
 import { initFaceDetector, detectFace } from './lib/face-detect.js';
-import { cropToFrame, fallbackCrop } from './lib/crop.js';
+import { cropToFrame, cropToSpecV2, fallbackCrop } from './lib/crop.js';
 import { SPECS } from './specs/formats.js';
 
 const PORT = parseInt(process.env.PORT || '8080', 10);
@@ -79,6 +79,40 @@ async function handleCrop(req, res) {
   }
 }
 
+/**
+ * POST /api/crop-spec — 규격 파라미터 주입형 안착 크롭 v2 (스펙스 파이프라인, 2026-07-06)
+ * body: { image: base64, spec: { frameW, frameH(px), frameHmm, faceTargetMm, topMarginMm? } }
+ * 순백 배경 입력 전제. 얼굴 감지 실패 시 프레임 비율 상단 커버 크롭 폴백.
+ */
+async function handleCropSpec(req, res) {
+  try {
+    const body = await readBody(req);
+    const { image, spec } = JSON.parse(body.toString());
+    if (!image || !spec || !spec.frameW || !spec.frameH || !spec.frameHmm || !spec.faceTargetMm) {
+      return sendJSON(res, 400, { success: false, error: 'image, spec{frameW,frameH,frameHmm,faceTargetMm} 필수' });
+    }
+    const imageBuffer = Buffer.from(image, 'base64');
+    const landmarks = await detectFace(imageBuffer);
+
+    if (!landmarks) {
+      const { default: sharp } = await import('sharp');
+      const fb = await sharp(imageBuffer)
+        .resize(spec.frameW, spec.frameH, { fit: 'cover', position: 'top' })
+        .withMetadata({ density: 300 }).png().toBuffer();
+      return sendJSON(res, 200, {
+        success: true, cropped: fb.toString('base64'), fallback: true,
+        meta: { reason: '얼굴 감지 실패 — 상단 커버 크롭' },
+      });
+    }
+
+    const { buffer, meta } = await cropToSpecV2(imageBuffer, landmarks, spec);
+    sendJSON(res, 200, { success: true, cropped: buffer.toString('base64'), fallback: false, meta });
+  } catch (err) {
+    console.error(`[CropSpecAPI] 에러: ${err.message}`);
+    sendJSON(res, 500, { success: false, error: err.message });
+  }
+}
+
 function handleSpecs(_req, res) {
   const specs = Object.entries(SPECS).map(([key, spec]) => ({
     key,
@@ -109,6 +143,8 @@ const server = http.createServer((req, res) => {
 
   if (req.method === 'POST' && path === '/api/crop') {
     handleCrop(req, res);
+  } else if (req.method === 'POST' && path === '/api/crop-spec') {
+    handleCropSpec(req, res);
   } else if (req.method === 'GET' && path === '/api/specs') {
     handleSpecs(req, res);
   } else if (req.method === 'GET' && path === '/health') {
