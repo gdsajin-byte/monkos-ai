@@ -318,7 +318,7 @@ export function renderHeadshot(req, res, forceLang = null) {
   <button class="hs-btn hs-btn-secondary" id="hsOptFree" style="width:100%;text-align:center;"
     data-title-free="${escapeHtml(d.pay.freeTitle)}" data-title-charge="${escapeHtml(d.pay.chargeTitle)}">
     <span id="hsOptFreeTitle">${escapeHtml(d.pay.freeTitle)}</span>
-    <span style="display:block;font-size:0.82rem;color:#888;margin-top:2px;">${escapeHtml(d.pay.freeSub)}</span>
+    <span id="hsOptFreeSub" style="display:block;font-size:0.82rem;color:#888;margin-top:2px;">${escapeHtml(d.pay.freeSub)}</span>
   </button>
   <!-- 선택지 ② 바로 결제 (비회원 직접결제) -->
   <button class="hs-btn hs-btn-generate" id="hsPayInstant" style="margin-top:10px;">

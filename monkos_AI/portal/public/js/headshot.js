@@ -63,7 +63,11 @@
     if (!paySection) return;
     paySection.style.display = 'block';
     if (msg) showPayError(msg); else hidePayError();
-    paySection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    // 확실한 이동 + 짧은 강조 — CTA 클릭이 "무반응"으로 느껴지는 문제 방지 (2026-07-06 작가님)
+    paySection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    paySection.style.transition = 'box-shadow 0.3s';
+    paySection.style.boxShadow = '0 0 0 3px rgba(108,79,255,0.45)';
+    setTimeout(function() { paySection.style.boxShadow = 'none'; }, 900);
   }
 
   /* ─── GA4 퍼널 (주문 단위 1회 가드 — paymentToken 절대 미포함, transaction_id=orderId) ─── */
@@ -335,9 +339,12 @@
       persistPayState(); // 결제 전 선행 저장 (리다이렉트 생존) — 결제 클릭 체인 밖
       var optBtn = document.getElementById('hsOptFree');
       var optTitle = document.getElementById('hsOptFreeTitle');
+      var optSub = document.getElementById('hsOptFreeSub');
       if (optBtn && optTitle) {
         var t = loggedIn ? optBtn.getAttribute('data-title-charge') : optBtn.getAttribute('data-title-free');
         if (t) optTitle.textContent = t;
+        // 충전 모드에선 부제(무료 체험 문구) 숨김 — 문구 이어붙음 방지
+        if (optSub) optSub.style.display = loggedIn ? 'none' : 'block';
       }
       showPaySection();
       return;
@@ -365,7 +372,13 @@
     if (typeof monkTrack === 'function') {
       monkTrack('open_credit_shop', { current_credits: (currentUser.credits || 0), page: 'headshot' });
     }
-    if (typeof openCreditShop === 'function') openCreditShop();
+    // 모달 미가용 시 충전 페이지로 폴백 (무반응 방지) — 이미지 보존 후 복귀 경로 부여
+    if (typeof openCreditShop === 'function' && document.getElementById('creditShopModal')) {
+      openCreditShop();
+    } else {
+      persistPayState();
+      window.location.href = '/credits.html?from=' + encodeURIComponent(location.pathname + '?credits=return');
+    }
   });
 
   if (payInstantBtn) payInstantBtn.addEventListener('click', function() {
@@ -501,7 +514,7 @@
     if (!PAY || !paySection) return;
     var qs;
     try { qs = new URLSearchParams(location.search); } catch (e) { return; }
-    var mode = qs.get('toss') || (qs.get('lemon') ? 'lemon' : null);
+    var mode = qs.get('toss') || (qs.get('lemon') ? 'lemon' : (qs.get('credits') ? 'credits' : null));
     if (!mode) return;
     var pk = qs.get('paymentKey');
     var oid = qs.get('orderId');
@@ -568,6 +581,16 @@
         setLoadingText(PT.waiting || '', PT.waitingHint || '');
         startPolling(saved.orderId);
       }
+    } else if (mode === 'credits') {
+      // 충전 페이지 복귀 — 이미지·스타일 복원됨. 잔액 재확인 후 크레딧 생성 or 선택 화면 재노출
+      if (!uploadedImage || !selectedStyle) return;
+      fetch('/api/credits', { credentials: 'same-origin' })
+        .then(function(r) { return r.ok ? r.json() : null; })
+        .then(function(d) {
+          if (d && typeof d.credits === 'number' && d.credits >= 10) runGenerate(false);
+          else showPaySection();
+        })
+        .catch(function() { showPaySection(); });
     }
   })();
 
