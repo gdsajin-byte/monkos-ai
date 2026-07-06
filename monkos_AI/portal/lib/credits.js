@@ -40,13 +40,9 @@ export async function handleCreditsGet(req, res) {
   }
 
   const urlParams = new URL(req.url, `http://${req.headers.host}`);
-  const userId = urlParams.searchParams.get('userId');
-
-  if (!userId) {
-    res.writeHead(400, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: 'userId 파라미터 필수' }));
-    return;
-  }
+  // userId 생략 = 세션 본인 조회 (specs·헤드샷 잔액 확인이 파라미터 없이 호출 —
+  // 종전 400 응답을 클라이언트가 "잔액 없음"으로 오판해 충전창 유도, 2026-07-06 실사고)
+  const userId = urlParams.searchParams.get('userId') || authUserId;
 
   if (authUserId !== userId) {
     log(`[Credits] 조회 거부: 세션(${authUserId}) ≠ 요청(${userId})`, 'WARNING');

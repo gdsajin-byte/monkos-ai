@@ -136,6 +136,29 @@ describe('환불 가드 — use/refund 왕복', () => {
   });
 });
 
+describe('잔액 조회 — userId 생략 = 세션 본인 (2026-07-06 충전창 오유도 사고)', () => {
+  test('파라미터 없이 GET → 본인 잔액 반환', async () => {
+    const res = mockRes();
+    await credits.handleCreditsGet({ url: '/api/credits', headers: { host: 'localhost', cookie: 'monkos_session=tok' }, method: 'GET' }, res);
+    expect(res.statusCode).toBe(200);
+    expect(res.body.credits).toBe(100);
+    expect(res.body.userId).toBe('u1');
+  });
+
+  test('타인 userId 지정 → 403 유지', async () => {
+    const res = mockRes();
+    await credits.handleCreditsGet({ url: '/api/credits?userId=u2', headers: { host: 'localhost', cookie: 'monkos_session=tok' }, method: 'GET' }, res);
+    expect(res.statusCode).toBe(403);
+  });
+
+  test('무세션 → 403 유지', async () => {
+    verifyAuthTokenMock.mockReturnValue(null);
+    const res = mockRes();
+    await credits.handleCreditsGet({ url: '/api/credits', headers: { host: 'localhost' }, method: 'GET' }, res);
+    expect(res.statusCode).toBe(403);
+  });
+});
+
 describe('refundEligibility 순수 함수', () => {
   const now = Date.parse('2026-07-06T12:00:00.000Z');
 
