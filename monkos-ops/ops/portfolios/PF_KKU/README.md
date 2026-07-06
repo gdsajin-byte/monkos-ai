@@ -116,6 +116,9 @@ idpass.monkos.ai (SPA 간판) → monkos.ai/specs/{국가-문서} (본진 SSR, S
 | 06/12 | 작가님 | IDPASS 비전 확정 — specs×crop 간판/엔진 분리, 3티어 매출(Free+AI유료+Studio), idphoto와 별도 2라인 | PF_KKU 비전 반영 | ✅ |
 | 06/12 | 웹/민아 | specs GEO 보강 표준 수신 — 꾸 미국비자 정본 템플릿에 인용 단문·스키마 조합·언어 단계화 반영 필요 (상세: PF_SPECS) | SPEC_20260612_specs_GEO보강표준.md | ⏳ 템플릿 반영 대기 |
 | 06/13 | 웹/민아 | 숏폼 떡상 공식 분석 엔진(SHORTS DECODER) 설계 — RADAR/DECODER/SYNTH 3레이어, kku-blog/specs 소재 공급 | DESIGN_20260613_숏폼떡상공식_분석엔진.md, PR #65 | ⏳ 작가님 승인·오픈이슈 대기 |
+| 07/05 | M2/쌍아+꾸 | 잡코리아 제휴 제안서 7P 캔바 리뷰·수정 — 3터치포인트+정산구조 재편, AI표현 제거, 가격전략 확정 | 캔바 제안서, PROPOSAL_20260705 | ⏳ P5/P7 디자인 마무리 |
+| 07/05 | M2/쌍아+꾸 | 자격증 증명사진 필요 시험 600종+ 전수 조사 — 타겟 플랫폼(Q-net, YBM 등) 정리 | CSV(로컬), 아티팩트 | ✅ |
+| 07/06 | M2/쌍아+꾸 | 제안서 전체 리뷰 — P3 Monk Studio→MONKOS 수정, P2 한국인 예시 검토, P7 여백 활용 검토 | 캔바 제안서 | ⏳ |
 
 ---
 
