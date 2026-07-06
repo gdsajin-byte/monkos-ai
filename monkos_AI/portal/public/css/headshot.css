@@ -387,7 +387,8 @@
 }
 
 /* === 실사 스타일 카드 + 결제 위저드 (2026-07-06 클로드 디자인 시안 이식) === */
-.hs-style-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; }
+.hs-style-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 900px) { .hs-style-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 .hs-style-card { padding: 0 0 12px; overflow: hidden; text-align: center; }
 .hs-style-img {
   width: 100%; aspect-ratio: 4 / 5; object-fit: cover; display: block;

@@ -55,6 +55,7 @@ const I18N = {
       instant: '바로 결제 (회원가입 불필요)',
       desc: '1회 결제로 헤드샷 1컷 생성',
       ctaSelect: '스타일을 선택해 주세요',
+      ctaPhoto: '사진을 올려주세요',
       ctaMake: '이 스타일로 헤드샷 만들기',
       back: '스타일 다시 고르기',
       makeBtn: '이 사진으로 만들기',
@@ -131,6 +132,7 @@ const I18N = {
       instant: 'Pay now (no signup)',
       desc: 'One payment, one headshot',
       ctaSelect: 'Choose a style first',
+      ctaPhoto: 'Upload your photo',
       ctaMake: 'Create my headshot in this style',
       back: 'Choose a different style',
       makeBtn: 'Create with this photo',
@@ -207,6 +209,7 @@ const I18N = {
       instant: '今すぐ支払う（登録不要）',
       desc: '1回のお支払いで1枚生成',
       ctaSelect: 'スタイルを選んでください',
+      ctaPhoto: '写真をアップロードしてください',
       ctaMake: 'このスタイルで作成',
       back: 'スタイルを選び直す',
       makeBtn: 'この写真で作成',
@@ -335,7 +338,7 @@ export function renderHeadshot(req, res, forceLang = null) {
   <!-- 중립 CTA (2026-07-05 작가님): 가격 없는 "이 사진으로 만들기" → 클릭 시 결제 선택 화면.
        로그인+크레딧 충분 사용자만 JS가 즉시 크레딧 생성으로 직결 -->
   <button class="hs-btn hs-btn-generate" id="hsGenerateBtn" disabled
-    data-label-select="${escapeHtml(d.pay.ctaSelect)}" data-label-make="${escapeHtml(d.pay.ctaMake)}">
+    data-label-select="${escapeHtml(d.pay.ctaSelect)}" data-label-photo="${escapeHtml(d.pay.ctaPhoto)}" data-label-make="${escapeHtml(d.pay.ctaMake)}">
     ${escapeHtml(d.pay.ctaSelect)}
   </button>
   <p class="hs-balance" id="hsBalance"></p>

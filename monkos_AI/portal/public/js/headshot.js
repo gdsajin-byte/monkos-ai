@@ -135,8 +135,10 @@
   function updateGenerateBtn() {
     var ready = !!(uploadedImage && selectedStyle);
     generateBtn.disabled = !ready;
-    // CTA 상태 라벨: 준비 전 "스타일을 선택해 주세요" → 준비 후 "이 스타일로 헤드샷 만들기" (2026-07-06 시안)
-    var lbl = ready ? generateBtn.getAttribute('data-label-make') : generateBtn.getAttribute('data-label-select');
+    // CTA 상태 라벨: 무엇이 부족한지 버튼이 직접 말함 (스타일 미선택 / 사진 미업로드 / 준비 완료)
+    var lbl = ready ? generateBtn.getAttribute('data-label-make')
+      : (selectedStyle && !uploadedImage) ? generateBtn.getAttribute('data-label-photo')
+      : generateBtn.getAttribute('data-label-select');
     if (lbl) generateBtn.textContent = lbl;
   }
 
