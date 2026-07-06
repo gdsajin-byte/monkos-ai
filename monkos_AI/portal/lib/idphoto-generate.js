@@ -64,13 +64,20 @@ const EXPRESSION_PROMPTS = {
   neutral: 'natural calm resting face with soft relaxed eyes, at ease and composed',
 };
 
+// 프레이밍 지시 2종 (2026-07-06): 규격 안착 크롭이 뒤따르는 specs 경로는 'wide' —
+// AI가 임의로 타이트하게 잘라버리면 크롭 단계에 여백·어깨 원자재가 없어 규격 안착 불능.
+const FRAMING_INSTRUCTIONS = {
+  passport: 'Crop/frame to passport format: head centered, face 70-80% of frame height, 3:4 ratio',
+  wide: 'Frame as a chest-up portrait: the ENTIRE head fully visible with generous empty space above the hair (about 15% of frame height), both shoulders and upper chest included. The face (chin to top of head) should occupy roughly 45-55% of the frame height. Head horizontally centered.',
+};
+
 const ZERO_TOUCH_PROMPT = `[STRICT PASSPORT PHOTO CONVERSION — ZERO MODIFICATION]
 
 You are converting a casual photo into an official passport/ID photo.
 
 YOUR ONLY JOBS:
 1. Replace the background with pure white (#FFFFFF)
-2. Crop/frame to passport format: head centered, face 70-80% of frame height, 3:4 ratio
+2. {{FRAMING}}
 
 ABSOLUTELY DO NOT CHANGE:
 - Face, skin, features — NOTHING. Not even "enhancement" or "improvement"
@@ -87,12 +94,12 @@ Think of this as: CROP + BACKGROUND REMOVAL. Nothing else.
 The output must be the SAME PERSON with the SAME APPEARANCE, just on a white background in passport framing.`;
 
 function buildPromptV5(body, model) {
-  let { format, gender, age } = body;
+  let { format, gender, age, framing } = body;
   gender = gender || 'm';
   age = age || 'adult';
 
   if (model === 'gemini-2.5-flash') {
-    return ZERO_TOUCH_PROMPT;
+    return ZERO_TOUCH_PROMPT.replace('{{FRAMING}}', FRAMING_INSTRUCTIONS[framing] || FRAMING_INSTRUCTIONS.passport);
   }
 
   const parts = [];
@@ -136,7 +143,7 @@ const MODEL_MAP = {
 
 const REGIONAL_MODELS = new Set(['gemini-2.5-flash-image']);
 
-export async function generateIdPhoto({ image, format, gender, age, model, userId }) {
+export async function generateIdPhoto({ image, format, gender, age, model, userId, framing }) {
   if (!image) throw new Error('이미지 필수');
 
   const base64Data = extractBase64(image);
@@ -148,7 +155,7 @@ export async function generateIdPhoto({ image, format, gender, age, model, userI
     throw new Error('이미지가 너무 큽니다 (7MB 이하)');
   }
 
-  const instruction = buildPromptV5({ format: format || 'passport', gender, age }, model);
+  const instruction = buildPromptV5({ format: format || 'passport', gender, age, framing }, model);
 
   const client = REGIONAL_MODELS.has(modelId) ? regionAI : imageAI;
   const response = await client.models.generateContent({

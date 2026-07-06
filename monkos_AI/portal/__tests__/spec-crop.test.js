@@ -16,18 +16,18 @@ const { createRequire } = await import('module');
 const SPECS_DATA = createRequire(import.meta.url)('../lib/cms/specs-data.json');
 
 describe('규격 파라미터 파서', () => {
-  test('kr-passport: 35×45mm, 얼굴 3.2~3.6cm → 타겟 34mm', () => {
+  test('kr-passport: 35×45mm, 얼굴 3.2~3.6cm → 타겟 상위권 34.4mm (크롭앱 최적 33~35 준거)', () => {
     expect(getSpecCropParams('kr-passport')).toEqual({
-      frameW: 413, frameH: 531, frameHmm: 45, faceTargetMm: 34, topMarginMm: 3.5,
+      frameW: 413, frameH: 531, frameHmm: 45, faceTargetMm: 34.4, faceMinMm: 32, hairMarginMm: 2,
     });
   });
 
   test('us-passport: 정사각 51×51mm, 인치 병기 mm 범위 파싱', () => {
     const p = getSpecCropParams('us-passport');
-    expect(p.frameW).toBe(p.frameH ? p.frameW : p.frameW); // 존재 확인
     expect(p.frameHmm).toBeCloseTo(51, 0);
     expect(p.faceTargetMm).toBeGreaterThanOrEqual(25);
     expect(p.faceTargetMm).toBeLessThanOrEqual(36);
+    expect(p.faceMinMm).toBeLessThan(p.faceTargetMm);
   });
 
   test('전수 커버리지: 428건 중 파라미터 산출 426건 이상', () => {

@@ -372,9 +372,10 @@ Respond in JSON only:
 
       let generatedBase64;
       try {
-        // specs(slug 보유)는 무보정 배경제거 정본 = gemini-2.5-flash (작가님 2026-07-06: 보정 없이 틀만)
+        // specs(slug 보유)는 무보정 배경제거 정본 = gemini-2.5-flash + 여유 프레이밍(wide)
+        // — 크롭 원자재 확보 (AI의 타이트 크롭 위에서 재단하면 여백·어깨 부족, 2026-07-06 실사고)
         const effectiveModel = model || (slug ? 'gemini-2.5-flash' : 'nano-banana-pro');
-        generatedBase64 = await generateIdPhoto({ image, format: format || 'passport', gender, age, model: effectiveModel, userId: gateUserId === 'specs-visitor' ? 'specs-visitor' : gateUserId });
+        generatedBase64 = await generateIdPhoto({ image, format: format || 'passport', gender, age, model: effectiveModel, userId: gateUserId === 'specs-visitor' ? 'specs-visitor' : gateUserId, framing: slug ? 'wide' : undefined });
       } catch (genErr) {
         // 서버측 생성 실패 → 소모분 반환 (토큰 쿼터 / 크레딧)
         if (gateMode === 'token') {

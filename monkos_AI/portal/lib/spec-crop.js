@@ -33,17 +33,17 @@ function parseSizeMm(str) {
   return [parseFloat(m[1]) * k, parseFloat(m[2]) * k];
 }
 
-/** "3.2~3.6cm" | "3.4cm" | "1~1⅜ inches (25~35mm)" → 타겟 mm (범위면 중간값) */
-function parseHeadHeightMm(str) {
+/** "3.2~3.6cm" | "3.4cm" | "1~1⅜ inches (25~35mm)" → [minMm, maxMm] (단일값은 ±5%) */
+function parseHeadHeightRangeMm(str) {
   const s = String(str || '');
   const rangeCm = s.match(/([\d.]+)\s*[~\-]\s*([\d.]+)\s*cm/i);
-  if (rangeCm) return ((parseFloat(rangeCm[1]) + parseFloat(rangeCm[2])) / 2) * 10;
+  if (rangeCm) return [parseFloat(rangeCm[1]) * 10, parseFloat(rangeCm[2]) * 10];
   const rangeMm = s.match(/([\d.]+)\s*[~\-]\s*([\d.]+)\s*mm/i);
-  if (rangeMm) return (parseFloat(rangeMm[1]) + parseFloat(rangeMm[2])) / 2;
+  if (rangeMm) return [parseFloat(rangeMm[1]), parseFloat(rangeMm[2])];
   const singleCm = s.match(/([\d.]+)\s*cm/i);
-  if (singleCm) return parseFloat(singleCm[1]) * 10;
+  if (singleCm) { const v = parseFloat(singleCm[1]) * 10; return [v * 0.95, v * 1.05]; }
   const singleMm = s.match(/([\d.]+)\s*mm/i);
-  if (singleMm) return parseFloat(singleMm[1]);
+  if (singleMm) { const v = parseFloat(singleMm[1]); return [v * 0.95, v * 1.05]; }
   return null;
 }
 
@@ -63,14 +63,17 @@ export function getSpecCropParams(slug) {
   if (!frame) return null;
 
   const frameHmm = sizeMm ? sizeMm[1] : (frame[1] / (Number(data.dpi) || 300)) * 25.4;
-  let faceTargetMm = parseHeadHeightMm(data.headHeight);
-  // 파싱 불가 or 비상식 값 → 보수 기본값 (프레임 높이의 72%)
+  const range = parseHeadHeightRangeMm(data.headHeight);
+  // 타겟 = 범위 상위권(min + 0.6×폭) — 사진관 관행: 허용 범위의 중상단이 안정적 (크롭앱 최적 33~35/45 준거)
+  let faceMinMm = range ? range[0] : null;
+  let faceTargetMm = range ? +(range[0] + (range[1] - range[0]) * 0.6).toFixed(1) : null;
+  // 파싱 불가 or 비상식 값 → 보수 기본값 (프레임 높이의 72% — 크롭앱 여권 기본 비율)
   if (!faceTargetMm || faceTargetMm >= frameHmm * 0.9 || faceTargetMm < frameHmm * 0.3) {
     faceTargetMm = +(frameHmm * 0.72).toFixed(1);
+    faceMinMm = +(frameHmm * 0.66).toFixed(1);
   }
-  const topMarginMm = +(frameHmm * 0.078).toFixed(1); // 관행: 45mm 프레임 기준 ~3.5mm
 
-  return { frameW: frame[0], frameH: frame[1], frameHmm, faceTargetMm, topMarginMm };
+  return { frameW: frame[0], frameH: frame[1], frameHmm, faceTargetMm, faceMinMm, hairMarginMm: 2 };
 }
 
 /**

@@ -189,62 +189,81 @@ async function cropWithPadding(imageBuffer, scale, extractTop, extractLeft, fram
 }
 
 /**
- * 규격 안착 크롭 v2 — 순백 배경 전제 (스펙스 파이프라인 전용, 2026-07-06)
+ * 규격 안착 크롭 v3 — IDPASS 크롭앱 정본 수학 이식 (2026-07-06 야간 교정)
  *
- * AI 배경제거 출력(순백 #FFF)이 입력이므로 피사체 상단(머리끝)을 픽셀 실측할 수 있다.
- * v1의 해부학 정수리 추정(눈~턱 반전 + 헤어볼륨 8%)은 헤어스타일에 따라 실측과 어긋나
- * 상단 여백 0mm 밀착이 발생(2026-07-06 Phase 0 실측) — v2는 실측 앵커로 대체.
+ * v2의 "머리끝~턱 = 얼굴" 측정은 오류였다: 규격의 머리 높이는 정수리~턱(두상)이며,
+ * 헤어 볼륨을 얼굴에 포함하면 두상이 축소 배치돼 틀 안에서 붕 뜬다 (작가님 실사고 지적).
  *
- * 배치: face = 실측 머리끝 ~ FaceMesh 턱을 spec.faceTargetMm으로 스케일,
- *       머리끝을 spec.topMarginMm에 안착, 양 눈 중심을 수평 중앙 정렬.
+ * 정본 배치 (portal/public/crop/crop.js = IDPASS 검증 로직):
+ *   crown = 눈 - (턱 - 눈)  ← 해부학: 눈은 두상의 1/2
+ *   face  = crown ~ chin  →  spec.faceTargetMm으로 스케일
+ *   눈 위치 = 프레임 상단 44% (허용 40~48%)
+ * 순백 스캔(머리끝 실측)은 "헤어 잘림 방지" 보조로만: 헤어가 프레임 밖이면
+ * 내려 앉히고, 눈 48% 초과 시 faceMinMm까지 축소.
  *
- * @param {Buffer} imageBuffer - 순백 배경 이미지
- * @param {object} landmarks - detectFace() 반환값
- * @param {object} spec - { frameW, frameH (px), frameHmm, faceTargetMm, topMarginMm }
+ * @param {object} spec - { frameW, frameH(px), frameHmm, faceTargetMm, faceMinMm?, hairMarginMm? }
  */
+const EYE_TARGET_RATIO = 0.44;   // 크롭앱 최적 43~45%
+const EYE_MAX_RATIO = 0.48;      // 크롭앱 허용 상한
+const HAIR_MARGIN_MM_DEFAULT = 2; // 헤어탑 위 최소 여백
+
 export async function cropToSpecV2(imageBuffer, landmarks, spec) {
-  const { frameW, frameH, frameHmm, faceTargetMm, topMarginMm } = spec;
+  const { frameW, frameH, frameHmm, faceTargetMm } = spec;
   if (!frameW || !frameH || !frameHmm || !faceTargetMm) {
-    throw new Error('[CropV2] spec 필수 필드 누락 (frameW/frameH/frameHmm/faceTargetMm)');
+    throw new Error('[CropV3] spec 필수 필드 누락 (frameW/frameH/frameHmm/faceTargetMm)');
   }
   const mmPx = frameH / frameHmm;
-  const topMm = (typeof topMarginMm === 'number') ? topMarginMm : frameHmm * 0.078;
+  const faceMinMm = spec.faceMinMm || faceTargetMm * 0.93;
+  const hairMarginPx = (spec.hairMarginMm || HAIR_MARGIN_MM_DEFAULT) * mmPx;
 
-  const hairTop = await subjectTopRow(imageBuffer);
   const { chin, leftEye, rightEye, imageWidth, imageHeight } = landmarks;
-  const facePx = chin.y - hairTop;
-  if (facePx <= 0) throw new Error('[CropV2] 유효하지 않은 얼굴 높이 (머리끝 실측 실패 가능)');
+  const eyeY = (leftEye.y + rightEye.y) / 2;
+  const crownY = eyeY - (chin.y - eyeY); // 정수리 = 눈~턱 반전 (크롭앱 동일)
+  const facePx = chin.y - crownY;
+  if (facePx <= 0) throw new Error('[CropV3] 유효하지 않은 얼굴 높이');
+  const hairTop = await subjectTopRow(imageBuffer); // 실측 머리끝 (잘림 방지 보조)
 
-  const scale = (faceTargetMm * mmPx) / facePx;
+  let scale = (faceTargetMm * mmPx) / facePx;
+  const place = (s) => Math.round(eyeY * s - EYE_TARGET_RATIO * frameH); // 눈 44% 앵커
+
+  let extractTop = place(scale);
+  // 헤어 잘림 방지 — 헤어탑이 여백 미달이면 내려 앉힘, 눈 상한(48%) 초과 시 얼굴 축소
+  if (hairTop * scale - extractTop < hairMarginPx) {
+    extractTop = Math.round(hairTop * scale - hairMarginPx);
+    let eyeRatio = (eyeY * scale - extractTop) / frameH;
+    while (eyeRatio > EYE_MAX_RATIO && (facePx * scale / mmPx) > faceMinMm) {
+      scale *= 0.99;
+      extractTop = Math.round(hairTop * scale - hairMarginPx);
+      eyeRatio = (eyeY * scale - extractTop) / frameH;
+    }
+  }
+
   const eyeCenterX = (leftEye.x + rightEye.x) / 2;
   const scaledW = Math.round(imageWidth * scale);
   const scaledH = Math.round(imageHeight * scale);
-
-  let extractTop = Math.round(hairTop * scale - topMm * mmPx);
   let extractLeft = Math.round(eyeCenterX * scale - frameW / 2);
+
+  const buildMeta = (padded) => ({
+    faceMM: (facePx * scale / mmPx).toFixed(1),                                  // 정수리~턱 (규격 정의)
+    crownMarginMM: ((crownY * scale - extractTop) / mmPx).toFixed(1),            // 정수리 위 여백
+    hairMarginMM: ((hairTop * scale - extractTop) / mmPx).toFixed(1),            // 실측 헤어탑 여백
+    eyePositionPercent: ((eyeY * scale - extractTop) / frameH * 100).toFixed(1), // 목표 44%
+    scale: Math.round(scale * 100) / 100,
+    ...(padded ? { padded: true } : {}),
+  });
 
   // 스케일 결과가 프레임보다 작으면 흰 패딩 — 클램프 전 원시 좌표 유지 (음수 = 패딩량, 중앙정렬 보존)
   if (scaledW < frameW || scaledH < frameH) {
-    const meta = {
-      faceMM: (facePx * scale / mmPx).toFixed(1),
-      topMarginMM: ((hairTop * scale - extractTop) / mmPx).toFixed(1),
-      eyePositionPercent: ((((leftEye.y + rightEye.y) / 2) * scale - extractTop) / frameH * 100).toFixed(1),
-      scale: Math.round(scale * 100) / 100,
-      padded: true,
-    };
+    const meta = buildMeta(true);
     const padded = await cropWithPadding(imageBuffer, scale, extractTop, extractLeft, frameW, frameH, scaledW, scaledH);
+    console.log(`[CropV3] face=${meta.faceMM}mm crown=${meta.crownMarginMM}mm eye=${meta.eyePositionPercent}% (padded)`);
     return { buffer: padded.buffer, meta };
   }
 
   extractTop = Math.max(0, Math.min(extractTop, scaledH - frameH));
   extractLeft = Math.max(0, Math.min(extractLeft, scaledW - frameW));
 
-  const meta = {
-    faceMM: (facePx * scale / mmPx).toFixed(1),
-    topMarginMM: ((hairTop * scale - extractTop) / mmPx).toFixed(1),
-    eyePositionPercent: ((((leftEye.y + rightEye.y) / 2) * scale - extractTop) / frameH * 100).toFixed(1),
-    scale: Math.round(scale * 100) / 100,
-  };
+  const meta = buildMeta(false);
 
   const buffer = await sharp(imageBuffer)
     .resize(scaledW, scaledH, { fit: 'fill' })
@@ -254,7 +273,7 @@ export async function cropToSpecV2(imageBuffer, landmarks, spec) {
     .png()
     .toBuffer();
 
-  console.log(`[CropV2] face=${meta.faceMM}mm top=${meta.topMarginMM}mm eye=${meta.eyePositionPercent}%`);
+  console.log(`[CropV3] face=${meta.faceMM}mm crown=${meta.crownMarginMM}mm hair=${meta.hairMarginMM}mm eye=${meta.eyePositionPercent}%`);
   return { buffer, meta };
 }
 
