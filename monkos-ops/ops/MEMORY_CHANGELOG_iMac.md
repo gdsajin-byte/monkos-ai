@@ -457,3 +457,6 @@
 
 ## 2026-07-05 (민아)
 - 추가: project_orchestrator_agent_intent.md — 작가님 "전체 운영 에이전트" 구현 의향 + Fable급 하네스 세팅 중시 (07-05 마감 대화). MEMORY.md 인사이트 섹션 1행 추가.
+
+**[2026-07-06 22:31 KST]** iMac/민아
+- 추가: 작가님 인사이트 "그럴듯한 것과 딱 떨어지는 것엔 극한의 갭" → feedback_plausible_vs_exact_gap.md (07-06 크롭 v2→v3 실사고 교훈 — 도메인 정의 재해석 금지·수치 통과≠실물 합격)
