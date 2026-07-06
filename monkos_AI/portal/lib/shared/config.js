@@ -280,13 +280,25 @@ export async function logTransaction({ userId, amount, type, service = 'portal',
 }
 
 // === Telegram 메시지 전송 ===
+// 응답 미확인 → 침묵 실패 구조였음 (2026-07-06 실사고: orderId 밑줄이 Markdown 엔티티로
+// 오해석 → 400 → 취소 회수 경보 유실). ok 확인 + 파스 실패 시 평문 폴백 + 실패 로그.
 export async function sendTelegramMessage(chatId, text, botApi = TELEGRAM_CS_API) {
   try {
-    await fetch(`${botApi}/sendMessage`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'Markdown' }),
-    });
+    const send = async (parseMode) => {
+      const body = { chat_id: chatId, text };
+      if (parseMode) body.parse_mode = parseMode;
+      const r = await fetch(`${botApi}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      if (r.ok) return { ok: true };
+      const d = await r.json().catch(() => ({}));
+      return { ok: false, desc: d.description || `HTTP ${r.status}` };
+    };
+    let out = await send('Markdown');
+    if (!out.ok && /parse|entit/i.test(out.desc)) out = await send(null);
+    if (!out.ok) log(`[Telegram] 메시지 전송 실패: ${out.desc}`, 'WARNING');
   } catch (err) {
     log(`[Telegram] 메시지 전송 실패: ${err.message}`);
   }
