@@ -157,13 +157,22 @@ export async function matteSpecPipeline(originalB64, slug) {
 
   // ① 감지·크롭은 사용자 원본에서 — 실패(facemesh 미안착)면 신경로 포기.
   //    커버 크롭 위 매팅은 "그럴듯한" 무규격 출고라 금지 (무음 폴백 금지).
-  const cropRes = await cropToSpec(stripDataUri(originalB64), slug);
-  if (!cropRes.cropped || cropRes.engine !== 'facemesh') {
-    log(`[Matte] ${slug}: 원본 감지 미안착(engine=${cropRes.engine}) → Gemini 폴백`, 'WARNING');
-    return null;
-  }
-  if (!cropMetaWithinSpec(cropRes.meta)) {
-    log(`[Matte] ${slug}: 안착 가드 이탈(crown=${cropRes.meta?.crownMarginMM}mm eye=${cropRes.meta?.eyePositionPercent}%) → Gemini 폴백`, 'WARNING');
+  // 머리끝 실측이 잔머리에 흔들리는 비결정성 실측(2026-07-07: 동일 원본 crown 5.7 vs 22.2mm)
+  // → 가드 이탈 시 1회 재크롭으로 흡수, 재이탈이면 Gemini 재프레이밍 폴백.
+  const pureB64 = stripDataUri(originalB64);
+  let cropRes = null;
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    cropRes = await cropToSpec(pureB64, slug);
+    if (!cropRes.cropped || cropRes.engine !== 'facemesh') {
+      log(`[Matte] ${slug}: 원본 감지 미안착(engine=${cropRes.engine}) → Gemini 폴백`, 'WARNING');
+      return null;
+    }
+    if (cropMetaWithinSpec(cropRes.meta)) break;
+    if (attempt === 1) {
+      log(`[Matte] ${slug}: 안착 가드 이탈(crown=${cropRes.meta?.crownMarginMM}mm eye=${cropRes.meta?.eyePositionPercent}%) → 재크롭 1회`, 'WARNING');
+      continue;
+    }
+    log(`[Matte] ${slug}: 재크롭도 가드 이탈(crown=${cropRes.meta?.crownMarginMM}mm eye=${cropRes.meta?.eyePositionPercent}%) → Gemini 폴백`, 'WARNING');
     return null;
   }
 

@@ -19,9 +19,9 @@ const { createRequire } = await import('module');
 const SPECS_DATA = createRequire(import.meta.url)('../lib/cms/specs-data.json');
 
 describe('규격 파라미터 파서', () => {
-  test('kr-passport: 35×45mm, 얼굴 3.2~3.6cm → 타겟 상위권 34.4mm (크롭앱 최적 33~35 준거)', () => {
+  test('kr-passport: 35×45mm, 얼굴 3.2~3.6cm → IDPASS 산식 max(33, fMin+1) = 33mm (2026-07-07 이식)', () => {
     expect(getSpecCropParams('kr-passport')).toEqual({
-      frameW: 413, frameH: 531, frameHmm: 45, faceTargetMm: 34.4, faceMinMm: 32, hairMarginMm: 2,
+      frameW: 413, frameH: 531, frameHmm: 45, faceTargetMm: 33, faceMinMm: 32, hairMarginMm: 2,
     });
   });
 

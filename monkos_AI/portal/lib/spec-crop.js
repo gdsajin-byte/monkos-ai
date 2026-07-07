@@ -64,9 +64,18 @@ export function getSpecCropParams(slug) {
 
   const frameHmm = sizeMm ? sizeMm[1] : (frame[1] / (Number(data.dpi) || 300)) * 25.4;
   const range = parseHeadHeightRangeMm(data.headHeight);
-  // 타겟 = 범위 상위권(min + 0.6×폭) — 사진관 관행: 허용 범위의 중상단이 안정적 (크롭앱 최적 33~35/45 준거)
+  // 타겟 = IDPASS 정본 산식 (2026-07-07 작가님: "크롭은 Gemini가 아니라 우리 IDPASS 로직으로")
+  // 프레임 h≥60 → fMax-1 / h≥40 → max(33, fMin+1) / 소형 → h×0.70. 범위 내 클램프.
+  // (종전 min+0.6×폭 = kr 34.4mm는 실측상 과대 — 얼굴이 프레임을 압도, 카나리 2호 판정)
   let faceMinMm = range ? range[0] : null;
-  let faceTargetMm = range ? +(range[0] + (range[1] - range[0]) * 0.6).toFixed(1) : null;
+  let faceTargetMm = null;
+  if (range) {
+    const [fMin, fMax] = range;
+    if (frameHmm >= 60) faceTargetMm = fMax - 1;
+    else if (frameHmm >= 40) faceTargetMm = Math.max(33, fMin + 1);
+    else faceTargetMm = frameHmm * 0.70;
+    faceTargetMm = +Math.min(Math.max(faceTargetMm, fMin), fMax).toFixed(1);
+  }
   // 파싱 불가 or 비상식 값 → 보수 기본값 (프레임 높이의 72% — 크롭앱 여권 기본 비율)
   if (!faceTargetMm || faceTargetMm >= frameHmm * 0.9 || faceTargetMm < frameHmm * 0.3) {
     faceTargetMm = +(frameHmm * 0.72).toFixed(1);
