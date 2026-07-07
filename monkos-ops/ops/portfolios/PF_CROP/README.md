@@ -180,6 +180,7 @@ status: active
 | 06/14 | 4060/쌍아 | **RMBG-2.0 A/B 비교 + 후처리 파이프라인 PoC** — RMBG-2.0 gated 접근 성공, 동일 5종 비교(품질 동급, 속도 RMBG 7%↑, 라이선스 BiRefNet MIT 승). 후처리 3단(GuidedFilter 알파매팅+에지페더링+디컨태미네이션) 구현, 오버헤드 +9ms, 효과 제한적(마스크 자체 양호). compare-test.html 동시 비교 UI | [COMPLETION](../../reports/2026-06/COMPLETION_20260614_4060쌍아_배경제거후처리_PoC.md) | ✅ |
 | 07/07 | iMac/민아 | **애플 비전 직접 대조 PoC + 테스트 기반 + 재설계 기안** — ① 3엔진 실측(애플 비전 iMac 네이티브 CLI vs BiRefNet ONNX CPU vs Gemini, 동일 원본): **BiRefNet ≈ 애플 비전**(잔머리 대등·원본 픽셀 보존), CPU 하한 19.4s ② 테스트 기반 정본화(`benchmark/poc-20260707/` 스크립트+디바이스별 실행법, 모델 972MB GDrive) ③ IDPASS 순서 이식+연산 3층 재설계 기안 — 06/14 실측과 합쳐 채택 근거 완비. 과거 "기각" 실체=RMBG-2.0 비상업 라이선스 규명 | [DESIGN](../../../tech/designs/2026-07/DESIGN_20260707_배경제거_온디바이스_재설계.md) | ⏳ 쌍아 검토 |
 | 07/07 | M1/민아 | **matte 서빙 정본 신설 (ORDER_20260707 A-1)** — BiRefNet 채택 확정(작가님) 반영. benchmark/birefnet_server.py 승계해 `apps/monkos-matte/` 규격화(`/api/matte {image,bgColor}`, 소프트 알파 합성, stdlib http.server — flask 의존 제거), torch(4060 GPU)/onnx(CPU 개발) 2백엔드. M1 ONNX 실동 검증(15.4s/장, 배경색 정밀 합성 확인). 4060 torch 기동은 전원 인가 대기 | apps/monkos-matte/ | ⏳ |
+| 07/07 | M1/막내2 | **BiRefNet-lite PoC** — 경량 모델(swin_v1_tiny, 214MB) M1 CPU 실측. 추론 8.6s(portrait 15.7s 대비 1.8배↑), 품질 portrait와 육안 차이 미미(머리카락·안경·어깨 동급). 모델 4.3배 작음. Phase 4 클라이언트 프리뷰 후보 데이터 확보 | [COMPLETION](../../reports/2026-07/COMPLETION_20260707_M1막내2_BiRefNet_lite_PoC.md) | ✅ |
 
 ---
 
