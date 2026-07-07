@@ -98,6 +98,7 @@ status: 현행
 | 34 | CHAT_WORKERS_URL | 챗봇 Workers 엔드포인트 | portal | ⭐ 2026-06-02 §A 편입 (§F deploy.sh엔 기존 존재) |
 | 35 | CHAT_API_KEY | 챗봇 Workers API 인증 | portal | ⭐ 2026-06-02 §A 편입 (§3 CF Dashboard와 동일값) |
 | 36 | AGENT_API_KEYS | GH Actions→포털 CMS 에이전트 인증 | portal (blog-draft-publish) | ⭐ 2026-06-11 신설. SM: AGENT-API-KEYS, GH: PORTAL_AGENT_KEY. deploy.sh --set-secrets 주입 |
+| 37 | RUNPOD_API_KEY | RunPod Serverless API 인증 | monkos-matte (BiRefNet 서빙) | ⭐ 2026-07-07 신설. 키명 monkos-matte, R/W, RunPod T4 flex 서빙용 |
 
 ### B. 루트 .env (로컬 전용 — 2개)
 
