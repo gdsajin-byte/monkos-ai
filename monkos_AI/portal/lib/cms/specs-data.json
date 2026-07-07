@@ -474,7 +474,8 @@
    "ja": "イギリス UKパスポート写真規格（35 × 45 mm、クリームまたは薄灰色）。規定・撮影のコツ・AI自動クロップ。"
   },
   "headHeightMin": 29,
-  "headHeightMax": 34
+  "headHeightMax": 34,
+  "faceTargetExplicitMm": 31
  },
  "kr-passport": {
   "slug": "kr-passport",
@@ -2832,7 +2833,8 @@
    "ja": "イギリス 運転免許写真規格（3.5 × 4.5cm、明るい灰色）。規定・撮影のコツ・AI自動クロップ。"
   },
   "headHeightMin": 29,
-  "headHeightMax": 34
+  "headHeightMax": 34,
+  "faceTargetExplicitMm": 31
  },
  "uk-visa": {
   "slug": "uk-visa",
@@ -2946,7 +2948,8 @@
    "ja": "イギリス ビザ写真規格（3.5 × 4.5cm、明るい灰色）。規定・撮影のコツ・AI自動クロップ。"
   },
   "headHeightMin": 29,
-  "headHeightMax": 34
+  "headHeightMax": 34,
+  "faceTargetExplicitMm": 31
  },
  "cn-passport": {
   "slug": "cn-passport",
@@ -3058,7 +3061,8 @@
    "ja": "中国 パスポート写真規格（3.3 × 4.8cm、白）。規定・撮影のコツ・AI自動クロップ。"
   },
   "headHeightMin": 28,
-  "headHeightMax": 33
+  "headHeightMax": 33,
+  "faceTargetExplicitMm": 30
  },
  "cn-visa": {
   "slug": "cn-visa",
@@ -3170,7 +3174,8 @@
    "ja": "中国 ビザ写真規格（3.3 × 4.8cm、白）。規定・撮影のコツ・AI自動クロップ。"
   },
   "headHeightMin": 28,
-  "headHeightMax": 33
+  "headHeightMax": 33,
+  "faceTargetExplicitMm": 30
  },
  "cn-license": {
   "slug": "cn-license",
@@ -3282,7 +3287,8 @@
    "ja": "中国 運転免許写真規格（2.2 × 3.2cm、白）。規定・撮影のコツ・AI自動クロップ。"
   },
   "headHeightMin": 16,
-  "headHeightMax": 20
+  "headHeightMax": 20,
+  "faceTargetExplicitMm": 30
  },
  "ca-passport": {
   "slug": "ca-passport",
@@ -5194,7 +5200,8 @@
    "ja": "ベトナム パスポート写真規格（4 × 6cm、白）。規定・撮影のコツ・AI自動クロップ。"
   },
   "headHeightMin": 36,
-  "headHeightMax": 40
+  "headHeightMax": 40,
+  "faceTargetExplicitMm": 42
  },
  "vn-visa": {
   "slug": "vn-visa",
@@ -5306,7 +5313,8 @@
    "ja": "ベトナム ビザ写真規格（4 × 6cm、白）。規定・撮影のコツ・AI自動クロップ。"
   },
   "headHeightMin": 36,
-  "headHeightMax": 40
+  "headHeightMax": 40,
+  "faceTargetExplicitMm": 42
  },
  "id-passport": {
   "slug": "id-passport",

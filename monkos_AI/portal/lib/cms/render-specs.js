@@ -2111,25 +2111,25 @@ ${hreflangTags}
         </div>
       </div>
 
-      <!-- Phase 2.5: 프레임 피팅 가이드 (ORDER_20260707 크롭정밀도) -->
+      <!-- Phase 2.5: 규격 안착 시어터 (2026-07-07 작가님 연출 비전 — 전문가 대행을 보여준다) -->
       <div class="v2-make-layout" id="v2-phase-fit" style="display:none;">
         <div class="v2-pay-grid">
           <div class="v2-pay-preview">
-            <div id="v2-fit-wrap" style="position:relative;display:inline-block;max-width:100%;overflow:hidden;">
-              <img id="v2-fit-img" src="" alt="규격 맞춤 미리보기" style="display:block;max-width:100%;">
-              <div id="v2-fit-frame" style="display:none;position:absolute;border:2px solid #22c55e;box-shadow:0 0 0 9999px rgba(15,15,25,0.45);pointer-events:none;"></div>
-              <div id="v2-fit-line-crown" style="display:none;position:absolute;left:0;right:0;border-top:2px dashed #ef4444;pointer-events:none;"></div>
-              <div id="v2-fit-line-eye" style="display:none;position:absolute;left:0;right:0;border-top:2px dashed #3b82f6;pointer-events:none;"></div>
-              <div id="v2-fit-line-chin" style="display:none;position:absolute;left:0;right:0;border-top:2px dashed #f59e0b;pointer-events:none;"></div>
+            <div id="v2-fit-stage" style="position:relative;overflow:hidden;width:240px;height:320px;margin:0 auto;background:#0e1016;border-radius:10px;box-shadow:0 10px 30px rgba(15,15,40,.28);">
+              <img id="v2-fit-img" src="" alt="규격 안착" style="position:absolute;left:0;top:0;max-width:none;">
+              <div id="v2-fit-dim-top" style="position:absolute;left:0;right:0;top:0;background:rgba(8,10,16,.36);height:0;transition:height .5s;pointer-events:none;"></div>
+              <div id="v2-fit-dim-bot" style="position:absolute;left:0;right:0;bottom:0;background:rgba(8,10,16,.36);height:0;transition:height .5s;pointer-events:none;"></div>
+              <div id="v2-fit-line-hair" style="border-top:1.5px dashed rgba(255,255,255,.55);"></div>
+              <div id="v2-fit-line-crown" style="border-top:2px solid #FDCB6E;"></div>
+              <div id="v2-fit-line-eye" style="border-top:2px solid #74b9ff;"></div>
+              <div id="v2-fit-line-chin" style="border-top:2px solid rgba(255,255,255,.85);"></div>
             </div>
+            <div id="v2-fit-status" style="text-align:center;margin-top:10px;font-size:13px;color:#777;min-height:18px;"></div>
           </div>
           <div class="v2-checklist-side">
-            <div class="v2-checklist-title">규격 맞춤 미리보기</div>
-            <div class="v2-checklist-loading" id="v2-fit-loading" style="display:none;">
-              <div class="v2-spinner"></div>
-              <span>규격 프레임을 맞추는 중...</span>
-            </div>
-            <ul class="v2-checklist-items" id="v2-fit-info"></ul>
+            <div class="v2-checklist-title">규격 안착</div>
+            <div id="v2-fit-badges" style="display:none;gap:8px;flex-wrap:wrap;margin:8px 0;"></div>
+            <div id="v2-fit-note" style="display:none;font-size:12.5px;color:#555;background:#f6f6fb;border-radius:8px;padding:8px 10px;margin:6px 0;"></div>
             <div class="v2-checklist-summary" id="v2-fit-summary"></div>
             <div class="v2-action-buttons" id="v2-fit-actions" style="display:none;">
               <button class="v2-action-btn v2-btn-retry" id="v2-fit-change">다른 사진으로</button>
@@ -2469,57 +2469,152 @@ ${hreflangTags}
     showPhase(phasePay);
   }
 
-  /* ─── 프레임 피팅 가이드 (ORDER_20260707 Task 3) ─── */
+  /* ─── 규격 안착 시어터 (2026-07-07 작가님 연출 비전) ───
+     줌인 → 가이드 라인 순차 진입 → 전문가(비전) 미세 보정 트윈 → 정본 신호등 판정 */
+  var SIGCOL = { pass:'#00B894', warn:'#FDCB6E', fail:'#E17055' };
+  var fitTimers = [];
+  function fitClearTimers(){ fitTimers.forEach(clearTimeout); fitTimers = []; }
+  function fitAfter(ms, fn){ fitTimers.push(setTimeout(fn, ms)); }
+
   function runFit(){
     showPhase(phaseFit);
-    var fl = document.getElementById('v2-fit-loading');
-    var fa = document.getElementById('v2-fit-actions');
-    var fi = document.getElementById('v2-fit-info');
+    fitClearTimers();
+    var stage = document.getElementById('v2-fit-stage');
+    var img = document.getElementById('v2-fit-img');
+    var badges = document.getElementById('v2-fit-badges');
+    var noteEl = document.getElementById('v2-fit-note');
     var fs = document.getElementById('v2-fit-summary');
-    fi.innerHTML = ''; fs.textContent = ''; fs.className = 'v2-checklist-summary';
-    fa.style.display = 'none'; fl.style.display = 'flex';
-    document.getElementById('v2-fit-img').src = uploadedBase64;
-    ['v2-fit-frame','v2-fit-line-crown','v2-fit-line-eye','v2-fit-line-chin'].forEach(function(id){ document.getElementById(id).style.display = 'none'; });
+    var fa = document.getElementById('v2-fit-actions');
+    badges.style.display = 'none'; badges.innerHTML = '';
+    noteEl.style.display = 'none';
+    fs.textContent = ''; fs.className = 'v2-checklist-summary';
+    fa.style.display = 'none';
+    ['hair','crown','eye','chin'].forEach(function(k){
+      var el = document.getElementById('v2-fit-line-' + k);
+      el.style.cssText += ';position:absolute;left:6%;right:6%;opacity:0;transition:opacity .45s, top .8s cubic-bezier(.22,.9,.24,1);pointer-events:none;';
+    });
+    document.getElementById('v2-fit-dim-top').style.height = '0';
+    document.getElementById('v2-fit-dim-bot').style.height = '0';
+    document.getElementById('v2-fit-status').textContent = '얼굴 위치 분석 중...';
+    img.style.transition = 'none';
+    img.src = uploadedBase64;
+
     fetch('/api/idphoto/fit', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ image: uploadedBase64, slug: CFG.slug, faceBox: precheckData && precheckData.faceBox })
     })
     .then(function(r){ return r.json(); })
     .then(function(data){
-      fl.style.display = 'none';
       if(!data || !data.success){ fitResult = null; proceedToPay(); return; } // 카나리 밖·감지 실패 → 기존 경로
       fitResult = data;
-      renderFitOverlay(data);
+      playFitTheater(data);
     })
-    .catch(function(){ fl.style.display = 'none'; fitResult = null; proceedToPay(); });
+    .catch(function(){ fitResult = null; proceedToPay(); });
   }
 
-  function renderFitOverlay(d){
+  function playFitTheater(d){
+    var stage = document.getElementById('v2-fit-stage');
+    var img = document.getElementById('v2-fit-img');
+    var statusEl = document.getElementById('v2-fit-status');
+    var stageW = Math.min(260, (stage.parentElement.clientWidth || 280) - 20);
+    var stageH = Math.round(stageW * d.spec.frameH / d.spec.frameW);
+    stage.style.width = stageW + 'px'; stage.style.height = stageH + 'px';
     var W = d.imageSize.width, H = d.imageSize.height;
-    function pct(v, total){ return (v / total * 100) + '%'; }
-    var f = document.getElementById('v2-fit-frame');
-    f.style.display = 'block';
-    f.style.left = pct(d.frame.x, W); f.style.top = pct(d.frame.y, H);
-    f.style.width = pct(d.frame.w, W); f.style.height = pct(d.frame.h, H);
-    var linemap = { 'v2-fit-line-crown': d.lines.crownY, 'v2-fit-line-eye': d.lines.eyeY, 'v2-fit-line-chin': d.lines.chinY };
-    Object.keys(linemap).forEach(function(id){
-      var el = document.getElementById(id);
-      el.style.display = 'block'; el.style.top = pct(linemap[id], H);
+
+    function applyFrame(f){
+      var sc = stageW / f.w;
+      img.style.width = (W * sc) + 'px';
+      img.style.left = (-f.x * sc) + 'px';
+      img.style.top = (-f.y * sc) + 'px';
+      return sc;
+    }
+    function positionLine(id, y, f){
+      var sc = stageW / f.w;
+      document.getElementById(id).style.top = ((y - f.y) * sc) + 'px';
+    }
+    function setStatus(t){ statusEl.textContent = t; }
+
+    // 0) 전체 사진(contain)에서 시작
+    var sc0 = Math.min(stageW / W, stageH / H);
+    img.style.transition = 'none';
+    img.style.width = (W * sc0) + 'px';
+    img.style.left = ((stageW - W * sc0) / 2) + 'px';
+    img.style.top = ((stageH - H * sc0) / 2) + 'px';
+    void img.offsetWidth; // 리플로우 — 이후 트랜지션 적용
+    img.style.transition = 'width 1.1s cubic-bezier(.22,.9,.24,1), left 1.1s cubic-bezier(.22,.9,.24,1), top 1.1s cubic-bezier(.22,.9,.24,1)';
+
+    var frame0 = d.frameInitial || d.frame;
+    // 1) 규격 프레임으로 자연 줌인
+    fitAfter(400, function(){ setStatus('규격 프레임 정렬 중'); applyFrame(frame0); });
+    // 2) 가이드 라인 순차 진입
+    var seq = [
+      ['v2-fit-line-eye',   d.lines.eyeY,    '눈높이 확인'],
+      ['v2-fit-line-chin',  d.lines.chinY,   '턱 라인 확인'],
+      ['v2-fit-line-crown', d.lines.crownY,  '정수리 산정 — 1:1 해부학 앵커'],
+      ['v2-fit-line-hair',  d.lines.hairTopY,'헤어 여백 검토'],
+    ];
+    var t = 1700;
+    seq.forEach(function(item, i){
+      fitAfter(t + i * 480, function(){
+        setStatus(item[2]);
+        positionLine(item[0], item[1], frame0);
+        document.getElementById(item[0]).style.opacity = '1';
+      });
     });
-    var fi = document.getElementById('v2-fit-info');
-    fi.innerHTML = '';
-    var rangeTxt = (d.spec && d.spec.headHeightMin && d.spec.headHeightMax) ? ' (허용 ' + d.spec.headHeightMin + '~' + d.spec.headHeightMax + 'mm)' : '';
-    [['머리 높이(정수리~턱)', d.meta.faceMM + 'mm' + rangeTxt],
-     ['눈 높이', d.meta.eyePositionPercent + '%'],
-     ['정수리 여백', d.meta.crownMarginMM + 'mm']].forEach(function(it){
-      var li = document.createElement('li');
-      li.textContent = it[0] + ' — ' + it[1];
-      fi.appendChild(li);
+    t += seq.length * 480 + 250;
+    // 3) 전문가(비전) 미세 보정 트윈
+    var moved = d.frameInitial && Math.abs(d.frame.y - d.frameInitial.y) > 1;
+    if(moved){
+      fitAfter(t, function(){
+        setStatus('전문가 보정 적용 중 — 여백 균형');
+        applyFrame(d.frame);
+        seq.forEach(function(item){ positionLine(item[0], item[1], d.frame); });
+      });
+      t += 1000;
+    }
+    // 4) 딤 + 신호등 판정
+    fitAfter(t + 150, function(){
+      var scF = stageW / d.frame.w;
+      var crownTop = (d.lines.crownY - d.frame.y) * scF;
+      var chinTop = (d.lines.chinY - d.frame.y) * scF;
+      document.getElementById('v2-fit-dim-top').style.height = Math.max(0, crownTop) + 'px';
+      document.getElementById('v2-fit-dim-bot').style.height = Math.max(0, stageH - chinTop) + 'px';
+      setStatus('');
+      renderFitVerdict(d);
     });
+  }
+
+  function renderFitVerdict(d){
+    var b = document.getElementById('v2-fit-badges');
+    b.innerHTML = ''; b.style.display = 'flex';
+    function badge(label, val, sig){
+      var el = document.createElement('div');
+      var c = SIGCOL[sig] || '#888';
+      el.style.cssText = 'padding:5px 10px;border-radius:8px;font-size:12.5px;font-weight:600;background:' + c + '22;color:' + c + ';';
+      el.textContent = label + ' ' + val;
+      b.appendChild(el);
+    }
+    var m = d.metrics || {}, j = d.judge || {};
+    if(m.faceMm != null) badge('얼굴', m.faceMm + 'mm', j.face);
+    if(m.eyeRatio != null) badge('눈', (m.eyeRatio * 100).toFixed(0) + '%', j.eye);
+    if(m.topMm != null) badge('상단', m.topMm + 'mm', j.top);
+    if(m.bottomMm != null) badge('하단', m.bottomMm + 'mm', j.bottom);
+    if(d.vision && d.vision.note){
+      var n = document.getElementById('v2-fit-note');
+      n.style.display = 'block';
+      n.textContent = '전문가 AI — ' + d.vision.note;
+    }
     var fs = document.getElementById('v2-fit-summary');
-    var visionOk = !d.vision || d.vision.pass !== false;
-    fs.className = 'v2-checklist-summary ' + (visionOk ? 'v2-summary-pass' : 'v2-summary-fail');
-    fs.textContent = visionOk ? '초록 프레임대로 규격에 맞춰집니다.' : 'AI 검수가 프레임을 보정했습니다. 미리보기를 확인해주세요.';
+    var mk = document.getElementById('v2-fit-make');
+    if(j.blocked){
+      fs.className = 'v2-checklist-summary v2-summary-fail';
+      fs.textContent = '규격 허용 범위를 벗어났습니다. 다른 사진을 권장해요.';
+      mk.disabled = true; mk.style.opacity = '.4';
+    } else {
+      fs.className = 'v2-checklist-summary v2-summary-pass';
+      fs.textContent = '규격에 안착했습니다. 이대로 만들 수 있어요.';
+      mk.disabled = false; mk.style.opacity = '';
+    }
     document.getElementById('v2-fit-actions').style.display = 'flex';
   }
 
@@ -2724,8 +2819,18 @@ ${hreflangTags}
     gaTrack('generate_click', null, true); // 재생성 포함 매회 발화
     showPhase(phaseGen);
     setGenMessage(GEN_TEXT_DEFAULT, GEN_SUB_DEFAULT);
+    // 연출: 실제 파이프라인 단계를 순환 표기 (재단→매팅→검수) — 대기가 신뢰가 되게
+    if(window.__genStageTimer) clearInterval(window.__genStageTimer);
+    (function(){
+      var stages = fitResult ? ['확정 프레임으로 원본 재단 중', '배경 분리 중 — 원본 픽셀 보존', '정밀 검수 중'] : [GEN_TEXT_DEFAULT];
+      var i = 0;
+      window.__genStageTimer = setInterval(function(){
+        i = (i + 1) % stages.length;
+        setGenMessage(stages[i], GEN_SUB_DEFAULT);
+      }, 3500);
+    })();
     var body = { image: uploadedBase64, format: CFG.format, gender: 'm', age: 'adult', slug: CFG.slug };
-    if(fitResult && fitResult.frame){ body.fitFrame = fitResult.frame; body.fitMeta = fitResult.meta; }
+    if(fitResult && fitResult.frame){ body.fitFrame = fitResult.frame; body.fitMeta = fitResult.meta; body.fitMetrics = fitResult.metrics; }
     if(pay.token) body.paymentToken = pay.token;
     fetch('/api/idphoto/generate', {
       method:'POST', headers:{'Content-Type':'application/json'},
@@ -2735,10 +2840,21 @@ ${hreflangTags}
     .then(function(res){
       genBusy = false;
       var data = res.d;
+      if(window.__genStageTimer) clearInterval(window.__genStageTimer);
       if(data.image){
         if(typeof data.remainingGenerates === 'number'){ pay.remaining = data.remainingGenerates; persistOrder(); }
         document.getElementById('v2-result-before-img').src = uploadedBase64;
-        document.getElementById('v2-result-after-img').src = 'data:image/png;base64,' + data.image;
+        var afterImg = document.getElementById('v2-result-after-img');
+        afterImg.src = 'data:image/png;base64,' + data.image;
+        // 누끼 체험: 배경이 위→아래로 벗겨지듯 결과가 드러남 (birefnet 트랙 = 원본 픽셀 보존)
+        if(data.track === 'birefnet'){
+          afterImg.style.transition = 'none';
+          afterImg.style.clipPath = 'inset(0 0 100% 0)';
+          requestAnimationFrame(function(){ requestAnimationFrame(function(){
+            afterImg.style.transition = 'clip-path 1.3s cubic-bezier(.22,.9,.24,1)';
+            afterImg.style.clipPath = 'inset(0 0 0 0)';
+          }); });
+        } else { afterImg.style.clipPath = ''; afterImg.style.transition = ''; }
         renderResultChecklist(data);
         showPhase(phaseResult);
         gaTrack('preview_view');
@@ -2759,7 +2875,7 @@ ${hreflangTags}
         showPhase(uploadedBase64 ? phasePay : phaseUpload);
       }
     })
-    .catch(function(){ genBusy = false; showError(T.errNet); showPhase(uploadedBase64 ? phasePay : phaseUpload); });
+    .catch(function(){ if(window.__genStageTimer) clearInterval(window.__genStageTimer); genBusy = false; showError(T.errNet); showPhase(uploadedBase64 ? phasePay : phaseUpload); });
   }
 
   var payCreditBtn = document.getElementById('v2-pay-credit');

@@ -288,41 +288,49 @@ export async function cropToSpecV2(imageBuffer, landmarks, spec) {
  * @returns 입력 이미지 좌표계 기준 { frame, lines, meta } — frame은 스케일 역산된 원본 좌표
  */
 export async function fitSpecGeometry(imageBuffer, landmarks, spec, opts = {}) {
-  const hairScan = opts.hairScan !== false;
   const { frameW, frameH, frameHmm, faceTargetMm } = spec;
   if (!frameW || !frameH || !frameHmm || !faceTargetMm) {
     throw new Error('[FitSpec] spec 필수 필드 누락 (frameW/frameH/frameHmm/faceTargetMm)');
   }
   const mmPx = frameH / frameHmm;
   const faceMinMm = spec.faceMinMm || faceTargetMm * 0.93;
-  const hairMarginPx = (spec.hairMarginMm || HAIR_MARGIN_MM_DEFAULT) * mmPx;
 
   const { chin, leftEye, rightEye, imageWidth, imageHeight } = landmarks;
   const eyeY = (leftEye.y + rightEye.y) / 2;
-  const crownY = eyeY - (chin.y - eyeY); // 정수리 = 눈~턱 반전 (1:1:1)
+  const eyeCenterX = (leftEye.x + rightEye.x) / 2;
+  const crownY = eyeY - (chin.y - eyeY); // 정수리 = 눈~턱 1:1 미러 (CropEngine.swift:254)
   const facePx = chin.y - crownY;
   if (facePx <= 0) throw new Error('[FitSpec] 유효하지 않은 얼굴 높이');
-  const hairTop = hairScan ? await subjectTopRow(imageBuffer) : null;
+
+  // ─── IDPASS 정본 배치 엔진 그대로 포팅 (CropEngine.swift:252-307, 2026-07-07 완전분석) ───
+  // 상수: HAIR_MARGIN_MIN 0.044 / HAIR_VOLUME_RATIO 0.08 / BOTTOM_MIN_RATIO 0.12
+  // 헤어탑 = 추정(정수리 − 얼굴높이×8%) — 실측 스캔 아님 (순백 스캔은 실사 배경 오판 실사고로 폐기)
+  const hairTopY = crownY - facePx * HAIR_VOLUME_RATIO;
+  const eyeAnchor = frameHmm >= 60 ? 0.42 : 0.43; // 정본: 대형 프레임 42% 분기 (CropEngine.swift:252)
 
   let scale = (faceTargetMm * mmPx) / facePx;
-  const place = (s) => Math.round(eyeY * s - EYE_TARGET_RATIO * frameH);
+  let extractTop = Math.round(eyeY * scale - eyeAnchor * frameH);
 
-  let extractTop = place(scale);
-  if (hairTop !== null && hairTop * scale - extractTop < hairMarginPx) {
-    extractTop = Math.round(hairTop * scale - hairMarginPx);
-    let eyeRatio = (eyeY * scale - extractTop) / frameH;
-    while (eyeRatio > EYE_MAX_RATIO && (facePx * scale / mmPx) > faceMinMm) {
-      scale *= 0.99;
-      extractTop = Math.round(hairTop * scale - hairMarginPx);
-      eyeRatio = (eyeY * scale - extractTop) / frameH;
+  // 헤어 침범 시: 헤어탑 위 4.4% 여백으로 재앵커 → 하단 12% 미달 시 ×0.995 축소 (faceMin 하한)
+  if (hairTopY * scale - extractTop < 0) {
+    extractTop = Math.round(hairTopY * scale - frameH * HAIR_MARGIN_MIN);
+    const minBottomPx = frameH * BOTTOM_MIN_RATIO;
+    const chinInFrame = chin.y * scale - extractTop;
+    if (frameH - chinInFrame < minBottomPx) {
+      const minTargetFaceH = faceMinMm * mmPx;
+      let newScale = scale;
+      while (newScale * facePx > minTargetFaceH) {
+        newScale *= 0.995;
+        const nTop = Math.round(hairTopY * newScale - frameH * HAIR_MARGIN_MIN);
+        const nChinInFrame = chin.y * newScale - nTop;
+        if (frameH - nChinInFrame >= minBottomPx) { scale = newScale; extractTop = nTop; break; }
+      }
     }
   }
 
-  const eyeCenterX = (leftEye.x + rightEye.x) / 2;
   const scaledW = Math.round(imageWidth * scale);
   const scaledH = Math.round(imageHeight * scale);
   let extractLeft = Math.round(eyeCenterX * scale - frameW / 2);
-  // 클램프 (프레임이 이미지 안에 들도록 — 불가능하면 원시값 유지 = 상위에서 패딩 렌더)
   const canClampY = scaledH >= frameH;
   const canClampX = scaledW >= frameW;
   if (canClampY) extractTop = Math.max(0, Math.min(extractTop, scaledH - frameH));
@@ -331,16 +339,15 @@ export async function fitSpecGeometry(imageBuffer, landmarks, spec, opts = {}) {
   const meta = {
     faceMM: (facePx * scale / mmPx).toFixed(1),
     crownMarginMM: ((crownY * scale - extractTop) / mmPx).toFixed(1),
-    ...(hairTop !== null ? { hairMarginMM: ((hairTop * scale - extractTop) / mmPx).toFixed(1) } : {}),
+    hairMarginMM: ((hairTopY * scale - extractTop) / mmPx).toFixed(1),
     eyePositionPercent: ((eyeY * scale - extractTop) / frameH * 100).toFixed(1),
     scale: Math.round(scale * 1000) / 1000,
     padded: !canClampX || !canClampY,
   };
 
   return {
-    // 입력 이미지 좌표계의 규격 프레임 (스케일 역산)
     frame: { x: extractLeft / scale, y: extractTop / scale, w: frameW / scale, h: frameH / scale },
-    lines: { crownY, eyeY, chinY: chin.y, ...(hairTop !== null ? { hairTopY: hairTop } : {}) },
+    lines: { crownY, eyeY, chinY: chin.y, hairTopY, eyeCenterX },
     imageSize: { width: imageWidth, height: imageHeight },
     meta,
   };

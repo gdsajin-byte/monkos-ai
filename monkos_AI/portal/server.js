@@ -42,6 +42,7 @@ import { handleHeadshotGenerate } from './lib/headshot-route.js';
 import { generateIdPhoto } from './lib/idphoto-generate.js';
 import { cropToSpec, warmupCropEngine, getSpecCropParams } from './lib/spec-crop.js';
 import { matteSpecPipeline, matteFitPipeline, matteEnabled, matteSlugAllowed, warmupMatteEngine, stripDataUri, getSpecBgColor } from './lib/matte.js';
+import { judgeMetrics, metricsFromFit } from './lib/spec-judge.js';
 import { trackEvent, linkIdentity } from './lib/tracking.js';
 import { saveImages } from './lib/gcs-save.js';
 import { handleAgentAuth, requireAdmin } from './lib/cms/admin-auth.js';
@@ -322,7 +323,11 @@ const httpServer = createServer(async (req, res) => {
       }
       // 러프 크롭 오프셋 → 원본 좌표
       const frame = { x: fitRes.frame.x + rx, y: fitRes.frame.y + ry, w: fitRes.frame.w, h: fitRes.frame.h };
-      const lines = { crownY: fitRes.lines.crownY + ry, eyeY: fitRes.lines.eyeY + ry, chinY: fitRes.lines.chinY + ry };
+      const lines = {
+        crownY: fitRes.lines.crownY + ry, eyeY: fitRes.lines.eyeY + ry, chinY: fitRes.lines.chinY + ry,
+        hairTopY: (fitRes.lines.hairTopY ?? fitRes.lines.crownY) + ry,
+        eyeCenterX: (fitRes.lines.eyeCenterX ?? (frame.x + frame.w / 2)) + rx,
+      };
       // 새니티 가드: 눈 라인이 faceBox 수직 범위(±30% 확장) 밖이면 좌표계 붕괴 → fit 포기 (기존 경로 폴백)
       if (fbPx && fbPx.h > 10) {
         const lo = fbPx.y - fbPx.h * 0.3, hi = fbPx.y + fbPx.h * 1.3;
@@ -332,8 +337,10 @@ const httpServer = createServer(async (req, res) => {
           return res.end(JSON.stringify({ success: false, code: 'FIT_SANITY' }));
         }
       }
+      const frameInitial = { ...frame };
 
-      // ③ Gemini 비전 검수 (§6-2) — 초록 프레임 오버레이 캡처 → 판단만 받고 산술 보정은 코드가
+      // ③ Gemini 비전 = 전문가 심미 대행 (판정은 코드 정본표가 담당 — 역할 분리, 2026-07-07 작가님)
+      //    범위 내에서 "보기 좋음"만 판단: 헤어 걸침·상하 균형. adjustment_y_px 산술 보정 후 정본표 재검증, 이탈 시 원복.
       let vision = null;
       try {
         const scale = Math.min(1, 768 / W);
@@ -346,32 +353,36 @@ const httpServer = createServer(async (req, res) => {
           model: 'gemini-2.5-flash',
           contents: [{ role: 'user', parts: [
             { inlineData: { mimeType: 'image/jpeg', data: overlay.toString('base64') } },
-            { text: `이 이미지는 증명사진 규격 프레임(초록선)이 원본 위에 오버레이된 것입니다.\n규격: 프레임 ${Math.round(spec.frameHmm * spec.frameW / spec.frameH)}×${spec.frameHmm}mm, 머리높이(정수리~턱) 허용 ${spec.headHeightMinMm || spec.faceMinMm}~${spec.headHeightMaxMm || spec.faceTargetMm}mm.\n\n다음을 JSON으로 판정하세요:\n{"crown_ok": 정수리(머리카락 아래 두개골 최상단 추정)가 프레임 안에 있는가 (true/false), "crown_margin_px": 정수리~프레임 상단 여백 (이 이미지 픽셀, 음수면 잘림), "hair_overflow": 머리카락이 프레임 상단 밖으로 과도하게 나갔는가 (true/false), "eye_center_ratio": 눈 중심이 프레임 상단에서 몇 % 위치인가 (0~100), "adjustment_y_px": 프레임을 위/아래로 몇 픽셀 이동해야 최적인가 (양수=아래로, 음수=위로, 이 이미지 픽셀), "pass": 현재 상태로 규격 통과 가능한가 (true/false)}` },
+            { text: `당신은 12년차 증명사진 전문가입니다. 초록 프레임은 규격 크롭 영역입니다.\n규격 준수 판정은 별도 시스템이 하므로, 당신은 오직 "사진관 전문가의 심미 관점"만 판단하세요:\n- 머리카락이 프레임 상단에 닿거나 잘리는가 (볼륨 헤어 배려)\n- 상하 여백 균형이 자연스러운가 (답답하거나 붕 뜨지 않게)\n\nJSON: {"hair_touching_top": bool, "balance": "good"|"too_high"|"too_low", "adjustment_y_px": 프레임을 이동할 픽셀(양수=아래로, 음수=위로, 이 이미지 기준, 필요 없으면 0), "note": "전문가 한 줄 소견 (한국어)"}` },
           ]}],
-          // 씽킹 차단 — 비전 판정에 2.5-flash 동적 씽킹이 ~38s 소요 (2026-07-07 dev 실측). 판정은 즉답형으로 충분.
           config: { responseMimeType: 'application/json', thinkingConfig: { thinkingBudget: 0 } },
         });
         const vtext = vres.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
         vision = JSON.parse(vtext);
-        // 산술 보정: 비전 픽셀 → 원본 픽셀, ±12% 프레임 높이로 클램프 (비전은 판단만, 실행은 코드)
         const adjRaw = Number(vision.adjustment_y_px) || 0;
         const adj = Math.max(-frame.h * 0.12, Math.min(frame.h * 0.12, adjRaw / scale));
-        if (Math.abs(adj) > 1) frame.y = Math.round(frame.y + adj);
+        if (Math.abs(adj) > 1) {
+          const cand = { ...frame, y: Math.round(frame.y + adj) };
+          // 정본표 재검증: 보정이 규격을 깨면 원복 (비전은 판단만, 게이트는 코드)
+          const candJudge = judgeMetrics(metricsFromFit(cand, lines, spec), spec);
+          if (!candJudge.blocked) { frame.y = cand.y; }
+          else { vision.reverted = true; }
+        }
       } catch (ve) {
         log(`[Fit] ${slug}: 비전 검수 실패 (${ve.message}) — 기하 피팅만 사용`, 'WARNING');
       }
 
-      // ④ 최종 메타 (원본 좌표 기준 재계산)
-      const mmPerPx = spec.frameHmm / frame.h;
+      // ④ 최종 메트릭 + IDPASS 정본 판정표
+      const metrics = metricsFromFit(frame, lines, spec);
+      const judge = judgeMetrics(metrics, spec);
       const meta = {
-        faceMM: ((lines.chinY - lines.crownY) * mmPerPx).toFixed(1),
-        crownMarginMM: ((lines.crownY - frame.y) * mmPerPx).toFixed(1),
-        eyePositionPercent: ((lines.eyeY - frame.y) / frame.h * 100).toFixed(1),
+        faceMM: String(metrics.faceMm), crownMarginMM: String(metrics.topMm),
+        eyePositionPercent: (metrics.eyeRatio * 100).toFixed(1),
       };
-      slog(`[Fit] ${slug}: face=${meta.faceMM}mm crown=${meta.crownMarginMM}mm eye=${meta.eyePositionPercent}% vision=${vision ? (vision.pass ? 'pass' : 'adjust') : 'skip'}`);
+      slog(`[Fit] ${slug}: face=${metrics.faceMm}mm top=${metrics.topMm}mm btm=${metrics.bottomMm}mm eye=${(metrics.eyeRatio * 100).toFixed(1)}% judge=${judge.blocked ? 'BLOCKED' : judge.face + '/' + judge.eye} vision=${vision ? (vision.balance || 'ok') : 'skip'}`);
       res.writeHead(200, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify({
-        success: true, frame, lines, imageSize: { width: W, height: H }, meta, vision,
+        success: true, frame, frameInitial, lines, imageSize: { width: W, height: H }, meta, metrics, judge, vision,
         spec: { frameW: spec.frameW, frameH: spec.frameH, frameHmm: spec.frameHmm, headHeightMin: spec.headHeightMinMm || spec.faceMinMm, headHeightMax: spec.headHeightMaxMm || null, faceTargetMm: spec.faceTargetMm },
       }));
     } catch (err) {
@@ -557,7 +568,9 @@ Respond in JSON only:
           let matteRes = null;
           if (body.fitFrame && body.fitFrame.w > 0 && body.fitFrame.h > 0) {
             const specP = getSpecCropParams(slug);
-            if (specP) matteRes = await matteFitPipeline(image, slug, body.fitFrame, body.fitMeta || null, specP.frameW, specP.frameH);
+            // IDPASS 정본 게이트: blocked면 fit 경로 차단 (face 범위 밖 OR eye 40~48% 밖)
+            const blocked = specP && body.fitMetrics ? judgeMetrics(body.fitMetrics, specP).blocked : false;
+            if (specP && !blocked) matteRes = await matteFitPipeline(image, slug, body.fitFrame, body.fitMeta || null, specP.frameW, specP.frameH);
           }
           if (!matteRes) matteRes = await matteSpecPipeline(image, slug);
           if (matteRes) {

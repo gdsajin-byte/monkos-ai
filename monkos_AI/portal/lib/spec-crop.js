@@ -67,17 +67,17 @@ export function getSpecCropParams(slug) {
   const range = (Number.isFinite(data.headHeightMin) && Number.isFinite(data.headHeightMax) && data.headHeightMin < data.headHeightMax)
     ? [data.headHeightMin, data.headHeightMax]
     : parseHeadHeightRangeMm(data.headHeight);
-  // 타겟 = IDPASS 정본 산식 (2026-07-07 작가님: "크롭은 Gemini가 아니라 우리 IDPASS 로직으로")
-  // 프레임 h≥60 → fMax-1 / h≥40 → max(33, fMin+1) / 소형 → h×0.70. 범위 내 클램프.
-  // (종전 min+0.6×폭 = kr 34.4mm는 실측상 과대 — 얼굴이 프레임을 압도, 카나리 2호 판정)
+  // 타겟 = IDPASS 정본 결정식 그대로 (SpecData.swift:196-218, 2026-07-07 완전분석 §2-2):
+  // 명시값(countries.jsonl faceTarget) → clamp(h≥60?fMax−1 : h≥40?max(33,fMin+1) : h×0.70, fMin+1, fMax−1)
+  // 하한 편향(fMin+1)은 실무 최적해 — 심사관별 정수리 정의 편차에 의한 반려 방어 (작가님 12년 실무)
   let faceMinMm = range ? range[0] : null;
   let faceTargetMm = null;
-  if (range) {
+  if (Number.isFinite(data.faceTargetExplicitMm)) {
+    faceTargetMm = data.faceTargetExplicitMm;
+  } else if (range) {
     const [fMin, fMax] = range;
-    if (frameHmm >= 60) faceTargetMm = fMax - 1;
-    else if (frameHmm >= 40) faceTargetMm = Math.max(33, fMin + 1);
-    else faceTargetMm = frameHmm * 0.70;
-    faceTargetMm = +Math.min(Math.max(faceTargetMm, fMin), fMax).toFixed(1);
+    const base = frameHmm >= 60 ? fMax - 1 : frameHmm >= 40 ? Math.max(33, fMin + 1) : frameHmm * 0.70;
+    faceTargetMm = +Math.min(Math.max(base, fMin + 1), fMax - 1).toFixed(1);
   }
   // 파싱 불가 or 비상식 값 → 보수 기본값 (프레임 높이의 72% — 크롭앱 여권 기본 비율)
   if (!faceTargetMm || faceTargetMm >= frameHmm * 0.9 || faceTargetMm < frameHmm * 0.3) {

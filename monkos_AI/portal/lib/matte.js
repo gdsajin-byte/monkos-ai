@@ -230,10 +230,6 @@ export async function renderFitCrop(originalB64, fitFrame, frameW, frameH) {
 export async function matteFitPipeline(originalB64, slug, fitFrame, fitMeta, frameW, frameH) {
   if (!matteEnabled() || !matteSlugAllowed(slug)) return null;
   if (!frameW || !frameH) return null;
-  if (fitMeta && !cropMetaWithinSpec(fitMeta)) {
-    log(`[Matte] ${slug}: fit 메타 가드 이탈(crown=${fitMeta?.crownMarginMM} eye=${fitMeta?.eyePositionPercent}) → Gemini 폴백`, 'WARNING');
-    return null;
-  }
   try {
     const cropB64 = await renderFitCrop(originalB64, fitFrame, frameW, frameH);
     const bgColor = getSpecBgColor(slug);
