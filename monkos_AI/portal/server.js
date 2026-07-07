@@ -286,7 +286,7 @@ const httpServer = createServer(async (req, res) => {
       // ① faceBox 러프 크롭 — FaceMesh 안정 입력 (사일런트 미스 방지). 얼굴높이 4배 창.
       // faceBox는 비율(0~1) 정본 — Gemini 비전의 픽셀 좌표는 자체 다운스케일 기준이라 신뢰 불가
       // (2026-07-07 카나리 7호: 픽셀 좌표 오해 → 러프 창 어긋남 → 가이드 전체 오배치)
-      let rx = 0, ry = 0, roughBuf = buf;
+      let rx = 0, ry = 0, roughScale = 1, roughBuf = buf;
       let fbPx = null;
       if (faceBox && faceBox.w > 0 && faceBox.h > 0) {
         const frac = (faceBox.x <= 1.5 && faceBox.y <= 1.5 && faceBox.w <= 1.5 && faceBox.h <= 1.5);
@@ -294,7 +294,10 @@ const httpServer = createServer(async (req, res) => {
           ? { x: faceBox.x * W, y: faceBox.y * H, w: faceBox.w * W, h: faceBox.h * H }
           : { x: faceBox.x, y: faceBox.y, w: faceBox.w, h: faceBox.h };
       }
-      if (fbPx && fbPx.w > 10 && fbPx.h > 10) {
+      // FaceMesh 입력 정규화 (2026-07-07 작가님: "FaceMesh에겐 얼굴이 적정 크기로 나오는 입력을 보내야")
+      // — IDPASS 카메라 가이드가 강제하던 조건의 웹 재현: 얼굴 높이를 목표 px로 리사이즈해 전달
+      async function buildRough(targetFaceH) {
+        if (!fbPx || fbPx.w <= 10 || fbPx.h <= 10) return { buf, rx: 0, ry: 0, scale: 1 };
         const fh = fbPx.h;
         const top = Math.max(0, Math.round(fbPx.y - fh * 1.3));
         const bottom = Math.min(H, Math.round(fbPx.y + fh * 2.7));
@@ -302,40 +305,51 @@ const httpServer = createServer(async (req, res) => {
         const winH = bottom - top;
         const winW = Math.min(W, Math.round(winH * (spec.frameW / spec.frameH) * 1.4));
         const left = Math.max(0, Math.min(W - winW, Math.round(cx - winW / 2)));
-        if (winH > 50 && winW > 50 && (winH < H * 0.98 || winW < W * 0.98)) {
-          roughBuf = await sharp(buf).extract({ left, top, width: winW, height: winH }).png().toBuffer();
-          rx = left; ry = top;
-          slog(`[Fit] ${slug}: 러프 크롭 ${winW}x${winH}@(${left},${top}) / 원본 ${W}x${H} fb=(${Math.round(fbPx.x)},${Math.round(fbPx.y)},${Math.round(fbPx.w)},${Math.round(fbPx.h)})`);
-        }
+        if (winH < 50 || winW < 50) return { buf, rx: 0, ry: 0, scale: 1 };
+        const sc = Math.min(2, targetFaceH / fh); // 얼굴을 targetFaceH px로 (업스케일은 2배 한도)
+        const outW = Math.max(64, Math.round(winW * sc));
+        const outH = Math.max(64, Math.round(winH * sc));
+        const b = await sharp(buf).extract({ left, top, width: winW, height: winH })
+          .resize(outW, outH, { fit: 'fill' }).png().toBuffer();
+        return { buf: b, rx: left, ry: top, scale: sc };
       }
-
-      // ② crop-engine 기하 피팅 (실사 원본 — 순백 헤어스캔 비활성)
+      // ② crop-engine 기하 피팅 — 정규화 입력, 랜드마크 해부학 검증, 실패 시 스케일 바꿔 1회 재시도.
+      // 사일런트 미스(감지 성공 플래그 + 쓰레기 좌표)는 검증으로만 잡힌다 — 엉뚱한 가이드 절대 금지.
       const CROP_ENGINE_URL = process.env.CROP_ENGINE_URL || '';
-      const fitRes = await fetch(`${CROP_ENGINE_URL}/api/fit-spec`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image: roughBuf.toString('base64'), spec, hairScan: false }),
-        signal: AbortSignal.timeout(45000),
-      }).then((r) => r.json());
-      if (!fitRes.success || !fitRes.detected) {
-        slog(`[Fit] ${slug}: 감지 실패 → NO_FACE`);
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        return res.end(JSON.stringify({ success: false, code: 'NO_FACE' }));
-      }
-      // 러프 크롭 오프셋 → 원본 좌표
-      const frame = { x: fitRes.frame.x + rx, y: fitRes.frame.y + ry, w: fitRes.frame.w, h: fitRes.frame.h };
-      const lines = {
-        crownY: fitRes.lines.crownY + ry, eyeY: fitRes.lines.eyeY + ry, chinY: fitRes.lines.chinY + ry,
-        hairTopY: (fitRes.lines.hairTopY ?? fitRes.lines.crownY) + ry,
-        eyeCenterX: (fitRes.lines.eyeCenterX ?? (frame.x + frame.w / 2)) + rx,
-      };
-      // 새니티 가드: 눈 라인이 faceBox 수직 범위(±30% 확장) 밖이면 좌표계 붕괴 → fit 포기 (기존 경로 폴백)
-      if (fbPx && fbPx.h > 10) {
-        const lo = fbPx.y - fbPx.h * 0.3, hi = fbPx.y + fbPx.h * 1.3;
-        if (lines.eyeY < lo || lines.eyeY > hi) {
-          slog(`[Fit] ${slug}: 새니티 가드 이탈 (eyeY=${Math.round(lines.eyeY)} vs fb ${Math.round(lo)}~${Math.round(hi)}) → fit 포기`);
-          res.writeHead(200, { 'Content-Type': 'application/json' });
-          return res.end(JSON.stringify({ success: false, code: 'FIT_SANITY' }));
+      let frame = null, lines = null;
+      for (const targetFaceH of [280, 200]) {
+        const rough = await buildRough(targetFaceH);
+        const fitRes = await fetch(`${CROP_ENGINE_URL}/api/fit-spec`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ image: rough.buf.toString('base64'), spec, hairScan: false }),
+          signal: AbortSignal.timeout(45000),
+        }).then((r) => r.json()).catch(() => null);
+        if (!fitRes || !fitRes.success || !fitRes.detected) continue;
+        const sc = rough.scale;
+        const cand = {
+          frame: { x: fitRes.frame.x / sc + rough.rx, y: fitRes.frame.y / sc + rough.ry, w: fitRes.frame.w / sc, h: fitRes.frame.h / sc },
+          lines: {
+            crownY: fitRes.lines.crownY / sc + rough.ry,
+            eyeY: fitRes.lines.eyeY / sc + rough.ry,
+            chinY: fitRes.lines.chinY / sc + rough.ry,
+            hairTopY: (fitRes.lines.hairTopY ?? fitRes.lines.crownY) / sc + rough.ry,
+            eyeCenterX: (fitRes.lines.eyeCenterX ?? 0) / sc + rough.rx,
+          },
+        };
+        // 해부학 검증 (faceBox 대비): 눈=박스 상중부, 턱=박스 하단부 — 어긋나면 사일런트 미스로 판정
+        let ok = true;
+        if (fbPx && fbPx.h > 10) {
+          const eyeOk = cand.lines.eyeY >= fbPx.y + fbPx.h * 0.08 && cand.lines.eyeY <= fbPx.y + fbPx.h * 0.72;
+          const chinOk = cand.lines.chinY >= fbPx.y + fbPx.h * 0.55 && cand.lines.chinY <= fbPx.y + fbPx.h * 1.45;
+          ok = eyeOk && chinOk;
         }
+        if (ok) { frame = cand.frame; lines = cand.lines; break; }
+        slog(`[Fit] ${slug}: 랜드마크 검증 이탈 (targetFaceH=${targetFaceH}, eye=${Math.round(cand.lines.eyeY)}, chin=${Math.round(cand.lines.chinY)}, fb.y=${Math.round(fbPx.y)}, fb.h=${Math.round(fbPx.h)}) → 재시도`);
+      }
+      if (!frame) {
+        slog(`[Fit] ${slug}: 정규화·재시도 후에도 신뢰 랜드마크 확보 실패 → fit 포기 (기존 경로 폴백)`);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        return res.end(JSON.stringify({ success: false, code: 'FIT_SANITY' }));
       }
       const frameInitial = { ...frame };
 
