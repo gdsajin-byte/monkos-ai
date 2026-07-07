@@ -63,7 +63,10 @@ export function getSpecCropParams(slug) {
   if (!frame) return null;
 
   const frameHmm = sizeMm ? sizeMm[1] : (frame[1] / (Number(data.dpi) || 300)) * 25.4;
-  const range = parseHeadHeightRangeMm(data.headHeight);
+  // 수치 정본 우선 (ORDER_20260707 Task 2: countries.jsonl 155 + 텍스트 267 + 기본값 6 병합분)
+  const range = (Number.isFinite(data.headHeightMin) && Number.isFinite(data.headHeightMax) && data.headHeightMin < data.headHeightMax)
+    ? [data.headHeightMin, data.headHeightMax]
+    : parseHeadHeightRangeMm(data.headHeight);
   // 타겟 = IDPASS 정본 산식 (2026-07-07 작가님: "크롭은 Gemini가 아니라 우리 IDPASS 로직으로")
   // 프레임 h≥60 → fMax-1 / h≥40 → max(33, fMin+1) / 소형 → h×0.70. 범위 내 클램프.
   // (종전 min+0.6×폭 = kr 34.4mm는 실측상 과대 — 얼굴이 프레임을 압도, 카나리 2호 판정)

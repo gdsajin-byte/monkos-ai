@@ -71,3 +71,22 @@ describe('cropToSpec 폴백 (엔진 URL 부재)', () => {
     expect(out.engine).toBe('none');
   });
 });
+
+describe('headHeight 수치 정본 (ORDER_20260707 Task 2 병합)', () => {
+  test('428건 전수: headHeightMin < headHeightMax, 프레임 내 무결', () => {
+    const slugs = Object.keys(SPECS_DATA);
+    for (const s of slugs) {
+      const d = SPECS_DATA[s];
+      expect(Number.isFinite(d.headHeightMin)).toBe(true);
+      expect(Number.isFinite(d.headHeightMax)).toBe(true);
+      expect(d.headHeightMin).toBeLessThan(d.headHeightMax);
+      expect(d.headHeightMin).toBeGreaterThan(0);
+    }
+  });
+
+  test('kr-passport 수치 정본 32~36 (countries.jsonl) → 타겟 33 유지', () => {
+    expect(SPECS_DATA['kr-passport'].headHeightMin).toBe(32);
+    expect(SPECS_DATA['kr-passport'].headHeightMax).toBe(36);
+    expect(getSpecCropParams('kr-passport').faceTargetMm).toBe(33);
+  });
+});
