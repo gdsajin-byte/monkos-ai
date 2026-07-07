@@ -2580,7 +2580,10 @@ ${hreflangTags}
   }
 
   /* ─── 생성 (결제 토큰 경유) ─── */
+  var genBusy = false; // 중복 제출 잠금 — 더블클릭 이중 차감 실사고 (2026-07-07 13:48, 200ms 간격 2건)
   function doGenerate(){
+    if(genBusy) return;
+    genBusy = true;
     hideError();
     payBusy = false;
     gaTrack('generate_click', null, true); // 재생성 포함 매회 발화
@@ -2594,6 +2597,7 @@ ${hreflangTags}
     })
     .then(function(r){ return r.json().then(function(d){ return { status: r.status, d: d }; }); })
     .then(function(res){
+      genBusy = false;
       var data = res.d;
       if(data.image){
         if(typeof data.remainingGenerates === 'number'){ pay.remaining = data.remainingGenerates; persistOrder(); }
@@ -2618,7 +2622,7 @@ ${hreflangTags}
         showPhase(uploadedBase64 ? phasePay : phaseUpload);
       }
     })
-    .catch(function(){ showError(T.errNet); showPhase(uploadedBase64 ? phasePay : phaseUpload); });
+    .catch(function(){ genBusy = false; showError(T.errNet); showPhase(uploadedBase64 ? phasePay : phaseUpload); });
   }
 
   var payCreditBtn = document.getElementById('v2-pay-credit');

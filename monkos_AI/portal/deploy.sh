@@ -64,8 +64,9 @@ CROP_ENGINE_URL="https://monkos-crop-engine-933456016842.asia-northeast3.run.app
 # 2026-07-07: .env 미비 디바이스(M1 등)에서 배포 시 빈값 덮임 방지 — 라이브 정본값 명시 (비시크릿)
 CHAT_WORKERS_URL="${CHAT_WORKERS_URL:-https://monk.kr/api/chat}"
 NAVER_CLIENT_ID="${NAVER_CLIENT_ID:-JaqN_J5ashaxBC7t6aya}"
-# === matte 신경로 (ORDER_20260707) — 서빙 체인: [4060 편입 예정 →] RunPod. 전 실패 시 코드가 Gemini L3 ===
-MATTE_API_URLS="https://api.runpod.ai/v2/di9upymdumei34"
+# === matte 신경로 (ORDER_20260707) — 서빙 체인: [4060 편입 예정 →] RunPod → Cloud Run L4. 전 실패 시 코드가 Gemini L3 ===
+# L4 편입(2026-07-07 13:58): RunPod DC 스로틀 실측 대응 — precheck 예열이 L4를 선기동(콜드 27s 실측 < 결제 리드타임)
+MATTE_API_URLS="https://api.runpod.ai/v2/di9upymdumei34,https://monkos-matte-gpu-4jeplpqpua-as.a.run.app"
 # 카나리 게이트 (2026-07-07 작가님): kr-passport 파일럿 → 크롭 정확도·디자인 검증 후 확산. 빈값 = 전 슬러그
 MATTE_SLUGS="kr-passport"
 

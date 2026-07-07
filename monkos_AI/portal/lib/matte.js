@@ -101,7 +101,12 @@ const WARMUP_IMAGE_B64 = '/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAEBAQEBAQEBAQEBAQEBAQ
  * 워커를 미리 기동 (유휴 후 첫 활성화 30s+가 30s 예산을 초과하는 실측 대응, idleTimeout 90s와 짝).
  * 결제 전 precheck 시점 + 생성 시작 시점에서 호출.
  */
+let lastWarmupAt = 0;
 export function warmupMatteEngine() {
+  // 60s 쿨다운 — precheck·생성이 연달아 불러도 워밍 잡이 워커를 중복 점유하지 않게
+  const now = Date.now();
+  if (now - lastWarmupAt < 60 * 1000) return;
+  lastWarmupAt = now;
   for (const url of MATTE_API_URLS) {
     if (isRunpod(url)) {
       fetch(`${url.replace(/\/$/, '')}/run`, {
@@ -147,6 +152,10 @@ async function callMatteApi(url, imageB64, bgColor) {
     // RunPod 큐 규약: {status:'COMPLETED', output:{...}} 언랩
     const body = runpod ? (data.output || {}) : data;
     if (!res.ok || (runpod && data.status !== 'COMPLETED') || !body.success || !body.image) {
+      // 미완료 잡은 취소 — 좀비 큐 적재 방지 (2026-07-07 IN_QUEUE 5건 실측)
+      if (runpod && data.id && data.status !== 'COMPLETED') {
+        fetch(`${url.replace(/\/$/, '')}/cancel/${data.id}`, { method: 'POST', headers: authHeaders(url), signal: AbortSignal.timeout(5000) }).catch(() => {});
+      }
       throw new Error(body.error || data.error || (runpod ? `runpod status=${data.status}` : `HTTP ${res.status}`));
     }
     return body;
