@@ -2234,8 +2234,8 @@ ${hreflangTags}
 (function(){
   var CFG = ${JSON.stringify(v2ClientCfg)};
   var T = CFG.t;
-  // 퍼널 줄서기 — 페이지 진입 즉시 matte 워커 의자 확보 시작 (서버가 슬러그 게이트·쿨다운 관리)
-  try { fetch('/api/matte/warmup?slug=' + encodeURIComponent(CFG.slug || ''), { method: 'POST' }).catch(function(){}); } catch(e) {}
+  // 의자잡기는 업로드 시점(서버 precheck가 워밍 발화) — 진입 워밍은 구경 트래픽에 ₩12/건 낭비라 제거
+  // (2026-07-07 작가님: 사전분석+티어 선택 시간이 부팅 30s를 자연 은폐 — 체감 불가)
   var dropzone = document.getElementById('v2-dropzone');
   var fileInput = document.getElementById('v2-file-input');
   var errorMsg = document.getElementById('v2-error');
