@@ -2116,13 +2116,16 @@ ${hreflangTags}
         <div class="v2-pay-grid">
           <div class="v2-pay-preview">
             <div id="v2-fit-stage" style="position:relative;overflow:hidden;width:240px;height:320px;margin:0 auto;background:#0e1016;border-radius:10px;box-shadow:0 10px 30px rgba(15,15,40,.28);">
-              <img id="v2-fit-img" src="" alt="규격 안착" style="position:absolute;left:0;top:0;max-width:none;">
+              <div id="v2-fit-world" style="position:absolute;left:0;top:0;transform-origin:0 0;">
+                <img id="v2-fit-img" src="" alt="규격 안착" style="display:block;max-width:none;max-height:none;">
+                <div id="v2-fit-frame" style="display:none;position:absolute;border:3px solid #00B894;border-radius:2px;box-sizing:border-box;pointer-events:none;transition:opacity .5s, top .8s cubic-bezier(.22,.9,.24,1);"></div>
+                <div id="v2-fit-line-hair" style="border-top:2px dashed rgba(255,255,255,.6);"></div>
+                <div id="v2-fit-line-crown" style="border-top:3px solid #FDCB6E;"></div>
+                <div id="v2-fit-line-eye" style="border-top:3px solid #74b9ff;"></div>
+                <div id="v2-fit-line-chin" style="border-top:3px solid rgba(255,255,255,.9);"></div>
+              </div>
               <div id="v2-fit-dim-top" style="position:absolute;left:0;right:0;top:0;background:rgba(8,10,16,.36);height:0;transition:height .5s;pointer-events:none;"></div>
               <div id="v2-fit-dim-bot" style="position:absolute;left:0;right:0;bottom:0;background:rgba(8,10,16,.36);height:0;transition:height .5s;pointer-events:none;"></div>
-              <div id="v2-fit-line-hair" style="border-top:1.5px dashed rgba(255,255,255,.55);"></div>
-              <div id="v2-fit-line-crown" style="border-top:2px solid #FDCB6E;"></div>
-              <div id="v2-fit-line-eye" style="border-top:2px solid #74b9ff;"></div>
-              <div id="v2-fit-line-chin" style="border-top:2px solid rgba(255,255,255,.85);"></div>
             </div>
             <div id="v2-fit-status" style="text-align:center;margin-top:10px;font-size:13px;color:#777;min-height:18px;"></div>
           </div>
@@ -2490,9 +2493,10 @@ ${hreflangTags}
     fs.textContent = ''; fs.className = 'v2-checklist-summary';
     fa.style.display = 'none';
     ['hair','crown','eye','chin'].forEach(function(k){
-      var el = document.getElementById('v2-fit-line-' + k);
-      el.style.cssText += ';position:absolute;left:6%;right:6%;opacity:0;transition:opacity .45s, top .8s cubic-bezier(.22,.9,.24,1);pointer-events:none;';
+      document.getElementById('v2-fit-line-' + k).style.opacity = '0';
     });
+    var fEl0 = document.getElementById('v2-fit-frame');
+    fEl0.style.display = 'none'; fEl0.style.opacity = '0';
     document.getElementById('v2-fit-dim-top').style.height = '0';
     document.getElementById('v2-fit-dim-bot').style.height = '0';
     document.getElementById('v2-fit-status').textContent = '얼굴 위치 분석 중...';
@@ -2513,7 +2517,10 @@ ${hreflangTags}
   }
 
   function playFitTheater(d){
+    // IDPASS 원칙 (2026-07-07 작가님 교정): 사진이 우선 — 원본 비율·포인트는 절대 불변.
+    // 사진+라인+프레임을 월드(강체)로 묶고, 카메라(균일 scale transform)만 프레임으로 다가간다.
     var stage = document.getElementById('v2-fit-stage');
+    var world = document.getElementById('v2-fit-world');
     var img = document.getElementById('v2-fit-img');
     var statusEl = document.getElementById('v2-fit-status');
     var stageW = Math.min(260, (stage.parentElement.clientWidth || 280) - 20);
@@ -2521,59 +2528,78 @@ ${hreflangTags}
     stage.style.width = stageW + 'px'; stage.style.height = stageH + 'px';
     var W = d.imageSize.width, H = d.imageSize.height;
 
-    function applyFrame(f){
+    // 월드 = 사진 원본 좌표계 그대로 (px 단위 1:1)
+    world.style.width = W + 'px'; world.style.height = H + 'px';
+    img.style.width = W + 'px'; img.style.height = 'auto';
+
+    function camera(f){ // 프레임 f가 스테이지를 가득 채우도록 월드를 균일 스케일 이동
       var sc = stageW / f.w;
-      img.style.width = (W * sc) + 'px';
-      img.style.left = (-f.x * sc) + 'px';
-      img.style.top = (-f.y * sc) + 'px';
-      return sc;
+      return 'translate(' + (-f.x * sc) + 'px,' + (-f.y * sc) + 'px) scale(' + sc + ')';
     }
-    function positionLine(id, y, f){
-      var sc = stageW / f.w;
-      document.getElementById(id).style.top = ((y - f.y) * sc) + 'px';
+    function containCam(){ // 사진 전체가 보이는 카메라
+      var sc = Math.min(stageW / W, stageH / H);
+      var tx = (stageW - W * sc) / 2, ty = (stageH - H * sc) / 2;
+      return 'translate(' + tx + 'px,' + ty + 'px) scale(' + sc + ')';
     }
     function setStatus(t){ statusEl.textContent = t; }
 
-    // 0) 전체 사진(contain)에서 시작
-    var sc0 = Math.min(stageW / W, stageH / H);
-    img.style.transition = 'none';
-    img.style.width = (W * sc0) + 'px';
-    img.style.left = ((stageW - W * sc0) / 2) + 'px';
-    img.style.top = ((stageH - H * sc0) / 2) + 'px';
-    void img.offsetWidth; // 리플로우 — 이후 트랜지션 적용
-    img.style.transition = 'width 1.1s cubic-bezier(.22,.9,.24,1), left 1.1s cubic-bezier(.22,.9,.24,1), top 1.1s cubic-bezier(.22,.9,.24,1)';
-
-    var frame0 = d.frameInitial || d.frame;
-    // 1) 규격 프레임으로 자연 줌인
-    fitAfter(400, function(){ setStatus('규격 프레임 정렬 중'); applyFrame(frame0); });
-    // 2) 가이드 라인 순차 진입
-    var seq = [
-      ['v2-fit-line-eye',   d.lines.eyeY,    '눈높이 확인'],
-      ['v2-fit-line-chin',  d.lines.chinY,   '턱 라인 확인'],
-      ['v2-fit-line-crown', d.lines.crownY,  '정수리 산정 — 1:1 해부학 앵커'],
-      ['v2-fit-line-hair',  d.lines.hairTopY,'헤어 여백 검토'],
+    // 라인·프레임을 사진 좌표에 고정 배치 (이후 절대 안 움직임 — 월드만 움직인다)
+    var lineDefs = [
+      ['v2-fit-line-eye',   d.lines.eyeY,     '눈높이 확인'],
+      ['v2-fit-line-chin',  d.lines.chinY,    '턱 라인 확인'],
+      ['v2-fit-line-crown', d.lines.crownY,   '정수리 산정 — 1:1 해부학 앵커'],
+      ['v2-fit-line-hair',  d.lines.hairTopY, '헤어 여백 검토'],
     ];
-    var t = 1700;
-    seq.forEach(function(item, i){
+    lineDefs.forEach(function(item){
+      var el = document.getElementById(item[0]);
+      el.style.cssText += ';position:absolute;left:0;width:' + W + 'px;top:' + item[1] + 'px;opacity:0;transition:opacity .5s;pointer-events:none;';
+    });
+    var frame0 = d.frameInitial || d.frame;
+    var fEl = document.getElementById('v2-fit-frame');
+    fEl.style.display = 'block'; fEl.style.opacity = '0';
+    fEl.style.left = frame0.x + 'px'; fEl.style.top = frame0.y + 'px';
+    fEl.style.width = frame0.w + 'px'; fEl.style.height = frame0.h + 'px';
+
+    // 0) 전체 사진에서 시작 — 원본 그대로 보여준다
+    world.style.transition = 'none';
+    world.style.transform = containCam();
+    void world.offsetWidth;
+    world.style.transition = 'transform 1.3s cubic-bezier(.22,.9,.24,1)';
+    setStatus('얼굴 위치 분석 중');
+
+    // 1) 가이드 라인이 사진 위에 순차 진입 (사진은 그대로)
+    var t = 500;
+    lineDefs.forEach(function(item, i){
       fitAfter(t + i * 480, function(){
         setStatus(item[2]);
-        positionLine(item[0], item[1], frame0);
         document.getElementById(item[0]).style.opacity = '1';
       });
     });
-    t += seq.length * 480 + 250;
-    // 3) 전문가(비전) 미세 보정 트윈
+    t += lineDefs.length * 480 + 300;
+
+    // 2) 규격 프레임이 사진 위로 나타남
+    fitAfter(t, function(){ setStatus('규격 프레임 정렬'); fEl.style.opacity = '1'; });
+    t += 700;
+
+    // 3) 전문가(비전) 보정 — 프레임"만" 이동 (사진 불변)
     var moved = d.frameInitial && Math.abs(d.frame.y - d.frameInitial.y) > 1;
     if(moved){
       fitAfter(t, function(){
-        setStatus('전문가 보정 적용 중 — 여백 균형');
-        applyFrame(d.frame);
-        seq.forEach(function(item){ positionLine(item[0], item[1], d.frame); });
+        setStatus('전문가 보정 — 여백 균형');
+        fEl.style.top = d.frame.y + 'px';
       });
-      t += 1000;
+      t += 950;
     }
-    // 4) 딤 + 신호등 판정
-    fitAfter(t + 150, function(){
+
+    // 4) 카메라가 프레임으로 자연스럽게 다가감 (균일 줌 — 왜곡 불가)
+    fitAfter(t, function(){
+      setStatus('규격에 맞춰 안착 중');
+      world.style.transform = camera(d.frame);
+    });
+    t += 1400;
+
+    // 5) 딤 + 신호등 판정
+    fitAfter(t, function(){
       var scF = stageW / d.frame.w;
       var crownTop = (d.lines.crownY - d.frame.y) * scF;
       var chinTop = (d.lines.chinY - d.frame.y) * scF;
