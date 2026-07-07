@@ -93,10 +93,25 @@ function authHeaders(url) {
   return h;
 }
 
-/** matte 엔진 예열 (fire-and-forget) — 감지·크롭과 병렬로 콜드스타트 흡수 */
+// 1×1 백색 JPEG — RunPod 워커 예열용 초소형 실잡 (모델 경유 ~0.7s, 비용 ~₩0.1)
+const WARMUP_IMAGE_B64 = '/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH/wAALCAABAAEBAREA/8QAFAABAAAAAAAAAAAAAAAAAAAACf/EABQQAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQEAAD8AKp//2Q==';
+
+/**
+ * matte 엔진 예열 (fire-and-forget) — 자체 서버형은 /health, RunPod은 초소형 실잡으로
+ * 워커를 미리 기동 (유휴 후 첫 활성화 30s+가 30s 예산을 초과하는 실측 대응, idleTimeout 90s와 짝).
+ * 결제 전 precheck 시점 + 생성 시작 시점에서 호출.
+ */
 export function warmupMatteEngine() {
   for (const url of MATTE_API_URLS) {
-    if (isRunpod(url)) continue; // RunPod 큐형은 요청 자체가 워커를 깨움 — 별도 예열 불필요
+    if (isRunpod(url)) {
+      fetch(`${url.replace(/\/$/, '')}/run`, {
+        method: 'POST',
+        headers: authHeaders(url),
+        body: JSON.stringify({ input: { image: WARMUP_IMAGE_B64, bgColor: '#FFFFFF' } }),
+        signal: AbortSignal.timeout(10000),
+      }).catch(() => {});
+      continue;
+    }
     fetch(`${url}/health`, { signal: AbortSignal.timeout(20000) }).catch(() => {});
   }
 }

@@ -252,6 +252,8 @@ const httpServer = createServer(async (req, res) => {
         res.writeHead(400, { 'Content-Type': 'application/json' });
         return res.end(JSON.stringify({ error: '이미지 필수' }));
       }
+      // matte 워커 선예열 — 결제·생성보다 30초+ 앞선 시점이라 유휴 후 첫 활성화 지연을 흡수
+      warmupMatteEngine();
       const base64Data = body.image.includes(',') ? body.image.split(',')[1] : body.image;
       const ai = new GoogleGenAI({ vertexai: true, project: process.env.PROJECT_ID, location: 'us-central1' });
       const result = await ai.models.generateContent({
