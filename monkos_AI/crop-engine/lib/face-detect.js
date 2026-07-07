@@ -87,9 +87,30 @@ async function detectAtScale(imageBuffer, targetWidth, origMeta) {
 
     const keypoints = faces[0].keypoints;
     const forehead = keypoints[LANDMARKS.FOREHEAD_TOP];
-    const chin = keypoints[LANDMARKS.CHIN];
-    const leftEye = keypoints[LANDMARKS.LEFT_EYE];
-    const rightEye = keypoints[LANDMARKS.RIGHT_EYE];
+    // IDPASS 정본 규칙 이식 (CropEngine.swift, 2026-07-07 완전분석 P3-12):
+    // ① 눈 = 동공(iris) 우선 — refineLandmarks의 홍채 중심(좌 468~472, 우 473~477 평균), 폴백 눈꺼풀점
+    // ② 턱 = 얼굴 윤곽의 최대 Y — 단일점(#152)은 얼굴형에 따라 이탈 (턱 오차는 정수리 1:1 미러로 2배 증폭)
+    function irisCenter(startIdx, fallbackIdx) {
+      const pts = [];
+      for (let i = startIdx; i < startIdx + 5; i++) {
+        if (keypoints[i] && Number.isFinite(keypoints[i].x)) pts.push(keypoints[i]);
+      }
+      if (pts.length >= 3) {
+        return {
+          x: pts.reduce((a, b) => a + b.x, 0) / pts.length,
+          y: pts.reduce((a, b) => a + b.y, 0) / pts.length,
+        };
+      }
+      return keypoints[fallbackIdx];
+    }
+    const leftEye = irisCenter(468, LANDMARKS.LEFT_EYE);
+    const rightEye = irisCenter(473, LANDMARKS.RIGHT_EYE);
+    const JAW_IDX = [152, 148, 176, 149, 150, 377, 400, 378, 379];
+    let chin = keypoints[LANDMARKS.CHIN];
+    for (const ji of JAW_IDX) {
+      const kp = keypoints[ji];
+      if (kp && Number.isFinite(kp.y) && kp.y > chin.y) chin = kp;
+    }
     const noseTip = keypoints[LANDMARKS.NOSE_TIP];
     const leftContour = keypoints[LANDMARKS.LEFT_CONTOUR];
     const rightContour = keypoints[LANDMARKS.RIGHT_CONTOUR];

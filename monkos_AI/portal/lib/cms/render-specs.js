@@ -2499,7 +2499,28 @@ ${hreflangTags}
     fEl0.style.display = 'none'; fEl0.style.opacity = '0';
     document.getElementById('v2-fit-dim-top').style.height = '0';
     document.getElementById('v2-fit-dim-bot').style.height = '0';
-    document.getElementById('v2-fit-status').textContent = '얼굴 위치 분석 중...';
+    // 분석 대기 연출 — 정지 화면 금지 (2026-07-07 작가님: 수 초 정지 = 뻗은 것처럼 보임)
+    if(window.__fitWaitTimer) clearInterval(window.__fitWaitTimer);
+    (function(){
+      var texts = ['얼굴 위치 분석 중', '랜드마크 정밀 측정 중', '규격 계산 중', '전문가 검수 중'];
+      var dots = 0, ti = 0;
+      window.__fitWaitTimer = setInterval(function(){
+        dots = (dots + 1) % 4;
+        if(dots === 0) ti = (ti + 1) % texts.length;
+        var el = document.getElementById('v2-fit-status');
+        if(el) el.textContent = texts[ti] + '.'.repeat(dots + 1);
+        var sc = document.getElementById('v2-fit-scan');
+        if(sc){ var t = (Date.now() / 12) % ((parseInt(stage.style.height) || 320) + 40) - 20; sc.style.top = t + 'px'; }
+      }, 420);
+    })();
+    var scan = document.getElementById('v2-fit-scan');
+    if(!scan){
+      scan = document.createElement('div');
+      scan.id = 'v2-fit-scan';
+      scan.style.cssText = 'position:absolute;left:0;right:0;top:0;height:2px;background:linear-gradient(90deg,transparent,#00B894 40%,#00B894 60%,transparent);box-shadow:0 0 12px #00B894;opacity:.85;pointer-events:none;';
+      stage.appendChild(scan);
+    }
+    scan.style.display = 'block';
     var world0 = document.getElementById('v2-fit-world');
     world0.style.transition = 'none';
     world0.style.transform = 'scale(1)';
@@ -2522,11 +2543,13 @@ ${hreflangTags}
     })
     .then(function(r){ return r.json(); })
     .then(function(data){
-      if(!data || !data.success){ fitResult = null; proceedToPay(); return; } // 카나리 밖·감지 실패 → 기존 경로
+      if(!data || !data.success){ if(window.__fitWaitTimer) clearInterval(window.__fitWaitTimer); fitResult = null; proceedToPay(); return; } // 카나리 밖·감지 실패 → 기존 경로
       fitResult = data;
+      if(window.__fitWaitTimer) clearInterval(window.__fitWaitTimer);
+      var sc = document.getElementById('v2-fit-scan'); if(sc) sc.style.display = 'none';
       playFitTheater(data);
     })
-    .catch(function(){ fitResult = null; proceedToPay(); });
+    .catch(function(){ if(window.__fitWaitTimer) clearInterval(window.__fitWaitTimer); fitResult = null; proceedToPay(); });
   }
 
   function playFitTheater(d){
