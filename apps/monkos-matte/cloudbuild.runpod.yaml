@@ -1,14 +1,19 @@
 # RunPod 워커 이미지 빌드 — 모델을 GCS에서 컨텍스트로 복사 후 베이크
 # 실행: gcloud builds submit --config cloudbuild.runpod.yaml --project monkos .
+# lite 빌드: --substitutions=_MODEL=BiRefNet_lite.onnx,_TAG=runpod-lite
+substitutions:
+  _MODEL: BiRefNet-portrait.onnx
+  _TAG: runpod
 steps:
   - name: gcr.io/cloud-builders/gsutil
-    args: ['cp', 'gs://monkos-models/birefnet/BiRefNet-portrait.onnx', 'BiRefNet-portrait.onnx']
+    args: ['cp', 'gs://monkos-models/birefnet/${_MODEL}', 'BiRefNet-portrait.onnx']
+    # Dockerfile.runpod의 COPY 소스명에 맞춰 통일 (컨테이너 내부는 /app/model.onnx)
   - name: gcr.io/cloud-builders/docker
     args: ['build', '-f', 'Dockerfile.runpod',
-           '-t', 'asia-southeast1-docker.pkg.dev/monkos/monkos-public/monkos-matte:runpod',
+           '-t', 'asia-southeast1-docker.pkg.dev/monkos/monkos-public/monkos-matte:${_TAG}',
            '.']
 images:
-  - 'asia-southeast1-docker.pkg.dev/monkos/monkos-public/monkos-matte:runpod'
+  - 'asia-southeast1-docker.pkg.dev/monkos/monkos-public/monkos-matte:${_TAG}'
 options:
   machineType: E2_HIGHCPU_8
   diskSizeGb: 100
