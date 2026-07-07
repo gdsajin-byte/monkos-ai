@@ -1,0 +1,23 @@
+# MONKOS matte — RunPod Serverless T4 워커 (모델 베이크판)
+# 빌드는 cloudbuild.runpod.yaml 경유 (GCS에서 모델을 빌드 컨텍스트로 복사 후 빌드)
+FROM nvidia/cuda:12.4.1-cudnn-runtime-ubuntu22.04
+
+LABEL maintainer="MONK.KR"
+LABEL description="MONKOS matte — BiRefNet RunPod serverless worker"
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends python3 python3-pip && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+RUN pip3 install --no-cache-dir onnxruntime-gpu==1.20.1 "numpy>=1.26" "Pillow>=10.0" runpod
+
+# 모델 베이크 — RunPod은 GCS 마운트가 없어 이미지에 포함 (T4 워커 로컬 캐시로 콜드스타트 단축)
+COPY BiRefNet-portrait.onnx /app/model.onnx
+COPY matte_server.py handler.py ./
+
+ENV MATTE_BACKEND=onnx
+ENV MATTE_ONNX_PATH=/app/model.onnx
+
+CMD ["python3", "-u", "handler.py"]

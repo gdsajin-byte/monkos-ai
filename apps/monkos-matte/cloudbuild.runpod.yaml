@@ -1,0 +1,15 @@
+# RunPod 워커 이미지 빌드 — 모델을 GCS에서 컨텍스트로 복사 후 베이크
+# 실행: gcloud builds submit --config cloudbuild.runpod.yaml --project monkos .
+steps:
+  - name: gcr.io/cloud-builders/gsutil
+    args: ['cp', 'gs://monkos-models/birefnet/BiRefNet-portrait.onnx', 'BiRefNet-portrait.onnx']
+  - name: gcr.io/cloud-builders/docker
+    args: ['build', '-f', 'Dockerfile.runpod',
+           '-t', 'asia-southeast1-docker.pkg.dev/monkos/monkos-public/monkos-matte:runpod',
+           '.']
+images:
+  - 'asia-southeast1-docker.pkg.dev/monkos/monkos-public/monkos-matte:runpod'
+options:
+  machineType: E2_HIGHCPU_8
+  diskSizeGb: 100
+timeout: 1800s
