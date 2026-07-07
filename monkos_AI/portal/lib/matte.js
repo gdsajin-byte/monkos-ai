@@ -26,8 +26,10 @@ const MATTE_API_KEY = process.env.MATTE_API_KEY || ''; // RunPod 등 인증형 �
 // 미설정 = 전 슬러그 개방. 파일럿: kr-passport 단일 → 검증 후 확산.
 const MATTE_SLUGS = (process.env.MATTE_SLUGS || '')
   .split(',').map((s) => s.trim()).filter(Boolean);
-const HEALTH_TIMEOUT_MS = 2500;  // 생사 프리플라이트 — 죽은 엔드포인트에 30s를 쓰지 않는다
-const MATTE_TIMEOUT_MS = 30000;  // 본 호출 (GPU 웜 1s 안팎, 콜드는 타임아웃 → 다음 엔드포인트/L3)
+const HEALTH_TIMEOUT_MS = 2500;  // 생사 프리플라이트 — 죽은 엔드포인트에 본 예산을 쓰지 않는다
+// 45s: 의자뺏기 실측 29~35s 일정(2026-07-07 8회 캠페인) + 여유 — 콜드 히트도 birefnet 성공.
+// 작가님 UX 예산 60s 이내. 포털 Cloud Run 타임아웃 120s(deploy.sh)와 짝 — 폴백 Gemini까지 수용.
+const MATTE_TIMEOUT_MS = 45000;
 const ALERT_COOLDOWN_MS = 10 * 60 * 1000; // 장애 경보 폭주 방지
 let lastAlertAt = 0;
 

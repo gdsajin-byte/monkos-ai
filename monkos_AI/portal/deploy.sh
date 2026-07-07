@@ -158,7 +158,7 @@ gcloud run deploy ${SERVICE_NAME} \
   --allow-unauthenticated \
   --memory ${MEMORY} \
   --cpu ${CPU} \
-  --timeout 60 \
+  --timeout 120 \
   --concurrency 100 \
   --min-instances ${MIN_INSTANCES} \
   --max-instances ${MAX_INSTANCES} \
