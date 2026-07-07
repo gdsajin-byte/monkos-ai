@@ -28,7 +28,8 @@ import numpy as np
 from PIL import Image
 
 BACKEND = os.environ.get('MATTE_BACKEND', 'torch')
-PORT = int(os.environ.get('MATTE_PORT', '5100'))
+# MATTE_PORT 우선, 없으면 Cloud Run 규약 PORT, 최종 5100
+PORT = int(os.environ.get('MATTE_PORT') or os.environ.get('PORT') or '5100')
 HF_MODEL = os.environ.get('MATTE_HF_MODEL', 'ZhengPeng7/BiRefNet-portrait')
 ONNX_PATH = os.environ.get('MATTE_ONNX_PATH', '')
 

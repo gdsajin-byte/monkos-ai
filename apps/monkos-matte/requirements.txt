@@ -1,0 +1,4 @@
+# onnx 백엔드 (Cloud Run CPU) — torch 백엔드는 4060 로컬 환경에서 별도 구성
+onnxruntime==1.20.1
+numpy>=1.26
+Pillow>=10.0
