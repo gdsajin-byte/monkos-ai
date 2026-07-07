@@ -55,6 +55,29 @@ export function matteEnabled() {
   return MATTE_API_URLS.length > 0;
 }
 
+/**
+ * 데이터 URI 프리픽스 제거 — 프론트 업로드 원본은 "data:image/png;base64,..." 형태.
+ * 구경로는 Gemini 출력물(순수 base64)만 다뤄 잠복했던 버그 (2026-07-07 카나리 1호 실측 발견).
+ */
+export function stripDataUri(b64) {
+  const s = String(b64 || '');
+  return s.includes(',') ? s.slice(s.indexOf(',') + 1) : s;
+}
+
+/**
+ * 규격 안착 가드 — 크롭 성공 플래그만 믿지 않는다 (2026-07-07 카나리 2호 실측:
+ * 인물이 작은 와이드 원본에서 crown 16.7mm·눈높이 72.4% 크롭이 success로 반환됨).
+ * 허용창 밖이면 신경로 포기 → Gemini 재프레이밍 경로가 흡수.
+ * 준거: 새벽 실측 정상군 crown 5.4~5.7mm·눈높이 39.7~48.0% (크롭 수학 v3 개선 시 재조정).
+ */
+export function cropMetaWithinSpec(meta) {
+  const crown = parseFloat(meta?.crownMarginMM);
+  const eye = parseFloat(meta?.eyePositionPercent);
+  if (Number.isFinite(crown) && crown > 10) return false;
+  if (Number.isFinite(eye) && (eye < 33 || eye > 58)) return false;
+  return true;
+}
+
 /** 카나리 게이트 — MATTE_SLUGS 미설정이면 전 슬러그 허용 */
 export function matteSlugAllowed(slug) {
   return MATTE_SLUGS.length === 0 || MATTE_SLUGS.includes(slug);
@@ -134,9 +157,13 @@ export async function matteSpecPipeline(originalB64, slug) {
 
   // ① 감지·크롭은 사용자 원본에서 — 실패(facemesh 미안착)면 신경로 포기.
   //    커버 크롭 위 매팅은 "그럴듯한" 무규격 출고라 금지 (무음 폴백 금지).
-  const cropRes = await cropToSpec(originalB64, slug);
+  const cropRes = await cropToSpec(stripDataUri(originalB64), slug);
   if (!cropRes.cropped || cropRes.engine !== 'facemesh') {
     log(`[Matte] ${slug}: 원본 감지 미안착(engine=${cropRes.engine}) → Gemini 폴백`, 'WARNING');
+    return null;
+  }
+  if (!cropMetaWithinSpec(cropRes.meta)) {
+    log(`[Matte] ${slug}: 안착 가드 이탈(crown=${cropRes.meta?.crownMarginMM}mm eye=${cropRes.meta?.eyePositionPercent}%) → Gemini 폴백`, 'WARNING');
     return null;
   }
 

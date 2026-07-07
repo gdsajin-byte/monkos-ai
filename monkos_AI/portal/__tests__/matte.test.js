@@ -60,3 +60,23 @@ describe('안전 스위치 (MATTE_API_URL 미설정)', () => {
     await expect(matteSpecPipeline('aGVsbG8=', 'kr-passport')).resolves.toBeNull();
   });
 });
+
+describe('stripDataUri — 프론트 데이터 URI 정규화 (카나리 1호 버그)', () => {
+  test('프리픽스 제거 + 순수 base64 무변', async () => {
+    const { stripDataUri } = await import('../lib/matte.js');
+    expect(stripDataUri('data:image/png;base64,iVBORw0K')).toBe('iVBORw0K');
+    expect(stripDataUri('iVBORw0K')).toBe('iVBORw0K');
+    expect(stripDataUri('')).toBe('');
+  });
+});
+
+describe('규격 안착 가드 (카나리 2호 실측)', () => {
+  test('정상군(새벽 실측) 통과, 이탈군(카페 와이드) 차단', async () => {
+    const { cropMetaWithinSpec } = await import('../lib/matte.js');
+    expect(cropMetaWithinSpec({ crownMarginMM: '5.4', eyePositionPercent: '39.7' })).toBe(true);
+    expect(cropMetaWithinSpec({ crownMarginMM: '5.7', eyePositionPercent: '48.0' })).toBe(true);
+    expect(cropMetaWithinSpec({ crownMarginMM: '16.7', eyePositionPercent: '72.4' })).toBe(false);
+    expect(cropMetaWithinSpec({ crownMarginMM: '2.8', eyePositionPercent: '44.4' })).toBe(true);
+    expect(cropMetaWithinSpec({})).toBe(true); // 메타 부재 시 통과 (엔진 신뢰)
+  });
+});
