@@ -2118,7 +2118,7 @@ ${hreflangTags}
             <div id="v2-fit-stage" style="position:relative;overflow:hidden;width:240px;height:320px;margin:0 auto;background:#0e1016;border-radius:10px;box-shadow:0 10px 30px rgba(15,15,40,.28);">
               <div id="v2-fit-world" style="position:absolute;left:0;top:0;transform-origin:0 0;">
                 <img id="v2-fit-img" src="" alt="규격 안착" style="display:block;max-width:none;max-height:none;">
-                <div id="v2-fit-frame" style="display:none;position:absolute;border:3px solid #00B894;border-radius:2px;box-sizing:border-box;pointer-events:none;transition:opacity .5s, top .8s cubic-bezier(.22,.9,.24,1);"></div>
+                <div id="v2-fit-frame" style="display:none;position:absolute;border:3px solid #00B894;border-radius:2px;box-sizing:border-box;pointer-events:none;transition:opacity .5s, top .9s cubic-bezier(.22,.9,.24,1), left .9s cubic-bezier(.22,.9,.24,1), width .9s cubic-bezier(.22,.9,.24,1), height .9s cubic-bezier(.22,.9,.24,1);"></div>
                 <div id="v2-fit-line-hair" style="border-top:2px dashed rgba(255,255,255,.6);"></div>
                 <div id="v2-fit-line-crown" style="border-top:3px solid #FDCB6E;"></div>
                 <div id="v2-fit-line-eye" style="border-top:3px solid #74b9ff;"></div>
@@ -2595,13 +2595,16 @@ ${hreflangTags}
     t += 700;
 
     // 3) 전문가(비전) 보정 — 프레임"만" 이동 (사진 불변)
-    var moved = d.frameInitial && Math.abs(d.frame.y - d.frameInitial.y) > 1;
+    var moved = d.frameInitial && (Math.abs(d.frame.y - d.frameInitial.y) > 1 || Math.abs(d.frame.h - d.frameInitial.h) > 1);
     if(moved){
       fitAfter(t, function(){
-        setStatus('전문가 보정 — 여백 균형');
+        setStatus(d.vision && d.vision.executed ? '전문가 보정 실행 — 헤어 여백 확보' : '전문가 보정 — 여백 균형');
         fEl.style.top = d.frame.y + 'px';
+        fEl.style.left = d.frame.x + 'px';
+        fEl.style.width = d.frame.w + 'px';
+        fEl.style.height = d.frame.h + 'px';
       });
-      t += 950;
+      t += 1050;
     }
 
     // 4) 카메라가 프레임으로 자연스럽게 다가감 (균일 줌 — 왜곡 불가)
@@ -2638,10 +2641,11 @@ ${hreflangTags}
     if(m.eyeRatio != null) badge('눈', (m.eyeRatio * 100).toFixed(0) + '%', j.eye);
     if(m.topMm != null) badge('상단', m.topMm + 'mm', j.top);
     if(m.bottomMm != null) badge('하단', m.bottomMm + 'mm', j.bottom);
-    if(d.vision && d.vision.note){
+    var expertMsg = (d.vision && d.vision.executed) || (d.vision && d.vision.note);
+    if(expertMsg){
       var n = document.getElementById('v2-fit-note');
       n.style.display = 'block';
-      n.textContent = '전문가 AI — ' + d.vision.note;
+      n.textContent = '전문가 AI — ' + expertMsg;
     }
     var fs = document.getElementById('v2-fit-summary');
     var mk = document.getElementById('v2-fit-make');

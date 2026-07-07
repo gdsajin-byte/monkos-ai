@@ -372,6 +372,33 @@ const httpServer = createServer(async (req, res) => {
           if (!candJudge.blocked) { frame.y = cand.y; }
           else { vision.reverted = true; }
         }
+        // 실행형 보정 (2026-07-07 작가님: "고객이 원하는 것은 설명이 아니라 실행"):
+        // 헤어가 실제로 닿았으면 얼굴 크기를 0.5mm씩 양보(줌아웃)해 여백을 만든다 — 정본 축소 루프의 비전 관측 버전.
+        // 제약: 얼굴 ≥ fMin(허용 하한), 정본표 blocked 금지. 눈 앵커 43%·중심 유지.
+        if (vision.hair_touching_top) {
+          // 작가님 철학: "가용범위 안에서 얼굴 사이즈 최소화" — 헤어가 닿았으면 허용 하한까지 양보 (최대 여백 확보)
+          const facePx = lines.chinY - lines.crownY;
+          const fMin = spec.headHeightMinMm || spec.faceMinMm;
+          const curFaceMm = facePx * spec.frameHmm / frame.h;
+          const hairObsY = frame.y; // 비전이 '닿음'을 관측한 시점의 상단 = 실측 헤어 상단 근사
+          const aspect = spec.frameW / spec.frameH;
+          for (let ft = fMin; ft < curFaceMm - 0.2; ft += 0.5) { // 하한부터 — 통과하는 최대 양보를 채택
+            const h2 = facePx * spec.frameHmm / ft;
+            const w2 = h2 * aspect;
+            const cand = {
+              x: lines.eyeCenterX - w2 / 2,
+              y: lines.eyeY - (spec.frameHmm >= 60 ? 0.42 : 0.43) * h2,
+              w: w2, h: h2,
+            };
+            const gainPx = hairObsY - cand.y; // 헤어 위로 벌어준 실공간
+            const j2 = judgeMetrics(metricsFromFit(cand, lines, spec), spec);
+            if (gainPx > 4 && !j2.blocked) {
+              frame.x = cand.x; frame.y = cand.y; frame.w = cand.w; frame.h = cand.h;
+              vision.executed = `헤어 여백 확보를 위해 얼굴 크기를 ${curFaceMm.toFixed(1)}→${ft.toFixed(1)}mm(허용 ${fMin}~${spec.headHeightMaxMm || ''}mm 내)로 조정했습니다.`;
+              break;
+            }
+          }
+        }
       } catch (ve) {
         log(`[Fit] ${slug}: 비전 검수 실패 (${ve.message}) — 기하 피팅만 사용`, 'WARNING');
       }
