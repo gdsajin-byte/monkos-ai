@@ -178,6 +178,7 @@ status: active
 | 06/14 | 4060/쌍아 | **BiRefNet 배경 제거 PoC** — ZhengPeng7/BiRefNet(MIT 라이선스) 4060 GPU 실측. 평균 0.829s, VRAM peak 3197MB/8GB. 증명사진 경계 깔끔, 머리카락 디테일 우수. RMBG-2.0(CC BY-NC) 대비 상업 사용 무제한. Flask 서버+테스트 UI+벤치마크 5종 완료 | [COMPLETION](../../reports/2026-06/COMPLETION_20260614_4060쌍아_BiRefNet_PoC.md) | ✅ |
 | 06/14 | iMac/막내1 | **배경 제거 모델+후처리 기법 리서치** — 후처리 6종 비교(ViTMatte Apache2.0 최상), 대안 모델 6종(BiRefNet MIT 현행 최적 확인), 하이브리드 파이프라인 사례(BiRefNet→ViTMatte 2단계 프로덕션 표준). 권고: BiRefNet+ViTMatte 2단계 | [REPORT](../../reports/2026-06/REPORT_20260614_막내1_CROP_배경제거모델리서치.md) | ✅ |
 | 06/14 | 4060/쌍아 | **RMBG-2.0 A/B 비교 + 후처리 파이프라인 PoC** — RMBG-2.0 gated 접근 성공, 동일 5종 비교(품질 동급, 속도 RMBG 7%↑, 라이선스 BiRefNet MIT 승). 후처리 3단(GuidedFilter 알파매팅+에지페더링+디컨태미네이션) 구현, 오버헤드 +9ms, 효과 제한적(마스크 자체 양호). compare-test.html 동시 비교 UI | [COMPLETION](../../reports/2026-06/COMPLETION_20260614_4060쌍아_배경제거후처리_PoC.md) | ✅ |
+| 07/07 | iMac/민아 | **애플 비전 직접 대조 PoC + 테스트 기반 + 재설계 기안** — ① 3엔진 실측(애플 비전 iMac 네이티브 CLI vs BiRefNet ONNX CPU vs Gemini, 동일 원본): **BiRefNet ≈ 애플 비전**(잔머리 대등·원본 픽셀 보존), CPU 하한 19.4s ② 테스트 기반 정본화(`benchmark/poc-20260707/` 스크립트+디바이스별 실행법, 모델 972MB GDrive) ③ IDPASS 순서 이식+연산 3층 재설계 기안 — 06/14 실측과 합쳐 채택 근거 완비. 과거 "기각" 실체=RMBG-2.0 비상업 라이선스 규명 | [DESIGN](../../../tech/designs/2026-07/DESIGN_20260707_배경제거_온디바이스_재설계.md) | ⏳ 쌍아 검토 |
 
 ---
 
