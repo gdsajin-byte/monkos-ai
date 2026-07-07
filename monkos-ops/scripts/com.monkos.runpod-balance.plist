@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.monkos.runpod-balance</string>
+
+    <!-- RunPod 잔액 모니터 — 09:00·21:00 KST 1일 2회. 임계값 $2 미만 시 텔레그램 팀 채널 경보 -->
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>/Users/developer/monk_project/monkos-ops/scripts/runpod_balance_check.sh</string>
+    </array>
+
+    <key>StartCalendarInterval</key>
+    <array>
+        <dict>
+            <key>Hour</key>
+            <integer>9</integer>
+            <key>Minute</key>
+            <integer>0</integer>
+        </dict>
+        <dict>
+            <key>Hour</key>
+            <integer>21</integer>
+            <key>Minute</key>
+            <integer>0</integer>
+        </dict>
+    </array>
+
+    <key>StandardOutPath</key>
+    <string>/tmp/monkos-runpod-balance.log</string>
+
+    <key>StandardErrorPath</key>
+    <string>/tmp/monkos-runpod-balance-stderr.log</string>
+</dict>
+</plist>
