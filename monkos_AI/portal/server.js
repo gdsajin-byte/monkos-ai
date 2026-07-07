@@ -353,14 +353,18 @@ const httpServer = createServer(async (req, res) => {
           model: 'gemini-2.5-flash',
           contents: [{ role: 'user', parts: [
             { inlineData: { mimeType: 'image/jpeg', data: overlay.toString('base64') } },
-            { text: `당신은 12년차 증명사진 전문가입니다. 초록 프레임은 규격 크롭 영역입니다.\n규격 준수 판정은 별도 시스템이 하므로, 당신은 오직 "사진관 전문가의 심미 관점"만 판단하세요:\n- 머리카락이 프레임 상단에 닿거나 잘리는가 (볼륨 헤어 배려)\n- 상하 여백 균형이 자연스러운가 (답답하거나 붕 뜨지 않게)\n\nJSON: {"hair_touching_top": bool, "balance": "good"|"too_high"|"too_low", "adjustment_y_px": 프레임을 이동할 픽셀(양수=아래로, 음수=위로, 이 이미지 기준, 필요 없으면 0), "note": "전문가 한 줄 소견 (한국어)"}` },
+            { text: `당신은 12년차 증명사진 전문가입니다. 초록 프레임은 규격 크롭 영역입니다.\n규격 준수 판정은 별도 시스템이 하므로, 당신은 오직 "사진관 전문가의 심미 관점"만 판단하세요:\n- 머리카락이 프레임 상단에 닿거나 잘리는가 (볼륨 헤어 배려)\n- 상하 여백 균형이 자연스러운가 (답답하거나 붕 뜨지 않게)\n\n절대 규칙: 머리카락이 프레임 상단에 닿아 있거나 닿을 듯하면, 얼굴을 위로 올리는(프레임을 아래로 내리는) 제안을 하지 마세요 — 헤어가 잘립니다. 그 경우 adjustment_y_px는 0 또는 음수만 허용됩니다.\n\nJSON: {"hair_touching_top": bool, "balance": "good"|"too_high"|"too_low", "adjustment_y_px": 프레임을 이동할 픽셀(양수=아래로, 음수=위로, 이 이미지 기준, 필요 없으면 0), "note": "전문가 한 줄 소견 (한국어)"}` },
           ]}],
           config: { responseMimeType: 'application/json', thinkingConfig: { thinkingBudget: 0 } },
         });
         const vtext = vres.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
         vision = JSON.parse(vtext);
         const adjRaw = Number(vision.adjustment_y_px) || 0;
-        const adj = Math.max(-frame.h * 0.12, Math.min(frame.h * 0.12, adjRaw / scale));
+        let adj = Math.max(-frame.h * 0.12, Math.min(frame.h * 0.12, adjRaw / scale));
+        // 헤어 보호 (2026-07-07 작가님): 헤어가 프레임 상단에 닿아 있으면 얼굴을 올리는 방향(프레임 하강, adj>0) 금지
+        if (vision.hair_touching_top && adj > 0) { adj = 0; vision.hairGuard = true; }
+        // 헤어 추정선이 프레임 밖으로 나가는 보정도 금지 (frame.y + adj > hairTopY 추정 → 잘림)
+        if (adj > 0 && frame.y + adj > lines.hairTopY) { adj = Math.max(0, lines.hairTopY - frame.y); vision.hairGuard = true; }
         if (Math.abs(adj) > 1) {
           const cand = { ...frame, y: Math.round(frame.y + adj) };
           // 정본표 재검증: 보정이 규격을 깨면 원복 (비전은 판단만, 게이트는 코드)

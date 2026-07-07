@@ -2500,8 +2500,21 @@ ${hreflangTags}
     document.getElementById('v2-fit-dim-top').style.height = '0';
     document.getElementById('v2-fit-dim-bot').style.height = '0';
     document.getElementById('v2-fit-status').textContent = '얼굴 위치 분석 중...';
-    img.style.transition = 'none';
+    var world0 = document.getElementById('v2-fit-world');
+    world0.style.transition = 'none';
+    world0.style.transform = 'scale(1)';
+    img.onload = function(){
+      // fetch 응답 전에도 전체 사진(contain)부터 — 빈 구석에서 시작하지 않는다 (2026-07-07 작가님 교정)
+      var W0 = img.naturalWidth, H0 = img.naturalHeight;
+      if(!W0 || !H0) return;
+      var stW = parseInt(stage.style.width) || 240, stH = parseInt(stage.style.height) || 320;
+      world0.style.width = W0 + 'px'; world0.style.height = H0 + 'px';
+      img.style.width = W0 + 'px'; img.style.height = 'auto';
+      var sc = Math.min(stW / W0, stH / H0);
+      world0.style.transform = 'translate(' + ((stW - W0 * sc) / 2) + 'px,' + ((stH - H0 * sc) / 2) + 'px) scale(' + sc + ')';
+    };
     img.src = uploadedBase64;
+    if(img.complete) img.onload();
 
     fetch('/api/idphoto/fit', {
       method:'POST', headers:{'Content-Type':'application/json'},
