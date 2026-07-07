@@ -22,6 +22,7 @@ describe('규격 파라미터 파서', () => {
   test('kr-passport: 35×45mm, 얼굴 3.2~3.6cm → IDPASS 산식 max(33, fMin+1) = 33mm (2026-07-07 이식)', () => {
     expect(getSpecCropParams('kr-passport')).toEqual({
       frameW: 413, frameH: 531, frameHmm: 45, faceTargetMm: 33, faceMinMm: 32, hairMarginMm: 2,
+      headHeightMinMm: 32, headHeightMaxMm: 36,
     });
   });
 

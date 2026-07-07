@@ -1,6 +1,6 @@
 import http from 'node:http';
 import { initFaceDetector, detectFace } from './lib/face-detect.js';
-import { cropToFrame, cropToSpecV2, fallbackCrop } from './lib/crop.js';
+import { cropToFrame, cropToSpecV2, fitSpecGeometry, fallbackCrop } from './lib/crop.js';
 import { SPECS } from './specs/formats.js';
 
 const PORT = parseInt(process.env.PORT || '8080', 10);
@@ -113,6 +113,32 @@ async function handleCropSpec(req, res) {
   }
 }
 
+
+/**
+ * POST /api/fit-spec — 프레임 피팅 기하만 반환 (렌더 없음, ORDER_20260707 크롭정밀도)
+ * body: { image: base64, spec: {...cropSpec 동일}, hairScan?: bool (실사 원본은 false 권장) }
+ * 반환: { success, detected, frame(입력좌표), lines{crownY,eyeY,chinY[,hairTopY]}, imageSize, meta }
+ */
+async function handleFitSpec(req, res) {
+  try {
+    const body = await readBody(req);
+    const { image, spec, hairScan } = JSON.parse(body.toString());
+    if (!image || !spec || !spec.frameW || !spec.frameH || !spec.frameHmm || !spec.faceTargetMm) {
+      return sendJSON(res, 400, { success: false, error: 'image, spec{frameW,frameH,frameHmm,faceTargetMm} 필수' });
+    }
+    const imageBuffer = Buffer.from(image, 'base64');
+    const landmarks = await detectFace(imageBuffer);
+    if (!landmarks) {
+      return sendJSON(res, 200, { success: true, detected: false });
+    }
+    const fit = await fitSpecGeometry(imageBuffer, landmarks, spec, { hairScan: hairScan !== false });
+    sendJSON(res, 200, { success: true, detected: true, ...fit });
+  } catch (err) {
+    console.error(`[FitSpecAPI] 에러: ${err.message}`);
+    sendJSON(res, 500, { success: false, error: err.message });
+  }
+}
+
 function handleSpecs(_req, res) {
   const specs = Object.entries(SPECS).map(([key, spec]) => ({
     key,
@@ -145,6 +171,8 @@ const server = http.createServer((req, res) => {
     handleCrop(req, res);
   } else if (req.method === 'POST' && path === '/api/crop-spec') {
     handleCropSpec(req, res);
+  } else if (req.method === 'POST' && path === '/api/fit-spec') {
+    handleFitSpec(req, res);
   } else if (req.method === 'GET' && path === '/api/specs') {
     handleSpecs(req, res);
   } else if (req.method === 'GET' && path === '/health') {

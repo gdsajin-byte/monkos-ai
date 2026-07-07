@@ -173,6 +173,80 @@ function alertMatteDown(reason) {
   sendTelegramMessage(TEAM_CHAT_ID, `🚨 *matte 전 엔드포인트 장애 — Gemini L3 폴백 가동*\n사유: ${reason}\n→ 4060/RunPod 상태 확인 필요`, TELEGRAM_TEAM_API).catch(() => {});
 }
 
+/** matte 체인 공용부 — 크롭 b64 → 엔드포인트 순회 매팅 → 300dpi 스탬프. 실패 시 null(+경보). */
+async function runMatteChain(cropB64, bgColor, slug) {
+  let lastErr = 'no endpoint';
+  for (const url of MATTE_API_URLS) {
+    try {
+      if (!(await isAlive(url))) {
+        log(`[Matte] ${slug}: ${url} 프리플라이트 불통 → 다음 엔드포인트`, 'WARNING');
+        continue;
+      }
+      const data = await callMatteApi(url, cropB64, bgColor);
+      const stamped = await sharp(Buffer.from(data.image, 'base64'))
+        .withMetadata({ density: 300 })
+        .png()
+        .toBuffer();
+      return { image: stamped.toString('base64'), matteSec: data.meta?.elapsedSec, via: isRunpod(url) ? 'runpod' : url };
+    } catch (err) {
+      lastErr = err.message;
+      log(`[Matte] ${slug}: ${url} 호출 실패 (${err.message}) → 다음 엔드포인트`, 'WARNING');
+    }
+  }
+  log(`[Matte] ${slug}: matte 전 엔드포인트 실패 (${lastErr}) → 폴백`, 'ERROR');
+  alertMatteDown(lastErr);
+  return null;
+}
+
+/**
+ * fit 프레임(원본 좌표) 기하 재단 — FaceMesh 재실행 없이 검수 확정 프레임 그대로 (WYSIWYG).
+ * 프레임이 이미지 경계를 벗어나면 흰 패딩. (ORDER_20260707 크롭정밀도 Task 3)
+ */
+export async function renderFitCrop(originalB64, fitFrame, frameW, frameH) {
+  const buf = Buffer.from(stripDataUri(originalB64), 'base64');
+  const { width: W, height: H } = await sharp(buf).metadata();
+  const fx = Math.round(fitFrame.x), fy = Math.round(fitFrame.y);
+  const fw = Math.round(fitFrame.w), fh = Math.round(fitFrame.h);
+  if (!fw || !fh || fw < 20 || fh < 20) throw new Error('fitFrame 무효');
+  const ar = fw / fh, target = frameW / frameH;
+  if (Math.abs(ar - target) / target > 0.03) throw new Error('fitFrame 비율 불일치');
+  const ix = Math.max(0, fx), iy = Math.max(0, fy);
+  const iw = Math.min(W, fx + fw) - ix, ih = Math.min(H, fy + fh) - iy;
+  if (iw <= 0 || ih <= 0) throw new Error('fitFrame이 이미지 밖');
+  const region = await sharp(buf).extract({ left: ix, top: iy, width: iw, height: ih }).png().toBuffer();
+  let full = region;
+  if (!(ix === fx && iy === fy && iw === fw && ih === fh)) {
+    full = await sharp({ create: { width: fw, height: fh, channels: 3, background: { r: 255, g: 255, b: 255 } } })
+      .composite([{ input: region, left: ix - fx, top: iy - fy }]).png().toBuffer();
+  }
+  const out = await sharp(full).resize(frameW, frameH, { fit: 'fill' }).png().toBuffer();
+  return out.toString('base64');
+}
+
+/**
+ * fit 확정 경로: 검수 단계에서 확정된 프레임을 기하 재단 → 매팅. FaceMesh 미재실행 = 비결정성 0.
+ * 성공 시 {image, cropEngine:'fit', matte:true, meta}, 실패 시 null (호출부 L3 폴백).
+ */
+export async function matteFitPipeline(originalB64, slug, fitFrame, fitMeta, frameW, frameH) {
+  if (!matteEnabled() || !matteSlugAllowed(slug)) return null;
+  if (!frameW || !frameH) return null;
+  if (fitMeta && !cropMetaWithinSpec(fitMeta)) {
+    log(`[Matte] ${slug}: fit 메타 가드 이탈(crown=${fitMeta?.crownMarginMM} eye=${fitMeta?.eyePositionPercent}) → Gemini 폴백`, 'WARNING');
+    return null;
+  }
+  try {
+    const cropB64 = await renderFitCrop(originalB64, fitFrame, frameW, frameH);
+    const bgColor = getSpecBgColor(slug);
+    const r = await runMatteChain(cropB64, bgColor, slug);
+    if (!r) return null;
+    log(`[Matte] ${slug}: fit 확정 매팅 완료 via=${r.via} bg=${bgColor} ${r.matteSec}s face=${fitMeta?.faceMM}mm`);
+    return { image: r.image, cropEngine: 'fit', matte: true, meta: { ...(fitMeta || {}), bgColor, matteSec: r.matteSec } };
+  } catch (err) {
+    log(`[Matte] ${slug}: fit 경로 실패 (${err.message}) → 폴백`, 'WARNING');
+    return null;
+  }
+}
+
 /**
  * 신경로 전체: 원본 감지·크롭 → matte 체인(우선순위 순회) → 300dpi 스탬프.
  * 성공 시 {image, cropEngine:'facemesh', matte:true, meta}, 실패·비활성 시 null (호출부 L3 폴백).
@@ -202,30 +276,10 @@ export async function matteSpecPipeline(originalB64, slug) {
     return null;
   }
 
-  // ② matte 체인 순회: 4060 → RunPod → … (각각 프리플라이트 → 본 호출)
+  // ② matte 체인 순회 (공용부): 각 엔드포인트 프리플라이트 → 본 호출 → 300dpi
   const bgColor = getSpecBgColor(slug);
-  let lastErr = 'no endpoint';
-  for (const url of MATTE_API_URLS) {
-    try {
-      if (!(await isAlive(url))) {
-        log(`[Matte] ${slug}: ${url} 프리플라이트 불통 → 다음 엔드포인트`, 'WARNING');
-        continue;
-      }
-      const data = await callMatteApi(url, cropRes.image, bgColor);
-      // ③ 300dpi 스탬프 (fileSpec "300DPI 이상" 요건)
-      const stamped = await sharp(Buffer.from(data.image, 'base64'))
-        .withMetadata({ density: 300 })
-        .png()
-        .toBuffer();
-      log(`[Matte] ${slug}: 매팅 합성 완료 via=${isRunpod(url) ? 'runpod' : url} bg=${bgColor} ${data.meta?.elapsedSec}s face=${cropRes.meta?.faceMM}mm`);
-      return { image: stamped.toString('base64'), cropEngine: 'facemesh', matte: true, meta: { ...cropRes.meta, bgColor, matteSec: data.meta?.elapsedSec } };
-    } catch (err) {
-      lastErr = err.message;
-      log(`[Matte] ${slug}: ${url} 호출 실패 (${err.message}) → 다음 엔드포인트`, 'WARNING');
-    }
-  }
-
-  log(`[Matte] ${slug}: matte 전 엔드포인트 실패 (${lastErr}) → Gemini 폴백`, 'ERROR');
-  alertMatteDown(lastErr);
-  return null;
+  const r = await runMatteChain(cropRes.image, bgColor, slug);
+  if (!r) return null;
+  log(`[Matte] ${slug}: 매팅 합성 완료 via=${r.via} bg=${bgColor} ${r.matteSec}s face=${cropRes.meta?.faceMM}mm`);
+  return { image: r.image, cropEngine: 'facemesh', matte: true, meta: { ...cropRes.meta, bgColor, matteSec: r.matteSec } };
 }

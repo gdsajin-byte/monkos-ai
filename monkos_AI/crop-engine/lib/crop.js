@@ -278,6 +278,75 @@ export async function cropToSpecV2(imageBuffer, landmarks, spec) {
 }
 
 /**
+ * 규격 프레임 피팅 기하 — cropToSpecV2와 동일 산식, 렌더 없이 좌표만 반환 (ORDER_20260707 크롭정밀도)
+ *
+ * 용도: 비전 검수·가이드 오버레이. 실사(비순백) 원본에서는 hairScan을 꺼야 한다 —
+ * subjectTopRow는 순백 전제라 어두운 배경에서 hairTop=0(최상단)으로 오판, 프레임이 통째로
+ * 위에 붙는 실사고의 원인 (2026-07-07 카나리 crown 22.2mm/눈 84.7% 규명).
+ * 실사 입력의 헤어 잘림 판정은 상위(Gemini 비전 §6-2)가 담당.
+ *
+ * @returns 입력 이미지 좌표계 기준 { frame, lines, meta } — frame은 스케일 역산된 원본 좌표
+ */
+export async function fitSpecGeometry(imageBuffer, landmarks, spec, opts = {}) {
+  const hairScan = opts.hairScan !== false;
+  const { frameW, frameH, frameHmm, faceTargetMm } = spec;
+  if (!frameW || !frameH || !frameHmm || !faceTargetMm) {
+    throw new Error('[FitSpec] spec 필수 필드 누락 (frameW/frameH/frameHmm/faceTargetMm)');
+  }
+  const mmPx = frameH / frameHmm;
+  const faceMinMm = spec.faceMinMm || faceTargetMm * 0.93;
+  const hairMarginPx = (spec.hairMarginMm || HAIR_MARGIN_MM_DEFAULT) * mmPx;
+
+  const { chin, leftEye, rightEye, imageWidth, imageHeight } = landmarks;
+  const eyeY = (leftEye.y + rightEye.y) / 2;
+  const crownY = eyeY - (chin.y - eyeY); // 정수리 = 눈~턱 반전 (1:1:1)
+  const facePx = chin.y - crownY;
+  if (facePx <= 0) throw new Error('[FitSpec] 유효하지 않은 얼굴 높이');
+  const hairTop = hairScan ? await subjectTopRow(imageBuffer) : null;
+
+  let scale = (faceTargetMm * mmPx) / facePx;
+  const place = (s) => Math.round(eyeY * s - EYE_TARGET_RATIO * frameH);
+
+  let extractTop = place(scale);
+  if (hairTop !== null && hairTop * scale - extractTop < hairMarginPx) {
+    extractTop = Math.round(hairTop * scale - hairMarginPx);
+    let eyeRatio = (eyeY * scale - extractTop) / frameH;
+    while (eyeRatio > EYE_MAX_RATIO && (facePx * scale / mmPx) > faceMinMm) {
+      scale *= 0.99;
+      extractTop = Math.round(hairTop * scale - hairMarginPx);
+      eyeRatio = (eyeY * scale - extractTop) / frameH;
+    }
+  }
+
+  const eyeCenterX = (leftEye.x + rightEye.x) / 2;
+  const scaledW = Math.round(imageWidth * scale);
+  const scaledH = Math.round(imageHeight * scale);
+  let extractLeft = Math.round(eyeCenterX * scale - frameW / 2);
+  // 클램프 (프레임이 이미지 안에 들도록 — 불가능하면 원시값 유지 = 상위에서 패딩 렌더)
+  const canClampY = scaledH >= frameH;
+  const canClampX = scaledW >= frameW;
+  if (canClampY) extractTop = Math.max(0, Math.min(extractTop, scaledH - frameH));
+  if (canClampX) extractLeft = Math.max(0, Math.min(extractLeft, scaledW - frameW));
+
+  const meta = {
+    faceMM: (facePx * scale / mmPx).toFixed(1),
+    crownMarginMM: ((crownY * scale - extractTop) / mmPx).toFixed(1),
+    ...(hairTop !== null ? { hairMarginMM: ((hairTop * scale - extractTop) / mmPx).toFixed(1) } : {}),
+    eyePositionPercent: ((eyeY * scale - extractTop) / frameH * 100).toFixed(1),
+    scale: Math.round(scale * 1000) / 1000,
+    padded: !canClampX || !canClampY,
+  };
+
+  return {
+    // 입력 이미지 좌표계의 규격 프레임 (스케일 역산)
+    frame: { x: extractLeft / scale, y: extractTop / scale, w: frameW / scale, h: frameH / scale },
+    lines: { crownY, eyeY, chinY: chin.y, ...(hairTop !== null ? { hairTopY: hairTop } : {}) },
+    imageSize: { width: imageWidth, height: imageHeight },
+    meta,
+  };
+}
+
+/**
  * 순백 배경에서 피사체 상단(머리끝) 행 실측 — 행의 2% 이상 비백색이면 피사체 시작
  */
 async function subjectTopRow(imageBuffer) {

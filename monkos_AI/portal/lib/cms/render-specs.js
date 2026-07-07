@@ -2111,6 +2111,34 @@ ${hreflangTags}
         </div>
       </div>
 
+      <!-- Phase 2.5: 프레임 피팅 가이드 (ORDER_20260707 크롭정밀도) -->
+      <div class="v2-make-layout" id="v2-phase-fit" style="display:none;">
+        <div class="v2-pay-grid">
+          <div class="v2-pay-preview">
+            <div id="v2-fit-wrap" style="position:relative;display:inline-block;max-width:100%;overflow:hidden;">
+              <img id="v2-fit-img" src="" alt="규격 맞춤 미리보기" style="display:block;max-width:100%;">
+              <div id="v2-fit-frame" style="display:none;position:absolute;border:2px solid #22c55e;box-shadow:0 0 0 9999px rgba(15,15,25,0.45);pointer-events:none;"></div>
+              <div id="v2-fit-line-crown" style="display:none;position:absolute;left:0;right:0;border-top:2px dashed #ef4444;pointer-events:none;"></div>
+              <div id="v2-fit-line-eye" style="display:none;position:absolute;left:0;right:0;border-top:2px dashed #3b82f6;pointer-events:none;"></div>
+              <div id="v2-fit-line-chin" style="display:none;position:absolute;left:0;right:0;border-top:2px dashed #f59e0b;pointer-events:none;"></div>
+            </div>
+          </div>
+          <div class="v2-checklist-side">
+            <div class="v2-checklist-title">규격 맞춤 미리보기</div>
+            <div class="v2-checklist-loading" id="v2-fit-loading" style="display:none;">
+              <div class="v2-spinner"></div>
+              <span>규격 프레임을 맞추는 중...</span>
+            </div>
+            <ul class="v2-checklist-items" id="v2-fit-info"></ul>
+            <div class="v2-checklist-summary" id="v2-fit-summary"></div>
+            <div class="v2-action-buttons" id="v2-fit-actions" style="display:none;">
+              <button class="v2-action-btn v2-btn-retry" id="v2-fit-change">다른 사진으로</button>
+              <button class="v2-action-btn v2-btn-retouch" id="v2-fit-make">이대로 만들기</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Phase 2: 결제 선택 -->
       <div class="v2-make-layout" id="v2-phase-pay" style="display:none;">
         <div class="v2-pay-grid">
@@ -2163,6 +2191,7 @@ ${hreflangTags}
             <img id="v2-result-after-img" src="" alt="${escapeHtml(v2.labelAfter)}">
           </div>
         </div>
+        <ul class="v2-checklist-items" id="v2-result-checklist" style="margin:16px auto 0;max-width:440px;text-align:left;"></ul>
         <div class="v2-result-actions">
           <button class="v2-download-btn" id="v2-download">${escapeHtml(v2.btnDownload)}</button>
           <button class="v2-action-btn v2-btn-retry" id="v2-btn-retry2">${escapeHtml(v2.btnRetry)}</button>
@@ -2241,6 +2270,7 @@ ${hreflangTags}
   var errorMsg = document.getElementById('v2-error');
   var phaseUpload = document.getElementById('v2-phase-upload');
   var phaseCheck = document.getElementById('v2-phase-check');
+  var phaseFit = document.getElementById('v2-phase-fit');
   var phasePay = document.getElementById('v2-phase-pay');
   var phaseGen = document.getElementById('v2-phase-generating');
   var phaseResult = document.getElementById('v2-phase-result');
@@ -2294,7 +2324,7 @@ ${hreflangTags}
   var IMG_KEY = 'monkos_specs_img';
 
   function showPhase(phase){
-    [phaseUpload, phaseCheck, phasePay, phaseGen, phaseResult].forEach(function(p){ if(p) p.style.display='none'; });
+    [phaseUpload, phaseCheck, phaseFit, phasePay, phaseGen, phaseResult].forEach(function(p){ if(p) p.style.display='none'; });
     if(phase) phase.style.display='';
   }
   function setGenMessage(text, sub){
@@ -2364,6 +2394,7 @@ ${hreflangTags}
 
   function handleFile(file){
     hideError();
+    fitResult = null; precheckData = null;
     if(!file.type.match(/image\\/(jpeg|png|heic|heif|webp)/i)) return showError(T.errFileType);
     if(file.size > 10*1024*1024) return showError(T.errFileSize);
     var reader = new FileReader();
@@ -2390,27 +2421,27 @@ ${hreflangTags}
       .then(function(r){ return r.json(); })
       .then(function(data){
         checkLoading.style.display = 'none';
-        if(data.checks){
-          var allPass = true;
-          data.checks.forEach(function(c){
-            var li = document.createElement('li');
-            var icon = document.createElement('span');
-            icon.className = 'v2-check-icon ' + (c.pass ? 'v2-check-pass' : c.warn ? 'v2-check-warn' : 'v2-check-fail');
-            icon.textContent = c.pass ? '\\u2713' : c.warn ? '!' : '\\u2717';
-            li.appendChild(icon);
-            li.appendChild(document.createTextNode(c.label));
-            checklistItems.appendChild(li);
-            if(c.warnMsg){
-              var wm = document.createElement('div');
-              wm.className = 'v2-check-warn-msg';
-              wm.textContent = c.warnMsg;
-              li.appendChild(wm);
-            }
-            if(!c.pass && !c.warn) allPass = false;
-          });
-          summary.className = 'v2-checklist-summary ' + (allPass ? 'v2-summary-pass' : 'v2-summary-fail');
-          summary.textContent = allPass ? T.checkPass : T.checkFail;
-          checkActions.style.display = 'flex';
+        if(data && (typeof data.measurable !== 'undefined' || data.checks)){
+          precheckData = data;
+          // 규정 8항목은 결과 화면에서 사후 표시 (ORDER_20260707 Task 1: 사전=측정성만)
+          if(data.measurable === false){
+            var reasons = {
+              face_too_small: '얼굴이 너무 작게 나왔어요. 가슴 위까지 나온 사진으로 올려주세요.',
+              multiple_faces: '사진에 여러 명이 있어요. 1인 사진을 올려주세요.',
+              side_angle: '옆모습이에요. 정면 사진을 올려주세요.',
+              occluded: '얼굴이 가려져 있어요. 가림 없는 사진을 올려주세요.',
+              no_face: '얼굴을 찾지 못했어요. 정면 얼굴 사진을 올려주세요.'
+            };
+            summary.className = 'v2-checklist-summary v2-summary-fail';
+            summary.textContent = reasons[data.rejectionReason] || '이 사진으로는 정밀 측정이 어려워요. 다른 사진을 올려주세요.';
+            document.getElementById('v2-btn-proceed').style.display = 'none';
+            checkActions.style.display = 'flex';
+          } else {
+            summary.className = 'v2-checklist-summary v2-summary-pass';
+            summary.textContent = '측정 가능한 사진이에요. 계속 진행해주세요.';
+            document.getElementById('v2-btn-proceed').style.display = '';
+            checkActions.style.display = 'flex';
+          }
           // 이미지 저장을 검수 시점에 선행 — 결제 클릭 체인에서 캔버스 압축을 제거해
           // 토스 결제창의 user activation 만료(팝업 차단)를 방지 (2026-07-05 E2E 실패 수정)
           persistImage(function(){});
@@ -2429,12 +2460,76 @@ ${hreflangTags}
     uploadedBase64 = null;
     showPhase(phaseUpload);
   });
-  document.getElementById('v2-btn-proceed').addEventListener('click', function(){
+  var fitResult = null, precheckData = null;
+
+  function proceedToPay(){
     document.getElementById('v2-preview-img').src = uploadedBase64;
     // 이미 결제된 토큰(재생성 잔여)이 있으면 재결제 없이 바로 생성
     if(hasUsableToken()) return doGenerate();
     showPhase(phasePay);
+  }
+
+  /* ─── 프레임 피팅 가이드 (ORDER_20260707 Task 3) ─── */
+  function runFit(){
+    showPhase(phaseFit);
+    var fl = document.getElementById('v2-fit-loading');
+    var fa = document.getElementById('v2-fit-actions');
+    var fi = document.getElementById('v2-fit-info');
+    var fs = document.getElementById('v2-fit-summary');
+    fi.innerHTML = ''; fs.textContent = ''; fs.className = 'v2-checklist-summary';
+    fa.style.display = 'none'; fl.style.display = 'flex';
+    document.getElementById('v2-fit-img').src = uploadedBase64;
+    ['v2-fit-frame','v2-fit-line-crown','v2-fit-line-eye','v2-fit-line-chin'].forEach(function(id){ document.getElementById(id).style.display = 'none'; });
+    fetch('/api/idphoto/fit', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ image: uploadedBase64, slug: CFG.slug, faceBox: precheckData && precheckData.faceBox })
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      fl.style.display = 'none';
+      if(!data || !data.success){ fitResult = null; proceedToPay(); return; } // 카나리 밖·감지 실패 → 기존 경로
+      fitResult = data;
+      renderFitOverlay(data);
+    })
+    .catch(function(){ fl.style.display = 'none'; fitResult = null; proceedToPay(); });
+  }
+
+  function renderFitOverlay(d){
+    var W = d.imageSize.width, H = d.imageSize.height;
+    function pct(v, total){ return (v / total * 100) + '%'; }
+    var f = document.getElementById('v2-fit-frame');
+    f.style.display = 'block';
+    f.style.left = pct(d.frame.x, W); f.style.top = pct(d.frame.y, H);
+    f.style.width = pct(d.frame.w, W); f.style.height = pct(d.frame.h, H);
+    var linemap = { 'v2-fit-line-crown': d.lines.crownY, 'v2-fit-line-eye': d.lines.eyeY, 'v2-fit-line-chin': d.lines.chinY };
+    Object.keys(linemap).forEach(function(id){
+      var el = document.getElementById(id);
+      el.style.display = 'block'; el.style.top = pct(linemap[id], H);
+    });
+    var fi = document.getElementById('v2-fit-info');
+    fi.innerHTML = '';
+    var rangeTxt = (d.spec && d.spec.headHeightMin && d.spec.headHeightMax) ? ' (허용 ' + d.spec.headHeightMin + '~' + d.spec.headHeightMax + 'mm)' : '';
+    [['머리 높이(정수리~턱)', d.meta.faceMM + 'mm' + rangeTxt],
+     ['눈 높이', d.meta.eyePositionPercent + '%'],
+     ['정수리 여백', d.meta.crownMarginMM + 'mm']].forEach(function(it){
+      var li = document.createElement('li');
+      li.textContent = it[0] + ' — ' + it[1];
+      fi.appendChild(li);
+    });
+    var fs = document.getElementById('v2-fit-summary');
+    var visionOk = !d.vision || d.vision.pass !== false;
+    fs.className = 'v2-checklist-summary ' + (visionOk ? 'v2-summary-pass' : 'v2-summary-fail');
+    fs.textContent = visionOk ? '초록 프레임대로 규격에 맞춰집니다.' : 'AI 검수가 프레임을 보정했습니다. 미리보기를 확인해주세요.';
+    document.getElementById('v2-fit-actions').style.display = 'flex';
+  }
+
+  document.getElementById('v2-fit-change').addEventListener('click', function(){
+    uploadedBase64 = null; fitResult = null; precheckData = null;
+    showPhase(phaseUpload);
   });
+  document.getElementById('v2-fit-make').addEventListener('click', function(){ proceedToPay(); });
+
+  document.getElementById('v2-btn-proceed').addEventListener('click', function(){ runFit(); });
 
   /* ─── Pay phase ─── */
   document.getElementById('v2-change-photo').addEventListener('click', function(){
@@ -2581,6 +2676,44 @@ ${hreflangTags}
     showError(T.imgLost);
   }
 
+  /* ─── 사후 검수 체크리스트 (ORDER_20260707 Task 4 — 규정 8항목 사후 이동 + 수치 검수) ─── */
+  function renderResultChecklist(data){
+    var ul = document.getElementById('v2-result-checklist');
+    if(!ul) return;
+    ul.innerHTML = '';
+    var hardFail = false;
+    function add(label, state, msg){
+      var li = document.createElement('li');
+      var icon = document.createElement('span');
+      icon.className = 'v2-check-icon ' + (state === 'pass' ? 'v2-check-pass' : state === 'warn' ? 'v2-check-warn' : 'v2-check-fail');
+      icon.textContent = state === 'pass' ? '\u2713' : state === 'warn' ? '!' : '\u2717';
+      li.appendChild(icon);
+      li.appendChild(document.createTextNode(label));
+      if(msg){ var wm = document.createElement('div'); wm.className = 'v2-check-warn-msg'; wm.textContent = msg; li.appendChild(wm); }
+      ul.appendChild(li);
+      if(state === 'fail') hardFail = true;
+    }
+    var m = data.meta || {};
+    var sp = fitResult && fitResult.spec;
+    if(m.faceMM){
+      var face = parseFloat(m.faceMM);
+      if(sp && sp.headHeightMin && sp.headHeightMax){
+        var okF = face >= sp.headHeightMin && face <= sp.headHeightMax;
+        add('머리 높이 ' + m.faceMM + 'mm (허용 ' + sp.headHeightMin + '~' + sp.headHeightMax + 'mm)', okF ? 'pass' : 'fail', okF ? null : '허용 범위를 벗어났습니다. 다른 사진을 권장해요.');
+      } else add('머리 높이 ' + m.faceMM + 'mm', 'pass');
+      if(m.eyePositionPercent){ var e = parseFloat(m.eyePositionPercent); add('눈 위치 ' + m.eyePositionPercent + '%', (e >= 33 && e <= 58) ? 'pass' : 'warn'); }
+      if(m.crownMarginMM){ var c = parseFloat(m.crownMarginMM); add('정수리 여백 ' + m.crownMarginMM + 'mm', c >= 0.5 ? 'pass' : 'fail', c >= 0.5 ? null : '정수리가 프레임 상단에 닿습니다.'); }
+    }
+    add('배경', data.track === 'birefnet' ? 'pass' : 'warn', data.track === 'birefnet' ? null : 'AI 재구성 배경으로 생성되었습니다.');
+    add('해상도 · 300DPI', 'pass');
+    if(precheckData && precheckData.checks){
+      precheckData.checks.forEach(function(c){ add(c.label, c.pass ? 'pass' : c.warn ? 'warn' : 'fail', c.warnMsg || null); });
+    }
+    var dl = document.getElementById('v2-download');
+    if(hardFail){ dl.disabled = true; dl.style.opacity = '0.4'; dl.title = '검수 미통과 항목이 있습니다'; }
+    else { dl.disabled = false; dl.style.opacity = ''; dl.title = ''; }
+  }
+
   /* ─── 생성 (결제 토큰 경유) ─── */
   var genBusy = false; // 중복 제출 잠금 — 더블클릭 이중 차감 실사고 (2026-07-07 13:48, 200ms 간격 2건)
   function doGenerate(){
@@ -2592,6 +2725,7 @@ ${hreflangTags}
     showPhase(phaseGen);
     setGenMessage(GEN_TEXT_DEFAULT, GEN_SUB_DEFAULT);
     var body = { image: uploadedBase64, format: CFG.format, gender: 'm', age: 'adult', slug: CFG.slug };
+    if(fitResult && fitResult.frame){ body.fitFrame = fitResult.frame; body.fitMeta = fitResult.meta; }
     if(pay.token) body.paymentToken = pay.token;
     fetch('/api/idphoto/generate', {
       method:'POST', headers:{'Content-Type':'application/json'},
@@ -2605,6 +2739,7 @@ ${hreflangTags}
         if(typeof data.remainingGenerates === 'number'){ pay.remaining = data.remainingGenerates; persistOrder(); }
         document.getElementById('v2-result-before-img').src = uploadedBase64;
         document.getElementById('v2-result-after-img').src = 'data:image/png;base64,' + data.image;
+        renderResultChecklist(data);
         showPhase(phaseResult);
         gaTrack('preview_view');
       } else {

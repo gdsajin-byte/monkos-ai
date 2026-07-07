@@ -40,8 +40,8 @@ import { handleLineWebhook } from './lib/line-chatbot.js';
 import { handleWebChat, handleCoaching } from './lib/coaching.js';
 import { handleHeadshotGenerate } from './lib/headshot-route.js';
 import { generateIdPhoto } from './lib/idphoto-generate.js';
-import { cropToSpec, warmupCropEngine } from './lib/spec-crop.js';
-import { matteSpecPipeline, matteEnabled, matteSlugAllowed, warmupMatteEngine } from './lib/matte.js';
+import { cropToSpec, warmupCropEngine, getSpecCropParams } from './lib/spec-crop.js';
+import { matteSpecPipeline, matteFitPipeline, matteEnabled, matteSlugAllowed, warmupMatteEngine, stripDataUri, getSpecBgColor } from './lib/matte.js';
 import { trackEvent, linkIdentity } from './lib/tracking.js';
 import { saveImages } from './lib/gcs-save.js';
 import { handleAgentAuth, requireAdmin } from './lib/cms/admin-auth.js';
@@ -252,6 +252,116 @@ const httpServer = createServer(async (req, res) => {
     return res.end();
   }
 
+
+  // === 프레임 피팅 + 비전 검수 (ORDER_20260707 크롭정밀도 Task 3) ===
+  // 업로드 원본 → (faceBox 러프 크롭) → crop-engine 기하 피팅 → Gemini 비전 검수 → 가이드 좌표 반환.
+  // "만들기"는 이 좌표를 기하 재단만 하므로 (FaceMesh 재실행 없음) 가이드 = 결과물 (WYSIWYG).
+  if (urlPath === '/api/idphoto/fit' && req.method === 'POST') {
+    if (!checkRateLimit(req, 'fit', 10)) {
+      res.writeHead(429, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ error: '요청이 너무 많습니다. 잠시 후 다시 시도해주세요.', code: 'RATE_LIMITED' }));
+    }
+    try {
+      const { parseJsonBody, log: slog } = await import('./lib/shared/config.js');
+      const { default: sharp } = await import('sharp');
+      const body = await parseJsonBody(req);
+      const { image, slug, faceBox } = body;
+      if (!image || !slug) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        return res.end(JSON.stringify({ error: 'image, slug 필수' }));
+      }
+      if (!matteEnabled() || !matteSlugAllowed(slug)) {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        return res.end(JSON.stringify({ success: false, code: 'NOT_AVAILABLE' }));
+      }
+      const spec = getSpecCropParams(slug);
+      if (!spec) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        return res.end(JSON.stringify({ error: '미지원 규격' }));
+      }
+      const buf = Buffer.from(stripDataUri(image), 'base64');
+      const { width: W, height: H } = await sharp(buf).metadata();
+
+      // ① faceBox 러프 크롭 — FaceMesh 안정 입력 (사일런트 미스 방지). 얼굴높이 4배 창.
+      let rx = 0, ry = 0, roughBuf = buf;
+      if (faceBox && faceBox.w > 0 && faceBox.h > 0) {
+        const fh = faceBox.h;
+        const top = Math.max(0, Math.round(faceBox.y - fh * 1.3));
+        const bottom = Math.min(H, Math.round(faceBox.y + fh * 2.7));
+        const cx = faceBox.x + faceBox.w / 2;
+        const winH = bottom - top;
+        const winW = Math.min(W, Math.round(winH * (spec.frameW / spec.frameH) * 1.4));
+        const left = Math.max(0, Math.min(W - winW, Math.round(cx - winW / 2)));
+        if (winH > 50 && winW > 50 && (winH < H * 0.98 || winW < W * 0.98)) {
+          roughBuf = await sharp(buf).extract({ left, top, width: winW, height: winH }).png().toBuffer();
+          rx = left; ry = top;
+        }
+      }
+
+      // ② crop-engine 기하 피팅 (실사 원본 — 순백 헤어스캔 비활성)
+      const CROP_ENGINE_URL = process.env.CROP_ENGINE_URL || '';
+      const fitRes = await fetch(`${CROP_ENGINE_URL}/api/fit-spec`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: roughBuf.toString('base64'), spec, hairScan: false }),
+        signal: AbortSignal.timeout(45000),
+      }).then((r) => r.json());
+      if (!fitRes.success || !fitRes.detected) {
+        slog(`[Fit] ${slug}: 감지 실패 → NO_FACE`);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        return res.end(JSON.stringify({ success: false, code: 'NO_FACE' }));
+      }
+      // 러프 크롭 오프셋 → 원본 좌표
+      const frame = { x: fitRes.frame.x + rx, y: fitRes.frame.y + ry, w: fitRes.frame.w, h: fitRes.frame.h };
+      const lines = { crownY: fitRes.lines.crownY + ry, eyeY: fitRes.lines.eyeY + ry, chinY: fitRes.lines.chinY + ry };
+
+      // ③ Gemini 비전 검수 (§6-2) — 초록 프레임 오버레이 캡처 → 판단만 받고 산술 보정은 코드가
+      let vision = null;
+      try {
+        const scale = Math.min(1, 768 / W);
+        const oW = Math.round(W * scale), oH = Math.round(H * scale);
+        const svg = `<svg width="${oW}" height="${oH}" xmlns="http://www.w3.org/2000/svg"><rect x="${frame.x * scale}" y="${frame.y * scale}" width="${frame.w * scale}" height="${frame.h * scale}" fill="none" stroke="#00c853" stroke-width="4"/></svg>`;
+        const overlay = await sharp(buf).resize(oW, oH).composite([{ input: Buffer.from(svg), left: 0, top: 0 }]).jpeg({ quality: 80 }).toBuffer();
+        const { GoogleGenAI } = await import('@google/genai');
+        const ai = new GoogleGenAI({ vertexai: true, project: process.env.PROJECT_ID, location: 'us-central1' });
+        const vres = await ai.models.generateContent({
+          model: 'gemini-2.5-flash',
+          contents: [{ role: 'user', parts: [
+            { inlineData: { mimeType: 'image/jpeg', data: overlay.toString('base64') } },
+            { text: `이 이미지는 증명사진 규격 프레임(초록선)이 원본 위에 오버레이된 것입니다.\n규격: 프레임 ${Math.round(spec.frameHmm * spec.frameW / spec.frameH)}×${spec.frameHmm}mm, 머리높이(정수리~턱) 허용 ${spec.headHeightMinMm || spec.faceMinMm}~${spec.headHeightMaxMm || spec.faceTargetMm}mm.\n\n다음을 JSON으로 판정하세요:\n{"crown_ok": 정수리(머리카락 아래 두개골 최상단 추정)가 프레임 안에 있는가 (true/false), "crown_margin_px": 정수리~프레임 상단 여백 (이 이미지 픽셀, 음수면 잘림), "hair_overflow": 머리카락이 프레임 상단 밖으로 과도하게 나갔는가 (true/false), "eye_center_ratio": 눈 중심이 프레임 상단에서 몇 % 위치인가 (0~100), "adjustment_y_px": 프레임을 위/아래로 몇 픽셀 이동해야 최적인가 (양수=아래로, 음수=위로, 이 이미지 픽셀), "pass": 현재 상태로 규격 통과 가능한가 (true/false)}` },
+          ]}],
+          // 씽킹 차단 — 비전 판정에 2.5-flash 동적 씽킹이 ~38s 소요 (2026-07-07 dev 실측). 판정은 즉답형으로 충분.
+          config: { responseMimeType: 'application/json', thinkingConfig: { thinkingBudget: 0 } },
+        });
+        const vtext = vres.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
+        vision = JSON.parse(vtext);
+        // 산술 보정: 비전 픽셀 → 원본 픽셀, ±12% 프레임 높이로 클램프 (비전은 판단만, 실행은 코드)
+        const adjRaw = Number(vision.adjustment_y_px) || 0;
+        const adj = Math.max(-frame.h * 0.12, Math.min(frame.h * 0.12, adjRaw / scale));
+        if (Math.abs(adj) > 1) frame.y = Math.round(frame.y + adj);
+      } catch (ve) {
+        log(`[Fit] ${slug}: 비전 검수 실패 (${ve.message}) — 기하 피팅만 사용`, 'WARNING');
+      }
+
+      // ④ 최종 메타 (원본 좌표 기준 재계산)
+      const mmPerPx = spec.frameHmm / frame.h;
+      const meta = {
+        faceMM: ((lines.chinY - lines.crownY) * mmPerPx).toFixed(1),
+        crownMarginMM: ((lines.crownY - frame.y) * mmPerPx).toFixed(1),
+        eyePositionPercent: ((lines.eyeY - frame.y) / frame.h * 100).toFixed(1),
+      };
+      slog(`[Fit] ${slug}: face=${meta.faceMM}mm crown=${meta.crownMarginMM}mm eye=${meta.eyePositionPercent}% vision=${vision ? (vision.pass ? 'pass' : 'adjust') : 'skip'}`);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({
+        success: true, frame, lines, imageSize: { width: W, height: H }, meta, vision,
+        spec: { frameW: spec.frameW, frameH: spec.frameH, frameHmm: spec.frameHmm, headHeightMin: spec.headHeightMinMm || spec.faceMinMm, headHeightMax: spec.headHeightMaxMm || null, faceTargetMm: spec.faceTargetMm },
+      }));
+    } catch (err) {
+      log(`[Fit] 에러: ${err.message}`, 'ERROR');
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ error: '프레임 피팅 중 오류', code: 'INTERNAL_ERROR' }));
+    }
+  }
+
   if (urlPath === '/api/idphoto/precheck' && req.method === 'POST') {
     if (!checkRateLimit(req, 'precheck', 10)) {
       res.writeHead(429, { 'Content-Type': 'application/json' });
@@ -273,7 +383,20 @@ const httpServer = createServer(async (req, res) => {
         model: 'gemini-2.5-flash',
         contents: [{ role: 'user', parts: [
           { inlineData: { mimeType: 'image/jpeg', data: base64Data } },
-          { text: `You are a STRICT photo evaluator for MONKOS AI passport photo service. The user uploads a photo that AI will retouch into a passport photo. You must evaluate whether this input photo is SUITABLE for AI processing. Be strict — AI can fix backgrounds and lighting, but it CANNOT fix fundamentally unsuitable inputs.
+          { text: `You are a STRICT photo evaluator for MONKOS AI passport photo service. Perform TWO evaluations in ONE response.
+
+=== PART A — MEASURABILITY (사전: 측정 가능성 검증, ORDER_20260707) ===
+Determine whether precise facial measurement (FaceMesh landmark detection) is possible on this photo:
+1. face_count: number of detected faces
+2. face_box: bounding box of the primary face [x, y, w, h] in pixels of THIS image
+3. face_ratio: fraction of image height occupied by the face (0~1)
+4. frontal: is the face roughly frontal (true/false)
+5. occlusion: is there severe occlusion of the face (true/false)
+6. measurable: can FaceMesh measure this input reliably (true/false) — false if face_count!=1, face_ratio<0.12, not frontal, or occluded
+7. rejection_reason: when measurable=false, one of: face_too_small / multiple_faces / side_angle / occluded / no_face — else null
+
+=== PART B — REGULATION CHECKS (규정 검수 8항목 — 결과 화면에서 사후 표시용) ===
+Evaluate whether this input photo is SUITABLE for AI processing. Be strict — AI can fix backgrounds and lighting, but it CANNOT fix fundamentally unsuitable inputs.
 
 CRITICAL RULES:
 - This must be a PORTRAIT photo of a SINGLE PERSON showing their FACE clearly.
@@ -322,16 +445,25 @@ ITEM 8 — "사진 적합성" (Photo suitability):
 - FAIL if: multiple people, face <20% of image, full-body shot, extremely blurry, no face, or waist-down visible. Set warnMsg: "1인 정면 얼굴(가슴 위 구도) 사진을 올려주세요."
 
 Respond in JSON only:
-{"checks":[{"id":"frontal","label":"정면 응시","pass":bool,"warn":bool,"warnMsg":"string or null"},{"id":"eyebrow","label":"눈썹 노출","pass":bool,"warn":bool,"warnMsg":"string or null"},{"id":"background","label":"배경","pass":bool,"warn":bool,"warnMsg":"string or null"},{"id":"lighting","label":"조명","pass":bool,"warn":bool,"warnMsg":"string or null"},{"id":"expression","label":"표정","pass":bool,"warn":bool,"warnMsg":"string or null"},{"id":"clothing","label":"상의","pass":bool,"warn":bool,"warnMsg":"string or null"},{"id":"glasses","label":"안경/렌즈","pass":bool,"warn":bool,"warnMsg":"string or null"},{"id":"suitability","label":"사진 적합성","pass":bool,"warn":bool,"warnMsg":"string or null"}]}` }
+{"measurable":bool,"rejection_reason":"string or null","face_count":int,"face_box":[x,y,w,h],"face_ratio":number,"frontal":bool,"occlusion":bool,"checks":[{"id":"frontal","label":"정면 응시","pass":bool,"warn":bool,"warnMsg":"string or null"},{"id":"eyebrow","label":"눈썹 노출","pass":bool,"warn":bool,"warnMsg":"string or null"},{"id":"background","label":"배경","pass":bool,"warn":bool,"warnMsg":"string or null"},{"id":"lighting","label":"조명","pass":bool,"warn":bool,"warnMsg":"string or null"},{"id":"expression","label":"표정","pass":bool,"warn":bool,"warnMsg":"string or null"},{"id":"clothing","label":"상의","pass":bool,"warn":bool,"warnMsg":"string or null"},{"id":"glasses","label":"안경/렌즈","pass":bool,"warn":bool,"warnMsg":"string or null"},{"id":"suitability","label":"사진 적합성","pass":bool,"warn":bool,"warnMsg":"string or null"}]}` }
         ]}],
         config: { responseMimeType: 'application/json' },
       });
       const text = result.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
       let parsed;
       try { parsed = JSON.parse(text); } catch { parsed = { checks: [] }; }
-      slog(`[IDPhoto][precheck] 검수 완료: ${parsed.checks?.length || 0}항목`);
+      // 측정성(사전) + 규정 8항목(사후 표시용) — 단일 호출 (ORDER_20260707 Task 1)
+      const fb = Array.isArray(parsed.face_box) && parsed.face_box.length === 4 ? parsed.face_box.map(Number) : null;
+      const out = {
+        measurable: parsed.measurable !== false,
+        rejectionReason: parsed.rejection_reason || null,
+        faceBox: fb ? { x: fb[0], y: fb[1], w: fb[2], h: fb[3] } : null,
+        faceRatio: Number(parsed.face_ratio) || null,
+        checks: parsed.checks || [],
+      };
+      slog(`[IDPhoto][precheck] 측정성=${out.measurable}${out.rejectionReason ? `(${out.rejectionReason})` : ''} 검수 ${out.checks.length}항목`);
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      return res.end(JSON.stringify(parsed));
+      return res.end(JSON.stringify(out));
     } catch (err) {
       log(`[IDPhoto][precheck] 에러: ${err.message}`, 'ERROR');
       res.writeHead(500, { 'Content-Type': 'application/json' });
@@ -399,13 +531,21 @@ Respond in JSON only:
       let finalBase64 = null;
       let cropEngine = null;
       let genTrack = null;
+      let resultMeta = null;
       if (slug && matteEnabled()) {
         try {
-          const matteRes = await matteSpecPipeline(image, slug);
+          // fit 확정 경로 우선 (ORDER_20260707): 검수 단계 확정 프레임을 기하 재단 — WYSIWYG, FaceMesh 미재실행
+          let matteRes = null;
+          if (body.fitFrame && body.fitFrame.w > 0 && body.fitFrame.h > 0) {
+            const specP = getSpecCropParams(slug);
+            if (specP) matteRes = await matteFitPipeline(image, slug, body.fitFrame, body.fitMeta || null, specP.frameW, specP.frameH);
+          }
+          if (!matteRes) matteRes = await matteSpecPipeline(image, slug);
           if (matteRes) {
             finalBase64 = matteRes.image;
             cropEngine = matteRes.cropEngine;
             genTrack = 'birefnet';
+            resultMeta = matteRes.meta || null;
           }
         } catch (e) {
           log(`[IDPhoto] matte 신경로 예외 (${e.message}) → Gemini 폴백`, 'ERROR');
@@ -442,6 +582,7 @@ Respond in JSON only:
           const cropRes = await cropToSpec(generatedBase64, slug);
           finalBase64 = cropRes.image;
           cropEngine = cropRes.engine;
+          resultMeta = cropRes.meta || null;
         }
       }
 
@@ -452,7 +593,7 @@ Respond in JSON only:
       }
       log(`[IDPhoto] 생성 완료: 규격=${slug || format || 'passport'}, 게이트=${gateMode}${genTrack ? `, 트랙=${genTrack}` : ''}${cropEngine ? `, 크롭=${cropEngine}` : ''}`);
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      return res.end(JSON.stringify({ image: finalBase64, remainingGenerates }));
+      return res.end(JSON.stringify({ image: finalBase64, remainingGenerates, track: genTrack, cropEngine, meta: resultMeta }));
     } catch (err) {
       log(`[IDPhoto] 에러: ${err.message}`, 'ERROR');
       res.writeHead(500, { 'Content-Type': 'application/json' });

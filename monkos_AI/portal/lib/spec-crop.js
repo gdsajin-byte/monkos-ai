@@ -85,7 +85,8 @@ export function getSpecCropParams(slug) {
     faceMinMm = +(frameHmm * 0.66).toFixed(1);
   }
 
-  return { frameW: frame[0], frameH: frame[1], frameHmm, faceTargetMm, faceMinMm, hairMarginMm: 2 };
+  return { frameW: frame[0], frameH: frame[1], frameHmm, faceTargetMm, faceMinMm, hairMarginMm: 2,
+    headHeightMinMm: range ? range[0] : null, headHeightMaxMm: range ? range[1] : null };
 }
 
 /**
