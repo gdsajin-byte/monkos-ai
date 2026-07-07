@@ -41,7 +41,7 @@ import { handleWebChat, handleCoaching } from './lib/coaching.js';
 import { handleHeadshotGenerate } from './lib/headshot-route.js';
 import { generateIdPhoto } from './lib/idphoto-generate.js';
 import { cropToSpec, warmupCropEngine } from './lib/spec-crop.js';
-import { matteSpecPipeline, matteEnabled, warmupMatteEngine } from './lib/matte.js';
+import { matteSpecPipeline, matteEnabled, matteSlugAllowed, warmupMatteEngine } from './lib/matte.js';
 import { trackEvent, linkIdentity } from './lib/tracking.js';
 import { saveImages } from './lib/gcs-save.js';
 import { handleAgentAuth, requireAdmin } from './lib/cms/admin-auth.js';
@@ -239,6 +239,19 @@ const httpServer = createServer(async (req, res) => {
   }
 
   // === 증명사진 규격 검수 (무료 — IP 레이트리밋만) ===
+  // 퍼널 줄서기 (2026-07-07 작가님: RunPod 단일 집중 — 페이지 진입 시점부터 워커 의자 확보)
+  // 진입→업로드→precheck→생성으로 이어지는 동안 워밍 잡 연쇄(60s 쿨다운)가 의자를 유지한다.
+  if (urlPath === '/api/matte/warmup' && (req.method === 'GET' || req.method === 'POST')) {
+    if (!checkRateLimit(req, 'matte-warmup', 20)) {
+      res.writeHead(429, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ error: 'rate limited' }));
+    }
+    const warmSlug = new URL(req.url, `http://${req.headers.host}`).searchParams.get('slug') || '';
+    if (matteEnabled() && matteSlugAllowed(warmSlug)) warmupMatteEngine();
+    res.writeHead(204);
+    return res.end();
+  }
+
   if (urlPath === '/api/idphoto/precheck' && req.method === 'POST') {
     if (!checkRateLimit(req, 'precheck', 10)) {
       res.writeHead(429, { 'Content-Type': 'application/json' });
