@@ -51,11 +51,21 @@ references:
 
 ### Task A-1: BiRefNet matte API 서빙
 
-- 기성 자산 `birefnet_server.py` 기반으로 `/api/matte` 엔드포인트 규격화
+- 기성 자산 `birefnet_server.py` + ONNX PoC 기반으로 `/api/matte` 엔드포인트 규격화
 - 입력: 이미지 + bgColor (기본 #FFFFFF, 유색 배경 16국 개방 대비)
 - 출력: 배경 합성 완료 PNG
-- **서빙 위치**: 4060 우선 (Tailscale/CF Tunnel). 장애 시 Gemini L3 폴백
-- 4060 기동 점검: tailscale 온라인 → nvidia-smi → HF 캐시 확인 → 서버 기동
+- **서빙 위치 (단계적)**:
+  1. **Cloud Run CPU (ONNX 백엔드) 선실측** — deploy.sh 체계 그대로, 신규 벤더 없음. M1 CPU 14.8s → 서버 vCPU에서 5~10s 예상 (현행 Gemini 10~20s와 UX 등가 이상). **실측 수치 보고 후 서빙지 확정**
+  2. 느릴 경우: RunPod Serverless T4 ($0.40/hr, scale-to-zero) 또는 Cloud Run GPU (L4)로 승격 — MATTE_API_URL 교체만, 코드 변경 0
+  3. **Gemini L3 폴백**: matte API 장애 시 현행 Gemini 경로 유지
+- 4060: 프로덕션 상주가 아닌 **개발·테스트 거점**으로 운용 (아들 점유 변수로 SLA 불가)
+
+### Task A-1.5: 콜드스타트 프리로드 설계
+
+- scale-to-zero 운용 (최소 인스턴스 0, 월 ₩1~2만)
+- **"무료로 시작하기" CTA 클릭 시 matte API에 백그라운드 헬스체크 ping** — 사진 업로드·검수 UI를 거치는 20~30초 동안 컨테이너 웜업 완료
+- 실제 매팅 요청 시점에는 웜 상태 → 콜드스타트 체감 0
+- matte API에 `/health` 엔드포인트 구현 (모델 프리로드 트리거 역할)
 
 ### Task A-2: 포털 파이프라인 교체
 
