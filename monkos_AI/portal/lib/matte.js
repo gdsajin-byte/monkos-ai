@@ -22,6 +22,10 @@ const SPECS_DATA = createRequire(import.meta.url)('./cms/specs-data.json');
 const MATTE_API_URLS = (process.env.MATTE_API_URLS || process.env.MATTE_API_URL || '')
   .split(',').map((s) => s.trim()).filter(Boolean);
 const MATTE_API_KEY = process.env.MATTE_API_KEY || ''; // RunPod 등 인증형 엔드포인트용
+// 카나리 게이트 (2026-07-07 작가님): 지정 슬러그만 신경로, 나머지는 현행 Gemini 유지.
+// 미설정 = 전 슬러그 개방. 파일럿: kr-passport 단일 → 검증 후 확산.
+const MATTE_SLUGS = (process.env.MATTE_SLUGS || '')
+  .split(',').map((s) => s.trim()).filter(Boolean);
 const HEALTH_TIMEOUT_MS = 2500;  // 생사 프리플라이트 — 죽은 엔드포인트에 30s를 쓰지 않는다
 const MATTE_TIMEOUT_MS = 30000;  // 본 호출 (GPU 웜 1s 안팎, 콜드는 타임아웃 → 다음 엔드포인트/L3)
 const ALERT_COOLDOWN_MS = 10 * 60 * 1000; // 장애 경보 폭주 방지
@@ -49,6 +53,11 @@ export function getSpecBgColor(slug) {
 
 export function matteEnabled() {
   return MATTE_API_URLS.length > 0;
+}
+
+/** 카나리 게이트 — MATTE_SLUGS 미설정이면 전 슬러그 허용 */
+export function matteSlugAllowed(slug) {
+  return MATTE_SLUGS.length === 0 || MATTE_SLUGS.includes(slug);
 }
 
 function isRunpod(url) {
@@ -121,6 +130,7 @@ function alertMatteDown(reason) {
  */
 export async function matteSpecPipeline(originalB64, slug) {
   if (!matteEnabled()) return null;
+  if (!matteSlugAllowed(slug)) return null; // 카나리 밖 슬러그 → 현행 Gemini 경로
 
   // ① 감지·크롭은 사용자 원본에서 — 실패(facemesh 미안착)면 신경로 포기.
   //    커버 크롭 위 매팅은 "그럴듯한" 무규격 출고라 금지 (무음 폴백 금지).
