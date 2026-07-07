@@ -178,6 +178,7 @@ status: active
 | 06/14 | 4060/쌍아 | **BiRefNet 배경 제거 PoC** — ZhengPeng7/BiRefNet(MIT 라이선스) 4060 GPU 실측. 평균 0.829s, VRAM peak 3197MB/8GB. 증명사진 경계 깔끔, 머리카락 디테일 우수. RMBG-2.0(CC BY-NC) 대비 상업 사용 무제한. Flask 서버+테스트 UI+벤치마크 5종 완료 | [COMPLETION](../../reports/2026-06/COMPLETION_20260614_4060쌍아_BiRefNet_PoC.md) | ✅ |
 | 06/14 | iMac/막내1 | **배경 제거 모델+후처리 기법 리서치** — 후처리 6종 비교(ViTMatte Apache2.0 최상), 대안 모델 6종(BiRefNet MIT 현행 최적 확인), 하이브리드 파이프라인 사례(BiRefNet→ViTMatte 2단계 프로덕션 표준). 권고: BiRefNet+ViTMatte 2단계 | [REPORT](../../reports/2026-06/REPORT_20260614_막내1_CROP_배경제거모델리서치.md) | ✅ |
 | 06/14 | 4060/쌍아 | **RMBG-2.0 A/B 비교 + 후처리 파이프라인 PoC** — RMBG-2.0 gated 접근 성공, 동일 5종 비교(품질 동급, 속도 RMBG 7%↑, 라이선스 BiRefNet MIT 승). 후처리 3단(GuidedFilter 알파매팅+에지페더링+디컨태미네이션) 구현, 오버헤드 +9ms, 효과 제한적(마스크 자체 양호). compare-test.html 동시 비교 UI | [COMPLETION](../../reports/2026-06/COMPLETION_20260614_4060쌍아_배경제거후처리_PoC.md) | ✅ |
+| 07/07 | M1/민아 | **matte 서빙 정본 신설 (ORDER_20260707 A-1)** — BiRefNet 채택 확정(작가님) 반영. benchmark/birefnet_server.py 승계해 `apps/monkos-matte/` 규격화(`/api/matte {image,bgColor}`, 소프트 알파 합성, stdlib http.server — flask 의존 제거), torch(4060 GPU)/onnx(CPU 개발) 2백엔드. M1 ONNX 실동 검증(15.4s/장, 배경색 정밀 합성 확인). 4060 torch 기동은 전원 인가 대기 | apps/monkos-matte/ | ⏳ |
 
 ---
 

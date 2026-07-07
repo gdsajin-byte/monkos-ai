@@ -41,10 +41,11 @@ import { handleWebChat, handleCoaching } from './lib/coaching.js';
 import { handleHeadshotGenerate } from './lib/headshot-route.js';
 import { generateIdPhoto } from './lib/idphoto-generate.js';
 import { cropToSpec, warmupCropEngine } from './lib/spec-crop.js';
+import { matteSpecPipeline, matteEnabled, warmupMatteEngine } from './lib/matte.js';
 import { trackEvent, linkIdentity } from './lib/tracking.js';
 import { saveImages } from './lib/gcs-save.js';
 import { handleAgentAuth, requireAdmin } from './lib/cms/admin-auth.js';
-import { handleDashboardSummary, handleDashboardUsers, handleDashboardCredits, handleDashboardTraffic } from './lib/cms/dashboard.js';
+import { handleDashboardSummary, handleDashboardUsers, handleDashboardUsers360, handleDashboardCredits, handleDashboardTraffic } from './lib/cms/dashboard.js';
 import { handleBlogList, handleBlogGet, handleBlogCreate, handleBlogUpdate, handleBlogDelete } from './lib/cms/blog.js';
 import { handleFaqList, handleFaqCreate, handleFaqUpdate, handleFaqDelete } from './lib/cms/faq.js';
 import { handleGalleryList, handleGalleryCreate, handleGalleryUpdate, handleGalleryDelete } from './lib/cms/gallery.js';
@@ -102,17 +103,24 @@ function checkRateLimit(req, bucket, limit, windowMs = 60000) {
 }
 
 function trackPageView(req) {
+  const urlObj = new URL(req.url, `http://${req.headers.host}`);
+  const utmParams = {};
+  for (const key of ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content']) {
+    const val = urlObj.searchParams.get(key);
+    if (val) utmParams[key] = val;
+  }
   trackEvent({
     eventName: 'page_view',
     userId: req.userId || null,
     sessionId: req.sessionId,
-    pagePath: req.url.split('?')[0],
+    pagePath: urlObj.pathname,
     lang: req.lang,
     region: req.paymentRegion,
     service: 'portal',
     referer: req.headers.referer || null,
     userAgent: req.headers['user-agent'] || null,
     ipCountry: req.paymentRegion,
+    params: Object.keys(utmParams).length > 0 ? utmParams : null,
   }).catch(() => {});
 }
 
@@ -367,38 +375,59 @@ Respond in JSON only:
         gateUserId = session.userId;
       }
 
-      // 크롭 엔진 예열 — AI 생성과 병렬로 콜드스타트 흡수 (fire-and-forget)
-      if (slug) warmupCropEngine();
+      // 엔진 예열 — 감지·크롭/매팅과 병렬로 콜드스타트 흡수 (fire-and-forget)
+      if (slug) { warmupCropEngine(); warmupMatteEngine(); }
 
-      let generatedBase64;
-      try {
-        // specs(slug 보유)는 무보정 배경제거 정본 = gemini-2.5-flash + 여유 프레이밍(wide)
-        // — 크롭 원자재 확보 (AI의 타이트 크롭 위에서 재단하면 여백·어깨 부족, 2026-07-06 실사고)
-        const effectiveModel = model || (slug ? 'gemini-2.5-flash' : 'nano-banana-pro');
-        generatedBase64 = await generateIdPhoto({ image, format: format || 'passport', gender, age, model: effectiveModel, userId: gateUserId === 'specs-visitor' ? 'specs-visitor' : gateUserId, framing: slug ? 'wide' : undefined });
-      } catch (genErr) {
-        // 서버측 생성 실패 → 소모분 반환 (토큰 쿼터 / 크레딧)
-        if (gateMode === 'token') {
-          refundGenerateQuota(paymentToken).catch(() => {});
-        } else if (gateMode === 'credits') {
-          fetch(`http://localhost:${PORT}/api/credits/refund`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Cookie': req.headers.cookie },
-            body: JSON.stringify({ userId: gateUserId, type: 'generate' }),
-          }).catch(() => {});
+      // 신경로 (IDPASS 순서, ORDER_20260707): 원본에서 감지·크롭 → BiRefNet 매팅 → 배경색 합성.
+      // 원본 픽셀 보존 + Gemini 재생성물 위 감지의 비결정성 제거.
+      // MATTE_API_URL 미설정·감지 미안착·matte 장애 → null 반환 → 현행 Gemini 경로(L3) 강등.
+      let finalBase64 = null;
+      let cropEngine = null;
+      let genTrack = null;
+      if (slug && matteEnabled()) {
+        try {
+          const matteRes = await matteSpecPipeline(image, slug);
+          if (matteRes) {
+            finalBase64 = matteRes.image;
+            cropEngine = matteRes.cropEngine;
+            genTrack = 'birefnet';
+          }
+        } catch (e) {
+          log(`[IDPhoto] matte 신경로 예외 (${e.message}) → Gemini 폴백`, 'ERROR');
         }
-        log(`[IDPhoto] 생성 실패 → 소모분 반환(${gateMode}): ${genErr.message}`, 'WARNING');
-        res.writeHead(500, { 'Content-Type': 'application/json' });
-        return res.end(JSON.stringify({ error: '생성에 실패했습니다. 다시 시도해주세요.', code: 'GENERATE_FAILED' }));
       }
 
-      // specs: 규격 안착 크롭 (FaceMesh 엔진, 실패 시 커버 폴백 — 결과는 항상 규격 비율)
-      let finalBase64 = generatedBase64;
-      let cropEngine = null;
-      if (slug) {
-        const cropRes = await cropToSpec(generatedBase64, slug);
-        finalBase64 = cropRes.image;
-        cropEngine = cropRes.engine;
+      if (!finalBase64) {
+        let generatedBase64;
+        try {
+          // L3/현행: specs(slug 보유)는 무보정 배경제거 = gemini-2.5-flash + 여유 프레이밍(wide)
+          // — 크롭 원자재 확보 (AI의 타이트 크롭 위에서 재단하면 여백·어깨 부족, 2026-07-06 실사고)
+          const effectiveModel = model || (slug ? 'gemini-2.5-flash' : 'nano-banana-pro');
+          generatedBase64 = await generateIdPhoto({ image, format: format || 'passport', gender, age, model: effectiveModel, userId: gateUserId === 'specs-visitor' ? 'specs-visitor' : gateUserId, framing: slug ? 'wide' : undefined });
+        } catch (genErr) {
+          // 서버측 생성 실패 → 소모분 반환 (토큰 쿼터 / 크레딧)
+          if (gateMode === 'token') {
+            refundGenerateQuota(paymentToken).catch(() => {});
+          } else if (gateMode === 'credits') {
+            fetch(`http://localhost:${PORT}/api/credits/refund`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'Cookie': req.headers.cookie },
+              body: JSON.stringify({ userId: gateUserId, type: 'generate' }),
+            }).catch(() => {});
+          }
+          log(`[IDPhoto] 생성 실패 → 소모분 반환(${gateMode}): ${genErr.message}`, 'WARNING');
+          res.writeHead(500, { 'Content-Type': 'application/json' });
+          return res.end(JSON.stringify({ error: '생성에 실패했습니다. 다시 시도해주세요.', code: 'GENERATE_FAILED' }));
+        }
+
+        // specs: 규격 안착 크롭 (FaceMesh 엔진, 실패 시 커버 폴백 — 결과는 항상 규격 비율)
+        finalBase64 = generatedBase64;
+        genTrack = 'gemini';
+        if (slug) {
+          const cropRes = await cropToSpec(generatedBase64, slug);
+          finalBase64 = cropRes.image;
+          cropEngine = cropRes.engine;
+        }
       }
 
       try {
@@ -406,7 +435,7 @@ Respond in JSON only:
       } catch (e) {
         log(`[IDPhoto] GCS 저장 실패 (무시): ${e.message}`, 'WARNING');
       }
-      log(`[IDPhoto] 생성 완료: 규격=${slug || format || 'passport'}, 게이트=${gateMode}${cropEngine ? `, 크롭=${cropEngine}` : ''}`);
+      log(`[IDPhoto] 생성 완료: 규격=${slug || format || 'passport'}, 게이트=${gateMode}${genTrack ? `, 트랙=${genTrack}` : ''}${cropEngine ? `, 크롭=${cropEngine}` : ''}`);
       res.writeHead(200, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify({ image: finalBase64, remainingGenerates }));
     } catch (err) {
@@ -508,6 +537,7 @@ Respond in JSON only:
   // === Dashboard API ===
   if (urlPath === '/api/admin/dashboard/summary' && req.method === 'GET') return handleDashboardSummary(req, res);
   if (urlPath === '/api/admin/dashboard/users' && req.method === 'GET') return handleDashboardUsers(req, res);
+  if (urlPath === '/api/admin/dashboard/users360' && req.method === 'GET') return handleDashboardUsers360(req, res);
   if (urlPath === '/api/admin/dashboard/credits' && req.method === 'GET') return handleDashboardCredits(req, res);
   if (urlPath === '/api/admin/dashboard/traffic' && req.method === 'GET') return handleDashboardTraffic(req, res);
 

@@ -1,4 +1,4 @@
-import { firestore, log, GA4_PROPERTY_ID } from '../shared/config.js';
+import { firestore, log, GA4_PROPERTY_ID, ADMIN_UIDS } from '../shared/config.js';
 import { requireAdmin } from './admin-auth.js';
 import { BetaAnalyticsDataClient } from '@google-analytics/data';
 
@@ -19,6 +19,21 @@ function toISOStr(val) {
   if (val.toDate) return val.toDate().toISOString();
   if (val._seconds) return new Date(val._seconds * 1000).toISOString();
   return '';
+}
+
+function toKSTStr(val) {
+  if (!val) return '';
+  let d;
+  if (typeof val === 'string') { d = new Date(val); if (isNaN(d.getTime())) return ''; }
+  else if (val.toDate) d = val.toDate();
+  else if (val._seconds) d = new Date(val._seconds * 1000);
+  else return '';
+  const kst = new Date(d.getTime() + 9 * 3600000);
+  return kst.toISOString().replace('T', ' ').slice(0, 16);
+}
+
+function isTestUser(uid) {
+  return ADMIN_UIDS.includes(uid);
 }
 
 let analyticsClient;
@@ -54,31 +69,61 @@ export async function handleDashboardSummary(req, res) {
   if (!admin) return;
 
   try {
-    const snapshot = await usersCol.get();
     const today = todayKST();
-    const monthStart = monthStartKST();
+    const yesterday = daysAgoDate(1);
 
-    let totalCredits = 0, todaySignups = 0, monthSignups = 0, activeUsersToday = 0;
+    const [usersSnap, txSnap] = await Promise.all([usersCol.get(), txCol.get()]);
 
-    snapshot.forEach(doc => {
+    let totalUsers = 0, todaySignups = 0, yesterdaySignups = 0;
+    let activeToday = 0, totalCredits = 0;
+
+    usersSnap.forEach(doc => {
       const data = doc.data();
+      if (isTestUser(doc.id)) return;
+      totalUsers++;
       totalCredits += data.credits || 0;
       const created = toDateStr(data.createdAt);
       if (created === today) todaySignups++;
-      if (created >= monthStart) monthSignups++;
+      if (created === yesterday) yesterdaySignups++;
       const lastLogin = toDateStr(data.lastLogin);
-      if (lastLogin === today) activeUsersToday++;
+      if (lastLogin === today) activeToday++;
     });
 
-    const totalUsers = snapshot.size;
+    const payingUserIds = new Set();
+    let todayCharges = 0, yesterdayCharges = 0;
+    let todayRevenue = 0, yesterdayRevenue = 0;
+    let todayConsumed = 0, yesterdayConsumed = 0;
+
+    txSnap.forEach(doc => {
+      const d = doc.data();
+      if (isTestUser(d.userId)) return;
+      const date = toDateStr(d.createdAt);
+      if (d.type === 'charge') {
+        payingUserIds.add(d.userId);
+        const rev = (d.metadata && typeof d.metadata.amount === 'number') ? d.metadata.amount : 0;
+        if (date === today) { todayCharges++; todayRevenue += rev; }
+        if (date === yesterday) { yesterdayCharges++; yesterdayRevenue += rev; }
+      }
+      if (d.type === 'use') {
+        const c = Math.abs(d.amount || 0);
+        if (date === today) todayConsumed += c;
+        if (date === yesterday) yesterdayConsumed += c;
+      }
+    });
+
+    const conversionRate = totalUsers > 0 ? Math.round((payingUserIds.size / totalUsers) * 1000) / 10 : 0;
+
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({
       totalUsers,
-      todaySignups,
-      monthSignups,
+      todaySignups, yesterdaySignups,
+      todayCharges, yesterdayCharges,
+      activeToday,
+      todayRevenue, yesterdayRevenue,
+      conversionRate,
+      todayConsumed, yesterdayConsumed,
       totalCredits,
-      avgCreditsPerUser: totalUsers ? Math.round((totalCredits / totalUsers) * 10) / 10 : 0,
-      activeUsersToday,
+      payingUsers: payingUserIds.size,
     }));
   } catch (err) {
     log(`[Dashboard] summary 에러: ${err.message}`, 'ERROR');
@@ -175,6 +220,108 @@ export async function handleDashboardCredits(req, res) {
     res.end(JSON.stringify({ distribution, totalCredits, recentTransactions }));
   } catch (err) {
     log(`[Dashboard] credits 에러: ${err.message}`, 'ERROR');
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: err.message }));
+  }
+}
+
+export async function handleDashboardUsers360(req, res) {
+  const admin = requireAdmin(req, res);
+  if (!admin) return;
+
+  try {
+    const url = new URL(req.url, `http://${req.headers.host}`);
+    const showTest = url.searchParams.get('test') === '1';
+    const days = parseInt(url.searchParams.get('days') || '30', 10);
+    const since = daysAgoDate(Math.min(Math.max(days, 1), 90));
+
+    const [usersSnap, txSnap] = await Promise.all([usersCol.get(), txCol.get()]);
+
+    const txByUser = {};
+    txSnap.forEach(doc => {
+      const d = doc.data();
+      const uid = d.userId;
+      if (!uid) return;
+      if (!txByUser[uid]) txByUser[uid] = [];
+      txByUser[uid].push({
+        type: d.type,
+        amount: d.amount || 0,
+        createdAt: toISOStr(d.createdAt),
+        date: toDateStr(d.createdAt),
+        description: d.description || '',
+        metadata: d.metadata || {},
+      });
+    });
+
+    const dailyMap = {};
+    const byProvider = {};
+    const users = [];
+
+    usersSnap.forEach(doc => {
+      const data = doc.data();
+      const uid = doc.id;
+      const test = isTestUser(uid);
+      if (test && !showTest) return;
+
+      const provider = data.provider || 'unknown';
+      if (!test) {
+        byProvider[provider] = (byProvider[provider] || 0) + 1;
+        const created = toDateStr(data.createdAt);
+        if (created >= since) {
+          dailyMap[created] = (dailyMap[created] || 0) + 1;
+        }
+      }
+
+      const userTx = txByUser[uid] || [];
+      const charges = userTx.filter(t => t.type === 'charge');
+      const uses = userTx.filter(t => t.type === 'use');
+      const hasGenerate = uses.some(t => t.description.includes('generate'));
+      const hasDownload = uses.some(t => t.description.includes('download'));
+
+      let funnelStage = 2;
+      if (hasGenerate) funnelStage = 3;
+      if (charges.length > 0) funnelStage = Math.max(funnelStage, 4);
+      if (hasDownload) funnelStage = 5;
+
+      const totalPaid = charges.reduce((sum, t) =>
+        sum + ((t.metadata && typeof t.metadata.amount === 'number') ? t.metadata.amount : 0), 0);
+      const generateCount = uses.filter(t => t.description.includes('generate')).length;
+
+      const sortedTx = userTx.length > 0
+        ? [...userTx].sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+        : [];
+      const lastTxDate = sortedTx.length > 0 ? sortedTx[0].createdAt : '';
+      const lastLoginISO = toISOStr(data.lastLogin);
+      const lastActivity = (lastTxDate && lastLoginISO)
+        ? (lastTxDate > lastLoginISO ? lastTxDate : lastLoginISO)
+        : (lastTxDate || lastLoginISO);
+
+      users.push({
+        id: uid, name: data.name || '', email: data.email || '',
+        provider,
+        createdAt: toKSTStr(data.createdAt),
+        createdAtRaw: toISOStr(data.createdAt),
+        funnelStage, generateCount,
+        hasCharge: charges.length > 0,
+        totalPaid, chargeCount: charges.length,
+        credits: data.credits || 0,
+        lastActivity: lastActivity ? toKSTStr(lastActivity) : '',
+        lastActivityRaw: lastActivity || '',
+        isTest: test,
+        transactions: sortedTx.slice(0, 20),
+      });
+    });
+
+    users.sort((a, b) => (b.createdAtRaw || '').localeCompare(a.createdAtRaw || ''));
+
+    const daily = Object.entries(dailyMap)
+      .map(([date, count]) => ({ date, count }))
+      .sort((a, b) => b.date.localeCompare(a.date));
+
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ users, daily, byProvider, total: users.length }));
+  } catch (err) {
+    log(`[Dashboard] users360 에러: ${err.message}`, 'ERROR');
     res.writeHead(500, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: err.message }));
   }
