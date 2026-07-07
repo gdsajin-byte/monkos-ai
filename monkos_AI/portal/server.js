@@ -283,18 +283,28 @@ const httpServer = createServer(async (req, res) => {
       const { width: W, height: H } = await sharp(buf).metadata();
 
       // ① faceBox 러프 크롭 — FaceMesh 안정 입력 (사일런트 미스 방지). 얼굴높이 4배 창.
+      // faceBox는 비율(0~1) 정본 — Gemini 비전의 픽셀 좌표는 자체 다운스케일 기준이라 신뢰 불가
+      // (2026-07-07 카나리 7호: 픽셀 좌표 오해 → 러프 창 어긋남 → 가이드 전체 오배치)
       let rx = 0, ry = 0, roughBuf = buf;
+      let fbPx = null;
       if (faceBox && faceBox.w > 0 && faceBox.h > 0) {
-        const fh = faceBox.h;
-        const top = Math.max(0, Math.round(faceBox.y - fh * 1.3));
-        const bottom = Math.min(H, Math.round(faceBox.y + fh * 2.7));
-        const cx = faceBox.x + faceBox.w / 2;
+        const frac = (faceBox.x <= 1.5 && faceBox.y <= 1.5 && faceBox.w <= 1.5 && faceBox.h <= 1.5);
+        fbPx = frac
+          ? { x: faceBox.x * W, y: faceBox.y * H, w: faceBox.w * W, h: faceBox.h * H }
+          : { x: faceBox.x, y: faceBox.y, w: faceBox.w, h: faceBox.h };
+      }
+      if (fbPx && fbPx.w > 10 && fbPx.h > 10) {
+        const fh = fbPx.h;
+        const top = Math.max(0, Math.round(fbPx.y - fh * 1.3));
+        const bottom = Math.min(H, Math.round(fbPx.y + fh * 2.7));
+        const cx = fbPx.x + fbPx.w / 2;
         const winH = bottom - top;
         const winW = Math.min(W, Math.round(winH * (spec.frameW / spec.frameH) * 1.4));
         const left = Math.max(0, Math.min(W - winW, Math.round(cx - winW / 2)));
         if (winH > 50 && winW > 50 && (winH < H * 0.98 || winW < W * 0.98)) {
           roughBuf = await sharp(buf).extract({ left, top, width: winW, height: winH }).png().toBuffer();
           rx = left; ry = top;
+          slog(`[Fit] ${slug}: 러프 크롭 ${winW}x${winH}@(${left},${top}) / 원본 ${W}x${H} fb=(${Math.round(fbPx.x)},${Math.round(fbPx.y)},${Math.round(fbPx.w)},${Math.round(fbPx.h)})`);
         }
       }
 
@@ -313,6 +323,15 @@ const httpServer = createServer(async (req, res) => {
       // 러프 크롭 오프셋 → 원본 좌표
       const frame = { x: fitRes.frame.x + rx, y: fitRes.frame.y + ry, w: fitRes.frame.w, h: fitRes.frame.h };
       const lines = { crownY: fitRes.lines.crownY + ry, eyeY: fitRes.lines.eyeY + ry, chinY: fitRes.lines.chinY + ry };
+      // 새니티 가드: 눈 라인이 faceBox 수직 범위(±30% 확장) 밖이면 좌표계 붕괴 → fit 포기 (기존 경로 폴백)
+      if (fbPx && fbPx.h > 10) {
+        const lo = fbPx.y - fbPx.h * 0.3, hi = fbPx.y + fbPx.h * 1.3;
+        if (lines.eyeY < lo || lines.eyeY > hi) {
+          slog(`[Fit] ${slug}: 새니티 가드 이탈 (eyeY=${Math.round(lines.eyeY)} vs fb ${Math.round(lo)}~${Math.round(hi)}) → fit 포기`);
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          return res.end(JSON.stringify({ success: false, code: 'FIT_SANITY' }));
+        }
+      }
 
       // ③ Gemini 비전 검수 (§6-2) — 초록 프레임 오버레이 캡처 → 판단만 받고 산술 보정은 코드가
       let vision = null;
@@ -388,7 +407,7 @@ const httpServer = createServer(async (req, res) => {
 === PART A — MEASURABILITY (사전: 측정 가능성 검증, ORDER_20260707) ===
 Determine whether precise facial measurement (FaceMesh landmark detection) is possible on this photo:
 1. face_count: number of detected faces
-2. face_box: bounding box of the primary face [x, y, w, h] in pixels of THIS image
+2. face_box: bounding box of the primary face [x, y, w, h] as FRACTIONS of image dimensions (each value 0.0~1.0, x/w relative to width, y/h relative to height) — do NOT use pixels
 3. face_ratio: fraction of image height occupied by the face (0~1)
 4. frontal: is the face roughly frontal (true/false)
 5. occlusion: is there severe occlusion of the face (true/false)
@@ -445,7 +464,7 @@ ITEM 8 — "사진 적합성" (Photo suitability):
 - FAIL if: multiple people, face <20% of image, full-body shot, extremely blurry, no face, or waist-down visible. Set warnMsg: "1인 정면 얼굴(가슴 위 구도) 사진을 올려주세요."
 
 Respond in JSON only:
-{"measurable":bool,"rejection_reason":"string or null","face_count":int,"face_box":[x,y,w,h],"face_ratio":number,"frontal":bool,"occlusion":bool,"checks":[{"id":"frontal","label":"정면 응시","pass":bool,"warn":bool,"warnMsg":"string or null"},{"id":"eyebrow","label":"눈썹 노출","pass":bool,"warn":bool,"warnMsg":"string or null"},{"id":"background","label":"배경","pass":bool,"warn":bool,"warnMsg":"string or null"},{"id":"lighting","label":"조명","pass":bool,"warn":bool,"warnMsg":"string or null"},{"id":"expression","label":"표정","pass":bool,"warn":bool,"warnMsg":"string or null"},{"id":"clothing","label":"상의","pass":bool,"warn":bool,"warnMsg":"string or null"},{"id":"glasses","label":"안경/렌즈","pass":bool,"warn":bool,"warnMsg":"string or null"},{"id":"suitability","label":"사진 적합성","pass":bool,"warn":bool,"warnMsg":"string or null"}]}` }
+{"measurable":bool,"rejection_reason":"string or null","face_count":int,"face_box":[x_frac,y_frac,w_frac,h_frac],"face_ratio":number,"frontal":bool,"occlusion":bool,"checks":[{"id":"frontal","label":"정면 응시","pass":bool,"warn":bool,"warnMsg":"string or null"},{"id":"eyebrow","label":"눈썹 노출","pass":bool,"warn":bool,"warnMsg":"string or null"},{"id":"background","label":"배경","pass":bool,"warn":bool,"warnMsg":"string or null"},{"id":"lighting","label":"조명","pass":bool,"warn":bool,"warnMsg":"string or null"},{"id":"expression","label":"표정","pass":bool,"warn":bool,"warnMsg":"string or null"},{"id":"clothing","label":"상의","pass":bool,"warn":bool,"warnMsg":"string or null"},{"id":"glasses","label":"안경/렌즈","pass":bool,"warn":bool,"warnMsg":"string or null"},{"id":"suitability","label":"사진 적합성","pass":bool,"warn":bool,"warnMsg":"string or null"}]}` }
         ]}],
         config: { responseMimeType: 'application/json' },
       });
