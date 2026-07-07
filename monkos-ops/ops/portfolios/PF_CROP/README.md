@@ -183,6 +183,7 @@ status: active
 | 07/07 | M1/막내2 | **BiRefNet-lite PoC** — 경량 모델(swin_v1_tiny, 214MB) M1 CPU 실측. 추론 8.6s(portrait 15.7s 대비 1.8배↑), 품질 portrait와 육안 차이 미미(머리카락·안경·어깨 동급). 모델 4.3배 작음. Phase 4 클라이언트 프리뷰 후보 데이터 확보 | [COMPLETION](../../reports/2026-07/COMPLETION_20260707_M1막내2_BiRefNet_lite_PoC.md) | ✅ |
 
 | 07/07 | M1/민아 | **BiRefNet-lite 서버 서빙 교체 실측·확정** — 막내2 로컬 판정(214MB·품질 동급) 서버 검증: 첫 풀 13.5분→82.8s(10배), GPU 추론 0.36~0.75s(2배), CPU 11~13s(1.7배), 공정 A/B 평균차 0.4%(경계 국한). RunPod 템플릿·CPU dev lite 전환 완료 | cloudbuild.runpod.yaml, gs://monkos-models*/birefnet/ | ✅ |
+| 07/07 | M1/막내2 | **BiRefNet-lite 브라우저 PoC** — onnxruntime-web WASM/WebGPU 4조합 전부 추론 OOM. 모델 로드 성공(2.9~4.1s)이나 1024² 고정 입력의 중간 텐서 ~4.6GB 필요 → 브라우저 메모리 한계(WASM 2-4GB) 초과. **서버 비용 ₩0 브라우저 직접 추론 = 현세대 불가 판정** | [COMPLETION](../../reports/2026-07/COMPLETION_20260707_M1막내2_BiRefNet_lite_브라우저PoC.md) | ✅ |
 
 ---
 

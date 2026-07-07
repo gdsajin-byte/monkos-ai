@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BiRefNet-lite 브라우저 PoC</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, system-ui, sans-serif; background: #1a1a2e; color: #e0e0e0; padding: 20px; }
+h1 { font-size: 1.4rem; margin-bottom: 4px; }
+.subtitle { font-size: 0.85rem; color: #888; margin-bottom: 20px; }
+.controls { display: flex; gap: 12px; align-items: center; margin-bottom: 16px; flex-wrap: wrap; }
+button, select { padding: 8px 16px; border: 1px solid #444; border-radius: 6px; background: #2a2a4a; color: #e0e0e0; cursor: pointer; font-size: 0.9rem; }
+button:hover { background: #3a3a5a; }
+button:disabled { opacity: 0.4; cursor: not-allowed; }
+#status { padding: 12px; background: #0d1117; border: 1px solid #333; border-radius: 8px; font-family: monospace; font-size: 0.85rem; white-space: pre-wrap; min-height: 120px; margin-bottom: 16px; max-height: 300px; overflow-y: auto; }
+.results { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.result-box { background: #222; border-radius: 8px; padding: 12px; text-align: center; }
+.result-box img { max-width: 100%; border-radius: 4px; }
+.result-box .label { font-size: 0.8rem; color: #aaa; margin-top: 6px; }
+.metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px; margin-bottom: 16px; }
+.metric { background: #222; border-radius: 8px; padding: 10px 14px; }
+.metric .val { font-size: 1.3rem; font-weight: 700; color: #00d4aa; }
+.metric .key { font-size: 0.75rem; color: #888; }
+</style>
+</head>
+<body>
+<h1>BiRefNet-lite 브라우저 PoC</h1>
+<p class="subtitle">onnxruntime-web — WASM / WebGPU 실측</p>
+
+<div class="controls">
+  <select id="backend">
+    <option value="wasm">WASM (CPU)</option>
+    <option value="webgpu">WebGPU (GPU)</option>
+  </select>
+  <button id="loadBtn">모델 로드</button>
+  <input type="file" id="fileInput" accept="image/*" style="display:none">
+  <button id="runBtn" disabled>이미지 선택 + 추론</button>
+</div>
+
+<div class="metrics" id="metrics"></div>
+<div id="status">대기 중...</div>
+<div class="results" id="results"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.22.0/dist/ort.min.js"></script>
+<script>
+let session = null;
+let currentBackend = 'wasm';
+
+function log(msg) {
+  const el = document.getElementById('status');
+  el.textContent += msg + '\n';
+  el.scrollTop = el.scrollHeight;
+}
+
+function setMetric(key, val) {
+  const el = document.getElementById('metrics');
+  let m = document.getElementById('m-' + key);
+  if (!m) {
+    m = document.createElement('div');
+    m.className = 'metric';
+    m.id = 'm-' + key;
+    el.appendChild(m);
+  }
+  m.innerHTML = '<div class="val">' + val + '</div><div class="key">' + key + '</div>';
+}
+
+document.getElementById('loadBtn').addEventListener('click', async function() {
+  const btn = this;
+  btn.disabled = true;
+  currentBackend = document.getElementById('backend').value;
+
+  try {
+    if (currentBackend === 'webgpu' && !navigator.gpu) {
+      log('⚠️ WebGPU 미지원 브라우저. WASM 폴백.');
+      currentBackend = 'wasm';
+    }
+
+    log('[' + currentBackend + '] 모델 로딩 시작... (214MB)');
+    var t0 = performance.now();
+
+    var opts = { executionProviders: [currentBackend] };
+    if (currentBackend === 'wasm') {
+      ort.env.wasm.numThreads = navigator.hardwareConcurrency || 4;
+      ort.env.wasm.simd = true;
+    }
+
+    session = await ort.InferenceSession.create('./poc-20260707/BiRefNet_lite.onnx', opts);
+
+    var t1 = performance.now();
+    var loadSec = ((t1 - t0) / 1000).toFixed(2);
+    log('✅ 모델 로드 완료: ' + loadSec + 's (' + currentBackend + ')');
+    setMetric('모델 로드', loadSec + 's');
+    setMetric('백엔드', currentBackend.toUpperCase());
+    log('입력: ' + session.inputNames.join(', '));
+    log('출력: ' + session.outputNames.join(', '));
+
+    document.getElementById('runBtn').disabled = false;
+  } catch (e) {
+    log('❌ 모델 로드 실패: ' + e.message);
+    console.error(e);
+  }
+  btn.disabled = false;
+});
+
+document.getElementById('runBtn').addEventListener('click', function() {
+  document.getElementById('fileInput').click();
+});
+
+document.getElementById('fileInput').addEventListener('change', async function(e) {
+  var file = e.target.files[0];
+  if (!file || !session) return;
+
+  var runBtn = document.getElementById('runBtn');
+  runBtn.disabled = true;
+
+  try {
+    log('\n이미지: ' + file.name + ' (' + (file.size/1024).toFixed(0) + 'KB)');
+
+    var img = await createImageBitmap(file);
+    var W = img.width, H = img.height;
+    log('원본: ' + W + '×' + H);
+    setMetric('입력 크기', W + '×' + H);
+
+    log('전처리 중...');
+    var t_pre0 = performance.now();
+
+    var canvas = new OffscreenCanvas(1024, 1024);
+    var ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, 1024, 1024);
+    var imageData = ctx.getImageData(0, 0, 1024, 1024);
+    var pixels = imageData.data;
+
+    var mean = [0.485, 0.456, 0.406];
+    var std_ = [0.229, 0.224, 0.225];
+    var input = new Float32Array(1 * 3 * 1024 * 1024);
+    var sz = 1024 * 1024;
+
+    for (var i = 0; i < sz; i++) {
+      var pi = i * 4;
+      input[i] = (pixels[pi] / 255 - mean[0]) / std_[0];
+      input[sz + i] = (pixels[pi + 1] / 255 - mean[1]) / std_[1];
+      input[2 * sz + i] = (pixels[pi + 2] / 255 - mean[2]) / std_[2];
+    }
+
+    var tensor = new ort.Tensor('float32', input, [1, 3, 1024, 1024]);
+    var t_pre1 = performance.now();
+    log('전처리: ' + ((t_pre1 - t_pre0) / 1000).toFixed(2) + 's');
+    setMetric('전처리', ((t_pre1 - t_pre0) / 1000).toFixed(2) + 's');
+
+    log('추론 중...');
+    var inputName = session.inputNames[0];
+    var t_inf0 = performance.now();
+    var results = await session.run({ [inputName]: tensor });
+    var t_inf1 = performance.now();
+
+    var infSec = ((t_inf1 - t_inf0) / 1000).toFixed(2);
+    log('✅ 추론 완료: ' + infSec + 's');
+    setMetric('추론 시간', infSec + 's');
+
+    log('후처리 중...');
+    var t_post0 = performance.now();
+
+    var outputName = session.outputNames[0];
+    var output = results[outputName];
+    var logits = output.data;
+
+    var mask1024 = new Float32Array(sz);
+    for (var i = 0; i < logits.length; i++) {
+      mask1024[i] = 1 / (1 + Math.exp(-logits[i]));
+    }
+
+    var maskCanvas = new OffscreenCanvas(1024, 1024);
+    var maskCtx = maskCanvas.getContext('2d');
+    var maskImgData = maskCtx.createImageData(1024, 1024);
+    for (var i = 0; i < sz; i++) {
+      var v = Math.round(mask1024[i] * 255);
+      maskImgData.data[i * 4] = v;
+      maskImgData.data[i * 4 + 1] = v;
+      maskImgData.data[i * 4 + 2] = v;
+      maskImgData.data[i * 4 + 3] = 255;
+    }
+    maskCtx.putImageData(maskImgData, 0, 0);
+
+    var maskResized = new OffscreenCanvas(W, H);
+    var maskResCtx = maskResized.getContext('2d');
+    maskResCtx.drawImage(maskCanvas, 0, 0, W, H);
+    var maskFinal = maskResCtx.getImageData(0, 0, W, H);
+
+    var origCanvas = new OffscreenCanvas(W, H);
+    var origCtx = origCanvas.getContext('2d');
+    origCtx.drawImage(img, 0, 0);
+    var origData = origCtx.getImageData(0, 0, W, H);
+
+    var finalCanvas = new OffscreenCanvas(W, H);
+    var finalCtx = finalCanvas.getContext('2d');
+    var compWhite = finalCtx.createImageData(W, H);
+    var compGray = new ImageData(W, H);
+    var totalPx = W * H;
+
+    for (var i = 0; i < totalPx; i++) {
+      var pi = i * 4;
+      var alpha = maskFinal.data[pi] / 255;
+      var inv = 1 - alpha;
+      compWhite.data[pi] = origData.data[pi] * alpha + 255 * inv;
+      compWhite.data[pi + 1] = origData.data[pi + 1] * alpha + 255 * inv;
+      compWhite.data[pi + 2] = origData.data[pi + 2] * alpha + 255 * inv;
+      compWhite.data[pi + 3] = 255;
+      compGray.data[pi] = origData.data[pi] * alpha + 128 * inv;
+      compGray.data[pi + 1] = origData.data[pi + 1] * alpha + 128 * inv;
+      compGray.data[pi + 2] = origData.data[pi + 2] * alpha + 128 * inv;
+      compGray.data[pi + 3] = 255;
+    }
+
+    var t_post1 = performance.now();
+    log('후처리: ' + ((t_post1 - t_post0) / 1000).toFixed(2) + 's');
+    setMetric('후처리', ((t_post1 - t_post0) / 1000).toFixed(2) + 's');
+    setMetric('전체 소요', ((t_inf1 - t_pre0) / 1000).toFixed(2) + 's');
+
+    var whiteC = new OffscreenCanvas(W, H);
+    whiteC.getContext('2d').putImageData(compWhite, 0, 0);
+    var whiteBlob = await whiteC.convertToBlob({ type: 'image/png' });
+
+    var grayC = new OffscreenCanvas(W, H);
+    grayC.getContext('2d').putImageData(compGray, 0, 0);
+    var grayBlob = await grayC.convertToBlob({ type: 'image/png' });
+
+    document.getElementById('results').innerHTML =
+      '<div class="result-box"><img src="' + URL.createObjectURL(file) + '" /><div class="label">원본</div></div>' +
+      '<div class="result-box"><img src="' + URL.createObjectURL(whiteBlob) + '" /><div class="label">흰배경 (' + currentBackend + ')</div></div>' +
+      '<div class="result-box"><img src="' + URL.createObjectURL(grayBlob) + '" /><div class="label">회색배경 (' + currentBackend + ')</div></div>' +
+      '<div class="result-box" style="display:flex;align-items:center;justify-content:center;">' +
+        '<div style="text-align:center;">' +
+          '<div style="font-size:2rem;color:#00d4aa;">✅</div>' +
+          '<div style="font-size:0.9rem;margin-top:8px;">추론 ' + infSec + 's</div>' +
+          '<div style="font-size:0.9rem;">모델 214MB</div>' +
+          '<div style="font-size:0.9rem;">' + currentBackend.toUpperCase() + '</div>' +
+        '</div>' +
+      '</div>';
+
+    if (performance.memory) {
+      setMetric('JS Heap', (performance.memory.usedJSHeapSize / 1024 / 1024).toFixed(0) + 'MB');
+    }
+
+    log('\n=== 완료 ===');
+    log('백엔드: ' + currentBackend);
+    log('추론: ' + infSec + 's');
+    log('전체: ' + ((t_post1 - t_pre0) / 1000).toFixed(2) + 's');
+
+  } catch (e) {
+    log('❌ 에러: ' + e.message);
+    console.error(e);
+  }
+
+  runBtn.disabled = false;
+  this.value = '';
+});
+</script>
+</body>
+</html>
