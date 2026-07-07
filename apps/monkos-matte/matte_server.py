@@ -44,9 +44,13 @@ if BACKEND == 'onnx':
     if not ONNX_PATH or not os.path.exists(ONNX_PATH):
         raise SystemExit(f'MATTE_ONNX_PATH 미지정 또는 파일 없음: {ONNX_PATH}')
     print(f'BiRefNet ONNX 로딩: {ONNX_PATH}')
-    _sess = ort.InferenceSession(ONNX_PATH, providers=['CPUExecutionProvider'])
+    # CUDA EP 가용 시 GPU, 아니면 CPU 자동 폴백 (onnxruntime-gpu 설치 여부에 따름)
+    _avail = ort.get_available_providers()
+    _providers = [p for p in ('CUDAExecutionProvider', 'CPUExecutionProvider') if p in _avail]
+    _sess = ort.InferenceSession(ONNX_PATH, providers=_providers)
+    _active = _sess.get_providers()[0]
     _input_name = _sess.get_inputs()[0].name
-    DEVICE = 'cpu(onnx)'
+    DEVICE = 'cuda(onnx)' if _active == 'CUDAExecutionProvider' else 'cpu(onnx)'
     MODEL_NAME = os.path.basename(ONNX_PATH)
 
     def predict_mask(img):

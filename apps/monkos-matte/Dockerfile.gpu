@@ -1,0 +1,22 @@
+# MONKOS matte — Cloud Run GPU (onnxruntime-gpu, L4)
+# 모델은 GCS 볼륨 마운트로 공급 (deploy.sh gpu 타겟)
+FROM nvidia/cuda:12.4.1-cudnn-runtime-ubuntu22.04
+
+LABEL maintainer="MONK.KR"
+LABEL description="MONKOS matte — BiRefNet 배경제거 + 배경색 합성 (GPU)"
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends python3 python3-pip && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# onnxruntime-gpu 1.20 = CUDA 12.x + cuDNN 9 조합
+RUN pip3 install --no-cache-dir onnxruntime-gpu==1.20.1 "numpy>=1.26" "Pillow>=10.0"
+
+COPY matte_server.py ./
+
+ENV MATTE_BACKEND=onnx
+ENV MATTE_ONNX_PATH=/models/birefnet/BiRefNet-portrait.onnx
+
+CMD ["python3", "matte_server.py"]
