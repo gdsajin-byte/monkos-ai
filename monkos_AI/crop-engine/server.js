@@ -1,10 +1,60 @@
 import http from 'node:http';
+import { spawn } from 'node:child_process';
 import { initFaceDetector, detectFace } from './lib/face-detect.js';
 import { cropToFrame, cropToSpecV2, fitSpecGeometry, fallbackCrop } from './lib/crop.js';
 import { SPECS } from './specs/formats.js';
 
 const PORT = parseInt(process.env.PORT || '8080', 10);
 const MAX_BODY_SIZE = 20 * 1024 * 1024; // 20MB
+
+// === SCRFD 검출 사이드카 (InsightFace 도입 1단, 2026-07-08) ===
+// det_10g.onnx — 실측 검증본. 실패해도 서비스는 계속 (FaceMesh 경로 무영향, /api/detect만 503).
+const SCRFD_PORT = parseInt(process.env.SCRFD_PORT || '5001', 10);
+const SCRFD_PY = process.env.SCRFD_PY || 'python3';
+let scrfdReady = false;
+let scrfdRestarts = 0;
+
+function startScrfdSidecar() {
+  let proc;
+  try {
+    proc = spawn(SCRFD_PY, ['face_detect_scrfd.py'], { cwd: import.meta.dirname, stdio: ['ignore', 'pipe', 'pipe'] });
+  } catch (e) {
+    console.error(`[SCRFD] 스폰 실패: ${e.message} — 검출 사이드카 비활성 (FaceMesh 경로 정상)`);
+    return;
+  }
+  proc.stdout.on('data', (d) => {
+    const line = d.toString().trim();
+    if (line) console.log(`[SCRFD] ${line}`);
+    if (line.includes('ready')) scrfdReady = true;
+  });
+  proc.stderr.on('data', (d) => console.error(`[SCRFD:err] ${d.toString().trim().slice(0, 300)}`));
+  proc.on('exit', (code) => {
+    scrfdReady = false;
+    console.error(`[SCRFD] 사이드카 종료 (code=${code})`);
+    if (scrfdRestarts < 3) {
+      scrfdRestarts += 1;
+      setTimeout(startScrfdSidecar, 2000 * scrfdRestarts);
+    }
+  });
+}
+
+async function handleDetect(req, res) {
+  if (!scrfdReady) {
+    return sendJSON(res, 503, { success: false, error: 'SCRFD 미가동', code: 'DETECT_UNAVAILABLE' });
+  }
+  try {
+    const body = await readBody(req);
+    const upstream = await fetch(`http://127.0.0.1:${SCRFD_PORT}/detect`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body,
+      signal: AbortSignal.timeout(15000),
+    });
+    const data = await upstream.json();
+    sendJSON(res, upstream.status, upstream.ok ? { success: true, ...data } : { success: false, ...data });
+  } catch (err) {
+    console.error(`[DetectAPI] 에러: ${err.message}`);
+    sendJSON(res, 500, { success: false, error: err.message });
+  }
+}
 
 // CORS 헤더
 const CORS_HEADERS = {
@@ -148,7 +198,7 @@ function handleSpecs(_req, res) {
 }
 
 function handleHealth(_req, res) {
-  sendJSON(res, 200, { status: 'ok', model: detector ? 'loaded' : 'not_loaded' });
+  sendJSON(res, 200, { status: 'ok', model: detector ? 'loaded' : 'not_loaded', scrfd: scrfdReady ? 'ready' : 'off' });
 }
 
 // detector 로드 상태를 health에서 참조
@@ -173,6 +223,8 @@ const server = http.createServer((req, res) => {
     handleCropSpec(req, res);
   } else if (req.method === 'POST' && path === '/api/fit-spec') {
     handleFitSpec(req, res);
+  } else if (req.method === 'POST' && path === '/api/detect') {
+    handleDetect(req, res);
   } else if (req.method === 'GET' && path === '/api/specs') {
     handleSpecs(req, res);
   } else if (req.method === 'GET' && path === '/health') {
@@ -185,6 +237,7 @@ const server = http.createServer((req, res) => {
 // === 기동 ===
 
 async function start() {
+  startScrfdSidecar(); // FaceMesh 로딩과 병렬 기동
   console.log('[CropEngine] FaceMesh 모델 로딩 중...');
   await initFaceDetector();
   detector = true;
@@ -192,7 +245,7 @@ async function start() {
 
   server.listen(PORT, () => {
     console.log(`[CropEngine] 서버 기동: http://localhost:${PORT}`);
-    console.log(`[CropEngine] 엔드포인트: POST /api/crop, GET /api/specs, GET /health`);
+    console.log(`[CropEngine] 엔드포인트: POST /api/crop, POST /api/fit-spec, POST /api/detect, GET /api/specs, GET /health`);
   });
 }
 

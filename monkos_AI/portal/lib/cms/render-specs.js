@@ -2453,7 +2453,7 @@ ${hreflangTags}
           showPhase(phaseUpload);
         }
       })
-      .catch(function(){ showError(T.errCheckNet); showPhase(phaseUpload); });
+      .catch(function(e){ console.error('[precheck-catch]', e); showError(T.errCheckNet + (e ? ' (' + (e.message||e) + ')' : '')); showPhase(phaseUpload); });
     };
     reader.readAsDataURL(file);
   }
@@ -2543,7 +2543,16 @@ ${hreflangTags}
     })
     .then(function(r){ return r.json(); })
     .then(function(data){
-      if(!data || !data.success){ if(window.__fitWaitTimer) clearInterval(window.__fitWaitTimer); fitResult = null; proceedToPay(); return; } // 카나리 밖·감지 실패 → 기존 경로
+      if(!data || !data.success){
+        if(window.__fitWaitTimer) clearInterval(window.__fitWaitTimer);
+        fitResult = null;
+        if(data && data.code === 'FIT_SANITY'){
+          showError('이 사진은 정밀 측정이 어려워요. 정면 얼굴이 크게 나온 사진으로 다시 시도해주세요.');
+          showPhase(phaseUpload);
+          return;
+        }
+        proceedToPay(); return; // 카나리 밖(NOT_AVAILABLE) → 기존 경로
+      }
       fitResult = data;
       if(window.__fitWaitTimer) clearInterval(window.__fitWaitTimer);
       var sc = document.getElementById('v2-fit-scan'); if(sc) sc.style.display = 'none';

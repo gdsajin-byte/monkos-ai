@@ -74,14 +74,14 @@ MATTE_SLUGS="kr-passport"
 # 환경별 설정 (Portal은 경량 서비스)
 if [ "$ENV" = "dev" ]; then
   SERVICE_NAME="monkos-portal-dev"
-  MEMORY="512Mi"
+  MEMORY="1Gi"
   CPU="1"
   MIN_INSTANCES="0"  # dev는 콜드스타트 허용 (유휴 과금 방지)
   MAX_INSTANCES="2"
   DEPLOY_FLAGS=""
 elif [ "$ENV" = "prod" ]; then
   SERVICE_NAME="monkos-portal"
-  MEMORY="512Mi"
+  MEMORY="1Gi"
   CPU="1"
   MIN_INSTANCES="1"  # prod 상시 대기 = 콜드스타트 이탈 방지 (변경 금지)
   MAX_INSTANCES="5"
@@ -110,7 +110,7 @@ elif [ "$ENV" = "prod" ]; then
 
 elif [ "$ENV" = "preview" ]; then
   SERVICE_NAME="monkos-portal"
-  MEMORY="512Mi"
+  MEMORY="1Gi"
   CPU="1"
   MIN_INSTANCES="1"  # prod 서비스 대상이므로 prod와 동일 유지
   MAX_INSTANCES="5"
@@ -159,7 +159,7 @@ gcloud run deploy ${SERVICE_NAME} \
   --memory ${MEMORY} \
   --cpu ${CPU} \
   --timeout 120 \
-  --concurrency 100 \
+  --concurrency 20 \
   --min-instances ${MIN_INSTANCES} \
   --max-instances ${MAX_INSTANCES} \
   --update-env-vars "^::^PROJECT_ID=${PROJECT_ID}::LOCATION=${REGION}::GCS_BUCKET=${GCS_BUCKET}::CHAT_WORKERS_URL=${CHAT_WORKERS_URL}::NAVER_CLIENT_ID=${NAVER_CLIENT_ID}::CROP_ENGINE_URL=${CROP_ENGINE_URL}::MATTE_API_URLS=${MATTE_API_URLS}::MATTE_SLUGS=${MATTE_SLUGS}" \

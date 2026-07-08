@@ -6,11 +6,15 @@ LABEL description="MONKOS Crop Engine — AI 증명사진 정밀 크롭 서비�
 
 WORKDIR /app
 
-# tfjs-node 네이티브 빌드 + sharp 의존성
+# tfjs-node 네이티브 빌드 + sharp 의존성 + SCRFD 사이드카(python venv)
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-    build-essential python3 fontconfig fonts-dejavu-core && \
+    build-essential python3 python3-venv fontconfig fonts-dejavu-core && \
     rm -rf /var/lib/apt/lists/*
+
+# SCRFD 사이드카 의존성 — 전부 프리빌트 휠 (컴파일 없음)
+RUN python3 -m venv /opt/scrfd && \
+    /opt/scrfd/bin/pip install --no-cache-dir onnxruntime opencv-python-headless numpy
 
 COPY package*.json ./
 
@@ -20,6 +24,10 @@ RUN npm install --omit=dev && \
 COPY server.js ./
 COPY lib/ ./lib/
 COPY specs/ ./specs/
+COPY face_detect_scrfd.py ./
+COPY models/ ./models/
+
+ENV SCRFD_PY=/opt/scrfd/bin/python3
 
 ENV NODE_ENV=production
 ENV PORT=8080

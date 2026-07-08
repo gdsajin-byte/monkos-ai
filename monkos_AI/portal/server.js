@@ -65,6 +65,25 @@ import { handlePodStart, handlePodStatus, handlePodStop, handleComfyProxy } from
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
+async function normalizeImage(rawBase64) {
+  const { default: sharp } = await import('sharp');
+  const raw = Buffer.from(rawBase64.includes(',') ? rawBase64.split(',')[1] : rawBase64, 'base64');
+  try {
+    const buf = await sharp(raw)
+      .rotate()
+      .resize(2048, 2048, { fit: 'inside', withoutEnlargement: true })
+      .jpeg({ quality: 90 })
+      .toBuffer();
+    const { width, height } = await sharp(buf).metadata();
+    return { buf, b64: buf.toString('base64'), width, height, rawBase64 };
+  } catch (err) {
+    log(`[normalizeImage] sharp 실패 (${err.message}) → 원본 폴백`, 'WARNING');
+    const { width, height } = await sharp(raw).metadata().catch(() => ({ width: 0, height: 0 }));
+    const b64 = rawBase64.includes(',') ? rawBase64.split(',')[1] : rawBase64;
+    return { buf: raw, b64, width, height, rawBase64 };
+  }
+}
+
 function detectLang(req) {
   const urlMatch = req.url.match(/^\/(ja|en)(\/|$|\?)/);
   if (urlMatch) return urlMatch[1];
@@ -280,19 +299,41 @@ const httpServer = createServer(async (req, res) => {
         res.writeHead(400, { 'Content-Type': 'application/json' });
         return res.end(JSON.stringify({ error: '미지원 규격' }));
       }
-      const buf = Buffer.from(stripDataUri(image), 'base64');
-      const { width: W, height: H } = await sharp(buf).metadata();
+      const norm = await normalizeImage(image);
+      const buf = norm.buf;
+      const { width: W, height: H } = { width: norm.width, height: norm.height };
 
-      // ① faceBox 러프 크롭 — FaceMesh 안정 입력 (사일런트 미스 방지). 얼굴높이 4배 창.
-      // faceBox는 비율(0~1) 정본 — Gemini 비전의 픽셀 좌표는 자체 다운스케일 기준이라 신뢰 불가
-      // (2026-07-07 카나리 7호: 픽셀 좌표 오해 → 러프 창 어긋남 → 가이드 전체 오배치)
+      // ① 얼굴 검출 → 러프 크롭 창 — FaceMesh 안정 입력 (사일런트 미스 방지). 얼굴높이 4배 창.
+      // 1순위 SCRFD(crop-engine /api/detect, 정규화 프레임 절대픽셀 — 2026-07-08 비교실측 채택):
+      //   Gemini 박스의 흔들림(카나리 7호·금일 오배치)이 뿌리라 검출을 결정론 엔진으로 교체.
+      // 폴백 legacy = 클라이언트 전달 Gemini faceBox (비율 0~1 정본). FACE_DETECT_ENGINE=legacy로 원복.
+      const CROP_ENGINE_URL = process.env.CROP_ENGINE_URL || '';
       let rx = 0, ry = 0, roughScale = 1, roughBuf = buf;
       let fbPx = null;
-      if (faceBox && faceBox.w > 0 && faceBox.h > 0) {
+      let detectSrc = 'none';
+      if ((process.env.FACE_DETECT_ENGINE || 'scrfd') !== 'legacy' && CROP_ENGINE_URL) {
+        try {
+          const det = await fetch(`${CROP_ENGINE_URL}/api/detect`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ image: norm.b64 }),
+            signal: AbortSignal.timeout(15000),
+          }).then((r) => r.json());
+          if (det && det.success && Array.isArray(det.faces) && det.faces.length > 0 && det.faces[0].score >= 0.45) {
+            const bb = det.faces[0].bbox;
+            fbPx = { x: bb[0], y: bb[1], w: bb[2] - bb[0], h: bb[3] - bb[1] };
+            detectSrc = 'scrfd';
+            if (det.faces.length > 1) slog(`[Fit] ${slug}: 다인 검출 ${det.faces.length}명 (최고점 사용) — 게이트 후속 과제`);
+          }
+        } catch (de) {
+          slog(`[Fit] ${slug}: SCRFD 검출 실패 (${de.message}) → legacy faceBox 폴백`);
+        }
+      }
+      if (!fbPx && faceBox && faceBox.w > 0 && faceBox.h > 0) {
         const frac = (faceBox.x <= 1.5 && faceBox.y <= 1.5 && faceBox.w <= 1.5 && faceBox.h <= 1.5);
         fbPx = frac
           ? { x: faceBox.x * W, y: faceBox.y * H, w: faceBox.w * W, h: faceBox.h * H }
           : { x: faceBox.x, y: faceBox.y, w: faceBox.w, h: faceBox.h };
+        detectSrc = 'legacy';
       }
       // FaceMesh 입력 정규화 (2026-07-07 작가님: "FaceMesh에겐 얼굴이 적정 크기로 나오는 입력을 보내야")
       // — IDPASS 카메라 가이드가 강제하던 조건의 웹 재현: 얼굴 높이를 목표 px로 리사이즈해 전달
@@ -315,7 +356,6 @@ const httpServer = createServer(async (req, res) => {
       }
       // ② crop-engine 기하 피팅 — 정규화 입력, 랜드마크 해부학 검증, 실패 시 스케일 바꿔 1회 재시도.
       // 사일런트 미스(감지 성공 플래그 + 쓰레기 좌표)는 검증으로만 잡힌다 — 엉뚱한 가이드 절대 금지.
-      const CROP_ENGINE_URL = process.env.CROP_ENGINE_URL || '';
       let frame = null, lines = null;
       for (const targetFaceH of [280, 200]) {
         const rough = await buildRough(targetFaceH);
@@ -336,15 +376,12 @@ const httpServer = createServer(async (req, res) => {
             eyeCenterX: (fitRes.lines.eyeCenterX ?? 0) / sc + rough.rx,
           },
         };
-        // 해부학 검증 (faceBox 대비): 눈=박스 상중부, 턱=박스 하단부 — 어긋나면 사일런트 미스로 판정
-        let ok = true;
-        if (fbPx && fbPx.h > 10) {
-          const eyeOk = cand.lines.eyeY >= fbPx.y + fbPx.h * 0.08 && cand.lines.eyeY <= fbPx.y + fbPx.h * 0.72;
-          const chinOk = cand.lines.chinY >= fbPx.y + fbPx.h * 0.55 && cand.lines.chinY <= fbPx.y + fbPx.h * 1.45;
-          ok = eyeOk && chinOk;
-        }
+        // FaceMesh 자체 정합으로 사일런트 미스 판정 — Gemini faceBox는 러프 크롭 산정에만 사용
+        const faceH = cand.lines.chinY - cand.lines.crownY;
+        const eyeChinRatio = (cand.lines.chinY - cand.lines.eyeY) / (faceH || 1);
+        const ok = faceH > 30 && eyeChinRatio > 0.35 && eyeChinRatio < 0.70;
         if (ok) { frame = cand.frame; lines = cand.lines; break; }
-        slog(`[Fit] ${slug}: 랜드마크 검증 이탈 (targetFaceH=${targetFaceH}, eye=${Math.round(cand.lines.eyeY)}, chin=${Math.round(cand.lines.chinY)}, fb.y=${Math.round(fbPx.y)}, fb.h=${Math.round(fbPx.h)}) → 재시도`);
+        slog(`[Fit] ${slug}: 랜드마크 검증 이탈 (targetFaceH=${targetFaceH}, faceH=${Math.round(faceH)}, eyeChinRatio=${eyeChinRatio.toFixed(3)}) → 재시도`);
       }
       if (!frame) {
         slog(`[Fit] ${slug}: 정규화·재시도 후에도 신뢰 랜드마크 확보 실패 → fit 포기 (기존 경로 폴백)`);
@@ -424,7 +461,7 @@ const httpServer = createServer(async (req, res) => {
         faceMM: String(metrics.faceMm), crownMarginMM: String(metrics.topMm),
         eyePositionPercent: (metrics.eyeRatio * 100).toFixed(1),
       };
-      slog(`[Fit] ${slug}: face=${metrics.faceMm}mm top=${metrics.topMm}mm btm=${metrics.bottomMm}mm eye=${(metrics.eyeRatio * 100).toFixed(1)}% judge=${judge.blocked ? 'BLOCKED' : judge.face + '/' + judge.eye} vision=${vision ? (vision.balance || 'ok') : 'skip'}`);
+      slog(`[Fit] ${slug}: face=${metrics.faceMm}mm top=${metrics.topMm}mm btm=${metrics.bottomMm}mm eye=${(metrics.eyeRatio * 100).toFixed(1)}% judge=${judge.blocked ? 'BLOCKED' : judge.face + '/' + judge.eye} vision=${vision ? (vision.balance || 'ok') : 'skip'} detect=${detectSrc}`);
       res.writeHead(200, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify({
         success: true, frame, frameInitial, lines, imageSize: { width: W, height: H }, meta, metrics, judge, vision,
@@ -452,12 +489,12 @@ const httpServer = createServer(async (req, res) => {
       }
       // matte 워커 선예열 — 결제·생성보다 30초+ 앞선 시점이라 유휴 후 첫 활성화 지연을 흡수
       warmupMatteEngine();
-      const base64Data = body.image.includes(',') ? body.image.split(',')[1] : body.image;
+      const norm = await normalizeImage(body.image);
       const ai = new GoogleGenAI({ vertexai: true, project: process.env.PROJECT_ID, location: 'us-central1' });
       const result = await ai.models.generateContent({
         model: 'gemini-2.5-flash',
         contents: [{ role: 'user', parts: [
-          { inlineData: { mimeType: 'image/jpeg', data: base64Data } },
+          { inlineData: { mimeType: 'image/jpeg', data: norm.b64 } },
           { text: `You are a STRICT photo evaluator for MONKOS AI passport photo service. Perform TWO evaluations in ONE response.
 
 === PART A — MEASURABILITY (사전: 측정 가능성 검증, ORDER_20260707) ===
@@ -540,9 +577,9 @@ Respond in JSON only:
       res.writeHead(200, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify(out));
     } catch (err) {
-      log(`[IDPhoto][precheck] 에러: ${err.message}`, 'ERROR');
+      log(`[IDPhoto][precheck] 에러: ${err.message} | stack: ${(err.stack || '').split('\n').slice(0,3).join(' > ')}`, 'ERROR');
       res.writeHead(500, { 'Content-Type': 'application/json' });
-      return res.end(JSON.stringify({ error: '검수 중 오류가 발생했습니다', code: 'INTERNAL_ERROR' }));
+      return res.end(JSON.stringify({ error: '검수 중 오류가 발생했습니다', detail: err.message, code: 'INTERNAL_ERROR' }));
     }
   }
 
@@ -600,6 +637,8 @@ Respond in JSON only:
       // 엔진 예열 — 감지·크롭/매팅과 병렬로 콜드스타트 흡수 (fire-and-forget)
       if (slug) { warmupCropEngine(); warmupMatteEngine(); }
 
+      const norm = await normalizeImage(image);
+
       // 신경로 (IDPASS 순서, ORDER_20260707): 원본에서 감지·크롭 → BiRefNet 매팅 → 배경색 합성.
       // 원본 픽셀 보존 + Gemini 재생성물 위 감지의 비결정성 제거.
       // MATTE_API_URL 미설정·감지 미안착·matte 장애 → null 반환 → 현행 Gemini 경로(L3) 강등.
@@ -615,9 +654,9 @@ Respond in JSON only:
             const specP = getSpecCropParams(slug);
             // IDPASS 정본 게이트: blocked면 fit 경로 차단 (face 범위 밖 OR eye 40~48% 밖)
             const blocked = specP && body.fitMetrics ? judgeMetrics(body.fitMetrics, specP).blocked : false;
-            if (specP && !blocked) matteRes = await matteFitPipeline(image, slug, body.fitFrame, body.fitMeta || null, specP.frameW, specP.frameH);
+            if (specP && !blocked) matteRes = await matteFitPipeline(norm.b64, slug, body.fitFrame, body.fitMeta || null, specP.frameW, specP.frameH);
           }
-          if (!matteRes) matteRes = await matteSpecPipeline(image, slug);
+          if (!matteRes) matteRes = await matteSpecPipeline(norm.b64, slug);
           if (matteRes) {
             finalBase64 = matteRes.image;
             cropEngine = matteRes.cropEngine;
@@ -635,7 +674,7 @@ Respond in JSON only:
           // L3/현행: specs(slug 보유)는 무보정 배경제거 = gemini-2.5-flash + 여유 프레이밍(wide)
           // — 크롭 원자재 확보 (AI의 타이트 크롭 위에서 재단하면 여백·어깨 부족, 2026-07-06 실사고)
           const effectiveModel = model || (slug ? 'gemini-2.5-flash' : 'nano-banana-pro');
-          generatedBase64 = await generateIdPhoto({ image, format: format || 'passport', gender, age, model: effectiveModel, userId: gateUserId === 'specs-visitor' ? 'specs-visitor' : gateUserId, framing: slug ? 'wide' : undefined });
+          generatedBase64 = await generateIdPhoto({ image: norm.b64, format: format || 'passport', gender, age, model: effectiveModel, userId: gateUserId === 'specs-visitor' ? 'specs-visitor' : gateUserId, framing: slug ? 'wide' : undefined });
         } catch (genErr) {
           // 서버측 생성 실패 → 소모분 반환 (토큰 쿼터 / 크레딧)
           if (gateMode === 'token') {
@@ -664,7 +703,7 @@ Respond in JSON only:
       }
 
       try {
-        await saveImages('idphoto', gateUserId, slug || format || 'passport', image, finalBase64);
+        await saveImages('idphoto', gateUserId, slug || format || 'passport', norm.rawBase64, finalBase64);
       } catch (e) {
         log(`[IDPhoto] GCS 저장 실패 (무시): ${e.message}`, 'WARNING');
       }
