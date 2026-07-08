@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
-# SCRFD 얼굴 검출 사이드카 — crop-engine 내부 전용 (2026-07-08, InsightFace 도입 1단)
-# 모델: det_10g.onnx (SCRFD-10GF, buffalo_l 동일 — 2026-07-08 iMac 실측 검증본)
-# 프로토콜: POST /detect {"image": base64} → {"faces":[{"bbox":[x1,y1,x2,y2],"score":f,"kps":[[x,y]*5]}],"ms":f}
+# SCRFD 얼굴 검출 + 106점 랜드마크 사이드카 — crop-engine 내부 전용
+# 모델: det_10g.onnx (SCRFD-10GF) + 2d106det.onnx (106점 랜드마크)
+# 프로토콜:
+#   POST /detect {"image": base64} → {"faces":[{"bbox":[x1,y1,x2,y2],"score":f,"kps":[[x,y]*5]}],"ms":f}
+#   POST /landmarks {"image": base64, "bbox": [x1,y1,x2,y2]} → {"landmarks":[[x,y]*106],"count":106,"ms":f}
 # 의존: onnxruntime, opencv-python-headless, numpy (전부 프리빌트 휠 — 컴파일 불요)
 import json, time, base64, os, sys
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
@@ -10,6 +12,7 @@ import cv2
 import onnxruntime as ort
 
 MODEL = os.environ.get("SCRFD_MODEL", os.path.join(os.path.dirname(__file__), "models", "det_10g.onnx"))
+LMK_MODEL = os.environ.get("LMK_MODEL", os.path.join(os.path.dirname(__file__), "models", "2d106det.onnx"))
 PORT = int(os.environ.get("SCRFD_PORT", "5001"))
 DET_SIZE = 640
 THRESH = float(os.environ.get("SCRFD_THRESH", "0.4"))
@@ -22,6 +25,37 @@ output_names = [o.name for o in session.get_outputs()]
 STRIDES = [8, 16, 32]
 NUM_ANCHORS = 2
 _center_cache = {}
+
+# 2d106det 랜드마크 모델 (2단 — 교차검증 delta 0.0px 확정, 2026-07-09)
+# 정렬: bbox 중심 기반 스케일 (공식 insightface Landmark.get 동일)
+# 전처리: mean=0.0, std=1.0 (모델 내부 Sub/Mul 노드로 자체 정규화)
+lmk_session = ort.InferenceSession(LMK_MODEL, providers=["CPUExecutionProvider"])
+lmk_input_name = lmk_session.get_inputs()[0].name
+LMK_INPUT_SIZE = lmk_session.get_inputs()[0].shape[2]  # 192
+
+
+def predict_landmarks(img, bbox):
+    """106점 랜드마크 추론 — bbox 중심 기반 정렬 + 역변환으로 원본 좌표 반환"""
+    w = bbox[2] - bbox[0]
+    h = bbox[3] - bbox[1]
+    cx = (bbox[2] + bbox[0]) / 2.0
+    cy = (bbox[3] + bbox[1]) / 2.0
+    scale = float(LMK_INPUT_SIZE) / (max(w, h) * 1.5)
+    M = np.array([
+        [scale, 0, LMK_INPUT_SIZE / 2.0 - cx * scale],
+        [0, scale, LMK_INPUT_SIZE / 2.0 - cy * scale]
+    ], dtype=np.float64)
+    aligned = cv2.warpAffine(img, M, (LMK_INPUT_SIZE, LMK_INPUT_SIZE), borderValue=0.0)
+    blob = cv2.dnn.blobFromImage(aligned, 1.0, (LMK_INPUT_SIZE, LMK_INPUT_SIZE),
+                                 (0.0, 0.0, 0.0), swapRB=True)
+    pred = lmk_session.run(None, {lmk_input_name: blob})[0][0]
+    pts = pred.reshape(-1, 2)
+    pts[:, 0:2] += 1
+    pts[:, 0:2] *= (LMK_INPUT_SIZE // 2)
+    IM = cv2.invertAffineTransform(M)
+    ones = np.ones((pts.shape[0], 1), dtype=np.float32)
+    original = np.hstack([pts, ones]) @ IM.T
+    return original.tolist()
 
 
 def _centers(h, w, stride):
@@ -114,11 +148,12 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         if self.path == "/health":
-            return self._json(200, {"ok": True, "model": os.path.basename(MODEL)})
+            return self._json(200, {"ok": True, "model": os.path.basename(MODEL),
+                                    "lmk": os.path.basename(LMK_MODEL)})
         self._json(404, {"error": "not found"})
 
     def do_POST(self):
-        if self.path != "/detect":
+        if self.path not in ("/detect", "/landmarks"):
             return self._json(404, {"error": "not found"})
         try:
             n = int(self.headers.get("Content-Length", 0))
@@ -128,13 +163,19 @@ class Handler(BaseHTTPRequestHandler):
             if img is None:
                 return self._json(400, {"error": "decode 실패 (HEIC 등 미지원 포맷)", "code": "DECODE_FAILED"})
             t0 = time.time()
-            faces = detect(img)
-            self._json(200, {"faces": faces, "ms": round((time.time() - t0) * 1000, 1),
-                             "imageSize": {"width": int(img.shape[1]), "height": int(img.shape[0])}})
+            if self.path == "/detect":
+                faces = detect(img)
+                self._json(200, {"faces": faces, "ms": round((time.time() - t0) * 1000, 1),
+                                 "imageSize": {"width": int(img.shape[1]), "height": int(img.shape[0])}})
+            else:
+                bbox = payload["bbox"]
+                lmk = predict_landmarks(img, bbox)
+                self._json(200, {"landmarks": lmk, "count": len(lmk),
+                                 "ms": round((time.time() - t0) * 1000, 1)})
         except Exception as e:
             self._json(500, {"error": str(e)})
 
 
 if __name__ == "__main__":
-    print(f"[scrfd] ready model={os.path.basename(MODEL)} port={PORT}", flush=True)
+    print(f"[scrfd] ready model={os.path.basename(MODEL)} lmk={os.path.basename(LMK_MODEL)} port={PORT}", flush=True)
     ThreadingHTTPServer(("127.0.0.1", PORT), Handler).serve_forever()

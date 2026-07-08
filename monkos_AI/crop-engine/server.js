@@ -1,6 +1,7 @@
 import http from 'node:http';
 import { spawn } from 'node:child_process';
 import { initFaceDetector, detectFace } from './lib/face-detect.js';
+import { insightToAnatomy } from './lib/face-detect-insight.js';
 import { cropToFrame, cropToSpecV2, fitSpecGeometry, fallbackCrop } from './lib/crop.js';
 import { SPECS } from './specs/formats.js';
 
@@ -177,7 +178,38 @@ async function handleFitSpec(req, res) {
       return sendJSON(res, 400, { success: false, error: 'image, spec{frameW,frameH,frameHmm,faceTargetMm} 필수' });
     }
     const imageBuffer = Buffer.from(image, 'base64');
-    const landmarks = await detectFace(imageBuffer);
+
+    let landmarks = null;
+    if (scrfdReady) {
+      try {
+        const det = await fetch(`http://127.0.0.1:${SCRFD_PORT}/detect`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ image }),
+          signal: AbortSignal.timeout(10000),
+        }).then(r => r.json());
+
+        if (det.faces && det.faces.length > 0 && det.faces[0].score >= 0.4) {
+          const lmk = await fetch(`http://127.0.0.1:${SCRFD_PORT}/landmarks`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ image, bbox: det.faces[0].bbox }),
+            signal: AbortSignal.timeout(10000),
+          }).then(r => r.json());
+
+          if (lmk.landmarks && lmk.landmarks.length === 106) {
+            landmarks = insightToAnatomy(lmk.landmarks, det.imageSize.width, det.imageSize.height);
+            console.log(`[FitSpec] InsightFace 106점: chin=(${landmarks.chin.y.toFixed(0)}), eye=(${landmarks.leftEye.y.toFixed(0)})`);
+          }
+        }
+      } catch (e) {
+        console.error(`[FitSpec] InsightFace 실패 (${e.message}) → FaceMesh 폴백`);
+      }
+    }
+
+    if (!landmarks) {
+      landmarks = await detectFace(imageBuffer);
+      if (landmarks) console.log('[FitSpec] FaceMesh 폴백 사용');
+    }
+
     if (!landmarks) {
       return sendJSON(res, 200, { success: true, detected: false });
     }
@@ -198,7 +230,7 @@ function handleSpecs(_req, res) {
 }
 
 function handleHealth(_req, res) {
-  sendJSON(res, 200, { status: 'ok', model: detector ? 'loaded' : 'not_loaded', scrfd: scrfdReady ? 'ready' : 'off' });
+  sendJSON(res, 200, { status: 'ok', model: detector ? 'loaded' : 'not_loaded', scrfd: scrfdReady ? 'ready+lmk' : 'off' });
 }
 
 // detector 로드 상태를 health에서 참조

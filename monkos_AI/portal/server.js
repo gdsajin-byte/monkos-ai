@@ -390,69 +390,8 @@ const httpServer = createServer(async (req, res) => {
       }
       const frameInitial = { ...frame };
 
-      // ③ Gemini 비전 = 전문가 심미 대행 (판정은 코드 정본표가 담당 — 역할 분리, 2026-07-07 작가님)
-      //    범위 내에서 "보기 좋음"만 판단: 헤어 걸침·상하 균형. adjustment_y_px 산술 보정 후 정본표 재검증, 이탈 시 원복.
+      // ③ Gemini 비전 퇴출 (2026-07-09, InsightFace 결정론 확보로 기하 추정 안정 — 비전 비결정 요소 제거)
       let vision = null;
-      try {
-        const scale = Math.min(1, 768 / W);
-        const oW = Math.round(W * scale), oH = Math.round(H * scale);
-        const svg = `<svg width="${oW}" height="${oH}" xmlns="http://www.w3.org/2000/svg"><rect x="${frame.x * scale}" y="${frame.y * scale}" width="${frame.w * scale}" height="${frame.h * scale}" fill="none" stroke="#00c853" stroke-width="4"/></svg>`;
-        const overlay = await sharp(buf).resize(oW, oH).composite([{ input: Buffer.from(svg), left: 0, top: 0 }]).jpeg({ quality: 80 }).toBuffer();
-        const { GoogleGenAI } = await import('@google/genai');
-        const ai = new GoogleGenAI({ vertexai: true, project: process.env.PROJECT_ID, location: 'us-central1' });
-        const vres = await ai.models.generateContent({
-          model: 'gemini-2.5-flash',
-          contents: [{ role: 'user', parts: [
-            { inlineData: { mimeType: 'image/jpeg', data: overlay.toString('base64') } },
-            { text: `당신은 12년차 증명사진 전문가입니다. 초록 프레임은 규격 크롭 영역입니다.\n규격 준수 판정은 별도 시스템이 하므로, 당신은 오직 "사진관 전문가의 심미 관점"만 판단하세요:\n- 머리카락이 프레임 상단에 닿거나 잘리는가 (볼륨 헤어 배려)\n- 상하 여백 균형이 자연스러운가 (답답하거나 붕 뜨지 않게)\n\n절대 규칙: 머리카락이 프레임 상단에 닿아 있거나 닿을 듯하면, 얼굴을 위로 올리는(프레임을 아래로 내리는) 제안을 하지 마세요 — 헤어가 잘립니다. 그 경우 adjustment_y_px는 0 또는 음수만 허용됩니다.\n\nJSON: {"hair_touching_top": bool, "balance": "good"|"too_high"|"too_low", "adjustment_y_px": 프레임을 이동할 픽셀(양수=아래로, 음수=위로, 이 이미지 기준, 필요 없으면 0), "note": "전문가 한 줄 소견 (한국어)"}` },
-          ]}],
-          config: { responseMimeType: 'application/json', thinkingConfig: { thinkingBudget: 0 } },
-        });
-        const vtext = vres.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
-        vision = JSON.parse(vtext);
-        const adjRaw = Number(vision.adjustment_y_px) || 0;
-        let adj = Math.max(-frame.h * 0.12, Math.min(frame.h * 0.12, adjRaw / scale));
-        // 헤어 보호 (2026-07-07 작가님): 헤어가 프레임 상단에 닿아 있으면 얼굴을 올리는 방향(프레임 하강, adj>0) 금지
-        if (vision.hair_touching_top && adj > 0) { adj = 0; vision.hairGuard = true; }
-        // 헤어 추정선이 프레임 밖으로 나가는 보정도 금지 (frame.y + adj > hairTopY 추정 → 잘림)
-        if (adj > 0 && frame.y + adj > lines.hairTopY) { adj = Math.max(0, lines.hairTopY - frame.y); vision.hairGuard = true; }
-        if (Math.abs(adj) > 1) {
-          const cand = { ...frame, y: Math.round(frame.y + adj) };
-          // 정본표 재검증: 보정이 규격을 깨면 원복 (비전은 판단만, 게이트는 코드)
-          const candJudge = judgeMetrics(metricsFromFit(cand, lines, spec), spec);
-          if (!candJudge.blocked) { frame.y = cand.y; }
-          else { vision.reverted = true; }
-        }
-        // 실행형 보정 (2026-07-07 작가님: "고객이 원하는 것은 설명이 아니라 실행"):
-        // 헤어가 실제로 닿았으면 얼굴 크기를 0.5mm씩 양보(줌아웃)해 여백을 만든다 — 정본 축소 루프의 비전 관측 버전.
-        // 제약: 얼굴 ≥ fMin(허용 하한), 정본표 blocked 금지. 눈 앵커 43%·중심 유지.
-        if (vision.hair_touching_top) {
-          // 작가님 철학: "가용범위 안에서 얼굴 사이즈 최소화" — 헤어가 닿았으면 허용 하한까지 양보 (최대 여백 확보)
-          const facePx = lines.chinY - lines.crownY;
-          const fMin = spec.headHeightMinMm || spec.faceMinMm;
-          const curFaceMm = facePx * spec.frameHmm / frame.h;
-          const hairObsY = frame.y; // 비전이 '닿음'을 관측한 시점의 상단 = 실측 헤어 상단 근사
-          const aspect = spec.frameW / spec.frameH;
-          for (let ft = fMin; ft < curFaceMm - 0.2; ft += 0.5) { // 하한부터 — 통과하는 최대 양보를 채택
-            const h2 = facePx * spec.frameHmm / ft;
-            const w2 = h2 * aspect;
-            const cand = {
-              x: lines.eyeCenterX - w2 / 2,
-              y: lines.eyeY - (spec.frameHmm >= 60 ? 0.42 : 0.43) * h2,
-              w: w2, h: h2,
-            };
-            const gainPx = hairObsY - cand.y; // 헤어 위로 벌어준 실공간
-            const j2 = judgeMetrics(metricsFromFit(cand, lines, spec), spec);
-            if (gainPx > 4 && !j2.blocked) {
-              frame.x = cand.x; frame.y = cand.y; frame.w = cand.w; frame.h = cand.h;
-              vision.executed = `헤어 여백 확보를 위해 얼굴 크기를 ${curFaceMm.toFixed(1)}→${ft.toFixed(1)}mm(허용 ${fMin}~${spec.headHeightMaxMm || ''}mm 내)로 조정했습니다.`;
-              break;
-            }
-          }
-        }
-      } catch (ve) {
-        log(`[Fit] ${slug}: 비전 검수 실패 (${ve.message}) — 기하 피팅만 사용`, 'WARNING');
-      }
 
       // ④ 최종 메트릭 + IDPASS 정본 판정표
       const metrics = metricsFromFit(frame, lines, spec);
