@@ -185,6 +185,7 @@ status: active
 | 07/07 | M1/민아 | **BiRefNet-lite 서버 서빙 교체 실측·확정** — 막내2 로컬 판정(214MB·품질 동급) 서버 검증: 첫 풀 13.5분→82.8s(10배), GPU 추론 0.36~0.75s(2배), CPU 11~13s(1.7배), 공정 A/B 평균차 0.4%(경계 국한). RunPod 템플릿·CPU dev lite 전환 완료 | cloudbuild.runpod.yaml, gs://monkos-models*/birefnet/ | ✅ |
 | 07/07 | M1/막내2 | **BiRefNet-lite 브라우저 PoC** — onnxruntime-web WASM/WebGPU 4조합 전부 추론 OOM. 모델 로드 성공(2.9~4.1s)이나 1024² 고정 입력의 중간 텐서 ~4.6GB 필요 → 브라우저 메모리 한계(WASM 2-4GB) 초과. **서버 비용 ₩0 브라우저 직접 추론 = 현세대 불가 판정** | [COMPLETION](../../reports/2026-07/COMPLETION_20260707_M1막내2_BiRefNet_lite_브라우저PoC.md) | ✅ |
 | 07/07 | M1/막내2 | **FaceMesh vs dlib 랜드마크 비교 실측** — 3장(셀카/클로즈업/안경) 양쪽 3/3 감지 성공. 눈 Δ평균 4.7px·턱 Δ평균 5.3px(동급). FaceMesh 26배 빠름(0.010s vs 0.263s), 모델 26배 작음(3.6MB vs 95MB). 사일런트 미스 미재현 — Python vs 웹JS 구현 차이 또는 와이드샷 특수 케이스 가능 | [COMPLETION](../../reports/2026-07/COMPLETION_20260707_M1막내2_FaceMesh_vs_dlib_비교실측.md) | ✅ |
+| 07/08 | iMac/쌍아+민아 | **InsightFace SCRFD 도입 + 좌표계 일원화 + Gemini 판정 퇴출** — OOM→EXIF→좌표계 3연쇄 디버깅 후 normalizeImage 입구 정규화, SCRFD 검출 교체(Gemini 박스 퇴출, 문제사진 3/3 안착), precheck 코드 게이트 전환(7~20s→0.7~3s), 해부학 검증 FaceMesh 내부 정합으로 교체. crop-engine 00009, portal 00433 | [설계서](../../../monkos-ops/tech/designs/2026-07/DESIGN_20260708_엔진완결_좌표계일원화.md) | ✅ (쌍아 사후 추인) |
 
 ---
 
