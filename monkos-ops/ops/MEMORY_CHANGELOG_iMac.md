@@ -460,3 +460,6 @@
 
 **[2026-07-06 22:31 KST]** iMac/민아
 - 추가: 작가님 인사이트 "그럴듯한 것과 딱 떨어지는 것엔 극한의 갭" → feedback_plausible_vs_exact_gap.md (07-06 크롭 v2→v3 실사고 교훈 — 도메인 정의 재해석 금지·수치 통과≠실물 합격)
+
+**[2026-07-08 13:03 KST]** iMac/민아
+- 추가: project_ga4_test_traffic_contamination.md — GA4 수치=작가님 자가 테스트 오염, 실 유입 0 간주 (07-08 직접 교정. specs 50:50 근거 데스크톱 권고 철회 계기). MEMORY.md "데이터 주의" 섹션 신설 1행 추가.
