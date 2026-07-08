@@ -121,6 +121,10 @@
 - 등재: insight_crown_anchor_ip.md — 규격 얼굴길이 기준 = 두개골 정수리, 1:1:1 앵커 + 수동 보정 + 실시간 판정 = 핵심 IP
 - 등재: feedback_stop_before_patching.md — 지적받으면 멈춘다·정본 재해석 금지 포팅·실패 중 완료 언어 금지 (MEMORY.md 인덱스 3건 갱신)
 
+## 2026-07-09 M1/쌍아
+- 등재: project_fable_autonomy_observation.md — Fable 5 자율실행 확대 시 작가님 인지 동기화 관찰 필요 (MEMORY.md 인덱스 1건 갱신)
+- 세션 요지: InsightFace 2단 지시서(106점 FaceMesh 교체) + precheck 게이트 강화 지시서(face_ratio 20~50%·위치·소견 코드화) + 무료티어 퍼널 재설계 설계서(T0 무료/T1 ₩2,000/T2 ₩9,900). 전략 대화: IDPASS 역방향 R&D 패턴·에이전트 코드화 철학·이보토 파라미터화 참조
+
 ## 2026-07-09 M1/민아
 - 메모리 변경 없음 (세션 산출물은 전부 repo 정본으로 적재 — REPORT·REVIEW·PF_SPECS 3행)
 - 세션 요지: fit 좌표 불안정 진단(FaceMesh chinY 26.6px 비결정 규명) → InsightFace 2단 재검증(진폭 0px) → 연출 안정화 직접 실행(경로 ③, prod 00435)
