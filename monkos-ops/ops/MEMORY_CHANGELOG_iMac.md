@@ -7,6 +7,9 @@
 
 ---
 
+## 2026-07-08 19:35 KST — Fable 5 구독 7/12 연장 반영 — project_model_placement.md 갱신
+- 7/7 이탈 → 7/12 연장 확인. 필터링 강화·토큰 압박 추세 기록.
+
 ## 2026-07-06 19:51 KST — Fable 5 실측 평가 + 현행 체제 확정 — project_model_placement.md 갱신
 
 ### 배경
