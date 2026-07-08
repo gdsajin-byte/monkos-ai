@@ -390,20 +390,36 @@ const httpServer = createServer(async (req, res) => {
       }
       const frameInitial = { ...frame };
 
-      // ③ Gemini 비전 퇴출 (2026-07-09, InsightFace 결정론 확보로 기하 추정 안정 — 비전 비결정 요소 제거)
+      // ③ 코드 소견 — metrics 기반 (Gemini 비전 퇴출 2026-07-09)
       let vision = null;
-
-      // ④ 최종 메트릭 + IDPASS 정본 판정표
       const metrics = metricsFromFit(frame, lines, spec);
+      const codedNote = (function() {
+        if (!frame || !lines) return null;
+        if (metrics.topMm < 2) return '머리 위 여백이 부족합니다. 헤어 볼륨이 큰 경우 다른 사진을 권장합니다.';
+        if (metrics.topMm > 6) return '머리 위 공간이 넉넉합니다.';
+        if (metrics.bottomMm < 4) return '어깨선 여백이 좁습니다.';
+        return null;
+      })();
+      if (codedNote) vision = { note: codedNote };
+
+      // ④ IDPASS 정본 판정표
       const judge = judgeMetrics(metrics, spec);
       const meta = {
         faceMM: String(metrics.faceMm), crownMarginMM: String(metrics.topMm),
         eyePositionPercent: (metrics.eyeRatio * 100).toFixed(1),
       };
-      slog(`[Fit] ${slug}: face=${metrics.faceMm}mm top=${metrics.topMm}mm btm=${metrics.bottomMm}mm eye=${(metrics.eyeRatio * 100).toFixed(1)}% judge=${judge.blocked ? 'BLOCKED' : judge.face + '/' + judge.eye} vision=${vision ? (vision.balance || 'ok') : 'skip'} detect=${detectSrc}${gate ? ` gate={mouth:${gate.mouthOpen},eyeL:${gate.eyeOpenL},eyeR:${gate.eyeOpenR},roll:${gate.rollDeg},yaw:${gate.yawRatio}}` : ''}`);
+      // gate 기반 postcheck
+      const poseCheck = {};
+      if (gate) {
+        poseCheck.roll = { value: gate.rollDeg, ok: Math.abs(gate.rollDeg) <= 15 };
+        poseCheck.yaw = { value: gate.yawRatio, ok: Math.abs(gate.yawRatio) <= 0.20 };
+        poseCheck.eyeOpen = { value: Math.min(gate.eyeOpenL || 1, gate.eyeOpenR || 1), ok: Math.min(gate.eyeOpenL || 1, gate.eyeOpenR || 1) > 0.15 };
+        poseCheck.mouthOpen = { value: gate.mouthOpen, ok: (gate.mouthOpen || 0) < 0.15 };
+      }
+      slog(`[Fit] ${slug}: face=${metrics.faceMm}mm top=${metrics.topMm}mm btm=${metrics.bottomMm}mm eye=${(metrics.eyeRatio * 100).toFixed(1)}% judge=${judge.blocked ? 'BLOCKED' : judge.face + '/' + judge.eye} vision=${vision ? (vision.note || 'ok') : 'skip'} detect=${detectSrc}${gate ? ` gate={mouth:${gate.mouthOpen},eyeL:${gate.eyeOpenL},eyeR:${gate.eyeOpenR},roll:${gate.rollDeg},yaw:${gate.yawRatio}}` : ''}`);
       res.writeHead(200, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify({
-        success: true, frame, frameInitial, lines, gate, imageSize: { width: W, height: H }, meta, metrics, judge, vision,
+        success: true, frame, frameInitial, lines, gate, poseCheck, imageSize: { width: W, height: H }, meta, metrics, judge, vision,
         spec: { frameW: spec.frameW, frameH: spec.frameH, frameHmm: spec.frameHmm, headHeightMin: spec.headHeightMinMm || spec.faceMinMm, headHeightMax: spec.headHeightMaxMm || null, faceTargetMm: spec.faceTargetMm },
       }));
     } catch (err) {
@@ -456,23 +472,28 @@ const httpServer = createServer(async (req, res) => {
           const [x1, y1, x2, y2] = f.bbox;
           const fbW = x2 - x1, fbH = y2 - y1;
           faceBox = { x: x1 / norm.width, y: y1 / norm.height, w: fbW / norm.width, h: fbH / norm.height };
-          faceRatio = +(fbH / norm.height).toFixed(3);
           // 다인: 2순위 얼굴이 유의미(면적 30%↑ + score 0.6↑)면 차단
           const second = faces[1];
           if (second && second.score >= 0.6) {
             const a1 = fbW * fbH, a2 = (second.bbox[2] - second.bbox[0]) * (second.bbox[3] - second.bbox[1]);
             if (a2 >= a1 * 0.3) { measurable = false; reason = 'multiple_faces'; }
           }
-          // 과소: 정규화 프레임 얼굴 박스 높이 100px 미만 = 측정 신뢰 하한 미달
-          if (measurable && fbH < 100) { measurable = false; reason = 'face_too_small'; }
-          // 각도(5점 kps): roll=눈선 기울기, yaw=코끝의 눈·입 중심선 이탈 — 보수 임계만 하드컷
+          // 크기: 비율 기반 (2026-07-09 게이트 강화)
+          faceRatio = +(fbH / norm.height).toFixed(3);
+          if (measurable && faceRatio < 0.20) { measurable = false; reason = 'face_too_small'; }
+          if (measurable && faceRatio > 0.50) { measurable = false; reason = 'face_too_close'; }
+          // 위치: 상단·하단 잘림 + 좌우 치우침
+          if (measurable && y1 / norm.height < 0.05) { measurable = false; reason = 'head_cropped'; }
+          if (measurable && (norm.height - y2) / norm.height < 0.05) { measurable = false; reason = 'chin_cropped'; }
+          const faceCenterX = (x1 + x2) / 2;
+          if (measurable && Math.abs(faceCenterX - norm.width / 2) / norm.width > 0.15) { measurable = false; reason = 'off_center'; }
+          // 각도(5점 kps): 관측 로그만 — 판정은 postcheck(fit judge)로 이관
           const k = f.kps;
           if (k && k.length >= 5) {
             rollDeg = +((Math.atan2(k[1][1] - k[0][1], k[1][0] - k[0][0]) * 180) / Math.PI).toFixed(1);
             const eyeSpan = Math.hypot(k[1][0] - k[0][0], k[1][1] - k[0][1]) || 1;
             const midX = (k[0][0] + k[1][0] + k[3][0] + k[4][0]) / 4;
             yawRatio = +(((k[2][0] - midX) / eyeSpan)).toFixed(3);
-            if (measurable && (Math.abs(rollDeg) > 30 || Math.abs(yawRatio) > 0.35)) { measurable = false; reason = 'side_angle'; }
           }
           // 밝기·그림자: 얼굴 박스 픽셀 통계 (그림자는 관측만 — 임계 실측 후)
           try {
@@ -491,6 +512,7 @@ const httpServer = createServer(async (req, res) => {
               bright = +sAll.channels[0].mean.toFixed(0);
               shadowDiff = +Math.abs(sL.channels[0].mean - sR.channels[0].mean).toFixed(0);
               if (measurable && bright < 40) { measurable = false; reason = 'too_dark'; }
+              if (measurable && bright > 240) { measurable = false; reason = 'too_bright'; }
             }
           } catch { /* 통계 실패 시 게이트 미적용 */ }
         }

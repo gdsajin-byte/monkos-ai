@@ -2433,21 +2433,24 @@ ${hreflangTags}
           // 규정 8항목은 결과 화면에서 사후 표시 (ORDER_20260707 Task 1: 사전=측정성만)
           if(data.measurable === false){
             var reasons = {
-              face_too_small: '얼굴이 너무 작게 나왔어요. 가슴 위까지 나온 사진으로 올려주세요.',
+              no_face: '얼굴을 찾지 못했어요. 정면 얼굴이 나온 사진을 올려주세요.',
               multiple_faces: '사진에 여러 명이 있어요. 1인 사진을 올려주세요.',
+              face_too_small: '얼굴이 너무 작아요. 가슴 위까지 나오게 찍어주세요.',
+              face_too_close: '너무 가까워요. 조금 멀리서 찍어주세요.',
+              head_cropped: '머리 위가 잘렸어요. 머리 전체가 나오게 찍어주세요.',
+              chin_cropped: '턱 아래가 잘렸어요. 어깨가 보이게 찍어주세요.',
+              off_center: '얼굴이 한쪽으로 치우쳐 있어요. 중앙에서 찍어주세요.',
+              too_dark: '사진이 너무 어두워요. 밝은 곳에서 찍어주세요.',
+              too_bright: '사진이 너무 밝아요. 직사광선을 피해주세요.',
               side_angle: '옆모습이에요. 정면 사진을 올려주세요.',
-              occluded: '얼굴이 가려져 있어요. 가림 없는 사진을 올려주세요.',
-              no_face: '얼굴을 찾지 못했어요. 정면 얼굴 사진을 올려주세요.'
+              occluded: '얼굴이 가려져 있어요. 가림 없는 사진을 올려주세요.'
             };
             summary.className = 'v2-checklist-summary v2-summary-fail';
             summary.textContent = reasons[data.rejectionReason] || '이 사진으로는 정밀 측정이 어려워요. 다른 사진을 올려주세요.';
             document.getElementById('v2-btn-proceed').style.display = 'none';
             checkActions.style.display = 'flex';
           } else {
-            summary.className = 'v2-checklist-summary v2-summary-pass';
-            summary.textContent = '측정 가능한 사진이에요. 계속 진행해주세요.';
-            document.getElementById('v2-btn-proceed').style.display = '';
-            checkActions.style.display = 'flex';
+            runFit();
           }
           // 이미지 저장을 검수 시점에 선행 — 결제 클릭 체인에서 캔버스 압축을 제거해
           // 토스 결제창의 user activation 만료(팝업 차단)를 방지 (2026-07-05 E2E 실패 수정)
@@ -2685,11 +2688,16 @@ ${hreflangTags}
     if(m.eyeRatio != null) badge('눈', (m.eyeRatio * 100).toFixed(0) + '%', j.eye);
     if(m.topMm != null) badge('상단', m.topMm + 'mm', j.top);
     if(m.bottomMm != null) badge('하단', m.bottomMm + 'mm', j.bottom);
+    if(d.poseCheck){
+      if(d.poseCheck.roll) badge('기울기', Math.abs(d.poseCheck.roll.value).toFixed(0) + '°', d.poseCheck.roll.ok ? 'pass' : 'fail');
+      if(d.poseCheck.eyeOpen && !d.poseCheck.eyeOpen.ok) badge('눈', '감김', 'fail');
+      if(d.poseCheck.mouthOpen && !d.poseCheck.mouthOpen.ok) badge('입', '벌림', 'warn');
+    }
     var expertMsg = (d.vision && d.vision.executed) || (d.vision && d.vision.note);
     if(expertMsg){
       var n = document.getElementById('v2-fit-note');
       n.style.display = 'block';
-      n.textContent = '전문가 AI — ' + expertMsg;
+      n.textContent = expertMsg;
     }
     var fs = document.getElementById('v2-fit-summary');
     var mk = document.getElementById('v2-fit-make');
