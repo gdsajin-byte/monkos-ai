@@ -7,6 +7,7 @@ import { readdirSync } from 'fs';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { escapeHtml, layoutShell } from './render-shell.js';
+import { getSpecCropParams } from '../spec-crop.js';
 import { log, LEMONSQUEEZY_VARIANT_SPECS_SINGLE, LEMONSQUEEZY_VARIANT_SPECS_SINGLE_JP } from '../shared/config.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -2115,7 +2116,7 @@ ${hreflangTags}
       <div class="v2-make-layout" id="v2-phase-fit" style="display:none;">
         <div class="v2-pay-grid">
           <div class="v2-pay-preview">
-            <div id="v2-fit-stage" style="position:relative;overflow:hidden;width:240px;height:320px;margin:0 auto;background:#0e1016;border-radius:10px;box-shadow:0 10px 30px rgba(15,15,40,.28);">
+            <div id="v2-fit-stage" style="position:relative;overflow:hidden;width:240px;height:320px;margin:0 auto;background:#fff;border-radius:10px;box-shadow:0 10px 30px rgba(15,15,40,.28);">
               <div id="v2-fit-world" style="position:absolute;left:0;top:0;transform-origin:0 0;">
                 <img id="v2-fit-img" src="" alt="규격 안착" style="display:block;max-width:none;max-height:none;">
                 <div id="v2-fit-frame" style="display:none;position:absolute;border:3px solid #00B894;border-radius:2px;box-sizing:border-box;pointer-events:none;transition:opacity .5s, top .9s cubic-bezier(.22,.9,.24,1), left .9s cubic-bezier(.22,.9,.24,1), width .9s cubic-bezier(.22,.9,.24,1), height .9s cubic-bezier(.22,.9,.24,1);"></div>
@@ -2254,10 +2255,13 @@ ${hreflangTags}
 `;
 
   // 클라이언트 설정 주입 — JSON.stringify 경유(이스케이프 사고 방지). 시크릿 값 없음(문구·slug·시장뿐).
+  // frameRatio: 규격 세로/가로 비 — fit 스테이지를 진입 시점에 규격비로 1회 고정 (연출 중 크기 변경 금지, 2026-07-09 작가님)
+  const fitCropParams = getSpecCropParams(slug);
   const v2ClientCfg = {
     slug,
     format: typeSlug,
     market,
+    frameRatio: fitCropParams ? +(fitCropParams.frameH / fitCropParams.frameW).toFixed(4) : null,
     downloadName: `${countryName}_${typeName}_${locField(specData, 'size', lang).replace(/\s/g, '')}_MONKOS.jpg`,
     t: v2.js,
   };
@@ -2483,6 +2487,11 @@ ${hreflangTags}
     showPhase(phaseFit);
     fitClearTimers();
     var stage = document.getElementById('v2-fit-stage');
+    // 스테이지 크기 = 진입 시점(빈 박스) 1회 고정 — 규격비 반영, 폭 240 유지.
+    // 연출 중 크기 변경 금지 (2026-07-09 작가님: 비율 전환은 이해 가능, 박스가 툭 커지는 것은 불필요)
+    var stW0 = Math.min(240, (stage.parentElement.clientWidth || 280) - 20);
+    var stH0 = Math.round(stW0 * (CFG.frameRatio || 4 / 3));
+    stage.style.width = stW0 + 'px'; stage.style.height = stH0 + 'px';
     var img = document.getElementById('v2-fit-img');
     var badges = document.getElementById('v2-fit-badges');
     var noteEl = document.getElementById('v2-fit-note');
@@ -2568,9 +2577,12 @@ ${hreflangTags}
     var world = document.getElementById('v2-fit-world');
     var img = document.getElementById('v2-fit-img');
     var statusEl = document.getElementById('v2-fit-status');
-    var stageW = Math.min(260, (stage.parentElement.clientWidth || 280) - 20);
-    var stageH = Math.round(stageW * d.spec.frameH / d.spec.frameW);
-    stage.style.width = stageW + 'px'; stage.style.height = stageH + 'px';
+    // 크기 재설정 금지 — runFit 진입 시점에 고정된 값을 읽는다 (연출 중 박스 스냅 = 컨테이너 흔들림의 원인이었음).
+    // CFG.frameRatio 부재 등으로 비율이 어긋난 경우에만 높이 보정 (폭은 불변).
+    var stageW = parseInt(stage.style.width) || 240;
+    var stageH = parseInt(stage.style.height) || 320;
+    var specH = Math.round(stageW * d.spec.frameH / d.spec.frameW);
+    if (Math.abs(specH - stageH) > 2) { stageH = specH; stage.style.height = stageH + 'px'; }
     var W = d.imageSize.width, H = d.imageSize.height;
 
     // 월드 = 사진 원본 좌표계 그대로 (px 단위 1:1)
