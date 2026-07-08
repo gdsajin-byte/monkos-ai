@@ -120,3 +120,7 @@
 - 등재: insight_token_economics.md — 토큰·클라우드 비용 경제학 = 시대 중심 인사이트 (동일 결과물 원가 400배차 실증)
 - 등재: insight_crown_anchor_ip.md — 규격 얼굴길이 기준 = 두개골 정수리, 1:1:1 앵커 + 수동 보정 + 실시간 판정 = 핵심 IP
 - 등재: feedback_stop_before_patching.md — 지적받으면 멈춘다·정본 재해석 금지 포팅·실패 중 완료 언어 금지 (MEMORY.md 인덱스 3건 갱신)
+
+## 2026-07-09 M1/민아
+- 메모리 변경 없음 (세션 산출물은 전부 repo 정본으로 적재 — REPORT·REVIEW·PF_SPECS 3행)
+- 세션 요지: fit 좌표 불안정 진단(FaceMesh chinY 26.6px 비결정 규명) → InsightFace 2단 재검증(진폭 0px) → 연출 안정화 직접 실행(경로 ③, prod 00435)
