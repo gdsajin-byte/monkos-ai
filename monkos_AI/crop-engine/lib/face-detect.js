@@ -119,6 +119,29 @@ async function detectAtScale(imageBuffer, targetWidth, origMeta) {
     const faceHeight = chin.y - forehead.y;
     const crownY = forehead.y - (faceHeight * CROWN_OFFSET_RATIO);
 
+    // === 게이트 수치 (2026-07-08 검수 코드화 — 하드컷 없이 수치만 반환, 임계는 실측 후) ===
+    // 입벌림 = 안쪽 입술 간격 / 입 폭 (닫힘 ~0.05, 치아 노출 웃음 0.15+)
+    // 눈뜸 = 눈꺼풀 수직 간격 / 눈 가로폭 (열림 0.25~0.35, 감김 <0.12)
+    // roll = 눈선 기울기(도), yaw = 코끝의 눈-입 중심선 이탈 / 눈 간격 (정면 ~0)
+    function gateMetrics() {
+      const p = (i) => keypoints[i];
+      const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+      const g = {};
+      try {
+        const mouthW = dist(p(61), p(291));
+        g.mouthOpen = +(Math.abs(p(14).y - p(13).y) / (mouthW || 1)).toFixed(3);
+        g.eyeOpenL = +(Math.abs(p(145).y - p(159).y) / (dist(p(33), p(133)) || 1)).toFixed(3);
+        g.eyeOpenR = +(Math.abs(p(374).y - p(386).y) / (dist(p(362), p(263)) || 1)).toFixed(3);
+        const eyeSpan = dist(leftEye, rightEye) || 1;
+        g.rollDeg = +((Math.atan2(rightEye.y - leftEye.y, rightEye.x - leftEye.x) * 180) / Math.PI).toFixed(1);
+        const midX = (leftEye.x + rightEye.x + p(61).x + p(291).x) / 4;
+        g.yawRatio = +((noseTip.x - midX) / eyeSpan).toFixed(3);
+        const dL = noseTip.x - leftContour.x, dR = rightContour.x - noseTip.x;
+        g.contourAsym = +(((dR - dL) / ((dR + dL) || 1))).toFixed(3);
+      } catch { /* 일부 포인트 결손 시 가용 값만 */ }
+      return g;
+    }
+
     const result = {
       crown:        { x: forehead.x, y: crownY },
       chin:         { x: chin.x, y: chin.y },
@@ -127,6 +150,7 @@ async function detectAtScale(imageBuffer, targetWidth, origMeta) {
       noseTip:      { x: noseTip.x, y: noseTip.y },
       leftContour:  { x: leftContour.x, y: leftContour.y },
       rightContour: { x: rightContour.x, y: rightContour.y },
+      gate:         gateMetrics(),
       imageWidth:   info.width,
       imageHeight:  info.height,
     };

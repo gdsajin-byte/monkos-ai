@@ -356,7 +356,7 @@ const httpServer = createServer(async (req, res) => {
       }
       // ② crop-engine 기하 피팅 — 정규화 입력, 랜드마크 해부학 검증, 실패 시 스케일 바꿔 1회 재시도.
       // 사일런트 미스(감지 성공 플래그 + 쓰레기 좌표)는 검증으로만 잡힌다 — 엉뚱한 가이드 절대 금지.
-      let frame = null, lines = null;
+      let frame = null, lines = null, gate = null;
       for (const targetFaceH of [280, 200]) {
         const rough = await buildRough(targetFaceH);
         const fitRes = await fetch(`${CROP_ENGINE_URL}/api/fit-spec`, {
@@ -380,7 +380,7 @@ const httpServer = createServer(async (req, res) => {
         const faceH = cand.lines.chinY - cand.lines.crownY;
         const eyeChinRatio = (cand.lines.chinY - cand.lines.eyeY) / (faceH || 1);
         const ok = faceH > 30 && eyeChinRatio > 0.35 && eyeChinRatio < 0.70;
-        if (ok) { frame = cand.frame; lines = cand.lines; break; }
+        if (ok) { frame = cand.frame; lines = cand.lines; gate = fitRes.gate || null; break; }
         slog(`[Fit] ${slug}: 랜드마크 검증 이탈 (targetFaceH=${targetFaceH}, faceH=${Math.round(faceH)}, eyeChinRatio=${eyeChinRatio.toFixed(3)}) → 재시도`);
       }
       if (!frame) {
@@ -461,10 +461,10 @@ const httpServer = createServer(async (req, res) => {
         faceMM: String(metrics.faceMm), crownMarginMM: String(metrics.topMm),
         eyePositionPercent: (metrics.eyeRatio * 100).toFixed(1),
       };
-      slog(`[Fit] ${slug}: face=${metrics.faceMm}mm top=${metrics.topMm}mm btm=${metrics.bottomMm}mm eye=${(metrics.eyeRatio * 100).toFixed(1)}% judge=${judge.blocked ? 'BLOCKED' : judge.face + '/' + judge.eye} vision=${vision ? (vision.balance || 'ok') : 'skip'} detect=${detectSrc}`);
+      slog(`[Fit] ${slug}: face=${metrics.faceMm}mm top=${metrics.topMm}mm btm=${metrics.bottomMm}mm eye=${(metrics.eyeRatio * 100).toFixed(1)}% judge=${judge.blocked ? 'BLOCKED' : judge.face + '/' + judge.eye} vision=${vision ? (vision.balance || 'ok') : 'skip'} detect=${detectSrc}${gate ? ` gate={mouth:${gate.mouthOpen},eyeL:${gate.eyeOpenL},eyeR:${gate.eyeOpenR},roll:${gate.rollDeg},yaw:${gate.yawRatio}}` : ''}`);
       res.writeHead(200, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify({
-        success: true, frame, frameInitial, lines, imageSize: { width: W, height: H }, meta, metrics, judge, vision,
+        success: true, frame, frameInitial, lines, gate, imageSize: { width: W, height: H }, meta, metrics, judge, vision,
         spec: { frameW: spec.frameW, frameH: spec.frameH, frameHmm: spec.frameHmm, headHeightMin: spec.headHeightMinMm || spec.faceMinMm, headHeightMax: spec.headHeightMaxMm || null, faceTargetMm: spec.faceTargetMm },
       }));
     } catch (err) {
@@ -481,99 +481,84 @@ const httpServer = createServer(async (req, res) => {
     }
     try {
       const { parseJsonBody, log: slog } = await import('./lib/shared/config.js');
-      const { GoogleGenAI } = await import('@google/genai');
       const body = await parseJsonBody(req);
       if (!body.image) {
         res.writeHead(400, { 'Content-Type': 'application/json' });
         return res.end(JSON.stringify({ error: '이미지 필수' }));
       }
-      // matte 워커 선예열 — 결제·생성보다 30초+ 앞선 시점이라 유휴 후 첫 활성화 지연을 흡수
-      warmupMatteEngine();
+      // === 코드 게이트 (2026-07-08 검수 코드화 — Gemini 비전 퇴출, 작가님 확정) ===
+      // SCRFD 검출 + 픽셀 통계. 하드컷: 얼굴무/다인/과소/과대각도/암흑. 그림자 등은 관측 로그 (임계 실측 후 승격).
+      const t0 = Date.now();
       const norm = await normalizeImage(body.image);
-      const ai = new GoogleGenAI({ vertexai: true, project: process.env.PROJECT_ID, location: 'us-central1' });
-      const result = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
-        contents: [{ role: 'user', parts: [
-          { inlineData: { mimeType: 'image/jpeg', data: norm.b64 } },
-          { text: `You are a STRICT photo evaluator for MONKOS AI passport photo service. Perform TWO evaluations in ONE response.
-
-=== PART A — MEASURABILITY (사전: 측정 가능성 검증, ORDER_20260707) ===
-Determine whether precise facial measurement (FaceMesh landmark detection) is possible on this photo:
-1. face_count: number of detected faces
-2. face_box: bounding box of the primary face [x, y, w, h] as FRACTIONS of image dimensions (each value 0.0~1.0, x/w relative to width, y/h relative to height) — do NOT use pixels
-3. face_ratio: fraction of image height occupied by the face (0~1)
-4. frontal: is the face roughly frontal (true/false)
-5. occlusion: is there severe occlusion of the face (true/false)
-6. measurable: can FaceMesh measure this input reliably (true/false) — false if face_count!=1, face_ratio<0.12, not frontal, or occluded
-7. rejection_reason: when measurable=false, one of: face_too_small / multiple_faces / side_angle / occluded / no_face — else null
-
-=== PART B — REGULATION CHECKS (규정 검수 8항목 — 결과 화면에서 사후 표시용) ===
-Evaluate whether this input photo is SUITABLE for AI processing. Be strict — AI can fix backgrounds and lighting, but it CANNOT fix fundamentally unsuitable inputs.
-
-CRITICAL RULES:
-- This must be a PORTRAIT photo of a SINGLE PERSON showing their FACE clearly.
-- The person must be wearing appropriate clothing (at minimum a top/shirt covering shoulders).
-- Swimwear, underwear, lingerie, bare chest, costumes, or inappropriate clothing = IMMEDIATE FAIL for clothing AND suitability.
-- Face must be roughly frontal and occupy a significant portion of the image.
-
-Every item must include a "warnMsg" field: null if pass, a short Korean explanation if warn or fail.
-
-ITEM 1 — "정면 응시" (Frontal face):
-- PASS if: face is roughly frontal (within ~10 degrees), shoulders relatively square.
-- WARN if: face or shoulders noticeably angled (10-25 degrees). Set warnMsg: "측면 각도가 커서 AI 보정 시 실물과 다를 수 있습니다."
-- FAIL if: 3/4 pose, profile view, extreme angle, or back of head. Set warnMsg: "정면에 가까운 사진을 올려주세요."
-
-ITEM 2 — "눈썹 노출" (Eyebrows visible):
-- PASS if: both eyebrows mostly visible.
-- WARN if: bangs partially cover eyebrows. Set warnMsg: "앞머리가 눈썹을 가려 AI가 추정 보정합니다."
-- FAIL if: face obscured by hair/hat/mask/hand. Set warnMsg: "얼굴이 가려지지 않은 사진을 올려주세요."
-
-ITEM 3 — "배경" (Background):
-- PASS if: any background — AI will replace it.
-- WARN if: extremely cluttered background with objects overlapping the person. Set warnMsg: "복잡한 배경은 AI 제거 시 경계가 부자연스러울 수 있습니다."
-
-ITEM 4 — "조명" (Lighting):
-- PASS if: face reasonably lit.
-- WARN if: strong one-sided shadows or backlighting. Set warnMsg: "강한 그림자로 AI 보정 후 얼굴 톤이 달라질 수 있습니다."
-- FAIL if: face in complete darkness/silhouette. Set warnMsg: "얼굴이 밝게 보이는 사진을 올려주세요."
-
-ITEM 5 — "표정" (Expression):
-- PASS if: neutral or slight closed-mouth smile.
-- WARN if: teeth showing or laughing. Set warnMsg: "입을 다문 표정으로 AI가 보정합니다. 실물과 다를 수 있습니다."
-
-ITEM 6 — "상의" (Clothing):
-- PASS if: normal clothing (shirt, jacket, blouse, etc.) covering shoulders.
-- WARN if: white top (will blend with white background). Set warnMsg: "흰색 상의는 흰 배경과 경계가 불분명할 수 있습니다."
-- FAIL if: underwear, lingerie, swimwear, bare chest/shoulders, costume, or no clothing visible above chest. Set warnMsg: "증명사진에 적합한 상의를 착용한 사진을 올려주세요."
-
-ITEM 7 — "안경/렌즈" (Glasses):
-- PASS if: no glasses or clear glasses without glare.
-- WARN if: glasses with light reflection. Set warnMsg: "안경 반사를 AI가 제거합니다. 눈 주변이 실물과 다를 수 있습니다."
-- FAIL if: dark sunglasses or colored lenses. Set warnMsg: "선글라스/컬러렌즈를 벗고 촬영한 사진을 올려주세요."
-
-ITEM 8 — "사진 적합성" (Photo suitability):
-- PASS if: single person, face clearly visible, face occupies ~30%+ of image, bust-up framing.
-- WARN if: face somewhat small (20-30%), slight blur. Set warnMsg: "얼굴 비중이 작아 AI 보정 시 실물과 다를 수 있습니다. 가슴 위까지 나온 사진을 권장합니다."
-- FAIL if: multiple people, face <20% of image, full-body shot, extremely blurry, no face, or waist-down visible. Set warnMsg: "1인 정면 얼굴(가슴 위 구도) 사진을 올려주세요."
-
-Respond in JSON only:
-{"measurable":bool,"rejection_reason":"string or null","face_count":int,"face_box":[x_frac,y_frac,w_frac,h_frac],"face_ratio":number,"frontal":bool,"occlusion":bool,"checks":[{"id":"frontal","label":"정면 응시","pass":bool,"warn":bool,"warnMsg":"string or null"},{"id":"eyebrow","label":"눈썹 노출","pass":bool,"warn":bool,"warnMsg":"string or null"},{"id":"background","label":"배경","pass":bool,"warn":bool,"warnMsg":"string or null"},{"id":"lighting","label":"조명","pass":bool,"warn":bool,"warnMsg":"string or null"},{"id":"expression","label":"표정","pass":bool,"warn":bool,"warnMsg":"string or null"},{"id":"clothing","label":"상의","pass":bool,"warn":bool,"warnMsg":"string or null"},{"id":"glasses","label":"안경/렌즈","pass":bool,"warn":bool,"warnMsg":"string or null"},{"id":"suitability","label":"사진 적합성","pass":bool,"warn":bool,"warnMsg":"string or null"}]}` }
-        ]}],
-        config: { responseMimeType: 'application/json' },
-      });
-      const text = result.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
-      let parsed;
-      try { parsed = JSON.parse(text); } catch { parsed = { checks: [] }; }
-      // 측정성(사전) + 규정 8항목(사후 표시용) — 단일 호출 (ORDER_20260707 Task 1)
-      const fb = Array.isArray(parsed.face_box) && parsed.face_box.length === 4 ? parsed.face_box.map(Number) : null;
-      const out = {
-        measurable: parsed.measurable !== false,
-        rejectionReason: parsed.rejection_reason || null,
-        faceBox: fb ? { x: fb[0], y: fb[1], w: fb[2], h: fb[3] } : null,
-        faceRatio: Number(parsed.face_ratio) || null,
-        checks: parsed.checks || [],
-      };
-      slog(`[IDPhoto][precheck] 측정성=${out.measurable}${out.rejectionReason ? `(${out.rejectionReason})` : ''} 검수 ${out.checks.length}항목`);
+      if (!norm.width || !norm.height) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        return res.end(JSON.stringify({ error: '이미지를 해석할 수 없습니다. JPG 또는 PNG로 올려주세요.', code: 'DECODE_FAILED' }));
+      }
+      const CROP_ENGINE_URL = process.env.CROP_ENGINE_URL || '';
+      let det = null;
+      try {
+        det = await fetch(`${CROP_ENGINE_URL}/api/detect`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ image: norm.b64 }),
+          signal: AbortSignal.timeout(15000),
+        }).then((r) => r.json());
+      } catch (de) {
+        slog(`[IDPhoto][precheck] SCRFD 불가 (${de.message}) → fail-open (fit이 재검출·방어)`);
+      }
+      let measurable = true, reason = null, faceBox = null, faceRatio = null;
+      let bright = null, shadowDiff = null, rollDeg = null, yawRatio = null, nFaces = null;
+      if (det && det.success && Array.isArray(det.faces)) {
+        const faces = det.faces.filter((f) => f.score >= 0.45);
+        nFaces = faces.length;
+        if (faces.length === 0) {
+          measurable = false; reason = 'no_face';
+        } else {
+          const f = faces[0];
+          const [x1, y1, x2, y2] = f.bbox;
+          const fbW = x2 - x1, fbH = y2 - y1;
+          faceBox = { x: x1 / norm.width, y: y1 / norm.height, w: fbW / norm.width, h: fbH / norm.height };
+          faceRatio = +(fbH / norm.height).toFixed(3);
+          // 다인: 2순위 얼굴이 유의미(면적 30%↑ + score 0.6↑)면 차단
+          const second = faces[1];
+          if (second && second.score >= 0.6) {
+            const a1 = fbW * fbH, a2 = (second.bbox[2] - second.bbox[0]) * (second.bbox[3] - second.bbox[1]);
+            if (a2 >= a1 * 0.3) { measurable = false; reason = 'multiple_faces'; }
+          }
+          // 과소: 정규화 프레임 얼굴 박스 높이 100px 미만 = 측정 신뢰 하한 미달
+          if (measurable && fbH < 100) { measurable = false; reason = 'face_too_small'; }
+          // 각도(5점 kps): roll=눈선 기울기, yaw=코끝의 눈·입 중심선 이탈 — 보수 임계만 하드컷
+          const k = f.kps;
+          if (k && k.length >= 5) {
+            rollDeg = +((Math.atan2(k[1][1] - k[0][1], k[1][0] - k[0][0]) * 180) / Math.PI).toFixed(1);
+            const eyeSpan = Math.hypot(k[1][0] - k[0][0], k[1][1] - k[0][1]) || 1;
+            const midX = (k[0][0] + k[1][0] + k[3][0] + k[4][0]) / 4;
+            yawRatio = +(((k[2][0] - midX) / eyeSpan)).toFixed(3);
+            if (measurable && (Math.abs(rollDeg) > 30 || Math.abs(yawRatio) > 0.35)) { measurable = false; reason = 'side_angle'; }
+          }
+          // 밝기·그림자: 얼굴 박스 픽셀 통계 (그림자는 관측만 — 임계 실측 후)
+          try {
+            const { default: sharp } = await import('sharp');
+            const exl = Math.max(0, Math.round(x1)), ext = Math.max(0, Math.round(y1));
+            const ex = { left: exl, top: ext,
+              width: Math.min(norm.width - exl, Math.round(fbW)),
+              height: Math.min(norm.height - ext, Math.round(fbH)) };
+            if (ex.width > 8 && ex.height > 8) {
+              const half = Math.max(4, Math.floor(ex.width / 2));
+              const [sAll, sL, sR] = await Promise.all([
+                sharp(norm.buf).extract(ex).greyscale().stats(),
+                sharp(norm.buf).extract({ ...ex, width: half }).greyscale().stats(),
+                sharp(norm.buf).extract({ ...ex, left: ex.left + ex.width - half, width: half }).greyscale().stats(),
+              ]);
+              bright = +sAll.channels[0].mean.toFixed(0);
+              shadowDiff = +Math.abs(sL.channels[0].mean - sR.channels[0].mean).toFixed(0);
+              if (measurable && bright < 40) { measurable = false; reason = 'too_dark'; }
+            }
+          } catch { /* 통계 실패 시 게이트 미적용 */ }
+        }
+      }
+      if (measurable) warmupMatteEngine(); // 게이트 통과자만 예열 — 구경·불합격 트래픽 웜 비용 차단
+      const out = { measurable, rejectionReason: reason, faceBox, faceRatio, checks: [] };
+      slog(`[IDPhoto][precheck] 코드게이트 측정성=${measurable}${reason ? `(${reason})` : ''} faces=${nFaces} fbH=${faceRatio !== null ? Math.round(faceRatio * norm.height) : '-'}px bright=${bright} shadow=${shadowDiff} roll=${rollDeg} yaw=${yawRatio} ${Date.now() - t0}ms`);
       res.writeHead(200, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify(out));
     } catch (err) {

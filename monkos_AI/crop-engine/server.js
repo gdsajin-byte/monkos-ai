@@ -182,7 +182,7 @@ async function handleFitSpec(req, res) {
       return sendJSON(res, 200, { success: true, detected: false });
     }
     const fit = await fitSpecGeometry(imageBuffer, landmarks, spec, { hairScan: hairScan !== false });
-    sendJSON(res, 200, { success: true, detected: true, ...fit });
+    sendJSON(res, 200, { success: true, detected: true, gate: landmarks.gate || null, ...fit });
   } catch (err) {
     console.error(`[FitSpecAPI] 에러: ${err.message}`);
     sendJSON(res, 500, { success: false, error: err.message });
