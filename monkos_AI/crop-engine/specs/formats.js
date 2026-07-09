@@ -6,6 +6,9 @@ export const SPECS = {
     faceRatio: 0.74,   // 얼굴 33.5mm / 45mm (실무 3.3~3.4cm)
     topMargin: 0.07,   // 정수리 위 3mm / 45mm
     bottomMargin: 0.19, // 턱 아래 8.5mm / 45mm
+    frameHmm: 45,
+    faceTargetMm: 33,
+    faceMinMm: 32.5,
   },
   passport_jp: {
     name: '日本旅券',
@@ -14,6 +17,9 @@ export const SPECS = {
     faceRatio: 0.74,
     topMargin: 0.07,
     bottomMargin: 0.19,
+    frameHmm: 45,
+    faceTargetMm: 33,
+    faceMinMm: 32.5,
   },
   id_kr: {
     name: '한국 반명함',
@@ -22,6 +28,9 @@ export const SPECS = {
     faceRatio: 0.65,
     topMargin: 0.08,
     bottomMargin: 0.22,
+    frameHmm: 40,
+    faceTargetMm: 26,
+    faceMinMm: 25,
   },
 };
 
