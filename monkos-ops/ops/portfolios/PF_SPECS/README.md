@@ -377,3 +377,4 @@ SEO 콘텐츠가 있는 문서 → 풀 페이지 (FAQ + 반려사유 + 촬영가
 | 07/09 | iMac/민아 | **6DRepNet pitch 부호/오프셋 검증** — 정면 오프셋 -4.8°±1.0 확인. Phase 2(pitch 미러 보정) 프로드 편향 발견(상단 4.6mm/눈 48%). 중립화 + 원복 권고 | [REVIEW](../../reports/2026-07/REPORT_20260709_iMac민아_6DRepNet_pitch부호오프셋_검증.md) | ✅ |
 | 07/09 | iMac/쌍아 | **크롭 앵커 원복 + precheck headpose 제거** — mirrorRatio=1.0, eyeAnchor=0.43 원복. precheck에서 headpose 호출 제거(콜드스타트 15초→~3초). fitSpecGeometry 중복 경로 수정. crop-engine 00016, portal 재배포 | crop.js, portal/server.js | ✅ 라이브 |
 | 07/09 | iMac/막내1 | **정수리 추정 선행기술 조사 (특허 근거)** — 핵심 차별점: "촬영 각도 2D 투영 왜곡 실시간 보정 정수리 추산" 선행기술 없음. 특허 청구항 후보 확정 | [REPORT](../../reports/2026-07/REPORT_20260709_iMac막내1_정수리추정_선행기술조사.md) | ✅ |
+| 07/09 | iMac/막내2 | **해부학 비율 딥리서치** — 두상 2등분(눈=50%) 해부학 검증 + 인종별 안면 비율 실측(한국인 0.76:1:0.89) + NEUTRAL 값 0.82±0.05 + pitch 역산 수학 검증. Farkas 포함 논문 12건 | [REPORT](../../reports/2026-07/REPORT_20260709_iMac막내2_해부학비율_딥리서치.md) | ✅ |
