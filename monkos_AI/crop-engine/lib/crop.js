@@ -320,13 +320,14 @@ export async function fitSpecGeometry(imageBuffer, landmarks, spec, opts = {}) {
   const eyeCenterX = (leftEye.x + rightEye.x) / 2;
   const pose = landmarks.pose || {};
   const pitchDeg = pose.pitch || 0;
-  const mirrorRatio = 1.0 + Math.max(-0.10, Math.min(0.10, Math.tan(pitchDeg * Math.PI / 180) * -0.3));
+  // pitch 보정 중립화 — 6DRepNet 오프셋·부호 미확정 (민아 검증 2026-07-09)
+  const mirrorRatio = 1.0;
   const crownY = eyeY - (chin.y - eyeY) * mirrorRatio;
   const facePx = chin.y - crownY;
   if (facePx <= 0) throw new Error('[FitSpec] 유효하지 않은 얼굴 높이');
 
   const hairTopY = crownY - facePx * HAIR_VOLUME_RATIO;
-  const eyeAnchor = frameHmm >= 60 ? 0.42 : 0.43;
+  const eyeAnchor = computeEyeAnchor({ topMargin: spec.topMargin || 0.07, bottomMargin: spec.bottomMargin || 0.19 });
 
   let scale = (faceTargetMm * mmPx) / facePx;
   let extractTop = Math.round(eyeY * scale - eyeAnchor * frameH);
