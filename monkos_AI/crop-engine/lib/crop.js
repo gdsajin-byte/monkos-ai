@@ -79,11 +79,11 @@ export async function cropToFrame(imageBuffer, landmarks, options = {}) {
   // hard 제약: 정수리 잘림 금지 (여백 ≥ 0)
   const topMax = Math.round(crownY * scale);
 
-  // soft 타겟: 헤어탑 실측 있으면 헤어 위 2mm, 없으면 정수리 위 2mm
+  // 배치: 헤어탑 실측 있으면 헤어 위 2mm, 없으면 눈 45% 고정 (프리뷰용)
   const hasHairTop = landmarks.hairTop != null;
   const topTarget = hasHairTop
     ? Math.round(hairTopY * scale - softMarginPx)  // 실측 헤어탑 위 2mm
-    : Math.round(crownY * scale - softMarginPx);   // 정수리 위 2mm (= 눈 ~43%)
+    : Math.round(eyeCenterY * scale - frameH * 0.45);  // 눈 45% 앵커
 
   let extractTop = Math.max(0, Math.min(topMax, topTarget));
 
@@ -259,7 +259,7 @@ export async function fitSpecGeometry(imageBuffer, landmarks, spec, opts = {}) {
   const hasHairTop = landmarks.hairTop != null;
   const topTarget = hasHairTop
     ? Math.round(hairTopY * scale - softMarginPx)
-    : Math.round(crownY * scale - softMarginPx);
+    : Math.round(eyeY * scale - frameH * 0.45);
   let extractTop = Math.max(0, Math.min(topMax, topTarget));
 
   if (hairTopY * scale - extractTop < 0) {
