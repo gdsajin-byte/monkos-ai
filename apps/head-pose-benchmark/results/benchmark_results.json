@@ -1,0 +1,188 @@
+[
+  {
+    "image": "casual_03.jpg",
+    "bbox": [
+      310.1000061035156,
+      283.0,
+      562.2000122070312,
+      639.5999755859375
+    ],
+    "indirect": {
+      "pitch": -17.73,
+      "yaw": -8.69,
+      "roll": 4.72,
+      "pitch_ratio": 0.506,
+      "yaw_ratio": -0.0756,
+      "inference_ms": 5.06
+    },
+    "models": {
+      "6DRepNet-MobileNetV3s": {
+        "pitch": -5.58,
+        "yaw": 5.96,
+        "roll": 4.23,
+        "inference_ms": 4.68
+      },
+      "6DRepNet-MobileNetV2": {
+        "pitch": -7.73,
+        "yaw": 2.69,
+        "roll": 4.75,
+        "inference_ms": 9.96
+      }
+    }
+  },
+  {
+    "image": "frontal_01.jpg",
+    "bbox": [
+      343.5,
+      181.89999389648438,
+      686.4000244140625,
+      640.7999877929688
+    ],
+    "indirect": {
+      "pitch": -14.76,
+      "yaw": 0.61,
+      "roll": 0.47,
+      "pitch_ratio": 0.5721,
+      "yaw_ratio": 0.0053,
+      "inference_ms": 6.45
+    },
+    "models": {
+      "6DRepNet-MobileNetV3s": {
+        "pitch": -5.72,
+        "yaw": 1.02,
+        "roll": 1.51,
+        "inference_ms": 5.65
+      },
+      "6DRepNet-MobileNetV2": {
+        "pitch": -8.44,
+        "yaw": 0.8,
+        "roll": -0.46,
+        "inference_ms": 6.63
+      }
+    }
+  },
+  {
+    "image": "frontal_02.jpg",
+    "bbox": [
+      343.5,
+      181.89999389648438,
+      686.4000244140625,
+      640.7999877929688
+    ],
+    "indirect": {
+      "pitch": -14.76,
+      "yaw": 0.61,
+      "roll": 0.47,
+      "pitch_ratio": 0.5721,
+      "yaw_ratio": 0.0053,
+      "inference_ms": 10.18
+    },
+    "models": {
+      "6DRepNet-MobileNetV3s": {
+        "pitch": -5.72,
+        "yaw": 1.02,
+        "roll": 1.51,
+        "inference_ms": 5.24
+      },
+      "6DRepNet-MobileNetV2": {
+        "pitch": -8.44,
+        "yaw": 0.8,
+        "roll": -0.46,
+        "inference_ms": 9.79
+      }
+    }
+  },
+  {
+    "image": "frontal_04.jpg",
+    "bbox": [
+      717.5,
+      313.0,
+      1270.9000244140625,
+      1044.699951171875
+    ],
+    "indirect": {
+      "pitch": -18.59,
+      "yaw": 1.53,
+      "roll": -0.34,
+      "pitch_ratio": 0.4869,
+      "yaw_ratio": 0.0133,
+      "inference_ms": 3.35
+    },
+    "models": {
+      "6DRepNet-MobileNetV3s": {
+        "pitch": -5.04,
+        "yaw": 0.81,
+        "roll": 0.45,
+        "inference_ms": 3.01
+      },
+      "6DRepNet-MobileNetV2": {
+        "pitch": -6.81,
+        "yaw": 0.52,
+        "roll": -0.74,
+        "inference_ms": 6.85
+      }
+    }
+  },
+  {
+    "image": "frontal_06.jpg",
+    "bbox": [
+      600.0,
+      371.20001220703125,
+      1373.9000244140625,
+      1434.699951171875
+    ],
+    "indirect": {
+      "pitch": -18.14,
+      "yaw": -1.05,
+      "roll": 0.13,
+      "pitch_ratio": 0.4968,
+      "yaw_ratio": -0.0092,
+      "inference_ms": 3.28
+    },
+    "models": {
+      "6DRepNet-MobileNetV3s": {
+        "pitch": -3.66,
+        "yaw": 2.39,
+        "roll": -0.19,
+        "inference_ms": 2.9
+      },
+      "6DRepNet-MobileNetV2": {
+        "pitch": -5.47,
+        "yaw": 0.92,
+        "roll": -0.16,
+        "inference_ms": 4.09
+      }
+    }
+  },
+  {
+    "image": "yaw_05.jpg",
+    "bbox": [
+      681.0,
+      205.10000610351562,
+      983.0999755859375,
+      634.2999877929688
+    ],
+    "indirect": {
+      "pitch": -23.73,
+      "yaw": 39.42,
+      "roll": -4.5,
+      "pitch_ratio": 0.3726,
+      "yaw_ratio": 0.3175,
+      "inference_ms": 3.73
+    },
+    "models": {
+      "6DRepNet-MobileNetV3s": {
+        "pitch": 4.86,
+        "yaw": -20.83,
+        "roll": -6.61,
+        "inference_ms": 4.06
+      },
+      "6DRepNet-MobileNetV2": {
+        "pitch": 7.8,
+        "yaw": -20.37,
+        "roll": -6.87,
+        "inference_ms": 8.09
+      }
+    }
+  }
+]
