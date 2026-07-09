@@ -461,7 +461,7 @@ const httpServer = createServer(async (req, res) => {
         slog(`[IDPhoto][precheck] SCRFD 불가 (${de.message}) → fail-open (fit이 재검출·방어)`);
       }
       let measurable = true, reason = null, faceBox = null, faceRatio = null;
-      let bright = null, shadowDiff = null, rollDeg = null, yawRatio = null, nFaces = null;
+      let bright = null, shadowDiff = null, rollDeg = null, yawRatio = null, nFaces = null, crownMargin = null;
       if (det && det.success && Array.isArray(det.faces)) {
         const faces = det.faces.filter((f) => f.score >= 0.45);
         nFaces = faces.length;
@@ -478,10 +478,11 @@ const httpServer = createServer(async (req, res) => {
             const a1 = fbW * fbH, a2 = (second.bbox[2] - second.bbox[0]) * (second.bbox[3] - second.bbox[1]);
             if (a2 >= a1 * 0.3) { measurable = false; reason = 'multiple_faces'; }
           }
-          // 크기: 비율 기반 (2026-07-09 게이트 강화)
+          // 크기: 비율 기반 (2026-07-09 게이트 강화 → 12:00 완화: 재규격 여권사진 bbox 0.53~0.68 수용.
+          // 잘림 판정은 아래 정수리 여백 게이트가 담당, 0.80은 측량 신뢰 대역 위생 캡)
           faceRatio = +(fbH / norm.height).toFixed(3);
           if (measurable && faceRatio < 0.20) { measurable = false; reason = 'face_too_small'; }
-          if (measurable && faceRatio > 0.50) { measurable = false; reason = 'face_too_close'; }
+          if (measurable && faceRatio > 0.80) { measurable = false; reason = 'face_too_close'; }
           // 위치: 상단·하단 잘림 + 좌우 치우침
           if (measurable && y1 / norm.height < 0.05) { measurable = false; reason = 'head_cropped'; }
           if (measurable && (norm.height - y2) / norm.height < 0.05) { measurable = false; reason = 'chin_cropped'; }
@@ -494,6 +495,13 @@ const httpServer = createServer(async (req, res) => {
             const eyeSpan = Math.hypot(k[1][0] - k[0][0], k[1][1] - k[0][1]) || 1;
             const midX = (k[0][0] + k[1][0] + k[3][0] + k[4][0]) / 4;
             yawRatio = +(((k[2][0] - midX) / eyeSpan)).toFixed(3);
+            // 정수리 잘림: 눈 미러 crown 추정 − 헤어볼륨 8%(crop.js HAIR_VOLUME_RATIO 정본 계수)가
+            // 프레임 밖이면 크롭 불가 — 고정 크기 캡 대체 (2026-07-09)
+            const eyeY = (k[0][1] + k[1][1]) / 2;
+            const crownEstY = 2 * eyeY - y2;
+            const hairTopEstY = crownEstY - (y2 - crownEstY) * 0.08;
+            crownMargin = +(hairTopEstY / norm.height).toFixed(3);
+            if (measurable && hairTopEstY < 0) { measurable = false; reason = 'crown_cropped'; }
           }
           if (measurable && rollDeg !== null && Math.abs(rollDeg) > 8) { measurable = false; reason = 'head_tilted'; }
           if (measurable && yawRatio !== null && Math.abs(yawRatio) > 0.15) { measurable = false; reason = 'not_frontal'; }
@@ -522,7 +530,7 @@ const httpServer = createServer(async (req, res) => {
       }
       if (measurable) warmupMatteEngine(); // 게이트 통과자만 예열 — 구경·불합격 트래픽 웜 비용 차단
       const out = { measurable, rejectionReason: reason, faceBox, faceRatio, checks: [] };
-      slog(`[IDPhoto][precheck] 코드게이트 측정성=${measurable}${reason ? `(${reason})` : ''} faces=${nFaces} fbH=${faceRatio !== null ? Math.round(faceRatio * norm.height) : '-'}px bright=${bright} shadow=${shadowDiff} roll=${rollDeg} yaw=${yawRatio} ${Date.now() - t0}ms`);
+      slog(`[IDPhoto][precheck] 코드게이트 측정성=${measurable}${reason ? `(${reason})` : ''} faces=${nFaces} fbH=${faceRatio !== null ? Math.round(faceRatio * norm.height) : '-'}px crown=${crownMargin} bright=${bright} shadow=${shadowDiff} roll=${rollDeg} yaw=${yawRatio} ${Date.now() - t0}ms`);
       res.writeHead(200, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify(out));
     } catch (err) {
