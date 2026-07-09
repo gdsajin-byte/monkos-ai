@@ -33,6 +33,46 @@ lmk_session = ort.InferenceSession(LMK_MODEL, providers=["CPUExecutionProvider"]
 lmk_input_name = lmk_session.get_inputs()[0].name
 LMK_INPUT_SIZE = lmk_session.get_inputs()[0].shape[2]  # 192
 
+# 6DRepNet Head Pose 모델 (선택 — 파일 존재 시만 로딩)
+POSE_MODEL = os.environ.get("POSE_MODEL", os.path.join(os.path.dirname(__file__), "models", "6drepnet_mobilenetv3s.onnx"))
+pose_session = None
+if os.path.exists(POSE_MODEL):
+    pose_session = ort.InferenceSession(POSE_MODEL, providers=["CPUExecutionProvider"])
+    pose_input_name = pose_session.get_inputs()[0].name
+    POSE_INPUT_SIZE = 224
+    _IMGNET_MEAN = np.array([0.485, 0.456, 0.406], dtype=np.float32)
+    _IMGNET_STD = np.array([0.229, 0.224, 0.225], dtype=np.float32)
+
+
+def predict_headpose(img, bbox):
+    """6DRepNet: bbox → crop 224×224 → rotation matrix → euler angles (pitch, yaw, roll °)"""
+    if pose_session is None:
+        return None
+    x1, y1, x2, y2 = [int(v) for v in bbox]
+    h, w = img.shape[:2]
+    bw, bh = x2 - x1, y2 - y1
+    cx, cy = (x1 + x2) / 2, (y1 + y2) / 2
+    sz = max(bw, bh) * 1.1
+    nx1, ny1 = max(0, int(cx - sz / 2)), max(0, int(cy - sz / 2))
+    nx2, ny2 = min(w, int(cx + sz / 2)), min(h, int(cy + sz / 2))
+    face = img[ny1:ny2, nx1:nx2]
+    if face.size == 0:
+        return None
+    face = cv2.cvtColor(cv2.resize(face, (POSE_INPUT_SIZE, POSE_INPUT_SIZE)), cv2.COLOR_BGR2RGB)
+    face = (face.astype(np.float32) / 255.0 - _IMGNET_MEAN) / _IMGNET_STD
+    blob = face.transpose(2, 0, 1)[np.newaxis].astype(np.float32)
+    R = pose_session.run(None, {pose_input_name: blob})[0][0]
+    sy = float(np.sqrt(R[0][0]**2 + R[1][0]**2))
+    if sy > 1e-6:
+        pitch = float(np.degrees(np.arctan2(R[2][1], R[2][2])))
+        yaw = float(np.degrees(np.arctan2(-R[2][0], sy)))
+        roll = float(np.degrees(np.arctan2(R[1][0], R[0][0])))
+    else:
+        pitch = float(np.degrees(np.arctan2(-R[1][2], R[1][1])))
+        yaw = float(np.degrees(np.arctan2(-R[2][0], sy)))
+        roll = 0.0
+    return {"pitch": round(pitch, 1), "yaw": round(yaw, 1), "roll": round(roll, 1)}
+
 
 def predict_landmarks(img, bbox):
     """106점 랜드마크 추론 — bbox 중심 기반 정렬 + 역변환으로 원본 좌표 반환"""
@@ -149,11 +189,12 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path == "/health":
             return self._json(200, {"ok": True, "model": os.path.basename(MODEL),
-                                    "lmk": os.path.basename(LMK_MODEL)})
+                                    "lmk": os.path.basename(LMK_MODEL),
+                                    "pose": os.path.basename(POSE_MODEL) if pose_session else "off"})
         self._json(404, {"error": "not found"})
 
     def do_POST(self):
-        if self.path not in ("/detect", "/landmarks"):
+        if self.path not in ("/detect", "/landmarks", "/headpose"):
             return self._json(404, {"error": "not found"})
         try:
             n = int(self.headers.get("Content-Length", 0))
@@ -167,11 +208,21 @@ class Handler(BaseHTTPRequestHandler):
                 faces = detect(img)
                 self._json(200, {"faces": faces, "ms": round((time.time() - t0) * 1000, 1),
                                  "imageSize": {"width": int(img.shape[1]), "height": int(img.shape[0])}})
-            else:
+            elif self.path == "/landmarks":
                 bbox = payload["bbox"]
                 lmk = predict_landmarks(img, bbox)
                 self._json(200, {"landmarks": lmk, "count": len(lmk),
                                  "ms": round((time.time() - t0) * 1000, 1)})
+            elif self.path == "/headpose":
+                bbox = payload.get("bbox")
+                if not bbox:
+                    faces = detect(img)
+                    if not faces:
+                        return self._json(200, {"pose": None, "reason": "no_face",
+                                                "ms": round((time.time() - t0) * 1000, 1)})
+                    bbox = faces[0]["bbox"]
+                pose = predict_headpose(img, bbox)
+                self._json(200, {"pose": pose, "ms": round((time.time() - t0) * 1000, 1)})
         except Exception as e:
             self._json(500, {"error": str(e)})
 

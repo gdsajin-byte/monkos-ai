@@ -57,6 +57,24 @@ async function handleDetect(req, res) {
   }
 }
 
+async function handleHeadpose(req, res) {
+  if (!scrfdReady) {
+    return sendJSON(res, 503, { success: false, error: 'SCRFD 미가동', code: 'DETECT_UNAVAILABLE' });
+  }
+  try {
+    const body = await readBody(req);
+    const upstream = await fetch(`http://127.0.0.1:${SCRFD_PORT}/headpose`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body,
+      signal: AbortSignal.timeout(10000),
+    });
+    const data = await upstream.json();
+    sendJSON(res, upstream.status, { success: true, ...data });
+  } catch (err) {
+    console.error(`[HeadposeAPI] 에러: ${err.message}`);
+    sendJSON(res, 500, { success: false, error: err.message });
+  }
+}
+
 // CORS 헤더
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
@@ -189,15 +207,24 @@ async function handleFitSpec(req, res) {
         }).then(r => r.json());
 
         if (det.faces && det.faces.length > 0 && det.faces[0].score >= 0.4) {
-          const lmk = await fetch(`http://127.0.0.1:${SCRFD_PORT}/landmarks`, {
-            method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ image, bbox: det.faces[0].bbox }),
-            signal: AbortSignal.timeout(10000),
-          }).then(r => r.json());
+          const bbox = det.faces[0].bbox;
+          const [lmkRes, poseRes] = await Promise.all([
+            fetch(`http://127.0.0.1:${SCRFD_PORT}/landmarks`, {
+              method: 'POST', headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ image, bbox }),
+              signal: AbortSignal.timeout(10000),
+            }).then(r => r.json()),
+            fetch(`http://127.0.0.1:${SCRFD_PORT}/headpose`, {
+              method: 'POST', headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ image, bbox }),
+              signal: AbortSignal.timeout(10000),
+            }).then(r => r.json()).catch(() => ({ pose: null })),
+          ]);
 
-          if (lmk.landmarks && lmk.landmarks.length === 106) {
-            landmarks = insightToAnatomy(lmk.landmarks, det.imageSize.width, det.imageSize.height);
-            console.log(`[FitSpec] InsightFace 106점: chin=(${landmarks.chin.y.toFixed(0)}), eye=(${landmarks.leftEye.y.toFixed(0)})`);
+          if (lmkRes.landmarks && lmkRes.landmarks.length === 106) {
+            landmarks = insightToAnatomy(lmkRes.landmarks, det.imageSize.width, det.imageSize.height);
+            if (poseRes.pose) landmarks.pose = poseRes.pose;
+            console.log(`[FitSpec] InsightFace 106점: chin=(${landmarks.chin.y.toFixed(0)}), eye=(${landmarks.leftEye.y.toFixed(0)})${poseRes.pose ? ` pose=p${poseRes.pose.pitch}/y${poseRes.pose.yaw}/r${poseRes.pose.roll}` : ''}`);
           }
         }
       } catch (e) {
@@ -214,7 +241,7 @@ async function handleFitSpec(req, res) {
       return sendJSON(res, 200, { success: true, detected: false });
     }
     const fit = await fitSpecGeometry(imageBuffer, landmarks, spec, { hairScan: hairScan !== false });
-    sendJSON(res, 200, { success: true, detected: true, gate: landmarks.gate || null, ...fit });
+    sendJSON(res, 200, { success: true, detected: true, gate: landmarks.gate || null, pose: landmarks.pose || null, ...fit });
   } catch (err) {
     console.error(`[FitSpecAPI] 에러: ${err.message}`);
     sendJSON(res, 500, { success: false, error: err.message });
@@ -257,6 +284,8 @@ const server = http.createServer((req, res) => {
     handleFitSpec(req, res);
   } else if (req.method === 'POST' && path === '/api/detect') {
     handleDetect(req, res);
+  } else if (req.method === 'POST' && path === '/api/headpose') {
+    handleHeadpose(req, res);
   } else if (req.method === 'GET' && path === '/api/specs') {
     handleSpecs(req, res);
   } else if (req.method === 'GET' && path === '/health') {
@@ -277,7 +306,7 @@ async function start() {
 
   server.listen(PORT, () => {
     console.log(`[CropEngine] 서버 기동: http://localhost:${PORT}`);
-    console.log(`[CropEngine] 엔드포인트: POST /api/crop, POST /api/fit-spec, POST /api/detect, GET /api/specs, GET /health`);
+    console.log(`[CropEngine] 엔드포인트: POST /api/crop, POST /api/fit-spec, POST /api/detect, POST /api/headpose, GET /api/specs, GET /health`);
   });
 }
 
