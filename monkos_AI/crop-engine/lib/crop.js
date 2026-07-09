@@ -52,11 +52,12 @@ export async function cropToFrame(imageBuffer, landmarks, options = {}) {
   const eyeCenterY = (leftEye.y + rightEye.y) / 2;
   const eyeCenterX = (leftEye.x + rightEye.x) / 2;
 
-  // ─── 2. 정수리 추산 (해부학: 눈~정수리 ≈ 눈~턱, pitch 보정) ───
+  // ─── 2. 정수리 추산 (해부학: 눈~정수리 ≈ 눈~턱) ───
   const eyeToChin = chin.y - eyeCenterY;
   const pose = landmarks.pose || {};
   const pitchDeg = pose.pitch || 0;
-  const mirrorRatio = 1.0 + Math.max(-0.10, Math.min(0.10, Math.tan(pitchDeg * Math.PI / 180) * -0.3));
+  // pitch 보정 중립화 — 6DRepNet 오프셋(-4.8°) + 부호 미확정. 캘리브레이션 후 복원 (민아 검증 2026-07-09)
+  const mirrorRatio = 1.0;
   const crownY = eyeCenterY - eyeToChin * mirrorRatio;
   const faceHeight = chin.y - crownY;
 
