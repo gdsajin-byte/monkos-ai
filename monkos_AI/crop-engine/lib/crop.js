@@ -18,13 +18,25 @@ import { getSpec } from '../specs/formats.js';
  */
 
 // ─── 배치 상수 (45mm 프레임 기준, 비율) ───
-const EYE_POSITION_RATIO = 0.43;    // 눈 위치: 프레임 상단에서 43% (중앙보다 ~7% 위)
+const EYE_POSITION_RATIO = 0.43;    // 레거시 폴백 — 실사용은 computeEyeAnchor()
 const HAIR_MARGIN_MIN = 0.044;      // 헤어탑 위 최소 여백: 2mm / 45mm ≈ 4.4%
 const HAIR_VOLUME_RATIO = 0.08;     // 정수리 위 헤어 볼륨 추정: 얼굴높이의 8% (~2.6mm@33mm)
 const FACE_TARGET_MM = 33;          // 얼굴 기본 타겟 (mm)
 const FACE_MIN_MM = 32;             // 얼굴 최소 허용 (mm)
 const FRAME_MM = 45;                // 프레임 높이 (mm)
 const BOTTOM_MIN_RATIO = 0.12;      // 하단 최소 비율: ~5.4mm / 45mm (어깨선 가시)
+
+function computeEyeAnchor(spec) {
+  const faceRatio = (FACE_TARGET_MM / FRAME_MM);
+  const halfFace = faceRatio / 2;
+  const topMarginMin = spec.topMargin || 0.04;
+  const bottomMarginMin = spec.bottomMargin || 0.12;
+  const eyeMin = topMarginMin + halfFace;
+  const eyeMax = 1 - bottomMarginMin - halfFace;
+  if (eyeMin > eyeMax) return 0.44;
+  const eyeOptimal = (eyeMin + eyeMax) / 2;
+  return Math.max(0.42, Math.min(0.48, eyeOptimal));
+}
 
 export async function cropToFrame(imageBuffer, landmarks, options = {}) {
   const { format = 'passport', country = 'KR' } = options;
@@ -40,10 +52,13 @@ export async function cropToFrame(imageBuffer, landmarks, options = {}) {
   const eyeCenterY = (leftEye.y + rightEye.y) / 2;
   const eyeCenterX = (leftEye.x + rightEye.x) / 2;
 
-  // ─── 2. 정수리 추산 (해부학: 눈~정수리 ≈ 눈~턱) ───
+  // ─── 2. 정수리 추산 (해부학: 눈~정수리 ≈ 눈~턱, pitch 보정) ───
   const eyeToChin = chin.y - eyeCenterY;
-  const crownY = eyeCenterY - eyeToChin;  // 눈 위로 눈~턱 거리만큼
-  const faceHeight = chin.y - crownY;     // = eyeToChin * 2
+  const pose = landmarks.pose || {};
+  const pitchDeg = pose.pitch || 0;
+  const mirrorRatio = 1.0 + Math.max(-0.10, Math.min(0.10, Math.tan(pitchDeg * Math.PI / 180) * -0.3));
+  const crownY = eyeCenterY - eyeToChin * mirrorRatio;
+  const faceHeight = chin.y - crownY;
 
   if (faceHeight <= 0) {
     throw new Error('[Crop] 유효하지 않은 얼굴 높이');
@@ -59,8 +74,9 @@ export async function cropToFrame(imageBuffer, landmarks, options = {}) {
   let scale = targetFaceH / faceHeight;
 
   // ─── 5. 눈 위치 앵커로 수직 배치 ───
+  const eyeAnchor = computeEyeAnchor(spec);
   let scaledEyeY = eyeCenterY * scale;
-  let targetEyeY = frameH * EYE_POSITION_RATIO;
+  let targetEyeY = frameH * eyeAnchor;
   let extractTop = Math.round(scaledEyeY - targetEyeY);
 
   // ─── 6. 조건부 보정 ───
@@ -145,10 +161,13 @@ export async function cropToFrame(imageBuffer, landmarks, options = {}) {
     topMarginMM: topMM,
     bottomMarginMM: bottomMM,
     eyePositionPercent: eyePosPercent,
+    eyeAnchor,
+    mirrorRatio: +mirrorRatio.toFixed(2),
+    pitchDeg,
     extractRegion: { left: extractLeft, top: extractTop, width: frameW, height: frameH },
   };
 
-  console.log(`[Crop] 완료: face=${actualFaceMM}mm, top=${topMM}mm, bottom=${bottomMM}mm, eye=${eyePosPercent}%, scale=${meta.scale}`);
+  console.log(`[Crop] 완료: face=${actualFaceMM}mm, top=${topMM}mm, bottom=${bottomMM}mm, eye=${eyePosPercent}%, scale=${meta.scale}, mirror=${mirrorRatio.toFixed(2)}, pitch=${pitchDeg}°`);
   return { buffer: croppedBuffer, meta };
 }
 
@@ -298,15 +317,15 @@ export async function fitSpecGeometry(imageBuffer, landmarks, spec, opts = {}) {
   const { chin, leftEye, rightEye, imageWidth, imageHeight } = landmarks;
   const eyeY = (leftEye.y + rightEye.y) / 2;
   const eyeCenterX = (leftEye.x + rightEye.x) / 2;
-  const crownY = eyeY - (chin.y - eyeY); // 정수리 = 눈~턱 1:1 미러 (CropEngine.swift:254)
+  const pose = landmarks.pose || {};
+  const pitchDeg = pose.pitch || 0;
+  const mirrorRatio = 1.0 + Math.max(-0.10, Math.min(0.10, Math.tan(pitchDeg * Math.PI / 180) * -0.3));
+  const crownY = eyeY - (chin.y - eyeY) * mirrorRatio;
   const facePx = chin.y - crownY;
   if (facePx <= 0) throw new Error('[FitSpec] 유효하지 않은 얼굴 높이');
 
-  // ─── IDPASS 정본 배치 엔진 그대로 포팅 (CropEngine.swift:252-307, 2026-07-07 완전분석) ───
-  // 상수: HAIR_MARGIN_MIN 0.044 / HAIR_VOLUME_RATIO 0.08 / BOTTOM_MIN_RATIO 0.12
-  // 헤어탑 = 추정(정수리 − 얼굴높이×8%) — 실측 스캔 아님 (순백 스캔은 실사 배경 오판 실사고로 폐기)
   const hairTopY = crownY - facePx * HAIR_VOLUME_RATIO;
-  const eyeAnchor = frameHmm >= 60 ? 0.42 : 0.43; // 정본: 대형 프레임 42% 분기 (CropEngine.swift:252)
+  const eyeAnchor = frameHmm >= 60 ? 0.42 : 0.43;
 
   let scale = (faceTargetMm * mmPx) / facePx;
   let extractTop = Math.round(eyeY * scale - eyeAnchor * frameH);
@@ -341,6 +360,9 @@ export async function fitSpecGeometry(imageBuffer, landmarks, spec, opts = {}) {
     crownMarginMM: ((crownY * scale - extractTop) / mmPx).toFixed(1),
     hairMarginMM: ((hairTopY * scale - extractTop) / mmPx).toFixed(1),
     eyePositionPercent: ((eyeY * scale - extractTop) / frameH * 100).toFixed(1),
+    eyeAnchor,
+    mirrorRatio: +mirrorRatio.toFixed(2),
+    pitchDeg,
     scale: Math.round(scale * 1000) / 1000,
     padded: !canClampX || !canClampY,
   };
