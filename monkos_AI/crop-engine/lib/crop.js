@@ -79,13 +79,13 @@ export async function cropToFrame(imageBuffer, landmarks, options = {}) {
   // hard 제약: 정수리 잘림 금지 (여백 ≥ 0)
   const topMax = Math.round(crownY * scale);
 
-  // soft 타겟: 헤어탑 위 2mm
-  const topTarget = Math.round(hairTopY * scale - softMarginPx);
+  // soft 타겟: 헤어탑 실측 있으면 헤어 위 2mm, 없으면 정수리 위 2mm
+  const hasHairTop = landmarks.hairTop != null;
+  const topTarget = hasHairTop
+    ? Math.round(hairTopY * scale - softMarginPx)  // 실측 헤어탑 위 2mm
+    : Math.round(crownY * scale - softMarginPx);   // 정수리 위 2mm (= 눈 ~43%)
 
-  // 하한 없음 — 어깨는 soft, 강제하지 않음
-  const topMin = 0;
-
-  let extractTop = Math.max(topMin, Math.min(topMax, topTarget));
+  let extractTop = Math.max(0, Math.min(topMax, topTarget));
 
   // 스케일 축소 시도: 헤어탑이 프레임 밖이면 32.5mm까지
   if (hairTopY * scale - extractTop < 0) {
@@ -256,9 +256,11 @@ export async function fitSpecGeometry(imageBuffer, landmarks, spec, opts = {}) {
 
   // 제약 기반 clamp 배치
   const topMax = Math.round(crownY * scale);
-  const topTarget = Math.round(hairTopY * scale - softMarginPx);
-  const topMin = 0;
-  let extractTop = Math.max(topMin, Math.min(topMax, topTarget));
+  const hasHairTop = landmarks.hairTop != null;
+  const topTarget = hasHairTop
+    ? Math.round(hairTopY * scale - softMarginPx)
+    : Math.round(crownY * scale - softMarginPx);
+  let extractTop = Math.max(0, Math.min(topMax, topTarget));
 
   if (hairTopY * scale - extractTop < 0) {
     const minTargetFaceH = faceMinMm * mmPx;
