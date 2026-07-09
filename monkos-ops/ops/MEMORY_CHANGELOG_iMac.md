@@ -466,3 +466,8 @@
 
 **[2026-07-08 13:03 KST]** iMac/민아
 - 추가: project_ga4_test_traffic_contamination.md — GA4 수치=작가님 자가 테스트 오염, 실 유입 0 간주 (07-08 직접 교정. specs 50:50 근거 데스크톱 권고 철회 계기). MEMORY.md "데이터 주의" 섹션 신설 1행 추가.
+
+## [2026-07-09 15:55 KST] iMac/민아 — 세션 마감분
+- 신규: `feedback_fable_owner_level_output.md` — 과잉 유보 금지, 판단 먼저. "새 모델 제한" 법률 맥락은 소형 모델 대상 (작가님 직접 교정)
+- 갱신: `project_role_recognition.md` — 잔존 세션 로그의 에이전트명으로 역할 추정 금지 (7/9 막내1 오인 실사고)
+- MEMORY.md 인덱스에 Fable 출력 기대치 1행 추가
