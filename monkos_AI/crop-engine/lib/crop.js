@@ -75,7 +75,7 @@ export async function cropToFrame(imageBuffer, landmarks, options = {}) {
   let scale = targetFaceH / faceHeight;
 
   // ─── 5. 눈 위치 앵커로 수직 배치 ───
-  const eyeAnchor = computeEyeAnchor(spec);
+  const eyeAnchor = EYE_POSITION_RATIO;  // 0.43 원복 — pitch·헤어라인 준비 후 computeEyeAnchor 복원
   let scaledEyeY = eyeCenterY * scale;
   let targetEyeY = frameH * eyeAnchor;
   let extractTop = Math.round(scaledEyeY - targetEyeY);
@@ -327,7 +327,7 @@ export async function fitSpecGeometry(imageBuffer, landmarks, spec, opts = {}) {
   if (facePx <= 0) throw new Error('[FitSpec] 유효하지 않은 얼굴 높이');
 
   const hairTopY = crownY - facePx * HAIR_VOLUME_RATIO;
-  const eyeAnchor = computeEyeAnchor({ topMargin: spec.topMargin || 0.07, bottomMargin: spec.bottomMargin || 0.19 });
+  const eyeAnchor = frameHmm >= 60 ? 0.42 : 0.43;  // 원복 — pitch·헤어라인 준비 후 computeEyeAnchor 복원
 
   let scale = (faceTargetMm * mmPx) / facePx;
   let extractTop = Math.round(eyeY * scale - eyeAnchor * frameH);

@@ -489,23 +489,9 @@ const httpServer = createServer(async (req, res) => {
           if (measurable && (norm.height - y2) / norm.height < 0.05) { measurable = false; reason = 'chin_cropped'; }
           const faceCenterX = (x1 + x2) / 2;
           if (measurable && Math.abs(faceCenterX - norm.width / 2) / norm.width > 0.15) { measurable = false; reason = 'off_center'; }
-          // 6DRepNet 정밀 포즈 (5점 kps 간접추정 교체, R&D 실측 2026-07-09)
-          try {
-            const poseRes = await fetch(`${CROP_ENGINE_URL}/api/headpose`, {
-              method: 'POST', headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ image: norm.b64, bbox: [x1, y1, x2, y2] }),
-              signal: AbortSignal.timeout(10000),
-            }).then(r => r.json());
-            if (poseRes.pose) {
-              posePitch = poseRes.pose.pitch;
-              poseYaw = poseRes.pose.yaw;
-              poseRoll = poseRes.pose.roll;
-              poseModel = '6drep';
-            }
-          } catch (pe) {
-            slog(`[IDPhoto][precheck] headpose 불가 (${pe.message}) → 5점 kps 폴백`);
-          }
-          // 5점 kps 폴백 + 정수리 잘림 게이트 (kps는 항상 계산 — crown 추정에 필요)
+          // precheck에서 headpose 호출 제거 — 콜드스타트 15초 원인 + 부호 미확정 (2026-07-09)
+          // pitch 게이트는 캘리브레이션 후 복원. roll/yaw는 5점 kps로 충분 (R&D 실측 MAD 1°)
+          // 5점 kps + 정수리 잘림 게이트
           const k = f.kps;
           if (k && k.length >= 5) {
             rollDeg = +((Math.atan2(k[1][1] - k[0][1], k[1][0] - k[0][0]) * 180) / Math.PI).toFixed(1);
@@ -518,14 +504,9 @@ const httpServer = createServer(async (req, res) => {
             crownMargin = +(hairTopEstY / norm.height).toFixed(3);
             if (measurable && hairTopEstY < 0) { measurable = false; reason = 'crown_cropped'; }
           }
-          // 포즈 게이트 — 6DRepNet 우선, 불가 시 5점 kps 폴백
-          const effectiveRoll = poseRoll !== null ? poseRoll : rollDeg;
-          const effectiveYaw = poseYaw !== null ? poseYaw : (yawRatio !== null ? Math.asin(Math.min(1, Math.abs(yawRatio) * 2)) * 180 / Math.PI * Math.sign(yawRatio) : null);
-          const effectivePitch = posePitch;
-          if (!poseModel) poseModel = 'kps';
-          if (measurable && effectiveRoll !== null && Math.abs(effectiveRoll) > 8) { measurable = false; reason = 'head_tilted'; }
-          if (measurable && effectiveYaw !== null && Math.abs(effectiveYaw) > 15) { measurable = false; reason = 'not_frontal'; }
-          if (measurable && effectivePitch !== null && Math.abs(effectivePitch) > 20) { measurable = false; reason = effectivePitch > 0 ? 'chin_too_low' : 'chin_too_high'; }
+          // 포즈 게이트 — 5점 kps (roll/yaw 충분, pitch는 캘리브레이션 후 복원)
+          if (measurable && rollDeg !== null && Math.abs(rollDeg) > 8) { measurable = false; reason = 'head_tilted'; }
+          if (measurable && yawRatio !== null && Math.abs(yawRatio) > 0.15) { measurable = false; reason = 'not_frontal'; }
           // 밝기·그림자: 얼굴 박스 픽셀 통계
           try {
             const { default: sharp } = await import('sharp');
@@ -551,7 +532,7 @@ const httpServer = createServer(async (req, res) => {
       }
       if (measurable) warmupMatteEngine(); // 게이트 통과자만 예열 — 구경·불합격 트래픽 웜 비용 차단
       const out = { measurable, rejectionReason: reason, faceBox, faceRatio, checks: [] };
-      slog(`[IDPhoto][precheck] 코드게이트 측정성=${measurable}${reason ? `(${reason})` : ''} faces=${nFaces} fbH=${faceRatio !== null ? Math.round(faceRatio * norm.height) : '-'}px crown=${crownMargin} bright=${bright} shadow=${shadowDiff} roll=${poseRoll ?? rollDeg} yaw=${poseYaw ?? yawRatio} pitch=${posePitch} poseModel=${poseModel ?? 'none'} ${Date.now() - t0}ms`);
+      slog(`[IDPhoto][precheck] 코드게이트 측정성=${measurable}${reason ? `(${reason})` : ''} faces=${nFaces} fbH=${faceRatio !== null ? Math.round(faceRatio * norm.height) : '-'}px crown=${crownMargin} bright=${bright} shadow=${shadowDiff} roll=${rollDeg} yaw=${yawRatio} ${Date.now() - t0}ms`);
       res.writeHead(200, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify(out));
     } catch (err) {
