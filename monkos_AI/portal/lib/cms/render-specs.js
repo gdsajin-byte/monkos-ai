@@ -2442,7 +2442,9 @@ ${hreflangTags}
               off_center: '얼굴이 한쪽으로 치우쳐 있어요. 중앙에서 찍어주세요.',
               too_dark: '사진이 너무 어두워요. 밝은 곳에서 찍어주세요.',
               too_bright: '사진이 너무 밝아요. 직사광선을 피해주세요.',
-              side_angle: '옆모습이에요. 정면 사진을 올려주세요.',
+              head_tilted: '고개가 기울어져 있어요. 고개를 바로 세우고 찍어주세요.',
+              not_frontal: '옆모습이에요. 정면을 바라보고 찍어주세요.',
+              uneven_lighting: '얼굴에 그림자가 져 있어요. 균일한 조명에서 찍어주세요.',
               occluded: '얼굴이 가려져 있어요. 가림 없는 사진을 올려주세요.'
             };
             summary.className = 'v2-checklist-summary v2-summary-fail';

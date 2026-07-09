@@ -487,7 +487,7 @@ const httpServer = createServer(async (req, res) => {
           if (measurable && (norm.height - y2) / norm.height < 0.05) { measurable = false; reason = 'chin_cropped'; }
           const faceCenterX = (x1 + x2) / 2;
           if (measurable && Math.abs(faceCenterX - norm.width / 2) / norm.width > 0.15) { measurable = false; reason = 'off_center'; }
-          // 각도(5점 kps): 관측 로그만 — 판정은 postcheck(fit judge)로 이관
+          // 각도(5점 kps) + 그림자: 측정 불가 차단 (2026-07-09 precheck 복원)
           const k = f.kps;
           if (k && k.length >= 5) {
             rollDeg = +((Math.atan2(k[1][1] - k[0][1], k[1][0] - k[0][0]) * 180) / Math.PI).toFixed(1);
@@ -495,7 +495,9 @@ const httpServer = createServer(async (req, res) => {
             const midX = (k[0][0] + k[1][0] + k[3][0] + k[4][0]) / 4;
             yawRatio = +(((k[2][0] - midX) / eyeSpan)).toFixed(3);
           }
-          // 밝기·그림자: 얼굴 박스 픽셀 통계 (그림자는 관측만 — 임계 실측 후)
+          if (measurable && rollDeg !== null && Math.abs(rollDeg) > 8) { measurable = false; reason = 'head_tilted'; }
+          if (measurable && yawRatio !== null && Math.abs(yawRatio) > 0.15) { measurable = false; reason = 'not_frontal'; }
+          // 밝기·그림자: 얼굴 박스 픽셀 통계
           try {
             const { default: sharp } = await import('sharp');
             const exl = Math.max(0, Math.round(x1)), ext = Math.max(0, Math.round(y1));
@@ -513,6 +515,7 @@ const httpServer = createServer(async (req, res) => {
               shadowDiff = +Math.abs(sL.channels[0].mean - sR.channels[0].mean).toFixed(0);
               if (measurable && bright < 40) { measurable = false; reason = 'too_dark'; }
               if (measurable && bright > 240) { measurable = false; reason = 'too_bright'; }
+              if (measurable && shadowDiff !== null && shadowDiff > 50) { measurable = false; reason = 'uneven_lighting'; }
             }
           } catch { /* 통계 실패 시 게이트 미적용 */ }
         }
