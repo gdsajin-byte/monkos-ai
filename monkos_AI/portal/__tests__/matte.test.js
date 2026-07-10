@@ -70,13 +70,14 @@ describe('stripDataUri — 프론트 데이터 URI 정규화 (카나리 1호 버
   });
 });
 
-describe('규격 안착 가드 (카나리 2호 실측)', () => {
-  test('정상군(새벽 실측) 통과, 이탈군(카페 와이드) 차단', async () => {
+describe('규격 안착 가드 (카나리 2호 실측 + 2026-07-10 정본 정렬)', () => {
+  test('IDPASS 정본 blocked 게이트(eye 40~48%)와 동일 창 — 경계 포함 통과, 밖 차단', async () => {
     const { cropMetaWithinSpec } = await import('../lib/matte.js');
-    expect(cropMetaWithinSpec({ crownMarginMM: '5.4', eyePositionPercent: '39.7' })).toBe(true);
-    expect(cropMetaWithinSpec({ crownMarginMM: '5.7', eyePositionPercent: '48.0' })).toBe(true);
-    expect(cropMetaWithinSpec({ crownMarginMM: '16.7', eyePositionPercent: '72.4' })).toBe(false);
+    expect(cropMetaWithinSpec({ crownMarginMM: '5.4', eyePositionPercent: '40.0' })).toBe(true);  // 하한 경계
+    expect(cropMetaWithinSpec({ crownMarginMM: '5.7', eyePositionPercent: '48.0' })).toBe(true);  // 상한 경계
     expect(cropMetaWithinSpec({ crownMarginMM: '2.8', eyePositionPercent: '44.4' })).toBe(true);
+    expect(cropMetaWithinSpec({ crownMarginMM: '5.4', eyePositionPercent: '39.7' })).toBe(false); // 구 창(33~58) 통과분 — 정본상 blocked
+    expect(cropMetaWithinSpec({ crownMarginMM: '16.7', eyePositionPercent: '72.4' })).toBe(false);
     expect(cropMetaWithinSpec({})).toBe(true); // 메타 부재 시 통과 (엔진 신뢰)
   });
 });

@@ -10,6 +10,10 @@ import { jest } from '@jest/globals';
 
 jest.unstable_mockModule('../lib/shared/config.js', () => ({
   log: jest.fn(),
+  // render-specs가 spec-crop.js(getSpecCropParams)를 import — 그쪽 텔레그램 경보부 링크 요건 (2026-07-10)
+  sendTelegramMessage: jest.fn(),
+  TELEGRAM_TEAM_API: '',
+  TEAM_CHAT_ID: '',
   LEMONSQUEEZY_VARIANT_SPECS_SINGLE: 'test-variant-single',
   LEMONSQUEEZY_VARIANT_SPECS_SINGLE_JP: 'test-variant-single-jp',
 }));

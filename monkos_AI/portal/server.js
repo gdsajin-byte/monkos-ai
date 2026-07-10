@@ -248,10 +248,15 @@ const httpServer = createServer(async (req, res) => {
     return;
   }
 
+  // 세션·언어·결제권역 식별은 메서드 무관 — GET 한정이던 구 구조에선 모든 POST 핸들러의
+  // 서버측 trackEvent가 req.sessionId/req.paymentRegion을 잃었다 (2026-07-10 적대검증 #1).
+  // 쿠키 발급(Set-Cookie)은 종전대로 GET 페이지 응답에서만.
+  req.lang = detectLang(req);
+  req.paymentRegion = detectPaymentRegion(req);
+  const cookies = parseCookies(req.headers.cookie);
+  req.sessionId = cookies.monkos_sid || null;
+
   if (req.method === 'GET') {
-    req.lang = detectLang(req);
-    req.paymentRegion = detectPaymentRegion(req);
-    const cookies = parseCookies(req.headers.cookie);
     const setCookies = [];
     if (cookies.monkos_lang !== req.lang) {
       setCookies.push(`monkos_lang=${req.lang};Domain=.monkos.ai;Path=/;Max-Age=31536000;SameSite=Lax`);
@@ -260,8 +265,6 @@ const httpServer = createServer(async (req, res) => {
       const sid = crypto.randomUUID();
       setCookies.push(`monkos_sid=${sid};Domain=.monkos.ai;Path=/;Max-Age=63072000;SameSite=Lax`);
       req.sessionId = sid;
-    } else {
-      req.sessionId = cookies.monkos_sid;
     }
     if (setCookies.length > 0) {
       res.setHeader('Set-Cookie', setCookies);
@@ -630,6 +633,12 @@ const httpServer = createServer(async (req, res) => {
       res.writeHead(429, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify({ error: '요청이 너무 많습니다. 잠시 후 다시 시도해주세요.', code: 'RATE_LIMITED' }));
     }
+    // 게이트 소모분(무료 선차감·토큰 쿼터·크레딧) 반환 예약 — 게이트 통과 시 장착, 산출물 확정 시 해제.
+    // 실패 경로 어디서든 최대 1회 발화. 게이트 이후 비보호 구간(normalizeImage·cropToSpec 등)의
+    // throw가 과금+무산출로 남던 공백 봉합 (2026-07-10 적대검증 #2).
+    let gateMode = null;
+    let refundGate = null;
+    const fireRefundGate = () => { const fire = refundGate; refundGate = null; if (fire) fire(); };
     try {
       const { parseJsonBody, parseCookies: pc, verifyAuthToken } = await import('./lib/shared/config.js');
       const body = await parseJsonBody(req);
@@ -642,7 +651,6 @@ const httpServer = createServer(async (req, res) => {
       }
 
       // 결제 게이트: ① 결제 토큰(비로그인 단건) ② 로그인 크레딧 ③ T0 무료(파일럿) — 셋 다 아니면 402
-      let gateMode = null;
       let gateUserId = 'specs-visitor';
       let remainingGenerates = null;
       let freeQuota = null;
@@ -678,6 +686,7 @@ const httpServer = createServer(async (req, res) => {
         }
         if (srvQuota && srvQuota.count) freeQuota = { date: freeQuota.date, count: srvQuota.count - 1 }; // 쿠키 표기를 서버 정본에 동기
         gateMode = 'free';
+        refundGate = () => refundFreeQuota(req).catch(() => {});
       } else if (paymentToken) {
         const gate = await consumeGenerateQuota(paymentToken);
         if (!gate.ok) {
@@ -686,6 +695,7 @@ const httpServer = createServer(async (req, res) => {
         }
         gateMode = 'token';
         remainingGenerates = gate.remainingGenerates;
+        refundGate = () => refundGenerateQuota(paymentToken).catch(() => {});
       } else {
         const cookies = pc(req.headers.cookie);
         const session = cookies.monkos_session ? verifyAuthToken(cookies.monkos_session) : null;
@@ -706,6 +716,11 @@ const httpServer = createServer(async (req, res) => {
         }
         gateMode = 'credits';
         gateUserId = session.userId;
+        refundGate = () => fetch(`http://localhost:${PORT}/api/credits/refund`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Cookie': req.headers.cookie },
+          body: JSON.stringify({ userId: gateUserId, type: 'generate' }),
+        }).catch(() => {});
       }
 
       // 엔진 예열 — 감지·크롭/매팅과 병렬로 콜드스타트 흡수 (fire-and-forget)
@@ -765,7 +780,7 @@ const httpServer = createServer(async (req, res) => {
 
       // T0 무료: 매팅 실패 시 Gemini 폴백 금지 — 무료 원가 상한(매팅비)만 허용. 선차감분 반환 후 종료.
       if (gateMode === 'free' && !finalBase64) {
-        refundFreeQuota(req).catch(() => {});
+        fireRefundGate();
         res.writeHead(503, { 'Content-Type': 'application/json' });
         return res.end(JSON.stringify({ error: '지금 무료 처리가 몰려 있어요. 잠시 후 다시 시도해주세요.', code: 'FREE_UNAVAILABLE' }));
       }
@@ -779,15 +794,7 @@ const httpServer = createServer(async (req, res) => {
           generatedBase64 = await generateIdPhoto({ image: norm.b64, format: format || 'passport', gender, age, model: effectiveModel, userId: gateUserId === 'specs-visitor' ? 'specs-visitor' : gateUserId, framing: slug ? 'wide' : undefined });
         } catch (genErr) {
           // 서버측 생성 실패 → 소모분 반환 (토큰 쿼터 / 크레딧)
-          if (gateMode === 'token') {
-            refundGenerateQuota(paymentToken).catch(() => {});
-          } else if (gateMode === 'credits') {
-            fetch(`http://localhost:${PORT}/api/credits/refund`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json', 'Cookie': req.headers.cookie },
-              body: JSON.stringify({ userId: gateUserId, type: 'generate' }),
-            }).catch(() => {});
-          }
+          fireRefundGate();
           log(`[IDPhoto] 생성 실패 → 소모분 반환(${gateMode}): ${genErr.message}`, 'WARNING');
           res.writeHead(500, { 'Content-Type': 'application/json' });
           return res.end(JSON.stringify({ error: '생성에 실패했습니다. 다시 시도해주세요.', code: 'GENERATE_FAILED' }));
@@ -814,7 +821,7 @@ const httpServer = createServer(async (req, res) => {
       trackEvent({
         eventName: 'api_generate',
         userId: gateUserId === 'specs-visitor' ? null : gateUserId,
-        sessionId: parseCookies(req.headers.cookie).monkos_sid || null,
+        sessionId: req.sessionId,
         service: 'specs',
         params: { gate: gateMode, slug: slug || null, track: genTrack || null },
       }).catch(() => {});
@@ -825,9 +832,12 @@ const httpServer = createServer(async (req, res) => {
         remainingFree = Math.max(0, FREE_DAILY_CAP - newCount);
         res.setHeader('Set-Cookie', freeQuotaCookie(freeQuota.date, newCount));
       }
+      refundGate = null; // 산출물 확정 — 이후 실패는 반환 대상 아님
       res.writeHead(200, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify({ image: finalBase64, remainingGenerates, remainingFree, track: genTrack, cropEngine, meta: resultMeta }));
     } catch (err) {
+      if (refundGate) log(`[IDPhoto] 처리 실패 → 소모분 반환(${gateMode})`, 'WARNING');
+      fireRefundGate();
       log(`[IDPhoto] 에러: ${err.message}`, 'ERROR');
       res.writeHead(500, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify({ error: '처리 중 오류가 발생했습니다', code: 'INTERNAL_ERROR' }));
@@ -901,8 +911,7 @@ const httpServer = createServer(async (req, res) => {
       'open_credit_shop', 'start_payment', 'session_end',
       'generate_complete',
     ];
-    const cookies = parseCookies(req.headers.cookie);
-    const sessionId = cookies.monkos_sid || null;
+    const sessionId = req.sessionId;
     for (const evt of events) {
       if (!ALLOWED_EVENTS.includes(evt.event_name)) continue;
       trackEvent({

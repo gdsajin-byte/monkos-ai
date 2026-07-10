@@ -70,13 +70,16 @@ export function stripDataUri(b64) {
  * 규격 안착 가드 — 크롭 성공 플래그만 믿지 않는다 (2026-07-07 카나리 2호 실측:
  * 인물이 작은 와이드 원본에서 crown 16.7mm·눈높이 72.4% 크롭이 success로 반환됨).
  * 허용창 밖이면 신경로 포기 → Gemini 재프레이밍 경로가 흡수.
- * 준거: 새벽 실측 정상군 crown 5.4~5.7mm·눈높이 39.7~48.0% (크롭 수학 v3 개선 시 재조정).
+ * 눈높이 창은 IDPASS 정본 blocked 게이트(spec-judge.js, eye 40~48%)와 동일 수치 —
+ * 비-fit 경로 가드가 다운로드 물리 게이트보다 느슨하면 blocked 범위 산출물이 그대로
+ * 출고된다 (2026-07-10 적대검증 #3. 구 창 33~58은 실측 정상군 39.7~48.0% 기반 임시치였음).
+ * spec-judge는 "재해석 금지 이식" 정본이라 상수 공유 대신 수치 정렬로 유지.
  */
 export function cropMetaWithinSpec(meta) {
   const crown = parseFloat(meta?.crownMarginMM);
   const eye = parseFloat(meta?.eyePositionPercent);
   if (Number.isFinite(crown) && crown > 10) return false;
-  if (Number.isFinite(eye) && (eye < 33 || eye > 58)) return false;
+  if (Number.isFinite(eye) && (eye < 40 || eye > 48)) return false;
   return true;
 }
 
