@@ -1900,6 +1900,14 @@ const IDPASS_PILOT_STYLE = `
 .ip-card-list li::before { content:"✓"; position:absolute; left:2px; color:#0e8a5f; font-weight:800; font-size:12px; }
 .ip-btn-mid { width:100%; height:46px; font-size:14.5px; margin-top:12px; background:#fff; color:#5a3de6; border:1.5px solid #c9bdf2; }
 .ip-card-soon { opacity:.75; }
+.idpass-pilot .v2-make-layout { animation: ipfade .28s ease; }
+@keyframes ipfade { from { opacity:0; } to { opacity:1; } }
+.idpass-pilot .v2-pay-grid { min-height: 380px; align-items: start; }
+.ip-summary-ok { text-align:center; font-size:13px; color:#0a6b4a; font-weight:600; margin:6px 0 2px; }
+.ip-free-side { text-align:left; }
+.ip-free-side .ip-free-kicker { display:block; }
+.ip-free-h { font-size:20px; font-weight:800; color:#17151f; margin:6px 0 12px; line-height:1.35; word-break:keep-all; }
+.ip-free-side .ip-free-cap { text-align:left; }
 .ip-card-soon .ip-btn-mid { color:#8b879b; border-color:#dcd8e8; cursor:default; }
 .ip-card-t2 { background:#17151f; border-color:#17151f; color:#efedf6; }
 .ip-t2-badge { display:inline-block; background:rgba(139,115,255,.18); color:#c9bbff; font-size:10.5px; letter-spacing:2px; font-weight:700; font-family:monospace; border-radius:7px; padding:4px 9px; }
@@ -2159,10 +2167,10 @@ ${hreflangTags}
             <img id="v2-check-img" src="" alt="${escapeHtml(v2.altCheck)}">
           </div>
           <div class="v2-checklist-side">
-            <div class="v2-checklist-title">${escapeHtml(v2.checkTitle)}</div>
+            <div class="v2-checklist-title">${isPilot ? '사진 확인 중' : escapeHtml(v2.checkTitle)}</div>
             <div class="v2-checklist-loading" id="v2-loading">
               <div class="v2-spinner"></div>
-              <span>${escapeHtml(v2.checking)}</span>
+              <span>${isPilot ? '고객님의 사진을 확인하고 있습니다...' : escapeHtml(v2.checking)}</span>
             </div>
             <ul class="v2-checklist-items" id="v2-checklist-items"></ul>
             <div class="v2-checklist-summary" id="v2-summary"></div>
@@ -2193,7 +2201,7 @@ ${hreflangTags}
             <div id="v2-fit-status" style="text-align:center;margin-top:10px;font-size:13px;color:#777;min-height:18px;"></div>
           </div>
           <div class="v2-checklist-side">
-            <div class="v2-checklist-title">규격 안착</div>
+            ${isPilot ? '' : '<div class="v2-checklist-title">규격 안착</div>'}
             <div id="v2-fit-badges" style="display:none;gap:8px;flex-wrap:wrap;margin:8px 0;"></div>
             <div id="v2-fit-note" style="display:none;font-size:12.5px;color:#555;background:#f6f6fb;border-radius:8px;padding:8px 10px;margin:6px 0;"></div>
             <div class="v2-checklist-summary" id="v2-fit-summary"></div>
@@ -2266,51 +2274,50 @@ ${hreflangTags}
         </div>
       </div>
 
-      ${isPilot ? `<!-- S3 땡큐 — T0 무료 결과 + 업셀 사다리 (IDPASS 파일럿) -->
+      ${isPilot ? `<!-- S3 땡큐 — 동일 프레임(2컬럼) 유지: 사진 자리 고정, 패널만 진화 (2026-07-10 작가님 연속성 지시) -->
       <div class="v2-make-layout" id="v2-phase-free" style="display:none;">
-        <div class="ip-free-wrap">
-          <div class="ip-free-hero">
+        <div class="v2-pay-grid">
+          <div class="v2-pay-preview">
+            <div class="ip-free-photo"><img id="ip-free-img" src="" alt="완성된 여권 규격 사진"></div>
+            <div class="ip-free-spec">3.5 × 4.5cm · 300dpi · 흰 배경</div>
+          </div>
+          <div class="ip-free-side">
             <span class="ip-free-kicker">DONE · KR PASSPORT</span>
-            <h3>완성! 여권 규격에 맞춰 만들었어요</h3>
+            <h3 class="ip-free-h">완성! 여권 규격에 맞춰 만들었어요</h3>
+            <div class="ip-free-btnrow">
+              <button class="ip-btn ip-btn-primary" id="ip-free-download">다운로드</button>
+              <button class="ip-btn ip-btn-ghost" id="ip-free-retry">다른 사진</button>
+            </div>
+            <div class="ip-free-cap">오늘 무료 <span id="ip-free-remaining">-</span>회 남음</div>
+            ${t1RetouchOn ? `<div class="ip-card ip-card-t1">
+              <div class="ip-card-head"><b>AI 보정</b><span class="ip-price">₩2,000</span></div>
+              <ul class="ip-card-list">
+                <li>AI 리터칭 — 내 얼굴 그대로, 더 단정하게</li>
+                <li>AI 규격 검수</li>
+                <li>여권 규격 보정 파일</li>
+              </ul>
+              <button class="ip-btn ip-btn-mid" id="ip-t1-buy">AI 보정으로 업그레이드</button>
+            </div>` : `<div class="ip-card ip-card-t1 ip-card-soon">
+              <div class="ip-card-head"><b>AI 보정</b><span class="ip-price">₩2,000</span></div>
+              <ul class="ip-card-list">
+                <li>AI 리터칭 — 내 얼굴 그대로, 더 단정하게</li>
+                <li>AI 규격 검수</li>
+              </ul>
+              <button class="ip-btn ip-btn-mid" id="ip-t1-buy" disabled>곧 열려요 — 준비 중</button>
+            </div>`}
+            <div class="ip-card ip-card-t2">
+              <span class="ip-t2-badge">◆ 발급보장</span>
+              <h4>전문 검수 + 반려 시 100% 환불</h4>
+              <p>접수 반려 걱정까지 책임지는 프리미엄 검수 서비스예요.</p>
+              <div class="ip-t2-price"><b>₩9,900</b><span>별도 서비스로 진행</span></div>
+              <a class="ip-btn ip-btn-t2" id="ip-t2-go" href="${upsellHref}" data-cta="specs-upsell" rel="noopener">발급보장으로 만들기</a>
+            </div>
+            <a class="ip-slot" id="ip-slot-credit" href="/credits.html">
+              <span class="ip-slot-ic">🎁</span>
+              <span class="ip-slot-txt"><b>간편로그인하면 10c 크레딧</b><span>AI 보정 1회가 ₩1,500이 돼요</span></span>
+              <span class="ip-slot-tag">EVENT</span>
+            </a>
           </div>
-          <div class="ip-free-photo"><img id="ip-free-img" src="" alt="완성된 여권 규격 사진"></div>
-          <div class="ip-free-spec">3.5 × 4.5cm · 300dpi · 흰 배경</div>
-          <div class="ip-free-btnrow">
-            <button class="ip-btn ip-btn-primary" id="ip-free-download">다운로드</button>
-            <button class="ip-btn ip-btn-ghost" id="ip-free-retry">다른 사진</button>
-          </div>
-          <div class="ip-free-cap">오늘 무료 <span id="ip-free-remaining">-</span>회 남음</div>
-
-          ${t1RetouchOn ? `<div class="ip-card ip-card-t1">
-            <div class="ip-card-head"><b>AI 보정</b><span class="ip-price">₩2,000</span></div>
-            <ul class="ip-card-list">
-              <li>AI 리터칭 — 내 얼굴 그대로, 더 단정하게</li>
-              <li>AI 규격 검수</li>
-              <li>여권 규격 보정 파일</li>
-            </ul>
-            <button class="ip-btn ip-btn-mid" id="ip-t1-buy">AI 보정으로 업그레이드</button>
-          </div>` : `<div class="ip-card ip-card-t1 ip-card-soon">
-            <div class="ip-card-head"><b>AI 보정</b><span class="ip-price">₩2,000</span></div>
-            <ul class="ip-card-list">
-              <li>AI 리터칭 — 내 얼굴 그대로, 더 단정하게</li>
-              <li>AI 규격 검수</li>
-            </ul>
-            <button class="ip-btn ip-btn-mid" id="ip-t1-buy" disabled>곧 열려요 — 준비 중</button>
-          </div>`}
-
-          <div class="ip-card ip-card-t2">
-            <span class="ip-t2-badge">◆ 발급보장</span>
-            <h4>전문 검수 + 반려 시 100% 환불</h4>
-            <p>접수 반려 걱정까지 책임지는 프리미엄 검수 서비스예요.</p>
-            <div class="ip-t2-price"><b>₩9,900</b><span>별도 서비스로 진행</span></div>
-            <a class="ip-btn ip-btn-t2" id="ip-t2-go" href="${upsellHref}" data-cta="specs-upsell" rel="noopener">발급보장으로 만들기</a>
-          </div>
-
-          <a class="ip-slot" id="ip-slot-credit" href="/credits.html">
-            <span class="ip-slot-ic">🎁</span>
-            <span class="ip-slot-txt"><b>간편로그인하면 10c 크레딧</b><span>AI 보정 1회가 ₩1,500이 돼요</span></span>
-            <span class="ip-slot-tag">EVENT</span>
-          </a>
         </div>
       </div>` : ''}
 
@@ -2611,7 +2618,6 @@ ${hreflangTags}
   var pilotGenPromise = null;
   function prepareFreeReady(){
     fitResult = null; pilotGenPromise = null; freeBusy = false;
-    showPhase(phaseFit);
     fitClearTimers();
     if(window.__fitWaitTimer) clearInterval(window.__fitWaitTimer);
     var stage = document.getElementById('v2-fit-stage');
@@ -2639,12 +2645,20 @@ ${hreflangTags}
       var scv = Math.min(stW / W0, stH / H0);
       world.style.transform = 'translate(' + ((stW - W0 * scv) / 2) + 'px,' + ((stH - H0 * scv) / 2) + 'px) scale(' + scv + ')';
     };
-    img.src = uploadedBase64;
-    if(img.complete) img.onload();
+    var fs2 = document.getElementById('v2-fit-summary');
+    fs2.className = 'ip-summary-ok';
+    fs2.textContent = '사진 확인 완료';
     document.getElementById('v2-fit-actions').style.display = 'flex';
     var cap = document.getElementById('ip-fit-caption'); if(cap) cap.style.display = 'block';
     var t2l = document.getElementById('ip-fit-t2-link'); if(t2l) t2l.style.display = 'block';
     updateFreeRemainingUI(null);
+    // 디코드 완료 후 페이즈 전환 — 업로드→레디 리플로우 털컥 은닉
+    var swapped = false;
+    function swap(){ if(swapped) return; swapped = true; showPhase(phaseFit); }
+    img.onload = (function(orig){ return function(){ orig(); swap(); }; })(img.onload);
+    img.src = uploadedBase64;
+    if(img.complete){ img.onload(); }
+    setTimeout(swap, 600); // 디코드 지연 안전망
   }
   function pilotGatesFail(d){
     var pc = d.poseCheck || {};
@@ -2819,6 +2833,8 @@ ${hreflangTags}
     noteEl.style.display = 'none';
     fs.textContent = ''; fs.className = 'v2-checklist-summary';
     fa.style.display = 'none';
+    var capEl = document.getElementById('ip-fit-caption'); if(capEl) capEl.style.display = 'none';
+    var t2lEl = document.getElementById('ip-fit-t2-link'); if(t2lEl) t2lEl.style.display = 'none';
     ['hair','crown','eye','chin'].forEach(function(k){
       document.getElementById('v2-fit-line-' + k).style.opacity = '0';
     });
