@@ -2571,7 +2571,7 @@ ${hreflangTags}
             document.getElementById('v2-btn-proceed').style.display = 'none';
             checkActions.style.display = 'flex';
           } else {
-            runFit();
+            if(CFG.pilot) prepareFreeReady(); else runFit();
           }
           // 이미지 저장을 검수 시점에 선행 — 결제 클릭 체인에서 캔버스 압축을 제거해
           // 토스 결제창의 user activation 만료(팝업 차단)를 방지 (2026-07-05 E2E 실패 수정)
@@ -2605,6 +2605,106 @@ ${hreflangTags}
      쿼터는 서명 쿠키 monkos_free(서버 정본) — 클라는 표시용으로만 읽는다. */
   var freeBusy = false;
   var freeResultB64 = null;
+  /* 파일럿 재구성 (2026-07-10 작가님): 클릭 전 = 음성 게이트만(precheck), 클릭 후 = 시어터 연출을
+     매팅 대기 시간과 겹쳐 재생. '규격에 맞아요' 사전 판정 제거 — 문제만 말한다. */
+  var fitMode = 'default';
+  var pilotGenPromise = null;
+  function prepareFreeReady(){
+    fitResult = null; pilotGenPromise = null; freeBusy = false;
+    showPhase(phaseFit);
+    fitClearTimers();
+    if(window.__fitWaitTimer) clearInterval(window.__fitWaitTimer);
+    var stage = document.getElementById('v2-fit-stage');
+    var stW0 = Math.min(240, (stage.parentElement.clientWidth || 280) - 20);
+    var stH0 = Math.round(stW0 * (CFG.frameRatio || 4 / 3));
+    stage.style.width = stW0 + 'px'; stage.style.height = stH0 + 'px';
+    ['hair','crown','eye','chin'].forEach(function(k){ document.getElementById('v2-fit-line-' + k).style.opacity = '0'; });
+    var fEl = document.getElementById('v2-fit-frame'); fEl.style.display = 'none';
+    document.getElementById('v2-fit-dim-top').style.height = '0';
+    document.getElementById('v2-fit-dim-bot').style.height = '0';
+    var sc = document.getElementById('v2-fit-scan'); if(sc) sc.style.display = 'none';
+    var b = document.getElementById('v2-fit-badges'); b.style.display = 'none'; b.innerHTML = '';
+    var fs = document.getElementById('v2-fit-summary'); fs.textContent = ''; fs.className = 'v2-checklist-summary';
+    document.getElementById('v2-fit-status').textContent = '';
+    // 사진 표시 (전체 contain) — 시어터 없이 정지 상태
+    var world = document.getElementById('v2-fit-world');
+    var img = document.getElementById('v2-fit-img');
+    world.style.transition = 'none';
+    img.onload = function(){
+      var W0 = img.naturalWidth, H0 = img.naturalHeight;
+      if(!W0 || !H0) return;
+      var stW = parseInt(stage.style.width) || 240, stH = parseInt(stage.style.height) || 320;
+      world.style.width = W0 + 'px'; world.style.height = H0 + 'px';
+      img.style.width = W0 + 'px'; img.style.height = 'auto';
+      var scv = Math.min(stW / W0, stH / H0);
+      world.style.transform = 'translate(' + ((stW - W0 * scv) / 2) + 'px,' + ((stH - H0 * scv) / 2) + 'px) scale(' + scv + ')';
+    };
+    img.src = uploadedBase64;
+    if(img.complete) img.onload();
+    document.getElementById('v2-fit-actions').style.display = 'flex';
+    var cap = document.getElementById('ip-fit-caption'); if(cap) cap.style.display = 'block';
+    var t2l = document.getElementById('ip-fit-t2-link'); if(t2l) t2l.style.display = 'block';
+    updateFreeRemainingUI(null);
+  }
+  function pilotGatesFail(d){
+    var pc = d.poseCheck || {};
+    if(d.judge && d.judge.blocked) return '이 사진으로는 규격을 맞추기 어려워요. 다른 사진을 올려주세요.';
+    if(pc.eyeOpen && !pc.eyeOpen.ok) return '눈이 감겨 있어요. 카메라를 보고 다시 찍은 사진을 올려주세요.';
+    if(pc.roll && !pc.roll.ok) return '고개가 기울어져 있어요. 수평을 맞춘 사진을 올려주세요.';
+    return null;
+  }
+  function pilotOnFit(d){
+    // fit 응답 즉시: 게이트 통과면 매팅을 시어터와 병행 시작 (대기 시간 겹치기)
+    pilotGenPromise = pilotGatesFail(d) ? null : freeGenerateRequest(d);
+  }
+  function pilotVerdict(d){
+    fitMode = 'default';
+    var fs = document.getElementById('v2-fit-summary');
+    var fa = document.getElementById('v2-fit-actions');
+    var st = document.getElementById('v2-fit-status');
+    var fail = pilotGatesFail(d);
+    if(fail){
+      fs.className = 'v2-checklist-summary v2-summary-fail';
+      fs.textContent = fail;
+      fa.style.display = 'flex';
+      freeBusy = false; fitResult = null; pilotGenPromise = null;
+      return;
+    }
+    st.textContent = '규격 안착 완료 — 배경을 지우는 중이에요';
+    (pilotGenPromise || freeGenerateRequest(d)).then(function(res){
+      freeBusy = false;
+      if(!res.ok){
+        var code = res.d && res.d.code;
+        if(code === 'FREE_LIMIT'){ updateFreeRemainingUI(0); gaTrack('free_limit_hit', {}, true); }
+        showError((res.d && res.d.error) || '무료 생성에 실패했어요. 잠시 후 다시 시도해주세요.');
+        st.textContent = '';
+        fa.style.display = 'flex';
+        return;
+      }
+      freeResultB64 = res.d.image;
+      var img = document.getElementById('ip-free-img');
+      if(img) img.src = 'data:image/png;base64,' + freeResultB64;
+      updateFreeRemainingUI(res.d.remainingFree);
+      gaTrack('free_generate_done', { gen_track: res.d.track || '' }, true);
+      showPhase(phaseFree);
+      try{ window.scrollTo({ top: document.getElementById('v2-steps').offsetTop - 12, behavior: 'smooth' }); }catch(e){}
+    }).catch(function(){
+      freeBusy = false;
+      showError(T.errNet);
+      st.textContent = '';
+      fa.style.display = 'flex';
+    });
+  }
+  function freeGenerateRequest(d){
+    gaTrack('free_generate_click', {}, true);
+    return fetch('/api/idphoto/generate', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        image: uploadedBase64, slug: CFG.slug, freeTier: true,
+        fitFrame: d.frame, fitMeta: d.meta || null, fitMetrics: d.metrics || null
+      })
+    }).then(function(r){ return r.json().then(function(j){ return { ok: r.ok, status: r.status, d: j }; }); });
+  }
   function freeRemainingFromCookie(){
     try{
       var m = document.cookie.match(/(?:^|;\\s*)monkos_free=([^;]+)/);
@@ -2634,17 +2734,9 @@ ${hreflangTags}
     if(!fitResult || !fitResult.frame){ proceedToPay(); return; }
     freeBusy = true;
     hideError();
-    gaTrack('free_generate_click', {}, true);
     setGenMessage('무료로 만드는 중이에요', '배경 제거 + 여권 규격 크롭 — 잠시만 기다려주세요');
     showPhase(phaseGen);
-    fetch('/api/idphoto/generate', {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({
-        image: uploadedBase64, slug: CFG.slug, freeTier: true,
-        fitFrame: fitResult.frame, fitMeta: fitResult.meta || null, fitMetrics: fitResult.metrics || null
-      })
-    })
-    .then(function(r){ return r.json().then(function(d){ return { ok: r.ok, status: r.status, d: d }; }); })
+    freeGenerateRequest(fitResult)
     .then(function(res){
       freeBusy = false;
       setGenMessage(GEN_TEXT_DEFAULT, GEN_SUB_DEFAULT);
@@ -2786,11 +2878,13 @@ ${hreflangTags}
           showPhase(phaseUpload);
           return;
         }
+        if(fitMode === 'pilot'){ fitMode = 'default'; freeBusy = false; showError('지금 무료 만들기가 어려워요. 잠시 후 다시 시도해주세요.'); prepareFreeReady(); return; }
         proceedToPay(); return; // 카나리 밖(NOT_AVAILABLE) → 기존 경로
       }
       fitResult = data;
       if(window.__fitWaitTimer) clearInterval(window.__fitWaitTimer);
       var sc = document.getElementById('v2-fit-scan'); if(sc) sc.style.display = 'none';
+      if(fitMode === 'pilot') pilotOnFit(data);
       playFitTheater(data);
     })
     .catch(function(){ if(window.__fitWaitTimer) clearInterval(window.__fitWaitTimer); fitResult = null; proceedToPay(); });
@@ -2897,6 +2991,7 @@ ${hreflangTags}
   }
 
   function renderFitVerdict(d){
+    if(fitMode === 'pilot') return pilotVerdict(d);
     var b = document.getElementById('v2-fit-badges');
     b.innerHTML = ''; b.style.display = 'flex';
     function badge(label, val, sig){
@@ -2954,7 +3049,15 @@ ${hreflangTags}
     showPhase(phaseUpload);
   });
   document.getElementById('v2-fit-make').addEventListener('click', function(){
-    if(CFG.pilot) return doFreeGenerate(); // 파일럿: 무료 선진행 → 땡큐에서 업셀
+    if(CFG.pilot){
+      if(freeBusy) return;
+      if(hasUsableToken()) return doGenerate();
+      if(fitResult && fitResult.frame) return doFreeGenerate(); // 재시도 경로 (fit 이미 확보)
+      freeBusy = true; hideError();
+      fitMode = 'pilot';
+      runFit(); // 시어터 + fit — 응답 시 pilotOnFit이 매팅 병행 시작
+      return;
+    }
     proceedToPay();
   });
 
