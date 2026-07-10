@@ -15,6 +15,14 @@
       "port": 8080
     },
     {
+      "name": "portal-pilot (env-file)",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["--env-file=.env", "server.js"],
+      "cwd": "monkos_AI/portal",
+      "port": 8091,
+      "autoPort": true
+    },
+    {
       "name": "idphoto-kr",
       "runtimeExecutable": "node",
       "runtimeArgs": ["server.js"],

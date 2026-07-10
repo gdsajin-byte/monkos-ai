@@ -23,9 +23,12 @@ export function judgeMetrics(m, spec) {
     out.face = sig(m.faceMm, fMin + r * 0.2, fMax - r * 0.2, fMin, fMax); // 스위트존 = 안쪽 20%
   }
   if (Number.isFinite(m.eyeRatio)) {
+    // 비-tall 그린 밴드 0.43~0.45 → 0.42~0.46 (2026-07-10 파일럿, K2):
+    // 프리뷰 앵커 45%가 정확히 passHi 경계라 반올림 하나로 warn 플리커. 최종 실측 눈 범위
+    // 42.2~45.6%(REVIEW_20260709 검산)를 덮도록 확장 — blocked 게이트(40~48%)는 IDPASS 정본 유지.
     out.eye = tall
       ? sig(m.eyeRatio, 0.40, 0.48, 0.38, 0.50)
-      : sig(m.eyeRatio, 0.43, 0.45, 0.40, 0.48);
+      : sig(m.eyeRatio, 0.42, 0.46, 0.40, 0.48);
   }
   if (Number.isFinite(m.topMm)) {
     out.top = tall ? sig(m.topMm, 10, 20, 5, 25) : sig(m.topMm, 3, 7, 2, 10);

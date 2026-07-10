@@ -122,6 +122,36 @@ function checkRateLimit(req, bucket, limit, windowMs = 60000) {
   return rl.count <= limit;
 }
 
+/**
+ * T0 무료 쿼터 (kr-passport 파일럿 — 경로③ 작가님 직접 지시 2026-07-10)
+ * 서명 쿠키가 정본(Cloud Run 다중 인스턴스 무관), 인메모리 IP 카운터는 쿠키 삭제 우회의 백스톱.
+ * 날짜는 KST 기준 — 무료 3회/일의 "일"은 한국 자정에 리셋.
+ */
+const FREE_DAILY_CAP = 3;
+const FREE_PILOT_SLUGS = new Set(['kr-passport']);
+function freeQuotaSign(payload) {
+  const secret = process.env.AUTH_SECRET || process.env.LEMONSQUEEZY_WEBHOOK_SECRET || '';
+  return crypto.createHmac('sha256', secret).update(payload).digest('base64url').slice(0, 16);
+}
+function kstToday() {
+  return new Date(Date.now() + 9 * 3600 * 1000).toISOString().slice(0, 10);
+}
+function readFreeQuota(req) {
+  const today = kstToday();
+  const raw = parseCookies(req.headers.cookie).monkos_free;
+  if (!raw) return { date: today, count: 0 };
+  const [date, countStr, sig] = raw.split('.');
+  if (!date || !countStr || !sig || freeQuotaSign(`${date}:${countStr}`) !== sig) return { date: today, count: 0 };
+  if (date !== today) return { date: today, count: 0 };
+  const count = parseInt(countStr, 10);
+  return { date, count: Number.isFinite(count) && count >= 0 ? count : 0 };
+}
+function freeQuotaCookie(date, count) {
+  // Domain 미지정(host-only) — dev(run.app)·prod(monkos.ai) 양쪽에서 유효.
+  // HttpOnly 미적용: 클라가 잔여 횟수 표시용으로 읽는다 (서명 검증은 서버 정본 — 위조 시 카운트 0 리셋뿐).
+  return `monkos_free=${date}.${count}.${freeQuotaSign(`${date}:${count}`)};Path=/;Max-Age=93600;SameSite=Lax`;
+}
+
 function trackPageView(req) {
   const urlObj = new URL(req.url, `http://${req.headers.host}`);
   const utmParams = {};
@@ -559,11 +589,34 @@ const httpServer = createServer(async (req, res) => {
         return res.end(JSON.stringify({ error: '이미지 필수' }));
       }
 
-      // 결제 게이트: ① 결제 토큰(비로그인 단건) ② 로그인 크레딧 — 둘 다 없으면 402
+      // 결제 게이트: ① 결제 토큰(비로그인 단건) ② 로그인 크레딧 ③ T0 무료(파일럿) — 셋 다 아니면 402
       let gateMode = null;
       let gateUserId = 'specs-visitor';
       let remainingGenerates = null;
-      if (paymentToken) {
+      let freeQuota = null;
+
+      // ③ T0 무료 (kr-passport 파일럿): fit 확정 프레임 필수, 매팅 전용(Gemini 폴백 금지 = 원가 상한 보장)
+      const isFreeReq = body.freeTier === true && !paymentToken;
+      if (isFreeReq) {
+        if (!slug || !FREE_PILOT_SLUGS.has(slug)) {
+          res.writeHead(403, { 'Content-Type': 'application/json' });
+          return res.end(JSON.stringify({ error: '이 규격은 아직 무료 만들기를 지원하지 않아요.', code: 'FREE_NOT_AVAILABLE' }));
+        }
+        if (!body.fitFrame || !(body.fitFrame.w > 0 && body.fitFrame.h > 0)) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          return res.end(JSON.stringify({ error: '규격 검수를 먼저 진행해주세요.', code: 'FREE_REQUIRES_FIT' }));
+        }
+        if (!checkRateLimit(req, 'free-gen', 5) || !checkRateLimit(req, 'free-day', FREE_DAILY_CAP * 4, 86400000)) {
+          res.writeHead(429, { 'Content-Type': 'application/json' });
+          return res.end(JSON.stringify({ error: '요청이 너무 많습니다. 잠시 후 다시 시도해주세요.', code: 'RATE_LIMITED' }));
+        }
+        freeQuota = readFreeQuota(req);
+        if (freeQuota.count >= FREE_DAILY_CAP) {
+          res.writeHead(429, { 'Content-Type': 'application/json' });
+          return res.end(JSON.stringify({ error: '오늘 무료 횟수를 모두 사용했어요. 내일 다시 이용하거나 AI 보정으로 진행해주세요.', code: 'FREE_LIMIT', remainingFree: 0 }));
+        }
+        gateMode = 'free';
+      } else if (paymentToken) {
         const gate = await consumeGenerateQuota(paymentToken);
         if (!gate.ok) {
           res.writeHead(gate.status, { 'Content-Type': 'application/json' });
@@ -627,6 +680,32 @@ const httpServer = createServer(async (req, res) => {
         }
       }
 
+      // T1 리터칭 (파일럿 잠금 해제 대기 — PILOT_T1_RETOUCH=1): 유료 게이트 한정, 매팅본 위 재보정.
+      // 상품 충돌 해소용: T0 무료(매팅+크롭 무보정)와 동일해진 유료 산출물에 실제 '보정'을 부착.
+      // 실패·미설정 시 매팅본 그대로 — 결제 산출물이 무료보다 나빠지는 경우는 구조적으로 없음.
+      if (finalBase64 && genTrack === 'birefnet' && gateMode !== 'free'
+          && process.env.PILOT_T1_RETOUCH === '1' && slug && FREE_PILOT_SLUGS.has(slug)) {
+        try {
+          const retouched = await generateIdPhoto({ image: finalBase64, format: format || 'passport', gender, age, model: 'nano-banana-2', userId: gateUserId, framing: 'passport' });
+          if (retouched) {
+            const cropRes = await cropToSpec(retouched, slug);
+            if (cropRes && cropRes.image) {
+              finalBase64 = cropRes.image;
+              cropEngine = cropRes.engine;
+              genTrack = 'birefnet+retouch';
+            }
+          }
+        } catch (e) {
+          log(`[IDPhoto] T1 리터칭 실패 — 매팅본 유지 (${e.message})`, 'WARNING');
+        }
+      }
+
+      // T0 무료: 매팅 실패 시 Gemini 폴백 금지 — 무료 원가 상한(매팅비)만 허용. 쿼터 미소모로 종료.
+      if (gateMode === 'free' && !finalBase64) {
+        res.writeHead(503, { 'Content-Type': 'application/json' });
+        return res.end(JSON.stringify({ error: '지금 무료 처리가 몰려 있어요. 잠시 후 다시 시도해주세요.', code: 'FREE_UNAVAILABLE' }));
+      }
+
       if (!finalBase64) {
         let generatedBase64;
         try {
@@ -667,8 +746,23 @@ const httpServer = createServer(async (req, res) => {
         log(`[IDPhoto] GCS 저장 실패 (무시): ${e.message}`, 'WARNING');
       }
       log(`[IDPhoto] 생성 완료: 규격=${slug || format || 'passport'}, 게이트=${gateMode}${genTrack ? `, 트랙=${genTrack}` : ''}${cropEngine ? `, 크롭=${cropEngine}` : ''}`);
+      // 서버측 확정 계측 (헤드샷 api_generate 패턴 준용 — 클라 GA 유실 대비 + 무료 쿼터 남용 감시)
+      trackEvent({
+        eventName: 'api_generate',
+        userId: gateUserId === 'specs-visitor' ? null : gateUserId,
+        sessionId: parseCookies(req.headers.cookie).monkos_sid || null,
+        service: 'specs',
+        params: { gate: gateMode, slug: slug || null, track: genTrack || null },
+      }).catch(() => {});
+
+      let remainingFree = null;
+      if (gateMode === 'free') {
+        const newCount = freeQuota.count + 1;
+        remainingFree = Math.max(0, FREE_DAILY_CAP - newCount);
+        res.setHeader('Set-Cookie', freeQuotaCookie(freeQuota.date, newCount));
+      }
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      return res.end(JSON.stringify({ image: finalBase64, remainingGenerates, track: genTrack, cropEngine, meta: resultMeta }));
+      return res.end(JSON.stringify({ image: finalBase64, remainingGenerates, remainingFree, track: genTrack, cropEngine, meta: resultMeta }));
     } catch (err) {
       log(`[IDPhoto] 에러: ${err.message}`, 'ERROR');
       res.writeHead(500, { 'Content-Type': 'application/json' });

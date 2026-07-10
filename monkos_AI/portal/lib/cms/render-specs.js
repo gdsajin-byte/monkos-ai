@@ -1863,12 +1863,69 @@ const V2_FAQ_FALLBACK = {
   ],
 };
 
+/* ═══ IDPASS 파일럿 스타일 (kr-passport ko 한정) — 가독성 토큰 교정 + 땡큐 위계 (2026-07-10)
+   브라이트 모바일 가독 3원인 교정: 보조회색 #888(3.5:1)→#5D5A6B(6.7:1), 카드 틴트+그림자, 버튼 52px.
+   확산 시 SPECS_V2_STYLE 공용 토큰으로 승격 예정 — 그 전까지 .idpass-pilot 스코프 밖 오염 금지. ═══ */
+const IDPASS_PILOT_STYLE = `
+.idpass-pilot .v2-steps-sub { color:#5d5a6b; font-size:15px; }
+.idpass-pilot .v2-checklist-title { color:#17151f; }
+.idpass-pilot #v2-fit-status { color:#5d5a6b !important; }
+.idpass-pilot .v2-checklist-summary { font-size:16.5px; font-weight:800; line-height:1.45; border-radius:14px; padding:14px 16px; }
+.idpass-pilot .v2-summary-pass { background:#eaf7f1; color:#0a6b4a; }
+.idpass-pilot .v2-summary-fail { background:#fbeef0; color:#a32538; }
+.idpass-pilot .v2-action-buttons { flex-direction:column-reverse; gap:10px; }
+.idpass-pilot .v2-action-btn { width:100%; height:52px; font-size:16px; font-weight:800; border-radius:14px; }
+.idpass-pilot .v2-btn-retouch { background:#6c4fff; color:#fff; box-shadow:0 8px 18px -8px rgba(108,79,255,.55); }
+.idpass-pilot .v2-btn-retry { background:#fff; color:#3a3744; border:1.5px solid #dcd8e8; }
+.ip-fit-caption { text-align:center; font-size:12.5px; color:#5d5a6b; margin-top:8px; line-height:1.5; word-break:keep-all; }
+.ip-quiet-link { display:block; text-align:center; font-size:13px; color:#5d5a6b; margin-top:16px; text-decoration:none; }
+.ip-quiet-link b { color:#5a3de6; font-weight:700; }
+.ip-free-wrap { max-width:420px; margin:0 auto; text-align:center; }
+.ip-free-kicker { font-family:monospace; font-size:10.5px; letter-spacing:2.5px; color:#5a3de6; font-weight:700; }
+.ip-free-hero h3 { font-size:20px; font-weight:800; color:#17151f; margin:6px 0 14px; line-height:1.35; text-wrap:balance; word-break:keep-all; }
+.ip-free-photo { border-radius:18px; overflow:hidden; background:#fff; border:1px solid #e2dfec; box-shadow:0 6px 16px -12px rgba(23,21,31,.18); max-width:280px; margin:0 auto; }
+.ip-free-photo img { display:block; width:100%; aspect-ratio:35/45; object-fit:cover; }
+.ip-free-spec { text-align:center; font-size:11.5px; color:#5d5a6b; margin-top:8px; font-family:monospace; }
+.ip-free-btnrow { display:flex; gap:10px; margin-top:12px; }
+.ip-btn { display:flex; align-items:center; justify-content:center; height:52px; border-radius:14px; font-size:16px; font-weight:800; border:none; cursor:pointer; text-decoration:none; box-sizing:border-box; font-family:inherit; }
+.ip-btn-primary { flex:1.6; background:#6c4fff; color:#fff; box-shadow:0 8px 18px -8px rgba(108,79,255,.55); }
+.ip-btn-ghost { flex:1; background:#fff; color:#3a3744; border:1.5px solid #dcd8e8; }
+.ip-free-cap { text-align:center; font-size:12px; color:#5d5a6b; margin-top:8px; line-height:1.5; word-break:keep-all; }
+.ip-card { border:1px solid #e2dfec; border-radius:18px; padding:18px; margin-top:14px; background:#fbfafd; box-shadow:0 6px 16px -12px rgba(23,21,31,.18); text-align:left; }
+.ip-card-head { display:flex; align-items:baseline; }
+.ip-card-head b { font-size:16px; font-weight:800; color:#17151f; }
+.ip-price { margin-left:auto; font-size:18px; font-weight:800; color:#5a3de6; font-variant-numeric:tabular-nums; }
+.ip-card-list { margin:10px 0 2px; padding:0; list-style:none; }
+.ip-card-list li { font-size:13px; color:#3a3744; padding:3.5px 0 3.5px 22px; position:relative; line-height:1.45; }
+.ip-card-list li::before { content:"✓"; position:absolute; left:2px; color:#0e8a5f; font-weight:800; font-size:12px; }
+.ip-btn-mid { width:100%; height:46px; font-size:14.5px; margin-top:12px; background:#fff; color:#5a3de6; border:1.5px solid #c9bdf2; }
+.ip-card-t2 { background:#17151f; border-color:#17151f; color:#efedf6; }
+.ip-t2-badge { display:inline-block; background:rgba(139,115,255,.18); color:#c9bbff; font-size:10.5px; letter-spacing:2px; font-weight:700; font-family:monospace; border-radius:7px; padding:4px 9px; }
+.ip-card-t2 h4 { font-size:17px; font-weight:800; margin:10px 0 4px; color:#fff; }
+.ip-card-t2 p { font-size:12.5px; color:#b4afc6; margin:0; line-height:1.55; }
+.ip-t2-price { display:flex; align-items:center; gap:8px; margin-top:14px; }
+.ip-t2-price b { font-size:21px; font-weight:800; color:#fff; font-variant-numeric:tabular-nums; }
+.ip-t2-price span { font-size:11.5px; color:#8b879b; }
+.ip-btn-t2 { width:100%; height:46px; font-size:14.5px; margin-top:12px; background:#6c4fff; color:#fff; }
+.ip-slot { display:flex; gap:11px; align-items:center; border:1.5px dashed #d4cceb; background:#f8f6fe; border-radius:14px; padding:13px 15px; margin-top:14px; text-decoration:none; text-align:left; }
+.ip-slot-ic { font-size:18px; }
+.ip-slot-txt b { display:block; font-size:13px; color:#3f2e99; }
+.ip-slot-txt span { display:block; font-size:11.5px; color:#6e62a8; margin-top:1px; }
+.ip-slot-tag { margin-left:auto; font-size:9.5px; font-family:monospace; letter-spacing:1.5px; color:#9c93c4; }
+@media (max-width:640px){
+  .idpass-pilot .v2-pay-grid { grid-template-columns:1fr; }
+}
+`;
+
 function specsDetailV2Fragment(slug, forceLang = null) {
   const lang = forceLang || 'ko';
   const i = SPECS_I18N[lang] || SPECS_I18N.ko;
   const v2 = i.v2 || SPECS_I18N.ko.v2;
   // 시장 판별: 결제 PG 분기 정본 (kr=토스, jp=레몬 JP 스토어, global=레몬 글로벌)
   const market = lang === 'ja' ? 'jp' : lang === 'en' ? 'global' : 'kr';
+  // IDPASS 파일럿 (경로③ 작가님 직접 지시 2026-07-10): kr-passport ko 한정 — T0 무료 퍼널 + 땡큐 위계 + 가독성 토큰.
+  // 확산 게이트 3건(실기기 가독·계측 동작·SEO 무손상) 충족 후 전 specs 승격. PROPOSAL_20260710_민아_IDPASS통합설계 §9.
+  const isPilot = slug === 'kr-passport' && lang === 'ko';
   const fmtV2 = (tpl, vars) => String(tpl).replace(/\{(\w+)\}/g, (m, k) => (vars[k] != null ? vars[k] : m));
   const prefix = lang === 'ko' ? '' : `/${lang}`;
   const specData = SPECS_DATA[slug];
@@ -2017,7 +2074,7 @@ ${hreflangTags}
   const fullName = `${countryName} ${typeName}`;
   const bodyContent = `
   ${market === 'kr' ? '<script src="https://js.tosspayments.com/v2/standard"></script>' : ''}
-  <div class="v2-wrap">
+  <div class="v2-wrap${isPilot ? ' idpass-pilot' : ''}" data-slug="${slug}">
     <!-- 1. 헤더 -->
     <nav class="v2-breadcrumb">
       <a href="${prefix}/specs">${escapeHtml(v2.breadcrumbGuide)}</a> &gt; ${escapeHtml(countryName)} &gt; ${escapeHtml(typeName)}
@@ -2137,8 +2194,10 @@ ${hreflangTags}
             <div class="v2-checklist-summary" id="v2-fit-summary"></div>
             <div class="v2-action-buttons" id="v2-fit-actions" style="display:none;">
               <button class="v2-action-btn v2-btn-retry" id="v2-fit-change">다른 사진으로</button>
-              <button class="v2-action-btn v2-btn-retouch" id="v2-fit-make">이대로 만들기</button>
+              <button class="v2-action-btn v2-btn-retouch" id="v2-fit-make">${isPilot ? '무료로 만들기' : '이대로 만들기'}</button>
             </div>
+            ${isPilot ? `<div class="ip-fit-caption" id="ip-fit-caption" style="display:none;">배경 제거 + 여권 규격 크롭 · 오늘 <span id="ip-fit-remaining">3</span>회 무료 · 로그인 불필요</div>
+            <a class="ip-quiet-link" id="ip-fit-t2-link" href="${upsellHref}" data-cta="specs-upsell" rel="noopener" style="display:none;">반려 걱정까지 맡기려면 — <b>발급보장 ₩9,900 →</b></a>` : ''}
           </div>
         </div>
       </div>
@@ -2168,7 +2227,7 @@ ${hreflangTags}
               <div id="v2-agree"></div>
               <button class="v2-action-btn v2-btn-retouch" id="v2-pay-confirm" style="width:100%;margin-top:12px;"></button>
             </div>
-            ${upsellHtml}
+            <!-- K1 수정 (2026-07-10): 결제 옵션 내부 upsellHtml 제거 — 섹션 하단 상시 노출분과 중복 렌더되던 사고 -->
           </div>
         </div>
       </div>
@@ -2202,8 +2261,49 @@ ${hreflangTags}
         </div>
       </div>
 
-      <!-- T2 업셀 — 발급보장 (상시 노출) -->
-      ${upsellHtml}
+      ${isPilot ? `<!-- S3 땡큐 — T0 무료 결과 + 업셀 사다리 (IDPASS 파일럿) -->
+      <div class="v2-make-layout" id="v2-phase-free" style="display:none;">
+        <div class="ip-free-wrap">
+          <div class="ip-free-hero">
+            <span class="ip-free-kicker">DONE · KR PASSPORT</span>
+            <h3>완성! 여권 규격에 맞춰 만들었어요</h3>
+          </div>
+          <div class="ip-free-photo"><img id="ip-free-img" src="" alt="완성된 여권 규격 사진"></div>
+          <div class="ip-free-spec">3.5 × 4.5cm · 300dpi · 흰 배경</div>
+          <div class="ip-free-btnrow">
+            <button class="ip-btn ip-btn-primary" id="ip-free-download">다운로드</button>
+            <button class="ip-btn ip-btn-ghost" id="ip-free-retry">다른 사진</button>
+          </div>
+          <div class="ip-free-cap">오늘 무료 <span id="ip-free-remaining">-</span>회 남음 · 비로그인 파일은 24시간 뒤 자동 삭제됩니다</div>
+
+          <div class="ip-card ip-card-t1">
+            <div class="ip-card-head"><b>AI 보정</b><span class="ip-price">₩2,000</span></div>
+            <ul class="ip-card-list">
+              <li>AI 리터칭 — 내 얼굴 그대로, 더 단정하게</li>
+              <li>AI 규격 검수</li>
+              <li>보정 원본 + 여권 규격 파일</li>
+            </ul>
+            <button class="ip-btn ip-btn-mid" id="ip-t1-buy">AI 보정으로 업그레이드</button>
+          </div>
+
+          <div class="ip-card ip-card-t2">
+            <span class="ip-t2-badge">◆ 발급보장</span>
+            <h4>전문 검수 + 반려 시 100% 환불</h4>
+            <p>접수 반려 걱정까지 책임지는 프리미엄 검수 서비스예요.</p>
+            <div class="ip-t2-price"><b>₩9,900</b><span>별도 서비스로 진행</span></div>
+            <a class="ip-btn ip-btn-t2" id="ip-t2-go" href="${upsellHref}" data-cta="specs-upsell" rel="noopener">발급보장으로 만들기</a>
+          </div>
+
+          <a class="ip-slot" href="/credits.html?from=specs-free">
+            <span class="ip-slot-ic">🎁</span>
+            <span class="ip-slot-txt"><b>간편로그인하면 10c 크레딧</b><span>AI 보정 1회가 ₩1,500이 돼요</span></span>
+            <span class="ip-slot-tag">EVENT</span>
+          </a>
+        </div>
+      </div>` : ''}
+
+      <!-- T2 업셀 — 발급보장 (상시 노출 · 파일럿에선 S3 카드로 대체) -->
+      ${isPilot ? '' : upsellHtml}
     </div>
 
     <!-- 4. 상세규정 + 반려사유 (아코디언) -->
@@ -2264,6 +2364,8 @@ ${hreflangTags}
     frameRatio: fitCropParams ? +(fitCropParams.frameH / fitCropParams.frameW).toFixed(4) : null,
     downloadName: `${countryName}_${typeName}_${locField(specData, 'size', lang).replace(/\s/g, '')}_MONKOS.jpg`,
     t: v2.js,
+    pilot: isPilot,
+    freeCap: 3,
   };
 
   const pageScript = `
@@ -2281,6 +2383,7 @@ ${hreflangTags}
   var phasePay = document.getElementById('v2-phase-pay');
   var phaseGen = document.getElementById('v2-phase-generating');
   var phaseResult = document.getElementById('v2-phase-result');
+  var phaseFree = document.getElementById('v2-phase-free'); // IDPASS 파일럿 전용 (비파일럿 null)
   var genTextEl = document.getElementById('v2-gen-text');
   var genSubEl = document.getElementById('v2-gen-sub');
   var uploadedBase64 = null;
@@ -2331,7 +2434,7 @@ ${hreflangTags}
   var IMG_KEY = 'monkos_specs_img';
 
   function showPhase(phase){
-    [phaseUpload, phaseCheck, phaseFit, phasePay, phaseGen, phaseResult].forEach(function(p){ if(p) p.style.display='none'; });
+    [phaseUpload, phaseCheck, phaseFit, phasePay, phaseGen, phaseResult, phaseFree].forEach(function(p){ if(p) p.style.display='none'; });
     if(phase) phase.style.display='';
   }
   function setGenMessage(text, sub){
@@ -2482,6 +2585,102 @@ ${hreflangTags}
     // 이미 결제된 토큰(재생성 잔여)이 있으면 재결제 없이 바로 생성
     if(hasUsableToken()) return doGenerate();
     showPhase(phasePay);
+  }
+
+  /* ─── T0 무료 생성 (IDPASS 파일럿 — 무료 선진행 → 땡큐 업셀) ───
+     서버 /api/idphoto/generate freeTier 분기: fit 확정 프레임 → 매팅+기하 재단, Gemini 미경유.
+     쿼터는 서명 쿠키 monkos_free(서버 정본) — 클라는 표시용으로만 읽는다. */
+  var freeBusy = false;
+  var freeResultB64 = null;
+  function freeRemainingFromCookie(){
+    try{
+      var m = document.cookie.match(/(?:^|;\\s*)monkos_free=([^;]+)/);
+      if(!m) return CFG.freeCap;
+      var parts = decodeURIComponent(m[1]).split('.');
+      var today = new Date(Date.now() + 9 * 3600 * 1000).toISOString().slice(0, 10);
+      if(parts[0] !== today) return CFG.freeCap;
+      var n = parseInt(parts[1], 10);
+      return isNaN(n) ? CFG.freeCap : Math.max(0, CFG.freeCap - n);
+    }catch(e){ return CFG.freeCap; }
+  }
+  function updateFreeRemainingUI(val){
+    var v = (val != null) ? val : freeRemainingFromCookie();
+    var a = document.getElementById('ip-fit-remaining');
+    var b = document.getElementById('ip-free-remaining');
+    if(a) a.textContent = v;
+    if(b) b.textContent = v;
+  }
+  function restoreFitActions(){
+    showPhase(phaseFit);
+    var fa = document.getElementById('v2-fit-actions');
+    if(fa) fa.style.display = 'flex';
+  }
+  function doFreeGenerate(){
+    if(!uploadedBase64 || freeBusy) return;
+    if(!fitResult || !fitResult.frame){ proceedToPay(); return; }
+    freeBusy = true;
+    hideError();
+    gaTrack('free_generate_click', {}, true);
+    setGenMessage('무료로 만드는 중이에요', '배경 제거 + 여권 규격 크롭 — 잠시만 기다려주세요');
+    showPhase(phaseGen);
+    fetch('/api/idphoto/generate', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        image: uploadedBase64, slug: CFG.slug, freeTier: true,
+        fitFrame: fitResult.frame, fitMeta: fitResult.meta || null, fitMetrics: fitResult.metrics || null
+      })
+    })
+    .then(function(r){ return r.json().then(function(d){ return { ok: r.ok, status: r.status, d: d }; }); })
+    .then(function(res){
+      freeBusy = false;
+      setGenMessage(GEN_TEXT_DEFAULT, GEN_SUB_DEFAULT);
+      if(!res.ok){
+        var code = res.d && res.d.code;
+        if(code === 'FREE_LIMIT'){
+          updateFreeRemainingUI(0);
+          gaTrack('free_limit_hit', {}, true);
+          showError('오늘 무료 횟수를 모두 사용했어요. AI 보정(₩2,000)으로는 계속 만들 수 있어요.');
+          proceedToPay();
+          return;
+        }
+        showError((res.d && res.d.error) || '무료 생성에 실패했어요. 잠시 후 다시 시도해주세요.');
+        restoreFitActions();
+        return;
+      }
+      freeResultB64 = res.d.image;
+      var img = document.getElementById('ip-free-img');
+      if(img) img.src = 'data:image/png;base64,' + freeResultB64;
+      updateFreeRemainingUI(res.d.remainingFree);
+      gaTrack('free_generate_done', { gen_track: res.d.track || '' }, true);
+      showPhase(phaseFree);
+      try{ window.scrollTo({ top: document.getElementById('v2-steps').offsetTop - 12, behavior: 'smooth' }); }catch(e){}
+    })
+    .catch(function(){
+      freeBusy = false;
+      setGenMessage(GEN_TEXT_DEFAULT, GEN_SUB_DEFAULT);
+      showError(T.errNet);
+      restoreFitActions();
+    });
+  }
+  if(CFG.pilot && phaseFree){
+    document.getElementById('ip-free-download').addEventListener('click', function(){
+      if(!freeResultB64) return;
+      var a = document.createElement('a');
+      a.href = 'data:image/png;base64,' + freeResultB64;
+      a.download = CFG.downloadName.replace(/\\.jpg$/, '_free.png');
+      document.body.appendChild(a); a.click(); a.remove();
+      gaTrack('free_download', {}, true);
+    });
+    document.getElementById('ip-free-retry').addEventListener('click', function(){
+      uploadedBase64 = null; fitResult = null; precheckData = null; freeResultB64 = null;
+      showPhase(phaseUpload);
+    });
+    document.getElementById('ip-t1-buy').addEventListener('click', function(){
+      gaTrack('t1_upsell_click', {}, true);
+      proceedToPay();
+    });
+    var t2go = document.getElementById('ip-t2-go');
+    if(t2go) t2go.addEventListener('click', function(){ gaTrack('t2_upsell_click', {}, true); });
   }
 
   /* ─── 규격 안착 시어터 (2026-07-07 작가님 연출 비전) ───
@@ -2689,14 +2888,18 @@ ${hreflangTags}
       b.appendChild(el);
     }
     var m = d.metrics || {}, j = d.judge || {};
-    if(m.faceMm != null) badge('얼굴', m.faceMm + 'mm', j.face);
-    if(m.eyeRatio != null) badge('눈', (m.eyeRatio * 100).toFixed(0) + '%', j.eye);
-    if(m.topMm != null) badge('상단', m.topMm + 'mm', j.top);
-    if(m.bottomMm != null) badge('하단', m.bottomMm + 'mm', j.bottom);
+    // 파일럿: 수치 뱃지 제거 (통과 사용자에게 숫자 나열은 인지 비용 — §7-1) — 문제 칩만 유지
+    if(!CFG.pilot){
+      if(m.faceMm != null) badge('얼굴', m.faceMm + 'mm', j.face);
+      if(m.eyeRatio != null) badge('눈', (m.eyeRatio * 100).toFixed(0) + '%', j.eye);
+      if(m.topMm != null) badge('상단', m.topMm + 'mm', j.top);
+      if(m.bottomMm != null) badge('하단', m.bottomMm + 'mm', j.bottom);
+    }
     if(d.poseCheck){
-      if(d.poseCheck.roll) badge('기울기', Math.abs(d.poseCheck.roll.value).toFixed(0) + '°', d.poseCheck.roll.ok ? 'pass' : 'fail');
-      if(d.poseCheck.eyeOpen && !d.poseCheck.eyeOpen.ok) badge('눈', '감김', 'fail');
-      if(d.poseCheck.mouthOpen && !d.poseCheck.mouthOpen.ok) badge('입', '벌림', 'warn');
+      if(d.poseCheck.roll && !d.poseCheck.roll.ok) badge('기울기', Math.abs(d.poseCheck.roll.value).toFixed(0) + '° — 수평을 맞춰주세요', 'fail');
+      else if(d.poseCheck.roll && !CFG.pilot) badge('기울기', Math.abs(d.poseCheck.roll.value).toFixed(0) + '°', 'pass');
+      if(d.poseCheck.eyeOpen && !d.poseCheck.eyeOpen.ok) badge('눈', '감김 — 다른 사진을 올려주세요', 'fail');
+      if(d.poseCheck.mouthOpen && !d.poseCheck.mouthOpen.ok) badge('입', '벌림 — 입을 다문 사진 권장', 'warn');
     }
     var expertMsg = (d.vision && d.vision.executed) || (d.vision && d.vision.note);
     if(expertMsg){
@@ -2708,21 +2911,31 @@ ${hreflangTags}
     var mk = document.getElementById('v2-fit-make');
     if(j.blocked){
       fs.className = 'v2-checklist-summary v2-summary-fail';
-      fs.textContent = '규격 허용 범위를 벗어났습니다. 다른 사진을 권장해요.';
+      fs.textContent = CFG.pilot ? '이 사진으로는 어려워요. 다른 사진을 올려주세요.' : '규격 허용 범위를 벗어났습니다. 다른 사진을 권장해요.';
       mk.disabled = true; mk.style.opacity = '.4';
     } else {
       fs.className = 'v2-checklist-summary v2-summary-pass';
-      fs.textContent = '규격에 안착했습니다. 이대로 만들 수 있어요.';
+      fs.textContent = CFG.pilot ? '규격에 맞아요. 이대로 만들 수 있어요.' : '규격에 안착했습니다. 이대로 만들 수 있어요.';
       mk.disabled = false; mk.style.opacity = '';
     }
     document.getElementById('v2-fit-actions').style.display = 'flex';
+    if(CFG.pilot){
+      var cap = document.getElementById('ip-fit-caption');
+      var t2l = document.getElementById('ip-fit-t2-link');
+      if(cap) cap.style.display = j.blocked ? 'none' : 'block';
+      if(t2l) t2l.style.display = 'block';
+      updateFreeRemainingUI(null);
+    }
   }
 
   document.getElementById('v2-fit-change').addEventListener('click', function(){
     uploadedBase64 = null; fitResult = null; precheckData = null;
     showPhase(phaseUpload);
   });
-  document.getElementById('v2-fit-make').addEventListener('click', function(){ proceedToPay(); });
+  document.getElementById('v2-fit-make').addEventListener('click', function(){
+    if(CFG.pilot) return doFreeGenerate(); // 파일럿: 무료 선진행 → 땡큐에서 업셀
+    proceedToPay();
+  });
 
   document.getElementById('v2-btn-proceed').addEventListener('click', function(){ runFit(); });
 
@@ -3109,7 +3322,7 @@ ${hreflangTags}
     description,
     seoMeta,
     htmlLang: lang,
-    pageStyle: SPECS_V2_STYLE,
+    pageStyle: isPilot ? SPECS_V2_STYLE + IDPASS_PILOT_STYLE : SPECS_V2_STYLE,
     bodyContent,
     pageScript,
   };
