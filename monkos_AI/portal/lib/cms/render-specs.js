@@ -2090,7 +2090,7 @@ ${hreflangTags}
     <div class="v2-tags">
       <span class="v2-tag">${escapeHtml(countryName)}</span>
       <span class="v2-tag">${escapeHtml(typeName)}</span>
-      ${sameSize.map(s => {
+      ${isPilot ? '' : sameSize.map(s => {
         const n = lang === 'ja' ? (s.typeJa || s.type) : (lang === 'en' ? s.typeEn : s.type);
         const { typeSlug: ts, countrySlug: cs } = parseSlug(s.slug);
         return `<a href="${prefix}/specs/${ts}/${cs}" class="v2-tag">${escapeHtml(n)}</a>`;
@@ -2352,10 +2352,10 @@ ${hreflangTags}
           <span class="v2-same-icon">💼</span>
           <div><div class="v2-same-name">${escapeHtml(v2.crossHeadshot)}</div><div class="v2-same-size">${escapeHtml(v2.crossHeadshotSub)}</div></div>
         </a>
-        <a href="/" class="v2-same-card">
+        ${isPilot ? '' : `<a href="/" class="v2-same-card">
           <span class="v2-same-icon">📷</span>
           <div><div class="v2-same-name">${escapeHtml(v2.crossProfile)}</div><div class="v2-same-size">${escapeHtml(v2.crossProfileSub)}</div></div>
-        </a>
+        </a>`}
         <a href="${prefix}/specs" class="v2-same-card">
           <span class="v2-same-icon">📐</span>
           <div><div class="v2-same-name">${escapeHtml(v2.crossSpecs)}</div><div class="v2-same-size">${escapeHtml(v2.crossSpecsSub)}</div></div>
@@ -2919,7 +2919,7 @@ ${hreflangTags}
       if(d.poseCheck.roll && !d.poseCheck.roll.ok) badge('기울기', Math.abs(d.poseCheck.roll.value).toFixed(0) + (sfx ? '° — 수평을 맞춰주세요' : '°'), 'fail');
       else if(d.poseCheck.roll && !CFG.pilot) badge('기울기', Math.abs(d.poseCheck.roll.value).toFixed(0) + '°', 'pass');
       if(d.poseCheck.eyeOpen && !d.poseCheck.eyeOpen.ok) badge('눈', sfx ? '감김 — 다른 사진을 올려주세요' : '감김', 'fail');
-      if(d.poseCheck.mouthOpen && !d.poseCheck.mouthOpen.ok) badge('입', sfx ? '벌림 — 입을 다문 사진 권장' : '벌림', 'warn');
+      if(d.poseCheck.mouthOpen && !d.poseCheck.mouthOpen.ok) badge(sfx ? '참고' : '입', sfx ? '입은 다문 상태가 안전해요' : '벌림', 'warn');
     }
     var expertMsg = (d.vision && d.vision.executed) || (d.vision && d.vision.note);
     if(expertMsg){
