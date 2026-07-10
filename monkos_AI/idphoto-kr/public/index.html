@@ -10,6 +10,7 @@
   gtag('js', new Date());
   gtag('config', 'G-FKG0CPTC14');
   (function(){var d=['chatgpt.com','perplexity','claude.ai','gemini.google','copilot'];var r=document.referrer||'';if(d.some(function(s){return r.includes(s)})){var e=r.includes('chatgpt')?'chatgpt':r.includes('perplexity')?'perplexity':r.includes('claude.ai')?'claude':r.includes('gemini.google')?'gemini':r.includes('copilot')?'copilot':'other_ai';gtag('event','ai_referral_landing',{'ai_engine':e,'landing_page':location.pathname})}})();
+  if(!sessionStorage.getItem('landing_referrer')){sessionStorage.setItem('landing_referrer',document.referrer||'direct');sessionStorage.setItem('landing_url',location.href);}
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -1094,12 +1095,20 @@ function handleGoogleTokenCallback(tokenResponse) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
-    body: JSON.stringify({ access_token: tokenResponse.access_token }),
+    body: JSON.stringify({
+      access_token: tokenResponse.access_token,
+      acquisition: {
+        referrer: sessionStorage.getItem('landing_referrer') || null,
+        landing_url: sessionStorage.getItem('landing_url') || null,
+        first_visit: new Date().toISOString()
+      }
+    }),
   })
   .then(function(res) { return res.json(); })
   .then(function(data) {
     if (data.success && data.user) {
       updateAuthUI(data.user);
+      gtag('config', 'G-FKG0CPTC14', { user_id: data.user.id });
       if (data.isNewUser) {
         showToast((data.user.name || '') + '님, MONKOS에 오신 것을 환영합니다!', 'info');
       }
@@ -1113,21 +1122,21 @@ function handleGoogleTokenCallback(tokenResponse) {
 /* === 카카오/LINE OAuth (팝업 + postMessage) === */
 function loginKakao() {
   closeLoginModal();
-  var popup = window.open(
-    (window.MONKOS_PORTAL_URL || 'https://monkos.ai') + '/auth/kakao?popup=1&redirect_app=' + encodeURIComponent(window.location.origin),
-    'kakao-login', 'width=500,height=600'
-  );
-  if (!popup) { location.href = (window.MONKOS_PORTAL_URL || 'https://monkos.ai') + '/auth/kakao?redirect_app=' + encodeURIComponent(window.location.origin); return; }
+  var acqRef = encodeURIComponent(sessionStorage.getItem('landing_referrer') || '');
+  var acqUrl = encodeURIComponent(sessionStorage.getItem('landing_url') || '');
+  var authBase = (window.MONKOS_PORTAL_URL || 'https://monkos.ai') + '/auth/kakao?popup=1&redirect_app=' + encodeURIComponent(window.location.origin) + '&acq_referrer=' + acqRef + '&acq_url=' + acqUrl;
+  var popup = window.open(authBase, 'kakao-login', 'width=500,height=600');
+  if (!popup) { location.href = authBase.replace('popup=1&', ''); return; }
   listenAuthMessage();
 }
 
 function loginLine() {
   closeLoginModal();
-  var popup = window.open(
-    (window.MONKOS_PORTAL_URL || 'https://monkos.ai') + '/auth/line?popup=1&redirect_app=' + encodeURIComponent(window.location.origin),
-    'line-login', 'width=500,height=600'
-  );
-  if (!popup) { location.href = (window.MONKOS_PORTAL_URL || 'https://monkos.ai') + '/auth/line?redirect_app=' + encodeURIComponent(window.location.origin); return; }
+  var acqRef = encodeURIComponent(sessionStorage.getItem('landing_referrer') || '');
+  var acqUrl = encodeURIComponent(sessionStorage.getItem('landing_url') || '');
+  var authBase = (window.MONKOS_PORTAL_URL || 'https://monkos.ai') + '/auth/line?popup=1&redirect_app=' + encodeURIComponent(window.location.origin) + '&acq_referrer=' + acqRef + '&acq_url=' + acqUrl;
+  var popup = window.open(authBase, 'line-login', 'width=500,height=600');
+  if (!popup) { location.href = authBase.replace('popup=1&', ''); return; }
   listenAuthMessage();
 }
 
@@ -1136,6 +1145,7 @@ function listenAuthMessage() {
     if (e.origin !== (window.MONKOS_PORTAL_URL || 'https://monkos.ai')) return;
     if (e.data && e.data.type === 'auth-success') {
       updateAuthUI(e.data.user);
+      if (e.data.user && e.data.user.id) gtag('config', 'G-FKG0CPTC14', { user_id: e.data.user.id });
       window.removeEventListener('message', handler);
     }
   }
@@ -1162,6 +1172,7 @@ function downloadGate() {
     .then(function(data) {
       if (data && data.user && data.user.id) {
         updateAuthUI(data.user);
+        gtag('config', 'G-FKG0CPTC14', { user_id: data.user.id });
       }
     })
     .catch(function() {});

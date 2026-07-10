@@ -34,7 +34,7 @@ export async function handleIdphotoResults(req, res) {
   const limit = Math.min(Math.max(parseInt(url.searchParams.get('limit') || '40', 10) || 40, 1), 200);
 
   try {
-    const [files] = await bucket.getFiles({ prefix: SERVICE_PREFIX[service] });
+    const [files] = await bucket.getFiles({ prefix: SERVICE_PREFIX[service], autoPaginate: true });
 
     // userId + timestamp 프리픽스로 원본↔결과물 짝맞춤
     const pairs = new Map(); // key: `${userId}/${timestamp}`
