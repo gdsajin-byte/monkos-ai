@@ -2,126 +2,124 @@ import sharp from 'sharp';
 import { getSpec } from '../specs/formats.js';
 
 /**
- * 증명사진 크롭 엔진 v2 — 조건부 배치 로직
+ * 증명사진 크롭 엔진 v3 — 스펙 주입형 단일 배치 산식
  *
  * 설계 원칙 (사진관 실무 기반):
- * - 눈 위치를 1차 앵커로 사용 (프레임 상단에서 ~40-42%)
  * - 정수리 = 눈~턱 거리를 위로 반전 (해부학: 눈은 두상의 1/2)
- * - 헤어탑 여백 최소 2mm 보장
- * - 어깨선 가시성: 하단 부족 시 얼굴 크기를 3.2cm 방향으로 축소
- * - 얼굴 크기 허용 범위: 3.2~3.6cm (프레임 45mm 기준)
+ * - 두상(crown~chin)을 spec.faceTargetMm으로 스케일
+ * - 배치 모드 2종 (작가님 결정 2026-07-09):
+ *   · 실측: landmarks.hairTop 존재 시 헤어탑 위 soft 여백(2mm)
+ *   · 프리뷰 폴백: 미실측 시 눈 45% 고정 앵커
+ * - 헤어탑이 프레임 밖이면 spec.faceMinMm까지 축소, 그래도 안 되면 정수리 여백 0(헤어 잘림 허용)
  *
- * @param {Buffer} imageBuffer - 원본 이미지 버퍼
- * @param {object} landmarks - detectFace() 반환값
- * @param {object} options - { format, country }
- * @returns {Promise<{buffer: Buffer, meta: object}>}
+ * 배치 수학의 정본은 resolvePlacement() 하나다 (REVIEW_20260709 B5 단일화).
+ * cropToFrame(이름 규격 렌더)·cropToSpecV2(주입 스펙 렌더)·fitSpecGeometry(기하)는 전부 이를 경유한다.
  */
 
-// ─── 배치 상수 (45mm 프레임 기준, 비율) ───
-const EYE_POSITION_RATIO = 0.43;    // 레거시 폴백 — 실사용은 computeEyeAnchor()
-const HAIR_MARGIN_MIN = 0.044;      // soft 타겟 여백: 2mm / 45mm ≈ 4.4%
-const FACE_TARGET_MM = 33;          // 얼굴 기본 타겟 (mm)
-const FACE_MIN_MM = 32.5;           // 얼굴 최소 허용 (mm) — 32mm 터치 금지
-const FRAME_MM = 45;                // 프레임 높이 (mm)
-const BOTTOM_MIN_RATIO = 0.12;      // 하단 최소 비율: ~5.4mm / 45mm (어깨선 가시)
+// ─── 배치 상수 ───
+const EYE_ANCHOR_FALLBACK = 0.45;  // hairTop 미실측 시 눈 고정 앵커 (프리뷰 45%, 작가님 결정 2026-07-09)
+const HAIR_MARGIN_MM = 2;          // 실측 헤어탑 위 soft 여백 (mm) — spec.hairMarginMm이 우선
+const FACE_MIN_RATIO = 0.93;       // spec.faceMinMm 부재 시 최소 얼굴 = faceTargetMm × 0.93
 
-function computeEyeAnchor(spec) {
-  const faceRatio = (FACE_TARGET_MM / FRAME_MM);
-  const halfFace = faceRatio / 2;
-  const topMarginMin = spec.topMargin || 0.04;
-  const bottomMarginMin = spec.bottomMargin || 0.12;
-  const eyeMin = topMarginMin + halfFace;
-  const eyeMax = 1 - bottomMarginMin - halfFace;
-  if (eyeMin > eyeMax) return 0.44;
-  const eyeOptimal = (eyeMin + eyeMax) / 2;
-  return Math.max(0.42, Math.min(0.48, eyeOptimal));
-}
-
-export async function cropToFrame(imageBuffer, landmarks, options = {}) {
-  const { format = 'passport', country = 'KR' } = options;
-  const spec = getSpec(format, country);
-  if (!spec) {
-    throw new Error(`[Crop] 미지원 규격: ${format}_${country}`);
+/**
+ * 공용 배치 산식 — 스케일과 extractTop/extractLeft를 결정한다.
+ * 경계 클램프는 호출부 정책: 렌더는 하드 클램프+패딩, 기하는 프레임의 이미지 밖 돌출 허용.
+ *
+ * @param {object} landmarks - detectFace() 반환값 (chin, leftEye, rightEye, imageWidth, imageHeight[, hairTop, pose])
+ * @param {object} spec - { frameW, frameH(px), frameHmm, faceTargetMm, faceMinMm?, hairMarginMm? }
+ */
+function resolvePlacement(landmarks, spec) {
+  const { frameW, frameH, frameHmm, faceTargetMm } = spec;
+  if (!frameW || !frameH || !frameHmm || !faceTargetMm) {
+    throw new Error('[Crop] spec 필수 필드 누락 (frameW/frameH/frameHmm/faceTargetMm)');
   }
+  const mmPx = frameH / frameHmm;
+  const faceMinMm = spec.faceMinMm || faceTargetMm * FACE_MIN_RATIO;
+  const softMarginPx = (spec.hairMarginMm ?? HAIR_MARGIN_MM) * mmPx;
 
-  const { width: frameW, height: frameH } = spec;
   const { chin, leftEye, rightEye, imageWidth, imageHeight } = landmarks;
-
-  // ─── 1. 눈 위치 실측 ───
-  const eyeCenterY = (leftEye.y + rightEye.y) / 2;
+  const eyeY = (leftEye.y + rightEye.y) / 2;
   const eyeCenterX = (leftEye.x + rightEye.x) / 2;
-
-  // ─── 2. 정수리 추산 (해부학: 눈~정수리 ≈ 눈~턱) ───
-  const eyeToChin = chin.y - eyeCenterY;
   const pose = landmarks.pose || {};
   const pitchDeg = pose.pitch || 0;
   // pitch 보정 중립화 — 6DRepNet 오프셋(-4.8°) + 부호 미확정. 캘리브레이션 후 복원 (민아 검증 2026-07-09)
   const mirrorRatio = 1.0;
-  const crownY = eyeCenterY - eyeToChin * mirrorRatio;
-  const faceHeight = chin.y - crownY;
+  const crownY = eyeY - (chin.y - eyeY) * mirrorRatio;
+  const facePx = chin.y - crownY;
+  if (facePx <= 0) throw new Error('[Crop] 유효하지 않은 얼굴 높이');
 
-  if (faceHeight <= 0) {
-    throw new Error('[Crop] 유효하지 않은 얼굴 높이');
-  }
-
-  // ─── 3. 헤어탑 추산 ───
   const hairTopY = landmarks.hairTop ?? crownY;
 
-  // ─── 4. 스케일 결정 (타겟 얼굴 크기 기반) ───
-  const faceTargetRatio = FACE_TARGET_MM / FRAME_MM;
-  let targetFaceH = frameH * faceTargetRatio;
-  let scale = targetFaceH / faceHeight;
+  let scale = (faceTargetMm * mmPx) / facePx;
 
-  // ─── 5. 제약 기반 clamp 배치 ───
-  const mmPx = frameH / FRAME_MM;
-  const softMarginPx = 2 * mmPx;  // 헤어 위 soft 타겟 2mm
-
-  // hard 제약: 정수리 잘림 금지 (여백 ≥ 0)
+  // 제약 기반 clamp 배치 — hard 제약: 정수리 잘림 금지 (여백 ≥ 0)
   const topMax = Math.round(crownY * scale);
-
-  // 배치: 헤어탑 실측 있으면 헤어 위 2mm, 없으면 눈 45% 고정 (프리뷰용)
   const hasHairTop = landmarks.hairTop != null;
   const topTarget = hasHairTop
-    ? Math.round(hairTopY * scale - softMarginPx)  // 실측 헤어탑 위 2mm
-    : Math.round(eyeCenterY * scale - frameH * 0.45);  // 눈 45% 앵커
-
+    ? Math.round(hairTopY * scale - softMarginPx)              // 실측 헤어탑 위 soft 여백
+    : Math.round(eyeY * scale - frameH * EYE_ANCHOR_FALLBACK); // 눈 45% 앵커
   let extractTop = Math.max(0, Math.min(topMax, topTarget));
 
-  // 스케일 축소 시도: 헤어탑이 프레임 밖이면 32.5mm까지
+  // 스케일 축소 시도: 헤어탑이 프레임 밖이면 faceMinMm까지
   if (hairTopY * scale - extractTop < 0) {
-    const faceMinRatio = FACE_MIN_MM / FRAME_MM;
+    const minTargetFaceH = faceMinMm * mmPx;
     let newScale = scale;
-    while (newScale * faceHeight > frameH * faceMinRatio) {
+    let fitted = false;
+    while (newScale * facePx > minTargetFaceH) {
       newScale *= 0.995;
-      const newTopMax = Math.round(crownY * newScale);
-      const newTopTarget = Math.round(hairTopY * newScale - softMarginPx);
-      const newTopMin = 0;
-      const newExtractTop = Math.max(newTopMin, Math.min(newTopMax, newTopTarget));
-      if (hairTopY * newScale - newExtractTop >= 0) {
+      const nTopMax = Math.round(crownY * newScale);
+      const nTopTarget = Math.round(hairTopY * newScale - softMarginPx);
+      const nExtractTop = Math.max(0, Math.min(nTopMax, nTopTarget));
+      if (hairTopY * newScale - nExtractTop >= 0) {
         scale = newScale;
-        extractTop = newExtractTop;
+        extractTop = nExtractTop;
+        fitted = true;
         break;
       }
     }
-    // 32.5mm에서도 안 되면 → 33mm 유지, 헤어 잘림 허용
-    if (scale === targetFaceH / faceHeight) {
-      extractTop = topMax;  // 정수리 여백 0 = 헤어 최대 잘림
-    }
+    // faceMinMm에서도 안 되면 → 타겟 유지, 헤어 잘림 허용 (정수리 여백 0)
+    if (!fitted) extractTop = topMax;
   }
 
-  const eyeAnchor = ((eyeCenterY * scale - extractTop) / frameH);
+  const eyeAnchor = (eyeY * scale - extractTop) / frameH;
 
-  // ─── 7. 스케일 적용 ───
   const scaledW = Math.round(imageWidth * scale);
   const scaledH = Math.round(imageHeight * scale);
-
   // 좌우: 양 눈 중심이 프레임 수평 중앙
-  const scaledEyeCenterX = eyeCenterX * scale;
-  let extractLeft = Math.round(scaledEyeCenterX - frameW / 2);
+  const extractLeft = Math.round(eyeCenterX * scale - frameW / 2);
+
+  return {
+    scale, extractTop, extractLeft, scaledW, scaledH,
+    mmPx, facePx, eyeAnchor, mirrorRatio, pitchDeg,
+    lines: { crownY, eyeY, chinY: chin.y, hairTopY, eyeCenterX },
+    imageSize: { width: imageWidth, height: imageHeight },
+  };
+}
+
+/** 공용 meta 계측 — extractTop은 호출부 경계 클램프 이후 값, eyeAnchor는 클램프 전 값 유지 */
+function placementMeta(p, extractTop) {
+  return {
+    faceMM: (p.facePx * p.scale / p.mmPx).toFixed(1),
+    crownMarginMM: ((p.lines.crownY * p.scale - extractTop) / p.mmPx).toFixed(1),
+    hairMarginMM: ((p.lines.hairTopY * p.scale - extractTop) / p.mmPx).toFixed(1),
+    eyePositionPercent: (p.eyeAnchor * 100).toFixed(1),
+    eyeAnchor: +p.eyeAnchor.toFixed(3),
+    mirrorRatio: +p.mirrorRatio.toFixed(2),
+    pitchDeg: p.pitchDeg,
+  };
+}
+
+/**
+ * 배치 → sharp 렌더 공용 경로 (cropToFrame·cropToSpecV2 공용)
+ */
+async function renderPlacement(imageBuffer, landmarks, spec) {
+  const p = resolvePlacement(landmarks, spec);
+  const { frameW, frameH } = spec;
+  const { scale, scaledW, scaledH, mmPx } = p;
 
   // 경계 보정
-  extractTop = Math.max(0, Math.min(extractTop, scaledH - frameH));
-  extractLeft = Math.max(0, Math.min(extractLeft, scaledW - frameW));
+  const extractTop = Math.max(0, Math.min(p.extractTop, scaledH - frameH));
+  const extractLeft = Math.max(0, Math.min(p.extractLeft, scaledW - frameW));
 
   // 패딩 필요 시
   if (scaledW < frameW || scaledH < frameH) {
@@ -129,7 +127,6 @@ export async function cropToFrame(imageBuffer, landmarks, options = {}) {
     return await cropWithPadding(imageBuffer, scale, extractTop, extractLeft, frameW, frameH, scaledW, scaledH);
   }
 
-  // ─── 8. sharp: resize → extract ───
   const croppedBuffer = await sharp(imageBuffer)
     .resize(scaledW, scaledH, { fit: 'fill' })
     .extract({ left: extractLeft, top: extractTop, width: frameW, height: frameH })
@@ -137,29 +134,40 @@ export async function cropToFrame(imageBuffer, landmarks, options = {}) {
     .png()
     .toBuffer();
 
-  // ─── 메타 정보 ───
-  const actualFaceMM = (faceHeight * scale / mmPx).toFixed(1);
-  const crownMM = ((crownY * scale - extractTop) / mmPx).toFixed(1);
-  const hairMM = ((hairTopY * scale - extractTop) / mmPx).toFixed(1);
-  const bottomMM = ((frameH - (chin.y * scale - extractTop)) / mmPx).toFixed(1);
-  const eyePosPercent = ((eyeAnchor) * 100).toFixed(1);
-
   const meta = {
-    spec: `${format}_${country}`,
+    ...placementMeta(p, extractTop),
+    bottomMarginMM: ((frameH - (p.lines.chinY * scale - extractTop)) / mmPx).toFixed(1),
     scale: Math.round(scale * 100) / 100,
-    faceMM: actualFaceMM,
-    crownMarginMM: crownMM,
-    hairMarginMM: hairMM,
-    bottomMarginMM: bottomMM,
-    eyePositionPercent: eyePosPercent,
-    eyeAnchor: +eyeAnchor.toFixed(3),
-    mirrorRatio: +mirrorRatio.toFixed(2),
-    pitchDeg,
     extractRegion: { left: extractLeft, top: extractTop, width: frameW, height: frameH },
   };
 
-  console.log(`[Crop] 완료: face=${actualFaceMM}mm, crown=${crownMM}mm, hair=${hairMM}mm, bottom=${bottomMM}mm, eye=${eyePosPercent}%, scale=${meta.scale}, mirror=${mirrorRatio.toFixed(2)}, pitch=${pitchDeg}°`);
+  console.log(`[Crop] 완료: face=${meta.faceMM}mm, crown=${meta.crownMarginMM}mm, hair=${meta.hairMarginMM}mm, bottom=${meta.bottomMarginMM}mm, eye=${meta.eyePositionPercent}%, scale=${meta.scale}, mirror=${p.mirrorRatio.toFixed(2)}, pitch=${p.pitchDeg}°`);
   return { buffer: croppedBuffer, meta };
+}
+
+/**
+ * 이름 규격 렌더 크롭 — getSpec(format, country) 규격을 스펙 필드로 정규화해 renderPlacement 경유.
+ * 얼굴 타겟·프레임 mm은 전부 규격에서 온다 (구 모듈 상수 33/45 고정 산식 폐지, 2026-07-10).
+ *
+ * @param {Buffer} imageBuffer - 원본 이미지 버퍼
+ * @param {object} landmarks - detectFace() 반환값
+ * @param {object} options - { format: 'passport'|'id', country: 'KR'|'JP' }
+ * @returns {Promise<{buffer: Buffer, meta: object}>}
+ */
+export async function cropToFrame(imageBuffer, landmarks, options = {}) {
+  const { format = 'passport', country = 'KR' } = options;
+  const named = getSpec(format, country);
+  if (!named) {
+    throw new Error(`[Crop] 미지원 규격: ${format}_${country}`);
+  }
+  const { buffer, meta } = await renderPlacement(imageBuffer, landmarks, {
+    frameW: named.width,
+    frameH: named.height,
+    frameHmm: named.frameHmm,
+    faceTargetMm: named.faceTargetMm,
+    faceMinMm: named.faceMinMm,
+  });
+  return { buffer, meta: { spec: `${format}_${country}`, ...meta } };
 }
 
 /**
@@ -199,29 +207,19 @@ async function cropWithPadding(imageBuffer, scale, extractTop, extractLeft, fram
 }
 
 /**
- * 규격 안착 크롭 v3 — IDPASS 크롭앱 정본 수학 이식 (2026-07-06 야간 교정)
- *
- * v2의 "머리끝~턱 = 얼굴" 측정은 오류였다: 규격의 머리 높이는 정수리~턱(두상)이며,
- * 헤어 볼륨을 얼굴에 포함하면 두상이 축소 배치돼 틀 안에서 붕 뜬다 (작가님 실사고 지적).
- *
- * 정본 배치 (portal/public/crop/crop.js = IDPASS 검증 로직):
- *   crown = 눈 - (턱 - 눈)  ← 해부학: 눈은 두상의 1/2
- *   face  = crown ~ chin  →  spec.faceTargetMm으로 스케일
- *   눈 위치 = 프레임 상단 44% (허용 40~48%)
- * 순백 스캔(머리끝 실측)은 "헤어 잘림 방지" 보조로만: 헤어가 프레임 밖이면
- * 내려 앉히고, 눈 48% 초과 시 faceMinMm까지 축소.
+ * 주입 스펙 렌더 크롭 v3 — 스펙스 파이프라인(server.js /api/crop-spec) 전용.
+ * 주입된 spec을 그대로 배치에 사용한다. 428개 슬러그 규격이 각각 다르므로
+ * id_kr/passport_kr 2종으로의 강제 매핑 금지 (2026-07-10 R1 적대검증 확정).
  *
  * @param {object} spec - { frameW, frameH(px), frameHmm, faceTargetMm, faceMinMm?, hairMarginMm? }
+ * @returns {Promise<{buffer: Buffer, meta: object}>}
  */
-/** @deprecated cropToFrame으로 통합 (2026-07-09) */
 export async function cropToSpecV2(imageBuffer, landmarks, spec) {
-  const format = (spec.frameHmm && spec.frameHmm <= 42) ? 'id' : 'passport';
-  const country = spec.name?.includes('日本') ? 'JP' : 'KR';
-  return cropToFrame(imageBuffer, landmarks, { format, country });
+  return renderPlacement(imageBuffer, landmarks, spec);
 }
 
 /**
- * 규격 프레임 피팅 기하 — cropToSpecV2와 동일 산식, 렌더 없이 좌표만 반환 (ORDER_20260707 크롭정밀도)
+ * 규격 프레임 피팅 기하 — 렌더 없이 좌표만 반환 (ORDER_20260707 크롭정밀도)
  *
  * 용도: 비전 검수·가이드 오버레이. 실사(비순백) 원본에서는 hairScan을 꺼야 한다 —
  * subjectTopRow는 순백 전제라 어두운 배경에서 hairTop=0(최상단)으로 오판, 프레임이 통째로
@@ -231,79 +229,25 @@ export async function cropToSpecV2(imageBuffer, landmarks, spec) {
  * @returns 입력 이미지 좌표계 기준 { frame, lines, meta } — frame은 스케일 역산된 원본 좌표
  */
 export async function fitSpecGeometry(imageBuffer, landmarks, spec, opts = {}) {
-  const { frameW, frameH, frameHmm, faceTargetMm } = spec;
-  if (!frameW || !frameH || !frameHmm || !faceTargetMm) {
-    throw new Error('[FitSpec] spec 필수 필드 누락 (frameW/frameH/frameHmm/faceTargetMm)');
-  }
-  const mmPx = frameH / frameHmm;
-  const faceMinMm = spec.faceMinMm || faceTargetMm * 0.93;
+  const p = resolvePlacement(landmarks, spec);
+  const { frameW, frameH } = spec;
 
-  const { chin, leftEye, rightEye, imageWidth, imageHeight } = landmarks;
-  const eyeY = (leftEye.y + rightEye.y) / 2;
-  const eyeCenterX = (leftEye.x + rightEye.x) / 2;
-  const pose = landmarks.pose || {};
-  const pitchDeg = pose.pitch || 0;
-  // pitch 보정 중립화 — 6DRepNet 오프셋·부호 미확정 (민아 검증 2026-07-09)
-  const mirrorRatio = 1.0;
-  const crownY = eyeY - (chin.y - eyeY) * mirrorRatio;
-  const facePx = chin.y - crownY;
-  if (facePx <= 0) throw new Error('[FitSpec] 유효하지 않은 얼굴 높이');
-
-  const hairTopY = landmarks.hairTop ?? crownY;
-  const softMarginPx = 2 * mmPx;
-
-  let scale = (faceTargetMm * mmPx) / facePx;
-
-  // 제약 기반 clamp 배치
-  const topMax = Math.round(crownY * scale);
-  const hasHairTop = landmarks.hairTop != null;
-  const topTarget = hasHairTop
-    ? Math.round(hairTopY * scale - softMarginPx)
-    : Math.round(eyeY * scale - frameH * 0.45);
-  let extractTop = Math.max(0, Math.min(topMax, topTarget));
-
-  if (hairTopY * scale - extractTop < 0) {
-    const minTargetFaceH = faceMinMm * mmPx;
-    let newScale = scale;
-    while (newScale * facePx > minTargetFaceH) {
-      newScale *= 0.995;
-      const nTopMax = Math.round(crownY * newScale);
-      const nTopTarget = Math.round(hairTopY * newScale - softMarginPx);
-      const nTopMin = 0;
-      const nExtractTop = Math.max(nTopMin, Math.min(nTopMax, nTopTarget));
-      if (hairTopY * newScale - nExtractTop >= 0) { scale = newScale; extractTop = nExtractTop; break; }
-    }
-    if (scale === (faceTargetMm * mmPx) / facePx) {
-      extractTop = topMax;
-    }
-  }
-
-  const eyeAnchor = (eyeY * scale - extractTop) / frameH;
-
-  const scaledW = Math.round(imageWidth * scale);
-  const scaledH = Math.round(imageHeight * scale);
-  let extractLeft = Math.round(eyeCenterX * scale - frameW / 2);
-  const canClampY = scaledH >= frameH;
-  const canClampX = scaledW >= frameW;
-  if (canClampY) extractTop = Math.max(0, Math.min(extractTop, scaledH - frameH));
-  if (canClampX) extractLeft = Math.max(0, Math.min(extractLeft, scaledW - frameW));
+  let { extractTop, extractLeft } = p;
+  const canClampY = p.scaledH >= frameH;
+  const canClampX = p.scaledW >= frameW;
+  if (canClampY) extractTop = Math.max(0, Math.min(extractTop, p.scaledH - frameH));
+  if (canClampX) extractLeft = Math.max(0, Math.min(extractLeft, p.scaledW - frameW));
 
   const meta = {
-    faceMM: (facePx * scale / mmPx).toFixed(1),
-    crownMarginMM: ((crownY * scale - extractTop) / mmPx).toFixed(1),
-    hairMarginMM: ((hairTopY * scale - extractTop) / mmPx).toFixed(1),
-    eyePositionPercent: (eyeAnchor * 100).toFixed(1),
-    eyeAnchor: +eyeAnchor.toFixed(3),
-    mirrorRatio: +mirrorRatio.toFixed(2),
-    pitchDeg,
-    scale: Math.round(scale * 1000) / 1000,
+    ...placementMeta(p, extractTop),
+    scale: Math.round(p.scale * 1000) / 1000,
     padded: !canClampX || !canClampY,
   };
 
   return {
-    frame: { x: extractLeft / scale, y: extractTop / scale, w: frameW / scale, h: frameH / scale },
-    lines: { crownY, eyeY, chinY: chin.y, hairTopY, eyeCenterX },
-    imageSize: { width: imageWidth, height: imageHeight },
+    frame: { x: extractLeft / p.scale, y: extractTop / p.scale, w: frameW / p.scale, h: frameH / p.scale },
+    lines: p.lines,
+    imageSize: p.imageSize,
     meta,
   };
 }
