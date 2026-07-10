@@ -101,7 +101,7 @@ const SPECS_I18N = {
       altSelfie: '셀카 예시', labelSelfie: '✓ 셀카',
       altProfile: '프로필 예시', labelProfile: '✓ 프로필',
       dropText: '사진을 끌어다 놓거나', selectBtn: '사진 선택',
-      guideChips: ['정면 얼굴', '가슴 위 구도', '1인', '선명한 화질'],
+      guideChips: ['정면 얼굴', '가슴 위 구도', '1인', '선명한 화질', '입 다물기 (치아 노출 금지)'],
       altCheck: '검수 사진', checkTitle: '규정 체크', checking: 'AI 검수 중...',
       btnOtherPhoto: '다른 사진', btnProceed: '진행하기',
       altPreview: '미리보기',
@@ -202,7 +202,7 @@ const SPECS_I18N = {
       altSelfie: 'セルフィー例', labelSelfie: '✓ セルフィー',
       altProfile: 'プロフィール例', labelProfile: '✓ プロフィール',
       dropText: '写真をドラッグ＆ドロップ、または', selectBtn: '写真を選択',
-      guideChips: ['正面の顔', '胸から上の構図', '1人', '鮮明な画質'],
+      guideChips: ['正面の顔', '胸から上の構図', '1人', '鮮明な画質', '口を閉じる（歯を見せない）'],
       altCheck: '検査写真', checkTitle: '規定チェック', checking: 'AI検査中...',
       btnOtherPhoto: '別の写真', btnProceed: '進める',
       altPreview: 'プレビュー',
@@ -300,7 +300,7 @@ const SPECS_I18N = {
       altSelfie: 'Selfie example', labelSelfie: '✓ Selfie',
       altProfile: 'Profile example', labelProfile: '✓ Profile',
       dropText: 'Drag & drop a photo, or', selectBtn: 'Choose Photo',
-      guideChips: ['Front-facing', 'Chest-up framing', 'One person', 'Sharp focus'],
+      guideChips: ['Front-facing', 'Chest-up framing', 'One person', 'Sharp focus', 'Mouth closed (no teeth)'],
       altCheck: 'Photo under review', checkTitle: 'Compliance Check', checking: 'AI is checking...',
       btnOtherPhoto: 'Another Photo', btnProceed: 'Continue',
       altPreview: 'Preview',
@@ -2919,7 +2919,8 @@ ${hreflangTags}
       if(d.poseCheck.roll && !d.poseCheck.roll.ok) badge('기울기', Math.abs(d.poseCheck.roll.value).toFixed(0) + (sfx ? '° — 수평을 맞춰주세요' : '°'), 'fail');
       else if(d.poseCheck.roll && !CFG.pilot) badge('기울기', Math.abs(d.poseCheck.roll.value).toFixed(0) + '°', 'pass');
       if(d.poseCheck.eyeOpen && !d.poseCheck.eyeOpen.ok) badge('눈', sfx ? '감김 — 다른 사진을 올려주세요' : '감김', 'fail');
-      if(d.poseCheck.mouthOpen && !d.poseCheck.mouthOpen.ok) badge(sfx ? '참고' : '입', sfx ? '입은 다문 상태가 안전해요' : '벌림', 'warn');
+      // 입벌림 칩 미표기 (2026-07-10 작가님): 입술 간격 비율로는 '치아 노출'(규정 핵심)을 판별 못함 —
+      // 1차 검수는 신뢰 가능한 항목만 표기. 검출값은 서버 로그로 축적, 규정 안내는 업로드 가이드 칩 담당.
     }
     var expertMsg = (d.vision && d.vision.executed) || (d.vision && d.vision.note);
     if(expertMsg){
