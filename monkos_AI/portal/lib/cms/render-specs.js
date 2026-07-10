@@ -2616,6 +2616,7 @@ ${hreflangTags}
      매팅 대기 시간과 겹쳐 재생. '규격에 맞아요' 사전 판정 제거 — 문제만 말한다. */
   var fitMode = 'default';
   var pilotGenPromise = null;
+  var pilotFreeExhausted = false;
   function prepareFreeReady(){
     fitResult = null; pilotGenPromise = null; freeBusy = false;
     fitClearTimers();
@@ -2646,8 +2647,19 @@ ${hreflangTags}
       world.style.transform = 'translate(' + ((stW - W0 * scv) / 2) + 'px,' + ((stH - H0 * scv) / 2) + 'px) scale(' + scv + ')';
     };
     var fs2 = document.getElementById('v2-fit-summary');
-    fs2.className = 'ip-summary-ok';
-    fs2.textContent = '사진 확인 완료';
+    var mkBtn = document.getElementById('v2-fit-make');
+    if(freeRemainingFromCookie() <= 0){
+      // 무료 소진 모드 — 연출·연산 없이 유료 길 즉시 개방 (2026-07-10 작가님)
+      pilotFreeExhausted = true;
+      fs2.className = 'v2-checklist-summary v2-summary-fail';
+      fs2.textContent = '오늘 무료 횟수를 모두 사용했어요 — 내일 3회가 다시 채워져요.';
+      mkBtn.textContent = '₩2,000으로 계속 만들기';
+    } else {
+      pilotFreeExhausted = false;
+      fs2.className = 'ip-summary-ok';
+      fs2.textContent = '사진 확인 완료';
+      mkBtn.textContent = '무료로 만들기';
+    }
     document.getElementById('v2-fit-actions').style.display = 'flex';
     var cap = document.getElementById('ip-fit-caption'); if(cap) cap.style.display = 'block';
     var t2l = document.getElementById('ip-fit-t2-link'); if(t2l) t2l.style.display = 'block';
@@ -2685,13 +2697,22 @@ ${hreflangTags}
       return;
     }
     st.textContent = '규격 안착 완료 — 배경을 지우는 중이에요';
+    fs.className = 'ip-summary-ok';
+    fs.textContent = '배경을 지우고 있어요...';
     (pilotGenPromise || freeGenerateRequest(d)).then(function(res){
       freeBusy = false;
       if(!res.ok){
         var code = res.d && res.d.code;
-        if(code === 'FREE_LIMIT'){ updateFreeRemainingUI(0); gaTrack('free_limit_hit', {}, true); }
+        if(code === 'FREE_LIMIT'){
+          updateFreeRemainingUI(0); gaTrack('free_limit_hit', {}, true);
+          pilotFreeExhausted = true;
+          showError('오늘 무료 횟수를 모두 사용했어요 — 아래 결제로 바로 계속 만들 수 있어요.');
+          proceedToPay(); // 무료 막혀도 유료 길은 연다
+          return;
+        }
         showError((res.d && res.d.error) || '무료 생성에 실패했어요. 잠시 후 다시 시도해주세요.');
         st.textContent = '';
+        fs.textContent = '';
         fa.style.display = 'flex';
         return;
       }
@@ -2759,8 +2780,9 @@ ${hreflangTags}
         if(code === 'FREE_LIMIT'){
           updateFreeRemainingUI(0);
           gaTrack('free_limit_hit', {}, true);
-          showError((res.d && res.d.error) || '오늘 무료 횟수를 모두 사용했어요.');
-          if(CFG.t1) proceedToPay(); else restoreFitActions();
+          pilotFreeExhausted = true;
+          showError('오늘 무료 횟수를 모두 사용했어요 — 아래 결제로 바로 계속 만들 수 있어요.');
+          proceedToPay();
           return;
         }
         showError((res.d && res.d.error) || '무료 생성에 실패했어요. 잠시 후 다시 시도해주세요.');
@@ -2832,6 +2854,10 @@ ${hreflangTags}
     badges.style.display = 'none'; badges.innerHTML = '';
     noteEl.style.display = 'none';
     fs.textContent = ''; fs.className = 'v2-checklist-summary';
+    if(fitMode === 'pilot'){
+      fs.className = 'ip-summary-ok';
+      fs.textContent = '사진을 규격에 맞추는 중이에요...';
+    }
     fa.style.display = 'none';
     var capEl = document.getElementById('ip-fit-caption'); if(capEl) capEl.style.display = 'none';
     var t2lEl = document.getElementById('ip-fit-t2-link'); if(t2lEl) t2lEl.style.display = 'none';
@@ -3068,6 +3094,7 @@ ${hreflangTags}
     if(CFG.pilot){
       if(freeBusy) return;
       if(hasUsableToken()) return doGenerate();
+      if(pilotFreeExhausted) return proceedToPay(); // 무료 소진 → 유료 길 직행
       if(fitResult && fitResult.frame) return doFreeGenerate(); // 재시도 경로 (fit 이미 확보)
       freeBusy = true; hideError();
       fitMode = 'pilot';
