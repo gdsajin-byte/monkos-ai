@@ -1899,6 +1899,8 @@ const IDPASS_PILOT_STYLE = `
 .ip-card-list li { font-size:13px; color:#3a3744; padding:3.5px 0 3.5px 22px; position:relative; line-height:1.45; }
 .ip-card-list li::before { content:"✓"; position:absolute; left:2px; color:#0e8a5f; font-weight:800; font-size:12px; }
 .ip-btn-mid { width:100%; height:46px; font-size:14.5px; margin-top:12px; background:#fff; color:#5a3de6; border:1.5px solid #c9bdf2; }
+.ip-card-soon { opacity:.75; }
+.ip-card-soon .ip-btn-mid { color:#8b879b; border-color:#dcd8e8; cursor:default; }
 .ip-card-t2 { background:#17151f; border-color:#17151f; color:#efedf6; }
 .ip-t2-badge { display:inline-block; background:rgba(139,115,255,.18); color:#c9bbff; font-size:10.5px; letter-spacing:2px; font-weight:700; font-family:monospace; border-radius:7px; padding:4px 9px; }
 .ip-card-t2 h4 { font-size:17px; font-weight:800; margin:10px 0 4px; color:#fff; }
@@ -1926,6 +1928,8 @@ function specsDetailV2Fragment(slug, forceLang = null) {
   // IDPASS 파일럿 (경로③ 작가님 직접 지시 2026-07-10): kr-passport ko 한정 — T0 무료 퍼널 + 땡큐 위계 + 가독성 토큰.
   // 확산 게이트 3건(실기기 가독·계측 동작·SEO 무손상) 충족 후 전 specs 승격. PROPOSAL_20260710_민아_IDPASS통합설계 §9.
   const isPilot = slug === 'kr-passport' && lang === 'ko';
+  // T1 리터칭 실동작 여부 — 카드 문구·CTA를 서버 플래그와 결합 (off인데 '리터칭' 판매 금지, 2026-07-10 리뷰 확정)
+  const t1RetouchOn = process.env.PILOT_T1_RETOUCH === '1';
   const fmtV2 = (tpl, vars) => String(tpl).replace(/\{(\w+)\}/g, (m, k) => (vars[k] != null ? vars[k] : m));
   const prefix = lang === 'ko' ? '' : `/${lang}`;
   const specData = SPECS_DATA[slug];
@@ -2144,8 +2148,9 @@ ${hreflangTags}
             <span class="v2-guide-label">${escapeHtml(v2.labelProfile)}</span>
           </div>
         </div>
-        <div class="v2-error-msg" id="v2-error"></div>
       </div>
+      <!-- 에러 안내 — 페이즈 밖 공통 위치 (숨겨진 페이즈 내부에 있으면 무음, 2026-07-10 리뷰 확정) -->
+      <div class="v2-error-msg" id="v2-error"></div>
 
       <!-- Phase 2: AI 검수 결과 -->
       <div class="v2-make-layout" id="v2-phase-check" style="display:none;">
@@ -2274,17 +2279,24 @@ ${hreflangTags}
             <button class="ip-btn ip-btn-primary" id="ip-free-download">다운로드</button>
             <button class="ip-btn ip-btn-ghost" id="ip-free-retry">다른 사진</button>
           </div>
-          <div class="ip-free-cap">오늘 무료 <span id="ip-free-remaining">-</span>회 남음 · 비로그인 파일은 24시간 뒤 자동 삭제됩니다</div>
+          <div class="ip-free-cap">오늘 무료 <span id="ip-free-remaining">-</span>회 남음</div>
 
-          <div class="ip-card ip-card-t1">
+          ${t1RetouchOn ? `<div class="ip-card ip-card-t1">
             <div class="ip-card-head"><b>AI 보정</b><span class="ip-price">₩2,000</span></div>
             <ul class="ip-card-list">
               <li>AI 리터칭 — 내 얼굴 그대로, 더 단정하게</li>
               <li>AI 규격 검수</li>
-              <li>보정 원본 + 여권 규격 파일</li>
+              <li>여권 규격 보정 파일</li>
             </ul>
             <button class="ip-btn ip-btn-mid" id="ip-t1-buy">AI 보정으로 업그레이드</button>
-          </div>
+          </div>` : `<div class="ip-card ip-card-t1 ip-card-soon">
+            <div class="ip-card-head"><b>AI 보정</b><span class="ip-price">₩2,000</span></div>
+            <ul class="ip-card-list">
+              <li>AI 리터칭 — 내 얼굴 그대로, 더 단정하게</li>
+              <li>AI 규격 검수</li>
+            </ul>
+            <button class="ip-btn ip-btn-mid" id="ip-t1-buy" disabled>곧 열려요 — 준비 중</button>
+          </div>`}
 
           <div class="ip-card ip-card-t2">
             <span class="ip-t2-badge">◆ 발급보장</span>
@@ -2294,7 +2306,7 @@ ${hreflangTags}
             <a class="ip-btn ip-btn-t2" id="ip-t2-go" href="${upsellHref}" data-cta="specs-upsell" rel="noopener">발급보장으로 만들기</a>
           </div>
 
-          <a class="ip-slot" href="/credits.html?from=specs-free">
+          <a class="ip-slot" id="ip-slot-credit" href="/credits.html">
             <span class="ip-slot-ic">🎁</span>
             <span class="ip-slot-txt"><b>간편로그인하면 10c 크레딧</b><span>AI 보정 1회가 ₩1,500이 돼요</span></span>
             <span class="ip-slot-tag">EVENT</span>
@@ -2365,6 +2377,7 @@ ${hreflangTags}
     downloadName: `${countryName}_${typeName}_${locField(specData, 'size', lang).replace(/\s/g, '')}_MONKOS.jpg`,
     t: v2.js,
     pilot: isPilot,
+    t1: t1RetouchOn,
     freeCap: 3,
   };
 
@@ -2617,6 +2630,7 @@ ${hreflangTags}
   }
   function doFreeGenerate(){
     if(!uploadedBase64 || freeBusy) return;
+    if(hasUsableToken()) return doGenerate(); // 미사용 결제 토큰 보유 시 유료 경로 우선 (방어적 — 토큰 방치 방지)
     if(!fitResult || !fitResult.frame){ proceedToPay(); return; }
     freeBusy = true;
     hideError();
@@ -2639,8 +2653,8 @@ ${hreflangTags}
         if(code === 'FREE_LIMIT'){
           updateFreeRemainingUI(0);
           gaTrack('free_limit_hit', {}, true);
-          showError('오늘 무료 횟수를 모두 사용했어요. AI 보정(₩2,000)으로는 계속 만들 수 있어요.');
-          proceedToPay();
+          showError((res.d && res.d.error) || '오늘 무료 횟수를 모두 사용했어요.');
+          if(CFG.t1) proceedToPay(); else restoreFitActions();
           return;
         }
         showError((res.d && res.d.error) || '무료 생성에 실패했어요. 잠시 후 다시 시도해주세요.');
@@ -2681,6 +2695,11 @@ ${hreflangTags}
     });
     var t2go = document.getElementById('ip-t2-go');
     if(t2go) t2go.addEventListener('click', function(){ gaTrack('t2_upsell_click', {}, true); });
+    var slotCredit = document.getElementById('ip-slot-credit');
+    if(slotCredit){
+      slotCredit.href = '/credits.html?from=' + encodeURIComponent(location.pathname + '?credits=return');
+      slotCredit.addEventListener('click', function(){ gaTrack('credit_slot_click', {}, true); });
+    }
   }
 
   /* ─── 규격 안착 시어터 (2026-07-07 작가님 연출 비전) ───
@@ -2896,10 +2915,11 @@ ${hreflangTags}
       if(m.bottomMm != null) badge('하단', m.bottomMm + 'mm', j.bottom);
     }
     if(d.poseCheck){
-      if(d.poseCheck.roll && !d.poseCheck.roll.ok) badge('기울기', Math.abs(d.poseCheck.roll.value).toFixed(0) + '° — 수평을 맞춰주세요', 'fail');
+      var sfx = CFG.pilot; // 안내 접미문은 파일럿 한정 — 비파일럿(ja/en 포함)은 기존 짧은 라벨 유지
+      if(d.poseCheck.roll && !d.poseCheck.roll.ok) badge('기울기', Math.abs(d.poseCheck.roll.value).toFixed(0) + (sfx ? '° — 수평을 맞춰주세요' : '°'), 'fail');
       else if(d.poseCheck.roll && !CFG.pilot) badge('기울기', Math.abs(d.poseCheck.roll.value).toFixed(0) + '°', 'pass');
-      if(d.poseCheck.eyeOpen && !d.poseCheck.eyeOpen.ok) badge('눈', '감김 — 다른 사진을 올려주세요', 'fail');
-      if(d.poseCheck.mouthOpen && !d.poseCheck.mouthOpen.ok) badge('입', '벌림 — 입을 다문 사진 권장', 'warn');
+      if(d.poseCheck.eyeOpen && !d.poseCheck.eyeOpen.ok) badge('눈', sfx ? '감김 — 다른 사진을 올려주세요' : '감김', 'fail');
+      if(d.poseCheck.mouthOpen && !d.poseCheck.mouthOpen.ok) badge('입', sfx ? '벌림 — 입을 다문 사진 권장' : '벌림', 'warn');
     }
     var expertMsg = (d.vision && d.vision.executed) || (d.vision && d.vision.note);
     if(expertMsg){

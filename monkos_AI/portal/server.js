@@ -14,7 +14,7 @@ import geoip from 'geoip-lite';
 
 // === 공통 인프라 ===
 import {
-  PORT, PROJECT_ID, LOCATION, log,
+  PORT, PROJECT_ID, LOCATION, log, firestore,
   ALLOWED_ORIGINS, MIME_TYPES, usersCollection,
   GOOGLE_CLIENT_ID, LEMONSQUEEZY_API_KEY, TOSS_SECRET_KEY,
   TELEGRAM_BOT_TOKEN, TELEGRAM_EVENT_BOT_TOKEN, TELEGRAM_TEAM_BOT_TOKEN,
@@ -111,7 +111,10 @@ function detectPaymentRegion(req) {
  * @returns true = 허용, false = 초과(429 처리 필요)
  */
 function checkRateLimit(req, bucket, limit, windowMs = 60000) {
-  const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket.remoteAddress;
+  // XFF는 최우측 값 사용 — Cloud Run(GFE)이 실제 클라이언트 IP를 우측에 append.
+  // 최좌측은 클라이언트 임의 주입 가능(스푸핑)이라 버킷 키로 쓰면 레이트리밋이 무력화됨 (2026-07-10 리뷰 확정).
+  const xff = req.headers['x-forwarded-for'];
+  const ip = (xff ? xff.split(',').pop().trim() : '') || req.socket.remoteAddress;
   const now = Date.now();
   if (!global._rateLimits) global._rateLimits = {};
   const key = `${bucket}:${ip}`;
@@ -148,8 +151,57 @@ function readFreeQuota(req) {
 }
 function freeQuotaCookie(date, count) {
   // Domain 미지정(host-only) — dev(run.app)·prod(monkos.ai) 양쪽에서 유효.
-  // HttpOnly 미적용: 클라가 잔여 횟수 표시용으로 읽는다 (서명 검증은 서버 정본 — 위조 시 카운트 0 리셋뿐).
+  // HttpOnly 미적용: 클라가 잔여 횟수 표시용으로 읽는다. 쿠키는 UX 힌트 — 정본은 Firestore(아래).
   return `monkos_free=${date}.${count}.${freeQuotaSign(`${date}:${count}`)};Path=/;Max-Age=93600;SameSite=Lax`;
+}
+/**
+ * 무료 쿼터 서버 정본 — Firestore 원자 트랜잭션 (2026-07-10 적대 리뷰 HIGH 대응).
+ * 쿠키 삭제·XFF 회전으로도 우회 불가: 키 = sid+IP 해시(개인) + 날짜 전역 총량(원가 하드캡).
+ * 선차감 방식 — 생성 실패(FREE_UNAVAILABLE) 시 refundFreeQuota로 반환. 멀티탭 레이스도 원자성으로 해소.
+ * Firestore 장애 시 null 반환 → 쿠키+IP 백스톱만으로 진행(가용성 우선, WARNING 로그).
+ */
+const FREE_GLOBAL_DAILY_CAP = 300; // 전역 일일 상한 — 최악 매팅 원가 ~₩6,000/일
+function freeQuotaKey(req) {
+  const xff = req.headers['x-forwarded-for'];
+  const ip = (xff ? xff.split(',').pop().trim() : '') || req.socket.remoteAddress || '';
+  const sid = parseCookies(req.headers.cookie).monkos_sid || '';
+  return crypto.createHash('sha256').update(`${ip}|${sid}`).digest('hex').slice(0, 24);
+}
+async function consumeFreeQuota(req) {
+  const date = kstToday();
+  const key = freeQuotaKey(req);
+  try {
+    const userRef = firestore.collection('free_quota').doc(`${date}_${key}`);
+    const globalRef = firestore.collection('free_quota').doc(`${date}_GLOBAL`);
+    return await firestore.runTransaction(async (tx) => {
+      const [u, g] = await Promise.all([tx.get(userRef), tx.get(globalRef)]);
+      const uc = u.exists ? (u.data().count || 0) : 0;
+      const gc = g.exists ? (g.data().count || 0) : 0;
+      if (gc >= FREE_GLOBAL_DAILY_CAP) return { allowed: false, global: true };
+      if (uc >= FREE_DAILY_CAP) return { allowed: false, global: false };
+      tx.set(userRef, { count: uc + 1, updatedAt: new Date() }, { merge: true });
+      tx.set(globalRef, { count: gc + 1, updatedAt: new Date() }, { merge: true });
+      return { allowed: true, count: uc + 1 };
+    });
+  } catch (e) {
+    log(`[FreeQuota] Firestore 트랜잭션 실패 — 쿠키 백스톱으로 진행 (${e.message})`, 'WARNING');
+    return null;
+  }
+}
+async function refundFreeQuota(req) {
+  const date = kstToday();
+  const key = freeQuotaKey(req);
+  try {
+    const userRef = firestore.collection('free_quota').doc(`${date}_${key}`);
+    const globalRef = firestore.collection('free_quota').doc(`${date}_GLOBAL`);
+    await firestore.runTransaction(async (tx) => {
+      const [u, g] = await Promise.all([tx.get(userRef), tx.get(globalRef)]);
+      if (u.exists) tx.set(userRef, { count: Math.max(0, (u.data().count || 0) - 1) }, { merge: true });
+      if (g.exists) tx.set(globalRef, { count: Math.max(0, (g.data().count || 0) - 1) }, { merge: true });
+    });
+  } catch (e) {
+    log(`[FreeQuota] 반환 실패 (무시): ${e.message}`, 'WARNING');
+  }
 }
 
 function trackPageView(req) {
@@ -613,8 +665,18 @@ const httpServer = createServer(async (req, res) => {
         freeQuota = readFreeQuota(req);
         if (freeQuota.count >= FREE_DAILY_CAP) {
           res.writeHead(429, { 'Content-Type': 'application/json' });
-          return res.end(JSON.stringify({ error: '오늘 무료 횟수를 모두 사용했어요. 내일 다시 이용하거나 AI 보정으로 진행해주세요.', code: 'FREE_LIMIT', remainingFree: 0 }));
+          return res.end(JSON.stringify({ error: '오늘 무료 횟수를 모두 사용했어요. 내일 다시 이용해주세요.', code: 'FREE_LIMIT', remainingFree: 0 }));
         }
+        // 서버 정본 선차감 (Firestore 원자) — 쿠키·IP 우회를 무력화. 실패 경로에서 refund.
+        const srvQuota = await consumeFreeQuota(req);
+        if (srvQuota && !srvQuota.allowed) {
+          res.writeHead(429, { 'Content-Type': 'application/json' });
+          return res.end(JSON.stringify({
+            error: srvQuota.global ? '오늘 무료 서비스 물량이 마감됐어요. 내일 다시 이용해주세요.' : '오늘 무료 횟수를 모두 사용했어요. 내일 다시 이용해주세요.',
+            code: 'FREE_LIMIT', remainingFree: 0,
+          }));
+        }
+        if (srvQuota && srvQuota.count) freeQuota = { date: freeQuota.date, count: srvQuota.count - 1 }; // 쿠키 표기를 서버 정본에 동기
         gateMode = 'free';
       } else if (paymentToken) {
         const gate = await consumeGenerateQuota(paymentToken);
@@ -693,6 +755,7 @@ const httpServer = createServer(async (req, res) => {
               finalBase64 = cropRes.image;
               cropEngine = cropRes.engine;
               genTrack = 'birefnet+retouch';
+              resultMeta = cropRes.meta || resultMeta; // 리터칭 후 재크롭 실측으로 갱신 — 구 메타로 체크리스트 오표시 방지
             }
           }
         } catch (e) {
@@ -700,8 +763,9 @@ const httpServer = createServer(async (req, res) => {
         }
       }
 
-      // T0 무료: 매팅 실패 시 Gemini 폴백 금지 — 무료 원가 상한(매팅비)만 허용. 쿼터 미소모로 종료.
+      // T0 무료: 매팅 실패 시 Gemini 폴백 금지 — 무료 원가 상한(매팅비)만 허용. 선차감분 반환 후 종료.
       if (gateMode === 'free' && !finalBase64) {
+        refundFreeQuota(req).catch(() => {});
         res.writeHead(503, { 'Content-Type': 'application/json' });
         return res.end(JSON.stringify({ error: '지금 무료 처리가 몰려 있어요. 잠시 후 다시 시도해주세요.', code: 'FREE_UNAVAILABLE' }));
       }
