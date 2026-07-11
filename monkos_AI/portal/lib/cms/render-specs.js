@@ -1739,6 +1739,7 @@ a:hover { color: #5a3de6; }
   .v2-spec-duo { grid-template-columns: 1fr; gap: 16px; }
   .v2-card-diagram, .v2-card-specs { order: 0; } /* 데스크톱 order 스왑 해제 → 이미지 먼저 */
   .v2-half-card { padding: 22px 20px; }
+  .v2-card-diagram { padding: 0; } /* 도해 풀블리드 유지 — half-card 모바일 패딩이 덮지 않게 (2026-07-11 작가님 발견) */
   .v2-check-layout { grid-template-columns: 1fr; }
   .v2-action-buttons { flex-direction: column; }
   .v2-pay-grid { grid-template-columns: 1fr; }
