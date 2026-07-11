@@ -656,10 +656,11 @@ const httpServer = createServer(async (req, res) => {
       let remainingGenerates = null;
       let freeQuota = null;
 
-      // ③ T0 무료 (kr-passport 파일럿): fit 확정 프레임 필수, 매팅 전용(Gemini 폴백 금지 = 원가 상한 보장)
+      // ③ T0 무료 (2026-07-11 작가님: 파일럿 검증 완료 → 전 슬러그 개방. T1 리터칭은 FREE_PILOT_SLUGS 파일럿 유지):
+      //    fit 확정 프레임 필수, 매팅 전용(Gemini 폴백 금지 = 원가 상한 보장). 크롭 미지원 슬러그는 매팅 실패 시 503+반환으로 안전
       const isFreeReq = body.freeTier === true && !paymentToken;
       if (isFreeReq) {
-        if (!slug || !FREE_PILOT_SLUGS.has(slug)) {
+        if (!slug) {
           res.writeHead(403, { 'Content-Type': 'application/json' });
           return res.end(JSON.stringify({ error: '이 규격은 아직 무료 만들기를 지원하지 않아요.', code: 'FREE_NOT_AVAILABLE' }));
         }

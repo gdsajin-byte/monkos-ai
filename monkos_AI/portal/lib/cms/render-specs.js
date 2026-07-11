@@ -1923,9 +1923,9 @@ function specsDetailV2Fragment(slug, forceLang = null) {
   const v2 = i.v2 || SPECS_I18N.ko.v2;
   // 시장 판별: 결제 PG 분기 정본 (kr=토스, jp=레몬 JP 스토어, global=레몬 글로벌)
   const market = lang === 'ja' ? 'jp' : lang === 'en' ? 'global' : 'kr';
-  // IDPASS 파일럿 (경로③ 작가님 직접 지시 2026-07-10): kr-passport ko 한정 — T0 무료 퍼널 + 땡큐 위계 + 가독성 토큰.
-  // 확산 게이트 3건(실기기 가독·계측 동작·SEO 무손상) 충족 후 전 specs 승격. PROPOSAL_20260710_민아_IDPASS통합설계 §9.
-  const isPilot = slug === 'kr-passport' && lang === 'ko';
+  // T0 무료 퍼널 (2026-07-10 파일럿 → 2026-07-11 작가님 전면 개방 지시): v2 ko 전 슬러그 승격.
+  // en/ja는 퍼널 문구 3언어화 후 개방 예정. T1 리터칭은 서버 FREE_PILOT_SLUGS(kr-passport) 파일럿 유지.
+  const isPilot = lang === 'ko';
   // T1 리터칭 실동작 여부 — 카드 문구·CTA를 서버 플래그와 결합 (off인데 '리터칭' 판매 금지, 2026-07-10 리뷰 확정)
   const t1RetouchOn = process.env.PILOT_T1_RETOUCH === '1';
   const fmtV2 = (tpl, vars) => String(tpl).replace(/\{(\w+)\}/g, (m, k) => (vars[k] != null ? vars[k] : m));
@@ -2209,7 +2209,7 @@ ${hreflangTags}
               <button class="v2-action-btn v2-btn-retry" id="v2-fit-change">다른 사진으로</button>
               <button class="v2-action-btn v2-btn-retouch" id="v2-fit-make">${isPilot ? '무료로 만들기' : '이대로 만들기'}</button>
             </div>
-            ${isPilot ? `<div class="ip-fit-caption" id="ip-fit-caption" style="display:none;">배경 제거 + 여권 규격 크롭 · 오늘 <span id="ip-fit-remaining">3</span>회 무료 · 로그인 불필요</div>
+            ${isPilot ? `<div class="ip-fit-caption" id="ip-fit-caption" style="display:none;">배경 제거 + ${escapeHtml(typeName)} 규격 크롭 · 오늘 <span id="ip-fit-remaining">3</span>회 무료 · 로그인 불필요</div>
             <a class="ip-quiet-link" id="ip-fit-t2-link" href="${upsellHref}" data-cta="specs-upsell" rel="noopener" style="display:none;">반려 걱정까지 맡기려면 — <b>발급보장 ₩9,900 →</b></a>` : ''}
           </div>
         </div>
@@ -2278,12 +2278,12 @@ ${hreflangTags}
       <div class="v2-make-layout" id="v2-phase-free" style="display:none;">
         <div class="v2-pay-grid">
           <div class="v2-pay-preview">
-            <div class="ip-free-photo"><img id="ip-free-img" src="" alt="완성된 여권 규격 사진"></div>
-            <div class="ip-free-spec">3.5 × 4.5cm · 300dpi · 흰 배경</div>
+            <div class="ip-free-photo"><img id="ip-free-img" src="" alt="완성된 ${escapeHtml(typeName)} 규격 사진"></div>
+            <div class="ip-free-spec">${escapeHtml(locField(specData, 'size', lang))}${specData.dpi ? ` · ${escapeHtml(String(specData.dpi))}dpi` : ''}${locField(specData, 'background', lang) ? ` · ${escapeHtml(locField(specData, 'background', lang))}` : ''}</div>
           </div>
           <div class="ip-free-side">
-            <span class="ip-free-kicker">DONE · KR PASSPORT</span>
-            <h3 class="ip-free-h">완성! 여권 규격에 맞춰 만들었어요</h3>
+            <span class="ip-free-kicker">DONE · ${escapeHtml(slug.toUpperCase())}</span>
+            <h3 class="ip-free-h">완성! ${escapeHtml(typeName)} 규격에 맞춰 만들었어요</h3>
             <div class="ip-free-btnrow">
               <button class="ip-btn ip-btn-primary" id="ip-free-download">다운로드</button>
               <button class="ip-btn ip-btn-ghost" id="ip-free-retry">다른 사진</button>

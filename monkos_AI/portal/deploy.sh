@@ -69,7 +69,7 @@ NAVER_CLIENT_ID="${NAVER_CLIENT_ID:-JaqN_J5ashaxBC7t6aya}"
 # L4 서비스(monkos-matte-gpu)는 삭제하지 않고 무과금 보존 — 재편입은 이 줄에 URL 추가만.
 MATTE_API_URLS="https://api.runpod.ai/v2/di9upymdumei34"
 # 카나리 게이트 (2026-07-07 작가님): kr-passport 파일럿 → 크롭 정확도·디자인 검증 후 확산. 빈값 = 전 슬러그
-MATTE_SLUGS="kr-passport"
+MATTE_SLUGS=""  # 빈 값 = 전 슬러그 매팅 허용 (2026-07-11 작가님 T0 전면 개방 지시. 카나리 kr-passport 졸업)
 
 # 환경별 설정 (Portal은 경량 서비스)
 if [ "$ENV" = "dev" ]; then
