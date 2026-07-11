@@ -9,3 +9,4 @@
 | 2026-06-21 14:35 KST | iMac | charge | gdsajin@gmail.com | 0c | 100c | 테스트용 크레딧 충전 (작가님 지시, 헤드샷 생성 테스트) |
 | 2026-06-21 19:13 KST | iMac | charge | gdsajin@gmail.com | 0c | 500c | 작가님 지시 — 테스트 및 운영용 500c 충전 |
 | 2026-07-06 19:33 KST | iMac | charge | gdsajin@gmail.com | 0c | 500c | 작가님 요청 — 크레딧 충전 |
+| 2026-07-11 18:54 KST | iMac | charge | gdsajin@gmail.com | 0c | 100c | T1 파일럿 테스트용 충전 (작가님 지시) |
