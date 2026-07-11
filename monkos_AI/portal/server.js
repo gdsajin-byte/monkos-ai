@@ -41,7 +41,7 @@ import { handleWebChat, handleCoaching } from './lib/coaching.js';
 import { handleHeadshotGenerate } from './lib/headshot-route.js';
 import { generateIdPhoto, buildT1Prompt } from './lib/idphoto-generate.js';
 import { cropToSpec, warmupCropEngine, getSpecCropParams } from './lib/spec-crop.js';
-import { matteSpecPipeline, matteFitPipeline, matteEnabled, matteSlugAllowed, warmupMatteEngine, stripDataUri, getSpecBgColor } from './lib/matte.js';
+import { matteSpecPipeline, matteFitPipeline, matteEnabled, matteSlugAllowed, warmupMatteEngine, stripDataUri, getSpecBgColor, cropMetaWithinSpec } from './lib/matte.js';
 import { judgeMetrics, metricsFromFit } from './lib/spec-judge.js';
 import { trackEvent, linkIdentity } from './lib/tracking.js';
 import { saveImages } from './lib/gcs-save.js';
@@ -768,16 +768,25 @@ const httpServer = createServer(async (req, res) => {
         try {
           const attireDesc = body.attireDesc || null;
           const t1Prompt = buildT1Prompt(attireDesc);
-          const t1Result = await generateIdPhoto({ image: norm.b64, format: format || 'passport', gender, age, model: 'nano-banana-2', userId: gateUserId, framing: 'wide', promptOverride: t1Prompt });
-          if (t1Result) {
+          // 프레이밍 게이트 (2026-07-10 하네스 3회 실증 → 2026-07-11 서버 탑재): 나노 화각 드리프트로
+          // 규격 초과 크롭이 출고되는 사고 차단 — 재크롭 meta를 정본 판정(cropMetaWithinSpec)하고
+          // 이탈 시 재생성 1회, 재이탈 시 매팅본 유지(t1-framing-fallback 계측)
+          let t1Done = false;
+          for (let attempt = 1; attempt <= 2 && !t1Done; attempt++) {
+            const t1Result = await generateIdPhoto({ image: norm.b64, format: format || 'passport', gender, age, model: 'nano-banana-2', userId: gateUserId, framing: 'wide', promptOverride: t1Prompt });
+            if (!t1Result) break;
             const cropRes = await cropToSpec(t1Result, slug);
-            if (cropRes && cropRes.image) {
+            if (cropRes && cropRes.image && cropRes.engine === 'facemesh' && cropMetaWithinSpec(cropRes.meta)) {
               finalBase64 = cropRes.image;
               cropEngine = cropRes.engine;
               genTrack = 't1-attire';
               resultMeta = cropRes.meta || resultMeta;
+              t1Done = true;
+            } else {
+              log(`[IDPhoto] T1 프레이밍 게이트 이탈 (attempt ${attempt}, engine=${cropRes?.engine}, crown=${cropRes?.meta?.crownMarginMM}mm, eye=${cropRes?.meta?.eyePositionPercent}%) → ${attempt === 1 ? '재생성 1회' : '매팅본 유지'}`, 'WARNING');
             }
           }
+          if (!t1Done && finalBase64) genTrack = 't1-framing-fallback';
         } catch (e) {
           log(`[IDPhoto] T1 의상+보정 실패 — ${finalBase64 ? '매팅본' : 'Gemini 폴백'} 유지 (${e.message})`, 'WARNING');
         }
