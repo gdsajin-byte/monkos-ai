@@ -99,6 +99,7 @@ domain: 인프라
 | 06/17 | 웹민아 | **데이터 랙 재정의(이상)** — 자동 브리핑 데이터 기준일 06-13(랙 4일🔴)이나 GH Action `daily-briefing.yml`은 오늘 07:03 KST run success. "산출물 소실" 아닌 "데이터 신선도 지연"으로 재정의 — 점검 초점을 크론→GSC 수집 윈도우로 이동 권고 | `BRIEFING_E2E_20260617.md` | ⏳ |
 | 06/23 | iMac/민아 | **dev 포털 배포 정합 — 평문→secret 타입 잔재 청소** — 6/11 deploy.sh가 평문 env→Secret Manager 참조(4종: CHAT_API_KEY·NAVER_CLIENT_SECRET·ADMIN_UIDS·AGENT_API_KEYS)로 전환했으나 dev만 재배포 없어 전 변수 평문 잔재 → Cloud Run 타입변경 거부로 6/18~ dev 배포 실패. dev 평문 잔재(CHAT_API_KEY·ADMIN_UIDS) 제거 후 재배포 → secret 4종 정상 적용(rev 00033, dev 200). 코드·deploy.sh 무수정. CHAT_API_KEY=포털↔CF Workers 챗봇(gemma) 서비스 인증키로 실사용 확정 | dev 서비스(런타임만) | ✅ |
 | 07/05 | iMac/민아 | **브리핑 실효성 개편 (작가님 "느낌 없는 메시지" 문제 제기)** — ① daily_briefing.py 텔레그램 본문형 요약(지표+긴급+SEO, 링크 의존 제거) ② daily-briefing.yml 전일 이슈 자동 close ③ e2e-briefing-notify.yml 신설: 웹민아 E2E 보고 푸시→🔴긴급+✅TODO 전문 발송(동선형 아침 메시지) ④ 브리핑 이슈 백로그 70건 일괄 close(잔존 #124·#111) ⑤ monk.kr 403 오탐 분류(EXPECTED_BOT_BLOCKED) — 5월부터 이월 종결 | daily_briefing.py, daily-briefing.yml, e2e-briefing-notify.yml | ✅ (익일 사이클 실증 대기) |
+| 07/12 | 웹/민아(루틴) | 이상 발견 — ① 🔴 **신규 GCP 결제 계정 `01A2CC-…` 정지**(07-11 18:10 KST, 크레딧 만료/소진) 메일 인입: 연결 프로젝트 청구 서비스 중지 통지이나 **프로덕션 5서비스 프로브 전량 200** → 별개 크레딧/실험 계정 추정, 콘솔 연결 프로젝트 확인 권고(장애 아님) ② 🔴 **RunPod 잔액 5차 경고**($3.58 이월, 재발 지속) ③ **PAT MONKOS-CDP 갱신 미확인**(07-06 만료 이월). 자동 브리핑 데이터 랙 4일(경계🟡·오늘자 미생성)·보안 0건·서비스 5/5 200 정상. bizinfo 직접 조회 불가(crtfcKey 미주입 환경) | [BRIEFING_E2E_20260712](../../briefings/BRIEFING_E2E_20260712.md) | ⚠️ |
 
 ---
 
