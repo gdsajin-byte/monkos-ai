@@ -1450,67 +1450,15 @@ a:hover { color: #5a3de6; }
 .v2-badge-a { background: rgba(108,79,255,0.1); color: #6c4fff; }
 .v2-badge-req { background: rgba(239,68,68,0.1); color: #dc2626; }
 
-/* 규격 다이어그램 — 도면형 치수 주석 (2026-07-11 작가님 지시: 라벨을 프레임 밖 정위치에, 머리높이 밴드 시각화)
-   구 구조 결함: 치수 라벨이 overflow:hidden 프레임 안에서 잘리고(35mm·머리높이 미표시),
-   45mm는 diagram-wrap 우측 벽에 앵커되어 사진과 무관한 위치에 떠 있었음 */
+/* 규격 다이어그램 — 1:1 정방 도해 이미지 (2026-07-11 작가님 확정: 치수선·머리높이 밴드를 이미지에 내장.
+   prof 마스터 기반 규격별 생성 — 구글 이미지·og 썸네일 포석. CSS 치수 오버레이 세대는 이미지 내장형으로 대체) */
 .v2-diagram-wrap {
   display: flex; align-items: center; justify-content: center;
   position: relative; min-height: 280px;
-  padding: 14px 58px 46px 68px; /* 프레임 밖 치수 라벨 돌출 공간 */
 }
-.v2-diagram-anno { position: relative; }
-.v2-photo-frame {
-  /* 프레임 비율 = 규격 비율 (인라인 --spec-ar로 페이지별 주입, 2026-07-06 정합 — 종전 160×206 고정이 정사각 규격을 세로로 왜곡) */
-  width: 230px; aspect-ratio: var(--spec-ar, 35/45); background: #e8e9ed; border-radius: 6px;
-  border: 1px solid rgba(0,0,0,0.08); position: relative;
-  overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-}
-.v2-photo-frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
-/* 머리높이 밴드 — 정수리·턱 점선 (규격 수치 기반 서버 산출, 인라인 top 주입) */
-.v2-head-line {
-  position: absolute; left: 6%; right: 6%; height: 0;
-  border-top: 1.5px dashed rgba(239,68,68,0.7); pointer-events: none;
-}
-/* 치수선 공통: 12px 폭 트랙 + 끝 캡(border) + 중앙 1px 선 + 선 위 라벨 칩 */
-.v2-dim-w {
-  position: absolute; top: calc(100% + 12px); left: 0; width: 100%; height: 12px;
-  border-left: 1.5px solid #6c4fff; border-right: 1.5px solid #6c4fff;
-}
-.v2-dim-w::before {
-  content: ''; position: absolute; top: 50%; left: 0; right: 0;
-  height: 1px; background: rgba(108,79,255,0.55);
-}
-.v2-dim-w span {
-  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-  font-size: 13px; color: #6c4fff; font-weight: 700; background: #fff;
-  padding: 0 8px; white-space: nowrap; line-height: 1.2;
-}
-.v2-dim-h {
-  position: absolute; left: calc(100% + 12px); top: 0; height: 100%; width: 12px;
-  border-top: 1.5px solid #6c4fff; border-bottom: 1.5px solid #6c4fff;
-}
-.v2-dim-h::before {
-  content: ''; position: absolute; left: 50%; top: 0; bottom: 0;
-  width: 1px; background: rgba(108,79,255,0.55);
-}
-.v2-dim-h span {
-  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-  writing-mode: vertical-rl; font-size: 13px; color: #6c4fff; font-weight: 700;
-  background: #fff; padding: 8px 0; white-space: nowrap; line-height: 1.2;
-}
-/* 머리높이 치수 — 프레임 좌측, 밴드 구간만 (인라인 top/height 주입) */
-.v2-dim-head {
-  position: absolute; right: calc(100% + 12px); width: 12px;
-  border-top: 1.5px solid #ef4444; border-bottom: 1.5px solid #ef4444;
-}
-.v2-dim-head::before {
-  content: ''; position: absolute; left: 50%; top: 0; bottom: 0;
-  width: 1px; background: rgba(239,68,68,0.6);
-}
-.v2-dim-head span {
-  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-  writing-mode: vertical-rl; font-size: 12px; color: #ef4444; font-weight: 700;
-  background: #fff; padding: 8px 0; white-space: nowrap; line-height: 1.2;
+.v2-diagram-img {
+  width: min(430px, 100%); aspect-ratio: 1/1; display: block;
+  border-radius: 16px;
 }
 
 /* 3스텝 플로우 */
@@ -1794,10 +1742,8 @@ a:hover { color: #5a3de6; }
   .v2-spec-table td { font-size: 16px; }
   .v2-spec-table td:first-child { color: #555; }
   .v2-badge { font-size: 13px; }
-  .v2-dim-w span, .v2-dim-h span { font-size: 14px; }
-  .v2-dim-head span { font-size: 13px; }
-  .v2-photo-frame { width: 190px; }
-  .v2-diagram-wrap { padding: 10px 50px 42px 58px; min-height: 0; }
+  .v2-diagram-img { width: min(340px, 100%); }
+  .v2-diagram-wrap { min-height: 0; }
   .v2-steps-badge { font-size: 14px; }
   .v2-check-warn-msg { font-size: 14px; }
   .v2-checklist-summary { font-size: 15px; }
@@ -2056,31 +2002,10 @@ ${hreflangTags}
   const sizeMm = parseSizeMm(specData.size);
   // 치수 라벨은 mm 정본에서 생성 — 원문 split은 "2 × 2 inch (51 × 51mm)"처럼 ×가 2개면 잘림 (2026-07-07 실사고)
   const mmParts = (sizeMm || '').split('x');
-  const sizeW = mmParts[0] ? `${mmParts[0]}mm` : locField(specData, 'size', lang).split('×')[0].trim();
-  const sizeH = mmParts[1] ? `${mmParts[1]}mm` : (locField(specData, 'size', lang).split('×')[1] || '').trim();
   const imgSrc = `/images/guides/${slug}.webp`;
   const fallbackSrc = sizeMm ? `/images/guides/${sizeMm}.webp` : '';
 
-  // 머리높이 밴드 — 다이어그램의 정수리·턱 라인 위치를 규격 수치로 산출.
-  // 정수리 여백은 (프레임높이 − 머리높이 중앙값)의 42%로 근사 — 가이드 이미지가 규격 프레이밍
-  // (crown 3~6mm, 2026-07-07 실측 재생성분)이라 수치 주석과 실사가 시각적으로 정합.
-  const headBand = (() => {
-    const frameHmm = Number(mmParts[1]);
-    const hhRaw = locField(specData, 'headHeight', lang) || '';
-    // inch 표기는 괄호 병기 mm를 정본으로 ("1~1⅜ inches (25~35mm)" — 분수 문자가 수치 파싱을 오염)
-    const paren = hhRaw.match(/\(([^)]*(?:mm|cm)[^)]*)\)/i);
-    const src = paren ? paren[1] : hhRaw;
-    const nums = (src.match(/[\d.]+/g) || []).map(Number).filter(n => n > 0).slice(0, 2);
-    if (!frameHmm || !nums.length) return null;
-    let headMm = nums.length === 2 ? (nums[0] + nums[1]) / 2 : nums[0];
-    if (/cm/i.test(src) || headMm < 10) headMm *= 10;
-    // 유효범위: 규격상 머리는 프레임 높이의 40~95% — 밖이면 표기 오류로 보고 밴드 생략
-    if (!(headMm > 0) || headMm < frameHmm * 0.4 || headMm >= frameHmm * 0.95) return null;
-    const crownMm = Math.min(8, Math.max(2, (frameHmm - headMm) * 0.42));
-    const topPct = (crownMm / frameHmm) * 100;
-    const bandPct = (headMm / frameHmm) * 100;
-    return { top: topPct.toFixed(1), band: bandPct.toFixed(1), bot: (topPct + bandPct).toFixed(1) };
-  })();
+  // 치수·머리높이 시각화는 1:1 도해 이미지에 내장 (2026-07-11 작가님 확정 — 생성기: 세션 스크립트 gen_reference_diagrams)
 
   // 상세 규정 — 정본 데이터 우선: detailSections > (kr-passport 파일럿 문구) > details 문장 분해 > 공통 규정.
   // V2_DETAILS는 한국 일반 규정이므로 kr-passport 외 슬러그에 폴백 금지 (타국 오정보 방지)
@@ -2161,21 +2086,8 @@ ${hreflangTags}
         </table>
       </div>
       <div class="v2-diagram-wrap">
-        <div class="v2-diagram-anno">
-          <div class="v2-photo-frame"${(() => {
-            // 규격 비율을 프레임에 주입 — 정사각(51x51)이 세로 틀로 왜곡되던 정합 사고 (2026-07-06)
-            const mm = (sizeMm || '').split('x').map(Number);
-            return (mm.length === 2 && mm[0] > 0 && mm[1] > 0) ? ` style="--spec-ar:${mm[0]}/${mm[1]}"` : '';
-          })()}>
-            <img src="${imgSrc}" alt="${escapeHtml(countryName)} ${escapeHtml(typeName)}"
-                 onerror="this.src='${fallbackSrc}';this.onerror=function(){this.style.display='none'}">
-            ${headBand ? `<div class="v2-head-line" style="top:${headBand.top}%"></div>
-            <div class="v2-head-line" style="top:${headBand.bot}%"></div>` : ''}
-          </div>
-          <div class="v2-dim-w"><span>${escapeHtml(sizeW)}</span></div>
-          <div class="v2-dim-h"><span>${escapeHtml(sizeH)}</span></div>
-          ${headBand ? `<div class="v2-dim-head" style="top:${headBand.top}%;height:${headBand.band}%"><span>${escapeHtml(locField(specData, 'headHeight', lang))}</span></div>` : ''}
-        </div>
+        <img class="v2-diagram-img" src="${imgSrc}" alt="${escapeHtml(countryName)} ${escapeHtml(typeName)} ${escapeHtml(locField(specData, 'size', lang))}"
+             onerror="this.src='${fallbackSrc}';this.onerror=function(){this.style.display='none'}">
       </div>
     </div>
 
