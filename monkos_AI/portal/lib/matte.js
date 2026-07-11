@@ -27,9 +27,9 @@ const MATTE_API_KEY = process.env.MATTE_API_KEY || ''; // RunPod 등 인증형 �
 const MATTE_SLUGS = (process.env.MATTE_SLUGS || '')
   .split(',').map((s) => s.trim()).filter(Boolean);
 const HEALTH_TIMEOUT_MS = 2500;  // 생사 프리플라이트 — 죽은 엔드포인트에 본 예산을 쓰지 않는다
-// 45s: 의자뺏기 실측 29~35s 일정(2026-07-07 8회 캠페인) + 여유 — 콜드 히트도 birefnet 성공.
-// 작가님 UX 예산 60s 이내. 포털 Cloud Run 타임아웃 120s(deploy.sh)와 짝 — 폴백 Gemini까지 수용.
-const MATTE_TIMEOUT_MS = 45000;
+// 60s: 콜드스타트 실측 30s~3min 편차. 45s에서 타임아웃 abort 4건 발생(7/7~7/10).
+// Cloud Run 타임아웃 120s와 짝 — 폴백 Gemini까지 수용. (2026-07-11 작가님 승인)
+const MATTE_TIMEOUT_MS = 60000;
 const ALERT_COOLDOWN_MS = 10 * 60 * 1000; // 장애 경보 폭주 방지
 let lastAlertAt = 0;
 
