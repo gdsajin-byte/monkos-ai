@@ -348,6 +348,7 @@ SEO 콘텐츠가 있는 문서 → 풀 페이지 (FAQ + 반려사유 + 촬영가
 | 07/11 | iMac/민아 | **specs 다이어그램 도면형 재구성 + 완성본 매팅 이음매 제거** (경로③ 작가님 캡처 지시) — ① 치수 라벨 428p 전역 결함 해소(45mm 오앵커·35mm/머리높이 클리핑), 사진 230px 확대, 머리높이 밴드 점선+브래킷(규격 수치 산출, US inch 괄호 파싱) ② matteFitPipeline 재배열(영역 매팅→배경 합성)로 패딩 경계 세로줄 구조적 소멸, x/y 독립 스케일 정착. jest 101·dev E2E(RunPod 관통, 경계초과 강제 케이스 세로줄 0)·프로드 스모크 | [COMPLETION](../../reports/2026-07/COMPLETION_20260711_iMac민아_SPECS_다이어그램_매팅이음매.md) · 8ea16343+b5765be0 | ✅ 라이브 (prod 00448) |
 | 07/11 | iMac/민아 | **S3 완성 사진 컨테이너 폭 불일치 수정 (3차 보고 진범)** — 구 결제화면 `.v2-pay-preview img max-width:200px`가 완성 사진만 압축, 컨테이너 280px와 어긋나 우측 공백("1:1 프레임" 체감). max-width 명시 초기화. 프로드 합성 실측 280=278+보더. 부수: 무료 쿼터 Firestore 정본 확정·dev 검증 IP 쿼터 공유 문제 → FREE_QUOTA_BYPASS 기안 대상 | COMPLETION 부록 | ✅ 라이브 (prod 00449) |
 | 07/11 | iMac/민아 | **대표이미지 26종 전면 재제작 — prof 마스터 1:1 정방 도해** (작가님 지시: 구글 썸네일 포석·세련 팔레트·정수리/턱 실좌표·kr 32mm 여유) — BiRefNet 매팅 1회+crop-engine 106점 좌표+로컬 크롭 27파일, 히어로 도해 내장 모드 전환(CSS 치수 세대 대체), og 자동 승계 | [COMPLETION](../../reports/2026-07/COMPLETION_20260711_iMac민아_SPECS_대표이미지_정방도해26종.md) | ✅ 라이브 (prod 00450) |
+| 07/11 | iMac/민아 | **브랜드 도해 1,278장 — 국기+언어별 타이틀+MONKOS.AI 내장** (작가님: 이미지 검색 브랜드 노출) — 슬러그×3언어 전환, flagcdn 202국, 렌더러 {slug}_{lang} 우선(히어로 v1/v2·og·JSON-LD), 크롭 캐시 150s 생성 | COMPLETION 부록 | ✅ 라이브 (prod 00451) |
 | 07/05 | iMac/막내2 | **V2 전면 배포 전 페이지 렌더 검증** — dev 서버 기동, 주요국 10개+다국어 9건+sitemap 1,284건 전수 curl. V2 phase UI·V1 폴백·OG메타·hreflang 전 항목 PASS. 깨지는 페이지 0건 | [REPORT](../../reports/2026-07/REPORT_20260705_막내2_SPECS_렌더검증.md) | ✅ |
 
 ---
