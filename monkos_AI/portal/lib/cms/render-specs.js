@@ -1909,7 +1909,9 @@ const IDPASS_PILOT_STYLE = `
 .ip-free-kicker { font-family:monospace; font-size:10.5px; letter-spacing:2.5px; color:#5a3de6; font-weight:700; }
 .ip-free-hero h3 { font-size:20px; font-weight:800; color:#17151f; margin:6px 0 14px; line-height:1.35; text-wrap:balance; word-break:keep-all; }
 .ip-free-photo { border-radius:18px; overflow:hidden; background:#fff; border:1px solid #e2dfec; box-shadow:0 6px 16px -12px rgba(23,21,31,.18); max-width:280px; margin:0 auto; }
-.ip-free-photo img { display:block; width:100%; aspect-ratio:35/45; object-fit:cover; }
+/* max-width/height 명시 초기화 — 상위 .v2-pay-preview img { max-width:200px }가 이미지만 눌러
+   컨테이너(280px)와 폭이 어긋나 우측 공백이 생기던 실사고 (2026-07-11 작가님 3차 보고로 특정) */
+.ip-free-photo img { display:block; width:100%; max-width:100%; max-height:none; aspect-ratio:35/45; object-fit:cover; }
 .ip-free-spec { text-align:center; font-size:11.5px; color:#5d5a6b; margin-top:8px; font-family:monospace; }
 .ip-free-btnrow { display:flex; gap:10px; margin-top:12px; }
 .ip-btn { display:flex; align-items:center; justify-content:center; height:52px; border-radius:14px; font-size:16px; font-weight:800; border:none; cursor:pointer; text-decoration:none; box-sizing:border-box; font-family:inherit; }
