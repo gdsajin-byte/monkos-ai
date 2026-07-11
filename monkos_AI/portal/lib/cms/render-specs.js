@@ -1927,7 +1927,9 @@ function specsDetailV2Fragment(slug, forceLang = null) {
   // en/ja는 퍼널 문구 3언어화 후 개방 예정. T1 리터칭은 서버 FREE_PILOT_SLUGS(kr-passport) 파일럿 유지.
   const isPilot = lang === 'ko';
   // T1 리터칭 실동작 여부 — 카드 문구·CTA를 서버 플래그와 결합 (off인데 '리터칭' 판매 금지, 2026-07-10 리뷰 확정)
-  const t1RetouchOn = process.env.PILOT_T1_RETOUCH === '1';
+  // 서버 리터칭 게이트(FREE_PILOT_SLUGS=kr-passport)와 정합 — 리터칭이 실행되지 않는 슬러그에 활성 카드 노출 금지
+  // (2026-07-11 T0 전면 개방 때 env-only 분기가 전 페이지로 새던 것을 작가님 실캡처로 적발)
+  const t1RetouchOn = process.env.PILOT_T1_RETOUCH === '1' && slug === 'kr-passport';
   const fmtV2 = (tpl, vars) => String(tpl).replace(/\{(\w+)\}/g, (m, k) => (vars[k] != null ? vars[k] : m));
   const prefix = lang === 'ko' ? '' : `/${lang}`;
   const specData = SPECS_DATA[slug];
@@ -2294,7 +2296,7 @@ ${hreflangTags}
               <ul class="ip-card-list">
                 <li>AI 리터칭 — 내 얼굴 그대로, 더 단정하게</li>
                 <li>AI 규격 검수</li>
-                <li>여권 규격 보정 파일</li>
+                <li>${escapeHtml(typeName)} 규격 보정 파일</li>
               </ul>
               <button class="ip-btn ip-btn-mid" id="ip-t1-buy">AI 보정으로 업그레이드</button>
             </div>` : `<div class="ip-card ip-card-t1 ip-card-soon">
