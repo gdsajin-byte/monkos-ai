@@ -1932,7 +1932,8 @@ function specsDetailV2Fragment(slug, forceLang = null) {
   ].join('\n');
 
   const faqs = (specData.faqs && (specData.faqs[lang] || specData.faqs.ko)) || (V2_FAQ_FALLBACK[lang] || V2_FAQ_FALLBACK.ko);
-  const ogGuideKey = GUIDE_IMAGES.has(slug) ? slug : (parseSizeMm(specData.size) || 'kr-passport');
+  const ogGuideKey = GUIDE_IMAGES.has(`${slug}_${lang}`) ? `${slug}_${lang}`
+    : GUIDE_IMAGES.has(slug) ? slug : (parseSizeMm(specData.size) || 'kr-passport');
   const ogImageAbsolute = `https://monkos.ai/images/guides/${ogGuideKey}.webp`;
   const specsLabel = { ko: '규격', en: 'Specs', ja: '規格' }[lang] || 'Specs';
 
@@ -2000,9 +2001,10 @@ ${hreflangTags}
   ).join('');
 
   const sizeMm = parseSizeMm(specData.size);
-  // 치수 라벨은 mm 정본에서 생성 — 원문 split은 "2 × 2 inch (51 × 51mm)"처럼 ×가 2개면 잘림 (2026-07-07 실사고)
-  const mmParts = (sizeMm || '').split('x');
-  const imgSrc = `/images/guides/${slug}.webp`;
+  // 브랜드 도해 우선: {slug}_{lang}(국기+타이틀+MONKOS.AI 내장, 2026-07-11) → 구 슬러그 → 사이즈 패턴 폴백
+  const guideKey = GUIDE_IMAGES.has(`${slug}_${lang}`) ? `${slug}_${lang}`
+    : GUIDE_IMAGES.has(slug) ? slug : sizeMm;
+  const imgSrc = `/images/guides/${guideKey}.webp`;
   const fallbackSrc = sizeMm ? `/images/guides/${sizeMm}.webp` : '';
 
   // 치수·머리높이 시각화는 1:1 도해 이미지에 내장 (2026-07-11 작가님 확정 — 생성기: 세션 스크립트 gen_reference_diagrams)
@@ -3492,7 +3494,8 @@ export function specsDetailFragment(slug, forceLang = null) {
   ].join('\n');
 
   const faqs = (specData.faqs && (specData.faqs[lang] || specData.faqs.ko)) || [];
-  const v1OgGuideKey = GUIDE_IMAGES.has(slug) ? slug : (parseSizeMm(specData.size) || 'kr-passport');
+  const v1OgGuideKey = GUIDE_IMAGES.has(`${slug}_${lang}`) ? `${slug}_${lang}`
+    : GUIDE_IMAGES.has(slug) ? slug : (parseSizeMm(specData.size) || 'kr-passport');
   const v1OgImage = `https://monkos.ai/images/guides/${v1OgGuideKey}.webp`;
 
   const specsLabel = { ko: '규격', en: 'Specs', ja: '規格' }[lang] || 'Specs';
@@ -3662,7 +3665,9 @@ ${hreflangTags}
     <div class="specs-diagram">
       <div class="specs-photo-frame">
         ${(() => {
-          const countryImg = `/images/guides/${slug}.webp`;
+          // 브랜드 도해 {slug}_{lang} 우선 (2026-07-11) — v2 히어로와 동일 우선순위
+          const v1Key = GUIDE_IMAGES.has(`${slug}_${lang}`) ? `${slug}_${lang}` : slug;
+          const countryImg = `/images/guides/${v1Key}.webp`;
           const sizeMm = parseSizeMm(specData.size);
           const fallbackImg = sizeMm ? `/images/guides/${sizeMm}.webp` : '';
           const altText = `${countryName} ${typeName}`;
