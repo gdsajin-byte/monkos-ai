@@ -30,11 +30,14 @@ if (!args.person || !args.prompt) {
   console.error('필수: --person <매팅본> --prompt <프롬프트파일>');
   process.exit(1);
 }
-const MODEL = (args.model === 'pro') ? 'gemini-3-pro-image-preview' : 'gemini-3.1-flash-image-preview';
+const MODEL_MAP = { pro: 'gemini-3-pro-image-preview', flash25: 'gemini-2.5-flash-image', nano2: 'gemini-3.1-flash-image-preview' };
+const MODEL = MODEL_MAP[args.model] || MODEL_MAP.nano2;
 const RETRIES = parseInt(args.retries || '2', 10);
 const OUT = args.out || 'harness_result.png';
 
-const ai = new GoogleGenAI({ vertexai: true, project: process.env.PROJECT_ID, location: 'global' });
+const REGIONAL = new Set(['gemini-2.5-flash-image']);
+const loc = REGIONAL.has(MODEL) ? (process.env.LOCATION || 'us-central1') : 'global';
+const ai = new GoogleGenAI({ vertexai: true, project: process.env.PROJECT_ID, location: loc });
 const parts = [{ inlineData: { mimeType: 'image/png', data: readFileSync(args.person).toString('base64') } }];
 if (args.garment) parts.push({ inlineData: { mimeType: 'image/png', data: readFileSync(args.garment).toString('base64') } });
 parts.push({ text: readFileSync(args.prompt, 'utf8') });
@@ -48,6 +51,9 @@ for (let attempt = 1; attempt <= RETRIES; attempt++) {
   });
   const img = res.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
   if (!img) { console.log(`시도${attempt}: 이미지 미반환 (${res.candidates?.[0]?.finishReason || '?'})`); continue; }
+  const rawPath = OUT.replace(/(\.\w+)$/, `_raw${attempt}$1`);
+  writeFileSync(rawPath, Buffer.from(img.inlineData.data, 'base64'));
+  console.log(`  나노 원출력 저장: ${rawPath}`);
   const crop = await cropToSpec(img.inlineData.data, 'kr-passport');
   const eye = parseFloat(crop.meta?.eyePositionPercent || '0');
   console.log(`시도${attempt}: ${((Date.now() - t) / 1000).toFixed(1)}s | face=${crop.meta?.faceMM}mm eye=${eye}% crown=${crop.meta?.crownMarginMM}mm | 모델=${MODEL}`);

@@ -39,7 +39,7 @@ import { handleKakaoChatbot } from './lib/kakao-chatbot.js';
 import { handleLineWebhook } from './lib/line-chatbot.js';
 import { handleWebChat, handleCoaching } from './lib/coaching.js';
 import { handleHeadshotGenerate } from './lib/headshot-route.js';
-import { generateIdPhoto } from './lib/idphoto-generate.js';
+import { generateIdPhoto, buildT1Prompt } from './lib/idphoto-generate.js';
 import { cropToSpec, warmupCropEngine, getSpecCropParams } from './lib/spec-crop.js';
 import { matteSpecPipeline, matteFitPipeline, matteEnabled, matteSlugAllowed, warmupMatteEngine, stripDataUri, getSpecBgColor } from './lib/matte.js';
 import { judgeMetrics, metricsFromFit } from './lib/spec-judge.js';
@@ -759,24 +759,27 @@ const httpServer = createServer(async (req, res) => {
         }
       }
 
-      // T1 리터칭 (파일럿 잠금 해제 대기 — PILOT_T1_RETOUCH=1): 유료 게이트 한정, 매팅본 위 재보정.
-      // 상품 충돌 해소용: T0 무료(매팅+크롭 무보정)와 동일해진 유료 산출물에 실제 '보정'을 부착.
-      // 실패·미설정 시 매팅본 그대로 — 결제 산출물이 무료보다 나빠지는 경우는 구조적으로 없음.
-      if (finalBase64 && genTrack === 'birefnet' && gateMode !== 'free'
+      // T1 의상+보정 (PILOT_T1_RETOUCH=1): 유료 게이트 한정.
+      // 파이프라인: 원본 → 나노2(v4: 의상교체+보정+배경+넓은화각) → crop-engine 재크롭.
+      // 매팅(RunPod) 불필요 — 나노가 배경 제거+흰배경까지 처리. (2026-07-11 작가님 확정)
+      // 실패 시 매팅본(T0 결과) 그대로 — 결제 산출물이 무료보다 나빠지는 경우는 구조적으로 없음.
+      if (gateMode !== 'free'
           && process.env.PILOT_T1_RETOUCH === '1' && slug && FREE_PILOT_SLUGS.has(slug)) {
         try {
-          const retouched = await generateIdPhoto({ image: finalBase64, format: format || 'passport', gender, age, model: 'nano-banana-2', userId: gateUserId, framing: 'passport' });
-          if (retouched) {
-            const cropRes = await cropToSpec(retouched, slug);
+          const attireDesc = body.attireDesc || null;
+          const t1Prompt = buildT1Prompt(attireDesc);
+          const t1Result = await generateIdPhoto({ image: norm.b64, format: format || 'passport', gender, age, model: 'nano-banana-2', userId: gateUserId, framing: 'wide', promptOverride: t1Prompt });
+          if (t1Result) {
+            const cropRes = await cropToSpec(t1Result, slug);
             if (cropRes && cropRes.image) {
               finalBase64 = cropRes.image;
               cropEngine = cropRes.engine;
-              genTrack = 'birefnet+retouch';
-              resultMeta = cropRes.meta || resultMeta; // 리터칭 후 재크롭 실측으로 갱신 — 구 메타로 체크리스트 오표시 방지
+              genTrack = 't1-attire';
+              resultMeta = cropRes.meta || resultMeta;
             }
           }
         } catch (e) {
-          log(`[IDPhoto] T1 리터칭 실패 — 매팅본 유지 (${e.message})`, 'WARNING');
+          log(`[IDPhoto] T1 의상+보정 실패 — ${finalBase64 ? '매팅본' : 'Gemini 폴백'} 유지 (${e.message})`, 'WARNING');
         }
       }
 

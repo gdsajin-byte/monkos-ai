@@ -131,6 +131,21 @@ function buildPromptV5(body, model) {
   return `${identity}\n\n[IMAGE-TO-IMAGE TRANSFORM]\n${parts.join('\n')}`;
 }
 
+// T1 의상 교체 프롬프트 (2026-07-11 v4 확정 — 작가님·쌍아 공동 튜닝)
+// 원본 → 나노2(의상+보정+배경+넓은화각) → crop-engine. RunPod 매팅 불필요.
+export function buildT1Prompt(attireDesc) {
+  return `${IDENTITY_PRESERVATION}
+
+[IMAGE-TO-IMAGE TRANSFORM]
+[FORMAT] Official passport/visa photo. White background mandatory.
+[SUBJECT] This person is an adult.
+[OUTFIT] ${attireDesc || 'Replace current clothing with a neat dark navy business suit, white dress shirt, no tie. Clothing should look natural and properly fitted.'}
+[BACKGROUND] pure white (#FFFFFF) background
+[EXPRESSION] Natural, relaxed, closed-mouth expression. Lips gently together. Soft calm eyes with quiet warmth — NOT stiff, NOT tense, NOT angry-looking. A subtle pleasant resting face, like a calm passport photo. NO smile, NO teeth showing, but NOT frowning either.
+[CONSTRAINT] Keep the person's face and body exactly the same — only apply the specified styling. DO NOT change apparent gender or age.
+[FRAMING] Do NOT crop tightly. Output a WIDE chest-up portrait: the ENTIRE head fully visible with generous empty space above the hair, both shoulders and upper chest included. Leave plenty of margin — the photo will be cropped later by a separate system.`;
+}
+
 function extractBase64(base64Input) {
   return base64Input.includes(',') ? base64Input.split(',')[1] : base64Input;
 }
@@ -143,19 +158,19 @@ const MODEL_MAP = {
 
 const REGIONAL_MODELS = new Set(['gemini-2.5-flash-image']);
 
-export async function generateIdPhoto({ image, format, gender, age, model, userId, framing }) {
+export async function generateIdPhoto({ image, format, gender, age, model, userId, framing, promptOverride }) {
   if (!image) throw new Error('이미지 필수');
 
   const base64Data = extractBase64(image);
   const byteLength = Math.ceil(base64Data.length * 3 / 4);
   const modelId = MODEL_MAP[model] || MODEL_MAP['nano-banana-2'];
-  log(`[IDPhoto] 입력: ${(byteLength / 1024).toFixed(1)}KB, 규격: ${format || 'passport'}, 모델: ${modelId}, 유저: ${userId}`);
+  log(`[IDPhoto] 입력: ${(byteLength / 1024).toFixed(1)}KB, 규격: ${format || 'passport'}, 모델: ${modelId}, 유저: ${userId}${promptOverride ? ', T1' : ''}`);
 
   if (byteLength > 7 * 1024 * 1024) {
     throw new Error('이미지가 너무 큽니다 (7MB 이하)');
   }
 
-  const instruction = buildPromptV5({ format: format || 'passport', gender, age, framing }, model);
+  const instruction = promptOverride || buildPromptV5({ format: format || 'passport', gender, age, framing }, model);
 
   const client = REGIONAL_MODELS.has(modelId) ? regionAI : imageAI;
   const response = await client.models.generateContent({
