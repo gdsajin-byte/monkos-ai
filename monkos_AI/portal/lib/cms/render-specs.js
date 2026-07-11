@@ -2099,14 +2099,11 @@ ${hreflangTags}
       <h1>${escapeHtml(countryName)} ${escapeHtml(typeName)}</h1>
       <div class="v2-sub">${escapeHtml(specData.countryEn || countryName)} ${escapeHtml(specData.typeEn || typeName)} Photo Specification</div>
     </div>
+    <!-- 상단 sameSize 태그 전역 제거 (2026-07-11 작가님 — 어제 파일럿 한정 제거를 전 페이지 확장.
+         동일규격 내부링크 정본 = 하단 롤다운 카드) -->
     <div class="v2-tags">
       <span class="v2-tag">${escapeHtml(countryName)}</span>
       <span class="v2-tag">${escapeHtml(typeName)}</span>
-      ${isPilot ? '' : sameSize.map(s => {
-        const n = lang === 'ja' ? (s.typeJa || s.type) : (lang === 'en' ? s.typeEn : s.type);
-        const { typeSlug: ts, countrySlug: cs } = parseSlug(s.slug);
-        return `<a href="${prefix}/specs/${ts}/${cs}" class="v2-tag">${escapeHtml(n)}</a>`;
-      }).join('')}
     </div>
 
     <!-- 2. 핵심 규격 듀오 — 이미지 박스 + 수치 박스(탭) 분리. DOM 순서=모바일 순서(이미지 먼저) -->
