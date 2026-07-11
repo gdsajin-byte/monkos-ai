@@ -206,6 +206,20 @@ async function runMatteChain(cropB64, bgColor, slug) {
  * 프레임이 이미지 경계를 벗어나면 흰 패딩. (ORDER_20260707 크롭정밀도 Task 3)
  */
 export async function renderFitCrop(originalB64, fitFrame, frameW, frameH) {
+  const g = await extractFitRegion(originalB64, fitFrame, frameW, frameH);
+  if (!g.padded) return g.regionScaled.toString('base64');
+  const out = await sharp({ create: { width: frameW, height: frameH, channels: 3, background: { r: 255, g: 255, b: 255 } } })
+    .composite([{ input: g.regionScaled, left: g.dx, top: g.dy }]).png().toBuffer();
+  return out.toString('base64');
+}
+
+/**
+ * fit 프레임에서 실픽셀 영역만 추출·규격 스케일로 축소 — 매팅 입력용.
+ * 패딩은 매팅 이후에 붙인다: 흰 패딩을 먼저 만들면 원본 사진과 패딩의 경계선이
+ * 매팅 마스크에 전경으로 살아남아 완성본에 세로줄로 출고됨 (2026-07-11 실사고).
+ * 반환 좌표(dx/dy/rw/rh)는 frameW×frameH 캔버스 기준.
+ */
+async function extractFitRegion(originalB64, fitFrame, frameW, frameH) {
   const buf = Buffer.from(stripDataUri(originalB64), 'base64');
   const { width: W, height: H } = await sharp(buf).metadata();
   const fx = Math.round(fitFrame.x), fy = Math.round(fitFrame.y);
@@ -216,30 +230,41 @@ export async function renderFitCrop(originalB64, fitFrame, frameW, frameH) {
   const ix = Math.max(0, fx), iy = Math.max(0, fy);
   const iw = Math.min(W, fx + fw) - ix, ih = Math.min(H, fy + fh) - iy;
   if (iw <= 0 || ih <= 0) throw new Error('fitFrame이 이미지 밖');
-  const region = await sharp(buf).extract({ left: ix, top: iy, width: iw, height: ih }).png().toBuffer();
-  let full = region;
-  if (!(ix === fx && iy === fy && iw === fw && ih === fh)) {
-    full = await sharp({ create: { width: fw, height: fh, channels: 3, background: { r: 255, g: 255, b: 255 } } })
-      .composite([{ input: region, left: ix - fx, top: iy - fy }]).png().toBuffer();
-  }
-  const out = await sharp(full).resize(frameW, frameH, { fit: 'fill' }).png().toBuffer();
-  return out.toString('base64');
+  const padded = !(ix === fx && iy === fy && iw === fw && ih === fh);
+  // 프레임→규격 캔버스 스케일을 영역에 선적용 — 매팅 페이로드를 규격 크기로 고정.
+  // x/y 독립 스케일: 비율 허용오차(3%) 안에서도 규격 치수에 정확히 안착 (fill과 동일 기하)
+  const sx = frameW / fw, sy = frameH / fh;
+  let dx = Math.max(0, Math.round((ix - fx) * sx)), dy = Math.max(0, Math.round((iy - fy) * sy));
+  let rw = Math.max(1, Math.round(iw * sx)), rh = Math.max(1, Math.round(ih * sy));
+  if (dx + rw > frameW) rw = frameW - dx;
+  if (dy + rh > frameH) rh = frameH - dy;
+  const regionScaled = await sharp(buf).extract({ left: ix, top: iy, width: iw, height: ih })
+    .resize(rw, rh, { fit: 'fill' }).png().toBuffer();
+  return { regionScaled, dx, dy, rw, rh, padded };
 }
 
 /**
  * fit 확정 경로: 검수 단계에서 확정된 프레임을 기하 재단 → 매팅. FaceMesh 미재실행 = 비결정성 0.
+ * 순서 = 영역 매팅 → 배경색 캔버스 합성: 패딩과 매팅 배경이 같은 색이라 이음매가 구조적으로 없음.
  * 성공 시 {image, cropEngine:'fit', matte:true, meta}, 실패 시 null (호출부 L3 폴백).
  */
 export async function matteFitPipeline(originalB64, slug, fitFrame, fitMeta, frameW, frameH) {
   if (!matteEnabled() || !matteSlugAllowed(slug)) return null;
   if (!frameW || !frameH) return null;
   try {
-    const cropB64 = await renderFitCrop(originalB64, fitFrame, frameW, frameH);
+    const g = await extractFitRegion(originalB64, fitFrame, frameW, frameH);
     const bgColor = getSpecBgColor(slug);
-    const r = await runMatteChain(cropB64, bgColor, slug);
+    const r = await runMatteChain(g.regionScaled.toString('base64'), bgColor, slug);
     if (!r) return null;
-    log(`[Matte] ${slug}: fit 확정 매팅 완료 via=${r.via} bg=${bgColor} ${r.matteSec}s face=${fitMeta?.faceMM}mm`);
-    return { image: r.image, cropEngine: 'fit', matte: true, meta: { ...(fitMeta || {}), bgColor, matteSec: r.matteSec } };
+    let image = r.image;
+    if (g.padded) {
+      const out = await sharp({ create: { width: frameW, height: frameH, channels: 3, background: bgColor } })
+        .composite([{ input: Buffer.from(r.image, 'base64'), left: g.dx, top: g.dy }])
+        .withMetadata({ density: 300 }).png().toBuffer();
+      image = out.toString('base64');
+    }
+    log(`[Matte] ${slug}: fit 확정 매팅 완료 via=${r.via} bg=${bgColor} pad=${g.padded ? 1 : 0} ${r.matteSec}s face=${fitMeta?.faceMM}mm`);
+    return { image, cropEngine: 'fit', matte: true, meta: { ...(fitMeta || {}), bgColor, matteSec: r.matteSec } };
   } catch (err) {
     log(`[Matte] ${slug}: fit 경로 실패 (${err.message}) → 폴백`, 'WARNING');
     return null;
