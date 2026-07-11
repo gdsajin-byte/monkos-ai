@@ -1439,10 +1439,10 @@ a:hover { color: #5a3de6; }
   padding: 28px; box-shadow: 0 2px 12px rgba(0,0,0,0.04);
 }
 .v2-card-specs { order: 1; display: flex; flex-direction: column; }
-.v2-card-diagram { order: 2; display: flex; align-items: center; justify-content: center; padding: 20px; }
+/* 도해 카드 = 도해 자체 — 패딩 0 풀블리드로 박스 속 박스감 제거 (2026-07-11 작가님 v5) */
+.v2-card-diagram { order: 2; padding: 0; overflow: hidden; display: flex; align-items: stretch; justify-content: center; }
 .v2-diagram-img {
-  width: min(480px, 100%); aspect-ratio: 1/1; display: block;
-  border-radius: 14px;
+  width: 100%; height: 100%; aspect-ratio: 1/1; display: block; object-fit: cover;
 }
 /* 수치 박스 탭 — 규격 | 상세 규정 | 반려 사유 */
 .v2-tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
@@ -1738,7 +1738,6 @@ a:hover { color: #5a3de6; }
   /* 듀오 1컬럼 — DOM 순서(이미지→수치)가 그대로 모바일 순서 (2026-07-11 작가님) */
   .v2-spec-duo { grid-template-columns: 1fr; gap: 16px; }
   .v2-card-diagram, .v2-card-specs { order: 0; } /* 데스크톱 order 스왑 해제 → 이미지 먼저 */
-  .v2-card-diagram { padding: 12px; }
   .v2-half-card { padding: 22px 20px; }
   .v2-check-layout { grid-template-columns: 1fr; }
   .v2-action-buttons { flex-direction: column; }
