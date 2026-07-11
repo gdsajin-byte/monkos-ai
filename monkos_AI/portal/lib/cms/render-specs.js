@@ -1428,13 +1428,38 @@ a:hover { color: #5a3de6; }
 .v2-header h1 { font-size: 36px; font-weight: 800; color: #1a1a1a; margin-bottom: 8px; line-height: 1.3; }
 .v2-header .v2-sub { font-size: 15px; color: #888; margin-bottom: 40px; }
 
-/* 핵심 규격 카드 — 2컬럼 */
-.v2-spec-card {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 32px;
-  background: #ffffff; border: 1px solid rgba(0,0,0,0.08); border-radius: 16px;
-  padding: 32px; margin-bottom: 48px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+/* 핵심 규격 듀오 — 이미지 박스·수치 박스 분리 (2026-07-11 작가님: 웹 좌수치/우이미지, 모바일 이미지 우선)
+   DOM 순서 = 이미지 먼저(모바일 자연 순서), 데스크톱은 order로 수치를 좌측에 */
+.v2-spec-duo {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 48px;
+  align-items: stretch;
 }
+.v2-half-card {
+  background: #ffffff; border: 1px solid rgba(0,0,0,0.08); border-radius: 16px;
+  padding: 28px; box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+}
+.v2-card-specs { order: 1; display: flex; flex-direction: column; }
+.v2-card-diagram { order: 2; display: flex; align-items: center; justify-content: center; padding: 20px; }
+.v2-diagram-img {
+  width: min(480px, 100%); aspect-ratio: 1/1; display: block;
+  border-radius: 14px;
+}
+/* 수치 박스 탭 — 규격 | 상세 규정 | 반려 사유 */
+.v2-tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.v2-tab {
+  border: 1px solid rgba(0,0,0,0.1); background: #fff; color: #555;
+  font-size: 13.5px; font-weight: 600; padding: 8px 14px; border-radius: 999px;
+  cursor: pointer; font-family: inherit; line-height: 1.2;
+}
+.v2-tab.on { background: #6c4fff; border-color: #6c4fff; color: #fff; }
+.v2-tabpane[hidden] { display: none; }
+.v2-tabpane { flex: 1; }
+.v2-source {
+  margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(0,0,0,0.05);
+  font-size: 13px; color: #888;
+}
+.v2-source a { color: #6c4fff; font-weight: 600; text-decoration: none; }
+.v2-source a:hover { text-decoration: underline; }
 .v2-spec-table { width: 100%; border-collapse: collapse; }
 .v2-spec-table tr { border-bottom: 1px solid rgba(0,0,0,0.05); }
 .v2-spec-table tr:last-child { border-bottom: none; }
@@ -1449,17 +1474,6 @@ a:hover { color: #5a3de6; }
 }
 .v2-badge-a { background: rgba(108,79,255,0.1); color: #6c4fff; }
 .v2-badge-req { background: rgba(239,68,68,0.1); color: #dc2626; }
-
-/* 규격 다이어그램 — 1:1 정방 도해 이미지 (2026-07-11 작가님 확정: 치수선·머리높이 밴드를 이미지에 내장.
-   prof 마스터 기반 규격별 생성 — 구글 이미지·og 썸네일 포석. CSS 치수 오버레이 세대는 이미지 내장형으로 대체) */
-.v2-diagram-wrap {
-  display: flex; align-items: center; justify-content: center;
-  position: relative; min-height: 280px;
-}
-.v2-diagram-img {
-  width: min(430px, 100%); aspect-ratio: 1/1; display: block;
-  border-radius: 16px;
-}
 
 /* 3스텝 플로우 */
 .v2-steps-section {
@@ -1560,17 +1574,12 @@ a:hover { color: #5a3de6; }
   margin-top: 8px;
 }
 .v2-upload-zone .v2-upload-hint { font-size: 11px; color: #bbb; margin-top: 6px; }
-.v2-upload-with-guides { display: flex; align-items: center; gap: 24px; justify-content: center; }
-.v2-guide-img-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; flex-shrink: 0; }
-.v2-guide-img { width: 100px; height: 100px; border-radius: 12px; object-fit: cover; opacity: 0.7; border: 2px dashed rgba(108,79,255,0.25); }
-.v2-guide-label { font-size: 11px; color: #888; font-weight: 500; }
+/* 업로드 존 단독 — 양옆 셀카/프로필 예시 제거 (2026-07-11 작가님: 잡스러움) */
+.v2-upload-with-guides { display: flex; align-items: center; justify-content: center; }
 .v2-upload-guide { margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(0,0,0,0.06); }
 .v2-guide-items { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
 .v2-guide-items span { font-size: 11px; color: #888; background: rgba(108,79,255,0.06); padding: 3px 8px; border-radius: 10px; }
 @media (max-width: 700px) {
-  .v2-upload-with-guides { flex-direction: column; gap: 16px; }
-  .v2-guide-img-wrap { flex-direction: row; gap: 12px; }
-  .v2-guide-img { width: 60px; height: 60px; }
 }
 
 /* 스텝2 — 프리뷰 */
@@ -1604,23 +1613,7 @@ a:hover { color: #5a3de6; }
 }
 @keyframes v2spin { to { transform: rotate(360deg); } }
 
-/* 상세규정 + 반려사유 2컬럼 */
-.v2-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-bottom: 48px; }
-.v2-detail-card {
-  background: #ffffff; border: 1px solid rgba(0,0,0,0.06); border-radius: 16px;
-  padding: 28px; box-shadow: 0 1px 6px rgba(0,0,0,0.03);
-}
-.v2-detail-card h3 {
-  font-size: 20px; font-weight: 700; color: #1a1a1a; margin-bottom: 0;
-  cursor: pointer; display: flex; align-items: center; user-select: none;
-}
-.v2-detail-card h3::after {
-  content: '\\25BE'; margin-left: auto; color: #aaa; font-size: 13px;
-  transition: transform 0.25s;
-}
-.v2-detail-card.open h3::after { transform: rotate(180deg); }
-.v2-detail-card .v2-detail-body { display: none; margin-top: 20px; }
-.v2-detail-card.open .v2-detail-body { display: block; }
+/* 상세규정·반려사유 리스트 — 수치 박스 탭 내부 (구 하단 2컬럼 아코디언에서 이동, 2026-07-11) */
 .v2-detail-list { list-style: none; padding: 0; margin: 0; }
 .v2-detail-list li {
   padding: 10px 0; font-size: 14px; color: #555; line-height: 1.7;
@@ -1648,10 +1641,28 @@ a:hover { color: #5a3de6; }
 }
 .v2-rj-desc { font-size: 13px; color: #888; padding-left: 30px; }
 
-/* 같은 규격 서류 */
+/* 같은 규격 서류 — 롤다운 (2026-07-11 작가님: 카드 상시 노출 대신 접기) */
 .v2-same-section { margin-bottom: 48px; }
-.v2-same-section h2 { font-size: 24px; font-weight: 800; color: #1a1a1a; margin-bottom: 6px; }
-.v2-same-sub { font-size: 14px; color: #888; margin-bottom: 20px; }
+.v2-same-acc {
+  background: #ffffff; border: 1px solid rgba(0,0,0,0.08); border-radius: 16px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.03);
+}
+.v2-same-acc summary {
+  list-style: none; cursor: pointer; user-select: none;
+  padding: 22px 28px; display: flex; align-items: center; gap: 10px;
+}
+.v2-same-acc summary::-webkit-details-marker { display: none; }
+.v2-same-acc summary h2 { font-size: 19px; font-weight: 800; color: #1a1a1a; margin: 0; }
+.v2-same-count {
+  background: rgba(108,79,255,0.1); color: #6c4fff; font-size: 12.5px; font-weight: 700;
+  padding: 3px 10px; border-radius: 999px;
+}
+.v2-same-acc summary::after {
+  content: '\\25BE'; margin-left: auto; color: #aaa; font-size: 14px; transition: transform 0.25s;
+}
+.v2-same-acc[open] summary::after { transform: rotate(180deg); }
+.v2-same-body { padding: 0 28px 24px; }
+.v2-same-sub { font-size: 14px; color: #888; margin-bottom: 16px; }
 .v2-same-grid { display: flex; gap: 12px; flex-wrap: wrap; }
 .v2-same-card {
   background: #ffffff; border: 1px solid rgba(0,0,0,0.08); border-radius: 12px;
@@ -1724,26 +1735,33 @@ a:hover { color: #5a3de6; }
 @media (max-width: 768px) {
   .v2-wrap { padding: 24px 16px 0; }
   .v2-header h1 { font-size: 26px; }
-  .v2-spec-card { grid-template-columns: 1fr; gap: 24px; }
+  /* 듀오 1컬럼 — DOM 순서(이미지→수치)가 그대로 모바일 순서 (2026-07-11 작가님) */
+  .v2-spec-duo { grid-template-columns: 1fr; gap: 16px; }
+  .v2-card-diagram, .v2-card-specs { order: 0; } /* 데스크톱 order 스왑 해제 → 이미지 먼저 */
+  .v2-card-diagram { padding: 12px; }
+  .v2-half-card { padding: 22px 20px; }
   .v2-check-layout { grid-template-columns: 1fr; }
   .v2-action-buttons { flex-direction: column; }
   .v2-pay-grid { grid-template-columns: 1fr; }
   .v2-result-grid { flex-direction: column; }
   .v2-result-arrow { transform: rotate(90deg); }
   .v2-steps-section { padding: 28px 20px; }
-  .v2-detail-grid { grid-template-columns: 1fr; }
   .v2-same-grid { flex-direction: column; }
+  .v2-same-acc summary { padding: 18px 20px; }
+  .v2-same-body { padding: 0 20px 18px; }
 
   /* ── 모바일 가독성 1차 패스 (2026-07-07 작가님: 소형 활자·저대비로 판독 불가) ──
      11~13px 계열을 14px+ 로, #888 계열 회색을 진하게. 총체 재설계 전 응급 상향. */
   .v2-header .v2-sub { font-size: 16px; color: #555; }
   .v2-breadcrumb { font-size: 14px; color: #666; }
   .v2-tag { font-size: 14px; }
-  .v2-spec-table td { font-size: 16px; }
+  /* 수치 간격 압축 + 도해 확대 (2026-07-11 작가님: 모바일 이미지 작고 숫자 간격 과함) */
+  .v2-spec-table th, .v2-spec-table td { padding: 8px 0; }
+  .v2-spec-table td { font-size: 15px; }
+  .v2-spec-table th { font-size: 13.5px; width: 96px; }
   .v2-spec-table td:first-child { color: #555; }
-  .v2-badge { font-size: 13px; }
-  .v2-diagram-img { width: min(340px, 100%); }
-  .v2-diagram-wrap { min-height: 0; }
+  .v2-badge { font-size: 12px; }
+  .v2-diagram-img { width: 100%; }
   .v2-steps-badge { font-size: 14px; }
   .v2-check-warn-msg { font-size: 14px; }
   .v2-checklist-summary { font-size: 15px; }
@@ -1756,7 +1774,6 @@ a:hover { color: #5a3de6; }
   .v2-result-label { font-size: 14px; color: #666; }
   .v2-detail-card li, .v2-detail-card p { font-size: 15px; color: #444; }
   .v2-upload-zone .v2-upload-btn { font-size: 15px; }
-  .v2-guide-label { font-size: 14px; color: #555; }
   .v2-credit { font-size: 13px; }
 }
 
@@ -2029,6 +2046,18 @@ ${hreflangTags}
     `<li><div class="v2-rj-title">${escapeHtml(r.title)}</div>${r.desc ? `<div class="v2-rj-desc">${escapeHtml(r.desc)}</div>` : ''}</li>`
   ).join('');
 
+  // 수치 박스 탭 라벨 + 공식 출처 링크 (2026-07-11 작가님: DB 보유 출처를 규정 박스에 노출, 없으면 미표기)
+  const tabSpecLabel = { ko: '규격', en: 'Specs', ja: '規格' }[lang] || '규격';
+  const sourceLabel = { ko: '출처', en: 'Source', ja: '出典' }[lang] || '출처';
+  const sourceHtml = (() => {
+    const os = specData.officialSource;
+    const url = (os && os.url) || (typeof specData.source === 'string' && /^https?:/i.test(specData.source) ? specData.source : null);
+    if (!url) return '';
+    let label = os && os.label && (os.label[lang] || os.label.ko);
+    if (!label) { try { label = new URL(url).hostname.replace(/^www\./, ''); } catch { return ''; } }
+    return `<div class="v2-source">${escapeHtml(sourceLabel)}: <a href="${escapeHtml(url)}" target="_blank" rel="noopener nofollow">${escapeHtml(label)} &#8599;</a></div>`;
+  })();
+
   const sameSize = Object.values(SPECS_DATA)
     .filter(s => s.country === specData.country && s.size === specData.size && s.slug !== slug)
     .sort((a, b) => a.priority - b.priority);
@@ -2080,18 +2109,34 @@ ${hreflangTags}
       }).join('')}
     </div>
 
-    <!-- 2. 핵심 규격 카드 -->
-    <div class="v2-spec-card">
-      <div>
-        <table class="v2-spec-table">
-          ${specRows}
-        </table>
-      </div>
-      <div class="v2-diagram-wrap">
+    <!-- 2. 핵심 규격 듀오 — 이미지 박스 + 수치 박스(탭) 분리. DOM 순서=모바일 순서(이미지 먼저) -->
+    <div class="v2-spec-duo">
+      <div class="v2-half-card v2-card-diagram">
         <img class="v2-diagram-img" src="${imgSrc}" alt="${escapeHtml(countryName)} ${escapeHtml(typeName)} ${escapeHtml(locField(specData, 'size', lang))}"
              onerror="this.src='${fallbackSrc}';this.onerror=function(){this.style.display='none'}">
       </div>
+      <div class="v2-half-card v2-card-specs">
+        <div class="v2-tabs" role="tablist">
+          <button type="button" class="v2-tab on" data-pane="spec" onclick="v2SpecTab(this)">${escapeHtml(tabSpecLabel)}</button>
+          ${detailHtml ? `<button type="button" class="v2-tab" data-pane="detail" onclick="v2SpecTab(this)">${escapeHtml(v2.detailsTitle)}</button>` : ''}
+          ${rejectHtml ? `<button type="button" class="v2-tab" data-pane="reject" onclick="v2SpecTab(this)">${escapeHtml(v2.rejectionTitle)}</button>` : ''}
+        </div>
+        <div class="v2-tabpane" data-pane="spec">
+          <table class="v2-spec-table">
+            ${specRows}
+          </table>
+          ${sourceHtml}
+        </div>
+        ${detailHtml ? `<div class="v2-tabpane" data-pane="detail" hidden>
+          <ul class="v2-detail-list">${detailHtml}</ul>
+          ${sourceHtml}
+        </div>` : ''}
+        ${rejectHtml ? `<div class="v2-tabpane" data-pane="reject" hidden>
+          <ol class="v2-reject-list">${rejectHtml}</ol>
+        </div>` : ''}
+      </div>
     </div>
+    <script>function v2SpecTab(btn){var card=btn.closest('.v2-card-specs');card.querySelectorAll('.v2-tab').forEach(function(b){b.classList.toggle('on',b===btn)});card.querySelectorAll('.v2-tabpane').forEach(function(p){p.hidden=p.getAttribute('data-pane')!==btn.getAttribute('data-pane')});}</script>
 
     <!-- 3. 사진 만들기 (T1 셀프서브 즉시결제) -->
     <div class="v2-steps-section" id="v2-steps">
@@ -2101,10 +2146,6 @@ ${hreflangTags}
       <!-- Phase 1: 업로드 -->
       <div class="v2-make-layout" id="v2-phase-upload">
         <div class="v2-upload-with-guides">
-          <div class="v2-guide-img-wrap">
-            <img src="/images/guides/guide-selfie.jpg" alt="${escapeHtml(v2.altSelfie)}" class="v2-guide-img">
-            <span class="v2-guide-label">${escapeHtml(v2.labelSelfie)}</span>
-          </div>
           <div class="v2-upload-zone" id="v2-dropzone">
             <div class="v2-upload-icon">&#8615;</div>
             <div class="v2-upload-main-text">${escapeHtml(v2.dropText)}</div>
@@ -2116,10 +2157,6 @@ ${hreflangTags}
                 ${v2.guideChips.map(c => `<span>${escapeHtml(c)}</span>`).join('\n                ')}
               </div>
             </div>
-          </div>
-          <div class="v2-guide-img-wrap">
-            <img src="/images/guides/guide-profile.jpg" alt="${escapeHtml(v2.altProfile)}" class="v2-guide-img">
-            <span class="v2-guide-label">${escapeHtml(v2.labelProfile)}</span>
           </div>
         </div>
       </div>
@@ -2291,23 +2328,15 @@ ${hreflangTags}
       ${isPilot ? '' : upsellHtml}
     </div>
 
-    <!-- 4. 상세규정 + 반려사유 (아코디언) -->
-    <div class="v2-detail-grid">
-      <div class="v2-detail-card" onclick="this.classList.toggle('open')">
-        <h3>${escapeHtml(v2.detailsTitle)}</h3>
-        <div class="v2-detail-body"><ul class="v2-detail-list">${detailHtml}</ul></div>
-      </div>
-      ${rejectHtml ? `<div class="v2-detail-card" onclick="this.classList.toggle('open')">
-        <h3>${escapeHtml(v2.rejectionTitle)}</h3>
-        <div class="v2-detail-body"><ol class="v2-reject-list">${rejectHtml}</ol></div>
-      </div>` : ''}
-    </div>
-
-    ${sameSize.length > 0 ? `<!-- 5. 같은 사진으로 제출 가능한 서류 -->
+    ${sameSize.length > 0 ? `<!-- 4. 같은 사진으로 제출 가능한 서류 — 롤다운 (상세규정·반려사유는 수치 박스 탭으로 이동) -->
     <div class="v2-same-section">
-      <h2>${escapeHtml(v2.sameTitle)}</h2>
-      <div class="v2-same-sub">${escapeHtml(fmtV2(v2.sameSub, { name: fullName, size: locField(specData, 'size', lang) }))}</div>
-      <div class="v2-same-grid">${sameHtml}</div>
+      <details class="v2-same-acc">
+        <summary><h2>${escapeHtml(v2.sameTitle)}</h2><span class="v2-same-count">${sameSize.length}</span></summary>
+        <div class="v2-same-body">
+          <div class="v2-same-sub">${escapeHtml(fmtV2(v2.sameSub, { name: fullName, size: locField(specData, 'size', lang) }))}</div>
+          <div class="v2-same-grid">${sameHtml}</div>
+        </div>
+      </details>
     </div>` : ''}
 
     <!-- 6. FAQ -->
