@@ -158,6 +158,7 @@ secret env               # SM → .env 일괄 동기화
 | 06/23 | M1/쌍아 | **시크릿 입력 단순화** — `scripts/secret.sh` CLI + `MONKOS 시크릿 등록.app` GUI 신설(둘 다 클립보드 자동읽기). 글로벌 커맨드 `secret`, rules/data-access.md 에이전트 프로토콜 등재, PF_INFRA §2-5 체계 정리 | secret.sh + .app + 설계서 + rules 갱신 | ✅ |
 | 06/23 | iMac/민아 | **🔴 포털 홈 이미지 누락 사고 복구 + 배포 안전망 제안** — 이미지(.jpg/.png)가 .gitignore로 git 미추적 → 빌드 컨텍스트 누락 → specs prod 배포가 이미지 없는 컨테이너로 교체(/assets/*.jpg 404). 복구: .gitignore 예외 + 에셋 11개(8.6MB) git 추적 → 재배포(스모크 18URL 200). 근본=배포 안전망 부재(슬러그·이미지 두 사고 공통). 안전망 3종(스모크검증·preview선검증·git자산점검) 제안, 경계 정본=ch5 배포규칙(개정 초안 예정) | `3390720f`·`4e519257`, [REPORT](../../reports/2026-06/REPORT_20260623_민아_포털이미지누락_배포안전망.md) | ✅ |
 | 07/02 | iMac/쌍아 | **레몬 API 키 로테이션** — 키 노출 인시던트 대응. Secret Manager v2 등록 + deploy.sh `--set-secrets`에 API 키 편입(평문 env→시크릿 전환, 광역오더 #8 위반 해소). 포털 재배포(rev 00375-g45) | deploy.sh, SECRET_INVENTORY.md | ✅ |
+| 07/12 | iMac/민아 | **specs 정적 자산 캐시 체계 신설 (렌더 퍼널 분리 동반)** — 인라인 CSS/JS를 정적 5파일로 추출하며 캐시 정책 이원화: `/{js,css}/specs-*` → `max-age=31536000, immutable` + `?v=K_REVISION` 배포 단위 버스트(server.js:1167 분기). 기존 css/js no-cache 정책은 불변(범위 최소화). 효과: 428p 페이지당 gzip 34→10.3KB, 15언어 확장 시 크롤 218→66MB/회전. dev 00110 라이브·prod 미승격 | [COMPLETION](../../reports/2026-07/COMPLETION_20260712_iMac민아_렌더퍼널분리.md), server.js | ✅ (쌍아 추인 대기) |
 
 ---
 
