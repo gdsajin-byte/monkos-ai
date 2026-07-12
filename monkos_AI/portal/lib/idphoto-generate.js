@@ -199,7 +199,7 @@ export async function generateIdPhoto({ image, format, gender, age, model, userI
     ]}],
     config: {
       responseModalities: ['TEXT', 'IMAGE'],
-      imageConfig: { aspectRatio: '3:4' },
+      imageConfig: { aspectRatio: framing === 'wide' ? '1:1' : '3:4' },
       safetySettings: [
         { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
         { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
