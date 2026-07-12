@@ -160,7 +160,7 @@
         "pattern": "solid", "neckline": "stand-collar", "season": "all",
         "formality": "formal", "age_range": "all",
         "trend_tags": ["베이직"],
-        "use_case": ["passport", "resume"]
+        "use_case": ["headshot", "profile"]
       },
       "attire_desc": "Replace current clothing with a crisp plain white dress shirt with a regular collar, top button fastened, no tie. Clothing must look natural and properly fitted.",
       "swatch": { "primary": "#FFFFFF", "secondary": "#DDDDDD" },
@@ -185,6 +185,44 @@
       "swatch": { "primary": "#BDD7EE", "secondary": "#FFFFFF" },
       "image_gcs": null, "thumbnail": null, "source": null, "source_ref": null,
       "labels": { "ko": "라이트블루 셔츠", "ja": "ライトブルー シャツ", "en": "Light Blue Shirt" },
+      "vendor": null
+    },
+    {
+      "id": "m_shirt_navy_regular_17",
+      "active": true,
+      "sort_order": 50,
+      "tags": {
+        "gender": "m", "category": "shirt", "subcategory": null,
+        "accessory": { "tie": null }, "fit": "regular", "material": "cotton",
+        "color": { "primary": "navy", "secondary": null, "tone": "cool" },
+        "pattern": "solid", "neckline": "stand-collar", "season": "all",
+        "formality": "semi-formal", "age_range": "20s-40s",
+        "trend_tags": ["단독가능", "모던"],
+        "use_case": ["passport", "resume"]
+      },
+      "attire_desc": "Replace current clothing with a dark navy dress shirt with a regular collar, top button fastened, no tie. Clothing must look natural and properly fitted.",
+      "swatch": { "primary": "#2C3E5D", "secondary": "#3D5177" },
+      "image_gcs": null, "thumbnail": null, "source": null, "source_ref": null,
+      "labels": { "ko": "네이비 셔츠", "ja": "ネイビーシャツ", "en": "Navy Dress Shirt" },
+      "vendor": null
+    },
+    {
+      "id": "m_shirt_black_regular_18",
+      "active": true,
+      "sort_order": 60,
+      "tags": {
+        "gender": "m", "category": "shirt", "subcategory": null,
+        "accessory": { "tie": null }, "fit": "regular", "material": "cotton",
+        "color": { "primary": "black", "secondary": null, "tone": "neutral" },
+        "pattern": "solid", "neckline": "stand-collar", "season": "all",
+        "formality": "semi-formal", "age_range": "20s-40s",
+        "trend_tags": ["단독가능", "모던"],
+        "use_case": ["passport", "resume"]
+      },
+      "attire_desc": "Replace current clothing with a black dress shirt with a regular collar, top button fastened, no tie. Clothing must look natural and properly fitted.",
+      "swatch": { "primary": "#1C1C1E", "secondary": "#333336" },
+      "image_gcs": null, "thumbnail": null, "source": null, "source_ref": null,
+      "labels": { "ko": "블랙 셔츠", "ja": "ブラックシャツ", "en": "Black Dress Shirt" },
       "vendor": null
     },
     {
@@ -293,7 +331,7 @@
         "pattern": "solid", "neckline": "stand-collar", "season": "all",
         "formality": "formal", "age_range": "20s-40s",
         "trend_tags": ["정장셋", "취업필수"],
-        "use_case": ["resume"]
+        "use_case": ["headshot", "profile"]
       },
       "attire_desc": "Replace current clothing with a crisp white dress shirt with a regular collar and a solid dark navy necktie, neatly knotted. Clothing must look natural and properly fitted.",
       "swatch": { "primary": "#FFFFFF", "secondary": "#2C3E5D" },
@@ -426,7 +464,7 @@
         "pattern": "solid", "neckline": "round", "season": "all",
         "formality": "semi-formal", "age_range": "20s-40s",
         "trend_tags": ["베이직", "취업필수"],
-        "use_case": ["passport", "resume"]
+        "use_case": ["headshot", "profile"]
       },
       "attire_desc": "Replace current clothing with a clean white woven blouse (elegant drapey fabric with a subtle sheen, NOT a t-shirt, NOT knit jersey) with a refined round neckline and a smooth simple front. Clothing must look natural and properly fitted.",
       "swatch": { "primary": "#FFFFFF", "secondary": "#E8E8E8" },
@@ -474,16 +512,16 @@
     },
     {
       "id": "f_blouse_beige_round_09",
-      "active": false,
-      "sort_order": 130,
+      "active": true,
+      "sort_order": 40,
       "tags": {
         "gender": "f", "category": "blouse", "subcategory": null,
         "accessory": { "tie": null }, "fit": "regular", "material": "blend",
         "color": { "primary": "beige", "secondary": null, "tone": "warm" },
         "pattern": "solid", "neckline": "round", "season": "all",
-        "formality": "business-casual", "age_range": "30s+",
+        "formality": "business-casual", "age_range": "20s-40s",
         "trend_tags": ["소프트"],
-        "use_case": ["headshot"]
+        "use_case": ["passport", "resume", "headshot"]
       },
       "attire_desc": "Replace current clothing with a beige round-neck blouse with a clean simple front. Clothing must look natural and properly fitted.",
       "swatch": { "primary": "#D8C6A8", "secondary": "#E5D8C0" },
