@@ -70,6 +70,10 @@
 .atp-item.atp-on .atp-visual-original { color: var(--atp-border-on); }
 .atp-thumb { width: 100%; height: 100%; object-fit: cover; display: block; }
 
+/* 카드형 칩 — 상품컷 썸네일 존재 시 (v1.5). 스와치 칩과 혼재 가능 */
+.atp-item.atp-has-thumb { width: 96px; }
+.atp-has-thumb .atp-visual { width: 78px; height: 104px; border-radius: 8px; background: #fff; }
+
 .atp-label {
   font-size: 11px; line-height: 1.25; color: var(--atp-text);
   max-width: 72px; text-align: center;
@@ -87,6 +91,7 @@
 
 /* 데스크톱(≥720px): 그리드 전환 */
 @media (min-width: 720px) {
-  .atp-items { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); overflow: visible; }
+  .atp-items { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); overflow: visible; }
   .atp-item { width: auto; }
+  .atp-item.atp-has-thumb { width: auto; }
 }

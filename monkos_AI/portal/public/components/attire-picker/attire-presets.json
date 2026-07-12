@@ -31,7 +31,7 @@
       },
       "attire_desc": "Replace current clothing with a charcoal single-breasted wool business suit with notch lapels, a crisp white dress shirt underneath, no tie. Clothing must look natural and properly fitted.",
       "swatch": { "primary": "#3B3F46", "secondary": "#FFFFFF" },
-      "image_gcs": null, "thumbnail": null, "source": null, "source_ref": null,
+      "image_gcs": "gs://monk-ai-images/assets/attire/m_suit_charcoal_single_01.png", "thumbnail": "/images/attire/m_suit_charcoal_single_01_thumb.webp", "source": "ai-generated", "source_ref": null,
       "labels": { "ko": "차콜 싱글 정장", "ja": "チャコール シングルスーツ", "en": "Charcoal Single Suit" },
       "vendor": null
     },
@@ -297,7 +297,7 @@
       },
       "attire_desc": "Replace current clothing with a crisp white dress shirt with a regular collar and a solid dark navy necktie, neatly knotted. Clothing must look natural and properly fitted.",
       "swatch": { "primary": "#FFFFFF", "secondary": "#2C3E5D" },
-      "image_gcs": null, "thumbnail": null, "source": null, "source_ref": null,
+      "image_gcs": "gs://monk-ai-images/assets/attire/m_shirt_white_tie_navy_15.png", "thumbnail": "/images/attire/m_shirt_white_tie_navy_15_thumb.webp", "source": "ai-generated", "source_ref": null,
       "labels": { "ko": "화이트 셔츠 + 네이비 타이", "ja": "ホワイトシャツ + ネイビータイ", "en": "White Shirt + Navy Tie" },
       "vendor": null
     },
@@ -335,7 +335,7 @@
       },
       "attire_desc": "Replace current clothing with a charcoal single-breasted women's suit jacket with notch lapels over a plain white blouse. Clothing must look natural and properly fitted.",
       "swatch": { "primary": "#3B3F46", "secondary": "#FFFFFF" },
-      "image_gcs": null, "thumbnail": null, "source": null, "source_ref": null,
+      "image_gcs": "gs://monk-ai-images/assets/attire/f_suit_charcoal_single_01.png", "thumbnail": "/images/attire/f_suit_charcoal_single_01_thumb.webp", "source": "ai-generated", "source_ref": null,
       "labels": { "ko": "차콜 싱글 정장", "ja": "チャコール シングルスーツ", "en": "Charcoal Single Suit" },
       "vendor": null
     },
@@ -428,9 +428,9 @@
         "trend_tags": ["베이직", "취업필수"],
         "use_case": ["passport", "resume"]
       },
-      "attire_desc": "Replace current clothing with a clean white round-neck blouse with a smooth simple front. Clothing must look natural and properly fitted.",
+      "attire_desc": "Replace current clothing with a clean white woven blouse (elegant drapey fabric with a subtle sheen, NOT a t-shirt, NOT knit jersey) with a refined round neckline and a smooth simple front. Clothing must look natural and properly fitted.",
       "swatch": { "primary": "#FFFFFF", "secondary": "#E8E8E8" },
-      "image_gcs": null, "thumbnail": null, "source": null, "source_ref": null,
+      "image_gcs": "gs://monk-ai-images/assets/attire/f_blouse_white_round_06.png", "thumbnail": "/images/attire/f_blouse_white_round_06_thumb.webp", "source": "ai-generated", "source_ref": null,
       "labels": { "ko": "화이트 라운드 블라우스", "ja": "ホワイト ラウンドブラウス", "en": "White Round-Neck Blouse" },
       "vendor": null
     },

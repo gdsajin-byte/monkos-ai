@@ -54,3 +54,20 @@ status: 마감
 | 데모 | (dev) /components/attire-picker/demo.html — 배포 시 prod 동일 경로 |
 
 배포: 미배포 (deploy = 민아 스코프 밖, 쌍아 트랙 커밋·배포에 동승 권장 — 신규 파일뿐이라 무충돌)
+
+---
+
+## 부록 — v1.5 샘플링 (12:49 작가님 추가 지시: "의상 생성 몇 컷 → 몽코스 에셋 적재 → 샘플링")
+
+**[2026-07-12 12:57 KST]** iMac/민아
+
+✅ **상품컷 4종 생성** — 나노2 t2i 고스트 마네킹, 각 ~11초. 생성기를 재현 가능 도구로 승격: `portal/tools/attire-assets/generate_samples.mjs` (attire_desc에서 의상 구절 파생 → 상품컷 프롬프트, --ids 지정/썸네일 미보유 active 전체)
+- 남 차콜 싱글 정장 · 남 화이트 셔츠+네이비 타이 · 여 차콜 싱글 정장 · 여 화이트 라운드 블라우스
+- ❌→✅ 1건 재생성: 블라우스가 티셔츠로 생성(1차) → **스키마 attire_desc 자체를 보강** ("woven blouse, NOT a t-shirt") 후 합격 — 같은 오해가 T1 실합성에도 재현될 수 있어 데이터 정본 수정 (그럴듯함≠딱 떨어짐)
+✅ **몽코스 에셋 적재** — `gs://monk-ai-images/assets/attire/{id}.png` 4종 (설계 §5 경로 그대로)
+✅ **썸네일** — cwebp 256px, 2~6KB×4 (리포 부담 총 17KB) → `portal/public/images/attire/{id}_thumb.webp`
+✅ **스키마 배선** — 4종 image_gcs·thumbnail·source:"ai-generated" 충전
+✅ **카드형 칩** — thumbnail 보유 시 78×104 카드 자동 전환(`atp-has-thumb`), 스와치 칩과 혼재 균일. 데모에 캐시버스터(살아있는 스펙 보장)
+✅ **시현** — 남/여 탭 카드·스와치 혼재, 선택 상태(보라 테두리+attireDesc 페이로드), 모바일 가로 스크롤, 콘솔 에러 0
+
+💡 v1.5 완전 전환 조건: 잔여 8종 생성+**작가님 검수**(이번 4종도 최종 검수 대상 — 민아 1차 합격만 통과한 상태). 생성기 1커맨드로 재생산 가능.

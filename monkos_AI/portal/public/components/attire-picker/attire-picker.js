@@ -224,6 +224,7 @@
 
     var visual = el('span', 'atp-visual');
     if (it.thumbnail) {
+      chip.classList.add('atp-has-thumb'); // 상품컷 존재 → 카드형 칩 (v1.5)
       var img = el('img', 'atp-thumb', { src: it.thumbnail, alt: '', loading: 'lazy' });
       visual.appendChild(img);
     } else if (it.isDefault) {

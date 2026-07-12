@@ -60,6 +60,7 @@
     picker = AttirePicker.mount(root, {
       service: document.getElementById('svc').value,
       lang: document.getElementById('lng').value,
+      presetsUrl: './attire-presets.json?v=' + Date.now(), // 데모=살아있는 스펙 — 항상 최신 데이터
       onChange: show,
       onReady: function (p) { show(p.getSelection()); }
     });
