@@ -255,7 +255,7 @@ export async function fitSpecGeometry(imageBuffer, landmarks, spec, opts = {}) {
 /**
  * 순백 배경에서 피사체 상단(머리끝) 행 실측 — 행의 2% 이상 비백색이면 피사체 시작
  */
-async function subjectTopRow(imageBuffer) {
+export async function subjectTopRow(imageBuffer) {
   const { data, info } = await sharp(imageBuffer).removeAlpha().raw().toBuffer({ resolveWithObject: true });
   const { width: W, height: H, channels: C } = info;
   const threshold = Math.max(3, Math.floor(W * 0.02));

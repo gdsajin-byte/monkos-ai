@@ -2,7 +2,7 @@ import http from 'node:http';
 import { spawn } from 'node:child_process';
 import { initFaceDetector, detectFace } from './lib/face-detect.js';
 import { insightToAnatomy } from './lib/face-detect-insight.js';
-import { cropToFrame, cropToSpecV2, fitSpecGeometry, fallbackCrop } from './lib/crop.js';
+import { cropToFrame, cropToSpecV2, fitSpecGeometry, fallbackCrop, subjectTopRow } from './lib/crop.js';
 import { SPECS } from './specs/formats.js';
 
 const PORT = parseInt(process.env.PORT || '8080', 10);
@@ -38,6 +38,20 @@ function startScrfdSidecar() {
     }
   });
 }
+
+// scrfdReady 헬스 폴링 (2026-07-12 민아): stdout 'ready' 마커 유실 시 사이드카가 살아있어도
+// 영구 FaceMesh 폴백으로 고착되는 사고 실측 — 15초 주기 실측으로 플래그를 회복/강하한다.
+async function refreshScrfdReady() {
+  try {
+    const r = await fetch(`http://127.0.0.1:${SCRFD_PORT}/health`, { signal: AbortSignal.timeout(1500) });
+    if (r.ok && !scrfdReady) console.log('[SCRFD] 헬스 폴링으로 ready 회복');
+    scrfdReady = r.ok;
+  } catch {
+    scrfdReady = false;
+  }
+}
+setTimeout(refreshScrfdReady, 5000);
+setInterval(refreshScrfdReady, 15000).unref();
 
 async function handleDetect(req, res) {
   if (!scrfdReady) {
@@ -149,9 +163,60 @@ async function handleCrop(req, res) {
 }
 
 /**
+ * 최선 검출 — InsightFace(SCRFD+106점) 우선, 실패 시 FaceMesh 폴백.
+ * 2026-07-12 작가님 확정: 유료 최종 크롭(crop-spec)이 신뢰도 문제로 퇴출 결정된 FaceMesh에
+ * 남아있던 것이 과대 크롭의 핵심 — fit-spec에서 실전 검증된 블록을 공용화해 crop-spec도 전환.
+ * 반환 landmarks.detector = 'insightface' | 'facemesh' (meta 추적용).
+ */
+async function detectBest(imageB64, imageBuffer) {
+  if (scrfdReady) {
+    try {
+      const det = await fetch(`http://127.0.0.1:${SCRFD_PORT}/detect`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: imageB64 }),
+        signal: AbortSignal.timeout(10000),
+      }).then(r => r.json());
+
+      if (det.faces && det.faces.length > 0 && det.faces[0].score >= 0.4) {
+        const bbox = det.faces[0].bbox;
+        const [lmkRes, poseRes] = await Promise.all([
+          fetch(`http://127.0.0.1:${SCRFD_PORT}/landmarks`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ image: imageB64, bbox }),
+            signal: AbortSignal.timeout(10000),
+          }).then(r => r.json()),
+          fetch(`http://127.0.0.1:${SCRFD_PORT}/headpose`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ image: imageB64, bbox }),
+            signal: AbortSignal.timeout(10000),
+          }).then(r => r.json()).catch(() => ({ pose: null })),
+        ]);
+
+        if (lmkRes.landmarks && lmkRes.landmarks.length === 106) {
+          const landmarks = insightToAnatomy(lmkRes.landmarks, det.imageSize.width, det.imageSize.height);
+          if (poseRes.pose) landmarks.pose = poseRes.pose;
+          landmarks.detector = 'insightface';
+          console.log(`[DetectBest] InsightFace 106점: chin=(${landmarks.chin.y.toFixed(0)}), eye=(${landmarks.leftEye.y.toFixed(0)})${poseRes.pose ? ` pose=p${poseRes.pose.pitch}/y${poseRes.pose.yaw}/r${poseRes.pose.roll}` : ''}`);
+          return landmarks;
+        }
+      }
+    } catch (e) {
+      console.error(`[DetectBest] InsightFace 실패 (${e.message}) → FaceMesh 폴백`);
+    }
+  }
+  const landmarks = await detectFace(imageBuffer);
+  if (landmarks) {
+    landmarks.detector = 'facemesh';
+    console.log('[DetectBest] FaceMesh 폴백 사용');
+  }
+  return landmarks;
+}
+
+/**
  * POST /api/crop-spec — 규격 파라미터 주입형 안착 크롭 v2 (스펙스 파이프라인, 2026-07-06)
  * body: { image: base64, spec: { frameW, frameH(px), frameHmm, faceTargetMm, topMarginMm? } }
  * 순백 배경 입력 전제. 얼굴 감지 실패 시 프레임 비율 상단 커버 크롭 폴백.
+ * 검출: InsightFace 우선(detectBest) + hairTop 실측 스캔(순백 전제 엔드포인트라 상시).
  */
 async function handleCropSpec(req, res) {
   try {
@@ -161,7 +226,7 @@ async function handleCropSpec(req, res) {
       return sendJSON(res, 400, { success: false, error: 'image, spec{frameW,frameH,frameHmm,faceTargetMm} 필수' });
     }
     const imageBuffer = Buffer.from(image, 'base64');
-    const landmarks = await detectFace(imageBuffer);
+    const landmarks = await detectBest(image, imageBuffer);
 
     if (!landmarks) {
       const { default: sharp } = await import('sharp');
@@ -174,8 +239,17 @@ async function handleCropSpec(req, res) {
       });
     }
 
+    // hairTop 실측 — 순백 전제 엔드포인트라 상시 스캔. 좌표(crown 미러 추산)와 독립인
+    // 외부 기준점: ① 스케일 축소 루프 활성(헤어까지 프레임 안착) ② 좌표 오검출 교차 검증 원료
+    try {
+      landmarks.hairTop = await subjectTopRow(imageBuffer);
+    } catch { /* 스캔 실패 시 기존(crownY 폴백) 경로 유지 */ }
+
     const { buffer, meta } = await cropToSpecV2(imageBuffer, landmarks, spec);
-    sendJSON(res, 200, { success: true, cropped: buffer.toString('base64'), fallback: false, meta });
+    sendJSON(res, 200, {
+      success: true, cropped: buffer.toString('base64'), fallback: false,
+      meta: { ...meta, detector: landmarks.detector, hairTopY: landmarks.hairTop ?? null },
+    });
   } catch (err) {
     console.error(`[CropSpecAPI] 에러: ${err.message}`);
     sendJSON(res, 500, { success: false, error: err.message });
@@ -197,45 +271,8 @@ async function handleFitSpec(req, res) {
     }
     const imageBuffer = Buffer.from(image, 'base64');
 
-    let landmarks = null;
-    if (scrfdReady) {
-      try {
-        const det = await fetch(`http://127.0.0.1:${SCRFD_PORT}/detect`, {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ image }),
-          signal: AbortSignal.timeout(10000),
-        }).then(r => r.json());
-
-        if (det.faces && det.faces.length > 0 && det.faces[0].score >= 0.4) {
-          const bbox = det.faces[0].bbox;
-          const [lmkRes, poseRes] = await Promise.all([
-            fetch(`http://127.0.0.1:${SCRFD_PORT}/landmarks`, {
-              method: 'POST', headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ image, bbox }),
-              signal: AbortSignal.timeout(10000),
-            }).then(r => r.json()),
-            fetch(`http://127.0.0.1:${SCRFD_PORT}/headpose`, {
-              method: 'POST', headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ image, bbox }),
-              signal: AbortSignal.timeout(10000),
-            }).then(r => r.json()).catch(() => ({ pose: null })),
-          ]);
-
-          if (lmkRes.landmarks && lmkRes.landmarks.length === 106) {
-            landmarks = insightToAnatomy(lmkRes.landmarks, det.imageSize.width, det.imageSize.height);
-            if (poseRes.pose) landmarks.pose = poseRes.pose;
-            console.log(`[FitSpec] InsightFace 106점: chin=(${landmarks.chin.y.toFixed(0)}), eye=(${landmarks.leftEye.y.toFixed(0)})${poseRes.pose ? ` pose=p${poseRes.pose.pitch}/y${poseRes.pose.yaw}/r${poseRes.pose.roll}` : ''}`);
-          }
-        }
-      } catch (e) {
-        console.error(`[FitSpec] InsightFace 실패 (${e.message}) → FaceMesh 폴백`);
-      }
-    }
-
-    if (!landmarks) {
-      landmarks = await detectFace(imageBuffer);
-      if (landmarks) console.log('[FitSpec] FaceMesh 폴백 사용');
-    }
+    // 검출 공용화 (2026-07-12): 인라인 InsightFace 블록 → detectBest 통일 (crop-spec과 동일 경로)
+    const landmarks = await detectBest(image, imageBuffer);
 
     if (!landmarks) {
       return sendJSON(res, 200, { success: true, detected: false });
