@@ -82,6 +82,7 @@ if [ "$ENV" = "dev" ]; then
   MAX_INSTANCES="2"
   FREE_QUOTA_BYPASS="1"  # dev 무료 횟수 제한 해제
   TOSS_CLIENT_KEY_OVERRIDE="test_gck_XZYkKL4Mrj9kOlJpvJJkV0zJwlEW"  # dev 테스트 결제용
+  TOSS_SECRET_KEY_NAME="TOSS_SECRET_KEY_TEST"  # dev 테스트 시크릿 키
   DEPLOY_FLAGS=""
 elif [ "$ENV" = "prod" ]; then
   SERVICE_NAME="monkos-portal"
@@ -165,6 +166,9 @@ if [ -n "${TOSS_CLIENT_KEY_OVERRIDE}" ]; then
 else
   SECRETS="${SECRETS},TOSS_CLIENT_KEY=TOSS_CLIENT_KEY:latest"
 fi
+
+# dev/prod 토스 시크릿 키 분기
+SECRETS="${SECRETS},TOSS_SECRET_KEY=${TOSS_SECRET_KEY_NAME:-TOSS_SECRET_KEY}:latest"
 
 gcloud run deploy ${SERVICE_NAME} \
   --image gcr.io/${PROJECT_ID}/${SERVICE_NAME} \
