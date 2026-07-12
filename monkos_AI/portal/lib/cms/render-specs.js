@@ -1542,6 +1542,42 @@ a:hover { color: #5a3de6; }
 .v2-pay-divider span { background: #f5f5f7; padding: 0 12px; position: relative; z-index: 1; }
 .v2-pay-divider::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; border-top: 1px solid #e5e5e5; }
 
+/* Phase 2.7: 의상 선택 */
+.v2-attire-title { font-size: 16px; font-weight: 700; color: #1a1a1a; margin-bottom: 4px; }
+.v2-attire-sub { font-size: 13px; color: #888; margin-bottom: 16px; }
+.v2-attire-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+.v2-attire-card {
+  padding: 14px 12px; border-radius: 12px; border: 2px solid rgba(0,0,0,0.08);
+  background: #fff; cursor: pointer; text-align: center; transition: all 0.2s;
+}
+.v2-attire-card:hover { border-color: #6c4fff; }
+.v2-attire-card.selected { border-color: #6c4fff; background: rgba(108,79,255,0.04); }
+.v2-attire-card-icon { font-size: 22px; margin-bottom: 4px; }
+.v2-attire-card-label { font-size: 13px; font-weight: 600; color: #333; }
+.v2-attire-sub-section { margin-top: 12px; }
+.v2-attire-sub-label { font-size: 12px; font-weight: 600; color: #888; margin-bottom: 8px; }
+.v2-attire-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.v2-attire-chip {
+  display: flex; align-items: center; gap: 6px; padding: 7px 14px;
+  border-radius: 20px; border: 1.5px solid rgba(0,0,0,0.1);
+  background: #fff; cursor: pointer; font-size: 12px; font-weight: 500; color: #333;
+  transition: all 0.15s;
+}
+.v2-attire-chip:hover { border-color: #6c4fff; }
+.v2-attire-chip.selected { border-color: #6c4fff; background: rgba(108,79,255,0.06); color: #6c4fff; font-weight: 600; }
+.v2-attire-swatch {
+  width: 14px; height: 14px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.12);
+  flex-shrink: 0;
+}
+.v2-attire-summary {
+  font-size: 12px; color: #555; background: #f6f6fb; border-radius: 8px;
+  padding: 8px 12px; margin-top: 12px; text-align: center;
+}
+.v2-attire-actions { display: flex; gap: 10px; margin-top: 16px; }
+@media (max-width: 600px) {
+  .v2-attire-cards { grid-template-columns: 1fr 1fr; }
+}
+
 /* Phase 3: 생성 중 */
 .v2-generating { text-align: center; padding: 60px 0; }
 .v2-gen-text { font-size: 16px; font-weight: 600; color: #1a1a1a; margin-top: 16px; }
@@ -2217,6 +2253,43 @@ ${hreflangTags}
         </div>
       </div>
 
+      <!-- Phase 2.7: 의상 선택 (T1 유료 경로) -->
+      <div class="v2-make-layout" id="v2-phase-attire" style="display:none;">
+        <div class="v2-pay-grid">
+          <div class="v2-pay-preview">
+            <img id="v2-attire-preview" src="" alt="업로드 미리보기">
+          </div>
+          <div class="v2-attire-side">
+            <div class="v2-attire-title">의상 선택</div>
+            <div class="v2-attire-sub">증명사진에 어울리는 의상을 선택하세요</div>
+            <div class="v2-attire-cards" id="v2-attire-cards">
+              <div class="v2-attire-card selected" data-attire="asis">
+                <div class="v2-attire-card-icon">👔</div>
+                <div class="v2-attire-card-label">그대로</div>
+              </div>
+              <div class="v2-attire-card" data-attire="suit">
+                <div class="v2-attire-card-icon">🤵</div>
+                <div class="v2-attire-card-label">정장</div>
+              </div>
+              <div class="v2-attire-card" data-attire="blouse">
+                <div class="v2-attire-card-icon">👚</div>
+                <div class="v2-attire-card-label">블라우스</div>
+              </div>
+              <div class="v2-attire-card" data-attire="casual">
+                <div class="v2-attire-card-icon">🧥</div>
+                <div class="v2-attire-card-label">캐주얼</div>
+              </div>
+            </div>
+            <div id="v2-attire-sub-options"></div>
+            <div class="v2-attire-summary" id="v2-attire-summary">현재 의상 유지, 보정만 적용</div>
+            <div class="v2-attire-actions">
+              <button class="v2-action-btn v2-btn-retry" id="v2-attire-back">이전</button>
+              <button class="v2-action-btn v2-btn-retouch" id="v2-attire-confirm">이대로 진행</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Phase 2: 결제 선택 -->
       <div class="v2-make-layout" id="v2-phase-pay" style="display:none;">
         <div class="v2-pay-grid">
@@ -2394,6 +2467,7 @@ ${hreflangTags}
   var phaseUpload = document.getElementById('v2-phase-upload');
   var phaseCheck = document.getElementById('v2-phase-check');
   var phaseFit = document.getElementById('v2-phase-fit');
+  var phaseAttire = document.getElementById('v2-phase-attire');
   var phasePay = document.getElementById('v2-phase-pay');
   var phaseGen = document.getElementById('v2-phase-generating');
   var phaseResult = document.getElementById('v2-phase-result');
@@ -2405,6 +2479,29 @@ ${hreflangTags}
   var pollTimer = null;
   // 결제 상태: token = generate용 paymentToken, remaining = 남은 재생성(null=미확정), consumed = 다운로드로 최종 소모됨
   var pay = { orderId: null, token: null, remaining: null, consumed: false };
+  // 의상 선택 상태
+  var attireSelection = { type: 'asis', suitColor: 'navy', shirtColor: 'white', tieColor: 'notie', tiePattern: 'solid', casualColor: 'beige', blouseColor: 'white' };
+  function getAttireDesc(){
+    var t = attireSelection.type;
+    if(t === 'asis') return 'Keep current clothing as-is. Only ensure it looks neat and tidy.';
+    if(t === 'suit'){
+      var sc = attireSelection.suitColor === 'lightgray' ? 'light gray' : attireSelection.suitColor;
+      var shc = attireSelection.shirtColor.replace('light','light ');
+      var desc = 'Dress this person in a ' + sc + ' formal business suit with a ' + shc + ' collared dress shirt';
+      if(attireSelection.tieColor === 'notie') desc += ', no tie.';
+      else desc += ' and a ' + (attireSelection.tiePattern === 'stripe' ? 'striped ' : '') + attireSelection.tieColor + ' tie.';
+      return desc;
+    }
+    if(t === 'blouse'){
+      var bc = attireSelection.blouseColor === 'lightblue' ? 'light blue' : attireSelection.blouseColor;
+      return 'Dress this person in a neat ' + bc + ' collared blouse, professional and clean.';
+    }
+    if(t === 'casual'){
+      var cc = attireSelection.casualColor;
+      return 'Dress this person in a clean, neat ' + cc + ' knit sweater with a round neckline, professional casual look.';
+    }
+    return null;
+  }
 
   if(!dropzone) return;
 
@@ -2448,7 +2545,7 @@ ${hreflangTags}
   var IMG_KEY = 'monkos_specs_img';
 
   function showPhase(phase){
-    [phaseUpload, phaseCheck, phaseFit, phasePay, phaseGen, phaseResult, phaseFree].forEach(function(p){ if(p) p.style.display='none'; });
+    [phaseUpload, phaseCheck, phaseFit, phaseAttire, phasePay, phaseGen, phaseResult, phaseFree].forEach(function(p){ if(p) p.style.display='none'; });
     if(phase) phase.style.display='';
   }
   function setGenMessage(text, sub){
@@ -2598,8 +2695,15 @@ ${hreflangTags}
     document.getElementById('v2-preview-img').src = uploadedBase64;
     // 이미 결제된 토큰(재생성 잔여)이 있으면 재결제 없이 바로 생성
     if(hasUsableToken()) return doGenerate();
+    // T1 의상 선택 (유료 경로만 — 무료 경로 제외)
+    if(CFG.t1 && phaseAttire && !attireConfirmed){
+      document.getElementById('v2-attire-preview').src = uploadedBase64;
+      showPhase(phaseAttire);
+      return;
+    }
     showPhase(phasePay);
   }
+  var attireConfirmed = false;
 
   /* ─── T0 무료 생성 (IDPASS 파일럿 — 무료 선진행 → 땡큐 업셀) ───
      서버 /api/idphoto/generate freeTier 분기: fit 확정 프레임 → 매팅+기하 재단, Gemini 미경유.
@@ -3081,7 +3185,7 @@ ${hreflangTags}
   }
 
   document.getElementById('v2-fit-change').addEventListener('click', function(){
-    uploadedBase64 = null; fitResult = null; precheckData = null;
+    uploadedBase64 = null; fitResult = null; precheckData = null; attireConfirmed = false;
     showPhase(phaseUpload);
   });
   document.getElementById('v2-fit-make').addEventListener('click', function(){
@@ -3100,9 +3204,105 @@ ${hreflangTags}
 
   document.getElementById('v2-btn-proceed').addEventListener('click', function(){ runFit(); });
 
+  /* ─── Attire phase (T1 의상 선택) ─── */
+  if(phaseAttire){
+    var ATTIRE_COLORS = {
+      suit: { navy:'#1b2a4a', charcoal:'#36454f', black:'#1a1a1a', lightgray:'#c0c0c0' },
+      shirt: { white:'#f0f0f0', lightblue:'#ADD8E6', lightpink:'#FFB6C1', lightbeige:'#F5DEB3' },
+      tie: { notie:null, navy:'#1b2a4a', wine:'#722f37', black:'#1a1a1a' },
+      blouse: { white:'#f0f0f0', cream:'#FFFDD0', lightblue:'#ADD8E6' },
+      casual: { beige:'#D4B896', navy:'#1b2a4a', charcoal:'#36454f', cream:'#FFFDD0' }
+    };
+    var ATTIRE_LABELS = {
+      suit: { navy:'네이비', charcoal:'차콜', black:'블랙', lightgray:'라이트그레이' },
+      shirt: { white:'화이트', lightblue:'연블루', lightpink:'연핑크', lightbeige:'연베이지' },
+      tie: { notie:'노타이', navy:'네이비', wine:'와인', black:'블랙' },
+      tiePattern: { solid:'민무늬', stripe:'스트라이프' },
+      blouse: { white:'화이트', cream:'크림', lightblue:'연블루' },
+      casual: { beige:'베이지', navy:'네이비', charcoal:'차콜', cream:'크림' }
+    };
+    var attireCardsEl = document.getElementById('v2-attire-cards');
+    var attireSubEl = document.getElementById('v2-attire-sub-options');
+    var attireSummaryEl = document.getElementById('v2-attire-summary');
+
+    function renderAttireSubOptions(){
+      var html = '';
+      var t = attireSelection.type;
+      if(t === 'suit'){
+        html += '<div class="v2-attire-sub-section"><div class="v2-attire-sub-label">수트 컬러</div><div class="v2-attire-chips" data-field="suitColor">';
+        Object.keys(ATTIRE_COLORS.suit).forEach(function(k){ html += '<div class="v2-attire-chip'+(attireSelection.suitColor===k?' selected':'')+'" data-val="'+k+'"><span class="v2-attire-swatch" style="background:'+ATTIRE_COLORS.suit[k]+'"></span>'+ATTIRE_LABELS.suit[k]+'</div>'; });
+        html += '</div></div>';
+        html += '<div class="v2-attire-sub-section"><div class="v2-attire-sub-label">셔츠 컬러</div><div class="v2-attire-chips" data-field="shirtColor">';
+        Object.keys(ATTIRE_COLORS.shirt).forEach(function(k){ html += '<div class="v2-attire-chip'+(attireSelection.shirtColor===k?' selected':'')+'" data-val="'+k+'"><span class="v2-attire-swatch" style="background:'+ATTIRE_COLORS.shirt[k]+'"></span>'+ATTIRE_LABELS.shirt[k]+'</div>'; });
+        html += '</div></div>';
+        html += '<div class="v2-attire-sub-section"><div class="v2-attire-sub-label">넥타이</div><div class="v2-attire-chips" data-field="tieColor">';
+        Object.keys(ATTIRE_COLORS.tie).forEach(function(k){ html += '<div class="v2-attire-chip'+(attireSelection.tieColor===k?' selected':'')+'" data-val="'+k+'">'+(ATTIRE_COLORS.tie[k]?'<span class="v2-attire-swatch" style="background:'+ATTIRE_COLORS.tie[k]+'"></span>':'')+''+ATTIRE_LABELS.tie[k]+'</div>'; });
+        html += '</div></div>';
+        if(attireSelection.tieColor && attireSelection.tieColor !== 'notie'){
+          html += '<div class="v2-attire-sub-section"><div class="v2-attire-sub-label">넥타이 무늬</div><div class="v2-attire-chips" data-field="tiePattern">';
+          Object.keys(ATTIRE_LABELS.tiePattern).forEach(function(k){ html += '<div class="v2-attire-chip'+(attireSelection.tiePattern===k?' selected':'')+'" data-val="'+k+'">'+ATTIRE_LABELS.tiePattern[k]+'</div>'; });
+          html += '</div></div>';
+        }
+      } else if(t === 'blouse'){
+        html += '<div class="v2-attire-sub-section"><div class="v2-attire-sub-label">블라우스 컬러</div><div class="v2-attire-chips" data-field="blouseColor">';
+        Object.keys(ATTIRE_COLORS.blouse).forEach(function(k){ html += '<div class="v2-attire-chip'+(attireSelection.blouseColor===k?' selected':'')+'" data-val="'+k+'"><span class="v2-attire-swatch" style="background:'+ATTIRE_COLORS.blouse[k]+'"></span>'+ATTIRE_LABELS.blouse[k]+'</div>'; });
+        html += '</div></div>';
+      } else if(t === 'casual'){
+        html += '<div class="v2-attire-sub-section"><div class="v2-attire-sub-label">니트 컬러</div><div class="v2-attire-chips" data-field="casualColor">';
+        Object.keys(ATTIRE_COLORS.casual).forEach(function(k){ html += '<div class="v2-attire-chip'+(attireSelection.casualColor===k?' selected':'')+'" data-val="'+k+'"><span class="v2-attire-swatch" style="background:'+ATTIRE_COLORS.casual[k]+'"></span>'+ATTIRE_LABELS.casual[k]+'</div>'; });
+        html += '</div></div>';
+      }
+      attireSubEl.innerHTML = html;
+      updateAttireSummary();
+    }
+
+    function updateAttireSummary(){
+      var t = attireSelection.type;
+      var s = '';
+      if(t === 'asis') s = '현재 의상 유지, 보정만 적용';
+      else if(t === 'suit'){
+        s = (ATTIRE_LABELS.suit[attireSelection.suitColor]||'') + ' 정장';
+        s += ' · ' + (ATTIRE_LABELS.shirt[attireSelection.shirtColor]||'') + ' 셔츠';
+        s += ' · ' + (ATTIRE_LABELS.tie[attireSelection.tieColor]||'');
+        if(attireSelection.tieColor !== 'notie') s += ' ' + (ATTIRE_LABELS.tiePattern[attireSelection.tiePattern]||'');
+      } else if(t === 'blouse'){
+        s = (ATTIRE_LABELS.blouse[attireSelection.blouseColor]||'') + ' 블라우스';
+      } else if(t === 'casual'){
+        s = (ATTIRE_LABELS.casual[attireSelection.casualColor]||'') + ' 니트';
+      }
+      attireSummaryEl.textContent = s;
+    }
+
+    attireCardsEl.addEventListener('click', function(e){
+      var card = e.target.closest('[data-attire]');
+      if(!card) return;
+      attireSelection.type = card.dataset.attire;
+      attireCardsEl.querySelectorAll('.v2-attire-card').forEach(function(c){ c.classList.toggle('selected', c === card); });
+      renderAttireSubOptions();
+    });
+    attireSubEl.addEventListener('click', function(e){
+      var chip = e.target.closest('.v2-attire-chip');
+      if(!chip) return;
+      var field = chip.parentElement.dataset.field;
+      var val = chip.dataset.val;
+      attireSelection[field] = val;
+      renderAttireSubOptions();
+    });
+    document.getElementById('v2-attire-back').addEventListener('click', function(){
+      attireConfirmed = false;
+      showPhase(phaseFit);
+    });
+    document.getElementById('v2-attire-confirm').addEventListener('click', function(){
+      attireConfirmed = true;
+      document.getElementById('v2-preview-img').src = uploadedBase64;
+      showPhase(phasePay);
+    });
+    renderAttireSubOptions();
+  }
+
   /* ─── Pay phase ─── */
   document.getElementById('v2-change-photo').addEventListener('click', function(){
-    uploadedBase64 = null;
+    uploadedBase64 = null; attireConfirmed = false;
     showPhase(phaseUpload);
   });
 
@@ -3306,6 +3506,7 @@ ${hreflangTags}
     var body = { image: uploadedBase64, format: CFG.format, gender: 'm', age: 'adult', slug: CFG.slug };
     if(fitResult && fitResult.frame){ body.fitFrame = fitResult.frame; body.fitMeta = fitResult.meta; body.fitMetrics = fitResult.metrics; }
     if(pay.token) body.paymentToken = pay.token;
+    if(CFG.t1 && attireConfirmed){ var ad = getAttireDesc(); if(ad) body.attireDesc = ad; }
     fetch('/api/idphoto/generate', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify(body)
