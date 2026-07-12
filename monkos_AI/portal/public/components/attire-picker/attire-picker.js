@@ -20,21 +20,22 @@
 
   var UI_TEXT = {
     ko: {
-      title: '의상 선택', gm: '남성', gf: '여성', all: '전체',
+      // gm/gf = 의상 카탈로그 필터 라벨 — 피사체 성별 선언이 아니다 (2026-07-12 작가님: 메인 프롬프트[SUBJECT]와 피커[OUTFIT] 채널 분리)
+      title: '의상 선택', gm: '남성복', gf: '여성복', all: '전체',
       upload: '내 옷 사진 올리기', uploadOn: '내 옷', soon: '곧 열려요',
       notice: 'AI 합성 연출 이미지로 완성돼요',
       warnLight: '⚠ 흰 배경 규격에서는 흰색·아이보리 등 밝은 상의가 배경과 겹쳐 반려될 수 있어요',
       uploadBad: '이 사진은 쓰기 어려워요 — 256px 이상, 5MB 이하 이미지로 다시 올려주세요'
     },
     ja: {
-      title: '衣装を選ぶ', gm: '男性', gf: '女性', all: 'すべて',
+      title: '衣装を選ぶ', gm: 'メンズ', gf: 'レディース', all: 'すべて',
       upload: '自分の服をアップ', uploadOn: 'マイ服', soon: '近日公開',
       notice: 'AI合成による演出イメージです',
       warnLight: '⚠ 白背景の規格では、白・アイボリーなど明るい服は背景と重なり不受理になる場合があります',
       uploadBad: 'この画像は使用できません — 256px以上・5MB以下の画像を選んでください'
     },
     en: {
-      title: 'Outfit', gm: 'Men', gf: 'Women', all: 'All',
+      title: 'Outfit', gm: "Menswear", gf: "Womenswear", all: 'All',
       upload: 'Upload my outfit', uploadOn: 'My outfit', soon: 'Coming soon',
       notice: 'Rendered with AI outfit synthesis',
       warnLight: '⚠ On white-background specs, white/ivory tops may blend into the background and get rejected',
