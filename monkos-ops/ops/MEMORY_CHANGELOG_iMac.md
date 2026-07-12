@@ -7,6 +7,12 @@
 
 ---
 
+## 2026-07-12 (쌍아 세션)
+- **신규**: `project_startup_window_strategy.md` — 스타트업 윈도우 전략(빈틈선점→IP/DAU→exit. 사전트래킹=레이더)
+- **신규**: `project_print_service_integration.md` — 인화 서비스 통합(사진관 기반, 스마트스토어 인화→자체 플로우)
+- **신규**: `project_idpass_router_architecture.md` — portal server.js 분리 + /idpass 허브 라우터 어젠다
+- MEMORY.md 인덱스 3행 추가
+
 ## 2026-07-08 19:35 KST — Fable 5 구독 7/12 연장 반영 — project_model_placement.md 갱신
 - 7/7 이탈 → 7/12 연장 확인. 필터링 강화·토큰 압박 추세 기록.
 
