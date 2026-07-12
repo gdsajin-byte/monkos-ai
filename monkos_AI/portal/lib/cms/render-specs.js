@@ -2453,7 +2453,7 @@ ${hreflangTags}
     t: v2.js,
     pilot: isPilot,
     t1: t1RetouchOn,
-    freeCap: 3,
+    freeCap: process.env.FREE_QUOTA_BYPASS === '1' ? 999999 : 3,
   };
 
   const pageScript = `
