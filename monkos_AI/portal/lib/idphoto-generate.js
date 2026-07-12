@@ -133,15 +133,33 @@ function buildPromptV5(body, model) {
 
 // T1 의상 교체 프롬프트 (2026-07-11 v4 확정 — 작가님·쌍아 공동 튜닝)
 // 원본 → 나노2(의상+보정+배경+넓은화각) → crop-engine. RunPod 매팅 불필요.
-export function buildT1Prompt(attireDesc) {
-  return `${IDENTITY_PRESERVATION}
+export function buildT1Prompt(attireDesc, opts) {
+  const gender = opts?.gender || '';
+  const age = opts?.age || 'adult';
+  const SUBJECT_MAP = {
+    'f-baby':  'This person is a baby girl (infant/toddler).',
+    'f-child': 'This person is a young girl (child, under 12).',
+    'f-teen':  'This person is a teenage girl (13-18).',
+    'f-adult': 'This person is an adult woman.',
+    'm-baby':  'This person is a baby boy (infant/toddler).',
+    'm-child': 'This person is a young boy (child, under 12).',
+    'm-teen':  'This person is a teenage boy (13-18).',
+    'm-adult': 'This person is an adult man.',
+  };
+  const subjectText = SUBJECT_MAP[`${gender}-${age}`] || 'This person is an adult.';
+  const identity = (age === 'baby') ? IDENTITY_PRESERVATION_BABY : IDENTITY_PRESERVATION;
+  const expression = (age === 'baby')
+    ? "[EXPRESSION] Keep the child's natural expression exactly as-is."
+    : '[EXPRESSION] Natural, relaxed, closed-mouth expression. Lips gently together. Soft calm eyes with quiet warmth — NOT stiff, NOT tense, NOT angry-looking. A subtle pleasant resting face, like a calm passport photo. NO smile, NO teeth showing, but NOT frowning either.';
+
+  return `${identity}
 
 [IMAGE-TO-IMAGE TRANSFORM]
 [FORMAT] Official passport/visa photo. White background mandatory.
-[SUBJECT] This person is an adult.
+[SUBJECT] ${subjectText}
 [OUTFIT] ${attireDesc || 'Replace current clothing with a neat dark navy business suit, white dress shirt, no tie. Clothing should look natural and properly fitted.'}
 [BACKGROUND] pure white (#FFFFFF) background
-[EXPRESSION] Natural, relaxed, closed-mouth expression. Lips gently together. Soft calm eyes with quiet warmth — NOT stiff, NOT tense, NOT angry-looking. A subtle pleasant resting face, like a calm passport photo. NO smile, NO teeth showing, but NOT frowning either.
+${expression}
 [CONSTRAINT] Keep the person's face and body exactly the same — only apply the specified styling. DO NOT change apparent gender or age.
 [FRAMING] Do NOT crop tightly. Output a WIDE chest-up portrait: the ENTIRE head fully visible with generous empty space above the hair, both shoulders and upper chest included. Leave plenty of margin — the photo will be cropped later by a separate system.`;
 }

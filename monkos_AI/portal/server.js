@@ -767,7 +767,7 @@ const httpServer = createServer(async (req, res) => {
           && process.env.PILOT_T1_RETOUCH === '1' && slug && FREE_PILOT_SLUGS.has(slug)) {
         try {
           const attireDesc = body.attireDesc || null;
-          const t1Prompt = buildT1Prompt(attireDesc);
+          const t1Prompt = buildT1Prompt(attireDesc, { gender, age });
           // 프레이밍 게이트 (2026-07-10 하네스 3회 실증 → 2026-07-11 서버 탑재): 나노 화각 드리프트로
           // 규격 초과 크롭이 출고되는 사고 차단 — 재크롭 meta를 정본 판정(cropMetaWithinSpec)하고
           // 이탈 시 재생성 1회, 재이탈 시 매팅본 유지(t1-framing-fallback 계측)
