@@ -2569,7 +2569,7 @@ ${hreflangTags}
 
   /* ─── 리다이렉트 생존 저장소 (sessionStorage) ─── */
   function persistOrder(){
-    try{ sessionStorage.setItem(ORDER_KEY, JSON.stringify({ orderId: pay.orderId, token: pay.token, remaining: pay.remaining, slug: CFG.slug, ts: Date.now() })); }catch(e){}
+    try{ sessionStorage.setItem(ORDER_KEY, JSON.stringify({ orderId: pay.orderId, token: pay.token, remaining: pay.remaining, slug: CFG.slug, ts: Date.now(), attire: attireSelection, subject: subjectSelection })); }catch(e){}
   }
   function loadOrder(){
     try{
@@ -3639,6 +3639,8 @@ ${hreflangTags}
       pay.orderId = saved.orderId;
       pay.token = saved.token || null;
       pay.remaining = (typeof saved.remaining === 'number') ? saved.remaining : null;
+      if(saved.attire) Object.assign(attireSelection, saved.attire);
+      if(saved.subject) Object.assign(subjectSelection, saved.subject);
     }
 
     if(mode === 'direct' && pk && oid){
