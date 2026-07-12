@@ -1574,7 +1574,6 @@ a:hover { color: #5a3de6; }
   padding: 8px 12px; margin-top: 12px; text-align: center;
 }
 .v2-subject-section { margin-bottom: 14px; }
-.v2-subject-fit { margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(0,0,0,0.06); }
 .v2-attire-inline { margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid rgba(0,0,0,0.06); }
 @media (max-width: 600px) {
   .v2-attire-cards { grid-template-columns: 1fr 1fr; }
@@ -2245,19 +2244,6 @@ ${hreflangTags}
             <div id="v2-fit-badges" style="display:none;gap:8px;flex-wrap:wrap;margin:8px 0;"></div>
             <div id="v2-fit-note" style="display:none;font-size:12.5px;color:#555;background:#f6f6fb;border-radius:8px;padding:8px 10px;margin:6px 0;"></div>
             <div class="v2-checklist-summary" id="v2-fit-summary"></div>
-            <!-- 피사체 칩 (fit phase — T0/T1 공통) -->
-            <div class="v2-subject-section v2-subject-fit" id="v2-subject-fit" style="display:none;">
-              <div class="v2-attire-sub-label">찍힌 분</div>
-              <div class="v2-attire-chips" data-field="age">
-                <div class="v2-attire-chip selected" data-val="adult">성인</div>
-                <div class="v2-attire-chip" data-val="teen">청소년</div>
-                <div class="v2-attire-chip" data-val="baby">영유아</div>
-              </div>
-              <div class="v2-attire-chips" data-field="gender">
-                <div class="v2-attire-chip" data-val="m">남성</div>
-                <div class="v2-attire-chip" data-val="f">여성</div>
-              </div>
-            </div>
             <div class="v2-action-buttons" id="v2-fit-actions" style="display:none;">
               <button class="v2-action-btn v2-btn-retry" id="v2-fit-change">다른 사진으로</button>
               <button class="v2-action-btn v2-btn-retouch" id="v2-fit-make">${isPilot ? '무료로 만들기' : '이대로 만들기'}</button>
@@ -2854,7 +2840,6 @@ ${hreflangTags}
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({
         image: uploadedBase64, slug: CFG.slug, freeTier: true,
-        gender: subjectSelection.gender || 'm', age: subjectSelection.age || 'adult',
         fitFrame: d.frame, fitMeta: d.meta || null, fitMetrics: d.metrics || null
       })
     }).then(function(r){ return r.json().then(function(j){ return { ok: r.ok, status: r.status, d: j }; }); });
@@ -3320,18 +3305,6 @@ ${hreflangTags}
       renderAttireSubOptions();
     });
   });
-
-  // fit phase에 피사체 칩 표시 (fit actions 표시 시점에 연동)
-  var fitSubjectEl = document.getElementById('v2-subject-fit');
-  var origShowFitActions = null;
-  (function(){
-    var fa = document.getElementById('v2-fit-actions');
-    if(!fa || !fitSubjectEl) return;
-    var obs = new MutationObserver(function(){
-      if(fa.style.display !== 'none') fitSubjectEl.style.display = '';
-    });
-    obs.observe(fa, { attributes: true, attributeFilter: ['style'] });
-  })();
 
   renderAttireSubOptions();
 
