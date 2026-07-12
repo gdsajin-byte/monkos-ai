@@ -639,6 +639,7 @@ const httpServer = createServer(async (req, res) => {
     // throw가 과금+무산출로 남던 공백 봉합 (2026-07-10 적대검증 #2).
     let gateMode = null;
     let refundGate = null;
+    let t1RawForSave = null;
     const fireRefundGate = () => { const fire = refundGate; refundGate = null; if (fire) fire(); };
     try {
       const { parseJsonBody, parseCookies: pc, verifyAuthToken } = await import('./lib/shared/config.js');
@@ -775,6 +776,7 @@ const httpServer = createServer(async (req, res) => {
           for (let attempt = 1; attempt <= 2 && !t1Done; attempt++) {
             const t1Result = await generateIdPhoto({ image: norm.b64, format: format || 'passport', gender, age, model: 'nano-banana-2', userId: gateUserId, framing: 'wide', promptOverride: t1Prompt });
             if (!t1Result) break;
+            t1RawForSave = t1Result;
             const cropRes = await cropToSpec(t1Result, slug);
             if (cropRes && cropRes.image && cropRes.engine === 'facemesh' && cropMetaWithinSpec(cropRes.meta)) {
               finalBase64 = cropRes.image;
@@ -826,7 +828,7 @@ const httpServer = createServer(async (req, res) => {
       }
 
       try {
-        await saveImages('idphoto', gateUserId, slug || format || 'passport', norm.rawBase64, finalBase64);
+        await saveImages('idphoto', gateUserId, slug || format || 'passport', norm.rawBase64, finalBase64, t1RawForSave ? { t1Raw: t1RawForSave } : undefined);
       } catch (e) {
         log(`[IDPhoto] GCS 저장 실패 (무시): ${e.message}`, 'WARNING');
       }
