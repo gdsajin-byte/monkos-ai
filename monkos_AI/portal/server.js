@@ -738,7 +738,8 @@ const httpServer = createServer(async (req, res) => {
       let cropEngine = null;
       let genTrack = null;
       let resultMeta = null;
-      if (slug && matteEnabled()) {
+      const isT1Path = gateMode !== 'free' && process.env.PILOT_T1_RETOUCH === '1' && slug && FREE_PILOT_SLUGS.has(slug);
+      if (slug && matteEnabled() && !isT1Path) {
         try {
           // fit 확정 경로 우선 (ORDER_20260707): 검수 단계 확정 프레임을 기하 재단 — WYSIWYG, FaceMesh 미재실행
           let matteRes = null;
@@ -764,8 +765,7 @@ const httpServer = createServer(async (req, res) => {
       // 파이프라인: 원본 → 나노2(v4: 의상교체+보정+배경+넓은화각) → crop-engine 재크롭.
       // 매팅(RunPod) 불필요 — 나노가 배경 제거+흰배경까지 처리. (2026-07-11 작가님 확정)
       // 실패 시 매팅본(T0 결과) 그대로 — 결제 산출물이 무료보다 나빠지는 경우는 구조적으로 없음.
-      if (gateMode !== 'free'
-          && process.env.PILOT_T1_RETOUCH === '1' && slug && FREE_PILOT_SLUGS.has(slug)) {
+      if (isT1Path) {
         try {
           const attireDesc = body.attireDesc || null;
           log(`[IDPhoto] T1 attireDesc=${attireDesc ? attireDesc.slice(0, 60) : 'null'}, gender=${gender}, age=${age}`);
@@ -1164,7 +1164,10 @@ const httpServer = createServer(async (req, res) => {
         resolvedExt = '.html';
       } else { throw new Error('Not Found'); }
     }
-    const cacheHeader = ['.css', '.js'].includes(resolvedExt) ? 'no-cache' : 'public, max-age=3600';
+    // specs 퍼널 정적 자산(2026-07-12 분리): ?v=K_REVISION 쿼리로 배포 단위 버스트 — URL이 바뀌므로 장기 캐시 안전
+    const isVersionedSpecsAsset = /^\/(?:js|css)\/specs-[\w-]+\.(?:js|css)$/.test(filePath);
+    const cacheHeader = isVersionedSpecsAsset ? 'public, max-age=31536000, immutable'
+      : ['.css', '.js'].includes(resolvedExt) ? 'no-cache' : 'public, max-age=3600';
     res.writeHead(200, {
       'Content-Type': MIME_TYPES[resolvedExt] || 'application/octet-stream',
       'Cache-Control': cacheHeader,
