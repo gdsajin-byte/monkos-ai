@@ -130,7 +130,7 @@ function checkRateLimit(req, bucket, limit, windowMs = 60000) {
  * 서명 쿠키가 정본(Cloud Run 다중 인스턴스 무관), 인메모리 IP 카운터는 쿠키 삭제 우회의 백스톱.
  * 날짜는 KST 기준 — 무료 3회/일의 "일"은 한국 자정에 리셋.
  */
-const FREE_DAILY_CAP = 3;
+const FREE_DAILY_CAP = process.env.FREE_QUOTA_BYPASS === '1' ? 999999 : 3;
 const FREE_PILOT_SLUGS = new Set(['kr-passport']);
 function freeQuotaSign(payload) {
   const secret = process.env.AUTH_SECRET || process.env.LEMONSQUEEZY_WEBHOOK_SECRET || '';
