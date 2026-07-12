@@ -34,6 +34,14 @@
         <option value="ko" selected>ko</option><option value="ja">ja</option><option value="en">en</option>
       </select>
     </label>
+    <label>age
+      <select id="age">
+        <option value="adult" selected>성인</option>
+        <option value="teen">청소년·학생</option>
+        <option value="baby">영유아</option>
+      </select>
+    </label>
+    <label><input type="checkbox" id="inactive"> 전체 그릇 보기 (inactive 포함)</label>
   </div>
 
   <div id="picker-root"></div>
@@ -52,6 +60,7 @@
     payload.textContent = JSON.stringify({
       attireId: sel.id,
       attireDesc: sel.attire_desc,
+      attireImage: sel.attire_image ? '(base64 ' + Math.round(sel.attire_image.length * 3 / 4 / 1024) + 'KB — 나노2 2이미지 i2i 입력)' : null,
       label: sel.labels
     }, null, 2);
   }
@@ -60,13 +69,16 @@
     picker = AttirePicker.mount(root, {
       service: document.getElementById('svc').value,
       lang: document.getElementById('lng').value,
+      age: document.getElementById('age').value,
+      includeInactive: document.getElementById('inactive').checked, // 검수·그릇 확인용
       presetsUrl: './attire-presets.json?v=' + Date.now(), // 데모=살아있는 스펙 — 항상 최신 데이터
       onChange: show,
       onReady: function (p) { show(p.getSelection()); }
     });
   }
-  document.getElementById('svc').addEventListener('change', boot);
-  document.getElementById('lng').addEventListener('change', boot);
+  ['svc', 'lng', 'age', 'inactive'].forEach(function (id) {
+    document.getElementById(id).addEventListener('change', boot);
+  });
   boot();
 </script>
 </body>

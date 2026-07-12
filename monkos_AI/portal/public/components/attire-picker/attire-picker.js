@@ -5,22 +5,44 @@
  * 데이터 정본: ./attire-presets.json (schema_version 2)
  *
  * 의존성 0. 서비스는 use_case 프로파일로 아이템을 조회할 뿐 카테고리를 소유하지 않는다.
- * v1 = 텍스트형: 선택 → attire_desc(영문 [OUTFIT] 프롬프트) 반환. thumbnail 채워지면 이미지 칩 자동 전환(v1.5).
+ * v1 = 텍스트형: 선택 → attire_desc(영문 [OUTFIT] 프롬프트) 반환. thumbnail 채워지면 카드형 자동 전환(v1.5).
+ * 업로드: 이미지를 컴포넌트가 리사이즈·보관(getAttireImage) — 서버 2이미지 i2i 배선은 소비자 몫.
  *
  * 사용:
- *   var picker = AttirePicker.mount(el, { service:'idpass', gender:'m', lang:'ko',
- *     onChange:function(sel){} });
- *   picker.getAttireDesc();   // string | null(기본값=지금 옷 그대로)
- *   picker.getSelection();    // { id, attire_desc, labels, tags } | 기본 옵션
+ *   var picker = AttirePicker.mount(el, { service:'idpass', gender:'m', age:'adult', lang:'ko',
+ *     upload:true, warnLightTop:true, onChange:function(sel){} });
+ *   picker.getAttireDesc();    // string | null(기본값=지금 옷 그대로 / 업로드)
+ *   picker.getAttireImage();   // base64(jpeg, ≤1024px) | null — 업로드 선택 시
+ *   picker.getSelection();     // { id, attire_desc, attire_image, labels, tags }
  */
 (function () {
   'use strict';
 
   var UI_TEXT = {
-    ko: { title: '의상 선택', gm: '남성', gf: '여성', all: '전체', upload: '내 옷 사진 올리기', soon: '곧 열려요', notice: 'AI 합성 연출 이미지로 완성돼요' },
-    ja: { title: '衣装を選ぶ', gm: '男性', gf: '女性', all: 'すべて', upload: '自分の服をアップ', soon: '近日公開', notice: 'AI合成による演出イメージです' },
-    en: { title: 'Outfit', gm: 'Men', gf: 'Women', all: 'All', upload: 'Upload my outfit', soon: 'Coming soon', notice: 'Rendered with AI outfit synthesis' }
+    ko: {
+      title: '의상 선택', gm: '남성', gf: '여성', all: '전체',
+      upload: '내 옷 사진 올리기', uploadOn: '내 옷', soon: '곧 열려요',
+      notice: 'AI 합성 연출 이미지로 완성돼요',
+      warnLight: '⚠ 흰 배경 규격에서는 흰색·아이보리 등 밝은 상의가 배경과 겹쳐 반려될 수 있어요',
+      uploadBad: '이 사진은 쓰기 어려워요 — 256px 이상, 5MB 이하 이미지로 다시 올려주세요'
+    },
+    ja: {
+      title: '衣装を選ぶ', gm: '男性', gf: '女性', all: 'すべて',
+      upload: '自分の服をアップ', uploadOn: 'マイ服', soon: '近日公開',
+      notice: 'AI合成による演出イメージです',
+      warnLight: '⚠ 白背景の規格では、白・アイボリーなど明るい服は背景と重なり不受理になる場合があります',
+      uploadBad: 'この画像は使用できません — 256px以上・5MB以下の画像を選んでください'
+    },
+    en: {
+      title: 'Outfit', gm: 'Men', gf: 'Women', all: 'All',
+      upload: 'Upload my outfit', uploadOn: 'My outfit', soon: 'Coming soon',
+      notice: 'Rendered with AI outfit synthesis',
+      warnLight: '⚠ On white-background specs, white/ivory tops may blend into the background and get rejected',
+      uploadBad: 'This image cannot be used — please pick one at least 256px and under 5MB'
+    }
   };
+
+  var LIGHT_COLORS = ['white', 'cream']; // 흰 배경 반려 주의 대상 (color.primary)
 
   var presetsCache = {}; // presetsUrl → Promise<data>
 
@@ -41,15 +63,38 @@
     return n;
   }
 
+  // 업로드 이미지 클라 리사이즈 — 최대 변 1024px, jpeg. 콜백(dataURL) / 실패 시 null
+  function resizeImage(file, cb) {
+    var img = new Image();
+    var url = URL.createObjectURL(file);
+    img.onload = function () {
+      URL.revokeObjectURL(url);
+      if (img.width < 256 || img.height < 256) return cb(null); // 저해상 반려 (쌍아 §4-4)
+      var scale = Math.min(1, 1024 / Math.max(img.width, img.height));
+      var canvas = document.createElement('canvas');
+      canvas.width = Math.round(img.width * scale);
+      canvas.height = Math.round(img.height * scale);
+      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+      cb(canvas.toDataURL('image/jpeg', 0.88));
+    };
+    img.onerror = function () { URL.revokeObjectURL(url); cb(null); };
+    img.src = url;
+  }
+
   function Picker(container, opts) {
     this.container = container;
     this.opts = opts || {};
     this.lang = this.opts.lang || 'ko';
+    this.age = this.opts.age || 'adult';          // adult | teen | baby — 연령은 세그먼트가 아닌 컨텍스트 주입
     this.gender = this.opts.gender && this.opts.gender !== 'all' ? this.opts.gender : 'm';
-    this.genderLocked = !!(this.opts.gender && this.opts.gender !== 'all');
+    this.genderLocked = !!(this.opts.gender && this.opts.gender !== 'all') || this.age === 'baby'; // 영유아 = 성별 축 무의미
     this.category = 'all';
+    this.uploadEnabled = this.opts.upload !== false;          // 기본 활성 (작가님 2026-07-12: 나노2에 이미지만 보내면 되는 구조)
+    this.warnLightTop = this.opts.warnLightTop !== false;     // 밝은 상의 반려 주의 (흰 배경 규격 소비자는 켠 채 유지)
+    this.includeInactive = !!this.opts.includeInactive;       // 데모·검수용 — 실서비스 기본 false
     this.data = null;
-    this.selection = null; // null = default_option
+    this.selection = null;   // null = default_option
+    this.uploadItem = null;  // {id:'upload', attire_image, thumbnail(dataURL), isUpload:true}
     this.t = UI_TEXT[this.lang] || UI_TEXT.ko;
 
     container.classList.add('atp');
@@ -74,19 +119,32 @@
     return (prof && prof.use_case) || [];
   };
 
+  Picker.prototype.ageMatch = function (it) {
+    var ar = it.tags.age_range || '';
+    if (this.age === 'baby') return ar === 'baby';
+    if (this.age === 'teen') return ar.indexOf('teen') === 0;   // teen, teen-20s
+    return ar !== 'baby';                                        // adult: 영유아 전용만 제외
+  };
+
   Picker.prototype.visibleItems = function () {
+    var self = this;
     var uc = this.useCases();
     var g = this.gender;
     return (this.data.items || []).filter(function (it) {
-      if (!it.active) return false;
-      if (it.tags.gender !== 'unisex' && it.tags.gender !== g) return false;
+      if (!it.active && !self.includeInactive) return false;
+      if (!self.ageMatch(it)) return false;
+      if (self.age !== 'baby' && it.tags.gender !== 'unisex' && it.tags.gender !== g) return false;
       if (uc.length && !(it.tags.use_case || []).some(function (u) { return uc.indexOf(u) !== -1; })) return false;
       return true;
     }).sort(function (a, b) { return (a.sort_order || 0) - (b.sort_order || 0); });
   };
 
+  Picker.prototype.isLightTop = function (item) {
+    return !!(item && item.tags && LIGHT_COLORS.indexOf(item.tags.color.primary) !== -1);
+  };
+
   Picker.prototype.select = function (item) {
-    this.selection = item; // null = 기본
+    this.selection = item; // null = 기본 / uploadItem 가능
     var boxes = this.container.querySelectorAll('.atp-item');
     var selId = item ? item.id : 'original';
     boxes.forEach(function (b) {
@@ -95,29 +153,43 @@
       b.setAttribute('aria-checked', on ? 'true' : 'false');
       b.tabIndex = on ? 0 : -1;
     });
+    this.updateWarn();
     var sel = this.getSelection();
     if (typeof this.opts.onChange === 'function') this.opts.onChange(sel);
     this.container.dispatchEvent(new CustomEvent('attire:change', { detail: sel, bubbles: true }));
   };
 
-  Picker.prototype.getSelection = function () {
-    if (this.selection) {
-      return { id: this.selection.id, attire_desc: this.selection.attire_desc, labels: this.selection.labels, tags: this.selection.tags };
-    }
-    var d = (this.data && this.data.default_option) || { id: 'original', labels: {}, attire_desc: null };
-    return { id: d.id, attire_desc: d.attire_desc, labels: d.labels, tags: null };
+  // 반려 주의 문구 — 밝은 프리셋 선택 또는 업로드 선택 시 노출
+  Picker.prototype.updateWarn = function () {
+    if (!this.warnEl) return;
+    var s = this.selection;
+    var show = this.warnLightTop && s && (s.isUpload || this.isLightTop(s));
+    this.warnEl.textContent = show ? this.t.warnLight : '';
+    this.warnEl.style.display = show ? '' : 'none';
   };
 
-  Picker.prototype.getAttireDesc = function () {
-    return this.getSelection().attire_desc || null;
+  Picker.prototype.getSelection = function () {
+    if (this.selection) {
+      return {
+        id: this.selection.id,
+        attire_desc: this.selection.attire_desc || null,
+        attire_image: this.selection.isUpload ? this.selection.attire_image : null,
+        labels: this.selection.labels, tags: this.selection.tags || null
+      };
+    }
+    var d = (this.data && this.data.default_option) || { id: 'original', labels: {}, attire_desc: null };
+    return { id: d.id, attire_desc: d.attire_desc, attire_image: null, labels: d.labels, tags: null };
   };
+
+  Picker.prototype.getAttireDesc = function () { return this.getSelection().attire_desc || null; };
+  Picker.prototype.getAttireImage = function () { return this.getSelection().attire_image || null; };
 
   Picker.prototype.render = function () {
     var self = this, t = this.t, lang = this.lang;
     var c = this.container;
     c.innerHTML = '';
 
-    // 헤더 행: 타이틀 + 성별 세그먼트
+    // 헤더 행: 타이틀 + 성별 세그먼트 (영유아 모드는 성별 축 숨김)
     var head = el('div', 'atp-head');
     var title = el('span', 'atp-title');
     title.textContent = t.title;
@@ -143,7 +215,7 @@
 
     var items = this.visibleItems();
 
-    // 카테고리 칩 (현재 성별·유스케이스에 존재하는 것만, 2개 이상일 때만 노출)
+    // 카테고리 칩 (현재 필터에 존재하는 것만, 2개 이상일 때만 노출)
     var cats = (this.data.categories || []).filter(function (cat) {
       return items.some(function (it) { return it.tags.category === cat.id; });
     }).sort(function (a, b) { return (a.order || 0) - (b.order || 0); });
@@ -173,19 +245,59 @@
     c.appendChild(this.itemsRow);
     this.renderItems();
 
-    // 하단: 업로드 슬롯(v3 자리) + 연출 고지
+    // 반려 주의 문구 영역 (선택 반응형)
+    this.warnEl = el('div', 'atp-warn');
+    this.warnEl.style.display = 'none';
+    c.appendChild(this.warnEl);
+
+    // 하단: 업로드 + 연출 고지
     var foot = el('div', 'atp-foot');
-    var up = el('button', 'atp-upload', { type: 'button', disabled: 'disabled' });
-    up.textContent = t.upload + ' · ' + t.soon;
-    foot.appendChild(up);
+    if (this.uploadEnabled) {
+      var fileInput = el('input', 'atp-file', { type: 'file', accept: 'image/*' });
+      fileInput.style.display = 'none';
+      var up = el('button', 'atp-upload atp-upload-on', { type: 'button' });
+      up.textContent = t.upload;
+      up.addEventListener('click', function () { fileInput.click(); });
+      fileInput.addEventListener('change', function () {
+        var f = fileInput.files && fileInput.files[0];
+        fileInput.value = '';
+        if (!f) return;
+        if (f.size > 5 * 1024 * 1024) return self.uploadFail();
+        resizeImage(f, function (dataUrl) {
+          if (!dataUrl) return self.uploadFail();
+          self.uploadItem = {
+            id: 'upload', isUpload: true,
+            attire_image: dataUrl.split(',')[1],  // base64 본문 — 서버 2이미지 i2i 입력
+            thumbnail: dataUrl,                    // 칩 미리보기
+            attire_desc: null,
+            labels: { ko: UI_TEXT.ko.uploadOn, ja: UI_TEXT.ja.uploadOn, en: UI_TEXT.en.uploadOn }
+          };
+          self.renderItems();
+          self.select(self.uploadItem);
+        });
+      });
+      foot.appendChild(up);
+      foot.appendChild(fileInput);
+    } else {
+      var upOff = el('button', 'atp-upload', { type: 'button', disabled: 'disabled' });
+      upOff.textContent = t.upload + ' · ' + t.soon;
+      foot.appendChild(upOff);
+    }
     var notice = el('span', 'atp-notice');
     notice.textContent = t.notice;
     foot.appendChild(notice);
     c.appendChild(foot);
+    this.updateWarn();
+  };
+
+  Picker.prototype.uploadFail = function () {
+    if (!this.warnEl) return;
+    this.warnEl.textContent = this.t.uploadBad;
+    this.warnEl.style.display = '';
   };
 
   Picker.prototype.renderItems = function () {
-    var self = this, lang = this.lang;
+    var self = this;
     var row = this.itemsRow;
     row.innerHTML = '';
     var items = this.visibleItems().filter(function (it) {
@@ -201,6 +313,11 @@
     items.forEach(function (it) {
       row.appendChild(self.itemChip(it, self.selection && self.selection.id === it.id));
     });
+
+    // 업로드된 내 옷 칩 — 항상 마지막
+    if (this.uploadItem) {
+      row.appendChild(this.itemChip(this.uploadItem, this.selection && this.selection.id === 'upload'));
+    }
 
     // 키보드 좌우 이동 (radiogroup)
     row.addEventListener('keydown', function (e) {
@@ -224,7 +341,7 @@
 
     var visual = el('span', 'atp-visual');
     if (it.thumbnail) {
-      chip.classList.add('atp-has-thumb'); // 상품컷 존재 → 카드형 칩 (v1.5)
+      chip.classList.add('atp-has-thumb'); // 상품컷/업로드 → 카드형 칩 (v1.5)
       var img = el('img', 'atp-thumb', { src: it.thumbnail, alt: '', loading: 'lazy' });
       visual.appendChild(img);
     } else if (it.isDefault) {
@@ -238,11 +355,19 @@
     }
     chip.appendChild(visual);
 
+    // 밝은 상의 반려 주의 미니 배지
+    if (this.warnLightTop && !it.isDefault && !it.isUpload && this.isLightTop(it)) {
+      var badge = el('span', 'atp-badge-warn', { title: this.t.warnLight });
+      badge.textContent = '⚠';
+      chip.appendChild(badge);
+    }
+
     var lab = el('span', 'atp-label');
     lab.textContent = (it.labels && it.labels[lang]) || it.id;
     chip.appendChild(lab);
 
     chip.addEventListener('click', function () {
+      if (it.isUpload) return self.select(self.uploadItem);
       self.select(it.isDefault ? null : self.data.items.find(function (x) { return x.id === it.id; }));
     });
     return chip;

@@ -606,6 +606,63 @@
       "vendor": null
     },
     {
+      "id": "b_shirt_skyblue_baby_01",
+      "active": false,
+      "sort_order": 300,
+      "tags": {
+        "gender": "unisex", "category": "shirt", "subcategory": null,
+        "accessory": { "tie": null }, "fit": "regular", "material": "cotton",
+        "color": { "primary": "light-blue", "secondary": null, "tone": "cool" },
+        "pattern": "solid", "neckline": "stand-collar", "season": "all",
+        "formality": "semi-formal", "age_range": "baby",
+        "trend_tags": ["베이비"],
+        "use_case": ["passport", "id-photo"]
+      },
+      "attire_desc": "Replace current clothing with a soft sky blue baby collared shirt, simple and neat, appropriate for an infant passport photo. Clothing must look natural and properly fitted for a baby.",
+      "swatch": { "primary": "#BDD7EE", "secondary": "#FFFFFF" },
+      "image_gcs": null, "thumbnail": null, "source": null, "source_ref": null,
+      "labels": { "ko": "베이비 스카이블루 셔츠", "ja": "ベビー スカイブルーシャツ", "en": "Baby Sky Blue Shirt" },
+      "vendor": null
+    },
+    {
+      "id": "b_knit_graylight_baby_02",
+      "active": false,
+      "sort_order": 310,
+      "tags": {
+        "gender": "unisex", "category": "knit", "subcategory": null,
+        "accessory": { "tie": null }, "fit": "regular", "material": "cotton",
+        "color": { "primary": "gray-light", "secondary": null, "tone": "neutral" },
+        "pattern": "solid", "neckline": "round", "season": "all",
+        "formality": "casual", "age_range": "baby",
+        "trend_tags": ["베이비"],
+        "use_case": ["passport", "id-photo"]
+      },
+      "attire_desc": "Replace current clothing with a plain light gray round-neck baby knit top, simple and neat, appropriate for an infant passport photo. Clothing must look natural and properly fitted for a baby.",
+      "swatch": { "primary": "#C7CBD1", "secondary": "#D9DCE1" },
+      "image_gcs": null, "thumbnail": null, "source": null, "source_ref": null,
+      "labels": { "ko": "베이비 그레이 니트", "ja": "ベビー グレーニット", "en": "Baby Gray Knit" },
+      "vendor": null
+    },
+    {
+      "id": "b_cardigan_cream_baby_03",
+      "active": false,
+      "sort_order": 320,
+      "tags": {
+        "gender": "unisex", "category": "cardigan", "subcategory": null,
+        "accessory": { "tie": null }, "fit": "regular", "material": "cotton",
+        "color": { "primary": "cream", "secondary": "white", "tone": "warm" },
+        "pattern": "solid", "neckline": "round", "season": "all",
+        "formality": "casual", "age_range": "baby",
+        "trend_tags": ["베이비"],
+        "use_case": ["passport", "id-photo"]
+      },
+      "attire_desc": "Replace current clothing with a cream baby cardigan over a plain inner top, simple and neat, appropriate for an infant passport photo. Clothing must look natural and properly fitted for a baby.",
+      "swatch": { "primary": "#F1E8D8", "secondary": "#FFFFFF" },
+      "image_gcs": null, "thumbnail": null, "source": null, "source_ref": null,
+      "labels": { "ko": "베이비 크림 가디건", "ja": "ベビー クリームカーディガン", "en": "Baby Cream Cardigan" },
+      "vendor": null
+    },
+    {
       "id": "f_cardigan_beige_round_16",
       "active": false,
       "sort_order": 200,

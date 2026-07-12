@@ -87,7 +87,20 @@
   background: transparent; color: var(--atp-sub); font-size: 12px;
   padding: 6px 10px; cursor: not-allowed;
 }
+.atp-upload.atp-upload-on { cursor: pointer; color: var(--atp-text); border-color: var(--atp-sub); }
+.atp-upload.atp-upload-on:hover { border-color: var(--atp-border-on); color: var(--atp-border-on); }
 .atp-notice { font-size: 11px; color: var(--atp-sub); }
+
+/* 반려 주의 — 밝은 상의·업로드 선택 시 */
+.atp-warn {
+  margin-top: 8px; font-size: 12px; line-height: 1.45; color: #8a6d1a;
+  background: #fdf6e3; border: 1px solid #f0e3bd; border-radius: 8px; padding: 7px 10px;
+}
+.atp-item { position: relative; }
+.atp-badge-warn {
+  position: absolute; top: 4px; right: 4px; font-size: 11px; line-height: 1;
+  color: #b08514;
+}
 
 /* 데스크톱(≥720px): 그리드 전환 */
 @media (min-width: 720px) {
