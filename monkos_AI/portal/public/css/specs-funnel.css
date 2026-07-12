@@ -1,0 +1,409 @@
+/* specs-funnel.css — render-specs.js에서 분리 (2026-07-12 퍼널 분리 수술, 원본 상수 SPECS_V2_STYLE) */
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
+body { background: #ffffff !important; color: #1a1a1a !important; font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif !important; }
+.container { max-width: 1000px; }
+a { color: #6c4fff; }
+a:hover { color: #5a3de6; }
+
+.v2-wrap { max-width: 960px; margin: 0 auto; padding: 40px 24px 0; }
+.v2-breadcrumb { font-size: 13px; color: #888; margin-bottom: 16px; }
+.v2-breadcrumb a { color: #6c4fff; text-decoration: none; }
+.v2-breadcrumb a:hover { text-decoration: underline; }
+.v2-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.v2-tag {
+  background: rgba(108,79,255,0.08); color: #6c4fff; padding: 5px 14px;
+  border-radius: 20px; font-size: 13px; font-weight: 600; text-decoration: none;
+  border: 1px solid rgba(108,79,255,0.15);
+}
+.v2-tag:hover { background: rgba(108,79,255,0.15); }
+.v2-header h1 { font-size: 36px; font-weight: 800; color: #1a1a1a; margin-bottom: 8px; line-height: 1.3; }
+.v2-header .v2-sub { font-size: 15px; color: #888; margin-bottom: 40px; }
+
+/* 핵심 규격 듀오 — 이미지 박스·수치 박스 분리 (2026-07-11 작가님: 웹 좌수치/우이미지, 모바일 이미지 우선)
+   DOM 순서 = 이미지 먼저(모바일 자연 순서), 데스크톱은 order로 수치를 좌측에 */
+.v2-spec-duo {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 48px;
+  align-items: stretch;
+}
+.v2-half-card {
+  background: #ffffff; border: 1px solid rgba(0,0,0,0.08); border-radius: 16px;
+  padding: 28px; box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+}
+.v2-card-specs { order: 1; display: flex; flex-direction: column; }
+/* 도해 카드 = 도해 자체 — 패딩 0 풀블리드로 박스 속 박스감 제거 (2026-07-11 작가님 v5) */
+.v2-card-diagram { order: 2; padding: 0; overflow: hidden; display: flex; align-items: stretch; justify-content: center; }
+.v2-diagram-img {
+  width: 100%; height: 100%; aspect-ratio: 1/1; display: block; object-fit: cover;
+}
+/* 수치 박스 탭 — 규격 | 상세 규정 | 반려 사유 */
+.v2-tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.v2-tab {
+  border: 1px solid rgba(0,0,0,0.1); background: #fff; color: #555;
+  font-size: 13.5px; font-weight: 600; padding: 8px 14px; border-radius: 999px;
+  cursor: pointer; font-family: inherit; line-height: 1.2;
+}
+.v2-tab.on { background: #6c4fff; border-color: #6c4fff; color: #fff; }
+.v2-tabpane[hidden] { display: none; }
+.v2-tabpane { flex: 1; }
+.v2-source {
+  margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(0,0,0,0.05);
+  font-size: 13px; color: #888;
+}
+.v2-source a { color: #6c4fff; font-weight: 600; text-decoration: none; }
+.v2-source a:hover { text-decoration: underline; }
+.v2-spec-table { width: 100%; border-collapse: collapse; }
+.v2-spec-table tr { border-bottom: 1px solid rgba(0,0,0,0.05); }
+.v2-spec-table tr:last-child { border-bottom: none; }
+.v2-spec-table th {
+  text-align: left; padding: 12px 0; font-size: 14px; color: #888;
+  font-weight: 500; width: 110px; vertical-align: top;
+}
+.v2-spec-table td { padding: 12px 0; font-size: 15px; color: #1a1a1a; font-weight: 600; }
+.v2-badge {
+  display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 4px;
+  font-weight: 600; margin-left: 8px; vertical-align: middle;
+}
+.v2-badge-a { background: rgba(108,79,255,0.1); color: #6c4fff; }
+.v2-badge-req { background: rgba(239,68,68,0.1); color: #dc2626; }
+
+/* 3스텝 플로우 */
+.v2-steps-section {
+  background: #f7f7fb; border-radius: 20px; padding: 40px 32px;
+  margin-bottom: 48px;
+}
+.v2-steps-title { font-size: 24px; font-weight: 800; color: #1a1a1a; margin-bottom: 6px; }
+.v2-steps-sub { font-size: 14px; color: #888; margin-bottom: 8px; }
+.v2-steps-badge {
+  display: inline-block; background: rgba(108,79,255,0.1); color: #6c4fff;
+  font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 12px;
+  margin-bottom: 28px;
+}
+.v2-check-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; }
+.v2-photo-side { display: flex; flex-direction: column; align-items: center; }
+.v2-checklist-side {
+  background: #fff; border: 1px solid rgba(0,0,0,0.08); border-radius: 14px;
+  padding: 24px; min-height: 280px;
+}
+.v2-checklist-title { font-size: 14px; font-weight: 700; color: #1a1a1a; margin-bottom: 16px; letter-spacing: 0.5px; }
+.v2-checklist-loading { display: flex; align-items: center; gap: 10px; padding: 16px 0; }
+.v2-checklist-items { list-style: none; padding: 0; margin: 0; }
+.v2-checklist-items li {
+  display: flex; align-items: center; gap: 10px; padding: 8px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.04); font-size: 14px; color: #333;
+}
+.v2-checklist-items li:last-child { border-bottom: none; }
+.v2-check-icon { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+.v2-check-pass { background: rgba(34,197,94,0.12); color: #16a34a; }
+.v2-check-fail { background: rgba(239,68,68,0.12); color: #dc2626; }
+.v2-check-warn { background: rgba(245,158,11,0.12); color: #d97706; }
+.v2-checklist-summary { margin-top: 16px; padding: 12px; border-radius: 8px; font-size: 13px; font-weight: 600; text-align: center; }
+.v2-summary-pass { background: rgba(34,197,94,0.08); color: #16a34a; }
+.v2-summary-fail { background: rgba(239,68,68,0.08); color: #dc2626; }
+.v2-action-buttons { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+.v2-action-btn {
+  flex: 1; min-width: 100px; padding: 12px 8px; border-radius: 10px; font-size: 13px;
+  font-weight: 600; cursor: pointer; border: 1px solid rgba(0,0,0,0.1);
+  background: #fff; color: #333; transition: all 0.2s; text-align: center;
+}
+.v2-action-btn:hover { border-color: #6c4fff; color: #6c4fff; }
+.v2-btn-retouch { background: #6c4fff; color: #fff !important; border-color: #6c4fff; }
+.v2-btn-retouch:hover { background: #5a3de6; }
+.v2-btn-premier { background: #1a1a1a; color: #fff !important; border-color: #1a1a1a; }
+.v2-btn-premier:hover { background: #333; }
+.v2-credit { font-size: 11px; opacity: 0.8; margin-left: 4px; }
+
+/* Phase 2: 결제 */
+.v2-pay-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; }
+.v2-pay-preview { text-align: center; }
+.v2-pay-preview img { max-width: 200px; max-height: 260px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.08); }
+.v2-change-photo { margin-top: 12px; background: none; border: 1px solid rgba(0,0,0,0.15); border-radius: 8px; padding: 6px 16px; font-size: 12px; color: #666; cursor: pointer; }
+.v2-change-photo:hover { border-color: #6c4fff; color: #6c4fff; }
+.v2-pay-options { display: flex; flex-direction: column; gap: 12px; }
+.v2-pay-btn {
+  width: 100%; padding: 20px 24px; border-radius: 14px; cursor: pointer;
+  text-align: left; border: 2px solid rgba(0,0,0,0.08); background: #fff; transition: all 0.2s;
+}
+.v2-pay-btn:hover { border-color: #6c4fff; box-shadow: 0 4px 16px rgba(108,79,255,0.1); }
+.v2-pay-instant { border-color: #6c4fff; }
+.v2-toss-widget { margin-top: 16px; background: #fff; border-radius: 12px; padding: 4px 0; }
+.v2-pay-title { font-size: 16px; font-weight: 700; color: #1a1a1a; margin-bottom: 4px; }
+.v2-pay-price { font-size: 24px; font-weight: 800; color: #6c4fff; margin-bottom: 6px; }
+.v2-pay-desc { font-size: 12px; color: #888; }
+.v2-pay-divider { text-align: center; color: #ccc; font-size: 12px; position: relative; }
+.v2-pay-divider span { background: #f5f5f7; padding: 0 12px; position: relative; z-index: 1; }
+.v2-pay-divider::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; border-top: 1px solid #e5e5e5; }
+
+/* Phase 2.7: 의상 선택 */
+.v2-attire-title { font-size: 16px; font-weight: 700; color: #1a1a1a; margin-bottom: 4px; }
+.v2-attire-sub { font-size: 13px; color: #888; margin-bottom: 16px; }
+.v2-attire-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+.v2-attire-card {
+  padding: 14px 12px; border-radius: 12px; border: 2px solid rgba(0,0,0,0.08);
+  background: #fff; cursor: pointer; text-align: center; transition: all 0.2s;
+}
+.v2-attire-card:hover { border-color: #6c4fff; }
+.v2-attire-card.selected { border-color: #6c4fff; background: rgba(108,79,255,0.04); }
+.v2-attire-card-icon { font-size: 22px; margin-bottom: 4px; }
+.v2-attire-card-label { font-size: 13px; font-weight: 600; color: #333; }
+.v2-attire-sub-section { margin-top: 12px; }
+.v2-attire-sub-label { font-size: 12px; font-weight: 600; color: #888; margin-bottom: 8px; }
+.v2-attire-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.v2-attire-chip {
+  display: flex; align-items: center; gap: 6px; padding: 7px 14px;
+  border-radius: 20px; border: 1.5px solid rgba(0,0,0,0.1);
+  background: #fff; cursor: pointer; font-size: 12px; font-weight: 500; color: #333;
+  transition: all 0.15s;
+}
+.v2-attire-chip:hover { border-color: #6c4fff; }
+.v2-attire-chip.selected { border-color: #6c4fff; background: rgba(108,79,255,0.06); color: #6c4fff; font-weight: 600; }
+.v2-attire-swatch {
+  width: 14px; height: 14px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.12);
+  flex-shrink: 0;
+}
+.v2-attire-summary {
+  font-size: 12px; color: #555; background: #f6f6fb; border-radius: 8px;
+  padding: 8px 12px; margin-top: 12px; text-align: center;
+}
+.v2-subject-section { margin-bottom: 14px; }
+.v2-attire-inline { margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid rgba(0,0,0,0.06); }
+@media (max-width: 600px) {
+  .v2-attire-cards { grid-template-columns: 1fr 1fr; }
+}
+
+/* Phase 3: 생성 중 */
+.v2-generating { text-align: center; padding: 60px 0; }
+.v2-gen-text { font-size: 16px; font-weight: 600; color: #1a1a1a; margin-top: 16px; }
+.v2-gen-sub { font-size: 13px; color: #888; margin-top: 6px; }
+
+/* Phase 4: 결과 */
+.v2-result-grid { display: flex; align-items: center; justify-content: center; gap: 24px; margin-bottom: 24px; }
+.v2-result-before, .v2-result-after { text-align: center; }
+.v2-result-label { font-size: 12px; font-weight: 600; color: #888; margin-bottom: 8px; }
+.v2-result-before img, .v2-result-after img { max-width: 180px; max-height: 240px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.08); }
+.v2-result-arrow { font-size: 28px; color: #ccc; font-weight: 300; }
+.v2-result-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.v2-download-btn {
+  background: #6c4fff; color: #fff; border: none; padding: 14px 40px;
+  border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer;
+}
+.v2-download-btn:hover { background: #5a3de6; }
+
+/* 스텝1 — 업로드 */
+.v2-upload-zone {
+  width: 100%; border: 2px dashed rgba(108,79,255,0.25); border-radius: 12px;
+  padding: 32px 16px; cursor: pointer; transition: border-color 0.2s, background 0.2s;
+  display: flex; flex-direction: column; align-items: center;
+}
+.v2-upload-zone:hover, .v2-upload-zone.dragover { border-color: #6c4fff; background: rgba(108,79,255,0.03); }
+.v2-upload-zone .v2-upload-icon { font-size: 32px; color: #bbb; margin-bottom: 8px; }
+.v2-upload-zone .v2-upload-btn {
+  padding: 8px 20px; border: 1.5px solid #6c4fff; border-radius: 8px;
+  color: #6c4fff; font-size: 13px; font-weight: 600; background: none; cursor: pointer;
+  margin-top: 8px;
+}
+.v2-upload-zone .v2-upload-hint { font-size: 11px; color: #bbb; margin-top: 6px; }
+/* 업로드 존 단독 — 양옆 셀카/프로필 예시 제거 (2026-07-11 작가님: 잡스러움) */
+.v2-upload-with-guides { display: flex; align-items: center; justify-content: center; }
+.v2-upload-guide { margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(0,0,0,0.06); }
+.v2-guide-items { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+.v2-guide-items span { font-size: 11px; color: #888; background: rgba(108,79,255,0.06); padding: 3px 8px; border-radius: 10px; }
+@media (max-width: 700px) {
+}
+
+/* 스텝2 — 프리뷰 */
+.v2-preview-box {
+  width: 140px; height: 180px; background: #f0f1f5; border-radius: 8px;
+  border: 1px solid rgba(0,0,0,0.06); position: relative;
+  display: flex; align-items: center; justify-content: center; overflow: hidden;
+}
+.v2-preview-box img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.v2-preview-overlay {
+  position: absolute; top: 8px; right: 8px; background: rgba(108,79,255,0.85);
+  color: #fff; font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 4px;
+}
+.v2-preview-check {
+  position: absolute; bottom: 8px; right: 8px; width: 24px; height: 24px;
+  background: #22c55e; border-radius: 50%; color: #fff; font-size: 14px;
+  display: none; align-items: center; justify-content: center;
+}
+.v2-preview-check.show { display: flex; }
+
+/* 스텝3 — 다운로드 (결과 Phase에서 항상 표시) */
+
+/* 스텝 로딩 */
+.v2-step-loading {
+  display: none; flex-direction: column; align-items: center; gap: 10px;
+}
+.v2-step-loading.show { display: flex; }
+.v2-spinner {
+  width: 32px; height: 32px; border: 3px solid rgba(108,79,255,0.2);
+  border-top-color: #6c4fff; border-radius: 50%; animation: v2spin 0.8s linear infinite;
+}
+@keyframes v2spin { to { transform: rotate(360deg); } }
+
+/* 상세규정·반려사유 리스트 — 수치 박스 탭 내부 (구 하단 2컬럼 아코디언에서 이동, 2026-07-11) */
+.v2-detail-list { list-style: none; padding: 0; margin: 0; }
+.v2-detail-list li {
+  padding: 10px 0; font-size: 14px; color: #555; line-height: 1.7;
+  border-bottom: 1px solid rgba(0,0,0,0.04); padding-left: 16px; position: relative;
+}
+.v2-detail-list li:last-child { border-bottom: none; }
+.v2-detail-list li::before {
+  content: ''; position: absolute; left: 0; top: 16px;
+  width: 5px; height: 5px; border-radius: 50%; background: #6c4fff;
+}
+.v2-reject-list { list-style: none; padding: 0; margin: 0; counter-reset: rj; }
+.v2-reject-list li {
+  padding: 12px 0; border-bottom: 1px solid rgba(0,0,0,0.04);
+  counter-increment: rj;
+}
+.v2-reject-list li:last-child { border-bottom: none; }
+.v2-rj-title {
+  font-size: 15px; font-weight: 700; color: #1a1a1a; margin-bottom: 2px;
+  display: flex; align-items: center; gap: 8px;
+}
+.v2-rj-title::before {
+  content: counter(rj); flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%;
+  background: rgba(239,68,68,0.08); color: #dc2626; font-size: 12px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+.v2-rj-desc { font-size: 13px; color: #888; padding-left: 30px; }
+
+/* 같은 규격 서류 — 롤다운 (2026-07-11 작가님: 카드 상시 노출 대신 접기) */
+.v2-same-section { margin-bottom: 48px; }
+.v2-same-acc {
+  background: #ffffff; border: 1px solid rgba(0,0,0,0.08); border-radius: 16px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.03);
+}
+.v2-same-acc summary {
+  list-style: none; cursor: pointer; user-select: none;
+  padding: 22px 28px; display: flex; align-items: center; gap: 10px;
+}
+.v2-same-acc summary::-webkit-details-marker { display: none; }
+.v2-same-acc summary h2 { font-size: 19px; font-weight: 800; color: #1a1a1a; margin: 0; }
+.v2-same-count {
+  background: rgba(108,79,255,0.1); color: #6c4fff; font-size: 12.5px; font-weight: 700;
+  padding: 3px 10px; border-radius: 999px;
+}
+.v2-same-acc summary::after {
+  content: '\\25BE'; margin-left: auto; color: #aaa; font-size: 14px; transition: transform 0.25s;
+}
+.v2-same-acc[open] summary::after { transform: rotate(180deg); }
+.v2-same-body { padding: 0 28px 24px; }
+.v2-same-sub { font-size: 14px; color: #888; margin-bottom: 16px; }
+.v2-same-grid { display: flex; gap: 12px; flex-wrap: wrap; }
+.v2-same-card {
+  background: #ffffff; border: 1px solid rgba(0,0,0,0.08); border-radius: 12px;
+  padding: 16px 20px; text-decoration: none; color: #1a1a1a;
+  display: flex; align-items: center; gap: 10px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.v2-same-card:hover { border-color: rgba(108,79,255,0.3); box-shadow: 0 2px 10px rgba(108,79,255,0.08); }
+.v2-same-icon { font-size: 20px; }
+.v2-same-name { font-size: 14px; font-weight: 600; }
+.v2-same-size { font-size: 12px; color: #888; }
+.v2-same-note { font-size: 11px; color: #ef4444; }
+
+/* FAQ */
+.v2-faq-section { margin-bottom: 48px; }
+.v2-faq-section h2 { font-size: 24px; font-weight: 800; color: #1a1a1a; margin-bottom: 20px; }
+.v2-faq-item {
+  background: #ffffff; border: 1px solid rgba(0,0,0,0.06); border-radius: 12px;
+  margin-bottom: 8px; overflow: hidden;
+}
+.v2-faq-q {
+  padding: 16px 20px; font-weight: 600; font-size: 15px; color: #1a1a1a;
+  cursor: pointer; display: flex; align-items: center; gap: 10px; user-select: none;
+}
+.v2-faq-q:hover { background: rgba(0,0,0,0.015); }
+.v2-faq-q::before {
+  content: 'Q'; color: #6c4fff; font-weight: 800; font-size: 12px;
+  flex-shrink: 0; width: 24px; height: 24px; border-radius: 50%;
+  background: rgba(108,79,255,0.08); display: flex;
+  align-items: center; justify-content: center;
+}
+.v2-faq-q::after {
+  content: '\\25BE'; margin-left: auto; color: #aaa; font-size: 13px;
+  transition: transform 0.25s;
+}
+.v2-faq-item.open .v2-faq-q::after { transform: rotate(180deg); }
+.v2-faq-a {
+  padding: 0 20px 16px 54px; font-size: 14px; color: #666;
+  line-height: 1.8; display: none;
+}
+.v2-faq-item.open .v2-faq-a { display: block; }
+
+/* CTA 배너 */
+.v2-cta-banner {
+  background: linear-gradient(135deg, #6c4fff 0%, #9f7afe 100%);
+  border-radius: 20px; padding: 48px 32px; text-align: center; margin-bottom: 48px;
+}
+.v2-cta-banner h2 { font-size: 26px; font-weight: 800; color: #fff; margin-bottom: 8px; }
+.v2-cta-banner .v2-cta-sub { font-size: 14px; color: rgba(255,255,255,0.8); margin-bottom: 24px; }
+.v2-cta-btn-main {
+  display: inline-block; padding: 14px 36px; background: #fff; color: #6c4fff;
+  font-size: 15px; font-weight: 700; border-radius: 10px; text-decoration: none;
+  transition: transform 0.15s; box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+.v2-cta-btn-main:hover { transform: translateY(-2px); }
+
+/* 에러 메시지 */
+.v2-error-msg { display: none; color: #dc2626; font-size: 13px; margin-top: 8px; text-align: center; }
+.v2-error-msg.show { display: block; }
+
+/* T2 업셀 — 발급보장 (2티어 CTA) */
+.v2-upsell { text-align: center; margin-top: 20px; }
+.v2-upsell a {
+  font-size: 13px; color: #888; text-decoration: none;
+  border-bottom: 1px dashed rgba(0,0,0,0.2); padding-bottom: 2px;
+}
+.v2-upsell a:hover { color: #6c4fff; border-bottom-color: #6c4fff; }
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .v2-wrap { padding: 24px 16px 0; }
+  .v2-header h1 { font-size: 26px; }
+  /* 듀오 1컬럼 — DOM 순서(이미지→수치)가 그대로 모바일 순서 (2026-07-11 작가님) */
+  .v2-spec-duo { grid-template-columns: 1fr; gap: 16px; }
+  .v2-card-diagram, .v2-card-specs { order: 0; } /* 데스크톱 order 스왑 해제 → 이미지 먼저 */
+  .v2-half-card { padding: 22px 20px; }
+  .v2-card-diagram { padding: 0; } /* 도해 풀블리드 유지 — half-card 모바일 패딩이 덮지 않게 (2026-07-11 작가님 발견) */
+  .v2-check-layout { grid-template-columns: 1fr; }
+  .v2-action-buttons { flex-direction: column; }
+  .v2-pay-grid { grid-template-columns: 1fr; }
+  .v2-result-grid { flex-direction: column; }
+  .v2-result-arrow { transform: rotate(90deg); }
+  .v2-steps-section { padding: 28px 20px; }
+  .v2-same-grid { flex-direction: column; }
+  .v2-same-acc summary { padding: 18px 20px; }
+  .v2-same-body { padding: 0 20px 18px; }
+
+  /* ── 모바일 가독성 1차 패스 (2026-07-07 작가님: 소형 활자·저대비로 판독 불가) ──
+     11~13px 계열을 14px+ 로, #888 계열 회색을 진하게. 총체 재설계 전 응급 상향. */
+  .v2-header .v2-sub { font-size: 16px; color: #555; }
+  .v2-breadcrumb { font-size: 14px; color: #666; }
+  .v2-tag { font-size: 14px; }
+  /* 수치 간격 압축 + 도해 확대 (2026-07-11 작가님: 모바일 이미지 작고 숫자 간격 과함) */
+  .v2-spec-table th, .v2-spec-table td { padding: 8px 0; }
+  .v2-spec-table td { font-size: 15px; }
+  .v2-spec-table th { font-size: 13.5px; width: 96px; }
+  .v2-spec-table td:first-child { color: #555; }
+  .v2-badge { font-size: 12px; }
+  .v2-diagram-img { width: 100%; }
+  .v2-steps-badge { font-size: 14px; }
+  .v2-check-warn-msg { font-size: 14px; }
+  .v2-checklist-summary { font-size: 15px; }
+  .v2-action-btn { font-size: 15px; padding: 14px 10px; }
+  .v2-change-photo { font-size: 14px; color: #555; padding: 8px 18px; }
+  .v2-pay-title { font-size: 17px; }
+  .v2-pay-desc { font-size: 14px; color: #666; }
+  .v2-pay-divider { font-size: 14px; color: #999; }
+  .v2-gen-sub { font-size: 15px; color: #666; }
+  .v2-result-label { font-size: 14px; color: #666; }
+  .v2-detail-card li, .v2-detail-card p { font-size: 15px; color: #444; }
+  .v2-upload-zone .v2-upload-btn { font-size: 15px; }
+  .v2-credit { font-size: 13px; }
+}
+
+/* 검수 경고 메시지 */
+.v2-check-warn-msg { font-size: 12px; color: #d97706; padding: 6px 0 0 32px; line-height: 1.5; }
