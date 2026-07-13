@@ -3,7 +3,7 @@
  * IDPASS 카드 UI + 다크 테마 + 3티어 전환 퍼널
  */
 import { createRequire } from 'module';
-import { readdirSync } from 'fs';
+import { readdirSync, statSync } from 'fs';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { escapeHtml, layoutShell } from './render-shell.js';
@@ -17,6 +17,11 @@ const GUIDE_IMAGES = new Set(
 
 const _require = createRequire(import.meta.url);
 export const SPECS_DATA = _require('./specs-data.json');
+// 규격 데이터 최종 갱신일 — Article dateModified 정본 (하드코딩 금지, 데이터 파일 mtime 기준)
+const SPECS_DATA_MODIFIED = (() => {
+  try { return statSync(join(__dirname, 'specs-data.json')).mtime.toISOString().slice(0, 10); }
+  catch { return '2026-07-13'; }
+})();
 
 // 퍼널 분리 정적 자산 버전 — Cloud Run 리비전 단위 캐시 버스트 (로컬은 dev)
 const ASSET_VER = process.env.K_REVISION || 'dev';
@@ -822,12 +827,24 @@ function specsDetailV2Fragment(slug, forceLang = null) {
       "@context": "https://schema.org",
       "@type": "Article",
       "headline": title,
+      "description": description,
       "image": ogImageAbsolute,
       "inLanguage": lang,
       "author": { "@type": "Person", "name": "Shin JeongKyu", "jobTitle": "Photographer & AI Architect" },
-      "publisher": { "@type": "Organization", "name": "Monk Studio" },
+      // 브랜드 엔티티=MONKOS(전 표면 통일, ch8) + 법적 실체=몽크 스튜디오(legalName 보존) — 2026-07-13 작가님 확정
+      "publisher": { "@type": "Organization", "name": "MONKOS", "legalName": "몽크 스튜디오 (Monk Studio)", "url": "https://monkos.ai" },
       "datePublished": "2026-03-26",
-      "dateModified": "2026-06-24",
+      "dateModified": SPECS_DATA_MODIFIED,
+      // 규격 수치 기계가독화 — 생성형 엔진(GEO) 인용 표면 (표 HTML만으로는 미노출)
+      "about": {
+        "@type": "Thing",
+        "name": `${countryName} ${typeName}`,
+        "additionalProperty": [
+          { "@type": "PropertyValue", "name": "photo size", "value": locField(specData, 'size', lang) },
+          { "@type": "PropertyValue", "name": "background", "value": locField(specData, 'background', lang) },
+          { "@type": "PropertyValue", "name": "head height", "value": locField(specData, 'headHeight', lang) },
+        ].filter(p => p.value && String(p.value).trim()),
+      },
     },
     ...(faqs.length ? [{
       "@context": "https://schema.org",
@@ -870,6 +887,16 @@ ${hreflangTags}
    .map(([label, val, badge]) =>
     `<tr><th>${escapeHtml(label)}</th><td>${escapeHtml(val)}${badge}</td></tr>`
   ).join('');
+
+  // GEO 요약문 — 규격 수치를 자연문 1문장으로 (JSON-LD about과 동일 정본 필드, 표기만 언어별)
+  const geoSummary = (() => {
+    const size = locField(specData, 'size', lang);
+    const bg = locField(specData, 'background', lang);
+    const hh = locField(specData, 'headHeight', lang);
+    if (lang === 'en') return `${countryName} ${typeName} photo requirements: ${size}${bg ? `, ${String(bg).toLowerCase()} background` : ''}${hh ? `, head height ${hh}` : ''}.`;
+    if (lang === 'ja') return `${countryName}${typeName}写真の規格は${size}${bg ? `、背景は${bg}` : ''}${hh ? `、頭部の高さは${hh}` : ''}です。`;
+    return `${countryName} ${typeName} 사진 규격은 ${size}${bg ? `, ${bg} 배경` : ''}${hh ? `, 머리 높이 ${hh}` : ''}입니다.`;
+  })();
 
   const sizeMm = parseSizeMm(specData.size);
   // 브랜드 도해 우선: {slug}_{lang}(국기+타이틀+MONKOS.AI 내장, 2026-07-11) → 구 슬러그 → 사이즈 패턴 폴백
@@ -959,6 +986,9 @@ ${hreflangTags}
       <span class="v2-tag">${escapeHtml(countryName)}</span>
       <span class="v2-tag">${escapeHtml(typeName)}</span>
     </div>
+
+    <!-- GEO 요약문 — 수치 명시 1문단. AI 오버뷰·생성형 엔진의 인용 표적 (2026-07-13 헤드텀 설계 §4-4) -->
+    <p class="v2-geo-summary">${escapeHtml(geoSummary)}</p>
 
     <!-- 2. 핵심 규격 듀오 — 이미지 박스 + 수치 박스(탭) 분리. DOM 순서=모바일 순서(이미지 먼저) -->
     <div class="v2-spec-duo">
@@ -1337,12 +1367,23 @@ export function specsDetailFragment(slug, forceLang = null) {
       "@context": "https://schema.org",
       "@type": "Article",
       "headline": title,
+      "description": description,
       "image": v1OgImage,
       "inLanguage": lang,
       "author": { "@type": "Person", "name": "Shin JeongKyu", "jobTitle": "Photographer & AI Architect" },
-      "publisher": { "@type": "Organization", "name": "Monk Studio" },
+      // 브랜드 엔티티=MONKOS + 법적 실체=legalName — V2 경로(§Article)와 동일 정본 (2026-07-13)
+      "publisher": { "@type": "Organization", "name": "MONKOS", "legalName": "몽크 스튜디오 (Monk Studio)", "url": "https://monkos.ai" },
       "datePublished": "2026-03-26",
-      "dateModified": "2026-05-26",
+      "dateModified": SPECS_DATA_MODIFIED,
+      "about": {
+        "@type": "Thing",
+        "name": `${countryName} ${typeName}`,
+        "additionalProperty": [
+          { "@type": "PropertyValue", "name": "photo size", "value": locField(specData, 'size', lang) },
+          { "@type": "PropertyValue", "name": "background", "value": locField(specData, 'background', lang) },
+          { "@type": "PropertyValue", "name": "head height", "value": locField(specData, 'headHeight', lang) },
+        ].filter(p => p.value && String(p.value).trim()),
+      },
     },
     ...(faqs.length ? [{
       "@context": "https://schema.org",

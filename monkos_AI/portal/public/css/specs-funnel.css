@@ -10,6 +10,7 @@ a:hover { color: #5a3de6; }
 .v2-breadcrumb a { color: #6c4fff; text-decoration: none; }
 .v2-breadcrumb a:hover { text-decoration: underline; }
 .v2-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.v2-geo-summary { color: #5d5a6b; font-size: 15px; line-height: 1.6; margin: 0 0 20px; }
 .v2-tag {
   background: rgba(108,79,255,0.08); color: #6c4fff; padding: 5px 14px;
   border-radius: 20px; font-size: 13px; font-weight: 600; text-decoration: none;
