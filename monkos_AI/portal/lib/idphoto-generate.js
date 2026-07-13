@@ -122,7 +122,7 @@ function buildPromptV5(body, model) {
   if (age === 'baby') {
     parts.push('[EXPRESSION] Keep the child\'s natural expression exactly as-is.');
   } else {
-    parts.push('[EXPRESSION] Natural, relaxed, closed-mouth expression. Lips gently together. Soft calm eyes with quiet warmth — NOT stiff, NOT tense, NOT angry-looking. A subtle pleasant resting face, like a calm passport photo. NO smile, NO teeth showing, but NOT frowning either.');
+    parts.push('[EXPRESSION] Keep the original facial expression but with mouth closed — lips gently together, no teeth visible. Eyes looking straight at the camera. A gentle soft smile is perfectly fine. Do NOT flatten the expression into a stiff blank face.');
   }
 
   parts.push('[CONSTRAINT] Keep the person\'s face and body exactly the same — only apply the specified styling. DO NOT change apparent gender or age.');
@@ -150,7 +150,7 @@ export function buildT1Prompt(attireDesc, opts) {
   const identity = (age === 'baby') ? IDENTITY_PRESERVATION_BABY : IDENTITY_PRESERVATION;
   const expression = (age === 'baby')
     ? "[EXPRESSION] Keep the child's natural expression exactly as-is."
-    : '[EXPRESSION] Natural, relaxed, closed-mouth expression. Lips gently together. Soft calm eyes with quiet warmth — NOT stiff, NOT tense, NOT angry-looking. A subtle pleasant resting face, like a calm passport photo. NO smile, NO teeth showing, but NOT frowning either.';
+    : '[EXPRESSION] Keep the original facial expression but with mouth closed — lips gently together, no teeth visible. Eyes looking straight at the camera. A gentle soft smile is perfectly fine. Do NOT flatten the expression into a stiff blank face.';
 
   return `${identity}
 

@@ -498,7 +498,7 @@ const httpServer = createServer(async (req, res) => {
       if (gate) {
         poseCheck.roll = { value: gate.rollDeg, ok: Math.abs(gate.rollDeg) <= 15 };
         poseCheck.yaw = { value: gate.yawRatio, ok: Math.abs(gate.yawRatio) <= 0.20 };
-        poseCheck.eyeOpen = { value: Math.min(gate.eyeOpenL || 1, gate.eyeOpenR || 1), ok: Math.min(gate.eyeOpenL || 1, gate.eyeOpenR || 1) > 0.15 };
+        poseCheck.eyeOpen = { value: Math.min(gate.eyeOpenL || 1, gate.eyeOpenR || 1), ok: Math.min(gate.eyeOpenL || 1, gate.eyeOpenR || 1) > 0.10 };
         // 0.15 → 0.22 완화 (2026-07-10 작가님 실기기 오탐 2건 — 입 다문 사진이 warn. 실측값은 아래 slog gate.mouth로 축적)
         poseCheck.mouthOpen = { value: gate.mouthOpen, ok: (gate.mouthOpen || 0) < 0.22 };
       }
