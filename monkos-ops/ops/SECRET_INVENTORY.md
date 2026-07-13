@@ -78,7 +78,7 @@ status: 현행
 | 15 | LINE_CHANNEL_SECRET | LINE 로그인 시크릿 | portal | |
 | 16 | LINE_MESSAGING_ACCESS_TOKEN | LINE 메시징 API | portal | ⭐ 누락 |
 | 17 | LINE_MESSAGING_CHANNEL_SECRET | LINE 메시징 채널 시크릿 | portal | ⭐ 누락 |
-| 18 | TOSS_SECRET_KEY | 토스페이먼츠 | portal (KR 결제) | |
+| 18 | TOSS_SECRET_KEY | 토스페이먼츠 | portal (KR 결제) | ⭐ 2026-07-13 v2=라이브 정본 등록(작가님)·prod latest 참조 전환(콘솔 plain env 제거)·v1(6/3 테스트키 오등록분) destroy. 토스 재발급 구키는 토스측 7일 후 자동만료. dev는 별도 TOSS_SECRET_KEY_TEST |
 | 19 | TOSS_WEBHOOK_SECRET | 토스 웹훅 검증 | portal | |
 | 20 | LEMONSQUEEZY_API_KEY | Lemon Squeezy API | portal (JP/글로벌 결제) | 2026-07-02 v2 로테이션 (키노출 인시던트) |
 | 21 | LEMONSQUEEZY_WEBHOOK_SECRET | Lemon Squeezy 웹훅 (JP store#290457) | portal | |
