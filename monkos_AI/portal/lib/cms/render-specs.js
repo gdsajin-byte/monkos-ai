@@ -784,9 +784,10 @@ function specsDetailV2Fragment(slug, forceLang = null) {
   // en/ja는 퍼널 문구 3언어화 후 개방 예정. T1 리터칭은 서버 FREE_PILOT_SLUGS(kr-passport) 파일럿 유지.
   const isPilot = lang === 'ko';
   // T1 리터칭 실동작 여부 — 카드 문구·CTA를 서버 플래그와 결합 (off인데 '리터칭' 판매 금지, 2026-07-10 리뷰 확정)
-  // 서버 리터칭 게이트(FREE_PILOT_SLUGS=kr-passport)와 정합 — 리터칭이 실행되지 않는 슬러그에 활성 카드 노출 금지
+  // 서버 리터칭 게이트(server.js isT1Path)와 정합 — 리터칭이 실행되지 않는 슬러그에 활성 카드 노출 금지
   // (2026-07-11 T0 전면 개방 때 env-only 분기가 전 페이지로 새던 것을 작가님 실캡처로 적발)
-  const t1RetouchOn = process.env.PILOT_T1_RETOUCH === '1' && slug === 'kr-passport';
+  // 2026-07-13 작가님 승인: T1 전 슬러그 개방 (kr-passport 파일럿 졸업) — 서버 게이트와 동시 개방
+  const t1RetouchOn = process.env.PILOT_T1_RETOUCH === '1';
   const fmtV2 = (tpl, vars) => String(tpl).replace(/\{(\w+)\}/g, (m, k) => (vars[k] != null ? vars[k] : m));
   const prefix = lang === 'ko' ? '' : `/${lang}`;
   const specData = SPECS_DATA[slug];
@@ -962,6 +963,8 @@ ${hreflangTags}
 
   // 2-티어 CTA (DESIGN_20260704_specs_2tier): T1 = ₩2,000 즉시결제(주 CTA), T2 = 발급보장 업셀 링크.
   // 보장 상세 약속 문구 금지 — 규정 미승인 상태(작가님 승인 대기), 한 줄 절제 표기만.
+  // ⚠️ 2026-07-13 작가님: T2 노출 전면 잠정 중지 (운영체계 확정 전 판매 금지) — fit 링크·결과 카드·en/ja 업셀 3지점 제거.
+  //    아래 upsell* 정의는 복원 대비 존치(현재 미사용). 복원 시 git f3dce941 직전 상태 참조.
   const upsellHref = lang === 'ja' ? 'https://idphoto-jp.monkos.ai/' : 'https://idphoto-kr.monkos.ai/';
   const upsellLabel = lang === 'ja' ? '却下の心配なく — 発行保証 ¥990 →'
     : lang === 'en' ? 'No rejection worries — guaranteed issue ₩9,900 →'
@@ -1093,8 +1096,7 @@ ${hreflangTags}
               <button class="v2-action-btn v2-btn-retry" id="v2-fit-change">다른 사진으로</button>
               <button class="v2-action-btn v2-btn-retouch" id="v2-fit-make">${isPilot ? '무료로 만들기' : '이대로 만들기'}</button>
             </div>
-            ${isPilot ? `<div class="ip-fit-caption" id="ip-fit-caption" style="display:none;">배경 제거 + ${escapeHtml(typeName)} 규격 크롭 · 오늘 <span id="ip-fit-remaining">3</span>회 무료 · 로그인 불필요</div>
-            <a class="ip-quiet-link" id="ip-fit-t2-link" href="${upsellHref}" data-cta="specs-upsell" rel="noopener" style="display:none;">반려 걱정까지 맡기려면 — <b>발급보장 ₩9,900 →</b></a>` : ''}
+            ${isPilot ? `<div class="ip-fit-caption" id="ip-fit-caption" style="display:none;">배경 제거 + ${escapeHtml(typeName)} 규격 크롭 · 오늘 <span id="ip-fit-remaining">3</span>회 무료 · 로그인 불필요</div>` : ''}
           </div>
         </div>
       </div>
@@ -1226,13 +1228,6 @@ ${hreflangTags}
               </ul>
               <button class="ip-btn ip-btn-mid" id="ip-t1-buy" disabled>곧 열려요 — 준비 중</button>
             </div>`}
-            <div class="ip-card ip-card-t2">
-              <span class="ip-t2-badge">◆ 발급보장</span>
-              <h4>전문 검수 + 반려 시 100% 환불</h4>
-              <p>접수 반려 걱정까지 책임지는 프리미엄 검수 서비스예요.</p>
-              <div class="ip-t2-price"><b>₩9,900</b><span>별도 서비스로 진행</span></div>
-              <a class="ip-btn ip-btn-t2" id="ip-t2-go" href="${upsellHref}" data-cta="specs-upsell" rel="noopener">발급보장으로 만들기</a>
-            </div>
             <a class="ip-slot" id="ip-slot-credit" href="/credits.html">
               <span class="ip-slot-ic">🎁</span>
               <span class="ip-slot-txt"><b>간편로그인하면 10c 크레딧</b><span>AI 보정 1회가 ₩1,500이 돼요</span></span>
@@ -1242,8 +1237,6 @@ ${hreflangTags}
         </div>
       </div>` : ''}
 
-      <!-- T2 업셀 — 발급보장 (상시 노출 · 파일럿에선 S3 카드로 대체) -->
-      ${isPilot ? '' : upsellHtml}
     </div>
 
     ${sameSize.length > 0 ? `<!-- 4. 같은 사진으로 제출 가능한 서류 — 롤다운 (상세규정·반려사유는 수치 박스 탭으로 이동) -->

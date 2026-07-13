@@ -131,6 +131,7 @@ function checkRateLimit(req, bucket, limit, windowMs = 60000) {
  * 날짜는 KST 기준 — 무료 3회/일의 "일"은 한국 자정에 리셋.
  */
 const FREE_DAILY_CAP = process.env.FREE_QUOTA_BYPASS === '1' ? 999999 : 3;
+// T1 전 슬러그 개방 (2026-07-13 작가님 승인 — kr-passport 파일럿 졸업). 상수는 축소 재롤백 대비 존치, isT1Path에서 미참조.
 const FREE_PILOT_SLUGS = new Set(['kr-passport']);
 function freeQuotaSign(payload) {
   const secret = process.env.AUTH_SECRET || process.env.LEMONSQUEEZY_WEBHOOK_SECRET || '';
@@ -738,7 +739,8 @@ const httpServer = createServer(async (req, res) => {
       let cropEngine = null;
       let genTrack = null;
       let resultMeta = null;
-      const isT1Path = gateMode !== 'free' && process.env.PILOT_T1_RETOUCH === '1' && slug && FREE_PILOT_SLUGS.has(slug);
+      // T1 전 슬러그 개방 (2026-07-13 작가님 승인) — UI 게이트(render-specs.js t1RetouchOn)와 동시 개방 정합
+      const isT1Path = gateMode !== 'free' && process.env.PILOT_T1_RETOUCH === '1' && !!slug;
       if (slug && matteEnabled() && !isT1Path) {
         try {
           // fit 확정 경로 우선 (ORDER_20260707): 검수 단계 확정 프레임을 기하 재단 — WYSIWYG, FaceMesh 미재실행
