@@ -389,7 +389,7 @@
   }
   function freeRemainingFromCookie(){
     try{
-      var m = document.cookie.match(/(?:^|;\\s*)monkos_free=([^;]+)/);
+      var m = document.cookie.match(/(?:^|;\s*)monkos_free=([^;]+)/);
       if(!m) return CFG.freeCap;
       var parts = decodeURIComponent(m[1]).split('.');
       var today = new Date(Date.now() + 9 * 3600 * 1000).toISOString().slice(0, 10);
@@ -456,7 +456,7 @@
       if(!freeResultB64) return;
       var a = document.createElement('a');
       a.href = 'data:image/png;base64,' + freeResultB64;
-      a.download = CFG.downloadName.replace(/\\.jpg$/, '_free.png');
+      a.download = CFG.downloadName.replace(/\.jpg$/, '_free.png');
       document.body.appendChild(a); a.click(); a.remove();
       gaTrack('free_download', {}, true);
     });
