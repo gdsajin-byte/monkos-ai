@@ -169,7 +169,7 @@
   function handleFile(file){
     hideError();
     fitResult = null; precheckData = null;
-    if(!file.type.match(/image\\/(jpeg|png|heic|heif|webp)/i)) return showError(T.errFileType);
+    if(!file.type.match(/image\/(jpeg|png|heic|heif|webp)/i)) return showError(T.errFileType);
     if(file.size > 10*1024*1024) return showError(T.errFileSize);
     var reader = new FileReader();
     reader.onload = function(ev){
