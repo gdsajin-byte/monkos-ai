@@ -287,7 +287,7 @@ a:hover { color: #5a3de6; }
   padding: 3px 10px; border-radius: 999px;
 }
 .v2-same-acc summary::after {
-  content: '\\25BE'; margin-left: auto; color: #aaa; font-size: 14px; transition: transform 0.25s;
+  content: '\25BE'; margin-left: auto; color: #aaa; font-size: 14px; transition: transform 0.25s;
 }
 .v2-same-acc[open] summary::after { transform: rotate(180deg); }
 .v2-same-body { padding: 0 28px 24px; }
@@ -324,7 +324,7 @@ a:hover { color: #5a3de6; }
   align-items: center; justify-content: center;
 }
 .v2-faq-q::after {
-  content: '\\25BE'; margin-left: auto; color: #aaa; font-size: 13px;
+  content: '\25BE'; margin-left: auto; color: #aaa; font-size: 13px;
   transition: transform 0.25s;
 }
 .v2-faq-item.open .v2-faq-q::after { transform: rotate(180deg); }
