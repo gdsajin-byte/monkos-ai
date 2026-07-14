@@ -40,7 +40,8 @@
       "value": ""
     },
     "official_source_url": {
-      "value": "https://konzuliszolgalat.kormany.hu/en"
+      "value": "https://konzuliszolgalat.kormany.hu/en",
+      "source_url": "https://konzuliszolgalat.kormany.hu/en"
     }
   },
   "unverified": [

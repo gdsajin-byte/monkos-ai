@@ -49,7 +49,8 @@
       "value": ""
     },
     "official_source_url": {
-      "value": "https://www.dfa.ie/passports/photo-guidelines/"
+      "value": "https://www.dfa.ie/passports/photo-guidelines/",
+      "source_url": "https://www.dfa.ie/passports/photo-guidelines/"
     }
   },
   "unverified": [

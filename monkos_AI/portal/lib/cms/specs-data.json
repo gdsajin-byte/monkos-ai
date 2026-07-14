@@ -2600,7 +2600,6 @@
     "headHeight": "2.5~3.5cm",
     "headHeightEn": "2.5-3.5cm",
     "headHeightJa": "2.5~3.5cm",
-    "headHeightMin": 25,
     "validity": "taken within 6 months",
     "validityEn": "taken within 6 months",
     "validityJa": "",
@@ -2717,7 +2716,7 @@
       "en": "Official United States visa photo requirements 2026 — 2 × 2 inch (51 × 51mm), white background. Get a compliant photo online in seconds.",
       "ja": "アメリカビザ写真の公式サイズ・2026年規定 — 5.1 × 5.1cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
-    "headHeightMin": 22,
+    "headHeightMin": 25,
     "headHeightMax": 35,
     "officialSource": "https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/photos.html",
     "restrictions": {

@@ -39,7 +39,8 @@
       "value": ""
     },
     "official_source_url": {
-      "value": "https://www.mzv.sk/en/web/en/visa-and-services/schengen-visa"
+      "value": "https://www.mzv.sk/en/web/en/visa-and-services/schengen-visa",
+      "source_url": "https://www.mzv.sk/en/web/en/visa-and-services/schengen-visa"
     }
   },
   "unverified": [

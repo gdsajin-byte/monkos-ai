@@ -92,3 +92,6 @@ parent_order: ORDER_20260714_M1민아_막내1_SPECS_게이트보완_5항.md
 - [x] 보완 4: 2차 편입 목록 확정
 - [x] 보완 5: ko/ja 영어 미노출 + en 정상 노출 dev 실측
 - [ ] 민아 재검(검산 재실행) → 작가님 도메인 검수 → prod
+
+---
+> **[정오 각주 2026-07-14 16:18]** §보완1 "`headHeightMin 22→25` 정정" 보고 — 실태: headHeightMin 중복 키 발생(line 2603에 25 추가 / line 2720에 원본 22 잔존)으로 JSON 파서가 마지막 값 22를 채택. headHeightMin 반영 누락. 16:15 지시서(ORDER_재검잔여_headHeightMin.md)로 보정.
