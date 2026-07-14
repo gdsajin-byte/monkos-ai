@@ -1,0 +1,39 @@
+{
+  "slug": "gt-visa",
+  "batch": 10,
+  "verified": {
+    "size": {
+      "value": "1 colour photo, passport sized (2 x 2 inches / approx. 5.08 x 5.08cm), stapled to the visa application form",
+      "source_url": "https://www.embaguateusa.gob.gt/general-9"
+    },
+    "official_source_url": {
+      "value": "https://www.embaguateusa.gob.gt/general-9",
+      "source_url": "https://www.embaguateusa.gob.gt/general-9"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "3.5 x 4.5cm",
+      "research_value": "2 x 2 inches (approx. 5.08 x 5.08cm) — stated specifically for the Tourist Visa on the Embassy of Guatemala in the USA's official page; this may be a US-style 2x2in convention adopted by that specific mission rather than a nationwide MINEX standard",
+      "source_url": "https://www.embaguateusa.gob.gt/general-9"
+    }
+  ],
+  "cross_verification": {
+    "note": "Direct WebFetch of minex.gob.gt and igm.gob.gt visa pages returned HTTP 403 on every attempt. Two different official Guatemalan embassy sites give inconsistent quantities/sizes: the Embassy in the USA (embaguateusa.gob.gt, .gob.gt domain, directly fetched successfully) states '1 color photo -passport sized (2x2)', while the Embassy in Spain (embajadaguatemala.es, also directly fetched successfully, confirmed as an official diplomatic site) states only '2 fotografías tamaño carnet' with no exact mm given. This suggests Guatemalan visa photo requirements may vary by issuing mission rather than following one uniform published national standard; only the more specific, directly-fetched USA-embassy figure was recorded as verified. A separate claim that 'glasses/lenses are prohibited except for rare medical reasons with a certificate' and 'religious head coverings require full face visibility' surfaced in search results, but the source context mixed in ustraveldocs.com and travel.state.gov content (which describe the completely different US DS-160 visa photo standard for Guatemalans applying to the US, not Guatemala's own visa for inbound foreign travelers), so those claims were excluded as likely cross-contamination rather than genuine Guatemalan government requirements."
+  }
+}

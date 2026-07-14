@@ -1,0 +1,50 @@
+{
+  "slug": "rs-passport",
+  "batch": 22,
+  "verified": {
+    "size": {
+      "value": "50 × 50mm (5×5cm)",
+      "source_url": "https://www.mup.gov.rs/wps/portal/sr/gradjani/dokumenta/putne%20isprave/biometrijski%20pasos/"
+    },
+    "background": {
+      "value": "Single-color gray background (\"jednobojna siva pozadina\")",
+      "source_url": "https://www.mup.gov.rs/wps/portal/sr/gradjani/dokumenta/putne%20isprave/biometrijski%20pasos/"
+    },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": {
+      "value": "Frontal view (\"en face\")",
+      "source_url": "https://www.mup.gov.rs/wps/portal/sr/gradjani/dokumenta/putne%20isprave/biometrijski%20pasos/"
+    },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://www.mup.gov.rs/wps/portal/sr/gradjani/dokumenta/putne%20isprave/biometrijski%20pasos/",
+      "source_url": "https://www.mup.gov.rs/wps/portal/sr/gradjani/dokumenta/putne%20isprave/biometrijski%20pasos/"
+    }
+  },
+  "restrictions_i18n": {
+    "face_visibility": {
+      "en": "Photo must be a frontal (en face) view.",
+      "ko": "사진은 정면(전방) 응시 상태여야 한다.",
+      "ja": "写真は正面向き(アンフェイス)でなければならない。"
+    }
+  },
+  "unverified": ["head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [
+    {
+      "field": "background",
+      "db_value": "흰색",
+      "research_value": "Single-color gray (\"jednobojna siva pozadina\") per MUP (Serbian Ministry of Interior) official biometric passport page",
+      "source_url": "https://www.mup.gov.rs/wps/portal/sr/gradjani/dokumenta/putne%20isprave/biometrijski%20pasos/"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "MUP (Ministry of Interior) official page states that supplying a photo is not mandatory for a biometric passport ('nije obavezno' — the photo is captured live during application), but if a citizen does provide one it must be 50×50mm on a single-color gray background, en face. Size matches DB exactly (5×5cm); background conflicts (DB: white, official: gray). No further composition rules (head height, expression, glasses, headwear) were stated on this page."
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "slug": "al-passport",
+  "batch": 0,
+  "verified": {
+    "size": {
+      "value": "4 × 5cm",
+      "source_url": "https://e-albania.al/eAlbaniaServices/UseService.aspx?service_code=13851"
+    },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": {
+      "value": "Digital upload in JPG, JPEG, or PNG format",
+      "source_url": "https://e-albania.al/eAlbaniaServices/UseService.aspx?service_code=13851"
+    },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://e-albania.al/eAlbaniaServices/UseService.aspx?service_code=13851",
+      "source_url": "https://e-albania.al/eAlbaniaServices/UseService.aspx?service_code=13851"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["background", "head_height", "validity", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "e-Albania (e-albania.al) is Albania's official government e-services portal (National Agency for the Information Society, under the Council of Ministers), used for passport and ID card applications. Size (4×5cm) matches the current DB value exactly — no conflict. Detailed composition rules (background colour, head height, expression, glasses, headwear) were not exposed in the portion of the service page accessible without an e-Albania login, so they are left unverified rather than sourced to third-party photo-service sites."
+  }
+}

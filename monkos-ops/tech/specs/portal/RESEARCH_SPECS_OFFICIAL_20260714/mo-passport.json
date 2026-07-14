@@ -1,0 +1,63 @@
+{
+  "slug": "mo-passport",
+  "batch": 17,
+  "verified": {
+    "size": {
+      "value": "\"1.5-inch\" per the official English wording ('a 1.5-inch, color, bareheaded and full-faced photograph'). Note: the source text itself does not restate this in mm/cm; '1.5-inch photo' is a common Macao/Hong Kong photo-studio term conventionally corresponding to 35x45mm, but that conversion is not itself quoted on the source page.",
+      "source_url": "https://www.gov.mo/en/services/ps-1066/ps-1066a/"
+    },
+    "background": {
+      "value": "Plain white background",
+      "source_url": "https://www.gov.mo/en/services/ps-1066/ps-1066a/"
+    },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": {
+      "value": "Photograph taken at a photography studio within the last 6 months",
+      "source_url": "https://www.gov.mo/en/services/ps-1066/ps-1066a/"
+    },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": {
+      "value": "Full-faced photograph ('bareheaded and full-faced photograph')",
+      "source_url": "https://www.gov.mo/en/services/ps-1066/ps-1066a/"
+    },
+    "headwear_policy": {
+      "value": "Bareheaded (no head covering)",
+      "source_url": "https://www.gov.mo/en/services/ps-1066/ps-1066a/"
+    },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://www.gov.mo/en/services/ps-1066/ps-1066a/",
+      "source_url": "https://www.gov.mo/en/services/ps-1066/ps-1066a/"
+    }
+  },
+  "restrictions_i18n": {
+    "headwear": {
+      "en": "Bareheaded — no head covering.",
+      "ko": "머리에 아무것도 쓰지 않은 상태(무모자)여야 한다.",
+      "ja": "帽子など頭部を覆うものを着用しない(無帽)状態でなければならない。"
+    },
+    "face_visibility": {
+      "en": "A full-faced photograph is required.",
+      "ko": "얼굴 전체가 나오는 정면 사진이어야 한다.",
+      "ja": "顔全体が写った写真でなければならない。"
+    }
+  },
+  "unverified": [
+    "head_height",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Confirmed on the Macao SAR Government Portal's official 'Application procedures for Macao SAR Passport' page (gov.mo/en/services/ps-1066/ps-1066a/), which states applicants may use a photo from 'My Photos' of the 'Macao One Account' taken by a contracted photography studio, described as 'a 1.5-inch, color, bareheaded and full-faced photograph in plain white background which is taken at a photography studio within the last 6 months'. The page also references a separate 'Photograph Specifications' PDF from the Identification Services Bureau (DSI) for full technical detail, but that PDF (dsi.gov.mo/documents/new_photo_format_e.pdf) returned HTTP 404 on two direct fetch attempts and the DSI site's passport-specific page (dsi.gov.mo/dsi/passport_e.jsp) also 404'd, so content attributed to that PDF in search-engine summaries (e.g. 'no effect lenses', 'no exaggerated accessories like head wraps or facial jewellery', 12-month validity for resident ID cards) could not be independently confirmed by directly opening the document and is therefore excluded rather than reported as verified. Because '1.5-inch' is not itself a metric figure, no db_conflict against the DB's 3.5x4.5cm is asserted — the two are very likely the same size under the conventional Macao/HK naming, but that equivalence is not directly stated by the source.",
+    "note_ko": "마카오 특별행정구 정부포털의 공식 'Macao SAR 여권 신청 절차' 페이지(gov.mo/en/services/ps-1066/ps-1066a/)에서 확인했다. 신청자는 '마카오 원 어카운트'의 'My Photos'에 있는, 계약 사진관에서 촬영한 사진을 사용할 수 있으며, 이는 '1.5인치, 컬러, 무모자, 정면 얼굴 전체가 나오고 순백색 배경이며 최근 6개월 이내 사진관에서 촬영한 사진'으로 명시되어 있다. 해당 페이지는 신원증명국(DSI)의 별도 '사진 규격' PDF를 참조하도록 링크하고 있으나, 해당 PDF(dsi.gov.mo/documents/new_photo_format_e.pdf)는 두 차례 직접 접속 시도 모두 HTTP 404 오류가 발생했고, DSI 여권 전용 페이지(dsi.gov.mo/dsi/passport_e.jsp) 역시 404였다. 따라서 검색엔진 요약에 나타난 해당 PDF 관련 내용('이펙트 렌즈 금지', '두건·안면 장신구 등 과도한 액세서리 금지', '주민증 사진은 12개월 이내' 등)은 직접 문서를 열어 확인하지 못해 검증됨으로 기재하지 않고 제외했다. '1.5인치'는 그 자체로 미터법 수치가 아니므로 DB의 3.5×4.5cm와의 db_conflict는 단정하지 않았다 — 마카오/홍콩의 관행적 명칭상 동일 규격일 개연성이 높지만, 출처가 그 환산을 직접 명시하지는 않았다."
+  }
+}

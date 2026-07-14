@@ -1,0 +1,25 @@
+{
+  "slug": "mr-passport",
+  "batch": 18,
+  "verified": {},
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories",
+    "official_source_url"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Mauritania's official passport-issuing authority is ANRPTS (Agence Nationale du Registre des Populations et des Titres Sécurisés). Direct fetch of www.anrpts.mr failed (DNS resolution error) and anrpts.gov.mr returned no readable content. The national e-government procedures portal (procedures.gov.mr/fr/procedure/1588, 'Demande d'obtention de passeport pour la première fois') was fetched directly and lists only required identity documents and fees (3000/10000 MRU) — it does not publish a photo specification (size, background, head height, expression, glasses, headwear, etc.) anywhere accessible. Third-party photo-service sites (mybiometricphotos.com, ivisa.com, visafoto.com, rostrio.com, idphotodiy.com) all publish specific numbers (commonly 35x45mm, gray background) but none are Mauritanian government sources, so per the truthfulness gate none were carried into verified. Everything is left unverified rather than guessed."
+  }
+}

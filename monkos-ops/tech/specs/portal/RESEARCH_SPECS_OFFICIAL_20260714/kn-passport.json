@@ -1,0 +1,91 @@
+{
+  "slug": "kn-passport",
+  "batch": 13,
+  "verified": {
+    "size": {
+      "value": "45mm (height) × 35mm (width) [1.77in × 1.38in] — two identical facial photos required with all applications",
+      "source_url": "https://sknhcottawa.gov.kn/wp-content/uploads/2025/04/St-Kitts-and-Nevis-ePP-instructions-form_v1_Aug-2-2024.pdf"
+    },
+    "background": {
+      "value": "Plain white background; must contrast with the applicant's clothing (e.g. no white shirt against the white background), lighting must be uniform with no shadows or reflections",
+      "source_url": "https://sknhcottawa.gov.kn/wp-content/uploads/2025/04/St-Kitts-and-Nevis-ePP-instructions-form_v1_Aug-2-2024.pdf"
+    },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": {
+      "value": "Photos shall not be more than six months old",
+      "source_url": "https://sknhcottawa.gov.kn/wp-content/uploads/2025/04/St-Kitts-and-Nevis-ePP-instructions-form_v1_Aug-2-2024.pdf"
+    },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": {
+      "value": "There must be contrast between the image and background (e.g. no white shirt on a white background)",
+      "source_url": "https://sknhcottawa.gov.kn/wp-content/uploads/2025/04/St-Kitts-and-Nevis-ePP-instructions-form_v1_Aug-2-2024.pdf"
+    },
+    "expression_restriction": {
+      "value": "Facial expression must be neutral, with mouth closed and eyes open, with no hair obscuring the eyes",
+      "source_url": "https://sknhcottawa.gov.kn/wp-content/uploads/2025/04/St-Kitts-and-Nevis-ePP-instructions-form_v1_Aug-2-2024.pdf"
+    },
+    "glasses_policy": {
+      "value": "No prescription glasses, tinted shades, or sunglasses (full ban, no medical exception stated)",
+      "source_url": "https://sknhcottawa.gov.kn/wp-content/uploads/2025/04/St-Kitts-and-Nevis-ePP-instructions-form_v1_Aug-2-2024.pdf"
+    },
+    "ears_visibility": {
+      "value": "The face shall look directly at the camera with both ears showing",
+      "source_url": "https://sknhcottawa.gov.kn/wp-content/uploads/2025/04/St-Kitts-and-Nevis-ePP-instructions-form_v1_Aug-2-2024.pdf"
+    },
+    "face_visibility": {
+      "value": "Close-up of the applicant's head and top of the shoulders; the face shall take up 70-80 percent of the photo size in length",
+      "source_url": "https://sknhcottawa.gov.kn/wp-content/uploads/2025/04/St-Kitts-and-Nevis-ePP-instructions-form_v1_Aug-2-2024.pdf"
+    },
+    "headwear_policy": {
+      "value": "No head coverings except for religious, cultural, or medical justification",
+      "source_url": "https://sknhcottawa.gov.kn/wp-content/uploads/2025/04/St-Kitts-and-Nevis-ePP-instructions-form_v1_Aug-2-2024.pdf"
+    },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://sknhcottawa.gov.kn/wp-content/uploads/2025/04/St-Kitts-and-Nevis-ePP-instructions-form_v1_Aug-2-2024.pdf",
+      "source_url": "https://sknhcottawa.gov.kn/wp-content/uploads/2025/04/St-Kitts-and-Nevis-ePP-instructions-form_v1_Aug-2-2024.pdf"
+    }
+  },
+  "restrictions_i18n": {
+    "clothing": {
+      "en": "There must be contrast between the photo image and the background (e.g. no white shirt against a white background).",
+      "ko": "사진 속 인물과 배경 사이에 대비가 있어야 한다(예: 흰색 배경에 흰색 상의 착용 금지).",
+      "ja": "写真の人物と背景の間にコントラスト(明暗差)が必要である(例:白い背景に白いシャツの着用不可)。"
+    },
+    "expression": {
+      "en": "Facial expression must be neutral, with mouth closed and eyes open, with no hair obscuring the eyes.",
+      "ko": "무표정을 유지해야 하며, 입은 다물고 눈은 뜬 상태여야 하며, 머리카락이 눈을 가려서는 안 된다.",
+      "ja": "無表情を保ち、口を閉じ目を開けた状態で、髪の毛が目を隠してはならない。"
+    },
+    "glasses": {
+      "en": "No prescription glasses, tinted shades, or sunglasses are permitted.",
+      "ko": "도수 안경, 색이 들어간 안경, 선글라스는 착용할 수 없다.",
+      "ja": "度付き眼鏡、色付き眼鏡、サングラスの着用は認められない。"
+    },
+    "ears": {
+      "en": "The face must look directly at the camera with both ears showing.",
+      "ko": "얼굴은 카메라를 정면으로 응시해야 하며 양쪽 귀가 모두 보여야 한다.",
+      "ja": "顔はカメラに正面を向け、両耳が見える状態でなければならない。"
+    },
+    "face_visibility": {
+      "en": "The photo must show a close-up of the head and top of the shoulders, with the face taking up 70-80 percent of the photo's length.",
+      "ko": "사진은 머리와 어깨 윗부분이 클로즈업되어야 하며, 얼굴이 사진 세로 길이의 70~80%를 차지해야 한다.",
+      "ja": "写真は頭部と肩の上部をクローズアップで写し、顔が写真の縦の長さの70~80%を占めなければならない。"
+    },
+    "headwear": {
+      "en": "No head coverings are permitted, except for religious, cultural, or medical justification.",
+      "ko": "종교적·문화적·의학적 사유를 제외하고는 머리 가리개(모자 등) 착용이 불가하다.",
+      "ja": "宗教上・文化上・医学上の理由を除き、頭にかぶり物(帽子など)を着用することはできない。"
+    }
+  },
+  "unverified": ["head_height", "file_spec", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "head_height": {
+      "note": "The official instructions do not state a head-height figure in cm/mm directly — they specify the face must occupy '70-80 percent of the photo size in length'. Applying that percentage to the stated 45mm photo height gives an arithmetic range of approximately 31.5-36mm (3.15-3.6cm). This is a derived calculation, not an explicit source figure, but it roughly overlaps the DB's stated 3.2-3.6cm. Disclosed here rather than placed in 'verified' since the source itself never states a cm figure."
+    },
+    "file_spec": {
+      "note": "Photos are physically printed ('on high quality paper with high resolution') and glued/taped (not stapled) to the paper application form. The Passport Office also offers a 'Live Capture Photo' service for a $15 EC fee. No digital-upload pixel/KB specification is published, since this is not primarily a digital-upload system."
+    }
+  }
+}

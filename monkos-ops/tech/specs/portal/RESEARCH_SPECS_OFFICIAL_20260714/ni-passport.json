@@ -1,0 +1,28 @@
+{
+  "slug": "ni-passport",
+  "batch": 19,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://www.mint.gob.ni/migracion/section/extranjeria/",
+      "source_url": "https://www.mint.gob.ni/migracion/section/extranjeria/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Nicaragua's Dirección General de Migración y Extranjería (DGME) operates under mint.gob.ni (Ministerio del Interior). The domain was reachable via browser for some pages (e.g. the visa requirements page) but returned HTTP 403 to direct programmatic fetch for others, and its official passport-application user manual PDF (tramitesconsulares.mint.gob.ni/Content/source/MANUALDEUSUARIO_ TRAMITES.pdf, confirmed to exist and return HTTP 200 from within the site's own JS context) could not be retrieved as readable text by any available tool (blocked with 403 for both curl and WebFetch when requested directly). No official page with quantifiable passport-photo specs (size, background, head height) could be confirmed by direct inspection. Third-party sources report figures such as 4×5cm/white background, but these were not independently confirmed against an official .gob.ni source and are therefore excluded per the verification policy."
+  }
+}

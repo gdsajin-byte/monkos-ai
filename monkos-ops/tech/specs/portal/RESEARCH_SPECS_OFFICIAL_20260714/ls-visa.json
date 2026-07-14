@@ -1,0 +1,32 @@
+{
+  "slug": "ls-visa",
+  "batch": 15,
+  "verified": {
+    "validity": {
+      "value": "Photographs must have been taken within the past six months",
+      "source_url": "https://lesothohc.org.uk/types-of-visas/"
+    },
+    "official_source_url": {
+      "value": "https://lesothohc.org.uk/types-of-visas/",
+      "source_url": "https://lesothohc.org.uk/types-of-visas/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "expression_restriction",
+    "glasses_policy",
+    "headwear_policy",
+    "ears_visibility",
+    "face_visibility",
+    "file_spec",
+    "clothing_restriction",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Source is the High Commission of the Kingdom of Lesotho in the UK (lesothohc.org.uk, an official Lesotho diplomatic mission), directly fetched. Under the Business Visa documentation checklist it states: 'Two (2) coloured passport size photographs taken within the past six months.' This confirms colour (not B&W), a 2-photo count, and a 6-month recency window, but does not give exact millimeter dimensions, background colour, or facial-composition rules. Lesotho's homeaffairs.gov.ls e-Visa system was also checked directly and found to display only 'eVISA Applications System Suspended' with no photo specification published at the time of this research. Exact size/background/head-height are therefore left unverified rather than filled from unofficial visa-agency sites."
+  }
+}

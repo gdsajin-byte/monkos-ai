@@ -1,0 +1,25 @@
+{
+  "slug": "mu-visa",
+  "batch": 18,
+  "verified": {},
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories",
+    "official_source_url"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Mauritius Passport and Immigration Office's official 'Visa Requirements' page (passport.govmu.org/passport/?page_id=605) and 'Application for Visa' page (page_id=620) were fetched directly. They confirm 'two recent passport-size photos' are required for a visa application but do not themselves publish size/background/composition specifications separate from the passport standard. Since neither page states that the passport-specific standard (see mu-passport.json: 35-40mm x 45-50mm, light background, 25-35mm face length, 6 months) applies identically to visa photos, those figures were not carried over here to avoid asserting an unconfirmed cross-document equivalence."
+  }
+}

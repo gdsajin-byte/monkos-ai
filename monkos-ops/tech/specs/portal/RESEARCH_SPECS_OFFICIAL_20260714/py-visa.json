@@ -1,0 +1,64 @@
+{
+  "slug": "py-visa",
+  "batch": 22,
+  "verified": {
+    "size": {
+      "value": "3 × 4cm, JPG format (per Paraguay MRE's official visa pages). Note: Paraguayan consulates abroad list differing sizes for passport photos specifically (4×4cm Buenos Aires, 2×2in Los Angeles, 3.5×4.5cm Ecuador, 5×7cm Madrid), but this slug is for visa and both dedicated MRE visa pages agree on 3×4cm.",
+      "source_url": "https://www.mre.gov.py/visas/"
+    },
+    "background": {
+      "value": "White (\"fondo blanco\")",
+      "source_url": "https://www.mre.gov.py/visas/"
+    },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": {
+      "value": "Photo must be current/updated (\"actualizada\") — no specific validity period (e.g., number of months) is stated.",
+      "source_url": "https://www.mre.gov.py/visas/"
+    },
+    "file_spec": {
+      "value": "JPG format",
+      "source_url": "https://www.mre.gov.py/visas/"
+    },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": {
+      "value": "Photo must be front-facing, not in profile (\"de frente, no de perfil\")",
+      "source_url": "https://www.mre.gov.py/visas/"
+    },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": {
+      "value": "No accessories permitted (\"sin accesorios\")",
+      "source_url": "https://www.mre.gov.py/visas/"
+    },
+    "official_source_url": {
+      "value": "https://www.mre.gov.py/visas/",
+      "source_url": "https://www.mre.gov.py/visas/"
+    }
+  },
+  "restrictions_i18n": {
+    "face_visibility": {
+      "en": "Photo must be front-facing, not in profile.",
+      "ko": "사진은 정면을 향해야 하며, 측면(옆모습)은 허용되지 않는다.",
+      "ja": "写真は正面向きでなければならず、横顔は不可。"
+    },
+    "accessories": {
+      "en": "No accessories are permitted in the photo.",
+      "ko": "액세서리 착용 금지.",
+      "ja": "アクセサリーの着用不可。"
+    }
+  },
+  "unverified": ["head_height", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "headwear_policy"],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "3.5 × 4.5cm",
+      "research_value": "3 × 4cm per Paraguay MRE's official online visa pages (mre.gov.py/visas/ and mre.gov.py/visasenlinea/, identical text on both)",
+      "source_url": "https://www.mre.gov.py/visas/"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "Paraguay's MRE (Ministerio de Relaciones Exteriores) is authoritative for visas. Both https://www.mre.gov.py/visas/ and https://www.mre.gov.py/visasenlinea/ state identical text: 'Foto tamaño 3x4 en formato JPG, actualizada con fondo blanco, de frente (no de perfil) sin accesorios.' Individual Paraguayan consulates abroad list differing sizes for passport (not visa) photos, suggesting local consulate discretion applies to passports specifically, while the centralized visa system uses 3x4cm uniformly."
+  }
+}

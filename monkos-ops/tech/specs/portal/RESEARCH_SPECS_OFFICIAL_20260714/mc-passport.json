@@ -1,0 +1,88 @@
+{
+  "slug": "mc-passport",
+  "batch": 16,
+  "verified": {
+    "size": {
+      "value": "45 × 35mm (4.5 × 3.5cm)",
+      "source_url": "https://monservicepublic.gouv.mc/en/themes/nationality-and-residency/monegasque-nationality/identity-documents/how-to-obtain-a-passport"
+    },
+    "background": {
+      "value": "Light background only — the official page explicitly states 'no white backgrounds'.",
+      "source_url": "https://monservicepublic.gouv.mc/en/themes/nationality-and-residency/monegasque-nationality/identity-documents/how-to-obtain-a-passport"
+    },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": {
+      "value": "Less than 6 months old.",
+      "source_url": "https://monservicepublic.gouv.mc/en/themes/nationality-and-residency/monegasque-nationality/identity-documents/how-to-obtain-a-passport"
+    },
+    "file_spec": {
+      "value": "Must be an original print taken by a professional photographer; photo-booth, personal, or scanned photographs are rejected. Submitting the full contact sheet is preferable so the passport office can cut it to size themselves.",
+      "source_url": "https://monservicepublic.gouv.mc/en/themes/nationality-and-residency/monegasque-nationality/identity-documents/how-to-obtain-a-passport"
+    },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": {
+      "value": "You should not smile; show your face clearly.",
+      "source_url": "https://monservicepublic.gouv.mc/en/themes/nationality-and-residency/monegasque-nationality/identity-documents/how-to-obtain-a-passport"
+    },
+    "glasses_policy": {
+      "value": "Without glasses (glasses are not permitted); no exception documented in the official source.",
+      "source_url": "https://monservicepublic.gouv.mc/en/themes/nationality-and-residency/monegasque-nationality/identity-documents/how-to-obtain-a-passport"
+    },
+    "ears_visibility": {
+      "value": "Ears and face unobstructed.",
+      "source_url": "https://monservicepublic.gouv.mc/en/themes/nationality-and-residency/monegasque-nationality/identity-documents/how-to-obtain-a-passport"
+    },
+    "face_visibility": {
+      "value": "Show your face; ears and face unobstructed.",
+      "source_url": "https://monservicepublic.gouv.mc/en/themes/nationality-and-residency/monegasque-nationality/identity-documents/how-to-obtain-a-passport"
+    },
+    "headwear_policy": {
+      "value": "Head must be uncovered; the official source does not mention a religious exemption.",
+      "source_url": "https://monservicepublic.gouv.mc/en/themes/nationality-and-residency/monegasque-nationality/identity-documents/how-to-obtain-a-passport"
+    },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://monservicepublic.gouv.mc/en/themes/nationality-and-residency/monegasque-nationality/identity-documents/how-to-obtain-a-passport",
+      "source_url": "https://monservicepublic.gouv.mc/en/themes/nationality-and-residency/monegasque-nationality/identity-documents/how-to-obtain-a-passport"
+    }
+  },
+  "restrictions_i18n": {
+    "expression": {
+      "en": "You should not smile; show your face clearly.",
+      "ko": "미소 짓지 말 것; 얼굴이 뚜렷이 보이도록 할 것.",
+      "ja": "微笑まないこと。顔がはっきり見えるようにすること。"
+    },
+    "glasses": {
+      "en": "Without glasses (glasses are not permitted); no exception documented in the official source.",
+      "ko": "안경 착용 불가; 공식 출처에 예외 규정 없음.",
+      "ja": "眼鏡の着用不可。公式情報源に例外の記載はない。"
+    },
+    "ears": {
+      "en": "Ears and face unobstructed.",
+      "ko": "귀와 얼굴이 가려지지 않아야 함.",
+      "ja": "耳と顔が隠れていないこと。"
+    },
+    "face_visibility": {
+      "en": "Show your face; ears and face unobstructed.",
+      "ko": "얼굴이 뚜렷이 보이도록 할 것; 귀와 얼굴이 가려지지 않아야 함.",
+      "ja": "顔がはっきり見えるようにすること。耳と顔が隠れていないこと。"
+    },
+    "headwear": {
+      "en": "Head must be uncovered; the official source does not mention a religious exemption.",
+      "ko": "머리는 가리지 않아야 함; 공식 출처에는 종교적 예외가 언급되어 있지 않음.",
+      "ja": "頭部を覆わないこと。公式情報源には宗教上の例外について言及がない。"
+    }
+  },
+  "unverified": ["head_height", "clothing_restriction", "accessories"],
+  "db_conflicts": [
+    {
+      "field": "background",
+      "db_value": "흰색",
+      "research_value": "Official Monaco government portal states 'Light background only (no white backgrounds)' — the opposite of DB's white.",
+      "source_url": "https://monservicepublic.gouv.mc/en/themes/nationality-and-residency/monegasque-nationality/identity-documents/how-to-obtain-a-passport"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "monservicepublic.gouv.mc is Monaco's official government public-service portal. Size '4.5 x 3.5 cm' as printed on the source is the same physical dimensions as DB's '3.5 x 4.5cm', just listed width-first; not logged as a conflict. Photos must be produced by a professional photographer — self-service, scanned, or digital photos are explicitly rejected, which is unusual among the countries surveyed in this batch."
+  }
+}

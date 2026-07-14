@@ -1,0 +1,29 @@
+{
+  "slug": "cl-passport",
+  "batch": 5,
+  "verified": {
+    "official_source_url": {
+      "value": "https://www.chileatiende.gob.cl/fichas/3445-pasaporte",
+      "source_url": "https://www.chileatiende.gob.cl/fichas/3445-pasaporte"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note": "Successfully fetched the official ChileAtiende/Registro Civil e Identificación (SRCeI) passport page directly: it confirms the passport document itself is valid for 10 years, but does not publish a citizen-facing photo specification (size/background/head height). This is because SRCeI captures the passport photo digitally in person at the civil registry office rather than accepting a pre-made photo, which plausibly explains why no official numeric photo spec is published. Third-party ID-photo services (visafoto, photoaid, rutificadorchile, etc.) repeatedly cite 4.5x4.5cm/white background, but per the truthfulness gate these are excluded as non-official sources, so size/background/head_height remain unverified rather than confirmed or flagged as conflicting."
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "slug": "nr-passport",
+  "batch": 19,
+  "verified": {
+    "size": {
+      "value": "35-40mm wide, 45-50mm high (given as an acceptable range, not a single fixed size).",
+      "source_url": "https://justice.gov.nr/passport-division/"
+    },
+    "background": {
+      "value": "White background, no shadows or reflections.",
+      "source_url": "https://justice.gov.nr/passport-division/"
+    },
+    "head_height": {
+      "value": "Face measured chin-to-crown: maximum 36mm, minimum 32mm.",
+      "source_url": "https://justice.gov.nr/passport-division/"
+    },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": {
+      "value": "Eyes open, mouth closed, no smiling.",
+      "source_url": "https://justice.gov.nr/passport-division/"
+    },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": {
+      "value": "Hair must not obstruct any part of the face so that both ears can be seen.",
+      "source_url": "https://justice.gov.nr/passport-division/"
+    },
+    "face_visibility": {
+      "value": "Face centered and looking straight at the camera; hair must not obstruct any part of the face. No retouching or removal of any kind from face or background.",
+      "source_url": "https://justice.gov.nr/passport-division/"
+    },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://justice.gov.nr/passport-division/",
+      "source_url": "https://justice.gov.nr/passport-division/"
+    }
+  },
+  "restrictions_i18n": {
+    "expression": {
+      "en": "Eyes open, mouth closed, no smiling.",
+      "ko": "눈을 뜨고 입은 다물며, 미소(웃는 표정) 금지.",
+      "ja": "目を開け、口を閉じ、笑顔は禁止。"
+    },
+    "ears": {
+      "en": "Hair must not obstruct any part of the face so that both ears can be seen.",
+      "ko": "머리카락이 얼굴의 어느 부분도 가리지 않아야 하며 양쪽 귀가 보여야 함.",
+      "ja": "髪の毛が顔のいかなる部分も覆わないようにし、両耳が見えるようにすること。"
+    },
+    "face_visibility": {
+      "en": "Face centered and looking straight at the camera; hair must not obstruct any part of the face. No retouching or removal of any kind from face or background.",
+      "ko": "얼굴은 중앙에 위치하고 카메라를 정면으로 응시해야 하며, 머리카락이 얼굴의 어느 부분도 가리면 안 됨. 얼굴이나 배경에 대한 리터칭·제거 보정 일체 금지.",
+      "ja": "顔は中央に配置し、カメラを正面から見つめること。髪の毛が顔のいかなる部分も覆わないこと。顔や背景のリタッチ・除去修正は一切禁止。"
+    }
+  },
+  "unverified": ["validity", "file_spec", "clothing_restriction", "glasses_policy", "headwear_policy", "accessories"],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "3.5 × 4.5cm",
+      "research_value": "35-40mm × 45-50mm (acceptable range per Nauru Passport Division; the DB's fixed 3.5×4.5cm sits at the minimum edge of this range, so it is compatible but not identical to the published spec)",
+      "source_url": "https://justice.gov.nr/passport-division/"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "Source is the Department of Justice & Border Control, Passport Division — the official Nauru government passport authority. head_height matches the DB value exactly (32-36mm = 3.2-3.6cm); size is a range whose minimum equals the DB's fixed value (see db_conflicts for detail)."
+  }
+}

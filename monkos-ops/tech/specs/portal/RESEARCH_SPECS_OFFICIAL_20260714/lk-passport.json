@@ -1,0 +1,60 @@
+{
+  "slug": "lk-passport",
+  "batch": 15,
+  "verified": {
+    "validity": {
+      "value": "Only photographs taken within the last 6 months are valid",
+      "source_url": "https://www.immigration.gov.lk/pages_e.php?id=7"
+    },
+    "glasses_policy": {
+      "value": "The photo should show the applicant's eyes clearly without spectacles",
+      "source_url": "https://www.immigration.gov.lk/pages_e.php?id=49"
+    },
+    "headwear_policy": {
+      "value": "Applicants who wish to wear caps and scarves may do so, but the forehead and ears must be clearly visible, and shadows of the scarf must not fall on the face",
+      "source_url": "https://www.immigration.gov.lk/pages_e.php?id=49"
+    },
+    "ears_visibility": {
+      "value": "The forehead and ears must be clearly visible (stated in the context of applicants wearing caps/scarves)",
+      "source_url": "https://www.immigration.gov.lk/pages_e.php?id=49"
+    },
+    "file_spec": {
+      "value": "Photographs must be submitted as digital photographs taken via an authorised/registered photo studio (or captured on-site at a Department centre); printed photographs are no longer accepted. Photos must conform to International Civil Aviation Organization (ICAO) standards.",
+      "source_url": "https://www.immigration.gov.lk/pages_e.php?id=7"
+    },
+    "official_source_url": {
+      "value": "https://www.immigration.gov.lk/pages_e.php?id=7",
+      "source_url": "https://www.immigration.gov.lk/pages_e.php?id=7"
+    }
+  },
+  "restrictions_i18n": {
+    "glasses": {
+      "en": "The photo should show the applicant's eyes clearly without spectacles.",
+      "ko": "사진에는 안경을 착용하지 않은 상태로 신청자의 눈이 선명하게 보여야 한다.",
+      "ja": "写真には眼鏡を着用しない状態で申請者の目がはっきりと見えなければならない。"
+    },
+    "headwear": {
+      "en": "Applicants who wish to wear caps and scarves may do so, but the forehead and ears must be clearly visible, and shadows from the scarf must not fall on the face.",
+      "ko": "모자나 스카프 착용을 원하는 신청자는 착용할 수 있으나, 이마와 귀가 선명하게 보여야 하며 스카프 그림자가 얼굴에 지지 않아야 한다.",
+      "ja": "帽子やスカーフの着用を希望する申請者は着用できるが、額と耳がはっきりと見えなければならず、スカーフの影が顔にかかってはならない。"
+    },
+    "ears": {
+      "en": "The forehead and ears must be clearly visible in the photo.",
+      "ko": "사진에서 이마와 귀가 선명하게 보여야 한다.",
+      "ja": "写真では額と耳がはっきりと見えなければならない。"
+    }
+  },
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "expression_restriction",
+    "face_visibility",
+    "clothing_restriction",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Since 10 August 2015, Sri Lankan passport applicants no longer submit their own photograph prints; the biometric-enabled photograph is either captured on-site at the Department of Immigration and Emigration's head/regional offices and DS-DRP units, or taken at an authorised/registered photo studio and transmitted digitally with an acknowledgement number (per https://www.immigration.gov.lk/pages_e.php?id=7 and id=49, both directly fetched and confirmed). The Department's official pages state the photo must conform to ICAO standards and give qualitative rules (eyes visible without spectacles; forehead/ears visible if wearing religious headwear; 6-month recency) but do not publish an explicit millimeter size, exact background colour, or head-height ratio -- these were not found on any official immigration.gov.lk page reached in this research pass, so they are left unverified rather than filled in from third-party photo-service sites."
+  }
+}

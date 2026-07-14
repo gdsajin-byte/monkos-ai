@@ -1,0 +1,103 @@
+{
+  "slug": "bz-visa",
+  "batch": 4,
+  "verified": {
+    "size": {
+      "value": "2 x 2 inches (actual photo size), head occupying 70-80% of photo. The official Belize Immigration Visa Requirements page directs applicants to the same Passport Photo Specifications page for photo standards, and the Belize Embassy (Washington) visa page separately confirms a 'passport size photograph' is required for visa applications.",
+      "source_url": "https://immigration.gov.bz/passport/passport-photo-requirements/"
+    },
+    "background": {
+      "value": "White background, uniform lighting, no shadows or reflections (per Belize Immigration Dept. standard applied to visa photos)",
+      "source_url": "https://immigration.gov.bz/passport/passport-photo-requirements/"
+    },
+    "head_height": {
+      "value": "1.25 in to 1.41 in (31.8mm to 35.8mm), chin to crown [percentage framing '70-80% of photo' removed per self-consistency check: 70-80% of a 2in photo computes to 1.40-1.60in, which does not match the stated inch figures]",
+      "source_url": "https://immigration.gov.bz/passport/passport-photo-requirements/"
+    },
+    "validity": {
+      "value": "Photo must be less than 6 months old",
+      "source_url": "https://immigration.gov.bz/passport/passport-photo-requirements/"
+    },
+    "clothing_restriction": {
+      "value": "No sleeveless shirts or tank tops, chest area must be covered; no camouflage tops, military or government uniforms",
+      "source_url": "https://immigration.gov.bz/passport/passport-photo-requirements/"
+    },
+    "expression_restriction": {
+      "value": "Neutral facial expression must be maintained (no smiling or frowning); eyes open (no squinting); mouth closed",
+      "source_url": "https://immigration.gov.bz/passport/passport-photo-requirements/"
+    },
+    "glasses_policy": {
+      "value": "No glasses, tinted shades or sunglasses",
+      "source_url": "https://immigration.gov.bz/passport/passport-photo-requirements/"
+    },
+    "ears_visibility": {
+      "value": "Both ears showing",
+      "source_url": "https://immigration.gov.bz/passport/passport-photo-requirements/"
+    },
+    "face_visibility": {
+      "value": "Face looking directly at the camera, no hair across the face or eyes; visibility of the eyes is important",
+      "source_url": "https://immigration.gov.bz/passport/passport-photo-requirements/"
+    },
+    "headwear_policy": {
+      "value": "No head coverings except for religious, cultural, or medical justification",
+      "source_url": "https://immigration.gov.bz/passport/passport-photo-requirements/"
+    },
+    "accessories": {
+      "value": "Minimal facial jewelry so it does not reflect light in the photo or prove a distraction, except for religious, cultural, or medical justification",
+      "source_url": "https://immigration.gov.bz/passport/passport-photo-requirements/"
+    },
+    "official_source_url": {
+      "value": "https://immigration.gov.bz/visa/visa-requirements/",
+      "source_url": "https://immigration.gov.bz/visa/visa-requirements/"
+    }
+  },
+  "restrictions_i18n": {
+    "clothing": {
+      "en": "No sleeveless shirts or tank tops; chest area must be covered. No camouflage tops, military, or government uniforms.",
+      "ko": "민소매·탱크톱 금지, 가슴 부위가 가려져야 함. 군복 무늬(카모플라주)·군복·관공서 제복 착용 금지.",
+      "ja": "ノースリーブ・タンクトップ不可、胸元は覆われていること。迷彩柄・軍服・官公庁の制服は着用不可。"
+    },
+    "expression": {
+      "en": "Neutral facial expression required; no smiling or frowning; eyes open, mouth closed.",
+      "ko": "무표정 유지 필수. 미소·찡그림 금지. 눈은 뜨고 입은 다물어야 함.",
+      "ja": "無表情を維持すること。笑顔や眉をひそめる表情は不可。目を開け、口は閉じること。"
+    },
+    "glasses": {
+      "en": "No glasses, tinted shades, or sunglasses permitted.",
+      "ko": "안경·색안경·선글라스 착용 전면 금지.",
+      "ja": "眼鏡・色付きレンズ・サングラスの着用は一切不可。"
+    },
+    "ears": {
+      "en": "Both ears must be visible in the photo.",
+      "ko": "양쪽 귀가 사진에 모두 보여야 함.",
+      "ja": "両耳が写真に写っていること。"
+    },
+    "face_visibility": {
+      "en": "Eyes must be clearly visible; no hair across the face or eyes.",
+      "ko": "눈이 선명하게 보여야 하며, 머리카락이 얼굴이나 눈을 가려서는 안 됨.",
+      "ja": "目がはっきり見えること。髪の毛が顔や目にかかってはならない。"
+    },
+    "headwear": {
+      "en": "No head coverings permitted, except for religious, cultural, or medical reasons.",
+      "ko": "종교적·문화적·의료적 사유가 아닌 이상 머리가리개 착용 불가.",
+      "ja": "宗教的・文化的・医療的な理由がある場合を除き、被り物は不可。"
+    },
+    "accessories": {
+      "en": "Minimal facial jewelry so it does not reflect light or distract, except for religious, cultural, or medical reasons.",
+      "ko": "얼굴 장신구는 빛 반사나 시선 분산을 일으키지 않도록 최소화(종교·문화·의료적 사유 예외).",
+      "ja": "顔のアクセサリーは光の反射や気を散らす要因にならないよう最小限に(宗教的・文化的・医療的理由は例外)。"
+    }
+  },
+  "unverified": [
+    "file_spec"
+  ],
+  "db_conflicts": [
+    {
+      "field": "head_height",
+      "db_value": "3.5~4.1cm",
+      "research_value": "31.8mm to 35.8mm (1.25in-1.41in)",
+      "source_url": "https://immigration.gov.bz/passport/passport-photo-requirements/"
+    }
+  ],
+  "cross_verification": {}
+}

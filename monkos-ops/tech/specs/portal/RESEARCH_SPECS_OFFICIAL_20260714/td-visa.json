@@ -1,0 +1,28 @@
+{
+  "slug": "td-visa",
+  "batch": 24,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://www.ambatchadberlin.de/lambassade/les-services/visa/",
+      "source_url": "https://www.ambatchadberlin.de/lambassade/les-services/visa/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Verified via the Embassy of the Republic of Chad in Berlin's official visa service page, which confirms '2 photos d'identite' (2 identity photos) are required alongside the application form (2 copies), passport, EUR 100 fee, an invitation letter, and proof of accommodation — but this page does not itself state a photo size or background color. As of 11 May 2026, Chad's Ministry of Public Security and Immigration (E-Visa Sub-Directorate) mandated that all new visa applications be filed exclusively online via evisa.td; that portal was checked directly but did not surface photo specifications during this research. The passport-specific 4x4cm (40/40mm) figure found for td-passport is not carried over here since it was not explicitly stated to apply to visa photos on this page."
+  }
+}

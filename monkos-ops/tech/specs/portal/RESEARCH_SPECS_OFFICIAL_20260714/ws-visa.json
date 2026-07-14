@@ -1,0 +1,41 @@
+{
+  "slug": "ws-visa",
+  "batch": 28,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://www.mfat.gov.ws/visas/",
+      "source_url": "https://www.mfat.gov.ws/visas/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Samoa Ministry of Foreign Affairs and Trade (mfat.gov.ws) 'Visas' page only links out to visa-requirement-by-nationality and entry-requirement PDFs (general entry rules — no visitor visa needed under 60 days for most nationalities, per mfat.gov.ws/wp-content/uploads/2013/10/Entry-requirements-into-Samoa.pdf); none of these documents contain a photograph specification. No distinct official Samoa visa-photo specification could be located."
+  }
+}

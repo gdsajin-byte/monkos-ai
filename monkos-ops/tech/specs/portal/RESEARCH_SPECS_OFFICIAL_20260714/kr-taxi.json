@@ -1,0 +1,54 @@
+{
+  "slug": "kr-taxi",
+  "batch": 14,
+  "verified": {
+    "size": {
+      "value": "3.5cm × 4.5cm (여권용 규격). 「여객자동차 운수사업법 시행규칙」 별지 제28호서식(개정 2024.12.26.) 원문: '가. 운전자격증 발급 : 사진(3.5cm×4.5cm) 2장 / 나. 운전자격증명 발급 : 사진(3.5cm×4.5cm) 2장'. 정정·재발급은 각 1장. 별지 제31호서식(운전자격증명 자체 서식, 개정 2021.4.8.)에도 '사진(여권용)(3.5cm×4.5cm)'로 명시됨.",
+      "source_url": "https://www.law.go.kr/LSW/lsBylInfoPLinkR.do?lsiSeq=273021&lsNm=%EC%97%AC%EA%B0%9D%EC%9E%90%EB%8F%99%EC%B0%A8+%EC%9A%B4%EC%88%98%EC%82%AC%EC%97%85%EB%B2%95+%EC%8B%9C%ED%96%89%EA%B7%9C%EC%B9%99&bylNo=0028&bylBrNo=00&bylCls=BF&bylEfYd=20250728&bylEfYdYn=Y"
+    },
+    "background": {
+      "value": "단색 배경(검은색 제외)의 컬러사진. 흰색으로 한정되지 않음 — 검은색만 아니면 단색 배경 허용.",
+      "source_url": "https://lic.kotsa.or.kr/road/html.do?menu_idx=37"
+    },
+    "validity": {
+      "value": "촬영 후 6개월 이내",
+      "source_url": "https://lic.kotsa.or.kr/road/html.do?menu_idx=37"
+    },
+    "file_spec": {
+      "value": "컬러사진 필수. 현장에서 셀카(셀프촬영)로 제출한 사진은 수용 불가.",
+      "source_url": "https://lic.kotsa.or.kr/road/html.do?menu_idx=37"
+    },
+    "official_source_url": {
+      "value": "https://lic.kotsa.or.kr/road/html.do?menu_idx=37",
+      "source_url": "https://lic.kotsa.or.kr/road/html.do?menu_idx=37"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "head_height",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "5 × 7cm",
+      "research_value": "3.5cm × 4.5cm (여권용)",
+      "source_url": "https://www.law.go.kr/LSW/lsBylInfoPLinkR.do?lsiSeq=273021&lsNm=%EC%97%AC%EA%B0%9D%EC%9E%90%EB%8F%99%EC%B0%A8+%EC%9A%B4%EC%88%98%EC%82%AC%EC%97%85%EB%B2%95+%EC%8B%9C%ED%96%89%EA%B7%9C%EC%B9%99&bylNo=0028&bylBrNo=00&bylCls=BF&bylEfYd=20250728&bylEfYdYn=Y"
+    },
+    {
+      "field": "background",
+      "db_value": "흰색",
+      "research_value": "단색(검은색 제외) — 흰색으로 한정한다는 명시 없음",
+      "source_url": "https://lic.kotsa.or.kr/road/html.do?menu_idx=37"
+    }
+  ],
+  "cross_verification": {
+    "note": "택시운전자격증(카드형)과 택시운전자격증명(게시용 증명서)은 별개 서식이나 2024.12.26 개정 이후 두 문서 모두 사진 규격이 3.5×4.5cm로 통일되어 있음 (여객자동차 운수사업법 시행규칙 별지 제28호서식 PDF 원문 직접 확인). 정부24(gov.kr) 페이지에는 '사진(2.5cm×3.0cm) 2장'이라는 상이한 수치가 노출되어 있어 최신 개정 반영이 지연된 것으로 추정되나, law.go.kr의 최신 개정 서식(2024.12.26)을 정본으로 채택함. DB의 '5×7cm'는 법령상 자격증/자격증명 사진규격도, 자격증명 서식 용지 크기(148mm×105mm)도 아니므로 근거를 확인하지 못함."
+  }
+}

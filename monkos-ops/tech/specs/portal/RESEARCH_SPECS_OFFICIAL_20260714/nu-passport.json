@@ -1,0 +1,50 @@
+{
+  "slug": "nu-passport",
+  "batch": 20,
+  "verified": {
+    "size": {
+      "value": "Niue does not issue its own national passport. Niue is a self-governing state in free association with New Zealand, and under New Zealand law all Niueans are New Zealand citizens; they apply for and travel on a New Zealand passport (35mm wide x 45mm high), to which a Niue-specific travel document/exemption label may be affixed.",
+      "source_url": "https://www.passports.govt.nz/passport-photos"
+    },
+    "background": {
+      "value": "Applies the New Zealand passport standard: plain, light background — explicitly not white (pale greys and blues are recommended over white); strong contrast with the face, no shadows or objects behind the head.",
+      "source_url": "https://www.passports.govt.nz/passport-photos"
+    },
+    "head_height": {
+      "value": "Applies the New Zealand passport standard: chin-to-crown head height should occupy 70-80% of the photo height, approximately 32-36mm.",
+      "source_url": "https://www.passports.govt.nz/passport-photos"
+    },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://www.passports.govt.nz/passport-photos (Niue itself has no passport-issuing authority; the New Zealand Department of Internal Affairs — Passports is the applicable authority)",
+      "source_url": "https://www.mfat.govt.nz/en/countries-and-regions/australia-and-pacific/niue"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["validity", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "3.5 × 4.5cm (entered as if Niue issues its own national passport)",
+      "research_value": "No such document exists. Niue's Ministry of Foreign Affairs and Trade counterpart function is covered by New Zealand; the New Zealand Ministry of Foreign Affairs and Trade confirms 'all Niueans are New Zealand citizens' under NZ law, so a 'Niuean passport' is in practice a New Zealand passport (35 x 45mm). A Government of Niue media release additionally confirms the 'Niue Visa Exemption' for people of Niuean descent 'is affixed to passports' rather than being a passport in itself, consistent with there being no separate Niue-issued travel document.",
+      "source_url": "https://www.gov.nu/media-releases/niue-immigration-department-announces-changes-for-niue-visa-exemption-and-permanent-residency-for-passports"
+    },
+    {
+      "field": "background",
+      "db_value": "흰색 (white)",
+      "research_value": "Since the applicable document is the New Zealand passport, New Zealand's official guidance applies: the background must NOT be white — a plain, light background is required but 'pale greys and blues work better than white', with strong contrast against the face. This is the same conflict independently confirmed for nz-passport.json (same source, same standard).",
+      "source_url": "https://www.passports.govt.nz/passport-photos"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "Primary finding for this slug: Niue has no passport-issuing authority of its own. This was corroborated by (1) the New Zealand Ministry of Foreign Affairs and Trade's Niue country page, which states plainly that all Niueans are New Zealand citizens under NZ law, and (2) a Government of Niue (gov.nu) official media release describing the 'Niue Visa Exemption' as a label 'affixed to passports' and processed by the Niue Immigration Office — language consistent with Niueans holding New Zealand passports rather than a distinct national one. Because the applicable document is therefore the New Zealand passport, the size/background/head_height fields above report New Zealand's own official passport-photo standard (passports.govt.nz) rather than any Niue-specific figure, and are explicitly framed that way in each value string. Composition details beyond size/background/head_height were not separately re-verified for this record (see nz-passport.json for the fuller New Zealand passport photo rule set) and are left unverified here to avoid duplicating unverified assumptions."
+  }
+}

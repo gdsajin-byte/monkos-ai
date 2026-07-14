@@ -1,0 +1,92 @@
+{
+  "slug": "za-passport",
+  "batch": 28,
+  "verified": {
+    "size": {
+      "value": "35mm × 45mm — 'Two recent, clear, unmounted photographs of the applicant (showing head and shoulders) measuring 35mm x 45mm must accompany the application' (BI-73 form); corroborated by DHA's 'Passport & ID Photograph Specifications' flyer.",
+      "source_url": "https://www.dha.gov.za/images/PDFs/Travel%20Documents/bi-73.pdf"
+    },
+    "background": {
+      "value": "Light grey or plain cream-coloured background (source explicitly does not require white)",
+      "source_url": "https://stanonprodmtpdxpzan.blob.core.windows.net/dxp/2024-04/dha-passport-id-photo-specifications.pdf"
+    },
+    "head_height": {
+      "value": "At least 29mm and no more than 34mm, per the official photographic template diagram (overall photo 35mm × 45mm)",
+      "source_url": "https://stanonprodmtpdxpzan.blob.core.windows.net/dxp/2024-04/dha-passport-id-photo-specifications.pdf"
+    },
+    "validity": {
+      "value": "Not more than one (1) month old",
+      "source_url": "https://stanonprodmtpdxpzan.blob.core.windows.net/dxp/2024-04/dha-passport-id-photo-specifications.pdf"
+    },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": {
+      "value": "Neutral expression, mouth closed; no obvious grinning, frowning, or raised eyebrows",
+      "source_url": "https://stanonprodmtpdxpzan.blob.core.windows.net/dxp/2024-04/dha-passport-id-photo-specifications.pdf"
+    },
+    "glasses_policy": {
+      "value": "Permitted if eyes are clearly visible with no flash reflection off the lenses; no dark-tinted lenses or heavy frames; frames must not cover any part of the eyes",
+      "source_url": "https://stanonprodmtpdxpzan.blob.core.windows.net/dxp/2024-04/dha-passport-id-photo-specifications.pdf"
+    },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": {
+      "value": "Both edges of the face shown clearly; face square onto the camera, not tilted or portrait-style (looking over one shoulder)",
+      "source_url": "https://stanonprodmtpdxpzan.blob.core.windows.net/dxp/2024-04/dha-passport-id-photo-specifications.pdf"
+    },
+    "headwear_policy": {
+      "value": "Not permitted except for religious reasons; facial features from the bottom of the chin to the top of the forehead and both edges of the face must be clearly shown",
+      "source_url": "https://stanonprodmtpdxpzan.blob.core.windows.net/dxp/2024-04/dha-passport-id-photo-specifications.pdf"
+    },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://stanonprodmtpdxpzan.blob.core.windows.net/dxp/2024-04/dha-passport-id-photo-specifications.pdf",
+      "source_url": "https://stanonprodmtpdxpzan.blob.core.windows.net/dxp/2024-04/dha-passport-id-photo-specifications.pdf"
+    }
+  },
+  "restrictions_i18n": {
+    "expression": {
+      "en": "Neutral expression, mouth closed; no obvious grinning, frowning, or raised eyebrows.",
+      "ko": "입을 다문 무표정을 유지해야 하며, 뚜렷한 미소·찡그림·눈썹을 치켜올리는 표정은 허용되지 않습니다.",
+      "ja": "口を閉じた無表情であること。明らかな笑顔・しかめ面・眉を上げた表情は認められません。"
+    },
+    "glasses": {
+      "en": "Glasses are permitted if eyes are clearly visible with no flash reflection off the lenses; no dark-tinted lenses or heavy frames; frames must not cover any part of the eyes.",
+      "ko": "안경은 렌즈에 플래시 반사가 없이 눈이 선명하게 보이는 경우에 한해 허용되며, 짙은 색 렌즈나 두꺼운 프레임은 불가하고 프레임이 눈의 일부라도 가려서는 안 됩니다.",
+      "ja": "眼鏡は、レンズにフラッシュの反射がなく目がはっきり見える場合に限り着用可能です。濃い色のレンズや太いフレームは不可で、フレームが目の一部でも覆ってはいけません。"
+    },
+    "face_visibility": {
+      "en": "Both edges of the face must be shown clearly; face square onto the camera, not tilted or portrait-style (looking over one shoulder).",
+      "ko": "얼굴 양쪽 윤곽이 뚜렷이 보여야 하며, 카메라를 정면으로 향하고 기울이거나 옆으로 돌린 자세(어깨너머로 보는 듯한 구도)는 허용되지 않습니다.",
+      "ja": "顔の両端がはっきりと見える必要があり、カメラに対して正面を向き、傾けたり横向き(肩越しのような構図)にしたりしてはいけません。"
+    },
+    "headwear": {
+      "en": "Head coverings are not permitted except for religious reasons; facial features from the bottom of the chin to the top of the forehead and both edges of the face must be clearly shown.",
+      "ko": "머리 가리개는 종교적 사유를 제외하고 허용되지 않으며, 종교적 사유로 착용하는 경우에도 턱 끝부터 이마 상단까지, 그리고 얼굴 양쪽 윤곽이 뚜렷이 보여야 합니다.",
+      "ja": "宗教上の理由を除き、頭部を覆うものは認められません。宗教上の理由で着用する場合でも、あごの先から額の上部まで、および顔の両端がはっきりと見える必要があります。"
+    }
+  },
+  "unverified": [
+    "file_spec",
+    "clothing_restriction",
+    "ears_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [
+    {
+      "field": "background",
+      "db_value": "흰색",
+      "research_value": "Light grey or plain cream-coloured background — the DHA specification explicitly does not call for a white background",
+      "source_url": "https://stanonprodmtpdxpzan.blob.core.windows.net/dxp/2024-04/dha-passport-id-photo-specifications.pdf"
+    },
+    {
+      "field": "head_height",
+      "db_value": "3.2~3.6cm",
+      "research_value": "2.9~3.4cm (at least 29mm, no more than 34mm), per the DHA official photographic template",
+      "source_url": "https://stanonprodmtpdxpzan.blob.core.windows.net/dxp/2024-04/dha-passport-id-photo-specifications.pdf"
+    }
+  ],
+  "cross_verification": {
+    "size": "Independently confirmed by two separate official Department of Home Affairs (DHA) documents: the BI-73 passport/travel-document application form ('Photographs: ... measuring 35mm x 45mm') and the DHA 'Passport & ID Photograph Specifications' public-information flyer (diagram labelled 35mm width). Both are dha.gov.za-issued documents and agree exactly.",
+    "domain_authenticity": "[Batch 28 adversarial re-audit]: The 'Passport & ID Photograph Specifications' flyer (source for background/head_height/validity/expression_restriction/glasses_policy/face_visibility/headwear_policy) is hosted at a stanonprodmtpdxpzan.blob.core.windows.net URL — an Azure Blob Storage address with no government string in the hostname, which on a domain-string-only check would fail the government/official-domain test. Direct visual inspection of the PDF (fetched and read in full) confirms it displays the 'home affairs / Department Home Affairs / REPUBLIC OF SOUTH AFRICA' national coat of arms, directs readers to www.dha.gov.za, and lists the DHA public helpline 0800 60 11 90 — i.e. it is the genuine DHA-authored flyer, merely served from DHA's cloud-hosted document/DXP backend rather than a dha.gov.za-pathed URL. All quoted values (background, head_height, validity, expression, glasses, face_visibility, headwear) were checked verbatim against the fetched PDF text and match exactly. Retained as a verified government source on this basis; no change made to the underlying data values."
+  }
+}

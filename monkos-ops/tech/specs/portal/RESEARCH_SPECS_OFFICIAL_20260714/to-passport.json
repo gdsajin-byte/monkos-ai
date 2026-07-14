@@ -1,0 +1,29 @@
+{
+  "slug": "to-passport",
+  "batch": 26,
+  "verified": {
+    "official_source_url": {
+      "value": "https://ago.gov.to/cms/images/LEGISLATION/SUBORDINATE/2508/2508-0001/PassportRegulations_2.pdf",
+      "source_url": "https://ago.gov.to/cms/images/LEGISLATION/SUBORDINATE/2508/2508-0001/PassportRegulations_2.pdf"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Fetched and full-text-searched the official Tonga Passport Regulations (Cap. 25.08.1, 2016 Revised Edition, ago.gov.to — Tonga's Attorney General's Office legislation repository) directly. The regulation requires 'two recent photographs of the applicant, endorsed with the words \"I certify this is a true likeness of (applicant's name)\" on the reverse of the photograph and signed by' a qualifying witness (minister of religion, law practitioner, magistrate, public servant, medical practitioner, etc. who has known the applicant 12+ months). A full-text search of the entire 17-page regulation for 'mm', 'cm', 'inch', 'size', and 'background' returned no matches — Tonga's primary law does not specify numeric photo dimensions, background colour, or head-height, relying instead on a personal-witness certification system rather than ICAO biometric measurement standards. Because no official numeric spec exists to verify or refute, technical fields are left unverified rather than filled with third-party estimates."
+  }
+}

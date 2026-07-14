@@ -1,0 +1,35 @@
+{
+  "slug": "nu-visa",
+  "batch": 20,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://www.gov.nu/media-releases/niue-immigration-department-announces-changes-for-niue-visa-exemption-and-permanent-residency-for-passports",
+      "source_url": "https://www.gov.nu/media-releases/niue-immigration-department-announces-changes-for-niue-visa-exemption-and-permanent-residency-for-passports"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "3.5 × 4.5cm",
+      "research_value": "No standard 'Niue visa' photo specification was found. Directly fetching the Government of Niue's own arrival-form page (gov.nu/niue-passenger-arrival-form) shows most travellers enter via an Arrival Card requiring only an uploaded image of the passport bio-page, not a dedicated ID-style photo. A separate gov.nu media release describes a 'Niue Visa Exemption' label for people of Niuean descent, affixed to their (New Zealand) passport and processed by the Niue Immigration Office for a fee, but does not specify any photo requirement for that process.",
+      "source_url": "https://www.gov.nu/niue-passenger-arrival-form"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "Niue does not appear to operate a conventional pre-photo visa-application process for most visitors: entry is commonly visa-free for short stays and processed via an Arrival Card (confirmed by direct fetch of gov.nu's arrival-form page, which asks for a photo/copy of the passport bio-page, not a portrait photo). The only Niue-specific document with an explicit photo-adjacent element found was the 'Niue Visa Exemption' label for people of Niuean descent (gov.nu media release), which is affixed to an existing passport rather than requiring its own submitted photograph — no composition specification for it was published on gov.nu. Given the lack of a confirmed government-sourced photo spec for a 'Niue visa' as such, all composition fields are left unverified rather than assumed."
+  }
+}

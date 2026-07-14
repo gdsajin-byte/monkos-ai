@@ -1,0 +1,77 @@
+{
+  "slug": "br-passport",
+  "batch": 3,
+  "verified": {
+    "size": {
+      "value": "5 x 7 cm (identity/passport standard size, per Polícia Federal / Itamaraty)",
+      "source_url": "https://www.gov.br/mre/pt-br/embaixada-sao-jose/consular/especificacoes-da-fotografia-para-o-pedido-de-passaporte"
+    },
+    "background": {
+      "value": "White background (fundo branco), photo taken facing forward",
+      "source_url": "https://www.gov.br/mre/pt-br/embaixada-sao-jose/consular/especificacoes-da-fotografia-para-o-pedido-de-passaporte"
+    },
+    "head_height": {
+      "value": "Chin-to-forehead length (comprimento do queixo à testa) must be between 31 and 36 mm",
+      "source_url": "https://www.gov.br/mre/pt-br/embaixada-sao-jose/consular/especificacoes-da-fotografia-para-o-pedido-de-passaporte"
+    },
+    "validity": {
+      "value": "Recent photo, preferably taken less than 6 months prior",
+      "source_url": "https://www.gov.br/mre/pt-br/embaixada-sao-jose/consular/especificacoes-da-fotografia-para-o-pedido-de-passaporte"
+    },
+    "expression_restriction": {
+      "value": "Neutral physiognomy (fisionomia neutra) required",
+      "source_url": "https://www.gov.br/mre/pt-br/embaixada-sao-jose/consular/especificacoes-da-fotografia-para-o-pedido-de-passaporte"
+    },
+    "glasses_policy": {
+      "value": "Lenses must not reflect ambient or camera light; sunglasses or thick/flashy frames are not permitted under any circumstances",
+      "source_url": "https://www.gov.br/mre/pt-br/embaixada-sao-jose/consular/especificacoes-da-fotografia-para-o-pedido-de-passaporte"
+    },
+    "face_visibility": {
+      "value": "Face and shoulders fully framed by the camera, applicant looking directly at camera, eyes open and visible; no reflections, penumbra, or shadows anywhere in the photo",
+      "source_url": "https://www.gov.br/mre/pt-br/embaixada-sao-jose/consular/especificacoes-da-fotografia-para-o-pedido-de-passaporte"
+    },
+    "official_source_url": {
+      "value": "https://www.gov.br/mre/pt-br/embaixada-sao-jose/consular/especificacoes-da-fotografia-para-o-pedido-de-passaporte",
+      "source_url": "https://www.gov.br/mre/pt-br/embaixada-sao-jose/consular/especificacoes-da-fotografia-para-o-pedido-de-passaporte"
+    }
+  },
+  "restrictions_i18n": {
+    "expression": {
+      "en": "Neutral expression required; eyes open and clearly visible",
+      "ko": "무표정(중립적 표정)을 유지해야 하며, 눈은 뜬 상태로 뚜렷하게 보여야 함",
+      "ja": "無表情(中立的な表情)を保ち、目は開けてはっきり見えること"
+    },
+    "glasses": {
+      "en": "Glasses lenses must not reflect ambient or camera light; sunglasses and thick or flashy frames are not permitted",
+      "ko": "안경 렌즈에 주변광이나 카메라 조명이 반사되면 안 되며, 선글라스나 두껍고 화려한 테의 안경은 착용 불가(무반사 원칙)",
+      "ja": "眼鏡のレンズに周囲光やカメラの光が反射してはならず、サングラスや太い・派手なフレームの眼鏡は不可"
+    },
+    "face_visibility": {
+      "en": "Face and shoulders must be fully within frame, looking directly at the camera, with no shadows or reflections",
+      "ko": "얼굴과 어깨가 프레임 안에 완전히 들어와야 하며 카메라를 정면으로 응시하고, 그림자나 반사가 없어야 함",
+      "ja": "顔と肩が完全にフレーム内に収まり、カメラを正面から見て、影や反射がないこと"
+    }
+  },
+  "unverified": [
+    "file_spec",
+    "clothing_restriction",
+    "ears_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [
+    {
+      "field": "head_height",
+      "db_value": "4.2cm",
+      "research_value": "31-36mm chin-to-forehead (queixo à testa) — different measurement point and value",
+      "source_url": "https://www.gov.br/mre/pt-br/embaixada-sao-jose/consular/especificacoes-da-fotografia-para-o-pedido-de-passaporte"
+    }
+  ],
+  "cross_verification": {
+    "size": {
+      "verdict": "confirmed",
+      "evidence": "5x7cm (50x70mm) is consistently confirmed across multiple gov.br/mre consular pages (consulado-atlanta, embaixada-sao-jose, consulado-chicago) as the standard Brazilian passport photo size — Brazil is a documented exception to the 35x45mm ICAO-style standard used by most countries.",
+      "correct_value": "5 x 7 cm"
+    }
+  }
+}

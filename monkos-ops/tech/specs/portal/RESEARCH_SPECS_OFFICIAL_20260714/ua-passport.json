@@ -1,0 +1,83 @@
+{
+  "slug": "ua-passport",
+  "batch": 26,
+  "verified": {
+    "size": {
+      "value": "3.5 x 4.5cm is officially confirmed for the DOMESTIC internal passport-book (paper ID passport) photo insertion required at ages 25 and 45. For the INTERNATIONAL biometric travel passport (закордонний паспорт), most adult applicants are photographed live on-site at the DMSU service center — no user-submitted photo is required at all. Exception: children under 12, or applicants unable to travel due to a documented urgent medical condition, may submit a 10x15cm colour print for scanning.",
+      "source_url": "https://dmsu.gov.ua/poslugi/pasport-gromadyanina-ukrajni/vkleyuvannya-fotografij-do-pasporta-gromadyanina-ukrajni-pri-dosyagnenni-25-ta-45-richnogo-viku.html"
+    },
+    "background": {
+      "value": "Uniform, light-coloured background providing contrast with the face, clothing, and hair; no shadows or spots permitted on the face or background. (The rule is phrased generically as 'light-coloured', not specifically 'white', though white satisfies it.)",
+      "source_url": "https://dmsu.gov.ua/news/dms/6100.html"
+    },
+    "expression_restriction": {
+      "value": "Close-up, frontal view with a neutral expression, closed mouth, and open eyes, looking directly at the camera; no head turning or tilting, except for documented medical, age, or mobility reasons.",
+      "source_url": "https://dmsu.gov.ua/news/dms/6100.html"
+    },
+    "glasses_policy": {
+      "value": "Glasses are not permitted except permanent daily-wear glasses with clear, undamaged lenses. Sunglasses, dark lenses, photochromic lenses, and coloured contact lenses are prohibited.",
+      "source_url": "https://dmsu.gov.ua/news/dms/6100.html"
+    },
+    "face_visibility": {
+      "value": "Close-up, frontal view; vertical (upright) positioning is required (exceptions only for lying-down infants in special seats or mobility-impaired individuals); no head tilt or turn.",
+      "source_url": "https://dmsu.gov.ua/news/dms/6100.html"
+    },
+    "headwear_policy": {
+      "value": "Headwear is generally prohibited, except religious headwear worn daily for faith reasons, or medical headwear accompanied by a doctor's certificate. Permitted headwear must not alter facial features (forehead, cheeks, chin, eyes), cover the face or chin, or cover the ears and neck, and must follow the hairline contour.",
+      "source_url": "https://dmsu.gov.ua/news/dms/6100.html"
+    },
+    "accessories": {
+      "value": "No earbuds, wireless devices, or audio equipment. No temporary facial stickers or decals (tattoos are allowed). Light, subtle makeup with a natural skin tone is acceptable.",
+      "source_url": "https://dmsu.gov.ua/news/dms/6100.html"
+    },
+    "official_source_url": {
+      "value": "https://dmsu.gov.ua/news/dms/6100.html",
+      "source_url": "https://dmsu.gov.ua/news/dms/6100.html"
+    }
+  },
+  "restrictions_i18n": {
+    "expression": {
+      "en": "Close-up frontal view with a neutral expression, closed mouth, and open eyes, looking directly at the camera; no head turning or tilting except for documented medical, age, or mobility reasons.",
+      "ko": "정면을 향한 클로즈업 사진에서 무표정을 유지하고 입을 다물며 눈을 뜬 채 카메라를 정면으로 볼 것. 의료적·연령적·거동상의 사유가 문서로 확인되는 경우를 제외하고 고개를 돌리거나 기울이면 안 된다.",
+      "ja": "正面向きのクローズアップで無表情、口を閉じ、目を開けてカメラを正面から見ること。医療上・年齢上・移動上の理由が文書で確認される場合を除き、頭を回したり傾けたりしてはならない。"
+    },
+    "glasses": {
+      "en": "Glasses are not permitted except permanent daily-wear glasses with clear, undamaged lenses. Sunglasses, dark lenses, photochromic lenses, and coloured contact lenses are prohibited.",
+      "ko": "영구적으로 매일 착용하는, 무색이고 손상되지 않은 렌즈의 안경을 제외하고는 안경 착용이 금지된다. 선글라스, 짙은 색 렌즈, 광변색 렌즈, 컬러 콘택트렌즈는 금지된다.",
+      "ja": "常時着用する透明で破損のない眼鏡を除き、メガネの着用は禁止される。サングラス、濃い色のレンズ、調光レンズ、カラーコンタクトレンズは禁止される。"
+    },
+    "face_visibility": {
+      "en": "Close-up, frontal view with vertical (upright) positioning required; no head tilt or turn.",
+      "ko": "정면을 향한 클로즈업으로 수직(직립) 자세를 유지해야 하며, 고개를 돌리거나 기울이면 안 된다.",
+      "ja": "正面向きのクローズアップで垂直(直立)の姿勢を保つ必要があり、頭を回したり傾けたりしてはならない。"
+    },
+    "headwear": {
+      "en": "Headwear is generally prohibited, except religious headwear worn daily for faith reasons, or medical headwear with a doctor's certificate. Permitted headwear must not alter facial features, cover the face or chin, or cover the ears and neck, and must follow the hairline.",
+      "ko": "머리 가리개는 원칙적으로 금지되나, 신앙상의 이유로 매일 착용하는 종교적 머리 가리개, 또는 의사 소견서가 있는 의료용 머리 가리개는 예외로 허용된다. 허용되는 머리 가리개도 얼굴 윤곽을 변형하거나 얼굴·턱을 가리거나 귀·목을 덮어서는 안 되며 정수리의 헤어라인을 따라야 한다.",
+      "ja": "頭部の覆いは原則として禁止されるが、信仰上の理由で毎日着用する宗教的な頭部の覆い、または医師の証明書がある医療用の頭部の覆いは例外として許可される。許可される頭部の覆いも顔の輪郭を変えたり顔・顎を覆ったり、耳・首を覆ったりしてはならず、髪の生え際に沿う必要がある。"
+    },
+    "accessories": {
+      "en": "No earbuds or wireless audio devices. No temporary facial stickers or decals (tattoos are allowed). Light, subtle makeup with a natural skin tone is acceptable.",
+      "ko": "이어폰이나 무선 음향기기 착용 금지. 일시적인 얼굴 스티커나 데칼 금지(문신은 허용). 자연스러운 피부톤의 옅은 메이크업은 허용된다.",
+      "ja": "イヤホンやワイヤレス音響機器の着用禁止。一時的な顔用ステッカーやデカールは禁止(タトゥーは許可)。自然な肌色の薄いメイクは許可される。"
+    }
+  },
+  "unverified": [
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "ears_visibility"
+  ],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "3.5×4.5cm",
+      "research_value": "3.5x4.5cm is real and officially confirmed, but only for the DOMESTIC internal passport-book photo insertion (age 25/45) — it does NOT apply to the standard international biometric passport process, where most adults have no photo-submission requirement at all (live on-site capture). If the DB's 'ua-passport' category is meant for international travel document photos, the practically relevant answer is closer to 'no photo needed' / '10x15cm print for exceptional cases only', not a fixed 3.5x4.5cm print size.",
+      "source_url": "https://dmsu.gov.ua/poslugi/dokumenti-dlya-vijzdu-za-kordon/vidacha-pasporta-gromadyanina-ukrajni-dlya-vijzdu-za-kordon.html"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "Ukraine's State Migration Service (DMSU, dmsu.gov.ua) was directly reachable and fetched successfully. Three separate DMSU pages were cross-checked: (1) the domestic passport-book 25/45 photo-insertion page confirming 3.5x4.5cm, (2) the international passport issuance page confirming 10x15cm applies only to children under 12 / homebound applicants (standard adults are captured live, no submission), and (3) the official news article 'Затверджено нові вимоги до фотозображень при оформленні біометричних документів' (New requirements for biometric-document photo images approved) giving the detailed background/expression/glasses/headwear/accessories rules used above. mfa.gov.ua and all its subdomains (visa.mfa.gov.ua, usa.mfa.gov.ua, uk.mfa.gov.ua, japan.mfa.gov.ua) consistently returned HTTP 403 to both WebFetch and curl with multiple user-agents, so MFA-specific content could not be verified — this affects ua-visa, not ua-passport, since passports are issued by DMSU."
+  }
+}

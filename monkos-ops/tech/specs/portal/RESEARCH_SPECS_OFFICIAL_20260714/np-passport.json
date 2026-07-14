@@ -1,0 +1,28 @@
+{
+  "slug": "np-passport",
+  "batch": 19,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://nepalpassport.gov.np/process/-9",
+      "source_url": "https://nepalpassport.gov.np/process/-9"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Directly browsed Nepal's Department of Passports official site (nepalpassport.gov.np) 'documents required' pages for both domestic (/process/-8) and abroad (/process/-9) applications. Standard adult e-Passport applications are processed via in-person biometric capture at enrollment centers, so no separate submitted photo (with size/background spec) is itemized for the general case. The only explicit photo mention found is for the special case of a minor born abroad to Nepali parents applying for a first passport, which requires 'नाबालकको हालै खिचेको पासपोर्ट आकारको फोटो २ प्रति' (2 copies of a recently taken passport-size photo of the minor) — quantity only, no mm/background spec given. The Embassy of Nepal, Washington DC (us.nepalembassy.gov.np, official) states photos are taken in-person at the embassy and directs applicants to nepalpassport.gov.np for further detail, which was searched extensively without finding a published numeric spec page. Commonly cited figures (35×45mm, white background) appear only on third-party photo-service sites and were not confirmed against an official .gov.np source, so are excluded here."
+  }
+}

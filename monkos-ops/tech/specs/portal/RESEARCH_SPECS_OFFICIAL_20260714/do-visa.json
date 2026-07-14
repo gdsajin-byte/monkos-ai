@@ -1,0 +1,44 @@
+{
+  "slug": "do-visa",
+  "batch": 7,
+  "verified": {
+    "size": {
+      "value": "Official MIREX (Ministry of Foreign Affairs) visa portal states \"Una (1) fotografía tamaño 4 x 5 centímetros\" (one 4×5cm photograph) as the primary requirement text; the same official document elsewhere also shows alternate wording \"Una (1) fotografía 2¨x 2¨ plgs.\" (2×2 inch). Two different figures appear on the same official source.",
+      "source_url": "https://servicios360.mirex.gob.do/visas/"
+    },
+    "background": {
+      "value": "\"de frente y con fondo blanco\" — frontal view, white background — matches DB",
+      "source_url": "https://servicios360.mirex.gob.do/visas/"
+    },
+    "official_source_url": {
+      "value": "https://servicios360.mirex.gob.do/visas/",
+      "source_url": "https://servicios360.mirex.gob.do/visas/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "2 × 2 inch (51 × 51mm)",
+      "research_value": "MIREX's official visa portal (servicios360.mirex.gob.do/visas/) primarily/prominently states \"4 x 5 centímetros\" (40×50mm) for the visa photo — a different figure from DB. The SAME official page also contains an alternate/older line reading \"2¨x 2¨ plgs.\" (matching DB), so the document itself is internally inconsistent (likely serving multiple visa-category templates); DB's value matches only the secondary occurrence, not the primary one.",
+      "source_url": "https://servicios360.mirex.gob.do/visas/"
+    }
+  ],
+  "cross_verification": {
+    "fetch_note": {
+      "note": "Directly fetched via WebFetch (successful, not a search-engine paraphrase) — both size phrasings (\"4 x 5 centímetros\" and \"2¨x 2¨ plgs.\") appear verbatim on the same live page at time of research."
+    }
+  }
+}

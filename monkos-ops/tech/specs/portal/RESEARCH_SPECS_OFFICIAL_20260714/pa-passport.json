@@ -1,0 +1,78 @@
+{
+  "slug": "pa-passport",
+  "batch": 20,
+  "verified": {
+    "size": {
+      "value": "35 x 45mm (3.5 x 4.5cm)",
+      "source_url": "https://www.apap.gob.pa/index.php?option=com_sppagebuilder&view=page&id=20&Itemid=154"
+    },
+    "background": {
+      "value": "Plain, uniform white background",
+      "source_url": "https://www.apap.gob.pa/index.php?option=com_sppagebuilder&view=page&id=20&Itemid=154"
+    },
+    "head_height": {
+      "value": "Head height from chin to top of hair approximately 34.5mm, with roughly 4.5mm of space between the top of the photo and the top of the hair (falls within the general 32-36mm chin-to-crown range)",
+      "source_url": "https://www.apap.gob.pa/index.php?option=com_sppagebuilder&view=page&id=20&Itemid=154"
+    },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": {
+      "value": "No sleeveless clothing or low necklines; avoid white-coloured tops (they blend into the white background); hair pulled back and tucked behind the ears; no extravagant hairstyles",
+      "source_url": "https://www.apap.gob.pa/index.php?option=com_sppagebuilder&view=page&id=20&Itemid=154"
+    },
+    "expression_restriction": {
+      "value": "A slight smile is accepted as long as the teeth are not shown — not strictly neutral-expression-only",
+      "source_url": "https://www.apap.gob.pa/index.php?option=com_sppagebuilder&view=page&id=20&Itemid=154"
+    },
+    "glasses_policy": {
+      "value": "Glasses are not permitted",
+      "source_url": "https://www.apap.gob.pa/index.php?option=com_sppagebuilder&view=page&id=20&Itemid=154"
+    },
+    "ears_visibility": {
+      "value": "Ears must be visible; small earrings are acceptable; no hair clips, bands, or other accessories over the hair",
+      "source_url": "https://www.apap.gob.pa/index.php?option=com_sppagebuilder&view=page&id=20&Itemid=154"
+    },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": {
+      "value": "No facial piercings; small earrings are acceptable; no hair accessories such as clips, bands, or hooks",
+      "source_url": "https://www.apap.gob.pa/index.php?option=com_sppagebuilder&view=page&id=20&Itemid=154"
+    },
+    "official_source_url": {
+      "value": "https://www.apap.gob.pa/index.php?option=com_sppagebuilder&view=page&id=20&Itemid=154",
+      "source_url": "https://www.apap.gob.pa/index.php?option=com_sppagebuilder&view=page&id=20&Itemid=154"
+    }
+  },
+  "restrictions_i18n": {
+    "clothing": {
+      "en": "No sleeveless clothing or low necklines; avoid white-coloured tops; hair pulled back and tucked behind the ears; no extravagant hairstyles.",
+      "ko": "민소매 옷이나 목이 깊게 파인 옷 금지; 흰색 상의는 지양; 머리는 뒤로 넘겨 귀 뒤로 정리; 과장된 헤어스타일 금지.",
+      "ja": "ノースリーブや胸元の開いた服は不可。白い色のトップスは避ける。髪は後ろに束ね耳の後ろに整える。奇抜な髪型は不可。"
+    },
+    "expression": {
+      "en": "A slight smile is accepted as long as the teeth are not shown (not strictly neutral-expression-only).",
+      "ko": "이가 보이지 않는 선에서 살짝 미소를 짓는 것은 허용된다 (완전한 무표정만 요구하지는 않음).",
+      "ja": "歯が見えない範囲での軽い微笑みは許容される(完全な無表情のみが求められるわけではない)。"
+    },
+    "glasses": {
+      "en": "Glasses are not permitted.",
+      "ko": "안경 착용 불가.",
+      "ja": "メガネの着用は不可。"
+    },
+    "ears": {
+      "en": "Ears must be visible; small earrings are acceptable; no hair clips, bands, or other accessories over the hair.",
+      "ko": "귀가 보여야 하며, 작은 귀걸이는 허용된다; 머리핀·머리띠 등 헤어 액세서리는 착용하면 안 된다.",
+      "ja": "耳が見える必要がある。小さいピアスは許容される。ヘアピンやヘアバンドなどのヘアアクセサリーは不可。"
+    },
+    "accessories": {
+      "en": "No facial piercings; small earrings are acceptable; no hair accessories such as clips, bands, or hooks.",
+      "ko": "얼굴 피어싱 금지; 작은 귀걸이는 허용; 머리핀·머리띠·집게 등의 헤어 액세서리 금지.",
+      "ja": "顔のピアス不可。小さいピアスは許容。ヘアピン・ヘアバンド・クリップなどのヘアアクセサリーは不可。"
+    }
+  },
+  "unverified": ["validity", "file_spec", "face_visibility", "headwear_policy"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Direct WebFetch of apap.gob.pa (Autoridad de Pasaportes de Panama, the official passport authority) failed on every attempt with an SSL certificate validation error ('unable to verify the first certificate') rather than a paywall or authentication block — this is a technical issue on the .gob.pa server, not restricted content. The figures above were confirmed via multiple independent web searches that each explicitly attributed the same specific, technical figures (e.g. 34.5mm head height, 4.5mm top margin, 'no visten prendas blancas', earring/piercing rules) to the APAP passport-requirements page, rather than to any third-party photo vendor. Size (3.5x4.5cm) and background (white) both match the DB's existing values exactly — no conflict. A human reviewer should ideally re-confirm by loading the page directly in a standard browser, since this record could not be independently verified via direct tool fetch."
+  }
+}

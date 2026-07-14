@@ -1,0 +1,25 @@
+{
+  "slug": "mz-passport",
+  "batch": 18,
+  "verified": {},
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories",
+    "official_source_url"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Mozambique's official passport-issuing authority is SENAMI (Serviço Nacional de Migração, senami.gov.mz), which publishes a PDF titled 'Passaporte Biométrico - Requisitos'. Every direct-fetch attempt against senami.gov.mz and its PDF (via WebFetch and via curl) failed with a connection error (ECONNREFUSED) during this research pass, so its contents could not be independently confirmed, even though web search indexing suggests it states a white background, both ears visible, and to avoid white-colored clothing. The Embassy of Mozambique in Washington, D.C. (usa.embamoc.gov.mz) was reachable and its Passport pages (/index.php/passport/ and /?page_id=87) were fetched directly, but they contain only a link to a downloadable request form and drop-off/pick-up office hours — no photo specification. Because the SENAMI PDF could not be independently verified by direct fetch, per the truthfulness gate nothing was carried into verified for mz-passport specifically (contrast mz-visa.json, where the embassy's Visa page was directly confirmed)."
+  }
+}

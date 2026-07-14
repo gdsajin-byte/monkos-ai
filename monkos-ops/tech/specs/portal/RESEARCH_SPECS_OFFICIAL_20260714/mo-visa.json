@@ -1,0 +1,59 @@
+{
+  "slug": "mo-visa",
+  "batch": 17,
+  "verified": {
+    "size": {
+      "value": "48mm x 33mm (4.8 x 3.3 cm)",
+      "source_url": "https://lk.china-embassy.gov.cn/eng/lsfw/qz/202211/t20221107_10801432.htm"
+    },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": {
+      "value": "Without head covering",
+      "source_url": "https://lk.china-embassy.gov.cn/eng/lsfw/qz/202211/t20221107_10801432.htm"
+    },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://lk.china-embassy.gov.cn/eng/lsfw/qz/202211/t20221107_10801432.htm",
+      "source_url": "https://lk.china-embassy.gov.cn/eng/lsfw/qz/202211/t20221107_10801432.htm"
+    }
+  },
+  "restrictions_i18n": {
+    "headwear": {
+      "en": "Without head covering.",
+      "ko": "머리를 가리지 않은 상태여야 한다.",
+      "ja": "頭部を覆わない状態でなければならない。"
+    }
+  },
+  "unverified": [
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "3.5 × 4.5cm",
+      "research_value": "48mm x 33mm (4.8 x 3.3cm)",
+      "source_url": "https://lk.china-embassy.gov.cn/eng/lsfw/qz/202211/t20221107_10801432.htm"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "Visas for Macao SAR of China are issued through the People's Republic of China's diplomatic missions (Macao does not maintain its own overseas visa-issuing posts). The figure '48mmx33mm, recent, front view... without head covering' with 'one color photo' was independently found, word-for-word identical, on two separate official Chinese government domains: the Chinese Embassy in Sri Lanka (lk.china-embassy.gov.cn, 'Visa for Macao SAR of China' page) and the Chinese Consulate-General in Chiang Mai, Thailand (chiangmai.china-consulate.gov.cn, 'Visas for Macao SAR of China' page) — both china-embassy.gov.cn / china-consulate.gov.cn are official PRC government domains. Because both pages carry the identical boilerplate text, this is treated as one consistent official standard applied uniformly across Chinese missions worldwide for the Macao SAR visa, rather than two independent confirmations. This size (48x33mm, a wide/landscape-leaning small format) differs substantially from the DB's 3.5x4.5cm (portrait format), so it is flagged as a conflict. No background color, validity window, or other appearance rule was stated on either page.",
+    "note_ko": "마카오 특별행정구 비자는 마카오 자체가 아닌 중화인민공화국의 재외공관을 통해 발급된다. '48mm×33mm, 최근 촬영, 정면, 무모자, 컬러사진 1매'라는 동일한 문구를 스리랑카 주재 중국대사관(lk.china-embassy.gov.cn)과 태국 치앙마이 주재 중국총영사관(chiangmai.china-consulate.gov.cn) 두 개의 별도 공식 중국 정부 도메인(china-embassy.gov.cn / china-consulate.gov.cn)에서 토씨 하나 다르지 않게 확인했다. 두 페이지가 동일한 표준 문구를 사용하고 있어, 이는 전 세계 중국 재외공관에 공통 적용되는 마카오 비자 사진 규격으로 판단하여 하나의 일관된 공식 기준으로 취급했다(별개의 두 번 확인이 아님). 이 규격(48×33mm, 가로가 넓은 소형 포맷)은 DB의 3.5×4.5cm(세로형 포맷)와 상당히 달라 충돌로 명시했다. 배경색·유효기간 등 다른 규정은 두 페이지 모두 명시하지 않았다."
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "slug": "il-visa",
+  "batch": 11,
+  "verified": {
+    "size": {
+      "value": "5x5cm (50x50mm)",
+      "source_url": "https://embassies.gov.il/usa/en/services/foreign-citizens/entry-visa-visiting-or-touring-israel"
+    },
+    "background": {
+      "value": "White, color photo, full front view of face",
+      "source_url": "https://embassies.gov.il/usa/en/services/foreign-citizens/entry-visa-visiting-or-touring-israel"
+    },
+    "official_source_url": {
+      "value": "https://embassies.gov.il/usa/en/services/foreign-citizens/entry-visa-visiting-or-touring-israel",
+      "source_url": "https://embassies.gov.il/usa/en/services/foreign-citizens/entry-visa-visiting-or-touring-israel"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "3.5 × 4.5cm",
+      "research_value": "5 × 5cm (50x50mm)",
+      "source_url": "https://embassies.gov.il/usa/en/services/foreign-citizens/entry-visa-visiting-or-touring-israel"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "Multiple embassies.gov.il subdomains (USA, Berlin, Atlanta, Los Angeles -- Israeli Ministry of Foreign Affairs pages) consistently state '5x5 cm' for entry/work visa photos, distinct from the 35x45mm figure used for Israeli citizens' own biometric passport (see il-passport.json). Direct WebFetch access to embassies.gov.il was blocked on every attempt; confirmation relies on web-search indexing that directly surfaced these specific gov.il URLs with a consistently repeated figure across multiple independent queries and mirror subdomains. DB's size value (3.5x4.5cm) appears to conflate the passport figure with the visa figure -- logged as a conflict; DB not modified per instructions."
+  }
+}

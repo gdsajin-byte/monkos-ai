@@ -1,0 +1,54 @@
+{
+  "slug": "mk-visa",
+  "batch": 17,
+  "verified": {
+    "size": {
+      "value": "3.5 x 4.5 cm (also stated as 'one photograph size 35x45 mm')",
+      "source_url": "https://mfa.gov.mk/en-GB/konzularni-uslugi/vidovi-vizi-za-vlez-vo-rsm"
+    },
+    "background": {
+      "value": "White, color photograph",
+      "source_url": "https://mfa.gov.mk/en-GB/konzularni-uslugi/vidovi-vizi-za-vlez-vo-rsm"
+    },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": {
+      "value": "The face of the applicant must be clearly visible",
+      "source_url": "https://mfa.gov.mk/en-GB/konzularni-uslugi/vidovi-vizi-za-vlez-vo-rsm"
+    },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://mfa.gov.mk/en-GB/konzularni-uslugi/vidovi-vizi-za-vlez-vo-rsm",
+      "source_url": "https://mfa.gov.mk/en-GB/konzularni-uslugi/vidovi-vizi-za-vlez-vo-rsm"
+    }
+  },
+  "restrictions_i18n": {
+    "face_visibility": {
+      "en": "The face of the applicant must be clearly visible in the photograph.",
+      "ko": "사진에서 신청자의 얼굴이 뚜렷하게 보여야 한다.",
+      "ja": "写真には申請者の顔がはっきりと写っていなければならない。"
+    }
+  },
+  "unverified": [
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Confirmed via two pages on the Ministry of Foreign Affairs and Foreign Trade of the Republic of North Macedonia's official consular-services portal (mfa.gov.mk/en-GB/konzularni-uslugi/): 'Types of entry visas for the Republic of North Macedonia' (vidovi-vizi-za-vlez-vo-rsm), which states dimensions 3.5x4.5cm, color, white background, face clearly visible; and 'Visa Application Procedure' (postapka-za-izdavanje-na-viza), which independently states 'one photograph size 35x45 mm' — the two figures are consistent (35x45mm = 3.5x4.5cm) and match the DB value exactly, so no conflict. Neither page specifies head height, photo recency/validity, digital file specs, clothing, expression, glasses, ear visibility, headwear policy, or accessories, so those remain unverified rather than inferred from generic Schengen/ICAO norms.",
+    "note_ko": "북마케도니아 외교통상부 영사서비스 공식 포털(mfa.gov.mk/en-GB/konzularni-uslugi/) 내 두 개 페이지에서 확인했다. '북마케도니아 입국 비자 종류'(vidovi-vizi-za-vlez-vo-rsm) 페이지는 규격 3.5×4.5cm, 컬러, 흰색 배경, 얼굴 뚜렷이 보임을 명시하고, '비자 발급 절차'(postapka-za-izdavanje-na-viza) 페이지는 별도로 '사진 1매, 규격 35x45mm'라고 명시하여 두 수치(35×45mm = 3.5×4.5cm)가 서로 일치하며 DB 값과도 정확히 일치해 충돌이 없다. 두 페이지 모두 두상 높이, 사진 유효기간, 디지털 파일 규격, 복장·표정·안경·귀 노출·머리가리개·액세서리 규정은 언급하지 않아 일반적인 셍겐/ICAO 기준을 유추하지 않고 미확인으로 남겼다."
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "slug": "mh-passport",
+  "batch": 16,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": {
+      "value": "Photographs must be taken no more than six (6) months prior to the date of application (stated repeatedly across multiple application categories in the Act: renunciation/naturalization-based applications, etc.).",
+      "source_url": "https://rmiparliament.org/cms/images/LEGISLATION/PRINCIPAL/2020/2020-0018/2020-0018_1.pdf"
+    },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://rmiparliament.org/cms/images/LEGISLATION/PRINCIPAL/2020/2020-0018/2020-0018_1.pdf",
+      "source_url": "https://rmiparliament.org/cms/images/LEGISLATION/PRINCIPAL/2020/2020-0018/2020-0018_1.pdf"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "CORRECTED (source-domain downgrade): 'size' and 'background' were previously recorded as verified based on a scanned Office of the Attorney General memorandum ('2 passport photos (2x2) on WHITE BACKGROUND') that appears authentic (RMI letterhead/seal, contact details matching the AG office) but is only reachable via a third-party informational mirror site (infomarshallislands.com), not a .gov or other qualifying government domain — no directly-hosted RMI government copy of this memo could be located. Per source-domain policy, a document's apparent authenticity does not substitute for a qualifying government-domain source, so both fields are downgraded to unverified rather than counted as verified. For reference only (not verified): the memo's stated values (2×2 inch, white background) do match DB's existing size/background exactly, but this is noted here rather than logged as a confirmed match. 'The Passport Act, 2020' (43 MIRC Ch.17), the Republic of the Marshall Islands' primary passport legislation, retrieved from the RMI Parliament (Nitijela)'s own document repository at rmiparliament.org and read via full-text PDF extraction, remains a valid government source — it repeatedly specifies photographs 'taken no more than six (6) months prior to the date of an application' across several application categories, which is the source for the validity field. Head height, expression, glasses, ears, face visibility, and headwear rules were not found in either source and are left unverified; commercial passport-photo sites' generic ICAO-style claims (e.g. '70-80% head height') were not used as they are not government sources."
+  }
+}

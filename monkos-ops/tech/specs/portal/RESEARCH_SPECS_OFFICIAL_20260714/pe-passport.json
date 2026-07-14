@@ -1,0 +1,28 @@
+{
+  "slug": "pe-passport",
+  "batch": 20,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://www.gob.pe/institucion/migraciones/tema/pasaporte",
+      "source_url": "https://www.gob.pe/institucion/migraciones/tema/pasaporte"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Every attempted WebFetch of Peru's unified government portal (gob.pe, which hosts Superintendencia Nacional de Migraciones' passport pages) returned HTTP 418 ('I'm a Teapot'), a deliberate anti-bot response, on both the specific passport-service page and the bare domain root. migraciones.gob.pe redirects (301) to the same blocked gob.pe domain. consulado.pe (Peru's consular site, which hosts a visa-application PDF referencing passport-photo standards) returned a certificate-validation error on every attempt. As a result no composition field could be independently confirmed from a Peruvian government source in this research pass; the official_source_url above is included only because it was confirmed to be the correct authority's page via multiple independent search-result listings (titled/branded as the Superintendencia Nacional de Migraciones' own 'Plataforma del Estado Peruano' page), not because its content was read. Note for a human reviewer: secondary Peruvian press reporting (not used as a source here, since it is not a government domain) suggests the passport photo in Peru is captured biometrically on-site at the Migraciones office at the time of the appointment rather than submitted by the applicant, which — if accurate — would make a fixed print-photo size/background spec largely inapplicable to this document type; this should be confirmed directly against gob.pe before publishing."
+  }
+}

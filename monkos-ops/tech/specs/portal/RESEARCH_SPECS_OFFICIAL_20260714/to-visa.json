@@ -1,0 +1,29 @@
+{
+  "slug": "to-visa",
+  "batch": 26,
+  "verified": {
+    "official_source_url": {
+      "value": "http://www.tongaembassycn.gov.to/en/going-to-tonga-en/visas-en/visitors-visa-en",
+      "source_url": "http://www.tongaembassycn.gov.to/en/going-to-tonga-en/visas-en/visitors-visa-en"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Fetched the official Tonga Embassy in China (tongaembassycn.gov.to, a gov.to government domain, Immigration Division / Ministry of Foreign Affairs) visitor-visa page directly. It states only that 'a most recent passport photo' is required, with no numeric size, background colour, or head-height specification. This is consistent with the finding for to-passport: Tonga's official documentation does not appear to publish ICAO-style numeric photo standards; applicants are told to bring a 'recent' photo without further technical detail. Left unverified rather than substituting third-party-sourced numbers."
+  }
+}

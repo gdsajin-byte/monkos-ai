@@ -1,0 +1,89 @@
+{
+  "slug": "lu-passport",
+  "batch": 15,
+  "verified": {
+    "size": {
+      "value": "35mm (width) x 45mm (height)",
+      "source_url": "https://mae.gouvernement.lu/content/dam/gouv_maee/services-aux-citoyens/passeport/iso-icao-photo-guidelines.pdf"
+    },
+    "head_height": {
+      "value": "Face height (chin to crown) must be 32-36mm, corresponding to 70-80% of the photo; face height may not be less than 32mm",
+      "source_url": "https://mae.gouvernement.lu/content/dam/gouv_maee/services-aux-citoyens/passeport/iso-icao-photo-guidelines.pdf"
+    },
+    "background": {
+      "value": "One colour and bright (ideally neutral grey), in a contrasting colour to face and hair, no pattern, no shadows on the background, only the applicant visible in the photo",
+      "source_url": "https://mae.gouvernement.lu/content/dam/gouv_maee/services-aux-citoyens/passeport/iso-icao-photo-guidelines.pdf"
+    },
+    "expression_restriction": {
+      "value": "Neutral expression, mouth closed, looking directly into the camera; head neither at an angle nor turned (no portrait-style pose)",
+      "source_url": "https://mae.gouvernement.lu/content/dam/gouv_maee/services-aux-citoyens/passeport/iso-icao-photo-guidelines.pdf"
+    },
+    "glasses_policy": {
+      "value": "Eyes must be clearly recognisable; reflections, tinted glasses or sunglasses are not permitted; the edge/frame of glasses may not cover the eyes",
+      "source_url": "https://mae.gouvernement.lu/content/dam/gouv_maee/services-aux-citoyens/passeport/iso-icao-photo-guidelines.pdf"
+    },
+    "headwear_policy": {
+      "value": "Headwear is generally not permitted; exceptions possible especially for religious reasons, in which case the face must be visible from the lower tip of the chin to the forehead with no shadows on the face",
+      "source_url": "https://mae.gouvernement.lu/content/dam/gouv_maee/services-aux-citoyens/passeport/iso-icao-photo-guidelines.pdf"
+    },
+    "face_visibility": {
+      "value": "Eyes must be open and clearly visible, not covered by hair or spectacle frames; facial features must be clear from tip of chin to crown of head, including left and right sides of the face",
+      "source_url": "https://mae.gouvernement.lu/content/dam/gouv_maee/services-aux-citoyens/passeport/iso-icao-photo-guidelines.pdf"
+    },
+    "clothing_restriction": {
+      "value": "Passport law provides that no parts of uniforms may be depicted in the photo",
+      "source_url": "https://mae.gouvernement.lu/content/dam/gouv_maee/services-aux-citoyens/passeport/iso-icao-photo-guidelines.pdf"
+    },
+    "file_spec": {
+      "value": "Photo must be printed on high-quality paper with a print resolution of at least 600 dpi (especially for digitally-taken photos); neutral colour, natural skin tones, no creases or impurities",
+      "source_url": "https://mae.gouvernement.lu/content/dam/gouv_maee/services-aux-citoyens/passeport/iso-icao-photo-guidelines.pdf"
+    },
+    "official_source_url": {
+      "value": "https://mae.gouvernement.lu/en/services-aux-citoyens/passeport.html",
+      "source_url": "https://mae.gouvernement.lu/en/services-aux-citoyens/passeport.html"
+    }
+  },
+  "restrictions_i18n": {
+    "expression": {
+      "en": "The expression should be neutral with the mouth closed, looking directly into the camera; the head should be neither at an angle nor turned.",
+      "ko": "표정은 중립적이어야 하며 입을 다물고 카메라를 정면으로 응시해야 한다. 고개는 기울이거나 돌리지 않아야 한다.",
+      "ja": "表情は中立でなければならず、口を閉じてカメラを正面から見つめること。頭を傾けたり回したりしてはならない。"
+    },
+    "glasses": {
+      "en": "Eyes must be clearly recognisable; reflections, tinted glasses, or sunglasses are not permitted, and the frame may not cover the eyes.",
+      "ko": "눈이 명확히 식별되어야 하며, 반사·색안경·선글라스는 허용되지 않고 안경테가 눈을 가려서는 안 된다.",
+      "ja": "目がはっきりと識別できなければならず、反射・色付きレンズ・サングラスは認められず、フレームが目を覆ってはならない。"
+    },
+    "headwear": {
+      "en": "Headwear is generally not permitted; exceptions are possible for religious reasons, in which case the face must be visible from the chin to the forehead with no shadows.",
+      "ko": "머리가리개(모자 등)는 원칙적으로 허용되지 않으나 종교적 사유로 예외가 인정될 수 있으며, 이 경우 턱 끝부터 이마까지 얼굴이 그림자 없이 보여야 한다.",
+      "ja": "頭部を覆うもの(帽子等)は原則として認められないが、宗教上の理由により例外が認められる場合があり、その際は顎先から額まで影なく顔が見えなければならない。"
+    },
+    "face_visibility": {
+      "en": "Eyes must be open and clearly visible, and may not be covered by hair or spectacle frames.",
+      "ko": "눈은 뜬 상태로 선명하게 보여야 하며 머리카락이나 안경테로 가려져서는 안 된다.",
+      "ja": "目は開いた状態ではっきりと見えなければならず、髪や眼鏡フレームで覆われてはならない。"
+    },
+    "clothing": {
+      "en": "Passport law provides that no parts of uniforms may be depicted in the photo.",
+      "ko": "여권법에 따라 사진에 제복(유니폼)의 일부가 나타나서는 안 된다.",
+      "ja": "旅券法により、写真に制服の一部が写ってはならない。"
+    }
+  },
+  "unverified": [
+    "validity",
+    "ears_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [
+    {
+      "field": "background",
+      "db_value": "흰색",
+      "research_value": "\"One colour and bright (ideally neutral grey)\", per the official ICAO-criteria standard incorporated by Luxembourg's Ministry of Foreign and European Affairs -- the officially recommended background is neutral grey, not explicitly white",
+      "source_url": "https://mae.gouvernement.lu/content/dam/gouv_maee/services-aux-citoyens/passeport/iso-icao-photo-guidelines.pdf"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "Primary source is Luxembourg's Ministry of Foreign and European Affairs (MAE) own passport page (mae.gouvernement.lu/en/services-aux-citoyens/passeport.html), which links to and adopts, as its official ICAO-criteria reference, a PDF titled 'ISO/ICAO photo guidelines' hosted at mae.gouvernement.lu/content/dam/gouv_maee/services-aux-citoyens/passeport/iso-icao-photo-guidelines.pdf. This PDF was downloaded and read directly (not via search synthesis); its footer bears a 'Bundeskriminalamt' (German Federal Criminal Police Office) production credit, indicating it is a shared European ICAO-standard explainer rather than bespoke Luxembourg artwork, but it is hosted on and explicitly incorporated by reference by the Luxembourg government's own official passport page as the definitive statement of the standard Luxembourg applies, so it is treated as the official Luxembourg source for these technical specifications. The size (35x45mm) matches the DB value exactly; head-height (32-36mm, i.e. 70-80% of frame) is consistent with the DB's implied range. No explicit photo-recency/validity window or ears-specific rule was found in this document, so those remain unverified."
+  }
+}

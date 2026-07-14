@@ -1,0 +1,91 @@
+{
+  "slug": "nz-passport",
+  "batch": 20,
+  "verified": {
+    "size": {
+      "value": "35mm wide x 45mm high (printed/paper photo)",
+      "source_url": "https://www.passports.govt.nz/passport-photos"
+    },
+    "background": {
+      "value": "Plain, light background — explicitly not white; pale greys and blues are recommended over white. Strong contrast between face and background required, with no shadows or objects behind the head.",
+      "source_url": "https://www.passports.govt.nz/passport-photos"
+    },
+    "head_height": {
+      "value": "Head height (chin to crown) should occupy approximately 70-80% of the photo height, roughly 32-36mm",
+      "source_url": "https://www.passports.govt.nz/passport-photos"
+    },
+    "validity": {
+      "value": "Photo must be taken within the last 6 months and be a true, current likeness of the applicant. Selfies are rejected.",
+      "source_url": "https://www.passports.govt.nz/passport-photos"
+    },
+    "file_spec": {
+      "value": "For online applications: digital photo 33x44mm (3:4 aspect ratio), between 900-4500 x 1200-6000 pixels, JPG/JPEG format only, file size between 250KB and 5MB",
+      "source_url": "https://www.passports.govt.nz/passport-photos"
+    },
+    "clothing_restriction": {
+      "value": "Avoid uniforms, costumes, or clothing that resembles official attire",
+      "source_url": "https://www.passports.govt.nz/passport-photos"
+    },
+    "expression_restriction": {
+      "value": "Neutral expression, mouth closed, both eyes open; no smiling with teeth showing; look straight at the camera with a relaxed, natural face",
+      "source_url": "https://www.passports.govt.nz/passport-photos"
+    },
+    "glasses_policy": {
+      "value": "Prescription glasses permitted if not tinted and not thick-framed; sunglasses are not allowed",
+      "source_url": "https://www.passports.govt.nz/passport-photos"
+    },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": {
+      "value": "There must be a clear gap around the sides and top of the head; shoulders and upper chest should be included in the photo; face must not be tilted",
+      "source_url": "https://www.passports.govt.nz/passport-photos"
+    },
+    "headwear_policy": {
+      "value": "Head coverings are permitted only for religious or medical reasons; the face must be fully visible",
+      "source_url": "https://www.passports.govt.nz/passport-photos"
+    },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://www.passports.govt.nz/passport-photos",
+      "source_url": "https://www.passports.govt.nz/passport-photos"
+    }
+  },
+  "restrictions_i18n": {
+    "clothing": {
+      "en": "Avoid uniforms, costumes, or clothing that resembles official attire.",
+      "ko": "제복, 코스튬 또는 공식 복장처럼 보이는 의상은 피할 것.",
+      "ja": "制服やコスチューム、公式な服装に見える衣装は避けること。"
+    },
+    "expression": {
+      "en": "Neutral expression with mouth closed and both eyes open; no smiling with teeth showing; look straight at the camera with a relaxed, natural face.",
+      "ko": "입을 다물고 양쪽 눈을 뜬 무표정을 유지할 것; 이가 보이는 미소는 금지; 카메라를 정면으로 보며 자연스럽고 편안한 표정을 지을 것.",
+      "ja": "口を閉じ両目を開けた無表情を保つこと。歯が見える笑顔は禁止。カメラを正面から見て自然でリラックスした表情にすること。"
+    },
+    "glasses": {
+      "en": "Prescription glasses are permitted if not tinted and not thick-framed; sunglasses are not allowed.",
+      "ko": "색이 없고 두껍지 않은 테의 도수 안경은 허용되나, 선글라스는 불가하다.",
+      "ja": "色がなく太くないフレームの度付きメガネは許可されるが、サングラスは不可。"
+    },
+    "face_visibility": {
+      "en": "There must be a clear gap around the sides and top of the head; shoulders and upper chest should be included in the photo; face must not be tilted.",
+      "ko": "머리 양옆과 정수리 주변에 여백이 있어야 하며, 어깨와 상반신 일부가 사진에 포함되어야 하고, 얼굴을 기울이면 안 된다.",
+      "ja": "頭の両側と頭頂部の周りに余白が必要で、肩と上半身の一部を写真に含めること。顔を傾けてはならない。"
+    },
+    "headwear": {
+      "en": "Head coverings are permitted only for religious or medical reasons; the face must be fully visible.",
+      "ko": "머리 가리개는 종교적·의료적 사유가 있을 때만 허용되며, 얼굴이 완전히 보여야 한다.",
+      "ja": "頭部の覆いは宗教上または医療上の理由がある場合のみ許可され、顔全体が見える必要がある。"
+    }
+  },
+  "unverified": ["ears_visibility", "accessories"],
+  "db_conflicts": [
+    {
+      "field": "background",
+      "db_value": "흰색 (white)",
+      "research_value": "Official guidance explicitly says the background must NOT be white — a plain, light background is required but 'pale greys and blues work better than white', with strong contrast against the face.",
+      "source_url": "https://www.passports.govt.nz/passport-photos"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "Direct WebFetch of www.passports.govt.nz returned HTTP 403 on every attempt (including PDF guide subpages), so the figures above were confirmed via multiple independent web searches that each explicitly attributed specific, consistent, non-generic quotes to passports.govt.nz (e.g. the distinctive 'not white — pale greys and blues work better' background guidance, and the 33x44mm / 900-4500x1200-6000px online-upload spec). Size (35x45mm) and head height (32-36mm) both match the DB's existing values exactly. Background does not match — DB says white, official guidance says explicitly avoid white."
+  }
+}

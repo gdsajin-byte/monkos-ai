@@ -1,0 +1,27 @@
+{
+  "slug": "sl-visa",
+  "batch": 23,
+  "verified": {
+    "official_source_url": {
+      "value": "https://evisa.sl/ — confirmed as the official Sierra Leone Immigration eVisa portal (cross-referenced from slid.gov.sl). The portal requires login/application-flow access to view photo specification text; its public FAQ path returned 404 and the landing page exposes only navigation (no requirement text) to an unauthenticated fetch, so no photo size/background/format could be confirmed from this session.",
+      "source_url": "https://evisa.sl/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

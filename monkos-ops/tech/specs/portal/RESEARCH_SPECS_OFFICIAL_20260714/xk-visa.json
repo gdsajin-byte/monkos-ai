@@ -1,0 +1,43 @@
+{
+  "slug": "xk-visa",
+  "batch": 28,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": {
+      "value": "A recent photograph, not older than 1 month, in accordance with international standards as set out in ICAO Document 9303, Part 1, 6th edition.",
+      "source_url": "https://arkivi.mfa-ks.net/en/sherbimet_konsullore/506/paraqitja-e-krkess-pr-viz/506.html"
+    },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://arkivi.mfa-ks.net/en/sherbimet_konsullore/506/paraqitja-e-krkess-pr-viz/506.html",
+      "source_url": "https://arkivi.mfa-ks.net/en/sherbimet_konsullore/506/paraqitja-e-krkess-pr-viz/506.html"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Kosovo Ministry of Foreign Affairs and Diaspora (mfa-ks.net, archived English page) 'Visa application procedure' explicitly requires the photo to follow ICAO Document 9303 Part 1 (6th edition) and be no older than 1 month. The page cites the ICAO standard by name/edition rather than restating specific numeric values (e.g. mm size, background colour) in its own text, so size/background/head_height are left unverified rather than inferring the generic ICAO 35×45mm figure on Kosovo's behalf. DB's size (3.5×4.5cm) and head_height (3.2~3.6cm) are plausible under ICAO 9303 but were not independently restated by this Kosovo government source, so no db_conflicts entry is warranted (absence of confirmation, not contradiction)."
+  }
+}

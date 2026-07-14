@@ -1,0 +1,31 @@
+{
+  "slug": "ba-passport",
+  "batch": 1,
+  "verified": {
+    "official_source_url": {
+      "value": "https://www.iddeea.gov.ba/en/travel-documents/",
+      "source_url": "https://www.iddeea.gov.ba/en/travel-documents/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": {
+      "note": "IDDEEA (Agency for Identification Documents, Registers and Data Exchange of Bosnia and Herzegovina) confirmed via direct fetch as the official passport-issuing agency, but its published pages (travel-documents, bylaws/regulations index, passport info page) did not expose specific mm/background/head-height figures in the content retrievable by this research tool — those numbers live inside downloadable Rulebook (Pravilnik) PDFs referenced only by title ('Rulebook on design, contents, and minimum security features...', Official Gazette of BiH 73/13, 59/14, 2/17) which could not be opened (connection refused / SSL certificate errors on every attempt against msb.gov.ba and mup.ks.gov.ba hosts). A non-official legal aggregator (paragraf.ba) hosting the primary Law on Travel Documents text explicitly states technical photo specifications are delegated to separate implementing regulations, not contained in the law itself, so no number from that aggregator was used. Per the truthfulness gate this entire technical spec is left unverified rather than reporting figures seen only on non-government aggregator sites."
+    }
+  }
+}

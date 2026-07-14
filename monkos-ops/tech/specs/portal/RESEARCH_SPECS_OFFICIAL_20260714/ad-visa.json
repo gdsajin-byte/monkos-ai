@@ -1,0 +1,30 @@
+{
+  "slug": "ad-visa",
+  "batch": 0,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://www.govern.ad/en/ministries-and-secretaries-of-state/ministry-of-foreign-affairs/travel-to-andorra",
+      "source_url": "https://www.govern.ad/en/ministries-and-secretaries-of-state/ministry-of-foreign-affairs/travel-to-andorra"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Andorra does not issue its own visa — confirmed via govern.ad (Ministry of Foreign Affairs): 'Andorra does not issue visas'. Entry is via France or Spain; a third-country national who needs a visa applies for a Schengen visa at a French or Spanish consulate, following EU/Schengen photo standards rather than an Andorra-specific standard. The current DB values (3.5×4.5cm / white / 3.2-3.6cm) match the general Schengen visa photo standard, but this could not be independently re-verified as an 'Andorran' standard within this research pass since no such standard exists.",
+    "note_ko": "안도라는 자체 비자를 발급하지 않는다 — govern.ad(외교부) 페이지에서 확인: \"Andorra does not issue visas\". 안도라 입국은 프랑스 또는 스페인을 경유하며, 비자가 필요한 제3국 국민은 프랑스 또는 스페인 영사관에서 셍겐비자를 신청하고 안도라 고유 규격이 아닌 EU/셍겐 사진규격을 따른다. 현재 DB 값(3.5×4.5cm/흰색/3.2~3.6cm)은 일반 셍겐비자 사진규격과 일치하지만, '안도라 고유 규격'으로서 이번 리서치에서 독립적으로 재검증하지는 못했다 — 애초에 그런 규격이 존재하지 않기 때문이다.",
+    "note_ja": "アンドラは独自のビザを発給しない — govern.ad(外務省)ページで確認:「Andorra does not issue visas」。アンドラへの入国はフランスまたはスペイン経由であり、ビザが必要な第三国籍者はフランスまたはスペイン領事館でシェンゲンビザを申請し、アンドラ独自の規格ではなくEU/シェンゲンの写真規格に従う。現在のDB値(3.5×4.5cm/白/3.2~3.6cm)は一般的なシェンゲンビザ写真規格と一致するが、「アンドラ独自の規格」として今回の調査で独立検証することはできなかった — そもそもそのような規格が存在しないためである。"
+  }
+}

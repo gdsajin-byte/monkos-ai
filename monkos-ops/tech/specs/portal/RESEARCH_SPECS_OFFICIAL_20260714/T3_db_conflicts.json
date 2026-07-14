@@ -1,0 +1,828 @@
+[
+ {
+  "slug": "ae-id",
+  "field": "size",
+  "db_value": "3.5 × 4.5cm",
+  "research_value": "3.5 × 4.0cm (35 × 40mm)",
+  "source_url": "https://icp.gov.ae/wp-content/uploads/2021/11/icao_english.pdf"
+ },
+ {
+  "slug": "ae-id",
+  "field": "head_height",
+  "db_value": "3.2~3.6cm",
+  "research_value": "Source does not give an exact cm figure; it states the face occupies 70-80% of t",
+  "source_url": "https://icp.gov.ae/wp-content/uploads/2021/11/icao_english.pdf"
+ },
+ {
+  "slug": "ae-passport",
+  "field": "size",
+  "db_value": "4 × 6cm",
+  "research_value": "3.5 × 4.0cm (35 × 40mm) per ICP's dedicated spec PDF; ICP's FAQ separately state",
+  "source_url": "https://icp.gov.ae/wp-content/uploads/2021/11/icao_english.pdf"
+ },
+ {
+  "slug": "ae-visa",
+  "field": "size",
+  "db_value": "4.3 × 5.5cm",
+  "research_value": "3.5 × 4.0cm (35 × 40mm) per ICP's dedicated spec PDF; ICP's FAQ separately state",
+  "source_url": "https://icp.gov.ae/wp-content/uploads/2021/11/icao_english.pdf"
+ },
+ {
+  "slug": "al-visa",
+  "field": "head_height",
+  "db_value": "3.2~3.6cm",
+  "research_value": "Source does not state an exact cm figure; it describes the face as 'occupying ap",
+  "source_url": "https://e-visa.al/"
+ },
+ {
+  "slug": "am-passport",
+  "field": "background",
+  "db_value": "흰색 (white only)",
+  "research_value": "Plain, light-colored background — white, light gray, or beige are all officially",
+  "source_url": "https://mcs-citizenship.am/en/guest/photoRequirements"
+ },
+ {
+  "slug": "ao-passport",
+  "field": "size",
+  "db_value": "3.5 × 4.5cm",
+  "research_value": "4 × 5cm — SME (Serviço de Migração e Estrangeiros, Angola's Ministry of Interior",
+  "source_url": "https://www.sme.gov.ao/ao/servicos/requisitos-dos-actos-migratorios/nacionais/"
+ },
+ {
+  "slug": "ao-visa",
+  "field": "size",
+  "db_value": "3.5 × 4.5cm",
+  "research_value": "Angola visas are processed exclusively through the SME e-Visa portal (smevisa.go",
+  "source_url": "https://www.sme.gov.ao/ao/perguntas-frequentes/evisa-english-version/"
+ },
+ {
+  "slug": "au-passport",
+  "field": "size",
+  "db_value": "3.5×4.5cm",
+  "researched_value": "35-40mm wide x 45-50mm high (official spec is a range, not fixed 35x45mm)",
+  "source_url": "https://www.passports.gov.au/help/passport-photos"
+ },
+ {
+  "slug": "au-passport",
+  "field": "background",
+  "db_value": "밝은 회색 (light grey only)",
+  "researched_value": "Plain white OR light grey - white is also officially allowed",
+  "source_url": "https://www.passports.gov.au/help/passport-photos"
+ },
+ {
+  "slug": "au-visa",
+  "field": "background",
+  "db_value": "흰색 (white)",
+  "research_value": "Neutral or light grey colour that contrasts with your face — the official Home A",
+  "source_url": "https://immi.homeaffairs.gov.au/help-text/evidence/Pages/et-h0050.aspx"
+ },
+ {
+  "slug": "bo-visa",
+  "field": "size",
+  "db_value": "4 × 5cm",
+  "research_value": "4 x 4 cm",
+  "source_url": "https://consulados.cancilleria.gob.bo/base/visas/"
+ },
+ {
+  "slug": "bo-visa",
+  "field": "background",
+  "db_value": "흰색 (white)",
+  "research_value": "fondo rojo (red)",
+  "source_url": "https://consulados.cancilleria.gob.bo/base/visas/"
+ },
+ {
+  "slug": "br-passport",
+  "field": "head_height",
+  "db_value": "4.2cm",
+  "research_value": "31-36mm chin-to-forehead (queixo à testa) — different measurement point and valu",
+  "source_url": "https://www.gov.br/mre/pt-br/embaixada-sao-jose/consular/especificacoes-da-fotog"
+ },
+ {
+  "slug": "bs-passport",
+  "field": "size",
+  "db_value": "3.5 × 4.5cm",
+  "research_value": "2 x 2 inches (50.8 x 50.8mm), square format",
+  "source_url": "https://mofa.gov.bs/passportrenewal/"
+ },
+ {
+  "slug": "bs-visa",
+  "field": "size",
+  "db_value": "3.5 × 4.5cm",
+  "research_value": "2 x 2 inches (50.8 x 50.8mm), square format",
+  "source_url": "https://mofa.gov.bs/wp-content/uploads/2020/06/eVISA-photoSpecification-1v1-2020"
+ },
+ {
+  "slug": "bw-passport",
+  "field": "size",
+  "db_value": "3 × 4cm",
+  "research_value": "Between 52mm x 37mm (min) and 63mm x 50mm (max)",
+  "source_url": "https://www.botswanaembassy.org/sites/default/files/documents/Botswana_Passport_"
+ },
+ {
+  "slug": "bz-passport",
+  "field": "head_height",
+  "db_value": "3.5~4.1cm",
+  "research_value": "31.8mm to 35.8mm (1.25in-1.41in)",
+  "source_url": "https://immigration.gov.bz/passport/passport-photo-requirements/"
+ },
+ {
+  "slug": "bz-visa",
+  "field": "head_height",
+  "db_value": "3.5~4.1cm",
+  "research_value": "31.8mm to 35.8mm (1.25in-1.41in)",
+  "source_url": "https://immigration.gov.bz/passport/passport-photo-requirements/"
+ },
+ {
+  "slug": "cf-passport",
+  "field": "size",
+  "db_value": "3.5 × 4.5cm",
+  "research_value": "4 x 4cm",
+  "source_url": "https://paris.diplomatie.gouv.cf/communiques/12/delivrance-de-passeports-biometr"
+ },
+ {
+  "slug": "cg-passport",
+  "field": "size",
+  "db_value": "3.5 × 4.5cm",
+  "research_value": "4 x 4cm",
+  "source_url": "https://interieur.gouv.cg/passeport/"
+ },
+ {
+  "slug": "ci-passport",
+  "field": "size",
+  "db_value": "3.5 × 4.5cm",
+  "research_value": "4cm x 4cm (Modèle Europe)",
+  "source_url": "https://canada.diplomatie.gouv.ci/visa.php?lang=&num=50"
+ },
+ {
+  "slug": "cr-visa",
+  "field": "size",
+  "db_value": "2 × 2 inch (51 × 51mm)",
+  "research_value": "5cm × 5cm (50mm × 50mm) — stated explicitly in metric by the DGME-authorized vis",
+  "source_url": "https://www.embajadadecostarica.org/wp-content/uploads/2023/05/Requisitos-visa-a"
+ },
+ {
+  "slug": "cv-passport",
+  "field": "size",
+  "db_value": "3.5 × 4.5cm",
+  "research_value": "Digital-only: 900–4500px width × 1200–6000px height, portrait ratio 4:3 or 3:4. ",
+  "source_url": "https://www.gov.cv/requisitos-fotografias-passaporte"
+ },
+ {
+  "slug": "cv-passport",
+  "field": "background",
+  "db_value": "흰색",
+  "research_value": "\"um plano de fundo claro\" (a light/clear background) — the official text specifi",
+  "source_url": "https://www.gov.cv/requisitos-fotografias-passaporte"
+ },
+ {
+  "slug": "cv-passport",
+  "field": "head_height",
+  "db_value": "3.2~3.6cm",
+  "research_value": "No cm/mm figure published for head height. Official guidance is qualitative only",
+  "source_url": "https://www.gov.cv/requisitos-fotografias-passaporte"
+ },
+ {
+  "slug": "cv-visa",
+  "field": "size",
+  "db_value": "3.5 × 4.5cm",
+  "research_value": "Digital-only: 900–4500px width × 1200–6000px height, portrait ratio 4:3 or 3:4; ",
+  "source_url": "https://www.gov.cv/requisitos-fotografias-passaporte"
+ },
+ {
+  "slug": "cv-visa",
+  "field": "background",
+  "db_value": "흰색",
+  "research_value": "\"um plano de fundo claro\" (a light/clear background) — specified as \"claro\" (lig",
+  "source_url": "https://www.gov.cv/requisitos-fotografias-passaporte"
+ },
+ {
+  "slug": "cv-visa",
+  "field": "head_height",
+  "db_value": "3.2~3.6cm",
+  "research_value": "No cm/mm figure published for head height. Official guidance is qualitative only",
+  "source_url": "https://www.gov.cv/requisitos-fotografias-passaporte"
+ },
+ {
+  "slug": "cy-visa",
+  "field": "background",
+  "db_value": "흰색",
+  "research_value": "\"plain light-coloured background\" — specified as light-coloured, not explicitly ",
+  "source_url": "https://home-affairs.ec.europa.eu/document/download/5bb16566-c8c2-4afb-b038-530f"
+ },
+ {
+  "slug": "cy-visa",
+  "field": "head_height",
+  "db_value": "3.2~3.6cm",
+  "research_value": "No mm figure published for head height — only a qualitative percentage (\"close u",
+  "source_url": "https://home-affairs.ec.europa.eu/document/download/5bb16566-c8c2-4afb-b038-530f"
+ },
+ {
+  "slug": "de-resume",
+  "field": "size",
+  "db_value": "3.5 × 4.5cm",
+  "research_value": "\"Größe mindestens 4 x 6 cm, höchstens 6,5 x 8,5 cm\" (minimum 4×6cm, maximum 6.5×",
+  "source_url": "https://www.arbeitsagentur.de/vor-ort/datei/merkblatt-praktische-bewerbungstipps"
+ },
+ {
+  "slug": "de-resume",
+  "field": "background",
+  "db_value": "밝은 배경",
+  "research_value": "\"Der Hintergrund sollte neutral sein\" (the background should be neutral) — offic",
+  "source_url": "https://www.arbeitsagentur.de/bildung/einfach-erklaert/tipps-bewerbungsfoto-einf"
+ },
+ {
+  "slug": "dj-visa",
+  "field": "size",
+  "db_value": "3.5 × 3.5cm",
+  "research_value": "2 × 2 inch (50.8 × 50.8mm) — printed directly on the official Republic of Djibou",
+  "source_url": "https://djiboutiembassyus.org/sites/default/files/documents/Djibouti_Visa_Applic"
+ },
+ {
+  "slug": "dm-passport",
+  "field": "background",
+  "db_value": "흰색 (white only)",
+  "research_value": "dominica.gov.dm lists FIVE acceptable background colours — white, light grey, li",
+  "source_url": "https://dominica.gov.dm/services/passports-and-travel-documents-nationals/how-do"
+ },
+ {
+  "slug": "dm-visa",
+  "field": "background",
+  "db_value": "흰색 (white only)",
+  "research_value": "dominica.gov.dm lists FIVE acceptable background colours — white, light grey, li",
+  "source_url": "https://dominica.gov.dm/services/passports-and-travel-documents-nationals/how-do"
+ },
+ {
+  "slug": "do-visa",
+  "field": "size",
+  "db_value": "2 × 2 inch (51 × 51mm)",
+  "research_value": "MIREX's official visa portal (servicios360.mirex.gob.do/visas/) primarily/promin",
+  "source_url": "https://servicios360.mirex.gob.do/visas/"
+ },
+ {
+  "slug": "ec-visa",
+  "field": "size",
+  "db_value": "3.5 × 4.5cm",
+  "research_value": "5 x 5 cm (2 x 2 inches) — this figure recurs consistently across multiple indepe",
+  "source_url": "https://www.cancilleria.gob.ec/houston/2023/05/10/visas-de-turismo/"
+ },
+ {
+  "slug": "fm-passport",
+  "field": "size",
+  "db_value": "3.5 × 4.5cm",
+  "research_value": "1 3/16 × 1½ inch (approx. 3.0 × 3.8cm)",
+  "source_url": "https://www.fsmgov.org/passport.html"
+ },
+ {
+  "slug": "ga-visa",
+  "field": "background",
+  "db_value": "흰색",
+  "research_value": "Gray or white (\"fond gris ou blanc\") per the Embassy of Gabon in France's offici",
+  "source_url": "https://fr.ambagabon.org/index.php/avis-aux-voyageurs/immigration/visas"
+ },
+ {
+  "slug": "gr-passport",
+  "field": "background",
+  "db_value": "흰색 (white)",
+  "research_value": "Light-coloured background, preferably grey with RGB (190;190;190) +/-10 — the of",
+  "source_url": "https://www.passport.gov.gr/en/diadikasia-ekdosis/documents/specificationphoto.h"
+ },
+ {
+  "slug": "gr-passport",
+  "field": "head_height",
+  "db_value": "3.6~4.0cm",
+  "research_value": "Official page gives head sizing only as percentages of the 60mm printed-photo he",
+  "source_url": "https://www.passport.gov.gr/en/diadikasia-ekdosis/documents/specificationphoto.h"
+ },
+ {
+  "slug": "gt-visa",
+  "field": "size",
+  "db_value": "3.5 x 4.5cm",
+  "research_value": "2 x 2 inches (approx. 5.08 x 5.08cm) — stated specifically for the Tourist Visa ",
+  "source_url": "https://www.embaguateusa.gob.gt/general-9"
+ },
+ {
+  "slug": "id-passport",
+  "field": "head_height",
+  "db_value": "2.5~3.1cm",
+  "research_value": "~3.0-3.6cm (computed from the official 50%-60%-of-image-height ratio applied to ",
+  "source_url": "https://www.imigrasi.go.id/upload/file/Syarat%20Foto.pdf"
+ },
+ {
+  "slug": "il-visa",
+  "field": "size",
+  "db_value": "3.5 × 4.5cm",
+  "research_value": "5 × 5cm (50x50mm)",
+  "source_url": "https://embassies.gov.il/usa/en/services/foreign-citizens/entry-visa-visiting-or"
+ },
+ {
+  "slug": "ir-visa",
+  "field": "size",
+  "db_value": "3 × 4cm",
+  "research_value": "Minimum 400x600px digital upload (aspect ratio ~2:3), per Iran's official e-visa",
+  "source_url": "https://evisatraveller.mfa.ir/en/request/digital_image_requirement/?title_name=p"
+ },
+ {
+  "slug": "jm-passport",
+  "field": "background",
+  "db_value": "흰색",
+  "research_value": "Complexion-dependent, not uniformly white: dark-complexioned applicants are phot",
+  "source_url": "https://www.pica.gov.jm/passport/photo-requirements"
+ },
+ {
+  "slug": "ke-passport",
+  "field": "size",
+  "db_value": "3.5 × 4.5cm",
+  "research_value": "5.5cm × 5.5cm (207px × 207px)",
+  "source_url": "https://immigration.ecitizen.go.ke/index.php?id=9"
+ },
+ {
+  "slug": "ke-passport",
+  "field": "head_height",
+  "db_value": "3.2~3.6cm",
+  "research_value": "No absolute cm/mm figure given on the official page — specified only as a propor",
+  "source_url": "https://immigration.ecitizen.go.ke/index.php?id=9"
+ },
+ {
+  "slug": "ke-visa",
+  "field": "size",
+  "db_value": "3.5 × 4.5cm",
+  "research_value": "5.5cm × 5.5cm (207px × 207px)",
+  "source_url": "https://immigration.ecitizen.go.ke/index.php?id=9"
+ },
+ {
+  "slug": "ke-visa",
+  "field": "head_height",
+  "db_value": "3.2~3.6cm",
+  "research_value": "No absolute cm/mm figure given on the official page — specified only as a propor",
+  "source_url": "https://immigration.ecitizen.go.ke/index.php?id=9"
+ },
+ {
+  "slug": "kg-passport",
+  "field": "size",
+  "db_value": "3.5 × 4.5cm",
+  "research_value": "40 x 60mm (4 x 6cm) per the State Registration Service (GRS)'s official passport",
+  "source_url": "https://grs.gov.kg/uploads/files/eid_photo_ru.pdf"
+ },
+ {
+  "slug": "kh-visa",
+  "field": "size",
+  "db_value": "4 × 6cm",
+  "research_value": "Royal Embassy of Cambodia in Washington D.C. tourist-visa instructions require a",
+  "source_url": "https://www.embassyofcambodiadc.org/tourist_visa_type-t.html"
+ },
+ {
+  "slug": "kr-taxi",
+  "field": "size",
+  "db_value": "5 × 7cm",
+  "research_value": "3.5cm × 4.5cm (여권용)",
+  "source_url": "https://www.law.go.kr/LSW/lsBylInfoPLinkR.do?lsiSeq=273021&lsNm=%EC%97%AC%EA%B0%"
+ },
+ {
+  "slug": "kr-taxi",
+  "field": "background",
+  "db_value": "흰색",
+  "research_value": "단색(검은색 제외) — 흰색으로 한정한다는 명시 없음",
+  "source_url": "https://lic.kotsa.or.kr/road/html.do?menu_idx=37"
+ },
+ {
+  "slug": "kw-visa",
+  "field": "background",
+  "db_value": "파란색",
+  "research_value": "White background",
+  "source_url": "https://kuwaitvisa.moi.gov.kw/faq"
+ },
+ {
+  "slug": "kz-passport",
+  "field": "background",
+  "db_value": "흰색",
+  "research_value": "Solid light-colored background, gray specifically recommended, blue explicitly N",
+  "source_url": "https://egov.kz/cms/en/articles/trebovaniya_k_fotografiyam"
+ },
+ {
+  "slug": "lk-visa",
+  "field": "size",
+  "db_value": "3.5 × 4.5cm",
+  "research_value": "Not applicable -- no photograph is required at all for a Sri Lanka ETA (Electron",
+  "source_url": "https://www.eta.gov.lk/slvisa/visainfo/weta.jsp?locale=en_US&ch1=current"
+ },
+ {
+  "slug": "lk-visa",
+  "field": "background",
+  "db_value": "흰색",
+  "research_value": "Not applicable -- no photograph is required for the ETA",
+  "source_url": "https://www.eta.gov.lk/slvisa/visainfo/weta.jsp?locale=en_US&ch1=current"
+ },
+ {
+  "slug": "lk-visa",
+  "field": "head_height",
+  "db_value": "3.2~3.6cm",
+  "research_value": "Not applicable -- no photograph is required for the ETA",
+  "source_url": "https://www.eta.gov.lk/slvisa/visainfo/weta.jsp?locale=en_US&ch1=current"
+ },
+ {
+  "slug": "lr-visa",
+  "field": "background",
+  "db_value": "흰색",
+  "research_value": "\"Neutral background\" (per the official Liberia Immigration Service visa-on-arriv",
+  "source_url": "https://visaonarrival.lis.gov.lr/"
+ },
+ {
+  "slug": "lu-passport",
+  "field": "background",
+  "db_value": "흰색",
+  "research_value": "\"One colour and bright (ideally neutral grey)\", per the official ICAO-criteria s",
+  "source_url": "https://mae.gouvernement.lu/content/dam/gouv_maee/services-aux-citoyens/passepor"
+ },
+ {
+  "slug": "lu-visa",
+  "field": "background",
+  "db_value": "흰색",
+  "research_value": "\"One colour and bright (ideally neutral grey)\", per the ICAO-criteria standard i",
+  "source_url": "https://mae.gouvernement.lu/content/dam/gouv_maee/services-aux-citoyens/passepor"
+ },
+ {
+  "slug": "ly-visa",
+  "field": "size",
+  "db_value": "4 × 6cm",
+  "research_value": "2 x 2 inch (5.08 x 5.08cm), per the Embassy of the State of Libya in Washington,",
+  "source_url": "https://www.embassyoflibyadc.org/visa"
+ },
+ {
+  "slug": "ma-passport",
+  "field": "background",
+  "db_value": "흰색",
+  "research_value": "The official passeport.ma application-checklist page allows sky blue, white, OR ",
+  "source_url": "https://www.passeport.ma/Home/PiecesAuMaroc"
+ },
+ {
+  "slug": "mc-passport",
+  "field": "background",
+  "db_value": "흰색",
+  "research_value": "Official Monaco government portal states 'Light background only (no white backgr",
+  "source_url": "https://monservicepublic.gouv.mc/en/themes/nationality-and-residency/monegasque-"
+ },
+ {
+  "slug": "md-passport",
+  "field": "size",
+  "db_value": "3.5 × 4.5cm",
+  "research_value": "No official ASP (Agenția Servicii Publice) page found stating a standard fixed c",
+  "source_url": "https://www.asp.gov.md/en/servicii/persoane-fizice/15/155"
+ },
+ {
+  "slug": "md-passport",
+  "field": "head_height",
+  "db_value": "3.2~3.6cm",
+  "research_value": "ASP does not publish a fixed head-height range in cm/mm. Instead it defines head",
+  "source_url": "https://www.asp.gov.md/en/informatii-utile/recomandari"
+ },
+ {
+  "slug": "me-visa",
+  "field": "head_height",
+  "db_value": "3.2~3.6cm",
+  "research_value": "Official regulation (Article 9) states head (chin to crown) = 70-80% of the 45mm",
+  "source_url": "https://wapi.gov.me/download/6b026ff7-a360-4bb6-a04d-4f43ce3b74fa?version=1.0"
+ },
+ {
+  "slug": "mg-passport",
+  "field": "size",
+  "db_value": "4 × 4cm",
+  "research_value": "431×555px @300dpi, which converts to ≈36.5×47.0mm (3.65×4.70cm) — a non-square, ",
+  "source_url": "https://www.diplomatie.gov.mg/app/passeport/index.php/passeport/photo_requiremen"
+ },
+ {
+  "slug": "mg-passport",
+  "field": "background",
+  "db_value": "흰색",
+  "research_value": "Off-white or light gray ('blanc cassé ou gris clair'), not pure white.",
+  "source_url": "https://www.diplomatie.gov.mg/app/passeport/index.php/passeport/photo_requiremen"
+ },
+ {
+  "slug": "mk-passport",
+  "field": "size",
+  "db_value": "5 × 5cm",
+  "research_value": "3.5 x 4.5 cm (face portion 2.5 x 3.5cm), per the Ministry of Interior's 'Правилн",
+  "source_url": "https://portal.mdt.gov.mk/post-body-files/podzakonski-akti-mvr-file-QrrG.pdf"
+ },
+ {
+  "slug": "mk-passport",
+  "field": "head_height",
+  "db_value": "3.0~3.5cm",
+  "research_value": "2.5 x 3.5 cm face/likeness ('лик') box within the 3.5x4.5cm photo, per Article 1",
+  "source_url": "https://portal.mdt.gov.mk/post-body-files/podzakonski-akti-mvr-file-QrrG.pdf"
+ },
+ {
+  "slug": "mm-passport",
+  "field": "size",
+  "db_value": "3.5 × 4.5cm",
+  "research_value": "4cm x 6cm, per the Embassy of the Republic of the Union of Myanmar in Phnom Penh",
+  "source_url": "https://mephnompenh.org/issuance-of-new-passport-renewal-passport/"
+ },
+ {
+  "slug": "mm-visa",
+  "field": "size",
+  "db_value": "3.8 × 4.8cm",
+  "research_value": "3.8cm x 4.6cm (1.5 x 1.8 inches)",
+  "source_url": "https://estay.moip.gov.mm/home/usefulinformation"
+ },
+ {
+  "slug": "mo-visa",
+  "field": "size",
+  "db_value": "3.5 × 4.5cm",
+  "research_value": "48mm x 33mm (4.8 x 3.3cm)",
+  "source_url": "https://lk.china-embassy.gov.cn/eng/lsfw/qz/202211/t20221107_10801432.htm"
+ },
+ {
+  "slug": "mt-passport",
+  "field": "size",
+  "db_value": "3.5 × 4.5cm",
+  "research_value": "40mm x 30mm (height x width)",
+  "source_url": "https://identita.gov.mt/passport-office-sec-page-useful-info/"
+ },
+ {
+  "slug": "mt-passport",
+  "field": "head_height",
+  "db_value": "3.2~3.6cm",
+  "research_value": "Not stated as an absolute mm figure — official rule is 'face takes up 70-80% of ",
+  "source_url": "https://identita.gov.mt/passport-office-sec-page-useful-info/"
+ },
+ {
+  "slug": "mu-passport",
+  "field": "size",
+  "db_value": "3.5 × 4.5cm",
+  "research_value": "Range: 35-40mm wide x 45-50mm high (not a single fixed 35x45mm value)",
+  "source_url": "https://passport.govmu.org/passport/?mdocs-file=718"
+ },
+ {
+  "slug": "mu-passport",
+  "field": "head_height",
+  "db_value": "3.2~3.6cm",
+  "research_value": "25-35mm (0.98-1.38in) chin-to-crown face length",
+  "source_url": "https://passport.govmu.org/passport/?mdocs-file=718"
+ },
+ {
+  "slug": "mx-visa",
+  "field": "size",
+  "db_value": "3.5 × 4.5cm",
+  "research_value": "39 x 31 mm (per consulmex.sre.gob.mx/boston)",
+  "source_url": "https://consulmex.sre.gob.mx/boston/index.php/visas-english"
+ },
+ {
+  "slug": "ng-passport",
+  "field": "head_height",
+  "db_value": "3.2~3.6cm",
+  "research_value": "2.9~3.4cm (29-34mm, chin to crown) per Nigeria Immigration Service's official pa",
+  "source_url": "https://passport.immigration.gov.ng/image-compliance"
+ },
+ {
+  "slug": "nr-passport",
+  "field": "size",
+  "db_value": "3.5 × 4.5cm",
+  "research_value": "35-40mm × 45-50mm (acceptable range per Nauru Passport Division; the DB's fixed ",
+  "source_url": "https://justice.gov.nr/passport-division/"
+ },
+ {
+  "slug": "nu-passport",
+  "field": "size",
+  "db_value": "3.5 × 4.5cm (entered as if Niue issues its own national passport)",
+  "research_value": "No such document exists. Niue's Ministry of Foreign Affairs and Trade counterpar",
+  "source_url": "https://www.gov.nu/media-releases/niue-immigration-department-announces-changes-"
+ },
+ {
+  "slug": "nu-passport",
+  "field": "background",
+  "db_value": "흰색 (white)",
+  "research_value": "Since the applicable document is the New Zealand passport, New Zealand's officia",
+  "source_url": "https://www.passports.govt.nz/passport-photos"
+ },
+ {
+  "slug": "nu-visa",
+  "field": "size",
+  "db_value": "3.5 × 4.5cm",
+  "research_value": "No standard 'Niue visa' photo specification was found. Directly fetching the Gov",
+  "source_url": "https://www.gov.nu/niue-passenger-arrival-form"
+ },
+ {
+  "slug": "nz-passport",
+  "field": "background",
+  "db_value": "흰색 (white)",
+  "research_value": "Official guidance explicitly says the background must NOT be white — a plain, li",
+  "source_url": "https://www.passports.govt.nz/passport-photos"
+ },
+ {
+  "slug": "om-visa",
+  "field": "background",
+  "db_value": "파란색 (blue)",
+  "research_value": "The official eVisa attachment/document guide (evisa.rop.gov.om) specifies only '",
+  "source_url": "https://evisa.rop.gov.om/eVisaSponsoredUnsponsored/help/en/Attach_Document_Guide"
+ },
+ {
+  "slug": "pa-visa",
+  "field": "size",
+  "db_value": "3.5 × 4.5cm",
+  "research_value": "4cm x 4cm ('tamaño visa'), per the Panama Consulate in Caracas's official touris",
+  "source_url": "https://www.consuladodepanama.com.ve/index.php/ufaqs/cuales-son-los-requisitos-p"
+ },
+ {
+  "slug": "ph-passport",
+  "field": "background",
+  "db_value": "흰색",
+  "research_value": "Royal Blue (per Philippine Embassy Seoul's official 'Machine Readable Passport' ",
+  "source_url": "https://www.philembassy-seoul.com/announcements-advisories/machine-readable-pass"
+ },
+ {
+  "slug": "ph-visa",
+  "field": "size",
+  "db_value": "3.5 × 4.5cm",
+  "research_value": "2 x 2 inches (approx. 51 x 51mm), per the Bureau of Immigration's official CGAF ",
+  "source_url": "https://immigration.gov.ph/wp-content/uploads/2024/08/IRD04.QF_.004-CGAF-FOR-EXT"
+ },
+ {
+  "slug": "ps-passport",
+  "field": "size",
+  "db_value": "3.5 × 4.5cm",
+  "research_value": "3 x 4 cm, per the Palestinian Ministry of Foreign Affairs and Expatriates' offic",
+  "source_url": "https://www.mofa.pna.ps/ar-jo/%D8%A7%D9%84%D8%AE%D8%AF%D9%85%D8%A7%D8%AA%D8%A7%D"
+ },
+ {
+  "slug": "ps-passport",
+  "field": "background",
+  "db_value": "흰색",
+  "research_value": "Blue (زرقاء), per the same official MOFA renewal page",
+  "source_url": "https://www.mofa.pna.ps/ar-jo/%D8%A7%D9%84%D8%AE%D8%AF%D9%85%D8%A7%D8%AA%D8%A7%D"
+ },
+ {
+  "slug": "py-passport",
+  "field": "size",
+  "db_value": "3.5 × 4.5cm",
+  "research_value": "4cm x 4cm, per the Paraguayan Ministry of Foreign Affairs' consular passport ser",
+  "source_url": "https://www2.mre.gov.py/congralpar-buenos-aires/index.php/tramites-y-servicios/p"
+ },
+ {
+  "slug": "py-visa",
+  "field": "size",
+  "db_value": "3.5 × 4.5cm",
+  "research_value": "3 × 4cm per Paraguay MRE's official online visa pages (mre.gov.py/visas/ and mre",
+  "source_url": "https://www.mre.gov.py/visas/"
+ },
+ {
+  "slug": "rs-passport",
+  "field": "background",
+  "db_value": "흰색",
+  "research_value": "Single-color gray (\"jednobojna siva pozadina\") per MUP (Serbian Ministry of Inte",
+  "source_url": "https://www.mup.gov.rs/wps/portal/sr/gradjani/dokumenta/putne%20isprave/biometri"
+ },
+ {
+  "slug": "ru-passport",
+  "field": "head_height",
+  "db_value": "3.2~3.6cm",
+  "research_value": "No absolute cm/mm figure is published by the source — specified only as a propor",
+  "source_url": "https://www.kdmid.ru/cons/passports/list-of-documents-required-for-registration-"
+ },
+ {
+  "slug": "ru-visa",
+  "field": "head_height",
+  "db_value": "3.2~3.6cm",
+  "research_value": "No absolute cm/mm figure is published — specified only as a proportion (face = 7",
+  "source_url": "https://evisa.kdmid.ru/"
+ },
+ {
+  "slug": "sa-visa",
+  "field": "size",
+  "db_value": "4 × 6cm",
+  "research_value": "Digital upload is 200×200 pixels — a SQUARE (1:1) image — per Saudi Arabia's off",
+  "source_url": "https://visa.visitsaudi.com/Home/PhotoSpecifications"
+ },
+ {
+  "slug": "sa-visa",
+  "field": "head_height",
+  "db_value": "3.6~4.0cm",
+  "research_value": "No cm figure is directly published — specified as 70%–80% of the photo, or 1.4\"–",
+  "source_url": "https://visa.visitsaudi.com/Home/PhotoSpecifications"
+ },
+ {
+  "slug": "sy-passport",
+  "field": "size",
+  "db_value": "3.5 × 4.5cm",
+  "research_value": "4 × 4cm (stated verbatim as \"size 4x4\" by Syria's Ministry of Foreign Affairs an",
+  "source_url": "https://mofaex.gov.sy/en/services/%D8%A5%D8%B5%D8%AF%D8%A7%D8%B1-%D8%AC%D9%88%D8"
+ },
+ {
+  "slug": "td-passport",
+  "field": "size",
+  "db_value": "5 × 5cm",
+  "research_value": "4 × 4cm (\"format 40/40 mm\", verbatim from the Embassy of Chad in Berlin's offici",
+  "source_url": "https://www.ambatchadberlin.de/lambassade/les-services/service-passeport/"
+ },
+ {
+  "slug": "tg-visa",
+  "field": "background",
+  "db_value": "흰색",
+  "research_value": "\"de couleur claire, régulier, uni, pas dégradé\" (light-colored, uniform, no grad",
+  "source_url": "https://voyage.gouv.tg/faq"
+ },
+ {
+  "slug": "th-passport",
+  "field": "size",
+  "db_value": "3.5 × 4.5cm",
+  "research_value": "\"3*5 cm.\" as literally published by the Royal Thai Embassy, Brussels (read as 3c",
+  "source_url": "https://brussels.thaiembassy.org/en/page/thai-passport"
+ },
+ {
+  "slug": "tl-visa",
+  "field": "size",
+  "db_value": "3.5 × 4.5cm",
+  "research_value": "3x4 cm, per the official Serviço de Migração (Immigration Service of Timor-Leste",
+  "source_url": "https://www.migracao.gov.tl/pdf/1_Visa_Application_Form.pdf"
+ },
+ {
+  "slug": "tl-visa",
+  "field": "background",
+  "db_value": "흰색",
+  "research_value": "\"fundo liso\" / plain background — color unspecified beyond \"plain\"; not explicit",
+  "source_url": "https://www.migracao.gov.tl/pdf/1_Visa_Application_Form.pdf"
+ },
+ {
+  "slug": "tt-passport",
+  "field": "background",
+  "db_value": "흰색 (white)",
+  "research_value": "Official instructions specify only a 'plain, light coloured background' — the te",
+  "source_url": "https://foreign.gov.tt/documents/703/ADULT_PASSPORT_Instructions.pdf"
+ },
+ {
+  "slug": "tt-visa",
+  "field": "size",
+  "db_value": "31 × 41mm",
+  "research_value": "35mm x 45mm per the official Visa Application Instructions — this is the passpor",
+  "source_url": "https://foreign.gov.tt/documents/1830/Visa_application_instructions_amended.pdf"
+ },
+ {
+  "slug": "tv-passport",
+  "field": "size",
+  "db_value": "3.5 × 4.5cm",
+  "research_value": "2 inches x 1½ inches (≈50.8mm x 38.1mm) per the official Passports Regulations (",
+  "source_url": "https://tuvalu-legislation.tv/cms/images/LEGISLATION/SUBORDINATE/1980/1980-0010/"
+ },
+ {
+  "slug": "ua-passport",
+  "field": "size",
+  "db_value": "3.5×4.5cm",
+  "research_value": "3.5x4.5cm is real and officially confirmed, but only for the DOMESTIC internal p",
+  "source_url": "https://dmsu.gov.ua/poslugi/dokumenti-dlya-vijzdu-za-kordon/vidacha-pasporta-gro"
+ },
+ {
+  "slug": "uy-passport",
+  "field": "size",
+  "db_value": "3.5×4.5cm",
+  "research_value": "5cm x 5cm ('tipo visa'), confirmed identically on two separate official gub.uy (",
+  "source_url": "https://www.gub.uy/ministerio-relaciones-exteriores/embajada-republica-oriental-"
+ },
+ {
+  "slug": "uy-visa",
+  "field": "size",
+  "db_value": "3.5 × 4.5cm",
+  "research_value": "1200 × 1200 pixels (square digital photo — no fixed cm/mm print size published; ",
+  "source_url": "https://www.gub.uy/ministerio-relaciones-exteriores/embajada-republica-oriental-"
+ },
+ {
+  "slug": "vc-passport",
+  "field": "size",
+  "db_value": "3.5 × 4.5cm",
+  "research_value": "Between 2 × 1½ in (5.08 × 3.81cm) and 2½ × 2 in (6.35 × 5.08cm), per official Fo",
+  "source_url": "https://www.gov.vc/images/citizens/PDF/adultpassportform.pdf"
+ },
+ {
+  "slug": "vn-passport",
+  "field": "head_height",
+  "db_value": "3.6~4.0cm",
+  "research_value": "Official source specifies head/face sizing as a percentage-of-frame rule (face ≈",
+  "source_url": "https://dichvucong.bocongan.gov.vn/bocongan/tintuc/chitiet?matin=41"
+ },
+ {
+  "slug": "ye-passport",
+  "field": "size",
+  "db_value": "4 × 6cm",
+  "research_value": "Embassy of the Republic of Yemen (The Hague) states verbatim: '60mm width by 40m",
+  "source_url": "https://www.yemenembassynl.org/consulate/the-specifications-for-personal-photos-"
+ },
+ {
+  "slug": "ye-visa",
+  "field": "size",
+  "db_value": "4 × 6cm",
+  "research_value": "Embassy of the Republic of Yemen (The Hague) 'Yemen Entry Visa Request' page sta",
+  "source_url": "https://www.yemenembassynl.org/consulate/yemen-entry-visa-request"
+ },
+ {
+  "slug": "za-passport",
+  "field": "background",
+  "db_value": "흰색",
+  "research_value": "Light grey or plain cream-coloured background — the DHA specification explicitly",
+  "source_url": "https://stanonprodmtpdxpzan.blob.core.windows.net/dxp/2024-04/dha-passport-id-ph"
+ },
+ {
+  "slug": "za-passport",
+  "field": "head_height",
+  "db_value": "3.2~3.6cm",
+  "research_value": "2.9~3.4cm (at least 29mm, no more than 34mm), per the DHA official photographic ",
+  "source_url": "https://stanonprodmtpdxpzan.blob.core.windows.net/dxp/2024-04/dha-passport-id-ph"
+ }
+]

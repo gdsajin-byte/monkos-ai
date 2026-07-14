@@ -1,0 +1,68 @@
+{
+  "slug": "gh-passport",
+  "batch": 9,
+  "verified": {
+    "size": {
+      "value": "3.5cm × 4.5cm (also stated as 45mm × 35mm)",
+      "source_url": "https://oslo.mfa.gov.gh/passport"
+    },
+    "background": {
+      "value": "White (\"plain white background\"; a related FAQ page separately says photos must be \"taken against a white background\")",
+      "source_url": "https://oslo.mfa.gov.gh/passport"
+    },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": {
+      "value": "No hat or sunglasses (\"without a hat or sunglasses\")",
+      "source_url": "https://oslo.mfa.gov.gh/passport"
+    },
+    "ears_visibility": {
+      "value": "Full face, forehead, and ears must be visible.",
+      "source_url": "https://london.mfa.gov.gh/frequently-asked-questions"
+    },
+    "face_visibility": {
+      "value": "Photo must show full face and forehead against a white background; nothing may cover the face.",
+      "source_url": "https://london.mfa.gov.gh/frequently-asked-questions"
+    },
+    "headwear_policy": {
+      "value": "No headgear unless worn for religious reasons.",
+      "source_url": "https://london.mfa.gov.gh/frequently-asked-questions"
+    },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://passport.mfa.gov.gh/",
+      "source_url": "https://passport.mfa.gov.gh/"
+    }
+  },
+  "restrictions_i18n": {
+    "glasses": {
+      "en": "No hats or sunglasses.",
+      "ko": "모자·선글라스 착용 불가.",
+      "ja": "帽子・サングラス着用不可。"
+    },
+    "ears": {
+      "en": "Full face, forehead, and ears must be visible.",
+      "ko": "얼굴 전체, 이마, 귀가 모두 보여야 함.",
+      "ja": "顔全体、額、耳がすべて見えている必要がある。"
+    },
+    "face_visibility": {
+      "en": "Photo must show the full face and forehead against a white background; nothing may cover the face.",
+      "ko": "흰색 배경에서 얼굴 전체와 이마가 보여야 하며, 얼굴을 가리는 것이 없어야 함.",
+      "ja": "白背景で顔全体と額が見える必要があり、顔を覆うものがあってはならない。"
+    },
+    "headwear": {
+      "en": "No headgear unless worn for religious reasons.",
+      "ko": "종교적 사유가 아니면 모자·머리가리개 착용 불가.",
+      "ja": "宗教上の理由がない限り、帽子・被り物の着用不可。"
+    }
+  },
+  "unverified": ["head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Confirmed via three separate official mfa.gov.gh mission pages (Oslo embassy, Hamburg consulate, London high commission FAQ) plus the main Ghana Passport Online Portal (passport.mfa.gov.gh). Oslo: '3.5cm x 4.5cm colour photographs with plain white background... without a hat or sunglasses.' Hamburg: 'Four (4) recent 45mm x 35mm passport size photographs' (same size, transposed). Both match the current DB size (3.5x4.5cm) and background (white) exactly — no conflict. London's FAQ page (fetched via curl due to a WebFetch header-parsing error on this domain) states: 'Ensure your photo meets the required format and size, taken against a white background, showing your full face, forehead, and ears. No eyewear or headgear unless worn for religious reasons.' Head height in cm, exact recency window, and digital file spec (resolution/size/format) could not be confirmed on any official mfa.gov.gh page for the physical passport photo — a commonly-repeated third-party figure of '34.5mm head height' was found only on non-official passport-photo vendor sites and is excluded.",
+    "note_ko": "오슬로 대사관, 함부르크 총영사관, 런던 고등판무관 FAQ, 가나 여권 공식 포털(passport.mfa.gov.gh) 등 mfa.gov.gh 산하 복수의 공식 재외공관 페이지에서 교차 확인. 크기(3.5×4.5cm)와 배경(흰색)은 DB값과 정확히 일치. 귀 노출·이마 노출·종교적 사유 예외 모자 규정은 런던 FAQ에서 직접 확인(런던 도메인은 WebFetch 헤더 파싱 오류로 curl 우회 사용). 정확한 두상 높이(cm) 수치와 유효기간, 디지털 파일 규격은 공식 페이지에서 확인되지 않아 미확인 처리."
+  }
+}

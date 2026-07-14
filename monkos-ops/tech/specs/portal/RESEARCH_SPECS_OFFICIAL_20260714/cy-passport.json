@@ -1,0 +1,29 @@
+{
+  "slug": "cy-passport",
+  "batch": 6,
+  "verified": {
+    "official_source_url": {
+      "value": "https://www.gov.cy/moi/en/documents/passports/",
+      "source_url": "https://www.gov.cy/moi/en/documents/passports/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note": "The official Cyprus Ministry of Interior passports page (gov.cy) states biometric data (photo, fingerprints, signature) are normally collected in person by trained officers, and that 'Applicants may provide their own photo, provided it meets the required specifications (see the relevant document here)' — however, inspection of the page's raw HTML shows the word 'here' is plain text with no hyperlink attached (a broken/missing reference), so the actual specification document could not be located or verified through this official page. No other gov.cy or moi.gov.cy page with a numeric photo spec (size/background/head height) could be found. Third-party sites commonly cite 40x50mm with 34mm head height, but these are excluded per the truthfulness gate since no official document could be independently confirmed."
+  }
+}

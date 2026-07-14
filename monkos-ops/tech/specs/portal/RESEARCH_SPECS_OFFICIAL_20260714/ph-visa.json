@@ -1,0 +1,56 @@
+{
+  "slug": "ph-visa",
+  "batch": 21,
+  "verified": {
+    "size": {
+      "value": "2 x 2 inches (approx. 51 x 51mm) — per Bureau of Immigration's Consolidated General Application Form (CGAF) for Extension of Stay of Temporary Visitor's Visa",
+      "source_url": "https://immigration.gov.ph/wp-content/uploads/2024/08/IRD04.QF_.004-CGAF-FOR-EXTENSION-OF-STAY-OF-TEMPORARY-VISITORS-VISA-1.pdf"
+    },
+    "background": {
+      "value": "White",
+      "source_url": "https://immigration.gov.ph/wp-content/uploads/2024/08/IRD04.QF_.004-CGAF-FOR-EXTENSION-OF-STAY-OF-TEMPORARY-VISITORS-VISA-1.pdf"
+    },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": {
+      "value": "Taken within the past three (3) months.",
+      "source_url": "https://immigration.gov.ph/wp-content/uploads/2024/08/IRD04.QF_.004-CGAF-FOR-EXTENSION-OF-STAY-OF-TEMPORARY-VISITORS-VISA-1.pdf"
+    },
+    "file_spec": {
+      "value": "Colored photograph, physically glued with permanent glue in the photograph box; computer generated or photocopied picture is not acceptable.",
+      "source_url": "https://immigration.gov.ph/wp-content/uploads/2024/08/IRD04.QF_.004-CGAF-FOR-EXTENSION-OF-STAY-OF-TEMPORARY-VISITORS-VISA-1.pdf"
+    },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": {
+      "value": "Standard close-up full-face photo.",
+      "source_url": "https://immigration.gov.ph/wp-content/uploads/2024/08/IRD04.QF_.004-CGAF-FOR-EXTENSION-OF-STAY-OF-TEMPORARY-VISITORS-VISA-1.pdf"
+    },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://immigration.gov.ph/",
+      "source_url": "https://immigration.gov.ph/wp-content/uploads/2024/08/IRD04.QF_.004-CGAF-FOR-EXTENSION-OF-STAY-OF-TEMPORARY-VISITORS-VISA-1.pdf"
+    }
+  },
+  "restrictions_i18n": {
+    "face_visibility": {
+      "en": "Standard close-up full-face photo.",
+      "ko": "표준 클로즈업 정면 얼굴 사진.",
+      "ja": "標準的なクローズアップの正面顔写真。"
+    }
+  },
+  "unverified": ["head_height", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "3.5 × 4.5cm",
+      "research_value": "2 x 2 inches (approx. 51 x 51mm), per the Bureau of Immigration's official CGAF form for Temporary Visitor's Visa extension",
+      "source_url": "https://immigration.gov.ph/wp-content/uploads/2024/08/IRD04.QF_.004-CGAF-FOR-EXTENSION-OF-STAY-OF-TEMPORARY-VISITORS-VISA-1.pdf"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "This spec is drawn from the Bureau of Immigration's official 'Extension of Stay of Temporary Visitor's Visa' form (Dept. of Justice, effective 07 Aug 2024), one of the most common visa-related services foreigners in the Philippines use. The eVisaPH portal (evisa.gov.ph, DFA/DICT/DOT/NICA/BI/DOJ joint portal) was directly checked but its public pages did not state explicit photo dimensions/background for online eVisa applications, so those could not be verified from that channel. Other Philippine visa categories (e.g. initial 9(a) visa at a consulate abroad) may use different specs not covered by this BI form."
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "slug": "tm-passport",
+  "batch": 25,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": { "value": "", "source_url": "" }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Accessible official Turkmenistan government pages exist (tmembassy.gov.tm / tmconsulate.gov.tm subdomains for Ankara, Istanbul, Washington DC, and New Delhi missions were all successfully read — see tm-visa.json for the strong results obtained there), but every one of them documents VISA requirements for foreign travelers entering Turkmenistan, not the domestic PASSPORT process for Turkmenistan's own citizens. No page describing citizen passport photo specifications (size, background, recency, etc.) could be located on any tmembassy.gov.tm/tmconsulate.gov.tm mission site, nor on mfa.gov.tm. Turkmenistan's State Migration Service (migration.gov.tm), which would be the plausible domestic authority for citizen passports, returned only a bare Turkmen-language header ('TÜRKMENISTANYŇ DÖWLET MIGRASIÝA GULLUGY') via automated fetch with no extractable body content — the site appears to be JavaScript-rendered. This is unsurprising for Turkmenistan, one of the world's most closed states with minimal English-language public administrative documentation; recommend flagging this slug for a follow-up with a JS-rendering-capable fetch tool if higher confidence is needed."
+  }
+}

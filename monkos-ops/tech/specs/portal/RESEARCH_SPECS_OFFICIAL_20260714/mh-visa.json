@@ -1,0 +1,42 @@
+{
+  "slug": "mh-visa",
+  "batch": 17,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://rmiimmigration.org/applications/",
+      "source_url": "https://rmiimmigration.org/applications/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "The Marshall Islands Embassy consular page (rmiembassyus.org/consular) was fetched and its section structure explicitly checked: the only numeric photo spec found on the site — '2 passport photos (2x2) on WHITE BACKGROUND' — appears exclusively under the page's 'General Passport Information' heading, not under 'General Visa Information'. Both the 2025-revised RMI Division of Immigration Visa Application (Form 1, rmiimmigration.org/wp-content/uploads/2025/02/2025-Revised-Visa-Application-Form.pdf) and its 2011 predecessor contain only an unlabelled 'PHOTOGRAPH' box with no size/background/quality text. The Immigration Division's Applications page (rmiimmigration.org/applications/) and RMIOCIT visa-requirements page (ocit.mh/visa-requirements) likewise state no photo spec. Because no RMI government source ties a specific size/background/etc. to the VISA (as opposed to the passport) product, all fields are left unverified rather than assuming the passport figure carries over.",
+    "note_ko": "마셜제도 대사관 영사 페이지(rmiembassyus.org/consular)를 직접 확인한 결과, 유일하게 발견된 수치 규격('2 passport photos (2x2) on WHITE BACKGROUND')은 'General Passport Information'(여권) 항목에만 명시되어 있고 'General Visa Information'(비자) 항목에는 사진 규격이 전혀 언급되어 있지 않았다. 2025년 개정 비자신청서(Form 1)와 구버전 모두 'PHOTOGRAPH'라는 빈 박스만 있을 뿐 규격 텍스트가 없다. 이민국 신청서 페이지, RMIOCIT 비자안내 페이지에서도 비자용 사진 규격은 확인되지 않았다. 여권 규격을 비자에 그대로 적용할 근거가 없어 전 항목을 미확인 처리했다."
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "slug": "ly-passport",
+  "batch": 15,
+  "verified": {
+    "background": {
+      "value": "White background (\"خلفية بيضاء\")",
+      "source_url": "https://www.embassyoflibyadc.org/assets/frontend/img/RequiredD.pdf"
+    },
+    "glasses_policy": {
+      "value": "Prescription/corrective eyeglasses may not be worn during the photo session (\"عدم استعمال النظارات الطبية أثناء التصوير\")",
+      "source_url": "https://www.embassyoflibyadc.org/assets/frontend/img/RequiredD.pdf"
+    },
+    "accessories": {
+      "value": "Contact lenses may not be worn during the photo session (\"عدم استعمال العدسات اللاصقة أثناء التصوير\")",
+      "source_url": "https://www.embassyoflibyadc.org/assets/frontend/img/RequiredD.pdf"
+    },
+    "headwear_policy": {
+      "value": "White-coloured headscarves (hijab), in any shade of white, may not be worn during the photo session (\"عدم ارتداء اللون الأبيض بدرجاته المختلفة بالنسبة للحجاب أثناء التصوير\") -- implying religious headscarves are otherwise permitted, just not in white tones (which would blend with the white background)",
+      "source_url": "https://www.embassyoflibyadc.org/assets/frontend/img/RequiredD.pdf"
+    },
+    "official_source_url": {
+      "value": "https://www.embassyoflibyadc.org/passports",
+      "source_url": "https://www.embassyoflibyadc.org/passports"
+    }
+  },
+  "restrictions_i18n": {
+    "glasses": {
+      "en": "Prescription (corrective) eyeglasses may not be worn during the photo session.",
+      "ko": "촬영 시 도수 안경(교정용 안경)을 착용해서는 안 된다.",
+      "ja": "撮影時に度付き眼鏡(矯正用眼鏡)を着用してはならない。"
+    },
+    "accessories": {
+      "en": "Contact lenses may not be worn during the photo session.",
+      "ko": "촬영 시 콘택트렌즈를 착용해서는 안 된다.",
+      "ja": "撮影時にコンタクトレンズを着用してはならない。"
+    },
+    "headwear": {
+      "en": "White-coloured headscarves (hijab), in any shade of white, may not be worn during the photo session.",
+      "ko": "촬영 시 흰색 계열(모든 명도의 흰색)의 히잡(머리가리개)을 착용해서는 안 된다.",
+      "ja": "撮影時に白系統(あらゆる濃淡の白)のヒジャブ(頭部を覆うスカーフ)を着用してはならない。"
+    }
+  },
+  "unverified": [
+    "size",
+    "head_height",
+    "validity",
+    "expression_restriction",
+    "ears_visibility",
+    "face_visibility",
+    "file_spec",
+    "clothing_restriction"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Two official sources from the Embassy of the State of Libya in Washington, D.C. (embassyoflibyadc.org, an official Libyan diplomatic mission) were directly fetched/read: (1) the /passports page, confirming '2 passport-sized photos' are required for a new/replacement passport; and (2) an Arabic-language PDF ('RequiredD.pdf', directly read via PDF extraction) titled roughly 'Documents required to issue a new passport', which lists 'عدد (2) صور حديثة خلفية بيضاء' (2 recent photos, white background) among the required documents, and separately lists photo-session conduct rules ('ملاحظات') that apply because passport photos are captured on-site at the embassy by appointment: no contact lenses, no prescription glasses, and no white-toned hijab during the sitting. The white background finding matches the DB's '흰색' value exactly (no conflict). No exact millimeter size, head-height ratio, or explicit facial-expression rule was found on either official document, so these remain unverified; third-party vendor claims of '40x60mm / 4x6cm, min head height 38mm' were seen in this research but could not be traced to any Libyan government or embassy source and are therefore excluded per the truth-gate rule rather than used to confirm or refute the DB's '4 x 6cm' value."
+  }
+}

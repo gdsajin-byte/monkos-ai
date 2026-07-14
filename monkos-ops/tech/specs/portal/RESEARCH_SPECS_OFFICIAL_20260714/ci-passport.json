@@ -1,0 +1,37 @@
+{
+  "slug": "ci-passport",
+  "batch": 4,
+  "verified": {
+    "size": {
+      "value": "4cm x 4cm (Modèle Europe / European model) - stated consistently across the ordinary biometric passport (passeport ordinaire biométrique) application instructions for adults and minors",
+      "source_url": "https://canada.diplomatie.gouv.ci/visa.php?lang=&num=50"
+    },
+    "official_source_url": {
+      "value": "https://canada.diplomatie.gouv.ci/visa.php?lang=&num=50",
+      "source_url": "https://canada.diplomatie.gouv.ci/visa.php?lang=&num=50"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "3.5 × 4.5cm",
+      "research_value": "4cm x 4cm (Modèle Europe)",
+      "source_url": "https://canada.diplomatie.gouv.ci/visa.php?lang=&num=50"
+    }
+  ],
+  "cross_verification": {}
+}

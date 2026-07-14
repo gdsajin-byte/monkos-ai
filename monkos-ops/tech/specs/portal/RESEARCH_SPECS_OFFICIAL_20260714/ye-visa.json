@@ -1,0 +1,67 @@
+{
+  "slug": "ye-visa",
+  "batch": 28,
+  "verified": {
+    "size": {
+      "value": "Source states: 'A recent colored passport photo with white background size (6x4) cm' (same width/height ambiguity as the passport-photo spec on the same embassy site)",
+      "source_url": "https://www.yemenembassynl.org/consulate/yemen-entry-visa-request"
+    },
+    "background": {
+      "value": "White",
+      "source_url": "https://www.yemenembassynl.org/consulate/yemen-entry-visa-request"
+    },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": {
+      "value": "Medical or sunglasses must not be worn",
+      "source_url": "https://www.yemenembassynl.org/consulate/yemen-entry-visa-request"
+    },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": {
+      "value": "Hats of any shape or form must not be worn",
+      "source_url": "https://www.yemenembassynl.org/consulate/yemen-entry-visa-request"
+    },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://www.yemenembassynl.org/consulate/yemen-entry-visa-request",
+      "source_url": "https://www.yemenembassynl.org/consulate/yemen-entry-visa-request"
+    }
+  },
+  "restrictions_i18n": {
+    "glasses": {
+      "en": "Medical or sunglasses must not be worn.",
+      "ko": "의료용 안경이나 선글라스를 착용해서는 안 됩니다.",
+      "ja": "医療用眼鏡やサングラスの着用は認められません。"
+    },
+    "headwear": {
+      "en": "Hats of any shape or form must not be worn.",
+      "ko": "어떤 형태나 종류의 모자도 착용해서는 안 됩니다.",
+      "ja": "いかなる形状・種類の帽子も着用してはいけません。"
+    }
+  },
+  "unverified": [
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "ears_visibility",
+    "face_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "4 × 6cm",
+      "research_value": "Embassy of the Republic of Yemen (The Hague) 'Yemen Entry Visa Request' page states photo size as '(6x4) cm', mirroring the same width/height orientation ambiguity found on the same site's passport-photo specification page.",
+      "source_url": "https://www.yemenembassynl.org/consulate/yemen-entry-visa-request"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "Same source domain (Embassy of the Republic of Yemen, The Hague) as ye-passport; this page covers both regular entry visas and diplomatic visas, both requiring an identical photo spec, and both stating 'Not to wear medical or sun glasses' and 'Not to wear Hats of any shape or form' — no religious headwear exception is mentioned in this source (unlike some other countries' policies), so none was assumed."
+  }
+}

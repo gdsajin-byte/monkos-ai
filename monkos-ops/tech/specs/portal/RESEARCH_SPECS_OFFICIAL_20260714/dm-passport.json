@@ -1,0 +1,80 @@
+{
+  "slug": "dm-passport",
+  "batch": 7,
+  "verified": {
+    "size": {
+      "value": "45mm(H) × 38mm(W), i.e. 1¾ × 1½ inches — matches DB's 3.8 × 4.5cm",
+      "source_url": "https://dominica.gov.dm/services/passports-and-travel-documents-nationals/how-do-i-apply-for-a-passport"
+    },
+    "background": {
+      "value": "Acceptable background colours: white, light grey, light blue, light brown, or beige. Must have contrast between subject and background (e.g. no white shirt on white background); no shadows.",
+      "source_url": "https://dominica.gov.dm/services/passports-and-travel-documents-nationals/how-do-i-apply-for-a-passport"
+    },
+    "validity": {
+      "value": "Photo must not be more than six months old",
+      "source_url": "https://dominica.gov.dm/services/passports-and-travel-documents-nationals/how-do-i-apply-for-a-passport"
+    },
+    "clothing_restriction": {
+      "value": "No bold prints; no military or camouflage-pattern clothing; no sleeveless or tank tops — chest area must be covered",
+      "source_url": "https://dominica.gov.dm/services/passports-and-travel-documents-nationals/how-do-i-apply-for-a-passport"
+    },
+    "expression_restriction": {
+      "value": "Facial expression must be neutral; applicant may smile but the mouth must not be open",
+      "source_url": "https://dominica.gov.dm/services/passports-and-travel-documents-nationals/how-do-i-apply-for-a-passport"
+    },
+    "glasses_policy": {
+      "value": "No shades or dark sunglasses",
+      "source_url": "https://dominica.gov.dm/services/passports-and-travel-documents-nationals/how-do-i-apply-for-a-passport"
+    },
+    "headwear_policy": {
+      "value": "No head coverings permitted, except in the case of Muslims",
+      "source_url": "https://dominica.gov.dm/services/passports-and-travel-documents-nationals/how-do-i-apply-for-a-passport"
+    },
+    "official_source_url": {
+      "value": "https://dominica.gov.dm/services/passports-and-travel-documents-nationals/how-do-i-apply-for-a-passport",
+      "source_url": "https://dominica.gov.dm/services/passports-and-travel-documents-nationals/how-do-i-apply-for-a-passport"
+    }
+  },
+  "restrictions_i18n": {
+    "clothing": {
+      "en": "No bold prints, no military or camouflage-pattern clothing, no sleeveless or tank tops — the chest area must be covered.",
+      "ko": "화려한 프린트 무늬, 군복·카모플라주 패턴 착용 금지. 민소매·탱크톱 금지 — 가슴 부위가 가려져야 함.",
+      "ja": "派手な柄物や迷彩・軍服調の服は不可。ノースリーブ・タンクトップも不可 — 胸元が隠れている必要あり。"
+    },
+    "expression": {
+      "en": "Neutral facial expression required; a smile is allowed but the mouth must remain closed.",
+      "ko": "무표정(중립적 표정) 필수. 미소는 허용되나 입은 다물어야 함(치아 노출 금지).",
+      "ja": "無表情(自然な表情)が必須。微笑みは可だが口は閉じること(歯が見えるのは不可)。"
+    },
+    "glasses": {
+      "en": "Shaded or dark sunglasses are not allowed.",
+      "ko": "색이 들어간 선글라스나 짙은 색 안경 착용 불가.",
+      "ja": "色付きサングラスや濃い色のメガネの着用は不可。"
+    },
+    "headwear": {
+      "en": "No head coverings are permitted, except for Muslim applicants.",
+      "ko": "머리 가리개(모자 등) 착용 불가. 단, 무슬림의 경우 예외 인정.",
+      "ja": "帽子などの被り物は不可。ただしムスリムの場合は例外として認められる。"
+    }
+  },
+  "unverified": [
+    "head_height",
+    "file_spec",
+    "ears_visibility",
+    "face_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [
+    {
+      "field": "background",
+      "db_value": "흰색 (white only)",
+      "research_value": "dominica.gov.dm lists FIVE acceptable background colours — white, light grey, light blue, light brown, beige — not white exclusively. White remains valid, but DB's single-color framing understates the official allowance.",
+      "source_url": "https://dominica.gov.dm/services/passports-and-travel-documents-nationals/how-do-i-apply-for-a-passport"
+    }
+  ],
+  "cross_verification": {
+    "head_height": {
+      "note": "The official page frames head sizing as margins/percentages rather than an absolute measurement: image must be 3–5mm from the top edge, chin 10–12mm from the bottom edge of a 45mm-tall photo, and the face should take up 70–80% of the vertical dimension (per a related Dominica visa-page search result citing the same government portal). A crown-to-chin figure could be derived from these margins (~28–32mm) but that would be my own calculation, not a value stated verbatim in the source, so head_height is left unverified rather than asserted or forced into a db_conflicts entry."
+    }
+  }
+}

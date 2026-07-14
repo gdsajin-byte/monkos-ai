@@ -1,0 +1,75 @@
+{
+  "slug": "ec-passport",
+  "batch": 7,
+  "verified": {
+    "ears_visibility": {
+      "value": "\"El rostro y orejas del usuario deben estar 100% descubiertos\" — the user's face and ears must be 100% uncovered",
+      "source_url": "https://www.registrocivil.gob.ec/registro-civil-aplica-normas-especificas-para-la-captura-de-fotografias/"
+    },
+    "face_visibility": {
+      "value": "\"El cabello no debe cubrir las orejas ni la totalidad de la frente\" — hair must not cover the ears nor the entirety of the forehead",
+      "source_url": "https://www.registrocivil.gob.ec/registro-civil-aplica-normas-especificas-para-la-captura-de-fotografias/"
+    },
+    "headwear_policy": {
+      "value": "\"Tampoco podrán usar sombreros o cintillos que cubran el rostro\" — hats or headbands that cover the face are not permitted",
+      "source_url": "https://www.registrocivil.gob.ec/registro-civil-aplica-normas-especificas-para-la-captura-de-fotografias/"
+    },
+    "accessories": {
+      "value": "\"Los aretes en las mujeres no podrán exceder el 20% del tamaño de la oreja\" — earrings worn by women must not exceed 20% of the size of the ear",
+      "source_url": "https://www.registrocivil.gob.ec/registro-civil-aplica-normas-especificas-para-la-captura-de-fotografias/"
+    },
+    "expression_restriction": {
+      "value": "\"Los ojos deben estar abiertos moderadamente\" — eyes must be moderately open",
+      "source_url": "https://www.registrocivil.gob.ec/registro-civil-aplica-normas-especificas-para-la-captura-de-fotografias/"
+    },
+    "file_spec": {
+      "value": "For domestic first-time/renewal passport procedures, applicants do NOT need to bring a photo — fingerprints, photo, and signature are captured on-site at Registro Civil agencies (\"Para el trámite de pasaportes NO NECESITA TRAER FOTOS. Se procederá con captura de huellas dactilares, toma de foto y de firma en el área de pasaportes directamente en las agencias del Registro Civil\")",
+      "source_url": "https://www.registrocivil.gob.ec/emision-de-pasaporte-ordinario-por-primera-vez-o-renovacion-para-mayores-de-18-anos/"
+    },
+    "official_source_url": {
+      "value": "https://www.registrocivil.gob.ec/",
+      "source_url": "https://www.registrocivil.gob.ec/"
+    }
+  },
+  "restrictions_i18n": {
+    "ears_visibility": {
+      "en": "The applicant's face and ears must be 100% uncovered.",
+      "ko": "얼굴과 귀가 100% 드러나야 함(가림 없이 노출).",
+      "ja": "顔と耳は100%露出していること(隠れていないこと)。"
+    },
+    "face_visibility": {
+      "en": "Hair must not cover the ears or the entirety of the forehead.",
+      "ko": "머리카락이 귀나 이마 전체를 가려서는 안 됨.",
+      "ja": "髪の毛で耳や額全体を覆ってはならない。"
+    },
+    "headwear": {
+      "en": "Hats or headbands that cover the face are not permitted.",
+      "ko": "얼굴을 가리는 모자나 헤어밴드 착용 불가.",
+      "ja": "顔を覆う帽子やヘアバンドの着用は不可。"
+    },
+    "accessories": {
+      "en": "Earrings worn by women must not exceed 20% of the size of the ear.",
+      "ko": "여성의 귀걸이는 귀 크기의 20%를 초과할 수 없음.",
+      "ja": "女性のピアス・イヤリングは耳の大きさの20%を超えてはならない。"
+    },
+    "expression": {
+      "en": "Eyes must be moderately open.",
+      "ko": "눈은 적당히 뜨고 있어야 함.",
+      "ja": "目は適度に開いていること。"
+    }
+  },
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "clothing_restriction",
+    "glasses_policy"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "capture_model_note": {
+      "note": "Ecuador's Registro Civil (Civil Registry, the passport-issuing authority) captures the passport photo in-person at its own service points for domestic applicants — there is no self-prepared/self-submitted print size to verify against DB's '5×5cm' for most cases. DB's size/background/head_height values could not be confirmed or contradicted against an official self-print spec and are left unverified rather than guessed. Direct WebFetch to registrocivil.gob.ec returned HTTP 403 and to gob.ec returned a connection refusal on repeated attempts; content was confirmed via grounded web search quoting verbatim Spanish text specifically attributed to registrocivil.gob.ec (Ecuador's official Civil Registry, under the Cancillería/MREMH umbrella)."
+    }
+  }
+}

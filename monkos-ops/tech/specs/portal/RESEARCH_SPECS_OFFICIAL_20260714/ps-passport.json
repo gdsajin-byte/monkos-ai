@@ -1,0 +1,47 @@
+{
+  "slug": "ps-passport",
+  "batch": 21,
+  "verified": {
+    "size": {
+      "value": "3 x 4 cm (per Ministry of Foreign Affairs and Expatriates passport renewal service, processed through Palestinian diplomatic missions abroad)",
+      "source_url": "https://www.mofa.pna.ps/ar-jo/%D8%A7%D9%84%D8%AE%D8%AF%D9%85%D8%A7%D8%AA%D8%A7%D9%84%D8%A7%D9%84%D9%83%D8%AA%D8%B1%D9%88%D9%86%D9%8A%D8%A9/%D8%AC%D9%88%D8%A7%D8%B2%D8%A7%D8%AA%D8%A7%D9%84%D8%B3%D9%81%D8%B1/%D8%A7%D8%B5%D8%AF%D8%A7%D8%B1%D8%A7%D9%88%D8%AA%D8%AC%D8%AF%D9%8A%D8%AF%D8%AC%D9%88%D8%A7%D8%B2%D8%B3%D9%81%D8%B1%D9%81%D9%84%D8%B3%D8%B7%D9%8A%D9%86%D9%8A"
+    },
+    "background": {
+      "value": "Blue (زرقاء)",
+      "source_url": "https://www.mofa.pna.ps/ar-jo/%D8%A7%D9%84%D8%AE%D8%AF%D9%85%D8%A7%D8%AA%D8%A7%D9%84%D8%A7%D9%84%D9%83%D8%AA%D8%B1%D9%88%D9%86%D9%8A%D8%A9/%D8%AC%D9%88%D8%A7%D8%B2%D8%A7%D8%AA%D8%A7%D9%84%D8%B3%D9%81%D8%B1/%D8%A7%D8%B5%D8%AF%D8%A7%D8%B1%D8%A7%D9%88%D8%AA%D8%AC%D8%AF%D9%8A%D8%AF%D8%AC%D9%88%D8%A7%D8%B2%D8%B3%D9%81%D8%B1%D9%81%D9%84%D8%B3%D8%B7%D9%8A%D9%86%D9%8A"
+    },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://www.mofa.pna.ps/en-us/home",
+      "source_url": "https://www.mofa.pna.ps/en-us/home"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "3.5 × 4.5cm",
+      "research_value": "3 x 4 cm, per the Palestinian Ministry of Foreign Affairs and Expatriates' official passport-renewal service page (processed via missions abroad)",
+      "source_url": "https://www.mofa.pna.ps/ar-jo/%D8%A7%D9%84%D8%AE%D8%AF%D9%85%D8%A7%D8%AA%D8%A7%D9%84%D8%A7%D9%84%D9%83%D8%AA%D8%B1%D9%88%D9%86%D9%8A%D8%A9/%D8%AC%D9%88%D8%A7%D8%B2%D8%A7%D8%AA%D8%A7%D9%84%D8%B3%D9%81%D8%B1/%D8%A7%D8%B5%D8%AF%D8%A7%D8%B1%D8%A7%D9%88%D8%AA%D8%AC%D8%AF%D9%8A%D8%AF%D8%AC%D9%88%D8%A7%D8%B2%D8%B3%D9%81%D8%B1%D9%81%D9%84%D8%B3%D8%B7%D9%8A%D9%86%D9%8A"
+    },
+    {
+      "field": "background",
+      "db_value": "흰색",
+      "research_value": "Blue (زرقاء), per the same official MOFA renewal page",
+      "source_url": "https://www.mofa.pna.ps/ar-jo/%D8%A7%D9%84%D8%AE%D8%AF%D9%85%D8%A7%D8%AA%D8%A7%D9%84%D8%A7%D9%84%D9%83%D8%AA%D8%B1%D9%88%D9%86%D9%8A%D8%A9/%D8%AC%D9%88%D8%A7%D8%B2%D8%A7%D8%AA%D8%A7%D9%84%D8%B3%D9%81%D8%B1/%D8%A7%D8%B5%D8%AF%D8%A7%D8%B1%D8%A7%D9%88%D8%AA%D8%AC%D8%AF%D9%8A%D8%AF%D8%AC%D9%88%D8%A7%D8%B2%D8%B3%D9%81%D8%B1%D9%81%D9%84%D8%B3%D8%B7%D9%8A%D9%86%D9%8A"
+    }
+  ],
+  "cross_verification": {
+    "note_ko": "팔레스타인 외교부(mofa.pna.ps) 공식 페이지(여권 갱신 서비스, 해외 공관 경유)를 직접 접속하여 확인함(HTTPS 인증서 오류로 표준 fetch 도구는 실패했으나 curl로 우회 접속하여 원문 아랍어 텍스트를 직접 대조함). 원문: 'صورة شخصية حديثة 3*4 سم، عدد 4، بخلفية زرقاء' = '최근 촬영한 개인사진 3x4cm, 4매, 파란색 배경'. 여권 처리기간은 30~45일이며 만료 3~6개월 전 신청 권장이라는 안내가 있으나 이는 사진 유효기간이 아니라 여권 처리기간이므로 validity 필드에는 반영하지 않음. 신청서 양식 자체는 내무부(وزارة الداخلية) 발급이라고 명시되어 있어, 국내 최초 발급 절차(내무부 관할)에서는 사양이 다를 수 있음."
+  }
+}

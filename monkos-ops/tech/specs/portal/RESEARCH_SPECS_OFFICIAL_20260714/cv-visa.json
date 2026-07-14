@@ -1,0 +1,96 @@
+{
+  "slug": "cv-visa",
+  "batch": 6,
+  "verified": {
+    "size": {
+      "value": "Digital submission only (GOV.CV portal/app), same standard as the passport: 900–4500 pixels width × 1200–6000 pixels height, portrait aspect ratio 4:3 or 3:4, JPG/JPEG format, 250KB–10MB file size. No fixed cm/mm print size is published.",
+      "source_url": "https://www.gov.cv/requisitos-fotografias-passaporte"
+    },
+    "background": {
+      "value": "\"Use um plano de fundo claro que não contenha objectos ou outras pessoas\" — a light/plain background with no objects or other people",
+      "source_url": "https://www.gov.cv/requisitos-fotografias-passaporte"
+    },
+    "head_height": {
+      "value": "No cm/mm figure published. Qualitative framing only: head centered with free space around the sides and top, and part of the shoulders or upper chest must be visible.",
+      "source_url": "https://www.gov.cv/requisitos-fotografias-passaporte"
+    },
+    "validity": {
+      "value": "Less than 6 months old",
+      "source_url": "https://www.gov.cv/requisitos-fotografias-passaporte"
+    },
+    "file_spec": {
+      "value": "JPG or JPEG format, 250KB–10MB file size, 900–4500px width × 1200–6000px height, portrait ratio 4:3 or 3:4. Scanned photos and selfies are not accepted.",
+      "source_url": "https://www.gov.cv/requisitos-fotografias-passaporte"
+    },
+    "expression_restriction": {
+      "value": "Neutral expression with mouth closed",
+      "source_url": "https://www.gov.cv/requisitos-fotografias-passaporte"
+    },
+    "glasses_policy": {
+      "value": "Glasses allowed if not sunglasses, colored, or thick-framed; no glare/flash reflection; clear space visible between eyes and frames",
+      "source_url": "https://www.gov.cv/requisitos-fotografias-passaporte"
+    },
+    "face_visibility": {
+      "value": "Full frontal view, face turned toward the camera, eyes clearly visible",
+      "source_url": "https://www.gov.cv/requisitos-fotografias-passaporte"
+    },
+    "headwear_policy": {
+      "value": "No hats, hoods, bandanas, or headscarves unless required for religious or medical reasons (requires ID endorsement in that case)",
+      "source_url": "https://www.gov.cv/requisitos-fotografias-passaporte"
+    },
+    "official_source_url": {
+      "value": "https://www.gov.cv/en/pedir-visto",
+      "source_url": "https://www.gov.cv/en/pedir-visto"
+    }
+  },
+  "restrictions_i18n": {
+    "expression": {
+      "en": "Neutral expression with mouth closed.",
+      "ko": "입을 다문 무표정(중립적인 표정)을 유지할 것.",
+      "ja": "口を閉じた無表情(中立的な表情)であること。"
+    },
+    "glasses": {
+      "en": "Glasses are allowed if they are not sunglasses, tinted, or thick-framed, with no glare or flash reflection on the lenses, and a clear space visible between the eyes and the frames.",
+      "ko": "선글라스·색안경·두꺼운 테 안경이 아니라면 안경 착용이 가능하며, 렌즈에 빛 번짐이나 플래시 반사가 없어야 하고 눈과 안경테 사이 공간이 명확히 보여야 함.",
+      "ja": "サングラス・色付きレンズ・太いフレームでなければ眼鏡の着用可。レンズに光の反射やフラッシュの映り込みがなく、目とフレームの間の隙間がはっきり見えること。"
+    },
+    "face_visibility": {
+      "en": "Full frontal view of the face, turned toward the camera, with eyes clearly visible.",
+      "ko": "얼굴이 카메라를 향한 완전한 정면 모습이어야 하며, 눈이 뚜렷하게 보여야 함.",
+      "ja": "顔がカメラの方を向いた完全な正面の状態であること。目がはっきり見えること。"
+    },
+    "headwear": {
+      "en": "No hats, hoods, bandanas, or scarves on the head, unless required for religious or medical reasons (in which case an endorsement on the ID document is needed).",
+      "ko": "모자·후드·반다나·스카프 등 머리 가리개 착용 금지 (단, 종교적·의료적 사유가 있는 경우 신분증에 배서가 필요함).",
+      "ja": "帽子・フード・バンダナ・スカーフなどの被り物は禁止(ただし宗教上・医療上の理由がある場合は身分証明書への裏書きが必要)。"
+    }
+  },
+  "unverified": [
+    "clothing_restriction",
+    "ears_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "3.5 × 4.5cm",
+      "research_value": "Digital-only: 900–4500px width × 1200–6000px height, portrait ratio 4:3 or 3:4; no fixed cm/mm print size published",
+      "source_url": "https://www.gov.cv/requisitos-fotografias-passaporte"
+    },
+    {
+      "field": "background",
+      "db_value": "흰색",
+      "research_value": "\"um plano de fundo claro\" (a light/clear background) — specified as \"claro\" (light), not explicitly \"branco\" (white)",
+      "source_url": "https://www.gov.cv/requisitos-fotografias-passaporte"
+    },
+    {
+      "field": "head_height",
+      "db_value": "3.2~3.6cm",
+      "research_value": "No cm/mm figure published for head height. Official guidance is qualitative only (head centered with free space around the sides and top; part of the shoulders/upper chest must be visible), consistent with the digital pixel-based capture standard reported under size — no physical unit is published against which to confirm or refute the DB's cm range",
+      "source_url": "https://www.gov.cv/requisitos-fotografias-passaporte"
+    }
+  ],
+  "cross_verification": {
+    "note": "Cape Verde's official visa request page (gov.cv/en/pedir-visto) explicitly links to the same 'Compliant photograph' / 'Requisitos para Fotografias' page used for passport applications, confirming the visa photo standard is identical to the passport standard rather than being assumed equivalent. See cv-passport.json for the same underlying source detail."
+  }
+}

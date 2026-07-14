@@ -1,0 +1,35 @@
+{
+  "slug": "ht-passport",
+  "batch": 11,
+  "verified": {
+    "background": {
+      "value": "White background -- 'Two color passport photos on a white background'",
+      "source_url": "https://www.haiti.org/passport-application/"
+    },
+    "validity": {
+      "value": "Photo must be less than three (3) months old at time of application",
+      "source_url": "https://www.haiti.org/passport-application/"
+    },
+    "official_source_url": {
+      "value": "https://www.haiti.org/passport-application/",
+      "source_url": "https://www.haiti.org/passport-application/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "head_height",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Source is the Embassy of Haiti in Washington, D.C. (haiti.org), the most authoritative Haitian diplomatic page located during this research pass; a separate Direction de l'Immigration et Emigration (DIE) technical specification page could not be found. The page was fetched directly and confirms only 'two color passport photos on a white background, less than three (3) months old.' DB's background value (white) matches exactly -- no conflict. No precise size, head-height ratio, or composition rules (expression, glasses, headwear, ears, clothing, accessories) are published on this official page, so those fields remain unverified rather than sourced to non-official passport-photo vendor sites (printitsmart.com, passportphotonow.com, vividphoto.com, etc. were all excluded per the truthfulness gate)."
+  }
+}

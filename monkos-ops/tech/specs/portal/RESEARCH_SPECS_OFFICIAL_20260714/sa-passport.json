@@ -1,0 +1,28 @@
+{
+  "slug": "sa-passport",
+  "batch": 22,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://www.absher.sa/wps/vanityurl/ar/guide/Issuing-the-Saudi-passport",
+      "source_url": "https://www.absher.sa/wps/vanityurl/ar/guide/Issuing-the-Saudi-passport"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Saudi passports are issued via the Absher platform (Ministry of Interior). Multiple direct fetch attempts on absher.sa, moi.gov.sa (including a passport-services PDF), my.gov.sa, and mofa.gov.sa's Fanar portal either returned 403 Forbidden / connection errors, or only navigational/login content with no readable photo-specification text. Search-engine synopses referenced figures such as '2 colored 4×6cm photos, white background' attributed to my.gov.sa/moi.gov.sa, but since the underlying page content could not be independently opened and read, these figures are not included as verified per the sourcing policy — only actually-read official page content is recorded here."
+  }
+}

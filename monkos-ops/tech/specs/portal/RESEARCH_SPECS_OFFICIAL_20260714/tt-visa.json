@@ -1,0 +1,86 @@
+{
+  "slug": "tt-visa",
+  "batch": 26,
+  "verified": {
+    "size": {
+      "value": "35mm x 45mm colour photograph",
+      "source_url": "https://foreign.gov.tt/documents/1830/Visa_application_instructions_amended.pdf"
+    },
+    "background": {
+      "value": "White background required; the applicant's signature must be affixed below the photo on the application form",
+      "source_url": "https://nationalsecurity.gov.tt/wp-content/uploads/2023/10/Visa-Application-Requirements-Form.pdf"
+    },
+    "glasses_policy": {
+      "value": "No eyeglasses/spectacles should be worn in the photo — stricter than the passport rule, which permits untinted prescription glasses.",
+      "source_url": "https://nationalsecurity.gov.tt/wp-content/uploads/2023/10/Visa-Application-Requirements-Form.pdf"
+    },
+    "expression_restriction": {
+      "value": "Neutral expression, both eyes visible, mouth closed, facing the camera directly (not portrait-style at an angle).",
+      "source_url": "https://nationalsecurity.gov.tt/wp-content/uploads/2024/02/Photograph-Guide-Poster.pdf"
+    },
+    "headwear_policy": {
+      "value": "Head coverings are not accepted, except where the competent State authority specifically approves for religious, medical, or cultural reasons.",
+      "source_url": "https://nationalsecurity.gov.tt/wp-content/uploads/2024/02/Photograph-Guide-Poster.pdf"
+    },
+    "face_visibility": {
+      "value": "Face must occupy 70-80% of the photo's length; applicant must face square to the camera (not at an angle) with both edges of the face clearly visible.",
+      "source_url": "https://nationalsecurity.gov.tt/wp-content/uploads/2024/02/Photograph-Guide-Poster.pdf"
+    },
+    "accessories": {
+      "value": "The photo must show the applicant alone, with no other people or objects visible.",
+      "source_url": "https://nationalsecurity.gov.tt/wp-content/uploads/2024/02/Photograph-Guide-Poster.pdf"
+    },
+    "file_spec": {
+      "value": "For e-Visa online applications: digital passport-sized photo in JPG format, validated via the portal's built-in 'Check Your Photo' tool.",
+      "source_url": "https://nationalsecurity.gov.tt/divisions/immigrationdivision/evisa-online/"
+    },
+    "official_source_url": {
+      "value": "https://foreign.gov.tt/documents/1830/Visa_application_instructions_amended.pdf",
+      "source_url": "https://foreign.gov.tt/documents/1830/Visa_application_instructions_amended.pdf"
+    }
+  },
+  "restrictions_i18n": {
+    "glasses": {
+      "en": "No eyeglasses or spectacles should be worn in the photo — stricter than the passport rule, which permits untinted prescription glasses.",
+      "ko": "여권 규정(무색 도수 안경은 허용)과 달리, 비자 사진에서는 안경을 전혀 착용해서는 안 된다.",
+      "ja": "パスポート規定(無色の度付きメガネは許可)とは異なり、ビザ写真ではメガネの着用は一切認められない。"
+    },
+    "expression": {
+      "en": "Neutral expression with both eyes visible and mouth closed, facing the camera directly.",
+      "ko": "양쪽 눈이 보이도록 입을 다물고 무표정으로 카메라를 정면으로 볼 것.",
+      "ja": "両目が見えるように口を閉じ、無表情でカメラを正面から見ること。"
+    },
+    "headwear": {
+      "en": "Head coverings are not accepted, except where the competent State authority specifically approves them for religious, medical, or cultural reasons.",
+      "ko": "관할 국가기관이 종교적·의료적·문화적 사유로 특별히 승인한 경우를 제외하고 머리 가리개는 허용되지 않는다.",
+      "ja": "所轄の国家当局が宗教上・医療上・文化上の理由で特別に承認した場合を除き、頭部の覆いは認められない。"
+    },
+    "face_visibility": {
+      "en": "Face must occupy 70-80% of the photo's length, facing square to the camera (not at an angle), with both edges of the face clearly visible.",
+      "ko": "얼굴이 사진 세로 길이의 70~80%를 차지해야 하며, 비스듬하지 않게 카메라를 정면으로 보고 얼굴 양쪽 가장자리가 선명하게 보여야 한다.",
+      "ja": "顔が写真の縦の長さの70~80%を占める必要があり、斜めではなく正面からカメラを見て、顔の両端がはっきり見える必要がある。"
+    },
+    "accessories": {
+      "en": "The photo must show the applicant alone, with no other people or objects visible.",
+      "ko": "사진에는 신청자 본인만 나와야 하며, 다른 사람이나 물체가 보이면 안 된다.",
+      "ja": "写真には申請者本人のみが写っている必要があり、他の人物や物体が写っていてはならない。"
+    }
+  },
+  "unverified": [
+    "head_height",
+    "validity",
+    "clothing_restriction",
+    "ears_visibility"
+  ],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "31 × 41mm",
+      "research_value": "35mm x 45mm per the official Visa Application Instructions — this is the passport's size (31x41mm), not the visa's. The two document types have different official photo sizes in Trinidad and Tobago.",
+      "source_url": "https://foreign.gov.tt/documents/1830/Visa_application_instructions_amended.pdf"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "Retrieved via curl + pdftotext from foreign.gov.tt (Ministry of Foreign and CARICOM Affairs) and nationalsecurity.gov.tt (Ministry of National Security, Immigration Division) — both official gov.tt domains. The Photograph-Guide-Poster.pdf is directly linked from the official e-Visa Online FAQ page as 'View Photo Specifications', confirming it is the applicable guide for visa photos even though its own text is generic ('Photograph Guide') and co-branded with the printer Canadian Bank Note Company. head_height was deliberately left unverified rather than computed from the poster's 70-80% face-proportion rule, since that rule's exact base dimension for the 35x45mm visa format was not explicitly confirmed in the source text."
+  }
+}

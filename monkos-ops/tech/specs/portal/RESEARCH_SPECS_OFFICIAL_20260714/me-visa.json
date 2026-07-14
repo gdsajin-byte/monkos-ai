@@ -1,0 +1,56 @@
+{
+  "slug": "me-visa",
+  "batch": 16,
+  "verified": {
+    "size": {
+      "value": "35 × 45mm, color photograph.",
+      "source_url": "https://wapi.gov.me/download/6b026ff7-a360-4bb6-a04d-4f43ce3b74fa?version=1.0"
+    },
+    "background": {
+      "value": "The regulation (Article 9) requires the print to be made on 'white glossy, thin photo paper' — this specifies the print paper stock; it does not separately state the backdrop color behind the subject.",
+      "source_url": "https://wapi.gov.me/download/6b026ff7-a360-4bb6-a04d-4f43ce3b74fa?version=1.0"
+    },
+    "head_height": {
+      "value": "Head (chin to crown) must occupy 70-80% of the photo height.",
+      "source_url": "https://wapi.gov.me/download/6b026ff7-a360-4bb6-a04d-4f43ce3b74fa?version=1.0"
+    },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": {
+      "value": "Photo must not be embellished or retouched ('ne smije biti dotjerivana niti retuširana'); must be printed on white glossy, thin photo paper.",
+      "source_url": "https://wapi.gov.me/download/6b026ff7-a360-4bb6-a04d-4f43ce3b74fa?version=1.0"
+    },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": {
+      "value": "Forehead must be uncovered, no cap, per Article 9 of the Regulation on Visas and Visa Forms. Exception (same article): a foreign national who, per national affiliation, religion, or custom, wears a cap or headscarf as an integral part of their dress may submit a photo wearing it.",
+      "source_url": "https://wapi.gov.me/download/6b026ff7-a360-4bb6-a04d-4f43ce3b74fa?version=1.0"
+    },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://wapi.gov.me/download/6b026ff7-a360-4bb6-a04d-4f43ce3b74fa?version=1.0 (Pravilnik o vizama i viznim obrascima / Regulation on Visas and Visa Forms, Article 9)",
+      "source_url": "https://wapi.gov.me/download/6b026ff7-a360-4bb6-a04d-4f43ce3b74fa?version=1.0"
+    }
+  },
+  "restrictions_i18n": {
+    "headwear": {
+      "en": "Forehead must be uncovered, no cap, per Article 9 of the Regulation on Visas and Visa Forms. Exception: a foreign national who, per national affiliation, religion, or custom, wears a cap or headscarf as an integral part of their dress may submit a photo wearing it.",
+      "ko": "비자 및 비자서식규정 제9조에 따라 이마를 가리지 않아야 하며 모자 착용 불가; 다만 민족적 소속, 종교, 또는 관습에 따라 모자나 스카프를 복장의 필수 요소로 착용하는 외국인은 이를 착용한 사진을 제출할 수 있음(예외 규정).",
+      "ja": "査証及び査証様式規則第9条により額を覆わず、帽子の着用不可。例外として、民族的所属、宗教、または慣習により帽子やスカーフを服装の一部として着用する外国人は、それを着用した写真を提出できる。"
+    }
+  },
+  "unverified": ["validity", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "accessories"],
+  "db_conflicts": [
+    {
+      "field": "head_height",
+      "db_value": "3.2~3.6cm",
+      "research_value": "Official regulation (Article 9) states head (chin to crown) = 70-80% of the 45mm-tall photo, which converts to ≈31.5-36mm (3.15-3.6cm) — a straightforward unit conversion of the stated percentage against the regulation's own 45mm frame height. Upper bound matches DB exactly (3.6cm); lower bound (3.15cm) is 0.5mm below DB's stated 3.2cm, most likely rounding rather than a genuine standard mismatch.",
+      "source_url": "https://wapi.gov.me/download/6b026ff7-a360-4bb6-a04d-4f43ce3b74fa?version=1.0"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "Source is the official Montenegrin 'Pravilnik o vizama i viznim obrascima' (Regulation on Visas and Visa Forms), retrieved as a text-layer PDF from wapi.gov.me (a gov.me government subdomain) and read via full-text extraction — Article 8 confirms this regulation governs the 'stranac' (foreign national) visa application, and Article 9 is the dedicated photo-requirements clause, quoted directly: 'Fotografija podnosioca zahtjeva mora da bude u boji, veličine 35 x 45 mm... 70-80% visine fotografije prikazuje glavu od brade do tjemena.' DB's size (3.5×4.5cm) matches exactly — no conflict. DB's head_height (3.2~3.6cm) is closely consistent with the official 70-80%-of-45mm range (≈31.5-36mm / 3.15-3.6cm, a straightforward unit conversion of the stated percentage) — no material conflict, only minor rounding at the lower bound. A companion visa-application-form PDF (wapi.gov.me/download/b94d2c3e-b46f-4a55-8858-d972740bc2b8) independently prints '35 x 45 mm' next to its photo placeholder box, corroborating the regulation."
+  }
+}

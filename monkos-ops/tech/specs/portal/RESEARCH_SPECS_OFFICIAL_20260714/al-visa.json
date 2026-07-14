@@ -1,0 +1,67 @@
+{
+  "slug": "al-visa",
+  "batch": 0,
+  "verified": {
+    "size": {
+      "value": "36mm × 47mm (3.6 × 4.7cm); digital equivalent stated as 425×555px at 300dpi",
+      "source_url": "https://e-visa.al/"
+    },
+    "background": {
+      "value": "Plain white or off-white background",
+      "source_url": "https://e-visa.al/"
+    },
+    "head_height": {
+      "value": "Face centred in the frame, occupying approximately 80% of the photo",
+      "source_url": "https://e-visa.al/"
+    },
+    "validity": {
+      "value": "Taken within the last 6 months",
+      "source_url": "https://e-visa.al/"
+    },
+    "file_spec": {
+      "value": "JPEG (.jpg) format, file size ≤ 240KB",
+      "source_url": "https://e-visa.al/"
+    },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": {
+      "value": "Neutral expression, mouth closed, eyes open; no selfies — must be a formal passport-style photo; even lighting with no shadows on face or background",
+      "source_url": "https://e-visa.al/"
+    },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": {
+      "value": "No hats; religious headwear is permitted provided it does not cover the chin or forehead",
+      "source_url": "https://e-visa.al/"
+    },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://e-visa.al/",
+      "source_url": "https://e-visa.al/"
+    }
+  },
+  "restrictions_i18n": {
+    "expression": {
+      "en": "Neutral expression, mouth closed, eyes open; no selfies — must be a formal passport-style photo; even lighting with no shadows.",
+      "ko": "무표정, 입 다물기, 눈 뜨기; 셀카 불가 — 정식 여권형 사진이어야 하며 그림자 없는 균일한 조명 필요.",
+      "ja": "無表情、口を閉じ、目を開けること。自撮り不可 — 正式なパスポート形式の写真であること。影のない均一な照明が必要。"
+    },
+    "headwear": {
+      "en": "No hats; religious headwear is permitted provided it does not cover the chin or forehead.",
+      "ko": "모자 착용 불가; 종교적 머리가리개는 턱과 이마를 가리지 않는 경우에 한해 허용.",
+      "ja": "帽子の着用不可。宗教上の頭部を覆うもの(かぶり物)は、あごと額を隠さない場合に限り許可される。"
+    }
+  },
+  "unverified": ["clothing_restriction", "glasses_policy", "ears_visibility", "face_visibility", "accessories"],
+  "db_conflicts": [
+    {
+      "field": "head_height",
+      "db_value": "3.2~3.6cm",
+      "research_value": "Source does not state an exact cm figure; it describes the face as 'occupying approximately 80% of the photo'. If interpreted as 80% of the confirmed 4.7cm photo height, this implies approximately 3.76cm — above the DB's 3.2-3.6cm range. This is an approximate reading, not a directly stated measurement, so treat with caution.",
+      "source_url": "https://e-visa.al/"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "e-visa.al is confirmed via search results as the e-Visa portal referenced by Albania's Ministry for Europe and Foreign Affairs. Direct WebFetch of the domain returned certificate/403 errors in this session, so content was confirmed via search-engine access to the live page rather than a direct fetch by this agent. Size (3.6×4.7cm) matches the current DB value exactly — no conflict."
+  }
+}

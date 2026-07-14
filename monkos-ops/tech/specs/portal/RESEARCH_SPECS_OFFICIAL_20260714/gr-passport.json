@@ -1,0 +1,109 @@
+{
+  "slug": "gr-passport",
+  "batch": 10,
+  "verified": {
+    "size": {
+      "value": "Printed photograph: 40mm x 60mm without frame",
+      "source_url": "https://www.passport.gov.gr/en/diadikasia-ekdosis/documents/specificationphoto.html"
+    },
+    "background": {
+      "value": "A light coloured background is required, preferably grey with an RGB value of (190;190;190) +/-10; the background must be uniform, free of patterns, shadows, or other objects",
+      "source_url": "https://www.passport.gov.gr/en/diadikasia-ekdosis/documents/specificationphoto.html"
+    },
+    "head_height": {
+      "value": "The image of the person, from the base of the shoulders to the top of the hair, should cover 70-75% of the photo; specifically, the distance from the chin to the top of the forehead should be 50-60% of the photo",
+      "source_url": "https://www.passport.gov.gr/en/diadikasia-ekdosis/documents/specificationphoto.html"
+    },
+    "validity": {
+      "value": "Must be a recent photograph, taken within the last six months from the date of application",
+      "source_url": "https://www.passport.gov.gr/en/diadikasia-ekdosis/documents/specificationphoto.html"
+    },
+    "file_spec": {
+      "value": "For applications submitted within Greece, the photo must be submitted digitally via the myPhoto e-service on the gov.gr portal, following special digital file specifications published by GSIS (image approx. 1280x1600 px at 4:5 ratio, JPEG, max size around 3MB). Printed physical photos (40x60mm) were exceptionally still being accepted only until 31/01/2026 to ease the transition.",
+      "source_url": "https://www.gsis.gr/sites/default/files/myPhoto/specifications.pdf"
+    },
+    "clothing_restriction": {
+      "value": "The person depicted must be wearing civilian clothing",
+      "source_url": "https://www.passport.gov.gr/en/diadikasia-ekdosis/documents/specificationphoto.html"
+    },
+    "expression_restriction": {
+      "value": "The person must look straight at the camera lens with a neutral expression and a closed mouth; eyes must be normally open (not wide open) and clearly visible",
+      "source_url": "https://www.passport.gov.gr/en/diadikasia-ekdosis/documents/specificationphoto.html"
+    },
+    "glasses_policy": {
+      "value": "If the person usually wears glasses, they must wear them in the photograph. Dark glasses or sunglasses are acceptable only for medical reasons",
+      "source_url": "https://www.passport.gov.gr/en/diadikasia-ekdosis/documents/specificationphoto.html"
+    },
+    "face_visibility": {
+      "value": "The entire face should be clear, from the jaw to the forehead and from one ear to the other; the hair must never cover the eyes, the eyebrows, or any part of the person's face",
+      "source_url": "https://www.passport.gov.gr/en/diadikasia-ekdosis/documents/specificationphoto.html"
+    },
+    "headwear_policy": {
+      "value": "A head covering is acceptable only for religious reasons; in any case, the face characteristics from the jaw up to the forehead and from one ear to the other must remain visible",
+      "source_url": "https://www.passport.gov.gr/en/diadikasia-ekdosis/documents/specificationphoto.html"
+    },
+    "official_source_url": {
+      "value": "https://www.passport.gov.gr/en/diadikasia-ekdosis/documents/specificationphoto.html",
+      "source_url": "https://www.passport.gov.gr/en/diadikasia-ekdosis/documents/specificationphoto.html"
+    }
+  },
+  "restrictions_i18n": {
+    "clothing": {
+      "en": "The person depicted must be wearing civilian clothing.",
+      "ko": "사복(민간인 복장)을 착용한 상태여야 함.",
+      "ja": "私服(一般人の服装)を着用した状態であること。"
+    },
+    "expression": {
+      "en": "Look straight at the camera lens with a neutral expression and a closed mouth; eyes must be normally open (not wide open) and clearly visible.",
+      "ko": "정면을 응시하며 무표정을 유지하고 입은 다물 것. 눈은 (크게 뜨지 않고) 자연스럽게 뜬 상태로 또렷하게 보여야 함.",
+      "ja": "正面を見つめ、無表情で口を閉じること。目は(見開かずに)自然に開けた状態ではっきりと見える必要がある。"
+    },
+    "glasses": {
+      "en": "If you usually wear glasses, you must wear them in the photo. Dark glasses or sunglasses are acceptable only for medical reasons.",
+      "ko": "평소 안경을 착용한다면 사진에서도 착용해야 함. 짙은 색 안경이나 선글라스는 의료상 사유가 있는 경우에만 허용됨.",
+      "ja": "普段眼鏡を着用している場合、写真でも着用すること。色付き眼鏡やサングラスは医療上の理由がある場合のみ認められる。"
+    },
+    "face_visibility": {
+      "en": "The entire face must be clear, from the jaw to the forehead and from one ear to the other. Hair must never cover the eyes, the eyebrows, or any part of the face.",
+      "ko": "얼굴 전체가 또렷하게 보여야 하며, 턱부터 이마까지, 한쪽 귀에서 다른 쪽 귀까지 가려지지 않아야 함. 머리카락이 눈, 눈썹, 얼굴의 어느 부분도 가려서는 안 됨.",
+      "ja": "顎から額まで、片方の耳からもう片方の耳まで、顔全体がはっきりと見える必要がある。髪の毛が目、眉毛、顔のいかなる部分も覆ってはならない。"
+    },
+    "headwear": {
+      "en": "A head covering is acceptable only for religious reasons; the face characteristics from the jaw up to the forehead and from one ear to the other must in any case remain visible.",
+      "ko": "머리 가리개는 종교적 사유가 있는 경우에만 허용되며, 이 경우에도 턱부터 이마까지, 귀에서 귀까지의 얼굴 윤곽은 반드시 보여야 함.",
+      "ja": "頭部の被り物は宗教上の理由がある場合のみ認められ、その場合でも顎から額まで、耳から耳までの顔の輪郭は必ず見える状態でなければならない。"
+    }
+  },
+  "unverified": [
+    "ears_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [
+    {
+      "field": "background",
+      "db_value": "흰색 (white)",
+      "research_value": "Light-coloured background, preferably grey with RGB (190;190;190) +/-10 — the official passport.gov.gr specification text does not name plain white as the preferred option (unlike some countries' passport pages)",
+      "source_url": "https://www.passport.gov.gr/en/diadikasia-ekdosis/documents/specificationphoto.html"
+    },
+    {
+      "field": "head_height",
+      "db_value": "3.6~4.0cm",
+      "research_value": "Official page gives head sizing only as percentages of the 60mm printed-photo height (40x60mm): chin-to-forehead-top 50-60% (computes to ~30-36mm / 3.0-3.6cm) and shoulders-to-hair-top 70-75% (computes to ~42-45mm / 4.2-4.5cm). Neither computed range matches the DB's 3.6-4.0cm band cleanly (the closer chin-to-forehead figure only touches the DB range at its 3.6cm edge); flagged per numeric self-consistency check even though the official source expresses the rule as a percentage rather than a direct cm figure.",
+      "source_url": "https://www.passport.gov.gr/en/diadikasia-ekdosis/documents/specificationphoto.html"
+    }
+  ],
+  "cross_verification": {
+    "size": {
+      "note": "Directly fetched (HTTP 200) the official specificationphoto.html page twice, independently, and both times it verbatim-confirmed '40 mm x 60 mm without frame' for the printed photo — this matches the DB's '4 x 6cm' exactly."
+    },
+    "head_height": {
+      "note": "Official page expresses head sizing as two percentage rules (70-75% shoulders-to-hair-top; 50-60% chin-to-forehead) rather than a direct cm range, so it cannot be cleanly compared numerically against the DB's '3.6~4.0cm'. Not flagged as a conflict since the measurement basis differs (percentage-of-photo vs. absolute chin-to-crown cm) and a computed conversion would be my own inference rather than a quoted official figure."
+    },
+    "file_spec": {
+      "note": "Direct WebFetch of the GSIS myPhoto specifications PDF (gsis.gr) returned HTTP 403 on every attempt. The 1280x1600px / JPEG / ~3MB figures are grounded in search-engine-indexed snippets that consistently and specifically attribute these numbers to that exact official PDF URL across independent queries; the 4:5 aspect ratio is internally consistent with 1280:1600, which supports (but does not by itself prove) that the figure is a genuine quotation rather than a fabrication."
+    },
+    "clothing_restriction": {
+      "note": "The 'civilian clothing' requirement was not visible in the raw text returned by two direct WebFetch calls to specificationphoto.html (the fetch tool's own summarization may have dropped it), but it appeared verbatim and consistently across three independently issued WebSearch queries, each explicitly attributing the phrase to this same official URL in the context of the ICAO 9303 compliance sentence."
+    }
+  }
+}

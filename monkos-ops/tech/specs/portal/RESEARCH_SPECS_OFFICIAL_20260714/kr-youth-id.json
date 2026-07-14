@@ -1,0 +1,33 @@
+{
+  "slug": "kr-youth-id",
+  "batch": 14,
+  "verified": {
+    "size": {
+      "value": "3.5cm × 4.5cm (반명함판, 여권·주민등록증과 동일 규격). 2023년 여성가족부가 기존 3cm×4cm에서 여권·주민등록증 규격인 3.5cm×4.5cm로 통일함.",
+      "source_url": "https://www.mogef.go.kr/sp/yth/sp_yth_f005.do"
+    },
+    "official_source_url": {
+      "value": "https://www.mogef.go.kr/sp/yth/sp_yth_f005.do",
+      "source_url": "https://www.mogef.go.kr/sp/yth/sp_yth_f005.do"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note": "size는 여성가족부(성평등가족부) 공식 페이지(mogef.go.kr)와 대한민국 정책브리핑(korea.kr, 문화체육관광부 국민소통실 운영 공식 정부 도메인) 기사에서 이중 확인됨 — '사진 규격이 기존 3cm×4cm에서 여권·주민등록증 등 타 신분증 신청 때 필요한 3.5cm×4.5cm로 통일'. DB값(3.5×4.5cm)과 일치. 배경색·머리크기 등 세부 규격은 청소년증 발급 관련 공식 페이지(정부24, 여성가족부, 국가법령정보센터 청소년복지 지원법 시행규칙 별지서식)에서 명시적 수치를 찾지 못했으며, 주민등록증 규격(mois.go.kr)을 참고할 수는 있으나 청소년증에 동일 적용된다는 공식 명시가 없어 verified에 포함하지 않음.",
+    "secondary_source": "https://www.korea.kr/news/policyNewsView.do?newsId=148918360"
+  }
+}

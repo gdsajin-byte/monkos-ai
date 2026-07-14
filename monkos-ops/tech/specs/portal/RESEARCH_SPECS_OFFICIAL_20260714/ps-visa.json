@@ -1,0 +1,28 @@
+{
+  "slug": "ps-visa",
+  "batch": 21,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://www.mofa.pna.ps/en-us/home",
+      "source_url": "https://www.mofa.pna.ps/en-us/home"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "The Palestinian Ministry of Foreign Affairs and Expatriates' consular services menu (mofa.pna.ps, directly accessed) lists passport issuance/renewal, civil-status transactions (birth certificate, character certificate, etc.), and powers-of-attorney as its consular services - no independent visa-issuance service page was found there or on any other official Palestinian government domain reached during this research. No official photo specification for a Palestinian-issued entry visa could be located or verified; all fields left unverified rather than sourced from third-party aggregator sites."
+  }
+}

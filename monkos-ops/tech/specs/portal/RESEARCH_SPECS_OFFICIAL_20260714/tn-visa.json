@@ -1,0 +1,29 @@
+{
+  "slug": "tn-visa",
+  "batch": 26,
+  "verified": {
+    "official_source_url": {
+      "value": "https://www.econsulat.tn/fr/services-de-chancellerie/demande-visa",
+      "source_url": "https://www.econsulat.tn/fr/services-de-chancellerie/demande-visa"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Confirmed via Tunisia's official e-Consulat portal (econsulat.tn, under the Ministry of Foreign Affairs) and the Embassy of the Republic of Tunisia (tunisianembassy.org) that visa applications require 'Une (01) photo' / 'One Recent Photo', and per diplomatie.gov.tn search results that photos must conform to ICAO (OACI) biometric standards generally. Neither official page fetched during this research disclosed numeric size, background colour, or head-height specifications. Third-party photo-service sites consistently cite 35x45mm/white background, but this could not be independently confirmed on any Tunisian government or embassy page actually read in this session, so it is left unverified per the truth gate. Direct attempts to reach diplomatie.gov.tn subpages and sicad.gov.tn (Ministry of Interior visa form portal) failed (404 / connection refused)."
+  }
+}

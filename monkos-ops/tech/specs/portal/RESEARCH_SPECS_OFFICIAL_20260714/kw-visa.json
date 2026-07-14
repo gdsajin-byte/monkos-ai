@@ -1,0 +1,42 @@
+{
+  "slug": "kw-visa",
+  "batch": 14,
+  "verified": {
+    "size": {
+      "value": "Official visa FAQ text: 'Yes, you are required to submit a recent passport-sized photo that meets passport photo standards.' The portal does not restate a number itself; cross-referenced against the Kuwait passport standard (e.gov.kw) of 4×5cm.",
+      "source_url": "https://kuwaitvisa.moi.gov.kw/faq"
+    },
+    "background": {
+      "value": "White background ('The photo must have a white background and be clearly recognizable')",
+      "source_url": "https://kuwaitvisa.moi.gov.kw/faq"
+    },
+    "official_source_url": {
+      "value": "https://kuwaitvisa.moi.gov.kw/faq",
+      "source_url": "https://kuwaitvisa.moi.gov.kw/faq"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [
+    {
+      "field": "background",
+      "db_value": "파란색",
+      "research_value": "White background",
+      "source_url": "https://kuwaitvisa.moi.gov.kw/faq"
+    }
+  ],
+  "cross_verification": {
+    "note": "Kuwait Ministry of Interior's official e-Visa portal (kuwaitvisa.moi.gov.kw) FAQ was read by expanding the accordion item 'Do I need to submit passport photos with my visa application?' via direct DOM inspection (JS SPA — content not visible via static fetch). The exact answer text: 'Yes, you are required to submit a recent passport-sized photo that meets passport photo standards. The photo must have a white background and be clearly recognizable.' This explicitly and directly contradicts the DB's blue background — note it also differs from the Kuwait PASSPORT background (blue, per e.gov.kw), meaning passport and visa photos have different required background colors in Kuwait despite the visa FAQ's 'meets passport photo standards' phrasing. Other restriction fields (expression, glasses, headwear, etc.) were not repeated on the visa-specific page, so left unverified rather than assumed inherited from the passport page."
+  }
+}

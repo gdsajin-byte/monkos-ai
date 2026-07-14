@@ -1,0 +1,90 @@
+{
+  "slug": "cy-visa",
+  "batch": 6,
+  "verified": {
+    "size": {
+      "value": "35–40mm in width (only width specified; no separate height figure given)",
+      "source_url": "https://home-affairs.ec.europa.eu/document/download/5bb16566-c8c2-4afb-b038-530f488cb72a_en?filename=icao_photograph_guidelines_en.pdf"
+    },
+    "background": {
+      "value": "Plain light-coloured background (\"be taken with a plain light-coloured background\")",
+      "source_url": "https://home-affairs.ec.europa.eu/document/download/5bb16566-c8c2-4afb-b038-530f488cb72a_en?filename=icao_photograph_guidelines_en.pdf"
+    },
+    "head_height": {
+      "value": "No mm figure published in this document. Qualitative only: \"close up of your head and top of your shoulders so that your face takes up 70–80% of the photograph\"",
+      "source_url": "https://home-affairs.ec.europa.eu/document/download/5bb16566-c8c2-4afb-b038-530f488cb72a_en?filename=icao_photograph_guidelines_en.pdf"
+    },
+    "validity": {
+      "value": "No more than 6 months old",
+      "source_url": "https://home-affairs.ec.europa.eu/document/download/5bb16566-c8c2-4afb-b038-530f488cb72a_en?filename=icao_photograph_guidelines_en.pdf"
+    },
+    "file_spec": {
+      "value": "Printed on high quality paper at high resolution; photographs taken with a digital camera must be high quality colour and printed on photo-quality paper",
+      "source_url": "https://home-affairs.ec.europa.eu/document/download/5bb16566-c8c2-4afb-b038-530f488cb72a_en?filename=icao_photograph_guidelines_en.pdf"
+    },
+    "expression_restriction": {
+      "value": "Neutral expression, mouth closed, looking directly at the camera; must show the applicant alone with no chair backs, toys, or other people visible",
+      "source_url": "https://home-affairs.ec.europa.eu/document/download/5bb16566-c8c2-4afb-b038-530f488cb72a_en?filename=icao_photograph_guidelines_en.pdf"
+    },
+    "glasses_policy": {
+      "value": "If wearing glasses: eyes must be shown clearly with no flash reflection off the glasses, no tinted lenses (avoid heavy frames if possible), and the frames must not cover any part of the eyes",
+      "source_url": "https://home-affairs.ec.europa.eu/document/download/5bb16566-c8c2-4afb-b038-530f488cb72a_en?filename=icao_photograph_guidelines_en.pdf"
+    },
+    "face_visibility": {
+      "value": "Facing square on to the camera, not tilted or looking over one shoulder (portrait style), showing both edges of the face clearly; eyes open and clearly visible with no hair across the eyes",
+      "source_url": "https://home-affairs.ec.europa.eu/document/download/5bb16566-c8c2-4afb-b038-530f488cb72a_en?filename=icao_photograph_guidelines_en.pdf"
+    },
+    "headwear_policy": {
+      "value": "Head coverings are not permitted except for religious reasons, but facial features from bottom of chin to top of forehead and both edges of the face must be clearly shown",
+      "source_url": "https://home-affairs.ec.europa.eu/document/download/5bb16566-c8c2-4afb-b038-530f488cb72a_en?filename=icao_photograph_guidelines_en.pdf"
+    },
+    "official_source_url": {
+      "value": "https://www.gov.cy/en/information/visas/",
+      "source_url": "https://www.gov.cy/en/information/visas/"
+    }
+  },
+  "restrictions_i18n": {
+    "expression": {
+      "en": "Neutral expression, mouth closed, looking directly at the camera, alone in the frame with no other people or objects.",
+      "ko": "입을 다문 무표정으로 카메라를 정면으로 응시하며, 다른 사람이나 물건 없이 혼자 촬영되어야 함.",
+      "ja": "口を閉じた無表情でカメラを正面から見ること。他の人物や物が写り込まず、一人で撮影されること。"
+    },
+    "glasses": {
+      "en": "If wearing glasses, eyes must be clearly visible with no flash reflection off the glasses, no tinted lenses, and the frames must not cover any part of the eyes.",
+      "ko": "안경 착용 시 눈이 뚜렷이 보여야 하며 플래시 반사·색깔 렌즈가 없어야 하고, 안경테가 눈의 일부라도 가려서는 안 됨.",
+      "ja": "眼鏡を着用する場合、目がはっきり見え、フラッシュの反射や色付きレンズがないこと。フレームが目の一部でも隠してはならない。"
+    },
+    "face_visibility": {
+      "en": "Face must be square-on to the camera, not tilted or turned to one side (portrait style), with both edges of the face clearly shown; eyes open with no hair across them.",
+      "ko": "얼굴을 기울이거나 옆으로 돌리지 않고(측면 포즈 금지) 카메라를 정면으로 향해야 하며, 얼굴 양쪽 윤곽이 뚜렷이 보여야 함; 눈을 뜨고 머리카락이 눈을 가리지 않아야 함.",
+      "ja": "顔を傾けたり横向き(ポートレート風)にしたりせず、カメラに対して正面を向くこと。顔の両側の輪郭がはっきり見えること。目を開け、髪が目にかからないこと。"
+    },
+    "headwear": {
+      "en": "Head coverings are not permitted except for religious reasons, but facial features from the bottom of the chin to the top of the forehead and both edges of the face must be clearly shown.",
+      "ko": "종교적 사유를 제외하고 머리 가리개 착용이 불가하며, 턱 아래부터 이마 위까지의 얼굴 윤곽과 양쪽 얼굴 가장자리가 뚜렷이 보여야 함.",
+      "ja": "宗教上の理由を除き、頭部を覆うものの着用は不可。顎の下から額の上まで、および顔の両側の輪郭がはっきり見えること。"
+    }
+  },
+  "unverified": [
+    "clothing_restriction",
+    "ears_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [
+    {
+      "field": "background",
+      "db_value": "흰색",
+      "research_value": "\"plain light-coloured background\" — specified as light-coloured, not explicitly white",
+      "source_url": "https://home-affairs.ec.europa.eu/document/download/5bb16566-c8c2-4afb-b038-530f488cb72a_en?filename=icao_photograph_guidelines_en.pdf"
+    },
+    {
+      "field": "head_height",
+      "db_value": "3.2~3.6cm",
+      "research_value": "No mm figure published for head height — only a qualitative percentage (\"close up of your head and top of your shoulders so that your face takes up 70–80% of the photograph\"); the document gives no explicit total photo height in mm, so the percentage cannot be converted to confirm or refute the DB's cm range",
+      "source_url": "https://home-affairs.ec.europa.eu/document/download/5bb16566-c8c2-4afb-b038-530f488cb72a_en?filename=icao_photograph_guidelines_en.pdf"
+    }
+  ],
+  "cross_verification": {
+    "note": "Cyprus's official gov.cy Visas page states that 'The Republic of Cyprus has already fully harmonized the visa procedures, the documents required, the fees and the visa sticker with the other Schengen Member States,' and directly links an 'ICAO entry visa application' reference to this European Commission home-affairs.ec.europa.eu ICAO photograph guidelines PDF as the applicable photo standard — this is treated as Cyprus's own official standard by direct linkage, not as an assumption. The document gives only a width range (35-40mm) with no explicit height figure, so it was not flagged as conflicting with the DB's 35x45mm on the size field (35mm falls within the stated range); only the background nuance (light-coloured vs. white) was flagged."
+  }
+}

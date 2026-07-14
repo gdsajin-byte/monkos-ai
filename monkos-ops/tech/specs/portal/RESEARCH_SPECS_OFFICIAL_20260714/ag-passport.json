@@ -1,0 +1,84 @@
+{
+  "slug": "ag-passport",
+  "batch": 0,
+  "verified": {
+    "size": {
+      "value": "45mm × 35mm (i.e. 3.5 × 4.5cm) — two identical photographs required",
+      "source_url": "https://immigration.gov.ag/general-services/passports/"
+    },
+    "background": {
+      "value": "Plain white background, no shadows",
+      "source_url": "https://immigration.gov.ag/general-services/passports/"
+    },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": {
+      "value": "Taken within the last 6 months; photos must be original and unaltered, not taken from an existing photo",
+      "source_url": "https://immigration.gov.ag/general-services/passports/"
+    },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": {
+      "value": "Applicants should avoid wearing white clothing (to keep contrast against the plain white background)",
+      "source_url": "https://immigration.gov.ag/general-services/passports/"
+    },
+    "expression_restriction": {
+      "value": "Neutral facial expression",
+      "source_url": "https://immigration.gov.ag/general-services/passports/"
+    },
+    "glasses_policy": {
+      "value": "No dark spectacles/sunglasses",
+      "source_url": "https://immigration.gov.ag/general-services/passports/"
+    },
+    "ears_visibility": {
+      "value": "Full frontal view of the head, including ears, is required",
+      "source_url": "https://immigration.gov.ag/general-services/passports/"
+    },
+    "face_visibility": {
+      "value": "Full frontal view of head and shoulders",
+      "source_url": "https://immigration.gov.ag/general-services/passports/"
+    },
+    "headwear_policy": {
+      "value": "No head covering, except for religious or medical reasons supported by documentary evidence",
+      "source_url": "https://immigration.gov.ag/general-services/passports/"
+    },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://immigration.gov.ag/general-services/passports/",
+      "source_url": "https://immigration.gov.ag/general-services/passports/"
+    }
+  },
+  "restrictions_i18n": {
+    "clothing": {
+      "en": "Applicants should avoid wearing white clothing (to keep contrast against the plain white background).",
+      "ko": "흰색 배경과 대비되도록 흰색 옷은 착용을 피해야 한다.",
+      "ja": "白い背景とのコントラストを保つため、白い服の着用は避けるべきである。"
+    },
+    "expression": {
+      "en": "Neutral facial expression.",
+      "ko": "무표정을 유지할 것.",
+      "ja": "無表情であること。"
+    },
+    "glasses": {
+      "en": "No dark spectacles/sunglasses.",
+      "ko": "짙은 색 안경(선글라스) 착용 불가.",
+      "ja": "濃い色のメガネ(サングラス)の着用不可。"
+    },
+    "ears": {
+      "en": "Full frontal view of the head, including ears, is required.",
+      "ko": "귀를 포함한 머리 전체가 정면으로 보여야 한다.",
+      "ja": "耳を含む頭部全体が正面から見える必要がある。"
+    },
+    "face_visibility": {
+      "en": "Full frontal view of head and shoulders.",
+      "ko": "머리와 어깨가 정면으로 온전히 보여야 한다.",
+      "ja": "頭と肩が正面から完全に見えること。"
+    },
+    "headwear": {
+      "en": "No head covering, except for religious or medical reasons supported by documentary evidence.",
+      "ko": "종교적 또는 의학적 사유(증빙서류 필요)를 제외하고는 머리 가리개 착용 불가.",
+      "ja": "宗教上または医学上の理由(証明書類が必要)を除き、頭部を覆うもの(かぶり物)の着用は不可。"
+    }
+  },
+  "unverified": ["head_height", "file_spec", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

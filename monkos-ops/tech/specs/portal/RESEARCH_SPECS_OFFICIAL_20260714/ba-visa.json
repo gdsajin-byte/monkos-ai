@@ -1,0 +1,27 @@
+{
+  "slug": "ba-visa",
+  "batch": 1,
+  "verified": {},
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories",
+    "official_source_url"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": {
+      "note": "The Ministry of Foreign Affairs of Bosnia and Herzegovina is referenced across many secondary sources under at least three different domain spellings (mfa.gov.ba, mvp.gov.ba, and a suspicious-looking mvp-gov-ba.com), which is itself a reason for caution. Every direct WebFetch attempt against mvp.gov.ba (including a specific 'Decision on Visas' PDF found via search) failed with SSL certificate or connection errors, so I could not myself confirm which domain is authoritative or read any photo specification text. Only one generic mention was found ('one passport size picture' required for a visa application) with no dimensions. Per the truthfulness gate, no official_source_url or spec value is asserted as verified for this slug — everything is left unverified rather than guessed."
+    }
+  }
+}

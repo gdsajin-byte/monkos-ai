@@ -1,0 +1,42 @@
+{
+  "slug": "lr-visa",
+  "batch": 15,
+  "verified": {
+    "background": {
+      "value": "Neutral background (official wording is \"neutral\", not specifically \"white\")",
+      "source_url": "https://visaonarrival.lis.gov.lr/"
+    },
+    "file_spec": {
+      "value": "Portrait photo (obligatory): neutral background, in color, maximum file size 2 MB, in BMP, JPG, JPEG or PNG format. Applicants are also directed to follow ICAO photo guidelines.",
+      "source_url": "https://visaonarrival.lis.gov.lr/"
+    },
+    "official_source_url": {
+      "value": "https://visaonarrival.lis.gov.lr/",
+      "source_url": "https://visaonarrival.lis.gov.lr/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "head_height",
+    "validity",
+    "expression_restriction",
+    "glasses_policy",
+    "headwear_policy",
+    "ears_visibility",
+    "face_visibility",
+    "clothing_restriction",
+    "accessories"
+  ],
+  "db_conflicts": [
+    {
+      "field": "background",
+      "db_value": "흰색",
+      "research_value": "\"Neutral background\" (per the official Liberia Immigration Service visa-on-arrival/eVisa portal) -- officially specified as neutral, not explicitly white, which may permit light grey/off-white tones the DB's strict white requirement would not",
+      "source_url": "https://visaonarrival.lis.gov.lr/"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "https://visaonarrival.lis.gov.lr/ is the official Liberia Immigration Service (a .gov.lr government domain) eVisa/visa-on-arrival portal, directly fetched and confirmed. Its stated photo rule is 'Neutral background, in color, with a maximum size of 2 MB, in BMP, JPG, JPEG or PNG formats,' with a further reference to ICAO photo guidelines. No exact millimeter size or head-height ratio is published on this page, so those fields are left unverified. The background wording ('neutral') is recorded as a db_conflict against the DB's '흰색' (white) because 'neutral' is the officially used term and is broader than strict white."
+  }
+}

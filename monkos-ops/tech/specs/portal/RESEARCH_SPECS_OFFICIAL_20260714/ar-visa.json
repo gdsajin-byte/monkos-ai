@@ -1,0 +1,37 @@
+{
+  "slug": "ar-visa",
+  "batch": 1,
+  "verified": {
+    "size": {
+      "value": "4 × 4cm, color, passport-style (\"foto carnet\") — confirmed for the \"rentista\" (pensioner/retiree) visa category; six copies required",
+      "source_url": "https://csigo.cancilleria.gob.ar/userfiles/BRENTISTA_2.pdf"
+    },
+    "background": {
+      "value": "White",
+      "source_url": "https://csigo.cancilleria.gob.ar/userfiles/BRENTISTA_2.pdf"
+    },
+    "official_source_url": {
+      "value": "https://www.cancilleria.gob.ar/es/servicios/servicios-para-extranjeros/visas",
+      "source_url": "https://www.cancilleria.gob.ar/es/servicios/servicios-para-extranjeros/visas"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": {
+      "note": "Confirmed via an official cancilleria.gob.ar-hosted requirements PDF for the 'rentista' visa subcategory (4x4cm, white background) — matches DB exactly. Argentina's foreign ministry publishes requirements per visa subcategory across dozens of consulate subdomains rather than one master photo-spec page; other visa subcategories were not individually checked, so this confirmation should be read as representative rather than exhaustive across all Argentine visa types."
+    }
+  }
+}

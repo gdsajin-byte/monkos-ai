@@ -1,0 +1,28 @@
+{
+  "slug": "ne-passport",
+  "batch": 19,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://ambaniger-bruxelles.be/index.php/service-consulaire-visa-passeports/demande-de-passeport/17-formulaires",
+      "source_url": "https://ambaniger-bruxelles.be/index.php/service-consulaire-visa-passeports/demande-de-passeport/17-formulaires"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Niger's national government portal for this procedure, service-public.ne (démarche: passeport-ordinaire), returned a persistent 521 'server is down' error throughout research and could not be accessed. The official passport application form itself (République du Niger, Ministère de l'Intérieur, Direction Générale de la Police Nationale, DEMANDE DE PASSEPORT NATIONAL ORDINAIRE, sourced via the Embassy of Niger in the USA's site) lists required supporting documents (birth certificate, nationality certificate, marriage certificate for married women) but does not mention a photograph requirement or specification at all. The Embassy of Niger in Brussels (ambaniger-bruxelles.be), an official Nigerien diplomatic mission site, states only that 'une photo d'identité récente en couleur' (a recent color ID photo) is required, with no dimensions, background, or other technical specification given. No official source with quantifiable photo specs could be found."
+  }
+}

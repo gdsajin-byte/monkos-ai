@@ -1,0 +1,28 @@
+{
+  "slug": "mg-visa",
+  "batch": 16,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://evisamada.gov.mg/en/",
+      "source_url": "https://evisamada.gov.mg/en/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "CORRECTED: the previously-recorded official_source_url (evisamada-mg.com, a .com domain) is not the genuine government domain. Search corroboration (multiple independent results) identifies evisamada.gov.mg as 'the only official website of the Republic of Madagascar for the management of online visa applications,' and evisamada-mg.com's own page text directs applicants to 'create an account on evisamada.gov.mg' to actually apply — meaning evisamada-mg.com is at most a secondary/informational mirror, not the primary official portal, and its contact address (contact@evisamada-mg.com) is not a .gov.mg address. Direct WebFetch of evisamada.gov.mg was refused (connect ECONNREFUSED) in this session, so its page content could not be independently re-verified; the domain correction rests on search-engine corroboration plus the .com site's own internal cross-reference, not a direct fetch. Regardless of which domain hosts it, no page (gov.mg or the .com mirror) yielded specific photo dimension, background, or format specifications during this research — those likely sit behind the application login — so all spec fields remain correctly unverified rather than assumed to match the passport standard (see mg-passport.json)."
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "slug": "ve-visa",
+  "batch": 27,
+  "verified": {
+    "face_visibility": {
+      "value": "\"Dos (2) fotos recientes (de frente, a color y tamaño carnet)\" — front-facing (\"de frente\")",
+      "source_url": "https://colombia.embajada.gob.ve/tramites-a-extranjeros/visas/visa-de-turista-t/"
+    },
+    "accessories": {
+      "value": "Two (2) recent photos required, front-facing, in color, \"tamaño carnet\" (ID/carnet size — no exact cm/mm figure is published)",
+      "source_url": "https://colombia.embajada.gob.ve/tramites-a-extranjeros/visas/visa-de-turista-t/"
+    },
+    "official_source_url": {
+      "value": "https://colombia.embajada.gob.ve/tramites-a-extranjeros/visas/visa-de-turista-t/",
+      "source_url": "https://colombia.embajada.gob.ve/tramites-a-extranjeros/visas/visa-de-turista-t/"
+    }
+  },
+  "restrictions_i18n": {
+    "face_visibility": {
+      "en": "Photo must be front-facing.",
+      "ko": "정면을 응시한 사진이어야 함.",
+      "ja": "正面を向いた写真であること。"
+    },
+    "accessories": {
+      "en": "Two (2) recent photos required: front-facing, in color, \"carnet\" (ID) size.",
+      "ko": "최근 촬영한 사진 2매 필요: 정면, 컬러, \"까르네(신분증)\" 규격.",
+      "ja": "最近撮影した写真2枚が必要:正面、カラー、「カルネ(身分証)」サイズ。"
+    }
+  },
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "headwear_policy"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Confirmed via the official Embassy of the Bolivarian Republic of Venezuela in Colombia (colombia.embajada.gob.ve — a gob.ve government domain, Ministerio del Poder Popular para las Relaciones Exteriores), Tourist Visa (T) requirements page. The term 'tamaño carnet' (carnet/ID size) is a common Latin American convention but is not a single fixed measurement, and no exact cm/mm figure was published on this page, so it is not converted to a specific number and no db_conflict is asserted against the DB's '2×2 inch' claim — a direct numeric comparison is not confirmable from this source. Photo background color and exact size were not stated."
+  }
+}

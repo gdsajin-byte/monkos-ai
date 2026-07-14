@@ -1,0 +1,29 @@
+{
+  "slug": "cm-visa",
+  "batch": 5,
+  "verified": {
+    "official_source_url": {
+      "value": "https://www.evisacam.cm/",
+      "source_url": "https://www.evisacam.cm/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note": "evisacam.cm confirmed as the official Cameroon e-visa portal, but the fetchable homepage exposes no photo specification (details are gated behind the login/application flow). Third-party sources give conflicting numbers for Cameroon visa photos (35x45mm white background vs 2x2 inch for US-consulate applicants vs 4x4cm), which itself signals no single reliable public standard could be confirmed; all such non-official figures were excluded per the truthfulness gate."
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "slug": "sa-visa",
+  "batch": 22,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": {
+      "value": "White background; must not have any pattern; no shadows on the background.",
+      "source_url": "https://visa.visitsaudi.com/Home/PhotoSpecifications"
+    },
+    "head_height": {
+      "value": "Face takes up 70%–80% of the photo, or 1.4\"–1.6\" (≈3.6–4.1cm) from the chin to the crown.",
+      "source_url": "https://visa.visitsaudi.com/Home/PhotoSpecifications"
+    },
+    "validity": {
+      "value": "No more than six months old, to ensure an up-to-date likeness.",
+      "source_url": "https://visa.visitsaudi.com/Home/PhotoSpecifications"
+    },
+    "file_spec": {
+      "value": "Digital photo 200 × 200 pixels (width × height); image file size 5–100 KB.",
+      "source_url": "https://visa.visitsaudi.com/Home/PhotoSpecifications"
+    },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": {
+      "value": "Head must be square to the camera; face and eyes must be straight toward the camera (slight rotation/tilt is the condition to avoid).",
+      "source_url": "https://visa.visitsaudi.com/Home/PhotoSpecifications"
+    },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": {
+      "value": "Both ears and cheeks must be clearly visible.",
+      "source_url": "https://visa.visitsaudi.com/Home/PhotoSpecifications"
+    },
+    "face_visibility": {
+      "value": "Photo shows only the applicant, no other persons (group pictures) or objects; face square to camera.",
+      "source_url": "https://visa.visitsaudi.com/Home/PhotoSpecifications"
+    },
+    "headwear_policy": {
+      "value": "Headwear is generally not permitted; exceptions possible for religious reasons, provided the face is visible from the lower tip of the chin to the forehead.",
+      "source_url": "https://visa.visitsaudi.com/Home/PhotoSpecifications"
+    },
+    "accessories": {
+      "value": "No other persons (group pictures) or objects may appear in the photo.",
+      "source_url": "https://visa.visitsaudi.com/Home/PhotoSpecifications"
+    },
+    "official_source_url": {
+      "value": "https://visa.visitsaudi.com/Home/PhotoSpecifications",
+      "source_url": "https://visa.visitsaudi.com/Home/PhotoSpecifications"
+    }
+  },
+  "restrictions_i18n": {
+    "expression": {
+      "en": "Head must be square to the camera; face and eyes must be straight toward the camera.",
+      "ko": "머리는 카메라를 정면으로 향해야 하며, 얼굴과 눈은 카메라를 똑바로 향해야 한다.",
+      "ja": "頭はカメラに対して正面を向き、顔と目はカメラを真っ直ぐ向くこと。"
+    },
+    "ears": {
+      "en": "Both ears and cheeks must be clearly visible.",
+      "ko": "양쪽 귀와 볼이 뚜렷이 보여야 한다.",
+      "ja": "両耳と頬がはっきり見える必要がある。"
+    },
+    "face_visibility": {
+      "en": "Photo shows only the applicant — no other persons (group pictures) or objects.",
+      "ko": "사진에는 신청자 본인만 나와야 하며, 다른 사람(단체사진)이나 사물이 포함되어서는 안 된다.",
+      "ja": "写真には申請者本人のみが写ること。他の人物(集合写真)や物が写り込んではならない。"
+    },
+    "headwear": {
+      "en": "Headwear is generally not permitted; exceptions possible for religious reasons, provided the face is visible from the chin to the forehead.",
+      "ko": "머리가리개는 원칙적으로 금지되나, 종교적 사유의 경우 턱부터 이마까지 얼굴이 보이는 조건 하에 예외가 허용된다.",
+      "ja": "頭部covering(帽子等)は原則不可。宗教上の理由がある場合は、顎から額まで顔が見えることを条件に例外が認められる。"
+    },
+    "accessories": {
+      "en": "No other persons (group photos) or objects may appear in the photo.",
+      "ko": "사진에 다른 사람(단체사진)이나 사물이 포함되어서는 안 된다.",
+      "ja": "写真に他の人物(集合写真)や物が写り込んではならない。"
+    }
+  },
+  "unverified": ["size", "clothing_restriction", "glasses_policy"],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "4 × 6cm",
+      "research_value": "Digital upload is 200×200 pixels — a SQUARE (1:1) image — per Saudi Arabia's official eVisa portal, which does not match the DB's 4×6cm (2:3) rectangular ratio. The portal does not separately state a physical print size in cm.",
+      "source_url": "https://visa.visitsaudi.com/Home/PhotoSpecifications"
+    },
+    {
+      "field": "head_height",
+      "db_value": "3.6~4.0cm",
+      "research_value": "No cm figure is directly published — specified as 70%–80% of the photo, or 1.4\"–1.6\" (≈3.6–4.1cm) chin-to-crown. The inch-derived upper bound (~4.1cm) slightly exceeds DB's stated upper bound (4.0cm).",
+      "source_url": "https://visa.visitsaudi.com/Home/PhotoSpecifications"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "visa.visitsaudi.com is Saudi Arabia's official eVisa/tourist-visa portal with a dedicated Photo Specifications page; content read directly. DB's headHeight (3.6–4.0cm) closely matches the source's stated 1.4\"–1.6\" (≈3.56–4.06cm) chin-to-crown range — effectively confirms headHeight. However DB's size field (4×6cm, rectangular) does not match the portal's stated 200×200px (square) digital-upload spec — flagged as db_conflict. Glasses policy and clothing restriction were not addressed on this specific page."
+  }
+}

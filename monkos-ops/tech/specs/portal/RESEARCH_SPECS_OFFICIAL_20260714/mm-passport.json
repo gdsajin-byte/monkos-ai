@@ -1,0 +1,53 @@
+{
+  "slug": "mm-passport",
+  "batch": 17,
+  "verified": {
+    "size": {
+      "value": "4 cm x 6 cm — 'Three photos (white background, 4cm x 6cm)'",
+      "source_url": "https://mephnompenh.org/issuance-of-new-passport-renewal-passport/"
+    },
+    "background": {
+      "value": "White background",
+      "source_url": "https://mephnompenh.org/issuance-of-new-passport-renewal-passport/"
+    },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://mephnompenh.org/issuance-of-new-passport-renewal-passport/",
+      "source_url": "https://mephnompenh.org/issuance-of-new-passport-renewal-passport/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "3.5 × 4.5cm",
+      "research_value": "4cm x 6cm, per the Embassy of the Republic of the Union of Myanmar in Phnom Penh's passport issuance/renewal requirements: 'Three photos (white background, 4cm x 6cm)'",
+      "source_url": "https://mephnompenh.org/issuance-of-new-passport-renewal-passport/"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "The only directly-fetchable official figure found is from the Embassy of the Republic of the Union of Myanmar in Phnom Penh's own passport issuance/renewal page, which lists among the required documents 'Three photos (white background, 4cm x 6cm)'. This is an overseas-mission submission requirement (for Myanmar nationals resident in Cambodia) rather than a domestic Immigration Department regulation; the domestic online booking portal (passport.gov.mm) could not be reached (SSL certificate error), and the eStay/eVisa portal of the Ministry of Immigration and Population (which was reachable and used for mm-visa) is a distinct product from the citizen passport process. Widely repeated third-party figures of 35x45mm / 6 months / neutral expression could not be confirmed on any .gov.mm domain and are excluded per the truthfulness gate. Given the genuine possibility that embassy print-photo submission requirements (for pasting onto a paper form) differ from the biometric chip-photo standard used domestically, this is flagged as a DB conflict rather than silently reconciled.",
+    "note_ko": "직접 접속·확인 가능했던 유일한 공식 수치는 주캄보디아(프놈펜) 미얀마연방공화국 대사관의 여권 신규발급/갱신 안내 페이지로, 필요서류 중 '사진 3매(흰색 배경, 4cm x 6cm)'를 명시하고 있다. 이는 캄보디아 거주 미얀마 국민을 위한 재외공관 제출 요건이며, 미얀마 국내 이민인구부 여권 신청 포털(passport.gov.mm)은 SSL 인증서 오류로 접속이 불가했다. mm-visa에 사용한 eStay/eVisa 포털(이민인구부 소관)은 국민 여권 발급 절차와는 별개 서비스다. 널리 반복되는 '35×45mm·6개월·무표정' 등의 수치는 어떤 .gov.mm 도메인에서도 확인되지 않아 진실성 게이트에 따라 배제했다. 재외공관의 서식 부착용 인화사진 요건이 국내 생체인식 칩사진 표준과 다를 가능성이 있어, 임의로 일치시키지 않고 DB 충돌로 명시했다."
+  }
+}

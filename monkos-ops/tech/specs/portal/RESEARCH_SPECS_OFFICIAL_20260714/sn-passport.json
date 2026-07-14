@@ -1,0 +1,27 @@
+{
+  "slug": "sn-passport",
+  "batch": 23,
+  "verified": {
+    "official_source_url": {
+      "value": "https://interieur.gouv.sn/pour-vous/services-aux-usagers/passeport-ordinaire — Senegal Ministère de l'Intérieur (Direction de la Police des étrangers et des titres de voyage) official page lists \"3 photos d'identité en couleur\" (3 colour ID photos) among required documents for the ordinary passport. Exact dimensions, background colour, and head-height are not stated on this page.",
+      "source_url": "https://interieur.gouv.sn/pour-vous/services-aux-usagers/passeport-ordinaire"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

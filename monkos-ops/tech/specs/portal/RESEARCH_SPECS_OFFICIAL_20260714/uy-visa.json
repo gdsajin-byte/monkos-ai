@@ -1,0 +1,43 @@
+{
+  "slug": "uy-visa",
+  "batch": 27,
+  "verified": {
+    "background": {
+      "value": "White (\"fondo blanco\")",
+      "source_url": "https://www.gub.uy/ministerio-relaciones-exteriores/embajada-republica-oriental-del-uruguay-costa-rica/visa-turismo"
+    },
+    "file_spec": {
+      "value": "Digital passport-type photo, white background, good lighting, dimensions 1200 × 1200 pixels (\"Fotografía digital tipo pasaporte, con fondo blanco, buena iluminación y dimensiones de 1200 × 1200 píxeles\")",
+      "source_url": "https://www.gub.uy/ministerio-relaciones-exteriores/embajada-republica-oriental-del-uruguay-costa-rica/visa-turismo"
+    },
+    "official_source_url": {
+      "value": "https://www.gub.uy/ministerio-relaciones-exteriores/embajada-republica-oriental-del-uruguay-costa-rica/visa-turismo",
+      "source_url": "https://www.gub.uy/ministerio-relaciones-exteriores/embajada-republica-oriental-del-uruguay-costa-rica/visa-turismo"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "head_height",
+    "validity",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "3.5 × 4.5cm",
+      "research_value": "1200 × 1200 pixels (square digital photo — no fixed cm/mm print size published; aspect ratio is square, not the rectangular 3.5:4.5 implied by the DB value)",
+      "source_url": "https://www.gub.uy/ministerio-relaciones-exteriores/embajada-republica-oriental-del-uruguay-costa-rica/visa-turismo"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "Uruguay's Ministry of Foreign Affairs (gub.uy) is the only official domain found publishing concrete tourism-visa photo specs, via the Uruguayan Embassy in Costa Rica's consular page. Uruguay does not appear to operate a unified e-visa portal; visa requirements are published per-consulate on gub.uy subpages, so specs may vary slightly by jurisdiction. No official page could be found stating a physical head-height ratio, expression, glasses, or headwear rule for this specific visa category — left unverified rather than inferred from generic third-party passport-photo vendor sites.",
+      "batch_note": "Only uy-visa was in scope for this batch (uy-passport was not part of the assigned slug list)."
+  }
+}

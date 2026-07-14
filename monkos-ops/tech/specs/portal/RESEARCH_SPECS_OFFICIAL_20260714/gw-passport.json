@@ -1,0 +1,29 @@
+{
+  "slug": "gw-passport",
+  "batch": 10,
+  "verified": {
+    "official_source_url": {
+      "value": "The official Embassy of Guinea-Bissau in Portugal confirms passport renewal requires '1 (uma) foto' (one photograph) among the submitted documents, but publishes no dimensions, background colour, or other technical photo specification.",
+      "source_url": "https://embaixadaguinebissau.pt/pedidos-consulares/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note": "Guinea-Bissau's passport-issuing authority is DGICRAN (Direcção-Geral de Identificação Civil, Registo e Arquivo Nacional, under the Ministry of Justice). Its digital government portal, gov-gb.com, was directly fetched and does publish a photo spec — '3x4cm, fundo branco (white background), recent' — but that spec is explicitly for the Bilhete de Identidade (national ID card), a different document from the passport, so it was NOT applied to this passport record to avoid conflating document types. No dedicated official page describing passport-specific photo technical requirements could be located; the Portugal-embassy consular checklist (directly fetched, confirmed official) only requires 'one current photograph' with no further specification. A domain 'evisa.gov.gw' referenced in aggregator summaries failed DNS resolution and was not used."
+  }
+}

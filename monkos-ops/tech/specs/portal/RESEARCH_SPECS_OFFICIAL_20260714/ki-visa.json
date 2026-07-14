@@ -1,0 +1,31 @@
+{
+  "slug": "ki-visa",
+  "batch": 13,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": {
+      "value": "Photographs must be less than six months old",
+      "source_url": "https://www.mfa.gov.ki/wp-content/uploads/2020/11/Visitor-Visa-FINAL.pdf"
+    },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://www.mfa.gov.ki/wp-content/uploads/2020/11/Visitor-Visa-FINAL.pdf",
+      "source_url": "https://www.mfa.gov.ki/wp-content/uploads/2020/11/Visitor-Visa-FINAL.pdf"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note": "Directly read the official Kiribati Immigration Visitor Visa Application Form (Ministry of Foreign Affairs and Immigration, mfa.gov.ki). Section A states 'Attach two colour passport-size photographs of yourself here. The photographs must be less than six months old. Write your full name on the back of both photographs,' and the page-9 document checklist repeats 'Two passport-sized colour photographs for everyone included in the application'. No exact millimetre size, background colour, head-height ratio, or expression/glasses/headwear rule is stated anywhere in the 10-page form, so the DB's 3.5×4.5cm / 3.2-3.6cm figures could not be confirmed against this document (not contradicted either — simply not addressed)."
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "slug": "ci-visa",
+  "batch": 5,
+  "verified": {
+    "size": {
+      "value": "4.5cm x 3.5cm (45mm x 35mm) — same dimension pair as DB, order transposed",
+      "source_url": "https://france.diplomatie.gouv.ci/visa.php?num=1"
+    },
+    "validity": {
+      "value": "Photo must be recent, less than 6 months old (\"récente de moins de 6 mois\")",
+      "source_url": "https://france.diplomatie.gouv.ci/visa.php?num=1"
+    },
+    "official_source_url": {
+      "value": "https://france.diplomatie.gouv.ci/visa.php?num=1",
+      "source_url": "https://france.diplomatie.gouv.ci/visa.php?num=1"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "background",
+    "head_height",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": "Official source (Côte d'Ivoire embassy in France, gouv.ci domain) states '4,5 cm sur 3,5 cm' which is the same dimension pair as DB's '3.5 × 4.5cm' (order transposed, not a real conflict). A separate document category (diplomatic/service passport holders) on the same site lists 50mm x 70mm, but that applies to a different applicant category, not the standard visa photo."
+  }
+}

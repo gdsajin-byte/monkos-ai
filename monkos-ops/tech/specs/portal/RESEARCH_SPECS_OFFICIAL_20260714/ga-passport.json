@@ -1,0 +1,31 @@
+{
+  "slug": "ga-passport",
+  "batch": 8,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": {
+      "value": "Photos must be recent ('photos récentes'); three recent colour ID photos required (four for emergency/urgent passport applications)",
+      "source_url": "https://www.affaires-etrangeres.gouv.ga/passeports"
+    },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://www.affaires-etrangeres.gouv.ga/passeports",
+      "source_url": "https://www.affaires-etrangeres.gouv.ga/passeports"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Gabon's Ministry of Foreign Affairs official site (affaires-etrangeres.gouv.ga/passeports) confirms passport applications require 'trois photos d'identité couleurs récentes' (three recent colour ID photos; four for emergency passports) but does not publish technical size/background/composition specifications. The Gabon Embassy in the US (gabonembassyusa.org, official diplomatic mission site) confirms one photo must be glued/stapled to the visa application form, likewise without technical specs. A private French visa-processing intermediary (visa-office.fr) hosts a form citing '35×45mm' but was excluded per the truthfulness gate since it is not an official government or embassy domain and its currency/accuracy could not be independently confirmed."
+  }
+}

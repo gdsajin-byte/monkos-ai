@@ -1,0 +1,81 @@
+{
+  "slug": "er-passport",
+  "batch": 7,
+  "verified": {
+    "size": {
+      "value": "35 x 45mm (1.38\" x 1.77\") — matches DB's 3.5 × 4.5cm",
+      "source_url": "https://us.embassyeritrea.org/passport/"
+    },
+    "background": {
+      "value": "White background — matches DB",
+      "source_url": "https://us.embassyeritrea.org/passport/"
+    },
+    "expression_restriction": {
+      "value": "Natural expression required — no smile, laugh, or frown; mouth must be closed; eyes open",
+      "source_url": "https://us.embassyeritrea.org/passport/"
+    },
+    "glasses_policy": {
+      "value": "Prescription glasses only",
+      "source_url": "https://us.embassyeritrea.org/passport/"
+    },
+    "ears_visibility": {
+      "value": "Ears must be fully visible (hair kept off the face)",
+      "source_url": "https://us.embassyeritrea.org/passport/"
+    },
+    "face_visibility": {
+      "value": "Photo must be centered and facing straight forward; forehead must be fully visible (hair off the face)",
+      "source_url": "https://us.embassyeritrea.org/passport/"
+    },
+    "headwear_policy": {
+      "value": "Only religious hats or scarves are allowed",
+      "source_url": "https://us.embassyeritrea.org/passport/"
+    },
+    "official_source_url": {
+      "value": "https://us.embassyeritrea.org/passport/",
+      "source_url": "https://us.embassyeritrea.org/passport/"
+    }
+  },
+  "restrictions_i18n": {
+    "expression": {
+      "en": "A natural expression is required — no smile, laugh, or frown; mouth closed, eyes open.",
+      "ko": "자연스러운 무표정 필수 — 미소·웃음·찡그림 금지. 입은 다물고 눈은 뜬 상태.",
+      "ja": "自然な表情が必須 — 微笑み・笑い・しかめ面は不可。口は閉じ、目は開けた状態。"
+    },
+    "glasses": {
+      "en": "Only prescription glasses are allowed.",
+      "ko": "도수 안경(시력 교정용)만 허용.",
+      "ja": "度付き眼鏡(視力矯正用)のみ許可。"
+    },
+    "ears_visibility": {
+      "en": "Ears must be fully visible; hair must be kept off the face.",
+      "ko": "귀가 완전히 드러나야 함. 머리카락이 얼굴을 가리지 않도록 해야 함.",
+      "ja": "耳が完全に見えている必要あり。髪の毛で顔を覆わないこと。"
+    },
+    "face_visibility": {
+      "en": "The photo must be centered, facing straight forward, with the forehead fully visible.",
+      "ko": "사진은 정중앙에 정면을 응시한 상태여야 하며, 이마가 완전히 드러나야 함.",
+      "ja": "写真は中央に配置し、正面をまっすぐ向いた状態で、額が完全に見えている必要あり。"
+    },
+    "headwear": {
+      "en": "Only religious hats or scarves are permitted.",
+      "ko": "종교적 목적의 모자나 스카프만 허용.",
+      "ja": "宗教的な帽子やスカーフのみ着用可。"
+    }
+  },
+  "unverified": [
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "source_status_note": {
+      "note": "us.embassyeritrea.org is the official website of the Eritrean Embassy to the United States — Eritrea does not appear to operate a unified central government web portal with a dedicated passport-photo requirements page, so the embassy's own consular page is used as the official source, consistent with this being a small-country case where official-source availability is inherently thin."
+    },
+    "clothing_restriction": {
+      "note": "A 'wear ordinary clothes, no uniforms, dark clothing recommended for white-background contrast' claim appeared in a secondary web search, but could not be cleanly attributed to us.embassyeritrea.org itself (the direct WebFetch of that exact page did not surface any clothing-specific statement) — left unverified rather than asserted."
+    }
+  }
+}

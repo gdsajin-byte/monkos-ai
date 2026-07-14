@@ -1,0 +1,55 @@
+{
+  "slug": "co-visa",
+  "batch": 5,
+  "verified": {
+    "size": {
+      "value": "3cm x 4cm. Matches DB value exactly.",
+      "source_url": "https://www.cancilleria.gov.co/sites/default/files/FOTOS2025/Infografia%20fotografia%20para%20visas%20espa%C3%B1ol%20e%20ingles.pdf"
+    },
+    "background": {
+      "value": "White",
+      "source_url": "https://www.cancilleria.gov.co/sites/default/files/FOTOS2025/Infografia%20fotografia%20para%20visas%20espa%C3%B1ol%20e%20ingles.pdf"
+    },
+    "ears_visibility": {
+      "value": "Both ears must be visible",
+      "source_url": "https://www.cancilleria.gov.co/sites/default/files/FOTOS2025/Infografia%20fotografia%20para%20visas%20espa%C3%B1ol%20e%20ingles.pdf"
+    },
+    "expression_restriction": {
+      "value": "Neutral expression, looking directly at the camera, head centered and complete",
+      "source_url": "https://www.cancilleria.gov.co/sites/default/files/FOTOS2025/Infografia%20fotografia%20para%20visas%20espa%C3%B1ol%20e%20ingles.pdf"
+    },
+    "file_spec": {
+      "value": "JPG format, maximum file size 300KB",
+      "source_url": "https://www.cancilleria.gov.co/sites/default/files/FOTOS2025/Infografia%20fotografia%20para%20visas%20espa%C3%B1ol%20e%20ingles.pdf"
+    },
+    "official_source_url": {
+      "value": "https://www.cancilleria.gov.co/otras-tramites-visas",
+      "source_url": "https://www.cancilleria.gov.co/otras-tramites-visas"
+    }
+  },
+  "restrictions_i18n": {
+    "ears": {
+      "en": "Both ears must be visible.",
+      "ko": "양쪽 귀가 모두 보여야 합니다.",
+      "ja": "両耳が見える必要があります。"
+    },
+    "expression": {
+      "en": "Neutral expression, looking directly at the camera with the head centered and fully in frame.",
+      "ko": "무표정으로 카메라를 정면으로 응시하며, 머리가 중앙에 위치하고 전체가 프레임 안에 들어와야 합니다.",
+      "ja": "無表情でカメラを正面から見て、頭が中央に位置し全体がフレーム内に収まるようにしてください。"
+    }
+  },
+  "unverified": [
+    "head_height",
+    "validity",
+    "clothing_restriction",
+    "glasses_policy",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": "3x4cm and white-background/ears-visible/JPG<=300KB details consistently returned across two independent WebSearch passes citing the same official Cancillería visa-photo infographic PDF (cancilleria.gov.co domain); direct WebFetch of the PDF itself was blocked (HTTP 403) both attempts, so treat with slightly lower confidence than the co-passport entry, which was corroborated via a directly-fetched HTML page."
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "slug": "md-visa",
+  "batch": 16,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://mfa.gov.md/sites/default/files/visa-application-form_0.pdf",
+      "source_url": "https://mfa.gov.md/sites/default/files/visa-application-form_0.pdf"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Moldova's short-stay (type C) entry visa uses the EU/Schengen-format uniform application form, confirmed by direct retrieval and full-text extraction of mfa.gov.md/sites/default/files/visa-application-form_0.pdf. The form includes a designated 'PHOTO' box and a declaration that 'the taking of my photograph... [is] mandatory for the examination of the visa application,' but the extracted form text does not state explicit photo dimensions or background color (these are typically shown only as a graphical placeholder on the printed form, not as text). The application is processed via mfa.gov.md, Moldovan diplomatic missions, or the e-Visa portal at evisa.gov.md; a direct fetch of evisa.gov.md failed with a TLS certificate error in this session. No page stating specific cm/background values for the visa photo (as opposed to the separate passport photo, see md-passport) could be confirmed, so all spec fields are left unverified rather than assumed to match the passport standard."
+  }
+}

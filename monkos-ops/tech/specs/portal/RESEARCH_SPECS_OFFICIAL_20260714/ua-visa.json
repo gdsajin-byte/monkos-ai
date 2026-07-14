@@ -1,0 +1,25 @@
+{
+  "slug": "ua-visa",
+  "batch": 26,
+  "verified": {},
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories",
+    "official_source_url"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Ukraine visas for foreign nationals are issued by the Ministry of Foreign Affairs (MFA), not by DMSU (which handles citizens' passports/ID and was reachable — see ua-passport.json). Every mfa.gov.ua property attempted in this session — mfa.gov.ua, visa.mfa.gov.ua, usa.mfa.gov.ua, uk.mfa.gov.ua, japan.mfa.gov.ua, and the visa application PDF at mfa.gov.ua/storage/... — returned HTTP 403 to both the WebFetch tool and direct curl requests with multiple realistic user-agents/headers, indicating a bot-blocking WAF rather than a missing page. Because none of this content could be actually read, no field is marked verified even though third-party aggregator sites (not cited here per the truth gate) consistently claim 30x40mm / 450x600px / light-grey background for the e-Visa system. DMSU's biometric-photo rules (used for ua-passport) are deliberately NOT cross-applied here since DMSU is a different issuing authority than MFA and the rules are not confirmed to be shared."
+  }
+}

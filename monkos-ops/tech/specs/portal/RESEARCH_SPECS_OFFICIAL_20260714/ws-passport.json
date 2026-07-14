@@ -1,0 +1,41 @@
+{
+  "slug": "ws-passport",
+  "batch": 28,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://mygov.gov.ws/service/passport/",
+      "source_url": "https://mygov.gov.ws/service/passport/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Checked three official Samoa government sources: mygov.gov.ws/service/passport/ (The Government of Samoa service portal), mpmc.gov.ws/divisions/immigration/passports/ (Ministry of the Prime Minister and Cabinet, Samoa Immigration division), and the actual official passport application form itself (Government of Samoa, form 'MPMC 300 v1.8', downloaded PDF, coat of arms confirmed). All three consistently require 'two photos' with the identity-certifier endorsing the back of one photo ('This is a true likeness of (your name)'), and the application form explicitly instructs 'Lodge two photos (don't staple)'. None of the three official sources states a numeric size, background colour, or head-height figure for the photograph. This appears to be a genuine gap in Samoa's published citizen-facing guidance (likely specified only at the Immigration Office counter), not a research failure — hence no verified numeric fields for this slug."
+  }
+}

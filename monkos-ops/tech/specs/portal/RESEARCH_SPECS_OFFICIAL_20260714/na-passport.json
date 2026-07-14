@@ -1,0 +1,91 @@
+{
+  "slug": "na-passport",
+  "batch": 19,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": {
+      "value": "White background.",
+      "source_url": "https://www.embassyofnamibia.se/index.php/consular-matters/requirements-for-new-passport"
+    },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": {
+      "value": "Two passport photographs required, in colour (not black & white).",
+      "source_url": "https://www.embassyofnamibia.se/index.php/consular-matters/requirements-for-new-passport"
+    },
+    "clothing_restriction": {
+      "value": "No uniform.",
+      "source_url": "https://www.embassyofnamibia.se/index.php/consular-matters/requirements-for-new-passport"
+    },
+    "expression_restriction": {
+      "value": "No smile.",
+      "source_url": "https://www.embassyofnamibia.se/index.php/consular-matters/requirements-for-new-passport"
+    },
+    "glasses_policy": {
+      "value": "No eyeglasses.",
+      "source_url": "https://www.embassyofnamibia.se/index.php/consular-matters/requirements-for-new-passport"
+    },
+    "ears_visibility": {
+      "value": "Both ears must be visible; ears must not be covered.",
+      "source_url": "https://www.embassyofnamibia.se/index.php/consular-matters/requirements-for-new-passport"
+    },
+    "face_visibility": {
+      "value": "Forehead must not be covered; shoulders square to the camera; no visible shadow.",
+      "source_url": "https://www.embassyofnamibia.se/index.php/consular-matters/requirements-for-new-passport"
+    },
+    "headwear_policy": {
+      "value": "No head gear.",
+      "source_url": "https://www.embassyofnamibia.se/index.php/consular-matters/requirements-for-new-passport"
+    },
+    "accessories": {
+      "value": "No earrings for men; no eyebrow, chin, or nose rings for any applicant.",
+      "source_url": "https://www.embassyofnamibia.se/index.php/consular-matters/requirements-for-new-passport"
+    },
+    "official_source_url": {
+      "value": "https://www.embassyofnamibia.se/index.php/consular-matters/requirements-for-new-passport",
+      "source_url": "https://www.embassyofnamibia.se/index.php/consular-matters/requirements-for-new-passport"
+    }
+  },
+  "restrictions_i18n": {
+    "clothing": {
+      "en": "No uniform.",
+      "ko": "제복(유니폼) 착용 금지.",
+      "ja": "制服の着用禁止。"
+    },
+    "expression": {
+      "en": "No smile.",
+      "ko": "미소(웃는 표정) 금지.",
+      "ja": "笑顔（微笑み）禁止。"
+    },
+    "glasses": {
+      "en": "No eyeglasses.",
+      "ko": "안경 착용 금지.",
+      "ja": "メガネ着用禁止。"
+    },
+    "ears": {
+      "en": "Both ears must be visible; ears must not be covered.",
+      "ko": "양쪽 귀가 보여야 하며, 귀를 가리면 안 됨.",
+      "ja": "両耳が見える状態にし、耳を隠さないこと。"
+    },
+    "face_visibility": {
+      "en": "Forehead must not be covered; shoulders square to the camera; no visible shadow.",
+      "ko": "이마를 가리면 안 되며, 어깨는 카메라를 정면으로 향하고 그림자가 보이지 않아야 함.",
+      "ja": "額を隠さず、肩はカメラに対して正面を向け、影が見えないようにすること。"
+    },
+    "headwear": {
+      "en": "No head gear.",
+      "ko": "모자 등 머리 장식 착용 금지.",
+      "ja": "帽子などの被り物は禁止。"
+    },
+    "accessories": {
+      "en": "No earrings for men; no eyebrow, chin, or nose rings for any applicant.",
+      "ko": "남성은 귀걸이 금지, 모든 신청자는 눈썹·턱·코 피어싱(링) 금지.",
+      "ja": "男性はピアス（イヤリング）禁止。全申請者は眉・あご・鼻のピアス（リング）禁止。"
+    }
+  },
+  "unverified": ["size", "head_height", "validity"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Source is the Embassy of Namibia in Sweden's official 'requirements for new passport' page, which mirrors Ministry of Home Affairs and Immigration (MHA) rules. MHA's own domestic site (mha.gov.na/passports-general-information) only states 'clear background', consistent with but less specific than the embassy's 'white background'. No official source found stating exact photo size (mm) or head-height measurement for the passport (as opposed to the visa, where an official visa application form gives 37×52mm — see na-visa)."
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "slug": "lr-passport",
+  "batch": 15,
+  "verified": {
+    "clothing_restriction": {
+      "value": "Dress code for the passport photo/application: no short pants, no flip flops, no crop tops or sleeveless tops",
+      "source_url": "https://www.embassyofliberia.be/people-2/"
+    },
+    "file_spec": {
+      "value": "For the online application, a passport-size digital photograph must be scanned and attached, maximum file size 1MB",
+      "source_url": "https://www.embassyofliberia.be/people-2/"
+    },
+    "official_source_url": {
+      "value": "https://www.mofa.gov.lr/general/liberian-passport-information",
+      "source_url": "https://www.mofa.gov.lr/general/liberian-passport-information"
+    }
+  },
+  "restrictions_i18n": {
+    "clothing": {
+      "en": "Dress code: no short pants, no flip flops, no crop tops or sleeveless tops.",
+      "ko": "복장 규정: 반바지, 플립플롭(슬리퍼), 크롭톱/민소매 상의 착용 금지.",
+      "ja": "服装規定:ショートパンツ、ビーチサンダル、クロップトップ/ノースリーブの着用禁止。"
+    }
+  },
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "expression_restriction",
+    "glasses_policy",
+    "headwear_policy",
+    "ears_visibility",
+    "face_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "The Ministry of Foreign Affairs' own 'Passport Regulation Including all Amendments' (official PDF, directly read at https://www.mofa.gov.lr/sites/default/files/documents/Passport%20Regulation%20Including%20all%20Amendments.pdf) confirms in Article II(v) that applicants 'must fill an application form and submit it with one (1) passport size photo (recent color photo of the applicant's facial view). Further photograph may be taken in the case of biometric passports.' This confirms a recent colour facial photo is required but does not specify exact millimeter dimensions, background colour, or head-height ratio -- so size/background/head_height are left unverified rather than filled from third-party photo-service sites (several such sites claim 35x45mm / 34.5mm head height, but none could be traced to an official Liberian government source, so they are excluded per the truth-gate rule). The Embassy of Liberia in Brussels (embassyofliberia.be, an official Liberian diplomatic mission, directly fetched) additionally lists a distinctive rule not seen in most other countries' official pages: 'HAIR COLORS: Brown or Black' -- this could not be cleanly mapped to any of the standard schema fields (it is neither clothing, nor an accessory, nor a standard expression/glasses/headwear rule) so it is recorded here for visibility rather than forced into an ill-fitting field."
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "slug": "gn-visa",
+  "batch": 9,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": {
+      "value": "Visa validity varies by category on the official e-Visa portal: e.g. one visa category states \"Not exceeding five years\" and another (a certificate-linked category) states \"Not exceeding three days.\" Separately, the passport used for entry must be valid for more than 6 months.",
+      "source_url": "https://www.paf.gov.gn/visa"
+    },
+    "file_spec": {
+      "value": "No self-submitted photo is required when applying online: \"Applicant photo and fingerprint will be captured at the enrolment counter\" (i.e., biometric capture happens in person at the visa-on-arrival/enrolment counter, not as a digital upload during the online application).",
+      "source_url": "https://www.paf.gov.gn/visa"
+    },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://www.paf.gov.gn/visa",
+      "source_url": "https://www.paf.gov.gn/visa"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Guinea's visa process is run by the Direction Centrale de la Police aux Frontières (DCPAF) under the Ministry of Security, via the official e-Visa portal at paf.gov.gn/visa (fetched successfully via curl after WebFetch and repeated direct requests to related sub-pages returned HTTP 500 errors — the /visa endpoint itself was reachable). This is effectively a visa-on-arrival system: applicants apply online, receive an approval/Entry Visa Letter by email, then proceed to a visa-on-arrival counter where 'Applicant photo and fingerprint will be captured at the enrolment counter' — meaning there is no self-submitted photo-upload requirement with size/background rules to research for most visa categories, which is itself a material finding recorded under file_spec. Validity periods differ by visa category (5 years vs. 3 days were both seen across different sections of the same page) and are reported as such rather than collapsed into one figure. No composition specification (background, glasses, headwear, etc.) applies because no applicant-submitted photo exists in this workflow, per the official text found.",
+    "note_ko": "기니 비자는 안보부 산하 국경경찰중앙국(DCPAF)이 공식 전자비자 포털(paf.gov.gn/visa)을 통해 운영하며, 이는 사실상 도착비자(visa-on-arrival) 방식이다. 온라인 신청 후 승인 시 입국비자레터를 이메일로 받고, 실제 입국 시 '등록 카운터에서 신청자 사진과 지문을 채취'하는 구조로, 신청자가 직접 사진을 업로드하는 절차 자체가 없다는 점을 file_spec에 확인 기록했다. 유효기간은 비자 종류별로 최대 5년/최대 3일 등으로 상이하게 명시되어 그대로 기록했다."
+  }
+}

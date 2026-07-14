@@ -1,0 +1,30 @@
+{
+  "slug": "va-passport",
+  "batch": 27,
+  "verified": {
+    "official_source_url": {
+      "value": "https://epass.vatican.va/Dossier_INFO_ENGL.pdf",
+      "source_url": "https://epass.vatican.va/Dossier_INFO_ENGL.pdf"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "The only official Vatican document found on passport issuance is epass.vatican.va/Dossier_INFO_ENGL.pdf, a general information dossier from the Holy See/Vatican City State issuing authorities (Secretariat of State and Governorate of Vatican City State). It covers passport types (diplomatic, service, temporary service, ordinary), document validity periods (5–10 years depending on type) and issuing authority, but contains NO photo composition requirements (size, background, expression, glasses, headwear, etc.). This is consistent with the fact that Vatican passports are issued only to a small number of Vatican citizens/officials (roughly 800 citizens total), not the general public, so no consumer-facing photo-spec page appears to exist on any vatican.va domain. Numerous third-party vendor sites (passportphotonow.com, reloadinternet.com, idphotonow.com, photofusionstudio.com, passportranker.org) quote '35mm x 45mm, white background, neutral expression' for Vatican passports, but none of this could be confirmed on an official vatican.va or governatorato.va page, so per the truthfulness gate it is left entirely unverified rather than reproduced from non-official sources.",
+    "db_note": "DB values (3.5×4.5cm / white / 3.2-3.6cm) could not be confirmed or refuted against any official source — no db_conflicts entry is asserted since there is nothing official to compare against, only silence."
+  }
+}

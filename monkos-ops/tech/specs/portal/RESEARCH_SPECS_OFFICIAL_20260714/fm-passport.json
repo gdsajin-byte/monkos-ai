@@ -1,0 +1,41 @@
+{
+  "slug": "fm-passport",
+  "batch": 8,
+  "verified": {
+    "size": {
+      "value": "1 3/16 × 1½ inch (approx. 3.0 × 3.8cm)",
+      "source_url": "https://www.fsmgov.org/passport.html"
+    },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": {
+      "value": "Two identical photos required per application (new, renewal, and replacement)",
+      "source_url": "https://www.fsmgov.org/passport.html"
+    },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://www.fsmgov.org/passport.html",
+      "source_url": "https://www.fsmgov.org/passport.html"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["background", "head_height", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "3.5 × 4.5cm",
+      "research_value": "1 3/16 × 1½ inch (approx. 3.0 × 3.8cm)",
+      "source_url": "https://www.fsmgov.org/passport.html"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "FSM's official government portal (fsmgov.org), page 'Procedure to Follow in Filing for FSM Passport', states photo size as '1 3/16 x 1½' inches (≈3.0×3.8cm) and quantity as two identical photos — this size does not match the DB's 3.5×4.5cm and is recorded as a db_conflict without altering the DB. Background, head height, and composition rules were not stated on this page. A related detailed instruction-sheet PDF (fsmembassy.fm) and the official passport application form PDF (fsmgov.org/passport.pdf) could not be parsed by the fetch tool (returned binary/encoded stream data), so any claims reported by secondary aggregator sites about leis/hats/earrings/attire restrictions could not be independently confirmed on an official source and are excluded per the truthfulness gate."
+  }
+}

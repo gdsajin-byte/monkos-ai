@@ -1,0 +1,27 @@
+{
+  "slug": "bo-passport",
+  "batch": 3,
+  "verified": {
+    "official_source_url": {
+      "value": "https://consulados.cancilleria.gob.bo/base/pasaporte/",
+      "source_url": "https://consulados.cancilleria.gob.bo/base/pasaporte/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

@@ -1,0 +1,72 @@
+{
+  "slug": "by-passport",
+  "batch": 4,
+  "verified": {
+    "size": {
+      "value": "40mm x 50mm (стандартный размер фотопечати / standard print template size)",
+      "source_url": "https://usa.mfa.gov.by/ru/usa/photos/"
+    },
+    "background": {
+      "value": "Even, light background without patterns (ровный светлый фон без рисунков)",
+      "source_url": "https://usa.mfa.gov.by/ru/usa/photos/"
+    },
+    "head_height": {
+      "value": "32mm to 35mm from chin to top of hair (длина изображения лица от подбородка до верхней кромки головы)",
+      "source_url": "https://usa.mfa.gov.by/ru/usa/photos/"
+    },
+    "validity": {
+      "value": "Photo age must not exceed 6 months (давность фотографии не должна превышать 6 месяцев)",
+      "source_url": "https://usa.mfa.gov.by/ru/usa/photos/"
+    },
+    "clothing_restriction": {
+      "value": "Photographing in uniform clothing (форменная одежда) is not permitted",
+      "source_url": "https://usa.mfa.gov.by/ru/usa/photos/"
+    },
+    "glasses_policy": {
+      "value": "Dark/sunglasses not permitted except for the visually impaired; frames that even partially cover the eyes are not permitted",
+      "source_url": "https://czech.mfa.gov.by/ru/consular_issues/passport/photo/"
+    },
+    "headwear_policy": {
+      "value": "No headwear (без головного убора)",
+      "source_url": "https://usa.mfa.gov.by/ru/usa/photos/"
+    },
+    "accessories": {
+      "value": "Only jewelry/costume jewelry (ювелирные изделия и бижутерия) permitted as accessories",
+      "source_url": "https://czech.mfa.gov.by/ru/consular_issues/passport/photo/"
+    },
+    "official_source_url": {
+      "value": "https://usa.mfa.gov.by/ru/usa/photos/",
+      "source_url": "https://usa.mfa.gov.by/ru/usa/photos/"
+    }
+  },
+  "restrictions_i18n": {
+    "clothing": {
+      "en": "No uniform clothing (military, police, or similar) permitted in the photo.",
+      "ko": "군복·경찰복 등 제복 착용 금지.",
+      "ja": "軍服・警察官の制服など制服の着用は不可。"
+    },
+    "glasses": {
+      "en": "Tinted/dark sunglasses not permitted, except for the visually impaired; eyeglass frames must not cover any part of the eyes.",
+      "ko": "색안경·선글라스 착용 금지(시각장애인 예외). 안경테가 눈을 조금이라도 가려서는 안 됨.",
+      "ja": "色付き・サングラスの着用は不可(視覚障害者は例外)。眼鏡のフレームが目を少しでも覆ってはならない。"
+    },
+    "headwear": {
+      "en": "No headwear permitted.",
+      "ko": "모자 등 머리가리개 착용 불가.",
+      "ja": "帽子などの被り物は不可。"
+    },
+    "accessories": {
+      "en": "Only jewelry/costume jewelry is permitted as an accessory.",
+      "ko": "액세서리는 장신구(주얼리)류만 허용됨.",
+      "ja": "アクセサリーはジュエリー類のみ着用可。"
+    }
+  },
+  "unverified": [
+    "file_spec",
+    "expression_restriction",
+    "ears_visibility",
+    "face_visibility"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

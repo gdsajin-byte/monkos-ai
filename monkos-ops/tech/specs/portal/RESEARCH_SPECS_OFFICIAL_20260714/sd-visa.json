@@ -1,0 +1,27 @@
+{
+  "slug": "sd-visa",
+  "batch": 23,
+  "verified": {
+    "official_source_url": {
+      "value": "https://sudanembassy.org/entry-visa/ — Embassy of the Republic of Sudan confirms the entry visa application requires \"One (1) passport sized photo attached with the application form.\" Quantity (1 photo) is confirmed; exact dimensions, background colour, and format are not specified on this page. The embassy's official Form No.7 (Ministry of Interior, Passport & Immigration General Administration) application form itself contains no photo box dimension text either.",
+      "source_url": "https://sudanembassy.org/entry-visa/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

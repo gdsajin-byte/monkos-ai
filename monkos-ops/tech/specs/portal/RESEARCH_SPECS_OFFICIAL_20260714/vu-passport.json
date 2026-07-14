@@ -1,0 +1,43 @@
+{
+  "slug": "vu-passport",
+  "batch": 28,
+  "verified": {
+    "size": {
+      "value": "3.5cm × 4.5cm (two recent ID photographs required)",
+      "source_url": "https://immigration.gov.vu/vanuatu-citizen-passport/"
+    },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://immigration.gov.vu/vanuatu-citizen-passport/",
+      "source_url": "https://immigration.gov.vu/vanuatu-citizen-passport/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Directly fetched (browser) from Vanuatu Department of Immigration and Passport Services, official page 'Vanuatu Citizen Passport': 'Attach with your application two recent ID photographs. All photographs must be within the dimensions of 3.5cm X 4.5cm. It is important that an identity witness must sign and write the date the back of the photo.' Size matches DB exactly. A companion official page (immigration.gov.vu/passport-forms/) additionally gives grooming guidance (neat haircut/beard, clear skin) but this is positive grooming advice, not a codified restriction category (clothing/expression/glasses/ears/face-visibility/headwear/accessories), so it was not mapped into restrictions_i18n. No official Vanuatu source stating background colour, head-height ratio, photo validity window, or glasses/headwear rules could be located despite checking immigration.gov.vu, the Vanuatu Citizenship Office (vancitizenship.gov.vu — TLS certificate error), and the eVisa portal (evisa.gov.vu — JS-rendered, no extractable text)."
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "slug": "af-visa",
+  "batch": 0,
+  "verified": {
+    "size": {
+      "value": "Described as 'standard passport size' by the Embassy of Afghanistan in Islamabad (not independently restated in mm/cm on this page; consistent with the 4×4.5cm ordinary-passport figure found on the same embassy's passport page)",
+      "source_url": "https://islamabad.mfa.gov.af/visa/"
+    },
+    "background": {
+      "value": "White",
+      "source_url": "https://islamabad.mfa.gov.af/visa/"
+    },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": {
+      "value": "Must be recent; two identical, matching photographs required, affixed to the visa application form",
+      "source_url": "https://islamabad.mfa.gov.af/visa/"
+    },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": {
+      "value": "Photo must be taken straight-on ('directly off the face') so that both ears are shown clearly.",
+      "source_url": "https://islamabad.mfa.gov.af/visa/"
+    },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://islamabad.mfa.gov.af/visa/",
+      "source_url": "https://islamabad.mfa.gov.af/visa/"
+    }
+  },
+  "restrictions_i18n": {
+    "ears": {
+      "en": "Photo must be taken straight-on so that both ears are shown clearly.",
+      "ko": "얼굴을 정면으로 향하여 양쪽 귀가 뚜렷이 보이도록 촬영해야 한다.",
+      "ja": "顔を正面に向け、両耳がはっきり見えるように撮影すること。"
+    }
+  },
+  "unverified": ["head_height", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Background (white) matches the current DB value exactly. Size is only described qualitatively ('standard passport size') by the source, not a restated numeric figure, so it is reported as verified-but-qualitative rather than compared numerically against the DB's 4×4.5cm."
+  }
+}

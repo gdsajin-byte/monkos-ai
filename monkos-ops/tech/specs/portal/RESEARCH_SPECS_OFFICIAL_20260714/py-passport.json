@@ -1,0 +1,41 @@
+{
+  "slug": "py-passport",
+  "batch": 21,
+  "verified": {
+    "size": {
+      "value": "4 cm x 4 cm (foto tipo carné, for the physical consular file; the photo embedded in the passport itself is captured on-site at the appointment)",
+      "source_url": "https://www2.mre.gov.py/congralpar-buenos-aires/index.php/tramites-y-servicios/pasaportes-consulares"
+    },
+    "background": {
+      "value": "White (fondo blanco)",
+      "source_url": "https://www2.mre.gov.py/congralpar-buenos-aires/index.php/tramites-y-servicios/pasaportes-consulares"
+    },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://www.mre.gov.py/pasaportes/",
+      "source_url": "https://www.mre.gov.py/pasaportes/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "3.5 × 4.5cm",
+      "research_value": "4cm x 4cm, per the Paraguayan Ministry of Foreign Affairs' consular passport service page (Consulate General in Buenos Aires)",
+      "source_url": "https://www2.mre.gov.py/congralpar-buenos-aires/index.php/tramites-y-servicios/pasaportes-consulares"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "Paraguay's domestic passport authority (Policia Nacional - Departamento de Identificaciones, identificaciones.gov.py / policianacional.gov.py) was directly checked but its passport pages did not state explicit photo dimensions, background, or other photo specs. The only official, directly-verified photo spec found was on the Ministry of Foreign Affairs' consular portal (mre.gov.py subdomain, for Paraguayans applying at the Buenos Aires consulate): '1 (una) foto tipo carne, tamano 4 cm x 4 cm, color, fondo blanco, actualizada' - this is for the physical consular file; the actual passport photo is captured biometrically at the appointment. Domestic (non-consular) passport photo specs remain unverified."
+  }
+}

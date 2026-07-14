@@ -1,0 +1,76 @@
+{
+  "slug": "de-resume",
+  "batch": 6,
+  "verified": {
+    "size": {
+      "value": "Größe mindestens 4 x 6 cm, höchstens 6,5 x 8,5 cm (minimum 4×6cm, maximum 6.5×8.5cm)",
+      "source_url": "https://www.arbeitsagentur.de/vor-ort/datei/merkblatt-praktische-bewerbungstipps_ba096387.pdf"
+    },
+    "background": {
+      "value": "Neutral background; patterns are distracting (\"Der Hintergrund sollte neutral sein. Muster oder Ähnliches lenken ab.\")",
+      "source_url": "https://www.arbeitsagentur.de/bildung/einfach-erklaert/tipps-bewerbungsfoto-einfach"
+    },
+    "file_spec": {
+      "value": "Color photo (\"Foto in Farbe\") for print/cover-sheet use. For digital upload via the Bundesagentur's JOBBÖRSE job-portal profile: JPG, GIF, or PNG format, max. 100KB file size; longer side recommended not to exceed 150 pixels (\"Das Bewerbungsfoto muss das Format JPG, GIF oder PNG besitzen und darf eine Dateigröße von 100 KB nicht überschreiten... die längere Seite... sollte... nicht mehr als 150 Pixel besitzen\")",
+      "source_url": "https://jobboerse.arbeitsagentur.de/vamJB/hilfe/de/AS/betreut/1480.html"
+    },
+    "clothing_restriction": {
+      "value": "Clothing should match the profession/position applied for and be something the applicant feels comfortable in (\"Kleidung auf dem Foto entsprechend der Position für die Sie sich bewerben\" / \"Wähle Kleidung, in der du dich gut fühlst. Sie soll zu dem Beruf passen\"); should fit well, be clean, and ideally ironed",
+      "source_url": "https://www.arbeitsagentur.de/vor-ort/datei/merkblatt-praktische-bewerbungstipps_ba096387.pdf"
+    },
+    "expression_restriction": {
+      "value": "Look at the camera and smile (\"Schau in die Kamera und lächle\" / podcast: \"direkt in die Kamera schauen, natürlich lächeln\") — unlike passport photos, a natural smile is the recommended expression, not a neutral one",
+      "source_url": "https://www.arbeitsagentur.de/bildung/einfach-erklaert/tipps-bewerbungsfoto-einfach"
+    },
+    "accessories": {
+      "value": "If the applicant has visible tattoos or piercings, the guidance is to ask the photographer for advice (\"Hast du Tattoos oder Piercings? Frag die Fotografin oder den Fotografen um Rat\") — a styling consideration, not a stated prohibition",
+      "source_url": "https://www.arbeitsagentur.de/bildung/einfach-erklaert/tipps-bewerbungsfoto-einfach"
+    },
+    "official_source_url": {
+      "value": "https://www.arbeitsagentur.de/bildung/bewerbung/bewerbungsunterlagen",
+      "source_url": "https://www.arbeitsagentur.de/bildung/bewerbung/bewerbungsunterlagen"
+    }
+  },
+  "restrictions_i18n": {
+    "clothing": {
+      "en": "Clothing should match the profession/position being applied for; it should fit well, be clean, and ideally ironed.",
+      "ko": "지원하는 직업·직무에 어울리는 복장을 착용할 것; 옷이 잘 맞고 깨끗하며 가급적 다림질된 상태여야 함.",
+      "ja": "応募する職業・職種に合った服装を着用すること。服はきちんと着こなし、清潔でできればアイロンがけされていること。"
+    },
+    "expression": {
+      "en": "Look directly at the camera and smile naturally — unlike passport photos, a natural smile is encouraged rather than a neutral expression.",
+      "ko": "카메라를 정면으로 바라보며 자연스럽게 미소 지을 것 — 여권사진과 달리 무표정이 아닌 자연스러운 미소가 권장됨.",
+      "ja": "カメラを正面から見て自然に微笑むこと。パスポート写真とは異なり、無表情ではなく自然な笑顔が推奨される。"
+    },
+    "accessories": {
+      "en": "If you have visible tattoos or piercings, ask the photographer for advice — this is a styling consideration, not an outright prohibition.",
+      "ko": "눈에 띄는 문신이나 피어싱이 있는 경우 사진작가에게 조언을 구할 것 — 금지 사항이 아닌 스타일링 고려사항임.",
+      "ja": "目立つタトゥーやピアスがある場合は、写真家に相談すること。禁止事項ではなくスタイリング上の配慮である。"
+    }
+  },
+  "unverified": [
+    "head_height",
+    "validity",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy"
+  ],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "3.5 × 4.5cm",
+      "research_value": "\"Größe mindestens 4 x 6 cm, höchstens 6,5 x 8,5 cm\" (minimum 4×6cm, maximum 6.5×8.5cm) per the Bundesagentur für Arbeit's official application checklist — a distinctly larger size range than the standard 3.5×4.5cm biometric passport photo; the DB's figure appears to reflect the passport standard rather than the CV/application-photo standard",
+      "source_url": "https://www.arbeitsagentur.de/vor-ort/datei/merkblatt-praktische-bewerbungstipps_ba096387.pdf"
+    },
+    {
+      "field": "background",
+      "db_value": "밝은 배경",
+      "research_value": "\"Der Hintergrund sollte neutral sein\" (the background should be neutral) — official guidance specifies \"neutral,\" not explicitly \"bright/light\" (밝은)",
+      "source_url": "https://www.arbeitsagentur.de/bildung/einfach-erklaert/tipps-bewerbungsfoto-einfach"
+    }
+  ],
+  "cross_verification": {
+    "note": "'de-resume' is treated here as the German Bewerbungsfoto (job-application photo) standard, since Germany is the only country tied to this slug's 'de' prefix and the type is 'Application Photo.' Sources are Germany's Bundesagentur für Arbeit (Federal Employment Agency, a federal government body): its official application-guide PDF ('Merkblatt: Praktische Bewerbungstipps') and its 'meinBERUF' easy-language guidance page (including an audio-transcript podcast). Unlike government ID/passport photo specs, a Bewerbungsfoto is legally optional in Germany — the source notes that since the Allgemeines Gleichbehandlungsgesetz (AGG, General Equal Treatment Act), employers may not explicitly require a photo in job postings, though including one remains customary. No numeric head-height, glasses, ears, face-visibility, or headwear rule was found in official guidance (these concern private-sector hiring practice, not a regulated ID document), so they are left unverified."
+  }
+}

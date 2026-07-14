@@ -1,0 +1,28 @@
+{
+  "slug": "eu-license",
+  "batch": 8,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://europa.eu/youreurope/citizens/vehicles/driving-licence/index_en.htm",
+      "source_url": "https://europa.eu/youreurope/citizens/vehicles/driving-licence/index_en.htm"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "EU driving licences are standardised in card format and security features by Directive 2006/126/EC, but the Directive's published text (checked via EUR-Lex) governs card design, not applicant photo specifications, and EUR-Lex's own pages returned no readable content via automated fetch in this research pass (blank content on repeated attempts at both the HTML and PDF endpoints). The European Commission's official 'Your Europe' citizen portal (europa.eu/youreurope) confirms driving-licence-adjacent matters are frequently left to national authorities rather than set EU-wide, and directs citizens to country-specific pages. No single official EU-level document specifying photo size/background/head-height for driving licences could be located, so all fields are left unverified rather than substituting one member state's national spec as if it were a unified EU standard."
+  }
+}

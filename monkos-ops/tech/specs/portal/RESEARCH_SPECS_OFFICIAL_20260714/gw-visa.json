@@ -1,0 +1,29 @@
+{
+  "slug": "gw-visa",
+  "batch": 10,
+  "verified": {
+    "official_source_url": {
+      "value": "The official Embassy of Guinea-Bissau in Portugal's visa application page states applicants must 'TRAZER UMA FOTOGRAFIA ACTUAL' (bring one current photograph), with no dimensions, background colour, or other technical specification published.",
+      "source_url": "https://embaixadaguinebissau.pt/pedidos-consulares/pedido-de-visto/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note": "A third-party operator, rgb-visa.com, advertises an 'Electronic Visa Application System' for Guinea-Bissau, but its official government affiliation could not be confirmed (search results explicitly flag it as 'reported to be unreliable') and it is not on a .gw or gov.gw domain, so it was excluded per the government-source-only sourcing policy. A domain 'evisa.gov.gw' referenced in some aggregator summaries failed DNS resolution and could not be reached. No official Guinea-Bissau government page with granular e-visa/visa photo technical specifications (size, background, expression, etc.) could be located."
+  }
+}

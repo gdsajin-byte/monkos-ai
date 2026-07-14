@@ -1,0 +1,29 @@
+{
+  "slug": "cr-passport",
+  "batch": 6,
+  "verified": {
+    "official_source_url": {
+      "value": "https://migracion.go.cr/pasaportes-permisos-de-salida/",
+      "source_url": "https://migracion.go.cr/pasaportes-permisos-de-salida/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note": "Costa Rica's Dirección General de Migración y Extranjería (DGME) does not publish a citizen-facing passport photo specification because passport photos are captured biometrically in person at Migración offices, banks, or Correos de Costa Rica — confirmed via the official requirements list at migracion.go.cr/pasaportes-permisos-de-salida/, which lists only a valid cédula and proof of payment as required items for an adult passport application (no photo submission item). Since no official numeric spec is published for citizen-submitted photos, size/background/head_height and the restriction fields are left unverified rather than matched against or flagged as conflicting with the DB's figures. Third-party photo-service sites cite 2x2in/51x51mm figures, but these are excluded per the truthfulness gate as non-official sources."
+  }
+}

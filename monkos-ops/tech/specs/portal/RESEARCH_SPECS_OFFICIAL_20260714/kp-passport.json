@@ -1,0 +1,25 @@
+{
+  "slug": "kp-passport",
+  "batch": 13,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": { "value": "", "source_url": "" }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories", "official_source_url"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note": "DPRK passports are issued only to North Korean citizens through an internal domestic administrative process (Ministry of Social Security), not a public self-service online application, so no published civil-facing photo specification could be found. naenara.com.kp (the DPRK state web portal, run by the Korea Computer Center — confirmed via independent secondary sources as the country's official portal) could not be successfully connected to during this research pass (connection reset/redirect errors on every attempt), and no accessible consular or passport-photo page on any other .kp domain was found. Numerous third-party tour-agency and visa-photo-vendor sites (e.g. koreakonsult.com, youngpioneertours.com, visa-passport-photos.com) publish specific figures (45×35mm, cream/grey background, etc.), but per the truthfulness gate these are excluded because none could be traced to an official DPRK government source. Given North Korea's restricted information environment, this is expected to remain largely unverifiable through open-web research, and no field — including official_source_url — could be confirmed."
+  }
+}

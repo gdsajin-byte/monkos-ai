@@ -1,0 +1,25 @@
+{
+  "slug": "sy-visa",
+  "batch": 24,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": { "value": "", "source_url": "" }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories", "official_source_url"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "No operational, verifiable official Syrian visa-photo specification could be located. Syria's dedicated e-visa portal (evisa.sy) failed to load with a certificate error and third-party search results describe it as showing 'Coming Soon'. The Ministry of Foreign Affairs and Expatriates services page (mofaex.gov.sy/en/services) was checked directly and lists 28 consular services for Syrians abroad but no visa-issuance service for foreign visitors. A site calling itself 'syriaembassy.org' surfaced in search results claiming embassy status, but was confirmed via further search to be a private third-party document-legalization service, not the genuine Syrian government embassy site, so any data from it is excluded entirely per the truthfulness policy. Note: post-transitional-government Syria (2025-2026) entry is largely visa-on-arrival at Damascus/Aleppo airports and the Lebanese land border with prior online entry approval, which may explain the absence of a conventional visa photo-upload specification."
+  }
+}

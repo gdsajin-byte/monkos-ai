@@ -1,0 +1,28 @@
+{
+  "slug": "sb-visa",
+  "batch": 22,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://immigration.gov.sb/visas/",
+      "source_url": "https://immigration.gov.sb/visas/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Solomon Islands Immigration Division confirms visa applications require a passport biopage copy and related documents, but no official page (main site, visitor-visa/tourist page, know-your-visa-requirements page, or division-resources page) states specific photo dimensions, background color, or composition rules. The Division's own site notes that online-payment/e-visa functionality was still undergoing technical testing at the time of research, with in-person applications remaining the primary route. No numeric specification could be confirmed from an official source."
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "slug": "sr-passport",
+  "batch": 23,
+  "verified": {
+    "official_source_url": {
+      "value": "https://burgerzaken.gov.sr/paspoorten — Suriname's Directoraat Burgerzaken (official civil registry authority) lists a passport photo as \"niet verplicht\" (not mandatory) for new, lost, damaged, and renewal passport applications, noting it is only specifically recommended in the case of a baby (\"Pasfoto: niet verplicht, maar wel aan te raden in het geval van een baby\"). No size, background, or head-height specification is published, consistent with photo submission not being a standard requirement for most adult applicants.",
+      "source_url": "https://burgerzaken.gov.sr/paspoorten"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

@@ -1,0 +1,28 @@
+{
+  "slug": "pe-visa",
+  "batch": 20,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "http://www.rree.gob.pe/ (Ministerio de Relaciones Exteriores del Peru — the ministry that processes visa applications through Peruvian consulates)",
+      "source_url": "http://www.rree.gob.pe/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Peru's Ministerio de Relaciones Exteriores (RREE) processes visa applications via its consulates. Its official visa application form (DGC-005) and a consular 'VISAS' requirements PDF are hosted on consulado.pe, but every WebFetch attempt against that domain returned an SSL certificate-validation error, and the ministry's own gob.pe-platform pages return the same HTTP 418 anti-bot block documented for pe-passport.json. No composition field could be independently confirmed from a government source in this research pass. The rree.gob.pe root domain is listed as official_source_url only as the correct authority to consult, not as a page whose content was read."
+  }
+}

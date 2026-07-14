@@ -1,0 +1,48 @@
+{
+  "slug": "ml-visa",
+  "batch": 17,
+  "verified": {
+    "size": {
+      "value": "4.5 x 3.5 cm (45 x 35 mm) — 'format 4,5 x 3,5 cm'",
+      "source_url": "https://consulatdumalienfrance.fr/service-visa.html"
+    },
+    "background": {
+      "value": "White ('sur fond blanc')",
+      "source_url": "https://www.ambassademali.it/service-consulaire/visas"
+    },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": {
+      "value": "Photos must be recent, maximum 6 months old ('récentes de 6 mois maximum')",
+      "source_url": "https://ambassademali.de/fr/visa/"
+    },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://consulatdumalienfrance.fr/service-visa.html",
+      "source_url": "https://consulatdumalienfrance.fr/service-visa.html"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "head_height",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Size confirmed via the Mali Consulate General in Paris (consulatdumalienfrance.fr/service-visa.html: 'Deux photos d'identité couleur, collées au formulaire – format 4,5 x 3,5 cm'), matching the DB's 3.5x4.5cm (no conflict). Background color confirmed separately via the Embassy of Mali in Rome (ambassademali.it: 'Deux (2) photos d'identité en couleur sur fond blanc'). Photo recency confirmed via the Embassy of Mali in Berlin (ambassademali.de: 'Deux (02) Photos d'identité en couleur récentes de 6 mois maximum'). Because these are three separate diplomatic missions rather than a single consolidated regulation, each fact is attributed to the specific mission that stated it rather than merged into one unverified composite. No official Malian source specified head height, digital file spec, clothing, expression, glasses, ear/face visibility detail, or headwear/religious exceptions for the visa photo specifically.",
+    "note_ko": "규격은 주프랑스 말리 총영사관(파리, consulatdumalienfrance.fr) 페이지에서 '컬러 증명사진 2매, 신청서에 부착, 규격 4.5×3.5cm'로 확인했으며 DB의 3.5×4.5cm과 일치해 충돌 없음. 배경색은 별도로 주이탈리아(로마) 말리 대사관에서 '컬러 증명사진 2매, 흰색 배경'으로 확인했다. 사진 유효기간(6개월 이내)은 주독일(베를린) 말리 대사관에서 확인했다. 세 정보 모두 단일 통합 규정이 아닌 각기 다른 재외공관에서 개별 확인된 것이라 출처를 개별적으로 명시했다. 두상 높이, 디지털 파일 규격, 복장·표정·안경·귀/얼굴 노출 세부사항, 머리가리개(종교적 예외) 규정은 비자용으로 특정하여 확인된 공식 자료가 없었다."
+  }
+}

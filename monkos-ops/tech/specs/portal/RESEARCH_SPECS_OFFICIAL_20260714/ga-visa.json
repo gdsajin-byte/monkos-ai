@@ -1,0 +1,50 @@
+{
+  "slug": "ga-visa",
+  "batch": 9,
+  "verified": {
+    "size": {
+      "value": "35 × 45mm (half-format color photo)",
+      "source_url": "https://fr.ambagabon.org/index.php/avis-aux-voyageurs/immigration/visas"
+    },
+    "background": {
+      "value": "Gray or white (\"fond gris ou blanc\")",
+      "source_url": "https://fr.ambagabon.org/index.php/avis-aux-voyageurs/immigration/visas"
+    },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": {
+      "value": "No glasses (\"sans lunettes\")",
+      "source_url": "https://fr.ambagabon.org/index.php/avis-aux-voyageurs/immigration/visas"
+    },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://fr.ambagabon.org/index.php/avis-aux-voyageurs/immigration/visas",
+      "source_url": "https://fr.ambagabon.org/index.php/avis-aux-voyageurs/immigration/visas"
+    }
+  },
+  "restrictions_i18n": {
+    "glasses": {
+      "en": "Glasses are not permitted in the photo.",
+      "ko": "안경 착용 불가.",
+      "ja": "メガネ着用不可。"
+    }
+  },
+  "unverified": ["head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [
+    {
+      "field": "background",
+      "db_value": "흰색",
+      "research_value": "Gray or white (\"fond gris ou blanc\") per the Embassy of Gabon in France's official visa instructions — gray is explicitly listed as an accepted alternative to white, not just white alone.",
+      "source_url": "https://fr.ambagabon.org/index.php/avis-aux-voyageurs/immigration/visas"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "The Embassy of Gabon in France (fr.ambagabon.org, an official Gabonese diplomatic mission) states: \"02 demi cartes photos couleurs (35x45mm) récentes, fond gris ou blanc, sans lunettes\" (2 recent half-format color photos, 35x45mm, gray or white background, no glasses). This directly confirms size (matches DB's 3.5x4.5cm) and adds a background nuance (gray also accepted) and a glasses ban not in the current DB. Gabon's official e-visa portal (evisa.dgdi.ga, under the Direction Générale de la Documentation et de l'Immigration) could not be verified directly — WebFetch failed with an SSL certificate error and the page returned no server-rendered text via direct retrieval (likely a JavaScript single-page app), so widely-repeated third-party claims about e-visa specifics (600dpi, 1MB max, gray-only background) are NOT included here as verified. Validity period, head height, file spec, and most composition rules (expression, ears, headwear, accessories, clothing) could not be confirmed on any accessible official Gabonese government page."
+  }
+}

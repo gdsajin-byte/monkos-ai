@@ -1,0 +1,86 @@
+{
+  "slug": "mm-visa",
+  "batch": 17,
+  "verified": {
+    "size": {
+      "value": "3.8 cm (1.5 inches) wide by 4.6 cm (1.8 inches) high",
+      "source_url": "https://estay.moip.gov.mm/home/usefulinformation"
+    },
+    "background": {
+      "value": "Plain white background without shadows, in color",
+      "source_url": "https://estay.moip.gov.mm/home/usefulinformation"
+    },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": {
+      "value": "Taken within the last 3 months",
+      "source_url": "https://estay.moip.gov.mm/home/usefulinformation"
+    },
+    "file_spec": {
+      "value": "Accepted upload formats: JPG or PDF; file size limit 2MB (eVisa 'Upload Photo & Document' step, labelled 'Passport Size Color Photo')",
+      "source_url": "https://evisa.moip.gov.mm/assets/dist/img/guide/userGuide.pdf"
+    },
+    "clothing_restriction": {
+      "value": "Taken in formal attire",
+      "source_url": "https://estay.moip.gov.mm/home/usefulinformation"
+    },
+    "expression_restriction": {
+      "value": "Neutral face expression",
+      "source_url": "https://estay.moip.gov.mm/home/usefulinformation"
+    },
+    "glasses_policy": {
+      "value": "Spectacles must be taken off",
+      "source_url": "https://estay.moip.gov.mm/home/usefulinformation"
+    },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": {
+      "value": "Full face with the upper shoulders visible, facing forward with eyes open",
+      "source_url": "https://estay.moip.gov.mm/home/usefulinformation"
+    },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://evisa.moip.gov.mm/",
+      "source_url": "https://evisa.moip.gov.mm/"
+    }
+  },
+  "restrictions_i18n": {
+    "clothing": {
+      "en": "The photo must be taken in formal attire.",
+      "ko": "사진은 정장(포멀 복장)을 착용하고 촬영해야 한다.",
+      "ja": "写真はフォーマルな服装で撮影しなければならない。"
+    },
+    "expression": {
+      "en": "A neutral facial expression is required.",
+      "ko": "무표정(중립적인 표정)으로 촬영해야 한다.",
+      "ja": "表情は無表情(ニュートラル)でなければならない。"
+    },
+    "glasses": {
+      "en": "Spectacles (eyeglasses) must be taken off.",
+      "ko": "안경은 벗고 촬영해야 한다.",
+      "ja": "眼鏡は外して撮影しなければならない。"
+    },
+    "face_visibility": {
+      "en": "Full face with the upper shoulders visible, facing forward with eyes open.",
+      "ko": "얼굴 전체와 어깨 윗부분이 보여야 하며, 정면을 향하고 눈을 뜬 상태여야 한다.",
+      "ja": "顔全体と肩の上部が見える状態で、正面を向いて目を開けていなければならない。"
+    }
+  },
+  "unverified": [
+    "head_height",
+    "ears_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "3.8 × 4.8cm",
+      "research_value": "3.8cm x 4.6cm (1.5 x 1.8 inches)",
+      "source_url": "https://estay.moip.gov.mm/home/usefulinformation"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "The detailed spec (size, background, validity, clothing, expression, glasses, face visibility) is from the Myanmar eStay official government website (estay.moip.gov.mm), under the Ministry of Immigration and Population (MOIP) — the same ministry that operates the eVisa portal (evisa.moip.gov.mm) used for mm-visa, and eStay's 'Photo Requirements' heading was fetched and quoted verbatim: 'Taken within the last 3 months; Clear and in focus, 3.8 cm(or) 1.5 inches wide by 4.6 cm (or) 1.8 inches high; In colour taken against a plain white background without shadows; Full face with the upper shoulders visible, facing forward with eyes open; Spectacles must be taken off; Taken in formal attire; Neutral face expression; Photos copied or digitally scanned from any documents are not acceptable.' The eVisa User Guide PDF (evisa.moip.gov.mm) separately and directly confirms the upload file spec (JPG/PDF, 2MB) and labels the required upload 'Passport Size Color Photo' but does not itself restate the cm figure — the eStay figure is used as the best available official MOIP numeric spec since the eVisa portal's own FAQ page returned no extractable photo-spec text. The DB's 4.8cm height does not match the 4.6cm found on estay.moip.gov.mm, so this is flagged as a conflict rather than silently reconciled.",
+    "note_ko": "상세 규격(크기·배경·유효기간·복장·표정·안경·얼굴노출)은 미얀마 이민인구부(MOIP) 산하 공식 정부 웹사이트인 eStay(estay.moip.gov.mm)에서 확인했다. 이는 mm-visa에 사용한 eVisa 포털(evisa.moip.gov.mm)과 동일한 부처(MOIP) 소관이며, eStay의 'Photo Requirements' 항목 원문을 그대로 인용했다: '최근 3개월 이내 촬영, 선명하고 초점이 맞을 것, 3.8cm(1.5인치) 너비 x 4.6cm(1.8인치) 높이, 컬러·흰색 배경·그림자 없음, 얼굴 전체와 어깨 윗부분이 보이며 정면 응시·눈을 뜬 상태, 안경 벗을 것, 정장 착용, 무표정, 문서 복사/스캔본 불가.' eVisa 사용자 가이드 PDF는 별도로 업로드 파일 규격(JPG/PDF, 2MB)을 직접 확인해주며 업로드란을 'Passport Size Color Photo'로 표기하나 cm 수치 자체는 재기재하지 않는다. eVisa 자체 FAQ 페이지에서는 사진 규격 텍스트를 추출할 수 없어, MOIP 산하 자매 포털인 eStay의 수치를 최선의 공식 수치로 사용했다. DB의 4.8cm(높이)는 estay.moip.gov.mm에서 확인된 4.6cm와 일치하지 않아 임의로 맞추지 않고 충돌로 명시했다."
+  }
+}

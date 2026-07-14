@@ -1,0 +1,82 @@
+{
+  "slug": "il-passport",
+  "batch": 11,
+  "verified": {
+    "size": {
+      "value": "35x45mm (3.5x4.5cm) for biometric passport photo capture; an alternate 5x5cm (50x50mm) format is used for non-biometric travel documents issued at Israeli missions abroad",
+      "source_url": "https://www.gov.il/en/departments/general/biometric_photo_guide"
+    },
+    "background": {
+      "value": "White (plain, even, no shadow)",
+      "source_url": "https://www.gov.il/en/departments/general/biometric_photo_guide"
+    },
+    "head_height": {
+      "value": "Face height from chin to hairline: 32mm to 36mm",
+      "source_url": "https://www.gov.il/en/departments/general/biometric_photo_guide"
+    },
+    "validity": {
+      "value": "Photo must be taken within the last 3 months",
+      "source_url": "https://embassies.gov.il/atlanta/en/services/israeli-citizens/issuance-travel-documents-passport-citizens-and-residents-israel"
+    },
+    "glasses_policy": {
+      "value": "Glasses are not permitted (no exception stated other than documented medical necessity)",
+      "source_url": "https://www.gov.il/en/departments/general/biometric_photo_guide"
+    },
+    "ears_visibility": {
+      "value": "Both ears must be visible; hair must be tucked behind the ears",
+      "source_url": "https://embassies.gov.il/atlanta/en/services/israeli-citizens/issuance-travel-documents-passport-citizens-and-residents-israel"
+    },
+    "face_visibility": {
+      "value": "Facial features must be fully visible, including the eyebrows",
+      "source_url": "https://embassies.gov.il/atlanta/en/services/israeli-citizens/issuance-travel-documents-passport-citizens-and-residents-israel"
+    },
+    "expression_restriction": {
+      "value": "Neutral expression, closed mouth, no smiling",
+      "source_url": "https://www.gov.il/en/departments/general/biometric_photo_guide"
+    },
+    "headwear_policy": {
+      "value": "No hat or head covering permitted, unless worn for religious reasons",
+      "source_url": "https://www.gov.il/en/departments/general/biometric_photo_guide"
+    },
+    "official_source_url": {
+      "value": "https://www.gov.il/en/departments/general/biometric_photo_guide",
+      "source_url": "https://www.gov.il/en/departments/general/biometric_photo_guide"
+    }
+  },
+  "restrictions_i18n": {
+    "glasses": {
+      "en": "Glasses are not permitted, except for documented medical necessity.",
+      "ko": "의학적 필요성이 증빙된 경우를 제외하고 안경 착용이 불가하다.",
+      "ja": "医学的必要性が証明される場合を除き、眼鏡の着用は不可。"
+    },
+    "ears": {
+      "en": "Both ears must be visible; hair must be tucked behind the ears.",
+      "ko": "양쪽 귀가 모두 보여야 하며, 머리카락은 귀 뒤로 넘겨야 한다.",
+      "ja": "両耳がはっきり見える必要があり、髪は耳の後ろにまとめること。"
+    },
+    "face_visibility": {
+      "en": "Facial features must be fully visible, including the eyebrows.",
+      "ko": "눈썹을 포함한 모든 얼굴 특징이 완전히 보여야 한다.",
+      "ja": "眉を含むすべての顔の特徴がはっきり見える必要がある。"
+    },
+    "expression": {
+      "en": "Neutral expression with a closed mouth; no smiling.",
+      "ko": "입을 다문 중립적인 표정을 지어야 하며, 미소는 금지된다.",
+      "ja": "口を閉じた中立的な表情であること。微笑みは禁止。"
+    },
+    "headwear": {
+      "en": "No hat or head covering is permitted, unless worn for religious reasons.",
+      "ko": "종교적 사유로 착용하는 경우를 제외하고 모자나 머리가리개 착용이 불가하다.",
+      "ja": "宗教上の理由で着用する場合を除き、帽子や頭を覆うものの着用は不可。"
+    }
+  },
+  "unverified": [
+    "file_spec",
+    "clothing_restriction",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Direct WebFetch access to gov.il and embassies.gov.il was blocked (403/connection reset) on every attempt during this research pass; the figures above are corroborated by web-search indexing that directly surfaced the specific gov.il/embassies.gov.il URLs (genuine Israeli government domains, not third-party aggregators) with consistent, repeated figures across multiple independent queries -- size, background, head height, ear/eyebrow visibility, glasses, expression, and headwear all recurred identically. DB size (3.5x4.5cm) and head_height (3.2-3.6cm) both match the biometric-capture figures found (35x45mm / 32-36mm) almost exactly -- no conflict, strong confirmation. A secondary 5x5cm format for overseas non-biometric travel documents was also consistently found but is noted as an alternate track, not a conflict, since DB's value matches the primary biometric format."
+  }
+}

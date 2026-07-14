@@ -1,0 +1,41 @@
+{
+  "slug": "xk-passport",
+  "batch": 28,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://mpb.rks-gov.net/f/48/Aplikimi-per-pasaporte-biometrike",
+      "source_url": "https://mpb.rks-gov.net/f/48/Aplikimi-per-pasaporte-biometrike"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Checked the Kosovo Ministry of Internal Affairs (MPB, mpb.rks-gov.net) passport pages 'Pajisja me pasaportë' and 'Aplikimi për pasaportë biometrike', both citing Administrative Instruction MPB Nr. 01/2024 and Nr. 06/2018, plus the downloadable citizen leaflet 'Procedura e pajisjes me Pasaporte_10.pdf' (fully read). All of these official documents describe required identity/consent/police-report documentation and fees in detail but contain zero mention of a photograph specification (size, background, etc.). This is consistent with Kosovo's biometric passport being captured in person at the Qendra për Pajisje me Dokumente (Document Issuance Centre) rather than requiring citizens to submit a pre-taken photo — but that is an inference, not an explicit official statement, so no fields are marked verified."
+  }
+}

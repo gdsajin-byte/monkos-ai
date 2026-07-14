@@ -1,0 +1,65 @@
+{
+  "slug": "fj-visa",
+  "batch": 8,
+  "verified": {
+    "size": {
+      "value": "3.5cm × 4.5cm (per Ministry of Immigration's shared passport-photograph guideline, which the visa-application page references by requiring 'passport size photos')",
+      "source_url": "https://www.immigration.gov.fj/guidelines-for-passport-photographs/"
+    },
+    "background": {
+      "value": "Plain or light-coloured background; full-face view of head and shoulders, good quality colour",
+      "source_url": "https://www.immigration.gov.fj/visa-application/"
+    },
+    "head_height": {
+      "value": "Head must occupy 70–80% of the photo, per the Ministry's shared photo guideline",
+      "source_url": "https://www.immigration.gov.fj/guidelines-for-passport-photographs/"
+    },
+    "validity": {
+      "value": "Photographs must be less than 6 months old; two (2) recent passport-size photos required",
+      "source_url": "https://www.immigration.gov.fj/visa-application/"
+    },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": {
+      "value": "Straight-looking, centered, neutral expression; eyes must be open (per Ministry's shared photo guideline)",
+      "source_url": "https://www.immigration.gov.fj/guidelines-for-passport-photographs/"
+    },
+    "glasses_policy": {
+      "value": "Prescription glasses permitted if clear and thin-framed, with no flash reflection obscuring vision (per Ministry's shared photo guideline)",
+      "source_url": "https://www.immigration.gov.fj/guidelines-for-passport-photographs/"
+    },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": {
+      "value": "Head coverings, hair, head-dress, or facial ornaments must not obscure the face (per Ministry's shared photo guideline)",
+      "source_url": "https://www.immigration.gov.fj/guidelines-for-passport-photographs/"
+    },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://www.immigration.gov.fj/visa-application/",
+      "source_url": "https://www.immigration.gov.fj/visa-application/"
+    }
+  },
+  "restrictions_i18n": {
+    "expression": {
+      "en": "Face the camera straight on, centered in the frame, with a neutral expression; eyes must be open.",
+      "ko": "카메라를 정면으로 응시하고 화면 중앙에 위치하며 무표정을 유지해야 한다. 눈은 뜬 상태여야 한다.",
+      "ja": "カメラに対して正面を向き、画面中央に位置し、無表情を保つこと。目は開けていなければならない。"
+    },
+    "glasses": {
+      "en": "Prescription glasses are permitted if clear and thin-framed, with no flash reflection obscuring vision.",
+      "ko": "얇은 무테·투명 테 안경은 허용되나, 플래시 반사로 시야가 가려지면 안 된다.",
+      "ja": "薄いフレームの透明な眼鏡は許可されるが、フラッシュの反射で視界が隠れてはならない。"
+    },
+    "headwear": {
+      "en": "Head coverings, hair, headdresses, or facial ornaments must not obscure the face.",
+      "ko": "머리쓰개, 머리카락, 장식물이 얼굴을 가려서는 안 된다.",
+      "ja": "帽子・ヘアスタイル・ヘッドドレスや装飾品が顔を隠してはならない。"
+    }
+  },
+  "unverified": ["file_spec", "clothing_restriction", "ears_visibility", "face_visibility", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Fiji's official visa-application page (immigration.gov.fj/visa-application) directly states 'Two (02) recent passport size photos' with its own background/validity criteria ('plain or light-coloured background', 'less than 6 months old'). Since Fiji's Ministry of Immigration is the single issuing authority for both passports and visas and the visa page explicitly requires 'passport size photos', the shared 'Guidelines for Passport Photographs' page was also used for size/head-height/expression/glasses/headwear fields. Size (3.5×4.5cm) matches DB with no conflict; background/head-height are roughly consistent with DB as noted for fj-passport. The shared guideline's own text reads '70 to 80% of the photo or one inch height'; one inch (25.4mm) does not reconcile with 70–80% of a 45mm-tall photo (31.5–36mm, beyond the ±1.5mm self-consistency tolerance), so the 'one inch' alternate figure was dropped and only the internally-consistent percentage figure retained."
+  }
+}

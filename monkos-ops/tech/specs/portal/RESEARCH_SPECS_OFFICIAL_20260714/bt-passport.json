@@ -1,0 +1,59 @@
+{
+  "slug": "bt-passport",
+  "batch": 3,
+  "verified": {
+    "size": {
+      "value": "45mm x 35mm, with facial image occupying 70-80% of the photograph",
+      "source_url": "https://www.mfa.gov.bt/passport/photograph-requirements/"
+    },
+    "background": {
+      "value": "White background only, without border",
+      "source_url": "https://www.mfa.gov.bt/passport/photograph-requirements/"
+    },
+    "validity": {
+      "value": "Not more than six months old",
+      "source_url": "https://www.mfa.gov.bt/passport/photograph-requirements/"
+    },
+    "glasses_policy": {
+      "value": "If glasses are worn, there should be no flash reflection, no tinted lenses, and frames should not cover any part of the eyes",
+      "source_url": "https://www.mfa.gov.bt/passport/photograph-requirements/"
+    },
+    "face_visibility": {
+      "value": "Eyes must be open and clearly visible, looking directly at the camera; sharp focus with no shadows",
+      "source_url": "https://www.mfa.gov.bt/passport/photograph-requirements/"
+    },
+    "official_source_url": {
+      "value": "https://www.mfa.gov.bt/passport/photograph-requirements/",
+      "source_url": "https://www.mfa.gov.bt/passport/photograph-requirements/"
+    }
+  },
+  "restrictions_i18n": {
+    "glasses": {
+      "en": "If glasses are worn, there must be no flash reflection, no tinted lenses, and the frames must not cover any part of the eyes",
+      "ko": "안경 착용 시 플래시 반사가 없어야 하고 색이 있는 렌즈는 불가하며, 안경테가 눈의 일부라도 가리면 안 됨",
+      "ja": "眼鏡を着用する場合、フラッシュの反射がなく、色付きレンズは不可。フレームが目の一部でも覆ってはならない"
+    },
+    "face_visibility": {
+      "en": "Eyes must be open and clearly visible, looking directly at the camera",
+      "ko": "눈은 뜬 상태로 뚜렷하게 보여야 하며 카메라를 정면으로 응시해야 함",
+      "ja": "目は開けてはっきり見えるようにし、カメラを正面から見ること"
+    }
+  },
+  "unverified": [
+    "head_height",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "ears_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": {
+      "verdict": "confirmed",
+      "evidence": "Directly fetched from mfa.gov.bt official photograph-requirements page. DB value (3.5 x 4.5cm = 35x45mm) numerically matches the official 45mm x 35mm figure (same two dimensions, different presentation order) — no conflict.",
+      "correct_value": "45mm x 35mm"
+    }
+  }
+}

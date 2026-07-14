@@ -1,0 +1,25 @@
+{
+  "slug": "tv-visa",
+  "batch": 26,
+  "verified": {},
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories",
+    "official_source_url"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Successfully fetched the Permanent Mission of Tuvalu to the UN consular-services page (un.int/tuvalu/tuvalu/consular-services), but its content covers passport re-issuance/validity extension by missions only, with no mention of visitor visas or photos at all. The Tuvalu government's own domain (gov.tv) did not resolve (DNS failure) via either curl or WebFetch during this session. The Tuvalu High Commission NZ visa page (tuvaluhc.org.nz/visa) is a JavaScript single-page app that returned no readable content via curl or WebFetch (cert issues on the sibling /passports page). Tuvalu's official Passports Regulations (used for tv-passport) govern the Tuvalu passport, not visas issued to foreign visitors, so it is not cross-applied here. Given no official visa-specific source could be read, this slug is left entirely unverified rather than guessed."
+  }
+}

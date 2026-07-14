@@ -1,0 +1,41 @@
+{
+  "slug": "kh-visa",
+  "batch": 13,
+  "verified": {
+    "size": {
+      "value": "2 × 2 inches (~5.08 × 5.08cm), stapled to the application form — per Royal Embassy of Cambodia in Washington D.C. tourist visa instructions (in-person application)",
+      "source_url": "https://www.embassyofcambodiadc.org/tourist_visa_type-t.html"
+    },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": {
+      "value": "Photo must be recently taken, within approximately the last 6 months",
+      "source_url": "https://www.embassyofcambodiadc.org/tourist_visa_type-t.html"
+    },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://www.evisa.gov.kh/",
+      "source_url": "https://www.evisa.gov.kh/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["background", "head_height", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "4 × 6cm",
+      "research_value": "Royal Embassy of Cambodia in Washington D.C. tourist-visa instructions require a 2×2 inch (~5.08×5.08cm) stapled photo for in-person applications — a different figure from the DB's 4×6cm. This may reflect a different application channel (in-person embassy vs. online eVisa) rather than a true contradiction. evisa.gov.kh's own online eVisa photo spec (widely cited elsewhere as 4×6cm) could not be independently confirmed because the site blocked automated access during this research pass.",
+      "source_url": "https://www.embassyofcambodiadc.org/tourist_visa_type-t.html"
+    }
+  ],
+  "cross_verification": {
+    "note": "evisa.gov.kh (Cambodia's official eVisa government portal) blocked automated fetch attempts (redirect loops / 'Request Rejected' bot-protection responses) across multiple tries, including via the mfaic.gov.kh subdomain recberlin.mfaic.gov.kh, so its own stated photo spec could not be directly verified from primary source text in this pass. The one Cambodian government domain that did load successfully — the Royal Embassy of Cambodia in Washington D.C. (embassyofcambodiadc.org) — only covers in-person tourist visa applications and states a 2x2 inch stapled photo, recently taken. Third-party visa-photo vendor sites (visafoto.com, e-visa-cambodia.com, cambodia-e-visa.com, etc.) were deliberately excluded per the truthfulness gate even though several converged on figures matching the DB (4x6cm, 3.6cm head height) — convergence among paid photo-vendor sites is not equivalent to an official source."
+  }
+}

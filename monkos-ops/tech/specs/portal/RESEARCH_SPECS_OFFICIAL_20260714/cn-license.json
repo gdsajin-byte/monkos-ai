@@ -1,0 +1,98 @@
+{
+  "slug": "cn-license",
+  "batch": 5,
+  "verified": {
+    "size": {
+      "value": "22mm (w) x 32mm (h) — one-inch, bareheaded photo. Matches DB value exactly (2.2 x 3.2cm).",
+      "source_url": "https://www.wuxi.gov.cn/doc/2025/05/23/4627485.shtml"
+    },
+    "background": {
+      "value": "White background",
+      "source_url": "https://www.wuxi.gov.cn/doc/2025/05/23/4627485.shtml"
+    },
+    "validity": {
+      "value": "Must be taken within 6 months prior to the application",
+      "source_url": "https://www.wuxi.gov.cn/doc/2025/05/23/4627485.shtml"
+    },
+    "file_spec": {
+      "value": "Digital submission (Beijing traffic police portal): PNG with transparent background channel, 520px (w) x 756px (h), file size not exceeding 300KB, no retouching/beautification/facial-feature alteration permitted",
+      "source_url": "https://jtgl.beijing.gov.cn/jgj/93950/bszn/325741235/index.html"
+    },
+    "clothing_restriction": {
+      "value": "Dark-colored clothing is required, not merely recommended (source states \"着深色衣服\" — an imperative instruction, phrased the same as the no-headwear rule, not a suggestion)",
+      "source_url": "https://www.wuxi.gov.cn/doc/2025/05/23/4627485.shtml"
+    },
+    "expression_restriction": {
+      "value": "Natural expression, facing the camera directly, even lighting with no obvious distortion",
+      "source_url": "https://www.wuxi.gov.cn/doc/2025/05/23/4627485.shtml"
+    },
+    "glasses_policy": {
+      "value": "Sunglasses prohibited",
+      "source_url": "https://www.wuxi.gov.cn/doc/2025/05/23/4627485.shtml"
+    },
+    "ears_visibility": {
+      "value": "Hair must not cover the ears",
+      "source_url": "https://www.wuxi.gov.cn/doc/2025/05/23/4627485.shtml"
+    },
+    "face_visibility": {
+      "value": "Hair must not cover the face",
+      "source_url": "https://www.wuxi.gov.cn/doc/2025/05/23/4627485.shtml"
+    },
+    "headwear_policy": {
+      "value": "Hats and scarves not allowed",
+      "source_url": "https://www.wuxi.gov.cn/doc/2025/05/23/4627485.shtml"
+    },
+    "accessories": {
+      "value": "Heavy makeup and accessories not allowed",
+      "source_url": "https://www.wuxi.gov.cn/doc/2025/05/23/4627485.shtml"
+    },
+    "official_source_url": {
+      "value": "https://jtgl.beijing.gov.cn/jgj/93950/bszn/325741235/index.html",
+      "source_url": "https://jtgl.beijing.gov.cn/jgj/93950/bszn/325741235/index.html"
+    }
+  },
+  "restrictions_i18n": {
+    "clothing": {
+      "en": "Dark-colored clothing is required, not merely recommended.",
+      "ko": "짙은 색 옷 착용은 권장이 아닌 필수 사항입니다.",
+      "ja": "濃い色の服装の着用は推奨ではなく必須です。"
+    },
+    "expression": {
+      "en": "Natural expression, facing the camera directly with even lighting and no distortion.",
+      "ko": "자연스러운 표정으로 정면을 응시하며, 조명이 고르고 왜곡이 없어야 합니다.",
+      "ja": "自然な表情で正面を向き、均一な照明で歪みがないようにしてください。"
+    },
+    "glasses": {
+      "en": "Sunglasses are prohibited.",
+      "ko": "선글라스 착용이 금지됩니다.",
+      "ja": "サングラスの着用は禁止されています。"
+    },
+    "ears": {
+      "en": "Hair must not cover the ears.",
+      "ko": "머리카락으로 귀를 가려서는 안 됩니다.",
+      "ja": "髪の毛で耳を隠してはいけません。"
+    },
+    "face_visibility": {
+      "en": "Hair must not cover the face.",
+      "ko": "머리카락으로 얼굴을 가려서는 안 됩니다.",
+      "ja": "髪の毛で顔を隠してはいけません。"
+    },
+    "headwear": {
+      "en": "Hats and scarves are not allowed.",
+      "ko": "모자와 스카프 착용이 금지됩니다.",
+      "ja": "帽子やスカーフの着用は禁止されています。"
+    },
+    "accessories": {
+      "en": "Heavy makeup and accessories are not allowed.",
+      "ko": "짙은 화장과 장신구 착용이 금지됩니다.",
+      "ja": "濃いメイクやアクセサリーの着用は禁止されています。"
+    }
+  },
+  "unverified": [
+    "head_height"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": "22mm x 32mm print size directly confirmed via Wuxi Municipal Government official portal (wuxi.gov.cn) and independently corroborated by multiple .gov.cn search hits referencing the national standard (GA482-2012); matches DB value exactly. Digital PNG spec (520x756px, <=300KB) independently confirmed via Beijing Municipal Public Security Traffic Management Bureau portal (jtgl.beijing.gov.cn)."
+  }
+}

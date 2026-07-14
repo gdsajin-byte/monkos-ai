@@ -1,0 +1,68 @@
+{
+  "slug": "bw-passport",
+  "batch": 4,
+  "verified": {
+    "size": {
+      "value": "Not more than 63mm x 50mm (2½ x 2 inches) and not less than 52mm x 37mm (2 x 1½ inches)",
+      "source_url": "https://www.botswanaembassy.org/sites/default/files/documents/Botswana_Passport_Application_Form.pdf"
+    },
+    "background": {
+      "value": "Light plain background",
+      "source_url": "https://www.botswanaembassy.org/sites/default/files/documents/Botswana_Passport_Application_Form.pdf"
+    },
+    "validity": {
+      "value": "Photographs must be sufficiently recent, not more than six months old",
+      "source_url": "https://www.botswanaembassy.org/sites/default/files/documents/Botswana_Passport_Application_Form.pdf"
+    },
+    "clothing_restriction": {
+      "value": "Applicant should be dressed in normal attire without hat, a doek (head wrap) or braids. Only applicants who serve in uniformed government departments (Armed Forces, Police, Immigration, etc.) applying for diplomatic or official passports may submit photographs wearing a Botswana Government uniform.",
+      "source_url": "https://www.botswanaembassy.org/sites/default/files/documents/Botswana_Passport_Application_Form.pdf"
+    },
+    "face_visibility": {
+      "value": "Photographs must be clear, front view, full face, taken full face - head and shoulders - with light plain background",
+      "source_url": "https://www.botswanaembassy.org/sites/default/files/documents/Botswana_Passport_Application_Form.pdf"
+    },
+    "headwear_policy": {
+      "value": "No hat/doek. Special exception may be allowed for headgear only if it is part of regional attire worn daily; uniforms or head covering which obscure the applicant's features (hair or hairline) may not be worn.",
+      "source_url": "https://www.botswanaembassy.org/sites/default/files/documents/Botswana_Passport_Application_Form.pdf"
+    },
+    "official_source_url": {
+      "value": "https://www.botswanaembassy.org/sites/default/files/documents/Botswana_Passport_Application_Form.pdf",
+      "source_url": "https://www.botswanaembassy.org/sites/default/files/documents/Botswana_Passport_Application_Form.pdf"
+    }
+  },
+  "restrictions_i18n": {
+    "clothing": {
+      "en": "Normal attire; no hat, doek (head wrap), or braids. Government-uniformed applicants (military, police, immigration) may wear uniform only when applying for a diplomatic or official passport.",
+      "ko": "일반 복장 착용, 모자·두건(doek)·땋은 머리 장식 금지. 제복 근무자(군·경찰·이민국)는 외교관·관용여권 신청 시에만 정부 제복 착용 가능.",
+      "ja": "普段着を着用し、帽子・ドーク(頭巾)・編み込み髪の装飾は不可。制服着用の公務員(軍・警察・移民局)は外交・公用旅券申請時に限り政府制服の着用可。"
+    },
+    "face_visibility": {
+      "en": "Full face, head and shoulders, clear front view, against a light plain background.",
+      "ko": "정면에서 얼굴 전체와 머리·어깨가 선명하게 나와야 하며, 배경은 밝고 무늬 없는 단색이어야 함.",
+      "ja": "正面から顔全体と頭・肩が鮮明に写ること。背景は明るい無地であること。"
+    },
+    "headwear": {
+      "en": "No hat, doek, or head covering permitted; exception only for headgear that forms part of daily regional/traditional dress.",
+      "ko": "모자·두건 등 머리가리개 착용 불가. 일상적으로 착용하는 전통·지역 복식의 일부인 경우에만 예외 인정.",
+      "ja": "帽子やドークなどの被り物は不可。日常的に着用する民族衣装・地域衣装の一部である場合のみ例外を認める。"
+    }
+  },
+  "unverified": [
+    "head_height",
+    "file_spec",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "3 × 4cm",
+      "research_value": "Between 52mm x 37mm (min) and 63mm x 50mm (max)",
+      "source_url": "https://www.botswanaembassy.org/sites/default/files/documents/Botswana_Passport_Application_Form.pdf"
+    }
+  ],
+  "cross_verification": {}
+}

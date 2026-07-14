@@ -1,0 +1,35 @@
+{
+  "slug": "ge-passport",
+  "batch": 9,
+  "verified": {
+    "size": {
+      "value": "3.5 × 4.5 cm (biometric photograph, \"ბიომეტრიული ფოტოსურათი, ზომით 3.5X4.5 სმ.\")",
+      "source_url": "https://gc-pfiles.mfa.gov.ge/DocFiles//2023/12/14/LegalAct/24/60f588dc-bc05-4be7-b7ee-9d5437ccc078.pdf"
+    },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": {
+      "value": "Submitted in electronic form (\"ელექტრონული ფორმით\") — the regulation repeatedly specifies the 3.5x4.5cm biometric photo must be electronic, but does not state pixel dimensions, DPI, or file-size limits.",
+      "source_url": "https://gc-pfiles.mfa.gov.ge/DocFiles//2023/12/14/LegalAct/24/60f588dc-bc05-4be7-b7ee-9d5437ccc078.pdf"
+    },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://sda.gov.ge/en/products/passport/",
+      "source_url": "https://sda.gov.ge/en/products/passport/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["background", "head_height", "validity", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Georgia's Ministry of Justice Order No. 98 (27 July 2011) — 'on approval of the rule for registration of citizens of Georgia and aliens residing in Georgia, and issuance of identity (residence) cards, passports, travel passports and travel documents' — was located via web search and fetched as a PDF. WebFetch's built-in text extraction failed to read it (binary/compressed stream error), so the PDF was downloaded and re-processed with the local 'pdftotext' utility via Bash, then grepped for the Georgian word 'ფოტოსურათი' (photograph). This directly confirmed the phrase 'ფერადი ბიომეტრიული ფოტოსურათი, ზომით 3.5X4.5 სმ., ელექტრონული ფორმით' (color biometric photograph, size 3.5x4.5cm, in electronic form) recurring across at least 7 separate articles covering ID cards, ordinary passports, travel passports and travel documents — this exactly matches the current DB value of 3.5x4.5cm, no conflict. The same 39-page document was grepped for background/lighting/glasses/headwear/ear-related Georgian terms (ფონ, თეთრ, სათვალ, თავსაბურავ, ყურ) and none were found — meaning detailed composition rules are delegated elsewhere (the law text itself says exact technical characteristics are set by a separate Minister of Justice order not linked from this document), so those fields are honestly left unverified rather than assumed from generic ICAO practice.",
+    "note_ko": "조지아 법무부령 제98호(2011.7.27) 원문 PDF를 WebFetch로는 바이너리 인식 실패, 로컬 pdftotext로 재추출하여 직접 확인. '컬러 생체인식 사진, 크기 3.5×4.5cm, 전자 형식' 문구가 신분증·일반여권·여행여권·여행증명서 관련 최소 7개 조항에서 반복 확인되어 DB값(3.5×4.5cm)과 정확히 일치. 배경색·안경·머리가리개 등 세부 구성 규정은 동일 문서 39페이지 전체를 한국어 대응 조지아어 키워드로 검색했으나 발견되지 않았으며, 법 조문 자체가 '기술적 세부사항은 별도 법무부령으로 정한다'고 위임하고 있어 정직하게 미확인 처리함."
+  }
+}

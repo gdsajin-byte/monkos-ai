@@ -1,0 +1,27 @@
+{
+  "slug": "sc-passport",
+  "batch": 23,
+  "verified": {
+    "official_source_url": {
+      "value": "https://www.ics.gov.sc/faq/immigration-services/seychelles-bio-metric-passport — Immigration and Civil Status (ICS) Seychelles confirms that since the biometric passport was introduced (Nov 2022), applicants no longer submit a printed photo with their application. The photo is captured in person at the Passport Office during enrolment: \"Upon completion of payment applicants submit their bio-data as follows: Image is taken, fingerprints and digital signature.\" No printed photo size/background/format specification for applicant-submitted photos is published, because none is required.",
+      "source_url": "https://www.ics.gov.sc/faq/immigration-services/seychelles-bio-metric-passport"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

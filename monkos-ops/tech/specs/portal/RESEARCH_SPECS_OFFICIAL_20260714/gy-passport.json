@@ -1,0 +1,95 @@
+{
+  "slug": "gy-passport",
+  "batch": 10,
+  "verified": {
+    "size": {
+      "value": "Two colour photographs, not larger than 45 x 35mm nor smaller than 32 x 26mm",
+      "source_url": "https://guyanahctrinidad.mission.gov.gy/passports/"
+    },
+    "background": {
+      "value": "Plain white background, no shadows",
+      "source_url": "https://guyanahctrinidad.mission.gov.gy/passports/"
+    },
+    "validity": {
+      "value": "Photographs must be taken within the last 3 months",
+      "source_url": "https://guyanahctrinidad.mission.gov.gy/passports/"
+    },
+    "expression_restriction": {
+      "value": "Neutral expression; no smiling, open mouth, or frowning",
+      "source_url": "https://guyanahctrinidad.mission.gov.gy/passports/"
+    },
+    "glasses_policy": {
+      "value": "No glasses at the point of the photograph being taken",
+      "source_url": "https://guyanahctrinidad.mission.gov.gy/passports/"
+    },
+    "headwear_policy": {
+      "value": "No headpiece or hair covering, except for religious purposes and only if the full facial features are clearly visible, including the ears",
+      "source_url": "https://pp.gpf.gov.gy/"
+    },
+    "accessories": {
+      "value": "Studs/earrings are not accepted on male applicants' pictures",
+      "source_url": "https://guyanahctrinidad.mission.gov.gy/passports/"
+    },
+    "clothing_restriction": {
+      "value": "No white tops, since the background is white and a white top would not contrast; shoulders must be covered",
+      "source_url": "https://guyanahctrinidad.mission.gov.gy/passports/"
+    },
+    "face_visibility": {
+      "value": "Eyes, ears, and full facial features must be clearly visible for identification and facial recognition",
+      "source_url": "https://pp.gpf.gov.gy/"
+    },
+    "ears_visibility": {
+      "value": "Ears must be clearly visible, as part of the full facial features required for identification and facial recognition",
+      "source_url": "https://pp.gpf.gov.gy/"
+    },
+    "official_source_url": {
+      "value": "https://guyanahctrinidad.mission.gov.gy/passports/",
+      "source_url": "https://guyanahctrinidad.mission.gov.gy/passports/"
+    }
+  },
+  "restrictions_i18n": {
+    "clothing": {
+      "en": "No white tops, since the background is white and a white top would not contrast; shoulders must be covered.",
+      "ko": "흰색 상의 착용 불가(배경이 흰색이라 대비가 되지 않음). 어깨는 가려야 함.",
+      "ja": "白いトップスの着用不可(背景が白のためコントラストが出ない)。肩は隠すこと。"
+    },
+    "expression": {
+      "en": "Neutral expression; no smiling, open mouth, or frowning.",
+      "ko": "무표정 유지. 미소, 입 벌림, 찡그림 금지.",
+      "ja": "無表情であること。笑顔、口を開けること、しかめ面は禁止。"
+    },
+    "glasses": {
+      "en": "No glasses at the point of the photograph being taken.",
+      "ko": "촬영 시점에 안경 착용 불가.",
+      "ja": "撮影時に眼鏡の着用は不可。"
+    },
+    "ears": {
+      "en": "Eyes, ears, and full facial features must be clearly visible for identification and facial recognition.",
+      "ko": "눈, 귀, 얼굴의 모든 특징이 신원 확인 및 안면 인식을 위해 또렷하게 보여야 함.",
+      "ja": "目、耳、顔のすべての特徴が本人確認・顔認証のためにはっきりと見える必要がある。"
+    },
+    "face_visibility": {
+      "en": "Eyes, ears, and full facial features must be clearly visible for identification and facial recognition.",
+      "ko": "눈, 귀, 얼굴의 모든 특징이 신원 확인 및 안면 인식을 위해 또렷하게 보여야 함.",
+      "ja": "目、耳、顔のすべての特徴が本人確認・顔認証のためにはっきりと見える必要がある。"
+    },
+    "headwear": {
+      "en": "No headpiece or hair covering, except for religious purposes and only if the full facial features are clearly visible, including the ears.",
+      "ko": "머리 장식이나 머리가리개는 착용 불가(종교적 목적 예외, 이 경우에도 귀를 포함한 얼굴 전체 특징이 또렷하게 보여야 함).",
+      "ja": "頭部の装飾品や被り物の着用は不可(宗教上の目的の場合を除く。その場合も耳を含む顔全体の特徴がはっきりと見える必要がある)。"
+    },
+    "accessories": {
+      "en": "Studs/earrings are not accepted on male applicants' pictures.",
+      "ko": "남성 신청자의 경우 스터드/귀걸이 착용 불가.",
+      "ja": "男性申請者の写真ではスタッド/イヤリングの着用は認められない。"
+    }
+  },
+  "unverified": [
+    "head_height",
+    "file_spec"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note": "Direct WebFetch of every guyanahctrinidad.mission.gov.gy, pp.gpf.gov.gy, and other mission.gov.gy subdomain page attempted returned HTTP 403 (Cloudflare-style bot protection applied site-wide). The values recorded as verified above appeared consistently and with matching specific wording (dimensions, 3-month age limit, 'studs/earrings not accepted on male applicants', 'no white tops') across five independently issued WebSearch queries, all explicitly attributing them to guyanahctrinidad.mission.gov.gy ('Passports – Consulate General of Guyana') and/or pp.gpf.gov.gy (the Guyana Police Force's official online passport-appointment portal, launched 2026). Size (45x35mm max / 32x26mm min) is consistent with the DB's 3.5x4.5cm figure sitting at the maximum end of that official range, so no conflict was filed."
+  }
+}

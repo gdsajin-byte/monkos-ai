@@ -1,0 +1,41 @@
+{
+  "slug": "td-passport",
+  "batch": 24,
+  "verified": {
+    "size": {
+      "value": "40/40 mm (i.e. 4 x 4cm), verbatim: \"Quatre photos biometriques d'identite (pas de photos numerisees), de format 40/40 mm\" (Four biometric ID photos (not digitized/scanned), in 40/40 mm format).",
+      "source_url": "https://www.ambatchadberlin.de/lambassade/les-services/service-passeport/"
+    },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": {
+      "value": "Original biometric prints only — scanned/digitized photocopies are explicitly not accepted (\"pas de photos numerisees\").",
+      "source_url": "https://www.ambatchadberlin.de/lambassade/les-services/service-passeport/"
+    },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://www.ambatchadberlin.de/lambassade/les-services/service-passeport/",
+      "source_url": "https://www.ambatchadberlin.de/lambassade/les-services/service-passeport/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["background", "head_height", "validity", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "5 × 5cm",
+      "research_value": "4 × 4cm (\"format 40/40 mm\", verbatim from the Embassy of Chad in Berlin's official passport service page; four photos required, not digitized/scanned)",
+      "source_url": "https://www.ambatchadberlin.de/lambassade/les-services/service-passeport/"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "Verified via the Embassy of the Republic of Chad in Berlin (ambatchadberlin.de), an official Chadian diplomatic mission website, which states the embassy itself does not issue passports (applications go to N'Djamena) but lists the photo requirement as part of the standard document checklist. Chad's domestic passport authority, the Agence Nationale des Titres Securises (ANATS) under the Ministere de la Securite Publique et de l'Immigration (securite.gouv.td), was checked directly but its site did not render readable content for this research (JavaScript-heavy site). Third-party aggregators blend this embassy figure with unrelated diaspora-blog claims (fond blanc/visage centre/expression neutre/absence de lunettes from tchadvision.com, a non-official site), so those additional claims are excluded from verified data and left unverified pending confirmation from an official source."
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "slug": "am-visa",
+  "batch": 1,
+  "verified": {
+    "official_source_url": {
+      "value": "https://evisa.mfa.am/",
+      "source_url": "https://evisa.mfa.am/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": {
+      "note": "Direct fetch of evisa.mfa.am (Armenia's official e-visa portal, Ministry of Foreign Affairs) homepage returned only contact info and navigation — no photo specification text was present on the accessible page. Third-party aggregators disagree sharply on the digital photo pixel size (600x600px vs 6000x6000px claims seen across different sources), which is itself a signal that none of them are reliably grounded in the actual portal content. Per the truthfulness gate, this field is left unverified rather than reporting a guessed number. The passport-specific 35x45mm spec (see am-passport.json, source mcs-citizenship.am) is NOT carried over here because Armenia's e-visa is a digital-only submission and may use a different spec than the physical passport photo."
+    }
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "slug": "bh-passport",
+  "batch": 2,
+  "verified": {
+    "size": {
+      "value": "Printed photo: \"the size of the photo frame should be 4*6 cm\" (matches DB exactly). Separately, the digital biometric photo standard is 32.5mm × 43mm (3:4 aspect ratio), target resolution 1244×933px, min. 933×1244px.",
+      "source_url": "https://services.bahrain.bh/wps/PA_SmartCardServices/resources/newIDSpec/NewIDSpec_en.pdf"
+    },
+    "background": {
+      "value": "\"The photo must be coloured with a white background\"; must not be altered/edited in any way (no filters, retouching)",
+      "source_url": "https://services.bahrain.bh/wps/PA_SmartCardServices/resources/newIDSpec/NewIDSpec_en.pdf"
+    },
+    "head_height": {
+      "value": "\"the height of your head, from the top of your hair to the bottom of your chin, should be 38 mm\" (matches DB's 3.8cm exactly); overall face must take up 70-80% of the photograph",
+      "source_url": "https://services.bahrain.bh/wps/PA_SmartCardServices/resources/newIDSpec/NewIDSpec_en.pdf"
+    },
+    "validity": {
+      "value": "\"The picture must be recent, not exceeding 6 months before submitting the application\"",
+      "source_url": "https://services.bahrain.bh/wps/PA_SmartCardServices/resources/newIDSpec/NewIDSpec_en.pdf"
+    },
+    "file_spec": {
+      "value": "Digital photo: JPEG/JPG format, resolution 1244×933 pixels, 32.5×43mm (3:4 aspect ratio), file size must not exceed 2MB, 300 DPI",
+      "source_url": "https://services.bahrain.bh/wps/PA_SmartCardServices/resources/newIDSpec/NewIDSpec_en.pdf"
+    },
+    "expression_restriction": {
+      "value": "\"Maintain a neutral facial expression\"",
+      "source_url": "https://services.bahrain.bh/wps/PA_SmartCardServices/resources/newIDSpec/NewIDSpec_en.pdf"
+    },
+    "glasses_policy": {
+      "value": "\"The eyes must be clearly recognizable; reflections from the glasses are not permitted. The edge of the glasses or the frames must not cover any part of the eyes and thick frames should be avoided, if possible. Tinted glasses or coloured contact lenses that hide the original eye colour will not be accepted.\"",
+      "source_url": "https://services.bahrain.bh/wps/PA_SmartCardServices/resources/newIDSpec/NewIDSpec_en.pdf"
+    },
+    "ears_visibility": {
+      "value": "Not explicitly stated as a separate rule, but \"the photo must show the applicant facing forward ... showing both edges of the face\" implies hair/coverings should not obscure the sides of the face",
+      "source_url": "https://services.bahrain.bh/wps/PA_SmartCardServices/resources/newIDSpec/NewIDSpec_en.pdf"
+    },
+    "face_visibility": {
+      "value": "\"The applicant's photo must show the whole head and top of the shoulders. The face must be centered & takes up 70%-80% of the photograph... facing forward and looking directly at the camera showing both edges of the face... Red eyes & flash reflection must be avoided... The face of the applicant's photo must be fully visible and not covered. The applicant eyes must be open and clearly visible... must not be over or under-exposed.\"",
+      "source_url": "https://services.bahrain.bh/wps/PA_SmartCardServices/resources/newIDSpec/NewIDSpec_en.pdf"
+    },
+    "headwear_policy": {
+      "value": "\"When wearing the Veil and Ghutra ... the applicants' full face must be visible, and the head covering must not cast any shadows on the face.\"",
+      "source_url": "https://services.bahrain.bh/wps/PA_SmartCardServices/resources/newIDSpec/NewIDSpec_en.pdf"
+    },
+    "official_source_url": {
+      "value": "https://services.bahrain.bh/wps/PA_SmartCardServices/resources/newIDSpec/NewIDSpec_en.pdf (NPRA-issued spec, titled 'ID Card Photo Requirements'; NPRA — Nationality, Passports and Residence Affairs — is also the passport-issuing authority, and its e-passport photo announcement cites the identical 32.5×43mm digital figure found in this document)",
+      "source_url": "https://services.bahrain.bh/wps/PA_SmartCardServices/resources/newIDSpec/NewIDSpec_en.pdf"
+    }
+  },
+  "restrictions_i18n": {
+    "expression": {
+      "en": "Maintain a neutral facial expression.",
+      "ko": "무표정을 유지해야 한다.",
+      "ja": "無表情を保つこと。"
+    },
+    "glasses": {
+      "en": "Eyes must be clearly recognizable with no reflections from glasses; the frame must not cover any part of the eyes and thick frames should be avoided; tinted glasses or coloured contact lenses that hide the natural eye colour are not accepted.",
+      "ko": "안경에 반사가 없이 눈이 뚜렷하게(무반사) 보여야 하며, 안경테가 눈을 가리면 안 되고 두꺼운 테는 피해야 한다. 원래 눈동자 색을 가리는 색깔 렌즈나 선팅 안경은 허용되지 않는다.",
+      "ja": "眼鏡に反射がなく目がはっきり見える必要がある。フレームが目を覆ってはならず、太いフレームは避けること。本来の瞳の色を隠す色付きレンズやカラーコンタクトは認められない。"
+    },
+    "ears": {
+      "en": "Not explicitly stated as a separate rule, but the requirement to show both edges of the face while facing forward implies that hair or head coverings should not obscure the ears or sides of the face.",
+      "ko": "별도 규정으로 명시되어 있지는 않으나, 정면을 향해 얼굴 양쪽 가장자리가 모두 보여야 한다는 요건상 머리카락이나 가리개가 귀 또는 얼굴 옆면을 가리지 않아야 함을 시사한다.",
+      "ja": "別途明記された規則ではないが、正面を向いて顔の両端が見える必要があるという要件から、髪型や被り物が耳や顔の側面を隠さないことが示唆される。"
+    },
+    "face_visibility": {
+      "en": "Face must be centered and occupy 70-80% of the photograph, facing forward with both edges of the face visible, whole head and top of shoulders shown, eyes open and clearly visible, no red-eye or flash reflection, not over- or under-exposed.",
+      "ko": "얼굴은 중앙에 위치하고 사진의 70~80%를 차지해야 하며, 정면을 향해 얼굴 양쪽 윤곽이 모두 보여야 한다. 머리 전체와 어깨 윗부분이 나와야 하고, 눈은 뜨고 뚜렷하게 보여야 하며, 적목현상이나 플래시 반사가 없어야 하고 노출 과다·과소가 없어야 한다.",
+      "ja": "顔は中央に位置し、写真の70~80%を占める必要がある。正面を向いて顔の両端の輪郭が見える状態で、頭部全体と肩の上部が写ること。目は開けてはっきり見える状態で、赤目やフラッシュの反射がなく、露出過多・過少がないこと。"
+    },
+    "headwear": {
+      "en": "Veil and Ghutra (traditional head coverings) are permitted, but the applicant's full face must be visible and the head covering must not cast any shadows on the face.",
+      "ko": "베일과 구트라(전통 머리가리개)는 허용되나, 얼굴 전체가 보여야 하며 머리가리개가 얼굴에 그림자를 드리우면 안 된다.",
+      "ja": "ベールやグトラ(伝統的な頭部の被り物)は着用可能だが、顔全体が見える必要があり、被り物が顔に影を落としてはならない。"
+    }
+  },
+  "unverified": [
+    "clothing_restriction",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": {
+      "verdict": "confirmed",
+      "evidence": "Direct pdftotext extraction of the official services.bahrain.bh PDF confirms verbatim 'The size of the photo frame should be 4*6 cm' for the printed photo, matching DB exactly. Independently, a WebSearch of the Bahrain News Agency/NPRA e-passport photo announcement (title: 'NPRA announces new conditions for the e-passport photo') cites the identical digital figure '32.5mm x 43mm (3:4 aspect ratio)' that appears in this PDF, indicating NPRA applies the same unified photo standard to both the national ID/Smart Card and the e-passport.",
+      "correct_value": "Printed: 4×6cm; Digital: 32.5×43mm"
+    },
+    "head_height": {
+      "verdict": "confirmed",
+      "evidence": "PDF states verbatim: 'the height of your head, from the top of your hair to the bottom of your chin, should be 38 mm.' This matches the DB value of 3.8cm exactly.",
+      "correct_value": "38mm (3.8cm)"
+    }
+  }
+}

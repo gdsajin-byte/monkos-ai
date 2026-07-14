@@ -1,0 +1,45 @@
+{
+  "slug": "tm-visa",
+  "batch": 25,
+  "verified": {
+    "size": {
+      "value": "5x6 color photo, one copy, required at the visa-formalization/issuance stage (\"a 5x6 color photo\"). A related but distinct requirement of \"2 (two) 3x4 color photographs of the citizen\" applies at the initial application stage, and \"2 photographs (3x4 size)\" specifically for transit visas — see cross_verification.",
+      "source_url": "https://turkey.tmembassy.gov.tm/en/consular-services/konsullyk-hyzmatlary/visa-requirements"
+    },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": {
+      "value": "\"One (1) passport size photo glued to the Application\" of \"maximum 6 months old\"",
+      "source_url": "https://india.tmembassy.gov.tm/en/consular-services/viza-application-of-turkmenistan"
+    },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://turkey.tmembassy.gov.tm/en/consular-services/konsullyk-hyzmatlary/visa-requirements",
+      "source_url": "https://turkey.tmembassy.gov.tm/en/consular-services/konsullyk-hyzmatlary/visa-requirements"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "background",
+    "head_height",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Confirmed via four separate official Turkmenistan diplomatic mission pages, all on the tmembassy.gov.tm / tmconsulate.gov.tm government domains: Embassy in Ankara (Turkey), Consulate-General in Istanbul (Turkey), Embassy in New Delhi (India), and Embassy in Washington DC (USA) — an unusually strong multi-source result for a country with very limited public administrative documentation. The Ankara and Istanbul pages both distinguish two photo sizes at two different stages: \"2 (two) 3x4 color photographs of the citizen\" (and, worded separately for transit visas, \"2 photographs (3x4 size)\") required at the INITIAL visa application stage, versus \"a 5x6 color photo\" (one copy) required later at the VISA FORMALIZATION stage. The DB's 5x6cm figure matches the formalization-stage figure, which is recorded as the verified 'size' value since it is the figure that corresponds to the final issued visa document (closer to the DB's likely intent). The Washington DC and New Delhi embassy pages both independently confirm '(one) passport size photo... glued to the Application... of maximum 6 months old,' consistent across missions. Background color, expression, glasses, and headwear rules were not stated on any of the four mission pages; each redirects to Turkmenistan's State Migration Service site (migration.gov.tm) for full guidelines, which could not be read via automated fetch (Turkmen-language, appears JS-rendered)."
+  }
+}

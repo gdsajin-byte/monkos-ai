@@ -1,0 +1,28 @@
+{
+  "slug": "sr-visa",
+  "batch": 24,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://gov.sr/toelichting-op-de-visum-en-toeristenkaartprocedure/",
+      "source_url": "https://gov.sr/toelichting-op-de-visum-en-toeristenkaartprocedure/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "The Suriname Ministry of Foreign Affairs (gov.sr) publishes the visa/entry-fee procedure (visa requirement abolished for many nationalities since 1 July 2022, applications processed via VFS Global since 2019, entry fee USD/EUR 50) but this official page does not state photo dimensions, background color, or other photo specifications. Direct fetch attempts on embassies.gov.sr, foreignaffairs.gov.sr, burgerzaken.gov.sr, and cbb.gov.sr either returned 403/DNS errors or pages with no photo specifications. A Consulate General passport-application PDF (embassies.gov.sr) reportedly contains detailed photo criteria referenced by third parties, but the PDF returned as encoded/unreadable and its content could not be independently verified. Third-party photo-service sites (visafoto.com, idphotodiy.com, mybiometricphotos.com) claim 35x45mm with light/gray background, but none of this could be traced to a readable Surinamese government source, so per the verification policy it is excluded from verified data."
+  }
+}

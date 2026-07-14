@@ -1,0 +1,31 @@
+{
+  "slug": "et-passport",
+  "batch": 8,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": {
+      "value": "Photo and fingerprints are captured in person by Immigration and Citizenship Service (ICS) staff at the applicant's appointment; the official application guide does not describe any applicant-submitted digital photo file specification.",
+      "source_url": "https://ics.gov.et/information/how-to-obtain-a-new-ethiopian-passport/"
+    },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://ics.gov.et/information/how-to-obtain-a-new-ethiopian-passport/",
+      "source_url": "https://ics.gov.et/information/how-to-obtain-a-new-ethiopian-passport/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "validity", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Ethiopia's Immigration and Citizenship Service (ics.gov.et) official passport guide requires applicants to attend an in-person appointment where fingerprints and photo are captured by ICS staff on site; the site does not publish applicant-facing photo dimension/background/expression specifications since applicants do not submit their own photo file. Numerous third-party visa-photo vendor sites cite 30×40mm or other figures for Ethiopian passports, but none could be confirmed on an official .gov.et page during this research pass (ics.gov.et and immigration.gov.et carry no dedicated photo-spec document), so all technical composition fields are left unverified rather than sourced to non-official aggregators."
+  }
+}

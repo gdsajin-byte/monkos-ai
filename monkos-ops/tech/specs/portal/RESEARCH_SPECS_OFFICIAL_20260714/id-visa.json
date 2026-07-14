@@ -1,0 +1,32 @@
+{
+  "slug": "id-visa",
+  "batch": 11,
+  "verified": {
+    "file_spec": {
+      "value": "Foto ukuran paspor (format JPG/JPEG/PNG dengan ukuran maksimal 200 kb) -- Passport-sized photo, JPG/JPEG/PNG format, maximum file size 200KB",
+      "source_url": "https://www.imigrasi.go.id/faq/visa/apa-saja-dokumen-persyaratan-untuk-mengajukan-visa-online"
+    },
+    "official_source_url": {
+      "value": "https://www.imigrasi.go.id/faq/visa/apa-saja-dokumen-persyaratan-untuk-mengajukan-visa-online",
+      "source_url": "https://www.imigrasi.go.id/faq/visa/apa-saja-dokumen-persyaratan-untuk-mengajukan-visa-online"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Directly fetched the official Directorate General of Immigration (imigrasi.go.id) online-visa FAQ page. It states only 'passport-sized photo, JPG/JPEG/PNG format, max 200KB' -- no explicit background color, dimensions, or composition rules are given on this specific official page, despite third-party blogs (paspoto.com etc.) claiming a white background and 3:4 aspect ratio for e-VoA/e-visa photos. Because those specific claims could not be independently confirmed on an official imigrasi.go.id or evisa.imigrasi.go.id page during this research pass, they are excluded from verified per the truthfulness gate. DB's background value (white) is plausible but unconfirmed here."
+  }
+}

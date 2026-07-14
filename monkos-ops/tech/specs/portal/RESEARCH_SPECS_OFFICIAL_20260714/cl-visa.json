@@ -1,0 +1,29 @@
+{
+  "slug": "cl-visa",
+  "batch": 5,
+  "verified": {
+    "official_source_url": {
+      "value": "https://www.consulado.gob.cl/visas",
+      "source_url": "https://www.consulado.gob.cl/visas"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note": "consulado.gob.cl (Ministerio de Relaciones Exteriores) confirmed as the correct authority for entry visas, but its visa page did not publish a numeric photo spec. Servicio Nacional de Migraciones (serviciomigraciones.cl, a different agency handling in-country residence permits, not entry visas) separately publishes '4x4cm, white background, no glasses/hat' for its own Temporary Residence permit — a different document category from 'cl-visa', so not applied here to avoid misattribution."
+  }
+}

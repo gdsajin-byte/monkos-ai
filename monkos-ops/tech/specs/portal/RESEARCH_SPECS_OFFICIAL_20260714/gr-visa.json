@@ -1,0 +1,51 @@
+{
+  "slug": "gr-visa",
+  "batch": 10,
+  "verified": {
+    "background": {
+      "value": "White background required",
+      "source_url": "https://www.mfa.gr/en/visas/schengen-visas/"
+    },
+    "head_height": {
+      "value": "The face must take up 70-80% of the photo",
+      "source_url": "https://www.mfa.gr/en/visas/schengen-visas/"
+    },
+    "validity": {
+      "value": "Photograph taken within the last 6 months",
+      "source_url": "https://www.mfa.gr/en/visas/schengen-visas/"
+    },
+    "expression_restriction": {
+      "value": "Look straight at the camera with a neutral facial expression; no smiling, mouth closed",
+      "source_url": "https://www.mfa.gr/en/visas/schengen-visas/"
+    },
+    "glasses_policy": {
+      "value": "Sunglasses and myopic glasses with coloured (tinted) lenses are prohibited",
+      "source_url": "https://www.mfa.gr/en/visas/schengen-visas/"
+    }
+  },
+  "restrictions_i18n": {
+    "expression": {
+      "en": "Look straight at the camera with a neutral facial expression; no smiling, mouth closed.",
+      "ko": "정면을 응시하며 무표정을 유지할 것. 미소 금지, 입은 다물 것.",
+      "ja": "正面を見つめ、無表情を保つこと。笑顔は禁止、口は閉じること。"
+    },
+    "glasses": {
+      "en": "Sunglasses and myopic glasses with coloured (tinted) lenses are prohibited.",
+      "ko": "선글라스 및 색이 들어간(착색) 근시용 안경은 착용 금지.",
+      "ja": "サングラスおよび色付きの近視用眼鏡の着用は禁止。"
+    }
+  },
+  "unverified": [
+    "size",
+    "file_spec",
+    "clothing_restriction",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note": "Direct WebFetch of every mfa.gr Schengen-visa page attempted (missionsabroad/japan-en, usa/en, en/visas/schengen-visas) returned HTTP 403 on every try. The values kept as verified above are the ones that appeared consistently and specifically across two independently issued WebSearch queries, both explicitly attributing them to Greece's official MFA Schengen-visa guidance. A photo-size figure of '3.5cm x 4cm' also surfaced but only once, is internally inconsistent with the standard EU Visa Code Annex II figure of 35x45mm, and could not be corroborated by a second independent query, so it was left out of verified rather than risk publishing a transcription error. Background was independently corroborated as 'white' by two separate queries, matching the DB value (no conflict); a third query mentioned 'light grey suggested' but that appeared only once and inside an answer that also said 'white' in the same breath, so it reads as the search-summary tool's own imprecision rather than a genuine second data point, and was not used to file a db_conflict."
+  }
+}

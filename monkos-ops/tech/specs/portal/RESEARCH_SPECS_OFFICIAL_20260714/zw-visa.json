@@ -1,0 +1,18 @@
+{
+  "slug": "zw-visa",
+  "batch": 29,
+  "verified": {
+    "official_source_url": {
+      "value": "https://www.evisa.gov.zw/",
+      "source_url": "https://www.evisa.gov.zw/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "The official Zimbabwe eVisa Platform (evisa.gov.zw, operated by the Department of Immigration) was checked directly - its homepage and complete FAQ page contain zero photo specifications (no size, background, format, or restriction language of any kind, confirmed via live browser render, not just a static fetch). Its 'Brochure.pdf' guide returns an S3 AccessDenied error, and the in-app application form (evisa.gov.zw/app) sits behind a required account sign-up, so it could not be inspected further without creating an account, which was not attempted per policy.",
+    "partial_text_found": "Two separate official Zimbabwean embassy pages that list visa (port-of-entry) document checklists - Embassy of Zimbabwe to the USA (zimembassydc.org/visa-information/) and the Zimbabwean Embassy in New Delhi, India (zimnewdelhi.gov.zw/services/, 'Visa Information' subsection) - both describe the visa photo requirement only as '2 passport size photos', with no cm/mm figure, background color, or any restriction language restated for the visa category specifically.",
+    "db_relationship": "The DB's existing size (3.5 x 4.5cm), background (white), and head-height (3.2-3.6cm) values are identical to what IS explicitly confirmed for the separate zw-passport category on the same official pages (see zw-passport.json) - but since no official source restates those numbers under the Visa section itself, this file does not assert them as confirmed for zw-visa, nor does it flag them as contradicted. They are left unverified per the truthfulness gate rather than assumed to carry over from the passport spec."
+  }
+}

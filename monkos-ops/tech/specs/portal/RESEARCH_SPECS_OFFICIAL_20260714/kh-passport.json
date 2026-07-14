@@ -1,0 +1,25 @@
+{
+  "slug": "kh-passport",
+  "batch": "T3-refill",
+  "verified": {},
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories",
+    "official_source_url"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note": "Extensive attempts to reach an official Cambodian government source for ordinary-passport photo specs were blocked in this session. evisa.gov.kh (General Department of Immigration's self-described 'Official Government Website') returns a NexusGuard DDoS-protection/authentication challenge to automated fetches, both direct and via an r.jina.ai proxy — the same blocker already documented in the sibling kh-visa.json. online.gdi.gov.kh (the citizen passport pre-application portal referenced by Khmer Times' 'Ministry of Interior launches a trial of online passport service' headline) returned HTTP 403 / no response on repeated attempts. immigration.gov.kh (General Department of Immigration, foreigner/visa-facing) and interior.gov.kh (Ministry of Interior homepage) both loaded successfully but contain no photo-specification content on the pages checked. Note a naming ambiguity worth flagging for future research passes: Cambodia has two distinct agencies both commonly abbreviated 'GDI' in English — the General Department of Immigration (foreigners/visas, evisa.gov.kh) and the General Department of Identification (citizens' national ID cards and passports, under the Ministry of Interior, online.gdi.gov.kh) — the DB's 'kh-passport' concerns the latter, whose portal could not be accessed in this pass. The Royal Embassy of Cambodia in Washington D.C. (embassyofcambodiadc.org, used successfully as a source for kh-visa.json) was rechecked specifically for passport services in this pass and explicitly states it does NOT renew or issue Cambodian passports (only Temporary Travel Documents and visas), so it cannot serve as a passport-photo source. Commercial photo-vendor sites (mybiometricphotos.com, visafoto.com, passport-photo.online, visapicpro.com, etc.) converge on 40x60mm (4x6cm) white background for the printed passport photo — notably NOT matching the DB's 3.5x4.5cm (which is closer to the figure those same commercial sites commonly cite for Cambodia's visa/other-document photos) — but per the truthfulness gate this was not recorded as a db_conflict since no official source could be reached to confirm either figure for the passport specifically. This discrepancy between the DB's passport value and commercial sites' passport value is flagged here for awareness only, not as a verified conflict — the DB was left unmodified."
+  }
+}

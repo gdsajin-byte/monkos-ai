@@ -1,0 +1,66 @@
+{
+  "slug": "bf-passport",
+  "batch": 2,
+  "verified": {
+    "size": {
+      "value": "\"deux photos d'identité au format 4,5 X 3,5\" (two identity photos in 4.5 × 3.5cm format — same dimensions as DB's 3.5×4.5cm, axis order stated differently)",
+      "source_url": "https://oni.bf/nos-prestations/passeport/"
+    },
+    "background": {
+      "value": "\"fond blanc\" (white background); \"format passeport\" (passport format); applications filed in Ouagadougou require a digital photo meeting photographic norms, three (3) photos required for Paris consulate applications",
+      "source_url": "https://www.mae.gov.bf/detail?tx_news_pi1%5Baction%5D=detail&tx_news_pi1%5Bcontroller%5D=News&tx_news_pi1%5Bnews%5D=23&cHash=4b8509fe6c8eecad29c7125a62c916f8"
+    },
+    "clothing_restriction": {
+      "value": "Avoid white clothing (\"ne portez pas d'habit blanc\"), high necklines/turtlenecks and coats (\"tenues qui ferment le cou (col monté)\"), earrings (\"pas de port de boucle d'oreilles\"), neck jewelry (\"parures au cou\"), and lipstick (\"pas de rouge à lèvres\")",
+      "source_url": "https://www.consulatburkinaparis.org/passeport/"
+    },
+    "glasses_policy": {
+      "value": "Corrective glasses/lenses not permitted (\"pas de verres correcteurs\")",
+      "source_url": "https://www.consulatburkinaparis.org/passeport/"
+    },
+    "ears_visibility": {
+      "value": "Hairstyles covering the ears should be avoided (\"coiffures qui cachent les oreilles\")",
+      "source_url": "https://www.consulatburkinaparis.org/passeport/"
+    },
+    "accessories": {
+      "value": "No rolled/bun hairstyles or metal hair accessories (\"pas de colle roulé, ni de mentaux\")",
+      "source_url": "https://www.consulatburkinaparis.org/passeport/"
+    },
+    "official_source_url": {
+      "value": "https://oni.bf/nos-prestations/passeport/ (Office National d'Identification — issuing authority)",
+      "source_url": "https://oni.bf/nos-prestations/passeport/"
+    }
+  },
+  "restrictions_i18n": {
+    "clothing": {
+      "en": "Avoid white clothing, high necklines/turtlenecks, coats, earrings, neck jewelry, and lipstick.",
+      "ko": "흰색 의상, 목을 감싸는 하이넥이나 코트, 귀걸이, 목걸이 등 장신구, 립스틱 착용을 피해야 한다.",
+      "ja": "白い服、ハイネックやコート、イヤリング、ネックレスなどのアクセサリー、口紅の着用は避けること。"
+    },
+    "glasses": {
+      "en": "Corrective glasses/lenses are not permitted.",
+      "ko": "도수가 있는 안경이나 렌즈는 착용할 수 없다.",
+      "ja": "度付き眼鏡・コンタクトレンズの着用は認められない。"
+    },
+    "ears": {
+      "en": "Hairstyles that cover the ears should be avoided.",
+      "ko": "귀를 가리는 헤어스타일은 피해야 한다.",
+      "ja": "耳を隠す髪型は避けること。"
+    },
+    "accessories": {
+      "en": "No rolled/bun hairstyles or metal hair accessories.",
+      "ko": "말아 올린 헤어스타일(번)이나 금속 헤어 액세서리는 금지된다.",
+      "ja": "巻き髪(お団子)や金属製のヘアアクセサリーは禁止される。"
+    }
+  },
+  "unverified": [
+    "head_height",
+    "validity",
+    "file_spec",
+    "expression_restriction",
+    "face_visibility",
+    "headwear_policy"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

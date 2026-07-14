@@ -1,0 +1,82 @@
+{
+  "slug": "mu-passport",
+  "batch": 18,
+  "verified": {
+    "size": {
+      "value": "Width between 35mm and 40mm, height between 45mm and 50mm ('please do not trim your photos to meet this condition')",
+      "source_url": "https://passport.govmu.org/passport/?mdocs-file=718"
+    },
+    "background": {
+      "value": "Light background; photographs should be matt and printed on low-gloss, plain white photo-quality paper (no watermarks, embossing, or printing on the back)",
+      "source_url": "https://passport.govmu.org/passport/?page_id=773"
+    },
+    "head_height": {
+      "value": "Face length from chin to crown of head shall be between 25mm and 35mm (0.98in and 1.38in)",
+      "source_url": "https://passport.govmu.org/passport/?mdocs-file=718"
+    },
+    "validity": {
+      "value": "Photograph must be less than six months old",
+      "source_url": "https://passport.govmu.org/passport/?mdocs-file=718"
+    },
+    "file_spec": {
+      "value": "Two identical, recent photographs required; must be professionally printed ('photos printed at home are not likely to be of acceptable quality'); undamaged (e.g. no creases from paperclips)",
+      "source_url": "https://passport.govmu.org/passport/?page_id=773"
+    },
+    "expression_restriction": {
+      "value": "Taken full face with a neutral expression, mouth closed, eyes wide open",
+      "source_url": "https://passport.govmu.org/passport/?mdocs-file=718"
+    },
+    "glasses_policy": {
+      "value": "If applicant/minor wears glasses, the eyes should be visible; no sunglasses or heavily tinted glasses; no reflection or glare on glasses",
+      "source_url": "https://passport.govmu.org/passport/?mdocs-file=718"
+    },
+    "headwear_policy": {
+      "value": "Taken full face, without a hat, unless worn for religious beliefs or medical reasons",
+      "source_url": "https://passport.govmu.org/passport/?page_id=773"
+    },
+    "official_source_url": {
+      "value": "https://passport.govmu.org/passport/?page_id=773",
+      "source_url": "https://passport.govmu.org/passport/?page_id=773"
+    }
+  },
+  "restrictions_i18n": {
+    "expression": {
+      "en": "Photograph must be taken full face with a neutral expression, mouth closed, and eyes wide open.",
+      "ko": "정면을 향해 입을 다문 무표정으로, 눈을 크게 뜬 상태로 촬영해야 한다.",
+      "ja": "正面を向き、口を閉じた無表情で、目を大きく開けた状態で撮影すること。"
+    },
+    "glasses": {
+      "en": "If the applicant wears glasses, the eyes must be visible. No sunglasses or heavily tinted glasses are permitted; there must be no reflection or glare on the lenses.",
+      "ko": "안경을 착용하는 경우 눈이 보여야 한다. 선글라스나 짙게 착색된 안경은 불가하며, 렌즈에 빛 반사나 눈부심이 없어야 한다.",
+      "ja": "眼鏡を着用する場合は目が見える必要がある。サングラスや濃い色付き眼鏡は不可。レンズへの反射やまぶしさがないこと。"
+    },
+    "headwear": {
+      "en": "Photograph must be taken full face without a hat, unless the head covering is worn for religious beliefs or medical reasons.",
+      "ko": "종교적 또는 의료적 사유가 아닌 이상 모자를 쓰지 않은 정면 사진이어야 한다.",
+      "ja": "宗教上または医療上の理由がない限り、帽子を着用せず正面から撮影すること。"
+    }
+  },
+  "unverified": [
+    "clothing_restriction",
+    "ears_visibility",
+    "face_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "3.5 × 4.5cm",
+      "research_value": "Range: 35-40mm wide x 45-50mm high (not a single fixed 35x45mm value)",
+      "source_url": "https://passport.govmu.org/passport/?mdocs-file=718"
+    },
+    {
+      "field": "head_height",
+      "db_value": "3.2~3.6cm",
+      "research_value": "25-35mm (0.98-1.38in) chin-to-crown face length",
+      "source_url": "https://passport.govmu.org/passport/?mdocs-file=718"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "Confirmed via two independent official sources on the same government domain: the Passport and Immigration Office's public 'Application Guide' page (page_id=773) and the official downloadable passport application form P.F.136 (mdocs-file=718, its printed 'Photo specification' Note 2). Both are consistent with each other on the core figures (35-40mm x 45-50mm, 25-35mm face length, 6 months, light/white background, no hat, neutral expression, glasses eyes visible)."
+  }
+}

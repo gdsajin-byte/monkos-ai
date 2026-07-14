@@ -1,0 +1,40 @@
+{
+  "slug": "az-visa",
+  "batch": 1,
+  "verified": {
+    "size": {
+      "value": "3 × 4cm (30mm × 40mm), minimum resolution 354 × 472 pixels, image quality above 300 dpi",
+      "source_url": "https://www.mfa.gov.az/en/category/photo-requirements"
+    },
+    "background": {
+      "value": "Plain, white, and non-reflective background",
+      "source_url": "https://www.mfa.gov.az/en/category/photo-requirements"
+    },
+    "validity": {
+      "value": "Taken within the last 6 months, reflecting current appearance",
+      "source_url": "https://www.mfa.gov.az/en/category/photo-requirements"
+    },
+    "official_source_url": {
+      "value": "https://www.mfa.gov.az/en/category/photo-requirements",
+      "source_url": "https://www.mfa.gov.az/en/category/photo-requirements"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "head_height",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": {
+      "note": "3x4cm confirmed matching DB's 3×4cm exactly. Direct WebFetch of mfa.gov.az failed with an SSL certificate error on repeated attempts; the values above are grounded in search-engine-indexed snippets that explicitly and consistently attribute the quoted figures to the Ministry of Foreign Affairs of Azerbaijan's dedicated 'Photo requirements' page (mfa.gov.az/en/category/photo-requirements) across two independently issued search queries."
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "slug": "sm-visa",
+  "batch": 23,
+  "verified": {
+    "official_source_url": {
+      "value": "https://www.gov.uk/foreign-travel-advice/san-marino/entry-requirements — UK government official travel advisory confirms San Marino issues no independent visa: \"You can travel without a visa to the Schengen area and San Marino for up to 90 days in any 180-day period.\" San Marino has an open land border with Italy (a Schengen member) and no separate border control, so entry is governed de facto by Schengen/Italian visa rules rather than a San Marino-specific visa regime. No San Marino-specific photo size/background/format spec exists because there is no separate San Marino visa document.",
+      "source_url": "https://www.gov.uk/foreign-travel-advice/san-marino/entry-requirements"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

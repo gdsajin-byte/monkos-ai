@@ -1,0 +1,41 @@
+{
+  "slug": "za-visa",
+  "batch": 28,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://www.vfsglobal.com/southafrica/uganda/pdf/application_checklist_211015.pdf",
+      "source_url": "https://www.vfsglobal.com/southafrica/uganda/pdf/application_checklist_211015.pdf"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "[Batch 28 adversarial re-audit]: The original pass marked size/background/validity as verified from vfsglobal.com's 'SOUTH AFRICA VISA APPLICATION CHECKLIST' PDF. Re-audit fetched and read this PDF in full: it contains no government seal, coat of arms, or Department of Home Affairs / High Commission letterhead anywhere in the document — only one line of body text asserting 'The South African High Commission has provided guidance to help you submit your application... www.vfsglobal.com/southafrica/uganda/'. VFS Global is a private, for-profit visa-outsourcing contractor; vfsglobal.com is neither a .gov.za domain nor an embassy/high-commission-owned domain, and a self-published claim of official guidance inside a commercial intermediary's own PDF is not independent government-domain confirmation. This is materially weaker provenance than za-passport's DHA flyer, which direct PDF inspection confirmed bears the actual 'Department of Home Affairs, REPUBLIC OF SOUTH AFRICA' coat of arms and cites www.dha.gov.za plus the DHA helpline 0800 60 11 90. Per the rule requiring a government/official source domain for verified status, size/background/validity are downgraded here to unverified. The unconfirmed figures are preserved as a lead rather than deleted: the source stated '(45*35mm)' (same {35,45}mm pair as DB, order reversed), 'white or clear background', and 'not more than 12 months old'. Consequently the earlier claim that South Africa's visa photo policy 'differs' from its DHA passport/ID policy (grey/cream vs white background, 1 month vs 12 months validity) is itself now unconfirmed pending a genuine dha.gov.za or South African embassy/high-commission source specific to visa photos — it may still be accurate, but the sole supporting source does not meet the domain-authority bar."
+  }
+}

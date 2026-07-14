@@ -1,0 +1,81 @@
+{
+  "slug": "mk-passport",
+  "batch": 17,
+  "verified": {
+    "size": {
+      "value": "3.5 x 4.5 cm ('со димензии 3,5 х 4,5 см')",
+      "source_url": "https://portal.mdt.gov.mk/post-body-files/podzakonski-akti-mvr-file-QrrG.pdf"
+    },
+    "background": { "value": "", "source_url": "" },
+    "head_height": {
+      "value": "The depicted face/likeness ('ликот') within the 3.5x4.5cm photo must itself measure 2.5 x 3.5 cm ('ликот на фотографијата треба да биде со димензии 2,5 х 3,5 см')",
+      "source_url": "https://portal.mdt.gov.mk/post-body-files/podzakonski-akti-mvr-file-QrrG.pdf"
+    },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": {
+      "value": "The photograph must faithfully depict the likeness of the travel-document holder ('верно да го прикажува ликот на носителот')",
+      "source_url": "https://portal.mdt.gov.mk/post-body-files/podzakonski-akti-mvr-file-QrrG.pdf"
+    },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": {
+      "value": "The person must be photographed face-on / frontally ('во лице, анфас')",
+      "source_url": "https://portal.mdt.gov.mk/post-body-files/podzakonski-akti-mvr-file-QrrG.pdf"
+    },
+    "headwear_policy": {
+      "value": "No hat or headscarf ('без капа односно шамија'). This 1993 rulebook states no religious or medical exception.",
+      "source_url": "https://portal.mdt.gov.mk/post-body-files/podzakonski-akti-mvr-file-QrrG.pdf"
+    },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://mfa.gov.mk/en-GB/konzularni-uslugi/patni-ispravi",
+      "source_url": "https://mfa.gov.mk/en-GB/konzularni-uslugi/patni-ispravi"
+    }
+  },
+  "restrictions_i18n": {
+    "expression": {
+      "en": "The photograph must faithfully depict the likeness of the travel-document holder.",
+      "ko": "사진은 여행증명서 소지자의 실제 모습을 정확하게(있는 그대로) 나타내야 한다.",
+      "ja": "写真は旅行証明書所持者本人の姿を正確に写さなければならない。"
+    },
+    "face_visibility": {
+      "en": "The person must be photographed face-on (frontal / en face).",
+      "ko": "정면으로(안파스) 촬영해야 한다.",
+      "ja": "正面(アンフェイス)で撮影しなければならない。"
+    },
+    "headwear": {
+      "en": "No hat or headscarf is permitted; this 1993 rulebook states no religious or medical exception.",
+      "ko": "모자나 머릿수건(샤미야) 착용이 허용되지 않는다. 1993년 규정에는 종교적·의료적 예외가 명시되어 있지 않다.",
+      "ja": "帽子やスカーフの着用は認められない。この1993年の規則には宗教上・医療上の例外は明記されていない。"
+    }
+  },
+  "unverified": [
+    "background",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "5 × 5cm",
+      "research_value": "3.5 x 4.5 cm (face portion 2.5 x 3.5cm), per the Ministry of Interior's 'Правилник за обрасците на патните исправи и визи... и за начинот на фотографирање' (Rulebook on the forms of travel documents and visas..., and on the manner of photographing), Article 11, Official Gazette No. 2/1993",
+      "source_url": "https://portal.mdt.gov.mk/post-body-files/podzakonski-akti-mvr-file-QrrG.pdf"
+    },
+    {
+      "field": "head_height",
+      "db_value": "3.0~3.5cm",
+      "research_value": "2.5 x 3.5 cm face/likeness ('лик') box within the 3.5x4.5cm photo, per Article 11 of the same 1993 rulebook (Official Gazette No. 2/1993)",
+      "source_url": "https://portal.mdt.gov.mk/post-body-files/podzakonski-akti-mvr-file-QrrG.pdf"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "Primary source is the Ministry of Interior's 1993 rulebook 'ПРАВИЛНИК ЗА ОБРАСЦИТЕ НА ПАТНИТЕ ИСПРАВИ И ВИЗИ НА ДРЖАВЈАНИТЕ НА РЕПУБЛИКА МАКЕДОНИЈА...' (Official Gazette of the Republic of Macedonia No. 2, 21 January 1993, signed by Minister Ljubomir Frčkoski), located via the government legal-acts portal (portal.mdt.gov.mk) and independently indexed by the ENER regulatory register (ener.gov.mk item 2502, which could not be reached directly — connection refused). Article 11 gives the passport/travel-document photo size (3.5x4.5cm) and the required 'лик' (face) dimension within it (2.5x3.5cm); Article 12 additionally describes positioning via the 1884 Frankfurt-horizontal anthropometric convention, which was not mapped to any schema field. This regulation predates the 2019 Prespa Agreement rename to 'North Macedonia' and the country's move to biometric passports, so it may have been technically superseded by a newer instrument (a 2021 Official Gazette No. 161 PDF was located but its content could not be extracted); however, 3.5x4.5cm (35x45mm) matches the international ICAO 9303 biometric-photo standard, making continuity plausible. No official mvr.gov.mk or mfa.gov.mk page gives a background-color requirement specifically for the PASSPORT (as opposed to the visa, where mfa.gov.mk does state white — see mk-visa.json); background is therefore left unverified here rather than assumed. The DB's stated 5x5cm does not match this or any other source found.",
+    "note_ko": "1차 출처는 북마케도니아 내무부(МВР)가 1993년 제정한 '여권·비자 서식 및 여권용 촬영 방법에 관한 규정'(Official Gazette No. 2, 1993.1.21, 내무부장관 Ljubomir Frčkoski 서명)이며, 정부 법령 포털(portal.mdt.gov.mk)에서 확보했고 ENER 규제 등록부(ener.gov.mk, 항목 2502)에도 동일 제목으로 등재되어 있음을 확인했다(단, ener.gov.mk 직접 접속은 연결 거부로 실패). 제11조는 여권/여행증명서 사진 규격(3.5×4.5cm)과 그 안의 '얼굴(лик)' 부분 규격(2.5×3.5cm)을 명시하며, 제12조는 1884년 프랑크푸르트 수평선 인체측정 관례에 따른 촬영 위치 지정법을 설명하나 스키마 필드에 매핑하지 않았다. 이 규정은 2019년 프레스파 협정에 따른 '북마케도니아' 개명 및 생체인식 여권 도입 이전 문서라 기술적으로 후속 규정(2021년 관보 161호 PDF 확인했으나 본문 추출 실패)으로 대체되었을 가능성이 있다. 다만 3.5×4.5cm(35×45mm)는 국제 ICAO 9303 생체인식 사진 표준과 일치하여 현재도 유효할 개연성이 높다. 배경색은 여권(passport) 관련 공식 문서에서 명시되지 않아 미확인으로 남겼다(비자는 mfa.gov.mk에서 흰색 확인됨, mk-visa.json 참조). DB의 5×5cm 값은 확인된 어떤 자료와도 일치하지 않는다."
+  }
+}

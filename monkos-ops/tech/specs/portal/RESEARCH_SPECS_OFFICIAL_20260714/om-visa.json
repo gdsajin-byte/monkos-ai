@@ -1,0 +1,77 @@
+{
+  "slug": "om-visa",
+  "batch": 20,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": {
+      "value": "Clear background (plain, uncluttered) — the official document guide does not specify an exact colour",
+      "source_url": "https://evisa.rop.gov.om/eVisaSponsoredUnsponsored/help/en/Attach_Document_Guide/attachment_guide_en.htm"
+    },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": {
+      "value": "Photo must be taken within the last six months",
+      "source_url": "https://evisa.rop.gov.om/eVisaSponsoredUnsponsored/help/en/Attach_Document_Guide/attachment_guide_en.htm"
+    },
+    "file_spec": {
+      "value": "Accepted formats: PDF, JPEG, PNG at 96 DPI. Maximum file size 512KB. Filename must use only numbers 0-9 and letters A-Z (upper/lower case), maximum 35 characters. Compressed files (e.g. zip) are not accepted. Attachment must be upright.",
+      "source_url": "https://evisa.rop.gov.om/eVisaSponsoredUnsponsored/help/en/Attach_Document_Guide/attachment_guide_en.htm"
+    },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": {
+      "value": "Neutral facial expression with both eyes open; colour photo",
+      "source_url": "https://evisa.rop.gov.om/eVisaSponsoredUnsponsored/help/en/Attach_Document_Guide/attachment_guide_en.htm"
+    },
+    "glasses_policy": {
+      "value": "Glasses must be removed for the photo",
+      "source_url": "https://evisa.rop.gov.om/eVisaSponsoredUnsponsored/help/en/Attach_Document_Guide/attachment_guide_en.htm"
+    },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": {
+      "value": "Full face looking at the camera, well illuminated",
+      "source_url": "https://evisa.rop.gov.om/eVisaSponsoredUnsponsored/help/en/Attach_Document_Guide/attachment_guide_en.htm"
+    },
+    "headwear_policy": {
+      "value": "A hat or head covering that obscures the hair or hairline is not allowed, unless worn daily for religious reasons — in which case the full face must still be visible and the covering must not cast any shadow on the face.",
+      "source_url": "https://evisa.rop.gov.om/eVisaSponsoredUnsponsored/help/en/Attach_Document_Guide/attachment_guide_en.htm"
+    },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://evisa.rop.gov.om/eVisaSponsoredUnsponsored/help/en/Attach_Document_Guide/attachment_guide_en.htm",
+      "source_url": "https://evisa.rop.gov.om/eVisaSponsoredUnsponsored/help/en/Attach_Document_Guide/attachment_guide_en.htm"
+    }
+  },
+  "restrictions_i18n": {
+    "expression": {
+      "en": "Neutral facial expression with both eyes open; colour photo.",
+      "ko": "양쪽 눈을 뜬 무표정을 유지할 것; 컬러 사진이어야 한다.",
+      "ja": "両目を開けた無表情を保つこと。カラー写真であること。"
+    },
+    "glasses": {
+      "en": "Glasses must be removed for the photo.",
+      "ko": "촬영 시 안경을 벗어야 한다.",
+      "ja": "撮影時にはメガネを外す必要がある。"
+    },
+    "face_visibility": {
+      "en": "Full face looking at the camera, well illuminated.",
+      "ko": "얼굴 전체가 카메라를 향하고 조명이 고르게 비춰야 한다.",
+      "ja": "顔全体がカメラの方を向き、均一に照明が当たっていること。"
+    },
+    "headwear": {
+      "en": "A hat or head covering that obscures the hair or hairline is not allowed, unless worn daily for religious reasons — in which case the full face must be visible and the covering must not cast any shadow on the face.",
+      "ko": "머리카락이나 헤어라인을 가리는 모자나 머리 가리개는 허용되지 않는다. 다만 종교적 사유로 매일 착용하는 경우는 예외이며, 이때도 얼굴 전체가 보여야 하고 얼굴에 그림자가 지면 안 된다.",
+      "ja": "髪の毛や生え際を隠す帽子や頭部の覆いは許可されない。ただし宗教上の理由で日常的に着用している場合は例外とし、その場合も顔全体が見える必要があり、顔に影がかかってはならない。"
+    }
+  },
+  "unverified": ["size", "head_height", "clothing_restriction", "ears_visibility", "accessories"],
+  "db_conflicts": [
+    {
+      "field": "background",
+      "db_value": "파란색 (blue)",
+      "research_value": "The official eVisa attachment/document guide (evisa.rop.gov.om) specifies only 'Clear background' with no colour named — it does not state or confirm blue specifically.",
+      "source_url": "https://evisa.rop.gov.om/eVisaSponsoredUnsponsored/help/en/Attach_Document_Guide/attachment_guide_en.htm"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "This record covers Oman's eVisa (evisa.rop.gov.om), a distinct Royal Oman Police service from the physical passport (see om-passport.json, left unverified). The Attach_Document_Guide page was successfully fetched directly and is the primary source for all verified fields above. It does not state an exact photo pixel size, so size/head_height remain unverified even though third-party sites commonly cite 40x60mm — that figure was not confirmed on the official document guide."
+  }
+}

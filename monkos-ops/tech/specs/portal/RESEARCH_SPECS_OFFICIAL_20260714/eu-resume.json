@@ -1,0 +1,28 @@
+{
+  "slug": "eu-resume",
+  "batch": 8,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://europass.europa.eu/en/create-europass-cv",
+      "source_url": "https://europass.europa.eu/en/create-europass-cv"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Europass (europass.europa.eu), the EU's official CV-building platform, recommends as a finishing-touch tip to 'add a professional photograph of yourself' but does not publish a technical size/background/head-height specification anywhere on the official domain located in this pass — a CV photo in Europe is a country-varying convention (mandatory in some countries, discouraged/rejected in others for anti-discrimination reasons) rather than a single legally mandated document photo. No official EU-level numeric spec exists to verify against the DB's 3.5×4.5cm / solid-color figures, so all technical fields are left unverified."
+  }
+}

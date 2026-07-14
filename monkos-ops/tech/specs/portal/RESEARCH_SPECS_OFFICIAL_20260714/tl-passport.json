@@ -1,0 +1,41 @@
+{
+  "slug": "tl-passport",
+  "batch": 25,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://mj.gov.tl/files/2023/Rekezitus_trata_passporte_TL.pdf",
+      "source_url": "https://mj.gov.tl/files/2023/Rekezitus_trata_passporte_TL.pdf"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "The official Timor-Leste Ministry of Justice document 'Rekezitus trata Pasaporte' (Requirements for processing a passport, referencing Decreto-Lei No. 52/2016 of 28 December, Direção Nacional de Identificação Civil e Registo Criminal, Departamento de Passaportes e Passes de Fronteira — https://mj.gov.tl/files/2023/Rekezitus_trata_passporte_TL.pdf) lists only identity documents for e-Passport applications: a valid Bilete Identidade (national ID card) for adults; birth certificate, marriage certificate of parents, and parents' ID cards for minors. It does NOT list a self-submitted photograph among the requirements at all, and states fees/turnaround (USD 50/10 business days standard, up to USD 100/1 business day urgent). This absence suggests Timor-Leste's e-Passport photo may be captured biometrically on-site at the passport office, similar to Thailand's process (see th-passport.json), but this is an inference from an omission, not an explicit statement, so it is NOT recorded as a verified field. No separate official Ministry of Justice or Ministério do Interior page stating passport photo size/background specifications (as distinct from the visa specifications independently confirmed for tl-visa) could be located despite searching mj.gov.tl, timor-leste.gov.tl, and ajendamentu.mj.gov.tl."
+  }
+}

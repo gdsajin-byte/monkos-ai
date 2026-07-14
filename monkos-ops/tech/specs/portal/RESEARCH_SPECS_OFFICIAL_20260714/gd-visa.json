@@ -1,0 +1,31 @@
+{
+  "slug": "gd-visa",
+  "batch": 9,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": {
+      "value": "No more than 3 months old — consistently confirmed by both the Consulate General of Grenada (Miami) and the High Commission for Grenada (UK): \"TWO (2) Passport pictures (no more than 3 months old), one certified by a Justice of the Peace or a Notary Public.\"",
+      "source_url": "https://www.grenadaconsulatemiami.com/wp-content/uploads/2019/07/Requirements-Photo-Authentication-Form-Visa-Application-for-Grenada-Visa-Prior-to-Arrival-Jul-2019.pdf"
+    },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://www.grenadaconsulatemiami.com/wp-content/uploads/2019/07/Requirements-Photo-Authentication-Form-Visa-Application-for-Grenada-Visa-Prior-to-Arrival-Jul-2019.pdf",
+      "source_url": "https://www.grenadaconsulatemiami.com/wp-content/uploads/2019/07/Requirements-Photo-Authentication-Form-Visa-Application-for-Grenada-Visa-Prior-to-Arrival-Jul-2019.pdf"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Two official Grenada missions were read directly (PDF text via the Read tool): Consulate General of Grenada, Miami and High Commission for Grenada, UK. Both give an identical procedural requirement — 'no more than 3 months old' — for the pre-arrival visa photo, and both require the photo (specifically, ONE of the two submitted) to be certified/notarized by a Justice of the Peace or Notary Public as 'a true likeness of the applicant,' using a dedicated Photo Authentication Form. Unlike the passport application instructions (which list explicit composition rules: no glasses, ears visible, chest covered, etc.), neither visa instruction sheet restates a composition specification list, a size in mm/inches, or a background color for the visa photo specifically — so none of those fields are marked verified here rather than assuming the passport's rules carry over unstated. The Grenada visa application form itself (also read) shows only a blank photo box with no printed size guide."
+  }
+}

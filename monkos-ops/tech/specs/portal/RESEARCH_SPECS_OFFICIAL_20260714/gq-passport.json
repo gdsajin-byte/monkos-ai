@@ -1,0 +1,29 @@
+{
+  "slug": "gq-passport",
+  "batch": 10,
+  "verified": {
+    "official_source_url": {
+      "value": "Embassy of Equatorial Guinea in Spain (official diplomatic mission site) confirms a passport photograph is required — 'Una foto reciente tamaño carnet' for first-time minors, 'Dos fotos tamaño carné' for renewal — but publishes no explicit mm dimensions, background colour, or other technical specification. The Equatorial Guinea Embassy in the USA's consular services page likewise lists 'biometric passports' among its services without publishing photo technical specs.",
+      "source_url": "https://xn--embajadadeguineaecuatorialenespaa-yfd.com/pasaportes/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note": "Checked two independent official Equatoguinean diplomatic sources — Embassy in Spain (xn--embajadadeguineaecuatorialenespaa-yfd.com, punycode for embajadadeguineaecuatorialenespaña.com) and Embassy in the USA (egembassydc.com) — both consistently publish only 'foto tamaño carné' (ID-photo-sized) as the passport photo requirement with no mm/background/head-height figures. minexteriores.gob.gq (Ministry of Foreign Affairs) returned HTTP 403 on direct fetch; its indexed PDF diplomatic guides did not surface photo specs in search snippets either. Widely circulated figures like '35x45mm' or '40x50mm' appear only on third-party photo-service aggregator sites (visafoto, idphotodiy, mybiometricphotos, etc.) and are excluded per sourcing policy — they could not be traced to any Equatoguinean government publication."
+  }
+}

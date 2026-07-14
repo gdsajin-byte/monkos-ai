@@ -1,0 +1,48 @@
+{
+  "slug": "vc-passport",
+  "batch": 27,
+  "verified": {
+    "size": {
+      "value": "\"The size must not be more than 2½ inches by 2 inches or less than 2 inches by 1½ inches\" — i.e. between 5.08 × 3.81cm (min) and 6.35 × 5.08cm (max)",
+      "source_url": "https://www.gov.vc/images/citizens/PDF/adultpassportform.pdf"
+    },
+    "headwear_policy": {
+      "value": "\"These must be taken full face without hat\" — not allowed (no religious exception mentioned on this form)",
+      "source_url": "https://www.gov.vc/images/citizens/PDF/adultpassportform.pdf"
+    },
+    "official_source_url": {
+      "value": "https://www.gov.vc/index.php/passport-application",
+      "source_url": "https://www.gov.vc/index.php/passport-application"
+    }
+  },
+  "restrictions_i18n": {
+    "headwear": {
+      "en": "Photo must be taken full face without a hat.",
+      "ko": "모자를 쓰지 않은 정면 얼굴 전체가 나오도록 촬영해야 함.",
+      "ja": "帽子を着用せず、正面から顔全体が写るように撮影すること。"
+    }
+  },
+  "unverified": [
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "3.5 × 4.5cm",
+      "research_value": "Between 2 × 1½ in (5.08 × 3.81cm) and 2½ × 2 in (6.35 × 5.08cm), per official Form A (Application for a St. Vincent and the Grenadines Passport)",
+      "source_url": "https://www.gov.vc/images/citizens/PDF/adultpassportform.pdf"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "Confirmed directly from the official Government of St. Vincent and the Grenadines (gov.vc) Form A adult passport application PDF, Note 3 ('PHOTOGRAPHS'). It also requires 'Two copies of a recent photograph' and that the certifying officer endorse the reverse of one copy — no background color, expression, or glasses rule is stated on the form itself. The gov.vc TLS certificate does not cover the bare 'gov.vc' hostname (only subdomains like www.gov.vc), which blocks some automated fetchers; content was retrieved successfully via www.gov.vc."
+  }
+}

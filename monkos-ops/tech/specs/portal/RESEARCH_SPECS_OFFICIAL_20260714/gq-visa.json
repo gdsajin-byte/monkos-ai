@@ -1,0 +1,29 @@
+{
+  "slug": "gq-visa",
+  "batch": 10,
+  "verified": {
+    "official_source_url": {
+      "value": "Embassy of Equatorial Guinea in Spain (official diplomatic mission site) lists 'Fotografía tamaño carné reciente' (a recent ID-photo-sized photograph) as an identical requirement across all visa categories it processes (diplomatic/courtesy, business/work, tourism/family visit, religious, transit, and Equatoguinean-origin citizens) — but publishes no explicit mm dimensions, background colour, or other technical specification.",
+      "source_url": "https://xn--embajadadeguineaecuatorialenespaa-yfd.com/visados/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note": "Same finding as gq-passport: both the Equatorial Guinea Embassy in Spain and the Embassy in the USA (egembassydc.com/visas) publish visa document checklists that mention a photograph is required but do not specify size, background, or appearance rules. minexteriores.gob.gq returned HTTP 403 on direct fetch. Third-party aggregator figures (e.g. 35x45mm) are widely repeated online but could not be traced to any Equatoguinean government publication, so they are excluded per sourcing policy."
+  }
+}

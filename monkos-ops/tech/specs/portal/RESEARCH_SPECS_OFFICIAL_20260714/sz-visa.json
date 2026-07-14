@@ -1,0 +1,28 @@
+{
+  "slug": "sz-visa",
+  "batch": 24,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://www.gov.sz/index.php/services-sp-22242747/visa",
+      "source_url": "https://www.gov.sz/index.php/services-sp-22242747/visa"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "The Eswatini Government official visa page (gov.sz) confirms visa applications require 'Two (2) identity photographs' but does not publish exact dimensions, background color, or facial-pose specifications. Eswatini has no fully automated eVisa portal with published photo specs at the time of this research; evisa.gov.sz exists but its landing content did not itself detail photo requirements. Applicants are directed to the Ministry of Home Affairs or an Eswatini embassy/high commission for further detail, which this research could not independently access."
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "slug": "zw-passport",
+  "batch": 29,
+  "verified": {
+    "size": {
+      "value": "3.5cm x 4.5cm. Official text: \"Two (2) colour passport photos (size 3.5cm X 4.5cm) on a strictly white background\"",
+      "source_url": "https://www.zimnewdelhi.gov.zw/services/"
+    },
+    "background": {
+      "value": "Strictly white background",
+      "source_url": "https://www.zimnewdelhi.gov.zw/services/"
+    },
+    "clothing_restriction": {
+      "value": "Applicant must wear dark or bright colours; cream and white colours are not acceptable (so the subject contrasts against the white background). Official text: \"please wear dark or bright colours. Cream and white colours are not acceptable\"",
+      "source_url": "https://www.zimnewdelhi.gov.zw/services/"
+    },
+    "accessories": {
+      "value": "No jewellery of any form. Official text: \"Applicants should desist from wearing any form of jewellery\"",
+      "source_url": "https://www.zimembassydc.org/passport-information/"
+    },
+    "official_source_url": {
+      "value": "https://www.zimnewdelhi.gov.zw/services/",
+      "source_url": "https://www.zimnewdelhi.gov.zw/services/"
+    }
+  },
+  "restrictions_i18n": {
+    "clothing": {
+      "en": "Wear dark or bright colours; cream and white colours are not acceptable.",
+      "ko": "짙거나 밝은 색상의 옷을 착용할 것 - 크림색, 흰색 의류는 허용되지 않음.",
+      "ja": "濃い色または明るい色の服を着用すること。クリーム色・白色の服は不可。"
+    },
+    "accessories": {
+      "en": "Applicants should refrain from wearing any form of jewellery.",
+      "ko": "어떠한 형태의 장신구(액세서리)도 착용하지 말 것.",
+      "ja": "いかなる装身具(アクセサリー)も着用しないこと。"
+    }
+  },
+  "unverified": ["head_height", "validity", "file_spec", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Size (3.5cm x 4.5cm), white background, and the dark/bright-clothing rule were independently cross-confirmed with near-identical wording across five separate official Zimbabwean government missions: Embassy of Zimbabwe in Lusaka, Zambia (zimlusaka.gov.zw/passport-application/), Embassy of Zimbabwe in Luanda, Angola (zimluanda.gov.zw/?page_id=23207), Embassy of Zimbabwe to the USA (zimembassydc.org/passport-information/), Zimbabwean Embassy in New Delhi, India (zimnewdelhi.gov.zw/services/), and the Embassy of Zimbabwe in Botswana (zimgaborone.gov.zw/?cat=43) - all evidently distributing the same Registrar-General's Office / Ministry of Foreign Affairs standard consular instruction. The domestic passport-issuing authority's own site (rg.gov.zw, Department of the Registrar General) returned only a 404 / under-construction response at every path tried during this research and could not be used directly as a source.",
+    "ttd_scope_note": "The New Delhi embassy's combined Passport/Visa/TTD services page separately lists 'no eyeglasses, no jewelry, hair tied back, dark shirt' but that language is explicitly scoped to its Temporary Travel Document (TTD) subsection, not the Passport subsection - so it is NOT attributed to zw-passport here per the truthfulness gate. No official source found states a head-height figure, a photo recency/validity window, digital file-format specs, or explicit rules on expression, glasses, ear visibility, or headwear for the passport photo category itself.",
+    "db_match": "DB's existing size (3.5 x 4.5cm) and background (흰색/white) both match the officially confirmed values exactly - no conflict."
+  }
+}

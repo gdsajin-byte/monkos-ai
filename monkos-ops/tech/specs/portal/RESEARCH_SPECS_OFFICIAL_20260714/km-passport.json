@@ -1,0 +1,28 @@
+{
+  "slug": "km-passport",
+  "batch": 13,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://www.un.int/comoros/comoros/passport-and-visa-process",
+      "source_url": "https://www.un.int/comoros/comoros/passport-and-visa-process"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note": "Extensive search could not locate a functioning official Union of the Comoros government domain with passport photo specifications. egouv.km (the Comoros e-government portal) refused all connections (both http and https); ambassade-comores.com (Comoros Embassy Paris) reset the connection; no working '.km' Ministry of Foreign Affairs or immigration-directorate site was found. The only reachable official Comoros government page located was the Permanent Mission of the Union of the Comoros to the UN (un.int/comoros), which describes the passport/visa fee schedule and required documents but states no photo size, background, or composition rules. Third-party aggregator sites disagree with each other even on basic points like background colour (some say plain white; one French-language aggregator claims white is prohibited and light blue/grey is required, attributing this to unnamed 'ISO/IEC standards') — this contradiction is itself a reason to leave the field unverified rather than adopt any single aggregator's figure, per the truthfulness gate."
+  }
+}

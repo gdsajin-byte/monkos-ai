@@ -1,0 +1,32 @@
+{
+  "slug": "iq-passport",
+  "batch": 11,
+  "verified": {
+    "background": {
+      "value": "White background -- 'Three color photos (white background)'",
+      "source_url": "https://mofa.gov.iq/passport-issuance/"
+    },
+    "official_source_url": {
+      "value": "https://mofa.gov.iq/passport-issuance/",
+      "source_url": "https://mofa.gov.iq/passport-issuance/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Directly fetched the Iraqi Ministry of Foreign Affairs (mofa.gov.iq) passport-issuance page. It states applicants need 'Three color photos (white background)', with the applicant's photo also stamped with a consular seal at submission (a processing step, not a composition rule). Background matches DB exactly (white) -- no conflict. No size, head-height, or other composition rules are published on this official page; third-party sites cite 35x45mm and a 34.5mm head height, but no .gov.iq domain could be found stating these figures directly during this research pass, so they are excluded from verified per the truthfulness gate."
+  }
+}

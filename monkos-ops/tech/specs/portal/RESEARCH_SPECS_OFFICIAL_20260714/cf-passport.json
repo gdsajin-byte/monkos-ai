@@ -1,0 +1,40 @@
+{
+  "slug": "cf-passport",
+  "batch": 4,
+  "verified": {
+    "size": {
+      "value": "4 x 4cm (format 4 X 4)",
+      "source_url": "https://paris.diplomatie.gouv.cf/communiques/12/delivrance-de-passeports-biometriques"
+    },
+    "background": {
+      "value": "White background (fond blanc); photo-booth (photomaton) images not accepted",
+      "source_url": "https://paris.diplomatie.gouv.cf/communiques/12/delivrance-de-passeports-biometriques"
+    },
+    "official_source_url": {
+      "value": "https://paris.diplomatie.gouv.cf/communiques/12/delivrance-de-passeports-biometriques",
+      "source_url": "https://paris.diplomatie.gouv.cf/communiques/12/delivrance-de-passeports-biometriques"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "3.5 × 4.5cm",
+      "research_value": "4 x 4cm",
+      "source_url": "https://paris.diplomatie.gouv.cf/communiques/12/delivrance-de-passeports-biometriques"
+    }
+  ],
+  "cross_verification": {}
+}

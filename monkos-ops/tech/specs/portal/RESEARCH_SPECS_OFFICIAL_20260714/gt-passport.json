@@ -1,0 +1,84 @@
+{
+  "slug": "gt-passport",
+  "batch": 10,
+  "verified": {
+    "expression_restriction": {
+      "value": "No smiling; maintain an upright, relaxed posture and look directly at the camera",
+      "source_url": "https://agn.gt/requisitos-y-proceso-para-la-fotografia-del-pasaporte/"
+    },
+    "glasses_policy": {
+      "value": "Glasses (lentes) are not permitted",
+      "source_url": "https://agn.gt/requisitos-y-proceso-para-la-fotografia-del-pasaporte/"
+    },
+    "accessories": {
+      "value": "Earrings, chains, and scarves are not permitted; artificial eyelashes are prohibited; discreet/light makeup is allowed for adult women",
+      "source_url": "https://agn.gt/requisitos-y-proceso-para-la-fotografia-del-pasaporte/"
+    },
+    "clothing_restriction": {
+      "value": "High-neck clothing such as turtlenecks is not permitted",
+      "source_url": "https://agn.gt/requisitos-y-proceso-para-la-fotografia-del-pasaporte/"
+    },
+    "face_visibility": {
+      "value": "The face must be uncovered; hair must leave the ears and forehead visible",
+      "source_url": "https://agn.gt/requisitos-y-proceso-para-la-fotografia-del-pasaporte/"
+    },
+    "headwear_policy": {
+      "value": "No caps, hats, or head accessories are allowed, except for documented religious reasons; if a religious head covering (veil or similar) is required, it may be worn during the photograph provided the eyes, nose, and mouth remain clearly visible",
+      "source_url": "https://igm.gob.gt/requisitos-para-tramite-de-pasaporte-guatemalteco/"
+    },
+    "official_source_url": {
+      "value": "https://igm.gob.gt/informacion-pasaportes/",
+      "source_url": "https://igm.gob.gt/informacion-pasaportes/"
+    }
+  },
+  "restrictions_i18n": {
+    "expression": {
+      "en": "No smiling; maintain an upright, relaxed posture and look directly at the camera.",
+      "ko": "미소 금지. 상체를 곧게 세우고 편안한 자세로 카메라를 정면으로 응시할 것.",
+      "ja": "笑顔は禁止。姿勢をまっすぐにし、リラックスした状態でカメラを正面から見ること。"
+    },
+    "glasses": {
+      "en": "Glasses are not permitted.",
+      "ko": "안경 착용 불가.",
+      "ja": "眼鏡の着用は不可。"
+    },
+    "accessories": {
+      "en": "Earrings, chains, and scarves are not permitted; artificial eyelashes are prohibited. Discreet/light makeup is allowed for adult women.",
+      "ko": "귀걸이, 목걸이(체인), 스카프 착용 불가. 인조 속눈썹 금지. 성인 여성의 경우 옅은 화장은 허용됨.",
+      "ja": "イヤリング、チェーン、スカーフの着用不可。付けまつげ禁止。成人女性の場合、控えめなメイクは許可される。"
+    },
+    "clothing": {
+      "en": "High-neck clothing such as turtlenecks is not permitted.",
+      "ko": "터틀넥과 같은 목이 높은 의류는 착용 불가.",
+      "ja": "タートルネックなど首の詰まった衣服は着用不可。"
+    },
+    "face_visibility": {
+      "en": "The face must be uncovered; hair must leave the ears and forehead visible.",
+      "ko": "얼굴을 가리지 않아야 하며, 머리카락이 귀와 이마를 가리지 않고 드러나야 함.",
+      "ja": "顔を覆ってはならず、髪の毛は耳と額が見えるようにすること。"
+    },
+    "headwear": {
+      "en": "No caps, hats, or head accessories are allowed, except for documented religious reasons; a religious head covering may be worn provided the eyes, nose, and mouth remain clearly visible.",
+      "ko": "모자, 캡 등 머리 장신구는 착용 불가(증빙 가능한 종교적 사유는 예외). 종교적 사유의 머리가리개는 착용 가능하나 눈·코·입은 반드시 보여야 함.",
+      "ja": "帽子やキャップなどの頭部装飾品の着用は不可(証明可能な宗教上の理由を除く)。宗教上の理由による頭部の被り物は着用可能だが、目・鼻・口は必ず見える状態でなければならない。"
+    }
+  },
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "ears_visibility"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note": "Direct WebFetch of igm.gob.gt (the Instituto Guatemalteco de Migración's own domain) returned HTTP 403 on every attempted URL, including /informacion-pasaportes/ and /requisitos-para-tramite-de-pasaporte-guatemalteco/. As a substitute, AGN.gt (Agencia Guatemalteca de Noticias — Guatemala's official state news agency) was directly fetched successfully; its article explicitly opens by attributing the requirements it lists to IGM and is treated here as a government-sourced proxy for the primary regulator. The headwear/religious-veil clause could not be directly fetched from igm.gob.gt either, but appeared consistently across independent WebSearch queries explicitly attributing it to that URL, so it is included with the caveat noted here.",
+    "background": {
+      "note": "CORRECTION (adversarial re-verification, batch 10): the original 'background must be clear, smooth, and uniform, preferably neutral gray' claim, attributed to this same agn.gt URL, was NOT found in the article on direct re-fetch — two independent targeted fetches searching specifically for 'fondo'/'gris'/color/backdrop language returned no matches, while every other claim sourced to this URL (expression, glasses, accessories, clothing, face visibility) was independently confirmed verbatim in the article text. The background claim was therefore a sourcing error and has been downgraded to unverified; the corresponding db_conflicts entry has been removed since there is no longer a verified value to compare against the DB's '흰색 (white)'."
+    },
+    "size": {
+      "note": "A '26x32mm' figure circulates widely across third-party passport-photo aggregator sites (visafoto.com, etc.) and even appeared in generic search-engine summaries mentioning igm.gob.gt, but the one Guatemalan government source actually and successfully fetched (AGN.gt) explicitly states that exact photo dimensions are NOT specified in its account of the IGM requirements. Because the only figure available traces to non-official aggregators rather than confirmed government text, size is left unverified rather than risk publishing an unconfirmed number."
+    }
+  }
+}

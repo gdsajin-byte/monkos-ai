@@ -1,0 +1,52 @@
+{
+  "slug": "th-passport",
+  "batch": 25,
+  "verified": {
+    "size": {
+      "value": "\"3*5 cm.\" (literal text as published — read as 3cm × 5cm), stated identically for both adult (20+) and under-20 applicants",
+      "source_url": "https://brussels.thaiembassy.org/en/page/thai-passport"
+    },
+    "background": {
+      "value": "White background (\"A recent photograph, 3*5 cm., white background\")",
+      "source_url": "https://brussels.thaiembassy.org/en/page/thai-passport"
+    },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://brussels.thaiembassy.org/en/page/thai-passport",
+      "source_url": "https://brussels.thaiembassy.org/en/page/thai-passport"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "3.5 × 4.5cm",
+      "research_value": "\"3*5 cm.\" as literally published by the Royal Thai Embassy, Brussels (read as 3cm × 5cm)",
+      "source_url": "https://brussels.thaiembassy.org/en/page/thai-passport"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "Thailand's e-Passport is a biometric document, and multiple official Royal Thai missions state the photo is captured live at the appointment rather than submitted by the applicant. The Royal Thai Embassy Washington DC's passport-renewal FAQ states verbatim: \"No, you do not need to [bring a photo]. The officer will take your photo on the day of your appointment.\" (https://washingtondc.thaiembassy.org/en/page/faqspprenewal). The Royal Thai Embassy Seoul's Thai National Passport requirements page (https://seoul.thaiembassy.org/en/publicservice/thai-national-passport) lists only ID/passport/residence documents among requirements and describes in-person \"biometric data collection, such as fingerprinting, photography, and iris scanning\" — again no self-submitted photo. Against this, the Royal Thai Embassy Brussels page used above for the verified fields DOES list a photograph (\"3*5 cm., white background\") among required documents for its passport application. These official sources are not fully reconcilable from public pages alone — it is possible Brussels still wants a printed photo attached to the paper form even though the actual passport image is captured biometrically on-site, or requirements differ slightly by mission. The size/background figures above should be read as confirmed for the Brussels mission specifically, not as a universal Thai passport photo standard."
+  }
+}

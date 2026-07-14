@@ -1,0 +1,28 @@
+{
+  "slug": "fm-visa",
+  "batch": 8,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://fsmembassy.fm/faq/",
+      "source_url": "https://fsmembassy.fm/faq/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "The FSM Embassy's official FAQ (fsmembassy.fm) confirms that no visa is required to visit FSM — a valid passport, sufficient funds, and proof of onward travel are sufficient for a 30-day stay; longer stays require a separate 'entry permit' from the FSM Department of Justice, Division of Immigration, not a 'visa' per se. No photo specification is published for entry permits in this FAQ. A related Department of Justice entry-permit PDF form (fsmemb.or.jp/.../permit.pdf) could not be parsed by the fetch tool (binary/encoded stream data), so no photo technical fields could be verified for this document type. This DB entry may itself be a category mismatch (FSM issues 'entry permits', not 'visas') but the DB was not altered per instructions."
+  }
+}

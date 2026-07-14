@@ -1,0 +1,63 @@
+{
+  "slug": "dz-passport",
+  "batch": 7,
+  "verified": {
+    "size": {
+      "value": "35 × 45mm — matches DB's 3.5 × 4.5cm",
+      "source_url": "https://cglondon.mfa.gov.dz/consular-services/passport-photo-requirements"
+    },
+    "background": {
+      "value": "Plain white background, no shadows",
+      "source_url": "https://cglondon.mfa.gov.dz/consular-services/passport-photo-requirements"
+    },
+    "validity": {
+      "value": "Photo must be taken within the last six months",
+      "source_url": "https://cglondon.mfa.gov.dz/consular-services/passport-photo-requirements"
+    },
+    "file_spec": {
+      "value": "Only original photographs are acceptable — copied or digitally scanned photos are not accepted; photos must not be digitally altered or retouched",
+      "source_url": "https://cglondon.mfa.gov.dz/consular-services/passport-photo-requirements"
+    },
+    "headwear_policy": {
+      "value": "Hats or head coverings are not permitted, except veils for women; full facial features must be clearly visible",
+      "source_url": "https://cglondon.mfa.gov.dz/consular-services/passport-photo-requirements"
+    },
+    "glasses_policy": {
+      "value": "Photos with dark, tinted, or mirrored glasses are not accepted",
+      "source_url": "https://cglondon.mfa.gov.dz/consular-services/passport-photo-requirements"
+    },
+    "official_source_url": {
+      "value": "https://cglondon.mfa.gov.dz/consular-services/passport-photo-requirements",
+      "source_url": "https://cglondon.mfa.gov.dz/consular-services/passport-photo-requirements"
+    }
+  },
+  "restrictions_i18n": {
+    "headwear": {
+      "en": "Hats or head coverings are not permitted, except veils for women; the full facial features must remain clearly visible.",
+      "ko": "모자나 머리 가리개 착용 불가. 단, 여성의 베일(히잡 등)은 예외이며, 이 경우에도 얼굴 윤곽 전체가 뚜렷하게 보여야 함.",
+      "ja": "帽子や頭部を覆うものの着用は不可。ただし女性のベール(ヴェール)は例外。その場合も顔の輪郭全体がはっきり見える必要あり。"
+    },
+    "glasses": {
+      "en": "Photos showing dark, tinted, or mirrored glasses are not accepted.",
+      "ko": "짙은 색·유색·미러(반사) 렌즈 안경을 착용한 사진은 접수 불가.",
+      "ja": "濃色・色付き・ミラーレンズの眼鏡を着用した写真は不可。"
+    }
+  },
+  "unverified": [
+    "head_height",
+    "clothing_restriction",
+    "expression_restriction",
+    "ears_visibility",
+    "face_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "direct_fetch_note": {
+      "note": "Direct WebFetch to cglondon.mfa.gov.dz (and to other *.mfa.gov.dz subdomains tried as alternates) failed with a TLS chain-validation error ('unable to verify the first certificate') on every attempt — a technical fetch-tool limitation, not a content issue. Values above were confirmed via a grounded web search whose top, exactly-matching result (title: 'Passport photo requirements | Consulate General of Algerian in London') is this official Algerian MFA consular page, with specific verbatim quotes attributed to it. Additional supplementary detail seen elsewhere ('face centered, no head tilt/looking over shoulder') was not included above because it was not clearly separable from third-party aggregator text in the same result set."
+    },
+    "head_height": {
+      "note": "A '75% of picture' / '32–36mm' figure appeared in some search results, but attribution was ambiguous between the official mfa.gov.dz page and commercial passport-photo aggregator sites (mybiometricphotos.com, visapics.org) that were mixed into the same result set. Not included as verified per the truthfulness gate."
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "slug": "np-visa",
+  "batch": 19,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://immigration.gov.np/visa-fees-and-documents",
+      "source_url": "https://immigration.gov.np/visa-fees-and-documents"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Directly browsed Nepal's Department of Immigration official site (immigration.gov.np/visa-fees-and-documents), which publishes a full 'Nepal Visa Types & Requirements' table covering Diplomatic, Official, Tourist, Working, Press, Relation, Marriage, Study, Business, NRN, Residential, Transit, and Reciprocity (US) visa categories with their required-document lists. None of these official lists itemize a photograph as a required document, so no photo-spec fields could be verified. Also checked the Tribhuvan International Airport Immigration Office's official FAQ (tia.immigration.gov.np/faq), whose 6 published questions do not cover photo requirements either. Third-party sources claim figures like 1.5\"×1.5\" for online tourist e-visa uploads, but this was not confirmed on an official .gov.np page and is excluded here."
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "slug": "hn-visa",
+  "batch": 11,
+  "verified": {
+    "official_source_url": {
+      "value": "https://inm.gob.hn/visas.html",
+      "source_url": "https://inm.gob.hn/visas.html"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Honduras' Instituto Nacional de Migracion (INM, inm.gob.hn) is the official visa-issuing authority; the Secretaria de Relaciones Exteriores y Cooperacion Internacional (SRECI, sreci.gob.hn) handles consular visa processing abroad. Direct access to inm.gob.hn's visa page could not be completed during this research pass (repeated connection failures on the domain), and no official page could be directly confirmed to state exact photo dimensions, background color, or composition rules for the generic 'visa' category. Secondary/aggregator sources cited inconsistent figures across different visa sub-types (2x2 inch for some categories, 4x3cm 'Honduran ID size' for others, 5x5cm for diplomatic/official travel visas, 6x5cm for residency permits) -- too inconsistent across unofficial sources to certify a single value without direct official confirmation. Per the truthfulness gate, all numeric/policy fields are left unverified rather than guessed. DB's stated value (5x5cm, white) is plausible (it matches the figure some secondary sources attribute to Honduran diplomatic/official travel visas) but could not be independently verified against a directly-accessed official page."
+  }
+}

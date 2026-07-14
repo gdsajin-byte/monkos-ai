@@ -1,0 +1,38 @@
+{
+  "slug": "pa-visa",
+  "batch": 20,
+  "verified": {
+    "size": {
+      "value": "4cm x 4cm ('tamaño visa') for a tourist visa application — three photos required. This differs from the ordinary Panama passport-photo size.",
+      "source_url": "https://www.consuladodepanama.com.ve/index.php/ufaqs/cuales-son-los-requisitos-para-la-solicitud-de-visa-de-turismo/"
+    },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://www.consuladodepanama.com.ve/index.php/ufaqs/cuales-son-los-requisitos-para-la-solicitud-de-visa-de-turismo/ (Consulado de Panama, Caracas); corroborated by Panama's Servicio Nacional de Migracion PDF 'REQUISITOS PARA SOLICITAR VISA DE TURISTA'",
+      "source_url": "https://www.migracion.gob.pa/wp-content/uploads/01.REQUISITOS-PARA-SOLICITAR-VISA-TURISTA.pdf"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["background", "head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "3.5 × 4.5cm",
+      "research_value": "4cm x 4cm ('tamaño visa'), per the Panama Consulate in Caracas's official tourist-visa requirements page (successfully fetched directly), independently corroborated by a search-engine citation of Panama's Servicio Nacional de Migracion PDF requirements sheet quoting the identical 'tres (03) fotografias... tamaño visa (4 cm x 4 cm)' language.",
+      "source_url": "https://www.consuladodepanama.com.ve/index.php/ufaqs/cuales-son-los-requisitos-para-la-solicitud-de-visa-de-turismo/"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "Panama's Servicio Nacional de Migracion (migracion.gob.pa) hosts the primary official 'REQUISITOS PARA SOLICITAR VISA DE TURISTA' PDF, but WebFetch could only retrieve it as an unparseable binary/compressed PDF stream (likely a scanned or non-text-layer document), so its content could not be directly quoted. The Panama Consulate in Caracas page (consuladodepanama.com.ve) was fetched directly and successfully, and its stated figures (3 photos, 4x4cm visa size) match what a search-engine summary attributed to the migracion.gob.pa PDF, so the two are treated as corroborating rather than conflicting. Background colour and other composition rules were not specified on the consulate page fetched ('no information regarding background color or specific composition guidelines is included')."
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "slug": "gh-visa",
+  "batch": 9,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": {
+      "value": "White (or off-white) — \"Background must be white or off-white in colour\"",
+      "source_url": "https://toronto.mfa.gov.gh/visaapplicationinfo.aspx"
+    },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": {
+      "value": "Photo must be taken within the last six months.",
+      "source_url": "https://london.mfa.gov.gh/frequently-asked-questions"
+    },
+    "file_spec": {
+      "value": "Digital upload: 140px × 170px, JPG format, file size not exceeding 1MB.",
+      "source_url": "https://toronto.mfa.gov.gh/visaapplicationinfo.aspx"
+    },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": {
+      "value": "Facing forward and looking straight at the camera; no hair in front of the eyes; plain/neutral expression with mouth closed; eyes open and visible.",
+      "source_url": "https://toronto.mfa.gov.gh/visaapplicationinfo.aspx"
+    },
+    "glasses_policy": {
+      "value": "No dark glasses (\"without dark glasses or hats\").",
+      "source_url": "https://london.mfa.gov.gh/frequently-asked-questions"
+    },
+    "ears_visibility": {
+      "value": "Full face, forehead, and ears must be visible.",
+      "source_url": "https://london.mfa.gov.gh/frequently-asked-questions"
+    },
+    "face_visibility": {
+      "value": "Nothing may cover the face; full face on a plain background.",
+      "source_url": "https://toronto.mfa.gov.gh/visaapplicationinfo.aspx"
+    },
+    "headwear_policy": {
+      "value": "No head covering unless worn for religious or medical reasons.",
+      "source_url": "https://toronto.mfa.gov.gh/visaapplicationinfo.aspx"
+    },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://london.mfa.gov.gh/frequently-asked-questions",
+      "source_url": "https://london.mfa.gov.gh/frequently-asked-questions"
+    }
+  },
+  "restrictions_i18n": {
+    "expression": {
+      "en": "Face the camera directly with a neutral expression, mouth closed, eyes open and visible, and no hair in front of the eyes.",
+      "ko": "카메라를 정면으로 응시하고 무표정(입 다문 상태)을 유지하며, 눈을 뜨고 잘 보이도록 하고 머리카락이 눈을 가리지 않아야 함.",
+      "ja": "カメラを正面から見て無表情(口を閉じた状態)を保ち、目は開けてはっきり見えるようにし、髪が目にかからないようにすること。"
+    },
+    "glasses": {
+      "en": "Dark glasses are not permitted.",
+      "ko": "짙은 색 안경(선글라스) 착용 불가.",
+      "ja": "濃い色のメガネ(サングラス)着用不可。"
+    },
+    "ears": {
+      "en": "Full face, forehead, and ears must be visible.",
+      "ko": "얼굴 전체, 이마, 귀가 모두 보여야 함.",
+      "ja": "顔全体、額、耳がすべて見えている必要がある。"
+    },
+    "face_visibility": {
+      "en": "Nothing may cover the face; the full face must be shown on a plain background.",
+      "ko": "얼굴을 가리는 것이 없어야 하며, 무지 배경에서 얼굴 전체가 보여야 함.",
+      "ja": "顔を覆うものがあってはならず、無地の背景で顔全体が見える必要がある。"
+    },
+    "headwear": {
+      "en": "No head covering unless worn for religious or medical reasons.",
+      "ko": "종교적·의료적 사유가 아니면 머리가리개 착용 불가.",
+      "ja": "宗教上・医療上の理由がない限り、被り物の着用不可。"
+    }
+  },
+  "unverified": ["size", "head_height", "clothing_restriction", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Confirmed via two official mfa.gov.gh mission pages: Toronto Consulate General's 'Visa Application Information' page (fetched via WebFetch) and London High Commission's FAQ page (fetched via curl after a WebFetch header-parsing error on this domain). Toronto specifies the DIGITAL upload spec precisely (140x170px, JPG, max 1MB) for the online visa portal — this is a pixel spec, not a cm spec, so it is recorded under file_spec rather than size; no cm/mm figure for the visa photo specifically could be confirmed on an official page (the DB's 3.5x4.5cm may describe the passport photo carried over by convention, but this was not independently confirmed for the visa), so 'size' is left unverified rather than assumed. Background ('white or off-white') is a superset of the DB's plain '흰색' (white) but not a contradiction, so it is not logged as a db_conflict. Composition rules (expression, glasses, ears, face visibility, headwear) are corroborated across both missions with consistent wording.",
+    "note_ko": "토론토 총영사관 '비자 신청 정보' 페이지(WebFetch)와 런던 고등판무관 FAQ 페이지(도메인 헤더 파싱 오류로 curl 우회)로 교차 확인. 토론토 페이지는 디지털 업로드 규격(140x170px, JPG, 최대 1MB)을 명시하나 이는 cm 단위가 아닌 픽셀 단위이므로 size가 아닌 file_spec에 기록. 비자용 사진의 실제 cm 크기는 공식 출처에서 별도로 확인되지 않아 미확인 처리(여권 규격 3.5×4.5cm를 비자에 그대로 적용한다고 단정하지 않음). 배경 표현('흰색 또는 오프화이트')은 DB의 '흰색'보다 넓은 범위지만 모순은 아니므로 충돌로 기록하지 않음."
+  }
+}

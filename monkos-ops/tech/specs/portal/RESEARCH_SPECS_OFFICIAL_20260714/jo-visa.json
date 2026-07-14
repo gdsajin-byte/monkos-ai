@@ -1,0 +1,27 @@
+{
+  "slug": "jo-visa",
+  "batch": 12,
+  "verified": {
+    "official_source_url": {
+      "value": "https://jordan.gov.jo/EN/Pages/Travel_Visas (Jordan e-government portal, \"Jordan Gate\") confirms a \"passport-sized photo\" is required among visa application documents, but does not publish exact dimensions, background colour, or other technical specifications on this page. The Ministry of Interior's e-services portal (moi.gov.jo, Visa E-Applications) was also checked and lists visa categories (Visit/Transit/Exit-Entry/Study/Work) without photo specifications.",
+      "source_url": "https://jordan.gov.jo/EN/Pages/Travel_Visas"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

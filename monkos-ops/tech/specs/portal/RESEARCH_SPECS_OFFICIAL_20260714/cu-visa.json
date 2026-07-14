@@ -1,0 +1,29 @@
+{
+  "slug": "cu-visa",
+  "batch": 6,
+  "verified": {
+    "official_source_url": {
+      "value": "https://misiones.cubaminrex.cu/sites/default/files/formularios/admin/1_visa_application_embassy_cuba_in_lebanon.pdf",
+      "source_url": "https://misiones.cubaminrex.cu/sites/default/files/formularios/admin/1_visa_application_embassy_cuba_in_lebanon.pdf"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note": "Cuban consular visa/tourist-card procedures found on the official misiones.cubaminrex.cu (MINREX) domain vary by post and do not converge on a single published numeric photo spec. The Embassy of Cuba in Lebanon's official visa application form lists 'One (1) recent photo' among the visa requirements but states no size, background, or head-height figure (it simply has a printed 'PHOTO' box on the form). The Consulate General of Cuba in France's tourist-card ('visa touristique') requirements list does not mention a photo requirement at all. Because Cuba's own passport photo standard (4.5x4.5cm, confirmed separately for cu-passport) is not explicitly stated to also apply to visas/tourist cards, it was not carried over here per the truthfulness gate — all fields are left unverified rather than assumed."
+  }
+}

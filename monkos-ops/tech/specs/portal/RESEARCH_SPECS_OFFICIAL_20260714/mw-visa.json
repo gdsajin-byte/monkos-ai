@@ -1,0 +1,25 @@
+{
+  "slug": "mw-visa",
+  "batch": 18,
+  "verified": {},
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories",
+    "official_source_url"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Malawi's Department of Immigration (immigration.gov.mw) pages /visa/visa-application-process/ and /visa/apply-for-visa/ were fetched directly. Both confirm a photograph is part of the required documentation ('It requires you to give the traveler's information as per the data page of your passport, travel details, photograph, and other related documents') but publish no size/background/composition specification. Malawi visas are processed exclusively online via evisa.gov.mw, which was also fetched directly and likewise gives no photo specification beyond requiring 'a photograph' as an upload. Third-party photo-service sites publish specific numbers but none are Malawian government sources, so per the truthfulness gate none were carried into verified."
+  }
+}

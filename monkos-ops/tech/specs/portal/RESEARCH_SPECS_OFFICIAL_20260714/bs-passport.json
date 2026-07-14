@@ -1,0 +1,101 @@
+{
+  "slug": "bs-passport",
+  "batch": 3,
+  "verified": {
+    "size": {
+      "value": "2 x 2 inches at 600 dpi",
+      "source_url": "https://mofa.gov.bs/passportrenewal/"
+    },
+    "background": {
+      "value": "Plain white or off-white background",
+      "source_url": "https://mofa.gov.bs/passportrenewal/"
+    },
+    "clothing_restriction": {
+      "value": "Dark color clothing with shoulders covered; must not bear any form of military or civil servant badges or ornaments",
+      "source_url": "https://mofa.gov.bs/passportrenewal/"
+    },
+    "expression_restriction": {
+      "value": "Neutral facial expression, not smiling, mouth must be closed",
+      "source_url": "https://mofa.gov.bs/passportrenewal/"
+    },
+    "ears_visibility": {
+      "value": "Hairline and ears must be visible and not covered",
+      "source_url": "https://mofa.gov.bs/passportrenewal/"
+    },
+    "face_visibility": {
+      "value": "Full face view; applicant must be facing the camera directly",
+      "source_url": "https://mofa.gov.bs/passportrenewal/"
+    },
+    "headwear_policy": {
+      "value": "Covering of the head is prohibited unless for medical or religious purposes; a formal written request must be submitted and approved by the Passport Department (epassportoffice@bahamas.gov.bs)",
+      "source_url": "https://mofa.gov.bs/passportrenewal/"
+    },
+    "accessories": {
+      "value": "Makeup should be neutral and jewelry modest",
+      "source_url": "https://mofa.gov.bs/passportrenewal/"
+    },
+    "validity": {
+      "value": "No more than six (6) months old at the time of application",
+      "source_url": "https://mofa.gov.bs/passportrenewal/"
+    },
+    "file_spec": {
+      "value": "JPEG/PNG/BMP format accepted for digital copy submission",
+      "source_url": "https://mofa.gov.bs/passportrenewal/"
+    },
+    "official_source_url": {
+      "value": "https://mofa.gov.bs/passportrenewal/",
+      "source_url": "https://mofa.gov.bs/passportrenewal/"
+    }
+  },
+  "restrictions_i18n": {
+    "clothing": {
+      "en": "Clothing should be dark in color with shoulders covered; must not bear any military or civil servant badges or ornaments",
+      "ko": "복장은 어두운 색상으로 어깨가 가려지도록 착용해야 하며, 군복이나 공무원 제복의 배지·장식은 금지",
+      "ja": "服装は濃い色で肩が隠れるように着用すること。軍や公務員の記章・装飾品の着用は禁止"
+    },
+    "expression": {
+      "en": "Neutral facial expression, not smiling, mouth must be closed",
+      "ko": "무표정(중립적 표정)을 유지해야 하며 미소는 금지, 입은 다문 상태를 유지",
+      "ja": "無表情(中立的な表情)を保ち、笑顔は不可、口は閉じること"
+    },
+    "ears": {
+      "en": "Hairline and ears must be visible and not covered",
+      "ko": "헤어라인과 귀가 가려지지 않고 보여야 함",
+      "ja": "生え際と耳が隠れず見えること"
+    },
+    "face_visibility": {
+      "en": "Full face view required; applicant must be facing the camera directly",
+      "ko": "정면 전체 얼굴이 나와야 하며 카메라를 똑바로 응시해야 함",
+      "ja": "顔全体が正面から写っていること。カメラを真っ直ぐ見ること"
+    },
+    "headwear": {
+      "en": "Head covering is prohibited unless for medical or religious purposes, subject to a formal written request approved by the Passport Department",
+      "ko": "머리 가림은 의료 또는 종교적 목적을 제외하고 금지되며, 예외 시 여권사무국(Passport Department)에 서면 승인 요청이 필요",
+      "ja": "頭部の被り物は医療上または宗教上の理由を除き禁止。例外の場合はパスポート局への書面申請と承認が必要"
+    },
+    "accessories": {
+      "en": "Makeup should be neutral and jewelry modest",
+      "ko": "메이크업은 자연스럽게, 액세서리(장신구)는 과하지 않게 착용",
+      "ja": "メイクは控えめに、アクセサリーは控えめなものを着用"
+    }
+  },
+  "unverified": [
+    "head_height",
+    "glasses_policy"
+  ],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "3.5 × 4.5cm",
+      "research_value": "2 x 2 inches (50.8 x 50.8mm), square format",
+      "source_url": "https://mofa.gov.bs/passportrenewal/"
+    }
+  ],
+  "cross_verification": {
+    "background": {
+      "verdict": "confirmed",
+      "evidence": "White background confirmed on both mofa.gov.bs/passportrenewal/ (Ministry of Foreign Affairs) and independently on bahamas.gov.bs government services portal, which additionally specifies 3 color photographs required.",
+      "correct_value": "Plain white background"
+    }
+  }
+}

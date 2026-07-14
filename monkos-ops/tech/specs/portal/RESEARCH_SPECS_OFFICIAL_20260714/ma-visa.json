@@ -1,0 +1,46 @@
+{
+  "slug": "ma-visa",
+  "batch": 16,
+  "verified": {
+    "size": {
+      "value": "3.5 × 4.5cm for general/tourist visa applications; the Ministry of Foreign Affairs consular network additionally states 4 × 3cm specifically for student/trainee/researcher and family-reunification visa categories.",
+      "source_url": "https://us.diplomatie.ma/en/visa-requirements"
+    },
+    "background": {
+      "value": "White background (explicitly required for student/trainee/researcher, family-reunification, and diplomatic visa categories); general consular guidance also references white or light-blue.",
+      "source_url": "https://us.diplomatie.ma/en/visa-requirements"
+    },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": {
+      "value": "Photos must be recent (taken within the last six months); two identical photos are required.",
+      "source_url": "https://us.diplomatie.ma/en/visa-requirements"
+    },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": {
+      "value": "Face the camera with a neutral expression, without smiling or showing teeth; face must be evenly illuminated on both sides with no shadows, features clearly visible.",
+      "source_url": "https://us.diplomatie.ma/en/visa-requirements"
+    },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://us.diplomatie.ma/en/visa-requirements",
+      "source_url": "https://us.diplomatie.ma/en/visa-requirements"
+    }
+  },
+  "restrictions_i18n": {
+    "expression": {
+      "en": "Face the camera with a neutral expression, without smiling or showing teeth; face must be evenly illuminated on both sides without shadows, features clearly visible.",
+      "ko": "카메라를 정면으로 향하고 무표정을 유지하며 미소를 짓거나 치아를 보이지 않을 것; 얼굴 양쪽에 그림자 없이 고르게 조명되어 이목구비가 뚜렷이 보여야 함.",
+      "ja": "カメラに対して正面を向き、無表情を保ち、微笑んだり歯を見せたりしないこと。顔の両側に影がなく均一に照明され、目鼻立ちがはっきり見えること。"
+    }
+  },
+  "unverified": ["head_height", "file_spec", "clothing_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Source is the Kingdom of Morocco Ministry of Foreign Affairs consular network (diplomatie.ma subdomains, e.g. us.diplomatie.ma, mw.diplomatie.ma — all display 'KINGDOM OF MOROCCO MINISTRY OF FOREIGN AFFAIRS' branding). Direct WebFetch re-verification of these exact pages repeatedly failed with a TLS certificate error on this session's fetch tool; the values above reflect grounded web-search retrieval of that domain's content rather than a literal re-fetched quote, so they are recorded with some caution. Size/background varies by visa subtype per the same source (see 'size'/'background' values); DB's generic 3.5×4.5cm and white align with the general/tourist-visa figures, so no conflict is logged. Morocco does not operate a universal tourist e-visa; most numerous commercial '.com'/'.org' sites calling themselves 'Morocco eVisa' are private visa-processing agencies, not government portals, and were excluded from verified data per the truthfulness gate."
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "slug": "ng-passport",
+  "batch": 19,
+  "verified": {
+    "size": {
+      "value": "35mm (width) × 45mm (height).",
+      "source_url": "https://passport.immigration.gov.ng/image-compliance"
+    },
+    "background": {
+      "value": "Must have white background.",
+      "source_url": "https://passport.immigration.gov.ng/image-compliance"
+    },
+    "head_height": {
+      "value": "At least 29mm and no more than 34mm (chin to crown), per the official dimension diagram.",
+      "source_url": "https://passport.immigration.gov.ng/image-compliance"
+    },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": {
+      "value": "Image file size must be less than 2MB; image resolution should be 600×800 px.",
+      "source_url": "https://passport.immigration.gov.ng/image-compliance"
+    },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": {
+      "value": "Hair should not cover the ears.",
+      "source_url": "https://passport.immigration.gov.ng/image-compliance"
+    },
+    "face_visibility": {
+      "value": "Hair should not cover the face.",
+      "source_url": "https://passport.immigration.gov.ng/image-compliance"
+    },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": {
+      "value": "\"Do not use any apparel-headphone, mask etc.\" (verbatim NIS instruction; site copy is informally worded and the exact scope of \"apparel\" is not clarified elsewhere on the page — read narrowly here as headphones/masks/similar items).",
+      "source_url": "https://passport.immigration.gov.ng/image-compliance"
+    },
+    "official_source_url": {
+      "value": "https://passport.immigration.gov.ng/image-compliance",
+      "source_url": "https://passport.immigration.gov.ng/image-compliance"
+    }
+  },
+  "restrictions_i18n": {
+    "ears": {
+      "en": "Hair should not cover the ears.",
+      "ko": "머리카락이 귀를 가리면 안 됨.",
+      "ja": "髪の毛で耳を隠さないこと。"
+    },
+    "face_visibility": {
+      "en": "Hair should not cover the face.",
+      "ko": "머리카락이 얼굴을 가리면 안 됨.",
+      "ja": "髪の毛で顔を隠さないこと。"
+    },
+    "accessories": {
+      "en": "Do not wear any headphones, masks, or similar apparel/accessories in the photo.",
+      "ko": "헤드폰, 마스크 등의 장신구·의류를 착용하지 말 것.",
+      "ja": "ヘッドホン、マスクなどの装身具・衣類を着用しないこと。"
+    }
+  },
+  "unverified": ["validity", "clothing_restriction", "expression_restriction", "glasses_policy", "headwear_policy"],
+  "db_conflicts": [
+    {
+      "field": "head_height",
+      "db_value": "3.2~3.6cm",
+      "research_value": "2.9~3.4cm (29-34mm, chin to crown) per Nigeria Immigration Service's official passport-photo dimension diagram",
+      "source_url": "https://passport.immigration.gov.ng/image-compliance"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "Verified directly against the live Nigeria Immigration Service 'Domestic Passport Application Portal' (passport.immigration.gov.ng/image-compliance), including its embedded dimension diagram image (assets/images/dummy.png) which was downloaded and read pixel-for-pixel to confirm the 35mm/45mm/29mm/34mm figures. Size (35×45mm = 3.5×4.5cm) matches the DB value exactly; head_height does not (see db_conflicts)."
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "slug": "ki-passport",
+  "batch": 13,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://www.mfa.gov.ki/passportapplication/",
+      "source_url": "https://www.mfa.gov.ki/wp-content/uploads/2018/08/Application-for-a-Kiribati-passport-Adult-Version-1-final-approved-Jan-2014.pdf"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note": "Directly read the official 'Application for a Kiribati passport – ADULT' form (Ministry of Foreign Affairs and Immigration, mfa.gov.ki, Version 1 approved January 2014). Section D ('My photograph and signature') only instructs applicants to attach 'a recent photograph of me' using glue or a loop of tape (not staples), to put nothing over the photo, and to have an authorised person confirm it is a true likeness. It explicitly refers applicants to separate 'guidelines' for composition rules ('Make sure that the photo complies with the rules set out in the guidelines. An unacceptable photo will delay the processing of your application') but that guidelines document is not published inline on the form or elsewhere on mfa.gov.ki that could be located, so exact size, background, head-height, or validity-period figures could not be confirmed against an official source."
+  }
+}

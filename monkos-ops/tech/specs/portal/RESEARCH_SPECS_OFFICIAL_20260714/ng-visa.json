@@ -1,0 +1,28 @@
+{
+  "slug": "ng-visa",
+  "batch": 19,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://immigration.gov.ng/?echo_kb_faq=what-documents-are-required-for-an-e-visa-application",
+      "source_url": "https://immigration.gov.ng/?echo_kb_faq=what-documents-are-required-for-an-e-visa-application"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Nigeria Immigration Service's official e-Visa knowledge base confirms 'Recent Passport-Size Photos' as a required document for e-Visa applications, but publishes no numeric size/background/head-height specification for this document type. The Domestic Passport Application Portal's image-compliance tool (documented in ng-passport.json: 35×45mm, white background, 29-34mm head height, <2MB, 600×800px) is operated by the same agency (Nigeria Immigration Service) but the visa portal (visa.immigration.gov.ng) is a separate application requiring login, and its photo-upload spec screen could not be reached without authentication, so those figures are not carried over here as verified for ng-visa specifically."
+  }
+}

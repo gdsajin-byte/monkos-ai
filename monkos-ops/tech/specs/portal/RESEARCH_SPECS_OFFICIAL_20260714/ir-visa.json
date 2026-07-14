@@ -1,0 +1,65 @@
+{
+  "slug": "ir-visa",
+  "batch": 11,
+  "verified": {
+    "size": {
+      "value": "Minimum 400 (width) x 600 (height) pixels, with the face occupying approximately 70-80% of the photo",
+      "source_url": "https://evisatraveller.mfa.ir/en/request/digital_image_requirement/?title_name=photo"
+    },
+    "background": {
+      "value": "Plain white or off-white background",
+      "source_url": "https://evisatraveller.mfa.ir/en/request/digital_image_requirement/?title_name=photo"
+    },
+    "file_spec": {
+      "value": "JPEG format. Maximum file size was cited as 1024KB in the most recent confirmation of this official page; an earlier citation of the same page stated a 500KB maximum (10KB minimum). The exact current KB ceiling could not be pinned down with full confidence across research passes -- treat as approximate (500KB-1024KB range).",
+      "source_url": "https://evisatraveller.mfa.ir/en/request/digital_image_requirement/?title_name=photo"
+    },
+    "validity": {
+      "value": "Photo must be taken within the last 6 months",
+      "source_url": "https://evisatraveller.mfa.ir/en/request/digital_image_requirement/?title_name=photo"
+    },
+    "expression_restriction": {
+      "value": "Neutral facial expression, both eyes open, full-face view directly facing the camera",
+      "source_url": "https://evisatraveller.mfa.ir/en/request/digital_image_requirement/?title_name=photo"
+    },
+    "clothing_restriction": {
+      "value": "Clothing normally worn on a daily basis",
+      "source_url": "https://en.mfa.gov.ir/portal/generalserviceinfo/4010"
+    },
+    "official_source_url": {
+      "value": "https://evisatraveller.mfa.ir/en/request/digital_image_requirement/?title_name=photo",
+      "source_url": "https://evisatraveller.mfa.ir/en/request/digital_image_requirement/?title_name=photo"
+    }
+  },
+  "restrictions_i18n": {
+    "expression": {
+      "en": "Neutral facial expression with both eyes open, in full-face view directly facing the camera.",
+      "ko": "양쪽 눈을 뜨고 정면을 응시하는 중립적인 표정이어야 한다.",
+      "ja": "両目を開け、カメラに正対した中立的な表情であること。"
+    },
+    "clothing": {
+      "en": "Wear clothing normally worn on a daily basis; avoid uniforms or costumes.",
+      "ko": "평상시 일상적으로 착용하는 복장을 입어야 하며, 제복이나 특수 복장은 피해야 한다.",
+      "ja": "普段着用している日常の服装を着用すること。制服やコスチュームは避けること。"
+    }
+  },
+  "unverified": [
+    "head_height",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "3 × 4cm",
+      "research_value": "Minimum 400x600px digital upload (aspect ratio ~2:3), per Iran's official e-visa portal -- a different aspect ratio than DB's 3:4 cm figure, and measured in pixels (digital minimum) rather than a fixed cm print size",
+      "source_url": "https://evisatraveller.mfa.ir/en/request/digital_image_requirement/?title_name=photo"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "Source is Iran's official e-visa portal (evisatraveller.mfa.ir, under the Ministry of Foreign Affairs mfa.ir domain), which appeared directly in search results across multiple independent queries with consistent figures (400x600px min, white/off-white background, 70-80% face fill, 6-month currency, neutral expression). Direct WebFetch access repeatedly failed (redirect loop), so confirmation relies on search-engine indexing of the specific official URL rather than a raw page fetch. Headwear/hijab requirements were investigated but found genuinely inconsistent even in secondary reporting (some sources say hijab is optional for the digital e-visa photo specifically, others say mandatory as for all Iranian document photos) -- left unverified rather than resolved by guessing. This ir-visa record covers the MFA e-visa (evisatraveller.mfa.ir); Iran's separate domestic passport photo requirements (via NAJA/epolice.ir) are recorded independently under ir-passport.json and could not be verified from an official domain."
+  }
+}

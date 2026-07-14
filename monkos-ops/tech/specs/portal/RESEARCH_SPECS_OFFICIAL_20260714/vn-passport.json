@@ -1,0 +1,84 @@
+{
+  "slug": "vn-passport",
+  "batch": 27,
+  "verified": {
+    "size": {
+      "value": "Ratio width × length = 4 × 6 (\"Tỉ lệ ảnh: rộng x dài = 4 x 6\")",
+      "source_url": "https://dichvucong.bocongan.gov.vn/bocongan/tintuc/chitiet?matin=41"
+    },
+    "background": {
+      "value": "White background (\"Phông nền trắng\")",
+      "source_url": "https://dichvucong.bocongan.gov.vn/bocongan/tintuc/chitiet?matin=41"
+    },
+    "head_height": {
+      "value": "Face area should occupy approximately 75% of the photo area (\"Tỉ lệ diện tích khuôn mặt chiếm khoảng 75% diện tích ảnh\"); height from eyes to the top edge of the photo should be approximately 2/3 of the height from eyes to the bottom edge",
+      "source_url": "https://dichvucong.bocongan.gov.vn/bocongan/tintuc/chitiet?matin=41"
+    },
+    "validity": {
+      "value": "Recently taken photo, no more than 6 months old (\"Ảnh mới chụp (không quá 6 tháng)\")",
+      "source_url": "https://dichvucong.bocongan.gov.vn/bocongan/tintuc/chitiet?matin=41"
+    },
+    "glasses_policy": {
+      "value": "Not allowed (\"không đeo kính\")",
+      "source_url": "https://dichvucong.bocongan.gov.vn/bocongan/tintuc/chitiet?matin=41"
+    },
+    "ears_visibility": {
+      "value": "Both ears must be visible (\"lộ 2 vành tai\")",
+      "source_url": "https://dichvucong.bocongan.gov.vn/bocongan/tintuc/chitiet?matin=41"
+    },
+    "face_visibility": {
+      "value": "Face looking straight ahead (\"Mặt nhìn thẳng\")",
+      "source_url": "https://dichvucong.bocongan.gov.vn/bocongan/tintuc/chitiet?matin=41"
+    },
+    "headwear_policy": {
+      "value": "Bare head, no headwear (\"đầu để trần\")",
+      "source_url": "https://dichvucong.bocongan.gov.vn/bocongan/tintuc/chitiet?matin=41"
+    },
+    "file_spec": {
+      "value": "Minimum resolution 300dpi (\"Độ phân giải tối thiểu 300dpi\"); file format JPEG 2000 (\"Định dạng file jpeg 2000\") for the online portal upload",
+      "source_url": "https://dichvucong.bocongan.gov.vn/bocongan/tintuc/chitiet?matin=41"
+    },
+    "official_source_url": {
+      "value": "https://dichvucong.bocongan.gov.vn/bocongan/tintuc/chitiet?matin=41",
+      "source_url": "https://dichvucong.bocongan.gov.vn/bocongan/tintuc/chitiet?matin=41"
+    }
+  },
+  "restrictions_i18n": {
+    "glasses": {
+      "en": "Glasses are not allowed.",
+      "ko": "안경 착용 불가.",
+      "ja": "眼鏡の着用不可。"
+    },
+    "ears": {
+      "en": "Both ears must be visible.",
+      "ko": "양쪽 귀가 모두 보여야 함.",
+      "ja": "両耳が見えるようにすること。"
+    },
+    "face_visibility": {
+      "en": "Face must look straight ahead at the camera.",
+      "ko": "정면을 응시한 얼굴이어야 함.",
+      "ja": "顔はまっすぐ正面を向くこと。"
+    },
+    "headwear": {
+      "en": "Bare head; no headwear allowed.",
+      "ko": "맨머리로, 모자·머리가리개 착용 불가.",
+      "ja": "頭部を覆うものは不可、帽子なしで撮影。"
+    }
+  },
+  "unverified": [
+    "clothing_restriction",
+    "expression_restriction",
+    "accessories"
+  ],
+  "db_conflicts": [
+    {
+      "field": "head_height",
+      "db_value": "3.6~4.0cm",
+      "research_value": "Official source specifies head/face sizing as a percentage-of-frame rule (face ≈75% of photo area; eye-to-top-edge ≈ 2/3 of eye-to-bottom-edge), not an absolute cm range — a different measurement convention than the DB's cm figure, so the two cannot be directly cross-checked as matching or non-matching",
+      "source_url": "https://dichvucong.bocongan.gov.vn/bocongan/tintuc/chitiet?matin=41"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "Confirmed directly and in full from the official Ministry of Public Security (Bộ Công An) Public Service Portal (dichvucong.bocongan.gov.vn), article 'Hướng dẫn quy chuẩn ảnh 4x6 của thủ tục Cấp hộ chiếu phổ thông' (Guide to the 4x6 photo standard for the ordinary passport issuance procedure), published 07/05/2020. Size (4×6, i.e. 4×6cm in local convention) and background (white) both match the DB exactly — no conflict on those two fields."
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "slug": "ht-visa",
+  "batch": 11,
+  "verified": {
+    "official_source_url": {
+      "value": "https://www.haiti.org/diplomatic-and-official-visas/",
+      "source_url": "https://www.haiti.org/diplomatic-and-official-visas/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "The Embassy of Haiti (haiti.org) visa page -- covering both tourist and diplomatic/official visas, published in English, French, and Haitian Creole -- was fetched directly and states only 'Two (2) color passport photos,' with no size, background, or composition detail specified for the visa category. The sister passport-application page on the same domain separately states a white background and a 3-month currency window (see ht-passport.json), but since the visa page itself does not restate those figures, they are not carried over by inference and are left unverified per the truthfulness gate."
+  }
+}

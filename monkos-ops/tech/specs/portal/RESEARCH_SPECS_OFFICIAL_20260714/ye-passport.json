@@ -1,0 +1,62 @@
+{
+  "slug": "ye-passport",
+  "batch": 28,
+  "verified": {
+    "size": {
+      "value": "Source states: 'The photo size must be 60mm width by 40mm height (6x4 cm).' (i.e. width 6cm > height 4cm, as literally published)",
+      "source_url": "https://www.yemenembassynl.org/consulate/the-specifications-for-personal-photos-for-passport-issuance"
+    },
+    "background": {
+      "value": "Plain white",
+      "source_url": "https://www.yemenembassynl.org/consulate/the-specifications-for-personal-photos-for-passport-issuance"
+    },
+    "head_height": {
+      "value": "Face height should be approximately 32-36mm (photo should not be too close to the head or too far)",
+      "source_url": "https://www.yemenembassynl.org/consulate/the-specifications-for-personal-photos-for-passport-issuance"
+    },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": {
+      "value": "The entire face and part or all of the shoulders must be visible",
+      "source_url": "https://www.yemenembassynl.org/consulate/the-specifications-for-personal-photos-for-passport-issuance"
+    },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://www.yemenembassynl.org/consulate/the-specifications-for-personal-photos-for-passport-issuance",
+      "source_url": "https://www.yemenembassynl.org/consulate/the-specifications-for-personal-photos-for-passport-issuance"
+    }
+  },
+  "restrictions_i18n": {
+    "face_visibility": {
+      "en": "The entire face and part or all of the shoulders must be visible.",
+      "ko": "얼굴 전체와 어깨의 일부 또는 전체가 보여야 합니다.",
+      "ja": "顔全体と肩の一部または全体が写っている必要があります。"
+    }
+  },
+  "unverified": [
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "4 × 6cm",
+      "research_value": "Embassy of the Republic of Yemen (The Hague) states verbatim: '60mm width by 40mm height (6x4 cm)' — i.e. width(6cm) is greater than height(4cm), the reverse portrait orientation implied by DB's '4 × 6cm'. Confirmed face-height of 32-36mm fits much more naturally within a 60mm-tall frame than a 40mm-tall one, so this may be a labelling error on the embassy's own site, but is reported exactly as published rather than silently corrected.",
+      "source_url": "https://www.yemenembassynl.org/consulate/the-specifications-for-personal-photos-for-passport-issuance"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "Directly fetched (browser get_page_text + screenshot) from the Embassy of the Republic of Yemen in The Hague, Netherlands, official 'Photo Requirements for Passport Issuance' page. Head/face height (32-36mm = 3.2-3.6cm) matches DB's headHeight exactly. Background (plain white) matches DB. Only the width/height orientation of the size figure conflicts with DB, as detailed above."
+  }
+}

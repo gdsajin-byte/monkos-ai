@@ -1,0 +1,33 @@
+{
+  "slug": "uz-visa",
+  "batch": 27,
+  "verified": {
+    "file_spec": {
+      "value": "\"The uploaded face image must comply with the recommendations of the International Civil Aviation Organization's DOC9303\" (biometric photo standard; portal does not restate exact mm/px numbers on this page)",
+      "source_url": "https://e-visa.gov.uz/what-you-need-to-know"
+    },
+    "official_source_url": {
+      "value": "https://e-visa.gov.uz",
+      "source_url": "https://e-visa.gov.uz/what-you-need-to-know"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "e-visa.gov.uz (official electronic visa portal, Ministry of Foreign Affairs of the Republic of Uzbekistan) is a JavaScript single-page app; its 'About e-visa' / 'Need to know' informational page was read directly via rendered browser (not static HTML fetch) and explicitly requires ICAO DOC9303 compliance for the uploaded photo, but does not itself publish exact size/background/dpi numbers in that text. Third-party visa-agency sites widely quote '35x40mm, 300dpi, white background, max 1MB' for this e-visa, but that could not be independently confirmed on an official .uz government page within this research pass, so it is left unverified rather than reproduced from non-official sources per the truthfulness gate.",
+      "distinction_note": "uz-passport's confirmed 35×45mm size (Ministry of Foreign Affairs consular page) is a DIFFERENT document/process than this e-visa; it was not carried over here without direct confirmation on the e-visa portal itself."
+  }
+}

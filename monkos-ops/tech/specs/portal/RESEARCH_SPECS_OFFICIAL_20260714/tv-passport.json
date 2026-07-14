@@ -1,0 +1,59 @@
+{
+  "slug": "tv-passport",
+  "batch": 26,
+  "verified": {
+    "size": {
+      "value": "2 inches by 1½ inches (approximately 50.8mm x 38.1mm)",
+      "source_url": "https://tuvalu-legislation.tv/cms/images/LEGISLATION/SUBORDINATE/1980/1980-0010/1980-0010_2.pdf"
+    },
+    "file_spec": {
+      "value": "Two copies required. Photographs must not be mounted; must be printed on normal thin photographic paper and must not be glazed on the reverse side. One copy must be endorsed on the reverse by a qualifying witness with 'I certify that this is a true likeness of the applicant...' and signed.",
+      "source_url": "https://tuvalu-legislation.tv/cms/images/LEGISLATION/SUBORDINATE/1980/1980-0010/1980-0010_2.pdf"
+    },
+    "face_visibility": {
+      "value": "Photograph must be taken full face (front-facing view).",
+      "source_url": "https://tuvalu-legislation.tv/cms/images/LEGISLATION/SUBORDINATE/1980/1980-0010/1980-0010_2.pdf"
+    },
+    "headwear_policy": {
+      "value": "Photograph must be taken without a hat. No religious or medical exception is stated anywhere in the regulation text.",
+      "source_url": "https://tuvalu-legislation.tv/cms/images/LEGISLATION/SUBORDINATE/1980/1980-0010/1980-0010_2.pdf"
+    },
+    "official_source_url": {
+      "value": "https://tuvalu-legislation.tv/cms/images/LEGISLATION/SUBORDINATE/1980/1980-0010/1980-0010_2.pdf",
+      "source_url": "https://tuvalu-legislation.tv/cms/images/LEGISLATION/SUBORDINATE/1980/1980-0010/1980-0010_2.pdf"
+    }
+  },
+  "restrictions_i18n": {
+    "headwear": {
+      "en": "The photograph must be taken full face without a hat (no religious or medical exception is stated in the regulation text).",
+      "ko": "사진은 모자를 쓰지 않은 정면 얼굴로 촬영해야 한다 (규정 원문에 종교적·의료적 예외 조항은 명시되어 있지 않다).",
+      "ja": "写真は帽子を着用せず正面から撮影しなければならない(規定原文に宗教上・医療上の例外規定の記載はない)。"
+    },
+    "face_visibility": {
+      "en": "The photograph must be taken full face (front-facing view).",
+      "ko": "사진은 정면 얼굴(정면 응시)로 촬영해야 한다.",
+      "ja": "写真は正面向き(顔全体が見える正面)で撮影しなければならない。"
+    }
+  },
+  "unverified": [
+    "background",
+    "head_height",
+    "validity",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "3.5 × 4.5cm",
+      "research_value": "2 inches x 1½ inches (≈50.8mm x 38.1mm) per the official Passports Regulations (CAP. 24.20.1, 2022 Revised Edition) — a different, larger, and differently-proportioned size than the DB's 35x45mm.",
+      "source_url": "https://tuvalu-legislation.tv/cms/images/LEGISLATION/SUBORDINATE/1980/1980-0010/1980-0010_2.pdf"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "Retrieved directly via curl + pdftotext (WebFetch could not parse this 38-page PDF's binary stream) from tuvalu-legislation.tv, Tuvalu's official legislation portal, hosting CAP. 24.20.1 Passports Regulations, 2022 Revised Edition. The regulation's Schedule 1 forms restate this '2 inches by 1½ inches' size multiple times (adult, child, and investor-immigrant applications) with high internal consistency. No background colour, head-height, expression, or glasses rule is specified anywhere in the regulation text — full-text review found only quantity (2 copies), size, mounting/paper, and 'full face without hat'. A secondary source (Tuvalu High Commission NZ site, tuvaluhc.org.nz/passports) reportedly states a white background and bans t-shirts/vests/earrings/necklaces/jackets per search-engine synthesis, but this page is a JavaScript single-page app with an expired/invalid TLS certificate that could not be independently rendered or verified by direct fetch in this session, so it was excluded from verified fields per the truth gate."
+  }
+}

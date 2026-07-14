@@ -1,0 +1,45 @@
+{
+  "slug": "cr-visa",
+  "batch": 6,
+  "verified": {
+    "size": {
+      "value": "5cm x 5cm (fotografía a color del rostro, tamaño pasaporte)",
+      "source_url": "https://www.embajadadecostarica.org/wp-content/uploads/2023/05/Requisitos-visa-autorizada-DGME-pagina-web-MAY23.pdf"
+    },
+    "background": {
+      "value": "Fondo blanco (white background)",
+      "source_url": "https://www.embajadadecostarica.org/wp-content/uploads/2023/05/Requisitos-visa-autorizada-DGME-pagina-web-MAY23.pdf"
+    },
+    "file_spec": {
+      "value": "Physical color print, glued (\"pegada\") onto the designated space on the first page of the printed visa application form — not a digital upload",
+      "source_url": "https://www.embajadadecostarica.org/wp-content/uploads/2023/05/Requisitos-visa-autorizada-DGME-pagina-web-MAY23.pdf"
+    },
+    "official_source_url": {
+      "value": "https://www.embajadadecostarica.org/wp-content/uploads/2023/05/Requisitos-visa-autorizada-DGME-pagina-web-MAY23.pdf",
+      "source_url": "https://www.embajadadecostarica.org/wp-content/uploads/2023/05/Requisitos-visa-autorizada-DGME-pagina-web-MAY23.pdf"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "head_height",
+    "validity",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "2 × 2 inch (51 × 51mm)",
+      "research_value": "5cm × 5cm (50mm × 50mm) — stated explicitly in metric by the DGME-authorized visa requirements document (\"Una fotografía a color del rostro, de 5 cm x 5 cm, con fondo blanco, tamaño pasaporte\"); 50mm differs from the DB's 51mm (2-inch) figure",
+      "source_url": "https://www.embajadadecostarica.org/wp-content/uploads/2023/05/Requisitos-visa-autorizada-DGME-pagina-web-MAY23.pdf"
+    }
+  ],
+  "cross_verification": {
+    "note": "Source is a DGME (Dirección General de Migración y Extranjería)-authorized visa requirements document distributed via the Embassy of Costa Rica (for its Colombia consular jurisdiction), explicitly labeled 'VISA AUTORIZADA POR LA DIRECCIÓN GENERAL DE MIGRACIÓN Y EXTRANJERÍA DE COSTA RICA (DGME)'. The document only specifies size, background, and physical/glued submission format — it does not detail head height, expression, glasses, headwear, or other restriction fields, which remain unverified. Costa Rica's general migracion.go.cr visa portal (migracion.go.cr/visas/) and its generic 'Requisitos para las visas consulares' checklist do not itemize a photo requirement at all, suggesting photo specifics may only appear in jurisdiction-specific consular instructions such as this one."
+  }
+}

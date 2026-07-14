@@ -1,0 +1,74 @@
+{
+  "slug": "ma-passport",
+  "batch": 16,
+  "verified": {
+    "size": {
+      "value": "35mm × 45mm (3.5 × 4.5cm)",
+      "source_url": "https://www.passeport.ma/Home/PiecesAuMaroc"
+    },
+    "background": {
+      "value": "Plain background in sky blue, white, or light gray ('sur fond bleu, blanc ou gris clairs'). Note: a separate dedicated norms document on the same official domain specifies only sky-blue or light-gray (does not list white) — see cross_verification.",
+      "source_url": "https://www.passeport.ma/Home/PiecesAuMaroc"
+    },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": {
+      "value": "Neutral expression: mouth closed, no smile, eyes normally open and clearly visible; head held straight, face centered in the frame, gaze fixed directly on the lens.",
+      "source_url": "https://www.passeport.ma/PDF/NORMES%20POUR%20LES%20PHOTOGRAPHIES.pdf"
+    },
+    "glasses_policy": {
+      "value": "Only clear (non-tinted) lenses are permitted; glasses must not cover the eyes even partially — tinted lenses or thick frames must be removed; no light reflections on the lenses; wearing glasses is not obligatory.",
+      "source_url": "https://www.passeport.ma/PDF/NORMES%20POUR%20LES%20PHOTOGRAPHIES.pdf"
+    },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": {
+      "value": "All facial features from the bottom of the chin to the top of the forehead must be entirely visible.",
+      "source_url": "https://www.passeport.ma/PDF/NORMES%20POUR%20LES%20PHOTOGRAPHIES.pdf"
+    },
+    "headwear_policy": {
+      "value": "Decorative headwear such as hats, caps, or similar items is not permitted. The official norms document does not state a religious exemption.",
+      "source_url": "https://www.passeport.ma/PDF/NORMES%20POUR%20LES%20PHOTOGRAPHIES.pdf"
+    },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://www.passeport.ma/PDF/NORMES%20POUR%20LES%20PHOTOGRAPHIES.pdf",
+      "source_url": "https://www.passeport.ma/PDF/NORMES%20POUR%20LES%20PHOTOGRAPHIES.pdf"
+    }
+  },
+  "restrictions_i18n": {
+    "expression": {
+      "en": "Neutral expression: mouth closed, no smile, eyes normally open and clearly visible; head held straight, face centered, gaze fixed on the lens.",
+      "ko": "무표정 유지: 입을 다물고 미소 짓지 않으며, 눈은 평상시처럼 뜨고 또렷하게 보일 것; 고개를 똑바로 세우고 얼굴을 중앙에 두며 시선은 렌즈를 정면으로 응시.",
+      "ja": "無表情を維持:口を閉じ微笑まず、目は普段通り開けてはっきり見えるようにする。頭をまっすぐにし顔を中央に置き、視線はレンズを正面から見つめる。"
+    },
+    "glasses": {
+      "en": "Only clear (non-tinted) lenses permitted; glasses must not cover the eyes even partially; tinted lenses or thick frames must be removed; no light reflections; wearing glasses is not obligatory.",
+      "ko": "무색 렌즈만 허용; 안경이 눈을 부분적으로라도 가려서는 안 됨; 색이 있는 렌즈나 두꺼운 테는 벗어야 함; 렌즈에 빛 반사 금지; 안경 착용은 의무 아님.",
+      "ja": "無色レンズのみ許可。眼鏡が目を部分的にも覆ってはならない。色付きレンズや太いフレームは外すこと。レンズへの光の反射は不可。眼鏡の着用は義務ではない。"
+    },
+    "face_visibility": {
+      "en": "All facial features from the bottom of the chin to the top of the forehead must be entirely visible.",
+      "ko": "턱 아래부터 이마 위까지 얼굴의 모든 특징이 완전히 보여야 함.",
+      "ja": "顎の下から額の上まで、顔の特徴がすべて完全に見えること。"
+    },
+    "headwear": {
+      "en": "Decorative headwear such as hats, caps, or similar items is not permitted; the official norms document does not state a religious exemption.",
+      "ko": "모자, 캡 등 장식용 머리쓰개 착용 불가; 공식 규정 문서에는 종교적 예외 규정이 명시되어 있지 않음.",
+      "ja": "帽子・キャップなどの装飾的な被り物は不可。公式規定文書には宗教上の例外規定の記載はない。"
+    }
+  },
+  "unverified": ["head_height", "validity", "file_spec", "clothing_restriction", "ears_visibility", "accessories"],
+  "db_conflicts": [
+    {
+      "field": "background",
+      "db_value": "흰색",
+      "research_value": "The official passeport.ma application-checklist page allows sky blue, white, OR light gray ('bleu, blanc ou gris clairs'). A separate dedicated document on the same domain ('NORMES POUR LES PHOTOGRAPHIES') states only sky-blue or light-gray, without listing white. DB's single value 'white' does not capture this — see cross_verification.",
+      "source_url": "https://www.passeport.ma/Home/PiecesAuMaroc"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "Morocco's official passport portal (passeport.ma) contains two documents that are internally inconsistent on background color: the general 'Pièces à fournir' checklist page states blue/white/light-gray are all acceptable, while the dedicated 'NORMES POUR LES PHOTOGRAPHIES' PDF (fetched and read in full via pdftotext) states only sky-blue or light-gray, with no mention of white. The PDF also does not state a numeric head-height, photo validity/recency period, or a religious headwear exemption — these were left unverified rather than assumed from third-party aggregator sites."
+  }
+}

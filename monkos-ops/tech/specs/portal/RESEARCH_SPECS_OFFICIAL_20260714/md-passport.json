@@ -1,0 +1,96 @@
+{
+  "slug": "md-passport",
+  "batch": 16,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": {
+      "value": "White background required.",
+      "source_url": "https://www.asp.gov.md/en/informatii-utile/recomandari"
+    },
+    "head_height": {
+      "value": "Head (chin to crown) must occupy a minimum of 70% of the photo height; up to 50% head size is allowed for children under 11 to preserve image quality; hairstyle should take up no more than 10% of the photo height.",
+      "source_url": "https://www.asp.gov.md/en/informatii-utile/recomandari"
+    },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": {
+      "value": "Solid-colored clothing recommended (casual or business); avoid white clothing (poor contrast with the white background); deep V-neck necklines not recommended — the clothing neckline should remain visible after cropping; those with long necks should wear higher collars; uniform photos are not permitted.",
+      "source_url": "https://www.asp.gov.md/en/informatii-utile/recomandari"
+    },
+    "expression_restriction": {
+      "value": "Eyes open, mouth closed, direct gaze into the camera lens (the same standard applies to children under 11).",
+      "source_url": "https://www.asp.gov.md/en/informatii-utile/recomandari"
+    },
+    "glasses_policy": {
+      "value": "Generally not permitted unless worn daily; if worn, lenses must be transparent with no flash glare, and must not darken or distort the eyes or face contours.",
+      "source_url": "https://www.asp.gov.md/en/informatii-utile/recomandari"
+    },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": {
+      "value": "The oval of the face must be completely visible, including eyebrows (bangs must not cover the eyebrows); eyes open and clearly visible with a direct gaze into the lens.",
+      "source_url": "https://www.asp.gov.md/en/informatii-utile/recomandari"
+    },
+    "headwear_policy": {
+      "value": "Head must be uncovered, except for religious or medical circumstances, which require documentation and written notice from officials.",
+      "source_url": "https://www.asp.gov.md/en/informatii-utile/recomandari"
+    },
+    "accessories": {
+      "value": "Excessively large hair ornaments not recommended; bright or heavy makeup discouraged — light daytime makeup advised.",
+      "source_url": "https://www.asp.gov.md/en/informatii-utile/recomandari"
+    },
+    "official_source_url": {
+      "value": "https://www.asp.gov.md/en/informatii-utile/recomandari",
+      "source_url": "https://www.asp.gov.md/en/informatii-utile/recomandari"
+    }
+  },
+  "restrictions_i18n": {
+    "clothing": {
+      "en": "Solid-colored clothing recommended (casual or business); avoid white clothing (poor contrast with the white background); deep V-neck necklines not recommended; those with long necks should wear higher collars; uniforms not permitted.",
+      "ko": "단색 의상 권장(캐주얼 또는 정장); 흰색 의상은 피할 것(흰색 배경과 대비가 떨어짐); 깊게 파인 브이넥은 권장하지 않음; 목이 긴 사람은 높은 칼라의 옷을 착용할 것; 제복 착용 불가.",
+      "ja": "無地の服装を推奨(カジュアルまたはビジネス)。白い服は避けること(白背景とのコントラストが低いため)。深いVネックは非推奨。首の長い人は襟の高い服を着用すること。制服の着用は不可。"
+    },
+    "expression": {
+      "en": "Eyes open, mouth closed, direct gaze into the camera lens (the same standard applies to children under 11).",
+      "ko": "눈을 뜨고 입을 다물며 카메라 렌즈를 정면으로 응시(11세 미만 아동도 동일 기준 적용).",
+      "ja": "目を開け口を閉じ、カメラのレンズを正面から見つめる(11歳未満の子供にも同じ基準が適用される)。"
+    },
+    "glasses": {
+      "en": "Generally not permitted unless worn daily; if worn, lenses must be transparent without flash glare, and must not darken or distort the eyes or face contours.",
+      "ko": "일상적으로 착용하는 경우가 아니면 원칙적으로 불허; 착용 시 렌즈는 투명해야 하고 플래시 반사가 없어야 하며 눈이나 얼굴 윤곽을 어둡게 하거나 왜곡해서는 안 됨.",
+      "ja": "日常的に着用している場合を除き原則不可。着用する場合、レンズは透明でフラッシュの反射がなく、目や顔の輪郭を暗くしたり歪めたりしてはならない。"
+    },
+    "face_visibility": {
+      "en": "The oval of the face must be completely visible, including eyebrows (bangs must not cover eyebrows); eyes open and clearly visible with a direct gaze into the lens.",
+      "ko": "눈썹을 포함해 얼굴 윤곽 전체가 완전히 보여야 함(앞머리가 눈썹을 가리면 안 됨); 눈은 뜨고 또렷하게 보이며 시선은 렌즈를 정면으로 응시.",
+      "ja": "眉を含め顔の輪郭全体が完全に見えること(前髪が眉にかからないこと)。目は開けてはっきり見え、視線はレンズを正面から見つめる。"
+    },
+    "headwear": {
+      "en": "Head must be uncovered, except for religious or medical circumstances, which require documentation and written notice from officials.",
+      "ko": "머리는 가리지 않아야 하며, 종교적·의학적 사유가 있는 경우에만 예외가 인정되고 이 경우 증빙서류와 담당자의 서면 통지가 필요함.",
+      "ja": "頭部は覆わないこと。ただし宗教上または医学上の事情がある場合は例外となり、証明書類と担当者による書面通知が必要。"
+    },
+    "accessories": {
+      "en": "Excessively large hair ornaments not recommended; bright or heavy makeup discouraged, light daytime makeup advised.",
+      "ko": "지나치게 큰 헤어 장신구는 권장하지 않음; 진하거나 화려한 메이크업은 지양하고 자연스러운 데이라이트 메이크업을 권장.",
+      "ja": "過度に大きなヘアアクセサリーは非推奨。濃い・派手なメイクは避け、自然なデイタイムメイクを推奨。"
+    }
+  },
+  "unverified": ["size", "validity", "file_spec", "ears_visibility"],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "3.5 × 4.5cm",
+      "research_value": "No official ASP (Agenția Servicii Publice) page found stating a standard fixed cutout size such as 3.5×4.5cm for the regular biometric passport. ASP's official appearance guidance defines head positioning as a percentage of frame (≥70% of photo height, chin to crown) rather than a fixed print size — this is typically because the biometric photo is captured live at the ASP counter, not submitted pre-printed. A separate official ASP service page specifies 10×15cm specifically for physical photos required only in exceptional cases (immobilized applicants, facial injury, or children unable to attend in person).",
+      "source_url": "https://www.asp.gov.md/en/servicii/persoane-fizice/15/155"
+    },
+    {
+      "field": "head_height",
+      "db_value": "3.2~3.6cm",
+      "research_value": "ASP does not publish a fixed head-height range in cm/mm. Instead it defines head (chin to crown) as a percentage of photo height: minimum 70% of frame height (up to 50% permitted for children under 11), with hairstyle occupying no more than 10% of frame height. This percentage-based standard cannot be reconciled into DB's fixed 3.2~3.6cm range without a confirmed physical print/frame size, which ASP does not publish for the standard live biometric capture.",
+      "source_url": "https://www.asp.gov.md/en/informatii-utile/recomandari"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "asp.gov.md (Public Services Agency, under Moldova's Ministry of Internal Affairs) is the issuing authority for Moldovan passports. Its 'recomandari' (recommendations) page targets the live in-office biometric capture used for most applicants, which is why it specifies percentage-of-frame rules rather than a fixed mm/cm print size — this differs structurally from most other countries in this batch and is not a data-quality gap so much as a different capture methodology."
+  }
+}

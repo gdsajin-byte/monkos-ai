@@ -1,0 +1,30 @@
+{
+  "slug": "bi-passport",
+  "batch": 2,
+  "verified": {
+    "file_spec": {
+      "value": "Online application photo-upload field accepts \".png, .jpg, .jpeg\" formats only",
+      "source_url": "https://migration.gov.bi/Documents/index/1"
+    },
+    "official_source_url": {
+      "value": "https://migration.gov.bi/ (Commissariat Général des Migrations — CGM)",
+      "source_url": "https://migration.gov.bi/Documents/index/6"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

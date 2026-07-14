@@ -1,0 +1,41 @@
+{
+  "slug": "vu-visa",
+  "batch": 28,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://immigration.gov.vu/visit/",
+      "source_url": "https://immigration.gov.vu/visit/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Checked Vanuatu Department of Immigration and Passport Services 'Visit' page (visa categories/criteria/fees — no photo spec) and the Vanuatu eVisa Portal (evisa.gov.vu, official government MIDAS e-Visa system) — the latter is a JS-rendered single-page app and returned no extractable photo-requirement text via fetch or browser page-text. The department's passport page (see vu-passport.json) states photos must be 3.5cm × 4.5cm, but that text appears specifically on the citizen-passport page, not a visa page, so it was not carried over here without direct confirmation. No distinct official Vanuatu visa photo specification could be located."
+  }
+}

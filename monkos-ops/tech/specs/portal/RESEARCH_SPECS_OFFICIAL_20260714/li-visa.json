@@ -1,0 +1,30 @@
+{
+  "slug": "li-visa",
+  "batch": 15,
+  "verified": {
+    "official_source_url": {
+      "value": "https://www.liechtensteinusa.org/visa-information",
+      "source_url": "https://www.liechtensteinusa.org/visa-information"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "expression_restriction",
+    "glasses_policy",
+    "headwear_policy",
+    "ears_visibility",
+    "face_visibility",
+    "file_spec",
+    "clothing_restriction",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Liechtenstein's own Migration and Passport Office 'Visa' page (https://www.llv.li/en/national-administration/migration-and-passport-office/visa) returned HTTP 403 Forbidden on every direct fetch attempt in this research pass, so its content could not be independently confirmed and is not cited as a source. However, the official Embassy of Liechtenstein in the USA (liechtensteinusa.org, an official Liechtenstein diplomatic mission) was directly fetched and confirmed to state, verbatim in substance: 'Liechtenstein does not issue its own visas' and that travelers to Liechtenstein are subject to 'the same visa requirements... as they do to travelers to Switzerland' because there are no border controls between the two countries and Switzerland represents Liechtenstein for Schengen visa matters. This is a structurally important finding: it means there is no Liechtenstein-specific visa photo standard -- the operative standard is Switzerland's own Schengen visa photo requirement, administered by Swiss authorities (eda.admin.ch and Swiss consular missions). Repeated direct-fetch attempts against Swiss government domains (eda.admin.ch, dfae.admin.ch, mission-geneva.dfae.admin.ch) all failed with HTTP 403 or DNS errors in this session, so the exact Swiss mm/background/head-height figures could not be independently confirmed from a .admin.ch source and are therefore left unverified rather than asserted secondhand. Per the truth-gate instruction, no commercial visa-photo-service figures were used as a substitute.",
+    "note_ko": "리히텐슈타인 이민여권청(llv.li)의 비자 페이지는 이번 조사에서 매 시도마다 403 오류로 직접 확인이 불가능했다. 다만 주미 리히텐슈타인 대사관(liechtensteinusa.org, 공식 외교공관)을 직접 확인한 결과 '리히텐슈타인은 자체 비자를 발급하지 않으며, 스위스와 동일한 비자 요건이 적용된다'는 사실을 확인했다. 즉 리히텐슈타인 고유의 비자 사진 규격은 존재하지 않고 스위스 셍겐비자 규격이 그대로 적용되는 구조이나, 스위스 정부 도메인(admin.ch) 접근이 반복적으로 차단되어 정확한 수치는 직접 검증하지 못했다."
+  }
+}

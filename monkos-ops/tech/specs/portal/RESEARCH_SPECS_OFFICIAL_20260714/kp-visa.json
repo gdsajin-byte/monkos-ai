@@ -1,0 +1,25 @@
+{
+  "slug": "kp-visa",
+  "batch": 13,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": { "value": "", "source_url": "" }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories", "official_source_url"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note": "Independent travel to North Korea is not permitted; foreign tourists must book through a state-licensed tour operator, which relays visa requirements from the DPRK Foreign Ministry/embassies rather than a public self-service government web application. No official DPRK embassy or ministry web page with explicit visa-photo composition specs was found or successfully reachable during this research pass (naenara.com.kp connection reset on every attempt; a site-restricted search limited to official .kp domains returned no results). Third-party tour-agency sites publish specific figures, but per the truthfulness gate these cannot be traced to an official DPRK source and are excluded. Given North Korea's restricted information environment, this is expected to remain largely unverifiable through open-web research."
+  }
+}

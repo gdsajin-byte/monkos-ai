@@ -1,0 +1,84 @@
+{
+  "slug": "tt-passport",
+  "batch": 26,
+  "verified": {
+    "size": {
+      "value": "31mm wide x 41mm high",
+      "source_url": "https://foreign.gov.tt/documents/703/ADULT_PASSPORT_Instructions.pdf"
+    },
+    "background": {
+      "value": "Plain, light coloured background; no other people, chair back, or objects in the photograph",
+      "source_url": "https://foreign.gov.tt/documents/703/ADULT_PASSPORT_Instructions.pdf"
+    },
+    "head_height": {
+      "value": "Chin to crown (top of head) must be 70-80% of the vertical height of the picture — approximately 28.7-32.8mm on the 41mm-high photo",
+      "source_url": "https://foreign.gov.tt/documents/703/ADULT_PASSPORT_Instructions.pdf"
+    },
+    "validity": {
+      "value": "Photograph must not be older than 6 months. (Separately, the passport itself is valid for a maximum of 5 years from date of issue for applicants 16 years and over.)",
+      "source_url": "https://foreign.gov.tt/documents/703/ADULT_PASSPORT_Instructions.pdf"
+    },
+    "file_spec": {
+      "value": "First-time Machine Readable Passport applicants are NOT required to submit photographs — live image capture is done at the Immigration Office. For any subsequent passport, submit 2 identical unmounted colour photographs; if produced as a print, must be on good/photo-quality paper. Specifications comply with ICAO guidelines and ISO/IEC 19794-5.",
+      "source_url": "https://foreign.gov.tt/documents/703/ADULT_PASSPORT_Instructions.pdf"
+    },
+    "expression_restriction": {
+      "value": "Neutral expression with the mouth closed, facing square to the camera (not portrait-style at an angle); eyes open with no hair obscuring them.",
+      "source_url": "https://foreign.gov.tt/documents/703/ADULT_PASSPORT_Instructions.pdf"
+    },
+    "glasses_policy": {
+      "value": "Dark glasses are not permitted unless for a physical disability. If glasses are worn, eyes must be clearly visible with no reflected light, lenses must not be tinted, and heavy frames should be avoided so they do not cover any part of the eyes.",
+      "source_url": "https://foreign.gov.tt/documents/703/ADULT_PASSPORT_Instructions.pdf"
+    },
+    "face_visibility": {
+      "value": "Full facial features from the bottom of the chin to the top of the forehead, and both edges of the face, must be clearly visible; no head tilt.",
+      "source_url": "https://foreign.gov.tt/documents/703/ADULT_PASSPORT_Instructions.pdf"
+    },
+    "headwear_policy": {
+      "value": "Coverings, hair, headdress, hats, scarves, head bands, bandanas, or facial ornamentation that obscure the face are not permitted, except for religious or medical reasons.",
+      "source_url": "https://foreign.gov.tt/documents/703/ADULT_PASSPORT_Instructions.pdf"
+    },
+    "official_source_url": {
+      "value": "https://foreign.gov.tt/documents/703/ADULT_PASSPORT_Instructions.pdf",
+      "source_url": "https://foreign.gov.tt/documents/703/ADULT_PASSPORT_Instructions.pdf"
+    }
+  },
+  "restrictions_i18n": {
+    "expression": {
+      "en": "Neutral expression with the mouth closed, facing the camera directly rather than at an angle, with both eyes open and not obscured by hair.",
+      "ko": "입을 다물고 무표정을 유지하며, 비스듬하지 않게 카메라를 정면으로 볼 것. 양쪽 눈을 뜨고 머리카락으로 가리지 않아야 한다.",
+      "ja": "口を閉じ無表情を保ち、斜めではなく正面からカメラを見ること。両目を開け、髪で隠さないこと。"
+    },
+    "glasses": {
+      "en": "Dark glasses are not permitted unless for a physical disability. If glasses are worn, eyes must be clearly visible with no reflections, lenses must not be tinted, and heavy frames covering the eyes should be avoided.",
+      "ko": "신체 장애가 있는 경우가 아니면 짙은 색 안경은 허용되지 않는다. 안경을 착용할 경우 반사광 없이 눈이 선명하게 보여야 하며, 색이 있는 렌즈는 불가하고 눈을 가리는 두꺼운 테는 피해야 한다.",
+      "ja": "身体障害の場合を除き、濃い色のメガネは許可されない。メガネを着用する場合、反射なく目がはっきり見える必要があり、色付きレンズは不可、目を覆う太いフレームは避けること。"
+    },
+    "face_visibility": {
+      "en": "Full facial features from the bottom of the chin to the top of the forehead, and both edges of the face, must be clearly visible, with no head tilt.",
+      "ko": "턱 아래부터 이마 위까지, 그리고 얼굴 양쪽 가장자리가 모두 선명하게 보여야 하며 고개를 기울이면 안 된다.",
+      "ja": "顎の下から額の上まで、そして顔の両端がはっきりと見える必要があり、頭を傾けてはならない。"
+    },
+    "headwear": {
+      "en": "Coverings, headdress, hats, scarves, head bands, bandanas, or facial ornamentation that obscure the face are not permitted, except for religious or medical reasons.",
+      "ko": "얼굴을 가리는 머리 가리개, 모자, 스카프, 헤드밴드, 반다나, 얼굴 장식물은 종교적·의료적 사유를 제외하고 허용되지 않는다.",
+      "ja": "顔を隠す頭部の覆い、帽子、スカーフ、ヘアバンド、バンダナ、顔の装飾品は、宗教上または医療上の理由を除き許可されない。"
+    }
+  },
+  "unverified": [
+    "clothing_restriction",
+    "ears_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [
+    {
+      "field": "background",
+      "db_value": "흰색 (white)",
+      "research_value": "Official instructions specify only a 'plain, light coloured background' — the text does not say 'white' specifically, unlike the DB's assumption.",
+      "source_url": "https://foreign.gov.tt/documents/703/ADULT_PASSPORT_Instructions.pdf"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "Retrieved directly via curl + pdftotext (WebFetch could not parse this PDF's binary stream). Source is the Immigration Division, Ministry of National Security, Republic of Trinidad and Tobago official 'PASSPORT APPLICATION For Trinidad and Tobago Citizens 16 years of age and over' instructions document, which explicitly states it follows ICAO guidelines. DB size (31x41mm) and head_height (2.9-3.3cm, i.e. ~70-80% of 41mm) both match the official document closely."
+  }
+}

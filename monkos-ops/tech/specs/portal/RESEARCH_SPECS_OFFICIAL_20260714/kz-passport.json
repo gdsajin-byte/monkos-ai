@@ -1,0 +1,92 @@
+{
+  "slug": "kz-passport",
+  "batch": 14,
+  "verified": {
+    "size": {
+      "value": "Height 45 mm, width 35 mm (3.5 x 4.5 cm)",
+      "source_url": "https://egov.kz/cms/en/articles/trebovaniya_k_fotografiyam"
+    },
+    "head_height": {
+      "value": "Face should occupy 70-80% of photograph, which makes 32-36 mm (3.2-3.6cm) from lower point of chin to crown of the head",
+      "source_url": "https://egov.kz/cms/en/articles/trebovaniya_k_fotografiyam"
+    },
+    "background": {
+      "value": "Sole (solid) coloured and light background; gray recommended (medium gray for light hair, light gray for dark hair); blue background NOT recommended; no drawings/patterns allowed",
+      "source_url": "https://egov.kz/cms/en/articles/trebovaniya_k_fotografiyam"
+    },
+    "validity": {
+      "value": "Photograph must be made no later than 6 months prior to documents submission",
+      "source_url": "https://egov.kz/cms/en/articles/trebovaniya_k_fotografiyam"
+    },
+    "expression_restriction": {
+      "value": "Neutral countenance with mouth closed; person should look straight into the camera",
+      "source_url": "https://egov.kz/cms/en/articles/trebovaniya_k_fotografiyam"
+    },
+    "face_visibility": {
+      "value": "Full face view — the applicant must face the camera directly (not in profile)",
+      "source_url": "https://egov.kz/cms/en/articles/trebovaniya_k_fotografiyam"
+    },
+    "glasses_policy": {
+      "value": "Eyes should be clearly visible; no light reflections and no sunglasses allowed; medical eyeshades permitted only if the frame does not hide the eyes",
+      "source_url": "https://egov.kz/cms/en/articles/trebovaniya_k_fotografiyam"
+    },
+    "headwear_policy": {
+      "value": "No headwear is allowed, except for religious reasons, in which case a face should be open from the lower point of chin to forehead",
+      "source_url": "https://egov.kz/cms/en/articles/trebovaniya_k_fotografiyam"
+    },
+    "clothing_restriction": {
+      "value": "Photographs of a person in uniform are not allowed",
+      "source_url": "https://egov.kz/cms/en/articles/trebovaniya_k_fotografiyam"
+    },
+    "file_spec": {
+      "value": "Digital: 413×531 pixels; file size up to 30 KB; color depth 24 bits. Physical prints: photo printing from one negative image on thick photographic paper; no computer scanning/modelling/copying; no bends, dirt, or scratches; no art retouching or manipulation",
+      "source_url": "https://egov.kz/cms/en/articles/trebovaniya_k_fotografiyam"
+    },
+    "official_source_url": {
+      "value": "https://egov.kz/cms/en/articles/trebovaniya_k_fotografiyam",
+      "source_url": "https://egov.kz/cms/en/articles/trebovaniya_k_fotografiyam"
+    }
+  },
+  "restrictions_i18n": {
+    "expression": {
+      "en": "Neutral facial expression with mouth closed; look straight into the camera.",
+      "ko": "입을 다물고 무표정을 유지하며 카메라를 정면으로 응시할 것.",
+      "ja": "口を閉じ、無表情でカメラを正面から見つめること。"
+    },
+    "face_visibility": {
+      "en": "Full face view — the applicant must face the camera directly, not in profile.",
+      "ko": "측면이 아닌 정면으로 카메라를 향한 얼굴 전체가 나와야 함.",
+      "ja": "側面ではなく正面からカメラに顔全体を向けること。"
+    },
+    "glasses": {
+      "en": "Eyes must be clearly visible. No light reflections or sunglasses are allowed; medically-tinted glasses are permitted only if the frame does not hide the eyes.",
+      "ko": "눈이 뚜렷이 보여야 함. 빛 반사나 선글라스는 허용되지 않으며, 의료용 색안경은 안경테가 눈을 가리지 않는 경우에만 허용됨.",
+      "ja": "目がはっきりと見えること。反射光やサングラスは不可。医療用の色付き眼鏡はフレームが目を隠さない場合のみ許可される。"
+    },
+    "headwear": {
+      "en": "No headwear is allowed, except for religious reasons, in which case the face must be fully open from the chin to the forehead.",
+      "ko": "모자 등 머리쓰개는 착용 불가하나, 종교적 사유의 경우 예외로 하며 이 경우에도 턱부터 이마까지 얼굴이 드러나야 함.",
+      "ja": "帽子等の着用は不可。ただし宗教上の理由による場合は例外とし、その場合もあごから額まで顔が見えること。"
+    },
+    "clothing": {
+      "en": "Photographs of a person wearing a uniform are not permitted.",
+      "ko": "제복(유니폼)을 착용한 사진은 허용되지 않음.",
+      "ja": "制服を着用した写真は認められない。"
+    }
+  },
+  "unverified": [
+    "ears_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [
+    {
+      "field": "background",
+      "db_value": "흰색",
+      "research_value": "Solid light-colored background, gray specifically recommended, blue explicitly NOT recommended — white is not the stated recommendation",
+      "source_url": "https://egov.kz/cms/en/articles/trebovaniya_k_fotografiyam"
+    }
+  ],
+  "cross_verification": {
+    "note": "size and head_height both match DB exactly (3.5×4.5cm; 3.2-3.6cm). This official egov.kz page is titled 'Requirements to photographs when drawing up identity documents to citizens of the Republic of Kazakhstan' and covers national ID + passport for citizens; it was used as the source for kz-passport specifically (linked from the national ID/passport issuance service page pass003_mvd). Not applied to kz-visa since visas are issued to foreigners under a separate regulatory framework (see kz-visa file). [적대검증 배치14 보정] 원본 expression_restriction 값에 'full face view' 문구가 포함되어 있었으나 face_visibility 필드 자체가 verified/unverified 어디에도 없어 누락 상태였음 — 동일 출처(egov.kz)에서 이미 인용된 문구를 face_visibility로 분리 신설하고, expression_restriction에서는 중복 문구를 제거함. restrictions_i18n에도 face_visibility 번역 추가."
+  }
+}

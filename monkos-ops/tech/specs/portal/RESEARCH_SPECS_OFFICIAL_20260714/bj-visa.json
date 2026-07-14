@@ -1,0 +1,30 @@
+{
+  "slug": "bj-visa",
+  "batch": 3,
+  "verified": {
+    "background": {
+      "value": "White background (fond blanc), passport-format photo",
+      "source_url": "https://rendez-vous.benin-ambassade.fr/visa-diplomatique/"
+    },
+    "official_source_url": {
+      "value": "https://evisa.bj/",
+      "source_url": "https://evisa.bj/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

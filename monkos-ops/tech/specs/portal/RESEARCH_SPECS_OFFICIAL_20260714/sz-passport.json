@@ -1,0 +1,28 @@
+{
+  "slug": "sz-passport",
+  "batch": 24,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://www.gov.sz/index.php/services-sp-22242747/travel-documents-and-passports",
+      "source_url": "https://www.gov.sz/index.php/services-sp-22242747/travel-documents-and-passports"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "The Eswatini Government official portal (gov.sz) confirms passport applications require 'Two (2) coloured passport sized photos' but does not publish exact dimensions, background color, or facial-pose specifications on either its main travel-documents-and-passports page or the alternate article (id=313) URL, both checked directly. Third-party aggregators (ivisa.com, rostrio.com, and photo-vendor sites) uniformly cite 4.5cm x 3.5cm with white-wall background and no-headwear policy, but this exact figure could not be traced to any reachable Eswatini government page. The Passports Act 1971 (via EswatiniLII, which would be the authoritative legal text) returned HTTP 403 and could not be checked directly, so its schedule/specimen requirements remain unconfirmed."
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "slug": "jm-passport",
+  "batch": 12,
+  "verified": {
+    "size": {
+      "value": "\"Photographs must be: 45millimetres (length) x 35 millimetres\" (35×45mm / 3.5×4.5cm — matches DB)",
+      "source_url": "https://www.pica.gov.jm/passport/photo-requirements"
+    },
+    "head_height": {
+      "value": "\"The length of the face in the photograph should be 25mm to 35mm\", with a margin of 3-4mm between the head and the edge of the photograph (matches DB's 2.5~3.5cm)",
+      "source_url": "https://www.pica.gov.jm/passport/photo-requirements"
+    },
+    "validity": {
+      "value": "\"Photograph should not be taken more than six (6) months prior to submitting application\"",
+      "source_url": "https://www.pica.gov.jm/passport/photo-requirements"
+    },
+    "clothing_restriction": {
+      "value": "\"Applicants of dark complexion should wear coloured clothing and photographs should be taken against a white background\"; \"Applicants of light complexion must be photographed against a pastel-shaded wall\" and should avoid wearing white clothing. Avoid exposed shoulders/chest and bright colours.",
+      "source_url": "https://www.pica.gov.jm/passport/photo-requirements"
+    },
+    "glasses_policy": {
+      "value": "\"Tinted lenses are prohibited\"; \"Heavy (thick) frames should be avoided\"",
+      "source_url": "https://www.pica.gov.jm/passport/photo-requirements"
+    },
+    "headwear_policy": {
+      "value": "Headgear permitted ONLY for religious purposes, and must be declared/completed on a special application form section",
+      "source_url": "https://www.pica.gov.jm/passport/photo-requirements"
+    },
+    "face_visibility": {
+      "value": "\"Facial features including the outline of the face from the bottom of the chin to top of the forehead must be clearly shown\"",
+      "source_url": "https://www.pica.gov.jm/passport/photo-requirements"
+    },
+    "official_source_url": {
+      "value": "https://www.pica.gov.jm/passport/photo-requirements (Passport, Immigration and Citizenship Agency — PICA, Jamaica's official passport-issuing authority)",
+      "source_url": "https://www.pica.gov.jm/passport/photo-requirements"
+    }
+  },
+  "restrictions_i18n": {
+    "clothing": {
+      "en": "Clothing depends on complexion: dark-complexioned applicants should wear coloured clothing (photographed against a white background); light-complexioned applicants must avoid white clothing (photographed against a pastel background). Avoid exposed shoulders/chest and bright colours.",
+      "ko": "안색에 따라 의상 규정이 다르다: 어두운 안색은 유색 의상을 착용(흰색 배경 촬영), 밝은 안색은 흰색 의상을 피해야 한다(파스텔 배경 촬영). 어깨·가슴 노출과 밝은 원색은 피할 것.",
+      "ja": "肌の色によって服装の規定が異なる:色黒の申請者は色付きの服を着用(白背景で撮影)、色白の申請者は白い服を避ける(パステル背景で撮影)。肩や胸の露出、明るい原色は避けること。"
+    },
+    "glasses": {
+      "en": "Tinted lenses are prohibited; heavy (thick) frames should be avoided.",
+      "ko": "색깔 있는 렌즈(선팅)는 금지되며, 두꺼운 안경테는 피해야 한다.",
+      "ja": "色付きレンズは禁止。太い眼鏡フレームは避けること。"
+    },
+    "headwear": {
+      "en": "Headgear is permitted only for religious purposes and must be declared on a special section of the application form.",
+      "ko": "머리가리개는 종교적 목적에 한해서만 허용되며, 신청서의 별도 항목에 명시해야 한다.",
+      "ja": "頭部を覆うものは宗教上の目的の場合のみ許可され、申請書の専用欄にその旨を明記する必要がある。"
+    },
+    "face_visibility": {
+      "en": "Facial features, including the outline of the face from the bottom of the chin to the top of the forehead, must be clearly shown.",
+      "ko": "턱 아래부터 이마 위까지 얼굴 윤곽을 포함한 이목구비가 명확히 드러나야 한다.",
+      "ja": "あごの下から額の上まで、顔の輪郭を含む目鼻立ちがはっきりと写っている必要がある。"
+    }
+  },
+  "unverified": [
+    "expression_restriction",
+    "ears_visibility",
+    "accessories",
+    "file_spec"
+  ],
+  "db_conflicts": [
+    {
+      "field": "background",
+      "db_value": "흰색",
+      "research_value": "Complexion-dependent, not uniformly white: dark-complexioned applicants are photographed against a WHITE background; light-complexioned applicants against a PASTEL background (beige, pale pink, etc.) and told to avoid white clothing; applicants with grey/white hair are photographed against a pale blue or pastel background.",
+      "source_url": "https://www.pica.gov.jm/passport/photo-requirements"
+    }
+  ],
+  "cross_verification": {}
+}

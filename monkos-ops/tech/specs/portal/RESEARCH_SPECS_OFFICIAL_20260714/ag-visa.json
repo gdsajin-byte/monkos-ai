@@ -1,0 +1,37 @@
+{
+  "slug": "ag-visa",
+  "batch": 0,
+  "verified": {
+    "size": {
+      "value": "45mm × 35mm (i.e. 3.5 × 4.5cm) — referred to on the visa page as a 'recent color passport photograph'",
+      "source_url": "https://immigration.gov.ag/visa-services/visa-application-process/"
+    },
+    "background": {
+      "value": "White background only",
+      "source_url": "https://immigration.gov.ag/visa-services/visa-application-process/"
+    },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": {
+      "value": "Photo must not be altered or edited from its original state",
+      "source_url": "https://immigration.gov.ag/visa-services/visa-application-process/"
+    },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://immigration.gov.ag/visa-services/visa-application-process/",
+      "source_url": "https://immigration.gov.ag/visa-services/visa-application-process/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["head_height", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "The visa page explicitly labels the required photo a 'passport photograph', which strongly suggests the same composition rules as ag-passport (neutral expression, no dark glasses, ears visible, head covering restricted to religious/medical reasons) apply here too — but since the visa-specific page text only restates size, background and originality, this file only marks those three as directly verified for ag-visa; the remaining restriction fields are left unverified rather than assumed."
+  }
+}

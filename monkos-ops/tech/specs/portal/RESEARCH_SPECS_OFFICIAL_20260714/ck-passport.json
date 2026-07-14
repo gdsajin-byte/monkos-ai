@@ -1,0 +1,29 @@
+{
+  "slug": "ck-passport",
+  "batch": 5,
+  "verified": {
+    "official_source_url": {
+      "value": "https://mfai.gov.ck/",
+      "source_url": "https://mfai.gov.ck/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note": "The Cook Islands Ministry of Foreign Affairs and Immigration (mfai.gov.ck) is corroborated as the correct issuing authority across many independent search results, but every direct page-fetch attempt to mfai.gov.ck returned HTTP 403 (bot protection), so no numeric photo specification could be independently confirmed. Background context (not a verified spec field): the Cook Islands does not currently issue an independent Cook Islands passport — Cook Islanders travel on New Zealand passports carrying a 'Cook Islands Status' endorsement — so a distinct 'Cook Islands passport photo standard' may not exist as such; this could not be confirmed via a successful official fetch and is flagged for the requester's awareness rather than asserted as fact."
+  }
+}

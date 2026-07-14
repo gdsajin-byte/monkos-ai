@@ -1,0 +1,28 @@
+{
+  "slug": "et-visa",
+  "batch": 8,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://www.evisa.gov.et/visa",
+      "source_url": "https://www.evisa.gov.et/visa"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "The official Ethiopian e-Visa portal (evisa.gov.et) is a JavaScript-rendered single-page application; repeated direct fetches (English and French locale pages, tourist-info page, root page) returned only the page <title> tag with no readable body text, so none of its stated photo requirements could be confirmed first-hand. Many third-party visa-photo vendor sites (visafoto.com, photogov.com, mybiometricphotos.com, ethiopia-e-visa.com) converge on figures like 35×45mm / white background / 600dpi / 2MB JPEG, but per the truthfulness gate these are excluded because they are not the primary official source and their claims could not be cross-checked against actual evisa.gov.et page content. All fields left unverified rather than adopting aggregator consensus."
+  }
+}

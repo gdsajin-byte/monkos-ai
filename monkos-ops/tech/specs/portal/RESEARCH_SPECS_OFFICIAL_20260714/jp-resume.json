@@ -1,0 +1,43 @@
+{
+  "slug": "jp-resume",
+  "batch": "T3-refill",
+  "verified": {
+    "size": {
+      "value": "",
+      "source_url": "",
+      "_note": "실무 관례상 세로 40mm x 가로 30mm(4x3cm, 통상 '3x4cm'로 통용)가 널리 쓰이나, 이는 과거 JIS(일본산업규격) 해설서에 실렸던 이력서 양식 예시에서 비롯된 통용 수치일 뿐 현재 유효한 법정/공식 규정이 아님이 정부 페이지로 확인됨"
+    },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": { "value": "", "source_url": "" }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories",
+    "official_source_url"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note": "履歴書(resume) photos in Japan are a private hiring convention submitted to companies, not a government-regulated document. Confirmed by the Ministry of Health, Labour and Welfare's own page (mhlw.go.jp/stf/newpage_kouseisaiyou030416.html), which states verbatim: '令和2年7月に日本規格協会が、JIS規格の解説の様式例から履歴書の様式例を削除したため' (in July 2020 the Japan Standards Association deleted the resume-format example from the JIS standard's explanatory materials). MHLW subsequently created its own reference format (履歴書様式例) specifically to preserve fair-hiring standards after that deletion (i.e. to keep discriminatory items like photo/gender/age out of a unified template) — and that MHLW reference format does not specify any photo size or photo requirement; this was directly confirmed by fetching the MHLW page itself. Separately, the Ministry of Justice Immigration Services Agency's photo-standard page (moj.go.jp/isa/applications/status/photo_info_00002.html, which is cited in the neighboring jp-halfcard.json record for its 30x40mm figure) was re-checked in this pass and confirmed to apply only to '在留手続' (residence procedures) — it never mentions 履歴書, so it cannot be used as a source here. The commonly cited figure (3x4cm / 30x40mm, matching the DB) reflects market convention carried over from JIS's now-deleted example — still followed by print shops, stationery vendors and web-form UIs — rather than any currently binding regulation, mirroring the sibling kr-resume.json finding for Korea. No government or public body currently regulates resume-photo specs in Japan; leaving 'verified' empty is an intentional, sourced conclusion per the truthfulness gate, not an unfinished research gap."
+  }
+}

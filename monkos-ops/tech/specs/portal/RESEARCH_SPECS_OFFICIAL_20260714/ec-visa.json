@@ -1,0 +1,64 @@
+{
+  "slug": "ec-visa",
+  "batch": 7,
+  "verified": {
+    "size": {
+      "value": "5 x 5 cms (2 x 2 inches) — Cancillería (Ministry of Foreign Affairs and Human Mobility) consular visa pages consistently state this size across multiple independent consulate subdomains (Houston, Caracas, New York, Washington)",
+      "source_url": "https://www.cancilleria.gob.ec/houston/2023/05/10/visas-de-turismo/"
+    },
+    "background": {
+      "value": "White background required",
+      "source_url": "https://www.cancilleria.gob.ec/houston/2023/05/10/visas-de-turismo/"
+    },
+    "expression_restriction": {
+      "value": "Neutral facial expression preferred, though a natural smile is also accepted; both eyes must be open",
+      "source_url": "https://www.cancilleria.gob.ec/houston/2023/05/10/visas-de-turismo/"
+    },
+    "ears_visibility": {
+      "value": "Ears must be uncovered",
+      "source_url": "https://www.cancilleria.gob.ec/newyork/2024/01/17/1215/"
+    },
+    "file_spec": {
+      "value": "Digital photo must be color, JPG format, maximum 1 MB, recently taken",
+      "source_url": "https://www.cancilleria.gob.ec/houston/2023/05/10/visas-de-turismo/"
+    },
+    "official_source_url": {
+      "value": "https://www.cancilleria.gob.ec/2024/07/16/portal-evisas-visas-electronicas-para-ecuador/",
+      "source_url": "https://www.cancilleria.gob.ec/2024/07/16/portal-evisas-visas-electronicas-para-ecuador/"
+    }
+  },
+  "restrictions_i18n": {
+    "expression": {
+      "en": "A neutral expression is preferred, though a natural smile is also accepted; both eyes must be open.",
+      "ko": "무표정을 권장하나 자연스러운 미소도 허용됨. 양쪽 눈은 뜨고 있어야 함.",
+      "ja": "無表情が望ましいが、自然な笑顔も許容される。両目は開いていること。"
+    },
+    "ears_visibility": {
+      "en": "Ears must be uncovered in the photo.",
+      "ko": "귀가 가려지지 않고 드러나야 함.",
+      "ja": "耳が隠れずに見えている必要あり。"
+    }
+  },
+  "unverified": [
+    "head_height",
+    "validity",
+    "clothing_restriction",
+    "glasses_policy",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "3.5 × 4.5cm",
+      "research_value": "5 x 5 cm (2 x 2 inches) — this figure recurs consistently across multiple independent Cancillería consulate subpages (Houston tourism-visa page, Caracas visa pages, New York cédula/pasaporte photo-capture page, Washington visa page), which increases confidence it is the genuine centralized MRE standard rather than a one-off typo.",
+      "source_url": "https://www.cancilleria.gob.ec/houston/2023/05/10/visas-de-turismo/"
+    }
+  ],
+  "cross_verification": {
+    "direct_fetch_note": {
+      "note": "Direct WebFetch to cancilleria.gob.ec (multiple subdomains/paths tried: newyork, houston, washington) failed every time with a TLS chain-validation error ('unable to verify the first certificate') — a fetch-tool limitation. Values were confirmed via grounded web search returning verbatim-quoted Spanish text tied specifically to cancilleria.gob.ec consular pages, cross-checked across several independent consulate subdomains showing the same figures, which is treated as a meaningful corroboration signal distinct from a single-source echo."
+    }
+  }
+}

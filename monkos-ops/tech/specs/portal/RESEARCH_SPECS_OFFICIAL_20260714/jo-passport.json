@@ -1,0 +1,83 @@
+{
+  "slug": "jo-passport",
+  "batch": "T3-refill",
+  "verified": {
+    "size": {
+      "value": "35 x 45mm (3.5 x 4.5cm), color photo",
+      "source_url": "https://www.cspd.gov.jo/AR/ListDetails/%D8%A7%D9%84%D8%AE%D8%AF%D9%85%D8%A7%D8%AA_%D8%A7%D9%84%D8%A7%D9%84%D9%83%D8%AA%D8%B1%D9%88%D9%86%D9%8A%D8%A9/42/1006"
+    },
+    "background": {
+      "value": "Pure white background, free of shadows or any visible elements",
+      "source_url": "https://www.cspd.gov.jo/AR/ListDetails/%D8%A7%D9%84%D8%AE%D8%AF%D9%85%D8%A7%D8%AA_%D8%A7%D9%84%D8%A7%D9%84%D9%83%D8%AA%D8%B1%D9%88%D9%86%D9%8A%D8%A9/42/1006"
+    },
+    "validity": {
+      "value": "Photo must be recent, not exceeding six months old",
+      "source_url": "https://www.cspd.gov.jo/AR/ListDetails/%D8%A7%D9%84%D8%AE%D8%AF%D9%85%D8%A7%D8%AA_%D8%A7%D9%84%D8%A7%D9%84%D9%83%D8%AA%D8%B1%D9%88%D9%86%D9%8A%D8%A9/42/1006"
+    },
+    "clothing_restriction": {
+      "value": "No specific restriction on ordinary/everyday clothing is stated",
+      "source_url": "https://www.cspd.gov.jo/AR/ListDetails/%D8%A7%D9%84%D8%AE%D8%AF%D9%85%D8%A7%D8%AA_%D8%A7%D9%84%D8%A7%D9%84%D9%83%D8%AA%D8%B1%D9%88%D9%86%D9%8A%D8%A9/42/1006"
+    },
+    "expression_restriction": {
+      "value": "Neutral facial expression required; no exaggerated smile or frown",
+      "source_url": "https://www.cspd.gov.jo/AR/ListDetails/%D8%A7%D9%84%D8%AE%D8%AF%D9%85%D8%A7%D8%AA_%D8%A7%D9%84%D8%A7%D9%84%D9%83%D8%AA%D8%B1%D9%88%D9%86%D9%8A%D8%A9/42/1006"
+    },
+    "glasses_policy": {
+      "value": "Sunglasses / tinted glasses are not permitted",
+      "source_url": "https://www.cspd.gov.jo/AR/ListDetails/%D8%A7%D9%84%D8%AE%D8%AF%D9%85%D8%A7%D8%AA_%D8%A7%D9%84%D8%A7%D9%84%D9%83%D8%AA%D8%B1%D9%88%D9%86%D9%8A%D8%A9/42/1006"
+    },
+    "ears_visibility": {
+      "value": "Ears must be clearly visible",
+      "source_url": "https://www.cspd.gov.jo/AR/ListDetails/%D8%A7%D9%84%D8%AE%D8%AF%D9%85%D8%A7%D8%AA_%D8%A7%D9%84%D8%A7%D9%84%D9%83%D8%AA%D8%B1%D9%88%D9%86%D9%8A%D8%A9/42/1006"
+    },
+    "face_visibility": {
+      "value": "Photo taken from a frontal angle showing the full facial features together with the shoulders; face must be clearly visible",
+      "source_url": "https://www.cspd.gov.jo/AR/ListDetails/%D8%A7%D9%84%D8%AE%D8%AF%D9%85%D8%A7%D8%AA_%D8%A7%D9%84%D8%A7%D9%84%D9%83%D8%AA%D8%B1%D9%88%D9%86%D9%8A%D8%A9/42/1006"
+    },
+    "accessories": {
+      "value": "Accessories that obscure facial features are not permitted; no digital retouching, filters or effects allowed",
+      "source_url": "https://www.cspd.gov.jo/AR/ListDetails/%D8%A7%D9%84%D8%AE%D8%AF%D9%85%D8%A7%D8%AA_%D8%A7%D9%84%D8%A7%D9%84%D9%83%D8%AA%D8%B1%D9%88%D9%86%D9%8A%D8%A9/42/1006"
+    },
+    "official_source_url": {
+      "value": "https://www.cspd.gov.jo/ (Civil Status and Passports Department / CSPD, دائرة الأحوال المدنية والجوازات — Ministry of Interior, Jordan). CSPD's E-Services page names a specific resource, 'ICAO Photo Specifications for the Personal Photo', at the ListDetails URL, confirming CSPD itself publishes these specs, though the resource renders as a non-extractable graphic to this research tool.",
+      "source_url": "https://www.cspd.gov.jo/AR/ListDetails/%D8%A7%D9%84%D8%AE%D8%AF%D9%85%D8%A7%D8%AA_%D8%A7%D9%84%D8%A7%D9%84%D9%83%D8%AA%D8%B1%D9%88%D9%86%D9%8A%D8%A9/42/1006"
+    }
+  },
+  "restrictions_i18n": {
+    "clothing": {
+      "en": "No specific restriction on ordinary/everyday clothing is stated.",
+      "ko": "일반적인 평상복 착용에 대한 별도 제한 규정은 없음.",
+      "ja": "普段着の着用について特別な制限規定はない。"
+    },
+    "expression": {
+      "en": "Neutral facial expression is required; no exaggerated smile or frown.",
+      "ko": "무표정(중립적 표정)을 유지해야 하며, 과도한 미소나 찡그림은 허용되지 않음.",
+      "ja": "無表情(中立的な表情)を保つこと。大げさな笑顔やしかめ面は不可。"
+    },
+    "glasses": {
+      "en": "Sunglasses / tinted glasses are not permitted.",
+      "ko": "선글라스(색안경) 착용은 허용되지 않음.",
+      "ja": "サングラス(色付き眼鏡)の着用は不可。"
+    },
+    "ears": {
+      "en": "Ears must be clearly visible.",
+      "ko": "양쪽 귀가 뚜렷하게 보여야 함.",
+      "ja": "両耳がはっきりと見えること。"
+    },
+    "face_visibility": {
+      "en": "The photo must be taken from a frontal angle showing the full facial features together with the shoulders; the face must be clearly visible.",
+      "ko": "정면 각도로 촬영하여 얼굴 전체 윤곽과 어깨까지 나와야 하며, 얼굴이 뚜렷하게 보여야 함.",
+      "ja": "正面から撮影し、顔の輪郭全体と肩まで写ること。顔がはっきりと見えること。"
+    },
+    "accessories": {
+      "en": "Accessories that obscure facial features are not permitted; digital retouching, filters or effects are not allowed.",
+      "ko": "얼굴 윤곽을 가리는 액세서리 착용 불가. 디지털 보정·필터·효과 사용 금지.",
+      "ja": "顔の輪郭を隠すアクセサリーの着用は不可。デジタル修正・フィルター・エフェクトの使用は禁止。"
+    }
+  },
+  "unverified": ["head_height", "file_spec", "headwear_policy"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note": "cspd.gov.jo's E-Services homepage (Arabic) explicitly links to a resource titled 'ICAO Photo Specifications for the Personal Photo' at /AR/ListDetails/.../42/1006, confirming CSPD does publish these specs, but the page delivers them as a graphic/image that this tool's HTML-to-text pipeline could not extract (tried direct fetch and an r.jina.ai proxy fetch; both returned only surrounding page chrome, not the graphic content). Field values above are therefore sourced from convergent, contemporaneous Jordanian news coverage that explicitly attributes the same figures to an official CSPD announcement: Al Rai (alrai.com, published by the Jordan Press Foundation, in which the Jordanian government holds an ownership stake) dated the announcement on/around 22 January 2026 and reported size 35x45mm, white background free of shadows/visible elements, 6-month validity, frontal framing with shoulders, neutral expression, and a ban on sunglasses/face-obscuring accessories. Al Dustour (addustour.com) independently reported matching figures and additionally specified that both ears and the face must be clearly visible, and that there is no specific restriction on ordinary clothing. Roya News (royanews.com) independently reported matching size/background/expression/accessory figures and explicitly stated the source is an official CSPD announcement. All three name CSPD (دائرة الأحوال المدنية والجوازات) as the source. Commercial passport-photo vendor sites (mybiometricphotos.com, visafoto.com, ipassportphoto.com, idphotodiy.com, etc.) were excluded per the truthfulness gate even where their claims coincided; a few of their claims that do NOT appear in any CSPD-attributed news coverage found in this pass (exact head-height 33mm, digital pixel dimensions 826x1062, 600 DPI scan resolution, an unconditional prescription-glasses ban, and a hat/religious-exception clause) were deliberately NOT carried into verified and are left in unverified/uncited instead. jordan.gov.jo and moi.gov.jo (the general e-government portal, checked previously for jo-visa.json) do not host this detail — cspd.gov.jo is confirmed as the correct primary authority for Jordan passport photos. Size and background both match the DB exactly; no db_conflicts found."
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "slug": "sl-passport",
+  "batch": 23,
+  "verified": {
+    "file_spec": {
+      "value": "\"Passport photograph in JPG or PNG format.\" — stated on the official Sierra Leone Immigration Department Online Passport Applications portal as one of the uploaded/required items. No further compression, resolution, or file-size limit is stated.",
+      "source_url": "https://passport.slid.datahub.gov.sl"
+    },
+    "official_source_url": {
+      "value": "https://slid.gov.sl/ (Sierra Leone Immigration Department) — application is processed via the online portal https://passport.slid.datahub.gov.sl. Neither the department's main site, its Fees page, nor the online portal publish a photo size, background colour, or head-height specification.",
+      "source_url": "https://slid.gov.sl/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

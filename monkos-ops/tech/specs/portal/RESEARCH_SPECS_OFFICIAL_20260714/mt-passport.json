@@ -1,0 +1,98 @@
+{
+  "slug": "mt-passport",
+  "batch": 18,
+  "verified": {
+    "size": {
+      "value": "40mm x 30mm (height x width; 1.58 x 1.18 inch)",
+      "source_url": "https://identita.gov.mt/passport-office-sec-page-useful-info/"
+    },
+    "background": {
+      "value": "Plain and white. Photographs with dark, busy or patterned backgrounds will not be accepted.",
+      "source_url": "https://identita.gov.mt/passport-office-sec-page-useful-info/"
+    },
+    "head_height": {
+      "value": "Close-up of head and top of shoulders; the face should take up 70-80% of the vertical dimension of the photograph (no absolute mm figure published on this page)",
+      "source_url": "https://identita.gov.mt/passport-office-sec-page-useful-info/"
+    },
+    "validity": {
+      "value": "Photos must not be older than six (6) months",
+      "source_url": "https://identita.gov.mt/passport-office-sec-page-useful-info/"
+    },
+    "file_spec": {
+      "value": "Must be printed on photo-quality (non-glossy) paper in high resolution; only original prints are accepted — scanned or photocopied photos are not accepted",
+      "source_url": "https://identita.gov.mt/passport-office-sec-page-useful-info/"
+    },
+    "clothing_restriction": {
+      "value": "Normal/casual attire, without wearing a hat or dark glasses",
+      "source_url": "https://identita.gov.mt/passport-office-sec-page-useful-info/"
+    },
+    "expression_restriction": {
+      "value": "Applicant must look directly towards the camera portraying a neutral expression; smiles, frowning, raised eyebrows or unusual expressions are not acceptable",
+      "source_url": "https://identita.gov.mt/passport-office-sec-page-useful-info/"
+    },
+    "glasses_policy": {
+      "value": "Eyes must be shown clearly with no light reflection off the glasses and no tinted lenses; heavy frames should be avoided if possible. Dark glasses / non-prescription tinted glasses are not acceptable unless medically necessary, in which case a medical certificate is required.",
+      "source_url": "https://identita.gov.mt/passport-office-sec-page-useful-info/"
+    },
+    "face_visibility": {
+      "value": "Both edges of the face shall be clearly visible",
+      "source_url": "https://identita.gov.mt/passport-office-sec-page-useful-info/"
+    },
+    "headwear_policy": {
+      "value": "Head coverings shall not be accepted except in circumstances specifically approved by the competent authority; religious headwear worn daily requires a signed statement confirming this practice",
+      "source_url": "https://identita.gov.mt/passport-office-sec-page-useful-info/"
+    },
+    "official_source_url": {
+      "value": "https://identita.gov.mt/passport-office-sec-page-useful-info/",
+      "source_url": "https://identita.gov.mt/passport-office-sec-page-useful-info/"
+    }
+  },
+  "restrictions_i18n": {
+    "expression": {
+      "en": "Look directly towards the camera with a neutral expression; smiles, frowning, raised eyebrows or unusual expressions are not acceptable.",
+      "ko": "카메라를 정면으로 응시하며 무표정을 유지해야 한다. 미소, 찡그림, 눈썹 치켜올리기 등 부자연스러운 표정은 허용되지 않는다.",
+      "ja": "カメラを正面から直視し、無表情を保つこと。笑顔、しかめ面、眉を上げるなどの不自然な表情は認められない。"
+    },
+    "glasses": {
+      "en": "Eyes must be shown clearly with no reflection off the glasses and no tinted lenses; heavy frames should be avoided where possible. Dark glasses are not acceptable unless medically necessary (certificate required).",
+      "ko": "안경 착용 시 렌즈에 빛 반사가 없어야 하며 색이 있는 렌즈는 불가하다. 두꺼운 안경테는 가급적 피해야 한다. 짙은 색 선글라스는 의료상 필요한 경우(진단서 필요) 외에는 허용되지 않는다.",
+      "ja": "眼鏡を着用する場合、レンズへの反射がなく、色付きレンズも不可。太いフレームはできるだけ避けること。濃い色のサングラスは医学的理由(診断書が必要)がない限り認められない。"
+    },
+    "headwear": {
+      "en": "Head coverings are not accepted except in circumstances specifically approved by the competent authority; religious headwear worn daily requires a signed statement confirming this practice.",
+      "ko": "머리가리개(모자 등)는 관계 당국이 특별히 승인한 경우를 제외하고 허용되지 않는다. 매일 착용하는 종교적 머리가리개는 이를 확인하는 서명된 진술서가 필요하다.",
+      "ja": "頭部を覆うもの(帽子等)は、管轄当局が特別に承認した場合を除き認められない。日常的に着用する宗教上の頭覆いは、その旨を証明する署名済みの申立書が必要。"
+    },
+    "face_visibility": {
+      "en": "Both edges of the face shall be clearly visible.",
+      "ko": "얼굴 양쪽 가장자리(윤곽)가 뚜렷하게 보여야 한다.",
+      "ja": "顔の両端(輪郭)がはっきりと見える必要がある。"
+    },
+    "clothing": {
+      "en": "Normal/casual attire should be worn, without a hat or dark glasses.",
+      "ko": "일상적인 평상복을 착용해야 하며, 모자나 짙은 선글라스는 착용할 수 없다.",
+      "ja": "普段のカジュアルな服装を着用し、帽子や濃い色のサングラスは着用不可。"
+    }
+  },
+  "unverified": [
+    "ears_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "3.5 × 4.5cm",
+      "research_value": "40mm x 30mm (height x width)",
+      "source_url": "https://identita.gov.mt/passport-office-sec-page-useful-info/"
+    },
+    {
+      "field": "head_height",
+      "db_value": "3.2~3.6cm",
+      "research_value": "Not stated as an absolute mm figure — official rule is 'face takes up 70-80% of the vertical dimension of the photograph'",
+      "source_url": "https://identita.gov.mt/passport-office-sec-page-useful-info/"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "Malta's identity/passport agency changed domain from identitymalta.com to identita.gov.mt; the old identitymalta.com domain now returns HTTP 403 on direct fetch. Two internal inconsistencies were found on identita.gov.mt itself during this research pass and were deliberately NOT used: (1) a PDF hosted at identita.gov.mt/wp-content/uploads/2023/10/Biometric-photos.pdf is titled 'Passport photographs' but its letterhead reads 'Home Office / Identity & Passport Service' and it cites a 'Passport Adviceline 0870 521 0410' (a UK phone number) and gives DIFFERENT figures (45mm x 35mm, light grey/cream background, 1 month old) — this is evidently a leftover/reused UK IPS document, not Maltese-authored content, so it was excluded entirely. (2) identita.gov.mt's own FAQ aggregator page (frequently-asked-questions/passport/) separately states '45mm x 35mm' and a 3-month validity, conflicting with the dedicated passport-office-sec-page-useful-info page used here (40mm x 30mm, 6 months). The dedicated page was preferred as primary because its language reads as genuine Malta-drafted regulatory text (references to 'the competent authority', a specific signed-statement exception process) rather than generic/templated content. Given this internal inconsistency on Malta's own official domain, the size and head_height figures reported here should be treated with appropriate caution despite being sourced from an official .gov.mt page."
+  }
+}

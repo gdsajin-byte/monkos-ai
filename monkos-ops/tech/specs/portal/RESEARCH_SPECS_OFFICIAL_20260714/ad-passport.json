@@ -1,0 +1,62 @@
+{
+  "slug": "ad-passport",
+  "batch": 0,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": {
+      "value": "Standard applications: photo captured on-site at the Servei de Tràmits (Processing Service) photo booth at the time of application — no prior validity window applies. Exception (children under 6, or applicants with a physical impediment preventing booth use): a photo taken within 6 months before the application must be submitted.",
+      "source_url": "https://www.govern.ad/ca/tematiques/ciutadania-i-documentacio/passaport/sollicitar-el-passaport"
+    },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": {
+      "value": "Frontal position, looking directly at the camera, neutral expression, mouth closed, eyes open and not covered by hair.",
+      "source_url": "https://www.govern.ad/ca/tematiques/ciutadania-i-documentacio/passaport/sollicitar-el-passaport"
+    },
+    "glasses_policy": {
+      "value": "Glasses must be removed for the photo so the eyes are fully visible.",
+      "source_url": "https://www.govern.ad/ca/tematiques/ciutadania-i-documentacio/passaport/sollicitar-el-passaport"
+    },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": {
+      "value": "No hairstyle or facial ornament that partially hides the face is accepted.",
+      "source_url": "https://www.govern.ad/ca/tematiques/ciutadania-i-documentacio/passaport/sollicitar-el-passaport"
+    },
+    "headwear_policy": {
+      "value": "No accessory on the head is permitted.",
+      "source_url": "https://www.govern.ad/ca/tematiques/ciutadania-i-documentacio/passaport/sollicitar-el-passaport"
+    },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://www.govern.ad/ca/tematiques/ciutadania-i-documentacio/passaport/sollicitar-el-passaport",
+      "source_url": "https://www.govern.ad/ca/tematiques/ciutadania-i-documentacio/passaport/sollicitar-el-passaport"
+    }
+  },
+  "restrictions_i18n": {
+    "expression": {
+      "en": "Frontal position, looking directly at the camera, neutral expression, mouth closed, eyes open and not covered by hair.",
+      "ko": "정면을 보고 카메라를 직시, 무표정, 입은 다물고, 눈은 뜬 채로 머리카락에 가리지 않을 것.",
+      "ja": "正面を向いてカメラを直視し、無表情、口を閉じ、目を開けて髪の毛で隠れないようにすること。"
+    },
+    "glasses": {
+      "en": "Glasses must be removed for the photo so the eyes are fully visible.",
+      "ko": "눈이 완전히 보이도록 촬영 시 안경을 벗어야 한다.",
+      "ja": "目がはっきり見えるよう、撮影時にはメガネを外す必要がある。"
+    },
+    "face_visibility": {
+      "en": "No hairstyle or facial ornament that partially hides the face is accepted.",
+      "ko": "얼굴 일부를 가리는 헤어스타일이나 장신구는 허용되지 않는다.",
+      "ja": "顔の一部を隠す髪型や装飾品は認められない。"
+    },
+    "headwear": {
+      "en": "No accessory on the head is permitted.",
+      "ko": "머리에 어떠한 액세서리(모자 등)도 착용할 수 없다.",
+      "ja": "頭部に一切のアクセサリー(帽子等)を着用できない。"
+    }
+  },
+  "unverified": ["size", "background", "head_height", "file_spec", "clothing_restriction", "ears_visibility", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

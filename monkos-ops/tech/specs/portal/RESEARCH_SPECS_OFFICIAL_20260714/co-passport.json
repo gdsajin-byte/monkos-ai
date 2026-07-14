@@ -1,0 +1,66 @@
+{
+  "slug": "co-passport",
+  "batch": 5,
+  "verified": {
+    "size": {
+      "value": "4.0cm x 5.0cm, color, recent. Matches DB value exactly (4 x 5cm).",
+      "source_url": "https://www.cancilleria.gov.co/faq/tengo-que-llevar-fotografias-que-me-sea-expedido-pasaporte"
+    },
+    "head_height": {
+      "value": "Head length 27mm (2.7cm); eye height 2.4cm-3.4cm from the bottom edge of the photo; 2mm top-edge margin; face size max 4.2cm / min 3.9cm; 9mm from top edge to start of head. Head-length figure matches DB value exactly (2.7cm).",
+      "source_url": "https://www.cancilleria.gov.co/faq/tengo-que-llevar-fotografias-que-me-sea-expedido-pasaporte"
+    },
+    "background": {
+      "value": "White background (blue-toned background permitted only as an exception for people with white and/or thin/sparse hair)",
+      "source_url": "https://www.cancilleria.gov.co/faq/tengo-que-llevar-fotografias-que-me-sea-expedido-pasaporte"
+    },
+    "validity": {
+      "value": "Taken no more than 6 months prior to application",
+      "source_url": "https://www.cancilleria.gov.co/faq/tengo-que-llevar-fotografias-que-me-sea-expedido-pasaporte"
+    },
+    "clothing_restriction": {
+      "value": "Dark clothing, both shoulders visible in the silhouette",
+      "source_url": "https://www.cancilleria.gov.co/faq/tengo-que-llevar-fotografias-que-me-sea-expedido-pasaporte"
+    },
+    "glasses_policy": {
+      "value": "Glasses are not allowed",
+      "source_url": "https://www.cancilleria.gov.co/faq/tengo-que-llevar-fotografias-que-me-sea-expedido-pasaporte"
+    },
+    "headwear_policy": {
+      "value": "Hats and caps are not allowed",
+      "source_url": "https://www.cancilleria.gov.co/faq/tengo-que-llevar-fotografias-que-me-sea-expedido-pasaporte"
+    },
+    "official_source_url": {
+      "value": "https://www.cancilleria.gov.co/faq/tengo-que-llevar-fotografias-que-me-sea-expedido-pasaporte",
+      "source_url": "https://www.cancilleria.gov.co/faq/tengo-que-llevar-fotografias-que-me-sea-expedido-pasaporte"
+    }
+  },
+  "restrictions_i18n": {
+    "clothing": {
+      "en": "Dark clothing, with both shoulders visible in the silhouette.",
+      "ko": "어두운 색 옷을 착용하고, 실루엣에서 양쪽 어깨가 드러나야 합니다.",
+      "ja": "濃い色の服を着用し、シルエットで両肩が見える必要があります。"
+    },
+    "glasses": {
+      "en": "Glasses are not allowed.",
+      "ko": "안경 착용이 금지됩니다.",
+      "ja": "眼鏡の着用は禁止されています。"
+    },
+    "headwear": {
+      "en": "Hats and caps are not allowed.",
+      "ko": "모자와 캡 착용이 금지됩니다.",
+      "ja": "帽子やキャップの着用は禁止されています。"
+    }
+  },
+  "unverified": [
+    "file_spec",
+    "expression_restriction",
+    "ears_visibility",
+    "face_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note": "Note for context (not a verified field): Cancillería's own FAQ states passport photos are not submitted in advance by the applicant — they are captured digitally and in person at the passport office as part of the procedure. The specification above is nonetheless the official standard as published by Cancillería's own FAQ page (cancilleria.gov.co), used internally for that capture."
+  }
+}

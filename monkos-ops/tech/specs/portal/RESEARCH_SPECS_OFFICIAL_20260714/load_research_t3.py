@@ -59,7 +59,9 @@ for f in sorted(glob.glob(RDIR + '/*.json')):
         tri = i18n.get(rk) or i18n.get(rf) or {}
         if not en_val and not tri.get('en'):
             continue
-        block = {}
+        # 기존 블록과 언어별 병합 — 리서치 파일에 없는 언어(기번역 ko/ja)를 절대 소실시키지 않는다
+        # (2026-07-14 게이트 적발 버그 수리: en-only 1차 파일이 T2 번역 87슬러그를 덮어쓰던 문제)
+        block = dict(restr.get(rk, {}) or {})
         for lang in ('en', 'ko', 'ja'):
             t = str(tri.get(lang, '')).strip()
             if lang == 'en' and not t:

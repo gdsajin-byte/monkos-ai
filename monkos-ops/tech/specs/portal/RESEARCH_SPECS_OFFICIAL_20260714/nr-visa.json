@@ -1,0 +1,28 @@
+{
+  "slug": "nr-visa",
+  "batch": 20,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://justice.gov.nr/immigration-division/",
+      "source_url": "https://justice.gov.nr/immigration-division/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Nauru's Department of Justice & Border Control runs both the Passport Division and the Immigration Division (which handles visas) on the same justice.gov.nr site, but only the Passport Division page publishes explicit photo specs (35-40mm wide x 45-50mm high, chin-to-crown 32-36mm, white background, no smiling, ears visible — see the separate nr-passport record). The Immigration Division page itself (fetched directly) contains no photo specification for visas, and the official Visitor Visa application form (Form 7, justice.gov.nr/wp-content/uploads/2023/12/Application-Form-Visitor-Visa.pdf) is a scanned/image-based PDF that could not be text-extracted to confirm whether the same standard applies to visa photos. Rather than assume the passport standard carries over to visas, all composition fields are left unverified for this document type."
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "slug": "kw-passport",
+  "batch": 14,
+  "verified": {
+    "size": {
+      "value": "4 x 5 cm",
+      "source_url": "https://e.gov.kw/sites/kgoenglish/Pages/Services/MOI/ApplyforPassport.aspx"
+    },
+    "background": {
+      "value": "Blue background, to be in contrast to the face",
+      "source_url": "https://e.gov.kw/sites/kgoenglish/Pages/Services/MOI/ApplyforPassport.aspx"
+    },
+    "validity": {
+      "value": "Shall not exceed 6 months after creation date",
+      "source_url": "https://e.gov.kw/sites/kgoenglish/Pages/Services/MOI/ApplyforPassport.aspx"
+    },
+    "expression_restriction": {
+      "value": "Look directly into the camera with a straight (neutral) face",
+      "source_url": "https://e.gov.kw/sites/kgoenglish/Pages/Services/MOI/ApplyforPassport.aspx"
+    },
+    "glasses_policy": {
+      "value": "Glasses with thick or colored lenses are not allowed; there should be no reflection from the glasses",
+      "source_url": "https://e.gov.kw/sites/kgoenglish/Pages/Services/MOI/ApplyforPassport.aspx"
+    },
+    "face_visibility": {
+      "value": "Keep your hair off your face in order to show your face outline",
+      "source_url": "https://e.gov.kw/sites/kgoenglish/Pages/Services/MOI/ApplyforPassport.aspx"
+    },
+    "headwear_policy": {
+      "value": "Hijabs are permitted but must be in one color and should allow the face to appear entirely from the lowest of the chin to the highest of the forehead, along with the sides of the face",
+      "source_url": "https://e.gov.kw/sites/kgoenglish/Pages/Services/MOI/ApplyforPassport.aspx"
+    },
+    "accessories": {
+      "value": "Jewelry is allowed but should not hide or change the details of the face",
+      "source_url": "https://e.gov.kw/sites/kgoenglish/Pages/Services/MOI/ApplyforPassport.aspx"
+    },
+    "official_source_url": {
+      "value": "https://e.gov.kw/sites/kgoenglish/Pages/Services/MOI/ApplyforPassport.aspx",
+      "source_url": "https://e.gov.kw/sites/kgoenglish/Pages/Services/MOI/ApplyforPassport.aspx"
+    }
+  },
+  "restrictions_i18n": {
+    "expression": {
+      "en": "Look directly into the camera with a neutral, straight facial expression.",
+      "ko": "카메라를 정면으로 응시하며 무표정을 유지할 것.",
+      "ja": "カメラを正面から見つめ、無表情を保つこと。"
+    },
+    "glasses": {
+      "en": "Glasses with thick or colored lenses are not allowed, and there must be no reflection on the lenses.",
+      "ko": "두꺼운 렌즈나 색이 있는 렌즈의 안경은 허용되지 않으며, 렌즈에 빛 반사가 없어야 함.",
+      "ja": "厚いレンズや色付きレンズの眼鏡は不可。レンズに反射光があってはならない。"
+    },
+    "face_visibility": {
+      "en": "Hair must be kept away from the face so that the outline of the face is visible.",
+      "ko": "머리카락이 얼굴을 가리지 않도록 하여 얼굴 윤곽이 드러나야 함.",
+      "ja": "髪の毛が顔にかからないようにし、顔の輪郭がはっきり見えるようにすること。"
+    },
+    "headwear": {
+      "en": "Hijabs are permitted but must be a single color and must allow the entire face to be visible from the bottom of the chin to the top of the forehead, including the sides of the face.",
+      "ko": "히잡(머리가리개) 착용은 허용되나 단색이어야 하며, 턱 아래부터 이마 위, 얼굴 양옆까지 얼굴 전체가 드러나야 함.",
+      "ja": "ヒジャブの着用は許可されるが単色でなければならず、あごの下から額の上、顔の両側まで顔全体が見えること。"
+    },
+    "accessories": {
+      "en": "Jewelry is allowed but must not hide or alter the details of the face.",
+      "ko": "장신구(액세서리) 착용은 가능하나 얼굴의 세부 특징을 가리거나 변형시켜서는 안 됨.",
+      "ja": "アクセサリーの着用は可能だが、顔の特徴を隠したり変えたりしてはならない。"
+    }
+  },
+  "unverified": [
+    "head_height",
+    "file_spec",
+    "clothing_restriction",
+    "ears_visibility"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note": "size(4×5cm)와 background(파란색)는 DB값과 정확히 일치. head_height(DB: 3.8cm)는 공식 e.gov.kw 페이지에 구체적 mm/cm 또는 퍼센트 수치가 없어 확인 불가 — 제3자 사진서비스(visafoto 등)가 제시하는 75%/38mm 등의 수치는 공식 출처가 아니므로 배제함. 어린이(3세 미만) 특례: '입을 벌린 사진 허용'이 명시되어 있으나 이는 표준 성인 규정이 아니므로 verified에서 제외."
+  }
+}

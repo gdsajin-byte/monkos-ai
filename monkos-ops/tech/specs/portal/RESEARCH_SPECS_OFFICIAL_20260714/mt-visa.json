@@ -1,0 +1,25 @@
+{
+  "slug": "mt-visa",
+  "batch": 18,
+  "verified": {},
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories",
+    "official_source_url"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "DB labels this product 'Schengen Visa' (short-stay, Type C). Malta's dedicated short-stay Schengen visa page (foreign.gov.mt/schengen-visa-applications/) returned HTTP 403 on every direct-fetch attempt during this research pass (including via web.archive.org, which this tool cannot access) and could not be read. Malta's identity/passport/visa agency (identita.gov.mt) does publish photo guidance for its Central Visa Unit, but the two pages actually reached are explicitly labelled NATIONAL (long-stay, Type D) visa pages: 'One recent passport size photograph as per ICAO Standards' (identita.gov.mt/central-visa-unit-national-visa-long-stay-visa/) and 'one (1) passport-size photograph (in colour, taken against a white background, and the face should be clearly visible)' (identita.gov.mt/central-visa-national-visa-visa-application/). Since these are documented as National-visa requirements and were not confirmed to be identical to the Schengen short-stay product this slug represents, they were deliberately NOT carried into verified, to avoid misattributing a possibly-different product's figures. For reference, Malta's own passport standard (see mt-passport.json) is 40x30mm/white/6-months, and general EU Schengen practice is commonly cited elsewhere as 35x45mm/ICAO-standard, but neither figure was confirmed on a Malta-government Schengen-visa-specific page within this research pass."
+  }
+}

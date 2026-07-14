@@ -1,0 +1,47 @@
+{
+  "slug": "lb-passport",
+  "batch": 14,
+  "verified": {
+    "size": {
+      "value": "4.5 x 3.5 cm (i.e. 3.5×4.5cm), conforming to ICAO standards",
+      "source_url": "https://www.general-security.gov.lb/en/posts/196"
+    },
+    "background": {
+      "value": "White background",
+      "source_url": "https://www.general-security.gov.lb/en/posts/196"
+    },
+    "face_visibility": {
+      "value": "A recent color photograph of the full face (frontal view)",
+      "source_url": "https://www.general-security.gov.lb/en/posts/196"
+    },
+    "file_spec": {
+      "value": "Must be a recent color photo, not drawn/copied from a previous photo. Must be certified: the owner's name, file number, and place of registered residence written on it, signed and stamped with the mayor's (mukhtar's) seal.",
+      "source_url": "https://www.general-security.gov.lb/en/posts/196"
+    },
+    "official_source_url": {
+      "value": "https://www.general-security.gov.lb/en/posts/80",
+      "source_url": "https://www.general-security.gov.lb/en/posts/80"
+    }
+  },
+  "restrictions_i18n": {
+    "face_visibility": {
+      "en": "A recent full-face color photograph (frontal view).",
+      "ko": "정면을 향한 얼굴 전체가 나오는 최근 촬영 컬러 사진.",
+      "ja": "正面を向いた顔全体が写る、最近撮影したカラー写真。"
+    }
+  },
+  "unverified": [
+    "head_height",
+    "validity",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note": "Lebanese General Security (GDGS, general-security.gov.lb) is the sole authority for passports in Lebanon. Page /en/posts/80 is titled 'Passport picture requirements' but its specification text is embedded in images (res1-3.jpg) that could not be retrieved (image host returned HTML/404 rather than the image binary). The verbatim quote used here — 'A recent color photograph of the full face on a white background, conforming to the standards of the International Civil Aviation Organization (ICAO) measuring 4.5 x 3.5 cm...certified by the mayor's seal and signature after writing the name of the owner of the photo, file number and statistical statement' — comes from /en/posts/196, which covers biometric passport issuance for Palestinian refugees registered in Lebanon specifically, but restates the same general GDGS ICAO photo standard. size and background both match DB exactly (3.5×4.5cm; white)."
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "slug": "am-passport",
+  "batch": 1,
+  "verified": {
+    "size": {
+      "value": "35mm × 45mm (width × height), aspect ratio 7:9",
+      "source_url": "https://mcs-citizenship.am/en/guest/photoRequirements"
+    },
+    "background": {
+      "value": "Plain, light-colored background (white, light gray, or beige)",
+      "source_url": "https://mcs-citizenship.am/en/guest/photoRequirements"
+    },
+    "head_height": {
+      "value": "Head occupies 70-80% of photo height, approximately 32-36mm from chin to top of head; eyes located 23-35mm from bottom of photo",
+      "source_url": "https://mcs-citizenship.am/en/guest/photoRequirements"
+    },
+    "validity": {
+      "value": "Photo must be taken within the last 6 months",
+      "source_url": "https://mcs-citizenship.am/en/guest/photoRequirements"
+    },
+    "expression_restriction": {
+      "value": "Neutral facial expression — no smile, frown, or raised eyebrows; mouth closed, teeth not visible",
+      "source_url": "https://mcs-citizenship.am/en/guest/photoRequirements"
+    },
+    "glasses_policy": {
+      "value": "Glasses allowed but must not cause glare or reflection; no dark or tinted lenses",
+      "source_url": "https://mcs-citizenship.am/en/guest/photoRequirements"
+    },
+    "headwear_policy": {
+      "value": "Headwear not allowed, except for religious or medical reasons (must not cover main facial features)",
+      "source_url": "https://mcs-citizenship.am/en/guest/photoRequirements"
+    },
+    "accessories": {
+      "value": "Large earrings, hats, or accessories that obscure the face are not allowed",
+      "source_url": "https://mcs-citizenship.am/en/guest/photoRequirements"
+    },
+    "face_visibility": {
+      "value": "Eyes open and clearly visible, looking directly at camera; head fully visible without cropped parts (forehead/chin not cut off); no red-eye or glare on glasses",
+      "source_url": "https://mcs-citizenship.am/en/guest/photoRequirements"
+    },
+    "file_spec": {
+      "value": "High resolution, at least 600 dpi for digital photos; no filters, retouching, or edited photos allowed",
+      "source_url": "https://mcs-citizenship.am/en/guest/photoRequirements"
+    },
+    "official_source_url": {
+      "value": "https://mcs-citizenship.am/en/guest/photoRequirements",
+      "source_url": "https://mcs-citizenship.am/en/guest/photoRequirements"
+    }
+  },
+  "restrictions_i18n": {
+    "expression": {
+      "en": "Neutral facial expression — no smile, frown, or raised eyebrows; mouth closed with teeth not visible.",
+      "ko": "무표정 유지 — 미소·찡그림·눈썹 치켜올림 금지. 입은 다물고 치아가 보이지 않아야 함.",
+      "ja": "無表情を維持 — 微笑み・しかめ面・眉を上げる表情は禁止。口は閉じ、歯が見えないこと。"
+    },
+    "glasses": {
+      "en": "Glasses are allowed but must not cause glare or reflection; dark or tinted lenses are not permitted.",
+      "ko": "안경 착용 가능하나 빛반사·눈부심이 없어야 하며, 짙은 색·유색 렌즈는 금지.",
+      "ja": "眼鏡着用可。ただし反射やグレアがないこと。色付き・濃い色のレンズは不可。"
+    },
+    "headwear": {
+      "en": "Headwear is not allowed, except for religious or medical reasons (must not cover the main facial features).",
+      "ko": "모자 등 머리가리개 착용 금지. 단, 종교적·의료적 사유는 예외(얼굴 주요 부위를 가리지 않아야 함).",
+      "ja": "帽子等の被り物は不可。ただし宗教上・医療上の理由がある場合は例外(顔の主要部分を覆わないこと)。"
+    },
+    "accessories": {
+      "en": "Large earrings, hats, or any accessories that obscure the face are not allowed.",
+      "ko": "큰 귀걸이, 모자 등 얼굴을 가리는 액세서리 착용 금지.",
+      "ja": "大きなイヤリング、帽子など顔を覆うアクセサリーは不可。"
+    },
+    "face_visibility": {
+      "en": "Eyes must be open and clearly visible, looking directly at the camera. The head must be fully visible without any cropped parts (forehead or chin must not be cut off). No red-eye effect or glare on glasses.",
+      "ko": "눈은 뜨고 카메라를 정면으로 응시. 이마·턱이 잘리지 않도록 머리 전체가 보여야 함. 적목 현상이나 안경 빛반사 없어야 함.",
+      "ja": "目を開けてカメラを正面に見ること。額や顎が切れないよう頭部全体が写っていること。赤目現象や眼鏡の反射がないこと。"
+    }
+  },
+  "unverified": [
+    "clothing_restriction",
+    "ears_visibility"
+  ],
+  "db_conflicts": [
+    {
+      "field": "background",
+      "db_value": "흰색 (white only)",
+      "research_value": "Plain, light-colored background — white, light gray, or beige are all officially accepted (not white-only)",
+      "source_url": "https://mcs-citizenship.am/en/guest/photoRequirements"
+    }
+  ],
+  "cross_verification": {
+    "size": {
+      "note": "35x45mm confirmed matches DB's 3.5x4.5cm exactly; head_height 32-36mm matches DB's 3.2-3.6cm exactly. Source mcs-citizenship.am is the Migration and Citizenship Service e-case-management portal of the Republic of Armenia (linked from avv.police.am citizenship division), treated as the official government source for citizenship/passport document photo requirements."
+    }
+  }
+}

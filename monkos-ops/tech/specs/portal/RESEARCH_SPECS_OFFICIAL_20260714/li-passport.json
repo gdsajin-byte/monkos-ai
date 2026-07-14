@@ -1,0 +1,32 @@
+{
+  "slug": "li-passport",
+  "batch": 14,
+  "verified": {
+    "file_spec": {
+      "value": "In-person applications must be made at the counter of the Migration and Passport Office (Ausländer- und Passamt) in Vaduz. 'The biometric facial image, fingerprints and signature are captured directly on site. You don't have to bring a passport photo.' Liechtenstein has no passport-issuing embassies of its own: nationals residing abroad (except in Switzerland) must apply at the Swiss representation responsible for their country; nationals residing in Switzerland must apply in person in Vaduz.",
+      "source_url": "https://www.llv.li/en/national-administration/migration-and-passport-office/passport/exhibition-process"
+    },
+    "official_source_url": {
+      "value": "https://www.llv.li/en/national-administration/migration-and-passport-office/passport/exhibition-process",
+      "source_url": "https://www.llv.li/en/national-administration/migration-and-passport-office/passport/exhibition-process"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note": "Checked llv.li (Liechtenstein National Administration, official government portal — required loading via a rendered browser session, as direct WebFetch returned HTTP 403) across three pages: 'Passport' landing page, 'Exhibition process', and 'Application abroad'. None publish a printed-photo size/background/head-height spec, because the standard domestic process captures the biometric photo on-site rather than accepting a submitted print — consistent with what was found for az-passport in an earlier batch. Applications from abroad (except Switzerland) are filed at Swiss representations, since Liechtenstein has no passport-issuing embassies of its own; it is plausible those Swiss-run application points follow Swiss/ICAO biometric photo capture conventions, but no explicit Liechtenstein-government citation states a specific cm/mm figure, so size/background/head_height were left unverified rather than inferred. DB's values (3.5×4.5cm / white / 3.2-3.6cm) could not be confirmed or contradicted with an official source, so no db_conflicts entry was recorded (a conflict requires an actual differing verified value, not merely an absence of one)."
+  }
+}

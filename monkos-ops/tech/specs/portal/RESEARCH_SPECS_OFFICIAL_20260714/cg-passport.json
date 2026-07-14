@@ -1,0 +1,49 @@
+{
+  "slug": "cg-passport",
+  "batch": 4,
+  "verified": {
+    "size": {
+      "value": "4 x 4cm (the passport's data page 2 reserves 'un cadre 4×4 réservé à la photographie' - a 4x4 frame for the photograph, per Décret N° 2013-226 du 7 Juin 2013)",
+      "source_url": "https://interieur.gouv.cg/passeport/"
+    },
+    "background": {
+      "value": "White background (sur fond blanc)",
+      "source_url": "https://interieur.gouv.cg/passeport/"
+    },
+    "headwear_policy": {
+      "value": "Bare head required, no head covering (tête nue)",
+      "source_url": "https://interieur.gouv.cg/passeport/"
+    },
+    "official_source_url": {
+      "value": "https://interieur.gouv.cg/passeport/",
+      "source_url": "https://interieur.gouv.cg/passeport/"
+    }
+  },
+  "restrictions_i18n": {
+    "headwear": {
+      "en": "Bare head required (no head covering).",
+      "ko": "머리가리개 없이 맨머리로 촬영해야 함.",
+      "ja": "被り物なしで、頭部を露出した状態で撮影すること。"
+    }
+  },
+  "unverified": [
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "3.5 × 4.5cm",
+      "research_value": "4 x 4cm",
+      "source_url": "https://interieur.gouv.cg/passeport/"
+    }
+  ],
+  "cross_verification": {}
+}

@@ -1,0 +1,25 @@
+{
+  "slug": "sv-visa",
+  "batch": 24,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": { "value": "", "source_url": "" }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories", "official_source_url"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "El Salvador's Ministerio de Relaciones Exteriores (rree.gob.sv) is the correct authority for foreigner visa applications (page rree.gob.sv/visas-para-extranjeros/ and application form FOR-PM-TRC-20.pdf were identified), but every direct-fetch attempt on rree.gob.sv (the main visa page, the FAQ, and the PDF application form) returned HTTP 403, so no content could be independently read and confirmed. Search-engine indexing attributes 'one recent color photograph, front-facing, white background, ID-card size or 2x2 inch' to this domain, but since this could not be verified by directly reading the source page itself, it is withheld from verified data per the truthfulness policy rather than reported with unconfirmed specifics. Contact channel published: Departamento de Visas y Prorrogas, migracion.visas@seguridad.gob.sv."
+  }
+}

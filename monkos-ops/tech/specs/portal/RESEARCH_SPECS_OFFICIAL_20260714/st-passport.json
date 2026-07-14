@@ -1,0 +1,28 @@
+{
+  "slug": "st-passport",
+  "batch": 24,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "http://www.smf.st/index.php",
+      "source_url": "http://www.smf.st/index.php"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "SMF (Servico de Migracao e Fronteiras) is Sao Tome and Principe's official migration/passport authority (smf.st), confirmed reachable and legitimate by direct access; the homepage confirms an electronic passport was launched by the Government, and its FAQ page (fq.php) covers visa exemption/cost topics only. No page reachable during this research published passport photo dimensions, background color, or facial-pose specifications. Search-engine indexing attributes a 'passport-type photo, white background, PNG/JPEG format' requirement for non-presential (remote) passport applications to SMF, originating from a news article (stp-press.st) that returned 'Account Suspended' when fetched directly. Because this specific claim could not be confirmed by directly reading a live official page, it is withheld from verified per the truthfulness policy rather than reported as confirmed."
+  }
+}

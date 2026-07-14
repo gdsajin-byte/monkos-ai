@@ -1,0 +1,76 @@
+{
+  "slug": "cu-passport",
+  "batch": 6,
+  "verified": {
+    "size": {
+      "value": "4.5 x 4.5 cm (4½ x 4½)",
+      "source_url": "https://misiones.cubaminrex.cu/sites/default/files/formularios/editorjamaica/planilla_solicitud_de_servicio_consular_cubanos_0.pdf"
+    },
+    "file_spec": {
+      "value": "Two (2) color photos of 4½ x 4½ cm required; one must be glued (\"pegada\") onto the printed application form (planilla) — physical print, not digital",
+      "source_url": "https://misiones.cubaminrex.cu/sites/default/files/formularios/editorjamaica/planilla_solicitud_de_servicio_consular_cubanos_0.pdf"
+    },
+    "clothing_restriction": {
+      "value": "Shoulders must be covered (\"con los hombros cubiertos\"); no visible accessories such as caps or headscarves (\"sin adornos visibles: gorras, pañuelos, etc.\"); clothing should be appropriate and contrast with the background (\"utilizar ropa adecuada y que contraste con el fondo\")",
+      "source_url": "https://misiones.cubaminrex.cu/sites/default/files/formularios/admin/3tramites_para_pasaportes.pdf"
+    },
+    "glasses_policy": {
+      "value": "Dark glasses/sunglasses (\"espejuelos oscuros\") not permitted. If wearing (clear) glasses, the camera flash must not reflect off the lenses (\"no debe reflejarse en éstos la luz del flash que emite la cámara\")",
+      "source_url": "https://misiones.cubaminrex.cu/sites/default/files/formularios/admin/3tramites_para_pasaportes.pdf"
+    },
+    "face_visibility": {
+      "value": "Photo must be frontal (\"de frente\"), hair uncovered (\"con el cabello descubierto\")",
+      "source_url": "https://misiones.cubaminrex.cu/sites/default/files/formularios/editorjamaica/planilla_solicitud_de_servicio_consular_cubanos_0.pdf"
+    },
+    "headwear_policy": {
+      "value": "Hair/head must be uncovered (\"cabello descubierto\"); no caps or headscarves visible in the photo (\"sin adornos visibles: gorras, pañuelos, etc.\")",
+      "source_url": "https://misiones.cubaminrex.cu/sites/default/files/formularios/admin/3tramites_para_pasaportes.pdf"
+    },
+    "accessories": {
+      "value": "No visible adornments such as caps or headscarves (\"sin adornos visibles (gorras, pañuelos, etc.)\")",
+      "source_url": "https://misiones.cubaminrex.cu/sites/default/files/formularios/admin/3tramites_para_pasaportes.pdf"
+    },
+    "official_source_url": {
+      "value": "https://misiones.cubaminrex.cu/sites/default/files/formularios/editorjamaica/planilla_solicitud_de_servicio_consular_cubanos_0.pdf",
+      "source_url": "https://misiones.cubaminrex.cu/sites/default/files/formularios/editorjamaica/planilla_solicitud_de_servicio_consular_cubanos_0.pdf"
+    }
+  },
+  "restrictions_i18n": {
+    "clothing": {
+      "en": "Shoulders must be covered; no visible accessories (caps, headscarves, etc.); clothing should be appropriate and contrast with the background.",
+      "ko": "어깨가 가려지도록 할 것; 모자·두건 등 눈에 띄는 장식품 착용 금지; 배경과 대비되는 적절한 복장을 착용할 것.",
+      "ja": "肩が隠れるようにすること。帽子・スカーフなど目立つ装飾品の着用禁止。背景とコントラストのある適切な服装を着用すること。"
+    },
+    "glasses": {
+      "en": "Dark glasses/sunglasses are not permitted. If wearing glasses, the camera flash must not reflect off the lenses.",
+      "ko": "짙은 색 안경(선글라스) 착용 불가. 안경 착용 시 카메라 플래시가 렌즈에 반사되지 않아야 함.",
+      "ja": "濃い色のサングラスは不可。眼鏡を着用する場合、カメラのフラッシュがレンズに反射しないこと。"
+    },
+    "face_visibility": {
+      "en": "Photo must be frontal, with hair uncovered.",
+      "ko": "사진은 정면을 향해야 하며, 머리카락으로 가리지 않은 상태여야 함.",
+      "ja": "写真は正面を向いていること。髪で覆われていないこと。"
+    },
+    "headwear": {
+      "en": "Hair/head must be uncovered; no caps or headscarves visible in the photo.",
+      "ko": "머리는 가리지 않은 상태여야 하며, 모자나 두건 등을 착용한 상태로 촬영할 수 없음.",
+      "ja": "頭髪は覆わないこと。帽子やスカーフなどを着用した状態での撮影は不可。"
+    },
+    "accessories": {
+      "en": "No visible adornments such as caps or headscarves.",
+      "ko": "모자·두건 등 눈에 띄는 장식품 착용 금지.",
+      "ja": "帽子やスカーフなど目立つ装飾品の着用禁止。"
+    }
+  },
+  "unverified": [
+    "background",
+    "head_height",
+    "validity",
+    "expression_restriction",
+    "ears_visibility"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note": "Sources are official MININT (Ministerio del Interior)/Dirección de Inmigración y Extranjería consular forms hosted on misiones.cubaminrex.cu (Cuba's Foreign Ministry consular-missions domain): the Jamaica consulate's 'Solicitud de Servicio Consular' form and the South Africa embassy's 'Trámites Relacionados con el Pasaporte' instructions. The 4.5x4.5cm size figure matches the DB exactly. No official document found explicitly states a background color (only that clothing should 'contrast with the background,' implying a plain but unspecified-color backdrop) — so background is left unverified rather than assumed to be white. Passport document validity itself (6 years, renewable every 2 years) was found but is a different concept from photo recency/validity, so it was not used to populate the 'validity' field."
+  }
+}

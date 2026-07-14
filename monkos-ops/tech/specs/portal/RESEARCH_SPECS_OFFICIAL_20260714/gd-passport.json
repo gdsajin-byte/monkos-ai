@@ -1,0 +1,73 @@
+{
+  "slug": "gd-passport",
+  "batch": 9,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": {
+      "value": "No more than 3 months old per the Consulate General of Grenada (Miami) official instructions (\"Two passport size pictures no more than 3 months old MUST be submitted with application\"). Note: the Grenada High Commission (UK) instruction sheet for the same Caribbean Community Grenada Passport instead states no more than six (6) months old — the two official Grenada diplomatic missions are not consistent with each other on this point.",
+      "source_url": "https://www.grenadaconsulatemiami.com/downloadable/Nationals/Instructions-for-Passport-Application.pdf"
+    },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": {
+      "value": "Chest must be covered.",
+      "source_url": "https://www.grenadaconsulatemiami.com/downloadable/Nationals/Instructions-for-Passport-Application.pdf"
+    },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": {
+      "value": "No glasses.",
+      "source_url": "https://www.grenadaconsulatemiami.com/downloadable/Nationals/Instructions-for-Passport-Application.pdf"
+    },
+    "ears_visibility": {
+      "value": "Ears must be visible.",
+      "source_url": "https://www.grenadaconsulatemiami.com/downloadable/Nationals/Instructions-for-Passport-Application.pdf"
+    },
+    "face_visibility": {
+      "value": "Hair must be away from face and not covering the forehead.",
+      "source_url": "https://www.grenadaconsulatemiami.com/downloadable/Nationals/Instructions-for-Passport-Application.pdf"
+    },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": {
+      "value": "No hair bands visible. No big earrings.",
+      "source_url": "https://www.grenadaconsulatemiami.com/downloadable/Nationals/Instructions-for-Passport-Application.pdf"
+    },
+    "official_source_url": {
+      "value": "https://www.grenadaconsulatemiami.com/downloadable/Nationals/Instructions-for-Passport-Application.pdf",
+      "source_url": "https://www.grenadaconsulatemiami.com/downloadable/Nationals/Instructions-for-Passport-Application.pdf"
+    }
+  },
+  "restrictions_i18n": {
+    "clothing": {
+      "en": "Chest must be covered.",
+      "ko": "가슴 부위가 가려져 있어야 함(노출 금지).",
+      "ja": "胸元は隠れている必要がある(肌の露出不可)。"
+    },
+    "glasses": {
+      "en": "Glasses are not permitted.",
+      "ko": "안경 착용 불가.",
+      "ja": "メガネ着用不可。"
+    },
+    "ears": {
+      "en": "Ears must be visible.",
+      "ko": "귀가 보여야 함.",
+      "ja": "耳が見えている必要がある。"
+    },
+    "face_visibility": {
+      "en": "Hair must be pulled away from the face and must not cover the forehead.",
+      "ko": "머리카락이 얼굴에서 벗어나 있어야 하며 이마를 가리면 안 됨.",
+      "ja": "髪は顔から離し、額を隠してはならない。"
+    },
+    "accessories": {
+      "en": "No visible hairbands; no large earrings.",
+      "ko": "머리띠가 보이지 않아야 하며 큰 귀걸이는 착용할 수 없음.",
+      "ja": "ヘアバンドが見えないこと。大きなイヤリングの着用不可。"
+    }
+  },
+  "unverified": ["size", "background", "head_height", "file_spec", "expression_restriction", "headwear_policy"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Two official Grenada diplomatic missions were read directly (PDF text extracted via the Read tool): the Consulate General of Grenada in Miami (grenadaconsulatemiami.com) and the High Commission for Grenada in London (grenada-highcommission.co.uk). Both list an identical 'Specifications for photographs' block (no glasses; no hair bands visible; no big earrings; ears must be visible; hair away from face/forehead; chest must be covered) — this is treated as strongly verified since it is corroborated word-for-word by two independent official missions. Neither official PDF states a photo size in mm/inches or a background color, despite this being widely repeated by third-party photo-service sites (35x45mm, 2x2in, white background) — those third-party claims are NOT included as verified here because they could not be confirmed on an actual official Grenada government/mission document. The one figure that IS explicit — the 'no more than X months old' recency rule — conflicts between the two missions (3 months vs. 6 months); both are cited transparently in the validity value rather than picking one silently. Grenada's own government portal (gov.gd) and the Royal Grenada Police Force Immigration Department (rgpf.gd), which nominally have primary authority over passport issuance, returned 404/500 errors and could not be accessed for cross-checking during this research pass.",
+    "note_ko": "미국 마이애미 총영사관과 영국 고등판무관실, 두 개의 그레나다 공식 재외공관 PDF를 직접 읽어 대조했다. 사진 구성 규정(안경 금지, 머리띠 노출 금지, 큰 귀걸이 금지, 귀 노출 필수, 이마 가림 금지, 가슴 부위 노출 금지)은 두 기관 문서에서 문구까지 동일하게 확인되어 신뢰도가 높다. 반면 사진 크기(mm/inch)와 배경색은 두 공식 문서 어디에도 명시되어 있지 않았다 — 서드파티 사진 서비스들이 널리 퍼뜨린 35x45mm·흰색 배경 주장은 공식 출처로 확인되지 않아 verified에 포함하지 않았다. 유효기간(촬영 후 경과 허용치)은 두 기관이 각각 3개월과 6개월로 서로 다르게 명시하고 있어 충돌 사실을 그대로 기록했다."
+  }
+}

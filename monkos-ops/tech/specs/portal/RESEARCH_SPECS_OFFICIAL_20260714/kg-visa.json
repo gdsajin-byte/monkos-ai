@@ -1,0 +1,29 @@
+{
+  "slug": "kg-visa",
+  "batch": "T3-refill",
+  "verified": {
+    "official_source_url": {
+      "value": "https://www.evisa.e-gov.kg/ (Kyrgyz Republic e-Visa portal, operated under the Ministry of Foreign Affairs; e-gov.kg is Kyrgyzstan's official e-government domain). The portal's own 'Information' page confirms applicants must attach a 'Photo' / digital photo as part of the online application, but does not publish any technical specification (size, background color, head height, or other technical detail) on either the information page or the first step of the visa application flow checked in this pass.",
+      "source_url": "https://www.evisa.e-gov.kg/get_information.php?lng=en"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note": "evisa.e-gov.kg did not resolve via direct WebFetch from this environment (DNS failure) but was successfully retrieved via an r.jina.ai text-rendering proxy of the same official URL. Both the general-information page (get_information.php?lng=en) and the first step of the application flow (step_1.php, country/trip-purpose selection) were checked; neither publishes photo technical specs. The information page states only: 'You will need valid travel Document/Passport, Photo and Credit/debit card. You need to have scanned images of your Document/Passport and digital photo to attach them to your electronic application according to the visa type' — no size, background, or other technical detail follows. This mirrors the sibling jo-visa.json finding for Jordan, where the official visa portal confirms a photo is required without publishing detailed specs. Kyrgyzstan's domestic passport-photo spec (see kg-passport.json, sourced from the State Registration Service / GRS, a confirmed official PDF requiring 40x60mm) is issued by a different authority — GRS handles citizen passports, while the Ministry of Foreign Affairs (via evisa.e-gov.kg) handles foreigner e-visas — so it was not assumed to apply here and is not cited as a kg-visa source. Commercial visa-photo vendor sites (visafoto.com, mybiometricphotos.com, etc.) converged on 35x45mm / white background figures matching the DB, but per the truthfulness gate these were not used as verified since they are not confirmed anywhere on the official evisa.e-gov.kg portal itself."
+  }
+}

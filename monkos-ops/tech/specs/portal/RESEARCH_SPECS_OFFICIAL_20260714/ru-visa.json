@@ -1,0 +1,83 @@
+{
+  "slug": "ru-visa",
+  "batch": 22,
+  "verified": {
+    "size": {
+      "value": "35 × 45mm (3.5×4.5cm) rectangular aspect ratio",
+      "source_url": "https://evisa.kdmid.ru/"
+    },
+    "background": {
+      "value": "Plain light-colored background with no shadows",
+      "source_url": "https://evisa.kdmid.ru/"
+    },
+    "head_height": {
+      "value": "Face must take up 70–80% of the photo, measured from the top of the hairline/crown of the head to the tip of the chin.",
+      "source_url": "https://evisa.kdmid.ru/"
+    },
+    "validity": {
+      "value": "No more than six months old as of the date of the application, and must reflect current appearance.",
+      "source_url": "https://evisa.kdmid.ru/"
+    },
+    "file_spec": {
+      "value": "Digital JPEG photo required for the e-visa system.",
+      "source_url": "https://evisa.kdmid.ru/"
+    },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": {
+      "value": "Full-face view; head must not be tilted or turned. Look directly at the camera with a neutral expression, mouth closed, eyes open and clearly visible.",
+      "source_url": "https://evisa.kdmid.ru/"
+    },
+    "glasses_policy": {
+      "value": "Eyes must be clearly visible; flash reflection off lenses and tinted lenses are not allowed.",
+      "source_url": "https://evisa.kdmid.ru/"
+    },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": {
+      "value": "Head centered and fully visible from hairline/crown to chin tip, nose on the symmetry line; photo must show the top of the head and top of the shoulders.",
+      "source_url": "https://evisa.kdmid.ru/"
+    },
+    "headwear_policy": {
+      "value": "Religious head coverings are permitted if the face is clearly visible from the bottom of the chin to the top of the forehead.",
+      "source_url": "https://evisa.kdmid.ru/"
+    },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://evisa.kdmid.ru/",
+      "source_url": "https://evisa.kdmid.ru/"
+    }
+  },
+  "restrictions_i18n": {
+    "expression": {
+      "en": "Full-face view, head not tilted or turned; look directly at the camera with a neutral expression, mouth closed, eyes open and clearly visible.",
+      "ko": "정면 얼굴 전체가 보여야 하며 고개를 기울이거나 돌리지 않을 것. 무표정으로 카메라를 정면으로 응시하고 입은 다물고 눈은 뜬 채로 뚜렷이 보여야 한다.",
+      "ja": "顔全体が正面を向き、頭を傾けたり回したりしないこと。無表情でカメラを直視し、口を閉じ、目を開けてはっきり見えるようにすること。"
+    },
+    "glasses": {
+      "en": "Eyes must be clearly visible; flash reflection off lenses and tinted lenses are not allowed.",
+      "ko": "눈이 뚜렷이 보여야 하며, 렌즈에 플래시 반사나 색이 들어간 렌즈는 허용되지 않는다.",
+      "ja": "目がはっきり見える必要があり、レンズへのフラッシュ反射や色付きレンズは認められない。"
+    },
+    "face_visibility": {
+      "en": "Head must be centered and fully visible from hairline/crown to chin tip, with the nose on the symmetry line.",
+      "ko": "머리는 정중앙에 위치하고 헤어라인(정수리)부터 턱끝까지 완전히 보여야 하며, 코는 대칭선 위에 있어야 한다.",
+      "ja": "頭は中央に位置し、生え際(頭頂部)から顎先まで完全に見える必要があり、鼻は対称線上にあること。"
+    },
+    "headwear": {
+      "en": "Religious head coverings are permitted if the face is clearly visible from the bottom of the chin to the top of the forehead.",
+      "ko": "종교적 머리가리개는 턱 아래부터 이마 위까지 얼굴이 뚜렷이 보이는 경우 허용된다.",
+      "ja": "宗教上の頭部covering(スカーフ等)は、顎の下から額の上まで顔がはっきり見える場合に限り許可される。"
+    }
+  },
+  "unverified": ["clothing_restriction", "ears_visibility", "accessories"],
+  "db_conflicts": [
+    {
+      "field": "head_height",
+      "db_value": "3.2~3.6cm",
+      "research_value": "No absolute cm/mm figure is published — specified only as a proportion (face = 70–80% of the photo, measured from hairline/crown to chin tip).",
+      "source_url": "https://evisa.kdmid.ru/"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "evisa.kdmid.ru is the official Consular Department of the Russian MFA e-visa portal, content read directly. Size (35×45mm) matches DB exactly — no conflict. DB's 'light gray' background is broadly consistent with the source's 'plain light-colored background' wording, though the source does not name the specific hue 'gray' explicitly, so this is treated as consistent rather than as an independently confirmed exact match."
+  }
+}

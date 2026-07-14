@@ -1,0 +1,80 @@
+{
+  "slug": "ke-visa",
+  "batch": 12,
+  "verified": {
+    "size": {
+      "value": "\"It should be 5.5cm * 5.5cm (207px * 207px)\" — found on the official eCitizen Immigration \"Photo requirements and guidelines\" page, which is generic across the Department of Immigration Services' eCitizen services (passport and visa applications share this portal domain)",
+      "source_url": "https://immigration.ecitizen.go.ke/index.php?id=9"
+    },
+    "background": {
+      "value": "\"It should have a white background\"",
+      "source_url": "https://immigration.ecitizen.go.ke/index.php?id=9"
+    },
+    "head_height": {
+      "value": "No absolute mm/cm figure is published; instead specified as a proportion: \"close up of your head and top of your shoulders so that your face takes up 70-80%\" of the photograph",
+      "source_url": "https://immigration.ecitizen.go.ke/index.php?id=9"
+    },
+    "validity": {
+      "value": "\"The photograph should be a recent one not more than 6 months old\"",
+      "source_url": "https://immigration.ecitizen.go.ke/index.php?id=9"
+    },
+    "file_spec": {
+      "value": "\"Scanned & colour photocopies would NOT be accepted\"",
+      "source_url": "https://immigration.ecitizen.go.ke/index.php?id=9"
+    },
+    "ears_visibility": {
+      "value": "\"It should be with the applicant's hair tucked behind his/her ears\"",
+      "source_url": "https://immigration.ecitizen.go.ke/index.php?id=9"
+    },
+    "face_visibility": {
+      "value": "For the case-by-case permitted religious headgear exception: \"Chin, nose, eyes and eyebrows must not be covered\"",
+      "source_url": "https://immigration.ecitizen.go.ke/index.php?id=9"
+    },
+    "headwear_policy": {
+      "value": "\"It is to be taken without headgear\" / \"It should be without hat/cap.\" Religious headgear may be permitted only after case-by-case review, and even then chin/nose/eyes/eyebrows must remain uncovered",
+      "source_url": "https://immigration.ecitizen.go.ke/index.php?id=9"
+    },
+    "official_source_url": {
+      "value": "https://immigration.ecitizen.go.ke/index.php?id=9 (Department of Immigration Services, delivered via the Kenyan Government's eCitizen portal)",
+      "source_url": "https://immigration.ecitizen.go.ke/index.php?id=9"
+    }
+  },
+  "restrictions_i18n": {
+    "ears": {
+      "en": "Hair must be tucked behind the ears so both ears are visible.",
+      "ko": "귀가 보이도록 머리카락을 귀 뒤로 넘겨야 한다.",
+      "ja": "耳が見えるように髪を耳の後ろにかける必要がある。"
+    },
+    "face_visibility": {
+      "en": "Chin, nose, eyes and eyebrows must not be covered.",
+      "ko": "턱, 코, 눈, 눈썹이 가려지면 안 된다.",
+      "ja": "あご、鼻、目、眉毛が隠れてはならない。"
+    },
+    "headwear": {
+      "en": "Photo must be taken without headgear/hat/cap. Religious headgear may be allowed after case-by-case review, but the chin, nose, eyes and eyebrows must remain visible.",
+      "ko": "머리가리개·모자 없이 촬영해야 한다. 종교적 사유의 머리가리개는 사안별 검토 후 허용될 수 있으나, 이 경우에도 턱·코·눈·눈썹은 가려지지 않아야 한다.",
+      "ja": "帽子やヘッドギアなしで撮影すること。宗教上の理由による被り物は個別審査の上で許可される場合があるが、その場合もあご・鼻・目・眉毛は隠れてはならない。"
+    }
+  },
+  "unverified": [
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "accessories"
+  ],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "3.5 × 4.5cm",
+      "research_value": "5.5cm × 5.5cm (207px × 207px)",
+      "source_url": "https://immigration.ecitizen.go.ke/index.php?id=9"
+    },
+    {
+      "field": "head_height",
+      "db_value": "3.2~3.6cm",
+      "research_value": "No absolute cm/mm figure given on the official page — specified only as a proportion (\"face takes up 70-80%\" of the photo)",
+      "source_url": "https://immigration.ecitizen.go.ke/index.php?id=9"
+    }
+  ],
+  "cross_verification": {}
+}

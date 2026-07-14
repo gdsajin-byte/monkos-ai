@@ -1,0 +1,59 @@
+{
+  "slug": "pg-passport",
+  "batch": 21,
+  "verified": {
+    "size": {
+      "value": "45mm (Height) x 35mm (Width)",
+      "source_url": "https://ica.gov.pg/uploads/media/post_file_6070572-6.-checklist---ordinary-png-passport-first-time-19-years-older-1-.pdf"
+    },
+    "background": {
+      "value": "White",
+      "source_url": "https://ica.gov.pg/uploads/media/post_file_6070572-6.-checklist---ordinary-png-passport-first-time-19-years-older-1-.pdf"
+    },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": {
+      "value": "Neutral – NO SMILING AND SHOWING OF TEETH.",
+      "source_url": "https://ica.gov.pg/uploads/media/post_file_6070572-6.-checklist---ordinary-png-passport-first-time-19-years-older-1-.pdf"
+    },
+    "glasses_policy": {
+      "value": "Tinted glasses are not allowed (photo must be taken without tinted glasses).",
+      "source_url": "https://ica.gov.pg/uploads/media/post_file_6070572-6.-checklist---ordinary-png-passport-first-time-19-years-older-1-.pdf"
+    },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": {
+      "value": "2 photos taken from head to shoulders only, showing the full face.",
+      "source_url": "https://ica.gov.pg/uploads/media/post_file_6070572-6.-checklist---ordinary-png-passport-first-time-19-years-older-1-.pdf"
+    },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://ica.gov.pg/",
+      "source_url": "https://ica.gov.pg/uploads/media/post_file_6070572-6.-checklist---ordinary-png-passport-first-time-19-years-older-1-.pdf"
+    }
+  },
+  "restrictions_i18n": {
+    "expression": {
+      "en": "Neutral expression - no smiling and no showing of teeth.",
+      "ko": "무표정 유지 — 미소 금지, 치아 노출 금지.",
+      "ja": "無表情を維持——微笑み禁止、歯を見せることも禁止。"
+    },
+    "glasses": {
+      "en": "Tinted glasses are not allowed.",
+      "ko": "색안경(선글라스) 착용 불가.",
+      "ja": "色付き眼鏡(サングラス)の着用不可。"
+    },
+    "face_visibility": {
+      "en": "Photo taken from head to shoulders only, showing the full face.",
+      "ko": "머리부터 어깨까지만 촬영, 얼굴 전체가 나오도록 할 것.",
+      "ja": "頭から肩までのみを撮影し、顔全体が写るようにすること。"
+    }
+  },
+  "unverified": ["head_height", "validity", "file_spec", "clothing_restriction", "ears_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Official ICA (Immigration and Citizenship Authority) PNG passport checklist confirms photo size as 45mm(H) x 35mm(W), which numerically matches the DB's '3.5 x 4.5cm'. 2 photos required per application. No official PNG source with an explicit head-height figure, photo validity period, or headwear policy was found during this research."
+  }
+}

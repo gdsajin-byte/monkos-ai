@@ -1,0 +1,29 @@
+{
+  "slug": "ge-visa",
+  "batch": 9,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://www.evisa.gov.ge/GeoVisa/en/VisaApp",
+      "source_url": "https://www.evisa.gov.ge/GeoVisa/en/VisaApp"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Confirmed the official Georgian e-Visa portal (evisa.gov.ge/GeoVisa) and consular portal (geoconsul.gov.ge) both exist and both list 'PHOTO' as a required upload for a Georgian visa application, but neither page's fetched content specifies size, background color, or composition rules. A Ministry of Foreign Affairs D3 (study visa) requirements PDF (mfa.gov.ge/pfiles/files/D3-study-visa-requirements.pdf) was also read directly and only says 'One biometric photo' is required, with no technical spec. Georgia's Ministry of Justice Order No. 98, which does specify a 3.5x4.5cm biometric photo size (see ge-passport.json), governs registration/ID/passport/travel-document issuance for citizens and residents — it is a different legal instrument from the visa process for foreign nationals entering Georgia, so its figure was NOT carried over to this file without independent confirmation for visas specifically. Widely-repeated third-party claims that Georgia e-visa photos must be 472x591px (4x5cm) or use a 'light grey' background could not be traced to any accessible official Georgian government page and are excluded.",
+    "note_ko": "조지아 공식 전자비자 포털(evisa.gov.ge)과 영사포털(geoconsul.gov.ge) 모두 사진 업로드를 요구한다는 사실은 확인했으나, 실제 페이지 본문에는 크기·배경색 등 세부 규격이 명시되어 있지 않았다. 외교부 D3(유학) 비자 PDF도 직접 열람했지만 '생체인식 사진 1매' 요구만 있을 뿐 규격은 없었다. 여권 규정(법무부령 98호, 3.5×4.5cm)은 자국민/거주외국인 대상 별도 법령으로, 외국인 대상 비자 절차에 그대로 적용된다고 확인되지 않아 이관하지 않았다."
+  }
+}

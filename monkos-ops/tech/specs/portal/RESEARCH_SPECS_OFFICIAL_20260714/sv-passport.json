@@ -1,0 +1,77 @@
+{
+  "slug": "sv-passport",
+  "batch": 24,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": {
+      "value": "Avoid low-cut clothing that could make the applicant appear unclothed in the photo.",
+      "source_url": "https://www.migracion.gob.sv/pasaportes-preguntas/"
+    },
+    "expression_restriction": {
+      "value": "\"Toma la fotografia de frente, con la cabeza recta, la mirada directa a la camara y expresion neutra (sin sonreir)\" (Take the photo facing forward, with head straight, direct gaze at the camera, and a neutral expression, without smiling). Lighting must be uniform and without red-eye.",
+      "source_url": "https://www.migracion.gob.sv/pasaportes-preguntas/"
+    },
+    "glasses_policy": {
+      "value": "Eyeglasses are not permitted (listed alongside caps, hats, and large jewelry as items that must not create shadows or distort appearance).",
+      "source_url": "https://www.migracion.gob.sv/pasaportes-preguntas/"
+    },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": {
+      "value": "\"Tu rostro debe estar completamente visible, sin cabello ni accesorios que lo cubran, y con los ojos abiertos\" (Your face must be completely visible, with no hair or accessories covering it, and eyes open).",
+      "source_url": "https://www.migracion.gob.sv/pasaportes-preguntas/"
+    },
+    "headwear_policy": {
+      "value": "Caps and hats are not permitted.",
+      "source_url": "https://www.migracion.gob.sv/pasaportes-preguntas/"
+    },
+    "accessories": {
+      "value": "Large jewelry that creates shadows or distorts appearance is not permitted.",
+      "source_url": "https://www.migracion.gob.sv/pasaportes-preguntas/"
+    },
+    "official_source_url": {
+      "value": "https://www.migracion.gob.sv/pasaportes-preguntas/",
+      "source_url": "https://www.migracion.gob.sv/pasaportes-preguntas/"
+    }
+  },
+  "restrictions_i18n": {
+    "expression": {
+      "en": "Take the photo facing forward, with head straight, direct gaze at the camera, and a neutral expression (no smiling). Lighting must be uniform with no red-eye.",
+      "ko": "카메라를 정면으로 바라보고 고개를 똑바로 세운 채 시선은 카메라를 직시하며 무표정(미소 금지)으로 촬영할 것. 조명은 균일해야 하며 적목 현상이 없어야 함.",
+      "ja": "カメラの正面を向き、頭をまっすぐにして視線はカメラを直視し、無表情(微笑み禁止)で撮影すること。照明は均一で赤目現象がないこと。"
+    },
+    "face_visibility": {
+      "en": "Your face must be completely visible, with no hair or accessories covering it, and eyes open.",
+      "ko": "얼굴이 머리카락이나 액세서리에 가리지 않고 완전히 드러나야 하며 눈을 뜨고 있어야 함.",
+      "ja": "顔は髪の毛やアクセサリーで隠れることなく完全に見える状態で、目を開けていること。"
+    },
+    "glasses": {
+      "en": "Eyeglasses are not permitted.",
+      "ko": "안경 착용 불가.",
+      "ja": "メガネの着用不可。"
+    },
+    "headwear": {
+      "en": "Caps and hats are not permitted.",
+      "ko": "모자(캡·햇) 착용 불가.",
+      "ja": "帽子(キャップ・ハット)の着用不可。"
+    },
+    "accessories": {
+      "en": "Large jewelry that creates shadows or distorts your appearance is not permitted.",
+      "ko": "그림자를 만들거나 외형을 왜곡시키는 큰 장신구는 착용할 수 없음.",
+      "ja": "影を作ったり外見を歪めたりする大きなアクセサリーは着用不可。"
+    },
+    "clothing": {
+      "en": "Avoid low-cut clothing that could make you appear unclothed in the photo.",
+      "ko": "사진에서 옷을 입지 않은 것처럼 보일 수 있는 목선이 깊게 파인 의상은 피할 것.",
+      "ja": "写真で服を着ていないように見える可能性がある胸元の大きく開いた服装は避けること。"
+    }
+  },
+  "unverified": ["size", "background", "head_height", "validity", "file_spec", "ears_visibility"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "El Salvador's Direccion General de Migracion y Extranjeria (DGME, migracion.gob.sv) publishes detailed pose/expression/restriction rules for online passport renewal but this specific page does not state photo size, background color, or head-height proportions, so the DB's existing 3.5x4.5cm/white/3.2-3.6cm values could not be confirmed or contradicted and are left unverified rather than assumed correct. Third-party aggregators claim 35x45mm at 300 DPI with 7:9 aspect ratio and white background attributed to DGME, but a direct fetch of the same domain's photo-spec pages could not reproduce those exact figures verbatim, so they are excluded per the verification policy."
+  }
+}

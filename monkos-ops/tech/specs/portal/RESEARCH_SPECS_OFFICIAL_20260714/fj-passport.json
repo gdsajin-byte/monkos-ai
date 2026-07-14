@@ -1,0 +1,70 @@
+{
+  "slug": "fj-passport",
+  "batch": 8,
+  "verified": {
+    "size": {
+      "value": "3.5cm × 4.5cm",
+      "source_url": "https://www.immigration.gov.fj/guidelines-for-passport-photographs/"
+    },
+    "background": {
+      "value": "Plain, light background; illumination must be uniform with no shadows on the face or behind the subject",
+      "source_url": "https://www.immigration.gov.fj/guidelines-for-passport-photographs/"
+    },
+    "head_height": {
+      "value": "Head must occupy 70–80% of the photo",
+      "source_url": "https://www.immigration.gov.fj/guidelines-for-passport-photographs/"
+    },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": {
+      "value": "Straight-looking, centered, neutral expression; eyes must be open",
+      "source_url": "https://www.immigration.gov.fj/guidelines-for-passport-photographs/"
+    },
+    "glasses_policy": {
+      "value": "Prescription glasses permitted if clear and thin-framed, with no flash reflection obscuring vision",
+      "source_url": "https://www.immigration.gov.fj/guidelines-for-passport-photographs/"
+    },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": {
+      "value": "Head coverings, hair, head-dress, or facial ornaments must not obscure the face",
+      "source_url": "https://www.immigration.gov.fj/guidelines-for-passport-photographs/"
+    },
+    "accessories": {
+      "value": "No other people or objects may appear in the photo; no red-eye effects allowed",
+      "source_url": "https://www.immigration.gov.fj/guidelines-for-passport-photographs/"
+    },
+    "official_source_url": {
+      "value": "https://www.immigration.gov.fj/guidelines-for-passport-photographs/",
+      "source_url": "https://www.immigration.gov.fj/guidelines-for-passport-photographs/"
+    }
+  },
+  "restrictions_i18n": {
+    "expression": {
+      "en": "Face the camera straight on, centered in the frame, with a neutral expression; eyes must be open.",
+      "ko": "카메라를 정면으로 응시하고 화면 중앙에 위치하며 무표정을 유지해야 한다. 눈은 뜬 상태여야 한다.",
+      "ja": "カメラに対して正面を向き、画面中央に位置し、無表情を保つこと。目は開けていなければならない。"
+    },
+    "glasses": {
+      "en": "Prescription glasses are permitted if clear and thin-framed, with no flash reflection obscuring vision.",
+      "ko": "얇은 무테·투명 테 안경은 허용되나, 플래시 반사로 시야가 가려지면 안 된다.",
+      "ja": "薄いフレームの透明な眼鏡は許可されるが、フラッシュの反射で視界が隠れてはならない。"
+    },
+    "headwear": {
+      "en": "Head coverings, hair, headdresses, or facial ornaments must not obscure the face.",
+      "ko": "머리쓰개, 머리카락, 장식물이 얼굴을 가려서는 안 된다.",
+      "ja": "帽子・ヘアスタイル・ヘッドドレスや装飾品が顔を隠してはならない。"
+    },
+    "accessories": {
+      "en": "No other people or objects may appear in the photo; red-eye effects are not permitted.",
+      "ko": "사진에 다른 사람이나 물체가 나오면 안 되며, 적목현상도 허용되지 않는다.",
+      "ja": "写真に他の人物や物体が写ってはならず、赤目現象も許可されない。"
+    }
+  },
+  "unverified": ["validity", "file_spec", "clothing_restriction", "ears_visibility", "face_visibility"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Fiji Ministry of Immigration's official 'Guidelines for Passport Photographs' page confirms size (3.5×4.5cm, matching DB exactly — no conflict) and head-height as a 70–80% ratio (≈3.15–3.6cm on a 4.5cm-tall photo, roughly consistent with DB's 3.2–3.6cm — not flagged as a conflict since the source states a ratio, not a fixed cm figure). The source's own text reads '70 to 80% of the photo or one inch height'; one inch (25.4mm) does not reconcile with 70–80% of a 45mm-tall photo (31.5–36mm, a ~6–11mm gap versus the ±1.5mm self-consistency tolerance), so the 'one inch' alternate figure was dropped and only the internally-consistent percentage figure retained. Background is stated as 'plain light background' rather than specifically 'white'; since white falls within 'light', this was not flagged as a conflict. Photo validity period, clothing rules, and ear visibility are not stated on this page."
+  }
+}

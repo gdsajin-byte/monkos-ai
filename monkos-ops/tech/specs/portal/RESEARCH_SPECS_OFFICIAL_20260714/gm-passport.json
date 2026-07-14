@@ -1,0 +1,29 @@
+{
+  "slug": "gm-passport",
+  "batch": 9,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://gid.gov.gm/passport/",
+      "source_url": "https://gid.gov.gm/passport/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "The Gambia Immigration Department's official passport page (gid.gov.gm/passport/) presents a valid TLS certificate that WebFetch could not verify, so the page was retrieved directly via curl (with certificate verification bypassed) and its HTML stripped to plain text for inspection. The confirmed official text describes the MRP and Biometric passport application procedures in detail and states applicants must attach 'at least two passport size photos' (first-time MRP) or 'two passport sizes photos' (biometric, first-instance adult applicant, or minor) — confirming photo quantity requirements only. No sentence anywhere on this page specifies a photo size in cm/inches, a background color, or any composition rule (glasses, headwear, ears, expression). A widely-repeated third-party claim of '4.5cm height x 3.5cm width, white wall background, no colors/patterns/shadows' could NOT be traced to this or any other accessible official gambia.gov.gm/gid.gov.gm page during this research pass, so it is excluded per the truthfulness gate rather than reported as verified. gambia.gov.gm/passport-office/ (fetched cleanly, no cert issue) similarly confirms '4 passport size photos' (MRP) / '2 passport photos' (biometric) required but gives no technical specification either.",
+    "note_ko": "감비아 이민청 공식 여권 페이지(gid.gov.gm/passport/)는 WebFetch에서 인증서 검증 오류가 발생하여 curl로 인증서 검증을 우회해 원문 HTML을 직접 확인했다. 신청 절차 설명에서 '여권용 사진 최소 2매 첨부' 요구는 명확히 확인되나, 페이지 어디에도 사진의 cm/inch 크기, 배경색, 안경·머리가리개·귀 노출 등 구성 규정은 명시되어 있지 않았다. 서드파티에서 널리 반복되는 '4.5×3.5cm, 흰 벽 배경' 주장은 이 페이지를 포함한 접근 가능한 어떤 공식 감비아 정부 페이지에서도 확인되지 않아 verified에 포함하지 않았다."
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "slug": "lc-passport",
+  "batch": 14,
+  "verified": {
+    "size": {
+      "value": "50mm x 40mm (5cm x 4cm) — same two dimensions as DB's '4×5cm', axis order stated differently. (Source's inch figure '1½\" width' removed from this record: 1.5in × 25.4 = 38.1mm, which does not match the stated 40mm within the ±1.5mm self-consistency tolerance — diff 1.9mm — so only the mm value is retained.)",
+      "source_url": "https://stluciaconsulate.ca/frequently-asked-questions/"
+    },
+    "validity": {
+      "value": "Photos must be recent — less than three (3) months old",
+      "source_url": "https://stluciaconsulate.ca/frequently-asked-questions/"
+    },
+    "headwear_policy": {
+      "value": "Photographs must be taken full face without a hat",
+      "source_url": "https://www.govt.lc/media.govt.lc/www/resources/forms/Application%20for%20Saint%20Lucia%20Passport_Form%20%20A.pdf"
+    },
+    "glasses_policy": {
+      "value": "Only prescription glasses will be accepted",
+      "source_url": "https://www.govt.lc/media.govt.lc/www/resources/forms/Application%20for%20Saint%20Lucia%20Passport_Form%20%20A.pdf"
+    },
+    "face_visibility": {
+      "value": "Photographs must be taken full face",
+      "source_url": "https://www.govt.lc/media.govt.lc/www/resources/forms/Application%20for%20Saint%20Lucia%20Passport_Form%20%20A.pdf"
+    },
+    "file_spec": {
+      "value": "Two (2) identical passport-size photo copies required. A Recommender (Doctor, Lawyer, Minister of Religion, or Justice of the Peace) must certify on the reverse of one photo that it is a true likeness of the applicant; photos must bear the name of the business/studio where taken and the date taken.",
+      "source_url": "https://www.govt.lc/media.govt.lc/www/resources/forms/Application%20for%20Saint%20Lucia%20Passport_Form%20%20A.pdf"
+    },
+    "official_source_url": {
+      "value": "https://www.govt.lc/services/apply-for-a-saint-lucia-passport",
+      "source_url": "https://www.govt.lc/services/apply-for-a-saint-lucia-passport"
+    }
+  },
+  "restrictions_i18n": {
+    "headwear": {
+      "en": "Photo must be taken full-face without a hat.",
+      "ko": "모자를 쓰지 않은 상태로 얼굴 전체가 정면으로 나오도록 촬영할 것.",
+      "ja": "帽子を着用せず、正面から顔全体が写るように撮影すること。"
+    },
+    "glasses": {
+      "en": "Only prescription (corrective) glasses are accepted.",
+      "ko": "도수가 있는 교정용 안경만 허용됨.",
+      "ja": "度付き眼鏡(矯正用メガネ)のみ許可される。"
+    },
+    "face_visibility": {
+      "en": "Photo must show the full face.",
+      "ko": "얼굴 전체가 나오도록 정면으로 촬영할 것.",
+      "ja": "顔全体が写るように正面から撮影すること。"
+    }
+  },
+  "unverified": [
+    "background",
+    "head_height",
+    "clothing_restriction",
+    "expression_restriction",
+    "ears_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note": "Two official sources combined: (1) govt.lc's own downloadable 'Form A' PDF application (read via OCR/document parsing — genuine government form, not a third party): section (G) PHOTOGRAPHS states 'Two (2) passport size copies of a recent photograph of the applicant must be included with the application. These photographs must be taken full face without hat. Only prescription glasses will be accepted.' This PDF gives no explicit cm/inch figure. (2) The Consulate General of Saint Lucia in Toronto (stluciaconsulate.ca — an official Saint Lucia diplomatic mission site) FAQ gives the explicit size 'Photos must be 2\" length/height x 1½\" width/(50mm x 40mm)' and a 3-month validity window. 50mm×40mm = 5cm×4cm, the same pair of numbers as DB's '4×5cm' (width/height order differs by source convention) — treated as matching, not a conflict. Background color and head height were not found in either official source. [적대검증 배치14 보정] 원본 인치 병기 '2\" x 1½\"'의 ×25.4 환산 자기일관성 검산: 2in=50.8mm(≈50mm, 오차 0.8mm, 허용범위 내) / 1.5in=38.1mm(vs 명시된 40mm, 오차 1.9mm, ±1.5mm 허용범위 초과) — 후자가 모순이므로 인치 병기를 제거하고 mm값(50mm×40mm)만 유지함."
+  }
+}

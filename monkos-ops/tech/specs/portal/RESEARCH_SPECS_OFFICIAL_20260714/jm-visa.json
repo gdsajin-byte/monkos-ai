@@ -1,0 +1,27 @@
+{
+  "slug": "jm-visa",
+  "batch": 12,
+  "verified": {
+    "official_source_url": {
+      "value": "https://www.pica.gov.jm/immigration/entry-visa-requirements (Passport, Immigration and Citizenship Agency — PICA) confirms entry-visa policy exists but this page only states travel documents \"must have a photograph of the bearer\"; no dedicated visa-photo specification (size/background/head height) was published on any PICA page found.",
+      "source_url": "https://www.pica.gov.jm/immigration/entry-visa-requirements"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

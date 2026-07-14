@@ -1,0 +1,28 @@
+{
+  "slug": "pg-visa",
+  "batch": 21,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://ica.gov.pg/visa-information/visa-forms",
+      "source_url": "https://ica.gov.pg/uploads/media/post_file_3195072-visa-information-booklet-2025.pdf"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "PNG's official 'Immigration & Entry Permit Information Handbook 2025' and 'Visa Information Guide' (both ica.gov.pg, directly fetched) require a photo for several visa classes but only describe it in generic terms - e.g. the Work Visa checklist asks for 'Two recent, clear and colour passport size photographs' and Permanent Residence classes ask for 'A current passport photo' - without restating exact mm/background specs in the visa document itself. The PNG passport checklist (same authority, ICA) specifies 45x35mm/white for passport photos, but since the visa documents do not explicitly restate this figure, size/background are left unverified here rather than assumed."
+  }
+}

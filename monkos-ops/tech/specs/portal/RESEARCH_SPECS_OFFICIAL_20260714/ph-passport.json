@@ -1,0 +1,77 @@
+{
+  "slug": "ph-passport",
+  "batch": 21,
+  "verified": {
+    "size": {
+      "value": "4.5 x 3.5 cm (45 x 35mm)",
+      "source_url": "https://www.philembassy-seoul.com/announcements-advisories/machine-readable-passport"
+    },
+    "background": {
+      "value": "Royal Blue",
+      "source_url": "https://www.philembassy-seoul.com/announcements-advisories/machine-readable-passport"
+    },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": {
+      "value": "Photograph should have been taken within the last six months.",
+      "source_url": "https://www.philembassy-seoul.com/announcements-advisories/machine-readable-passport"
+    },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": {
+      "value": "Applicant's photograph should show him/her wearing decent attire, preferably with collar. Women must avoid short sleeves or plunging necklines.",
+      "source_url": "https://www.philembassy-seoul.com/announcements-advisories/machine-readable-passport"
+    },
+    "expression_restriction": {
+      "value": "A slight smile (\"Mona Lisa\" pose) is allowed, but the eyes, mouth and cheeks must not appear distorted or too different from a formal/non-smiling pose.",
+      "source_url": "https://www.philembassy-seoul.com/announcements-advisories/machine-readable-passport"
+    },
+    "glasses_policy": {
+      "value": "Regular eyeglasses are acceptable if there is no glare. Use of dark/tinted glasses is not acceptable, except for the medically blind (provided the person can still be recognized through the photo).",
+      "source_url": "https://www.philembassy-seoul.com/announcements-advisories/machine-readable-passport"
+    },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": {
+      "value": "Use of caps or head gear is not allowed. Use of head scarf for religious or medical reason is allowed, however the scarf should not cover the eyebrows/eyes.",
+      "source_url": "https://www.philembassy-seoul.com/announcements-advisories/machine-readable-passport"
+    },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://www.philembassy-seoul.com/announcements-advisories/machine-readable-passport",
+      "source_url": "https://www.philembassy-seoul.com/announcements-advisories/machine-readable-passport"
+    }
+  },
+  "restrictions_i18n": {
+    "expression": {
+      "en": "A slight smile (\"Mona Lisa\" pose) is allowed, but the eyes, mouth and cheeks must not appear distorted or too different from a neutral, non-smiling pose.",
+      "ko": "옅은 미소(모나리자 포즈)는 허용되나, 눈·입·볼이 일그러지거나 무표정 사진과 크게 달라 보이면 안 됨.",
+      "ja": "軽い微笑み(モナリザ・ポーズ)は許容されるが、目・口・頬が歪んだり無表情の写真と大きく異なって見えてはならない。"
+    },
+    "glasses": {
+      "en": "Regular eyeglasses are acceptable if there is no glare. Dark/tinted glasses are not acceptable, except for the medically blind.",
+      "ko": "일반 안경은 반사가 없으면 허용. 색안경·선글라스는 의학적 실명자를 제외하고 착용 불가.",
+      "ja": "通常の眼鏡は反射がなければ許可。色付き眼鏡・サングラスは医学的失明者を除き着用不可。"
+    },
+    "headwear": {
+      "en": "Caps or head gear are not allowed. A head scarf worn for religious or medical reasons is allowed, provided it does not cover the eyebrows or eyes.",
+      "ko": "모자·헤드기어 착용 불가. 종교적·의료적 사유의 머리스카프는 눈썹과 눈을 가리지 않는 경우 허용.",
+      "ja": "帽子・ヘッドギアの着用不可。宗教的・医療的理由によるヘッドスカーフは、眉と目を隠さない場合に限り許可。"
+    },
+    "clothing": {
+      "en": "Applicant should wear decent attire, preferably with a collar. Women should avoid short sleeves or plunging necklines.",
+      "ko": "단정한 복장 착용, 카라(옷깃) 있는 옷을 권장. 여성은 반소매나 깊게 파인 네크라인 금지.",
+      "ja": "きちんとした服装を着用し、襟付きの服が望ましい。女性は半袖や胸元の開いた服を避けること。"
+    }
+  },
+  "unverified": ["head_height", "file_spec", "ears_visibility", "face_visibility", "accessories"],
+  "db_conflicts": [
+    {
+      "field": "background",
+      "db_value": "흰색",
+      "research_value": "Royal Blue (per Philippine Embassy Seoul's official 'Machine Readable Passport' photo requirements page, dated 2026-07-12)",
+      "source_url": "https://www.philembassy-seoul.com/announcements-advisories/machine-readable-passport"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "The Philippine Embassy in Seoul's official page (an actual PH government diplomatic mission site, directly fetched, dated 2026-07-12) explicitly states 'Background color should be Royal Blue' for the printed photo submitted with passport applications. Numerous third-party photo-service sites (not independently verified here) claim the current on-site ePassport capture at DFA offices within the Philippines uses a white background instead, and that no printed photo is needed there because the photo is captured digitally during the appointment - but consular.dfa.gov.ph and all dfa.gov.ph subdomains returned HTTP 403 (bot-blocked) on every direct fetch attempt in this research, so that specific white-background claim could not be independently confirmed from an official DFA source. Royal Blue is recorded as verified here because it is the only figure directly confirmed on an accessible official PH government page; treat the white-vs-blue question as still open pending direct DFA access."
+  }
+}

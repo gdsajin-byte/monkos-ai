@@ -1,0 +1,59 @@
+{
+  "slug": "jp-residence",
+  "batch": 12,
+  "verified": {
+    "size": {
+      "value": "\"縦４センチメートル、横３センチメートル\" (height 4cm × width 3cm) — matches DB's 3×4cm exactly",
+      "source_url": "https://www.moj.go.jp/isa/applications/status/photo_info_00002.html"
+    },
+    "background": {
+      "value": "Background must be plain with no shadows visible (影が入らないこと)",
+      "source_url": "https://www.moj.go.jp/isa/applications/status/photo_info_00002.html"
+    },
+    "validity": {
+      "value": "\"提出の日前６か月以内に撮影されたもの\" (taken within 6 months prior to the date of submission)",
+      "source_url": "https://www.moj.go.jp/isa/applications/status/photo_info_00002.html"
+    },
+    "headwear_policy": {
+      "value": "\"無帽で正面を向いたもの\" (hatless, facing directly forward)",
+      "source_url": "https://www.moj.go.jp/isa/applications/status/photo_info_00002.html"
+    },
+    "glasses_policy": {
+      "value": "Glasses frames must not obscure the eyes and must not cause light reflections; excessively thick frames are described as unsuitable",
+      "source_url": "https://www.moj.go.jp/isa/applications/status/photo_info_00002.html"
+    },
+    "official_source_url": {
+      "value": "https://www.moj.go.jp/isa/applications/status/photo_info_00002.html (出入国在留管理庁 / Immigration Services Agency of Japan, Ministry of Justice)",
+      "source_url": "https://www.moj.go.jp/isa/applications/status/photo_info_00002.html"
+    }
+  },
+  "restrictions_i18n": {
+    "glasses": {
+      "en": "Eyeglass frames must not obscure the eyes or cause glare/reflection; excessively thick frames are unsuitable.",
+      "ko": "안경테가 눈을 가리거나 빛 반사를 일으키면 안 되며, 지나치게 두꺼운 테는 부적합하다.",
+      "ja": "メガネのフレームで目が隠れたり、光の反射が写り込んだりしてはならない。極端に太いフレームは不適切である。"
+    },
+    "headwear": {
+      "en": "Must be photographed hatless, facing directly forward.",
+      "ko": "모자를 쓰지 않고 정면을 바라본 상태로 촬영해야 한다.",
+      "ja": "無帽で正面を向いて撮影すること。"
+    }
+  },
+  "unverified": [
+    "head_height",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "ears_visibility",
+    "face_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": {
+      "verdict": "confirmed",
+      "evidence": "Official Immigration Services Agency (moj.go.jp) page states verbatim '縦４センチメートル、横３センチメートル' (vertical/height 4cm, horizontal/width 3cm), matching the DB's '3 × 4cm' exactly.",
+      "correct_value": "3cm (width) × 4cm (height)"
+    }
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "slug": "lk-visa",
+  "batch": 15,
+  "verified": {
+    "official_source_url": {
+      "value": "https://www.eta.gov.lk/slvisa/visainfo/weta.jsp?locale=en_US&ch1=current",
+      "source_url": "https://www.eta.gov.lk/slvisa/visainfo/weta.jsp?locale=en_US&ch1=current"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "validity",
+    "expression_restriction",
+    "glasses_policy",
+    "headwear_policy",
+    "ears_visibility",
+    "face_visibility",
+    "file_spec",
+    "clothing_restriction",
+    "accessories"
+  ],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "3.5 × 4.5cm",
+      "research_value": "Not applicable -- no photograph is required at all for a Sri Lanka ETA (Electronic Travel Authorization), the country's standard electronic visitor-visa mechanism",
+      "source_url": "https://www.eta.gov.lk/slvisa/visainfo/weta.jsp?locale=en_US&ch1=current"
+    },
+    {
+      "field": "background",
+      "db_value": "흰색",
+      "research_value": "Not applicable -- no photograph is required for the ETA",
+      "source_url": "https://www.eta.gov.lk/slvisa/visainfo/weta.jsp?locale=en_US&ch1=current"
+    },
+    {
+      "field": "head_height",
+      "db_value": "3.2~3.6cm",
+      "research_value": "Not applicable -- no photograph is required for the ETA",
+      "source_url": "https://www.eta.gov.lk/slvisa/visainfo/weta.jsp?locale=en_US&ch1=current"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "Directly fetched and confirmed on the official eta.gov.lk 'What is an ETA?' page: 'No passport copies, documents or photographs are required.' Sri Lanka's Electronic Travel Authorization (ETA) is the standard entry-visa mechanism for the great majority of foreign visitors, replacing the older paper/embassy visa for tourism and most short-stay purposes; the online application requires only personal/passport data entry and payment, with no photo upload step. The applicant's actual passport is presented in person to the immigration officer on arrival; a printed copy of the ETA approval notice is described as advisable but not mandatory. This directly conflicts with the DB's assumption of a photo-based spec (size/background/head-height) for 'lk-visa' -- those fields are not applicable to the current official process and are logged as db_conflicts rather than verified or silently left unverified, since the underlying premise (a photo is required) does not hold. Note: this finding applies to the standard ETA route; a residual paper-visa process may still exist for categories outside ETA eligibility (e.g. some official/diplomatic cases), but no official page describing photo specs for such an alternate route was found in this research pass -- immigration.gov.lk's general 'Information on Visa' page (id=14) was also directly fetched and contains no photo specification either.",
+    "note_ko": "eta.gov.lk 공식 페이지에서 직접 확인: '여권 사본, 서류, 사진이 필요하지 않습니다(No passport copies, documents or photographs are required).' 스리랑카 ETA는 대다수 방문객에게 적용되는 표준 전자비자로, 사진 업로드 절차 자체가 없다. DB에 기재된 규격(3.5×4.5cm, 흰색, 3.2~3.6cm)은 현재 공식 절차상 전제 자체가 성립하지 않아 db_conflicts로 기록함."
+  }
+}

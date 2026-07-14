@@ -1,0 +1,30 @@
+{
+  "slug": "bb-visa",
+  "batch": 2,
+  "verified": {
+    "size": {
+      "value": "\"One (1) passport size photograph\" required for visa applications — references the same Barbados Immigration Department passport-photo standard (not more than 5×5cm)",
+      "source_url": "https://immigration.gov.bb/pages/visa_requirements.aspx"
+    },
+    "official_source_url": {
+      "value": "https://immigration.gov.bb/pages/visa_requirements.aspx",
+      "source_url": "https://immigration.gov.bb/pages/visa_requirements.aspx"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

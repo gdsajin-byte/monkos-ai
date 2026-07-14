@@ -1,0 +1,67 @@
+{
+  "slug": "au-visa",
+  "batch": 1,
+  "verified": {
+    "size": {
+      "value": "45mm x 35mm, showing head and shoulders only",
+      "source_url": "https://immi.homeaffairs.gov.au/help-text/evidence/Pages/et-h0050.aspx"
+    },
+    "background": {
+      "value": "Neutral or light grey coloured background that contrasts with your face; no patterns, objects, or other people visible behind you",
+      "source_url": "https://immi.homeaffairs.gov.au/help-text/evidence/Pages/et-h0050.aspx"
+    },
+    "validity": {
+      "value": "Must be less than six months old",
+      "source_url": "https://immi.homeaffairs.gov.au/help-text/evidence/Pages/et-h0050.aspx"
+    },
+    "glasses_policy": {
+      "value": "Glasses should be removed unless they cannot be removed for medical reasons. If worn, glasses should be untinted (except for medical reasons), frames should not obscure the eyes, and there should be no reflection from the lenses",
+      "source_url": "https://immi.homeaffairs.gov.au/help-text/evidence/Pages/et-h0050.aspx"
+    },
+    "headwear_policy": {
+      "value": "A head covering worn for religious reasons is permitted as long as the whole face is visible; the covering should be plain material without any patterns",
+      "source_url": "https://immi.homeaffairs.gov.au/help-text/evidence/Pages/et-h0050.aspx"
+    },
+    "file_spec": {
+      "value": "Digital JPEG format between 70 KB and 3.5 MB; preferred resolution 1200 x 1600 pixels (for online applications). Photos must be unedited — background, moles, wrinkles, scars, or red eyes must not be removed",
+      "source_url": "https://immi.homeaffairs.gov.au/help-text/evidence/Pages/et-h0050.aspx"
+    },
+    "official_source_url": {
+      "value": "https://immi.homeaffairs.gov.au/help-text/evidence/Pages/et-h0050.aspx",
+      "source_url": "https://immi.homeaffairs.gov.au/help-text/evidence/Pages/et-h0050.aspx"
+    }
+  },
+  "restrictions_i18n": {
+    "glasses": {
+      "en": "Glasses should generally be removed. If kept on for medical reasons, lenses must be untinted, frames must not obscure the eyes, and there must be no reflection from the lenses.",
+      "ko": "안경은 원칙적으로 벗어야 함. 의료상 사유로 착용 시 무색 렌즈여야 하며, 안경테가 눈을 가리지 않고 렌즈에 빛반사가 없어야 함.",
+      "ja": "眼鏡は原則として外すこと。医療上の理由で着用する場合は、無色レンズで、フレームが目を隠さず、レンズに反射がないこと。"
+    },
+    "headwear": {
+      "en": "A head covering worn for religious reasons is permitted in the photo as long as the whole face is visible. The covering must be plain material without any patterns.",
+      "ko": "종교적 사유로 머리가리개를 착용하는 경우, 얼굴 전체가 보이는 한 사진 촬영 시 착용 가능. 가리개는 무늬 없는 단색 소재여야 함.",
+      "ja": "宗教上の理由で頭部の被り物を着用する場合、顔全体が見える限り撮影時の着用が可能。被り物は柄のない無地の素材であること。"
+    }
+  },
+  "unverified": [
+    "head_height",
+    "clothing_restriction",
+    "expression_restriction",
+    "ears_visibility",
+    "face_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [
+    {
+      "field": "background",
+      "db_value": "흰색 (white)",
+      "research_value": "Neutral or light grey colour that contrasts with your face — the official Home Affairs visa/general photo-evidence page text does not list plain white as an explicit option (unlike the separate Australian Passport Office page, which explicitly permits white or light grey for passport photos)",
+      "source_url": "https://immi.homeaffairs.gov.au/help-text/evidence/Pages/et-h0050.aspx"
+    }
+  ],
+  "cross_verification": {
+    "size": {
+      "note": "45x35mm confirmed matching DB's 3.5x4.5cm. Direct WebFetch of immi.homeaffairs.gov.au returned HTTP 403 (bot-blocked) on every attempt; the values above are grounded in search-engine-indexed snippets that explicitly and consistently attribute the quoted figures to this specific official Home Affairs URL across three independently issued search queries."
+    }
+  }
+}

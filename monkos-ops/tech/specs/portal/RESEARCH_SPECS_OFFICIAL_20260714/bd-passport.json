@@ -1,0 +1,50 @@
+{
+  "slug": "bd-passport",
+  "batch": 2,
+  "verified": {
+    "background": {
+      "value": "White background required. For children under 6 / first-time passport applicants: 'The background of the photo must be white and the background should be cover at least 40% area of the whole photo.' Adult applicants do not upload a photo at all — biometric enrolment (photo + fingerprints) is captured in person at a DIP office or Bangladesh mission against a controlled white backdrop, per the mandatory-appointment system.",
+      "source_url": "https://bhclondon.org.uk/e-passport-application"
+    },
+    "clothing_restriction": {
+      "value": "\"Light colour dresses (such as white, sky, ash etc.) may cause photo capturing refusal engraved in system software. Applicants are cordially requested to avoid light-coloured dresses.\" (general guidance, not limited to children)",
+      "source_url": "https://bhclondon.org.uk/e-passport-application"
+    },
+    "validity": {
+      "value": "For children under 6 / first-passport applicants: photo must not be older than 3 months. Adult applicants do not submit a pre-taken photo — it is captured live at biometric enrolment, so a separate 'photo validity window' does not apply the same way.",
+      "source_url": "https://bhclondon.org.uk/e-passport-application"
+    },
+    "ears_visibility": {
+      "value": "For children under 6: \"Both the ear of the child should be visible.\"",
+      "source_url": "https://bhclondon.org.uk/e-passport-application"
+    },
+    "official_source_url": {
+      "value": "https://www.epassport.gov.bd/ (Department of Immigration & Passports online portal; adults must complete in-person biometric enrolment, see https://www.epassport.gov.bd/landing/faqs/4)",
+      "source_url": "https://www.epassport.gov.bd/landing/faqs/4"
+    }
+  },
+  "restrictions_i18n": {
+    "clothing": {
+      "en": "Light-coloured dresses (white, sky blue, ash/grey, etc.) are discouraged for all applicants — they may cause the photo-capture system to refuse the image.",
+      "ko": "흰색·하늘색·회색 등 밝은 색상의 의상은 착용을 피해야 한다 — 촬영 시스템 소프트웨어가 촬영을 거부할 수 있다.",
+      "ja": "白・水色・グレーなど明るい色の服の着用は避けること — 撮影システムのソフトウェアが撮影を拒否する場合がある。"
+    },
+    "ears": {
+      "en": "For children under 6 (first-passport applicants): both ears of the child must be visible in the photo.",
+      "ko": "만 6세 미만 아동(최초 여권 신청자)의 경우, 사진에서 양쪽 귀가 모두 보여야 한다.",
+      "ja": "6歳未満の子供(初回パスポート申請者)の場合、写真では両耳がはっきり見える必要がある。"
+    }
+  },
+  "unverified": [
+    "size",
+    "head_height",
+    "file_spec",
+    "expression_restriction",
+    "glasses_policy",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

@@ -1,0 +1,45 @@
+{
+  "slug": "dj-visa",
+  "batch": 6,
+  "verified": {
+    "size": {
+      "value": "2 x 2 inch — printed directly on the official Republic of Djibouti visa application form as \"PHOTOGRAPH (2 x 2)\"",
+      "source_url": "https://djiboutiembassyus.org/sites/default/files/documents/Djibouti_Visa_Application_form.pdf"
+    },
+    "validity": {
+      "value": "Photo must be recent, 6 months old (\"1 recent passport size color photo (6 months old)\")",
+      "source_url": "https://djiboutiembassyus.org/sites/default/files/documents/Djibouti_Visa_Application_form.pdf"
+    },
+    "file_spec": {
+      "value": "Color photo required (\"1 recent passport size color photo\"); physical 2x2 inch print affixed to the printed visa application form (a photo box is pre-printed on the form)",
+      "source_url": "https://djiboutiembassyus.org/sites/default/files/documents/Djibouti_Visa_Application_form.pdf"
+    },
+    "official_source_url": {
+      "value": "https://djiboutiembassyus.org/sites/default/files/documents/Djibouti_Visa_Application_form.pdf",
+      "source_url": "https://djiboutiembassyus.org/sites/default/files/documents/Djibouti_Visa_Application_form.pdf"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "background",
+    "head_height",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "3.5 × 3.5cm",
+      "research_value": "2 × 2 inch (50.8 × 50.8mm) — printed directly on the official Republic of Djibouti visa application form as \"PHOTOGRAPH (2 x 2)\"; a US-inch-based square size, notably larger than the DB's 3.5cm figure",
+      "source_url": "https://djiboutiembassyus.org/sites/default/files/documents/Djibouti_Visa_Application_form.pdf"
+    }
+  ],
+  "cross_verification": {
+    "note": "Source is the official 'Republic of Djibouti Visa Application' form and requirements list published by the Embassy of the Republic of Djibouti in Washington, DC. The photo box is explicitly labeled '(2 x 2)' in inches on the form itself (a US-influenced convention, consistent with this being the Washington DC embassy's version); no background color, head-height, or composition rules are specified in the document."
+  }
+}

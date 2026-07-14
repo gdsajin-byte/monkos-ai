@@ -1,0 +1,30 @@
+{
+  "slug": "bi-visa",
+  "batch": 2,
+  "verified": {
+    "file_spec": {
+      "value": "e-Visa application portal photo-upload field accepts \".png, .jpg, .jpeg\" formats only; general document upload size limit of 200 KB observed on the same application step",
+      "source_url": "https://migration.gov.bi/Apply/step1/3"
+    },
+    "official_source_url": {
+      "value": "https://migration.gov.bi/ (Commissariat Général des Migrations — CGM, official e-Visa portal)",
+      "source_url": "https://migration.gov.bi/Apply/step1/3"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

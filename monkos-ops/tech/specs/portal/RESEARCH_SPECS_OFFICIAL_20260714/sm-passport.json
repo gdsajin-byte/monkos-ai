@@ -1,0 +1,27 @@
+{
+  "slug": "sm-passport",
+  "batch": 23,
+  "verified": {
+    "official_source_url": {
+      "value": "https://www.gov.sm — \"Carta dei Servizi\" (Ufficio Stato Civile, Servizi Demografici ed Elettorali, Rev. 04/2026) official service charter, Sezione Passaporti, states: \"La fotografia viene fatta in Ufficio al momento della richiesta (per i bambini da 0 a 5 anni occorre portare invece una fototessera)\" — i.e. the photo is taken in-office at the time of application for standard applicants; only for children aged 0-5 must a 'fototessera' (standard ID photo) be brought instead, with no dimensions specified. Separately, the official gov.sm application form for residents-abroad (\"modulo passaporto res all'estero\") lists \"1 fototessera\" as a required attachment. Passport document validity is 10 years for applicants 14+ (3 years for ages 0-3, 5 years for ages 3-14) — this is the passport's own validity, not a stated photo-validity period.",
+      "source_url": "https://www.gov.sm/pub2/GovSM/dam/jcr:9a27eb14-1b4f-486d-b207-1f3b723b2d06/Rev%20Carta%20dei%20Servizi%20Stato%20Civile,%20Servizi%20Demografici%20ed%20Elettorali%202025.pdf"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

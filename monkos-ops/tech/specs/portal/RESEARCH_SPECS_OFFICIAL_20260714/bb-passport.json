@@ -1,0 +1,36 @@
+{
+  "slug": "bb-passport",
+  "batch": 2,
+  "verified": {
+    "size": {
+      "value": "Not more than 5cm × 5cm (5×5cm), must be taken by a professional photographer; two (2) photographs required per application",
+      "source_url": "https://immigration.gov.bb/pages/Passport.aspx"
+    },
+    "official_source_url": {
+      "value": "https://immigration.gov.bb/pages/Passport.aspx",
+      "source_url": "https://immigration.gov.bb/pages/Passport.aspx"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": {
+      "verdict": "confirmed",
+      "evidence": "Full raw-text extraction of the Barbados Immigration Department's official Passport page (immigration.gov.bb/pages/Passport.aspx) confirms verbatim: 'The photographs should not be more than five (5) centimetres by five (5) centimetres and should be taken by a professional photographer.' This matches the DB value exactly. Note: a page image titled 'Photo Head Size Template' shows only the outer 5×5cm frame with no internal head-height measurement text, so head_height could not be confirmed from this source despite third-party sites (not used here) claiming 30-40mm.",
+      "correct_value": "5 × 5cm"
+    }
+  }
+}

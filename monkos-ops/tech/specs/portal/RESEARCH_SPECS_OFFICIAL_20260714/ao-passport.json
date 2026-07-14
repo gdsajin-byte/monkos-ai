@@ -1,0 +1,41 @@
+{
+  "slug": "ao-passport",
+  "batch": 1,
+  "verified": {
+    "size": {
+      "value": "4 × 5cm (\"fotografia tipo passe recente e colorida, dimensão 4x5cm\" — recent, color, passport-style photo)",
+      "source_url": "https://www.sme.gov.ao/ao/servicos/requisitos-dos-actos-migratorios/nacionais/"
+    },
+    "official_source_url": {
+      "value": "https://www.sme.gov.ao/ao/servicos/requisitos-dos-actos-migratorios/nacionais/",
+      "source_url": "https://www.sme.gov.ao/ao/servicos/requisitos-dos-actos-migratorios/nacionais/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "3.5 × 4.5cm",
+      "research_value": "4 × 5cm — SME (Serviço de Migração e Estrangeiros, Angola's Ministry of Interior migration/passport authority) official requirements page quotes exactly \"dimensão 4x5cm\" for both Ordinary and Service passports",
+      "source_url": "https://www.sme.gov.ao/ao/servicos/requisitos-dos-actos-migratorios/nacionais/"
+    }
+  ],
+  "cross_verification": {
+    "background": {
+      "note": "A direct fetch of the SME nacionais requirements page quoted only 'fotografia tipo passe recente e colorida, dimensão 4x5cm' without stating a background color explicitly in the retrieved excerpt. A separate secondary search surfaced 'white background' language tied to SME's official passport application PDF forms, but since my own direct read of the primary official page text did not itself state the background color, this field is left unverified rather than asserted, per the truthfulness gate."
+    }
+  }
+}

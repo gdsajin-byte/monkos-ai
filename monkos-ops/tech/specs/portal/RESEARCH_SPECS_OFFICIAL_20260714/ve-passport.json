@@ -1,0 +1,32 @@
+{
+  "slug": "ve-passport",
+  "batch": 27,
+  "verified": {
+    "file_spec": {
+      "value": "No applicant-submitted photo file is required. The official document checklist for passport issuance/renewal (current passport or laminated cédula, appointment form 'planilla de cita', and consular fee) does not include bringing a photo — SAIME captures the photograph and fingerprints live, on-site, at the in-person appointment.",
+      "source_url": "https://consuladobarcelona.gob.ve/webalterna/expedicion-y-renovacion-de-pasaporte/"
+    },
+    "official_source_url": {
+      "value": "https://www.saime.gob.ve/pasaporte/",
+      "source_url": "https://www.saime.gob.ve/pasaporte/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "SAIME (Servicio Administrativo de Identificación, Migración y Extranjería, saime.gob.ve — Venezuela's official identification/passport authority) and its consular offices abroad (verified via the official Venezuelan Consulate General in Barcelona, consuladobarcelona.gob.ve, a gob.ve government domain) both describe a passport process where the applicant is photographed and fingerprinted live by an official at the appointment, rather than submitting a pre-taken photo. This explains why no official .gob.ve page publishes consumer-facing photo composition specs (size/background/head-height/etc.) for the passport — there is genuinely no such applicant-facing requirement to publish. DB values (2×2in / white / 3.4-3.8cm) could not be confirmed or refuted against any official source describing applicant-submitted photos, so no db_conflicts entry is asserted."
+  }
+}

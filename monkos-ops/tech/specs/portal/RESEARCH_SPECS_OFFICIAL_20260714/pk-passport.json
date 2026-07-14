@@ -1,0 +1,65 @@
+{
+  "slug": "pk-passport",
+  "batch": 21,
+  "verified": {
+    "size": {
+      "value": "45mm high by 35mm wide",
+      "source_url": "https://onlinemrp.dgip.gov.pk/photo-requirements/"
+    },
+    "background": {
+      "value": "Plain white background",
+      "source_url": "https://onlinemrp.dgip.gov.pk/photo-requirements/"
+    },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": {
+      "value": "Not more than 6 months old.",
+      "source_url": "https://onlinemrp.dgip.gov.pk/photo-requirements/"
+    },
+    "file_spec": {
+      "value": "Digital file size must not exceed 5MB. Photo cannot be cut down from a larger picture or edited/retouched in software (e.g. Photoshop).",
+      "source_url": "https://onlinemrp.dgip.gov.pk/photo-requirements/"
+    },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": {
+      "value": "Facing forward and looking straight at the camera, with a neutral expression and mouth closed.",
+      "source_url": "https://onlinemrp.dgip.gov.pk/photo-requirements/"
+    },
+    "glasses_policy": {
+      "value": "Eyes must be open, visible, and free from reflection or glare from glasses; eyes must not be covered by sunglasses, tinted glasses, glasses frames, or hair.",
+      "source_url": "https://onlinemrp.dgip.gov.pk/photo-requirements/"
+    },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": {
+      "value": "Nothing may cover the face; in sharp focus and clear, in clear contrast to the background, without shadows or red-eye.",
+      "source_url": "https://onlinemrp.dgip.gov.pk/photo-requirements/"
+    },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://onlinemrp.dgip.gov.pk/photo-requirements/",
+      "source_url": "https://onlinemrp.dgip.gov.pk/photo-requirements/"
+    }
+  },
+  "restrictions_i18n": {
+    "expression": {
+      "en": "Facing forward and looking straight at the camera, with a neutral expression and mouth closed.",
+      "ko": "정면을 향해 카메라를 똑바로 응시, 무표정에 입을 다물 것.",
+      "ja": "正面を向いてカメラをまっすぐ見つめ、無表情で口を閉じること。"
+    },
+    "glasses": {
+      "en": "Eyes must be open, visible, and free from reflection or glare from glasses; eyes must not be covered by sunglasses, tinted glasses, glasses frames, or hair.",
+      "ko": "눈을 뜨고 뚜렷이 보이도록 하며 안경 반사·눈부심이 없을 것; 선글라스·색안경·안경테·머리카락으로 눈을 가리지 말 것.",
+      "ja": "目を開けてはっきり見えるようにし、眼鏡の反射・グレアがないこと。サングラス・色付き眼鏡・眼鏡フレーム・髪の毛で目を隠さないこと。"
+    },
+    "face_visibility": {
+      "en": "Nothing may cover the face.",
+      "ko": "얼굴을 가리는 것이 없어야 함.",
+      "ja": "顔を覆うものがあってはならない。"
+    }
+  },
+  "unverified": ["head_height", "clothing_restriction", "ears_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Note: onlinemrp.dgip.gov.pk directly blocks the fetch tool's default user agent (HTTP 403); content was retrieved via a text-rendering proxy (r.jina.ai) of the same official DGIP URL, and the quoted text matches DGIP's own published photo-requirements copy. Size 45x35mm matches the DB's '3.5 x 4.5cm', no conflict."
+  }
+}

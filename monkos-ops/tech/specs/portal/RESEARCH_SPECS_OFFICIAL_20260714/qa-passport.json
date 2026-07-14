@@ -1,0 +1,28 @@
+{
+  "slug": "qa-passport",
+  "batch": 22,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://portal.moi.gov.qa/wps/portal/MOIInternet/departmentcommittees/nationalitytraveldocuments/",
+      "source_url": "https://portal.moi.gov.qa/wps/portal/MOIInternet/departmentcommittees/nationalitytraveldocuments/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Qatar's Ministry of Interior (MOI) — General Administration of Nationality, Borders & Expatriate Affairs / Nationality and Travel Documents Department — is the passport-issuing authority (portal.moi.gov.qa). Direct fetches of MOI, Hukoomi, and MOFA pages (portal.moi.gov.qa/wps/.../nationalitytraveldocuments, portal.moi.gov.qa open-data passport section, hukoomi.gov.qa) returned only navigation/fee/contact content — no detailed photo specification page could be located or confirmed. Third-party visa-photo vendor sites disagree sharply with each other on size (35×45mm / 38×48mm / 30×40mm) and background (white / blue / light grey), which is itself a signal that no single reliable figure exists publicly; per the sourcing policy none of these third-party figures are used here. All requested fields are left unverified pending a directly-readable official specification document."
+  }
+}

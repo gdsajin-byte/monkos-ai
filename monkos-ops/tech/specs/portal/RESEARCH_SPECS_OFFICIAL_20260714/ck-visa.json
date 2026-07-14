@@ -1,0 +1,29 @@
+{
+  "slug": "ck-visa",
+  "batch": 5,
+  "verified": {
+    "official_source_url": {
+      "value": "https://mfai.gov.ck/immigration",
+      "source_url": "https://mfai.gov.ck/immigration"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note": "Every direct page-fetch attempt to mfai.gov.ck (incl. /immigration, /faq, /cook-islands-status) returned HTTP 403. No numeric photo specification could be independently confirmed from an official source within this research pass."
+  }
+}

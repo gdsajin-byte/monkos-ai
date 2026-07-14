@@ -1,0 +1,28 @@
+{
+  "slug": "mc-visa",
+  "batch": 16,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://ambassade-en-france.gouv.mc/en/information-and-services/visiting-monaco — Monaco's own embassy site states Monaco issues no visa of its own: 'Nationals of countries outside the European Economic Area wishing to visit the Principality of Monaco must be in possession of a valid passport and a visa for the Schengen area.'",
+      "source_url": "https://ambassade-en-france.gouv.mc/en/information-and-services/visiting-monaco"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Monaco has no independent visa authority or border control; it is folded into the Schengen area via France. Non-EEA nationals needing to visit Monaco must obtain a Schengen visa processed by French consular authorities (france-visas.gouv.fr), confirmed directly on Monaco's own embassy-in-France website. Because there is no Monaco-specific 'visa photo' standard distinct from the general Schengen/ICAO photo rules administered by France, and a direct fetch of france-visas.gouv.fr was blocked (HTTP 403) in this session, no size/background/etc. fields are recorded as verified for this slug — recording DB's existing 3.5×4.5cm/white as confirmed would misrepresent that they were checked against an actual Monaco-issued visa photo standard, which does not exist."
+  }
+}

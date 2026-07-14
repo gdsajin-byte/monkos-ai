@@ -1,0 +1,81 @@
+{
+  "slug": "tg-visa",
+  "batch": 25,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": {
+      "value": "\"de couleur claire, régulier, uni, pas dégradé\" — light-colored, regular, uniform, not gradient (not explicitly stated as white)",
+      "source_url": "https://voyage.gouv.tg/faq"
+    },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": {
+      "value": "\"photo datant de maximum 6 mois, en couleurs, rendue naturelle, nette, non retouchée\" — photo no more than 6 months old, in color, naturally rendered, sharp, unretouched",
+      "source_url": "https://voyage.gouv.tg/faq"
+    },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": {
+      "value": "\"expression neutre, regard droit, bouche fermée\" — neutral expression, straight gaze, closed mouth",
+      "source_url": "https://voyage.gouv.tg/faq"
+    },
+    "glasses_policy": {
+      "value": "\"pas de reflets gênants, pas d'ombres\" — no bothersome reflections, no shadows",
+      "source_url": "https://voyage.gouv.tg/faq"
+    },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": {
+      "value": "\"visage entièrement visible, yeux entièrement visibles\" — face entirely visible, eyes entirely visible",
+      "source_url": "https://voyage.gouv.tg/faq"
+    },
+    "headwear_policy": {
+      "value": "\"tête nue\" — bare head (no headwear)",
+      "source_url": "https://voyage.gouv.tg/faq"
+    },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://voyage.gouv.tg/faq",
+      "source_url": "https://voyage.gouv.tg/faq"
+    }
+  },
+  "restrictions_i18n": {
+    "expression": {
+      "en": "Neutral expression, straight gaze, mouth closed.",
+      "ko": "무표정(중립적 표정)을 유지하고, 정면을 응시하며, 입은 다문 상태여야 함.",
+      "ja": "無表情(中立的な表情)で、正面を見つめ、口を閉じた状態であること。"
+    },
+    "glasses": {
+      "en": "No bothersome reflections, no shadows.",
+      "ko": "눈에 거슬리는 반사광이나 그림자가 없어야 함.",
+      "ja": "気になる反射や影がないこと。"
+    },
+    "face_visibility": {
+      "en": "Face entirely visible, eyes entirely visible.",
+      "ko": "얼굴 전체와 눈이 완전히 보여야 함.",
+      "ja": "顔全体と両目が完全に見える状態であること。"
+    },
+    "headwear": {
+      "en": "Bare head (no headwear).",
+      "ko": "맨머리 상태여야 함(모자·머리가리개 착용 불가).",
+      "ja": "無帽(帽子・ヘッドギア着用不可)であること。"
+    }
+  },
+  "unverified": [
+    "size",
+    "head_height",
+    "file_spec",
+    "clothing_restriction",
+    "ears_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [
+    {
+      "field": "background",
+      "db_value": "흰색",
+      "research_value": "\"de couleur claire, régulier, uni, pas dégradé\" (light-colored, uniform, no gradient) — Togo's official e-Visa FAQ does not say specifically white, only \"light-colored\"",
+      "source_url": "https://voyage.gouv.tg/faq"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "voyage.gouv.tg is Togo's official government e-Visa portal (\"Togo Voyage\"). Its FAQ page gives a genuinely detailed official photo standard covering quality, background, expression, glasses, and headwear — unusually thorough for a page of this size. No numeric photo size (cm) or file format/KB spec was found anywhere on the site (voyage.gouv.tg/about, voyage.gouv.tg/faq, or the visa checklist), which only says \"Une (1) photo d'identité récente\" (one recent ID photo) is mandatory. Togo's separate passport authority DGDN (see tg-passport.json) only confirms background+quantity for the passport photo specifically, so the richer visa-page standard above was NOT cross-applied to the passport record."
+  }
+}

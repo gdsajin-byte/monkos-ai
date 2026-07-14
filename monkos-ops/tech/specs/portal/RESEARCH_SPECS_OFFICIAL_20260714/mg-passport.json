@@ -1,0 +1,94 @@
+{
+  "slug": "mg-passport",
+  "batch": 16,
+  "verified": {
+    "size": {
+      "value": "431 × 555 px at 300 dpi (≈36.5 × 47.0mm / 3.65 × 4.70cm, a direct unit conversion of the stated px/dpi values — a non-square, portrait-oriented format); file must be under 50KB, in .jpg format.",
+      "source_url": "https://www.diplomatie.gov.mg/app/passeport/index.php/passeport/photo_requirements"
+    },
+    "background": {
+      "value": "Off-white or light gray background ('un fond blanc cassé ou de couleur gris claire'), with clear contrast maintained between the face and the background.",
+      "source_url": "https://www.diplomatie.gov.mg/app/passeport/index.php/passeport/photo_requirements"
+    },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": {
+      "value": "Photo must be taken no more than six months before the application submission date.",
+      "source_url": "https://www.diplomatie.gov.mg/app/passeport/index.php/passeport/photo_requirements"
+    },
+    "file_spec": {
+      "value": "431 × 555 px, .jpg format, file size under 50KB, 300dpi resolution.",
+      "source_url": "https://www.diplomatie.gov.mg/app/passeport/index.php/passeport/photo_requirements"
+    },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": {
+      "value": "Neutral facial expression, mouth closed, no smiling ('bouche fermée, pas de sourire').",
+      "source_url": "https://www.diplomatie.gov.mg/app/passeport/index.php/passeport/photo_requirements"
+    },
+    "glasses_policy": {
+      "value": "Glasses are not permitted.",
+      "source_url": "https://www.diplomatie.gov.mg/app/passeport/index.php/passeport/photo_requirements"
+    },
+    "ears_visibility": {
+      "value": "Forehead and ears must be uncovered.",
+      "source_url": "https://www.diplomatie.gov.mg/app/passeport/index.php/passeport/photo_requirements"
+    },
+    "face_visibility": {
+      "value": "Forehead and ears must be uncovered; eyes open and clearly visible; face and shoulders straight, centered, and squared to the camera.",
+      "source_url": "https://www.diplomatie.gov.mg/app/passeport/index.php/passeport/photo_requirements"
+    },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": {
+      "value": "Facial piercings are not permitted.",
+      "source_url": "https://www.diplomatie.gov.mg/app/passeport/index.php/passeport/photo_requirements"
+    },
+    "official_source_url": {
+      "value": "https://www.diplomatie.gov.mg/app/passeport/index.php/passeport/photo_requirements",
+      "source_url": "https://www.diplomatie.gov.mg/app/passeport/index.php/passeport/photo_requirements"
+    }
+  },
+  "restrictions_i18n": {
+    "expression": {
+      "en": "Neutral facial expression, mouth closed, no smiling.",
+      "ko": "무표정 유지, 입은 다물고 미소 짓지 않을 것.",
+      "ja": "無表情を保ち、口を閉じ微笑まないこと。"
+    },
+    "glasses": {
+      "en": "Glasses are not permitted.",
+      "ko": "안경 착용 불가.",
+      "ja": "眼鏡の着用不可。"
+    },
+    "ears": {
+      "en": "Ears must be uncovered.",
+      "ko": "귀는 가리지 않아야 함.",
+      "ja": "耳を隠さないこと。"
+    },
+    "face_visibility": {
+      "en": "Forehead and ears must be uncovered; eyes open and clearly visible; face and shoulders straight, centered, and squared to the camera.",
+      "ko": "이마와 귀는 가리지 않아야 함; 눈은 뜨고 또렷하게 보여야 함; 얼굴과 어깨는 카메라를 향해 곧게, 중앙에, 정면으로 위치할 것.",
+      "ja": "額と耳を隠さないこと。目は開けてはっきり見えること。顔と肩はカメラに対しまっすぐ、中央に、正面を向くこと。"
+    },
+    "accessories": {
+      "en": "Facial piercings are not permitted.",
+      "ko": "얼굴 피어싱 착용 불가.",
+      "ja": "顔のピアスは不可。"
+    }
+  },
+  "unverified": ["head_height", "clothing_restriction", "headwear_policy"],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "4 × 4cm",
+      "research_value": "431×555px @300dpi, which converts to ≈36.5×47.0mm (3.65×4.70cm) — a non-square, portrait-oriented format, not the square 4×4cm recorded in DB.",
+      "source_url": "https://www.diplomatie.gov.mg/app/passeport/index.php/passeport/photo_requirements"
+    },
+    {
+      "field": "background",
+      "db_value": "흰색",
+      "research_value": "Off-white or light gray ('blanc cassé ou gris clair'), not pure white.",
+      "source_url": "https://www.diplomatie.gov.mg/app/passeport/index.php/passeport/photo_requirements"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "Source is the Madagascar Ministry of Foreign Affairs (diplomatie.gov.mg) passport photo-requirements page, fetched directly. The px/mm conversion (300dpi standard: 1 inch = 25.4mm, so 431px÷300×25.4≈36.5mm, 555px÷300×25.4≈47.0mm) is a deterministic unit conversion of the officially stated figures, not an estimate. Third-party commercial photo-service sites claim a separate '40×40mm' figure for Madagascar, but this could not be traced to an official government page and was excluded per the truthfulness gate."
+  }
+}

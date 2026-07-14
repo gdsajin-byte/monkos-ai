@@ -1,0 +1,34 @@
+{
+  "slug": "pw-visa",
+  "batch": 21,
+  "verified": {
+    "size": {
+      "value": "2 inch x 2 inch (ID photo)",
+      "source_url": "https://bcbp.pw/?page_id=165"
+    },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": {
+      "value": "Recent, within 6 months.",
+      "source_url": "https://bcbp.pw/?page_id=165"
+    },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://bcbp.pw/?page_id=165",
+      "source_url": "https://bcbp.pw/?page_id=165"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["background", "head_height", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Source: Palau's Bureau of Customs and Border Protection, Division of Immigration (bcbp.pw), which lists 'One recent ID photo (2\"x 2\") (6 months)' as a consistent requirement across several long-stay visa categories (Resident, Investor, Missionary, Student, Government Employee visas). Most short-term visitors to Palau do not need a pre-arranged visa at all - a free 30-day entry permit is issued on arrival, and travelers instead complete the online Palau Entry Form (palautravel.pw), which was not confirmed to require a photo. Background color and other photo specifics were not stated on the page and are left unverified. Size 2x2 inch matches the DB's '2 x 2 inch (51 x 51mm)', no conflict."
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "slug": "dz-visa",
+  "batch": 7,
+  "verified": {
+    "background": {
+      "value": "Photos must be taken on a white background",
+      "source_url": "https://www.mfa.gov.dz/services-for-foreigners/entry-visa-to-algeria"
+    },
+    "glasses_policy": {
+      "value": "Applicant must not wear glasses of any kind, except prescription eyewear",
+      "source_url": "https://www.mfa.gov.dz/services-for-foreigners/entry-visa-to-algeria"
+    },
+    "file_spec": {
+      "value": "Two (02) recent identity photos required; applicant's first and last names must be written in pencil on the back of each photo; the visa application form/photos cannot be submitted electronically — must be brought in person or sent by post to the Algerian embassy/consulate",
+      "source_url": "https://www.mfa.gov.dz/services-for-foreigners/entry-visa-to-algeria"
+    },
+    "official_source_url": {
+      "value": "https://www.mfa.gov.dz/services-for-foreigners/entry-visa-to-algeria",
+      "source_url": "https://www.mfa.gov.dz/services-for-foreigners/entry-visa-to-algeria"
+    }
+  },
+  "restrictions_i18n": {
+    "glasses": {
+      "en": "The applicant must not wear glasses of any kind, except prescription eyewear.",
+      "ko": "안경 착용 불가. 단, 시력 교정용 도수 안경은 예외로 허용.",
+      "ja": "眼鏡の着用は不可。ただし度付き(視力矯正用)眼鏡は例外として許可。"
+    }
+  },
+  "unverified": [
+    "size",
+    "head_height",
+    "validity",
+    "clothing_restriction",
+    "expression_restriction",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "direct_fetch_note": {
+      "note": "Direct WebFetch to www.mfa.gov.dz and multiple embassy subdomains (embwashington.mfa.gov.dz, cglondon.mfa.gov.dz) all failed with a TLS chain-validation error, consistent with a systemic fetch-tool issue on this domain family rather than a content problem. Values confirmed via grounded web search quoting the official 'Entry visa to Algeria' page, which is mirrored near-identically across multiple Algerian embassy subdomains (Washington, New Delhi, Amman, Abu Dhabi, Pretoria, Ankara, Oslo)."
+    },
+    "size": {
+      "note": "A '35×45mm' figure for the ENTRY visa specifically (as opposed to the passport) was seen only on third-party photo-vendor sites (photogov.net, visafoto.com, visapics.org) in the search results, not verbatim on any mfa.gov.dz page found. Since the passport-specific page does confirm 35×45mm for dz-passport, it is plausible the visa uses the same national photo standard, but this was not explicitly restated on the entry-visa page itself, so size is left unverified here rather than inferred."
+    }
+  }
+}

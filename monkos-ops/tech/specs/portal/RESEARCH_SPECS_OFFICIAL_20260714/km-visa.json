@@ -1,0 +1,28 @@
+{
+  "slug": "km-visa",
+  "batch": 13,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://www.un.int/comoros/comoros/passport-and-visa-process",
+      "source_url": "https://www.un.int/comoros/comoros/passport-and-visa-process"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note": "Comoros issues most visas on arrival at the airport/seaport rather than through a public online e-visa system, and no functioning official Union of the Comoros government domain with visa photo specifications could be located during this research pass (egouv.km refused connections; ambassade-comores.com reset the connection). The only reachable official source, the Permanent Mission of the Union of the Comoros to the UN (un.int/comoros), covers the visa fee/process but states no photo size, background, or composition rules. Third-party aggregator sites conflict with each other on background colour (plain white vs. light blue/grey per differing sources), which is itself a reason to leave these fields unverified rather than adopt any single aggregator's figure, per the truthfulness gate."
+  }
+}

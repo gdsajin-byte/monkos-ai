@@ -1,0 +1,28 @@
+{
+  "slug": "sb-passport",
+  "batch": 22,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://immigration.gov.sb/ordinary-passport/",
+      "source_url": "https://immigration.gov.sb/ordinary-passport/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Solomon Islands Immigration Division (immigration.gov.sb, official government site) confirms a passport photo is required and states that 'Passport photo, finger prints and signature will be captured electronically before application form is submitted for assessment' — i.e. the photo is captured in-person at the Immigration Office rather than pre-supplied by the applicant against a printed spec sheet. No numeric size/background/composition specifications were found on the official site, its two linked application-form PDFs (Passport-Application-Form-1.pdf, Passport-Application-Form-2.pdf), or its Division Resources page. This is consistent with the limited scope of the country's official web presence; third-party photo-vendor sites cite figures like 3.5×4.5cm, but per policy these are not used as verified since no official confirmation was found."
+  }
+}

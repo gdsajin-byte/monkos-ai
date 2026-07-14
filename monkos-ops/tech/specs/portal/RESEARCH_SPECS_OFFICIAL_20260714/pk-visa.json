@@ -1,0 +1,73 @@
+{
+  "slug": "pk-visa",
+  "batch": 21,
+  "verified": {
+    "size": {
+      "value": "45mm high by 35mm wide; face should occupy 70-80% of the photograph.",
+      "source_url": "https://visa.nadra.gov.pk/photograph-guide/"
+    },
+    "background": {
+      "value": "Plain white / plain light-colored background.",
+      "source_url": "https://visa.nadra.gov.pk/photograph-guide/"
+    },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": {
+      "value": "No more than 6 months old.",
+      "source_url": "https://visa.nadra.gov.pk/photograph-guide/"
+    },
+    "file_spec": {
+      "value": "Digital file size up to a maximum of 350KB.",
+      "source_url": "https://visa.nadra.gov.pk/photograph-guide/"
+    },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": {
+      "value": "Neutral expression with mouth closed, looking at the camera.",
+      "source_url": "https://visa.nadra.gov.pk/photograph-guide/"
+    },
+    "glasses_policy": {
+      "value": "The photograph must show your eyes clearly with no glasses on.",
+      "source_url": "https://visa.nadra.gov.pk/photograph-guide/"
+    },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": {
+      "value": "Close-up of head and top of shoulders, showing you alone (no chair backs or other people visible), in sharp focus, uniform lighting, no shadows/flash reflections/red-eye.",
+      "source_url": "https://visa.nadra.gov.pk/photograph-guide/"
+    },
+    "headwear_policy": {
+      "value": "Head coverings are permitted, but your facial features from the bottom of the chin to the top of the forehead and both edges of your face must be clearly shown.",
+      "source_url": "https://visa.nadra.gov.pk/photograph-guide/"
+    },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://visa.nadra.gov.pk/photograph-guide/",
+      "source_url": "https://visa.nadra.gov.pk/photograph-guide/"
+    }
+  },
+  "restrictions_i18n": {
+    "expression": {
+      "en": "Neutral expression with mouth closed, looking at the camera.",
+      "ko": "무표정으로 입을 다물고 카메라를 응시할 것.",
+      "ja": "無表情で口を閉じ、カメラを見つめること。"
+    },
+    "glasses": {
+      "en": "The photograph must show your eyes clearly with no glasses on.",
+      "ko": "안경을 착용하지 않은 상태로 눈이 뚜렷이 보여야 함.",
+      "ja": "眼鏡を着用せず、目がはっきり見える状態であること。"
+    },
+    "headwear": {
+      "en": "Head coverings are permitted, but your facial features from the bottom of the chin to the top of the forehead and both edges of your face must be clearly shown.",
+      "ko": "머리가리개(헤드커버링) 착용은 허용되나, 턱 끝부터 이마 상단까지와 얼굴 양쪽 윤곽이 뚜렷이 보여야 함.",
+      "ja": "頭部を覆うもの(ヘッドカバー)の着用は可能だが、顎先から額の上部まで、および顔の両側の輪郭がはっきり見える必要がある。"
+    },
+    "face_visibility": {
+      "en": "Close-up of head and top of shoulders, showing you alone (no chair backs or other people visible), in sharp focus, uniform lighting, no shadows/flash reflections/red-eye.",
+      "ko": "머리부터 어깨 상단까지 클로즈업 촬영, 본인만 나와야 함(의자 등받이나 다른 사람이 보이지 않을 것), 초점이 선명하고 조명이 균일해야 하며 그림자·플래시 반사·적목현상이 없어야 함.",
+      "ja": "頭部から肩の上部までのクローズアップ撮影で、本人のみが写ること(椅子の背もたれや他の人物が写り込まないこと)。ピントが鮮明で照明が均一であり、影・フラッシュの反射・赤目がないこと。"
+    }
+  },
+  "unverified": ["head_height", "clothing_restriction", "ears_visibility", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Source is Pakistan's official NADRA online visa system (visa.nadra.gov.pk), a different government portal from the DGIP passport photo-requirements page; visa.nadra.gov.pk directly blocked the fetch tool's default user agent (HTTP 403), so content was retrieved via a text-rendering proxy (r.jina.ai) of the same official URL. Note the visa glasses policy ('no glasses on') is stricter than what could be confirmed for the passport (which only explicitly bars sunglasses/tinted lenses/frames obscuring the eyes) - these are recorded separately per their distinct sources rather than merged. Size 45x35mm matches the DB's '3.5 x 4.5cm', no conflict."
+  }
+}

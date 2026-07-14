@@ -1,0 +1,44 @@
+{
+  "slug": "mn-visa",
+  "batch": 17,
+  "verified": {
+    "size": {
+      "value": "3.5 x 4.5 cm (stated as mandatory: 'the size of the photo is mandatory')",
+      "source_url": "https://en.consul.mn/visa/c/82"
+    },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://en.consul.mn/visa/c/82",
+      "source_url": "https://en.consul.mn/visa/c/82"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Mongolia's official consular portal (en.consul.mn/visa/c/82, Ministry of Foreign Affairs) states '3.5×4.5cm photo (the size of the photo is mandatory)' applying to all visa categories (tourist, business, employment, student, official/diplomatic). This matches the DB value exactly. The Embassy of Mongolia in the US (mongolianembassy.us) independently confirms only 'one photo /passport size/' without a numeric size, which does not contradict the consul.mn figure. Neither the evisa.mn application portal nor the Immigration Agency's application page (immigration.gov.mn/en/application/) exposed any additional photo-spec text when fetched. A detailed photo standard (white background, no hat/glasses, ears/forehead visible, 3-month validity, JPEG 413x531px) was found and verified for the domestic gadaad-passport product (see mn-passport.json) via Mongolian embassy pages, but since those specific pages were framed around 'гадаад паспорт' (foreign passport) rather than visa, that detail is not carried over here without its own visa-specific confirmation.",
+    "note_ko": "몽골 외교부 공식 영사포털(en.consul.mn/visa/c/82)은 관광·상용·취업·유학·공무 등 전 비자 유형에 적용되는 '3.5×4.5cm 사진(규격 필수)'을 명시하며, 이는 DB 값과 정확히 일치한다. 주미 몽골대사관(mongolianembassy.us)은 별도로 '사진 1매(여권 규격)'만 확인해줄 뿐 수치를 명시하지 않아 consul.mn 수치와 모순되지 않는다. e비자 신청 포털(evisa.mn)과 이민청 신청 페이지(immigration.gov.mn/en/application/)에서는 추가 사진 규격 텍스트가 확인되지 않았다. mn-passport.json에서는 몽골 재외공관 페이지들을 통해 상세한 사진 표준(흰색 배경, 모자·안경 금지, 귀·이마 노출, 유효기간 3개월, JPEG 413×531px)을 확인했으나, 해당 페이지들이 '가다드 파스포르트'(외국여행용 여권)를 대상으로 한 것이라 비자 전용 확인 없이 그대로 이관하지 않았다."
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "slug": "ae-passport",
+  "batch": 0,
+  "verified": {
+    "size": {
+      "value": "35mm (width) × 40mm (height) per ICP's unified 'Personal Photo Specifications' document. Note: ICP's FAQ page separately states 3.5 × 4.5cm for its general 'Passport & Visa' category — the two official ICP sources are not fully consistent.",
+      "source_url": "https://icp.gov.ae/wp-content/uploads/2021/11/icao_english.pdf"
+    },
+    "background": {
+      "value": "White",
+      "source_url": "https://icp.gov.ae/en/faq/"
+    },
+    "head_height": {
+      "value": "Close-up of head and top of shoulders; face takes up 70-80% of the photograph (exact cm figure not stated in the source document)",
+      "source_url": "https://icp.gov.ae/wp-content/uploads/2021/11/icao_english.pdf"
+    },
+    "validity": {
+      "value": "No more than 6 months old",
+      "source_url": "https://icp.gov.ae/wp-content/uploads/2021/11/icao_english.pdf"
+    },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": {
+      "value": "Look directly at the camera; face square-on to the lens, not tilted, both edges of the face clearly visible; eyes open, no hair across the eyes; natural/colour-neutral skin tone; no shadows, flash reflection, or red-eye.",
+      "source_url": "https://icp.gov.ae/wp-content/uploads/2021/11/icao_english.pdf"
+    },
+    "glasses_policy": {
+      "value": "Sunglasses/tinted lenses prohibited; prescription glasses are permitted only if they do not obscure the eyes and show no glare.",
+      "source_url": "https://icp.gov.ae/en/faq/"
+    },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": {
+      "value": "Face must be square to the camera (not portrait-style or turned to one side), both edges of the face clearly visible, no shadows across the face.",
+      "source_url": "https://icp.gov.ae/wp-content/uploads/2021/11/icao_english.pdf"
+    },
+    "headwear_policy": {
+      "value": "Hats are not allowed.",
+      "source_url": "https://icp.gov.ae/en/faq/"
+    },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://icp.gov.ae/wp-content/uploads/2021/11/icao_english.pdf",
+      "source_url": "https://icp.gov.ae/wp-content/uploads/2021/11/icao_english.pdf"
+    }
+  },
+  "restrictions_i18n": {
+    "expression": {
+      "en": "Look directly at the camera; face square-on, not tilted, both edges of the face clearly visible; eyes open, no hair across the eyes.",
+      "ko": "카메라를 정면으로 응시, 얼굴을 기울이지 않고 양쪽 윤곽이 뚜렷이 보이도록 할 것; 눈을 뜨고 머리카락이 눈을 가리지 않을 것.",
+      "ja": "カメラを正面から直視し、顔を傾けず両側の輪郭がはっきり見えるようにすること。目を開け、髪の毛が目にかからないこと。"
+    },
+    "glasses": {
+      "en": "Sunglasses/tinted lenses prohibited; prescription glasses permitted only if they do not obscure the eyes and show no glare.",
+      "ko": "선글라스·색안경 금지; 도수 안경은 눈을 가리지 않고 반사가 없을 때만 허용.",
+      "ja": "サングラス・色付きレンズは禁止。度付きメガネは目を隠さず反射がない場合のみ許可。"
+    },
+    "face_visibility": {
+      "en": "Face must be square to the camera, both edges of the face clearly visible, no shadows across the face.",
+      "ko": "얼굴이 카메라를 정면으로 향해야 하며, 양쪽 얼굴 윤곽이 뚜렷이 보이고 얼굴에 그림자가 없어야 함.",
+      "ja": "顔はカメラに対して正面を向き、両側の輪郭がはっきり見え、顔に影がないこと。"
+    },
+    "headwear": {
+      "en": "Hats are not allowed.",
+      "ko": "모자 착용 불가.",
+      "ja": "帽子の着用不可。"
+    }
+  },
+  "unverified": ["file_spec", "clothing_restriction", "ears_visibility", "accessories"],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "4 × 6cm",
+      "research_value": "3.5 × 4.0cm (35 × 40mm) per ICP's dedicated spec PDF; ICP's FAQ separately states 3.5 × 4.5cm for 'Passport & Visa'",
+      "source_url": "https://icp.gov.ae/wp-content/uploads/2021/11/icao_english.pdf"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "ICP's dedicated 'Personal Photo Specifications' PDF states 35×40mm. ICP's own FAQ page (icp.gov.ae/en/faq/) separately states 3.5×4.5cm for 'Passport & Visa'. Neither of these two official ICP figures matches the DB's 4×6cm. The two official ICP sources are internally inconsistent with each other; this file uses the dedicated PDF as primary since it is the single generically-titled document used across ICP identity services."
+  }
+}

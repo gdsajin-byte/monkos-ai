@@ -1,0 +1,28 @@
+{
+  "slug": "ne-visa",
+  "batch": 19,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://ambaniger-bruxelles.be/index.php/service-consulaire-visa-passeports/demande-de-visa",
+      "source_url": "https://ambaniger-bruxelles.be/index.php/service-consulaire-visa-passeports/demande-de-visa"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "The Embassy of Niger in Brussels (ambaniger-bruxelles.be), an official Nigerien diplomatic mission site, lists 'une photo d'identité récente en couleur' (a recent color ID photo) as a requirement across every visa category (official, student, medical, journalist, private, business) but gives no dimensions, background, or other technical specification. Niger's national e-government portal service-public.ne was unreachable (persistent 521 'server is down' error) throughout research, so its passeport/visa démarche pages could not be checked directly."
+  }
+}

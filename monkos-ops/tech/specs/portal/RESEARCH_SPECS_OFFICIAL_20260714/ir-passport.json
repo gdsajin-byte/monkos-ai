@@ -1,0 +1,29 @@
+{
+  "slug": "ir-passport",
+  "batch": 11,
+  "verified": {
+    "official_source_url": {
+      "value": "http://epolice.ir/page.php?7=",
+      "source_url": "http://epolice.ir/page.php?7="
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Iran's domestic passports are issued through NAJA (Islamic Republic of Iran Police) via the epolice.ir / egozar.epolice.ir portal. The official passport-services page (epolice.ir) was located directly in search results, but no readable content could be extracted from it during this research pass, and repeated WebFetch attempts on Iranian government domains failed (redirect loops / connection resets). Numerous third-party Persian travel-agency and photo-studio blogs (myparvaz.com, cafeneti.com, mrbilit.com, nilgam.com, alefbatour.com, etc. -- none of them epolice.ir itself) describe a 4x6cm white-background photo with a mandatory hijab for women and visible ears/forehead for men, but since none of these claims could be independently confirmed against the actual epolice.ir domain content, they are excluded from verified per the truthfulness gate rather than falsely attributed to an official source. This is a case where available official-domain content is genuinely too weak to certify -- the high unverified count is intentional, not an oversight."
+  }
+}

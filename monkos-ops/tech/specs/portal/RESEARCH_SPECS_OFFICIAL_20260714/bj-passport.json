@@ -1,0 +1,45 @@
+{
+  "slug": "bj-passport",
+  "batch": 2,
+  "verified": {
+    "size": {
+      "value": "\"Deux (02) photos d'identité aux formats de l'Organisation internationale de l'Aviation civile (OACI), c'est-à-dire 45mm x 35mm\" (two ICAO-format identity photos, 45×35mm — matches DB's 3.5×4.5cm exactly)",
+      "source_url": "https://dei.gouv.bj/services/download/90315618-10f6-499b-832c-6a621bafa196/"
+    },
+    "background": {
+      "value": "\"fond blanc\" (white background)",
+      "source_url": "https://beninembassy.us/passeport-ordinaire-biometrique-2/"
+    },
+    "validity": {
+      "value": "\"une photo d'identité en couleur datant de moins de six (06) mois\" (a color identity photo less than six (6) months old)",
+      "source_url": "https://beninembassy.us/passeport-ordinaire-biometrique-2/"
+    },
+    "file_spec": {
+      "value": "\"format PNG ou JPEG (Aucune photo scannée ne sera acceptée)\" — PNG or JPEG format only; scanned photos are explicitly rejected",
+      "source_url": "https://beninembassy.us/passeport-ordinaire-biometrique-2/"
+    },
+    "official_source_url": {
+      "value": "https://dei.gouv.bj/services/passeports (Direction de l'Émigration et de l'Immigration — DEI)",
+      "source_url": "https://dei.gouv.bj/services/download/90315618-10f6-499b-832c-6a621bafa196/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "head_height",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": {
+      "verdict": "confirmed",
+      "evidence": "Two independent official sources agree: the DEI's own downloadable PIECES A FOURNIR PDF (dei.gouv.bj) states 'formats de l'OACI, c'est-à-dire 45mm x 35mm' for minors born in Benin/abroad, and the Benin Embassy in the US (beninembassy.us) independently states 'format passeport (35mm/45mm)' with white background for the general ordinary biometric passport. Both match DB's 3.5×4.5cm exactly.",
+      "correct_value": "35mm × 45mm (3.5 × 4.5cm)"
+    }
+  }
+}

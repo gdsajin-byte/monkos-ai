@@ -1,0 +1,25 @@
+{
+  "slug": "va-visa",
+  "batch": 27,
+  "verified": {},
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories",
+    "official_source_url"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Vatican City State has no independent border control and no general-public tourist visa regime of its own — it is physically accessible only through Italy, so ordinary entry is governed by Italian/Schengen visa rules, not a Vatican-issued visa. The only Vatican-specific entry authorizations are diplomatic accreditation (via the Secretariat of State's Section for Relations with States, under the 1961 Vienna Convention) and the 'nulla osta' clearance issued by the Secretariat of State or the local Apostolic Nunciature for religious personnel — neither of which is a standard photo-based visa application with published photo specs. No official vatican.va, governatorato.va, or Apostolic Nunciature page describing applicant photo requirements could be found. Left entirely unverified rather than reproduced from generic visa-agency sites, per the truthfulness gate; a small-country/no-process case, not a research gap."
+  }
+}

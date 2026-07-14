@@ -1,0 +1,100 @@
+{
+  "slug": "cn-passport",
+  "batch": 5,
+  "verified": {
+    "size": {
+      "value": "33mm (w) x 48mm (h); head width 15-22mm; 3-5mm from crown to photo top edge; chin-to-bottom-edge height >= 7mm. Matches DB value exactly (3.3 x 4.8cm).",
+      "source_url": "https://losangeles.china-consulate.gov.cn/lbqw/lszj/hzlxz/202401/t20240103_11216138.htm"
+    },
+    "head_height": {
+      "value": "28mm - 33mm (2.8cm - 3.3cm), measured chin to crown. Matches DB value exactly.",
+      "source_url": "https://losangeles.china-consulate.gov.cn/lbqw/lszj/hzlxz/202401/t20240103_11216138.htm"
+    },
+    "background": {
+      "value": "Pure white, no blemishes, no shadows",
+      "source_url": "https://ca.china-embassy.gov.cn/chn/lsyw/lszj/hzlxz00/202311/t20231130_11189612.htm"
+    },
+    "validity": {
+      "value": "Must be taken within 6 months",
+      "source_url": "https://ca.china-embassy.gov.cn/chn/lsyw/lszj/hzlxz00/202311/t20231130_11189612.htm"
+    },
+    "file_spec": {
+      "value": "Printed photo must be professionally developed on photo-lab paper (no retouching or compositing). Digital submission: JPG/JPEG format, file size 30KB-80KB.",
+      "source_url": "https://ca.china-embassy.gov.cn/chn/lsyw/lszj/hzlxz00/202311/t20231130_11189612.htm"
+    },
+    "clothing_restriction": {
+      "value": "Dark-colored, collared clothing is required, not merely recommended (source states \"穿深色有领上衣\" as a mandatory instruction under its clothing-requirements section, distinct from the one unrelated \"建议\"/suggested item elsewhere on the page about using a professional studio)",
+      "source_url": "https://ca.china-embassy.gov.cn/chn/lsyw/lszj/hzlxz00/202311/t20231130_11189612.htm"
+    },
+    "expression_restriction": {
+      "value": "Natural expression; eyes open, lips naturally closed; face forward with level gaze — no tilting, looking up/down, or turning sideways",
+      "source_url": "https://ca.china-embassy.gov.cn/chn/lsyw/lszj/hzlxz00/202311/t20231130_11189612.htm"
+    },
+    "glasses_policy": {
+      "value": "Only clear, colorless lenses allowed; glasses must not obscure eye contours; no tinted lenses or heavy frames",
+      "source_url": "https://ca.china-embassy.gov.cn/chn/lsyw/lszj/hzlxz00/202311/t20231130_11189612.htm"
+    },
+    "ears_visibility": {
+      "value": "Both ears must be visible",
+      "source_url": "https://ca.china-embassy.gov.cn/chn/lsyw/lszj/hzlxz00/202311/t20231130_11189612.htm"
+    },
+    "face_visibility": {
+      "value": "Both eyebrows must be visible; eyes naturally open; entire head and face included in frame",
+      "source_url": "https://ca.china-embassy.gov.cn/chn/lsyw/lszj/hzlxz00/202311/t20231130_11189612.htm"
+    },
+    "headwear_policy": {
+      "value": "Prohibited in general; exception only for religious, medical, or cultural reasons, and even then must not obscure the face or cast a shadow",
+      "source_url": "https://ca.china-embassy.gov.cn/chn/lsyw/lszj/hzlxz00/202311/t20231130_11189612.htm"
+    },
+    "accessories": {
+      "value": "Jewelry (necklaces, earrings) allowed if it does not cover the face; hearing aids permitted",
+      "source_url": "https://ca.china-embassy.gov.cn/chn/lsyw/lszj/hzlxz00/202311/t20231130_11189612.htm"
+    },
+    "official_source_url": {
+      "value": "https://cs.mfa.gov.cn/zlbg/bgzl/hzlxz/202204/t20220408_10665772.shtml",
+      "source_url": "https://cs.mfa.gov.cn/zlbg/bgzl/hzlxz/202204/t20220408_10665772.shtml"
+    }
+  },
+  "restrictions_i18n": {
+    "clothing": {
+      "en": "Dark-colored clothing with a collar is required, not merely recommended.",
+      "ko": "짙은 색의 카라(옷깃) 있는 옷 착용은 권장이 아닌 필수 사항입니다.",
+      "ja": "襟付きの濃い色の服装の着用は推奨ではなく必須です。"
+    },
+    "expression": {
+      "en": "Natural expression, eyes open, lips naturally closed, facing forward with a level gaze — no tilting, looking up or down, or turning sideways.",
+      "ko": "자연스러운 표정으로 눈을 뜨고 입술을 자연스럽게 다물며, 고개를 기울이거나 위아래로 젖히거나 옆으로 돌리지 않고 정면을 응시합니다.",
+      "ja": "自然な表情で目を開け唇を自然に閉じ、頭を傾けたり上下左右に向けたりせず正面を見てください。"
+    },
+    "glasses": {
+      "en": "Only clear, colorless lenses are allowed; glasses must not obscure the eye contours. Tinted lenses or heavy frames are not allowed.",
+      "ko": "무색 투명 렌즈의 안경만 허용되며, 안경이 눈의 윤곽을 가려서는 안 됩니다. 색안경이나 두꺼운 테는 금지됩니다.",
+      "ja": "無色透明レンズの眼鏡のみ許可され、眼鏡が目の輪郭を隠してはいけません。色付きレンズや太いフレームは禁止です。"
+    },
+    "ears": {
+      "en": "Both ears must be visible.",
+      "ko": "양쪽 귀가 모두 보여야 합니다.",
+      "ja": "両耳が見える必要があります。"
+    },
+    "face_visibility": {
+      "en": "Both eyebrows must be visible, eyes naturally open, and the entire head and face must be included in the frame.",
+      "ko": "양쪽 눈썹이 보여야 하고 눈은 자연스럽게 뜬 상태여야 하며, 머리와 얼굴 전체가 프레임 안에 들어와야 합니다.",
+      "ja": "両方の眉が見える必要があり、目は自然に開けた状態で、頭と顔全体がフレーム内に収まっている必要があります。"
+    },
+    "headwear": {
+      "en": "Headwear is prohibited in general, with an exception only for religious, medical, or cultural reasons — and even then it must not obscure the face or cast a shadow on it.",
+      "ko": "머리 가리개는 원칙적으로 금지되며, 종교·의료·문화적 사유가 있는 경우에만 예외로 허용됩니다. 다만 이 경우에도 얼굴을 가리거나 얼굴에 그림자를 만들어서는 안 됩니다.",
+      "ja": "頭部の覆いは原則禁止です。宗教・医療・文化的な理由がある場合のみ例外が認められますが、その場合も顔を隠したり顔に影を作ったりしてはいけません。"
+    },
+    "accessories": {
+      "en": "Jewelry such as necklaces and earrings is allowed as long as it does not cover the face; hearing aids are permitted.",
+      "ko": "목걸이·귀걸이 등 장신구는 얼굴을 가리지 않는 범위 내에서 허용되며, 보청기는 착용할 수 있습니다.",
+      "ja": "ネックレスやピアスなどのアクセサリーは顔を隠さない範囲で許可され、補聴器の着用は認められます。"
+    }
+  },
+  "unverified": [],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size_and_head_height": "Head height (28-33mm) and overall size (33x48mm) independently corroborated across National Immigration Administration (nia.gov.cn), MFA Consular Service Network (cs.mfa.gov.cn), and the Chinese Consulate-General in Los Angeles (losangeles.china-consulate.gov.cn); all three agree, and all match the DB value exactly. Facial/clothing/headwear/glasses restrictions independently confirmed via a direct fetch of the Chinese Embassy in Canada's official consular notice (ca.china-embassy.gov.cn)."
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "slug": "kg-passport",
+  "batch": "T3-refill",
+  "verified": {
+    "size": {
+      "value": "40 x 60mm (4 x 6cm), color photo on white background, glossy paper. Verbatim: 'Размер фотографии составляет 40х60 мм' / 'Фотография должна быть цветной на белом фоне на глянцевой бумаге'",
+      "source_url": "https://grs.gov.kg/uploads/files/eid_photo_ru.pdf"
+    },
+    "background": {
+      "value": "Solid, even white background with no texture; no shadows on the background; face must be clearly distinguished from the background. Verbatim: 'Фон фотографии представляет собой однотонный и ровный белый цвет, без какой-либо текстуры; На фоне не должно быть теней; Лицо четко выделяется из фона'",
+      "source_url": "https://grs.gov.kg/uploads/files/eid_photo_ru.pdf"
+    },
+    "head_height": {
+      "value": "Chin-to-crown distance must equal 70-80% of the photo's height. Verbatim: 'Расстояние на фотографии от подбородка, до макушки фотографируемого составляет 70-80% от высоты фотографии.' Since photo height is 60mm, this computes to approximately 42-48mm.",
+      "source_url": "https://grs.gov.kg/uploads/files/eid_photo_ru.pdf"
+    },
+    "clothing_restriction": {
+      "value": "Everyday, appropriate clothing. Verbatim: 'Одежда – повседневная, корректная'",
+      "source_url": "https://grs.gov.kg/uploads/files/eid_photo_ru.pdf"
+    },
+    "expression_restriction": {
+      "value": "Neutral expression, mouth closed, eyes open; no facial expressions of any kind permitted (smiling, squinting, raised eyebrows, etc). Verbatim: 'Выражение лица должно быть нейтральным, рот закрыт, глаза открыты. Не допускается любого рода мимика (улыбка, прищур, приподнятые брови и т.п.)'",
+      "source_url": "https://grs.gov.kg/uploads/files/eid_photo_ru.pdf"
+    },
+    "glasses_policy": {
+      "value": "Photographing while wearing glasses is permitted only for medical reasons. If photochromic lenses darken in bright light, lighting must be adjusted to remove the darkening; if this cannot be done, glasses must be removed or replaced. Eyes must be visible in the photo, no glare on the lenses, and the frame must not cover the eyes. Eye patches and dark-lensed glasses are permitted only for medical reasons.",
+      "source_url": "https://grs.gov.kg/uploads/files/eid_photo_ru.pdf"
+    },
+    "face_visibility": {
+      "value": "Face and shoulders must be in a frontal position toward the camera; head must be straight and centered in the photo; gaze must be directed straight into the lens; over-the-shoulder shots are not allowed; the pictured image must correspond to the applicant's current appearance.",
+      "source_url": "https://grs.gov.kg/uploads/files/eid_photo_ru.pdf"
+    },
+    "headwear_policy": {
+      "value": "Headwear is not permitted, except a headscarf (hijab) worn by women for religious reasons. When photographed in a headscarf, the upper part of the neck under the chin must be visible for a clear image of the chin, and the headscarf must fit closely to the head.",
+      "source_url": "https://grs.gov.kg/uploads/files/eid_photo_ru.pdf"
+    },
+    "official_source_url": {
+      "value": "Государственная Регистрационная Служба при Правительстве Кыргызской Республики (State Registration Service under the Government of the Kyrgyz Republic, GRS) — official booklet 'Требования к личной фотографии на паспорт' (Requirements for a personal photo for a passport), stated to be developed per ICAO standards. GRS's own listed web address on the document is www.srs.kg; the identical PDF is also hosted at grs.gov.kg.",
+      "source_url": "https://grs.gov.kg/uploads/files/eid_photo_ru.pdf"
+    }
+  },
+  "restrictions_i18n": {
+    "clothing": {
+      "en": "Clothing must be everyday and appropriate.",
+      "ko": "복장은 일상적이고 단정한 옷차림이어야 함.",
+      "ja": "服装は普段着で、きちんとしたものであること。"
+    },
+    "expression": {
+      "en": "Neutral expression, mouth closed, eyes open; no facial expressions of any kind (smiling, squinting, raised eyebrows, etc.) are permitted.",
+      "ko": "무표정을 유지하고 입은 다물며 눈은 뜬 상태여야 함. 미소·찡그림·눈썹 치켜올림 등 어떠한 표정 변화도 허용되지 않음.",
+      "ja": "無表情を保ち、口を閉じ、目を開けること。笑顔・目を細める・眉を上げるなど、いかなる表情の変化も認められない。"
+    },
+    "glasses": {
+      "en": "Wearing glasses is permitted only for medical reasons. Eyes must be visible with no glare on the lenses, and the frame must not cover the eyes. If photochromic lenses appear darkened and lighting cannot correct this, glasses must be removed. Eye patches and dark-lensed glasses are permitted only for medical reasons.",
+      "ko": "안경을 착용한 사진은 의료상 필요한 경우에만 허용됨. 눈이 잘 보여야 하고 렌즈에 반사(무반사)가 없어야 하며, 안경테가 눈을 가리면 안 됨. 광변색 렌즈가 어두워진 경우 조명으로 보정하고, 보정이 되지 않으면 안경을 벗어야 함. 안대 및 짙은 색 렌즈 안경은 의료상 필요한 경우에만 허용됨.",
+      "ja": "眼鏡を着用した写真は医療上必要な場合のみ認められる。目がはっきり見える必要があり、レンズに反射(無反射)がなく、フレームが目を覆ってはならない。調光レンズが暗くなり照明で補正できない場合は眼鏡を外すこと。眼帯や濃い色のレンズの眼鏡は医療上必要な場合のみ認められる。"
+    },
+    "face_visibility": {
+      "en": "Face and shoulders must be frontal, head straight and centered, gaze directed straight at the lens; over-the-shoulder shots are not allowed.",
+      "ko": "얼굴과 어깨는 정면을 향해야 하며, 머리는 곧게 세우고 사진 중앙에 위치해야 함. 시선은 카메라 렌즈를 정면으로 응시해야 하며, 어깨 너머로 찍은 사진은 불가.",
+      "ja": "顔と肩は正面を向き、頭はまっすぐで写真の中央に位置すること。視線はレンズを正面から見つめ、肩越しに撮った写真は不可。"
+    },
+    "headwear": {
+      "en": "Headwear is not permitted, except a headscarf (hijab) worn by women for religious reasons; the upper neck under the chin must remain visible, and the headscarf must fit closely to the head.",
+      "ko": "머리쓰개(모자 등)는 허용되지 않으나, 여성이 종교적 이유로 착용하는 히잡(머릿수건)은 예외로 허용됨. 이 경우 턱 아래 목 윗부분이 보여야 하며, 히잡은 머리에 밀착되어야 함.",
+      "ja": "帽子などの被り物は不可だが、女性が宗教上の理由で着用するヒジャブ(頭巾)は例外として認められる。この場合、あご下の首の上部が見えている必要があり、ヒジャブは頭に密着させること。"
+    }
+  },
+  "unverified": ["validity", "file_spec", "ears_visibility", "accessories"],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "3.5 × 4.5cm",
+      "research_value": "40 x 60mm (4 x 6cm) per the State Registration Service (GRS)'s official passport-photo requirement booklet, verbatim 'Размер фотографии составляет 40х60 мм'",
+      "source_url": "https://grs.gov.kg/uploads/files/eid_photo_ru.pdf"
+    }
+  ],
+  "cross_verification": {
+    "note": "Direct DNS resolution to grs.gov.kg failed from this research environment. The identical file (same filename/path 'eid_photo_ru.pdf') was independently located via WebSearch at both grs.gov.kg/uploads/files/eid_photo_ru.pdf and a mirror at testing.kg/media/uploads/2022/02/16/eid_photo_ru.pdf; the testing.kg copy was downloaded directly and parsed as a PDF in this session. Authenticity is confirmed internally by the document's own letterhead/cover page: 'Государственная Регистрационная Служба при Правительстве Кыргызской Республики', official address (720040, Бишкек, ул. Орозбекова, 44), phone (66 36 05), listed website (www.srs.kg), and the GRS institutional seal graphic reproduced on page 2. Content is a complete 8-page official ICAO-based photo-requirement booklet covering general parameters, pose, expression/glasses/headwear, background, lighting and technical/camera specs. No explicit numeric validity period (e.g. a stated number of months) appears anywhere in the document — it only requires the image to match the applicant's current appearance — so 'validity' is left unverified rather than inferring a figure. No digital file spec (format/KB/DPI) is given since this document governs only the printed photo. Ears are never singled out as their own rule in the source text (unlike e.g. Bahrain's or Jordan's specs), so ears_visibility is left unverified rather than inferred from the adjacent pose/background rules. General jewelry/accessories beyond glasses, eye patches and headwear are not addressed, so accessories is left unverified. DB's size figure (3.5 x 4.5cm / 35x45mm) does not match this GRS document's stated 40x60mm — recorded as a db_conflict per instructions, DB left unmodified."
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "slug": "me-passport",
+  "batch": 16,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": {
+      "value": "At application, a digital photograph is taken along with fingerprints of two fingers and a digitized handwritten signature (electronic/biometric passport); fingerprints are not taken from applicants under 12.",
+      "source_url": "https://wapi.gov.me/download/d765c42e-bdff-4fc4-b667-dff1001d0722?version=1.0"
+    },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": {
+      "value": "A citizen who, according to national affiliation, religion, or custom, wears a cap or headscarf as an integral part of their dress may be photographed wearing it; however, the part of the face needed for identification must not be covered by the cap or headscarf when the photo is taken.",
+      "source_url": "https://wapi.gov.me/download/d765c42e-bdff-4fc4-b667-dff1001d0722?version=1.0"
+    },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://wapi.gov.me/download/d765c42e-bdff-4fc4-b667-dff1001d0722?version=1.0",
+      "source_url": "https://wapi.gov.me/download/d765c42e-bdff-4fc4-b667-dff1001d0722?version=1.0"
+    }
+  },
+  "restrictions_i18n": {
+    "headwear": {
+      "en": "A citizen who, according to national affiliation, religion, or custom, wears a cap or headscarf as an integral part of their dress may be photographed wearing it; however, the part of the face needed for identification must not be covered by the cap or headscarf when the photo is taken.",
+      "ko": "민족적 소속, 종교, 또는 관습에 따라 모자나 스카프를 복장의 필수 요소로 착용하는 국민은 이를 착용한 채로 촬영할 수 있음; 다만 촬영 시 신원 확인에 필요한 얼굴 부위가 모자나 스카프에 가려져서는 안 됨.",
+      "ja": "民族的所属、宗教、または慣習により帽子やスカーフを服装の一部として着用する国民は、それを着用したまま撮影することができる。ただし撮影時、本人確認に必要な顔の部分が帽子やスカーフで隠れてはならない。"
+    }
+  },
+  "unverified": ["size", "background", "head_height", "validity", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Source is Montenegro's Ministry of Interior (Ministarstvo unutrašnjih poslova) official procedure document, served from the gov.me subdomain wapi.gov.me. This document (about passport issuance procedure for Montenegrin citizens) does not state a numeric photo size, background color, or head-height figure. A separate, directly-verified Montenegrin regulation — the 'Pravilnik o vizama i viznim obrascima' (Regulation on Visas and Visa Forms) — DOES specify 35×45mm / 70-80% head height / white glossy paper, but that regulation applies explicitly to foreign nationals ('stranac') applying for a VISA, not to citizens' passports; see me-visa.json for that data. The passport-procedure document's headwear-exemption wording is nearly identical to the visa regulation's wording, suggesting Montenegro likely applies a unified national photo standard across document types, but this was not directly confirmed for passports specifically, so size/background/head_height are left unverified here rather than copied over from the visa regulation."
+  }
+}

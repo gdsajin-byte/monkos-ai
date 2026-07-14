@@ -1,0 +1,25 @@
+{
+  "slug": "na-visa",
+  "batch": 19,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": { "value": "", "source_url": "" }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories", "official_source_url"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "A document purporting to be a scanned copy of the official REPUBLIC OF NAMIBIA, Ministry of Home Affairs and Immigration 'APPLICATION FOR VISA' form (Form 3-1/0033, under the Immigration Control Act 1993) was found, but only as an incidental reference document on a NASA field-mission logistics page (airbornescience.nasa.gov/.../namibia_visa_application%20ORACLES.pdf, for an unrelated 'ORACLES' airborne-science mission) rather than on mha.gov.na or any Namibian government/embassy channel. Per verification policy (source_url must be on a .gov/.go.xx/embassy/immigration/foreign-ministry domain of the issuing authority), a US federal science-agency subdomain does not qualify as an official Namibian source regardless of the document's apparent authenticity. All fields sourced solely from this document — size (37×52mm, which would otherwise match the DB value of 3.7×5.2cm exactly), file_spec, and official_source_url itself — have accordingly been downgraded to unverified pending a source hosted on an official Namibian government/diplomatic channel. No size, background, or head-height figure specific to na-passport (as opposed to na-visa) could be verified either — see na-passport.json."
+  }
+}

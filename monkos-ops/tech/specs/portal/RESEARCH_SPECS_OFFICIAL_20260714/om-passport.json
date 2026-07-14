@@ -1,0 +1,28 @@
+{
+  "slug": "om-passport",
+  "batch": 20,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://www.rop.gov.om/english/e_passport.aspx",
+      "source_url": "https://www.rop.gov.om/english/e_passport.aspx"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Royal Oman Police (ROP) issues Omani passports through 'e_passport.aspx', a transactional e-government portal (PKI e-authentication, in-Sultanate presence required) rather than a public information page — direct fetch of it and of the general Civil Status & Passport services page returned only procedural/eligibility text, no photo composition specs. Numerous third-party photo-service sites claim a 4x6cm size with 38mm head height on a blue background, and Oman's separate eVisa service (evisa.rop.gov.om, a different ROP unit — see om-visa.json) does publish official photo rules, but per the truth-gate instructions neither the vendor claims nor the eVisa rules (a distinct document type) were used to fill in passport-specific fields here, since no rop.gov.om page could be found that states them for the physical passport itself."
+  }
+}

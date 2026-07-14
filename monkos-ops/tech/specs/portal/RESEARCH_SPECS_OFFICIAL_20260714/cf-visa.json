@@ -1,0 +1,27 @@
+{
+  "slug": "cf-visa",
+  "batch": 4,
+  "verified": {
+    "official_source_url": {
+      "value": "https://paris.diplomatie.gouv.cf/services/24/visa-court-sejour",
+      "source_url": "https://paris.diplomatie.gouv.cf/services/24/visa-court-sejour"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

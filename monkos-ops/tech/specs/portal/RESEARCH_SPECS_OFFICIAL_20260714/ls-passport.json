@@ -1,0 +1,57 @@
+{
+  "slug": "ls-passport",
+  "batch": 15,
+  "verified": {
+    "background": {
+      "value": "Plain (unpatterned) background required; exact colour not further specified on this page",
+      "source_url": "https://www.lesothoemb-usa.gov.ls/passport-requirements/"
+    },
+    "glasses_policy": {
+      "value": "No eyeglasses permitted, because they cause unwanted reflection",
+      "source_url": "https://www.lesothoemb-usa.gov.ls/passport-requirements/"
+    },
+    "expression_restriction": {
+      "value": "No teeth should be shown in the photo",
+      "source_url": "https://www.lesothoemb-usa.gov.ls/passport-requirements/"
+    },
+    "ears_visibility": {
+      "value": "Both ears must be clearly shown in the photo",
+      "source_url": "https://www.lesothoemb-usa.gov.ls/passport-requirements/"
+    },
+    "official_source_url": {
+      "value": "https://www.lesothoemb-usa.gov.ls/passport-requirements/",
+      "source_url": "https://www.lesothoemb-usa.gov.ls/passport-requirements/"
+    }
+  },
+  "restrictions_i18n": {
+    "glasses": {
+      "en": "No eyeglasses are permitted, as they cause unwanted reflection.",
+      "ko": "안경은 원치 않는 반사를 유발하므로 착용이 허용되지 않는다.",
+      "ja": "眼鏡は不要な反射を引き起こすため、着用は認められない。"
+    },
+    "expression": {
+      "en": "No teeth should be shown in the photo.",
+      "ko": "사진에는 치아가 보이지 않아야 한다.",
+      "ja": "写真には歯が見えないようにすること。"
+    },
+    "ears": {
+      "en": "Both ears must be clearly shown in the photo.",
+      "ko": "사진에는 양쪽 귀가 선명하게 보여야 한다.",
+      "ja": "写真には両耳がはっきりと写っていなければならない。"
+    }
+  },
+  "unverified": [
+    "size",
+    "head_height",
+    "validity",
+    "headwear_policy",
+    "face_visibility",
+    "file_spec",
+    "clothing_restriction",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Source is the official Lesotho Embassy in the USA (lesothoemb-usa.gov.ls, a .gov.ls government domain), directly fetched: 'Passport size photos should be clear', 'Should be taken on a plain background', 'Face should show two ears clearly', 'There should be no eye glasses (because they portray unwanted reflection)', 'No teeth exposed', and two photos are required. Exact millimeter size, head-height ratio, and headwear policy are not stated on this page and were not found confirmed on any other Ministry of Home Affairs (homeaffairs.gov.ls) page reached in this pass, so they are left unverified rather than filled from unofficial-domain lookalike sites (e.g. homeaffairslesotho.com, which is not the .gov.ls domain and was excluded from this research as not clearly official)."
+  }
+}

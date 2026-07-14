@@ -1,0 +1,78 @@
+{
+  "slug": "id-passport",
+  "batch": 11,
+  "verified": {
+    "background": {
+      "value": "Red (merah) solid background -- shown as the approved-photo example in the official guide",
+      "source_url": "https://www.imigrasi.go.id/upload/file/Syarat%20Foto.pdf"
+    },
+    "file_spec": {
+      "value": "File format JPEG/JPG/PNG, in color. Minimum 400x600px. Maximum file size 2MB. Photo layout/position must be properly composed (not too close, not too far).",
+      "source_url": "https://www.imigrasi.go.id/upload/file/Syarat%20Foto.pdf"
+    },
+    "head_height": {
+      "value": "Top of head (including hair) to bottom of chin must occupy 50%-60% of total image height; eye height (measured from the bottom of the image to eye level) must also be 50%-60% of image height. Applied to DB's own listed 4x6cm print size, this ratio implies an approximate head height of 3.0-3.6cm.",
+      "source_url": "https://www.imigrasi.go.id/upload/file/Syarat%20Foto.pdf"
+    },
+    "expression_restriction": {
+      "value": "Neutral expression required -- 'expression face photo' (smiling/exaggerated expression) is explicitly listed as an unrecommended photo, alongside blurry photos and non-face-only photos",
+      "source_url": "https://www.imigrasi.go.id/upload/file/Syarat%20Foto.pdf"
+    },
+    "glasses_policy": {
+      "value": "Glasses and contact lenses (including colored or vision-altering lenses) are not permitted -- they may cause reflections/shadows that interfere with biometric identification",
+      "source_url": "https://banggai.imigrasi.go.id/berita-utama/imigrasi-tegaskan-larangan-penggunaan-kacamata-dan-softlens-saat-foto-paspor"
+    },
+    "face_visibility": {
+      "value": "Hair must not cover the ears or eyes; long hair should be tucked behind the ears/shoulders",
+      "source_url": "https://malang.imigrasi.go.id/info-publik/syarat-dan-prosedur-lengkap-pengurusan-paspor-2026"
+    },
+    "clothing_restriction": {
+      "value": "Neat clothing with a collar is required",
+      "source_url": "https://balikpapan.imigrasi.go.id/halo-sahabat-mido-berikut-syarat-foto-paspor-di-imigrasi-meliputi-ketentuan-pakaian-ekspresi-wajah-dan-aksesoris/"
+    },
+    "official_source_url": {
+      "value": "https://www.imigrasi.go.id/upload/file/Syarat%20Foto.pdf",
+      "source_url": "https://www.imigrasi.go.id/upload/file/Syarat%20Foto.pdf"
+    }
+  },
+  "restrictions_i18n": {
+    "expression": {
+      "en": "A neutral expression is required; smiling or exaggerated expressions are explicitly listed as unrecommended.",
+      "ko": "중립적인 표정이 필수이며, 미소나 과도한 표정은 비권장 사항으로 명시되어 있다.",
+      "ja": "中立的な表情が必須であり、笑顔や過度な表情は非推奨として明記されている。"
+    },
+    "glasses": {
+      "en": "Glasses and contact lenses (including colored or vision-altering lenses) are not permitted -- they may cause reflections or shadows that interfere with biometric identification.",
+      "ko": "안경 및 콘택트렌즈(컬러 렌즈·도수 변경 렌즈 포함) 착용이 금지된다 -- 생체인식 식별을 방해하는 반사나 그림자를 유발할 수 있다.",
+      "ja": "眼鏡およびコンタクトレンズ(カラーレンズ・度数変更レンズを含む)の着用は禁止 -- 生体認証の識別を妨げる反射や影を生じる可能性がある。"
+    },
+    "face_visibility": {
+      "en": "Hair must not cover the ears or eyes; long hair should be tucked behind the ears and shoulders.",
+      "ko": "머리카락이 귀나 눈을 가려서는 안 되며, 긴 머리는 귀와 어깨 뒤로 넘겨야 한다.",
+      "ja": "髪の毛で耳や目を覆ってはならず、長い髪は耳と肩の後ろにまとめること。"
+    },
+    "clothing": {
+      "en": "Neat clothing with a collar is required.",
+      "ko": "카라(옷깃)가 있는 단정한 의상을 착용해야 한다.",
+      "ja": "襟付きのきちんとした服装を着用すること。"
+    }
+  },
+  "unverified": [
+    "size",
+    "validity",
+    "ears_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [
+    {
+      "field": "head_height",
+      "db_value": "2.5~3.1cm",
+      "research_value": "~3.0-3.6cm (computed from the official 50%-60%-of-image-height ratio applied to DB's own listed 4x6cm print size)",
+      "source_url": "https://www.imigrasi.go.id/upload/file/Syarat%20Foto.pdf"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "Primary source is an official Directorate General of Immigration (imigrasi.go.id) PDF titled 'Syarat Foto' (Photo Requirements), fetched and read directly (not via search synthesis) -- it visually shows a RED background in the approved-photo example, matching DB exactly (no conflict on background). It states composition ratios rather than a fixed cm head-height; applying those ratios to DB's own stated 4x6cm print size yields ~3.0-3.6cm, which only marginally overlaps DB's stated 2.5-3.1cm, so it is logged as a conflict. Glasses/hair/clothing rules are corroborated by multiple official imigrasi.go.id regional-office subdomains (banggai, malang, balikpapan) that appeared directly in search results (not third-party vendor sites). A separately-seen general claim that passport applicants should 'avoid white clothing because the background is white' was deliberately excluded because it contradicts the directly-observed red background and appears to describe a different photo context (likely visa/white-background applications)."
+  }
+}

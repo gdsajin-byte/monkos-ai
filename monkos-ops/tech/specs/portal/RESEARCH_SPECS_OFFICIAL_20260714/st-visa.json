@@ -1,0 +1,28 @@
+{
+  "slug": "st-visa",
+  "batch": 24,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "http://www.smf.st/evisa/index.php",
+      "source_url": "http://www.smf.st/evisa/index.php"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "SMF's official e-Visa portal (smf.st/evisa) lists required documents for entry visas to Sao Tome and Principe: a digitized passport (PDF) valid at least 3 months beyond the visa's stated departure date, and proof of subsistence funds (EUR 100/day). No standalone identity photograph (dimensions, background, pose) is specified as a required upload on the reachable e-Visa portal pages. No further official Sao Tome and Principe government photo specification for visas could be located."
+  }
+}

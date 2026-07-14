@@ -1,0 +1,54 @@
+{
+  "slug": "ml-passport",
+  "batch": 17,
+  "verified": {
+    "size": {
+      "value": "45 x 35 mm (4.5 x 3.5 cm) — 'de format 45 x 35 mm'",
+      "source_url": "https://www.ambamali-jp.org/obtention-des-documents-administratifs-et-consulaires/"
+    },
+    "background": {
+      "value": "White ('sur fond blanc')",
+      "source_url": "https://www.ambamali-jp.org/obtention-des-documents-administratifs-et-consulaires/"
+    },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": {
+      "value": "Taken frontally / face-on ('prise de face')",
+      "source_url": "https://www.ambamali-jp.org/obtention-des-documents-administratifs-et-consulaires/"
+    },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://www.ambamali-jp.org/obtention-des-documents-administratifs-et-consulaires/",
+      "source_url": "https://www.ambamali-jp.org/obtention-des-documents-administratifs-et-consulaires/"
+    }
+  },
+  "restrictions_i18n": {
+    "face_visibility": {
+      "en": "The photo must be taken frontally (face-on).",
+      "ko": "사진은 정면을 향해 촬영해야 한다.",
+      "ja": "写真は正面を向いて撮影しなければならない。"
+    }
+  },
+  "unverified": [
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Primary figure ('Deux (2) Photographies récentes en couleur, de format 45 x 35 mm, prise de face et sur fond blanc' = two recent color photos, 45x35mm, frontal, white background) comes from the Embassy of the Republic of Mali in Japan, an official Malian diplomatic mission. Cross-verified qualitatively (color/frontal/white background, without exact mm) by the Embassy of Mali in Belgium (amba-mali.be/article/les-passeports: 'couleur, de face et sur fond blanc') and by the Mali Consulate in Lyon (consulat-mali-lyon.fr/passeport.html: 3 photos 'format photomaton'). Mali's own Ministry of Security and Civil Protection (securite.gouv.ml, the domestic passport-issuing authority) and its Geneva mission (missionmali.ch) confirm only '2 (or 3) photos d'identité en couleurs' without stating size — they do not contradict the Tokyo embassy's figure, they simply omit it. 45x35mm is dimensionally identical to the DB's 3.5x4.5cm (just width-first vs. height-first ordering), so no conflict is recorded. No source specified head height, validity window, file spec, clothing, expression, glasses, ear visibility, or headwear/religious exceptions.",
+    "note_ko": "핵심 수치('최근 컬러사진 2매, 45x35mm, 정면, 흰색 배경')는 주일 말리 대사관(공식 재외공관) 웹페이지에서 확인했다. 벨기에 주재 말리 대사관(amba-mali.be, '컬러·정면·흰색 배경'—정확한 mm 언급 없음)과 리옹 말리 영사관(consulat-mali-lyon.fr, '포토마통 규격' 3매)에서 정성적으로 교차 확인했다. 말리 자국 보안·시민보호부(securite.gouv.ml, 국내 여권 발급 주무부처)와 제네바 상주대표부(missionmali.ch)는 '컬러 증명사진 2매(또는 3매)'만 명시하고 규격은 언급하지 않아 도쿄 대사관 수치와 모순되지 않는다(단순 생략). 45×35mm는 DB의 3.5×4.5cm과 단위·표기 순서만 다를 뿐 동일한 규격이므로 충돌로 기록하지 않았다. 두상 높이, 유효기간, 파일 규격, 복장·표정·안경·귀 노출·머리가리개(종교적 예외 포함) 규정은 어떤 공식 출처에서도 확인되지 않았다."
+  }
+}

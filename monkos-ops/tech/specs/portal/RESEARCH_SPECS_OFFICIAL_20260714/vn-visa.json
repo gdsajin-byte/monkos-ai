@@ -1,0 +1,74 @@
+{
+  "slug": "vn-visa",
+  "batch": 27,
+  "verified": {
+    "size": {
+      "value": "4×6 cm image (\"The visa applicant's photo must be a recent 4x6 cm image\")",
+      "source_url": "https://evisa.gov.vn/"
+    },
+    "background": {
+      "value": "White background",
+      "source_url": "https://evisa.gov.vn/"
+    },
+    "validity": {
+      "value": "Must be a recent photo (not further quantified in months on this page)",
+      "source_url": "https://evisa.gov.vn/"
+    },
+    "file_spec": {
+      "value": "JPG or JPEG format, file size less than 2MB",
+      "source_url": "https://evisa.gov.vn/"
+    },
+    "clothing_restriction": {
+      "value": "In formal attire (\"in formal attire\")",
+      "source_url": "https://evisa.gov.vn/"
+    },
+    "glasses_policy": {
+      "value": "Not allowed (\"no glasses\")",
+      "source_url": "https://evisa.gov.vn/"
+    },
+    "headwear_policy": {
+      "value": "Not allowed (\"no hat\")",
+      "source_url": "https://evisa.gov.vn/"
+    },
+    "face_visibility": {
+      "value": "Front-facing image (\"front-facing image\")",
+      "source_url": "https://evisa.gov.vn/"
+    },
+    "official_source_url": {
+      "value": "https://evisa.gov.vn/",
+      "source_url": "https://evisa.gov.vn/"
+    }
+  },
+  "restrictions_i18n": {
+    "clothing": {
+      "en": "Must wear formal attire.",
+      "ko": "정장(격식 있는 복장)을 착용해야 함.",
+      "ja": "フォーマルな服装を着用すること。"
+    },
+    "glasses": {
+      "en": "Glasses are not allowed.",
+      "ko": "안경 착용 불가.",
+      "ja": "眼鏡の着用不可。"
+    },
+    "headwear": {
+      "en": "Hats/headwear are not allowed.",
+      "ko": "모자 착용 불가.",
+      "ja": "帽子の着用不可。"
+    },
+    "face_visibility": {
+      "en": "Photo must be a front-facing image.",
+      "ko": "정면을 응시한 사진이어야 함.",
+      "ja": "正面を向いた写真であること。"
+    }
+  },
+  "unverified": [
+    "head_height",
+    "ears_visibility",
+    "expression_restriction",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Confirmed directly from the official Vietnam National Electronic Visa system (evisa.gov.vn, Ministry of Public Security / Immigration Department), 'Instruction' page, Step 1 of the e-visa declaration guide: \"the visa applicant's photo must be a recent 4x6 cm image in JPG or JPEG format, with a file size of less than 2MB. The photo should be a front-facing image with no hat, no glasses, in formal attire, and with a white background.\" Size (4×6cm) and background (white) both match the DB exactly — no conflict. Note the file format differs from vn-passport's domestic portal, which specifies JPEG 2000 rather than plain JPG/JPEG — the two are separate government systems (Immigration Dept. e-visa portal vs. Ministry of Public Security public-service portal) with independently published specs, not assumed to be identical."
+  }
+}

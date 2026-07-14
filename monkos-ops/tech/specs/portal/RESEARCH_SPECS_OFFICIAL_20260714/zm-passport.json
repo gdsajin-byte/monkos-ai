@@ -1,0 +1,54 @@
+{
+  "slug": "zm-passport",
+  "batch": 28,
+  "verified": {
+    "size": {
+      "value": "35mm × 45mm — 'Enclose two passport size photos of dimensions 35 x 45mm (Any other dimensions are not acceptable)' (standalone 'REQUIREMENTS FOR A ZAMBIAN PASSPORT OR TRAVEL DOCUMENT' section). Note: an older section earlier in the same official PDF instead states '38 x 51 mm or 51 mm 64 mm' — the source document is not fully internally consistent; the clearer, unambiguous 35×45mm statement is used here since it also matches DB.",
+      "source_url": "https://zambiahighcommission.ca/wp/wp-content/uploads/app_passport_guide.pdf"
+    },
+    "background": {
+      "value": "White background, photos not to be mounted",
+      "source_url": "https://zambiahighcommission.ca/wp/wp-content/uploads/app_passport_guide.pdf"
+    },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": {
+      "value": "Plaited hair is not acceptable on passport photographs. (An earlier section of the same official guide specifies, for female applicants specifically: no artificial or plaited hair, and no earrings.)",
+      "source_url": "https://zambiahighcommission.ca/wp/wp-content/uploads/app_passport_guide.pdf"
+    },
+    "official_source_url": {
+      "value": "https://zambiahighcommission.ca/wp/wp-content/uploads/app_passport_guide.pdf",
+      "source_url": "https://zambiahighcommission.ca/wp/wp-content/uploads/app_passport_guide.pdf"
+    }
+  },
+  "restrictions_i18n": {
+    "accessories": {
+      "en": "Plaited hair is not acceptable on passport photographs. (An earlier section of the same official guide specifies, for female applicants: no artificial or plaited hair, and no earrings.)",
+      "ko": "여권 사진에는 땋은 머리가 허용되지 않습니다. (동일 공식 안내서의 이전 항목에는 여성 지원자의 경우 인조 머리·땋은 머리 및 귀걸이 착용을 금지한다고 명시되어 있습니다.)",
+      "ja": "パスポート写真では編み込み髪は認められません。(同じ公式ガイドの旧項目には、女性申請者について付け毛・編み込み髪およびイヤリングの着用を禁止すると明記されています。)"
+    }
+  },
+  "unverified": [
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": "The official High Commission of the Republic of Zambia (Ottawa, Canada) PDF guide contains two different figures in different sections: an older FAQ-style section states dimensions '38 x 51 mm or 51 mm 64 mm', while a separate, later, standalone section titled 'REQUIREMENTS FOR A ZAMBIAN PASSPORT OR TRAVEL DOCUMENT' unambiguously states '35 x 45mm (Any other dimensions are not acceptable)'. This file reports the latter as verified since it is the clearer, current-reading statement and matches DB; the source's internal inconsistency is disclosed here rather than silently resolved.",
+    "background": "Both sections of the same document independently state a white background requirement ('MUST be taken in white background' / 'MUST BE TAKEN IN WHITE BACKGROUND'), so background is consistent within the source despite the size discrepancy."
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "slug": "gy-visa",
+  "batch": 10,
+  "verified": {
+    "size": {
+      "value": "Passport-size photograph, 45 x 35mm",
+      "source_url": "https://guyanahctrinidad.mission.gov.gy/visa-application-advisory/"
+    },
+    "background": {
+      "value": "Plain white background (no colour or shadows)",
+      "source_url": "https://guyanahctrinidad.mission.gov.gy/visa-application-advisory/"
+    },
+    "validity": {
+      "value": "Not more than 1 month old",
+      "source_url": "https://guyanahctrinidad.mission.gov.gy/visa-application-advisory/"
+    },
+    "expression_restriction": {
+      "value": "Neutral expression (no smile, open mouth, or frown)",
+      "source_url": "https://guyanahctrinidad.mission.gov.gy/visa-application-advisory/"
+    },
+    "face_visibility": {
+      "value": "Eyes, ears, and full facial features must be clearly visible",
+      "source_url": "https://guyanahctrinidad.mission.gov.gy/visa-application-advisory/"
+    },
+    "accessories": {
+      "value": "Studs/earrings are not accepted on male applicants' pictures; photos must carry a legible photographer's stamp and date",
+      "source_url": "https://guyanahctrinidad.mission.gov.gy/visa-application-advisory/"
+    },
+    "file_spec": {
+      "value": "For online e-Services applications: square aspect ratio (height = width), minimum 600x600px, maximum 1200x1200px, colour (24-bit) in sRGB colour space, JPEG format, file size <= 240kB, compression ratio <= 20:1. If scanning an existing printed photo instead: the print must be 2 x 2 inches (51 x 51mm), scanned at 300 pixels per inch (12 pixels/mm)",
+      "source_url": "https://eservices.iss.gov.gy/visitor-visa"
+    },
+    "official_source_url": {
+      "value": "https://eservices.iss.gov.gy/visitor-visa",
+      "source_url": "https://eservices.iss.gov.gy/visitor-visa"
+    }
+  },
+  "restrictions_i18n": {
+    "expression": {
+      "en": "Neutral expression (no smile, open mouth, or frown).",
+      "ko": "무표정 유지(미소, 입 벌림, 찡그림 금지).",
+      "ja": "無表情であること(笑顔、口を開けること、しかめ面は禁止)。"
+    },
+    "face_visibility": {
+      "en": "Eyes, ears, and full facial features must be clearly visible.",
+      "ko": "눈, 귀, 얼굴의 모든 특징이 또렷하게 보여야 함.",
+      "ja": "目、耳、顔のすべての特徴がはっきりと見える必要がある。"
+    },
+    "accessories": {
+      "en": "Studs/earrings are not accepted on male applicants' pictures; photos must carry a legible photographer's stamp and date.",
+      "ko": "남성 신청자의 경우 스터드/귀걸이 착용 불가. 사진에는 판독 가능한 사진사 스탬프와 날짜가 있어야 함.",
+      "ja": "男性申請者の写真ではスタッド/イヤリングの着用は認められない。写真には判読可能な写真店のスタンプと日付が必要。"
+    }
+  },
+  "unverified": [
+    "head_height",
+    "clothing_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "headwear_policy"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note": "The digital file specification (pixel dimensions, JPEG, file size, compression, and the 2x2in/51x51mm scan-alternative) was confirmed via a successful direct WebFetch (HTTP 200) of eservices.iss.gov.gy/visitor-visa — this is the strongest-grounded data point in this record. All other fields (background, validity, expression, face visibility, accessories) come from guyanahctrinidad.mission.gov.gy, which returned HTTP 403 on every direct WebFetch attempt; those values are grounded instead in consistent, specific WebSearch-indexed attribution to that same official URL, corroborated across multiple independent queries and consistent with the parallel passport-page findings from the same Guyanese consular domain family (mission.gov.gy). Size and background both align with the DB's 3.5x4.5cm / white, so no conflict was filed; the visa-specific validity window (1 month) is notably shorter than the passport's (3 months) per the same source family.",
+    "size": {
+      "note": "CORRECTION (adversarial re-verification, batch 10): the original value field additionally cited an alternate '4cm x 5cm' (40x50mm) figure as an alleged rounding variant of 45x35mm. That is a numeric self-consistency failure, not a rounding difference (40x50mm and 45x35mm are not the same measurement under any reasonable tolerance, and even have different aspect ratios). The unsupported '4cm x 5cm' figure has been removed; 45x35mm is retained as the verified value since it is the figure independently corroborated by the parallel Guyana passport photo specification from the same official domain family (guyanahctrinidad.mission.gov.gy) and matches the DB's 3.5x4.5cm exactly."
+    }
+  }
+}

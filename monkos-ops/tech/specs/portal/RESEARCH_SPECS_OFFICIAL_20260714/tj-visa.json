@@ -1,0 +1,38 @@
+{
+  "slug": "tj-visa",
+  "batch": 25,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": { "value": "", "source_url": "" }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "No accessible official Tajikistan government source could be read for this slug despite extensive attempts. The Ministry of Foreign Affairs domain mfa.tj (including the Embassy of Tajikistan in the Republic of Korea's standard-visa page and the Embassy of Tajikistan to the USA's consular-fees page) returned a TLS certificate error ('unable to verify the first certificate') on every fetch attempt. The official e-visa portal evisa.tj and the parallel visa.gov.tj (including its /index.evisa.html sub-path) are JavaScript-rendered single-page applications that returned only a bare page title with no extractable body text via automated fetch. The Embassy of Tajikistan in the UK domain (tajembassy.org.uk) failed DNS resolution outright. Search-engine AI summaries repeatedly surfaced figures like '50x60mm, max 240KB, 300dpi, white background' attributed to evisa.tj, but tracing every one of those claims led only to third-party commercial photo-service sites (mybiometricphotos.com, visafoto.com, idphotodiy.com, ivisa.com) rather than to any readable page on the .tj government domain itself, so none of them qualify as verified under the truthfulness gate. This slug should be treated as unresearched pending accessible official sourcing."
+  }
+}

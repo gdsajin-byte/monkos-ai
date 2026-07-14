@@ -1,0 +1,25 @@
+{
+  "slug": "kr-halfcard",
+  "batch": 13,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": { "value": "", "source_url": "" }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories", "official_source_url"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note": "'반명함' 30×40mm is a conventional Korean print/photo-industry size historically used for resumes and some certificates ('이력서 규격'), not a figure mandated by a single current government regulation. Research specifically found the opposite trend: Korea's official ID photo formats have been unifying onto the passport standard 3.5×4.5cm — e.g. driver's licence photos, per Korean consular-office notices (mofa.go.kr subdomains), have moved to the unified 3.5×4.5cm passport-style spec, explicitly NOT 30×40mm (one notice states full unification effective 2026-03-01). No government agency (여권/운전면허/주민등록증 등) was found to currently specify 30×40mm, consistent with the DB's own head_height annotation '제출처에 따라 상이' (varies by submission destination), which itself acknowledges there is no single controlling authority for this photo type. Because this entry does not correspond to one verifiable official regulator, all fields are left unverified per the truthfulness gate rather than citing a private industry convention as if it were an official government spec."
+  }
+}

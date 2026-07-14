@@ -1,0 +1,62 @@
+{
+  "slug": "ar-passport",
+  "batch": 1,
+  "verified": {
+    "size": {
+      "value": "4 × 4cm (\"foto carnet\")",
+      "source_url": "https://croma.cancilleria.gob.ar/es/requisitos-para-la-tramitacion-de-pasaporte-argentino-y-solicitud-de-turnos"
+    },
+    "background": {
+      "value": "White (\"fondo blanco\")",
+      "source_url": "https://croma.cancilleria.gob.ar/es/requisitos-para-la-tramitacion-de-pasaporte-argentino-y-solicitud-de-turnos"
+    },
+    "headwear_policy": {
+      "value": "Not allowed (\"sin sombrero\")",
+      "source_url": "https://croma.cancilleria.gob.ar/es/requisitos-para-la-tramitacion-de-pasaporte-argentino-y-solicitud-de-turnos"
+    },
+    "glasses_policy": {
+      "value": "Not allowed (\"sin anteojos\")",
+      "source_url": "https://croma.cancilleria.gob.ar/es/requisitos-para-la-tramitacion-de-pasaporte-argentino-y-solicitud-de-turnos"
+    },
+    "face_visibility": {
+      "value": "Front view, half-bust framing (\"de frente, medio busto\")",
+      "source_url": "https://croma.cancilleria.gob.ar/es/requisitos-para-la-tramitacion-de-pasaporte-argentino-y-solicitud-de-turnos"
+    },
+    "official_source_url": {
+      "value": "https://www.argentina.gob.ar/interior/pasaporte",
+      "source_url": "https://www.argentina.gob.ar/interior/pasaporte"
+    }
+  },
+  "restrictions_i18n": {
+    "headwear": {
+      "en": "Not allowed (no hat).",
+      "ko": "모자 착용 불가.",
+      "ja": "帽子の着用不可。"
+    },
+    "glasses": {
+      "en": "Not allowed (no glasses).",
+      "ko": "안경 착용 불가.",
+      "ja": "眼鏡の着用不可。"
+    },
+    "face_visibility": {
+      "en": "Front-facing, half-bust framing (de frente, medio busto).",
+      "ko": "정면 응시, 상반신(가슴 위) 구도로 촬영.",
+      "ja": "正面を向き、胸から上のバストアップ構図で撮影。"
+    }
+  },
+  "unverified": [
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "ears_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": {
+      "note": "4x4cm and white background both confirmed matching DB exactly, quoted verbatim from the Argentine Ministry of Foreign Affairs (Cancillería) Rome Consulate official requirements page: \"1 foto carnet (4x4 de frente, fondo blanco, medio busto, sin sombrero y sin anteojos)\". Note: exact procedural requirements can vary slightly by consulate/jurisdiction; this is the Rome consulate's published text on the official cancilleria.gob.ar domain."
+    }
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "slug": "th-visa",
+  "batch": 25,
+  "verified": {
+    "size": {
+      "value": "3.5 x 4.5 cm (\"One colour photo (Size 3.5 x 4.5 cm.) taken within the past six months\")",
+      "source_url": "https://fukuoka.thaiembassy.org/en/content/108844-tourist-visa?cate=5f20eda771c05359785aa6c8"
+    },
+    "background": {
+      "value": "White background (\"Please submit a proper passport type photo with a white background NOT a photo cropped from your passport or other types of photo that do not match the requirements.\")",
+      "source_url": "https://image.mfa.go.th/mfa/0/TkZZJfspCP/%E0%B9%8DYear_2024/E_Visa_2024/Common_Mistakes_EVisa_Jan2024.pdf"
+    },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": {
+      "value": "Photograph taken within the last six months (\"Photograph *taken within the last six months\"; corroborated by Fukuoka consulate: \"taken within the past six months\")",
+      "source_url": "https://image.mfa.go.th/mfa/0/TkZZJfspCP/%E0%B9%8DYear_2024/E_Visa_2024/Common_Mistakes_EVisa_Jan2024.pdf"
+    },
+    "file_spec": {
+      "value": "\"Required documents must be uploaded as JPG or PDF files with a maximum file size of 3 MB.\" This is the e-Visa portal's general document-upload spec (also stated as \".JPG / .JPEG / .PDF formats with the maximum size of 3MB\" in the Bucharest embassy's Common Mistakes guide) — not explicitly limited to the photo field alone, so treat as indicative rather than photo-specific.",
+      "source_url": "https://seoul.thaiembassy.org/en/publicservice/required-documents-for-visa-application-and-import?menu=5fa4b2b321ace90bbc52e372&page=5fa4ac18af46ee3780556b72"
+    },
+    "clothing_restriction": {
+      "value": "\"Please wear an appropriate attire in your photo. A photo showing that you are shirtless or wearing an inappropriate top such as a tank top or a strapless top WILL BE REJECTED.\"",
+      "source_url": "https://image.mfa.go.th/mfa/0/TkZZJfspCP/%E0%B9%8DYear_2024/E_Visa_2024/Common_Mistakes_EVisa_Jan2024.pdf"
+    },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://image.mfa.go.th/mfa/0/TkZZJfspCP/%E0%B9%8DYear_2024/E_Visa_2024/Common_Mistakes_EVisa_Jan2024.pdf",
+      "source_url": "https://image.mfa.go.th/mfa/0/TkZZJfspCP/%E0%B9%8DYear_2024/E_Visa_2024/Common_Mistakes_EVisa_Jan2024.pdf"
+    }
+  },
+  "restrictions_i18n": {
+    "clothing": {
+      "en": "Wear appropriate attire in the photo. A photo showing the applicant shirtless or wearing an inappropriate top such as a tank top or strapless top will be rejected.",
+      "ko": "사진에는 단정한 복장을 착용해야 함. 상의를 벗은 사진이나 민소매·끈나시 등 부적절한 상의를 착용한 사진은 반려됨.",
+      "ja": "写真では適切な服装を着用すること。上半身裸やタンクトップ・肩ひものないトップスなど不適切な服装の写真は却下される。"
+    }
+  },
+  "unverified": [
+    "head_height",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Two independent official Thai government sources agree: the Royal Thai Consulate-General in Fukuoka's paper Tourist Visa (TR) form spec (fukuoka.thaiembassy.org, under the thaiembassy.org / MFA network) gives size 3.5x4.5cm and six-month recency; the Royal Thai Embassy Bucharest's 'Common Mistakes in applying for Thai e-Visa' PDF (hosted on image.mfa.go.th, the Thai MFA's own document server, updated 2 January 2024) gives the white-background, six-month recency, and clothing rules for the thaievisa.go.th e-Visa system. These two documents describe different application channels (paper TR form vs. e-Visa upload) but their overlapping fields (background, recency) are consistent, which is why size/background/validity are recorded as verified even though sourced from two different missions' pages. Extensive further searching (thaievisa.go.th itself, its PDF guides, Royal Thai Embassy Seoul's pages) could not surface an official numeric head-height/face-ratio figure, glasses policy, or headwear policy in readable text — third-party photo-service sites make various claims (65-75% face ratio, glasses removed, religious headwear allowed with conditions) but none could be traced to an accessible official Thai government page, so those fields are left unverified per the truthfulness gate."
+  }
+}

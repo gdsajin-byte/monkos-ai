@@ -1,0 +1,54 @@
+{
+  "slug": "uy-passport",
+  "batch": 26,
+  "verified": {
+    "size": {
+      "value": "5cm x 5cm, described officially as 'tipo visa' (visa-type format) — applies to passport applications processed at Uruguayan consulates abroad.",
+      "source_url": "https://www.gub.uy/ministerio-relaciones-exteriores/embajada-republica-oriental-del-uruguay-ecuador/tramites-consulares/renovacion-pasaporte-comun"
+    },
+    "background": {
+      "value": "White background ('fondo blanco') required.",
+      "source_url": "https://www.gub.uy/ministerio-relaciones-exteriores/embajada-republica-oriental-del-uruguay-ecuador/tramites-consulares/renovacion-pasaporte-comun"
+    },
+    "glasses_policy": {
+      "value": "No glasses or accessories are permitted on the face or head ('sin lentes o accesorio en rostro y cabeza').",
+      "source_url": "https://www.gub.uy/ministerio-relaciones-exteriores/embajada-republica-oriental-del-uruguay-ecuador/tramites-consulares/renovacion-pasaporte-comun"
+    },
+    "file_spec": {
+      "value": "For domestic applications at DNIC (Dirección Nacional de Identificación Civil) offices within Uruguay, the photo is taken live on-site by the official at the appointment — applicants do not bring their own photo. For consular applications abroad (e.g. the Ecuador embassy's 'Operativo Pasaporte'), the photo is submitted digitally as a PDF email attachment ahead of the appointment.",
+      "source_url": "https://www.gub.uy/ministerio-relaciones-exteriores/embajada-republica-oriental-del-uruguay-ecuador/tramites-consulares/operativo-pasaporte"
+    },
+    "official_source_url": {
+      "value": "https://www.gub.uy/ministerio-relaciones-exteriores/embajada-republica-oriental-del-uruguay-ecuador/tramites-consulares/renovacion-pasaporte-comun",
+      "source_url": "https://www.gub.uy/ministerio-relaciones-exteriores/embajada-republica-oriental-del-uruguay-ecuador/tramites-consulares/renovacion-pasaporte-comun"
+    }
+  },
+  "restrictions_i18n": {
+    "glasses": {
+      "en": "No glasses or accessories are permitted on the face or head.",
+      "ko": "얼굴이나 머리에 안경이나 액세서리를 착용할 수 없다.",
+      "ja": "顔や頭に眼鏡やアクセサリーを着用することはできない。"
+    }
+  },
+  "unverified": [
+    "head_height",
+    "validity",
+    "clothing_restriction",
+    "expression_restriction",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "3.5×4.5cm",
+      "research_value": "5cm x 5cm ('tipo visa'), confirmed identically on two separate official gub.uy (Ministerio de Relaciones Exteriores) consular pages — a different, larger, square-ish size than the DB's 35x45mm. Note: for domestic DNIC applications within Uruguay itself, the photo is captured live on-site and no user-submitted size applies at all.",
+      "source_url": "https://www.gub.uy/ministerio-relaciones-exteriores/embajada-republica-oriental-del-uruguay-ecuador/tramites-consulares/renovacion-pasaporte-comun"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "The 5cm x 5cm / white background / no-glasses-or-accessories spec was read directly and identically on two separate gub.uy pages (Ministerio de Relaciones Exteriores consular pages for the Ecuador embassy: 'Renovación de pasaporte común' and 'Operativo Pasaporte'), which strengthens confidence despite being consular (abroad) rather than domestic DNIC procedure. Direct fetch of dnic.minterior.gub.uy (redirects to gub.uy/ministerio-interior/direccion-nacional-identificacion-civil) confirmed DNIC exists and handles domestic passport issuance but that specific page carried no technical photo spec of its own — it was used only to corroborate the 'live capture on-site, no submitted photo' finding for domestic applications, which is separately supported by third-party consumer guidance (not independently cited as verified here)."
+  }
+}

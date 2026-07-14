@@ -1,0 +1,52 @@
+{
+  "slug": "iq-visa",
+  "batch": 11,
+  "verified": {
+    "size": {
+      "value": "Minimum 400x600 pixels (digital upload minimum, not a fixed cm print size) -- per the Kurdistan Regional Government's e-Visa Portal, which issues a separate entry visa specifically for the Kurdistan Region of Iraq",
+      "source_url": "https://visit.gov.krd/requirements"
+    },
+    "background": {
+      "value": "Plain white or off-white background -- per the Kurdistan Regional Government's e-Visa Portal",
+      "source_url": "https://visit.gov.krd/requirements"
+    },
+    "headwear_policy": {
+      "value": "No hat or head covering that obscures the hair/hairline, unless worn daily for religious reasons; the full face must be visible with no shadows cast by the headwear -- per the Kurdistan Regional Government's e-Visa Portal",
+      "source_url": "https://visit.gov.krd/requirements"
+    },
+    "clothing_restriction": {
+      "value": "Uniforms should not be worn, except religious clothing worn on a daily basis -- per the Kurdistan Regional Government's e-Visa Portal",
+      "source_url": "https://visit.gov.krd/requirements"
+    },
+    "official_source_url": {
+      "value": "https://mofa.gov.iq/visa/",
+      "source_url": "https://mofa.gov.iq/visa/"
+    }
+  },
+  "restrictions_i18n": {
+    "headwear": {
+      "en": "No hat or head covering that obscures the hair or hairline is permitted, unless worn daily for religious reasons; the full face must remain visible with no shadows cast by the head covering.",
+      "ko": "머리카락이나 헤어라인을 가리는 모자·머리가리개는 종교적 사유로 매일 착용하는 경우를 제외하고 금지되며, 머리가리개로 인한 그림자 없이 얼굴 전체가 보여야 한다.",
+      "ja": "髪やヘアラインを隠す帽子・頭を覆うものは、宗教上の理由で日常的に着用する場合を除き禁止され、それによる影がなく顔全体が見える必要がある。"
+    },
+    "clothing": {
+      "en": "Uniforms should not be worn, except religious clothing worn on a daily basis.",
+      "ko": "제복은 착용할 수 없으며, 일상적으로 착용하는 종교적 복장은 예외로 한다.",
+      "ja": "制服は着用不可。ただし日常的に着用する宗教的な服装は例外とする。"
+    }
+  },
+  "unverified": [
+    "head_height",
+    "validity",
+    "file_spec",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Iraq has two parallel visa-issuing authorities: the federal Ministry of Foreign Affairs (mofa.gov.iq), whose own visa page was directly fetched and states only 'two photographs' with no size/background/composition detail; and the Kurdistan Regional Government's e-Visa Portal (visit.gov.krd, a genuine .gov.krd domain), which publishes detailed digital-photo specifications for entry specifically to the Kurdistan Region of Iraq. The verified fields above are sourced to the KRG portal and are scoped accordingly -- they describe the KRG e-Visa, which may differ from a federal Baghdad-issued visa. Direct WebFetch of visit.gov.krd was blocked (403) on every attempt; confirmation relies on the domain appearing directly and repeatedly in web-search results with consistent figures across independent queries. DB's size value (3.5x4.5cm, a fixed print size) is not directly comparable to the KRG portal's pixel-minimum digital spec (different units/purpose), so no conflict is logged for size."
+  }
+}

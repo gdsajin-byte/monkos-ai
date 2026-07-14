@@ -1,0 +1,31 @@
+{
+  "slug": "eg-visa",
+  "batch": 7,
+  "verified": {
+    "official_source_url": {
+      "value": "https://www.visa2egypt.gov.eg/ — confirmed as the correct official Egypt e-Visa portal domain via direct fetch (the portal's own FAQ page loaded successfully, but its FAQ content does not itself publish detailed photo specifications such as size, background, or head height)",
+      "source_url": "https://www.visa2egypt.gov.eg/eVisa/FAQ"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "direct_fetch_note": {
+      "note": "Directly fetched https://www.visa2egypt.gov.eg/eVisa/FAQ and https://www.visa2egypt.gov.eg/eVisa/Home — neither published photo size/background/head-height specifications in their visible content at time of research. A '40x60mm, 38–39.9mm chin-to-crown, 500KB JPG/PNG' figure set recurs across many web results, but every attribution traced back to commercial passport-photo vendors (mybiometricphotos.com, atlys.com, visafoto.com, photogov.net, egypt-eta.com) rather than a verbatim quote from visa2egypt.gov.eg itself, so — per the truthfulness gate — none of it is recorded as verified here. eg-passport.json (researched separately, confirmed via mfa.gov.eg) records a 4×6cm / white-background / no-glasses standard for the ordinary passport photo, which may or may not be identical to the e-visa upload photo requirement; this was not asserted for eg-visa without its own confirmation."
+    }
+  }
+}

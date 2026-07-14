@@ -1,0 +1,52 @@
+{
+  "slug": "bo-visa",
+  "batch": 3,
+  "verified": {
+    "size": {
+      "value": "4 x 4 cm (current photo, 'Fotografía actual 4 x 4')",
+      "source_url": "https://consulados.cancilleria.gob.bo/base/visas/"
+    },
+    "background": {
+      "value": "Red background (fondo rojo) — explicitly red, not white",
+      "source_url": "https://consulados.cancilleria.gob.bo/base/visas/"
+    },
+    "official_source_url": {
+      "value": "https://consulados.cancilleria.gob.bo/base/visas/",
+      "source_url": "https://consulados.cancilleria.gob.bo/base/visas/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "4 × 5cm",
+      "research_value": "4 x 4 cm",
+      "source_url": "https://consulados.cancilleria.gob.bo/base/visas/"
+    },
+    {
+      "field": "background",
+      "db_value": "흰색 (white)",
+      "research_value": "fondo rojo (red)",
+      "source_url": "https://consulados.cancilleria.gob.bo/base/visas/"
+    }
+  ],
+  "cross_verification": {
+    "background": {
+      "verdict": "confirmed",
+      "evidence": "'Fotografía actual 4 x 4 (fondo rojo)' independently found identical on two separate official Bolivian Ministry of Foreign Affairs (cancilleria.gob.bo) consulate subdomains — /base/visas/ and /madrid/visas/ — both directly fetched and both stating red background for visa photos across all visa categories (tourism, student, business, humanitarian, transit).",
+      "correct_value": "4 x 4 cm, fondo rojo (red background)"
+    }
+  }
+}

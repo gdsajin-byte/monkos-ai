@@ -1,0 +1,71 @@
+{
+  "slug": "lu-visa",
+  "batch": 15,
+  "verified": {
+    "size": {
+      "value": "Colour photo, 35mm x 45mm, per ICAO criteria",
+      "source_url": "https://newdelhi.mae.lu/en/service_citoyens/visa-immigration/short-term-schengen-visa.html"
+    },
+    "head_height": {
+      "value": "Face height (chin to crown) must be 32-36mm, corresponding to 70-80% of the photo (per the ICAO-criteria standard the visa page requires)",
+      "source_url": "https://mae.gouvernement.lu/content/dam/gouv_maee/services-aux-citoyens/passeport/iso-icao-photo-guidelines.pdf"
+    },
+    "background": {
+      "value": "One colour and bright (ideally neutral grey), contrasting with face and hair, no pattern, no shadows (per the ICAO-criteria standard the visa page requires)",
+      "source_url": "https://mae.gouvernement.lu/content/dam/gouv_maee/services-aux-citoyens/passeport/iso-icao-photo-guidelines.pdf"
+    },
+    "expression_restriction": {
+      "value": "Neutral expression, mouth closed, looking directly into the camera; head neither at an angle nor turned (per the ICAO-criteria standard the visa page requires)",
+      "source_url": "https://mae.gouvernement.lu/content/dam/gouv_maee/services-aux-citoyens/passeport/iso-icao-photo-guidelines.pdf"
+    },
+    "glasses_policy": {
+      "value": "Eyes must be clearly recognisable; reflections, tinted glasses or sunglasses not permitted; frame may not cover the eyes (per the ICAO-criteria standard the visa page requires)",
+      "source_url": "https://mae.gouvernement.lu/content/dam/gouv_maee/services-aux-citoyens/passeport/iso-icao-photo-guidelines.pdf"
+    },
+    "headwear_policy": {
+      "value": "Headwear generally not permitted; exceptions possible for religious reasons, face visible from chin to forehead with no shadows (per the ICAO-criteria standard the visa page requires)",
+      "source_url": "https://mae.gouvernement.lu/content/dam/gouv_maee/services-aux-citoyens/passeport/iso-icao-photo-guidelines.pdf"
+    },
+    "official_source_url": {
+      "value": "https://mae.gouvernement.lu/en/services-aux-citoyens/visa-immigration.html",
+      "source_url": "https://mae.gouvernement.lu/en/services-aux-citoyens/visa-immigration.html"
+    }
+  },
+  "restrictions_i18n": {
+    "expression": {
+      "en": "The expression should be neutral with the mouth closed, looking directly into the camera; the head should be neither at an angle nor turned.",
+      "ko": "표정은 중립적이어야 하며 입을 다물고 카메라를 정면으로 응시해야 한다. 고개는 기울이거나 돌리지 않아야 한다.",
+      "ja": "表情は中立でなければならず、口を閉じてカメラを正面から見つめること。頭を傾けたり回したりしてはならない。"
+    },
+    "glasses": {
+      "en": "Eyes must be clearly recognisable; reflections, tinted glasses, or sunglasses are not permitted, and the frame may not cover the eyes.",
+      "ko": "눈이 명확히 식별되어야 하며, 반사·색안경·선글라스는 허용되지 않고 안경테가 눈을 가려서는 안 된다.",
+      "ja": "目がはっきりと識別できなければならず、反射・色付きレンズ・サングラスは認められず、フレームが目を覆ってはならない。"
+    },
+    "headwear": {
+      "en": "Headwear is generally not permitted; exceptions are possible for religious reasons, in which case the face must be visible from the chin to the forehead with no shadows.",
+      "ko": "머리가리개(모자 등)는 원칙적으로 허용되지 않으나 종교적 사유로 예외가 인정될 수 있으며, 이 경우 턱 끝부터 이마까지 얼굴이 그림자 없이 보여야 한다.",
+      "ja": "頭部を覆うもの(帽子等)は原則として認められないが、宗教上の理由により例外が認められる場合があり、その際は顎先から額まで影なく顔が見えなければならない。"
+    }
+  },
+  "unverified": [
+    "validity",
+    "ears_visibility",
+    "face_visibility",
+    "file_spec",
+    "clothing_restriction",
+    "accessories"
+  ],
+  "db_conflicts": [
+    {
+      "field": "background",
+      "db_value": "흰색",
+      "research_value": "\"One colour and bright (ideally neutral grey)\", per the ICAO-criteria standard incorporated by reference on Luxembourg's visa page -- the officially recommended background is neutral grey, not explicitly white",
+      "source_url": "https://mae.gouvernement.lu/content/dam/gouv_maee/services-aux-citoyens/passeport/iso-icao-photo-guidelines.pdf"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "The Embassy of Luxembourg in New Delhi's official short-term Schengen visa page (newdelhi.mae.lu, part of the mae.lu diplomatic-mission domain family under the Ministry of Foreign and European Affairs) was directly fetched and confirms: 'Passport photo according to ICAO criteria in color with dimensions of 35x45 mm.' Since Luxembourg's own MAE explicitly defines 'ICAO criteria' via the ISO/ICAO photo guidelines PDF hosted at mae.gouvernement.lu (the same document verified for lu-passport in this batch), that PDF's detailed background/expression/glasses/headwear rules are extended here as the operative Luxembourg standard for visa photos too, since the visa page incorporates it by reference rather than stating a separate rule set. Fields not addressed in either document (validity/recency window, ears visibility, explicit clothing/accessories rules for visas) are left unverified.",
+    "note_ko": "주뉴델리 룩셈부르크 대사관 공식 페이지(newdelhi.mae.lu, 외교부 mae.lu 공관망 소속)에서 'ICAO 기준에 따른 컬러 사진, 35x45mm' 요건을 직접 확인함. 룩셈부르크 외교부가 'ICAO 기준'을 정의하는 문서(mae.gouvernement.lu 소재 ISO/ICAO 사진 가이드라인 PDF, lu-passport 항목과 동일 문서)를 그대로 원용하는 구조이므로, 세부 배경·표정·안경·머리가리개 규정은 해당 PDF를 근거로 확장 적용함."
+  }
+}

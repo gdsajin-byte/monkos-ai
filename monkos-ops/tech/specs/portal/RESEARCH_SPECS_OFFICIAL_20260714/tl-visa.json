@@ -1,0 +1,58 @@
+{
+  "slug": "tl-visa",
+  "batch": 25,
+  "verified": {
+    "size": {
+      "value": "3x4 cm (shown as the photo box on the official form, \"Foto/Photo 3x4 cm\", and repeated throughout the application checklist as \"Fotografia (3x4cm) a cores sob fundo liso / Colour photograph (3x4cm) on plain background\" for every visa category: Tourist, Transit, Airport Transit, Work, Business Class I/II, Temporary Stay VET1-5, and Residence)",
+      "source_url": "https://www.migracao.gov.tl/pdf/1_Visa_Application_Form.pdf"
+    },
+    "background": {
+      "value": "\"fundo liso\" / \"plain background\" — plainness (no pattern) is specified, but the color itself is not stated as white",
+      "source_url": "https://www.migracao.gov.tl/pdf/1_Visa_Application_Form.pdf"
+    },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://www.migracao.gov.tl/pdf/1_Visa_Application_Form.pdf",
+      "source_url": "https://www.migracao.gov.tl/pdf/1_Visa_Application_Form.pdf"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "3.5 × 4.5cm",
+      "research_value": "3x4 cm, per the official Serviço de Migração (Immigration Service of Timor-Leste, Ministério do Interior) visa application form and checklist",
+      "source_url": "https://www.migracao.gov.tl/pdf/1_Visa_Application_Form.pdf"
+    },
+    {
+      "field": "background",
+      "db_value": "흰색",
+      "research_value": "\"fundo liso\" / plain background — color unspecified beyond \"plain\"; not explicitly stated as white",
+      "source_url": "https://www.migracao.gov.tl/pdf/1_Visa_Application_Form.pdf"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "Source is the official Visa Application Form (FORMULÁRIO DE PEDIDO DE VISTO) published by the República Democrática de Timor-Leste, Ministério do Interior, Serviço de Migração (Immigration Service), downloadable free from www.migracao.gov.tl per the document's own footer. The 3x4cm/plain-background/colour spec is printed identically in the checklist section for every one of the twelve visa categories the form covers (Transit, Airport Transit, Tourist, Work, Business Class I, Business Class II, Temporary Stay VET1-5, Residence VFR1-2), indicating this is a uniform standard across all Timor-Leste visa types rather than category-specific. Separately, the Immigration Service's visa-on-arrival / tourist-visa web pages (migracao.gov.tl/html/sub0301.php, customs.gov.tl/travelers/obtaining-a-visa) list travel document, funds, return ticket, and accommodation among requirements but do NOT mention a photo at all for the on-arrival product — suggesting the 3x4cm photo requirement above applies specifically to the pre-arrival paper/PDF application route, not the $30 visa-on-arrival route. No numeric head-height, expression, glasses, or headwear rule was found on any Timor-Leste government page checked (migracao.gov.tl, customs.gov.tl)."
+  }
+}

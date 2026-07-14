@@ -1,0 +1,73 @@
+{
+  "slug": "pw-passport",
+  "batch": 21,
+  "verified": {
+    "size": {
+      "value": "2 inch x 2 inch",
+      "source_url": "https://www.palauembassy.org/wp-content/uploads/2016/05/PassportApplication.pdf"
+    },
+    "background": {
+      "value": "Plain light (white) background",
+      "source_url": "https://www.palauembassy.org/wp-content/uploads/2016/05/PassportApplication.pdf"
+    },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": {
+      "value": "Sufficiently recent - taken within the last six (6) months.",
+      "source_url": "https://www.palauembassy.org/wp-content/uploads/2016/05/PassportApplication.pdf"
+    },
+    "file_spec": {
+      "value": "Color photograph, printed on thin paper. Photographs retouched so that appearance is changed are unacceptable; snapshots, most vendor machine prints, and magazine or full-length photographs are unacceptable.",
+      "source_url": "https://www.palauembassy.org/wp-content/uploads/2016/05/PassportApplication.pdf"
+    },
+    "clothing_restriction": {
+      "value": "Normal street attire.",
+      "source_url": "https://www.palauembassy.org/wp-content/uploads/2016/05/PassportApplication.pdf"
+    },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": {
+      "value": "Taken without dark glasses.",
+      "source_url": "https://www.palauembassy.org/wp-content/uploads/2016/05/PassportApplication.pdf"
+    },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": {
+      "value": "Clear, front view, full face.",
+      "source_url": "https://www.palauembassy.org/wp-content/uploads/2016/05/PassportApplication.pdf"
+    },
+    "headwear_policy": {
+      "value": "Taken without a hat.",
+      "source_url": "https://www.palauembassy.org/wp-content/uploads/2016/05/PassportApplication.pdf"
+    },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://www.palaugov.pw/executive-branch/ministries/state/passport-office/",
+      "source_url": "https://www.palauembassy.org/wp-content/uploads/2016/05/PassportApplication.pdf"
+    }
+  },
+  "restrictions_i18n": {
+    "clothing": {
+      "en": "Taken in normal street attire.",
+      "ko": "평상복(일상복) 차림으로 촬영할 것.",
+      "ja": "普段着(日常着)で撮影すること。"
+    },
+    "glasses": {
+      "en": "Taken without dark glasses.",
+      "ko": "짙은 색 안경(선글라스)을 착용하지 않은 상태로 촬영할 것.",
+      "ja": "濃い色の眼鏡(サングラス)を着用せずに撮影すること。"
+    },
+    "face_visibility": {
+      "en": "Clear, front view, full face.",
+      "ko": "선명한 정면 사진, 얼굴 전체가 나올 것.",
+      "ja": "鮮明な正面写真で、顔全体が写っていること。"
+    },
+    "headwear": {
+      "en": "Taken without a hat.",
+      "ko": "모자를 착용하지 않은 상태로 촬영할 것.",
+      "ja": "帽子を着用せずに撮影すること。"
+    }
+  },
+  "unverified": ["head_height", "expression_restriction", "ears_visibility", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Source: official Palau Passport Office (Ministry of State) application form, hosted on the Palau Embassy's official site. Size 2x2 inch matches the DB's '2 x 2 inch (51 x 51mm)', no conflict. This form's photo-affixing instructions apply to the standard, off-line passport application process; it is one photograph glued to the application (not a digital-upload spec)."
+  }
+}

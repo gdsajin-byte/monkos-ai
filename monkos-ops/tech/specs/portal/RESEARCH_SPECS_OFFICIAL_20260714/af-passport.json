@@ -1,0 +1,37 @@
+{
+  "slug": "af-passport",
+  "batch": 0,
+  "verified": {
+    "size": {
+      "value": "4 × 4.5cm",
+      "source_url": "https://islamabad.mfa.gov.af/passport/"
+    },
+    "background": {
+      "value": "White",
+      "source_url": "https://islamabad.mfa.gov.af/passport/"
+    },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": {
+      "value": "Must be recent; 3 passport-size photographs required per application",
+      "source_url": "https://islamabad.mfa.gov.af/passport/"
+    },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://islamabad.mfa.gov.af/passport/",
+      "source_url": "https://islamabad.mfa.gov.af/passport/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["head_height", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Islamic Emirate of Afghanistan's Ministry of Foreign Affairs (mfa.gov.af) is the current de facto governing authority's official passport-issuing body; the Embassy of Afghanistan in Islamabad page is a subdomain of this ministry. Size (4×4.5cm) and background (white) match the current DB values exactly — no conflict. Detailed composition rules (head height ratio, expression, glasses, headwear incl. hijab requirement for women, ears visibility) are frequently cited by third-party passport-photo vendor sites but could not be confirmed on an official .gov.af page within this research pass, so they are left unverified rather than sourced to non-official sites."
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "slug": "vc-visa",
+  "batch": 27,
+  "verified": {
+    "accessories": {
+      "value": "\"Please attach two (2) passport pictures\" — two photos required with the Entry Visa Application form; no size/background/pose specification printed on the form itself (just an 'Affix Photo' box)",
+      "source_url": "https://security.gov.vc/security/images/stories/Immigration/entry_visa_application_form.pdf"
+    },
+    "official_source_url": {
+      "value": "https://security.gov.vc/security/index.php?option=com_content&view=article&id=708%3Aentry-visa-application-form&catid=70&Itemid=426",
+      "source_url": "https://security.gov.vc/security/index.php?option=com_content&view=article&id=708%3Aentry-visa-application-form&catid=70&Itemid=426"
+    }
+  },
+  "restrictions_i18n": {
+    "accessories": {
+      "en": "Two (2) passport-style photographs must be attached to the Entry Visa Application form.",
+      "ko": "입국비자 신청서에 여권용 사진 2매를 첨부해야 함.",
+      "ja": "入国ビザ申請書にパスポート用写真2枚を添付する必要がある。"
+    }
+  },
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Confirmed via the official Ministry of National Security, Air and Sea Port Development (security.gov.vc) 'Entry Visa Application Form' PDF, issued to nationals of a short list of countries requiring a Saint Vincent and the Grenadines entry visa (fee EC$200, non-refundable). Unlike the passport Form A, this visa form does not print any photo size/background/pose rule — only the requirement of two photos and an 'Affix Photo' box. Left size/background/etc. unverified rather than assuming they mirror the passport rule (vc-passport), since that would not be a directly confirmed fact for this specific document."
+  }
+}

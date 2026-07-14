@@ -1,0 +1,32 @@
+{
+  "slug": "lb-visa",
+  "batch": 14,
+  "verified": {
+    "size": {
+      "value": "One passport-size photo (3.5 × 4.5 cm), required for visa applications submitted through Lebanese embassies",
+      "source_url": "https://www.general-security.gov.lb/en/posts/61"
+    },
+    "official_source_url": {
+      "value": "https://www.general-security.gov.lb/en/posts/61",
+      "source_url": "https://www.general-security.gov.lb/en/posts/61"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note": "General Security (GDGS) post 61 is the visa-application-via-embassy page and states 'One passport-size photo (3.5 × 4.5 cm)' — matches DB exactly, no conflict. The page does not restate background/expression/glasses/headwear rules for the visa photo specifically, so those were left unverified rather than assumed identical to the lb-passport spec (see lb-passport.json), even though both are administered by the same authority."
+  }
+}

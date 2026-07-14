@@ -1,0 +1,77 @@
+{
+  "slug": "ru-passport",
+  "batch": 22,
+  "verified": {
+    "size": {
+      "value": "35 × 45mm",
+      "source_url": "https://www.kdmid.ru/cons/passports/list-of-documents-required-for-registration-of-foreign-passports/"
+    },
+    "background": {
+      "value": "White, uniform, without stripes, spots, images of foreign objects or shadows (\"белым, ровным, без полос, пятен и изображения посторонних предметов и теней\")",
+      "source_url": "https://www.kdmid.ru/cons/passports/list-of-documents-required-for-registration-of-foreign-passports/"
+    },
+    "head_height": {
+      "value": "Face must occupy 70–80% of the photo area (\"размер лица должен составлять 70–80% площади фотографии\"); for a 45mm-tall photo this computes to roughly 31.5–36mm, consistent with the DB's 3.2–3.6cm figure though not stated in cm directly by this source.",
+      "source_url": "https://www.kdmid.ru/cons/passports/list-of-documents-required-for-registration-of-foreign-passports/"
+    },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": {
+      "value": "Military or official uniforms (\"форменная одежда\") are prohibited in the photo.",
+      "source_url": "https://www.kdmid.ru/cons/passports/list-of-documents-required-for-registration-of-foreign-passports/"
+    },
+    "expression_restriction": {
+      "value": "Strictly frontal, looking straight ahead with a neutral expression, eyes open, mouth closed (\"строго в анфас и смотрящим прямо с нейтральным выражением, глаза должны быть открыты, рот закрыт\"); hair must not obscure the eyes.",
+      "source_url": "https://www.kdmid.ru/cons/passports/list-of-documents-required-for-registration-of-foreign-passports/"
+    },
+    "glasses_policy": {
+      "value": "Glasses with tinted lenses are prohibited.",
+      "source_url": "https://www.kdmid.ru/cons/passports/list-of-documents-required-for-registration-of-foreign-passports/"
+    },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": {
+      "value": "Headwear is generally not allowed; a religious head covering that does not conceal the oval of the face (\"не скрывающем овал лица\") is permitted for those whose beliefs require appearing before others covered.",
+      "source_url": "https://www.kdmid.ru/cons/passports/list-of-documents-required-for-registration-of-foreign-passports/"
+    },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://www.kdmid.ru/cons/passports/list-of-documents-required-for-registration-of-foreign-passports/",
+      "source_url": "https://www.kdmid.ru/cons/passports/list-of-documents-required-for-registration-of-foreign-passports/"
+    }
+  },
+  "restrictions_i18n": {
+    "expression": {
+      "en": "Strictly frontal view, looking straight ahead with a neutral expression, eyes open, mouth closed; hair must not cover the eyes.",
+      "ko": "정면을 똑바로 응시하며 무표정을 유지할 것. 눈은 뜨고 입은 다물어야 하며, 머리카락이 눈을 가리면 안 된다.",
+      "ja": "正面を直視し、無表情を保つこと。目を開け口を閉じ、髪の毛が目にかからないこと。"
+    },
+    "glasses": {
+      "en": "Glasses with tinted lenses are prohibited.",
+      "ko": "색이 들어간 렌즈의 안경은 금지된다.",
+      "ja": "色付きレンズの眼鏡は禁止。"
+    },
+    "headwear": {
+      "en": "Headwear is generally not allowed; a religious head covering that does not conceal the oval of the face is permitted.",
+      "ko": "모자 등 머리가리개는 원칙적으로 금지되나, 얼굴 윤곽을 가리지 않는 종교적 머리가리개는 허용된다.",
+      "ja": "帽子などの被り物は原則禁止だが、顔の輪郭を隠さない宗教上の頭部covering(スカーフ等)は許可される。"
+    },
+    "clothing": {
+      "en": "Military or official uniforms are prohibited in the photo.",
+      "ko": "군복이나 제복(공식 유니폼) 착용 금지.",
+      "ja": "軍服や制服の着用は不可。"
+    }
+  },
+  "unverified": ["validity", "file_spec", "ears_visibility", "face_visibility", "accessories"],
+  "db_conflicts": [
+    {
+      "field": "head_height",
+      "db_value": "3.2~3.6cm",
+      "research_value": "No absolute cm/mm figure is published by the source — specified only as a proportion (face = 70–80% of the photo area), which computes to approximately 31.5–36mm (3.15–3.6cm) for a 45mm-tall photo.",
+      "source_url": "https://www.kdmid.ru/cons/passports/list-of-documents-required-for-registration-of-foreign-passports/"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "Source is the Consular Department of the Russian MFA (kdmid.ru), which administers passport services for Russian citizens; the stated rules match the well-known MVD Administrative Regulation (Order No. 851/186) figures publicly reported elsewhere. Size (35×45mm) and background (white) both match DB exactly — no conflict. DB's head_height (3.2–3.6cm) is not stated in cm directly by this source but is consistent with its 70–80%-face-occupancy rule applied to a 45mm-tall photo (≈31.5–36mm)."
+  }
+}

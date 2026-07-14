@@ -1,0 +1,51 @@
+{
+  "slug": "mx-visa",
+  "batch": 18,
+  "verified": {
+    "size": {
+      "value": "39 x 31 mm, front view, white background, no eyeglasses",
+      "source_url": "https://consulmex.sre.gob.mx/boston/index.php/visas-english"
+    },
+    "background": {
+      "value": "White background required",
+      "source_url": "https://consulmex.sre.gob.mx/boston/index.php/visas-english"
+    },
+    "glasses_policy": {
+      "value": "No eyeglasses (photo must be taken without glasses)",
+      "source_url": "https://consulmex.sre.gob.mx/boston/index.php/visas-english"
+    },
+    "official_source_url": {
+      "value": "https://consulmex.sre.gob.mx/boston/index.php/visas-english",
+      "source_url": "https://consulmex.sre.gob.mx/boston/index.php/visas-english"
+    }
+  },
+  "restrictions_i18n": {
+    "glasses": {
+      "en": "No eyeglasses — the photo must be taken without glasses.",
+      "ko": "안경을 착용하지 않은 상태로 촬영해야 한다 (안경 착용 불가).",
+      "ja": "眼鏡を着用せずに撮影すること(眼鏡不可)。"
+    }
+  },
+  "unverified": [
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "3.5 × 4.5cm",
+      "research_value": "39 x 31 mm (per consulmex.sre.gob.mx/boston)",
+      "source_url": "https://consulmex.sre.gob.mx/boston/index.php/visas-english"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "Consulado de México en Boston (consulmex.sre.gob.mx), operated by Mexico's Secretaría de Relaciones Exteriores (SRE), was fetched directly and applies the same photo spec text identically across its Non-Paid Activities (Tourist), Lucrative Activities (Work), Permanent Resident, Temporary Resident, and Student visa pages: '39 x 31 mm or 2 x 2 inches, front view, no eyeglasses and white background.' NOTE: the source page's own '2 x 2 inches' co-notation is NOT mathematically equivalent to 39x31mm (2x2in = 50.8x50.8mm, a ~12mm discrepancy, likely boilerplate carried over from the unrelated US 2x2in passport-photo standard) — the inch figure was therefore dropped from verified.size.value per the truthfulness gate and only the explicit 39x31mm figure retained. A separate INM (Instituto Nacional de Migración) official PDF (inm.gob.mx/micrositio/1/docs/ficha/01-es.pdf), which covers visas requested directly at INM for family-unity/humanitarian/job-offer cases, was also read in full (12 pages) and does NOT mention any photo requirement at all for those specific INM-direct categories — so that document was not used as a conflicting source, since it addresses a different visa-application channel. Other search-indexed SRE consulate pages (not independently fetched in this pass) cite a range of '32.0mm x 26mm (min) to 39.0mm x 31.0mm (max)', consistent with the Boston consulate's 39x31mm figure as an upper bound; this was not added to verified since it was not independently confirmed by direct fetch."
+  }
+}

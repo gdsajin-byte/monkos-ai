@@ -1,0 +1,84 @@
+{
+  "slug": "nz-visa",
+  "batch": 20,
+  "verified": {
+    "size": {
+      "value": "Paper applications: 35mm wide x 45mm high. Online applications: portrait orientation, 3:4 aspect ratio (no fixed print size).",
+      "source_url": "https://www.immigration.govt.nz/process-to-apply/applying-for-a-visa/applying-online/uploading-documents-and-photos/visa-and-nzeta-photos/"
+    },
+    "background": {
+      "value": "Must be neutral and plain; only the applicant may be visible in the photo — no other people or objects in the background.",
+      "source_url": "https://www.immigration.govt.nz/process-to-apply/applying-for-a-visa/applying-online/uploading-documents-and-photos/visa-and-nzeta-photos/"
+    },
+    "head_height": {
+      "value": "No fixed millimetre figure is given for online uploads; the face must cover between 70% and 80% of the image and be in the middle of the frame.",
+      "source_url": "https://www.immigration.govt.nz/process-to-apply/applying-for-a-visa/applying-online/uploading-documents-and-photos/visa-and-nzeta-photos/"
+    },
+    "validity": {
+      "value": "Photo must be taken within the last 6 months",
+      "source_url": "https://www.immigration.govt.nz/process-to-apply/applying-for-a-visa/applying-online/uploading-documents-and-photos/visa-and-nzeta-photos/"
+    },
+    "file_spec": {
+      "value": "Format: JPG or JPEG only. File size between 512KB and 3.14MB (professional studio photos may be up to 10MB). Photo must not be edited or altered — no filters, no beautification features, no AI editing tools, and not a photo of a photo.",
+      "source_url": "https://www.immigration.govt.nz/process-to-apply/applying-for-a-visa/applying-online/uploading-documents-and-photos/visa-and-nzeta-photos/"
+    },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": {
+      "value": "Look straight at the camera with a neutral expression and mouth closed; face must not be turned to the side or angled.",
+      "source_url": "https://www.immigration.govt.nz/process-to-apply/applying-for-a-visa/applying-online/uploading-documents-and-photos/visa-and-nzeta-photos/"
+    },
+    "glasses_policy": {
+      "value": "Prescription glasses are permitted only if clear and not tinted (no sunglasses), without heavy frames that cover the face, and must not create glare or reflection.",
+      "source_url": "https://www.immigration.govt.nz/process-to-apply/applying-for-a-visa/applying-online/uploading-documents-and-photos/visa-and-nzeta-photos/"
+    },
+    "ears_visibility": {
+      "value": "Ears must be visible unless a scarf is worn for religious or medical reasons; hair must not cover the face or ears.",
+      "source_url": "https://www.immigration.govt.nz/process-to-apply/applying-for-a-visa/applying-online/uploading-documents-and-photos/visa-and-nzeta-photos/"
+    },
+    "face_visibility": {
+      "value": "Eyes open, mouth closed, neutral expression; face must cover 70-80% of the image and be centred, not turned or angled to the side.",
+      "source_url": "https://www.immigration.govt.nz/process-to-apply/applying-for-a-visa/applying-online/uploading-documents-and-photos/visa-and-nzeta-photos/"
+    },
+    "headwear_policy": {
+      "value": "Head coverings are permitted only for religious or medical reasons, and the covering must not cover the mouth or the sides of the face.",
+      "source_url": "https://www.immigration.govt.nz/process-to-apply/applying-for-a-visa/applying-online/uploading-documents-and-photos/visa-and-nzeta-photos/"
+    },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://www.immigration.govt.nz/process-to-apply/applying-for-a-visa/applying-online/uploading-documents-and-photos/visa-and-nzeta-photos/",
+      "source_url": "https://www.immigration.govt.nz/process-to-apply/applying-for-a-visa/applying-online/uploading-documents-and-photos/visa-and-nzeta-photos/"
+    }
+  },
+  "restrictions_i18n": {
+    "expression": {
+      "en": "Look straight at the camera with a neutral expression and mouth closed; face must not be turned to the side or angled.",
+      "ko": "카메라를 정면으로 응시하고 무표정을 유지하며 입은 다물 것; 얼굴을 옆으로 돌리거나 기울이지 말 것.",
+      "ja": "カメラを正面から見つめ、無表情で口を閉じること。顔を横に向けたり傾けたりしないこと。"
+    },
+    "glasses": {
+      "en": "Prescription glasses are permitted only if clear and not tinted (no sunglasses), without heavy frames that cover the face, and must not create glare or reflection.",
+      "ko": "도수 안경은 투명하고 색이 없는 경우(선글라스 불가)에만 허용되며, 얼굴을 가리는 두꺼운 테는 안 되고 빛 반사가 없어야 한다.",
+      "ja": "度付きメガネは透明で色がついていない場合(サングラス不可)のみ許可され、顔を覆う太いフレームは不可、光の反射がないこと。"
+    },
+    "ears": {
+      "en": "Ears must be visible unless a scarf is worn for religious or medical reasons; hair must not cover the face or ears.",
+      "ko": "종교적·의료적 사유로 스카프를 착용하는 경우를 제외하고 귀가 보여야 하며, 머리카락이 얼굴이나 귀를 가리면 안 된다.",
+      "ja": "宗教上または医療上の理由でスカーフを着用する場合を除き、耳が見える必要があり、髪の毛で顔や耳を覆ってはならない。"
+    },
+    "face_visibility": {
+      "en": "Eyes open, mouth closed, neutral expression; face must cover 70-80% of the image and be centred, not turned or angled to the side.",
+      "ko": "눈은 뜨고 입은 다물며 무표정을 유지할 것; 얼굴이 사진의 70~80%를 차지하며 중앙에 위치해야 하고 돌리거나 기울이면 안 된다.",
+      "ja": "目を開けて口を閉じ、無表情を保つこと。顔は写真の70~80%を占め中央に位置し、横に向けたり傾けたりしないこと。"
+    },
+    "headwear": {
+      "en": "Head coverings are permitted only for religious or medical reasons, and must not cover the mouth or the sides of the face.",
+      "ko": "머리 가리개(스카프 등)는 종교적·의료적 사유가 있을 때만 허용되며, 입이나 얼굴 양옆을 가리면 안 된다.",
+      "ja": "頭部の覆い(スカーフ等)は宗教上または医療上の理由がある場合のみ許可され、口や顔の両側を覆ってはならない。"
+    }
+  },
+  "unverified": ["clothing_restriction", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Directly fetched from immigration.govt.nz (Immigration New Zealand's own 'Acceptable photos for a visa or NZeTA' page). Size (35x45mm for paper applications) matches the DB's 3.5x4.5cm exactly. Background is described only as 'neutral and plain' — this does not explicitly rule out white the way the separate New Zealand PASSPORT page does (see nz-passport.json, which explicitly says avoid white), so no background conflict is flagged here since white was not explicitly excluded on this visa-specific page."
+  }
+}

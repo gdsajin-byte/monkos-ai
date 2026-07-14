@@ -1,0 +1,50 @@
+{
+  "slug": "uz-passport",
+  "batch": 27,
+  "verified": {
+    "size": {
+      "value": "35 × 45mm (1 photo) — \"фотокарточку размером 35 х 45 мм (1 шт.)\"",
+      "source_url": "https://web.archive.org/web/20210619005734/https://m.mfa.uz/ru/consular/bio/"
+    },
+    "glasses_policy": {
+      "value": "Discouraged — the regulation states a citizen's biometric passport application may be refused in case of \"evasion from the fingerprinting procedure and persistent desire to be photographed in glasses or headwear, with objects affecting appearance\"",
+      "source_url": "https://lex.uz/ru/docs/4719876"
+    },
+    "headwear_policy": {
+      "value": "Discouraged on the same grounds as glasses (see glasses_policy) — application may be refused if applicant insists on being photographed wearing headwear",
+      "source_url": "https://lex.uz/ru/docs/4719876"
+    },
+    "official_source_url": {
+      "value": "https://mfa.uz/ru/consular/bio/",
+      "source_url": "https://web.archive.org/web/20210619005734/https://m.mfa.uz/ru/consular/bio/"
+    }
+  },
+  "restrictions_i18n": {
+    "glasses": {
+      "en": "Discouraged; persistently insisting on being photographed wearing glasses can be grounds for refusal of the biometric passport.",
+      "ko": "권장하지 않음. 안경 착용 촬영을 고집할 경우 여권 발급이 거부될 수 있음.",
+      "ja": "推奨されない。眼鏡着用での撮影に固執すると、生体認証旅券の発給が拒否される場合がある。"
+    },
+    "headwear": {
+      "en": "Discouraged; persistently insisting on being photographed wearing headwear can be grounds for refusal of the biometric passport.",
+      "ko": "권장하지 않음. 모자·머리가리개 착용 촬영을 고집할 경우 여권 발급이 거부될 수 있음.",
+      "ja": "推奨されない。帽子・頭部を覆うもの着用での撮影に固執すると、生体認証旅券の発給が拒否される場合がある。"
+    }
+  },
+  "unverified": [
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "ears_visibility",
+    "face_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Size 35×45mm confirmed via the Ministry of Foreign Affairs of Uzbekistan's consular page on registering the biometric passport abroad (captured via Wayback Machine, live mfa.uz site has since been restructured into the gov.uz portal and the specific page could not be reloaded live). This matches the DB value (3.5×4.5cm) exactly — no conflict. Cross-checked against Cabinet of Ministers Resolution No. 49 (30.01.2020, lex.uz, currently in force per lex.uz), which governs the modern biometric passport and confirms the glasses/headwear refusal grounds but does not itself restate the mm size. An older 1994 Resolution No. 624 (lex.uz/acts/574051) on passports issued by diplomatic missions abroad also states 35×45mm, corroborating the figure independently.",
+    "scope_note": "All sourced text concerns the biometric international travel passport issued to citizens (including those registered with consular offices abroad); no separate domestic-only variant was found."
+  }
+}

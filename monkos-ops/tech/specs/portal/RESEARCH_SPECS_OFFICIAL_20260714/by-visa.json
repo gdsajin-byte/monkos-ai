@@ -1,0 +1,61 @@
+{
+  "slug": "by-visa",
+  "batch": 4,
+  "verified": {
+    "size": {
+      "value": "35mm x 45mm",
+      "source_url": "https://usa.mfa.gov.by/en/usa/visa/"
+    },
+    "background": {
+      "value": "Plain, evenly lit and light background",
+      "source_url": "https://usa.mfa.gov.by/en/usa/visa/"
+    },
+    "face_visibility": {
+      "value": "Full face view occupying 70-80% of the picture",
+      "source_url": "https://usa.mfa.gov.by/en/usa/visa/"
+    },
+    "validity": {
+      "value": "Photo must not be older than 6 months",
+      "source_url": "https://usa.mfa.gov.by/en/usa/visa/"
+    },
+    "glasses_policy": {
+      "value": "Sunglasses not permitted",
+      "source_url": "https://usa.mfa.gov.by/en/usa/visa/"
+    },
+    "headwear_policy": {
+      "value": "No hat or other head covering, unless for ethnic or religious reasons",
+      "source_url": "https://usa.mfa.gov.by/en/usa/visa/"
+    },
+    "official_source_url": {
+      "value": "https://usa.mfa.gov.by/en/usa/visa/",
+      "source_url": "https://usa.mfa.gov.by/en/usa/visa/"
+    }
+  },
+  "restrictions_i18n": {
+    "glasses": {
+      "en": "Sunglasses not permitted.",
+      "ko": "선글라스 착용 금지.",
+      "ja": "サングラスの着用不可。"
+    },
+    "headwear": {
+      "en": "No hat or other head covering, unless required for ethnic or religious reasons.",
+      "ko": "민족·종교적 사유가 아닌 이상 모자 등 머리가리개 착용 불가.",
+      "ja": "民族的・宗教的な理由による場合を除き、帽子などの被り物は不可。"
+    },
+    "face_visibility": {
+      "en": "Full face view, occupying 70-80% of the picture.",
+      "ko": "정면 얼굴이 사진의 70~80%를 차지해야 함.",
+      "ja": "正面の顔が写真の70~80%を占めること。"
+    }
+  },
+  "unverified": [
+    "head_height",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "ears_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

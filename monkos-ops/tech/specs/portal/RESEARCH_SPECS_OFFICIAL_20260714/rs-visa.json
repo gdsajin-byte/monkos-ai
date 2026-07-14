@@ -1,0 +1,31 @@
+{
+  "slug": "rs-visa",
+  "batch": 22,
+  "verified": {
+    "size": {
+      "value": "3.5 × 4.5cm (35×45mm) — \"Photo (size 3.5x4.5cm)\"",
+      "source_url": "https://www.mfa.gov.rs/en/citizens/travel-serbia/visa-requirements"
+    },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://www.mfa.gov.rs/en/citizens/travel-serbia/visa-requirements",
+      "source_url": "https://www.mfa.gov.rs/en/citizens/travel-serbia/visa-requirements"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["background", "head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Serbia's MFA (Ministry of Foreign Affairs) visa-requirements page states only 'Photo (size 3.5x4.5cm)' among the document checklist items — matches DB exactly, no conflict. No further detail on background, expression, glasses, or headwear was present on this page. The separate official e-Visa platform (evisa.welcometoserbia.gov.rs, on the gov.rs domain) was reached but its public help pages did not surface detailed photo specs either — applicants likely see full specs only inside the logged-in application flow."
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "slug": "ni-visa",
+  "batch": 19,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://www.mint.gob.ni/migracion/tramites/visa-de-ingreso-al-pais/",
+      "source_url": "https://www.mint.gob.ni/migracion/tramites/visa-de-ingreso-al-pais/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Directly browsed the official DGME (Dirección General de Migración y Extranjería) 'Visa de ingreso al país' page (mint.gob.ni/migracion/tramites/visa-de-ingreso-al-pais/) and read its full Category C ('visa consultada') requirements table: passport copy (min. 6 months validity), visa request letter, criminal-record certificate, and a notarized support/maintenance commitment. This official checklist does not itemize a photograph as a required document at all, let alone specify size/background/head-height, so no photo-spec fields could be verified for ni-visa from this source."
+  }
+}

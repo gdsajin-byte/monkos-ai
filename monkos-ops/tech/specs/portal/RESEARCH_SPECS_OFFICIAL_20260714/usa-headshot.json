@@ -1,0 +1,25 @@
+{
+  "slug": "usa-headshot",
+  "batch": 26,
+  "verified": {},
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories",
+    "official_source_url"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "'Headshot / Profile Photo' (400x400px+, solid-colour background, no head-height spec) is not a government-regulated document type in the way Passport/Visa/ID are — it reads as a generic professional/social profile photo (e.g. LinkedIn, resume, corporate directory), for which the U.S. federal government has no single binding specification. The nearest official U.S. analogues were checked directly: (1) travel.state.gov passport/visa digital photos require a SQUARE image between 600x600 and 1200x1200 pixels with a white/off-white background (travel.state.gov/content/travel/en/us-visas/visa-information-resources/photos/digital-image-requirements.html) — a 400x400px image would fail this as too small; (2) CBP Global Entry / Trusted Traveler photos follow the same 2x2in/51x51mm passport-style spec (cbp.gov/travel/trusted-traveler-programs/global-entry). Neither matches the DB's 400x400px 'solid colour' headshot spec, confirming this slug is not the same product as us-passport/us-visa (already researched separately) and has no discoverable official government source of its own. Left entirely unverified rather than borrowing the passport/visa numbers, which would misattribute them to the wrong document type."
+  }
+}

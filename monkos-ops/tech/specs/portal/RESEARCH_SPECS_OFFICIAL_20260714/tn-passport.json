@@ -1,0 +1,45 @@
+{
+  "slug": "tn-passport",
+  "batch": 25,
+  "verified": {
+    "size": {
+      "value": "4,5×3,5cm (\"Deux photos d'identité (en couleur, avec fond blanc, dimensions 4,5×3,5cm)\" — stated identically for children's and adults' passport applications)",
+      "source_url": "https://www.econsulat.tn/fr/services-de-chancellerie/etablissement-du-passeport"
+    },
+    "background": {
+      "value": "\"fond blanc\" / white background",
+      "source_url": "https://www.econsulat.tn/fr/services-de-chancellerie/etablissement-du-passeport"
+    },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://www.econsulat.tn/fr/services-de-chancellerie/etablissement-du-passeport",
+      "source_url": "https://www.econsulat.tn/fr/services-de-chancellerie/etablissement-du-passeport"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "econsulat.tn is Tunisia's official e-Consulate portal (chancellery/consular services operated for Tunisian citizens abroad) and states \"Deux photos d'identité (en couleur, avec fond blanc, dimensions 4,5×3,5cm)\" identically in both the children's and adults' document checklists for passport establishment (établissement du passeport) — this matches the DB's 3.5x4.5cm / white values (no conflict). However, a separate diplomatic source, the Embassy of the Republic of Tunisia's passport-services page (tunisianembassy.org/passport-services), states a different size for the same product: \"Two Recent Passport Photos (2\\\" x 2\\\" White Background)\" for first-time, renewal, and lost-passport applications alike. Both sources are plausibly official (government consular portal vs. embassy site) but disagree on size — 4.5x3.5cm (~1.77in x 1.38in) vs 2x2in (~5.08x5.08cm). This research records the econsulat.tn figure as verified because it matches the DB and because econsulat.tn is the centralized, MFA-run digital consular platform, but the discrepancy with the embassy site is unresolved and should be treated as an open question. Separately, the same econsulat.tn portal's National ID Card (carte d'identité nationale) page independently specifies photos must be taken \"Vue de face, sans lunettes sur fond blanc\" (front-facing, without glasses, white background) — this glasses/pose rule was NOT found stated on the passport-specific page itself, so per the truthfulness gate it is not carried over into this passport record as verified, even though it likely applies in practice since both documents are issued under the same Tunisian civil-registry authority."
+  }
+}

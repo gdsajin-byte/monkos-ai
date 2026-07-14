@@ -1,0 +1,50 @@
+{
+  "slug": "sy-passport",
+  "batch": 24,
+  "verified": {
+    "size": {
+      "value": "Officially stated as \"size 4x4\" (i.e. 4 x 4cm) for the two required passport photos.",
+      "source_url": "https://mofaex.gov.sy/en/services/%D8%A5%D8%B5%D8%AF%D8%A7%D8%B1-%D8%AC%D9%88%D8%A7%D8%B2-%D8%B3%D9%81%D8%B1-%D9%84%D8%A3%D9%88%D9%84-%D9%85%D8%B1%D8%A9"
+    },
+    "background": {
+      "value": "White background.",
+      "source_url": "https://mofaex.gov.sy/en/services/%D8%A5%D8%B5%D8%AF%D8%A7%D8%B1-%D8%AC%D9%88%D8%A7%D8%B2-%D8%B3%D9%81%D8%B1-%D9%84%D8%A3%D9%88%D9%84-%D9%85%D8%B1%D8%A9"
+    },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": {
+      "value": "\"Two recent colored passport-sized photos with a white background, wearing dark clothing, size 4x4\" — dark-colored clothing is explicitly required (contrasts against the white background).",
+      "source_url": "https://mofaex.gov.sy/en/services/%D8%A5%D8%B5%D8%AF%D8%A7%D8%B1-%D8%AC%D9%88%D8%A7%D8%B2-%D8%B3%D9%81%D8%B1-%D9%84%D8%A3%D9%88%D9%84-%D9%85%D8%B1%D8%A9"
+    },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://mofaex.gov.sy/en/services/%D8%A5%D8%B5%D8%AF%D8%A7%D8%B1-%D8%AC%D9%88%D8%A7%D8%B2-%D8%B3%D9%81%D8%B1-%D9%84%D8%A3%D9%88%D9%84-%D9%85%D8%B1%D8%A9",
+      "source_url": "https://mofaex.gov.sy/en/services/%D8%A5%D8%B5%D8%AF%D8%A7%D8%B1-%D8%AC%D9%88%D8%A7%D8%B2-%D8%B3%D9%81%D8%B1-%D9%84%D8%A3%D9%88%D9%84-%D9%85%D8%B1%D8%A9"
+    }
+  },
+  "restrictions_i18n": {
+    "clothing": {
+      "en": "Two recent colored passport-sized photos with a white background; the applicant must wear dark-colored clothing.",
+      "ko": "흰색 배경의 최근 컬러 여권용 사진 2매가 필요하며, 어두운 색상의 복장을 착용해야 함.",
+      "ja": "白背景の最近のカラーパスポート用写真2枚が必要で、濃い色の服装を着用すること。"
+    }
+  },
+  "unverified": ["head_height", "validity", "file_spec", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "3.5 × 4.5cm",
+      "research_value": "4 × 4cm (stated verbatim as \"size 4x4\" by Syria's Ministry of Foreign Affairs and Expatriates, for first-time passport issuance via diplomatic missions abroad)",
+      "source_url": "https://mofaex.gov.sy/en/services/%D8%A5%D8%B5%D8%AF%D8%A7%D8%B1-%D8%AC%D9%88%D8%A7%D8%B2-%D8%B3%D9%81%D8%B1-%D9%84%D8%A3%D9%88%D9%84-%D9%85%D8%B1%D8%A9"
+    }
+  ],
+  "cross_verification": {
+    "note_en": "This spec was verified via Syria's Ministry of Foreign Affairs and Expatriates (mofaex.gov.sy) official service page for first-time passport issuance for Syrians abroad, listing exact requirements: appointment confirmation, printed application form, personal ID/civil-registry extract with a recent photo (under 6 months) certified by a local Mukhtar, 'two recent colored passport-sized photos with a white background, wearing dark clothing, size 4x4', and a residence-card copy. This is the domestic Immigration and Passports Directorate's likely equivalent for in-country applicants, but this research only confirmed the MOFA (overseas-mission) page; the directorate underwent a major post-2024 transitional-government reform (new green passport design unveiled 3 July 2025) so requirements may differ for in-country applications. Third-party sites cite conflicting sizes (40x60mm, 51x51mm, 4x6cm) that could not be traced to any Syrian government source and are excluded."
+  }
+}

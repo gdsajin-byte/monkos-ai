@@ -1,0 +1,37 @@
+{
+  "slug": "eu-visa",
+  "batch": 8,
+  "verified": {
+    "size": {
+      "value": "3.5cm × 4.5cm, colour photo",
+      "source_url": "https://www.netherlandsworldwide.nl/visa-the-netherlands/checklist-schengen-visa-tourism"
+    },
+    "background": {
+      "value": "White or light-coloured background",
+      "source_url": "https://www.netherlandsworldwide.nl/visa-the-netherlands/checklist-schengen-visa-tourism"
+    },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": {
+      "value": "No more than 6 months old",
+      "source_url": "https://www.netherlandsworldwide.nl/visa-the-netherlands/checklist-schengen-visa-tourism"
+    },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://www.netherlandsworldwide.nl/visa-the-netherlands/checklist-schengen-visa-tourism",
+      "source_url": "https://www.netherlandsworldwide.nl/visa-the-netherlands/checklist-schengen-visa-tourism"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["head_height", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "The Visa Code (Regulation (EC) No 810/2009) is the EU-wide legal basis for Schengen visa photos, but EUR-Lex's own pages (HTML and PDF endpoints, multiple CELEX/consolidation variants) returned no readable content via automated fetch across repeated attempts, and the EEAS 'How to Apply for a Schengen Visa' PDF and France-Visas page were likewise unreadable/blocked (403). As a working substitute, the Dutch Ministry of Foreign Affairs' official consular portal (Netherlands Worldwide), which implements the same EU-wide Visa Code as every Schengen state, was used to confirm size/background/validity. Size (3.5×4.5cm) and background (white/light) match the DB exactly — no conflict. Head height and detailed composition/expression/glasses/headwear rules were not stated on this specific checklist page and remain unverified rather than filled from third-party aggregators."
+  }
+}

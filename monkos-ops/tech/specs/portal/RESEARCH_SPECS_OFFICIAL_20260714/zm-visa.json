@@ -1,0 +1,21 @@
+{
+  "slug": "zm-visa",
+  "batch": 29,
+  "verified": {
+    "file_spec": {
+      "value": "Photos must be uploaded in jpeg, tiff or png format; applicant must not upload the photo used in their passport. Official brochure text: \"Ensure that you have in place a clear passport style photograph [jpeg, tiff or png]. Do not upload the photo from your passport.\"",
+      "source_url": "https://www.zambiaimmigration.gov.zm/wp-content/uploads/2019/10/Immigration-e-Visa-Brochure.pdf"
+    },
+    "official_source_url": {
+      "value": "https://www.zambiaimmigration.gov.zm/wp-content/uploads/2019/10/Immigration-e-Visa-Brochure.pdf",
+      "source_url": "https://www.zambiaimmigration.gov.zm/wp-content/uploads/2019/10/Immigration-e-Visa-Brochure.pdf"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "validity", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Two official Zambia Department of Immigration documents were read in full: the 32-page 'Guide on Immigration Permits & Visas' PDF and the 'What is an e-Visa?' brochure PDF (both hosted at zambiaimmigration.gov.zm), plus the live 'Visa Requirements by Purpose of Visit' page and the eservices.zambiaimmigration.gov.zm portal landing page. All sources consistently require only a 'passport sized photo' for every visa category (Business, Diplomatic, Official, Religious, School, Tourist, Transit, Visitor) — none states an exact cm/mm dimension, background color, or head-height figure anywhere in the documents. The DB's existing values (3.5 x 4.5cm / white / 3.2-3.6cm) could therefore neither be confirmed nor contradicted by any official Zambian government source found in this research pass, so they are left unverified rather than asserted or flagged as a conflict.",
+    "visa_validity_distinction": "The e-Visa document itself (not the photo) is stated to be valid for 90 days from date of first issuance (multiple entry visas for US nationals: 3 years). This is the VISA's validity, not a photo-recency requirement, so it was not entered under the 'validity' (photo validity) field."
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "slug": "sc-visa",
+  "batch": 23,
+  "verified": {
+    "official_source_url": {
+      "value": "https://mfa.gov.sc/visa/ — Seychelles Ministry of Foreign Affairs and the Diaspora visa page lists a \"Recent passport size photo\" among the required visa application documents, but does not specify exact dimensions, background colour, or format. Note: most travellers to Seychelles instead use the Travel Authorisation (TA) via the Seychelles Electronic Border System (seychelles.govtas.com), whose own published pages (HOWTO, FAQ) also do not list a specific photo size/background spec.",
+      "source_url": "https://mfa.gov.sc/visa/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

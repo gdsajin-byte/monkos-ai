@@ -1,0 +1,57 @@
+{
+  "slug": "eg-passport",
+  "batch": 7,
+  "verified": {
+    "size": {
+      "value": "4×6cm (\"مقاس 4×6 سم\") — matches DB",
+      "source_url": "https://www.mfa.gov.eg/ar/ConsularServicesAndTransactions/Details/73"
+    },
+    "background": {
+      "value": "Pure white background required (\"بخلفية بيضاء\"); cream, gray, or colored backgrounds are rejected (\"الخلفيات الكريمية أو الرمادية أو الملونة مرفوضة\")",
+      "source_url": "https://www.mfa.gov.eg/ar/ConsularServicesAndTransactions/Details/73"
+    },
+    "glasses_policy": {
+      "value": "Glasses are completely prohibited in Egyptian passport photos (\"النظارات محظورة تماماً في جوازات السفر المصرية\")",
+      "source_url": "https://www.mfa.gov.eg/ar/ConsularServicesAndTransactions/Details/73"
+    },
+    "headwear_policy": {
+      "value": "Hijab is permitted, provided the face is shown fully (\"الحجاب مسموح به مع ظهور الوجه كاملاً\")",
+      "source_url": "https://www.mfa.gov.eg/ar/ConsularServicesAndTransactions/Details/73"
+    },
+    "official_source_url": {
+      "value": "https://www.mfa.gov.eg/ar/ConsularServicesAndTransactions/Details/73",
+      "source_url": "https://www.mfa.gov.eg/ar/ConsularServicesAndTransactions/Details/73"
+    }
+  },
+  "restrictions_i18n": {
+    "glasses": {
+      "en": "Glasses are completely prohibited in Egyptian passport photos.",
+      "ko": "이집트 여권 사진에서는 안경 착용이 전면 금지됨.",
+      "ja": "エジプトのパスポート写真では眼鏡の着用は一切不可。"
+    },
+    "headwear": {
+      "en": "Hijab is permitted, provided the face is shown fully.",
+      "ko": "히잡은 허용되나, 얼굴 전체가 온전히 드러나야 함.",
+      "ja": "ヒジャブの着用は可能だが、顔全体がはっきり見えている必要あり。"
+    }
+  },
+  "unverified": [
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "ears_visibility",
+    "face_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "direct_fetch_note": {
+      "note": "Direct WebFetch to mfa.gov.eg returned HTTP 403 (bot protection); direct WebFetch to emoves.moi.gov.eg and moi.gov.eg subpages returned connection-refused / access-rejected responses on every attempt (these Egyptian government sites appear to actively block automated fetching). Values above were confirmed via a grounded Arabic-language web search that quoted specific verbatim Arabic text attributed to www.mfa.gov.eg (Egypt's Ministry of Foreign Affairs), the official page titled 'استخراج او تجديد جواز السفر' (Passport issuance/renewal)."
+    },
+    "head_height": {
+      "note": "A '38mm hair-to-chin' figure and a '4 photos required' figure appeared repeatedly across searches, but were attributed to generic 'Ministry of Interior' framing via commercial photo-vendor aggregator sites (mybiometricphotos.com, visafoto, etc.), not to a specific quoted line on an .eg government domain. Left unverified per the truthfulness gate rather than asserted on secondary-source consensus alone."
+    }
+  }
+}

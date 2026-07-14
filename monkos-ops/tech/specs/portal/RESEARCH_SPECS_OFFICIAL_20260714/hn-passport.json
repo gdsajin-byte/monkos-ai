@@ -1,0 +1,32 @@
+{
+  "slug": "hn-passport",
+  "batch": 10,
+  "verified": {
+    "file_spec": {
+      "value": "Honduras does not use a citizen-submitted photo system for passport applications: the photograph (and fingerprints) are captured biometrically in person at the appointment, at INM offices domestically or at a Honduran embassy/consulate abroad. Applicants do not bring a pre-taken photo — e.g. the Embassy of Honduras in Canada states explicitly that a photo is taken on the day of the appointment and 'no photographs are necessary' from the applicant.",
+      "source_url": "https://embajadahondurasencanada.hn/en/passports/"
+    },
+    "official_source_url": {
+      "value": "https://inm.gob.hn/pasaportes.html",
+      "source_url": "https://inm.gob.hn/pasaportes.html"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note": "inm.gob.hn and citaconsular.sreci.gob.hn (Honduras's Instituto Nacional de Migración and its consular-appointment subdomain) were unreachable on every WebFetch attempt — inm.gob.hn returned 'connect ECONNREFUSED' consistently (not a bot-block 403, suggesting an actual connectivity/hosting issue from this fetch path) and the sreci.gob.hn PDF endpoints returned SSL certificate verification failures. The Embassy of Honduras in Canada (embajadahondurasencanada.hn, official .hn diplomatic domain) WAS successfully and directly fetched, and its live-capture finding is corroborated by a separate WebSearch synthesis of inm.gob.hn's own indexed content ('la presencia física es indispensable para que tomen la foto... no aceptando fotos traídas de casa'). This plausibly explains why no citizen-facing technical photo spec (size/background/head-height) is published domestically — there may be none to publish. A '5x5cm' figure matching the DB value circulates on third-party aggregator sites, but no official Honduran government page could be reached or found via search to directly confirm it, so size/background/head_height are left unverified rather than risk endorsing an unconfirmed figure. inm.gob.hn IS confirmed (via consistent, repeated search-engine indexing under its exact official title 'Pasaportes/Instituto Nacional de Migración') to be the correct official passport authority page, even though its content could not be directly retrieved in this session."
+  }
+}

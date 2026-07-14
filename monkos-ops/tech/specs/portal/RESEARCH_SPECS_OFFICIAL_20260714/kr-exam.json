@@ -1,0 +1,60 @@
+{
+  "slug": "kr-exam",
+  "batch": 13,
+  "verified": {
+    "size": {
+      "value": "가로 3.5cm × 세로 4.5cm (3.5cm width × 4.5cm height)",
+      "source_url": "https://www.suneung.re.kr/sub/info.do?m=0102&s=suneung"
+    },
+    "background": {
+      "value": "균일한 흰색 배경, 테두리 없음 (uniform white background, no border)",
+      "source_url": "https://www.suneung.re.kr/sub/info.do?m=0102&s=suneung"
+    },
+    "head_height": {
+      "value": "정수리부터 턱까지 3.2cm~3.6cm (crown-to-chin: 3.2-3.6cm)",
+      "source_url": "https://www.suneung.re.kr/sub/info.do?m=0102&s=suneung"
+    },
+    "validity": {
+      "value": "원서접수 시작일로부터 최근 6개월 이내 촬영한 천연색 상반신 정면 사진 (taken within 6 months before the application period start date; colour, frontal, upper-body)",
+      "source_url": "https://www.suneung.re.kr/sub/info.do?m=0102&s=suneung"
+    },
+    "file_spec": {
+      "value": "온라인 사전입력용: JPG/JPEG, 500KB 이하, 권장 가로413×세로531픽셀 (허용범위 가로395~431px, 세로507~550px), 300dpi 권장. 관련 S/W를 통한 원판 변형 금지. (Online pre-entry upload: JPG/JPEG, max 500KB, recommended 413×531px, acceptable range 395-431 × 507-550px, 300dpi recommended; no digital retouching/alteration permitted)",
+      "source_url": "https://www.suneung.re.kr/sub/info.do?m=0102&s=suneung"
+    },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": {
+      "value": "머리카락, 안경테 등으로 눈을 가리면 안 됨 (hair or glasses frames must not cover the eyes)",
+      "source_url": "https://www.suneung.re.kr/sub/info.do?m=0102&s=suneung"
+    },
+    "headwear_policy": {
+      "value": "모자 등으로 머리를 가리면 안 됨 (hats/head coverings that cover the head are not permitted)",
+      "source_url": "https://www.suneung.re.kr/sub/info.do?m=0102&s=suneung"
+    },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://www.suneung.re.kr/sub/info.do?m=0102&s=suneung",
+      "source_url": "https://www.suneung.re.kr/sub/info.do?m=0102&s=suneung"
+    }
+  },
+  "restrictions_i18n": {
+    "face_visibility": {
+      "en": "Hair or eyeglass frames must not cover the eyes.",
+      "ko": "머리카락이나 안경테 등으로 눈을 가려서는 안 된다.",
+      "ja": "髪の毛や眼鏡のフレームなどで目を隠してはならない。"
+    },
+    "headwear": {
+      "en": "Hats or other head coverings that cover the head are not permitted.",
+      "ko": "모자 등으로 머리를 가려서는 안 된다.",
+      "ja": "帽子などで頭を覆ってはならない。"
+    }
+  },
+  "unverified": ["clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note": "Directly read the official 한국교육과정평가원(KICE) 대학수학능력시험 홈페이지 (suneung.re.kr) application-photo guidance page. DB's size (3.5×4.5cm) and head_height (3.2~3.6cm) match exactly — no conflict. The page notes the photo should conform to 여권사진규정(외교부) [passport photo regulation] format generally, but does not itself spell out explicit clothing, expression/smile, glasses-ban, or ears-visibility rules beyond the hair/glasses-frame-covering-eyes and hat restrictions already captured above, so those remain unverified rather than inferred from the separate passport regulation document."
+  }
+}

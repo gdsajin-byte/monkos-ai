@@ -1,0 +1,32 @@
+{
+  "slug": "lc-visa",
+  "batch": 14,
+  "verified": {
+    "file_spec": {
+      "value": "'2 certified passport size photographs' required with the non-immigrant visa application (page gives no separate cm figure or background/expression rules beyond this)",
+      "source_url": "https://www.govt.lc/services/apply-for-saint-lucia-non-immigrant-visa"
+    },
+    "official_source_url": {
+      "value": "https://www.govt.lc/services/apply-for-saint-lucia-non-immigrant-visa",
+      "source_url": "https://www.govt.lc/services/apply-for-saint-lucia-non-immigrant-visa"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note": "govt.lc's official non-immigrant visa service page states only '2 certified passport size photographs' as the photo requirement, referencing 'passport size' without restating a number. By cross-reference with lc-passport.json (confirmed 50mm×40mm / 5×4cm via the Saint Lucia consulate in Toronto), the DB's '4×5cm' for lc-visa is plausible but was not independently restated on the visa page itself, so size is left unverified here rather than asserted as confirmed for the visa document specifically."
+  }
+}

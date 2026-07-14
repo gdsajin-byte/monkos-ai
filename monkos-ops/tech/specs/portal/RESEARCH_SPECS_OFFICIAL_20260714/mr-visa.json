@@ -1,0 +1,25 @@
+{
+  "slug": "mr-visa",
+  "batch": 18,
+  "verified": {},
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories",
+    "official_source_url"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "The Embassy of the Islamic Republic of Mauritania in Washington, D.C. (its official page, reached via un.int/mauritania/mauritania/visa-forms, listing address 2129 Leroy Place NW and phone (202) 232-5700) was fetched directly and confirms '4 passport-sized photographs' are required for a visa application, but publishes no size, background, or composition specification. No other official Mauritanian government page with visa photo specs was located (see mr-passport note on ANRPTS / procedures.gov.mr, which also does not publish photo specs). Third-party photo-service sites publish specific numbers but were excluded as non-official per the truthfulness gate."
+  }
+}

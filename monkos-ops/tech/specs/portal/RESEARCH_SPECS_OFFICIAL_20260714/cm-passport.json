@@ -1,0 +1,29 @@
+{
+  "slug": "cm-passport",
+  "batch": 5,
+  "verified": {
+    "official_source_url": {
+      "value": "https://www.dgsn.cm/passeports/",
+      "source_url": "https://www.dgsn.cm/passeports/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note": "Directly fetched two official DGSN (Délégation Générale à la Sûreté Nationale) pamphlets (Depliant-Passport-2025.pdf and Depliant-CNI.pdf) — both describe the application procedure only; neither publishes a citizen-facing photo size/background spec. The passport pamphlet confirms the photo is captured biometrically in person at the enrollment center ('la prise de vos paramètres (Photo, empreintes digitales, signature, taille)'), which plausibly explains the absence of a published pre-made-photo standard. Numerous third-party ID-photo services cite 35x45mm/white background, but these are excluded per the truthfulness gate as non-official sources."
+  }
+}

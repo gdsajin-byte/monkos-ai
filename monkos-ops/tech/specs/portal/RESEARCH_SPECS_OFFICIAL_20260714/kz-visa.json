@@ -1,0 +1,33 @@
+{
+  "slug": "kz-visa",
+  "batch": 14,
+  "verified": {
+    "size": {
+      "value": "3.5 x 4.5 cm (color or black-and-white photo accepted). Official Russian text: 'цветной, либо черно-белой фотографией размером 3,5 х 4,5 сантиметров'",
+      "source_url": "https://egov.kz/cms/en/services/for_foreigners/pass597_mvd"
+    },
+    "official_source_url": {
+      "value": "https://egov.kz/cms/en/services/for_foreigners/pass597_mvd",
+      "source_url": "https://egov.kz/cms/en/services/for_foreigners/pass597_mvd"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note": "size confirmed via two independent egov.kz pages (English: 'Issuance, restoration or extension...of visas for the right to leave/enter the Republic of Kazakhstan' service page pass597_mvd, referencing Annex 6 to the Rules; Russian: rk_visa_obtaining article) — both state 3.5×4.5cm, matching DB exactly. A separate egov.kz page gives detailed background/expression/glasses/headwear rules (gray background recommended, no blue, etc.) but that page is explicitly scoped to 'identity documents...to citizens of the Republic of Kazakhstan' (i.e. national ID/passport for citizens) — since a visa is issued to foreign nationals under a different rule set (Annex 6), it was not applied here without an explicit visa-specific citation, per the truth-gate instruction.",
+    "related_source": "https://egov.kz/cms/ru/articles/rk_visa_obtaining"
+  }
+}

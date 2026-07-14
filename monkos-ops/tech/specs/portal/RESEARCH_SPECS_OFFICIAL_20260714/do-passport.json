@@ -1,0 +1,65 @@
+{
+  "slug": "do-passport",
+  "batch": 7,
+  "verified": {
+    "size": {
+      "value": "2 x 2 pulgadas (5 x 5 cm), per ICAO Document 9303 (\"La fotografía digital debe tener un tamaño de 2 x 2 pulgadas (5 x 5 cm) según el documento 9303 de la Organización de Aviación Civil Internacional\") — matches DB's 2×2 inch (51×51mm)",
+      "source_url": "https://www.pasaportes.gob.do/index.php/servicios-s/solicitudes-nuevas/item/233-solicitud-de-pasaporte-para-adultos-dominicanos-por-nacimiento"
+    },
+    "background": {
+      "value": "White background (\"fondo blanco\") — matches DB",
+      "source_url": "https://www.pasaportes.gob.do/index.php/servicios-s/solicitudes-nuevas/item/233-solicitud-de-pasaporte-para-adultos-dominicanos-por-nacimiento"
+    },
+    "glasses_policy": {
+      "value": "No sunglasses (\"gafas de sol\"); no colored contact lenses (\"no utilizar lentes de contacto de color\")",
+      "source_url": "https://www.pasaportes.gob.do/index.php/servicios-s/solicitudes-nuevas/item/233-solicitud-de-pasaporte-para-adultos-dominicanos-por-nacimiento"
+    },
+    "accessories": {
+      "value": "No facial adornments; no earrings (\"aretes\"), no chains/necklaces (\"cadenas\") — \"Las fotos no deben incluir adornos faciales ni prendas de vestir como gafas de sol, aretes, cadenas, sombreros\"",
+      "source_url": "https://www.pasaportes.gob.do/index.php/servicios-s/solicitudes-nuevas/item/233-solicitud-de-pasaporte-para-adultos-dominicanos-por-nacimiento"
+    },
+    "headwear_policy": {
+      "value": "No hats (\"sombreros\") per the same prohibited-items list",
+      "source_url": "https://www.pasaportes.gob.do/index.php/servicios-s/solicitudes-nuevas/item/233-solicitud-de-pasaporte-para-adultos-dominicanos-por-nacimiento"
+    },
+    "file_spec": {
+      "value": "For online/digital submission, documents including the photo must be scanned in JPG format (\"Los documentos deben ser escaneados en formato JPG\")",
+      "source_url": "https://www.pasaportes.gob.do/index.php/servicios-s/solicitudes-nuevas/item/233-solicitud-de-pasaporte-para-adultos-dominicanos-por-nacimiento"
+    },
+    "official_source_url": {
+      "value": "https://www.pasaportes.gob.do/",
+      "source_url": "https://www.pasaportes.gob.do/"
+    }
+  },
+  "restrictions_i18n": {
+    "glasses": {
+      "en": "Sunglasses are not allowed, and colored contact lenses must not be worn.",
+      "ko": "선글라스 착용 불가, 컬러 콘택트렌즈 착용 금지.",
+      "ja": "サングラスは不可。カラーコンタクトレンズの着用も不可。"
+    },
+    "accessories": {
+      "en": "No facial adornments; earrings and necklaces/chains are not allowed in the photo.",
+      "ko": "얼굴 장신구 금지. 귀걸이, 목걸이·체인 등 착용 금지.",
+      "ja": "顔まわりの装飾品は不可。イヤリング・ネックレス(チェーン類)の着用も不可。"
+    },
+    "headwear": {
+      "en": "Hats are not allowed.",
+      "ko": "모자 착용 금지.",
+      "ja": "帽子の着用は不可。"
+    }
+  },
+  "unverified": [
+    "head_height",
+    "validity",
+    "clothing_restriction",
+    "expression_restriction",
+    "ears_visibility",
+    "face_visibility"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "direct_fetch_note": {
+      "note": "Direct WebFetch to pasaportes.gob.do returned HTTP 473 (bot-protection status) on repeated attempts. Content above was confirmed via a grounded web-search fetch that quoted verbatim Spanish text specifically attributed to the pasaportes.gob.do adult first-time passport application page (Dirección General de Pasaportes, the Dominican Republic's official passport authority) — not from third-party passport-photo vendors."
+    }
+  }
+}

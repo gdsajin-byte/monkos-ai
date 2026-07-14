@@ -1,0 +1,43 @@
+{
+  "slug": "ao-visa",
+  "batch": 1,
+  "verified": {
+    "size": {
+      "value": "Digital upload only — width 381-571 pixels, height 496-744 pixels (standard size photo)",
+      "source_url": "https://www.sme.gov.ao/ao/perguntas-frequentes/evisa-english-version/"
+    },
+    "background": {
+      "value": "White background",
+      "source_url": "https://www.sme.gov.ao/ao/perguntas-frequentes/evisa-english-version/"
+    },
+    "file_spec": {
+      "value": "JPEG format (.jpg/.jpeg), maximum file size 200 KB",
+      "source_url": "https://www.sme.gov.ao/ao/perguntas-frequentes/evisa-english-version/"
+    },
+    "official_source_url": {
+      "value": "https://www.smevisa.gov.ao/",
+      "source_url": "https://www.sme.gov.ao/ao/perguntas-frequentes/evisa-english-version/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "head_height",
+    "validity",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "3.5 × 4.5cm",
+      "research_value": "Angola visas are processed exclusively through the SME e-Visa portal (smevisa.gov.ao); the official spec is pixel-based digital upload (381-571 × 496-744 px, max 200KB JPEG), not a physical print size in cm",
+      "source_url": "https://www.sme.gov.ao/ao/perguntas-frequentes/evisa-english-version/"
+    }
+  ],
+  "cross_verification": {}
+}

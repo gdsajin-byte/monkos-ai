@@ -1,0 +1,27 @@
+{
+  "slug": "sd-passport",
+  "batch": 23,
+  "verified": {
+    "official_source_url": {
+      "value": "https://sudanembassy.org/passport-renewal/ — Embassy of the Republic of Sudan (official diplomatic mission site) passport renewal page describes the application procedure (in-person appointment, fees, processing via diplomatic pouch to/from Sudan) but does not publish any photo size, background, or format specification.",
+      "source_url": "https://sudanembassy.org/passport-renewal/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

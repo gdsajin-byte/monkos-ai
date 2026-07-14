@@ -1,0 +1,28 @@
+{
+  "slug": "kn-visa",
+  "batch": 13,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://www.stkittsnevishcuk.gov.kn/visa-immigration/",
+      "source_url": "https://www.stkittsnevishcuk.gov.kn/visa-immigration/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note": "St. Kitts and Nevis is visa-free for the large majority of nationalities. The High Commission in London's official 'Visa & Immigration' page (stkittsnevishcuk.gov.kn) states only that 'Two (2) recent colour passport sized photos' are required, with no further composition detail (exact mm, background colour, head-height ratio, expression/glasses/headwear rules). The detailed composition standard (45×35mm, plain white background, 70-80% face ratio, no glasses, headwear exceptions, etc.) is officially published only for the ePassport application — see kn-passport.json — and was not found duplicated in an explicit visa-specific document, so per the truthfulness gate it is not carried over here without direct confirmation."
+  }
+}

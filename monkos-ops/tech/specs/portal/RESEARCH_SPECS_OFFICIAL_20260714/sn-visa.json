@@ -1,0 +1,27 @@
+{
+  "slug": "sn-visa",
+  "batch": 23,
+  "verified": {
+    "official_source_url": {
+      "value": "https://consulsen-paris.gouv.sn/wp-content/uploads/2022/08/visaform.pdf — official visa application form (\"Demande de Visa de moins de trois mois\") issued by the Consulat Général du Sénégal à Paris, Ministère des Affaires Étrangères, lists required supporting documents as \"Photocopie Titre de séjour --- Photocopie du Passeport --- Une Photo d'identité (pour visa avec consultation)\" — i.e. one ID photo is required for visas requiring prior consultation. The form's photo box has no printed dimension/background text. Senegal's e-visa is otherwise processed via visasenegal.sn / snedai.sn, which returned HTTP 403 to this session's fetch and could not be independently verified.",
+      "source_url": "https://consulsen-paris.gouv.sn/wp-content/uploads/2022/08/visaform.pdf"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

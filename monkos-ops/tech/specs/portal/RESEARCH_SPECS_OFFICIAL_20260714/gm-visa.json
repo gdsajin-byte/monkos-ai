@@ -1,0 +1,29 @@
+{
+  "slug": "gm-visa",
+  "batch": 9,
+  "verified": {
+    "size": { "value": "", "source_url": "" },
+    "background": { "value": "", "source_url": "" },
+    "head_height": { "value": "", "source_url": "" },
+    "validity": { "value": "", "source_url": "" },
+    "file_spec": { "value": "", "source_url": "" },
+    "clothing_restriction": { "value": "", "source_url": "" },
+    "expression_restriction": { "value": "", "source_url": "" },
+    "glasses_policy": { "value": "", "source_url": "" },
+    "ears_visibility": { "value": "", "source_url": "" },
+    "face_visibility": { "value": "", "source_url": "" },
+    "headwear_policy": { "value": "", "source_url": "" },
+    "accessories": { "value": "", "source_url": "" },
+    "official_source_url": {
+      "value": "https://gid.gov.gm/visa/",
+      "source_url": "https://gid.gov.gm/visa/"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": ["size", "background", "head_height", "validity", "file_spec", "clothing_restriction", "expression_restriction", "glasses_policy", "ears_visibility", "face_visibility", "headwear_policy", "accessories"],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "The Gambia Immigration Department's official visa page (gid.gov.gm/visa/) was retrieved via curl (bypassing a TLS certificate error that blocked WebFetch). The rendered page only contains a short overview ('Visa Services Overview: Ordinary, Diplomatic, Short Visit... securing a visa to the Gambia is one of the requirements...') with no photo specification text visible in the static HTML — the detailed requirements are likely rendered client-side via JavaScript and were not captured. gambia.gov.gm/immigration-and-visas/ was also fetched directly and confirms only that 'a valid passport and evidence of Yellow fever vaccination card' are required, again with no photo spec. A commonly-repeated third-party claim ('2in x 2in, white background, printed on photo paper, taken in the last 6 months') could not be traced to any accessible official Gambian government page and is excluded rather than reported as verified.",
+    "note_ko": "감비아 이민청 공식 비자 페이지(gid.gov.gm/visa/)는 TLS 인증서 오류로 curl 우회 접속했으나, 정적 HTML에는 '비자 서비스 개요(일반/외교/단기방문)' 수준의 짧은 안내만 있고 사진 규격 관련 텍스트는 없었다(상세 내용이 JavaScript로 렌더링되는 것으로 추정). 감비아 정부 포털(gambia.gov.gm/immigration-and-visas/)도 직접 확인했으나 '유효한 여권과 황열병 예방접종 증명서 필요'라는 일반 요건만 있을 뿐 사진 규격은 없었다. 서드파티에서 반복되는 '2x2인치, 흰 배경, 6개월 이내 촬영' 주장은 공식 출처로 확인되지 않아 제외했다."
+  }
+}

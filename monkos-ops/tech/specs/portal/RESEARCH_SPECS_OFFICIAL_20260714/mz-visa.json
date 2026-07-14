@@ -1,0 +1,32 @@
+{
+  "slug": "mz-visa",
+  "batch": 18,
+  "verified": {
+    "background": {
+      "value": "White background required; photo must be in color",
+      "source_url": "https://usa.embamoc.gov.mz/?page_id=99"
+    },
+    "official_source_url": {
+      "value": "https://usa.embamoc.gov.mz/?page_id=99",
+      "source_url": "https://usa.embamoc.gov.mz/?page_id=99"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note_en": "Confirmed directly via the Embassy of the Republic of Mozambique in Washington, D.C. (usa.embamoc.gov.mz), an official Mozambican government diplomatic mission page: 'Submit two passport size photographs (passport photos must be in color and with a white background).' No dimensions in mm/inches, head-height, expression, glasses, or headwear policy are published on this page. Background='White' matches the current DB value exactly, so no db_conflict is logged. SENAMI (senami.gov.mz), Mozambique's domestic migration authority, publishes a more detailed PDF but could not be reached directly during this pass (see mz-passport.json note) — so no additional fields from that document were added here."
+  }
+}

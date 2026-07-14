@@ -1,0 +1,35 @@
+{
+  "slug": "dj-passport",
+  "batch": 6,
+  "verified": {
+    "validity": {
+      "value": "Photo must be recent, maximum 6 months old (\"1 Recent passport size picture (max. 6 months old)\" / \"1 Photo récente (datée au maximum de 6 mois)\")",
+      "source_url": "https://djiboutiembassyus.org/sites/default/files/documents/BIOMETRIC_PASSPORT_APPLICATION_REQUIREMENTS_AND_FORM.pdf"
+    },
+    "file_spec": {
+      "value": "A recent passport-size photo is submitted with the application (by email, in advance, for review); the final biometric photo and fingerprints are then captured in person at the Embassy during the appointment (this in-person biometric capture step takes about 30 minutes)",
+      "source_url": "https://djiboutiembassyus.org/sites/default/files/documents/BIOMETRIC_PASSPORT_APPLICATION_REQUIREMENTS_AND_FORM.pdf"
+    },
+    "official_source_url": {
+      "value": "https://djiboutiembassyus.org/sites/default/files/documents/BIOMETRIC_PASSPORT_APPLICATION_REQUIREMENTS_AND_FORM.pdf",
+      "source_url": "https://djiboutiembassyus.org/sites/default/files/documents/BIOMETRIC_PASSPORT_APPLICATION_REQUIREMENTS_AND_FORM.pdf"
+    }
+  },
+  "restrictions_i18n": {},
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "note": "Source is the official 'Requirements for a New Biometric Passport for Djibouti Nationals in the United States and Canada' bilingual (English/French) document published by the Embassy of the Republic of Djibouti in Washington, DC (Ministère des Affaires Étrangères et de la Coopération Internationale). It lists a recent passport-size photo (max. 6 months old) as a required document but does not give a numeric cm size, background color, or composition rules — biometric passports for this jurisdiction are issued by Djibouti's National Police based on data captured in person at the Embassy, which may explain the absence of a detailed citizen-facing photo spec. Third-party sites cite 35x35mm/white background/70% head-height figures, but these are excluded per the truthfulness gate as non-official."
+  }
+}
