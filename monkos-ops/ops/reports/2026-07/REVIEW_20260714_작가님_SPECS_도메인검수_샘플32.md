@@ -76,3 +76,13 @@ status: 상시 검수 중 (일괄 게이트 아님)
 
 ---
 검수 완료 시: 통과 슬러그는 ✓, 이상 슬러그는 행 아래 메모. 이후 흐름 — 민아 수거 → 정정 지시 → prod (deploy.sh).
+
+### F. T3 플래그 편입 (7/14 20:47 — 사람 판정 필요)
+
+| ✓ | 슬러그 | 검수 포인트 | 링크 |
+|---|--------|------------|------|
+| ☐ | bh-passport | 정부 PDF 수치 자기모순 — head 38mm vs face 70-80% vs DPI 환산 불일치 (ID카드 스펙 유용 의심) | [en](https://monkos.ai/en/specs/passport/bh) |
+| ☐ | bh-visa | 동일 소스 재사용 — 위와 동일 모순 | [en](https://monkos.ai/en/specs/visa/bh) |
+| ☐ | mt-passport | 몰타 정부 도메인 내부 상충: 40×30/6개월 vs 45×35/3개월 — 어느 페이지가 현행인지 판정 | [en](https://monkos.ai/en/specs/passport/mt) |
+
+- db_conflicts 118건 전체: `monkos-ops/tech/specs/portal/RESEARCH_SPECS_OFFICIAL_20260714/T3_db_conflicts.json` (kg-passport 공식 40×60 vs DB 3.5×4.5 등 — 기계 판정 트랙 우선)
