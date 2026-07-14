@@ -1,0 +1,69 @@
+{
+  "slug": "au-passport",
+  "batch": "t1-additions",
+  "verified": {
+    "size": {
+      "value": "35-40mm wide x 45-50mm high (a range, not fixed dimensions)",
+      "source_url": "https://www.passports.gov.au/help/passport-photos"
+    },
+    "background": {
+      "value": "Plain white or light grey background that contrasts with face",
+      "source_url": "https://www.passports.gov.au/help/passport-photos"
+    },
+    "head_height": {
+      "value": "32-36mm from chin to crown of head",
+      "source_url": "https://www.passports.gov.au/help/passport-photos"
+    },
+    "validity": {
+      "value": "Photo must be less than 6 months old",
+      "source_url": "https://www.passports.gov.au/help/passport-photos"
+    },
+    "file_spec": {
+      "value": "Printed: clear, unedited, high-gloss heavy-weight paper, colour gloss prints. Digital specifications not detailed on main page",
+      "source_url": "https://www.passports.gov.au/help/passport-photos"
+    },
+    "expression_restriction": {
+      "value": "Neutral expression - not smiling, laughing or frowning",
+      "source_url": "https://www.passports.gov.au/help/passport-photos"
+    },
+    "glasses_policy": {
+      "value": "No glasses allowed in passport photos since 1 July 2018. Medical exception only where glasses cannot be removed for medical reasons",
+      "source_url": "https://www.passports.gov.au/help/passport-photos"
+    },
+    "ears_visibility": {
+      "value": "Hair off face so edges of face are visible",
+      "source_url": "https://www.passports.gov.au/help/passport-photos"
+    },
+    "face_visibility": {
+      "value": "Face looking directly at camera, not tilted in any direction. Face centered, edges of face clearly visible. For children over 3: eyes open and facing camera straight on",
+      "source_url": "https://www.passports.gov.au/help/passport-photos"
+    },
+    "official_source_url": {
+      "value": "https://www.passports.gov.au/help/passport-photos",
+      "source_url": "https://www.passports.gov.au/help/passport-photos"
+    },
+    "is_white_background_allowed": {
+      "value": "Yes - plain white is one of the two officially allowed backgrounds (white or light grey)",
+      "source_url": "https://www.passports.gov.au/help/passport-photos"
+    }
+  },
+  "unverified": [
+    "clothing_restriction",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [
+    {
+      "field": "size",
+      "db_value": "3.5×4.5cm",
+      "researched_value": "35-40mm wide x 45-50mm high (official spec is a range, not fixed 35x45mm)",
+      "source_url": "https://www.passports.gov.au/help/passport-photos"
+    },
+    {
+      "field": "background",
+      "db_value": "밝은 회색 (light grey only)",
+      "researched_value": "Plain white OR light grey - white is also officially allowed",
+      "source_url": "https://www.passports.gov.au/help/passport-photos"
+    }
+  ]
+}

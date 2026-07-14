@@ -1,0 +1,64 @@
+{
+  "slug": "us-passport",
+  "batch": "t1-additions",
+  "verified": {
+    "size": {
+      "value": "2x2 inches (51x51mm)",
+      "source_url": "https://travel.state.gov/content/travel/en/passports/how-apply/photos.html"
+    },
+    "background": {
+      "value": "White or off-white, plain, free of shadows, textures, or objects",
+      "source_url": "https://travel.state.gov/content/travel/en/passports/how-apply/photos.html"
+    },
+    "head_height": {
+      "value": "1 to 1-3/8 inches (25-35mm) from bottom of chin to top of head",
+      "source_url": "https://travel.state.gov/content/travel/en/passports/how-apply/photos.html"
+    },
+    "validity": {
+      "value": "Photo must be taken within last 6 months; passport valid 10 years (adult 16+) / 5 years (child under 16)",
+      "source_url": "https://travel.state.gov/content/travel/en/passports/how-apply/photos.html"
+    },
+    "file_spec": {
+      "value": "Printed: matte or glossy photo-quality paper, original only. Digital (online renewal): JPG/JPEG/PNG/HEIC/HEIF, 54KB-10MB. Visa digital: JPEG only, 600x600 to 1200x1200 pixels, max 240KB, 24-bit color sRGB, compression ratio <=20:1",
+      "source_url": "https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/photos/digital-image-requirements.html"
+    },
+    "clothing_restriction": {
+      "value": "No uniforms, camouflage, or wireless devices in/on ears. Remove anything covering face unless for documented religious or medical reasons",
+      "source_url": "https://travel.state.gov/content/travel/en/passports/how-apply/photos.html"
+    },
+    "expression_restriction": {
+      "value": "Neutral facial expression, both eyes open and visible, mouth closed. Natural smile acceptable if eyes open and mouth closed",
+      "source_url": "https://travel.state.gov/content/travel/en/passports/how-apply/photos.html"
+    },
+    "glasses_policy": {
+      "value": "Eyeglasses must be removed. Exception only with documented medical necessity requiring signed doctor's note. Sunglasses and tinted glasses never permitted",
+      "source_url": "https://travel.state.gov/content/travel/en/passports/how-apply/photos.html"
+    },
+    "ears_visibility": {
+      "value": "Full face must be visible; no wireless devices in or on ears; hair cannot obstruct face",
+      "source_url": "https://travel.state.gov/content/travel/en/passports/how-apply/photos.html"
+    },
+    "face_visibility": {
+      "value": "Full face must be visible, directly centered, facing camera. Head fully visible from chin to top of head. No face coverings except documented religious or medical reasons",
+      "source_url": "https://travel.state.gov/content/travel/en/passports/how-apply/photos.html"
+    },
+    "headwear_policy": {
+      "value": "Prohibited except for religious or medical purposes (requires signed statement). If worn: full face must remain visible, no shadows cast, one solid color, no patterns or holes",
+      "source_url": "https://travel.state.gov/content/travel/en/passports/how-apply/photos.html"
+    },
+    "accessories": {
+      "value": "Facial piercings acceptable if not hiding face. Jewelry allowed if not obscuring features. No wireless devices (earbuds, headphones). No face coverings or medical masks",
+      "source_url": "https://travel.state.gov/content/travel/en/passports/how-apply/photos.html"
+    },
+    "official_source_url": {
+      "value": "https://travel.state.gov/content/travel/en/passports/how-apply/photos.html",
+      "source_url": "https://travel.state.gov/content/travel/en/passports/how-apply/photos.html"
+    },
+    "is_white_background_allowed": {
+      "value": "Yes - white or off-white is the REQUIRED background color",
+      "source_url": "https://travel.state.gov/content/travel/en/passports/how-apply/photos.html"
+    }
+  },
+  "unverified": [],
+  "db_conflicts": []
+}

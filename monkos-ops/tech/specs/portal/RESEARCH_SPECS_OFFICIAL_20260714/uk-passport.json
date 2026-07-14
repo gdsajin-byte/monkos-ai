@@ -1,0 +1,64 @@
+{
+  "slug": "uk-passport",
+  "batch": "t1-additions",
+  "verified": {
+    "size": {
+      "value": "45mm high x 35mm wide",
+      "source_url": "https://www.gov.uk/photos-for-passports/photo-requirements"
+    },
+    "background": {
+      "value": "Plain, uniform, light grey or cream (5-10% grey recommended). Accessible standards also list: different shades of white (cream, ivory, vanilla) and light grey. Pure white not recommended due to biometric edge detection issues",
+      "source_url": "https://www.gov.uk/government/publications/passport-photos-guide-for-photographers/guidance-for-photographers"
+    },
+    "head_height": {
+      "value": "29-34mm from bottom of chin to crown of head",
+      "source_url": "https://www.gov.uk/photos-for-passports/photo-requirements"
+    },
+    "validity": {
+      "value": "Photo must be taken within the last month (1 month). Exception: up to 12 months for adults and 6 months for children in delayed applications",
+      "source_url": "https://www.gov.uk/photos-for-passports/photo-requirements"
+    },
+    "file_spec": {
+      "value": "Digital: at least 600x750 pixels, 50KB-10MB, color only (no black and white). Printed: plain white photographic paper, no border, high quality medium/low gloss or matt",
+      "source_url": "https://www.gov.uk/photos-for-passports"
+    },
+    "clothing_restriction": {
+      "value": "Bare shoulders and uniforms acceptable. Reject clothing hiding facial features (high scarves covering chin). Hoods/coat collars acceptable if facial features visible",
+      "source_url": "https://www.gov.uk/government/publications/photographic-standards/photo-standards-accessible"
+    },
+    "expression_restriction": {
+      "value": "Neutral expression (neither frowning nor smiling), mouth closed. Relaxed mouth with slightly visible teeth acceptable. Reject if expression distorts facial shape (wide smile, pouting, frowning). Children under 6 exempt",
+      "source_url": "https://www.gov.uk/government/publications/photographic-standards/photo-standards-accessible"
+    },
+    "glasses_policy": {
+      "value": "Remove glasses to ensure accurate biometric. Dark, tinted, or mirrored glasses must be removed. If worn: both eyes must be clearly visible (white and pupil), frames may cover eye socket/eyelids but not eyes, no glare/reflection covering eyes",
+      "source_url": "https://www.gov.uk/government/publications/passport-photos-guide-for-photographers/guidance-for-photographers"
+    },
+    "ears_visibility": {
+      "value": "No earphones, ear buds, or over-head headphones. Visible hearing aids acceptable. Edges of face must show clearly",
+      "source_url": "https://www.gov.uk/government/publications/photographic-standards/photo-standards-accessible"
+    },
+    "face_visibility": {
+      "value": "Full front view of face and shoulders, squared to camera, centered. Chin and top of head clearly visible. Nothing covering the face. Eyes in top 40-70% of photo (vertical eye band). No tilting",
+      "source_url": "https://www.gov.uk/government/publications/photographic-standards/photo-standards-accessible"
+    },
+    "headwear_policy": {
+      "value": "Not permitted except for religious headwear (if not covering face) or medical head coverings (scarves, bandages for wounds/hair loss). Hair accessories acceptable if facial features clear",
+      "source_url": "https://www.gov.uk/government/publications/photographic-standards/photo-standards-accessible"
+    },
+    "accessories": {
+      "value": "No earphones/headphones. Hearing aids acceptable. Beards and moustaches acceptable. Single-colored bindi acceptable. Permanent tattoos acceptable. Temporary jewelry bindis rejected. Multiple piercings rejected if causing reflection",
+      "source_url": "https://www.gov.uk/government/publications/photographic-standards/photo-standards-accessible"
+    },
+    "official_source_url": {
+      "value": "https://www.gov.uk/photos-for-passports/photo-requirements",
+      "source_url": "https://www.gov.uk/photos-for-passports/photo-requirements"
+    },
+    "is_white_background_allowed": {
+      "value": "Partially - off-white shades (cream, ivory, vanilla) are explicitly allowed per accessible standards. Pure white is not recommended; photographer guide specifies 5-10% grey. Automated biometric edge detection may have difficulty with pure white against pale skin",
+      "source_url": "https://www.gov.uk/government/publications/photographic-standards/photo-standards-accessible"
+    }
+  },
+  "unverified": [],
+  "db_conflicts": []
+}

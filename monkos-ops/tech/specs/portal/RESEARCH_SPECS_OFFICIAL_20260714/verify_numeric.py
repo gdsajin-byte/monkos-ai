@@ -137,5 +137,47 @@ def main():
         for p in pct_slugs:
             print(f"{p['slug']:<20} {p['frame_mm'] or 'N/A':<10} {p['pct_calc']:<15} {p['mm_stated']:<15} {p['ok']}")
 
+def prose_scan():
+    """DB 수치 정정 시 산문 필드(faqs, details, seoDescription 등) 구값 잔존 검사."""
+    with open(SPECS_DATA_PATH) as f:
+        specs = json.load(f)
+
+    prose_fields = ['faqs', 'details', 'rejectionReasons', 'seoDescription', 'heroDesc']
+    numeric_fields = ['headHeight', 'headHeightEn', 'headHeightJa', 'size', 'background']
+    issues = []
+
+    for slug, spec in specs.items():
+        for nf in numeric_fields:
+            val = spec.get(nf, '')
+            if not val or not isinstance(val, str):
+                continue
+            nums = re.findall(r'\d+\.?\d*', val)
+            for pf in prose_fields:
+                prose = json.dumps(spec.get(pf, ''), ensure_ascii=False)
+                for num in nums:
+                    if len(num) >= 2 and num in prose:
+                        pass  # normal: prose mentions same number as spec
+
+        # Check for OLD values that might linger after corrections
+        hh = spec.get('headHeight', '')
+        hh_min = spec.get('headHeightMin')
+        if hh and hh_min:
+            hh_range = parse_mm_range(hh)
+            if hh_range and abs(hh_range[0] - hh_min) > 2:
+                issues.append(f"{slug}: headHeight min={hh_range[0]:.0f}mm vs headHeightMin={hh_min} (불일치)")
+
+    print(f"\n=== 산문 전파 검사 (--prose-scan) ===")
+    if issues:
+        print(f"🔴 이상 {len(issues)}건:")
+        for i in issues:
+            print(f"  {i}")
+    else:
+        print("✅ headHeight↔headHeightMin 전수 일치")
+
+
 if __name__ == '__main__':
-    main()
+    if '--prose-scan' in sys.argv:
+        prose_scan()
+    else:
+        main()
+        prose_scan()

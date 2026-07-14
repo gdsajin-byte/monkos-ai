@@ -1,0 +1,64 @@
+{
+  "slug": "cn-resume",
+  "batch": "t1-additions",
+  "verified": {
+    "size": {
+      "value": "1寸 (1-inch): 25x35mm (295x413px at 300dpi); 2寸 (2-inch): 35x49mm (413x579px at 300dpi). Passport: 33x48mm (separate standard)",
+      "source_url": "https://www.secaiyun.com/docs/id-photo-size-specification-guide-2026-06-08.html"
+    },
+    "background": {
+      "value": "Depends on document type: White (白色) for ID card, passport, driver's license, social security card; Blue (蓝色, RGB 67,142,219) for resume, diploma, work permit, exam registration; Red (红色) for marriage certificate, party credentials",
+      "source_url": "https://www.secaiyun.com/docs/id-photo-size-specification-guide-2026-06-08.html"
+    },
+    "head_height": {
+      "value": "For passport (33x48mm): head width 15-22mm, head height (chin to crown) 28-33mm, crown to top edge 3-5mm, chin to bottom edge minimum 7mm",
+      "source_url": "https://losangeles.china-consulate.gov.cn/chn/lbqw/lszj/hzlxz/202401/t20240103_11216138.htm"
+    },
+    "validity": {
+      "value": "Within 6 months",
+      "source_url": "https://losangeles.china-consulate.gov.cn/chn/lbqw/lszj/hzlxz/202401/t20240103_11216138.htm"
+    },
+    "file_spec": {
+      "value": "JPEG format, 300dpi. 1寸: 295x413px; 2寸: 413x579px. File size 5KB-999KB for digital submissions. Professional photo paper printing required for physical copies",
+      "source_url": "https://www.secaiyun.com/docs/id-photo-size-specification-guide-2026-06-08.html"
+    },
+    "clothing_restriction": {
+      "value": "Dark clothing (偏深色衣服) for contrast with white background. No uniforms for government officials. For resume: formal business attire recommended",
+      "source_url": "https://kh.china-embassy.gov.cn/lsfws/lingshifuwu2/lingshizhengjian1/202407/t20240718_11455858.htm"
+    },
+    "expression_restriction": {
+      "value": "Natural expression, eyes open, lips closed (双唇闭合). Slight smile acceptable for resume photos",
+      "source_url": "https://kh.china-embassy.gov.cn/lsfws/lingshifuwu2/lingshizhengjian1/202407/t20240718_11455858.htm"
+    },
+    "glasses_policy": {
+      "value": "Clear/non-colored lens glasses allowed but frames cannot obscure eyes and no flash reflections. No colored lenses. For resume photos: no glasses recommended",
+      "source_url": "https://kh.china-embassy.gov.cn/lsfws/lingshifuwu2/lingshizhengjian1/202407/t20240718_11455858.htm"
+    },
+    "ears_visibility": {
+      "value": "Both ears visible; no hair covering ears or eyebrows (for passport/ID); no ear accessories",
+      "source_url": "https://kh.china-embassy.gov.cn/lsfws/lingshifuwu2/lingshizhengjian1/202407/t20240718_11455858.htm"
+    },
+    "face_visibility": {
+      "value": "Full face and head visible, clear facial features (五官清晰), frontal view, no shadows on face or background",
+      "source_url": "https://kh.china-embassy.gov.cn/lsfws/lingshifuwu2/lingshizhengjian1/202407/t20240718_11455858.htm"
+    },
+    "headwear_policy": {
+      "value": "No hat or head coverings (无帽). Religious headwear permitted only if face is not obscured",
+      "source_url": "https://kh.china-embassy.gov.cn/lsfws/lingshifuwu2/lingshizhengjian1/202407/t20240718_11455858.htm"
+    },
+    "accessories": {
+      "value": "No ear jewelry or accessories. Hearing aids acceptable. No modifications or composites",
+      "source_url": "https://kh.china-embassy.gov.cn/lsfws/lingshifuwu2/lingshizhengjian1/202407/t20240718_11455858.htm"
+    },
+    "official_source_url": {
+      "value": "https://losangeles.china-consulate.gov.cn/chn/lbqw/lszj/hzlxz/202401/t20240103_11216138.htm",
+      "source_url": "https://losangeles.china-consulate.gov.cn/chn/lbqw/lszj/hzlxz/202401/t20240103_11216138.htm"
+    },
+    "is_white_background_allowed": {
+      "value": "Yes - white is the standard for official ID documents (身份证, passport, driver's license). For resume specifically, blue is conventional but white is also accepted",
+      "source_url": "https://www.secaiyun.com/docs/id-photo-size-specification-guide-2026-06-08.html"
+    }
+  },
+  "unverified": [],
+  "db_conflicts": []
+}

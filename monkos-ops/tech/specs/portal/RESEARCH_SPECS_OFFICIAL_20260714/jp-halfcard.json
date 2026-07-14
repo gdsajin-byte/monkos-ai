@@ -1,0 +1,53 @@
+{
+  "slug": "jp-halfcard",
+  "batch": "t1-additions",
+  "verified": {
+    "size": {
+      "value": "30x40mm (width 30mm x height 40mm). Also written as 3x4cm. JIS standard for resume (履歴書) and residence card (在留カード)",
+      "source_url": "https://www.moj.go.jp/isa/applications/status/photo_info_00002.html"
+    },
+    "background": {
+      "value": "Plain background with no shadows. White is the most standard color; light blue and light grey also accepted for resumes. For residence card: plain without background shadows",
+      "source_url": "https://www.moj.go.jp/isa/applications/status/photo_info_00002.html"
+    },
+    "head_height": {
+      "value": "32-36mm from chin to top of head (for residence card 在留カード). For resume: approximately 30mm head portion with 2.5mm spacing from crown",
+      "source_url": "https://www.moj.go.jp/isa/applications/status/photo_info_00002.html"
+    },
+    "validity": {
+      "value": "Within 3 months of submission (在留カード); within 3 months (resume convention)",
+      "source_url": "https://www.moj.go.jp/isa/applications/status/photo_info_00002.html"
+    },
+    "expression_restriction": {
+      "value": "Neutral expression, facing forward directly (正面を向いたもの). No unfamiliar or exaggerated expressions",
+      "source_url": "https://www.moj.go.jp/isa/applications/status/photo_info_00002.html"
+    },
+    "glasses_policy": {
+      "value": "Allowed if eyes are clearly visible. No thick frames covering eyes, no reflections on lenses",
+      "source_url": "https://www.moj.go.jp/isa/applications/status/photo_info_00002.html"
+    },
+    "face_visibility": {
+      "value": "Full face visible, frontal view, no bangs obscuring eyes, no masks or cloth coverings (except religious/medical with documentation)",
+      "source_url": "https://www.moj.go.jp/isa/applications/status/photo_info_00002.html"
+    },
+    "headwear_policy": {
+      "value": "No hat (無帽). Exception for religious or medical necessity with documentation, but face must not be obscured",
+      "source_url": "https://www.moj.go.jp/isa/applications/status/photo_info_00002.html"
+    },
+    "official_source_url": {
+      "value": "https://www.moj.go.jp/isa/applications/status/photo_info_00002.html",
+      "source_url": "https://www.moj.go.jp/isa/applications/status/photo_info_00002.html"
+    },
+    "is_white_background_allowed": {
+      "value": "Yes - white is the most standard and commonly used background color for Japanese ID/resume photos",
+      "source_url": "https://www.moj.go.jp/isa/applications/status/photo_info_00002.html"
+    }
+  },
+  "unverified": [
+    "file_spec",
+    "clothing_restriction",
+    "ears_visibility",
+    "accessories"
+  ],
+  "db_conflicts": []
+}

@@ -1,0 +1,56 @@
+{
+  "slug": "eu-passport",
+  "batch": "t1-additions",
+  "verified": {
+    "size": {
+      "value": "35x45mm (3.5x4.5cm)",
+      "source_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=celex:32004R2252"
+    },
+    "background": {
+      "value": "Plain white or light grey, no patterns, objects, shadows, or textures. Must provide clear contrast with face for biometric compatibility",
+      "source_url": "https://home-affairs.ec.europa.eu/system/files/2016-12/icao_photograph_guidelines_en.pdf"
+    },
+    "head_height": {
+      "value": "32-36mm (70-80% of photo height)",
+      "source_url": "https://home-affairs.ec.europa.eu/system/files/2016-12/icao_photograph_guidelines_en.pdf"
+    },
+    "validity": {
+      "value": "Photo must be no more than 6 months old",
+      "source_url": "https://home-affairs.ec.europa.eu/system/files/2016-12/icao_photograph_guidelines_en.pdf"
+    },
+    "file_spec": {
+      "value": "600 DPI recommended for printed photos. ICAO 9303 compliant. Photograph paper shall have low roughness, non-structured surface (no pearl or silkscreen effect)",
+      "source_url": "https://home-affairs.ec.europa.eu/system/files/2016-12/icao_photograph_guidelines_en.pdf"
+    },
+    "expression_restriction": {
+      "value": "Neutral expression for facial recognition compatibility",
+      "source_url": "https://home-affairs.ec.europa.eu/system/files/2016-12/icao_photograph_guidelines_en.pdf"
+    },
+    "glasses_policy": {
+      "value": "No glasses recommended for biometric compatibility. Individual member states may vary",
+      "source_url": "https://home-affairs.ec.europa.eu/system/files/2016-12/icao_photograph_guidelines_en.pdf"
+    },
+    "face_visibility": {
+      "value": "Full frontal face visible, compliant with ICAO 9303 machine-readable passport standards",
+      "source_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=celex:32004R2252"
+    },
+    "headwear_policy": {
+      "value": "Not permitted except for religious reasons, and only if full facial features remain clearly visible",
+      "source_url": "https://home-affairs.ec.europa.eu/system/files/2016-12/icao_photograph_guidelines_en.pdf"
+    },
+    "official_source_url": {
+      "value": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=celex:32004R2252",
+      "source_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=celex:32004R2252"
+    },
+    "is_white_background_allowed": {
+      "value": "Yes - white is one of the two standard backgrounds (white or light grey) per ICAO 9303 and EU Regulation 2252/2004",
+      "source_url": "https://home-affairs.ec.europa.eu/system/files/2016-12/icao_photograph_guidelines_en.pdf"
+    }
+  },
+  "unverified": [
+    "clothing_restriction",
+    "ears_visibility",
+    "accessories"
+  ],
+  "db_conflicts": []
+}
