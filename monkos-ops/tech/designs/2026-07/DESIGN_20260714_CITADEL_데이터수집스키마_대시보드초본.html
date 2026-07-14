@@ -1,0 +1,677 @@
+<title>CITADEL — SEO/GEO 데이터 수집 스키마 & 대시보드 초본</title>
+<style>
+  :root {
+    --bg-primary: #F8FAFC;
+    --bg-card: #FFFFFF;
+    --bg-code: #F1F5F9;
+    --text-primary: #0F172A;
+    --text-secondary: #475569;
+    --text-muted: #94A3B8;
+    --border: #E2E8F0;
+    --accent: #06B6D4;
+    --accent-dim: #0891B210;
+    --signal-green: #22C55E;
+    --signal-green-dim: #22C55E18;
+    --signal-amber: #F59E0B;
+    --signal-amber-dim: #F59E0B18;
+    --signal-red: #EF4444;
+    --signal-red-dim: #EF444418;
+    --signal-blue: #3B82F6;
+    --signal-blue-dim: #3B82F618;
+    --flow-google: #4285F4;
+    --flow-naver: #03C75A;
+    --flow-bing: #00809D;
+    --flow-bq: #669DF6;
+    --flow-ga4: #F9AB00;
+    --flow-gsc: #34A853;
+    --shadow-sm: 0 1px 2px rgba(15,23,42,0.06);
+    --shadow-md: 0 4px 12px rgba(15,23,42,0.08);
+    --radius: 8px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg-primary: #0F172A;
+      --bg-card: #1E293B;
+      --bg-code: #334155;
+      --text-primary: #F1F5F9;
+      --text-secondary: #94A3B8;
+      --text-muted: #64748B;
+      --border: #334155;
+      --accent-dim: #0891B220;
+      --signal-green-dim: #22C55E20;
+      --signal-amber-dim: #F59E0B20;
+      --signal-red-dim: #EF444420;
+      --signal-blue-dim: #3B82F620;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg-primary: #0F172A;
+    --bg-card: #1E293B;
+    --bg-code: #334155;
+    --text-primary: #F1F5F9;
+    --text-secondary: #94A3B8;
+    --text-muted: #64748B;
+    --border: #334155;
+    --accent-dim: #0891B220;
+    --signal-green-dim: #22C55E20;
+    --signal-amber-dim: #F59E0B20;
+    --signal-red-dim: #EF444420;
+    --signal-blue-dim: #3B82F620;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+  }
+  :root[data-theme="light"] {
+    --bg-primary: #F8FAFC;
+    --bg-card: #FFFFFF;
+    --bg-code: #F1F5F9;
+    --text-primary: #0F172A;
+    --text-secondary: #475569;
+    --text-muted: #94A3B8;
+    --border: #E2E8F0;
+    --accent-dim: #0891B210;
+    --signal-green-dim: #22C55E18;
+    --signal-amber-dim: #F59E0B18;
+    --signal-red-dim: #EF444418;
+    --signal-blue-dim: #3B82F618;
+    --shadow-sm: 0 1px 2px rgba(15,23,42,0.06);
+    --shadow-md: 0 4px 12px rgba(15,23,42,0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: system-ui, -apple-system, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.5;
+  }
+
+  .page { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
+
+  /* Header */
+  .header { margin-bottom: 32px; }
+  .header-top { display: flex; align-items: baseline; gap: 12px; margin-bottom: 4px; }
+  .header h1 {
+    font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em;
+  }
+  .header .badge {
+    font-size: 0.7rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+    background: var(--accent-dim); color: var(--accent);
+    padding: 3px 8px; border-radius: 4px;
+  }
+  .header .subtitle { font-size: 0.85rem; color: var(--text-muted); }
+
+  /* KPI Strip */
+  .kpi-strip {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px; margin-bottom: 28px;
+  }
+  .kpi {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 16px 18px;
+    box-shadow: var(--shadow-sm);
+  }
+  .kpi-label {
+    font-size: 0.7rem; font-weight: 600; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px;
+  }
+  .kpi-value {
+    font-family: 'SF Mono', ui-monospace, monospace;
+    font-size: 1.6rem; font-weight: 700; font-variant-numeric: tabular-nums;
+  }
+  .kpi-delta { font-size: 0.75rem; margin-top: 2px; }
+  .kpi-delta.up { color: var(--signal-green); }
+  .kpi-delta.down { color: var(--signal-red); }
+  .kpi-delta.flat { color: var(--text-muted); }
+  .kpi .bar {
+    height: 3px; border-radius: 2px; margin-top: 10px;
+    background: var(--border);
+  }
+  .kpi .bar-fill { height: 100%; border-radius: 2px; }
+
+  /* Section */
+  .section-title {
+    font-size: 0.8rem; font-weight: 700; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--text-muted);
+    margin-bottom: 14px; padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* Cards grid */
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px; margin-bottom: 32px; }
+  .card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 20px;
+    box-shadow: var(--shadow-sm);
+  }
+  .card-header {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 14px;
+  }
+  .card-icon {
+    width: 28px; height: 28px; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.85rem; font-weight: 700; color: #fff;
+    flex-shrink: 0;
+  }
+  .card-title { font-size: 0.9rem; font-weight: 600; }
+  .card-subtitle { font-size: 0.72rem; color: var(--text-muted); }
+
+  /* Data table inside cards */
+  .data-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+  .data-table th {
+    text-align: left; font-weight: 600; color: var(--text-muted);
+    font-size: 0.7rem; letter-spacing: 0.04em; text-transform: uppercase;
+    padding: 6px 0; border-bottom: 1px solid var(--border);
+  }
+  .data-table td {
+    padding: 7px 0; border-bottom: 1px solid var(--border);
+    font-variant-numeric: tabular-nums;
+  }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table .num { text-align: right; font-family: 'SF Mono', ui-monospace, monospace; font-size: 0.78rem; }
+
+  /* Status pills */
+  .pill {
+    display: inline-block; font-size: 0.65rem; font-weight: 600;
+    padding: 2px 7px; border-radius: 10px; letter-spacing: 0.03em;
+  }
+  .pill-green { background: var(--signal-green-dim); color: var(--signal-green); }
+  .pill-amber { background: var(--signal-amber-dim); color: var(--signal-amber); }
+  .pill-red { background: var(--signal-red-dim); color: var(--signal-red); }
+  .pill-blue { background: var(--signal-blue-dim); color: var(--signal-blue); }
+
+  /* Flow diagram */
+  .flow-section { margin-bottom: 32px; }
+  .flow-diagram {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 24px;
+    box-shadow: var(--shadow-sm);
+    overflow-x: auto;
+  }
+  .flow-row {
+    display: flex; align-items: stretch; gap: 0; margin-bottom: 16px;
+    min-width: 900px;
+  }
+  .flow-row:last-child { margin-bottom: 0; }
+  .flow-node {
+    flex: 1; padding: 12px 14px; border-radius: 6px;
+    font-size: 0.78rem; line-height: 1.4; position: relative;
+  }
+  .flow-node-title {
+    font-weight: 700; font-size: 0.72rem; letter-spacing: 0.04em;
+    text-transform: uppercase; margin-bottom: 4px;
+  }
+  .flow-node-items { color: var(--text-secondary); font-size: 0.73rem; }
+  .flow-arrow {
+    display: flex; align-items: center; justify-content: center;
+    width: 36px; flex-shrink: 0; color: var(--text-muted); font-size: 1.1rem;
+  }
+
+  .flow-source { background: var(--signal-blue-dim); border: 1px solid var(--signal-blue)30; }
+  .flow-source .flow-node-title { color: var(--signal-blue); }
+  .flow-collect { background: var(--signal-green-dim); border: 1px solid var(--signal-green)30; }
+  .flow-collect .flow-node-title { color: var(--signal-green); }
+  .flow-store { background: var(--signal-amber-dim); border: 1px solid var(--signal-amber)30; }
+  .flow-store .flow-node-title { color: var(--signal-amber); }
+  .flow-output { background: var(--accent-dim); border: 1px solid var(--accent)30; }
+  .flow-output .flow-node-title { color: var(--accent); }
+
+  /* Channel status */
+  .channel-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 10px; margin-bottom: 32px;
+  }
+  .channel {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 12px 14px;
+    box-shadow: var(--shadow-sm);
+  }
+  .channel-dot {
+    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+  }
+  .channel-dot.live { background: var(--signal-green); box-shadow: 0 0 6px var(--signal-green)60; }
+  .channel-dot.ready { background: var(--signal-amber); }
+  .channel-dot.off { background: var(--signal-red); }
+  .channel-name { font-size: 0.82rem; font-weight: 600; flex: 1; }
+  .channel-meta { font-size: 0.68rem; color: var(--text-muted); text-align: right; }
+
+  /* Funnel */
+  .funnel { display: flex; flex-direction: column; gap: 4px; }
+  .funnel-step {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 12px; border-radius: 6px;
+    background: var(--bg-code);
+  }
+  .funnel-bar {
+    height: 6px; border-radius: 3px; background: var(--accent);
+    transition: width 0.3s ease;
+  }
+  .funnel-label { font-size: 0.75rem; font-weight: 600; min-width: 110px; }
+  .funnel-value {
+    font-family: 'SF Mono', ui-monospace, monospace;
+    font-size: 0.75rem; min-width: 40px; text-align: right;
+  }
+  .funnel-bar-wrap { flex: 1; background: var(--border); border-radius: 3px; height: 6px; }
+
+  /* Footer */
+  .footer { text-align: center; padding: 20px 0; color: var(--text-muted); font-size: 0.7rem; }
+</style>
+
+<div class="page">
+  <!-- Header -->
+  <div class="header">
+    <div class="header-top">
+      <h1>CITADEL</h1>
+      <span class="badge">Dashboard v0.1</span>
+    </div>
+    <div class="subtitle">SEO / GEO / AEO 데이터 수집 스키마 — 2026-07-14 기준 현행 인프라 전수 실측</div>
+  </div>
+
+  <!-- KPI Strip -->
+  <div class="kpi-strip">
+    <div class="kpi">
+      <div class="kpi-label">수집 채널</div>
+      <div class="kpi-value">11</div>
+      <div class="kpi-delta flat">7 작동 · 1 키만 · 3 신규</div>
+      <div class="bar"><div class="bar-fill" style="width:64%;background:var(--signal-green)"></div></div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">GSC 클릭 (28d)</div>
+      <div class="kpi-value">85</div>
+      <div class="kpi-delta up">노출 1,784</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">GA4 세션 (7d)</div>
+      <div class="kpi-value">41</div>
+      <div class="kpi-delta flat">신규 35</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Purchase</div>
+      <div class="kpi-value" style="color:var(--signal-amber)">계측 복구</div>
+      <div class="kpi-delta flat">7/14 prod rev 465</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">SM 시크릿</div>
+      <div class="kpi-value">44</div>
+      <div class="kpi-delta up">+3 오늘</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">GH Secrets</div>
+      <div class="kpi-value">18</div>
+      <div class="kpi-delta up">+6 동기</div>
+    </div>
+  </div>
+
+  <!-- DATA FLOW SCHEMA -->
+  <div class="flow-section">
+    <div class="section-title">데이터 수집 총 동선 (Source → Collect → Store → Output)</div>
+    <div class="flow-diagram">
+
+      <!-- Row 1: Search Engines -->
+      <div class="flow-row">
+        <div class="flow-node flow-source" style="flex:1.5">
+          <div class="flow-node-title">Source: 검색 엔진</div>
+          <div class="flow-node-items">
+            Google (GSC API) · Bing (WMT API) · Naver (서치어드바이저)
+          </div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node flow-collect">
+          <div class="flow-node-title">Collect: daily_briefing.py</div>
+          <div class="flow-node-items">
+            클릭·노출·CTR·순위 · 디바이스 · searchAppearance · URL Inspection
+          </div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node flow-store">
+          <div class="flow-node-title">Store: GitHub md + Issue</div>
+          <div class="flow-node-items">
+            BRIEFING_YYYYMMDD.md<br>GitHub Issue #일일보고
+          </div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node flow-output" style="flex:0.8">
+          <div class="flow-node-title">Output</div>
+          <div class="flow-node-items">
+            Telegram 알림<br>E2E 민아 판독<br>쌍아/작가님 세션
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 2: Analytics -->
+      <div class="flow-row">
+        <div class="flow-node flow-source" style="flex:1.5">
+          <div class="flow-node-title">Source: 유저 행동</div>
+          <div class="flow-node-items">
+            GA4 (Data API + Realtime) · BQ monkos_tracking
+          </div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node flow-collect">
+          <div class="flow-node-title">Collect: 이중 계측</div>
+          <div class="flow-node-items">
+            GA4: 세션·퍼널·이탈률·CWV<br>BQ: page_view·referrer·generate·purchase + identity_map
+          </div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node flow-store">
+          <div class="flow-node-title">Store: GA4 + BigQuery</div>
+          <div class="flow-node-items">
+            GA4 속성 521406894<br>BQ monkos_tracking.events<br>BQ identity_map
+          </div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node flow-output" style="flex:0.8">
+          <div class="flow-node-title">Output</div>
+          <div class="flow-node-items">
+            대시보드 API 5종<br>daily_briefing<br>MCP 직접 조회
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 3: Keywords -->
+      <div class="flow-row">
+        <div class="flow-node flow-source" style="flex:1.5">
+          <div class="flow-node-title">Source: 키워드 인텔</div>
+          <div class="flow-node-items">
+            Naver 검색광고 API · Naver DataLab · Bing Keyword Stats · PageSpeed
+          </div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node flow-collect">
+          <div class="flow-node-title">Collect: daily_briefing.py</div>
+          <div class="flow-node-items">
+            월간 검색량(PC/모바일) · 트렌드 추이 · CPC · CWV (LCP/INP/CLS)
+          </div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node flow-store">
+          <div class="flow-node-title">Store: 브리핑 md</div>
+          <div class="flow-node-items">
+            키워드 시계열 (향후 BQ/Firestore 이관)
+          </div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node flow-output" style="flex:0.8">
+          <div class="flow-node-title">Output</div>
+          <div class="flow-node-items">
+            콘텐츠 전략<br>vol36 보강 판단<br>경쟁 포지셔닝
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 4: Outbound (색인) -->
+      <div class="flow-row">
+        <div class="flow-node flow-output" style="flex:1.5">
+          <div class="flow-node-title">Outbound: 색인 요청</div>
+          <div class="flow-node-items">
+            콘텐츠 발행/수정 → seo.js
+          </div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node flow-collect">
+          <div class="flow-node-title">Push: 이중 통지</div>
+          <div class="flow-node-items">
+            Google Indexing API (URL_UPDATED)<br>IndexNow (5엔진 동시)
+          </div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node flow-source">
+          <div class="flow-node-title">Target: 검색 엔진</div>
+          <div class="flow-node-items">
+            Google · Bing · Naver · Yandex · Seznam · Yep
+          </div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node flow-store" style="flex:0.8">
+          <div class="flow-node-title">피드백 루프</div>
+          <div class="flow-node-items">
+            URL Inspection<br>색인 현황 추적<br><span class="pill pill-amber">미구현</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Channel Status -->
+  <div class="section-title">채널별 수집 상태</div>
+  <div class="channel-grid">
+    <div class="channel">
+      <div class="channel-dot live"></div>
+      <div class="channel-name">GSC Search Analytics</div>
+      <div class="channel-meta">매일 05:00 · 확장됨</div>
+    </div>
+    <div class="channel">
+      <div class="channel-dot live"></div>
+      <div class="channel-name">GA4 Data API</div>
+      <div class="channel-meta">매일 05:00 · 확장됨</div>
+    </div>
+    <div class="channel">
+      <div class="channel-dot live"></div>
+      <div class="channel-name">Google Indexing API</div>
+      <div class="channel-meta">실시간 · seo.js</div>
+    </div>
+    <div class="channel">
+      <div class="channel-dot live"></div>
+      <div class="channel-name">IndexNow (5엔진)</div>
+      <div class="channel-meta">실시간 · seo.js</div>
+    </div>
+    <div class="channel">
+      <div class="channel-dot live"></div>
+      <div class="channel-name">BQ User Tracking</div>
+      <div class="channel-meta">실시간 · tracking.js</div>
+    </div>
+    <div class="channel">
+      <div class="channel-dot live"></div>
+      <div class="channel-name">AI Referral (GA4)</div>
+      <div class="channel-meta">실시간 · render-shell.js</div>
+    </div>
+    <div class="channel">
+      <div class="channel-dot live"></div>
+      <div class="channel-name">SEO Health Check</div>
+      <div class="channel-meta">매일 05:00 · 8 URL</div>
+    </div>
+    <div class="channel">
+      <div class="channel-dot ready"></div>
+      <div class="channel-name">Naver 검색광고 API</div>
+      <div class="channel-meta">키 등록 6/20 · 코드 7/14</div>
+    </div>
+    <div class="channel">
+      <div class="channel-dot ready"></div>
+      <div class="channel-name">Naver DataLab</div>
+      <div class="channel-meta">키 등록 7/14 · 코드 7/14</div>
+    </div>
+    <div class="channel">
+      <div class="channel-dot ready"></div>
+      <div class="channel-name">Bing WMT API</div>
+      <div class="channel-meta">키 등록 7/14 · 코드 7/14</div>
+    </div>
+    <div class="channel">
+      <div class="channel-dot ready"></div>
+      <div class="channel-name">PageSpeed Insights</div>
+      <div class="channel-meta">API 활성 · 코드 7/14</div>
+    </div>
+  </div>
+
+  <!-- Detail Cards -->
+  <div class="cards">
+    <!-- 검색 유입 -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon" style="background:var(--flow-google)">G</div>
+        <div>
+          <div class="card-title">검색 유입 (Google + Bing + Naver)</div>
+          <div class="card-subtitle">GSC 28일 실측 + Bing WMT + Naver DataLab</div>
+        </div>
+      </div>
+      <table class="data-table">
+        <tr><th>채널</th><th>키워드</th><th class="num">월간 볼륨</th><th class="num">순위</th></tr>
+        <tr><td><span class="pill pill-green">Google</span></td><td>취업사진 안경</td><td class="num">70</td><td class="num">1.0</td></tr>
+        <tr><td><span class="pill pill-green">Google</span></td><td>ai 증명사진</td><td class="num">—</td><td class="num">8.5</td></tr>
+        <tr><td><span class="pill pill-green">Naver</span> </td><td>증명사진</td><td class="num">53,210</td><td class="num">—</td></tr>
+        <tr><td><span class="pill pill-blue">Bing</span></td><td>(48h 대기)</td><td class="num">—</td><td class="num">—</td></tr>
+      </table>
+    </div>
+
+    <!-- 유저 퍼널 -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon" style="background:var(--flow-ga4)">F</div>
+        <div>
+          <div class="card-title">유저 퍼널 (GA4 + BQ)</div>
+          <div class="card-subtitle">specs 서비스 6단계 전환</div>
+        </div>
+      </div>
+      <div class="funnel">
+        <div class="funnel-step">
+          <div class="funnel-label">spec_select</div>
+          <div class="funnel-bar-wrap"><div class="funnel-bar" style="width:100%"></div></div>
+          <div class="funnel-value">31</div>
+        </div>
+        <div class="funnel-step">
+          <div class="funnel-label">photo_upload</div>
+          <div class="funnel-bar-wrap"><div class="funnel-bar" style="width:42%"></div></div>
+          <div class="funnel-value">13</div>
+        </div>
+        <div class="funnel-step">
+          <div class="funnel-label">generate_click</div>
+          <div class="funnel-bar-wrap"><div class="funnel-bar" style="width:16%"></div></div>
+          <div class="funnel-value">5</div>
+        </div>
+        <div class="funnel-step">
+          <div class="funnel-label">preview_view</div>
+          <div class="funnel-bar-wrap"><div class="funnel-bar" style="width:16%"></div></div>
+          <div class="funnel-value">5</div>
+        </div>
+        <div class="funnel-step">
+          <div class="funnel-label">begin_checkout</div>
+          <div class="funnel-bar-wrap"><div class="funnel-bar" style="width:0%;background:var(--signal-red)"></div></div>
+          <div class="funnel-value" style="color:var(--signal-amber)">복구</div>
+        </div>
+        <div class="funnel-step">
+          <div class="funnel-label">purchase</div>
+          <div class="funnel-bar-wrap"><div class="funnel-bar" style="width:0%;background:var(--signal-red)"></div></div>
+          <div class="funnel-value" style="color:var(--signal-amber)">복구</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BQ 유저 동선 -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon" style="background:var(--flow-bq)">B</div>
+        <div>
+          <div class="card-title">유저 동선 (BigQuery)</div>
+          <div class="card-subtitle">monkos_tracking.events — 비가입자 포함 전수</div>
+        </div>
+      </div>
+      <table class="data-table">
+        <tr><th>이벤트</th><th>수집 데이터</th><th class="num">상태</th></tr>
+        <tr><td>page_view</td><td>referrer, path, lang, region</td><td class="num"><span class="pill pill-green">실시간</span></td></tr>
+        <tr><td>api_generate</td><td>gate, slug, track</td><td class="num"><span class="pill pill-green">실시간</span></td></tr>
+        <tr><td>auth_login</td><td>provider, acquisition</td><td class="num"><span class="pill pill-green">실시간</span></td></tr>
+        <tr><td>credit_charge</td><td>amount, provider</td><td class="num"><span class="pill pill-green">실시간</span></td></tr>
+        <tr><td>identity_map</td><td>session_id ↔ user_id</td><td class="num"><span class="pill pill-green">실시간</span></td></tr>
+      </table>
+    </div>
+
+    <!-- 대시보드 API -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon" style="background:var(--accent)">A</div>
+        <div>
+          <div class="card-title">어드민 대시보드 API</div>
+          <div class="card-subtitle">portal /api/admin/dashboard/* — BQ 기반</div>
+        </div>
+      </div>
+      <table class="data-table">
+        <tr><th>엔드포인트</th><th>데이터</th><th class="num">상태</th></tr>
+        <tr><td>/summary</td><td>총 유저·세션·생성·크레딧</td><td class="num"><span class="pill pill-green">가동</span></td></tr>
+        <tr><td>/users</td><td>유저 목록·가입일</td><td class="num"><span class="pill pill-green">가동</span></td></tr>
+        <tr><td>/users360</td><td>개별 유저 전체 이력</td><td class="num"><span class="pill pill-green">가동</span></td></tr>
+        <tr><td>/credits</td><td>크레딧 충전·차감 이력</td><td class="num"><span class="pill pill-green">가동</span></td></tr>
+        <tr><td>/traffic</td><td>referrer별 방문·퍼널</td><td class="num"><span class="pill pill-green">가동</span></td></tr>
+      </table>
+    </div>
+
+    <!-- MCP 도구 -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon" style="background:#8B5CF6">M</div>
+        <div>
+          <div class="card-title">MCP 에이전트 직접 조회</div>
+          <div class="card-subtitle">.mcp.json 등록 6개 서버</div>
+        </div>
+      </div>
+      <table class="data-table">
+        <tr><th>MCP 서버</th><th>도구</th><th class="num">상태</th></tr>
+        <tr><td>monk-retrieval</td><td>search/lookup/relations/stats</td><td class="num"><span class="pill pill-green">복구</span></td></tr>
+        <tr><td>google-analytics</td><td>GA4 직접 쿼리</td><td class="num"><span class="pill pill-amber">래퍼</span></td></tr>
+        <tr><td>google-search-console</td><td>GSC 직접 쿼리</td><td class="num"><span class="pill pill-amber">래퍼</span></td></tr>
+        <tr><td>playwright</td><td>CDP 브라우저</td><td class="num"><span class="pill pill-green">가동</span></td></tr>
+        <tr><td>cloudflare</td><td>DNS 관리</td><td class="num"><span class="pill pill-green">가동</span></td></tr>
+        <tr><td>google-docs</td><td>문서 접근</td><td class="num"><span class="pill pill-green">가동</span></td></tr>
+      </table>
+    </div>
+
+    <!-- 시크릿 인벤토리 -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon" style="background:#EF4444">S</div>
+        <div>
+          <div class="card-title">시크릿 인벤토리</div>
+          <div class="card-subtitle">SM 44건 · GH 18건 · 자동 감사 활성</div>
+        </div>
+      </div>
+      <table class="data-table">
+        <tr><th>저장소</th><th class="num">등록</th><th class="num">인벤토리</th><th class="num">상태</th></tr>
+        <tr><td>GCP Secret Manager</td><td class="num">44</td><td class="num">44</td><td class="num"><span class="pill pill-green">정합</span></td></tr>
+        <tr><td>GitHub Secrets</td><td class="num">18</td><td class="num">18</td><td class="num"><span class="pill pill-green">동기</span></td></tr>
+        <tr><td>.env (설정값)</td><td class="num">10</td><td class="num">10</td><td class="num"><span class="pill pill-green">정합</span></td></tr>
+        <tr><td>audit_secrets.sh</td><td class="num">—</td><td class="num">—</td><td class="num"><span class="pill pill-green">신설</span></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- 미구현 / 로드맵 -->
+  <div class="section-title">미구현 · 로드맵</div>
+  <div class="channel-grid">
+    <div class="channel">
+      <div class="channel-dot off"></div>
+      <div class="channel-name">BQ → 대시보드 시각화</div>
+      <div class="channel-meta">referrer별 동선 대시보드</div>
+    </div>
+    <div class="channel">
+      <div class="channel-dot off"></div>
+      <div class="channel-name">색인 피드백 루프</div>
+      <div class="channel-meta">IndexNow 발송 → 색인 확인</div>
+    </div>
+    <div class="channel">
+      <div class="channel-dot off"></div>
+      <div class="channel-name">키워드 시계열 DB</div>
+      <div class="channel-meta">BQ/Firestore 이관</div>
+    </div>
+    <div class="channel">
+      <div class="channel-dot off"></div>
+      <div class="channel-name">경쟁사 모니터링</div>
+      <div class="channel-meta">Ahrefs MCP 검토 시</div>
+    </div>
+    <div class="channel">
+      <div class="channel-dot off"></div>
+      <div class="channel-name">AI 인용 추적</div>
+      <div class="channel-meta">ChatGPT/Perplexity 인용 모니터</div>
+    </div>
+    <div class="channel">
+      <div class="channel-dot off"></div>
+      <div class="channel-name">Naver 서치어드바이저</div>
+      <div class="channel-meta">API 없음 · 월 1회 수동</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    CITADEL v0.1 — MONKOS SEO/GEO/AEO 데이터 수집 인프라 · 2026-07-14 M1/쌍아 설계
+  </div>
+</div>
