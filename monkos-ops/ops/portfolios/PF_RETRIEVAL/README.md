@@ -49,6 +49,8 @@ created: 2026-06-14
 | 06/20 | iMac/막내1 | **P2 의미검색 구현** — Vertex AI embedding(3232건)+하이브리드 검색(BM25+Vector RRF)+증분 캐시 | embeddings.js·build_index.js·search.js 확장+COMPLETION | ✅ |
 | 06/20 | iMac/막내1 | **P3 MCP 서버 구현** — lib.js 모듈화+mcp_server.js 4도구(search/lookup/relations/stats)+.mcp.json 등록 | lib.js·mcp_server.js 신규+search.js 리팩토링+COMPLETION | ✅ |
 | 06/21 | iMac/쌍아 | PF_STYLER·PF_INFRA 신설 → 인덱스 리빌드 (3252문서, 37PF, 523링크) | build_index.js 실행 | ✅ |
+| 07/14 | M1/막내3 | **M1 DB 리빌드 + MCP 정규화** — 3,623문서/41PF/710링크. .mcp.json 래퍼 전환. rules/mcp-tools.md + skills 3개 신설. mk-push.sh 실패 가시화 | 36e3e959 | ✅ |
+| 07/14 | M1/쌍아 | **P3 운용 실적 첫 건** — PF 필터·관계맵·BM25 전부 작동 확인. "MCP impersonation" 검색으로 4월 SA 임퍼소네이션 지시서(ORDER_20260405) 발굴 = 사문화가 아니었으면 오늘 논의 3개월 이력을 즉시 찾았을 실증. 한국어 BM25는 형태소 미지원으로 실패 → 벡터 임베딩 리빌드 필요 | CLI 실측 | ✅ |
 | 07/14 | M1/쌍아 | **🔴 전면 사문화 판정** — 6/21 이후 MCP 도구 호출 0건(전 디바이스), M1 monk_index.db 미존재(빌드 안 됨), GA4/GSC MCP도 사문화(크리덴셜 iMac 경로 하드코딩으로 M1 불가). mk-push.sh 리빌드 실패도 `\|\| echo`로 무시되어 인지 안 됨. 원인: ①DB가 .gitignore→디바이스 전파 불가 ②.mcp.json 크리덴셜 iMac 종속 ③에이전트 습관적 미사용(grep/Read 우회). **긴급 어젠다: 크리덴셜 정규화 + M1 DB 빌드 + rules/skills 강제 경로 필요** | — | 🔴 긴급 |
 
 ---
