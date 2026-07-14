@@ -1,0 +1,35 @@
+<!DOCTYPE html><html><head><meta charset="utf-8">
+<!--
+MONKOS 블로그 대표 썸네일 공용 템플릿 "피치 2.0"
+- 승격: 2026-07-14 작가님 승인 (vol36 리뉴얼 B안 → 시리즈 공용)
+- 규격: 1280×670 (og 1.91:1 정합 — og:image로 그대로 사용 가능)
+- 치환 필드 4곳: {{BADGE}} 상단 필 배지 / {{TITLE_L1}}·{{TITLE_L2}} 헤드라인 2행(L2에 하이라이트) / {{SUB}} 서브카피
+- 렌더:
+  "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless --disable-gpu \
+    --screenshot=out.png --window-size=1280,670 --hide-scrollbars "file://$(pwd)/이파일.html"
+  이후 jpg 변환: sips -s format jpeg -s formatOptions 85 out.png --out banner.jpg
+- 업로드 관례: gs://monk-ai-images/blog/{Date.now()}_banner_{언어}_{slug}_v{n}.jpg (contentType image/jpeg, public)
+- 폰트: Apple SD Gothic Neo (macOS 시스템) — 렌더 머신 macOS 전제
+-->
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{width:1280px;height:670px;overflow:hidden;font-family:"Apple SD Gothic Neo",-apple-system,sans-serif}
+.stage{position:relative;width:1280px;height:670px;background:linear-gradient(135deg,#fdeadb 0%,#f7d9c0 100%);overflow:hidden}
+.glyph{position:absolute;right:-120px;bottom:-150px;display:flex;align-items:center;opacity:.28}
+.lens{width:340px;height:310px;border:22px solid #b5754c;border-radius:48%}
+.bridge{width:60px;height:22px;background:#b5754c;border-radius:10px;margin:0 -3px;transform:translateY(-90px)}
+.badge{position:absolute;left:80px;top:96px;background:#fff;color:#a05f38;font-size:26px;font-weight:800;padding:14px 30px;border-radius:40px;letter-spacing:2px;box-shadow:0 4px 14px rgba(160,95,56,.18)}
+h1{position:absolute;left:80px;top:196px;color:#38271c;font-size:92px;line-height:1.2;font-weight:800;letter-spacing:-1.5px}
+h1 .hl{background:linear-gradient(transparent 62%, #ffc79e 62%)}
+.sub{position:absolute;left:80px;top:452px;color:#8a6247;font-size:30px;font-weight:600}
+.brand{position:absolute;right:72px;bottom:52px;color:#a05f38;font-size:30px;font-weight:800;letter-spacing:2px}
+.topline{position:absolute;left:0;top:0;width:1280px;height:12px;background:#d99b6c}
+/* 주제 글리프(.glyph)는 글마다 교체 가능 — 안경 외 주제면 이 블록만 교체. 유지 시 브랜드 연속성 우선 */
+</style></head><body><div class="stage">
+<div class="topline"></div>
+<div class="glyph"><div class="lens"></div><div class="bridge"></div><div class="lens"></div></div>
+<div class="badge">{{BADGE}}</div>
+<h1>{{TITLE_L1}}<br><span class="hl">{{TITLE_L2}}</span></h1>
+<div class="sub">{{SUB}}</div>
+<div class="brand">MONKOS.ai</div>
+</div></body></html>

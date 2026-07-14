@@ -78,6 +78,7 @@ status: completed (merged → PF_AUTOPILOT)
 | 04/11 | 민아 | 축2 (SEO 교정) WebFetch 실측 — HTML→markdown 변환 과정에서 `<head>` 메타태그(canonical/hreflang/robots) 전량 소실. **WebFetch는 SEO 엄밀 진단 부적합**. 원인은 네트워크가 아니라 도구 출력 스키마 | 실측 결과 | ⚠️ |
 | 04/11 | 민아 | 축1 (GSC) MCP 실측 — `/Users/jeong-kyushin/.config/gcloud/adc_impersonated.json` 경로 ENOENT. **M1 민아 세션의 GSC MCP 임퍼소네이션 경로가 엉뚱한 홈디렉토리를 가리킴**. PF_BRIEF와 독립된 설정 사고 | 실측 결과 | 🚨 |
 | 04/11 | 민아 | **근본 원인 재정정** — 쌍아 판정은 3개의 이질 문제(① bash curl 범위 과확장 ② WebFetch 출력 한계 ③ GSC MCP 경로 오류)를 "curl 차단" 뭉텅이로 합친 오진단. 샌드박스 네트워크는 원인 아님 | 본 세션 로그 | ✅ |
+| 07/14 | M1/민아 | **4/11 🚨 GSC MCP 경로 사고 — M1 우회 경로 확립** — gdsajin ADC로 `yong-a-orchestrator` SA 임퍼소네이션(webmasters.readonly+analytics.readonly) REST 직조회 성공 (GSC 200 + GA4 property 521406894 실측). monk-image-engine은 TokenCreator 부재로 임퍼소네이션 불가 확인 → GSC MCP 실인증 SA = yong-a. 항구 픽스 2안(.mcp.json ${HOME}화 / M1 로컬 adc_impersonated.json 생성)은 쌍아 지시서 제안 | [REPORT](../../reports/2026-07/REPORT_20260714_M1민아_GSC_GA4동향_헤드텀v2정합.md) §6 | ⏳ (항구 픽스 쌍아) |
 
 ---
 

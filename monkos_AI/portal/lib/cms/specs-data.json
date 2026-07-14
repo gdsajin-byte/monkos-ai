@@ -947,7 +947,7 @@
     "background": "흰색",
     "backgroundEn": "White",
     "backgroundJa": "白",
-    "headHeight": "2.5~3.0cm",
+    "headHeight": "",
     "headHeightEn": "",
     "headHeightJa": "",
     "validity": "",
@@ -956,34 +956,34 @@
     "fileSpec": "",
     "fileSpecEn": "",
     "fileSpecJa": "",
-    "standard": "ICAO 9303",
+    "standard": "",
     "continent": "asia",
     "details": {
-      "ko": "ICAO 9303 기준을 따릅니다. 흰색 배경, 정면 응시, 무표정.",
-      "ja": "ICAO 9303基準に準拠。白背景、正面、無表情。",
-      "en": "Follows ICAO 9303 standard. White background, frontal view, neutral expression."
+      "ko": "반명함은 이력서·학생증 등에 쓰이는 규격으로, 여권과 달리 얼굴 크기(머리 높이)에 공식 규정이 없습니다. 상반신을 여유 있게 담아 전체 비율이 좋아 보이게 크롭하는 것이 관례이며, 정장 타이 라인이나 교복 명찰·학교 엠블럼까지 노출하기도 합니다. 배경은 흰색이 표준이고, 자연스러운 표정이 허용됩니다.",
+      "ja": "半名刺判は履歴書や学生証などに使われる韓国の規格で、パスポートと異なり顔の大きさ（頭部の高さ）に公式規定はありません。上半身をバランスよく収めるのが慣例で、スーツのネクタイラインや制服の名札・校章まで写す場合もあります。背景は白が標準で、自然な表情が許容されます。",
+      "en": "The Korean half-size portrait is used for resumes and student IDs. Unlike passport photos, there is no official head-height regulation — the convention is a well-balanced upper-body crop, often showing the suit tie line or even a school uniform name tag and emblem. A white background is standard, and a natural expression is acceptable."
     },
     "rejectionReasons": {
       "ko": [
-        "배경 불균일",
-        "머리 기울어짐",
-        "사이즈 불일치",
-        "그림자 감지",
-        "표정 부적합"
+        "배경 불균일·그림자",
+        "초점 흐림·해상도 미달",
+        "얼굴 과대 확대(비율 부조화)",
+        "과도한 보정",
+        "사이즈 불일치"
       ],
       "ja": [
-        "背景の不均一",
-        "頭の傾き",
-        "サイズ不一致",
-        "影の検出",
-        "表情不適合"
+        "背景の不均一・影",
+        "ピンボケ・解像度不足",
+        "顔の過度な拡大（バランス不良）",
+        "過度なレタッチ",
+        "サイズ不一致"
       ],
       "en": [
-        "Uneven background",
-        "Head tilt",
-        "Wrong size",
-        "Shadow detected",
-        "Improper expression"
+        "Uneven background or shadows",
+        "Blurry or low resolution",
+        "Face cropped too large (poor balance)",
+        "Excessive retouching",
+        "Wrong size"
       ]
     },
     "priority": 12,
@@ -1001,6 +1001,10 @@
         {
           "q": "대한민국 반명함 사진 배경색 규정은?",
           "a": "대한민국 반명함 사진은 흰색 배경이 필요합니다. 그림자나 무늬가 있으면 반려될 수 있습니다."
+        },
+        {
+          "q": "반명함 사진에 얼굴 크기(머리 높이) 규정이 있나요?",
+          "a": "없습니다. 여권사진과 달리 반명함은 얼굴 크기에 공식 규정이 없고, 상반신 비율이 좋아 보이는 프레임으로 크롭하는 것이 관례입니다. 얼굴을 상대적으로 작게 잡아 정장 타이 라인, 교복 명찰이나 학교 엠블럼까지 담기도 합니다."
         }
       ],
       "en": [
@@ -1015,6 +1019,10 @@
         {
           "q": "What is the background color for a South Korea Half-size Portrait photo?",
           "a": "A South Korea Half-size Portrait photo requires a White background. Shadows or patterns may cause rejection."
+        },
+        {
+          "q": "Is there a head-size regulation for the Korean half-size portrait?",
+          "a": "No. Unlike passport photos, the half-size portrait has no official head-height rule — it is conventionally cropped as a well-balanced upper-body frame, with the face relatively smaller, sometimes showing the suit tie line or a school uniform name tag and emblem."
         }
       ],
       "ja": [
@@ -1029,6 +1037,10 @@
         {
           "q": "韓国の半名刺判写真の背景色の規定は？",
           "a": "韓国の半名刺判写真は白の背景が必要です。影や模様があると不合格になる場合があります。"
+        },
+        {
+          "q": "半名刺判写真に顔の大きさ（頭部の高さ）の規定はありますか？",
+          "a": "ありません。パスポート写真と異なり公式規定がなく、上半身をバランスよく収めるクロップが慣例です。顔を相対的に小さめにし、スーツのネクタイラインや制服の名札・校章まで写す場合もあります。"
         }
       ]
     },
