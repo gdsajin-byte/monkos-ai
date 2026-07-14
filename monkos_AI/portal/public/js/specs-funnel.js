@@ -887,7 +887,7 @@
       var d = res.d;
       pay.orderId = d.orderId; pay.token = null; pay.remaining = null; pay.consumed = false;
       // orderId 확보 후 주문 단위 1회 발화 — 에러 후 재클릭 중복 방지 + purchase와 쌍 정합
-      gaTrackOrder('begin_checkout', d.orderId, { payment_provider: GA_PAY.payment_provider, currency: GA_PAY.currency, value: GA_PAY.value });
+      gaTrackOrder('begin_checkout', d.orderId, { payment_provider: GA_PAY.payment_provider, currency: GA_PAY.currency, value: GA_PAY.value, transport_type: 'beacon' });
       persistOrder();
       // 이미지 저장은 검수 통과 시점에 선행 완료 — 여기서 캔버스 압축을 돌리면
       // user activation이 만료돼 토스 결제창이 팝업 차단됨 (2026-07-05 E2E 실패 원인)
