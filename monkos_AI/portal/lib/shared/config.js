@@ -118,12 +118,12 @@ export const TELEGRAM_TEAM_API = `https://api.telegram.org/bot${TELEGRAM_TEAM_BO
 
 // === 크레딧 매핑 ===
 export const VARIANT_CREDITS = {
-  // Global USD 상품 (store#415328, ⚠️ test mode ID — 라이브에 미존재. 글로벌USD통합 기안(07-05) 실행 시 라이브 ID로 교체)
-  '1825695': 40,    // 40 credits: $3.90
-  '1825706': 80,    // 80 credits: $6.90
-  '1825708': 130,   // 130 credits: $9.90
-  '1825711': 420,   // 420 credits: $26.90
-  '1825713': 750,   // 750 credits: $39.90
+  // Global USD 상품 (store#415328, 라이브 published)
+  '1909373': 40,    // topup_40: $3.90, 40c
+  '1909383': 80,    // single_80: $6.90, 80c
+  '1909386': 130,   // package_130: $9.90, 130c
+  '1909388': 420,   // package_420: $26.90, 420c
+  '1909390': 750,   // package_750: $39.90, 750c
   // JP ¥ 상품 (store#290457, 라이브 published) — 06-23 전환(667ccdd6) 때 소실 → 07-05 응급 복원.
   // 미복원 시 JP 충전 결제가 "돈만 받고 크레딧 미지급"이 됨. 글로벌USD통합 완료 전까지 유지.
   '1382355': 10,    // topup_10: ¥150, 10c+0

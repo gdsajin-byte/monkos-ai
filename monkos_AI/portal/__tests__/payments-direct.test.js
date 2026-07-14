@@ -112,7 +112,7 @@ jest.unstable_mockModule('../lib/shared/config.js', () => ({
   SINGLE_DOWNLOAD_VARIANTS: new Set([VARIANT_SINGLE, VARIANT_SINGLE_JP]),
   TOSS_SECRET_KEY: 'test_sk_dummy',
   TOSS_CLIENT_KEY: 'test_ck_dummy',
-  VARIANT_CREDITS: { '1825695': 40 },
+  VARIANT_CREDITS: { '1909373': 40 },
   TOSS_AMOUNT_CREDITS: {},
   PRODUCTS: { topup_10: { price: 1500, credits: 10, bonus: 0 } },
   DIRECT_PRICING: {
@@ -439,7 +439,7 @@ describe('레몬 웹훅 — specs 단건 $2 분기', () => {
     const res = mockRes();
     // userId 없음 + 크레딧 variant → 기존 skipped 동작
     await payments.handleLemonSqueezyWebhook(
-      webhookReq(orderCreatedPayload({ lemonOrderId: '5004', variantId: '1825695' })), res);
+      webhookReq(orderCreatedPayload({ lemonOrderId: '5004', variantId: '1909373' })), res);
     expect(res.statusCode).toBe(200);
     expect(res.body.action).toBe('skipped');
   });
@@ -508,7 +508,7 @@ describe('레몬 웹훅 — 서명 검증 필수 (P0 무서명 위조 차단)', 
 
     const payload = {
       meta: { event_name: 'order_created', custom_data: { user_id: 'victim-user' } },
-      data: { id: '6003', attributes: { total: 200, currency: 'USD', first_order_item: { variant_id: 1825695 } } },
+      data: { id: '6003', attributes: { total: 200, currency: 'USD', first_order_item: { variant_id: 1909373 } } },
     };
     const res = mockRes();
     await payments.handleLemonSqueezyWebhook(

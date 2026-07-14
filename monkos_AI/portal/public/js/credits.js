@@ -52,11 +52,11 @@ function renderShopItems() {
       : 'Current: <strong>' + credits + '</strong> credits';
     if (closeBtn) closeBtn.textContent = (lang === 'ja') ? '閉じる' : 'Close';
     container.innerHTML =
-      '<button class="shop-item" onclick="buyCreditsLS(\'1825695\')"><span>40 credits</span><span class="amount">$3.90</span></button>' +
-      '<button class="shop-item" onclick="buyCreditsLS(\'1825706\')"><span>80 credits</span><span class="amount">$6.90</span></button>' +
-      '<button class="shop-item best" onclick="buyCreditsLS(\'1825708\')"><span>130 credits</span><span class="amount">$9.90 <small style="color:var(--green)">BEST</small></span></button>' +
-      '<button class="shop-item" onclick="buyCreditsLS(\'1825711\')"><span>420 credits</span><span class="amount">$26.90</span></button>' +
-      '<button class="shop-item" onclick="buyCreditsLS(\'1825713\')"><span>750 credits</span><span class="amount">$39.90</span></button>';
+      '<button class="shop-item" onclick="buyCreditsLS(\'1909373\')"><span>40 credits</span><span class="amount">$3.90</span></button>' +
+      '<button class="shop-item" onclick="buyCreditsLS(\'1909383\')"><span>80 credits</span><span class="amount">$6.90</span></button>' +
+      '<button class="shop-item best" onclick="buyCreditsLS(\'1909386\')"><span>130 credits</span><span class="amount">$9.90 <small style="color:var(--green)">BEST</small></span></button>' +
+      '<button class="shop-item" onclick="buyCreditsLS(\'1909388\')"><span>420 credits</span><span class="amount">$26.90</span></button>' +
+      '<button class="shop-item" onclick="buyCreditsLS(\'1909390\')"><span>750 credits</span><span class="amount">$39.90</span></button>';
   }
 }
 
