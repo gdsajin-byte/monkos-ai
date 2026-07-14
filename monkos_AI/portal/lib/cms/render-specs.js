@@ -870,7 +870,7 @@ function specsDetailV2Fragment(slug, forceLang = null) {
           { "@type": "PropertyValue", "name": "background", "value": locField(specData, 'background', lang) },
           { "@type": "PropertyValue", "name": "head height", "value": locField(specData, 'headHeight', lang) },
           ...restrEntries.map(e => ({ "@type": "PropertyValue", "name": e.label, "value": e.text })),
-        ].filter(p => p.value && String(p.value).trim()),
+        ].filter(p => p.value && String(p.value).trim() && String(p.value).trim() !== '-'),
       },
     },
     ...(faqs.length ? [{
@@ -1402,7 +1402,7 @@ export function specsDetailFragment(slug, forceLang = null) {
           { "@type": "PropertyValue", "name": "photo size", "value": locField(specData, 'size', lang) },
           { "@type": "PropertyValue", "name": "background", "value": locField(specData, 'background', lang) },
           { "@type": "PropertyValue", "name": "head height", "value": locField(specData, 'headHeight', lang) },
-        ].filter(p => p.value && String(p.value).trim()),
+        ].filter(p => p.value && String(p.value).trim() && String(p.value).trim() !== '-'),
       },
     },
     ...(faqs.length ? [{

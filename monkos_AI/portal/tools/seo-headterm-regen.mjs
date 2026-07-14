@@ -33,23 +33,62 @@ function localMetricSize(size) {
   return `${toCm(m[1])} × ${toCm(m[2])}cm`;
 }
 
+// en size → 1단위: inch 포함 시 inch만, 그 외 metric만. 괄호 병기 제거
+function enSizeCompact(size) {
+  if (!size) return '';
+  if (/inch/i.test(size)) {
+    const m = size.match(/([\d.]+\s*[×x]\s*[\d.]+)\s*inch/i);
+    return m ? `${m[1].replace(/\s/g, '')} inch` : size;
+  }
+  const m2 = size.match(/\(([\d.]+\s*[×x]\s*[\d.]+)\s*mm\)/i);
+  if (m2) return `${m2[1].replace(/\s/g, '')}mm`;
+  return size;
+}
+
 function build(slug, d) {
   const sizeEn = d.size || '';
+  const sizeEnCompact = enSizeCompact(sizeEn);
   const sizeMetric = localMetricSize(d.size || '');
+  const sizeMetricCompact = sizeMetric.replace(/\s*×\s*/g, '×');
   const cEn = EN_SHORT[d.countryEn] || d.countryEn || d.country;
   const bgKo = d.background || '';
   const bgEn = d.backgroundEn || '';
   const bgJa = d.backgroundJa || '';
 
-  const seoTitle = {
-    ko: `${d.country} ${d.type} 사진 규격·규정 ${YEAR} — ${sizeMetric}·배경·복장 | MONKOS`,
-    en: `${cEn} ${d.typeEn} Photo Size & Requirements ${YEAR} — ${sizeEn} | MONKOS`,
-    ja: `${d.countryJa}${d.typeJa}写真のサイズ・規格 ${YEAR} — ${sizeMetric}・背景・服装 | MONKOS`,
-  };
+  // (b) Photo / 写真 이중 표기 방지
+  const typeEnPhoto = /photo$/i.test(d.typeEn) ? d.typeEn : `${d.typeEn} Photo`;
+  const typeJaPhoto = /写真$/.test(d.typeJa) ? d.typeJa : `${d.typeJa}写真`;
+
+  // (a) en title: | MONKOS 제거 + 1단위 사이즈
+  let enTitle = `${cEn} ${typeEnPhoto} Size & Requirements ${YEAR} — ${sizeEnCompact}`;
+  if (enTitle.length > 60) {
+    enTitle = `${cEn} ${typeEnPhoto} Size & Requirements ${YEAR}`;
+  }
+
+  let koTitle = `${d.country} ${d.type} 사진 규격·규정 ${YEAR} — ${sizeMetricCompact}·배경·복장 | MONKOS`;
+  let jaTitle = `${d.countryJa}${typeJaPhoto}のサイズ・規格 ${YEAR} — ${sizeMetricCompact}・背景・服装 | MONKOS`;
+
+  // (c) desc: background 중복 방지 + en desc에서 United States → US
+  const bgKoSuffix = bgKo && !/배경$/.test(bgKo) ? `${bgKo} 배경` : bgKo;
+  const bgEnSuffix = bgEn && !/background$/i.test(bgEn) ? `${bgEn.toLowerCase()} background` : bgEn.toLowerCase();
+  const bgJaSuffix = bgJa && !/背景$/.test(bgJa) ? bgJa : bgJa;
+  const descCountryEn = EN_SHORT[d.countryEn] || d.countryEn;
+  const typeEnLower = String(d.typeEn || '').toLowerCase();
+  const typeEnPhotoLower = /photo$/i.test(typeEnLower) ? typeEnLower : `${typeEnLower} photo`;
+
+  // (d) ko·ja 60자 초과 개별 축소 — 치수 세그먼트 축약, ·배경·복장 생략
+  if (koTitle.length > 60) {
+    koTitle = `${d.country} ${d.type} 사진 규격·규정 ${YEAR} — ${sizeMetricCompact} | MONKOS`;
+  }
+  if (jaTitle.length > 60) {
+    jaTitle = `${d.countryJa}${typeJaPhoto}のサイズ・規格 ${YEAR} — ${sizeMetricCompact} | MONKOS`;
+  }
+
+  const seoTitle = { ko: koTitle, en: enTitle, ja: jaTitle };
   const seoDescription = {
-    ko: `${d.country} ${d.type} 사진 공식 규격·${YEAR}년 규정 — ${sizeMetric}${bgKo ? `, ${bgKo} 배경` : ''}. 규격 검증된 사진 파일을 즉시 다운로드하세요.`,
-    en: `Official ${d.countryEn} ${String(d.typeEn || '').toLowerCase()} photo requirements ${YEAR} — ${sizeEn}${bgEn ? `, ${bgEn.toLowerCase()} background` : ''}. Get a compliant photo online in seconds.`,
-    ja: `${d.countryJa}${d.typeJa}写真の公式サイズ・${YEAR}年規定 — ${sizeMetric}${bgJa ? `、背景は${bgJa}` : ''}。規格対応の写真をオンラインで即ダウンロード。`,
+    ko: `${d.country} ${d.type} 사진 공식 규격·${YEAR}년 규정 — ${sizeMetric}${bgKoSuffix ? `, ${bgKoSuffix}` : ''}. 규격 검증된 사진 파일을 즉시 다운로드하세요.`,
+    en: `Official ${descCountryEn} ${typeEnPhotoLower} requirements ${YEAR} — ${sizeEn}${bgEnSuffix ? `, ${bgEnSuffix}` : ''}. Get a compliant photo online in seconds.`,
+    ja: `${d.countryJa}${typeJaPhoto}の公式サイズ・${YEAR}年規定 — ${sizeMetric}${bgJaSuffix ? `、背景は${bgJaSuffix}` : ''}。規格対応の写真をオンラインで即ダウンロード。`,
   };
   return { seoTitle, seoDescription };
 }
