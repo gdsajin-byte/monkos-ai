@@ -160,6 +160,7 @@ secret env               # SM → .env 일괄 동기화
 | 07/02 | iMac/쌍아 | **레몬 API 키 로테이션** — 키 노출 인시던트 대응. Secret Manager v2 등록 + deploy.sh `--set-secrets`에 API 키 편입(평문 env→시크릿 전환, 광역오더 #8 위반 해소). 포털 재배포(rev 00375-g45) | deploy.sh, SECRET_INVENTORY.md | ✅ |
 | 07/12 | iMac/민아 | **specs 정적 자산 캐시 체계 신설 (렌더 퍼널 분리 동반)** — 인라인 CSS/JS를 정적 5파일로 추출하며 캐시 정책 이원화: `/{js,css}/specs-*` → `max-age=31536000, immutable` + `?v=K_REVISION` 배포 단위 버스트(server.js:1167 분기). 기존 css/js no-cache 정책은 불변(범위 최소화). 효과: 428p 페이지당 gzip 34→10.3KB, 15언어 확장 시 크롤 218→66MB/회전. dev 00110 라이브·prod 미승격 | [COMPLETION](../../reports/2026-07/COMPLETION_20260712_iMac민아_렌더퍼널분리.md), server.js | ✅ (쌍아 추인 대기) |
 | 07/14 | M1/막내3 | **자동화 인프라 통합 정비 4건** — ① daily_briefing.py 5채널 수집 확장(네이버 검색광고/DataLab/Bing WMT/GSC 디바이스+URL Inspection/GA4 디바이스+이탈률/PageSpeed CWV) + yml env 6건 ② .mcp.json GA4/GSC 크리덴셜 SM 기반 래퍼 전환(iMac 하드코딩 해소) + retrieval DB 빌드(3,623문서) ③ SECRET_INVENTORY.md SM 44건 대사 + 7건 추가 + audit_secrets.sh 신설 ④ rules/mcp-tools.md + skills/seo-query.md + skills/secret-audit.md 신설 | daily_briefing.py, daily-briefing.yml, .mcp.json, ga4_mcp.sh, gsc_mcp.sh, audit_secrets.sh, mk-push.sh, SECRET_INVENTORY.md, mcp-tools.md, seo-query.md, secret-audit.md | ✅ |
+| 07/15 | M1/막내1 | **SEO 수집 함수 도구화** — daily_briefing.py에서 6개 함수(naver-searchad/datalab/bing/pagespeed/ga4-device/gsc-inspection)를 `scripts/tools/seo_collectors.py`로 분리 + SM 키 주입 shell 래퍼(`seo_collect.sh`) + `/seo-query` 스킬 스크립트 방식 전환. daily_briefing.py는 import로 재사용(코드 중복 0) | seo_collectors.py, seo_collect.sh, seo-query.md, daily_briefing.py | ✅ |
 
 ---
 

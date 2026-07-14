@@ -1,12 +1,9 @@
 """PF_AUTOPILOT Phase 2 — 데일리 브리핑 자동 생성."""
 
 import base64
-import hashlib
-import hmac
 import json
 import os
 import sys
-import time
 from datetime import date, timedelta
 from email.utils import parsedate_to_datetime
 from pathlib import Path
@@ -21,18 +18,14 @@ from google.analytics.data_v1beta.types import (
     Metric,
     RunReportRequest,
 )
-from google.auth.credentials import AnonymousCredentials
 from google.oauth2.service_account import Credentials
 
-SCOPES_GA4 = ["https://www.googleapis.com/auth/analytics.readonly"]
-SCOPES_GSC = ["https://www.googleapis.com/auth/webmasters.readonly"]
-
-NAVER_KEYWORDS = ["증명사진", "AI 증명사진", "여권사진", "취업사진", "취업사진 안경"]
-
-PAGESPEED_URLS = [
-    "https://monkos.ai/",
-    "https://monkos.ai/specs/kr-passport",
-]
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../scripts/tools"))
+from seo_collectors import (
+    fetch_naver_searchad, fetch_naver_datalab, fetch_bing_wmt,
+    fetch_pagespeed, fetch_ga4_extended, fetch_gsc_url_inspection,
+    NAVER_KEYWORDS, PAGESPEED_URLS, SCOPES_GA4, SCOPES_GSC,
+)
 
 KNOWN_SEO_ISSUES = {}
 
@@ -169,36 +162,6 @@ def _fetch_ga4_funnel(client, prop, d):
     return [{"event": e, **event_map.get(e, {"count": 0, "users": 0})} for e in FUNNEL_EVENTS]
 
 
-def fetch_ga4_extended(key_json, property_id, target_date):
-    creds = Credentials.from_service_account_info(key_json, scopes=SCOPES_GA4)
-    client = BetaAnalyticsDataClient(credentials=creds)
-    prop = f"properties/{property_id}"
-
-    req = RunReportRequest(
-        property=prop,
-        date_ranges=[DateRange(start_date=target_date, end_date=target_date)],
-        dimensions=[Dimension(name="deviceCategory")],
-        metrics=[
-            Metric(name="sessions"),
-            Metric(name="bounceRate"),
-            Metric(name="averageSessionDuration"),
-            Metric(name="screenPageViewsPerSession"),
-        ],
-    )
-    resp = client.run_report(req)
-    rows = []
-    for row in resp.rows:
-        rows.append({
-            "device": row.dimension_values[0].value,
-            "sessions": int(row.metric_values[0].value),
-            "bounceRate": float(row.metric_values[1].value),
-            "avgDuration": float(row.metric_values[2].value),
-            "pagesPerSession": float(row.metric_values[3].value),
-        })
-    rows.sort(key=lambda r: r["sessions"], reverse=True)
-    return rows
-
-
 def fetch_gsc(key_json, site_url, target_date, compare_date):
     from googleapiclient.discovery import build
 
@@ -241,211 +204,6 @@ def fetch_gsc(key_json, site_url, target_date, compare_date):
 
     return (today_totals, compare_totals, top_queries, top_pages,
             page_query, country, device_data, search_appearance)
-
-
-def fetch_gsc_url_inspection(key_json, site_url, urls):
-    creds = Credentials.from_service_account_info(key_json, scopes=SCOPES_GSC)
-    from googleapiclient.discovery import build
-    service = build("searchconsole", "v1", credentials=creds)
-
-    results = []
-    for url in urls[:10]:
-        try:
-            resp = service.urlInspection().index().inspect(
-                body={"inspectionUrl": url, "siteUrl": site_url}
-            ).execute()
-            result = resp.get("inspectionResult", {})
-            index_status = result.get("indexStatusResult", {})
-            results.append({
-                "url": url,
-                "verdict": index_status.get("verdict", "UNKNOWN"),
-                "coverageState": index_status.get("coverageState", ""),
-                "lastCrawlTime": index_status.get("lastCrawlTime", ""),
-            })
-        except Exception as e:
-            results.append({"url": url, "verdict": "ERROR", "coverageState": str(e)[:80]})
-    return results
-
-
-def fetch_naver_searchad(keywords):
-    api_key = os.environ.get("NAVER_SEARCHAD_API_KEY", "")
-    secret_key = os.environ.get("NAVER_SEARCHAD_SECRET_KEY", "")
-    customer_id = os.environ.get("NAVER_SEARCHAD_CUSTOMER_ID", "")
-    if not all([api_key, secret_key, customer_id]):
-        return None
-
-    base_url = "https://api.searchad.naver.com"
-    uri = "/keywordstool"
-    method = "GET"
-    timestamp = str(int(time.time() * 1000))
-    sign_str = f"{timestamp}.{method}.{uri}"
-    signature = base64.b64encode(
-        hmac.new(secret_key.encode("utf-8"), sign_str.encode("utf-8"), hashlib.sha256).digest()
-    ).decode("utf-8")
-
-    headers = {
-        "X-Timestamp": timestamp,
-        "X-API-KEY": api_key,
-        "X-Customer": customer_id,
-        "X-Signature": signature,
-    }
-    params = {
-        "hintKeywords": ",".join(keywords),
-        "showDetail": "1",
-    }
-    try:
-        resp = requests.get(base_url + uri, headers=headers, params=params, timeout=15)
-        resp.raise_for_status()
-        data = resp.json()
-        results = []
-        for item in data.get("keywordList", []):
-            if item.get("relKeyword") in keywords:
-                results.append({
-                    "keyword": item["relKeyword"],
-                    "pcSearch": item.get("monthlyPcQcCnt", 0),
-                    "mobileSearch": item.get("monthlyMobileQcCnt", 0),
-                    "pcClick": item.get("monthlyAvePcClkCnt", 0),
-                    "mobileClick": item.get("monthlyAveMobileClkCnt", 0),
-                    "competition": item.get("compIdx", ""),
-                })
-        return results
-    except Exception as e:
-        print(f"WARNING: 네이버 검색광고 API 실패 — {e}", file=sys.stderr)
-        return None
-
-
-def fetch_naver_datalab(keywords):
-    client_id = os.environ.get("NAVER_DATALAB_CLIENT_ID", "")
-    client_secret = os.environ.get("NAVER_DATALAB_CLIENT_SECRET", "")
-    if not all([client_id, client_secret]):
-        return None
-
-    end_date = date.today().isoformat()
-    start_date = (date.today() - timedelta(days=30)).isoformat()
-
-    body = {
-        "startDate": start_date,
-        "endDate": end_date,
-        "timeUnit": "week",
-        "keywordGroups": [
-            {"groupName": kw, "keywords": [kw]} for kw in keywords[:5]
-        ],
-    }
-    headers = {
-        "X-Naver-Client-Id": client_id,
-        "X-Naver-Client-Secret": client_secret,
-        "Content-Type": "application/json",
-    }
-    try:
-        resp = requests.post(
-            "https://openapi.naver.com/v1/datalab/search",
-            headers=headers, json=body, timeout=15,
-        )
-        resp.raise_for_status()
-        data = resp.json()
-        results = []
-        for group in data.get("results", []):
-            periods = group.get("data", [])
-            if len(periods) >= 2:
-                prev = periods[-2].get("ratio", 0)
-                curr = periods[-1].get("ratio", 0)
-                if prev > 0:
-                    change = (curr - prev) / prev * 100
-                    direction = "↑" if change > 5 else ("↓" if change < -5 else "→")
-                else:
-                    direction = "→"
-                results.append({
-                    "keyword": group["title"],
-                    "current": curr,
-                    "previous": prev,
-                    "direction": direction,
-                })
-        return results
-    except Exception as e:
-        print(f"WARNING: 네이버 DataLab API 실패 — {e}", file=sys.stderr)
-        return None
-
-
-def fetch_bing_wmt():
-    api_key = os.environ.get("BING_WMT_API_KEY", "")
-    if not api_key:
-        return None
-
-    base_url = "https://ssl.bing.com/webmaster/api.svc/json"
-    site = "https://monkos.ai/"
-
-    results = {}
-    try:
-        resp = requests.get(
-            f"{base_url}/GetQueryStats",
-            params={"apikey": api_key, "siteUrl": site},
-            timeout=15,
-        )
-        resp.raise_for_status()
-        stats = resp.json().get("d", [])
-        top_queries = sorted(stats, key=lambda x: x.get("Impressions", 0), reverse=True)[:10]
-        results["queries"] = [{
-            "query": q.get("Query", ""),
-            "impressions": q.get("Impressions", 0),
-            "clicks": q.get("Clicks", 0),
-            "position": q.get("AvgImpressionPosition", 0),
-        } for q in top_queries]
-    except Exception as e:
-        print(f"WARNING: Bing WMT GetQueryStats 실패 — {e}", file=sys.stderr)
-        results["queries"] = []
-
-    try:
-        resp = requests.get(
-            f"{base_url}/GetLinkCounts",
-            params={"apikey": api_key, "siteUrl": site},
-            timeout=15,
-        )
-        resp.raise_for_status()
-        link_data = resp.json().get("d", {})
-        results["links"] = link_data
-    except Exception as e:
-        print(f"WARNING: Bing WMT GetLinkCounts 실패 — {e}", file=sys.stderr)
-        results["links"] = {}
-
-    return results
-
-
-def fetch_pagespeed(urls, api_key=None):
-    results = []
-    for url in urls:
-        for strategy in ["mobile", "desktop"]:
-            params = {
-                "url": url,
-                "strategy": strategy,
-                "category": "performance",
-            }
-            if api_key:
-                params["key"] = api_key
-            try:
-                resp = requests.get(
-                    "https://www.googleapis.com/pagespeedonline/v5/runPagespeed",
-                    params=params, timeout=30,
-                )
-                resp.raise_for_status()
-                data = resp.json()
-                lh = data.get("lighthouseResult", {})
-                audits = lh.get("audits", {})
-                score = lh.get("categories", {}).get("performance", {}).get("score", 0)
-                lcp = audits.get("largest-contentful-paint", {}).get("numericValue", 0)
-                cls = audits.get("cumulative-layout-shift", {}).get("numericValue", 0)
-                inp_audit = audits.get("interaction-to-next-paint", {})
-                inp = inp_audit.get("numericValue", 0) if inp_audit else 0
-                results.append({
-                    "url": url.replace("https://monkos.ai", ""),
-                    "strategy": strategy,
-                    "score": int((score or 0) * 100),
-                    "lcp_ms": int(lcp),
-                    "cls": round(cls, 3),
-                    "inp_ms": int(inp),
-                })
-            except Exception as e:
-                print(f"WARNING: PageSpeed {url} {strategy} 실패 — {e}", file=sys.stderr)
-    return results
 
 
 def seo_scan():

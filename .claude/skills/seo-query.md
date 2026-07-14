@@ -1,21 +1,24 @@
 ---
 name: seo-query
-description: SEO 데이터 즉시 조회 — GA4/GSC MCP로 최근 7일 성과 테이블 보고
+description: SEO 데이터 즉시 조회 — 네이버/GSC/GA4/Bing/CWV 전 채널 수집
 user_invocable: true
 ---
 
 # /seo-query — SEO 데이터 즉시 조회
 
-이 스킬이 호출되면 아래 순서로 실행한다:
+이 스킬이 호출되면 아래를 실행한다:
 
-1. `google-analytics` MCP로 최근 7일 GA4 데이터 조회:
-   - 세션, 사용자, 신규 사용자, 페이지뷰
-   - 디바이스별 분리 (desktop/mobile/tablet)
+1. `scripts/tools/seo_collect.sh all` 실행 (Bash 도구 사용)
+2. JSON 출력을 파싱하여 마크다운 테이블로 정리
+3. 채널별 성과 + 이상 징후를 보고
 
-2. `google-search-console` MCP로 최근 7일 GSC 데이터 조회:
-   - 총 클릭, 노출, CTR, 평균 순위
-   - 상위 10 검색어
+채널별 단독 조회:
+- `scripts/tools/seo_collect.sh naver-searchad` — 네이버 키워드 검색량
+- `scripts/tools/seo_collect.sh naver-datalab` — 네이버 30일 트렌드
+- `scripts/tools/seo_collect.sh bing` — Bing 검색 성과 + 백링크
+- `scripts/tools/seo_collect.sh pagespeed` — Core Web Vitals
+- `scripts/tools/seo_collect.sh ga4-device` — GA4 디바이스별 성과
+- `scripts/tools/seo_collect.sh gsc-inspection` — GSC URL 색인 상태
 
-3. 결과를 마크다운 테이블로 정리하여 보고한다.
-
-MCP 서버 연결 실패 시: 최신 브리핑 파일(`monkos-ops/ops/briefings/`)을 Read하여 대체한다.
+SM 키 주입 실패 시: 해당 채널 SKIP + 경고 출력.
+전 채널 실패 시: 최신 브리핑 파일(`monkos-ops/ops/briefings/`)을 Read하여 대체.
