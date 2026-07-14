@@ -164,6 +164,8 @@ status: 현행
 | 파일 | 경로 | 용도 |
 |------|------|------|
 | ADC | ~/.config/gcloud/application_default_credentials.json | gcloud 기본 인증 |
+| ADC impersonated (M1) | ~/.config/gcloud/adc_impersonated.json | yong-a-orchestrator 임퍼소네이션 — GSC/GA4 MCP·REST (2026-07-14 생성, 키 파일 아님·단기 토큰) |
+| SA 키 캐시 (폴백) | ~/.config/monkos-mcp/sa_key.json | gsc_mcp.sh 폴백용 GCP_SA_KEY 복원본 — 임퍼소네이션 ADC 부재 환경만 (2026-07-14 MCP정규화) |
 | ADC impersonated | ~/.config/gcloud/adc_impersonated.json | SA 임퍼소네이션 |
 
 ### I. D1 데이터베이스
