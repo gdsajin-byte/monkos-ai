@@ -49,6 +49,7 @@ created: 2026-06-14
 | 06/20 | iMac/막내1 | **P2 의미검색 구현** — Vertex AI embedding(3232건)+하이브리드 검색(BM25+Vector RRF)+증분 캐시 | embeddings.js·build_index.js·search.js 확장+COMPLETION | ✅ |
 | 06/20 | iMac/막내1 | **P3 MCP 서버 구현** — lib.js 모듈화+mcp_server.js 4도구(search/lookup/relations/stats)+.mcp.json 등록 | lib.js·mcp_server.js 신규+search.js 리팩토링+COMPLETION | ✅ |
 | 06/21 | iMac/쌍아 | PF_STYLER·PF_INFRA 신설 → 인덱스 리빌드 (3252문서, 37PF, 523링크) | build_index.js 실행 | ✅ |
+| 07/14 | M1/쌍아 | **🔴 전면 사문화 판정** — 6/21 이후 MCP 도구 호출 0건(전 디바이스), M1 monk_index.db 미존재(빌드 안 됨), GA4/GSC MCP도 사문화(크리덴셜 iMac 경로 하드코딩으로 M1 불가). mk-push.sh 리빌드 실패도 `\|\| echo`로 무시되어 인지 안 됨. 원인: ①DB가 .gitignore→디바이스 전파 불가 ②.mcp.json 크리덴셜 iMac 종속 ③에이전트 습관적 미사용(grep/Read 우회). **긴급 어젠다: 크리덴셜 정규화 + M1 DB 빌드 + rules/skills 강제 경로 필요** | — | 🔴 긴급 |
 
 ---
 
