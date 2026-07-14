@@ -1,0 +1,56 @@
+{
+  "slug": "it-visa",
+  "batch": "de-it-es-pt-nl-be",
+  "verified": {
+    "size": {
+      "value": "35 x 45mm",
+      "source_url": "https://ambvienna.esteri.it/it/servizi-consolari-e-visti/servizi-per-il-cittadino-italiano/passaporti/norme-icao/"
+    },
+    "background": {
+      "value": "white or light-colored, plain, no patterns",
+      "source_url": "https://ambvienna.esteri.it/it/servizi-consolari-e-visti/servizi-per-il-cittadino-italiano/passaporti/norme-icao/"
+    },
+    "head_height": {
+      "value": "face covers 70-80% of photo height",
+      "source_url": "https://ambvienna.esteri.it/it/servizi-consolari-e-visti/servizi-per-il-cittadino-italiano/passaporti/norme-icao/"
+    },
+    "validity": {
+      "value": "taken within 6 months",
+      "source_url": "https://ambvienna.esteri.it/it/servizi-consolari-e-visti/servizi-per-il-cittadino-italiano/passaporti/norme-icao/"
+    },
+    "expression_restriction": {
+      "value": "neutral expression, mouth closed, eyes open and clearly visible, looking straight at camera",
+      "source_url": "https://ambvienna.esteri.it/it/servizi-consolari-e-visti/servizi-per-il-cittadino-italiano/passaporti/norme-icao/"
+    },
+    "glasses_policy": {
+      "value": "permitted if eyes remain clearly visible; no sunglasses or tinted lenses; no reflective glare; heavy frames prohibited",
+      "source_url": "https://ambvienna.esteri.it/it/servizi-consolari-e-visti/servizi-per-il-cittadino-italiano/passaporti/norme-icao/"
+    },
+    "headwear_policy": {
+      "value": "not permitted except for religious or medical reasons; face must remain fully visible",
+      "source_url": "https://ambvienna.esteri.it/it/servizi-consolari-e-visti/servizi-per-il-cittadino-italiano/passaporti/norme-icao/"
+    },
+    "face_visibility": {
+      "value": "full face visible, eyes open and clearly visible, direct gaze at camera",
+      "source_url": "https://ambvienna.esteri.it/it/servizi-consolari-e-visti/servizi-per-il-cittadino-italiano/passaporti/norme-icao/"
+    },
+    "official_source_url": {
+      "value": "https://ambvienna.esteri.it/it/servizi-consolari-e-visti/servizi-per-il-cittadino-italiano/passaporti/norme-icao/",
+      "source_url": "https://ambvienna.esteri.it/it/servizi-consolari-e-visti/servizi-per-il-cittadino-italiano/passaporti/norme-icao/"
+    }
+  },
+  "unverified": [
+    "file_spec",
+    "clothing_restriction",
+    "ears_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": {
+      "verdict": "confirmed",
+      "evidence": "Italian visa photos follow the Schengen standard of 35 x 45mm. Multiple independent sources confirm: passport-photo.online states Italy visa photo is '35x45 mm', visaguide.world confirms the same, and the VFS Global Italy visa page confirms the Schengen photo specification. As a Schengen member state, Italy uses the uniform 35x45mm photo standard for visas. Note that the cited source is specifically about passport ICAO norms rather than visa requirements, but the dimension is the same for both document types.",
+      "correct_value": "35 x 45mm"
+    }
+  }
+}

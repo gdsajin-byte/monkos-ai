@@ -1,0 +1,65 @@
+{
+  "slug": "fr-visa",
+  "batch": "tw-hk-my-la-mv-fr",
+  "verified": {
+    "size": {
+      "value": "3.5 x 4.5 cm (35 x 45 mm)",
+      "source_url": "https://france-visas.gouv.fr/documents/d/france-visas/iso_iec_fv_visa_photograph_requirements_en"
+    },
+    "background": {
+      "value": "Plain white or light grey",
+      "source_url": "https://france-visas.gouv.fr/documents/d/france-visas/iso_iec_fv_visa_photograph_requirements_en"
+    },
+    "head_height": {
+      "value": "32-36 mm (chin to top of head, excluding hair); face must occupy 70-80% of photo",
+      "source_url": "https://france-visas.gouv.fr/documents/d/france-visas/iso_iec_fv_visa_photograph_requirements_en"
+    },
+    "validity": {
+      "value": "taken within the last 6 months",
+      "source_url": "https://france-visas.gouv.fr/documents/d/france-visas/iso_iec_fv_visa_photograph_requirements_en"
+    },
+    "file_spec": {
+      "value": "PNG, JPG, or JPEG; max 120 KB (for online applications); min 400 DPI print resolution",
+      "source_url": "https://france-visas.gouv.fr/documents/d/france-visas/iso_iec_fv_visa_photograph_requirements_en"
+    },
+    "clothing_restriction": {
+      "value": "",
+      "source_url": ""
+    },
+    "expression_restriction": {
+      "value": "Neutral expression, mouth closed, eyes open, looking directly at camera",
+      "source_url": "https://france-visas.gouv.fr/documents/d/france-visas/iso_iec_fv_visa_photograph_requirements_en"
+    },
+    "glasses_policy": {
+      "value": "Glasses allowed if eyes clearly visible, no reflection from glasses, frames do not cover eyes",
+      "source_url": "https://france-visas.gouv.fr/documents/d/france-visas/iso_iec_fv_visa_photograph_requirements_en"
+    },
+    "ears_visibility": {
+      "value": "",
+      "source_url": ""
+    },
+    "face_visibility": {
+      "value": "Face must be clearly visible; eyes open and looking directly at camera",
+      "source_url": "https://france-visas.gouv.fr/documents/d/france-visas/iso_iec_fv_visa_photograph_requirements_en"
+    },
+    "headwear_policy": {
+      "value": "Religious head coverings permitted if plain, single color, contrasts with background; otherwise head must be bare",
+      "source_url": "https://france-visas.gouv.fr/documents/d/france-visas/iso_iec_fv_visa_photograph_requirements_en"
+    },
+    "accessories": {
+      "value": "",
+      "source_url": ""
+    },
+    "official_source_url": {
+      "value": "https://france-visas.gouv.fr/documents/d/france-visas/iso_iec_fv_visa_photograph_requirements_en",
+      "source_url": "https://france-visas.gouv.fr/documents/d/france-visas/iso_iec_fv_visa_photograph_requirements_en"
+    }
+  },
+  "unverified": [
+    "clothing_restriction",
+    "ears_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

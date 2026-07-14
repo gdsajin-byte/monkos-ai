@@ -1,0 +1,44 @@
+{
+  "slug": "se-visa",
+  "batch": "ch-at-se-no-dk-fi",
+  "verified": {
+    "size": {
+      "value": "35 x 45 mm",
+      "source_url": "https://www.migrationsverket.se/en/you-want-to-apply/visiting-sweden/visiting-sweden-for-up-to-90-days-entry-visa.html"
+    },
+    "background": {
+      "value": "Light-colored (light grey recommended); plain, no patterns",
+      "source_url": "https://www.migrationsverket.se/en/you-want-to-apply/visiting-sweden/visiting-sweden-for-up-to-90-days-entry-visa.html"
+    },
+    "head_height": {
+      "value": "32-36 mm (70-80% of photo)",
+      "source_url": "https://www.migrationsverket.se/en/you-want-to-apply/visiting-sweden/visiting-sweden-for-up-to-90-days-entry-visa.html"
+    },
+    "validity": {
+      "value": "Taken within 6 months",
+      "source_url": "https://www.migrationsverket.se/en/you-want-to-apply/visiting-sweden/visiting-sweden-for-up-to-90-days-entry-visa.html"
+    },
+    "expression_restriction": {
+      "value": "Neutral expression, frontal view, eyes looking at camera",
+      "source_url": "https://www.migrationsverket.se/en/you-want-to-apply/visiting-sweden/visiting-sweden-for-up-to-90-days-entry-visa.html"
+    },
+    "headwear_policy": {
+      "value": "Not allowed; religious headgear permitted if face fully visible",
+      "source_url": "https://www.migrationsverket.se/en/you-want-to-apply/visiting-sweden/visiting-sweden-for-up-to-90-days-entry-visa.html"
+    },
+    "official_source_url": {
+      "value": "https://www.migrationsverket.se/en/you-want-to-apply/visiting-sweden/visiting-sweden-for-up-to-90-days-entry-visa.html",
+      "source_url": "https://www.migrationsverket.se/en/you-want-to-apply/visiting-sweden/visiting-sweden-for-up-to-90-days-entry-visa.html"
+    }
+  },
+  "unverified": [
+    "file_spec",
+    "clothing_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

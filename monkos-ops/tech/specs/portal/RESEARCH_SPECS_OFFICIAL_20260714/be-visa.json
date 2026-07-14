@@ -1,0 +1,44 @@
+{
+  "slug": "be-visa",
+  "batch": "de-it-es-pt-nl-be",
+  "verified": {
+    "size": {
+      "value": "35 x 45mm (Schengen standard, ICAO compliant)",
+      "source_url": "https://diplomatie.belgium.be/en/belgians-abroad/belgian-passport/quality-requirements-photo"
+    },
+    "background": {
+      "value": "white or light-colored",
+      "source_url": "https://unitedstates.diplomatie.belgium.be/en/visa-belgium/schengen-visa-c-visa-90-days"
+    },
+    "validity": {
+      "value": "taken within 6 months",
+      "source_url": "https://unitedstates.diplomatie.belgium.be/en/visa-belgium/schengen-visa-c-visa-90-days"
+    },
+    "expression_restriction": {
+      "value": "neutral facial expression, mouth shut, no smiling",
+      "source_url": "https://diplomatie.belgium.be/en/belgians-abroad/belgian-passport/quality-requirements-photo"
+    },
+    "glasses_policy": {
+      "value": "no reflecting or tinted glasses; frames should not be too big or too close to eyeline; eyes must be perfectly visible",
+      "source_url": "https://diplomatie.belgium.be/en/belgians-abroad/belgian-passport/quality-requirements-photo"
+    },
+    "face_visibility": {
+      "value": "face totally uncovered; forehead, chin and part towards ears visible; head and shoulders straight, right in front of camera",
+      "source_url": "https://diplomatie.belgium.be/en/belgians-abroad/belgian-passport/quality-requirements-photo"
+    },
+    "official_source_url": {
+      "value": "https://diplomatie.belgium.be/en/belgians-abroad/belgian-passport/quality-requirements-photo",
+      "source_url": "https://diplomatie.belgium.be/en/belgians-abroad/belgian-passport/quality-requirements-photo"
+    }
+  },
+  "unverified": [
+    "head_height",
+    "file_spec",
+    "clothing_restriction",
+    "ears_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

@@ -1,0 +1,67 @@
+{
+  "slug": "is-passport",
+  "batch": "is-ie-pl-cz-sk-hu",
+  "verified": {
+    "size": {
+      "value": "35 x 45 mm",
+      "source_url": "https://island.is/reglugerdir/nr/0560-2009"
+    },
+    "background": {
+      "value": "light gray, neutral, no shadows",
+      "source_url": "https://island.is/reglugerdir/nr/0560-2009"
+    },
+    "head_height": {
+      "value": ""
+    },
+    "validity": {
+      "value": "taken within 6 months",
+      "source_url": "https://island.is/reglugerdir/nr/0560-2009"
+    },
+    "file_spec": {
+      "value": ""
+    },
+    "clothing_restriction": {
+      "value": ""
+    },
+    "expression_restriction": {
+      "value": "natural expression, face turned directly toward camera",
+      "source_url": "https://island.is/reglugerdir/nr/0560-2009"
+    },
+    "glasses_policy": {
+      "value": "dark glasses and reflective lenses prohibited",
+      "source_url": "https://island.is/reglugerdir/nr/0560-2009"
+    },
+    "ears_visibility": {
+      "value": ""
+    },
+    "face_visibility": {
+      "value": "face must be turned directly toward camera, both eyes visible",
+      "source_url": "https://island.is/reglugerdir/nr/0560-2009"
+    },
+    "headwear_policy": {
+      "value": "not permitted; exception for religious or health reasons",
+      "source_url": "https://island.is/reglugerdir/nr/0560-2009"
+    },
+    "accessories": {
+      "value": ""
+    },
+    "official_source_url": {
+      "value": "https://island.is/reglugerdir/nr/0560-2009"
+    }
+  },
+  "unverified": [
+    "head_height",
+    "file_spec",
+    "clothing_restriction",
+    "ears_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": {
+      "verdict": "confirmed",
+      "evidence": "The Icelandic regulation 560/2009 (fetched from island.is/reglugerdir/nr/0560-2009) explicitly states 'tveimur ljósmyndum á ljósmyndapappír 35 x 45 mm að stærð' (two photos on photographic paper 35 x 45 mm in size) in Article 8. Multiple independent third-party sources (visafoto.com, mybiometricphotos.com, timpson.co.uk, passportphotonow.com) all consistently confirm 35 x 45 mm for Iceland passport photos. Iceland follows ICAO standards which specify this size.",
+      "correct_value": "35 x 45 mm"
+    }
+  }
+}

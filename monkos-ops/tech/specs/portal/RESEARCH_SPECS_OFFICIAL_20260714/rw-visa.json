@@ -1,0 +1,35 @@
+{
+  "slug": "rw-visa",
+  "batch": "east-africa",
+  "verified": {
+    "background": {
+      "value": "white",
+      "source_url": "https://www.rwandainusa.gov.rw/services/service-details/visa-1usa"
+    },
+    "face_visibility": {
+      "value": "all facial features must be visible and clear",
+      "source_url": "https://www.rwandainusa.gov.rw/services/service-details/visa-1usa"
+    },
+    "headwear_policy": {
+      "value": "no hats",
+      "source_url": "https://www.rwandainusa.gov.rw/services/service-details/visa-1usa"
+    },
+    "official_source_url": {
+      "value": "https://www.rwandainusa.gov.rw/services/service-details/visa-1usa",
+      "source_url": "https://www.rwandainusa.gov.rw/services/service-details/visa-1usa"
+    }
+  },
+  "unverified": [
+    "size",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

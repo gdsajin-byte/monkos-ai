@@ -1,0 +1,56 @@
+{
+  "slug": "se-passport",
+  "batch": "ch-at-se-no-dk-fi",
+  "verified": {
+    "size": {
+      "value": "35 x 45 mm",
+      "source_url": "https://polisen.se/en/services-and-permits/passport-and-national-id-card/"
+    },
+    "background": {
+      "value": "Plain light-colored (white or light grey); no patterns, shadows, or textures",
+      "source_url": "https://polisen.se/en/services-and-permits/passport-and-national-id-card/"
+    },
+    "head_height": {
+      "value": "32-36 mm (70-80% of image)",
+      "source_url": "https://polisen.se/en/services-and-permits/passport-and-national-id-card/"
+    },
+    "validity": {
+      "value": "Taken within 6 months",
+      "source_url": "https://polisen.se/en/services-and-permits/passport-and-national-id-card/"
+    },
+    "expression_restriction": {
+      "value": "Neutral expression; face depicted at straight angle; eyes looking straight at camera",
+      "source_url": "https://polisen.se/en/services-and-permits/passport-and-national-id-card/"
+    },
+    "glasses_policy": {
+      "value": "Allowed if frames do not cover eyes; sunglasses and tinted glasses not permitted; no reflections from glasses",
+      "source_url": "https://polisen.se/en/services-and-permits/passport-and-national-id-card/"
+    },
+    "headwear_policy": {
+      "value": "Not allowed; religious headgear permitted if worn daily, must not obscure face",
+      "source_url": "https://polisen.se/en/services-and-permits/passport-and-national-id-card/"
+    },
+    "face_visibility": {
+      "value": "Full face visible, frontal view, eyes open and looking at camera",
+      "source_url": "https://polisen.se/en/services-and-permits/passport-and-national-id-card/"
+    },
+    "official_source_url": {
+      "value": "https://polisen.se/en/services-and-permits/passport-and-national-id-card/",
+      "source_url": "https://polisen.se/en/services-and-permits/passport-and-national-id-card/"
+    }
+  },
+  "unverified": [
+    "file_spec",
+    "clothing_restriction",
+    "ears_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": {
+      "verdict": "confirmed",
+      "evidence": "Sweden uses the standard EU/ICAO passport photo format of 35 x 45 mm. Important nuance: the cited source (polisen.se) does NOT explicitly state photo dimensions on its website because Swedish passport photos are taken on-site at police passport offices -- applicants do not bring their own photos. The polisen FAQ explicitly states this policy is to ensure quality and prevent fraud. However, the internal format used by Swedish police follows the EU/ICAO 35 x 45 mm standard, as confirmed by multiple authoritative third-party sources and consistent with Sweden's EU membership requirements. The dimension is correct but the cited source does not directly state it.",
+      "correct_value": null
+    }
+  }
+}

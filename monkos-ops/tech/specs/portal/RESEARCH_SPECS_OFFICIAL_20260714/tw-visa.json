@@ -1,0 +1,67 @@
+{
+  "slug": "tw-visa",
+  "batch": "tw-hk-my-la-mv-fr",
+  "verified": {
+    "size": {
+      "value": "3.5 x 4.5 cm (35 x 45 mm)",
+      "source_url": "https://www.boca.gov.tw/cp-158-250-a5a40-2.html"
+    },
+    "background": {
+      "value": "white",
+      "source_url": "https://www.boca.gov.tw/cp-158-250-a5a40-2.html"
+    },
+    "head_height": {
+      "value": "32-36 mm (chin to crown), face must occupy 70-80% of the photograph",
+      "source_url": "https://www.boca.gov.tw/cp-140-467-29b1d-2.html"
+    },
+    "validity": {
+      "value": "taken within the last 6 months",
+      "source_url": "https://www.boca.gov.tw/cp-158-250-a5a40-2.html"
+    },
+    "file_spec": {
+      "value": "JPG/JPEG, RGB (min 24-bit), max 5 MB, min 531 x 413 pixels (H x W)",
+      "source_url": "https://www.boca.gov.tw/cp-140-467-29b1d-2.html"
+    },
+    "clothing_restriction": {
+      "value": "Military, police uniforms, or camouflage clothing prohibited",
+      "source_url": "https://www.boca.gov.tw/cp-140-467-29b1d-2.html"
+    },
+    "expression_restriction": {
+      "value": "Neutral expression, mouth closed, eyes open and clearly visible",
+      "source_url": "https://www.boca.gov.tw/cp-140-467-29b1d-2.html"
+    },
+    "glasses_policy": {
+      "value": "Corrective lenses permitted if eyes are clearly visible with no glare/reflection; tinted glasses prohibited; colored/circle contact lenses prohibited",
+      "source_url": "https://www.boca.gov.tw/cp-140-467-29b1d-2.html"
+    },
+    "ears_visibility": {
+      "value": "Ears must be clearly visible; exception for microtia patients",
+      "source_url": "https://www.boca.gov.tw/cp-140-467-29b1d-2.html"
+    },
+    "face_visibility": {
+      "value": "Full face from forehead to chin and both edges must be clearly visible; eyebrows, eyes, nose, mouth, face, ears must be shown",
+      "source_url": "https://www.boca.gov.tw/cp-140-467-29b1d-2.html"
+    },
+    "headwear_policy": {
+      "value": "No hats or head coverings except for religious or medical reasons",
+      "source_url": "https://www.boca.gov.tw/cp-140-467-29b1d-2.html"
+    },
+    "accessories": {
+      "value": "Natural moles, birthmarks, scars must be visible; colored/circle contact lenses prohibited",
+      "source_url": "https://www.boca.gov.tw/cp-140-467-29b1d-2.html"
+    },
+    "official_source_url": {
+      "value": "https://www.boca.gov.tw/cp-158-250-a5a40-2.html",
+      "source_url": "https://www.boca.gov.tw/cp-158-250-a5a40-2.html"
+    }
+  },
+  "unverified": [],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": {
+      "verdict": "confirmed",
+      "evidence": "Official BOCA visa page (https://www.boca.gov.tw/cp-158-250-a5a40-2.html) states: 'Two passport-size (45 mm in height and 35 mm in width) photos in color within 6 months.' Taiwan visa photos use the same 35x45mm specification as passport photos. This matches the claimed 3.5 x 4.5 cm (35 x 45 mm).",
+      "correct_value": null
+    }
+  }
+}

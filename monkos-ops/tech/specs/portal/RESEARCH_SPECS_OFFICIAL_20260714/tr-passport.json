@@ -1,0 +1,56 @@
+{
+  "slug": "tr-passport",
+  "batch": "si-tr-mx",
+  "verified": {
+    "size": {
+      "value": "50 x 60 mm",
+      "source_url": "https://www.nvi.gov.tr/istanbul/biyometrik-fotograf-nasil-olmalidir"
+    },
+    "background": {
+      "value": "White, patternless, no shadows",
+      "source_url": "https://www.nvi.gov.tr/istanbul/biyometrik-fotograf-nasil-olmalidir"
+    },
+    "validity": {
+      "value": "Taken within the last 6 months",
+      "source_url": "https://www.nvi.gov.tr/istanbul/biyometrik-fotograf-nasil-olmalidir"
+    },
+    "expression_restriction": {
+      "value": "Neutral facial expression with closed lips, eyes open and clearly visible, direct camera gaze",
+      "source_url": "https://www.nvi.gov.tr/istanbul/biyometrik-fotograf-nasil-olmalidir"
+    },
+    "glasses_policy": {
+      "value": "No colored lenses or sunglasses; clear prescription glasses allowed with no reflections on frames; frame edges must not obstruct eyes",
+      "source_url": "https://www.nvi.gov.tr/istanbul/biyometrik-fotograf-nasil-olmalidir"
+    },
+    "face_visibility": {
+      "value": "Face must be centered and fully visible including hairstyle; hair must not cover eyes; chin to forehead must be visible",
+      "source_url": "https://www.nvi.gov.tr/istanbul/biyometrik-fotograf-nasil-olmalidir"
+    },
+    "headwear_policy": {
+      "value": "Hats, headbands, and similar items prohibited; hijab/religious head covering acceptable but must not create shadows on face; chin to forehead must remain visible",
+      "source_url": "https://www.nvi.gov.tr/istanbul/biyometrik-fotograf-nasil-olmalidir"
+    },
+    "accessories": {
+      "value": "No glasses, earrings, hats, or clothing/accessories that prevent face from being seen",
+      "source_url": "https://losangeles-cg.mfa.gov.tr/Mission/ShowInfoNote/411309"
+    },
+    "official_source_url": {
+      "value": "https://www.nvi.gov.tr/istanbul/biyometrik-fotograf-nasil-olmalidir",
+      "source_url": "https://www.nvi.gov.tr/istanbul/biyometrik-fotograf-nasil-olmalidir"
+    }
+  },
+  "unverified": [
+    "head_height",
+    "file_spec",
+    "clothing_restriction",
+    "ears_visibility"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": {
+      "verdict": "confirmed",
+      "evidence": "The official Turkish NVI (Nufus ve Vatandaslik Isleri Genel Mudurlugu) page was fetched directly and states in Turkish: 'Ebati 50 mm X 60 mm, beyaz fonda ve desensiz olmalidir' (The size must be 50mm x 60mm, with a white and patternless background). It also explicitly warns photographers NOT to cut biometric photos to 35x45mm. This matches the claimed value. The Turkish MFA Los Angeles consulate page (losangeles-cg.mfa.gov.tr) independently confirms 50mm x 60mm as well.",
+      "correct_value": "50 x 60 mm"
+    }
+  }
+}

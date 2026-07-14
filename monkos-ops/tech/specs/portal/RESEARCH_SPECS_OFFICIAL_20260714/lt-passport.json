@@ -1,0 +1,50 @@
+{
+  "slug": "lt-passport",
+  "batch": "ro-bg-hr-lv-lt-ee",
+  "verified": {
+    "size": {
+      "value": "40 x 60 mm (photo taken so that a 35 x 45 mm rectangle can be cut from it)",
+      "source_url": "https://migracija.lrv.lt/lt/veiklos-sritys-1/asmens-dokumentai-1/nuotrauku-asmens-dokumentams-pavyzdziai/"
+    },
+    "background": {
+      "value": "must maintain contrast with face, hair and clothing; must remain clear when converted to greyscale",
+      "source_url": "https://migracija.lrv.lt/lt/veiklos-sritys-1/asmens-dokumentai-1/nuotrauku-asmens-dokumentams-pavyzdziai/"
+    },
+    "head_height": {
+      "value": "70-80% of photo height; chin to top of head 31-35mm; 2-4mm from top edge to top of head; 8-10mm from chin to bottom edge",
+      "source_url": "https://migracija.lrv.lt/lt/veiklos-sritys-1/asmens-dokumentai-1/nuotrauku-asmens-dokumentams-pavyzdziai/"
+    },
+    "validity": {
+      "value": "recommended no older than 6 months",
+      "source_url": "https://migracija.lrv.lt/lt/veiklos-sritys-1/asmens-dokumentai-1/nuotrauku-asmens-dokumentams-pavyzdziai/"
+    },
+    "file_spec": {
+      "value": "greyscale for passport; color for temporary travel document",
+      "source_url": "https://migracija.lrv.lt/lt/veiklos-sritys-1/asmens-dokumentai-1/nuotrauku-asmens-dokumentams-pavyzdziai/"
+    },
+    "expression_restriction": {
+      "value": "neutral expression; no laughing, mouth open, yawning, or frowning",
+      "source_url": "https://migracija.lrv.lt/lt/veiklos-sritys-1/asmens-dokumentai-1/nuotrauku-asmens-dokumentams-pavyzdziai/"
+    },
+    "glasses_policy": {
+      "value": "no tinted or colored lenses; frames should not cover any part of the eyes and preferably should not be heavy",
+      "source_url": "https://migracija.lrv.lt/lt/veiklos-sritys-1/asmens-dokumentai-1/nuotrauku-asmens-dokumentams-pavyzdziai/"
+    },
+    "headwear_policy": {
+      "value": "not allowed; religious exception permitted if eyes, eyebrows, cheeks, and chin remain clearly visible",
+      "source_url": "https://migracija.lrv.lt/lt/veiklos-sritys-1/asmens-dokumentai-1/nuotrauku-asmens-dokumentams-pavyzdziai/"
+    },
+    "official_source_url": {
+      "value": "https://migracija.lrv.lt/lt/veiklos-sritys-1/asmens-dokumentai-1/nuotrauku-asmens-dokumentams-pavyzdziai/",
+      "source_url": "https://migracija.lrv.lt/lt/veiklos-sritys-1/asmens-dokumentai-1/nuotrauku-asmens-dokumentams-pavyzdziai/"
+    }
+  },
+  "unverified": [
+    "clothing_restriction",
+    "ears_visibility",
+    "face_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

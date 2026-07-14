@@ -1,0 +1,71 @@
+{
+  "slug": "kr-intl-license",
+  "batch": "kr-jp-us",
+  "verified": {
+    "size": {
+      "value": "3.5 x 4.5cm",
+      "source_url": "https://www.koroad.or.kr/main/board/9/306204/board_view.do?cp=5&listType=list&bdOpenYn=Y&bdNoticeYn=N"
+    },
+    "background": {
+      "value": "white",
+      "source_url": "https://www.koroad.or.kr/main/board/9/306204/board_view.do?cp=5&listType=list&bdOpenYn=Y&bdNoticeYn=N"
+    },
+    "head_height": {
+      "value": "3.2-3.6cm",
+      "source_url": "https://www.koroad.or.kr/main/board/9/306204/board_view.do?cp=5&listType=list&bdOpenYn=Y&bdNoticeYn=N"
+    },
+    "validity": {
+      "value": "taken within 6 months",
+      "source_url": "https://www.koroad.or.kr/main/board/9/306204/board_view.do?cp=5&listType=list&bdOpenYn=Y&bdNoticeYn=N"
+    },
+    "file_spec": {
+      "value": "",
+      "source_url": ""
+    },
+    "clothing_restriction": {
+      "value": "",
+      "source_url": ""
+    },
+    "expression_restriction": {
+      "value": "frontal view, face not tilted",
+      "source_url": "https://www.koroad.or.kr/main/board/9/306204/board_view.do?cp=5&listType=list&bdOpenYn=Y&bdNoticeYn=N"
+    },
+    "glasses_policy": {
+      "value": "sunglasses prohibited; eyes must not be covered",
+      "source_url": "https://www.koroad.or.kr/main/board/9/306204/board_view.do?cp=5&listType=list&bdOpenYn=Y&bdNoticeYn=N"
+    },
+    "ears_visibility": {
+      "value": "hair may cover ears but facial contours must remain visible",
+      "source_url": "https://www.koroad.or.kr/main/board/9/306204/board_view.do?cp=5&listType=list&bdOpenYn=Y&bdNoticeYn=N"
+    },
+    "face_visibility": {
+      "value": "both eyebrows must be at least 70% visible; hair cannot cover cheeks or cheekbones",
+      "source_url": "https://www.koroad.or.kr/main/board/9/306204/board_view.do?cp=5&listType=list&bdOpenYn=Y&bdNoticeYn=N"
+    },
+    "headwear_policy": {
+      "value": "no hats; passport photo standards applied",
+      "source_url": "https://www.koroad.or.kr/main/board/9/306204/board_view.do?cp=5&listType=list&bdOpenYn=Y&bdNoticeYn=N"
+    },
+    "accessories": {
+      "value": "",
+      "source_url": ""
+    },
+    "official_source_url": {
+      "value": "https://www.koroad.or.kr/main/board/6/89356/board_view.do?cp=1&listType=list&bdOpenYn=Y&bdNoticeYn=N",
+      "source_url": "https://www.koroad.or.kr/main/board/6/89356/board_view.do?cp=1&listType=list&bdOpenYn=Y&bdNoticeYn=N"
+    }
+  },
+  "unverified": [
+    "file_spec",
+    "clothing_restriction",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": {
+      "verdict": "confirmed",
+      "evidence": "Multiple MOFA embassy notices (py.mofa.go.kr, mofa.go.kr) confirm photo standard unification (사진규격 일원화) for both domestic and international driver's licenses at 3.5cm x 4.5cm, aligned with ICAO passport standards. The koroad.or.kr notice (Road Traffic Act Article 57) applies to both license types. The safedriving.or.kr (한국도로교통공단 안전운전 통합민원) also lists the same 3.5x4.5cm requirement.",
+      "correct_value": null
+    }
+  }
+}

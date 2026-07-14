@@ -809,6 +809,31 @@ function specsDetailV2Fragment(slug, forceLang = null) {
   ].join('\n');
 
   const faqs = (specData.faqs && (specData.faqs[lang] || specData.faqs.ko)) || (V2_FAQ_FALLBACK[lang] || V2_FAQ_FALLBACK.ko);
+
+  // 제한사항(restrictions) — 공식 출처 기반 리서치 데이터. 값 없으면 자동 스킵.
+  const RESTR_LABELS = {
+    clothing:        { ko: '복장', en: 'Clothing', ja: '服装' },
+    expression:      { ko: '표정', en: 'Expression', ja: '表情' },
+    glasses:         { ko: '안경', en: 'Glasses', ja: '眼鏡' },
+    ears:            { ko: '귀 노출', en: 'Ears', ja: '耳' },
+    face_visibility: { ko: '얼굴 노출', en: 'Face', ja: '顔' },
+    headwear:        { ko: '머리 장식', en: 'Headwear', ja: '帽子・頭飾り' },
+    accessories:     { ko: '장신구', en: 'Accessories', ja: 'アクセサリー' },
+  };
+  const restrData = specData.restrictions || {};
+  const restrEntries = Object.entries(RESTR_LABELS)
+    .map(([key, labels]) => {
+      const r = restrData[key];
+      if (!r) return null;
+      const text = r[lang];
+      if (!text) return null;
+      return { label: labels[lang] || labels.en, text };
+    })
+    .filter(Boolean);
+  const restrictionsHtml = restrEntries.length
+    ? `<div class="v2-restrictions"><h4 class="v2-restr-title">${escapeHtml({ ko: '제한사항', en: 'Restrictions', ja: '制限事項' }[lang] || 'Restrictions')}</h4><dl class="v2-restr-list">${restrEntries.map(e => `<dt>${escapeHtml(e.label)}</dt><dd>${escapeHtml(e.text)}</dd>`).join('')}</dl></div>`
+    : '';
+
   const ogGuideKey = GUIDE_IMAGES.has(`${slug}_${lang}`) ? `${slug}_${lang}`
     : GUIDE_IMAGES.has(slug) ? slug : (parseSizeMm(specData.size) || 'kr-passport');
   const ogImageAbsolute = `https://monkos.ai/images/guides/${ogGuideKey}.webp`;
@@ -844,6 +869,7 @@ function specsDetailV2Fragment(slug, forceLang = null) {
           { "@type": "PropertyValue", "name": "photo size", "value": locField(specData, 'size', lang) },
           { "@type": "PropertyValue", "name": "background", "value": locField(specData, 'background', lang) },
           { "@type": "PropertyValue", "name": "head height", "value": locField(specData, 'headHeight', lang) },
+          ...restrEntries.map(e => ({ "@type": "PropertyValue", "name": e.label, "value": e.text })),
         ].filter(p => p.value && String(p.value).trim()),
       },
     },
@@ -1002,7 +1028,7 @@ ${hreflangTags}
       <div class="v2-half-card v2-card-specs">
         <div class="v2-tabs" role="tablist">
           <button type="button" class="v2-tab on" data-pane="spec" onclick="v2SpecTab(this)">${escapeHtml(tabSpecLabel)}</button>
-          ${detailHtml ? `<button type="button" class="v2-tab" data-pane="detail" onclick="v2SpecTab(this)">${escapeHtml(v2.detailsTitle)}</button>` : ''}
+          ${detailHtml || restrictionsHtml ? `<button type="button" class="v2-tab" data-pane="detail" onclick="v2SpecTab(this)">${escapeHtml(v2.detailsTitle)}</button>` : ''}
           ${rejectHtml ? `<button type="button" class="v2-tab" data-pane="reject" onclick="v2SpecTab(this)">${escapeHtml(v2.rejectionTitle)}</button>` : ''}
         </div>
         <div class="v2-tabpane" data-pane="spec">
@@ -1011,8 +1037,9 @@ ${hreflangTags}
           </table>
           ${sourceHtml}
         </div>
-        ${detailHtml ? `<div class="v2-tabpane" data-pane="detail" hidden>
-          <ul class="v2-detail-list">${detailHtml}</ul>
+        ${detailHtml || restrictionsHtml ? `<div class="v2-tabpane" data-pane="detail" hidden>
+          ${detailHtml ? `<ul class="v2-detail-list">${detailHtml}</ul>` : ''}
+          ${restrictionsHtml}
           ${sourceHtml}
         </div>` : ''}
         ${rejectHtml ? `<div class="v2-tabpane" data-pane="reject" hidden>

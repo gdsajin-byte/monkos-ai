@@ -1,0 +1,65 @@
+{
+  "slug": "my-visa",
+  "batch": "tw-hk-my-la-mv-fr",
+  "verified": {
+    "size": {
+      "value": "3.5 x 5.0 cm (35 x 50 mm)",
+      "source_url": "https://www.imi.gov.my/index.php/en/main-services/passport/malaysian-international-passport/"
+    },
+    "background": {
+      "value": "white",
+      "source_url": "https://www.imi.gov.my/index.php/en/main-services/passport/malaysian-international-passport/"
+    },
+    "head_height": {
+      "value": "25-30 mm (50-60% of photo space per ICAO guidelines)",
+      "source_url": "https://www.imi.gov.my/index.php/en/main-services/passport/malaysian-international-passport/"
+    },
+    "validity": {
+      "value": "taken within the last 6 months",
+      "source_url": "https://www.imi.gov.my/index.php/en/main-services/passport/malaysian-international-passport/"
+    },
+    "file_spec": {
+      "value": "",
+      "source_url": ""
+    },
+    "clothing_restriction": {
+      "value": "",
+      "source_url": ""
+    },
+    "expression_restriction": {
+      "value": "Neutral expression, eyes open, mouth closed, look directly at camera",
+      "source_url": "https://www.imi.gov.my/index.php/en/main-services/passport/malaysian-international-passport/"
+    },
+    "glasses_policy": {
+      "value": "Contact lenses and spectacles/eyeglasses are NOT permitted during photo capture",
+      "source_url": "https://www.imi.gov.my/index.php/en/main-services/passport/malaysian-international-passport/"
+    },
+    "ears_visibility": {
+      "value": "Ears should be visible/exposed",
+      "source_url": "https://www.kln.gov.my/documents/33524/8993488/Photo+specification+for+Malaysian+Passport.pdf/f7006a29-4d69-4434-a079-6c9b77f78516"
+    },
+    "face_visibility": {
+      "value": "Full face clearly visible; hair must not cover the face; forehead must not be covered",
+      "source_url": "https://www.imi.gov.my/index.php/en/main-services/passport/malaysian-international-passport/"
+    },
+    "headwear_policy": {
+      "value": "No hats or headwear; religious hijab permitted but forehead must remain visible",
+      "source_url": "https://www.imi.gov.my/index.php/en/main-services/passport/malaysian-international-passport/"
+    },
+    "accessories": {
+      "value": "",
+      "source_url": ""
+    },
+    "official_source_url": {
+      "value": "https://www.imi.gov.my/index.php/en/main-services/passport/malaysian-international-passport/",
+      "source_url": "https://www.imi.gov.my/index.php/en/main-services/passport/malaysian-international-passport/"
+    }
+  },
+  "unverified": [
+    "file_spec",
+    "clothing_restriction",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

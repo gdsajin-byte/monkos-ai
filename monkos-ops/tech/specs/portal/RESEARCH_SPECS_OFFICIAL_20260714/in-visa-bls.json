@@ -1,0 +1,63 @@
+{
+  "slug": "in-visa-bls",
+  "batch": "uk-cn-ca-sg-in",
+  "verified": {
+    "size": {
+      "value": "2 x 2 inches (51 x 51mm)",
+      "source_url": "https://www.blsinternational.com/india/uae/visa/visa-photo-specification.php"
+    },
+    "background": {
+      "value": "White background",
+      "source_url": "https://www.blsinternational.com/india/uae/visa/visa-photo-specification.php"
+    },
+    "head_height": {
+      "value": "Face takes up 80-85% of the photograph",
+      "source_url": "https://www.blsinternational.com/india/uae/visa/visa-photo-specification.php"
+    },
+    "validity": {
+      "value": "Taken within the last 3 months",
+      "source_url": "https://www.blsinternational.com/india/uae/visa/visa-photo-specification.php"
+    },
+    "file_spec": {
+      "value": "630 x 810 pixels, colour",
+      "source_url": "https://www.blsinternational.com/india/uae/visa/visa-photo-specification.php"
+    },
+    "clothing_restriction": {
+      "value": "Applicants should wear dark-coloured clothing",
+      "source_url": "https://www.blsinternational.com/india/uae/visa/visa-photo-specification.php"
+    },
+    "expression_restriction": {
+      "value": "Natural expression, mouth closed",
+      "source_url": "https://www.blsinternational.com/india/uae/visa/visa-photo-specification.php"
+    },
+    "glasses_policy": {
+      "value": "Remove glasses to avoid reflections; no reflections on glasses permitted",
+      "source_url": "https://www.blsinternational.com/india/uae/visa/visa-photo-specification.php"
+    },
+    "ears_visibility": {
+      "value": "Ears must be completely visible",
+      "source_url": "https://www.blsinternational.com/india/uae/visa/visa-photo-specification.php"
+    },
+    "face_visibility": {
+      "value": "Full face, front view, eyes open; forehead and chin completely visible; head not tilted; full head from top of hair to bottom of chin",
+      "source_url": "https://www.blsinternational.com/india/uae/visa/visa-photo-specification.php"
+    },
+    "headwear_policy": {
+      "value": "Head coverings not permitted except for religious reasons; facial features from bottom of chin to top of forehead and both edges of face must be clearly shown",
+      "source_url": "https://www.blsinternational.com/india/uae/visa/visa-photo-specification.php"
+    },
+    "accessories": {
+      "value": "",
+      "source_url": ""
+    },
+    "official_source_url": {
+      "value": "https://www.blsinternational.com/india/uae/visa/visa-photo-specification.php",
+      "source_url": "https://www.blsinternational.com/india/uae/visa/visa-photo-specification.php"
+    }
+  },
+  "unverified": [
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

@@ -1,0 +1,70 @@
+{
+  "slug": "ca-passport",
+  "batch": "uk-cn-ca-sg-in",
+  "verified": {
+    "size": {
+      "value": "50 x 70mm (2 x 2.75 inches)",
+      "source_url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/canadian-passports/photos.html"
+    },
+    "background": {
+      "value": "Plain white or light-coloured background",
+      "source_url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/canadian-passports/photos.html"
+    },
+    "head_height": {
+      "value": "31-36mm from chin to crown of head",
+      "source_url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/canadian-passports/photos.html"
+    },
+    "validity": {
+      "value": "Taken within the last 6 months",
+      "source_url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/canadian-passports/photos.html"
+    },
+    "file_spec": {
+      "value": "JPEG/JPG format, minimum 420 x 540 pixels, max 4MB",
+      "source_url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/canadian-passports/photos.html"
+    },
+    "clothing_restriction": {
+      "value": "Avoid wearing white clothing",
+      "source_url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/canadian-passports/photos.html"
+    },
+    "expression_restriction": {
+      "value": "Neutral expression, no smiling or frowning, mouth closed",
+      "source_url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/canadian-passports/photos.html"
+    },
+    "glasses_policy": {
+      "value": "Non-tinted prescription glasses allowed if eyes are clearly visible and frame does not cover any part of eyes; sunglasses not acceptable",
+      "source_url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/canadian-passports/photos.html"
+    },
+    "ears_visibility": {
+      "value": "",
+      "source_url": ""
+    },
+    "face_visibility": {
+      "value": "Full front view of head; face in middle of photograph; hair must be off face so edges of face are visible; eyes clearly visible with no glare on lenses",
+      "source_url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/canadian-passports/photos.html"
+    },
+    "headwear_policy": {
+      "value": "Head coverings allowed for religious reasons if full facial features are not obscured; medical headwear permitted with explanatory letter",
+      "source_url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/canadian-passports/photos.html"
+    },
+    "accessories": {
+      "value": "",
+      "source_url": ""
+    },
+    "official_source_url": {
+      "value": "https://www.canada.ca/en/immigration-refugees-citizenship/services/canadian-passports/photos.html",
+      "source_url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/canadian-passports/photos.html"
+    }
+  },
+  "unverified": [
+    "ears_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": {
+      "verdict": "confirmed",
+      "evidence": "The official canada.ca URL returned HTTP 403 but multiple independent sources unanimously confirm the Canadian passport photo size as 50mm wide x 70mm high (2 inches x 2.75 inches). Sources include passlens.com, visapicpro.com, citizenpass.ca, 2x2passportphoto.com, photopass.ai, and passportphotomaker.app -- all citing IRCC requirements and listing 50x70mm / 2x2.75 inches for 2026. The claimed dimensions are correct.",
+      "correct_value": "50 x 70mm (2 x 2.75 inches)"
+    }
+  }
+}

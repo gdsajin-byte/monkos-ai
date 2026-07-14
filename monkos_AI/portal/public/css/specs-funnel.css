@@ -253,6 +253,12 @@ a:hover { color: #5a3de6; }
   content: ''; position: absolute; left: 0; top: 16px;
   width: 5px; height: 5px; border-radius: 50%; background: #6c4fff;
 }
+.v2-restrictions { margin-top: 16px; }
+.v2-restr-title { font-size: 13px; font-weight: 600; color: #6c4fff; margin: 0 0 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+.v2-restr-list { margin: 0; padding: 0; }
+.v2-restr-list dt { font-size: 13px; font-weight: 600; color: #333; margin-top: 10px; }
+.v2-restr-list dt:first-child { margin-top: 0; }
+.v2-restr-list dd { font-size: 13px; color: #555; line-height: 1.6; margin: 2px 0 0 0; }
 .v2-reject-list { list-style: none; padding: 0; margin: 0; counter-reset: rj; }
 .v2-reject-list li {
   padding: 12px 0; border-bottom: 1px solid rgba(0,0,0,0.04);

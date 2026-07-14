@@ -1,0 +1,67 @@
+{
+  "slug": "kr-passport",
+  "batch": "kr-jp-us",
+  "verified": {
+    "size": {
+      "value": "3.5 x 4.5cm",
+      "source_url": "https://www.passport.go.kr/home/kor/contents.do?menuPos=32"
+    },
+    "background": {
+      "value": "white (uniform, no ink marks, no borders, no artificial removal or compositing)",
+      "source_url": "https://www.passport.go.kr/home/kor/contents.do?menuPos=32"
+    },
+    "head_height": {
+      "value": "3.2-3.6cm (from crown of head, excluding hair, to chin)",
+      "source_url": "https://www.passport.go.kr/home/kor/contents.do?menuPos=32"
+    },
+    "validity": {
+      "value": "taken within 6 months before application",
+      "source_url": "https://www.passport.go.kr/home/kor/contents.do?menuPos=32"
+    },
+    "file_spec": {
+      "value": "JPG/JPEG, max 500KB, recommended 413x531 pixels (acceptable range: 395-431 x 507-550 pixels), 300 DPI recommended",
+      "source_url": "https://www.passport.go.kr/home/kor/contents.do?menuPos=12"
+    },
+    "clothing_restriction": {
+      "value": "neck covering acceptable if face outline exposed; no scarves covering facial contours",
+      "source_url": "https://www.passport.go.kr/home/kor/contents.do?menuPos=32"
+    },
+    "expression_restriction": {
+      "value": "natural neutral expression, closed mouth, no teeth showing, eyes open looking straight ahead",
+      "source_url": "https://www.passport.go.kr/home/kor/contents.do?menuPos=32"
+    },
+    "glasses_policy": {
+      "value": "regular glasses permitted if frames do not obscure eyes and no glare; no sunglasses, tinted, colored, cosmetic, or blue-light lenses",
+      "source_url": "https://www.passport.go.kr/home/kor/contents.do?menuPos=32"
+    },
+    "ears_visibility": {
+      "value": "ears must be visible; hair must not cover ears (exception: naturally non-visible ears from front)",
+      "source_url": "https://www.passport.go.kr/home/kor/contents.do?menuPos=32"
+    },
+    "face_visibility": {
+      "value": "hair cannot cover eyes, eyebrows, or facial contours (cheekbones, jawline); forehead to chin must be fully visible",
+      "source_url": "https://www.passport.go.kr/home/kor/contents.do?menuPos=32"
+    },
+    "headwear_policy": {
+      "value": "no hats, headbands, or hair accessories; religious headwear permitted if worn daily and full face visible (forehead to chin)",
+      "source_url": "https://www.passport.go.kr/home/kor/contents.do?menuPos=32"
+    },
+    "accessories": {
+      "value": "no jewelry causing light reflection or obscuring face; no earphones or wireless earbuds",
+      "source_url": "https://www.passport.go.kr/home/kor/contents.do?menuPos=32"
+    },
+    "official_source_url": {
+      "value": "https://www.passport.go.kr/home/kor/contents.do?menuPos=32",
+      "source_url": "https://www.passport.go.kr/home/kor/contents.do?menuPos=32"
+    }
+  },
+  "unverified": [],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": {
+      "verdict": "confirmed",
+      "evidence": "Official passport.go.kr (외교부 여권안내) confirms 3.5cm x 4.5cm. Head length 3.2-3.6cm (crown to chin). Compliant with ICAO standards. Fetched directly from https://www.passport.go.kr/home/kor/contents.do?menuPos=32",
+      "correct_value": null
+    }
+  }
+}

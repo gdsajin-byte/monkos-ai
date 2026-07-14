@@ -1,0 +1,50 @@
+{
+  "slug": "si-passport",
+  "batch": "si-tr-mx",
+  "verified": {
+    "size": {
+      "value": "3.5 x 4.5 cm (35 x 45 mm)",
+      "source_url": "https://e-uprava.gov.si/si/podrocja/osebni-dokumenti-potrdila-selitev/osebni-dokumenti/potni-list/pogosta-vprasanja/kaksna-fotografija-je-ustrezna-za-izdajo-potnega-lista.html"
+    },
+    "head_height": {
+      "value": "Face from top of head to chin must occupy 70% of the photograph",
+      "source_url": "https://e-uprava.gov.si/si/podrocja/osebni-dokumenti-potrdila-selitev/osebni-dokumenti/potni-list/pogosta-vprasanja/kaksna-fotografija-je-ustrezna-za-izdajo-potnega-lista.html"
+    },
+    "expression_restriction": {
+      "value": "Neutral facial expression, mouth must be closed",
+      "source_url": "https://e-uprava.gov.si/si/podrocja/osebni-dokumenti-potrdila-selitev/osebni-dokumenti/potni-list/pogosta-vprasanja/kaksna-fotografija-je-ustrezna-za-izdajo-potnega-lista.html"
+    },
+    "face_visibility": {
+      "value": "Frontal view, uncovered forehead, face clearly visible and suitable for biometric capture",
+      "source_url": "https://e-uprava.gov.si/si/podrocja/osebni-dokumenti-potrdila-selitev/osebni-dokumenti/potni-list/pogosta-vprasanja/kaksna-fotografija-je-ustrezna-za-izdajo-potnega-lista.html"
+    },
+    "headwear_policy": {
+      "value": "No hats, caps, or scarves allowed; exceptions only in exceptional cases (religious/medical)",
+      "source_url": "https://e-uprava.gov.si/si/podrocja/osebni-dokumenti-potrdila-selitev/osebni-dokumenti/potni-list/pogosta-vprasanja/kaksna-fotografija-je-ustrezna-za-izdajo-potnega-lista.html"
+    },
+    "file_spec": {
+      "value": "Printed on white thin glossy photographic paper, minimum 600 dpi resolution; alternatively, digital photo via e-fotograf system with reference number",
+      "source_url": "https://e-uprava.gov.si/si/podrocja/osebni-dokumenti-potrdila-selitev/osebni-dokumenti/potni-list/pogosta-vprasanja/kaksna-fotografija-je-ustrezna-za-izdajo-potnega-lista.html"
+    },
+    "official_source_url": {
+      "value": "https://e-uprava.gov.si/si/podrocja/osebni-dokumenti-potrdila-selitev/osebni-dokumenti/potni-list/pogosta-vprasanja/kaksna-fotografija-je-ustrezna-za-izdajo-potnega-lista.html",
+      "source_url": "https://e-uprava.gov.si/si/podrocja/osebni-dokumenti-potrdila-selitev/osebni-dokumenti/potni-list/pogosta-vprasanja/kaksna-fotografija-je-ustrezna-za-izdajo-potnega-lista.html"
+    }
+  },
+  "unverified": [
+    "background",
+    "validity",
+    "clothing_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": {
+      "verdict": "confirmed",
+      "evidence": "The official Slovenian e-uprava page was fetched directly and states: 'Vlogi je potrebno priloziti eno fotografijo velikosti 3,5 x 4,5 cm' (One photograph of size 3.5 x 4.5 cm must be attached). This matches the claimed value of 35 x 45 mm exactly. Multiple independent third-party sources (visafoto.com, mybiometricphotos.com, timpson.co.uk) also consistently cite 35x45mm for Slovenia passport photos.",
+      "correct_value": "3.5 x 4.5 cm (35 x 45 mm)"
+    }
+  }
+}

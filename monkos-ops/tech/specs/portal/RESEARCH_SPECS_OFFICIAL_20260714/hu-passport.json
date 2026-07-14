@@ -1,0 +1,61 @@
+{
+  "slug": "hu-passport",
+  "batch": "is-ie-pl-cz-sk-hu",
+  "verified": {
+    "size": {
+      "value": "35 x 45 mm",
+      "source_url": "https://telaviv.mfa.gov.hu/en/utleveligenyles"
+    },
+    "background": {
+      "value": "plain gray, no shadows",
+      "source_url": "https://telaviv.mfa.gov.hu/en/utleveligenyles"
+    },
+    "head_height": {
+      "value": ""
+    },
+    "validity": {
+      "value": "taken within the last 6 months",
+      "source_url": "https://telaviv.mfa.gov.hu/en/utleveligenyles"
+    },
+    "file_spec": {
+      "value": ""
+    },
+    "clothing_restriction": {
+      "value": ""
+    },
+    "expression_restriction": {
+      "value": "neutral facial expression, closed mouth",
+      "source_url": "https://telaviv.mfa.gov.hu/en/utleveligenyles"
+    },
+    "glasses_policy": {
+      "value": "not allowed unless for documented medical reasons",
+      "source_url": "https://telaviv.mfa.gov.hu/en/utleveligenyles"
+    },
+    "ears_visibility": {
+      "value": ""
+    },
+    "face_visibility": {
+      "value": "face fully visible and centered, both eyes open and facing camera",
+      "source_url": "https://telaviv.mfa.gov.hu/en/utleveligenyles"
+    },
+    "headwear_policy": {
+      "value": "not allowed unless for religious or medical reasons with documentation",
+      "source_url": "https://telaviv.mfa.gov.hu/en/utleveligenyles"
+    },
+    "accessories": {
+      "value": ""
+    },
+    "official_source_url": {
+      "value": "https://telaviv.mfa.gov.hu/en/utleveligenyles"
+    }
+  },
+  "unverified": [
+    "head_height",
+    "file_spec",
+    "clothing_restriction",
+    "ears_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

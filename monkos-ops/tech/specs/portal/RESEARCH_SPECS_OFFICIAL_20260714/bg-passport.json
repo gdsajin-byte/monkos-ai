@@ -1,0 +1,53 @@
+{
+  "slug": "bg-passport",
+  "batch": "ro-bg-hr-lv-lt-ee",
+  "verified": {
+    "size": {
+      "value": "3.5 x 4.5 cm (35 x 45mm)",
+      "source_url": "https://www.mfa.bg/en/services-travel/consular-services/consular-services-abroad/issuing-bid"
+    },
+    "background": {
+      "value": "light colored",
+      "source_url": "https://www.mfa.bg/en/services-travel/consular-services/consular-services-abroad/issuing-bid"
+    },
+    "head_height": {
+      "value": "face should occupy 70-80% of photo, shown in full-face position",
+      "source_url": "https://www.mfa.bg/en/services-travel/consular-services/consular-services-abroad/issuing-bid"
+    },
+    "validity": {
+      "value": "taken within 6 months",
+      "source_url": "https://www.mfa.bg/en/services-travel/consular-services/consular-services-abroad/issuing-bid"
+    },
+    "expression_restriction": {
+      "value": "neutral expression, full-face position only",
+      "source_url": "https://www.mfa.bg/en/services-travel/consular-services/consular-services-abroad/issuing-bid"
+    },
+    "glasses_policy": {
+      "value": "darkly tinted glasses not accepted; remove glasses unless medically required",
+      "source_url": "https://www.mfa.bg/en/services-travel/consular-services/consular-services-abroad/issuing-bid"
+    },
+    "face_visibility": {
+      "value": "face must be clear and large, full-face position only; no red eyes accepted",
+      "source_url": "https://www.mfa.bg/en/services-travel/consular-services/consular-services-abroad/issuing-bid"
+    },
+    "official_source_url": {
+      "value": "https://www.mfa.bg/en/services-travel/consular-services/consular-services-abroad/issuing-bid",
+      "source_url": "https://www.mfa.bg/en/services-travel/consular-services/consular-services-abroad/issuing-bid"
+    }
+  },
+  "unverified": [
+    "file_spec",
+    "clothing_restriction",
+    "ears_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": {
+      "verdict": "confirmed",
+      "evidence": "The official mfa.bg source was blocked by bot protection (Radware redirect). However, multiple independent third-party sources consistently confirm 35x45mm (3.5x4.5 cm) for Bulgarian passports: visafoto.com ('3.5x4.5 cm'), knowsize.com, mybiometricphotos.com, ozelu.com, visapics.org, and photoid.app all cite 35x45mm. This is also the standard EU/ICAO passport photo size. No contradicting evidence was found from any source.",
+      "correct_value": "3.5 x 4.5 cm (35 x 45mm)"
+    }
+  }
+}

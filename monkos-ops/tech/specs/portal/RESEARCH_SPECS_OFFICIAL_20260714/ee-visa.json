@@ -1,0 +1,44 @@
+{
+  "slug": "ee-visa",
+  "batch": "ro-bg-hr-lv-lt-ee",
+  "verified": {
+    "size": {
+      "value": "35 x 45 mm",
+      "source_url": "https://www.politsei.ee/en/requirement-and-instructions-for-the-document-photo"
+    },
+    "background": {
+      "value": "light, single color, without extraneous objects",
+      "source_url": "https://www.politsei.ee/en/requirement-and-instructions-for-the-document-photo"
+    },
+    "validity": {
+      "value": "not older than 6 months",
+      "source_url": "https://www.politsei.ee/en/requirement-and-instructions-for-the-document-photo"
+    },
+    "expression_restriction": {
+      "value": "look straight into camera, eyes must be level, head not tilted, face centered",
+      "source_url": "https://www.politsei.ee/en/requirement-and-instructions-for-the-document-photo"
+    },
+    "glasses_policy": {
+      "value": "eyes must be visible from behind spectacle frames; glasses may not reflect light",
+      "source_url": "https://www.politsei.ee/en/requirement-and-instructions-for-the-document-photo"
+    },
+    "headwear_policy": {
+      "value": "no headwear or headphones allowed; religious or medical head coverings permitted",
+      "source_url": "https://www.politsei.ee/en/requirement-and-instructions-for-the-document-photo"
+    },
+    "official_source_url": {
+      "value": "https://www.politsei.ee/en/requirement-and-instructions-for-the-document-photo",
+      "source_url": "https://www.politsei.ee/en/requirement-and-instructions-for-the-document-photo"
+    }
+  },
+  "unverified": [
+    "head_height",
+    "file_spec",
+    "clothing_restriction",
+    "ears_visibility",
+    "face_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

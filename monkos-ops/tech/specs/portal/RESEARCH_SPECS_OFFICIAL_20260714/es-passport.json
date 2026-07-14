@@ -1,0 +1,56 @@
+{
+  "slug": "es-passport",
+  "batch": "de-it-es-pt-nl-be",
+  "verified": {
+    "size": {
+      "value": "32 x 26mm",
+      "source_url": "https://www.dnielectronico.es/PortalDNIe/PRF1_Cons02.action?pag=REF_1084"
+    },
+    "background": {
+      "value": "white, uniform, smooth (uniforme blanco y liso)",
+      "source_url": "https://www.dnielectronico.es/PortalDNIe/PRF1_Cons02.action?pag=REF_1084"
+    },
+    "validity": {
+      "value": "recent (reciente)",
+      "source_url": "https://www.dnielectronico.es/PortalDNIe/PRF1_Cons02.action?pag=REF_1084"
+    },
+    "expression_restriction": {
+      "value": "neutral expression, no smiles or gestures",
+      "source_url": "https://www.dnielectronico.es/PortalDNIe/PRF1_Cons02.action?pag=REF_1084"
+    },
+    "glasses_policy": {
+      "value": "transparent lenses only; dark-tinted glasses (gafas de cristales oscuros) not permitted; no reflections allowed",
+      "source_url": "https://www.dnielectronico.es/PortalDNIe/PRF1_Cons02.action?pag=REF_1084"
+    },
+    "headwear_policy": {
+      "value": "not permitted except for religious reasons with justification; oval of face must remain completely visible from hairline to chin",
+      "source_url": "https://www.dnielectronico.es/PortalDNIe/PRF1_Cons02.action?pag=REF_1084"
+    },
+    "face_visibility": {
+      "value": "full face oval visible including eyebrows, eyes, nose, mouth and chin (el ovalo de la cara, que incluye cejas, ojos, nariz, boca y menton); taken from front",
+      "source_url": "https://www.dnielectronico.es/PortalDNIe/PRF1_Cons02.action?pag=REF_1084"
+    },
+    "file_spec": {
+      "value": "high resolution on quality photographic paper (alta resolucion en papel fotografico de buena calidad)",
+      "source_url": "https://www.dnielectronico.es/PortalDNIe/PRF1_Cons02.action?pag=REF_1084"
+    },
+    "official_source_url": {
+      "value": "https://www.dnielectronico.es/PortalDNIe/PRF1_Cons02.action?pag=REF_1084",
+      "source_url": "https://www.dnielectronico.es/PortalDNIe/PRF1_Cons02.action?pag=REF_1084"
+    }
+  },
+  "unverified": [
+    "head_height",
+    "clothing_restriction",
+    "ears_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": {
+      "verdict": "confirmed",
+      "evidence": "The cited official source (dnielectronico.es, the official DNI portal) confirms the photo size as '32 x 26 milimetros'. This was directly fetched and verified. The notation '32 x 26mm' follows Spanish official convention of height x width (the photo is 26mm wide and 32mm tall in portrait orientation). Multiple independent sources confirm this unique Spanish format: photogov.net lists 'es-passport-32x26mm', visafoto.com confirms 26x32mm (width x height notation), mybiometricphotos.com confirms the same. Spain notably uses a smaller format than the standard European 35x45mm. Both passport and DNI use this same 32x26mm (or equivalently 26x32mm in WxH) specification.",
+      "correct_value": "32 x 26mm"
+    }
+  }
+}

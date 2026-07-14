@@ -1,0 +1,53 @@
+{
+  "slug": "mx-passport",
+  "batch": "si-tr-mx",
+  "verified": {
+    "size": {
+      "value": "3.5 x 4.5 cm (35 x 45 mm)",
+      "source_url": "https://sre.gob.mx/tramites-y-servicios/pasaportes?id=252"
+    },
+    "background": {
+      "value": "White",
+      "source_url": "https://sre.gob.mx/tramites-y-servicios/pasaportes?id=252"
+    },
+    "validity": {
+      "value": "Taken within 30 days before passport application",
+      "source_url": "https://sre.gob.mx/tramites-y-servicios/pasaportes?id=252"
+    },
+    "expression_restriction": {
+      "value": "Neutral expression, mouth closed, face squared to camera",
+      "source_url": "https://www.gob.mx/sre/acciones-y-programas/tramite-de-pasaporte-8014"
+    },
+    "glasses_policy": {
+      "value": "No glasses of any kind allowed",
+      "source_url": "https://sre.gob.mx/tramites-y-servicios/pasaportes?id=252"
+    },
+    "face_visibility": {
+      "value": "Frontal view, face completely unobstructed, nothing covering the face",
+      "source_url": "https://www.gob.mx/sre/acciones-y-programas/tramite-de-pasaporte-8014"
+    },
+    "headwear_policy": {
+      "value": "Head must be completely uncovered (cabeza totalmente descubierta)",
+      "source_url": "https://www.gob.mx/sre/acciones-y-programas/tramite-de-pasaporte-8014"
+    },
+    "official_source_url": {
+      "value": "https://sre.gob.mx/tramites-y-servicios/pasaportes?id=252",
+      "source_url": "https://sre.gob.mx/tramites-y-servicios/pasaportes?id=252"
+    }
+  },
+  "unverified": [
+    "head_height",
+    "file_spec",
+    "clothing_restriction",
+    "ears_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": {
+      "verdict": "uncertain",
+      "evidence": "The cited SRE page (sre.gob.mx/tramites-y-servicios/pasaportes?id=252) was fetched directly but does NOT specify exact dimensions in mm or cm -- it only refers to 'fotografias tamano pasaporte' (passport-sized photographs) without stating 35x45mm explicitly. However, other SRE consulate pages (e.g., embamex.sre.gob.mx/paisesbajos) do reference 'tamano pasaporte (3.5 x 4.5 cm)' or '4.5 x 3.5 cm', and multiple third-party sources (visafoto.com, passport-photo.online, 123passportphoto.com) consistently cite 35x45mm. The value of 35x45mm is very likely correct based on consular sources and widespread third-party consensus, but the specific cited URL does not contain the explicit dimension. Marking uncertain because the claimed source does not substantiate the specific measurement.",
+      "correct_value": null
+    }
+  }
+}

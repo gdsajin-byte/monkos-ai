@@ -1,0 +1,38 @@
+{
+  "slug": "cd-visa",
+  "batch": "east-africa",
+  "verified": {
+    "size": {
+      "value": "2 x 2 inch",
+      "source_url": "https://www.ambadrcusa.org/consular-affairs/passport-visa-tenant-lieu/"
+    },
+    "validity": {
+      "value": "taken within last 6 months",
+      "source_url": "https://www.ambadrcusa.org/consular-affairs/passport-visa-tenant-lieu/"
+    },
+    "official_source_url": {
+      "value": "https://www.ambadrcusa.org/consular-affairs/passport-visa-tenant-lieu/",
+      "source_url": "https://www.ambadrcusa.org/consular-affairs/passport-visa-tenant-lieu/"
+    }
+  },
+  "unverified": [
+    "background",
+    "head_height",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": {
+      "verdict": "uncertain",
+      "evidence": "The cited source (DRC Embassy in Washington, ambadrcusa.org) states 2x2 inch photos for visa applications. The congo-evisa.com site also confirms '2 inches by 2 inches (50mm by 50mm)' for eVisa applications. However, other third-party sources cite different dimensions (e.g., 35x45mm). The 2x2 inch specification has more support for visa applications than for passports (the eVisa portal agrees), but there is still conflicting evidence from photo specification databases that list 35x45mm. The discrepancy between embassy/eVisa sources (2x2 inch) and photo databases (35x45mm) prevents full confirmation.",
+      "correct_value": "2x2 inch (per embassy and eVisa portal) or 35x45mm (per photo databases)"
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "slug": "lv-visa",
+  "batch": "ro-bg-hr-lv-lt-ee",
+  "verified": {
+    "size": {
+      "value": "35 x 45 mm",
+      "source_url": "https://www.mfa.gov.lv/en/documents-required-apply-visa"
+    },
+    "official_source_url": {
+      "value": "https://www.pmlp.gov.lv/en/visas-and-invitations",
+      "source_url": "https://www.pmlp.gov.lv/en/visas-and-invitations"
+    }
+  },
+  "unverified": [
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

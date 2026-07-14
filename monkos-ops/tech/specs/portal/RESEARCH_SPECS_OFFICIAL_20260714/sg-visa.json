@@ -1,0 +1,65 @@
+{
+  "slug": "sg-visa",
+  "batch": "uk-cn-ca-sg-in",
+  "verified": {
+    "size": {
+      "value": "35 x 45mm",
+      "source_url": "https://www.ica.gov.sg/photo-guidelines"
+    },
+    "background": {
+      "value": "Plain white background",
+      "source_url": "https://www.ica.gov.sg/photo-guidelines"
+    },
+    "head_height": {
+      "value": "25-35mm from chin to crown of head",
+      "source_url": "https://www.ica.gov.sg/photo-guidelines"
+    },
+    "validity": {
+      "value": "Taken within the last 3 months",
+      "source_url": "https://www.ica.gov.sg/photo-guidelines"
+    },
+    "file_spec": {
+      "value": "400 x 514 pixels for e-Services upload; accepted formats: jpg, jpeg, heic, heif, png; max 8MB",
+      "source_url": "https://www.ica.gov.sg/photo-guidelines"
+    },
+    "clothing_restriction": {
+      "value": "",
+      "source_url": ""
+    },
+    "expression_restriction": {
+      "value": "Neutral expression, mouth closed, eyes open",
+      "source_url": "https://www.ica.gov.sg/photo-guidelines"
+    },
+    "glasses_policy": {
+      "value": "Glasses permitted if eyes clearly visible with no glare on lenses; dark-tinted or reflective glasses not allowed",
+      "source_url": "https://www.ica.gov.sg/photo-guidelines"
+    },
+    "ears_visibility": {
+      "value": "",
+      "source_url": ""
+    },
+    "face_visibility": {
+      "value": "Full face visible from bottom of chin to top of forehead; both edges of face clearly shown",
+      "source_url": "https://www.ica.gov.sg/photo-guidelines"
+    },
+    "headwear_policy": {
+      "value": "No headgear unless worn habitually in accordance with religious or racial customs",
+      "source_url": "https://www.ica.gov.sg/photo-guidelines"
+    },
+    "accessories": {
+      "value": "",
+      "source_url": ""
+    },
+    "official_source_url": {
+      "value": "https://www.ica.gov.sg/photo-guidelines",
+      "source_url": "https://www.ica.gov.sg/photo-guidelines"
+    }
+  },
+  "unverified": [
+    "clothing_restriction",
+    "ears_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

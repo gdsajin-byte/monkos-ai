@@ -1,0 +1,59 @@
+{
+  "slug": "ch-passport",
+  "batch": "ch-at-se-no-dk-fi",
+  "verified": {
+    "size": {
+      "value": "35 x 45 mm",
+      "source_url": "https://www.fedpol.admin.ch/de/beantragen"
+    },
+    "background": {
+      "value": "Light grey (neutral, monochrome; must provide sufficient contrast to head and hair)",
+      "source_url": "https://www.fedpol.admin.ch/de/beantragen"
+    },
+    "head_height": {
+      "value": "29-34 mm (chin to crown), corresponding to 70-80% of image height",
+      "source_url": "https://www.fedpol.admin.ch/de/beantragen"
+    },
+    "validity": {
+      "value": "Taken within 6 months",
+      "source_url": "https://www.fedpol.admin.ch/de/beantragen"
+    },
+    "expression_restriction": {
+      "value": "Neutral expression, mouth closed, eyes open and looking directly at camera",
+      "source_url": "https://www.fedpol.admin.ch/de/beantragen"
+    },
+    "glasses_policy": {
+      "value": "Glasses allowed if eyes fully visible, lenses must be clear (no tinting), no glare or reflections",
+      "source_url": "https://www.fedpol.admin.ch/de/beantragen"
+    },
+    "headwear_policy": {
+      "value": "Not allowed; exceptions for religious or medical reasons (must not cover face or cast shadows; signed statement required)",
+      "source_url": "https://www.fedpol.admin.ch/de/beantragen"
+    },
+    "face_visibility": {
+      "value": "Eyes open, looking directly at camera; face photographed from front; 5mm space between top of head and edge of photo",
+      "source_url": "https://www.fedpol.admin.ch/de/beantragen"
+    },
+    "file_spec": {
+      "value": "Colour digital photo required",
+      "source_url": "https://www.fedpol.admin.ch/de/beantragen"
+    },
+    "official_source_url": {
+      "value": "https://www.fedpol.admin.ch/de/beantragen",
+      "source_url": "https://www.fedpol.admin.ch/de/beantragen"
+    }
+  },
+  "unverified": [
+    "clothing_restriction",
+    "ears_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": {
+      "verdict": "confirmed",
+      "evidence": "The official Swiss Federal Office of Police (fedpol) criteria document for passport photos specifies 35 x 45 mm. This was confirmed via the fedpol photo criteria PDF (fotomustertafel.pdf) and corroborated by multiple authoritative sources including passport-photo.online which cites the fedpol source directly. The claimed source URL (fedpol.admin.ch/de/beantragen) is a general application page rather than the specific photo criteria page, but the dimension itself is correct.",
+      "correct_value": null
+    }
+  }
+}

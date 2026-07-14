@@ -1,0 +1,35 @@
+{
+  "slug": "lv-passport",
+  "batch": "ro-bg-hr-lv-lt-ee",
+  "verified": {
+    "size": {
+      "value": "35 x 45 mm",
+      "source_url": "https://www2.mfa.gov.lv/en/austria/consular-information/applying-for-passport-and-or-id-card"
+    },
+    "background": {
+      "value": "white",
+      "source_url": "https://www2.mfa.gov.lv/en/austria/consular-information/applying-for-passport-and-or-id-card"
+    },
+    "validity": {
+      "value": "not older than 3 months",
+      "source_url": "https://www2.mfa.gov.lv/en/austria/consular-information/applying-for-passport-and-or-id-card"
+    },
+    "official_source_url": {
+      "value": "https://www.pmlp.gov.lv/en/citizens-passport",
+      "source_url": "https://www.pmlp.gov.lv/en/citizens-passport"
+    }
+  },
+  "unverified": [
+    "head_height",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

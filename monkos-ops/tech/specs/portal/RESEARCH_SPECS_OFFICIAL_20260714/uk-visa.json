@@ -1,0 +1,67 @@
+{
+  "slug": "uk-visa",
+  "batch": "uk-cn-ca-sg-in",
+  "verified": {
+    "size": {
+      "value": "",
+      "source_url": ""
+    },
+    "background": {
+      "value": "Plain light-coloured background",
+      "source_url": "https://www.gov.uk/guidance/how-to-take-a-photo-for-a-visa-application-or-permission"
+    },
+    "head_height": {
+      "value": "",
+      "source_url": ""
+    },
+    "validity": {
+      "value": "",
+      "source_url": ""
+    },
+    "file_spec": {
+      "value": "JPG/JPEG, minimum 600 x 750 pixels, 50KB-6MB",
+      "source_url": "https://www.gov.uk/guidance/how-to-take-a-photo-for-a-visa-application-or-permission"
+    },
+    "clothing_restriction": {
+      "value": "Shoulders and torso must be clothed",
+      "source_url": "https://www.gov.uk/guidance/how-to-take-a-photo-for-a-visa-application-or-permission"
+    },
+    "expression_restriction": {
+      "value": "Plain expression, mouth closed",
+      "source_url": "https://www.gov.uk/guidance/how-to-take-a-photo-for-a-visa-application-or-permission"
+    },
+    "glasses_policy": {
+      "value": "No sunglasses or tinted lenses; regular glasses only if medically necessary with eyes clearly visible",
+      "source_url": "https://www.gov.uk/guidance/how-to-take-a-photo-for-a-visa-application-or-permission"
+    },
+    "ears_visibility": {
+      "value": "",
+      "source_url": ""
+    },
+    "face_visibility": {
+      "value": "Facial features clearly visible; facing towards and looking straight at camera; eyes open and visible; no hair in front of eyes; no shadows on face",
+      "source_url": "https://www.gov.uk/guidance/how-to-take-a-photo-for-a-visa-application-or-permission"
+    },
+    "headwear_policy": {
+      "value": "No head covering unless for religious or medical reasons",
+      "source_url": "https://www.gov.uk/guidance/how-to-take-a-photo-for-a-visa-application-or-permission"
+    },
+    "accessories": {
+      "value": "",
+      "source_url": ""
+    },
+    "official_source_url": {
+      "value": "https://www.gov.uk/guidance/how-to-take-a-photo-for-a-visa-application-or-permission",
+      "source_url": "https://www.gov.uk/guidance/how-to-take-a-photo-for-a-visa-application-or-permission"
+    }
+  },
+  "unverified": [
+    "size",
+    "head_height",
+    "validity",
+    "ears_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

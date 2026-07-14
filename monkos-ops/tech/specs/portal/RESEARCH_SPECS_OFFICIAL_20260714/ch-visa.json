@@ -1,0 +1,56 @@
+{
+  "slug": "ch-visa",
+  "batch": "ch-at-se-no-dk-fi",
+  "verified": {
+    "size": {
+      "value": "35 x 45 mm",
+      "source_url": "https://www.eda.admin.ch/countries/usa/en/home/visa/entry-ch/up-90-days/documents-schengen.html"
+    },
+    "background": {
+      "value": "Light grey (Schengen standard; plain, uniform, no shadows or patterns)",
+      "source_url": "https://www.eda.admin.ch/countries/usa/en/home/visa/entry-ch/up-90-days/documents-schengen.html"
+    },
+    "head_height": {
+      "value": "32-36 mm (chin to crown), 70-80% of photo",
+      "source_url": "https://www.eda.admin.ch/countries/usa/en/home/visa/entry-ch/up-90-days/documents-schengen.html"
+    },
+    "validity": {
+      "value": "Taken within 6 months",
+      "source_url": "https://www.eda.admin.ch/countries/usa/en/home/visa/entry-ch/up-90-days/documents-schengen.html"
+    },
+    "expression_restriction": {
+      "value": "Neutral expression, mouth closed, eyes open and visible",
+      "source_url": "https://www.eda.admin.ch/countries/usa/en/home/visa/entry-ch/up-90-days/documents-schengen.html"
+    },
+    "glasses_policy": {
+      "value": "Allowed only if eyes fully visible, no reflections, no tinted lenses",
+      "source_url": "https://www.eda.admin.ch/countries/usa/en/home/visa/entry-ch/up-90-days/documents-schengen.html"
+    },
+    "headwear_policy": {
+      "value": "Not allowed; exception for religious headwear only if face fully visible from chin to forehead",
+      "source_url": "https://www.eda.admin.ch/countries/usa/en/home/visa/entry-ch/up-90-days/documents-schengen.html"
+    },
+    "face_visibility": {
+      "value": "Full face visible, frontal view, eyes looking at camera",
+      "source_url": "https://www.eda.admin.ch/countries/usa/en/home/visa/entry-ch/up-90-days/documents-schengen.html"
+    },
+    "official_source_url": {
+      "value": "https://www.eda.admin.ch/countries/usa/en/home/visa/entry-ch/up-90-days/documents-schengen.html",
+      "source_url": "https://www.eda.admin.ch/countries/usa/en/home/visa/entry-ch/up-90-days/documents-schengen.html"
+    }
+  },
+  "unverified": [
+    "file_spec",
+    "clothing_restriction",
+    "ears_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": {
+      "verdict": "confirmed",
+      "evidence": "Switzerland follows the standard Schengen visa photo size of 35 x 45 mm. This is confirmed by the EU Visa Code Regulation (EC) No 810/2009 which mandates this size for all 27 Schengen member states. One official EDA document (from the South Africa consulate) mentions a range of '35-40 mm in width' suggesting some tolerance, but the standard specification remains 35 x 45 mm. The claimed source URL (eda.admin.ch) returned 403 Forbidden so the exact source page content could not be verified, but the dimension is correct per Schengen standards.",
+      "correct_value": null
+    }
+  }
+}

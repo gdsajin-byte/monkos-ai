@@ -1,0 +1,65 @@
+{
+  "slug": "jp-id",
+  "batch": "kr-jp-us",
+  "verified": {
+    "size": {
+      "value": "3.5 x 4.5cm (35 x 45mm)",
+      "source_url": "https://www.kojinbango-card.go.jp/apprec/apply/facephoto/"
+    },
+    "background": {
+      "value": "plain, no background (無背景)",
+      "source_url": "https://www.kojinbango-card.go.jp/apprec/apply/facephoto/"
+    },
+    "head_height": {
+      "value": "",
+      "source_url": ""
+    },
+    "validity": {
+      "value": "taken within 6 months",
+      "source_url": "https://www.kojinbango-card.go.jp/apprec/apply/facephoto/"
+    },
+    "file_spec": {
+      "value": "JPEG only, RGB color mode, 20KB-7MB, 480-6000 pixels width and height",
+      "source_url": "https://www.kojinbango-card.go.jp/apprec/apply/facephoto/"
+    },
+    "clothing_restriction": {
+      "value": "",
+      "source_url": ""
+    },
+    "expression_restriction": {
+      "value": "frontal view; face must be identifiable; eyes open",
+      "source_url": "https://www.kojinbango-card.go.jp/apprec/apply/facephoto/"
+    },
+    "glasses_policy": {
+      "value": "prohibited if frames cover eyes or cause reflection; sunglasses not permitted",
+      "source_url": "https://www.kojinbango-card.go.jp/apprec/apply/facephoto/"
+    },
+    "ears_visibility": {
+      "value": "",
+      "source_url": ""
+    },
+    "face_visibility": {
+      "value": "front hair must not conceal eyes or face contour; face must be centered",
+      "source_url": "https://www.kojinbango-card.go.jp/apprec/apply/facephoto/"
+    },
+    "headwear_policy": {
+      "value": "no hats; wide headbands and decorative items obscuring face disallowed; religious/medical exceptions permitted if face contour visible",
+      "source_url": "https://www.kojinbango-card.go.jp/apprec/apply/facephoto/"
+    },
+    "accessories": {
+      "value": "sunglasses not permitted; decorative items obscuring face outline disallowed",
+      "source_url": "https://www.kojinbango-card.go.jp/apprec/apply/facephoto/"
+    },
+    "official_source_url": {
+      "value": "https://www.kojinbango-card.go.jp/apprec/apply/facephoto/",
+      "source_url": "https://www.kojinbango-card.go.jp/apprec/apply/facephoto/"
+    }
+  },
+  "unverified": [
+    "head_height",
+    "clothing_restriction",
+    "ears_visibility"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

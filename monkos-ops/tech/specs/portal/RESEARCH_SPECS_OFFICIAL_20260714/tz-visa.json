@@ -1,0 +1,53 @@
+{
+  "slug": "tz-visa",
+  "batch": "east-africa",
+  "verified": {
+    "size": {
+      "value": "45 x 35mm (maximum)",
+      "source_url": "https://visa.immigration.go.tz/guidelines"
+    },
+    "background": {
+      "value": "plain (colored photo with plain background, no distracting shadows or images)",
+      "source_url": "https://visa.immigration.go.tz/guidelines"
+    },
+    "expression_restriction": {
+      "value": "natural expression",
+      "source_url": "https://visa.immigration.go.tz/guidelines"
+    },
+    "face_visibility": {
+      "value": "full face (front view) from top of hair to bottom of chin, eyes open",
+      "source_url": "https://visa.immigration.go.tz/guidelines"
+    },
+    "glasses_policy": {
+      "value": "eyeglasses permitted if regularly worn",
+      "source_url": "https://visa.immigration.go.tz/guidelines"
+    },
+    "headwear_policy": {
+      "value": "head coverings not permitted except for religious reasons; facial features from chin to forehead must be visible",
+      "source_url": "https://visa.immigration.go.tz/guidelines"
+    },
+    "file_spec": {
+      "value": "JPG or JPEG format, max 500KB",
+      "source_url": "https://visa.immigration.go.tz/guidelines"
+    },
+    "official_source_url": {
+      "value": "https://visa.immigration.go.tz/guidelines",
+      "source_url": "https://visa.immigration.go.tz/guidelines"
+    }
+  },
+  "unverified": [
+    "head_height",
+    "validity",
+    "clothing_restriction",
+    "ears_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": {
+      "verdict": "confirmed",
+      "evidence": "The official Tanzania immigration website (visa.immigration.go.tz/guidelines) specifies the photo dimension as '45mm (length) X 35 mm (Width)' and states the photo size should not exceed these dimensions. The '(maximum)' qualifier in the claim accurately reflects the official guideline language. Multiple third-party sources (atlys.com, 2x2passportphoto.com) corroborate 35x45mm. Note: some third-party sites (visafoto, mybiometricphotos) cite 40x45mm, but the official government source is authoritative and confirms the claimed 45x35mm.",
+      "correct_value": "45 x 35mm (maximum)"
+    }
+  }
+}

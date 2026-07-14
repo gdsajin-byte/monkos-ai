@@ -1,0 +1,38 @@
+{
+  "slug": "rw-passport",
+  "batch": "east-africa",
+  "verified": {
+    "background": {
+      "value": "white",
+      "source_url": "https://www.migration.gov.rw/our-services/e-passport-1"
+    },
+    "expression_restriction": {
+      "value": "neutral expression or natural smile; avoid broad smiling or exaggerated facial expressions",
+      "source_url": "https://support.irembo.gov.rw/en/support/solutions/articles/47001276112-tips-and-requirements-for-uploading-a-compliant-passport-photo"
+    },
+    "face_visibility": {
+      "value": "face directed straight at camera; eyes in upper half of photo (30-50% from top); face centered horizontally; head and shoulders fully visible",
+      "source_url": "https://support.irembo.gov.rw/en/support/solutions/articles/47001276112-tips-and-requirements-for-uploading-a-compliant-passport-photo"
+    },
+    "headwear_policy": {
+      "value": "no headgear (caps, hats) without valid reasons",
+      "source_url": "https://support.irembo.gov.rw/en/support/solutions/articles/47001276112-tips-and-requirements-for-uploading-a-compliant-passport-photo"
+    },
+    "official_source_url": {
+      "value": "https://www.migration.gov.rw/our-services/e-passport-1",
+      "source_url": "https://www.migration.gov.rw/our-services/e-passport-1"
+    }
+  },
+  "unverified": [
+    "size",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

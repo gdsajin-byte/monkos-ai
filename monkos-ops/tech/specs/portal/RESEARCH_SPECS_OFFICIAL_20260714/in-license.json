@@ -1,0 +1,67 @@
+{
+  "slug": "in-license",
+  "batch": "uk-cn-ca-sg-in",
+  "verified": {
+    "size": {
+      "value": "35 x 45mm",
+      "source_url": "https://parivahan.gov.in/en/node/168"
+    },
+    "background": {
+      "value": "White background",
+      "source_url": "https://parivahan.gov.in/en/node/168"
+    },
+    "head_height": {
+      "value": "",
+      "source_url": ""
+    },
+    "validity": {
+      "value": "Taken within the last 6 months",
+      "source_url": "https://parivahan.gov.in/en/node/168"
+    },
+    "file_spec": {
+      "value": "JPEG, 420 x 525 pixels, 10-20KB",
+      "source_url": "https://parivahan.gov.in/en/node/168"
+    },
+    "clothing_restriction": {
+      "value": "",
+      "source_url": ""
+    },
+    "expression_restriction": {
+      "value": "",
+      "source_url": ""
+    },
+    "glasses_policy": {
+      "value": "Glasses not permitted unless medically prescribed and documented",
+      "source_url": "https://parivahan.gov.in/en/node/168"
+    },
+    "ears_visibility": {
+      "value": "Both ears must be fully visible",
+      "source_url": "https://parivahan.gov.in/en/node/168"
+    },
+    "face_visibility": {
+      "value": "Front-facing, no tilting",
+      "source_url": "https://parivahan.gov.in/en/node/168"
+    },
+    "headwear_policy": {
+      "value": "",
+      "source_url": ""
+    },
+    "accessories": {
+      "value": "",
+      "source_url": ""
+    },
+    "official_source_url": {
+      "value": "https://parivahan.gov.in/en/node/168",
+      "source_url": "https://parivahan.gov.in/en/node/168"
+    }
+  },
+  "unverified": [
+    "head_height",
+    "clothing_restriction",
+    "expression_restriction",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

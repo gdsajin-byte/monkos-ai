@@ -1,0 +1,67 @@
+{
+  "slug": "ie-visa",
+  "batch": "is-ie-pl-cz-sk-hu",
+  "verified": {
+    "size": {
+      "value": "35 x 45 mm (minimum) to 38 x 50 mm (maximum)",
+      "source_url": "https://www.irishimmigration.ie/photograph-rules-for-visa-applications/"
+    },
+    "background": {
+      "value": "plain white or light grey",
+      "source_url": "https://www.irishimmigration.ie/photograph-rules-for-visa-applications/"
+    },
+    "head_height": {
+      "value": "face takes up 70-80% of the photograph",
+      "source_url": "https://www.irishimmigration.ie/photograph-rules-for-visa-applications/"
+    },
+    "validity": {
+      "value": "no more than 6 months old",
+      "source_url": "https://www.irishimmigration.ie/photograph-rules-for-visa-applications/"
+    },
+    "file_spec": {
+      "value": ""
+    },
+    "clothing_restriction": {
+      "value": ""
+    },
+    "expression_restriction": {
+      "value": "neutral expression, both eyes open, mouth closed",
+      "source_url": "https://www.irishimmigration.ie/photograph-rules-for-visa-applications/"
+    },
+    "glasses_policy": {
+      "value": "clear glass acceptable; sunglasses not permitted",
+      "source_url": "https://www.irishimmigration.ie/photograph-rules-for-visa-applications/"
+    },
+    "ears_visibility": {
+      "value": ""
+    },
+    "face_visibility": {
+      "value": "full face visible, no hair covering eyes",
+      "source_url": "https://www.irishimmigration.ie/photograph-rules-for-visa-applications/"
+    },
+    "headwear_policy": {
+      "value": "only head coverings for religious reasons permitted; hair bands not allowed",
+      "source_url": "https://www.irishimmigration.ie/photograph-rules-for-visa-applications/"
+    },
+    "accessories": {
+      "value": ""
+    },
+    "official_source_url": {
+      "value": "https://www.irishimmigration.ie/photograph-rules-for-visa-applications/"
+    }
+  },
+  "unverified": [
+    "file_spec",
+    "clothing_restriction",
+    "ears_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": {
+      "verdict": "confirmed",
+      "evidence": "The official irishimmigration.ie photograph rules page states photos must be '45-50mm in height and 35-38mm in width,' which corresponds exactly to a minimum of 35x45mm and maximum of 38x50mm. This was confirmed via web search results referencing the official page directly. Multiple independent sources (visafoto.com, atlys.com, akbartravels.com) corroborate the same range.",
+      "correct_value": "35 x 45 mm (minimum) to 38 x 50 mm (maximum)"
+    }
+  }
+}

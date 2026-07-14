@@ -1,0 +1,35 @@
+{
+  "slug": "ss-visa",
+  "batch": "east-africa",
+  "verified": {
+    "size": {
+      "value": "2 x 2 inch",
+      "source_url": "https://www.ssembassydc.org/visa-services/"
+    },
+    "official_source_url": {
+      "value": "https://www.ssembassydc.org/visa-services/",
+      "source_url": "https://www.ssembassydc.org/visa-services/"
+    }
+  },
+  "unverified": [
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": {
+      "verdict": "confirmed",
+      "evidence": "The official South Sudan Embassy in Washington DC website (ssembassydc.org/visa-services/) explicitly states 'Two (2) passport-sized photo (2 inches by 2 inches)'. This is independently corroborated by visa-to-travel.com which confirms '2x2 inches (51x51 mm)' for South Sudan visa photos. Multiple sources consistently agree on the 2x2 inch requirement.",
+      "correct_value": "2 x 2 inch"
+    }
+  }
+}

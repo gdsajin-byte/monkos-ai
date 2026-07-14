@@ -1,0 +1,56 @@
+{
+  "slug": "de-visa",
+  "batch": "de-it-es-pt-nl-be",
+  "verified": {
+    "size": {
+      "value": "35 x 45mm",
+      "source_url": "https://dublin.diplo.de/ie-en/passport-photos-2380534"
+    },
+    "background": {
+      "value": "plain, single-color, light-colored background (light grey recommended); must contrast with face and clothing, no patterns or shadows",
+      "source_url": "https://dublin.diplo.de/ie-en/passport-photos-2380534"
+    },
+    "head_height": {
+      "value": "face occupies 70-80% of photo height",
+      "source_url": "https://dublin.diplo.de/ie-en/passport-photos-2380534"
+    },
+    "validity": {
+      "value": "taken within 6 months",
+      "source_url": "https://dublin.diplo.de/ie-en/passport-photos-2380534"
+    },
+    "expression_restriction": {
+      "value": "neutral expression, mouth closed, looking straight at camera, eyes open",
+      "source_url": "https://dublin.diplo.de/ie-en/passport-photos-2380534"
+    },
+    "glasses_policy": {
+      "value": "permitted if regularly worn; iris must be clearly and completely visible, no dark or tinted lenses, no reflective glare, frames cannot cover eyes",
+      "source_url": "https://dublin.diplo.de/ie-en/passport-photos-2380534"
+    },
+    "headwear_policy": {
+      "value": "not permitted except for religious or medical reasons; face must remain fully visible",
+      "source_url": "https://dublin.diplo.de/ie-en/passport-photos-2380534"
+    },
+    "face_visibility": {
+      "value": "full face must be clearly visible and centered, eyes open",
+      "source_url": "https://dublin.diplo.de/ie-en/passport-photos-2380534"
+    },
+    "official_source_url": {
+      "value": "https://dublin.diplo.de/ie-en/passport-photos-2380534",
+      "source_url": "https://dublin.diplo.de/ie-en/passport-photos-2380534"
+    }
+  },
+  "unverified": [
+    "file_spec",
+    "clothing_restriction",
+    "ears_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": {
+      "verdict": "confirmed",
+      "evidence": "German visa photos follow the Schengen standard of 35 x 45mm. Independent confirmation from how-to-germany.com explicitly states 'Visa photos for Germany and the Schengen area must meet the guidelines of German and European authorities' with 'a standardized image size of 35 mm x 45 mm.' The Schengen visa photo standard is uniformly 35x45mm across all member states. Multiple independent sources (passlens.com Schengen guide, photogov.net, feather-insurance.com) confirm this dimension.",
+      "correct_value": "35 x 45mm"
+    }
+  }
+}

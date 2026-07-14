@@ -1,0 +1,53 @@
+{
+  "slug": "si-visa",
+  "batch": "si-tr-mx",
+  "verified": {
+    "size": {
+      "value": "3.5 x 4.5 cm (35 x 45 mm)",
+      "source_url": "https://www.gov.si/en/representations/embassy-new-delhi/visa-information/"
+    },
+    "background": {
+      "value": "Light grey or white (ICAO standard, as referenced by Slovenian government)",
+      "source_url": "https://home-affairs.ec.europa.eu/document/download/5bb16566-c8c2-4afb-b038-530f488cb72a_en?filename=icao_photograph_guidelines_en.pdf"
+    },
+    "head_height": {
+      "value": "Face height 32-36 mm (70-80% of photograph), per ICAO standard",
+      "source_url": "https://home-affairs.ec.europa.eu/document/download/5bb16566-c8c2-4afb-b038-530f488cb72a_en?filename=icao_photograph_guidelines_en.pdf"
+    },
+    "validity": {
+      "value": "Taken within the last 6 months",
+      "source_url": "https://home-affairs.ec.europa.eu/document/download/5bb16566-c8c2-4afb-b038-530f488cb72a_en?filename=icao_photograph_guidelines_en.pdf"
+    },
+    "expression_restriction": {
+      "value": "Neutral expression, mouth closed",
+      "source_url": "https://www.gov.si/en/representations/embassy-new-delhi/visa-information/"
+    },
+    "face_visibility": {
+      "value": "Frontal view, face clearly visible, in accordance with ICAO standards",
+      "source_url": "https://www.gov.si/en/representations/embassy-new-delhi/visa-information/"
+    },
+    "headwear_policy": {
+      "value": "Not permitted except for religious or medical reasons (ICAO standard)",
+      "source_url": "https://home-affairs.ec.europa.eu/document/download/5bb16566-c8c2-4afb-b038-530f488cb72a_en?filename=icao_photograph_guidelines_en.pdf"
+    },
+    "official_source_url": {
+      "value": "https://www.gov.si/en/representations/embassy-new-delhi/visa-information/",
+      "source_url": "https://www.gov.si/en/representations/embassy-new-delhi/visa-information/"
+    }
+  },
+  "unverified": [
+    "file_spec",
+    "clothing_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": {
+      "verdict": "confirmed",
+      "evidence": "The official Slovenian embassy page (gov.si) was fetched directly and states the photo dimension for a long-stay (D) visa is '45x35 mm, conform to ICAO standards'. This is 35x45mm (width x height), matching the claimed value. Additionally, Slovenia is a Schengen country; the standard Schengen visa photo size is 35x45mm, which is confirmed by schengenvisainfo.com and other independent sources. The dimension is the same whether written as 35x45mm or 45x35mm (height x width notation).",
+      "correct_value": "3.5 x 4.5 cm (35 x 45 mm)"
+    }
+  }
+}

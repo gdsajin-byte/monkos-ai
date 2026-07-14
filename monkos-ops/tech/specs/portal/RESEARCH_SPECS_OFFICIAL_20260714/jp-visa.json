@@ -1,0 +1,66 @@
+{
+  "slug": "jp-visa",
+  "batch": "kr-jp-us",
+  "verified": {
+    "size": {
+      "value": "3.5 x 4.5cm (35 x 45mm)",
+      "source_url": "https://www.mofa.go.jp/files/000124525.pdf"
+    },
+    "background": {
+      "value": "plain, no background including no shadows",
+      "source_url": "https://www.moj.go.jp/isa/applications/status/photo_info_00002.html"
+    },
+    "head_height": {
+      "value": "",
+      "source_url": ""
+    },
+    "validity": {
+      "value": "taken within 6 months before submission",
+      "source_url": "https://www.moj.go.jp/isa/applications/status/photo_info_00002.html"
+    },
+    "file_spec": {
+      "value": "",
+      "source_url": ""
+    },
+    "clothing_restriction": {
+      "value": "",
+      "source_url": ""
+    },
+    "expression_restriction": {
+      "value": "neutral natural expression; frontal view facing forward",
+      "source_url": "https://www.moj.go.jp/isa/applications/status/photo_info_00002.html"
+    },
+    "glasses_policy": {
+      "value": "permitted if frames do not cover eyes, frames not excessively thick, and no glare/reflection",
+      "source_url": "https://www.moj.go.jp/isa/applications/status/photo_info_00002.html"
+    },
+    "ears_visibility": {
+      "value": "",
+      "source_url": ""
+    },
+    "face_visibility": {
+      "value": "applicant only; eyes fully visible and clear; hair cannot conceal eyes or facial features",
+      "source_url": "https://www.moj.go.jp/isa/applications/status/photo_info_00002.html"
+    },
+    "headwear_policy": {
+      "value": "no headwear; religious/medical exceptions require statement",
+      "source_url": "https://www.moj.go.jp/isa/applications/status/photo_info_00002.html"
+    },
+    "accessories": {
+      "value": "facial coverings not acceptable (religious/medical exceptions require statement)",
+      "source_url": "https://www.moj.go.jp/isa/applications/status/photo_info_00002.html"
+    },
+    "official_source_url": {
+      "value": "https://www.mofa.go.jp/j_info/visit/visa/index.html",
+      "source_url": "https://www.mofa.go.jp/j_info/visit/visa/index.html"
+    }
+  },
+  "unverified": [
+    "head_height",
+    "file_spec",
+    "clothing_restriction",
+    "ears_visibility"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

@@ -703,7 +703,30 @@
       }
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "restrictions": {
+      "clothing": {
+        "en": "neck covering acceptable if face outline exposed; no scarves covering facial contours"
+      },
+      "expression": {
+        "en": "natural neutral expression, closed mouth, no teeth showing, eyes open looking straight ahead"
+      },
+      "glasses": {
+        "en": "regular glasses permitted if frames do not obscure eyes and no glare; no sunglasses, tinted, colored, cosmetic, or blue-light lenses"
+      },
+      "ears": {
+        "en": "ears must be visible; hair must not cover ears (exception: naturally non-visible ears from front)"
+      },
+      "face_visibility": {
+        "en": "hair cannot cover eyes, eyebrows, or facial contours (cheekbones, jawline); forehead to chin must be fully visible"
+      },
+      "headwear": {
+        "en": "no hats, headbands, or hair accessories; religious headwear permitted if worn daily and full face visible (forehead to chin)"
+      },
+      "accessories": {
+        "en": "no jewelry causing light reflection or obscuring face; no earphones or wireless earbuds"
+      }
+    }
   },
   "kr-visa": {
     "slug": "kr-visa",
@@ -722,8 +745,8 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "3.2-3.6cm",
     "headHeightJa": "3.2~3.6cm",
-    "validity": "",
-    "validityEn": "",
+    "validity": "taken within 6 months",
+    "validityEn": "taken within 6 months",
     "validityJa": "",
     "fileSpec": "",
     "fileSpecEn": "",
@@ -817,7 +840,22 @@
       "ja": "韓国ビザ写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://www.visa.go.kr/openPage.do?MENU_ID=1020408",
+    "restrictions": {
+      "glasses": {
+        "en": "sunglasses prohibited (exception: visually impaired for medical purposes)"
+      },
+      "face_visibility": {
+        "en": "front-facing view required; decorative items covering part of the face prohibited"
+      },
+      "headwear": {
+        "en": "hats prohibited"
+      },
+      "accessories": {
+        "en": "decorative items that cover part of the face prohibited"
+      }
+    }
   },
   "kr-id": {
     "slug": "kr-id",
@@ -836,8 +874,8 @@
     "headHeight": "별도 규정 없음",
     "headHeightEn": "3.2-3.6cm",
     "headHeightJa": "3.2~3.6cm",
-    "validity": "",
-    "validityEn": "",
+    "validity": "taken within 6 months",
+    "validityEn": "taken within 6 months",
     "validityJa": "",
     "fileSpec": "",
     "fileSpecEn": "",
@@ -931,7 +969,25 @@
       "ja": "韓国住民登録証写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://www.mois.go.kr/frt/sub/a06/b06/IDCard_5/screen.do",
+    "restrictions": {
+      "expression": {
+        "en": "natural closed-mouth expression; eyes open, gazing directly forward; no profile shots"
+      },
+      "glasses": {
+        "en": "colored sunglasses prohibited (exception: visually impaired); no glare or reflection on glasses lenses"
+      },
+      "face_visibility": {
+        "en": "face must be clearly identifiable; frontal view required; shoulder line must be visible"
+      },
+      "headwear": {
+        "en": "hats, bonnets, head wraps prohibited"
+      },
+      "accessories": {
+        "en": "eye patches, bandages, adhesive tape prohibited"
+      }
+    }
   },
   "kr-resume": {
     "slug": "kr-resume",
@@ -1074,11 +1130,11 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "3.2-3.6cm",
     "headHeightJa": "3.2~3.6cm",
-    "validity": "",
-    "validityEn": "",
+    "validity": "taken within 6 months",
+    "validityEn": "taken within 6 months",
     "validityJa": "",
-    "fileSpec": "",
-    "fileSpecEn": "",
+    "fileSpec": "JPG, max 200KB (standard license) / max 250KB (mobile license), 350x450 pixels minimum",
+    "fileSpecEn": "JPG, max 200KB (standard license) / max 250KB (mobile license), 350x450 pixels minimum",
     "fileSpecJa": "",
     "standard": "도로교통법",
     "continent": "asia",
@@ -1169,7 +1225,25 @@
       "ja": "韓国運転免許写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://www.safedriving.or.kr/guide/larGuide10.do?menuCode=MN-PO-12111",
+    "restrictions": {
+      "expression": {
+        "en": "frontal view, face not tilted, eyes forward"
+      },
+      "glasses": {
+        "en": "colored glasses and sunglasses prohibited; eyes must not be covered"
+      },
+      "ears": {
+        "en": "hair may cover ears but facial contours (cheeks, cheekbones) must remain visible"
+      },
+      "face_visibility": {
+        "en": "both eyebrows must be at least 70% visible; hair cannot cover cheeks or cheekbones"
+      },
+      "headwear": {
+        "en": "no hats; passport photo standards strictly applied from March 1, 2026"
+      }
+    }
   },
   "kr-intl-license": {
     "slug": "kr-intl-license",
@@ -1188,8 +1262,8 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "3.2-3.6cm",
     "headHeightJa": "3.2~3.6cm",
-    "validity": "",
-    "validityEn": "",
+    "validity": "taken within 6 months",
+    "validityEn": "taken within 6 months",
     "validityJa": "",
     "fileSpec": "",
     "fileSpecEn": "",
@@ -1283,7 +1357,25 @@
       "ja": "韓国国際運転免許写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://www.koroad.or.kr/main/board/6/89356/board_view.do?cp=1&listType=list&bdOpenYn=Y&bdNoticeYn=N",
+    "restrictions": {
+      "expression": {
+        "en": "frontal view, face not tilted"
+      },
+      "glasses": {
+        "en": "sunglasses prohibited; eyes must not be covered"
+      },
+      "ears": {
+        "en": "hair may cover ears but facial contours must remain visible"
+      },
+      "face_visibility": {
+        "en": "both eyebrows must be at least 70% visible; hair cannot cover cheeks or cheekbones"
+      },
+      "headwear": {
+        "en": "no hats; passport photo standards applied"
+      }
+    }
   },
   "kr-exam": {
     "slug": "kr-exam",
@@ -1638,8 +1730,8 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "3.2-3.6cm",
     "headHeightJa": "3.2~3.6cm",
-    "validity": "",
-    "validityEn": "",
+    "validity": "taken within 6 months",
+    "validityEn": "taken within 6 months",
     "validityJa": "",
     "fileSpec": "",
     "fileSpecEn": "",
@@ -1733,7 +1825,8 @@
       "ja": "韓国水上レジャー免許写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://gunsan.mof.go.kr/ko/page.do?menuIdx=963"
   },
   "jp-passport": {
     "slug": "jp-passport",
@@ -1752,8 +1845,8 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "3.2-3.6cm",
     "headHeightJa": "3.2~3.6cm",
-    "validity": "",
-    "validityEn": "",
+    "validity": "taken within 6 months before application",
+    "validityEn": "taken within 6 months before application",
     "validityJa": "",
     "fileSpec": "",
     "fileSpecEn": "",
@@ -1847,7 +1940,31 @@
       "ja": "日本パスポート写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://www.mofa.go.jp/mofaj/toko/passport/ic_photo.html",
+    "restrictions": {
+      "clothing": {
+        "en": "no turtlenecks or clothing obscuring facial features"
+      },
+      "expression": {
+        "en": "neutral expression, mouth closed, no teeth showing, both eyes fully open (updated March 3, 2025)"
+      },
+      "glasses": {
+        "en": "not prohibited but removal recommended for reliable identification; if worn, no colored/tinted lenses, no glare/reflection, frames must not cover eyes"
+      },
+      "ears": {
+        "en": "ears should ideally be visible; hairline and ears visible when possible"
+      },
+      "face_visibility": {
+        "en": "full face clearly visible; hair must not cover eyes or face contour; clear contrast between face/hair and background"
+      },
+      "headwear": {
+        "en": "no hats, hair bands, or head coverings; religious/medical exceptions permitted if face contour visible"
+      },
+      "accessories": {
+        "en": "no colored contacts or pupil-enlarging lenses; no veils obscuring facial features"
+      }
+    }
   },
   "jp-id": {
     "slug": "jp-id",
@@ -1866,11 +1983,11 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "3.2-3.6cm",
     "headHeightJa": "3.2~3.6cm",
-    "validity": "",
-    "validityEn": "",
+    "validity": "taken within 6 months",
+    "validityEn": "taken within 6 months",
     "validityJa": "",
-    "fileSpec": "",
-    "fileSpecEn": "",
+    "fileSpec": "JPEG only, RGB color mode, 20KB-7MB, 480-6000 pixels width and height",
+    "fileSpecEn": "JPEG only, RGB color mode, 20KB-7MB, 480-6000 pixels width and height",
     "fileSpecJa": "",
     "standard": "J-LIS",
     "continent": "asia",
@@ -1959,7 +2076,25 @@
       "ja": "日本マイナンバーカード写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://www.kojinbango-card.go.jp/apprec/apply/facephoto/",
+    "restrictions": {
+      "expression": {
+        "en": "frontal view; face must be identifiable; eyes open"
+      },
+      "glasses": {
+        "en": "prohibited if frames cover eyes or cause reflection; sunglasses not permitted"
+      },
+      "face_visibility": {
+        "en": "front hair must not conceal eyes or face contour; face must be centered"
+      },
+      "headwear": {
+        "en": "no hats; wide headbands and decorative items obscuring face disallowed; religious/medical exceptions permitted if face contour visible"
+      },
+      "accessories": {
+        "en": "sunglasses not permitted; decorative items obscuring face outline disallowed"
+      }
+    }
   },
   "jp-visa": {
     "slug": "jp-visa",
@@ -1978,8 +2113,8 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "3.2-3.6cm",
     "headHeightJa": "3.2~3.6cm",
-    "validity": "",
-    "validityEn": "",
+    "validity": "taken within 6 months before submission",
+    "validityEn": "taken within 6 months before submission",
     "validityJa": "",
     "fileSpec": "",
     "fileSpecEn": "",
@@ -2071,7 +2206,25 @@
       "ja": "日本ビザ写真の公式サイズ・2026年規定 — 4.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://www.mofa.go.jp/j_info/visit/visa/index.html",
+    "restrictions": {
+      "expression": {
+        "en": "neutral natural expression; frontal view facing forward"
+      },
+      "glasses": {
+        "en": "permitted if frames do not cover eyes, frames not excessively thick, and no glare/reflection"
+      },
+      "face_visibility": {
+        "en": "applicant only; eyes fully visible and clear; hair cannot conceal eyes or facial features"
+      },
+      "headwear": {
+        "en": "no headwear; religious/medical exceptions require statement"
+      },
+      "accessories": {
+        "en": "facial coverings not acceptable (religious/medical exceptions require statement)"
+      }
+    }
   },
   "jp-license": {
     "slug": "jp-license",
@@ -2090,8 +2243,8 @@
     "headHeight": "1.8~2.2cm",
     "headHeightEn": "",
     "headHeightJa": "",
-    "validity": "",
-    "validityEn": "",
+    "validity": "taken within 6 months before application",
+    "validityEn": "taken within 6 months before application",
     "validityJa": "",
     "fileSpec": "",
     "fileSpecEn": "",
@@ -2183,7 +2336,28 @@
       "ja": "日本運転免許写真の公式サイズ・2026年規定 — 2.4 × 3cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 18,
-    "headHeightMax": 22
+    "headHeightMax": 22,
+    "officialSource": "https://www.keishicho.metro.tokyo.lg.jp/menkyo/koshin/koshin/koshin02_2.html",
+    "restrictions": {
+      "clothing": {
+        "en": "face cannot be obscured by clothing; clothing must contrast with background"
+      },
+      "expression": {
+        "en": "natural expression; frontal view; eyes open and facing forward; no wide mouth open smiling"
+      },
+      "glasses": {
+        "en": "regular glasses acceptable if frames do not obstruct eyes and no glare; dark-tinted/sunglasses prohibited"
+      },
+      "face_visibility": {
+        "en": "eyes clearly visible; cannot be narrowed, closed, or hidden by hair; gaze forward"
+      },
+      "headwear": {
+        "en": "no hats, wide headbands, bandanas, or head wraps; religious/medical exceptions permitted if face contour visible"
+      },
+      "accessories": {
+        "en": "masks not permitted"
+      }
+    }
   },
   "jp-resume": {
     "slug": "jp-resume",
@@ -2423,14 +2597,15 @@
     "background": "흰색",
     "backgroundEn": "White",
     "backgroundJa": "白",
-    "headHeight": "2.2~3.5cm",
-    "headHeightEn": "2.2-3.5cm",
-    "headHeightJa": "2.2~3.5cm",
-    "validity": "",
-    "validityEn": "",
+    "headHeight": "2.5~3.5cm",
+    "headHeightEn": "2.5-3.5cm",
+    "headHeightJa": "2.5~3.5cm",
+    "headHeightMin": 25,
+    "validity": "taken within 6 months",
+    "validityEn": "taken within 6 months",
     "validityJa": "",
-    "fileSpec": "JPEG, max 240KB",
-    "fileSpecEn": "JPEG, max 240KB",
+    "fileSpec": "JPEG format, max 240KB, 600x600px min to 1200x1200px max, 24-bit color, sRGB",
+    "fileSpecEn": "JPEG format, max 240KB, 600x600px min to 1200x1200px max, 24-bit color, sRGB",
     "fileSpecJa": "JPEG, max 240KB",
     "standard": "22 CFR 51",
     "continent": "americas",
@@ -2543,7 +2718,31 @@
       "ja": "アメリカビザ写真の公式サイズ・2026年規定 — 5.1 × 5.1cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 22,
-    "headHeightMax": 35
+    "headHeightMax": 35,
+    "officialSource": "https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/photos.html",
+    "restrictions": {
+      "clothing": {
+        "en": "daily clothing; no uniforms except religious clothing worn daily"
+      },
+      "expression": {
+        "en": "neutral facial expression, both eyes open"
+      },
+      "glasses": {
+        "en": "eyeglasses no longer allowed except rare medical circumstances with documentation; if medically approved, frames must not cover eyes, no glare"
+      },
+      "ears": {
+        "en": "ears should be visible"
+      },
+      "face_visibility": {
+        "en": "full-face view directly facing camera; forehead and eyebrows must be visible; no shadows obscuring features"
+      },
+      "headwear": {
+        "en": "no hat or head covering unless worn daily for religious purpose; religious covering must not cast shadows on face"
+      },
+      "accessories": {
+        "en": "no headphones or wireless hands-free devices; hearing devices allowed"
+      }
+    }
   },
   "eu-visa": {
     "slug": "eu-visa",
@@ -2786,8 +2985,8 @@
     "headHeight": "2.9~3.4cm",
     "headHeightEn": "2.9-3.4cm",
     "headHeightJa": "2.9~3.4cm",
-    "validity": "",
-    "validityEn": "",
+    "validity": "Taken within the last month",
+    "validityEn": "Taken within the last month",
     "validityJa": "",
     "fileSpec": "",
     "fileSpecEn": "",
@@ -2882,7 +3081,22 @@
     },
     "headHeightMin": 29,
     "headHeightMax": 34,
-    "faceTargetExplicitMm": 31
+    "faceTargetExplicitMm": 31,
+    "officialSource": "https://www.nidirect.gov.uk/articles/photo-your-driving-licence",
+    "restrictions": {
+      "expression": {
+        "en": "Natural expression, no smiling, grinning or frowning; eyes open, mouth closed"
+      },
+      "glasses": {
+        "en": "Remove glasses if possible; if worn, eyes must be clearly visible with no glare or reflections. Sunglasses or tinted glasses not allowed"
+      },
+      "face_visibility": {
+        "en": "Face forward, look straight at camera; hair away from face and eyes; full head visible"
+      },
+      "headwear": {
+        "en": "No hat or head covering unless for medical or religious reasons"
+      }
+    }
   },
   "uk-visa": {
     "slug": "uk-visa",
@@ -2904,8 +3118,8 @@
     "validity": "",
     "validityEn": "",
     "validityJa": "",
-    "fileSpec": "",
-    "fileSpecEn": "",
+    "fileSpec": "JPG/JPEG, minimum 600 x 750 pixels, 50KB-6MB",
+    "fileSpecEn": "JPG/JPEG, minimum 600 x 750 pixels, 50KB-6MB",
     "fileSpecJa": "",
     "standard": "UKVI",
     "continent": "europe",
@@ -2997,7 +3211,25 @@
     },
     "headHeightMin": 29,
     "headHeightMax": 34,
-    "faceTargetExplicitMm": 31
+    "faceTargetExplicitMm": 31,
+    "officialSource": "https://www.gov.uk/guidance/how-to-take-a-photo-for-a-visa-application-or-permission",
+    "restrictions": {
+      "clothing": {
+        "en": "Shoulders and torso must be clothed"
+      },
+      "expression": {
+        "en": "Plain expression, mouth closed"
+      },
+      "glasses": {
+        "en": "No sunglasses or tinted lenses; regular glasses only if medically necessary with eyes clearly visible"
+      },
+      "face_visibility": {
+        "en": "Facial features clearly visible; facing towards and looking straight at camera; eyes open and visible; no hair in front of eyes; no shadows on face"
+      },
+      "headwear": {
+        "en": "No head covering unless for religious or medical reasons"
+      }
+    }
   },
   "cn-passport": {
     "slug": "cn-passport",
@@ -3129,11 +3361,11 @@
     "headHeight": "2.8~3.3cm",
     "headHeightEn": "2.8-3.3cm",
     "headHeightJa": "2.8~3.3cm",
-    "validity": "",
-    "validityEn": "",
+    "validity": "Taken within the last 6 months",
+    "validityEn": "Taken within the last 6 months",
     "validityJa": "",
-    "fileSpec": "",
-    "fileSpecEn": "",
+    "fileSpec": "JPEG, 354-420 x 472-560 pixels, 40-120KB",
+    "fileSpecEn": "JPEG, 354-420 x 472-560 pixels, 40-120KB",
     "fileSpecJa": "",
     "standard": "GA 461",
     "continent": "asia",
@@ -3223,7 +3455,25 @@
     },
     "headHeightMin": 28,
     "headHeightMax": 33,
-    "faceTargetExplicitMm": 30
+    "faceTargetExplicitMm": 30,
+    "officialSource": "https://www.visaforchina.cn/SYD3_EN/qianzhengyewu/jichuzhishi/changjianwenti/355135188537315328.html",
+    "restrictions": {
+      "expression": {
+        "en": "Neutral expression, eyes open, lips closed"
+      },
+      "glasses": {
+        "en": "Eyeglasses allowed except thick-rimmed, tinted or glare glasses"
+      },
+      "ears": {
+        "en": "Ears must be visible"
+      },
+      "face_visibility": {
+        "en": "Entire head and face clearly visible; bare-head full face; head tilt <=20 degrees left/right, <=25 degrees up/down"
+      },
+      "headwear": {
+        "en": "Hats or head coverings only permitted for religious reasons; facial features must not be obscured"
+      }
+    }
   },
   "cn-license": {
     "slug": "cn-license",
@@ -3355,11 +3605,11 @@
     "headHeight": "3.1~3.6cm",
     "headHeightEn": "3.1-3.6cm",
     "headHeightJa": "3.1~3.6cm",
-    "validity": "",
-    "validityEn": "",
+    "validity": "Taken within the last 6 months",
+    "validityEn": "Taken within the last 6 months",
     "validityJa": "",
-    "fileSpec": "",
-    "fileSpecEn": "",
+    "fileSpec": "JPEG/JPG format, minimum 420 x 540 pixels, max 4MB",
+    "fileSpecEn": "JPEG/JPG format, minimum 420 x 540 pixels, max 4MB",
     "fileSpecJa": "",
     "standard": "PPTC-203",
     "continent": "americas",
@@ -3450,7 +3700,25 @@
       "ja": "カナダパスポート写真の公式サイズ・2026年規定 — 5 × 7cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 31,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://www.canada.ca/en/immigration-refugees-citizenship/services/canadian-passports/photos.html",
+    "restrictions": {
+      "clothing": {
+        "en": "Avoid wearing white clothing"
+      },
+      "expression": {
+        "en": "Neutral expression, no smiling or frowning, mouth closed"
+      },
+      "glasses": {
+        "en": "Non-tinted prescription glasses allowed if eyes are clearly visible and frame does not cover any part of eyes; sunglasses not acceptable"
+      },
+      "face_visibility": {
+        "en": "Full front view of head; face in middle of photograph; hair must be off face so edges of face are visible; eyes clearly visible with no glare on lenses"
+      },
+      "headwear": {
+        "en": "Head coverings allowed for religious reasons if full facial features are not obscured; medical headwear permitted with explanatory letter"
+      }
+    }
   },
   "ca-visa": {
     "slug": "ca-visa",
@@ -3469,11 +3737,11 @@
     "headHeight": "3.1~3.6cm",
     "headHeightEn": "3.1-3.6cm",
     "headHeightJa": "3.1~3.6cm",
-    "validity": "",
-    "validityEn": "",
+    "validity": "Taken within the last 6 months",
+    "validityEn": "Taken within the last 6 months",
     "validityJa": "",
-    "fileSpec": "",
-    "fileSpecEn": "",
+    "fileSpec": "JPEG/JPG format, minimum 420 x 540 pixels",
+    "fileSpecEn": "JPEG/JPG format, minimum 420 x 540 pixels",
     "fileSpecJa": "",
     "standard": "PPTC-203",
     "continent": "americas",
@@ -3562,7 +3830,22 @@
       "ja": "カナダビザ写真の公式サイズ・2026年規定 — 5 × 7cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 31,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides/temporary-resident-visa-application-photograph-specifications.html",
+    "restrictions": {
+      "expression": {
+        "en": "Neutral expression, neither frowning nor smiling, mouth closed"
+      },
+      "glasses": {
+        "en": "Non-tinted prescription glasses allowed if eyes clearly visible and frame does not cover any part of eyes; sunglasses not acceptable"
+      },
+      "face_visibility": {
+        "en": "Full front view of head with face in middle of photograph; includes top of shoulders"
+      },
+      "headwear": {
+        "en": "Head coverings allowed for religious reasons if full facial features are not obscured"
+      }
+    }
   },
   "sg-passport": {
     "slug": "sg-passport",
@@ -3676,7 +3959,25 @@
       "ja": "シンガポールパスポート写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 25,
-    "headHeightMax": 35
+    "headHeightMax": 35,
+    "officialSource": "https://www.ica.gov.sg/photo-guidelines",
+    "restrictions": {
+      "expression": {
+        "en": "Neutral expression, mouth closed, eyes open"
+      },
+      "glasses": {
+        "en": "Glasses permitted if eyes clearly visible with no glare on lenses; dark-tinted or reflective glasses not allowed"
+      },
+      "face_visibility": {
+        "en": "Full face visible from bottom of chin to top of forehead; both edges of face clearly shown"
+      },
+      "headwear": {
+        "en": "No headgear unless worn habitually in accordance with religious or racial customs"
+      },
+      "accessories": {
+        "en": "Photo must not be altered or enhanced in any way"
+      }
+    }
   },
   "sg-visa": {
     "slug": "sg-visa",
@@ -3695,8 +3996,8 @@
     "headHeight": "2.5~3.5cm",
     "headHeightEn": "2.5-3.5cm",
     "headHeightJa": "2.5~3.5cm",
-    "validity": "",
-    "validityEn": "",
+    "validity": "Taken within the last 3 months",
+    "validityEn": "Taken within the last 3 months",
     "validityJa": "",
     "fileSpec": "max 60KB",
     "fileSpecEn": "max 60KB",
@@ -3788,7 +4089,22 @@
       "ja": "シンガポールビザ写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 25,
-    "headHeightMax": 35
+    "headHeightMax": 35,
+    "officialSource": "https://www.ica.gov.sg/photo-guidelines",
+    "restrictions": {
+      "expression": {
+        "en": "Neutral expression, mouth closed, eyes open"
+      },
+      "glasses": {
+        "en": "Glasses permitted if eyes clearly visible with no glare on lenses; dark-tinted or reflective glasses not allowed"
+      },
+      "face_visibility": {
+        "en": "Full face visible from bottom of chin to top of forehead; both edges of face clearly shown"
+      },
+      "headwear": {
+        "en": "No headgear unless worn habitually in accordance with religious or racial customs"
+      }
+    }
   },
   "in-passport": {
     "slug": "in-passport",
@@ -3807,11 +4123,11 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "",
     "headHeightJa": "",
-    "validity": "",
-    "validityEn": "",
+    "validity": "Taken within the last 6 months",
+    "validityEn": "Taken within the last 6 months",
     "validityJa": "",
-    "fileSpec": "",
-    "fileSpecEn": "",
+    "fileSpec": "JPEG, 630 x 810 pixels, max 250KB for Passport Seva portal upload",
+    "fileSpecEn": "JPEG, 630 x 810 pixels, max 250KB for Passport Seva portal upload",
     "fileSpecJa": "",
     "standard": "ICAO 9303 (2025.9~)",
     "continent": "asia",
@@ -3900,7 +4216,25 @@
       "ja": "インドパスポート写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://passportindia.gov.in/AppOnlineProject/pdf/ApplicationformInstructionBooklet-V3.0.pdf",
+    "restrictions": {
+      "expression": {
+        "en": "Natural expression, mouth closed, eyes open looking directly at camera"
+      },
+      "glasses": {
+        "en": "Glasses not permitted unless documented medical condition with doctor's certificate (ICAO rules effective September 2025)"
+      },
+      "ears": {
+        "en": "Both ears should be visible if not covered by religious garment"
+      },
+      "face_visibility": {
+        "en": "Full face front view; face clearly visible from bottom of chin to top of forehead"
+      },
+      "headwear": {
+        "en": "Head coverings permitted if worn as part of daily religious practice (turbans, hijab etc.); face must be fully visible from bottom of chin to top of forehead"
+      }
+    }
   },
   "in-license": {
     "slug": "in-license",
@@ -3919,11 +4253,11 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "3.2-3.6cm",
     "headHeightJa": "3.2~3.6cm",
-    "validity": "",
-    "validityEn": "",
+    "validity": "Taken within the last 6 months",
+    "validityEn": "Taken within the last 6 months",
     "validityJa": "",
-    "fileSpec": "",
-    "fileSpecEn": "",
+    "fileSpec": "JPEG, 420 x 525 pixels, 10-20KB",
+    "fileSpecEn": "JPEG, 420 x 525 pixels, 10-20KB",
     "fileSpecJa": "",
     "standard": "MVA",
     "continent": "asia",
@@ -4012,7 +4346,19 @@
       "ja": "インド運転免許写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://parivahan.gov.in/en/node/168",
+    "restrictions": {
+      "glasses": {
+        "en": "Glasses not permitted unless medically prescribed and documented"
+      },
+      "ears": {
+        "en": "Both ears must be fully visible"
+      },
+      "face_visibility": {
+        "en": "Front-facing, no tilting"
+      }
+    }
   },
   "in-visa-evisa": {
     "slug": "in-visa-evisa",
@@ -4031,8 +4377,8 @@
     "headHeight": "3.6~4.1cm",
     "headHeightEn": "3.6-4.1cm",
     "headHeightJa": "3.6~4.1cm",
-    "validity": "",
-    "validityEn": "",
+    "validity": "Taken within the last 6 months",
+    "validityEn": "Taken within the last 6 months",
     "validityJa": "",
     "fileSpec": "JPEG, max 1024KB, min 10KB",
     "fileSpecEn": "JPEG, max 1024KB, min 10KB",
@@ -4126,7 +4472,19 @@
       "ja": "インドe-Visa写真の公式サイズ・2026年規定 — 5.1 × 5.1cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 36,
-    "headHeightMax": 41
+    "headHeightMax": 41,
+    "officialSource": "https://indianvisaonline.gov.in/visa/instruction.html",
+    "restrictions": {
+      "expression": {
+        "en": "Neutral expression, mouth closed"
+      },
+      "glasses": {
+        "en": "Without spectacles (glasses not permitted)"
+      },
+      "face_visibility": {
+        "en": "Full face, front view, eyes open; center head within frame; present full head from top of hair to bottom of chin; no shadows on face or background"
+      }
+    }
   },
   "in-visa-bls": {
     "slug": "in-visa-bls",
@@ -4145,8 +4503,8 @@
     "headHeight": "3.6~4.1cm",
     "headHeightEn": "3.6-4.1cm",
     "headHeightJa": "3.6~4.1cm",
-    "validity": "",
-    "validityEn": "",
+    "validity": "Taken within the last 3 months",
+    "validityEn": "Taken within the last 3 months",
     "validityJa": "",
     "fileSpec": "JPEG, max 300KB, min 10KB",
     "fileSpecEn": "JPEG, max 300KB, min 10KB",
@@ -4238,7 +4596,28 @@
       "ja": "インドビザ (BLS/VFS)写真の公式サイズ・2026年規定 — 5.1 × 5.1cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 36,
-    "headHeightMax": 41
+    "headHeightMax": 41,
+    "officialSource": "https://www.blsinternational.com/india/uae/visa/visa-photo-specification.php",
+    "restrictions": {
+      "clothing": {
+        "en": "Applicants should wear dark-coloured clothing"
+      },
+      "expression": {
+        "en": "Natural expression, mouth closed"
+      },
+      "glasses": {
+        "en": "Remove glasses to avoid reflections; no reflections on glasses permitted"
+      },
+      "ears": {
+        "en": "Ears must be completely visible"
+      },
+      "face_visibility": {
+        "en": "Full face, front view, eyes open; forehead and chin completely visible; head not tilted; full head from top of hair to bottom of chin"
+      },
+      "headwear": {
+        "en": "Head coverings not permitted except for religious reasons; facial features from bottom of chin to top of forehead and both edges of face must be clearly shown"
+      }
+    }
   },
   "tw-passport": {
     "slug": "tw-passport",
@@ -4257,11 +4636,11 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "3.2-3.6cm",
     "headHeightJa": "3.2~3.6cm",
-    "validity": "",
-    "validityEn": "",
+    "validity": "taken within the last 6 months",
+    "validityEn": "taken within the last 6 months",
     "validityJa": "",
-    "fileSpec": "",
-    "fileSpecEn": "",
+    "fileSpec": "JPG/JPEG, RGB (min 24-bit), max 5 MB, min 531 x 413 pixels (H x W)",
+    "fileSpecEn": "JPG/JPEG, RGB (min 24-bit), max 5 MB, min 531 x 413 pixels (H x W)",
     "fileSpecJa": "",
     "standard": "BOCA",
     "continent": "asia",
@@ -4352,7 +4731,31 @@
       "ja": "台湾パスポート写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://www.boca.gov.tw/cp-140-467-29b1d-2.html",
+    "restrictions": {
+      "clothing": {
+        "en": "Military, police uniforms, or camouflage clothing prohibited"
+      },
+      "expression": {
+        "en": "Neutral expression, mouth closed, eyes open and clearly visible"
+      },
+      "glasses": {
+        "en": "Corrective lenses permitted if eyes are clearly visible with no glare/reflection; thick frames not recommended; tinted glasses prohibited; colored/circle contact lenses prohibited"
+      },
+      "ears": {
+        "en": "Ears must be clearly visible; exception for microtia patients who may conceal ears with hair but both face edges must be visible"
+      },
+      "face_visibility": {
+        "en": "Full face from forehead to chin and both edges must be clearly visible; hair must not cover eyebrows or eyes"
+      },
+      "headwear": {
+        "en": "No hats or head coverings except for religious or medical reasons"
+      },
+      "accessories": {
+        "en": "Moles, birthmarks, scars must be visible; no colored/circle contact lenses"
+      }
+    }
   },
   "tw-visa": {
     "slug": "tw-visa",
@@ -4371,11 +4774,11 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "3.2-3.6cm",
     "headHeightJa": "3.2~3.6cm",
-    "validity": "",
-    "validityEn": "",
+    "validity": "taken within the last 6 months",
+    "validityEn": "taken within the last 6 months",
     "validityJa": "",
-    "fileSpec": "",
-    "fileSpecEn": "",
+    "fileSpec": "JPG/JPEG, RGB (min 24-bit), max 5 MB, min 531 x 413 pixels (H x W)",
+    "fileSpecEn": "JPG/JPEG, RGB (min 24-bit), max 5 MB, min 531 x 413 pixels (H x W)",
     "fileSpecJa": "",
     "standard": "BOCA",
     "continent": "asia",
@@ -4464,7 +4867,31 @@
       "ja": "台湾ビザ写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://www.boca.gov.tw/cp-158-250-a5a40-2.html",
+    "restrictions": {
+      "clothing": {
+        "en": "Military, police uniforms, or camouflage clothing prohibited"
+      },
+      "expression": {
+        "en": "Neutral expression, mouth closed, eyes open and clearly visible"
+      },
+      "glasses": {
+        "en": "Corrective lenses permitted if eyes are clearly visible with no glare/reflection; tinted glasses prohibited; colored/circle contact lenses prohibited"
+      },
+      "ears": {
+        "en": "Ears must be clearly visible; exception for microtia patients"
+      },
+      "face_visibility": {
+        "en": "Full face from forehead to chin and both edges must be clearly visible; eyebrows, eyes, nose, mouth, face, ears must be shown"
+      },
+      "headwear": {
+        "en": "No hats or head coverings except for religious or medical reasons"
+      },
+      "accessories": {
+        "en": "Natural moles, birthmarks, scars must be visible; colored/circle contact lenses prohibited"
+      }
+    }
   },
   "hk-passport": {
     "slug": "hk-passport",
@@ -4483,11 +4910,11 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "3.2-3.6cm",
     "headHeightJa": "3.2~3.6cm",
-    "validity": "",
-    "validityEn": "",
+    "validity": "taken within the last 6 months",
+    "validityEn": "taken within the last 6 months",
     "validityJa": "",
-    "fileSpec": "",
-    "fileSpecEn": "",
+    "fileSpec": "JPEG, max 5 MB, min 1200 x 1600 pixels (W x H) for digital camera; 600 DPI for scanner at 40x50mm",
+    "fileSpecEn": "JPEG, max 5 MB, min 1200 x 1600 pixels (W x H) for digital camera; 600 DPI for scanner at 40x50mm",
     "fileSpecJa": "",
     "standard": "HKSAR IMMD",
     "continent": "asia",
@@ -4576,7 +5003,25 @@
       "ja": "香港パスポート写真の公式サイズ・2026年規定 — 4 × 5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://www.immd.gov.hk/eng/residents/immigration/traveldoc/photorequirements.html",
+    "restrictions": {
+      "clothing": {
+        "en": "Avoid overly dark or overly light-coloured clothing; avoid heavy make-up"
+      },
+      "expression": {
+        "en": "Full frontal face with clear facial features"
+      },
+      "glasses": {
+        "en": "Frames must not cross the eyes; flash reflections on glasses are unacceptable"
+      },
+      "face_visibility": {
+        "en": "Full frontal face with clear facial features; hair must not cover eyes or eyebrows"
+      },
+      "headwear": {
+        "en": "Do not wear head dress"
+      }
+    }
   },
   "hk-visa": {
     "slug": "hk-visa",
@@ -4595,11 +5040,11 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "3.2-3.6cm",
     "headHeightJa": "3.2~3.6cm",
-    "validity": "",
-    "validityEn": "",
+    "validity": "taken within the last 6 months",
+    "validityEn": "taken within the last 6 months",
     "validityJa": "",
-    "fileSpec": "",
-    "fileSpecEn": "",
+    "fileSpec": "JPEG, max 5 MB, min 1200 x 1600 pixels (W x H) for digital camera; 600 DPI for scanner at 40x50mm",
+    "fileSpecEn": "JPEG, max 5 MB, min 1200 x 1600 pixels (W x H) for digital camera; 600 DPI for scanner at 40x50mm",
     "fileSpecJa": "",
     "standard": "HKSAR IMMD",
     "continent": "asia",
@@ -4688,7 +5133,25 @@
       "ja": "香港ビザ写真の公式サイズ・2026年規定 — 4 × 5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://www.immd.gov.hk/eng/residents/immigration/traveldoc/photorequirements.html",
+    "restrictions": {
+      "clothing": {
+        "en": "Avoid overly dark or overly light-coloured clothing; avoid heavy make-up"
+      },
+      "expression": {
+        "en": "Full frontal face with clear facial features"
+      },
+      "glasses": {
+        "en": "Frames must not cross the eyes; flash reflections on glasses are unacceptable"
+      },
+      "face_visibility": {
+        "en": "Full frontal face with clear facial features; hair must not cover eyes or eyebrows"
+      },
+      "headwear": {
+        "en": "Do not wear head dress"
+      }
+    }
   },
   "mo-passport": {
     "slug": "mo-passport",
@@ -5605,11 +6068,11 @@
     "headHeight": "2.5~3.0cm",
     "headHeightEn": "2.5-3.0cm",
     "headHeightJa": "2.5~3.0cm",
-    "validity": "",
-    "validityEn": "",
+    "validity": "taken within the last 6 months",
+    "validityEn": "taken within the last 6 months",
     "validityJa": "",
-    "fileSpec": "",
-    "fileSpecEn": "",
+    "fileSpec": "413 x 591 pixels at 300 DPI, 100 KB - 1 MB (for MyOnline Passport)",
+    "fileSpecEn": "413 x 591 pixels at 300 DPI, 100 KB - 1 MB (for MyOnline Passport)",
     "fileSpecJa": "",
     "standard": "ICAO 9303",
     "continent": "asia",
@@ -5698,7 +6161,25 @@
       "ja": "マレーシアパスポート写真の公式サイズ・2026年規定 — 3.5 × 5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 25,
-    "headHeightMax": 30
+    "headHeightMax": 30,
+    "officialSource": "https://www.imi.gov.my/index.php/en/main-services/passport/malaysian-international-passport/",
+    "restrictions": {
+      "expression": {
+        "en": "Neutral expression, eyes open, mouth closed, look directly at camera"
+      },
+      "glasses": {
+        "en": "Contact lenses and spectacles/eyeglasses are NOT permitted during photo capture"
+      },
+      "ears": {
+        "en": "Ears should be visible/exposed; long hair must be tied with ears exposed"
+      },
+      "face_visibility": {
+        "en": "Full face clearly visible; hair must not cover the face; forehead must not be covered (including for hijab wearers)"
+      },
+      "headwear": {
+        "en": "No hats or headwear; religious hijab permitted but forehead must remain visible and hijab must be dark-coloured (black preferred)"
+      }
+    }
   },
   "my-visa": {
     "slug": "my-visa",
@@ -5717,8 +6198,8 @@
     "headHeight": "2.5~3.0cm",
     "headHeightEn": "2.5-3.0cm",
     "headHeightJa": "2.5~3.0cm",
-    "validity": "",
-    "validityEn": "",
+    "validity": "taken within the last 6 months",
+    "validityEn": "taken within the last 6 months",
     "validityJa": "",
     "fileSpec": "",
     "fileSpecEn": "",
@@ -5810,7 +6291,25 @@
       "ja": "マレーシアビザ写真の公式サイズ・2026年規定 — 3.5 × 5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 25,
-    "headHeightMax": 30
+    "headHeightMax": 30,
+    "officialSource": "https://www.imi.gov.my/index.php/en/main-services/passport/malaysian-international-passport/",
+    "restrictions": {
+      "expression": {
+        "en": "Neutral expression, eyes open, mouth closed, look directly at camera"
+      },
+      "glasses": {
+        "en": "Contact lenses and spectacles/eyeglasses are NOT permitted during photo capture"
+      },
+      "ears": {
+        "en": "Ears should be visible/exposed"
+      },
+      "face_visibility": {
+        "en": "Full face clearly visible; hair must not cover the face; forehead must not be covered"
+      },
+      "headwear": {
+        "en": "No hats or headwear; religious hijab permitted but forehead must remain visible"
+      }
+    }
   },
   "ph-passport": {
     "slug": "ph-passport",
@@ -6501,8 +7000,8 @@
     "headHeight": "3.6~4.0cm",
     "headHeightEn": "",
     "headHeightJa": "",
-    "validity": "",
-    "validityEn": "",
+    "validity": "taken within the last 6 months",
+    "validityEn": "taken within the last 6 months",
     "validityJa": "",
     "fileSpec": "",
     "fileSpecEn": "",
@@ -6594,7 +7093,31 @@
       "ja": "ラオスパスポート写真の公式サイズ・2026年規定 — 4 × 6cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 36,
-    "headHeightMax": 40
+    "headHeightMax": 40,
+    "officialSource": "https://laoevisa.gov.la/info",
+    "restrictions": {
+      "clothing": {
+        "en": "Wear normal daily clothing; no uniforms, costumes, or official attire"
+      },
+      "expression": {
+        "en": "Neutral expression, mouth closed, both eyes open"
+      },
+      "glasses": {
+        "en": "Glasses not allowed unless for documented medical reasons"
+      },
+      "ears": {
+        "en": "Accessories must not cover any part of face or ears"
+      },
+      "face_visibility": {
+        "en": "Face must be fully visible and centered; face should take up 60-80% of photo"
+      },
+      "headwear": {
+        "en": "Hats, headsets, or accessories not allowed; religious headwear permitted if full face and ears remain visible"
+      },
+      "accessories": {
+        "en": "No accessories that cover any part of face or ears"
+      }
+    }
   },
   "la-visa": {
     "slug": "la-visa",
@@ -6613,11 +7136,11 @@
     "headHeight": "3.6~4.0cm",
     "headHeightEn": "",
     "headHeightJa": "",
-    "validity": "",
-    "validityEn": "",
+    "validity": "taken within the last 6 months",
+    "validityEn": "taken within the last 6 months",
     "validityJa": "",
-    "fileSpec": "",
-    "fileSpecEn": "",
+    "fileSpec": "JPG, PNG, or PDF; max 2 MB; 152 x 227 pixels; 300 DPI",
+    "fileSpecEn": "JPG, PNG, or PDF; max 2 MB; 152 x 227 pixels; 300 DPI",
     "fileSpecJa": "",
     "standard": "ICAO 9303",
     "continent": "asia",
@@ -6706,7 +7229,31 @@
       "ja": "ラオスビザ写真の公式サイズ・2026年規定 — 4 × 6cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 36,
-    "headHeightMax": 40
+    "headHeightMax": 40,
+    "officialSource": "https://laoevisa.gov.la/info",
+    "restrictions": {
+      "clothing": {
+        "en": "Wear normal daily clothing; no uniforms, costumes, or official attire"
+      },
+      "expression": {
+        "en": "Neutral expression, mouth closed, both eyes open, face camera directly"
+      },
+      "glasses": {
+        "en": "Glasses not allowed unless for documented medical reasons"
+      },
+      "ears": {
+        "en": "Accessories must not cover any part of face or ears"
+      },
+      "face_visibility": {
+        "en": "Face must be fully visible and centered; face should take up 60-80% of photo from chin to top of head"
+      },
+      "headwear": {
+        "en": "Hats, headsets, or accessories not allowed; religious headwear permitted if full face and ears remain visible"
+      },
+      "accessories": {
+        "en": "No accessories that cover any part of face or ears; photo must not be retouched or altered"
+      }
+    }
   },
   "bd-passport": {
     "slug": "bd-passport",
@@ -10085,11 +10632,11 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "",
     "headHeightJa": "",
-    "validity": "",
-    "validityEn": "",
+    "validity": "taken within the last 30 days",
+    "validityEn": "taken within the last 30 days",
     "validityJa": "",
-    "fileSpec": "",
-    "fileSpecEn": "",
+    "fileSpec": "Minimum 600 DPI; soft copy required for all submissions",
+    "fileSpecEn": "Minimum 600 DPI; soft copy required for all submissions",
     "fileSpecJa": "",
     "standard": "ICAO 9303",
     "continent": "asia",
@@ -10178,7 +10725,31 @@
       "ja": "モルディブパスポート写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://www.immigration.gov.mv/photo-standard",
+    "restrictions": {
+      "clothing": {
+        "en": "Darker shades mandatory; light-colored clothes blend with white background; uniform components not acceptable"
+      },
+      "expression": {
+        "en": "Neutral expression, mouth closed, looking directly at camera"
+      },
+      "glasses": {
+        "en": "Dark tinted glasses and sunglasses prohibited; frames must not cover any part of eyes; no flash reflections on lenses; contact lenses acceptable"
+      },
+      "ears": {
+        "en": "Both left and right sides of face must be visible"
+      },
+      "face_visibility": {
+        "en": "Face visible from bottom of chin to crown (top of head, not top of hair); both left and right sides of face must be visible; hair must not cover eyes or facial features"
+      },
+      "headwear": {
+        "en": "Hats prohibited; religious head coverings (hijab) permitted if face visible from chin to crown and eyebrows visible"
+      },
+      "accessories": {
+        "en": "Facial ornaments obscuring features prohibited; excessive makeup not permitted; no nose rings, hoops, excessive jewelry; no fake eyelashes"
+      }
+    }
   },
   "mv-visa": {
     "slug": "mv-visa",
@@ -10197,11 +10768,11 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "",
     "headHeightJa": "",
-    "validity": "",
-    "validityEn": "",
+    "validity": "taken within the last 30 days",
+    "validityEn": "taken within the last 30 days",
     "validityJa": "",
-    "fileSpec": "",
-    "fileSpecEn": "",
+    "fileSpec": "Minimum 600 DPI; soft copy required",
+    "fileSpecEn": "Minimum 600 DPI; soft copy required",
     "fileSpecJa": "",
     "standard": "ICAO 9303",
     "continent": "asia",
@@ -10290,7 +10861,31 @@
       "ja": "モルディブビザ写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://www.immigration.gov.mv/photo-standard",
+    "restrictions": {
+      "clothing": {
+        "en": "Darker shades mandatory; light-colored clothes blend with white background; uniform components not acceptable"
+      },
+      "expression": {
+        "en": "Neutral expression, mouth closed, looking directly at camera"
+      },
+      "glasses": {
+        "en": "Dark tinted glasses and sunglasses prohibited; frames must not cover any part of eyes; no flash reflections on lenses"
+      },
+      "ears": {
+        "en": "Both left and right sides of face must be visible"
+      },
+      "face_visibility": {
+        "en": "Face visible from bottom of chin to crown (top of head, not top of hair); both sides of face must be visible"
+      },
+      "headwear": {
+        "en": "Hats prohibited; religious head coverings (hijab) permitted if face visible from chin to crown and eyebrows visible"
+      },
+      "accessories": {
+        "en": "Facial ornaments obscuring features prohibited; excessive makeup not permitted; no nose rings, hoops, excessive jewelry; no fake eyelashes"
+      }
+    }
   },
   "ru-passport": {
     "slug": "ru-passport",
@@ -10757,8 +11352,8 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "3.2-3.6cm",
     "headHeightJa": "3.2~3.6cm",
-    "validity": "",
-    "validityEn": "",
+    "validity": "taken within the last 6 months",
+    "validityEn": "taken within the last 6 months",
     "validityJa": "",
     "fileSpec": "",
     "fileSpecEn": "",
@@ -10852,7 +11447,28 @@
       "ja": "フランスパスポート写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は明るい灰色。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://www.service-public.gouv.fr/particuliers/vosdroits/F10619",
+    "restrictions": {
+      "expression": {
+        "en": "Neutral expression, mouth closed, eyes open and looking directly at camera"
+      },
+      "glasses": {
+        "en": "Glasses optional; if worn, frames cannot be thick or hide eyes, lenses must not be tinted or produce glare"
+      },
+      "ears": {
+        "en": "Ears must be clearly visible"
+      },
+      "face_visibility": {
+        "en": "Face must be clear and fully visible; eyes perfectly visible and open; hair must not cover face (bangs acceptable if they do not obstruct eyes)"
+      },
+      "headwear": {
+        "en": "Head must be bare; no hats, scarves, or headbands"
+      },
+      "accessories": {
+        "en": "Earrings and piercings permitted if they do not obscure facial features"
+      }
+    }
   },
   "fr-visa": {
     "slug": "fr-visa",
@@ -10871,11 +11487,11 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "3.2-3.6cm",
     "headHeightJa": "3.2~3.6cm",
-    "validity": "",
-    "validityEn": "",
+    "validity": "taken within the last 6 months",
+    "validityEn": "taken within the last 6 months",
     "validityJa": "",
-    "fileSpec": "",
-    "fileSpecEn": "",
+    "fileSpec": "PNG, JPG, or JPEG; max 120 KB (for online applications); min 400 DPI print resolution",
+    "fileSpecEn": "PNG, JPG, or JPEG; max 120 KB (for online applications); min 400 DPI print resolution",
     "fileSpecJa": "",
     "standard": "EU Reg. 2252/2004",
     "continent": "europe",
@@ -10964,7 +11580,22 @@
       "ja": "フランスシェンゲンビザ写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は明るい灰色。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://france-visas.gouv.fr/documents/d/france-visas/iso_iec_fv_visa_photograph_requirements_en",
+    "restrictions": {
+      "expression": {
+        "en": "Neutral expression, mouth closed, eyes open, looking directly at camera"
+      },
+      "glasses": {
+        "en": "Glasses allowed if eyes clearly visible, no reflection from glasses, frames do not cover eyes"
+      },
+      "face_visibility": {
+        "en": "Face must be clearly visible; eyes open and looking directly at camera"
+      },
+      "headwear": {
+        "en": "Religious head coverings permitted if plain, single color, contrasts with background; otherwise head must be bare"
+      }
+    }
   },
   "de-passport": {
     "slug": "de-passport",
@@ -10983,11 +11614,11 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "3.2-3.6cm",
     "headHeightJa": "3.2~3.6cm",
-    "validity": "",
-    "validityEn": "",
+    "validity": "taken within 6 months",
+    "validityEn": "taken within 6 months",
     "validityJa": "",
-    "fileSpec": "",
-    "fileSpecEn": "",
+    "fileSpec": "minimum 600 dpi resolution, high-quality photo paper; since May 1, 2025 digital submission via certified photo studio (Lichtbildübermittlungsstelle) required for ID documents",
+    "fileSpecEn": "minimum 600 dpi resolution, high-quality photo paper; since May 1, 2025 digital submission via certified photo studio (Lichtbildübermittlungsstelle) required for ID documents",
     "fileSpecJa": "",
     "standard": "ICAO 9303",
     "continent": "europe",
@@ -11078,7 +11709,22 @@
       "ja": "ドイツパスポート写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://dublin.diplo.de/ie-en/passport-photos-2380534",
+    "restrictions": {
+      "expression": {
+        "en": "neutral expression, mouth closed, no smiling, looking directly into camera"
+      },
+      "glasses": {
+        "en": "not permitted; glasses banned in all German biometric ID photos since November 2017 per BMI Fotomustertafel"
+      },
+      "face_visibility": {
+        "en": "full face must be clearly visible and centered, eyes fully open, sharp and clear image with sufficient contrast, no shadows or reflections on face"
+      },
+      "headwear": {
+        "en": "not permitted except for religious or medical reasons; face from lower chin edge to forehead must remain fully visible"
+      }
+    }
   },
   "de-visa": {
     "slug": "de-visa",
@@ -11097,8 +11743,8 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "3.2-3.6cm",
     "headHeightJa": "3.2~3.6cm",
-    "validity": "",
-    "validityEn": "",
+    "validity": "taken within 6 months",
+    "validityEn": "taken within 6 months",
     "validityJa": "",
     "fileSpec": "",
     "fileSpecEn": "",
@@ -11190,7 +11836,22 @@
       "ja": "ドイツシェンゲンビザ写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://dublin.diplo.de/ie-en/passport-photos-2380534",
+    "restrictions": {
+      "expression": {
+        "en": "neutral expression, mouth closed, looking straight at camera, eyes open"
+      },
+      "glasses": {
+        "en": "permitted if regularly worn; iris must be clearly and completely visible, no dark or tinted lenses, no reflective glare, frames cannot cover eyes"
+      },
+      "face_visibility": {
+        "en": "full face must be clearly visible and centered, eyes open"
+      },
+      "headwear": {
+        "en": "not permitted except for religious or medical reasons; face must remain fully visible"
+      }
+    }
   },
   "it-passport": {
     "slug": "it-passport",
@@ -11209,8 +11870,8 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "",
     "headHeightJa": "",
-    "validity": "",
-    "validityEn": "",
+    "validity": "taken within 6 months",
+    "validityEn": "taken within 6 months",
     "validityJa": "",
     "fileSpec": "",
     "fileSpecEn": "",
@@ -11304,7 +11965,22 @@
       "ja": "イタリアパスポート写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://ambvienna.esteri.it/it/servizi-consolari-e-visti/servizi-per-il-cittadino-italiano/passaporti/norme-icao/",
+    "restrictions": {
+      "expression": {
+        "en": "neutral expression, mouth closed, no smiling, eyes open and clearly visible, direct gaze at camera"
+      },
+      "glasses": {
+        "en": "permitted if eyes remain clearly visible; no sunglasses or tinted lenses; heavy frames that cover eye areas prohibited; avoid flash reflections on lenses"
+      },
+      "face_visibility": {
+        "en": "full face visible, not in profile, eyes open and clearly visible, no flash reflections, person must appear alone"
+      },
+      "headwear": {
+        "en": "not permitted except for religious reasons with clear justification; face contours from chin to forehead and both sides of face must be clearly visible"
+      }
+    }
   },
   "it-visa": {
     "slug": "it-visa",
@@ -11323,8 +11999,8 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "3.2-3.6cm",
     "headHeightJa": "3.2~3.6cm",
-    "validity": "",
-    "validityEn": "",
+    "validity": "taken within 6 months",
+    "validityEn": "taken within 6 months",
     "validityJa": "",
     "fileSpec": "",
     "fileSpecEn": "",
@@ -11416,7 +12092,22 @@
       "ja": "イタリアシェンゲンビザ写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://ambvienna.esteri.it/it/servizi-consolari-e-visti/servizi-per-il-cittadino-italiano/passaporti/norme-icao/",
+    "restrictions": {
+      "expression": {
+        "en": "neutral expression, mouth closed, eyes open and clearly visible, looking straight at camera"
+      },
+      "glasses": {
+        "en": "permitted if eyes remain clearly visible; no sunglasses or tinted lenses; no reflective glare; heavy frames prohibited"
+      },
+      "face_visibility": {
+        "en": "full face visible, eyes open and clearly visible, direct gaze at camera"
+      },
+      "headwear": {
+        "en": "not permitted except for religious or medical reasons; face must remain fully visible"
+      }
+    }
   },
   "es-passport": {
     "slug": "es-passport",
@@ -11435,11 +12126,11 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "",
     "headHeightJa": "",
-    "validity": "",
-    "validityEn": "",
+    "validity": "recent (reciente)",
+    "validityEn": "recent (reciente)",
     "validityJa": "",
-    "fileSpec": "",
-    "fileSpecEn": "",
+    "fileSpec": "high resolution on quality photographic paper (alta resolucion en papel fotografico de buena calidad)",
+    "fileSpecEn": "high resolution on quality photographic paper (alta resolucion en papel fotografico de buena calidad)",
     "fileSpecJa": "",
     "standard": "ICAO 9303",
     "continent": "europe",
@@ -11530,7 +12221,22 @@
       "ja": "スペインパスポート写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://www.dnielectronico.es/PortalDNIe/PRF1_Cons02.action?pag=REF_1084",
+    "restrictions": {
+      "expression": {
+        "en": "neutral expression, no smiles or gestures"
+      },
+      "glasses": {
+        "en": "transparent lenses only; dark-tinted glasses (gafas de cristales oscuros) not permitted; no reflections allowed"
+      },
+      "face_visibility": {
+        "en": "full face oval visible including eyebrows, eyes, nose, mouth and chin (el ovalo de la cara, que incluye cejas, ojos, nariz, boca y menton); taken from front"
+      },
+      "headwear": {
+        "en": "not permitted except for religious reasons with justification; oval of face must remain completely visible from hairline to chin"
+      }
+    }
   },
   "es-visa": {
     "slug": "es-visa",
@@ -11549,8 +12255,8 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "3.2-3.6cm",
     "headHeightJa": "3.2~3.6cm",
-    "validity": "",
-    "validityEn": "",
+    "validity": "recent color photo",
+    "validityEn": "recent color photo",
     "validityJa": "",
     "fileSpec": "",
     "fileSpecEn": "",
@@ -11642,7 +12348,19 @@
       "ja": "スペインシェンゲンビザ写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://www.exteriores.gob.es/Consulados/losangeles/en/ServiciosConsulares/Paginas/Consular/Visados-Schengen.aspx",
+    "restrictions": {
+      "expression": {
+        "en": "neutral expression, facing forward"
+      },
+      "glasses": {
+        "en": "no dark or reflective glasses"
+      },
+      "face_visibility": {
+        "en": "no garments concealing the oval of the face; full face visible from front"
+      }
+    }
   },
   "pt-passport": {
     "slug": "pt-passport",
@@ -11661,8 +12379,8 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "",
     "headHeightJa": "",
-    "validity": "",
-    "validityEn": "",
+    "validity": "taken within 1 year (obtidas ha menos de um ano)",
+    "validityEn": "taken within 1 year (obtidas ha menos de um ano)",
     "validityJa": "",
     "fileSpec": "",
     "fileSpecEn": "",
@@ -11756,7 +12474,8 @@
       "ja": "ポルトガルパスポート写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://justica.gov.pt/Registos/Identificacao/Passaporte-eletronico"
   },
   "pt-visa": {
     "slug": "pt-visa",
@@ -11868,7 +12587,8 @@
       "ja": "ポルトガルシェンゲンビザ写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://vistos.mne.gov.pt/en/short-stay-visas-schengen/required-documentation/short-stay-visa"
   },
   "nl-passport": {
     "slug": "nl-passport",
@@ -11887,11 +12607,11 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "",
     "headHeightJa": "",
-    "validity": "",
-    "validityEn": "",
+    "validity": "taken within 6 months (no more than 6 months old when application is submitted)",
+    "validityEn": "taken within 6 months (no more than 6 months old when application is submitted)",
     "validityJa": "",
-    "fileSpec": "",
-    "fileSpecEn": "",
+    "fileSpec": "minimum 400 dpi resolution, high-quality smooth photo paper, color, sharp with sufficient contrast and detail",
+    "fileSpecEn": "minimum 400 dpi resolution, high-quality smooth photo paper, color, sharp with sufficient contrast and detail",
     "fileSpecJa": "",
     "standard": "ICAO 9303",
     "continent": "europe",
@@ -11982,7 +12702,28 @@
       "ja": "オランダパスポート写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://www.government.nl/topics/identification-documents/requirements-for-photos",
+    "restrictions": {
+      "expression": {
+        "en": "neutral expression, mouth closed, looking straight at camera"
+      },
+      "glasses": {
+        "en": "permitted if eyes are fully visible, lenses fully transparent, no distortion or shadows from reflection"
+      },
+      "ears": {
+        "en": "ears need not be visible if full face width (16-20mm) is shown"
+      },
+      "face_visibility": {
+        "en": "face fully visible, eyes fully visible, head shown in full and centered"
+      },
+      "headwear": {
+        "en": "not permitted; exceptions for religious or belief-based head coverings (must be plain, single color, contrasting with background) and medical hair loss coverings"
+      },
+      "accessories": {
+        "en": "earrings and facial piercings permitted; beards, wigs, makeup allowed; no reflection from accessories"
+      }
+    }
   },
   "nl-visa": {
     "slug": "nl-visa",
@@ -12001,11 +12742,11 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "3.2-3.6cm",
     "headHeightJa": "3.2~3.6cm",
-    "validity": "",
-    "validityEn": "",
+    "validity": "taken within 6 months",
+    "validityEn": "taken within 6 months",
     "validityJa": "",
-    "fileSpec": "",
-    "fileSpecEn": "",
+    "fileSpec": "minimum 400 dpi resolution, color, sharp with sufficient contrast",
+    "fileSpecEn": "minimum 400 dpi resolution, color, sharp with sufficient contrast",
     "fileSpecJa": "",
     "standard": "EU Reg. 2252/2004",
     "continent": "europe",
@@ -12094,7 +12835,28 @@
       "ja": "オランダシェンゲンビザ写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://www.netherlandsworldwide.nl/passport-id-card/photo-requirements",
+    "restrictions": {
+      "expression": {
+        "en": "neutral expression, mouth closed, looking straight at camera"
+      },
+      "glasses": {
+        "en": "permitted if eyes fully visible, lenses fully transparent, no glare or shadow"
+      },
+      "ears": {
+        "en": "ears need not be visible if full face width is shown"
+      },
+      "face_visibility": {
+        "en": "face fully visible and uncovered, eyes fully visible"
+      },
+      "headwear": {
+        "en": "not permitted; exceptions for religious head coverings (plain, single color, contrasting background) and medical hair loss"
+      },
+      "accessories": {
+        "en": "earrings and facial piercings permitted; no reflection from accessories"
+      }
+    }
   },
   "be-passport": {
     "slug": "be-passport",
@@ -12113,8 +12875,8 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "",
     "headHeightJa": "",
-    "validity": "",
-    "validityEn": "",
+    "validity": "taken within 6 months before submitting application",
+    "validityEn": "taken within 6 months before submitting application",
     "validityJa": "",
     "fileSpec": "",
     "fileSpecEn": "",
@@ -12208,7 +12970,22 @@
       "ja": "ベルギーパスポート写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://diplomatie.belgium.be/en/belgians-abroad/belgian-passport/quality-requirements-photo",
+    "restrictions": {
+      "expression": {
+        "en": "neutral facial expression, mouth shut, no smiling"
+      },
+      "glasses": {
+        "en": "allowed but no reflecting or tinted glasses; frames should not be too big but not too close to the eyeline; glasses may be removed even if worn daily"
+      },
+      "ears": {
+        "en": "the part towards the ears must be visible (face totally uncovered requirement)"
+      },
+      "face_visibility": {
+        "en": "face totally uncovered; forehead, chin and the part towards the ears must be visible; eyes perfectly visible"
+      }
+    }
   },
   "be-visa": {
     "slug": "be-visa",
@@ -12227,8 +13004,8 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "3.2-3.6cm",
     "headHeightJa": "3.2~3.6cm",
-    "validity": "",
-    "validityEn": "",
+    "validity": "taken within 6 months",
+    "validityEn": "taken within 6 months",
     "validityJa": "",
     "fileSpec": "",
     "fileSpecEn": "",
@@ -12320,7 +13097,19 @@
       "ja": "ベルギーシェンゲンビザ写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://diplomatie.belgium.be/en/belgians-abroad/belgian-passport/quality-requirements-photo",
+    "restrictions": {
+      "expression": {
+        "en": "neutral facial expression, mouth shut, no smiling"
+      },
+      "glasses": {
+        "en": "no reflecting or tinted glasses; frames should not be too big or too close to eyeline; eyes must be perfectly visible"
+      },
+      "face_visibility": {
+        "en": "face totally uncovered; forehead, chin and part towards ears visible; head and shoulders straight, right in front of camera"
+      }
+    }
   },
   "ch-passport": {
     "slug": "ch-passport",
@@ -12339,11 +13128,11 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "",
     "headHeightJa": "",
-    "validity": "",
-    "validityEn": "",
+    "validity": "Taken within 6 months",
+    "validityEn": "Taken within 6 months",
     "validityJa": "",
-    "fileSpec": "",
-    "fileSpecEn": "",
+    "fileSpec": "Colour digital photo required",
+    "fileSpecEn": "Colour digital photo required",
     "fileSpecJa": "",
     "standard": "ICAO 9303",
     "continent": "europe",
@@ -12434,7 +13223,22 @@
       "ja": "スイスパスポート写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://www.fedpol.admin.ch/de/beantragen",
+    "restrictions": {
+      "expression": {
+        "en": "Neutral expression, mouth closed, eyes open and looking directly at camera"
+      },
+      "glasses": {
+        "en": "Glasses allowed if eyes fully visible, lenses must be clear (no tinting), no glare or reflections"
+      },
+      "face_visibility": {
+        "en": "Eyes open, looking directly at camera; face photographed from front; 5mm space between top of head and edge of photo"
+      },
+      "headwear": {
+        "en": "Not allowed; exceptions for religious or medical reasons (must not cover face or cast shadows; signed statement required)"
+      }
+    }
   },
   "ch-visa": {
     "slug": "ch-visa",
@@ -12453,8 +13257,8 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "3.2-3.6cm",
     "headHeightJa": "3.2~3.6cm",
-    "validity": "",
-    "validityEn": "",
+    "validity": "Taken within 6 months",
+    "validityEn": "Taken within 6 months",
     "validityJa": "",
     "fileSpec": "",
     "fileSpecEn": "",
@@ -12546,7 +13350,22 @@
       "ja": "スイスシェンゲンビザ写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://www.eda.admin.ch/countries/usa/en/home/visa/entry-ch/up-90-days/documents-schengen.html",
+    "restrictions": {
+      "expression": {
+        "en": "Neutral expression, mouth closed, eyes open and visible"
+      },
+      "glasses": {
+        "en": "Allowed only if eyes fully visible, no reflections, no tinted lenses"
+      },
+      "face_visibility": {
+        "en": "Full face visible, frontal view, eyes looking at camera"
+      },
+      "headwear": {
+        "en": "Not allowed; exception for religious headwear only if face fully visible from chin to forehead"
+      }
+    }
   },
   "at-passport": {
     "slug": "at-passport",
@@ -12565,11 +13384,11 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "",
     "headHeightJa": "",
-    "validity": "",
-    "validityEn": "",
+    "validity": "Not older than 6 months",
+    "validityEn": "Not older than 6 months",
     "validityJa": "",
-    "fileSpec": "",
-    "fileSpecEn": "",
+    "fileSpec": "Color photo on smooth glossy paper without surface texture; high print resolution",
+    "fileSpecEn": "Color photo on smooth glossy paper without surface texture; high print resolution",
     "fileSpecJa": "",
     "standard": "ICAO 9303",
     "continent": "europe",
@@ -12660,7 +13479,25 @@
       "ja": "オーストリアパスポート写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://www.bmi.gv.at/607/passbild_kriterien.html",
+    "restrictions": {
+      "expression": {
+        "en": "Neutral expression, mouth closed, eyes open and clearly visible, direct eye contact with camera"
+      },
+      "glasses": {
+        "en": "Permitted only if eyes clearly visible without lens reflections, no tinted lenses, no frame obstruction"
+      },
+      "ears": {
+        "en": "Ears should not be covered by hair; hair must not obscure eyes, nose, or mouth"
+      },
+      "face_visibility": {
+        "en": "Frontal view, eyes uncovered and clearly visible, natural skin tone, even lighting, sharp focus"
+      },
+      "headwear": {
+        "en": "Prohibited except for religious or medical reasons; face from chin to forehead must be visible without facial shadows"
+      }
+    }
   },
   "at-visa": {
     "slug": "at-visa",
@@ -12679,8 +13516,8 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "3.2-3.6cm",
     "headHeightJa": "3.2~3.6cm",
-    "validity": "",
-    "validityEn": "",
+    "validity": "Not older than 3 months",
+    "validityEn": "Not older than 3 months",
     "validityJa": "",
     "fileSpec": "",
     "fileSpecEn": "",
@@ -12772,7 +13609,25 @@
       "ja": "オーストリアシェンゲンビザ写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://www.bmeia.gv.at/en/austrian-embassy-london/travelling-to-austria/entry-requirements-visa-and-immigration/schengen-visa-application-requirements",
+    "restrictions": {
+      "expression": {
+        "en": "Neutral expression, mouth closed, eyes open and clearly visible (ICAO standard)"
+      },
+      "glasses": {
+        "en": "Permitted only if eyes clearly visible without lens reflections, no tinted lenses, no frame obstruction"
+      },
+      "ears": {
+        "en": "Ears should not be covered by hair"
+      },
+      "face_visibility": {
+        "en": "Frontal view, eyes uncovered and clearly visible"
+      },
+      "headwear": {
+        "en": "Prohibited except for religious or medical reasons; face from chin to forehead must be visible"
+      }
+    }
   },
   "se-passport": {
     "slug": "se-passport",
@@ -12791,8 +13646,8 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "",
     "headHeightJa": "",
-    "validity": "",
-    "validityEn": "",
+    "validity": "Taken within 6 months",
+    "validityEn": "Taken within 6 months",
     "validityJa": "",
     "fileSpec": "",
     "fileSpecEn": "",
@@ -12886,7 +13741,22 @@
       "ja": "スウェーデンパスポート写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://polisen.se/en/services-and-permits/passport-and-national-id-card/",
+    "restrictions": {
+      "expression": {
+        "en": "Neutral expression; face depicted at straight angle; eyes looking straight at camera"
+      },
+      "glasses": {
+        "en": "Allowed if frames do not cover eyes; sunglasses and tinted glasses not permitted; no reflections from glasses"
+      },
+      "face_visibility": {
+        "en": "Full face visible, frontal view, eyes open and looking at camera"
+      },
+      "headwear": {
+        "en": "Not allowed; religious headgear permitted if worn daily, must not obscure face"
+      }
+    }
   },
   "se-visa": {
     "slug": "se-visa",
@@ -12905,8 +13775,8 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "3.2-3.6cm",
     "headHeightJa": "3.2~3.6cm",
-    "validity": "",
-    "validityEn": "",
+    "validity": "Taken within 6 months",
+    "validityEn": "Taken within 6 months",
     "validityJa": "",
     "fileSpec": "",
     "fileSpecEn": "",
@@ -12998,7 +13868,16 @@
       "ja": "スウェーデンシェンゲンビザ写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://www.migrationsverket.se/en/you-want-to-apply/visiting-sweden/visiting-sweden-for-up-to-90-days-entry-visa.html",
+    "restrictions": {
+      "expression": {
+        "en": "Neutral expression, frontal view, eyes looking at camera"
+      },
+      "headwear": {
+        "en": "Not allowed; religious headgear permitted if face fully visible"
+      }
+    }
   },
   "no-passport": {
     "slug": "no-passport",
@@ -13017,8 +13896,8 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "",
     "headHeightJa": "",
-    "validity": "",
-    "validityEn": "",
+    "validity": "Must show face as it looks today (taken recently)",
+    "validityEn": "Must show face as it looks today (taken recently)",
     "validityJa": "",
     "fileSpec": "",
     "fileSpecEn": "",
@@ -13112,7 +13991,28 @@
       "ja": "ノルウェーパスポート写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://www.udi.no/en/word-definitions/photopassport-photo/",
+    "restrictions": {
+      "clothing": {
+        "en": "Scarves, bags and outerwear must be removed before being photographed"
+      },
+      "expression": {
+        "en": "Neutral expression, mouth closed"
+      },
+      "glasses": {
+        "en": "Glasses are not to be worn; exception for documented medical reasons with doctor's note"
+      },
+      "ears": {
+        "en": "Both ears must be entirely visible"
+      },
+      "face_visibility": {
+        "en": "Both eyes, both eyebrows and both ears must be entirely visible; face photographed from front; eyes directed at camera"
+      },
+      "headwear": {
+        "en": "Headgear is not to be worn; religious or medical headwear permitted if worn regularly and does not cover facial features or distort face shape"
+      }
+    }
   },
   "no-visa": {
     "slug": "no-visa",
@@ -13131,8 +14031,8 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "3.2-3.6cm",
     "headHeightJa": "3.2~3.6cm",
-    "validity": "",
-    "validityEn": "",
+    "validity": "Must show face as it looks today (taken recently)",
+    "validityEn": "Must show face as it looks today (taken recently)",
     "validityJa": "",
     "fileSpec": "",
     "fileSpecEn": "",
@@ -13224,7 +14124,28 @@
       "ja": "ノルウェーシェンゲンビザ写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://www.udi.no/en/word-definitions/photopassport-photo/",
+    "restrictions": {
+      "clothing": {
+        "en": "Scarves, bags and outerwear must be removed before being photographed"
+      },
+      "expression": {
+        "en": "Neutral expression, mouth closed"
+      },
+      "glasses": {
+        "en": "Glasses are not to be worn; exception for documented medical reasons with doctor's note"
+      },
+      "ears": {
+        "en": "Both ears must be entirely visible"
+      },
+      "face_visibility": {
+        "en": "Both eyes, both eyebrows and both ears must be entirely visible; face photographed from front"
+      },
+      "headwear": {
+        "en": "Headgear is not to be worn; religious or medical headwear permitted if worn regularly and does not cover facial features"
+      }
+    }
   },
   "dk-passport": {
     "slug": "dk-passport",
@@ -13243,8 +14164,8 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "",
     "headHeightJa": "",
-    "validity": "",
-    "validityEn": "",
+    "validity": "Taken within 6 months",
+    "validityEn": "Taken within 6 months",
     "validityJa": "",
     "fileSpec": "",
     "fileSpecEn": "",
@@ -13338,7 +14259,22 @@
       "ja": "デンマークパスポート写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://politi.dk/pas/krav-til-pas-og-koerekortfoto",
+    "restrictions": {
+      "expression": {
+        "en": "Neutral expression, mouth closed, eyes open and looking directly into camera"
+      },
+      "glasses": {
+        "en": "Allowed if they do not block eyes; no sunglasses or tinted lenses; no reflections on lenses"
+      },
+      "face_visibility": {
+        "en": "Whole face must be visible; both eyes visible; looking directly into camera; photo taken from front"
+      },
+      "headwear": {
+        "en": "Not allowed; religious headgear permitted with forehead, cheekbones and chin visible"
+      }
+    }
   },
   "dk-visa": {
     "slug": "dk-visa",
@@ -13357,8 +14293,8 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "3.2-3.6cm",
     "headHeightJa": "3.2~3.6cm",
-    "validity": "",
-    "validityEn": "",
+    "validity": "Taken within 6 months",
+    "validityEn": "Taken within 6 months",
     "validityJa": "",
     "fileSpec": "",
     "fileSpecEn": "",
@@ -13450,7 +14386,19 @@
       "ja": "デンマークシェンゲンビザ写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://um.dk/en/travel-and-residence/how-to-apply-for-a-danish-passport/",
+    "restrictions": {
+      "expression": {
+        "en": "Neutral expression, mouth closed"
+      },
+      "glasses": {
+        "en": "Prescription glasses allowed if eyes clearly visible; no tinted lenses or sunglasses; no reflections"
+      },
+      "headwear": {
+        "en": "Not allowed; religious headgear permitted with forehead, cheekbones and chin visible"
+      }
+    }
   },
   "fi-passport": {
     "slug": "fi-passport",
@@ -13469,11 +14417,11 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "",
     "headHeightJa": "",
-    "validity": "",
-    "validityEn": "",
+    "validity": "Not older than 6 months",
+    "validityEn": "Not older than 6 months",
     "validityJa": "",
-    "fileSpec": "",
-    "fileSpecEn": "",
+    "fileSpec": "JPEG format (.jpg or .jpeg), 500 x 653 pixels, max 250 KB; no editing or retouching allowed",
+    "fileSpecEn": "JPEG format (.jpg or .jpeg), 500 x 653 pixels, max 250 KB; no editing or retouching allowed",
     "fileSpecJa": "",
     "standard": "ICAO 9303",
     "continent": "europe",
@@ -13564,7 +14512,31 @@
       "ja": "フィンランドパスポート写真の公式サイズ・2026年規定 — 3.6 × 4.7cm、背景は明るい灰色。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://poliisi.fi/en/submitting-passport-photographs",
+    "restrictions": {
+      "clothing": {
+        "en": "Normal everyday upper-body clothing; avoid white shirts (blend with background), hoodies, and thick scarves"
+      },
+      "expression": {
+        "en": "Neutral expression, mouth closed; slight smile allowed but lips must remain together"
+      },
+      "glasses": {
+        "en": "Not recommended; if worn, glasses must not cause reflections and frames must not cover eyes; police often reject photos with glasses"
+      },
+      "ears": {
+        "en": "Preferred but not mandatory; both ears showing or both edges of face visible"
+      },
+      "face_visibility": {
+        "en": "Face fully visible and centered; both eyes open; hair must not cover eyebrows or facial features"
+      },
+      "headwear": {
+        "en": "No hats allowed; religious headgear (headscarf, yarmulke) permitted if worn daily and does not obscure facial features or cast shadows"
+      },
+      "accessories": {
+        "en": "Small neck scarf acceptable; avoid large scarves"
+      }
+    }
   },
   "fi-visa": {
     "slug": "fi-visa",
@@ -13583,11 +14555,11 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "3.2-3.6cm",
     "headHeightJa": "3.2~3.6cm",
-    "validity": "",
-    "validityEn": "",
+    "validity": "Not older than 6 months",
+    "validityEn": "Not older than 6 months",
     "validityJa": "",
-    "fileSpec": "",
-    "fileSpecEn": "",
+    "fileSpec": "JPEG format, 500 x 653 pixels, max 250 KB",
+    "fileSpecEn": "JPEG format, 500 x 653 pixels, max 250 KB",
     "fileSpecJa": "",
     "standard": "EU Reg. 2252/2004",
     "continent": "europe",
@@ -13676,7 +14648,22 @@
       "ja": "フィンランドシェンゲンビザ写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は明るい灰色。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://migri.fi/en/-/oleskelulupahakemukseen-liitettavan-passikuvan-on-oltava-tuore",
+    "restrictions": {
+      "expression": {
+        "en": "Neutral expression, mouth closed"
+      },
+      "glasses": {
+        "en": "Not recommended; must not cause reflections or cover eyes; police often reject photos with glasses"
+      },
+      "face_visibility": {
+        "en": "Face fully visible and centered; both eyes open"
+      },
+      "headwear": {
+        "en": "No hats; religious headgear permitted if worn daily and does not obscure features"
+      }
+    }
   },
   "is-passport": {
     "slug": "is-passport",
@@ -13695,8 +14682,8 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "",
     "headHeightJa": "",
-    "validity": "",
-    "validityEn": "",
+    "validity": "taken within 6 months",
+    "validityEn": "taken within 6 months",
     "validityJa": "",
     "fileSpec": "",
     "fileSpecEn": "",
@@ -13790,7 +14777,22 @@
       "ja": "アイスランドパスポート写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://island.is/reglugerdir/nr/0560-2009",
+    "restrictions": {
+      "expression": {
+        "en": "natural expression, face turned directly toward camera"
+      },
+      "glasses": {
+        "en": "dark glasses and reflective lenses prohibited"
+      },
+      "face_visibility": {
+        "en": "face must be turned directly toward camera, both eyes visible"
+      },
+      "headwear": {
+        "en": "not permitted; exception for religious or health reasons"
+      }
+    }
   },
   "is-visa": {
     "slug": "is-visa",
@@ -13902,7 +14904,8 @@
       "ja": "アイスランドシェンゲンビザ写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://island.is/en/get-a-visa/supporting-documents"
   },
   "ie-passport": {
     "slug": "ie-passport",
@@ -13921,11 +14924,11 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "",
     "headHeightJa": "",
-    "validity": "",
-    "validityEn": "",
+    "validity": "taken within the last 6 months",
+    "validityEn": "taken within the last 6 months",
     "validityJa": "",
-    "fileSpec": "",
-    "fileSpecEn": "",
+    "fileSpec": "JPEG format, minimum 715 x 951 pixels, maximum 9MB, colour, no compression artifacts",
+    "fileSpecEn": "JPEG format, minimum 715 x 951 pixels, maximum 9MB, colour, no compression artifacts",
     "fileSpecJa": "",
     "standard": "ICAO 9303",
     "continent": "europe",
@@ -14016,7 +15019,25 @@
       "ja": "アイルランドパスポート写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://www.dfa.ie/passports/photo-guidelines/",
+    "restrictions": {
+      "clothing": {
+        "en": "uniforms (civil or military) and insignia-bearing clothing not permitted"
+      },
+      "expression": {
+        "en": "neutral expression, mouth closed, no smiling"
+      },
+      "glasses": {
+        "en": "transparent glasses permitted if frames do not cover eyes and no glare on lenses; sunglasses not permitted"
+      },
+      "face_visibility": {
+        "en": "face fully visible; hair cannot cover eyes; full head to mid-torso visible"
+      },
+      "headwear": {
+        "en": "allowed for religious or medical reasons only; no other head accessories permitted"
+      }
+    }
   },
   "ie-visa": {
     "slug": "ie-visa",
@@ -14035,8 +15056,8 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "3.2-3.6cm",
     "headHeightJa": "3.2~3.6cm",
-    "validity": "",
-    "validityEn": "",
+    "validity": "no more than 6 months old",
+    "validityEn": "no more than 6 months old",
     "validityJa": "",
     "fileSpec": "",
     "fileSpecEn": "",
@@ -14128,7 +15149,22 @@
       "ja": "アイルランドシェンゲンビザ写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://www.irishimmigration.ie/photograph-rules-for-visa-applications/",
+    "restrictions": {
+      "expression": {
+        "en": "neutral expression, both eyes open, mouth closed"
+      },
+      "glasses": {
+        "en": "clear glass acceptable; sunglasses not permitted"
+      },
+      "face_visibility": {
+        "en": "full face visible, no hair covering eyes"
+      },
+      "headwear": {
+        "en": "only head coverings for religious reasons permitted; hair bands not allowed"
+      }
+    }
   },
   "pl-passport": {
     "slug": "pl-passport",
@@ -14147,11 +15183,11 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "",
     "headHeightJa": "",
-    "validity": "",
-    "validityEn": "",
+    "validity": "taken within 6 months before submission",
+    "validityEn": "taken within 6 months before submission",
     "validityJa": "",
-    "fileSpec": "",
-    "fileSpecEn": "",
+    "fileSpec": "online: minimum 768 x 1004 pixels, max 2.5 MB, 35x45mm proportions",
+    "fileSpecEn": "online: minimum 768 x 1004 pixels, max 2.5 MB, 35x45mm proportions",
     "fileSpecJa": "",
     "standard": "ICAO 9303",
     "continent": "europe",
@@ -14242,7 +15278,28 @@
       "ja": "ポーランドパスポート写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://www.gov.pl/web/gov/zdjecie-do-dowodu-lub-paszportu",
+    "restrictions": {
+      "expression": {
+        "en": "natural facial expression, closed mouth"
+      },
+      "glasses": {
+        "en": "corrective glasses permitted if eyes visible and frames do not cover eyebrows, no lens glare; dark glasses only with disability documentation; contact lenses allowed if they do not change natural eye appearance"
+      },
+      "ears": {
+        "en": "religious headwear must leave entire face oval and ear line visible"
+      },
+      "face_visibility": {
+        "en": "visible eyebrows, eyes, and pupils; face not obscured by hair"
+      },
+      "headwear": {
+        "en": "not allowed; religious headwear permitted with faith community certification if entire face oval and ear line remain visible"
+      },
+      "accessories": {
+        "en": "jewelry permitted if it does not obscure face oval or disrupt background uniformity"
+      }
+    }
   },
   "pl-visa": {
     "slug": "pl-visa",
@@ -14261,8 +15318,8 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "3.2-3.6cm",
     "headHeightJa": "3.2~3.6cm",
-    "validity": "",
-    "validityEn": "",
+    "validity": "taken within 6 months",
+    "validityEn": "taken within 6 months",
     "validityJa": "",
     "fileSpec": "",
     "fileSpecEn": "",
@@ -14354,7 +15411,28 @@
       "ja": "ポーランドシェンゲンビザ写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://www.gov.pl/web/gov/zdjecie-do-dowodu-lub-paszportu",
+    "restrictions": {
+      "expression": {
+        "en": "natural facial expression, closed mouth"
+      },
+      "glasses": {
+        "en": "corrective glasses permitted if eyes visible; dark glasses only with disability documentation"
+      },
+      "ears": {
+        "en": "religious headwear must leave ear line visible"
+      },
+      "face_visibility": {
+        "en": "visible eyebrows, eyes, and pupils; face not obscured by hair"
+      },
+      "headwear": {
+        "en": "not allowed; religious headwear permitted with certification"
+      },
+      "accessories": {
+        "en": "jewelry permitted if it does not obscure face oval"
+      }
+    }
   },
   "cz-passport": {
     "slug": "cz-passport",
@@ -14373,8 +15451,8 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "",
     "headHeightJa": "",
-    "validity": "",
-    "validityEn": "",
+    "validity": "not older than 6 months; must show current appearance",
+    "validityEn": "not older than 6 months; must show current appearance",
     "validityJa": "",
     "fileSpec": "",
     "fileSpecEn": "",
@@ -14468,7 +15546,25 @@
       "ja": "チェコパスポート写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://ipc.gov.cz/en/forms-and-documents/documents/photograph/",
+    "restrictions": {
+      "clothing": {
+        "en": "civil attire required"
+      },
+      "expression": {
+        "en": "neutral expression, lips closed, eyes open"
+      },
+      "glasses": {
+        "en": "tinted glasses and eye patches allowed only for medical reasons; no sunglasses except for blind individuals"
+      },
+      "face_visibility": {
+        "en": "full face front view, head and upper shoulders visible, eyes not covered by hair"
+      },
+      "headwear": {
+        "en": "no head cover except for religious or health reasons; must not prevent identification"
+      }
+    }
   },
   "cz-visa": {
     "slug": "cz-visa",
@@ -14487,8 +15583,8 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "3.2-3.6cm",
     "headHeightJa": "3.2~3.6cm",
-    "validity": "",
-    "validityEn": "",
+    "validity": "must show current appearance",
+    "validityEn": "must show current appearance",
     "validityJa": "",
     "fileSpec": "",
     "fileSpecEn": "",
@@ -14580,7 +15676,25 @@
       "ja": "チェコシェンゲンビザ写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://mzv.gov.cz/jnp/en/information_for_aliens/supporting_documents_overview/photo.html",
+    "restrictions": {
+      "clothing": {
+        "en": "civil attire required"
+      },
+      "expression": {
+        "en": "neutral expression, lips closed, eyes open"
+      },
+      "glasses": {
+        "en": "no sunglasses except for blind individuals; tinted glasses only for medical reasons"
+      },
+      "face_visibility": {
+        "en": "full face front view, eyes not covered by hair, head and upper shoulders visible"
+      },
+      "headwear": {
+        "en": "no head cover except for religious or health reasons; must not prevent identification"
+      }
+    }
   },
   "sk-passport": {
     "slug": "sk-passport",
@@ -14806,7 +15920,8 @@
       "ja": "スロバキアシェンゲンビザ写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://www.mzv.sk/en/web/en/visa-and-services/schengen-visa"
   },
   "hu-passport": {
     "slug": "hu-passport",
@@ -14825,8 +15940,8 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "",
     "headHeightJa": "",
-    "validity": "",
-    "validityEn": "",
+    "validity": "taken within the last 6 months",
+    "validityEn": "taken within the last 6 months",
     "validityJa": "",
     "fileSpec": "",
     "fileSpecEn": "",
@@ -14920,7 +16035,22 @@
       "ja": "ハンガリーパスポート写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://telaviv.mfa.gov.hu/en/utleveligenyles",
+    "restrictions": {
+      "expression": {
+        "en": "neutral facial expression, closed mouth"
+      },
+      "glasses": {
+        "en": "not allowed unless for documented medical reasons"
+      },
+      "face_visibility": {
+        "en": "face fully visible and centered, both eyes open and facing camera"
+      },
+      "headwear": {
+        "en": "not allowed unless for religious or medical reasons with documentation"
+      }
+    }
   },
   "hu-visa": {
     "slug": "hu-visa",
@@ -15032,7 +16162,8 @@
       "ja": "ハンガリーシェンゲンビザ写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://konzuliszolgalat.kormany.hu/en"
   },
   "ro-passport": {
     "slug": "ro-passport",
@@ -15051,8 +16182,8 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "",
     "headHeightJa": "",
-    "validity": "",
-    "validityEn": "",
+    "validity": "taken within 6 months",
+    "validityEn": "taken within 6 months",
     "validityJa": "",
     "fileSpec": "",
     "fileSpecEn": "",
@@ -15146,7 +16277,19 @@
       "ja": "ルーマニアパスポート写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://pasapoarte.mai.gov.ro/documente-necesare-pentru-pasaport-simplu-electronic-simplu-temporar-cu-mentionarea-statului-de-domiciliu-c-r-d-s/",
+    "restrictions": {
+      "expression": {
+        "en": "neutral expression, mouth closed, eyes open"
+      },
+      "glasses": {
+        "en": "glasses not allowed unless for documented medical reasons"
+      },
+      "headwear": {
+        "en": "not allowed; religious head coverings permitted with signed statement, face must remain fully visible"
+      }
+    }
   },
   "ro-visa": {
     "slug": "ro-visa",
@@ -15165,8 +16308,8 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "3.2-3.6cm",
     "headHeightJa": "3.2~3.6cm",
-    "validity": "",
-    "validityEn": "",
+    "validity": "taken within 6 months",
+    "validityEn": "taken within 6 months",
     "validityJa": "",
     "fileSpec": "",
     "fileSpecEn": "",
@@ -15258,7 +16401,13 @@
       "ja": "ルーマニアシェンゲンビザ写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://newdelhi.mae.ro/en/node/871",
+    "restrictions": {
+      "expression": {
+        "en": "neutral expression, eyes open, mouth closed"
+      }
+    }
   },
   "bg-passport": {
     "slug": "bg-passport",
@@ -15277,8 +16426,8 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "",
     "headHeightJa": "",
-    "validity": "",
-    "validityEn": "",
+    "validity": "taken within 6 months",
+    "validityEn": "taken within 6 months",
     "validityJa": "",
     "fileSpec": "",
     "fileSpecEn": "",
@@ -15372,7 +16521,19 @@
       "ja": "ブルガリアパスポート写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://www.mfa.bg/en/services-travel/consular-services/consular-services-abroad/issuing-bid",
+    "restrictions": {
+      "expression": {
+        "en": "neutral expression, full-face position only"
+      },
+      "glasses": {
+        "en": "darkly tinted glasses not accepted; remove glasses unless medically required"
+      },
+      "face_visibility": {
+        "en": "face must be clear and large, full-face position only; no red eyes accepted"
+      }
+    }
   },
   "bg-visa": {
     "slug": "bg-visa",
@@ -15484,7 +16645,19 @@
       "ja": "ブルガリアシェンゲンビザ写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://www.mfa.bg/en/services-travel/consular-services/travel-bulgaria/visa-bulgaria",
+    "restrictions": {
+      "expression": {
+        "en": "neutral expression, full-face position only"
+      },
+      "glasses": {
+        "en": "darkly tinted glasses not accepted"
+      },
+      "face_visibility": {
+        "en": "face must be clear and large, full-face only"
+      }
+    }
   },
   "hr-passport": {
     "slug": "hr-passport",
@@ -15598,7 +16771,16 @@
       "ja": "クロアチアパスポート写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://mup.gov.hr/gradjani-281562/moji-dokumenti-281563/putovnica-330/primjeri-ispravno-i-neispravno-snimljenih-fotografija/378",
+    "restrictions": {
+      "face_visibility": {
+        "en": "front-facing (en face), forehead must be exposed and visible; photo must truthfully depict the person"
+      },
+      "headwear": {
+        "en": "not allowed (hats, caps, scarves); religious or medical head coverings permitted if cheeks, chin and forehead remain visible"
+      }
+    }
   },
   "hr-visa": {
     "slug": "hr-visa",
@@ -15620,8 +16802,8 @@
     "validity": "",
     "validityEn": "",
     "validityJa": "",
-    "fileSpec": "",
-    "fileSpecEn": "",
+    "fileSpec": "high-quality glossy and smooth paper without surface structures",
+    "fileSpecEn": "high-quality glossy and smooth paper without surface structures",
     "fileSpecJa": "",
     "standard": "EU Reg. 2252/2004",
     "continent": "europe",
@@ -15710,7 +16892,22 @@
       "ja": "クロアチアシェンゲンビザ写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://mvep.gov.hr/consular-information-151075/visas-151076/when-is-visa-request-admissible/180329",
+    "restrictions": {
+      "expression": {
+        "en": "neutral facial expression, eyes open, mouth closed"
+      },
+      "glasses": {
+        "en": "blind individuals may wear dark glasses; otherwise glasses should not obscure eyes"
+      },
+      "face_visibility": {
+        "en": "full face visible, centered in photo"
+      },
+      "headwear": {
+        "en": "religious or medical head coverings permitted if cheeks, chin and forehead remain visible"
+      }
+    }
   },
   "rs-passport": {
     "slug": "rs-passport",
@@ -17521,8 +18718,8 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "",
     "headHeightJa": "",
-    "validity": "",
-    "validityEn": "",
+    "validity": "not older than 3 months",
+    "validityEn": "not older than 3 months",
     "validityJa": "",
     "fileSpec": "",
     "fileSpecEn": "",
@@ -17616,7 +18813,8 @@
       "ja": "ラトビアパスポート写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://www.pmlp.gov.lv/en/citizens-passport"
   },
   "lv-visa": {
     "slug": "lv-visa",
@@ -17728,7 +18926,8 @@
       "ja": "ラトビアシェンゲンビザ写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://www.pmlp.gov.lv/en/visas-and-invitations"
   },
   "lt-passport": {
     "slug": "lt-passport",
@@ -17747,11 +18946,11 @@
     "headHeight": "3.3cm",
     "headHeightEn": "3.3cm",
     "headHeightJa": "3.3cm",
-    "validity": "",
-    "validityEn": "",
+    "validity": "recommended no older than 6 months",
+    "validityEn": "recommended no older than 6 months",
     "validityJa": "",
-    "fileSpec": "",
-    "fileSpecEn": "",
+    "fileSpec": "greyscale for passport; color for temporary travel document",
+    "fileSpecEn": "greyscale for passport; color for temporary travel document",
     "fileSpecJa": "",
     "standard": "ICAO 9303",
     "continent": "europe",
@@ -17842,7 +19041,19 @@
       "ja": "リトアニアパスポート写真の公式サイズ・2026年規定 — 4 × 6cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 31.3,
-    "headHeightMax": 34.6
+    "headHeightMax": 34.6,
+    "officialSource": "https://migracija.lrv.lt/lt/veiklos-sritys-1/asmens-dokumentai-1/nuotrauku-asmens-dokumentams-pavyzdziai/",
+    "restrictions": {
+      "expression": {
+        "en": "neutral expression; no laughing, mouth open, yawning, or frowning"
+      },
+      "glasses": {
+        "en": "no tinted or colored lenses; frames should not cover any part of the eyes and preferably should not be heavy"
+      },
+      "headwear": {
+        "en": "not allowed; religious exception permitted if eyes, eyebrows, cheeks, and chin remain clearly visible"
+      }
+    }
   },
   "lt-visa": {
     "slug": "lt-visa",
@@ -17861,8 +19072,8 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "",
     "headHeightJa": "",
-    "validity": "",
-    "validityEn": "",
+    "validity": "not older than 3 months",
+    "validityEn": "not older than 3 months",
     "validityJa": "",
     "fileSpec": "",
     "fileSpecEn": "",
@@ -17956,7 +19167,13 @@
       "ja": "リトアニアビザ写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://www.urm.lt/il/en/travel-and-residence/coming-to-lithuania/visas",
+    "restrictions": {
+      "expression": {
+        "en": "neutral expression, eyes open, mouth closed"
+      }
+    }
   },
   "ee-passport": {
     "slug": "ee-passport",
@@ -17975,11 +19192,11 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "",
     "headHeightJa": "",
-    "validity": "",
-    "validityEn": "",
+    "validity": "not older than 6 months",
+    "validityEn": "not older than 6 months",
     "validityJa": "",
-    "fileSpec": "",
-    "fileSpecEn": "",
+    "fileSpec": "color, unedited, JPEG format, 1-5MB file size, minimum 1300 x 1600 pixels; no scanned photos or screenshots allowed",
+    "fileSpecEn": "color, unedited, JPEG format, 1-5MB file size, minimum 1300 x 1600 pixels; no scanned photos or screenshots allowed",
     "fileSpecJa": "",
     "standard": "ICAO 9303",
     "continent": "europe",
@@ -18070,7 +19287,22 @@
       "ja": "エストニアパスポート写真の公式サイズ・2026年規定 — 4 × 5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://www.politsei.ee/en/requirement-and-instructions-for-the-document-photo",
+    "restrictions": {
+      "expression": {
+        "en": "look straight into camera, eyes must be level, head not tilted, face centered; children must have mouth closed"
+      },
+      "glasses": {
+        "en": "eyes must be visible from behind spectacle frames; glasses may not reflect light"
+      },
+      "ears": {
+        "en": "ears must be visible on both sides; not covered by hair, headphones, or heavy earrings"
+      },
+      "headwear": {
+        "en": "no headwear or headphones allowed; religious or medical head coverings permitted"
+      }
+    }
   },
   "ee-visa": {
     "slug": "ee-visa",
@@ -18089,8 +19321,8 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "",
     "headHeightJa": "",
-    "validity": "",
-    "validityEn": "",
+    "validity": "not older than 6 months",
+    "validityEn": "not older than 6 months",
     "validityJa": "",
     "fileSpec": "",
     "fileSpecEn": "",
@@ -18184,7 +19416,19 @@
       "ja": "エストニアビザ写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://www.politsei.ee/en/requirement-and-instructions-for-the-document-photo",
+    "restrictions": {
+      "expression": {
+        "en": "look straight into camera, eyes must be level, head not tilted, face centered"
+      },
+      "glasses": {
+        "en": "eyes must be visible from behind spectacle frames; glasses may not reflect light"
+      },
+      "headwear": {
+        "en": "no headwear or headphones allowed; religious or medical head coverings permitted"
+      }
+    }
   },
   "si-passport": {
     "slug": "si-passport",
@@ -18206,8 +19450,8 @@
     "validity": "",
     "validityEn": "",
     "validityJa": "",
-    "fileSpec": "",
-    "fileSpecEn": "",
+    "fileSpec": "Printed on white thin glossy photographic paper, minimum 600 dpi resolution; alternatively, digital photo via e-fotograf system with reference number",
+    "fileSpecEn": "Printed on white thin glossy photographic paper, minimum 600 dpi resolution; alternatively, digital photo via e-fotograf system with reference number",
     "fileSpecJa": "",
     "standard": "ICAO 9303",
     "continent": "europe",
@@ -18298,7 +19542,19 @@
       "ja": "スロベニアパスポート写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://e-uprava.gov.si/si/podrocja/osebni-dokumenti-potrdila-selitev/osebni-dokumenti/potni-list/pogosta-vprasanja/kaksna-fotografija-je-ustrezna-za-izdajo-potnega-lista.html",
+    "restrictions": {
+      "expression": {
+        "en": "Neutral facial expression, mouth must be closed"
+      },
+      "face_visibility": {
+        "en": "Frontal view, uncovered forehead, face clearly visible and suitable for biometric capture"
+      },
+      "headwear": {
+        "en": "No hats, caps, or scarves allowed; exceptions only in exceptional cases (religious/medical)"
+      }
+    }
   },
   "si-visa": {
     "slug": "si-visa",
@@ -18317,8 +19573,8 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "3.2-3.6cm",
     "headHeightJa": "3.2~3.6cm",
-    "validity": "",
-    "validityEn": "",
+    "validity": "Taken within the last 6 months",
+    "validityEn": "Taken within the last 6 months",
     "validityJa": "",
     "fileSpec": "",
     "fileSpecEn": "",
@@ -18410,7 +19666,19 @@
       "ja": "スロベニアシェンゲンビザ写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://www.gov.si/en/representations/embassy-new-delhi/visa-information/",
+    "restrictions": {
+      "expression": {
+        "en": "Neutral expression, mouth closed"
+      },
+      "face_visibility": {
+        "en": "Frontal view, face clearly visible, in accordance with ICAO standards"
+      },
+      "headwear": {
+        "en": "Not permitted except for religious or medical reasons (ICAO standard)"
+      }
+    }
   },
   "gr-passport": {
     "slug": "gr-passport",
@@ -20009,8 +21277,8 @@
     "headHeight": "3.4cm",
     "headHeightEn": "3.4cm",
     "headHeightJa": "3.4cm",
-    "validity": "",
-    "validityEn": "",
+    "validity": "Taken within the last 6 months",
+    "validityEn": "Taken within the last 6 months",
     "validityJa": "",
     "fileSpec": "JPEG, max 500KB",
     "fileSpecEn": "JPEG, max 500KB",
@@ -20102,7 +21370,25 @@
       "ja": "トルコパスポート写真の公式サイズ・2026年規定 — 5 × 6cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32.3,
-    "headHeightMax": 35.7
+    "headHeightMax": 35.7,
+    "officialSource": "https://www.nvi.gov.tr/istanbul/biyometrik-fotograf-nasil-olmalidir",
+    "restrictions": {
+      "expression": {
+        "en": "Neutral facial expression with closed lips, eyes open and clearly visible, direct camera gaze"
+      },
+      "glasses": {
+        "en": "No colored lenses or sunglasses; clear prescription glasses allowed with no reflections on frames; frame edges must not obstruct eyes"
+      },
+      "face_visibility": {
+        "en": "Face must be centered and fully visible including hairstyle; hair must not cover eyes; chin to forehead must be visible"
+      },
+      "headwear": {
+        "en": "Hats, headbands, and similar items prohibited; hijab/religious head covering acceptable but must not create shadows on face; chin to forehead must remain visible"
+      },
+      "accessories": {
+        "en": "No glasses, earrings, hats, or clothing/accessories that prevent face from being seen"
+      }
+    }
   },
   "tr-visa": {
     "slug": "tr-visa",
@@ -20121,8 +21407,8 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "3.2-3.6cm",
     "headHeightJa": "3.2~3.6cm",
-    "validity": "",
-    "validityEn": "",
+    "validity": "Taken within the last 6 months",
+    "validityEn": "Taken within the last 6 months",
     "validityJa": "",
     "fileSpec": "",
     "fileSpecEn": "",
@@ -20214,7 +21500,25 @@
       "ja": "トルコビザ写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://losangeles-cg.mfa.gov.tr/Mission/ShowInfoNote/411309",
+    "restrictions": {
+      "expression": {
+        "en": "Neutral facial expression with closed lips, eyes open and focused on camera"
+      },
+      "glasses": {
+        "en": "No glasses, earrings, or hats; no clothing/accessories that prevent face from being seen"
+      },
+      "face_visibility": {
+        "en": "Face must be completely visible; hair must not cover face; head not tilted or turned"
+      },
+      "headwear": {
+        "en": "Hats prohibited; religious head covering acceptable provided face remains fully visible with no shadows"
+      },
+      "accessories": {
+        "en": "No glasses, earrings, hats, or clothing/accessories that will prevent face from being seen"
+      }
+    }
   },
   "mx-passport": {
     "slug": "mx-passport",
@@ -20233,8 +21537,8 @@
     "headHeight": "3.2~3.9cm",
     "headHeightEn": "3.2-3.9cm",
     "headHeightJa": "3.2~3.9cm",
-    "validity": "",
-    "validityEn": "",
+    "validity": "Taken within 30 days before passport application",
+    "validityEn": "Taken within 30 days before passport application",
     "validityJa": "",
     "fileSpec": "",
     "fileSpecEn": "",
@@ -20328,7 +21632,22 @@
       "ja": "メキシコパスポート写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 39
+    "headHeightMax": 39,
+    "officialSource": "https://sre.gob.mx/tramites-y-servicios/pasaportes?id=252",
+    "restrictions": {
+      "expression": {
+        "en": "Neutral expression, mouth closed, face squared to camera"
+      },
+      "glasses": {
+        "en": "No glasses of any kind allowed"
+      },
+      "face_visibility": {
+        "en": "Frontal view, face completely unobstructed, nothing covering the face"
+      },
+      "headwear": {
+        "en": "Head must be completely uncovered (cabeza totalmente descubierta)"
+      }
+    }
   },
   "mx-visa": {
     "slug": "mx-visa",
@@ -30528,7 +31847,8 @@
       "ja": "タンザニアパスポート写真の公式サイズ・2026年規定 — 4 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32.3,
-    "headHeightMax": 35.7
+    "headHeightMax": 35.7,
+    "officialSource": "https://www.immigration.go.tz/index.php/immigration-services/passports-and-travel-documents"
   },
   "tz-visa": {
     "slug": "tz-visa",
@@ -30550,8 +31870,8 @@
     "validity": "",
     "validityEn": "",
     "validityJa": "",
-    "fileSpec": "",
-    "fileSpecEn": "",
+    "fileSpec": "JPG or JPEG format, max 500KB",
+    "fileSpecEn": "JPG or JPEG format, max 500KB",
     "fileSpecJa": "",
     "standard": "ICAO 9303",
     "continent": "africa",
@@ -30640,7 +31960,22 @@
       "ja": "タンザニアビザ写真の公式サイズ・2026年規定 — 4 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32.3,
-    "headHeightMax": 35.7
+    "headHeightMax": 35.7,
+    "officialSource": "https://visa.immigration.go.tz/guidelines",
+    "restrictions": {
+      "expression": {
+        "en": "natural expression"
+      },
+      "glasses": {
+        "en": "eyeglasses permitted if regularly worn"
+      },
+      "face_visibility": {
+        "en": "full face (front view) from top of hair to bottom of chin, eyes open"
+      },
+      "headwear": {
+        "en": "head coverings not permitted except for religious reasons; facial features from chin to forehead must be visible"
+      }
+    }
   },
   "et-passport": {
     "slug": "et-passport",
@@ -32770,7 +34105,8 @@
       "ja": "ウガンダパスポート写真の公式サイズ・2026年規定 — 5.1 × 5.1cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 25,
-    "headHeightMax": 35
+    "headHeightMax": 35,
+    "officialSource": "https://www.immigration.go.ug/ugandan-passport"
   },
   "ug-visa": {
     "slug": "ug-visa",
@@ -32882,7 +34218,8 @@
       "ja": "ウガンダビザ写真の公式サイズ・2026年規定 — 5.1 × 5.1cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 25,
-    "headHeightMax": 35
+    "headHeightMax": 35,
+    "officialSource": "https://www.immigration.go.ug/services/tourist-visa"
   },
   "rw-passport": {
     "slug": "rw-passport",
@@ -32996,7 +34333,19 @@
       "ja": "ルワンダパスポート写真の公式サイズ・2026年規定 — 5.1 × 5.1cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 25,
-    "headHeightMax": 35
+    "headHeightMax": 35,
+    "officialSource": "https://www.migration.gov.rw/our-services/e-passport-1",
+    "restrictions": {
+      "expression": {
+        "en": "neutral expression or natural smile; avoid broad smiling or exaggerated facial expressions"
+      },
+      "face_visibility": {
+        "en": "face directed straight at camera; eyes in upper half of photo (30-50% from top); face centered horizontally; head and shoulders fully visible"
+      },
+      "headwear": {
+        "en": "no headgear (caps, hats) without valid reasons"
+      }
+    }
   },
   "rw-visa": {
     "slug": "rw-visa",
@@ -33108,7 +34457,16 @@
       "ja": "ルワンダビザ写真の公式サイズ・2026年規定 — 5.1 × 5.1cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 25,
-    "headHeightMax": 35
+    "headHeightMax": 35,
+    "officialSource": "https://www.rwandainusa.gov.rw/services/service-details/visa-1usa",
+    "restrictions": {
+      "face_visibility": {
+        "en": "all facial features must be visible and clear"
+      },
+      "headwear": {
+        "en": "no hats"
+      }
+    }
   },
   "mz-passport": {
     "slug": "mz-passport",
@@ -33799,8 +35157,8 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "",
     "headHeightJa": "",
-    "validity": "",
-    "validityEn": "",
+    "validity": "taken within last 6 months",
+    "validityEn": "taken within last 6 months",
     "validityJa": "",
     "fileSpec": "",
     "fileSpecEn": "",
@@ -33894,7 +35252,8 @@
       "ja": "コンゴ民主共和国パスポート写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://www.ambadrcusa.org/consular-affairs/passport-visa-tenant-lieu/"
   },
   "cd-visa": {
     "slug": "cd-visa",
@@ -33913,8 +35272,8 @@
     "headHeight": "3.2~3.6cm",
     "headHeightEn": "",
     "headHeightJa": "",
-    "validity": "",
-    "validityEn": "",
+    "validity": "taken within last 6 months",
+    "validityEn": "taken within last 6 months",
     "validityJa": "",
     "fileSpec": "",
     "fileSpecEn": "",
@@ -34006,7 +35365,8 @@
       "ja": "コンゴ民主共和国ビザ写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://www.ambadrcusa.org/consular-affairs/passport-visa-tenant-lieu/"
   },
   "mg-passport": {
     "slug": "mg-passport",
@@ -34344,7 +35704,8 @@
       "ja": "ソマリアパスポート写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://www.somalia.gov.so/services/ordinary-passport"
   },
   "so-visa": {
     "slug": "so-visa",
@@ -34456,7 +35817,8 @@
       "ja": "ソマリアビザ写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://immigration.gov.so/en/visa/"
   },
   "bw-passport": {
     "slug": "bw-passport",
@@ -44208,7 +45570,8 @@
       "ja": "南スーダンパスポート写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://mofaic.gov.ss/visas/"
   },
   "ss-visa": {
     "slug": "ss-visa",
@@ -44320,7 +45683,8 @@
       "ja": "南スーダンビザ写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。"
     },
     "headHeightMin": 32,
-    "headHeightMax": 36
+    "headHeightMax": 36,
+    "officialSource": "https://www.ssembassydc.org/visa-services/"
   },
   "cv-passport": {
     "slug": "cv-passport",

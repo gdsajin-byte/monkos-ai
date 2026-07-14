@@ -1,0 +1,53 @@
+{
+  "slug": "ee-passport",
+  "batch": "ro-bg-hr-lv-lt-ee",
+  "verified": {
+    "size": {
+      "value": "40 x 50 mm",
+      "source_url": "https://www.politsei.ee/en/requirement-and-instructions-for-the-document-photo"
+    },
+    "background": {
+      "value": "light, single color, without extraneous objects",
+      "source_url": "https://www.politsei.ee/en/requirement-and-instructions-for-the-document-photo"
+    },
+    "head_height": {
+      "value": "face covers 70-80% of photo height",
+      "source_url": "https://www.politsei.ee/en/requirement-and-instructions-for-the-document-photo"
+    },
+    "validity": {
+      "value": "not older than 6 months",
+      "source_url": "https://www.politsei.ee/en/requirement-and-instructions-for-the-document-photo"
+    },
+    "file_spec": {
+      "value": "color, unedited, JPEG format, 1-5MB file size, minimum 1300 x 1600 pixels; no scanned photos or screenshots allowed",
+      "source_url": "https://www.politsei.ee/en/requirement-and-instructions-for-the-document-photo"
+    },
+    "expression_restriction": {
+      "value": "look straight into camera, eyes must be level, head not tilted, face centered; children must have mouth closed",
+      "source_url": "https://www.politsei.ee/en/requirement-and-instructions-for-the-document-photo"
+    },
+    "glasses_policy": {
+      "value": "eyes must be visible from behind spectacle frames; glasses may not reflect light",
+      "source_url": "https://www.politsei.ee/en/requirement-and-instructions-for-the-document-photo"
+    },
+    "ears_visibility": {
+      "value": "ears must be visible on both sides; not covered by hair, headphones, or heavy earrings",
+      "source_url": "https://www.politsei.ee/en/requirement-and-instructions-for-the-document-photo"
+    },
+    "headwear_policy": {
+      "value": "no headwear or headphones allowed; religious or medical head coverings permitted",
+      "source_url": "https://www.politsei.ee/en/requirement-and-instructions-for-the-document-photo"
+    },
+    "official_source_url": {
+      "value": "https://www.politsei.ee/en/requirement-and-instructions-for-the-document-photo",
+      "source_url": "https://www.politsei.ee/en/requirement-and-instructions-for-the-document-photo"
+    }
+  },
+  "unverified": [
+    "clothing_restriction",
+    "face_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

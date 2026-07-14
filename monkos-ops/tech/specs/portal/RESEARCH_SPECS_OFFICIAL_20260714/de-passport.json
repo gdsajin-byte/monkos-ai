@@ -1,0 +1,59 @@
+{
+  "slug": "de-passport",
+  "batch": "de-it-es-pt-nl-be",
+  "verified": {
+    "size": {
+      "value": "35 x 45mm",
+      "source_url": "https://dublin.diplo.de/ie-en/passport-photos-2380534"
+    },
+    "background": {
+      "value": "neutral grey (light grey), plain, single-color, providing sufficient contrast to face and hair",
+      "source_url": "https://dublin.diplo.de/ie-en/passport-photos-2380534"
+    },
+    "head_height": {
+      "value": "32-36mm from chin to crown (face occupies 70-80% of photo height)",
+      "source_url": "https://dublin.diplo.de/ie-en/passport-photos-2380534"
+    },
+    "validity": {
+      "value": "taken within 6 months",
+      "source_url": "https://dublin.diplo.de/ie-en/passport-photos-2380534"
+    },
+    "file_spec": {
+      "value": "minimum 600 dpi resolution, high-quality photo paper; since May 1, 2025 digital submission via certified photo studio (Lichtbildübermittlungsstelle) required for ID documents",
+      "source_url": "https://dublin.diplo.de/ie-en/passport-photos-2380534"
+    },
+    "expression_restriction": {
+      "value": "neutral expression, mouth closed, no smiling, looking directly into camera",
+      "source_url": "https://dublin.diplo.de/ie-en/passport-photos-2380534"
+    },
+    "glasses_policy": {
+      "value": "not permitted; glasses banned in all German biometric ID photos since November 2017 per BMI Fotomustertafel",
+      "source_url": "https://dublin.diplo.de/ie-en/passport-photos-2380534"
+    },
+    "face_visibility": {
+      "value": "full face must be clearly visible and centered, eyes fully open, sharp and clear image with sufficient contrast, no shadows or reflections on face",
+      "source_url": "https://dublin.diplo.de/ie-en/passport-photos-2380534"
+    },
+    "headwear_policy": {
+      "value": "not permitted except for religious or medical reasons; face from lower chin edge to forehead must remain fully visible",
+      "source_url": "https://www.personalausweisportal.de/SharedDocs/faqs/Webs/PA/DE/Haeufige-Fragen/2_biometrie_faq/C2_3_Passbild_beachten.html"
+    },
+    "official_source_url": {
+      "value": "https://dublin.diplo.de/ie-en/passport-photos-2380534",
+      "source_url": "https://dublin.diplo.de/ie-en/passport-photos-2380534"
+    }
+  },
+  "unverified": [
+    "clothing_restriction",
+    "ears_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": {
+      "verdict": "confirmed",
+      "evidence": "Multiple independent sources confirm German passport photos are 35 x 45mm. The cited German Embassy Dublin page discusses face size (32-36mm chin to hairline) within this standard photo size. Independent confirmation from how-to-germany.com states 'a standardized image size of 35 mm x 45 mm' for German passport/visa photos. This is also the standard biometric Passbild size per Bundesdruckerei specifications. Numerous third-party photo services (passlens.com, passportphototools.com, visafoto.com) all consistently cite 35x45mm.",
+      "correct_value": "35 x 45mm"
+    }
+  }
+}

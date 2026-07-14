@@ -1,0 +1,64 @@
+{
+  "slug": "in-passport",
+  "batch": "uk-cn-ca-sg-in",
+  "verified": {
+    "size": {
+      "value": "35 x 45mm",
+      "source_url": "https://passportindia.gov.in/AppOnlineProject/pdf/ApplicationformInstructionBooklet-V3.0.pdf"
+    },
+    "background": {
+      "value": "Plain white background",
+      "source_url": "https://passportindia.gov.in/AppOnlineProject/pdf/ApplicationformInstructionBooklet-V3.0.pdf"
+    },
+    "head_height": {
+      "value": "Face should fill 80-85% of the photo; face from chin to top of head 36-38mm",
+      "source_url": "https://passportindia.gov.in/AppOnlineProject/pdf/ApplicationformInstructionBooklet-V3.0.pdf"
+    },
+    "validity": {
+      "value": "Taken within the last 6 months",
+      "source_url": "https://passportindia.gov.in/AppOnlineProject/pdf/ApplicationformInstructionBooklet-V3.0.pdf"
+    },
+    "file_spec": {
+      "value": "JPEG, 630 x 810 pixels, max 250KB for Passport Seva portal upload",
+      "source_url": "https://passportindia.gov.in/AppOnlineProject/pdf/ApplicationformInstructionBooklet-V3.0.pdf"
+    },
+    "clothing_restriction": {
+      "value": "",
+      "source_url": ""
+    },
+    "expression_restriction": {
+      "value": "Natural expression, mouth closed, eyes open looking directly at camera",
+      "source_url": "https://passportindia.gov.in/AppOnlineProject/pdf/ApplicationformInstructionBooklet-V3.0.pdf"
+    },
+    "glasses_policy": {
+      "value": "Glasses not permitted unless documented medical condition with doctor's certificate (ICAO rules effective September 2025)",
+      "source_url": "https://passportindia.gov.in/AppOnlineProject/pdf/ApplicationformInstructionBooklet-V3.0.pdf"
+    },
+    "ears_visibility": {
+      "value": "Both ears should be visible if not covered by religious garment",
+      "source_url": "https://passportindia.gov.in/AppOnlineProject/pdf/ApplicationformInstructionBooklet-V3.0.pdf"
+    },
+    "face_visibility": {
+      "value": "Full face front view; face clearly visible from bottom of chin to top of forehead",
+      "source_url": "https://passportindia.gov.in/AppOnlineProject/pdf/ApplicationformInstructionBooklet-V3.0.pdf"
+    },
+    "headwear_policy": {
+      "value": "Head coverings permitted if worn as part of daily religious practice (turbans, hijab etc.); face must be fully visible from bottom of chin to top of forehead",
+      "source_url": "https://passportindia.gov.in/AppOnlineProject/pdf/ApplicationformInstructionBooklet-V3.0.pdf"
+    },
+    "accessories": {
+      "value": "",
+      "source_url": ""
+    },
+    "official_source_url": {
+      "value": "https://passportindia.gov.in/AppOnlineProject/pdf/ApplicationformInstructionBooklet-V3.0.pdf",
+      "source_url": "https://passportindia.gov.in/AppOnlineProject/pdf/ApplicationformInstructionBooklet-V3.0.pdf"
+    }
+  },
+  "unverified": [
+    "clothing_restriction",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

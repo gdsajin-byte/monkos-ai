@@ -1,0 +1,59 @@
+{
+  "slug": "at-visa",
+  "batch": "ch-at-se-no-dk-fi",
+  "verified": {
+    "size": {
+      "value": "35 x 45 mm (ICAO standard)",
+      "source_url": "https://www.bmeia.gv.at/en/austrian-embassy-london/travelling-to-austria/entry-requirements-visa-and-immigration/schengen-visa-application-requirements"
+    },
+    "background": {
+      "value": "Uniform light-colored, ideally gray (same ICAO/Schengen standard as passport)",
+      "source_url": "https://www.bmi.gv.at/607/passbild_kriterien.html"
+    },
+    "head_height": {
+      "value": "Approximately 2/3 of image (ICAO standard)",
+      "source_url": "https://www.bmi.gv.at/607/passbild_kriterien.html"
+    },
+    "validity": {
+      "value": "Not older than 3 months",
+      "source_url": "https://www.bmeia.gv.at/en/austrian-embassy-london/travelling-to-austria/entry-requirements-visa-and-immigration/schengen-visa-application-requirements"
+    },
+    "expression_restriction": {
+      "value": "Neutral expression, mouth closed, eyes open and clearly visible (ICAO standard)",
+      "source_url": "https://www.bmi.gv.at/607/passbild_kriterien.html"
+    },
+    "glasses_policy": {
+      "value": "Permitted only if eyes clearly visible without lens reflections, no tinted lenses, no frame obstruction",
+      "source_url": "https://www.bmi.gv.at/607/passbild_kriterien.html"
+    },
+    "headwear_policy": {
+      "value": "Prohibited except for religious or medical reasons; face from chin to forehead must be visible",
+      "source_url": "https://www.bmi.gv.at/607/passbild_kriterien.html"
+    },
+    "ears_visibility": {
+      "value": "Ears should not be covered by hair",
+      "source_url": "https://www.bmi.gv.at/607/passbild_kriterien.html"
+    },
+    "face_visibility": {
+      "value": "Frontal view, eyes uncovered and clearly visible",
+      "source_url": "https://www.bmi.gv.at/607/passbild_kriterien.html"
+    },
+    "official_source_url": {
+      "value": "https://www.bmeia.gv.at/en/austrian-embassy-london/travelling-to-austria/entry-requirements-visa-and-immigration/schengen-visa-application-requirements",
+      "source_url": "https://www.bmeia.gv.at/en/austrian-embassy-london/travelling-to-austria/entry-requirements-visa-and-immigration/schengen-visa-application-requirements"
+    }
+  },
+  "unverified": [
+    "file_spec",
+    "clothing_restriction",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": {
+      "verdict": "confirmed",
+      "evidence": "The official BMEIA page (bmeia.gv.at Schengen visa application requirements) states: 'One passport-size photograph according to ICAO standards and not older than 3 months.' The ICAO biometric photo standard (Doc 9303) is widely understood as 35 x 45 mm -- this was the European format the ICAO standard was originally based on and is used by all Schengen countries. Technically, ICAO Doc 9303 specifies biometric content requirements rather than mandating exact physical dimensions, but 35 x 45 mm is the universally applied size for ICAO-compliant photos in the EU/Schengen context. The claim of '35 x 45 mm (ICAO standard)' is accurate in practical terms.",
+      "correct_value": null
+    }
+  }
+}

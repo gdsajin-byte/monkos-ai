@@ -1,0 +1,47 @@
+{
+  "slug": "ro-visa",
+  "batch": "ro-bg-hr-lv-lt-ee",
+  "verified": {
+    "size": {
+      "value": "3.5 x 4.5 cm (35 x 45mm)",
+      "source_url": "https://pasapoarte.mai.gov.ro/documente-necesare-pentru-pasaport-simplu-electronic-simplu-temporar-cu-mentionarea-statului-de-domiciliu-c-r-d-s/"
+    },
+    "background": {
+      "value": "light colored",
+      "source_url": "https://pasapoarte.mai.gov.ro/documente-necesare-pentru-pasaport-simplu-electronic-simplu-temporar-cu-mentionarea-statului-de-domiciliu-c-r-d-s/"
+    },
+    "head_height": {
+      "value": "70-80% of photo height",
+      "source_url": "https://pasapoarte.mai.gov.ro/documente-necesare-pentru-pasaport-simplu-electronic-simplu-temporar-cu-mentionarea-statului-de-domiciliu-c-r-d-s/"
+    },
+    "validity": {
+      "value": "taken within 6 months",
+      "source_url": "https://pasapoarte.mai.gov.ro/documente-necesare-pentru-pasaport-simplu-electronic-simplu-temporar-cu-mentionarea-statului-de-domiciliu-c-r-d-s/"
+    },
+    "expression_restriction": {
+      "value": "neutral expression, eyes open, mouth closed",
+      "source_url": "https://pasapoarte.mai.gov.ro/documente-necesare-pentru-pasaport-simplu-electronic-simplu-temporar-cu-mentionarea-statului-de-domiciliu-c-r-d-s/"
+    },
+    "official_source_url": {
+      "value": "https://newdelhi.mae.ro/en/node/871",
+      "source_url": "https://newdelhi.mae.ro/en/node/871"
+    }
+  },
+  "unverified": [
+    "file_spec",
+    "clothing_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": {
+      "verdict": "uncertain",
+      "evidence": "The claimed source (pasapoarte.mai.gov.ro) is a PASSPORT requirements page, not a visa-specific page, making it an inappropriate source for visa photo requirements. There is significant conflicting evidence about Romania visa photo size: multiple specialized photo services (visafoto.com, makepassportphoto.com, idphotodiy.com, mybiometricphotos.com, fylite.com) consistently state Romania visa photos are 30x40mm (3x4 cm), which is described as a Romania-specific format. However, other sources (atlys.com, itzeazy.in, evisa-romania.com) state 35x45mm. A web search against the official mae.ro domain returned references to '3x4cm' for visa photos. The correct size may be 30x40mm (3x4 cm) for standard visa applications rather than the claimed 35x45mm, but the official mae.ro site returned 503 errors preventing direct verification. Cannot confirm or refute with certainty.",
+      "correct_value": "Possibly 30 x 40 mm (3 x 4 cm) for standard visa; conflicting sources"
+    }
+  }
+}

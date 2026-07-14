@@ -1,0 +1,72 @@
+{
+  "slug": "uk-license",
+  "batch": "uk-cn-ca-sg-in",
+  "verified": {
+    "size": {
+      "value": "45 x 35mm",
+      "source_url": "https://www.nidirect.gov.uk/articles/photo-your-driving-licence"
+    },
+    "background": {
+      "value": "Light grey or cream background",
+      "source_url": "https://www.nidirect.gov.uk/articles/photo-your-driving-licence"
+    },
+    "head_height": {
+      "value": "29-34mm from crown to chin (passport-type photo standards apply)",
+      "source_url": "https://www.gov.uk/government/publications/photographic-standards/photo-standards-accessible"
+    },
+    "validity": {
+      "value": "Taken within the last month",
+      "source_url": "https://www.nidirect.gov.uk/articles/photo-your-driving-licence"
+    },
+    "file_spec": {
+      "value": "",
+      "source_url": ""
+    },
+    "clothing_restriction": {
+      "value": "",
+      "source_url": ""
+    },
+    "expression_restriction": {
+      "value": "Natural expression, no smiling, grinning or frowning; eyes open, mouth closed",
+      "source_url": "https://www.nidirect.gov.uk/articles/photo-your-driving-licence"
+    },
+    "glasses_policy": {
+      "value": "Remove glasses if possible; if worn, eyes must be clearly visible with no glare or reflections. Sunglasses or tinted glasses not allowed",
+      "source_url": "https://www.nidirect.gov.uk/articles/photo-your-driving-licence"
+    },
+    "ears_visibility": {
+      "value": "",
+      "source_url": ""
+    },
+    "face_visibility": {
+      "value": "Face forward, look straight at camera; hair away from face and eyes; full head visible",
+      "source_url": "https://www.nidirect.gov.uk/articles/photo-your-driving-licence"
+    },
+    "headwear_policy": {
+      "value": "No hat or head covering unless for medical or religious reasons",
+      "source_url": "https://www.nidirect.gov.uk/articles/photo-your-driving-licence"
+    },
+    "accessories": {
+      "value": "",
+      "source_url": ""
+    },
+    "official_source_url": {
+      "value": "https://www.nidirect.gov.uk/articles/photo-your-driving-licence",
+      "source_url": "https://www.nidirect.gov.uk/articles/photo-your-driving-licence"
+    }
+  },
+  "unverified": [
+    "file_spec",
+    "clothing_restriction",
+    "ears_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": {
+      "verdict": "confirmed",
+      "evidence": "The nidirect.gov.uk source confirms the photo must be '45 millimetres (mm) high and 35mm wide.' The GOV.UK photo standards page (gov.uk/government/publications/photographic-standards) independently confirms '45mm high x 35mm wide.' Multiple third-party photo services (visafoto, 123passportphoto, makepassportphoto) all list the UK driving licence photo as 35x45mm (width x height). The claimed '45 x 35mm' (height x width ordering) is dimensionally correct.",
+      "correct_value": "45 x 35mm"
+    }
+  }
+}

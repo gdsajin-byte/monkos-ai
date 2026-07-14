@@ -1,0 +1,53 @@
+{
+  "slug": "fi-visa",
+  "batch": "ch-at-se-no-dk-fi",
+  "verified": {
+    "size": {
+      "value": "36 x 47 mm",
+      "source_url": "https://migri.fi/en/-/oleskelulupahakemukseen-liitettavan-passikuvan-on-oltava-tuore"
+    },
+    "background": {
+      "value": "Light background; plain, no shadows",
+      "source_url": "https://migri.fi/en/-/oleskelulupahakemukseen-liitettavan-passikuvan-on-oltava-tuore"
+    },
+    "head_height": {
+      "value": "32-36 mm (same as passport standard)",
+      "source_url": "https://poliisi.fi/en/submitting-passport-photographs"
+    },
+    "validity": {
+      "value": "Not older than 6 months",
+      "source_url": "https://migri.fi/en/-/oleskelulupahakemukseen-liitettavan-passikuvan-on-oltava-tuore"
+    },
+    "file_spec": {
+      "value": "JPEG format, 500 x 653 pixels, max 250 KB",
+      "source_url": "https://poliisi.fi/en/submitting-passport-photographs"
+    },
+    "expression_restriction": {
+      "value": "Neutral expression, mouth closed",
+      "source_url": "https://poliisi.fi/en/submitting-passport-photographs"
+    },
+    "glasses_policy": {
+      "value": "Not recommended; must not cause reflections or cover eyes; police often reject photos with glasses",
+      "source_url": "https://passikuvasuomi.fi/en/passport-photo/"
+    },
+    "headwear_policy": {
+      "value": "No hats; religious headgear permitted if worn daily and does not obscure features",
+      "source_url": "https://passikuvasuomi.fi/en/passport-photo/"
+    },
+    "face_visibility": {
+      "value": "Face fully visible and centered; both eyes open",
+      "source_url": "https://poliisi.fi/en/submitting-passport-photographs"
+    },
+    "official_source_url": {
+      "value": "https://migri.fi/en/-/oleskelulupahakemukseen-liitettavan-passikuvan-on-oltava-tuore",
+      "source_url": "https://migri.fi/en/-/oleskelulupahakemukseen-liitettavan-passikuvan-on-oltava-tuore"
+    }
+  },
+  "unverified": [
+    "clothing_restriction",
+    "ears_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

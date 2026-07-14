@@ -1,0 +1,71 @@
+{
+  "slug": "ca-visa",
+  "batch": "uk-cn-ca-sg-in",
+  "verified": {
+    "size": {
+      "value": "35 x 45mm (1 3/8 x 1 3/4 inches)",
+      "source_url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides/temporary-resident-visa-application-photograph-specifications.html"
+    },
+    "background": {
+      "value": "Plain white or light-coloured background",
+      "source_url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides/temporary-resident-visa-application-photograph-specifications.html"
+    },
+    "head_height": {
+      "value": "31-36mm from chin to crown of head",
+      "source_url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides/temporary-resident-visa-application-photograph-specifications.html"
+    },
+    "validity": {
+      "value": "Taken within the last 6 months",
+      "source_url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides/temporary-resident-visa-application-photograph-specifications.html"
+    },
+    "file_spec": {
+      "value": "JPEG/JPG format, minimum 420 x 540 pixels",
+      "source_url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides/temporary-resident-visa-application-photograph-specifications.html"
+    },
+    "clothing_restriction": {
+      "value": "",
+      "source_url": ""
+    },
+    "expression_restriction": {
+      "value": "Neutral expression, neither frowning nor smiling, mouth closed",
+      "source_url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides/temporary-resident-visa-application-photograph-specifications.html"
+    },
+    "glasses_policy": {
+      "value": "Non-tinted prescription glasses allowed if eyes clearly visible and frame does not cover any part of eyes; sunglasses not acceptable",
+      "source_url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides/temporary-resident-visa-application-photograph-specifications.html"
+    },
+    "ears_visibility": {
+      "value": "",
+      "source_url": ""
+    },
+    "face_visibility": {
+      "value": "Full front view of head with face in middle of photograph; includes top of shoulders",
+      "source_url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides/temporary-resident-visa-application-photograph-specifications.html"
+    },
+    "headwear_policy": {
+      "value": "Head coverings allowed for religious reasons if full facial features are not obscured",
+      "source_url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides/temporary-resident-visa-application-photograph-specifications.html"
+    },
+    "accessories": {
+      "value": "",
+      "source_url": ""
+    },
+    "official_source_url": {
+      "value": "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides/temporary-resident-visa-application-photograph-specifications.html",
+      "source_url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides/temporary-resident-visa-application-photograph-specifications.html"
+    }
+  },
+  "unverified": [
+    "clothing_restriction",
+    "ears_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": {
+      "verdict": "confirmed",
+      "evidence": "The official canada.ca URL returned HTTP 403 but multiple independent sources confirm the Canada Temporary Resident Visa photo frame size as '35mm x 45mm (1 3/8 x 1 3/4 inches).' Sources include passlens.com, pixid.studio, visareadynow.com, visafoto.com, and makepassportphoto.com -- all referencing IRCC specifications and listing 35x45mm for TRV photos. The search result snippet from canada.ca itself references these same dimensions. The claimed dimensions are correct.",
+      "correct_value": "35 x 45mm (1 3/8 x 1 3/4 inches)"
+    }
+  }
+}

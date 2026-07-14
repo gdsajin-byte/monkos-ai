@@ -1,0 +1,70 @@
+{
+  "slug": "kr-license",
+  "batch": "kr-jp-us",
+  "verified": {
+    "size": {
+      "value": "3.5 x 4.5cm",
+      "source_url": "https://www.koroad.or.kr/main/board/9/306204/board_view.do?cp=5&listType=list&bdOpenYn=Y&bdNoticeYn=N"
+    },
+    "background": {
+      "value": "white or off-white",
+      "source_url": "https://www.koroad.or.kr/main/board/9/306204/board_view.do?cp=5&listType=list&bdOpenYn=Y&bdNoticeYn=N"
+    },
+    "head_height": {
+      "value": "3.2-3.6cm",
+      "source_url": "https://www.koroad.or.kr/main/board/9/306204/board_view.do?cp=5&listType=list&bdOpenYn=Y&bdNoticeYn=N"
+    },
+    "validity": {
+      "value": "taken within 6 months",
+      "source_url": "https://www.safedriving.or.kr/guide/larGuide10.do?menuCode=MN-PO-12111"
+    },
+    "file_spec": {
+      "value": "JPG, max 200KB (standard license) / max 250KB (mobile license), 350x450 pixels minimum",
+      "source_url": "https://www.koroad.or.kr/main/board/1/787/board_view.do?cp=31&listType=list&bdOpenYn=Y&bdNoticeYn=N"
+    },
+    "clothing_restriction": {
+      "value": "",
+      "source_url": ""
+    },
+    "expression_restriction": {
+      "value": "frontal view, face not tilted, eyes forward",
+      "source_url": "https://www.koroad.or.kr/main/board/9/306204/board_view.do?cp=5&listType=list&bdOpenYn=Y&bdNoticeYn=N"
+    },
+    "glasses_policy": {
+      "value": "colored glasses and sunglasses prohibited; eyes must not be covered",
+      "source_url": "https://www.koroad.or.kr/main/board/9/306204/board_view.do?cp=5&listType=list&bdOpenYn=Y&bdNoticeYn=N"
+    },
+    "ears_visibility": {
+      "value": "hair may cover ears but facial contours (cheeks, cheekbones) must remain visible",
+      "source_url": "https://www.koroad.or.kr/main/board/9/306204/board_view.do?cp=5&listType=list&bdOpenYn=Y&bdNoticeYn=N"
+    },
+    "face_visibility": {
+      "value": "both eyebrows must be at least 70% visible; hair cannot cover cheeks or cheekbones",
+      "source_url": "https://www.koroad.or.kr/main/board/9/306204/board_view.do?cp=5&listType=list&bdOpenYn=Y&bdNoticeYn=N"
+    },
+    "headwear_policy": {
+      "value": "no hats; passport photo standards strictly applied from March 1, 2026",
+      "source_url": "https://www.koroad.or.kr/main/board/9/306204/board_view.do?cp=5&listType=list&bdOpenYn=Y&bdNoticeYn=N"
+    },
+    "accessories": {
+      "value": "",
+      "source_url": ""
+    },
+    "official_source_url": {
+      "value": "https://www.safedriving.or.kr/guide/larGuide10.do?menuCode=MN-PO-12111",
+      "source_url": "https://www.safedriving.or.kr/guide/larGuide10.do?menuCode=MN-PO-12111"
+    }
+  },
+  "unverified": [
+    "clothing_restriction",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": {
+      "verdict": "confirmed",
+      "evidence": "Official Korea Road Traffic Authority (koroad.or.kr) notice states '사진 3.5 X 4.5cm' per 도로교통법 시행규칙 제57조 (Road Traffic Act Enforcement Rule Article 57). Stricter passport-aligned standards applied from March 1, 2026. Head length 3.2-3.6cm. Fetched from https://www.koroad.or.kr/main/board/9/306204/board_view.do?cp=5&listType=list&bdOpenYn=Y&bdNoticeYn=N",
+      "correct_value": null
+    }
+  }
+}

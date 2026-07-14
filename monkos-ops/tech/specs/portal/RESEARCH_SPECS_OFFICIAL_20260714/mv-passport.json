@@ -1,0 +1,61 @@
+{
+  "slug": "mv-passport",
+  "batch": "tw-hk-my-la-mv-fr",
+  "verified": {
+    "size": {
+      "value": "3.5 x 4.5 cm (35 x 45 mm)",
+      "source_url": "https://www.immigration.gov.mv/photo-standard"
+    },
+    "background": {
+      "value": "white",
+      "source_url": "https://www.immigration.gov.mv/photo-standard"
+    },
+    "head_height": {
+      "value": "32-36 mm optimal (acceptable range 27-40 mm); face must take up 70-80% of photo",
+      "source_url": "https://www.immigration.gov.mv/photo-standard"
+    },
+    "validity": {
+      "value": "taken within the last 30 days",
+      "source_url": "https://www.immigration.gov.mv/photo-standard"
+    },
+    "file_spec": {
+      "value": "Minimum 600 DPI; soft copy required for all submissions",
+      "source_url": "https://www.immigration.gov.mv/photo-standard"
+    },
+    "clothing_restriction": {
+      "value": "Darker shades mandatory; light-colored clothes blend with white background; uniform components not acceptable",
+      "source_url": "https://www.immigration.gov.mv/photo-standard"
+    },
+    "expression_restriction": {
+      "value": "Neutral expression, mouth closed, looking directly at camera",
+      "source_url": "https://www.immigration.gov.mv/photo-standard"
+    },
+    "glasses_policy": {
+      "value": "Dark tinted glasses and sunglasses prohibited; frames must not cover any part of eyes; no flash reflections on lenses; contact lenses acceptable",
+      "source_url": "https://www.immigration.gov.mv/photo-standard"
+    },
+    "ears_visibility": {
+      "value": "Both left and right sides of face must be visible",
+      "source_url": "https://www.immigration.gov.mv/photo-standard"
+    },
+    "face_visibility": {
+      "value": "Face visible from bottom of chin to crown (top of head, not top of hair); both left and right sides of face must be visible; hair must not cover eyes or facial features",
+      "source_url": "https://www.immigration.gov.mv/photo-standard"
+    },
+    "headwear_policy": {
+      "value": "Hats prohibited; religious head coverings (hijab) permitted if face visible from chin to crown and eyebrows visible",
+      "source_url": "https://www.immigration.gov.mv/photo-standard"
+    },
+    "accessories": {
+      "value": "Facial ornaments obscuring features prohibited; excessive makeup not permitted; no nose rings, hoops, excessive jewelry; no fake eyelashes",
+      "source_url": "https://www.immigration.gov.mv/photo-standard"
+    },
+    "official_source_url": {
+      "value": "https://www.immigration.gov.mv/photo-standard",
+      "source_url": "https://www.immigration.gov.mv/photo-standard"
+    }
+  },
+  "unverified": [],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

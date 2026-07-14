@@ -1,0 +1,50 @@
+{
+  "slug": "dk-passport",
+  "batch": "ch-at-se-no-dk-fi",
+  "verified": {
+    "size": {
+      "value": "35 x 45 mm",
+      "source_url": "https://politi.dk/pas/krav-til-pas-og-koerekortfoto"
+    },
+    "background": {
+      "value": "Light and plain; no shadows or motifs",
+      "source_url": "https://politi.dk/pas/krav-til-pas-og-koerekortfoto"
+    },
+    "head_height": {
+      "value": "30-36 mm (from top of head to chin)",
+      "source_url": "https://politi.dk/pas/krav-til-pas-og-koerekortfoto"
+    },
+    "validity": {
+      "value": "Taken within 6 months",
+      "source_url": "https://politi.dk/pas/krav-til-pas-og-koerekortfoto"
+    },
+    "expression_restriction": {
+      "value": "Neutral expression, mouth closed, eyes open and looking directly into camera",
+      "source_url": "https://politi.dk/pas/krav-til-pas-og-koerekortfoto"
+    },
+    "glasses_policy": {
+      "value": "Allowed if they do not block eyes; no sunglasses or tinted lenses; no reflections on lenses",
+      "source_url": "https://politi.dk/pas/krav-til-pas-og-koerekortfoto"
+    },
+    "headwear_policy": {
+      "value": "Not allowed; religious headgear permitted with forehead, cheekbones and chin visible",
+      "source_url": "https://politi.dk/pas/krav-til-pas-og-koerekortfoto"
+    },
+    "face_visibility": {
+      "value": "Whole face must be visible; both eyes visible; looking directly into camera; photo taken from front",
+      "source_url": "https://politi.dk/pas/krav-til-pas-og-koerekortfoto"
+    },
+    "official_source_url": {
+      "value": "https://politi.dk/pas/krav-til-pas-og-koerekortfoto",
+      "source_url": "https://politi.dk/pas/krav-til-pas-og-koerekortfoto"
+    }
+  },
+  "unverified": [
+    "file_spec",
+    "clothing_restriction",
+    "ears_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

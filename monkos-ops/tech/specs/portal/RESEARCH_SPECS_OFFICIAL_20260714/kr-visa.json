@@ -1,0 +1,72 @@
+{
+  "slug": "kr-visa",
+  "batch": "kr-jp-us",
+  "verified": {
+    "size": {
+      "value": "3.5 x 4.5cm",
+      "source_url": "https://www.visa.go.kr/openPage.do?MENU_ID=1020408"
+    },
+    "background": {
+      "value": "white or no background",
+      "source_url": "https://www.visa.go.kr/openPage.do?MENU_ID=1020408"
+    },
+    "head_height": {
+      "value": "face length 2.5-3.5cm",
+      "source_url": "https://www.visa.go.kr/openPage.do?MENU_ID=1020408"
+    },
+    "validity": {
+      "value": "taken within 6 months",
+      "source_url": "https://www.visa.go.kr/openPage.do?MENU_ID=1020408"
+    },
+    "file_spec": {
+      "value": "",
+      "source_url": ""
+    },
+    "clothing_restriction": {
+      "value": "",
+      "source_url": ""
+    },
+    "expression_restriction": {
+      "value": "",
+      "source_url": ""
+    },
+    "glasses_policy": {
+      "value": "sunglasses prohibited (exception: visually impaired for medical purposes)",
+      "source_url": "https://www.visa.go.kr/openPage.do?MENU_ID=1020408"
+    },
+    "ears_visibility": {
+      "value": "",
+      "source_url": ""
+    },
+    "face_visibility": {
+      "value": "front-facing view required; decorative items covering part of the face prohibited",
+      "source_url": "https://www.visa.go.kr/openPage.do?MENU_ID=1020408"
+    },
+    "headwear_policy": {
+      "value": "hats prohibited",
+      "source_url": "https://www.visa.go.kr/openPage.do?MENU_ID=1020408"
+    },
+    "accessories": {
+      "value": "decorative items that cover part of the face prohibited",
+      "source_url": "https://www.visa.go.kr/openPage.do?MENU_ID=1020408"
+    },
+    "official_source_url": {
+      "value": "https://www.visa.go.kr/openPage.do?MENU_ID=1020408",
+      "source_url": "https://www.visa.go.kr/openPage.do?MENU_ID=1020408"
+    }
+  },
+  "unverified": [
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "ears_visibility"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": {
+      "verdict": "confirmed",
+      "evidence": "Official Korea Visa Portal (visa.go.kr) states '사진(총천연색, 3.5cm x 4.5cm)' in both the electronic application and in-person visit preparation sections. Also confirmed by immigration.go.kr foreign registration photo guidelines: '사진크기(Photo size) : 가로 3.5cm * 세로 4.5cm'. Fetched from https://www.visa.go.kr/openPage.do?MENU_ID=1020408 and https://www.immigration.go.kr/sites/immigration/file/photo-size.html",
+      "correct_value": null
+    }
+  }
+}

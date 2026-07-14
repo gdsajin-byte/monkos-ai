@@ -1,0 +1,61 @@
+{
+  "slug": "pl-visa",
+  "batch": "is-ie-pl-cz-sk-hu",
+  "verified": {
+    "size": {
+      "value": "35 x 45 mm",
+      "source_url": "https://www.gov.pl/web/gov/zdjecie-do-dowodu-lub-paszportu"
+    },
+    "background": {
+      "value": "white",
+      "source_url": "https://www.gov.pl/web/gov/zdjecie-do-dowodu-lub-paszportu"
+    },
+    "head_height": {
+      "value": "face occupies 70-80% of the photo",
+      "source_url": "https://www.gov.pl/web/gov/zdjecie-do-dowodu-lub-paszportu"
+    },
+    "validity": {
+      "value": "taken within 6 months",
+      "source_url": "https://www.gov.pl/web/gov/zdjecie-do-dowodu-lub-paszportu"
+    },
+    "file_spec": {
+      "value": ""
+    },
+    "clothing_restriction": {
+      "value": ""
+    },
+    "expression_restriction": {
+      "value": "natural facial expression, closed mouth",
+      "source_url": "https://www.gov.pl/web/gov/zdjecie-do-dowodu-lub-paszportu"
+    },
+    "glasses_policy": {
+      "value": "corrective glasses permitted if eyes visible; dark glasses only with disability documentation",
+      "source_url": "https://www.gov.pl/web/gov/zdjecie-do-dowodu-lub-paszportu"
+    },
+    "ears_visibility": {
+      "value": "religious headwear must leave ear line visible",
+      "source_url": "https://www.gov.pl/web/gov/zdjecie-do-dowodu-lub-paszportu"
+    },
+    "face_visibility": {
+      "value": "visible eyebrows, eyes, and pupils; face not obscured by hair",
+      "source_url": "https://www.gov.pl/web/gov/zdjecie-do-dowodu-lub-paszportu"
+    },
+    "headwear_policy": {
+      "value": "not allowed; religious headwear permitted with certification",
+      "source_url": "https://www.gov.pl/web/gov/zdjecie-do-dowodu-lub-paszportu"
+    },
+    "accessories": {
+      "value": "jewelry permitted if it does not obscure face oval",
+      "source_url": "https://www.gov.pl/web/gov/zdjecie-do-dowodu-lub-paszportu"
+    },
+    "official_source_url": {
+      "value": "https://www.gov.pl/web/gov/zdjecie-do-dowodu-lub-paszportu"
+    }
+  },
+  "unverified": [
+    "file_spec",
+    "clothing_restriction"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

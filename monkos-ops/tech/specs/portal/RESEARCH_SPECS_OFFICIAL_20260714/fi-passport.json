@@ -1,0 +1,61 @@
+{
+  "slug": "fi-passport",
+  "batch": "ch-at-se-no-dk-fi",
+  "verified": {
+    "size": {
+      "value": "36 x 47 mm",
+      "source_url": "https://poliisi.fi/en/submitting-passport-photographs"
+    },
+    "background": {
+      "value": "Light grey recommended; plain and even; face, hair and clothes must be clearly distinguished from background",
+      "source_url": "https://poliisi.fi/en/submitting-passport-photographs"
+    },
+    "head_height": {
+      "value": "32-36 mm (445-500 pixels); 4-6 mm above crown, 7-9 mm below chin",
+      "source_url": "https://poliisi.fi/en/submitting-passport-photographs"
+    },
+    "validity": {
+      "value": "Not older than 6 months",
+      "source_url": "https://poliisi.fi/en/submitting-passport-photographs"
+    },
+    "file_spec": {
+      "value": "JPEG format (.jpg or .jpeg), 500 x 653 pixels, max 250 KB; no editing or retouching allowed",
+      "source_url": "https://poliisi.fi/en/submitting-passport-photographs"
+    },
+    "clothing_restriction": {
+      "value": "Normal everyday upper-body clothing; avoid white shirts (blend with background), hoodies, and thick scarves",
+      "source_url": "https://passikuvasuomi.fi/en/passport-photo/"
+    },
+    "expression_restriction": {
+      "value": "Neutral expression, mouth closed; slight smile allowed but lips must remain together",
+      "source_url": "https://passikuvasuomi.fi/en/passport-photo/"
+    },
+    "glasses_policy": {
+      "value": "Not recommended; if worn, glasses must not cause reflections and frames must not cover eyes; police often reject photos with glasses",
+      "source_url": "https://passikuvasuomi.fi/en/passport-photo/"
+    },
+    "headwear_policy": {
+      "value": "No hats allowed; religious headgear (headscarf, yarmulke) permitted if worn daily and does not obscure facial features or cast shadows",
+      "source_url": "https://passikuvasuomi.fi/en/passport-photo/"
+    },
+    "face_visibility": {
+      "value": "Face fully visible and centered; both eyes open; hair must not cover eyebrows or facial features",
+      "source_url": "https://passikuvasuomi.fi/en/passport-photo/"
+    },
+    "ears_visibility": {
+      "value": "Preferred but not mandatory; both ears showing or both edges of face visible",
+      "source_url": "https://passikuvasuomi.fi/en/passport-photo/"
+    },
+    "accessories": {
+      "value": "Small neck scarf acceptable; avoid large scarves",
+      "source_url": "https://passikuvasuomi.fi/en/passport-photo/"
+    },
+    "official_source_url": {
+      "value": "https://poliisi.fi/en/submitting-passport-photographs",
+      "source_url": "https://poliisi.fi/en/submitting-passport-photographs"
+    }
+  },
+  "unverified": [],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

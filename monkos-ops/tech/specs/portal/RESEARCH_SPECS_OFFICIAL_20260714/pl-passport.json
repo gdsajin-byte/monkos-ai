@@ -1,0 +1,67 @@
+{
+  "slug": "pl-passport",
+  "batch": "is-ie-pl-cz-sk-hu",
+  "verified": {
+    "size": {
+      "value": "35 x 45 mm",
+      "source_url": "https://www.gov.pl/web/gov/zdjecie-do-dowodu-lub-paszportu"
+    },
+    "background": {
+      "value": "uniform bright (white) background with even lighting",
+      "source_url": "https://www.gov.pl/web/gov/zdjecie-do-dowodu-lub-paszportu"
+    },
+    "head_height": {
+      "value": "face occupies 70-80% of the photo, from crown to upper shoulders",
+      "source_url": "https://www.gov.pl/web/gov/zdjecie-do-dowodu-lub-paszportu"
+    },
+    "validity": {
+      "value": "taken within 6 months before submission",
+      "source_url": "https://www.gov.pl/web/gov/zdjecie-do-dowodu-lub-paszportu"
+    },
+    "file_spec": {
+      "value": "online: minimum 768 x 1004 pixels, max 2.5 MB, 35x45mm proportions",
+      "source_url": "https://www.gov.pl/web/gov/zdjecie-do-dowodu-lub-paszportu"
+    },
+    "clothing_restriction": {
+      "value": ""
+    },
+    "expression_restriction": {
+      "value": "natural facial expression, closed mouth",
+      "source_url": "https://www.gov.pl/web/gov/zdjecie-do-dowodu-lub-paszportu"
+    },
+    "glasses_policy": {
+      "value": "corrective glasses permitted if eyes visible and frames do not cover eyebrows, no lens glare; dark glasses only with disability documentation; contact lenses allowed if they do not change natural eye appearance",
+      "source_url": "https://www.gov.pl/web/gov/zdjecie-do-dowodu-lub-paszportu"
+    },
+    "ears_visibility": {
+      "value": "religious headwear must leave entire face oval and ear line visible",
+      "source_url": "https://www.gov.pl/web/gov/zdjecie-do-dowodu-lub-paszportu"
+    },
+    "face_visibility": {
+      "value": "visible eyebrows, eyes, and pupils; face not obscured by hair",
+      "source_url": "https://www.gov.pl/web/gov/zdjecie-do-dowodu-lub-paszportu"
+    },
+    "headwear_policy": {
+      "value": "not allowed; religious headwear permitted with faith community certification if entire face oval and ear line remain visible",
+      "source_url": "https://www.gov.pl/web/gov/zdjecie-do-dowodu-lub-paszportu"
+    },
+    "accessories": {
+      "value": "jewelry permitted if it does not obscure face oval or disrupt background uniformity",
+      "source_url": "https://www.gov.pl/web/gov/zdjecie-do-dowodu-lub-paszportu"
+    },
+    "official_source_url": {
+      "value": "https://www.gov.pl/web/gov/zdjecie-do-dowodu-lub-paszportu"
+    }
+  },
+  "unverified": [
+    "clothing_restriction"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": {
+      "verdict": "confirmed",
+      "evidence": "The official Polish government page at gov.pl/web/gov/zdjecie-do-dowodu-lub-paszportu (fetched directly) explicitly states for passport photos: 'kolorowe zdjecie na papierze w formacie 35 x 45 mm (szerokosc x wysokosc)' (color photo on paper in 35 x 45 mm format, width x height). The same dimensions apply to both dowod osobisty (ID card) and passport. Multiple independent sources (visafoto.com, fylite.com, 123passportphoto.com) all confirm 35 x 45 mm.",
+      "correct_value": null
+    }
+  }
+}

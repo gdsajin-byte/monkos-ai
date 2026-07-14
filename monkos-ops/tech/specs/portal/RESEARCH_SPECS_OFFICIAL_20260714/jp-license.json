@@ -1,0 +1,64 @@
+{
+  "slug": "jp-license",
+  "batch": "kr-jp-us",
+  "verified": {
+    "size": {
+      "value": "2.4 x 3.0cm (24 x 30mm)",
+      "source_url": "https://www.keishicho.metro.tokyo.lg.jp/menkyo/koshin/koshin/koshin02_2.html"
+    },
+    "background": {
+      "value": "plain, no background (無背景); no patterns, textures, scenery, or wallpaper",
+      "source_url": "https://www.keishicho.metro.tokyo.lg.jp/menkyo/koshin/koshin/koshin02_2.html"
+    },
+    "head_height": {
+      "value": "approximately 3mm margin above head to photo edge",
+      "source_url": "https://www.keishicho.metro.tokyo.lg.jp/menkyo/koshin/koshin/koshin02_2.html"
+    },
+    "validity": {
+      "value": "taken within 6 months before application",
+      "source_url": "https://www.keishicho.metro.tokyo.lg.jp/menkyo/koshin/koshin/koshin02_2.html"
+    },
+    "file_spec": {
+      "value": "",
+      "source_url": ""
+    },
+    "clothing_restriction": {
+      "value": "face cannot be obscured by clothing; clothing must contrast with background",
+      "source_url": "https://www.keishicho.metro.tokyo.lg.jp/menkyo/koshin/koshin/koshin02_2.html"
+    },
+    "expression_restriction": {
+      "value": "natural expression; frontal view; eyes open and facing forward; no wide mouth open smiling",
+      "source_url": "https://www.keishicho.metro.tokyo.lg.jp/menkyo/koshin/koshin/koshin02_2.html"
+    },
+    "glasses_policy": {
+      "value": "regular glasses acceptable if frames do not obstruct eyes and no glare; dark-tinted/sunglasses prohibited",
+      "source_url": "https://www.keishicho.metro.tokyo.lg.jp/menkyo/koshin/koshin/koshin02_2.html"
+    },
+    "ears_visibility": {
+      "value": "",
+      "source_url": ""
+    },
+    "face_visibility": {
+      "value": "eyes clearly visible; cannot be narrowed, closed, or hidden by hair; gaze forward",
+      "source_url": "https://www.keishicho.metro.tokyo.lg.jp/menkyo/koshin/koshin/koshin02_2.html"
+    },
+    "headwear_policy": {
+      "value": "no hats, wide headbands, bandanas, or head wraps; religious/medical exceptions permitted if face contour visible",
+      "source_url": "https://www.keishicho.metro.tokyo.lg.jp/menkyo/koshin/koshin/koshin02_2.html"
+    },
+    "accessories": {
+      "value": "masks not permitted",
+      "source_url": "https://www.keishicho.metro.tokyo.lg.jp/menkyo/koshin/koshin/koshin02_2.html"
+    },
+    "official_source_url": {
+      "value": "https://www.keishicho.metro.tokyo.lg.jp/menkyo/koshin/koshin/koshin02_2.html",
+      "source_url": "https://www.keishicho.metro.tokyo.lg.jp/menkyo/koshin/koshin/koshin02_2.html"
+    }
+  },
+  "unverified": [
+    "file_spec",
+    "ears_visibility"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

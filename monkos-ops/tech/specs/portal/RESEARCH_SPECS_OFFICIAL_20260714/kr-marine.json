@@ -1,0 +1,72 @@
+{
+  "slug": "kr-marine",
+  "batch": "kr-jp-us",
+  "verified": {
+    "size": {
+      "value": "3.5 x 4.5cm",
+      "source_url": "https://gunsan.mof.go.kr/ko/page.do?menuIdx=963"
+    },
+    "background": {
+      "value": "",
+      "source_url": ""
+    },
+    "head_height": {
+      "value": "",
+      "source_url": ""
+    },
+    "validity": {
+      "value": "taken within 6 months",
+      "source_url": "https://gunsan.mof.go.kr/ko/page.do?menuIdx=963"
+    },
+    "file_spec": {
+      "value": "",
+      "source_url": ""
+    },
+    "clothing_restriction": {
+      "value": "",
+      "source_url": ""
+    },
+    "expression_restriction": {
+      "value": "",
+      "source_url": ""
+    },
+    "glasses_policy": {
+      "value": "",
+      "source_url": ""
+    },
+    "ears_visibility": {
+      "value": "",
+      "source_url": ""
+    },
+    "face_visibility": {
+      "value": "",
+      "source_url": ""
+    },
+    "headwear_policy": {
+      "value": "",
+      "source_url": ""
+    },
+    "accessories": {
+      "value": "",
+      "source_url": ""
+    },
+    "official_source_url": {
+      "value": "https://gunsan.mof.go.kr/ko/page.do?menuIdx=963",
+      "source_url": "https://gunsan.mof.go.kr/ko/page.do?menuIdx=963"
+    }
+  },
+  "unverified": [
+    "background",
+    "head_height",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

@@ -1,0 +1,50 @@
+{
+  "slug": "bg-visa",
+  "batch": "ro-bg-hr-lv-lt-ee",
+  "verified": {
+    "size": {
+      "value": "3.5 x 4.5 cm (35 x 45mm)",
+      "source_url": "https://www.mfa.bg/en/services-travel/consular-services/travel-bulgaria/visa-bulgaria"
+    },
+    "background": {
+      "value": "light colored",
+      "source_url": "https://www.mfa.bg/en/services-travel/consular-services/travel-bulgaria/visa-bulgaria"
+    },
+    "head_height": {
+      "value": "face should occupy 70-80% of photo",
+      "source_url": "https://www.mfa.bg/en/services-travel/consular-services/travel-bulgaria/visa-bulgaria"
+    },
+    "expression_restriction": {
+      "value": "neutral expression, full-face position only",
+      "source_url": "https://www.mfa.bg/en/services-travel/consular-services/travel-bulgaria/visa-bulgaria"
+    },
+    "glasses_policy": {
+      "value": "darkly tinted glasses not accepted",
+      "source_url": "https://www.mfa.bg/en/services-travel/consular-services/travel-bulgaria/visa-bulgaria"
+    },
+    "face_visibility": {
+      "value": "face must be clear and large, full-face only",
+      "source_url": "https://www.mfa.bg/en/services-travel/consular-services/travel-bulgaria/visa-bulgaria"
+    },
+    "official_source_url": {
+      "value": "https://www.mfa.bg/en/services-travel/consular-services/travel-bulgaria/visa-bulgaria",
+      "source_url": "https://www.mfa.bg/en/services-travel/consular-services/travel-bulgaria/visa-bulgaria"
+    }
+  },
+  "unverified": [
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "ears_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": {
+      "verdict": "confirmed",
+      "evidence": "The official mfa.bg source was blocked by bot protection (Radware redirect). However, multiple independent third-party sources consistently confirm 35x45mm (3.5x4.5 cm) for Bulgarian visa photos: visafoto.com states 'Width: 35mm, Height: 45mm', makepassportphoto.com lists '35x45 mm (3.5x4.5 cm)', visapics.org, mybiometricphotos.com, atlys.com, and vfsglobal.com (official visa application center) all cite the same dimensions. No contradicting evidence was found.",
+      "correct_value": "3.5 x 4.5 cm (35 x 45mm)"
+    }
+  }
+}

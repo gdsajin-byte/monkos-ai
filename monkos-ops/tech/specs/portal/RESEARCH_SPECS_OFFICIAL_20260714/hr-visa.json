@@ -1,0 +1,50 @@
+{
+  "slug": "hr-visa",
+  "batch": "ro-bg-hr-lv-lt-ee",
+  "verified": {
+    "size": {
+      "value": "35 x 45 mm",
+      "source_url": "https://mvep.gov.hr/consular-information-151075/visas-151076/when-is-visa-request-admissible/180329"
+    },
+    "background": {
+      "value": "light uncolored, no patterns",
+      "source_url": "https://mvep.gov.hr/consular-information-151075/visas-151076/when-is-visa-request-admissible/180329"
+    },
+    "head_height": {
+      "value": "about 2/3 of photo, not exceeding 36mm",
+      "source_url": "https://mvep.gov.hr/consular-information-151075/visas-151076/when-is-visa-request-admissible/180329"
+    },
+    "expression_restriction": {
+      "value": "neutral facial expression, eyes open, mouth closed",
+      "source_url": "https://mvep.gov.hr/consular-information-151075/visas-151076/when-is-visa-request-admissible/180329"
+    },
+    "glasses_policy": {
+      "value": "blind individuals may wear dark glasses; otherwise glasses should not obscure eyes",
+      "source_url": "https://mvep.gov.hr/consular-information-151075/visas-151076/when-is-visa-request-admissible/180329"
+    },
+    "face_visibility": {
+      "value": "full face visible, centered in photo",
+      "source_url": "https://mvep.gov.hr/consular-information-151075/visas-151076/when-is-visa-request-admissible/180329"
+    },
+    "headwear_policy": {
+      "value": "religious or medical head coverings permitted if cheeks, chin and forehead remain visible",
+      "source_url": "https://mvep.gov.hr/consular-information-151075/visas-151076/when-is-visa-request-admissible/180329"
+    },
+    "file_spec": {
+      "value": "high-quality glossy and smooth paper without surface structures",
+      "source_url": "https://mvep.gov.hr/consular-information-151075/visas-151076/when-is-visa-request-admissible/180329"
+    },
+    "official_source_url": {
+      "value": "https://mvep.gov.hr/consular-information-151075/visas-151076/when-is-visa-request-admissible/180329",
+      "source_url": "https://mvep.gov.hr/consular-information-151075/visas-151076/when-is-visa-request-admissible/180329"
+    }
+  },
+  "unverified": [
+    "validity",
+    "clothing_restriction",
+    "ears_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

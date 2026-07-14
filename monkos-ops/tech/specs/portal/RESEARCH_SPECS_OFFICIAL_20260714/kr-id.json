@@ -1,0 +1,72 @@
+{
+  "slug": "kr-id",
+  "batch": "kr-jp-us",
+  "verified": {
+    "size": {
+      "value": "3.5 x 4.5cm",
+      "source_url": "https://www.mois.go.kr/frt/sub/a06/b06/IDCard_5/screen.do"
+    },
+    "background": {
+      "value": "white or light color recommended",
+      "source_url": "https://www.mois.go.kr/frt/sub/a06/b06/IDCard_5/screen.do"
+    },
+    "head_height": {
+      "value": "",
+      "source_url": ""
+    },
+    "validity": {
+      "value": "taken within 6 months",
+      "source_url": "https://www.mois.go.kr/frt/sub/a06/b06/IDCard_5/screen.do"
+    },
+    "file_spec": {
+      "value": "",
+      "source_url": ""
+    },
+    "clothing_restriction": {
+      "value": "",
+      "source_url": ""
+    },
+    "expression_restriction": {
+      "value": "natural closed-mouth expression; eyes open, gazing directly forward; no profile shots",
+      "source_url": "https://www.mois.go.kr/frt/sub/a06/b06/IDCard_5/screen.do"
+    },
+    "glasses_policy": {
+      "value": "colored sunglasses prohibited (exception: visually impaired); no glare or reflection on glasses lenses",
+      "source_url": "https://www.mois.go.kr/frt/sub/a06/b06/IDCard_5/screen.do"
+    },
+    "ears_visibility": {
+      "value": "",
+      "source_url": ""
+    },
+    "face_visibility": {
+      "value": "face must be clearly identifiable; frontal view required; shoulder line must be visible",
+      "source_url": "https://www.mois.go.kr/frt/sub/a06/b06/IDCard_5/screen.do"
+    },
+    "headwear_policy": {
+      "value": "hats, bonnets, head wraps prohibited",
+      "source_url": "https://www.mois.go.kr/frt/sub/a06/b06/IDCard_5/screen.do"
+    },
+    "accessories": {
+      "value": "eye patches, bandages, adhesive tape prohibited",
+      "source_url": "https://www.mois.go.kr/frt/sub/a06/b06/IDCard_5/screen.do"
+    },
+    "official_source_url": {
+      "value": "https://www.mois.go.kr/frt/sub/a06/b06/IDCard_5/screen.do",
+      "source_url": "https://www.mois.go.kr/frt/sub/a06/b06/IDCard_5/screen.do"
+    }
+  },
+  "unverified": [
+    "head_height",
+    "file_spec",
+    "clothing_restriction",
+    "ears_visibility"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": {
+      "verdict": "confirmed",
+      "evidence": "Official Ministry of the Interior and Safety (mois.go.kr) confirms 3.5cm x 4.5cm for 주민등록증 photos. The site also notes '여권 사진 규격으로 촬영하면 주민등록증과 여권 발급 시 모두 사용 가능' (passport photo specs work for both ID and passport). Also independently confirmed by visafoto.com at 35mm x 45mm. Fetched from https://www.mois.go.kr/frt/sub/a06/b06/IDCard_5/screen.do",
+      "correct_value": null
+    }
+  }
+}

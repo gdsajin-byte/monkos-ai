@@ -1,0 +1,35 @@
+{
+  "slug": "pt-passport",
+  "batch": "de-it-es-pt-nl-be",
+  "verified": {
+    "size": {
+      "value": "35 x 45mm (tipo passe, ICAO standard)",
+      "source_url": "https://paris.consuladoportugal.mne.gov.pt/pt/assuntos-consulares/quero-tratar-de/passaporte"
+    },
+    "background": {
+      "value": "white (fundo branco), plain (fundo liso)",
+      "source_url": "https://goa.consuladoportugal.mne.gov.pt/pt/assuntos-consulares/servicos-consulares/passaporte"
+    },
+    "validity": {
+      "value": "taken within 1 year (obtidas ha menos de um ano)",
+      "source_url": "https://paris.consuladoportugal.mne.gov.pt/pt/assuntos-consulares/quero-tratar-de/passaporte"
+    },
+    "official_source_url": {
+      "value": "https://justica.gov.pt/Registos/Identificacao/Passaporte-eletronico",
+      "source_url": "https://justica.gov.pt/Registos/Identificacao/Passaporte-eletronico"
+    }
+  },
+  "unverified": [
+    "head_height",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

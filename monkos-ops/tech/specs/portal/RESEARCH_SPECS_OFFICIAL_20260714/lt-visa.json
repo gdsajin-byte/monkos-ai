@@ -1,0 +1,35 @@
+{
+  "slug": "lt-visa",
+  "batch": "ro-bg-hr-lv-lt-ee",
+  "verified": {
+    "size": {
+      "value": "35 x 45 mm",
+      "source_url": "https://www.urm.lt/il/en/travel-and-residence/coming-to-lithuania/visas"
+    },
+    "validity": {
+      "value": "not older than 3 months",
+      "source_url": "https://www.urm.lt/il/en/travel-and-residence/coming-to-lithuania/visas"
+    },
+    "expression_restriction": {
+      "value": "neutral expression, eyes open, mouth closed",
+      "source_url": "https://www.urm.lt/il/en/travel-and-residence/coming-to-lithuania/visas"
+    },
+    "official_source_url": {
+      "value": "https://www.urm.lt/il/en/travel-and-residence/coming-to-lithuania/visas",
+      "source_url": "https://www.urm.lt/il/en/travel-and-residence/coming-to-lithuania/visas"
+    }
+  },
+  "unverified": [
+    "background",
+    "head_height",
+    "file_spec",
+    "clothing_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

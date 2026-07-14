@@ -1,0 +1,64 @@
+{
+  "slug": "fr-passport",
+  "batch": "tw-hk-my-la-mv-fr",
+  "verified": {
+    "size": {
+      "value": "3.5 x 4.5 cm (35 x 45 mm)",
+      "source_url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F10619"
+    },
+    "background": {
+      "value": "Plain, light-colored (light blue or light gray acceptable); white background is PROHIBITED",
+      "source_url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F10619"
+    },
+    "head_height": {
+      "value": "32-36 mm (chin to top of skull, excluding hair); face must occupy 70-80% of photo",
+      "source_url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F10619"
+    },
+    "validity": {
+      "value": "taken within the last 6 months",
+      "source_url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F10619"
+    },
+    "file_spec": {
+      "value": "",
+      "source_url": ""
+    },
+    "clothing_restriction": {
+      "value": "",
+      "source_url": ""
+    },
+    "expression_restriction": {
+      "value": "Neutral expression, mouth closed, eyes open and looking directly at camera",
+      "source_url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F10619"
+    },
+    "glasses_policy": {
+      "value": "Glasses optional; if worn, frames cannot be thick or hide eyes, lenses must not be tinted or produce glare",
+      "source_url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F10619"
+    },
+    "ears_visibility": {
+      "value": "Ears must be clearly visible",
+      "source_url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F10619"
+    },
+    "face_visibility": {
+      "value": "Face must be clear and fully visible; eyes perfectly visible and open; hair must not cover face (bangs acceptable if they do not obstruct eyes)",
+      "source_url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F10619"
+    },
+    "headwear_policy": {
+      "value": "Head must be bare; no hats, scarves, or headbands",
+      "source_url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F10619"
+    },
+    "accessories": {
+      "value": "Earrings and piercings permitted if they do not obscure facial features",
+      "source_url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F10619"
+    },
+    "official_source_url": {
+      "value": "https://www.service-public.gouv.fr/particuliers/vosdroits/F10619",
+      "source_url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F10619"
+    }
+  },
+  "unverified": [
+    "file_spec",
+    "clothing_restriction"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

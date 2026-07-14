@@ -1,0 +1,26 @@
+{
+  "slug": "so-visa",
+  "batch": "east-africa",
+  "verified": {
+    "official_source_url": {
+      "value": "https://immigration.gov.so/en/visa/",
+      "source_url": "https://immigration.gov.so/en/visa/"
+    }
+  },
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

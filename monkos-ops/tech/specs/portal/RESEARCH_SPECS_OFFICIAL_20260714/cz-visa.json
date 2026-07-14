@@ -1,0 +1,61 @@
+{
+  "slug": "cz-visa",
+  "batch": "is-ie-pl-cz-sk-hu",
+  "verified": {
+    "size": {
+      "value": "35 x 45 mm",
+      "source_url": "https://mzv.gov.cz/jnp/en/information_for_aliens/supporting_documents_overview/photo.html"
+    },
+    "background": {
+      "value": "white to light blue or light grey, plain and uniform",
+      "source_url": "https://ipc.gov.cz/en/forms-and-documents/documents/photograph/"
+    },
+    "head_height": {
+      "value": "face height at least 13 mm (eyes to chin); minimum 2 mm from top of head to photo edge",
+      "source_url": "https://ipc.gov.cz/en/forms-and-documents/documents/photograph/"
+    },
+    "validity": {
+      "value": "must show current appearance",
+      "source_url": "https://ipc.gov.cz/en/forms-and-documents/documents/photograph/"
+    },
+    "file_spec": {
+      "value": ""
+    },
+    "clothing_restriction": {
+      "value": "civil attire required",
+      "source_url": "https://mzv.gov.cz/jnp/en/information_for_aliens/supporting_documents_overview/photo.html"
+    },
+    "expression_restriction": {
+      "value": "neutral expression, lips closed, eyes open",
+      "source_url": "https://ipc.gov.cz/en/forms-and-documents/documents/photograph/"
+    },
+    "glasses_policy": {
+      "value": "no sunglasses except for blind individuals; tinted glasses only for medical reasons",
+      "source_url": "https://mzv.gov.cz/jnp/en/information_for_aliens/supporting_documents_overview/photo.html"
+    },
+    "ears_visibility": {
+      "value": ""
+    },
+    "face_visibility": {
+      "value": "full face front view, eyes not covered by hair, head and upper shoulders visible",
+      "source_url": "https://ipc.gov.cz/en/forms-and-documents/documents/photograph/"
+    },
+    "headwear_policy": {
+      "value": "no head cover except for religious or health reasons; must not prevent identification",
+      "source_url": "https://mzv.gov.cz/jnp/en/information_for_aliens/supporting_documents_overview/photo.html"
+    },
+    "accessories": {
+      "value": ""
+    },
+    "official_source_url": {
+      "value": "https://mzv.gov.cz/jnp/en/information_for_aliens/supporting_documents_overview/photo.html"
+    }
+  },
+  "unverified": [
+    "file_spec",
+    "ears_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

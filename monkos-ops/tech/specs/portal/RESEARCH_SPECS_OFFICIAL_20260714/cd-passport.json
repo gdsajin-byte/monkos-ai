@@ -1,0 +1,38 @@
+{
+  "slug": "cd-passport",
+  "batch": "east-africa",
+  "verified": {
+    "size": {
+      "value": "2 x 2 inch",
+      "source_url": "https://www.ambadrcusa.org/consular-affairs/passport-visa-tenant-lieu/"
+    },
+    "validity": {
+      "value": "taken within last 6 months",
+      "source_url": "https://www.ambadrcusa.org/consular-affairs/passport-visa-tenant-lieu/"
+    },
+    "official_source_url": {
+      "value": "https://www.ambadrcusa.org/consular-affairs/passport-visa-tenant-lieu/",
+      "source_url": "https://www.ambadrcusa.org/consular-affairs/passport-visa-tenant-lieu/"
+    }
+  },
+  "unverified": [
+    "background",
+    "head_height",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": {
+      "verdict": "uncertain",
+      "evidence": "The cited source (DRC Embassy in Washington, ambadrcusa.org) does state 'One passport-style photographs (2\"x2\")' for passport applications. However, multiple independent photo specification databases (visafoto, makepassportphoto, visapics, mybiometricphotos, idphotodiy) consistently list the standard DRC passport photo size as 35x45mm (3.5x4.5cm). These are meaningfully different dimensions: 2x2 inch is 51x51mm (square) while 35x45mm is rectangular. The 2x2 inch requirement on the US embassy page may be a localized requirement for US-based applications (matching US passport photo conventions) rather than the universal DRC domestic standard.",
+      "correct_value": "35x45mm (per multiple photo databases) or 2x2 inch (per US embassy)"
+    }
+  }
+}

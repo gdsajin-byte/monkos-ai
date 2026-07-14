@@ -1,0 +1,61 @@
+{
+  "slug": "sk-visa",
+  "batch": "is-ie-pl-cz-sk-hu",
+  "verified": {
+    "size": {
+      "value": ""
+    },
+    "background": {
+      "value": ""
+    },
+    "head_height": {
+      "value": ""
+    },
+    "validity": {
+      "value": ""
+    },
+    "file_spec": {
+      "value": ""
+    },
+    "clothing_restriction": {
+      "value": ""
+    },
+    "expression_restriction": {
+      "value": ""
+    },
+    "glasses_policy": {
+      "value": ""
+    },
+    "ears_visibility": {
+      "value": ""
+    },
+    "face_visibility": {
+      "value": ""
+    },
+    "headwear_policy": {
+      "value": ""
+    },
+    "accessories": {
+      "value": ""
+    },
+    "official_source_url": {
+      "value": "https://www.mzv.sk/en/web/en/visa-and-services/schengen-visa"
+    }
+  },
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

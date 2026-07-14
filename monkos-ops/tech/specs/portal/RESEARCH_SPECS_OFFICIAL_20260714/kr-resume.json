@@ -1,0 +1,76 @@
+{
+  "slug": "kr-resume",
+  "batch": "kr-jp-us",
+  "verified": {
+    "size": {
+      "value": "",
+      "source_url": "",
+      "_note": "3x4cm은 통용 관례이나 공식 규격 문서 없음 — unverified 강등, DB 유지"
+    },
+    "background": {
+      "value": "",
+      "source_url": ""
+    },
+    "head_height": {
+      "value": "",
+      "source_url": ""
+    },
+    "validity": {
+      "value": "",
+      "source_url": ""
+    },
+    "file_spec": {
+      "value": "",
+      "source_url": ""
+    },
+    "clothing_restriction": {
+      "value": "",
+      "source_url": ""
+    },
+    "expression_restriction": {
+      "value": "",
+      "source_url": ""
+    },
+    "glasses_policy": {
+      "value": "",
+      "source_url": ""
+    },
+    "ears_visibility": {
+      "value": "",
+      "source_url": ""
+    },
+    "face_visibility": {
+      "value": "",
+      "source_url": ""
+    },
+    "headwear_policy": {
+      "value": "",
+      "source_url": ""
+    },
+    "accessories": {
+      "value": "",
+      "source_url": ""
+    },
+    "official_source_url": {
+      "value": "",
+      "source_url": ""
+    }
+  },
+  "unverified": [
+    "size",
+    "background",
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "face_visibility",
+    "headwear_policy",
+    "accessories",
+    "official_source_url"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

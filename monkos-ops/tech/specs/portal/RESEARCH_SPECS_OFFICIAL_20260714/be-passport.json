@@ -1,0 +1,50 @@
+{
+  "slug": "be-passport",
+  "batch": "de-it-es-pt-nl-be",
+  "verified": {
+    "size": {
+      "value": "35 x 45mm",
+      "source_url": "https://diplomatie.belgium.be/en/belgians-abroad/belgian-passport/quality-requirements-photo"
+    },
+    "background": {
+      "value": "light color (white, cream, light grey, or light blue); uniform, plain, no gradation, free of shadows and patterns",
+      "source_url": "https://diplomatie.belgium.be/en/belgians-abroad/belgian-passport/quality-requirements-photo"
+    },
+    "head_height": {
+      "value": "31-36mm from top of forehead to bottom of chin; space must remain between crown and top edge of photo and on both sides of face; neck and upper shoulders must also be visible",
+      "source_url": "https://diplomatie.belgium.be/en/belgians-abroad/belgian-passport/quality-requirements-photo"
+    },
+    "validity": {
+      "value": "taken within 6 months before submitting application",
+      "source_url": "https://diplomatie.belgium.be/en/belgians-abroad/belgian-passport/quality-requirements-photo"
+    },
+    "expression_restriction": {
+      "value": "neutral facial expression, mouth shut, no smiling",
+      "source_url": "https://diplomatie.belgium.be/en/belgians-abroad/belgian-passport/quality-requirements-photo"
+    },
+    "glasses_policy": {
+      "value": "allowed but no reflecting or tinted glasses; frames should not be too big but not too close to the eyeline; glasses may be removed even if worn daily",
+      "source_url": "https://diplomatie.belgium.be/en/belgians-abroad/belgian-passport/quality-requirements-photo"
+    },
+    "face_visibility": {
+      "value": "face totally uncovered; forehead, chin and the part towards the ears must be visible; eyes perfectly visible",
+      "source_url": "https://diplomatie.belgium.be/en/belgians-abroad/belgian-passport/quality-requirements-photo"
+    },
+    "ears_visibility": {
+      "value": "the part towards the ears must be visible (face totally uncovered requirement)",
+      "source_url": "https://diplomatie.belgium.be/en/belgians-abroad/belgian-passport/quality-requirements-photo"
+    },
+    "official_source_url": {
+      "value": "https://diplomatie.belgium.be/en/belgians-abroad/belgian-passport/quality-requirements-photo",
+      "source_url": "https://diplomatie.belgium.be/en/belgians-abroad/belgian-passport/quality-requirements-photo"
+    }
+  },
+  "unverified": [
+    "file_spec",
+    "clothing_restriction",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

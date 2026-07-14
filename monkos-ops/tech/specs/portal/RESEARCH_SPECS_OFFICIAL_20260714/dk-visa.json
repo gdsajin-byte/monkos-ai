@@ -1,0 +1,47 @@
+{
+  "slug": "dk-visa",
+  "batch": "ch-at-se-no-dk-fi",
+  "verified": {
+    "size": {
+      "value": "35 x 45 mm (Schengen standard)",
+      "source_url": "https://um.dk/en/travel-and-residence/how-to-apply-for-a-danish-passport/"
+    },
+    "background": {
+      "value": "Light, plain (white, light grey, or cream); no patterns",
+      "source_url": "https://um.dk/en/travel-and-residence/how-to-apply-for-a-danish-passport/"
+    },
+    "head_height": {
+      "value": "30-36 mm (70-80% of photo)",
+      "source_url": "https://um.dk/en/travel-and-residence/how-to-apply-for-a-danish-passport/"
+    },
+    "validity": {
+      "value": "Taken within 6 months",
+      "source_url": "https://um.dk/en/travel-and-residence/how-to-apply-for-a-danish-passport/"
+    },
+    "expression_restriction": {
+      "value": "Neutral expression, mouth closed",
+      "source_url": "https://um.dk/en/travel-and-residence/how-to-apply-for-a-danish-passport/"
+    },
+    "glasses_policy": {
+      "value": "Prescription glasses allowed if eyes clearly visible; no tinted lenses or sunglasses; no reflections",
+      "source_url": "https://politi.dk/pas/krav-til-pas-og-koerekortfoto"
+    },
+    "headwear_policy": {
+      "value": "Not allowed; religious headgear permitted with forehead, cheekbones and chin visible",
+      "source_url": "https://politi.dk/pas/krav-til-pas-og-koerekortfoto"
+    },
+    "official_source_url": {
+      "value": "https://um.dk/en/travel-and-residence/how-to-apply-for-a-danish-passport/",
+      "source_url": "https://um.dk/en/travel-and-residence/how-to-apply-for-a-danish-passport/"
+    }
+  },
+  "unverified": [
+    "file_spec",
+    "clothing_restriction",
+    "ears_visibility",
+    "face_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

@@ -1,0 +1,44 @@
+{
+  "slug": "hr-passport",
+  "batch": "ro-bg-hr-lv-lt-ee",
+  "verified": {
+    "size": {
+      "value": "35 x 45 mm",
+      "source_url": "https://mup.gov.hr/gradjani-281562/moji-dokumenti-281563/putovnica-330/primjeri-ispravno-i-neispravno-snimljenih-fotografija/378"
+    },
+    "background": {
+      "value": "",
+      "source_url": ""
+    },
+    "face_visibility": {
+      "value": "front-facing (en face), forehead must be exposed and visible; photo must truthfully depict the person",
+      "source_url": "https://mup.gov.hr/gradjani-281562/moji-dokumenti-281563/putovnica-330/primjeri-ispravno-i-neispravno-snimljenih-fotografija/378"
+    },
+    "headwear_policy": {
+      "value": "not allowed (hats, caps, scarves); religious or medical head coverings permitted if cheeks, chin and forehead remain visible",
+      "source_url": "https://mup.gov.hr/gradjani-281562/moji-dokumenti-281563/putovnica-330/primjeri-ispravno-i-neispravno-snimljenih-fotografija/378"
+    },
+    "official_source_url": {
+      "value": "https://mup.gov.hr/gradjani-281562/moji-dokumenti-281563/putovnica-330/primjeri-ispravno-i-neispravno-snimljenih-fotografija/378",
+      "source_url": "https://mup.gov.hr/gradjani-281562/moji-dokumenti-281563/putovnica-330/primjeri-ispravno-i-neispravno-snimljenih-fotografija/378"
+    }
+  },
+  "unverified": [
+    "head_height",
+    "validity",
+    "file_spec",
+    "clothing_restriction",
+    "expression_restriction",
+    "glasses_policy",
+    "ears_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": {
+      "verdict": "confirmed",
+      "evidence": "The official Croatian Ministry of Interior (mup.gov.hr) page directly states: 'za putovnicu, diplomatsku i sluzbenu putovnicu 35 x 45 mm' (for passport, diplomatic and official passport 35 x 45 mm). This was successfully fetched and confirmed. Multiple independent third-party sources (visafoto.com, idphotodiy.com, 123passportphoto.com, ozelu.com) also consistently cite 35x45mm for Croatian passports.",
+      "correct_value": "35 x 45 mm"
+    }
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "slug": "es-visa",
+  "batch": "de-it-es-pt-nl-be",
+  "verified": {
+    "size": {
+      "value": "35 x 45mm (standard Schengen visa format)",
+      "source_url": "https://www.exteriores.gob.es/Consulados/losangeles/en/ServiciosConsulares/Paginas/Consular/Visados-Schengen.aspx"
+    },
+    "background": {
+      "value": "white",
+      "source_url": "https://www.exteriores.gob.es/Consulados/losangeles/en/ServiciosConsulares/Paginas/Consular/Visados-Schengen.aspx"
+    },
+    "validity": {
+      "value": "recent color photo",
+      "source_url": "https://www.exteriores.gob.es/Consulados/losangeles/en/ServiciosConsulares/Paginas/Consular/Visados-Schengen.aspx"
+    },
+    "expression_restriction": {
+      "value": "neutral expression, facing forward",
+      "source_url": "https://www.exteriores.gob.es/Consulados/losangeles/en/ServiciosConsulares/Paginas/Consular/Visados-Schengen.aspx"
+    },
+    "glasses_policy": {
+      "value": "no dark or reflective glasses",
+      "source_url": "https://www.exteriores.gob.es/Consulados/losangeles/en/ServiciosConsulares/Paginas/Consular/Visados-Schengen.aspx"
+    },
+    "face_visibility": {
+      "value": "no garments concealing the oval of the face; full face visible from front",
+      "source_url": "https://www.exteriores.gob.es/Consulados/losangeles/en/ServiciosConsulares/Paginas/Consular/Visados-Schengen.aspx"
+    },
+    "official_source_url": {
+      "value": "https://www.exteriores.gob.es/Consulados/losangeles/en/ServiciosConsulares/Paginas/Consular/Visados-Schengen.aspx",
+      "source_url": "https://www.exteriores.gob.es/Consulados/losangeles/en/ServiciosConsulares/Paginas/Consular/Visados-Schengen.aspx"
+    }
+  },
+  "unverified": [
+    "head_height",
+    "file_spec",
+    "clothing_restriction",
+    "ears_visibility",
+    "headwear_policy",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

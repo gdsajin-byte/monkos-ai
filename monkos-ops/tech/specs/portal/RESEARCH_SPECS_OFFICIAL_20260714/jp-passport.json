@@ -1,0 +1,63 @@
+{
+  "slug": "jp-passport",
+  "batch": "kr-jp-us",
+  "verified": {
+    "size": {
+      "value": "3.5 x 4.5cm (35 x 45mm)",
+      "source_url": "https://www.mofa.go.jp/mofaj/toko/passport/ic_photo.html"
+    },
+    "background": {
+      "value": "plain white recommended; no patterns, shadows, or gradients",
+      "source_url": "https://www.mofa.go.jp/mofaj/toko/passport/ic_photo.html"
+    },
+    "head_height": {
+      "value": "3.2-3.6cm (32-36mm) from crown to chin; top of head to photo edge 2-6mm",
+      "source_url": "https://www.mofa.go.jp/mofaj/toko/passport/ic_photo.html"
+    },
+    "validity": {
+      "value": "taken within 6 months before application",
+      "source_url": "https://www.mofa.go.jp/mofaj/toko/passport/ic_photo.html"
+    },
+    "file_spec": {
+      "value": "",
+      "source_url": ""
+    },
+    "clothing_restriction": {
+      "value": "no turtlenecks or clothing obscuring facial features",
+      "source_url": "https://www.pref.gunma.jp/page/7833.html"
+    },
+    "expression_restriction": {
+      "value": "neutral expression, mouth closed, no teeth showing, both eyes fully open (updated March 3, 2025)",
+      "source_url": "https://www.mofa.go.jp/mofaj/toko/passport/ic_photo.html"
+    },
+    "glasses_policy": {
+      "value": "not prohibited but removal recommended for reliable identification; if worn, no colored/tinted lenses, no glare/reflection, frames must not cover eyes",
+      "source_url": "https://www.mofa.go.jp/mofaj/toko/passport/ic_photo.html"
+    },
+    "ears_visibility": {
+      "value": "ears should ideally be visible; hairline and ears visible when possible",
+      "source_url": "https://www.mofa.go.jp/mofaj/toko/passport/ic_photo.html"
+    },
+    "face_visibility": {
+      "value": "full face clearly visible; hair must not cover eyes or face contour; clear contrast between face/hair and background",
+      "source_url": "https://www.mofa.go.jp/mofaj/toko/passport/ic_photo.html"
+    },
+    "headwear_policy": {
+      "value": "no hats, hair bands, or head coverings; religious/medical exceptions permitted if face contour visible",
+      "source_url": "https://www.mofa.go.jp/mofaj/toko/passport/ic_photo.html"
+    },
+    "accessories": {
+      "value": "no colored contacts or pupil-enlarging lenses; no veils obscuring facial features",
+      "source_url": "https://www.pref.gunma.jp/page/7833.html"
+    },
+    "official_source_url": {
+      "value": "https://www.mofa.go.jp/mofaj/toko/passport/ic_photo.html",
+      "source_url": "https://www.mofa.go.jp/mofaj/toko/passport/ic_photo.html"
+    }
+  },
+  "unverified": [
+    "file_spec"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

@@ -1,0 +1,70 @@
+{
+  "slug": "hk-visa",
+  "batch": "tw-hk-my-la-mv-fr",
+  "verified": {
+    "size": {
+      "value": "4.0 x 5.0 cm (40 x 50 mm)",
+      "source_url": "https://www.immd.gov.hk/eng/residents/immigration/traveldoc/photorequirements.html"
+    },
+    "background": {
+      "value": "white",
+      "source_url": "https://www.immd.gov.hk/eng/residents/immigration/traveldoc/photorequirements.html"
+    },
+    "head_height": {
+      "value": "32-36 mm (chin to crown) with sufficient headroom",
+      "source_url": "https://www.immd.gov.hk/eng/residents/immigration/traveldoc/photorequirements.html"
+    },
+    "validity": {
+      "value": "taken within the last 6 months",
+      "source_url": "https://www.immd.gov.hk/eng/residents/immigration/traveldoc/photorequirements.html"
+    },
+    "file_spec": {
+      "value": "JPEG, max 5 MB, min 1200 x 1600 pixels (W x H) for digital camera; 600 DPI for scanner at 40x50mm",
+      "source_url": "https://www.immd.gov.hk/eng/residents/immigration/traveldoc/photorequirements.html"
+    },
+    "clothing_restriction": {
+      "value": "Avoid overly dark or overly light-coloured clothing; avoid heavy make-up",
+      "source_url": "https://www.immd.gov.hk/eng/residents/immigration/traveldoc/photorequirements.html"
+    },
+    "expression_restriction": {
+      "value": "Full frontal face with clear facial features",
+      "source_url": "https://www.immd.gov.hk/eng/residents/immigration/traveldoc/photorequirements.html"
+    },
+    "glasses_policy": {
+      "value": "Frames must not cross the eyes; flash reflections on glasses are unacceptable",
+      "source_url": "https://www.immd.gov.hk/eng/residents/immigration/traveldoc/photorequirements.html"
+    },
+    "ears_visibility": {
+      "value": "",
+      "source_url": ""
+    },
+    "face_visibility": {
+      "value": "Full frontal face with clear facial features; hair must not cover eyes or eyebrows",
+      "source_url": "https://www.immd.gov.hk/eng/residents/immigration/traveldoc/photorequirements.html"
+    },
+    "headwear_policy": {
+      "value": "Do not wear head dress",
+      "source_url": "https://www.immd.gov.hk/eng/residents/immigration/traveldoc/photorequirements.html"
+    },
+    "accessories": {
+      "value": "",
+      "source_url": ""
+    },
+    "official_source_url": {
+      "value": "https://www.immd.gov.hk/eng/residents/immigration/traveldoc/photorequirements.html",
+      "source_url": "https://www.immd.gov.hk/eng/residents/immigration/traveldoc/photorequirements.html"
+    }
+  },
+  "unverified": [
+    "ears_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": {
+      "verdict": "confirmed",
+      "evidence": "Official IMMD page (https://www.immd.gov.hk/eng/residents/immigration/traveldoc/photorequirements.html) applies the same 40mm x 50mm photo requirements to both HKSAR Passports and Documents of Identity for Visa Purposes. Multiple independent photo service sites (visafoto.com/hk-visa-photo, idphotodiy.com) confirm Hong Kong visa photos are 40x50mm. This matches the claimed 4.0 x 5.0 cm (40 x 50 mm).",
+      "correct_value": null
+    }
+  }
+}

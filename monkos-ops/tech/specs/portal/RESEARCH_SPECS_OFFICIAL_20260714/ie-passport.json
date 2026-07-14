@@ -1,0 +1,67 @@
+{
+  "slug": "ie-passport",
+  "batch": "is-ie-pl-cz-sk-hu",
+  "verified": {
+    "size": {
+      "value": "35 x 45 mm (minimum) to 38 x 50 mm (maximum)",
+      "source_url": "https://www.dfa.ie/passports/photo-guidelines/"
+    },
+    "background": {
+      "value": "plain white, light grey, or cream",
+      "source_url": "https://www.dfa.ie/passports/photo-guidelines/"
+    },
+    "head_height": {
+      "value": "face takes up 70-80% of the frame",
+      "source_url": "https://www.dfa.ie/passports/photo-guidelines/"
+    },
+    "validity": {
+      "value": "taken within the last 6 months",
+      "source_url": "https://www.dfa.ie/passports/photo-guidelines/"
+    },
+    "file_spec": {
+      "value": "JPEG format, minimum 715 x 951 pixels, maximum 9MB, colour, no compression artifacts",
+      "source_url": "https://www.dfa.ie/passports/photo-guidelines/"
+    },
+    "clothing_restriction": {
+      "value": "uniforms (civil or military) and insignia-bearing clothing not permitted",
+      "source_url": "https://www.dfa.ie/passports/photo-guidelines/"
+    },
+    "expression_restriction": {
+      "value": "neutral expression, mouth closed, no smiling",
+      "source_url": "https://www.dfa.ie/passports/photo-guidelines/"
+    },
+    "glasses_policy": {
+      "value": "transparent glasses permitted if frames do not cover eyes and no glare on lenses; sunglasses not permitted",
+      "source_url": "https://www.dfa.ie/passports/photo-guidelines/"
+    },
+    "ears_visibility": {
+      "value": ""
+    },
+    "face_visibility": {
+      "value": "face fully visible; hair cannot cover eyes; full head to mid-torso visible",
+      "source_url": "https://www.dfa.ie/passports/photo-guidelines/"
+    },
+    "headwear_policy": {
+      "value": "allowed for religious or medical reasons only; no other head accessories permitted",
+      "source_url": "https://www.dfa.ie/passports/photo-guidelines/"
+    },
+    "accessories": {
+      "value": ""
+    },
+    "official_source_url": {
+      "value": "https://www.dfa.ie/passports/photo-guidelines/"
+    }
+  },
+  "unverified": [
+    "ears_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": {
+      "verdict": "confirmed",
+      "evidence": "The official DFA passport photo guidelines page at dfa.ie/passports/photo-guidelines/ (fetched directly) confirms printed photos must have a minimum of 35mm x 45mm and maximum of 38mm x 50mm. The ireland.ie mirror of the same guidelines (ireland.ie/en/dfa/passports/photo-guidelines/) confirms the same dimensions. Multiple independent sources (passlens.com, passport-photo.online, 123passportphoto.com) corroborate this range.",
+      "correct_value": "35 x 45 mm (minimum) to 38 x 50 mm (maximum)"
+    }
+  }
+}

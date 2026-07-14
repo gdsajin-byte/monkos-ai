@@ -1,0 +1,59 @@
+{
+  "slug": "nl-visa",
+  "batch": "de-it-es-pt-nl-be",
+  "verified": {
+    "size": {
+      "value": "35 x 45mm",
+      "source_url": "https://www.netherlandsworldwide.nl/passport-id-card/photo-requirements"
+    },
+    "background": {
+      "value": "light grey, light blue, or white; plain, single color",
+      "source_url": "https://www.netherlandsworldwide.nl/passport-id-card/photo-requirements"
+    },
+    "head_height": {
+      "value": "26-30mm chin to crown (ages 11+); face width 16-20mm excluding ears",
+      "source_url": "https://www.netherlandsworldwide.nl/passport-id-card/photo-requirements"
+    },
+    "validity": {
+      "value": "taken within 6 months",
+      "source_url": "https://www.netherlandsworldwide.nl/passport-id-card/photo-requirements"
+    },
+    "file_spec": {
+      "value": "minimum 400 dpi resolution, color, sharp with sufficient contrast",
+      "source_url": "https://www.netherlandsworldwide.nl/passport-id-card/photo-requirements"
+    },
+    "expression_restriction": {
+      "value": "neutral expression, mouth closed, looking straight at camera",
+      "source_url": "https://www.netherlandsworldwide.nl/passport-id-card/photo-requirements"
+    },
+    "glasses_policy": {
+      "value": "permitted if eyes fully visible, lenses fully transparent, no glare or shadow",
+      "source_url": "https://www.netherlandsworldwide.nl/passport-id-card/photo-requirements"
+    },
+    "ears_visibility": {
+      "value": "ears need not be visible if full face width is shown",
+      "source_url": "https://www.netherlandsworldwide.nl/passport-id-card/photo-requirements"
+    },
+    "face_visibility": {
+      "value": "face fully visible and uncovered, eyes fully visible",
+      "source_url": "https://www.netherlandsworldwide.nl/passport-id-card/photo-requirements"
+    },
+    "headwear_policy": {
+      "value": "not permitted; exceptions for religious head coverings (plain, single color, contrasting background) and medical hair loss",
+      "source_url": "https://www.netherlandsworldwide.nl/passport-id-card/photo-requirements"
+    },
+    "accessories": {
+      "value": "earrings and facial piercings permitted; no reflection from accessories",
+      "source_url": "https://www.netherlandsworldwide.nl/passport-id-card/photo-requirements"
+    },
+    "official_source_url": {
+      "value": "https://www.netherlandsworldwide.nl/passport-id-card/photo-requirements",
+      "source_url": "https://www.netherlandsworldwide.nl/passport-id-card/photo-requirements"
+    }
+  },
+  "unverified": [
+    "clothing_restriction"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

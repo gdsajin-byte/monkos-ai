@@ -1,0 +1,56 @@
+{
+  "slug": "no-passport",
+  "batch": "ch-at-se-no-dk-fi",
+  "verified": {
+    "size": {
+      "value": "35 x 45 mm",
+      "source_url": "https://www.udi.no/en/word-definitions/photopassport-photo/"
+    },
+    "background": {
+      "value": "Evenly lit background (white or light grey accepted)",
+      "source_url": "https://www.udi.no/en/word-definitions/photopassport-photo/"
+    },
+    "head_height": {
+      "value": "32-36 mm (75-80% of image)",
+      "source_url": "https://www.udi.no/en/word-definitions/photopassport-photo/"
+    },
+    "validity": {
+      "value": "Must show face as it looks today (taken recently)",
+      "source_url": "https://www.udi.no/en/word-definitions/photopassport-photo/"
+    },
+    "expression_restriction": {
+      "value": "Neutral expression, mouth closed",
+      "source_url": "https://www.udi.no/en/word-definitions/photopassport-photo/"
+    },
+    "glasses_policy": {
+      "value": "Glasses are not to be worn; exception for documented medical reasons with doctor's note",
+      "source_url": "https://www.udi.no/en/word-definitions/photopassport-photo/"
+    },
+    "headwear_policy": {
+      "value": "Headgear is not to be worn; religious or medical headwear permitted if worn regularly and does not cover facial features or distort face shape",
+      "source_url": "https://www.udi.no/en/word-definitions/photopassport-photo/"
+    },
+    "ears_visibility": {
+      "value": "Both ears must be entirely visible",
+      "source_url": "https://www.udi.no/en/word-definitions/photopassport-photo/"
+    },
+    "face_visibility": {
+      "value": "Both eyes, both eyebrows and both ears must be entirely visible; face photographed from front; eyes directed at camera",
+      "source_url": "https://www.udi.no/en/word-definitions/photopassport-photo/"
+    },
+    "clothing_restriction": {
+      "value": "Scarves, bags and outerwear must be removed before being photographed",
+      "source_url": "https://www.udi.no/en/word-definitions/photopassport-photo/"
+    },
+    "official_source_url": {
+      "value": "https://www.udi.no/en/word-definitions/photopassport-photo/",
+      "source_url": "https://www.udi.no/en/word-definitions/photopassport-photo/"
+    }
+  },
+  "unverified": [
+    "file_spec",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

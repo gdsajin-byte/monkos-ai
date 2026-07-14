@@ -1,0 +1,61 @@
+{
+  "slug": "la-visa",
+  "batch": "tw-hk-my-la-mv-fr",
+  "verified": {
+    "size": {
+      "value": "4 x 6 cm (40 x 60 mm)",
+      "source_url": "https://laoevisa.gov.la/info"
+    },
+    "background": {
+      "value": "white",
+      "source_url": "https://laoevisa.gov.la/info"
+    },
+    "head_height": {
+      "value": "36 mm minimum head height",
+      "source_url": "https://laoevisa.gov.la/info"
+    },
+    "validity": {
+      "value": "taken within the last 6 months",
+      "source_url": "https://laoevisa.gov.la/info"
+    },
+    "file_spec": {
+      "value": "JPG, PNG, or PDF; max 2 MB; 152 x 227 pixels; 300 DPI",
+      "source_url": "https://laoevisa.gov.la/info"
+    },
+    "clothing_restriction": {
+      "value": "Wear normal daily clothing; no uniforms, costumes, or official attire",
+      "source_url": "https://laoevisa.gov.la/info"
+    },
+    "expression_restriction": {
+      "value": "Neutral expression, mouth closed, both eyes open, face camera directly",
+      "source_url": "https://laoevisa.gov.la/info"
+    },
+    "glasses_policy": {
+      "value": "Glasses not allowed unless for documented medical reasons",
+      "source_url": "https://laoevisa.gov.la/info"
+    },
+    "ears_visibility": {
+      "value": "Accessories must not cover any part of face or ears",
+      "source_url": "https://laoevisa.gov.la/info"
+    },
+    "face_visibility": {
+      "value": "Face must be fully visible and centered; face should take up 60-80% of photo from chin to top of head",
+      "source_url": "https://laoevisa.gov.la/info"
+    },
+    "headwear_policy": {
+      "value": "Hats, headsets, or accessories not allowed; religious headwear permitted if full face and ears remain visible",
+      "source_url": "https://laoevisa.gov.la/info"
+    },
+    "accessories": {
+      "value": "No accessories that cover any part of face or ears; photo must not be retouched or altered",
+      "source_url": "https://laoevisa.gov.la/info"
+    },
+    "official_source_url": {
+      "value": "https://laoevisa.gov.la/info",
+      "source_url": "https://laoevisa.gov.la/info"
+    }
+  },
+  "unverified": [],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

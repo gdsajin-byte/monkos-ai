@@ -1,0 +1,59 @@
+{
+  "slug": "nl-passport",
+  "batch": "de-it-es-pt-nl-be",
+  "verified": {
+    "size": {
+      "value": "35 x 45mm",
+      "source_url": "https://www.government.nl/topics/identification-documents/requirements-for-photos"
+    },
+    "background": {
+      "value": "light grey, light blue, or white; plain, single color, single shade; must provide sufficient contrast with head",
+      "source_url": "https://www.government.nl/topics/identification-documents/requirements-for-photos"
+    },
+    "head_height": {
+      "value": "26-30mm chin to crown (ages 11+); 19-30mm (under 11); face width 16-20mm excluding ears",
+      "source_url": "https://www.government.nl/topics/identification-documents/requirements-for-photos"
+    },
+    "validity": {
+      "value": "taken within 6 months (no more than 6 months old when application is submitted)",
+      "source_url": "https://www.government.nl/topics/identification-documents/requirements-for-photos"
+    },
+    "file_spec": {
+      "value": "minimum 400 dpi resolution, high-quality smooth photo paper, color, sharp with sufficient contrast and detail",
+      "source_url": "https://www.government.nl/topics/identification-documents/requirements-for-photos"
+    },
+    "expression_restriction": {
+      "value": "neutral expression, mouth closed, looking straight at camera",
+      "source_url": "https://www.government.nl/topics/identification-documents/requirements-for-photos"
+    },
+    "glasses_policy": {
+      "value": "permitted if eyes are fully visible, lenses fully transparent, no distortion or shadows from reflection",
+      "source_url": "https://www.government.nl/topics/identification-documents/requirements-for-photos"
+    },
+    "ears_visibility": {
+      "value": "ears need not be visible if full face width (16-20mm) is shown",
+      "source_url": "https://www.government.nl/topics/identification-documents/requirements-for-photos"
+    },
+    "face_visibility": {
+      "value": "face fully visible, eyes fully visible, head shown in full and centered",
+      "source_url": "https://www.government.nl/topics/identification-documents/requirements-for-photos"
+    },
+    "headwear_policy": {
+      "value": "not permitted; exceptions for religious or belief-based head coverings (must be plain, single color, contrasting with background) and medical hair loss coverings",
+      "source_url": "https://www.government.nl/topics/identification-documents/requirements-for-photos"
+    },
+    "accessories": {
+      "value": "earrings and facial piercings permitted; beards, wigs, makeup allowed; no reflection from accessories",
+      "source_url": "https://www.government.nl/topics/identification-documents/requirements-for-photos"
+    },
+    "official_source_url": {
+      "value": "https://www.government.nl/topics/identification-documents/requirements-for-photos",
+      "source_url": "https://www.government.nl/topics/identification-documents/requirements-for-photos"
+    }
+  },
+  "unverified": [
+    "clothing_restriction"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {}
+}

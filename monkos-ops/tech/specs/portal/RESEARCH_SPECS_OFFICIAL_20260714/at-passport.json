@@ -1,0 +1,62 @@
+{
+  "slug": "at-passport",
+  "batch": "ch-at-se-no-dk-fi",
+  "verified": {
+    "size": {
+      "value": "35 x 45 mm",
+      "source_url": "https://www.bmi.gv.at/607/passbild_kriterien.html"
+    },
+    "background": {
+      "value": "Uniform light-colored, ideally gray; must provide sufficient contrast to face and hair; no patterns",
+      "source_url": "https://www.bmi.gv.at/607/passbild_kriterien.html"
+    },
+    "head_height": {
+      "value": "Approximately 2/3 of image; head must not exceed 36 mm; minimum eye distance 8 mm",
+      "source_url": "https://www.bmi.gv.at/607/passbild_kriterien.html"
+    },
+    "validity": {
+      "value": "Not older than 6 months",
+      "source_url": "https://www.bmi.gv.at/607/passbild_kriterien.html"
+    },
+    "expression_restriction": {
+      "value": "Neutral expression, mouth closed, eyes open and clearly visible, direct eye contact with camera",
+      "source_url": "https://www.bmi.gv.at/607/passbild_kriterien.html"
+    },
+    "glasses_policy": {
+      "value": "Permitted only if eyes clearly visible without lens reflections, no tinted lenses, no frame obstruction",
+      "source_url": "https://www.bmi.gv.at/607/passbild_kriterien.html"
+    },
+    "headwear_policy": {
+      "value": "Prohibited except for religious or medical reasons; face from chin to forehead must be visible without facial shadows",
+      "source_url": "https://www.bmi.gv.at/607/passbild_kriterien.html"
+    },
+    "ears_visibility": {
+      "value": "Ears should not be covered by hair; hair must not obscure eyes, nose, or mouth",
+      "source_url": "https://www.bmi.gv.at/607/passbild_kriterien.html"
+    },
+    "face_visibility": {
+      "value": "Frontal view, eyes uncovered and clearly visible, natural skin tone, even lighting, sharp focus",
+      "source_url": "https://www.bmi.gv.at/607/passbild_kriterien.html"
+    },
+    "file_spec": {
+      "value": "Color photo on smooth glossy paper without surface texture; high print resolution",
+      "source_url": "https://www.bmi.gv.at/607/passbild_kriterien.html"
+    },
+    "official_source_url": {
+      "value": "https://www.bmi.gv.at/607/passbild_kriterien.html",
+      "source_url": "https://www.bmi.gv.at/607/passbild_kriterien.html"
+    }
+  },
+  "unverified": [
+    "clothing_restriction",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": {
+      "verdict": "confirmed",
+      "evidence": "Directly verified from the official Austrian Federal Ministry of the Interior (BMI) page at bmi.gv.at/607/passbild_kriterien.html, which states in German: 'Das Foto muss 35 mm breit und 45 mm hoch sein' (The photo must be 35 mm wide and 45 mm high). This is the exact source cited in the claim and the dimension matches exactly.",
+      "correct_value": null
+    }
+  }
+}

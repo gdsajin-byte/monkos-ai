@@ -1,0 +1,70 @@
+{
+  "slug": "cn-visa",
+  "batch": "uk-cn-ca-sg-in",
+  "verified": {
+    "size": {
+      "value": "48 x 33mm",
+      "source_url": "https://www.visaforchina.cn/SYD3_EN/qianzhengyewu/jichuzhishi/changjianwenti/355135188537315328.html"
+    },
+    "background": {
+      "value": "White or close to white, no edge frame",
+      "source_url": "https://www.visaforchina.cn/SYD3_EN/qianzhengyewu/jichuzhishi/changjianwenti/355135188537315328.html"
+    },
+    "head_height": {
+      "value": "Head width 15-22mm, head height 28-33mm",
+      "source_url": "https://www.visaforchina.cn/SYD3_EN/qianzhengyewu/jichuzhishi/changjianwenti/355135188537315328.html"
+    },
+    "validity": {
+      "value": "Taken within the last 6 months",
+      "source_url": "https://www.visaforchina.cn/SYD3_EN/qianzhengyewu/jichuzhishi/changjianwenti/355135188537315328.html"
+    },
+    "file_spec": {
+      "value": "JPEG, 354-420 x 472-560 pixels, 40-120KB",
+      "source_url": "https://losangeles.china-consulate.gov.cn/eng/visa/chinavisa/201611/t20161122_5421687.htm"
+    },
+    "clothing_restriction": {
+      "value": "",
+      "source_url": ""
+    },
+    "expression_restriction": {
+      "value": "Neutral expression, eyes open, lips closed",
+      "source_url": "https://www.visaforchina.cn/SYD3_EN/qianzhengyewu/jichuzhishi/changjianwenti/355135188537315328.html"
+    },
+    "glasses_policy": {
+      "value": "Eyeglasses allowed except thick-rimmed, tinted or glare glasses",
+      "source_url": "https://www.visaforchina.cn/SYD3_EN/qianzhengyewu/jichuzhishi/changjianwenti/355135188537315328.html"
+    },
+    "ears_visibility": {
+      "value": "Ears must be visible",
+      "source_url": "https://www.visaforchina.cn/SYD3_EN/qianzhengyewu/jichuzhishi/changjianwenti/355135188537315328.html"
+    },
+    "face_visibility": {
+      "value": "Entire head and face clearly visible; bare-head full face; head tilt <=20 degrees left/right, <=25 degrees up/down",
+      "source_url": "https://www.visaforchina.cn/SYD3_EN/qianzhengyewu/jichuzhishi/changjianwenti/355135188537315328.html"
+    },
+    "headwear_policy": {
+      "value": "Hats or head coverings only permitted for religious reasons; facial features must not be obscured",
+      "source_url": "https://www.visaforchina.cn/SYD3_EN/qianzhengyewu/jichuzhishi/changjianwenti/355135188537315328.html"
+    },
+    "accessories": {
+      "value": "",
+      "source_url": ""
+    },
+    "official_source_url": {
+      "value": "https://www.visaforchina.cn/SYD3_EN/qianzhengyewu/jichuzhishi/changjianwenti/355135188537315328.html",
+      "source_url": "https://www.visaforchina.cn/SYD3_EN/qianzhengyewu/jichuzhishi/changjianwenti/355135188537315328.html"
+    }
+  },
+  "unverified": [
+    "clothing_restriction",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": {
+      "verdict": "confirmed",
+      "evidence": "The visaforchina.cn source confirms 'Photo size: 48mm x 33mm' with head width 15-22mm and head height 28-33mm. Independent sources (chinadiscovery.com, photoaid.com, snap2pass.com, atlys.com) all confirm the China visa photo is 33mm wide x 48mm high. The claimed '48 x 33mm' (height x width ordering) is dimensionally correct.",
+      "correct_value": "48 x 33mm"
+    }
+  }
+}

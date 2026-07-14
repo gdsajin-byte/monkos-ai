@@ -1,0 +1,56 @@
+{
+  "slug": "tr-visa",
+  "batch": "si-tr-mx",
+  "verified": {
+    "size": {
+      "value": "50 x 60 mm",
+      "source_url": "https://losangeles-cg.mfa.gov.tr/Mission/ShowInfoNote/411309"
+    },
+    "background": {
+      "value": "White, patternless",
+      "source_url": "https://losangeles-cg.mfa.gov.tr/Mission/ShowInfoNote/411309"
+    },
+    "validity": {
+      "value": "Taken within the last 6 months",
+      "source_url": "https://losangeles-cg.mfa.gov.tr/Mission/ShowInfoNote/411309"
+    },
+    "expression_restriction": {
+      "value": "Neutral facial expression with closed lips, eyes open and focused on camera",
+      "source_url": "https://losangeles-cg.mfa.gov.tr/Mission/ShowInfoNote/411309"
+    },
+    "glasses_policy": {
+      "value": "No glasses, earrings, or hats; no clothing/accessories that prevent face from being seen",
+      "source_url": "https://losangeles-cg.mfa.gov.tr/Mission/ShowInfoNote/411309"
+    },
+    "face_visibility": {
+      "value": "Face must be completely visible; hair must not cover face; head not tilted or turned",
+      "source_url": "https://losangeles-cg.mfa.gov.tr/Mission/ShowInfoNote/411309"
+    },
+    "headwear_policy": {
+      "value": "Hats prohibited; religious head covering acceptable provided face remains fully visible with no shadows",
+      "source_url": "https://losangeles-cg.mfa.gov.tr/Mission/ShowInfoNote/411309"
+    },
+    "accessories": {
+      "value": "No glasses, earrings, hats, or clothing/accessories that will prevent face from being seen",
+      "source_url": "https://losangeles-cg.mfa.gov.tr/Mission/ShowInfoNote/411309"
+    },
+    "official_source_url": {
+      "value": "https://losangeles-cg.mfa.gov.tr/Mission/ShowInfoNote/411309",
+      "source_url": "https://losangeles-cg.mfa.gov.tr/Mission/ShowInfoNote/411309"
+    }
+  },
+  "unverified": [
+    "head_height",
+    "file_spec",
+    "clothing_restriction",
+    "ears_visibility"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": {
+      "verdict": "confirmed",
+      "evidence": "The official Turkish MFA Los Angeles consulate page was fetched directly and states: 'The biometric passport photo size must be 50 mm x 60 mm (As 2*2' is commonly used in the USA, the said dimension is also acceptable).' This matches the claimed value exactly. Multiple independent sources (visafoto.com, makepassportphoto.com, mybiometricphotos.com, photoaid.com) all consistently cite 50x60mm for Turkey visa photos.",
+      "correct_value": "50 x 60 mm"
+    }
+  }
+}

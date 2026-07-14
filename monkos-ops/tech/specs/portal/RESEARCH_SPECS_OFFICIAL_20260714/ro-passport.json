@@ -1,0 +1,53 @@
+{
+  "slug": "ro-passport",
+  "batch": "ro-bg-hr-lv-lt-ee",
+  "verified": {
+    "size": {
+      "value": "3.5 x 4.5 cm (35 x 45mm)",
+      "source_url": "https://pasapoarte.mai.gov.ro/documente-necesare-pentru-pasaport-simplu-electronic-simplu-temporar-cu-mentionarea-statului-de-domiciliu-c-r-d-s/"
+    },
+    "background": {
+      "value": "white",
+      "source_url": "https://pasapoarte.mai.gov.ro/documente-necesare-pentru-pasaport-simplu-electronic-simplu-temporar-cu-mentionarea-statului-de-domiciliu-c-r-d-s/"
+    },
+    "head_height": {
+      "value": "face should cover 70-80% of photo height",
+      "source_url": "https://pasapoarte.mai.gov.ro/documente-necesare-pentru-pasaport-simplu-electronic-simplu-temporar-cu-mentionarea-statului-de-domiciliu-c-r-d-s/"
+    },
+    "validity": {
+      "value": "taken within 6 months",
+      "source_url": "https://pasapoarte.mai.gov.ro/documente-necesare-pentru-pasaport-simplu-electronic-simplu-temporar-cu-mentionarea-statului-de-domiciliu-c-r-d-s/"
+    },
+    "expression_restriction": {
+      "value": "neutral expression, mouth closed, eyes open",
+      "source_url": "https://pasapoarte.mai.gov.ro/documente-necesare-pentru-pasaport-simplu-electronic-simplu-temporar-cu-mentionarea-statului-de-domiciliu-c-r-d-s/"
+    },
+    "glasses_policy": {
+      "value": "glasses not allowed unless for documented medical reasons",
+      "source_url": "https://pasapoarte.mai.gov.ro/documente-necesare-pentru-pasaport-simplu-electronic-simplu-temporar-cu-mentionarea-statului-de-domiciliu-c-r-d-s/"
+    },
+    "headwear_policy": {
+      "value": "not allowed; religious head coverings permitted with signed statement, face must remain fully visible",
+      "source_url": "https://pasapoarte.mai.gov.ro/documente-necesare-pentru-pasaport-simplu-electronic-simplu-temporar-cu-mentionarea-statului-de-domiciliu-c-r-d-s/"
+    },
+    "official_source_url": {
+      "value": "https://pasapoarte.mai.gov.ro/documente-necesare-pentru-pasaport-simplu-electronic-simplu-temporar-cu-mentionarea-statului-de-domiciliu-c-r-d-s/",
+      "source_url": "https://pasapoarte.mai.gov.ro/documente-necesare-pentru-pasaport-simplu-electronic-simplu-temporar-cu-mentionarea-statului-de-domiciliu-c-r-d-s/"
+    }
+  },
+  "unverified": [
+    "file_spec",
+    "clothing_restriction",
+    "ears_visibility",
+    "face_visibility",
+    "accessories"
+  ],
+  "db_conflicts": [],
+  "cross_verification": {
+    "size": {
+      "verdict": "confirmed",
+      "evidence": "The official Romanian passport authority page (pasapoarte.mai.gov.ro) explicitly states: 'Doua fotografii color identice ale titularului, avand dimensiunile 3,5 x 4,5 cm'. This directly confirms the claimed size of 3.5 x 4.5 cm (35 x 45mm). Multiple independent third-party sources (visafoto.com, photoid.app, timpson.co.uk) also consistently cite 35x45mm for Romanian passports.",
+      "correct_value": "3.5 x 4.5 cm (35 x 45mm)"
+    }
+  }
+}
