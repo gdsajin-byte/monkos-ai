@@ -78,6 +78,7 @@ status: active
 | 2026-06-17 | 웹/민아 | 시크릿 위생 전수 감사 — git history 무유출 확인(.env 무커밋), 로컬 잔존 5파일·토스 test키 3중복제·photo-coach .pem(history) 적발, INVENTORY 정합성 갭. 막내1 정리로 로컬 5파일 삭제 종결 | [감사보고서](../../reports/2026-06/REPORT_20260617_웹민아_시크릿위생_전수감사.md) | ✅ |
 | 06/17 | iMac/막내2 | 보안 노출 표면 4건 보강 — /health 모델명 제거·err.message 일반화 15곳·/api/info styles 제거·admin 프롬프트 반환 제거. 3개 서비스(idphoto-kr/jp/portal) prod 배포·실측 | COMPLETION_20260617, `ba32dcea` | ✅ |
 | 06/19 | 웹/민아 | **배포 권한 위협모델 검증 + 정본 보정** — `GCP_SA_KEY`=yong-a-orchestrator 규명, editor·run.admin·secretAccessor 부재 확인→키 유출돼도 배포·파괴·권한상승 불가. **작가님 직접 editor 삭제 확정**으로 INVENTORY 154↔227 모순 해소. 잔여위험: objectAdmin(버킷 R/W/삭제)·aiplatform.user는 🟡, objectViewer 축소 권고 | [COMPLETION](../../reports/2026-06/COMPLETION_20260619_웹민아_IDPHOTO어드민리뷰_퍼널진단.md), `86320205` | ✅ |
+| 07/14 | M1/민아 | **인증 신뢰 모델 합의 — impersonation 표준화 항목 실전 판정** (작가님·쌍아·민아) — GSC MCP 인증 경합(SM 키 vs 임퍼소네이션)에서 **SM 키 우선·임퍼 폴백** 확정. 근거: 관리 루트 단일화(1인 운영) > 무키 이점, 임퍼의 gcloud OAuth 세션 의존(만료 시 에이전트 자율성 상실). 구글 공식 서열 원문 확인(키=최후수단). **승격 트리거 3조건 명문화**(키 유출 사고/디바이스·인원 확대/GCP 키리스 전환) + 차기: GH Actions GCP_SA_KEY→WIF 키리스. "벽과 레일" 독트린 탄생 건. 개념 정본: SECRET_INVENTORY §0-2 | 인벤토리 §0-2, gsc_mcp.sh, 세션로그 7/14 | ✅ (WIF 전환은 ⏳ 쌍아 제안서) |
 
 ---
 
