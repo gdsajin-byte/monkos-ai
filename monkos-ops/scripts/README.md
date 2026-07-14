@@ -32,6 +32,8 @@
 |----------|------|
 | night_operator.py | 야간 자동화 오퍼레이터 |
 | notify.ps1 | Windows 알림 (PowerShell) |
+| runpod_balance_check.sh | RunPod 잔액 모니터 — $2 미만 시 텔레그램 팀 채널 경보. matte(BiRefNet) 선불 잔액 감시 |
+| com.monkos.runpod-balance.plist | 위 스크립트 launchd 스케줄 정본 (09:00·21:00 KST). `cp → ~/Library/LaunchAgents/ → launchctl load` |
 
 ## 인프라
 
