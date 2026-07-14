@@ -36,6 +36,7 @@ begin_checkout(specs-funnel.js:890)이 `transport_type: 'beacon'` 없이 발화 
 |------|------|
 | `monkos_AI/portal/lib/payments.js` | `/toss-success` HTML 템플릿에 gtag.js 스니펫(G-JPZWSJ3323 + G-FKG0CPTC14) 추가 + confirm 성공 후 `purchase` 이벤트 발화(transaction_id·currency·value·transport_type:beacon) |
 | `monkos_AI/portal/public/js/specs-funnel.js` | begin_checkout 파라미터에 `transport_type: 'beacon'` 추가 |
+| `monkos_AI/portal/public/js/headshot.js` | begin_checkout 파라미터에 `transport_type: 'beacon'` 추가 (막내1 보강) |
 
 ## 검증
 
@@ -49,5 +50,5 @@ begin_checkout(specs-funnel.js:890)이 `transport_type: 'beacon'` 없이 발화 
 
 ## 배포 리비전
 
-- dev: `monkos-portal-dev-00116-tgl`
-- prod: `monkos-portal-00465-b4m`
+- dev: `monkos-portal-dev-00117-2xm` (막내1 headshot.js 보강 포함)
+- prod: `monkos-portal-00466-f9d` (막내1 headshot.js 보강 포함)

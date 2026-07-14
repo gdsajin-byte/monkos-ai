@@ -472,7 +472,7 @@
       var d = res.d;
       pay.orderId = d.orderId; pay.token = null; pay.remaining = null;
       // orderId 확보 후 주문 단위 1회 발화 (재클릭 중복 방지, purchase와 쌍 정합)
-      gaPayEvent('begin_checkout', d.orderId);
+      gaPayEvent('begin_checkout', d.orderId, { transport_type: 'beacon' });
       persistOrder();
       if (d.provider === 'toss') startToss(d, lemonWin);
       else startLemon(d, lemonWin);
