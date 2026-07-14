@@ -1,7 +1,7 @@
 ---
 type: inventory
-date: 2026-06-12
-updated_by: 웹/민아 + iMac/막내1 (병합)
+date: 2026-07-14
+updated_by: M1/막내3 (SM 전수 대사 44건)
 status: 현행
 ---
 
@@ -9,8 +9,8 @@ status: 현행
 
 > ⚠️ **이 문서에 키 값을 절대 기재하지 않는다.** 항목+위치+용도만 기록.
 > 전신: `credentials_inventory.md` (2026-02-19). 본 문서가 정본.
-> 최종 갱신: 2026-06-12 (웹/민아 검수 + 막내1 전수조사 A 병합 — §0-1 키 현황, §3 누락 보정, §G SA 실측 현행화, 구키 삭제 완결 확인)
-> 직전 갱신: 2026-06-03 (광역오더 #8 — .env 시크릿 하이브리드 표준 적용 + GCP 일괄 등록)
+> 최종 갱신: 2026-07-14 (M1/막내3 SM 전수 대사 44건 — §J 10건 추가, audit_secrets.sh 신설)
+> 직전 갱신: 2026-06-12 (웹/민아 검수 + 막내1 전수조사 A 병합 — §0-1 키 현황, §3 누락 보정, §G SA 실측 현행화, 구키 삭제 완결 확인)
 
 ---
 
@@ -189,6 +189,14 @@ status: 현행
 | **AGENT-API-KEYS** | 포털 CMS 에이전트 인증 (GH `PORTAL_AGENT_KEY` 카탈로그 동기) | portal blog-draft-publish, deploy.sh --set-secrets 주입 | ⭐ **2026-06-11 신설** — §A #36 대응 |
 | **LEMONSQUEEZY_VARIANT_SPECS_SINGLE** | Lemon Squeezy 글로벌 스토어 specs 단건 variant ID | portal (specs 글로벌 결제) | ⭐ **2026-07-05 신설** — USD $1.99 통일 |
 | **TOSS_CLIENT_KEY** | 토스페이먼츠 라이브 클라이언트 키 (결제위젯 SDK용) | portal (KR 결제) | ⭐ **2026-07-05 신설** — specs KR 결제 연동 |
+
+| **AUTH_SECRET** | NextAuth 세션 서명 키 | portal (CR 환경변수 직접 설정) | ⭐ **2026-06-12 SM 등록 확인** — 콘솔에서 직접 설정된 것도 있음 |
+| **TOSS_SECRET_KEY_TEST** | 토스 테스트 시크릿 키 | portal-dev (개발 환경 결제 테스트) | ⭐ **2026-07-12 신설** — dev 환경 전용, prod TOSS_SECRET_KEY와 분리 |
+| **LEMONSQUEEZY_API_KEY_GLOBAL** | Lemon Squeezy 글로벌 스토어 API 키 | portal (글로벌 결제) | ⭐ **2026-06-23 신설** — Global store#415328 |
+| **LEMONSQUEEZY_WEBHOOK_SECRET_GLOBAL** | Lemon Squeezy 글로벌 웹훅 시크릿 | portal | ⭐ **2026-06-23 신설** — Global store#415328 |
+| **BING_WMT_API_KEY** | Bing Webmaster Tools API | daily_briefing (Bing 검색 성과) | ⭐ **2026-07-14 신설** — 일본 시장 Bing 36% 대응 |
+| **NAVER_DATALAB_CLIENT_ID** | 네이버 DataLab API 클라이언트 ID | daily_briefing (네이버 트렌드) | ⭐ **2026-07-14 신설** — 네이버 검색 트렌드 수집 |
+| **NAVER_DATALAB_CLIENT_SECRET** | 네이버 DataLab API 클라이언트 시크릿 | daily_briefing (네이버 트렌드) | ⭐ **2026-07-14 신설** |
 
 **gdocs 토큰 중앙화 (광역오더 #7)**: iMac 정본 `~/.config/mcp-google-docs/token.json` → `MCP_GDOCS_TOKEN`으로 등록.
 `gdocs_mcp.sh`가 token.json 부재 시 GCP에서 자동 복원 → **타 디바이스(M1 등) 무인증 동작**. 검증 완료(바이트 동일 복원·권한 600).

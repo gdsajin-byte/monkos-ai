@@ -8,7 +8,11 @@ cd "$(git rev-parse --show-toplevel)"
 WORKS_OK=true
 
 echo "=== [0/3] retrieval 인덱스 리빌드 ==="
-(cd scripts/retrieval && node build_index.js) || echo "⚠️ 인덱스 빌드 실패 — push는 계속"
+if (cd scripts/retrieval && node build_index.js); then
+  echo "✅ 인덱스 빌드 완료"
+else
+  echo "⚠️ 인덱스 빌드 실패 — push는 계속하되 retrieval MCP 데이터가 구버전입니다"
+fi
 echo ""
 
 echo "=== [1/3] works submodule push ==="
