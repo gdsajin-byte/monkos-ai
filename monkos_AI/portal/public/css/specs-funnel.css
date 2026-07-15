@@ -414,3 +414,65 @@ a:hover { color: #5a3de6; }
 
 /* 검수 경고 메시지 */
 .v2-check-warn-msg { font-size: 12px; color: #d97706; padding: 6px 0 0 32px; line-height: 1.5; }
+
+/* ═══ 파일럿 스타일 흡수 (2026-07-15 specs-pilot.css 통합) ═══ */
+.idpass-pilot .v2-steps-sub { color:#5d5a6b; font-size:15px; }
+.idpass-pilot .v2-checklist-title { color:#17151f; }
+.idpass-pilot #v2-fit-status { color:#5d5a6b !important; }
+.idpass-pilot .v2-checklist-summary { font-size:16.5px; font-weight:800; line-height:1.45; border-radius:14px; padding:14px 16px; }
+.idpass-pilot .v2-summary-pass { background:#eaf7f1; color:#0a6b4a; }
+.idpass-pilot .v2-summary-fail { background:#fbeef0; color:#a32538; }
+.idpass-pilot .v2-action-buttons { flex-direction:column-reverse; gap:10px; }
+.idpass-pilot .v2-action-btn { width:100%; height:52px; font-size:16px; font-weight:800; border-radius:14px; }
+.idpass-pilot .v2-btn-retouch { background:#6c4fff; color:#fff; box-shadow:0 8px 18px -8px rgba(108,79,255,.55); }
+.idpass-pilot .v2-btn-retry { background:#fff; color:#3a3744; border:1.5px solid #dcd8e8; }
+.ip-fit-caption { text-align:center; font-size:12.5px; color:#5d5a6b; margin-top:8px; line-height:1.5; word-break:keep-all; }
+.ip-quiet-link { display:block; text-align:center; font-size:13px; color:#5d5a6b; margin-top:16px; text-decoration:none; }
+.ip-quiet-link b { color:#5a3de6; font-weight:700; }
+.ip-free-wrap { max-width:420px; margin:0 auto; text-align:center; }
+.ip-free-kicker { font-family:monospace; font-size:10.5px; letter-spacing:2.5px; color:#5a3de6; font-weight:700; }
+.ip-free-hero h3 { font-size:20px; font-weight:800; color:#17151f; margin:6px 0 14px; line-height:1.35; text-wrap:balance; word-break:keep-all; }
+.ip-free-photo { border-radius:18px; overflow:hidden; background:#fff; border:1px solid #e2dfec; box-shadow:0 6px 16px -12px rgba(23,21,31,.18); max-width:280px; margin:0 auto; }
+/* max-width/height 명시 초기화 — 상위 .v2-pay-preview img { max-width:200px }가 이미지만 눌러
+   컨테이너(280px)와 폭이 어긋나 우측 공백이 생기던 실사고 (2026-07-11 작가님 3차 보고로 특정) */
+.ip-free-photo img { display:block; width:100%; max-width:100%; max-height:none; aspect-ratio:35/45; object-fit:cover; }
+.ip-free-spec { text-align:center; font-size:11.5px; color:#5d5a6b; margin-top:8px; font-family:monospace; }
+.ip-free-btnrow { display:flex; gap:10px; margin-top:12px; }
+.ip-btn { display:flex; align-items:center; justify-content:center; height:52px; border-radius:14px; font-size:16px; font-weight:800; border:none; cursor:pointer; text-decoration:none; box-sizing:border-box; font-family:inherit; }
+.ip-btn-primary { flex:1.6; background:#6c4fff; color:#fff; box-shadow:0 8px 18px -8px rgba(108,79,255,.55); }
+.ip-btn-ghost { flex:1; background:#fff; color:#3a3744; border:1.5px solid #dcd8e8; }
+.ip-free-cap { text-align:center; font-size:12px; color:#5d5a6b; margin-top:8px; line-height:1.5; word-break:keep-all; }
+.ip-card { border:1px solid #e2dfec; border-radius:18px; padding:18px; margin-top:14px; background:#fbfafd; box-shadow:0 6px 16px -12px rgba(23,21,31,.18); text-align:left; }
+.ip-card-head { display:flex; align-items:baseline; }
+.ip-card-head b { font-size:16px; font-weight:800; color:#17151f; }
+.ip-price { margin-left:auto; font-size:18px; font-weight:800; color:#5a3de6; font-variant-numeric:tabular-nums; }
+.ip-card-list { margin:10px 0 2px; padding:0; list-style:none; }
+.ip-card-list li { font-size:13px; color:#3a3744; padding:3.5px 0 3.5px 22px; position:relative; line-height:1.45; }
+.ip-card-list li::before { content:"✓"; position:absolute; left:2px; color:#0e8a5f; font-weight:800; font-size:12px; }
+.ip-btn-mid { width:100%; height:46px; font-size:14.5px; margin-top:12px; background:#fff; color:#5a3de6; border:1.5px solid #c9bdf2; }
+.ip-card-soon { opacity:.75; }
+.idpass-pilot .v2-make-layout { animation: ipfade .28s ease; }
+@keyframes ipfade { from { opacity:0; } to { opacity:1; } }
+.idpass-pilot .v2-pay-grid { min-height: 380px; align-items: start; }
+.ip-summary-ok { text-align:center; font-size:13px; color:#0a6b4a; font-weight:600; margin:6px 0 2px; }
+.ip-free-side { text-align:left; }
+.ip-free-side .ip-free-kicker { display:block; }
+.ip-free-h { font-size:20px; font-weight:800; color:#17151f; margin:6px 0 12px; line-height:1.35; word-break:keep-all; }
+.ip-free-side .ip-free-cap { text-align:left; }
+.ip-card-soon .ip-btn-mid { color:#8b879b; border-color:#dcd8e8; cursor:default; }
+.ip-card-t2 { background:#17151f; border-color:#17151f; color:#efedf6; }
+.ip-t2-badge { display:inline-block; background:rgba(139,115,255,.18); color:#c9bbff; font-size:10.5px; letter-spacing:2px; font-weight:700; font-family:monospace; border-radius:7px; padding:4px 9px; }
+.ip-card-t2 h4 { font-size:17px; font-weight:800; margin:10px 0 4px; color:#fff; }
+.ip-card-t2 p { font-size:12.5px; color:#b4afc6; margin:0; line-height:1.55; }
+.ip-t2-price { display:flex; align-items:center; gap:8px; margin-top:14px; }
+.ip-t2-price b { font-size:21px; font-weight:800; color:#fff; font-variant-numeric:tabular-nums; }
+.ip-t2-price span { font-size:11.5px; color:#8b879b; }
+.ip-btn-t2 { width:100%; height:46px; font-size:14.5px; margin-top:12px; background:#6c4fff; color:#fff; }
+.ip-slot { display:flex; gap:11px; align-items:center; border:1.5px dashed #d4cceb; background:#f8f6fe; border-radius:14px; padding:13px 15px; margin-top:14px; text-decoration:none; text-align:left; }
+.ip-slot-ic { font-size:18px; }
+.ip-slot-txt b { display:block; font-size:13px; color:#3f2e99; }
+.ip-slot-txt span { display:block; font-size:11.5px; color:#6e62a8; margin-top:1px; }
+.ip-slot-tag { margin-left:auto; font-size:9.5px; font-family:monospace; letter-spacing:1.5px; color:#9c93c4; }
+@media (max-width:640px){
+  .idpass-pilot .v2-pay-grid { grid-template-columns:1fr; }
+}

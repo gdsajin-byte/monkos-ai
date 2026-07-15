@@ -102,29 +102,8 @@ export function specFunnelMarkup(ctx) {
                 <div class="v2-attire-chip" data-val="f">여성</div>
               </div>
             </div>
-            <div class="v2-attire-inline" id="v2-attire-inline" style="display:none;">
-              <div class="v2-attire-sub-label">의상 선택</div>
-              <div class="v2-attire-cards" id="v2-attire-cards">
-                <div class="v2-attire-card selected" data-attire="asis">
-                  <div class="v2-attire-card-icon">👔</div>
-                  <div class="v2-attire-card-label">그대로</div>
-                </div>
-                <div class="v2-attire-card" data-attire="suit">
-                  <div class="v2-attire-card-icon">🤵</div>
-                  <div class="v2-attire-card-label">정장</div>
-                </div>
-                <div class="v2-attire-card" data-attire="blouse">
-                  <div class="v2-attire-card-icon">👚</div>
-                  <div class="v2-attire-card-label">블라우스</div>
-                </div>
-                <div class="v2-attire-card" data-attire="casual">
-                  <div class="v2-attire-card-icon">🧥</div>
-                  <div class="v2-attire-card-label">캐주얼</div>
-                </div>
-              </div>
-              <div id="v2-attire-sub-options"></div>
-              <div class="v2-attire-summary" id="v2-attire-summary">현재 의상 유지, 보정만 적용</div>
-            </div>
+            <!-- attire-picker mount (구형 인라인 의상 UI 제거 → 공유 컴포넌트 D5) -->
+            <div id="v2-attire-mount" style="display:none;"></div>
             <button class="v2-pay-btn v2-pay-instant" id="v2-pay-instant">
               <div class="v2-pay-title">${eh(fmtV2(v2.payTitle, { type: typeName }))}</div>
               <div class="v2-pay-price">${v2.payPrice}</div>

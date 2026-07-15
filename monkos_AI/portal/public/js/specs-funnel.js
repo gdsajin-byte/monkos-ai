@@ -25,28 +25,8 @@ var SpecsFunnel = (function(){
   var pay = { orderId: null, token: null, remaining: null, consumed: false };
   // 피사체 + 의상 선택 상태
   var subjectSelection = { age: 'adult', gender: null };
-  var attireSelection = { type: 'asis', suitColor: 'navy', shirtColor: 'white', tieColor: 'notie', tiePattern: 'solid', casualColor: 'beige', blouseColor: 'white' };
-  function getAttireDesc(){
-    var t = attireSelection.type;
-    if(t === 'asis') return 'Keep current clothing as-is. Only ensure it looks neat and tidy.';
-    if(t === 'suit'){
-      var sc = attireSelection.suitColor === 'lightgray' ? 'light gray' : attireSelection.suitColor;
-      var shc = attireSelection.shirtColor.replace('light','light ');
-      var desc = 'Dress this person in a ' + sc + ' formal business suit with a ' + shc + ' collared dress shirt';
-      if(attireSelection.tieColor === 'notie') desc += ', no tie.';
-      else desc += ' and a ' + (attireSelection.tiePattern === 'stripe' ? 'striped ' : '') + attireSelection.tieColor + ' tie.';
-      return desc;
-    }
-    if(t === 'blouse'){
-      var bc = attireSelection.blouseColor === 'lightblue' ? 'light blue' : attireSelection.blouseColor;
-      return 'Dress this person in a neat ' + bc + ' collared blouse, professional and clean.';
-    }
-    if(t === 'casual'){
-      var cc = attireSelection.casualColor;
-      return 'Dress this person in a clean, neat ' + cc + ' knit sweater with a round neckline, professional casual look.';
-    }
-    return null;
-  }
+  // attireSelection은 sessionStorage 복원 호환용으로 존치 (persistOrder/restoreOrder)
+  var attireSelection = { type: 'asis' };
   function syncSubjectChips(target){
     var sections = document.querySelectorAll('.v2-subject-section');
     sections.forEach(function(sec){
@@ -245,12 +225,22 @@ var SpecsFunnel = (function(){
   });
   var fitResult = null, precheckData = null;
 
+  var attirePicker = null;
   function proceedToPay(){
     document.getElementById('v2-preview-img').src = uploadedBase64;
     if(hasUsableToken()) return doGenerate();
-    // T1 의상 인라인 표시/숨김
-    var attireInline = document.getElementById('v2-attire-inline');
-    if(attireInline) attireInline.style.display = CFG.t1 ? '' : 'none';
+    var attireMount = document.getElementById('v2-attire-mount');
+    if(attireMount && CFG.t1 && typeof AttirePicker !== 'undefined'){
+      attireMount.style.display = '';
+      if(!attirePicker){
+        attirePicker = AttirePicker.mount(attireMount, {
+          service: 'idpass', gender: subjectSelection.gender || 'm',
+          age: subjectSelection.age || 'adult',
+          lang: document.documentElement.lang || 'ko',
+          upload: false, warnLightTop: true
+        });
+      }
+    }
     syncSubjectChips('pay');
     showPhase(phasePay);
   }
@@ -740,89 +730,7 @@ var SpecsFunnel = (function(){
 
   document.getElementById('v2-btn-proceed').addEventListener('click', function(){ runFit(); });
 
-  /* ─── 피사체 + 의상 인라인 (pay phase 내부) ─── */
-  var ATTIRE_COLORS = {
-    suit: { navy:'#1b2a4a', charcoal:'#36454f', black:'#1a1a1a', lightgray:'#c0c0c0' },
-    shirt: { white:'#f0f0f0', lightblue:'#ADD8E6', lightpink:'#FFB6C1', lightbeige:'#F5DEB3' },
-    tie: { notie:null, navy:'#1b2a4a', wine:'#722f37', black:'#1a1a1a' },
-    blouse: { white:'#f0f0f0', cream:'#FFFDD0', lightblue:'#ADD8E6' },
-    casual: { beige:'#D4B896', navy:'#1b2a4a', charcoal:'#36454f', cream:'#FFFDD0' }
-  };
-  var ATTIRE_LABELS = {
-    suit: { navy:'네이비', charcoal:'차콜', black:'블랙', lightgray:'라이트그레이' },
-    shirt: { white:'화이트', lightblue:'연블루', lightpink:'연핑크', lightbeige:'연베이지' },
-    tie: { notie:'노타이', navy:'네이비', wine:'와인', black:'블랙' },
-    tiePattern: { solid:'민무늬', stripe:'스트라이프' },
-    blouse: { white:'화이트', cream:'크림', lightblue:'연블루' },
-    casual: { beige:'베이지', navy:'네이비', charcoal:'차콜', cream:'크림' }
-  };
-  var attireCardsEl = document.getElementById('v2-attire-cards');
-  var attireSubEl = document.getElementById('v2-attire-sub-options');
-  var attireSummaryEl = document.getElementById('v2-attire-summary');
-  var attireInlineEl = document.getElementById('v2-attire-inline');
-
-  function renderAttireSubOptions(){
-    if(!attireSubEl) return;
-    var html = '';
-    var t = attireSelection.type;
-    if(t === 'suit'){
-      html += '<div class="v2-attire-sub-section"><div class="v2-attire-sub-label">수트 컬러</div><div class="v2-attire-chips" data-field="suitColor">';
-      Object.keys(ATTIRE_COLORS.suit).forEach(function(k){ html += '<div class="v2-attire-chip'+(attireSelection.suitColor===k?' selected':'')+'" data-val="'+k+'"><span class="v2-attire-swatch" style="background:'+ATTIRE_COLORS.suit[k]+'"></span>'+ATTIRE_LABELS.suit[k]+'</div>'; });
-      html += '</div></div>';
-      html += '<div class="v2-attire-sub-section"><div class="v2-attire-sub-label">셔츠 컬러</div><div class="v2-attire-chips" data-field="shirtColor">';
-      Object.keys(ATTIRE_COLORS.shirt).forEach(function(k){ html += '<div class="v2-attire-chip'+(attireSelection.shirtColor===k?' selected':'')+'" data-val="'+k+'"><span class="v2-attire-swatch" style="background:'+ATTIRE_COLORS.shirt[k]+'"></span>'+ATTIRE_LABELS.shirt[k]+'</div>'; });
-      html += '</div></div>';
-      html += '<div class="v2-attire-sub-section"><div class="v2-attire-sub-label">넥타이</div><div class="v2-attire-chips" data-field="tieColor">';
-      Object.keys(ATTIRE_COLORS.tie).forEach(function(k){ html += '<div class="v2-attire-chip'+(attireSelection.tieColor===k?' selected':'')+'" data-val="'+k+'">'+(ATTIRE_COLORS.tie[k]?'<span class="v2-attire-swatch" style="background:'+ATTIRE_COLORS.tie[k]+'"></span>':'')+''+ATTIRE_LABELS.tie[k]+'</div>'; });
-      html += '</div></div>';
-      if(attireSelection.tieColor && attireSelection.tieColor !== 'notie'){
-        html += '<div class="v2-attire-sub-section"><div class="v2-attire-sub-label">넥타이 무늬</div><div class="v2-attire-chips" data-field="tiePattern">';
-        Object.keys(ATTIRE_LABELS.tiePattern).forEach(function(k){ html += '<div class="v2-attire-chip'+(attireSelection.tiePattern===k?' selected':'')+'" data-val="'+k+'">'+ATTIRE_LABELS.tiePattern[k]+'</div>'; });
-        html += '</div></div>';
-      }
-    } else if(t === 'blouse'){
-      html += '<div class="v2-attire-sub-section"><div class="v2-attire-sub-label">블라우스 컬러</div><div class="v2-attire-chips" data-field="blouseColor">';
-      Object.keys(ATTIRE_COLORS.blouse).forEach(function(k){ html += '<div class="v2-attire-chip'+(attireSelection.blouseColor===k?' selected':'')+'" data-val="'+k+'"><span class="v2-attire-swatch" style="background:'+ATTIRE_COLORS.blouse[k]+'"></span>'+ATTIRE_LABELS.blouse[k]+'</div>'; });
-      html += '</div></div>';
-    } else if(t === 'casual'){
-      html += '<div class="v2-attire-sub-section"><div class="v2-attire-sub-label">니트 컬러</div><div class="v2-attire-chips" data-field="casualColor">';
-      Object.keys(ATTIRE_COLORS.casual).forEach(function(k){ html += '<div class="v2-attire-chip'+(attireSelection.casualColor===k?' selected':'')+'" data-val="'+k+'"><span class="v2-attire-swatch" style="background:'+ATTIRE_COLORS.casual[k]+'"></span>'+ATTIRE_LABELS.casual[k]+'</div>'; });
-      html += '</div></div>';
-    }
-    attireSubEl.innerHTML = html;
-    if(attireSummaryEl){
-      var s = '';
-      if(t === 'asis') s = '현재 의상 유지, 보정만 적용';
-      else if(t === 'suit'){
-        s = (ATTIRE_LABELS.suit[attireSelection.suitColor]||'') + ' 정장';
-        s += ' · ' + (ATTIRE_LABELS.shirt[attireSelection.shirtColor]||'') + ' 셔츠';
-        s += ' · ' + (ATTIRE_LABELS.tie[attireSelection.tieColor]||'');
-        if(attireSelection.tieColor !== 'notie') s += ' ' + (ATTIRE_LABELS.tiePattern[attireSelection.tiePattern]||'');
-      } else if(t === 'blouse') s = (ATTIRE_LABELS.blouse[attireSelection.blouseColor]||'') + ' 블라우스';
-      else if(t === 'casual') s = (ATTIRE_LABELS.casual[attireSelection.casualColor]||'') + ' 니트';
-      attireSummaryEl.textContent = s;
-    }
-    // 영유아 시 의상 선택 비활성
-    if(attireInlineEl) attireInlineEl.style.display = (CFG.t1 && subjectSelection.age !== 'baby') ? '' : 'none';
-  }
-
-  if(attireCardsEl) attireCardsEl.addEventListener('click', function(e){
-    var card = e.target.closest('[data-attire]');
-    if(!card) return;
-    attireSelection.type = card.dataset.attire;
-    attireCardsEl.querySelectorAll('.v2-attire-card').forEach(function(c){ c.classList.toggle('selected', c === card); });
-    renderAttireSubOptions();
-  });
-  if(attireSubEl) attireSubEl.addEventListener('click', function(e){
-    var chip = e.target.closest('.v2-attire-chip');
-    if(!chip) return;
-    var field = chip.parentElement.dataset.field;
-    var val = chip.dataset.val;
-    attireSelection[field] = val;
-    renderAttireSubOptions();
-  });
-
-  // 피사체 칩 이벤트 (fit + pay 양쪽 공유)
+  // 피사체 칩 이벤트
   document.querySelectorAll('.v2-subject-section').forEach(function(sec){
     sec.addEventListener('click', function(e){
       var chip = e.target.closest('.v2-attire-chip');
@@ -832,11 +740,8 @@ var SpecsFunnel = (function(){
       if(field === 'age') subjectSelection.age = val;
       else if(field === 'gender') subjectSelection.gender = val;
       syncSubjectChips();
-      renderAttireSubOptions();
     });
   });
-
-  renderAttireSubOptions();
 
   /* ─── Pay phase ─── */
   document.getElementById('v2-change-photo').addEventListener('click', function(){
@@ -1044,7 +949,7 @@ var SpecsFunnel = (function(){
     var body = { image: uploadedBase64, format: CFG.format, gender: subjectSelection.gender || 'm', age: subjectSelection.age || 'adult', slug: CFG.slug };
     if(fitResult && fitResult.frame){ body.fitFrame = fitResult.frame; body.fitMeta = fitResult.meta; body.fitMetrics = fitResult.metrics; }
     if(pay.token) body.paymentToken = pay.token;
-    if(CFG.t1){ var ad = getAttireDesc(); if(ad) body.attireDesc = ad; }
+    if(CFG.t1 && attirePicker){ var ad = attirePicker.getAttireDesc(); if(ad) body.attireDesc = ad; }
     fetch('/api/idphoto/generate', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify(body)

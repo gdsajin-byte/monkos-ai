@@ -336,11 +336,7 @@ ${hreflangTags}
 
 // ─── SPECS V2 — kr-passport 카드형 리디자인 ────────────────────
 
-// V2 롤아웃 게이트 (2026-07-04 DESIGN_specs_2tier)
-// - V2_DIRECT_SLUGS: 옛 1-segment URL(/specs/kr-passport)을 301 없이 200으로 직접 서빙하는 파일럿 슬러그.
-//   확장 게이트를 여기에 그대로 쓰면 1-segment 428건의 301이 전부 해제되어 canonical(2-segment)과
-//   중복 서빙되므로 렌더 게이트와 분리 유지. 나머지 슬러그는 계속 2-segment 정본으로 301.
-const V2_DIRECT_SLUGS = new Set(['kr-passport']);
+// V2_DIRECT_SLUGS 폐지 (2026-07-15 D6) — 전 슬러그 2-segment 정본 301 합류. kr-passport도 /specs/passport/kr로 301.
 
 // 생성 엔진 호환성 게이트 (2026-07-04 감사 P0 대응)
 // 생성 엔진(idphoto-generate.js)은 3:4 비율·흰색 배경으로 고정 출력한다.
@@ -364,16 +360,11 @@ function isEngineCompatibleSpec(specData) {
 }
 
 // 렌더 분기: 파일럿(kr-passport)은 en/ja 포함 기존 동작 보존, 그 외는 ko 언어 한정 +
-// 생성 엔진 호환 규격에만 v2.
-// en/ja는 레몬 단건 variant env가 설정된 경우에만 v2 확장 (DESIGN_20260704_결제연동트랙 §2-D).
-// env 미설정(기본 '') → v1 유지 = 코드 배포만으로는 en/ja 표면 변화 없음 (반쪽 롤아웃 방지).
+// D6 게이트 재정의 (2026-07-15): 퍼널 노출 = 엔진 호환성만 판정, 전 언어 공통.
+// LEMONSQUEEZY_VARIANT_SPECS_SINGLE은 결제 가용성 플래그로 축소 — 미설정 시 유료 버튼만 비활성.
 function isV2Spec(slug, lang) {
-  if (V2_DIRECT_SLUGS.has(slug)) return true;
   if (!isEngineCompatibleSpec(SPECS_DATA[slug])) return false;
-  if (lang === 'ko') return true;
-  // en/ja 공통: 글로벌 USD 단일 variant 기준 (2026-07-05 USD 통일 — JP 별도 variant 폐지)
-  if (lang === 'en' || lang === 'ja') return Boolean(LEMONSQUEEZY_VARIANT_SPECS_SINGLE);
-  return false;
+  return true;
 }
 
 // v2 상세 CSS → public/css/specs-funnel.css (2026-07-12 퍼널 분리)
@@ -643,10 +634,10 @@ ${relatedServices(ctx)}
   return {
     title,
     description,
-    seoMeta: seoMeta + specsCssLink('specs-funnel') + specsCssLink('specs-pilot'),
+    seoMeta: seoMeta + specsCssLink('specs-funnel'),
     htmlLang: lang,
     pageStyle: '',
-    bodyContent: bodyContent + specsJsTag('specs-funnel'),
+    bodyContent: bodyContent + `\n<script src="/components/attire-picker/attire-picker.js?v=${ASSET_VER}" defer></script>` + specsJsTag('specs-funnel'),
     pageScript,
   };
 }
@@ -1071,13 +1062,11 @@ export function renderSpecsDetail(req, res, forceLang = null) {
     if (!slug && remaining.length === 1) {
       const oldSlug = remaining[0];
       if (SPECS_DATA[oldSlug]) {
-        if (!V2_DIRECT_SLUGS.has(oldSlug)) {
-          const redirect = REDIRECT_MAP[oldSlug];
-          if (redirect) {
-            const newUrl = `${prefix}/specs/${redirect}`;
-            res.writeHead(301, { Location: newUrl });
-            return res.end();
-          }
+        const redirect = REDIRECT_MAP[oldSlug];
+        if (redirect) {
+          const newUrl = `${prefix}/specs/${redirect}`;
+          res.writeHead(301, { Location: newUrl });
+          return res.end();
         }
       }
       slug = oldSlug;
