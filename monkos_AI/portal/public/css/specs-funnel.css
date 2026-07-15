@@ -1,4 +1,5 @@
 /* specs-funnel.css — render-specs.js에서 분리 (2026-07-12 퍼널 분리 수술, 원본 상수 SPECS_V2_STYLE) */
+@import url('/components/specs-funnel/tokens.css');
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
 body { background: #ffffff !important; color: #1a1a1a !important; font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif !important; }
 .container { max-width: 1000px; }

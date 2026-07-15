@@ -115,7 +115,7 @@ const TYPE_ALIASES = {
 
 // 404 시 text/plain 대신 HTML 반환 — 모바일 Safari의 .txt 다운로드 오인 방지 + UX
 function specs404Html(prefix, lang) {
-  const ii = SPECS_I18N[lang] || SPECS_I18N.ko;
+  const ii = SPECS_I18N[lang] || SPECS_I18N.en || SPECS_I18N.ko;
   const msg = ii.notFoundMsg;
   const cta = ii.notFoundCta;
   return `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><meta name="robots" content="noindex"><meta name="viewport" content="width=device-width,initial-scale=1"><title>404 · MONKOS</title></head><body style="font-family:system-ui,-apple-system,sans-serif;text-align:center;padding:64px 20px;color:#222"><h1 style="font-size:48px;margin:0">404</h1><p style="color:#666">${msg}</p><p><a href="${prefix}/specs" style="color:#6b4eff;text-decoration:none">${cta} →</a></p></body></html>`;
@@ -220,7 +220,7 @@ function buildHubData(lang) {
 
 export function specsListFragment(forceLang = null) {
   const lang = forceLang || 'ko';
-  const i = SPECS_I18N[lang] || SPECS_I18N.ko;
+  const i = SPECS_I18N[lang] || SPECS_I18N.en || SPECS_I18N.ko;
   const prefix = lang === 'ko' ? '' : `/${lang}`;
 
   const hubData = buildHubData(lang);
@@ -381,7 +381,7 @@ function isV2Spec(slug, lang) {
 
 function specsDetailV2Fragment(slug, forceLang = null) {
   const lang = forceLang || 'ko';
-  const i = SPECS_I18N[lang] || SPECS_I18N.ko;
+  const i = SPECS_I18N[lang] || SPECS_I18N.en || SPECS_I18N.ko;
   const v2 = i.v2 || SPECS_I18N.ko.v2;
   // 시장 판별: 결제 PG 분기 정본 (kr=토스, jp=레몬 JP 스토어, global=레몬 글로벌)
   const market = MARKET_MAP[lang] || 'global';
@@ -636,7 +636,7 @@ ${relatedServices(ctx)}
   return {
     title,
     description,
-    seoMeta: seoMeta + specsCssLink('specs-funnel'),
+    seoMeta: seoMeta + specsCssLink('specs-funnel') + `\n<link rel="stylesheet" href="/components/attire-picker/attire-picker.css?v=${ASSET_VER}">`,
     htmlLang: lang,
     pageStyle: '',
     bodyContent: bodyContent + `\n<script src="/components/attire-picker/attire-picker.js?v=${ASSET_VER}" defer></script>` + specsJsTag('specs-funnel'),
@@ -650,7 +650,7 @@ export function specsDetailFragment(slug, forceLang = null) {
   if (isV2Spec(slug, forceLang || 'ko')) return specsDetailV2Fragment(slug, forceLang);
 
   const lang = forceLang || 'ko';
-  const i = SPECS_I18N[lang] || SPECS_I18N.ko;
+  const i = SPECS_I18N[lang] || SPECS_I18N.en || SPECS_I18N.ko;
   const prefix = lang === 'ko' ? '' : `/${lang}`;
   const specData = SPECS_DATA[slug];
   if (!specData) return null;
