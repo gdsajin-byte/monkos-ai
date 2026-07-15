@@ -3,17 +3,84 @@
   "updated": "2026-07-12",
   "default_option": {
     "id": "original",
-    "labels": { "ko": "지금 옷 그대로", "ja": "今の服のまま", "en": "Keep current outfit" },
+    "labels": {
+      "ko": "지금 옷 그대로",
+      "ja": "今の服のまま",
+      "en": "Keep current outfit"
+    },
     "attire_desc": null
   },
   "categories": [
-    { "id": "suit", "order": 1, "labels": { "ko": "정장", "ja": "スーツ", "en": "Suit" } },
-    { "id": "blazer", "order": 2, "labels": { "ko": "블레이저", "ja": "ブレザー", "en": "Blazer" } },
-    { "id": "shirt", "order": 3, "labels": { "ko": "셔츠", "ja": "シャツ", "en": "Shirt" } },
-    { "id": "blouse", "order": 4, "labels": { "ko": "블라우스", "ja": "ブラウス", "en": "Blouse" } },
-    { "id": "knit", "order": 5, "labels": { "ko": "니트", "ja": "ニット", "en": "Knit" } },
-    { "id": "tank", "order": 6, "labels": { "ko": "탱크탑", "ja": "タンクトップ", "en": "Tank" } },
-    { "id": "cardigan", "order": 7, "labels": { "ko": "가디건", "ja": "カーディガン", "en": "Cardigan" } }
+    {
+      "id": "suit",
+      "order": 1,
+      "labels": {
+        "ko": "정장",
+        "ja": "スーツ",
+        "en": "Suit",
+        "es": "Traje"
+      }
+    },
+    {
+      "id": "blazer",
+      "order": 2,
+      "labels": {
+        "ko": "블레이저",
+        "ja": "ブレザー",
+        "en": "Blazer",
+        "es": "Blazer"
+      }
+    },
+    {
+      "id": "shirt",
+      "order": 3,
+      "labels": {
+        "ko": "셔츠",
+        "ja": "シャツ",
+        "en": "Shirt",
+        "es": "Camisa"
+      }
+    },
+    {
+      "id": "blouse",
+      "order": 4,
+      "labels": {
+        "ko": "블라우스",
+        "ja": "ブラウス",
+        "en": "Blouse",
+        "es": "Blusa"
+      }
+    },
+    {
+      "id": "knit",
+      "order": 5,
+      "labels": {
+        "ko": "니트",
+        "ja": "ニット",
+        "en": "Knit",
+        "es": "Suéter"
+      }
+    },
+    {
+      "id": "tank",
+      "order": 6,
+      "labels": {
+        "ko": "탱크탑",
+        "ja": "タンクトップ",
+        "en": "Tank",
+        "es": "Camiseta sin mangas"
+      }
+    },
+    {
+      "id": "cardigan",
+      "order": 7,
+      "labels": {
+        "ko": "가디건",
+        "ja": "カーディガン",
+        "en": "Cardigan",
+        "es": "Cárdigan"
+      }
+    }
   ],
   "items": [
     {
@@ -21,18 +88,49 @@
       "active": true,
       "sort_order": 10,
       "tags": {
-        "gender": "m", "category": "suit", "subcategory": "single-breasted",
-        "accessory": { "tie": null }, "fit": "regular", "material": "wool",
-        "color": { "primary": "charcoal", "secondary": "white", "tone": "neutral" },
-        "pattern": "solid", "neckline": "notch-lapel", "season": "all",
-        "formality": "formal", "age_range": "20s-40s",
-        "trend_tags": ["클래식", "취업필수"],
-        "use_case": ["passport", "visa", "resume"]
+        "gender": "m",
+        "category": "suit",
+        "subcategory": "single-breasted",
+        "accessory": {
+          "tie": null
+        },
+        "fit": "regular",
+        "material": "wool",
+        "color": {
+          "primary": "charcoal",
+          "secondary": "white",
+          "tone": "neutral"
+        },
+        "pattern": "solid",
+        "neckline": "notch-lapel",
+        "season": "all",
+        "formality": "formal",
+        "age_range": "20s-40s",
+        "trend_tags": [
+          "클래식",
+          "취업필수"
+        ],
+        "use_case": [
+          "passport",
+          "visa",
+          "resume"
+        ]
       },
       "attire_desc": "Replace current clothing with a charcoal single-breasted wool business suit with notch lapels, a crisp white dress shirt underneath, no tie. Clothing must look natural and properly fitted.",
-      "swatch": { "primary": "#3B3F46", "secondary": "#FFFFFF" },
-      "image_gcs": "gs://monk-ai-images/assets/attire/m_suit_charcoal_single_01.png", "thumbnail": "/images/attire/m_suit_charcoal_single_01_thumb.webp", "source": "ai-generated", "source_ref": null,
-      "labels": { "ko": "차콜 싱글 정장", "ja": "チャコール シングルスーツ", "en": "Charcoal Single Suit" },
+      "swatch": {
+        "primary": "#3B3F46",
+        "secondary": "#FFFFFF"
+      },
+      "image_gcs": "gs://monk-ai-images/assets/attire/m_suit_charcoal_single_01.png",
+      "thumbnail": "/images/attire/m_suit_charcoal_single_01_thumb.webp",
+      "source": "ai-generated",
+      "source_ref": null,
+      "labels": {
+        "ko": "차콜 싱글 정장",
+        "ja": "チャコール シングルスーツ",
+        "en": "Charcoal Single Suit",
+        "es": "Charcoal Single Suit"
+      },
       "vendor": null
     },
     {
@@ -40,18 +138,48 @@
       "active": true,
       "sort_order": 20,
       "tags": {
-        "gender": "m", "category": "suit", "subcategory": "single-breasted",
-        "accessory": { "tie": null }, "fit": "regular", "material": "wool",
-        "color": { "primary": "navy", "secondary": "white", "tone": "cool" },
-        "pattern": "solid", "neckline": "notch-lapel", "season": "all",
-        "formality": "formal", "age_range": "20s-40s",
-        "trend_tags": ["클래식", "취업필수"],
-        "use_case": ["passport", "resume"]
+        "gender": "m",
+        "category": "suit",
+        "subcategory": "single-breasted",
+        "accessory": {
+          "tie": null
+        },
+        "fit": "regular",
+        "material": "wool",
+        "color": {
+          "primary": "navy",
+          "secondary": "white",
+          "tone": "cool"
+        },
+        "pattern": "solid",
+        "neckline": "notch-lapel",
+        "season": "all",
+        "formality": "formal",
+        "age_range": "20s-40s",
+        "trend_tags": [
+          "클래식",
+          "취업필수"
+        ],
+        "use_case": [
+          "passport",
+          "resume"
+        ]
       },
       "attire_desc": "Replace current clothing with a dark navy single-breasted wool business suit with notch lapels, a crisp white dress shirt underneath, no tie. Clothing must look natural and properly fitted.",
-      "swatch": { "primary": "#2C3E5D", "secondary": "#FFFFFF" },
-      "image_gcs": null, "thumbnail": null, "source": null, "source_ref": null,
-      "labels": { "ko": "네이비 싱글 정장", "ja": "ネイビー シングルスーツ", "en": "Navy Single Suit" },
+      "swatch": {
+        "primary": "#2C3E5D",
+        "secondary": "#FFFFFF"
+      },
+      "image_gcs": null,
+      "thumbnail": null,
+      "source": null,
+      "source_ref": null,
+      "labels": {
+        "ko": "네이비 싱글 정장",
+        "ja": "ネイビー シングルスーツ",
+        "en": "Navy Single Suit",
+        "es": "Navy Single Suit"
+      },
       "vendor": null
     },
     {
@@ -59,18 +187,47 @@
       "active": true,
       "sort_order": 30,
       "tags": {
-        "gender": "m", "category": "suit", "subcategory": "single-breasted",
-        "accessory": { "tie": null }, "fit": "regular", "material": "wool",
-        "color": { "primary": "black", "secondary": "white", "tone": "neutral" },
-        "pattern": "solid", "neckline": "notch-lapel", "season": "all",
-        "formality": "formal", "age_range": "30s+",
-        "trend_tags": ["포멀"],
-        "use_case": ["passport", "visa"]
+        "gender": "m",
+        "category": "suit",
+        "subcategory": "single-breasted",
+        "accessory": {
+          "tie": null
+        },
+        "fit": "regular",
+        "material": "wool",
+        "color": {
+          "primary": "black",
+          "secondary": "white",
+          "tone": "neutral"
+        },
+        "pattern": "solid",
+        "neckline": "notch-lapel",
+        "season": "all",
+        "formality": "formal",
+        "age_range": "30s+",
+        "trend_tags": [
+          "포멀"
+        ],
+        "use_case": [
+          "passport",
+          "visa"
+        ]
       },
       "attire_desc": "Replace current clothing with a black single-breasted business suit with notch lapels, a crisp white dress shirt underneath, no tie. Clothing must look natural and properly fitted.",
-      "swatch": { "primary": "#1C1C1E", "secondary": "#FFFFFF" },
-      "image_gcs": null, "thumbnail": null, "source": null, "source_ref": null,
-      "labels": { "ko": "블랙 싱글 정장", "ja": "ブラック シングルスーツ", "en": "Black Single Suit" },
+      "swatch": {
+        "primary": "#1C1C1E",
+        "secondary": "#FFFFFF"
+      },
+      "image_gcs": null,
+      "thumbnail": null,
+      "source": null,
+      "source_ref": null,
+      "labels": {
+        "ko": "블랙 싱글 정장",
+        "ja": "ブラック シングルスーツ",
+        "en": "Black Single Suit",
+        "es": "Black Single Suit"
+      },
       "vendor": null
     },
     {
@@ -78,18 +235,47 @@
       "active": false,
       "sort_order": 110,
       "tags": {
-        "gender": "m", "category": "suit", "subcategory": "single-breasted",
-        "accessory": { "tie": null }, "fit": "slim", "material": "blend",
-        "color": { "primary": "gray-light", "secondary": "white", "tone": "neutral" },
-        "pattern": "solid", "neckline": "notch-lapel", "season": "ss",
-        "formality": "semi-formal", "age_range": "20s-30s",
-        "trend_tags": ["미니멀"],
-        "use_case": ["resume", "headshot"]
+        "gender": "m",
+        "category": "suit",
+        "subcategory": "single-breasted",
+        "accessory": {
+          "tie": null
+        },
+        "fit": "slim",
+        "material": "blend",
+        "color": {
+          "primary": "gray-light",
+          "secondary": "white",
+          "tone": "neutral"
+        },
+        "pattern": "solid",
+        "neckline": "notch-lapel",
+        "season": "ss",
+        "formality": "semi-formal",
+        "age_range": "20s-30s",
+        "trend_tags": [
+          "미니멀"
+        ],
+        "use_case": [
+          "resume",
+          "headshot"
+        ]
       },
       "attire_desc": "Replace current clothing with a light gray single-breasted suit with notch lapels, a crisp white dress shirt underneath, no tie. Clothing must look natural and properly fitted.",
-      "swatch": { "primary": "#B0B6BE", "secondary": "#FFFFFF" },
-      "image_gcs": null, "thumbnail": null, "source": null, "source_ref": null,
-      "labels": { "ko": "라이트그레이 정장", "ja": "ライトグレー スーツ", "en": "Light Gray Suit" },
+      "swatch": {
+        "primary": "#B0B6BE",
+        "secondary": "#FFFFFF"
+      },
+      "image_gcs": null,
+      "thumbnail": null,
+      "source": null,
+      "source_ref": null,
+      "labels": {
+        "ko": "라이트그레이 정장",
+        "ja": "ライトグレー スーツ",
+        "en": "Light Gray Suit",
+        "es": "Traje gris claro"
+      },
       "vendor": null
     },
     {
@@ -97,18 +283,47 @@
       "active": false,
       "sort_order": 120,
       "tags": {
-        "gender": "m", "category": "blazer", "subcategory": null,
-        "accessory": { "tie": null }, "fit": "regular", "material": "blend",
-        "color": { "primary": "navy", "secondary": "white", "tone": "cool" },
-        "pattern": "solid", "neckline": "notch-lapel", "season": "all",
-        "formality": "business-casual", "age_range": "20s-30s",
-        "trend_tags": ["비즈캐주얼"],
-        "use_case": ["headshot", "profile"]
+        "gender": "m",
+        "category": "blazer",
+        "subcategory": null,
+        "accessory": {
+          "tie": null
+        },
+        "fit": "regular",
+        "material": "blend",
+        "color": {
+          "primary": "navy",
+          "secondary": "white",
+          "tone": "cool"
+        },
+        "pattern": "solid",
+        "neckline": "notch-lapel",
+        "season": "all",
+        "formality": "business-casual",
+        "age_range": "20s-30s",
+        "trend_tags": [
+          "비즈캐주얼"
+        ],
+        "use_case": [
+          "headshot",
+          "profile"
+        ]
       },
       "attire_desc": "Replace current clothing with a navy blazer with notch lapels over a plain white shirt, no tie. Clothing must look natural and properly fitted.",
-      "swatch": { "primary": "#2C3E5D", "secondary": "#FFFFFF" },
-      "image_gcs": null, "thumbnail": null, "source": null, "source_ref": null,
-      "labels": { "ko": "네이비 블레이저", "ja": "ネイビー ブレザー", "en": "Navy Blazer" },
+      "swatch": {
+        "primary": "#2C3E5D",
+        "secondary": "#FFFFFF"
+      },
+      "image_gcs": null,
+      "thumbnail": null,
+      "source": null,
+      "source_ref": null,
+      "labels": {
+        "ko": "네이비 블레이저",
+        "ja": "ネイビー ブレザー",
+        "en": "Navy Blazer",
+        "es": "Blazer azul marino"
+      },
       "vendor": null
     },
     {
@@ -116,18 +331,46 @@
       "active": false,
       "sort_order": 130,
       "tags": {
-        "gender": "m", "category": "blazer", "subcategory": null,
-        "accessory": { "tie": null }, "fit": "regular", "material": "linen",
-        "color": { "primary": "beige", "secondary": "white", "tone": "warm" },
-        "pattern": "solid", "neckline": "notch-lapel", "season": "ss",
-        "formality": "business-casual", "age_range": "20s-30s",
-        "trend_tags": ["소프트"],
-        "use_case": ["headshot"]
+        "gender": "m",
+        "category": "blazer",
+        "subcategory": null,
+        "accessory": {
+          "tie": null
+        },
+        "fit": "regular",
+        "material": "linen",
+        "color": {
+          "primary": "beige",
+          "secondary": "white",
+          "tone": "warm"
+        },
+        "pattern": "solid",
+        "neckline": "notch-lapel",
+        "season": "ss",
+        "formality": "business-casual",
+        "age_range": "20s-30s",
+        "trend_tags": [
+          "소프트"
+        ],
+        "use_case": [
+          "headshot"
+        ]
       },
       "attire_desc": "Replace current clothing with a beige linen blazer with notch lapels over a plain white shirt, no tie. Clothing must look natural and properly fitted.",
-      "swatch": { "primary": "#D8C6A8", "secondary": "#FFFFFF" },
-      "image_gcs": null, "thumbnail": null, "source": null, "source_ref": null,
-      "labels": { "ko": "베이지 블레이저", "ja": "ベージュ ブレザー", "en": "Beige Blazer" },
+      "swatch": {
+        "primary": "#D8C6A8",
+        "secondary": "#FFFFFF"
+      },
+      "image_gcs": null,
+      "thumbnail": null,
+      "source": null,
+      "source_ref": null,
+      "labels": {
+        "ko": "베이지 블레이저",
+        "ja": "ベージュ ブレザー",
+        "en": "Beige Blazer",
+        "es": "Beige Blazer"
+      },
       "vendor": null
     },
     {
@@ -135,18 +378,47 @@
       "active": false,
       "sort_order": 140,
       "tags": {
-        "gender": "m", "category": "shirt", "subcategory": null,
-        "accessory": { "tie": null }, "fit": "slim", "material": "cotton",
-        "color": { "primary": "white", "secondary": null, "tone": "neutral" },
-        "pattern": "solid", "neckline": "mandarin", "season": "all",
-        "formality": "semi-formal", "age_range": "20s",
-        "trend_tags": ["취활", "미니멀"],
-        "use_case": ["resume"]
+        "gender": "m",
+        "category": "shirt",
+        "subcategory": null,
+        "accessory": {
+          "tie": null
+        },
+        "fit": "slim",
+        "material": "cotton",
+        "color": {
+          "primary": "white",
+          "secondary": null,
+          "tone": "neutral"
+        },
+        "pattern": "solid",
+        "neckline": "mandarin",
+        "season": "all",
+        "formality": "semi-formal",
+        "age_range": "20s",
+        "trend_tags": [
+          "취활",
+          "미니멀"
+        ],
+        "use_case": [
+          "resume"
+        ]
       },
       "attire_desc": "Replace current clothing with a clean white band-collar (mandarin collar) dress shirt, fully buttoned, no tie. Clothing must look natural and properly fitted.",
-      "swatch": { "primary": "#FFFFFF", "secondary": "#E8E8E8" },
-      "image_gcs": null, "thumbnail": null, "source": null, "source_ref": null,
-      "labels": { "ko": "화이트 밴드칼라 셔츠", "ja": "ホワイト バンドカラーシャツ", "en": "White Band-Collar Shirt" },
+      "swatch": {
+        "primary": "#FFFFFF",
+        "secondary": "#E8E8E8"
+      },
+      "image_gcs": null,
+      "thumbnail": null,
+      "source": null,
+      "source_ref": null,
+      "labels": {
+        "ko": "화이트 밴드칼라 셔츠",
+        "ja": "ホワイト バンドカラーシャツ",
+        "en": "White Band-Collar Shirt",
+        "es": "White Band-Collar Shirt"
+      },
       "vendor": null
     },
     {
@@ -154,18 +426,47 @@
       "active": true,
       "sort_order": 40,
       "tags": {
-        "gender": "m", "category": "shirt", "subcategory": null,
-        "accessory": { "tie": null }, "fit": "regular", "material": "cotton",
-        "color": { "primary": "white", "secondary": null, "tone": "neutral" },
-        "pattern": "solid", "neckline": "stand-collar", "season": "all",
-        "formality": "formal", "age_range": "all",
-        "trend_tags": ["베이직"],
-        "use_case": ["headshot", "profile"]
+        "gender": "m",
+        "category": "shirt",
+        "subcategory": null,
+        "accessory": {
+          "tie": null
+        },
+        "fit": "regular",
+        "material": "cotton",
+        "color": {
+          "primary": "white",
+          "secondary": null,
+          "tone": "neutral"
+        },
+        "pattern": "solid",
+        "neckline": "stand-collar",
+        "season": "all",
+        "formality": "formal",
+        "age_range": "all",
+        "trend_tags": [
+          "베이직"
+        ],
+        "use_case": [
+          "headshot",
+          "profile"
+        ]
       },
       "attire_desc": "Replace current clothing with a crisp plain white dress shirt with a regular collar, top button fastened, no tie. Clothing must look natural and properly fitted.",
-      "swatch": { "primary": "#FFFFFF", "secondary": "#DDDDDD" },
-      "image_gcs": null, "thumbnail": null, "source": null, "source_ref": null,
-      "labels": { "ko": "화이트 셔츠", "ja": "ホワイトシャツ", "en": "White Dress Shirt" },
+      "swatch": {
+        "primary": "#FFFFFF",
+        "secondary": "#DDDDDD"
+      },
+      "image_gcs": null,
+      "thumbnail": null,
+      "source": null,
+      "source_ref": null,
+      "labels": {
+        "ko": "화이트 셔츠",
+        "ja": "ホワイトシャツ",
+        "en": "White Dress Shirt",
+        "es": "Camisa blanca"
+      },
       "vendor": null
     },
     {
@@ -173,18 +474,46 @@
       "active": true,
       "sort_order": 50,
       "tags": {
-        "gender": "m", "category": "shirt", "subcategory": null,
-        "accessory": { "tie": null }, "fit": "regular", "material": "cotton",
-        "color": { "primary": "light-blue", "secondary": null, "tone": "cool" },
-        "pattern": "solid", "neckline": "stand-collar", "season": "all",
-        "formality": "semi-formal", "age_range": "20s-40s",
-        "trend_tags": ["클린"],
-        "use_case": ["resume"]
+        "gender": "m",
+        "category": "shirt",
+        "subcategory": null,
+        "accessory": {
+          "tie": null
+        },
+        "fit": "regular",
+        "material": "cotton",
+        "color": {
+          "primary": "light-blue",
+          "secondary": null,
+          "tone": "cool"
+        },
+        "pattern": "solid",
+        "neckline": "stand-collar",
+        "season": "all",
+        "formality": "semi-formal",
+        "age_range": "20s-40s",
+        "trend_tags": [
+          "클린"
+        ],
+        "use_case": [
+          "resume"
+        ]
       },
       "attire_desc": "Replace current clothing with a light blue dress shirt with a regular collar, top button fastened, no tie. Clothing must look natural and properly fitted.",
-      "swatch": { "primary": "#BDD7EE", "secondary": "#FFFFFF" },
-      "image_gcs": null, "thumbnail": null, "source": null, "source_ref": null,
-      "labels": { "ko": "라이트블루 셔츠", "ja": "ライトブルー シャツ", "en": "Light Blue Shirt" },
+      "swatch": {
+        "primary": "#BDD7EE",
+        "secondary": "#FFFFFF"
+      },
+      "image_gcs": null,
+      "thumbnail": null,
+      "source": null,
+      "source_ref": null,
+      "labels": {
+        "ko": "라이트블루 셔츠",
+        "ja": "ライトブルー シャツ",
+        "en": "Light Blue Shirt",
+        "es": "Light Blue Shirt"
+      },
       "vendor": null
     },
     {
@@ -192,18 +521,48 @@
       "active": true,
       "sort_order": 50,
       "tags": {
-        "gender": "m", "category": "shirt", "subcategory": null,
-        "accessory": { "tie": null }, "fit": "regular", "material": "cotton",
-        "color": { "primary": "navy", "secondary": null, "tone": "cool" },
-        "pattern": "solid", "neckline": "stand-collar", "season": "all",
-        "formality": "semi-formal", "age_range": "20s-40s",
-        "trend_tags": ["단독가능", "모던"],
-        "use_case": ["passport", "resume"]
+        "gender": "m",
+        "category": "shirt",
+        "subcategory": null,
+        "accessory": {
+          "tie": null
+        },
+        "fit": "regular",
+        "material": "cotton",
+        "color": {
+          "primary": "navy",
+          "secondary": null,
+          "tone": "cool"
+        },
+        "pattern": "solid",
+        "neckline": "stand-collar",
+        "season": "all",
+        "formality": "semi-formal",
+        "age_range": "20s-40s",
+        "trend_tags": [
+          "단독가능",
+          "모던"
+        ],
+        "use_case": [
+          "passport",
+          "resume"
+        ]
       },
       "attire_desc": "Replace current clothing with a dark navy dress shirt with a regular collar, top button fastened, no tie. Clothing must look natural and properly fitted.",
-      "swatch": { "primary": "#2C3E5D", "secondary": "#3D5177" },
-      "image_gcs": null, "thumbnail": null, "source": null, "source_ref": null,
-      "labels": { "ko": "네이비 셔츠", "ja": "ネイビーシャツ", "en": "Navy Dress Shirt" },
+      "swatch": {
+        "primary": "#2C3E5D",
+        "secondary": "#3D5177"
+      },
+      "image_gcs": null,
+      "thumbnail": null,
+      "source": null,
+      "source_ref": null,
+      "labels": {
+        "ko": "네이비 셔츠",
+        "ja": "ネイビーシャツ",
+        "en": "Navy Dress Shirt",
+        "es": "Navy Dress Shirt"
+      },
       "vendor": null
     },
     {
@@ -211,18 +570,48 @@
       "active": true,
       "sort_order": 60,
       "tags": {
-        "gender": "m", "category": "shirt", "subcategory": null,
-        "accessory": { "tie": null }, "fit": "regular", "material": "cotton",
-        "color": { "primary": "black", "secondary": null, "tone": "neutral" },
-        "pattern": "solid", "neckline": "stand-collar", "season": "all",
-        "formality": "semi-formal", "age_range": "20s-40s",
-        "trend_tags": ["단독가능", "모던"],
-        "use_case": ["passport", "resume"]
+        "gender": "m",
+        "category": "shirt",
+        "subcategory": null,
+        "accessory": {
+          "tie": null
+        },
+        "fit": "regular",
+        "material": "cotton",
+        "color": {
+          "primary": "black",
+          "secondary": null,
+          "tone": "neutral"
+        },
+        "pattern": "solid",
+        "neckline": "stand-collar",
+        "season": "all",
+        "formality": "semi-formal",
+        "age_range": "20s-40s",
+        "trend_tags": [
+          "단독가능",
+          "모던"
+        ],
+        "use_case": [
+          "passport",
+          "resume"
+        ]
       },
       "attire_desc": "Replace current clothing with a black dress shirt with a regular collar, top button fastened, no tie. Clothing must look natural and properly fitted.",
-      "swatch": { "primary": "#1C1C1E", "secondary": "#333336" },
-      "image_gcs": null, "thumbnail": null, "source": null, "source_ref": null,
-      "labels": { "ko": "블랙 셔츠", "ja": "ブラックシャツ", "en": "Black Dress Shirt" },
+      "swatch": {
+        "primary": "#1C1C1E",
+        "secondary": "#333336"
+      },
+      "image_gcs": null,
+      "thumbnail": null,
+      "source": null,
+      "source_ref": null,
+      "labels": {
+        "ko": "블랙 셔츠",
+        "ja": "ブラックシャツ",
+        "en": "Black Dress Shirt",
+        "es": "Black Dress Shirt"
+      },
       "vendor": null
     },
     {
@@ -230,18 +619,46 @@
       "active": false,
       "sort_order": 150,
       "tags": {
-        "gender": "m", "category": "shirt", "subcategory": null,
-        "accessory": { "tie": null }, "fit": "regular", "material": "cotton",
-        "color": { "primary": "cream", "secondary": null, "tone": "warm" },
-        "pattern": "solid", "neckline": "stand-collar", "season": "all",
-        "formality": "business-casual", "age_range": "30s+",
-        "trend_tags": ["소프트"],
-        "use_case": ["headshot"]
+        "gender": "m",
+        "category": "shirt",
+        "subcategory": null,
+        "accessory": {
+          "tie": null
+        },
+        "fit": "regular",
+        "material": "cotton",
+        "color": {
+          "primary": "cream",
+          "secondary": null,
+          "tone": "warm"
+        },
+        "pattern": "solid",
+        "neckline": "stand-collar",
+        "season": "all",
+        "formality": "business-casual",
+        "age_range": "30s+",
+        "trend_tags": [
+          "소프트"
+        ],
+        "use_case": [
+          "headshot"
+        ]
       },
       "attire_desc": "Replace current clothing with a cream-colored dress shirt with a regular collar, no tie. Clothing must look natural and properly fitted.",
-      "swatch": { "primary": "#F1E8D8", "secondary": "#FFFFFF" },
-      "image_gcs": null, "thumbnail": null, "source": null, "source_ref": null,
-      "labels": { "ko": "크림 셔츠", "ja": "クリームシャツ", "en": "Cream Shirt" },
+      "swatch": {
+        "primary": "#F1E8D8",
+        "secondary": "#FFFFFF"
+      },
+      "image_gcs": null,
+      "thumbnail": null,
+      "source": null,
+      "source_ref": null,
+      "labels": {
+        "ko": "크림 셔츠",
+        "ja": "クリームシャツ",
+        "en": "Cream Shirt",
+        "es": "Cream Shirt"
+      },
       "vendor": null
     },
     {
@@ -249,18 +666,47 @@
       "active": false,
       "sort_order": 160,
       "tags": {
-        "gender": "m", "category": "knit", "subcategory": null,
-        "accessory": { "tie": null }, "fit": "regular", "material": "wool",
-        "color": { "primary": "charcoal", "secondary": "white", "tone": "neutral" },
-        "pattern": "solid", "neckline": "v-neck", "season": "fw",
-        "formality": "business-casual", "age_range": "30s+",
-        "trend_tags": ["비즈캐주얼"],
-        "use_case": ["headshot", "profile"]
+        "gender": "m",
+        "category": "knit",
+        "subcategory": null,
+        "accessory": {
+          "tie": null
+        },
+        "fit": "regular",
+        "material": "wool",
+        "color": {
+          "primary": "charcoal",
+          "secondary": "white",
+          "tone": "neutral"
+        },
+        "pattern": "solid",
+        "neckline": "v-neck",
+        "season": "fw",
+        "formality": "business-casual",
+        "age_range": "30s+",
+        "trend_tags": [
+          "비즈캐주얼"
+        ],
+        "use_case": [
+          "headshot",
+          "profile"
+        ]
       },
       "attire_desc": "Replace current clothing with a fine-gauge charcoal v-neck knit sweater over a white collared shirt. Clothing must look natural and properly fitted.",
-      "swatch": { "primary": "#3B3F46", "secondary": "#FFFFFF" },
-      "image_gcs": null, "thumbnail": null, "source": null, "source_ref": null,
-      "labels": { "ko": "차콜 브이넥 니트", "ja": "チャコール Vネックニット", "en": "Charcoal V-Neck Knit" },
+      "swatch": {
+        "primary": "#3B3F46",
+        "secondary": "#FFFFFF"
+      },
+      "image_gcs": null,
+      "thumbnail": null,
+      "source": null,
+      "source_ref": null,
+      "labels": {
+        "ko": "차콜 브이넥 니트",
+        "ja": "チャコール Vネックニット",
+        "en": "Charcoal V-Neck Knit",
+        "es": "Charcoal V-Neck Knit"
+      },
       "vendor": null
     },
     {
@@ -268,18 +714,46 @@
       "active": false,
       "sort_order": 170,
       "tags": {
-        "gender": "m", "category": "knit", "subcategory": null,
-        "accessory": { "tie": null }, "fit": "regular", "material": "cotton",
-        "color": { "primary": "navy", "secondary": null, "tone": "cool" },
-        "pattern": "solid", "neckline": "crew", "season": "fw",
-        "formality": "casual", "age_range": "20s",
-        "trend_tags": ["캐주얼"],
-        "use_case": ["headshot"]
+        "gender": "m",
+        "category": "knit",
+        "subcategory": null,
+        "accessory": {
+          "tie": null
+        },
+        "fit": "regular",
+        "material": "cotton",
+        "color": {
+          "primary": "navy",
+          "secondary": null,
+          "tone": "cool"
+        },
+        "pattern": "solid",
+        "neckline": "crew",
+        "season": "fw",
+        "formality": "casual",
+        "age_range": "20s",
+        "trend_tags": [
+          "캐주얼"
+        ],
+        "use_case": [
+          "headshot"
+        ]
       },
       "attire_desc": "Replace current clothing with a plain navy crew-neck knit sweater. Clothing must look natural and properly fitted.",
-      "swatch": { "primary": "#2C3E5D", "secondary": "#3D5177" },
-      "image_gcs": null, "thumbnail": null, "source": null, "source_ref": null,
-      "labels": { "ko": "네이비 크루넥 니트", "ja": "ネイビー クルーネックニット", "en": "Navy Crew-Neck Knit" },
+      "swatch": {
+        "primary": "#2C3E5D",
+        "secondary": "#3D5177"
+      },
+      "image_gcs": null,
+      "thumbnail": null,
+      "source": null,
+      "source_ref": null,
+      "labels": {
+        "ko": "네이비 크루넥 니트",
+        "ja": "ネイビー クルーネックニット",
+        "en": "Navy Crew-Neck Knit",
+        "es": "Navy Crew-Neck Knit"
+      },
       "vendor": null
     },
     {
@@ -287,18 +761,46 @@
       "active": false,
       "sort_order": 180,
       "tags": {
-        "gender": "m", "category": "knit", "subcategory": null,
-        "accessory": { "tie": null }, "fit": "regular", "material": "cotton",
-        "color": { "primary": "beige", "secondary": null, "tone": "warm" },
-        "pattern": "solid", "neckline": "round", "season": "all",
-        "formality": "casual", "age_range": "teen-20s",
-        "trend_tags": ["캠퍼스"],
-        "use_case": ["student-id"]
+        "gender": "m",
+        "category": "knit",
+        "subcategory": null,
+        "accessory": {
+          "tie": null
+        },
+        "fit": "regular",
+        "material": "cotton",
+        "color": {
+          "primary": "beige",
+          "secondary": null,
+          "tone": "warm"
+        },
+        "pattern": "solid",
+        "neckline": "round",
+        "season": "all",
+        "formality": "casual",
+        "age_range": "teen-20s",
+        "trend_tags": [
+          "캠퍼스"
+        ],
+        "use_case": [
+          "student-id"
+        ]
       },
       "attire_desc": "Replace current clothing with a plain beige round-neck knit sweater. Clothing must look natural and properly fitted.",
-      "swatch": { "primary": "#D8C6A8", "secondary": "#E5D8C0" },
-      "image_gcs": null, "thumbnail": null, "source": null, "source_ref": null,
-      "labels": { "ko": "베이지 라운드 니트", "ja": "ベージュ ラウンドニット", "en": "Beige Round-Neck Knit" },
+      "swatch": {
+        "primary": "#D8C6A8",
+        "secondary": "#E5D8C0"
+      },
+      "image_gcs": null,
+      "thumbnail": null,
+      "source": null,
+      "source_ref": null,
+      "labels": {
+        "ko": "베이지 라운드 니트",
+        "ja": "ベージュ ラウンドニット",
+        "en": "Beige Round-Neck Knit",
+        "es": "Beige Round-Neck Knit"
+      },
       "vendor": null
     },
     {
@@ -306,18 +808,47 @@
       "active": false,
       "sort_order": 190,
       "tags": {
-        "gender": "m", "category": "knit", "subcategory": null,
-        "accessory": { "tie": null }, "fit": "regular", "material": "cotton",
-        "color": { "primary": "gray-light", "secondary": null, "tone": "neutral" },
-        "pattern": "solid", "neckline": "round", "season": "all",
-        "formality": "casual", "age_range": "teen",
-        "trend_tags": ["캠퍼스"],
-        "use_case": ["id-photo", "student-id"]
+        "gender": "m",
+        "category": "knit",
+        "subcategory": null,
+        "accessory": {
+          "tie": null
+        },
+        "fit": "regular",
+        "material": "cotton",
+        "color": {
+          "primary": "gray-light",
+          "secondary": null,
+          "tone": "neutral"
+        },
+        "pattern": "solid",
+        "neckline": "round",
+        "season": "all",
+        "formality": "casual",
+        "age_range": "teen",
+        "trend_tags": [
+          "캠퍼스"
+        ],
+        "use_case": [
+          "id-photo",
+          "student-id"
+        ]
       },
       "attire_desc": "Replace current clothing with a plain light gray round-neck knit sweater. Clothing must look natural and properly fitted.",
-      "swatch": { "primary": "#C7CBD1", "secondary": "#D9DCE1" },
-      "image_gcs": null, "thumbnail": null, "source": null, "source_ref": null,
-      "labels": { "ko": "라이트그레이 라운드 니트", "ja": "ライトグレー ラウンドニット", "en": "Light Gray Round Knit" },
+      "swatch": {
+        "primary": "#C7CBD1",
+        "secondary": "#D9DCE1"
+      },
+      "image_gcs": null,
+      "thumbnail": null,
+      "source": null,
+      "source_ref": null,
+      "labels": {
+        "ko": "라이트그레이 라운드 니트",
+        "ja": "ライトグレー ラウンドニット",
+        "en": "Light Gray Round Knit",
+        "es": "Light Gray Round Knit"
+      },
       "vendor": null
     },
     {
@@ -325,18 +856,48 @@
       "active": true,
       "sort_order": 60,
       "tags": {
-        "gender": "m", "category": "shirt", "subcategory": null,
-        "accessory": { "tie": "navy" }, "fit": "regular", "material": "cotton",
-        "color": { "primary": "white", "secondary": "navy", "tone": "neutral" },
-        "pattern": "solid", "neckline": "stand-collar", "season": "all",
-        "formality": "formal", "age_range": "20s-40s",
-        "trend_tags": ["정장셋", "취업필수"],
-        "use_case": ["headshot", "profile"]
+        "gender": "m",
+        "category": "shirt",
+        "subcategory": null,
+        "accessory": {
+          "tie": "navy"
+        },
+        "fit": "regular",
+        "material": "cotton",
+        "color": {
+          "primary": "white",
+          "secondary": "navy",
+          "tone": "neutral"
+        },
+        "pattern": "solid",
+        "neckline": "stand-collar",
+        "season": "all",
+        "formality": "formal",
+        "age_range": "20s-40s",
+        "trend_tags": [
+          "정장셋",
+          "취업필수"
+        ],
+        "use_case": [
+          "headshot",
+          "profile"
+        ]
       },
       "attire_desc": "Replace current clothing with a crisp white dress shirt with a regular collar and a solid dark navy necktie, neatly knotted. Clothing must look natural and properly fitted.",
-      "swatch": { "primary": "#FFFFFF", "secondary": "#2C3E5D" },
-      "image_gcs": "gs://monk-ai-images/assets/attire/m_shirt_white_tie_navy_15.png", "thumbnail": "/images/attire/m_shirt_white_tie_navy_15_thumb.webp", "source": "ai-generated", "source_ref": null,
-      "labels": { "ko": "화이트 셔츠 + 네이비 타이", "ja": "ホワイトシャツ + ネイビータイ", "en": "White Shirt + Navy Tie" },
+      "swatch": {
+        "primary": "#FFFFFF",
+        "secondary": "#2C3E5D"
+      },
+      "image_gcs": "gs://monk-ai-images/assets/attire/m_shirt_white_tie_navy_15.png",
+      "thumbnail": "/images/attire/m_shirt_white_tie_navy_15_thumb.webp",
+      "source": "ai-generated",
+      "source_ref": null,
+      "labels": {
+        "ko": "화이트 셔츠 + 네이비 타이",
+        "ja": "ホワイトシャツ + ネイビータイ",
+        "en": "White Shirt + Navy Tie",
+        "es": "White Shirt + Navy Tie"
+      },
       "vendor": null
     },
     {
@@ -344,18 +905,47 @@
       "active": false,
       "sort_order": 210,
       "tags": {
-        "gender": "m", "category": "shirt", "subcategory": null,
-        "accessory": { "tie": "charcoal" }, "fit": "regular", "material": "cotton",
-        "color": { "primary": "white", "secondary": "charcoal", "tone": "neutral" },
-        "pattern": "solid", "neckline": "stand-collar", "season": "all",
-        "formality": "formal", "age_range": "30s+",
-        "trend_tags": ["포멀"],
-        "use_case": ["visa", "passport"]
+        "gender": "m",
+        "category": "shirt",
+        "subcategory": null,
+        "accessory": {
+          "tie": "charcoal"
+        },
+        "fit": "regular",
+        "material": "cotton",
+        "color": {
+          "primary": "white",
+          "secondary": "charcoal",
+          "tone": "neutral"
+        },
+        "pattern": "solid",
+        "neckline": "stand-collar",
+        "season": "all",
+        "formality": "formal",
+        "age_range": "30s+",
+        "trend_tags": [
+          "포멀"
+        ],
+        "use_case": [
+          "visa",
+          "passport"
+        ]
       },
       "attire_desc": "Replace current clothing with a crisp white dress shirt with a regular collar and a solid charcoal gray necktie, neatly knotted. Clothing must look natural and properly fitted.",
-      "swatch": { "primary": "#FFFFFF", "secondary": "#3B3F46" },
-      "image_gcs": null, "thumbnail": null, "source": null, "source_ref": null,
-      "labels": { "ko": "화이트 셔츠 + 차콜 타이", "ja": "ホワイトシャツ + チャコールタイ", "en": "White Shirt + Charcoal Tie" },
+      "swatch": {
+        "primary": "#FFFFFF",
+        "secondary": "#3B3F46"
+      },
+      "image_gcs": null,
+      "thumbnail": null,
+      "source": null,
+      "source_ref": null,
+      "labels": {
+        "ko": "화이트 셔츠 + 차콜 타이",
+        "ja": "ホワイトシャツ + チャコールタイ",
+        "en": "White Shirt + Charcoal Tie",
+        "es": "White Shirt + Charcoal Tie"
+      },
       "vendor": null
     },
     {
@@ -363,18 +953,49 @@
       "active": true,
       "sort_order": 10,
       "tags": {
-        "gender": "f", "category": "suit", "subcategory": "single-breasted",
-        "accessory": { "tie": null }, "fit": "regular", "material": "wool",
-        "color": { "primary": "charcoal", "secondary": "white", "tone": "neutral" },
-        "pattern": "solid", "neckline": "notch-lapel", "season": "all",
-        "formality": "formal", "age_range": "20s-40s",
-        "trend_tags": ["클래식", "취업필수"],
-        "use_case": ["passport", "visa", "resume"]
+        "gender": "f",
+        "category": "suit",
+        "subcategory": "single-breasted",
+        "accessory": {
+          "tie": null
+        },
+        "fit": "regular",
+        "material": "wool",
+        "color": {
+          "primary": "charcoal",
+          "secondary": "white",
+          "tone": "neutral"
+        },
+        "pattern": "solid",
+        "neckline": "notch-lapel",
+        "season": "all",
+        "formality": "formal",
+        "age_range": "20s-40s",
+        "trend_tags": [
+          "클래식",
+          "취업필수"
+        ],
+        "use_case": [
+          "passport",
+          "visa",
+          "resume"
+        ]
       },
       "attire_desc": "Replace current clothing with a charcoal single-breasted women's suit jacket with notch lapels over a plain white blouse. Clothing must look natural and properly fitted.",
-      "swatch": { "primary": "#3B3F46", "secondary": "#FFFFFF" },
-      "image_gcs": "gs://monk-ai-images/assets/attire/f_suit_charcoal_single_01.png", "thumbnail": "/images/attire/f_suit_charcoal_single_01_thumb.webp", "source": "ai-generated", "source_ref": null,
-      "labels": { "ko": "차콜 싱글 정장", "ja": "チャコール シングルスーツ", "en": "Charcoal Single Suit" },
+      "swatch": {
+        "primary": "#3B3F46",
+        "secondary": "#FFFFFF"
+      },
+      "image_gcs": "gs://monk-ai-images/assets/attire/f_suit_charcoal_single_01.png",
+      "thumbnail": "/images/attire/f_suit_charcoal_single_01_thumb.webp",
+      "source": "ai-generated",
+      "source_ref": null,
+      "labels": {
+        "ko": "차콜 싱글 정장",
+        "ja": "チャコール シングルスーツ",
+        "en": "Charcoal Single Suit",
+        "es": "Charcoal Single Suit"
+      },
       "vendor": null
     },
     {
@@ -382,18 +1003,47 @@
       "active": true,
       "sort_order": 20,
       "tags": {
-        "gender": "f", "category": "suit", "subcategory": "single-breasted",
-        "accessory": { "tie": null }, "fit": "regular", "material": "wool",
-        "color": { "primary": "navy", "secondary": "white", "tone": "cool" },
-        "pattern": "solid", "neckline": "notch-lapel", "season": "all",
-        "formality": "formal", "age_range": "20s-40s",
-        "trend_tags": ["클래식", "취업필수"],
-        "use_case": ["resume"]
+        "gender": "f",
+        "category": "suit",
+        "subcategory": "single-breasted",
+        "accessory": {
+          "tie": null
+        },
+        "fit": "regular",
+        "material": "wool",
+        "color": {
+          "primary": "navy",
+          "secondary": "white",
+          "tone": "cool"
+        },
+        "pattern": "solid",
+        "neckline": "notch-lapel",
+        "season": "all",
+        "formality": "formal",
+        "age_range": "20s-40s",
+        "trend_tags": [
+          "클래식",
+          "취업필수"
+        ],
+        "use_case": [
+          "resume"
+        ]
       },
       "attire_desc": "Replace current clothing with a dark navy single-breasted women's suit jacket with notch lapels over a plain white blouse. Clothing must look natural and properly fitted.",
-      "swatch": { "primary": "#2C3E5D", "secondary": "#FFFFFF" },
-      "image_gcs": null, "thumbnail": null, "source": null, "source_ref": null,
-      "labels": { "ko": "네이비 싱글 정장", "ja": "ネイビー シングルスーツ", "en": "Navy Single Suit" },
+      "swatch": {
+        "primary": "#2C3E5D",
+        "secondary": "#FFFFFF"
+      },
+      "image_gcs": null,
+      "thumbnail": null,
+      "source": null,
+      "source_ref": null,
+      "labels": {
+        "ko": "네이비 싱글 정장",
+        "ja": "ネイビー シングルスーツ",
+        "en": "Navy Single Suit",
+        "es": "Navy Single Suit"
+      },
       "vendor": null
     },
     {
@@ -401,18 +1051,47 @@
       "active": true,
       "sort_order": 30,
       "tags": {
-        "gender": "f", "category": "suit", "subcategory": "single-breasted",
-        "accessory": { "tie": null }, "fit": "regular", "material": "wool",
-        "color": { "primary": "black", "secondary": "white", "tone": "neutral" },
-        "pattern": "solid", "neckline": "notch-lapel", "season": "all",
-        "formality": "formal", "age_range": "30s+",
-        "trend_tags": ["포멀"],
-        "use_case": ["passport", "visa"]
+        "gender": "f",
+        "category": "suit",
+        "subcategory": "single-breasted",
+        "accessory": {
+          "tie": null
+        },
+        "fit": "regular",
+        "material": "wool",
+        "color": {
+          "primary": "black",
+          "secondary": "white",
+          "tone": "neutral"
+        },
+        "pattern": "solid",
+        "neckline": "notch-lapel",
+        "season": "all",
+        "formality": "formal",
+        "age_range": "30s+",
+        "trend_tags": [
+          "포멀"
+        ],
+        "use_case": [
+          "passport",
+          "visa"
+        ]
       },
       "attire_desc": "Replace current clothing with a black single-breasted women's suit jacket with notch lapels over a plain white blouse. Clothing must look natural and properly fitted.",
-      "swatch": { "primary": "#1C1C1E", "secondary": "#FFFFFF" },
-      "image_gcs": null, "thumbnail": null, "source": null, "source_ref": null,
-      "labels": { "ko": "블랙 싱글 정장", "ja": "ブラック シングルスーツ", "en": "Black Single Suit" },
+      "swatch": {
+        "primary": "#1C1C1E",
+        "secondary": "#FFFFFF"
+      },
+      "image_gcs": null,
+      "thumbnail": null,
+      "source": null,
+      "source_ref": null,
+      "labels": {
+        "ko": "블랙 싱글 정장",
+        "ja": "ブラック シングルスーツ",
+        "en": "Black Single Suit",
+        "es": "Black Single Suit"
+      },
       "vendor": null
     },
     {
@@ -420,18 +1099,47 @@
       "active": false,
       "sort_order": 110,
       "tags": {
-        "gender": "f", "category": "blazer", "subcategory": null,
-        "accessory": { "tie": null }, "fit": "regular", "material": "blend",
-        "color": { "primary": "beige", "secondary": "white", "tone": "warm" },
-        "pattern": "solid", "neckline": "notch-lapel", "season": "all",
-        "formality": "semi-formal", "age_range": "20s-30s",
-        "trend_tags": ["소프트"],
-        "use_case": ["resume", "headshot"]
+        "gender": "f",
+        "category": "blazer",
+        "subcategory": null,
+        "accessory": {
+          "tie": null
+        },
+        "fit": "regular",
+        "material": "blend",
+        "color": {
+          "primary": "beige",
+          "secondary": "white",
+          "tone": "warm"
+        },
+        "pattern": "solid",
+        "neckline": "notch-lapel",
+        "season": "all",
+        "formality": "semi-formal",
+        "age_range": "20s-30s",
+        "trend_tags": [
+          "소프트"
+        ],
+        "use_case": [
+          "resume",
+          "headshot"
+        ]
       },
       "attire_desc": "Replace current clothing with a beige women's blazer with notch lapels over a plain white blouse. Clothing must look natural and properly fitted.",
-      "swatch": { "primary": "#D8C6A8", "secondary": "#FFFFFF" },
-      "image_gcs": null, "thumbnail": null, "source": null, "source_ref": null,
-      "labels": { "ko": "베이지 블레이저", "ja": "ベージュ ブレザー", "en": "Beige Blazer" },
+      "swatch": {
+        "primary": "#D8C6A8",
+        "secondary": "#FFFFFF"
+      },
+      "image_gcs": null,
+      "thumbnail": null,
+      "source": null,
+      "source_ref": null,
+      "labels": {
+        "ko": "베이지 블레이저",
+        "ja": "ベージュ ブレザー",
+        "en": "Beige Blazer",
+        "es": "Beige Blazer"
+      },
       "vendor": null
     },
     {
@@ -439,18 +1147,48 @@
       "active": false,
       "sort_order": 120,
       "tags": {
-        "gender": "f", "category": "blazer", "subcategory": null,
-        "accessory": { "tie": null }, "fit": "regular", "material": "blend",
-        "color": { "primary": "cream", "secondary": "white", "tone": "warm" },
-        "pattern": "solid", "neckline": "notch-lapel", "season": "ss",
-        "formality": "business-casual", "age_range": "20s-30s",
-        "trend_tags": ["소프트", "미니멀"],
-        "use_case": ["headshot", "profile"]
+        "gender": "f",
+        "category": "blazer",
+        "subcategory": null,
+        "accessory": {
+          "tie": null
+        },
+        "fit": "regular",
+        "material": "blend",
+        "color": {
+          "primary": "cream",
+          "secondary": "white",
+          "tone": "warm"
+        },
+        "pattern": "solid",
+        "neckline": "notch-lapel",
+        "season": "ss",
+        "formality": "business-casual",
+        "age_range": "20s-30s",
+        "trend_tags": [
+          "소프트",
+          "미니멀"
+        ],
+        "use_case": [
+          "headshot",
+          "profile"
+        ]
       },
       "attire_desc": "Replace current clothing with a cream-colored women's blazer with notch lapels over a plain white top. Clothing must look natural and properly fitted.",
-      "swatch": { "primary": "#F1E8D8", "secondary": "#FFFFFF" },
-      "image_gcs": null, "thumbnail": null, "source": null, "source_ref": null,
-      "labels": { "ko": "크림 블레이저", "ja": "クリーム ブレザー", "en": "Cream Blazer" },
+      "swatch": {
+        "primary": "#F1E8D8",
+        "secondary": "#FFFFFF"
+      },
+      "image_gcs": null,
+      "thumbnail": null,
+      "source": null,
+      "source_ref": null,
+      "labels": {
+        "ko": "크림 블레이저",
+        "ja": "クリーム ブレザー",
+        "en": "Cream Blazer",
+        "es": "Cream Blazer"
+      },
       "vendor": null
     },
     {
@@ -458,18 +1196,48 @@
       "active": true,
       "sort_order": 40,
       "tags": {
-        "gender": "f", "category": "blouse", "subcategory": null,
-        "accessory": { "tie": null }, "fit": "regular", "material": "cotton",
-        "color": { "primary": "white", "secondary": null, "tone": "neutral" },
-        "pattern": "solid", "neckline": "round", "season": "all",
-        "formality": "semi-formal", "age_range": "20s-40s",
-        "trend_tags": ["베이직", "취업필수"],
-        "use_case": ["headshot", "profile"]
+        "gender": "f",
+        "category": "blouse",
+        "subcategory": null,
+        "accessory": {
+          "tie": null
+        },
+        "fit": "regular",
+        "material": "cotton",
+        "color": {
+          "primary": "white",
+          "secondary": null,
+          "tone": "neutral"
+        },
+        "pattern": "solid",
+        "neckline": "round",
+        "season": "all",
+        "formality": "semi-formal",
+        "age_range": "20s-40s",
+        "trend_tags": [
+          "베이직",
+          "취업필수"
+        ],
+        "use_case": [
+          "headshot",
+          "profile"
+        ]
       },
       "attire_desc": "Replace current clothing with a clean white woven blouse (elegant drapey fabric with a subtle sheen, NOT a t-shirt, NOT knit jersey) with a refined round neckline and a smooth simple front. Clothing must look natural and properly fitted.",
-      "swatch": { "primary": "#FFFFFF", "secondary": "#E8E8E8" },
-      "image_gcs": "gs://monk-ai-images/assets/attire/f_blouse_white_round_06.png", "thumbnail": "/images/attire/f_blouse_white_round_06_thumb.webp", "source": "ai-generated", "source_ref": null,
-      "labels": { "ko": "화이트 라운드 블라우스", "ja": "ホワイト ラウンドブラウス", "en": "White Round-Neck Blouse" },
+      "swatch": {
+        "primary": "#FFFFFF",
+        "secondary": "#E8E8E8"
+      },
+      "image_gcs": "gs://monk-ai-images/assets/attire/f_blouse_white_round_06.png",
+      "thumbnail": "/images/attire/f_blouse_white_round_06_thumb.webp",
+      "source": "ai-generated",
+      "source_ref": null,
+      "labels": {
+        "ko": "화이트 라운드 블라우스",
+        "ja": "ホワイト ラウンドブラウス",
+        "en": "White Round-Neck Blouse",
+        "es": "White Round-Neck Blouse"
+      },
       "vendor": null
     },
     {
@@ -477,18 +1245,46 @@
       "active": true,
       "sort_order": 50,
       "tags": {
-        "gender": "f", "category": "blouse", "subcategory": null,
-        "accessory": { "tie": null }, "fit": "regular", "material": "blend",
-        "color": { "primary": "cream", "secondary": null, "tone": "warm" },
-        "pattern": "solid", "neckline": "v-neck", "season": "all",
-        "formality": "semi-formal", "age_range": "20s-30s",
-        "trend_tags": ["소프트"],
-        "use_case": ["resume"]
+        "gender": "f",
+        "category": "blouse",
+        "subcategory": null,
+        "accessory": {
+          "tie": null
+        },
+        "fit": "regular",
+        "material": "blend",
+        "color": {
+          "primary": "cream",
+          "secondary": null,
+          "tone": "warm"
+        },
+        "pattern": "solid",
+        "neckline": "v-neck",
+        "season": "all",
+        "formality": "semi-formal",
+        "age_range": "20s-30s",
+        "trend_tags": [
+          "소프트"
+        ],
+        "use_case": [
+          "resume"
+        ]
       },
       "attire_desc": "Replace current clothing with a cream-colored v-neck blouse with a clean simple front. Clothing must look natural and properly fitted.",
-      "swatch": { "primary": "#F1E8D8", "secondary": "#FAF5EA" },
-      "image_gcs": null, "thumbnail": null, "source": null, "source_ref": null,
-      "labels": { "ko": "크림 브이넥 블라우스", "ja": "クリーム Vネックブラウス", "en": "Cream V-Neck Blouse" },
+      "swatch": {
+        "primary": "#F1E8D8",
+        "secondary": "#FAF5EA"
+      },
+      "image_gcs": null,
+      "thumbnail": null,
+      "source": null,
+      "source_ref": null,
+      "labels": {
+        "ko": "크림 브이넥 블라우스",
+        "ja": "クリーム Vネックブラウス",
+        "en": "Cream V-Neck Blouse",
+        "es": "Cream V-Neck Blouse"
+      },
       "vendor": null
     },
     {
@@ -496,18 +1292,46 @@
       "active": true,
       "sort_order": 60,
       "tags": {
-        "gender": "f", "category": "blouse", "subcategory": "single-breasted",
-        "accessory": { "tie": null }, "fit": "regular", "material": "cotton",
-        "color": { "primary": "light-blue", "secondary": null, "tone": "cool" },
-        "pattern": "solid", "neckline": "stand-collar", "season": "all",
-        "formality": "semi-formal", "age_range": "30s+",
-        "trend_tags": ["클린"],
-        "use_case": ["passport"]
+        "gender": "f",
+        "category": "blouse",
+        "subcategory": "single-breasted",
+        "accessory": {
+          "tie": null
+        },
+        "fit": "regular",
+        "material": "cotton",
+        "color": {
+          "primary": "light-blue",
+          "secondary": null,
+          "tone": "cool"
+        },
+        "pattern": "solid",
+        "neckline": "stand-collar",
+        "season": "all",
+        "formality": "semi-formal",
+        "age_range": "30s+",
+        "trend_tags": [
+          "클린"
+        ],
+        "use_case": [
+          "passport"
+        ]
       },
       "attire_desc": "Replace current clothing with a light blue stand-collar button-up blouse, fully buttoned. Clothing must look natural and properly fitted.",
-      "swatch": { "primary": "#BDD7EE", "secondary": "#FFFFFF" },
-      "image_gcs": null, "thumbnail": null, "source": null, "source_ref": null,
-      "labels": { "ko": "라이트블루 스탠드칼라 블라우스", "ja": "ライトブルー スタンドカラーブラウス", "en": "Light Blue Stand-Collar Blouse" },
+      "swatch": {
+        "primary": "#BDD7EE",
+        "secondary": "#FFFFFF"
+      },
+      "image_gcs": null,
+      "thumbnail": null,
+      "source": null,
+      "source_ref": null,
+      "labels": {
+        "ko": "라이트블루 스탠드칼라 블라우스",
+        "ja": "ライトブルー スタンドカラーブラウス",
+        "en": "Light Blue Stand-Collar Blouse",
+        "es": "Light Blue Stand-Collar Blouse"
+      },
       "vendor": null
     },
     {
@@ -515,18 +1339,48 @@
       "active": true,
       "sort_order": 40,
       "tags": {
-        "gender": "f", "category": "blouse", "subcategory": null,
-        "accessory": { "tie": null }, "fit": "regular", "material": "blend",
-        "color": { "primary": "beige", "secondary": null, "tone": "warm" },
-        "pattern": "solid", "neckline": "round", "season": "all",
-        "formality": "business-casual", "age_range": "20s-40s",
-        "trend_tags": ["소프트"],
-        "use_case": ["passport", "resume", "headshot"]
+        "gender": "f",
+        "category": "blouse",
+        "subcategory": null,
+        "accessory": {
+          "tie": null
+        },
+        "fit": "regular",
+        "material": "blend",
+        "color": {
+          "primary": "beige",
+          "secondary": null,
+          "tone": "warm"
+        },
+        "pattern": "solid",
+        "neckline": "round",
+        "season": "all",
+        "formality": "business-casual",
+        "age_range": "20s-40s",
+        "trend_tags": [
+          "소프트"
+        ],
+        "use_case": [
+          "passport",
+          "resume",
+          "headshot"
+        ]
       },
       "attire_desc": "Replace current clothing with a beige round-neck blouse with a clean simple front. Clothing must look natural and properly fitted.",
-      "swatch": { "primary": "#D8C6A8", "secondary": "#E5D8C0" },
-      "image_gcs": null, "thumbnail": null, "source": null, "source_ref": null,
-      "labels": { "ko": "베이지 라운드 블라우스", "ja": "ベージュ ラウンドブラウス", "en": "Beige Round-Neck Blouse" },
+      "swatch": {
+        "primary": "#D8C6A8",
+        "secondary": "#E5D8C0"
+      },
+      "image_gcs": null,
+      "thumbnail": null,
+      "source": null,
+      "source_ref": null,
+      "labels": {
+        "ko": "베이지 라운드 블라우스",
+        "ja": "ベージュ ラウンドブラウス",
+        "en": "Beige Round-Neck Blouse",
+        "es": "Beige Round-Neck Blouse"
+      },
       "vendor": null
     },
     {
@@ -534,18 +1388,47 @@
       "active": false,
       "sort_order": 140,
       "tags": {
-        "gender": "f", "category": "knit", "subcategory": null,
-        "accessory": { "tie": null }, "fit": "regular", "material": "wool",
-        "color": { "primary": "charcoal", "secondary": null, "tone": "neutral" },
-        "pattern": "solid", "neckline": "round", "season": "fw",
-        "formality": "business-casual", "age_range": "30s+",
-        "trend_tags": ["비즈캐주얼"],
-        "use_case": ["headshot", "profile"]
+        "gender": "f",
+        "category": "knit",
+        "subcategory": null,
+        "accessory": {
+          "tie": null
+        },
+        "fit": "regular",
+        "material": "wool",
+        "color": {
+          "primary": "charcoal",
+          "secondary": null,
+          "tone": "neutral"
+        },
+        "pattern": "solid",
+        "neckline": "round",
+        "season": "fw",
+        "formality": "business-casual",
+        "age_range": "30s+",
+        "trend_tags": [
+          "비즈캐주얼"
+        ],
+        "use_case": [
+          "headshot",
+          "profile"
+        ]
       },
       "attire_desc": "Replace current clothing with a fine-gauge charcoal round-neck knit sweater. Clothing must look natural and properly fitted.",
-      "swatch": { "primary": "#3B3F46", "secondary": "#4A4F58" },
-      "image_gcs": null, "thumbnail": null, "source": null, "source_ref": null,
-      "labels": { "ko": "차콜 라운드 니트", "ja": "チャコール ラウンドニット", "en": "Charcoal Round-Neck Knit" },
+      "swatch": {
+        "primary": "#3B3F46",
+        "secondary": "#4A4F58"
+      },
+      "image_gcs": null,
+      "thumbnail": null,
+      "source": null,
+      "source_ref": null,
+      "labels": {
+        "ko": "차콜 라운드 니트",
+        "ja": "チャコール ラウンドニット",
+        "en": "Charcoal Round-Neck Knit",
+        "es": "Charcoal Round-Neck Knit"
+      },
       "vendor": null
     },
     {
@@ -553,18 +1436,46 @@
       "active": false,
       "sort_order": 150,
       "tags": {
-        "gender": "f", "category": "knit", "subcategory": null,
-        "accessory": { "tie": null }, "fit": "regular", "material": "wool",
-        "color": { "primary": "navy", "secondary": null, "tone": "cool" },
-        "pattern": "solid", "neckline": "v-neck", "season": "fw",
-        "formality": "business-casual", "age_range": "20s-30s",
-        "trend_tags": ["비즈캐주얼"],
-        "use_case": ["headshot"]
+        "gender": "f",
+        "category": "knit",
+        "subcategory": null,
+        "accessory": {
+          "tie": null
+        },
+        "fit": "regular",
+        "material": "wool",
+        "color": {
+          "primary": "navy",
+          "secondary": null,
+          "tone": "cool"
+        },
+        "pattern": "solid",
+        "neckline": "v-neck",
+        "season": "fw",
+        "formality": "business-casual",
+        "age_range": "20s-30s",
+        "trend_tags": [
+          "비즈캐주얼"
+        ],
+        "use_case": [
+          "headshot"
+        ]
       },
       "attire_desc": "Replace current clothing with a fine-gauge navy v-neck knit sweater. Clothing must look natural and properly fitted.",
-      "swatch": { "primary": "#2C3E5D", "secondary": "#3D5177" },
-      "image_gcs": null, "thumbnail": null, "source": null, "source_ref": null,
-      "labels": { "ko": "네이비 브이넥 니트", "ja": "ネイビー Vネックニット", "en": "Navy V-Neck Knit" },
+      "swatch": {
+        "primary": "#2C3E5D",
+        "secondary": "#3D5177"
+      },
+      "image_gcs": null,
+      "thumbnail": null,
+      "source": null,
+      "source_ref": null,
+      "labels": {
+        "ko": "네이비 브이넥 니트",
+        "ja": "ネイビー Vネックニット",
+        "en": "Navy V-Neck Knit",
+        "es": "Navy V-Neck Knit"
+      },
       "vendor": null
     },
     {
@@ -572,18 +1483,47 @@
       "active": false,
       "sort_order": 160,
       "tags": {
-        "gender": "f", "category": "knit", "subcategory": null,
-        "accessory": { "tie": null }, "fit": "regular", "material": "cotton",
-        "color": { "primary": "cream", "secondary": null, "tone": "warm" },
-        "pattern": "solid", "neckline": "crew", "season": "all",
-        "formality": "casual", "age_range": "20s",
-        "trend_tags": ["소프트"],
-        "use_case": ["headshot", "profile"]
+        "gender": "f",
+        "category": "knit",
+        "subcategory": null,
+        "accessory": {
+          "tie": null
+        },
+        "fit": "regular",
+        "material": "cotton",
+        "color": {
+          "primary": "cream",
+          "secondary": null,
+          "tone": "warm"
+        },
+        "pattern": "solid",
+        "neckline": "crew",
+        "season": "all",
+        "formality": "casual",
+        "age_range": "20s",
+        "trend_tags": [
+          "소프트"
+        ],
+        "use_case": [
+          "headshot",
+          "profile"
+        ]
       },
       "attire_desc": "Replace current clothing with a plain cream crew-neck knit sweater. Clothing must look natural and properly fitted.",
-      "swatch": { "primary": "#F1E8D8", "secondary": "#FAF5EA" },
-      "image_gcs": null, "thumbnail": null, "source": null, "source_ref": null,
-      "labels": { "ko": "크림 크루넥 니트", "ja": "クリーム クルーネックニット", "en": "Cream Crew-Neck Knit" },
+      "swatch": {
+        "primary": "#F1E8D8",
+        "secondary": "#FAF5EA"
+      },
+      "image_gcs": null,
+      "thumbnail": null,
+      "source": null,
+      "source_ref": null,
+      "labels": {
+        "ko": "크림 크루넥 니트",
+        "ja": "クリーム クルーネックニット",
+        "en": "Cream Crew-Neck Knit",
+        "es": "Cream Crew-Neck Knit"
+      },
       "vendor": null
     },
     {
@@ -591,18 +1531,46 @@
       "active": false,
       "sort_order": 170,
       "tags": {
-        "gender": "f", "category": "knit", "subcategory": null,
-        "accessory": { "tie": null }, "fit": "regular", "material": "cotton",
-        "color": { "primary": "gray-light", "secondary": null, "tone": "neutral" },
-        "pattern": "solid", "neckline": "round", "season": "all",
-        "formality": "casual", "age_range": "teen-20s",
-        "trend_tags": ["캠퍼스"],
-        "use_case": ["student-id"]
+        "gender": "f",
+        "category": "knit",
+        "subcategory": null,
+        "accessory": {
+          "tie": null
+        },
+        "fit": "regular",
+        "material": "cotton",
+        "color": {
+          "primary": "gray-light",
+          "secondary": null,
+          "tone": "neutral"
+        },
+        "pattern": "solid",
+        "neckline": "round",
+        "season": "all",
+        "formality": "casual",
+        "age_range": "teen-20s",
+        "trend_tags": [
+          "캠퍼스"
+        ],
+        "use_case": [
+          "student-id"
+        ]
       },
       "attire_desc": "Replace current clothing with a plain light gray round-neck knit sweater. Clothing must look natural and properly fitted.",
-      "swatch": { "primary": "#C7CBD1", "secondary": "#D9DCE1" },
-      "image_gcs": null, "thumbnail": null, "source": null, "source_ref": null,
-      "labels": { "ko": "라이트그레이 라운드 니트", "ja": "ライトグレー ラウンドニット", "en": "Light Gray Round Knit" },
+      "swatch": {
+        "primary": "#C7CBD1",
+        "secondary": "#D9DCE1"
+      },
+      "image_gcs": null,
+      "thumbnail": null,
+      "source": null,
+      "source_ref": null,
+      "labels": {
+        "ko": "라이트그레이 라운드 니트",
+        "ja": "ライトグレー ラウンドニット",
+        "en": "Light Gray Round Knit",
+        "es": "Light Gray Round Knit"
+      },
       "vendor": null
     },
     {
@@ -610,18 +1578,46 @@
       "active": false,
       "sort_order": 180,
       "tags": {
-        "gender": "f", "category": "tank", "subcategory": null,
-        "accessory": { "tie": null }, "fit": "slim", "material": "cotton",
-        "color": { "primary": "white", "secondary": null, "tone": "neutral" },
-        "pattern": "solid", "neckline": "round", "season": "ss",
-        "formality": "casual", "age_range": "20s",
-        "trend_tags": ["미니멀"],
-        "use_case": ["headshot"]
+        "gender": "f",
+        "category": "tank",
+        "subcategory": null,
+        "accessory": {
+          "tie": null
+        },
+        "fit": "slim",
+        "material": "cotton",
+        "color": {
+          "primary": "white",
+          "secondary": null,
+          "tone": "neutral"
+        },
+        "pattern": "solid",
+        "neckline": "round",
+        "season": "ss",
+        "formality": "casual",
+        "age_range": "20s",
+        "trend_tags": [
+          "미니멀"
+        ],
+        "use_case": [
+          "headshot"
+        ]
       },
       "attire_desc": "Replace current clothing with a plain white sleeveless round-neck top. Clothing must look natural and properly fitted.",
-      "swatch": { "primary": "#FFFFFF", "secondary": "#E8E8E8" },
-      "image_gcs": null, "thumbnail": null, "source": null, "source_ref": null,
-      "labels": { "ko": "화이트 탱크탑", "ja": "ホワイト タンクトップ", "en": "White Tank Top" },
+      "swatch": {
+        "primary": "#FFFFFF",
+        "secondary": "#E8E8E8"
+      },
+      "image_gcs": null,
+      "thumbnail": null,
+      "source": null,
+      "source_ref": null,
+      "labels": {
+        "ko": "화이트 탱크탑",
+        "ja": "ホワイト タンクトップ",
+        "en": "White Tank Top",
+        "es": "White Tank Top"
+      },
       "vendor": null
     },
     {
@@ -629,18 +1625,47 @@
       "active": false,
       "sort_order": 190,
       "tags": {
-        "gender": "f", "category": "tank", "subcategory": null,
-        "accessory": { "tie": null }, "fit": "slim", "material": "cotton",
-        "color": { "primary": "black", "secondary": null, "tone": "neutral" },
-        "pattern": "solid", "neckline": "round", "season": "ss",
-        "formality": "casual", "age_range": "20s-30s",
-        "trend_tags": ["미니멀"],
-        "use_case": ["headshot", "profile"]
+        "gender": "f",
+        "category": "tank",
+        "subcategory": null,
+        "accessory": {
+          "tie": null
+        },
+        "fit": "slim",
+        "material": "cotton",
+        "color": {
+          "primary": "black",
+          "secondary": null,
+          "tone": "neutral"
+        },
+        "pattern": "solid",
+        "neckline": "round",
+        "season": "ss",
+        "formality": "casual",
+        "age_range": "20s-30s",
+        "trend_tags": [
+          "미니멀"
+        ],
+        "use_case": [
+          "headshot",
+          "profile"
+        ]
       },
       "attire_desc": "Replace current clothing with a plain black sleeveless round-neck top. Clothing must look natural and properly fitted.",
-      "swatch": { "primary": "#1C1C1E", "secondary": "#333336" },
-      "image_gcs": null, "thumbnail": null, "source": null, "source_ref": null,
-      "labels": { "ko": "블랙 탱크탑", "ja": "ブラック タンクトップ", "en": "Black Tank Top" },
+      "swatch": {
+        "primary": "#1C1C1E",
+        "secondary": "#333336"
+      },
+      "image_gcs": null,
+      "thumbnail": null,
+      "source": null,
+      "source_ref": null,
+      "labels": {
+        "ko": "블랙 탱크탑",
+        "ja": "ブラック タンクトップ",
+        "en": "Black Tank Top",
+        "es": "Black Tank Top"
+      },
       "vendor": null
     },
     {
@@ -648,18 +1673,47 @@
       "active": false,
       "sort_order": 300,
       "tags": {
-        "gender": "unisex", "category": "shirt", "subcategory": null,
-        "accessory": { "tie": null }, "fit": "regular", "material": "cotton",
-        "color": { "primary": "light-blue", "secondary": null, "tone": "cool" },
-        "pattern": "solid", "neckline": "stand-collar", "season": "all",
-        "formality": "semi-formal", "age_range": "baby",
-        "trend_tags": ["베이비"],
-        "use_case": ["passport", "id-photo"]
+        "gender": "unisex",
+        "category": "shirt",
+        "subcategory": null,
+        "accessory": {
+          "tie": null
+        },
+        "fit": "regular",
+        "material": "cotton",
+        "color": {
+          "primary": "light-blue",
+          "secondary": null,
+          "tone": "cool"
+        },
+        "pattern": "solid",
+        "neckline": "stand-collar",
+        "season": "all",
+        "formality": "semi-formal",
+        "age_range": "baby",
+        "trend_tags": [
+          "베이비"
+        ],
+        "use_case": [
+          "passport",
+          "id-photo"
+        ]
       },
       "attire_desc": "Replace current clothing with a soft sky blue baby collared shirt, simple and neat, appropriate for an infant passport photo. Clothing must look natural and properly fitted for a baby.",
-      "swatch": { "primary": "#BDD7EE", "secondary": "#FFFFFF" },
-      "image_gcs": null, "thumbnail": null, "source": null, "source_ref": null,
-      "labels": { "ko": "베이비 스카이블루 셔츠", "ja": "ベビー スカイブルーシャツ", "en": "Baby Sky Blue Shirt" },
+      "swatch": {
+        "primary": "#BDD7EE",
+        "secondary": "#FFFFFF"
+      },
+      "image_gcs": null,
+      "thumbnail": null,
+      "source": null,
+      "source_ref": null,
+      "labels": {
+        "ko": "베이비 스카이블루 셔츠",
+        "ja": "ベビー スカイブルーシャツ",
+        "en": "Baby Sky Blue Shirt",
+        "es": "Baby Sky Blue Shirt"
+      },
       "vendor": null
     },
     {
@@ -667,18 +1721,47 @@
       "active": false,
       "sort_order": 310,
       "tags": {
-        "gender": "unisex", "category": "knit", "subcategory": null,
-        "accessory": { "tie": null }, "fit": "regular", "material": "cotton",
-        "color": { "primary": "gray-light", "secondary": null, "tone": "neutral" },
-        "pattern": "solid", "neckline": "round", "season": "all",
-        "formality": "casual", "age_range": "baby",
-        "trend_tags": ["베이비"],
-        "use_case": ["passport", "id-photo"]
+        "gender": "unisex",
+        "category": "knit",
+        "subcategory": null,
+        "accessory": {
+          "tie": null
+        },
+        "fit": "regular",
+        "material": "cotton",
+        "color": {
+          "primary": "gray-light",
+          "secondary": null,
+          "tone": "neutral"
+        },
+        "pattern": "solid",
+        "neckline": "round",
+        "season": "all",
+        "formality": "casual",
+        "age_range": "baby",
+        "trend_tags": [
+          "베이비"
+        ],
+        "use_case": [
+          "passport",
+          "id-photo"
+        ]
       },
       "attire_desc": "Replace current clothing with a plain light gray round-neck baby knit top, simple and neat, appropriate for an infant passport photo. Clothing must look natural and properly fitted for a baby.",
-      "swatch": { "primary": "#C7CBD1", "secondary": "#D9DCE1" },
-      "image_gcs": null, "thumbnail": null, "source": null, "source_ref": null,
-      "labels": { "ko": "베이비 그레이 니트", "ja": "ベビー グレーニット", "en": "Baby Gray Knit" },
+      "swatch": {
+        "primary": "#C7CBD1",
+        "secondary": "#D9DCE1"
+      },
+      "image_gcs": null,
+      "thumbnail": null,
+      "source": null,
+      "source_ref": null,
+      "labels": {
+        "ko": "베이비 그레이 니트",
+        "ja": "ベビー グレーニット",
+        "en": "Baby Gray Knit",
+        "es": "Baby Gray Knit"
+      },
       "vendor": null
     },
     {
@@ -686,18 +1769,47 @@
       "active": false,
       "sort_order": 320,
       "tags": {
-        "gender": "unisex", "category": "cardigan", "subcategory": null,
-        "accessory": { "tie": null }, "fit": "regular", "material": "cotton",
-        "color": { "primary": "cream", "secondary": "white", "tone": "warm" },
-        "pattern": "solid", "neckline": "round", "season": "all",
-        "formality": "casual", "age_range": "baby",
-        "trend_tags": ["베이비"],
-        "use_case": ["passport", "id-photo"]
+        "gender": "unisex",
+        "category": "cardigan",
+        "subcategory": null,
+        "accessory": {
+          "tie": null
+        },
+        "fit": "regular",
+        "material": "cotton",
+        "color": {
+          "primary": "cream",
+          "secondary": "white",
+          "tone": "warm"
+        },
+        "pattern": "solid",
+        "neckline": "round",
+        "season": "all",
+        "formality": "casual",
+        "age_range": "baby",
+        "trend_tags": [
+          "베이비"
+        ],
+        "use_case": [
+          "passport",
+          "id-photo"
+        ]
       },
       "attire_desc": "Replace current clothing with a cream baby cardigan over a plain inner top, simple and neat, appropriate for an infant passport photo. Clothing must look natural and properly fitted for a baby.",
-      "swatch": { "primary": "#F1E8D8", "secondary": "#FFFFFF" },
-      "image_gcs": null, "thumbnail": null, "source": null, "source_ref": null,
-      "labels": { "ko": "베이비 크림 가디건", "ja": "ベビー クリームカーディガン", "en": "Baby Cream Cardigan" },
+      "swatch": {
+        "primary": "#F1E8D8",
+        "secondary": "#FFFFFF"
+      },
+      "image_gcs": null,
+      "thumbnail": null,
+      "source": null,
+      "source_ref": null,
+      "labels": {
+        "ko": "베이비 크림 가디건",
+        "ja": "ベビー クリームカーディガン",
+        "en": "Baby Cream Cardigan",
+        "es": "Baby Cream Cardigan"
+      },
       "vendor": null
     },
     {
@@ -705,25 +1817,72 @@
       "active": false,
       "sort_order": 200,
       "tags": {
-        "gender": "f", "category": "cardigan", "subcategory": null,
-        "accessory": { "tie": null }, "fit": "regular", "material": "cotton",
-        "color": { "primary": "beige", "secondary": "white", "tone": "warm" },
-        "pattern": "solid", "neckline": "round", "season": "all",
-        "formality": "casual", "age_range": "teen",
-        "trend_tags": ["캠퍼스"],
-        "use_case": ["id-photo", "student-id"]
+        "gender": "f",
+        "category": "cardigan",
+        "subcategory": null,
+        "accessory": {
+          "tie": null
+        },
+        "fit": "regular",
+        "material": "cotton",
+        "color": {
+          "primary": "beige",
+          "secondary": "white",
+          "tone": "warm"
+        },
+        "pattern": "solid",
+        "neckline": "round",
+        "season": "all",
+        "formality": "casual",
+        "age_range": "teen",
+        "trend_tags": [
+          "캠퍼스"
+        ],
+        "use_case": [
+          "id-photo",
+          "student-id"
+        ]
       },
       "attire_desc": "Replace current clothing with a beige round-neck cardigan over a plain white inner top. Clothing must look natural and properly fitted.",
-      "swatch": { "primary": "#D8C6A8", "secondary": "#FFFFFF" },
-      "image_gcs": null, "thumbnail": null, "source": null, "source_ref": null,
-      "labels": { "ko": "베이지 가디건", "ja": "ベージュ カーディガン", "en": "Beige Cardigan" },
+      "swatch": {
+        "primary": "#D8C6A8",
+        "secondary": "#FFFFFF"
+      },
+      "image_gcs": null,
+      "thumbnail": null,
+      "source": null,
+      "source_ref": null,
+      "labels": {
+        "ko": "베이지 가디건",
+        "ja": "ベージュ カーディガン",
+        "en": "Beige Cardigan",
+        "es": "Cárdigan beige"
+      },
       "vendor": null
     }
   ],
   "service_profiles": {
-    "idpass": { "use_case": ["passport", "visa", "resume"] },
-    "headshot": { "use_case": ["headshot", "profile"] },
-    "student": { "use_case": ["student-id", "id-photo"] },
-    "styler": { "use_case": [] }
+    "idpass": {
+      "use_case": [
+        "passport",
+        "visa",
+        "resume"
+      ]
+    },
+    "headshot": {
+      "use_case": [
+        "headshot",
+        "profile"
+      ]
+    },
+    "student": {
+      "use_case": [
+        "student-id",
+        "id-photo"
+      ]
+    },
+    "styler": {
+      "use_case": []
+    }
   }
 }

@@ -40,6 +40,13 @@
       notice: 'Rendered with AI outfit synthesis',
       warnLight: '⚠ On white-background specs, white/ivory tops may blend into the background and get rejected',
       uploadBad: 'This image cannot be used — please pick one at least 256px and under 5MB'
+    },
+    es: {
+      title: 'Elegir atuendo', gm: 'Caballero', gf: 'Dama', all: 'Todo',
+      upload: 'Subir mi ropa', uploadOn: 'Mi ropa', soon: 'Próximamente',
+      notice: 'Imagen renderizada con síntesis de atuendo AI',
+      warnLight: '⚠ En especificaciones de fondo blanco, las prendas claras pueden confundirse con el fondo y ser rechazadas',
+      uploadBad: 'Esta imagen no se puede usar — seleccione una de al menos 256px y menos de 5MB'
     }
   };
 
@@ -96,10 +103,17 @@
     this.data = null;
     this.selection = null;   // null = default_option
     this.uploadItem = null;  // {id:'upload', attire_image, thumbnail(dataURL), isUpload:true}
-    this.t = UI_TEXT[this.lang] || UI_TEXT.ko;
+    this.t = UI_TEXT[this.lang] || UI_TEXT.en || UI_TEXT.ko;
 
     container.classList.add('atp');
     container.setAttribute('data-atp-lang', this.lang);
+
+    if (!document.querySelector('link[href*="attire-picker.css"]')) {
+      var cssLink = document.createElement('link');
+      cssLink.rel = 'stylesheet';
+      cssLink.href = '/components/attire-picker/attire-picker.css';
+      document.head.appendChild(cssLink);
+    }
 
     var self = this;
     var url = this.opts.presetsUrl || '/components/attire-picker/attire-presets.json';
@@ -133,6 +147,7 @@
     var g = this.gender;
     return (this.data.items || []).filter(function (it) {
       if (!it.active && !self.includeInactive) return false;
+      if (!it.thumbnail && !self.includeInactive) return false;
       if (!self.ageMatch(it)) return false;
       if (self.age !== 'baby' && it.tags.gender !== 'unisex' && it.tags.gender !== g) return false;
       if (uc.length && !(it.tags.use_case || []).some(function (u) { return uc.indexOf(u) !== -1; })) return false;
@@ -228,7 +243,7 @@
       catRow.appendChild(allChip);
       cats.forEach(function (cat) {
         var chip = el('button', 'atp-cat' + (self.category === cat.id ? ' atp-on' : ''), { type: 'button', 'data-cat': cat.id });
-        chip.textContent = (cat.labels && cat.labels[lang]) || cat.id;
+        chip.textContent = (cat.labels && (cat.labels[lang] || cat.labels.en)) || cat.id;
         catRow.appendChild(chip);
       });
       catRow.addEventListener('click', function (e) {
@@ -364,7 +379,7 @@
     }
 
     var lab = el('span', 'atp-label');
-    lab.textContent = (it.labels && it.labels[lang]) || it.id;
+    lab.textContent = (it.labels && (it.labels[lang] || it.labels.en)) || it.id;
     chip.appendChild(lab);
 
     chip.addEventListener('click', function () {
