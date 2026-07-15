@@ -9,6 +9,7 @@ import { fileURLToPath } from 'url';
 import { escapeHtml, layoutShell } from './render-shell.js';
 import { getSpecCropParams } from '../spec-crop.js';
 import { log, LEMONSQUEEZY_VARIANT_SPECS_SINGLE, LEMONSQUEEZY_VARIANT_SPECS_SINGLE_JP } from '../shared/config.js';
+import { COMMON_RULES, SPECS_I18N, V2_REJECTIONS, V2_DETAILS, V2_FAQ_FALLBACK, RESTR_LABELS } from './specs-i18n.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const GUIDE_IMAGES = new Set(
@@ -28,338 +29,7 @@ const ASSET_VER = process.env.K_REVISION || 'dev';
 const specsCssLink = (name) => `\n<link rel="stylesheet" href="/css/${name}.css?v=${ASSET_VER}">`;
 const specsJsTag = (name) => `\n<script src="/js/${name}.js?v=${ASSET_VER}" defer></script>`;
 
-// ─── I18N ───────────────────────────────────────────────────────
-
-const COMMON_RULES = {
-  ko: [
-    '촬영한지 6개월 이내의 사진이어야 합니다.',
-    '이마, 눈썹, 귀까지 얼굴전체가 나와야 합니다.',
-    '어깨선이 나올수 있도록 머리는 뒤로 넘기는게 좋습니다.',
-    '컬러렌즈, 반짝임이 심한 악세사리는 피하는게 좋습니다.',
-    '시선은 정면을 응시해야 합니다.',
-    '치아가 보이면 안됩니다.',
-    '흰색 또는 밝은색 상의는 배경과 구분이 어려울 수 있으므로 피하는 것이 좋습니다.',
-  ],
-  ja: [
-    '撮影から6ヶ月以内の写真でなければなりません。',
-    '額、眉、耳まで顔全体が写っている必要があります。',
-    '肩のラインが見えるよう、髪は後ろに流すのが望ましいです。',
-    'カラーコンタクト、光沢の強いアクセサリーは避けてください。',
-    '視線は正面を向いてください。',
-    '歯が見えてはいけません。',
-    '白色や明るい色の上着は背景と区別がつきにくいため、避けることをお勧めします。',
-  ],
-  en: [
-    'The photo must be taken within the last 6 months.',
-    'Your full face including forehead, eyebrows, and ears must be visible.',
-    'Hair should be swept back so that the shoulder line is visible.',
-    'Avoid colored contact lenses and reflective accessories.',
-    'Eyes must be looking directly at the camera.',
-    'Teeth must not be visible.',
-    'White or light-colored tops may blend with the background and should be avoided.',
-  ],
-};
-
-const SPECS_I18N = {
-  ko: {
-    hubTitle: '증명사진 규격 가이드 — 국가별·용도별 사이즈 총정리 | MONKOS',
-    hubDesc: '한국 여권·반명함, 일본 패스포트·이력서, 미국 비자 등 증명사진 규격을 한눈에. 사이즈·배경·복장 기준과 반려 사유까지.',
-    hubH1: '증명사진 규격 가이드',
-    hubSub: '전세계 200국가 이상의 여권, 비자 등 증명사진 규격 정보',
-    detailSuffix: '규격 — 사이즈·배경·복장 완벽 가이드 | MONKOS',
-    tableHeaders: { size: '사이즈', pixels: '해상도', dpi: 'DPI', background: '배경', headHeight: '머리 높이', validity: '유효기간', fileSpec: '파일 규격' },
-    commonRulesTitle: '공통 규정',
-    detailsTitle: '세부 규정',
-    rejectionTitle: '반려 사유 TOP 5',
-    faqTitle: '자주 묻는 질문',
-    ctaAI: 'AI로 촬영하기 →',
-    ctaCrop: '무료 크롭앱 →',
-    officialSourceTitle: '공식 발급 안내',
-    relatedTitle: '관련 콘텐츠',
-    relatedLinks: [
-      { label: '사용 가이드', href: '/guide' },
-      { label: '무료 크롭앱', href: '/crop' },
-      { label: 'FAQ', href: '/faq' },
-    ],
-    sameCountryLabel: '다른 사이즈 증명사진',
-    specLabel: '규격 보기',
-    heroGlobal: 'GLOBAL PHOTO SPEC GUIDE',
-    heroTitle: '증명사진 규격 가이드',
-    heroSub: '전세계 200국가 이상의 여권, 비자 등 증명사진 규격 정보 제공 및 규격 맞춤 서비스.',
-    statCountries: '국가', statSpecs: '규격', statVerified: '공식 검증',
-    hubFooter: '© 2026 MONKOS · 규격 정보는 공식 출처 기반 검증. 최종 규정은 발급 기관 확인.',
-    freeCropCta: '무료 AI 크롭 →',
-    searchPlaceholder: '국가명 검색...',
-    selectPurpose: '용도를 선택하세요',
-    backToContinent: '← 대륙 선택으로',
-    backToPurpose: '← 용도 선택으로',
-    countriesCount: '개국',
-    ctaBadge: '20년 경력 사진작가의 AI · 3분이면 완성',
-    ctaHeadline1: '셀카 한 장으로',
-    ctaHeadline2: '증명사진 완성',
-    ctaSub: '사진관 안 가도 됩니다. 여권·이력서·비자 규격 자동 대응.\nAI가 배경·조명·피부를 사진관 수준으로 보정합니다.',
-    ctaBtn: '무료로 체험하기 →',
-    ctaHref: 'https://idphoto-kr.monkos.ai/',
-    ctaPrice: '첫 로그인 시 무료 체험 · 이후 1장 ₩9,900',
-    heroLabel: 'PHOTO SPEC GUIDE',
-    heroCta: '무료 규격 맞춤 →',
-    // v2 플로우 문구 (2026-07-04 결제연동트랙 — 업로드/검수/결제/생성/결과)
-    v2: {
-      breadcrumbGuide: '규격 가이드',
-      makeTitle: '{name} 사진 만들기',
-      makeSub: '셀카 한 장이면 {size} 규격 증명사진이 완성됩니다.',
-      altSelfie: '셀카 예시', labelSelfie: '✓ 셀카',
-      altProfile: '프로필 예시', labelProfile: '✓ 프로필',
-      dropText: '사진을 끌어다 놓거나', selectBtn: '사진 선택',
-      guideChips: ['정면 얼굴', '가슴 위 구도', '1인', '선명한 화질', '입 다물기 (치아 노출 금지)'],
-      altCheck: '검수 사진', checkTitle: '규정 체크', checking: 'AI 검수 중...',
-      btnOtherPhoto: '다른 사진', btnProceed: '진행하기',
-      altPreview: '미리보기',
-      payTitle: '{type} 사진 만들기',
-      payPrice: '₩2,000',
-      payDesc: '카드/토스 즉시결제 · 로그인 불필요',
-      orDivider: '또는',
-      creditTitle: '크레딧으로 만들기',
-      creditDesc: '간편로그인 시 10c 무료 지급',
-      creditTopup: '추가 충전: 40c <span style="text-decoration:line-through;color:#bbb;">₩6,000</span> ₩4,900',
-      genText: 'AI가 {type} 사진을 만들고 있습니다...',
-      genSub: '약 30초 소요',
-      labelBefore: '원본', labelAfter: '완성',
-      btnDownload: '다운로드', btnRetry: '다른 사진으로 만들기',
-      detailsTitle: '상세 규정', rejectionTitle: '반려사유 TOP 5', faqTitle: '자주 묻는 질문',
-      sameTitle: '같은 사진으로 제출 가능한 서류',
-      sameSub: '아래 서류는 {name}과(와) 동일 규격({size})입니다.',
-      noGlasses: '무안경 권장',
-      crossTitle: '다른 MONKOS 서비스',
-      crossSub: '증명사진 외에도 다양한 AI 사진 서비스를 이용해보세요.',
-      crossHeadshot: '취업·이력서 사진', crossHeadshotSub: 'AI 헤드샷으로 완성',
-      crossProfile: '프로필 사진', crossProfileSub: 'SNS·링크드인용',
-      crossSpecs: '증명사진 전체 규격', crossSpecsSub: '국가별·용도별 규격 가이드',
-      js: {
-        errFileType: 'JPG, PNG, HEIC 파일만 업로드 가능합니다.',
-        errFileSize: '10MB 이하 파일만 업로드 가능합니다.',
-        checkPass: '규격 적합! 진행하기를 눌러주세요.',
-        checkFail: '일부 항목이 부적합합니다. 다른 사진을 권장합니다.',
-        errCheck: '검수 실패',
-        errCheckNet: '검수 오류',
-        errGen: '생성 실패',
-        errNet: '오류가 발생했습니다. 다시 시도해주세요.',
-        rateLimited: '요청이 많습니다. 잠시 후 다시 시도해주세요.',
-        payInitFail: '결제 시작에 실패했습니다. 잠시 후 다시 시도해주세요.',
-        payUnavailable: '이 지역의 결제는 준비 중입니다. 잠시 후 다시 확인해주세요.',
-        payCancelled: '결제가 취소되었습니다.',
-        payConfirming: '결제 확인 중...',
-        payConfirmFail: '결제 확인에 실패했습니다. 문제가 지속되면 info@monkos.ai로 문의해주세요.',
-        payWaiting: '결제 완료를 기다리는 중입니다...',
-        payWaitingHint: '결제창에서 결제를 마치면 자동으로 진행됩니다.',
-        payTimeout: '결제 확인이 지연되고 있습니다. 결제를 완료하셨다면 잠시 후 이 페이지를 새로고침해주세요.',
-        payFailed: '결제가 완료되지 않았습니다. 다시 시도해주세요.',
-        imgLost: '결제가 확인되었습니다. 사용하신 사진을 다시 업로드하면 바로 생성됩니다.',
-        tokenInvalid: '결제 정보가 유효하지 않습니다. info@monkos.ai로 문의해주세요.',
-        tokenUsed: '이미 사용 완료된 결제입니다. info@monkos.ai로 문의해주세요.',
-        tokenExpired: '결제 유효기간(24시간)이 지났습니다. info@monkos.ai로 문의해주세요.',
-        genLimit: '재생성 한도(3회)를 모두 사용했습니다. info@monkos.ai로 문의해주세요.',
-        downloadFail: '다운로드 처리에 실패했습니다. info@monkos.ai로 문의해주세요.',
-      },
-    },
-  },
-  ja: {
-    hubTitle: '証明写真 規格ガイド — 国別・用途別サイズ総まとめ | MONKOS',
-    hubDesc: '韓国パスポート・半名刺、日本パスポート・履歴書、米国ビザなど証明写真規格を一覧で。サイズ・背景・服装基準と却下理由まで。',
-    hubH1: '証明写真 規格ガイド',
-    hubSub: '世界200カ国以上のパスポート・ビザなど証明写真規格情報',
-    detailSuffix: '規格 — サイズ・背景・服装 完全ガイド | MONKOS',
-    tableHeaders: { size: 'サイズ', pixels: '解像度', dpi: 'DPI', background: '背景', headHeight: '頭の高さ', validity: '有効期限', fileSpec: 'ファイル規格' },
-    commonRulesTitle: '共通規定',
-    detailsTitle: '詳細規定',
-    rejectionTitle: '却下理由 TOP 5',
-    faqTitle: 'よくある質問',
-    ctaAI: 'AIで撮影する →',
-    ctaCrop: '無料クロップアプリ →',
-    officialSourceTitle: '公式申請案内',
-    relatedTitle: '関連コンテンツ',
-    relatedLinks: [
-      { label: 'ご利用ガイド', href: '/guide' },
-      { label: '無料クロップアプリ', href: '/crop' },
-      { label: 'FAQ', href: '/ja/faq' },
-    ],
-    sameCountryLabel: '他サイズの証明写真',
-    specLabel: '規格を見る',
-    heroGlobal: 'GLOBAL PHOTO SPEC GUIDE',
-    heroTitle: '証明写真 規格ガイド',
-    heroSub: '世界200カ国以上のパスポート・ビザなど証明写真規格情報と規格合わせサービス。',
-    statCountries: 'カ国', statSpecs: '規格', statVerified: '公式検証',
-    hubFooter: '© 2026 MONKOS · 規格情報は公式ソースに基づく検証済み。最終規定は発行機関にご確認ください。',
-    freeCropCta: '無料AIクロップ →',
-    searchPlaceholder: '国名で検索...',
-    selectPurpose: '用途を選択してください',
-    backToContinent: '← 大陸選択へ',
-    backToPurpose: '← 用途選択へ',
-    countriesCount: 'カ国',
-    ctaBadge: 'プロカメラマン20年のAI · 3分で完成',
-    ctaHeadline1: 'セルフィー1枚で',
-    ctaHeadline2: '証明写真完成',
-    ctaSub: '写真館に行かなくても大丈夫。パスポート・履歴書・ビザ規格に自動対応。\nAIが背景・照明・肌を写真館レベルに補正します。',
-    ctaBtn: '無料で体験する →',
-    ctaHref: 'https://idphoto-jp.monkos.ai/',
-    ctaPrice: '初回ログイン時 無料体験 · 以降1枚 ¥990',
-    heroLabel: 'PHOTO SPEC GUIDE',
-    heroCta: '無料で規格に合わせる →',
-    v2: {
-      breadcrumbGuide: '規格ガイド',
-      makeTitle: '{name}写真を作る',
-      makeSub: 'セルフィー1枚で{size}規格の証明写真が完成します。',
-      altSelfie: 'セルフィー例', labelSelfie: '✓ セルフィー',
-      altProfile: 'プロフィール例', labelProfile: '✓ プロフィール',
-      dropText: '写真をドラッグ＆ドロップ、または', selectBtn: '写真を選択',
-      guideChips: ['正面の顔', '胸から上の構図', '1人', '鮮明な画質', '口を閉じる（歯を見せない）'],
-      altCheck: '検査写真', checkTitle: '規定チェック', checking: 'AI検査中...',
-      btnOtherPhoto: '別の写真', btnProceed: '進める',
-      altPreview: 'プレビュー',
-      payTitle: '{type}写真を作成',
-      payPrice: '$1.99 <span style="font-size:14px;color:#888;font-weight:600;">(USD)</span>',
-      payDesc: 'カード即時決済 · ログイン不要',
-      orDivider: 'または',
-      genText: 'AIが{type}写真を作成しています...',
-      genSub: '約30秒かかります',
-      labelBefore: '元の写真', labelAfter: '完成',
-      btnDownload: 'ダウンロード', btnRetry: '別の写真で作る',
-      detailsTitle: '詳細規定', rejectionTitle: '却下理由 TOP 5', faqTitle: 'よくある質問',
-      sameTitle: '同じ写真で提出できる書類',
-      sameSub: '以下の書類は{name}と同一規格（{size}）です。',
-      noGlasses: '眼鏡なし推奨',
-      crossTitle: 'その他のMONKOSサービス',
-      crossSub: '証明写真のほかにも、さまざまなAI写真サービスをご利用いただけます。',
-      crossHeadshot: '就活・履歴書写真', crossHeadshotSub: 'AIヘッドショットで完成',
-      crossProfile: 'プロフィール写真', crossProfileSub: 'SNS・LinkedIn用',
-      crossSpecs: '証明写真の全規格', crossSpecsSub: '国別・用途別規格ガイド',
-      js: {
-        errFileType: 'JPG、PNG、HEICファイルのみアップロードできます。',
-        errFileSize: '10MB以下のファイルのみアップロードできます。',
-        checkPass: '規格適合！「進める」を押してください。',
-        checkFail: '一部の項目が不適合です。別の写真をお勧めします。',
-        errCheck: '検査に失敗しました',
-        errCheckNet: '検査エラー',
-        errGen: '生成に失敗しました',
-        errNet: 'エラーが発生しました。もう一度お試しください。',
-        rateLimited: 'リクエストが集中しています。しばらくしてからお試しください。',
-        payInitFail: '決済を開始できませんでした。しばらくしてからお試しください。',
-        payUnavailable: 'この地域の決済は準備中です。しばらくお待ちください。',
-        payCancelled: '決済がキャンセルされました。',
-        payConfirming: '決済を確認しています...',
-        payConfirmFail: '決済の確認に失敗しました。解決しない場合は info@monkos.ai までご連絡ください。',
-        payWaiting: '決済の完了を待っています...',
-        payWaitingHint: '決済が完了すると自動的に進みます。',
-        payTimeout: '決済確認に時間がかかっています。決済を完了された場合は、しばらくしてからこのページを再読み込みしてください。',
-        payFailed: '決済が完了しませんでした。もう一度お試しください。',
-        imgLost: '決済を確認しました。同じ写真を再アップロードするとすぐに生成されます。',
-        tokenInvalid: '決済情報が無効です。info@monkos.ai までご連絡ください。',
-        tokenUsed: 'この決済はすでに使用済みです。info@monkos.ai までご連絡ください。',
-        tokenExpired: '決済の有効期限（24時間）が切れました。info@monkos.ai までご連絡ください。',
-        genLimit: '再生成の上限（3回）に達しました。info@monkos.ai までご連絡ください。',
-        downloadFail: 'ダウンロード処理に失敗しました。info@monkos.ai までご連絡ください。',
-      },
-    },
-  },
-  en: {
-    hubTitle: 'ID Photo Specifications Guide — Size & Requirements by Country | MONKOS',
-    hubDesc: 'Korea passport & resume, Japan passport & resume, US visa photo specs at a glance. Size, background, dress code and rejection reasons.',
-    hubH1: 'ID Photo Specifications Guide',
-    hubSub: 'ID photo specifications for 200+ countries — passport, visa, and more.',
-    detailSuffix: 'Specs — Size, Background & Dress Code Complete Guide | MONKOS',
-    tableHeaders: { size: 'Size', pixels: 'Resolution', dpi: 'DPI', background: 'Background', headHeight: 'Head Height', validity: 'Validity', fileSpec: 'File Spec' },
-    commonRulesTitle: 'Common Requirements',
-    detailsTitle: 'Detailed Requirements',
-    rejectionTitle: 'Top 5 Rejection Reasons',
-    faqTitle: 'Frequently Asked Questions',
-    ctaAI: 'Take with AI →',
-    ctaCrop: 'Free Crop App →',
-    officialSourceTitle: 'Official Application',
-    relatedTitle: 'Related Content',
-    relatedLinks: [
-      { label: 'User Guide', href: '/guide' },
-      { label: 'Free Crop App', href: '/crop' },
-      { label: 'FAQ', href: '/en/faq' },
-    ],
-    sameCountryLabel: 'Other Size ID Photos',
-    specLabel: 'View specs',
-    heroGlobal: 'GLOBAL PHOTO SPEC GUIDE',
-    heroTitle: 'Photo Spec Guide',
-    heroSub: 'ID photo specifications for 200+ countries — passport, visa, and more. Free crop service included.',
-    statCountries: 'Countries', statSpecs: 'Specs', statVerified: 'Verified',
-    hubFooter: '© 2026 MONKOS · Specifications verified from official sources. Confirm final requirements with the issuing authority.',
-    freeCropCta: 'Free AI Crop →',
-    searchPlaceholder: 'Search country...',
-    selectPurpose: 'Select a purpose',
-    backToContinent: '← Back to continents',
-    backToPurpose: '← Back to purposes',
-    countriesCount: 'countries',
-    ctaBadge: '20 Years of Photography Expertise in AI · Done in 3 min',
-    ctaHeadline1: 'One Selfie,',
-    ctaHeadline2: 'Perfect ID Photo',
-    ctaSub: 'No photo studio needed. Auto-fit for passport, resume & visa specs.\nAI retouches background, lighting & skin to studio quality.',
-    ctaBtn: 'Try Free →',
-    ctaHref: 'https://idphoto-kr.monkos.ai/',
-    ctaPrice: 'Free on first login · $7.99 per photo after',
-    heroLabel: 'PHOTO SPEC GUIDE',
-    heroCta: 'Crop to this spec for free →',
-    v2: {
-      breadcrumbGuide: 'Specs Guide',
-      makeTitle: 'Create Your {name} Photo',
-      makeSub: 'One selfie is all it takes — a {size} compliant ID photo in minutes.',
-      altSelfie: 'Selfie example', labelSelfie: '✓ Selfie',
-      altProfile: 'Profile example', labelProfile: '✓ Profile',
-      dropText: 'Drag & drop a photo, or', selectBtn: 'Choose Photo',
-      guideChips: ['Front-facing', 'Chest-up framing', 'One person', 'Sharp focus', 'Mouth closed (no teeth)'],
-      altCheck: 'Photo under review', checkTitle: 'Compliance Check', checking: 'AI is checking...',
-      btnOtherPhoto: 'Another Photo', btnProceed: 'Continue',
-      altPreview: 'Preview',
-      payTitle: 'Create {type} Photo',
-      payPrice: '$1.99',
-      payDesc: 'Instant card checkout · No login required',
-      orDivider: 'or',
-      genText: 'AI is creating your {type} photo...',
-      genSub: 'Takes about 30 seconds',
-      labelBefore: 'Original', labelAfter: 'Result',
-      btnDownload: 'Download', btnRetry: 'Try Another Photo',
-      detailsTitle: 'Detailed Requirements', rejectionTitle: 'Top 5 Rejection Reasons', faqTitle: 'Frequently Asked Questions',
-      sameTitle: 'Documents Accepting the Same Photo',
-      sameSub: 'The documents below use the same spec ({size}) as {name}.',
-      noGlasses: 'No glasses recommended',
-      crossTitle: 'More MONKOS Services',
-      crossSub: 'Explore more AI photo services beyond ID photos.',
-      crossHeadshot: 'Job & Resume Photos', crossHeadshotSub: 'Polished AI headshots',
-      crossProfile: 'Profile Photos', crossProfileSub: 'For SNS & LinkedIn',
-      crossSpecs: 'All ID Photo Specs', crossSpecsSub: 'Specs by country & purpose',
-      js: {
-        errFileType: 'Only JPG, PNG, and HEIC files are supported.',
-        errFileSize: 'Please upload a file under 10MB.',
-        checkPass: 'Spec compliant! Press Continue.',
-        checkFail: 'Some checks did not pass. We recommend another photo.',
-        errCheck: 'Check failed',
-        errCheckNet: 'Check error',
-        errGen: 'Generation failed',
-        errNet: 'Something went wrong. Please try again.',
-        rateLimited: 'Too many requests. Please try again shortly.',
-        payInitFail: 'Could not start the payment. Please try again shortly.',
-        payUnavailable: 'Payment is not yet available for this region. Please check back soon.',
-        payCancelled: 'Payment was cancelled.',
-        payConfirming: 'Confirming your payment...',
-        payConfirmFail: 'Payment confirmation failed. If this persists, contact info@monkos.ai.',
-        payWaiting: 'Waiting for your payment...',
-        payWaitingHint: 'This page will continue automatically once checkout is complete.',
-        payTimeout: 'Payment confirmation is taking longer than expected. If you completed checkout, refresh this page shortly.',
-        payFailed: 'The payment was not completed. Please try again.',
-        imgLost: 'Payment confirmed. Re-upload the same photo to generate right away.',
-        tokenInvalid: 'Payment info is invalid. Contact info@monkos.ai.',
-        tokenUsed: 'This payment has already been used. Contact info@monkos.ai.',
-        tokenExpired: 'This payment expired (24h). Contact info@monkos.ai.',
-        genLimit: 'All 3 retries have been used. Contact info@monkos.ai.',
-        downloadFail: 'Download failed. Contact info@monkos.ai.',
-      },
-    },
-  },
-};
+// ─── I18N ─── (specs-i18n.js로 분리 — import 참조)
 
 // ─── CONTINENT META ─────────────────────────────────────────────
 
@@ -432,10 +102,9 @@ const TYPE_ALIASES = {
 
 // 404 시 text/plain 대신 HTML 반환 — 모바일 Safari의 .txt 다운로드 오인 방지 + UX
 function specs404Html(prefix, lang) {
-  const msg = lang === 'ja' ? 'お探しの規格ページが見つかりません。'
-    : lang === 'en' ? 'The requested spec page was not found.'
-    : '요청하신 규격 페이지를 찾을 수 없습니다.';
-  const cta = lang === 'ja' ? '証明写真の規格一覧へ' : lang === 'en' ? 'Browse all photo specs' : '증명사진 규격 전체 보기';
+  const ii = SPECS_I18N[lang] || SPECS_I18N.ko;
+  const msg = ii.notFoundMsg;
+  const cta = ii.notFoundCta;
   return `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><meta name="robots" content="noindex"><meta name="viewport" content="width=device-width,initial-scale=1"><title>404 · MONKOS</title></head><body style="font-family:system-ui,-apple-system,sans-serif;text-align:center;padding:64px 20px;color:#222"><h1 style="font-size:48px;margin:0">404</h1><p style="color:#666">${msg}</p><p><a href="${prefix}/specs" style="color:#6b4eff;text-decoration:none">${cta} →</a></p></body></html>`;
 }
 
@@ -702,75 +371,7 @@ function isV2Spec(slug, lang) {
 
 // v2 상세 CSS → public/css/specs-funnel.css (2026-07-12 퍼널 분리)
 
-// kr-passport 파일럿 전용 폴백 상수 — en/ja 페이지에서도 한국어가 노출되지 않도록 3언어화
-const V2_REJECTIONS = {
-  ko: [
-    { title: '배경 그림자 / 음영', desc: '얼굴 앞·뒤로 그림자가 생긴 경우' },
-    { title: '머리 높이 규격 초과', desc: '정수리~턱이 32-36mm 범위를 벗어남' },
-    { title: '표정 · 미소', desc: '입을 벌리거나 치아가 보이는 사진' },
-    { title: '안경 반사 / 컬러렌즈', desc: '렌즈에 빛 반사 또는 색조 렌즈 착용' },
-    { title: '앞머리·장신구로 얼굴 가림', desc: '이마·눈썹·귀 윤곽이 가려진 경우' },
-  ],
-  ja: [
-    { title: '背景の影', desc: '顔の前後に影がある場合' },
-    { title: '頭の高さが規格外', desc: '頭頂〜顎が32-36mmの範囲外' },
-    { title: '表情・笑顔', desc: '口が開いている、歯が見える写真' },
-    { title: '眼鏡の反射・カラーコンタクト', desc: 'レンズの光反射やカラーコンタクトの着用' },
-    { title: '前髪・アクセサリーで顔が隠れる', desc: '額・眉・耳の輪郭が隠れている場合' },
-  ],
-  en: [
-    { title: 'Background shadows', desc: 'Shadows in front of or behind the face' },
-    { title: 'Head height out of range', desc: 'Crown-to-chin outside the 32-36mm range' },
-    { title: 'Expression / smile', desc: 'Open mouth or visible teeth' },
-    { title: 'Glasses glare / colored lenses', desc: 'Light reflecting on lenses or tinted contacts' },
-    { title: 'Face covered by hair or accessories', desc: 'Forehead, eyebrows, or ears obscured' },
-  ],
-};
-
-const V2_DETAILS = {
-  ko: [
-    '촬영 6개월 이내, 정면을 응시한 상반신 사진',
-    '균일한 흰색 배경, 그림자·무늬·테두리 없음',
-    '입은 다물고 무표정 — 치아가 보이면 반려',
-    '안경 착용 시 빛 반사·뿔테로 눈 가림 금지 (운전면허는 무안경 권장)',
-    '머리카락·장신구로 얼굴 윤곽을 가리지 않을 것',
-    '컬러 사진, 자연스러운 피부 톤 · 과도한 보정 금지',
-  ],
-  ja: [
-    '撮影から6ヶ月以内、正面を向いた上半身の写真',
-    '均一な白背景、影・模様・縁取りなし',
-    '口を閉じて無表情 — 歯が見えると却下',
-    '眼鏡着用時は光の反射・太いフレームで目を隠さないこと（運転免許は眼鏡なし推奨）',
-    '髪やアクセサリーで顔の輪郭を隠さないこと',
-    'カラー写真、自然な肌トーン · 過度な補正禁止',
-  ],
-  en: [
-    'Taken within the last 6 months, upper body facing the camera',
-    'Uniform white background with no shadows, patterns, or borders',
-    'Mouth closed, neutral expression — visible teeth cause rejection',
-    'If wearing glasses, no glare or thick frames covering the eyes (no glasses recommended for driver licenses)',
-    'Hair and accessories must not cover the outline of the face',
-    'Color photo with natural skin tone · no excessive retouching',
-  ],
-};
-
-const V2_FAQ_FALLBACK = {
-  ko: [
-    { q: '여권사진과 운전면허증 사진이 같나요?', a: '네, 대한민국 여권과 운전면허증은 모두 35×45mm 규격으로 동일합니다. 다만 운전면허증은 안경 미착용을 권장합니다.' },
-    { q: 'AI로 만든 얼굴 사진을 제출해도 되나요?', a: '아니요. AI 생성 이미지(딥페이크 등)는 제출 불가합니다. MONKOS AI는 실제 사진의 배경·크기·밝기를 규격에 맞게 보정하는 것이지, 얼굴을 생성하지 않습니다.' },
-    { q: '온라인 신청용 파일 규격은 어떻게 되나요?', a: '가로 413 × 세로 531 픽셀, JPEG 형식, 500KB 이하, 300DPI 이상을 권장합니다.' },
-  ],
-  ja: [
-    { q: 'パスポート写真と運転免許証の写真は同じですか？', a: 'はい、韓国のパスポートと運転免許証はどちらも35×45mmの同一規格です。ただし、運転免許証は眼鏡なしを推奨します。' },
-    { q: 'AIで作った顔写真を提出してもいいですか？', a: 'いいえ。AI生成画像（ディープフェイクなど）は提出できません。MONKOS AIは実際の写真の背景・サイズ・明るさを規格に合わせて補正するもので、顔を生成するものではありません。' },
-    { q: 'オンライン申請用のファイル規格は？', a: '幅413 × 高さ531ピクセル、JPEG形式、500KB以下、300DPI以上を推奨します。' },
-  ],
-  en: [
-    { q: 'Are passport and driver license photos the same?', a: 'Yes, Korean passports and driver licenses both use the same 35×45mm spec. However, no glasses are recommended for driver license photos.' },
-    { q: 'Can I submit an AI-generated face photo?', a: 'No. AI-generated images (deepfakes, etc.) cannot be submitted. MONKOS AI adjusts the background, size, and brightness of your real photo to meet the spec — it does not generate faces.' },
-    { q: 'What is the file spec for online applications?', a: '413 × 531 pixels, JPEG format, under 500KB, and 300DPI or higher are recommended.' },
-  ],
-};
+// V2_REJECTIONS, V2_DETAILS, V2_FAQ_FALLBACK → specs-i18n.js로 분리
 
 // 파일럿 CSS → public/css/specs-pilot.css (2026-07-12 퍼널 분리)
 
@@ -811,15 +412,6 @@ function specsDetailV2Fragment(slug, forceLang = null) {
   const faqs = (specData.faqs && (specData.faqs[lang] || specData.faqs.ko)) || (V2_FAQ_FALLBACK[lang] || V2_FAQ_FALLBACK.ko);
 
   // 제한사항(restrictions) — 공식 출처 기반 리서치 데이터. 값 없으면 자동 스킵.
-  const RESTR_LABELS = {
-    clothing:        { ko: '복장', en: 'Clothing', ja: '服装' },
-    expression:      { ko: '표정', en: 'Expression', ja: '表情' },
-    glasses:         { ko: '안경', en: 'Glasses', ja: '眼鏡' },
-    ears:            { ko: '귀 노출', en: 'Ears', ja: '耳' },
-    face_visibility: { ko: '얼굴 노출', en: 'Face', ja: '顔' },
-    headwear:        { ko: '머리 장식', en: 'Headwear', ja: '帽子・頭飾り' },
-    accessories:     { ko: '장신구', en: 'Accessories', ja: 'アクセサリー' },
-  };
   const restrData = specData.restrictions || {};
   const restrEntries = Object.entries(RESTR_LABELS)
     .map(([key, labels]) => {
@@ -831,21 +423,19 @@ function specsDetailV2Fragment(slug, forceLang = null) {
     })
     .filter(Boolean);
   const restrictionsHtml = restrEntries.length
-    ? `<div class="v2-restrictions"><h4 class="v2-restr-title">${escapeHtml({ ko: '제한사항', en: 'Restrictions', ja: '制限事項' }[lang] || 'Restrictions')}</h4><dl class="v2-restr-list">${restrEntries.map(e => `<dt>${escapeHtml(e.label)}</dt><dd>${escapeHtml(e.text)}</dd>`).join('')}</dl></div>`
+    ? `<div class="v2-restrictions"><h4 class="v2-restr-title">${escapeHtml(i.restrictionsTitle)}</h4><dl class="v2-restr-list">${restrEntries.map(e => `<dt>${escapeHtml(e.label)}</dt><dd>${escapeHtml(e.text)}</dd>`).join('')}</dl></div>`
     : '';
 
   const ogGuideKey = GUIDE_IMAGES.has(`${slug}_${lang}`) ? `${slug}_${lang}`
     : GUIDE_IMAGES.has(slug) ? slug : (parseSizeMm(specData.size) || 'kr-passport');
   const ogImageAbsolute = `https://monkos.ai/images/guides/${ogGuideKey}.webp`;
-  const specsLabel = { ko: '규격', en: 'Specs', ja: '規格' }[lang] || 'Specs';
-
   const specsJsonLdArr = [
     {
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
       "itemListElement": [
         { "@type": "ListItem", "position": 1, "name": "MONKOS", "item": "https://monkos.ai" },
-        { "@type": "ListItem", "position": 2, "name": specsLabel, "item": `https://monkos.ai${lang === 'ko' ? '' : '/' + lang}/specs` },
+        { "@type": "ListItem", "position": 2, "name": i.specsTabLabel, "item": `https://monkos.ai${lang === 'ko' ? '' : '/' + lang}/specs` },
         { "@type": "ListItem", "position": 3, "name": `${countryName} ${typeName}` }
       ]
     },
@@ -900,8 +490,8 @@ ${hreflangTags}
 
   const h = i.tableHeaders;
   // 파일 규격은 정본 데이터(fileSpec) 사용 — 한국 여권 온라인 신청 규격(500KB/JPEG) 하드코딩 금지
-  const dpiSuffix = lang === 'ja' ? '以上' : lang === 'en' ? 'or higher' : '이상';
-  const reqBadgeLabel = lang === 'ja' ? '必須' : lang === 'en' ? 'Required' : '필수';
+  const dpiSuffix = i.dpiSuffix;
+  const reqBadgeLabel = i.reqBadge;
   const specRows = [
     [h.size, locField(specData, 'size', lang), ''],
     [h.pixels, locField(specData, 'pixels', lang), ''],
@@ -955,8 +545,8 @@ ${hreflangTags}
   ).join('');
 
   // 수치 박스 탭 라벨 + 공식 출처 링크 (2026-07-11 작가님: DB 보유 출처를 규정 박스에 노출, 없으면 미표기)
-  const tabSpecLabel = { ko: '규격', en: 'Specs', ja: '規格' }[lang] || '규격';
-  const sourceLabel = { ko: '출처', en: 'Source', ja: '出典' }[lang] || '출처';
+  const tabSpecLabel = i.specsTabLabel;
+  const sourceLabel = i.sourceLabel;
   const sourceHtml = (() => {
     const os = specData.officialSource;
     const url = (os && os.url) || (typeof specData.source === 'string' && /^https?:/i.test(specData.source) ? specData.source : null);
@@ -1372,14 +962,13 @@ export function specsDetailFragment(slug, forceLang = null) {
     : GUIDE_IMAGES.has(slug) ? slug : (parseSizeMm(specData.size) || 'kr-passport');
   const v1OgImage = `https://monkos.ai/images/guides/${v1OgGuideKey}.webp`;
 
-  const specsLabel = { ko: '규격', en: 'Specs', ja: '規格' }[lang] || 'Specs';
   const specsJsonLdArr = [
     {
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
       "itemListElement": [
         { "@type": "ListItem", "position": 1, "name": "MONKOS", "item": "https://monkos.ai" },
-        { "@type": "ListItem", "position": 2, "name": specsLabel, "item": `https://monkos.ai${lang === 'ko' ? '' : '/' + lang}/specs` },
+        { "@type": "ListItem", "position": 2, "name": i.specsTabLabel, "item": `https://monkos.ai${lang === 'ko' ? '' : '/' + lang}/specs` },
         { "@type": "ListItem", "position": 3, "name": `${countryName} ${typeName}` }
       ]
     },
@@ -1495,7 +1084,7 @@ ${hreflangTags}
     `<a href="${l.href}">${escapeHtml(l.label)}</a>`
   ).join('\n        ');
 
-  const backLabel = lang === 'ja' ? '← 全規格一覧' : lang === 'en' ? '← All Specifications' : '← 전체 규격 목록';
+  const backLabel = i.backToList;
 
   const oxGoodLabel = lang === 'ja' ? '適合写真' : lang === 'en' ? 'Acceptable Photo' : '적합한 사진';
   const oxBadLabel = lang === 'ja' ? '却下される写真' : lang === 'en' ? 'Rejected Photo' : '반려되는 사진';
