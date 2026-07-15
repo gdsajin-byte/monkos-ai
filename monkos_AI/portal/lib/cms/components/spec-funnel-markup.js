@@ -109,13 +109,13 @@ export function specFunnelMarkup(ctx) {
               <div class="v2-pay-price">${v2.payPrice}</div>
               <div class="v2-pay-desc">${eh(v2.payDesc)}</div>
             </button>
-            ${lang === 'ko' ? `<div class="v2-pay-divider"><span>${eh(v2.orDivider)}</span></div>
+            <div class="v2-pay-divider"><span>${eh(v2.orDivider)}</span></div>
             <button class="v2-pay-btn v2-pay-credit" id="v2-pay-credit">
               <div class="v2-pay-title">${eh(v2.creditTitle)}</div>
-              <div class="v2-pay-price">10c <span style="font-size:13px;color:#888;font-weight:400;">(₩1,500)</span></div>
+              <div class="v2-pay-price">10c <span style="font-size:13px;color:#888;font-weight:400;">${market === 'kr' ? '(₩1,500)' : '($1)'}</span></div>
               <div class="v2-pay-desc">${eh(v2.creditDesc)}</div>
-              <div class="v2-pay-desc" style="font-size:12px;margin-top:4px;">${v2.creditTopup}</div>
-            </button>` : ''}
+              ${market === 'kr' ? `<div class="v2-pay-desc" style="font-size:12px;margin-top:4px;">${v2.creditTopup}</div>` : `<div class="v2-pay-desc" style="font-size:12px;margin-top:4px;">${eh(v2.creditTopupGlobal)}</div>`}
+            </button>
             <div class="v2-toss-widget" id="v2-toss-widget" style="display:none;">
               <div id="v2-pm"></div>
               <div id="v2-agree"></div>
