@@ -171,7 +171,7 @@
         "secondary": "#FFFFFF"
       },
       "image_gcs": null,
-      "thumbnail": null,
+      "thumbnail": "/images/attire/m_suit_navy_single_02_thumb.webp",
       "source": null,
       "source_ref": null,
       "labels": {
@@ -219,7 +219,7 @@
         "secondary": "#FFFFFF"
       },
       "image_gcs": null,
-      "thumbnail": null,
+      "thumbnail": "/images/attire/m_suit_black_single_03_thumb.webp",
       "source": null,
       "source_ref": null,
       "labels": {
@@ -458,7 +458,7 @@
         "secondary": "#DDDDDD"
       },
       "image_gcs": null,
-      "thumbnail": null,
+      "thumbnail": "/images/attire/m_shirt_white_regular_08_thumb.webp",
       "source": null,
       "source_ref": null,
       "labels": {
@@ -505,7 +505,7 @@
         "secondary": "#FFFFFF"
       },
       "image_gcs": null,
-      "thumbnail": null,
+      "thumbnail": "/images/attire/m_shirt_lightblue_regular_09_thumb.webp",
       "source": null,
       "source_ref": null,
       "labels": {
@@ -554,7 +554,7 @@
         "secondary": "#3D5177"
       },
       "image_gcs": null,
-      "thumbnail": null,
+      "thumbnail": "/images/attire/m_shirt_navy_regular_17_thumb.webp",
       "source": null,
       "source_ref": null,
       "labels": {
@@ -603,7 +603,7 @@
         "secondary": "#333336"
       },
       "image_gcs": null,
-      "thumbnail": null,
+      "thumbnail": "/images/attire/m_shirt_black_regular_18_thumb.webp",
       "source": null,
       "source_ref": null,
       "labels": {
@@ -1035,7 +1035,7 @@
         "secondary": "#FFFFFF"
       },
       "image_gcs": null,
-      "thumbnail": null,
+      "thumbnail": "/images/attire/f_suit_navy_single_02_thumb.webp",
       "source": null,
       "source_ref": null,
       "labels": {
@@ -1372,7 +1372,7 @@
         "secondary": "#E5D8C0"
       },
       "image_gcs": null,
-      "thumbnail": null,
+      "thumbnail": "/images/attire/f_blouse_beige_round_09_thumb.webp",
       "source": null,
       "source_ref": null,
       "labels": {
