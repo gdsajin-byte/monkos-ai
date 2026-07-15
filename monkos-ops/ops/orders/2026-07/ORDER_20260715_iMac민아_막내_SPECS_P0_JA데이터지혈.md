@@ -35,13 +35,16 @@ en/ja 스펙스가 실유입 형성 중(JA 148imp 페이지 존재)인데, 일�
 - 기준: 전각 30자 내외, 핵심 키워드(국가+문서+写真+サイズ+연도) 전방 배치, "| MONKOS" 접미 제거
 - 전 슬러그 ja seoTitle 일괄 적용
 
-**D. EN 관사 오류 수정** — `monkos_AI/portal/lib/cms/render-specs.js` EN 템플릿 문장
-- 현재: "A Austria Passport photo requires a White background." (구글 스니펫에 노출 중)
-- 수정: 관사 회피 구조로 — 예: "{Country} {Doc} photos require a white background." (a/an 판별 로직 추가 금지 — 문장 구조로 회피)
+~~**D. EN 관사 오류**~~ → **트랙1 지시서로 이관** (07-15 13:04 개정 — 병렬 투입 파일 관할 분리)
+
+## 2.5 파일 관할 (병렬 투입 충돌 방지 — 위반 금지)
+
+- 본 지시서 관할: **`specs-data.json`만** (+ B의 출처 URL 검증)
+- `render-specs.js`·`specs-funnel.js`·컴포넌트 계열은 **트랙1 막내 관할 — 접촉 금지**. 필요 발견 시 수정하지 말고 보고.
 
 ## 3. 산출물
 
-- specs-data.json 수정 (A·B·C) + render-specs.js EN 문장 1~2곳 (D)
+- specs-data.json 수정 (A·B·C)
 - 잔존 스캔 목록 포함 COMPLETION 보고서
 - dev 검증 후 `./deploy.sh` 배포
 
@@ -58,8 +61,8 @@ en/ja 스펙스가 실유입 형성 중(JA 148imp 페이지 존재)인데, 일�
 - [ ] A: ja 필드 영어/한국어 잔존 0건 (스캔 스크립트 재실행 증빙)
 - [ ] B: 신규 출처 URL HTTP 200 + 일본 외무성 도메인 확인
 - [ ] C: 전 슬러그 ja seoTitle 전각 30자 내외
-- [ ] D: 라이브 EN 페이지 스니펫 문장 관사 오류 0
-- [ ] 배포 후 `/ja/specs/passport/jp` `/en/specs/passport/at` 라이브 실측 첨부
+- [ ] 배포 후 `/ja/specs/passport/jp` 라이브 실측 첨부
+- [ ] render-specs.js 등 코드 파일 diff 0 (git diff로 증빙 — specs-data.json 외 무접촉)
 
 ## 6. 커밋
 

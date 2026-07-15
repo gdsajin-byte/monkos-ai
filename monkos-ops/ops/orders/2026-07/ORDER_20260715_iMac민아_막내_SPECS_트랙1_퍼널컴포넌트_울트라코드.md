@@ -42,7 +42,13 @@ portfolio: PF_SPECS
 3. `[refactor]` SpecsFunnel 위젯 추출 (ko 동작 동일 — 스크린샷 대조)
 4. `[feat]` isPilot 폐지 + T0 전언어 개방 + 구형 레이아웃 삭제 (isPilot/CFG.pilot 잔존 grep 0 증빙)
 5. `[feat]` attire-picker 편입 + specs-pilot.css 흡수 + D6 게이트 재정의
-6. `[fix]` 카피 교체 (D4 테이블) + 서버 에러 code 매핑
+6. `[fix]` 카피 교체 (D4 테이블) + 서버 에러 code 매핑 + **EN 관사 오류 수정**(P0에서 이관: "A Austria Passport photo…" → 관사 회피 문장 구조, a/an 판별 로직 추가 금지)
+
+## 3.5 파일 관할 (병렬 투입 충돌 방지 — 위반 금지)
+
+- **`specs-data.json` 수정 금지** — P0 막내 관할(ja 필드·출처·ja seoTitle 병렬 작업 중). 데이터 결함 발견 시 수정하지 말고 보고.
+- 착수 시 최신 main pull 필수. 커밋 전 pull --rebase로 P0 커밋과 정렬.
+- 커밋2의 diff 0 증빙은 **동일 워킹트리 시점에서 분해 전/후 비교** — P0의 데이터 변경과 무관하게 성립하도록 스크립트를 같은 데이터 상태에서 실행.
 
 ## 4. ⚠️ 준수 조항
 
