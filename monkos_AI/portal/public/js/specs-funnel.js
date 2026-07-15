@@ -223,7 +223,7 @@ var SpecsFunnel = (function(){
             document.getElementById('v2-btn-proceed').style.display = 'none';
             checkActions.style.display = 'flex';
           } else {
-            if(CFG.pilot) prepareFreeReady(); else runFit();
+            prepareFreeReady();
           }
           // 이미지 저장을 검수 시점에 선행 — 결제 클릭 체인에서 캔버스 압축을 제거해
           // 토스 결제창의 user activation 만료(팝업 차단)를 방지 (2026-07-05 E2E 실패 수정)
@@ -452,7 +452,7 @@ var SpecsFunnel = (function(){
       restoreFitActions();
     });
   }
-  if(CFG.pilot && phaseFree){
+  if(phaseFree){
     document.getElementById('ip-free-download').addEventListener('click', function(){
       if(!freeResultB64) return;
       var a = document.createElement('a');
@@ -693,16 +693,8 @@ var SpecsFunnel = (function(){
     }
     var m = d.metrics || {}, j = d.judge || {};
     // 파일럿: 수치 뱃지 제거 (통과 사용자에게 숫자 나열은 인지 비용 — §7-1) — 문제 칩만 유지
-    if(!CFG.pilot){
-      if(m.faceMm != null) badge('얼굴', m.faceMm + 'mm', j.face);
-      if(m.eyeRatio != null) badge('눈', (m.eyeRatio * 100).toFixed(0) + '%', j.eye);
-      if(m.topMm != null) badge('상단', m.topMm + 'mm', j.top);
-      if(m.bottomMm != null) badge('하단', m.bottomMm + 'mm', j.bottom);
-    }
     if(d.poseCheck){
-      var sfx = CFG.pilot; // 안내 접미문은 파일럿 한정 — 비파일럿(ja/en 포함)은 기존 짧은 라벨 유지
-      if(d.poseCheck.roll && !d.poseCheck.roll.ok) badge('기울기', Math.abs(d.poseCheck.roll.value).toFixed(0) + (sfx ? '° — 수평을 맞춰주세요' : '°'), 'fail');
-      else if(d.poseCheck.roll && !CFG.pilot) badge('기울기', Math.abs(d.poseCheck.roll.value).toFixed(0) + '°', 'pass');
+      if(d.poseCheck.roll && !d.poseCheck.roll.ok) badge('기울기', Math.abs(d.poseCheck.roll.value).toFixed(0) + '° — 수평을 맞춰주세요', 'fail');
       if(d.poseCheck.eyeOpen && !d.poseCheck.eyeOpen.ok) badge('눈', sfx ? '감김 — 다른 사진을 올려주세요' : '감김', 'fail');
       // 입벌림 칩 미표기 (2026-07-10 작가님): 입술 간격 비율로는 '치아 노출'(규정 핵심)을 판별 못함 —
       // 1차 검수는 신뢰 가능한 항목만 표기. 검출값은 서버 로그로 축적, 규정 안내는 업로드 가이드 칩 담당.
@@ -717,21 +709,19 @@ var SpecsFunnel = (function(){
     var mk = document.getElementById('v2-fit-make');
     if(j.blocked){
       fs.className = 'v2-checklist-summary v2-summary-fail';
-      fs.textContent = CFG.pilot ? '이 사진으로는 어려워요. 다른 사진을 올려주세요.' : '규격 허용 범위를 벗어났습니다. 다른 사진을 권장해요.';
+      fs.textContent = '이 사진으로는 어려워요. 다른 사진을 올려주세요.';
       mk.disabled = true; mk.style.opacity = '.4';
     } else {
       fs.className = 'v2-checklist-summary v2-summary-pass';
-      fs.textContent = CFG.pilot ? '규격에 맞아요. 이대로 만들 수 있어요.' : '규격에 안착했습니다. 이대로 만들 수 있어요.';
+      fs.textContent = '규격에 맞아요. 이대로 만들 수 있어요.';
       mk.disabled = false; mk.style.opacity = '';
     }
     document.getElementById('v2-fit-actions').style.display = 'flex';
-    if(CFG.pilot){
-      var cap = document.getElementById('ip-fit-caption');
-      var t2l = document.getElementById('ip-fit-t2-link');
-      if(cap) cap.style.display = j.blocked ? 'none' : 'block';
-      if(t2l) t2l.style.display = 'block';
-      updateFreeRemainingUI(null);
-    }
+    var cap = document.getElementById('ip-fit-caption');
+    var t2l = document.getElementById('ip-fit-t2-link');
+    if(cap) cap.style.display = j.blocked ? 'none' : 'block';
+    if(t2l) t2l.style.display = 'block';
+    updateFreeRemainingUI(null);
   }
 
   document.getElementById('v2-fit-change').addEventListener('click', function(){
@@ -739,17 +729,13 @@ var SpecsFunnel = (function(){
     showPhase(phaseUpload);
   });
   document.getElementById('v2-fit-make').addEventListener('click', function(){
-    if(CFG.pilot){
       if(freeBusy) return;
       if(hasUsableToken()) return doGenerate();
-      if(pilotFreeExhausted) return proceedToPay(); // 무료 소진 → 유료 길 직행
-      if(fitResult && fitResult.frame) return doFreeGenerate(); // 재시도 경로 (fit 이미 확보)
+      if(pilotFreeExhausted) return proceedToPay();
+      if(fitResult && fitResult.frame) return doFreeGenerate();
       freeBusy = true; hideError();
       fitMode = 'pilot';
-      runFit(); // 시어터 + fit — 응답 시 pilotOnFit이 매팅 병행 시작
-      return;
-    }
-    proceedToPay();
+      runFit();
   });
 
   document.getElementById('v2-btn-proceed').addEventListener('click', function(){ runFit(); });

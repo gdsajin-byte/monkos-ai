@@ -388,9 +388,7 @@ function specsDetailV2Fragment(slug, forceLang = null) {
   const v2 = i.v2 || SPECS_I18N.ko.v2;
   // 시장 판별: 결제 PG 분기 정본 (kr=토스, jp=레몬 JP 스토어, global=레몬 글로벌)
   const market = lang === 'ja' ? 'jp' : lang === 'en' ? 'global' : 'kr';
-  // T0 무료 퍼널 (2026-07-10 파일럿 → 2026-07-11 작가님 전면 개방 지시): v2 ko 전 슬러그 승격.
-  // en/ja는 퍼널 문구 3언어화 후 개방 예정. T1 리터칭은 서버 FREE_PILOT_SLUGS(kr-passport) 파일럿 유지.
-  const isPilot = lang === 'ko';
+  // T0 무료 퍼널 전 언어 개방 (2026-07-15 isPilot 폐지 — D1)
   // T1 리터칭 실동작 여부 — 카드 문구·CTA를 서버 플래그와 결합 (off인데 '리터칭' 판매 금지, 2026-07-10 리뷰 확정)
   // 서버 리터칭 게이트(server.js isT1Path)와 정합 — 리터칭이 실행되지 않는 슬러그에 활성 카드 노출 금지
   // (2026-07-11 T0 전면 개방 때 env-only 분기가 전 페이지로 새던 것을 작가님 실캡처로 적발)
@@ -596,7 +594,7 @@ ${hreflangTags}
 
   const fullName = `${countryName} ${typeName}`;
   const ctx = {
-    slug, lang, specData, i, v2, prefix, market, isPilot,
+    slug, lang, specData, i, v2, prefix, market,
     countryName, typeName, fullName, typeSlug, countrySlug,
     geoSummary, imgSrc, fallbackSrc, tabSpecLabel, sourceLabel,
     specRows, detailHtml, rejectHtml, restrictionsHtml, sourceHtml,
@@ -604,7 +602,7 @@ ${hreflangTags}
   };
   const bodyContent = `
   ${market === 'kr' ? '<script src="https://js.tosspayments.com/v2/standard"></script>' : ''}
-  <div class="v2-wrap${isPilot ? ' idpass-pilot' : ''}" data-slug="${slug}">
+  <div class="v2-wrap idpass-pilot" data-slug="${slug}">
 ${specHero(ctx)}
 
     <!-- 2. 핵심 규격 듀오 — 이미지 박스 + 수치 박스(탭) 분리. DOM 순서=모바일 순서(이미지 먼저) -->
@@ -634,7 +632,7 @@ ${relatedServices(ctx)}
     frameRatio: fitCropParams ? +(fitCropParams.frameH / fitCropParams.frameW).toFixed(4) : null,
     downloadName: `${countryName}_${typeName}_${locField(specData, 'size', lang).replace(/\s/g, '')}_MONKOS.jpg`,
     t: v2.js,
-    pilot: isPilot,
+    pilot: true,
     t1: t1RetouchOn,
     freeCap: process.env.FREE_QUOTA_BYPASS === '1' ? 999999 : 3,
   };
@@ -645,7 +643,7 @@ ${relatedServices(ctx)}
   return {
     title,
     description,
-    seoMeta: seoMeta + specsCssLink('specs-funnel') + (isPilot ? specsCssLink('specs-pilot') : ''),
+    seoMeta: seoMeta + specsCssLink('specs-funnel') + specsCssLink('specs-pilot'),
     htmlLang: lang,
     pageStyle: '',
     bodyContent: bodyContent + specsJsTag('specs-funnel'),

@@ -1,11 +1,11 @@
 import { escapeHtml } from '../render-shell.js';
 
 export function specFunnelMarkup(ctx) {
-  const { slug, lang, specData, v2, isPilot, typeName, fullName, market,
-          t1RetouchOn, fmtV2, locField, escapeHtml: _eh } = ctx;
+  const { slug, lang, specData, v2, typeName, fullName, market,
+          t1RetouchOn, fmtV2, locField } = ctx;
   const eh = escapeHtml;
   return `
-    <!-- 3. 사진 만들기 (T1 셀프서브 즉시결제) -->
+    <!-- 3. 사진 만들기 (T0 무료 전언어 통일) -->
     <div class="v2-steps-section" id="v2-steps">
       <div class="v2-steps-title">${eh(fmtV2(v2.makeTitle, { name: fullName }))}</div>
       <div class="v2-steps-sub">${eh(fmtV2(v2.makeSub, { size: locField(specData, 'size', lang) }))}</div>
@@ -27,7 +27,6 @@ export function specFunnelMarkup(ctx) {
           </div>
         </div>
       </div>
-      <!-- 에러 안내 — 페이즈 밖 공통 위치 (숨겨진 페이즈 내부에 있으면 무음, 2026-07-10 리뷰 확정) -->
       <div class="v2-error-msg" id="v2-error"></div>
 
       <!-- Phase 2: AI 검수 결과 -->
@@ -37,10 +36,10 @@ export function specFunnelMarkup(ctx) {
             <img id="v2-check-img" src="" alt="${eh(v2.altCheck)}">
           </div>
           <div class="v2-checklist-side">
-            <div class="v2-checklist-title">${isPilot ? '사진 확인 중' : eh(v2.checkTitle)}</div>
+            <div class="v2-checklist-title">${eh(v2.checkTitle)}</div>
             <div class="v2-checklist-loading" id="v2-loading">
               <div class="v2-spinner"></div>
-              <span>${isPilot ? '고객님의 사진을 확인하고 있습니다...' : eh(v2.checking)}</span>
+              <span>${eh(v2.checking)}</span>
             </div>
             <ul class="v2-checklist-items" id="v2-checklist-items"></ul>
             <div class="v2-checklist-summary" id="v2-summary"></div>
@@ -52,7 +51,7 @@ export function specFunnelMarkup(ctx) {
         </div>
       </div>
 
-      <!-- Phase 2.5: 규격 안착 시어터 (2026-07-07 작가님 연출 비전 — 전문가 대행을 보여준다) -->
+      <!-- Phase 2.5: 규격 안착 시어터 -->
       <div class="v2-make-layout" id="v2-phase-fit" style="display:none;">
         <div class="v2-pay-grid">
           <div class="v2-pay-preview">
@@ -71,20 +70,19 @@ export function specFunnelMarkup(ctx) {
             <div id="v2-fit-status" style="text-align:center;margin-top:10px;font-size:13px;color:#777;min-height:18px;"></div>
           </div>
           <div class="v2-checklist-side">
-            ${isPilot ? '' : '<div class="v2-checklist-title">규격 안착</div>'}
             <div id="v2-fit-badges" style="display:none;gap:8px;flex-wrap:wrap;margin:8px 0;"></div>
             <div id="v2-fit-note" style="display:none;font-size:12.5px;color:#555;background:#f6f6fb;border-radius:8px;padding:8px 10px;margin:6px 0;"></div>
             <div class="v2-checklist-summary" id="v2-fit-summary"></div>
             <div class="v2-action-buttons" id="v2-fit-actions" style="display:none;">
-              <button class="v2-action-btn v2-btn-retry" id="v2-fit-change">다른 사진으로</button>
-              <button class="v2-action-btn v2-btn-retouch" id="v2-fit-make">${isPilot ? '무료로 만들기' : '이대로 만들기'}</button>
+              <button class="v2-action-btn v2-btn-retry" id="v2-fit-change">${eh(v2.btnOtherPhoto)}</button>
+              <button class="v2-action-btn v2-btn-retouch" id="v2-fit-make">${eh(v2.fitMakeBtn)}</button>
             </div>
-            ${isPilot ? `<div class="ip-fit-caption" id="ip-fit-caption" style="display:none;">배경 제거 + ${eh(typeName)} 규격 크롭 · 오늘 <span id="ip-fit-remaining">3</span>회 무료 · 로그인 불필요</div>` : ''}
+            <div class="ip-fit-caption" id="ip-fit-caption" style="display:none;">${eh(fmtV2(v2.fitCaption, { type: typeName, n: '3' }))}</div>
           </div>
         </div>
       </div>
 
-      <!-- Phase 2: 결제 선택 (피사체 칩 + 의상 인라인 + 결제 카드) -->
+      <!-- Phase 결제 선택 -->
       <div class="v2-make-layout" id="v2-phase-pay" style="display:none;">
         <div class="v2-pay-grid">
           <div class="v2-pay-preview">
@@ -92,7 +90,6 @@ export function specFunnelMarkup(ctx) {
             <button class="v2-change-photo" id="v2-change-photo">${eh(v2.btnOtherPhoto)}</button>
           </div>
           <div class="v2-pay-options">
-            <!-- 피사체 선택 -->
             <div class="v2-subject-section" id="v2-subject-section">
               <div class="v2-attire-sub-label">찍힌 분</div>
               <div class="v2-attire-chips" id="v2-age-chips" data-field="age">
@@ -105,7 +102,6 @@ export function specFunnelMarkup(ctx) {
                 <div class="v2-attire-chip" data-val="f">여성</div>
               </div>
             </div>
-            <!-- 의상 선택 (T1만) -->
             <div class="v2-attire-inline" id="v2-attire-inline" style="display:none;">
               <div class="v2-attire-sub-label">의상 선택</div>
               <div class="v2-attire-cards" id="v2-attire-cards">
@@ -129,7 +125,6 @@ export function specFunnelMarkup(ctx) {
               <div id="v2-attire-sub-options"></div>
               <div class="v2-attire-summary" id="v2-attire-summary">현재 의상 유지, 보정만 적용</div>
             </div>
-            <!-- 결제 카드 -->
             <button class="v2-pay-btn v2-pay-instant" id="v2-pay-instant">
               <div class="v2-pay-title">${eh(fmtV2(v2.payTitle, { type: typeName }))}</div>
               <div class="v2-pay-price">${v2.payPrice}</div>
@@ -180,45 +175,45 @@ export function specFunnelMarkup(ctx) {
         </div>
       </div>
 
-      ${isPilot ? `<!-- S3 땡큐 — 동일 프레임(2컬럼) 유지: 사진 자리 고정, 패널만 진화 (2026-07-10 작가님 연속성 지시) -->
+      <!-- S3 땡큐 — T0 무료 생성 결과 -->
       <div class="v2-make-layout" id="v2-phase-free" style="display:none;">
         <div class="v2-pay-grid">
           <div class="v2-pay-preview">
-            <div class="ip-free-photo"><img id="ip-free-img" src="" alt="완성된 ${eh(typeName)} 규격 사진"></div>
+            <div class="ip-free-photo"><img id="ip-free-img" src="" alt="${eh(fmtV2(v2.freeAltDone, { type: typeName }))}"></div>
             <div class="ip-free-spec">${eh(locField(specData, 'size', lang))}${specData.dpi ? ` · ${eh(String(specData.dpi))}dpi` : ''}${locField(specData, 'background', lang) ? ` · ${eh(locField(specData, 'background', lang))}` : ''}</div>
           </div>
           <div class="ip-free-side">
             <span class="ip-free-kicker">DONE · ${eh(slug.toUpperCase())}</span>
-            <h3 class="ip-free-h">완성! ${eh(typeName)} 규격에 맞춰 만들었어요</h3>
+            <h3 class="ip-free-h">${eh(fmtV2(v2.freeDoneH, { type: typeName }))}</h3>
             <div class="ip-free-btnrow">
-              <button class="ip-btn ip-btn-primary" id="ip-free-download">다운로드</button>
-              <button class="ip-btn ip-btn-ghost" id="ip-free-retry">다른 사진</button>
+              <button class="ip-btn ip-btn-primary" id="ip-free-download">${eh(v2.btnDownload)}</button>
+              <button class="ip-btn ip-btn-ghost" id="ip-free-retry">${eh(v2.btnOtherPhoto)}</button>
             </div>
-            <div class="ip-free-cap">오늘 무료 <span id="ip-free-remaining">-</span>회 남음</div>
+            <div class="ip-free-cap">${eh(fmtV2(v2.freeRemainCap, { n: '-' }))}</div>
             ${t1RetouchOn ? `<div class="ip-card ip-card-t1">
-              <div class="ip-card-head"><b>AI 보정</b><span class="ip-price">₩2,000</span></div>
+              <div class="ip-card-head"><b>${eh(v2.t1Title)}</b><span class="ip-price">${eh(v2.t1Price)}</span></div>
               <ul class="ip-card-list">
-                <li>AI 리터칭 — 내 얼굴 그대로, 더 단정하게</li>
-                <li>AI 규격 검수</li>
-                <li>${eh(typeName)} 규격 보정 파일</li>
+                <li>${eh(v2.t1Desc1)}</li>
+                <li>${eh(v2.t1Desc2)}</li>
+                <li>${eh(fmtV2(v2.t1Desc3, { type: typeName }))}</li>
               </ul>
-              <button class="ip-btn ip-btn-mid" id="ip-t1-buy">AI 보정으로 업그레이드</button>
+              <button class="ip-btn ip-btn-mid" id="ip-t1-buy">${eh(v2.t1BuyBtn)}</button>
             </div>` : `<div class="ip-card ip-card-t1 ip-card-soon">
-              <div class="ip-card-head"><b>AI 보정</b><span class="ip-price">₩2,000</span></div>
+              <div class="ip-card-head"><b>${eh(v2.t1Title)}</b><span class="ip-price">${eh(v2.t1Price)}</span></div>
               <ul class="ip-card-list">
-                <li>AI 리터칭 — 내 얼굴 그대로, 더 단정하게</li>
-                <li>AI 규격 검수</li>
+                <li>${eh(v2.t1Desc1)}</li>
+                <li>${eh(v2.t1Desc2)}</li>
               </ul>
-              <button class="ip-btn ip-btn-mid" id="ip-t1-buy" disabled>곧 열려요 — 준비 중</button>
+              <button class="ip-btn ip-btn-mid" id="ip-t1-buy" disabled>${eh(v2.t1SoonBtn)}</button>
             </div>`}
             <a class="ip-slot" id="ip-slot-credit" href="/credits.html">
               <span class="ip-slot-ic">🎁</span>
-              <span class="ip-slot-txt"><b>간편로그인하면 10c 크레딧</b><span>AI 보정 1회가 ₩1,500이 돼요</span></span>
+              <span class="ip-slot-txt"><b>${eh(v2.creditSlotTitle)}</b><span>${eh(v2.creditSlotSub)}</span></span>
               <span class="ip-slot-tag">EVENT</span>
             </a>
           </div>
         </div>
-      </div>` : ''}
+      </div>
 
     </div>`;
 }
