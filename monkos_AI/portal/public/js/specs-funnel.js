@@ -180,26 +180,8 @@ var SpecsFunnel = (function(){
           precheckData = data;
           // 규정 8항목은 결과 화면에서 사후 표시 (ORDER_20260707 Task 1: 사전=측정성만)
           if(data.measurable === false){
-            var reasons = {
-              no_face: '얼굴을 찾지 못했어요. 정면 얼굴이 나온 사진을 올려주세요.',
-              multiple_faces: '사진에 여러 명이 있어요. 1인 사진을 올려주세요.',
-              face_too_small: '얼굴이 너무 작아요. 가슴 위까지 나오게 찍어주세요.',
-              face_too_close: '너무 가까워요. 조금 멀리서 찍어주세요.',
-              head_cropped: '머리 위가 잘렸어요. 머리 전체가 나오게 찍어주세요.',
-              crown_cropped: '정수리가 잘렸어요. 머리 전체가 나오게 찍어주세요.',
-              chin_cropped: '턱 아래가 잘렸어요. 어깨가 보이게 찍어주세요.',
-              off_center: '얼굴이 한쪽으로 치우쳐 있어요. 중앙에서 찍어주세요.',
-              too_dark: '사진이 너무 어두워요. 밝은 곳에서 찍어주세요.',
-              too_bright: '사진이 너무 밝아요. 직사광선을 피해주세요.',
-              head_tilted: '고개가 기울어져 있어요. 고개를 바로 세우고 찍어주세요.',
-              not_frontal: '옆모습이에요. 정면을 바라보고 찍어주세요.',
-              chin_too_low: '턱을 너무 숙이고 있어요. 정면을 바라보고 찍어주세요.',
-              chin_too_high: '턱을 너무 들고 있어요. 정면을 바라보고 찍어주세요.',
-              uneven_lighting: '얼굴에 그림자가 져 있어요. 균일한 조명에서 찍어주세요.',
-              occluded: '얼굴이 가려져 있어요. 가림 없는 사진을 올려주세요.'
-            };
             summary.className = 'v2-checklist-summary v2-summary-fail';
-            summary.textContent = reasons[data.rejectionReason] || '이 사진으로는 정밀 측정이 어려워요. 다른 사진을 올려주세요.';
+            summary.textContent = (data.rejectionReason && T['rej_' + data.rejectionReason]) || T.rejDefault;
             document.getElementById('v2-btn-proceed').style.display = 'none';
             checkActions.style.display = 'flex';
           } else {
@@ -334,7 +316,7 @@ var SpecsFunnel = (function(){
       freeBusy = false; fitResult = null; pilotGenPromise = null;
       return;
     }
-    st.textContent = '규격 안착 완료 — 배경을 지우는 중이에요';
+    st.textContent = '사진 확인 완료 — 배경을 지우는 중이에요';
     fs.className = 'ip-summary-ok';
     fs.textContent = '배경을 지우고 있어요...';
     (pilotGenPromise || freeGenerateRequest(d)).then(function(res){
@@ -344,11 +326,11 @@ var SpecsFunnel = (function(){
         if(code === 'FREE_LIMIT'){
           updateFreeRemainingUI(0); gaTrack('free_limit_hit', {}, true);
           pilotFreeExhausted = true;
-          showError('오늘 무료 횟수를 모두 사용했어요 — 아래 결제로 바로 계속 만들 수 있어요.');
+          showError('' + T.freeLimitHit + '');
           proceedToPay(); // 무료 막혀도 유료 길은 연다
           return;
         }
-        showError((res.d && res.d.error) || '무료 생성에 실패했어요. 잠시 후 다시 시도해주세요.');
+        showError((res.d && res.d.error) || '' + T.freeGenFail + '');
         st.textContent = '';
         fs.textContent = '';
         fa.style.display = 'flex';
@@ -419,11 +401,11 @@ var SpecsFunnel = (function(){
           updateFreeRemainingUI(0);
           gaTrack('free_limit_hit', {}, true);
           pilotFreeExhausted = true;
-          showError('오늘 무료 횟수를 모두 사용했어요 — 아래 결제로 바로 계속 만들 수 있어요.');
+          showError('' + T.freeLimitHit + '');
           proceedToPay();
           return;
         }
-        showError((res.d && res.d.error) || '무료 생성에 실패했어요. 잠시 후 다시 시도해주세요.');
+        showError((res.d && res.d.error) || '' + T.freeGenFail + '');
         restoreFitActions();
         return;
       }
@@ -554,11 +536,11 @@ var SpecsFunnel = (function(){
         if(window.__fitWaitTimer) clearInterval(window.__fitWaitTimer);
         fitResult = null;
         if(data && data.code === 'FIT_SANITY'){
-          showError('이 사진은 정밀 측정이 어려워요. 정면 얼굴이 크게 나온 사진으로 다시 시도해주세요.');
+          showError('' + T.fitSanity + '');
           showPhase(phaseUpload);
           return;
         }
-        if(fitMode === 'pilot'){ fitMode = 'default'; freeBusy = false; showError('지금 무료 만들기가 어려워요. 잠시 후 다시 시도해주세요.'); prepareFreeReady(); return; }
+        if(fitMode === 'pilot'){ fitMode = 'default'; freeBusy = false; showError('' + T.freeRetry + ''); prepareFreeReady(); return; }
         proceedToPay(); return; // 카나리 밖(NOT_AVAILABLE) → 기존 경로
       }
       fitResult = data;

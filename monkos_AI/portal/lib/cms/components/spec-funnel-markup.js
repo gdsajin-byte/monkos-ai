@@ -91,7 +91,7 @@ export function specFunnelMarkup(ctx) {
           </div>
           <div class="v2-pay-options">
             <div class="v2-subject-section" id="v2-subject-section">
-              <div class="v2-attire-sub-label">찍힌 분</div>
+              <div class="v2-attire-sub-label">사진 속 인물</div>
               <div class="v2-attire-chips" id="v2-age-chips" data-field="age">
                 <div class="v2-attire-chip selected" data-val="adult">성인</div>
                 <div class="v2-attire-chip" data-val="teen">청소년</div>
