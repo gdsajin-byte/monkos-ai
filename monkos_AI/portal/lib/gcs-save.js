@@ -1,9 +1,10 @@
 import { Storage } from '@google-cloud/storage';
-import { log } from './shared/config.js';
+import { firestore, log } from './shared/config.js';
 
 const CUSTOMER_GCS_BUCKET = process.env.CUSTOMER_GCS_BUCKET || 'monk-customer-photos';
 const storage = new Storage();
 const bucket = storage.bucket(CUSTOMER_GCS_BUCKET);
+const gensCol = firestore.collection('generations');
 
 function toBuffer(base64) {
   const raw = base64.includes(',') ? base64.split(',')[1] : base64;
@@ -29,6 +30,26 @@ export async function saveImages(service, userId, style, originalImage, generate
   }
 
   await Promise.all(tasks);
+
+  const isAnonymous = !userId || userId === 'specs-visitor';
+  const genDoc = {
+    userId: isAnonymous ? `anonymous_${extras?.sessionId || 'unknown'}` : userId,
+    service,
+    style,
+    slug: extras?.slug || null,
+    channel: extras?.channel || 'monkos',
+    gcsOriginal: originalPath,
+    gcsGenerated: generatedPath,
+    gcsT1Raw: t1RawPath || null,
+    status: 'active',
+    createdAt: new Date().toISOString(),
+  };
+
+  try {
+    await gensCol.add(genDoc);
+  } catch (e) {
+    log(`[GCS] generations 기록 실패 (무시): ${e.message}`, 'WARNING');
+  }
 
   log(`[GCS] 병렬 저장 완료: ${basePath}/ (원본+생성${t1RawPath ? '+나노원본' : ''})`);
   return { originalPath, generatedPath, t1RawPath };

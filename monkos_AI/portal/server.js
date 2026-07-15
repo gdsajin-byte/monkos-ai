@@ -46,7 +46,7 @@ import { judgeMetrics, metricsFromFit } from './lib/spec-judge.js';
 import { trackEvent, linkIdentity } from './lib/tracking.js';
 import { saveImages } from './lib/gcs-save.js';
 import { handleAgentAuth, requireAdmin } from './lib/cms/admin-auth.js';
-import { handleDashboardSummary, handleDashboardUsers, handleDashboardUsers360, handleDashboardCredits, handleDashboardTraffic } from './lib/cms/dashboard.js';
+import { handleDashboardSummary, handleDashboardUsers, handleDashboardUsers360, handleDashboardCredits, handleDashboardTraffic, handleDashboardCitadel, handleDashboardUserDetail, handleDashboardChannels } from './lib/cms/dashboard.js';
 import { handleBlogList, handleBlogGet, handleBlogCreate, handleBlogUpdate, handleBlogDelete } from './lib/cms/blog.js';
 import { handleFaqList, handleFaqCreate, handleFaqUpdate, handleFaqDelete } from './lib/cms/faq.js';
 import { handleGalleryList, handleGalleryCreate, handleGalleryUpdate, handleGalleryDelete } from './lib/cms/gallery.js';
@@ -831,7 +831,7 @@ const httpServer = createServer(async (req, res) => {
       }
 
       try {
-        await saveImages('idphoto', gateUserId, slug || format || 'passport', norm.rawBase64, finalBase64, t1RawForSave ? { t1Raw: t1RawForSave } : undefined);
+        await saveImages('idphoto', gateUserId, slug || format || 'passport', norm.rawBase64, finalBase64, { ...(t1RawForSave && { t1Raw: t1RawForSave }), sessionId: req.sessionId, slug: slug || null });
       } catch (e) {
         log(`[IDPhoto] GCS 저장 실패 (무시): ${e.message}`, 'WARNING');
       }
@@ -957,6 +957,12 @@ const httpServer = createServer(async (req, res) => {
   if (urlPath === '/api/admin/dashboard/users360' && req.method === 'GET') return handleDashboardUsers360(req, res);
   if (urlPath === '/api/admin/dashboard/credits' && req.method === 'GET') return handleDashboardCredits(req, res);
   if (urlPath === '/api/admin/dashboard/traffic' && req.method === 'GET') return handleDashboardTraffic(req, res);
+  if (urlPath === '/api/admin/dashboard/citadel' && req.method === 'GET') return handleDashboardCitadel(req, res);
+  if (urlPath === '/api/admin/dashboard/channels' && req.method === 'GET') return handleDashboardChannels(req, res);
+  if (urlPath.startsWith('/api/admin/dashboard/user/') && req.method === 'GET') {
+    const userId = decodeURIComponent(urlPath.split('/').pop());
+    return handleDashboardUserDetail(req, res, userId);
+  }
 
   // === CMS 관리자 API ===
   if (urlPath === '/api/admin/blog' && req.method === 'GET') return handleBlogList(req, res);
@@ -1073,7 +1079,9 @@ const httpServer = createServer(async (req, res) => {
   }
 
   // SSR page_view 트래킹 (API·정적·sitemap 제외)
-  if (req.method === 'GET' && !urlPath.startsWith('/api/') && !urlPath.startsWith('/admin/') && !urlPath.endsWith('.xml') && !urlPath.endsWith('.txt')) {
+  const STATIC_EXT = /\.(js|css|jpg|jpeg|png|gif|svg|webp|ico|woff|woff2|ttf|map|json)$/i;
+  const STATIC_PREFIX = /^\/(js|css|assets|images|fonts)\//;
+  if (req.method === 'GET' && !urlPath.startsWith('/api/') && !urlPath.startsWith('/admin/') && !urlPath.endsWith('.xml') && !urlPath.endsWith('.txt') && !STATIC_EXT.test(urlPath) && !STATIC_PREFIX.test(urlPath)) {
     trackPageView(req);
   }
 

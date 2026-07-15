@@ -1,9 +1,13 @@
 import { firestore, log, GA4_PROPERTY_ID, ADMIN_UIDS } from '../shared/config.js';
 import { requireAdmin } from './admin-auth.js';
 import { BetaAnalyticsDataClient } from '@google-analytics/data';
+import { bq } from '../tracking.js';
+import { Storage } from '@google-cloud/storage';
 
 const usersCol = firestore.collection('users');
 const txCol = firestore.collection('transactions');
+const gensCol = firestore.collection('generations');
+const gcsBucket = new Storage().bucket(process.env.CUSTOMER_GCS_BUCKET || 'monk-customer-photos');
 
 function toDateStr(val) {
   if (!val) return '';
@@ -309,6 +313,8 @@ export async function handleDashboardUsers360(req, res) {
         lastActivityRaw: lastActivity || '',
         isTest: test,
         transactions: sortedTx.slice(0, 20),
+        signupSource: data.signupSource || null,
+        referrer: data.acquisition?.referrer || null,
       });
     });
 
@@ -322,6 +328,91 @@ export async function handleDashboardUsers360(req, res) {
     res.end(JSON.stringify({ users, daily, byProvider, total: users.length }));
   } catch (err) {
     log(`[Dashboard] users360 에러: ${err.message}`, 'ERROR');
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: err.message }));
+  }
+}
+
+let citadelCache = { data: null, ts: 0 };
+const CITADEL_CACHE_TTL = 3600000;
+
+export async function handleDashboardCitadel(req, res) {
+  const admin = requireAdmin(req, res);
+  if (!admin) return;
+
+  const now = Date.now();
+  if (citadelCache.data && (now - citadelCache.ts) < CITADEL_CACHE_TTL) {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    return res.end(JSON.stringify(citadelCache.data));
+  }
+
+  try {
+    const startDate = daysAgoDate(7);
+    const endDate = todayKST();
+
+    let ga4 = { sessions7d: 0, sessionsDaily: 0, newUsers7d: 0, dataDate: endDate };
+    if (analyticsClient) {
+      try {
+        const [response] = await analyticsClient.runReport({
+          property: `properties/${GA4_PROPERTY_ID}`,
+          dateRanges: [{ startDate, endDate }],
+          metrics: [
+            { name: 'sessions' },
+            { name: 'newUsers' },
+          ],
+        });
+        for (const row of response.rows || []) {
+          ga4.sessions7d += parseInt(row.metricValues[0].value, 10);
+          ga4.newUsers7d += parseInt(row.metricValues[1].value, 10);
+        }
+        ga4.sessionsDaily = Math.round(ga4.sessions7d / 7);
+      } catch (err) {
+        log(`[CITADEL] GA4 조회 실패: ${err.message}`, 'WARNING');
+      }
+    }
+
+    let funnel = { spec_select: 0, photo_upload: 0, generate_click: 0, preview_view: 0, begin_checkout: 0, purchase: 0 };
+    let bqEvents = { page_view: 0, auth_login: 0, auth_signup: 0, credit_charge: 0, api_generate: 0 };
+    try {
+      const [rows] = await bq.query({
+        query: `SELECT event_name, COUNT(*) as cnt
+                FROM \`monkos.monkos_tracking.events\`
+                WHERE event_date >= DATE_SUB(CURRENT_DATE(), INTERVAL 7 DAY)
+                GROUP BY event_name`,
+        location: 'asia-northeast3',
+      });
+      for (const row of rows) {
+        const name = row.event_name;
+        const cnt = parseInt(row.cnt, 10);
+        if (name in bqEvents) bqEvents[name] = cnt;
+        if (name === 'spec_select') funnel.spec_select = cnt;
+        if (name === 'photo_upload') funnel.photo_upload = cnt;
+        if (name === 'api_generate') funnel.generate_click = cnt;
+        if (name === 'preview_view') funnel.preview_view = cnt;
+        if (name === 'credit_charge') funnel.begin_checkout = cnt;
+        if (name === 'purchase') funnel.purchase = cnt;
+      }
+    } catch (err) {
+      log(`[CITADEL] BQ 조회 실패: ${err.message}`, 'WARNING');
+    }
+
+    const result = {
+      ga4,
+      funnel,
+      bqEvents,
+      secrets: { sm: 44, gh: 18 },
+      channels: {
+        live: ['GSC Search Analytics', 'GA4 Data API', 'Google Indexing API', 'IndexNow', 'BQ User Tracking', 'AI Referral', 'SEO Health Check'],
+        ready: ['Naver 검색광고 API', 'Naver DataLab', 'Bing WMT API', 'PageSpeed Insights'],
+        off: ['BQ→대시보드 시각화', '색인 피드백 루프', '키워드 시계열 DB', '경쟁사 모니터링', 'AI 인용 추적', 'Naver 서치어드바이저'],
+      },
+    };
+
+    citadelCache = { data: result, ts: now };
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(result));
+  } catch (err) {
+    log(`[CITADEL] 종합 에러: ${err.message}`, 'ERROR');
     res.writeHead(500, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: err.message }));
   }
@@ -384,6 +475,258 @@ export async function handleDashboardTraffic(req, res) {
     }));
   } catch (err) {
     log(`[Dashboard] traffic 에러: ${err.message}`, 'ERROR');
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: err.message }));
+  }
+}
+
+export async function handleDashboardUserDetail(req, res, userId) {
+  const admin = requireAdmin(req, res);
+  if (!admin) return;
+
+  try {
+    const userDoc = await usersCol.doc(userId).get();
+    if (!userDoc.exists) {
+      res.writeHead(404, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ error: 'User not found' }));
+    }
+
+    const u = userDoc.data();
+    const profile = {
+      id: userId,
+      name: u.name || '',
+      email: u.email || '',
+      provider: u.provider || 'unknown',
+      picture: u.picture || null,
+      credits: u.credits || 0,
+      createdAt: toISOStr(u.createdAt),
+      lastLogin: toISOStr(u.lastLogin),
+      isTest: isTestUser(userId),
+    };
+
+    const acquisition = {
+      signupSource: u.signupSource || null,
+      referrer: u.acquisition?.referrer || null,
+      landingUrl: u.acquisition?.landingUrl || null,
+      firstVisit: u.acquisition?.firstVisit ? toISOStr(u.acquisition.firstVisit) : null,
+      source: u.acquisition?.referrer ? 'firestore' : null,
+    };
+
+    if (!acquisition.referrer) {
+      try {
+        const [bqAcq] = await bq.query({
+          query: `WITH user_sessions AS (
+                    SELECT session_id FROM \`monkos.monkos_tracking.identity_map\` WHERE user_id = @userId
+                  ),
+                  first_external AS (
+                    SELECT e.referer, e.page_path, e.event_timestamp,
+                           ROW_NUMBER() OVER (ORDER BY e.event_timestamp ASC) as rn
+                    FROM \`monkos.monkos_tracking.events\` e
+                    JOIN user_sessions us ON e.session_id = us.session_id
+                    WHERE e.event_name = 'page_view'
+                      AND e.event_date >= DATE_SUB(CURRENT_DATE(), INTERVAL 90 DAY)
+                      AND e.referer IS NOT NULL AND e.referer != ''
+                      AND e.referer NOT LIKE '%monkos.ai%'
+                      AND e.referer NOT LIKE '%monkos-portal%'
+                  )
+                  SELECT referer, page_path, event_timestamp FROM first_external WHERE rn = 1`,
+          params: { userId },
+          location: 'asia-northeast3',
+        });
+        if (bqAcq.length > 0) {
+          acquisition.referrer = bqAcq[0].referer;
+          acquisition.landingUrl = bqAcq[0].page_path;
+          acquisition.firstVisit = bqAcq[0].event_timestamp?.value || bqAcq[0].event_timestamp || '';
+          acquisition.source = 'bq_traced';
+        }
+      } catch (e) {
+        log(`[Dashboard] BQ acquisition 역추적 실패: ${e.message}`, 'WARNING');
+      }
+    }
+
+    const [txSnap, gensSnap] = await Promise.all([
+      txCol.where('userId', '==', userId).orderBy('createdAt', 'desc').limit(50).get(),
+      gensCol.where('userId', '==', userId).orderBy('createdAt', 'desc').limit(50).get(),
+    ]);
+
+    const transactions = txSnap.docs.map(doc => {
+      const d = doc.data();
+      return {
+        type: d.type || '',
+        amount: d.amount || 0,
+        createdAt: toISOStr(d.createdAt),
+        description: d.description || '',
+        provider: d.metadata?.provider || null,
+      };
+    });
+
+    const charges = transactions.filter(t => t.type === 'charge');
+    const uses = transactions.filter(t => t.type === 'use');
+    const hasGenerate = uses.some(t => t.description.includes('generate'));
+    const hasDownload = uses.some(t => t.description.includes('download'));
+    let funnelStage = 2;
+    if (hasGenerate) funnelStage = 3;
+    if (charges.length > 0) funnelStage = Math.max(funnelStage, 4);
+    if (hasDownload) funnelStage = 5;
+
+    const totalPaid = charges.reduce((sum, t) => sum + ((t.provider || t.amount > 0) ? 0 : 0), 0);
+    const generateCount = uses.filter(t => t.description.includes('generate')).length;
+
+    const totalPaidKRW = txSnap.docs
+      .filter(d => d.data().type === 'charge')
+      .reduce((sum, d) => {
+        const m = d.data().metadata;
+        return sum + ((m && typeof m.amount === 'number') ? m.amount : 0);
+      }, 0);
+
+    const generations = await Promise.all(gensSnap.docs.map(async doc => {
+      const g = doc.data();
+      let originalUrl = null, generatedUrl = null;
+      try {
+        if (g.gcsOriginal) {
+          [originalUrl] = await gcsBucket.file(g.gcsOriginal).getSignedUrl({ action: 'read', expires: Date.now() + 3600000 });
+        }
+        if (g.gcsGenerated) {
+          [generatedUrl] = await gcsBucket.file(g.gcsGenerated).getSignedUrl({ action: 'read', expires: Date.now() + 3600000 });
+        }
+      } catch (e) {
+        log(`[Dashboard] 서명 URL 실패: ${e.message}`, 'WARNING');
+      }
+      return {
+        id: doc.id,
+        service: g.service || '',
+        style: g.style || '',
+        slug: g.slug || null,
+        gcsOriginal: g.gcsOriginal || '',
+        gcsGenerated: g.gcsGenerated || '',
+        status: g.status || 'active',
+        createdAt: g.createdAt || '',
+        originalUrl,
+        generatedUrl,
+      };
+    }));
+
+    let timeline = [];
+    try {
+      const [rows] = await bq.query({
+        query: `SELECT event_name, event_timestamp, page_path, referer, params
+                FROM \`monkos.monkos_tracking.events\`
+                WHERE event_date >= DATE_SUB(CURRENT_DATE(), INTERVAL 90 DAY)
+                  AND (user_id = @userId OR session_id IN (
+                    SELECT session_id FROM \`monkos.monkos_tracking.identity_map\`
+                    WHERE user_id = @userId
+                  ))
+                  AND NOT REGEXP_CONTAINS(COALESCE(page_path, ''), r'\\.(js|css|jpg|jpeg|png|gif|svg|webp|ico|woff|woff2)$')
+                  AND NOT STARTS_WITH(COALESCE(page_path, ''), '/js/')
+                  AND NOT STARTS_WITH(COALESCE(page_path, ''), '/css/')
+                  AND NOT STARTS_WITH(COALESCE(page_path, ''), '/assets/')
+                  AND NOT STARTS_WITH(COALESCE(page_path, ''), '/fonts/')
+                ORDER BY event_timestamp DESC LIMIT 200`,
+        params: { userId },
+        location: 'asia-northeast3',
+      });
+      timeline = rows.map(r => ({
+        eventName: r.event_name,
+        timestamp: r.event_timestamp?.value || r.event_timestamp || '',
+        pagePath: r.page_path || '',
+        referer: r.referer || '',
+      }));
+    } catch (e) {
+      log(`[Dashboard] BQ timeline 조회 실패: ${e.message}`, 'WARNING');
+    }
+
+    const sortedTx = [...transactions].sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+    const lastTxDate = sortedTx.length > 0 ? sortedTx[0].createdAt : '';
+    const lastLoginISO = toISOStr(u.lastLogin);
+    const lastActivity = (lastTxDate && lastLoginISO)
+      ? (lastTxDate > lastLoginISO ? lastTxDate : lastLoginISO)
+      : (lastTxDate || lastLoginISO);
+
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({
+      profile,
+      acquisition,
+      funnelStage,
+      funnelLabels: ['방문', '가입', '생성', '결제', '다운로드'],
+      stats: {
+        generateCount,
+        totalPaid: totalPaidKRW,
+        chargeCount: charges.length,
+        lastActivity: lastActivity || null,
+      },
+      generations,
+      transactions,
+      timeline,
+    }));
+  } catch (err) {
+    log(`[Dashboard] userDetail 에러: ${err.message}`, 'ERROR');
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: err.message }));
+  }
+}
+
+export async function handleDashboardChannels(req, res) {
+  const admin = requireAdmin(req, res);
+  if (!admin) return;
+
+  try {
+    const days = parseInt(new URL(req.url, `http://${req.headers.host}`).searchParams.get('days') || '7', 10);
+
+    const [[channels], [directRows]] = await Promise.all([
+      bq.query({
+        query: `WITH external_visits AS (
+                  SELECT referer, page_path, event_timestamp
+                  FROM \`monkos.monkos_tracking.events\`
+                  WHERE event_name = 'page_view'
+                    AND event_date >= DATE_SUB(CURRENT_DATE(), INTERVAL @days DAY)
+                    AND referer IS NOT NULL AND referer != ''
+                    AND referer NOT LIKE '%monkos.ai%'
+                    AND referer NOT LIKE '%monkos-portal%'
+                    AND NOT REGEXP_CONTAINS(page_path, r'\\.(js|css|jpg|jpeg|png|gif|svg|webp|ico|woff|woff2)$')
+                    AND NOT STARTS_WITH(page_path, '/js/')
+                    AND NOT STARTS_WITH(page_path, '/css/')
+                    AND NOT STARTS_WITH(page_path, '/assets/')
+                )
+                SELECT
+                  NET.HOST(referer) as source_domain,
+                  COUNT(*) as visits,
+                  ARRAY_AGG(DISTINCT page_path ORDER BY page_path LIMIT 5) as top_landings,
+                  ARRAY_AGG(DISTINCT referer ORDER BY referer LIMIT 5) as sample_urls
+                FROM external_visits
+                GROUP BY source_domain
+                ORDER BY visits DESC
+                LIMIT 15`,
+        params: { days },
+        location: 'asia-northeast3',
+      }),
+      bq.query({
+        query: `SELECT COUNT(*) as cnt
+                FROM \`monkos.monkos_tracking.events\`
+                WHERE event_name = 'page_view'
+                  AND event_date >= DATE_SUB(CURRENT_DATE(), INTERVAL @days DAY)
+                  AND (referer IS NULL OR referer = '')
+                  AND NOT REGEXP_CONTAINS(page_path, r'\\.(js|css|jpg|jpeg|png|gif|svg|webp|ico|woff|woff2)$')
+                  AND NOT STARTS_WITH(page_path, '/js/')
+                  AND NOT STARTS_WITH(page_path, '/css/')
+                  AND NOT STARTS_WITH(page_path, '/assets/')`,
+        params: { days },
+        location: 'asia-northeast3',
+      }),
+    ]);
+
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({
+      days,
+      channels: channels.map(r => ({
+        domain: r.source_domain,
+        visits: parseInt(r.visits, 10),
+        topLandings: r.top_landings || [],
+        sampleUrls: r.sample_urls || [],
+      })),
+      directVisits: parseInt(directRows[0]?.cnt || 0, 10),
+    }));
+  } catch (err) {
+    log(`[Dashboard] channels 에러: ${err.message}`, 'ERROR');
     res.writeHead(500, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: err.message }));
   }

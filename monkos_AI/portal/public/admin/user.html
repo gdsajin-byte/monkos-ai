@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>유저 상세 — MONKOS Admin</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #f5f5f5; --surface: #ffffff; --surface2: #fafafa;
+  --accent: #6d28d9; --accent2: #4f46e5;
+  --text: #334155; --text-dim: #64748b; --text-bright: #0f172a;
+  --border: rgba(0,0,0,0.08); --border-hover: rgba(109,40,217,0.3);
+  --success: #059669; --danger: #dc2626; --orange: #ea580c;
+}
+body { font-family: 'Noto Sans KR', -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 13px; }
+a { color: var(--accent); text-decoration: none; }
+
+.nav { display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; border-bottom: 1px solid var(--border); background: var(--surface); }
+.nav-logo { font-size: 18px; font-weight: 700; color: var(--text-bright); letter-spacing: 2px; text-decoration: none; }
+.nav-back { font-size: 13px; color: var(--text-dim); }
+.nav-back:hover { color: var(--accent); }
+
+.container { max-width: 1200px; margin: 0 auto; padding: 20px 24px; }
+
+.top-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; }
+.card-title { font-size: 11px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+
+.profile-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.profile-avatar { width: 48px; height: 48px; border-radius: 50%; background: var(--surface2); display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; color: var(--accent); overflow: hidden; }
+.profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.profile-name { font-size: 18px; font-weight: 700; color: var(--text-bright); }
+.profile-email { font-size: 12px; color: var(--text-dim); }
+
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.info-item { background: var(--surface2); border-radius: 6px; padding: 8px 10px; }
+.info-label { font-size: 10px; color: var(--text-dim); }
+.info-value { font-size: 14px; font-weight: 700; color: var(--text-bright); }
+
+.provider-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 600; }
+.provider-kakao { background: #FEE500; color: #191919; }
+.provider-google { background: #4285F4; color: #fff; }
+.provider-line { background: #00B900; color: #fff; }
+.provider-unknown { background: #e2e8f0; color: #64748b; }
+
+.acq-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 12px; }
+.acq-label { color: var(--text-dim); min-width: 60px; font-weight: 600; }
+.acq-value { color: var(--text-bright); word-break: break-all; }
+
+/* Funnel */
+.funnel-bar { display: flex; align-items: center; gap: 0; margin-bottom: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; }
+.funnel-step { flex: 1; text-align: center; position: relative; }
+.funnel-dot { width: 14px; height: 14px; border-radius: 50%; background: #e2e8f0; margin: 0 auto 4px; }
+.funnel-dot.filled { background: var(--accent); }
+.funnel-dot.current { background: var(--accent); box-shadow: 0 0 8px rgba(109,40,217,0.4); }
+.funnel-connector { position: absolute; top: 7px; left: 50%; width: 100%; height: 2px; background: #e2e8f0; z-index: 0; }
+.funnel-connector.filled { background: var(--accent); }
+.funnel-step:last-child .funnel-connector { display: none; }
+.funnel-label { font-size: 10px; color: var(--text-dim); }
+
+/* Gallery */
+.gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; margin-bottom: 20px; }
+.gen-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px; }
+.gen-images { display: flex; gap: 8px; margin-bottom: 8px; }
+.gen-images img { width: 50%; border-radius: 6px; object-fit: cover; aspect-ratio: 3/4; background: var(--surface2); }
+.gen-meta { font-size: 11px; color: var(--text-dim); }
+.gen-meta strong { color: var(--text-bright); }
+
+/* Bottom row */
+.bottom-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+.tx-list { list-style: none; max-height: 400px; overflow-y: auto; }
+.tx-item { padding: 6px 0; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; font-size: 11px; }
+.tx-item:last-child { border-bottom: none; }
+.tx-amount.credit { color: var(--success); font-weight: 600; }
+.tx-amount.debit { color: var(--danger); font-weight: 600; }
+
+.timeline-list { list-style: none; max-height: 400px; overflow-y: auto; }
+.tl-item { padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 11px; display: flex; gap: 8px; }
+.tl-item:last-child { border-bottom: none; }
+.tl-time { color: var(--text-dim); min-width: 45px; white-space: nowrap; }
+.tl-event { font-weight: 600; min-width: 90px; }
+.tl-event.page_view { color: var(--text-dim); }
+.tl-event.api_generate { color: var(--accent); }
+.tl-event.credit_charge { color: var(--success); }
+.tl-event.auth_login { color: var(--orange); }
+.tl-event.auth_signup { color: var(--accent2); }
+.tl-path { color: var(--text); word-break: break-all; }
+
+.loading { text-align: center; padding: 60px 0; color: var(--text-dim); font-size: 14px; }
+.error-msg { color: var(--danger); font-size: 13px; padding: 16px; background: #fef2f2; border-radius: 6px; text-align: center; }
+
+.test-badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 600; background: #fef3c7; color: #92400e; margin-left: 6px; }
+
+@media (max-width: 768px) {
+  .top-row, .bottom-row { grid-template-columns: 1fr; }
+  .gallery-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/admin/" class="nav-logo">MONKOS Admin</a>
+  <div style="display:flex;gap:16px;align-items:center">
+    <a href="/admin/dashboard.html" class="nav-back">&larr; Dashboard</a>
+    <a href="/admin/citadel.html" class="nav-back">CITADEL</a>
+  </div>
+</nav>
+
+<div class="loading" id="loadingMsg">유저 데이터 로딩 중...</div>
+<div id="errorMsg" style="display:none"></div>
+
+<div class="container" id="main" style="display:none">
+  <!-- Profile + Acquisition -->
+  <div class="top-row">
+    <div class="card">
+      <div class="card-title">프로필</div>
+      <div class="profile-header">
+        <div class="profile-avatar" id="avatar"></div>
+        <div>
+          <div class="profile-name" id="userName"></div>
+          <div class="profile-email" id="userEmail"></div>
+        </div>
+      </div>
+      <div class="info-grid">
+        <div class="info-item"><div class="info-label">채널</div><div class="info-value" id="userProvider"></div></div>
+        <div class="info-item"><div class="info-label">가입일</div><div class="info-value" id="userCreated"></div></div>
+        <div class="info-item"><div class="info-label">크레딧 잔액</div><div class="info-value" id="userCredits"></div></div>
+        <div class="info-item"><div class="info-label">총 결제</div><div class="info-value" id="userPaid"></div></div>
+        <div class="info-item"><div class="info-label">생성 횟수</div><div class="info-value" id="userGenCount"></div></div>
+        <div class="info-item"><div class="info-label">최근 활동</div><div class="info-value" id="userLastActivity"></div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">유입 경로</div>
+      <div id="acquisitionInfo"></div>
+    </div>
+  </div>
+
+  <!-- Funnel -->
+  <div class="funnel-bar" id="funnelBar"></div>
+
+  <!-- Gallery -->
+  <div class="card" style="margin-bottom:20px">
+    <div class="card-title">생성 갤러리 <span style="font-weight:400;color:var(--text-dim)" id="genCount"></span></div>
+    <div class="gallery-grid" id="gallery"></div>
+    <div id="noGens" style="display:none;color:var(--text-dim);font-size:12px;padding:8px 0">생성 이력 없음</div>
+  </div>
+
+  <!-- Transactions + Timeline -->
+  <div class="bottom-row">
+    <div class="card">
+      <div class="card-title">거래 내역</div>
+      <ul class="tx-list" id="txList"></ul>
+      <div id="noTx" style="display:none;color:var(--text-dim);font-size:12px;padding:8px 0">거래 내역 없음</div>
+    </div>
+    <div class="card">
+      <div class="card-title">BQ 동선 타임라인</div>
+      <ul class="timeline-list" id="timeline"></ul>
+      <div id="noTimeline" style="display:none;color:var(--text-dim);font-size:12px;padding:8px 0">동선 데이터 없음</div>
+    </div>
+  </div>
+</div>
+
+<script>var region = 'kr'; var lang = 'ko';</script>
+<script src="/js/auth.js"></script>
+<script>
+const PROVIDER_MAP = { kakao: '카톡', google: '구글', line: '라인', unknown: '직접' };
+
+function esc(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+
+function formatKST(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return iso;
+  const kst = new Date(d.getTime() + 9 * 3600000);
+  return kst.toISOString().replace('T', ' ').slice(0, 16);
+}
+
+function timeOnly(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return '';
+  const kst = new Date(d.getTime() + 9 * 3600000);
+  return kst.toISOString().slice(11, 16);
+}
+
+async function apiFetch(url) {
+  const r = await fetch(url, { credentials: 'include' });
+  if (r.status === 401) { location.href = '/admin/'; throw new Error('Unauthorized'); }
+  if (r.status === 404) throw new Error('유저를 찾을 수 없습니다');
+  return r.json();
+}
+
+function renderProfile(data) {
+  const { profile, stats } = data;
+  const avatarEl = document.getElementById('avatar');
+  if (profile.picture) {
+    avatarEl.innerHTML = `<img src="${esc(profile.picture)}" alt="">`;
+  } else {
+    avatarEl.textContent = (profile.name || '?')[0].toUpperCase();
+  }
+
+  const nameEl = document.getElementById('userName');
+  nameEl.innerHTML = esc(profile.name || '—') + (profile.isTest ? '<span class="test-badge">TEST</span>' : '');
+  document.getElementById('userEmail').textContent = profile.email || '—';
+
+  const provLabel = PROVIDER_MAP[profile.provider] || profile.provider || '직접';
+  document.getElementById('userProvider').innerHTML = `<span class="provider-badge provider-${profile.provider || 'unknown'}">${provLabel}</span>`;
+  document.getElementById('userCreated').textContent = formatKST(profile.createdAt);
+  document.getElementById('userCredits').textContent = `${profile.credits}c`;
+  document.getElementById('userPaid').textContent = stats.totalPaid ? `₩${stats.totalPaid.toLocaleString()}` : '₩0';
+  document.getElementById('userGenCount').textContent = stats.generateCount;
+  document.getElementById('userLastActivity').textContent = formatKST(stats.lastActivity);
+
+  document.title = `${profile.name || profile.email || profile.id} — MONKOS Admin`;
+}
+
+function renderAcquisition(data) {
+  const { acquisition } = data;
+  const el = document.getElementById('acquisitionInfo');
+
+  let refDisplay = '(직접 접속)';
+  let refDetail = '';
+  if (acquisition.referrer) {
+    try { refDisplay = new URL(acquisition.referrer).hostname; } catch { refDisplay = acquisition.referrer; }
+    refDetail = acquisition.referrer;
+  }
+
+  const sourceLabel = acquisition.source === 'bq_traced' ? ' <span style="font-size:10px;color:var(--accent);font-weight:600">(BQ 역추적)</span>' : '';
+
+  const rows = [
+    { label: 'referrer', value: refDisplay + sourceLabel, raw: refDetail },
+    { label: '랜딩', value: acquisition.landingUrl },
+    { label: '가입 경로', value: acquisition.signupSource },
+    { label: '첫 방문', value: acquisition.firstVisit ? formatKST(acquisition.firstVisit) : null },
+  ];
+  el.innerHTML = rows.map(r => {
+    const mainVal = r.value || '(없음)';
+    const detail = r.raw ? `<div style="font-size:10px;color:var(--text-dim);word-break:break-all;margin-top:2px">${esc(r.raw)}</div>` : '';
+    return `<div class="acq-row" style="flex-direction:column;align-items:stretch;gap:0"><div style="display:flex;gap:8px"><span class="acq-label">${r.label}</span><span class="acq-value">${r.label === 'referrer' ? mainVal : esc(mainVal)}</span></div>${detail}</div>`;
+  }).join('');
+}
+
+function renderFunnel(data) {
+  const { funnelStage, funnelLabels } = data;
+  const bar = document.getElementById('funnelBar');
+  bar.innerHTML = funnelLabels.map((label, i) => {
+    const filled = i < funnelStage;
+    const current = i === funnelStage - 1;
+    const connFilled = i < funnelStage - 1;
+    return `<div class="funnel-step">
+      <div class="funnel-connector${connFilled ? ' filled' : ''}"></div>
+      <div class="funnel-dot${filled ? ' filled' : ''}${current ? ' current' : ''}"></div>
+      <div class="funnel-label">${label}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderGallery(data) {
+  const { generations } = data;
+  const grid = document.getElementById('gallery');
+  document.getElementById('genCount').textContent = `(${generations.length}건)`;
+
+  if (!generations.length) {
+    document.getElementById('noGens').style.display = 'block';
+    return;
+  }
+
+  grid.innerHTML = generations.map(g => {
+    const origSrc = g.originalUrl || '';
+    const genSrc = g.generatedUrl || '';
+    return `<div class="gen-card">
+      <div class="gen-images">
+        ${origSrc ? `<img src="${esc(origSrc)}" alt="원본" loading="lazy">` : '<div style="width:50%;aspect-ratio:3/4;background:var(--surface2);border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--text-dim);font-size:11px">원본 없음</div>'}
+        ${genSrc ? `<img src="${esc(genSrc)}" alt="결과" loading="lazy">` : '<div style="width:50%;aspect-ratio:3/4;background:var(--surface2);border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--text-dim);font-size:11px">결과 없음</div>'}
+      </div>
+      <div class="gen-meta"><strong>${esc(g.slug || g.style)}</strong> &middot; ${esc(g.service)} &middot; ${formatKST(g.createdAt)}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderTransactions(data) {
+  const { transactions } = data;
+  const list = document.getElementById('txList');
+  if (!transactions.length) {
+    document.getElementById('noTx').style.display = 'block';
+    return;
+  }
+  list.innerHTML = transactions.map(t => {
+    const cls = t.amount > 0 ? 'credit' : 'debit';
+    const sign = t.amount > 0 ? '+' : '';
+    return `<li class="tx-item"><span>${formatKST(t.createdAt)}<br>${esc(t.description)}</span><span class="tx-amount ${cls}">${sign}${t.amount}c</span></li>`;
+  }).join('');
+}
+
+function renderTimeline(data) {
+  const { timeline } = data;
+  const list = document.getElementById('timeline');
+  if (!timeline.length) {
+    document.getElementById('noTimeline').style.display = 'block';
+    return;
+  }
+  list.innerHTML = timeline.map(ev => {
+    const cls = ev.eventName.replace(/[^a-z_]/g, '');
+    return `<li class="tl-item"><span class="tl-time">${timeOnly(ev.timestamp)}</span><span class="tl-event ${cls}">${esc(ev.eventName)}</span><span class="tl-path">${esc(ev.pagePath || ev.referer || '')}</span></li>`;
+  }).join('');
+}
+
+async function loadUser() {
+  const userId = new URLSearchParams(location.search).get('id');
+  if (!userId) {
+    document.getElementById('loadingMsg').style.display = 'none';
+    document.getElementById('errorMsg').style.display = 'block';
+    document.getElementById('errorMsg').innerHTML = '<div class="error-msg">유저 ID가 없습니다. <a href="/admin/dashboard.html">대시보드로 돌아가기</a></div>';
+    return;
+  }
+
+  try {
+    const data = await apiFetch(`/api/admin/dashboard/user/${encodeURIComponent(userId)}`);
+    if (data.error) throw new Error(data.error);
+
+    document.getElementById('loadingMsg').style.display = 'none';
+    document.getElementById('main').style.display = 'block';
+
+    renderProfile(data);
+    renderAcquisition(data);
+    renderFunnel(data);
+    renderGallery(data);
+    renderTransactions(data);
+    renderTimeline(data);
+  } catch (err) {
+    document.getElementById('loadingMsg').style.display = 'none';
+    document.getElementById('errorMsg').style.display = 'block';
+    document.getElementById('errorMsg').innerHTML = `<div class="error-msg">${esc(err.message)} <a href="/admin/dashboard.html">대시보드로 돌아가기</a></div>`;
+  }
+}
+
+var _origUpdateAuthUI = updateAuthUI;
+updateAuthUI = function() { if (currentUser) { location.reload(); } };
+
+async function init() {
+  await loadGISWithRetry();
+  await initGoogleAuth();
+  try {
+    const r = await fetch('/api/auth/verify-cookie', { credentials: 'include' });
+    if (!r.ok) throw new Error('Not authenticated');
+    const adminCheck = await fetch('/api/admin/blog', { credentials: 'include' });
+    if (adminCheck.status === 401) { location.href = '/admin/'; return; }
+    loadUser();
+  } catch {
+    location.href = '/admin/';
+  }
+}
+init();
+</script>
+</body>
+</html>
