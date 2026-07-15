@@ -1,7 +1,8 @@
-/* specs-funnel.js — render-specs.js pageScript에서 분리 (2026-07-12 퍼널 분리 수술)
-   설정 주입: SSR이 인라인 <script>로 window.__SPECS_CFG__를 선행 정의 (원본 상수 specsDetailV2Fragment pageScript) */
-(function(){
-  var CFG = window.__SPECS_CFG__;
+/* SpecsFunnel — 증명사진 처리 위젯 (업로드→fit→무료 생성→결제→T1 업셀)
+   mount(el, opts): SSR 마크업 위에 이벤트를 바인딩하는 진입점.
+   SSR이 window.__SPECS_CFG__를 인라인 주입 → 자동 마운트. */
+var SpecsFunnel = (function(){
+  function mount(el, CFG) {
   var T = CFG.t;
   // 의자잡기는 업로드 시점(서버 precheck가 워밍 발화) — 진입 워밍은 구경 트래픽에 ₩12/건 낭비라 제거
   // (2026-07-07 작가님: 사전분석+티어 선택 시간이 부팅 30s를 자연 은폐 — 체감 불가)
@@ -1229,4 +1230,10 @@
         .catch(function(){ showPhase(phasePay); });
     }
   })();
+  }
+  return { mount: mount };
 })();
+if (window.__SPECS_CFG__) {
+  var _el = document.getElementById('v2-steps');
+  if (_el) SpecsFunnel.mount(_el, window.__SPECS_CFG__);
+}

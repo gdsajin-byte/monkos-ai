@@ -1,0 +1,25 @@
+/* L0 디자인 토큰 — specs 퍼널 공용 변수 (2026-07-15 D2 §L0)
+   컴포넌트 px 소유 금지 — 간격·크기는 이 파일의 변수를 참조.
+   기존 CSS 반복값 추출. 순차 교체 (토큰 도입 후 개별 값 삭제). */
+:root {
+  --specs-accent: #6c4fff;
+  --specs-accent-hover: #5a3de6;
+  --specs-text-primary: #1a1a1a;
+  --specs-text-secondary: #555;
+  --specs-text-muted: #888;
+  --specs-text-faint: #aaa;
+  --specs-bg-white: #fff;
+  --specs-bg-surface: #f7f7fb;
+  --specs-border: #e8e8ef;
+  --specs-success: #16a34a;
+  --specs-error: #dc2626;
+  --specs-warning: #d97706;
+  --specs-radius-sm: 8px;
+  --specs-radius-md: 12px;
+  --specs-radius-lg: 16px;
+  --specs-shadow-card: 0 2px 12px rgba(0,0,0,.06);
+  --specs-shadow-heavy: 0 10px 30px rgba(15,15,40,.28);
+  --specs-font-sm: 12px;
+  --specs-font-base: 14px;
+  --specs-font-lg: 16px;
+}
