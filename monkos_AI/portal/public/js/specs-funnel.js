@@ -272,13 +272,14 @@ var SpecsFunnel = (function(){
       // 무료 소진 모드 — 연출·연산 없이 유료 길 즉시 개방 (2026-07-10 작가님)
       pilotFreeExhausted = true;
       fs2.className = 'v2-checklist-summary v2-summary-fail';
-      fs2.textContent = '오늘 무료 횟수를 모두 사용했어요 — 내일 3회가 다시 채워져요.';
-      mkBtn.textContent = '₩2,000으로 계속 만들기';
+      fs2.textContent = T.quotaExhaustedMsg;
+      var _qp = CFG.market === 'kr' ? '₩2,000' : '$1.99';
+      mkBtn.textContent = T.quotaExhaustedBtn.replace('{price}', _qp);
     } else {
       pilotFreeExhausted = false;
       fs2.className = 'ip-summary-ok';
-      fs2.textContent = '사진 확인 완료';
-      mkBtn.textContent = '무료로 만들기';
+      fs2.textContent = T.checkDone;
+      mkBtn.textContent = T.freeCreateBtn;
     }
     document.getElementById('v2-fit-actions').style.display = 'flex';
     var cap = document.getElementById('ip-fit-caption'); if(cap) cap.style.display = 'block';
@@ -294,9 +295,9 @@ var SpecsFunnel = (function(){
   }
   function pilotGatesFail(d){
     var pc = d.poseCheck || {};
-    if(d.judge && d.judge.blocked) return '이 사진으로는 규격을 맞추기 어려워요. 다른 사진을 올려주세요.';
-    if(pc.eyeOpen && !pc.eyeOpen.ok) return '눈이 감겨 있어요. 카메라를 보고 다시 찍은 사진을 올려주세요.';
-    if(pc.roll && !pc.roll.ok) return '고개가 기울어져 있어요. 수평을 맞춘 사진을 올려주세요.';
+    if(d.judge && d.judge.blocked) return T.gateBlocked;
+    if(pc.eyeOpen && !pc.eyeOpen.ok) return T.gateEyeClosed;
+    if(pc.roll && !pc.roll.ok) return T.gateTilted;
     return null;
   }
   function pilotOnFit(d){
@@ -316,9 +317,9 @@ var SpecsFunnel = (function(){
       freeBusy = false; fitResult = null; pilotGenPromise = null;
       return;
     }
-    st.textContent = '사진 확인 완료 — 배경을 지우는 중이에요';
+    st.textContent = T.statusFitDone;
     fs.className = 'ip-summary-ok';
-    fs.textContent = '배경을 지우고 있어요...';
+    fs.textContent = T.statusRemoving;
     (pilotGenPromise || freeGenerateRequest(d)).then(function(res){
       freeBusy = false;
       if(!res.ok){
@@ -389,7 +390,7 @@ var SpecsFunnel = (function(){
     if(!fitResult || !fitResult.frame){ proceedToPay(); return; }
     freeBusy = true;
     hideError();
-    setGenMessage('무료로 만드는 중이에요', '배경 제거 + 여권 규격 크롭 — 잠시만 기다려주세요');
+    setGenMessage(T.freeGenTitle, T.freeGenSub.replace('{type}', CFG.format || ''));
     showPhase(phaseGen);
     freeGenerateRequest(fitResult)
     .then(function(res){
@@ -476,7 +477,7 @@ var SpecsFunnel = (function(){
     fs.textContent = ''; fs.className = 'v2-checklist-summary';
     if(fitMode === 'pilot'){
       fs.className = 'ip-summary-ok';
-      fs.textContent = '사진을 규격에 맞추는 중이에요...';
+      fs.textContent = T.statusFitting;
     }
     fa.style.display = 'none';
     var capEl = document.getElementById('ip-fit-caption'); if(capEl) capEl.style.display = 'none';
@@ -491,7 +492,7 @@ var SpecsFunnel = (function(){
     // 분석 대기 연출 — 정지 화면 금지 (2026-07-07 작가님: 수 초 정지 = 뻗은 것처럼 보임)
     if(window.__fitWaitTimer) clearInterval(window.__fitWaitTimer);
     (function(){
-      var texts = ['얼굴 위치 분석 중', '랜드마크 정밀 측정 중', '규격 계산 중', '전문가 검수 중'];
+      var texts = T.fitTexts;
       var dots = 0, ti = 0;
       window.__fitWaitTimer = setInterval(function(){
         dots = (dots + 1) % 4;
@@ -584,10 +585,10 @@ var SpecsFunnel = (function(){
 
     // 라인·프레임을 사진 좌표에 고정 배치 (이후 절대 안 움직임 — 월드만 움직인다)
     var lineDefs = [
-      ['v2-fit-line-eye',   d.lines.eyeY,     '눈높이 확인'],
-      ['v2-fit-line-chin',  d.lines.chinY,    '턱 라인 확인'],
-      ['v2-fit-line-crown', d.lines.crownY,   '정수리 산정 — 1:1 해부학 앵커'],
-      ['v2-fit-line-hair',  d.lines.hairTopY, '헤어 여백 검토'],
+      ['v2-fit-line-eye',   d.lines.eyeY,     T.fitLineEye],
+      ['v2-fit-line-chin',  d.lines.chinY,    T.fitLineChin],
+      ['v2-fit-line-crown', d.lines.crownY,   T.fitLineCrown],
+      ['v2-fit-line-hair',  d.lines.hairTopY, T.fitLineHair],
     ];
     lineDefs.forEach(function(item){
       var el = document.getElementById(item[0]);
@@ -604,7 +605,7 @@ var SpecsFunnel = (function(){
     world.style.transform = containCam();
     void world.offsetWidth;
     world.style.transition = 'transform 1.3s cubic-bezier(.22,.9,.24,1)';
-    setStatus('얼굴 위치 분석 중');
+    setStatus(T.fitStatusAnalyze);
 
     // 1) 가이드 라인이 사진 위에 순차 진입 (사진은 그대로)
     var t = 500;
@@ -617,14 +618,14 @@ var SpecsFunnel = (function(){
     t += lineDefs.length * 480 + 300;
 
     // 2) 규격 프레임이 사진 위로 나타남
-    fitAfter(t, function(){ setStatus('규격 프레임 정렬'); fEl.style.opacity = '1'; });
+    fitAfter(t, function(){ setStatus(T.fitStatusAlign); fEl.style.opacity = '1'; });
     t += 700;
 
     // 3) 전문가(비전) 보정 — 프레임"만" 이동 (사진 불변)
     var moved = d.frameInitial && (Math.abs(d.frame.y - d.frameInitial.y) > 1 || Math.abs(d.frame.h - d.frameInitial.h) > 1);
     if(moved){
       fitAfter(t, function(){
-        setStatus(d.vision && d.vision.executed ? '전문가 보정 실행 — 헤어 여백 확보' : '전문가 보정 — 여백 균형');
+        setStatus(d.vision && d.vision.executed ? T.fitStatusExpert : T.fitStatusExpertFallback);
         fEl.style.top = d.frame.y + 'px';
         fEl.style.left = d.frame.x + 'px';
         fEl.style.width = d.frame.w + 'px';
@@ -635,7 +636,7 @@ var SpecsFunnel = (function(){
 
     // 4) 카메라가 프레임으로 자연스럽게 다가감 (균일 줌 — 왜곡 불가)
     fitAfter(t, function(){
-      setStatus('규격에 맞춰 안착 중');
+      setStatus(T.fitStatusSettle);
       world.style.transform = camera(d.frame);
     });
     t += 1400;
@@ -666,8 +667,8 @@ var SpecsFunnel = (function(){
     var m = d.metrics || {}, j = d.judge || {};
     // 파일럿: 수치 뱃지 제거 (통과 사용자에게 숫자 나열은 인지 비용 — §7-1) — 문제 칩만 유지
     if(d.poseCheck){
-      if(d.poseCheck.roll && !d.poseCheck.roll.ok) badge('기울기', Math.abs(d.poseCheck.roll.value).toFixed(0) + '° — 수평을 맞춰주세요', 'fail');
-      if(d.poseCheck.eyeOpen && !d.poseCheck.eyeOpen.ok) badge('눈', sfx ? '감김 — 다른 사진을 올려주세요' : '감김', 'fail');
+      if(d.poseCheck.roll && !d.poseCheck.roll.ok) badge(T.badgeTilt, Math.abs(d.poseCheck.roll.value).toFixed(0) + T.badgeTiltSuffix, 'fail');
+      if(d.poseCheck.eyeOpen && !d.poseCheck.eyeOpen.ok) badge(T.badgeEyeClosed, T.badgeEyeClosedDesc, 'fail');
       // 입벌림 칩 미표기 (2026-07-10 작가님): 입술 간격 비율로는 '치아 노출'(규정 핵심)을 판별 못함 —
       // 1차 검수는 신뢰 가능한 항목만 표기. 검출값은 서버 로그로 축적, 규정 안내는 업로드 가이드 칩 담당.
     }
@@ -681,11 +682,11 @@ var SpecsFunnel = (function(){
     var mk = document.getElementById('v2-fit-make');
     if(j.blocked){
       fs.className = 'v2-checklist-summary v2-summary-fail';
-      fs.textContent = '이 사진으로는 어려워요. 다른 사진을 올려주세요.';
+      fs.textContent = T.fitFail;
       mk.disabled = true; mk.style.opacity = '.4';
     } else {
       fs.className = 'v2-checklist-summary v2-summary-pass';
-      fs.textContent = '규격에 맞아요. 이대로 만들 수 있어요.';
+      fs.textContent = T.fitPass;
       mk.disabled = false; mk.style.opacity = '';
     }
     document.getElementById('v2-fit-actions').style.display = 'flex';
@@ -787,7 +788,9 @@ var SpecsFunnel = (function(){
       if(!tossWidgets){
         tossWidgets = window.TossPayments(d.clientKey).widgets({ customerKey: window.TossPayments.ANONYMOUS });
       }
-      btn.textContent = '₩' + String(d.amount).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' 결제하기';
+      var _cur = (d.currency === 'USD' || CFG.market !== 'kr') ? '$' : '₩';
+      var _amt = _cur === '$' ? String(d.amount) : String(d.amount).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      btn.textContent = T.payBtnLabel.replace('{price}', _cur + _amt);
       wrap.style.display = 'block';
       tossWidgets.setAmount({ currency: d.currency || 'KRW', value: d.amount })
         .then(function(){
@@ -893,18 +896,18 @@ var SpecsFunnel = (function(){
       var face = parseFloat(m.faceMM);
       if(sp && sp.headHeightMin && sp.headHeightMax){
         var okF = face >= sp.headHeightMin && face <= sp.headHeightMax;
-        add('머리 높이 ' + m.faceMM + 'mm (허용 ' + sp.headHeightMin + '~' + sp.headHeightMax + 'mm)', okF ? 'pass' : 'fail', okF ? null : '허용 범위를 벗어났습니다. 다른 사진을 권장해요.');
-      } else add('머리 높이 ' + m.faceMM + 'mm', 'pass');
-      if(m.eyePositionPercent){ var e = parseFloat(m.eyePositionPercent); add('눈 위치 ' + m.eyePositionPercent + '%', (e >= 33 && e <= 58) ? 'pass' : 'warn'); }
-      if(m.crownMarginMM){ var c = parseFloat(m.crownMarginMM); add('정수리 여백 ' + m.crownMarginMM + 'mm', c >= 0.5 ? 'pass' : 'fail', c >= 0.5 ? null : '정수리가 프레임 상단에 닿습니다.'); }
+        add(T.resultHeadHeight.replace('{v}', m.faceMM).replace('{min}', sp.headHeightMin).replace('{max}', sp.headHeightMax), okF ? 'pass' : 'fail', okF ? null : T.resultHeadHeightFail);
+      } else add(T.resultHeadHeightSimple.replace('{v}', m.faceMM), 'pass');
+      if(m.eyePositionPercent){ var e = parseFloat(m.eyePositionPercent); add(T.resultEyePos.replace('{v}', m.eyePositionPercent), (e >= 33 && e <= 58) ? 'pass' : 'warn'); }
+      if(m.crownMarginMM){ var c = parseFloat(m.crownMarginMM); add(T.resultCrownMargin.replace('{v}', m.crownMarginMM), c >= 0.5 ? 'pass' : 'fail', c >= 0.5 ? null : T.resultCrownFail); }
     }
-    add('배경', data.track === 'birefnet' ? 'pass' : 'warn', data.track === 'birefnet' ? null : 'AI 재구성 배경으로 생성되었습니다.');
-    add('해상도 · 300DPI', 'pass');
+    add(T.resultBg, data.track === 'birefnet' ? 'pass' : 'warn', data.track === 'birefnet' ? null : T.resultBgWarn);
+    add(T.resultDpi, 'pass');
     if(precheckData && precheckData.checks){
       precheckData.checks.forEach(function(c){ add(c.label, c.pass ? 'pass' : c.warn ? 'warn' : 'fail', c.warnMsg || null); });
     }
     var dl = document.getElementById('v2-download');
-    if(hardFail){ dl.disabled = true; dl.style.opacity = '0.4'; dl.title = '검수 미통과 항목이 있습니다'; }
+    if(hardFail){ dl.disabled = true; dl.style.opacity = '0.4'; dl.title = T.resultCheckFail; }
     else { dl.disabled = false; dl.style.opacity = ''; dl.title = ''; }
   }
 
@@ -921,7 +924,7 @@ var SpecsFunnel = (function(){
     // 연출: 실제 파이프라인 단계를 순환 표기 (재단→매팅→검수) — 대기가 신뢰가 되게
     if(window.__genStageTimer) clearInterval(window.__genStageTimer);
     (function(){
-      var stages = fitResult ? ['확정 프레임으로 원본 재단 중', '배경 분리 중 — 원본 픽셀 보존', '정밀 검수 중'] : [GEN_TEXT_DEFAULT];
+      var stages = fitResult ? [T.genStage1, T.genStage2, T.genStage3] : [GEN_TEXT_DEFAULT];
       var i = 0;
       window.__genStageTimer = setInterval(function(){
         i = (i + 1) % stages.length;

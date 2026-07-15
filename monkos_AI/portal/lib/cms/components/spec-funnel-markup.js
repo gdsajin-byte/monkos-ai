@@ -57,7 +57,7 @@ export function specFunnelMarkup(ctx) {
           <div class="v2-pay-preview">
             <div id="v2-fit-stage" style="position:relative;overflow:hidden;width:240px;height:320px;margin:0 auto;background:#fff;border-radius:10px;box-shadow:0 10px 30px rgba(15,15,40,.28);">
               <div id="v2-fit-world" style="position:absolute;left:0;top:0;transform-origin:0 0;">
-                <img id="v2-fit-img" src="" alt="규격 안착" style="display:block;max-width:none;max-height:none;">
+                <img id="v2-fit-img" src="" alt="${eh(v2.fitAlt)}" style="display:block;max-width:none;max-height:none;">
                 <div id="v2-fit-frame" style="display:none;position:absolute;border:3px solid #00B894;border-radius:2px;box-sizing:border-box;pointer-events:none;transition:opacity .5s, top .9s cubic-bezier(.22,.9,.24,1), left .9s cubic-bezier(.22,.9,.24,1), width .9s cubic-bezier(.22,.9,.24,1), height .9s cubic-bezier(.22,.9,.24,1);"></div>
                 <div id="v2-fit-line-hair" style="border-top:2px dashed rgba(255,255,255,.6);"></div>
                 <div id="v2-fit-line-crown" style="border-top:3px solid #FDCB6E;"></div>
@@ -91,15 +91,15 @@ export function specFunnelMarkup(ctx) {
           </div>
           <div class="v2-pay-options">
             <div class="v2-subject-section" id="v2-subject-section">
-              <div class="v2-attire-sub-label">사진 속 인물</div>
+              <div class="v2-attire-sub-label">${eh(v2.subjectLabel)}</div>
               <div class="v2-attire-chips" id="v2-age-chips" data-field="age">
-                <div class="v2-attire-chip selected" data-val="adult">성인</div>
-                <div class="v2-attire-chip" data-val="teen">청소년</div>
-                <div class="v2-attire-chip" data-val="baby">영유아</div>
+                <div class="v2-attire-chip selected" data-val="adult">${eh(v2.ageAdult)}</div>
+                <div class="v2-attire-chip" data-val="teen">${eh(v2.ageTeen)}</div>
+                <div class="v2-attire-chip" data-val="baby">${eh(v2.ageBaby)}</div>
               </div>
               <div class="v2-attire-chips" id="v2-gender-chips" data-field="gender">
-                <div class="v2-attire-chip" data-val="m">남성</div>
-                <div class="v2-attire-chip" data-val="f">여성</div>
+                <div class="v2-attire-chip" data-val="m">${eh(v2.genderM)}</div>
+                <div class="v2-attire-chip" data-val="f">${eh(v2.genderF)}</div>
               </div>
             </div>
             <!-- attire-picker mount (구형 인라인 의상 UI 제거 → 공유 컴포넌트 D5) -->
