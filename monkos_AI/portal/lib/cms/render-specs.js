@@ -36,6 +36,12 @@ const ASSET_VER = process.env.K_REVISION || 'dev';
 const specsCssLink = (name) => `\n<link rel="stylesheet" href="/css/${name}.css?v=${ASSET_VER}">`;
 const specsJsTag = (name) => `\n<script src="/js/${name}.js?v=${ASSET_VER}" defer></script>`;
 
+// ─── LANGS / MARKET ────────────────────────────────────────────
+const LANGS = ['ko', 'en', 'ja', 'es'];
+const HREFLANG_LANGS = ['ko', 'ja', 'en'];
+const MARKET_MAP = { ko: 'kr', ja: 'jp', en: 'global', es: 'global' };
+const loc = (obj, lang) => obj[lang] || obj.en || obj.ko;
+
 // ─── I18N ─── (specs-i18n.js로 분리 — import 참조)
 
 // ─── CONTINENT META ─────────────────────────────────────────────
@@ -148,8 +154,11 @@ for (const [slug, spec] of Object.entries(SPECS_DATA)) {
 }
 
 function locField(spec, field, lang) {
-  if (lang === 'en' && spec[field + 'En']) return spec[field + 'En'];
-  if (lang === 'ja' && spec[field + 'Ja']) return spec[field + 'Ja'];
+  if (lang === 'ko') return spec[field];
+  const suffix = lang.charAt(0).toUpperCase() + lang.slice(1);
+  const val = spec[field + suffix];
+  if (val) return val;
+  if (lang !== 'en' && lang !== 'ja') return spec[field + 'En'] || spec[field];
   return spec[field];
 }
 
@@ -194,8 +203,8 @@ function buildHubData(lang) {
     if (seen[dedupKey]) continue;
     seen[dedupKey] = true;
 
-    const countryName = lang === 'en' ? (spec.countryEn || spec.country) : (lang === 'ja' ? (spec.countryJa || spec.country) : spec.country);
-    const typeName = lang === 'ja' ? (spec.typeJa || spec.type) : (lang === 'en' ? (spec.typeEn || spec.type) : spec.type);
+    const countryName = locField(spec, 'country', lang);
+    const typeName = locField(spec, 'type', lang);
 
     result[category][continent].push({
       flag: countryFlag(countrySlug),
@@ -219,12 +228,9 @@ export function specsListFragment(forceLang = null) {
   const totalSpecs = Object.keys(SPECS_DATA).length;
 
   const canonicalUrl = lang === 'ko' ? 'https://monkos.ai/specs' : `https://monkos.ai/${lang}/specs`;
-  const hreflangTags = [
-    '<link rel="alternate" hreflang="ko" href="https://monkos.ai/specs">',
-    '<link rel="alternate" hreflang="ja" href="https://monkos.ai/ja/specs">',
-    '<link rel="alternate" hreflang="en" href="https://monkos.ai/en/specs">',
-    '<link rel="alternate" hreflang="x-default" href="https://monkos.ai/specs">',
-  ].join('\n');
+  const hreflangTags = HREFLANG_LANGS.map(l =>
+    `<link rel="alternate" hreflang="${l}" href="https://monkos.ai${l === 'ko' ? '' : '/' + l}/specs">`
+  ).concat('<link rel="alternate" hreflang="x-default" href="https://monkos.ai/specs">').join('\n');
 
   const itemListJsonLd = JSON.stringify({
     "@context": "https://schema.org",
@@ -378,7 +384,7 @@ function specsDetailV2Fragment(slug, forceLang = null) {
   const i = SPECS_I18N[lang] || SPECS_I18N.ko;
   const v2 = i.v2 || SPECS_I18N.ko.v2;
   // 시장 판별: 결제 PG 분기 정본 (kr=토스, jp=레몬 JP 스토어, global=레몬 글로벌)
-  const market = lang === 'ja' ? 'jp' : lang === 'en' ? 'global' : 'kr';
+  const market = MARKET_MAP[lang] || 'global';
   // T0 무료 퍼널 전 언어 개방 (2026-07-15 isPilot 폐지 — D1)
   // T1 리터칭 실동작 여부 — 카드 문구·CTA를 서버 플래그와 결합 (off인데 '리터칭' 판매 금지, 2026-07-10 리뷰 확정)
   // 서버 리터칭 게이트(server.js isT1Path)와 정합 — 리터칭이 실행되지 않는 슬러그에 활성 카드 노출 금지
@@ -392,18 +398,15 @@ function specsDetailV2Fragment(slug, forceLang = null) {
 
   const { typeSlug, countrySlug } = parseSlug(slug);
   const newPath = `${typeSlug}/${countrySlug}`;
-  const countryName = lang === 'en' ? (specData.countryEn || specData.country) : lang === 'ja' ? (specData.countryJa || specData.country) : specData.country;
-  const typeName = lang === 'ja' ? (specData.typeJa || specData.type) : (lang === 'en' ? specData.typeEn : specData.type);
+  const countryName = locField(specData, 'country', lang);
+  const typeName = locField(specData, 'type', lang);
   const title = (specData.seoTitle && specData.seoTitle[lang]) || `2026 ${countryName} ${typeName} ${i.detailSuffix}`;
   const description = (specData.seoDescription && specData.seoDescription[lang]) || '';
 
   const canonicalUrl = lang === 'ko' ? `https://monkos.ai/specs/${newPath}` : `https://monkos.ai/${lang}/specs/${newPath}`;
-  const hreflangTags = [
-    `<link rel="alternate" hreflang="ko" href="https://monkos.ai/specs/${newPath}">`,
-    `<link rel="alternate" hreflang="ja" href="https://monkos.ai/ja/specs/${newPath}">`,
-    `<link rel="alternate" hreflang="en" href="https://monkos.ai/en/specs/${newPath}">`,
-    `<link rel="alternate" hreflang="x-default" href="https://monkos.ai/specs/${newPath}">`,
-  ].join('\n');
+  const hreflangTags = HREFLANG_LANGS.map(l =>
+    `<link rel="alternate" hreflang="${l}" href="https://monkos.ai${l === 'ko' ? '' : '/' + l}/specs/${newPath}">`
+  ).concat('<link rel="alternate" hreflang="x-default" href="https://monkos.ai/specs/' + newPath + '">').join('\n');
 
   const faqs = (specData.faqs && (specData.faqs[lang] || specData.faqs.ko)) || (V2_FAQ_FALLBACK[lang] || V2_FAQ_FALLBACK.ko);
 
@@ -506,9 +509,9 @@ ${hreflangTags}
     const size = locField(specData, 'size', lang);
     const bg = locField(specData, 'background', lang);
     const hh = locField(specData, 'headHeight', lang);
-    if (lang === 'en') return `${countryName} ${typeName} photo requirements: ${size}${bg ? `, ${String(bg).toLowerCase()} background` : ''}${hh ? `, head height ${hh}` : ''}.`;
-    if (lang === 'ja') return `${countryName}${typeName}写真の規格は${size}${bg ? `、背景は${bg}` : ''}${hh ? `、頭部の高さは${hh}` : ''}です。`;
-    return `${countryName} ${typeName} 사진 규격은 ${size}${bg ? `, ${bg} 배경` : ''}${hh ? `, 머리 높이 ${hh}` : ''}입니다.`;
+    const bgPart = bg ? fmtV2(i.geoSummaryBg, { bg: lang === 'en' ? String(bg).toLowerCase() : bg }) : '';
+    const hhPart = hh ? fmtV2(i.geoSummaryHh, { hh }) : '';
+    return fmtV2(i.geoSummaryTpl, { countryName, typeName, size, bgPart, hhPart });
   })();
 
   const sizeMm = parseSizeMm(specData.size);
@@ -556,7 +559,7 @@ ${hreflangTags}
     .filter(s => s.country === specData.country && s.size === specData.size && s.slug !== slug)
     .sort((a, b) => a.priority - b.priority);
   const sameHtml = sameSize.map(s => {
-    const name = lang === 'ja' ? (s.typeJa || s.type) : (lang === 'en' ? s.typeEn : s.type);
+    const name = locField(s, 'type', lang);
     const { typeSlug: ts, countrySlug: cs } = parseSlug(s.slug);
     // 언어 무관 slug 기준 판정 (구: 한국어 typeName 문자열 비교 — en/ja에서 항상 false였음)
     const note = (ts === 'license' || ts === 'drivers-license') ? `<div class="v2-same-note">${escapeHtml(v2.noGlasses)}</div>` : '';
@@ -577,10 +580,8 @@ ${hreflangTags}
   // 보장 상세 약속 문구 금지 — 규정 미승인 상태(작가님 승인 대기), 한 줄 절제 표기만.
   // ⚠️ 2026-07-13 작가님: T2 노출 전면 잠정 중지 (운영체계 확정 전 판매 금지) — fit 링크·결과 카드·en/ja 업셀 3지점 제거.
   //    아래 upsell* 정의는 복원 대비 존치(현재 미사용). 복원 시 git f3dce941 직전 상태 참조.
-  const upsellHref = lang === 'ja' ? 'https://idphoto-jp.monkos.ai/' : 'https://idphoto-kr.monkos.ai/';
-  const upsellLabel = lang === 'ja' ? '却下の心配なく — 発行保証 ¥990 →'
-    : lang === 'en' ? 'No rejection worries — guaranteed issue ₩9,900 →'
-    : '반려 걱정 없이 — 발급보장 ₩9,900 →';
+  const upsellHref = i.upsellHref;
+  const upsellLabel = i.upsellLabel;
   const upsellHtml = `<div class="v2-upsell"><a href="${upsellHref}" data-cta="specs-upsell" rel="noopener">${escapeHtml(upsellLabel)}</a></div>`;
 
   const fullName = `${countryName} ${typeName}`;
@@ -656,23 +657,16 @@ export function specsDetailFragment(slug, forceLang = null) {
   const { typeSlug, countrySlug } = parseSlug(slug);
   const newPath = `${typeSlug}/${countrySlug}`;
 
-  const typeName = lang === 'ja' ? (specData.typeJa || specData.type) : (lang === 'en' ? specData.typeEn : specData.type);
-  const countryName = lang === 'en'
-    ? (specData.countryEn || specData.country)
-    : lang === 'ja'
-      ? (specData.countryJa || specData.country)
-      : specData.country;
+  const typeName = locField(specData, 'type', lang);
+  const countryName = locField(specData, 'country', lang);
   const title = (specData.seoTitle && specData.seoTitle[lang]) || `2026 ${countryName} ${typeName} ${i.detailSuffix}`;
   const description = (specData.seoDescription && specData.seoDescription[lang]) || (specData.details && (specData.details[lang] || specData.details.ko || specData.details.en)) || '';
   const heroDescription = (specData.heroDesc && specData.heroDesc[lang]) || description;
 
   const canonicalUrl = lang === 'ko' ? `https://monkos.ai/specs/${newPath}` : `https://monkos.ai/${lang}/specs/${newPath}`;
-  const hreflangTags = [
-    `<link rel="alternate" hreflang="ko" href="https://monkos.ai/specs/${newPath}">`,
-    `<link rel="alternate" hreflang="ja" href="https://monkos.ai/ja/specs/${newPath}">`,
-    `<link rel="alternate" hreflang="en" href="https://monkos.ai/en/specs/${newPath}">`,
-    `<link rel="alternate" hreflang="x-default" href="https://monkos.ai/specs/${newPath}">`,
-  ].join('\n');
+  const hreflangTags = HREFLANG_LANGS.map(l =>
+    `<link rel="alternate" hreflang="${l}" href="https://monkos.ai${l === 'ko' ? '' : '/' + l}/specs/${newPath}">`
+  ).concat('<link rel="alternate" hreflang="x-default" href="https://monkos.ai/specs/' + newPath + '">').join('\n');
 
   const faqs = (specData.faqs && (specData.faqs[lang] || specData.faqs.ko)) || [];
   const v1OgGuideKey = GUIDE_IMAGES.has(`${slug}_${lang}`) ? `${slug}_${lang}`
@@ -723,14 +717,12 @@ export function specsDetailFragment(slug, forceLang = null) {
     {
       "@context": "https://schema.org",
       "@type": "HowTo",
-      "name": lang === 'ja' ? `${typeName}の規格に合わせて写真を準備する方法`
-             : lang === 'en' ? `How to prepare a ${typeName} photo`
-             : `${typeName} 규격에 맞게 사진 준비하는 법`,
+      "name": fmtV2(i.howToTitle, { typeName }),
       "step": [
-        { "@type": "HowToStep", "position": 1, "name": lang === 'ja' ? '規格確認' : lang === 'en' ? 'Check specs' : '규격 확인', "text": `${locField(specData, 'size', lang)} / ${locField(specData, 'background', lang)}` },
-        { "@type": "HowToStep", "position": 2, "name": lang === 'ja' ? 'セルフィー撮影' : lang === 'en' ? 'Take a selfie' : '셀카 촬영', "text": lang === 'ja' ? '明るい場所で白い背景の前で撮影' : lang === 'en' ? 'Take a photo in a bright area with a white background' : '밝은 곳에서 흰 배경 앞에 촬영' },
-        { "@type": "HowToStep", "position": 3, "name": lang === 'ja' ? 'AI補正またはクロップ' : lang === 'en' ? 'AI retouch or crop' : 'AI 보정 또는 크롭', "text": lang === 'ja' ? 'MONKOS AIまたは無料クロップアプリで規格に合わせる' : lang === 'en' ? 'Use MONKOS AI or the free crop app to fit the specs' : 'MONKOS AI 또는 무료 크롭앱으로 규격 맞춤' },
-        { "@type": "HowToStep", "position": 4, "name": lang === 'ja' ? 'ダウンロード' : lang === 'en' ? 'Download' : '다운로드', "text": lang === 'ja' ? '完成写真をダウンロード' : lang === 'en' ? 'Download the finished photo' : '완성 사진 다운로드' },
+        { "@type": "HowToStep", "position": 1, "name": i.howToStep1Name, "text": `${locField(specData, 'size', lang)} / ${locField(specData, 'background', lang)}` },
+        { "@type": "HowToStep", "position": 2, "name": i.howToStep2Name, "text": i.howToStep2Text },
+        { "@type": "HowToStep", "position": 3, "name": i.howToStep3Name, "text": i.howToStep3Text },
+        { "@type": "HowToStep", "position": 4, "name": i.howToStep4Name, "text": i.howToStep4Text },
       ],
     },
   ];
@@ -792,7 +784,7 @@ ${hreflangTags}
     .filter(s => s.country === specData.country && s.slug !== slug)
     .sort((a, b) => a.priority - b.priority);
   const sameCountryLinks = sameCountry.map(s => {
-    const name = lang === 'ja' ? (s.typeJa || s.type) : (lang === 'en' ? s.typeEn : s.type);
+    const name = locField(s, 'type', lang);
     const { typeSlug: ts, countrySlug: cs } = parseSlug(s.slug);
     return `<a href="${prefix}/specs/${ts}/${cs}">${escapeHtml(name)}</a>`;
   }).join('\n        ');
@@ -803,18 +795,19 @@ ${hreflangTags}
 
   const backLabel = i.backToList;
 
-  const oxGoodLabel = lang === 'ja' ? '適合写真' : lang === 'en' ? 'Acceptable Photo' : '적합한 사진';
-  const oxBadLabel = lang === 'ja' ? '却下される写真' : lang === 'en' ? 'Rejected Photo' : '반려되는 사진';
-  const oxGoodCaption = lang === 'ja' ? '正面・無表情・白背景' : lang === 'en' ? 'Front-facing · Neutral · White BG' : '정면 · 무표정 · 흰배경';
-  const oxBadCaption = lang === 'ja' ? '傾き・影・髪' : lang === 'en' ? 'Tilted · Shadow · Hair' : '기울어짐 · 그림자 · 머리카락';
+  const oxGoodLabel = i.oxGoodLabel;
+  const oxBadLabel = i.oxBadLabel;
+  const oxGoodCaption = i.oxGoodCaption;
+  const oxBadCaption = i.oxBadCaption;
 
   const aiSummary = (specData.aiSummary && specData.aiSummary[lang])
     ? escapeHtml(specData.aiSummary[lang])
-    : lang === 'ja'
-    ? `${escapeHtml(countryName)}の${escapeHtml(typeName)}は${escapeHtml(locField(specData, 'size', lang))}、${escapeHtml(locField(specData, 'background', lang))}背景、${escapeHtml(locField(specData, 'validity', lang))}以内の撮影が必要です。`
-    : lang === 'en'
-    ? `${escapeHtml(countryName)} ${escapeHtml(typeName)} requires ${escapeHtml(locField(specData, 'size', lang))}, ${escapeHtml(locField(specData, 'background', lang)).toLowerCase()} background, taken within ${escapeHtml(locField(specData, 'validity', lang)).toLowerCase()}.`
-    : `${escapeHtml(countryName)} ${escapeHtml(typeName)}은 ${escapeHtml(locField(specData, 'size', lang))}, ${escapeHtml(locField(specData, 'background', lang))} 배경이며 ${escapeHtml(locField(specData, 'validity', lang))} 촬영이 필요합니다.`;
+    : (() => {
+      const s = locField(specData, 'size', lang), b = locField(specData, 'background', lang), v = locField(specData, 'validity', lang);
+      if (lang === 'ja') return `${escapeHtml(countryName)}の${escapeHtml(typeName)}は${escapeHtml(s)}、${escapeHtml(b)}背景、${escapeHtml(v)}以内の撮影が必要です。`;
+      if (lang === 'en') return `${escapeHtml(countryName)} ${escapeHtml(typeName)} requires ${escapeHtml(s)}, ${escapeHtml(b).toLowerCase()} background, taken within ${escapeHtml(v).toLowerCase()}.`;
+      return `${escapeHtml(countryName)} ${escapeHtml(typeName)}은 ${escapeHtml(s)}, ${escapeHtml(b)} 배경이며 ${escapeHtml(v)} 촬영이 필요합니다.`;
+    })();
 
   const detailSections = (specData.detailSections && specData.detailSections[lang]) || [];
   const detailSectionsHtml = detailSections.length ? `
@@ -850,7 +843,7 @@ ${hreflangTags}
   <!-- Hero 풀와이드 -->
   <section class="specs-hero">
     <div class="specs-hero-text">
-      <h1>${countryFlag(countrySlug, 40)} ${(specData.heroTitle && specData.heroTitle[lang]) ? escapeHtml(specData.heroTitle[lang]) : `${escapeHtml(countryName)} ${escapeHtml(typeName)} ${lang === 'ja' ? '規定案内' : lang === 'en' ? 'Requirements Guide' : '규정안내'}`}</h1>
+      <h1>${countryFlag(countrySlug, 40)} ${(specData.heroTitle && specData.heroTitle[lang]) ? escapeHtml(specData.heroTitle[lang]) : `${escapeHtml(countryName)} ${escapeHtml(typeName)} ${i.heroGuideLabel}`}</h1>
       <p class="specs-hero-desc">${escapeHtml(heroDescription)}</p>
     </div>
     <div class="specs-diagram">
@@ -885,7 +878,7 @@ ${hreflangTags}
     <div class="band-inner">
       <div style="font-size:14px;font-weight:600;color:rgba(255,255,255,0.6);margin-bottom:12px;">${escapeHtml(i.sameCountryLabel)}</div>
       <div class="specs-hero-tags">${sameCountry.map(s => {
-        const name = lang === 'ja' ? (s.typeJa || s.type) : (lang === 'en' ? s.typeEn : s.type);
+        const name = locField(s, 'type', lang);
         const { typeSlug: ts, countrySlug: cs } = parseSlug(s.slug);
         return '<a href="' + prefix + '/specs/' + ts + '/' + cs + '" style="text-decoration:none;"><span>' + escapeHtml(name) + '</span></a>';
       }).join('')}</div>
@@ -896,12 +889,12 @@ ${hreflangTags}
   <div class="specs-band specs-band-gray">
     <div class="band-inner">
       <div class="specs-section">
-        <h2>${lang === 'ja' ? `${escapeHtml(typeName)} 規定写真を作る` : lang === 'en' ? `Make ${escapeHtml(typeName)} Photo` : `${escapeHtml(typeName)} 규정 사진 만들기`}</h2>
+        <h2>${fmtV2(i.makePhotoH2, { typeName: escapeHtml(typeName) })}</h2>
         <div class="specs-crop-tool" id="specs-crop-embed">
           <div class="specs-crop-panel specs-crop-upload">
             <div style="font-size:32px;color:#aaa;margin-bottom:12px;">&#8615;</div>
-            <div style="font-size:15px;color:#555;font-weight:600;margin-bottom:8px;">${lang === 'ja' ? '写真をドラッグ＆ドロップ' : lang === 'en' ? 'Drag and drop photo' : '사진을 끌어다 놓으세요'}</div>
-            <div style="margin:12px 0;padding:10px 24px;border:1.5px solid #6c4fff;border-radius:8px;color:#6c4fff;font-size:14px;font-weight:600;">${lang === 'ja' ? '写真を選択' : lang === 'en' ? 'Choose photo' : '사진 선택'}</div>
+            <div style="font-size:15px;color:#555;font-weight:600;margin-bottom:8px;">${i.dragDropText}</div>
+            <div style="margin:12px 0;padding:10px 24px;border:1.5px solid #6c4fff;border-radius:8px;color:#6c4fff;font-size:14px;font-weight:600;">${i.choosePhotoBtn}</div>
             <div style="font-size:12px;color:#aaa;margin-top:8px;">JPG, PNG, HEIC / max 10MB</div>
           </div>
           <div class="specs-crop-panel specs-crop-preview">
@@ -921,7 +914,7 @@ ${hreflangTags}
   <div class="specs-band specs-band-white">
     <div class="band-inner">
       <div class="specs-section">
-        <h2>${lang === 'ja' ? '規格情報' : lang === 'en' ? 'Specifications' : '규격 정보'}</h2>
+        <h2>${i.specsInfoTitle}</h2>
         <div class="specs-ai-summary">${aiSummary}</div>
         <table class="specs-table">
           <tbody>
@@ -937,7 +930,7 @@ ${hreflangTags}
   <div class="specs-band specs-band-gray">
     <div class="band-inner">
       <div class="specs-section">
-        <h2>${lang === 'ja' ? '撮影時の注意事項' : lang === 'en' ? 'Photo Requirements' : '촬영 주의사항'}</h2>
+        <h2>${i.shootingNotesTitle}</h2>
         <div class="specs-details-grid">
           ${detailGridHtml}
         </div>
