@@ -42,6 +42,14 @@ portfolio: PF_SPECS
 
 **D. 가격 표시 SSR 주입** (커밋7.1 이월분 흡수): specs-funnel.js 276행 `'$1.99'` 하드코딩 → SSR CFG 주입 가격 참조(서버가 이미 아는 variant 가격, 신규 숫자 하드코딩 금지). es는 global market → USD 표기.
 
+## 3.5 쌍아 코드리뷰 반영 3건 (2026-07-15 17:35 리뷰 — L0 커밋에 포함)
+
+1. **크로스셀 링크 언어 prefix**: [components/related-services.js:10](../../../../monkos_AI/portal/lib/cms/components/related-services.js) `href="/headshot"`·`href="/"` 하드코딩 → `${prefix}/headshot` 식으로 (실측: ja 페이지에서 한국어 headshot으로 이동 중. /ja/blog·/ja/guide는 정상이므로 그 패턴 준용)
+2. **SPECS_I18N 폴백 체인**: `SPECS_I18N[lang] || SPECS_I18N.ko` 3곳(render-specs.js 112·214·378) → `|| SPECS_I18N.en || SPECS_I18N.ko` — es 사전 부분 누락 시 한국어가 아닌 영어 폴백
+3. **tokens.css 연결**: 파일 생성됐으나 어디서도 link/import 0건(실측) — 셸 head에 link 추가로 실효화. 기존 3언어 렌더 diff에는 `<link>` 1행만 추가되도록
+
+(P2 백로그 — 본 지시서 스코프 아님: JSON.stringify </script> 이스케이프, i18n raw HTML 문서화, 영문 6건 "DONE/EVENT/BEFORE/AFTER" 등)
+
 ## 4. 커밋 분할 (순서 고정)
 
 1. `[refactor]` L0 일반화 — locField 채택+LANGS+market 테이블 (**3언어 diff 0 증빙 첨부**)
