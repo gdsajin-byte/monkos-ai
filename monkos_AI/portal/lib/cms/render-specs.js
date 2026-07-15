@@ -10,6 +10,12 @@ import { escapeHtml, layoutShell } from './render-shell.js';
 import { getSpecCropParams } from '../spec-crop.js';
 import { log, LEMONSQUEEZY_VARIANT_SPECS_SINGLE, LEMONSQUEEZY_VARIANT_SPECS_SINGLE_JP } from '../shared/config.js';
 import { COMMON_RULES, SPECS_I18N, V2_REJECTIONS, V2_DETAILS, V2_FAQ_FALLBACK, RESTR_LABELS } from './specs-i18n.js';
+import { specHero } from './components/spec-hero.js';
+import { specDiagram } from './components/spec-diagram.js';
+import { specCard } from './components/spec-card.js';
+import { docsAccepting } from './components/docs-accepting.js';
+import { faqSection } from './components/faq-section.js';
+import { relatedServices } from './components/related-services.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const GUIDE_IMAGES = new Set(
@@ -588,54 +594,22 @@ ${hreflangTags}
   const upsellHtml = `<div class="v2-upsell"><a href="${upsellHref}" data-cta="specs-upsell" rel="noopener">${escapeHtml(upsellLabel)}</a></div>`;
 
   const fullName = `${countryName} ${typeName}`;
+  const ctx = {
+    slug, lang, specData, i, v2, prefix, market, isPilot,
+    countryName, typeName, fullName, typeSlug, countrySlug,
+    geoSummary, imgSrc, fallbackSrc, tabSpecLabel, sourceLabel,
+    specRows, detailHtml, rejectHtml, restrictionsHtml, sourceHtml,
+    sameSize, sameHtml, faqHtml, locField, fmtV2,
+  };
   const bodyContent = `
   ${market === 'kr' ? '<script src="https://js.tosspayments.com/v2/standard"></script>' : ''}
   <div class="v2-wrap${isPilot ? ' idpass-pilot' : ''}" data-slug="${slug}">
-    <!-- 1. 헤더 -->
-    <nav class="v2-breadcrumb">
-      <a href="${prefix}/specs">${escapeHtml(v2.breadcrumbGuide)}</a> &gt; ${escapeHtml(countryName)} &gt; ${escapeHtml(typeName)}
-    </nav>
-    <div class="v2-header">
-      <h1>${escapeHtml(countryName)} ${escapeHtml(typeName)}</h1>
-      <div class="v2-sub">${escapeHtml(specData.countryEn || countryName)} ${escapeHtml(specData.typeEn || typeName)} Photo Specification</div>
-    </div>
-    <!-- 상단 sameSize 태그 전역 제거 (2026-07-11 작가님 — 어제 파일럿 한정 제거를 전 페이지 확장.
-         동일규격 내부링크 정본 = 하단 롤다운 카드) -->
-    <div class="v2-tags">
-      <span class="v2-tag">${escapeHtml(countryName)}</span>
-      <span class="v2-tag">${escapeHtml(typeName)}</span>
-    </div>
-
-    <!-- GEO 요약문 — 수치 명시 1문단. AI 오버뷰·생성형 엔진의 인용 표적 (2026-07-13 헤드텀 설계 §4-4) -->
-    <p class="v2-geo-summary">${escapeHtml(geoSummary)}</p>
+${specHero(ctx)}
 
     <!-- 2. 핵심 규격 듀오 — 이미지 박스 + 수치 박스(탭) 분리. DOM 순서=모바일 순서(이미지 먼저) -->
     <div class="v2-spec-duo">
-      <div class="v2-half-card v2-card-diagram">
-        <img class="v2-diagram-img" src="${imgSrc}" alt="${escapeHtml(countryName)} ${escapeHtml(typeName)} ${escapeHtml(locField(specData, 'size', lang))}"
-             onerror="this.src='${fallbackSrc}';this.onerror=function(){this.style.display='none'}">
-      </div>
-      <div class="v2-half-card v2-card-specs">
-        <div class="v2-tabs" role="tablist">
-          <button type="button" class="v2-tab on" data-pane="spec" onclick="v2SpecTab(this)">${escapeHtml(tabSpecLabel)}</button>
-          ${detailHtml || restrictionsHtml ? `<button type="button" class="v2-tab" data-pane="detail" onclick="v2SpecTab(this)">${escapeHtml(v2.detailsTitle)}</button>` : ''}
-          ${rejectHtml ? `<button type="button" class="v2-tab" data-pane="reject" onclick="v2SpecTab(this)">${escapeHtml(v2.rejectionTitle)}</button>` : ''}
-        </div>
-        <div class="v2-tabpane" data-pane="spec">
-          <table class="v2-spec-table">
-            ${specRows}
-          </table>
-          ${sourceHtml}
-        </div>
-        ${detailHtml || restrictionsHtml ? `<div class="v2-tabpane" data-pane="detail" hidden>
-          ${detailHtml ? `<ul class="v2-detail-list">${detailHtml}</ul>` : ''}
-          ${restrictionsHtml}
-          ${sourceHtml}
-        </div>` : ''}
-        ${rejectHtml ? `<div class="v2-tabpane" data-pane="reject" hidden>
-          <ol class="v2-reject-list">${rejectHtml}</ol>
-        </div>` : ''}
-      </div>
+${specDiagram(ctx)}
+${specCard(ctx)}
     </div>
     <script>function v2SpecTab(btn){var card=btn.closest('.v2-card-specs');card.querySelectorAll('.v2-tab').forEach(function(b){b.classList.toggle('on',b===btn)});card.querySelectorAll('.v2-tabpane').forEach(function(p){p.hidden=p.getAttribute('data-pane')!==btn.getAttribute('data-pane')});}</script>
 
@@ -856,42 +830,11 @@ ${hreflangTags}
 
     </div>
 
-    ${sameSize.length > 0 ? `<!-- 4. 같은 사진으로 제출 가능한 서류 — 롤다운 (상세규정·반려사유는 수치 박스 탭으로 이동) -->
-    <div class="v2-same-section">
-      <details class="v2-same-acc">
-        <summary><h2>${escapeHtml(v2.sameTitle)}</h2><span class="v2-same-count">${sameSize.length}</span></summary>
-        <div class="v2-same-body">
-          <div class="v2-same-sub">${escapeHtml(fmtV2(v2.sameSub, { name: fullName, size: locField(specData, 'size', lang) }))}</div>
-          <div class="v2-same-grid">${sameHtml}</div>
-        </div>
-      </details>
-    </div>` : ''}
+    ${sameSize.length > 0 ? docsAccepting(ctx) : ''}
 
-    <!-- 6. FAQ -->
-    <div class="v2-faq-section">
-      <h2>${escapeHtml(v2.faqTitle)}</h2>
-      ${faqHtml}
-    </div>
+${faqSection(ctx)}
 
-    <!-- 7. 크로스셀 카드 -->
-    <div class="v2-same-section">
-      <h2>${escapeHtml(v2.crossTitle)}</h2>
-      <div class="v2-same-sub">${escapeHtml(v2.crossSub)}</div>
-      <div class="v2-same-grid">
-        <a href="/headshot" class="v2-same-card">
-          <span class="v2-same-icon">💼</span>
-          <div><div class="v2-same-name">${escapeHtml(v2.crossHeadshot)}</div><div class="v2-same-size">${escapeHtml(v2.crossHeadshotSub)}</div></div>
-        </a>
-        ${isPilot ? '' : `<a href="/" class="v2-same-card">
-          <span class="v2-same-icon">📷</span>
-          <div><div class="v2-same-name">${escapeHtml(v2.crossProfile)}</div><div class="v2-same-size">${escapeHtml(v2.crossProfileSub)}</div></div>
-        </a>`}
-        <a href="${prefix}/specs" class="v2-same-card">
-          <span class="v2-same-icon">📐</span>
-          <div><div class="v2-same-name">${escapeHtml(v2.crossSpecs)}</div><div class="v2-same-size">${escapeHtml(v2.crossSpecsSub)}</div></div>
-        </a>
-      </div>
-    </div>
+${relatedServices(ctx)}
 
   </div>
 `;
