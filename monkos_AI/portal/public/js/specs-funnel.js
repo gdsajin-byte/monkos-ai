@@ -273,7 +273,7 @@ var SpecsFunnel = (function(){
       pilotFreeExhausted = true;
       fs2.className = 'v2-checklist-summary v2-summary-fail';
       fs2.textContent = T.quotaExhaustedMsg;
-      var _qp = CFG.market === 'kr' ? '₩2,000' : '$1.99';
+      var _qp = CFG.price || (CFG.market === 'kr' ? '₩2,000' : '$1.99');
       mkBtn.textContent = T.quotaExhaustedBtn.replace('{price}', _qp);
     } else {
       pilotFreeExhausted = false;
