@@ -38,7 +38,7 @@ const specsJsTag = (name) => `\n<script src="/js/${name}.js?v=${ASSET_VER}" defe
 
 // ─── LANGS / MARKET ────────────────────────────────────────────
 const LANGS = ['ko', 'en', 'ja', 'es'];
-const HREFLANG_LANGS = ['ko', 'ja', 'en'];
+const HREFLANG_LANGS = LANGS;
 const MARKET_MAP = { ko: 'kr', ja: 'jp', en: 'global', es: 'global' };
 const loc = (obj, lang) => obj[lang] || obj.en || obj.ko;
 
@@ -230,7 +230,7 @@ export function specsListFragment(forceLang = null) {
   const canonicalUrl = lang === 'ko' ? 'https://monkos.ai/specs' : `https://monkos.ai/${lang}/specs`;
   const hreflangTags = HREFLANG_LANGS.map(l =>
     `<link rel="alternate" hreflang="${l}" href="https://monkos.ai${l === 'ko' ? '' : '/' + l}/specs">`
-  ).concat('<link rel="alternate" hreflang="x-default" href="https://monkos.ai/specs">').join('\n');
+  ).concat('<link rel="alternate" hreflang="x-default" href="https://monkos.ai/en/specs">').join('\n');
 
   const itemListJsonLd = JSON.stringify({
     "@context": "https://schema.org",
@@ -406,7 +406,7 @@ function specsDetailV2Fragment(slug, forceLang = null) {
   const canonicalUrl = lang === 'ko' ? `https://monkos.ai/specs/${newPath}` : `https://monkos.ai/${lang}/specs/${newPath}`;
   const hreflangTags = HREFLANG_LANGS.map(l =>
     `<link rel="alternate" hreflang="${l}" href="https://monkos.ai${l === 'ko' ? '' : '/' + l}/specs/${newPath}">`
-  ).concat('<link rel="alternate" hreflang="x-default" href="https://monkos.ai/specs/' + newPath + '">').join('\n');
+  ).concat('<link rel="alternate" hreflang="x-default" href="https://monkos.ai/en/specs/' + newPath + '">').join('\n');
 
   const faqs = (specData.faqs && (specData.faqs[lang] || specData.faqs.ko)) || (V2_FAQ_FALLBACK[lang] || V2_FAQ_FALLBACK.ko);
 
@@ -626,6 +626,7 @@ ${relatedServices(ctx)}
     t: v2.js,
     pilot: true,
     t1: t1RetouchOn,
+    price: market === 'kr' ? '₩2,000' : '$1.99',
     freeCap: process.env.FREE_QUOTA_BYPASS === '1' ? 999999 : 3,
   };
 
@@ -666,7 +667,7 @@ export function specsDetailFragment(slug, forceLang = null) {
   const canonicalUrl = lang === 'ko' ? `https://monkos.ai/specs/${newPath}` : `https://monkos.ai/${lang}/specs/${newPath}`;
   const hreflangTags = HREFLANG_LANGS.map(l =>
     `<link rel="alternate" hreflang="${l}" href="https://monkos.ai${l === 'ko' ? '' : '/' + l}/specs/${newPath}">`
-  ).concat('<link rel="alternate" hreflang="x-default" href="https://monkos.ai/specs/' + newPath + '">').join('\n');
+  ).concat('<link rel="alternate" hreflang="x-default" href="https://monkos.ai/en/specs/' + newPath + '">').join('\n');
 
   const faqs = (specData.faqs && (specData.faqs[lang] || specData.faqs.ko)) || [];
   const v1OgGuideKey = GUIDE_IMAGES.has(`${slug}_${lang}`) ? `${slug}_${lang}`

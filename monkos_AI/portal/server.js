@@ -89,7 +89,7 @@ function detectLang(req) {
   if (urlMatch) return urlMatch[1];
 
   const cookies = parseCookies(req.headers.cookie);
-  if (cookies.monkos_lang && ['ko', 'ja', 'en'].includes(cookies.monkos_lang)) {
+  if (cookies.monkos_lang && ['ko', 'ja', 'en', 'es'].includes(cookies.monkos_lang)) {
     return cookies.monkos_lang;
   }
 
@@ -1132,6 +1132,8 @@ const httpServer = createServer(async (req, res) => {
   if (urlPath?.startsWith('/ja/specs/') && req.method === 'GET') return renderSpecsDetail(req, res, 'ja');
   if (urlPath === '/en/specs' && req.method === 'GET') return renderSpecsList(req, res, 'en');
   if (urlPath?.startsWith('/en/specs/') && req.method === 'GET') return renderSpecsDetail(req, res, 'en');
+  if (urlPath === '/es/specs' && req.method === 'GET') return renderSpecsList(req, res, 'es');
+  if (urlPath?.startsWith('/es/specs/') && req.method === 'GET') return renderSpecsDetail(req, res, 'es');
 
   if (urlPath === '/ja/gallery' && req.method === 'GET') return renderGallery(req, res);
   if (urlPath === '/en/gallery' && req.method === 'GET') return renderGallery(req, res);

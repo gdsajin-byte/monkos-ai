@@ -133,11 +133,13 @@ export function renderSitemapSpecs(req, res) {
         { lang: 'ko', href: `${DOMAIN}/specs/${path}` },
         { lang: 'en', href: `${DOMAIN}/en/specs/${path}` },
         { lang: 'ja', href: `${DOMAIN}/ja/specs/${path}` },
-        { lang: 'x-default', href: `${DOMAIN}/specs/${path}` },
+        { lang: 'es', href: `${DOMAIN}/es/specs/${path}` },
+        { lang: 'x-default', href: `${DOMAIN}/en/specs/${path}` },
       ];
       urls.push({ loc: `${DOMAIN}/specs/${path}`, lastmod, changefreq: 'monthly', priority: '0.8', alternates });
       urls.push({ loc: `${DOMAIN}/ja/specs/${path}`, lastmod, changefreq: 'monthly', priority: '0.7', alternates });
       urls.push({ loc: `${DOMAIN}/en/specs/${path}`, lastmod, changefreq: 'monthly', priority: '0.7', alternates });
+      urls.push({ loc: `${DOMAIN}/es/specs/${path}`, lastmod, changefreq: 'monthly', priority: '0.6', alternates });
     }
 
     sendXml(res, wrapUrlset(urls.map(urlEntry)));
