@@ -164,7 +164,7 @@ footer { text-align: center; padding: 40px 0 20px; border-top: 1px solid rgba(16
 </div>
 
 <div class="wrap">
-  <a href="/" class="back">&larr; MONKOS AI</a>
+  <a href="/" class="back">MONKOS AI</a>
 
   <div id="returnBar" class="return-bar" style="display:none;">
     <a id="returnLink" href="#">&larr; 돌아가기</a>
@@ -383,6 +383,8 @@ function showReturnCta() {
   if (!currentUser || !currentUser.credits || currentUser.credits < 10) return;
   var cta = document.getElementById('returnCta');
   cta.style.display = '';
+  // 주 CTA가 뜨면 상단 복귀 바는 숨김 — 복귀 요소 1개 원칙 (2026-07-16 작가님)
+  document.getElementById('returnBar').style.display = 'none';
   document.getElementById('returnCtaBtn').addEventListener('click', function() {
     sessionStorage.removeItem('monkos_credits_from');
     window.location.href = returnUrl;
