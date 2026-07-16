@@ -496,3 +496,7 @@
 ## 2026-07-16 (민아 2차)
 - `project_model_placement.md`: 채용 기준 정본 추가 — "준수율 우선, 성능 차순위" (4.7 퇴출·4.8 미달·Fable 안착 근거, 작가님 발언) + 쌍아 현행화(종량 크레딧·체제)
 - `feedback_secret_key_ops.md`: ch4 11조 편입 반영 + GCP_SA_KEY=plain JSON 실측 (쌍아 대행, 민아 사후 추인)
+
+## 2026-07-16 (쌍아)
+- 신설: `feedback_no_session_close_suggestion.md` — 에이전트가 세션 마감·정산 먼저 제안 금지 (작가님 여러 차례 주의)
+- 갱신: `project_specs_v2_url_structure.md` — 구식 "V2=1-segment" → 현행 "전 슬러그 2-segment `/specs/passport/kr` 통일" 교정. GSC 36.2% 구 형식 잔존 현황 추가
