@@ -576,7 +576,7 @@
   "uk-passport": {
     "slug": "uk-passport",
     "country": "영국",
-    "countryEn": "Europe",
+    "countryEn": "United Kingdom",
     "type": "여권",
     "typeEn": "Passport",
     "typeJa": "UKパスポート",
@@ -674,15 +674,15 @@
     },
     "seoTitle": {
       "ko": "영국 여권 사진 규격·규정 2026 — 3.5×4.5cm·배경·복장 | MONKOS",
-      "en": "Europe Passport Photo Size & Requirements 2026 — 3.5 × 4.5cm",
+      "en": "UK Passport Photo Size & Requirements 2026 — 3.5 × 4.5cm",
       "ja": "イギリスUKパスポート写真サイズ・規格 2026 — 3.5×4.5cm",
-      "es": "Europa Foto Pasaporte 2026 — 3.5 × 4.5cm"
+      "es": "Reino Unido Foto Pasaporte 2026 — 3.5 × 4.5cm"
     },
     "seoDescription": {
       "ko": "영국 여권 사진 공식 규격·2026년 규정 — 3.5 × 4.5cm, 크림 또는 연회색 배경. 규격 검증된 사진 파일을 즉시 다운로드하세요.",
-      "en": "Official Europe passport photo requirements 2026 — 3.5 × 4.5cm, cream or light grey background. Get a compliant photo online in seconds.",
+      "en": "Official UK passport photo requirements 2026 — 3.5 × 4.5cm, cream or light grey background. Get a compliant photo online in seconds.",
       "ja": "イギリスUKパスポート写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景はクリームまたは薄灰色。規格対応の写真をオンラインで即ダウンロード。",
-      "es": "Requisitos oficiales de foto de pasaporte de Europa 2026 — 3.5 × 4.5cm, fondo crema o gris claro. Obtenga una foto conforme al instante."
+      "es": "Requisitos oficiales de foto de pasaporte de Reino Unido 2026 — 3.5 × 4.5cm, fondo crema o gris claro. Obtenga una foto conforme al instante."
     },
     "headHeightMin": 29,
     "headHeightMax": 34,
@@ -66338,7 +66338,7 @@
   "de-resume": {
     "slug": "de-resume",
     "country": "독일",
-    "countryEn": "Europe",
+    "countryEn": "Germany",
     "type": "이력서",
     "typeEn": "Application Photo",
     "typeJa": "応募写真",
@@ -66433,15 +66433,15 @@
     },
     "seoTitle": {
       "ko": "독일 이력서 사진 규격·규정 2026 — 3.5×4.5cm·배경·복장 | MONKOS",
-      "en": "Europe Application Photo Size & Requirements 2026",
+      "en": "Germany Application Photo Size & Requirements 2026",
       "ja": "ドイツ応募写真サイズ・規格 2026 — 3.5×4.5cm",
-      "es": "Europa Foto Solicitud 2026 — 3.5 × 4.5cm"
+      "es": "Alemania Foto Solicitud 2026 — 3.5 × 4.5cm"
     },
     "seoDescription": {
       "ko": "독일 이력서 사진 공식 규격·2026년 규정 — 3.5 × 4.5cm, 밝은 배경. 규격 검증된 사진 파일을 즉시 다운로드하세요.",
-      "en": "Official Europe application photo requirements 2026 — 3.5 × 4.5cm, light background. Get a compliant photo online in seconds.",
+      "en": "Official Germany application photo requirements 2026 — 3.5 × 4.5cm, light background. Get a compliant photo online in seconds.",
       "ja": "ドイツ応募写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は明るい背景。規格対応の写真をオンラインで即ダウンロード。",
-      "es": "Requisitos oficiales de foto de foto de solicitud de Europa 2026 — 3.5 × 4.5cm, fondo fondo claro. Obtenga una foto conforme al instante."
+      "es": "Requisitos oficiales de foto de foto de solicitud de Alemania 2026 — 3.5 × 4.5cm, fondo fondo claro. Obtenga una foto conforme al instante."
     },
     "headHeightMin": 28.4,
     "headHeightMax": 34.6,
