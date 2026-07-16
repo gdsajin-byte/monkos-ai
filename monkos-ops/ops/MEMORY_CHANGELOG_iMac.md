@@ -492,3 +492,7 @@
 ## 2026-07-15~16 (민아 세션)
 - 신규: project_t0_free_global_open.md — T0 무료 전언어 개방 결정(트래픽·DA>실결제, 전역캡 300/일 원가방어) + MEMORY.md 인덱스 1행
 - 개정: project_idpass_router_architecture.md — IDPASS 3층 구조 확정(07-12 "specs=백과 전용"을 07-15 "말단 자체 완결"이 대체), 2차 확정(마케팅 분화·랜딩 헤더 승격·백링크 집중·도메인 분리 로드맵) 반영
+
+## 2026-07-16 (민아 2차)
+- `project_model_placement.md`: 채용 기준 정본 추가 — "준수율 우선, 성능 차순위" (4.7 퇴출·4.8 미달·Fable 안착 근거, 작가님 발언) + 쌍아 현행화(종량 크레딧·체제)
+- `feedback_secret_key_ops.md`: ch4 11조 편입 반영 + GCP_SA_KEY=plain JSON 실측 (쌍아 대행, 민아 사후 추인)
