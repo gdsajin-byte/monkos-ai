@@ -47,8 +47,10 @@ async function fetchGsc(days, rowLimit) {
     return (await r.json()).rows || [];
   }
 
-  const [kwRows, pgRows] = await Promise.all([query(['query']), query(['page'])]);
+  const [kwRows, pgRows, totalRows] = await Promise.all([query(['query']), query(['page']), query([])]);
+  const t = totalRows[0] || {};
   return {
+    totals: { clicks: t.clicks || 0, impressions: t.impressions || 0, ctr: +((t.ctr || 0) * 100).toFixed(1), position: +(t.position || 0).toFixed(1) },
     keywords: kwRows.map(r => ({ query: r.keys[0], clicks: r.clicks, impressions: r.impressions, ctr: +(r.ctr * 100).toFixed(1), position: +r.position.toFixed(1) })),
     pages: pgRows.map(r => ({ page: r.keys[0].replace('https://monkos.ai', ''), clicks: r.clicks, impressions: r.impressions, ctr: +(r.ctr * 100).toFixed(1), position: +r.position.toFixed(1) })),
     period: { start: startDate, end: endDate },

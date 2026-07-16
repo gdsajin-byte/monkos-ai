@@ -312,8 +312,8 @@
     </div>
     <div class="kpi">
       <div class="kpi-label">GSC 클릭 (28d)</div>
-      <div class="kpi-value" style="color:var(--text-muted)">GSC</div>
-      <div class="kpi-delta flat">연결 대기</div>
+      <div class="kpi-value" id="kpi-gsc-clicks" style="color:var(--text-muted)">—</div>
+      <div class="kpi-delta flat" id="kpi-gsc-delta">로딩 중</div>
       <div class="kpi-caption" id="kpi-gsc-date"></div>
     </div>
     <div class="kpi">
@@ -746,8 +746,18 @@ async function loadCitadel() {
     }
     document.getElementById('kpi-purchase-date').textContent = `기준: ${dataDate}`;
 
-    // KPI: GSC date caption
+    // KPI: GSC 클릭 28d — 신규 /gsc API 배선 (2026-07-16 '연결 대기' 정적 표기 해소)
     document.getElementById('kpi-gsc-date').textContent = `기준: ${dataDate}`;
+    fetch('/api/admin/dashboard/gsc?days=28')
+      .then(r => r.ok ? r.json() : null)
+      .then(g => {
+        if (!g || !g.totals) return;
+        var el = document.getElementById('kpi-gsc-clicks');
+        el.textContent = g.totals.clicks.toLocaleString();
+        el.style.color = '';
+        document.getElementById('kpi-gsc-delta').textContent = `노출 ${g.totals.impressions.toLocaleString()} · 평균 ${g.totals.position}위`;
+      })
+      .catch(() => {});
 
     // KPI: Secrets
     document.getElementById('kpi-sm').textContent = data.secrets.sm;
