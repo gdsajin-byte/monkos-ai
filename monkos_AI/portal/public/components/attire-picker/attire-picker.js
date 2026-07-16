@@ -24,29 +24,37 @@
       title: '의상 선택', gm: '남성복', gf: '여성복', all: '전체',
       upload: '내 옷 사진 올리기', uploadOn: '내 옷', soon: '곧 열려요',
       notice: 'AI 합성 연출 이미지로 완성돼요',
-      warnLight: '⚠ 흰 배경 규격에서는 흰색·아이보리 등 밝은 상의가 배경과 겹쳐 반려될 수 있어요',
-      uploadBad: '이 사진은 쓰기 어려워요 — 256px 이상, 5MB 이하 이미지로 다시 올려주세요'
+      warnLight: '⚠️ 흰색·밝은 상의는 발급 거부 사유가 될 수 있어요',
+      uploadBad: '이 사진은 쓰기 어려워요 — 256px 이상, 5MB 이하 이미지로 다시 올려주세요',
+      tieLabel: '넥타이',
+      babyGuide: '아기 사진은 옷 모양은 그대로 두고 색만 바꿔드려요'
     },
     ja: {
       title: '衣装を選ぶ', gm: 'メンズ', gf: 'レディース', all: 'すべて',
       upload: '自分の服をアップ', uploadOn: 'マイ服', soon: '近日公開',
       notice: 'AI合成による演出イメージです',
-      warnLight: '⚠ 白背景の規格では、白・アイボリーなど明るい服は背景と重なり不受理になる場合があります',
-      uploadBad: 'この画像は使用できません — 256px以上・5MB以下の画像を選んでください'
+      warnLight: '⚠️ 白や明るい色のトップスは受理拒否の原因になる場合があります',
+      uploadBad: 'この画像は使用できません — 256px以上・5MB以下の画像を選んでください',
+      tieLabel: 'ネクタイ',
+      babyGuide: '赤ちゃんの写真は服の形はそのまま、色だけ変えます'
     },
     en: {
       title: 'Outfit', gm: "Menswear", gf: "Womenswear", all: 'All',
       upload: 'Upload my outfit', uploadOn: 'My outfit', soon: 'Coming soon',
       notice: 'Rendered with AI outfit synthesis',
-      warnLight: '⚠ On white-background specs, white/ivory tops may blend into the background and get rejected',
-      uploadBad: 'This image cannot be used — please pick one at least 256px and under 5MB'
+      warnLight: '⚠️ White or light-colored tops may cause your application to be rejected',
+      uploadBad: 'This image cannot be used — please pick one at least 256px and under 5MB',
+      tieLabel: 'Necktie',
+      babyGuide: 'For baby photos, we only change the color — the outfit shape stays the same'
     },
     es: {
       title: 'Elegir atuendo', gm: 'Caballero', gf: 'Dama', all: 'Todo',
       upload: 'Subir mi ropa', uploadOn: 'Mi ropa', soon: 'Próximamente',
       notice: 'Imagen renderizada con síntesis de atuendo AI',
-      warnLight: '⚠ En especificaciones de fondo blanco, las prendas claras pueden confundirse con el fondo y ser rechazadas',
-      uploadBad: 'Esta imagen no se puede usar — seleccione una de al menos 256px y menos de 5MB'
+      warnLight: '⚠️ Las prendas blancas o de colores claros pueden ser motivo de rechazo',
+      uploadBad: 'Esta imagen no se puede usar — seleccione una de al menos 256px y menos de 5MB',
+      tieLabel: 'Corbata',
+      babyGuide: 'Para fotos de bebé, solo cambiamos el color — la forma de la ropa se mantiene igual'
     }
   };
 
@@ -103,6 +111,8 @@
     this.data = null;
     this.selection = null;   // null = default_option
     this.uploadItem = null;  // {id:'upload', attire_image, thumbnail(dataURL), isUpload:true}
+    this.tieOn = false;
+    this.tieColor = null;
     this.t = UI_TEXT[this.lang] || UI_TEXT.en || UI_TEXT.ko;
 
     container.classList.add('atp');
@@ -135,10 +145,8 @@
   };
 
   Picker.prototype.ageMatch = function (it) {
-    var ar = it.tags.age_range || '';
-    if (this.age === 'baby') return ar === 'baby';
-    if (this.age === 'teen') return ar.indexOf('teen') === 0;   // teen, teen-20s
-    return ar !== 'baby';                                        // adult: 영유아 전용만 제외
+    var ages = it.tags.age || ['adult'];
+    return ages.indexOf(this.age) !== -1;
   };
 
   Picker.prototype.visibleItems = function () {
@@ -147,7 +155,7 @@
     var g = this.gender;
     return (this.data.items || []).filter(function (it) {
       if (!it.active && !self.includeInactive) return false;
-      if (!it.thumbnail && !self.includeInactive) return false;
+      if (!it.thumbnail && it.mode !== 'recolor' && !self.includeInactive) return false;
       if (!self.ageMatch(it)) return false;
       if (self.age !== 'baby' && it.tags.gender !== 'unisex' && it.tags.gender !== g) return false;
       if (uc.length && !(it.tags.use_case || []).some(function (u) { return uc.indexOf(u) !== -1; })) return false;
@@ -169,6 +177,12 @@
       b.setAttribute('aria-checked', on ? 'true' : 'false');
       b.tabIndex = on ? 0 : -1;
     });
+    if (!this.tieSupported(this.selection)) {
+      this.tieOn = false;
+      this.tieColor = null;
+    }
+    this.renderTieRow();
+    this.updateTieBadge();
     this.updateWarn();
     var sel = this.getSelection();
     if (typeof this.opts.onChange === 'function') this.opts.onChange(sel);
@@ -178,23 +192,29 @@
   // 반려 주의 문구 — 밝은 프리셋 선택 또는 업로드 선택 시 노출
   Picker.prototype.updateWarn = function () {
     if (!this.warnEl) return;
-    var s = this.selection;
-    var show = this.warnLightTop && s && (s.isUpload || this.isLightTop(s));
+    var show = this.warnLightTop;
     this.warnEl.textContent = show ? this.t.warnLight : '';
     this.warnEl.style.display = show ? '' : 'none';
   };
 
   Picker.prototype.getSelection = function () {
     if (this.selection) {
+      var desc = this.selection.attire_desc || null;
+      var tieId = null;
+      if (desc && this.tieOn && this.tieColor) {
+        desc = desc.replace('no tie', this.tieColor.descFragment);
+        tieId = this.tieColor.id;
+      }
       return {
         id: this.selection.id,
-        attire_desc: this.selection.attire_desc || null,
+        attire_desc: desc,
         attire_image: this.selection.isUpload ? this.selection.attire_image : null,
+        attireTie: tieId,
         labels: this.selection.labels, tags: this.selection.tags || null
       };
     }
     var d = (this.data && this.data.default_option) || { id: 'original', labels: {}, attire_desc: null };
-    return { id: d.id, attire_desc: d.attire_desc, attire_image: null, labels: d.labels, tags: null };
+    return { id: d.id, attire_desc: d.attire_desc, attire_image: null, attireTie: null, labels: d.labels, tags: null };
   };
 
   Picker.prototype.getAttireDesc = function () { return this.getSelection().attire_desc || null; };
@@ -252,6 +272,7 @@
         self.category = btn.getAttribute('data-cat');
         catRow.querySelectorAll('.atp-cat').forEach(function (x) { x.classList.toggle('atp-on', x === btn); });
         self.renderItems();
+        self.updateTieBadge();
       });
       c.appendChild(catRow);
     }
@@ -261,7 +282,17 @@
     c.appendChild(this.itemsRow);
     this.renderItems();
 
-    // 반려 주의 문구 영역 (선택 반응형)
+    if (this.age === 'baby' && t.babyGuide) {
+      var guide = el('div', 'atp-baby-guide');
+      guide.textContent = t.babyGuide;
+      c.appendChild(guide);
+    }
+
+    this.tieRowEl = el('div', 'atp-tie-row');
+    this.tieRowEl.style.display = 'none';
+    c.appendChild(this.tieRowEl);
+
+    // 반려 주의 문구 영역
     this.warnEl = el('div', 'atp-warn');
     this.warnEl.style.display = 'none';
     c.appendChild(this.warnEl);
@@ -304,12 +335,80 @@
     foot.appendChild(notice);
     c.appendChild(foot);
     this.updateWarn();
+    this.renderTieRow();
   };
 
   Picker.prototype.uploadFail = function () {
     if (!this.warnEl) return;
     this.warnEl.textContent = this.t.uploadBad;
     this.warnEl.style.display = '';
+  };
+
+  Picker.prototype.tieSupported = function (item) {
+    if (!item || !item.tags || !item.attire_desc) return false;
+    var cat = item.tags.category;
+    return (cat === 'suit' || cat === 'shirt') && item.attire_desc.indexOf('no tie') !== -1;
+  };
+
+  Picker.prototype.renderTieRow = function () {
+    if (!this.tieRowEl || !this.data || !this.data.tieOptions) return;
+    var self = this, lang = this.lang;
+    var supported = this.tieSupported(this.selection);
+    this.tieRowEl.style.display = supported ? '' : 'none';
+    if (!supported) return;
+
+    this.tieRowEl.innerHTML = '';
+    var label = el('span', 'atp-tie-label');
+    label.textContent = this.t.tieLabel;
+    this.tieRowEl.appendChild(label);
+
+    var toggle = el('button', 'atp-tie-toggle', { type: 'button', 'data-on': this.tieOn ? 'true' : 'false', 'aria-label': this.t.tieLabel });
+    var knob = el('span', 'atp-tie-knob');
+    toggle.appendChild(knob);
+    toggle.addEventListener('click', function () {
+      self.tieOn = !self.tieOn;
+      if (self.tieOn && !self.tieColor && self.data.tieOptions.length) {
+        self.tieColor = self.data.tieOptions[0];
+      }
+      self.renderTieRow();
+      self.updateTieBadge();
+      var sel = self.getSelection();
+      if (typeof self.opts.onChange === 'function') self.opts.onChange(sel);
+      self.container.dispatchEvent(new CustomEvent('attire:change', { detail: sel, bubbles: true }));
+    });
+    this.tieRowEl.appendChild(toggle);
+
+    if (this.tieOn) {
+      var colors = el('div', 'atp-tie-colors');
+      this.data.tieOptions.forEach(function (opt) {
+        var btn = el('button', 'atp-tie-swatch' + (self.tieColor && self.tieColor.id === opt.id ? ' atp-on' : ''), { type: 'button' });
+        var dot = el('span', 'atp-tie-dot');
+        dot.style.background = opt.hex;
+        btn.appendChild(dot);
+        btn.appendChild(document.createTextNode(opt.labels[lang] || opt.labels.en || opt.id));
+        btn.addEventListener('click', function () {
+          self.tieColor = opt;
+          self.renderTieRow();
+          self.updateTieBadge();
+          var sel = self.getSelection();
+          if (typeof self.opts.onChange === 'function') self.opts.onChange(sel);
+          self.container.dispatchEvent(new CustomEvent('attire:change', { detail: sel, bubbles: true }));
+        });
+        colors.appendChild(btn);
+      });
+      this.tieRowEl.appendChild(colors);
+    }
+  };
+
+  Picker.prototype.updateTieBadge = function () {
+    var old = this.container.querySelectorAll('.atp-badge-tie');
+    old.forEach(function (b) { b.remove(); });
+    if (!this.tieOn || !this.tieColor || !this.selection) return;
+    var chip = this.container.querySelector('.atp-item[data-id="' + this.selection.id + '"]');
+    if (!chip) return;
+    var badge = el('span', 'atp-badge-tie');
+    badge.style.background = this.tieColor.hex;
+    chip.appendChild(badge);
   };
 
   Picker.prototype.renderItems = function () {

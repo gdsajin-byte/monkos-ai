@@ -31,7 +31,7 @@
     </label>
     <label>lang
       <select id="lng">
-        <option value="ko" selected>ko</option><option value="ja">ja</option><option value="en">en</option>
+        <option value="ko" selected>ko</option><option value="ja">ja</option><option value="en">en</option><option value="es">es</option>
       </select>
     </label>
     <label>age
@@ -60,6 +60,7 @@
     payload.textContent = JSON.stringify({
       attireId: sel.id,
       attireDesc: sel.attire_desc,
+      attireTie: sel.attireTie || null,
       attireImage: sel.attire_image ? '(base64 ' + Math.round(sel.attire_image.length * 3 / 4 / 1024) + 'KB — 나노2 2이미지 i2i 입력)' : null,
       label: sel.labels
     }, null, 2);

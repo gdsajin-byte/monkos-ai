@@ -936,7 +936,7 @@ var SpecsFunnel = (function(){
     var body = { image: uploadedBase64, format: CFG.format, gender: subjectSelection.gender || 'm', age: subjectSelection.age || 'adult', slug: CFG.slug };
     if(fitResult && fitResult.frame){ body.fitFrame = fitResult.frame; body.fitMeta = fitResult.meta; body.fitMetrics = fitResult.metrics; }
     if(pay.token) body.paymentToken = pay.token;
-    if(CFG.t1 && attirePicker){ var ad = attirePicker.getAttireDesc(); if(ad) body.attireDesc = ad; }
+    if(CFG.t1 && attirePicker){ var asel = attirePicker.getSelection(); if(asel.attire_desc) body.attireDesc = asel.attire_desc; if(asel.attireTie) body.attireTie = asel.attireTie; }
     fetch('/api/idphoto/generate', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify(body)

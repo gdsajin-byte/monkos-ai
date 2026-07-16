@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated": "2026-07-12",
+  "updated": "2026-07-16",
   "default_option": {
     "id": "original",
     "labels": {
@@ -10,6 +10,30 @@
     },
     "attire_desc": null
   },
+  "tieOptions": [
+    {
+      "id": "navy",
+      "hex": "#1F3A5F",
+      "descFragment": "with a solid dark navy tie, neatly knotted",
+      "labels": {
+        "ko": "네이비",
+        "ja": "ネイビー",
+        "en": "Navy",
+        "es": "Azul marino"
+      }
+    },
+    {
+      "id": "charcoal",
+      "hex": "#3B3F46",
+      "descFragment": "with a solid charcoal gray tie, neatly knotted",
+      "labels": {
+        "ko": "차콜",
+        "ja": "チャコール",
+        "en": "Charcoal",
+        "es": "Gris carbón"
+      }
+    }
+  ],
   "categories": [
     {
       "id": "suit",
@@ -79,6 +103,26 @@
         "ja": "カーディガン",
         "en": "Cardigan",
         "es": "Cárdigan"
+      }
+    },
+    {
+      "id": "polo",
+      "order": 8,
+      "labels": {
+        "ko": "폴로",
+        "ja": "ポロ",
+        "en": "Polo",
+        "es": "Polo"
+      }
+    },
+    {
+      "id": "sweatshirt",
+      "order": 9,
+      "labels": {
+        "ko": "맨투맨",
+        "ja": "スウェット",
+        "en": "Sweatshirt",
+        "es": "Sudadera"
       }
     }
   ],
@@ -432,6 +476,10 @@
         "accessory": {
           "tie": null
         },
+        "age": [
+          "adult",
+          "teen"
+        ],
         "fit": "regular",
         "material": "cotton",
         "color": {
@@ -480,6 +528,10 @@
         "accessory": {
           "tie": null
         },
+        "age": [
+          "adult",
+          "teen"
+        ],
         "fit": "regular",
         "material": "cotton",
         "color": {
@@ -853,7 +905,7 @@
     },
     {
       "id": "m_shirt_white_tie_navy_15",
-      "active": true,
+      "active": false,
       "sort_order": 60,
       "tags": {
         "gender": "m",
@@ -1315,6 +1367,10 @@
         ],
         "use_case": [
           "passport"
+        ],
+        "age": [
+          "adult",
+          "teen"
         ]
       },
       "attire_desc": "Replace current clothing with a light blue stand-collar button-up blouse, fully buttoned. Clothing must look natural and properly fitted.",
@@ -1857,6 +1913,371 @@
         "ja": "ベージュ カーディガン",
         "en": "Beige Cardigan",
         "es": "Cárdigan beige"
+      },
+      "vendor": null
+    },
+    {
+      "id": "u_polo_lightblue_teen_01",
+      "active": true,
+      "sort_order": 250,
+      "tags": {
+        "gender": "unisex",
+        "category": "polo",
+        "subcategory": null,
+        "accessory": {
+          "tie": null
+        },
+        "age": [
+          "teen"
+        ],
+        "fit": "regular",
+        "material": "cotton-pique",
+        "color": {
+          "primary": "light-blue",
+          "secondary": null,
+          "tone": "cool"
+        },
+        "pattern": "solid",
+        "neckline": "polo-collar",
+        "season": "all",
+        "formality": "casual",
+        "age_range": "teen",
+        "trend_tags": [
+          "교복",
+          "캠퍼스"
+        ],
+        "use_case": [
+          "student-id",
+          "id-photo",
+          "resume"
+        ]
+      },
+      "attire_desc": "Replace current clothing with a light blue pique cotton polo shirt with a flat collar, buttoned placket, short sleeves, no visible logo or emblem. Clothing must look natural and properly fitted.",
+      "swatch": {
+        "primary": "#BDD7EE",
+        "secondary": "#FFFFFF"
+      },
+      "image_gcs": "gs://monk-ai-images/assets/attire/u_polo_lightblue_teen_01.png",
+      "thumbnail": "/images/attire/u_polo_lightblue_teen_01_thumb.webp",
+      "source": null,
+      "source_ref": null,
+      "labels": {
+        "ko": "라이트블루 폴로",
+        "ja": "ライトブルー ポロ",
+        "en": "Light Blue Polo",
+        "es": "Polo azul claro"
+      },
+      "vendor": null
+    },
+    {
+      "id": "u_polo_navy_teen_02",
+      "active": true,
+      "sort_order": 260,
+      "tags": {
+        "gender": "unisex",
+        "category": "polo",
+        "subcategory": null,
+        "accessory": {
+          "tie": null
+        },
+        "age": [
+          "teen"
+        ],
+        "fit": "regular",
+        "material": "cotton-pique",
+        "color": {
+          "primary": "navy",
+          "secondary": null,
+          "tone": "cool"
+        },
+        "pattern": "solid",
+        "neckline": "polo-collar",
+        "season": "all",
+        "formality": "casual",
+        "age_range": "teen",
+        "trend_tags": [
+          "교복",
+          "캠퍼스"
+        ],
+        "use_case": [
+          "student-id",
+          "id-photo",
+          "resume"
+        ]
+      },
+      "attire_desc": "Replace current clothing with a dark navy pique cotton polo shirt with a flat collar, buttoned placket, short sleeves, no visible logo or emblem. Clothing must look natural and properly fitted.",
+      "swatch": {
+        "primary": "#2C3E5D",
+        "secondary": "#3D5177"
+      },
+      "image_gcs": "gs://monk-ai-images/assets/attire/u_polo_navy_teen_02.png",
+      "thumbnail": "/images/attire/u_polo_navy_teen_02_thumb.webp",
+      "source": null,
+      "source_ref": null,
+      "labels": {
+        "ko": "네이비 폴로",
+        "ja": "ネイビー ポロ",
+        "en": "Navy Polo",
+        "es": "Polo azul marino"
+      },
+      "vendor": null
+    },
+    {
+      "id": "u_sweat_gray_teen_03",
+      "active": true,
+      "sort_order": 270,
+      "tags": {
+        "gender": "unisex",
+        "category": "sweatshirt",
+        "subcategory": null,
+        "accessory": {
+          "tie": null
+        },
+        "age": [
+          "teen"
+        ],
+        "fit": "regular",
+        "material": "cotton-fleece",
+        "color": {
+          "primary": "gray",
+          "secondary": null,
+          "tone": "neutral"
+        },
+        "pattern": "solid",
+        "neckline": "crew",
+        "season": "all",
+        "formality": "casual",
+        "age_range": "teen",
+        "trend_tags": [
+          "캠퍼스",
+          "캐주얼"
+        ],
+        "use_case": [
+          "student-id",
+          "id-photo",
+          "resume"
+        ]
+      },
+      "attire_desc": "Replace current clothing with a plain gray crew-neck sweatshirt, no visible logo or print. Clothing must look natural and properly fitted.",
+      "swatch": {
+        "primary": "#8E939B",
+        "secondary": "#A4A9B1"
+      },
+      "image_gcs": "gs://monk-ai-images/assets/attire/u_sweat_gray_teen_03.png",
+      "thumbnail": "/images/attire/u_sweat_gray_teen_03_thumb.webp",
+      "source": null,
+      "source_ref": null,
+      "labels": {
+        "ko": "그레이 맨투맨",
+        "ja": "グレー スウェット",
+        "en": "Gray Sweatshirt",
+        "es": "Sudadera gris"
+      },
+      "vendor": null
+    },
+    {
+      "id": "u_sweat_navy_teen_04",
+      "active": true,
+      "sort_order": 280,
+      "tags": {
+        "gender": "unisex",
+        "category": "sweatshirt",
+        "subcategory": null,
+        "accessory": {
+          "tie": null
+        },
+        "age": [
+          "teen"
+        ],
+        "fit": "regular",
+        "material": "cotton-fleece",
+        "color": {
+          "primary": "navy",
+          "secondary": null,
+          "tone": "cool"
+        },
+        "pattern": "solid",
+        "neckline": "crew",
+        "season": "all",
+        "formality": "casual",
+        "age_range": "teen",
+        "trend_tags": [
+          "캠퍼스",
+          "캐주얼"
+        ],
+        "use_case": [
+          "student-id",
+          "id-photo",
+          "resume"
+        ]
+      },
+      "attire_desc": "Replace current clothing with a plain dark navy crew-neck sweatshirt, no visible logo or print. Clothing must look natural and properly fitted.",
+      "swatch": {
+        "primary": "#2C3E5D",
+        "secondary": "#3D5177"
+      },
+      "image_gcs": "gs://monk-ai-images/assets/attire/u_sweat_navy_teen_04.png",
+      "thumbnail": "/images/attire/u_sweat_navy_teen_04_thumb.webp",
+      "source": null,
+      "source_ref": null,
+      "labels": {
+        "ko": "네이비 맨투맨",
+        "ja": "ネイビー スウェット",
+        "en": "Navy Sweatshirt",
+        "es": "Sudadera azul marino"
+      },
+      "vendor": null
+    },
+    {
+      "id": "b_recolor_paleblue_01",
+      "active": true,
+      "mode": "recolor",
+      "sort_order": 300,
+      "tags": {
+        "gender": "unisex",
+        "category": "shirt",
+        "subcategory": null,
+        "accessory": {
+          "tie": null
+        },
+        "age": [
+          "baby"
+        ],
+        "fit": "regular",
+        "material": "cotton",
+        "color": {
+          "primary": "pale-blue",
+          "secondary": null,
+          "tone": "cool"
+        },
+        "pattern": "solid",
+        "neckline": "round",
+        "season": "all",
+        "formality": "casual",
+        "age_range": "baby",
+        "trend_tags": [
+          "베이비"
+        ],
+        "use_case": [
+          "passport",
+          "id-photo"
+        ]
+      },
+      "attire_desc": "Change the color of the current top to pale sky blue. Keep the original garment shape, fit, and texture exactly as-is. Do not change the garment type.",
+      "swatch": {
+        "primary": "#BDD7EE"
+      },
+      "image_gcs": null,
+      "thumbnail": null,
+      "source": null,
+      "source_ref": null,
+      "labels": {
+        "ko": "연하늘색",
+        "ja": "ペールブルー",
+        "en": "Pale Blue",
+        "es": "Azul cielo"
+      },
+      "vendor": null
+    },
+    {
+      "id": "b_recolor_palepink_02",
+      "active": true,
+      "mode": "recolor",
+      "sort_order": 310,
+      "tags": {
+        "gender": "unisex",
+        "category": "shirt",
+        "subcategory": null,
+        "accessory": {
+          "tie": null
+        },
+        "age": [
+          "baby"
+        ],
+        "fit": "regular",
+        "material": "cotton",
+        "color": {
+          "primary": "pale-pink",
+          "secondary": null,
+          "tone": "warm"
+        },
+        "pattern": "solid",
+        "neckline": "round",
+        "season": "all",
+        "formality": "casual",
+        "age_range": "baby",
+        "trend_tags": [
+          "베이비"
+        ],
+        "use_case": [
+          "passport",
+          "id-photo"
+        ]
+      },
+      "attire_desc": "Change the color of the current top to soft pale pink. Keep the original garment shape, fit, and texture exactly as-is. Do not change the garment type.",
+      "swatch": {
+        "primary": "#F8C8D4"
+      },
+      "image_gcs": null,
+      "thumbnail": null,
+      "source": null,
+      "source_ref": null,
+      "labels": {
+        "ko": "연핑크",
+        "ja": "ペールピンク",
+        "en": "Pale Pink",
+        "es": "Rosa pastel"
+      },
+      "vendor": null
+    },
+    {
+      "id": "b_recolor_lightgray_03",
+      "active": true,
+      "mode": "recolor",
+      "sort_order": 320,
+      "tags": {
+        "gender": "unisex",
+        "category": "shirt",
+        "subcategory": null,
+        "accessory": {
+          "tie": null
+        },
+        "age": [
+          "baby"
+        ],
+        "fit": "regular",
+        "material": "cotton",
+        "color": {
+          "primary": "light-gray",
+          "secondary": null,
+          "tone": "neutral"
+        },
+        "pattern": "solid",
+        "neckline": "round",
+        "season": "all",
+        "formality": "casual",
+        "age_range": "baby",
+        "trend_tags": [
+          "베이비"
+        ],
+        "use_case": [
+          "passport",
+          "id-photo"
+        ]
+      },
+      "attire_desc": "Change the color of the current top to light gray. Keep the original garment shape, fit, and texture exactly as-is. Do not change the garment type.",
+      "swatch": {
+        "primary": "#D0D5DC"
+      },
+      "image_gcs": null,
+      "thumbnail": null,
+      "source": null,
+      "source_ref": null,
+      "labels": {
+        "ko": "연회색",
+        "ja": "ライトグレー",
+        "en": "Light Gray",
+        "es": "Gris claro"
       },
       "vendor": null
     }

@@ -40,8 +40,8 @@ function outfitPhrase(attireDesc) {
 
 function buildPrompt(item) {
   const phrase = outfitPhrase(item.attire_desc);
-  const wear = item.tags.gender === 'f' ? "women's" : "men's";
-  return `Professional e-commerce product photograph of ${phrase}, presented as ${wear} apparel using the invisible ghost mannequin technique.
+  const wear = item.tags.gender === 'f' ? "women's" : item.tags.gender === 'unisex' ? '' : "men's";
+  return `Professional e-commerce product photograph of ${phrase}, presented as ${wear ? wear + ' ' : ''}apparel using the invisible ghost mannequin technique.
 Front view, upper-torso framing (collar to mid-chest emphasis) as it would appear in an ID photo crop.
 Pure white seamless background (#FFFFFF). Soft, even studio lighting with no harsh shadows.
 STRICT: no person, no head, no face, no hands, no visible mannequin, no hanger, no text, no logo.
@@ -67,7 +67,7 @@ async function generate(item) {
 
 const data = JSON.parse(readFileSync(PRESETS, 'utf8'));
 const targets = data.items.filter(it =>
-  onlyIds ? onlyIds.includes(it.id) : (it.active && !it.thumbnail)
+  it.mode !== 'recolor' && (onlyIds ? onlyIds.includes(it.id) : (it.active && !it.thumbnail))
 );
 if (!targets.length) { console.log('대상 없음'); process.exit(0); }
 

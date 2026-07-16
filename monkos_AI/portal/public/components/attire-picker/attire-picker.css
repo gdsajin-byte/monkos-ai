@@ -102,6 +102,51 @@
   color: #b08514;
 }
 
+/* baby recolor 안내 */
+.atp-baby-guide {
+  margin-top: 8px; font-size: 12px; line-height: 1.45; color: #4a6d8c;
+  background: #eef6ff; border: 1px solid #c8ddf0; border-radius: 8px; padding: 7px 10px;
+}
+
+/* 타이 토글 행 */
+.atp-tie-row {
+  display: flex; align-items: center; gap: 10px;
+  margin-top: 8px; padding: 8px 10px;
+  background: var(--atp-chip-bg); border: 1px solid var(--atp-border);
+  border-radius: 8px;
+}
+.atp-tie-label { font-size: 12px; font-weight: 600; color: var(--atp-text); white-space: nowrap; }
+.atp-tie-toggle {
+  appearance: none; width: 36px; height: 20px; border-radius: 10px;
+  background: #d1d5db; border: none; cursor: pointer;
+  position: relative; transition: background .2s; flex: 0 0 auto;
+}
+.atp-tie-toggle[data-on="true"] { background: var(--atp-border-on); }
+.atp-tie-knob {
+  position: absolute; top: 2px; left: 2px;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: #fff; transition: transform .2s;
+  box-shadow: 0 1px 2px rgba(0,0,0,.15);
+}
+.atp-tie-toggle[data-on="true"] .atp-tie-knob { transform: translateX(16px); }
+.atp-tie-colors { display: flex; gap: 6px; align-items: center; }
+.atp-tie-swatch {
+  appearance: none; display: inline-flex; align-items: center; gap: 4px;
+  border: 1.5px solid transparent; border-radius: 999px;
+  padding: 3px 8px 3px 4px; cursor: pointer;
+  font-size: 11px; color: var(--atp-sub); background: transparent;
+  transition: border-color .15s;
+}
+.atp-tie-swatch.atp-on { border-color: var(--atp-border-on); background: var(--atp-on-bg); color: var(--atp-text); font-weight: 600; }
+.atp-tie-dot { width: 14px; height: 14px; border-radius: 50%; flex: 0 0 auto; }
+
+.atp-badge-tie {
+  position: absolute; bottom: 4px; right: 4px;
+  width: 10px; height: 10px; border-radius: 50%;
+  border: 1.5px solid #fff;
+  box-shadow: 0 0 2px rgba(0,0,0,.2);
+}
+
 /* 데스크톱(≥720px): 그리드 전환 */
 @media (min-width: 720px) {
   .atp-items { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); overflow: visible; }
