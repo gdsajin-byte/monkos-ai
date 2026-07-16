@@ -488,3 +488,7 @@
 - **신규**: `project_retouch_default_by_culture.md` — 보정 기본값=문화 파라미터(한국=보정 디폴트/글로벌=자연) + 제작 독트린(인페인트 지양·전체 재생성, 나노2=유료 하한, 프롬프트 3실패 지도)
 - **신규**: `project_attire_commerce_vision.md` — 의상·헤어 피커 커머스 중개 비전(T1 피커=시험 모델, 벤더 필드 선탑재) + STYLER 앱 종착 비전(무보존 피팅실·카테고리 인덱스 추천)
 - MEMORY.md 인덱스 2행 추가
+
+## 2026-07-15~16 (민아 세션)
+- 신규: project_t0_free_global_open.md — T0 무료 전언어 개방 결정(트래픽·DA>실결제, 전역캡 300/일 원가방어) + MEMORY.md 인덱스 1행
+- 개정: project_idpass_router_architecture.md — IDPASS 3층 구조 확정(07-12 "specs=백과 전용"을 07-15 "말단 자체 완결"이 대체), 2차 확정(마케팅 분화·랜딩 헤더 승격·백링크 집중·도메인 분리 로드맵) 반영
