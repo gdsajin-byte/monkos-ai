@@ -10,6 +10,7 @@ import { escapeHtml, layoutShell } from './render-shell.js';
 import { getSpecCropParams } from '../spec-crop.js';
 import { log, LEMONSQUEEZY_VARIANT_SPECS_SINGLE, LEMONSQUEEZY_VARIANT_SPECS_SINGLE_JP } from '../shared/config.js';
 import { COMMON_RULES, SPECS_I18N, V2_REJECTIONS, V2_DETAILS, V2_FAQ_FALLBACK, RESTR_LABELS } from './specs-i18n.js';
+import { specsUrl, specsCanonicalUrl, specsHreflangTags, SPECS_DOMAIN } from './specs-url.js';
 import { specHero } from './components/spec-hero.js';
 import { specDiagram } from './components/spec-diagram.js';
 import { specCard } from './components/spec-card.js';
@@ -98,6 +99,14 @@ const COUNTRY_SLUG_TO_ISO = {
   singapore: 'sg', thailand: 'th', india: 'in', china: 'cn',
   vietnam: 'vn', indonesia: 'id', eu: 'eu',
 };
+
+for (const [slug, spec] of Object.entries(SPECS_DATA)) {
+  const cc = slug.split('-')[0];
+  const en = (spec.countryEn || '').toLowerCase().replace(/\s+/g, '-');
+  if (en && !COUNTRY_SLUG_TO_ISO[en]) {
+    COUNTRY_SLUG_TO_ISO[en] = cc;
+  }
+}
 
 function canonicalCountry(countrySlug) {
   return COUNTRY_SLUG_TO_ISO[countrySlug] || countrySlug;
@@ -230,10 +239,10 @@ export function specsListFragment(forceLang = null) {
   const totalCountries = new Set(Object.values(SPECS_DATA).map(s => s.countryEn || s.country)).size;
   const totalSpecs = Object.keys(SPECS_DATA).length;
 
-  const canonicalUrl = lang === 'ko' ? 'https://monkos.ai/specs' : `https://monkos.ai/${lang}/specs`;
+  const canonicalUrl = lang === 'ko' ? `${SPECS_DOMAIN}/specs` : `${SPECS_DOMAIN}/${lang}/specs`;
   const hreflangTags = HREFLANG_LANGS.map(l =>
-    `<link rel="alternate" hreflang="${l}" href="https://monkos.ai${l === 'ko' ? '' : '/' + l}/specs">`
-  ).concat('<link rel="alternate" hreflang="x-default" href="https://monkos.ai/en/specs">').join('\n');
+    `<link rel="alternate" hreflang="${l}" href="${SPECS_DOMAIN}${l === 'ko' ? '' : '/' + l}/specs">`
+  ).concat(`<link rel="alternate" hreflang="x-default" href="${SPECS_DOMAIN}/en/specs">`).join('\n');
 
   const itemListJsonLd = JSON.stringify({
     "@context": "https://schema.org",
@@ -405,10 +414,8 @@ function specsDetailV2Fragment(slug, forceLang = null) {
   const title = (specData.seoTitle && specData.seoTitle[lang]) || `2026 ${countryName} ${typeName} ${i.detailSuffix}`;
   const description = (specData.seoDescription && specData.seoDescription[lang]) || '';
 
-  const canonicalUrl = lang === 'ko' ? `https://monkos.ai/specs/${newPath}` : `https://monkos.ai/${lang}/specs/${newPath}`;
-  const hreflangTags = HREFLANG_LANGS.map(l =>
-    `<link rel="alternate" hreflang="${l}" href="https://monkos.ai${l === 'ko' ? '' : '/' + l}/specs/${newPath}">`
-  ).concat('<link rel="alternate" hreflang="x-default" href="https://monkos.ai/en/specs/' + newPath + '">').join('\n');
+  const canonicalUrl = specsCanonicalUrl(newPath, lang);
+  const hreflangTags = specsHreflangTags(newPath);
 
   const faqs = (specData.faqs && (specData.faqs[lang] || specData.faqs.ko)) || (V2_FAQ_FALLBACK[lang] || V2_FAQ_FALLBACK.ko);
 
@@ -666,10 +673,8 @@ export function specsDetailFragment(slug, forceLang = null) {
   const description = (specData.seoDescription && specData.seoDescription[lang]) || (specData.details && (specData.details[lang] || specData.details.ko || specData.details.en)) || '';
   const heroDescription = (specData.heroDesc && specData.heroDesc[lang]) || description;
 
-  const canonicalUrl = lang === 'ko' ? `https://monkos.ai/specs/${newPath}` : `https://monkos.ai/${lang}/specs/${newPath}`;
-  const hreflangTags = HREFLANG_LANGS.map(l =>
-    `<link rel="alternate" hreflang="${l}" href="https://monkos.ai${l === 'ko' ? '' : '/' + l}/specs/${newPath}">`
-  ).concat('<link rel="alternate" hreflang="x-default" href="https://monkos.ai/en/specs/' + newPath + '">').join('\n');
+  const canonicalUrl = specsCanonicalUrl(newPath, lang);
+  const hreflangTags = specsHreflangTags(newPath);
 
   const faqs = (specData.faqs && (specData.faqs[lang] || specData.faqs.ko)) || [];
   const v1OgGuideKey = GUIDE_IMAGES.has(`${slug}_${lang}`) ? `${slug}_${lang}`
