@@ -4,10 +4,11 @@
  */
 import { firestore, log } from '../shared/config.js';
 import { SPECS_DATA, REDIRECT_MAP } from './render-specs.js';
+import { specsUrl, specsAlternates, SPECS_DOMAIN } from './specs-url.js';
 import { isIndexableBlogUrl } from './seo-exclude.js';
 
 const blogCollection = firestore.collection('blog_posts');
-const DOMAIN = 'https://monkos.ai';
+const DOMAIN = SPECS_DOMAIN;
 
 // lastmod 정본 상수 — 인덱스와 하위 사이트맵의 날짜 드리프트 방지
 const STATIC_LASTMOD = '2026-06-15';
@@ -103,7 +104,6 @@ export function renderSitemapStatic(req, res) {
       { loc: `${DOMAIN}/en/pricing`, lastmod: '2026-04-27', changefreq: 'monthly', priority: '0.5' },
       { loc: `${DOMAIN}/guide`, lastmod: '2026-03-01', changefreq: 'weekly', priority: '0.7' },
       { loc: `${DOMAIN}/guide/ai-photo`, lastmod: '2026-03-01', changefreq: 'weekly', priority: '0.8', image: ogImage, imageTitle: 'MONKOS AI 증명사진 가이드' },
-      { loc: `${DOMAIN}/crop`, lastmod: '2026-05-01', changefreq: 'weekly', priority: '0.7' },
       { loc: `${DOMAIN}/specs`, lastmod: '2026-05-26', changefreq: 'monthly', priority: '0.9', image: ogImage, imageTitle: 'MONKOS AI 증명사진 규격' },
       { loc: `${DOMAIN}/ja/specs`, lastmod: '2026-05-26', changefreq: 'monthly', priority: '0.8', image: ogImage, imageTitle: 'MONKOS AI 証明写真 規格' },
       { loc: `${DOMAIN}/en/specs`, lastmod: '2026-05-26', changefreq: 'monthly', priority: '0.8', image: ogImage, imageTitle: 'MONKOS AI ID Photo Specs' },
@@ -129,17 +129,11 @@ export function renderSitemapSpecs(req, res) {
       seen.add(path);
 
       const lastmod = SPECS_LASTMOD;
-      const alternates = [
-        { lang: 'ko', href: `${DOMAIN}/specs/${path}` },
-        { lang: 'en', href: `${DOMAIN}/en/specs/${path}` },
-        { lang: 'ja', href: `${DOMAIN}/ja/specs/${path}` },
-        { lang: 'es', href: `${DOMAIN}/es/specs/${path}` },
-        { lang: 'x-default', href: `${DOMAIN}/en/specs/${path}` },
-      ];
-      urls.push({ loc: `${DOMAIN}/specs/${path}`, lastmod, changefreq: 'monthly', priority: '0.8', alternates });
-      urls.push({ loc: `${DOMAIN}/ja/specs/${path}`, lastmod, changefreq: 'monthly', priority: '0.7', alternates });
-      urls.push({ loc: `${DOMAIN}/en/specs/${path}`, lastmod, changefreq: 'monthly', priority: '0.7', alternates });
-      urls.push({ loc: `${DOMAIN}/es/specs/${path}`, lastmod, changefreq: 'monthly', priority: '0.6', alternates });
+      const alternates = specsAlternates(path);
+      urls.push({ loc: specsUrl(path, 'ko'), lastmod, changefreq: 'monthly', priority: '0.8', alternates });
+      urls.push({ loc: specsUrl(path, 'ja'), lastmod, changefreq: 'monthly', priority: '0.7', alternates });
+      urls.push({ loc: specsUrl(path, 'en'), lastmod, changefreq: 'monthly', priority: '0.7', alternates });
+      urls.push({ loc: specsUrl(path, 'es'), lastmod, changefreq: 'monthly', priority: '0.6', alternates });
     }
 
     sendXml(res, wrapUrlset(urls.map(urlEntry)));

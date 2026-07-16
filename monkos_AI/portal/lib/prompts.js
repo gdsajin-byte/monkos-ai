@@ -42,8 +42,7 @@ function buildPricingBlock(region, lang) {
 - ダウンロード: 1回 = ${p.download}クレジット
 - 1枚完成: 合計${p.retouch + p.download}クレジット (リタッチ${p.retouch}c + ダウンロード${p.download}c)
 - 購入 (${p.payment}):
-${lines}
-- クロップアプリ(monkos.ai/crop): 完全無料、クレジット不要`;
+${lines}`;
   }
   if (lang === 'ko') {
     return `[크레딧 시스템]
@@ -52,8 +51,7 @@ ${lines}
 - 다운로드: 1회 = ${p.download}크레딧
 - 1장 완성: 총 ${p.retouch + p.download}크레딧 (리터칭 ${p.retouch}c + 다운로드 ${p.download}c)
 - 구매 (${p.payment}):
-${lines}
-- 크롭앱(monkos.ai/crop): 완전 무료, 크레딧 불필요`;
+${lines}`;
   }
   // en/default
   return `[Credit System]
@@ -62,8 +60,7 @@ ${lines}
 - Download: ${p.download} credits per use
 - 1 complete photo: ${p.retouch + p.download} credits total
 - Purchase (${p.payment}):
-${lines}
-- Crop app (monkos.ai/crop): Completely free, no credits needed`;
+${lines}`;
 }
 
 // === 공통 블록: 서비스 목록 + 할루시네이션 차단 ===
@@ -77,9 +74,6 @@ const SERVICES_BLOCK_KO = `[서비스]
 - 증명사진 규격 정보 (26종): https://monkos.ai/specs
   - 한국(5)/일본(5)/미국(2)/유럽(5)/기타(9) 각국 규격 상세
   - 다국어 지원: /ja/specs (일본어), /en/specs (영어)
-- 무료 크롭앱: https://monkos.ai/crop
-  - ICAO 규격 자동 크롭, 478포인트 AI 얼굴 감지
-  - 서버 전송 없음 (로컬 처리), 완전 무료
 - PT 시스템: pt.monkos.ai (3D 캐릭터 프레젠테이션, 내부 서비스)
 - 다국어 페이지: /ja/ (일본어), /en/ (영어) 접두사로 접근 가능`;
 
@@ -93,9 +87,6 @@ const SERVICES_BLOCK_JA = `[サービス]
 - 証明写真規格情報 (26種): https://monkos.ai/specs
   - 日本(5)/韓国(5)/米国(2)/欧州(5)/その他(9) 各国規格詳細
   - 多言語対応: /ja/specs (日本語), /en/specs (英語)
-- 無料クロップアプリ: https://monkos.ai/crop
-  - ICAO規格自動クロップ、478ポイントAI顔認識
-  - サーバー送信なし(ローカル処理)、完全無料
 - PTシステム: pt.monkos.ai (3Dキャラクタープレゼンテーション、内部サービス)
 - 多言語ページ: /ja/ (日本語), /en/ (英語) プレフィックスでアクセス可能`;
 

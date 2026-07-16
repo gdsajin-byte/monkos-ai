@@ -14,7 +14,6 @@ const PRICING_DATA = {
       { name: 'AI 리터칭 (생성)', credit: '10c', note: '셀카 1장 → AI 보정' },
       { name: '고화질 다운로드', credit: '70c', note: '인화/제출용 원본' },
       { name: 'AI 증명사진 1장 완성', credit: '80c', note: '리터칭 + 다운로드', bold: true },
-      { name: '무료 크롭앱', credit: '0c', note: '규격 크롭 · 배경 제거', link: '/crop' },
     ],
     packTitle: '크레딧 팩',
     packs: [
@@ -43,7 +42,6 @@ const PRICING_DATA = {
       { name: 'AIリタッチ（生成）', credit: '10c', note: 'セルフィー1枚 → AI補正' },
       { name: '高画質ダウンロード', credit: '70c', note: '印刷/提出用原本' },
       { name: 'AI証明写真 1枚完成', credit: '80c', note: 'リタッチ + ダウンロード', bold: true },
-      { name: '無料クロップアプリ', credit: '0c', note: '規格クロップ・背景除去', link: '/crop' },
     ],
     packTitle: 'クレジットパック',
     packs: [
@@ -72,7 +70,6 @@ const PRICING_DATA = {
       { name: 'AI Retouch (Generate)', credit: '10c', note: '1 selfie → AI enhancement' },
       { name: 'HD Download', credit: '70c', note: 'Print/submission quality' },
       { name: 'AI ID Photo (Complete)', credit: '80c', note: 'Retouch + Download', bold: true },
-      { name: 'Free Crop App', credit: '0c', note: 'Spec crop & BG removal', link: '/crop' },
     ],
     packTitle: 'Credit Packs',
     packs: [

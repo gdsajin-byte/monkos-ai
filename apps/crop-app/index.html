@@ -1,314 +1,200 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-JPZWSJ3323"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-JPZWSJ3323');
+  gtag('config', 'G-FKG0CPTC14');
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#05080E">
-  <title>MONKOS Crop — ID Photo Crop</title>
-  <link rel="icon" href="monkos-icon.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-  <link rel="manifest" href="manifest.json">
-  <link rel="stylesheet" href="crop.css">
-  <link rel="stylesheet" href="step-nav.css">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#f5f5f5">
+  <meta name="format-detection" content="telephone=no">
+  <title>증명사진 무료 크롭 — 여권 3.5×4.5cm · 반명함 3×4cm ICAO 규격 | MONKOS</title>
+  <meta name="description" content="여권·신분증(3.5×4.5cm) 반명함(3×4cm) 증명사진을 ICAO 국제 규격에 맞춰 무료 크롭. 서버 전송 없이 브라우저에서 즉시 처리.">
+  <meta property="og:title" content="증명사진 무료 크롭 — ICAO 규격 | MONKOS">
+  <meta property="og:description" content="여권·신분증·반명함 증명사진을 ICAO 규격에 맞춰 무료 크롭. 브라우저에서 즉시 처리.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://monkos.ai/crop">
+  <link rel="canonical" href="https://monkos.ai/crop">
+  <link rel="alternate" hreflang="ko" href="https://monkos.ai/crop">
+  <link rel="alternate" hreflang="ja" href="https://monkos.ai/crop">
+  <link rel="alternate" hreflang="en" href="https://monkos.ai/crop">
+  <link rel="alternate" hreflang="x-default" href="https://monkos.ai/crop">
+  <link rel="icon" href="/monkos-icon.svg" type="image/svg+xml">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/crop/crop.css">
 </head>
 <body>
+  <div class="app-container">
 
-  <!-- ═══ Step Navigation Bar ═══ -->
-  <nav class="step-bar" id="stepBar">
-    <div class="step-bar-item active" data-step="1"><span>SELECT</span></div>
-    <div class="step-bar-item" data-step="2"><span>UPLOAD</span></div>
-    <div class="step-bar-item" data-step="3"><span>CROP</span></div>
-    <div class="step-bar-item" data-step="4"><span>BG</span></div>
-    <div class="step-bar-item" data-step="5"><span>DONE</span></div>
-  </nav>
-
-  <!-- ═══ Step 1: Purpose + Country + Spec Detail ═══ -->
-  <section class="step-page active" id="stepPage1">
-    <div class="step-wrapper">
-      <h1 class="step-heading" id="s1Heading">Select Specification</h1>
-
-      <!-- Purpose selector -->
-      <div class="purpose-row" id="purposeRow">
-        <button class="purpose-btn active" data-purpose="passport">🛂 <span data-i18n="passport">Passport</span></button>
-        <button class="purpose-btn" data-purpose="visa">📋 <span data-i18n="visa">Visa</span></button>
-        <button class="purpose-btn" data-purpose="id">🪪 <span data-i18n="id_card">ID Card</span></button>
-        <button class="purpose-btn" data-purpose="resume">📄 <span data-i18n="resume">Resume</span></button>
-        <button class="purpose-btn" data-purpose="custom">⚙️ <span data-i18n="custom">Custom</span></button>
+    <!-- 헤더 -->
+    <div class="header">
+      <div style="display:flex;align-items:center;gap:8px">
+        <img class="header-logo" src="/monkos-icon.svg" alt="M" width="28" height="28">
+        <h1 class="header-title">증명사진 무료 크롭 — ICAO 규격 자동 맞춤</h1>
       </div>
-
-      <!-- Country dropdown -->
-      <div class="country-dropdown" id="countryDropdown">
-        <label class="dropdown-label" data-i18n="country">Country</label>
-        <div class="dropdown-select" id="countrySelect">
-          <span class="dropdown-flag" id="dropdownFlag">🌍</span>
-          <span class="dropdown-text" id="dropdownText" data-i18n="select_country">Select country...</span>
-          <span class="dropdown-arrow">▾</span>
-        </div>
-        <div class="dropdown-list hidden" id="dropdownList">
-          <input type="text" class="dropdown-search" id="countrySearch" data-i18n-placeholder="search_country" placeholder="Search country...">
-          <div class="dropdown-items" id="dropdownItems"></div>
-        </div>
-      </div>
-
-      <!-- Custom size input (only when purpose=custom) -->
-      <div class="custom-size hidden" id="customSize">
-        <label class="dropdown-label" data-i18n="custom_size">Custom Size</label>
-        <div class="custom-inputs">
-          <div class="custom-field">
-            <input type="number" id="customW" placeholder="35" min="10" max="200">
-            <span>mm</span>
-          </div>
-          <span class="custom-x">×</span>
-          <div class="custom-field">
-            <input type="number" id="customH" placeholder="45" min="10" max="200">
-            <span>mm</span>
-          </div>
-        </div>
-        <button class="btn-full" id="customApply" data-i18n="apply_custom">Apply Custom Size</button>
-      </div>
-
-      <!-- Spec detail container (shown after country + purpose chosen) -->
-      <div class="spec-detail hidden" id="specDetail">
-        <div class="spec-detail-header">
-          <span class="spec-detail-flag" id="specFlag"></span>
-          <div class="spec-detail-title">
-            <div class="spec-detail-country" id="specCountryName"></div>
-            <div class="spec-detail-doc" id="specDocName"></div>
-          </div>
-        </div>
-
-        <div class="spec-detail-body">
-          <div class="spec-detail-grid">
-            <div class="spec-info-row"><span class="spec-info-label" data-i18n="size">Size</span><span class="spec-info-val" id="specSize"></span></div>
-            <div class="spec-info-row"><span class="spec-info-label" data-i18n="output">Output</span><span class="spec-info-val" id="specPx"></span></div>
-            <div class="spec-info-row"><span class="spec-info-label" data-i18n="dpi">DPI</span><span class="spec-info-val" id="specDpi"></span></div>
-            <div class="spec-info-row"><span class="spec-info-label" data-i18n="background">Background</span><span class="spec-info-val" id="specBg"></span></div>
-            <div class="spec-info-row"><span class="spec-info-label" data-i18n="standard">Standard</span><span class="spec-info-val" id="specStandard"></span></div>
-          </div>
-
-          <div class="spec-face-info hidden" id="specFaceInfo">
-            <div class="spec-info-row"><span class="spec-info-label" data-i18n="face_size">Face size</span><span class="spec-info-val" id="specFaceRange"></span></div>
-            <div class="spec-info-row"><span class="spec-info-label" data-i18n="eye_pos">Eye position</span><span class="spec-info-val" id="specEyeRange"></span></div>
-          </div>
-
-          <div class="spec-ai-warn hidden" id="specAiWarn" data-i18n="ai_warn">⚠️ AI editing prohibited for this country</div>
-
-          <a class="spec-source hidden" id="specSource" target="_blank" rel="noopener">
-            <span data-i18n="official_source">Official source</span> ↗
-          </a>
-        </div>
-
-        <button class="btn-full spec-confirm" id="specConfirm" data-i18n="use_this_spec">Use this specification →</button>
-      </div>
-    </div>
-  </section>
-
-  <!-- ═══ Step 2: Photo Upload ═══ -->
-  <section class="step-page" id="stepPage2">
-    <div class="step-wrapper">
-      <button class="btn-back hidden">← Back</button>
-      <div class="selected-spec-badge" id="uploadSpecBadge"></div>
-      <h1 class="step-heading" data-i18n="upload_photo">Upload Photo</h1>
-
-      <!-- Camera + Gallery buttons -->
-      <div class="upload-buttons">
-        <button class="upload-btn upload-btn-camera" id="btnCamera">
-          <span class="upload-btn-icon">📸</span>
-          <span data-i18n="take_photo">Take Photo</span>
-        </button>
-        <button class="upload-btn upload-btn-gallery" id="btnGallery">
-          <span class="upload-btn-icon">🖼️</span>
-          <span data-i18n="choose_from_gallery">Choose from Gallery</span>
-        </button>
-      </div>
-      <input type="file" accept="image/*" id="stepFileInput" hidden>
-      <input type="file" accept="image/*" id="cameraInput" capture="user" hidden>
-
-      <!-- Tips card -->
-      <div class="tips-card-s">
-        <div class="tips-header-s">
-          <span>📋</span>
-          <span class="tips-title-s" data-i18n="photo_tips">Photo Tips</span>
-        </div>
-        <ul class="tips-list-s">
-          <li data-i18n="tip1">Take in a well-lit area</li>
-          <li data-i18n="tip2">White or solid-color background</li>
-          <li data-i18n="tip3">No hats or sunglasses</li>
-          <li data-i18n="tip4">Face forward, mouth closed</li>
-          <li data-i18n="tip5">Shoulders visible</li>
-          <li data-i18n="tip6">Even lighting, no shadows</li>
-        </ul>
-      </div>
-    </div>
-  </section>
-
-  <!-- ═══ Step 3: Crop (crop.js core) ═══ -->
-  <section class="step-page" id="stepPage3">
-    <div class="app-container" id="cropContainer">
-      <button class="btn-back hidden">← Back</button>
-      <!-- 규격 배지 (탭 대체) -->
-      <div class="crop-spec-badge" id="cropSpecBadge"></div>
-
-      <div class="content">
-        <!-- 범례 -->
-        <div class="legend">
-          <div class="legend-item">
-            <div class="legend-dot" id="legendCrownDot"></div>
-            <span class="legend-label">정수리</span>
-          </div>
-          <div class="legend-item">
-            <div class="legend-dot" style="background:var(--gold)"></div>
-            <span class="legend-label">턱끝</span>
-          </div>
-          <div class="legend-item">
-            <div class="legend-dot" style="background:var(--accent)"></div>
-            <span class="legend-label">스케일</span>
-          </div>
-        </div>
-
-        <!-- 프레임 -->
-        <div class="frame-container" id="frame">
-          <img class="photo" id="photo" src="" alt="" draggable="false">
-          <svg class="overlay-svg" id="overlaySvg">
-            <rect id="maskTop" fill="rgba(0,0,0,0.48)"/>
-            <rect id="maskBottom" fill="rgba(0,0,0,0.48)"/>
-            <line id="crossH" stroke="rgba(255,255,255,0.12)" stroke-width="1" stroke-dasharray="4 6"/>
-            <line id="crossV" stroke="rgba(255,255,255,0.12)" stroke-width="1" stroke-dasharray="4 6"/>
-            <path id="ellipsePath" fill="none" stroke-width="1.5" stroke-dasharray="5 3"/>
-            <line id="crownLine" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.9"/>
-            <line id="chinLine" stroke="var(--gold)" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.85"/>
-            <line id="eyeLine" stroke-width="1" stroke-dasharray="2 5" opacity="0.7"/>
-            <line id="dimLineV" stroke-width="1" opacity="0.4"/>
-            <line id="dimLineTopH" stroke-width="1" opacity="0.4"/>
-            <line id="dimLineBotH" stroke-width="1" opacity="0.4"/>
-            <circle id="pupilL" r="3" opacity="0.8"/>
-            <circle id="pupilR" r="3" opacity="0.8"/>
-            <rect id="crownLabelBg" rx="3" fill="#06080D" opacity="0.88"/>
-            <text id="crownLabelText" font-size="9" font-weight="700">정수리</text>
-            <rect id="chinLabelBg" rx="3" fill="#06080D" opacity="0.88"/>
-            <text id="chinLabelText" fill="var(--gold)" font-size="9" font-weight="700">턱끝</text>
-            <rect id="eyeLabelBg" rx="3" fill="#06080D" opacity="0.78"/>
-            <text id="eyeLabelText" font-size="8"></text>
-          </svg>
-          <div class="pin pin-crown" id="crownPin">↕</div>
-          <div class="pin-hint" id="crownHint">↕ 드래그</div>
-          <div class="pin pin-chin" id="chinPin" style="background:var(--gold)"></div>
-          <div class="move-handle" id="moveHandle">✋</div>
-          <div class="scale-handle hidden" id="scaleHandle">⤢</div>
-          <div class="badge-face" id="badgeFace"><span id="badgeFaceVal"></span><span class="range" id="badgeFaceRange"></span></div>
-          <div class="badge-status" id="badgeStatus"></div>
-          <div class="badge-scale" id="badgeScale">x1.00</div>
-          <div class="facemesh-loading hidden" id="facemeshLoading">
-            <div class="facemesh-spinner"></div>
-            <span>얼굴 분석 중...</span>
-          </div>
-        </div>
-
-        <!-- 수치 4칸 -->
-        <div class="metrics">
-          <div class="metric" id="metricTop"><div class="metric-label">상단</div><div class="metric-value" id="metricTopVal">—</div></div>
-          <div class="metric" id="metricFace"><div class="metric-label">얼굴</div><div class="metric-value" id="metricFaceVal">—</div></div>
-          <div class="metric" id="metricBottom"><div class="metric-label">하단</div><div class="metric-value" id="metricBottomVal">—</div></div>
-          <div class="metric" id="metricEye"><div class="metric-label">눈위치</div><div class="metric-value" id="metricEyeVal">—</div></div>
-        </div>
-
-        <div class="warning-box hidden" id="eyeWarning"></div>
-        <div class="warning-box hidden" id="centerWarning"></div>
-        <div class="download-block-reason hidden" id="downloadBlock"></div>
-
-        <!-- 스케일 슬라이더 (S4) -->
-        <div class="scale-slider-container">
-          <span class="scale-slider-label">Scale</span>
-          <input type="range" id="scaleSlider" class="scale-slider" min="50" max="300" value="100" step="1">
-          <span class="scale-slider-value" id="scaleSliderVal">x1.00</span>
-        </div>
-
-        <!-- ICAO 범위 바 -->
-        <div class="range-bar-container">
-          <div class="range-bar-header">
-            <span style="color:var(--muted)" id="rangeLabel">ICAO 허용범위</span>
-            <span id="rangeValue" style="font-weight:700"></span>
-          </div>
-          <div class="range-track">
-            <div class="range-fill" id="rangeFill"></div>
-            <div class="range-dot" id="rangeDot"></div>
-          </div>
-          <div class="range-labels">
-            <span id="rangeMin"></span>
-            <span id="rangeMax"></span>
-          </div>
-        </div>
-
-        <!-- 버튼 -->
-        <div class="actions">
-          <button class="btn btn-reset" id="btnReset">↻ 초기화</button>
-          <button class="btn btn-preview" id="btnPreview">👁 미리보기</button>
-          <button class="btn btn-download enabled" id="btnNextBG">Continue →</button>
-        </div>
-
-        <div class="spec-info" id="specInfo"></div>
-      </div>
+      <span class="header-info" id="headerInfo">413x531px · 300dpi</span>
     </div>
 
-    <!-- 기존 crop.js가 참조하는 숨김 요소 -->
-    <div class="sample-banner hidden" id="sampleBanner"><span></span><button id="sampleUploadBtn"></button></div>
-    <div class="spec-tabs hidden">
-      <button class="spec-tab active" data-spec="passport">여권</button>
+    <!-- 규격 탭 -->
+    <div class="spec-tabs">
+      <button class="spec-tab active" data-spec="passport">여권/신분증</button>
       <button class="spec-tab" data-spec="id">반명함</button>
+      <a href="/specs" style="font-size:12px;color:#6c4fff;text-decoration:none;margin-left:auto;padding:6px 0;">규격 확인 →</a>
     </div>
-    <div class="header hidden">
-      <span class="header-info" id="headerInfo"></span>
-    </div>
-    <button class="hidden" id="btnPhoto"></button>
-    <button class="hidden" id="btnDownload"></button>
-  </section>
 
-  <!-- ═══ Step 4: Background Removal ═══ -->
-  <section class="step-page" id="stepPage4">
-    <div class="step-wrapper">
-      <button class="btn-back hidden">← Back</button>
-      <h1 class="step-heading">Background</h1>
-      <div class="bg-preview-s" id="bgPreviewS">
-        <canvas id="bgCanvas" style="max-width:100%;border-radius:8px;"></canvas>
-        <div class="bg-spinner hidden" id="bgSpinner">Removing background...</div>
+    <div class="content">
+
+      <!-- 샘플 배너 -->
+      <div class="sample-banner" id="sampleBanner">
+        <span>정면 얼굴 사진(어깨~가슴선 노출)을 업로드하세요</span>
+        <button id="sampleUploadBtn">업로드</button>
       </div>
-      <div class="bg-colors">
-        <div class="bg-c-wrap">
-          <button class="bg-c active" data-color="#FFFFFF" style="background:#FFFFFF" title="Pure White"></button>
-          <span class="bg-c-label">White</span>
+
+      <!-- 범례 -->
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-dot" id="legendCrownDot"></div>
+          <span class="legend-label">정수리 드래그</span>
         </div>
-        <div class="bg-c-wrap">
-          <button class="bg-c" data-color="#F5F5F5" style="background:#F5F5F5" title="Off-white"></button>
-          <span class="bg-c-label">Off-white</span>
+        <div class="legend-item">
+          <div class="legend-dot" style="background:var(--gold)"></div>
+          <span class="legend-label">턱끝 고정</span>
         </div>
-        <div class="bg-c-wrap">
-          <button class="bg-c" data-color="#E0E0E0" style="background:#E0E0E0" title="Light Grey"></button>
-          <span class="bg-c-label">Grey</span>
-        </div>
-        <div class="bg-c-wrap">
-          <button class="bg-c" data-color="#D6EAF8" style="background:#D6EAF8" title="Light Blue"></button>
-          <span class="bg-c-label">Blue</span>
+        <div class="legend-item">
+          <div class="legend-dot" style="background:var(--accent)"></div>
+          <span class="legend-label">스케일</span>
         </div>
       </div>
-      <button class="btn-full" id="btnBGDone">Complete →</button>
-    </div>
-  </section>
 
-  <!-- ═══ Step 5: Done ═══ -->
-  <section class="step-page" id="stepPage5">
-    <div class="step-wrapper" style="text-align:center;">
-      <button class="btn-back hidden">← Back</button>
-      <div style="font-size:48px;margin:20px 0;">✓</div>
-      <h1 class="step-heading">Crop Complete</h1>
-      <div class="done-spec" id="doneSpec"></div>
-      <canvas id="doneCanvas" style="max-width:280px;border-radius:8px;margin:16px auto;border:1px solid var(--border);"></canvas>
-      <button class="btn-full" id="btnDownloadFinal">Download (Free)</button>
-      <button class="btn-full btn-outline" id="btnCropAnother">Crop Another Spec</button>
-    </div>
-  </section>
+      <!-- 프레임 -->
+      <div class="frame-container" id="frame">
+        <!-- 사진 -->
+        <img class="photo" id="photo" src="" alt="" draggable="false">
 
-  <!-- crop.js가 필요로 하는 숨김 요소들 -->
+        <!-- SVG 오버레이 -->
+        <svg class="overlay-svg" id="overlaySvg">
+          <!-- 상단 마스크 -->
+          <rect id="maskTop" fill="rgba(0,0,0,0.48)"/>
+          <!-- 하단 마스크 -->
+          <rect id="maskBottom" fill="rgba(0,0,0,0.48)"/>
+          <!-- 십자 가이드 -->
+          <line id="crossH" stroke="rgba(255,255,255,0.12)" stroke-width="1" stroke-dasharray="4 6"/>
+          <line id="crossV" stroke="rgba(255,255,255,0.12)" stroke-width="1" stroke-dasharray="4 6"/>
+          <!-- 스플라인 타원 -->
+          <path id="ellipsePath" fill="none" stroke-width="1.5" stroke-dasharray="5 3"/>
+          <!-- 정수리 가이드선 -->
+          <line id="crownLine" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.9"/>
+          <!-- 턱끝 가이드선 -->
+          <line id="chinLine" stroke="var(--gold)" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.85"/>
+          <!-- 눈 가이드선 -->
+          <line id="eyeLine" stroke-width="1" stroke-dasharray="2 5" opacity="0.7"/>
+          <!-- 치수선 (우측) -->
+          <line id="dimLineV" stroke-width="1" opacity="0.4"/>
+          <line id="dimLineTopH" stroke-width="1" opacity="0.4"/>
+          <line id="dimLineBotH" stroke-width="1" opacity="0.4"/>
+          <!-- 동공 포인트 -->
+          <circle id="pupilL" r="3" opacity="0.8"/>
+          <circle id="pupilR" r="3" opacity="0.8"/>
+          <!-- 라벨: 정수리 -->
+          <rect id="crownLabelBg" rx="3" fill="#06080D" opacity="0.88"/>
+          <text id="crownLabelText" font-size="9" font-weight="700">정수리</text>
+          <!-- 라벨: 턱끝 -->
+          <rect id="chinLabelBg" rx="3" fill="#06080D" opacity="0.88"/>
+          <text id="chinLabelText" fill="var(--gold)" font-size="9" font-weight="700">턱끝</text>
+          <!-- 라벨: 눈 위치 -->
+          <rect id="eyeLabelBg" rx="3" fill="#06080D" opacity="0.78"/>
+          <text id="eyeLabelText" font-size="8"></text>
+        </svg>
+
+        <!-- 정수리 핀 -->
+        <div class="pin pin-crown" id="crownPin">↕</div>
+        <div class="pin-hint" id="crownHint">↕ 드래그</div>
+
+        <!-- 턱끝 핀 -->
+        <div class="pin pin-chin" id="chinPin" style="background:var(--gold)"></div>
+
+        <!-- 이동 핸들 (사진 드래그 영역 표시) -->
+        <div class="move-handle" id="moveHandle">✋</div>
+
+        <!-- 스케일 핸들 -->
+        <div class="scale-handle" id="scaleHandle">⤢</div>
+
+        <!-- faceMm 배지 -->
+        <div class="badge-face" id="badgeFace"><span id="badgeFaceVal"></span><span class="range" id="badgeFaceRange"></span></div>
+
+        <!-- 상태 배지 -->
+        <div class="badge-status" id="badgeStatus"></div>
+
+        <!-- 스케일 표시 -->
+        <div class="badge-scale" id="badgeScale">x1.00</div>
+
+        <!-- FaceMesh 로딩 인디케이터 -->
+        <div class="facemesh-loading hidden" id="facemeshLoading">
+          <div class="facemesh-spinner"></div>
+          <span>얼굴 분석 중...</span>
+        </div>
+      </div>
+
+      <!-- 수치 4칸 -->
+      <div class="metrics">
+        <div class="metric" id="metricTop"><div class="metric-label">상단</div><div class="metric-value" id="metricTopVal">—</div></div>
+        <div class="metric" id="metricFace"><div class="metric-label">얼굴</div><div class="metric-value" id="metricFaceVal">—</div></div>
+        <div class="metric" id="metricBottom"><div class="metric-label">하단</div><div class="metric-value" id="metricBottomVal">—</div></div>
+        <div class="metric" id="metricEye"><div class="metric-label">눈위치</div><div class="metric-value" id="metricEyeVal">—</div></div>
+      </div>
+
+      <!-- 경고: 눈 위치 -->
+      <div class="warning-box hidden" id="eyeWarning"></div>
+      <!-- 경고: 좌우 중심 -->
+      <div class="warning-box hidden" id="centerWarning"></div>
+      <!-- 다운로드 차단 안내 -->
+      <div class="download-block-reason hidden" id="downloadBlock"></div>
+
+      <!-- ICAO 범위 바 -->
+      <div class="range-bar-container">
+        <div class="range-bar-header">
+          <span style="color:var(--muted)" id="rangeLabel">ICAO 허용범위</span>
+          <span id="rangeValue" style="font-weight:700"></span>
+        </div>
+        <div class="range-track">
+          <div class="range-fill" id="rangeFill"></div>
+          <div class="range-dot" id="rangeDot"></div>
+        </div>
+        <div class="range-labels">
+          <span id="rangeMin"></span>
+          <span id="rangeMax"></span>
+        </div>
+      </div>
+
+      <!-- 버튼 -->
+      <div class="actions">
+        <button class="btn btn-photo" id="btnPhoto">사진</button>
+        <button class="btn btn-reset" id="btnReset">↻ 초기화</button>
+        <button class="btn btn-preview" id="btnPreview">👁 미리보기</button>
+        <button class="btn btn-download disabled" id="btnDownload">다운로드</button>
+      </div>
+
+      <!-- 규격 정보 -->
+      <div class="spec-info" id="specInfo"></div>
+    </div>
+  </div>
+
+  <!-- 파일 입력 -->
   <input type="file" accept="image/*" id="fileInput" style="display:none">
+
+  <!-- 다운로드 모달 -->
   <div class="modal-backdrop hidden" id="modalBackdrop">
     <div class="modal-content">
       <div class="modal-handle"></div>
@@ -321,22 +207,118 @@
       <div class="consent-list">
         <div class="consent-item" id="consent1Item">
           <div class="consent-check" id="consent1Check"></div>
-          <span class="consent-text"><span class="consent-required">[필수] </span>동의</span>
+          <span class="consent-text"><span class="consent-required">[필수] </span>크롭 결과에 대한 책임은 사용자에게 있음을 동의합니다.</span>
         </div>
         <div class="consent-item" id="consent2Item">
           <div class="consent-check" id="consent2Check"></div>
-          <span class="consent-text">선택 동의</span>
+          <span class="consent-text">크롭 데이터를 품질 향상 목적으로 활용하는 것에 동의합니다. (선택)</span>
         </div>
       </div>
       <div class="modal-actions">
-        <button class="modal-btn modal-btn-primary disabled" id="modalBtnDownload">다운로드</button>
+        <button class="modal-btn modal-btn-primary disabled" id="modalBtnDownload">크롭 결과 다운로드</button>
         <button class="modal-btn modal-btn-cancel" id="modalBtnCancel">취소</button>
       </div>
     </div>
   </div>
 
-  <script src="mediapipe/face_mesh.js"></script>
-  <script src="crop.js"></script>
-  <script type="module" src="step-nav.js"></script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "MONKOS Crop",
+    "applicationCategory": "PhotographyApplication",
+    "operatingSystem": "Web Browser",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "KRW" },
+    "description": "여권·신분증·반명함 증명사진을 ICAO 국제 규격에 맞춰 무료 크롭하는 웹 도구",
+    "url": "https://monkos.ai/crop",
+    "publisher": { "@type": "Organization", "name": "Monk Studio" }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "MONKOS 크롭앱으로 뭘 할 수 있나요?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "여권사진(3.5×4.5cm), 반명함(3×4cm) 등 ICAO 국제 규격에 맞춰 증명사진을 무료로 크롭할 수 있습니다. AI가 얼굴 랜드마크를 인식하여 정수리·턱 기준 자동 맞춤을 지원합니다."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "무료인가요? 비용이 드나요?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "완전 무료입니다. 회원가입도 필요 없습니다. 서버로 사진이 전송되지 않으며 브라우저에서 즉시 처리됩니다."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "ICAO 규격이 뭔가요?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "ICAO(국제민간항공기구)가 정한 여권사진 국제 표준입니다. 35×45mm 크기, 흰색 배경, 얼굴 비율 70~80% 등의 조건이 있으며, 전 세계 대부분의 국가가 이 규격을 채택하고 있습니다."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "사진이 서버에 저장되나요?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "아닙니다. 모든 처리는 브라우저 내에서 이루어지며 사진은 서버로 전송되지 않습니다. 개인정보 보호에 안전합니다."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "어떤 규격을 지원하나요?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "한국 여권(3.5×4.5cm), 반명함(3×4cm), 일본 여권(3.5×4.5cm), 미국 여권(2×2인치), 중국 여권(3.3×4.8cm) 등 주요 국가 규격을 지원합니다. 전체 규격 목록은 monkos.ai/specs에서 확인하세요."
+        }
+      }
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": "MONKOS 크롭앱으로 증명사진 규격 맞추는 법",
+    "description": "ICAO 국제 규격에 맞춰 증명사진을 무료로 크롭하는 방법",
+    "step": [
+      {
+        "@type": "HowToStep",
+        "position": 1,
+        "name": "사진 업로드",
+        "text": "정면 얼굴이 나온 사진을 업로드합니다. 어깨~가슴선이 보이는 사진이 좋습니다."
+      },
+      {
+        "@type": "HowToStep",
+        "position": 2,
+        "name": "규격 선택",
+        "text": "여권/신분증(3.5×4.5cm) 또는 반명함(3×4cm) 규격을 선택합니다."
+      },
+      {
+        "@type": "HowToStep",
+        "position": 3,
+        "name": "AI 자동 크롭",
+        "text": "AI가 얼굴 랜드마크를 인식하여 정수리·턱 기준으로 자동 맞춤합니다. 필요 시 수동 조정 가능합니다."
+      },
+      {
+        "@type": "HowToStep",
+        "position": 4,
+        "name": "다운로드",
+        "text": "완성된 증명사진을 고화질로 다운로드합니다. 300dpi 인쇄 품질입니다."
+      }
+    ]
+  }
+  </script>
+
+  <!-- MediaPipe FaceMesh -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous"></script>
+  <script src="/crop/crop.js"></script>
 </body>
 </html>

@@ -130,12 +130,8 @@ const CROP_I18N = {
     modalDownload: 'Download crop result', modalCancel: 'Cancel',
   }
 };
-const SUPPORTED_LANGS = ['ko', 'ja', 'en'];
-const detectedLang = localStorage.getItem('monkos_lang')
-  || navigator.language?.slice(0, 2)
-  || 'ko';
-const cropLang = SUPPORTED_LANGS.includes(detectedLang) ? detectedLang : 'en';
-const ct = CROP_I18N[cropLang];
+const cropLang = localStorage.getItem('monkos_lang') || 'ko';
+const ct = CROP_I18N[cropLang] || CROP_I18N.ko;
 
 // ─── 규격 데이터 ───
 const SPECS = {
@@ -215,27 +211,6 @@ const $ = (id) => document.getElementById(id);
 function getSpec() { return SPECS[specKey]; }
 function getFW() { return Math.round(FH * getSpec().wMm / getSpec().hMm); }
 function getMM() { return FH / getSpec().hMm; }
-window.setCropSpec = function(k, s) { SPECS[k] = s; specKey = k; };
-window.setCropSpecPassport = function(s) { SPECS['passport'] = s; specKey = 'passport'; };
-window.applyScale = function(newScale) {
-  const FW = getFW();
-  const oldScale = imgScale;
-  if (oldScale === newScale || !pts.crown) return;
-  const ratio = newScale / oldScale;
-  const cx = FW / 2 + imgPos.x;
-  const cy = FH / 2 + imgPos.y;
-  const next = {};
-  for (const k of Object.keys(pts)) {
-    if (pts[k] && typeof pts[k].x === 'number') {
-      next[k] = { x: cx + (pts[k].x - cx) * ratio, y: cy + (pts[k].y - cy) * ratio };
-    } else {
-      next[k] = pts[k];
-    }
-  }
-  imgScale = newScale;
-  pts = next;
-  render();
-};
 
 // ─── 오버레이 초기화 ───
 function initOverlay(sk) {
@@ -678,7 +653,7 @@ async function initFaceMesh() {
   }
   try {
     faceMeshInstance = new FaceMesh({
-      locateFile: (file) => new URL(`mediapipe/${file}`, window.location.href).href
+      locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`
     });
     faceMeshInstance.setOptions({
       maxNumFaces: 1,

@@ -1035,6 +1035,13 @@ const httpServer = createServer(async (req, res) => {
   // HEAD 요청을 GET으로 처리 — Googlebot HEAD 404 방지 (2026-04-10)
   if (req.method === 'HEAD') req.method = 'GET';
 
+  // /crop 수동 크롭앱 은퇴 → specs 허브 301 (2026-07-16 작가님: 산식 자산 보호 — 코드는 apps/crop-app 보관.
+  // IDPASS 허브(/idpass) 신설 시 타깃 변경 예정)
+  if (urlPath === '/crop' || urlPath.startsWith('/crop/')) {
+    res.writeHead(301, { 'Location': '/specs' });
+    return res.end();
+  }
+
   // 구 슬러그 → 신규 슬러그 301 리다이렉트 — 맵 정본: lib/cms/redirects.js (BLOG_REDIRECTS)
   const blogRedirects = BLOG_REDIRECTS;
   let decodedPath;
@@ -1129,7 +1136,7 @@ const httpServer = createServer(async (req, res) => {
   if (urlPath === '/en/headshot/result' && req.method === 'GET') return renderHeadshotResult(req, res, 'en');
   if (urlPath === '/ja/headshot' && req.method === 'GET') return renderHeadshot(req, res, 'ja');
   if (urlPath === '/ja/headshot/result' && req.method === 'GET') return renderHeadshotResult(req, res, 'ja');
-  // === Specs (규격 허브) ===
+  // === Specs (규격 허브) === LANGS: ko(프리픽스 없음), en, ja, es — specs-url.js SPECS_LANGS 정본 참조
   if (urlPath === '/specs' && req.method === 'GET') return renderSpecsList(req, res);
   if (urlPath?.startsWith('/specs/') && req.method === 'GET') return renderSpecsDetail(req, res);
   if (urlPath === '/ja/specs' && req.method === 'GET') return renderSpecsList(req, res, 'ja');

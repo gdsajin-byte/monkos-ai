@@ -64,7 +64,6 @@ export const SPECS_I18N = {
     relatedTitle: '관련 콘텐츠',
     relatedLinks: [
       { label: '사용 가이드', href: '/guide' },
-      { label: '무료 크롭앱', href: '/crop' },
       { label: 'FAQ', href: '/faq' },
     ],
     sameCountryLabel: '다른 사이즈 증명사진',
@@ -280,7 +279,6 @@ export const SPECS_I18N = {
     relatedTitle: '関連コンテンツ',
     relatedLinks: [
       { label: 'ご利用ガイド', href: '/guide' },
-      { label: '無料クロップアプリ', href: '/crop' },
       { label: 'FAQ', href: '/ja/faq' },
     ],
     sameCountryLabel: '他サイズの証明写真',
@@ -487,7 +485,6 @@ export const SPECS_I18N = {
     relatedTitle: 'Related Content',
     relatedLinks: [
       { label: 'User Guide', href: '/guide' },
-      { label: 'Free Crop App', href: '/crop' },
       { label: 'FAQ', href: '/en/faq' },
     ],
     sameCountryLabel: 'Other Size ID Photos',
@@ -694,7 +691,6 @@ export const SPECS_I18N = {
     relatedTitle: 'Contenido relacionado',
     relatedLinks: [
       { label: 'Guía de uso', href: '/guide' },
-      { label: 'Recorte gratuito', href: '/crop' },
       { label: 'FAQ', href: '/es/faq' },
     ],
     sameCountryLabel: 'Otros tamaños de foto de identificación',
