@@ -143,11 +143,12 @@ export async function handleDashboardNaver(req, res) {
   const keywords = ['증명사진', 'AI 증명사진', '여권사진', '취업사진', '취업사진 안경'];
   try {
     const [searchAd, dataLab] = await Promise.all([
-      fetchNaverSearchAd(keywords).catch(() => null),
-      fetchNaverDataLab(keywords).catch(() => null),
+      fetchNaverSearchAd(keywords).catch((e) => { log(`[Dashboard] Naver SearchAd 실패: ${e.message}`, 'WARNING'); return null; }),
+      fetchNaverDataLab(keywords).catch((e) => { log(`[Dashboard] Naver DataLab 실패: ${e.message}`, 'WARNING'); return null; }),
     ]);
     const result = { searchAd, dataLab };
-    naverCache.set(result);
+    // 부분 실패는 캐시하지 않음 — 일시 오류가 6h 고착되는 것 방지 (2026-07-16 민아 검증)
+    if (searchAd && dataLab) naverCache.set(result);
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(result));
   } catch (err) {
