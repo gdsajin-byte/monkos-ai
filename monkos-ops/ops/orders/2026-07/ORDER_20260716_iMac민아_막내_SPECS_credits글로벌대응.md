@@ -4,7 +4,7 @@ date: 2026-07-16
 from: iMac/민아
 to: 막내(번호 작가님 지정)
 subject: SPECS — credits.html 글로벌 대응 (en 모드 + 레몬 충전 동선)
-status: 대기
+status: 대체됨 — ORDER_20260716_iMac민아_막내2_SPECS_크레딧동선완결_글로벌.md로 흡수 (2026-07-16 15:09, 작가님 동선 확장 지시)
 portfolio: PF_SPECS
 ---
 
