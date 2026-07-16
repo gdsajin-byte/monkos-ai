@@ -589,3 +589,40 @@ deploy.sh 경유 필수(ch5 2조)와 동일 패턴 — **스크립트 경유를 
 > 근거: 2026-05-12 — 크레딧 수동 충전 시 감사 로그 부재, 접근 절차 미규정 상태에서 작가님 문제 제기. deploy.sh 패턴(ch5 2조)의 성공적 운용을 데이터 접근에 확장 적용.
 > 위반 시: 크레딧 변경 추적 불가, 고객 데이터 무단 접근, 감사 증적 부재.
 > 상위 헌법: 제4조(구속·윤리) 1항, 4항
+
+---
+
+### 11조: 시크릿 운용 규칙
+
+**1항 — 정본 체계**
+
+- **GCP Secret Manager** = 시크릿 단일 정본.
+- **GitHub Secrets** = write-only 카탈로그 + Actions 실행용 (정본 아님).
+- **.env / git** = 비밀 아닌 설정값만 (PROJECT_ID, LOCATION, GCS_BUCKET 등).
+- **인벤토리 정본**: `monkos-ops/ops/SECRET_INVENTORY.md` (메타만, 값 절대 금지).
+
+**2항 — `secret` 커맨드 경유 필수**
+
+시크릿이 필요할 때 에이전트가 직접 값을 다루지 않는다. 작가님에게 `secret` 실행을 요청한다.
+
+- 에이전트 확인(값 미접촉): `secret check <NAME>` (존재 + 버전만 확인).
+- 에이전트 후속: SECRET_INVENTORY.md 메타 1행 추가 + deploy.sh --set-secrets 라인 추가(해당 시).
+- `gcloud secrets create/versions add` 직접 실행 금지.
+
+**3항 — 금지 사항**
+
+- 시크릿 값 생성/추측/placeholder 금지 (헌법 4조 1항).
+- 에이전트가 값을 채팅·컨텍스트·파일에 노출 금지.
+- .env에 시크릿 하드코딩 후 git 커밋 금지.
+- SA 키 JSON을 코드에 포함 금지.
+
+**4항 — 실측 참고**
+
+- GCP_SA_KEY는 plain JSON (base64 아님 — 07-16 실측 확정).
+- 복원 캐시 경로: `~/.config/monkos-mcp/sa_key.json`(600). 복원 스크립트(ga4_mcp·gsc_mcp·seo_collect)는 형식 자동판별.
+- "키가 없다" 보고 전 `secret check <NAME>` 또는 SECRET_INVENTORY.md를 먼저 확인한다.
+
+> 근거: 광역오더 #8 (시크릿 운영 원칙) + 06-23 프로토콜 확정 + 07-16 실측(GCP_SA_KEY=plain JSON, 복원 스크립트 형식 자동판별 보정).
+> 개정: 07-16 — data-access.md 후반부 50줄을 법률로 편입 (PETITION_20260716).
+> 위반 시: 시크릿 유출, 인프라 인증 실패, 복원 스크립트 전멸.
+> 상위 헌법: 제4조(구속·윤리) 1항

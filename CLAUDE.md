@@ -151,7 +151,7 @@
 |------|------|----------|----------|---------|
 | **헌법** (본 문서 5조) | **왜** — 불변 원칙 | CLAUDE.md | 만장일치 | 조항 인용 → 영향 경고 → 승인 대기 |
 | **법률** (인덱스 8장) | **무엇** — 정의·목록 | `.claude/rules/` + `governance/laws/` | 쌍아+작가님 합의 | 조항 인용 → [예외] 기록 |
-| **명령** (Skills) | **어떻게** — 실행 절차 | `.claude/skills/` | 쌍아+작가님 합의 | 조항 인용 → [예외] 기록 |
+| **명령** (Skills) | **어떻게** — 실행 절차 | `.claude/commands/`(호출형 — `/명령`으로 발동) + `.claude/skills/`(자동형 — 조건 매칭 시 참조) | 쌍아+작가님 합의 | 조항 인용 → [예외] 기록 |
 | **규정** (MEMORY.md 등) | **디바이스 상세** | MEMORY.md | 에이전트 자율 | 변경 보고 → MEMORY 갱신 |
 
 - 법률 개정 시 대응하는 `.claude/rules/` 및 `.claude/skills/` 파일을 동시 갱신한다.
@@ -182,9 +182,9 @@
 | 장 | 제목 | 파일 | 조 수 |
 |----|------|------|------|
 | 제1장 | 에이전트 체계 | [ch1_agent_system.md](governance/laws/ch1_agent_system.md) | 6조 |
-| 제2장 | 코딩 규칙 | [ch2_coding.md](governance/laws/ch2_coding.md) | 6조 |
+| 제2장 | 코딩 규칙 | [ch2_coding.md](governance/laws/ch2_coding.md) | 8조 |
 | 제3장 | 세션 로그 | [ch3_session_log.md](governance/laws/ch3_session_log.md) | 5조 |
-| 제4장 | 문서/폴더 구조 | [ch4_docs_structure.md](governance/laws/ch4_docs_structure.md) | 10조 |
+| 제4장 | 문서/폴더 구조 | [ch4_docs_structure.md](governance/laws/ch4_docs_structure.md) | 11조 |
 | 제5장 | 배포 규칙 | [ch5_deployment.md](governance/laws/ch5_deployment.md) | 5조 |
 | 제6장 | 브랜치/커밋 | [ch6_git.md](governance/laws/ch6_git.md) | 4조 |
 | 제7장 | 막내 행동 강령 | [ch7_makne_code.md](governance/laws/ch7_makne_code.md) | 6조 |
@@ -199,4 +199,5 @@
 > 개정: 03-25 — 헌법 5축 재편 (7조→5조 위상 정렬, 정본 단일 원칙 신설, 4계층 문서 위계 확장). 만장일치, AMENDMENT_20260325
 > 개정: 03-26 — PF(포트폴리오) 체계 신설 (제3조 2항 확장, 적립 의무에 PF 갱신 추가). 만장일치, AMENDMENT_20260326
 > 개정: 06-12 — 꾸 역할 확장 (콘텐츠/마케팅+specs디자인, 경로④ 신설, 한송이 퇴사 반영). 삼권심사 만장일치, PETITION_20260612
+> 개정: 07-16 — 하네스 교정 일괄 개정 (법률 6장 + 헌법 5조 물리위치 보정 + 룰스/스킬 4건). 5인 만장일치 + 작가님 승인, PETITION_20260716
 > ⚠️ 2026-03-25 이전 문서의 "헌법 N조" 참조는 구(舊) 7조 체계 기준이다. 매핑: governance/constitution/AMENDMENT_20260325_5축재편_개헌청구안.md §4
