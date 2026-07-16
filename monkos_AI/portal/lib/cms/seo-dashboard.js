@@ -91,14 +91,16 @@ async function fetchNaverSearchAd(keywords) {
   const signStr = `${timestamp}.${method}.${uri}`;
   const signature = crypto.createHmac('sha256', secretKey).update(signStr).digest('base64');
 
-  const params = new URLSearchParams({ hintKeywords: keywords.join(','), showDetail: '1' });
+  // 서치애드 keywordstool은 공백 포함 키워드를 400으로 거부 — 공백 제거형으로 질의·매칭 (2026-07-16 민아 검증 실측)
+  const compact = keywords.map(k => k.replace(/\s+/g, ''));
+  const params = new URLSearchParams({ hintKeywords: compact.join(','), showDetail: '1' });
   const r = await fetch(`https://api.searchad.naver.com${uri}?${params}`, {
     headers: { 'X-Timestamp': timestamp, 'X-API-KEY': apiKey, 'X-Customer': customerId, 'X-Signature': signature },
   });
   if (!r.ok) throw new Error(`Naver SearchAd ${r.status}`);
   const data = await r.json();
   return (data.keywordList || [])
-    .filter(it => keywords.includes(it.relKeyword))
+    .filter(it => compact.includes(it.relKeyword))
     .map(it => ({
       keyword: it.relKeyword,
       pcSearch: it.monthlyPcQcCnt || 0,
