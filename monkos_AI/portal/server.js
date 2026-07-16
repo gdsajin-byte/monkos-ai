@@ -47,6 +47,7 @@ import { trackEvent, linkIdentity } from './lib/tracking.js';
 import { saveImages } from './lib/gcs-save.js';
 import { handleAgentAuth, requireAdmin } from './lib/cms/admin-auth.js';
 import { handleDashboardSummary, handleDashboardUsers, handleDashboardUsers360, handleDashboardCredits, handleDashboardTraffic, handleDashboardCitadel, handleDashboardUserDetail, handleDashboardChannels } from './lib/cms/dashboard.js';
+import { handleDashboardGsc, handleDashboardNaver, handleDashboardBing, handleDashboardPerformance } from './lib/cms/seo-dashboard.js';
 import { handleBlogList, handleBlogGet, handleBlogCreate, handleBlogUpdate, handleBlogDelete } from './lib/cms/blog.js';
 import { handleFaqList, handleFaqCreate, handleFaqUpdate, handleFaqDelete } from './lib/cms/faq.js';
 import { handleGalleryList, handleGalleryCreate, handleGalleryUpdate, handleGalleryDelete } from './lib/cms/gallery.js';
@@ -963,6 +964,10 @@ const httpServer = createServer(async (req, res) => {
   if (urlPath === '/api/admin/dashboard/traffic' && req.method === 'GET') return handleDashboardTraffic(req, res);
   if (urlPath === '/api/admin/dashboard/citadel' && req.method === 'GET') return handleDashboardCitadel(req, res);
   if (urlPath === '/api/admin/dashboard/channels' && req.method === 'GET') return handleDashboardChannels(req, res);
+  if (urlPath === '/api/admin/dashboard/gsc' && req.method === 'GET') return handleDashboardGsc(req, res);
+  if (urlPath === '/api/admin/dashboard/naver' && req.method === 'GET') return handleDashboardNaver(req, res);
+  if (urlPath === '/api/admin/dashboard/bing' && req.method === 'GET') return handleDashboardBing(req, res);
+  if (urlPath === '/api/admin/dashboard/performance' && req.method === 'GET') return handleDashboardPerformance(req, res);
   if (urlPath.startsWith('/api/admin/dashboard/user/') && req.method === 'GET') {
     const userId = decodeURIComponent(urlPath.split('/').pop());
     return handleDashboardUserDetail(req, res, userId);

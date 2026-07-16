@@ -595,8 +595,46 @@
   <div class="channel-grid" id="roadmap-grid">
   </div>
 
+  <!-- 전 채널 수집 통합 P1 -->
+  <div class="section-title" style="margin-top:32px;">검색 순위 (GSC)</div>
+  <div id="gsc-section" style="margin-bottom:24px;">
+    <div style="color:var(--text-muted);font-size:0.82rem;" id="gsc-loading">로딩 중...</div>
+    <div id="gsc-period" style="font-size:0.75rem;color:var(--text-muted);margin-bottom:8px;display:none;"></div>
+    <table class="data-table" id="gsc-table" style="display:none;">
+      <thead><tr><th>키워드</th><th>클릭</th><th>노출</th><th>CTR</th><th>순위</th></tr></thead>
+      <tbody id="gsc-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section-title">네이버 검색량</div>
+  <div id="naver-section" style="margin-bottom:24px;">
+    <div style="color:var(--text-muted);font-size:0.82rem;" id="naver-loading">로딩 중...</div>
+    <table class="data-table" id="naver-table" style="display:none;">
+      <thead><tr><th>키워드</th><th>PC</th><th>모바일</th><th>합계</th><th>경쟁도</th></tr></thead>
+      <tbody id="naver-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section-title">Bing 검색</div>
+  <div id="bing-section" style="margin-bottom:24px;">
+    <div style="color:var(--text-muted);font-size:0.82rem;" id="bing-loading">로딩 중...</div>
+    <table class="data-table" id="bing-table" style="display:none;">
+      <thead><tr><th>쿼리</th><th>클릭</th><th>노출</th><th>순위</th></tr></thead>
+      <tbody id="bing-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section-title">성능 (Core Web Vitals)</div>
+  <div id="perf-section" style="margin-bottom:24px;">
+    <div style="color:var(--text-muted);font-size:0.82rem;" id="perf-loading">로딩 중...</div>
+    <table class="data-table" id="perf-table" style="display:none;">
+      <thead><tr><th>페이지</th><th>디바이스</th><th>점수</th><th>LCP</th><th>CLS</th><th>TTFB</th></tr></thead>
+      <tbody id="perf-body"></tbody>
+    </table>
+  </div>
+
   <div class="footer">
-    CITADEL v0.1 &mdash; MONKOS SEO/GEO/AEO 데이터 수집 인프라 &middot; 2026-07-14 M1/쌍아 설계
+    CITADEL v0.2 &mdash; MONKOS SEO/GEO/AEO 전 채널 통합 인프라 &middot; P1 2026-07-16
   </div>
 </div>
 </div>
@@ -756,10 +794,96 @@ async function init() {
     document.getElementById('main').style.display = 'block';
 
     loadCitadel();
+    loadSeoSections();
   } catch {
     location.href = '/admin/';
   }
 }
+
+async function loadSeoSections() {
+  loadGsc();
+  loadNaver();
+  loadBing();
+  loadPerf();
+}
+
+async function loadGsc() {
+  try {
+    var d = await apiFetch('/api/admin/dashboard/gsc');
+    document.getElementById('gsc-loading').style.display = 'none';
+    if (d.period) {
+      var pe = document.getElementById('gsc-period');
+      pe.textContent = d.period.start + ' ~ ' + d.period.end;
+      pe.style.display = '';
+    }
+    var tb = document.getElementById('gsc-body');
+    (d.keywords || []).forEach(function(k) {
+      var tr = document.createElement('tr');
+      tr.innerHTML = '<td>' + esc(k.query) + '</td><td class="num">' + k.clicks + '</td><td class="num">' + k.impressions + '</td><td class="num">' + k.ctr + '%</td><td class="num">' + k.position + '</td>';
+      tb.appendChild(tr);
+    });
+    document.getElementById('gsc-table').style.display = '';
+  } catch(e) { document.getElementById('gsc-loading').textContent = 'GSC: ' + (e.message || '로드 실패'); }
+}
+
+async function loadNaver() {
+  try {
+    var d = await apiFetch('/api/admin/dashboard/naver');
+    document.getElementById('naver-loading').style.display = 'none';
+    if (d.searchAd) {
+      var tb = document.getElementById('naver-body');
+      d.searchAd.forEach(function(k) {
+        var tr = document.createElement('tr');
+        tr.innerHTML = '<td>' + esc(k.keyword) + '</td><td class="num">' + fmt(k.pcSearch) + '</td><td class="num">' + fmt(k.mobileSearch) + '</td><td class="num">' + fmt(k.totalSearch) + '</td><td class="num">' + esc(String(k.competition)) + '</td>';
+        tb.appendChild(tr);
+      });
+      document.getElementById('naver-table').style.display = '';
+    } else {
+      document.getElementById('naver-loading').textContent = '네이버 API 키 미설정';
+      document.getElementById('naver-loading').style.display = '';
+    }
+  } catch(e) { document.getElementById('naver-loading').textContent = 'Naver: ' + (e.message || '로드 실패'); }
+}
+
+async function loadBing() {
+  try {
+    var d = await apiFetch('/api/admin/dashboard/bing');
+    document.getElementById('bing-loading').style.display = 'none';
+    if (d.queries && d.queries.length) {
+      var tb = document.getElementById('bing-body');
+      d.queries.forEach(function(q) {
+        var tr = document.createElement('tr');
+        tr.innerHTML = '<td>' + esc(q.query) + '</td><td class="num">' + q.clicks + '</td><td class="num">' + q.impressions + '</td><td class="num">' + (q.position || '-') + '</td>';
+        tb.appendChild(tr);
+      });
+      document.getElementById('bing-table').style.display = '';
+    } else {
+      document.getElementById('bing-loading').textContent = 'Bing API 키 미설정 또는 데이터 없음';
+      document.getElementById('bing-loading').style.display = '';
+    }
+  } catch(e) { document.getElementById('bing-loading').textContent = 'Bing: ' + (e.message || '로드 실패'); }
+}
+
+async function loadPerf() {
+  try {
+    var d = await apiFetch('/api/admin/dashboard/performance');
+    document.getElementById('perf-loading').style.display = 'none';
+    if (Array.isArray(d) && d.length) {
+      var tb = document.getElementById('perf-body');
+      d.forEach(function(p) {
+        var sc = p.score >= 90 ? 'var(--signal-green)' : p.score >= 50 ? 'var(--signal-amber)' : 'var(--signal-red)';
+        var tr = document.createElement('tr');
+        tr.innerHTML = '<td>' + esc(p.url) + '</td><td>' + p.strategy + '</td><td class="num" style="color:' + sc + '">' + p.score + '</td><td class="num">' + p.lcp + 'ms</td><td class="num">' + p.cls + '</td><td class="num">' + p.ttfb + 'ms</td>';
+        tb.appendChild(tr);
+      });
+      document.getElementById('perf-table').style.display = '';
+    }
+  } catch(e) { document.getElementById('perf-loading').textContent = 'PageSpeed: ' + (e.message || '로드 실패'); }
+}
+
+function esc(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function fmt(n) { return typeof n === 'number' ? n.toLocaleString() : String(n); }
+
 init();
 </script>
 </body>

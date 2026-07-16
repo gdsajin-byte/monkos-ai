@@ -686,6 +686,7 @@ export async function handleDashboardChannels(req, res) {
                     AND NOT STARTS_WITH(page_path, '/js/')
                     AND NOT STARTS_WITH(page_path, '/css/')
                     AND NOT STARTS_WITH(page_path, '/assets/')
+                    AND (user_agent IS NULL OR NOT REGEXP_CONTAINS(user_agent, r'(?i)(bot|crawler|spider|ahref|semrush|yandex|gptbot|bingbot|googlebot)'))
                 )
                 SELECT
                   NET.HOST(referer) as source_domain,
