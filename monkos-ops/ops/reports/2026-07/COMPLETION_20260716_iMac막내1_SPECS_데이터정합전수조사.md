@@ -124,8 +124,105 @@ order: ORDER_20260716_iMac쌍아_막내_SPECS_데이터정합_전수조사.md
 
 ---
 
+## F: URL 형식 전수 카탈로그
+
+| 항목 | 수량 |
+|------|------|
+| 정본(2-segment) 경로 | 428 |
+| 1-segment(구 slug) 301 경로 | 428 |
+| 4언어 × 정본 = 유효 URL | 1,712 |
+| 4언어 × 구 slug = 301 대상 URL | 1,712 |
+| **총 URL 수** | **3,424** |
+
+### COUNTRY_SLUG_TO_ISO (15건 등재)
+
+```
+korea→kr, japan→jp, usa→us, canada→ca, uk→gb, germany→de, spain→es,
+australia→au, singapore→sg, thailand→th, india→in, china→cn,
+vietnam→vn, indonesia→id, eu→eu
+```
+
+**미등재 국가명: 192건** — `/specs/passport/france` 등 전체국명 URL 접근 시 404. 단, 현재 GSC에 해당 패턴 색인 없음.
+
+### TYPE_ALIASES (4건 등재)
+
+```
+drivers-license→license, resident→id, mynumber→id, zairyu→residence
+```
+
+실사용 type: exam, halfcard, headshot, id, intl-license, license, marine, passport, residence, resume, taxi, visa, visa-bls, visa-evisa, youth-id
+
+---
+
+## G: GSC 색인 현황 vs 정본 대조
+
+기간: 2026-07-01 ~ 2026-07-16 | 총 588행 | 노출 4,936 | 클릭 82
+
+| 분류 | URL 수 | 노출 | 클릭 | 평균순위 |
+|------|--------|------|------|---------|
+| **정본(2-segment)** | 382 | 3,147 | 63 | 11.0 |
+| 구 ISO 1-segment | 161 | 925 | 11 | 10.9 |
+| 구 전체국명 1-segment | 20 | 533 | 5 | 20.2 |
+| 구 전체국명 2-segment | 23 | 327 | 3 | 19.8 |
+| 허브 | 1 | 3 | 0 | 19.0 |
+| 기타 | 1 | 1 | 0 | 20.0 |
+
+- 정본 비율: 63.8% (노출 기준). 구 URL이 아직 36.2% 점유.
+- **korea-passport 노출 412 vs 정본 passport/kr 노출 62** — 구 URL이 정본의 6.6배. 301 걸려 있으나 이전 느림.
+
+### 주요 중복 쌍 (구>정본)
+
+| 구 URL | 구 노출 | 정본 URL | 정본 노출 |
+|--------|--------|---------|---------|
+| /specs/korea-passport | 412 | /specs/passport/kr | 62 |
+| /specs/kr-id | 145 | /specs/id/kr | 62 |
+| /specs/ca-passport | 55 | /specs/passport/ca | 20 |
+| /ja/specs/ca-passport | 45 | /ja/specs/passport/ca | 3 |
+| /ja/specs/in-passport | 15 | /ja/specs/passport/in | 1 |
+
+---
+
+## H: 301 커버리지 갭 분석
+
+### GSC 색인 구 URL → 301 실측: **전부 정상**
+
+| 분류 | 테스트 | 결과 |
+|------|--------|------|
+| 구 전체국명 1-segment (13건) | korea-passport 외 12건 | ✅ 전부 301 |
+| 구 전체국명 2-segment (15건) | /ja/specs/passport/japan 외 14건 | ✅ 전부 301 |
+| 구 ISO 1-segment (5건) | kr-passport 외 4건 | ✅ 전부 301 |
+
+### 잠재적 갭: COUNTRY_SLUG_TO_ISO 미등재 국가명
+
+| 테스트 URL | HTTP | 판정 |
+|-----------|------|------|
+| /specs/passport/france | 404 | ❌ 갭 |
+| /specs/passport/brazil | 404 | ❌ 갭 |
+| /specs/passport/russia | 404 | ❌ 갭 |
+| /specs/passport/turkey | 404 | ❌ 갭 |
+| /specs/passport/mexico | 404 | ❌ 갭 |
+| /specs/passport/egypt | 404 | ❌ 갭 |
+| /specs/passport/philippines | 404 | ❌ 갭 |
+| /specs/passport/malaysia | 404 | ❌ 갭 |
+| /specs/passport/italy | 404 | ❌ 갭 |
+| /specs/passport/netherlands | 404 | ❌ 갭 |
+| /specs/passport/taiwan | 404 | ❌ 갭 |
+| /specs/passport/switzerland | 404 | ❌ 갭 |
+| /specs/france-passport | 404 | ❌ 갭 |
+| /specs/brazil-passport | 404 | ❌ 갭 |
+| /specs/russia-passport | 404 | ❌ 갭 |
+| /specs/turkey-passport | 404 | ❌ 갭 |
+| /specs/philippines-passport | 404 | ❌ 갭 |
+| /specs/malaysia-passport | 404 | ❌ 갭 |
+
+**현재 GSC에 미등재 국가명 URL 색인 없음** — 즉시 SEO 피해 없으나, 외부 링크·북마크 접근 시 404 발생 가능. COUNTRY_SLUG_TO_ISO 확장(192개국)으로 완전 방어 가능.
+
+---
+
 ## 부대 발견
 
 1. **jp-halfcard country 필드**: "日本" (한자) — 한국어 필드에 일본어 한자 사용. "일본"이 표준이나 제품명 보존 의도일 수 있어 보고만.
 2. **uk-passport/de-resume/fr-passport 등 일부 슬러그 500 에러**: dev 환경 기존 서버 이슈. 데이터 수정과 무관.
 3. **de-resume seoDescription.es 기존 오류**: "foto de foto de solicitud" (foto 중복) — 본 지시서 범위 밖이라 미수정.
+4. **COUNTRY_SLUG_TO_ISO 15건만 등재**: 192개국 미매핑. 현재 색인 피해 없으나 선제적 확장 권고.
+5. **구 URL 노출 점유율 36.2%**: 301이 걸려 있어 시간이 지나면 이전되지만, korea-passport(412노출)가 정본(62노출)의 6.6배로 이전 속도 느림.
