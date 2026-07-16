@@ -170,7 +170,7 @@
         "primary": "#2C3E5D",
         "secondary": "#FFFFFF"
       },
-      "image_gcs": null,
+      "image_gcs": "gs://monk-ai-images/assets/attire/m_suit_navy_single_02.png",
       "thumbnail": "/images/attire/m_suit_navy_single_02_thumb.webp",
       "source": null,
       "source_ref": null,
@@ -218,7 +218,7 @@
         "primary": "#1C1C1E",
         "secondary": "#FFFFFF"
       },
-      "image_gcs": null,
+      "image_gcs": "gs://monk-ai-images/assets/attire/m_suit_black_single_03.png",
       "thumbnail": "/images/attire/m_suit_black_single_03_thumb.webp",
       "source": null,
       "source_ref": null,
@@ -457,7 +457,7 @@
         "primary": "#FFFFFF",
         "secondary": "#DDDDDD"
       },
-      "image_gcs": null,
+      "image_gcs": "gs://monk-ai-images/assets/attire/m_shirt_white_regular_08.png",
       "thumbnail": "/images/attire/m_shirt_white_regular_08_thumb.webp",
       "source": null,
       "source_ref": null,
@@ -504,7 +504,7 @@
         "primary": "#BDD7EE",
         "secondary": "#FFFFFF"
       },
-      "image_gcs": null,
+      "image_gcs": "gs://monk-ai-images/assets/attire/m_shirt_lightblue_regular_09.png",
       "thumbnail": "/images/attire/m_shirt_lightblue_regular_09_thumb.webp",
       "source": null,
       "source_ref": null,
@@ -553,7 +553,7 @@
         "primary": "#2C3E5D",
         "secondary": "#3D5177"
       },
-      "image_gcs": null,
+      "image_gcs": "gs://monk-ai-images/assets/attire/m_shirt_navy_regular_17.png",
       "thumbnail": "/images/attire/m_shirt_navy_regular_17_thumb.webp",
       "source": null,
       "source_ref": null,
@@ -602,7 +602,7 @@
         "primary": "#1C1C1E",
         "secondary": "#333336"
       },
-      "image_gcs": null,
+      "image_gcs": "gs://monk-ai-images/assets/attire/m_shirt_black_regular_18.png",
       "thumbnail": "/images/attire/m_shirt_black_regular_18_thumb.webp",
       "source": null,
       "source_ref": null,
@@ -1034,7 +1034,7 @@
         "primary": "#2C3E5D",
         "secondary": "#FFFFFF"
       },
-      "image_gcs": null,
+      "image_gcs": "gs://monk-ai-images/assets/attire/f_suit_navy_single_02.png",
       "thumbnail": "/images/attire/f_suit_navy_single_02_thumb.webp",
       "source": null,
       "source_ref": null,
@@ -1082,8 +1082,8 @@
         "primary": "#1C1C1E",
         "secondary": "#FFFFFF"
       },
-      "image_gcs": null,
-      "thumbnail": null,
+      "image_gcs": "gs://monk-ai-images/assets/attire/f_suit_black_single_03.png",
+      "thumbnail": "/images/attire/f_suit_black_single_03_thumb.webp",
       "source": null,
       "source_ref": null,
       "labels": {
@@ -1275,8 +1275,8 @@
         "primary": "#F1E8D8",
         "secondary": "#FAF5EA"
       },
-      "image_gcs": null,
-      "thumbnail": null,
+      "image_gcs": "gs://monk-ai-images/assets/attire/f_blouse_cream_vneck_07.png",
+      "thumbnail": "/images/attire/f_blouse_cream_vneck_07_thumb.webp",
       "source": null,
       "source_ref": null,
       "labels": {
@@ -1322,8 +1322,8 @@
         "primary": "#BDD7EE",
         "secondary": "#FFFFFF"
       },
-      "image_gcs": null,
-      "thumbnail": null,
+      "image_gcs": "gs://monk-ai-images/assets/attire/f_blouse_lightblue_stand_08.png",
+      "thumbnail": "/images/attire/f_blouse_lightblue_stand_08_thumb.webp",
       "source": null,
       "source_ref": null,
       "labels": {
@@ -1371,7 +1371,7 @@
         "primary": "#D8C6A8",
         "secondary": "#E5D8C0"
       },
-      "image_gcs": null,
+      "image_gcs": "gs://monk-ai-images/assets/attire/f_blouse_beige_round_09.png",
       "thumbnail": "/images/attire/f_blouse_beige_round_09_thumb.webp",
       "source": null,
       "source_ref": null,
