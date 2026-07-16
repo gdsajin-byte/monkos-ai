@@ -12,7 +12,13 @@ ADC_IMP="$HOME/.config/gcloud/adc_impersonated.json"
 if [ ! -f "$CRED_FILE" ]; then
   mkdir -p "$CRED_DIR"
   TMP=$(mktemp)
-  if gcloud secrets versions access latest --secret=GCP_SA_KEY --project=monkos 2>/dev/null | base64 -d > "$TMP" 2>/dev/null && [ -s "$TMP" ]; then
+  RAW=$(gcloud secrets versions access latest --secret=GCP_SA_KEY --project=monkos 2>/dev/null)
+  case "$RAW" in
+    \{*) printf '%s' "$RAW" > "$TMP" ;;                              # SM 정본 plain JSON (2026-07-16 실측)
+    ?*)  printf '%s' "$RAW" | base64 -d > "$TMP" 2>/dev/null ;;      # base64 저장분 하위호환
+  esac
+  unset RAW
+  if [ -s "$TMP" ]; then
     mv "$TMP" "$CRED_FILE"
     chmod 600 "$CRED_FILE"
     echo "[gsc_mcp] SA 키 Secret Manager에서 복원 완료." >&2

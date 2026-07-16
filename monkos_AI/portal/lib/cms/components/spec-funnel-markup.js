@@ -168,7 +168,8 @@ export function specFunnelMarkup(ctx) {
               <button class="ip-btn ip-btn-primary" id="ip-free-download">${eh(v2.btnDownload)}</button>
               <button class="ip-btn ip-btn-ghost" id="ip-free-retry">${eh(v2.btnOtherPhoto)}</button>
             </div>
-            <div class="ip-free-cap">${eh(fmtV2(v2.freeRemainCap, { n: '-' }))}</div>
+            ${/* n 슬롯에 JS(updateFreeRemainingUI) 갱신용 id 주입 — eh 이스케이프 우회 위해 토큰 치환 */''}
+            <div class="ip-free-cap">${eh(fmtV2(v2.freeRemainCap, { n: '@N@' })).replace('@N@', '<span id="ip-free-remaining">-</span>')}</div>
             ${t1RetouchOn ? `<div class="ip-card ip-card-t1">
               <div class="ip-card-head"><b>${eh(v2.t1Title)}</b><span class="ip-price">${eh(v2.t1Price)}</span></div>
               <ul class="ip-card-list">

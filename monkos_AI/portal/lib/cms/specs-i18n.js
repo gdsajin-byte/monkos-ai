@@ -374,7 +374,7 @@ export const SPECS_I18N = {
       t1BuyBtn: 'AIリタッチにアップグレード',
       t1SoonBtn: '近日公開 — 準備中',
       creditSlotTitle: '簡単ログインで10cクレジット',
-      creditSlotSub: 'AIリタッチ1回が¥150に',
+      creditSlotSub: 'AIリタッチ1回が$1に',
       freeAltDone: '完成した{type}規格写真',
       // SSR マークアップ i18n (spec-funnel-markup.js)
       subjectLabel: '写真の人物',
@@ -580,7 +580,7 @@ export const SPECS_I18N = {
       t1BuyBtn: 'Upgrade to AI Retouch',
       t1SoonBtn: 'Coming soon',
       creditSlotTitle: 'Quick login for 10c credit',
-      creditSlotSub: 'AI retouch for just $0.15',
+      creditSlotSub: 'AI retouch for just $1',
       freeAltDone: 'Completed {type} spec photo',
       // SSR markup i18n (spec-funnel-markup.js)
       subjectLabel: 'Person in the photo',
@@ -786,7 +786,7 @@ export const SPECS_I18N = {
       t1BuyBtn: 'Mejorar a retoque AI',
       t1SoonBtn: 'Próximamente',
       creditSlotTitle: 'Inicio rápido para 10c de crédito',
-      creditSlotSub: 'Retoque AI por solo $0.15',
+      creditSlotSub: 'Retoque AI por solo $1',
       freeAltDone: 'Foto de especificación {type} completada',
       // SSR markup i18n (spec-funnel-markup.js)
       subjectLabel: 'Persona en la foto',
