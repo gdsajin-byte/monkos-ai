@@ -39,12 +39,17 @@ a { color: var(--accent); text-decoration: none; }
 a:hover { text-decoration: underline; }
 .back { display: inline-block; margin-bottom: 24px; font-size: 0.85rem; }
 
-/* 헤더 */
+.return-bar {
+  background: linear-gradient(135deg, rgba(167,139,250,0.12), rgba(129,140,248,0.08));
+  border: 1px solid var(--border-hover); border-radius: 12px;
+  padding: 12px 16px; margin-bottom: 20px;
+}
+.return-bar a { font-size: 0.88rem; font-weight: 600; color: var(--accent); }
+
 .page-header { text-align: center; margin-bottom: 32px; }
 .page-header h1 { font-size: 1.4rem; color: var(--text-bright); margin-bottom: 4px; }
 .page-header .sub { font-size: 0.85rem; color: var(--text-dim); }
 
-/* 잔액 카드 */
 .balance-card {
   background: linear-gradient(135deg, rgba(167,139,250,0.15), rgba(129,140,248,0.1));
   border: 1.5px solid var(--border-hover);
@@ -56,12 +61,27 @@ a:hover { text-decoration: underline; }
 .balance-value span { font-size: 0.9rem; font-weight: 600; color: var(--text-dim); margin-left: 4px; }
 .balance-user { font-size: 0.78rem; color: var(--text-dim); margin-top: 8px; }
 
-/* 로그인 영역 */
+.return-cta {
+  margin-top: 14px; padding-top: 14px;
+  border-top: 1px solid rgba(167,139,250,0.15);
+}
+.return-cta button {
+  width: 100%; padding: 12px;
+  background: linear-gradient(135deg, var(--success), #2dd4bf);
+  color: #0a0a1a; border: none; border-radius: 12px;
+  font-size: 0.95rem; font-weight: 700; cursor: pointer;
+  box-shadow: 0 4px 12px rgba(52,211,153,0.25);
+  transition: opacity 0.2s;
+}
+.return-cta button:hover { opacity: 0.9; }
+.return-cta .return-cta-sub { font-size: 0.75rem; color: var(--text-dim); margin-top: 4px; }
+
 .login-area {
   background: var(--card-bg); border: 1px solid var(--border);
   border-radius: 16px; padding: 32px 24px; text-align: center; margin-bottom: 28px;
 }
-.login-area p { font-size: 0.9rem; color: var(--text-dim); margin-bottom: 20px; }
+.login-area p { font-size: 0.9rem; color: var(--text-dim); margin-bottom: 16px; }
+.login-area .signup-note { font-size: 0.8rem; color: var(--success); margin-top: 12px; }
 .google-btn {
   display: inline-flex; align-items: center; gap: 10px;
   padding: 12px 28px; background: #fff; color: #333;
@@ -71,7 +91,6 @@ a:hover { text-decoration: underline; }
 .google-btn:hover { box-shadow: 0 4px 16px rgba(255,255,255,0.15); }
 .google-btn svg { width: 20px; height: 20px; }
 
-/* 패키지 */
 .packages { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
 .pkg {
   display: flex; align-items: center; gap: 12px;
@@ -86,15 +105,12 @@ a:hover { text-decoration: underline; }
 .pkg-info { flex: 1; display: flex; justify-content: space-between; align-items: center; }
 .pkg-name { font-size: 0.92rem; font-weight: 600; color: var(--text); }
 .pkg-price { font-size: 0.88rem; font-weight: 600; color: var(--accent); }
-.pkg-discount { font-size: 0.7rem; color: var(--success); margin-left: 6px; }
-.pkg-desc { font-size: 0.75rem; color: var(--text-dim); margin-top: 2px; }
 .pkg-badge {
   position: absolute; top: -8px; right: 12px;
   background: var(--accent); color: #fff; font-size: 0.62rem; font-weight: 700;
   padding: 2px 8px; border-radius: 8px;
 }
 
-/* 결제 버튼 */
 .pay-btn {
   width: 100%; padding: 16px;
   background: linear-gradient(135deg, var(--accent), var(--accent2));
@@ -106,7 +122,6 @@ a:hover { text-decoration: underline; }
 .pay-btn:hover { opacity: 0.92; }
 .pay-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-/* 안내 */
 .info-box {
   margin-top: 24px; padding: 16px;
   background: var(--card-bg); border: 1px solid var(--border);
@@ -116,7 +131,6 @@ a:hover { text-decoration: underline; }
 .info-box li { font-size: 0.78rem; color: var(--text-dim); margin-bottom: 4px; list-style: none; }
 .info-box li::before { content: "· "; color: var(--accent); }
 
-/* 토스트 */
 .toast {
   position: fixed; top: 24px; left: 50%; transform: translateX(-50%);
   padding: 14px 24px; border-radius: 12px;
@@ -127,7 +141,6 @@ a:hover { text-decoration: underline; }
 .toast.error { background: rgba(239,68,68,0.95); color: #fff; }
 .toast.show { opacity: 1; }
 
-/* 로딩 */
 .loading-overlay {
   display: none; position: fixed; inset: 0;
   background: rgba(10,10,26,0.85); backdrop-filter: blur(4px);
@@ -147,37 +160,44 @@ footer { text-align: center; padding: 40px 0 20px; border-top: 1px solid rgba(16
 <div id="toast" class="toast"></div>
 <div id="loadingOverlay" class="loading-overlay">
   <div class="spinner"></div>
-  <div class="loading-text">결제 확인 중...</div>
+  <div class="loading-text" id="loadingText">결제 확인 중...</div>
 </div>
 
 <div class="wrap">
   <a href="/" class="back">&larr; MONKOS AI</a>
 
+  <div id="returnBar" class="return-bar" style="display:none;">
+    <a id="returnLink" href="#">&larr; 하던 사진으로 돌아가기</a>
+  </div>
+
   <div class="page-header">
-    <h1>크레딧 충전</h1>
-    <p class="sub">MONKOS AI 서비스에서 사용할 크레딧을 충전하세요</p>
+    <h1 id="pageTitle">크레딧 충전</h1>
+    <p class="sub" id="pageSub">MONKOS AI 서비스에서 사용할 크레딧을 충전하세요</p>
   </div>
 
   <!-- 미로그인 -->
   <div id="loginArea" class="login-area" style="display:none;">
-    <p>크레딧 충전을 위해 로그인이 필요합니다</p>
+    <p id="loginMsg">크레딧 충전을 위해 로그인이 필요합니다</p>
     <button class="google-btn" onclick="googleLogin()">
       <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.27-4.74 3.27-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-      Google로 로그인
+      <span id="googleBtnText">Google로 로그인</span>
     </button>
+    <div class="signup-note" id="signupNote">첫 로그인 시 10c 무료 증정!</div>
   </div>
 
   <!-- 로그인 상태 -->
   <div id="mainArea" style="display:none;">
     <div class="balance-card">
-      <div class="balance-label">현재 잔액</div>
+      <div class="balance-label" id="balanceLabel">현재 잔액</div>
       <div class="balance-value"><span id="balanceCount">0</span><span>c</span></div>
       <div class="balance-user" id="balanceUser"></div>
+      <div id="returnCta" class="return-cta" style="display:none;">
+        <button id="returnCtaBtn">돌아가서 만들기</button>
+        <div class="return-cta-sub" id="returnCtaSub">10c로 바로 생성</div>
+      </div>
     </div>
 
-    <div class="packages" id="packages">
-      <!-- JS로 렌더링 -->
-    </div>
+    <div class="packages" id="packages"></div>
 
     <div id="widgetSection" style="display:none; margin-top:16px;">
       <div id="payment-method"></div>
@@ -186,9 +206,9 @@ footer { text-align: center; padding: 40px 0 20px; border-top: 1px solid rgba(16
 
     <button class="pay-btn" id="payBtn" onclick="startPayment()" disabled>패키지를 선택해 주세요</button>
 
-    <div class="info-box">
-      <h3>안내</h3>
-      <ul>
+    <div class="info-box" id="infoBox">
+      <h3 id="infoTitle">안내</h3>
+      <ul id="infoList">
         <li>AI 증명사진 1장 = 10c</li>
         <li>크레딧 10c = ₩1,500 = $1 (부가세 포함)</li>
         <li>첫 로그인 10c 증정 (1컷 무료 체험)</li>
@@ -199,49 +219,182 @@ footer { text-align: center; padding: 40px 0 20px; border-top: 1px solid rgba(16
   </div>
 
   <footer>
-    <p>&copy; 2026 <a href="/">MONKOS AI</a> | <a href="/privacy.html">개인정보처리방침</a> | <a href="/terms.html">이용약관</a> | <a href="/refund.html">환불정책</a></p>
+    <p>&copy; 2026 <a href="/">MONKOS AI</a> | <a href="/privacy.html" id="footPrivacy">개인정보처리방침</a> | <a href="/terms.html" id="footTerms">이용약관</a> | <a href="/refund.html" id="footRefund">환불정책</a></p>
   </footer>
 </div>
 
 <script>
-// === 설정 ===
 var TOSS_CLIENT_KEY = 'live_gck_GePWvyJnrKaxZNXanzwR3gLzN97E';
 var GOOGLE_CLIENT_ID = '933456016842-clagcrpo1juvukjif1m454jq811bd2rq.apps.googleusercontent.com';
 
-var PACKAGES = [
+var KO_PACKAGES = [
   { label: '70 크레딧', amount: 9900, credits: 70, bonus: 10, recommended: true },
   { label: '100 크레딧', amount: 12900, credits: 100, bonus: 30 },
   { label: '300 크레딧', amount: 34900, credits: 300, bonus: 120, best: true },
   { label: '500 크레딧', amount: 49900, credits: 500, bonus: 250 },
 ];
 
+var T = {
+  ko: {
+    pageTitle: '크레딧 충전', pageSub: 'MONKOS AI 서비스에서 사용할 크레딧을 충전하세요',
+    loginMsg: '크레딧 충전을 위해 로그인이 필요합니다',
+    googleBtn: 'Google로 로그인', signupNote: '첫 로그인 시 10c 무료 증정!',
+    balanceLabel: '현재 잔액',
+    returnLink: '← 하던 사진으로 돌아가기',
+    returnCtaBtn: '돌아가서 만들기', returnCtaSub: '10c로 바로 생성',
+    returnService: '서비스로 돌아가기 ',
+    payDefault: '패키지를 선택해 주세요',
+    infoTitle: '안내',
+    infoItems: [
+      'AI 증명사진 1장 = 10c',
+      '크레딧 10c = ₩1,500 = $1 (부가세 포함)',
+      '첫 로그인 10c 증정 (1컷 무료 체험)',
+      '충전한 크레딧은 MONKOS 전 서비스에서 사용 가능',
+    ],
+    infoRefund: ['환불 정책은 ', '여기', '를 확인하세요'],
+    loadingText: '결제 확인 중...',
+    signupToast: '가입 완료! 10c 보너스가 지급되었습니다',
+    loginFail: '로그인 실패', loginRequired: '로그인이 필요합니다',
+    selectPkg: '결제 수단을 선택해 주세요',
+    payError: '결제 오류: ', tossFail: '결제가 취소되었습니다',
+    tossInvalid: '결제 정보가 올바르지 않습니다',
+    chargeOk: '충전 완료!', chargeFail: '결제 확인 실패: ',
+    chargeErr: '결제 확인 중 오류가 발생했습니다',
+    pollTimeout: '적립이 지연되고 있어요 — 잠시 후 새로고침해 주세요',
+    pollWait: '충전 확인 중...',
+    footPrivacy: '개인정보처리방침', footTerms: '이용약관', footRefund: '환불정책',
+  },
+  en: {
+    pageTitle: 'Top Up Credits', pageSub: 'Purchase credits to use MONKOS AI services',
+    loginMsg: 'Sign in to top up credits',
+    googleBtn: 'Sign in with Google', signupNote: 'Get 10 free credits on first sign-in!',
+    balanceLabel: 'Current Balance',
+    returnLink: '← Back to your photo',
+    returnCtaBtn: 'Go back & create', returnCtaSub: 'Generate now with 10c',
+    returnService: 'Returning to service ',
+    payDefault: 'Select a package',
+    infoTitle: 'Info',
+    infoItems: [
+      '1 AI ID photo = 10 credits',
+      '10 credits = $1',
+      '10 free credits on first sign-in',
+      'Credits work across all MONKOS services',
+    ],
+    infoRefund: ['See our ', 'refund policy', ''],
+    loadingText: 'Verifying payment...',
+    signupToast: 'Welcome! 10 free credits added',
+    loginFail: 'Sign-in failed', loginRequired: 'Please sign in first',
+    selectPkg: 'Please select a package',
+    payError: 'Payment error: ', tossFail: 'Payment was cancelled',
+    tossInvalid: 'Invalid payment information',
+    chargeOk: 'Top-up complete!', chargeFail: 'Payment verification failed: ',
+    chargeErr: 'An error occurred during payment verification',
+    pollTimeout: 'Credit delivery is delayed — please refresh in a moment',
+    pollWait: 'Verifying top-up...',
+    footPrivacy: 'Privacy Policy', footTerms: 'Terms', footRefund: 'Refund Policy',
+  }
+};
+
 var selectedIdx = 0;
 var currentUser = null;
 var returnUrl = null;
 var widgets = null;
 var widgetReady = false;
+var lang = 'ko';
+var globalProducts = null;
+var pollTimer = null;
+var preCheckoutBalance = null;
 
-// === 초기화 ===
+function t(key) { return (T[lang] && T[lang][key]) || T.ko[key] || key; }
+
+function detectLang() {
+  var params = new URLSearchParams(window.location.search);
+  var l = params.get('lang');
+  if (l && l !== 'ko') return 'en';
+  var from = sessionStorage.getItem('monkos_credits_from') || params.get('from') || '';
+  if (/^\/(ja|en|es|zh|vi|th|tl|id)\//.test(from)) return 'en';
+  return 'ko';
+}
+
+function applyLang() {
+  document.documentElement.lang = lang === 'ko' ? 'ko' : 'en';
+  document.title = t('pageTitle') + ' | MONKOS AI';
+  document.getElementById('pageTitle').textContent = t('pageTitle');
+  document.getElementById('pageSub').textContent = t('pageSub');
+  document.getElementById('loginMsg').textContent = t('loginMsg');
+  document.getElementById('googleBtnText').textContent = t('googleBtn');
+  document.getElementById('signupNote').textContent = t('signupNote');
+  document.getElementById('balanceLabel').textContent = t('balanceLabel');
+  document.getElementById('returnLink').textContent = t('returnLink');
+  document.getElementById('returnCtaBtn').textContent = t('returnCtaBtn');
+  document.getElementById('returnCtaSub').textContent = t('returnCtaSub');
+  document.getElementById('payBtn').textContent = t('payDefault');
+  document.getElementById('loadingText').textContent = t('loadingText');
+  document.getElementById('infoTitle').textContent = t('infoTitle');
+  document.getElementById('footPrivacy').textContent = t('footPrivacy');
+  document.getElementById('footTerms').textContent = t('footTerms');
+  document.getElementById('footRefund').textContent = t('footRefund');
+  var items = t('infoItems');
+  var ref = t('infoRefund');
+  var ul = document.getElementById('infoList');
+  ul.innerHTML = '';
+  items.forEach(function(txt) { var li = document.createElement('li'); li.textContent = txt; ul.appendChild(li); });
+  var liRef = document.createElement('li');
+  liRef.textContent = ref[0];
+  var a = document.createElement('a'); a.href = '/refund.html'; a.textContent = ref[1];
+  liRef.appendChild(a);
+  if (ref[2]) liRef.appendChild(document.createTextNode(ref[2]));
+  ul.appendChild(liRef);
+}
+
 window.addEventListener('DOMContentLoaded', async function() {
-  // from 파라미터 → sessionStorage 보존 (Toss 리다이렉트 생존)
   var params = new URLSearchParams(window.location.search);
   var from = params.get('from') || params.get('returnUrl');
-  if (from) {
-    sessionStorage.setItem('monkos_credits_from', from);
-  }
+  if (from) sessionStorage.setItem('monkos_credits_from', from);
   returnUrl = sessionStorage.getItem('monkos_credits_from') || null;
 
-  renderPackages();
+  lang = detectLang();
+  applyLang();
+  showReturnBar();
+
+  if (lang === 'ko') {
+    renderKoPackages();
+  } else {
+    await loadGlobalProducts();
+  }
+
   await checkAuth();
   handleTossResult();
 });
 
-// === 패키지 렌더링 ===
-function renderPackages() {
+function showReturnBar() {
+  if (returnUrl && isSafeReturnUrl(returnUrl)) {
+    document.getElementById('returnBar').style.display = '';
+    document.getElementById('returnLink').addEventListener('click', function(e) {
+      e.preventDefault();
+      sessionStorage.removeItem('monkos_credits_from');
+      window.location.href = returnUrl;
+    });
+  }
+}
+
+function showReturnCta() {
+  if (!returnUrl || !isSafeReturnUrl(returnUrl)) return;
+  if (!currentUser || !currentUser.credits || currentUser.credits < 10) return;
+  var cta = document.getElementById('returnCta');
+  cta.style.display = '';
+  document.getElementById('returnCtaBtn').addEventListener('click', function() {
+    sessionStorage.removeItem('monkos_credits_from');
+    window.location.href = returnUrl;
+  });
+}
+
+// === ko 패키지 렌더링 ===
+function renderKoPackages() {
   var container = document.getElementById('packages');
   var html = '';
-  for (var i = 0; i < PACKAGES.length; i++) {
-    var p = PACKAGES[i];
+  for (var i = 0; i < KO_PACKAGES.length; i++) {
+    var p = KO_PACKAGES[i];
     var totalC = p.credits + p.bonus;
     var strikePrice = totalC * 150;
     var saved = strikePrice - p.amount;
@@ -250,7 +403,7 @@ function renderPackages() {
     var badge = p.recommended ? '<span class="pkg-badge">추천</span>' : '';
     if (p.best) badge = '<span class="pkg-badge" style="background:#f59e0b;">★ BEST</span>';
     var priceHtml = '<span style="text-decoration:line-through;color:#666;font-size:0.75rem;">₩' + strikePrice.toLocaleString() + '</span> <span class="pkg-price">₩' + p.amount.toLocaleString() + '</span>';
-    var bonusHtml = p.bonus ? '<div style="font-size:0.72rem;color:#34d399;margin-top:3px;">+' + p.bonus + 'c 보너스 · ₩' + saved.toLocaleString() + '원 절약</div>' : '';
+    var bonusHtml = p.bonus ? '<div style="font-size:0.72rem;color:#34d399;margin-top:3px;">+' + p.bonus + 'c 보너스 \xB7 ₩' + saved.toLocaleString() + '원 절약</div>' : '';
     html += '<label class="pkg' + sel + '" data-idx="' + i + '">' +
       badge +
       '<input type="radio" name="pkg" value="' + i + '"' + chk + '>' +
@@ -264,7 +417,6 @@ function renderPackages() {
     '</label>';
   }
   container.innerHTML = html;
-
   container.querySelectorAll('.pkg').forEach(function(el) {
     el.addEventListener('click', function() {
       container.querySelectorAll('.pkg').forEach(function(p) { p.classList.remove('selected'); });
@@ -274,10 +426,63 @@ function renderPackages() {
   });
 }
 
-// === 위젯 ===
+// === 글로벌 상품 로드 + 렌더링 ===
+async function loadGlobalProducts() {
+  try {
+    var r = await fetch('/api/credits/topup-products');
+    var d = await r.json();
+    globalProducts = d.products || [];
+  } catch(e) { globalProducts = []; }
+  renderGlobalPackages();
+}
+
+function fmtUsd(cents) { return '$' + (cents / 100).toFixed(2); }
+
+function renderGlobalPackages() {
+  if (!globalProducts || !globalProducts.length) return;
+  var container = document.getElementById('packages');
+  var html = '';
+  for (var i = 0; i < globalProducts.length; i++) {
+    var p = globalProducts[i];
+    var sel = i === 0 ? ' selected' : '';
+    var chk = i === 0 ? ' checked' : '';
+    var badge = p.recommended ? '<span class="pkg-badge">Recommended</span>' : '';
+    if (p.best) badge = '<span class="pkg-badge" style="background:#f59e0b;">★ BEST</span>';
+    html += '<label class="pkg' + sel + '" data-idx="' + i + '">' +
+      badge +
+      '<input type="radio" name="pkg" value="' + i + '"' + chk + '>' +
+      '<div style="flex:1;">' +
+        '<div class="pkg-info">' +
+          '<span class="pkg-name">' + p.label + '</span>' +
+          '<span class="pkg-price">' + fmtUsd(p.priceUsd) + '</span>' +
+        '</div>' +
+      '</div>' +
+    '</label>';
+  }
+  container.innerHTML = html;
+  container.querySelectorAll('.pkg').forEach(function(el) {
+    el.addEventListener('click', function() {
+      container.querySelectorAll('.pkg').forEach(function(p) { p.classList.remove('selected'); });
+      this.classList.add('selected');
+      selectGlobalPkg(parseInt(this.dataset.idx));
+    });
+  });
+  selectGlobalPkg(0);
+}
+
+function selectGlobalPkg(idx) {
+  selectedIdx = idx;
+  var btn = document.getElementById('payBtn');
+  if (globalProducts && globalProducts[idx]) {
+    btn.textContent = fmtUsd(globalProducts[idx].priceUsd) + ' — Pay';
+    if (currentUser && currentUser.id) btn.disabled = false;
+  }
+}
+
+// === 토스 위젯 (ko only) ===
 async function selectPkg(idx) {
   selectedIdx = idx;
-  var pkg = PACKAGES[idx];
+  var pkg = KO_PACKAGES[idx];
   var btn = document.getElementById('payBtn');
   btn.textContent = '₩' + pkg.amount.toLocaleString() + ' 결제하기';
 
@@ -304,22 +509,19 @@ async function selectPkg(idx) {
 // === 인증 ===
 async function checkAuth() {
   try {
-    var res = await fetch('/api/auth/verify-cookie', {
-      credentials: 'include',
-    });
+    var res = await fetch('/api/auth/verify-cookie', { credentials: 'include' });
     if (res.ok) {
       var data = await res.json();
       if (data.user && data.user.id) {
         currentUser = data.user;
         showLoggedIn(data.user);
         fetchBalance(data.user.id);
-        selectPkg(selectedIdx);
+        if (lang === 'ko') selectPkg(selectedIdx);
+        else if (globalProducts && globalProducts.length) selectGlobalPkg(selectedIdx);
         return;
       }
     }
-  } catch (e) {
-    console.log('인증 실패');
-  }
+  } catch (e) {}
   showLogin();
 }
 
@@ -335,14 +537,13 @@ function showLoggedIn(user) {
 }
 
 function fetchBalance(userId) {
-  fetch('/api/credits?userId=' + encodeURIComponent(userId))
+  return fetch('/api/credits?userId=' + encodeURIComponent(userId))
     .then(function(r) { return r.json(); })
     .then(function(data) {
       if (data.credits !== undefined) {
         document.getElementById('balanceCount').textContent = data.credits;
-        if (currentUser) {
-          currentUser.credits = data.credits;
-        }
+        if (currentUser) currentUser.credits = data.credits;
+        showReturnCta();
       }
     })
     .catch(function() {});
@@ -365,13 +566,14 @@ function googleLogin() {
           currentUser = data.user;
           showLoggedIn(data.user);
           document.getElementById('balanceCount').textContent = data.user.credits || 0;
-          selectPkg(selectedIdx);
-          if (data.isNewUser) {
-            showToast('가입 완료! 10c 보너스가 지급되었습니다', 'success');
-          }
+          if (currentUser) currentUser.credits = data.user.credits || 0;
+          if (lang === 'ko') selectPkg(selectedIdx);
+          else if (globalProducts && globalProducts.length) selectGlobalPkg(selectedIdx);
+          if (data.isNewUser) showToast(t('signupToast'), 'success');
+          showReturnCta();
         }
       })
-      .catch(function() { showToast('로그인 실패', 'error'); });
+      .catch(function() { showToast(t('loginFail'), 'error'); });
     },
   });
   client.requestAccessToken();
@@ -380,15 +582,23 @@ function googleLogin() {
 // === 결제 ===
 async function startPayment() {
   if (!currentUser || !currentUser.id) {
-    showToast('로그인이 필요합니다', 'error');
-    return;
-  }
-  if (!widgets || !widgetReady) {
-    showToast('결제 수단을 선택해 주세요', 'error');
+    showToast(t('loginRequired'), 'error');
     return;
   }
 
-  var pkg = PACKAGES[selectedIdx];
+  if (lang === 'ko') {
+    await startTossPayment();
+  } else {
+    await startLemonPayment();
+  }
+}
+
+async function startTossPayment() {
+  if (!widgets || !widgetReady) {
+    showToast(t('selectPkg'), 'error');
+    return;
+  }
+  var pkg = KO_PACKAGES[selectedIdx];
   var orderId = 'MONKOS_' + currentUser.id.slice(0, 8) + '_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
 
   try {
@@ -402,9 +612,78 @@ async function startPayment() {
     });
   } catch (err) {
     if (err.code !== 'PAY_PROCESS_CANCELED' && err.code !== 'USER_CANCEL') {
-      showToast('결제 오류: ' + (err.message || err.code), 'error');
+      showToast(t('payError') + (err.message || err.code), 'error');
     }
   }
+}
+
+async function startLemonPayment() {
+  if (!globalProducts || !globalProducts[selectedIdx]) return;
+  var prod = globalProducts[selectedIdx];
+
+  preCheckoutBalance = currentUser.credits || 0;
+
+  try {
+    var r = await fetch('/api/checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        variantId: prod.variantId,
+        userId: currentUser.id,
+        email: currentUser.email || undefined,
+        redirectUrl: window.location.origin + '/credits.html?lang=' + lang,
+      }),
+    });
+    var d = await r.json();
+    if (d.url) {
+      window.open(d.url, '_blank');
+      startCreditPolling();
+    } else {
+      showToast(t('chargeErr'), 'error');
+    }
+  } catch(e) {
+    showToast(t('chargeErr'), 'error');
+  }
+}
+
+// === 레몬 적립 폴링 ===
+function startCreditPolling() {
+  if (pollTimer) clearInterval(pollTimer);
+  var btn = document.getElementById('payBtn');
+  btn.disabled = true;
+  btn.textContent = t('pollWait');
+
+  var elapsed = 0;
+  var maxMs = 180000;
+  var intervalMs = 5000;
+
+  pollTimer = setInterval(function() {
+    elapsed += intervalMs;
+    if (elapsed > maxMs) {
+      clearInterval(pollTimer);
+      pollTimer = null;
+      btn.disabled = false;
+      if (globalProducts && globalProducts[selectedIdx]) selectGlobalPkg(selectedIdx);
+      showToast(t('pollTimeout'), 'error');
+      return;
+    }
+    fetch('/api/credits?userId=' + encodeURIComponent(currentUser.id))
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data.credits !== undefined && data.credits > preCheckoutBalance) {
+          clearInterval(pollTimer);
+          pollTimer = null;
+          var added = data.credits - preCheckoutBalance;
+          currentUser.credits = data.credits;
+          document.getElementById('balanceCount').textContent = data.credits;
+          btn.disabled = false;
+          if (globalProducts && globalProducts[selectedIdx]) selectGlobalPkg(selectedIdx);
+          showToast('+' + added + 'c ' + t('chargeOk'), 'success');
+          returnToService();
+        }
+      })
+      .catch(function() {});
+  }, intervalMs);
 }
 
 // === 토스 결과 처리 ===
@@ -412,7 +691,7 @@ function handleTossResult() {
   var params = new URLSearchParams(window.location.search);
 
   if (params.get('toss') === 'fail') {
-    var msg = params.get('message') || '결제가 취소되었습니다';
+    var msg = params.get('message') || t('tossFail');
     history.replaceState({}, '', '/credits');
     showToast(msg, 'error');
     return;
@@ -425,7 +704,7 @@ function handleTossResult() {
 
     if (!paymentKey || !orderId || !amount) {
       history.replaceState({}, '', '/credits');
-      showToast('결제 정보가 올바르지 않습니다', 'error');
+      showToast(t('tossInvalid'), 'error');
       return;
     }
 
@@ -449,24 +728,24 @@ function handleTossResult() {
       showLoading(false);
       if (data.success) {
         document.getElementById('balanceCount').textContent = data.credits || 0;
-        if (currentUser) {
-          currentUser.credits = data.credits;
-        }
-        showToast('+' + (data.creditsAdded || '') + 'c 충전 완료!', 'success');
+        if (currentUser) currentUser.credits = data.credits;
+        showToast('+' + (data.creditsAdded || '') + 'c ' + t('chargeOk'), 'success');
         returnToService();
       } else {
-        showToast('결제 확인 실패: ' + (data.error || ''), 'error');
+        showToast(t('chargeFail') + (data.error || ''), 'error');
       }
     })
-    .catch(function(err) {
+    .catch(function() {
       showLoading(false);
-      showToast('결제 확인 중 오류가 발생했습니다', 'error');
+      showToast(t('chargeErr'), 'error');
     });
   }
 }
 
 // === 서비스 복귀 ===
 function isSafeReturnUrl(url) {
+  // 동일 오리진 상대 경로는 본질적으로 안전 (dev 등 비정식 호스트에서도 복귀 동작 — 2026-07-16 민아 검증 보완)
+  if (typeof url === 'string' && url.charAt(0) === '/' && url.charAt(1) !== '/') return true;
   try {
     var u = new URL(url, window.location.origin);
     var allowed = ['monkos.ai', 'www.monkos.ai', 'monk.kr', 'www.monk.kr',
@@ -478,18 +757,17 @@ function isSafeReturnUrl(url) {
 
 function returnToService() {
   if (!returnUrl || !isSafeReturnUrl(returnUrl)) return;
-  // 충전 완료 후 복귀 버튼 표시 + 3초 자동 이동
   var bar = document.createElement('div');
   bar.style.cssText = 'position:fixed;bottom:0;left:0;right:0;padding:16px 20px;background:linear-gradient(135deg,#a78bfa,#818cf8);text-align:center;z-index:9999;';
   var link = document.createElement('a');
   link.href = returnUrl;
   link.style.cssText = 'color:#fff;font-weight:700;font-size:0.95rem;text-decoration:none;';
-  link.textContent = '서비스로 돌아가기 ';
+  link.textContent = t('returnService');
   var countdown = document.createElement('span');
   countdown.id = 'returnCountdown';
   countdown.textContent = '3';
   link.appendChild(countdown);
-  link.appendChild(document.createTextNode('초'));
+  link.appendChild(document.createTextNode(lang === 'ko' ? '초' : 's'));
   bar.appendChild(link);
   document.body.appendChild(bar);
   var sec = 3;
@@ -503,7 +781,6 @@ function returnToService() {
       window.location.href = returnUrl;
     }
   }, 1000);
-  // 클릭 시 즉시 이동
   link.addEventListener('click', function(e) {
     e.preventDefault();
     clearInterval(timer);
@@ -512,7 +789,6 @@ function returnToService() {
   });
 }
 
-// === UI 유틸 ===
 function showToast(msg, type) {
   var el = document.getElementById('toast');
   el.textContent = msg;

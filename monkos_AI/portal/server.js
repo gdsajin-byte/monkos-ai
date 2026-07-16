@@ -23,7 +23,7 @@ import {
   KAKAO_REST_API_KEY, KAKAO_CHANNEL_ID, LINE_CHANNEL_ID,
   LINE_MESSAGING_ACCESS_TOKEN,
   ADMIN_UIDS, AGENT_API_KEYS, NAVER_CLIENT_ID,
-  parseCookies, parseJsonBody,
+  parseCookies, parseJsonBody, GLOBAL_TOPUP,
 } from './lib/shared/config.js';
 
 // === 핸들러 모듈 ===
@@ -330,6 +330,10 @@ const httpServer = createServer(async (req, res) => {
 
   // === 크레딧 ===
   if (req.url?.startsWith('/api/credits') && req.method === 'GET' && urlPath === '/api/credits') return handleCreditsGet(req, res);
+  if (urlPath === '/api/credits/topup-products' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    return res.end(JSON.stringify({ products: GLOBAL_TOPUP }));
+  }
   if (urlPath === '/api/credits/use' && req.method === 'POST') return handleCreditsUse(req, res);
   if (urlPath === '/api/credits/refund' && req.method === 'POST') return handleCreditsRefund(req, res);
   if (urlPath === '/api/credits/mission-complete' && req.method === 'POST') return handleMissionComplete(req, res);

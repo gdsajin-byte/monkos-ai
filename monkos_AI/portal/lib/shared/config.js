@@ -147,6 +147,15 @@ export const TOSS_AMOUNT_CREDITS = Object.fromEntries(
   Object.values(PRODUCTS).map(p => [p.price, p.credits + p.bonus])
 );
 
+// 글로벌 크레딧 충전 상품 (레몬 글로벌 스토어 #415328)
+export const GLOBAL_TOPUP = [
+  { variantId: '1909373', credits: 40,  priceUsd: 390,  label: '40 Credits' },
+  { variantId: '1909383', credits: 80,  priceUsd: 690,  label: '80 Credits' },
+  { variantId: '1909386', credits: 130, priceUsd: 990,  label: '130 Credits', recommended: true },
+  { variantId: '1909388', credits: 420, priceUsd: 2690, label: '420 Credits' },
+  { variantId: '1909390', credits: 750, priceUsd: 3990, label: '750 Credits', best: true },
+];
+
 // === specs 단건 직접결제 (T1) — 시장별 가격 정본 (클라이언트 금액 불신) ===
 export const DIRECT_PRICING = {
   kr:     { provider: 'toss',  amount: 2000, currency: 'KRW' },  // ₩2,000 서버 고정
