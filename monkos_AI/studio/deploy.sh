@@ -6,7 +6,7 @@
 # 내부용 AI 보정 앱
 #
 # 사용법:
-#   ./deploy.sh [dev|prod]
+#   ./deploy.sh [dev|prod] [--yes|-y]
 ###############################################################################
 
 set -e
@@ -17,10 +17,17 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
-ENV=${1:-""}
+AUTO_YES=0
+ENV=""
+for arg in "$@"; do
+  case "$arg" in
+    --yes|-y) AUTO_YES=1 ;;
+    *) [ -z "$ENV" ] && ENV="$arg" ;;
+  esac
+done
 
 if [ -z "$ENV" ]; then
-  echo -e "${RED}사용법: ./deploy.sh [dev|prod]${NC}"
+  echo -e "${RED}사용법: ./deploy.sh [dev|prod] [--yes|-y]${NC}"
   exit 1
 fi
 
@@ -52,11 +59,17 @@ elif [ "$ENV" = "prod" ]; then
   CPU="1"
   MAX_INSTANCES="5"
 
-  echo -e "${YELLOW}⚠ PRODUCTION 배포입니다. 계속하시겠습니까? (y/N)${NC}"
-  read -r confirm
-  if [ "$confirm" != "y" ]; then
-    echo "취소됨"
-    exit 0
+  if [ "$AUTO_YES" != "1" ]; then
+    if [ ! -t 0 ]; then
+      echo -e "${RED}ERROR: 비TTY 환경에서는 --yes 플래그가 필요합니다 (조용한 미배포 방지, ch5)${NC}" >&2
+      exit 1
+    fi
+    echo -e "${YELLOW}⚠ PRODUCTION 배포입니다. 계속하시겠습니까? (y/N)${NC}"
+    read -r confirm
+    if [ "$confirm" != "y" ]; then
+      echo "취소됨"
+      exit 0
+    fi
   fi
 fi
 

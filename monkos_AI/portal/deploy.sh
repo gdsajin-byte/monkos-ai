@@ -6,7 +6,7 @@
 # monkos.ai 메인 포털 (인증 + 크레딧 + 결제)
 #
 # 사용법:
-#   ./deploy.sh [dev|prod|preview]
+#   ./deploy.sh [dev|prod|preview] [--yes|-y]
 #
 # 환경:
 #   dev     → dev 서비스에 배포 (테스트)
@@ -22,7 +22,14 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
-ENV=${1:-""}
+AUTO_YES=0
+ENV=""
+for arg in "$@"; do
+  case "$arg" in
+    --yes|-y) AUTO_YES=1 ;;
+    *) [ -z "$ENV" ] && ENV="$arg" ;;
+  esac
+done
 
 # 인자 필수
 if [ -z "$ENV" ]; then
@@ -106,11 +113,17 @@ elif [ "$ENV" = "prod" ]; then
     exit 1
   fi
 
-  echo -e "${YELLOW}⚠ PRODUCTION 배포입니다. 계속하시겠습니까? (y/N)${NC}"
-  read -r confirm
-  if [ "$confirm" != "y" ]; then
-    echo "취소됨"
-    exit 0
+  if [ "$AUTO_YES" != "1" ]; then
+    if [ ! -t 0 ]; then
+      echo -e "${RED}ERROR: 비TTY 환경에서는 --yes 플래그가 필요합니다 (조용한 미배포 방지, ch5)${NC}" >&2
+      exit 1
+    fi
+    echo -e "${YELLOW}⚠ PRODUCTION 배포입니다. 계속하시겠습니까? (y/N)${NC}"
+    read -r confirm
+    if [ "$confirm" != "y" ]; then
+      echo "취소됨"
+      exit 0
+    fi
   fi
 
 elif [ "$ENV" = "preview" ]; then
@@ -127,11 +140,17 @@ elif [ "$ENV" = "preview" ]; then
     echo -e "${RED}preview 배포는 main 브랜치에서만 가능합니다 (현재: ${CURRENT_BRANCH})${NC}"
     exit 1
   fi
-  echo -e "${YELLOW}⚠ PREVIEW 배포 (트래픽 0%, 태그 URL 생성). 계속하시겠습니까? (y/N)${NC}"
-  read -r confirm
-  if [ "$confirm" != "y" ]; then
-    echo "취소됨"
-    exit 0
+  if [ "$AUTO_YES" != "1" ]; then
+    if [ ! -t 0 ]; then
+      echo -e "${RED}ERROR: 비TTY 환경에서는 --yes 플래그가 필요합니다 (조용한 미배포 방지, ch5)${NC}" >&2
+      exit 1
+    fi
+    echo -e "${YELLOW}⚠ PREVIEW 배포 (트래픽 0%, 태그 URL 생성). 계속하시겠습니까? (y/N)${NC}"
+    read -r confirm
+    if [ "$confirm" != "y" ]; then
+      echo "취소됨"
+      exit 0
+    fi
   fi
 fi
 
