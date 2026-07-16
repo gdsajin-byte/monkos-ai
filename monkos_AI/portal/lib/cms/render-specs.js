@@ -153,6 +153,9 @@ for (const [slug, spec] of Object.entries(SPECS_DATA)) {
   }
 }
 
+// V2 로컬이던 것을 모듈 레벨로 승격 — V1 레거시 경로(721·893)도 참조 (2026-07-16 fmtV2 미정의 500 핫픽스)
+const fmtV2 = (tpl, vars) => String(tpl).replace(/\{(\w+)\}/g, (m, k) => (vars[k] != null ? vars[k] : m));
+
 function locField(spec, field, lang) {
   if (lang === 'ko') return spec[field];
   const suffix = lang.charAt(0).toUpperCase() + lang.slice(1);
@@ -391,7 +394,6 @@ function specsDetailV2Fragment(slug, forceLang = null) {
   // (2026-07-11 T0 전면 개방 때 env-only 분기가 전 페이지로 새던 것을 작가님 실캡처로 적발)
   // 2026-07-13 작가님 승인: T1 전 슬러그 개방 (kr-passport 파일럿 졸업) — 서버 게이트와 동시 개방
   const t1RetouchOn = process.env.PILOT_T1_RETOUCH === '1';
-  const fmtV2 = (tpl, vars) => String(tpl).replace(/\{(\w+)\}/g, (m, k) => (vars[k] != null ? vars[k] : m));
   const prefix = lang === 'ko' ? '' : `/${lang}`;
   const specData = SPECS_DATA[slug];
   if (!specData) return null;
