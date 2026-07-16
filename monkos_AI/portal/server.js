@@ -801,7 +801,7 @@ const httpServer = createServer(async (req, res) => {
       if (gateMode === 'free' && !finalBase64) {
         fireRefundGate();
         res.writeHead(503, { 'Content-Type': 'application/json' });
-        return res.end(JSON.stringify({ error: '지금 무료 처리가 몰려 있어요. 잠시 후 다시 시도해주세요.', code: 'FREE_UNAVAILABLE' }));
+        return res.end(JSON.stringify({ error: '현재 이용자가 많습니다. 잠시 후 다시 시도해주세요.', code: 'FREE_UNAVAILABLE' }));
       }
 
       if (!finalBase64) {

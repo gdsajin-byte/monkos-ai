@@ -331,7 +331,8 @@ var SpecsFunnel = (function(){
           proceedToPay(); // 무료 막혀도 유료 길은 연다
           return;
         }
-        showError((res.d && res.d.error) || '' + T.freeGenFail + '');
+        // 서버 에러 문자열은 ko 고정 — code 기반 로컬라이즈 우선 (2026-07-16 작가님 es 실측)
+        showError(code === 'FREE_UNAVAILABLE' ? T.freeBusyMsg : code === 'GENERATE_FAILED' ? T.freeGenFail : ((res.d && res.d.error) || '' + T.freeGenFail + ''));
         st.textContent = '';
         fs.textContent = '';
         fa.style.display = 'flex';
@@ -406,7 +407,8 @@ var SpecsFunnel = (function(){
           proceedToPay();
           return;
         }
-        showError((res.d && res.d.error) || '' + T.freeGenFail + '');
+        // 서버 에러 문자열은 ko 고정 — code 기반 로컬라이즈 우선 (2026-07-16 작가님 es 실측)
+        showError(code === 'FREE_UNAVAILABLE' ? T.freeBusyMsg : code === 'GENERATE_FAILED' ? T.freeGenFail : ((res.d && res.d.error) || '' + T.freeGenFail + ''));
         restoreFitActions();
         return;
       }
@@ -968,6 +970,7 @@ var SpecsFunnel = (function(){
           : code === 'INVALID_TOKEN' ? T.tokenInvalid
           : code === 'GENERATE_LIMIT' ? T.genLimit
           : code === 'RATE_LIMITED' ? T.rateLimited
+          : code === 'GENERATE_FAILED' ? T.errGen
           : (data.error || T.errGen);
         if(code === 'TOKEN_EXPIRED' || code === 'TOKEN_USED' || code === 'INVALID_TOKEN'){
           pay.token = null; pay.remaining = null; clearStored();
