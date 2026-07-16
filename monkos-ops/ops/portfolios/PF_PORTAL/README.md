@@ -95,6 +95,7 @@ status: active
 | 07/15 | 막내1 | **T0 — generations 컬렉션 신설 + GCS 백필** — gcs-save.js에 Firestore `generations` 동시 기록 추가(GCS 저장 후 인덱스 1건, 실패 시 비차단). server.js extras 전달 1행. Firestore 복합 인덱스(userId+createdAt). GCS 백필 329건/에러0. dev 00128 → prod 00479 | [COMPLETION](../../reports/2026-07/COMPLETION_20260715_iMac막내1_T0_generations인덱스_신설.md) | ✅ |
 | 07/15 | 막내1 | **T1 — 어드민 유저 상세 + 통합 프로필 API** — `/api/admin/dashboard/user/:userId` 신설(4소스 조인: Firestore users/tx/generations + BQ events). `admin/user.html` 유저 상세 페이지 신규(프로필·유입경로·퍼널·갤러리·거래·타임라인). dashboard.html 유입경로 컬럼 추가+행 클릭→user.html 이동. dev 00129 → prod 00480 | [COMPLETION](../../reports/2026-07/COMPLETION_20260715_iMac막내1_T1_어드민유저상세_통합프로필API.md) | ✅ |
 | 07/15 | 막내1 | **T1 보강 — 외부 유입 역추적 + 노이즈 필터** — BQ identity_map→events 첫 외부 referrer 역추적(Firestore 비어있을 시). page_view 정적파일 필터(.js/.css/.jpg 등). `/api/admin/dashboard/channels` 신설(도메인별 외부 유입 집계 7/30/90d). 대시보드에 외부 유입 채널 바 차트 추가. dev 00130 → prod 00481 | [COMPLETION](../../reports/2026-07/COMPLETION_20260715_iMac막내1_T1보강_외부유입역추적_노이즈필터.md) | ✅ |
+| 07/16 | 막내2 | **대시보드 전 채널 통합 P1** — seo-dashboard.js 신설(GSC·Naver·Bing·PageSpeed 4 API+memCache), channels 봇 필터, citadel.html 4섹션 UI. seo_collectors.py→Node.js 포팅. 기존 8 API 무접촉. dev 00142-smf | [COMPLETION](../../reports/2026-07/COMPLETION_20260716_iMac막내2_PORTAL_대시보드_전채널통합P1.md) | ✅ dev |
 
 ---
 
