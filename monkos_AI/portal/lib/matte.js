@@ -193,7 +193,19 @@ async function runMatteChain(cropB64, bgColor, slug) {
       return { image: stamped.toString('base64'), matteSec: data.meta?.elapsedSec, via: isRunpod(url) ? 'runpod' : url };
     } catch (err) {
       lastErr = err.message;
-      log(`[Matte] ${slug}: ${url} 호출 실패 (${err.message}) → 다음 엔드포인트`, 'WARNING');
+      log(`[Matte] ${slug}: ${url} 호출 실패 (${err.message}) → 1회 재시도`, 'WARNING');
+      try {
+        const retryData = await callMatteApi(url, cropB64, bgColor);
+        log(`[Matte] ${slug}: ${url} 재시도 1회 성공`, 'INFO');
+        const stamped = await sharp(Buffer.from(retryData.image, 'base64'))
+          .withMetadata({ density: 300 })
+          .png()
+          .toBuffer();
+        return { image: stamped.toString('base64'), matteSec: retryData.meta?.elapsedSec, via: isRunpod(url) ? 'runpod' : url };
+      } catch (retryErr) {
+        lastErr = retryErr.message;
+        log(`[Matte] ${slug}: ${url} 재시도 실패 (${retryErr.message}) → 다음 엔드포인트`, 'WARNING');
+      }
     }
   }
   log(`[Matte] ${slug}: matte 전 엔드포인트 실패 (${lastErr}) → 폴백`, 'ERROR');

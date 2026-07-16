@@ -387,15 +387,19 @@ var SpecsFunnel = (function(){
   }
   function doFreeGenerate(){
     if(!uploadedBase64 || freeBusy) return;
-    if(hasUsableToken()) return doGenerate(); // 미사용 결제 토큰 보유 시 유료 경로 우선 (방어적 — 토큰 방치 방지)
+    if(hasUsableToken()) return doGenerate();
     if(!fitResult || !fitResult.frame){ proceedToPay(); return; }
     freeBusy = true;
     hideError();
     setGenMessage(T.freeGenTitle, T.freeGenSub.replace('{type}', CFG.format || ''));
     showPhase(phaseGen);
+    var freeWait1 = setTimeout(function(){ setGenMessage(T.freeGenTitle, T.genStillWorking1 || ''); }, 15000);
+    var freeWait2 = setTimeout(function(){ setGenMessage(T.freeGenTitle, T.genStillWorking2 || ''); }, 35000);
+    function clearFreeWait(){ clearTimeout(freeWait1); clearTimeout(freeWait2); }
     freeGenerateRequest(fitResult)
     .then(function(res){
       freeBusy = false;
+      clearFreeWait();
       setGenMessage(GEN_TEXT_DEFAULT, GEN_SUB_DEFAULT);
       if(!res.ok){
         var code = res.d && res.d.code;
@@ -407,7 +411,6 @@ var SpecsFunnel = (function(){
           proceedToPay();
           return;
         }
-        // 서버 에러 문자열은 ko 고정 — code 기반 로컬라이즈 우선 (2026-07-16 작가님 es 실측)
         showError(code === 'FREE_UNAVAILABLE' ? T.freeBusyMsg : code === 'GENERATE_FAILED' ? T.freeGenFail : ((res.d && res.d.error) || '' + T.freeGenFail + ''));
         restoreFitActions();
         return;
@@ -422,6 +425,7 @@ var SpecsFunnel = (function(){
     })
     .catch(function(){
       freeBusy = false;
+      clearFreeWait();
       setGenMessage(GEN_TEXT_DEFAULT, GEN_SUB_DEFAULT);
       showError(T.errNet);
       restoreFitActions();
@@ -925,6 +929,7 @@ var SpecsFunnel = (function(){
     setGenMessage(GEN_TEXT_DEFAULT, GEN_SUB_DEFAULT);
     // 연출: 실제 파이프라인 단계를 순환 표기 (재단→매팅→검수) — 대기가 신뢰가 되게
     if(window.__genStageTimer) clearInterval(window.__genStageTimer);
+    if(window.__genLongWaitTimer) clearTimeout(window.__genLongWaitTimer);
     (function(){
       var stages = fitResult ? [T.genStage1, T.genStage2, T.genStage3] : [GEN_TEXT_DEFAULT];
       var i = 0;
@@ -933,6 +938,10 @@ var SpecsFunnel = (function(){
         setGenMessage(stages[i], GEN_SUB_DEFAULT);
       }, 3500);
     })();
+    window.__genLongWaitTimer = setTimeout(function(){
+      if(window.__genStageTimer) clearInterval(window.__genStageTimer);
+      setGenMessage(T.genStillWorking2 || GEN_TEXT_DEFAULT, GEN_SUB_DEFAULT);
+    }, 35000);
     var body = { image: uploadedBase64, format: CFG.format, gender: subjectSelection.gender || 'm', age: subjectSelection.age || 'adult', slug: CFG.slug };
     if(fitResult && fitResult.frame){ body.fitFrame = fitResult.frame; body.fitMeta = fitResult.meta; body.fitMetrics = fitResult.metrics; }
     if(pay.token) body.paymentToken = pay.token;
@@ -946,6 +955,7 @@ var SpecsFunnel = (function(){
       genBusy = false;
       var data = res.d;
       if(window.__genStageTimer) clearInterval(window.__genStageTimer);
+      if(window.__genLongWaitTimer) clearTimeout(window.__genLongWaitTimer);
       if(data.image){
         if(typeof data.remainingGenerates === 'number'){ pay.remaining = data.remainingGenerates; persistOrder(); }
         document.getElementById('v2-result-before-img').src = uploadedBase64;
@@ -981,7 +991,7 @@ var SpecsFunnel = (function(){
         showPhase(uploadedBase64 ? phasePay : phaseUpload);
       }
     })
-    .catch(function(){ if(window.__genStageTimer) clearInterval(window.__genStageTimer); genBusy = false; showError(T.errNet); showPhase(uploadedBase64 ? phasePay : phaseUpload); });
+    .catch(function(){ if(window.__genStageTimer) clearInterval(window.__genStageTimer); if(window.__genLongWaitTimer) clearTimeout(window.__genLongWaitTimer); genBusy = false; showError(T.errNet); showPhase(uploadedBase64 ? phasePay : phaseUpload); });
   }
 
   var payCreditBtn = document.getElementById('v2-pay-credit');
