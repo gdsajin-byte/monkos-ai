@@ -57,7 +57,7 @@ import { handleIdphotoResults } from './lib/cms/idphoto-review.js';
 import { handleAiImage, handleAiThumbnail, handleAiSuggest } from './lib/cms/ai.js';
 import { handleTranslate } from './lib/cms/translate.js';
 import { handleSearch } from './lib/cms/search.js';
-import { renderBlogList, renderBlogPost, renderFaq, renderGallery, renderBoardList, renderBoardPost, renderBoardWrite, renderGuide, renderAiPhotoGuide, renderSitemap, renderSitemapStatic, renderSitemapSpecs, renderSitemapBlog, renderPricing, renderSpecsList, renderSpecsDetail } from './lib/cms/render.js';
+import { renderBlogList, renderBlogPost, renderFaq, renderGallery, renderBoardList, renderBoardPost, renderBoardWrite, renderGuide, renderAiPhotoGuide, renderSitemap, renderSitemapStatic, renderSitemapSpecs, renderSitemapSpecsLang, renderSitemapBlog, renderPricing, renderSpecsList, renderSpecsDetail } from './lib/cms/render.js';
 import { renderHome, handleSettingsGet, handleSettingsPut, handleLayoutGet, handleLayoutPut } from './lib/cms/home.js';
 import { renderLlmsTxt } from './lib/cms/render-llms.js';
 import { renderHeadshot, renderHeadshotResult } from './lib/cms/render-headshot.js';
@@ -1108,6 +1108,10 @@ const httpServer = createServer(async (req, res) => {
   if (urlPath === '/sitemap.xml' && req.method === 'GET') return renderSitemap(req, res);
   if (urlPath === '/sitemap-static.xml' && req.method === 'GET') return renderSitemapStatic(req, res);
   if (urlPath === '/sitemap-specs.xml' && req.method === 'GET') return renderSitemapSpecs(req, res);
+  if (urlPath === '/sitemap-specs-ko.xml' && req.method === 'GET') return renderSitemapSpecsLang(req, res, 'ko');
+  if (urlPath === '/sitemap-specs-en.xml' && req.method === 'GET') return renderSitemapSpecsLang(req, res, 'en');
+  if (urlPath === '/sitemap-specs-ja.xml' && req.method === 'GET') return renderSitemapSpecsLang(req, res, 'ja');
+  if (urlPath === '/sitemap-specs-es.xml' && req.method === 'GET') return renderSitemapSpecsLang(req, res, 'es');
   if (urlPath === '/sitemap-blog.xml' && req.method === 'GET') return renderSitemapBlog(req, res);
   if (urlPath === '/llms.txt' && req.method === 'GET') return renderLlmsTxt(req, res);
 

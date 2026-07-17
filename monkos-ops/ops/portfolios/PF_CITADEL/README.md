@@ -181,6 +181,8 @@ status: active
 | 07/05 | iMac/민아 | **GSC 404 색인 126건 실체 규명 + 해소** — GSC 콘솔 실사: idphoto-jp는 2건 잡음, 본체는 포털. ① 풋터 `${prefix}/terms.html` 유령링크 교정+정책 3종 /(en\|ja) 301 신설 ② BLOG_REDIRECTS 전수 대사(죽은 타깃 22건 교체·GSC 실측 슬러그 7건 흡수·58 타깃 재프로브 404 잔존 0) ③ robots.txt(kr/jp) Disallow 슬래시 패턴 결함 교정+`/auth/` 차단. monk.kr 403 2건은 CF 봇차단 오탐 확정(스캐너 분류 신설, 5월부터 이월 종결). dev rev 00039 검증 | [COMPLETION](../../reports/2026-07/COMPLETION_20260705_iMac민아_77마감스프린트.md) | ⏳ prod 배포 대기 |
 
 | 07/15 | iMac/쌍아 | **CITADEL 대시보드 어드민 이식 + 유저 프로필 통합 설계 + 4건 prod 배포 + 계측 한계 실측** — ① CITADEL 초본 HTML → admin/citadel.html 이식(prod 00477) ② generations 인덱스 신설+329건 백필(prod 00479) ③ 어드민 유저 상세 페이지(4소스 조인: Firestore users/tx/generations + BQ 동선, prod 00480) ④ 외부 유입 역추적+정적 필터+전체 유입 채널 집계 카드(prod 00481). 통합 설계서 작성(buildUserProfile 단일 조립, 어드민=전필드/마이페이지=필터링). BQ 실측: 46%봇, 인앱 브라우저 referrer 누락 → UTM 방향 확정 | [설계서](../../tech/designs/2026-07/DESIGN_20260715_유저프로필_통합데이터모델_대시보드재설계.md) | ✅ prod 4건 |
+| 07/16 | 브라우저/철창이 | **Technical SEO/GEO Audit** — Googlebot UA raw HTML 감사. SSR·hreflang·PropertyValue 10·FAQPage 8·robots.txt 전항 합격. 결함 3건(출처 중복Low·마크업Low·Offer스키마Opp). 사이트맵 분할 권고 | [REPORT](../../reports/2026-07/REPORT_20260716_철창이_SEO_GEO_Audit_Citadel.md) | ✅ |
+| 07/17 | iMac/쌍아 | **사이트맵·URL·콘텐츠 전수 조사 + 수정** — 428slug×4lang 전수 스캔: thin 1건(kr-halfcard), URL충돌 0. 사이트맵 결함 4건 수정: ①lastmod 52일 스테일 갱신 ②ES 정적 4항목 추가 ③언어별 4분할(sitemap-specs-{ko,en,ja,es}.xml) ④템플릿 sourceHtml 중복 제거. GSC 개별 제출 대기 | [REPORT](../../reports/2026-07/REPORT_20260717_iMac쌍아_SPECS_사이트맵_URL전수조사.md) | ✅ 배포 대기 |
 
 ---
 

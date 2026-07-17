@@ -17,7 +17,6 @@ export function specCard(ctx) {
         ${detailHtml || restrictionsHtml ? `<div class="v2-tabpane" data-pane="detail" hidden>
           ${detailHtml ? `<ul class="v2-detail-list">${detailHtml}</ul>` : ''}
           ${restrictionsHtml}
-          ${sourceHtml}
         </div>` : ''}
         ${rejectHtml ? `<div class="v2-tabpane" data-pane="reject" hidden>
           <ol class="v2-reject-list">${rejectHtml}</ol>

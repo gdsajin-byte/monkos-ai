@@ -11,8 +11,8 @@ const blogCollection = firestore.collection('blog_posts');
 const DOMAIN = SPECS_DOMAIN;
 
 // lastmod 정본 상수 — 인덱스와 하위 사이트맵의 날짜 드리프트 방지
-const STATIC_LASTMOD = '2026-06-15';
-const SPECS_LASTMOD = '2026-05-26';
+const STATIC_LASTMOD = '2026-07-17';
+const SPECS_LASTMOD = '2026-07-17';
 
 function escXml(s) { return s ? s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;') : ''; }
 
@@ -71,6 +71,22 @@ export async function renderSitemap(req, res) {
     <lastmod>${SPECS_LASTMOD}</lastmod>
   </sitemap>
   <sitemap>
+    <loc>${DOMAIN}/sitemap-specs-ko.xml</loc>
+    <lastmod>${SPECS_LASTMOD}</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>${DOMAIN}/sitemap-specs-en.xml</loc>
+    <lastmod>${SPECS_LASTMOD}</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>${DOMAIN}/sitemap-specs-ja.xml</loc>
+    <lastmod>${SPECS_LASTMOD}</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>${DOMAIN}/sitemap-specs-es.xml</loc>
+    <lastmod>${SPECS_LASTMOD}</lastmod>
+  </sitemap>
+  <sitemap>
     <loc>${DOMAIN}/sitemap-blog.xml</loc>
     <lastmod>${blogLastmod}</lastmod>
   </sitemap>
@@ -91,9 +107,11 @@ export function renderSitemapStatic(req, res) {
       { loc: `${DOMAIN}/`, lastmod: '2026-06-01', changefreq: 'weekly', priority: '1.0', image: ogImage, imageTitle: 'MONKOS AI 증명사진' },
       { loc: `${DOMAIN}/ja/`, lastmod: '2026-06-01', changefreq: 'weekly', priority: '0.9', image: ogImage, imageTitle: 'MONKOS AI 証明写真' },
       { loc: `${DOMAIN}/en/`, lastmod: '2026-06-01', changefreq: 'weekly', priority: '0.9', image: ogImage, imageTitle: 'MONKOS AI ID Photo' },
+      { loc: `${DOMAIN}/es/`, lastmod: '2026-07-15', changefreq: 'weekly', priority: '0.8', image: ogImage, imageTitle: 'MONKOS AI Foto de Identificación' },
       { loc: `${DOMAIN}/blog`, lastmod: '2026-06-14', changefreq: 'daily', priority: '0.8', image: ogImage, imageTitle: 'MONKOS AI 블로그' },
       { loc: `${DOMAIN}/ja/blog`, lastmod: '2026-06-14', changefreq: 'daily', priority: '0.7' },
       { loc: `${DOMAIN}/en/blog`, lastmod: '2026-06-14', changefreq: 'daily', priority: '0.7' },
+      { loc: `${DOMAIN}/es/blog`, lastmod: '2026-07-15', changefreq: 'daily', priority: '0.6' },
       { loc: `${DOMAIN}/faq`, lastmod: '2026-03-15', changefreq: 'weekly', priority: '0.7' },
       { loc: `${DOMAIN}/ja/faq`, lastmod: '2026-03-15', changefreq: 'weekly', priority: '0.6' },
       { loc: `${DOMAIN}/en/faq`, lastmod: '2026-03-15', changefreq: 'weekly', priority: '0.6' },
@@ -102,11 +120,13 @@ export function renderSitemapStatic(req, res) {
       { loc: `${DOMAIN}/pricing`, lastmod: '2026-04-27', changefreq: 'monthly', priority: '0.6' },
       { loc: `${DOMAIN}/ja/pricing`, lastmod: '2026-04-27', changefreq: 'monthly', priority: '0.5' },
       { loc: `${DOMAIN}/en/pricing`, lastmod: '2026-04-27', changefreq: 'monthly', priority: '0.5' },
+      { loc: `${DOMAIN}/es/pricing`, lastmod: '2026-07-15', changefreq: 'monthly', priority: '0.4' },
       { loc: `${DOMAIN}/guide`, lastmod: '2026-03-01', changefreq: 'weekly', priority: '0.7' },
       { loc: `${DOMAIN}/guide/ai-photo`, lastmod: '2026-03-01', changefreq: 'weekly', priority: '0.8', image: ogImage, imageTitle: 'MONKOS AI 증명사진 가이드' },
       { loc: `${DOMAIN}/specs`, lastmod: '2026-05-26', changefreq: 'monthly', priority: '0.9', image: ogImage, imageTitle: 'MONKOS AI 증명사진 규격' },
       { loc: `${DOMAIN}/ja/specs`, lastmod: '2026-05-26', changefreq: 'monthly', priority: '0.8', image: ogImage, imageTitle: 'MONKOS AI 証明写真 規格' },
       { loc: `${DOMAIN}/en/specs`, lastmod: '2026-05-26', changefreq: 'monthly', priority: '0.8', image: ogImage, imageTitle: 'MONKOS AI ID Photo Specs' },
+      { loc: `${DOMAIN}/es/specs`, lastmod: '2026-07-15', changefreq: 'monthly', priority: '0.7', image: ogImage, imageTitle: 'MONKOS AI Especificaciones Foto ID' },
     ];
     sendXml(res, wrapUrlset(urls.map(urlEntry)));
   } catch (err) {
@@ -116,29 +136,46 @@ export function renderSitemapStatic(req, res) {
   }
 }
 
-// GET /sitemap-specs.xml
+// specs 사이트맵 공통 — 지정 언어 1개분 URL 생성
+function specsUrlsForLang(lang) {
+  const urls = [];
+  const seen = new Set();
+  const priorityMap = { ko: '0.8', en: '0.7', ja: '0.7', es: '0.6' };
+  for (const [slug] of Object.entries(SPECS_DATA)) {
+    const canonical = REDIRECT_MAP[slug];
+    const path = canonical || slug;
+    if (seen.has(path)) continue;
+    seen.add(path);
+    urls.push({
+      loc: specsUrl(path, lang),
+      lastmod: SPECS_LASTMOD,
+      changefreq: 'monthly',
+      priority: priorityMap[lang] || '0.6',
+      alternates: specsAlternates(path),
+    });
+  }
+  return urls;
+}
+
+// GET /sitemap-specs.xml — 전체 (하위 호환)
 export function renderSitemapSpecs(req, res) {
   try {
     const urls = [];
-    const seen = new Set();
-
-    for (const [slug] of Object.entries(SPECS_DATA)) {
-      const canonical = REDIRECT_MAP[slug];
-      const path = canonical || slug;
-      if (seen.has(path)) continue;
-      seen.add(path);
-
-      const lastmod = SPECS_LASTMOD;
-      const alternates = specsAlternates(path);
-      urls.push({ loc: specsUrl(path, 'ko'), lastmod, changefreq: 'monthly', priority: '0.8', alternates });
-      urls.push({ loc: specsUrl(path, 'ja'), lastmod, changefreq: 'monthly', priority: '0.7', alternates });
-      urls.push({ loc: specsUrl(path, 'en'), lastmod, changefreq: 'monthly', priority: '0.7', alternates });
-      urls.push({ loc: specsUrl(path, 'es'), lastmod, changefreq: 'monthly', priority: '0.6', alternates });
-    }
-
+    for (const lang of ['ko', 'ja', 'en', 'es']) urls.push(...specsUrlsForLang(lang));
     sendXml(res, wrapUrlset(urls.map(urlEntry)));
   } catch (err) {
     log(`[CMS] sitemap-specs 에러: ${err.message}`, 'ERROR');
+    res.writeHead(500, { 'Content-Type': 'text/plain' });
+    res.end('Internal Server Error');
+  }
+}
+
+// GET /sitemap-specs-{lang}.xml — 언어별 분할
+export function renderSitemapSpecsLang(req, res, lang) {
+  try {
+    sendXml(res, wrapUrlset(specsUrlsForLang(lang).map(urlEntry)));
+  } catch (err) {
+    log(`[CMS] sitemap-specs-${lang} 에러: ${err.message}`, 'ERROR');
     res.writeHead(500, { 'Content-Type': 'text/plain' });
     res.end('Internal Server Error');
   }
