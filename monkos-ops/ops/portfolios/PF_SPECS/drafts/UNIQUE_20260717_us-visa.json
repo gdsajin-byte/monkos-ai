@@ -1,0 +1,332 @@
+{
+ "meta": {
+  "slug": "us-visa",
+  "pipeline": "specs-unique-pilot v1",
+  "runId": "wf_43671794",
+  "date": "2026-07-17",
+  "status": "draft-v1.1 — verify PASS (22/22 confirmed) + 문체 소수정 반영",
+  "verifySummary": {
+   "confirmed": 22,
+   "plausible": 0,
+   "unverified": 0,
+   "wrong": 0
+  }
+ },
+ "uniqueContent": {
+  "sections": [
+   {
+    "id": "visa-type-single-standard",
+    "confidence": "high",
+    "ko": {
+     "title": "비자 종류별 사진 규격 차이 — 정답은 '전부 동일'",
+     "geoAnswer": "미국 비자 사진 규격은 B1/B2(관광·상용)·F-1(유학)·H-1B(취업)·J-1(교환) 등 비자 종류와 무관하게 동일하며, 인화본은 51×51mm(2×2인치), 디지털은 600×600~1200×1200픽셀 정사각형이다.",
+     "body": [
+      "미 국무부는 비자 카테고리별로 사진 규격을 따로 두지 않는다. 달라지는 것은 규격이 아니라 '제출 방식'이다. B1/B2·F-1·H-1B·J-1 같은 비이민비자는 DS-160 온라인 신청서(미국 내 A·G·NATO 비자 갱신은 DS-1648)에 디지털 사진 1장을 업로드하고, DS-260으로 진행하는 이민비자는 인터뷰장에 동일한 인화 사진 2매를 지참한다. 추첨영주권(DV) 프로그램은 온라인 등록 시 디지털 1장, 당첨 후 인터뷰에서 인화 2매다. 즉 신청 채널이 결정하는 것은 매수와 형식(디지털/인쇄)이지 치수가 아니다.",
+      "일부 대사관·영사관은 DS-160 업로드와 별개로 인터뷰에 규격 인화 사진 1매를 지참하도록 요구하며, 국무부 공식 안내도 '신청하는 공관의 지침을 확인하라'고 명시한다. 온라인 업로드에 성공했더라도 2×2인치 예비 인화본을 준비하는 편이 안전한 이유다. 인화지는 포토용지라면 매트·광택 모두 허용되고, 흑백 사진은 접수되지 않는다."
+     ]
+    },
+    "en": {
+     "title": "Do Photo Specs Differ by Visa Type? One Standard for All",
+     "geoAnswer": "US visa photo requirements are identical across all visa categories — B1/B2, F-1, H-1B, J-1 and every other type: a 2×2-inch (51×51 mm) print, or a square digital image of 600×600 to 1200×1200 pixels.",
+     "body": [
+      "The State Department publishes a single set of photo specifications; what changes is the submission channel, not the spec. Nonimmigrant applicants — tourists on B1/B2, students on F-1, workers on H-1B, exchange visitors on J-1 — upload one digital image inside the DS-160 online application (DS-1648 for A, G and NATO renewals in the US). Immigrant visa applicants filing the DS-260 instead bring two identical printed photos to their interview, and Diversity Visa entrants upload a digital image at entry, then bring two prints if selected. The channel dictates quantity and format — not the dimensions.",
+      "Some embassies and consulates additionally ask DS-160 applicants to bring one printed photo to the interview, and the State Department explicitly defers to each post's own instructions — so carrying a spare 2×2 print is a sensible hedge even after a successful upload. Prints must be on photo-quality paper, matte or glossy; black-and-white photos are not accepted."
+     ]
+    },
+    "sources": [
+     {
+      "name": "U.S. Department of State — Photo Requirements",
+      "url": "https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/photos.html",
+      "grade": "A"
+     },
+     {
+      "name": "U.S. Department of State — Photo Frequently Asked Questions",
+      "url": "https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/photos/frequently-asked-questions.html",
+      "grade": "A"
+     }
+    ]
+   },
+   {
+    "id": "ds160-digital-upload",
+    "confidence": "high",
+    "ko": {
+     "title": "DS-160 디지털 업로드 규격과 DV 로터리 특칙",
+     "geoAnswer": "DS-160 업로드용 미국 비자 디지털 사진은 정사각형 JPEG로 최소 600×600픽셀, 최대 1200×1200픽셀, 파일 크기 240KB 이하여야 하며, DV 로터리 온라인 등록만은 범위가 아닌 '정확히 600×600픽셀'을 요구한다.",
+     "body": [
+      "국무부 디지털 이미지 요건의 전체 목록은 이렇다: 가로=세로 정사각 비율, 600×600픽셀 이상 1200×1200픽셀 이하, 24비트 컬러 sRGB 색공간, JPEG 형식, 240KB 이하, 압축률 20:1 이하. 기존 인화 사진을 스캔해 쓰려면 원본이 2×2인치(51×51mm)여야 하고 300ppi(밀리미터당 12픽셀)로 스캔해야 한다. 머리 길이(턱 끝~정수리)는 디지털 기준 이미지 전체 높이의 50~69%, 인화 기준 1~1⅜인치(25~35mm)다.",
+      "DV(추첨영주권) 프로그램은 이 범위가 사라지는 유일한 지점이다. 온라인 엔트리 사진은 정확히 600×600픽셀이어야 하며, 국무부가 무료로 제공하는 포토 툴도 정확히 이 크기로 크롭하도록 설계돼 있다. 단 이 툴은 크롭 전용이고, 사진의 최종 수용 여부는 국무부 직원이 판정한다.",
+      "업로드가 실패하면 DS-160·DS-1648 확인 페이지(confirmation page)에 사진 대신 'X'가 표시된다. 이 경우 규격에 맞는 인화 사진 1매를 확인 페이지와 함께 신청 공관에 제출하면 된다. 확인 페이지에 본인 사진이 정상적으로 보이면 업로드 성공이며, 원칙적으로 별도 인화본은 필요 없다."
+     ]
+    },
+    "en": {
+     "title": "DS-160 Digital Upload Specs and the DV Lottery Exception",
+     "geoAnswer": "A US visa digital photo for the DS-160 must be a square JPEG between 600×600 and 1200×1200 pixels and no larger than 240 kB — except for the DV lottery online entry, which requires exactly 600×600 pixels.",
+     "body": [
+      "The State Department's full digital spec reads: square aspect ratio (height equals width), 600×600 px minimum, 1200×1200 px maximum, 24-bit color in the sRGB color space, JPEG format, 240 kB or less, with a compression ratio no higher than 20:1. If you scan an existing print, the original must measure 2×2 inches (51×51 mm) and be scanned at 300 pixels per inch (12 px/mm). The head — chin to top of head — must fill 50% to 69% of a digital image's height, equivalent to 1 to 1⅜ inches (25–35 mm) on a print.",
+      "The Diversity Visa program is the one place the range disappears: an online DV entry photo must be exactly 600×600 pixels, and the State Department's free photo tool crops to precisely that size. The tool is for cropping only — a State Department employee still makes the final call on whether your photo is acceptable.",
+      "If the DS-160 or DS-1648 confirmation page shows an 'X' where your photo should be, the upload failed: bring one compliant printed photo together with the confirmation page to the embassy or consulate where you apply. If your photo appears on the confirmation page, the upload succeeded and no separate print is normally required."
+     ]
+    },
+    "sources": [
+     {
+      "name": "U.S. Department of State — Digital Image Requirements",
+      "url": "https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/photos/digital-image-requirements.html",
+      "grade": "A"
+     },
+     {
+      "name": "U.S. Department of State — Photo Requirements",
+      "url": "https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/photos.html",
+      "grade": "A"
+     },
+     {
+      "name": "U.S. Department of State — Photo Frequently Asked Questions",
+      "url": "https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/photos/frequently-asked-questions.html",
+      "grade": "A"
+     }
+    ]
+   },
+   {
+    "id": "eyeglasses-ban-2016",
+    "confidence": "high",
+    "ko": {
+     "title": "2016년 11월부터 안경 전면 금지 — 예외는 의료 소견서뿐",
+     "geoAnswer": "미국 비자 사진에서는 2016년 11월 1일부터 안경 착용이 전면 금지됐으며, 안과 수술 직후처럼 의료상 벗을 수 없는 경우에 한해 의료인이 서명한 소견서를 제출해야만 예외가 인정된다.",
+     "body": [
+      "국무부는 시행일(2016년 11월 1일)까지 명시해 이 규정을 별도 FAQ 항목으로 다룬다. 의료 사유로 예외가 인정되더라도 세 가지 조건이 붙는다: 안경테가 눈을 가리지 않을 것, 렌즈에 빛 반사(글레어)가 없을 것, 안경으로 인한 그림자나 굴절이 눈을 가리지 않을 것. 국무부 스스로 '드문 경우(rare circumstances)'라고 표현할 만큼 예외의 문은 좁다.",
+      "선글라스·착색(틴티드) 렌즈는 한 단계 더 엄격하다. 미국 여권 사진은 의료 증명이 있으면 착색 처방 렌즈를 허용할 수 있지만, 미국 비자 사진은 의료 사유로도 어두운 렌즈나 착색 렌즈를 일절 허용하지 않는다. 비자 규정이 여권 규정보다 엄격한 대표적인 지점으로, 여권 기준에 맞춰 사진을 준비했다면 제출 전에 반드시 다시 확인해야 한다."
+     ]
+    },
+    "en": {
+     "title": "Eyeglasses Banned Since November 2016 — Medical Exceptions Only",
+     "geoAnswer": "Eyeglasses have been banned in US visa photos since November 1, 2016; the only exception is a medical reason — such as recent ocular surgery — documented by a statement signed by a medical professional.",
+     "body": [
+      "The State Department treats this rule prominently enough to give it its own FAQ entry, effective date included. Even when glasses are accepted on medical grounds, three conditions apply: the frames must not cover the eyes, there must be no glare on the lenses, and no shadows or refraction from the glasses may obscure the eyes. The Department's own wording — 'rare circumstances' — signals how narrow the exception is.",
+      "Sunglasses and tinted lenses are stricter still. A US passport photo may permit tinted prescription lenses with a medical certificate, but for a US visa photo no dark or tinted lenses are allowed under any circumstances. It is one of the clearest points where visa rules outrank passport rules in strictness — applicants who prepared their photo to passport guidance should re-check before submitting."
+     ]
+    },
+    "sources": [
+     {
+      "name": "U.S. Department of State — Photo Frequently Asked Questions",
+      "url": "https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/photos/frequently-asked-questions.html",
+      "grade": "A"
+     },
+     {
+      "name": "U.S. Department of State — Photo Requirements",
+      "url": "https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/photos.html",
+      "grade": "A"
+     }
+    ]
+   },
+   {
+    "id": "us-rejection-triggers",
+    "confidence": "high",
+    "ko": {
+     "title": "미국 고유 반려 트리거 — 보정 금지·복장·6개월 시효",
+     "geoAnswer": "미국 비자 사진은 외모를 바꾸는 디지털 보정이 전면 금지되며, 촬영 후 편집 도구로 적목(red-eye)을 지우는 것조차 반려 사유다 — 허용되는 것은 촬영 시점에 카메라의 적목 감소 기능을 쓰는 것뿐이다.",
+     "body": [
+      "국무부 규정의 선은 '촬영 시점'과 '사후 편집' 사이에 그어져 있다. 촬영할 때 카메라의 적목 감소 옵션을 켜는 것은 허용되지만, 찍힌 사진에서 편집 도구로 적목을 지우는 것은 불가하며, 외모를 바꾸는 어떤 디지털 향상·수정도 금지된다. 운전면허증 등 공문서에서 복사·스캔한 사진, 잡지 사진, 저품질 자판기·휴대폰 사진, 전신 사진도 접수되지 않는다. 셀프 촬영 자체는 공식적으로 허용되지만, 국무부는 '대부분의 웹캠과 휴대폰은 충분한 품질을 내지 못한다'고 경고한다 — 관건은 600×600픽셀 이상에서 버티는 선명도와 정확한 구도다.",
+      "복장과 소품 규정도 미국식으로 구체적이다. 유니폼은 물론 '유니폼처럼 보이는 옷'과 위장복(camouflage)까지 금지되며, 예외는 일상적으로 착용하는 종교 복장뿐이다. 모자·머리덮개는 종교 목적의 일상 착용만 인정되고, 그 경우에도 얼굴 전체가 보여야 하며 얼굴에 그림자를 드리우면 안 된다. 헤드폰·무선 핸즈프리 기기는 착용 불가, 보청기 등 청각 보조기기는 허용이다.",
+      "시효 규정은 이중이다: 신청 시점 기준 6개월 이내 촬영이면서 '현재 외모'를 반영해야 한다. 6개월 이내 사진이라도 대규모 안면 성형·외상, 다수·대형 안면 피어싱·문신의 추가나 제거, 급격한 체중 변화가 있었다면 새 사진을 요구받는다. 반대로 수염을 기르거나 머리를 염색한 정도는 일반적으로 교체 사유가 아니다."
+     ]
+    },
+    "en": {
+     "title": "US-Specific Rejection Triggers: No Retouching, Dress Rules, the 6-Month Clock",
+     "geoAnswer": "US visa photos must not be digitally enhanced or altered to change your appearance in any way — even removing red-eye with editing software is grounds for rejection, while using a camera's built-in red-eye reduction at capture is allowed.",
+     "body": [
+      "The State Department draws the line between capture and post-processing: switching on red-eye reduction while shooting is fine; erasing red-eye afterward with an editing tool is not, and no digital enhancement that changes your appearance is permitted. Photos copied or scanned from driver's licenses or other official documents are rejected outright, as are magazine photos, low-quality vending-machine or mobile-phone shots, and full-length photographs. Self-taken photos are officially allowed, but the Department cautions that most webcams and mobile phones cannot deliver sufficient quality — what matters is sharpness that holds up at 600×600 pixels or more, with correct composition.",
+      "The dress rules are distinctively specific: uniforms, clothing that merely looks like a uniform, and camouflage attire are all barred, with daily-worn religious attire the sole exception. Hats and head coverings pass only if worn daily for religious purposes — and even then the full face must remain visible with no shadows cast on it. Headphones and wireless hands-free devices are not acceptable; hearing devices may be worn.",
+      "The validity rule is two-pronged: the photo must have been taken within 6 months of submitting the application and must reflect your current appearance. Significant facial surgery or trauma, adding or removing numerous or large facial piercings or tattoos, or substantial weight change triggers a new-photo request even inside the 6-month window. Growing a beard or coloring your hair generally does not."
+     ]
+    },
+    "sources": [
+     {
+      "name": "U.S. Department of State — Photo Frequently Asked Questions",
+      "url": "https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/photos/frequently-asked-questions.html",
+      "grade": "A"
+     },
+     {
+      "name": "U.S. Department of State — Photo Requirements",
+      "url": "https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/photos.html",
+      "grade": "A"
+     }
+    ]
+   },
+   {
+    "id": "infant-child-rules",
+    "confidence": "high",
+    "ko": {
+     "title": "영유아·아동 사진 규정 — 여권보다 엄격한 '눈 뜨기'",
+     "geoAnswer": "미국 비자 사진은 영유아를 포함한 모든 아동이 눈을 뜨고 카메라를 정면으로 바라봐야 하며, 신생아의 눈이 완전히 떠 있지 않아도 허용하는 미국 여권 사진과 달리 비자용에는 이 완화 규정이 없다.",
+     "body": [
+      "아이는 사진에 혼자 있어야 한다. 부모나 보호자가 함께 찍히는 것은 물론, 아이를 받치는 부모의 팔·손이 프레임에 들어가는 것도 반려 사유다. 국무부가 공식 안내하는 촬영법은 두 가지다: 흰색 또는 미색 시트 위에 아기를 눕혀 머리를 받치면서 배경을 확보하는 방법(위에서 내려찍을 때 얼굴 그림자 주의), 그리고 카시트에 흰색 또는 미색 시트를 덮고 아이를 앉혀 찍는 방법이다.",
+      "여권과의 차이가 함정이 되는 지점이 바로 눈이다. 미국 여권 사진 규정은 '아기의 눈이 완전히 떠 있지 않아도 괜찮다'고 명시하지만, 비자 사진 FAQ는 '아이의 눈이 감겨도 되는가'라는 질문에 명확히 '아니오'라고 답한다 — 눈을 뜨고 카메라를 정면으로 봐야 한다. 여권용으로 통과된 신생아 사진을 비자 신청에 재사용하는 것이 위험한 이유다.",
+      "한편 16세 미만 아동이 자연스러운 성장 과정으로 외모가 변한 경우에는 일반적으로 새 사진을 제출할 필요가 없다. 다만 사진의 최종 수용 여부는 언제나 신청 공관(대사관·영사관)의 재량이다."
+     ]
+    },
+    "en": {
+     "title": "Infant and Child Photo Rules — Stricter Than a US Passport",
+     "geoAnswer": "In a US visa photo, every child — infants included — must have their eyes open and look straight at the camera; unlike US passport rules, which accept a baby's eyes not being entirely open, visa rules grant no such allowance.",
+     "body": [
+      "The child must be the only person in the frame: not just no parent posing alongside, but no supporting parental hands or arms visible in the shot. The State Department itself suggests two techniques: lay the baby on a plain white or off-white sheet, which supports the head and supplies the background (watch for face shadows when shooting from above), or drape a car seat with a white sheet and photograph the child seated in it.",
+      "The eyes are where passport habits become a trap. US passport guidance states it is okay if a baby's eyes are not entirely open, but the visa photo FAQ answers the closed-eyes question with a flat no — the child's eyes must be open and looking straight ahead at the camera. That gap is exactly why reusing a passport-approved newborn photo for a visa application is risky.",
+      "On the other hand, a child under 16 whose appearance has changed through the normal aging process generally does not need to submit a new photo — though acceptance always remains at the discretion of the embassy or consulate where you apply."
+     ]
+    },
+    "sources": [
+     {
+      "name": "U.S. Department of State — Photo Frequently Asked Questions",
+      "url": "https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/photos/frequently-asked-questions.html",
+      "grade": "A"
+     },
+     {
+      "name": "U.S. Department of State — Photo Requirements",
+      "url": "https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/photos.html",
+      "grade": "A"
+     },
+     {
+      "name": "U.S. Department of State — Passport Photos",
+      "url": "https://travel.state.gov/content/travel/en/passports/how-apply/photos.html",
+      "grade": "A"
+     }
+    ]
+   }
+  ]
+ },
+ "researchNotes": [
+  "travel.state.gov 전체가 WebFetch에 403(Cloudflare 차단), web.archive.org도 접근 불가 → 브라우저 페인으로 2026-07-17 실측 열람. 공식 3개 페이지(Photo Requirements / Digital Image Requirements / Photo FAQ) + 여권 사진 페이지(passports/how-apply/photos) 전문 확보, 모든 수치 verbatim 검증 완료.",
+  "정본 수치 충돌 없음: specs-data.json의 headHeight 25~35mm, 600×600px, 240KB, 6개월, 51×51mm 모두 공식 FAQ·Digital Image Requirements와 일치. 단 공식 메인 페이지(photos.html)의 머리 높이 mm 병기가 '1 inch and 1 3/8 inches (22 mm and 35 mm)'로 표기돼 자체 FAQ(25~35mm)·1인치(=25.4mm)·백분율 하한(50%)과 모순 — 국무부 측 오기로 판단, 본문에는 25~35mm/1~1⅜인치/50~69%만 사용.",
+  "브리핑 교차검증 결과 정정 1건: '영유아는 눈을 일부 감아도 허용되는 경우 있음'(철창이 DB)은 미국 여권 규정('It is okay if a baby's eyes are not entirely open' — passport 페이지 실측)이며, 비자 FAQ는 아동 눈 감김 질문에 명시적 'No'(눈 뜨고 정면 필수) → 비자 페이지에서는 반대로 기술하고 여권과의 차이를 유니크 콘텐츠로 전환.",
+  "'2024년 사진 부적합 반려 약 30만 건'(visapics.org)은 B급 단독 수치로 공식 교차검증 불가 → 본문 제외.",
+  "'미국 전 문서유형 2×2 통일'(그린카드 I-485, 시민권 N-400, EAD I-766 등 USCIS 서식) 주장은 이번 세션에서 USCIS 공식 문서로 미검증 → 본문은 travel.state.gov에서 실측된 범위(비자 전 카테고리 + 여권)까지만 반영.",
+  "공식 실측 확정 사실: 안경 금지 시행일 2016-11-01(FAQ verbatim), DV 온라인 엔트리 '정확히 600×600px'(범위 아님), 디지털 압축률 ≤20:1, 스캔 300ppi(12px/mm), DS-160 확인 페이지 'X' 표시 시 인화 1매+확인 페이지 지참 절차, 선글라스·틴티드 렌즈는 비자에서 의료 예외조차 불허(여권과 상이), 유니폼 유사 복장·위장복 금지, 헤드폰·무선 핸즈프리 금지·보청기 허용, 매트/광택 인화지 모두 허용, 16세 미만 자연 성장은 새 사진 불요.",
+  "배경색: 공식 규정은 'plain white or off-white'(흰색 또는 미색) — 정본 background 필드는 '흰색' 단독 표기이나 모순은 아니므로 본문에서 시트 색상 안내 등은 공식 표현(흰색/미색)을 따름."
+ ],
+ "verifyRecord": {
+  "slug": "us-visa",
+  "pass": true,
+  "claims": [
+   {
+    "claim": "사진 규격은 비자 종류(B1/B2·F-1·H-1B·J-1)와 무관하게 동일하며 달라지는 것은 제출 채널(매수·형식)뿐이다",
+    "verdict": "confirmed",
+    "evidence": "photos.html 실측(2026-07-17): 단일 규격 세트만 게시. 'Digital images are required for some visa categories, while photos are required for other visa categories' + NIV(DS-160/DS-1648)=디지털 업로드, IV(DS-260)='two (2) identical photos at your immigrant visa interview', DV=엔트리 디지털 업로드+당첨자 인화 2매. 카테고리별 별도 치수 규정 없음."
+   },
+   {
+    "claim": "인화본 규격 2×2인치(51×51mm)",
+    "verdict": "confirmed",
+    "evidence": "FAQ verbatim: 'The photo must be exactly 2 x 2 inches (51 x 51 mm).' photos.html DS-260/DV 섹션 동일. specs-data.json size 필드와 일치."
+   },
+   {
+    "claim": "디지털 사진은 정사각형 600×600~1200×1200픽셀",
+    "verdict": "confirmed",
+    "evidence": "Digital Image Requirements 페이지 verbatim: 'Minimum acceptable dimensions are 600 x 600 pixels. Maximum acceptable dimensions are 1200 x 1200 pixels', 'square aspect ratio (the height must be equal to the width)'.",
+    "fix": "사실은 정확하나 이 범위는 섹션 1의 두 cited sources(photos.html·FAQ)에는 없고 Digital Image Requirements 페이지에만 있음 → 섹션 1 sources 배열에 Digital Image Requirements 페이지 추가 권장."
+   },
+   {
+    "claim": "DS-1648은 미국 내 A·G·NATO 비자 갱신용",
+    "verdict": "confirmed",
+    "evidence": "travel.state.gov 외교관 비자 섹션 실측: 'DS-1648: Online Application for A, G, and NATO Visas', 'Renewing A, G, and NATO Visas in the United States'. photos.html·FAQ는 DS-1648을 명칭으로만 언급.",
+    "fix": "근거 페이지(visas-diplomats.html)가 섹션 sources에 미포함 — 소스 추가 권장. ko '주미 외교공관 A·G·NATO 갱신'은 '미국 내 A·G·NATO 비자 갱신'으로 다듬기 권장."
+   },
+   {
+    "claim": "일부 공관은 DS-160과 별개로 인터뷰에 인화 1매 지참을 요구하며 국무부는 공관별 지침 확인을 안내",
+    "verdict": "confirmed",
+    "evidence": "photos.html verbatim: 'Some embassies and consulates require visa applicants to bring one (1) photo, which meets requirements, to the interview. Review the embassy or consulate instructions where you will apply to learn more.'"
+   },
+   {
+    "claim": "인화지는 매트·광택 모두 허용, 흑백 사진 불가",
+    "verdict": "confirmed",
+    "evidence": "FAQ verbatim: 'The photo quality paper can be either matte or glossy photo paper.' / 'Black and white photos will not be accepted.'"
+   },
+   {
+    "claim": "디지털 전체 스펙: 24비트 컬러 sRGB, JPEG, 240KB 이하, 압축률 20:1 이하",
+    "verdict": "confirmed",
+    "evidence": "Digital Image Requirements verbatim: 'in color (24 bits per pixel) in sRGB color space', 'JPEG file format', 'less than or equal to 240 kB', 'compression ratio should be less than or equal to 20:1'."
+   },
+   {
+    "claim": "스캔 시 원본 2×2인치 + 300ppi(밀리미터당 12픽셀)",
+    "verdict": "confirmed",
+    "evidence": "Digital Image Requirements·photos.html 공히 verbatim: '2 x 2 inches (51 x 51 mm) / Scanned at a resolution of 300 pixels per inch (12 pixels per millimeter)'. specs-data.json dpi 300과 일치."
+   },
+   {
+    "claim": "머리 높이: 디지털 전체 높이의 50~69%, 인화 1~1⅜인치(25~35mm)",
+    "verdict": "confirmed",
+    "evidence": "FAQ verbatim: 'between 1 inch and 1-3/8 inches (between 25 and 35 mm)', 'between 50% and 69% of the image's total height'. photos.html의 '(22 mm and 35 mm)' 오기 실재 확인 — 25~35mm 채택은 FAQ 근거로 타당. specs-data.json headHeightMin 25/Max 35와 일치."
+   },
+   {
+    "claim": "DV 온라인 엔트리는 정확히 600×600픽셀이며 국무부 무료 포토 툴은 크롭 전용, 최종 판정은 국무부 직원",
+    "verdict": "confirmed",
+    "evidence": "photos.html DV 섹션: '600x600 pixels in dimension'(고정값, 범위 아님) + 포토 툴 설명 verbatim: 'crop it to a square image of exactly 600 x 600 pixels', 'This tool is intended for photo cropping only. A Department of State employee will make the final decision'."
+   },
+   {
+    "claim": "DS-160/DS-1648 확인 페이지에 'X' 표시 시 업로드 실패 → 규격 인화 1매+확인 페이지 지참, 사진이 보이면 성공이며 별도 인화 불요",
+    "verdict": "confirmed",
+    "evidence": "FAQ verbatim: 'That means the photo upload failed. Therefore, you should submit one printed photo meeting our requirements, along with the online DS-160 confirmation page... If the confirmation page includes a photo of you, then the photo upload was successful and no separate photo is required.'"
+   },
+   {
+    "claim": "안경은 2016년 11월 1일부로 금지, 예외는 의료인 서명 소견서가 있는 의료 사유뿐이며 3개 조건(테가 눈 가림 금지·글레어 금지·그림자/굴절 금지) 부가, 'rare circumstances' 표현",
+    "verdict": "confirmed",
+    "evidence": "FAQ verbatim: 'Effective November 1, 2016, eyeglasses are no longer allowed in new visa photos, except in rare circumstances... ocular surgery... A medical statement signed by a medical professional/health practitioner must be provided' + 3개 조건 전문 일치. 별도 FAQ 항목으로 존재함도 사실."
+   },
+   {
+    "claim": "여권 사진은 의료 사유 시 착색 처방 렌즈 허용 가능하나 비자 사진은 어두운/착색 렌즈 일절 불허",
+    "verdict": "confirmed",
+    "evidence": "비자 FAQ verbatim: 'If you are applying for a U.S. passport, and you need to wear your prescription glasses that have dark on tinted lenses for medical reasons then they may be worn... A medical certificate may be required... If you are applying for a U.S. visa, you may not wear any glasses with dark or tinted lenses for your photo.' 여권 페이지의 의료 예외(signed note from your doctor)와도 정합."
+   },
+   {
+    "claim": "촬영 시 카메라 적목 감소 기능은 허용, 촬영 후 편집 도구로 적목 제거는 불가, 외모를 바꾸는 디지털 보정 전면 금지",
+    "verdict": "confirmed",
+    "evidence": "FAQ verbatim: 'It is acceptable to use the red-eye reduction option on your digital camera when you are taking the photo. However, you cannot use any photo editing tool to digitally remove the red-eye... you are not allowed to digitally enhance or alter the photo to change your appearance in any way.'"
+   },
+   {
+    "claim": "공문서(운전면허증 등) 복사·스캔 사진, 잡지 사진, 저품질 자판기·휴대폰 사진, 전신 사진 불가; 셀프 촬영은 허용되나 '대부분의 웹캠·휴대폰은 품질 불충분' 경고",
+    "verdict": "confirmed",
+    "evidence": "photos.html: 'Photos copied or digitally scanned from driver's licenses or other official documents are not acceptable... snapshots, magazine photos, low quality vending machine or mobile phone photos, and full-length photographs are not acceptable' + 'you may take the photo yourself'. FAQ: 'Most webcams and mobile phones cannot provide images of sufficient quality.'"
+   },
+   {
+    "claim": "유니폼, 유니폼처럼 보이는 옷, 위장복 금지(일상 착용 종교 복장만 예외); 모자·머리덮개는 종교 목적 일상 착용만 허용하되 얼굴 전체 노출+그림자 금지; 헤드폰·무선 핸즈프리 불가, 보청기 허용",
+    "verdict": "confirmed",
+    "evidence": "FAQ verbatim: 'Uniforms, clothing that looks like a uniform, and camouflage attire should not be worn in photos except in the case of religious attire that is worn daily.' photos.html: 'unless worn daily for a religious purpose. Your full face must be visible, and the head covering must not cast any shadows', 'Headphones, wireless hands-free devices... not acceptable', 'hearing device... may be worn'."
+   },
+   {
+    "claim": "시효는 '신청 시점 기준 6개월 이내 촬영'+'현재 외모 반영' 이중 요건이며, 6개월 이내라도 대규모 안면 성형·외상/다수·대형 안면 피어싱·문신 추가·제거/급격한 체중 변화 시 새 사진 요구, 수염·염색은 일반적으로 비해당",
+    "verdict": "confirmed",
+    "evidence": "FAQ: 'taken within 6 months of submitting your application and reflect your current appearance'. photos.html: 'even if it is not older than 6 months, the U.S. embassy or consulate will request... new photo' + 트리거 3종 verbatim('significant facial surgery or trauma / Added or removed numerous/large facial piercings or tattoos / significant amount of weight loss or gain') + 'Growing a beard or coloring your hair would not generally be considered a significant change'."
+   },
+   {
+    "claim": "아동은 사진에 단독이어야 하며 아이를 받치는 부모의 팔·손이 프레임에 보여도 불가; 공식 촬영법은 흰/미색 시트에 눕히기와 시트 덮은 카시트 2가지(위에서 촬영 시 그림자 주의)",
+    "verdict": "confirmed",
+    "evidence": "FAQ verbatim: 'the child must be the only person in the photo. Nothing used to support the child should be in the camera's frame, including the arms or hands of a parent holding the child.' photos.html Tip 1/Tip 2 verbatim(plain white or off-white sheet, car seat, 'Make certain there are no shadows on your baby's face, especially if you take a picture from above')."
+   },
+   {
+    "claim": "여권은 '아기 눈이 완전히 떠 있지 않아도 OK'이나 비자는 아동 눈 감김에 명시적 'No'(눈 뜨고 정면 응시 필수) — 완화 규정 부재",
+    "verdict": "confirmed",
+    "evidence": "여권 페이지 Babies and toddlers 섹션 verbatim: 'It is okay if a baby's eyes are not entirely open. All other children must have their eyes open.' 비자 FAQ verbatim: 'No. Please have your child's eyes open and looking straight ahead towards the camera.' 철창이 DB 정정(researchNotes 3번) 타당."
+   },
+   {
+    "claim": "16세 미만 아동의 자연 성장에 따른 외모 변화는 일반적으로 새 사진 불요, 최종 수용은 신청 공관 재량",
+    "verdict": "confirmed",
+    "evidence": "photos.html verbatim: 'If the appearance of your child under the age of 16 has changed due to the normal aging process, he or she will generally not have to provide a new photo. However, the acceptance... is at the discretion of the U.S. embassy or consulate where you apply.'"
+   },
+   {
+    "claim": "정본(specs-data.json) 수치와의 정합성",
+    "verdict": "confirmed",
+    "evidence": "jq 실측: size '2 × 2 inch (51 × 51mm)', fileSpec '600x600px min to 1200x1200px max, max 240KB, 24-bit, sRGB', headHeightMin/Max 25/35, dpi 300, validity 6개월 — 드래프트와 모순 없음. background '흰색' 단독 표기 vs 공식 'plain white or off-white'는 researchNotes 7번이 이미 처리(모순 아님)."
+   },
+   {
+    "claim": "researchNotes의 자체 검증 주장(photos.html의 22mm 오기 존재, B급 수치 '30만 건' 본문 제외, USCIS 미검증 주장 본문 제외)",
+    "verdict": "confirmed",
+    "evidence": "photos.html에 '1 inch and 1 3/8 inches (22 mm and 35 mm)' 실재 확인(오기 맞음). 본문 전체에서 visapics.org 30만 건·USCIS 전 서식 2×2 통일 주장 부재 확인 — 제외 처리 이행됨."
+   }
+  ],
+  "revisionNotes": [
+   "[출처 보강] 섹션 1 sources에 Digital Image Requirements 페이지 추가 권장 — geoAnswer의 '600×600~1200×1200' 범위는 현재 cited된 photos.html·FAQ 어디에도 없고 해당 페이지에만 있음.",
+   "[출처 보강] DS-1648='미국 내 A·G·NATO 갱신' 파렌티컬의 근거는 travel.state.gov 외교관 비자 섹션(실측 확인)이나 섹션 sources에 미포함 — 소스 1건 추가 권장. ko 표현 '주미 외교공관 A·G·NATO 갱신'은 어색·부정확 기미 → '미국 내 A·G·NATO 비자 갱신은 DS-1648' 권장.",
+   "[표현 정밀도] 섹션 1의 '신청 채널이 결정하는 것은 매수와 형식이지 치수가 아니다'/'never the dimensions'는 섹션 2의 DV 고정 600×600 특칙과 긴장. 사실 오류는 아니나(DV 엔트리는 비자 신청 전 단계) 'never' 단정 완화 또는 DV 특칙 상호참조 문구 권장.",
+   "[ko 누락] 섹션 4 ko '다수 또는 대형 피어싱·문신' — 공식 문구는 'facial piercings or tattoos'로 '안면' 한정. en은 'facial' 포함으로 정확하나 ko에 누락 → '다수·대형 안면 피어싱·문신'으로 보정.",
+   "[ko 일관성] 섹션 5 ko Tip2 '카시트에 흰 시트를 덮고' — 공식은 두 팁 모두 'plain white or off-white sheet'. Tip1('흰색 또는 미색 시트')과 동일하게 통일 권장(researchNotes 7번의 자체 방침과도 정합).",
+   "[en 문체] 섹션 5 en 'The State Department's own two techniques:' — 동사 없는 파편문. 'The State Department itself suggests two techniques:' 등으로 보정 권장.",
+   "[전반 품질] ko/en 모두 기계번역 투 없음, ko 본문에 영문 누출 없음(red-eye·camouflage 병기는 의도적 용어 주석으로 적절). geoAnswer 문장들 자연스럽고 단일 문장 요건 충족.",
+   "[검증 방법 기록] travel.state.gov는 WebFetch 403(researchNotes 1번 주장과 일치) → 브라우저 페인으로 4개 페이지 전문 실측(FAQ·여권 페이지는 접힌 아코디언 DOM에서 추출). 모든 verbatim 인용 2026-07-17 기준 실재."
+  ]
+ }
+}

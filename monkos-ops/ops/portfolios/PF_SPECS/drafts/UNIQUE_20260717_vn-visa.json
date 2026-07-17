@@ -1,0 +1,332 @@
+{
+ "meta": {
+  "slug": "vn-visa",
+  "pipeline": "specs-unique-pilot v1",
+  "runId": "wf_43671794",
+  "date": "2026-07-17",
+  "status": "draft-v1.1 — 검증자 fix 반영(wrong 1·unverified 5 완화), 재검증 권장. 35×45 공관 수용설은 공식 미확인→완화 표현(confidence medium)",
+  "verifySummary": {
+   "confirmed": 15,
+   "plausible": 1,
+   "unverified": 5,
+   "wrong": 1
+  }
+ },
+ "uniqueContent": {
+  "sections": [
+   {
+    "id": "evisa-digital-upload-spec",
+    "confidence": "high",
+    "ko": {
+     "title": "e-Visa 사진 업로드 — 공식 포털이 요구하는 실제 스펙",
+     "geoAnswer": "베트남 e-Visa 사진은 4×6cm(40×60mm) 세로 규격의 최근 촬영본이어야 하며, JPG 또는 JPEG 형식·2MB 미만 파일로 공식 포털(evisa.gov.vn)에 업로드해야 한다.",
+     "body": [
+      "베트남 출입국관리국이 운영하는 공식 전자비자 포털(evisa.gov.vn)의 신청 화면은 사진 요건을 문구 그대로 명시한다 — \"새로 촬영, 4×6cm, jpg·jpeg 형식, 2MB 미만, 정면 응시, 모자 금지, 안경 금지, 격식 있는 복장, 흰색 배경\".사진의 출처(직접 촬영이든 인화본 스캔이든)는 규정에 명시돼 있지 않다 — 심사 기준은 업로드된 최종 파일이 위 조건을 전부 만족하는지다.",
+      "같은 포털 안에서도 단계에 따라 용량 안내가 다르게 표시된다는 점은 주의할 만하다. 신청서의 사진 항목 라벨에는 \"파일 크기 ≤10MB\"로, 업로드 안내문에는 \"2MB 미만\"으로 적혀 있다. 어느 기준이 적용되든 통과하려면 2MB 미만으로 준비하는 것이 안전하다.",
+      "얼굴 사진 외에 여권 인적사항 면 이미지도 필수 업로드 대상이다. 공식 안내는 \"인적사항 면 1페이지만 업로드, 선명하게, 모서리 잘림 없이\"라고 명시한다. 비스듬히 촬영했거나 일부가 잘린 여권 스캔본은 사진 규격 위반과 함께 공식 안내문이 명시적으로 경고하는 항목이다."
+     ]
+    },
+    "en": {
+     "title": "e-Visa Photo Upload: What the Official Portal Actually Requires",
+     "geoAnswer": "A Vietnam e-visa photo must be a recently taken 4×6cm (40×60mm) portrait, uploaded to the official portal (evisa.gov.vn) as a JPG or JPEG file under 2MB.",
+     "body": [
+      "The application screen on Vietnam's official e-visa portal, run by the Immigration Department, spells the requirement out verbatim: \"newly taken, photo size 4x6 cm, jpg, jpeg format, size <2MB, straight face, no hat, no glasses, formal clothes, white background.The rules are silent on how the file is produced — what matters is that the final upload meets every condition above.",
+      "One quirk worth knowing: the portal itself displays two different size limits. The application form's photo field is labeled \"file size ≤ 10 MB,\" while the upload guidance note says \"less than 2MB.\" Whichever limit the validator enforces, a file under 2MB passes both — so prepare for 2MB.",
+      "The e-visa also requires an image of your passport's data page. The official note is specific: upload exactly one data page, keep it sharp, and make sure no corners are cut off. Slanted or partially cropped passport scans rank alongside photo-spec violations as exactly what the official note warns against."
+     ]
+    },
+    "sources": [
+     {
+      "name": "Vietnam National Electronic Visa Portal (evisa.gov.vn)",
+      "url": "https://evisa.gov.vn/",
+      "grade": "A"
+     }
+    ]
+   },
+   {
+    "id": "non-icao-40x60-size",
+    "confidence": "high",
+    "ko": {
+     "title": "40×60mm — 국제 관행보다 큰 베트남 국가 표준 규격",
+     "geoAnswer": "베트남 비자 사진의 4×6cm(40×60mm)는 다수 국가가 쓰는 35×45mm보다 큰 베트남 국가 표준 규격으로, 가로세로 비율부터 2:3으로 달라 기존 여권 사진을 잘라 재사용할 수 없다.",
+     "body": [
+      "40×60mm는 베트남이 자국 여권 사진에도 쓰는 국가 표준이다. 베트남 공안부 공공서비스 포털이 여권용 4×6 사진 기준(흰색 배경, 안경 금지, 최소 300dpi)을 별도 안내 페이지로 게시할 만큼 행정 전반의 기본 규격으로 자리잡고 있다. 반면 국제적으로 흔한 여권·비자 사진은 35×45mm(비율 7:9)여서, 35×45 사진을 확대·크롭해 2:3 비율의 40×60을 만들면 비율이 어긋나거나 해상도가 부족해진다.",
+      "혼동 포인트 하나 — 베트남 국내용 소형 규격.현지에서는 2×3·3×4cm 등 국내용 소형 규격이 각종 행정서류에 두루 통용되므로, 현지 사진관에서 규격을 특정하지 않으면 다른 크기를 받을 수 있다 — 비자용은 반드시 '4×6'으로 지정해야 한다. 비자용은 반드시 \"4×6\"으로 지정해야 한다.",
+      "혼동 포인트 둘 — 해외 안내 사이트. 일부 상용 안내는 베트남 비자 사진을 35×45mm로 표기하지만, 공식 e-Visa 포털과 비자 신청서(NA1) 양식 모두 4×6cm를 명시한다. 300dpi 인쇄 기준으로 환산하면 472×709픽셀이다."
+     ]
+    },
+    "en": {
+     "title": "40×60mm: A National Standard Larger Than the Global Norm",
+     "geoAnswer": "Vietnam's 4×6cm (40×60mm) visa photo is a national standard larger than the 35×45mm used by most countries, and its 2:3 aspect ratio means an existing passport photo cannot simply be cropped to fit.",
+     "body": [
+      "The 40×60mm format is Vietnam's own standard photographic size — the Ministry of Public Security's public-service portal publishes a dedicated 4×6 specification (white background, no glasses, minimum 300dpi) even for Vietnamese passports. Most countries' passport and visa photos measure 35×45mm, a 7:9 ratio; enlarging or cropping one of those into a 2:3 frame either breaks the proportions or starves the resolution.",
+      "Confusion point one: Vietnam's smaller domestic format.Smaller domestic formats such as 2×3 and 3×4 cm circulate widely for local paperwork, so a local studio may hand you the wrong size unless you specify '4×6' for the visa. For a visa, always ask for \"4×6.\"",
+      "Confusion point two: overseas guide sites. Some commercial pages list the Vietnam visa photo as 35×45mm, but both the official e-visa portal and the NA1 application form specify 4×6cm. At 300dpi print resolution, that works out to 472×709 pixels."
+     ]
+    },
+    "sources": [
+     {
+      "name": "Ministry of Public Security e-Services — 4×6 Photo Standard Guidance",
+      "url": "https://dichvucong.bocongan.gov.vn/bocongan/tintuc/chitiet?matin=41",
+      "grade": "A"
+     },
+     {
+      "name": "Vietnam National Electronic Visa Portal (evisa.gov.vn)",
+      "url": "https://evisa.gov.vn/",
+      "grade": "A"
+     },
+     {
+      "name": "TRIPMAP — Vietnamese ID Photo Sizes 2x3/3x4/4x6 in Practice",
+      "url": "https://marketplace.tripmap.vn/articles/huong-dan-lua-chon-kich-thuoc-anh-the-2x3-3x4",
+      "grade": "B"
+     }
+    ]
+   },
+   {
+    "id": "mission-photo-variation",
+    "confidence": "medium",
+    "ko": {
+     "title": "공관 신청은 규격이 다를 수 있다 — 주미 대사관은 2×2인치",
+     "geoAnswer": "베트남 비자를 재외 공관에서 종이로 신청할 때 사진 규격은 공관 소재국의 관행을 따르는 경우가 있으며, 주미 베트남대사관은 4×6cm 대신 2×2인치(51×51mm) 사진을 요구한다.",
+     "body": [
+      "워싱턴 D.C. 주미 베트남대사관의 공식 안내는 여권 원본을 제출하는 스티커 비자에 2×2인치 사진 1매, 여권 사본으로 신청하는 낱장(loose-leaf) 비자에 동일 사진 2매를 요구한다. 미국 사진 부스·인화점의 표준 규격인 2×2인치를 그대로 수용한 사례로, 본국 표준 4×6cm와 다르다.",
+      "반면 공안부령(Circular 04/2015/TT-BCA)에 따른 비자 신청서 NA1 양식(Circular 04/2015/TT-BCA)의 사진란은 4×6cm 기준으로 인쇄되어 있다. 결국 어느 규격이 적용되는지는 신청서 양식이 아니라 접수 공관의 공지가 결정한다. 일부 비자 대행센터·안내 사이트에서 여권 표준(35×45mm) 사진을 안내한다는 사례도 보고되지만 공관별로 다르므로, 방문 전 해당 공관 안내문의 사진 항목을 확인하는 것이 안전하다.",
+      "전자비자(e-Visa)에는 이런 편차가 없다. 창구는 evisa.gov.vn 하나, 규격은 4×6cm 하나다. 신청 채널을 고르는 것이 곧 사진 규격을 고르는 일이 된다."
+     ]
+    },
+    "en": {
+     "title": "Embassy Applications Can Differ: 2×2 Inches in Washington",
+     "geoAnswer": "When you apply for a Vietnam visa on paper at a mission abroad, the photo size may follow local convention rather than the 4×6cm national standard — the Vietnamese Embassy in Washington, D.C., for instance, asks for 2×2 inch (51×51mm) photos.",
+     "body": [
+      "The embassy's official instructions require one 2×2 inch photo if you submit your original passport for a sticker visa, or two identical 2×2 inch photos for a loose-leaf visa issued against a passport copy. That is the standard American photo-booth format, adopted wholesale — not Vietnam's domestic 4×6cm.",
+      "Meanwhile, the NA1 application form itself (issued under Circular No. 04/2015/TT-BCA of the Ministry of Public Security) prints its photo box to the 4×6cm standard. In practice, the deciding document is the receiving mission's notice, not the form. Some visa agencies and guidance sites report that passport-standard 35×45mm prints are accepted at certain posts, but this varies post by post — check the photo line in your specific embassy's checklist before you print.",
+      "The e-visa channel has none of this variance: one portal (evisa.gov.vn), one size (4×6cm). Choosing your application channel effectively chooses your photo spec."
+     ]
+    },
+    "sources": [
+     {
+      "name": "Embassy of Vietnam in the USA — Apply for Visa in Person or by Mail",
+      "url": "https://vietnamembassy-usa.org/page/apply-visa-person-or-mail",
+      "grade": "A"
+     },
+     {
+      "name": "Form NA1 under Circular 04/2015/TT-BCA (government-hosted copy)",
+      "url": "https://files.nettsteder.regjeringen.no/wpuploads01/blogs.dir/313/files/2018/07/visaapplicationformeng-vietnam.pdf",
+      "grade": "A"
+     }
+    ]
+   },
+   {
+    "id": "na1-form-photo-count",
+    "confidence": "high",
+    "ko": {
+     "title": "스티커 비자 1매, 낱장 비자 2매 — NA1 양식의 사진 매수 규칙",
+     "geoAnswer": "베트남 종이 비자 신청서(NA1 양식)는 4×6cm 흰색 배경 사진을 스티커 비자에는 1매, 낱장(loose-leaf) 비자에는 1매를 추가해 총 2매 동봉하도록 규정한다.",
+     "body": [
+      "NA1 양식(공안부 Circular 04/2015/TT-BCA, 2015년 1월 5일 제정)에 인쇄된 주기는 \"최근 촬영한 4×6cm 사진 1매 동봉 — 흰색 배경, 정면 응시, 모자 벗은 상태, 선글라스 금지. 낱장 비자는 사진 1매 추가\"로 명시돼 있다. 여권 원본을 제출하면 스티커 비자(사진 1매), 여권 사본으로 신청하면 낱장 비자(사진 2매)로 갈리는 구조다.",
+      "신청인 여권에 함께 등재된 14세 미만 동반 아동에 대해서는 양식에 아동 전용 사진란이 따로 마련되어 있어, 아동 몫의 4×6cm 사진도 별도로 부착해야 한다. 가족 단위 신청에서 어른 사진만 준비해 오는 것이 대표적인 서류 미비 사례다.",
+      "도착비자(VOA)로 입국하는 경우 실무 안내 기준으로 동일 사진 2매 지참이 일반적이며, 공항에서 유료 즉석 촬영이 가능한 경우가 많다. 다만 이는 공식 고시가 아닌 실무 관행이므로 여유분을 준비하는 편이 안전하다."
+     ]
+    },
+    "en": {
+     "title": "Sticker vs. Loose-Leaf: How Many Photos Form NA1 Really Wants",
+     "geoAnswer": "Vietnam's paper visa application (Form NA1) calls for a 4×6cm white-background photo — one print for a sticker visa, plus one more (two in total) if you request a loose-leaf visa.",
+     "body": [
+      "The note printed on Form NA1 (issued with Circular No. 04/2015/TT-BCA of January 5, 2015) reads: enclose one 4×6cm photo, recently taken with white background, looking ahead, bare head, without sunglasses — and for a loose-leaf visa, enclose one more. Submitting your original passport gets you a sticker visa (one photo); applying with a passport copy produces a loose-leaf visa (two photos).",
+      "Form NA1 also carries separate photo boxes for accompanying children under 14 who are included in the applicant's passport, so each child needs their own 4×6cm photo attached. Families who prepare photos only for the adults are a classic incomplete-file case.",
+      "For visa on arrival, the working guidance is to carry two identical prints; counters at Vietnam's international airports also offer on-the-spot photo service for a fee. This is practice rather than published regulation, so bringing spares is the safe play."
+     ]
+    },
+    "sources": [
+     {
+      "name": "Form NA1 under Circular 04/2015/TT-BCA (government-hosted copy)",
+      "url": "https://files.nettsteder.regjeringen.no/wpuploads01/blogs.dir/313/files/2018/07/visaapplicationformeng-vietnam.pdf",
+      "grade": "A"
+     },
+     {
+      "name": "My Vietnam Visa — Photo Requirements for E-Visa and Visa on Arrival",
+      "url": "https://www.myvietnamvisa.com/vietnam-visa-photo-requirements.html",
+      "grade": "B"
+     }
+    ]
+   },
+   {
+    "id": "vietnam-rejection-points",
+    "confidence": "high",
+    "ko": {
+     "title": "베트남 고유 반려 포인트 — 안경 전면 금지와 '격식 있는 복장'",
+     "geoAnswer": "베트남 e-Visa 사진은 모자·안경 금지에 더해 공식 요건에 '격식 있는 복장(formal clothes)'이 명문화되어 있어 복장만으로도 반려될 수 있다.",
+     "body": [
+      "베트남 e-Visa는 안경을 전면 금지하며, 미국이 2016년 11월부터 같은 정책을 시행하는 등 강경한 축에 속하는 규정이다. 공식 포털 문구는 단순히 \"no glasses\"로, 선글라스만 금지하는 종이 신청서 NA1의 \"without sunglasses\"보다 엄격하다. 온라인 신청이라면 도수 안경도 벗고 촬영해야 한다.",
+      "복장 요건이 규격 자체에 명문화된 점도 특징이다. 포털은 화면에 따라 \"formal clothes\" 또는 \"polite clothes\"로 표기한다. 별도의 정의는 없지만 민소매·오프숄더처럼 어깨가 드러나는 차림이 실질적 위험 요소이며, 칼라 있는 상의가 무난하다. 흰색 배경 규정과 맞물려 흰색·아이보리 상의는 배경과 붙어 보여 자동 심사에 불리할 수 있다는 점은 문서화된 규정이 아닌 실무 권고다.",
+      "머리 요건은 \"no hat\"(모자 금지)·\"bare head\"(맨머리)로 적혀 있고, 공식 문구에는 종교적 두건에 대한 예외가 별도로 명시되어 있지 않다. 예외 인정이 필요한 신청자는 접수 전에 출입국관리국이나 관할 공관에 확인하는 것이 안전하다."
+     ]
+    },
+    "en": {
+     "title": "Vietnam-Specific Rejection Traps: No Glasses, \"Formal Clothes\"",
+     "geoAnswer": "Vietnam's e-visa photo rules ban hats and glasses and write 'formal clothes' into the requirement itself, so clothing alone can sink an application.",
+     "body": [
+      "Vietnam's e-visa bans glasses outright — the same hard line the United States has banned them under since November 2016. The portal's wording is simply \"no glasses\" — stricter than the paper Form NA1, which only says \"without sunglasses.\" For the online channel, take the photo with prescription glasses off.",
+      "The dress code is written into the requirement itself: the portal uses \"formal clothes\" in one string and \"polite clothes\" in another. Neither is defined, but bare shoulders (sleeveless or off-shoulder tops) are the practical risk, and a collared top is the safe choice. Because the background must be white, a white or ivory top can also blend into the backdrop and trip automated checks — a practical caution rather than a written rule.",
+      "Headwear is a flat \"no hat\" / \"bare head,\" and the official wording carries no printed exemption for religious head coverings. Applicants who need one should confirm with the Immigration Department or the receiving mission before applying."
+     ]
+    },
+    "sources": [
+     {
+      "name": "Vietnam National Electronic Visa Portal (evisa.gov.vn)",
+      "url": "https://evisa.gov.vn/",
+      "grade": "A"
+     },
+     {
+      "name": "U.S. Department of State — Visa Photo Requirements (glasses ban comparison)",
+      "url": "https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/photos.html",
+      "grade": "A"
+     }
+    ]
+   }
+  ]
+ },
+ "researchNotes": [
+  "evisa.gov.vn은 TLS 인증서 체인 불완전으로 WebFetch 실패 → curl(macOS 신뢰저장소)로 접속 성공. 페이지가 Vue SPA여서 렌더링 본문 대신 공식 JS 번들(index-12e4d9e0.js)의 i18n 문자열에서 요건 원문을 직접 추출: upload_image_note = \"newly taken, photo size 4x6 cm, jpg, jpeg format, size <2MB, straight face, no hat, no glasses, formal clothes, white background\" + \"Only upload 1 passport data page, upload clear photos, no lost corners\".",
+  "공식 포털 내 파일 용량 표기 이원화 실측: image_rule 문자열은 \"file size ≤ 10 MB\", upload_image_note는 \"<2MB\". 정본 fileSpecEn(less than 2MB)은 보수 기준과 일치하므로 유지 권장. 본문에는 '2MB 미만 준비가 안전' 프레임으로 반영.",
+  "정본 headHeight 3.6~4.0cm과 faceTargetExplicitMm 42는 공식 e-Visa 문자열에 수치 근거 없음(공식 소스는 머리 높이를 계량하지 않음). 정본과의 모순은 아니어서 본문에서는 머리 높이 수치를 언급하지 않는 방식으로 회피. B급 유래 수치로 추정되므로 추후 정본 grade 검토 시 참고.",
+  "작가님 도메인 지식(재외공관 35×45mm 수용) 검증 결과: 공식 공관 페이지에서 35×45 표기는 직접 확인 실패. 대신 주미 베트남대사관(vietnamembassy-usa.org)이 2×2인치(51×51mm) 사진(스티커 1매/낱장 2매)을 요구함을 공식 확인 — '공관별 상이' 명제는 2×2인치 근거로 성립. 35×45는 '사례 보고' 수준의 완화 표현 처리, 해당 섹션 confidence medium.",
+  "NA1 양식(공안부 Circular 04/2015/TT-BCA, 2015-01-05) 원문 확보: 노르웨이 정부 파일서버(regjeringen.no) 호스팅 공식 양식 PDF가 커스텀 폰트 인코딩이어서 시프트 복호로 판독 — \"Enclose 01 photo (for sticker visa), in 4 x 6 cm size, recently taken with white background, look ahead, bare head, without sunglasses (for loose leaf visa, enclose 01 more photo)\" + 14세 미만 동반 아동 전용 사진란 2개 확인.",
+  "도착비자(VOA) 사진 2매·공항 즉석촬영은 상용(B급) 소스만 확인됨 → '실무 관행' 프레임으로 완화 서술.",
+  "브리핑의 이중 규격국 주장 중 CCCD·운전면허 30×40mm는 정부 소스 확인 실패(공안부 dichvucong 포털은 여권 4×6 기준만 고시, CCCD는 현장 촬영). 3×4cm는 B급 소스 수준 → 본문에서 '행정서류 관행' 수준으로 완화.",
+  "vietnamembassy-norway.org, vietnamconsulateinhouston.org, vietnamimmigration.com 등 공관 유사 도메인은 상용 대행 사이트로 판단해 인용 배제. vnembassy-bangkok.mofa.gov.vn·vnembassy-seoul.mofa.gov.vn 등 공식 공관 페이지는 404(사이트 개편 추정) — 주한 베트남대사관의 자체 사진 규격 공지는 미확보.",
+  "정본 standard 필드 'ICAO 9303' 라벨은 치수 관점에서 오해 소지 있음(40×60mm는 ICAO 관행 밖 대형 규격). 본문은 정본과 충돌하지 않도록 '얼굴 품질 원칙이 아닌 치수가 국제 관행(35×45)과 다른 국가 표준' 프레임으로 서술."
+ ],
+ "verifyRecord": {
+  "slug": "vn-visa",
+  "pass": false,
+  "claims": [
+   {
+    "claim": "e-Visa 포털 사진 요건 원문: \"newly taken, photo size 4x6 cm, jpg, jpeg format, size <2MB, straight face, no hat, no glasses, formal clothes, white background\"",
+    "verdict": "confirmed",
+    "evidence": "evisa.gov.vn 공식 JS 번들(index-12e4d9e0.js, 실측 재다운로드)의 upload_image_note EN 문자열과 한 글자까지 일치: \"Photo of the person requesting an electronic visa (newly taken, photo size 4x6 cm, jpg, jpeg format, size <2MB, straight face, no hat, no glasses, formal clothes, white background).\""
+   },
+   {
+    "claim": "같은 포털 안에서 용량 안내 이원화: 사진 항목 라벨 \"file size ≤ 10 MB\" vs 업로드 안내문 \"<2MB\"",
+    "verdict": "confirmed",
+    "evidence": "번들 image_rule EN: \"Portrait of applicant (recent photo, size 4x6cm, jpg/jpeg format, file size ≤ 10 MB, face looking straight, no hat, no glasses, polite clothes, white background)\" — upload_image_note의 <2MB와 병존 실측. zh/ja/vi 로케일에도 동일 이원화."
+   },
+   {
+    "claim": "여권 인적사항 면 업로드 요건: \"인적사항 면 1페이지만, 선명하게, 모서리 잘림 없이\"",
+    "verdict": "confirmed",
+    "evidence": "번들 upload_image_note 후반부 원문 그대로: \"Only upload 1 passport data page, upload clear photos, no lost corners\""
+   },
+   {
+    "claim": "evisa.gov.vn은 베트남 출입국관리국(공안부 산하)이 운영하는 공식 포털",
+    "verdict": "confirmed",
+    "evidence": "사이트 title \"Vietnam National Electronic Visa system\", 번들 내 \"Immigration Department - Ministry of Public Security\", \"Viet Nam Immigration Department\" 문자열 확인."
+   },
+   {
+    "claim": "\"인화 사진을 스캔해 올려도 되지만\" / \"A scanned print is acceptable\" (섹션 1)",
+    "verdict": "unverified",
+    "evidence": "공식 번들 전체에서 'scan' 관련 문자열 0건(파이썬 정규식 전수 검색). 스캔본 허용을 명시한 공식 문구가 존재하지 않는데 본문은 공식 요건을 인용하는 단락 안에서 허용을 단정한다.",
+    "fix": "ko: \"인화 사진을 스캔해 올려도 되지만, 최종 파일이 이 조건을 전부 만족해야 한다.\" → \"사진의 출처(직접 촬영이든 인화본 스캔이든)는 규정에 명시돼 있지 않다 — 심사 기준은 업로드된 최종 파일이 위 조건을 전부 만족하는지다.\" en도 동일하게 \"The rules are silent on how the file is produced — what matters is that the final upload meets every condition above.\"로 교체."
+   },
+   {
+    "claim": "비스듬히/잘린 여권 스캔본은 사진 규격 위반과 함께 \"신청 반려의 대표 원인\" / \"the most common reasons applications bounce back\" (섹션 1)",
+    "verdict": "unverified",
+    "evidence": "반려 사유 빈도 통계는 어떤 인용 소스에도 없음. 공식 문구는 요건을 명시할 뿐 반려 빈도를 말하지 않는다. 특히 en은 \"most common\"으로 ko(\"대표 원인\")보다 더 단정적.",
+    "fix": "빈도 주장 제거: ko \"...여권 스캔본은 공식 안내문이 명시적으로 경고하는 항목이다.\" / en \"...are exactly what the official note warns against.\"로 교체."
+   },
+   {
+    "claim": "공안부 공공서비스 포털이 여권용 4×6 사진 기준(흰색 배경, 안경 금지, 최소 300dpi)을 안내 (섹션 2)",
+    "verdict": "confirmed",
+    "evidence": "dichvucong.bocongan.gov.vn matin=41 실측(curl, 페이지 생존): \"Hướng dẫn quy chuẩn ảnh 4x6 của thủ tục Cấp hộ chiếu...\" (2020-05-07) — \"Tỉ lệ ảnh: rộng x dài = 4 x 6 ... không đeo kính; Phông nền trắng; Độ phân giải tối thiểu 300dpi\" 전부 확인. 단 문서 성격은 법적 '고시'가 아닌 포털 안내문(Hướng dẫn) — revisionNotes 참조."
+   },
+   {
+    "claim": "40×60mm은 여권·비자·NA1에 공통 적용되는 베트남 국가 표준이며, 2:3 비율·300dpi 환산 472×709px (섹션 2)",
+    "verdict": "confirmed",
+    "evidence": "MPS 여권 4x6 안내 + NA1 사진란 4x6 + evisa 4x6 3원 교차 확인. 산술 검증: 40/25.4×300=472.4, 60/25.4×300=708.7. 정본 specs-data.json(size 4×6cm, pixels 472×709px, dpi 300, 흰색, <2MB JPG/JPEG)과 모순 없음. headHeight 3.6~4.0cm은 본문에서 의도적으로 미언급 — 정본과 충돌 없음."
+   },
+   {
+    "claim": "\"현지에서는 신분증·행정서류용으로 3×4cm 사진이 관행적으로 통용\" / \"3×4cm prints are the everyday size for local ID paperwork\" (섹션 2, TRIPMAP 인용)",
+    "verdict": "wrong",
+    "evidence": "인용된 TRIPMAP 기사 실측 결과 자체 표에서 신분증(CMND/CCCD)·학생증은 2×3cm에, 3×4cm은 \"bằng tốt nghiệp, chứng chỉ, visa\"(졸업장·자격증·비자)에, 4×6cm은 사원증·보험증·의료기록에 배정. 즉 인용 소스는 '3×4=신분증 관행'을 말하지 않으며, 심지어 visa를 3×4로, 여권을 2×3으로 적는 등 공식 4×6과 충돌하는 저품질 소스다.",
+    "fix": "문장을 소스가 실제 지지하는 수준으로 재작성: ko \"현지에서는 2×3·3×4cm 등 국내용 소형 규격이 각종 행정서류에 두루 통용되므로, 현지 사진관에서 규격을 특정하지 않으면 다른 크기를 받을 수 있다. 비자용은 반드시 '4×6'으로 지정해야 한다.\" en 동일 취지로 수정. 아울러 TRIPMAP은 visa=3×4로 잘못 적는 소스이므로 인용을 유지하려면 '소형 규격 혼용' 근거로만 한정하고, 가능하면 다른 B급 소스로 교체 검토."
+   },
+   {
+    "claim": "일부 상용 안내 사이트가 베트남 비자 사진을 35×45mm로 표기 (섹션 2)",
+    "verdict": "confirmed",
+    "evidence": "웹 검색 실측: getvisavietnam.com이 \"35mm x 45mm is the standard photo size for a Vietnam visa, which is equivalent to 4 x 6 cm\"라는 (자체 모순적) 표기, bajajgeneralinsurance.com 블로그 등 다수 상용 페이지 존재 — '일부 상용 안내가 35×45로 표기한다'는 현상 자체는 사실."
+   },
+   {
+    "claim": "주미 베트남대사관: 스티커 비자(여권 원본) 2×2인치 1매, 낱장 비자(여권 사본) 동일 사진 2매 (섹션 3)",
+    "verdict": "confirmed",
+    "evidence": "vietnamembassy-usa.org(공식 대사관 사이트 확인) 해당 페이지 실측: \"one (1) 2x2 inch identical photo\"(sticker, 여권 원본 제출) / \"two (2) 2x2 inch identical photos\"(loose-leaf, ID면 사본) — 본문 주장과 정확히 일치."
+   },
+   {
+    "claim": "\"일부 공관·대행센터에서 여권 표준(35×45mm) 사진을 안내한다는 사례도 보고되지만\" (섹션 3)",
+    "verdict": "unverified",
+    "evidence": "35×45 안내는 상용 대행·안내 사이트에서만 확인됨. 공식 '공관' 페이지의 35×45 표기는 미확인(researchNotes도 자인). '보고되지만'으로 완화돼 있으나 '공관'을 보고 주체 범위에 포함한 것은 근거 없음.",
+    "fix": "'공관·대행센터' → '일부 비자 대행센터·안내 사이트'로 축소(ko/en 동일). 공관 편차의 확정 사례는 2×2인치(주미 대사관) 하나로 유지."
+   },
+   {
+    "claim": "NA1 양식은 Circular 04/2015/TT-BCA(2015-01-05) 소속이며, 사진란 4×6cm, 주기: 흰 배경·정면·맨머리·선글라스 금지, 스티커 1매/낱장 +1매(총 2매), 원본 여권=스티커·사본=낱장 (섹션 3·4)",
+    "verdict": "confirmed",
+    "evidence": "regjeringen.no 호스팅 NA1 PDF 텍스트 직접 추출: \"Form NA1 (Under Circular N 04/2015/TT-BCA, 5 Jan. 2015)\", 사진란 \"Photo 4x6 cm (For looseleaf visa, submit 1 more photo)\", note(2) \"Enclose 1 photo (for sticker visa), in 4x6 cm size, recently taken with white background, look ahead, bare head, without sunglasses (for loose leaf visa, enclose 1 more photo)\", note(1) 원본(스티커)/사본(낱장) 구분 — 전부 일치. 단 이 사본은 오슬로 대사관 배포본(note에 Oslo 제출처 명기)."
+   },
+   {
+    "claim": "NA1에 14세 미만 동반 아동 전용 사진란이 별도로 존재 (섹션 4)",
+    "verdict": "confirmed",
+    "evidence": "PDF 2페이지 18항: \"Accompanying child(ren) under 14 years old included in your passport (if any)\" + \"Photo (under 14 years old) See note (2)\" 사진란 2개 실측."
+   },
+   {
+    "claim": "도착비자(VOA) 동일 사진 2매 지참이 일반적, 공항 유료 즉석 촬영 존재 — '실무 관행' 프레임 (섹션 4)",
+    "verdict": "plausible",
+    "evidence": "B급 myvietnamvisa.com: \"2 photos (4x6cm or 2x2in)\", FAQ \"photo booths are usually available at the Embassy/Consulate or airport for a fee\". 본문이 '공식 고시가 아닌 실무 관행' 명시 완화를 이미 적용 — B급 근거 수준과 서술 강도 일치. 단 '카운터' 표현은 소스의 '부스'와 다름(revisionNotes)."
+   },
+   {
+    "claim": "미국은 2016년 11월부터 비자 사진 안경 금지 (섹션 5)",
+    "verdict": "confirmed",
+    "evidence": "국무부 공식 보도자료 \"New Requirements for Passport and Visa Photos as of November 1, 2016\"(2009-2017.state.gov/r/pa/prs/ps/2016/10/263118.htm) + travel.state.gov 사진 FAQ 페이지에서 확인(의료 예외 존재하나 본문이 부정하지 않음). 인용 URL(photos.html) 자체는 Cloudflare 봇 차단으로 자동 검증 불가 — 콘텐츠는 유효."
+   },
+   {
+    "claim": "\"비자 사진에서 안경을 전면 금지하는 나라는 소수\" / \"Only a handful of countries prohibit eyeglasses outright\" (섹션 5)",
+    "verdict": "unverified",
+    "evidence": "국가 수 비교를 지지하는 소스가 인용 목록에 없음. 중국 비자 등 안경 금지 국가가 추가로 존재해 '소수'의 범위 자체가 계량 불가. 확인된 사실은 미국·베트남 두 사례뿐.",
+    "fix": "국가 수 서열화 제거: ko \"베트남 e-Visa는 안경을 전면 금지한다. 미국이 2016년 11월부터 같은 정책을 시행하는 등 강경한 축에 속하는 규정이다.\" / en \"Vietnam's e-visa bans glasses outright — the same hard line the United States has taken since November 2016.\" 식으로 확인된 두 사례만으로 재구성."
+   },
+   {
+    "claim": "포털이 화면에 따라 \"formal clothes\"와 \"polite clothes\"를 혼용 (섹션 5)",
+    "verdict": "confirmed",
+    "evidence": "번들 실측: upload_image_note=\"formal clothes\"(1건), image_rule=\"polite clothes\" — 두 문자열 병존 확인. NA1의 \"without sunglasses\"와 e-Visa \"no glasses\"의 강도 차이도 양쪽 원문으로 확인."
+   },
+   {
+    "claim": "공식 문구에 종교적 두건 예외가 명시돼 있지 않음 (섹션 5)",
+    "verdict": "confirmed",
+    "evidence": "번들 전수 검색: \"head covering\" 0건, religio* 매칭은 신청서의 'Religion' 입력 필드와 종교활동 비자 안내뿐 — 사진 요건 관련 예외 문구 부재(부재 주장으로서 성립). 본문도 '확인 권장'으로 안전하게 마감."
+   },
+   {
+    "claim": "geoAnswer(섹션 5): \"'격식 있는 복장'이 명시된 드문 규격\" / \"one of the few photo specs that explicitly requires formal clothes\"",
+    "verdict": "unverified",
+    "evidence": "'드문/few'라는 국제 비교 계량 근거 없음(위 '소수' 주장과 동일 유형). 확인된 것은 베트남 요건에 복장 문구가 명문화돼 있다는 사실뿐.",
+    "fix": "ko \"...공식 요건에 '격식 있는 복장(formal clothes)'이 명문화되어 있어 복장만으로도 반려될 수 있다.\" / en \"...and writes 'formal clothes' into the requirement itself, so clothing alone can sink an application.\" — 희소성 비교 삭제."
+   },
+   {
+    "claim": "흰색·아이보리 상의의 배경 융합 위험은 '문서화된 규정이 아닌 실무 권고' (섹션 5)",
+    "verdict": "confirmed",
+    "evidence": "본문 스스로 규정 아님을 명시한 정직한 프레임 — 소스 요구 없음. 감점 없음."
+   },
+   {
+    "claim": "정본(specs-data.json vn-visa)과의 정합성: 치수·배경·픽셀·파일스펙",
+    "verdict": "confirmed",
+    "evidence": "jq 실측 — size \"4 × 6cm\", pixels \"472 × 709px\", dpi 300, background 흰색, fileSpecEn \"JPG or JPEG format, file size less than 2MB\", restrictions(안경 불가·정장·정면·모자 불가) 모두 드래프트와 일치. headHeight 3.6~4.0cm·faceTargetExplicitMm 42는 본문 미언급으로 충돌 회피(researchNotes 방침대로). standard \"ICAO 9303\" 라벨과도 직접 충돌 문장 없음."
+   }
+  ],
+  "revisionNotes": [
+   "ko 섹션 2 \"별도 고시로 안내\": dichvucong 페이지는 법령상 '고시'가 아니라 포털 안내문(Hướng dẫn, 2020-05-07 게시)이다. '고시'는 법적 지위 과장 — \"별도 안내 페이지로 게시할 만큼\"으로 교체. 섹션 3의 \"공안부 고시 비자 신청서인 NA1\"도 같은 문제 — Circular(시행규칙) 소속이므로 \"공안부령(Circular 04/2015/TT-BCA)에 따른 비자 신청서\"로 교체.",
+   "ko 섹션 1 \"사진 요건을 문구 그대로 명시한다\" 후 한국어 인용: 포털 로케일은 vi/en/zh/ja뿐(한국어 없음, 번들 실측). 한국어 따옴표 인용은 번역문이므로 '문구 그대로'와 충돌 — \"(영문 원문 번역)\" 부기하거나 영문 원문을 병기할 것.",
+   "en 섹션 5 \"the United States has since November 2016\": 동사 탈락으로 비문에 가까움 — \"the United States has banned them since November 2016\"으로 수정.",
+   "ko 섹션 4 \"주요 국제공항 카운터에서는 유료 즉석 촬영 서비스도 운영된다\": B급 소스 원문은 '공항에 유료 사진 부스가 통상 있음' 수준. '카운터 운영'으로 특정하지 말고 \"공항에서 유료 즉석 촬영이 가능한 경우가 많다\"로 완화 권장.",
+   "섹션 5 sources의 travel.state.gov photos.html은 Cloudflare 봇 차단으로 자동 접근 불가(사람 열람은 가능). 검증 편의를 위해 동일 도메인 FAQ 페이지(.../photos/frequently-asked-questions.html, 11/1/2016 문구 명시)로 교체 또는 병기 권장.",
+   "TRIPMAP 소스는 자체 표에서 visa=3×4, 여권=2×3으로 적는 등 공식 4×6과 정면충돌하는 저품질 B급 — 섹션 2 fix 반영 후에도 인용 유지 여부 재검토 권장(대체 소스 확보 전까지는 '국내 소형 규격 혼용' 근거로만 한정).",
+   "regjeringen.no NA1 사본은 오슬로 대사관 배포본(note 1에 Oslo 제출처 명기) — 양식·Circular 정체성은 전국 공통이므로 인용 유효하나, source name에 '(Embassy of Viet Nam in Oslo distribution copy)' 부기가 더 정확.",
+   "전반 문체: ko는 기계번역 투·영문 누출 없음, en도 자연스러움. 위 수정 반영 시 confidence 라벨(섹션 1·2·4·5 high, 3 medium)은 유지 가능 — 단 섹션 2는 TRIPMAP 문장 수정이 선행 조건."
+  ]
+ }
+}

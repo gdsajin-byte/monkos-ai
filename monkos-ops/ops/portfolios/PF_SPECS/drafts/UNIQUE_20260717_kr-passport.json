@@ -1,0 +1,318 @@
+{
+ "meta": {
+  "slug": "kr-passport",
+  "pipeline": "specs-unique-kr-pilot v2",
+  "runId": "wf_08899f01",
+  "date": "2026-07-17",
+  "status": "draft-v1.1 (검증자 fix 5건 반영, 작가님 검수 대기)",
+  "verifySummary": "claims 18: confirmed 16 / unverified 1(완화 반영) / plausible 1(완화 반영)"
+ },
+ "uniqueContent": {
+  "sections": [
+   {
+    "id": "abolished-ear-rule",
+    "confidence": "high",
+    "ko": {
+     "title": "\"귀가 보여야 한다\"는 2018년에 폐지됐습니다",
+     "geoAnswer": "한국 여권사진에서 양쪽 귀가 보여야 한다는 의무 조항은 2018년 1월 25일 외교부의 여권사진 규정 완화로 삭제되어, 현재는 눈썹과 얼굴 윤곽(광대·볼)을 가리지 않는 한 머리카락이 귀를 가려도 접수에 문제가 없습니다.",
+     "body": [
+      "외교부는 2018년 1월 25일부터 국제민간항공기구(ICAO) 기준을 충족하는 범위에서 여권사진 규정을 대폭 완화했습니다. 이때 삭제된 항목은 두 귀 노출 의무 외에도 어깨 수평 유지, 뿔테안경 지양, 제복·군복 착용 불가, 가발·장신구 착용 지양까지 포함됩니다. 즉 지금은 뿔테 안경을 쓰거나 제복을 입고 촬영해도 규정 위반이 아닙니다. 다만 귀걸이·피어싱 등 장신구가 빛을 반사하거나 얼굴 윤곽을 가리는 경우는 현행 규정에서도 제출 불가입니다.",
+      "다만 주의할 반전이 하나 있습니다. 2018년 완화 때 '눈썹 가림' 항목도 함께 삭제됐지만, 현행 규정(2022년 10월 개정)에는 \"머리카락으로 눈썹 및 얼굴 윤곽(광대, 볼 등)을 가리는 사진은 제출 불가\"가 다시 명시되어 있습니다. 귀는 가려도 되지만 눈썹과 얼굴 윤곽은 보여야 한다는 것이 현행 기준입니다.",
+      "사진관 안내문이나 오래된 블로그 글에는 아직도 \"귀를 드러내야 한다\", \"뿔테 안경은 안 된다\" 같은 폐지된 규정이 그대로 남아 있는 경우가 많습니다. 판단 기준은 언제나 외교부 여권안내 홈페이지의 현행 규격 페이지입니다."
+     ]
+    },
+    "en": {
+     "title": "\"Your Ears Must Show\" Was Abolished in 2018",
+     "geoAnswer": "South Korea abolished the rule requiring both ears to be visible in passport photos on January 25, 2018, so hair covering the ears is no longer grounds for rejection as long as the eyebrows and facial contours remain visible.",
+     "body": [
+      "On January 25, 2018, Korea's Ministry of Foreign Affairs relaxed its passport photo rules to align with ICAO standards. Alongside the two-ear exposure requirement, the ministry also scrapped the requirement to keep shoulders level, the advisory against thick-rimmed glasses, the ban on uniforms and military dress, and the advisories against wigs and jewelry. Wearing thick-rimmed glasses or a uniform in your photo is no longer a violation. One caveat remains: earrings or piercings that reflect light or obscure the facial contours are still disallowed under the current rules.",
+      "There is one twist worth knowing. The 2018 relaxation also dropped the eyebrow-coverage item, but the current rules (revised October 2022) once again explicitly prohibit photos where hair covers the eyebrows or facial contours such as cheekbones. Under today's standard, covered ears are fine — covered eyebrows are not.",
+      "Many photo studios and older blog posts still repeat the abolished rules, telling applicants their ears must show or that thick frames are banned. The only reliable reference is the current specification page on the Ministry of Foreign Affairs passport portal."
+     ]
+    },
+    "sources": [
+     {
+      "name": "대한민국 정책브리핑 — 여권사진 규정 완화, 양쪽 귀 노출 의무조항 삭제 (2018-01-26)",
+      "url": "https://www.korea.kr/news/policyNewsView.do?newsId=148847383",
+      "grade": "A"
+     },
+     {
+      "name": "외교부 여권안내 — 여권 사진 규격 (2022.10 개정)",
+      "url": "https://www.passport.go.kr/home/kor/contents.do?menuPos=32",
+      "grade": "A"
+     }
+    ]
+   },
+   {
+    "id": "real-rejection-risks",
+    "confidence": "high",
+    "ko": {
+     "title": "실제 반려를 부르는 대표 사유 — 컬러렌즈, 앞머리, AI 보정",
+     "geoAnswer": "현행 한국 여권사진 규정에서 실제 반려로 이어지기 쉬운 대표 사유는 미용·컬러·서클렌즈 착용, 앞머리로 눈썹이나 얼굴 윤곽을 가린 경우, 그리고 AI 편집물을 포함한 임의 보정 사진으로, 세 가지 모두 외교부 규정에 제출 불가로 명시되어 있습니다.",
+     "body": [
+      "외교부 현행 규정은 \"미용·컬러·서클렌즈, 렌즈에 색이 들어간 안경, 선글라스 등은 착용 불가\"라고 명시합니다. 렌즈 착용 여부는 사진 검증 프로그램이 자동으로 걸러내기 어려울 수 있는 항목이라, 온라인 사전 검증을 통과하고도 접수 창구 심사에서 반려되는 대표 사례입니다. 일반 안경은 빛 반사가 없고 테가 눈을 가리지 않으면 허용됩니다.",
+      "앞머리도 마찬가지입니다. 규정은 눈을 가리는 것뿐 아니라 \"머리카락으로 눈썹 및 얼굴 윤곽(광대, 볼 등)을 가리는 사진은 제출 불가\"라고 못 박고 있어, 이마부터 턱까지 얼굴 전체 윤곽이 드러나야 합니다. 눈만 보이면 된다고 생각하고 촬영하면 반려될 수 있습니다.",
+      "보정 규정은 2022년 10월 개정에서 한층 구체화됐습니다. 사진 편집 프로그램이나 필터로 임의 보정한 사진은 물론 \"AI를 활용한 편집·가공·합성·창조 제작물\"까지 명시적으로 허용되지 않으며, 포토샵으로 배경을 지우거나 흰 배경에 인물을 합성한 사진도 제출할 수 없습니다. 정부24 온라인 신청 화면에도 AI 편집·가공·합성 사진 불가가 별도로 안내됩니다.",
+      "외교부는 온라인 여권 사진 검증 서비스를 제공하지만, \"검증된 사진이라도 실제 대행기관 심사과정에서 여권접수가 반려되거나 여권교부가 거부될 수 있습니다\"라고 안내합니다. 자동 검증은 참고용일 뿐, 최종 판정은 사람의 심사라는 점을 전제로 준비하는 것이 안전합니다."
+     ]
+    },
+    "en": {
+     "title": "What Actually Gets Photos Rejected — Colored Lenses, Bangs, AI Retouching",
+     "geoAnswer": "Under Korea's current passport photo rules, the rejection risks that can slip past automated checks are colored or circle contact lenses, bangs covering the eyebrows or facial contours, and retouched images — including AI-edited photos, which the Ministry of Foreign Affairs explicitly disallows.",
+     "body": [
+      "The current MOFA rules state that cosmetic, colored, and circle contact lenses, tinted glasses, and sunglasses may not be worn. Lens use is exactly the kind of flaw automated photo checkers struggle to detect, which makes it a classic case of a photo passing online pre-verification and then being rejected at the counter. Regular glasses are permitted as long as there is no glare and the frames do not cover the eyes.",
+      "Bangs are the same story. The rules prohibit not only hair over the eyes but any photo where hair covers the eyebrows or the facial contours such as cheekbones — the entire face from forehead to chin must be visible. A photo framed on the assumption that only the eyes need to show can still be refused.",
+      "The retouching rules were tightened in the October 2022 revision. Photos altered with editing software or filters are disallowed, and the rules now explicitly extend to AI-based edits, composites, and generated images. Photos with the background erased in Photoshop or the subject pasted onto a white background are also rejected, and Korea's Government24 online application repeats the AI-editing ban on its upload screen.",
+      "MOFA offers an online photo pre-verification service, but it warns that even a photo that passes verification can still be rejected during review at the application office. Treat the automated check as a reference, not a guarantee — the final call is made by a human examiner."
+     ]
+    },
+    "sources": [
+     {
+      "name": "외교부 여권안내 — 여권 사진 규격 (2022.10 개정)",
+      "url": "https://www.passport.go.kr/home/kor/contents.do?menuPos=32",
+      "grade": "A"
+     },
+     {
+      "name": "외교부 여권안내 — 온라인 여권 사진 검증",
+      "url": "https://www.passport.go.kr/home/kor/onlinePhotoVerify/index.do?menuPos=33",
+      "grade": "A"
+     },
+     {
+      "name": "정부24 — 여권 재발급 온라인 신청",
+      "url": "https://www.gov.kr/portal/service/serviceInfo/126200000030",
+      "grade": "A"
+     }
+    ]
+   },
+   {
+    "id": "online-digital-photo-spec",
+    "confidence": "high",
+    "ko": {
+     "title": "정부24 온라인 재발급 — 사진 파일 요건은 따로 있습니다",
+     "geoAnswer": "정부24 온라인 여권 재발급에는 가로 413×세로 531픽셀을 권장하되 가로 395~431픽셀, 세로 507~550픽셀 범위 안의 500KB 이하 JPG/JPEG 파일만 업로드할 수 있으며, 전자여권을 한 번이라도 발급받은 이력이 있는 국민만 신청할 수 있습니다.",
+     "body": [
+      "온라인 신청은 종이 사진이 아니라 디지털 파일 심사입니다. 외교부 온라인용 사진파일 안내 기준은 JPG/JPEG 형식, 500KB 이하, 해상도 300dpi 권장이며, 픽셀 크기는 413×531을 권장하되 가로 395~431, 세로 507~550 범위를 벗어나면 업로드 자체가 되지 않습니다. 스마트폰 원본 사진은 대부분 이 범위보다 훨씬 크기 때문에, 규격에 맞춘 리사이즈가 선행되어야 합니다.",
+      "신청 자격에도 제한이 있습니다. 온라인 재발급은 기존에 전자여권을 발급받은 이력이 있는 국민만 가능하고, 생애 최초 신청자, 로마자 성명 변경이 필요한 경우, 개명·주민등록정보 정정자 등은 창구를 방문해야 합니다. 여권 수령 역시 본인이 직접 창구를 방문해야 하므로(18세 미만 자녀는 법정대리인 대리 수령 가능), 완전 비대면 절차는 아닙니다.",
+      "업로드 전에는 외교부 여권안내 홈페이지의 온라인 사진 검증 서비스로 파일을 미리 점검할 수 있습니다. 다만 검증 통과가 접수를 보장하지 않는다는 외교부 안내를 감안하면, 배경·조명·렌즈·보정 같은 실심사 항목까지 촬영 단계에서 확인해 두는 것이 온라인 신청 반려를 줄이는 방법입니다."
+     ]
+    },
+    "en": {
+     "title": "Online Renewal via Government24 — The Digital File Has Its Own Spec",
+     "geoAnswer": "Korea's online passport renewal on Government24 only accepts a JPG/JPEG file of 500KB or less, ideally 413 × 531 pixels and strictly within 395–431 pixels wide by 507–550 pixels tall, and only citizens who have previously held a Korean electronic passport can apply online.",
+     "body": [
+      "Online renewal is judged on a digital file, not a printed photo. The Ministry of Foreign Affairs specifies JPG/JPEG format, a 500KB maximum, and 300dpi recommended; 413 × 531 pixels is the recommended size, and files outside the 395–431 × 507–550 pixel window cannot be uploaded at all. A photo straight off a smartphone is far larger than this window, so resizing to spec comes first.",
+      "Eligibility is also restricted. Online renewal is open only to Korean citizens who have previously been issued an electronic passport; first-time applicants and anyone needing a romanized-name change or a correction to their resident registration details must apply in person. Pickup also requires a personal visit to the passport office (a legal guardian may collect on behalf of a child under 18), so the process is not fully remote.",
+      "Before uploading, you can pre-check the file with the online photo verification service on the MOFA passport portal. Since MOFA itself notes that passing verification does not guarantee acceptance, it pays to get the human-reviewed factors right at the shooting stage — background, lighting, lenses, and retouching — rather than relying on the automated check."
+     ]
+    },
+    "sources": [
+     {
+      "name": "외교부 여권안내 — 온라인용 사진파일 안내",
+      "url": "https://www.passport.go.kr/home/kor/contents.do?menuPos=12",
+      "grade": "A"
+     },
+     {
+      "name": "정부24 — 여권 재발급 온라인 신청",
+      "url": "https://www.gov.kr/portal/service/serviceInfo/126200000030",
+      "grade": "A"
+     },
+     {
+      "name": "외교부 여권안내 — 온라인 여권 사진 검증",
+      "url": "https://www.passport.go.kr/home/kor/onlinePhotoVerify/index.do?menuPos=33",
+      "grade": "A"
+     }
+    ]
+   },
+   {
+    "id": "one-shot-all-ids",
+    "confidence": "high",
+    "ko": {
+     "title": "여권 규격으로 한 번 찍으면 주민등록증·운전면허증까지",
+     "geoAnswer": "행정안전부는 여권 사진 규격(3.5×4.5cm)으로 촬영하면 주민등록증과 여권 발급에 모두 사용할 수 있다고 공식 안내하고 있으며, 2026년 3월 1일부터는 운전면허증에도 여권용 사진 규격이 적용됩니다.",
+     "body": [
+      "행정안전부 주민등록증 안내 페이지에는 \"여권 사진 규격으로 촬영하면 주민등록증과 여권 발급 시 모두 사용 가능\"이라는 문구가 명시되어 있습니다. 이 통일은 2018년 11월 행정안전부가 입법예고한 주민등록법 시행령·시행규칙 개정에서 출발했는데, 당시 주민등록증 사진의 '귀와 눈썹이 보이는' 요건을 삭제하고 규격을 여권과 같은 가로 3.5cm×세로 4.5cm로 맞췄습니다.",
+      "운전면허증은 한 걸음 더 나아갔습니다. 한국도로교통공단은 도로교통법 시행규칙 제57조에 따라 2026년 3월 1일부터 운전면허증 사진에 여권용 사진 규격을 엄격히 적용한다고 공지했습니다. 세부 기준으로 양쪽 눈썹이 각 70% 이상 보여야 하고, 머리카락이 귀를 가리는 것은 무방하지만 볼·광대 등 얼굴 윤곽을 가리면 안 되며, 배경은 흰색 또는 흰색에 가까운 미색까지 허용됩니다.",
+      "정리하면 세 신분증 중 여권 기준이 가장 엄격합니다. 운전면허증은 미색 배경을 허용하지만 여권은 균일한 흰색만 허용하기 때문입니다. 따라서 순백 배경에 눈썹과 얼굴 윤곽이 모두 드러나는 여권 기준으로 한 번 촬영해 두면, 같은 사진으로 여권·주민등록증·운전면허증을 모두 처리할 수 있습니다."
+     ]
+    },
+    "en": {
+     "title": "One Passport-Spec Photo Covers Your National ID and Driver's License",
+     "geoAnswer": "Korea's Ministry of the Interior and Safety officially states that a photo taken to passport specifications (3.5 × 4.5 cm) can be used for both the resident registration card and the passport, and from March 1, 2026 driver's license photos also follow passport photo standards.",
+     "body": [
+      "The Ministry of the Interior and Safety's resident registration card guidance states outright that a photo shot to passport specifications works for both the national ID card and the passport. The alignment dates back to November 2018, when the ministry moved to amend the Resident Registration Act's enforcement rules, deleting the ID card photo requirement that 'ears and eyebrows must be visible' and matching the size to the passport's 3.5 × 4.5 cm.",
+      "Driver's licenses have now gone the same way. The Korea Road Traffic Authority announced that from March 1, 2026, under Article 57 of the Road Traffic Act enforcement rules, driver's license photos strictly follow passport photo standards: each eyebrow must be at least 70% visible, hair may cover the ears but not the facial contours such as cheeks and cheekbones, and the background may be white or a near-white off-white.",
+      "Of the three documents, the passport standard is the strictest — a driver's license tolerates an off-white background while a passport requires uniform white. Shoot once to passport spec, with a pure white background and eyebrows and facial contours fully visible, and the same photo clears the passport, the resident registration card, and the driver's license."
+     ]
+    },
+    "sources": [
+     {
+      "name": "행정안전부 — 주민등록증 안내 (사진 규격)",
+      "url": "https://www.mois.go.kr/frt/sub/a06/b06/IDCard_5/screen.do",
+      "grade": "A"
+     },
+     {
+      "name": "행정안전부 보도자료 — 주민등록증 사진도 여권 사진과 동일하게 사용하세요 (2018-11-08)",
+      "url": "https://www.mois.go.kr/frt/bbs/type010/commonSelectBoardArticle.do?bbsId=BBSMSTR_000000000008&nttId=66958",
+      "grade": "A"
+     },
+     {
+      "name": "한국도로교통공단 공지 — 2026년 3월 1일부터 여권용 사진 규격 적용 (도로교통법 시행규칙 제57조)",
+      "url": "https://www.koroad.or.kr/main/board/9/306204/board_view.do?cp=5&listType=list&bdOpenYn=Y&bdNoticeYn=N",
+      "grade": "A"
+     }
+    ]
+   },
+   {
+    "id": "infant-rules",
+    "confidence": "high",
+    "ko": {
+     "title": "영유아 여권사진 — 기준은 성인과 동일, 예외는 하나",
+     "geoAnswer": "한국 영유아 여권사진은 성인과 동일한 기준이 적용되며, 유일한 완화는 신생아를 포함한 36개월 이하 유아가 입을 조금 벌린 것을 허용하는 것이고, 장난감이나 보호자의 손·신체가 사진에 노출되면 접수되지 않습니다.",
+     "body": [
+      "외교부 현행 규정의 영유아 항목은 \"모든 기준은 성인과 동일함\"이 원칙입니다. 흰색 배경, 정면 응시, 그림자 없음 같은 조건이 아기에게도 똑같이 적용되고, 명시된 예외는 신생아와 36개월 이하 유아의 경우 입을 조금 벌리는 것이 가능하다는 것 하나입니다.",
+      "실무에서 가장 흔한 함정은 촬영 보조물입니다. 규정상 장난감 등 사물이나 보호자가 사진에 노출되면 접수되지 않으므로, 아기를 안거나 손으로 받친 채 촬영한 사진은 보호자의 손가락 하나만 프레임에 걸려도 반려 사유가 됩니다. 흰 배경 위에 눕혀 촬영하는 방식이 일반적인 해법입니다.",
+      "과거 규격을 기억하는 보호자라면 머리 길이 기준도 갱신해 둘 필요가 있습니다. 2018년 1월 25일 규정 완화 때 영유아 사진의 머리 길이(정수리~턱) 기준이 기존 2.3~3.6cm에서 성인과 동일한 3.2~3.6cm로 통일됐습니다. 옛 기준으로 작게 찍힌 얼굴은 현행 규격에서는 부적합입니다."
+     ]
+    },
+    "en": {
+     "title": "Infant Passport Photos — Adult Rules Apply, With One Exception",
+     "geoAnswer": "Korean infant passport photos follow the same standards as adult photos, with a single stated exception — newborns and babies up to 36 months old may have their mouth slightly open — while any visible toy or a guardian's hand in the frame will get the photo refused.",
+     "body": [
+      "The infant clause in the current MOFA rules starts from the principle that all adult criteria apply: white background, face square to the camera, no shadows. The only stated relaxation is that newborns and children up to 36 months may have their mouth slightly open.",
+      "The most common pitfall in practice is support props. The rules bar any photo showing objects such as toys or a guardian, so a shot taken while holding or steadying the baby fails if even a single finger enters the frame. Laying the baby on a plain white sheet and shooting from above is the standard workaround.",
+      "Parents who remember the old spec should also update one number: in the January 25, 2018 relaxation, the head-height standard for infant photos (crown to chin) was unified from 2.3–3.6 cm to the adult range of 3.2–3.6 cm. A photo framed to the old, smaller face size no longer meets the current standard."
+     ]
+    },
+    "sources": [
+     {
+      "name": "외교부 여권안내 — 여권 사진 규격 (영유아 사진 기준)",
+      "url": "https://www.passport.go.kr/home/kor/contents.do?menuPos=32",
+      "grade": "A"
+     },
+     {
+      "name": "대한민국 정책브리핑 — 여권사진 규정 완화 (영유아 머리 길이 기준 통일)",
+      "url": "https://www.korea.kr/news/policyNewsView.do?newsId=148847383",
+      "grade": "A"
+     }
+    ]
+   }
+  ]
+ },
+ "researchNotes": [
+  "[정본 수치 충돌 — 수정 필요] specs-data.json kr-passport의 restrictions.ears 필드가 \"ears must be visible; hair must not cover ears\"로 기재되어 있으나, 귀 노출 의무는 2018-01-25 폐지됨(korea.kr 정책브리핑 newsId=148847383). 현행 passport.go.kr 규격 페이지(2022.10 개정, menuPos=32)에도 귀 노출 요구 없음(얼굴 윤곽 노출만 요구). 정본 데이터의 ears 필드 삭제 또는 '귀 가림 무방, 얼굴 윤곽 노출 필수'로 교체 권장.",
+  "[정본 수치 충돌 — 경미] onlineGuide 소요 기간이 '4~7일'로 기재되어 있으나 정부24 현행 페이지는 '근무일 기준 통상 8일(국내 기준), 야간 접수 +1일, 도서지역 +2일'로 안내. 본문에서는 소요 기간 수치를 사용하지 않아 모순 없음. 정본 갱신 검토 필요.",
+  "[규정 연혁 핵심] 2018-01-25 완화로 삭제된 6개 항목: 두 귀 노출 의무, 어깨 수평 유지, 뿔테안경 지양, 제복·군복 착용 불가, 눈썹가림 항목, 가발·장신구 착용 지양. 단 '눈썹가림'은 현행 규정(2022.10 개정)에 '머리카락으로 눈썹 및 얼굴 윤곽(광대·볼) 가림 제출 불가'로 재명시됨 — 귀(폐지 유지)와 눈썹(재도입)을 구분해 서술함. 콘텐츠 개정 시 이 구분 유지 필수.",
+  "[신규 발견 — 타 슬러그 반영 권장] 한국도로교통공단 공지: 2026-03-01부터 운전면허증 사진에 여권용 규격 엄격 적용(도로교통법 시행규칙 제57조). 세부: 양쪽 눈썹 각 70% 이상 노출, 귀 가림 무방, 흰색·미색 배경 허용, 보정 불가. kr-driver 등 운전면허 슬러그 존재 시 동일 근거로 갱신 권장.",
+  "[officialSource 갱신 권장] 정본 officialSource.url이 passport.go.kr 루트로 되어 있음. 사진 규격 상세 페이지는 https://www.passport.go.kr/home/kor/contents.do?menuPos=32 (menuPos=25는 관용·외교관 여권 페이지로 사진 규격 아님). 온라인 파일 스펙은 menuPos=12, 사진 검증 서비스는 menuPos=33.",
+  "[검증 상태] 전 섹션 A급(정부·공공기관) 출처로 확정: passport.go.kr(규격·온라인파일·검증), korea.kr(2018 완화 연혁), gov.kr(온라인 재발급), mois.go.kr(주민등록증 페이지+2018-11-08 보도자료), koroad.or.kr(운전면허 2026 적용). 접속 실패 없음. 행안부 '여권 사진 규격으로 촬영하면 주민등록증과 여권 발급 시 모두 사용 가능' 문구는 현행 공식 페이지에서 원문 확인 — 내부 힌트 실증 완료.",
+  "[2022.10 개정 특기사항] 현행 규정에 'AI를 활용한 편집·가공·합성·창조 제작물 포함' 보정 금지가 명시됨 — AI 사진 서비스 관점에서 규격 크롭·배경 처리와 얼굴 변형 보정의 경계를 명확히 해야 하는 근거 조항. 정부24 업로드 화면에도 동일 문구 존재."
+ ],
+ "verifyRecord": {
+  "slug": "kr-passport",
+  "pass": false,
+  "claims": [
+   {
+    "claim": "양쪽 귀 노출 의무 조항이 2018-01-25 여권사진 규정 완화로 삭제됨 (핵심 교정 주장)",
+    "verdict": "confirmed",
+    "evidence": "korea.kr newsId=148847383 원문: \"두 귀 노출 의무조항... 삭제됐다\" + \"25일부터 시행\". 현행 passport.go.kr menuPos=32(<2022.10. 개정> 표기)에 귀 관련 요구 부재 실측. 교정 주장 자체를 공격 검증했으나 반증 없음."
+   },
+   {
+    "claim": "2018 완화로 삭제된 항목: 어깨 수평, 뿔테안경 지양, 눈썹가림, 제복·군복 불가, 가발·장신구 지양",
+    "verdict": "confirmed",
+    "evidence": "korea.kr 원문 인용과 목록 완전 일치: \"어깨의 수평을 유지해야 한다는 항목과 뿔테안경 지양 및 눈썹가림에 대한 항목, 제복·군복 착용 불가 항목, 두 귀 노출 의무조항, 가발·장신구 착용 지양 항목 등이 삭제\""
+   },
+   {
+    "claim": "지금은 뿔테 안경·제복 착용 촬영이 규정 위반이 아님",
+    "verdict": "confirmed",
+    "evidence": "menuPos=32 재fetch: 제복·뿔테 관련 금지 문구 부재. 안경 조건은 \"빛이 반사되지 않아야 하며, 안경테가 눈을 가리면 안됨\"뿐 — 테가 눈을 가리면 여전히 불가하므로 섹션1에 이 조건 미기재(섹션2에는 있음)는 미세 보완 권장",
+    "fix": "섹션1 해당 문장에 \"(테가 눈을 가리지 않는 한)\" 조건 부가 권장 — 비차단"
+   },
+   {
+    "claim": "현행 규정(2022.10 개정)에 \"머리카락으로 눈썹 및 얼굴 윤곽(광대, 볼 등)을 가리는 사진은 제출 불가\" 재명시 — 귀(폐지 유지)/눈썹(재도입) 구분",
+    "verdict": "confirmed",
+    "evidence": "menuPos=32에서 해당 문구 원문 그대로 확인 + <2022. 10. 개정> 표기 확인"
+   },
+   {
+    "claim": "\"미용·컬러·서클렌즈, 렌즈에 색이 들어간 안경, 선글라스 등은 착용 불가\" 명시",
+    "verdict": "confirmed",
+    "evidence": "menuPos=32 원문 그대로 존재"
+   },
+   {
+    "claim": "\"AI를 활용한 편집·가공·합성·창조 제작물\" 불허가 현행 규정에 명시 + 정부24 안내에도 동일 문구",
+    "verdict": "confirmed",
+    "evidence": "menuPos=32: \"AI를 활용한 편집·가공·합성·창조 제작물 포함\" 확인. gov.kr/126200000030에도 동일 문구 + \"사진 필터 기능 등을 사용하여 임의로 보정된 사진\" 금지 확인. '2022.10 개정에서 구체화' 귀속은 페이지 자체 개정 표기가 근거"
+   },
+   {
+    "claim": "온라인 검증 경고문 \"검증된 사진이라도 실제 대행기관 심사과정에서 여권접수가 반려되거나 여권교부가 거부될 수 있습니다\"",
+    "verdict": "confirmed",
+    "evidence": "menuPos=33에서 원문 그대로 확인 (+\"해당 프로그램은 참고용일 뿐\" 병기)"
+   },
+   {
+    "claim": "온라인 사진파일 스펙: JPG/JPEG, 500KB 이하, 300dpi 권장, 413×531 권장, 가로 395~431·세로 507~550 이내만 업로드 가능",
+    "verdict": "confirmed",
+    "evidence": "menuPos=12 원문: \"가로 413 픽셀, 세로 531 픽셀 사이즈 권장(가로 395~431 픽셀, 세로 507~550 픽셀 이내만 업로드 가능)\" — 5개 수치 전부 일치"
+   },
+   {
+    "claim": "온라인 재발급은 전자여권 발급 이력자만 + 생애최초·로마자변경·개명자 등 제외 + 본인 직접 수령(18세 미만 법정대리인 대리 가능)",
+    "verdict": "confirmed",
+    "evidence": "gov.kr 원문: \"기존에 전자여권을 한 번이라도 발급 받은 이력이 있는 우리 국민\", 제외 대상 목록, \"1회 본인이 직접 창구를 방문\", 18세 미만 법정대리인 대리 수령 전부 확인"
+   },
+   {
+    "claim": "행안부 \"여권 사진 규격으로 촬영하면 주민등록증과 여권 발급 시 모두 사용 가능\" 공식 문구 존재",
+    "verdict": "confirmed",
+    "evidence": "mois.go.kr IDCard_5 페이지에서 원문 그대로 확인. 규격 \"가로 3.5cm×세로 4.5cm\" 병기, 귀·눈썹 요건 부재"
+   },
+   {
+    "claim": "2018-11 행안부 입법예고에서 주민등록증 사진 '귀와 눈썹이 보이는' 요건 삭제 + 3.5×4.5cm 통일",
+    "verdict": "confirmed",
+    "evidence": "mois.go.kr nttId=66958 (2018.11.08 게시): \"주민등록법 시행령·시행규칙 개정안을 9일 입법예고\", '귀와 눈썹이 보이는' 요건 삭제, \"가로 3.5센티미터, 세로 4.5센티미터\" 전부 확인"
+   },
+   {
+    "claim": "2026-03-01부터 운전면허증에 여권용 사진 규격 적용 (시행규칙 57조, 눈썹 각 70%, 귀 가림 무방·볼/광대 불가, 흰색/미색 배경, 보정 불가)",
+    "verdict": "confirmed",
+    "evidence": "koroad.or.kr 306204 공지(2026-02-24 작성) 원문에서 6개 세부 전부 확인. 연기·번복 가능성 추가 검색 — 제3자 자료도 현재(2026-07) 시행 중으로 기술, 반증 없음"
+   },
+   {
+    "claim": "여권은 균일한 흰색만, 면허는 미색 허용 → 여권 기준이 가장 엄격",
+    "verdict": "confirmed",
+    "evidence": "menuPos=32 \"배경은 균일하고 잉크 자국이 없는 흰색\" vs koroad \"흰색 또는 흰색에 가까운 미색 배경 가능\" — 비교 성립. 주민등록증은 여권 규격 수용이므로 결론 논리 유효"
+   },
+   {
+    "claim": "영유아: 모든 기준 성인과 동일, 36개월 이하 입 벌림 유일 예외, 장난감/보호자 노출 시 접수 불가 + 머리길이 2.3~3.6→3.2~3.6cm 통일(2018-01-25)",
+    "verdict": "confirmed",
+    "evidence": "menuPos=32 영유아 3개 조건 전부 확인. korea.kr 원문: \"기존 유아 사진 속 세로 머리 길이가 2.3∼3.6cm여야한다는 조항을 수정, 기존 성인 규격과 동일한 3.2∼3.6cm로 통일\""
+   },
+   {
+    "claim": "ko 제목 \"실제 반려 1순위\" + en geoAnswer \"the rejection risks that most often slip past automated checks\" — 순위·빈도 단정",
+    "verdict": "unverified",
+    "evidence": "반려 사유 공식 통계 부재 (추가 검색으로도 정부 통계 없음, 블로그급 일화뿐). 세 항목이 규정상 명시된 불가 사유라는 부분은 confirmed이나 '1순위'/'most often'은 어떤 출처로도 뒷받침 불가한 단정형 — pass=false 사유",
+    "fix": "ko 제목 \"실제 반려 1순위\" → \"실제 반려를 부르는 대표 사유\" 또는 \"자동 검증이 놓치는 반려 사유\". en geoAnswer \"most often slip past\" → \"can slip past automated checks\""
+   },
+   {
+    "claim": "\"렌즈 착용 여부는 사진 검증 프로그램이 자동으로 걸러내기 어려운 항목이라... 반려되는 대표 사례\" — 기전·빈도 서술",
+    "verdict": "plausible",
+    "evidence": "기전 추론은 합리적이나 근거 문서 없음. menuPos=33의 \"참고용일 뿐\" 경고가 간접 지지",
+    "fix": "\"걸러내기 어려울 수 있는 항목\" 정도로 완화 권장"
+   },
+   {
+    "claim": "researchNote: 정본 specs-data.json restrictions.ears가 폐지된 귀 노출 의무를 현행처럼 기재 — 정본 수정 필요",
+    "verdict": "confirmed",
+    "evidence": "jq 실측: restrictions.ears = \"ears must be visible; hair must not cover ears\" (en/ko/ja/es 4개 언어 전부) — 2018 폐지 규정 잔존. 드래프트의 정본 충돌 지적이 정확하며, 수정 시 4개 언어 필드 일괄 교체 필요"
+   },
+   {
+    "claim": "researchNote: 정본 onlineGuide 소요기간 4~7일 vs 정부24 근무일 8일 충돌",
+    "verdict": "confirmed",
+    "evidence": "jq 실측: \"소요 기간: 4~7일\" 기재 vs gov.kr 원문 \"근무일 기준 통상 8일(국내 기준)\" + 온라인 신청 시 +1일 — 충돌 실재, 정본 갱신 필요"
+   }
+  ],
+  "revisionNotes": [
+   "[필수 수정 2곳] ko 섹션2 제목 '실제 반려 1순위'와 en geoAnswer 'most often slip past automated checks'는 통계 근거가 없는 순위·빈도 단정 — 위 fix대로 완화하면 pass 가능. 나머지 규제 사실 주장은 8/8 출처 원문 대조 전부 확정.",
+   "[GEO 발췌 안전성] 섹션1 geoAnswer '머리카락이 귀를 가려도 접수에 문제가 없습니다'는 단독 발췌 시 조건 누락 — '얼굴 윤곽(광대·볼)을 가리지 않는 한' 부가 권장. koroad 공지의 '귀 가림 무방하되 윤곽은 노출' 구조를 차용하면 됨.",
+   "[오도 방지] 섹션1이 '가발·장신구 착용 지양' 삭제를 나열하지만 현행 규정에 조건부 장신구 제한('귀걸이·피어싱 등 장신구가 빛 반사되거나 얼굴 윤곽을 가리면 제출 불가')이 존재 — 장신구가 전면 자유화된 것으로 읽히지 않도록 한 줄 캐비앳 권장.",
+   "[품질기준 v2] 위반 섹션 없음 — 5개 섹션 전부 수치 나열이 아닌 교정·실무 함정·연혁 서사 구조. 섹션3이 가장 수치 밀도가 높으나 리사이즈 필요성·자격 제한·비대면 한계로 맥락화되어 있음.",
+   "[ko/en 표현 품질] 기계번역 투·한국어 누출 없음. en 미세 개선 1건: 'the level-shoulders requirement' → 'the requirement to keep shoulders level'. 섹션5 en 'plain white sheet' 조언은 구김→그림자 반려 리스크가 있으므로 'wrinkle-free' 뉘앙스 추가 시 더 안전.",
+   "[출처 라벨 소소] 섹션1 korea.kr 출처 라벨의 기사일자 (2018-01-26)는 발행일 미실측(시행일 01-25는 확정) — 라벨 날짜만 재확인 권장, 본문 영향 없음.",
+   "[정본 후속] specs-data.json 수정 시 restrictions.ears는 en뿐 아니라 ko/ja/es 4개 필드 전부 교체 필요. onlineGuide 소요기간도 ko/es 양쪽 갱신."
+  ]
+ }
+}

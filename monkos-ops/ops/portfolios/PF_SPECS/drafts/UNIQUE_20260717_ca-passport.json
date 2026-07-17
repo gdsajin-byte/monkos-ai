@@ -1,0 +1,333 @@
+{
+ "meta": {
+  "slug": "ca-passport",
+  "pipeline": "specs-unique-pilot v1",
+  "runId": "wf_43671794",
+  "date": "2026-07-17",
+  "status": "draft-v1.1 — 검증자 fix 반영(wrong 1·unverified 2 완화). 정본 결함 3건 별도 보고(standard·fileSpec·faqs)",
+  "verifySummary": {
+   "confirmed": 17,
+   "plausible": 2,
+   "unverified": 2,
+   "wrong": 2
+  }
+ },
+ "uniqueContent": {
+  "sections": [
+   {
+    "id": "size-50x70-uniqueness",
+    "confidence": "high",
+    "ko": {
+     "title": "50×70mm — 세계 최대급, 주요국 중 캐나다만 쓰는 여권 사진 크기",
+     "geoAnswer": "캐나다 여권 사진 규격은 가로 50mm × 세로 70mm(2 × 2¾인치)이며, 턱 끝부터 정수리까지 얼굴 높이가 31~36mm여야 한다 — 다수 국가가 쓰는 35×45mm나 미국의 51×51mm와 호환되지 않는 캐나다 고유 크기다.",
+     "body": [
+      "50×70mm는 주요국 여권 사진 중 면적이 가장 큰 축에 속한다. 미국용 2×2인치(51×51mm) 사진이나 35×45mm 사진을 잘라서 쓰는 것은 불가능하다 — 캔버스 비율(5:7)과 얼굴 높이 기준(31~36mm)이 모두 다르기 때문에 크롭으로는 규격을 맞출 수 없다. 캐나다 이민·난민·시민권부(IRCC)는 공식 페이지 첫머리에 '캐나다 요건은 타국과 다르다'고 명시하고, 요건 미달 시 신청 자체를 반려한다고 경고한다.",
+      "같은 50×70mm·얼굴 31~36mm 치수는 영주권(PR)카드 종이 신청과 시민권 증명(proof of citizenship) 종이 신청에도 적용된다. 다만 부대 요건은 문서마다 다르다: 여권은 컬러·흑백 모두 허용되고 촬영 후 6개월 이내여야 하지만, 시민권 증명은 컬러 사진만 받고, PR카드는 촬영 후 12개월까지 인정된다. 반면 캐나다 방문비자(TRV)는 35×45mm로 아예 다른 크기를 쓴다 — '캐나다 서류는 전부 50×70'이라고 일반화하면 안 된다.",
+      "흑백 사진이 공식 허용된다는 점도 캐나다 여권의 드문 특징이다. 배경은 무늬 없는 흰색 또는 밝은 단색이어야 하며, 흰 옷은 배경과 섞여 반려 사유가 되므로 피해야 한다."
+     ]
+    },
+    "en": {
+     "title": "50 × 70 mm: One of the World's Largest Passport Photo Formats, Used Only by Canada",
+     "geoAnswer": "Canadian passport photos must measure 50 mm wide by 70 mm high (2 in × 2¾ in) with a chin-to-crown face height of 31–36 mm — a format unique to Canada that is incompatible with both the 35 × 45 mm size used by most countries and the US 2 × 2 inch standard.",
+     "body": [
+      "At 50 × 70 mm, Canada uses one of the largest passport photo formats in the world. You cannot trim a US 2 × 2 inch (51 × 51 mm) photo or a 35 × 45 mm photo down to fit: both the 5:7 canvas ratio and the 31–36 mm face-height requirement differ, so no crop will make a foreign-format photo compliant. Immigration, Refugees and Citizenship Canada (IRCC) states up front that Canadian requirements differ from other countries' and warns that applications with non-compliant photos will be refused.",
+      "The same 50 × 70 mm dimensions and 31–36 mm face height also apply to paper applications for the permanent resident (PR) card and proof of citizenship — but the surrounding rules diverge by document. Passport photos may be colour or black and white and must be taken within 6 months; proof-of-citizenship photos must be colour; PR photos are accepted up to 12 months after they were taken. Meanwhile Canada's own visitor visa (TRV) uses a completely different 35 × 45 mm size, so 'everything Canadian is 50 × 70' is a myth.",
+      "Canada is also one of the few countries that officially accepts black-and-white passport photos. The background must be plain white or light-coloured with no texture, and white clothing should be avoided because it blends into the background — a stated rejection trigger."
+     ]
+    },
+    "sources": [
+     {
+      "name": "Government of Canada (IRCC) — Passport photo requirements",
+      "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/canadian-passports/photos.html",
+      "grade": "A"
+     },
+     {
+      "name": "Government of Canada (IRCC) — Permanent resident photos",
+      "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/permanent-residents/card/photos.html",
+      "grade": "A"
+     },
+     {
+      "name": "Government of Canada (IRCC) — Proof of citizenship photo specifications",
+      "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides/citizenship-application-photograph-specifications/proof-mail.html",
+      "grade": "A"
+     },
+     {
+      "name": "Government of Canada (IRCC) — Temporary Resident Visa photograph specifications",
+      "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides/temporary-resident-visa-application-photograph-specifications.html",
+      "grade": "A"
+     }
+    ]
+   },
+   {
+    "id": "photo-back-photographer-guarantor",
+    "confidence": "high",
+    "ko": {
+     "title": "사진 뒷면 요건 — 사진관 스탬프와 보증인 서명이라는 캐나다식 이중 인증",
+     "geoAnswer": "캐나다 여권 신규 신청 시 제출하는 동일 사진 2장 중 1장 뒷면에는 사진관이 촬영일과 상호·전체 주소를 기재하거나 스탬프로 찍어야 하고, 보증인(guarantor)이 'I certify this to be a true likeness of (신청자 이름)' 문구를 직접 쓰고 서명해야 한다.",
+     "body": [
+      "캐나다는 사진 자체의 물리적 이력을 요구하는 드문 나라다. 종이로 접수하는 모든 여권 신청(신규·우편·방문 갱신)에는 변조되지 않은 동일 사진 2장이 필요하고, 촬영은 상업 사진관·전문 사진사가 대면으로 해야 하며, 인화는 일반 고품질 인화지에 전문 인쇄되어야 한다. 가정용 프린터 출력이나 두꺼운 용지 인화는 접수되지 않는다 — 미국의 '셀프 촬영·출력', 영국의 '셀프 촬영·업로드' 경로가 캐나다 종이 신청에서는 원천적으로 막혀 있는 이유다.",
+      "뒷면 기재는 역할이 나뉜다. 사진관은 촬영일 + 상호·전체 주소를 쓰거나 스탬프로 남기고, 보증인은 인증 문구와 서명을 남긴다. 보증인 제도는 신청자의 신원을 아는 제3자가 사진이 본인임을 증명하는 캐나다 고유 절차로, 아동 여권에도 동일하게 적용된다. 단, 성인 여권 갱신(renewal)은 보증인이 필요 없다 — 신규 신청과 갱신의 요건 차이를 혼동하지 말 것.",
+      "사진이 6개월 이내 촬영본이어야 한다는 기준은 '신청서 제출일' 기준으로 계산된다. 오래 전 여분으로 받아 둔 사진을 쓰면 촬영일 스탬프에서 바로 드러난다."
+     ]
+    },
+    "en": {
+     "title": "The Back of the Photo: Canada's Double Authentication — Studio Stamp Plus Guarantor Signature",
+     "geoAnswer": "For a new Canadian passport application, the back of one of the two identical photos must carry the photo studio's name, complete address and the date the photo was taken (handwritten or stamped by the photographer), plus the guarantor's handwritten declaration 'I certify this to be a true likeness of (the applicant's name)' and signature.",
+     "body": [
+      "Canada is one of the few countries that demands a physical paper trail on the photo itself. Every paper application — a new passport, or a renewal by mail or in person — needs 2 identical, unaltered photos, taken in person by a commercial photographer or photo studio and professionally printed on plain, high-quality photographic paper. Photos printed at home or on heavyweight paper are not accepted — which is why the take-it-yourself route (print-at-home in the US, digital upload in the UK) is structurally closed for Canadian paper applications.",
+      "The back-of-photo duties are split between two parties. The photographer writes or stamps the date taken plus the studio's name and complete address; the guarantor — a third party who can vouch for the applicant's identity — adds the certification sentence and signs at the bottom. The same guarantor endorsement is required on a child's photo. Adult passport renewals, however, do not need a guarantor, a distinction between new applications and renewals that trips up many applicants.",
+      "The 6-month recency rule is measured against the date you submit the application, and the dated studio stamp on the back makes an out-of-date photo immediately detectable."
+     ]
+    },
+    "sources": [
+     {
+      "name": "Government of Canada (IRCC) — Passport photo requirements",
+      "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/canadian-passports/photos.html",
+      "grade": "A"
+     }
+    ]
+   },
+   {
+    "id": "zero-alteration-ai-ban",
+    "confidence": "high",
+    "ko": {
+     "title": "보정 전면 금지 — AI 도구는 물론 밝기 조정·적목 제거도 반려 사유",
+     "geoAnswer": "캐나다는 여권 사진의 일체 편집을 금지하며, AI 도구와 필터는 물론 색상·밝기·대비·선명도 조정, 배경 교체와 그림자 제거, 흉터·모반·적목 제거까지 모두 공식적으로 '변조된 사진(altered photo)'으로 규정해 신청을 반려한다.",
+     "body": [
+      "IRCC의 현행 공식 페이지는 '변조'의 범위를 이례적으로 구체적으로 정의한다: 색상·밝기·대비·선명도 등 기술적 보정, 머리·어깨 주변을 잘라내 흰 배경에 합성하는 것(cutting and pasting against a white background), 눈·코·입·귀의 크기나 형태 수정, 빛 반사·적목·흉터·모반 제거나 머리색 변경 같은 외모 개선, 의상 색 변경, 그림자 제거를 포함한 배경 변경 — 전부 반려 대상이다. 사진 편집 소프트웨어, 필터, AI 도구가 금지 수단으로 명시돼 있다.",
+      "특히 '배경 합성'이 명시적 반려 사유라는 점이 결정적이다. 여러 나라에서 통과되는 배경 제거·교체 방식의 앱 사진이 캐나다 여권 종이 신청에서는 규정 위반이 된다. 적목(red-eye)은 이중으로 걸린다 — 적목 현상이 있는 사진도, 적목을 보정한 사진도 모두 불허 목록에 올라 있다.",
+      "무보정 원칙의 근거는 얼굴인식이다.IRCC는 무표정 요구의 이유로 얼굴인식 시스템이 개인 고유의 얼굴 특징으로 신원을 검증한다는 점을 들며, 사진이 촬영 원본 그대로여야 하는 무보정 원칙도 같은 맥락에 있다. 캐나다 여권 사진의 안전한 경로는 사진관 촬영 원본을 그대로 제출하는 것뿐이다."
+     ]
+    },
+    "en": {
+     "title": "Zero-Alteration Policy: AI Tools Are Banned — and So Is Fixing Brightness or Red-Eye",
+     "geoAnswer": "Canada rejects any passport photo that has been altered in any way: the official IRCC definition of an 'altered photo' covers AI tools and filters as well as colour, brightness, contrast or sharpness corrections, background replacement or shadow removal, and even the removal of scars, birthmarks or red-eye.",
+     "body": [
+      "IRCC's current official page defines 'altered' with unusual precision: technical corrections or enhancements (colour, brightness, contrast, sharpness), cropping around the head and shoulders — explicitly including cutting and pasting your image against a white background — editing facial features such as the size or shape of eyes, nose, mouth or ears, appearance improvements like removing glare, red-eye, scars or birthmarks or changing hair colour, editing clothing colours, and changing the background including removing shadows. Photo-editing software, filters and AI tools are all named as prohibited means.",
+      "The explicit ban on background compositing is the decisive detail. App-generated photos that pass in many countries because the background was digitally removed and replaced are, by definition, non-compliant for a Canadian paper passport application. Red-eye fails twice over: photos showing red-eye are rejected, and so are photos where red-eye has been retouched away.",
+      "The rationale is facial recognition. Alongside the ICAO-recommended neutral expression (eyes open, mouth closed, no smiling or frowning), IRCC explains that recognition systems verify identity from each person's unique facial features — which is also why an edited file defeats the purpose. For a Canadian passport, the only safe route is submitting the studio original untouched."
+     ]
+    },
+    "sources": [
+     {
+      "name": "Government of Canada (IRCC) — Passport photo requirements",
+      "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/canadian-passports/photos.html",
+      "grade": "A"
+     }
+    ]
+   },
+   {
+    "id": "children-newborns",
+    "confidence": "high",
+    "ko": {
+     "title": "아동·신생아 사진 — 규격은 성인과 동일, 신생아만 공식 완화 조항",
+     "geoAnswer": "캐나다 아동·신생아 여권 사진도 성인과 동일한 50×70mm 크기와 턱~정수리 31~36mm 얼굴 높이를 충족해야 하지만, 신생아에 한해 표정 기준이 완화되고 머리 뒤에 흰 담요를 덮은 카시트 촬영이 공식 허용된다.",
+     "body": [
+      "캐나다는 아동용 별도 치수를 두지 않는다. 갓난아기도 50×70mm 캔버스에 얼굴 높이 31~36mm를 맞춰야 하고, 촬영은 성인과 마찬가지로 상업 사진관에서 6개월 이내에 이뤄져야 한다. 다만 IRCC는 '신생아에게 무표정을 기대하기 어렵다는 것을 안다'며 유아의 표정에는 일정 범위를 허용한다고 공식 문서에 명시한다 — 눈을 뜬 정면 응시라는 골격만 지키면 된다.",
+      "신생아 전용 절차로는 카시트 촬영이 있다: 카시트에 앉힌 채 찍되, 아이 머리 뒤 시트 위에 흰 담요를 덮어 얼굴 윤곽이 배경과 구분되게 해야 한다. 귀 주변·배경·얼굴과 어깨의 그림자는 성인 기준과 동일하게 반려 사유다.",
+      "아동 사진 특유의 함정이 손이다 — IRCC의 부적합 예시 갤러리가 아동 항목으로 드는 사례가 바로 손이 찍힌 사진이다. 아이를 받치는 부모의 손이든 아이 본인의 손이든, 사진에 손이 보이면 안 되며 프레임은 머리와 어깨까지만 담아야 한다. 아동 여권도 신규 신청이므로 사진 1장 뒷면에 사진관 정보 기재와 보증인 서명('I certify this to be a true likeness of…')이 성인 신규 신청과 동일하게 요구된다."
+     ]
+    },
+    "en": {
+     "title": "Children and Newborns: Adult Specs Apply in Full — With One Official Concession for Babies",
+     "geoAnswer": "Canadian child and newborn passport photos must meet the same 50 × 70 mm size and 31–36 mm chin-to-crown face height as adult photos, but IRCC officially relaxes the neutral-expression rule for newborns and permits car-seat photos with a white blanket placed behind the baby's head.",
+     "body": [
+      "Canada has no separate child dimensions: even a newborn must fit the 50 × 70 mm canvas with a 31–36 mm face height, photographed at a commercial studio within 6 months of applying, just like an adult. IRCC does state in writing that it knows a neutral expression is difficult for a newborn and that 'some range' of infant facial expressions is allowed — the essentials that remain are open eyes and a face square to the camera.",
+      "The newborn-specific procedure is the car-seat shot: the baby may be photographed sitting in a car seat, provided a white blanket covers the seat behind the head so the face stands out against the background. Shadow rules are not relaxed — shadows around the ears, in the background, or on the face and shoulders remain rejection triggers.",
+      "A signature child-photo pitfall is hands — IRCC's own unacceptable-photo examples pair the correct child pose against hands in the picture. Neither the parent's supporting hands nor the child's own hands may appear anywhere in the frame, which must show only the head and shoulders. And because a child's passport is always a new application, the back-of-photo regime applies in full: studio details plus the guarantor's 'I certify this to be a true likeness of…' declaration and signature on one photo."
+     ]
+    },
+    "sources": [
+     {
+      "name": "Government of Canada (IRCC) — Passport photo requirements",
+      "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/canadian-passports/photos.html",
+      "grade": "A"
+     }
+    ]
+   },
+   {
+    "id": "online-renewal-digital-photo",
+    "confidence": "high",
+    "ko": {
+     "title": "온라인 갱신용 디지털 사진 — 스캔본 불가, 사진관 정보는 업로드 폼에 입력",
+     "geoAnswer": "캐나다 여권 온라인 갱신에는 디지털 사진 1장이 필요한데, 이 역시 신청 전 6개월 이내에 상업 사진관에서 대면 촬영한 것이어야 하며 인쇄된 사진을 스캔한 파일은 접수되지 않는다.",
+     "body": [
+      "디지털 사진이 필요한 경우는 온라인 갱신 하나뿐이다 — 신규 발급이나 우편·방문 갱신은 여전히 인화 사진 2장을 쓴다. 온라인 갱신용 파일은 JPEG/JPG 형식으로, 카메라가 촬영한 원본 파일에서 바로 저장된 것이어야 하고, 종이 사진을 스캔본은 명시적으로 거부되며, 카메라 원본 직저장 요건상 재촬영본도 배제된다. 이 점은 같은 캐나다라도 PR카드 온라인 신청(전문 인화 사진의 스캔본 허용)과 정반대라서 혼동이 잦다.",
+      "디지털 규격은 인쇄 사진과 별도로 정해져 있으며, 핵심 비율 기준은 턱 끝~정수리가 사진 세로 높이의 45~50%를 차지해야 한다는 것이다. 편집 금지 원칙은 종이 사진과 동일하게 적용된다 — AI 도구·필터·밝기 보정 모두 반려 사유다.",
+      "종이 신청의 '뒷면 기재'는 온라인에서 입력 항목으로 대체된다: 사진 업로드 시 사진관(또는 사진사) 상호, 주소, 촬영일을 함께 제출해야 한다. IRCC는 촬영 시 디지털 파일과 인화본을 모두 받아 두라고 공식 권고한다 — 온라인 갱신이 불가능한 상황으로 판명되면 같은 사진으로 우편·방문 신청에 전환하기 위해서다."
+     ]
+    },
+    "en": {
+     "title": "Digital Photos for Online Renewal: No Scans Allowed, Studio Details Move Into the Upload Form",
+     "geoAnswer": "Renewing a Canadian passport online requires one digital photo, which must still be taken in person by a commercial photographer no more than 6 months before you apply — a scan of a printed photo is not accepted.",
+     "body": [
+      "Only online renewal uses a digital photo; new applications and in-person or mail renewals still require two printed photos. The file must be a .jpeg/.jpg saved directly from the original file captured by the camera — scanning or re-photographing a paper print is explicitly refused. Confusingly, this is the opposite of Canada's own PR card online application, which does accept scans of professionally printed photos, so applicants juggling both documents often get it backwards.",
+      "The digital specifications are defined separately from the printed-photo specs. The key proportion rule: the chin-to-crown measurement must occupy between 45% and 50% of the photo's height. The zero-alteration policy carries over unchanged — AI tools, filters and even brightness corrections make the photo invalid.",
+      "The paper route's back-of-photo details become form fields online: when uploading, you must enter the studio or photographer's name, their address, and the date the photo was taken. IRCC also officially recommends asking the photographer for both a digital copy and printed copies at the same sitting, so you can fall back to a mail or in-person application if online renewal turns out not to be an option for you."
+     ]
+    },
+    "sources": [
+     {
+      "name": "Government of Canada (IRCC) — Passport photo requirements (Online renewals section)",
+      "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/canadian-passports/photos.html",
+      "grade": "A"
+     },
+     {
+      "name": "Government of Canada (IRCC) — Permanent resident photos",
+      "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/permanent-residents/card/photos.html",
+      "grade": "A"
+     }
+    ]
+   }
+  ]
+ },
+ "researchNotes": [
+  "정본 수치 충돌: specs-data.json fileSpec 'JPEG/JPG format, minimum 420 x 540 pixels, max 4MB'는 공식 여권 온라인 갱신 디지털 스펙과 불일치. canada.ca 공식(2026-07-17 실측): 최소 1,800(H)×1,200(W)px, 최대 4,500×3,000px, 200KB~5MB, 3:2 세로 비율. 420×540px는 IRCC 비자 e-app 계열 스펙으로 추정(PR카드 온라인은 715×1000~2000×2800px, ≤4MB로 또 다름). 본문에서는 충돌 픽셀·용량 수치 인용을 전면 회피하고 비충돌 수치(턱~정수리 45~50%)만 사용. 데이터 정정 권고.",
+  "정본 details 필드 '사진 뒷면에 사진사 서명·주소·촬영일자 기재 필수'는 부정확: 공식 요건은 사진관의 촬영일+상호+전체주소 기재(또는 스탬프)이며, 서명은 사진사가 아니라 보증인(guarantor)이 한다. 갱신 시 보증인 면제.",
+  "정본 faqs '집에서 찍을 수 있나요? → 네, 셀프 촬영 가능 + MONKOS AI 배경 제거' 항목은 공식 요건과 정면 충돌: 캐나다 여권은 상업 사진관 대면 촬영 의무 + 일체 편집(배경 제거 포함) 금지 + 가정 인쇄 불가. 이 FAQ 유지 시 사용자 반려 유발 가능 — 콘텐츠 수정 필요.",
+  "철창이 브리핑 검증: ① '전 문서 50×70 통일' 부분 확인 — 여권·시민권 증명(종이)·PR카드(종이)는 50×70mm+31~36mm 동일하나, 방문비자(TRV)는 35×45mm로 상이하고 시민권 페이지는 '여권과 동일 규격 아님'을 명시(컬러 필수 등 부대조건 차이). '전 문서 통일'로 쓰지 않고 문서별 차이를 본문에 반영. ② 얼굴 31~36mm 공식 확인. ③ AI 편집 금지 공식 확인(altered photo 정의에 AI tools 명시). ④ 사진관 뒷면 기재 확인 + 보증인 서명 제도 추가 발굴.",
+  "접근성: canada.ca는 WebFetch 403 + curl 타임아웃으로 차단 — 브라우저 페인 경유로 공식 페이지 3종(여권 photos.html, PR photos.html, 시민권 proof-mail.html) 원문 전문 확보(2026-07-17). TRV 35×45mm는 공식 페이지(temporary-resident-visa-application-photograph-specifications.html) 검색 스니펫으로 확인.",
+  "정본 'standard: PPTC-203' 필드는 공식 photos.html에 양식 번호 언급이 없어 이번 세션에서 미검증 — 본문에서 미사용.",
+  "미사용 검증 사실(추후 활용 가능): 여권 사진은 컬러/흑백 모두 허용, 선글라스·착색 도수렌즈 전면 불가, 흰 옷 반려 경고, 휠체어(흰 담요)·의료 헤드웨어(소명서) 절차, PR카드 온라인은 스캔본 허용+업로드 후 자동 흑백 변환."
+ ],
+ "verifyRecord": {
+  "slug": "ca-passport",
+  "pass": false,
+  "claims": [
+   {
+    "claim": "[S2 본문] '모든 여권 신청에는 변조되지 않은 동일 사진 2장이 필요' / EN 'Every application needs 2 identical, unaltered photos' — 무한정 일반화",
+    "verdict": "wrong",
+    "evidence": "photos.html은 이 문장을 'New adult passports, and renewals in person or by mail' 섹션 안에 두고 'These requirements are for people applying in person or by mail only. If you're renewing your passport online, you need a digital passport photo'로 스코프를 못박음. 온라인 갱신은 디지털 1장 — 드래프트 S5 스스로도 그렇게 진술하므로 자기모순. GEO 콘텐츠 특성상 문장 단위 발췌 시 오정보가 됨.",
+    "fix": "ko: '종이로 접수하는 모든 여권 신청(신규·우편·방문 갱신)에는 변조되지 않은 동일 사진 2장이 필요하고' / en: 'Every paper application — a new passport, or a renewal by mail or in person — needs 2 identical, unaltered photos'"
+   },
+   {
+    "claim": "[S4 본문] '가장 흔한 반려 원인은 손이다' / 'The most common failure point is hands' — 빈도 최상급",
+    "verdict": "unverified",
+    "evidence": "4개 공식 페이지 어디에도 반려 사유 빈도 통계·서열 없음. photos.html은 'not show your hands or your child's hands' 요건과 부적합 예시 갤러리의 'Correct child pose / Hands in picture' 대비만 제시. '가장 흔한'은 근거 없는 창작 서열.",
+    "fix": "빈도 단정 삭제. ko: '아동 사진 특유의 함정이 손이다 — IRCC의 부적합 예시 갤러리가 아동 항목으로 드는 사례가 바로 손이 찍힌 사진이다' / en: 'A signature child-photo pitfall is hands — IRCC's own unacceptable-photo examples pair the correct child pose against hands in picture.'"
+   },
+   {
+    "claim": "[S3 ko 본문] 'IRCC는 …얼굴인식 시스템이 …검증하기 때문에 사진이 촬영 원본 그대로여야 한다고 설명한다' — 무보정 원칙의 근거를 IRCC 발언으로 귀속",
+    "verdict": "unverified",
+    "evidence": "공식 페이지의 얼굴인식 설명은 무표정 규정('Why you can't smile')의 근거로만 등장: 'This lets us use facial recognition systems to help prevent fraud. These systems electronically verify identity based on each person's unique facial features.' altered-photo 조항에는 근거 서술이 없음. EN판은 em dash 뒤 추론으로 처리해 경계선상이나 ko는 인과 전체를 IRCC 발언으로 단정 — 출처 귀속 과잉.",
+    "fix": "귀속 분리. ko: 'IRCC는 무표정 요구의 이유로 얼굴인식 시스템이 개인 고유의 얼굴 특징으로 신원을 검증한다는 점을 든다. 사진이 촬영 원본 그대로여야 하는 무보정 원칙도 같은 맥락에 있다.' (en은 '— so the file must remain exactly as captured'를 'which is also why an edited file defeats the purpose' 수준으로 완화 권장)"
+   },
+   {
+    "claim": "[S1 제목·geoAnswer] '캐나다에서만 쓰는 여권 사진 크기' / 'Used Only by Canada' / '캐나다 고유 크기'",
+    "verdict": "plausible",
+    "evidence": "인용된 A급 소스는 'Canadian passport photo requirements are different from those of other countries'까지만 진술 — '유일' 단정은 없음. B급 업계 소스 다수(passportphotohq, photopass.ai, photofusionstudio 등)가 'The 50×70mm format is unique to Canada'로 일치 지지. 반례 국가 미발견.",
+    "fix": "차단 사유는 아니나 A급 근거가 없으므로 제목은 '주요국 중 캐나다만 쓰는'(주요국 한정 헤지) 권장. '세계 최대급/one of the largest'는 이미 헤지되어 있어 유지 가능."
+   },
+   {
+    "claim": "[S2 본문] '미국·영국에서 통하는 집에서 찍고 출력 경로' / 'the take-it-yourself-and-print route that works in the US or UK'",
+    "verdict": "plausible",
+    "evidence": "인용 소스 밖 비교 주장. 미국은 셀프 촬영+자가 인쇄 허용으로 성립. 영국은 셀프 촬영이 온라인 디지털 업로드 경로로 통하며 '출력(print)'은 본선이 아님 — 절반이 부정확.",
+    "fix": "ko: '미국의 셀프 촬영·출력, 영국의 셀프 촬영·업로드 경로' / en: 'the take-it-yourself route (print-at-home in the US, digital upload in the UK)'"
+   },
+   {
+    "claim": "[S1] 50×70mm(2in×2¾in) + 턱 끝~정수리 얼굴 높이 31~36mm",
+    "verdict": "confirmed",
+    "evidence": "photos.html verbatim: 'They must be 50 mm wide by 70 mm high (2 inches wide by 2¾ inches high)' / 'The height of your face must measure between 31 mm (1¼ inches) and 36 mm (1⁷⁄₁₆ inches) from chin to crown (top of head)'"
+   },
+   {
+    "claim": "[S1] IRCC가 첫머리에 '타국과 다르다' 명시 + 요건 미달 시 신청 반려 경고",
+    "verdict": "confirmed",
+    "evidence": "페이지 도입부 verbatim: 'Canadian passport photo requirements are different from those of other countries.' / 'We'll refuse your application if your photos don't meet our requirements.'"
+   },
+   {
+    "claim": "[S1·S3] 여권 컬러·흑백 모두 허용 + 제출일 기준 6개월 + 흰 옷 반려 경고 + 흰색·밝은 단색 배경",
+    "verdict": "confirmed",
+    "evidence": "'Your photos may be in colour or in black and white' / 'taken no more than 6 months before the date you submit your application' / 'Avoid wearing white clothing. It can blend into the background and will mean that your photo gets rejected.' / 'be taken against a plain white or light-coloured background'"
+   },
+   {
+    "claim": "[S1] PR카드 종이·시민권 증명 종이도 50×70+31~36 동일, 시민권 증명은 컬러 전용, PR은 촬영 후 12개월 인정",
+    "verdict": "confirmed",
+    "evidence": "PR photos(Paper): 'Photo size: 50 mm wide by 70 mm high… between 31 mm … and 36 mm' + 'taken no more than 12 months before you apply'. proof-mail.html: '50 mm wide X 70 mm high… between 31 mm … and 36 mm' + 'You must provide 2 identical colour (printed) photos.'"
+   },
+   {
+    "claim": "[S1] 캐나다 방문비자(TRV)는 35×45mm로 상이한 규격",
+    "verdict": "confirmed",
+    "evidence": "TRV 공식 페이지: 'The frame size must be at least 35 mm x 45 mm (1 3/8″ x 1 3/4″)' — 50×70과 다른 체계임은 확정. 단 공식 표현은 '최소(at least)' 35×45.",
+    "fix": "정밀화: ko '최소 35×45mm' 병기 권장. 논지 자체는 유지."
+   },
+   {
+    "claim": "[S2] 뒷면 이중 기재 — 2장 중 1장 뒷면에 사진사가 촬영일+상호+전체 주소 기재/스탬프, 보증인이 'I certify this to be a true likeness of (이름)' 자필 + 하단 서명",
+    "verdict": "confirmed",
+    "evidence": "photos.html verbatim: 'On the back of 1 of the photos: the photographer must clearly write or stamp the: date the photo was taken / name and complete address of the photo studio; your guarantor must: clearly write \"I certify this to be a true likeness of (the applicant's name)\" / sign their name at the bottom' — 아동판도 동일('child's name')."
+   },
+   {
+    "claim": "[S2] 성인 여권 갱신은 보증인 불요",
+    "verdict": "confirmed",
+    "evidence": "photos.html verbatim: 'If you're renewing an adult passport, you do not need a guarantor.'"
+   },
+   {
+    "claim": "[S2] 상업 사진관·전문 사진사 대면 촬영 의무 + 일반 고품질 인화지 전문 인쇄 + 가정 인쇄·두꺼운 용지 불가",
+    "verdict": "confirmed",
+    "evidence": "'be taken in person by a commercial photographer or photo studio' / 'be professionally printed on plain, high-quality photographic paper' / 'We don't accept photos printed at home or on heavyweight paper.'"
+   },
+   {
+    "claim": "[S3] altered photo 정의 목록(색·밝기·대비·선명도 보정, 흰 배경 잘라붙이기, 눈·코·입·귀 크기·형태 수정, 빛반사·적목·흉터·모반 제거·머리색 변경, 의상 색 변경, 그림자 제거 포함 배경 변경) + 편집SW·필터·AI 도구 금지 명시",
+    "verdict": "confirmed",
+    "evidence": "photos.html 'What is an altered photo?' 목록과 항목 단위 완전 일치. 'This includes photo editing software, filters, and AI tools. We'll reject your application if the photos have been altered in any way.' — geoAnswer·본문 표현 모두 원문 범위 내."
+   },
+   {
+    "claim": "[S3] 적목 이중 반려 — 적목 현상 사진도, 적목 보정 사진도 불허",
+    "verdict": "confirmed",
+    "evidence": "불허 목록 verbatim: 'red-eye effect or red-eye alterations'"
+   },
+   {
+    "claim": "[S3] ICAO 무표정 권고 + 얼굴인식 시스템이 개인 고유 얼굴 특징으로 신원 검증",
+    "verdict": "confirmed",
+    "evidence": "'The International Civil Aviation Organization recommends that passport photos show a neutral expression' / 'These systems electronically verify identity based on each person's unique facial features.' — 단 이 근거의 공식 귀속 범위는 무표정 규정임(3번 항목의 fix 적용 전제)."
+   },
+   {
+    "claim": "[S4] 아동 별도 치수 없음(50×70+31~36 동일) + 신생아 표정 완화 명문화 + 카시트+흰 담요 절차 + 손 노출 금지(부모·아이 모두) + 귀·배경·얼굴어깨 그림자 반려",
+    "verdict": "confirmed",
+    "evidence": "아동 섹션 치수 성인과 동일(verbatim) / 'We know that it's difficult to get a neutral expression from your newborn. We do allow some range for infant facial expressions.' / 'a white blanket is placed over the seat behind your child's head' / 'not show your hands or your child's hands' / 그림자 3개소 불허 목록 일치."
+   },
+   {
+    "claim": "[S4] 아동 여권은 항상 신규 신청(갱신 불가) → 보증인 서명 항상 요구",
+    "verdict": "confirmed",
+    "evidence": "photos.html 아동 섹션이 보증인 서명을 무조건 요구하므로 결론은 인용 소스만으로 성립. '갱신 불가' 전제 자체는 canada.ca 헬프센터에서 확인('You can't renew a child passport. When it expires, you need to apply for a new child passport.') — 단 이 페이지는 인용 소스 목록 밖.",
+    "fix": "선택: 섹션4 sources에 canada.ca 아동 여권 페이지(canadian-passports/child-passport.html 또는 help-centre/general.html) 1건 추가."
+   },
+   {
+    "claim": "[S5] 온라인 갱신만 디지털 1장 + 스캔본 불가 + 카메라 원본 직저장 .jpeg/.jpg + 턱~정수리 45~50% + 업로드 폼에 사진관 상호·주소·촬영일 입력 + 디지털·인화 동시 확보 공식 권고(우편·방문 전환 대비)",
+    "verdict": "confirmed",
+    "evidence": "'You need a digital passport photo only if you're renewing your passport online' / 'not be a scanned copy of a printed passport photo' / 'The file must be saved directly from the original file captured by the camera' / 'chin-to-crown (top of head) measurement that's between 45% and 50% of the photo's height' / 'you must provide: the studio or photographer's name / address / the date the photo was taken' / 'Ask for both a digital copy of your photo and a printed (physical) copy… you can apply in person or by mail if renewing online isn't an option.' 편집 금지·AI 도구 금지도 디지털 섹션에 동일 반복 확인."
+   },
+   {
+    "claim": "[S5] PR카드 온라인은 전문 인화 사진의 스캔본 허용 — 여권 온라인 갱신과 정반대",
+    "verdict": "confirmed",
+    "evidence": "PR photos(Online) verbatim: 'You can submit either a professional digital photo or a scanned copy of a printed professional photo. We do not accept a photo of a paper photo taken with your digital camera or phone.'"
+   },
+   {
+    "claim": "[정본 대조] 드래프트는 specs-data.json 핵심 수치와 모순 없음 — size 5×7cm=50×70mm, headHeight 3.1~3.6cm=31~36mm, validity 6개월, background 흰색(공식은 white or light-coloured로 드래프트 en이 더 정확)",
+    "verdict": "confirmed",
+    "evidence": "jq 실측: size '5 × 7cm', headHeight '3.1~3.6cm'/headHeightMin 31/Max 36, validity 'Taken within the last 6 months', background '흰색'."
+   },
+   {
+    "claim": "[researchNotes 실측 검증] ① fileSpec 420×540px/4MB는 공식 여권 온라인 스펙과 불일치 ② details '사진사 서명' 오류(서명 주체=보증인) ③ FAQ '집에서 셀프 촬영+MONKOS 배경 제거'는 공식 요건과 정면 충돌 — 노트 3건 모두 정확",
+    "verdict": "confirmed",
+    "evidence": "공식 디지털(여권 온라인 갱신) verbatim: 'at least 1,800 pixels high by 1,200 pixels wide / no larger than 4,500 pixels high by 3,000 pixels wide / between 200 KB and 5 MB / 3:2 aspect ratio' — 420×540 불일치 확정. 뒷면 서명 주체는 보증인, 사진사는 기재/스탬프만 — 확정. 셀프 촬영·배경 제거는 상업 사진관 의무 + 'cutting and pasting your image against a white background'=altered 규정 위반 — 확정. 이 FAQ가 페이지에 남으면 본문과 페이지 내 자기모순 발생.",
+    "fix": "본문 게시와 별개로 정본 fileSpec·details·faqs(전 언어) 3필드 정정을 선행 또는 동시 진행. 특히 '집에서 촬영 가능' FAQ는 ca-passport에 한해 삭제·교체 필수."
+   },
+   {
+    "claim": "[정본 standard 필드] 'PPTC-203'은 사진 규격 표준이 아님 — 분실·도난 여행문서 신고서 양식",
+    "verdict": "wrong",
+    "evidence": "PPTC 203 = 'Declaration concerning a lost, stolen, inaccessible, damaged or found Canadian travel document' (canada.ca 공식 PDF pptc203-eng.pdf). photos.html에는 양식 번호 언급 자체가 없음. 드래프트 researchNote는 '미검증'으로 보수 처리했고 본문 미사용 판단은 올바름 — wrong 판정 대상은 정본 데이터 필드이며 드래프트 본문은 무관.",
+    "fix": "researchNote를 '미검증'에서 '오지정 확정(분실신고서 양식)'으로 승격하고, 정본 standard 필드 및 details의 'PPTC-203 기준을 따릅니다' 문구 삭제 권고."
+   }
+  ],
+  "revisionNotes": [
+   "ko 기관명 오기: 'rmb캐나다 이민·시민권부(IRCC)' → 공식 명칭은 Immigration, Refugees and Citizenship Canada = '이민·난민·시민권부(IRCC)'. '난민' 누락 보정 필요 (S1 첫 문단).",
+   "ko S1 '무늬 없는 흰색 계열 단색' — 공식은 'plain white or light-coloured'로 '흰색 계열'보다 범위가 넓음. '무늬 없는 흰색 또는 밝은 단색'으로 보정 (en판은 정확).",
+   "S5 '스캔하거나 재촬영한 파일은 명시적으로 거부된다'(ko/en 'explicitly refused') — 명시적 금지 대상은 스캔본뿐. 재촬영 배제는 '카메라 원본 파일 직저장' 요건의 귀결이므로 '스캔본은 명시적으로 거부되며, 원본 직저장 요건상 재촬영본도 배제된다'로 분리 권장.",
+   "TRV 표기: 공식은 'at least 35 mm x 45 mm'(최소 프레임 크기). '최소 35×45mm' 병기 권장.",
+   "researchNote ④의 \"시민권 페이지는 '여권과 동일 규격 아님'을 명시\" — 현행 proof-mail 페이지에 그런 명시 문장 없음(치수는 여권과 동일 50×70+31~36, 차이는 컬러 전용·뒷면 기재 방식·보증인 불요). 노트 문구 보정.",
+   "표현 품질 총평: ko/en 모두 기계번역 투·영문 누출 없음. 'I certify this to be a true likeness of…' 영어 원문 유지는 적절(실물 뒷면에 영어로 기재하는 문구). en 'structurally closed'는 다소 경직되나 허용 범위. geoAnswer 단문·수치 선행 구조는 GEO 목적에 부합.",
+   "en S5 'at the same sitting'은 공식 문구에 없는 부연(취지는 부합) — 유지 가능하나 축어 인용으로 오인되지 않게 주의.",
+   "합격 조건: 상기 claims의 wrong 1건(S2 '모든 신청 2장')과 unverified 2건(S4 손 최상급, S3 ko IRCC 귀속) 수정 반영 시 pass 전환 가능. 나머지 본문 주장은 A급 소스 축어 수준으로 견고함."
+  ]
+ }
+}
