@@ -5288,7 +5288,6 @@
     },
     "headHeightMin": 16,
     "headHeightMax": 20,
-    "faceTargetExplicitMm": 30,
     "restrictions": {
       "clothing": {
         "en": "Dark-colored clothing is required, not merely recommended.",
@@ -8351,7 +8350,6 @@
     },
     "headHeightMin": 36,
     "headHeightMax": 40,
-    "faceTargetExplicitMm": 42,
     "restrictions": {
       "glasses": {
         "en": "Glasses are not allowed.",
@@ -8521,7 +8519,6 @@
     },
     "headHeightMin": 36,
     "headHeightMax": 40,
-    "faceTargetExplicitMm": 42,
     "restrictions": {
       "clothing": {
         "en": "Must wear formal attire.",
