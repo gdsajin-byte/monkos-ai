@@ -54,8 +54,9 @@ describe('specs v2 GA4 계측', () => {
     expect(parts.seoMeta).toContain('/css/specs-funnel.css?v=');
   });
 
-  test('funnel JS가 주입 CFG를 소비 (전역 참조)', () => {
-    expect(funnelJs).toContain('var CFG = window.__SPECS_CFG__;');
+  test('funnel JS가 주입 CFG를 소비 (자동 마운트)', () => {
+    // c168d47e SpecsFunnel 위젯 추출: 전역 var CFG → mount(el, CFG) 자동 마운트 패턴
+    expect(funnelJs).toContain('SpecsFunnel.mount(_el, window.__SPECS_CFG__)');
   });
 
   test('gtag 가드(typeof gtag) 적용', () => {

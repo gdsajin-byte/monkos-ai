@@ -971,7 +971,7 @@
       ]
     },
     "officialSource": {
-      "url": "https://www.passport.go.kr",
+      "url": "https://www.passport.go.kr/home/kor/contents.do?menuPos=32",
       "label": {
         "ko": "대한민국 여권 안내 (외교부)",
         "en": "Republic of Korea Passport Guide (MOFA)",
@@ -999,7 +999,7 @@
               "정부24(gov.kr) 접속 → 여권 → 온라인 신청",
               "기존 전자여권 발급 이력이 있는 국민만 가능",
               "수수료: 10년 복수여권 53,000원 / 5년 복수여권 45,000원 (만 18세 이상)",
-              "소요 기간: 4~7일 (긴급 여권 당일~익일)",
+              "소요 기간: 근무일 기준 통상 8일 (야간 접수 +1일, 도서 지역 +2일)",
               "수령: 본인 직접 방문 (기존 여권 지참)"
             ]
           }
@@ -1028,7 +1028,7 @@
               "Acceda a gov.kr → Pasaporte → Solicitud en línea",
               "Solo disponible para ciudadanos con historial previo de emisión de pasaporte electrónico",
               "Tarifa: pasaporte múltiple de 10 años ₩53,000 / pasaporte múltiple de 5 años ₩45,000 (mayores de 18 años)",
-              "Tiempo de procesamiento: 4 a 7 días (pasaporte urgente: mismo día o día siguiente)",
+              "Tiempo de procesamiento: normalmente 8 días hábiles (recepción nocturna +1 día, zonas insulares +2 días)",
               "Recogida: visita presencial del titular (llevar el pasaporte anterior)"
             ]
           }
@@ -1061,10 +1061,10 @@
         "es": "regular anteojos permitido si marcos hacer sin obscure ojos y sin reflejo; sin gafas de sol, tintados, de color, cosmético, o azul-claro lentes"
       },
       "ears": {
-        "en": "ears must be visible; hair must not cover ears (exception: naturally non-visible ears from front)",
-        "ko": "귀 노출 필수; 머리카락이 귀를 가려서는 안 됨(정면에서 자연히 보이지 않는 귀는 예외)",
-        "ja": "耳の露出必須；髪が耳を覆ってはならない（正面から自然に見えない耳は例外）",
-        "es": "las orejas deben ser visibles; cabello debe sin cover orejas (excepción: naturally sin-visible orejas de frente)"
+        "en": "Ears may be covered — the ear-visibility rule was abolished in 2018 (MOFA); hair must still not cover the eyebrows or facial contours",
+        "ko": "귀는 가려도 됨 — 귀 노출 의무는 2018년 폐지(외교부). 단 머리카락이 눈썹·얼굴 윤곽을 가리면 반려",
+        "ja": "耳は隠れていても可 — 耳の露出義務は2018年に廃止（外交部）。ただし髪が眉や顔の輪郭を覆うと不可",
+        "es": "Las orejas pueden quedar cubiertas — el requisito de mostrarlas fue abolido en 2018 (MOFA); el cabello no debe cubrir las cejas ni el contorno del rostro"
       },
       "face_visibility": {
         "en": "hair cannot cover eyes, eyebrows, or facial contours (cheekbones, jawline); forehead to chin must be fully visible",
@@ -4986,16 +4986,16 @@
     "validity": "Taken within the last 6 months",
     "validityEn": "Taken within the last 6 months",
     "validityJa": "6ヶ月以内に撮影",
-    "fileSpec": "JPEG/JPG format, minimum 420 x 540 pixels, max 4MB",
-    "fileSpecEn": "JPEG/JPG format, minimum 420 x 540 pixels, max 4MB",
-    "fileSpecJa": "JPEG/JPG、最小420×540ピクセル、最大4MB",
-    "standard": "PPTC-203",
+    "fileSpec": "온라인 갱신: JPEG/JPG, 세로 1,800~4,500 × 가로 1,200~3,000픽셀(3:2), 200KB~5MB, 카메라 원본 파일",
+    "fileSpecEn": "Online renewal: JPEG/JPG, 1,800–4,500 (H) × 1,200–3,000 (W) pixels (3:2), 200KB–5MB, straight from the camera",
+    "fileSpecJa": "オンライン更新: JPEG/JPG、縦1,800～4,500×横1,200～3,000ピクセル（3:2）、200KB～5MB、カメラ原本ファイル",
+    "standard": "IRCC",
     "continent": "americas",
     "details": {
-      "ko": "PPTC-203 기준을 따릅니다. 흰색 배경, 정면 응시, 무표정. ⚠️ 캐나다 여권은 전문 사진사 촬영이 의무입니다. 사진 뒷면에 사진사 서명·주소·촬영일자 기재 필수.",
-      "ja": "PPTC-203基準に準拠。白背景、正面、無表情。 ⚠️ カナダのパスポートは商業写真家による撮影が義務です。",
-      "en": "Follows PPTC-203 standard. White background, frontal view, neutral expression. ⚠️ Canada requires photos taken by a commercial photographer.",
-      "es": "Sigue el estándar PPTC-203. Fondo blanco, vista frontal, expresión neutral. ⚠️ Canadá requiere fotos tomadas por un fotógrafo comercial."
+      "ko": "흰색 배경, 정면 응시, 무표정. ⚠️ 캐나다 여권(종이 신청)은 상업 사진관 촬영이 요구되며, 사진 뒷면에 사진관 상호·주소·촬영일 기재가 필요합니다(신규 신청은 보증인 서명 별도).",
+      "en": "White background, frontal view, neutral expression. ⚠️ Canada requires passport photos taken by a commercial photographer for paper applications; the studio's name, address and the date must appear on the back (a guarantor signs for new applications).",
+      "ja": "白背景、正面、無表情。⚠️ カナダのパスポート（紙申請）は商業写真館での撮影が求められ、写真裏面に写真館名・住所・撮影日の記載が必要です（新規申請は保証人の署名が別途必要）。",
+      "es": "Fondo blanco, vista frontal, expresión neutral. ⚠️ Canadá exige fotos tomadas en un estudio fotográfico comercial para solicitudes en papel; el reverso debe llevar el nombre del estudio, la dirección y la fecha (las solicitudes nuevas requieren además la firma de un garante)."
     },
     "rejectionReasons": {
       "ko": [
@@ -5039,7 +5039,7 @@
         },
         {
           "q": "캐나다 여권 사진을 집에서 찍을 수 있나요?",
-          "a": "네, 규격(5 × 7cm)과 배경(흰색) 조건만 맞으면 셀프 촬영이 가능합니다. MONKOS AI를 사용하면 배경 제거와 규격 크롭을 자동으로 처리합니다."
+          "a": "종이 신청(신규·우편·방문)은 상업 사진관 촬영과 사진 뒷면 상호·주소·촬영일 기재가 요구되어, 인화 제출은 사진관 경유가 원칙입니다. 온라인 갱신은 디지털 파일 업로드 방식이며 카메라 원본 제출 등 별도 요건이 있습니다. MONKOS는 규격·구도 확인과 디지털 준비 용도로 활용하세요."
         },
         {
           "q": "캐나다 여권 사진 배경색 규정은?",
@@ -5053,7 +5053,7 @@
         },
         {
           "q": "Can I take a Canada Passport photo at home?",
-          "a": "Yes, as long as you meet the size (5 × 7cm) and background (White) requirements. MONKOS AI automatically removes the background and crops to the correct specs."
+          "a": "For paper applications (new, by mail or in person) Canada requires photos taken by a commercial photographer, with the studio's name, address and date on the back — so printed submissions should go through a studio. Online renewal uses a digital upload with its own rules, such as submitting the file straight from the camera. Use MONKOS to check the spec and framing and to prepare for the digital route."
         },
         {
           "q": "What is the background color for a Canada Passport photo?",
@@ -5067,7 +5067,7 @@
         },
         {
           "q": "カナダのパスポート写真を自宅で撮れますか？",
-          "a": "はい、サイズ（5 × 7cm）と背景（白）の条件を満たせば自宅撮影も可能です。MONKOS AIを使えば背景除去と規格クロップが自動で処理されます。"
+          "a": "紙の申請（新規・郵送・窓口）は商業写真館での撮影と、写真裏面への写真館名・住所・撮影日の記載が求められるため、プリント提出は写真館経由が原則です。オンライン更新はデジタルファイルのアップロード方式で、カメラ原本の提出など別の要件があります。MONKOSは規格・構図の確認とデジタル準備にご活用ください。"
         },
         {
           "q": "カナダのパスポート写真の背景色の規定は？",
@@ -5081,7 +5081,7 @@
         },
         {
           "q": "¿Puedo tomar la foto de Canada Passport en casa?",
-          "a": "Sí, siempre que cumpla con los requisitos de tamaño (5 × 7cm) y fondo (White). MONKOS AI elimina automáticamente el fondo y recorta según las especificaciones correctas."
+          "a": "Para las solicitudes en papel (nueva, por correo o presencial), Canadá exige fotos tomadas en un estudio comercial, con el nombre del estudio, la dirección y la fecha al reverso — la entrega impresa debe pasar por un estudio. La renovación en línea usa un archivo digital con requisitos propios, como subir el archivo original de la cámara. Use MONKOS para verificar la especificación y el encuadre y preparar la vía digital."
         },
         {
           "q": "¿Cuál es el color de fondo para la foto de Canada Passport?",
@@ -5141,7 +5141,7 @@
     "backgroundEs": "Blanco",
     "headHeightEs": "3.1-3.6cm",
     "validityEs": "Tomada dentro de los últimos 6 meses",
-    "fileSpecEs": "JPEG/JPG formato, mínimo 420 x 540 píxeles, máx 4MB"
+    "fileSpecEs": "Renovación en línea: JPEG/JPG, 1.800–4.500 (alto) × 1.200–3.000 (ancho) píxeles (3:2), 200KB–5MB, archivo original de la cámara"
   },
   "ca-visa": {
     "slug": "ca-visa",
