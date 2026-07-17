@@ -210,6 +210,8 @@ status: 현행
 | **BING_WMT_API_KEY** | Bing Webmaster Tools API | daily_briefing (Bing 검색 성과) | ⭐ **2026-07-14 신설** — 일본 시장 Bing 36% 대응 |
 | **NAVER_DATALAB_CLIENT_ID** | 네이버 DataLab API 클라이언트 ID | daily_briefing (네이버 트렌드) | ⭐ **2026-07-14 신설** — 네이버 검색 트렌드 수집 |
 | **NAVER_DATALAB_CLIENT_SECRET** | 네이버 DataLab API 클라이언트 시크릿 | daily_briefing (네이버 트렌드) | ⭐ **2026-07-14 신설** |
+| **GOOGLE_ADS_DEV_TOKEN** | Google Ads API 개발자 토큰 (MCC 663-413-9609) | 키워드 플래너·캠페인 관리 API | ⭐ **2026-07-17 신설** — Basic Access 신청 중(~7/24 승인 예상), 테스트 상태 |
+| **TOSS_SECRET_KEY** | 토스페이먼츠 라이브 시크릿 키 | portal (KR 결제 서버 검증) | ⭐ **2026-07-13 신설** |
 
 **gdocs 토큰 중앙화 (광역오더 #7)**: iMac 정본 `~/.config/mcp-google-docs/token.json` → `MCP_GDOCS_TOKEN`으로 등록.
 `gdocs_mcp.sh`가 token.json 부재 시 GCP에서 자동 복원 → **타 디바이스(M1 등) 무인증 동작**. 검증 완료(바이트 동일 복원·권한 600).
