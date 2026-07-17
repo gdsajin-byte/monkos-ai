@@ -4,7 +4,7 @@
   "pipeline": "specs-unique-pilot v1",
   "runId": "wf_43671794",
   "date": "2026-07-17",
-  "status": "draft-v1.1 — verify PASS (22/22 confirmed) + 문체 소수정 반영",
+  "status": "draft-v1.1 — verify PASS (22/22 confirmed) + 문체 소수정 반영 + §3-5 톤 캘리브레이션 반영(2026-07-17)",
   "verifySummary": {
    "confirmed": 22,
    "plausible": 0,
@@ -126,7 +126,7 @@
      "body": [
       "국무부 규정의 선은 '촬영 시점'과 '사후 편집' 사이에 그어져 있다. 촬영할 때 카메라의 적목 감소 옵션을 켜는 것은 허용되지만, 찍힌 사진에서 편집 도구로 적목을 지우는 것은 불가하며, 외모를 바꾸는 어떤 디지털 향상·수정도 금지된다. 운전면허증 등 공문서에서 복사·스캔한 사진, 잡지 사진, 저품질 자판기·휴대폰 사진, 전신 사진도 접수되지 않는다. 셀프 촬영 자체는 공식적으로 허용되지만, 국무부는 '대부분의 웹캠과 휴대폰은 충분한 품질을 내지 못한다'고 경고한다 — 관건은 600×600픽셀 이상에서 버티는 선명도와 정확한 구도다.",
       "복장과 소품 규정도 미국식으로 구체적이다. 유니폼은 물론 '유니폼처럼 보이는 옷'과 위장복(camouflage)까지 금지되며, 예외는 일상적으로 착용하는 종교 복장뿐이다. 모자·머리덮개는 종교 목적의 일상 착용만 인정되고, 그 경우에도 얼굴 전체가 보여야 하며 얼굴에 그림자를 드리우면 안 된다. 헤드폰·무선 핸즈프리 기기는 착용 불가, 보청기 등 청각 보조기기는 허용이다.",
-      "시효 규정은 이중이다: 신청 시점 기준 6개월 이내 촬영이면서 '현재 외모'를 반영해야 한다. 6개월 이내 사진이라도 대규모 안면 성형·외상, 다수·대형 안면 피어싱·문신의 추가나 제거, 급격한 체중 변화가 있었다면 새 사진을 요구받는다. 반대로 수염을 기르거나 머리를 염색한 정도는 일반적으로 교체 사유가 아니다."
+      "시효 규정은 이중이다: 신청 시점 기준 6개월 이내 촬영이면서 '현재 외모'를 반영해야 한다. 6개월 이내 사진이라도 대규모 안면 성형·외상, 다수·대형 안면 피어싱·문신의 추가나 제거, 급격한 체중 변화가 있었다면 새 사진을 요구받는다. 반대로 수염을 기르거나 머리를 염색한 정도는 일반적으로 교체 사유가 아니다. 규정의 과녁은 외모를 바꾸는 편집입니다 — 심사관이 실물과 대조해 다르게 보일 정도의 수정이 문제의 본질이고, 규격에 맞춘 크롭이나 촬영 시점의 조명 관리는 이 금지의 대상이 아닙니다."
      ]
     },
     "en": {
@@ -135,7 +135,7 @@
      "body": [
       "The State Department draws the line between capture and post-processing: switching on red-eye reduction while shooting is fine; erasing red-eye afterward with an editing tool is not, and no digital enhancement that changes your appearance is permitted. Photos copied or scanned from driver's licenses or other official documents are rejected outright, as are magazine photos, low-quality vending-machine or mobile-phone shots, and full-length photographs. Self-taken photos are officially allowed, but the Department cautions that most webcams and mobile phones cannot deliver sufficient quality — what matters is sharpness that holds up at 600×600 pixels or more, with correct composition.",
       "The dress rules are distinctively specific: uniforms, clothing that merely looks like a uniform, and camouflage attire are all barred, with daily-worn religious attire the sole exception. Hats and head coverings pass only if worn daily for religious purposes — and even then the full face must remain visible with no shadows cast on it. Headphones and wireless hands-free devices are not acceptable; hearing devices may be worn.",
-      "The validity rule is two-pronged: the photo must have been taken within 6 months of submitting the application and must reflect your current appearance. Significant facial surgery or trauma, adding or removing numerous or large facial piercings or tattoos, or substantial weight change triggers a new-photo request even inside the 6-month window. Growing a beard or coloring your hair generally does not."
+      "The validity rule is two-pronged: the photo must have been taken within 6 months of submitting the application and must reflect your current appearance. Significant facial surgery or trauma, adding or removing numerous or large facial piercings or tattoos, or substantial weight change triggers a new-photo request even inside the 6-month window. Growing a beard or coloring your hair generally does not. The target of the rule is appearance-altering edits — what matters is whether the photo still looks like you at the interview window; cropping to spec and getting the lighting right at capture time are not what the ban is about."
      ]
     },
     "sources": [

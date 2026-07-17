@@ -16,6 +16,7 @@ import { specDiagram } from './components/spec-diagram.js';
 import { specCard } from './components/spec-card.js';
 import { docsAccepting } from './components/docs-accepting.js';
 import { faqSection } from './components/faq-section.js';
+import { uniqueContentSection } from './components/unique-content.js';
 import { relatedServices } from './components/related-services.js';
 import { specFunnelMarkup } from './components/spec-funnel-markup.js';
 
@@ -615,6 +616,8 @@ ${specCard(ctx)}
 ${specFunnelMarkup(ctx)}
 
     ${sameSize.length > 0 ? docsAccepting(ctx) : ''}
+
+${uniqueContentSection(ctx)}
 
 ${faqSection(ctx)}
 

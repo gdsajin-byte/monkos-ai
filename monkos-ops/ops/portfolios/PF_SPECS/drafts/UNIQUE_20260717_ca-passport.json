@@ -4,7 +4,7 @@
   "pipeline": "specs-unique-pilot v1",
   "runId": "wf_43671794",
   "date": "2026-07-17",
-  "status": "draft-v1.1 — 검증자 fix 반영(wrong 1·unverified 2 완화). 정본 결함 3건 별도 보고(standard·fileSpec·faqs)",
+  "status": "draft-v1.1 — 검증자 fix 반영(wrong 1·unverified 2 완화). 정본 결함 3건 별도 보고(standard·fileSpec·faqs) + §3-5 톤 캘리브레이션 반영(2026-07-17)",
   "verifySummary": {
    "confirmed": 17,
    "plausible": 2,
@@ -96,7 +96,7 @@
      "body": [
       "IRCC의 현행 공식 페이지는 '변조'의 범위를 이례적으로 구체적으로 정의한다: 색상·밝기·대비·선명도 등 기술적 보정, 머리·어깨 주변을 잘라내 흰 배경에 합성하는 것(cutting and pasting against a white background), 눈·코·입·귀의 크기나 형태 수정, 빛 반사·적목·흉터·모반 제거나 머리색 변경 같은 외모 개선, 의상 색 변경, 그림자 제거를 포함한 배경 변경 — 전부 반려 대상이다. 사진 편집 소프트웨어, 필터, AI 도구가 금지 수단으로 명시돼 있다.",
       "특히 '배경 합성'이 명시적 반려 사유라는 점이 결정적이다. 여러 나라에서 통과되는 배경 제거·교체 방식의 앱 사진이 캐나다 여권 종이 신청에서는 규정 위반이 된다. 적목(red-eye)은 이중으로 걸린다 — 적목 현상이 있는 사진도, 적목을 보정한 사진도 모두 불허 목록에 올라 있다.",
-      "무보정 원칙의 근거는 얼굴인식이다.IRCC는 무표정 요구의 이유로 얼굴인식 시스템이 개인 고유의 얼굴 특징으로 신원을 검증한다는 점을 들며, 사진이 촬영 원본 그대로여야 하는 무보정 원칙도 같은 맥락에 있다. 캐나다 여권 사진의 안전한 경로는 사진관 촬영 원본을 그대로 제출하는 것뿐이다."
+      "무보정 원칙의 근거는 얼굴인식이다.IRCC는 무표정 요구의 이유로 얼굴인식 시스템이 개인 고유의 얼굴 특징으로 신원을 검증한다는 점을 들며, 사진이 촬영 원본 그대로여야 하는 무보정 원칙도 같은 맥락에 있다. 캐나다 여권 사진의 안전한 경로는 사진관 촬영 원본을 그대로 제출하는 것뿐이다. 그래서 캐나다 종이 신청은 사진관 대면 촬영이 안전한 경로이며, 셀프 촬영본은 규격·구도 확인과 디지털 경로 준비에 활용하는 것이 실무적인 사용법입니다."
      ]
     },
     "en": {
@@ -105,7 +105,7 @@
      "body": [
       "IRCC's current official page defines 'altered' with unusual precision: technical corrections or enhancements (colour, brightness, contrast, sharpness), cropping around the head and shoulders — explicitly including cutting and pasting your image against a white background — editing facial features such as the size or shape of eyes, nose, mouth or ears, appearance improvements like removing glare, red-eye, scars or birthmarks or changing hair colour, editing clothing colours, and changing the background including removing shadows. Photo-editing software, filters and AI tools are all named as prohibited means.",
       "The explicit ban on background compositing is the decisive detail. App-generated photos that pass in many countries because the background was digitally removed and replaced are, by definition, non-compliant for a Canadian paper passport application. Red-eye fails twice over: photos showing red-eye are rejected, and so are photos where red-eye has been retouched away.",
-      "The rationale is facial recognition. Alongside the ICAO-recommended neutral expression (eyes open, mouth closed, no smiling or frowning), IRCC explains that recognition systems verify identity from each person's unique facial features — which is also why an edited file defeats the purpose. For a Canadian passport, the only safe route is submitting the studio original untouched."
+      "The rationale is facial recognition. Alongside the ICAO-recommended neutral expression (eyes open, mouth closed, no smiling or frowning), IRCC explains that recognition systems verify identity from each person's unique facial features — which is also why an edited file defeats the purpose. For a Canadian passport, the only safe route is submitting the studio original untouched. This is why the in-studio route is the safe path for Canadian paper applications — use self-taken photos to check the spec and framing and to prepare for the digital route."
      ]
     },
     "sources": [

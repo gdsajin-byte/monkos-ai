@@ -1090,7 +1090,200 @@
     "backgroundEs": "Blanco",
     "headHeightEs": "3.2-3.6cm",
     "validityEs": "Tomada dentro de los últimos 6 meses",
-    "fileSpecEs": "JPEG, inferior a 500KB, 300DPI+"
+    "fileSpecEs": "JPEG, inferior a 500KB, 300DPI+",
+    "uniqueContent": {
+      "sections": [
+        {
+          "id": "abolished-ear-rule",
+          "confidence": "high",
+          "ko": {
+            "title": "\"귀가 보여야 한다\"는 2018년에 폐지됐습니다",
+            "geoAnswer": "한국 여권사진에서 양쪽 귀가 보여야 한다는 의무 조항은 2018년 1월 25일 외교부의 여권사진 규정 완화로 삭제되어, 현재는 눈썹과 얼굴 윤곽(광대·볼)을 가리지 않는 한 머리카락이 귀를 가려도 접수에 문제가 없습니다.",
+            "body": [
+              "외교부는 2018년 1월 25일부터 국제민간항공기구(ICAO) 기준을 충족하는 범위에서 여권사진 규정을 대폭 완화했습니다. 이때 삭제된 항목은 두 귀 노출 의무 외에도 어깨 수평 유지, 뿔테안경 지양, 제복·군복 착용 불가, 가발·장신구 착용 지양까지 포함됩니다. 즉 지금은 뿔테 안경을 쓰거나 제복을 입고 촬영해도 규정 위반이 아닙니다. 다만 귀걸이·피어싱 등 장신구가 빛을 반사하거나 얼굴 윤곽을 가리는 경우는 현행 규정에서도 제출 불가입니다.",
+              "다만 주의할 반전이 하나 있습니다. 2018년 완화 때 '눈썹 가림' 항목도 함께 삭제됐지만, 현행 규정(2022년 10월 개정)에는 \"머리카락으로 눈썹 및 얼굴 윤곽(광대, 볼 등)을 가리는 사진은 제출 불가\"가 다시 명시되어 있습니다. 귀는 가려도 되지만 눈썹과 얼굴 윤곽은 보여야 한다는 것이 현행 기준입니다.",
+              "사진관 안내문이나 오래된 블로그 글에는 아직도 \"귀를 드러내야 한다\", \"뿔테 안경은 안 된다\" 같은 폐지된 규정이 그대로 남아 있는 경우가 많습니다. 판단 기준은 언제나 외교부 여권안내 홈페이지의 현행 규격 페이지입니다."
+            ]
+          },
+          "en": {
+            "title": "\"Your Ears Must Show\" Was Abolished in 2018",
+            "geoAnswer": "South Korea abolished the rule requiring both ears to be visible in passport photos on January 25, 2018, so hair covering the ears is no longer grounds for rejection as long as the eyebrows and facial contours remain visible.",
+            "body": [
+              "On January 25, 2018, Korea's Ministry of Foreign Affairs relaxed its passport photo rules to align with ICAO standards. Alongside the two-ear exposure requirement, the ministry also scrapped the requirement to keep shoulders level, the advisory against thick-rimmed glasses, the ban on uniforms and military dress, and the advisories against wigs and jewelry. Wearing thick-rimmed glasses or a uniform in your photo is no longer a violation. One caveat remains: earrings or piercings that reflect light or obscure the facial contours are still disallowed under the current rules.",
+              "There is one twist worth knowing. The 2018 relaxation also dropped the eyebrow-coverage item, but the current rules (revised October 2022) once again explicitly prohibit photos where hair covers the eyebrows or facial contours such as cheekbones. Under today's standard, covered ears are fine — covered eyebrows are not.",
+              "Many photo studios and older blog posts still repeat the abolished rules, telling applicants their ears must show or that thick frames are banned. The only reliable reference is the current specification page on the Ministry of Foreign Affairs passport portal."
+            ]
+          },
+          "sources": [
+            {
+              "name": "대한민국 정책브리핑 — 여권사진 규정 완화, 양쪽 귀 노출 의무조항 삭제 (2018-01-26)",
+              "url": "https://www.korea.kr/news/policyNewsView.do?newsId=148847383",
+              "grade": "A"
+            },
+            {
+              "name": "외교부 여권안내 — 여권 사진 규격 (2022.10 개정)",
+              "url": "https://www.passport.go.kr/home/kor/contents.do?menuPos=32",
+              "grade": "A"
+            }
+          ]
+        },
+        {
+          "id": "real-rejection-risks",
+          "confidence": "high",
+          "ko": {
+            "title": "실제 반려를 부르는 대표 사유 — 컬러렌즈, 앞머리, AI 보정",
+            "geoAnswer": "현행 한국 여권사진 규정에서 실제 반려로 이어지기 쉬운 대표 사유는 미용·컬러·서클렌즈 착용, 앞머리로 눈썹이나 얼굴 윤곽을 가린 경우, 그리고 AI 편집물을 포함한 임의 보정 사진으로, 세 가지 모두 외교부 규정에 제출 불가로 명시되어 있습니다.",
+            "body": [
+              "외교부 현행 규정은 \"미용·컬러·서클렌즈, 렌즈에 색이 들어간 안경, 선글라스 등은 착용 불가\"라고 명시합니다. 렌즈 착용 여부는 사진 검증 프로그램이 자동으로 걸러내기 어려울 수 있는 항목이라, 온라인 사전 검증을 통과하고도 접수 창구 심사에서 반려되는 대표 사례입니다. 일반 안경은 빛 반사가 없고 테가 눈을 가리지 않으면 허용됩니다.",
+              "앞머리도 마찬가지입니다. 규정은 눈을 가리는 것뿐 아니라 \"머리카락으로 눈썹 및 얼굴 윤곽(광대, 볼 등)을 가리는 사진은 제출 불가\"라고 못 박고 있어, 이마부터 턱까지 얼굴 전체 윤곽이 드러나야 합니다. 눈만 보이면 된다고 생각하고 촬영하면 반려될 수 있습니다.",
+              "보정 규정은 2022년 10월 개정에서 한층 구체화됐습니다. 사진 편집 프로그램이나 필터로 임의 보정한 사진은 물론 \"AI를 활용한 편집·가공·합성·창조 제작물\"까지 명시적으로 허용되지 않으며, 포토샵으로 배경을 지우거나 흰 배경에 인물을 합성한 사진도 제출할 수 없습니다. 정부24 온라인 신청 화면에도 AI 편집·가공·합성 사진 불가가 별도로 안내됩니다.",
+              "외교부는 온라인 여권 사진 검증 서비스를 제공하지만, \"검증된 사진이라도 실제 대행기관 심사과정에서 여권접수가 반려되거나 여권교부가 거부될 수 있습니다\"라고 안내합니다. 자동 검증은 참고용일 뿐, 최종 판정은 사람의 심사라는 점을 전제로 준비하는 것이 안전합니다. 이 조항의 취지는 신원을 왜곡하는 변형의 차단입니다. 촬영 현장의 경험칙으로는 심사에서 주로 문제 되는 것도 얼굴 특징이 달라 보일 만큼의 과한 보정이며, 최종 판정은 접수 심사관의 육안 대조로 이뤄집니다."
+            ]
+          },
+          "en": {
+            "title": "What Actually Gets Photos Rejected — Colored Lenses, Bangs, AI Retouching",
+            "geoAnswer": "Under Korea's current passport photo rules, the rejection risks that can slip past automated checks are colored or circle contact lenses, bangs covering the eyebrows or facial contours, and retouched images — including AI-edited photos, which the Ministry of Foreign Affairs explicitly disallows.",
+            "body": [
+              "The current MOFA rules state that cosmetic, colored, and circle contact lenses, tinted glasses, and sunglasses may not be worn. Lens use is exactly the kind of flaw automated photo checkers struggle to detect, which makes it a classic case of a photo passing online pre-verification and then being rejected at the counter. Regular glasses are permitted as long as there is no glare and the frames do not cover the eyes.",
+              "Bangs are the same story. The rules prohibit not only hair over the eyes but any photo where hair covers the eyebrows or the facial contours such as cheekbones — the entire face from forehead to chin must be visible. A photo framed on the assumption that only the eyes need to show can still be refused.",
+              "The retouching rules were tightened in the October 2022 revision. Photos altered with editing software or filters are disallowed, and the rules now explicitly extend to AI-based edits, composites, and generated images. Photos with the background erased in Photoshop or the subject pasted onto a white background are also rejected, and Korea's Government24 online application repeats the AI-editing ban on its upload screen.",
+              "MOFA offers an online photo pre-verification service, but it warns that even a photo that passes verification can still be rejected during review at the application office. Treat the automated check as a reference, not a guarantee — the final call is made by a human examiner. The intent of the rule is to block edits that distort identity; in practice, what draws rejections is retouching heavy enough to change how the face reads, with the final call made by the examiner comparing the photo against you in person."
+            ]
+          },
+          "sources": [
+            {
+              "name": "외교부 여권안내 — 여권 사진 규격 (2022.10 개정)",
+              "url": "https://www.passport.go.kr/home/kor/contents.do?menuPos=32",
+              "grade": "A"
+            },
+            {
+              "name": "외교부 여권안내 — 온라인 여권 사진 검증",
+              "url": "https://www.passport.go.kr/home/kor/onlinePhotoVerify/index.do?menuPos=33",
+              "grade": "A"
+            },
+            {
+              "name": "정부24 — 여권 재발급 온라인 신청",
+              "url": "https://www.gov.kr/portal/service/serviceInfo/126200000030",
+              "grade": "A"
+            }
+          ]
+        },
+        {
+          "id": "online-digital-photo-spec",
+          "confidence": "high",
+          "ko": {
+            "title": "정부24 온라인 재발급 — 사진 파일 요건은 따로 있습니다",
+            "geoAnswer": "정부24 온라인 여권 재발급에는 가로 413×세로 531픽셀을 권장하되 가로 395~431픽셀, 세로 507~550픽셀 범위 안의 500KB 이하 JPG/JPEG 파일만 업로드할 수 있으며, 전자여권을 한 번이라도 발급받은 이력이 있는 국민만 신청할 수 있습니다.",
+            "body": [
+              "온라인 신청은 종이 사진이 아니라 디지털 파일 심사입니다. 외교부 온라인용 사진파일 안내 기준은 JPG/JPEG 형식, 500KB 이하, 해상도 300dpi 권장이며, 픽셀 크기는 413×531을 권장하되 가로 395~431, 세로 507~550 범위를 벗어나면 업로드 자체가 되지 않습니다. 스마트폰 원본 사진은 대부분 이 범위보다 훨씬 크기 때문에, 규격에 맞춘 리사이즈가 선행되어야 합니다.",
+              "신청 자격에도 제한이 있습니다. 온라인 재발급은 기존에 전자여권을 발급받은 이력이 있는 국민만 가능하고, 생애 최초 신청자, 로마자 성명 변경이 필요한 경우, 개명·주민등록정보 정정자 등은 창구를 방문해야 합니다. 여권 수령 역시 본인이 직접 창구를 방문해야 하므로(18세 미만 자녀는 법정대리인 대리 수령 가능), 완전 비대면 절차는 아닙니다.",
+              "업로드 전에는 외교부 여권안내 홈페이지의 온라인 사진 검증 서비스로 파일을 미리 점검할 수 있습니다. 다만 검증 통과가 접수를 보장하지 않는다는 외교부 안내를 감안하면, 배경·조명·렌즈·보정 같은 실심사 항목까지 촬영 단계에서 확인해 두는 것이 온라인 신청 반려를 줄이는 방법입니다."
+            ]
+          },
+          "en": {
+            "title": "Online Renewal via Government24 — The Digital File Has Its Own Spec",
+            "geoAnswer": "Korea's online passport renewal on Government24 only accepts a JPG/JPEG file of 500KB or less, ideally 413 × 531 pixels and strictly within 395–431 pixels wide by 507–550 pixels tall, and only citizens who have previously held a Korean electronic passport can apply online.",
+            "body": [
+              "Online renewal is judged on a digital file, not a printed photo. The Ministry of Foreign Affairs specifies JPG/JPEG format, a 500KB maximum, and 300dpi recommended; 413 × 531 pixels is the recommended size, and files outside the 395–431 × 507–550 pixel window cannot be uploaded at all. A photo straight off a smartphone is far larger than this window, so resizing to spec comes first.",
+              "Eligibility is also restricted. Online renewal is open only to Korean citizens who have previously been issued an electronic passport; first-time applicants and anyone needing a romanized-name change or a correction to their resident registration details must apply in person. Pickup also requires a personal visit to the passport office (a legal guardian may collect on behalf of a child under 18), so the process is not fully remote.",
+              "Before uploading, you can pre-check the file with the online photo verification service on the MOFA passport portal. Since MOFA itself notes that passing verification does not guarantee acceptance, it pays to get the human-reviewed factors right at the shooting stage — background, lighting, lenses, and retouching — rather than relying on the automated check."
+            ]
+          },
+          "sources": [
+            {
+              "name": "외교부 여권안내 — 온라인용 사진파일 안내",
+              "url": "https://www.passport.go.kr/home/kor/contents.do?menuPos=12",
+              "grade": "A"
+            },
+            {
+              "name": "정부24 — 여권 재발급 온라인 신청",
+              "url": "https://www.gov.kr/portal/service/serviceInfo/126200000030",
+              "grade": "A"
+            },
+            {
+              "name": "외교부 여권안내 — 온라인 여권 사진 검증",
+              "url": "https://www.passport.go.kr/home/kor/onlinePhotoVerify/index.do?menuPos=33",
+              "grade": "A"
+            }
+          ]
+        },
+        {
+          "id": "one-shot-all-ids",
+          "confidence": "high",
+          "ko": {
+            "title": "여권 규격으로 한 번 찍으면 주민등록증·운전면허증까지",
+            "geoAnswer": "행정안전부는 여권 사진 규격(3.5×4.5cm)으로 촬영하면 주민등록증과 여권 발급에 모두 사용할 수 있다고 공식 안내하고 있으며, 2026년 3월 1일부터는 운전면허증에도 여권용 사진 규격이 적용됩니다.",
+            "body": [
+              "행정안전부 주민등록증 안내 페이지에는 \"여권 사진 규격으로 촬영하면 주민등록증과 여권 발급 시 모두 사용 가능\"이라는 문구가 명시되어 있습니다. 이 통일은 2018년 11월 행정안전부가 입법예고한 주민등록법 시행령·시행규칙 개정에서 출발했는데, 당시 주민등록증 사진의 '귀와 눈썹이 보이는' 요건을 삭제하고 규격을 여권과 같은 가로 3.5cm×세로 4.5cm로 맞췄습니다.",
+              "운전면허증은 한 걸음 더 나아갔습니다. 한국도로교통공단은 도로교통법 시행규칙 제57조에 따라 2026년 3월 1일부터 운전면허증 사진에 여권용 사진 규격을 엄격히 적용한다고 공지했습니다. 세부 기준으로 양쪽 눈썹이 각 70% 이상 보여야 하고, 머리카락이 귀를 가리는 것은 무방하지만 볼·광대 등 얼굴 윤곽을 가리면 안 되며, 배경은 흰색 또는 흰색에 가까운 미색까지 허용됩니다.",
+              "정리하면 세 신분증 중 여권 기준이 가장 엄격합니다. 운전면허증은 미색 배경을 허용하지만 여권은 균일한 흰색만 허용하기 때문입니다. 따라서 순백 배경에 눈썹과 얼굴 윤곽이 모두 드러나는 여권 기준으로 한 번 촬영해 두면, 같은 사진으로 여권·주민등록증·운전면허증을 모두 처리할 수 있습니다."
+            ]
+          },
+          "en": {
+            "title": "One Passport-Spec Photo Covers Your National ID and Driver's License",
+            "geoAnswer": "Korea's Ministry of the Interior and Safety officially states that a photo taken to passport specifications (3.5 × 4.5 cm) can be used for both the resident registration card and the passport, and from March 1, 2026 driver's license photos also follow passport photo standards.",
+            "body": [
+              "The Ministry of the Interior and Safety's resident registration card guidance states outright that a photo shot to passport specifications works for both the national ID card and the passport. The alignment dates back to November 2018, when the ministry moved to amend the Resident Registration Act's enforcement rules, deleting the ID card photo requirement that 'ears and eyebrows must be visible' and matching the size to the passport's 3.5 × 4.5 cm.",
+              "Driver's licenses have now gone the same way. The Korea Road Traffic Authority announced that from March 1, 2026, under Article 57 of the Road Traffic Act enforcement rules, driver's license photos strictly follow passport photo standards: each eyebrow must be at least 70% visible, hair may cover the ears but not the facial contours such as cheeks and cheekbones, and the background may be white or a near-white off-white.",
+              "Of the three documents, the passport standard is the strictest — a driver's license tolerates an off-white background while a passport requires uniform white. Shoot once to passport spec, with a pure white background and eyebrows and facial contours fully visible, and the same photo clears the passport, the resident registration card, and the driver's license."
+            ]
+          },
+          "sources": [
+            {
+              "name": "행정안전부 — 주민등록증 안내 (사진 규격)",
+              "url": "https://www.mois.go.kr/frt/sub/a06/b06/IDCard_5/screen.do",
+              "grade": "A"
+            },
+            {
+              "name": "행정안전부 보도자료 — 주민등록증 사진도 여권 사진과 동일하게 사용하세요 (2018-11-08)",
+              "url": "https://www.mois.go.kr/frt/bbs/type010/commonSelectBoardArticle.do?bbsId=BBSMSTR_000000000008&nttId=66958",
+              "grade": "A"
+            },
+            {
+              "name": "한국도로교통공단 공지 — 2026년 3월 1일부터 여권용 사진 규격 적용 (도로교통법 시행규칙 제57조)",
+              "url": "https://www.koroad.or.kr/main/board/9/306204/board_view.do?cp=5&listType=list&bdOpenYn=Y&bdNoticeYn=N",
+              "grade": "A"
+            }
+          ]
+        },
+        {
+          "id": "infant-rules",
+          "confidence": "high",
+          "ko": {
+            "title": "영유아 여권사진 — 기준은 성인과 동일, 예외는 하나",
+            "geoAnswer": "한국 영유아 여권사진은 성인과 동일한 기준이 적용되며, 유일한 완화는 신생아를 포함한 36개월 이하 유아가 입을 조금 벌린 것을 허용하는 것이고, 장난감이나 보호자의 손·신체가 사진에 노출되면 접수되지 않습니다.",
+            "body": [
+              "외교부 현행 규정의 영유아 항목은 \"모든 기준은 성인과 동일함\"이 원칙입니다. 흰색 배경, 정면 응시, 그림자 없음 같은 조건이 아기에게도 똑같이 적용되고, 명시된 예외는 신생아와 36개월 이하 유아의 경우 입을 조금 벌리는 것이 가능하다는 것 하나입니다.",
+              "실무에서 가장 흔한 함정은 촬영 보조물입니다. 규정상 장난감 등 사물이나 보호자가 사진에 노출되면 접수되지 않으므로, 아기를 안거나 손으로 받친 채 촬영한 사진은 보호자의 손가락 하나만 프레임에 걸려도 반려 사유가 됩니다. 흰 배경 위에 눕혀 촬영하는 방식이 일반적인 해법입니다.",
+              "과거 규격을 기억하는 보호자라면 머리 길이 기준도 갱신해 둘 필요가 있습니다. 2018년 1월 25일 규정 완화 때 영유아 사진의 머리 길이(정수리~턱) 기준이 기존 2.3~3.6cm에서 성인과 동일한 3.2~3.6cm로 통일됐습니다. 옛 기준으로 작게 찍힌 얼굴은 현행 규격에서는 부적합입니다."
+            ]
+          },
+          "en": {
+            "title": "Infant Passport Photos — Adult Rules Apply, With One Exception",
+            "geoAnswer": "Korean infant passport photos follow the same standards as adult photos, with a single stated exception — newborns and babies up to 36 months old may have their mouth slightly open — while any visible toy or a guardian's hand in the frame will get the photo refused.",
+            "body": [
+              "The infant clause in the current MOFA rules starts from the principle that all adult criteria apply: white background, face square to the camera, no shadows. The only stated relaxation is that newborns and children up to 36 months may have their mouth slightly open.",
+              "The most common pitfall in practice is support props. The rules bar any photo showing objects such as toys or a guardian, so a shot taken while holding or steadying the baby fails if even a single finger enters the frame. Laying the baby on a plain white sheet and shooting from above is the standard workaround.",
+              "Parents who remember the old spec should also update one number: in the January 25, 2018 relaxation, the head-height standard for infant photos (crown to chin) was unified from 2.3–3.6 cm to the adult range of 3.2–3.6 cm. A photo framed to the old, smaller face size no longer meets the current standard."
+            ]
+          },
+          "sources": [
+            {
+              "name": "외교부 여권안내 — 여권 사진 규격 (영유아 사진 기준)",
+              "url": "https://www.passport.go.kr/home/kor/contents.do?menuPos=32",
+              "grade": "A"
+            },
+            {
+              "name": "대한민국 정책브리핑 — 여권사진 규정 완화 (영유아 머리 길이 기준 통일)",
+              "url": "https://www.korea.kr/news/policyNewsView.do?newsId=148847383",
+              "grade": "A"
+            }
+          ]
+        }
+      ],
+      "verifiedAt": "2026-07-17",
+      "pipeline": "specs-unique-pilot"
+    }
   },
   "kr-visa": {
     "slug": "kr-visa",
@@ -3776,7 +3969,189 @@
     "backgroundEs": "Blanco",
     "headHeightEs": "2.5-3.5cm",
     "validityEs": "Tomada dentro de los últimos 6 meses",
-    "fileSpecEs": "JPEG formato, máx 240KB, 600x600px mín to 1200x1200px máx, 24-bit color, sRGB"
+    "fileSpecEs": "JPEG formato, máx 240KB, 600x600px mín to 1200x1200px máx, 24-bit color, sRGB",
+    "uniqueContent": {
+      "sections": [
+        {
+          "id": "visa-type-single-standard",
+          "confidence": "high",
+          "ko": {
+            "title": "비자 종류별 사진 규격 차이 — 정답은 '전부 동일'",
+            "geoAnswer": "미국 비자 사진 규격은 B1/B2(관광·상용)·F-1(유학)·H-1B(취업)·J-1(교환) 등 비자 종류와 무관하게 동일하며, 인화본은 51×51mm(2×2인치), 디지털은 600×600~1200×1200픽셀 정사각형이다.",
+            "body": [
+              "미 국무부는 비자 카테고리별로 사진 규격을 따로 두지 않는다. 달라지는 것은 규격이 아니라 '제출 방식'이다. B1/B2·F-1·H-1B·J-1 같은 비이민비자는 DS-160 온라인 신청서(미국 내 A·G·NATO 비자 갱신은 DS-1648)에 디지털 사진 1장을 업로드하고, DS-260으로 진행하는 이민비자는 인터뷰장에 동일한 인화 사진 2매를 지참한다. 추첨영주권(DV) 프로그램은 온라인 등록 시 디지털 1장, 당첨 후 인터뷰에서 인화 2매다. 즉 신청 채널이 결정하는 것은 매수와 형식(디지털/인쇄)이지 치수가 아니다.",
+              "일부 대사관·영사관은 DS-160 업로드와 별개로 인터뷰에 규격 인화 사진 1매를 지참하도록 요구하며, 국무부 공식 안내도 '신청하는 공관의 지침을 확인하라'고 명시한다. 온라인 업로드에 성공했더라도 2×2인치 예비 인화본을 준비하는 편이 안전한 이유다. 인화지는 포토용지라면 매트·광택 모두 허용되고, 흑백 사진은 접수되지 않는다."
+            ]
+          },
+          "en": {
+            "title": "Do Photo Specs Differ by Visa Type? One Standard for All",
+            "geoAnswer": "US visa photo requirements are identical across all visa categories — B1/B2, F-1, H-1B, J-1 and every other type: a 2×2-inch (51×51 mm) print, or a square digital image of 600×600 to 1200×1200 pixels.",
+            "body": [
+              "The State Department publishes a single set of photo specifications; what changes is the submission channel, not the spec. Nonimmigrant applicants — tourists on B1/B2, students on F-1, workers on H-1B, exchange visitors on J-1 — upload one digital image inside the DS-160 online application (DS-1648 for A, G and NATO renewals in the US). Immigrant visa applicants filing the DS-260 instead bring two identical printed photos to their interview, and Diversity Visa entrants upload a digital image at entry, then bring two prints if selected. The channel dictates quantity and format — not the dimensions.",
+              "Some embassies and consulates additionally ask DS-160 applicants to bring one printed photo to the interview, and the State Department explicitly defers to each post's own instructions — so carrying a spare 2×2 print is a sensible hedge even after a successful upload. Prints must be on photo-quality paper, matte or glossy; black-and-white photos are not accepted."
+            ]
+          },
+          "sources": [
+            {
+              "name": "U.S. Department of State — Photo Requirements",
+              "url": "https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/photos.html",
+              "grade": "A"
+            },
+            {
+              "name": "U.S. Department of State — Photo Frequently Asked Questions",
+              "url": "https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/photos/frequently-asked-questions.html",
+              "grade": "A"
+            }
+          ]
+        },
+        {
+          "id": "ds160-digital-upload",
+          "confidence": "high",
+          "ko": {
+            "title": "DS-160 디지털 업로드 규격과 DV 로터리 특칙",
+            "geoAnswer": "DS-160 업로드용 미국 비자 디지털 사진은 정사각형 JPEG로 최소 600×600픽셀, 최대 1200×1200픽셀, 파일 크기 240KB 이하여야 하며, DV 로터리 온라인 등록만은 범위가 아닌 '정확히 600×600픽셀'을 요구한다.",
+            "body": [
+              "국무부 디지털 이미지 요건의 전체 목록은 이렇다: 가로=세로 정사각 비율, 600×600픽셀 이상 1200×1200픽셀 이하, 24비트 컬러 sRGB 색공간, JPEG 형식, 240KB 이하, 압축률 20:1 이하. 기존 인화 사진을 스캔해 쓰려면 원본이 2×2인치(51×51mm)여야 하고 300ppi(밀리미터당 12픽셀)로 스캔해야 한다. 머리 길이(턱 끝~정수리)는 디지털 기준 이미지 전체 높이의 50~69%, 인화 기준 1~1⅜인치(25~35mm)다.",
+              "DV(추첨영주권) 프로그램은 이 범위가 사라지는 유일한 지점이다. 온라인 엔트리 사진은 정확히 600×600픽셀이어야 하며, 국무부가 무료로 제공하는 포토 툴도 정확히 이 크기로 크롭하도록 설계돼 있다. 단 이 툴은 크롭 전용이고, 사진의 최종 수용 여부는 국무부 직원이 판정한다.",
+              "업로드가 실패하면 DS-160·DS-1648 확인 페이지(confirmation page)에 사진 대신 'X'가 표시된다. 이 경우 규격에 맞는 인화 사진 1매를 확인 페이지와 함께 신청 공관에 제출하면 된다. 확인 페이지에 본인 사진이 정상적으로 보이면 업로드 성공이며, 원칙적으로 별도 인화본은 필요 없다."
+            ]
+          },
+          "en": {
+            "title": "DS-160 Digital Upload Specs and the DV Lottery Exception",
+            "geoAnswer": "A US visa digital photo for the DS-160 must be a square JPEG between 600×600 and 1200×1200 pixels and no larger than 240 kB — except for the DV lottery online entry, which requires exactly 600×600 pixels.",
+            "body": [
+              "The State Department's full digital spec reads: square aspect ratio (height equals width), 600×600 px minimum, 1200×1200 px maximum, 24-bit color in the sRGB color space, JPEG format, 240 kB or less, with a compression ratio no higher than 20:1. If you scan an existing print, the original must measure 2×2 inches (51×51 mm) and be scanned at 300 pixels per inch (12 px/mm). The head — chin to top of head — must fill 50% to 69% of a digital image's height, equivalent to 1 to 1⅜ inches (25–35 mm) on a print.",
+              "The Diversity Visa program is the one place the range disappears: an online DV entry photo must be exactly 600×600 pixels, and the State Department's free photo tool crops to precisely that size. The tool is for cropping only — a State Department employee still makes the final call on whether your photo is acceptable.",
+              "If the DS-160 or DS-1648 confirmation page shows an 'X' where your photo should be, the upload failed: bring one compliant printed photo together with the confirmation page to the embassy or consulate where you apply. If your photo appears on the confirmation page, the upload succeeded and no separate print is normally required."
+            ]
+          },
+          "sources": [
+            {
+              "name": "U.S. Department of State — Digital Image Requirements",
+              "url": "https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/photos/digital-image-requirements.html",
+              "grade": "A"
+            },
+            {
+              "name": "U.S. Department of State — Photo Requirements",
+              "url": "https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/photos.html",
+              "grade": "A"
+            },
+            {
+              "name": "U.S. Department of State — Photo Frequently Asked Questions",
+              "url": "https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/photos/frequently-asked-questions.html",
+              "grade": "A"
+            }
+          ]
+        },
+        {
+          "id": "eyeglasses-ban-2016",
+          "confidence": "high",
+          "ko": {
+            "title": "2016년 11월부터 안경 전면 금지 — 예외는 의료 소견서뿐",
+            "geoAnswer": "미국 비자 사진에서는 2016년 11월 1일부터 안경 착용이 전면 금지됐으며, 안과 수술 직후처럼 의료상 벗을 수 없는 경우에 한해 의료인이 서명한 소견서를 제출해야만 예외가 인정된다.",
+            "body": [
+              "국무부는 시행일(2016년 11월 1일)까지 명시해 이 규정을 별도 FAQ 항목으로 다룬다. 의료 사유로 예외가 인정되더라도 세 가지 조건이 붙는다: 안경테가 눈을 가리지 않을 것, 렌즈에 빛 반사(글레어)가 없을 것, 안경으로 인한 그림자나 굴절이 눈을 가리지 않을 것. 국무부 스스로 '드문 경우(rare circumstances)'라고 표현할 만큼 예외의 문은 좁다.",
+              "선글라스·착색(틴티드) 렌즈는 한 단계 더 엄격하다. 미국 여권 사진은 의료 증명이 있으면 착색 처방 렌즈를 허용할 수 있지만, 미국 비자 사진은 의료 사유로도 어두운 렌즈나 착색 렌즈를 일절 허용하지 않는다. 비자 규정이 여권 규정보다 엄격한 대표적인 지점으로, 여권 기준에 맞춰 사진을 준비했다면 제출 전에 반드시 다시 확인해야 한다."
+            ]
+          },
+          "en": {
+            "title": "Eyeglasses Banned Since November 2016 — Medical Exceptions Only",
+            "geoAnswer": "Eyeglasses have been banned in US visa photos since November 1, 2016; the only exception is a medical reason — such as recent ocular surgery — documented by a statement signed by a medical professional.",
+            "body": [
+              "The State Department treats this rule prominently enough to give it its own FAQ entry, effective date included. Even when glasses are accepted on medical grounds, three conditions apply: the frames must not cover the eyes, there must be no glare on the lenses, and no shadows or refraction from the glasses may obscure the eyes. The Department's own wording — 'rare circumstances' — signals how narrow the exception is.",
+              "Sunglasses and tinted lenses are stricter still. A US passport photo may permit tinted prescription lenses with a medical certificate, but for a US visa photo no dark or tinted lenses are allowed under any circumstances. It is one of the clearest points where visa rules outrank passport rules in strictness — applicants who prepared their photo to passport guidance should re-check before submitting."
+            ]
+          },
+          "sources": [
+            {
+              "name": "U.S. Department of State — Photo Frequently Asked Questions",
+              "url": "https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/photos/frequently-asked-questions.html",
+              "grade": "A"
+            },
+            {
+              "name": "U.S. Department of State — Photo Requirements",
+              "url": "https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/photos.html",
+              "grade": "A"
+            }
+          ]
+        },
+        {
+          "id": "us-rejection-triggers",
+          "confidence": "high",
+          "ko": {
+            "title": "미국 고유 반려 트리거 — 보정 금지·복장·6개월 시효",
+            "geoAnswer": "미국 비자 사진은 외모를 바꾸는 디지털 보정이 전면 금지되며, 촬영 후 편집 도구로 적목(red-eye)을 지우는 것조차 반려 사유다 — 허용되는 것은 촬영 시점에 카메라의 적목 감소 기능을 쓰는 것뿐이다.",
+            "body": [
+              "국무부 규정의 선은 '촬영 시점'과 '사후 편집' 사이에 그어져 있다. 촬영할 때 카메라의 적목 감소 옵션을 켜는 것은 허용되지만, 찍힌 사진에서 편집 도구로 적목을 지우는 것은 불가하며, 외모를 바꾸는 어떤 디지털 향상·수정도 금지된다. 운전면허증 등 공문서에서 복사·스캔한 사진, 잡지 사진, 저품질 자판기·휴대폰 사진, 전신 사진도 접수되지 않는다. 셀프 촬영 자체는 공식적으로 허용되지만, 국무부는 '대부분의 웹캠과 휴대폰은 충분한 품질을 내지 못한다'고 경고한다 — 관건은 600×600픽셀 이상에서 버티는 선명도와 정확한 구도다.",
+              "복장과 소품 규정도 미국식으로 구체적이다. 유니폼은 물론 '유니폼처럼 보이는 옷'과 위장복(camouflage)까지 금지되며, 예외는 일상적으로 착용하는 종교 복장뿐이다. 모자·머리덮개는 종교 목적의 일상 착용만 인정되고, 그 경우에도 얼굴 전체가 보여야 하며 얼굴에 그림자를 드리우면 안 된다. 헤드폰·무선 핸즈프리 기기는 착용 불가, 보청기 등 청각 보조기기는 허용이다.",
+              "시효 규정은 이중이다: 신청 시점 기준 6개월 이내 촬영이면서 '현재 외모'를 반영해야 한다. 6개월 이내 사진이라도 대규모 안면 성형·외상, 다수·대형 안면 피어싱·문신의 추가나 제거, 급격한 체중 변화가 있었다면 새 사진을 요구받는다. 반대로 수염을 기르거나 머리를 염색한 정도는 일반적으로 교체 사유가 아니다. 규정의 과녁은 외모를 바꾸는 편집입니다 — 심사관이 실물과 대조해 다르게 보일 정도의 수정이 문제의 본질이고, 규격에 맞춘 크롭이나 촬영 시점의 조명 관리는 이 금지의 대상이 아닙니다."
+            ]
+          },
+          "en": {
+            "title": "US-Specific Rejection Triggers: No Retouching, Dress Rules, the 6-Month Clock",
+            "geoAnswer": "US visa photos must not be digitally enhanced or altered to change your appearance in any way — even removing red-eye with editing software is grounds for rejection, while using a camera's built-in red-eye reduction at capture is allowed.",
+            "body": [
+              "The State Department draws the line between capture and post-processing: switching on red-eye reduction while shooting is fine; erasing red-eye afterward with an editing tool is not, and no digital enhancement that changes your appearance is permitted. Photos copied or scanned from driver's licenses or other official documents are rejected outright, as are magazine photos, low-quality vending-machine or mobile-phone shots, and full-length photographs. Self-taken photos are officially allowed, but the Department cautions that most webcams and mobile phones cannot deliver sufficient quality — what matters is sharpness that holds up at 600×600 pixels or more, with correct composition.",
+              "The dress rules are distinctively specific: uniforms, clothing that merely looks like a uniform, and camouflage attire are all barred, with daily-worn religious attire the sole exception. Hats and head coverings pass only if worn daily for religious purposes — and even then the full face must remain visible with no shadows cast on it. Headphones and wireless hands-free devices are not acceptable; hearing devices may be worn.",
+              "The validity rule is two-pronged: the photo must have been taken within 6 months of submitting the application and must reflect your current appearance. Significant facial surgery or trauma, adding or removing numerous or large facial piercings or tattoos, or substantial weight change triggers a new-photo request even inside the 6-month window. Growing a beard or coloring your hair generally does not. The target of the rule is appearance-altering edits — what matters is whether the photo still looks like you at the interview window; cropping to spec and getting the lighting right at capture time are not what the ban is about."
+            ]
+          },
+          "sources": [
+            {
+              "name": "U.S. Department of State — Photo Frequently Asked Questions",
+              "url": "https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/photos/frequently-asked-questions.html",
+              "grade": "A"
+            },
+            {
+              "name": "U.S. Department of State — Photo Requirements",
+              "url": "https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/photos.html",
+              "grade": "A"
+            }
+          ]
+        },
+        {
+          "id": "infant-child-rules",
+          "confidence": "high",
+          "ko": {
+            "title": "영유아·아동 사진 규정 — 여권보다 엄격한 '눈 뜨기'",
+            "geoAnswer": "미국 비자 사진은 영유아를 포함한 모든 아동이 눈을 뜨고 카메라를 정면으로 바라봐야 하며, 신생아의 눈이 완전히 떠 있지 않아도 허용하는 미국 여권 사진과 달리 비자용에는 이 완화 규정이 없다.",
+            "body": [
+              "아이는 사진에 혼자 있어야 한다. 부모나 보호자가 함께 찍히는 것은 물론, 아이를 받치는 부모의 팔·손이 프레임에 들어가는 것도 반려 사유다. 국무부가 공식 안내하는 촬영법은 두 가지다: 흰색 또는 미색 시트 위에 아기를 눕혀 머리를 받치면서 배경을 확보하는 방법(위에서 내려찍을 때 얼굴 그림자 주의), 그리고 카시트에 흰색 또는 미색 시트를 덮고 아이를 앉혀 찍는 방법이다.",
+              "여권과의 차이가 함정이 되는 지점이 바로 눈이다. 미국 여권 사진 규정은 '아기의 눈이 완전히 떠 있지 않아도 괜찮다'고 명시하지만, 비자 사진 FAQ는 '아이의 눈이 감겨도 되는가'라는 질문에 명확히 '아니오'라고 답한다 — 눈을 뜨고 카메라를 정면으로 봐야 한다. 여권용으로 통과된 신생아 사진을 비자 신청에 재사용하는 것이 위험한 이유다.",
+              "한편 16세 미만 아동이 자연스러운 성장 과정으로 외모가 변한 경우에는 일반적으로 새 사진을 제출할 필요가 없다. 다만 사진의 최종 수용 여부는 언제나 신청 공관(대사관·영사관)의 재량이다."
+            ]
+          },
+          "en": {
+            "title": "Infant and Child Photo Rules — Stricter Than a US Passport",
+            "geoAnswer": "In a US visa photo, every child — infants included — must have their eyes open and look straight at the camera; unlike US passport rules, which accept a baby's eyes not being entirely open, visa rules grant no such allowance.",
+            "body": [
+              "The child must be the only person in the frame: not just no parent posing alongside, but no supporting parental hands or arms visible in the shot. The State Department itself suggests two techniques: lay the baby on a plain white or off-white sheet, which supports the head and supplies the background (watch for face shadows when shooting from above), or drape a car seat with a white sheet and photograph the child seated in it.",
+              "The eyes are where passport habits become a trap. US passport guidance states it is okay if a baby's eyes are not entirely open, but the visa photo FAQ answers the closed-eyes question with a flat no — the child's eyes must be open and looking straight ahead at the camera. That gap is exactly why reusing a passport-approved newborn photo for a visa application is risky.",
+              "On the other hand, a child under 16 whose appearance has changed through the normal aging process generally does not need to submit a new photo — though acceptance always remains at the discretion of the embassy or consulate where you apply."
+            ]
+          },
+          "sources": [
+            {
+              "name": "U.S. Department of State — Photo Frequently Asked Questions",
+              "url": "https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/photos/frequently-asked-questions.html",
+              "grade": "A"
+            },
+            {
+              "name": "U.S. Department of State — Photo Requirements",
+              "url": "https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/photos.html",
+              "grade": "A"
+            },
+            {
+              "name": "U.S. Department of State — Passport Photos",
+              "url": "https://travel.state.gov/content/travel/en/passports/how-apply/photos.html",
+              "grade": "A"
+            }
+          ]
+        }
+      ],
+      "verifiedAt": "2026-07-17",
+      "pipeline": "specs-unique-pilot"
+    }
   },
   "eu-visa": {
     "slug": "eu-visa",
@@ -5141,7 +5516,178 @@
     "backgroundEs": "Blanco",
     "headHeightEs": "3.1-3.6cm",
     "validityEs": "Tomada dentro de los últimos 6 meses",
-    "fileSpecEs": "Renovación en línea: JPEG/JPG, 1.800–4.500 (alto) × 1.200–3.000 (ancho) píxeles (3:2), 200KB–5MB, archivo original de la cámara"
+    "fileSpecEs": "Renovación en línea: JPEG/JPG, 1.800–4.500 (alto) × 1.200–3.000 (ancho) píxeles (3:2), 200KB–5MB, archivo original de la cámara",
+    "uniqueContent": {
+      "sections": [
+        {
+          "id": "size-50x70-uniqueness",
+          "confidence": "high",
+          "ko": {
+            "title": "50×70mm — 세계 최대급, 주요국 중 캐나다만 쓰는 여권 사진 크기",
+            "geoAnswer": "캐나다 여권 사진 규격은 가로 50mm × 세로 70mm(2 × 2¾인치)이며, 턱 끝부터 정수리까지 얼굴 높이가 31~36mm여야 한다 — 다수 국가가 쓰는 35×45mm나 미국의 51×51mm와 호환되지 않는 캐나다 고유 크기다.",
+            "body": [
+              "50×70mm는 주요국 여권 사진 중 면적이 가장 큰 축에 속한다. 미국용 2×2인치(51×51mm) 사진이나 35×45mm 사진을 잘라서 쓰는 것은 불가능하다 — 캔버스 비율(5:7)과 얼굴 높이 기준(31~36mm)이 모두 다르기 때문에 크롭으로는 규격을 맞출 수 없다. 캐나다 이민·난민·시민권부(IRCC)는 공식 페이지 첫머리에 '캐나다 요건은 타국과 다르다'고 명시하고, 요건 미달 시 신청 자체를 반려한다고 경고한다.",
+              "같은 50×70mm·얼굴 31~36mm 치수는 영주권(PR)카드 종이 신청과 시민권 증명(proof of citizenship) 종이 신청에도 적용된다. 다만 부대 요건은 문서마다 다르다: 여권은 컬러·흑백 모두 허용되고 촬영 후 6개월 이내여야 하지만, 시민권 증명은 컬러 사진만 받고, PR카드는 촬영 후 12개월까지 인정된다. 반면 캐나다 방문비자(TRV)는 35×45mm로 아예 다른 크기를 쓴다 — '캐나다 서류는 전부 50×70'이라고 일반화하면 안 된다.",
+              "흑백 사진이 공식 허용된다는 점도 캐나다 여권의 드문 특징이다. 배경은 무늬 없는 흰색 또는 밝은 단색이어야 하며, 흰 옷은 배경과 섞여 반려 사유가 되므로 피해야 한다."
+            ]
+          },
+          "en": {
+            "title": "50 × 70 mm: One of the World's Largest Passport Photo Formats, Used Only by Canada",
+            "geoAnswer": "Canadian passport photos must measure 50 mm wide by 70 mm high (2 in × 2¾ in) with a chin-to-crown face height of 31–36 mm — a format unique to Canada that is incompatible with both the 35 × 45 mm size used by most countries and the US 2 × 2 inch standard.",
+            "body": [
+              "At 50 × 70 mm, Canada uses one of the largest passport photo formats in the world. You cannot trim a US 2 × 2 inch (51 × 51 mm) photo or a 35 × 45 mm photo down to fit: both the 5:7 canvas ratio and the 31–36 mm face-height requirement differ, so no crop will make a foreign-format photo compliant. Immigration, Refugees and Citizenship Canada (IRCC) states up front that Canadian requirements differ from other countries' and warns that applications with non-compliant photos will be refused.",
+              "The same 50 × 70 mm dimensions and 31–36 mm face height also apply to paper applications for the permanent resident (PR) card and proof of citizenship — but the surrounding rules diverge by document. Passport photos may be colour or black and white and must be taken within 6 months; proof-of-citizenship photos must be colour; PR photos are accepted up to 12 months after they were taken. Meanwhile Canada's own visitor visa (TRV) uses a completely different 35 × 45 mm size, so 'everything Canadian is 50 × 70' is a myth.",
+              "Canada is also one of the few countries that officially accepts black-and-white passport photos. The background must be plain white or light-coloured with no texture, and white clothing should be avoided because it blends into the background — a stated rejection trigger."
+            ]
+          },
+          "sources": [
+            {
+              "name": "Government of Canada (IRCC) — Passport photo requirements",
+              "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/canadian-passports/photos.html",
+              "grade": "A"
+            },
+            {
+              "name": "Government of Canada (IRCC) — Permanent resident photos",
+              "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/permanent-residents/card/photos.html",
+              "grade": "A"
+            },
+            {
+              "name": "Government of Canada (IRCC) — Proof of citizenship photo specifications",
+              "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides/citizenship-application-photograph-specifications/proof-mail.html",
+              "grade": "A"
+            },
+            {
+              "name": "Government of Canada (IRCC) — Temporary Resident Visa photograph specifications",
+              "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides/temporary-resident-visa-application-photograph-specifications.html",
+              "grade": "A"
+            }
+          ]
+        },
+        {
+          "id": "photo-back-photographer-guarantor",
+          "confidence": "high",
+          "ko": {
+            "title": "사진 뒷면 요건 — 사진관 스탬프와 보증인 서명이라는 캐나다식 이중 인증",
+            "geoAnswer": "캐나다 여권 신규 신청 시 제출하는 동일 사진 2장 중 1장 뒷면에는 사진관이 촬영일과 상호·전체 주소를 기재하거나 스탬프로 찍어야 하고, 보증인(guarantor)이 'I certify this to be a true likeness of (신청자 이름)' 문구를 직접 쓰고 서명해야 한다.",
+            "body": [
+              "캐나다는 사진 자체의 물리적 이력을 요구하는 드문 나라다. 종이로 접수하는 모든 여권 신청(신규·우편·방문 갱신)에는 변조되지 않은 동일 사진 2장이 필요하고, 촬영은 상업 사진관·전문 사진사가 대면으로 해야 하며, 인화는 일반 고품질 인화지에 전문 인쇄되어야 한다. 가정용 프린터 출력이나 두꺼운 용지 인화는 접수되지 않는다 — 미국의 '셀프 촬영·출력', 영국의 '셀프 촬영·업로드' 경로가 캐나다 종이 신청에서는 원천적으로 막혀 있는 이유다.",
+              "뒷면 기재는 역할이 나뉜다. 사진관은 촬영일 + 상호·전체 주소를 쓰거나 스탬프로 남기고, 보증인은 인증 문구와 서명을 남긴다. 보증인 제도는 신청자의 신원을 아는 제3자가 사진이 본인임을 증명하는 캐나다 고유 절차로, 아동 여권에도 동일하게 적용된다. 단, 성인 여권 갱신(renewal)은 보증인이 필요 없다 — 신규 신청과 갱신의 요건 차이를 혼동하지 말 것.",
+              "사진이 6개월 이내 촬영본이어야 한다는 기준은 '신청서 제출일' 기준으로 계산된다. 오래 전 여분으로 받아 둔 사진을 쓰면 촬영일 스탬프에서 바로 드러난다."
+            ]
+          },
+          "en": {
+            "title": "The Back of the Photo: Canada's Double Authentication — Studio Stamp Plus Guarantor Signature",
+            "geoAnswer": "For a new Canadian passport application, the back of one of the two identical photos must carry the photo studio's name, complete address and the date the photo was taken (handwritten or stamped by the photographer), plus the guarantor's handwritten declaration 'I certify this to be a true likeness of (the applicant's name)' and signature.",
+            "body": [
+              "Canada is one of the few countries that demands a physical paper trail on the photo itself. Every paper application — a new passport, or a renewal by mail or in person — needs 2 identical, unaltered photos, taken in person by a commercial photographer or photo studio and professionally printed on plain, high-quality photographic paper. Photos printed at home or on heavyweight paper are not accepted — which is why the take-it-yourself route (print-at-home in the US, digital upload in the UK) is structurally closed for Canadian paper applications.",
+              "The back-of-photo duties are split between two parties. The photographer writes or stamps the date taken plus the studio's name and complete address; the guarantor — a third party who can vouch for the applicant's identity — adds the certification sentence and signs at the bottom. The same guarantor endorsement is required on a child's photo. Adult passport renewals, however, do not need a guarantor, a distinction between new applications and renewals that trips up many applicants.",
+              "The 6-month recency rule is measured against the date you submit the application, and the dated studio stamp on the back makes an out-of-date photo immediately detectable."
+            ]
+          },
+          "sources": [
+            {
+              "name": "Government of Canada (IRCC) — Passport photo requirements",
+              "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/canadian-passports/photos.html",
+              "grade": "A"
+            }
+          ]
+        },
+        {
+          "id": "zero-alteration-ai-ban",
+          "confidence": "high",
+          "ko": {
+            "title": "보정 전면 금지 — AI 도구는 물론 밝기 조정·적목 제거도 반려 사유",
+            "geoAnswer": "캐나다는 여권 사진의 일체 편집을 금지하며, AI 도구와 필터는 물론 색상·밝기·대비·선명도 조정, 배경 교체와 그림자 제거, 흉터·모반·적목 제거까지 모두 공식적으로 '변조된 사진(altered photo)'으로 규정해 신청을 반려한다.",
+            "body": [
+              "IRCC의 현행 공식 페이지는 '변조'의 범위를 이례적으로 구체적으로 정의한다: 색상·밝기·대비·선명도 등 기술적 보정, 머리·어깨 주변을 잘라내 흰 배경에 합성하는 것(cutting and pasting against a white background), 눈·코·입·귀의 크기나 형태 수정, 빛 반사·적목·흉터·모반 제거나 머리색 변경 같은 외모 개선, 의상 색 변경, 그림자 제거를 포함한 배경 변경 — 전부 반려 대상이다. 사진 편집 소프트웨어, 필터, AI 도구가 금지 수단으로 명시돼 있다.",
+              "특히 '배경 합성'이 명시적 반려 사유라는 점이 결정적이다. 여러 나라에서 통과되는 배경 제거·교체 방식의 앱 사진이 캐나다 여권 종이 신청에서는 규정 위반이 된다. 적목(red-eye)은 이중으로 걸린다 — 적목 현상이 있는 사진도, 적목을 보정한 사진도 모두 불허 목록에 올라 있다.",
+              "무보정 원칙의 근거는 얼굴인식이다.IRCC는 무표정 요구의 이유로 얼굴인식 시스템이 개인 고유의 얼굴 특징으로 신원을 검증한다는 점을 들며, 사진이 촬영 원본 그대로여야 하는 무보정 원칙도 같은 맥락에 있다. 캐나다 여권 사진의 안전한 경로는 사진관 촬영 원본을 그대로 제출하는 것뿐이다. 그래서 캐나다 종이 신청은 사진관 대면 촬영이 안전한 경로이며, 셀프 촬영본은 규격·구도 확인과 디지털 경로 준비에 활용하는 것이 실무적인 사용법입니다."
+            ]
+          },
+          "en": {
+            "title": "Zero-Alteration Policy: AI Tools Are Banned — and So Is Fixing Brightness or Red-Eye",
+            "geoAnswer": "Canada rejects any passport photo that has been altered in any way: the official IRCC definition of an 'altered photo' covers AI tools and filters as well as colour, brightness, contrast or sharpness corrections, background replacement or shadow removal, and even the removal of scars, birthmarks or red-eye.",
+            "body": [
+              "IRCC's current official page defines 'altered' with unusual precision: technical corrections or enhancements (colour, brightness, contrast, sharpness), cropping around the head and shoulders — explicitly including cutting and pasting your image against a white background — editing facial features such as the size or shape of eyes, nose, mouth or ears, appearance improvements like removing glare, red-eye, scars or birthmarks or changing hair colour, editing clothing colours, and changing the background including removing shadows. Photo-editing software, filters and AI tools are all named as prohibited means.",
+              "The explicit ban on background compositing is the decisive detail. App-generated photos that pass in many countries because the background was digitally removed and replaced are, by definition, non-compliant for a Canadian paper passport application. Red-eye fails twice over: photos showing red-eye are rejected, and so are photos where red-eye has been retouched away.",
+              "The rationale is facial recognition. Alongside the ICAO-recommended neutral expression (eyes open, mouth closed, no smiling or frowning), IRCC explains that recognition systems verify identity from each person's unique facial features — which is also why an edited file defeats the purpose. For a Canadian passport, the only safe route is submitting the studio original untouched. This is why the in-studio route is the safe path for Canadian paper applications — use self-taken photos to check the spec and framing and to prepare for the digital route."
+            ]
+          },
+          "sources": [
+            {
+              "name": "Government of Canada (IRCC) — Passport photo requirements",
+              "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/canadian-passports/photos.html",
+              "grade": "A"
+            }
+          ]
+        },
+        {
+          "id": "children-newborns",
+          "confidence": "high",
+          "ko": {
+            "title": "아동·신생아 사진 — 규격은 성인과 동일, 신생아만 공식 완화 조항",
+            "geoAnswer": "캐나다 아동·신생아 여권 사진도 성인과 동일한 50×70mm 크기와 턱~정수리 31~36mm 얼굴 높이를 충족해야 하지만, 신생아에 한해 표정 기준이 완화되고 머리 뒤에 흰 담요를 덮은 카시트 촬영이 공식 허용된다.",
+            "body": [
+              "캐나다는 아동용 별도 치수를 두지 않는다. 갓난아기도 50×70mm 캔버스에 얼굴 높이 31~36mm를 맞춰야 하고, 촬영은 성인과 마찬가지로 상업 사진관에서 6개월 이내에 이뤄져야 한다. 다만 IRCC는 '신생아에게 무표정을 기대하기 어렵다는 것을 안다'며 유아의 표정에는 일정 범위를 허용한다고 공식 문서에 명시한다 — 눈을 뜬 정면 응시라는 골격만 지키면 된다.",
+              "신생아 전용 절차로는 카시트 촬영이 있다: 카시트에 앉힌 채 찍되, 아이 머리 뒤 시트 위에 흰 담요를 덮어 얼굴 윤곽이 배경과 구분되게 해야 한다. 귀 주변·배경·얼굴과 어깨의 그림자는 성인 기준과 동일하게 반려 사유다.",
+              "아동 사진 특유의 함정이 손이다 — IRCC의 부적합 예시 갤러리가 아동 항목으로 드는 사례가 바로 손이 찍힌 사진이다. 아이를 받치는 부모의 손이든 아이 본인의 손이든, 사진에 손이 보이면 안 되며 프레임은 머리와 어깨까지만 담아야 한다. 아동 여권도 신규 신청이므로 사진 1장 뒷면에 사진관 정보 기재와 보증인 서명('I certify this to be a true likeness of…')이 성인 신규 신청과 동일하게 요구된다."
+            ]
+          },
+          "en": {
+            "title": "Children and Newborns: Adult Specs Apply in Full — With One Official Concession for Babies",
+            "geoAnswer": "Canadian child and newborn passport photos must meet the same 50 × 70 mm size and 31–36 mm chin-to-crown face height as adult photos, but IRCC officially relaxes the neutral-expression rule for newborns and permits car-seat photos with a white blanket placed behind the baby's head.",
+            "body": [
+              "Canada has no separate child dimensions: even a newborn must fit the 50 × 70 mm canvas with a 31–36 mm face height, photographed at a commercial studio within 6 months of applying, just like an adult. IRCC does state in writing that it knows a neutral expression is difficult for a newborn and that 'some range' of infant facial expressions is allowed — the essentials that remain are open eyes and a face square to the camera.",
+              "The newborn-specific procedure is the car-seat shot: the baby may be photographed sitting in a car seat, provided a white blanket covers the seat behind the head so the face stands out against the background. Shadow rules are not relaxed — shadows around the ears, in the background, or on the face and shoulders remain rejection triggers.",
+              "A signature child-photo pitfall is hands — IRCC's own unacceptable-photo examples pair the correct child pose against hands in the picture. Neither the parent's supporting hands nor the child's own hands may appear anywhere in the frame, which must show only the head and shoulders. And because a child's passport is always a new application, the back-of-photo regime applies in full: studio details plus the guarantor's 'I certify this to be a true likeness of…' declaration and signature on one photo."
+            ]
+          },
+          "sources": [
+            {
+              "name": "Government of Canada (IRCC) — Passport photo requirements",
+              "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/canadian-passports/photos.html",
+              "grade": "A"
+            }
+          ]
+        },
+        {
+          "id": "online-renewal-digital-photo",
+          "confidence": "high",
+          "ko": {
+            "title": "온라인 갱신용 디지털 사진 — 스캔본 불가, 사진관 정보는 업로드 폼에 입력",
+            "geoAnswer": "캐나다 여권 온라인 갱신에는 디지털 사진 1장이 필요한데, 이 역시 신청 전 6개월 이내에 상업 사진관에서 대면 촬영한 것이어야 하며 인쇄된 사진을 스캔한 파일은 접수되지 않는다.",
+            "body": [
+              "디지털 사진이 필요한 경우는 온라인 갱신 하나뿐이다 — 신규 발급이나 우편·방문 갱신은 여전히 인화 사진 2장을 쓴다. 온라인 갱신용 파일은 JPEG/JPG 형식으로, 카메라가 촬영한 원본 파일에서 바로 저장된 것이어야 하고, 종이 사진을 스캔본은 명시적으로 거부되며, 카메라 원본 직저장 요건상 재촬영본도 배제된다. 이 점은 같은 캐나다라도 PR카드 온라인 신청(전문 인화 사진의 스캔본 허용)과 정반대라서 혼동이 잦다.",
+              "디지털 규격은 인쇄 사진과 별도로 정해져 있으며, 핵심 비율 기준은 턱 끝~정수리가 사진 세로 높이의 45~50%를 차지해야 한다는 것이다. 편집 금지 원칙은 종이 사진과 동일하게 적용된다 — AI 도구·필터·밝기 보정 모두 반려 사유다.",
+              "종이 신청의 '뒷면 기재'는 온라인에서 입력 항목으로 대체된다: 사진 업로드 시 사진관(또는 사진사) 상호, 주소, 촬영일을 함께 제출해야 한다. IRCC는 촬영 시 디지털 파일과 인화본을 모두 받아 두라고 공식 권고한다 — 온라인 갱신이 불가능한 상황으로 판명되면 같은 사진으로 우편·방문 신청에 전환하기 위해서다."
+            ]
+          },
+          "en": {
+            "title": "Digital Photos for Online Renewal: No Scans Allowed, Studio Details Move Into the Upload Form",
+            "geoAnswer": "Renewing a Canadian passport online requires one digital photo, which must still be taken in person by a commercial photographer no more than 6 months before you apply — a scan of a printed photo is not accepted.",
+            "body": [
+              "Only online renewal uses a digital photo; new applications and in-person or mail renewals still require two printed photos. The file must be a .jpeg/.jpg saved directly from the original file captured by the camera — scanning or re-photographing a paper print is explicitly refused. Confusingly, this is the opposite of Canada's own PR card online application, which does accept scans of professionally printed photos, so applicants juggling both documents often get it backwards.",
+              "The digital specifications are defined separately from the printed-photo specs. The key proportion rule: the chin-to-crown measurement must occupy between 45% and 50% of the photo's height. The zero-alteration policy carries over unchanged — AI tools, filters and even brightness corrections make the photo invalid.",
+              "The paper route's back-of-photo details become form fields online: when uploading, you must enter the studio or photographer's name, their address, and the date the photo was taken. IRCC also officially recommends asking the photographer for both a digital copy and printed copies at the same sitting, so you can fall back to a mail or in-person application if online renewal turns out not to be an option for you."
+            ]
+          },
+          "sources": [
+            {
+              "name": "Government of Canada (IRCC) — Passport photo requirements (Online renewals section)",
+              "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/canadian-passports/photos.html",
+              "grade": "A"
+            },
+            {
+              "name": "Government of Canada (IRCC) — Permanent resident photos",
+              "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/permanent-residents/card/photos.html",
+              "grade": "A"
+            }
+          ]
+        }
+      ],
+      "verifiedAt": "2026-07-17",
+      "pipeline": "specs-unique-pilot"
+    }
   },
   "ca-visa": {
     "slug": "ca-visa",
@@ -8008,7 +8554,183 @@
     "backgroundEs": "Blanco",
     "headHeightEs": "3.6~4.0cm",
     "validityEs": "Debe ser una foto reciente; el portal oficial no especifica un límite de meses",
-    "fileSpecEs": "Formato JPG o JPEG, tamaño de archivo menor a 2MB"
+    "fileSpecEs": "Formato JPG o JPEG, tamaño de archivo menor a 2MB",
+    "uniqueContent": {
+      "sections": [
+        {
+          "id": "evisa-digital-upload-spec",
+          "confidence": "high",
+          "ko": {
+            "title": "e-Visa 사진 업로드 — 공식 포털이 요구하는 실제 스펙",
+            "geoAnswer": "베트남 e-Visa 사진은 4×6cm(40×60mm) 세로 규격의 최근 촬영본이어야 하며, JPG 또는 JPEG 형식·2MB 미만 파일로 공식 포털(evisa.gov.vn)에 업로드해야 한다.",
+            "body": [
+              "베트남 출입국관리국이 운영하는 공식 전자비자 포털(evisa.gov.vn)의 신청 화면은 사진 요건을 문구 그대로 명시한다 — \"새로 촬영, 4×6cm, jpg·jpeg 형식, 2MB 미만, 정면 응시, 모자 금지, 안경 금지, 격식 있는 복장, 흰색 배경\".사진의 출처(직접 촬영이든 인화본 스캔이든)는 규정에 명시돼 있지 않다 — 심사 기준은 업로드된 최종 파일이 위 조건을 전부 만족하는지다.",
+              "같은 포털 안에서도 단계에 따라 용량 안내가 다르게 표시된다는 점은 주의할 만하다. 신청서의 사진 항목 라벨에는 \"파일 크기 ≤10MB\"로, 업로드 안내문에는 \"2MB 미만\"으로 적혀 있다. 어느 기준이 적용되든 통과하려면 2MB 미만으로 준비하는 것이 안전하다.",
+              "얼굴 사진 외에 여권 인적사항 면 이미지도 필수 업로드 대상이다. 공식 안내는 \"인적사항 면 1페이지만 업로드, 선명하게, 모서리 잘림 없이\"라고 명시한다. 비스듬히 촬영했거나 일부가 잘린 여권 스캔본은 사진 규격 위반과 함께 공식 안내문이 명시적으로 경고하는 항목이다."
+            ]
+          },
+          "en": {
+            "title": "e-Visa Photo Upload: What the Official Portal Actually Requires",
+            "geoAnswer": "A Vietnam e-visa photo must be a recently taken 4×6cm (40×60mm) portrait, uploaded to the official portal (evisa.gov.vn) as a JPG or JPEG file under 2MB.",
+            "body": [
+              "The application screen on Vietnam's official e-visa portal, run by the Immigration Department, spells the requirement out verbatim: \"newly taken, photo size 4x6 cm, jpg, jpeg format, size <2MB, straight face, no hat, no glasses, formal clothes, white background.The rules are silent on how the file is produced — what matters is that the final upload meets every condition above.",
+              "One quirk worth knowing: the portal itself displays two different size limits. The application form's photo field is labeled \"file size ≤ 10 MB,\" while the upload guidance note says \"less than 2MB.\" Whichever limit the validator enforces, a file under 2MB passes both — so prepare for 2MB.",
+              "The e-visa also requires an image of your passport's data page. The official note is specific: upload exactly one data page, keep it sharp, and make sure no corners are cut off. Slanted or partially cropped passport scans rank alongside photo-spec violations as exactly what the official note warns against."
+            ]
+          },
+          "sources": [
+            {
+              "name": "Vietnam National Electronic Visa Portal (evisa.gov.vn)",
+              "url": "https://evisa.gov.vn/",
+              "grade": "A"
+            }
+          ]
+        },
+        {
+          "id": "non-icao-40x60-size",
+          "confidence": "high",
+          "ko": {
+            "title": "40×60mm — 국제 관행보다 큰 베트남 국가 표준 규격",
+            "geoAnswer": "베트남 비자 사진의 4×6cm(40×60mm)는 다수 국가가 쓰는 35×45mm보다 큰 베트남 국가 표준 규격으로, 가로세로 비율부터 2:3으로 달라 기존 여권 사진을 잘라 재사용할 수 없다.",
+            "body": [
+              "40×60mm는 베트남이 자국 여권 사진에도 쓰는 국가 표준이다. 베트남 공안부 공공서비스 포털이 여권용 4×6 사진 기준(흰색 배경, 안경 금지, 최소 300dpi)을 별도 안내 페이지로 게시할 만큼 행정 전반의 기본 규격으로 자리잡고 있다. 반면 국제적으로 흔한 여권·비자 사진은 35×45mm(비율 7:9)여서, 35×45 사진을 확대·크롭해 2:3 비율의 40×60을 만들면 비율이 어긋나거나 해상도가 부족해진다.",
+              "혼동 포인트 하나 — 베트남 국내용 소형 규격.현지에서는 2×3·3×4cm 등 국내용 소형 규격이 각종 행정서류에 두루 통용되므로, 현지 사진관에서 규격을 특정하지 않으면 다른 크기를 받을 수 있다 — 비자용은 반드시 '4×6'으로 지정해야 한다. 비자용은 반드시 \"4×6\"으로 지정해야 한다.",
+              "혼동 포인트 둘 — 해외 안내 사이트. 일부 상용 안내는 베트남 비자 사진을 35×45mm로 표기하지만, 공식 e-Visa 포털과 비자 신청서(NA1) 양식 모두 4×6cm를 명시한다. 300dpi 인쇄 기준으로 환산하면 472×709픽셀이다."
+            ]
+          },
+          "en": {
+            "title": "40×60mm: A National Standard Larger Than the Global Norm",
+            "geoAnswer": "Vietnam's 4×6cm (40×60mm) visa photo is a national standard larger than the 35×45mm used by most countries, and its 2:3 aspect ratio means an existing passport photo cannot simply be cropped to fit.",
+            "body": [
+              "The 40×60mm format is Vietnam's own standard photographic size — the Ministry of Public Security's public-service portal publishes a dedicated 4×6 specification (white background, no glasses, minimum 300dpi) even for Vietnamese passports. Most countries' passport and visa photos measure 35×45mm, a 7:9 ratio; enlarging or cropping one of those into a 2:3 frame either breaks the proportions or starves the resolution.",
+              "Confusion point one: Vietnam's smaller domestic format.Smaller domestic formats such as 2×3 and 3×4 cm circulate widely for local paperwork, so a local studio may hand you the wrong size unless you specify '4×6' for the visa. For a visa, always ask for \"4×6.\"",
+              "Confusion point two: overseas guide sites. Some commercial pages list the Vietnam visa photo as 35×45mm, but both the official e-visa portal and the NA1 application form specify 4×6cm. At 300dpi print resolution, that works out to 472×709 pixels."
+            ]
+          },
+          "sources": [
+            {
+              "name": "Ministry of Public Security e-Services — 4×6 Photo Standard Guidance",
+              "url": "https://dichvucong.bocongan.gov.vn/bocongan/tintuc/chitiet?matin=41",
+              "grade": "A"
+            },
+            {
+              "name": "Vietnam National Electronic Visa Portal (evisa.gov.vn)",
+              "url": "https://evisa.gov.vn/",
+              "grade": "A"
+            },
+            {
+              "name": "TRIPMAP — Vietnamese ID Photo Sizes 2x3/3x4/4x6 in Practice",
+              "url": "https://marketplace.tripmap.vn/articles/huong-dan-lua-chon-kich-thuoc-anh-the-2x3-3x4",
+              "grade": "B"
+            }
+          ]
+        },
+        {
+          "id": "mission-photo-variation",
+          "confidence": "medium",
+          "ko": {
+            "title": "공관 신청은 규격이 다를 수 있다 — 주미 대사관은 2×2인치",
+            "geoAnswer": "베트남 비자를 재외 공관에서 종이로 신청할 때 사진 규격은 공관 소재국의 관행을 따르는 경우가 있으며, 주미 베트남대사관은 4×6cm 대신 2×2인치(51×51mm) 사진을 요구한다.",
+            "body": [
+              "워싱턴 D.C. 주미 베트남대사관의 공식 안내는 여권 원본을 제출하는 스티커 비자에 2×2인치 사진 1매, 여권 사본으로 신청하는 낱장(loose-leaf) 비자에 동일 사진 2매를 요구한다. 미국 사진 부스·인화점의 표준 규격인 2×2인치를 그대로 수용한 사례로, 본국 표준 4×6cm와 다르다.",
+              "반면 공안부령(Circular 04/2015/TT-BCA)에 따른 비자 신청서 NA1 양식(Circular 04/2015/TT-BCA)의 사진란은 4×6cm 기준으로 인쇄되어 있다. 결국 어느 규격이 적용되는지는 신청서 양식이 아니라 접수 공관의 공지가 결정한다. 일부 비자 대행센터·안내 사이트에서 여권 표준(35×45mm) 사진을 안내한다는 사례도 보고되지만 공관별로 다르므로, 방문 전 해당 공관 안내문의 사진 항목을 확인하는 것이 안전하다.",
+              "전자비자(e-Visa)에는 이런 편차가 없다. 창구는 evisa.gov.vn 하나, 규격은 4×6cm 하나다. 신청 채널을 고르는 것이 곧 사진 규격을 고르는 일이 된다."
+            ]
+          },
+          "en": {
+            "title": "Embassy Applications Can Differ: 2×2 Inches in Washington",
+            "geoAnswer": "When you apply for a Vietnam visa on paper at a mission abroad, the photo size may follow local convention rather than the 4×6cm national standard — the Vietnamese Embassy in Washington, D.C., for instance, asks for 2×2 inch (51×51mm) photos.",
+            "body": [
+              "The embassy's official instructions require one 2×2 inch photo if you submit your original passport for a sticker visa, or two identical 2×2 inch photos for a loose-leaf visa issued against a passport copy. That is the standard American photo-booth format, adopted wholesale — not Vietnam's domestic 4×6cm.",
+              "Meanwhile, the NA1 application form itself (issued under Circular No. 04/2015/TT-BCA of the Ministry of Public Security) prints its photo box to the 4×6cm standard. In practice, the deciding document is the receiving mission's notice, not the form. Some visa agencies and guidance sites report that passport-standard 35×45mm prints are accepted at certain posts, but this varies post by post — check the photo line in your specific embassy's checklist before you print.",
+              "The e-visa channel has none of this variance: one portal (evisa.gov.vn), one size (4×6cm). Choosing your application channel effectively chooses your photo spec."
+            ]
+          },
+          "sources": [
+            {
+              "name": "Embassy of Vietnam in the USA — Apply for Visa in Person or by Mail",
+              "url": "https://vietnamembassy-usa.org/page/apply-visa-person-or-mail",
+              "grade": "A"
+            },
+            {
+              "name": "Form NA1 under Circular 04/2015/TT-BCA (government-hosted copy)",
+              "url": "https://files.nettsteder.regjeringen.no/wpuploads01/blogs.dir/313/files/2018/07/visaapplicationformeng-vietnam.pdf",
+              "grade": "A"
+            }
+          ]
+        },
+        {
+          "id": "na1-form-photo-count",
+          "confidence": "high",
+          "ko": {
+            "title": "스티커 비자 1매, 낱장 비자 2매 — NA1 양식의 사진 매수 규칙",
+            "geoAnswer": "베트남 종이 비자 신청서(NA1 양식)는 4×6cm 흰색 배경 사진을 스티커 비자에는 1매, 낱장(loose-leaf) 비자에는 1매를 추가해 총 2매 동봉하도록 규정한다.",
+            "body": [
+              "NA1 양식(공안부 Circular 04/2015/TT-BCA, 2015년 1월 5일 제정)에 인쇄된 주기는 \"최근 촬영한 4×6cm 사진 1매 동봉 — 흰색 배경, 정면 응시, 모자 벗은 상태, 선글라스 금지. 낱장 비자는 사진 1매 추가\"로 명시돼 있다. 여권 원본을 제출하면 스티커 비자(사진 1매), 여권 사본으로 신청하면 낱장 비자(사진 2매)로 갈리는 구조다.",
+              "신청인 여권에 함께 등재된 14세 미만 동반 아동에 대해서는 양식에 아동 전용 사진란이 따로 마련되어 있어, 아동 몫의 4×6cm 사진도 별도로 부착해야 한다. 가족 단위 신청에서 어른 사진만 준비해 오는 것이 대표적인 서류 미비 사례다.",
+              "도착비자(VOA)로 입국하는 경우 실무 안내 기준으로 동일 사진 2매 지참이 일반적이며, 공항에서 유료 즉석 촬영이 가능한 경우가 많다. 다만 이는 공식 고시가 아닌 실무 관행이므로 여유분을 준비하는 편이 안전하다."
+            ]
+          },
+          "en": {
+            "title": "Sticker vs. Loose-Leaf: How Many Photos Form NA1 Really Wants",
+            "geoAnswer": "Vietnam's paper visa application (Form NA1) calls for a 4×6cm white-background photo — one print for a sticker visa, plus one more (two in total) if you request a loose-leaf visa.",
+            "body": [
+              "The note printed on Form NA1 (issued with Circular No. 04/2015/TT-BCA of January 5, 2015) reads: enclose one 4×6cm photo, recently taken with white background, looking ahead, bare head, without sunglasses — and for a loose-leaf visa, enclose one more. Submitting your original passport gets you a sticker visa (one photo); applying with a passport copy produces a loose-leaf visa (two photos).",
+              "Form NA1 also carries separate photo boxes for accompanying children under 14 who are included in the applicant's passport, so each child needs their own 4×6cm photo attached. Families who prepare photos only for the adults are a classic incomplete-file case.",
+              "For visa on arrival, the working guidance is to carry two identical prints; counters at Vietnam's international airports also offer on-the-spot photo service for a fee. This is practice rather than published regulation, so bringing spares is the safe play."
+            ]
+          },
+          "sources": [
+            {
+              "name": "Form NA1 under Circular 04/2015/TT-BCA (government-hosted copy)",
+              "url": "https://files.nettsteder.regjeringen.no/wpuploads01/blogs.dir/313/files/2018/07/visaapplicationformeng-vietnam.pdf",
+              "grade": "A"
+            },
+            {
+              "name": "My Vietnam Visa — Photo Requirements for E-Visa and Visa on Arrival",
+              "url": "https://www.myvietnamvisa.com/vietnam-visa-photo-requirements.html",
+              "grade": "B"
+            }
+          ]
+        },
+        {
+          "id": "vietnam-rejection-points",
+          "confidence": "high",
+          "ko": {
+            "title": "베트남 고유 반려 포인트 — 안경 전면 금지와 '격식 있는 복장'",
+            "geoAnswer": "베트남 e-Visa 사진은 모자·안경 금지에 더해 공식 요건에 '격식 있는 복장(formal clothes)'이 명문화되어 있어 복장만으로도 반려될 수 있다.",
+            "body": [
+              "베트남 e-Visa는 안경을 전면 금지하며, 미국이 2016년 11월부터 같은 정책을 시행하는 등 강경한 축에 속하는 규정이다. 공식 포털 문구는 단순히 \"no glasses\"로, 선글라스만 금지하는 종이 신청서 NA1의 \"without sunglasses\"보다 엄격하다. 온라인 신청이라면 도수 안경도 벗고 촬영해야 한다.",
+              "복장 요건이 규격 자체에 명문화된 점도 특징이다. 포털은 화면에 따라 \"formal clothes\" 또는 \"polite clothes\"로 표기한다. 별도의 정의는 없지만 민소매·오프숄더처럼 어깨가 드러나는 차림이 실질적 위험 요소이며, 칼라 있는 상의가 무난하다. 흰색 배경 규정과 맞물려 흰색·아이보리 상의는 배경과 붙어 보여 자동 심사에 불리할 수 있다는 점은 문서화된 규정이 아닌 실무 권고다.",
+              "머리 요건은 \"no hat\"(모자 금지)·\"bare head\"(맨머리)로 적혀 있고, 공식 문구에는 종교적 두건에 대한 예외가 별도로 명시되어 있지 않다. 예외 인정이 필요한 신청자는 접수 전에 출입국관리국이나 관할 공관에 확인하는 것이 안전하다."
+            ]
+          },
+          "en": {
+            "title": "Vietnam-Specific Rejection Traps: No Glasses, \"Formal Clothes\"",
+            "geoAnswer": "Vietnam's e-visa photo rules ban hats and glasses and write 'formal clothes' into the requirement itself, so clothing alone can sink an application.",
+            "body": [
+              "Vietnam's e-visa bans glasses outright — the same hard line the United States has banned them under since November 2016. The portal's wording is simply \"no glasses\" — stricter than the paper Form NA1, which only says \"without sunglasses.\" For the online channel, take the photo with prescription glasses off.",
+              "The dress code is written into the requirement itself: the portal uses \"formal clothes\" in one string and \"polite clothes\" in another. Neither is defined, but bare shoulders (sleeveless or off-shoulder tops) are the practical risk, and a collared top is the safe choice. Because the background must be white, a white or ivory top can also blend into the backdrop and trip automated checks — a practical caution rather than a written rule.",
+              "Headwear is a flat \"no hat\" / \"bare head,\" and the official wording carries no printed exemption for religious head coverings. Applicants who need one should confirm with the Immigration Department or the receiving mission before applying."
+            ]
+          },
+          "sources": [
+            {
+              "name": "Vietnam National Electronic Visa Portal (evisa.gov.vn)",
+              "url": "https://evisa.gov.vn/",
+              "grade": "A"
+            },
+            {
+              "name": "U.S. Department of State — Visa Photo Requirements (glasses ban comparison)",
+              "url": "https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/photos.html",
+              "grade": "A"
+            }
+          ]
+        }
+      ],
+      "verifiedAt": "2026-07-17",
+      "pipeline": "specs-unique-pilot"
+    }
   },
   "id-passport": {
     "slug": "id-passport",

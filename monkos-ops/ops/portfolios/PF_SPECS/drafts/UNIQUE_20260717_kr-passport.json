@@ -4,7 +4,7 @@
   "pipeline": "specs-unique-kr-pilot v2",
   "runId": "wf_08899f01",
   "date": "2026-07-17",
-  "status": "draft-v1.1 (검증자 fix 5건 반영, 작가님 검수 대기)",
+  "status": "draft-v1.1 (검증자 fix 5건 반영, 작가님 검수 대기) + §3-5 톤 캘리브레이션 반영(2026-07-17)",
   "verifySummary": "claims 18: confirmed 16 / unverified 1(완화 반영) / plausible 1(완화 반영)"
  },
  "uniqueContent": {
@@ -53,7 +53,7 @@
       "외교부 현행 규정은 \"미용·컬러·서클렌즈, 렌즈에 색이 들어간 안경, 선글라스 등은 착용 불가\"라고 명시합니다. 렌즈 착용 여부는 사진 검증 프로그램이 자동으로 걸러내기 어려울 수 있는 항목이라, 온라인 사전 검증을 통과하고도 접수 창구 심사에서 반려되는 대표 사례입니다. 일반 안경은 빛 반사가 없고 테가 눈을 가리지 않으면 허용됩니다.",
       "앞머리도 마찬가지입니다. 규정은 눈을 가리는 것뿐 아니라 \"머리카락으로 눈썹 및 얼굴 윤곽(광대, 볼 등)을 가리는 사진은 제출 불가\"라고 못 박고 있어, 이마부터 턱까지 얼굴 전체 윤곽이 드러나야 합니다. 눈만 보이면 된다고 생각하고 촬영하면 반려될 수 있습니다.",
       "보정 규정은 2022년 10월 개정에서 한층 구체화됐습니다. 사진 편집 프로그램이나 필터로 임의 보정한 사진은 물론 \"AI를 활용한 편집·가공·합성·창조 제작물\"까지 명시적으로 허용되지 않으며, 포토샵으로 배경을 지우거나 흰 배경에 인물을 합성한 사진도 제출할 수 없습니다. 정부24 온라인 신청 화면에도 AI 편집·가공·합성 사진 불가가 별도로 안내됩니다.",
-      "외교부는 온라인 여권 사진 검증 서비스를 제공하지만, \"검증된 사진이라도 실제 대행기관 심사과정에서 여권접수가 반려되거나 여권교부가 거부될 수 있습니다\"라고 안내합니다. 자동 검증은 참고용일 뿐, 최종 판정은 사람의 심사라는 점을 전제로 준비하는 것이 안전합니다."
+      "외교부는 온라인 여권 사진 검증 서비스를 제공하지만, \"검증된 사진이라도 실제 대행기관 심사과정에서 여권접수가 반려되거나 여권교부가 거부될 수 있습니다\"라고 안내합니다. 자동 검증은 참고용일 뿐, 최종 판정은 사람의 심사라는 점을 전제로 준비하는 것이 안전합니다. 이 조항의 취지는 신원을 왜곡하는 변형의 차단입니다. 촬영 현장의 경험칙으로는 심사에서 주로 문제 되는 것도 얼굴 특징이 달라 보일 만큼의 과한 보정이며, 최종 판정은 접수 심사관의 육안 대조로 이뤄집니다."
      ]
     },
     "en": {
@@ -63,7 +63,7 @@
       "The current MOFA rules state that cosmetic, colored, and circle contact lenses, tinted glasses, and sunglasses may not be worn. Lens use is exactly the kind of flaw automated photo checkers struggle to detect, which makes it a classic case of a photo passing online pre-verification and then being rejected at the counter. Regular glasses are permitted as long as there is no glare and the frames do not cover the eyes.",
       "Bangs are the same story. The rules prohibit not only hair over the eyes but any photo where hair covers the eyebrows or the facial contours such as cheekbones — the entire face from forehead to chin must be visible. A photo framed on the assumption that only the eyes need to show can still be refused.",
       "The retouching rules were tightened in the October 2022 revision. Photos altered with editing software or filters are disallowed, and the rules now explicitly extend to AI-based edits, composites, and generated images. Photos with the background erased in Photoshop or the subject pasted onto a white background are also rejected, and Korea's Government24 online application repeats the AI-editing ban on its upload screen.",
-      "MOFA offers an online photo pre-verification service, but it warns that even a photo that passes verification can still be rejected during review at the application office. Treat the automated check as a reference, not a guarantee — the final call is made by a human examiner."
+      "MOFA offers an online photo pre-verification service, but it warns that even a photo that passes verification can still be rejected during review at the application office. Treat the automated check as a reference, not a guarantee — the final call is made by a human examiner. The intent of the rule is to block edits that distort identity; in practice, what draws rejections is retouching heavy enough to change how the face reads, with the final call made by the examiner comparing the photo against you in person."
      ]
     },
     "sources": [
