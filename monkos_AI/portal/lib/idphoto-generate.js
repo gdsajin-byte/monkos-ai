@@ -115,7 +115,8 @@ function buildPromptV5(body, model) {
     'm-teen':  'This person is a teenage boy (13-18).',
     'm-adult': 'This person is an adult man.',
   };
-  parts.push(`[SUBJECT] ${SUBJECT_MAP[`${gender}-${age}`] || 'This person is an adult.'}`);
+  // 성별 미상 시 단정 금지 — 원본 보존 선언 (2026-07-17 성전환 P0: 'adult man' 선언이 여성 사진을 남성화)
+  parts.push(`[SUBJECT] ${SUBJECT_MAP[`${gender}-${age}`] || "Preserve this person's apparent gender and age exactly as shown in the original photo."}`);
   parts.push('[OUTFIT] Keep current clothing as-is. Only ensure it looks neat and tidy.');
   parts.push('[BACKGROUND] pure white (#FFFFFF) background');
 
@@ -146,7 +147,8 @@ export function buildT1Prompt(attireDesc, opts) {
     'm-teen':  'This person is a teenage boy (13-18).',
     'm-adult': 'This person is an adult man.',
   };
-  const subjectText = SUBJECT_MAP[`${gender}-${age}`] || 'This person is an adult.';
+  // 성별 미상 시 단정 금지 — 원본 보존 선언 (2026-07-17 성전환 P0)
+  const subjectText = SUBJECT_MAP[`${gender}-${age}`] || "Preserve this person's apparent gender and age exactly as shown in the original photo.";
   const identity = (age === 'baby') ? IDENTITY_PRESERVATION_BABY : IDENTITY_PRESERVATION;
   const expression = (age === 'baby')
     ? "[EXPRESSION] Keep the child's natural expression exactly as-is."
@@ -157,7 +159,7 @@ export function buildT1Prompt(attireDesc, opts) {
 [IMAGE-TO-IMAGE TRANSFORM]
 [FORMAT] Official passport/visa photo. White background mandatory.
 [SUBJECT] ${subjectText}
-[OUTFIT] ${attireDesc || 'Replace current clothing with a neat dark navy business suit, white dress shirt, no tie. Clothing should look natural and properly fitted.'}
+[OUTFIT] ${attireDesc || "Replace current clothing with neat, professional dark business attire matching the person's gender presentation in the original photo (e.g., a dark suit with a plain light top, or an equivalent blouse/jacket). Clothing should look natural and properly fitted."}
 [BACKGROUND] pure white (#FFFFFF) background
 ${expression}
 [CONSTRAINT] Keep the person's face and body exactly the same — only apply the specified styling. DO NOT change apparent gender or age.

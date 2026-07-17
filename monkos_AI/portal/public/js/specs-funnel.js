@@ -230,21 +230,32 @@ var SpecsFunnel = (function(){
   var fitResult = null, precheckData = null;
 
   var attirePicker = null;
+  var attirePickerCtx = null; // 마운트 시점의 gender|age — 칩 변경 시 재마운트 (2026-07-17 잠긴 진열대 실사고)
+  function mountAttirePicker(){
+    var attireMount = document.getElementById('v2-attire-mount');
+    if(!attireMount || !CFG.t1 || typeof AttirePicker === 'undefined') return;
+    attireMount.style.display = '';
+    // 성별 미선택 = 'all' — 피커 내부 성별 전환 개방 (구현부 genderLocked 조건 준용)
+    var g = subjectSelection.gender || 'all';
+    var a = subjectSelection.age || 'adult';
+    var key = g + '|' + a;
+    if(attirePicker && attirePickerCtx !== key){
+      try{ attireMount.innerHTML = ''; }catch(e){}
+      attirePicker = null;
+    }
+    if(!attirePicker){
+      attirePicker = AttirePicker.mount(attireMount, {
+        service: 'idpass', gender: g, age: a,
+        lang: document.documentElement.lang || 'ko',
+        upload: false, warnLightTop: true
+      });
+      attirePickerCtx = key;
+    }
+  }
   function proceedToPay(){
     document.getElementById('v2-preview-img').src = uploadedBase64;
     if(hasUsableToken()) return doGenerate();
-    var attireMount = document.getElementById('v2-attire-mount');
-    if(attireMount && CFG.t1 && typeof AttirePicker !== 'undefined'){
-      attireMount.style.display = '';
-      if(!attirePicker){
-        attirePicker = AttirePicker.mount(attireMount, {
-          service: 'idpass', gender: subjectSelection.gender || 'm',
-          age: subjectSelection.age || 'adult',
-          lang: document.documentElement.lang || 'ko',
-          upload: false, warnLightTop: true
-        });
-      }
-    }
+    mountAttirePicker();
     syncSubjectChips('pay');
     showPhase(phasePay);
   }
@@ -751,6 +762,8 @@ var SpecsFunnel = (function(){
       if(field === 'age') subjectSelection.age = val;
       else if(field === 'gender') subjectSelection.gender = val;
       syncSubjectChips();
+      // 결제 화면에서 성별·연령 변경 시 의상 카탈로그 즉시 갱신 (재마운트)
+      if(attirePicker) mountAttirePicker();
     });
   });
 
@@ -965,7 +978,8 @@ var SpecsFunnel = (function(){
       if(window.__genStageTimer) clearInterval(window.__genStageTimer);
       setGenMessage(T.genStillWorking2 || GEN_TEXT_DEFAULT, GEN_SUB_DEFAULT);
     }, 35000);
-    var body = { image: uploadedBase64, format: CFG.format, gender: subjectSelection.gender || 'm', age: subjectSelection.age || 'adult', slug: CFG.slug };
+    // 성별 미선택 시 빈 값 전송 — 서버 프롬프트가 "원본 보존" 선언으로 처리 (2026-07-17 성전환 실사고 P0)
+    var body = { image: uploadedBase64, format: CFG.format, gender: subjectSelection.gender || '', age: subjectSelection.age || 'adult', slug: CFG.slug };
     if(fitResult && fitResult.frame){ body.fitFrame = fitResult.frame; body.fitMeta = fitResult.meta; body.fitMetrics = fitResult.metrics; }
     if(pay.token) body.paymentToken = pay.token;
     if(CFG.t1 && attirePicker){ var asel = attirePicker.getSelection(); if(asel.attire_desc) body.attireDesc = asel.attire_desc; if(asel.attireTie) body.attireTie = asel.attireTie; }
