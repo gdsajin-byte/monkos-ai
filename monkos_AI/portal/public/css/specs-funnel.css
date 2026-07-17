@@ -33,9 +33,9 @@ a:hover { color: #5a3de6; }
 }
 .v2-card-specs { order: 1; display: flex; flex-direction: column; }
 /* 도해 카드 = 도해 자체 — 패딩 0 풀블리드로 박스 속 박스감 제거 (2026-07-11 작가님 v5) */
-.v2-card-diagram { order: 2; padding: 0; overflow: hidden; display: flex; align-items: stretch; justify-content: center; }
+.v2-card-diagram { order: 2; padding: 0; overflow: hidden; display: flex; align-items: flex-start; justify-content: center; align-self: flex-start; }
 .v2-diagram-img {
-  width: 100%; height: 100%; aspect-ratio: 1/1; display: block; object-fit: cover;
+  width: 100%; aspect-ratio: 1/1; display: block; object-fit: cover;
 }
 /* 수치 박스 탭 — 규격 | 상세 규정 | 반려 사유 */
 .v2-tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
@@ -436,7 +436,9 @@ a:hover { color: #5a3de6; }
 .ip-free-photo { border-radius:18px; overflow:hidden; background:#fff; border:1px solid #e2dfec; box-shadow:0 6px 16px -12px rgba(23,21,31,.18); max-width:280px; margin:0 auto; }
 /* max-width/height 명시 초기화 — 상위 .v2-pay-preview img { max-width:200px }가 이미지만 눌러
    컨테이너(280px)와 폭이 어긋나 우측 공백이 생기던 실사고 (2026-07-11 작가님 3차 보고로 특정) */
-.ip-free-photo img { display:block; width:100%; max-width:100%; max-height:none; aspect-ratio:35/45; object-fit:cover; }
+/* 비율 하드코딩 금지 — 산출물이 이미 규격 치수(frameW×frameH)라 자연 비율이 곧 규격.
+   aspect-ratio:35/45 고정이 정사각 규격(미국 2×2 등)을 세로로 잘라 보이던 실사고 (2026-07-17 작가님 실측) */
+.ip-free-photo img { display:block; width:100%; max-width:100%; max-height:none; height:auto; }
 .ip-free-spec { text-align:center; font-size:11.5px; color:#5d5a6b; margin-top:8px; font-family:monospace; }
 .ip-free-btnrow { display:flex; gap:10px; margin-top:12px; }
 .ip-btn { display:flex; align-items:center; justify-content:center; height:52px; border-radius:14px; font-size:16px; font-weight:800; border:none; cursor:pointer; text-decoration:none; box-sizing:border-box; font-family:inherit; }
