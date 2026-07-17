@@ -22,7 +22,7 @@ var SpecsFunnel = (function(){
   var payBusy = false;
   var pollTimer = null;
   // 결제 상태: token = generate용 paymentToken, remaining = 남은 재생성(null=미확정), consumed = 다운로드로 최종 소모됨
-  var pay = { orderId: null, token: null, remaining: null, consumed: false };
+  var pay = { orderId: null, token: null, remaining: null, consumed: false, expiresAt: null };
   // 피사체 + 의상 선택 상태
   var subjectSelection = { age: 'adult', gender: null };
   // attireSelection은 sessionStorage 복원 호환용으로 존치 (persistOrder/restoreOrder)
@@ -89,16 +89,28 @@ var SpecsFunnel = (function(){
   function showError(msg){ errorMsg.textContent = msg; errorMsg.classList.add('show'); }
   function hideError(){ errorMsg.classList.remove('show'); }
   function returnBase(){ return location.origin + location.pathname; }
-  function hasUsableToken(){ return !!(pay.token && !pay.consumed && (pay.remaining === null || pay.remaining > 0)); }
+  function hasUsableToken(){
+    if(!pay.token || pay.consumed) return false;
+    if(pay.expiresAt && Date.now() > pay.expiresAt){
+      pay.token = null; pay.remaining = null; pay.expiresAt = null;
+      return false;
+    }
+    return pay.remaining === null || pay.remaining > 0;
+  }
 
   /* ─── 리다이렉트 생존 저장소 (sessionStorage) ─── */
   function persistOrder(){
-    try{ sessionStorage.setItem(ORDER_KEY, JSON.stringify({ orderId: pay.orderId, token: pay.token, remaining: pay.remaining, slug: CFG.slug, ts: Date.now(), attire: attireSelection, subject: subjectSelection })); }catch(e){}
+    try{ sessionStorage.setItem(ORDER_KEY, JSON.stringify({ orderId: pay.orderId, token: pay.token, remaining: pay.remaining, expiresAt: pay.expiresAt, slug: CFG.slug, ts: Date.now(), attire: attireSelection, subject: subjectSelection })); }catch(e){}
   }
   function loadOrder(){
     try{
       var d = JSON.parse(sessionStorage.getItem(ORDER_KEY) || 'null');
-      return (d && d.slug === CFG.slug) ? d : null;
+      if(!d || d.slug !== CFG.slug) return null;
+      if(d.expiresAt && Date.now() > d.expiresAt){
+        sessionStorage.removeItem(ORDER_KEY);
+        return null;
+      }
+      return d;
     }catch(e){ return null; }
   }
   function clearStored(){
@@ -127,14 +139,24 @@ var SpecsFunnel = (function(){
   function persistImage(cb){
     if(!uploadedBase64) return cb();
     compressImage(uploadedBase64, function(small){
-      try{ sessionStorage.setItem(IMG_KEY, small || uploadedBase64); }catch(e){
-        // 저장 실패(HEIC 디코드 불가 + 쿼터 초과 등) — 결제는 진행하고 복귀 시 재업로드 안내(imgLost)
+      try{ sessionStorage.setItem(IMG_KEY, JSON.stringify({ slug: CFG.slug, data: small || uploadedBase64 })); }catch(e){
         try{ sessionStorage.removeItem(IMG_KEY); }catch(e2){}
       }
       cb();
     });
   }
-  function loadImage(){ try{ return sessionStorage.getItem(IMG_KEY); }catch(e){ return null; } }
+  function loadImage(){
+    try{
+      var raw = sessionStorage.getItem(IMG_KEY);
+      if(!raw) return null;
+      try{
+        var obj = JSON.parse(raw);
+        if(typeof obj === 'object' && obj !== null && obj.slug === CFG.slug) return obj.data;
+        if(typeof obj === 'string') return obj;
+        return null;
+      }catch(e){ return raw; }
+    }catch(e){ return null; }
+  }
 
   /* ─── Upload handlers ─── */
   dropzone.querySelector('.v2-upload-btn').addEventListener('click', function(e){ e.stopPropagation(); fileInput.click(); });
@@ -766,7 +788,7 @@ var SpecsFunnel = (function(){
         return;
       }
       var d = res.d;
-      pay.orderId = d.orderId; pay.token = null; pay.remaining = null; pay.consumed = false;
+      pay.orderId = d.orderId; pay.token = null; pay.remaining = null; pay.consumed = false; pay.expiresAt = null;
       // orderId 확보 후 주문 단위 1회 발화 — 에러 후 재클릭 중복 방지 + purchase와 쌍 정합
       gaTrackOrder('begin_checkout', d.orderId, { payment_provider: GA_PAY.payment_provider, currency: GA_PAY.currency, value: GA_PAY.value, transport_type: 'beacon' });
       persistOrder();
@@ -860,6 +882,7 @@ var SpecsFunnel = (function(){
         if(d.status === 'paid' && d.paymentToken){
           stopPolling(); payBusy = false;
           pay.orderId = orderId; pay.token = d.paymentToken; pay.remaining = null; pay.consumed = false;
+          pay.expiresAt = d.tokenExpiresAt || (Date.now() + 86400000);
           persistOrder();
           gaTrackPurchase(orderId);
           if(uploadedBase64) doGenerate(); else needReupload();
@@ -983,7 +1006,8 @@ var SpecsFunnel = (function(){
           : code === 'GENERATE_FAILED' ? T.errGen
           : (data.error || T.errGen);
         if(code === 'TOKEN_EXPIRED' || code === 'TOKEN_USED' || code === 'INVALID_TOKEN'){
-          pay.token = null; pay.remaining = null; clearStored();
+          pay.token = null; pay.remaining = null; pay.expiresAt = null;
+          sessionStorage.removeItem(ORDER_KEY);
         } else if(code === 'GENERATE_LIMIT'){
           pay.remaining = 0; persistOrder();
         }
@@ -1072,6 +1096,7 @@ var SpecsFunnel = (function(){
       pay.orderId = saved.orderId;
       pay.token = saved.token || null;
       pay.remaining = (typeof saved.remaining === 'number') ? saved.remaining : null;
+      pay.expiresAt = saved.expiresAt || null;
       if(saved.attire) Object.assign(attireSelection, saved.attire);
       if(saved.subject) Object.assign(subjectSelection, saved.subject);
     }
@@ -1087,6 +1112,7 @@ var SpecsFunnel = (function(){
       .then(function(res){
         if(res.ok && res.d && res.d.paymentToken){
           pay.orderId = oid; pay.token = res.d.paymentToken; pay.consumed = false;
+          pay.expiresAt = res.d.tokenExpiresAt || (Date.now() + 86400000);
           persistOrder();
           gaTrackPurchase(oid);
           if(uploadedBase64) doGenerate(); else needReupload();
