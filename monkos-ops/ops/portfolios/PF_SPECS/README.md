@@ -459,3 +459,4 @@ SEO 콘텐츠가 있는 문서 → 풀 페이지 (FAQ + 반려사유 + 촬영가
 | 07/18 | iMac/쌍아 | **크롭 엔진 통합 설계 + 5차 지시서 발급 + IDPASS 삼자대조 + 납품 철학 정본화** — IDPASS CropEngine.swift vs 웹 crop.js vs crop-app 전수 분석, 배치 앵커 역전 규명, 작가님 철학 L0~L3 조문화, 25개 프레임 사이즈×faceTarget 산식 전수 추출, UK 공식 규정 실측(crown=skull), 설계서 371행, 지시서 5건(통합+보완+3차+4차+5차) | [DESIGN](../../tech/designs/2026-07/DESIGN_20260718_크롭엔진_배치복원_통합설계.md) | ✅ |
 | 07/18 | iMac/쌍아 | **crop-engine min-instances=1 적용** — 콜드스타트 시 FaceMesh가 T0 전체를 감당하고 있었음 발견. InsightFace가 진짜 프로덕션 엔진이 된 첫 날. 월 ₩10,000 | crop-engine rev 00024-smw | ✅ |
 | 07/18 | iMac/쌍아 | **작가님 실측 합격** — VN T1: Head 42.0mm·Eye 42.0%·Crown 4.2mm, DE T0: Head 33.0mm·Eye 43.0%, KZ T0: Eye 43.0%+배경 #D5D5D5 | prod 실측 | ✅ |
+| 07/18 | iMac/막내2 | **6차 T1 재채색 + 블로그 URL 정본화** — T1 비백색국 runMatteChain 재채색(gray T1 전면 개방), 블로그 변형 슬러그(-kr/-en/-ja) 301 리다이렉트 + SEO 키 정정 | portal rev 00508-cv6 · [COMPLETION](../../reports/2026-07/COMPLETION_20260718_iMac막내2_6차_T1재채색_블로그URL.md) | ✅ |

@@ -187,7 +187,7 @@ function alertMatteDown(reason) {
 }
 
 /** matte 체인 공용부 — 크롭 b64 → 엔드포인트 순회 매팅 → 300dpi 스탬프. 실패 시 null(+경보). */
-async function runMatteChain(cropB64, bgColor, slug) {
+export async function runMatteChain(cropB64, bgColor, slug) {
   let lastErr = 'no endpoint';
   for (const url of MATTE_API_URLS) {
     try {

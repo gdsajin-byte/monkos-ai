@@ -407,9 +407,7 @@ function specsDetailV2Fragment(slug, forceLang = null) {
   const prefix = lang === 'ko' ? '' : `/${lang}`;
   const specData = SPECS_DATA[slug];
   if (!specData) return null;
-  const t1RetouchOnEnv = process.env.PILOT_T1_RETOUCH === '1';
-  const grayBg = /^회색$/.test(String(specData.background || '').trim());
-  const t1RetouchOn = t1RetouchOnEnv && !grayBg;
+  const t1RetouchOn = process.env.PILOT_T1_RETOUCH === '1';
 
   const { typeSlug, countrySlug } = parseSlug(slug);
   const newPath = `${typeSlug}/${countrySlug}`;

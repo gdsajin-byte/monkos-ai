@@ -41,7 +41,7 @@ import { handleWebChat, handleCoaching } from './lib/coaching.js';
 import { handleHeadshotGenerate } from './lib/headshot-route.js';
 import { generateIdPhoto, buildT1Prompt } from './lib/idphoto-generate.js';
 import { cropToSpec, warmupCropEngine, getSpecCropParams } from './lib/spec-crop.js';
-import { matteSpecPipeline, matteFitPipeline, matteEnabled, matteSlugAllowed, warmupMatteEngine, stripDataUri, getSpecBgColor, cropMetaWithinSpec } from './lib/matte.js';
+import { matteSpecPipeline, matteFitPipeline, matteEnabled, matteSlugAllowed, warmupMatteEngine, stripDataUri, getSpecBgColor, cropMetaWithinSpec, runMatteChain } from './lib/matte.js';
 import { judgeMetrics, metricsFromFit } from './lib/spec-judge.js';
 import { trackEvent, linkIdentity } from './lib/tracking.js';
 import { saveImages } from './lib/gcs-save.js';
@@ -801,7 +801,17 @@ const httpServer = createServer(async (req, res) => {
             t1RawForSave = t1Result;
             const cropRes = await cropToSpec(t1Result, slug);
             if (cropRes && cropRes.image && cropRes.engine === 'insight' && cropMetaWithinSpec(cropRes.meta)) {
-              finalBase64 = cropRes.image;
+              let t1Image = cropRes.image;
+              const bgColor = getSpecBgColor(slug);
+              if (bgColor !== '#FFFFFF') {
+                try {
+                  const matteResult = await runMatteChain(t1Image, bgColor, slug);
+                  if (matteResult && matteResult.image) t1Image = matteResult.image;
+                } catch (e) {
+                  log(`[IDPhoto] T1 배경 재채색 실패 (${slug}) — 흰배경 유지: ${e.message}`);
+                }
+              }
+              finalBase64 = t1Image;
               cropEngine = cropRes.engine;
               genTrack = 't1-attire';
               resultMeta = cropRes.meta || resultMeta;

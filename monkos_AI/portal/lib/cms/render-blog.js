@@ -253,6 +253,24 @@ export async function blogPostFragment(req, lang = null) {
   }
   if (!slug) return null; // 404 시그널
 
+  // 변형 슬러그(-kr/-en/-ja) 301 리다이렉트
+  const suffixMatch = slug.match(/^(.+)-(kr|en|ja)$/);
+  if (suffixMatch && !lang) {
+    const baseSlug = suffixMatch[1];
+    const suffixLang = suffixMatch[2] === 'kr' ? 'ko' : suffixMatch[2];
+    const baseDocId = `${baseSlug}-kr`;
+    try {
+      let baseDoc = await blogCollection.doc(baseDocId).get();
+      if (!baseDoc.exists) baseDoc = await blogCollection.doc(baseSlug).get();
+      if (baseDoc.exists) {
+        const target = suffixLang === 'ko'
+          ? `/blog/${baseSlug}`
+          : `/${suffixLang}/blog/${baseSlug}`;
+        return { redirect: target };
+      }
+    } catch { /* 폴스루 — 기존 로직으로 */ }
+  }
+
   const isPreview = req.url?.includes('preview=true') && !!getAdminUser(req);
   const docId = lang ? `${slug}-${lang}` : `${slug}-kr`;
   let doc = await blogCollection.doc(docId).get();
@@ -265,8 +283,8 @@ export async function blogPostFragment(req, lang = null) {
   const htmlLang = lang || post.lang || 'ko';
 
   const SEO_TITLE_OVERRIDES = {
-    'vol38-ai-kr': '셀카로 증명사진 찍을 때 꼭 알아야 할 것',
-    'ai-kr': '사진관이 만든 AI 플랫폼, MONKOS의 시작',
+    'vol38-ai': '셀카로 증명사진 찍을 때 꼭 알아야 할 것',
+    'ai': '사진관이 만든 AI 플랫폼, MONKOS의 시작',
   };
   if (SEO_TITLE_OVERRIDES[slug]) {
     post.title = SEO_TITLE_OVERRIDES[slug];
@@ -529,6 +547,10 @@ ${JSON.stringify({
 export async function renderBlogPost(req, res, lang = null) {
   try {
     const parts = await blogPostFragment(req, lang);
+    if (parts && parts.redirect) {
+      res.writeHead(301, { Location: parts.redirect });
+      return res.end();
+    }
     if (!parts) {
       res.writeHead(404, { 'Content-Type': 'text/plain' });
       return res.end('Not Found');
