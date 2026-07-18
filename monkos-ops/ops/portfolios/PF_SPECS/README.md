@@ -460,3 +460,4 @@ SEO 콘텐츠가 있는 문서 → 풀 페이지 (FAQ + 반려사유 + 촬영가
 | 07/18 | iMac/쌍아 | **crop-engine min-instances=1 적용** — 콜드스타트 시 FaceMesh가 T0 전체를 감당하고 있었음 발견. InsightFace가 진짜 프로덕션 엔진이 된 첫 날. 월 ₩10,000 | crop-engine rev 00024-smw | ✅ |
 | 07/18 | iMac/쌍아 | **작가님 실측 합격** — VN T1: Head 42.0mm·Eye 42.0%·Crown 4.2mm, DE T0: Head 33.0mm·Eye 43.0%, KZ T0: Eye 43.0%+배경 #D5D5D5 | prod 실측 | ✅ |
 | 07/18 | iMac/막내2 | **6차 T1 재채색 + 블로그 URL 정본화** — T1 비백색국 runMatteChain 재채색(gray T1 전면 개방), 블로그 변형 슬러그(-kr/-en/-ja) 301 리다이렉트 + SEO 키 정정 | portal rev 00508-cv6 · [COMPLETION](../../reports/2026-07/COMPLETION_20260718_iMac막내2_6차_T1재채색_블로그URL.md) | ✅ |
+| 07/18 | iMac/쌍아 | **세션 마감** — 오늘 총 prod 배포 8회(crop-engine 00023→00025, portal 00503→00508), 지시서 7건, 코드 파일 16개 수정. 배치 복원·폴백 삭제·FaceMesh 제거·데이터 병합·V2 게이트 개방·T1 재채색·블로그 URL 전부 완료. 후속: V1 삭제·창 캘리브레이션·33플로어 조율·블로그 잔여 | — | ✅ |
