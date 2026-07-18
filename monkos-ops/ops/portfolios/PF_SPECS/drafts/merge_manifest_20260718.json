@@ -1,0 +1,386 @@
+{
+ "generated": "2026-07-18 13:52 KST",
+ "hex_map": {
+  "gray": "#D5D5D5 (작가님 확정 13:50)",
+  "light-gray": "#F0F0F0",
+  "blue": "#438EDB",
+  "red": "#FF0000",
+  "de 전용": "#CCCCCC 권고 (독일 밴드 70~80% 상한 — #D5D5D5=84%는 밴드 초과)"
+ },
+ "ops": [
+  {
+   "slug": "ca-passport",
+   "field": "warning",
+   "from": null,
+   "to": "(3언어 warning 객체)",
+   "jsonl": true
+  },
+  {
+   "slug": "sg-passport",
+   "field": "warning",
+   "from": null,
+   "to": "(3언어 warning 객체)",
+   "jsonl": true
+  },
+  {
+   "slug": "id-passport",
+   "field": "warning",
+   "from": null,
+   "to": "(3언어 warning 객체)",
+   "jsonl": true
+  },
+  {
+   "slug": "id-visa",
+   "field": "warning",
+   "from": null,
+   "to": "(3언어 warning 객체)",
+   "jsonl": true
+  },
+  {
+   "slug": "ph-passport",
+   "field": "onsite",
+   "from": null,
+   "to": true,
+   "jsonl": true
+  },
+  {
+   "slug": "ph-passport",
+   "field": "warning",
+   "from": null,
+   "to": "(3언어 warning 객체)",
+   "jsonl": true
+  },
+  {
+   "slug": "kz-passport",
+   "field": "background",
+   "from": "흰색",
+   "to": "회색",
+   "jsonl": "gray"
+  },
+  {
+   "slug": "kz-visa",
+   "field": "background",
+   "from": "흰색",
+   "to": "회색",
+   "jsonl": "gray"
+  },
+  {
+   "slug": "ru-passport",
+   "field": "warning",
+   "from": null,
+   "to": "(3언어 warning 객체)",
+   "jsonl": true
+  },
+  {
+   "slug": "fr-passport",
+   "field": "bgNote",
+   "from": null,
+   "to": {
+    "ko": "흰색 배경 금지",
+    "en": "White background prohibited",
+    "ja": "白背景禁止"
+   },
+   "jsonl": true
+  },
+  {
+   "slug": "fr-passport",
+   "field": "warning",
+   "from": null,
+   "to": "(3언어 warning 객체)",
+   "jsonl": true
+  },
+  {
+   "slug": "de-passport",
+   "field": "warning",
+   "from": null,
+   "to": "(3언어 warning 객체)",
+   "jsonl": true
+  },
+  {
+   "slug": "de-passport",
+   "field": "digitalOnly",
+   "from": null,
+   "to": true,
+   "jsonl": true
+  },
+  {
+   "slug": "ch-passport",
+   "field": "background",
+   "from": "흰색",
+   "to": "회색",
+   "jsonl": "gray"
+  },
+  {
+   "slug": "ch-visa",
+   "field": "background",
+   "from": "흰색",
+   "to": "회색",
+   "jsonl": "gray"
+  },
+  {
+   "slug": "at-passport",
+   "field": "background",
+   "from": "흰색",
+   "to": "회색",
+   "jsonl": "gray"
+  },
+  {
+   "slug": "at-visa",
+   "field": "background",
+   "from": "흰색",
+   "to": "회색",
+   "jsonl": "gray"
+  },
+  {
+   "slug": "dk-passport",
+   "field": "background",
+   "from": "흰색",
+   "to": "회색",
+   "jsonl": "gray"
+  },
+  {
+   "slug": "dk-visa",
+   "field": "background",
+   "from": "흰색",
+   "to": "회색",
+   "jsonl": "gray"
+  },
+  {
+   "slug": "fi-passport",
+   "field": "digitalOnly",
+   "from": null,
+   "to": true,
+   "jsonl": true
+  },
+  {
+   "slug": "gr-passport",
+   "field": "background",
+   "from": "흰색",
+   "to": "회색",
+   "jsonl": "gray"
+  },
+  {
+   "slug": "gr-passport",
+   "field": "bgNote",
+   "from": null,
+   "to": {
+    "ko": "RGB(190,190,190)±10",
+    "en": "RGB(190,190,190)±10",
+    "ja": "RGB(190,190,190)±10"
+   },
+   "jsonl": true
+  },
+  {
+   "slug": "gr-visa",
+   "field": "background",
+   "from": "흰색",
+   "to": "회색",
+   "jsonl": "gray"
+  },
+  {
+   "slug": "gr-visa",
+   "field": "bgNote",
+   "from": null,
+   "to": {
+    "ko": "RGB(190,190,190)±10",
+    "en": "RGB(190,190,190)±10",
+    "ja": "RGB(190,190,190)±10"
+   },
+   "jsonl": true
+  },
+  {
+   "slug": "mx-passport",
+   "field": "onsite",
+   "from": null,
+   "to": true,
+   "jsonl": true
+  },
+  {
+   "slug": "mx-passport",
+   "field": "warning",
+   "from": null,
+   "to": "(3언어 warning 객체)",
+   "jsonl": true
+  },
+  {
+   "slug": "br-passport",
+   "field": "onsite",
+   "from": null,
+   "to": true,
+   "jsonl": true
+  },
+  {
+   "slug": "br-passport",
+   "field": "warning",
+   "from": null,
+   "to": "(3언어 warning 객체)",
+   "jsonl": true
+  },
+  {
+   "slug": "pe-passport",
+   "field": "onsite",
+   "from": null,
+   "to": true,
+   "jsonl": true
+  },
+  {
+   "slug": "pe-passport",
+   "field": "warning",
+   "from": null,
+   "to": "(3언어 warning 객체)",
+   "jsonl": true
+  },
+  {
+   "slug": "jm-passport",
+   "field": "background",
+   "from": "흰색",
+   "to": "다양",
+   "jsonl": "varies"
+  },
+  {
+   "slug": "jm-passport",
+   "field": "bgNote",
+   "from": null,
+   "to": {
+    "ko": "피부색별 분기",
+    "en": "Varies by skin tone",
+    "ja": "肌色により異なる"
+   },
+   "jsonl": true
+  },
+  {
+   "slug": "jm-visa",
+   "field": "background",
+   "from": "흰색",
+   "to": "다양",
+   "jsonl": "varies"
+  },
+  {
+   "slug": "ng-passport",
+   "field": "warning",
+   "from": null,
+   "to": "(3언어 warning 객체)",
+   "jsonl": true
+  }
+ ],
+ "summary": {
+  "bg_fix": [
+   {
+    "slug": "kz-passport",
+    "field": "background",
+    "from": "흰색",
+    "to": "회색",
+    "jsonl": "gray"
+   },
+   {
+    "slug": "kz-visa",
+    "field": "background",
+    "from": "흰색",
+    "to": "회색",
+    "jsonl": "gray"
+   },
+   {
+    "slug": "ch-passport",
+    "field": "background",
+    "from": "흰색",
+    "to": "회색",
+    "jsonl": "gray"
+   },
+   {
+    "slug": "ch-visa",
+    "field": "background",
+    "from": "흰색",
+    "to": "회색",
+    "jsonl": "gray"
+   },
+   {
+    "slug": "at-passport",
+    "field": "background",
+    "from": "흰색",
+    "to": "회색",
+    "jsonl": "gray"
+   },
+   {
+    "slug": "at-visa",
+    "field": "background",
+    "from": "흰색",
+    "to": "회색",
+    "jsonl": "gray"
+   },
+   {
+    "slug": "dk-passport",
+    "field": "background",
+    "from": "흰색",
+    "to": "회색",
+    "jsonl": "gray"
+   },
+   {
+    "slug": "dk-visa",
+    "field": "background",
+    "from": "흰색",
+    "to": "회색",
+    "jsonl": "gray"
+   },
+   {
+    "slug": "gr-passport",
+    "field": "background",
+    "from": "흰색",
+    "to": "회색",
+    "jsonl": "gray"
+   },
+   {
+    "slug": "gr-visa",
+    "field": "background",
+    "from": "흰색",
+    "to": "회색",
+    "jsonl": "gray"
+   },
+   {
+    "slug": "jm-passport",
+    "field": "background",
+    "from": "흰색",
+    "to": "다양",
+    "jsonl": "varies"
+   },
+   {
+    "slug": "jm-visa",
+    "field": "background",
+    "from": "흰색",
+    "to": "다양",
+    "jsonl": "varies"
+   }
+  ],
+  "onsite_add": [
+   "ph-passport",
+   "mx-passport",
+   "br-passport",
+   "pe-passport"
+  ],
+  "warning_add": [
+   "ca-passport",
+   "sg-passport",
+   "id-passport",
+   "id-visa",
+   "ph-passport",
+   "ru-passport",
+   "fr-passport",
+   "de-passport",
+   "mx-passport",
+   "br-passport",
+   "pe-passport",
+   "ng-passport"
+  ],
+  "digitalOnly_add": [
+   "de-passport",
+   "fi-passport"
+  ],
+  "bgNote_add": [
+   "fr-passport",
+   "gr-passport",
+   "gr-visa",
+   "jm-passport"
+  ],
+  "jsonl_docs_not_in_web": [],
+  "web_only_slug_count": 108
+ }
+}
