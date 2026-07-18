@@ -373,9 +373,10 @@ function isEngineCompatibleSpec(specData) {
   // 정사각(1:1)까지 허용 — 규격 안착 크롭 파이프라인(crop-engine v2)이 비율을 보장 (2026-07-06 게이트 완화).
   // 종전 h/w ≥ 1.15는 크롭 부재 시절의 보수 게이트 (07-04 감사 P0). 가로형(h<w)만 계속 제외.
   if (!w || !h || h / w < 1.0) return false;
-  // 유색 배경은 잔존 제외 — 생성 엔진이 순백 고정 (배경 재채색 미구현)
+  // 유색(파랑·빨강)만 제외 — matte 파이프라인이 배경색 합성 처리. 회색·흰색 등 허용
   const bg = String(specData.background || '').trim();
-  return bg.startsWith('흰') || /^white/i.test(bg);
+  if (/파란|빨간|blue|red/i.test(bg)) return false;
+  return true;
 }
 
 // 렌더 분기: 파일럿(kr-passport)은 en/ja 포함 기존 동작 보존, 그 외는 ko 언어 한정 +
@@ -403,10 +404,12 @@ function specsDetailV2Fragment(slug, forceLang = null) {
   // 서버 리터칭 게이트(server.js isT1Path)와 정합 — 리터칭이 실행되지 않는 슬러그에 활성 카드 노출 금지
   // (2026-07-11 T0 전면 개방 때 env-only 분기가 전 페이지로 새던 것을 작가님 실캡처로 적발)
   // 2026-07-13 작가님 승인: T1 전 슬러그 개방 (kr-passport 파일럿 졸업) — 서버 게이트와 동시 개방
-  const t1RetouchOn = process.env.PILOT_T1_RETOUCH === '1';
   const prefix = lang === 'ko' ? '' : `/${lang}`;
   const specData = SPECS_DATA[slug];
   if (!specData) return null;
+  const t1RetouchOnEnv = process.env.PILOT_T1_RETOUCH === '1';
+  const grayBg = /회색|gray|グレー|gris/i.test(String(specData.background || ''));
+  const t1RetouchOn = t1RetouchOnEnv && !grayBg;
 
   const { typeSlug, countrySlug } = parseSlug(slug);
   const newPath = `${typeSlug}/${countrySlug}`;
