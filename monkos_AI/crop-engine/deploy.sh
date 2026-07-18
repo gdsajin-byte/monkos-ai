@@ -20,7 +20,7 @@ gcloud run deploy $SERVICE_NAME \
   --platform managed \
   --memory 1Gi \
   --cpu 1 \
-  --min-instances 0 \
+  --min-instances 1 \
   --max-instances 3 \
   --timeout 60 \
   --allow-unauthenticated
