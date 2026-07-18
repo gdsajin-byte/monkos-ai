@@ -757,7 +757,19 @@ const httpServer = createServer(async (req, res) => {
             if (specP && !blocked) matteRes = await matteFitPipeline(norm.b64, slug, body.fitFrame, body.fitMeta || null, specP.frameW, specP.frameH);
           }
           if (!matteRes) matteRes = await matteSpecPipeline(norm.b64, slug);
-          if (matteRes) {
+          if (matteRes && matteRes.failed === 'FACE_NOT_DETECTED') {
+            fireRefundGate();
+            const FACE_FAIL_MSG = {
+              ko: '얼굴을 찾을 수 없습니다. 얼굴이 잘 보이는 다른 사진으로 다시 시도해 주세요.',
+              en: 'Could not detect a face. Please try again with a clearer photo.',
+              ja: '顔を検出できませんでした。顔がはっきり写っている別の写真でもう一度お試しください。',
+              es: 'No se pudo detectar un rostro. Inténtelo con otra foto más clara.',
+            };
+            const lang = body.lang || 'ko';
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            return res.end(JSON.stringify({ error: FACE_FAIL_MSG[lang] || FACE_FAIL_MSG.ko, code: 'FACE_NOT_DETECTED' }));
+          }
+          if (matteRes && matteRes.image) {
             finalBase64 = matteRes.image;
             cropEngine = matteRes.cropEngine;
             genTrack = 'birefnet';

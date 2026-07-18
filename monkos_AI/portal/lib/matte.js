@@ -310,8 +310,8 @@ export async function matteSpecPipeline(originalB64, slug) {
   for (let attempt = 1; attempt <= 2; attempt++) {
     cropRes = await cropToSpec(pureB64, slug);
     if (!cropRes.cropped || cropRes.engine !== 'insight') {
-      log(`[Matte] ${slug}: 원본 감지 미안착(engine=${cropRes.engine}) → Gemini 폴백`, 'WARNING');
-      return null;
+      log(`[Matte] ${slug}: 원본 감지 미안착(engine=${cropRes.engine}, error=${cropRes.error})`, 'WARNING');
+      return cropRes.error === 'FACE_NOT_DETECTED' ? { failed: 'FACE_NOT_DETECTED' } : null;
     }
     if (cropMetaWithinSpec(cropRes.meta)) break;
     if (attempt === 1) {

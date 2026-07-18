@@ -365,7 +365,15 @@ var SpecsFunnel = (function(){
           return;
         }
         // 서버 에러 문자열은 ko 고정 — code 기반 로컬라이즈 우선 (2026-07-16 작가님 es 실측)
-        showError(code === 'FREE_UNAVAILABLE' ? T.freeBusyMsg : code === 'GENERATE_FAILED' ? T.freeGenFail : ((res.d && res.d.error) || '' + T.freeGenFail + ''));
+        showError(code === 'FREE_UNAVAILABLE' ? T.freeBusyMsg : code === 'GENERATE_FAILED' ? T.freeGenFail : code === 'FACE_NOT_DETECTED' ? (res.d.error || T.freeGenFail) : ((res.d && res.d.error) || '' + T.freeGenFail + ''));
+        st.textContent = '';
+        fs.textContent = '';
+        fa.style.display = 'flex';
+        return;
+      }
+      if(res.d && res.d.code === 'FACE_NOT_DETECTED'){
+        freeBusy = false;
+        showError(res.d.error || T.freeGenFail);
         st.textContent = '';
         fs.textContent = '';
         fa.style.display = 'flex';
@@ -1018,6 +1026,7 @@ var SpecsFunnel = (function(){
           : code === 'GENERATE_LIMIT' ? T.genLimit
           : code === 'RATE_LIMITED' ? T.rateLimited
           : code === 'T1_GENERATE_FAILED' ? (data.error || T.errGen)
+          : code === 'FACE_NOT_DETECTED' ? (data.error || T.errGen)
           : code === 'GENERATE_FAILED' ? T.errGen
           : (data.error || T.errGen);
         if(code === 'TOKEN_EXPIRED' || code === 'TOKEN_USED' || code === 'INVALID_TOKEN'){
