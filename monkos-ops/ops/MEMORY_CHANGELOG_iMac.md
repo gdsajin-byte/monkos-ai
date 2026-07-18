@@ -506,3 +506,6 @@
 ## 2026-07-16 (쌍아)
 - 신설: `feedback_no_session_close_suggestion.md` — 에이전트가 세션 마감·정산 먼저 제안 금지 (작가님 여러 차례 주의)
 - 갱신: `project_specs_v2_url_structure.md` — 구식 "V2=1-segment" → 현행 "전 슬러그 2-segment `/specs/passport/kr` 통일" 교정. GSC 36.2% 구 형식 잔존 현황 추가
+
+## 2026-07-18 (민아)
+- 신규: `project_idphoto_delivery_philosophy.md` — 작가님 증명사진 납품 철학(규정 제1원칙·안전마진·하한 편향·명시 앵커±1·인간 게이트의 코드 대체). MEMORY.md 인덱스 1행 추가.
