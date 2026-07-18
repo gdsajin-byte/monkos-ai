@@ -258,10 +258,16 @@ export async function blogPostFragment(req, lang = null) {
   if (suffixMatch && !lang) {
     const baseSlug = suffixMatch[1];
     const suffixLang = suffixMatch[2] === 'kr' ? 'ko' : suffixMatch[2];
-    const baseDocId = `${baseSlug}-kr`;
+    // 접미 언어의 실레코드 존재 확인 후 리다이렉트 — en/ja는 해당 언어 문서(-en/-ja),
+    // ko는 -kr 키(레거시) 또는 원형 키. EN 전용 포스트의 /blog/{slug}-en 잔존문 봉합 (2026-07-18 7차)
     try {
-      let baseDoc = await blogCollection.doc(baseDocId).get();
-      if (!baseDoc.exists) baseDoc = await blogCollection.doc(baseSlug).get();
+      let baseDoc;
+      if (suffixLang === 'ko') {
+        baseDoc = await blogCollection.doc(`${baseSlug}-kr`).get();
+        if (!baseDoc.exists) baseDoc = await blogCollection.doc(baseSlug).get();
+      } else {
+        baseDoc = await blogCollection.doc(`${baseSlug}-${suffixMatch[2]}`).get();
+      }
       if (baseDoc.exists) {
         const target = suffixLang === 'ko'
           ? `/blog/${baseSlug}`

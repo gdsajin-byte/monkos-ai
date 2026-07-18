@@ -802,6 +802,8 @@ const httpServer = createServer(async (req, res) => {
             const cropRes = await cropToSpec(t1Result, slug);
             if (cropRes && cropRes.image && cropRes.engine === 'insight' && cropMetaWithinSpec(cropRes.meta)) {
               let t1Image = cropRes.image;
+              // 비백색국 T1 재채색 (나노 백색 산출 → matte 배경 합성). 재채색 실패 시 백색 잠정 출고
+              // = 작가님 승인 폴백 (2026-07-18 "일단 열자" 결정 상태로 회귀 — 무승인 폴백 아님)
               const bgColor = getSpecBgColor(slug);
               if (bgColor !== '#FFFFFF') {
                 try {
