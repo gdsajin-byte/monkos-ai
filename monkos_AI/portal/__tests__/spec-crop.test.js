@@ -54,16 +54,11 @@ describe('규격 파라미터 파서', () => {
 });
 
 describe('cropToSpec 폴백 (엔진 URL 부재)', () => {
-  test('로컬 커버 크롭 → 규격 프레임 크기 보장', async () => {
-    const src = await sharp({
-      create: { width: 300, height: 400, channels: 3, background: { r: 200, g: 200, b: 200 } },
-    }).png().toBuffer();
-    const out = await cropToSpec(src.toString('base64'), 'kr-passport');
-    expect(out.cropped).toBe(true);
-    expect(out.engine).toBe('cover');
-    const meta = await sharp(Buffer.from(out.image, 'base64')).metadata();
-    expect(meta.width).toBe(413);
-    expect(meta.height).toBe(531);
+  test('엔진 불통 → 명시 에러 반환 (커버 크롭 폐지)', async () => {
+    const out = await cropToSpec('aGVsbG8=', 'kr-passport');
+    expect(out.cropped).toBe(false);
+    expect(out.engine).toBe('none');
+    expect(out.error).toBe('FACE_NOT_DETECTED');
   });
 
   test('파라미터 산출 불가 슬러그 → 원본 그대로 (engine none)', async () => {
@@ -74,10 +69,11 @@ describe('cropToSpec 폴백 (엔진 URL 부재)', () => {
 });
 
 describe('headHeight 수치 정본 (ORDER_20260707 Task 2 병합)', () => {
-  test('428건 전수: headHeightMin < headHeightMax, 프레임 내 무결', () => {
+  test('428건 전수: headHeightMin < headHeightMax, 프레임 내 무결 (명시값 슬러그는 범위 생략 허용)', () => {
     const slugs = Object.keys(SPECS_DATA);
     for (const s of slugs) {
       const d = SPECS_DATA[s];
+      if (Number.isFinite(d.faceTargetExplicitMm) && !Number.isFinite(d.headHeightMin)) continue;
       expect(Number.isFinite(d.headHeightMin)).toBe(true);
       expect(Number.isFinite(d.headHeightMax)).toBe(true);
       expect(d.headHeightMin).toBeLessThan(d.headHeightMax);

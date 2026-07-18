@@ -884,6 +884,17 @@ ${hreflangTags}
   </div>
   </div>
 
+  ${(() => {
+    const alerts = [];
+    if (specData.onsite) alerts.push({ icon: '📍', text: specData.warning?.[lang] || (lang === 'en' ? 'On-site photo required' : lang === 'ja' ? '現場撮影が必要です' : lang === 'es' ? 'Foto presencial requerida' : '현장 촬영이 필요합니다') });
+    else if (specData.warning?.[lang]) alerts.push({ icon: '⚠️', text: specData.warning[lang] });
+    if (specData.digitalOnly) alerts.push({ icon: '💻', text: lang === 'en' ? 'Digital photo only — printed photos are not accepted' : lang === 'ja' ? 'デジタル写真のみ — 印刷写真は受付不可' : lang === 'es' ? 'Solo foto digital — no se aceptan fotos impresas' : '디지털 사진만 허용 — 인화 사진은 접수 불가' });
+    if (!alerts.length) return '';
+    return `<div class="specs-band" style="padding:12px 20px;background:#FFF8E1;">
+    <div class="band-inner">${alerts.map(a => `<div style="display:flex;align-items:flex-start;gap:8px;padding:6px 0;font-size:14px;color:#5D4037;"><span style="flex-shrink:0">${a.icon}</span><span>${escapeHtml(a.text)}</span></div>`).join('')}</div>
+  </div>`;
+  })()}
+
   ${sameCountry.length > 0 ? `<!-- BAND: 다른 용도 규격 -->
   <div class="specs-band specs-band-dark" style="padding:32px 20px;">
     <div class="band-inner">

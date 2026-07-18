@@ -773,10 +773,10 @@ const httpServer = createServer(async (req, res) => {
       // T1 실패 = 명시 에러 + 생성권 미소모. 강등 출고 금지 (작가님 7/17 확정).
       if (isT1Path) {
         const T1_FAIL_MSG = {
-          ko: '사진 생성에 실패했습니다. 다른 사진으로 다시 시도해 주세요.',
-          en: 'Photo generation failed. Please try again with a different photo.',
-          ja: '写真の生成に失敗しました。別の写真でもう一度お試しください。',
-          es: 'Error en la generación de la foto. Inténtelo de nuevo con otra foto.',
+          ko: '사진 생성에 실패했습니다. 크레딧은 소모되지 않았습니다. 다른 사진으로 다시 시도해 주세요.',
+          en: 'Photo generation failed. No credits were used. Please try again with a different photo.',
+          ja: '写真の生成に失敗しました。クレジットは消費されていません。別の写真でもう一度お試しください。',
+          es: 'Error en la generación de la foto. No se consumieron créditos. Inténtelo de nuevo con otra foto.',
         };
         try {
           const attireDesc = body.attireDesc || null;
@@ -802,14 +802,14 @@ const httpServer = createServer(async (req, res) => {
             fireRefundGate();
             const lang = body.lang || 'ko';
             res.writeHead(200, { 'Content-Type': 'application/json' });
-            return res.end(JSON.stringify({ error: 'T1_GENERATE_FAILED', message: T1_FAIL_MSG[lang] || T1_FAIL_MSG.ko }));
+            return res.end(JSON.stringify({ error: T1_FAIL_MSG[lang] || T1_FAIL_MSG.ko, code: 'T1_GENERATE_FAILED' }));
           }
         } catch (e) {
           log(`[IDPhoto] T1 의상+보정 실패 (${e.message}) → 명시 에러 반환`, 'WARNING');
           fireRefundGate();
           const lang = body.lang || 'ko';
           res.writeHead(200, { 'Content-Type': 'application/json' });
-          return res.end(JSON.stringify({ error: 'T1_GENERATE_FAILED', message: T1_FAIL_MSG[lang] || T1_FAIL_MSG.ko }));
+          return res.end(JSON.stringify({ error: T1_FAIL_MSG[lang] || T1_FAIL_MSG.ko, code: 'T1_GENERATE_FAILED' }));
         }
       }
 

@@ -74,6 +74,11 @@ export function getSpecCropParams(slug) {
   let faceTargetMm = null;
   if (Number.isFinite(data.faceTargetExplicitMm)) {
     faceTargetMm = data.faceTargetExplicitMm;
+    if (range && (faceTargetMm < range[0] || faceTargetMm > range[1])) {
+      range[0] = Math.min(range[0], faceTargetMm);
+      range[1] = Math.max(range[1], faceTargetMm);
+      faceMinMm = range[0];
+    }
   } else if (range) {
     const [fMin, fMax] = range;
     const base = frameHmm >= 60 ? fMax - 1 : frameHmm >= 40 ? Math.max(33, fMin + 1) : frameHmm * 0.70;
@@ -100,7 +105,7 @@ export function warmupCropEngine() {
 
 /**
  * 생성 결과(순백 배경 base64)를 slug 규격으로 안착 크롭.
- * @returns {{ image: string, cropped: boolean, engine: 'facemesh'|'cover'|'none', meta?: object }}
+ * @returns {{ image: string|null, cropped: boolean, engine: 'insight'|'none', error?: string, meta?: object }}
  */
 export async function cropToSpec(imageB64, slug) {
   const spec = getSpecCropParams(slug);

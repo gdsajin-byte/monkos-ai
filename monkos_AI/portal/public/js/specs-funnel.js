@@ -979,7 +979,7 @@ var SpecsFunnel = (function(){
       setGenMessage(T.genStillWorking2 || GEN_TEXT_DEFAULT, GEN_SUB_DEFAULT);
     }, 35000);
     // 성별 미선택 시 빈 값 전송 — 서버 프롬프트가 "원본 보존" 선언으로 처리 (2026-07-17 성전환 실사고 P0)
-    var body = { image: uploadedBase64, format: CFG.format, gender: subjectSelection.gender || '', age: subjectSelection.age || 'adult', slug: CFG.slug };
+    var body = { image: uploadedBase64, format: CFG.format, gender: subjectSelection.gender || '', age: subjectSelection.age || 'adult', slug: CFG.slug, lang: document.documentElement.lang || 'ko' };
     if(fitResult && fitResult.frame){ body.fitFrame = fitResult.frame; body.fitMeta = fitResult.meta; body.fitMetrics = fitResult.metrics; }
     if(pay.token) body.paymentToken = pay.token;
     if(CFG.t1 && attirePicker){ var asel = attirePicker.getSelection(); if(asel.attire_desc) body.attireDesc = asel.attire_desc; if(asel.attireTie) body.attireTie = asel.attireTie; }
@@ -1017,6 +1017,7 @@ var SpecsFunnel = (function(){
           : code === 'INVALID_TOKEN' ? T.tokenInvalid
           : code === 'GENERATE_LIMIT' ? T.genLimit
           : code === 'RATE_LIMITED' ? T.rateLimited
+          : code === 'T1_GENERATE_FAILED' ? (data.error || T.errGen)
           : code === 'GENERATE_FAILED' ? T.errGen
           : (data.error || T.errGen);
         if(code === 'TOKEN_EXPIRED' || code === 'TOKEN_USED' || code === 'INVALID_TOKEN'){

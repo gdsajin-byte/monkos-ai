@@ -38,7 +38,6 @@ let lastAlertAt = 0;
  * 유색 실측치 미확보 국가는 업계 관용값 — Phase 3 국가별 교정 대상 (기안서 §5).
  */
 const BG_COLOR_MAP = [
-  [/독일.*회색|독일 규정/, '#CCCCCC'],
   [/밝은\s*회색|연회색/, '#F0F0F0'],
   [/^회색$/, '#D5D5D5'],
   [/파란/, '#438EDB'],
@@ -46,7 +45,10 @@ const BG_COLOR_MAP = [
   [/다양/, '#FFFFFF'],
 ];
 
+const BG_OVERRIDE = { 'de-passport': '#CCCCCC' };
+
 export function getSpecBgColor(slug) {
+  if (BG_OVERRIDE[slug]) return BG_OVERRIDE[slug];
   const bgText = String(SPECS_DATA[slug]?.background || '');
   if (/흰|white/i.test(bgText)) return '#FFFFFF';
   for (const [re, hex] of BG_COLOR_MAP) {
@@ -293,13 +295,13 @@ export async function matteFitPipeline(originalB64, slug, fitFrame, fitMeta, fra
 
 /**
  * 신경로 전체: 원본 감지·크롭 → matte 체인(우선순위 순회) → 300dpi 스탬프.
- * 성공 시 {image, cropEngine:'facemesh', matte:true, meta}, 실패·비활성 시 null (호출부 L3 폴백).
+ * 성공 시 {image, cropEngine:'insight', matte:true, meta}, 실패·비활성 시 null (호출부 L3 폴백).
  */
 export async function matteSpecPipeline(originalB64, slug) {
   if (!matteEnabled()) return null;
   if (!matteSlugAllowed(slug)) return null; // 카나리 밖 슬러그 → 현행 Gemini 경로
 
-  // ① 감지·크롭은 사용자 원본에서 — 실패(facemesh 미안착)면 신경로 포기.
+  // ① 감지·크롭은 사용자 원본에서 — 실패(insight 미안착)면 신경로 포기.
   //    커버 크롭 위 매팅은 "그럴듯한" 무규격 출고라 금지 (무음 폴백 금지).
   // 머리끝 실측이 잔머리에 흔들리는 비결정성 실측(2026-07-07: 동일 원본 crown 5.7 vs 22.2mm)
   // → 가드 이탈 시 1회 재크롭으로 흡수, 재이탈이면 Gemini 재프레이밍 폴백.
