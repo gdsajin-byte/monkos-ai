@@ -1,0 +1,1165 @@
+{
+ "generated": "2026-07-18 11:14 KST",
+ "method": "예측눈%=(hairMargin2+k*faceTarget)/frameHmm, k=0.48~0.56, 창=[40,48] (cropMetaWithinSpec/spec-judge 정본)",
+ "summary": {
+  "total": 428,
+  "ok": 332,
+  "marginal": 52,
+  "misfitLow": 42,
+  "noParams": 2
+ },
+ "misfitSlugs": [
+  "kr-taxi",
+  "cn-passport",
+  "cn-visa",
+  "cn-license",
+  "ca-passport",
+  "ca-visa",
+  "vn-passport",
+  "vn-visa",
+  "id-passport",
+  "my-passport",
+  "my-visa",
+  "kh-passport",
+  "kh-visa",
+  "la-passport",
+  "la-visa",
+  "bd-passport",
+  "bd-visa",
+  "kg-passport",
+  "tm-visa",
+  "lt-passport",
+  "gr-passport",
+  "tr-passport",
+  "br-passport",
+  "cl-passport",
+  "cl-visa",
+  "co-passport",
+  "cu-passport",
+  "cu-visa",
+  "sa-passport",
+  "sa-visa",
+  "ae-passport",
+  "ae-visa",
+  "bh-passport",
+  "bh-visa",
+  "om-passport",
+  "om-visa",
+  "ye-passport",
+  "ye-visa",
+  "eg-passport",
+  "eg-visa",
+  "ly-passport",
+  "ly-visa"
+ ],
+ "marginalSlugs": [
+  "us-passport",
+  "us-visa",
+  "hk-passport",
+  "hk-visa",
+  "mm-visa",
+  "bn-passport",
+  "bn-visa",
+  "rs-passport",
+  "mk-passport",
+  "al-passport",
+  "by-passport",
+  "ee-passport",
+  "cy-passport",
+  "ve-passport",
+  "ve-visa",
+  "ec-passport",
+  "ec-visa",
+  "bo-passport",
+  "bo-visa",
+  "cr-passport",
+  "cr-visa",
+  "ni-passport",
+  "ni-visa",
+  "hn-passport",
+  "hn-visa",
+  "do-passport",
+  "do-visa",
+  "ht-passport",
+  "ht-visa",
+  "cm-passport",
+  "cm-visa",
+  "sd-passport",
+  "sd-visa",
+  "ug-passport",
+  "ug-visa",
+  "rw-passport",
+  "rw-visa",
+  "na-passport",
+  "na-visa",
+  "bb-passport",
+  "bb-visa",
+  "gd-passport",
+  "gd-visa",
+  "lc-passport",
+  "lc-visa",
+  "td-passport",
+  "td-visa",
+  "sl-passport",
+  "mh-passport",
+  "mh-visa",
+  "pw-passport",
+  "pw-visa"
+ ],
+ "detail": [
+  {
+   "slug": "us-passport",
+   "cls": "MARGINAL",
+   "frame": "51x51",
+   "faceTarget": 33,
+   "eyePred": [
+    35,
+    37.6,
+    40.2
+   ]
+  },
+  {
+   "slug": "usa-headshot",
+   "cls": "no-params",
+   "frame": "undefinedxundefined",
+   "eyePred": [
+    null,
+    null,
+    null
+   ]
+  },
+  {
+   "slug": "kr-taxi",
+   "cls": "MISFIT-LOW",
+   "frame": "50x70",
+   "faceTarget": 39,
+   "eyePred": [
+    29.6,
+    31.8,
+    34.1
+   ]
+  },
+  {
+   "slug": "us-visa",
+   "cls": "MARGINAL",
+   "frame": "51x51",
+   "faceTarget": 33,
+   "eyePred": [
+    35,
+    37.6,
+    40.2
+   ]
+  },
+  {
+   "slug": "cn-passport",
+   "cls": "MISFIT-LOW",
+   "frame": "33x48",
+   "faceTarget": 30,
+   "eyePred": [
+    34.2,
+    36.7,
+    39.2
+   ]
+  },
+  {
+   "slug": "cn-visa",
+   "cls": "MISFIT-LOW",
+   "frame": "33x48",
+   "faceTarget": 30,
+   "eyePred": [
+    34.2,
+    36.7,
+    39.2
+   ]
+  },
+  {
+   "slug": "cn-license",
+   "cls": "MISFIT-LOW",
+   "frame": "22x32",
+   "faceTarget": 19,
+   "eyePred": [
+    34.8,
+    37.1,
+    39.5
+   ]
+  },
+  {
+   "slug": "ca-passport",
+   "cls": "MISFIT-LOW",
+   "frame": "50x70",
+   "faceTarget": 35,
+   "eyePred": [
+    26.9,
+    28.9,
+    30.9
+   ]
+  },
+  {
+   "slug": "ca-visa",
+   "cls": "MISFIT-LOW",
+   "frame": "50x70",
+   "faceTarget": 35,
+   "eyePred": [
+    26.9,
+    28.9,
+    30.9
+   ]
+  },
+  {
+   "slug": "hk-passport",
+   "cls": "MARGINAL",
+   "frame": "40x50",
+   "faceTarget": 33,
+   "eyePred": [
+    35.7,
+    38.3,
+    41
+   ]
+  },
+  {
+   "slug": "hk-visa",
+   "cls": "MARGINAL",
+   "frame": "40x50",
+   "faceTarget": 33,
+   "eyePred": [
+    35.7,
+    38.3,
+    41
+   ]
+  },
+  {
+   "slug": "vn-passport",
+   "cls": "MISFIT-LOW",
+   "frame": "40x60",
+   "faceTarget": 39,
+   "eyePred": [
+    34.5,
+    37.1,
+    39.7
+   ]
+  },
+  {
+   "slug": "vn-visa",
+   "cls": "MISFIT-LOW",
+   "frame": "40x60",
+   "faceTarget": 39,
+   "eyePred": [
+    34.5,
+    37.1,
+    39.7
+   ]
+  },
+  {
+   "slug": "id-passport",
+   "cls": "MISFIT-LOW",
+   "frame": "40x60",
+   "faceTarget": 30,
+   "eyePred": [
+    27.3,
+    29.3,
+    31.3
+   ]
+  },
+  {
+   "slug": "my-passport",
+   "cls": "MISFIT-LOW",
+   "frame": "35x50",
+   "faceTarget": 29,
+   "eyePred": [
+    31.8,
+    34.2,
+    36.5
+   ]
+  },
+  {
+   "slug": "my-visa",
+   "cls": "MISFIT-LOW",
+   "frame": "35x50",
+   "faceTarget": 29,
+   "eyePred": [
+    31.8,
+    34.2,
+    36.5
+   ]
+  },
+  {
+   "slug": "mm-visa",
+   "cls": "MARGINAL",
+   "frame": "38x48",
+   "faceTarget": 33,
+   "eyePred": [
+    37.2,
+    39.9,
+    42.7
+   ]
+  },
+  {
+   "slug": "kh-passport",
+   "cls": "MISFIT-LOW",
+   "frame": "40x60",
+   "faceTarget": 36.8,
+   "eyePred": [
+    32.8,
+    35.2,
+    37.7
+   ]
+  },
+  {
+   "slug": "kh-visa",
+   "cls": "MISFIT-LOW",
+   "frame": "40x60",
+   "faceTarget": 36.8,
+   "eyePred": [
+    32.8,
+    35.2,
+    37.7
+   ]
+  },
+  {
+   "slug": "la-passport",
+   "cls": "MISFIT-LOW",
+   "frame": "40x60",
+   "faceTarget": 39,
+   "eyePred": [
+    34.5,
+    37.1,
+    39.7
+   ]
+  },
+  {
+   "slug": "la-visa",
+   "cls": "MISFIT-LOW",
+   "frame": "40x60",
+   "faceTarget": 39,
+   "eyePred": [
+    34.5,
+    37.1,
+    39.7
+   ]
+  },
+  {
+   "slug": "bd-passport",
+   "cls": "MISFIT-LOW",
+   "frame": "45x55",
+   "faceTarget": 33.3,
+   "eyePred": [
+    32.7,
+    35.1,
+    37.5
+   ]
+  },
+  {
+   "slug": "bd-visa",
+   "cls": "MISFIT-LOW",
+   "frame": "45x55",
+   "faceTarget": 33.3,
+   "eyePred": [
+    32.7,
+    35.1,
+    37.5
+   ]
+  },
+  {
+   "slug": "kg-passport",
+   "cls": "MISFIT-LOW",
+   "frame": "40x60",
+   "faceTarget": 39,
+   "eyePred": [
+    34.5,
+    37.1,
+    39.7
+   ]
+  },
+  {
+   "slug": "tm-visa",
+   "cls": "MISFIT-LOW",
+   "frame": "50x60",
+   "faceTarget": 37,
+   "eyePred": [
+    32.9,
+    35.4,
+    37.9
+   ]
+  },
+  {
+   "slug": "bn-passport",
+   "cls": "MARGINAL",
+   "frame": "40x52",
+   "faceTarget": 34.2,
+   "eyePred": [
+    35.4,
+    38,
+    40.7
+   ]
+  },
+  {
+   "slug": "bn-visa",
+   "cls": "MARGINAL",
+   "frame": "40x52",
+   "faceTarget": 34.2,
+   "eyePred": [
+    35.4,
+    38,
+    40.7
+   ]
+  },
+  {
+   "slug": "rs-passport",
+   "cls": "MARGINAL",
+   "frame": "50x50",
+   "faceTarget": 33,
+   "eyePred": [
+    35.7,
+    38.3,
+    41
+   ]
+  },
+  {
+   "slug": "mk-passport",
+   "cls": "MARGINAL",
+   "frame": "50x50",
+   "faceTarget": 33,
+   "eyePred": [
+    35.7,
+    38.3,
+    41
+   ]
+  },
+  {
+   "slug": "al-passport",
+   "cls": "MARGINAL",
+   "frame": "40x50",
+   "faceTarget": 33,
+   "eyePred": [
+    35.7,
+    38.3,
+    41
+   ]
+  },
+  {
+   "slug": "by-passport",
+   "cls": "MARGINAL",
+   "frame": "40x50",
+   "faceTarget": 33,
+   "eyePred": [
+    35.7,
+    38.3,
+    41
+   ]
+  },
+  {
+   "slug": "lt-passport",
+   "cls": "MISFIT-LOW",
+   "frame": "40x60",
+   "faceTarget": 33.6,
+   "eyePred": [
+    30.2,
+    32.5,
+    34.7
+   ]
+  },
+  {
+   "slug": "ee-passport",
+   "cls": "MARGINAL",
+   "frame": "40x50",
+   "faceTarget": 33,
+   "eyePred": [
+    35.7,
+    38.3,
+    41
+   ]
+  },
+  {
+   "slug": "gr-passport",
+   "cls": "MISFIT-LOW",
+   "frame": "40x60",
+   "faceTarget": 39,
+   "eyePred": [
+    34.5,
+    37.1,
+    39.7
+   ]
+  },
+  {
+   "slug": "cy-passport",
+   "cls": "MARGINAL",
+   "frame": "40x50",
+   "faceTarget": 33,
+   "eyePred": [
+    35.7,
+    38.3,
+    41
+   ]
+  },
+  {
+   "slug": "tr-passport",
+   "cls": "MISFIT-LOW",
+   "frame": "50x60",
+   "faceTarget": 34.7,
+   "eyePred": [
+    31.1,
+    33.4,
+    35.7
+   ]
+  },
+  {
+   "slug": "br-passport",
+   "cls": "MISFIT-LOW",
+   "frame": "50x70",
+   "faceTarget": 43.1,
+   "eyePred": [
+    32.4,
+    34.9,
+    37.3
+   ]
+  },
+  {
+   "slug": "cl-passport",
+   "cls": "MISFIT-LOW",
+   "frame": "45x45",
+   "faceTarget": 27.4,
+   "eyePred": [
+    33.7,
+    36.1,
+    38.5
+   ]
+  },
+  {
+   "slug": "cl-visa",
+   "cls": "MISFIT-LOW",
+   "frame": "45x45",
+   "faceTarget": 27.4,
+   "eyePred": [
+    33.7,
+    36.1,
+    38.5
+   ]
+  },
+  {
+   "slug": "co-passport",
+   "cls": "MISFIT-LOW",
+   "frame": "40x50",
+   "faceTarget": 27.4,
+   "eyePred": [
+    30.3,
+    32.5,
+    34.7
+   ]
+  },
+  {
+   "slug": "ve-passport",
+   "cls": "MARGINAL",
+   "frame": "51x51",
+   "faceTarget": 35,
+   "eyePred": [
+    36.9,
+    39.6,
+    42.4
+   ]
+  },
+  {
+   "slug": "ve-visa",
+   "cls": "MARGINAL",
+   "frame": "51x51",
+   "faceTarget": 35,
+   "eyePred": [
+    36.9,
+    39.6,
+    42.4
+   ]
+  },
+  {
+   "slug": "ec-passport",
+   "cls": "MARGINAL",
+   "frame": "50x50",
+   "faceTarget": 33,
+   "eyePred": [
+    35.7,
+    38.3,
+    41
+   ]
+  },
+  {
+   "slug": "ec-visa",
+   "cls": "MARGINAL",
+   "frame": "50x50",
+   "faceTarget": 33,
+   "eyePred": [
+    35.7,
+    38.3,
+    41
+   ]
+  },
+  {
+   "slug": "bo-passport",
+   "cls": "MARGINAL",
+   "frame": "40x50",
+   "faceTarget": 33.3,
+   "eyePred": [
+    36,
+    38.6,
+    41.3
+   ]
+  },
+  {
+   "slug": "bo-visa",
+   "cls": "MARGINAL",
+   "frame": "40x50",
+   "faceTarget": 33.3,
+   "eyePred": [
+    36,
+    38.6,
+    41.3
+   ]
+  },
+  {
+   "slug": "cr-passport",
+   "cls": "MARGINAL",
+   "frame": "51x51",
+   "faceTarget": 33,
+   "eyePred": [
+    35,
+    37.6,
+    40.2
+   ]
+  },
+  {
+   "slug": "cr-visa",
+   "cls": "MARGINAL",
+   "frame": "51x51",
+   "faceTarget": 33,
+   "eyePred": [
+    35,
+    37.6,
+    40.2
+   ]
+  },
+  {
+   "slug": "ni-passport",
+   "cls": "MARGINAL",
+   "frame": "40x50",
+   "faceTarget": 33.3,
+   "eyePred": [
+    36,
+    38.6,
+    41.3
+   ]
+  },
+  {
+   "slug": "ni-visa",
+   "cls": "MARGINAL",
+   "frame": "40x50",
+   "faceTarget": 33.3,
+   "eyePred": [
+    36,
+    38.6,
+    41.3
+   ]
+  },
+  {
+   "slug": "hn-passport",
+   "cls": "MARGINAL",
+   "frame": "50x50",
+   "faceTarget": 33,
+   "eyePred": [
+    35.7,
+    38.3,
+    41
+   ]
+  },
+  {
+   "slug": "hn-visa",
+   "cls": "MARGINAL",
+   "frame": "50x50",
+   "faceTarget": 33,
+   "eyePred": [
+    35.7,
+    38.3,
+    41
+   ]
+  },
+  {
+   "slug": "cu-passport",
+   "cls": "MISFIT-LOW",
+   "frame": "45x45",
+   "faceTarget": 27.4,
+   "eyePred": [
+    33.7,
+    36.1,
+    38.5
+   ]
+  },
+  {
+   "slug": "cu-visa",
+   "cls": "MISFIT-LOW",
+   "frame": "45x45",
+   "faceTarget": 27.4,
+   "eyePred": [
+    33.7,
+    36.1,
+    38.5
+   ]
+  },
+  {
+   "slug": "do-passport",
+   "cls": "MARGINAL",
+   "frame": "51x51",
+   "faceTarget": 33,
+   "eyePred": [
+    35,
+    37.6,
+    40.2
+   ]
+  },
+  {
+   "slug": "do-visa",
+   "cls": "MARGINAL",
+   "frame": "51x51",
+   "faceTarget": 33,
+   "eyePred": [
+    35,
+    37.6,
+    40.2
+   ]
+  },
+  {
+   "slug": "ht-passport",
+   "cls": "MARGINAL",
+   "frame": "51x51",
+   "faceTarget": 33,
+   "eyePred": [
+    35,
+    37.6,
+    40.2
+   ]
+  },
+  {
+   "slug": "ht-visa",
+   "cls": "MARGINAL",
+   "frame": "51x51",
+   "faceTarget": 33,
+   "eyePred": [
+    35,
+    37.6,
+    40.2
+   ]
+  },
+  {
+   "slug": "sa-passport",
+   "cls": "MISFIT-LOW",
+   "frame": "40x60",
+   "faceTarget": 38.9,
+   "eyePred": [
+    34.5,
+    37,
+    39.6
+   ]
+  },
+  {
+   "slug": "sa-visa",
+   "cls": "MISFIT-LOW",
+   "frame": "40x60",
+   "faceTarget": 39,
+   "eyePred": [
+    34.5,
+    37.1,
+    39.7
+   ]
+  },
+  {
+   "slug": "ae-passport",
+   "cls": "MISFIT-LOW",
+   "frame": "40x60",
+   "faceTarget": 39,
+   "eyePred": [
+    34.5,
+    37.1,
+    39.7
+   ]
+  },
+  {
+   "slug": "ae-visa",
+   "cls": "MISFIT-LOW",
+   "frame": "43x55",
+   "faceTarget": 35,
+   "eyePred": [
+    34.2,
+    36.7,
+    39.3
+   ]
+  },
+  {
+   "slug": "bh-passport",
+   "cls": "MISFIT-LOW",
+   "frame": "40x60",
+   "faceTarget": 38.9,
+   "eyePred": [
+    34.5,
+    37,
+    39.6
+   ]
+  },
+  {
+   "slug": "bh-visa",
+   "cls": "MISFIT-LOW",
+   "frame": "40x60",
+   "faceTarget": 38.9,
+   "eyePred": [
+    34.5,
+    37,
+    39.6
+   ]
+  },
+  {
+   "slug": "om-passport",
+   "cls": "MISFIT-LOW",
+   "frame": "40x60",
+   "faceTarget": 38.9,
+   "eyePred": [
+    34.5,
+    37,
+    39.6
+   ]
+  },
+  {
+   "slug": "om-visa",
+   "cls": "MISFIT-LOW",
+   "frame": "40x60",
+   "faceTarget": 38.9,
+   "eyePred": [
+    34.5,
+    37,
+    39.6
+   ]
+  },
+  {
+   "slug": "ye-passport",
+   "cls": "MISFIT-LOW",
+   "frame": "40x60",
+   "faceTarget": 35,
+   "eyePred": [
+    31.3,
+    33.7,
+    36
+   ]
+  },
+  {
+   "slug": "ye-visa",
+   "cls": "MISFIT-LOW",
+   "frame": "40x60",
+   "faceTarget": 35,
+   "eyePred": [
+    31.3,
+    33.7,
+    36
+   ]
+  },
+  {
+   "slug": "eg-passport",
+   "cls": "MISFIT-LOW",
+   "frame": "40x60",
+   "faceTarget": 39,
+   "eyePred": [
+    34.5,
+    37.1,
+    39.7
+   ]
+  },
+  {
+   "slug": "eg-visa",
+   "cls": "MISFIT-LOW",
+   "frame": "40x60",
+   "faceTarget": 39,
+   "eyePred": [
+    34.5,
+    37.1,
+    39.7
+   ]
+  },
+  {
+   "slug": "cm-passport",
+   "cls": "MARGINAL",
+   "frame": "40x50",
+   "faceTarget": 33,
+   "eyePred": [
+    35.7,
+    38.3,
+    41
+   ]
+  },
+  {
+   "slug": "cm-visa",
+   "cls": "MARGINAL",
+   "frame": "40x50",
+   "faceTarget": 33,
+   "eyePred": [
+    35.7,
+    38.3,
+    41
+   ]
+  },
+  {
+   "slug": "ly-passport",
+   "cls": "MISFIT-LOW",
+   "frame": "40x60",
+   "faceTarget": 38.9,
+   "eyePred": [
+    34.5,
+    37,
+    39.6
+   ]
+  },
+  {
+   "slug": "ly-visa",
+   "cls": "MISFIT-LOW",
+   "frame": "40x60",
+   "faceTarget": 38.9,
+   "eyePred": [
+    34.5,
+    37,
+    39.6
+   ]
+  },
+  {
+   "slug": "sd-passport",
+   "cls": "MARGINAL",
+   "frame": "40x50",
+   "faceTarget": 33.3,
+   "eyePred": [
+    36,
+    38.6,
+    41.3
+   ]
+  },
+  {
+   "slug": "sd-visa",
+   "cls": "MARGINAL",
+   "frame": "40x50",
+   "faceTarget": 33.3,
+   "eyePred": [
+    36,
+    38.6,
+    41.3
+   ]
+  },
+  {
+   "slug": "ug-passport",
+   "cls": "MARGINAL",
+   "frame": "51x51",
+   "faceTarget": 33,
+   "eyePred": [
+    35,
+    37.6,
+    40.2
+   ]
+  },
+  {
+   "slug": "ug-visa",
+   "cls": "MARGINAL",
+   "frame": "51x51",
+   "faceTarget": 33,
+   "eyePred": [
+    35,
+    37.6,
+    40.2
+   ]
+  },
+  {
+   "slug": "rw-passport",
+   "cls": "MARGINAL",
+   "frame": "51x51",
+   "faceTarget": 33,
+   "eyePred": [
+    35,
+    37.6,
+    40.2
+   ]
+  },
+  {
+   "slug": "rw-visa",
+   "cls": "MARGINAL",
+   "frame": "51x51",
+   "faceTarget": 33,
+   "eyePred": [
+    35,
+    37.6,
+    40.2
+   ]
+  },
+  {
+   "slug": "na-passport",
+   "cls": "MARGINAL",
+   "frame": "37x52",
+   "faceTarget": 35.2,
+   "eyePred": [
+    36.3,
+    39,
+    41.8
+   ]
+  },
+  {
+   "slug": "na-visa",
+   "cls": "MARGINAL",
+   "frame": "37x52",
+   "faceTarget": 35.2,
+   "eyePred": [
+    36.3,
+    39,
+    41.8
+   ]
+  },
+  {
+   "slug": "bb-passport",
+   "cls": "MARGINAL",
+   "frame": "50x50",
+   "faceTarget": 33,
+   "eyePred": [
+    35.7,
+    38.3,
+    41
+   ]
+  },
+  {
+   "slug": "bb-visa",
+   "cls": "MARGINAL",
+   "frame": "50x50",
+   "faceTarget": 33,
+   "eyePred": [
+    35.7,
+    38.3,
+    41
+   ]
+  },
+  {
+   "slug": "gd-passport",
+   "cls": "MARGINAL",
+   "frame": "38x51",
+   "faceTarget": 33,
+   "eyePred": [
+    35,
+    37.6,
+    40.2
+   ]
+  },
+  {
+   "slug": "gd-visa",
+   "cls": "MARGINAL",
+   "frame": "38x51",
+   "faceTarget": 33,
+   "eyePred": [
+    35,
+    37.6,
+    40.2
+   ]
+  },
+  {
+   "slug": "lc-passport",
+   "cls": "MARGINAL",
+   "frame": "40x50",
+   "faceTarget": 33,
+   "eyePred": [
+    35.7,
+    38.3,
+    41
+   ]
+  },
+  {
+   "slug": "lc-visa",
+   "cls": "MARGINAL",
+   "frame": "40x50",
+   "faceTarget": 33,
+   "eyePred": [
+    35.7,
+    38.3,
+    41
+   ]
+  },
+  {
+   "slug": "td-passport",
+   "cls": "MARGINAL",
+   "frame": "50x50",
+   "faceTarget": 34,
+   "eyePred": [
+    36.6,
+    39.4,
+    42.1
+   ]
+  },
+  {
+   "slug": "td-visa",
+   "cls": "MARGINAL",
+   "frame": "50x50",
+   "faceTarget": 34,
+   "eyePred": [
+    36.6,
+    39.4,
+    42.1
+   ]
+  },
+  {
+   "slug": "sl-passport",
+   "cls": "MARGINAL",
+   "frame": "50x50",
+   "faceTarget": 33,
+   "eyePred": [
+    35.7,
+    38.3,
+    41
+   ]
+  },
+  {
+   "slug": "mh-passport",
+   "cls": "MARGINAL",
+   "frame": "51x51",
+   "faceTarget": 33,
+   "eyePred": [
+    35,
+    37.6,
+    40.2
+   ]
+  },
+  {
+   "slug": "mh-visa",
+   "cls": "MARGINAL",
+   "frame": "51x51",
+   "faceTarget": 33,
+   "eyePred": [
+    35,
+    37.6,
+    40.2
+   ]
+  },
+  {
+   "slug": "pw-passport",
+   "cls": "MARGINAL",
+   "frame": "51x51",
+   "faceTarget": 33,
+   "eyePred": [
+    35,
+    37.6,
+    40.2
+   ]
+  },
+  {
+   "slug": "pw-visa",
+   "cls": "MARGINAL",
+   "frame": "51x51",
+   "faceTarget": 33,
+   "eyePred": [
+    35,
+    37.6,
+    40.2
+   ]
+  },
+  {
+   "slug": "cn-resume",
+   "cls": "no-params",
+   "frame": "undefinedxundefined",
+   "eyePred": [
+    null,
+    null,
+    null
+   ]
+  }
+ ]
+}
