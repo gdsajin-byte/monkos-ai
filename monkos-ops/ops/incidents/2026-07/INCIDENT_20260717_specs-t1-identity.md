@@ -142,6 +142,14 @@ portfolio: PF_SPECS
 
 처방: 후보 1~7 공식 원문 검증(유니크 콘텐츠 리서치 파이프라인 재활용) → 수치 정본 확정 → 배치 복원 묶음과 함께 반영. 합성 37건은 명시 앵커±1 대역으로 재해석(규정 사칭 해제).
 
+## 6-2. UK 실증이 연 설계 차원 2건 (07-18 12:32 쌍아 리서치 + 민아 공식 원문 재검증 — HMPO 전 항목 확인)
+
+UK(gov.uk 정본): 35×45, head **29~34**, crown **"the top of the head, not the top of the hair"**(두개골 꼭대기, 헤어 제외), "It is not necessary for all of the subject's hair to be in the photo", 눈 밴드 **"top 40% to 70%"** 공식 명문 (photo standards accessible). 명시값 31 = 좁은 범위+skull 기준을 아는 하한+2 오버라이드 — 철학 표본 실증.
+
+**신규 설계 차원**:
+1. **측정 기준(crown basis) per-spec 플래그** — skull(헤어 제외, UK형) vs 헤어 포함(통상형). 현행 파이프라인은 단일 기준: crop-engine crownY(미러 추정)=skull 근사, 배치 앵커는 hairTop. 규격별 기준 플래그가 faceTarget 스케일 기준·crown 게이트·헤어탑 취급을 갈라야 함.
+2. **L0 눈 밴드의 실재** — 눈 창이 규정된 국가가 존재(UK 40~70). 검증 창은 (a) L0 규정 밴드가 있으면 그것을 (b) 없으면 배치 앵커(42/43%)±유도 마진을 사용 — 고정 40~48은 UK 공식 밴드(폭 30pt)를 8pt로 과잉 압축한 사례로 기록. 검증 배치 시 각국 눈 밴드·crown 정의·디지털 규격 특칙도 수집 항목에 포함할 것.
+
 ## 4. 관측 기록
 
 ## 4. 관측 기록
