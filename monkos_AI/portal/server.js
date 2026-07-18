@@ -770,35 +770,46 @@ const httpServer = createServer(async (req, res) => {
 
       // T1 의상+보정 (PILOT_T1_RETOUCH=1): 유료 게이트 한정.
       // 파이프라인: 원본 → 나노2(v4: 의상교체+보정+배경+넓은화각) → crop-engine 재크롭.
-      // 매팅(RunPod) 불필요 — 나노가 배경 제거+흰배경까지 처리. (2026-07-11 작가님 확정)
-      // 실패 시 매팅본(T0 결과) 그대로 — 결제 산출물이 무료보다 나빠지는 경우는 구조적으로 없음.
+      // T1 실패 = 명시 에러 + 생성권 미소모. 강등 출고 금지 (작가님 7/17 확정).
       if (isT1Path) {
+        const T1_FAIL_MSG = {
+          ko: '사진 생성에 실패했습니다. 다른 사진으로 다시 시도해 주세요.',
+          en: 'Photo generation failed. Please try again with a different photo.',
+          ja: '写真の生成に失敗しました。別の写真でもう一度お試しください。',
+          es: 'Error en la generación de la foto. Inténtelo de nuevo con otra foto.',
+        };
         try {
           const attireDesc = body.attireDesc || null;
           log(`[IDPhoto] T1 attireDesc=${attireDesc ? attireDesc.slice(0, 60) : 'null'}, gender=${gender}, age=${age}`);
           const t1Prompt = buildT1Prompt(attireDesc, { gender, age });
-          // 프레이밍 게이트 (2026-07-10 하네스 3회 실증 → 2026-07-11 서버 탑재): 나노 화각 드리프트로
-          // 규격 초과 크롭이 출고되는 사고 차단 — 재크롭 meta를 정본 판정(cropMetaWithinSpec)하고
-          // 이탈 시 재생성 1회, 재이탈 시 매팅본 유지(t1-framing-fallback 계측)
           let t1Done = false;
           for (let attempt = 1; attempt <= 2 && !t1Done; attempt++) {
             const t1Result = await generateIdPhoto({ image: norm.b64, format: format || 'passport', gender, age, model: 'nano-banana-2', userId: gateUserId, framing: 'wide', promptOverride: t1Prompt });
             if (!t1Result) break;
             t1RawForSave = t1Result;
             const cropRes = await cropToSpec(t1Result, slug);
-            if (cropRes && cropRes.image && cropRes.engine === 'facemesh' && cropMetaWithinSpec(cropRes.meta)) {
+            if (cropRes && cropRes.image && cropRes.engine === 'insight' && cropMetaWithinSpec(cropRes.meta)) {
               finalBase64 = cropRes.image;
               cropEngine = cropRes.engine;
               genTrack = 't1-attire';
               resultMeta = cropRes.meta || resultMeta;
               t1Done = true;
             } else {
-              log(`[IDPhoto] T1 프레이밍 게이트 이탈 (attempt ${attempt}, engine=${cropRes?.engine}, crown=${cropRes?.meta?.crownMarginMM}mm, eye=${cropRes?.meta?.eyePositionPercent}%) → ${attempt === 1 ? '재생성 1회' : '매팅본 유지'}`, 'WARNING');
+              log(`[IDPhoto] T1 프레이밍 게이트 이탈 (attempt ${attempt}, engine=${cropRes?.engine}, crown=${cropRes?.meta?.crownMarginMM}mm, eye=${cropRes?.meta?.eyePositionPercent}%) → ${attempt === 1 ? '재생성 1회' : '명시 실패'}`, 'WARNING');
             }
           }
-          if (!t1Done && finalBase64) genTrack = 't1-framing-fallback';
+          if (!t1Done) {
+            fireRefundGate();
+            const lang = body.lang || 'ko';
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            return res.end(JSON.stringify({ error: 'T1_GENERATE_FAILED', message: T1_FAIL_MSG[lang] || T1_FAIL_MSG.ko }));
+          }
         } catch (e) {
-          log(`[IDPhoto] T1 의상+보정 실패 — ${finalBase64 ? '매팅본' : 'Gemini 폴백'} 유지 (${e.message})`, 'WARNING');
+          log(`[IDPhoto] T1 의상+보정 실패 (${e.message}) → 명시 에러 반환`, 'WARNING');
+          fireRefundGate();
+          const lang = body.lang || 'ko';
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          return res.end(JSON.stringify({ error: 'T1_GENERATE_FAILED', message: T1_FAIL_MSG[lang] || T1_FAIL_MSG.ko }));
         }
       }
 

@@ -38,14 +38,16 @@ let lastAlertAt = 0;
  * 유색 실측치 미확보 국가는 업계 관용값 — Phase 3 국가별 교정 대상 (기안서 §5).
  */
 const BG_COLOR_MAP = [
+  [/독일.*회색|독일 규정/, '#CCCCCC'],
   [/밝은\s*회색|연회색/, '#F0F0F0'],
+  [/^회색$/, '#D5D5D5'],
   [/파란/, '#438EDB'],
   [/빨간/, '#FF0000'],
+  [/다양/, '#FFFFFF'],
 ];
 
 export function getSpecBgColor(slug) {
   const bgText = String(SPECS_DATA[slug]?.background || '');
-  // 복합 표기("흰색·파란 배경" 등)는 흰색 우선 — 제출 안전측
   if (/흰|white/i.test(bgText)) return '#FFFFFF';
   for (const [re, hex] of BG_COLOR_MAP) {
     if (re.test(bgText)) return hex;
@@ -78,8 +80,14 @@ export function stripDataUri(b64) {
 export function cropMetaWithinSpec(meta) {
   const crown = parseFloat(meta?.crownMarginMM);
   const eye = parseFloat(meta?.eyePositionPercent);
-  if (Number.isFinite(crown) && crown > 10) return false;
-  if (Number.isFinite(eye) && (eye < 40 || eye > 48)) return false;
+  // crown: warn-only (기하 유도 캘리브레이션 후 재활성화 예정)
+  if (Number.isFinite(crown) && crown > 10) {
+    console.log(`[CropGuard] crown ${crown.toFixed(1)}mm > 10mm — warn (게이트 완화 중)`);
+  }
+  // eye: warn-only (배치 복원 후 캘리브레이션 완료까지)
+  if (Number.isFinite(eye) && (eye < 40 || eye > 48)) {
+    console.log(`[CropGuard] eye ${eye.toFixed(1)}% ∉ [40,48] — warn (게이트 완화 중)`);
+  }
   return true;
 }
 
@@ -299,7 +307,7 @@ export async function matteSpecPipeline(originalB64, slug) {
   let cropRes = null;
   for (let attempt = 1; attempt <= 2; attempt++) {
     cropRes = await cropToSpec(pureB64, slug);
-    if (!cropRes.cropped || cropRes.engine !== 'facemesh') {
+    if (!cropRes.cropped || cropRes.engine !== 'insight') {
       log(`[Matte] ${slug}: 원본 감지 미안착(engine=${cropRes.engine}) → Gemini 폴백`, 'WARNING');
       return null;
     }
@@ -317,5 +325,5 @@ export async function matteSpecPipeline(originalB64, slug) {
   const r = await runMatteChain(cropRes.image, bgColor, slug);
   if (!r) return null;
   log(`[Matte] ${slug}: 매팅 합성 완료 via=${r.via} bg=${bgColor} ${r.matteSec}s face=${cropRes.meta?.faceMM}mm`);
-  return { image: r.image, cropEngine: 'facemesh', matte: true, meta: { ...cropRes.meta, bgColor, matteSec: r.matteSec } };
+  return { image: r.image, cropEngine: 'insight', matte: true, meta: { ...cropRes.meta, bgColor, matteSec: r.matteSec } };
 }

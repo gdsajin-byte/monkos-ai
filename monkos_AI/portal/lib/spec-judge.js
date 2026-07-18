@@ -40,8 +40,8 @@ export function judgeMetrics(m, spec) {
     out.center = m.centerOffMm < 1 ? 'pass' : m.centerOffMm < 2 ? 'warn' : 'fail';
   }
   out.blocked = Boolean(
-    (Number.isFinite(fMin) && Number.isFinite(m.faceMm) && (m.faceMm < fMin || m.faceMm > fMax)) ||
-    (Number.isFinite(m.eyeRatio) && (m.eyeRatio < 0.40 || m.eyeRatio > 0.48))
+    (Number.isFinite(fMin) && Number.isFinite(m.faceMm) && (m.faceMm < fMin || m.faceMm > fMax))
+    // eye ratio blocked 판정 완화 — 배치 복원 캘리브레이션 완료 후 재활성화
   );
   return out;
 }

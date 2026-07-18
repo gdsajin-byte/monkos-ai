@@ -5686,6 +5686,11 @@
       ],
       "verifiedAt": "2026-07-17",
       "pipeline": "specs-unique-pilot"
+    },
+    "warning": {
+      "ko": "⚠️ 캐나다 여권은 전문 사진사 촬영이 의무입니다. 사진 뒷면에 사진사 서명·주소·촬영일자 기재 필수.",
+      "en": "⚠️ Canada requires photos taken by a commercial photographer.",
+      "ja": "⚠️ カナダのパスポートは商業写真家による撮影が義務です。"
     }
   },
   "ca-visa": {
@@ -6032,7 +6037,12 @@
     "backgroundEs": "Blanco",
     "headHeightEs": "2.5-3.5cm",
     "validityEs": "3 meses",
-    "fileSpecEs": "JPEG, máx 60KB"
+    "fileSpecEs": "JPEG, máx 60KB",
+    "warning": {
+      "ko": "⚠️ 유효기간 3개월",
+      "en": "⚠️ Valid 3 months",
+      "ja": "⚠️ 有効期限3ヶ月"
+    }
   },
   "sg-visa": {
     "slug": "sg-visa",
@@ -8382,7 +8392,8 @@
     "backgroundEs": "Blanco",
     "headHeightEs": "3.6~4.0cm",
     "validityEs": "Recently taken photo, no mayor de 6 meses (\"Ảnh mới chụp (không quá 6 tháng)\")",
-    "fileSpecEs": "JPEG, máx 500KB"
+    "fileSpecEs": "JPEG, máx 500KB",
+    "faceTargetExplicitMm": 42
   },
   "vn-visa": {
     "slug": "vn-visa",
@@ -8727,7 +8738,8 @@
       ],
       "verifiedAt": "2026-07-17",
       "pipeline": "specs-unique-pilot"
-    }
+    },
+    "faceTargetExplicitMm": 42
   },
   "id-passport": {
     "slug": "id-passport",
@@ -8896,7 +8908,12 @@
     "backgroundEs": "Rojo",
     "headHeightEs": "2.5-3.1cm",
     "validityEs": "",
-    "fileSpecEs": "File formato JPEG/JPG/PNG, in color. mínimo 400x600px. máximo tamaño de archivo 2MB. Photo layout/position debe be properly composed (not too close, not too far)."
+    "fileSpecEs": "File formato JPEG/JPG/PNG, in color. mínimo 400x600px. máximo tamaño de archivo 2MB. Photo layout/position debe be properly composed (not too close, not too far).",
+    "warning": {
+      "ko": "⚠️ 여권 배경색 빨간색. 비자는 흰색 35x45.",
+      "en": "⚠️ Passport background is RED. Visa uses white 35x45.",
+      "ja": "⚠️ パスポートの背景は赤色。ビザは白35x45。"
+    }
   },
   "id-visa": {
     "slug": "id-visa",
@@ -9039,7 +9056,12 @@
     "backgroundEs": "Blanco",
     "headHeightEs": "3.2~3.6cm",
     "validityEs": "",
-    "fileSpecEs": "Foto ukuran paspor (formato JPG/JPEG/PNG dengan ukuran maksimal 200 kb) -- Passport-sized photo, JPG/JPEG/PNG formato, máximo tamaño de archivo 200KB"
+    "fileSpecEs": "Foto ukuran paspor (formato JPG/JPEG/PNG dengan ukuran maksimal 200 kb) -- Passport-sized photo, JPG/JPEG/PNG formato, máximo tamaño de archivo 200KB",
+    "warning": {
+      "ko": "⚠️ 비자 사양은 여권과 다릅니다 (흰색 배경 35x45).",
+      "en": "⚠️ Visa spec differs from passport (white background 35x45).",
+      "ja": "⚠️ ビザの仕様はパスポートと異なります（白背景35x45）。"
+    }
   },
   "my-passport": {
     "slug": "my-passport",
@@ -9558,7 +9580,13 @@
     "backgroundEs": "Blanco",
     "headHeightEs": "3.2-3.6cm",
     "validityEs": "La fotografía debe have been taken dentro de los últimos 6 meses.",
-    "fileSpecEs": ""
+    "fileSpecEs": "",
+    "onsite": true,
+    "warning": {
+      "ko": "⚠️ DFA 국내 현장촬영",
+      "en": "⚠️ On-site photo at DFA offices",
+      "ja": "⚠️ DFA国内現場撮影"
+    }
   },
   "ph-visa": {
     "slug": "ph-visa",
@@ -12529,7 +12557,7 @@
     "size": "3.5 × 4.5cm",
     "pixels": "413 × 531px",
     "dpi": 300,
-    "background": "흰색",
+    "background": "회색",
     "backgroundEn": "White",
     "backgroundJa": "白",
     "headHeight": "3.2~3.6cm",
@@ -12704,7 +12732,7 @@
     "size": "3.5 × 4.5cm",
     "pixels": "413 × 531px",
     "dpi": 300,
-    "background": "흰색",
+    "background": "회색",
     "backgroundEn": "White",
     "backgroundJa": "白",
     "headHeight": "3.2~3.6cm",
@@ -15720,7 +15748,12 @@
     "backgroundEs": "Blanco",
     "headHeightEs": "3.2-3.6cm",
     "validityEs": "",
-    "fileSpecEs": "JPEG, máx 5120KB, mín 240KB"
+    "fileSpecEs": "JPEG, máx 5120KB, mín 240KB",
+    "warning": {
+      "ko": "⚠️ 광택종이 필수",
+      "en": "⚠️ Glossy paper required",
+      "ja": "⚠️ 光沢紙必須"
+    }
   },
   "ru-visa": {
     "slug": "ru-visa",
@@ -16389,7 +16422,17 @@
     "backgroundEs": "Gris claro",
     "headHeightEs": "3.2-3.6cm",
     "validityEs": "Tomada dentro de los últimos 6 meses",
-    "fileSpecEs": ""
+    "fileSpecEs": "",
+    "warning": {
+      "ko": "⚠️ 흰색 배경 금지! 밝은 회색/파란 필수",
+      "en": "⚠️ White background prohibited! Light grey/blue required",
+      "ja": "⚠️ 白背景禁止！明るいグレー/青必須"
+    },
+    "bgNote": {
+      "ko": "흰색 배경 금지",
+      "en": "White background prohibited",
+      "ja": "白背景禁止"
+    }
   },
   "fr-visa": {
     "slug": "fr-visa",
@@ -16571,7 +16614,7 @@
     "size": "3.5 × 4.5cm",
     "pixels": "413 × 531px",
     "dpi": 300,
-    "background": "흰색",
+    "background": "독일 규정 회색",
     "backgroundEn": "White",
     "backgroundJa": "白",
     "headHeight": "3.2~3.6cm",
@@ -16729,7 +16772,13 @@
     "backgroundEs": "Blanco",
     "headHeightEs": "3.2-3.6cm",
     "validityEs": "Tomada dentro de los últimos 6 meses",
-    "fileSpecEs": "mínimo 600 dpi resolución, alta calidad photo papel; since May 1, 2025 digital presentación via certified photo studio (Lichtbildübermittlungsstelle) requerido para ID documents"
+    "fileSpecEs": "mínimo 600 dpi resolución, alta calidad photo papel; since May 1, 2025 digital presentación via certified photo studio (Lichtbildübermittlungsstelle) requerido para ID documents",
+    "warning": {
+      "ko": "⚠️ 2025.05~ 종이사진 금지, 디지털 전용",
+      "en": "⚠️ From 2025.05 paper photos prohibited, digital only",
+      "ja": "⚠️ 2025.05〜紙写真禁止、デジタル専用"
+    },
+    "digitalOnly": true
   },
   "de-visa": {
     "slug": "de-visa",
@@ -18571,7 +18620,7 @@
     "size": "3.5 × 4.5cm",
     "pixels": "413 × 531px",
     "dpi": 300,
-    "background": "흰색",
+    "background": "회색",
     "backgroundEn": "White",
     "backgroundJa": "白",
     "headHeight": "3.2~3.6cm",
@@ -18742,7 +18791,7 @@
     "size": "3.5 × 4.5cm",
     "pixels": "413 × 531px",
     "dpi": 300,
-    "background": "흰색",
+    "background": "회색",
     "backgroundEn": "White",
     "backgroundJa": "白",
     "headHeight": "3.2~3.6cm",
@@ -18911,7 +18960,7 @@
     "size": "3.5 × 4.5cm",
     "pixels": "413 × 531px",
     "dpi": 300,
-    "background": "흰색",
+    "background": "회색",
     "backgroundEn": "White",
     "backgroundJa": "白",
     "headHeight": "3.2~3.6cm",
@@ -19088,7 +19137,7 @@
     "size": "3.5 × 4.5cm",
     "pixels": "413 × 531px",
     "dpi": 300,
-    "background": "흰색",
+    "background": "회색",
     "backgroundEn": "White",
     "backgroundJa": "白",
     "headHeight": "3.2~3.6cm",
@@ -19955,7 +20004,7 @@
     "size": "3.5 × 4.5cm",
     "pixels": "413 × 531px",
     "dpi": 300,
-    "background": "흰색",
+    "background": "회색",
     "backgroundEn": "White",
     "backgroundJa": "白",
     "headHeight": "3.2~3.6cm",
@@ -20126,7 +20175,7 @@
     "size": "3.5 × 4.5cm",
     "pixels": "413 × 531px",
     "dpi": 300,
-    "background": "흰색",
+    "background": "회색",
     "backgroundEn": "White",
     "backgroundJa": "白",
     "headHeight": "3.2~3.6cm",
@@ -20465,7 +20514,8 @@
     "backgroundEs": "Gris claro",
     "headHeightEs": "3.2~3.6cm",
     "validityEs": "No mayor de 6 meses",
-    "fileSpecEs": "JPEG formato (.jpg o .jpeg), 500 x 653 píxeles, máx 250 KB; sin edición o retoque allowed"
+    "fileSpecEs": "JPEG formato (.jpg o .jpeg), 500 x 653 píxeles, máx 250 KB; sin edición o retoque allowed",
+    "digitalOnly": true
   },
   "fi-visa": {
     "slug": "fi-visa",
@@ -27303,7 +27353,7 @@
     "size": "4 × 6cm",
     "pixels": "472 × 709px",
     "dpi": 300,
-    "background": "흰색",
+    "background": "회색",
     "backgroundEn": "White",
     "backgroundJa": "白",
     "headHeight": "3.6~4.0cm",
@@ -27467,7 +27517,12 @@
     "backgroundEs": "Blanco",
     "headHeightEs": "3.6~4.0cm",
     "validityEs": "Debe ser una fotografía reciente, tomada dentro de los seis meses anteriores a la fecha de solicitud",
-    "fileSpecEs": "para applications submitted within Greece, the photo debe be submitted digitally via the myPhoto e-service on the gov.gr portal, following special digital file specifications published by GSIS (image approx. 1280x1600 px at 4:5 ratio, JPEG, máx size around 3MB). impresa physical photos (40x60mm) were exceptionally still being accepted únicamente until 31/01/2026 to ease the transition."
+    "fileSpecEs": "para applications submitted within Greece, the photo debe be submitted digitally via the myPhoto e-service on the gov.gr portal, following special digital file specifications published by GSIS (image approx. 1280x1600 px at 4:5 ratio, JPEG, máx size around 3MB). impresa physical photos (40x60mm) were exceptionally still being accepted únicamente until 31/01/2026 to ease the transition.",
+    "bgNote": {
+      "ko": "RGB(190,190,190)±10",
+      "en": "RGB(190,190,190)±10",
+      "ja": "RGB(190,190,190)±10"
+    }
   },
   "gr-visa": {
     "slug": "gr-visa",
@@ -27480,7 +27535,7 @@
     "size": "3.5 × 4.5cm",
     "pixels": "413 × 531px",
     "dpi": 300,
-    "background": "흰색",
+    "background": "회색",
     "backgroundEn": "White",
     "backgroundJa": "白",
     "headHeight": "3.2~3.6cm",
@@ -27625,7 +27680,12 @@
     "backgroundEs": "Blanco",
     "headHeightEs": "3.2~3.6cm",
     "validityEs": "Photograph taken dentro de los últimos 6 meses",
-    "fileSpecEs": ""
+    "fileSpecEs": "",
+    "bgNote": {
+      "ko": "RGB(190,190,190)±10",
+      "en": "RGB(190,190,190)±10",
+      "ja": "RGB(190,190,190)±10"
+    }
   },
   "cy-passport": {
     "slug": "cy-passport",
@@ -30011,7 +30071,13 @@
     "backgroundEs": "Blanco",
     "headHeightEs": "3.2-3.9cm",
     "validityEs": "tomada dentro de 30 días antes de passport application",
-    "fileSpecEs": ""
+    "fileSpecEs": "",
+    "onsite": true,
+    "warning": {
+      "ko": "⚠️ 국내+영사관 현장촬영 병행",
+      "en": "⚠️ In-person photography at offices/consulates",
+      "ja": "⚠️ 国内・領事館で現場撮影"
+    }
   },
   "mx-visa": {
     "slug": "mx-visa",
@@ -30327,7 +30393,13 @@
     "backgroundEs": "Blanco",
     "headHeightEs": "4.2cm",
     "validityEs": "Foto reciente, de preferencia tomada hace menos de 6 meses",
-    "fileSpecEs": ""
+    "fileSpecEs": "",
+    "onsite": true,
+    "warning": {
+      "ko": "⚠️ 브라질 여권은 대면 방문 시 현장에서 얼굴 사진을 촬영합니다(gov.br/pf).",
+      "en": "⚠️ Brazil passport photos are taken on-site during in-person visits (gov.br/pf).",
+      "ja": "⚠️ ブラジルのパスポートは対面訪問時に現地で顔写真を撮影します（gov.br/pf）。"
+    }
   },
   "br-visa": {
     "slug": "br-visa",
@@ -31529,7 +31601,13 @@
     "backgroundEs": "Blanco",
     "headHeightEs": "3.2~3.6cm",
     "validityEs": "",
-    "fileSpecEs": ""
+    "fileSpecEs": "",
+    "onsite": true,
+    "warning": {
+      "ko": "⚠️ Migraciones 현장촬영 (사진 불필요)",
+      "en": "⚠️ On-site biometric photo at Migraciones",
+      "ja": "⚠️ Migraciones現場撮影（写真不要）"
+    }
   },
   "pe-visa": {
     "slug": "pe-visa",
@@ -35338,7 +35416,7 @@
     "size": "3.5 × 4.5cm",
     "pixels": "413 × 531px",
     "dpi": 300,
-    "background": "흰색",
+    "background": "다양",
     "backgroundEn": "White",
     "backgroundJa": "白",
     "headHeight": "2.5~3.5cm",
@@ -35494,7 +35572,12 @@
     "backgroundEs": "Blanco",
     "headHeightEs": "2.5-3.5cm",
     "validityEs": "\"La fotografía debe not be taken more than six (6) months antes de presentar la solicitud\"",
-    "fileSpecEs": ""
+    "fileSpecEs": "",
+    "bgNote": {
+      "ko": "피부색별 분기",
+      "en": "Varies by skin tone",
+      "ja": "肌色により異なる"
+    }
   },
   "jm-visa": {
     "slug": "jm-visa",
@@ -35507,7 +35590,7 @@
     "size": "3.5 × 4.5cm",
     "pixels": "413 × 531px",
     "dpi": 300,
-    "background": "흰색",
+    "background": "다양",
     "backgroundEn": "White",
     "backgroundJa": "白",
     "headHeight": "2.5~3.5cm",
@@ -43548,7 +43631,12 @@
     "backgroundEs": "Blanco",
     "headHeightEs": "3.2~3.6cm",
     "validityEs": "2w",
-    "fileSpecEs": "El tamaño del archivo de imagen debe ser menor a 2MB; la resolución de la imagen debería ser de 600×800 px."
+    "fileSpecEs": "El tamaño del archivo de imagen debe ser menor a 2MB; la resolución de la imagen debería ser de 600×800 px.",
+    "warning": {
+      "ko": "⚠️ 600DPI, 사진 유효기간 2주",
+      "en": "⚠️ 600DPI required, photo valid 2 weeks",
+      "ja": "⚠️ 600DPI必要、写真有効期限2週間"
+    }
   },
   "ng-visa": {
     "slug": "ng-visa",
@@ -51247,7 +51335,7 @@
     "size": "3.5 × 4.5cm",
     "pixels": "413 × 531px",
     "dpi": 300,
-    "background": "흰색",
+    "background": "회색",
     "backgroundEn": "White",
     "backgroundJa": "白",
     "headHeight": "3.2~3.6cm",
@@ -51424,7 +51512,7 @@
     "size": "3.5 × 4.5cm",
     "pixels": "413 × 531px",
     "dpi": 300,
-    "background": "흰색",
+    "background": "회색",
     "backgroundEn": "White",
     "backgroundJa": "白",
     "headHeight": "3.2~3.6cm",

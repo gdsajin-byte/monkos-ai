@@ -98,17 +98,6 @@ export function warmupCropEngine() {
   fetch(`${CROP_ENGINE_URL}/health`, { signal: AbortSignal.timeout(50000) }).catch(() => {});
 }
 
-/** 폴백: 프레임 비율 상단 커버 크롭 (얼굴 감지 없이 비율만 보장) */
-async function fallbackCoverCrop(imageB64, spec) {
-  const buf = await sharp(Buffer.from(imageB64, 'base64'))
-    .resize(spec.frameW, spec.frameH, { fit: 'cover', position: 'top' })
-    .flatten({ background: { r: 255, g: 255, b: 255 } })
-    .withMetadata({ density: 300 })
-    .png()
-    .toBuffer();
-  return buf.toString('base64');
-}
-
 /**
  * 생성 결과(순백 배경 base64)를 slug 규격으로 안착 크롭.
  * @returns {{ image: string, cropped: boolean, engine: 'facemesh'|'cover'|'none', meta?: object }}
@@ -118,8 +107,6 @@ export async function cropToSpec(imageB64, slug) {
   if (!spec) return { image: imageB64, cropped: false, engine: 'none' };
 
   if (CROP_ENGINE_URL) {
-    // 감지 실패형 폴백(fallback:true)은 비결정적 미스일 수 있어 1회 재시도.
-    // 재시도 후에도 안착 실패 = 규격 미보장 출고 → 반드시 경보 (조용한 폴백 금지, 2026-07-07 작가님 교정)
     for (let attempt = 1; attempt <= 2; attempt++) {
       try {
         const ctrl = new AbortController();
@@ -135,31 +122,20 @@ export async function cropToSpec(imageB64, slug) {
         if (res.ok && data.success && data.cropped) {
           if (!data.fallback) {
             log(`[SpecCrop] ${slug}: 안착 face=${data.meta?.faceMM}mm crown=${data.meta?.crownMarginMM}mm eye=${data.meta?.eyePositionPercent}%`);
-            return { image: data.cropped, cropped: true, engine: 'facemesh', meta: data.meta };
+            return { image: data.cropped, cropped: true, engine: 'insight', meta: data.meta };
           }
-          if (attempt === 1) { log(`[SpecCrop] ${slug}: 감지 실패 폴백 → 재시도 1회`, 'WARNING'); continue; }
-          log(`[SpecCrop] ${slug}: 재시도에도 감지 실패 — 커버 크롭 출고 (규격 미보장)`, 'ERROR');
-          if (TEAM_CHAT_ID) {
-            sendTelegramMessage(TEAM_CHAT_ID, `🚨 *스펙스 규격 미보장 출고*\nslug: ${slug}\n얼굴 감지 재시도 실패 → 비율만 맞춘 커버 크롭 발송\n→ GCS 결과물 확인·수동 대응 필요`, TELEGRAM_TEAM_API).catch(() => {});
-          }
-          return { image: data.cropped, cropped: true, engine: 'cover', meta: data.meta };
+          if (attempt === 1) { log(`[SpecCrop] ${slug}: 감지 실패 → 재시도 1회`, 'WARNING'); continue; }
         }
         log(`[SpecCrop] ${slug}: 엔진 응답 이상 (${data.error || res.status})`, 'WARNING');
       } catch (err) {
         log(`[SpecCrop] ${slug}: 엔진 호출 실패 (${err.message})`, 'WARNING');
       }
     }
-    log(`[SpecCrop] ${slug}: 엔진 불통 → 로컬 커버 폴백 (규격 미보장)`, 'ERROR');
+    log(`[SpecCrop] ${slug}: 감지 실패 — 명시 에러 반환`, 'ERROR');
     if (TEAM_CHAT_ID) {
-      sendTelegramMessage(TEAM_CHAT_ID, `🚨 *스펙스 크롭 엔진 불통*\nslug: ${slug}\n로컬 커버 크롭 발송 — crop-engine 상태 확인 필요`, TELEGRAM_TEAM_API).catch(() => {});
+      sendTelegramMessage(TEAM_CHAT_ID, `🚨 *스펙스 얼굴 감지 실패*\nslug: ${slug}\n2회 재시도 후 미검출 → 에러 반환`, TELEGRAM_TEAM_API).catch(() => {});
     }
   }
 
-  try {
-    const image = await fallbackCoverCrop(imageB64, spec);
-    return { image, cropped: true, engine: 'cover' };
-  } catch (err) {
-    log(`[SpecCrop] ${slug}: 로컬 폴백도 실패 (${err.message}) → 원본 반환`, 'ERROR');
-    return { image: imageB64, cropped: false, engine: 'none' };
-  }
+  return { image: null, cropped: false, engine: 'none', error: 'FACE_NOT_DETECTED' };
 }

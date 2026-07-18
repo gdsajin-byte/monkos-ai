@@ -16,9 +16,9 @@ import { getSpec } from '../specs/formats.js';
  * cropToFrame(이름 규격 렌더)·cropToSpecV2(주입 스펙 렌더)·fitSpecGeometry(기하)는 전부 이를 경유한다.
  */
 
-// ─── 배치 상수 ───
-const EYE_ANCHOR_FALLBACK = 0.45;  // hairTop 미실측 시 눈 고정 앵커 (프리뷰 45%, 작가님 결정 2026-07-09)
-const HAIR_MARGIN_MM = 2;          // 실측 헤어탑 위 soft 여백 (mm) — spec.hairMarginMm이 우선
+// ─── 배치 상수 (IDPASS CropEngine.swift 정본 이식) ───
+const HAIR_MARGIN_RATIO = 0.044;   // 프레임 높이의 4.4%
+const BOTTOM_MIN_RATIO = 0.12;     // 프레임 높이의 12% (턱 아래 최소 여백)
 const FACE_MIN_RATIO = 0.93;       // spec.faceMinMm 부재 시 최소 얼굴 = faceTargetMm × 0.93
 
 /**
@@ -35,51 +35,78 @@ function resolvePlacement(landmarks, spec) {
   }
   const mmPx = frameH / frameHmm;
   const faceMinMm = spec.faceMinMm || faceTargetMm * FACE_MIN_RATIO;
-  const softMarginPx = (spec.hairMarginMm ?? HAIR_MARGIN_MM) * mmPx;
 
   const { chin, leftEye, rightEye, imageWidth, imageHeight } = landmarks;
   const eyeY = (leftEye.y + rightEye.y) / 2;
   const eyeCenterX = (leftEye.x + rightEye.x) / 2;
   const pose = landmarks.pose || {};
   const pitchDeg = pose.pitch || 0;
-  // pitch 보정 중립화 — 6DRepNet 오프셋(-4.8°) + 부호 미확정. 캘리브레이션 후 복원 (민아 검증 2026-07-09)
   const mirrorRatio = 1.0;
   const crownY = eyeY - (chin.y - eyeY) * mirrorRatio;
   const facePx = chin.y - crownY;
   if (facePx <= 0) throw new Error('[Crop] 유효하지 않은 얼굴 높이');
 
   const hairTopY = landmarks.hairTop ?? crownY;
+  const hasHairTop = landmarks.hairTop != null;
 
   let scale = (faceTargetMm * mmPx) / facePx;
 
-  // 제약 기반 clamp 배치 — hard 제약: 정수리 잘림 금지 (여백 ≥ 0)
-  const topMax = Math.round(crownY * scale);
-  const hasHairTop = landmarks.hairTop != null;
-  const topTarget = hasHairTop
-    ? Math.round(hairTopY * scale - softMarginPx)              // 실측 헤어탑 위 soft 여백
-    : Math.round(eyeY * scale - frameH * EYE_ANCHOR_FALLBACK); // 눈 45% 앵커
-  let extractTop = Math.max(0, Math.min(topMax, topTarget));
+  // IDPASS CropEngine.swift 정본 이식 — 눈 우선 배치
+  const eyePositionRatio = frameHmm >= 60 ? 0.42 : 0.43;
+  let extractTop = Math.round(eyeY * scale - frameH * eyePositionRatio);
 
-  // 스케일 축소 시도: 헤어탑이 프레임 밖이면 faceMinMm까지
-  if (hairTopY * scale - extractTop < 0) {
+  // 머리 보호 가드 (잘릴 때만 개입)
+  if (hasHairTop) {
+    const scaledHairTopY = hairTopY * scale;
+    const hairTopInFrame = scaledHairTopY - extractTop;
+    if (hairTopInFrame < 0) {
+      const minHairMarginPx = frameH * HAIR_MARGIN_RATIO;
+      extractTop = Math.round(scaledHairTopY - minHairMarginPx);
+    }
+  }
+
+  // 턱 마진 가드
+  const scaledChinY = chin.y * scale;
+  const chinInFrame = scaledChinY - extractTop;
+  const bottomMargin = frameH - chinInFrame;
+  if (bottomMargin < frameH * BOTTOM_MIN_RATIO) {
+    const minTargetFaceH = faceMinMm * mmPx;
+    let newScale = scale;
+    while (newScale * facePx > minTargetFaceH) {
+      newScale *= 0.995;
+      const newExtractTop = Math.round(eyeY * newScale - frameH * eyePositionRatio);
+      const newChinInFrame = chin.y * newScale - newExtractTop;
+      const newBottomMargin = frameH - newChinInFrame;
+      if (newBottomMargin >= frameH * BOTTOM_MIN_RATIO) {
+        scale = newScale;
+        extractTop = newExtractTop;
+        break;
+      }
+    }
+  }
+
+  // 머리 잘림 방지 축소 (hairTop이 프레임 밖이면 faceMinMm까지)
+  if (hasHairTop && hairTopY * scale - extractTop < 0) {
     const minTargetFaceH = faceMinMm * mmPx;
     let newScale = scale;
     let fitted = false;
     while (newScale * facePx > minTargetFaceH) {
       newScale *= 0.995;
-      const nTopMax = Math.round(crownY * newScale);
-      const nTopTarget = Math.round(hairTopY * newScale - softMarginPx);
-      const nExtractTop = Math.max(0, Math.min(nTopMax, nTopTarget));
-      if (hairTopY * newScale - nExtractTop >= 0) {
+      const nExtractTop = Math.round(eyeY * newScale - frameH * eyePositionRatio);
+      const nHairMargin = frameH * HAIR_MARGIN_RATIO;
+      if (hairTopY * newScale - nExtractTop >= nHairMargin) {
         scale = newScale;
         extractTop = nExtractTop;
         fitted = true;
         break;
       }
     }
-    // faceMinMm에서도 안 되면 → 타겟 유지, 헤어 잘림 허용 (정수리 여백 0)
-    if (!fitted) extractTop = topMax;
+    if (!fitted) {
+      extractTop = Math.round(hairTopY * scale - frameH * HAIR_MARGIN_RATIO);
+    }
   }
+
+  extractTop = Math.max(0, extractTop);
 
   const eyeAnchor = (eyeY * scale - extractTop) / frameH;
 
