@@ -1,0 +1,397 @@
+{
+  "meta": {
+    "date": "2026-07-18",
+    "agent": "iMac/막내1",
+    "purpose": "공식 원문 기반 specs-data.json 전수 검증",
+    "method": "WebSearch + WebFetch, 공식 정부 사이트(.gov, .go) 우선",
+    "note": "데이터 수정 없음 — 리서치 전용"
+  },
+
+  "phase1_defect_candidates": {
+    "1_id_passport": {
+      "slug": "id-passport",
+      "country": "인도네시아",
+      "db_size": "4×6cm (40×60mm)",
+      "official_size": "40×60mm",
+      "size_match": true,
+      "db_head": "2.5~3.1cm (25~31mm)",
+      "official_head": "~38mm (80% of photo height); passport-photo.online: head 38mm, top margin 6mm",
+      "head_match": false,
+      "db_background": "빨간색 (Red)",
+      "official_background": "Red",
+      "bg_match": true,
+      "verdict": "CONFIRMED_DEFECT",
+      "severity": "🔴 critical",
+      "detail": "DB head range 25-31mm vs 공식 ~38mm. 하한 13mm, 상한 7mm 차이. 80%/60mm=48mm인데 38mm(63%)이 더 정확. 어느 쪽이든 DB 범위는 너무 낮음",
+      "source_grade": "B (passport-photo.online 종합, imigrasi.go.id 직접 수치 미제공)",
+      "sources": [
+        "https://passport-photo.online/indonesian-passport-photo",
+        "https://evisa.imigrasi.go.id/front/register/wna"
+      ]
+    },
+    "2_lt_passport": {
+      "slug": "lt-passport",
+      "country": "리투아니아",
+      "db_size": "4×6cm (40×60mm)",
+      "official_size": "40×60mm (접수 후 35×45mm로 재단)",
+      "size_match": true,
+      "db_head": "3.3cm (33mm, 단일값)",
+      "official_head": "31.5~36mm (제3자 종합)",
+      "head_match": "PARTIAL",
+      "db_background": "흰색",
+      "official_background": "White",
+      "bg_match": true,
+      "verdict": "PARTIAL_DEFECT",
+      "severity": "🟠 medium",
+      "detail": "단일값 33mm → 범위 31.5~36mm로 교정 필요. 33mm 자체는 범위 내이나 합성(kr상수 오염) 의심. 'head 33'은 kr-passport 기본값과 동일하여 복사 의심",
+      "source_grade": "B (vrm.lt 직접 수치 미확인, 제3자 종합)",
+      "sources": [
+        "https://visapics.org/blog/lt-lithuania-passport-40x60-mm-4x6-cm-photo-requir",
+        "https://mybiometricphotos.com/passport-photo/lithuania/"
+      ]
+    },
+    "3_co_passport": {
+      "slug": "co-passport",
+      "country": "콜롬비아",
+      "db_size": "4×5cm (40×50mm)",
+      "official_size": "4×5cm (40×50mm)",
+      "size_match": true,
+      "db_head": "2.7cm (27mm, 단일값)",
+      "official_head": "미규정 (공식 cancilleria.gov.co에서 head height 수치 미제공)",
+      "head_match": "UNVERIFIABLE",
+      "db_background": "흰색",
+      "official_background": "White or blue",
+      "bg_match": true,
+      "verdict": "SYNTHETIC_SUSPECTED",
+      "severity": "🟠 medium",
+      "detail": "27mm 단일값은 ICAO ±5% 합성으로 추정. 40×50mm 사진에서 27mm = 54%로 합리적이나 공식 근거 없음. 범위가 아닌 단일값",
+      "source_grade": "합성 (공식 원문에 head height 수치 없음)",
+      "sources": [
+        "https://www.cancilleria.gov.co/en/tt_ss/requirements"
+      ]
+    },
+    "4_cl_cu_45x45_group": {
+      "slugs": ["cl-passport", "cl-visa", "cu-passport", "cu-visa"],
+      "countries": "칠레, 쿠바",
+      "db_size": "4.5×4.5cm (45×45mm)",
+      "official_size_cl": "45×45mm (Registro Civil Chile)",
+      "official_size_cu": "50×50mm (eta-cuba.com) 또는 35×45mm (ICAO) — 45×45mm은 tourist card용",
+      "size_match_cl": true,
+      "size_match_cu": "DISPUTED",
+      "db_head": "2.7cm (27mm, 단일값)",
+      "official_head_cl": "27mm (제3자, 공식 미확인)",
+      "official_head_cu": "미규정",
+      "head_match": "UNVERIFIABLE",
+      "db_background": "흰색",
+      "official_background": "White",
+      "bg_match": true,
+      "verdict": "CU_SIZE_DISPUTED",
+      "severity": "🟠 medium",
+      "detail": "칠레: 45×45mm 일치, head 27mm은 제3자 출처. 쿠바: DB 45×45mm이지만 여권은 50×50mm(eta-cuba.com) 또는 35×45mm(ICAO). 45×45은 관광카드용일 수 있음. cu-passport 사이즈 교정 필요 가능",
+      "source_grade": "B (칠레 제3자), C (쿠바 출처 혼재)",
+      "sources": [
+        "https://mybiometricphotos.com/passport-photo/chile/",
+        "https://eta-cuba.com/cuba-passport-photo-and-visa-photo-requirements/",
+        "https://visafoto.com/cu-tarjeta-de-turista-photo"
+      ]
+    },
+    "5_us_visa": {
+      "slug": "us-visa",
+      "country": "미국",
+      "db_size": "2×2 inch (51×51mm)",
+      "official_size": "2×2 inch (51×51mm)",
+      "size_match": true,
+      "db_head": "2.5~3.5cm (25~35mm)",
+      "official_head": "1 inch to 1⅜ inches (25.4~34.9mm ≈ 25~35mm)",
+      "head_match": true,
+      "db_background": "흰색",
+      "official_background": "White or off-white",
+      "bg_match": true,
+      "verdict": "MATCH",
+      "severity": "✅ none",
+      "detail": "DB값 정합. 지시서에 언급된 'iOS head 22~35'의 22mm 하한은 공식 1인치(25.4mm) 미달 — iOS 앱 값이 오기라면 별도 확인 필요",
+      "source_grade": "A (travel.state.gov 공식)",
+      "sources": [
+        "https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/photos.html"
+      ]
+    },
+    "6_51x51_upper_group": {
+      "slugs": ["in-passport", "bz-passport", "ve-passport"],
+      "countries": "인도, 벨리즈, 베네수엘라",
+      "in_passport": {
+        "db_size": "3.5×4.5cm",
+        "official_size": "35×45mm (2025.09~ ICAO 전환)",
+        "size_match": true,
+        "db_head": "3.2~3.6cm (32~36mm)",
+        "official_head": "36~38mm (80-85% of 45mm frame, MEA/ICAO 9303)",
+        "head_match": false,
+        "verdict": "DEFECT",
+        "severity": "🔴 critical",
+        "detail": "인도 2025.09부터 ICAO 전환, face 36-38mm(80-85%). DB 32-36mm은 하한 4mm 낮음. 인도는 전 세계에서 가장 엄격한 얼굴 커버리지(80-85%) 요구"
+      },
+      "bz_passport": {
+        "db_size": "2×2 inch (51×51mm)",
+        "official_size": "2×2 inch (51×51mm)",
+        "size_match": true,
+        "db_head": "3.5~4.1cm (35~41mm)",
+        "official_head": "70-80% of 2inch: 35.7~40.8mm",
+        "head_match": true,
+        "verdict": "MATCH",
+        "severity": "✅ none",
+        "detail": "DB 35-41mm vs 공식 35.7-40.8mm — 실질 일치 (0.7mm 차이)"
+      },
+      "ve_passport": {
+        "db_size": "2×2 inch (51×51mm)",
+        "official_size": "2×2 inch (51×51mm)",
+        "size_match": true,
+        "db_head": "3.4~3.8cm (34~38mm)",
+        "official_head": "66-75% of 51mm: 33.7~38.25mm",
+        "head_match": true,
+        "verdict": "MATCH",
+        "severity": "✅ none",
+        "detail": "DB 34-38mm vs 공식 33.7-38.25mm — 실질 일치"
+      },
+      "source_grade": "A (India: MEA공식, Belize: immigration.gov.bz, Venezuela: 제3자 종합)",
+      "sources": [
+        "https://compliantphoto.com/india-passport",
+        "https://immigration.gov.bz/passport/passport-photo-requirements/",
+        "https://fylite.com/en/use/venezuela-passport-photo/"
+      ]
+    },
+    "7_td_passport_visa": {
+      "slugs": ["td-passport", "td-visa"],
+      "country": "차드",
+      "db_size": "5×5cm (50×50mm)",
+      "official_size": "50×50mm",
+      "size_match": true,
+      "db_head": "3.4~3.5cm (34~35mm)",
+      "official_head": "68% of 50mm = 34mm; 제3자 소스",
+      "head_match": "PARTIAL",
+      "db_background": "흰색",
+      "official_background": "White",
+      "bg_match": true,
+      "verdict": "NARROW_RANGE",
+      "severity": "🟡 low",
+      "detail": "1mm 범위(34-35)는 비정상적으로 좁음. 68%=34mm 단일값이 맞다면 단일값으로 교정하거나, 파싱 결함으로 범위가 반토막 났을 가능성. 지시서의 '35×45' 표기는 DB 실측 '5×5cm'과 불일치 — 지시서 오기",
+      "source_grade": "B (제3자 종합, 차드 정부 직접 사이트 미확인)",
+      "sources": [
+        "https://mybiometricphotos.com/passport-photo/chad/",
+        "https://visafoto.com/td-passport-50x50mm-photo"
+      ]
+    },
+    "8_ru_ng_dpi": {
+      "ru_passport": {
+        "slug": "ru-passport",
+        "db_dpi": 600,
+        "official_dpi": "600 DPI (인쇄용)",
+        "dpi_match": true,
+        "db_head": "3.2~3.6cm (32~36mm)",
+        "official_head": "32~36mm",
+        "head_match": true,
+        "verdict": "MATCH",
+        "severity": "✅ none"
+      },
+      "ru_visa": {
+        "slug": "ru-visa",
+        "db_dpi": 300,
+        "official_dpi": "600 DPI 인쇄 / 디지털은 별도",
+        "dpi_match": "AMBIGUOUS",
+        "db_head": "3.2~3.6cm (32~36mm)",
+        "official_head": "27~36mm (또는 32~36mm, 출처에 따라 차이)",
+        "head_match": true,
+        "db_background": "밝은 회색",
+        "official_background": "Light grey (MID 기준, 여권과 다름)",
+        "bg_match": true,
+        "verdict": "MATCH",
+        "severity": "✅ none",
+        "detail": "러시아 비자: 배경 밝은 회색(MID) 정합. DPI 300은 디지털 제출 기준으로 합리적"
+      },
+      "ng_passport": {
+        "slug": "ng-passport",
+        "db_dpi": 600,
+        "official_dpi": "인쇄 600 DPI, 디지털 포털 300 DPI",
+        "dpi_match": "PARTIAL",
+        "db_head": "3.2~3.6cm (32~36mm)",
+        "official_head": "31~36mm",
+        "head_match": "PARTIAL",
+        "verdict": "MINOR_DISCREPANCY",
+        "severity": "🟡 low",
+        "detail": "DB DPI 600은 인쇄용으로는 맞지만 디지털 포털은 300 DPI. DB head 하한 32 vs 공식 31 — 1mm 차이. NIS fileSpecEn에 '600×800 px' 이미 기록됨"
+      },
+      "ng_visa": {
+        "slug": "ng-visa",
+        "db_dpi": 600,
+        "official_dpi": "인쇄 600 DPI, 디지털 300 DPI",
+        "dpi_match": "PARTIAL",
+        "verdict": "MINOR_DISCREPANCY",
+        "severity": "🟡 low"
+      },
+      "sources": [
+        "https://passportphotohq.com/requirements/ru/",
+        "https://passport-photo.online/nigerian-passport-photo",
+        "https://passport.immigration.gov.ng/image-compliance"
+      ]
+    },
+    "9_cn_resume": {
+      "slug": "cn-resume",
+      "country": "중국",
+      "db_size": "1寸 · 2寸 복수 규격 (25×35 / 35×49mm)",
+      "official_size_1cun": "25×35mm",
+      "official_size_2cun": "35×49mm (또는 대2寸 35×53mm)",
+      "db_head": "없음 (headHeight 필드 비어있음)",
+      "official_head": "1寸·2寸 각각 별도 규격 필요 (공식 수치 미제공, 정성적 기준만)",
+      "verdict": "STRUCTURAL_DEFECT",
+      "severity": "🔴 critical",
+      "detail": "복수 규격(1寸/2寸)이 한 레코드에 합쳐져 크롭 파라미터 산출 불가. headHeight 비어있음. 레코드 분리 필수: cn-resume-1cun(25×35), cn-resume-2cun(35×49)",
+      "source_grade": "A (중국 정부 표준, 다수 중국어 출처 일치)",
+      "sources": [
+        "https://www.secaiyun.com/docs/id-photo-size-specification-guide-2026-06-08.html",
+        "https://zhuanlan.zhihu.com/p/698111615"
+      ]
+    }
+  },
+
+  "phase2_special_regulations": {
+    "crown_definition": {
+      "uk": {
+        "definition": "top of the head, NOT the top of the hair",
+        "measurement": "chin to crown (NOT hairline)",
+        "source": "gov.uk official photographer guidance",
+        "source_url": "https://www.gov.uk/government/publications/passport-photos-guide-for-photographers/guidance-for-photographers",
+        "in_db": false,
+        "impact": "HIGH — 볼륨 있는 헤어스타일 시 crown과 hair top 차이 최대 10mm+"
+      },
+      "canada": {
+        "definition": "chin to crown (top of head), NOT chin to hairline",
+        "source": "canada.ca passport photo specifications",
+        "source_url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/canadian-passports/photos.html",
+        "in_db": false,
+        "impact": "HIGH — 가장 흔한 반려 사유로 명시"
+      },
+      "us": {
+        "definition": "top of the head, INCLUDING the hair",
+        "measurement": "chin to top of head INCLUDING hair",
+        "source": "travel.state.gov",
+        "source_url": "https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/photos.html",
+        "in_db": false,
+        "impact": "MEDIUM — UK와 반대 정의. faceTarget 계산 시 구분 필수"
+      },
+      "australia": {
+        "definition": "chin to crown, crown includes hair",
+        "source": "passports.gov.au",
+        "source_url": "https://www.passports.gov.au/help/passport-photos",
+        "in_db": false,
+        "impact": "MEDIUM — US와 동일 방향"
+      }
+    },
+    "eye_position_numeric": {
+      "us": {
+        "spec": "eyes 1⅛ to 1⅜ inches (28.6~34.9mm) from bottom edge",
+        "as_percentage": "56-68% from bottom of 51mm photo",
+        "source": "travel.state.gov",
+        "in_db": false
+      },
+      "uk": {
+        "spec": "눈 위치 수치 규정 없음 (face 29-34mm만 규정)",
+        "in_db": "N/A"
+      },
+      "chad": {
+        "spec": "eye line at 56% from bottom of photo",
+        "source": "제3자 (mybiometricphotos.com)",
+        "in_db": false
+      }
+    },
+    "background_discrepancies": {
+      "nz_passport": {
+        "db_bg": "흰색 (White)",
+        "official_bg": "Light background, NOT white (light grey/off-white)",
+        "source": "New Zealand DIA",
+        "verdict": "DB_WRONG",
+        "severity": "🟠 medium"
+      },
+      "de_passport": {
+        "db_bg": "흰색 (White)",
+        "official_bg": "Light grey (70-80% brightness on neutral grey scale)",
+        "source": "Bundesdruckerei / Bundesregierung",
+        "verdict": "DB_WRONG",
+        "severity": "🟠 medium"
+      },
+      "fr_passport": {
+        "db_bg": "밝은 회색",
+        "official_bg": "Light grey/blue-grey, NOT white",
+        "verdict": "MATCH",
+        "severity": "✅ none"
+      },
+      "om_passport": {
+        "db_bg": "파란색 (Blue)",
+        "official_bg": "White (제3자 종합)",
+        "verdict": "NEEDS_VERIFICATION",
+        "severity": "🟡 low",
+        "detail": "제3자 소스 대부분 흰색 표기. 오만 정부 직접 사이트 미확인"
+      }
+    },
+    "strict_face_coverage": {
+      "india": {
+        "requirement": "80-85% of frame (36-38mm in 45mm photo)",
+        "note": "전 세계 최고 수준. 가장 흔한 반려 사유",
+        "db_discrepancy": "DB 32-36mm — 4mm 부족"
+      },
+      "indonesia": {
+        "requirement": "~80% of frame (~38mm in 60mm photo)",
+        "note": "인도와 유사 수준",
+        "db_discrepancy": "DB 25-31mm — 7-13mm 부족"
+      }
+    },
+    "glasses_ban_countries": [
+      {"country": "India", "since": 2020},
+      {"country": "France", "since": 2018},
+      {"country": "UK", "since": 2012, "note": "sunglasses banned, prescription optional"},
+      {"country": "Nigeria", "since": "unknown"}
+    ],
+    "unique_sizes_verified": {
+      "my_passport": {"size": "35×50mm", "head": "25-30mm", "note": "ICAO 50-60% 적용, 타국 대비 낮은 head비율"},
+      "ca_passport": {"size": "50×70mm", "head": "31-36mm", "note": "대형 사진, 상체 많이 포함"},
+      "br_passport": {"size": "50×70mm", "head": "31-36mm (제3자) vs DB 42mm", "note": "DB 42mm 과다 의심"},
+      "bd_passport": {"size": "45×55mm", "head": "34mm or 31-36mm", "note": "대사관별 사이즈 불일치(45×55, 35×45, 50×40)"}
+    }
+  },
+
+  "phase2_tier1_summary": [
+    {"country": "US", "code": "us", "size": "51×51mm", "head_mm": "25-35", "head_pct": "50-69%", "crown_def": "includes hair", "eye_pos": "28.6-34.9mm from bottom", "bg": "white/off-white", "db_match": true, "special": "eye position numeric"},
+    {"country": "CA", "code": "ca", "size": "50×70mm", "head_mm": "31-36", "head_pct": "44-51%", "crown_def": "NOT hairline", "eye_pos": "not specified", "bg": "white", "db_match": true, "special": "crown definition"},
+    {"country": "AU", "code": "au", "size": "35-40×45-50", "head_mm": "32-36", "head_pct": "~70-80%", "crown_def": "includes hair", "eye_pos": "not specified", "bg": "white/light grey", "db_match": true, "special": null},
+    {"country": "NZ", "code": "nz", "size": "35×45mm", "head_mm": "32-36", "head_pct": "70-80%", "crown_def": "not explicit", "eye_pos": "not specified", "bg": "NOT white", "db_match": false, "special": "background NOT white"},
+    {"country": "DE", "code": "de", "size": "35×45mm", "head_mm": "32-36", "head_pct": "~70-80%", "crown_def": "not explicit", "eye_pos": "eyes on horizontal centerline", "bg": "light grey 70-80%", "db_match": false, "special": "background light grey, NOT white"},
+    {"country": "FR", "code": "fr", "size": "35×45mm", "head_mm": "32-36", "head_pct": "~70-80%", "crown_def": "not explicit", "eye_pos": "not specified", "bg": "light grey, NOT white", "db_match": true, "special": "glasses banned 2018"},
+    {"country": "JP", "code": "jp", "size": "35×45mm", "head_mm": "32-36 (34±2)", "head_pct": "~70-80%", "crown_def": "not explicit", "eye_pos": "not specified", "bg": "white/grey/blue", "db_match": true, "special": null},
+    {"country": "CN", "code": "cn", "size": "33×48mm", "head_mm": "28-33", "head_pct": "~58-69%", "crown_def": "not explicit", "eye_pos": "not specified", "bg": "white", "db_match": true, "special": "top margin 3-5mm specified"},
+    {"country": "KR", "code": "kr", "size": "35×45mm", "head_mm": "32-36", "head_pct": "~70-80%", "crown_def": "not explicit", "eye_pos": "not specified", "bg": "pure white only", "db_match": true, "special": null},
+    {"country": "IN", "code": "in", "size": "35×45mm", "head_mm": "36-38", "head_pct": "80-85%", "crown_def": "not explicit", "eye_pos": "not specified", "bg": "pure white", "db_match": false, "special": "strictest face coverage globally, glasses banned 2020"},
+    {"country": "VN", "code": "vn", "size": "40×60mm", "head_mm": "32-36 (face, excl hair) / DB says 36-40", "head_pct": "70-80%", "crown_def": "not explicit", "eye_pos": "not specified", "bg": "white", "db_match": "NEEDS_CHECK", "special": "face vs head measurement ambiguity"},
+    {"country": "ID", "code": "id", "size": "40×60mm", "head_mm": "~38", "head_pct": "~80%", "crown_def": "not explicit", "eye_pos": "not specified", "bg": "RED", "db_match": false, "special": "red background unique; head significantly off"},
+    {"country": "TH", "code": "th", "size": "35×45mm", "head_mm": "31.5-36", "head_pct": "~70%", "crown_def": "not explicit", "eye_pos": "not specified", "bg": "white", "db_match": true, "special": null},
+    {"country": "PH", "code": "ph", "size": "35×45mm", "head_mm": "32-36", "head_pct": "70-80%", "crown_def": "includes hair", "eye_pos": "not specified", "bg": "white", "db_match": true, "special": "collar/sleeve dress code enforced"},
+    {"country": "MY", "code": "my", "size": "35×50mm", "head_mm": "25-30", "head_pct": "50-60%", "crown_def": "not explicit", "eye_pos": "not specified", "bg": "white", "db_match": true, "special": "low head ratio, 10mm top+bottom margins"},
+    {"country": "SG", "code": "sg", "size": "35×45mm", "head_mm": "25-35", "head_pct": "55-78%", "crown_def": "crown to chin", "eye_pos": "not specified", "bg": "white", "db_match": true, "special": "wide range 25-35mm"}
+  ],
+
+  "phase2_tier2_summary": [
+    {"country": "BH", "code": "bh", "size": "40×60mm", "head_mm": "38", "db_head": "38mm", "db_match": true},
+    {"country": "SA", "code": "sa", "size": "40×60mm", "head_mm": "38", "db_head": "38mm", "db_match": true},
+    {"country": "AE", "code": "ae", "size": "40×60mm", "head_mm": "31-35 or 38 (conflicting)", "db_head": "36-40mm", "db_match": "DISPUTED"},
+    {"country": "OM", "code": "om", "size": "40×60mm", "head_mm": "38 or 36-42", "db_head": "38mm", "db_match": true, "bg_issue": "DB blue vs official white"},
+    {"country": "YE", "code": "ye", "size": "40×60mm", "head_mm": "38", "db_head": "32-36mm", "db_match": false, "note": "DB head 6mm too low"},
+    {"country": "EG", "code": "eg", "size": "40×60mm", "head_mm": "38", "db_head": "38-40mm", "db_match": true},
+    {"country": "LY", "code": "ly", "size": "40×60mm", "head_mm": "unverified", "db_head": "38mm", "db_match": "UNVERIFIED"},
+    {"country": "KH", "code": "kh", "size": "40×60mm", "head_mm": "min 36", "db_head": "36mm", "db_match": true},
+    {"country": "LA", "code": "la", "size": "40×60mm", "head_mm": "min 36", "db_head": "36-40mm", "db_match": true},
+    {"country": "KG", "code": "kg", "size": "40×60mm", "head_mm": "38 (제3자)", "db_head": "36-40mm", "db_match": true},
+    {"country": "GR", "code": "gr", "size": "40×60mm", "head_mm": "31-35 (ICAO) or 70-75% chin-forehead", "db_head": "36-40mm", "db_match": "POSSIBLE_HIGH"},
+    {"country": "LT", "code": "lt", "size": "40×60mm", "head_mm": "31.5-36", "db_head": "33mm", "db_match": "PARTIAL"},
+    {"country": "BR", "code": "br", "size": "50×70mm", "head_mm": "31-36 (제3자)", "db_head": "42mm", "db_match": false, "note": "DB head 6-11mm too high — 제3자 수치 신뢰도 확인 필요"},
+    {"country": "BD", "code": "bd", "size": "45×55mm", "head_mm": "34 or 31-36", "db_head": "34mm", "db_match": true},
+    {"country": "BI", "code": "bi", "size": "45×45mm", "head_mm": "unverified", "db_head": "27-32mm", "db_match": "UNVERIFIED"},
+    {"country": "NA", "code": "na", "size": "37×52mm", "head_mm": "unverified", "db_head": "36mm", "db_match": "UNVERIFIED"},
+    {"country": "TM", "code": "tm", "size": "30×40mm (DB) vs 50×60mm (지시서)", "head_mm": "unverified", "db_head": "30mm", "db_match": "UNVERIFIED", "note": "DB size 30×40 vs 지시서 50×60 불일치 — 사이즈 자체 재확인 필요"}
+  ]
+}
