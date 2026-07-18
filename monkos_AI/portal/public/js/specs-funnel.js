@@ -88,6 +88,41 @@ var SpecsFunnel = (function(){
   }
   function showError(msg){ errorMsg.textContent = msg; errorMsg.classList.add('show'); }
   function hideError(){ errorMsg.classList.remove('show'); }
+  /* 이미지 기기 저장 — data URL 앵커는 인앱 브라우저(구글앱·카카오 등 WKWebView)에서 무반응 (2026-07-18 작가님 실사고).
+     blob 앵커 우선, 인앱·iOS에서 공유시트(파일) 폴백, 최후엔 길게 눌러 저장 안내. */
+  function saveImageToDevice(dataUrl, fileName){
+    try {
+      var b64 = dataUrl.split(',')[1];
+      var bin = atob(b64), arr = new Uint8Array(bin.length);
+      for(var i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+      var blob = new Blob([arr], { type: 'image/png' });
+      var ua = navigator.userAgent || '';
+      var inApp = /(GSA\/|FBAN|FBAV|Instagram|KAKAOTALK|Line\/|NAVER\(|DaumApps|; wv\))/i.test(ua);
+      if(inApp && navigator.canShare && window.File){
+        try {
+          var f = new File([blob], fileName.replace(/\.jpg$/, '.png'), { type: 'image/png' });
+          if(navigator.canShare({ files: [f] })){
+            navigator.share({ files: [f] }).catch(function(){ blobAnchor(); });
+            return;
+          }
+        } catch(e){ /* 폴스루 */ }
+      }
+      blobAnchor();
+      function blobAnchor(){
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url; a.download = fileName;
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(function(){ URL.revokeObjectURL(url); }, 5000);
+        // 인앱은 blob 앵커도 무반응일 수 있음 — 길게 눌러 저장 안내 (iOS 사파리 정상 경로엔 미표시)
+        if(inApp) showError(T.longPressSave || '저장이 안 되면 결과 사진을 길게 눌러 이미지 저장을 선택해 주세요.');
+      }
+    } catch(e){
+      var a2 = document.createElement('a');
+      a2.href = dataUrl; a2.download = fileName;
+      document.body.appendChild(a2); a2.click(); a2.remove();
+    }
+  }
   function returnBase(){ return location.origin + location.pathname; }
   function hasUsableToken(){
     if(!pay.token || pay.consumed) return false;
@@ -475,10 +510,7 @@ var SpecsFunnel = (function(){
   if(phaseFree){
     document.getElementById('ip-free-download').addEventListener('click', function(){
       if(!freeResultB64) return;
-      var a = document.createElement('a');
-      a.href = 'data:image/png;base64,' + freeResultB64;
-      a.download = CFG.downloadName.replace(/\.jpg$/, '_free.png');
-      document.body.appendChild(a); a.click(); a.remove();
+      saveImageToDevice('data:image/png;base64,' + freeResultB64, CFG.downloadName.replace(/\.jpg$/, '_free.png'));
       gaTrack('free_download', {}, true);
     });
     document.getElementById('ip-free-retry').addEventListener('click', function(){
@@ -1069,11 +1101,7 @@ var SpecsFunnel = (function(){
   document.getElementById('v2-download').addEventListener('click', function(){
     var img = document.getElementById('v2-result-after-img');
     if(!img.src) return;
-    function trigger(){
-      var a = document.createElement('a');
-      a.href = img.src; a.download = CFG.downloadName;
-      document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    }
+    function trigger(){ saveImageToDevice(img.src, CFG.downloadName); }
     // 결제 토큰 경로: 다운로드 직전 1회성 최종 소모 API 호출 성공 후 실제 다운로드 (서버 계약 5번)
     if(!pay.token || pay.consumed) return trigger();
     fetch('/api/download/direct?token=' + encodeURIComponent(pay.token))
