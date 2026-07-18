@@ -1,0 +1,8991 @@
+{
+ "generated": "2026-07-18 12:07 KST",
+ "classes": {
+  "51×51": {
+   "n": 22,
+   "collected": 22,
+   "def72": 0,
+   "explicit": 0,
+   "slugs": [
+    "us-passport",
+    "us-visa",
+    "in-visa-evisa",
+    "in-visa-bls",
+    "ve-passport",
+    "ve-visa",
+    "cr-passport",
+    "cr-visa",
+    "do-passport",
+    "do-visa",
+    "ht-passport",
+    "ht-visa",
+    "bz-passport",
+    "bz-visa",
+    "ug-passport",
+    "ug-visa",
+    "rw-passport",
+    "rw-visa",
+    "mh-passport",
+    "mh-visa",
+    "pw-passport",
+    "pw-visa"
+   ]
+  },
+  "35×45": {
+   "n": 290,
+   "collected": 290,
+   "def72": 0,
+   "explicit": 3,
+   "slugs": [
+    "eu-passport",
+    "eu-resume",
+    "uk-passport",
+    "kr-passport",
+    "kr-visa",
+    "kr-id",
+    "kr-license",
+    "kr-intl-license",
+    "kr-exam",
+    "kr-youth-id",
+    "kr-marine",
+    "jp-passport",
+    "jp-id",
+    "eu-visa",
+    "eu-license",
+    "uk-license",
+    "uk-visa",
+    "sg-passport",
+    "sg-visa",
+    "in-passport",
+    "in-license",
+    "tw-passport",
+    "tw-visa",
+    "mo-passport",
+    "mo-visa",
+    "th-passport",
+    "th-visa",
+    "id-visa",
+    "ph-passport",
+    "ph-visa",
+    "mm-passport",
+    "lk-passport",
+    "lk-visa",
+    "np-passport",
+    "np-visa",
+    "pk-passport",
+    "pk-visa",
+    "mn-passport",
+    "mn-visa",
+    "kz-passport",
+    "kz-visa",
+    "uz-passport",
+    "uz-visa",
+    "kg-visa",
+    "tj-passport",
+    "tj-visa",
+    "tl-passport",
+    "tl-visa",
+    "kp-passport",
+    "kp-visa",
+    "bt-passport",
+    "bt-visa",
+    "mv-passport",
+    "mv-visa",
+    "ru-passport",
+    "ru-visa",
+    "ua-passport",
+    "ua-visa",
+    "fr-passport",
+    "fr-visa",
+    "de-passport",
+    "de-visa",
+    "it-passport",
+    "it-visa",
+    "es-passport",
+    "es-visa",
+    "pt-passport",
+    "pt-visa",
+    "nl-passport",
+    "nl-visa",
+    "be-passport",
+    "be-visa",
+    "ch-passport",
+    "ch-visa",
+    "at-passport",
+    "at-visa",
+    "se-passport",
+    "se-visa",
+    "no-passport",
+    "no-visa",
+    "dk-passport",
+    "dk-visa",
+    "fi-visa",
+    "is-passport",
+    "is-visa",
+    "ie-passport",
+    "ie-visa",
+    "pl-passport",
+    "pl-visa",
+    "cz-passport",
+    "cz-visa",
+    "sk-passport",
+    "sk-visa",
+    "hu-passport",
+    "hu-visa",
+    "ro-passport",
+    "ro-visa",
+    "bg-passport",
+    "bg-visa",
+    "hr-passport",
+    "hr-visa",
+    "rs-visa",
+    "ba-passport",
+    "ba-visa",
+    "me-passport",
+    "me-visa",
+    "mk-visa",
+    "xk-passport",
+    "xk-visa",
+    "md-passport",
+    "md-visa",
+    "by-visa",
+    "lv-passport",
+    "lv-visa",
+    "lt-visa",
+    "ee-visa",
+    "si-passport",
+    "si-visa",
+    "gr-visa",
+    "cy-visa",
+    "mt-passport",
+    "mt-visa",
+    "lu-passport",
+    "lu-visa",
+    "ge-passport",
+    "ge-visa",
+    "am-passport",
+    "am-visa",
+    "tr-visa",
+    "mx-passport",
+    "mx-visa",
+    "br-visa",
+    "pe-passport",
+    "pe-visa",
+    "py-passport",
+    "py-visa",
+    "uy-passport",
+    "uy-visa",
+    "pa-passport",
+    "pa-visa",
+    "sv-passport",
+    "sv-visa",
+    "gt-passport",
+    "gt-visa",
+    "jm-passport",
+    "jm-visa",
+    "bs-passport",
+    "bs-visa",
+    "sr-passport",
+    "sr-visa",
+    "gy-passport",
+    "gy-visa",
+    "ae-id",
+    "iq-passport",
+    "iq-visa",
+    "jo-passport",
+    "jo-visa",
+    "lb-passport",
+    "lb-visa",
+    "sy-passport",
+    "sy-visa",
+    "il-passport",
+    "il-visa",
+    "ps-passport",
+    "ps-visa",
+    "za-passport",
+    "za-visa",
+    "ma-passport",
+    "ma-visa",
+    "ng-passport",
+    "ng-visa",
+    "ke-passport",
+    "ke-visa",
+    "gh-passport",
+    "gh-visa",
+    "sn-passport",
+    "sn-visa",
+    "ci-passport",
+    "ci-visa",
+    "dz-passport",
+    "dz-visa",
+    "tn-passport",
+    "tn-visa",
+    "mz-passport",
+    "mz-visa",
+    "zw-passport",
+    "zw-visa",
+    "ao-passport",
+    "ao-visa",
+    "cd-passport",
+    "cd-visa",
+    "mg-visa",
+    "so-passport",
+    "so-visa",
+    "zm-passport",
+    "zm-visa",
+    "mw-passport",
+    "mw-visa",
+    "mu-passport",
+    "mu-visa",
+    "au-passport",
+    "au-visa",
+    "nz-passport",
+    "nz-visa",
+    "fj-passport",
+    "fj-visa",
+    "pg-passport",
+    "pg-visa",
+    "ws-passport",
+    "ws-visa",
+    "to-passport",
+    "to-visa",
+    "li-passport",
+    "li-visa",
+    "mc-passport",
+    "mc-visa",
+    "sm-passport",
+    "sm-visa",
+    "ad-passport",
+    "ad-visa",
+    "va-passport",
+    "va-visa",
+    "ag-passport",
+    "ag-visa",
+    "kn-passport",
+    "kn-visa",
+    "vc-passport",
+    "vc-visa",
+    "bf-passport",
+    "bf-visa",
+    "ml-passport",
+    "ml-visa",
+    "ne-passport",
+    "ne-visa",
+    "mr-passport",
+    "mr-visa",
+    "gm-passport",
+    "gm-visa",
+    "gw-passport",
+    "gw-visa",
+    "gn-passport",
+    "gn-visa",
+    "sl-visa",
+    "lr-passport",
+    "lr-visa",
+    "tg-passport",
+    "tg-visa",
+    "bj-passport",
+    "bj-visa",
+    "cg-passport",
+    "cg-visa",
+    "ga-passport",
+    "ga-visa",
+    "gq-passport",
+    "gq-visa",
+    "cf-passport",
+    "cf-visa",
+    "st-passport",
+    "st-visa",
+    "er-passport",
+    "er-visa",
+    "ss-passport",
+    "ss-visa",
+    "cv-passport",
+    "cv-visa",
+    "km-passport",
+    "km-visa",
+    "sc-passport",
+    "sc-visa",
+    "sz-passport",
+    "sz-visa",
+    "ls-passport",
+    "ls-visa",
+    "vu-passport",
+    "vu-visa",
+    "sb-passport",
+    "sb-visa",
+    "ki-passport",
+    "ki-visa",
+    "fm-passport",
+    "fm-visa",
+    "nr-passport",
+    "nr-visa",
+    "tv-passport",
+    "tv-visa",
+    "ck-passport",
+    "ck-visa",
+    "nu-passport",
+    "nu-visa",
+    "de-resume"
+   ]
+  },
+  "30×40": {
+   "n": 15,
+   "collected": 15,
+   "def72": 0,
+   "explicit": 0,
+   "slugs": [
+    "kr-resume",
+    "jp-resume",
+    "jp-residence",
+    "tm-passport",
+    "az-passport",
+    "az-visa",
+    "co-visa",
+    "ir-passport",
+    "ir-visa",
+    "et-passport",
+    "et-visa",
+    "bw-passport",
+    "bw-visa",
+    "kr-halfcard",
+    "jp-halfcard"
+   ]
+  },
+  "50×70": {
+   "n": 4,
+   "collected": 4,
+   "def72": 0,
+   "explicit": 0,
+   "slugs": [
+    "kr-taxi",
+    "ca-passport",
+    "ca-visa",
+    "br-passport"
+   ]
+  },
+  "45×45": {
+   "n": 7,
+   "collected": 7,
+   "def72": 0,
+   "explicit": 0,
+   "slugs": [
+    "jp-visa",
+    "cl-passport",
+    "cl-visa",
+    "cu-passport",
+    "cu-visa",
+    "bi-passport",
+    "bi-visa"
+   ]
+  },
+  "24×30": {
+   "n": 1,
+   "collected": 1,
+   "def72": 0,
+   "explicit": 0,
+   "slugs": [
+    "jp-license"
+   ]
+  },
+  "33×48": {
+   "n": 2,
+   "collected": 2,
+   "def72": 0,
+   "explicit": 2,
+   "slugs": [
+    "cn-passport",
+    "cn-visa"
+   ]
+  },
+  "22×32": {
+   "n": 1,
+   "collected": 1,
+   "def72": 0,
+   "explicit": 0,
+   "slugs": [
+    "cn-license"
+   ]
+  },
+  "40×50": {
+   "n": 19,
+   "collected": 19,
+   "def72": 0,
+   "explicit": 0,
+   "slugs": [
+    "hk-passport",
+    "hk-visa",
+    "al-passport",
+    "by-passport",
+    "ee-passport",
+    "cy-passport",
+    "co-passport",
+    "bo-passport",
+    "bo-visa",
+    "ni-passport",
+    "ni-visa",
+    "kw-passport",
+    "kw-visa",
+    "cm-passport",
+    "cm-visa",
+    "sd-passport",
+    "sd-visa",
+    "lc-passport",
+    "lc-visa"
+   ]
+  },
+  "40×60": {
+   "n": 23,
+   "collected": 23,
+   "def72": 0,
+   "explicit": 0,
+   "slugs": [
+    "vn-passport",
+    "vn-visa",
+    "id-passport",
+    "kh-passport",
+    "kh-visa",
+    "la-passport",
+    "la-visa",
+    "kg-passport",
+    "lt-passport",
+    "gr-passport",
+    "sa-passport",
+    "sa-visa",
+    "ae-passport",
+    "bh-passport",
+    "bh-visa",
+    "om-passport",
+    "om-visa",
+    "ye-passport",
+    "ye-visa",
+    "eg-passport",
+    "eg-visa",
+    "ly-passport",
+    "ly-visa"
+   ]
+  },
+  "35×50": {
+   "n": 2,
+   "collected": 2,
+   "def72": 0,
+   "explicit": 0,
+   "slugs": [
+    "my-passport",
+    "my-visa"
+   ]
+  },
+  "38×48": {
+   "n": 3,
+   "collected": 3,
+   "def72": 0,
+   "explicit": 0,
+   "slugs": [
+    "mm-visa",
+    "qa-passport",
+    "qa-visa"
+   ]
+  },
+  "45×55": {
+   "n": 2,
+   "collected": 2,
+   "def72": 0,
+   "explicit": 0,
+   "slugs": [
+    "bd-passport",
+    "bd-visa"
+   ]
+  },
+  "40×45": {
+   "n": 4,
+   "collected": 4,
+   "def72": 0,
+   "explicit": 0,
+   "slugs": [
+    "af-passport",
+    "af-visa",
+    "tz-passport",
+    "tz-visa"
+   ]
+  },
+  "50×60": {
+   "n": 2,
+   "collected": 2,
+   "def72": 0,
+   "explicit": 0,
+   "slugs": [
+    "tm-visa",
+    "tr-passport"
+   ]
+  },
+  "40×52": {
+   "n": 2,
+   "collected": 2,
+   "def72": 0,
+   "explicit": 0,
+   "slugs": [
+    "bn-passport",
+    "bn-visa"
+   ]
+  },
+  "36×47": {
+   "n": 2,
+   "collected": 2,
+   "def72": 0,
+   "explicit": 0,
+   "slugs": [
+    "fi-passport",
+    "al-visa"
+   ]
+  },
+  "50×50": {
+   "n": 11,
+   "collected": 11,
+   "def72": 0,
+   "explicit": 0,
+   "slugs": [
+    "rs-passport",
+    "mk-passport",
+    "ec-passport",
+    "ec-visa",
+    "hn-passport",
+    "hn-visa",
+    "bb-passport",
+    "bb-visa",
+    "td-passport",
+    "td-visa",
+    "sl-passport"
+   ]
+  },
+  "40×40": {
+   "n": 3,
+   "collected": 3,
+   "def72": 0,
+   "explicit": 0,
+   "slugs": [
+    "ar-passport",
+    "ar-visa",
+    "mg-passport"
+   ]
+  },
+  "31×41": {
+   "n": 2,
+   "collected": 2,
+   "def72": 0,
+   "explicit": 0,
+   "slugs": [
+    "tt-passport",
+    "tt-visa"
+   ]
+  },
+  "43×55": {
+   "n": 1,
+   "collected": 1,
+   "def72": 0,
+   "explicit": 0,
+   "slugs": [
+    "ae-visa"
+   ]
+  },
+  "37×52": {
+   "n": 2,
+   "collected": 2,
+   "def72": 0,
+   "explicit": 0,
+   "slugs": [
+    "na-passport",
+    "na-visa"
+   ]
+  },
+  "38×45": {
+   "n": 2,
+   "collected": 2,
+   "def72": 0,
+   "explicit": 0,
+   "slugs": [
+    "dm-passport",
+    "dm-visa"
+   ]
+  },
+  "38×51": {
+   "n": 2,
+   "collected": 2,
+   "def72": 0,
+   "explicit": 0,
+   "slugs": [
+    "gd-passport",
+    "gd-visa"
+   ]
+  },
+  "35×35": {
+   "n": 2,
+   "collected": 2,
+   "def72": 0,
+   "explicit": 0,
+   "slugs": [
+    "dj-passport",
+    "dj-visa"
+   ]
+  }
+ },
+ "defects": [
+  {
+   "slug": "usa-headshot",
+   "chk": "C0-프레임산출불가",
+   "detail": "pixels=8×10 inch size=400×400px~"
+  },
+  {
+   "slug": "us-visa",
+   "chk": "C4-iOS↔웹범위불일치",
+   "detail": "iOS 22~35 vs 웹 25~35"
+  },
+  {
+   "slug": "cn-license",
+   "chk": "C4-iOS명시값웹누락",
+   "detail": "iOS faceTarget=30 (웹 explicit 없음 — 614484b6 제거분 포함)"
+  },
+  {
+   "slug": "vn-passport",
+   "chk": "C4-iOS명시값웹누락",
+   "detail": "iOS faceTarget=42 (웹 explicit 없음 — 614484b6 제거분 포함)"
+  },
+  {
+   "slug": "vn-visa",
+   "chk": "C4-iOS명시값웹누락",
+   "detail": "iOS faceTarget=42 (웹 explicit 없음 — 614484b6 제거분 포함)"
+  },
+  {
+   "slug": "kh-passport",
+   "chk": "C4-iOS↔웹범위불일치",
+   "detail": "iOS 36 vs 웹 34.2~37.8"
+  },
+  {
+   "slug": "kh-visa",
+   "chk": "C4-iOS↔웹범위불일치",
+   "detail": "iOS 36 vs 웹 34.2~37.8"
+  },
+  {
+   "slug": "bd-passport",
+   "chk": "C4-iOS↔웹범위불일치",
+   "detail": "iOS 34 vs 웹 32.3~35.7"
+  },
+  {
+   "slug": "bd-visa",
+   "chk": "C4-iOS↔웹범위불일치",
+   "detail": "iOS 34 vs 웹 32.3~35.7"
+  },
+  {
+   "slug": "tm-passport",
+   "chk": "C4-iOS↔웹범위불일치",
+   "detail": "iOS 30 vs 웹 28.5~31.5"
+  },
+  {
+   "slug": "bn-passport",
+   "chk": "C4-iOS↔웹범위불일치",
+   "detail": "iOS 35 vs 웹 33.2~36.8"
+  },
+  {
+   "slug": "bn-visa",
+   "chk": "C4-iOS↔웹범위불일치",
+   "detail": "iOS 35 vs 웹 33.2~36.8"
+  },
+  {
+   "slug": "ru-passport",
+   "chk": "C3-px/mm-dpi편차",
+   "detail": "명기dpi=600 실효=300 (px=413x531, mm=35x45)"
+  },
+  {
+   "slug": "lt-passport",
+   "chk": "C4-iOS↔웹범위불일치",
+   "detail": "iOS 33 vs 웹 31.3~34.6"
+  },
+  {
+   "slug": "tr-passport",
+   "chk": "C4-iOS↔웹범위불일치",
+   "detail": "iOS 34 vs 웹 32.3~35.7"
+  },
+  {
+   "slug": "br-passport",
+   "chk": "C4-iOS↔웹범위불일치",
+   "detail": "iOS 42 vs 웹 39.9~44.1"
+  },
+  {
+   "slug": "cl-passport",
+   "chk": "C4-iOS↔웹범위불일치",
+   "detail": "iOS 27 vs 웹 25.6~28.4"
+  },
+  {
+   "slug": "cl-visa",
+   "chk": "C4-iOS↔웹범위불일치",
+   "detail": "iOS 27 vs 웹 25.6~28.4"
+  },
+  {
+   "slug": "co-passport",
+   "chk": "C4-iOS↔웹범위불일치",
+   "detail": "iOS 27 vs 웹 25.6~28.4"
+  },
+  {
+   "slug": "bo-passport",
+   "chk": "C4-iOS↔웹범위불일치",
+   "detail": "iOS 34 vs 웹 32.3~35.7"
+  },
+  {
+   "slug": "bo-visa",
+   "chk": "C4-iOS↔웹범위불일치",
+   "detail": "iOS 34 vs 웹 32.3~35.7"
+  },
+  {
+   "slug": "ni-passport",
+   "chk": "C4-iOS↔웹범위불일치",
+   "detail": "iOS 34 vs 웹 32.3~35.7"
+  },
+  {
+   "slug": "ni-visa",
+   "chk": "C4-iOS↔웹범위불일치",
+   "detail": "iOS 34 vs 웹 32.3~35.7"
+  },
+  {
+   "slug": "cu-passport",
+   "chk": "C4-iOS↔웹범위불일치",
+   "detail": "iOS 27 vs 웹 25.6~28.4"
+  },
+  {
+   "slug": "cu-visa",
+   "chk": "C4-iOS↔웹범위불일치",
+   "detail": "iOS 27 vs 웹 25.6~28.4"
+  },
+  {
+   "slug": "sa-passport",
+   "chk": "C4-iOS↔웹범위불일치",
+   "detail": "iOS 38 vs 웹 36.1~39.9"
+  },
+  {
+   "slug": "qa-passport",
+   "chk": "C4-iOS↔웹범위불일치",
+   "detail": "iOS 34 vs 웹 32.3~35.7"
+  },
+  {
+   "slug": "qa-visa",
+   "chk": "C4-iOS↔웹범위불일치",
+   "detail": "iOS 34 vs 웹 32.3~35.7"
+  },
+  {
+   "slug": "kw-passport",
+   "chk": "C4-iOS↔웹범위불일치",
+   "detail": "iOS 38 vs 웹 36.1~39.9"
+  },
+  {
+   "slug": "kw-visa",
+   "chk": "C4-iOS↔웹범위불일치",
+   "detail": "iOS 38 vs 웹 36.1~39.9"
+  },
+  {
+   "slug": "bh-passport",
+   "chk": "C4-iOS↔웹범위불일치",
+   "detail": "iOS 38 vs 웹 36.1~39.9"
+  },
+  {
+   "slug": "bh-visa",
+   "chk": "C4-iOS↔웹범위불일치",
+   "detail": "iOS 38 vs 웹 36.1~39.9"
+  },
+  {
+   "slug": "om-passport",
+   "chk": "C4-iOS↔웹범위불일치",
+   "detail": "iOS 38 vs 웹 36.1~39.9"
+  },
+  {
+   "slug": "om-visa",
+   "chk": "C4-iOS↔웹범위불일치",
+   "detail": "iOS 38 vs 웹 36.1~39.9"
+  },
+  {
+   "slug": "ir-passport",
+   "chk": "C4-iOS↔웹범위불일치",
+   "detail": "iOS 28 vs 웹 26.6~29.4"
+  },
+  {
+   "slug": "ir-visa",
+   "chk": "C4-iOS↔웹범위불일치",
+   "detail": "iOS 28 vs 웹 26.6~29.4"
+  },
+  {
+   "slug": "ng-passport",
+   "chk": "C3-px/mm-dpi편차",
+   "detail": "명기dpi=600 실효=300 (px=413x531, mm=35x45)"
+  },
+  {
+   "slug": "ng-visa",
+   "chk": "C3-px/mm-dpi편차",
+   "detail": "명기dpi=600 실효=300 (px=413x531, mm=35x45)"
+  },
+  {
+   "slug": "tz-passport",
+   "chk": "C4-iOS↔웹범위불일치",
+   "detail": "iOS 34 vs 웹 32.3~35.7"
+  },
+  {
+   "slug": "tz-visa",
+   "chk": "C4-iOS↔웹범위불일치",
+   "detail": "iOS 34 vs 웹 32.3~35.7"
+  },
+  {
+   "slug": "et-passport",
+   "chk": "C4-iOS↔웹범위불일치",
+   "detail": "iOS 30 vs 웹 28.5~31.5"
+  },
+  {
+   "slug": "et-visa",
+   "chk": "C4-iOS↔웹범위불일치",
+   "detail": "iOS 30 vs 웹 28.5~31.5"
+  },
+  {
+   "slug": "ly-passport",
+   "chk": "C4-iOS↔웹범위불일치",
+   "detail": "iOS 38 vs 웹 36.1~39.9"
+  },
+  {
+   "slug": "ly-visa",
+   "chk": "C4-iOS↔웹범위불일치",
+   "detail": "iOS 38 vs 웹 36.1~39.9"
+  },
+  {
+   "slug": "sd-passport",
+   "chk": "C4-iOS↔웹범위불일치",
+   "detail": "iOS 34 vs 웹 32.3~35.7"
+  },
+  {
+   "slug": "sd-visa",
+   "chk": "C4-iOS↔웹범위불일치",
+   "detail": "iOS 34 vs 웹 32.3~35.7"
+  },
+  {
+   "slug": "bw-passport",
+   "chk": "C4-iOS↔웹범위불일치",
+   "detail": "iOS 30 vs 웹 28.5~31.5"
+  },
+  {
+   "slug": "bw-visa",
+   "chk": "C4-iOS↔웹범위불일치",
+   "detail": "iOS 30 vs 웹 28.5~31.5"
+  },
+  {
+   "slug": "na-passport",
+   "chk": "C4-iOS↔웹범위불일치",
+   "detail": "iOS 36 vs 웹 34.2~37.8"
+  },
+  {
+   "slug": "na-visa",
+   "chk": "C4-iOS↔웹범위불일치",
+   "detail": "iOS 36 vs 웹 34.2~37.8"
+  },
+  {
+   "slug": "td-passport",
+   "chk": "C2-범위과협",
+   "detail": "head 34~35"
+  },
+  {
+   "slug": "td-visa",
+   "chk": "C2-범위과협",
+   "detail": "head 34~35"
+  },
+  {
+   "slug": "cn-resume",
+   "chk": "C0-프레임산출불가",
+   "detail": "pixels=25×35 / 35×49 mm size=1寸 · 2寸 복수 규격"
+  }
+ ],
+ "rows": [
+  {
+   "slug": "us-passport",
+   "key": "51×51",
+   "frameWmm": 51,
+   "frameHmm": 51,
+   "range": [
+    25,
+    35
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.647,
+   "iosHead": [
+    25,
+    35
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "eu-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "eu-resume",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    28.4,
+    34.6
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "uk-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    29,
+    34
+   ],
+   "rangeSrc": "numeric",
+   "explicit": 31,
+   "derived": 31,
+   "derSrc": "explicit",
+   "ratio": 0.689,
+   "iosHead": [
+    29,
+    34
+   ],
+   "iosFT": 31,
+   "grade": "A"
+  },
+  {
+   "slug": "kr-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "kr-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "kr-id",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "kr-resume",
+   "key": "30×40",
+   "frameWmm": 30,
+   "frameHmm": 40,
+   "range": [
+    25,
+    30
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 29,
+   "derSrc": "formula",
+   "ratio": 0.725,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "kr-license",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "kr-intl-license",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "kr-exam",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "kr-youth-id",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "kr-taxi",
+   "key": "50×70",
+   "frameWmm": 50,
+   "frameHmm": 70,
+   "range": [
+    34,
+    40
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 39,
+   "derSrc": "formula",
+   "ratio": 0.557,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "kr-marine",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "jp-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "jp-id",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "jp-visa",
+   "key": "45×45",
+   "frameWmm": 45,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "jp-license",
+   "key": "24×30",
+   "frameWmm": 24,
+   "frameHmm": 30,
+   "range": [
+    18,
+    22
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 21,
+   "derSrc": "formula",
+   "ratio": 0.7,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "jp-resume",
+   "key": "30×40",
+   "frameWmm": 30,
+   "frameHmm": 40,
+   "range": [
+    25,
+    30
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 29,
+   "derSrc": "formula",
+   "ratio": 0.725,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "jp-residence",
+   "key": "30×40",
+   "frameWmm": 30,
+   "frameHmm": 40,
+   "range": [
+    25,
+    30
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 29,
+   "derSrc": "formula",
+   "ratio": 0.725,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "us-visa",
+   "key": "51×51",
+   "frameWmm": 51,
+   "frameHmm": 51,
+   "range": [
+    25,
+    35
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.647,
+   "iosHead": [
+    22,
+    35
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "eu-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "eu-license",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "uk-license",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    29,
+    34
+   ],
+   "rangeSrc": "numeric",
+   "explicit": 31,
+   "derived": 31,
+   "derSrc": "explicit",
+   "ratio": 0.689,
+   "iosHead": [
+    29,
+    34
+   ],
+   "iosFT": 31,
+   "grade": "A"
+  },
+  {
+   "slug": "uk-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    29,
+    34
+   ],
+   "rangeSrc": "numeric",
+   "explicit": 31,
+   "derived": 31,
+   "derSrc": "explicit",
+   "ratio": 0.689,
+   "iosHead": [
+    29,
+    34
+   ],
+   "iosFT": 31,
+   "grade": "A"
+  },
+  {
+   "slug": "cn-passport",
+   "key": "33×48",
+   "frameWmm": 33,
+   "frameHmm": 48,
+   "range": [
+    28,
+    33
+   ],
+   "rangeSrc": "numeric",
+   "explicit": 30,
+   "derived": 30,
+   "derSrc": "explicit",
+   "ratio": 0.625,
+   "iosHead": [
+    28,
+    33
+   ],
+   "iosFT": 30,
+   "grade": "B"
+  },
+  {
+   "slug": "cn-visa",
+   "key": "33×48",
+   "frameWmm": 33,
+   "frameHmm": 48,
+   "range": [
+    28,
+    33
+   ],
+   "rangeSrc": "numeric",
+   "explicit": 30,
+   "derived": 30,
+   "derSrc": "explicit",
+   "ratio": 0.625,
+   "iosHead": [
+    28,
+    33
+   ],
+   "iosFT": 30,
+   "grade": "A"
+  },
+  {
+   "slug": "cn-license",
+   "key": "22×32",
+   "frameWmm": 22,
+   "frameHmm": 32,
+   "range": [
+    16,
+    20
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 19,
+   "derSrc": "formula",
+   "ratio": 0.594,
+   "iosHead": null,
+   "iosFT": 30,
+   "grade": "B"
+  },
+  {
+   "slug": "ca-passport",
+   "key": "50×70",
+   "frameWmm": 50,
+   "frameHmm": 70,
+   "range": [
+    31,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 35,
+   "derSrc": "formula",
+   "ratio": 0.5,
+   "iosHead": [
+    31,
+    36
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "ca-visa",
+   "key": "50×70",
+   "frameWmm": 50,
+   "frameHmm": 70,
+   "range": [
+    31,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 35,
+   "derSrc": "formula",
+   "ratio": 0.5,
+   "iosHead": [
+    31,
+    36
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "sg-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    25,
+    35
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    25,
+    35
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "sg-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    25,
+    35
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    25,
+    35
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "in-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "in-license",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "in-visa-evisa",
+   "key": "51×51",
+   "frameWmm": 51,
+   "frameHmm": 51,
+   "range": [
+    36,
+    41
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 37,
+   "derSrc": "formula",
+   "ratio": 0.725,
+   "iosHead": [
+    36,
+    41
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "in-visa-bls",
+   "key": "51×51",
+   "frameWmm": 51,
+   "frameHmm": 51,
+   "range": [
+    36,
+    41
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 37,
+   "derSrc": "formula",
+   "ratio": 0.725,
+   "iosHead": [
+    36,
+    41
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "tw-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "tw-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "hk-passport",
+   "key": "40×50",
+   "frameWmm": 40,
+   "frameHmm": 50,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.66,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "hk-visa",
+   "key": "40×50",
+   "frameWmm": 40,
+   "frameHmm": 50,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.66,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "mo-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "mo-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "th-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "th-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "vn-passport",
+   "key": "40×60",
+   "frameWmm": 40,
+   "frameHmm": 60,
+   "range": [
+    36,
+    40
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 39,
+   "derSrc": "formula",
+   "ratio": 0.65,
+   "iosHead": null,
+   "iosFT": 42,
+   "grade": "B"
+  },
+  {
+   "slug": "vn-visa",
+   "key": "40×60",
+   "frameWmm": 40,
+   "frameHmm": 60,
+   "range": [
+    36,
+    40
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 39,
+   "derSrc": "formula",
+   "ratio": 0.65,
+   "iosHead": null,
+   "iosFT": 42,
+   "grade": "B"
+  },
+  {
+   "slug": "id-passport",
+   "key": "40×60",
+   "frameWmm": 40,
+   "frameHmm": 60,
+   "range": [
+    25,
+    31
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 30,
+   "derSrc": "formula",
+   "ratio": 0.5,
+   "iosHead": [
+    25,
+    31
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "id-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "my-passport",
+   "key": "35×50",
+   "frameWmm": 35,
+   "frameHmm": 50,
+   "range": [
+    25,
+    30
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 29,
+   "derSrc": "formula",
+   "ratio": 0.58,
+   "iosHead": [
+    25,
+    30
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "my-visa",
+   "key": "35×50",
+   "frameWmm": 35,
+   "frameHmm": 50,
+   "range": [
+    25,
+    30
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 29,
+   "derSrc": "formula",
+   "ratio": 0.58,
+   "iosHead": [
+    25,
+    30
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "ph-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "ph-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "mm-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "mm-visa",
+   "key": "38×48",
+   "frameWmm": 38,
+   "frameHmm": 48,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.688,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "C"
+  },
+  {
+   "slug": "kh-passport",
+   "key": "40×60",
+   "frameWmm": 40,
+   "frameHmm": 60,
+   "range": [
+    34.2,
+    37.8
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 36.8,
+   "derSrc": "formula",
+   "ratio": 0.613,
+   "iosHead": [
+    36
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "kh-visa",
+   "key": "40×60",
+   "frameWmm": 40,
+   "frameHmm": 60,
+   "range": [
+    34.2,
+    37.8
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 36.8,
+   "derSrc": "formula",
+   "ratio": 0.613,
+   "iosHead": [
+    36
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "la-passport",
+   "key": "40×60",
+   "frameWmm": 40,
+   "frameHmm": 60,
+   "range": [
+    36,
+    40
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 39,
+   "derSrc": "formula",
+   "ratio": 0.65,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "la-visa",
+   "key": "40×60",
+   "frameWmm": 40,
+   "frameHmm": 60,
+   "range": [
+    36,
+    40
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 39,
+   "derSrc": "formula",
+   "ratio": 0.65,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "bd-passport",
+   "key": "45×55",
+   "frameWmm": 45,
+   "frameHmm": 55,
+   "range": [
+    32.3,
+    35.7
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33.3,
+   "derSrc": "formula",
+   "ratio": 0.605,
+   "iosHead": [
+    34
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "bd-visa",
+   "key": "45×55",
+   "frameWmm": 45,
+   "frameHmm": 55,
+   "range": [
+    32.3,
+    35.7
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33.3,
+   "derSrc": "formula",
+   "ratio": 0.605,
+   "iosHead": [
+    34
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "lk-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "lk-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "np-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "np-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "pk-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "pk-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "af-passport",
+   "key": "40×45",
+   "frameWmm": 40,
+   "frameHmm": 45,
+   "range": [
+    30,
+    34
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "C"
+  },
+  {
+   "slug": "af-visa",
+   "key": "40×45",
+   "frameWmm": 40,
+   "frameHmm": 45,
+   "range": [
+    30,
+    34
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "C"
+  },
+  {
+   "slug": "mn-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "mn-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "kz-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "kz-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "uz-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "uz-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "kg-passport",
+   "key": "40×60",
+   "frameWmm": 40,
+   "frameHmm": 60,
+   "range": [
+    36,
+    40
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 39,
+   "derSrc": "formula",
+   "ratio": 0.65,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "kg-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "tj-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "tj-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "tm-passport",
+   "key": "30×40",
+   "frameWmm": 30,
+   "frameHmm": 40,
+   "range": [
+    28.5,
+    31.5
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 30.5,
+   "derSrc": "formula",
+   "ratio": 0.762,
+   "iosHead": [
+    30
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "tm-visa",
+   "key": "50×60",
+   "frameWmm": 50,
+   "frameHmm": 60,
+   "range": [
+    34,
+    38
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 37,
+   "derSrc": "formula",
+   "ratio": 0.617,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "bn-passport",
+   "key": "40×52",
+   "frameWmm": 40,
+   "frameHmm": 52,
+   "range": [
+    33.2,
+    36.8
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 34.2,
+   "derSrc": "formula",
+   "ratio": 0.658,
+   "iosHead": [
+    35
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "bn-visa",
+   "key": "40×52",
+   "frameWmm": 40,
+   "frameHmm": 52,
+   "range": [
+    33.2,
+    36.8
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 34.2,
+   "derSrc": "formula",
+   "ratio": 0.658,
+   "iosHead": [
+    35
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "tl-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "tl-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "kp-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "kp-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "bt-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "bt-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "mv-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "mv-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "ru-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "ru-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "ua-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "ua-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "fr-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "fr-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "de-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "de-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "it-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "it-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "es-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "es-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "pt-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "pt-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "nl-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "nl-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "be-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "be-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "ch-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "ch-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "at-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "at-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "se-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "se-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "no-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "no-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "dk-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "dk-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "fi-passport",
+   "key": "36×47",
+   "frameWmm": 36,
+   "frameHmm": 47,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.702,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "fi-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "is-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "is-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "ie-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "ie-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "pl-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "pl-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "cz-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "cz-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "sk-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "sk-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "hu-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "hu-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "ro-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "ro-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "bg-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "bg-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "hr-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "hr-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "rs-passport",
+   "key": "50×50",
+   "frameWmm": 50,
+   "frameHmm": 50,
+   "range": [
+    30,
+    35
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.66,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "rs-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "ba-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "ba-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "me-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "me-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "mk-passport",
+   "key": "50×50",
+   "frameWmm": 50,
+   "frameHmm": 50,
+   "range": [
+    30,
+    35
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.66,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "mk-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "al-passport",
+   "key": "40×50",
+   "frameWmm": 40,
+   "frameHmm": 50,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.66,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "al-visa",
+   "key": "36×47",
+   "frameWmm": 36,
+   "frameHmm": 47,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.702,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "xk-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "xk-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "md-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "md-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "by-passport",
+   "key": "40×50",
+   "frameWmm": 40,
+   "frameHmm": 50,
+   "range": [
+    32,
+    35
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.66,
+   "iosHead": [
+    32,
+    35
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "by-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "lv-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "lv-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "lt-passport",
+   "key": "40×60",
+   "frameWmm": 40,
+   "frameHmm": 60,
+   "range": [
+    31.3,
+    34.6
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33.6,
+   "derSrc": "formula",
+   "ratio": 0.56,
+   "iosHead": [
+    33
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "lt-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "ee-passport",
+   "key": "40×50",
+   "frameWmm": 40,
+   "frameHmm": 50,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.66,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "ee-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "si-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "si-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "gr-passport",
+   "key": "40×60",
+   "frameWmm": 40,
+   "frameHmm": 60,
+   "range": [
+    36,
+    40
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 39,
+   "derSrc": "formula",
+   "ratio": 0.65,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "gr-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "cy-passport",
+   "key": "40×50",
+   "frameWmm": 40,
+   "frameHmm": 50,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.66,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "cy-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "mt-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "mt-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "lu-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "lu-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "ge-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "ge-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "am-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "am-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "az-passport",
+   "key": "30×40",
+   "frameWmm": 30,
+   "frameHmm": 40,
+   "range": [
+    25,
+    30
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 29,
+   "derSrc": "formula",
+   "ratio": 0.725,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "az-visa",
+   "key": "30×40",
+   "frameWmm": 30,
+   "frameHmm": 40,
+   "range": [
+    25,
+    30
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 29,
+   "derSrc": "formula",
+   "ratio": 0.725,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "tr-passport",
+   "key": "50×60",
+   "frameWmm": 50,
+   "frameHmm": 60,
+   "range": [
+    32.3,
+    35.7
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 34.7,
+   "derSrc": "formula",
+   "ratio": 0.578,
+   "iosHead": [
+    34
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "tr-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "mx-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    39
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    39
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "mx-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    39
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    39
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "br-passport",
+   "key": "50×70",
+   "frameWmm": 50,
+   "frameHmm": 70,
+   "range": [
+    39.9,
+    44.1
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 43.1,
+   "derSrc": "formula",
+   "ratio": 0.616,
+   "iosHead": [
+    42
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "br-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "ar-passport",
+   "key": "40×40",
+   "frameWmm": 40,
+   "frameHmm": 40,
+   "range": [
+    28,
+    32
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 31,
+   "derSrc": "formula",
+   "ratio": 0.775,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "ar-visa",
+   "key": "40×40",
+   "frameWmm": 40,
+   "frameHmm": 40,
+   "range": [
+    28,
+    32
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 31,
+   "derSrc": "formula",
+   "ratio": 0.775,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "cl-passport",
+   "key": "45×45",
+   "frameWmm": 45,
+   "frameHmm": 45,
+   "range": [
+    25.6,
+    28.4
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 27.4,
+   "derSrc": "formula",
+   "ratio": 0.609,
+   "iosHead": [
+    27
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "cl-visa",
+   "key": "45×45",
+   "frameWmm": 45,
+   "frameHmm": 45,
+   "range": [
+    25.6,
+    28.4
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 27.4,
+   "derSrc": "formula",
+   "ratio": 0.609,
+   "iosHead": [
+    27
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "co-passport",
+   "key": "40×50",
+   "frameWmm": 40,
+   "frameHmm": 50,
+   "range": [
+    25.6,
+    28.4
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 27.4,
+   "derSrc": "formula",
+   "ratio": 0.548,
+   "iosHead": [
+    27
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "co-visa",
+   "key": "30×40",
+   "frameWmm": 30,
+   "frameHmm": 40,
+   "range": [
+    25,
+    30
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 29,
+   "derSrc": "formula",
+   "ratio": 0.725,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "pe-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "pe-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "ve-passport",
+   "key": "51×51",
+   "frameWmm": 51,
+   "frameHmm": 51,
+   "range": [
+    34,
+    38
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 35,
+   "derSrc": "formula",
+   "ratio": 0.686,
+   "iosHead": [
+    34,
+    38
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "ve-visa",
+   "key": "51×51",
+   "frameWmm": 51,
+   "frameHmm": 51,
+   "range": [
+    34,
+    38
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 35,
+   "derSrc": "formula",
+   "ratio": 0.686,
+   "iosHead": [
+    34,
+    38
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "ec-passport",
+   "key": "50×50",
+   "frameWmm": 50,
+   "frameHmm": 50,
+   "range": [
+    25,
+    35
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.66,
+   "iosHead": [
+    25,
+    35
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "ec-visa",
+   "key": "50×50",
+   "frameWmm": 50,
+   "frameHmm": 50,
+   "range": [
+    25,
+    35
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.66,
+   "iosHead": [
+    25,
+    35
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "bo-passport",
+   "key": "40×50",
+   "frameWmm": 40,
+   "frameHmm": 50,
+   "range": [
+    32.3,
+    35.7
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33.3,
+   "derSrc": "formula",
+   "ratio": 0.666,
+   "iosHead": [
+    34
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "bo-visa",
+   "key": "40×50",
+   "frameWmm": 40,
+   "frameHmm": 50,
+   "range": [
+    32.3,
+    35.7
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33.3,
+   "derSrc": "formula",
+   "ratio": 0.666,
+   "iosHead": [
+    34
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "py-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "py-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "uy-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "uy-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "pa-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "pa-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "cr-passport",
+   "key": "51×51",
+   "frameWmm": 51,
+   "frameHmm": 51,
+   "range": [
+    31,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.647,
+   "iosHead": [
+    31,
+    36
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "cr-visa",
+   "key": "51×51",
+   "frameWmm": 51,
+   "frameHmm": 51,
+   "range": [
+    31,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.647,
+   "iosHead": [
+    31,
+    36
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "ni-passport",
+   "key": "40×50",
+   "frameWmm": 40,
+   "frameHmm": 50,
+   "range": [
+    32.3,
+    35.7
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33.3,
+   "derSrc": "formula",
+   "ratio": 0.666,
+   "iosHead": [
+    34
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "ni-visa",
+   "key": "40×50",
+   "frameWmm": 40,
+   "frameHmm": 50,
+   "range": [
+    32.3,
+    35.7
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33.3,
+   "derSrc": "formula",
+   "ratio": 0.666,
+   "iosHead": [
+    34
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "hn-passport",
+   "key": "50×50",
+   "frameWmm": 50,
+   "frameHmm": 50,
+   "range": [
+    25,
+    35
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.66,
+   "iosHead": [
+    25,
+    35
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "hn-visa",
+   "key": "50×50",
+   "frameWmm": 50,
+   "frameHmm": 50,
+   "range": [
+    25,
+    35
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.66,
+   "iosHead": [
+    25,
+    35
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "sv-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "sv-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "gt-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "gt-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "cu-passport",
+   "key": "45×45",
+   "frameWmm": 45,
+   "frameHmm": 45,
+   "range": [
+    25.6,
+    28.4
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 27.4,
+   "derSrc": "formula",
+   "ratio": 0.609,
+   "iosHead": [
+    27
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "cu-visa",
+   "key": "45×45",
+   "frameWmm": 45,
+   "frameHmm": 45,
+   "range": [
+    25.6,
+    28.4
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 27.4,
+   "derSrc": "formula",
+   "ratio": 0.609,
+   "iosHead": [
+    27
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "jm-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    25,
+    35
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    25,
+    35
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "jm-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    25,
+    35
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    25,
+    35
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "do-passport",
+   "key": "51×51",
+   "frameWmm": 51,
+   "frameHmm": 51,
+   "range": [
+    25,
+    35
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.647,
+   "iosHead": [
+    25,
+    35
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "do-visa",
+   "key": "51×51",
+   "frameWmm": 51,
+   "frameHmm": 51,
+   "range": [
+    25,
+    35
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.647,
+   "iosHead": [
+    25,
+    35
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "ht-passport",
+   "key": "51×51",
+   "frameWmm": 51,
+   "frameHmm": 51,
+   "range": [
+    25,
+    35
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.647,
+   "iosHead": [
+    25,
+    35
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "ht-visa",
+   "key": "51×51",
+   "frameWmm": 51,
+   "frameHmm": 51,
+   "range": [
+    25,
+    35
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.647,
+   "iosHead": [
+    25,
+    35
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "tt-passport",
+   "key": "31×41",
+   "frameWmm": 31,
+   "frameHmm": 41,
+   "range": [
+    29,
+    33
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 32,
+   "derSrc": "formula",
+   "ratio": 0.78,
+   "iosHead": [
+    29,
+    33
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "tt-visa",
+   "key": "31×41",
+   "frameWmm": 31,
+   "frameHmm": 41,
+   "range": [
+    29,
+    33
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 32,
+   "derSrc": "formula",
+   "ratio": 0.78,
+   "iosHead": [
+    29,
+    33
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "bs-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "bs-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "bz-passport",
+   "key": "51×51",
+   "frameWmm": 51,
+   "frameHmm": 51,
+   "range": [
+    35,
+    41
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 36,
+   "derSrc": "formula",
+   "ratio": 0.706,
+   "iosHead": [
+    35,
+    41
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "bz-visa",
+   "key": "51×51",
+   "frameWmm": 51,
+   "frameHmm": 51,
+   "range": [
+    35,
+    41
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 36,
+   "derSrc": "formula",
+   "ratio": 0.706,
+   "iosHead": [
+    35,
+    41
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "sr-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "sr-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "gy-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "gy-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "sa-passport",
+   "key": "40×60",
+   "frameWmm": 40,
+   "frameHmm": 60,
+   "range": [
+    36.1,
+    39.9
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 38.9,
+   "derSrc": "formula",
+   "ratio": 0.648,
+   "iosHead": [
+    38
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "sa-visa",
+   "key": "40×60",
+   "frameWmm": 40,
+   "frameHmm": 60,
+   "range": [
+    36,
+    40
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 39,
+   "derSrc": "formula",
+   "ratio": 0.65,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "ae-passport",
+   "key": "40×60",
+   "frameWmm": 40,
+   "frameHmm": 60,
+   "range": [
+    36,
+    40
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 39,
+   "derSrc": "formula",
+   "ratio": 0.65,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "ae-visa",
+   "key": "43×55",
+   "frameWmm": 43,
+   "frameHmm": 55,
+   "range": [
+    34,
+    38
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 35,
+   "derSrc": "formula",
+   "ratio": 0.636,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "ae-id",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "qa-passport",
+   "key": "38×48",
+   "frameWmm": 38,
+   "frameHmm": 48,
+   "range": [
+    32.3,
+    35.7
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33.3,
+   "derSrc": "formula",
+   "ratio": 0.694,
+   "iosHead": [
+    34
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "qa-visa",
+   "key": "38×48",
+   "frameWmm": 38,
+   "frameHmm": 48,
+   "range": [
+    32.3,
+    35.7
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33.3,
+   "derSrc": "formula",
+   "ratio": 0.694,
+   "iosHead": [
+    34
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "kw-passport",
+   "key": "40×50",
+   "frameWmm": 40,
+   "frameHmm": 50,
+   "range": [
+    36.1,
+    39.9
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 37.1,
+   "derSrc": "formula",
+   "ratio": 0.742,
+   "iosHead": [
+    38
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "kw-visa",
+   "key": "40×50",
+   "frameWmm": 40,
+   "frameHmm": 50,
+   "range": [
+    36.1,
+    39.9
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 37.1,
+   "derSrc": "formula",
+   "ratio": 0.742,
+   "iosHead": [
+    38
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "bh-passport",
+   "key": "40×60",
+   "frameWmm": 40,
+   "frameHmm": 60,
+   "range": [
+    36.1,
+    39.9
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 38.9,
+   "derSrc": "formula",
+   "ratio": 0.648,
+   "iosHead": [
+    38
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "bh-visa",
+   "key": "40×60",
+   "frameWmm": 40,
+   "frameHmm": 60,
+   "range": [
+    36.1,
+    39.9
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 38.9,
+   "derSrc": "formula",
+   "ratio": 0.648,
+   "iosHead": [
+    38
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "om-passport",
+   "key": "40×60",
+   "frameWmm": 40,
+   "frameHmm": 60,
+   "range": [
+    36.1,
+    39.9
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 38.9,
+   "derSrc": "formula",
+   "ratio": 0.648,
+   "iosHead": [
+    38
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "om-visa",
+   "key": "40×60",
+   "frameWmm": 40,
+   "frameHmm": 60,
+   "range": [
+    36.1,
+    39.9
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 38.9,
+   "derSrc": "formula",
+   "ratio": 0.648,
+   "iosHead": [
+    38
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "ir-passport",
+   "key": "30×40",
+   "frameWmm": 30,
+   "frameHmm": 40,
+   "range": [
+    26.6,
+    29.4
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 28.4,
+   "derSrc": "formula",
+   "ratio": 0.71,
+   "iosHead": [
+    28
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "ir-visa",
+   "key": "30×40",
+   "frameWmm": 30,
+   "frameHmm": 40,
+   "range": [
+    26.6,
+    29.4
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 28.4,
+   "derSrc": "formula",
+   "ratio": 0.71,
+   "iosHead": [
+    28
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "iq-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "iq-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "jo-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "jo-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "lb-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "lb-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "sy-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "sy-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "ye-passport",
+   "key": "40×60",
+   "frameWmm": 40,
+   "frameHmm": 60,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 35,
+   "derSrc": "formula",
+   "ratio": 0.583,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "ye-visa",
+   "key": "40×60",
+   "frameWmm": 40,
+   "frameHmm": 60,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 35,
+   "derSrc": "formula",
+   "ratio": 0.583,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "il-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "il-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "ps-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "ps-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "za-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "za-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "eg-passport",
+   "key": "40×60",
+   "frameWmm": 40,
+   "frameHmm": 60,
+   "range": [
+    38,
+    40
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 39,
+   "derSrc": "formula",
+   "ratio": 0.65,
+   "iosHead": [
+    38,
+    40
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "eg-visa",
+   "key": "40×60",
+   "frameWmm": 40,
+   "frameHmm": 60,
+   "range": [
+    38,
+    40
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 39,
+   "derSrc": "formula",
+   "ratio": 0.65,
+   "iosHead": [
+    38,
+    40
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "ma-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "ma-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "ng-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "ng-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "ke-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "ke-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "tz-passport",
+   "key": "40×45",
+   "frameWmm": 40,
+   "frameHmm": 45,
+   "range": [
+    32.3,
+    35.7
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33.3,
+   "derSrc": "formula",
+   "ratio": 0.74,
+   "iosHead": [
+    34
+   ],
+   "iosFT": null,
+   "grade": "B+"
+  },
+  {
+   "slug": "tz-visa",
+   "key": "40×45",
+   "frameWmm": 40,
+   "frameHmm": 45,
+   "range": [
+    32.3,
+    35.7
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33.3,
+   "derSrc": "formula",
+   "ratio": 0.74,
+   "iosHead": [
+    34
+   ],
+   "iosFT": null,
+   "grade": "B+"
+  },
+  {
+   "slug": "et-passport",
+   "key": "30×40",
+   "frameWmm": 30,
+   "frameHmm": 40,
+   "range": [
+    28.5,
+    31.5
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 30.5,
+   "derSrc": "formula",
+   "ratio": 0.762,
+   "iosHead": [
+    30
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "et-visa",
+   "key": "30×40",
+   "frameWmm": 30,
+   "frameHmm": 40,
+   "range": [
+    28.5,
+    31.5
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 30.5,
+   "derSrc": "formula",
+   "ratio": 0.762,
+   "iosHead": [
+    30
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "gh-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "gh-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "sn-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "sn-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "ci-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "ci-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "cm-passport",
+   "key": "40×50",
+   "frameWmm": 40,
+   "frameHmm": 50,
+   "range": [
+    31,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.66,
+   "iosHead": [
+    31,
+    36
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "cm-visa",
+   "key": "40×50",
+   "frameWmm": 40,
+   "frameHmm": 50,
+   "range": [
+    31,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.66,
+   "iosHead": [
+    31,
+    36
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "dz-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "dz-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "tn-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "tn-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "ly-passport",
+   "key": "40×60",
+   "frameWmm": 40,
+   "frameHmm": 60,
+   "range": [
+    36.1,
+    39.9
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 38.9,
+   "derSrc": "formula",
+   "ratio": 0.648,
+   "iosHead": [
+    38
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "ly-visa",
+   "key": "40×60",
+   "frameWmm": 40,
+   "frameHmm": 60,
+   "range": [
+    36.1,
+    39.9
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 38.9,
+   "derSrc": "formula",
+   "ratio": 0.648,
+   "iosHead": [
+    38
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "sd-passport",
+   "key": "40×50",
+   "frameWmm": 40,
+   "frameHmm": 50,
+   "range": [
+    32.3,
+    35.7
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33.3,
+   "derSrc": "formula",
+   "ratio": 0.666,
+   "iosHead": [
+    34
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "sd-visa",
+   "key": "40×50",
+   "frameWmm": 40,
+   "frameHmm": 50,
+   "range": [
+    32.3,
+    35.7
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33.3,
+   "derSrc": "formula",
+   "ratio": 0.666,
+   "iosHead": [
+    34
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "ug-passport",
+   "key": "51×51",
+   "frameWmm": 51,
+   "frameHmm": 51,
+   "range": [
+    25,
+    35
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.647,
+   "iosHead": [
+    25,
+    35
+   ],
+   "iosFT": null,
+   "grade": "B+"
+  },
+  {
+   "slug": "ug-visa",
+   "key": "51×51",
+   "frameWmm": 51,
+   "frameHmm": 51,
+   "range": [
+    25,
+    35
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.647,
+   "iosHead": [
+    25,
+    35
+   ],
+   "iosFT": null,
+   "grade": "B+"
+  },
+  {
+   "slug": "rw-passport",
+   "key": "51×51",
+   "frameWmm": 51,
+   "frameHmm": 51,
+   "range": [
+    25,
+    35
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.647,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B+"
+  },
+  {
+   "slug": "rw-visa",
+   "key": "51×51",
+   "frameWmm": 51,
+   "frameHmm": 51,
+   "range": [
+    25,
+    35
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.647,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B+"
+  },
+  {
+   "slug": "mz-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "mz-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "zw-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "zw-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "ao-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "ao-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "cd-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B+"
+  },
+  {
+   "slug": "cd-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B+"
+  },
+  {
+   "slug": "mg-passport",
+   "key": "40×40",
+   "frameWmm": 40,
+   "frameHmm": 40,
+   "range": [
+    25,
+    32
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 31,
+   "derSrc": "formula",
+   "ratio": 0.775,
+   "iosHead": [
+    25,
+    32
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "mg-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "so-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B+"
+  },
+  {
+   "slug": "so-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B+"
+  },
+  {
+   "slug": "bw-passport",
+   "key": "30×40",
+   "frameWmm": 30,
+   "frameHmm": 40,
+   "range": [
+    28.5,
+    31.5
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 30.5,
+   "derSrc": "formula",
+   "ratio": 0.762,
+   "iosHead": [
+    30
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "bw-visa",
+   "key": "30×40",
+   "frameWmm": 30,
+   "frameHmm": 40,
+   "range": [
+    28.5,
+    31.5
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 30.5,
+   "derSrc": "formula",
+   "ratio": 0.762,
+   "iosHead": [
+    30
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "na-passport",
+   "key": "37×52",
+   "frameWmm": 37,
+   "frameHmm": 52,
+   "range": [
+    34.2,
+    37.8
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 35.2,
+   "derSrc": "formula",
+   "ratio": 0.677,
+   "iosHead": [
+    36
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "na-visa",
+   "key": "37×52",
+   "frameWmm": 37,
+   "frameHmm": 52,
+   "range": [
+    34.2,
+    37.8
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 35.2,
+   "derSrc": "formula",
+   "ratio": 0.677,
+   "iosHead": [
+    36
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "zm-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "zm-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "mw-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "mw-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "mu-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "mu-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "au-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "au-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "nz-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "nz-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "fj-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "fj-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "pg-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "pg-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "ws-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "ws-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "to-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "to-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "li-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "li-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": [
+    32,
+    36
+   ],
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "mc-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "mc-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "sm-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "sm-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "ad-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "ad-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "va-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "va-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "bb-passport",
+   "key": "50×50",
+   "frameWmm": 50,
+   "frameHmm": 50,
+   "range": [
+    30,
+    40
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.66,
+   "iosHead": [
+    30,
+    40
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "bb-visa",
+   "key": "50×50",
+   "frameWmm": 50,
+   "frameHmm": 50,
+   "range": [
+    30,
+    40
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.66,
+   "iosHead": [
+    30,
+    40
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "ag-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "ag-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "dm-passport",
+   "key": "38×45",
+   "frameWmm": 38,
+   "frameHmm": 45,
+   "range": [
+    30,
+    34
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "dm-visa",
+   "key": "38×45",
+   "frameWmm": 38,
+   "frameHmm": 45,
+   "range": [
+    30,
+    34
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "A"
+  },
+  {
+   "slug": "gd-passport",
+   "key": "38×51",
+   "frameWmm": 38,
+   "frameHmm": 51,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.647,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "C"
+  },
+  {
+   "slug": "gd-visa",
+   "key": "38×51",
+   "frameWmm": 38,
+   "frameHmm": 51,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.647,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "C"
+  },
+  {
+   "slug": "kn-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "kn-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "lc-passport",
+   "key": "40×50",
+   "frameWmm": 40,
+   "frameHmm": 50,
+   "range": [
+    25,
+    35
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.66,
+   "iosHead": [
+    25,
+    35
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "lc-visa",
+   "key": "40×50",
+   "frameWmm": 40,
+   "frameHmm": 50,
+   "range": [
+    25,
+    35
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.66,
+   "iosHead": [
+    25,
+    35
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "vc-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "vc-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "bf-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "bf-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "ml-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "ml-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "ne-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "ne-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "td-passport",
+   "key": "50×50",
+   "frameWmm": 50,
+   "frameHmm": 50,
+   "range": [
+    34,
+    35
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 34,
+   "derSrc": "formula",
+   "ratio": 0.68,
+   "iosHead": [
+    34,
+    35
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "td-visa",
+   "key": "50×50",
+   "frameWmm": 50,
+   "frameHmm": 50,
+   "range": [
+    34,
+    35
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 34,
+   "derSrc": "formula",
+   "ratio": 0.68,
+   "iosHead": [
+    34,
+    35
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "mr-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "mr-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "gm-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "gm-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "gw-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "gw-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "gn-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "gn-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "sl-passport",
+   "key": "50×50",
+   "frameWmm": 50,
+   "frameHmm": 50,
+   "range": [
+    30,
+    35
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.66,
+   "iosHead": [
+    30,
+    35
+   ],
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "sl-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "lr-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "lr-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "tg-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "tg-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "bj-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "bj-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "cg-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "cg-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "ga-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "ga-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "gq-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "gq-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "cf-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "cf-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "st-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "st-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "er-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "er-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "dj-passport",
+   "key": "35×35",
+   "frameWmm": 35,
+   "frameHmm": 35,
+   "range": [
+    25,
+    30
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 26,
+   "derSrc": "formula",
+   "ratio": 0.743,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "dj-visa",
+   "key": "35×35",
+   "frameWmm": 35,
+   "frameHmm": 35,
+   "range": [
+    25,
+    30
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 26,
+   "derSrc": "formula",
+   "ratio": 0.743,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "bi-passport",
+   "key": "45×45",
+   "frameWmm": 45,
+   "frameHmm": 45,
+   "range": [
+    27,
+    32
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 31,
+   "derSrc": "formula",
+   "ratio": 0.689,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "C"
+  },
+  {
+   "slug": "bi-visa",
+   "key": "45×45",
+   "frameWmm": 45,
+   "frameHmm": 45,
+   "range": [
+    27,
+    32
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 31,
+   "derSrc": "formula",
+   "ratio": 0.689,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "C"
+  },
+  {
+   "slug": "ss-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B+"
+  },
+  {
+   "slug": "ss-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B+"
+  },
+  {
+   "slug": "cv-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "cv-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "km-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "km-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "sc-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "sc-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "sz-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "sz-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "ls-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "ls-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "vu-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "vu-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "sb-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "sb-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "ki-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "ki-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "mh-passport",
+   "key": "51×51",
+   "frameWmm": 51,
+   "frameHmm": 51,
+   "range": [
+    25,
+    35
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.647,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "mh-visa",
+   "key": "51×51",
+   "frameWmm": 51,
+   "frameHmm": 51,
+   "range": [
+    25,
+    35
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.647,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "fm-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "fm-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "pw-passport",
+   "key": "51×51",
+   "frameWmm": 51,
+   "frameHmm": 51,
+   "range": [
+    25,
+    35
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.647,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "pw-visa",
+   "key": "51×51",
+   "frameWmm": 51,
+   "frameHmm": 51,
+   "range": [
+    25,
+    35
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.647,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": "B"
+  },
+  {
+   "slug": "nr-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "nr-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "tv-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "tv-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "ck-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "ck-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "nu-passport",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "nu-visa",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    32,
+    36
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "de-resume",
+   "key": "35×45",
+   "frameWmm": 35,
+   "frameHmm": 45,
+   "range": [
+    28.4,
+    34.6
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 33,
+   "derSrc": "formula",
+   "ratio": 0.733,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "kr-halfcard",
+   "key": "30×40",
+   "frameWmm": 30,
+   "frameHmm": 40,
+   "range": [
+    25.2,
+    30.8
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 29.8,
+   "derSrc": "formula",
+   "ratio": 0.745,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  },
+  {
+   "slug": "jp-halfcard",
+   "key": "30×40",
+   "frameWmm": 30,
+   "frameHmm": 40,
+   "range": [
+    25.2,
+    30.8
+   ],
+   "rangeSrc": "numeric",
+   "explicit": null,
+   "derived": 29.8,
+   "derSrc": "formula",
+   "ratio": 0.745,
+   "iosHead": null,
+   "iosFT": null,
+   "grade": null
+  }
+ ]
+}
