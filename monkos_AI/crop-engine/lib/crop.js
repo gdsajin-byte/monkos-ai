@@ -20,6 +20,7 @@ import { getSpec } from '../specs/formats.js';
 const HAIR_MARGIN_RATIO = 0.044;   // 프레임 높이의 4.4%
 const BOTTOM_MIN_RATIO = 0.12;     // 프레임 높이의 12% (턱 아래 최소 여백)
 const FACE_MIN_RATIO = 0.93;       // spec.faceMinMm 부재 시 최소 얼굴 = faceTargetMm × 0.93
+const HAIR_VOLUME_MAX = 0.15;      // hairTop 새니티: crown 위 fullFaceH × 15% 초과 시 오검출
 
 /**
  * 공용 배치 산식 — 스케일과 extractTop/extractLeft를 결정한다.
@@ -46,16 +47,28 @@ function resolvePlacement(landmarks, spec) {
   const facePx = chin.y - crownY;
   if (facePx <= 0) throw new Error('[Crop] 유효하지 않은 얼굴 높이');
 
-  const hairTopY = landmarks.hairTop ?? crownY;
-  const hasHairTop = landmarks.hairTop != null;
+  let hairTopY = landmarks.hairTop ?? crownY;
+  let hasHairTop = landmarks.hairTop != null;
 
   let scale = (faceTargetMm * mmPx) / facePx;
 
-  // IDPASS CropEngine.swift 정본 이식 — 눈 우선 배치
-  const eyePositionRatio = frameHmm >= 60 ? 0.42 : 0.43;
-  let extractTop = Math.round(eyeY * scale - frameH * eyePositionRatio);
+  // hairTop 새니티: crown 위로 해부학적 한계 초과 시 오검출 판정 → 무시
+  if (hasHairTop) {
+    const maxHairExtent = crownY - facePx * HAIR_VOLUME_MAX;
+    if (hairTopY < maxHairExtent) {
+      console.log(`[Crop] hairTop 새니티 실패: hairTop=${hairTopY.toFixed(0)} < crown-${(facePx * HAIR_VOLUME_MAX).toFixed(0)}=${maxHairExtent.toFixed(0)} → 오검출, 무시`);
+      hasHairTop = false;
+      hairTopY = crownY;
+    }
+  }
 
-  // 머리 보호 가드 (잘릴 때만 개입)
+  // IDPASS CropEngine.swift L263-294 정본 순서 이식
+  // ① 눈 앵커 배치
+  const eyePositionRatio = frameHmm >= 60 ? 0.42 : 0.43;
+  const targetEyeY = frameH * eyePositionRatio;
+  let extractTop = Math.round(eyeY * scale - targetEyeY);
+
+  // ② 헤어 가드 (잘릴 때만 개입)
   if (hasHairTop) {
     const scaledHairTopY = hairTopY * scale;
     const hairTopInFrame = scaledHairTopY - extractTop;
@@ -65,44 +78,28 @@ function resolvePlacement(landmarks, spec) {
     }
   }
 
-  // 턱 마진 가드
-  const scaledChinY = chin.y * scale;
-  const chinInFrame = scaledChinY - extractTop;
-  const bottomMargin = frameH - chinInFrame;
-  if (bottomMargin < frameH * BOTTOM_MIN_RATIO) {
+  // ③④ 하단 마진 체크 + 스케일 축소 루프 (눈 재앵커)
+  const bottomMarginPx = frameH - (chin.y * scale - extractTop);
+  if (bottomMarginPx < frameH * BOTTOM_MIN_RATIO) {
     const minTargetFaceH = faceMinMm * mmPx;
     let newScale = scale;
+    let resolved = false;
     while (newScale * facePx > minTargetFaceH) {
       newScale *= 0.995;
-      const newExtractTop = Math.round(eyeY * newScale - frameH * eyePositionRatio);
-      const newChinInFrame = chin.y * newScale - newExtractTop;
-      const newBottomMargin = frameH - newChinInFrame;
-      if (newBottomMargin >= frameH * BOTTOM_MIN_RATIO) {
-        scale = newScale;
-        extractTop = newExtractTop;
-        break;
+      const nExtractTop = Math.round(eyeY * newScale - targetEyeY);
+      const nBottomMargin = frameH - (chin.y * newScale - nExtractTop);
+      if (nBottomMargin >= frameH * BOTTOM_MIN_RATIO) {
+        // 헤어 체크: 축소 후에도 hairTop이 프레임 안이면 채택
+        if (!hasHairTop || hairTopY * newScale - nExtractTop >= 0) {
+          scale = newScale;
+          extractTop = nExtractTop;
+          resolved = true;
+          break;
+        }
       }
     }
-  }
-
-  // 머리 잘림 방지 축소 (hairTop이 프레임 밖이면 faceMinMm까지)
-  if (hasHairTop && hairTopY * scale - extractTop < 0) {
-    const minTargetFaceH = faceMinMm * mmPx;
-    let newScale = scale;
-    let fitted = false;
-    while (newScale * facePx > minTargetFaceH) {
-      newScale *= 0.995;
-      const nExtractTop = Math.round(eyeY * newScale - frameH * eyePositionRatio);
-      const nHairMargin = frameH * HAIR_MARGIN_RATIO;
-      if (hairTopY * newScale - nExtractTop >= nHairMargin) {
-        scale = newScale;
-        extractTop = nExtractTop;
-        fitted = true;
-        break;
-      }
-    }
-    if (!fitted) {
-      extractTop = Math.round(hairTopY * scale - frameH * HAIR_MARGIN_RATIO);
+    if (!resolved) {
+      // faceMin까지 줄여도 안 되면 ②의 위치 유지 (IDPASS 동일)
     }
   }
 
