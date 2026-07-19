@@ -671,6 +671,7 @@ ${relatedServices(ctx)}
 // ─── SPECS DETAIL (V1 소각 — 전 슬러그 V2 직결, 2026-07-19) ─────────────────────
 
 export function specsDetailFragment(slug, forceLang = null) {
+  if (!isV2Spec(slug, forceLang || 'ko')) return null;
   return specsDetailV2Fragment(slug, forceLang);
 }
 

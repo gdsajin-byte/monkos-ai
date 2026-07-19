@@ -517,7 +517,8 @@ var SpecsFunnel = (function(){
       uploadedBase64 = null; fitResult = null; precheckData = null; freeResultB64 = null;
       showPhase(phaseUpload);
     });
-    document.getElementById('ip-t1-buy').addEventListener('click', function(){
+    var t1Btn = document.getElementById('ip-t1-buy');
+    if(t1Btn) t1Btn.addEventListener('click', function(){
       gaTrack('t1_upsell_click', {}, true);
       proceedToPay();
     });
