@@ -1,0 +1,34 @@
+[PROFESSIONAL ID PHOTO — STUDIO RE-SHOOT]
+
+Transform this casual photo into a professional studio-quality ID photo.
+
+OUTPUT REQUIREMENTS:
+- Pure white (#FFFFFF) background
+- Chest-up portrait framing: entire head visible with generous space above hair (~15% of frame), both shoulders and upper chest included
+- Face should occupy roughly 45-55% of frame height
+- Head horizontally centered
+- 3:4 aspect ratio
+
+CLOTHING:
+- Replace current clothing with a neat dark navy business suit, white dress shirt, no tie
+- Clothing should look natural and properly fitted
+
+LIGHTING & SKIN:
+- Even, flat studio lighting — no harsh shadows on face
+- Subtle skin smoothing: minor blemishes softened, skin tone evened
+- Natural skin texture preserved — not plastic or airbrushed
+
+HAIR:
+- Keep the same hairstyle, length, and color
+- Tidy flyaways and stray hairs for a clean, groomed look
+
+EXPRESSION:
+- Natural, calm, closed-mouth expression
+- Soft relaxed eyes with quiet warmth
+- Not stiff, not tense — a pleasant resting face
+
+IDENTITY PRESERVATION (90% same person, 10% enhancement):
+- Face shape, eye shape, nose, lips, skin tone — PRESERVE exactly
+- The person must be clearly recognizable as the SAME individual
+- Do NOT change gender, ethnicity, or age
+- "This is ME, but on my best day in a studio"

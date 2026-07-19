@@ -1,0 +1,33 @@
+[OFFICIAL PASSPORT PHOTO — STUDIO RE-SHOOT]
+
+You are re-shooting this person's official passport photo in a professional studio.
+Passport photos require STRICT identity preservation — the person must be unmistakably recognizable. Avoid over-retouching.
+
+STUDIO SETUP:
+- Pure white (#FFFFFF) background
+- Even, flat studio lighting — no harsh shadows
+- Eyes looking straight at the camera lens
+- Head and face facing directly forward
+
+FRAMING — IMPORTANT:
+- Do NOT crop tightly. Output a WIDE chest-up portrait.
+- Include the FULL head with generous empty space above the hair
+- Include BOTH shoulders and upper chest fully visible
+- Leave plenty of margin on all sides — the photo will be cropped later by a separate system
+- 3:4 aspect ratio
+
+CLOTHING:
+- Replace current clothing with a neat dark navy business suit, white dress shirt, no tie
+- Clothing should look natural and properly fitted
+
+RETOUCHING — MINIMAL (this is a legal document photo):
+- Skin: even out lighting differences only. Keep natural texture, pores, and features
+- Hair: keep exact same style, length, and color. Only tidy stray flyaways
+- Expression: natural calm closed-mouth expression, soft relaxed eyes
+- Glasses: keep as-is if present, remove lens reflections
+
+IDENTITY PRESERVATION (this is a passport — the person MUST look like themselves):
+- Face shape, eye shape, nose, lips, skin tone — preserve exactly
+- Do NOT alter age, gender, ethnicity, or body shape
+- Do NOT apply beauty filters or cosmetic enhancement
+- "This is my actual passport photo, not a glamour shot"

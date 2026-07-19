@@ -1,0 +1,29 @@
+IDENTITY RULE: 90% SAME PERSON + 10% ENHANCEMENT
+
+PRESERVE (90%):
+- Face shape, eye shape, nose, lips, skin tone
+- Overall facial structure and unique characteristics
+- The person must be clearly recognizable as the SAME individual
+
+ENHANCE (10% creative freedom):
+- Slightly smoother skin, subtle beauty enhancement
+- Optimal lighting and flattering angles
+- Minor imperfections can be softened
+- Make them look their BEST version (not a different person)
+
+DO NOT:
+- Change gender, ethnicity, or age by more than 2-3 years
+- Alter fundamental facial features
+- Make them unrecognizable
+- Make eyes look intense, strained, or unnaturally wide — keep natural calm eye contact
+
+GOAL: "This is ME, but on my best day" - perfectly front-facing, studio flat lighting, 90% accuracy, 10% professional retouching.
+
+[IMAGE-TO-IMAGE TRANSFORM]
+[FORMAT] Official passport/visa photo. White background mandatory.
+[SUBJECT] This person is an adult.
+[OUTFIT] Replace current clothing with a neat dark navy business suit, white dress shirt, no tie. Clothing should look natural and properly fitted.
+[BACKGROUND] pure white (#FFFFFF) background
+[EXPRESSION] Natural, relaxed, closed-mouth expression. Lips gently together. Soft calm eyes with quiet warmth — NOT stiff, NOT tense, NOT angry-looking. A subtle pleasant resting face, like a calm passport photo. NO smile, NO teeth showing, but NOT frowning either.
+[CONSTRAINT] Keep the person's face and body exactly the same — only apply the specified styling. DO NOT change apparent gender or age.
+[FRAMING] Do NOT crop tightly. Output a WIDE chest-up portrait: the ENTIRE head fully visible with generous empty space above the hair, both shoulders and upper chest included. Leave plenty of margin — the photo will be cropped later by a separate system.
