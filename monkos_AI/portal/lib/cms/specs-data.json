@@ -39335,9 +39335,9 @@
     "size": "4 × 5cm",
     "pixels": "472 × 591px",
     "dpi": 300,
-    "background": "파란색",
-    "backgroundEn": "Blue",
-    "backgroundJa": "青",
+    "background": "흰색",
+    "backgroundEn": "White",
+    "backgroundJa": "白",
     "headHeight": "3.8cm",
     "headHeightEn": "3.8cm",
     "headHeightJa": "3.8cm",
@@ -39452,17 +39452,17 @@
       "es": "Kuwait Foto de Visa Tamaño y Requisitos 2026 — 4 × 5cm"
     },
     "seoDescription": {
-      "ko": "쿠웨이트 비자 사진 공식 규격·2026년 규정 — 4 × 5cm, 파란색 배경. 규격 검증된 사진 파일을 즉시 다운로드하세요.",
-      "en": "Official Kuwait visa photo requirements 2026 — 4 × 5cm, blue background. Get a compliant photo online in seconds.",
-      "ja": "クウェートビザ写真の公式サイズ・2026年規定 — 4 × 5cm、背景は青。規格対応の写真をオンラインで即ダウンロード。",
-      "es": "Requisitos oficiales de foto de visa de Kuwait 2026 — 4 × 5cm, fondo azul. Obtenga una foto conforme al instante."
+      "ko": "쿠웨이트 비자 사진 공식 규격·2026년 규정 — 4 × 5cm, 흰색 배경. 규격 검증된 사진 파일을 즉시 다운로드하세요.",
+      "en": "Official Kuwait visa photo requirements 2026 — 4 × 5cm, white background. Get a compliant photo online in seconds.",
+      "ja": "クウェートビザ写真の公式サイズ・2026年規定 — 4 × 5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。",
+      "es": "Requisitos oficiales de foto de visa de Kuwait 2026 — 4 × 5cm, fondo blanco. Obtenga una foto conforme al instante."
     },
     "headHeightMin": 36.1,
     "headHeightMax": 39.9,
     "officialSource": "https://kuwaitvisa.moi.gov.kw/faq",
     "countryEs": "Kuwait",
     "typeEs": "Visa",
-    "backgroundEs": "Azul",
+    "backgroundEs": "Blanco",
     "headHeightEs": "3.8cm",
     "validityEs": "",
     "fileSpecEs": ""
