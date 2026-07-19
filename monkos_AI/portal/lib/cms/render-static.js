@@ -449,41 +449,190 @@ export function aiPhotoGuideFragment(forceLang = null) {
 
   const i18n = {
     ko: {
-      title: 'AI 증명사진 만들기 — 무료 사이트 비교·가격·사용법 총정리 2026 | MONKOS',
-      desc: 'AI 증명사진 무료 사이트 비교, 사진관 vs AI 가격 차이, 셀프 촬영부터 규격 크롭까지. 여권·이력서·면허증 증명사진을 집에서 바로 만드세요.',
-      h1: 'AI 증명사진 만들기 — 2026 완벽 가이드',
-      intro: '사진관에 가지 않아도, 스마트폰 하나면 규격에 맞는 증명사진을 만들 수 있습니다.',
+      title: 'AI 증명사진 만들기 무료 — 셀프 촬영으로 429가지 규격 자동 크롭 | MONKOS',
+      desc: '셀카 한 장으로 여권·비자·이력서 증명사진을 무료로 만드세요. 429가지 규격 자동 크롭, AI 배경 제거, 규격 안착 검증까지. 사진관 대비 90% 저렴한 AI 증명사진 사이트.',
+      h1: 'AI 증명사진 만들기 — 무료 셀프 촬영 가이드 2026',
+      intro: '사진관에 가지 않아도, 스마트폰 셀카 한 장이면 규격에 맞는 증명사진을 만들 수 있습니다. MONKOS는 429가지 국가별 규격을 지원하며, 무료 체험부터 프리미엄 보정까지 한 곳에서 제공합니다.',
       whatTitle: 'AI 증명사진이란?',
-      whatText: 'AI 증명사진은 인공지능이 자동으로 배경을 제거하고, 얼굴 위치와 크기를 규격에 맞춰 크롭하며, 자연스러운 보정까지 처리하는 서비스입니다. 셀카 한 장이면 여권·이력서·운전면허 등 모든 규격의 증명사진을 만들 수 있습니다.',
+      whatText: 'AI 증명사진은 인공지능이 자동으로 배경을 제거하고, 얼굴 위치와 크기를 국가별 공식 규격에 맞춰 크롭하며, 자연스러운 보정까지 처리하는 서비스입니다. 셀카 한 장이면 여권·비자·이력서·운전면허·주민등록증 등 모든 규격의 증명사진을 즉시 만들 수 있습니다.',
+      beforeAfterTitle: '실제 변환 결과',
+      beforeLabel: '셀카 원본',
+      afterLabel: 'AI 증명사진',
       compareTitle: '사진관 vs AI 증명사진 비교',
-      compareHeaders: ['항목', '사진관', 'AI 증명사진'],
+      compareHeaders: ['항목', '사진관', 'MONKOS AI'],
       compareRows: [
-        ['가격', '10,000~20,000원', '무료~3,000원'],
-        ['소요 시간', '방문 + 촬영 30분~1시간', '1~3분'],
+        ['가격', '10,000~20,000원', '무료(T0) / ₩2,000(프리미엄)'],
+        ['소요 시간', '방문 + 촬영 30분~1시간', '30초~1분'],
         ['장소', '사진관 방문 필요', '집에서 스마트폰으로'],
-        ['규격 정확도', '촬영사 경험에 의존', 'AI가 자동으로 규격 맞춤'],
+        ['규격 정확도', '촬영사 경험에 의존', 'AI가 429규격 자동 맞춤'],
         ['재촬영', '재방문 필요', '무제한 재시도'],
+        ['배경 처리', '배경지 필요', 'AI 자동 배경 제거 + 규정색 합성'],
       ],
-      howTitle: '사용 방법 — 3단계',
+      howTitle: '사용 방법 — 4단계',
       steps: [
-        { title: '1. 셀카 촬영', text: '밝은 곳에서 흰 벽 앞에서 정면 셀카를 찍으세요. 자연광이 가장 좋습니다.' },
-        { title: '2. AI 자동 처리', text: 'MONKOS AI가 배경 제거, 규격 크롭, 자연 보정을 자동으로 처리합니다.' },
-        { title: '3. 다운로드', text: '완성된 증명사진을 다운로드하세요. 인쇄용(300dpi)과 온라인 제출용 모두 제공.' },
+        { title: '1. 규격 선택', text: '국가와 서류 종류를 선택하세요. 한국 여권, 일본 비자, 미국 여권 등 429가지 규격 중 선택.' },
+        { title: '2. 셀카 업로드', text: '밝은 곳에서 정면 셀카를 찍어 업로드하세요. 배경은 신경 쓰지 않아도 됩니다.' },
+        { title: '3. AI 자동 처리', text: 'MONKOS AI가 배경 제거 → 규격 크롭 → 얼굴 안착 검증을 자동으로 처리합니다.' },
+        { title: '4. 다운로드', text: '규격 검증된 증명사진을 즉시 다운로드. 인쇄용(300dpi)과 온라인 제출용 모두 제공.' },
       ],
-      specsTitle: '지원 규격',
-      specsText: '여권(3.5×4.5cm), 반명함(3×4cm), 운전면허(3.5×4.5cm), 주민등록증(35×45mm) 등 한국 주요 규격과 일본·미국·유럽 등 26개국 규격을 지원합니다.',
+      specsTitle: '지원 규격 — 429가지',
+      specsText: '전 세계 100개국 이상, 429가지 증명사진 규격을 지원합니다.',
+      specsTypes: [
+        { label: '여권', href: '/specs' },
+        { label: '비자', href: '/specs' },
+        { label: '이력서', href: '/specs' },
+        { label: '운전면허', href: '/specs' },
+        { label: '주민등록증', href: '/specs' },
+      ],
+      specsPopular: [
+        { label: '한국 여권 (35×45mm)', href: '/specs/passport/kr' },
+        { label: '일본 여권 (35×45mm)', href: '/specs/passport/jp' },
+        { label: '미국 여권 (51×51mm)', href: '/specs/passport/us' },
+        { label: '영국 비자 (35×45mm)', href: '/specs/visa/uk' },
+        { label: '중국 비자 (33×48mm)', href: '/specs/visa/cn' },
+      ],
+      pricingTitle: '가격 안내',
+      pricingTiers: [
+        { name: '무료 (T0)', desc: 'AI 배경 제거 + 규격 크롭', price: '₩0', note: '하루 3회' },
+        { name: '프리미엄 (T1)', desc: '+ AI 자연 보정 + 고해상도', price: '₩2,000', note: '1회 결제' },
+      ],
       faqTitle: '자주 묻는 질문',
       faqs: [
-        { q: 'AI 증명사진이 실제 서류에 사용 가능한가요?', a: '네, MONKOS AI는 각국 공식 규격(사이즈, 배경색, 머리 비율)에 맞춰 생성하므로 여권·비자·이력서 제출에 사용할 수 있습니다.' },
-        { q: '무료인가요?', a: '기본 크롭 기능은 무료입니다. AI 보정이 포함된 증명사진은 크레딧 차감 방식으로, 사진관 대비 90% 이상 저렴합니다.' },
-        { q: '스마트폰으로만 가능한가요?', a: '스마트폰, 태블릿, PC 모두 사용 가능합니다. 웹 브라우저만 있으면 됩니다.' },
-        { q: '셀카 품질이 낮아도 괜찮나요?', a: '밝은 환경에서 촬영하면 충분합니다. AI가 배경과 조명을 자동으로 보정합니다.' },
+        { q: 'AI 증명사진이 실제 서류에 사용 가능한가요?', a: '네, MONKOS는 각국 공식 규격(사이즈, 배경색, 머리 비율)에 맞춰 생성합니다. 여권·비자·이력서 등 공식 서류 제출에 사용할 수 있습니다.' },
+        { q: '무료로 몇 번 사용할 수 있나요?', a: '무료(T0)는 하루 3회까지 사용 가능합니다. 429가지 규격 모두 무료로 체험할 수 있으며, AI 보정이 포함된 프리미엄은 건당 ₩2,000입니다.' },
+        { q: '스마트폰으로만 가능한가요?', a: '스마트폰, 태블릿, PC 모두 사용 가능합니다. 웹 브라우저만 있으면 별도 앱 설치 없이 이용할 수 있습니다.' },
+        { q: '셀카 배경이 지저분해도 괜찮나요?', a: '네, AI가 배경을 자동으로 제거하고 규정색(흰색, 회색, 파랑 등)으로 합성합니다. 어떤 배경에서 찍어도 됩니다.' },
+        { q: '해외 규격도 지원하나요?', a: '100개국 이상의 여권·비자·신분증 규격을 지원합니다. 미국, 일본, 영국, 호주, 독일, 프랑스 등 주요국 규격이 모두 포함되어 있습니다.' },
       ],
       ctaTitle: '지금 바로 만들어 보세요',
-      ctaBtn1: 'AI 증명사진 만들기',
-      ctaBtn2: '무료 크롭 앱',
-      ctaBtn1Url: 'https://idphoto-kr.monkos.ai/',
-      ctaBtn2Url: 'https://monkos.ai/crop',
+      ctaBtn1: 'AI 증명사진 만들기 (무료)',
+      ctaBtn2: '전체 규격 보기',
+      ctaBtn1Url: '/specs/passport/kr',
+      ctaBtn2Url: '/specs',
+    },
+    en: {
+      title: 'Create AI ID Photos Free — 429 Specs, Auto Crop & Background Removal | MONKOS',
+      desc: 'Make passport, visa & ID photos from a selfie. 429 country specs, AI background removal, instant crop. Free online tool — no app needed.',
+      h1: 'Create AI ID Photos — Free Online Guide 2026',
+      intro: 'No photo studio needed. One selfie from your smartphone is all it takes to create specification-compliant ID photos. MONKOS supports 429 country-specific specs with free trials and premium retouching.',
+      whatTitle: 'What Are AI ID Photos?',
+      whatText: 'AI ID photos use artificial intelligence to automatically remove backgrounds, crop to official specifications (face position, size, head ratio), and apply natural retouching. One selfie becomes passport, visa, resume, or license photos instantly.',
+      beforeAfterTitle: 'Before & After',
+      beforeLabel: 'Original Selfie',
+      afterLabel: 'AI ID Photo',
+      compareTitle: 'Photo Studio vs AI ID Photos',
+      compareHeaders: ['Feature', 'Photo Studio', 'MONKOS AI'],
+      compareRows: [
+        ['Price', '$15~30', 'Free(T0) / $1.99(Premium)'],
+        ['Time', '30min~1hr visit', '30 seconds'],
+        ['Location', 'Must visit studio', 'From home, any device'],
+        ['Accuracy', 'Depends on photographer', 'AI auto-fits 429 specs'],
+        ['Retake', 'Revisit required', 'Unlimited retries'],
+        ['Background', 'Backdrop needed', 'AI auto-removal + spec color'],
+      ],
+      howTitle: 'How to Use — 4 Steps',
+      steps: [
+        { title: '1. Choose Spec', text: 'Select your country and document type. 429 specs available: passport, visa, resume, license, and more.' },
+        { title: '2. Upload Selfie', text: 'Take a front-facing photo in good lighting. Background does not matter — AI removes it.' },
+        { title: '3. AI Processing', text: 'MONKOS AI removes background, crops to spec, and validates face positioning automatically.' },
+        { title: '4. Download', text: 'Download your spec-compliant photo instantly. Print-ready (300dpi) and digital formats included.' },
+      ],
+      specsTitle: 'Supported Specs — 429 Types',
+      specsText: 'Over 100 countries, 429 ID photo specifications supported.',
+      specsTypes: [
+        { label: 'Passport', href: '/en/specs' },
+        { label: 'Visa', href: '/en/specs' },
+        { label: 'Resume', href: '/en/specs' },
+        { label: 'License', href: '/en/specs' },
+        { label: 'ID Card', href: '/en/specs' },
+      ],
+      specsPopular: [
+        { label: 'US Passport (51×51mm)', href: '/en/specs/passport/us' },
+        { label: 'UK Passport (35×45mm)', href: '/en/specs/passport/uk' },
+        { label: 'Canada Passport (50×70mm)', href: '/en/specs/passport/ca' },
+        { label: 'Australia Passport (35×45mm)', href: '/en/specs/passport/au' },
+        { label: 'Schengen Visa (35×45mm)', href: '/en/specs/schengen-visa/eu' },
+      ],
+      pricingTitle: 'Pricing',
+      pricingTiers: [
+        { name: 'Free (T0)', desc: 'AI background removal + spec crop', price: '$0', note: '3 per day' },
+        { name: 'Premium (T1)', desc: '+ AI retouching + high resolution', price: '$1.99', note: 'per photo' },
+      ],
+      faqTitle: 'FAQ',
+      faqs: [
+        { q: 'Can AI ID photos be used for official documents?', a: 'Yes. MONKOS generates photos that comply with each country\'s official specifications (size, background color, head ratio). Suitable for passports, visas, and resumes.' },
+        { q: 'How many free uses per day?', a: 'Free (T0) allows 3 photos per day across all 429 specs. Premium retouching is $1.99 per photo.' },
+        { q: 'Do I need to install an app?', a: 'No. MONKOS works in any web browser — smartphone, tablet, or desktop. No app installation required.' },
+        { q: 'What if my selfie background is messy?', a: 'No problem. AI automatically removes any background and composites the regulation color (white, gray, blue, etc.).' },
+        { q: 'Which countries are supported?', a: 'Over 100 countries including US, UK, Japan, Australia, Germany, France, Canada, and more. 429 total specifications.' },
+      ],
+      ctaTitle: 'Try It Now — Free',
+      ctaBtn1: 'Create AI ID Photo (Free)',
+      ctaBtn2: 'View All Specs',
+      ctaBtn1Url: '/en/specs/passport/us',
+      ctaBtn2Url: '/en/specs',
+    },
+    ja: {
+      title: 'AI証明写真の作り方 — 無料・429規格対応・自動クロップ | MONKOS',
+      desc: 'セルフィー1枚でパスポート・ビザ・履歴書の証明写真を無料作成。429種の国別規格に自動クロップ、AI背景除去。写真館の90%オフ。',
+      h1: 'AI証明写真の作り方 — 無料オンラインガイド 2026',
+      intro: '写真館に行かなくても、スマホのセルフィー1枚で規格に合った証明写真が作れます。MONKOSは429種の国別規格に対応し、無料体験からプレミアム補正まで提供します。',
+      whatTitle: 'AI証明写真とは？',
+      whatText: 'AI証明写真は、人工知能が自動で背景を除去し、顔の位置とサイズを各国の公式規格に合わせてクロップし、自然な補正まで行うサービスです。セルフィー1枚でパスポート・ビザ・履歴書・免許証など全ての証明写真を即座に作成できます。',
+      beforeAfterTitle: '実際の変換結果',
+      beforeLabel: 'セルフィー原本',
+      afterLabel: 'AI証明写真',
+      compareTitle: '写真館 vs AI証明写真',
+      compareHeaders: ['項目', '写真館', 'MONKOS AI'],
+      compareRows: [
+        ['価格', '¥1,500~3,000', '無料(T0) / $1.99(プレミアム)'],
+        ['所要時間', '来店+撮影30分~1時間', '30秒~1分'],
+        ['場所', '写真館への来店が必要', '自宅でスマホから'],
+        ['規格精度', 'カメラマンの経験に依存', 'AIが429規格を自動適合'],
+        ['撮り直し', '再来店が必要', '無制限リトライ'],
+        ['背景処理', '背景紙が必要', 'AI自動背景除去+規定色合成'],
+      ],
+      howTitle: '使い方 — 4ステップ',
+      steps: [
+        { title: '1. 規格を選択', text: '国と書類の種類を選択。日本パスポート、米国ビザなど429種から選べます。' },
+        { title: '2. セルフィーをアップロード', text: '明るい場所で正面のセルフィーを撮ってアップロード。背景は気にしなくてOK。' },
+        { title: '3. AI自動処理', text: 'MONKOS AIが背景除去→規格クロップ→顔位置検証を自動で処理します。' },
+        { title: '4. ダウンロード', text: '規格検証済みの証明写真を即座にダウンロード。印刷用(300dpi)とオンライン提出用の両方に対応。' },
+      ],
+      specsTitle: '対応規格 — 429種',
+      specsText: '世界100カ国以上、429種の証明写真規格に対応しています。',
+      specsTypes: [
+        { label: 'パスポート', href: '/ja/specs' },
+        { label: 'ビザ', href: '/ja/specs' },
+        { label: '履歴書', href: '/ja/specs' },
+        { label: '免許証', href: '/ja/specs' },
+        { label: '身分証', href: '/ja/specs' },
+      ],
+      specsPopular: [
+        { label: '日本パスポート (35×45mm)', href: '/ja/specs/passport/jp' },
+        { label: '日本免許証 (24×30mm)', href: '/ja/specs/license/jp' },
+        { label: '日本マイナンバー (35×45mm)', href: '/ja/specs/id/jp' },
+        { label: '米国パスポート (51×51mm)', href: '/ja/specs/passport/us' },
+        { label: '韓国パスポート (35×45mm)', href: '/ja/specs/passport/kr' },
+      ],
+      pricingTitle: '料金',
+      pricingTiers: [
+        { name: '無料 (T0)', desc: 'AI背景除去 + 規格クロップ', price: '¥0', note: '1日3回' },
+        { name: 'プレミアム (T1)', desc: '+ AI自然補正 + 高解像度', price: '$1.99', note: '1枚あたり' },
+      ],
+      faqTitle: 'よくある質問',
+      faqs: [
+        { q: 'AI証明写真は公式書類に使えますか？', a: 'はい。MONKOSは各国の公式規格（サイズ、背景色、頭部比率）に準拠して生成します。パスポート・ビザ・履歴書への提出に使用できます。' },
+        { q: '無料で何回使えますか？', a: '無料(T0)は1日3回まで、429規格すべてで利用可能です。AI補正付きプレミアムは1枚$1.99です。' },
+        { q: 'アプリのインストールは必要ですか？', a: '不要です。Webブラウザのみで動作します。スマホ・タブレット・PCすべてに対応。' },
+        { q: 'セルフィーの背景が汚くても大丈夫ですか？', a: 'はい。AIが自動で背景を除去し、規定色（白・グレー・青など）に合成します。どんな背景で撮っても構いません。' },
+        { q: '対応国は？', a: '米国、英国、日本、オーストラリア、ドイツ、フランス、カナダなど100カ国以上。計429種の規格に対応しています。' },
+      ],
+      ctaTitle: '今すぐ作ってみましょう',
+      ctaBtn1: 'AI証明写真を作る（無料）',
+      ctaBtn2: '全規格を見る',
+      ctaBtn1Url: '/ja/specs/passport/jp',
+      ctaBtn2Url: '/ja/specs',
     },
   };
   const t = i18n[lang] || i18n.ko;
@@ -508,7 +657,9 @@ export function aiPhotoGuideFragment(forceLang = null) {
 <meta property="og:url" content="${canonicalUrl}">
 <link rel="canonical" href="${canonicalUrl}">
 <link rel="alternate" hreflang="ko" href="https://monkos.ai/guide/ai-photo">
-<link rel="alternate" hreflang="x-default" href="https://monkos.ai/guide/ai-photo">
+<link rel="alternate" hreflang="en" href="https://monkos.ai/en/guide/ai-photo">
+<link rel="alternate" hreflang="ja" href="https://monkos.ai/ja/guide/ai-photo">
+<link rel="alternate" hreflang="x-default" href="https://monkos.ai/en/guide/ai-photo">
 <script type="application/ld+json">${jsonLd}</script>`;
 
   const compareRowsHtml = t.compareRows.map(([item, studio, ai]) =>
@@ -546,12 +697,44 @@ export function aiPhotoGuideFragment(forceLang = null) {
 .aip-cta-buttons a { display: inline-block; padding: 12px 24px; border-radius: 8px; font-weight: 600; text-decoration: none; font-size: 15px; }
 .aip-cta-buttons a.primary { background: var(--accent); color: #fff; }
 .aip-cta-buttons a.secondary { background: transparent; border: 1px solid var(--accent); color: var(--accent); }
+.aip-ba { display: flex; align-items: center; justify-content: center; gap: 20px; margin: 16px 0; flex-wrap: wrap; }
+.aip-ba-item { text-align: center; }
+.aip-ba-item img { border-radius: 8px; border: 1px solid var(--border-dim); object-fit: cover; }
+.aip-ba-item span { display: block; margin-top: 8px; font-size: 13px; color: var(--text-dim); }
+.aip-ba-arrow { font-size: 28px; color: var(--accent); }
+.aip-tags { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0; }
+.aip-tag { padding: 6px 14px; border-radius: 20px; background: var(--bg-card); border: 1px solid var(--border-dim); color: var(--text-bright); font-size: 13px; text-decoration: none; }
+.aip-tag:hover { border-color: var(--accent); color: var(--accent); }
+.aip-popular { list-style: none; padding: 0; margin: 12px 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; }
+.aip-popular li a { color: var(--accent); text-decoration: none; font-size: 14px; }
+.aip-popular li a:hover { text-decoration: underline; }
+.aip-pricing { display: flex; gap: 16px; flex-wrap: wrap; margin: 16px 0; }
+.aip-price-card { flex: 1; min-width: 200px; background: var(--bg-card); border: 1px solid var(--border-dim); border-radius: 12px; padding: 20px; text-align: center; }
+.aip-price-name { font-size: 16px; font-weight: 600; color: var(--text-bright); margin-bottom: 8px; }
+.aip-price-amount { font-size: 28px; font-weight: 700; color: var(--accent); margin-bottom: 8px; }
+.aip-price-desc { font-size: 13px; color: var(--text-dim); margin-bottom: 6px; }
+.aip-price-note { font-size: 12px; color: var(--text-dim); opacity: 0.7; }
 `;
+
+  const specsTypesHtml = (t.specsTypes || []).map(s => `<a href="${s.href}" class="aip-tag">${escapeHtml(s.label)}</a>`).join('');
+  const specsPopularHtml = (t.specsPopular || []).map(s => `<li><a href="${s.href}">${escapeHtml(s.label)}</a></li>`).join('\n');
+  const pricingHtml = (t.pricingTiers || []).map(p =>
+    `<div class="aip-price-card"><div class="aip-price-name">${escapeHtml(p.name)}</div><div class="aip-price-amount">${escapeHtml(p.price)}</div><div class="aip-price-desc">${escapeHtml(p.desc)}</div><div class="aip-price-note">${escapeHtml(p.note)}</div></div>`
+  ).join('\n');
 
   const bodyContent = `
 <div class="aip-container">
   <h1>${escapeHtml(t.h1)}</h1>
   <p class="aip-intro">${escapeHtml(t.intro)}</p>
+
+  <div class="aip-section">
+    <h2>${escapeHtml(t.beforeAfterTitle)}</h2>
+    <div class="aip-ba">
+      <div class="aip-ba-item"><img src="/images/guides/guide-selfie.jpg" alt="${escapeHtml(t.beforeLabel)}" width="200" height="260" loading="lazy"><span>${escapeHtml(t.beforeLabel)}</span></div>
+      <div class="aip-ba-arrow">→</div>
+      <div class="aip-ba-item"><img src="/images/guides/kr-passport.webp" alt="${escapeHtml(t.afterLabel)}" width="200" height="260" loading="lazy"><span>${escapeHtml(t.afterLabel)}</span></div>
+    </div>
+  </div>
 
   <div class="aip-section">
     <h2>${escapeHtml(t.whatTitle)}</h2>
@@ -574,7 +757,13 @@ export function aiPhotoGuideFragment(forceLang = null) {
   <div class="aip-section">
     <h2>${escapeHtml(t.specsTitle)}</h2>
     <p>${escapeHtml(t.specsText)}</p>
-    <p style="margin-top:8px;"><a href="/specs" style="color:var(--accent);">전체 규격 보기 →</a></p>
+    <div class="aip-tags">${specsTypesHtml}</div>
+    <ul class="aip-popular">${specsPopularHtml}</ul>
+  </div>
+
+  <div class="aip-section">
+    <h2>${escapeHtml(t.pricingTitle)}</h2>
+    <div class="aip-pricing">${pricingHtml}</div>
   </div>
 
   <div class="aip-section">
