@@ -214,7 +214,8 @@ status: 현행
 | **GOOGLE_ADS_CLIENT_ID** | Google Ads OAuth 클라이언트 ID | Ads API 인증 | ⭐ **2026-07-19 신설** |
 | **GOOGLE_ADS_CLIENT_SECRET** | Google Ads OAuth 클라이언트 시크릿 | Ads API 인증 | ⭐ **2026-07-19 신설** |
 | **GOOGLE_ADS_REFRESH_TOKEN** | Google Ads OAuth 리프레시 토큰 | Ads API 인증 | ⭐ **2026-07-19 신설** |
-| **GOOGLE_ADS_CUSTOMER_ID** | Google Ads 고객 ID (MCC 663-413-9609, 하이픈 제거) | Ads API 계정 식별 | ⭐ **2026-07-19 신설** |
+| **GOOGLE_ADS_CUSTOMER_ID** | Google Ads MCC ID (663-413-9609, 하이픈 제거) | Ads API login-customer-id | ⭐ **2026-07-19 신설** |
+| **GOOGLE_ADS_CLIENT_CID** | Google Ads 클라이언트 계정 (MonkosAI, 586-642-3846) | Ads API 메트릭 조회 대상 | ⭐ **2026-07-19 신설** |
 | **TOSS_SECRET_KEY** | 토스페이먼츠 라이브 시크릿 키 | portal (KR 결제 서버 검증) | ⭐ **2026-07-13 신설** |
 
 **gdocs 토큰 중앙화 (광역오더 #7)**: iMac 정본 `~/.config/mcp-google-docs/token.json` → `MCP_GDOCS_TOKEN`으로 등록.

@@ -50,10 +50,15 @@ get_access_token() {
 ads_query() {
   local query="$1"
   local target_cid="${2:-$(get_query_cid)}"
+  # 독립 계정(MCC 미연결)은 login-customer-id를 자기 자신으로
+  local login_cid="$CUSTOMER_ID"
+  if [ "$target_cid" = "$ADS_CLIENT_CID" ] && [ "$ADS_CLIENT_CID" != "$CUSTOMER_ID" ]; then
+    login_cid="$target_cid"
+  fi
   curl -s -X POST "${ADS_BASE}/customers/${target_cid}/googleAds:searchStream" \
     -H "Authorization: Bearer ${ACCESS_TOKEN}" \
     -H "developer-token: ${DEV_TOKEN}" \
-    -H "login-customer-id: ${CUSTOMER_ID}" \
+    -H "login-customer-id: ${login_cid}" \
     -H "Content-Type: application/json" \
     -d "{\"query\": \"${query}\"}"
 }
