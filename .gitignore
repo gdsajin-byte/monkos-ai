@@ -168,3 +168,6 @@ apps/crop-app/benchmark/poc-20260707/BiRefNet-portrait.onnx
 apps/crop-app/benchmark/poc-20260707/venv/
 apps/crop-app/benchmark/poc-20260707/apple-poc
 *.onnx
+
+# T1 튜닝 테스트 이미지
+monkos_AI/portal/tools/t1-tuning/
