@@ -456,3 +456,4 @@ Input.dispatchKeyEvent   — 키보드 입력 (Enter, 단축키)
 - 스크린샷: WebSocket `max_size` 기본 1MB → 10MB 확장 필요
 - ProseMirror: `innerHTML` 직접 주입 불가 → `window.editor.setHTML()` 또는 클릭+insertText
 - dpr=2 환경: 스크린샷/클릭 좌표 = CSS pixel 기준 (일치)
+| 07/19 | iMac/민아 | **품질 진단 실측 어펜드(§6)** — cdp_utils 정본 실측 1,847줄(README 인식 ~900줄의 2배, 리팩토링 트리거 1500줄 기초과 미인지)·타임아웃 2건·재시도 0·테스트 0·정본 이원화(scripts≠PF 사본 767줄)·전 자산 4/17 정지. 총평 "규율 있는 실험실 코드, 인프라 계층 부재". 개선 P0-1 신뢰성 계층~P2-7 골든패스 7건 로드맵 + 순찰 러너 설계와 묶음 지시 제안 | REPORT §6 | ⏳ 지시서화 대기 |
