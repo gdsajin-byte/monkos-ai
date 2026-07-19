@@ -4,7 +4,7 @@
  */
 
 export const SPECS_DOMAIN = 'https://monkos.ai';
-export const SPECS_LANGS = ['ko', 'en', 'ja', 'es'];
+export const SPECS_LANGS = ['ko', 'en', 'ja', 'es', 'id', 'vi'];
 
 export function specsPath(routeKey, lang = 'ko') {
   const prefix = lang === 'ko' ? '' : `/${lang}`;

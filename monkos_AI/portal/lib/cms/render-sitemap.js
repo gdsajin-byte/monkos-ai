@@ -157,7 +157,7 @@ function specsUrlsForLang(lang) {
 export function renderSitemapSpecs(req, res) {
   try {
     const urls = [];
-    for (const lang of ['ko', 'ja', 'en', 'es']) urls.push(...specsUrlsForLang(lang));
+    for (const lang of ['ko', 'ja', 'en', 'es', 'id', 'vi']) urls.push(...specsUrlsForLang(lang));
     sendXml(res, wrapUrlset(urls.map(urlEntry)));
   } catch (err) {
     log(`[CMS] sitemap-specs 에러: ${err.message}`, 'ERROR');

@@ -39,9 +39,9 @@ const specsCssLink = (name) => `\n<link rel="stylesheet" href="/css/${name}.css?
 const specsJsTag = (name) => `\n<script src="/js/${name}.js?v=${ASSET_VER}" defer></script>`;
 
 // ─── LANGS / MARKET ────────────────────────────────────────────
-const LANGS = ['ko', 'en', 'ja', 'es'];
+const LANGS = ['ko', 'en', 'ja', 'es', 'id', 'vi'];
 const HREFLANG_LANGS = LANGS;
-const MARKET_MAP = { ko: 'kr', ja: 'jp', en: 'global', es: 'global' };
+const MARKET_MAP = { ko: 'kr', ja: 'jp', en: 'global', es: 'global', id: 'global', vi: 'global' };
 const loc = (obj, lang) => obj[lang] || obj.en || obj.ko;
 
 // ─── I18N ─── (specs-i18n.js로 분리 — import 참조)
@@ -724,7 +724,7 @@ export function renderSpecsDetail(req, res, forceLang = null) {
     const lang = forceLang || 'ko';
     const prefix = lang === 'ko' ? '' : `/${lang}`;
     const url = new URL(req.url, `http://${req.headers.host}`);
-    const pathParts = url.pathname.replace(/^\/(?:ja|en)\//, '/').split('/').filter(Boolean);
+    const pathParts = url.pathname.replace(/^\/(?:ja|en|es|id|vi)\//, '/').split('/').filter(Boolean);
 
     const specsIdx = pathParts.indexOf('specs');
     const remaining = pathParts.slice(specsIdx + 1);

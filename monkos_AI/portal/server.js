@@ -1147,6 +1147,8 @@ const httpServer = createServer(async (req, res) => {
   if (urlPath === '/sitemap-specs-en.xml' && req.method === 'GET') return renderSitemapSpecsLang(req, res, 'en');
   if (urlPath === '/sitemap-specs-ja.xml' && req.method === 'GET') return renderSitemapSpecsLang(req, res, 'ja');
   if (urlPath === '/sitemap-specs-es.xml' && req.method === 'GET') return renderSitemapSpecsLang(req, res, 'es');
+  if (urlPath === '/sitemap-specs-id.xml' && req.method === 'GET') return renderSitemapSpecsLang(req, res, 'id');
+  if (urlPath === '/sitemap-specs-vi.xml' && req.method === 'GET') return renderSitemapSpecsLang(req, res, 'vi');
   if (urlPath === '/sitemap-blog.xml' && req.method === 'GET') return renderSitemapBlog(req, res);
   if (urlPath === '/llms.txt' && req.method === 'GET') return renderLlmsTxt(req, res);
 
@@ -1189,6 +1191,10 @@ const httpServer = createServer(async (req, res) => {
   if (urlPath?.startsWith('/en/specs/') && req.method === 'GET') return renderSpecsDetail(req, res, 'en');
   if (urlPath === '/es/specs' && req.method === 'GET') return renderSpecsList(req, res, 'es');
   if (urlPath?.startsWith('/es/specs/') && req.method === 'GET') return renderSpecsDetail(req, res, 'es');
+  if (urlPath === '/id/specs' && req.method === 'GET') return renderSpecsList(req, res, 'id');
+  if (urlPath?.startsWith('/id/specs/') && req.method === 'GET') return renderSpecsDetail(req, res, 'id');
+  if (urlPath === '/vi/specs' && req.method === 'GET') return renderSpecsList(req, res, 'vi');
+  if (urlPath?.startsWith('/vi/specs/') && req.method === 'GET') return renderSpecsDetail(req, res, 'vi');
 
   if (urlPath === '/ja/gallery' && req.method === 'GET') return renderGallery(req, res);
   if (urlPath === '/en/gallery' && req.method === 'GET') return renderGallery(req, res);
