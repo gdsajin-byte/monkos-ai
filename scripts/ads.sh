@@ -1,0 +1,153 @@
+#!/bin/bash
+# Google Ads API 래퍼 — credits.sh 패턴 준용
+# 사용: ./scripts/ads.sh <command> [args]
+# 에이전트 읽기 전용. 쓰기 API(입찰·예산)는 작가님 승인 게이트.
+
+set -euo pipefail
+
+PROJECT="monkos"
+ADS_API_VERSION="v21"
+ADS_BASE="https://googleads.googleapis.com/${ADS_API_VERSION}"
+
+# SM에서 시크릿 로드
+load_secrets() {
+  DEV_TOKEN=$(gcloud secrets versions access latest --secret=GOOGLE_ADS_DEV_TOKEN --project="$PROJECT")
+  CLIENT_ID=$(gcloud secrets versions access latest --secret=GOOGLE_ADS_CLIENT_ID --project="$PROJECT")
+  CLIENT_SECRET=$(gcloud secrets versions access latest --secret=GOOGLE_ADS_CLIENT_SECRET --project="$PROJECT")
+  REFRESH_TOKEN=$(gcloud secrets versions access latest --secret=GOOGLE_ADS_REFRESH_TOKEN --project="$PROJECT")
+  CUSTOMER_ID=$(gcloud secrets versions access latest --secret=GOOGLE_ADS_CUSTOMER_ID --project="$PROJECT")
+}
+
+# Access Token 발급 (Refresh Token → Access Token)
+get_access_token() {
+  ACCESS_TOKEN=$(curl -s -X POST "https://oauth2.googleapis.com/token" \
+    -d "client_id=${CLIENT_ID}" \
+    -d "client_secret=${CLIENT_SECRET}" \
+    -d "refresh_token=${REFRESH_TOKEN}" \
+    -d "grant_type=refresh_token" \
+    | python3 -c "import sys,json; print(json.load(sys.stdin).get('access_token',''))")
+
+  if [ -z "$ACCESS_TOKEN" ]; then
+    echo "❌ Access Token 발급 실패"
+    exit 1
+  fi
+}
+
+# Google Ads API 호출 (GAQL)
+ads_query() {
+  local query="$1"
+  curl -s -X POST "${ADS_BASE}/customers/${CUSTOMER_ID}/googleAds:searchStream" \
+    -H "Authorization: Bearer ${ACCESS_TOKEN}" \
+    -H "developer-token: ${DEV_TOKEN}" \
+    -H "Content-Type: application/json" \
+    -d "{\"query\": \"${query}\"}"
+}
+
+# 키워드 아이디어 조회
+keyword_ideas() {
+  local keywords="$1"
+  local lang="${2:-1004}"    # 1004=한국어
+  local country="${3:-2410}" # 2410=한국
+
+  # 키워드를 JSON 배열로 변환
+  local kw_json=$(echo "$keywords" | tr ',' '\n' | python3 -c "
+import sys,json
+kws = [w.strip() for w in sys.stdin if w.strip()]
+print(json.dumps(kws))
+")
+
+  curl -s -X POST "${ADS_BASE}/customers/${CUSTOMER_ID}:generateKeywordIdeas" \
+    -H "Authorization: Bearer ${ACCESS_TOKEN}" \
+    -H "developer-token: ${DEV_TOKEN}" \
+    -H "Content-Type: application/json" \
+    -d "{
+      \"keywordSeed\": {\"keywords\": ${kw_json}},
+      \"language\": \"languageConstants/${lang}\",
+      \"geoTargetConstants\": [\"geoTargetConstants/${country}\"],
+      \"keywordPlanNetwork\": \"GOOGLE_SEARCH\"
+    }"
+}
+
+# --- 명령어 라우터 ---
+
+CMD="${1:-help}"
+shift 2>/dev/null || true
+
+case "$CMD" in
+  test)
+    echo "=== Google Ads API 연결 테스트 ==="
+    load_secrets
+    echo "✅ 시크릿 로드 완료"
+    get_access_token
+    echo "✅ Access Token 발급 완료"
+
+    echo ""
+    echo "계정 정보 조회..."
+    RESULT=$(ads_query "SELECT customer.id, customer.descriptive_name FROM customer LIMIT 1")
+    echo "$RESULT" | python3 -m json.tool 2>/dev/null || echo "$RESULT"
+    ;;
+
+  keywords)
+    # 사용: ./scripts/ads.sh keywords "증명사진,여권사진" [lang_id] [country_id]
+    KEYWORDS="${1:-증명사진}"
+    LANG_ID="${2:-1004}"
+    COUNTRY_ID="${3:-2410}"
+
+    load_secrets
+    get_access_token
+
+    echo "=== 키워드 아이디어: ${KEYWORDS} ==="
+    RESULT=$(keyword_ideas "$KEYWORDS" "$LANG_ID" "$COUNTRY_ID")
+    echo "$RESULT" | python3 -c "
+import sys, json
+data = json.load(sys.stdin)
+results = data.get('results', [])
+if not results:
+    print('결과 없음')
+    print(json.dumps(data, indent=2, ensure_ascii=False))
+else:
+    print(f'총 {len(results)}건')
+    print(f'{\"키워드\":<30} {\"월검색량\":>10} {\"경쟁도\":>8} {\"CPC(저)\":>10} {\"CPC(고)\":>10}')
+    print('-' * 75)
+    for r in results[:30]:
+        m = r.get('keywordIdeaMetrics', {})
+        kw = r.get('text', '?')
+        vol = m.get('avgMonthlySearches', '?')
+        comp = m.get('competition', '?')
+        lo = m.get('lowTopOfPageBidMicros', 0)
+        hi = m.get('highTopOfPageBidMicros', 0)
+        lo_won = int(lo) // 1000000 if lo else 0
+        hi_won = int(hi) // 1000000 if hi else 0
+        print(f'{kw:<30} {str(vol):>10} {comp:>8} {lo_won:>8}원 {hi_won:>8}원')
+" 2>/dev/null || echo "$RESULT" | python3 -m json.tool 2>/dev/null || echo "$RESULT"
+    ;;
+
+  campaigns)
+    load_secrets
+    get_access_token
+    echo "=== 캠페인 목록 ==="
+    RESULT=$(ads_query "SELECT campaign.id, campaign.name, campaign.status, campaign_budget.amount_micros FROM campaign ORDER BY campaign.id")
+    echo "$RESULT" | python3 -m json.tool 2>/dev/null || echo "$RESULT"
+    ;;
+
+  search-terms)
+    load_secrets
+    get_access_token
+    echo "=== 검색어 보고서 (30일) ==="
+    RESULT=$(ads_query "SELECT search_term_view.search_term, metrics.impressions, metrics.clicks, metrics.cost_micros, metrics.conversions FROM search_term_view WHERE segments.date DURING LAST_30_DAYS ORDER BY metrics.impressions DESC LIMIT 50")
+    echo "$RESULT" | python3 -m json.tool 2>/dev/null || echo "$RESULT"
+    ;;
+
+  help|*)
+    echo "사용법: ./scripts/ads.sh <command>"
+    echo ""
+    echo "  test          연결 테스트 (계정 정보 조회)"
+    echo "  keywords      키워드 아이디어 조회"
+    echo "                예: ./scripts/ads.sh keywords \"증명사진,여권사진\""
+    echo "                예: ./scripts/ads.sh keywords \"passport photo\" 1000 2840  (영어, 미국)"
+    echo "  campaigns     캠페인 목록"
+    echo "  search-terms  검색어 보고서 (30일)"
+    echo ""
+    echo "읽기 전용. 쓰기 API는 미구현 (작가님 승인 게이트 필요)."
+    ;;
+esac
