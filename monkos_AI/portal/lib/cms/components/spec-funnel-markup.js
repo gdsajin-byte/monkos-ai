@@ -3,6 +3,9 @@ import { escapeHtml } from '../render-shell.js';
 export function specFunnelMarkup(ctx) {
   const { slug, lang, specData, v2, typeName, fullName, market,
           t1RetouchOn, fmtV2, locField } = ctx;
+  const bg = String(specData.background || '').trim();
+  const isColoredBg = /파란|빨간|blue|red/i.test(bg);
+  const showT1 = t1RetouchOn && !isColoredBg;
   const eh = escapeHtml;
   return `
     <!-- 3. 사진 만들기 (T0 무료 전언어 통일) -->
@@ -170,7 +173,7 @@ export function specFunnelMarkup(ctx) {
             </div>
             ${/* n 슬롯에 JS(updateFreeRemainingUI) 갱신용 id 주입 — eh 이스케이프 우회 위해 토큰 치환 */''}
             <div class="ip-free-cap">${eh(fmtV2(v2.freeRemainCap, { n: '@N@' })).replace('@N@', '<span id="ip-free-remaining">-</span>')}</div>
-            ${t1RetouchOn ? `<div class="ip-card ip-card-t1">
+            ${isColoredBg ? '' : showT1 ? `<div class="ip-card ip-card-t1">
               <div class="ip-card-head"><b>${eh(v2.t1Title)}</b><span class="ip-price">${eh(v2.t1Price)}</span></div>
               <ul class="ip-card-list">
                 <li>${eh(v2.t1Desc1)}</li>
