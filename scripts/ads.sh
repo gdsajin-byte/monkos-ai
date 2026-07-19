@@ -16,6 +16,18 @@ load_secrets() {
   CLIENT_SECRET=$(gcloud secrets versions access latest --secret=GOOGLE_ADS_CLIENT_SECRET --project="$PROJECT")
   REFRESH_TOKEN=$(gcloud secrets versions access latest --secret=GOOGLE_ADS_REFRESH_TOKEN --project="$PROJECT")
   CUSTOMER_ID=$(gcloud secrets versions access latest --secret=GOOGLE_ADS_CUSTOMER_ID --project="$PROJECT")
+  # 클라이언트 CID (MCC 산하 광고 계정) — 환경변수 우선, SM 폴백, 없으면 빈값
+  ADS_CLIENT_CID="${ADS_CLIENT_CID:-$(gcloud secrets versions access latest --secret=GOOGLE_ADS_CLIENT_CID --project="$PROJECT" 2>/dev/null || echo "")}"
+}
+
+# MCC = CUSTOMER_ID (login-customer-id 헤더용)
+# 쿼리 대상 = ADS_CLIENT_CID (메트릭 조회) 또는 CUSTOMER_ID (키워드 플래너)
+get_query_cid() {
+  if [ -n "${ADS_CLIENT_CID:-}" ]; then
+    echo "$ADS_CLIENT_CID"
+  else
+    echo "$CUSTOMER_ID"
+  fi
 }
 
 # Access Token 발급 (Refresh Token → Access Token)
@@ -34,11 +46,14 @@ get_access_token() {
 }
 
 # Google Ads API 호출 (GAQL)
+# $1=query, $2=target CID (생략 시 클라이언트 CID)
 ads_query() {
   local query="$1"
-  curl -s -X POST "${ADS_BASE}/customers/${CUSTOMER_ID}/googleAds:searchStream" \
+  local target_cid="${2:-$(get_query_cid)}"
+  curl -s -X POST "${ADS_BASE}/customers/${target_cid}/googleAds:searchStream" \
     -H "Authorization: Bearer ${ACCESS_TOKEN}" \
     -H "developer-token: ${DEV_TOKEN}" \
+    -H "login-customer-id: ${CUSTOMER_ID}" \
     -H "Content-Type: application/json" \
     -d "{\"query\": \"${query}\"}"
 }
@@ -59,6 +74,7 @@ print(json.dumps(kws))
   curl -s -X POST "${ADS_BASE}/customers/${CUSTOMER_ID}:generateKeywordIdeas" \
     -H "Authorization: Bearer ${ACCESS_TOKEN}" \
     -H "developer-token: ${DEV_TOKEN}" \
+    -H "login-customer-id: ${CUSTOMER_ID}" \
     -H "Content-Type: application/json" \
     -d "{
       \"keywordSeed\": {\"keywords\": ${kw_json}},
@@ -74,6 +90,28 @@ CMD="${1:-help}"
 shift 2>/dev/null || true
 
 case "$CMD" in
+  accounts)
+    echo "=== MCC 산하 클라이언트 계정 목록 ==="
+    load_secrets
+    get_access_token
+    RESULT=$(curl -s -X GET "${ADS_BASE}/customers:listAccessibleCustomers" \
+      -H "Authorization: Bearer ${ACCESS_TOKEN}" \
+      -H "developer-token: ${DEV_TOKEN}")
+    echo "$RESULT" | python3 -c "
+import sys, json
+data = json.load(sys.stdin)
+names = data.get('resourceNames', [])
+if not names:
+    print('접근 가능한 계정 없음')
+    print(json.dumps(data, indent=2, ensure_ascii=False))
+else:
+    print(f'접근 가능한 계정: {len(names)}건')
+    for n in names:
+        cid = n.replace('customers/', '')
+        print(f'  {cid}')
+" 2>/dev/null || echo "$RESULT" | python3 -m json.tool 2>/dev/null || echo "$RESULT"
+    ;;
+
   test)
     echo "=== Google Ads API 연결 테스트 ==="
     load_secrets
@@ -83,7 +121,7 @@ case "$CMD" in
 
     echo ""
     echo "계정 정보 조회..."
-    RESULT=$(ads_query "SELECT customer.id, customer.descriptive_name FROM customer LIMIT 1")
+    RESULT=$(ads_query "SELECT customer.id, customer.descriptive_name FROM customer LIMIT 1" "$CUSTOMER_ID")
     echo "$RESULT" | python3 -m json.tool 2>/dev/null || echo "$RESULT"
     ;;
 
@@ -141,12 +179,13 @@ else:
   help|*)
     echo "사용법: ./scripts/ads.sh <command>"
     echo ""
+    echo "  accounts      MCC 산하 클라이언트 계정 목록"
     echo "  test          연결 테스트 (계정 정보 조회)"
-    echo "  keywords      키워드 아이디어 조회"
+    echo "  keywords      키워드 아이디어 조회 (MCC 레벨)"
     echo "                예: ./scripts/ads.sh keywords \"증명사진,여권사진\""
     echo "                예: ./scripts/ads.sh keywords \"passport photo\" 1000 2840  (영어, 미국)"
-    echo "  campaigns     캠페인 목록"
-    echo "  search-terms  검색어 보고서 (30일)"
+    echo "  campaigns     캠페인 목록 (클라이언트 CID)"
+    echo "  search-terms  검색어 보고서 30일 (클라이언트 CID)"
     echo ""
     echo "읽기 전용. 쓰기 API는 미구현 (작가님 승인 게이트 필요)."
     ;;
