@@ -509,3 +509,6 @@
 
 ## 2026-07-18 (민아)
 - 신규: `project_idphoto_delivery_philosophy.md` — 작가님 증명사진 납품 철학(규정 제1원칙·안전마진·하한 편향·명시 앵커±1·인간 게이트의 코드 대체). MEMORY.md 인덱스 1행 추가.
+
+## 2026-07-19 (민아)
+- `project_ga4_test_traffic_contamination.md` 갱신 — "내부 필터 미설정" → 콘솔 실측으로 교정: 사무실 규칙(61.77.93.170/32)+Internal Traffic 필터 활성 완비, 잔여 갭=집 IP(당일 쌍아 트랙에서 해소 보고)·monk.kr 스트림·patrol UTM. MEMORY.md 인덱스 변경 없음.
