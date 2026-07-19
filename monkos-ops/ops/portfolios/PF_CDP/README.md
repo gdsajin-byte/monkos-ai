@@ -151,6 +151,9 @@ status: active
 | 04/07 | 막내 3기 | **CDP 멀티포트 3기 동시 실전 운용 성공** — SPREAD 첫 순환 (9222/9223/9224) | `4c5bf48` | ✅ |
 | 04/09 | 쌍아→막내 3기 | CDP 시연 지시서 3건 발행 — SEO진단(9222)+블로그발행(9223)+다국어검증(9224) | ORDER×3 | ✅ |
 | 04/09 | 막내1+3 | **CDP 시연 보고서 2건 제출** — SEO 7페이지 진단 + 다국어 15페이지 검증 | REPORT×2, `5f5912a`+`add12da` | ✅ |
+| 07/19 | iMac/막내2 | **eVisa JS SPA 원문 돌파 실전** — kuwaitvisa.moi.gov.kw FAQ CDP 확보(WebFetch 불가 사이트) → kw-visa 배경 흰색 확정·grade A 교정. 자체 CDP "JS SPA 원문 확보" 계층의 실전 가치 실증 | 2222cebb + 세션로그 3차 | ✅ |
+| 07/19 | iMac/민아 | **인앱 클로드 브라우저 첫 실전 완주** — 스포크 ① 검증 전체(DataTransfer 업로드 주입→precheck→fit→T0 생성→캔버스 픽셀 검증 #438edb)를 인앱만으로 수행. 파일 업로드 도구 부재를 same-origin 자산 주입으로 우회 확립. P0(200 OK 데드 퍼널) 검출 — L1 불가·L2 실주행만 가능함을 실증 | REPORT 반려·통과 2건 | ✅ |
+| 07/19 | iMac/민아 | **자체 CDP vs 인앱 브라우저 10축 비교 + 재정의 제안** — 범용 무장 절반은 플랫폼이 흡수(세션당 페인=멀티에이전트 자동 격리), 자체 CDP는 4대 특수 계층(실프로필·세션밖 가동·OS 통합·고빈도 캐시)으로 특화 제안. Phase 3 보류 격하·Phase 4×순찰 러너 통합·네이버 클립보드 우회 재검증 제안. 3개월 히스토리 공백 금일분 보전, 500줄 아카이브 트리거 임박 통지 | [REPORT 비교·재정의](../../reports/2026-07/REPORT_20260719_iMac민아_CDP_인앱브라우저_비교_재정의.md) | ✅ 쌍아 합의 대기 |
 
 ---
 
@@ -206,7 +209,7 @@ status: active
 | I2. 검색 통합 smart_search() | ✅ | iMac/막내2 | 검색 필드 자동 탐지 + 입력 + button/form/enter 자동 실행. Google/기업마당 검증 |
 | I3. 텍스트 구조화 smart_extract() | ✅ | iMac/막내3 | 7필드 추출 (title/headings/tables/body/files/images/meta). 3사이트 검증 |
 | I4. 섹션맵 smart_scroll() | ✅ | iMac/막내4 | h1~h6/section/div[id]/a[name] → scrollIntoView smooth. monkos.ai 35섹션 |
-| **Skills 패키징** | ⏳ | 쌍아(설계) | /ga4, /gsc, /blog-write, /deploy-status, /biz-search, /site-check (어젠다 #22) |
+| **Skills 패키징** | 🔄 | 쌍아(설계) | cdp-browser 스킬 실재(제어 규칙+장애 진단 통합, 07/19 확인). /ga4·/gsc는 MCP 직행으로 대체됨 — 잔여 범위 재정의 필요 (07/19 비교 보고서 §2) |
 
 ### Phase 3 — Stagehand v3 난제 사이트 적용 ⏳ 다음
 
