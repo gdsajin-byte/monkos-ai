@@ -67,10 +67,6 @@ export async function renderSitemap(req, res) {
     <lastmod>${STATIC_LASTMOD}</lastmod>
   </sitemap>
   <sitemap>
-    <loc>${DOMAIN}/sitemap-specs.xml</loc>
-    <lastmod>${SPECS_LASTMOD}</lastmod>
-  </sitemap>
-  <sitemap>
     <loc>${DOMAIN}/sitemap-specs-ko.xml</loc>
     <lastmod>${SPECS_LASTMOD}</lastmod>
   </sitemap>
