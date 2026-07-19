@@ -512,3 +512,7 @@
 
 ## 2026-07-19 (민아)
 - `project_ga4_test_traffic_contamination.md` 갱신 — "내부 필터 미설정" → 콘솔 실측으로 교정: 사무실 규칙(61.77.93.170/32)+Internal Traffic 필터 활성 완비, 잔여 갭=집 IP(당일 쌍아 트랙에서 해소 보고)·monk.kr 스트림·patrol UTM. MEMORY.md 인덱스 변경 없음.
+
+## 2026-07-19 (iMac/쌍아)
+- `project_model_placement.md` 갱신: Fable 7/20 정식 복귀(Max 쿼터), 민아=설계·검증 집중 체제 유지
+- `SECRET_INVENTORY.md` 갱신: Ads 시크릿 6종 추가 (DEV_TOKEN 승인 반영 + CLIENT_ID/SECRET/REFRESH_TOKEN/CUSTOMER_ID/CLIENT_CID)
