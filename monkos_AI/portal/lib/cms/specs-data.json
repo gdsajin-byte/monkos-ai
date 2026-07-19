@@ -39821,9 +39821,9 @@
     "size": "4 × 6cm",
     "pixels": "472 × 709px",
     "dpi": 300,
-    "background": "파란색",
-    "backgroundEn": "Blue",
-    "backgroundJa": "青",
+    "background": "흰색",
+    "backgroundEn": "White",
+    "backgroundJa": "白",
     "headHeight": "3.8cm",
     "headHeightEn": "3.8cm",
     "headHeightJa": "3.8cm",
@@ -39872,7 +39872,7 @@
       ]
     },
     "priority": 10,
-    "grade": "B",
+    "grade": "A",
     "faqs": {
       "ko": [
         {
@@ -39938,17 +39938,17 @@
       "es": "Omán Foto de Pasaporte Tamaño y Requisitos 2026 — 4 × 6cm"
     },
     "seoDescription": {
-      "ko": "오만 여권 사진 공식 규격·2026년 규정 — 4 × 6cm, 파란색 배경. 규격 검증된 사진 파일을 즉시 다운로드하세요.",
-      "en": "Official Oman passport photo requirements 2026 — 4 × 6cm, blue background. Get a compliant photo online in seconds.",
-      "ja": "オマーンパスポート写真の公式サイズ・2026年規定 — 4 × 6cm、背景は青。規格対応の写真をオンラインで即ダウンロード。",
-      "es": "Requisitos oficiales de foto de pasaporte de Omán 2026 — 4 × 6cm, fondo azul. Obtenga una foto conforme al instante."
+      "ko": "오만 여권 사진 공식 규격·2026년 규정 — 4 × 6cm, 흰색 배경. 규격 검증된 사진 파일을 즉시 다운로드하세요.",
+      "en": "Official Oman passport photo requirements 2026 — 4 × 6cm, white background. Get a compliant photo online in seconds.",
+      "ja": "オマーンパスポート写真の公式サイズ・2026年規定 — 4 × 6cm、背景は白。規格対応の写真をオンラインで即ダウンロード。",
+      "es": "Requisitos oficiales de foto de pasaporte de Omán 2026 — 4 × 6cm, fondo blanco. Obtenga una foto conforme al instante."
     },
     "headHeightMin": 36.1,
     "headHeightMax": 39.9,
-    "officialSource": "https://www.rop.gov.om/english/e_passport.aspx",
+    "officialSource": "https://www.fm.gov.om/abu-dhabi",
     "countryEs": "Omán",
     "typeEs": "Pasaporte",
-    "backgroundEs": "Azul",
+    "backgroundEs": "Blanco",
     "headHeightEs": "3.8cm",
     "validityEs": "",
     "fileSpecEs": ""
