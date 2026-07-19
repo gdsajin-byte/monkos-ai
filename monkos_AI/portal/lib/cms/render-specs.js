@@ -71,6 +71,7 @@ const TYPE_CATEGORIES = [
 const TYPE_SLUG_PATTERNS = [
   'schengen-visa', 'intl-license', 'drivers-license', 'youth-id',
   'visa-evisa', 'visa-bls', // 복합 type — 미등재 시 parseSlug가 country를 'in-visa'로 오분해 → canonical 301 루프
+  'resume-1cun', 'resume-2cun',
   'passport', 'visa', 'e-visa', 'resume', 'halfcard', 'headshot',
   'mynumber', 'resident', 'zairyu', 'license', 'taxi', 'marine', 'exam', 'id',
 ];
@@ -161,6 +162,11 @@ for (const [slug, spec] of Object.entries(SPECS_DATA)) {
   if (!COUNTRY_BEST[dedupKey] || spec.priority < COUNTRY_BEST[dedupKey].priority) {
     COUNTRY_BEST[dedupKey] = { slug, typeSlug, countrySlug, priority: spec.priority };
   }
+}
+
+// cn-resume 분리 후 구 URL 호환: /specs/resume/cn → cn-resume-1cun (1寸 기본값)
+if (!ROUTE_MAP['resume/cn'] && SPECS_DATA['cn-resume-1cun']) {
+  ROUTE_MAP['resume/cn'] = 'cn-resume-1cun';
 }
 
 // V2 로컬이던 것을 모듈 레벨로 승격 — V1 레거시 경로(721·893)도 참조 (2026-07-16 fmtV2 미정의 500 핫픽스)
@@ -613,8 +619,23 @@ ${alerts.map(a => `      <div style="display:flex;align-items:flex-start;gap:8px
     </div>`;
   })();
 
+  const isFunnelDisabled = specData.funnel === false;
+
+  const headshotCtaLabels = {
+    ko: 'AI 프로필 사진을 바로 만들어보세요',
+    en: 'Create your AI profile photo now',
+    ja: 'AIプロフィール写真を今すぐ作成',
+    es: 'Crea tu foto de perfil con IA ahora',
+  };
+  const headshotCtaHtml = isFunnelDisabled ? `
+    <div class="v2-steps-section" id="v2-cta-headshot" style="text-align:center;padding:40px 20px;">
+      <a href="${prefix}/headshot" class="v2-action-btn v2-btn-retouch" style="display:inline-block;font-size:16px;padding:14px 32px;text-decoration:none;">${escapeHtml(headshotCtaLabels[lang] || headshotCtaLabels.en)}</a>
+    </div>` : '';
+
+  const funnelSection = isFunnelDisabled ? headshotCtaHtml : specFunnelMarkup(ctx);
+
   const bodyContent = `
-  ${market === 'kr' ? '<script src="https://js.tosspayments.com/v2/standard"></script>' : ''}
+  ${market === 'kr' && !isFunnelDisabled ? '<script src="https://js.tosspayments.com/v2/standard"></script>' : ''}
   <div class="v2-wrap idpass-pilot" data-slug="${slug}">
 ${specHero(ctx)}
 ${warningBannerHtml}
@@ -625,7 +646,7 @@ ${specDiagram(ctx)}
 ${specCard(ctx)}
     </div>
     <script>function v2SpecTab(btn){var card=btn.closest('.v2-card-specs');card.querySelectorAll('.v2-tab').forEach(function(b){b.classList.toggle('on',b===btn)});card.querySelectorAll('.v2-tabpane').forEach(function(p){p.hidden=p.getAttribute('data-pane')!==btn.getAttribute('data-pane')});}</script>
-${specFunnelMarkup(ctx)}
+${funnelSection}
 
     ${sameSize.length > 0 ? docsAccepting(ctx) : ''}
 
@@ -641,7 +662,7 @@ ${relatedServices(ctx)}
   // 클라이언트 설정 주입 — JSON.stringify 경유(이스케이프 사고 방지). 시크릿 값 없음(문구·slug·시장뿐).
   // frameRatio: 규격 세로/가로 비 — fit 스테이지를 진입 시점에 규격비로 1회 고정 (연출 중 크기 변경 금지, 2026-07-09 작가님)
   const fitCropParams = getSpecCropParams(slug);
-  const v2ClientCfg = {
+  const v2ClientCfg = isFunnelDisabled ? null : {
     slug,
     format: typeSlug,
     market,
@@ -654,16 +675,18 @@ ${relatedServices(ctx)}
     freeCap: process.env.FREE_QUOTA_BYPASS === '1' ? 999999 : 3,
   };
 
-  // 위저드 클라 JS → public/js/specs-funnel.js (2026-07-12 퍼널 분리 — CFG만 인라인 주입)
-  const pageScript = `window.__SPECS_CFG__ = ${JSON.stringify(v2ClientCfg)};`;
+  const pageScript = v2ClientCfg ? `window.__SPECS_CFG__ = ${JSON.stringify(v2ClientCfg)};` : '';
+
+  const funnelAssets = isFunnelDisabled ? '' :
+    `\n<script src="/components/attire-picker/attire-picker.js?v=${ASSET_VER}" defer></script>` + specsJsTag('specs-funnel');
 
   return {
     title,
     description,
-    seoMeta: seoMeta + specsCssLink('specs-funnel') + `\n<link rel="stylesheet" href="/components/attire-picker/attire-picker.css?v=${ASSET_VER}">`,
+    seoMeta: seoMeta + specsCssLink('specs-funnel') + (isFunnelDisabled ? '' : `\n<link rel="stylesheet" href="/components/attire-picker/attire-picker.css?v=${ASSET_VER}">`),
     htmlLang: lang,
     pageStyle: '',
-    bodyContent: bodyContent + `\n<script src="/components/attire-picker/attire-picker.js?v=${ASSET_VER}" defer></script>` + specsJsTag('specs-funnel'),
+    bodyContent: bodyContent + funnelAssets,
     pageScript,
   };
 }

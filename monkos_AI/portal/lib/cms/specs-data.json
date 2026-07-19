@@ -300,7 +300,8 @@
     "backgroundEs": "Color sólido",
     "headHeightEs": "-",
     "validityEs": "-",
-    "fileSpecEs": "JPEG/PNG"
+    "fileSpecEs": "JPEG/PNG",
+    "funnel": false
   },
   "eu-passport": {
     "slug": "eu-passport",
@@ -67526,25 +67527,25 @@
     "validityEs": "Depende del destino de presentación",
     "fileSpecEs": "JPEG"
   },
-  "cn-resume": {
-    "slug": "cn-resume",
+  "cn-resume-1cun": {
+    "slug": "cn-resume-1cun",
     "country": "중국",
     "countryEn": "China",
-    "type": "이력서",
-    "typeEn": "Resume Photo",
-    "typeJa": "履歴書写真",
-    "size": "1寸 · 2寸 복수 규격",
-    "pixels": "25×35 / 35×49 mm",
+    "type": "이력서 (1寸)",
+    "typeEn": "Resume Photo (1-inch)",
+    "typeJa": "履歴書写真 (1寸)",
+    "size": "25 × 35 mm",
+    "pixels": "295 × 413 px",
     "dpi": 300,
-    "background": "흰색·파란 배경",
-    "headHeight": "",
+    "background": "흰색",
+    "headHeight": "2.0~2.5cm",
     "validity": "-",
     "fileSpec": "JPEG",
     "details": {
-      "ko": "중국 취업·유학·관공서 제출용. 1寸/2寸 복수 규격.",
-      "ja": "中国就職・留学・官公庁提出用。",
-      "en": "Chinese resume photo. Multiple sizes (1-inch/2-inch).",
-      "es": "Foto de currículum china. Varios tamaños (1 pulgada/2 pulgadas)."
+      "ko": "중국 1寸(小1寸) 증명사진. 취업·입학·관공서 제출용.",
+      "en": "Chinese 1-inch ID photo for employment, school enrollment, and government submissions.",
+      "ja": "中国1寸証明写真。就職・入学・官公庁提出用。",
+      "es": "Foto de identificación china de 1 pulgada para empleo, inscripción escolar y trámites gubernamentales."
     },
     "rejectionReasons": {
       "ko": [],
@@ -67554,90 +67555,74 @@
     },
     "ctaService": "idphoto-kr",
     "priority": 24,
-    "backgroundEn": "White or blue",
-    "backgroundJa": "白・青",
-    "sizeEn": "1-inch / 2-inch (multiple sizes)",
-    "sizeJa": "1寸・2寸（複数規格）",
+    "backgroundEn": "White",
+    "backgroundJa": "白",
+    "sizeEn": "25 × 35 mm",
+    "sizeJa": "25 × 35 mm",
     "continent": "asia",
     "validityEn": "-",
     "validityJa": "-",
     "fileSpecEn": "JPEG",
     "fileSpecJa": "JPEG",
-    "headHeightEn": "-",
-    "headHeightJa": "-",
+    "headHeightEn": "2.0~2.5cm",
+    "headHeightJa": "2.0~2.5cm",
     "countryJa": "中国",
     "faqs": {
       "ko": [
         {
-          "q": "중국 简历照片 사진 크기는?",
-          "a": "중국 简历照片 사진 규격은 1寸 · 2寸 복수 규격입니다. 배경은 흰색·파란 배경이어야 합니다."
+          "q": "중국 1寸 증명사진 크기는?",
+          "a": "중국 1寸 증명사진 규격은 25×35mm입니다. 배경은 흰색이어야 합니다."
         },
         {
-          "q": "중국 简历照片 사진을 집에서 찍을 수 있나요?",
-          "a": "네, 규격(1寸 · 2寸 복수 규격)과 배경(흰색·파란 배경) 조건만 맞으면 셀프 촬영이 가능합니다. MONKOS AI를 사용하면 배경 제거와 규격 크롭을 자동으로 처리합니다."
-        },
-        {
-          "q": "중국 简历照片 사진 배경색 규정은?",
-          "a": "중국 简历照片 사진은 흰색·파란 배경 배경이 필요합니다. 그림자나 무늬가 있으면 반려될 수 있습니다."
+          "q": "중국 1寸 사진을 집에서 찍을 수 있나요?",
+          "a": "네, 규격(25×35mm)과 배경(흰색) 조건만 맞으면 셀프 촬영이 가능합니다. MONKOS AI를 사용하면 배경 제거와 규격 크롭을 자동으로 처리합니다."
         }
       ],
       "en": [
         {
-          "q": "What size is a China Resume Photo photo?",
-          "a": "The China Resume Photo photo size is 1-inch / 2-inch (multiple sizes). The background must be White or blue."
+          "q": "What size is a Chinese 1-inch resume photo?",
+          "a": "The Chinese 1-inch resume photo size is 25×35mm with a white background."
         },
         {
-          "q": "Can I take a China Resume Photo photo at home?",
-          "a": "Yes, as long as you meet the size (1-inch / 2-inch (multiple sizes)) and background (White or blue) requirements. MONKOS AI automatically removes the background and crops to the correct specs."
-        },
-        {
-          "q": "What is the background color for a China Resume Photo photo?",
-          "a": "A China Resume Photo photo requires a White or blue background. Shadows or patterns may cause rejection."
+          "q": "Can I take a Chinese 1-inch photo at home?",
+          "a": "Yes, as long as you meet the size (25×35mm) and background (white) requirements. MONKOS AI automatically removes the background and crops to the correct specs."
         }
       ],
       "ja": [
         {
-          "q": "中国の履歴書写真のサイズは？",
-          "a": "中国の履歴書写真の規格は1寸・2寸（複数規格）です。背景は白・青が必要です。"
+          "q": "中国1寸証明写真のサイズは？",
+          "a": "中国1寸証明写真のサイズは25×35mmです。背景は白でなければなりません。"
         },
         {
-          "q": "中国の履歴書写真を自宅で撮れますか？",
-          "a": "はい、サイズ（1寸・2寸（複数規格））と背景（白・青）の条件を満たせば自宅撮影も可能です。MONKOS AIを使えば背景除去と規格クロップが自動で処理されます。"
-        },
-        {
-          "q": "中国の履歴書写真の背景色の規定は？",
-          "a": "中国の履歴書写真は白・青の背景が必要です。影や模様があると不合格になる場合があります。"
+          "q": "中国1寸写真を自宅で撮れますか？",
+          "a": "はい、サイズ(25×35mm)と背景(白)の条件を満たせばセルフ撮影が可能です。MONKOS AIが背景除去と規格クロップを自動処理します。"
         }
       ],
       "es": [
         {
-          "q": "¿Cuál es el tamaño de la foto de China Resume Photo?",
-          "a": "El tamaño de la foto de China Resume Photo es 1-inch / 2-inch (multiple sizes). El fondo debe ser blanco o azul."
+          "q": "¿Qué tamaño tiene la foto de currículum china de 1 pulgada?",
+          "a": "La foto de currículum china de 1 pulgada mide 25×35mm con fondo blanco."
         },
         {
-          "q": "¿Puedo tomar la foto de China Resume Photo en casa?",
-          "a": "Sí, siempre que cumpla con los requisitos de tamaño (1-inch / 2-inch (multiple sizes)) y fondo (blanco o azul). MONKOS AI elimina automáticamente el fondo y recorta según las especificaciones correctas."
-        },
-        {
-          "q": "¿Cuál es el color de fondo para la foto de China Resume Photo?",
-          "a": "La foto de China Resume Photo requiere un fondo blanco o azul. Las sombras o patrones pueden causar rechazo."
+          "q": "¿Puedo tomar la foto en casa?",
+          "a": "Sí, siempre que cumpla con el tamaño (25×35mm) y fondo (blanco). MONKOS AI elimina el fondo y recorta automáticamente."
         }
       ]
     },
     "seoTitle": {
-      "ko": "중국 이력서 사진 규격·규정 2026 — 1寸 · 2寸 복수 규격·배경·복장 | MONKOS",
-      "en": "China Resume Photo Size & Requirements 2026 — 1寸 · 2寸 복수 규격",
-      "ja": "中国履歴書写真サイズ・規格 2026 — 1寸・2寸 複数規格",
-      "es": "China Foto Currículum 2026 — 1 y 2 cun multi-formato"
+      "ko": "중국 1寸 증명사진 규격 2026 — 25×35mm | MONKOS",
+      "en": "China 1-Inch Resume Photo Size & Requirements 2026 — 25×35mm",
+      "ja": "中国1寸証明写真サイズ・規格 2026 — 25×35mm",
+      "es": "China Foto 1 Pulgada Tamaño y Requisitos 2026 — 25×35mm"
     },
     "seoDescription": {
-      "ko": "중국 이력서 사진 공식 규격·2026년 규정 — 1寸 · 2寸 복수 규격, 흰색·파란 배경. 규격 검증된 사진 파일을 즉시 다운로드하세요.",
-      "en": "Official China resume photo requirements 2026 — 1寸 · 2寸 복수 규격, white or blue background. Get a compliant photo online in seconds.",
-      "ja": "中国履歴書写真の公式サイズ・2026年規定 — 1寸・2寸 複数規格、背景は白・青。規格対応の写真をオンラインで即ダウンロード。",
-      "es": "Requisitos oficiales de foto de currículum de China 2026 — 1 y 2 cun multi-formato, fondo blanco o azul. Obtenga una foto conforme al instante."
+      "ko": "중국 1寸 증명사진 공식 규격 — 25×35mm, 흰색 배경. 규격 검증된 사진을 즉시 다운로드하세요.",
+      "en": "Official China 1-inch photo requirements — 25×35mm, white background. Get a compliant photo online in seconds.",
+      "ja": "中国1寸証明写真の公式サイズ — 25×35mm、白背景。規格対応の写真をオンラインで即ダウンロード。",
+      "es": "Requisitos oficiales de foto china 1 pulgada — 25×35mm, fondo blanco. Obtenga una foto conforme al instante."
     },
-    "headHeightMin": 28.4,
-    "headHeightMax": 34.6,
+    "headHeightMin": 20,
+    "headHeightMax": 25,
     "officialSource": "https://losangeles.china-consulate.gov.cn/chn/lbqw/lszj/hzlxz/202401/t20240103_11216138.htm",
     "restrictions": {
       "clothing": {
@@ -67684,10 +67669,160 @@
       }
     },
     "countryEs": "China",
-    "typeEs": "Foto de currículum",
-    "backgroundEs": "Blanco o azul",
-    "headHeightEs": "-",
+    "typeEs": "Foto de Currículum (1 pulgada)",
+    "backgroundEs": "Blanco",
+    "headHeightEs": "2.0~2.5cm",
     "validityEs": "-",
-    "fileSpecEs": "JPEG"
+    "fileSpecEs": "JPEG",
+    "grade": "B"
+  },
+  "cn-resume-2cun": {
+    "slug": "cn-resume-2cun",
+    "country": "중국",
+    "countryEn": "China",
+    "type": "이력서 (2寸)",
+    "typeEn": "Resume Photo (2-inch)",
+    "typeJa": "履歴書写真 (2寸)",
+    "size": "35 × 49 mm",
+    "pixels": "413 × 579 px",
+    "dpi": 300,
+    "background": "파란색",
+    "headHeight": "2.8~3.3cm",
+    "validity": "-",
+    "fileSpec": "JPEG",
+    "details": {
+      "ko": "중국 2寸(小2寸) 증명사진. 비자·졸업·학생증 제출용.",
+      "en": "Chinese 2-inch ID photo for visa, graduation, and student ID submissions.",
+      "ja": "中国2寸証明写真。ビザ・卒業・学生証提出用。",
+      "es": "Foto de identificación china de 2 pulgadas para visa, graduación y credencial estudiantil."
+    },
+    "rejectionReasons": {
+      "ko": [],
+      "ja": [],
+      "en": [],
+      "es": []
+    },
+    "ctaService": "idphoto-kr",
+    "priority": 25,
+    "backgroundEn": "Blue",
+    "backgroundJa": "青",
+    "sizeEn": "35 × 49 mm",
+    "sizeJa": "35 × 49 mm",
+    "continent": "asia",
+    "validityEn": "-",
+    "validityJa": "-",
+    "fileSpecEn": "JPEG",
+    "fileSpecJa": "JPEG",
+    "headHeightEn": "2.8~3.3cm",
+    "headHeightJa": "2.8~3.3cm",
+    "countryJa": "中国",
+    "faqs": {
+      "ko": [
+        {
+          "q": "중국 2寸 증명사진 크기는?",
+          "a": "중국 2寸 증명사진 규격은 35×49mm입니다. 배경은 파란색이어야 합니다."
+        },
+        {
+          "q": "중국 2寸 사진을 집에서 찍을 수 있나요?",
+          "a": "네, 규격(35×49mm)과 배경(파란색) 조건만 맞으면 셀프 촬영이 가능합니다. MONKOS AI를 사용하면 배경 제거와 규격 크롭을 자동으로 처리합니다."
+        }
+      ],
+      "en": [
+        {
+          "q": "What size is a Chinese 2-inch resume photo?",
+          "a": "The Chinese 2-inch resume photo size is 35×49mm with a blue background."
+        },
+        {
+          "q": "Can I take a Chinese 2-inch photo at home?",
+          "a": "Yes, as long as you meet the size (35×49mm) and background (blue) requirements. MONKOS AI automatically removes the background and crops to the correct specs."
+        }
+      ],
+      "ja": [
+        {
+          "q": "中国2寸証明写真のサイズは？",
+          "a": "中国2寸証明写真のサイズは35×49mmです。背景は青でなければなりません。"
+        },
+        {
+          "q": "中国2寸写真を自宅で撮れますか？",
+          "a": "はい、サイズ(35×49mm)と背景(青)の条件を満たせばセルフ撮影が可能です。MONKOS AIが背景除去と規格クロップを自動処理します。"
+        }
+      ],
+      "es": [
+        {
+          "q": "¿Qué tamaño tiene la foto china de 2 pulgadas?",
+          "a": "La foto china de 2 pulgadas mide 35×49mm con fondo azul."
+        },
+        {
+          "q": "¿Puedo tomar la foto en casa?",
+          "a": "Sí, siempre que cumpla con el tamaño (35×49mm) y fondo (azul). MONKOS AI elimina el fondo y recorta automáticamente."
+        }
+      ]
+    },
+    "seoTitle": {
+      "ko": "중국 2寸 증명사진 규격 2026 — 35×49mm | MONKOS",
+      "en": "China 2-Inch Resume Photo Size & Requirements 2026 — 35×49mm",
+      "ja": "中国2寸証明写真サイズ・規格 2026 — 35×49mm",
+      "es": "China Foto 2 Pulgadas Tamaño y Requisitos 2026 — 35×49mm"
+    },
+    "seoDescription": {
+      "ko": "중국 2寸 증명사진 공식 규격 — 35×49mm, 파란색 배경. 규격 검증된 사진을 즉시 다운로드하세요.",
+      "en": "Official China 2-inch photo requirements — 35×49mm, blue background. Get a compliant photo online in seconds.",
+      "ja": "中国2寸証明写真の公式サイズ — 35×49mm、青背景。規格対応の写真をオンラインで即ダウンロード。",
+      "es": "Requisitos oficiales de foto china 2 pulgadas — 35×49mm, fondo azul. Obtenga una foto conforme al instante."
+    },
+    "headHeightMin": 28,
+    "headHeightMax": 33,
+    "officialSource": "https://losangeles.china-consulate.gov.cn/chn/lbqw/lszj/hzlxz/202401/t20240103_11216138.htm",
+    "restrictions": {
+      "clothing": {
+        "en": "Dark clothing (偏深色衣服) for contrast with white background. No uniforms for government officials. For resume: formal business attire recommended",
+        "ko": "흰색 배경과 대비되도록 어두운 색상 의복 착용. 공무원은 제복 착용 금지. 이력서용: 정장 착용 권장",
+        "ja": "白い背景とのコントラストのため暗い色の衣服を着用。公務員は制服着用不可。履歴書用：フォーマルなビジネス服装を推奨",
+        "es": "Ropa oscura (偏深色衣服) para contrastar con el fondo blanco. Sin uniformes en el caso de funcionarios públicos. Para el currículum: se recomienda vestimenta formal de negocios"
+      },
+      "expression": {
+        "en": "Natural expression, eyes open, lips closed (双唇闭合). Slight smile acceptable for resume photos",
+        "ko": "자연스러운 표정, 눈 뜬 상태, 입술 다문 상태. 이력서 사진에는 가벼운 미소 허용",
+        "ja": "自然な表情、目を開けた状態、唇を閉じた状態。履歴書写真には軽い微笑み許可",
+        "es": "Expresión natural, ojos abiertos, labios cerrados (双唇闭合). Se acepta una sonrisa leve en las fotos de currículum"
+      },
+      "glasses": {
+        "en": "Clear/non-colored lens glasses allowed but frames cannot obscure eyes and no flash reflections. No colored lenses. For resume photos: no glasses recommended",
+        "ko": "투명/무색 렌즈 안경 허용(단, 프레임이 눈을 가리지 않고 플래시 반사가 없어야 함). 컬러 렌즈 금지. 이력서 사진: 안경 미착용 권장",
+        "ja": "透明／無色レンズの眼鏡は許可（ただしフレームが目を覆わずフラッシュの反射がないこと）。カラーレンズ不可。履歴書写真：眼鏡なしを推奨",
+        "es": "Se permiten gafas con lentes transparentes/incoloros, pero la montura no debe ocultar los ojos y no debe haber reflejos del flash. No se permiten lentes de color. Para fotos de currículum: se recomienda no usar gafas"
+      },
+      "ears": {
+        "en": "Both ears visible; no hair covering ears or eyebrows (for passport/ID); no ear accessories",
+        "ko": "양쪽 귀 노출 필수; 머리카락이 귀나 눈썹을 가리지 않아야 함(여권/신분증 기준); 귀 장신구 착용 금지",
+        "ja": "両耳の露出必須；髪が耳や眉を覆わないこと（パスポート／身分証基準）；耳の装飾品着用不可",
+        "es": "Ambas orejas visibles; el cabello no debe cubrir las orejas ni las cejas (para pasaporte/documento de identidad); sin accesorios en las orejas"
+      },
+      "face_visibility": {
+        "en": "Full face and head visible, clear facial features (五官清晰), frontal view, no shadows on face or background",
+        "ko": "정면 전체 얼굴 및 머리 노출 필수, 이목구비가 선명하게 보여야 하며, 얼굴이나 배경에 그림자가 없어야 함",
+        "ja": "正面の顔全体および頭部の露出必須、顔の各部位が鮮明に見えること、顔や背景に影がないこと",
+        "es": "Rostro y cabeza completamente visibles, rasgos faciales nítidos (五官清晰), vista frontal, sin sombras en el rostro ni en el fondo"
+      },
+      "headwear": {
+        "en": "No hat or head coverings (无帽). Religious headwear permitted only if face is not obscured",
+        "ko": "무모(모자 또는 머리 덮개 착용 금지). 얼굴이 가려지지 않는 경우에 한해 종교적 머리 덮개 허용",
+        "ja": "無帽（帽子または頭部の覆い着用不可）。顔が覆われない場合に限り宗教的な頭部の覆い許可",
+        "es": "Sin sombrero ni cubiertas para la cabeza (无帽). El tocado religioso se permite solo si el rostro no queda oculto"
+      },
+      "accessories": {
+        "en": "No ear jewelry or accessories. Hearing aids acceptable. No modifications or composites",
+        "ko": "귀 장신구 및 액세서리 착용 금지. 보청기 허용. 사진 수정 또는 합성 금지",
+        "ja": "耳の装飾品およびアクセサリー着用不可。補聴器は許可。写真の修正または合成不可",
+        "es": "Sin joyas ni accesorios en las orejas. Se aceptan los aparatos auditivos. Sin modificaciones ni fotomontajes"
+      }
+    },
+    "countryEs": "China",
+    "typeEs": "Foto de Currículum (2 pulgadas)",
+    "backgroundEs": "Azul",
+    "headHeightEs": "2.8~3.3cm",
+    "validityEs": "-",
+    "fileSpecEs": "JPEG",
+    "grade": "B"
   }
 }
