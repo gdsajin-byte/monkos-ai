@@ -118,3 +118,57 @@ portfolio: PF_SPECS
 - kw-passport: 이미 정확 (grade A, officialSource 정합)
 - kw-visa: 미확정 — 교정 금지
 - om-visa: 미확정 — 교정 금지
+
+---
+
+## [14:03 KST] CDP 브라우저 재시도 (후속 지시서)
+
+### kw-visa — 확정(흰색) ⚠️ 교정
+
+**공식 URL**: https://kuwaitvisa.moi.gov.kw/faq (CDP 브라우저 접근 성공)
+
+**원문 발췌** (쿠웨이트 내무부 비자 포털 FAQ, Angular SPA):
+> Q: "Do I need to submit passport photos with my visa application?"
+> A: "Yes, you are required to submit a recent passport-sized photo that meets passport photo standards. **The photo must have a white background** and be clearly recognizable"
+
+- 출처: kuwaitvisa.moi.gov.kw (.gov.kw, 쿠웨이트 내무부 공식)
+- 기존 데이터(`background: 파란색`)와 **불일치** → 교정 실행
+- 참고: evisa.moi.gov.kw는 서버 502 (Sucuri Firewall 타임아웃) — 동일 MOI 관할의 별도 포털인 kuwaitvisa.moi.gov.kw에서 확보
+
+### om-visa — 미확정 유지
+
+**CDP 재확인 결과** (evisa.rop.gov.om + rop.gov.om):
+
+1. `evisa.rop.gov.om` 첨부 가이드 (CDP 렌더링 완료):
+   - Photo requirement: "Color / Taken in the last six months / Full face looking at the camera / **Clear background** / Well illuminated / Neutral facial expression / No hat / Remove glasses"
+   - 색상 미특정. "clear background" = 평이한 배경(무늬·그림자 없음)만 요구.
+
+2. `rop.gov.om/english/Visas.aspx` (Work Visa Documents 탭):
+   - "Two photographs (6X4) cm." — 사이즈만 명시, 색상 언급 없음.
+
+3. `evisa.rop.gov.om/en/frequently-asked-questions`:
+   - "File size for passport and picture: Not more than 512 KB." — 용량만 명시.
+
+**결론**: 오만 정부 3개 공식 페이지에서 비자 사진 배경 **색상을 특정하는 원문 미발견**. 교정 금지.
+
+### 교정 실행: kw-visa
+
+- `background`: 파란색 → 흰색
+- `backgroundEn`: Blue → White
+- `backgroundJa`: 青 → 白
+- `backgroundEs`: Azul → Blanco
+- `seoDescription` 4언어 교정
+- countries.jsonl: bg blue → white
+
+### 최종 요약
+
+| 국가 | 문서 | 최종 결론 | 데이터 교정 |
+|------|------|----------|-----------|
+| kw | 여권 | 확정(파랑) | 불요 (정합) |
+| kw | 비자 | **확정(흰색)** | ✅ 파랑→흰색 |
+| om | 여권 | 확정(흰색) | ✅ (1차에서 완료) |
+| om | 비자 | 미확정 | ❌ 교정 금지 |
+
+### om-visa 잔여 조사 제안
+- omanportal.gov.om 503 해소 시 재확인 (거주증 vs 비자 배경색 분리 가능성)
+- 주한 오만대사관 직접 문의 (가장 확실하나 비자동화)
