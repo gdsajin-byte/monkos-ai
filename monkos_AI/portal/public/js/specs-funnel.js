@@ -66,6 +66,13 @@ var SpecsFunnel = (function(){
   }
   function gaTrackPurchase(orderId){
     gaTrackOrder('purchase', orderId, { transaction_id: orderId, payment_provider: GA_PAY.payment_provider, currency: GA_PAY.currency, value: GA_PAY.value });
+    adsConversion(CFG.adsConv && CFG.adsConv.labelPurchase, GA_PAY.value, GA_PAY.currency);
+  }
+  function adsConversion(label, value, currency){
+    if(typeof gtag !== 'function' || !CFG.adsConv || !label) return;
+    var p = { send_to: 'AW-' + CFG.adsConv.id + '/' + label };
+    if(value != null){ p.value = value; p.currency = currency || 'KRW'; }
+    gtag('event', 'conversion', p);
   }
   if(document.readyState === 'loading'){
     document.addEventListener('DOMContentLoaded', function(){ gaTrack('spec_select'); });
@@ -419,6 +426,7 @@ var SpecsFunnel = (function(){
       if(img) img.src = 'data:image/png;base64,' + freeResultB64;
       updateFreeRemainingUI(res.d.remainingFree);
       gaTrack('free_generate_done', { gen_track: res.d.track || '' }, true);
+      adsConversion(CFG.adsConv && CFG.adsConv.labelFree);
       showPhase(phaseFree);
       try{ window.scrollTo({ top: document.getElementById('v2-steps').offsetTop - 12, behavior: 'smooth' }); }catch(e){}
     }).catch(function(){
@@ -496,6 +504,7 @@ var SpecsFunnel = (function(){
       if(img) img.src = 'data:image/png;base64,' + freeResultB64;
       updateFreeRemainingUI(res.d.remainingFree);
       gaTrack('free_generate_done', { gen_track: res.d.track || '' }, true);
+      adsConversion(CFG.adsConv && CFG.adsConv.labelFree);
       showPhase(phaseFree);
       try{ window.scrollTo({ top: document.getElementById('v2-steps').offsetTop - 12, behavior: 'smooth' }); }catch(e){}
     })

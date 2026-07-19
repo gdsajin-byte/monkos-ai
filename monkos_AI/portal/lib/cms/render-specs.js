@@ -673,6 +673,11 @@ ${relatedServices(ctx)}
     t1: t1RetouchOn && !isColoredBg,
     price: market === 'kr' ? '₩2,000' : '$1.99',
     freeCap: process.env.FREE_QUOTA_BYPASS === '1' ? 999999 : 3,
+    adsConv: process.env.GOOGLE_ADS_CONVERSION_ID ? {
+      id: process.env.GOOGLE_ADS_CONVERSION_ID,
+      labelFree: process.env.GOOGLE_ADS_LABEL_FREE || '',
+      labelPurchase: process.env.GOOGLE_ADS_LABEL_PURCHASE || '',
+    } : null,
   };
 
   const pageScript = v2ClientCfg ? `window.__SPECS_CFG__ = ${JSON.stringify(v2ClientCfg)};` : '';

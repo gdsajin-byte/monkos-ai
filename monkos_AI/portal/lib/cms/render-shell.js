@@ -50,7 +50,8 @@ export function layoutHead(title, description, extra = '', htmlLang = 'ko') {
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
   gtag('config', 'G-JPZWSJ3323');
-  gtag('config', 'G-FKG0CPTC14');
+  gtag('config', 'G-FKG0CPTC14');${process.env.GOOGLE_ADS_CONVERSION_ID ? `
+  gtag('config', 'AW-${process.env.GOOGLE_ADS_CONVERSION_ID}');` : ''}
   (function(){var d=['chatgpt.com','perplexity','claude.ai','gemini.google','copilot'];var r=document.referrer||'';if(d.some(function(s){return r.includes(s)})){var e=r.includes('chatgpt')?'chatgpt':r.includes('perplexity')?'perplexity':r.includes('claude.ai')?'claude':r.includes('gemini.google')?'gemini':r.includes('copilot')?'copilot':'other_ai';gtag('event','ai_referral_landing',{'ai_engine':e,'landing_page':location.pathname})}})();
 </script>
 <meta charset="UTF-8">
