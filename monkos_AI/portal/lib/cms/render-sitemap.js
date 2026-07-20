@@ -11,8 +11,8 @@ const blogCollection = firestore.collection('blog_posts');
 const DOMAIN = SPECS_DOMAIN;
 
 // lastmod 정본 상수 — 인덱스와 하위 사이트맵의 날짜 드리프트 방지
-const STATIC_LASTMOD = '2026-07-17';
-const SPECS_LASTMOD = '2026-07-17';
+const STATIC_LASTMOD = '2026-07-20';
+const SPECS_LASTMOD = '2026-07-20';
 
 function escXml(s) { return s ? s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;') : ''; }
 
