@@ -520,3 +520,6 @@
 ## 2026-07-20 (iMac/민아)
 - MEMORY.md 변경 없음. 세션 산출물은 전부 ops 문서로 적립 (제안서 1·보고서 3·감사 1·세션로그 26턴).
 - (21:25 추가) `project_b2b_positioning_anti_dependence.md` 신설 — 작가님 확정: 시장의 눈 1차=자사 마케팅 비용 압축, B2B 공백=반감/의존 이분법의 제3항(자립). MEMORY.md 인덱스 1행 추가.
+
+## 2026-07-21 (iMac/민아)
+- `project_chulchang_isolation_by_design.md` 신설 — 작가님 확정: 철창이 레포 미편입=의도된 격리(발산 공간 보존, 편입 제안 반려 근거). MEMORY.md 인덱스 1행 추가.
