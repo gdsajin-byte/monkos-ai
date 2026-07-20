@@ -516,3 +516,6 @@
 ## 2026-07-19 (iMac/쌍아)
 - `project_model_placement.md` 갱신: Fable 7/20 정식 복귀(Max 쿼터), 민아=설계·검증 집중 체제 유지
 - `SECRET_INVENTORY.md` 갱신: Ads 시크릿 6종 추가 (DEV_TOKEN 승인 반영 + CLIENT_ID/SECRET/REFRESH_TOKEN/CUSTOMER_ID/CLIENT_CID)
+
+## 2026-07-20 (iMac/민아)
+- MEMORY.md 변경 없음. 세션 산출물은 전부 ops 문서로 적립 (제안서 1·보고서 3·감사 1·세션로그 26턴).
