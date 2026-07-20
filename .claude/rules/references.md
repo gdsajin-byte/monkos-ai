@@ -42,6 +42,39 @@
 - 인벤토리(메타만): `monkos-ops/ops/SECRET_INVENTORY.md`
 - 에이전트 접촉 금지. `secret` 커맨드 경유. 상세: ch4 10조 + data-access.md
 
+## 도구 맵
+
+> 도구 신설 시 **3요건** 동시 충족 필수 (미충족 = 미완료):
+> 1. **인지** — 이 표에 등재 + 해당 rules/skills/PF에 포인터
+> 2. **스모크** — 작동 실증 기록 (완료 보고 ≠ 실작동)
+> 3. **실패 가시화** — 고장 시 무음 강등 금지, 명시 에러/경고 필수
+
+| 분류 | 성격 | 위치 | 실행 주체 |
+|------|------|------|----------|
+| **MCP 도구** | 에이전트가 대화 중 호출하는 외부 기능 | MCP 서버 (scripts/retrieval 등) | 에이전트 자동 |
+| **인프라 도구** | 서비스 무관, 에이전트 공용 기반 | `scripts/tools/` | 막내 또는 사람 |
+| **CLI 스크립트** | 터미널에서 실행하는 범용 도구 | `scripts/` | 막내 또는 사람 |
+| **빌드/생성 도구** | 에셋을 배치 생성하는 코드 | `{서비스}/tools/` | 막내 실행 |
+| **SSR 컴포넌트** | 런타임 서빙 렌더 코드 | `{서비스}/lib/cms/components/` | 서버 자동 |
+
+### 도구 소재 정본
+
+| 도구 | 분류 | 위치 | 인지 경로 |
+|------|------|------|----------|
+| monk_search | MCP | `scripts/retrieval/` | `rules/mcp-tools.md` |
+| monk_relations | MCP | `scripts/retrieval/` | `rules/mcp-tools.md` |
+| monk_stats | MCP | `scripts/retrieval/` | `rules/mcp-tools.md` |
+| cdp.sh + cdp_utils.py | 인프라 | `scripts/tools/` | `skills/cdp-browser.md` |
+| secret | 인프라 | `scripts/tools/` | `rules/data-access.md` |
+| credits.sh | CLI | `scripts/` | `rules/data-access.md` |
+| mk-push.sh | CLI | `scripts/` | — |
+| ads.sh | CLI | `scripts/` | — |
+| deploy.sh | CLI | 각 서비스 디렉토리 | `rules/deployment.md` |
+| gen_brand_diagrams_v5.mjs | 빌드/생성 | `portal/tools/specs-diagrams/` | PF_SPECS |
+| gen_reference_diagrams.mjs | 빌드/생성 | `portal/tools/specs-diagrams/` | PF_SPECS |
+| generate_samples.mjs | 빌드/생성 | `portal/tools/attire-assets/` | PF_SPECS |
+| spec-diagram.js | SSR 컴포넌트 | `portal/lib/cms/components/` | — |
+
 ## 모델 배치
 
 - 정본: 작가님 지시 (유동적)
