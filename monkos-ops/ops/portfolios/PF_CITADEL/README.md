@@ -172,3 +172,4 @@ status: active
 |------|------|------|
 | `6fee987` | 3/25 | Phase 0: hreflang+sitemap+noindex (17파일, +630행) |
 | `f354e11` | 3/25 | Phase 0: llms.txt+robots.txt (4파일, +450행) |
+| `db785c5e` | 7/20 | EN 타이틀 429건 60자 재생성 "Photo Size" 포맷 + H1 연호 동기화 (prod 00522) |
