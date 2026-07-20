@@ -6,7 +6,7 @@ subject: "IAM·SA 권한 재조정·분기 재설계 (MONKOS 보안 체계화)"
 created: 2026-04-23
 owner: 작가님
 leads: "iMac/쌍아(설계·통합), 막내(실행)"
-status: active
+status: completed
 ---
 
 # PF_SECURITY — IAM·SA 권한 재조정·분기 재설계

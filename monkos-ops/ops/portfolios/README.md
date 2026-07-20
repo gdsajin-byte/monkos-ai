@@ -18,7 +18,7 @@
 | [PF_CITADEL](PF_CITADEL/README.md) | CITADEL | 전략 | SEO/GEO/AEO 통합 | active | 03-26 |
 | [PF_SPREAD](PF_SPREAD/README.md) | SPREAD | 전략 | 콘텐츠 배포·마케팅 통합 전략 | active | 03-04 |
 | [PF_EVENT](PF_EVENT/README.md) | EVENT | 전략 | 매출 전환 이벤트 | active | 04-21 |
-| [PF_PROFILES](PF_PROFILES/README.md) | PROFILES | 전략 | AI 프로필 사진 독립 서비스 | draft | 04-28 |
+| [PF_PROFILES](PF_PROFILES/README.md) | PROFILES | 전략 | AI 프로필 사진 독립 서비스 | active | 04-28 |
 | [PF_MONK_OS](PF_MONK_OS/README.md) | MONK_OS | 운영 | 범용 Agent OS 이식 로드맵 + 하네스 아키텍처 | active | 04-23 |
 | [PF_DOCS](PF_DOCS/README.md) | DOCS | 운영 | 문서 편집 체계 (포맷별 도구·파이프라인) | active | 05-04 |
 | [PF_RND](PF_RND/README.md) | RND | 운영 | 정부 R&D·IP 지원사업 통합 추적 | active | 04-24 |

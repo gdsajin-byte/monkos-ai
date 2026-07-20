@@ -45,22 +45,10 @@ status: active
 > **append only. 수정·삭제 금지.** 신규 항목은 하단에 추가.
 > 스냅샷 기준일: 2026-03-26. 소급 불적용(ch4 9조 5항) — 주요 마일스톤만 기재.
 
+> 전체 히스토리: [ARCHIVE_HISTORY.md](ARCHIVE_HISTORY.md) (3/4 ~ 4/22, 14행 아카이브)
+
 | 날짜 | 주체 | 내용 | 산출물 | 상태 |
 |------|------|------|--------|------|
-| 3/4 | 철창이 | 채널 리서치 보고서 (21채널 식별) | 채널리포트 | ✅ |
-| 3/16 | 쌍아 | 콘텐츠 자동 배포 파이프라인 기안 (n8n 방식) | PROPOSAL_20260316 | ⚠️ 대체됨 |
-| 3/19 | 쌍아 | SPREAD v2 종합전략 기안 (n8n→코웍이 방식 전환) | PROPOSAL_20260319_v2 | ⏳ 검토대기 |
-| 3/19 | 쌍아 | SPREAD 콘텐츠배포시스템 기안 (3방식 혼용: OG/n8n/코웍이) | PROPOSAL_20260319_배포시스템 | ⏳ 검토대기 |
-| 3/19 | 막내 | SPREAD 통합 리서치 보고서 | REPORT_20260319 | ✅ |
-| 3/21 | 민아 | 콘텐츠 제작 종합 파이프라인 기안 (IMAGE PRO 중심) | PROPOSAL_20260321 | ⏳ 검토대기 |
-| 3/26 | — | **스냅샷 작성 (PF 체계 편입)** | PF_SPREAD.md | ✅ |
-| 3/27 | 민아 | CDP 12채널 실전 검증 — X발행, 깃헙Issue발행, 티스토리/네이버/note 에디터 검증 | REPORT_20260327, PF_SPREAD §7 | ✅ |
-| 4/7 | 민아 | **SPREAD 첫 바퀴 파일럿 제안** — EXAONE 3.5 온디바이스 AI 실전 후기 콘텐츠 패키지 (블로그+X+GitHub+네이버 4채널). 민아 제안→쌍아 배분→막내 CDP 실행 체제 | PROPOSAL_20260407_iMac민아_EXAONE_콘텐츠패키지.md | ⏳ 쌍아 배분 대기 |
-| 4/7 | 막내4 | Phase 1 착수 — OG 공유 버튼 기존 구현 확인, GitHub Issues 자동 게시 코드 구현 (blog.js→github-issues.js 체이닝) | github-issues.js, blog.js, config.js | ⏳ PAT 설정 후 활성 |
-| 4/7 | 막내4 | 블로그 CMS Gemini 2.0 Flash 자동번역 정상 동작 확인 (KO↔JA/EN) | — | ✅ |
-| 4/7 | 쌍아→막내 | **SPREAD 첫 순환 완료** — EXAONE 콘텐츠 4/5채널 배포. 블로그+X+GitHub 성공, 네이버 실패 (CDP contentEditable 난제) | `4c5bf48` | ✅ (네이버 제외) |
-| 4/7 | 막내 | GitHub Issues AI 카테고리만 자동 등록 필터 추가 + prod 배포 rev 00216 | `b2a7de8` | ✅ |
-| 4/22 | 민아 | **채널 에셋 30 임계점 스냅 실측** — CDP로 7채널 순례: X 34 · 인스타 47 · 네이버 50+ · YouTube 28(쇼츠 23+영상 5) · note 18 · 카카오 30명 구독 · LINE 2명 구독. 3채널 알고리즘 활성 타이밍 도래, 1채널 이번주 임박, 1채널 미달. PF_EVENT Phase 3 "우선 투입 채널" 판정 근거 | 민아 세션 로그 2026-04-22 | ✅ 스냅 |
 | 5/10 | 쌍아 | **광고 채널 데이터 정밀 분석** — Google Ads 4캠페인 분석: 스마트 캠페인 이탈 82%(쓰레기 트래픽 판명), JP 검색 이탈 60%(최양질). 스마트 ₩4,200→₩1,000 축소 실행. 멀티채널 숏폼 비교(네이버클립·인스타릴스·유튜브쇼츠·카카오·틱톡). 채널 전략 확정: Google검색 유지 + 네이버클립·인스타릴스 신규 + 카카오 무료활용 | RESEARCH_20260510_쌍아_광고채널_데이터분석.md | ✅ |
 | 06/07 | 작가님+쌍아 | **IDPASS 4채널 수동 배포 실전** — 네이버 블로그(KO, 작가님 직접) + note.com(JA, 초안 제공) + Reddit r/SideProject(EN) + Medium(EN 롱폼). 신작가 문체 확립. QR 코드 생성+GCS 업로드 | 네이버·Reddit·Medium 발행, note 초안 | ✅ |
 | 06/07 | 쌍아 | **채널별 API vs CDP 최적 방안 전수 조사** — 7채널 조사. 3층 구조 확정: Layer 1 API 직통(Reddit/X/Facebook/Instagram/네이버) + Layer 2 API+보완(네이버 리치서식) + Layer 3 CDP 전용(note.com/Medium 신규). CDP 한계: note.com API 미제공, Medium 신규 토큰 발급 중단, X 봇탐지 강력 | 세션 내 보고 | ✅ |
