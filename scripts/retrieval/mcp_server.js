@@ -19,7 +19,7 @@ const server = new McpServer({
 
 server.tool(
   'monk_search',
-  'MONK 운영 문서 3200+건에서 키워드·의미 하이브리드 검색. PF·유형·날짜 필터 지원.',
+  'MONK 운영 문서 청크 단위 하이브리드 검색. PF·유형·날짜·축 필터 지원.',
   {
     query: z.string().describe('검색 쿼리 (자연어)'),
     mode: z.enum(['hybrid', 'bm25', 'vector']).optional().describe('검색 모드 (기본: hybrid)'),
@@ -27,9 +27,10 @@ server.tool(
     type: z.string().optional().describe('문서 유형 필터 (예: order, session_log, design)'),
     from: z.string().optional().describe('시작일 (YYYY-MM-DD)'),
     to: z.string().optional().describe('종료일 (YYYY-MM-DD)'),
+    axis: z.string().optional().describe('PF 축 필터 (IDPHOTO/OPUS/AUTOPILOT/STYLER/PARTNER)'),
     limit: z.number().optional().describe('결과 수 (기본 10, 최대 20)'),
   },
-  async ({ query, mode, pf, type, from, to, limit }) => {
+  async ({ query, mode, pf, type, from, to, axis, limit }) => {
     const db = openDB();
     if (!db) return { content: [{ type: 'text', text: '❌ 인덱스 없음. build_index.js를 먼저 실행하세요.' }] };
 
@@ -37,7 +38,7 @@ server.tool(
       const embAvailable = hasEmbeddings(db);
       const effectiveMode = mode || (embAvailable ? 'hybrid' : 'bm25');
       const effectiveLimit = Math.min(limit || 10, 20);
-      const args = { pf, type, from, to };
+      const args = { pf, type, from, to, axis };
 
       let results;
       let usedMode = effectiveMode;
@@ -58,7 +59,7 @@ server.tool(
           let vectorResults;
           try {
             const bm25Results = searchBM25(db, query, args);
-            vectorResults = await searchVector(db, query);
+            vectorResults = await searchVector(db, query, args);
             results = rrfFusion(bm25Results, vectorResults).slice(0, effectiveLimit);
           } catch (vecErr) {
             results = searchBM25(db, query, args).slice(0, effectiveLimit);
@@ -68,7 +69,7 @@ server.tool(
       }
 
       const output = results.map(r => ({
-        path: r.path,
+        path: r.anchor ? `${r.path}#${r.anchor}` : r.path,
         type: r.type || null,
         date: r.date || null,
         subject: r.subject || null,
@@ -131,7 +132,7 @@ server.tool(
 
 server.tool(
   'monk_stats',
-  '현재 인덱스 상태 — 문서 수, PF 수, 임베딩 수, 최종 빌드 시각.',
+  '현재 인덱스 상태 — 문서 수, 청크 수, PF 수, 임베딩 수, 축 매핑 수, 최종 빌드 시각.',
   {},
   async () => {
     const db = openDB();
@@ -139,18 +140,22 @@ server.tool(
 
     try {
       const documents = db.prepare('SELECT COUNT(*) as cnt FROM documents').get().cnt;
+      const hasChunks = db.prepare(`SELECT name FROM sqlite_master WHERE type='table' AND name='chunks'`).get();
+      const chunks = hasChunks ? db.prepare('SELECT COUNT(*) as cnt FROM chunks').get().cnt : 0;
       const pfLinks = db.prepare('SELECT COUNT(*) as cnt FROM doc_portfolios').get().cnt;
       const uniquePfs = db.prepare('SELECT COUNT(DISTINCT portfolio) as cnt FROM doc_portfolios').get().cnt;
+      const hasAxis = db.prepare(`SELECT name FROM sqlite_master WHERE type='table' AND name='pf_axis'`).get();
+      const axisCount = hasAxis ? db.prepare('SELECT COUNT(*) as cnt FROM pf_axis').get().cnt : 0;
 
       let embeddings = 0;
       if (hasEmbeddings(db)) {
-        embeddings = db.prepare('SELECT COUNT(*) as cnt FROM doc_embeddings').get().cnt;
+        embeddings = db.prepare('SELECT COUNT(*) as cnt FROM chunk_embeddings').get().cnt;
       }
 
       const stat = fs.statSync(DB_PATH);
       const dbUpdated = stat.mtime.toISOString();
 
-      const stats = { documents, pf_links: pfLinks, unique_pfs: uniquePfs, embeddings, db_updated: dbUpdated };
+      const stats = { documents, chunks, pf_links: pfLinks, unique_pfs: uniquePfs, axis_mappings: axisCount, embeddings, db_updated: dbUpdated };
       return { content: [{ type: 'text', text: JSON.stringify(stats, null, 2) }] };
     } finally {
       db.close();
