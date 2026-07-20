@@ -68,7 +68,7 @@ export function getSpecCropParams(slug) {
     ? [data.headHeightMin, data.headHeightMax]
     : parseHeadHeightRangeMm(data.headHeight);
   // 타겟 = IDPASS 정본 결정식 그대로 (SpecData.swift:196-218, 2026-07-07 완전분석 §2-2):
-  // 명시값(countries.jsonl faceTarget) → clamp(h≥60?fMax−1 : h≥40?max(33,fMin+1) : h×0.70, fMin+1, fMax−1)
+  // 명시값(countries.jsonl faceTarget) → clamp(h≥60?fMax−1 : h≥40?fMin+1 : h×0.70, fMin+1, fMax−1)
   // 하한 편향(fMin+1)은 실무 최적해 — 심사관별 정수리 정의 편차에 의한 반려 방어 (작가님 12년 실무)
   let faceMinMm = range ? range[0] : null;
   let faceTargetMm = null;
@@ -81,7 +81,7 @@ export function getSpecCropParams(slug) {
     }
   } else if (range) {
     const [fMin, fMax] = range;
-    const base = frameHmm >= 60 ? fMax - 1 : frameHmm >= 40 ? Math.max(33, fMin + 1) : frameHmm * 0.70;
+    const base = frameHmm >= 60 ? fMax - 1 : frameHmm >= 40 ? fMin + 1 : frameHmm * 0.70;
     faceTargetMm = +Math.min(Math.max(base, fMin + 1), fMax - 1).toFixed(1);
   }
   // 파싱 불가 or 비상식 값 → 보수 기본값 (프레임 높이의 72% — 크롭앱 여권 기본 비율)
