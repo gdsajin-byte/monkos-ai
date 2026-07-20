@@ -7,7 +7,7 @@ export function specHero(ctx) {
       <a href="${prefix}/specs">${escapeHtml(v2.breadcrumbGuide)}</a> &gt; ${escapeHtml(countryName)} &gt; ${escapeHtml(typeName)}
     </nav>
     <div class="v2-header">
-      <h1>${escapeHtml(countryName)} ${escapeHtml(typeName)}</h1>
+      <h1>${escapeHtml(countryName)} ${escapeHtml(typeName)} 2026</h1>
       <div class="v2-sub">${escapeHtml(specData.countryEn || countryName)} ${escapeHtml(specData.typeEn || typeName)} Photo Specification</div>
     </div>
     <!-- 상단 sameSize 태그 전역 제거 (2026-07-11 작가님 — 어제 파일럿 한정 제거를 전 페이지 확장.

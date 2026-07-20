@@ -59,10 +59,13 @@ function build(slug, d) {
   const typeEnPhoto = /photo$/i.test(d.typeEn) ? d.typeEn : `${d.typeEn} Photo`;
   const typeJaPhoto = /写真$/.test(d.typeJa) ? d.typeJa : `${d.typeJa}写真`;
 
-  // (a) en title: | MONKOS 제거 + 1단위 사이즈
-  let enTitle = `${cEn} ${typeEnPhoto} Size & Requirements ${YEAR} — ${sizeEnCompact}`;
+  // (a) en title: "Photo Size" 포맷, 연호 끝, 풀사이즈→축약→생략 체인
+  let enTitle = `${cEn} ${typeEnPhoto} Size — ${sizeEn} ${YEAR}`;
   if (enTitle.length > 60) {
-    enTitle = `${cEn} ${typeEnPhoto} Size & Requirements ${YEAR}`;
+    enTitle = `${cEn} ${typeEnPhoto} Size — ${sizeEnCompact} ${YEAR}`;
+  }
+  if (enTitle.length > 60) {
+    enTitle = `${cEn} ${typeEnPhoto} Size ${YEAR}`;
   }
 
   let koTitle = `${d.country} ${d.type} 사진 규격·규정 ${YEAR} — ${sizeMetricCompact}·배경·복장 | MONKOS`;
@@ -99,23 +102,32 @@ let changed = 0;
 const issues = [];
 const diffs = [];
 
+let koNo2026 = 0, jaNo2026 = 0;
 for (const slug of slugs) {
   const d = data[slug];
+  if (d.seoTitle?.ko && !d.seoTitle.ko.includes('2026')) koNo2026++;
+  if (d.seoTitle?.ja && !d.seoTitle.ja.includes('2026')) jaNo2026++;
   if (!d.country || !d.countryEn || !d.countryJa || !d.type || !d.typeEn || !d.typeJa || !d.size) {
     issues.push(`${slug}: 필수 필드 누락 (country/type/size 계열) — 건너뜀`);
     continue;
   }
   const next = build(slug, d);
-  const before = JSON.stringify({ t: d.seoTitle, s: d.seoDescription });
-  const after = JSON.stringify({ t: next.seoTitle, s: next.seoDescription });
-  if (before !== after) {
+  const beforeEn = JSON.stringify({ t: d.seoTitle?.en, s: d.seoDescription?.en });
+  const afterEn = JSON.stringify({ t: next.seoTitle.en, s: next.seoDescription.en });
+  if (beforeEn !== afterEn) {
     diffs.push({ slug, before: d.seoTitle, after: next.seoTitle });
-    if (!DRY) { d.seoTitle = next.seoTitle; d.seoDescription = next.seoDescription; }
+    if (!DRY) {
+      d.seoTitle = d.seoTitle || {};
+      d.seoTitle.en = next.seoTitle.en;
+      d.seoDescription = d.seoDescription || {};
+      d.seoDescription.en = next.seoDescription.en;
+    }
     changed++;
   }
 }
 
-console.log(`총 ${slugs.length} 슬러그 / 변경 ${changed} / 이슈 ${issues.length}${DRY ? ' [dry-run]' : ''}`);
+console.log(`총 ${slugs.length} 슬러그 / EN 변경 ${changed} / 이슈 ${issues.length}${DRY ? ' [dry-run]' : ''}`);
+console.log(`[Task 2] KO 연호 미포함: ${koNo2026} / JA 연호 미포함: ${jaNo2026}`);
 issues.forEach(i => console.log('⚠️ ', i));
 
 if (SAMPLE) {
