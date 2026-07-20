@@ -54,6 +54,7 @@ created: 2026-06-14
 | 07/14 | M1/쌍아 | **🔴 전면 사문화 판정** — 6/21 이후 MCP 도구 호출 0건(전 디바이스), M1 monk_index.db 미존재(빌드 안 됨), GA4/GSC MCP도 사문화(크리덴셜 iMac 경로 하드코딩으로 M1 불가). mk-push.sh 리빌드 실패도 `\|\| echo`로 무시되어 인지 안 됨. 원인: ①DB가 .gitignore→디바이스 전파 불가 ②.mcp.json 크리덴셜 iMac 종속 ③에이전트 습관적 미사용(grep/Read 우회). **긴급 어젠다: 크리덴셜 정규화 + M1 DB 빌드 + rules/skills 강제 경로 필요** | — | 🔴 긴급 |
 | 07/20 | iMac/민아 | **🔴 근본 원인 확정 — 임베딩 자기파괴 구조** — iMac 실측: 인덱스 신선(3,813건·7/19)하나 임베딩 0건·doc_embeddings 테이블 부재. 진범: mk-push.sh:12가 `--embed` 없이 리빌드 → build_index.js:99가 DB 통삭제 → 6/20 P2 임베딩 3,232건이 직후 첫 푸시에서 전량 소실, 이후 매 푸시 BM25 전용. 한국어 다어절 0건("시타델 대시보드" 등)+MCP 무음 강등으로 34일 미인지. 판정: 습관적 미사용은 원인 아닌 결과(품질→신뢰→습관 붕괴 연쇄). 처방 4종(P0 --embed 전환+무음강등금지 / P1 전량 리임베딩 / P2 한국어 BM25 보강 / P3 품질 복원 후 강제 경로) 쌍아 지시서 대기 | REPORT_20260720_iMac민아_RETRIEVAL_사문화_근본원인진단 | 🔴 긴급 |
 | 07/20 | iMac/막내2 | **임베딩 복원 완료** — mk-push.sh --embed 전환 + 0건 경고 추가 + 전량 리임베딩 3,823건(2m3s) + 스모크 5종 전 통과(hybrid 한국어 다어절 복원 확인) | COMPLETION_20260720+mk-push.sh+build_index.js | ✅ |
+| 07/20 | iMac/민아 | **청킹+축 필터 검증 게이트 통과** — DB 실측 20,776청크=임베딩·pf_axis 29(축 재판정 반영), 게이트 5종(G1 문면 부분=전용 문서 우선 랭킹으로 수용, 턴 청크 적중 실증). 소건 2 처리 확인: CLI 플래그 에러·--axis·anchor 표시(쌍아 c9357533). 잔여: 구세션 MCP stale 공지(신세션 정상)·anchor `##` 코스메틱 | 세션로그 7/20 19:33·19:41 | ✅ |
 | 07/20 | iMac/막내2 | **청킹 인덱스 + 축 필터 구현** — 문서→청크 전환(3,857문서→20,776청크, 5.4배), 5유형 경계(턴/h2/h3/PF히스토리/윈도우)+4K상한. chunks_fts+chunk_embeddings+pf_axis 스키마. 축 필터 axis=IDPHOTO/OPUS/AUTOPILOT/STYLER/PARTNER. 문서당 2청크 제한. 스모크 5종 CLI 전량 적중. 33m44s | COMPLETION_20260720+build_index.js+lib.js+mcp_server.js | ✅ |
 
 ---
