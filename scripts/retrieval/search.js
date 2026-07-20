@@ -5,12 +5,21 @@ const {
   searchByFilters, searchRelations,
 } = require('./lib');
 
+const KNOWN_FLAGS = new Set([
+  'query', 'mode', 'pf', 'type', 'from', 'to', 'agent', 'device',
+  'axis', 'limit', 'relations',
+]);
+
 function parseArgs(argv) {
   const args = {};
   for (let i = 2; i < argv.length; i++) {
     const key = argv[i];
     if (key.startsWith('--')) {
       const name = key.slice(2);
+      if (!KNOWN_FLAGS.has(name)) {
+        console.error(`❌ 알 수 없는 플래그: --${name}`);
+        process.exit(1);
+      }
       const next = argv[i + 1];
       if (next && !next.startsWith('--')) {
         args[name] = next;
@@ -31,8 +40,9 @@ function formatResults(results) {
   for (const r of results) {
     const date = r.date || '----';
     const type = (r.type || '-').padEnd(12);
+    const anchor = r.anchor ? `#${r.anchor}` : '';
     const subject = r.subject ? ` — ${r.subject}` : '';
-    console.log(`  ${date}  ${type} ${r.path}${subject}`);
+    console.log(`  ${date}  ${type} ${r.path}${anchor}${subject}`);
   }
   console.log(`\n  총 ${results.length}건`);
 }
@@ -110,6 +120,7 @@ async function main() {
   node search.js --query "증명사진 품질" --mode bm25        # BM25만
   node search.js --query "증명사진 품질" --mode vector      # 벡터만
   node search.js --query "증명사진 품질" --mode hybrid      # 명시적 hybrid
+  node search.js --query "크롭 배치" --axis IDPHOTO        # 축 필터
   node search.js --pf PF_IDPHOTO --type order
   node search.js --relations PF_OPUS
     `);
