@@ -100,6 +100,17 @@ const COUNTRY_SLUG_TO_ISO = {
   uk: 'gb', germany: 'de', spain: 'es', australia: 'au',
   singapore: 'sg', thailand: 'th', india: 'in', china: 'cn',
   vietnam: 'vn', indonesia: 'id', eu: 'eu',
+  bosnia: 'ba', azerbaijan: 'az', denmark: 'dk', belgium: 'be', belarus: 'by',
+  brazil: 'br', mexico: 'mx', france: 'fr', italy: 'it', netherlands: 'nl',
+  portugal: 'pt', sweden: 'se', norway: 'no', finland: 'fi', poland: 'pl',
+  russia: 'ru', turkey: 'tr', egypt: 'eg', nigeria: 'ng', kenya: 'ke',
+  philippines: 'ph', malaysia: 'my', pakistan: 'pk', bangladesh: 'bd',
+  colombia: 'co', argentina: 'ar', chile: 'cl', peru: 'pe',
+  morocco: 'ma', tunisia: 'tn', kuwait: 'kw', oman: 'om',
+  qatar: 'qa', bahrain: 'bh', jordan: 'jo', lebanon: 'lb',
+  cambodia: 'kh', myanmar: 'mm', laos: 'la', nepal: 'np',
+  'sri-lanka': 'lk', 'new-zealand': 'nz', 'south-africa': 'za',
+  'saudi-arabia': 'sa', 'united-arab-emirates': 'ae',
 };
 
 for (const [slug, spec] of Object.entries(SPECS_DATA)) {
