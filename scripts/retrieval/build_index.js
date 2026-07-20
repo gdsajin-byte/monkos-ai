@@ -205,7 +205,7 @@ async function buildIndex() {
       const subject = frontmatter.subject || null;
       const fromAgent = frontmatter.from || null;
       const toAgent = frontmatter.to || null;
-      const contentPreview = content.replace(/\s+/g, ' ').trim().slice(0, 500);
+      const contentPreview = content.replace(/\s+/g, ' ').trim().slice(0, 2000);
 
       const result = insertDoc.run(
         relPath, filename, type, date, device, agent, status, subject, fromAgent, toAgent, contentPreview
@@ -287,7 +287,7 @@ async function buildEmbeddings(db, docRecords, cache) {
   insertCached();
 
   if (needEmbed.length > 0) {
-    const BATCH = 100;
+    const BATCH = 20;
     for (let i = 0; i < needEmbed.length; i += BATCH) {
       const batch = needEmbed.slice(i, i + BATCH);
       const texts = batch.map(b => b.text);

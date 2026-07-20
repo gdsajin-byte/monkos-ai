@@ -144,10 +144,16 @@ function rrfFusion(bm25Results, vectorResults, k = 60) {
     }
   });
 
+  const now = Date.now();
   const fused = [];
   for (const [id, score] of scores) {
     const m = meta.get(id);
-    fused.push({ id, path: m.path, type: m.type, date: m.date, subject: m.subject, content_preview: m.content_preview, rrfScore: score });
+    let recencyBoost = 1;
+    if (m.date) {
+      const daysDiff = (now - new Date(m.date).getTime()) / 86400000;
+      if (daysDiff >= 0) recencyBoost = 1 + 0.3 * Math.exp(-daysDiff / 90);
+    }
+    fused.push({ id, path: m.path, type: m.type, date: m.date, subject: m.subject, content_preview: m.content_preview, rrfScore: score * recencyBoost });
   }
 
   fused.sort((a, b) => b.rrfScore - a.rrfScore);

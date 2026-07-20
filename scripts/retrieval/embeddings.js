@@ -6,7 +6,7 @@ const PROJECT = 'monkos';
 const LOCATION = 'us-central1';
 const MODEL = 'text-multilingual-embedding-002';
 const ENDPOINT = `projects/${PROJECT}/locations/${LOCATION}/publishers/google/models/${MODEL}`;
-const BATCH_SIZE = 50;
+const BATCH_SIZE = 5;
 
 const client = new PredictionServiceClient({
   apiEndpoint: `${LOCATION}-aiplatform.googleapis.com`,
