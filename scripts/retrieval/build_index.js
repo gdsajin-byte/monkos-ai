@@ -244,6 +244,16 @@ async function buildIndex() {
     await buildEmbeddings(db, docRecords, embeddingCache);
   }
 
+  const hasEmbTable = db.prepare(
+    `SELECT name FROM sqlite_master WHERE type='table' AND name='doc_embeddings'`
+  ).get();
+  const totalEmb = hasEmbTable
+    ? db.prepare('SELECT COUNT(*) as cnt FROM doc_embeddings').get().cnt
+    : 0;
+  if (totalEmb === 0) {
+    console.error('⚠️ 임베딩 0건 — --embed 플래그 확인 필요');
+  }
+
   console.log(`   DB: ${DB_PATH}`);
   db.close();
 }
