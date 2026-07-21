@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CF→CR API 검증 — Phase 0</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #0a0a0a; color: #e0e0e0; padding: 24px; max-width: 800px; margin: 0 auto; }
+  h1 { font-size: 20px; margin-bottom: 8px; color: #fff; }
+  .subtitle { font-size: 13px; color: #888; margin-bottom: 24px; }
+  .test-card { background: #141414; border: 1px solid #222; border-radius: 8px; padding: 16px; margin-bottom: 12px; }
+  .test-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .test-title { font-size: 14px; font-weight: 600; }
+  .test-desc { font-size: 12px; color: #888; margin-bottom: 12px; }
+  button { background: #2563eb; color: #fff; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 13px; }
+  button:hover { background: #1d4ed8; }
+  button:disabled { background: #333; cursor: not-allowed; }
+  .result { margin-top: 12px; padding: 12px; background: #0d0d0d; border-radius: 4px; font-family: monospace; font-size: 12px; white-space: pre-wrap; word-break: break-all; max-height: 300px; overflow-y: auto; display: none; }
+  .result.show { display: block; }
+  .status { font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 4px; }
+  .status-pass { background: #065f46; color: #6ee7b7; }
+  .status-fail { background: #7f1d1d; color: #fca5a5; }
+  .status-info { background: #1e3a5f; color: #93c5fd; }
+  .status-wait { background: #333; color: #888; }
+  .file-input { margin-bottom: 8px; }
+  .summary { background: #141414; border: 1px solid #222; border-radius: 8px; padding: 16px; margin-top: 24px; display: none; }
+  .summary h2 { font-size: 16px; margin-bottom: 12px; }
+  .summary table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .summary td, .summary th { padding: 6px 8px; border-bottom: 1px solid #222; text-align: left; }
+  .copy-btn { background: #333; font-size: 11px; padding: 4px 8px; margin-top: 8px; }
+</style>
+</head>
+<body>
+
+<h1>CF → CR API 검증 (Phase 0)</h1>
+<p class="subtitle">monk.kr (CF Pages) → monkos.ai (Cloud Run) 크로스오리진 호출 검증</p>
+
+<div class="test-card" id="t1-card">
+  <div class="test-header">
+    <span class="test-title">T1 — CORS 기본 호출</span>
+    <span class="status status-wait" id="t1-status">대기</span>
+  </div>
+  <div class="test-desc">GET https://monkos.ai/api/stats → 200 또는 CORS 에러 확인</div>
+  <button onclick="runT1()">실행</button>
+  <div class="result" id="t1-result"></div>
+</div>
+
+<div class="test-card" id="t2-card">
+  <div class="test-header">
+    <span class="test-title">T2 — 파일 업로드 (POST multipart)</span>
+    <span class="status status-wait" id="t2-status">대기</span>
+  </div>
+  <div class="test-desc">POST https://monkos.ai/api/idphoto/precheck (FormData + image)</div>
+  <div class="file-input"><input type="file" id="t2-file" accept="image/*"></div>
+  <button onclick="runT2()">실행</button>
+  <div class="result" id="t2-result"></div>
+</div>
+
+<div class="test-card" id="t3-card">
+  <div class="test-header">
+    <span class="test-title">T3 — IP 확인</span>
+    <span class="status status-wait" id="t3-status">대기</span>
+  </div>
+  <div class="test-desc">httpbin.org/ip → CF Pages에서의 클라이언트 IP 확인</div>
+  <button onclick="runT3()">실행</button>
+  <div class="result" id="t3-result"></div>
+</div>
+
+<div class="test-card" id="t4-card">
+  <div class="test-header">
+    <span class="test-title">T4 — 쿠키 도메인</span>
+    <span class="status status-wait" id="t4-status">대기</span>
+  </div>
+  <div class="test-desc">.monkos.ai 쿠키 설정 후 credentials:include 호출 → 전달 여부</div>
+  <button onclick="runT4()">실행</button>
+  <div class="result" id="t4-result"></div>
+</div>
+
+<div class="test-card" id="t5-card">
+  <div class="test-header">
+    <span class="test-title">T5 — 응답 시간 측정</span>
+    <span class="status status-wait" id="t5-status">대기</span>
+  </div>
+  <div class="test-desc">GET /api/stats 5회 반복 → 평균·최대·최소 + 페이지 로딩 시간</div>
+  <button onclick="runT5()">실행</button>
+  <div class="result" id="t5-result"></div>
+</div>
+
+<div style="margin-top:16px;">
+  <button onclick="runAll()" style="background:#059669;">전체 실행</button>
+</div>
+
+<div class="summary" id="summary">
+  <h2>검증 결과 요약</h2>
+  <table id="summary-table">
+    <tr><th>항목</th><th>상태</th><th>핵심</th></tr>
+  </table>
+  <button class="copy-btn" onclick="copySummary()">결과 복사</button>
+</div>
+
+<script>
+const results = {};
+
+function setStatus(id, type, text) {
+  const el = document.getElementById(id + '-status');
+  el.className = 'status status-' + type;
+  el.textContent = text;
+}
+
+function showResult(id, text) {
+  const el = document.getElementById(id + '-result');
+  el.textContent = text;
+  el.classList.add('show');
+}
+
+async function runT1() {
+  setStatus('t1', 'info', '실행 중');
+  const log = [];
+  try {
+    const t0 = performance.now();
+    const res = await fetch('https://monkos.ai/api/stats', { method: 'GET' });
+    const t1 = performance.now();
+    const body = await res.text();
+    log.push('[T1 CORS 기본 호출]');
+    log.push('상태: ' + res.status + ' ' + res.statusText);
+    log.push('응답 시간: ' + (t1 - t0).toFixed(1) + 'ms');
+    log.push('CORS 헤더:');
+    log.push('  Access-Control-Allow-Origin: ' + (res.headers.get('access-control-allow-origin') || '(없음)'));
+    log.push('  Access-Control-Allow-Methods: ' + (res.headers.get('access-control-allow-methods') || '(없음)'));
+    log.push('  Access-Control-Allow-Headers: ' + (res.headers.get('access-control-allow-headers') || '(없음)'));
+    log.push('응답 본문 (앞 500자):\n' + body.substring(0, 500));
+    results.T1 = { status: 'PASS', detail: res.status + ' / CORS 허용 / ' + (t1 - t0).toFixed(0) + 'ms' };
+    setStatus('t1', 'pass', 'PASS');
+  } catch (err) {
+    log.push('[T1 CORS 기본 호출 — 실패]');
+    log.push('에러: ' + err.message);
+    log.push('타입: ' + err.name);
+    if (err.message.includes('CORS') || err.message.includes('opaque') || err.name === 'TypeError') {
+      log.push('\n→ CORS 차단 확인. CR server.js에 Access-Control-Allow-Origin 헤더 추가 필요.');
+    }
+    results.T1 = { status: 'FAIL', detail: err.message };
+    setStatus('t1', 'fail', 'FAIL');
+  }
+  showResult('t1', log.join('\n'));
+}
+
+async function runT2() {
+  const fileInput = document.getElementById('t2-file');
+  if (!fileInput.files.length) {
+    showResult('t2', '이미지 파일을 먼저 선택하세요.');
+    setStatus('t2', 'info', '파일 필요');
+    return;
+  }
+  setStatus('t2', 'info', '실행 중');
+  const log = [];
+  try {
+    const formData = new FormData();
+    formData.append('image', fileInput.files[0]);
+    const t0 = performance.now();
+    const res = await fetch('https://monkos.ai/api/idphoto/precheck', {
+      method: 'POST',
+      body: formData
+    });
+    const t1 = performance.now();
+    const body = await res.text();
+    log.push('[T2 파일 업로드]');
+    log.push('상태: ' + res.status + ' ' + res.statusText);
+    log.push('응답 시간: ' + (t1 - t0).toFixed(1) + 'ms');
+    log.push('파일: ' + fileInput.files[0].name + ' (' + (fileInput.files[0].size / 1024).toFixed(1) + 'KB)');
+    log.push('Content-Type 요청: multipart/form-data (자동)');
+    log.push('CORS 헤더:');
+    log.push('  Access-Control-Allow-Origin: ' + (res.headers.get('access-control-allow-origin') || '(없음)'));
+    log.push('응답 본문 (앞 500자):\n' + body.substring(0, 500));
+    results.T2 = { status: 'PASS', detail: res.status + ' / 업로드 정상 / ' + (t1 - t0).toFixed(0) + 'ms' };
+    setStatus('t2', 'pass', 'PASS');
+  } catch (err) {
+    log.push('[T2 파일 업로드 — 실패]');
+    log.push('에러: ' + err.message);
+    if (err.message.includes('CORS') || err.name === 'TypeError') {
+      log.push('\n→ CORS preflight(OPTIONS) 차단. POST multipart는 simple request가 아니므로 preflight 필요.');
+    }
+    results.T2 = { status: 'FAIL', detail: err.message };
+    setStatus('t2', 'fail', 'FAIL');
+  }
+  showResult('t2', log.join('\n'));
+}
+
+async function runT3() {
+  setStatus('t3', 'info', '실행 중');
+  const log = [];
+  try {
+    const res = await fetch('https://httpbin.org/ip');
+    const data = await res.json();
+    log.push('[T3 IP 확인]');
+    log.push('클라이언트 IP (httpbin): ' + data.origin);
+    log.push('\n→ 이 IP가 CR 쪽에서 인식하는 IP와 동일한지 비교 필요.');
+    log.push('→ CF 프록시가 아닌 실제 클라이언트 IP이면 IP 소실 문제 없음.');
+    results.T3 = { status: 'INFO', detail: 'IP: ' + data.origin };
+    setStatus('t3', 'info', 'INFO');
+  } catch (err) {
+    log.push('[T3 IP 확인 — 실패]');
+    log.push('에러: ' + err.message);
+    results.T3 = { status: 'FAIL', detail: err.message };
+    setStatus('t3', 'fail', 'FAIL');
+  }
+  showResult('t3', log.join('\n'));
+}
+
+async function runT4() {
+  setStatus('t4', 'info', '실행 중');
+  const log = [];
+  log.push('[T4 쿠키 도메인]');
+
+  log.push('\n— 단계 1: .monkos.ai 쿠키 설정 시도');
+  try {
+    document.cookie = 'test_cf=1; domain=.monkos.ai; path=/; SameSite=None; Secure';
+    log.push('document.cookie 설정 실행 (에러 없음)');
+    log.push('현재 document.cookie: ' + (document.cookie || '(비어있음)'));
+    const hasCookie = document.cookie.includes('test_cf');
+    log.push('test_cf 쿠키 존재: ' + hasCookie);
+    if (!hasCookie) {
+      log.push('\n→ 예상대로 monk.kr 도메인에서 .monkos.ai 쿠키 설정 불가.');
+      log.push('→ 크로스도메인 쿠키 공유 불가 확인 — 서브도메인 전략 또는 토큰 기반 인증 필요.');
+    }
+  } catch (err) {
+    log.push('쿠키 설정 에러: ' + err.message);
+  }
+
+  log.push('\n— 단계 2: credentials:include 호출');
+  try {
+    const res = await fetch('https://monkos.ai/api/stats', {
+      credentials: 'include'
+    });
+    const body = await res.text();
+    log.push('상태: ' + res.status);
+    log.push('Access-Control-Allow-Credentials: ' + (res.headers.get('access-control-allow-credentials') || '(없음)'));
+    log.push('응답 본문 (앞 200자): ' + body.substring(0, 200));
+    results.T4 = { status: 'INFO', detail: '쿠키 설정 불가(크로스도메인) / credentials 호출 ' + res.status };
+    setStatus('t4', 'info', 'INFO');
+  } catch (err) {
+    log.push('credentials 호출 에러: ' + err.message);
+    if (err.message.includes('CORS')) {
+      log.push('\n→ credentials:include 시 CORS 추가 조건 필요:');
+      log.push('  Access-Control-Allow-Credentials: true');
+      log.push('  Access-Control-Allow-Origin: 정확한 오리진 (와일드카드 불가)');
+    }
+    results.T4 = { status: 'FAIL', detail: err.message };
+    setStatus('t4', 'fail', 'FAIL');
+  }
+  showResult('t4', log.join('\n'));
+}
+
+async function runT5() {
+  setStatus('t5', 'info', '실행 중 (5회)');
+  const log = [];
+  const times = [];
+  log.push('[T5 응답 시간 측정]');
+
+  for (let i = 0; i < 5; i++) {
+    try {
+      const t0 = performance.now();
+      const res = await fetch('https://monkos.ai/api/stats', { cache: 'no-store' });
+      const t1 = performance.now();
+      await res.text();
+      const elapsed = t1 - t0;
+      times.push(elapsed);
+      log.push('  #' + (i + 1) + ': ' + elapsed.toFixed(1) + 'ms (HTTP ' + res.status + ')');
+    } catch (err) {
+      log.push('  #' + (i + 1) + ': FAIL — ' + err.message);
+    }
+  }
+
+  if (times.length > 0) {
+    const avg = times.reduce((a, b) => a + b) / times.length;
+    const min = Math.min(...times);
+    const max = Math.max(...times);
+    log.push('\n평균: ' + avg.toFixed(1) + 'ms');
+    log.push('최소: ' + min.toFixed(1) + 'ms');
+    log.push('최대: ' + max.toFixed(1) + 'ms');
+    results.T5 = { status: 'INFO', detail: '평균 ' + avg.toFixed(0) + 'ms / 최소 ' + min.toFixed(0) + 'ms / 최대 ' + max.toFixed(0) + 'ms' };
+    setStatus('t5', 'info', avg.toFixed(0) + 'ms avg');
+  } else {
+    results.T5 = { status: 'FAIL', detail: '전량 실패 (CORS 차단 가능성)' };
+    setStatus('t5', 'fail', 'FAIL');
+  }
+
+  const navTiming = performance.getEntriesByType('navigation')[0];
+  if (navTiming) {
+    log.push('\n[CF Pages 로딩 시간]');
+    log.push('DNS: ' + (navTiming.domainLookupEnd - navTiming.domainLookupStart).toFixed(1) + 'ms');
+    log.push('TCP: ' + (navTiming.connectEnd - navTiming.connectStart).toFixed(1) + 'ms');
+    log.push('TLS: ' + (navTiming.secureConnectionStart > 0 ? (navTiming.connectEnd - navTiming.secureConnectionStart).toFixed(1) : 'N/A') + 'ms');
+    log.push('TTFB: ' + (navTiming.responseStart - navTiming.requestStart).toFixed(1) + 'ms');
+    log.push('DOM 로딩: ' + (navTiming.domContentLoadedEventEnd - navTiming.fetchStart).toFixed(1) + 'ms');
+    log.push('전체: ' + (navTiming.loadEventEnd - navTiming.fetchStart).toFixed(1) + 'ms');
+  }
+
+  showResult('t5', log.join('\n'));
+}
+
+async function runAll() {
+  await runT1();
+  await runT2();
+  await runT3();
+  await runT4();
+  await runT5();
+  showSummary();
+}
+
+function showSummary() {
+  const el = document.getElementById('summary');
+  el.style.display = 'block';
+  const tbody = document.getElementById('summary-table');
+  const existingRows = tbody.querySelectorAll('tr:not(:first-child)');
+  existingRows.forEach(r => r.remove());
+
+  for (const [key, val] of Object.entries(results)) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td>' + key + '</td><td><span class="status status-' +
+      (val.status === 'PASS' ? 'pass' : val.status === 'FAIL' ? 'fail' : 'info') +
+      '">' + val.status + '</span></td><td>' + val.detail + '</td>';
+    tbody.appendChild(tr);
+  }
+
+  const nav = performance.getEntriesByType('navigation')[0];
+  if (nav) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td>CF Pages TTFB</td><td><span class="status status-info">INFO</span></td><td>' +
+      (nav.responseStart - nav.requestStart).toFixed(0) + 'ms</td>';
+    tbody.appendChild(tr);
+  }
+}
+
+function copySummary() {
+  const lines = ['[CF→CR API 검증 결과 — ' + new Date().toISOString() + ']'];
+  lines.push('오리진: ' + location.origin);
+  lines.push('');
+  for (const [key, val] of Object.entries(results)) {
+    lines.push(key + ': ' + val.status + ' — ' + val.detail);
+  }
+  const nav = performance.getEntriesByType('navigation')[0];
+  if (nav) {
+    lines.push('CF Pages TTFB: ' + (nav.responseStart - nav.requestStart).toFixed(0) + 'ms');
+  }
+  navigator.clipboard.writeText(lines.join('\n')).then(() => {
+    alert('복사 완료');
+  });
+}
+</script>
+
+</body>
+</html>

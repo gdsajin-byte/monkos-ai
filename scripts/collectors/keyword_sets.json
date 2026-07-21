@@ -1,0 +1,40 @@
+{
+  "google_planner": [
+    {
+      "keywords": ["passport photo", "id photo", "visa photo"],
+      "lang": "1000", "geo": "2840", "lang_code": "en", "geo_code": "US"
+    },
+    {
+      "keywords": ["passport photo", "id photo", "visa photo"],
+      "lang": "1000", "geo": "2826", "lang_code": "en", "geo_code": "GB"
+    },
+    {
+      "keywords": ["証明写真", "パスポート写真", "履歴書写真"],
+      "lang": "1005", "geo": "2392", "lang_code": "ja", "geo_code": "JP"
+    },
+    {
+      "keywords": ["passbild", "bewerbungsfoto", "passfoto"],
+      "lang": "1001", "geo": "2276", "lang_code": "de", "geo_code": "DE"
+    },
+    {
+      "keywords": ["ảnh thẻ", "ảnh hộ chiếu", "ảnh chứng minh"],
+      "lang": "1040", "geo": "2704", "lang_code": "vi", "geo_code": "VN"
+    },
+    {
+      "keywords": ["2x2 picture", "passport photo", "id picture"],
+      "lang": "1000", "geo": "2608", "lang_code": "en", "geo_code": "PH"
+    },
+    {
+      "keywords": ["pas foto", "foto paspor", "photo id"],
+      "lang": "1025", "geo": "2360", "lang_code": "id", "geo_code": "ID"
+    },
+    {
+      "keywords": ["증명사진", "여권사진", "취업사진"],
+      "lang": "1004", "geo": "2410", "lang_code": "ko", "geo_code": "KR"
+    }
+  ],
+  "naver_searchad": [
+    ["증명사진", "AI증명사진", "여권사진", "취업사진", "반명함사진"],
+    ["비자사진", "운전면허사진", "주민등록증사진", "이력서사진"]
+  ]
+}

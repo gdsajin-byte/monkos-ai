@@ -74,6 +74,11 @@
 | gen_reference_diagrams.mjs | 빌드/생성 | `portal/tools/specs-diagrams/` | PF_SPECS |
 | generate_samples.mjs | 빌드/생성 | `portal/tools/attire-assets/` | PF_SPECS |
 | spec-diagram.js | SSR 컴포넌트 | `portal/lib/cms/components/` | — |
+| collectors/ (4종) | CLI | `scripts/collectors/` | PF_MARKET_EYE |
+| seo_collect.sh | 인프라 | `scripts/tools/` | `commands/market-eye.md` |
+| seo_collectors.py | 인프라 | `scripts/tools/` | `commands/market-eye.md` |
+| /market-eye | 스킬 | `.claude/commands/` | PF_MARKET_EYE |
+| /4060 | 스킬 | `.claude/commands/` | PF_INFRA + PF_FACTORY |
 
 ## 모델 배치
 

@@ -2,7 +2,8 @@ name: Daily Briefing
 
 on:
   schedule:
-    - cron: '0 20 * * *'  # UTC 20:00 = KST 05:00
+    - cron: '0 20 * * *'  # UTC 20:00 = KST 05:00 (일배치)
+    - cron: '0 0 1 * *'   # UTC 00:00 매월 1일 = KST 09:00 (월배치)
   workflow_dispatch:
 
 jobs:
@@ -18,8 +19,59 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install dependencies
+      - name: Install Python dependencies
         run: pip install -r .github/scripts/requirements.txt
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      # --- MARKET_EYE 일배치 (매일) ---
+      - name: Collect GSC daily
+        env:
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+          GSC_SITE_URL: ${{ secrets.GSC_SITE_URL }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: node scripts/collectors/collect_gsc.js
+
+      - name: Collect GA4 daily
+        env:
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+          GA4_PROPERTY_ID: ${{ secrets.GA4_PROPERTY_ID }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: node scripts/collectors/collect_ga4.js
+
+      # --- MARKET_EYE 월배치 (매월 1일) ---
+      - name: Collect Keywords monthly
+        if: github.event.schedule == '0 0 1 * *' || github.event_name == 'workflow_dispatch'
+        env:
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+          GOOGLE_ADS_DEV_TOKEN: ${{ secrets.GOOGLE_ADS_DEV_TOKEN }}
+          GOOGLE_ADS_CLIENT_ID: ${{ secrets.GOOGLE_ADS_CLIENT_ID }}
+          GOOGLE_ADS_CLIENT_SECRET: ${{ secrets.GOOGLE_ADS_CLIENT_SECRET }}
+          GOOGLE_ADS_REFRESH_TOKEN: ${{ secrets.GOOGLE_ADS_REFRESH_TOKEN }}
+          GOOGLE_ADS_CUSTOMER_ID: ${{ secrets.GOOGLE_ADS_CUSTOMER_ID }}
+          NAVER_SEARCHAD_API_KEY: ${{ secrets.NAVER_SEARCHAD_API_KEY }}
+          NAVER_SEARCHAD_SECRET_KEY: ${{ secrets.NAVER_SEARCHAD_SECRET_KEY }}
+          NAVER_SEARCHAD_CUSTOMER_ID: ${{ secrets.NAVER_SEARCHAD_CUSTOMER_ID }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: node scripts/collectors/collect_keywords.js
+
+      - name: Collect Trends monthly
+        if: github.event.schedule == '0 0 1 * *' || github.event_name == 'workflow_dispatch'
+        env:
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+          NAVER_DATALAB_CLIENT_ID: ${{ secrets.NAVER_DATALAB_CLIENT_ID }}
+          NAVER_DATALAB_CLIENT_SECRET: ${{ secrets.NAVER_DATALAB_CLIENT_SECRET }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: node scripts/collectors/collect_trends.js
 
       - name: Generate briefing
         id: gen
