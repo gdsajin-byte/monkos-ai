@@ -28,6 +28,8 @@
 | [PF_AUTOPILOT](PF_AUTOPILOT/README.md) | AUTOPILOT | 인프라 | AUTOPILOT | 접착 레이어 — CF↔CR 중계 + 시크릿 통합 + 멀티레포 연결 + 에이전트 연결 | active | 05-11 |
 | [PF_FACTORY](PF_FACTORY/README.md) | FACTORY | 인프라 | AUTOPILOT | 4060 GPU 팩토리 — 야간 생산 + 모델 연구 + 텔레그램 보고/지시 | draft | 05-11 |
 | [PF_INFRA](PF_INFRA/README.md) | INFRA | 인프라 | AUTOPILOT | 서비스 기반 인프라 — GCS 버킷·Drive 워크벤치·배포·SA·에셋 레지스트리 | active | 06-21 |
+| [PF_MARKET_EYE](PF_MARKET_EYE/README.md) | MARKET_EYE | 인프라 | AUTOPILOT | 시장 데이터 수집·적재·조회 — 모든 PF의 판단 근거 기반층 (BQ market_eye) | active | 07-21 |
+| [PF_DESIGNLAB](PF_DESIGNLAB/README.md) | DESIGNLAB | 인프라 | AUTOPILOT | 디자인 토큰·브랜딩·UI 시스템 — 전 서비스 표면의 횡단 기반층 | active | 07-21 |
 | [PF_RETRIEVAL](PF_RETRIEVAL/README.md) | RETRIEVAL | 메타(인프라) | AUTOPILOT | 관계 retrieval(네비게이션 DB) + 스토리지 최적화 — 1인 운영 지속가능성 | active | 06-14 |
 | [PF_MONK_OS](PF_MONK_OS/README.md) | MONK_OS | 운영 | AUTOPILOT | 범용 Agent OS 이식 로드맵 + 하네스 아키텍처 | active | 04-23 |
 | [PF_DOCS](PF_DOCS/README.md) | DOCS | 운영 | AUTOPILOT | 문서 편집 체계 (포맷별 도구·파이프라인) | active | 05-04 |

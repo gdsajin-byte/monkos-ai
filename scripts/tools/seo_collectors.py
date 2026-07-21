@@ -32,41 +32,50 @@ def fetch_naver_searchad(keywords):
     base_url = "https://api.searchad.naver.com"
     uri = "/keywordstool"
     method = "GET"
-    timestamp = str(int(time.time() * 1000))
-    sign_str = f"{timestamp}.{method}.{uri}"
-    signature = base64.b64encode(
-        hmac.new(secret_key.encode("utf-8"), sign_str.encode("utf-8"), hashlib.sha256).digest()
-    ).decode("utf-8")
+    api_keywords = [kw.replace(" ", "") for kw in keywords]
+    match_set = {kw.replace(" ", "") for kw in keywords}
+    seen = set()
+    results = []
 
-    headers = {
-        "X-Timestamp": timestamp,
-        "X-API-KEY": api_key,
-        "X-Customer": customer_id,
-        "X-Signature": signature,
-    }
-    params = {
-        "hintKeywords": ",".join(keywords),
-        "showDetail": "1",
-    }
-    try:
-        resp = requests.get(base_url + uri, headers=headers, params=params, timeout=15)
-        resp.raise_for_status()
-        data = resp.json()
-        results = []
-        for item in data.get("keywordList", []):
-            if item.get("relKeyword") in keywords:
-                results.append({
-                    "keyword": item["relKeyword"],
-                    "pcSearch": item.get("monthlyPcQcCnt", 0),
-                    "mobileSearch": item.get("monthlyMobileQcCnt", 0),
-                    "pcClick": item.get("monthlyAvePcClkCnt", 0),
-                    "mobileClick": item.get("monthlyAveMobileClkCnt", 0),
-                    "competition": item.get("compIdx", ""),
-                })
-        return results
-    except Exception as e:
-        print(f"WARNING: 네이버 검색광고 API 실패 — {e}", file=sys.stderr)
-        return None
+    for batch_start in range(0, len(api_keywords), 5):
+        batch = api_keywords[batch_start:batch_start + 5]
+        timestamp = str(int(time.time() * 1000))
+        sign_str = f"{timestamp}.{method}.{uri}"
+        signature = base64.b64encode(
+            hmac.new(secret_key.encode("utf-8"), sign_str.encode("utf-8"), hashlib.sha256).digest()
+        ).decode("utf-8")
+
+        headers = {
+            "X-Timestamp": timestamp,
+            "X-API-KEY": api_key,
+            "X-Customer": customer_id,
+            "X-Signature": signature,
+        }
+        params = {
+            "hintKeywords": ",".join(batch),
+            "showDetail": "1",
+        }
+        try:
+            resp = requests.get(base_url + uri, headers=headers, params=params, timeout=15)
+            resp.raise_for_status()
+            data = resp.json()
+            if not data.get("keywordList"):
+                print(f"WARNING: 네이버 SearchAd 빈 응답 — batch {batch}", file=sys.stderr)
+            for item in data.get("keywordList", []):
+                norm = item.get("relKeyword", "").replace(" ", "")
+                if norm in match_set and norm not in seen:
+                    seen.add(norm)
+                    results.append({
+                        "keyword": item["relKeyword"],
+                        "pcSearch": item.get("monthlyPcQcCnt", 0),
+                        "mobileSearch": item.get("monthlyMobileQcCnt", 0),
+                        "pcClick": item.get("monthlyAvePcClkCnt", 0),
+                        "mobileClick": item.get("monthlyAveMobileClkCnt", 0),
+                        "competition": item.get("compIdx", ""),
+                    })
+        except Exception as e:
+            print(f"WARNING: 네이버 검색광고 API 실패 (batch {batch}) — {e}", file=sys.stderr)
+    return results if results else None
 
 
 def fetch_naver_datalab(keywords):
