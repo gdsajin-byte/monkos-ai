@@ -156,6 +156,7 @@ P0 전팀 진단(500 클릭 0 결제), SEO 사각지대 발견, 광고=오가닉
 | 06/17 | iMac/막내2 | **증명서비스 전수조사 축3+축4** — 어드민 스튜디오 현황(VTON=독립, monk_studio=오프라인 활성, studio.monkos.ai=소스 불명), 아키텍처 맵(kr/jp 90%+ 중복, 인증 3중복제, 크레딧 정본 단일=건강), 인크루트 장애물(X-Frame-Options DENY=iframe 블로커), CF 레거시 전멸 확인 | [REPORT](../../reports/2026-06/REPORT_20260617_iMac막내2_증명서비스_전수조사_축3축4.md) | ✅ |
 | 06/17 | iMac/막내1+2 | 증명서비스 4축 전수조사 — 여성 정장 regression 확정(3/12 d7038907), baby+suit 미검증, KR/JP 코드 90%+ 동일 복제, X-Frame-Options iframe 블로커 발견. 인크루트 납품 선행 요건 도출 | REPORT_20260617 2건 | ✅ |
 | 06/19 | 웹/민아 | **퍼널 진단 — "가격 아님" 확정** (GA4 6/17 preview_view 1→begin_checkout 0→purchase 0, begin_checkout 계측 정상 검증 → 이탈은 preview→checkout 구간=품질/정체성보존 의심, n극소 방향만). + **어드민 idphoto 리뷰 페이지** 구현(원본↔결과물 비교, PR #86 draft) | [COMPLETION](../../reports/2026-06/COMPLETION_20260619_웹민아_IDPHOTO어드민리뷰_퍼널진단.md), `0fb98c47` | ⏳ 배포대기(맥) |
+| 07/21 | M1/민아 | **JP 시장 × idphoto-jp 분석 + 방향성 (작가님 지시)** — 시장: JP=유일 성장형 92,100/월(履歴書写真 60,500 십년 +38%). T3 GSC 28d 실측: **idphoto-jp 노출 2·클릭 0·就活 랜딩 노출 0 = 점유 0%** (기술 결함 아님 — sitemap·robots·랜딩 정상, DA 0 서브도메인+콘텐츠 7장의 구조 문제). 권고: **JP SEO 본대=monkos.ai(ja)·idphoto-jp=전환 말단** 역할 재정의(IDPASS 3층 정합), 실행 4단(ja 취업 클러스터·Bing WMT·말단 최적화·9월 적재 데드라인=27년 就活 시즌 역산). 선결: 레지스트리 채널 재배정 작가님 결정 대기 | [REPORT](../../reports/2026-07/REPORT_20260721_M1민아_JP시장_idphotoJP_분석_방향성.md) | ⏳ 채널 재배정 결정 대기 |
 
 ### Phase 5 — 독립 iOS 앱 + 결제 개편 ⏳ 진행 중 (05/18~) **← 현재**
 
