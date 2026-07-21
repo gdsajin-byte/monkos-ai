@@ -114,6 +114,11 @@ status: active
 | 07/21 | M1/민아 | **정보서비스 카테고리 벤치마크 7유형 + 방향성** — 구조 판독: 전 카테고리 해석층 공백·해자=시계열 적립·원천=커머디티·가격 스펙트럼 빈 칸(도구↔컨설팅 사이). 방향: **"대시보드가 아니라 판독을 판다"** — 수직 판독 리포트(정기 브리프+온디맨드 진단), 테넌트 0→1 경로, L3 즉시 가동=시간 해자, 범용 도구·저가 대시보드 경쟁 금지 | [REPORT](../../reports/2026-07/REPORT_20260721_M1민아_정보서비스_벤치마크_방향성.md) | ✅ |
 | 07/21 | M1/막내1 | **P0 BQ 기반 구축 완료** — dataset+테이블6+뷰2 생성, 수집기 4종(GSC·GA4·Keywords·Trends) 코드+수동 실행 검증, 크론 yml 편성. BQ 실측: GSC 113행, GA4 15행, Ads 9098행, SearchAd 9행, Trends 17행 | [COMPLETION](../../reports/2026-07/COMPLETION_20260721_M1막내1_MARKET_EYE_P0_BQ수집기.md) | ✅ |
 | 07/21 | M1/민아 | **P0 게이트 재검증 — 통과 ✅ (조건 1)** — BQ 독립 실측 전량 정합: 행수 5종 정확 일치(113·15·9,098·9·17), tenant 선탑재·DAY 파티션·데이터셋 분리·실패 가시화(_notify.js) = 제안서 원칙 4/4 구조 확인. GH Secrets 실측: GCP_SA_KEY·NAVER 5종 등록 확인, **GOOGLE_ADS 5종 부재** — 8/1 월배치 전 등록 필요(작가님 조치 3호) | BQ·gh 실측 | ✅ (조건: GH Ads 5종) |
+| 07/21 | M1/쌍아 | **MARKET_EYE 통합 설계서 완료** — 30종 데이터 소스 맵 + BQ 스키마 + 수집기 아키텍처 + 서비스화 경로(L3→L5) + 벤치마크 포지셔닝. P0~P1 비용 ₩0. Meta Marketing API + YouTube P1 편입 | [DESIGN](../../tech/designs/2026-07/DESIGN_20260721_MARKET_EYE_통합설계.md) | ✅ |
+| 07/21 | M1/쌍아 | **GH Secrets GOOGLE_ADS 6종 SM→GH 동기화** — 민아 게이트 조건 해소 | gh secret set × 6 | ✅ |
+| 07/21 | 작가님 | **CR 로그 BQ 싱크 설정** — Cloud Logging → market_eye 실시간 적재 | GCP 콘솔 | ✅ |
+| 07/21 | 작가님 | **billing export BQ 설정** — 표준 사용량 비용 → market_eye 일배치 | GCP 콘솔 | ✅ |
+| 07/21 | M1/쌍아+민아 | **SEA 3국 시장 실측** — ads.sh VN 85K·PH 84K·TH 10K. 개정 서열: JP≥VN≈PH>DE>KR>ID>TH. 교차 법칙 6개국 확장(우산 성장) | 세션로그 | ✅ |
 
 ---
 
