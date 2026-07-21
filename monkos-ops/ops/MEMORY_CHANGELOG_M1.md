@@ -135,6 +135,10 @@
 - **수정**: `MEMORY.md` — 다음 세션 우선순위 섹션 추가 (132→135줄)
 - 변경 사유: 작가님 지시 — 시타델 데이터 기반 페이지 개선 + 백링크 최적화 우선
 
+## 2026-07-21 (M1/쌍아)
+- 신규: `device_4060.md` — 4060 GPU 서버 접속 정보·환경·SSH 키·운용 규칙·BiRefNet 실측
+- MEMORY.md 인덱스 "디바이스: 4060" 섹션 추가 (Tailscale IP·SSH 패턴·RAM 32GB·게임 공존)
+
 ## 2026-07-14 (M1/민아)
 - 신규: `project_remote_control_fleet_plane.md` — RC 옵트인 회귀 대응·관제 플레인·네이밍 규율
 - 신규: `insight_org_harness_business.md` — 조직 하네스 비즈니스 비전(작가님 3차 정식화 + 업계 실증 Hermes/Antigravity)
