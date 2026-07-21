@@ -71,6 +71,7 @@ status: active
 | 07/20 | iMac/쌍아 | **도해 생성기 v5 실물 검증** — GCS tools/gen_brand_diagrams_v5.mjs(7/11 민아, 레포 밖 보관) 실행 확인: kr-passport_ko.webp 라이브 동일(55,128 vs 55,098 bytes, 시각적 일치). 베이스 확정. 5/20 generate-guide-images.js는 구버전 폐기 대상. 남은 갭: ① 인물 팩 교체 파이프라인(crop-engine 랜드마크 → 좌표 자동 산출) ② 레포 편입+경로 파라미터화. 지시서 1건감 | v5 테스트 결과 | ⏳ 지시서 대기 |
 | 07/20 | iMac/막내3 | **도해 생성기 v5 레포 편입 완료** — GCS 2종(v5+ref) → `portal/tools/specs-diagrams/` 편입, 절대경로 4곳 파라미터화(sharp 상대경로·SP/MASTER 환경변수·PORTAL import.meta.dirname), README 작성, 스모크 kr-passport 3장 바이트 동일 확인, references.md 도구 맵 갱신(v5 확정+ref 등재). 도구 3요건(인지·스모크·실패가시화) 1호 | [COMPLETION](../../reports/2026-07/COMPLETION_20260720_iMac막내3_도해v5_레포편입.md) | ✅ |
 | 07/21 | M1/민아 | **7/15 M1 잔재 정리 — 아카이브 누락 1행 복원 + EUEU 잔존 확인** — README 미커밋 +51행 전수 대조: 50행 ARCHIVE_HISTORY 기보존, 유일 미보존 1행(7/15 민아 게이트 판정)을 아카이브 시열 위치에 복원. 부수 실측: eu-passport·eu-resume typeJa 국명 내재 미수정(ja "EUEU" 중복 라이브 잔존) — 마이크로 수정 대상 유지. 7/15 세션로그 2건 지연 커밋 동승 | ARCHIVE_HISTORY.md 보정 | ✅ |
+| 07/21 | M1/민아 | **EUEU 국명 중복 수정 완결 (경로③ 작가님 지시)** — 진단 3층: FAQ 저장 문자열(ko "EU EU"+구버전 영문타입 잔존·ja "EUのEU", 20지점) + 렌더 조합 중복(JSON-LD name·H1·브레드크럼 = countryJa+typeJa) → 근본 = typeJa 국명 내재(428슬러그 중 eu 2건만, 컨벤션 위반 전수 스캔 확정). 데이터 2단 정정(FAQ 20지점 + typeJa 2건), 전후 렌더 diff 부수 변경 0(변경 지점 = 예상 4곳/페이지), seoTitle·정정 FAQ 보존 확인. dev 00157 게이트 → prod 00524 배포, 4URL 실측 중복 0·H1 정상 | 2bd6ed5b·f08daa7f, prod 00524-dnq | ✅ 라이브 |
 
 ---
 
