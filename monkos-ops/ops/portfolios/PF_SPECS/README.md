@@ -70,6 +70,7 @@ status: active
 | 07/19 | iMac/민아 | **guide 보강+동남아 1단계 검증 — 통과(P1 보완 1)** — id/vi 4 URL 현지어 타이틀=실측 롱테일 정조준·인니어 퍼널 실주행 fit 도달(UI 전면 현지어)·hreflang 6언어·EN kr-visa 메타 quick win 번들·프로그램matic 전 슬러그 확장·guide 3언어 429 반영·jest 105. **P1: id/vi 사이트맵 공백**(총합본에만 실렸는데 총합본은 금일 해제 — 언어별 2종 신설+GSC 등록 필요, 다음 배포 전 필수) + P2 typeName 영문 혼입 | [REPORT 검증](../../reports/2026-07/REPORT_20260719_iMac민아_guide보강_동남아1단계_검증.md) | ✅ P1 대기 |
 | 07/20 | iMac/쌍아 | **도해 생성기 v5 실물 검증** — GCS tools/gen_brand_diagrams_v5.mjs(7/11 민아, 레포 밖 보관) 실행 확인: kr-passport_ko.webp 라이브 동일(55,128 vs 55,098 bytes, 시각적 일치). 베이스 확정. 5/20 generate-guide-images.js는 구버전 폐기 대상. 남은 갭: ① 인물 팩 교체 파이프라인(crop-engine 랜드마크 → 좌표 자동 산출) ② 레포 편입+경로 파라미터화. 지시서 1건감 | v5 테스트 결과 | ⏳ 지시서 대기 |
 | 07/20 | iMac/막내3 | **도해 생성기 v5 레포 편입 완료** — GCS 2종(v5+ref) → `portal/tools/specs-diagrams/` 편입, 절대경로 4곳 파라미터화(sharp 상대경로·SP/MASTER 환경변수·PORTAL import.meta.dirname), README 작성, 스모크 kr-passport 3장 바이트 동일 확인, references.md 도구 맵 갱신(v5 확정+ref 등재). 도구 3요건(인지·스모크·실패가시화) 1호 | [COMPLETION](../../reports/2026-07/COMPLETION_20260720_iMac막내3_도해v5_레포편입.md) | ✅ |
+| 07/21 | M1/민아 | **7/15 M1 잔재 정리 — 아카이브 누락 1행 복원 + EUEU 잔존 확인** — README 미커밋 +51행 전수 대조: 50행 ARCHIVE_HISTORY 기보존, 유일 미보존 1행(7/15 민아 게이트 판정)을 아카이브 시열 위치에 복원. 부수 실측: eu-passport·eu-resume typeJa 국명 내재 미수정(ja "EUEU" 중복 라이브 잔존) — 마이크로 수정 대상 유지. 7/15 세션로그 2건 지연 커밋 동승 | ARCHIVE_HISTORY.md 보정 | ✅ |
 
 ---
 
