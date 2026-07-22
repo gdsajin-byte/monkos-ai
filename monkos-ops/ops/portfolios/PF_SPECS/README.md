@@ -72,6 +72,7 @@ status: active
 | 07/20 | iMac/막내3 | **도해 생성기 v5 레포 편입 완료** — GCS 2종(v5+ref) → `portal/tools/specs-diagrams/` 편입, 절대경로 4곳 파라미터화(sharp 상대경로·SP/MASTER 환경변수·PORTAL import.meta.dirname), README 작성, 스모크 kr-passport 3장 바이트 동일 확인, references.md 도구 맵 갱신(v5 확정+ref 등재). 도구 3요건(인지·스모크·실패가시화) 1호 | [COMPLETION](../../reports/2026-07/COMPLETION_20260720_iMac막내3_도해v5_레포편입.md) | ✅ |
 | 07/21 | M1/민아 | **7/15 M1 잔재 정리 — 아카이브 누락 1행 복원 + EUEU 잔존 확인** — README 미커밋 +51행 전수 대조: 50행 ARCHIVE_HISTORY 기보존, 유일 미보존 1행(7/15 민아 게이트 판정)을 아카이브 시열 위치에 복원. 부수 실측: eu-passport·eu-resume typeJa 국명 내재 미수정(ja "EUEU" 중복 라이브 잔존) — 마이크로 수정 대상 유지. 7/15 세션로그 2건 지연 커밋 동승 | ARCHIVE_HISTORY.md 보정 | ✅ |
 | 07/21 | M1/민아 | **EUEU 국명 중복 수정 완결 (경로③ 작가님 지시)** — 진단 3층: FAQ 저장 문자열(ko "EU EU"+구버전 영문타입 잔존·ja "EUのEU", 20지점) + 렌더 조합 중복(JSON-LD name·H1·브레드크럼 = countryJa+typeJa) → 근본 = typeJa 국명 내재(428슬러그 중 eu 2건만, 컨벤션 위반 전수 스캔 확정). 데이터 2단 정정(FAQ 20지점 + typeJa 2건), 전후 렌더 diff 부수 변경 0(변경 지점 = 예상 4곳/페이지), seoTitle·정정 FAQ 보존 확인. dev 00157 게이트 → prod 00524 배포, 4URL 실측 중복 0·H1 정상 | 2bd6ed5b·f08daa7f, prod 00524-dnq | ✅ 라이브 |
+| 07/22 | iMac/쌍아 | **SSR 홈 OfferCatalog 429개 + @graph 구조화 데이터 통합** — 구 index.html 사문화 판정(민아)으로 홈 OfferCatalog 부재 발견. home.js에 SPECS_DATA 전량 429개를 locField 정본 경유 동적 생성. Organization·ProfessionalService 이관, @id 상호참조 배선, EU ko type/seoTitle/seoDescription "유럽연합 EU" 중복 6건 해소. portal 00530-crz | 23e1cd3d, prod 00530-crz | ✅ 라이브 |
 
 ---
 

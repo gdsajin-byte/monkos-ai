@@ -166,6 +166,8 @@ secret env               # SM → .env 일괄 동기화
 | 07/21 | M1/막내3 | **specs SSG PoC 완료** — `scripts/build-specs-poc.js` 래퍼(25줄) → render-specs.js import → kr-passport 정적 HTML 40.1KB 생성 → monk.kr/specs-test/kr-passport/ 배포. SSR과 HTML 구조·SEO 메타·JSON-LD 100% 일치. 차이는 환경변수(T1 리터칭·K_REVISION)·CF 스크립트뿐. 정적 자산 전 200. PSI API 쿼터 초과로 수동 측정 잔여 | [COMPLETION](../../reports/2026-07/COMPLETION_20260721_M1막내3_INFRA_SSG_PoC_monkkr.md) | ✅ |
 | 07/21 | M1/쌍아 | **4060 SSH 연결 확립 + BiRefNet 파일럿 성공** — Tailscale→SSH 키 인증(administrators_authorized_keys). BiRefNet GPU 실측: 로딩 3.6s, 콜드 1,752ms, 웜 982ms, GPU 881MB/8,188MB. 아들 Roblox 게임 중 공존 실증(GPU 합산 21%, RAM 합산 34%). sshd+Tailscale AUTO_START+AC 절전 비활성 확인. 역할 분담 원칙 확정: 4060=무겁고·폴백·비동기 / CR=가볍고·실시간·폴백필수(crop 잔류) | memory/device_4060.md | ✅ |
 | 07/21 | 작가님 | **billing 실측** — 7월 19일간 ₩140K. CR ₩62K+Vertex AI ₩58K+기타 ₩20K. 42% 절감 서사 폐기→본명분=PSI·구조 정돈. billing export BQ 설정 완료 | GCP 콘솔 | ✅ |
+| 07/22 | iMac/쌍아 | **Gemini 이미지 모델 preview→GA 전환 대응** — gemini-3.1-flash-image-preview·gemini-3-pro-image-preview 404. GA 버전(-preview 제거) 실측 200. portal·idphoto-kr·idphoto-jp·studio 5파일 전수 교체 + 4서비스 prod 배포. Daily Briefing 크론 복구(npm ci→npm install) | 1f54d00a·29e06e36 | ✅ |
+| 07/22 | iMac/쌍아 | **4060 Tailscale 오프라인 확인** — last seen 3h ago. Chrome 원격접속 가능(게임 중). Tailscale 프로세스 미실행 → 서비스화(NSSM) 필요 재확인 | — | ⏳ |
 
 ---
 
