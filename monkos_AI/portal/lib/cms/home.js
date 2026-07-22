@@ -11,7 +11,7 @@ const layoutConfigRef = firestore.collection('site_config').doc('layout');
 function esc(s) { return escapeHtml(s); }
 function fmtDate(d) { return d ? d.substring(5, 10).replace('-', '.') : ''; }
 
-function buildOfferCatalog(lang) {
+function buildSpecsOffers(lang) {
   const seen = new Set();
   const items = [];
   for (const [slug, spec] of Object.entries(SPECS_DATA)) {
@@ -22,18 +22,75 @@ function buildOfferCatalog(lang) {
     if (!name) continue;
     items.push({ '@type': 'Offer', itemOffered: { '@type': 'Service', name, url: specsUrl(routeKey, lang) } });
   }
-  return items.length > 0 ? `<script type="application/ld+json">${JSON.stringify({
-    '@context': 'https://schema.org',
+  return items;
+}
+
+function buildStructuredData(lang, faqItems) {
+  const prefix = lang === 'ko' ? '' : `/${lang}`;
+  const domain = 'https://monkos.ai';
+  const canonical = `${domain}${prefix}/`;
+  const specsOffers = buildSpecsOffers(lang);
+  const graph = [];
+
+  graph.push({
     '@type': 'WebSite',
+    '@id': `${domain}/#website`,
     name: 'MONKOS AI',
-    url: 'https://monkos.ai/',
-    hasOfferCatalog: {
+    url: domain + '/',
+    inLanguage: ['ko', 'en', 'ja', 'es', 'id', 'vi'],
+    description: 'AI-powered ID photo service covering 200+ countries. Passport, visa, resume photos with ICAO-compliant specifications.',
+  });
+
+  graph.push({
+    '@type': 'Organization',
+    '@id': `${domain}/#organization`,
+    name: 'MONKOS',
+    alternateName: ['Monk Studio', '몽크사진관', '몽코스'],
+    url: domain,
+    logo: `${domain}/favicon-192.png`,
+    sameAs: ['https://monk.kr'],
+    knowsAbout: [
+      'AI ID photo generation', 'ICAO passport photo standard',
+      'Passport photo specifications by country', 'Face landmark detection for photo cropping',
+      'AI photo retouching', '증명사진 규격', '여권사진', '履歴書 証明写真',
+    ],
+  });
+
+  graph.push({
+    '@type': 'ProfessionalService',
+    '@id': `${domain}/#service`,
+    name: 'MONKOS AI ID Photo Service',
+    serviceType: 'AI ID Photo Service',
+    url: domain,
+    provider: { '@id': `${domain}/#organization` },
+    description: `AI service with ${specsOffers.length} ID photo specs across 200+ countries. Passport, visa, resume, and ID card photos generated to ICAO standards.`,
+  });
+
+  if (specsOffers.length > 0) {
+    graph.push({
       '@type': 'OfferCatalog',
-      name: `${items.length}+ Country ID Photo Specs`,
-      numberOfItems: items.length,
-      itemListElement: items,
-    },
-  })}</script>` : '';
+      '@id': `${domain}/#specs-catalog`,
+      name: `${specsOffers.length} Country ID Photo Specs`,
+      numberOfItems: specsOffers.length,
+      itemListElement: specsOffers,
+    });
+  }
+
+  if (faqItems && faqItems.length > 0) {
+    graph.push({
+      '@type': 'FAQPage',
+      '@id': `${canonical}#faq`,
+      mainEntity: faqItems.map(f => ({
+        '@type': 'Question', name: f.question,
+        acceptedAnswer: { '@type': 'Answer', text: f.answer },
+      })),
+    });
+  }
+
+  return `<script type="application/ld+json">${JSON.stringify({
+    '@context': 'https://schema.org',
+    '@graph': graph,
+  })}</script>`;
 }
 
 const HOME_I18N = {
@@ -460,16 +517,10 @@ export async function renderHome(req, res, forceLang = null) {
         }).join('')
       : `<p class="mk-blog-empty">${esc(d.blogEmpty)}</p>`;
 
-    const faqJsonLd = faqItems.length > 0 ? `<script type="application/ld+json">${JSON.stringify({
-      "@context": "https://schema.org", "@type": "FAQPage",
-      "mainEntity": faqItems.map(f => ({ "@type": "Question", "name": f.question, "acceptedAnswer": { "@type": "Answer", "text": f.answer } })),
-    })}</script>` : '';
-
-    const offerCatalogJsonLd = buildOfferCatalog(lang);
+    const structuredDataJsonLd = buildStructuredData(lang, faqItems);
 
     const html = headHtml(d)
-      + faqJsonLd
-      + offerCatalogJsonLd
+      + structuredDataJsonLd
       + navHtml(d, lang, prefix)
       + heroHtml(d, idphotoUrl)
       + headshotHtml(d, prefix)
