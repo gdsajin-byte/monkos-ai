@@ -27,7 +27,7 @@ jobs:
           node-version: '20'
 
       - name: Install Node dependencies
-        run: npm ci
+        run: npm install --no-audit --no-fund
 
       # --- MARKET_EYE 일배치 (매일) ---
       - name: Collect GSC daily

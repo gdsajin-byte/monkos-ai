@@ -1,0 +1,357 @@
+<title>MONKOS Lemon Squeezy Product Cards</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root {
+    --brand: #6B4EFF;
+    --brand-light: #8B74FF;
+    --surface: #F8F7FC;
+    --text: #1A1625;
+    --muted: #8E85A3;
+    --green: #22C55E;
+    --green-bg: #ECFDF5;
+    --white: #FFFFFF;
+    --card-radius: 32px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: #F0EEF5;
+    padding: 40px 24px;
+    color: var(--text);
+  }
+
+  h1 {
+    text-align: center;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 28px;
+    max-width: 1020px;
+    margin: 0 auto;
+  }
+
+  .card-wrap {
+    display: flex;
+    justify-content: center;
+  }
+
+  .card {
+    width: 600px;
+    height: 600px;
+    background: var(--white);
+    border-radius: var(--card-radius);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 40px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(26,22,37,0.06);
+  }
+
+  /* Subtle brand gradient accent at top */
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 6px;
+    background: linear-gradient(90deg, var(--brand), var(--brand-light));
+  }
+
+  .card-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: var(--surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 28px;
+  }
+
+  .card-icon svg {
+    width: 28px;
+    height: 28px;
+    fill: none;
+    stroke: var(--brand);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .card-credits {
+    font-size: 72px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--text);
+    margin-bottom: 4px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .card-credits-unit {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+    margin-bottom: 24px;
+  }
+
+  .card-price-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .card-price {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .card-discount {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 12px;
+    border-radius: 20px;
+    background: var(--green-bg);
+    color: var(--green);
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+  }
+
+  .card-per {
+    font-size: 15px;
+    color: var(--muted);
+    margin-bottom: 28px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .card-divider {
+    width: 48px;
+    height: 2px;
+    background: var(--surface);
+    border-radius: 1px;
+    margin-bottom: 28px;
+  }
+
+  .card-use {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .card-desc {
+    font-size: 14px;
+    color: var(--muted);
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  /* Single download card — different treatment */
+  .card--single {
+    background: var(--text);
+  }
+  .card--single::before {
+    background: linear-gradient(90deg, var(--brand-light), #A78BFA);
+  }
+  .card--single .card-icon {
+    background: rgba(255,255,255,0.08);
+  }
+  .card--single .card-icon svg {
+    stroke: var(--brand-light);
+  }
+  .card--single .card-credits {
+    color: var(--white);
+  }
+  .card--single .card-credits-unit {
+    color: rgba(255,255,255,0.5);
+  }
+  .card--single .card-price {
+    color: var(--white);
+  }
+  .card--single .card-per {
+    color: rgba(255,255,255,0.45);
+  }
+  .card--single .card-divider {
+    background: rgba(255,255,255,0.1);
+  }
+  .card--single .card-use {
+    color: var(--white);
+  }
+  .card--single .card-desc {
+    color: rgba(255,255,255,0.5);
+  }
+
+  /* Best value badge */
+  .card-badge {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    background: var(--brand);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .card--single .card-badge {
+    background: var(--brand-light);
+  }
+
+  .note {
+    text-align: center;
+    margin-top: 32px;
+    font-size: 13px;
+    color: var(--muted);
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+  }
+</style>
+
+<h1>Lemon Squeezy Product Cards — 600×600</h1>
+
+<div class="grid">
+
+  <!-- Single Download $1.99 -->
+  <div class="card-wrap">
+    <div class="card card--single">
+      <div class="card-badge">Quick Start</div>
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      </div>
+      <div class="card-credits">1</div>
+      <div class="card-credits-unit">ID Photo</div>
+      <div class="card-price-row">
+        <span class="card-price">$1.99</span>
+      </div>
+      <div class="card-per">No signup needed</div>
+      <div class="card-divider"></div>
+      <div class="card-use">Instant download</div>
+      <div class="card-desc">Pay once, get your photo — no account required</div>
+    </div>
+  </div>
+
+  <!-- 40 Credits -->
+  <div class="card-wrap">
+    <div class="card">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+      </div>
+      <div class="card-credits">40</div>
+      <div class="card-credits-unit">Credits</div>
+      <div class="card-price-row">
+        <span class="card-price">$3.90</span>
+        <span class="card-discount">Save 51%</span>
+      </div>
+      <div class="card-per">$0.098 per credit</div>
+      <div class="card-divider"></div>
+      <div class="card-use">4 photos</div>
+      <div class="card-desc">Passport, visa, or headshot — try different styles</div>
+    </div>
+  </div>
+
+  <!-- 80 Credits -->
+  <div class="card-wrap">
+    <div class="card">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <div class="card-credits">80</div>
+      <div class="card-credits-unit">Credits</div>
+      <div class="card-price-row">
+        <span class="card-price">$6.90</span>
+        <span class="card-discount">Save 57%</span>
+      </div>
+      <div class="card-per">$0.086 per credit</div>
+      <div class="card-divider"></div>
+      <div class="card-use">8 photos</div>
+      <div class="card-desc">Enough for a couple — passport + visa + headshot each</div>
+    </div>
+  </div>
+
+  <!-- 130 Credits -->
+  <div class="card-wrap">
+    <div class="card">
+      <div class="card-badge">Popular</div>
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      </div>
+      <div class="card-credits">130</div>
+      <div class="card-credits-unit">Credits</div>
+      <div class="card-price-row">
+        <span class="card-price">$9.90</span>
+        <span class="card-discount">Save 62%</span>
+      </div>
+      <div class="card-per">$0.076 per credit</div>
+      <div class="card-divider"></div>
+      <div class="card-use">13 photos</div>
+      <div class="card-desc">Share with family — everyone's passport &amp; visa sorted</div>
+    </div>
+  </div>
+
+  <!-- 420 Credits -->
+  <div class="card-wrap">
+    <div class="card">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+      </div>
+      <div class="card-credits">420</div>
+      <div class="card-credits-unit">Credits</div>
+      <div class="card-price-row">
+        <span class="card-price">$26.90</span>
+        <span class="card-discount">Save 68%</span>
+      </div>
+      <div class="card-per">$0.064 per credit</div>
+      <div class="card-divider"></div>
+      <div class="card-use">42 photos</div>
+      <div class="card-desc">Small office or team — bulk ID &amp; profile photos</div>
+    </div>
+  </div>
+
+  <!-- 750 Credits -->
+  <div class="card-wrap">
+    <div class="card">
+      <div class="card-badge">Best Value</div>
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      </div>
+      <div class="card-credits">750</div>
+      <div class="card-credits-unit">Credits</div>
+      <div class="card-price-row">
+        <span class="card-price">$39.90</span>
+        <span class="card-discount">Save 73%</span>
+      </div>
+      <div class="card-per">$0.053 per credit</div>
+      <div class="card-divider"></div>
+      <div class="card-use">75 photos</div>
+      <div class="card-desc">Business volume — HR onboarding, agency, studio use</div>
+    </div>
+  </div>
+
+</div>
+
+<p class="note">
+  Each card is 600×600px at actual size — right-click → Save Image or screenshot each card individually for Lemon Squeezy upload.<br>
+  Credits never expire · 10 credits = 1 AI photo (ID, visa, passport, or headshot)
+</p>
