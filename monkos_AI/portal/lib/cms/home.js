@@ -1,7 +1,7 @@
 import { firestore, log, parseJsonBody } from '../shared/config.js';
 import { requireAdmin } from './admin-auth.js';
 import { escapeHtml } from './render-shell.js';
-import { SPECS_DATA, REDIRECT_MAP } from './render-specs.js';
+import { SPECS_DATA, REDIRECT_MAP, locField } from './render-specs.js';
 import { specsUrl } from './specs-url.js';
 
 const blogCollection = firestore.collection('blog_posts');
@@ -18,9 +18,7 @@ function buildOfferCatalog(lang) {
     const routeKey = REDIRECT_MAP[slug];
     if (!routeKey || seen.has(routeKey)) continue;
     seen.add(routeKey);
-    const name = lang === 'ja' ? `${spec.countryJa || spec.countryEn || ''} ${spec.typeJa || spec.typeEn || ''}`.trim()
-               : lang === 'en' ? `${spec.countryEn || ''} ${spec.typeEn || ''}`.trim()
-               : `${spec.country || ''} ${spec.type || ''}`.trim();
+    const name = `${locField(spec, 'country', lang) || ''} ${locField(spec, 'type', lang) || ''}`.trim();
     if (!name) continue;
     items.push({ '@type': 'Offer', itemOffered: { '@type': 'Service', name, url: specsUrl(routeKey, lang) } });
   }

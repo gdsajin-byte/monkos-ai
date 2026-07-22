@@ -183,7 +183,7 @@ if (!ROUTE_MAP['resume/cn'] && SPECS_DATA['cn-resume-1cun']) {
 // V2 로컬이던 것을 모듈 레벨로 승격 — V1 레거시 경로(721·893)도 참조 (2026-07-16 fmtV2 미정의 500 핫픽스)
 const fmtV2 = (tpl, vars) => String(tpl).replace(/\{(\w+)\}/g, (m, k) => (vars[k] != null ? vars[k] : m));
 
-function locField(spec, field, lang) {
+export function locField(spec, field, lang) {
   if (lang === 'ko') return spec[field];
   const suffix = lang.charAt(0).toUpperCase() + lang.slice(1);
   const val = spec[field + suffix];
