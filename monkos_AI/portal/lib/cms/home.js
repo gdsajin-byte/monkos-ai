@@ -1,6 +1,8 @@
 import { firestore, log, parseJsonBody } from '../shared/config.js';
 import { requireAdmin } from './admin-auth.js';
 import { escapeHtml } from './render-shell.js';
+import { SPECS_DATA, REDIRECT_MAP } from './render-specs.js';
+import { specsUrl } from './specs-url.js';
 
 const blogCollection = firestore.collection('blog_posts');
 const siteConfigRef = firestore.collection('site_config').doc('main');
@@ -8,6 +10,33 @@ const layoutConfigRef = firestore.collection('site_config').doc('layout');
 
 function esc(s) { return escapeHtml(s); }
 function fmtDate(d) { return d ? d.substring(5, 10).replace('-', '.') : ''; }
+
+function buildOfferCatalog(lang) {
+  const seen = new Set();
+  const items = [];
+  for (const [slug, spec] of Object.entries(SPECS_DATA)) {
+    const routeKey = REDIRECT_MAP[slug];
+    if (!routeKey || seen.has(routeKey)) continue;
+    seen.add(routeKey);
+    const name = lang === 'ja' ? (spec.nameJa || spec.nameEn || spec.name)
+               : lang === 'en' ? (spec.nameEn || spec.name)
+               : spec.name;
+    if (!name) continue;
+    items.push({ '@type': 'Offer', itemOffered: { '@type': 'Service', name, url: specsUrl(routeKey, lang) } });
+  }
+  return items.length > 0 ? `<script type="application/ld+json">${JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'MONKOS AI',
+    url: 'https://monkos.ai/',
+    hasOfferCatalog: {
+      '@type': 'OfferCatalog',
+      name: `${items.length}+ Country ID Photo Specs`,
+      numberOfItems: items.length,
+      itemListElement: items,
+    },
+  })}</script>` : '';
+}
 
 const HOME_I18N = {
   ko: {
@@ -438,8 +467,11 @@ export async function renderHome(req, res, forceLang = null) {
       "mainEntity": faqItems.map(f => ({ "@type": "Question", "name": f.question, "acceptedAnswer": { "@type": "Answer", "text": f.answer } })),
     })}</script>` : '';
 
+    const offerCatalogJsonLd = buildOfferCatalog(lang);
+
     const html = headHtml(d)
       + faqJsonLd
+      + offerCatalogJsonLd
       + navHtml(d, lang, prefix)
       + heroHtml(d, idphotoUrl)
       + headshotHtml(d, prefix)
