@@ -18,9 +18,9 @@ function buildOfferCatalog(lang) {
     const routeKey = REDIRECT_MAP[slug];
     if (!routeKey || seen.has(routeKey)) continue;
     seen.add(routeKey);
-    const name = lang === 'ja' ? (spec.nameJa || spec.nameEn || spec.name)
-               : lang === 'en' ? (spec.nameEn || spec.name)
-               : spec.name;
+    const name = lang === 'ja' ? `${spec.countryJa || spec.countryEn || ''} ${spec.typeJa || spec.typeEn || ''}`.trim()
+               : lang === 'en' ? `${spec.countryEn || ''} ${spec.typeEn || ''}`.trim()
+               : `${spec.country || ''} ${spec.type || ''}`.trim();
     if (!name) continue;
     items.push({ '@type': 'Offer', itemOffered: { '@type': 'Service', name, url: specsUrl(routeKey, lang) } });
   }
