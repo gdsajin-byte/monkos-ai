@@ -38,6 +38,7 @@ function buildStructuredData(lang, faqItems) {
     name: 'MONKOS AI',
     url: domain + '/',
     inLanguage: ['ko', 'en', 'ja', 'es', 'id', 'vi'],
+    publisher: { '@id': `${domain}/#organization` },
     description: 'AI-powered ID photo service covering 200+ countries. Passport, visa, resume photos with ICAO-compliant specifications.',
   });
 
@@ -63,6 +64,7 @@ function buildStructuredData(lang, faqItems) {
     serviceType: 'AI ID Photo Service',
     url: domain,
     provider: { '@id': `${domain}/#organization` },
+    hasOfferCatalog: specsOffers.length > 0 ? { '@id': `${domain}/#specs-catalog` } : undefined,
     description: `AI service with ${specsOffers.length} ID photo specs across 200+ countries. Passport, visa, resume, and ID card photos generated to ICAO standards.`,
   });
 
@@ -80,6 +82,7 @@ function buildStructuredData(lang, faqItems) {
     graph.push({
       '@type': 'FAQPage',
       '@id': `${canonical}#faq`,
+      isPartOf: { '@id': `${domain}/#website` },
       mainEntity: faqItems.map(f => ({
         '@type': 'Question', name: f.question,
         acceptedAnswer: { '@type': 'Answer', text: f.answer },
