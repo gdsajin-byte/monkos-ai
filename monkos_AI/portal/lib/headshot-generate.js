@@ -10,8 +10,8 @@ const imageAI = new GoogleGenAI({
 });
 
 const PROFILE_MODEL_MAP = {
-  'nano-banana-2':   'gemini-3.1-flash-image-preview',
-  'nano-banana-pro': 'gemini-3-pro-image-preview',
+  'nano-banana-2':   'gemini-3.1-flash-image',
+  'nano-banana-pro': 'gemini-3-pro-image',
 };
 
 const PURPOSE_ASPECT_MAP = {

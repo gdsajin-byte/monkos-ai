@@ -171,8 +171,8 @@ function extractBase64(base64Input) {
 }
 
 const MODEL_MAP = {
-  'nano-banana-2':   'gemini-3.1-flash-image-preview',
-  'nano-banana-pro': 'gemini-3-pro-image-preview',
+  'nano-banana-2':   'gemini-3.1-flash-image',
+  'nano-banana-pro': 'gemini-3-pro-image',
   'gemini-2.5-flash': 'gemini-2.5-flash-image',
 };
 

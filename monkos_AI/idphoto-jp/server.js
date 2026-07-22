@@ -3,7 +3,7 @@
  *
  * 日本市場特化 AI 証明写真サービス
  *   a) Gemini Live コーチング — 撮影前リアルタイムガイド (日本語)
- *   b) Imagen I2I 生成 — 証明写真変換 (gemini-3-pro-image-preview)
+ *   b) Imagen I2I 生成 — 証明写真変換 (gemini-3-pro-image)
  *
  * 認証: ハイブリッド (Vertex AI ADC + Google AI Studio API Key)
  * Cloud Run デプロイ用 (HTTP — SSLはCloud Run処理)
@@ -46,7 +46,7 @@ function log(msg, severity = 'INFO', meta = {}) {
 }
 
 // === Vertex AI ADC 統合認証 ===
-// gemini-3-pro-image-preview Vertex AI 登録確認 (2026-06-19)
+// gemini-3-pro-image Vertex AI 登録確認 (2026-06-19, 07-22 GA転換)
 // AI Studio API Key 依存除去 → 全モデル Vertex AI ADCに統合
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
 
@@ -624,7 +624,7 @@ app.post('/api/idgen', async (req, res) => {
     const instruction = buildPromptV5(body);
 
     const response = await imageAI.models.generateContent({
-      model: 'gemini-3-pro-image-preview',
+      model: 'gemini-3-pro-image',
       contents: [{ role: 'user', parts: [
         { inlineData: { mimeType: 'image/jpeg', data: base64Data } },
         { text: instruction },
@@ -809,7 +809,7 @@ const httpServer = app.listen(PORT, '0.0.0.0', () => {
   log(`プロジェクト: ${PROJECT_ID}`);
   log(`リージョン: ${LOCATION}`);
   log(`認証: ハイブリッド (ADC + API Key)`);
-  log(`Imagen I2I: アクティブ (gemini-3-pro-image-preview, API Key)`);
+  log(`Imagen I2I: アクティブ (gemini-3-pro-image, API Key)`);
   log('事前分析: アクティブ (gemini-2.5-flash)');
   log('='.repeat(60));
   log('エンドポイント:');

@@ -184,8 +184,8 @@ const PURPOSE_PROMPT_MAP = {
 };
 
 const PROFILE_MODEL_MAP = {
-  'nano-banana-2':   'gemini-3.1-flash-image-preview',
-  'nano-banana-pro': 'gemini-3-pro-image-preview',
+  'nano-banana-2':   'gemini-3.1-flash-image',
+  'nano-banana-pro': 'gemini-3-pro-image',
 };
 
 // === Imagen 프롬프트 (idphoto-kr 정본 — 수정 금지) ===
@@ -503,7 +503,7 @@ app.post('/api/idgen', async (req, res) => {
     const instruction = buildPromptV5(body);
 
     const response = await imageAI.models.generateContent({
-      model: 'gemini-3-pro-image-preview',
+      model: 'gemini-3-pro-image',
       contents: [{ role: 'user', parts: [
         { inlineData: { mimeType: 'image/jpeg', data: base64Data } },
         { text: instruction },
