@@ -523,3 +523,7 @@
 
 ## 2026-07-21 (iMac/민아)
 - `project_chulchang_isolation_by_design.md` 신설 — 작가님 확정: 철창이 레포 미편입=의도된 격리(발산 공간 보존, 편입 제안 반려 근거). MEMORY.md 인덱스 1행 추가.
+
+## 2026-07-23 (iMac/민아)
+- MEMORY.md 인덱스 변경 없음.
+- `project_ga4_test_traffic_contamination.md` How-to-apply 확장 — "GA4 한정 아님: 서버 로그·크레딧·GCS 전 지표 동일. 실수요 판정 전 UID→credits.sh user 대조 필수" (금일 재방문 실유저 오판 재발 반영).

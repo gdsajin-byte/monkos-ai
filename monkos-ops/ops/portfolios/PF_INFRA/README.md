@@ -168,6 +168,9 @@ secret env               # SM → .env 일괄 동기화
 | 07/21 | 작가님 | **billing 실측** — 7월 19일간 ₩140K. CR ₩62K+Vertex AI ₩58K+기타 ₩20K. 42% 절감 서사 폐기→본명분=PSI·구조 정돈. billing export BQ 설정 완료 | GCP 콘솔 | ✅ |
 | 07/22 | iMac/쌍아 | **Gemini 이미지 모델 preview→GA 전환 대응** — gemini-3.1-flash-image-preview·gemini-3-pro-image-preview 404. GA 버전(-preview 제거) 실측 200. portal·idphoto-kr·idphoto-jp·studio 5파일 전수 교체 + 4서비스 prod 배포. Daily Briefing 크론 복구(npm ci→npm install) | 1f54d00a·29e06e36 | ✅ |
 | 07/22 | iMac/쌍아 | **4060 Tailscale 오프라인 확인** — last seen 3h ago. Chrome 원격접속 가능(게임 중). Tailscale 프로세스 미실행 → 서비스화(NSSM) 필요 재확인 | — | ⏳ |
+| 07/23 | iMac/막내1 | **4060 자체 서빙 Phase 1–3 완료** — CF Tunnel(`matte.monkos.ai`→4060-matte) + BiRefNet FastAPI 서버 + NSSM 서비스 3종(Tailscale/cloudflared-tunnel/birefnet-matte) 전 Running+Automatic. E2E 실측 ~1.3초(600x800, 웜). VRAM 861MB/8,188MB | [COMPLETION](../../reports/2026-07/COMPLETION_20260723_iMac막내1_INFRA_4060_자체서빙세팅_Phase1-3.md) | ✅ |
+| 07/23 | iMac/민아 | **Phase 4 검수+prod E2E 카나리 — 게이트 ③ 폐쇄** — 배선 커밋 `5249a220` 검수 통과(X-Matte-Secret·SM 주입·체인 순서), 4060 `/api/matte` 403 게이트 실측, T0 카나리 실행 → `[Matte] via=matte.monkos.ai 0.456s` prod 로그 확정. 매팅 원가 ₩0 체제 가동. 잔여: RunPod 폴백 실발동 미실증·비백색국 케이스 | 세션로그 2026-07-23_iMac_민아 | ✅ |
+| 07/23 | iMac/쌍아 | **4060 A세팅 + Phase 4 배선 + prod 실전 통과** — Wi-Fi 절전 비활성·고성능·자동 로그인. 4060 서버 프로토콜 호환 업데이트(/api/matte·bgColor·{success,image,meta}). matte.js X-Matte-Secret 헤더·deploy.sh 체인 갱신. 작가님 ar-passport T0 via=4060 0.419s 통과. T0 매팅 원가 ₩0 체제. portal 00531-s5q | 5249a220, prod 00531 | ✅ |
 
 ---
 
