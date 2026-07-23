@@ -1,3 +1,7 @@
+> 🔀 **[2026-07-24 리다이렉트] 이 문서는 구세대(2026-02-19) 참조본이다 — 정본 아님.**
+> 시크릿 정본 = GCP Secret Manager, 메타 정본 = [SECRET_INVENTORY.md](SECRET_INVENTORY.md), 인지 = `scripts/secret.sh map`.
+> 본 문서는 읽기 전용 보존(삭제 지시 없음). 갱신 금지.
+
 # MONKOS 인증 정보 인벤토리
 
 > ⚠️ 이 문서에는 키 값을 절대 기재하지 않습니다. 위치와 용도만 기록합니다.

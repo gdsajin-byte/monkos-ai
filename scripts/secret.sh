@@ -53,6 +53,7 @@ usage() {
   echo "  ${GREEN}secret get${NC} <NAME>    시크릿 값 조회"
   echo "  ${GREEN}secret list${NC}          등록된 시크릿 전체 목록"
   echo "  ${GREEN}secret check${NC} <NAME>  존재 여부 + 최신 버전 확인"
+  echo "  ${GREEN}secret map${NC} [NAME]    인지 1콜: 존재·상태·용도·소비처 (무인자=전체 맵+미등재 적발)"
   echo "  ${GREEN}secret env${NC}           SM → .env 일괄 동기화"
   exit 1
 }
@@ -233,12 +234,55 @@ cmd_env() {
   echo -e "갱신 ${GREEN}${UPDATED}${NC}개 / 동일 ${SKIPPED}개"
 }
 
+# map — 시크릿 인지 1콜: 존재·상태·용도·소비처를 한 번에 (2026-07-24 작가님 지시 "인지 코드화")
+# 에이전트 규약: "키가 있네없네" 판단은 grep/문서 탐색이 아니라 `secret map <NAME>` 1콜로 한다.
+cmd_map() {
+  local NAME="$1"
+  if [ -z "$NAME" ]; then
+    # 전체 요약: SM 실측 + 인벤토리 등재 여부
+    echo -e "${BLUE}=== 시크릿 전체 맵 (SM 실측 기준) ===${NC}"
+    while IFS=$'\t' read -r n created; do
+      local reg="⚠️ 인벤 미등재"
+      grep -q "$n" "$INVENTORY" 2>/dev/null && reg="등재"
+      printf "%-36s %s  %s\n" "$n" "${created%%T*}" "$reg"
+    done < <(gcloud secrets list --project="$PROJECT" --format="value(name,createTime)" 2>/dev/null)
+    return
+  fi
+  echo -e "${BLUE}=== $NAME ===${NC}"
+  # 1) SM 실측: 존재 + 최신 버전 상태
+  local desc
+  desc=$(gcloud secrets describe "$NAME" --project="$PROJECT" --format="value(createTime)" 2>/dev/null)
+  if [ -z "$desc" ]; then
+    echo -e "${RED}✗ SM에 없음${NC} — 등록 필요 시: 작가님에게 \`secret add $NAME\` 요청 (에이전트 값 접촉 금지)"
+  else
+    echo -e "${GREEN}✓ SM 존재${NC} (생성 ${desc%%T*})"
+    gcloud secrets versions list "$NAME" --project="$PROJECT" --limit=2 \
+      --format="value(name.basename(),state,createTime)" 2>/dev/null \
+      | while IFS=$'\t' read -r v st ct; do echo "   버전 $v: $st (${ct%%T*})"; done
+  fi
+  # 2) 용도 (인벤토리 행 — SM 라벨 정본화 전까지 문서 조인)
+  local row
+  row=$(grep -m1 "| $NAME |" "$INVENTORY" 2>/dev/null)
+  if [ -n "$row" ]; then
+    echo "   용도: $(echo "$row" | awk -F'|' '{print $4}' | sed 's/^ *//;s/ *$//')"
+    echo "   비고: $(echo "$row" | awk -F'|' '{print $6}' | sed 's/^ *//;s/ *$//' | cut -c1-90)"
+  else
+    echo -e "   ${YELLOW}⚠️ 인벤토리 미등재${NC} — 등재 필요 (메타만)"
+  fi
+  # 3) 소비처 (레포 실측)
+  echo "   소비처:"
+  (cd "$PROJECT_ROOT" 2>/dev/null && git grep -ln "$NAME" -- '*.sh' '*.js' '*.py' '*.yaml' '*.md' 2>/dev/null \
+    | grep -v -e node_modules -e SECRET_INVENTORY -e sessions/ -e reports/ -e briefings/ | head -6 \
+    | sed 's/^/     - /')
+}
+
 # 메인
 case "${1:-}" in
   add)   cmd_add "$2" ;;
   get)   cmd_get "$2" ;;
   list)  cmd_list ;;
   check) cmd_check "$2" ;;
+  map)   cmd_map "${2:-}" ;;
   env)   cmd_env ;;
   -h|--help|help) usage ;;
   *)     cmd_interactive ;;

@@ -82,6 +82,7 @@ secret check <NAME>                 # 존재 + 버전만 확인
 3. `secret env` 로 .env 동기화 (해당 시)
 
 ## "없다"고 보고하기 전에
+- **시크릿 인지 = `scripts/secret.sh map <NAME>` 1콜** (2026-07-24 신설): 존재·버전 상태·용도·소비처가 한 번에 나온다. grep·문서 탐색으로 있네없네 판단 금지. 무인자 실행 = 전체 맵 + 인벤 미등재 적발.
 - **키가 없다/환경변수가 없다 → 먼저 `secret check <NAME>` 또는 SECRET_INVENTORY.md를 Read하라**
 - **SA 권한/GSC 소유권이 "미부여"로 의심될 때 → SECRET_INVENTORY.md SA 섹션 Read하라.** monk-image-engine SA는 GSC sc-domain:monkos.ai 소유자 등록 + roles/indexing.publisher 보유 확정(2026-06-07). 색인 멈춤은 권한이 아니라 쿼터·폐기 엔드포인트·코드를 보라.
 - Cloud Run 환경변수는 deploy.sh가 주입. 콘솔에서 직접 설정된 것도 있음 (AUTH_SECRET 등)

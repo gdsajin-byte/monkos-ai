@@ -65,7 +65,7 @@
 | monk_relations | MCP | `scripts/retrieval/` | `rules/mcp-tools.md` |
 | monk_stats | MCP | `scripts/retrieval/` | `rules/mcp-tools.md` |
 | cdp.sh + cdp_utils.py | 인프라 | `scripts/tools/` | `skills/cdp-browser.md` |
-| secret | 인프라 | `scripts/tools/` | `rules/data-access.md` |
+| secret | 인프라 | `scripts/secret.sh` (07-24 위치 오기 교정) | `rules/data-access.md` |
 | credits.sh | CLI | `scripts/` | `rules/data-access.md` |
 | mk-push.sh | CLI | `scripts/` | — |
 | ads.sh | CLI | `scripts/` | — |
