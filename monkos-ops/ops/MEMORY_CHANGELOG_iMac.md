@@ -530,3 +530,6 @@
 
 ## 2026-07-23 (iMac/쌍아 오후)
 - `feedback_opus46_translation_role.md` 신설 — 쌍아(Opus 4.6)가 민아(Fable 5)의 고밀도 분석을 작가님에게 번역·요약하는 역할. 작가님 직접 언급. MEMORY.md 인덱스 1행 추가.
+
+## [2026-07-24 05:44 KST] iMac/민아
+- 신설: `feedback_verify_consumer_check.md` — 검증 게이트 "공용 정본 수정 시 대상 표면의 실소비 확인" (7/24 홈 navHtml 이원화 자기정정에서 도출). MEMORY.md 운영 교훈 섹션 1행 추가.

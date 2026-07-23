@@ -102,7 +102,7 @@ status: 현행
 | 27 | X_ACCESS_TOKEN_SECRET | X OAuth 시크릿 | n8n | |
 | 28 | X_CONSUMER_KEY | X API 컨슈머 키 | n8n | |
 | 29 | X_CONSUMER_SECRET | X API 컨슈머 시크릿 | n8n | |
-| 30 | N8N_API_KEY | n8n 자동화 API | Docker 4060 | ⚠️ 2026-06-02 iMac .env엔 **부재** — 4060 전용 추정. 위치 재확인 필요 — **07-24 monk-n8n 서비스 삭제로 사문화(폐기 후보)** |
+| 30 | N8N_API_KEY | n8n 자동화 API | Docker 4060 | ⚠️ 2026-06-02 iMac .env엔 **부재** — 4060 전용 추정. 위치 재확인 필요 — **07-24 monk-n8n 서비스 삭제로 사문화 → 버전 1 disable 완료(가역). destroy는 작가님 재확인 후** |
 | 31 | TX_API_KEY | D1 거래 원장 인증 | portal, MONK_kr | |
 | 32 | TX_API_URL | D1 거래 원장 엔드포인트 | portal, MONK_kr | |
 | 33 | REMOVEBG_API_KEY | remove.bg 배경 제거 API | 크롭앱, 스펙스, Android | ⭐ 2026-05-25 추가. 무료 50장/월 |
