@@ -112,6 +112,7 @@ status: 현행
 | 37 | RUNPOD_API_KEY | RunPod Serverless API 인증 | monkos-matte (BiRefNet 서빙) | ⭐ 2026-07-07 신설. 키명 monkos-matte, R/W, RunPod T4 flex 서빙용 |
 | 38 | MATTE_SECRET | 4060 BiRefNet 서버 인증 토큰 | 4060 matte-server, portal | ⭐ 2026-07-23 신설. X-Matte-Secret 헤더로 CR→4060 인증. 4060 NSSM env + SM 등록 |
 | 39 | CF_PAGES_TOKEN | CF Pages 배포 API 토큰 | 4060 빌드→CF Pages deploy | ⭐ 2026-07-23 신설. Pages:Edit + Workers Scripts:Edit 스코프. SSG 빌드 파이프라인용 |
+| 40 | PAGESPEED_API_KEY | PageSpeed Insights API 키 | 대시보드/성능 측정 | 2026-07-21 생성분 — **07-24 감사에서 미등재 적발, 소급 등재** |
 
 ### B. 루트 .env (로컬 전용 — 2개)
 
@@ -306,14 +307,29 @@ status: 현행
 | **4060** | desktop-70gomar | 100.118.31.62 | Windows | 작가님 | GPU 서버 (WSL) |
 | **iPhone** | iphone181 | 100.115.57.53 | iOS | 작가님 | 모바일 |
 
+### 권한 매트릭스 — SA·임퍼소네이션·키 상태 (2026-07-24 감사 신설, 갱신 의무: IAM 변경 시 동반)
+
+> 에이전트 인지 정본: 권한 관련 판단 전 이 표를 Read. 실측 갱신: `scripts/tools/sa_audit.sh`
+
+| 주체 | 프로젝트 롤 | 키 상태 | 임퍼소네이션 | 용도 |
+|------|------------|---------|-------------|------|
+| monk-image-engine SA | aiplatform.user · datastore.owner/user · bq.dataEditor/jobUser · storage.objectAdmin · secretAccessor · **tokenCreator(프로젝트 — ⚠️축소 대상)** | 사용자 키 0 (키리스 ✓) | ← gdsajin (07-24, GSC 쓰기용) | **전 Cloud Run 런타임(10서비스)** + GSC 소유자 |
+| yong-a-orchestrator SA | aiplatform.user · bq.dataEditor/jobUser · storage.objectAdmin | **영구 키 1개** (06-10 생성, 무만료 — ⚠️로테이션 부재). SM `GCP_SA_KEY` 정본 + 로컬 600 | ← gdsajin (7/14 합의) | MCP·에이전트 오케스트레이션. GSC=전체 사용자(읽기) |
+| compute default SA | **roles/editor (⚠️광권한)** | — | — | **monk-n8n 런타임 (⚠️교체 1순위)** |
+| appspot SA | aiplatform.user (⚠️미사용 추정 — 회수 후보) | — | — | App Engine legacy |
+| user gdsajin | owner · cloudbuild.editor | — | → yong-a · image-engine | 작가님 (1인 운영 루트) |
+
+- GSC 쓰기(사이트맵)는 `gsc_submit.sh` 경유 (image-engine 임퍼소네이션). MCP는 읽기 전용.
+- 순찰 규약: 이 표와 실측(sa_audit.sh) 불일치 발견 시 즉시 보고 + 표 갱신.
+
 ### SSH 접속 정보
 
 | 약칭 | 접속 명령 | User | 인증 방식 | 설정 위치 |
 |------|----------|------|----------|----------|
 | **M1** | `ssh m1` | macmini | SSH 키 | ~/.ssh/config |
-| **M2** | `sshm2` / `ssh m2` | kku | 비밀번호 (1234) | ~/.bash_profile + ~/.ssh/config |
+| **M2** | `sshm2` / `ssh m2` | kku | 비밀번호 (값 기재 금지 — 07-24 마스킹, SSH 키 전환 권고) | ~/.bash_profile + ~/.ssh/config |
 | **M4** | `ssh m4` | hansonngyi | 비밀번호 | ~/.ssh/config |
-| **4060** | `ssh4060` / `ssh 4060` | smuse73 | 비밀번호 (1234) — 2026-06-03 변경(akrso4060→1234, M2와 통일). SSH 키 인증 병행 | ~/.bash_profile + ~/.ssh/config |
+| **4060** | `ssh4060` / `ssh 4060` | smuse73 | 비밀번호 (값 기재 금지 — 07-24 마스킹, 구값 이력 포함 소거) + SSH 키 인증 병행 | ~/.bash_profile + ~/.ssh/config |
 
 ### 원격 빌드 파이프라인 (5/13 확립)
 
