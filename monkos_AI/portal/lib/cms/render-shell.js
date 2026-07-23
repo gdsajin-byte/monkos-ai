@@ -82,7 +82,8 @@ ${extra}
   --card-bg: #ffffff;
   --success: #34d399;
 }
-html, body { overflow-x: hidden; }
+/* iOS Safari는 body의 overflow-x:hidden을 무시하고 캔버스를 확장한다(가로 팬 유발) — clip은 스크롤 컨테이너를 만들지 않고 차단 */
+html, body { overflow-x: hidden; overflow-x: clip; }
 body {
   font-family: 'Pretendard', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
   background: var(--bg);
@@ -109,8 +110,16 @@ a:hover { color: var(--accent2); }
 .header-nav a {
   padding: 6px 14px; border-radius: 7px; font-size: 13px;
   color: #8892b4; text-decoration: none; transition: all 0.15s;
+  white-space: nowrap;
 }
 .header-nav a:hover { background: rgba(255,255,255,0.07); color: #f0f2ff; }
+/* 모바일: 네비 랩 허용 — 항목 잘림·캔버스 확장 없이 전 항목 노출 (2026-07-24 모바일 잘림 수선) */
+@media (max-width: 640px) {
+  .header-top { flex-wrap: wrap; height: auto; min-height: 50px; padding: 8px 12px; row-gap: 2px; }
+  .header-nav { flex-wrap: wrap; }
+  .header-nav a { padding: 5px 9px; font-size: 12.5px; }
+  .logo { font-size: 13px; }
+}
 .header-cta {
   padding: 7px 18px; border-radius: 8px; font-size: 13px; font-weight: 700;
   background: var(--accent); color: #fff; text-decoration: none; transition: opacity 0.15s;

@@ -76,4 +76,15 @@ export const BLOG_REDIRECTS = {
   '/en/blog/korean-vs-japanese-interview-makeup-heres-how-they-differ': '/en/blog', // FIXME: 살아있는 대응 글 없음 (2026-07-05 대사 — EN 면접 메이크업 한일비교 글 부재)
   '/en/blog/id-photo-job-application-photo-makeup-for-each-skin-tone': '/en/blog', // FIXME: 살아있는 대응 글 없음 (2026-07-05 대사 — EN 톤별 메이크업 글 부재)
   // 주: GSC 404 '/blog/증명사진-취업사진-메이크업-톤별로-...'(URL인코딩)은 기존 키 존재 — 위 타깃 교정으로 해소됨
+
+  // === vol36 안경 클러스터 문 통합 (2026-07-24 ORDER 모바일컨테이너_블로그서식 건2) ===
+  // can-i-wear-glasses-for-my-resume-photo(3언어)는 vol36과 동일 주제 중복 doc(4/28 생성, 구서식)
+  // → 정본 vol36으로 301 통합 + Firestore unpublish (scripts/fix_vol36_cluster.js).
+  // 접미사형(-kr/-en/-ja)도 명시 등재 — 일반 스트립 규칙 경유 시 2홉 체인 방지.
+  '/blog/can-i-wear-glasses-for-my-resume-photo':        '/blog/vol36',
+  '/en/blog/can-i-wear-glasses-for-my-resume-photo':     '/en/blog/vol36',
+  '/ja/blog/can-i-wear-glasses-for-my-resume-photo':     '/ja/blog/vol36',
+  '/blog/can-i-wear-glasses-for-my-resume-photo-kr':     '/blog/vol36',
+  '/en/blog/can-i-wear-glasses-for-my-resume-photo-en':  '/en/blog/vol36',
+  '/ja/blog/can-i-wear-glasses-for-my-resume-photo-ja':  '/ja/blog/vol36',
 };
