@@ -329,7 +329,7 @@ status: 현행
 | **M1** | `ssh m1` | macmini | SSH 키 | ~/.ssh/config |
 | **M2** | `sshm2` / `ssh m2` | kku | 비밀번호 (값 기재 금지 — 07-24 마스킹, SSH 키 전환 권고) | ~/.bash_profile + ~/.ssh/config |
 | **M4** | `ssh m4` | hansonngyi | 비밀번호 | ~/.ssh/config |
-| **4060** | `ssh4060` / `ssh 4060` | smuse73 | 비밀번호 (값 기재 금지 — 07-24 마스킹, 구값 이력 포함 소거) + SSH 키 인증 병행 | ~/.bash_profile + ~/.ssh/config |
+| **4060** | `ssh4060` / `ssh 4060` | smuse73 | **SSH 키 전용** (07-24 전환 완료 — PasswordAuthentication no + KbdInteractiveAuthentication no, 실측 "Permission denied (publickey)" 단독. 백업: sshd_config.bak_20260724) | ~/.bash_profile + ~/.ssh/config |
 
 ### 원격 빌드 파이프라인 (5/13 확립)
 
