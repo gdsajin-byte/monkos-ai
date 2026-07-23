@@ -78,6 +78,8 @@
 | seo_collect.sh | 인프라 | `scripts/tools/` | `commands/market-eye.md` |
 | gsc_submit.sh | 인프라 | `scripts/tools/` | `rules/mcp-tools.md` |
 | sa_audit.sh | 인프라 | `scripts/tools/` | SECRET_INVENTORY.md 권한 매트릭스 |
+| secret_patrol.sh | 인프라 | `scripts/tools/` + launchd `ai.monkos.secret-patrol`(일 09:30) | PATROL_LOG.md |
+| secret_meta_backfill.py | 인프라(1회성) | `scripts/tools/` | PROPOSAL_20260724 시크릿인지코드화 |
 | seo_collectors.py | 인프라 | `scripts/tools/` | `commands/market-eye.md` |
 | /market-eye | 스킬 | `.claude/commands/` | PF_MARKET_EYE |
 | /4060 | 스킬 | `.claude/commands/` | PF_INFRA + PF_FACTORY |

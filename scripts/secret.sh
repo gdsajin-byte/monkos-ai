@@ -144,8 +144,15 @@ cmd_add() {
     VER=$(gcloud secrets versions list "$NAME" --project="$PROJECT" --limit=1 --format="value(name)" 2>/dev/null)
     echo -e "${GREEN}✅ 등록 완료${NC} — $NAME (version $VER)"
     echo ""
-    echo -e "${YELLOW}[인벤토리]${NC} $INVENTORY 에 메타 정보를 추가하세요:"
-    echo "  | $NAME | (용도) | (사용처) | $(date +%Y-%m-%d) |"
+    # 용도를 SM annotations에 기록 (메타 정본 = SM, 2026-07-24 P1-ⓓ) — 엔터로 건너뛰기 가능
+    echo -n "용도(한 줄, 엔터=건너뜀): "
+    read -r PURPOSE
+    if [ -n "$PURPOSE" ]; then
+      gcloud secrets update "$NAME" --project="$PROJECT" \
+        --update-annotations="^@@@^purpose=${PURPOSE}" --update-labels=meta_src=secret_add >/dev/null 2>&1 \
+        && echo -e "${GREEN}✓ 용도 기록(SM)${NC}" || echo -e "${YELLOW}⚠️ 용도 기록 실패 — secret annotate로 재시도${NC}"
+    fi
+    echo -e "${YELLOW}[인벤토리]${NC} 자동 맵이 반영한다 — 수기 추가 불필요 (secret map $NAME 으로 확인)"
   else
     echo -e "${RED}❌ 등록 실패${NC} — gcloud 인증 상태를 확인하세요."
     exit 1
@@ -260,20 +267,40 @@ cmd_map() {
       --format="value(name.basename(),state,createTime)" 2>/dev/null \
       | while IFS=$'\t' read -r v st ct; do echo "   버전 $v: $st (${ct%%T*})"; done
   fi
-  # 2) 용도 (인벤토리 행 — SM 라벨 정본화 전까지 문서 조인)
-  local row
-  row=$(grep -m1 "| $NAME |" "$INVENTORY" 2>/dev/null)
-  if [ -n "$row" ]; then
-    echo "   용도: $(echo "$row" | awk -F'|' '{print $4}' | sed 's/^ *//;s/ *$//')"
-    echo "   비고: $(echo "$row" | awk -F'|' '{print $6}' | sed 's/^ *//;s/ *$//' | cut -c1-90)"
+  # 2) 용도 — SM annotations 정본 우선 (2026-07-24 P1-ⓓ 백필), 문서는 폴백
+  local ann_p ann_s ann_n
+  ann_p=$(gcloud secrets describe "$NAME" --project="$PROJECT" --format="value(annotations.purpose)" 2>/dev/null)
+  ann_s=$(gcloud secrets describe "$NAME" --project="$PROJECT" --format="value(annotations.service)" 2>/dev/null)
+  ann_n=$(gcloud secrets describe "$NAME" --project="$PROJECT" --format="value(annotations.note)" 2>/dev/null)
+  if [ -n "$ann_p" ]; then
+    echo "   용도(SM): $ann_p ${ann_s:+/ $ann_s}"
+    [ -n "$ann_n" ] && echo "   비고(SM): $(echo "$ann_n" | cut -c1-90)"
   else
-    echo -e "   ${YELLOW}⚠️ 인벤토리 미등재${NC} — 등재 필요 (메타만)"
+    local row
+    row=$(grep -m1 "| $NAME |" "$INVENTORY" 2>/dev/null)
+    if [ -n "$row" ]; then
+      echo "   용도(문서 폴백): $(echo "$row" | awk -F'|' '{print $4}' | sed 's/^ *//;s/ *$//')"
+    else
+      echo -e "   ${YELLOW}⚠️ 메타 없음${NC} — \`secret annotate $NAME\`으로 용도 기록 요망"
+    fi
   fi
   # 3) 소비처 (레포 실측)
   echo "   소비처:"
   (cd "$PROJECT_ROOT" 2>/dev/null && git grep -ln "$NAME" -- '*.sh' '*.js' '*.py' '*.yaml' '*.md' 2>/dev/null \
     | grep -v -e node_modules -e SECRET_INVENTORY -e sessions/ -e reports/ -e briefings/ | head -6 \
     | sed 's/^/     - /')
+}
+
+# annotate — 기존 시크릿에 용도 메타 기록/갱신 (값 비접촉)
+cmd_annotate() {
+  local NAME="$1"
+  [ -z "$NAME" ] && { echo -e "${RED}이름 필요${NC}: secret annotate <NAME>"; exit 1; }
+  echo -n "용도(한 줄): "
+  read -r PURPOSE
+  [ -z "$PURPOSE" ] && { echo "입력 없음 — 중단"; exit 1; }
+  gcloud secrets update "$NAME" --project="$PROJECT" \
+    --update-annotations="^@@@^purpose=${PURPOSE}" >/dev/null 2>&1 \
+    && echo -e "${GREEN}✓ 기록 완료${NC}" || { echo -e "${RED}✗ 실패${NC}"; exit 1; }
 }
 
 # 메인
@@ -283,6 +310,7 @@ case "${1:-}" in
   list)  cmd_list ;;
   check) cmd_check "$2" ;;
   map)   cmd_map "${2:-}" ;;
+  annotate) cmd_annotate "${2:-}" ;;
   env)   cmd_env ;;
   -h|--help|help) usage ;;
   *)     cmd_interactive ;;

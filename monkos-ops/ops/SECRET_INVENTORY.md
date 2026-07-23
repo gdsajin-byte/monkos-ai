@@ -7,6 +7,7 @@ status: 현행
 
 # MONKOS 시크릿 인벤토리
 
+> 🔐 **[2026-07-24 P1-ⓓ] 메타 정본 = SM annotations** (purpose·service·note, 53건 백필 완료). 인지 = `scripts/secret.sh map <NAME>` 1콜 — 이 문서의 테이블은 참조 뷰로 강등(신규 등록 시 수기 추가 불필요, `secret add`가 SM에 직접 기록).
 > ⚠️ **이 문서에 키 값을 절대 기재하지 않는다.** 항목+위치+용도만 기록.
 > 전신: `credentials_inventory.md` (2026-02-19). 본 문서가 정본.
 > 최종 갱신: 2026-07-14 (M1/막내3 SM 전수 대사 44건 — §J 10건 추가, audit_secrets.sh 신설)
