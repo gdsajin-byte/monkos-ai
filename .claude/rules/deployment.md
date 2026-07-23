@@ -30,5 +30,5 @@ globs:
 ## 예외
 
 - **pt.monkos.ai**: deploy.sh 미존재. gcloud 직접 배포 허용하되 지시서에 `[2조 한시적 예외: pt]` 명기. deploy.sh 제작 시 자동 소멸.
-- **monk-n8n**: 워크플로우 특수 서비스. 2조 적용 제외.
+- ~~monk-n8n~~: 2026-07-24 서비스 삭제 (작가님 승인 — SPREAD 3층 구조가 대체, 30일 무트래픽·영속 자산 0 실측). 예외 조항 소멸.
 - **비배포 gcloud**(describe, list, domain-mappings 등): 금지 대상 아님.

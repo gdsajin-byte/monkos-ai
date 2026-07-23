@@ -102,7 +102,7 @@ status: 현행
 | 27 | X_ACCESS_TOKEN_SECRET | X OAuth 시크릿 | n8n | |
 | 28 | X_CONSUMER_KEY | X API 컨슈머 키 | n8n | |
 | 29 | X_CONSUMER_SECRET | X API 컨슈머 시크릿 | n8n | |
-| 30 | N8N_API_KEY | n8n 자동화 API | Docker 4060 | ⚠️ 2026-06-02 iMac .env엔 **부재** — 4060 전용 추정. 위치 재확인 필요 |
+| 30 | N8N_API_KEY | n8n 자동화 API | Docker 4060 | ⚠️ 2026-06-02 iMac .env엔 **부재** — 4060 전용 추정. 위치 재확인 필요 — **07-24 monk-n8n 서비스 삭제로 사문화(폐기 후보)** |
 | 31 | TX_API_KEY | D1 거래 원장 인증 | portal, MONK_kr | |
 | 32 | TX_API_URL | D1 거래 원장 엔드포인트 | portal, MONK_kr | |
 | 33 | REMOVEBG_API_KEY | remove.bg 배경 제거 API | 크롭앱, 스펙스, Android | ⭐ 2026-05-25 추가. 무료 50장/월 |
@@ -315,7 +315,7 @@ status: 현행
 |------|------------|---------|-------------|------|
 | monk-image-engine SA | aiplatform.user · datastore.owner/user · bq.dataEditor/jobUser · storage.objectAdmin · secretAccessor · **tokenCreator(프로젝트 — ⚠️축소 대상)** | 사용자 키 0 (키리스 ✓) | ← gdsajin (07-24, GSC 쓰기용) | **전 Cloud Run 런타임(10서비스)** + GSC 소유자 |
 | yong-a-orchestrator SA | aiplatform.user · bq.dataEditor/jobUser · storage.objectAdmin | **영구 키 1개** (06-10 생성, 무만료 — ⚠️로테이션 부재). SM `GCP_SA_KEY` 정본 + 로컬 600 | ← gdsajin (7/14 합의) | MCP·에이전트 오케스트레이션. GSC=전체 사용자(읽기) |
-| compute default SA | **roles/editor (⚠️광권한)** | — | — | **monk-n8n 런타임 (⚠️교체 1순위)** |
+| compute default SA | **roles/editor (⚠️광권한 — 바인딩 리소스 0, 신규 리소스 부착 주의)** | — | — | ~~monk-n8n~~ 07-24 서비스 삭제로 **미사용** |
 | appspot SA | aiplatform.user (⚠️미사용 추정 — 회수 후보) | — | — | App Engine legacy |
 | user gdsajin | owner · cloudbuild.editor | — | → yong-a · image-engine | 작가님 (1인 운영 루트) |
 
