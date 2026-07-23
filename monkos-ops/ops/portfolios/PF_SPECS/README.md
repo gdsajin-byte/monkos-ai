@@ -75,6 +75,7 @@ status: active
 | 07/22 | iMac/쌍아 | **SSR 홈 OfferCatalog 429개 + @graph 구조화 데이터 통합** — 구 index.html 사문화 판정(민아)으로 홈 OfferCatalog 부재 발견. home.js에 SPECS_DATA 전량 429개를 locField 정본 경유 동적 생성. Organization·ProfessionalService 이관, @id 상호참조 배선, EU ko type/seoTitle/seoDescription "유럽연합 EU" 중복 6건 해소. portal 00530-crz | 23e1cd3d, prod 00530-crz | ✅ 라이브 |
 | 07/23 | iMac/쌍아 | **SSG 전환 + IDPASS 쉘 + 점진 이관 설계** — 작가님 결정: 전량 일괄 전환 아닌 필름 완성분부터 점진 이관(등사기·필름 비유). 4060 인쇄기 세팅 + CF Pages IDPASS 호스팅 + SSR 공존 구간. 민아 시타델 분석(인텐트 분할·/specs허브 301·네비 개편) 통합. 결제·인증 모듈 결합도 실측(*.monkos.ai 내 무변경 동작 확인). Phase 0~7 로드맵 | [DESIGN](../../tech/designs/2026-07/DESIGN_20260723_SPECS_SSG전환_IDPASS쉘_점진이관.md) | ⏳ 작가님 검수 |
 | 07/23 | iMac/민아 | **SSG 설계 검수 — 조건부 승인** — 승계 정합 ✓(크리티컬 2·게이트·429×6 실측 일치), 교정 필수 2(🔴 R1 dist 레이아웃=URL 정본 위반+트레일링 슬래시 308 → flat .html+specsUrl() 도출 / 🟠 R2 B안 실체=apex orange 전 트래픽 경유 → 웹훅 WAF 예외+run.app 오리진), ✅ R3 NS 기이관 실측(edna/bob.ns.cloudflare.com — 게이트3 축소), 승계 누락 3 복원(billing 기준선·/result 보존·핫픽스 부분 재빌드), 보강 5(쉘 SSR 선적용·Phase4 분할·토큰 스코프·301 쌍방·LCP<2.5s 게이트) | [REVIEW](../../reports/2026-07/REVIEW_20260723_iMac민아_SPECS_SSG설계_검수.md) | ✅ 반영 대기 |
+| 07/23 | iMac/민아 | **SSG 설계 v2 재검증 — 검수 11건 전항 반영 확인, 확정 승인** — R1(flat .html·specsUrl 도출·자산 포함 §5-2), R2(게이트4 재작성: apex orange 함의 3건·run.app 오리진·전환 시점 Phase 3 직전), R3(게이트3 NS 기이관 현행화+웹훅 URL 소재 확인 추가), 승계 3건(billing Phase 0·/result 보존 §4-3·--slug 부분 재빌드 §5-3), R4~R8(쉘 CR 선배포 필수 §4-2·Phase 4a/4b 분할·토큰 최소 스코프·게이트5 신설·LCP<2.5s+폰트 self-host). --slug 인자=데이터 키(kr-passport) 용법 정합 확인. 지시서 발행 단계 진입 | v2 전문 diff 실측 | ✅ 설계 확정 |
 
 ---
 
