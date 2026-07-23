@@ -308,7 +308,7 @@ function heroHtml(d, idphotoUrl) {
           <div class="mk-id-header"><span class="mk-id-title">${esc(d.idTitle)}</span><span class="mk-id-tag">${esc(d.idTag)}</span></div>
           <p class="mk-id-desc">${esc(d.idDesc)}</p>
           <div class="mk-id-chips">${chipsHtml}</div>
-          <div class="mk-id-footer"><a href="${idphotoUrl}" class="mk-btn-solid">${esc(d.idCta)}</a><span class="mk-id-domain">idphoto.monkos.ai</span></div>
+          <div class="mk-id-footer"><a href="${idphotoUrl}" class="mk-btn-solid">${esc(d.idCta)}</a></div>
         </div>
       </div>
     </div>
@@ -480,9 +480,7 @@ export async function renderHome(req, res, forceLang = null) {
     const lang = forceLang || req.lang || 'ko';
     const d = HOME_I18N[lang] || HOME_I18N.ko;
     const prefix = lang === 'ko' ? '' : `/${lang}`;
-    const idphotoUrl = req.paymentRegion === 'kr' ? 'https://idphoto-kr.monkos.ai/'
-      : req.paymentRegion === 'jp' ? 'https://idphoto-jp.monkos.ai/'
-      : `${prefix}/headshot`;
+    const idphotoUrl = `${prefix}/specs`;
 
     const [postsSnap, faqSnap, boardSnap] = await Promise.all([
       blogCollection.where('published', '==', true).orderBy('createdAt', 'desc').get().catch(() => ({ docs: [] })),

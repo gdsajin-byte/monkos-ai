@@ -134,12 +134,11 @@ export function layoutNav(lang = 'ko') {
   <div class="header-top">
     <a href="${prefix}/" class="logo"><span class="logo-dot"></span>MONKOS</a>
     <nav class="header-nav">
-      <a href="${prefix}/blog">Blog</a>
-      <a href="${prefix}/faq">FAQ</a>
-      <a href="${prefix}/gallery">Gallery</a>
-      <a href="${prefix}/board">Board</a>
-      <a href="${prefix}/guide">Guide</a>
+      <a href="${prefix}/specs">ID Photo</a>
+      <a href="${prefix}/headshot">Headshot</a>
       <a href="${prefix}/pricing">Pricing</a>
+      <a href="${prefix}/blog">Blog</a>
+      <a href="${prefix}/guide">Guide</a>
     </nav>
   </div>
 </header>`;
