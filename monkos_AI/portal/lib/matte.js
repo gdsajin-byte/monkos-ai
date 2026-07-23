@@ -22,6 +22,7 @@ const SPECS_DATA = createRequire(import.meta.url)('./cms/specs-data.json');
 const MATTE_API_URLS = (process.env.MATTE_API_URLS || process.env.MATTE_API_URL || '')
   .split(',').map((s) => s.trim()).filter(Boolean);
 const MATTE_API_KEY = process.env.MATTE_API_KEY || ''; // RunPod 등 인증형 엔드포인트용
+const MATTE_SECRET = process.env.MATTE_SECRET || ''; // 4060 자체 서빙 인증 (X-Matte-Secret)
 // 카나리 게이트 (2026-07-07 작가님): 지정 슬러그만 신경로, 나머지는 현행 Gemini 유지.
 // 미설정 = 전 슬러그 개방. 파일럿: kr-passport 단일 → 검증 후 확산.
 const MATTE_SLUGS = (process.env.MATTE_SLUGS || '')
@@ -104,7 +105,8 @@ function isRunpod(url) {
 
 function authHeaders(url) {
   const h = { 'Content-Type': 'application/json' };
-  if (MATTE_API_KEY && isRunpod(url)) h.Authorization = `Bearer ${MATTE_API_KEY}`;
+  if (isRunpod(url)) { if (MATTE_API_KEY) h.Authorization = `Bearer ${MATTE_API_KEY}`; }
+  else { if (MATTE_SECRET) h['X-Matte-Secret'] = MATTE_SECRET; }
   return h;
 }
 
