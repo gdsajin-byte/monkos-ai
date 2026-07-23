@@ -115,7 +115,9 @@ a:hover { color: #5a3de6; }
 .v2-credit { font-size: 11px; opacity: 0.8; margin-left: 4px; }
 
 /* Phase 2: 결제 */
-.v2-pay-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; }
+.v2-pay-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; max-width: 100%; }
+/* grid item min-width:auto 함정 차단 — 자식 min-content(의상 스트립 등)가 트랙을 뷰포트 밖으로 밀던 실사고 (2026-07-24 모바일, 성별 미선택=카탈로그 7종일 때만 발현) */
+.v2-pay-grid > * { min-width: 0; }
 .v2-pay-preview { text-align: center; }
 .v2-pay-preview img { max-width: 200px; max-height: 260px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.08); }
 .v2-change-photo { margin-top: 12px; background: none; border: 1px solid rgba(0,0,0,0.15); border-radius: 8px; padding: 6px 16px; font-size: 12px; color: #666; cursor: pointer; }
