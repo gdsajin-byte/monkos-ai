@@ -10,6 +10,7 @@
 - `google-analytics` MCP로 GA4 데이터 직접 조회 가능.
 - `google-search-console` MCP로 GSC 데이터 직접 조회 가능.
 - daily_briefing 파일을 Read하는 것보다 MCP 직접 조회가 최신 데이터.
+- **GSC 쓰기(사이트맵 제출)는 MCP로 403** — MCP SA(yong-a)는 GSC 전체 사용자(읽기)뿐. 제출·상태는 `scripts/tools/gsc_submit.sh {submit|status|list}` 경유 (소유자 SA 임퍼소네이션). 색인 생성 요청(Request Indexing)은 구글이 API 미제공 — 수동 UI 또는 CDP 자동화 별도.
 
 ## 시크릿 확인 시
 - `secret check <NAME>` 또는 SECRET_INVENTORY.md를 먼저 확인한다.
