@@ -83,6 +83,7 @@
 | seo_collectors.py | 인프라 | `scripts/tools/` | `commands/market-eye.md` |
 | /market-eye | 스킬 | `.claude/commands/` | PF_MARKET_EYE |
 | /4060 | 스킬 | `.claude/commands/` | PF_INFRA + PF_FACTORY |
+| gitleaks-precommit.sh | 인프라 | `scripts/tools/` + `.git/hooks/pre-commit` | PF_SECURITY |
 
 ## 모델 배치
 
