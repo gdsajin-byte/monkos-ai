@@ -115,6 +115,7 @@ status: 현행
 | 39 | CF_PAGES_TOKEN | CF Pages 배포 API 토큰 | 4060 빌드→CF Pages deploy | ⭐ 2026-07-23 신설. Pages:Edit + Workers Scripts:Edit 스코프. SSG 빌드 파이프라인용 |
 | 40 | PAGESPEED_API_KEY | PageSpeed Insights API 키 | 대시보드/성능 측정 | 2026-07-21 생성분 — **07-24 감사에서 미등재 적발, 소급 등재** |
 | 41 | WORKER_PROXY_SECRET | CF Workers→CR 프록시 인증 토큰 | cf-proxy worker (X-Proxy-Secret 헤더) | ⭐ 2026-07-24 신설. openssl rand -hex 32 생성. CR 측 검증 미들웨어는 별도 구현 필요 |
+| 42 | HF_TOKEN | HuggingFace 모델 다운로드 (매트·크롭 벤치마크·3D) | 4060 + 로컬 | ⭐ 2026-07-24 신설(구 하드코딩 토큰 로테이션분, READ 권한). **07-25 순찰이 인벤 미등재 적발 → 소급 등재**. `_start_server.bat` 환경변수 참조 전환 완료. 4060 env 세팅 대기 |
 
 ### B. 루트 .env (로컬 전용 — 2개)
 
@@ -318,7 +319,7 @@ status: 현행
 | monk-image-engine SA | aiplatform.user · datastore.owner/user · bq.dataEditor/jobUser · storage.objectAdmin · secretAccessor · **tokenCreator(SA 레벨 — 자기서명 전용, 07-24 프로젝트→SA 축소)** | 사용자 키 0 (키리스 ✓) | ← gdsajin (SA 레벨, GSC 쓰기용) | **전 Cloud Run 런타임(10서비스)** + GSC 소유자 |
 | yong-a-orchestrator SA | aiplatform.user · bq.dataEditor/jobUser · storage.objectAdmin | **영구 키 1개** (06-10 생성, 무만료 — ⚠️로테이션 부재). SM `GCP_SA_KEY` 정본 + 로컬 600 | ← gdsajin (7/14 합의) | MCP·에이전트 오케스트레이션. GSC=전체 사용자(읽기) |
 | compute default SA | **roles/editor** (Cloud Build 기본 실행 SA 암묵 의존 — 07-24 회수→배포실패→복원. T3 SA 분리 전 유지 필수) | — | — | Cloud Build 소스 업로드·빌드 실행 |
-| appspot SA | aiplatform.user (⚠️미사용 추정 — 회수 후보) | — | — | App Engine legacy |
+| ~~appspot SA~~ | 🗑️ **부재 — 항목 폐기 (07-25 민아 실측)**. `gcloud iam service-accounts list` 결과 monkos 프로젝트 SA는 yong-a·monk-image-engine·compute default **3개뿐**, appspot SA 자체가 존재하지 않음. 이 유령 행이 07-24 T2 지시서의 "appspot 롤 회수" 오조준 근원(실제 editor 보유자는 compute default) | — | — | ~~App Engine legacy~~ |
 | user gdsajin | owner · cloudbuild.editor | — | → yong-a · image-engine | 작가님 (1인 운영 루트) |
 
 - GSC 쓰기(사이트맵)는 `gsc_submit.sh` 경유 (image-engine 임퍼소네이션). MCP는 읽기 전용.
