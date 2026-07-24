@@ -171,7 +171,7 @@ status: 현행
 |----|--------|---------|------|------|
 | yong-a-orchestrator | yong-a-orchestrator@monkos.iam.gserviceaccount.com | **Agent Platform 사용자** + aiplatform.user + storage.objectAdmin | CI·관리용 | ✅ 06-10 editor→Agent Platform 축소. 키 교체: c1b7e5a702b8(6/10 발급, SM+GH 등록, 로컬 삭제). **06-12 실측: 구키 1月·5月 삭제 완료 확인** |
 | monk-image-engine | monk-image-engine@monkos.iam.gserviceaccount.com | aiplatform.user + datastore.owner + datastore.user + storage.objectAdmin + **secretmanager.secretAccessor** + **roles/indexing.publisher**(GSC 스코프) · ~~tokenCreator(프로젝트)~~ → **tokenCreator(SA 레벨 — 자기서명 전용)** | Cloud Run 실행 SA | ✅ GSC sc-domain:monkos.ai 소유자 등록 완료 (06-07). indexing.publisher는 GSC 스코프. 06-11 secretmanager.secretAccessor 부여. **07-24 tokenCreator 프로젝트→SA 축소**(자기 signBlob 한정) + gdsajin SA-level tokenCreator(GSC 쓰기 임퍼소네이션, gsc_submit.sh 경유) |
-| Compute Engine default | 933456016842-compute@developer.gserviceaccount.com | ~~roles/editor~~ **07-24 회수 완료** (프로젝트 레벨 역할 0) | GCE 기본 | 07-24 editor 회수 — monk-n8n 삭제(07-24)로 바인딩 리소스 0 확인 후 실행 |
+| Compute Engine default | 933456016842-compute@developer.gserviceaccount.com | **roles/editor** (Cloud Build 기본 실행 SA — 암묵 의존) | GCE 기본 | 07-24 editor 회수 시도 → Cloud Build storage.objects.get 실패로 배포 불가 → **editor 복원**. T3(SA 분리) 전까지 유지 필수 |
 | smuse73 *(startMONK)* | smuse73@gen-lang-client-0105707468.iam.gserviceaccount.com | serviceusage.serviceUsageConsumer + aiplatform.user | 레거시 | ✅ 06-12 owner 제거. ⚠️ USER_MANAGED 키 1개(67d2ab92, 2025-12-22). 프로젝트 종료 시 일괄 폐기 후보 |
 | monk-factory-agent *(monk-data-factory)* | monk-factory-agent@monk-data-factory.iam.gserviceaccount.com | storage.objectAdmin + aiplatform.user | 데이터 팩토리 | ⚠️ USER_MANAGED 키 1개(863e0af1, 2025-12-29). 기본 SA 2개 편집자 06-12 제거. 용도 재확인 후 결정 |
 
@@ -317,7 +317,7 @@ status: 현행
 |------|------------|---------|-------------|------|
 | monk-image-engine SA | aiplatform.user · datastore.owner/user · bq.dataEditor/jobUser · storage.objectAdmin · secretAccessor · **tokenCreator(SA 레벨 — 자기서명 전용, 07-24 프로젝트→SA 축소)** | 사용자 키 0 (키리스 ✓) | ← gdsajin (SA 레벨, GSC 쓰기용) | **전 Cloud Run 런타임(10서비스)** + GSC 소유자 |
 | yong-a-orchestrator SA | aiplatform.user · bq.dataEditor/jobUser · storage.objectAdmin | **영구 키 1개** (06-10 생성, 무만료 — ⚠️로테이션 부재). SM `GCP_SA_KEY` 정본 + 로컬 600 | ← gdsajin (7/14 합의) | MCP·에이전트 오케스트레이션. GSC=전체 사용자(읽기) |
-| compute default SA | ~~roles/editor~~ **07-24 회수 → 프로젝트 롤 0** | — | — | ~~monk-n8n~~ 07-24 서비스 삭제 + editor 회수로 **무권한** |
+| compute default SA | **roles/editor** (Cloud Build 기본 실행 SA 암묵 의존 — 07-24 회수→배포실패→복원. T3 SA 분리 전 유지 필수) | — | — | Cloud Build 소스 업로드·빌드 실행 |
 | appspot SA | aiplatform.user (⚠️미사용 추정 — 회수 후보) | — | — | App Engine legacy |
 | user gdsajin | owner · cloudbuild.editor | — | → yong-a · image-engine | 작가님 (1인 운영 루트) |
 
