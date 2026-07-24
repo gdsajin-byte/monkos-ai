@@ -6,7 +6,7 @@ subject: "IAM·SA 권한 재조정·분기 재설계 (MONKOS 보안 체계화)"
 created: 2026-04-23
 owner: 작가님
 leads: "iMac/쌍아(설계·통합), 막내(실행)"
-status: completed
+status: active
 ---
 
 # PF_SECURITY — IAM·SA 권한 재조정·분기 재설계
@@ -86,6 +86,11 @@ status: completed
 | 07/24 | iMac/민아 | **P1-ⓓ·P2 실행 (작가님 승인 "바로처리")** — ① SM 어노테이션 백필 53/53(실패 0, purpose·service·note — `secret_meta_backfill.py` dry-run→apply) ② `secret map` SM 정본 우선 승격 실측("용도(SM):" 출력) + `secret add` 용도 입력→SM 직기록 + `annotate` 신설 ③ 인벤토리 헤더에 "메타 정본=SM" 선언(테이블=참조 뷰 강등) ④ **일간 순찰 배선**: `secret_patrol.sh`(map+sa_audit 스냅샷→전일 diff→PATROL_LOG+텔레그램(chat_id 미배선 시 명시 경고)) + launchd `ai.monkos.secret-patrol` 09:30(crontab은 macOS TCC 블록 — 기존 관례대로 launchd, 킥스타트 실작동 ✓). 유보: yong-a 키 로테이션 크론 — 소비처 캐시 전파 검증 선행 필요, 쌍아 T2 지시서 이관 | 도구 2신설+secret.sh 확장 | ✅ (로테이션만 T2 이관) |
 | 07/24 | iMac/막내1 | **T2 IAM 회수 3건 실행** (쌍아 지시서) — ① N8N_API_KEY SM 컨테이너 완전 삭제(secret map "SM에 없음" 검증) ② compute default SA roles/editor 회수(프로젝트 롤 0 검증) ③ monk-image-engine tokenCreator 프로젝트→SA 축소(자기서명+gdsajin 2바인딩 검증, Cloud Run 에러 0건·gsc_submit.sh 정상). 인벤토리 §G+권한 매트릭스 3건 갱신. 4번(yong-a 로테이션)은 별도 지시서 대기 | [COMPLETION](../../reports/2026-07/COMPLETION_20260724_iMac막내1_SECURITY_T2_IAM회수.md) | ✅ |
 | 07/24 | iMac/막내2 | **gitleaks pre-commit 훅 설치** (쌍아 지시서) — gitleaks 8.30.1 brew 설치, `scripts/tools/gitleaks-precommit.sh` 작성(`protect --staged`), `.git/hooks/pre-commit` 신규, `.gitleaksignore` 베이스라인(오탐 70건), 스모크 ✓(차단·통과), 도구맵 등재. **실키 5종 히스토리 발견 보고**(HF토큰·LINE시크릿×2·Toss SK·Telegram봇토큰) — 조치 미실행, 판단 대기 | [COMPLETION](../../reports/2026-07/COMPLETION_20260724_iMac막내2_SECURITY_gitleaks_precommit.md) | ✅ (실키 후속 ⏳) |
+| 07/24 | iMac/민아 | **히스토리 실키 5종 유효성 실측** (막내2 적발분) — ⚠️ 오전 종합감사(82행) "히스토리 실키 0" **오판 보정**: 수동 grep이 놓친 것을 gitleaks 전수스캔(3133커밋)이 적발("쥐가 드러낸 것"). 유효성 실측(값 비노출·읽기전용 API): 🔴생존2(HF **monkosAI** user토큰=벤치마크 비프로덕션 / Telegram **Monk_yonga_bot** id8410084578=**배선0 사문봇**) · 🟢폐기1(LINE access token 401) · 🟡테스트키1(Toss test_sk 유효·실결제불가) · ⚫갈음1(LINE secret). 생존2 **둘 다 프로덕션 영향 0**. 히스토리 재작성 불가(force push 금지)→생존키 무효화가 정석. 재발급=작가님 영역(HF 웹 재발급+`_start_server.bat` 하드코딩 제거 지시서 / BotFather revoke) | 세션로그 12:42 | ⏳ 재발급 대기 |
+| 07/24 | iMac/쌍아 | **N8N_API_KEY 완전 삭제** (작가님 승인) — v1 destroy(11:10) + SM 컨테이너 삭제(막내1). 인벤토리 #30 폐기 마킹. 사문 키 0 달성 | secret map 검증 | ✅ |
+| 07/24 | iMac/쌍아 | **LINE_MESSAGING_CHANNEL_SECRET 현행키 노출 확인 + 로테이션** — 쌍아 해시 대조: 히스토리 노출분(3월 지시서) SHA256 = SM v1 **동일** 확정(민아 401 판정은 ACCESS_TOKEN 대상으로 CHANNEL_SECRET과 별건). 작가님 LINE Developers 콘솔에서 Channel Secret 재발급 → `secret add` v2 등록 + v1 disable. **prod 00536 배포**(deploy.sh 경유) — 서비스 무중단 확인(health=healthy) | SM v2 enabled, v1 disabled | ✅ |
+| 07/24 | iMac/쌍아 | **T2-3 compute SA editor 회수 철회** — 배포 시 Cloud Build가 compute 기본 SA를 실행 SA로 사용(gcloud builds get-default-service-account 실측). editor 회수 → storage.objects.get 권한 소실 → 빌드 실패. **editor 복원** 후 배포 성공. 교훈: GCP 자동 생성 SA는 암묵적 의존이 많아 T3(SA 분리) 전에는 건드릴 수 없음. 권한 매트릭스 원복 필요 | prod 00536 배포 성공으로 실증 | ✅ (T3으로 이관) |
+| 07/24 | iMac/쌍아 | **Toss 키 안전 확인** — TOSS_SECRET_KEY SM v1=destroyed(07/13), 현행 v2=라이브 정본(07/13 작가님 갱신). 히스토리 노출분 = 죽은 v1이므로 추가 조치 불필요. TOSS_SECRET_KEY_TEST(07-12 등록)도 SM 관리 하 | 해시 대조 + SM 버전 실측 | ✅ |
 
 ---
 
