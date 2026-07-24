@@ -91,6 +91,8 @@ status: active
 | 07/24 | iMac/쌍아 | **LINE_MESSAGING_CHANNEL_SECRET 현행키 노출 확인 + 로테이션** — 쌍아 해시 대조: 히스토리 노출분(3월 지시서) SHA256 = SM v1 **동일** 확정(민아 401 판정은 ACCESS_TOKEN 대상으로 CHANNEL_SECRET과 별건). 작가님 LINE Developers 콘솔에서 Channel Secret 재발급 → `secret add` v2 등록 + v1 disable. **prod 00536 배포**(deploy.sh 경유) — 서비스 무중단 확인(health=healthy) | SM v2 enabled, v1 disabled | ✅ |
 | 07/24 | iMac/쌍아 | **T2-3 compute SA editor 회수 철회** — 배포 시 Cloud Build가 compute 기본 SA를 실행 SA로 사용(gcloud builds get-default-service-account 실측). editor 회수 → storage.objects.get 권한 소실 → 빌드 실패. **editor 복원** 후 배포 성공. 교훈: GCP 자동 생성 SA는 암묵적 의존이 많아 T3(SA 분리) 전에는 건드릴 수 없음. 권한 매트릭스 원복 필요 | prod 00536 배포 성공으로 실증 | ✅ (T3으로 이관) |
 | 07/24 | iMac/쌍아 | **Toss 키 안전 확인** — TOSS_SECRET_KEY SM v1=destroyed(07/13), 현행 v2=라이브 정본(07/13 작가님 갱신). 히스토리 노출분 = 죽은 v1이므로 추가 조치 불필요. TOSS_SECRET_KEY_TEST(07-12 등록)도 SM 관리 하 | 해시 대조 + SM 버전 실측 | ✅ |
+| 07/24 | 작가님+쌍아 | **HF 토큰 로테이션 + SM 정본화** — HuggingFace monkosAI 구토큰(hf_...tqbt, READ) 삭제 → 신토큰(hf_...UWct, READ) 생성 → `secret add HF_TOKEN` SM 등록(v1). `_start_server.bat` 하드코딩 제거(환경변수 참조 전환). 히스토리 노출분 = 죽은 구토큰 | SM 등록 + 코드 교정 | ✅ |
+| 07/24 | — | **실키 5종 종결 현황**: ✅HF(로테이션+SM) ✅LINE CS(v2+v1 disable) ✅Toss(v1 destroyed) ✅LINE AT(이미 폐기) ⏳Telegram(BotFather revoke 대기, 사문봇·영향0) | — | ⏳ 1건 잔여 |
 
 ---
 
