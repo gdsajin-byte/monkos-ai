@@ -103,7 +103,7 @@ status: 현행
 | 27 | X_ACCESS_TOKEN_SECRET | X OAuth 시크릿 | n8n | |
 | 28 | X_CONSUMER_KEY | X API 컨슈머 키 | n8n | |
 | 29 | X_CONSUMER_SECRET | X API 컨슈머 시크릿 | n8n | |
-| 30 | N8N_API_KEY | n8n 자동화 API | Docker 4060 | ⚠️ 2026-06-02 iMac .env엔 **부재** — 4060 전용 추정. 위치 재확인 필요 — **07-24 monk-n8n 서비스 삭제로 사문화 → 버전 1 disable 완료(가역). destroy는 작가님 재확인 후** |
+| ~~30~~ | ~~N8N_API_KEY~~ | ~~n8n 자동화 API~~ | 🗑️ **폐기(삭제)** | **07-24 SM 컨테이너 완전 삭제** (버전 destroy + 컨테이너 삭제). monk-n8n 서비스 삭제(07-24)로 소비처 0 |
 | 31 | TX_API_KEY | D1 거래 원장 인증 | portal, MONK_kr | |
 | 32 | TX_API_URL | D1 거래 원장 엔드포인트 | portal, MONK_kr | |
 | 33 | REMOVEBG_API_KEY | remove.bg 배경 제거 API | 크롭앱, 스펙스, Android | ⭐ 2026-05-25 추가. 무료 50장/월 |
@@ -169,8 +169,8 @@ status: 현행
 | SA | 이메일 | IAM 역할 | 용도 | 비고 |
 |----|--------|---------|------|------|
 | yong-a-orchestrator | yong-a-orchestrator@monkos.iam.gserviceaccount.com | **Agent Platform 사용자** + aiplatform.user + storage.objectAdmin | CI·관리용 | ✅ 06-10 editor→Agent Platform 축소. 키 교체: c1b7e5a702b8(6/10 발급, SM+GH 등록, 로컬 삭제). **06-12 실측: 구키 1月·5月 삭제 완료 확인** |
-| monk-image-engine | monk-image-engine@monkos.iam.gserviceaccount.com | aiplatform.user + datastore.owner + datastore.user + iam.serviceAccountTokenCreator + storage.objectAdmin + **secretmanager.secretAccessor** + **roles/indexing.publisher**(GSC 스코프) | Cloud Run 실행 SA | ✅ GSC sc-domain:monkos.ai 소유자 등록 완료 (06-07). indexing.publisher는 GSC 스코프. 06-11 secretmanager.secretAccessor 부여. **07-24 gdsajin에 본 SA tokenCreator 부여** — GSC 쓰기(사이트맵 제출) 임퍼소네이션용, scripts/tools/gsc_submit.sh 경유 |
-| Compute Engine default | 933456016842-compute@developer.gserviceaccount.com | roles/editor (⚠️ 초과권한 11660/11666, 6개 실사용) | GCE 기본 | 06-12 실측: monk-n8n·pt 2개만 이 SA 사용. 축소는 영향평가 후 |
+| monk-image-engine | monk-image-engine@monkos.iam.gserviceaccount.com | aiplatform.user + datastore.owner + datastore.user + storage.objectAdmin + **secretmanager.secretAccessor** + **roles/indexing.publisher**(GSC 스코프) · ~~tokenCreator(프로젝트)~~ → **tokenCreator(SA 레벨 — 자기서명 전용)** | Cloud Run 실행 SA | ✅ GSC sc-domain:monkos.ai 소유자 등록 완료 (06-07). indexing.publisher는 GSC 스코프. 06-11 secretmanager.secretAccessor 부여. **07-24 tokenCreator 프로젝트→SA 축소**(자기 signBlob 한정) + gdsajin SA-level tokenCreator(GSC 쓰기 임퍼소네이션, gsc_submit.sh 경유) |
+| Compute Engine default | 933456016842-compute@developer.gserviceaccount.com | ~~roles/editor~~ **07-24 회수 완료** (프로젝트 레벨 역할 0) | GCE 기본 | 07-24 editor 회수 — monk-n8n 삭제(07-24)로 바인딩 리소스 0 확인 후 실행 |
 | smuse73 *(startMONK)* | smuse73@gen-lang-client-0105707468.iam.gserviceaccount.com | serviceusage.serviceUsageConsumer + aiplatform.user | 레거시 | ✅ 06-12 owner 제거. ⚠️ USER_MANAGED 키 1개(67d2ab92, 2025-12-22). 프로젝트 종료 시 일괄 폐기 후보 |
 | monk-factory-agent *(monk-data-factory)* | monk-factory-agent@monk-data-factory.iam.gserviceaccount.com | storage.objectAdmin + aiplatform.user | 데이터 팩토리 | ⚠️ USER_MANAGED 키 1개(863e0af1, 2025-12-29). 기본 SA 2개 편집자 06-12 제거. 용도 재확인 후 결정 |
 
@@ -314,9 +314,9 @@ status: 현행
 
 | 주체 | 프로젝트 롤 | 키 상태 | 임퍼소네이션 | 용도 |
 |------|------------|---------|-------------|------|
-| monk-image-engine SA | aiplatform.user · datastore.owner/user · bq.dataEditor/jobUser · storage.objectAdmin · secretAccessor · **tokenCreator(프로젝트 — ⚠️축소 대상)** | 사용자 키 0 (키리스 ✓) | ← gdsajin (07-24, GSC 쓰기용) | **전 Cloud Run 런타임(10서비스)** + GSC 소유자 |
+| monk-image-engine SA | aiplatform.user · datastore.owner/user · bq.dataEditor/jobUser · storage.objectAdmin · secretAccessor · **tokenCreator(SA 레벨 — 자기서명 전용, 07-24 프로젝트→SA 축소)** | 사용자 키 0 (키리스 ✓) | ← gdsajin (SA 레벨, GSC 쓰기용) | **전 Cloud Run 런타임(10서비스)** + GSC 소유자 |
 | yong-a-orchestrator SA | aiplatform.user · bq.dataEditor/jobUser · storage.objectAdmin | **영구 키 1개** (06-10 생성, 무만료 — ⚠️로테이션 부재). SM `GCP_SA_KEY` 정본 + 로컬 600 | ← gdsajin (7/14 합의) | MCP·에이전트 오케스트레이션. GSC=전체 사용자(읽기) |
-| compute default SA | **roles/editor (⚠️광권한 — 바인딩 리소스 0, 신규 리소스 부착 주의)** | — | — | ~~monk-n8n~~ 07-24 서비스 삭제로 **미사용** |
+| compute default SA | ~~roles/editor~~ **07-24 회수 → 프로젝트 롤 0** | — | — | ~~monk-n8n~~ 07-24 서비스 삭제 + editor 회수로 **무권한** |
 | appspot SA | aiplatform.user (⚠️미사용 추정 — 회수 후보) | — | — | App Engine legacy |
 | user gdsajin | owner · cloudbuild.editor | — | → yong-a · image-engine | 작가님 (1인 운영 루트) |
 
