@@ -5,7 +5,8 @@
 
 const CR_ORIGIN = 'https://monkos-portal-4jeplpqpua-uc.a.run.app';
 
-const STATIC_PREFIXES = ['/specs/', '/idpass/', '/css/', '/js/', '/assets/', '/images/'];
+// /specs/·/idpass/는 CR SSR 경로 — Pages SPA 폴백이 가리므로 제외. SSG 전환 후 복원
+const STATIC_PREFIXES = ['/css/', '/js/', '/assets/', '/images/'];
 
 function isStaticPath(pathname) {
   if (pathname === '/' || pathname === '/index.html') return true;

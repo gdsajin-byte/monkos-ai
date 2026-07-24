@@ -114,6 +114,7 @@ status: 현행
 | 38 | MATTE_SECRET | 4060 BiRefNet 서버 인증 토큰 | 4060 matte-server, portal | ⭐ 2026-07-23 신설. X-Matte-Secret 헤더로 CR→4060 인증. 4060 NSSM env + SM 등록 |
 | 39 | CF_PAGES_TOKEN | CF Pages 배포 API 토큰 | 4060 빌드→CF Pages deploy | ⭐ 2026-07-23 신설. Pages:Edit + Workers Scripts:Edit 스코프. SSG 빌드 파이프라인용 |
 | 40 | PAGESPEED_API_KEY | PageSpeed Insights API 키 | 대시보드/성능 측정 | 2026-07-21 생성분 — **07-24 감사에서 미등재 적발, 소급 등재** |
+| 41 | WORKER_PROXY_SECRET | CF Workers→CR 프록시 인증 토큰 | cf-proxy worker (X-Proxy-Secret 헤더) | ⭐ 2026-07-24 신설. openssl rand -hex 32 생성. CR 측 검증 미들웨어는 별도 구현 필요 |
 
 ### B. 루트 .env (로컬 전용 — 2개)
 
