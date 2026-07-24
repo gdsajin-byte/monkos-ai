@@ -93,6 +93,8 @@ status: active
 | 07/24 | iMac/쌍아 | **Toss 키 안전 확인** — TOSS_SECRET_KEY SM v1=destroyed(07/13), 현행 v2=라이브 정본(07/13 작가님 갱신). 히스토리 노출분 = 죽은 v1이므로 추가 조치 불필요. TOSS_SECRET_KEY_TEST(07-12 등록)도 SM 관리 하 | 해시 대조 + SM 버전 실측 | ✅ |
 | 07/24 | 작가님+쌍아 | **HF 토큰 로테이션 + SM 정본화** — HuggingFace monkosAI 구토큰(hf_...tqbt, READ) 삭제 → 신토큰(hf_...UWct, READ) 생성 → `secret add HF_TOKEN` SM 등록(v1). `_start_server.bat` 하드코딩 제거(환경변수 참조 전환). 히스토리 노출분 = 죽은 구토큰 | SM 등록 + 코드 교정 | ✅ |
 | 07/24 | — | **실키 5종 종결 현황**: ✅HF(로테이션+SM) ✅LINE CS(v2+v1 disable) ✅Toss(v1 destroyed) ✅LINE AT(이미 폐기) ⏳Telegram(BotFather revoke 대기, 사문봇·영향0) | — | ⏳ 1건 잔여 |
+| 07/25 | iMac/민아 | **순찰 도구 실작동 실증 + 잔여 3건 처리** (작가님 지시 "바로 처리") — ① **`secret_patrol.sh` 첫 diff 회차 실행**: 어제 변경분(N8N 삭제·tokenCreator 프로젝트→SA 축소·WORKER_PROXY_SECRET 신설) **전량 정확 포착**, PATROL_LOG.md 최초 생성 = 도구가 실제 감시 기능함 실증(07-24는 "첫 스냅샷 확보"로 끝나 미검증 상태였음). 텔레그램 미배선 시 **무음 아닌 명시 경고** 출력도 설계대로 확인 ② 순찰이 적발한 **HF_TOKEN 인벤 미등재 → #42 소급 등재**(`secret map` 등재·`sa_audit` ⑥ "전량 등재 ✓" 재실측) ③ **권한 매트릭스 `appspot SA` 유령 항목 폐기** — SA 자체 부재 실측(monkos SA는 yong-a·image-engine·compute 3개뿐), **07-24 T2 지시서 "appspot 롤 회수" 오조준의 근원** 명기 | `7f166d8b` | ✅ |
+| 07/25 | iMac/민아 | **4060 HF_TOKEN 교체 — 실키 종결 잔여분 완료** (작가님 "4060 SSH 개방했으니 직접 처리") — SSH 접속(DESKTOP-70GOMAR/Windows) → **기존 User env 토큰 HTTP 401 = 어제 폐기된 구토큰 잔존 실측**(브리핑 "env 세팅 대기" 항목의 실체 = 벤치마크 서버가 인증 실패 방치 상태) → SM `HF_TOKEN` latest를 **stdin 파이프로 전달**(값 채팅·로그 미노출, 헌법 4조 1항) → User 환경변수 교체 → **4060에서 직접 재검증 HTTP 200 / account=monkosAI**. 실키 5종 중 잔여는 Telegram revoke 1건(작가님 액션) | `6752f820` | ✅ |
 
 ---
 
