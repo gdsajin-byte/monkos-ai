@@ -1,0 +1,1 @@
+# gitleaks smoke test - clean file
