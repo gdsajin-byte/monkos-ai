@@ -91,5 +91,44 @@ PF_SECURITY 소관이나 본 지시서 범위 밖이라 손대지 않았다. SM 
 
 ## 7. 남은 것
 
-- **prod 승격**: 작가님 별도 승인 필요. 승격 시 3서비스 `./deploy.sh prod` — prod는 `TOSS_CLIENT_KEY`(라이브) SM 참조로 자동 분기된다.
+- ~~prod 승격~~ → **2026-07-25 15:20 KST 작가님 승인, §9에서 완료.**
 - A안(`/api/config` 서버 주입 전환)은 중기 과제로 별건 유지.
+
+---
+
+# §9. prod 승격 결과 (지시서 §9 — 2026-07-25 15:20 KST 작가님 승인)
+
+**[2026-07-25 15:28 KST]** iMac/막내1 → 작가님
+
+## 9.1 배포
+
+`./deploy.sh prod --yes` 3서비스 (비TTY 환경이라 deploy.sh가 요구하는 `--yes` 경유. ch5 준수)
+
+| 서비스 | 승격 전 rev | **승격 후 rev** |
+|---|---|---|
+| monkos-portal | 00536-czl | **00537-q69** |
+| monkos-studio | 00022-wkl | **00023-6tf** |
+| monkos-idphoto-kr | 00202-szs | **00203-jwn** |
+
+- `deploy.sh:109~111` prod 비-live 키 차단 가드: **발동 0** (정상 통과)
+- 평문 env 선제 제거 가드: **발동 0** (prod 3서비스에 평문 `TOSS_CLIENT_KEY` 부재 — dev 전용 잔재였음)
+
+## 9.2 승격 직후 확인 — 5/5 통과
+
+| # | 확인 | 결과 |
+|---|---|---|
+| 1 | prod 3서비스 키 접두사 | ✅ 3/3 `live_gck_` |
+| 2 | 위젯 실렌더 | ✅ 3/3 `rendered` · **테스트 배너 없음**(`false` 3/3) — [prod_*_widget.png](shots_20260725_toss_dev/) |
+| 3 | 플레이스홀더·전역변수 원문 잔존 | ✅ 3/3 `__TOSS_CLIENT_KEY__` 0건 |
+| 4 | 기동 로그 §5 ERROR | ✅ 3/3 `Toss Client Key: 설정됨 (LIVE)` — 신설 ERROR 0건 |
+| 5 | dev 무영향 | ✅ dev 3서비스 여전히 `test_gck_` |
+
+**핵심 — 난독화 재설계분의 prod 실동작 확정**: portal prod `/credits` 응답에서 `window.__MONKOS_TOSS_CK__="live_gck_…"` 주입 확인, `cache-control: no-cache` 유지. **§4-1에서 dev용으로 재설계한 방식이 prod 난독화 빌드에서도 그대로 동작한다** — 이번 승격의 유일한 미검증 지점이 실측으로 해소됐다. (portal Dockerfile에 dev/prod 분기가 없어 예상은 됐으나, 난독화기가 실행마다 심볼을 새로 뽑으므로 실측 전까지 단정하지 않았다.)
+
+prod 위젯에는 카카오페이·네이버페이·토스페이·PAYCO가 노출된다(dev 테스트 키는 토스페이·PAYCO만) — 라이브 키가 실제로 먹은 방증.
+
+- 롤백 미발생. **결제 버튼 미클릭** — 렌더 확인까지만.
+
+## 9.3 최종 상태
+
+전 환경 토스 클라이언트 키 경로가 SM 정본 참조로 일원화됐다. 정적 파일에 남은 결제 키 하드코딩 0건, dev는 테스트 키·prod는 라이브 키로 자동 분기.
