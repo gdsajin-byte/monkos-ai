@@ -84,6 +84,8 @@
 | /market-eye | 스킬 | `.claude/commands/` | PF_MARKET_EYE |
 | /4060 | 스킬 | `.claude/commands/` | PF_INFRA + PF_FACTORY |
 | gitleaks-precommit.sh | 인프라 | `scripts/tools/` + `.git/hooks/pre-commit` | PF_SECURITY |
+| matte_loadtest.py | 인프라 | `scripts/tools/` (4060에 실행 사본) | PF_INFRA + INCIDENT_20260725 |
+| matte-probe (chain/leg) | 빌드/생성 | `monkos_AI/portal/tools/matte-probe/` | PF_INFRA + INCIDENT_20260725 |
 
 ## 모델 배치
 
