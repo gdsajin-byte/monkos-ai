@@ -14,7 +14,14 @@
 # 헌법 4조 1항: 키 값 생성/추측 금지. 파이프/변수로만 취급.
 
 set -uo pipefail
-export PATH="/Users/macmini/google-cloud-sdk/bin:/usr/local/bin:/usr/bin:/bin"
+# launchd는 최소 PATH로 실행되므로 보강한다. ⚠️ 단일 디바이스 경로를 하드코딩하면
+# 다른 디바이스에서 gcloud 미탐지로 조용히 실패한다(2026-07-25 iMac 실측: 이 스크립트가
+# /Users/macmini/ 고정이라 iMac에서 KEY 조회 실패). 후보 경로를 모두 얹고 존재하는 것을 쓴다.
+export PATH="$PATH:/Users/macmini/google-cloud-sdk/bin:$HOME/google-cloud-sdk/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin"
+if ! command -v gcloud >/dev/null 2>&1; then
+  echo "[$(date '+%Y-%m-%d %H:%M:%S KST')] ❌ gcloud 미탐지 — PATH: $PATH"
+  exit 1
+fi
 
 PROJECT="monkos"
 THRESHOLD="${RUNPOD_BALANCE_THRESHOLD:-2.0}"
@@ -47,7 +54,34 @@ fi
 
 RESP=$(curl -s -m 30 -H "Content-Type: application/json" -H "Authorization: Bearer $KEY" \
   https://api.runpod.io/graphql -d '{"query":"query { myself { clientBalance } }"}')
+
+# === 사용량 스냅샷 (2026-07-25 신설, 작가님 "런팟도 api가 등록되어있으니 필요 신호를 수집하면 된다") ===
+# 목적: **예열 횟수를 포털 코드 무접촉으로 실측한다.**
+#   jobs.completed 델타 = 예열 잡 + 실제 매팅 잡
+#   실제 매팅 잡은 Cloud Logging `via=runpod` 카운트로 별도 확인 → **차이가 곧 예열 횟수**
+# 현재 warmupMatteEngine()의 RunPod 분기는 fire-and-forget에 로그가 0이라 이 경로 외에는
+# 예열을 셀 방법이 없다. 소비자(RunPod) 쪽에서 보는 것이 생산자에 로그를 넣는 것보다 싸다.
+EP="${MATTE_ENDPOINT_ID:-di9upymdumei34}"
+HEALTH=$(curl -s -m 20 -H "Authorization: Bearer $KEY" "https://api.runpod.ai/v2/${EP}/health" 2>/dev/null)
 unset KEY
+
+USAGE_LOG="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/ops/audit/RUNPOD_USAGE.jsonl"
+if echo "$HEALTH" | jq -e '.jobs.completed' >/dev/null 2>&1; then
+  PREV=$(tail -n 1 "$USAGE_LOG" 2>/dev/null | jq -r '.completed // empty' 2>/dev/null)
+  CUR=$(echo "$HEALTH" | jq -r '.jobs.completed')
+  DELTA=""
+  [ -n "$PREV" ] && DELTA=$((CUR - PREV))
+  mkdir -p "$(dirname "$USAGE_LOG")"
+  echo "$HEALTH" | jq -c --arg ts "$(ts)" --arg delta "$DELTA" \
+    '{ts:$ts, completed:.jobs.completed, failed:.jobs.failed, inQueue:.jobs.inQueue,
+      w_idle:.workers.idle, w_ready:.workers.ready, w_running:.workers.running,
+      w_init:.workers.initializing, w_throttled:.workers.throttled,
+      delta:(if $delta=="" then null else ($delta|tonumber) end)}' >> "$USAGE_LOG"
+  echo "[$(ts)] RunPod 사용량: completed=${CUR}${DELTA:+ (직전 대비 +${DELTA})} · workers idle/ready=$(echo "$HEALTH" | jq -r '.workers.idle')/$(echo "$HEALTH" | jq -r '.workers.ready')"
+else
+  # 무음 강등 금지 — 수집 실패를 조용히 넘기지 않는다(0으로 오독되면 예열 통제 판단이 뒤집힌다).
+  echo "[$(ts)] ⚠️ RunPod 사용량 스냅샷 실패 — /v2/${EP}/health 응답 파싱 불가"
+fi
 
 BALANCE=$(echo "$RESP" | jq -r '.data.myself.clientBalance // empty' 2>/dev/null)
 
