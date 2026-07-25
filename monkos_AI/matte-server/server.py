@@ -125,6 +125,15 @@ _nvml_handle = None
 _self_pid = os.getpid()
 _dev_mem = {"used": None, "free": None, "total": None}   # 장치 전역 VRAM (NVML)
 
+# --- 상태 시계열 (2026-07-25, 작가님 "20:16만 아이가 게임에 한창일 때") -------------
+# jobs.jsonl은 **잡이 있을 때만** 남는다. 그런데 프로드 트래픽은 하루 6건 산발이라
+# 정작 중요한 국면(사람이 조작 중인 활성 플레이)에 잡이 걸릴 확률이 낮다.
+# 20:16 160배 사건의 상태를 못 남긴 이유도 이것 — 그때는 샘플러 자체가 없었다.
+# 그래서 **잡과 무관하게** 상태를 주기 기록한다. 이미 도는 샘플러가 요약만 적으므로
+# GPU 부하는 0이고, 나중에 잡 결과(jobs.jsonl)와 시각으로 조인하면 패턴이 나온다.
+STATE_LOG_SEC = float(os.environ.get("MATTE_STATE_LOG_SEC", "60"))
+_state_log_last = 0.0
+
 
 def _occupancy_sampler():
     """상시 저비용 샘플러. pynvml 실측 0.015ms/회 → 250ms 간격 duty ≈ 0.006%."""
@@ -173,6 +182,25 @@ def _occupancy_sampler():
                     _occ_samples.popleft()
                 _occ_last_at = now
                 _occ_status = "ok"
+            # 상태 시계열 — 잡 유무와 무관하게 국면을 남긴다.
+            global _state_log_last
+            if now - _state_log_last >= STATE_LOG_SEC:
+                _state_log_last = now
+                snap = _occupancy_snapshot()
+                _statelog({
+                    "ts": time.strftime("%Y-%m-%dT%H:%M:%S"),
+                    "util": snap.get("gpu_util_now"),
+                    "f_max": snap.get("foreign_util_max"),
+                    "f_sd": snap.get("foreign_util_sd"),
+                    "f_dmean": snap.get("foreign_util_dmean"),
+                    "f_active": snap.get("foreign_active"),
+                    "f_sat": snap.get("foreign_saturated"),
+                    "f_procs": snap.get("foreign_procs"),
+                    "f_vram": snap.get("foreign_vram_mb"),
+                    "dev_free": snap.get("dev_vram_free_mb"),
+                    "my_res": round(torch.cuda.memory_reserved(0) / 1024**2),
+                    "inflight": inflight,
+                })
         except Exception as e:
             with _occ_lock:
                 _occ_status = f"error: {type(e).__name__}: {e}"
@@ -252,6 +280,19 @@ def _occupancy_snapshot():
 JOBLOG_PATH = os.environ.get(
     "MATTE_JOBLOG", os.path.join(os.path.dirname(os.path.abspath(__file__)), "logs", "jobs.jsonl"))
 _joblog_lock = threading.Lock()
+
+
+def _statelog(record):
+    """상태 시계열. 일별 파일로 나눠 수거·정리를 단순하게 한다."""
+    try:
+        d = os.path.join(os.path.dirname(JOBLOG_PATH))
+        os.makedirs(d, exist_ok=True)
+        path = os.path.join(d, f"gpu_state_{time.strftime('%Y%m%d')}.jsonl")
+        with _joblog_lock:
+            with open(path, "a", encoding="utf-8") as f:
+                f.write(json.dumps(record, ensure_ascii=False) + "\n")
+    except Exception as e:
+        logger.warning(f"statelog 기록 실패({type(e).__name__}: {e})")
 
 
 def _joblog(record):
