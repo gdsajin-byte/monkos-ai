@@ -533,3 +533,8 @@
 
 ## [2026-07-24 05:44 KST] iMac/민아
 - 신설: `feedback_verify_consumer_check.md` — 검증 게이트 "공용 정본 수정 시 대상 표면의 실소비 확인" (7/24 홈 navHtml 이원화 자기정정에서 도출). MEMORY.md 운영 교훈 섹션 1행 추가.
+
+## [2026-07-25 19:30 KST] iMac/쌍아
+- **신설**: `feedback_shared_resource_dev_gate_fallacy.md` — 공유 자원(Firestore·GPU·워킹트리)은 dev 게이트로 격리되지 않는다. 07-25 하루 3회 실증(prod 504 / prod 404 35분 / 커밋 귀속 혼입)
+- **MEMORY.md**: 「운영 교훈」에 위 1행 추가
+- **갱신**: `project_ssanga_context_budget.md` — 1M 해결 확정(2.1.220) + "모델 ID `[1m]` 접미사는 무효 지표, 분모만이 근거"
