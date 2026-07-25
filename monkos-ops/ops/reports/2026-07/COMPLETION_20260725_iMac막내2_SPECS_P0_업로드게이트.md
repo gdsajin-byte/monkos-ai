@@ -6,7 +6,7 @@ from: iMac/막내2
 to: iMac/쌍아
 order: ORDER_20260725_iMac쌍아_막내_SPECS_P0_업로드게이트_오탐구제.md
 portfolio: PF_SPECS
-commit: (커밋 후 기입)
+commit: 4f4b1f8e
 branch: main
 status: dev 검증 완료 / prod 미배포
 ---
