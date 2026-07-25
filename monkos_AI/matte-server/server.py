@@ -109,12 +109,21 @@ OCC_ACTIVE_DMEAN = float(os.environ.get("MATTE_FOREIGN_ACTIVE_DMEAN", "1.0"))
 # 초기값은 보수적 추정이며 jobs.jsonl 축적 후 실측으로 조정할 대상이다.
 OCC_SATURATED_PCT = int(os.environ.get("MATTE_FOREIGN_SATURATED_PCT", "90"))
 
+# --- 유휴 시 VRAM 반납 (2026-07-25, 작가님 "최대한 공유되도록") ----------------
+# torch 캐싱 할당자는 한 번 잡은 VRAM을 놓지 않는다. 실측: 모델 자체는 851MiB인데
+# 하루 돌린 뒤 reserved 4,376MiB — 약 3.5GB를 캐시로 붙들고 있었다. 이 기계는 아이의
+# 게임과 공유하는 가정용 PC이고 우리 트래픽은 하루 6건뿐이다. 유휴가 대부분인 자원을
+# 붙들고 있을 이유가 없다. 일정 시간 잡이 없으면 캐시를 반납한다.
+# (매 잡 후 반납은 다음 잡의 재할당 비용을 물리므로 하지 않는다 — 유휴 시에만.)
+IDLE_RELEASE_SEC = float(os.environ.get("MATTE_IDLE_VRAM_RELEASE_SEC", "60"))
+
 _occ_lock = threading.Lock()
 _occ_samples = deque()            # (mono, util_pct, inflight_at_sample)
 _occ_last_at = None               # 마지막 성공 샘플 시각 (perf_counter)
 _occ_status = "starting"          # ok | starting | 실패 사유 — 무음 0 금지
 _nvml_handle = None
 _self_pid = os.getpid()
+_dev_mem = {"used": None, "free": None, "total": None}   # 장치 전역 VRAM (NVML)
 
 
 def _occupancy_sampler():
@@ -135,10 +144,26 @@ def _occupancy_sampler():
     while True:
         try:
             util = pynvml.nvmlDeviceGetUtilizationRates(_nvml_handle).gpu
-            now = time.perf_counter()
+            mem = pynvml.nvmlDeviceGetMemoryInfo(_nvml_handle)   # 장치 전역 — torch.mem_get_info는
+            now = time.perf_counter()                            # WDDM 가상화로 못 쓴다(07-25 실측)
             with _state_lock:
                 inflight = len(_inflight_started)
                 last_done = _last_done_perf
+            with _occ_lock:
+                _dev_mem["used"] = mem.used
+                _dev_mem["free"] = mem.free
+                _dev_mem["total"] = mem.total
+            # 유휴 반납 — 잡이 끊긴 지 오래면 캐시를 놓아 아이 게임 쪽에 자리를 돌려준다.
+            if inflight == 0 and last_done is not None and (now - last_done) > IDLE_RELEASE_SEC:
+                if torch.cuda.memory_reserved(0) > torch.cuda.memory_allocated(0) + 64 * 1024**2:
+                    try:
+                        before = torch.cuda.memory_reserved(0)
+                        torch.cuda.empty_cache()
+                        freed = (before - torch.cuda.memory_reserved(0)) / 1024**2
+                        if freed > 1:
+                            logger.info(f"유휴 VRAM 반납 {freed:.0f}MiB (유휴 {now - last_done:.0f}s)")
+                    except Exception as e:
+                        logger.warning(f"VRAM 반납 실패({type(e).__name__}: {e})")
             # 우리 흔적: 진행 중이거나, 방금 끝나 사용률이 아직 안 내려간 구간.
             ours = inflight > 0 or (last_done is not None and now - last_done < OCC_SELF_COOLDOWN_SEC)
             with _occ_lock:
@@ -210,6 +235,11 @@ def _occupancy_snapshot():
         "foreign_busy_pct": OCC_BUSY_PCT,
         "foreign_active_sd": OCC_ACTIVE_SD,
         "foreign_procs": procs,
+        "dev_vram_used_mb": round(_dev_mem["used"] / 1024**2) if _dev_mem["used"] else None,
+        "dev_vram_free_mb": round(_dev_mem["free"] / 1024**2) if _dev_mem["free"] else None,
+        # 외부가 쥔 VRAM = 장치 사용량 − 우리 torch 예약분. 공존 여력의 직접 지표.
+        "foreign_vram_mb": (round(_dev_mem["used"] / 1024**2 - torch.cuda.memory_reserved(0) / 1024**2)
+                            if _dev_mem["used"] else None),
         "window_sec": OCC_WINDOW_SEC,
     }
 
@@ -394,6 +424,10 @@ def matte(req: MatteRequest):
             "f_sat": occ_at_start.get("foreign_saturated"),
             "f_procs": occ_at_start.get("foreign_procs"),
             "f_samples": occ_at_start.get("foreign_samples"),
+            "dev_vram_used": occ_at_start.get("dev_vram_used_mb"),
+            "dev_vram_free": occ_at_start.get("dev_vram_free_mb"),
+            "f_vram": occ_at_start.get("foreign_vram_mb"),
+            "my_reserved_mb": round(torch.cuda.memory_reserved(0) / 1024**2),
             "sampler": occ_at_start.get("sampler_status"),
         })
         return {
