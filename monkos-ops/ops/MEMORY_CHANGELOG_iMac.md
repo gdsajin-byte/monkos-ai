@@ -538,3 +538,6 @@
 - **신설**: `feedback_shared_resource_dev_gate_fallacy.md` — 공유 자원(Firestore·GPU·워킹트리)은 dev 게이트로 격리되지 않는다. 07-25 하루 3회 실증(prod 504 / prod 404 35분 / 커밋 귀속 혼입)
 - **MEMORY.md**: 「운영 교훈」에 위 1행 추가
 - **갱신**: `project_ssanga_context_budget.md` — 1M 해결 확정(2.1.220) + "모델 ID `[1m]` 접미사는 무효 지표, 분모만이 근거"
+
+## [2026-07-25 19:28 KST] iMac/민아
+- 신설: `feedback_capability_must_be_exercised.md` — **"디코드는 디코드로, 렌더는 렌더로 확인한다. 헤더·메타·설정값은 능력의 증거가 아니다."** 07-25 하루에 동형 오류 3회(레지스트리→file.type / `metadata()`→디코드능력 / 4060 1대→"Edge 특이성") 반복에서 도출. 특히 `metadata()` 오독은 "서버가 HEIC를 처리한다"는 거짓 전제가 되어 쌍아 처방을 뒤집을 뻔했다(검수자 미검증 단정의 하위 증폭). 같은 함정이 코드에도 있었음 — `normalizeImage`의 DECODE_FAILED 가드가 `metadata()` 기반이라 무력화. MEMORY.md 외장 메모리 섹션 1행 추가.
