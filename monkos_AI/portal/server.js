@@ -165,6 +165,9 @@ function freeQuotaCookie(date, count) {
  * 선차감 방식 — 생성 실패(FREE_UNAVAILABLE) 시 refundFreeQuota로 반환. 멀티탭 레이스도 원자성으로 해소.
  * Firestore 장애 시 null 반환 → 쿠키+IP 백스톱만으로 진행(가용성 우선, WARNING 로그).
  */
+// Cloud Run 요청 예산(120s) 대비 전달 판정 임계. 이 시간을 넘겨 완성된 산출물은
+// 유저에게 닿지 않았다고 보고 소모분을 반환한다 (2026-07-25 INCIDENT 대응).
+const GEN_DELIVERY_DEADLINE_MS = Number(process.env.GEN_DELIVERY_DEADLINE_MS || 115000);
 const FREE_GLOBAL_DAILY_CAP = 300; // 전역 일일 상한 — 최악 매팅 원가 ~₩6,000/일
 function freeQuotaKey(req) {
   const xff = req.headers['x-forwarded-for'];
@@ -661,11 +664,16 @@ const httpServer = createServer(async (req, res) => {
     let refundGate = null;
     let t1RawForSave = null;
     const fireRefundGate = () => { const fire = refundGate; refundGate = null; if (fire) fire(); };
-    // 🔴 클라이언트 절단 감지 (2026-07-25) — 07-25 INCIDENT의 실제 누출 지점.
-    // Cloud Run 타임아웃(504)으로 요청이 끊겨도 이 프로세스는 계속 돌아 산출물을 만들고
+    // 🔴 미전달 산출물에 생성권을 물리지 않는다 (2026-07-25) — 07-25 INCIDENT의 실제 누출 지점.
+    // Cloud Run 타임아웃(504)으로 유저 연결이 끊겨도 이 프로세스는 계속 돌아 산출물을 만들고
     // "생성 완료"를 기록한다. 그 경로는 서버 기준 성공이라 기존 반환 분기(!finalBase64)에
     // 걸리지 않았고, 카운트 동기용 Set-Cookie도 504에 밀려 유저에게 도달하지 못했다.
-    // → 결과물 없이 생성권만 소모. 연결이 끊긴 시점에 소모분을 반환한다.
+    //
+    // ⚠️ 소켓 절단 감지는 Cloud Run에서 쓸 수 없다 — 2026-07-25 실측: 클라이언트가 abort 해도
+    //    컨테이너의 res 'close'가 발화하지 않고(프록시가 상류 연결을 유지) 응답 쓰기도 조용히 성공한다.
+    //    따라서 절단은 관측 불가이며, **경과 시간이 유일한 신뢰 신호**다.
+    // 'close' 훅은 절단을 전파하는 환경(로컬·타 프록시)을 위해 남겨 둔다.
+    const reqStartedAt = Date.now();
     let clientGone = false;
     res.on('close', () => {
       if (res.writableFinished) return;
@@ -675,6 +683,8 @@ const httpServer = createServer(async (req, res) => {
         fireRefundGate();
       }
     });
+    /** Cloud Run 요청 예산(120s)을 넘겼으면 응답은 유저에게 닿지 않는다 — 소모분을 반환한다. */
+    const deliveryDoubtful = () => clientGone || (Date.now() - reqStartedAt) >= GEN_DELIVERY_DEADLINE_MS;
     try {
       const { parseJsonBody, parseCookies: pc, verifyAuthToken } = await import('./lib/shared/config.js');
       const body = await parseJsonBody(req);
@@ -921,21 +931,24 @@ const httpServer = createServer(async (req, res) => {
         params: { gate: gateMode, slug: slug || null, track: genTrack || null },
       }).catch(() => {});
 
-      // 산출물은 완성했지만 유저가 받지 못하는 경우 — 쿼터를 확정하지 않는다.
-      // (res.on('close')가 이미 반환했으면 fireRefundGate는 무동작)
-      if (clientGone) {
-        log(`[IDPhoto] 산출물 완성·클라이언트 연결 종료 — 쿼터 미확정(${gateMode})`, 'WARNING');
+      // 산출물은 완성했지만 유저에게 닿았는지 의심스러운 경우 — 소모분을 반환하고 쿼터를 확정하지 않는다.
+      // 응답 자체는 그대로 보낸다: 닿으면 유저는 사진을 받고 횟수도 안 깎인다(관대한 방향의 오차).
+      // 닿지 않으면 07-25처럼 "결과물 없이 생성권만 소모"가 되는 것을 막는다.
+      const undelivered = deliveryDoubtful();
+      if (undelivered) {
+        log(`[IDPhoto] 전달 불확실(경과 ${Date.now() - reqStartedAt}ms) — 소모분 반환·쿼터 미확정(${gateMode})`, 'WARNING');
         fireRefundGate();
-        return;
       }
 
       let remainingFree = null;
-      if (gateMode === 'free') {
+      if (gateMode === 'free' && !undelivered) {
         const newCount = freeQuota.count + 1;
         remainingFree = Math.max(0, FREE_DAILY_CAP - newCount);
         res.setHeader('Set-Cookie', freeQuotaCookie(freeQuota.date, newCount));
+      } else if (gateMode === 'free') {
+        remainingFree = Math.max(0, FREE_DAILY_CAP - freeQuota.count);
       }
-      refundGate = null; // 산출물 확정 — 이후 실패는 반환 대상 아님
+      if (!undelivered) refundGate = null; // 산출물 확정 — 이후 실패는 반환 대상 아님
       res.writeHead(200, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify({ image: finalBase64, remainingGenerates, remainingFree, track: genTrack, cropEngine, meta: resultMeta }));
     } catch (err) {
