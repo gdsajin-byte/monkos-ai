@@ -211,6 +211,7 @@ status: 현행
 
 | **AUTH_SECRET** | NextAuth 세션 서명 키 | portal (CR 환경변수 직접 설정) | ⭐ **2026-06-12 SM 등록 확인** — 콘솔에서 직접 설정된 것도 있음 |
 | **TOSS_SECRET_KEY_TEST** | 토스 테스트 시크릿 키 | portal-dev (개발 환경 결제 테스트) | ⭐ **2026-07-12 신설** — dev 환경 전용, prod TOSS_SECRET_KEY와 분리 |
+| **TOSS_CLIENT_KEY_TEST** | 토스 테스트 클라이언트 키 (결제위젯 SDK용) | portal-dev · studio-dev · idphoto-kr-dev (dev 결제위젯) | ⭐ **2026-07-25 신설** — dev 실결제 차단. deploy.sh 평문 하드코딩(`portal/deploy.sh:91`) → SM 참조 전환 대상. ORDER_20260725 토스클라이언트키_dev분리 |
 | **LEMONSQUEEZY_API_KEY_GLOBAL** | Lemon Squeezy 글로벌 스토어 API 키 | portal (글로벌 결제) | ⭐ **2026-06-23 신설** — Global store#415328 |
 | **LEMONSQUEEZY_WEBHOOK_SECRET_GLOBAL** | Lemon Squeezy 글로벌 웹훅 시크릿 | portal | ⭐ **2026-06-23 신설** — Global store#415328 |
 | **BING_WMT_API_KEY** | Bing Webmaster Tools API | daily_briefing (Bing 검색 성과) | ⭐ **2026-07-14 신설** — 일본 시장 Bing 36% 대응 |

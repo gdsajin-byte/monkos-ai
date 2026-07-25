@@ -85,7 +85,9 @@
       "mcp__playwright__browser_fill_form",
       "mcp__playwright__browser_evaluate",
       "mcp__playwright__browser_handle_dialog",
-      "mcp__claude_ai_Gmail__create_draft"
+      "mcp__claude_ai_Gmail__create_draft",
+      "mcp__monk-retrieval__monk_stats",
+      "mcp__monk-retrieval__monk_search"
     ],
     "deny": [
       "Bash(rm -rf *)",
@@ -100,5 +102,5 @@
       "/Users/jeong-kyushin/developer/monk_project/monkos-ops/works/han/260406_셀카증명사진촬영팁/watermarked"
     ]
   },
-  "model": "claude-opus-4-6[1m]"
+  "model": "claude-opus-5"
 }
