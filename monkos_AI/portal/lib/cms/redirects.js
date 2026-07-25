@@ -4,6 +4,17 @@
  * 구 슬러그 → 신규 슬러그 (GSC 404/중복 색인 해소용).
  */
 export const BLOG_REDIRECTS = {
+  // === 2026-07-25 CITADEL P2 — 관리자 편집 URL이 슬러그로 색인된 건 정본화 ===
+  // 원인: 슬러그 입력란에 /admin/blog-edit.html URL이 통째로 들어감. ko/ja/en 3문서 전부 동일 슬러그였다.
+  // 리슬러그: https:monkosaiadminblog-edithtml-{kr,ja,en} → womens-short-hair-job-photo-styles-{kr,ja,en}
+  // 접미사 변형까지 명시하는 이유: 접미사 정규화(1홉) + 본 맵(1홉) = 2홉 체인을 막기 위함.
+  '/blog/https:monkosaiadminblog-edithtml':        '/blog/womens-short-hair-job-photo-styles',
+  '/blog/https:monkosaiadminblog-edithtml-kr':     '/blog/womens-short-hair-job-photo-styles',
+  '/ja/blog/https:monkosaiadminblog-edithtml':     '/ja/blog/womens-short-hair-job-photo-styles',
+  '/ja/blog/https:monkosaiadminblog-edithtml-ja':  '/ja/blog/womens-short-hair-job-photo-styles',
+  '/en/blog/https:monkosaiadminblog-edithtml':     '/en/blog/womens-short-hair-job-photo-styles',
+  '/en/blog/https:monkosaiadminblog-edithtml-en':  '/en/blog/womens-short-hair-job-photo-styles',
+
   // JA — 죽은 타깃 교정 (2026-07-05 대사: 타깃 404 → 살아있는 슬러그로 교체)
   '/ja/blog/vol23-qa-5':     '/ja/blog/japanese-job-seekers-frequently-asked-questions-about-id-pho',
   '/ja/blog/vol22':          '/ja/blog/mensetsu-odango-hair-kanpeki-5-steps',

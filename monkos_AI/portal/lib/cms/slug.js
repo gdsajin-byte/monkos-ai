@@ -49,4 +49,22 @@ function isWeakSlug(slug) {
   return false;
 }
 
-export { generateSlug, generateSlugFromAI, sanitizeSlug, isWeakSlug };
+/**
+ * URL 형태 입력 판정 — 2026-07-25 재발 방지 (CITADEL P3).
+ * 사고: 슬러그 입력란에 `https://monkos.ai/admin/blog-edit.html`이 통째로 들어가
+ *       위생처리만 거쳐 `https:monkosaiadminblog-edithtml`로 색인됐다(ko/ja/en 3건).
+ * sanitizeSlug는 "정규화"만 하므로 쓰레기 입력을 조용히 통과시킨다 → 입력단에서 거부한다.
+ * 정상 슬러그는 `[a-z0-9-]`만 쓰므로 아래 조건에 걸리지 않는다.
+ */
+function isUrlLikeSlug(input) {
+  if (typeof input !== 'string') return false;
+  const s = input.trim().toLowerCase();
+  if (!s) return false;
+  if (s.includes('/')) return true;                              // 경로 구분자 — 정상 슬러그엔 없다
+  if (/^[a-z][a-z0-9+.-]*:/.test(s)) return true;                // 스킴 또는 그 잔해 (https:, mailto:)
+  if (/[a-z0-9-]+\.(com|net|org|ai|kr|io|co|jp|dev|app)(\b|$)/.test(s)) return true;  // 도메인
+  if (/\.(html?|php|aspx?|jsp)(\b|$)/.test(s)) return true;      // 파일 확장자
+  return false;
+}
+
+export { generateSlug, generateSlugFromAI, sanitizeSlug, isWeakSlug, isUrlLikeSlug };

@@ -9,7 +9,7 @@ import { requireAdmin } from './admin-auth.js';
 import { translateAndSaveBlogPost } from './translate.js';
 import { publishBlogToGitHub } from './github-issues.js';
 import { notifySearchEngines } from './seo.js';
-import { generateSlug, generateSlugFromAI, sanitizeSlug, isWeakSlug } from './slug.js';
+import { generateSlug, generateSlugFromAI, sanitizeSlug, isWeakSlug, isUrlLikeSlug } from './slug.js';
 
 const blogCollection = firestore.collection('blog_posts');
 const ogStorage = new Storage();
@@ -126,6 +126,14 @@ export async function handleBlogCreate(req, res) {
 
     const postLang = lang || 'ko';
     const suffix = langSuffix(postLang);
+
+    // URL 형태 슬러그 입력 거부 (2026-07-25 CITADEL P3) — 무음 통과 금지.
+    // 정규화는 위생처리만 하므로 URL을 넣으면 쓰레기 슬러그가 조용히 색인된다.
+    if (body.slug && isUrlLikeSlug(body.slug)) {
+      log(`[CMS] 🚨 URL 형태 슬러그 입력 거부: "${String(body.slug).substring(0, 80)}" (제목: ${title})`, 'ERROR');
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ error: 'slug에 URL을 넣을 수 없습니다. 영문 슬러그만 입력하거나 비워두면 제목에서 자동 생성됩니다.' }));
+    }
 
     let baseSlug = sanitizeSlug(body.slug || generateSlug(title));
     if (!baseSlug || hasKorean(baseSlug) || isWeakSlug(baseSlug)) {

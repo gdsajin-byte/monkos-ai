@@ -5705,10 +5705,10 @@
       "pipeline": "specs-unique-pilot"
     },
     "warning": {
-      "ko": "⚠️ 캐나다 여권은 전문 사진사 촬영이 의무입니다. 사진 뒷면에 사진사 서명·주소·촬영일자 기재 필수.",
-      "en": "⚠️ Canada requires photos taken by a commercial photographer.",
-      "ja": "⚠️ カナダのパスポートは商業写真家による撮影が義務です。",
-      "es": "⚠️ Canadá requiere fotos tomadas por un fotógrafo comercial."
+      "ko": "캐나다 여권은 전문 사진사 촬영이 의무입니다. 사진 뒷면에 사진사 서명·주소·촬영일자 기재 필수.",
+      "en": "Canada requires photos taken by a commercial photographer.",
+      "ja": "カナダのパスポートは商業写真家による撮影が義務です。",
+      "es": "Canadá requiere fotos tomadas por un fotógrafo comercial."
     }
   },
   "ca-visa": {
@@ -6057,10 +6057,10 @@
     "validityEs": "3 meses",
     "fileSpecEs": "JPEG, máx 60KB",
     "warning": {
-      "ko": "⚠️ 유효기간 3개월",
-      "en": "⚠️ Valid 3 months",
-      "ja": "⚠️ 有効期限3ヶ月",
-      "es": "⚠️ Válido por 3 meses"
+      "ko": "유효기간 3개월",
+      "en": "Valid 3 months",
+      "ja": "有効期限3ヶ月",
+      "es": "Válido por 3 meses"
     }
   },
   "sg-visa": {
@@ -8925,10 +8925,10 @@
     "validityEs": "",
     "fileSpecEs": "File formato JPEG/JPG/PNG, in color. mínimo 400x600px. máximo tamaño de archivo 2MB. Photo layout/position debe be properly composed (not too close, not too far).",
     "warning": {
-      "ko": "⚠️ 여권 배경색 빨간색. 비자는 흰색 35x45.",
-      "en": "⚠️ Passport background is RED. Visa uses white 35x45.",
-      "ja": "⚠️ パスポートの背景は赤色。ビザは白35x45。",
-      "es": "⚠️ El fondo del pasaporte es ROJO. La visa usa fondo blanco 35x45."
+      "ko": "여권 배경색 빨간색. 비자는 흰색 35x45.",
+      "en": "Passport background is RED. Visa uses white 35x45.",
+      "ja": "パスポートの背景は赤色。ビザは白35x45。",
+      "es": "El fondo del pasaporte es ROJO. La visa usa fondo blanco 35x45."
     }
   },
   "id-visa": {
@@ -9074,10 +9074,10 @@
     "validityEs": "",
     "fileSpecEs": "Foto ukuran paspor (formato JPG/JPEG/PNG dengan ukuran maksimal 200 kb) -- Passport-sized photo, JPG/JPEG/PNG formato, máximo tamaño de archivo 200KB",
     "warning": {
-      "ko": "⚠️ 비자 사양은 여권과 다릅니다 (흰색 배경 35x45).",
-      "en": "⚠️ Visa spec differs from passport (white background 35x45).",
-      "ja": "⚠️ ビザの仕様はパスポートと異なります（白背景35x45）。",
-      "es": "⚠️ Las especificaciones de visa difieren del pasaporte (fondo blanco 35x45)."
+      "ko": "비자 사양은 여권과 다릅니다 (흰색 배경 35x45).",
+      "en": "Visa spec differs from passport (white background 35x45).",
+      "ja": "ビザの仕様はパスポートと異なります（白背景35x45）。",
+      "es": "Las especificaciones de visa difieren del pasaporte (fondo blanco 35x45)."
     }
   },
   "my-passport": {
@@ -9600,10 +9600,10 @@
     "fileSpecEs": "",
     "onsite": true,
     "warning": {
-      "ko": "⚠️ DFA 국내 현장촬영",
-      "en": "⚠️ On-site photo at DFA offices",
-      "ja": "⚠️ DFA国内現場撮影",
-      "es": "⚠️ Foto presencial en oficinas DFA"
+      "ko": "DFA 국내 현장촬영",
+      "en": "On-site photo at DFA offices",
+      "ja": "DFA国内現場撮影",
+      "es": "Foto presencial en oficinas DFA"
     }
   },
   "ph-visa": {
@@ -15768,10 +15768,10 @@
     "validityEs": "",
     "fileSpecEs": "JPEG, máx 5120KB, mín 240KB",
     "warning": {
-      "ko": "⚠️ 광택종이 필수",
-      "en": "⚠️ Glossy paper required",
-      "ja": "⚠️ 光沢紙必須",
-      "es": "⚠️ Se requiere papel fotográfico brillante"
+      "ko": "광택종이 필수",
+      "en": "Glossy paper required",
+      "ja": "光沢紙必須",
+      "es": "Se requiere papel fotográfico brillante"
     }
   },
   "ru-visa": {
@@ -16443,10 +16443,10 @@
     "validityEs": "Tomada dentro de los últimos 6 meses",
     "fileSpecEs": "",
     "warning": {
-      "ko": "⚠️ 흰색 배경 금지! 밝은 회색/파란 필수",
-      "en": "⚠️ White background prohibited! Light grey/blue required",
-      "ja": "⚠️ 白背景禁止！明るいグレー/青必須",
-      "es": "⚠️ ¡Fondo blanco prohibido! Se requiere gris claro/azul"
+      "ko": "흰색 배경 금지! 밝은 회색/파란 필수",
+      "en": "White background prohibited! Light grey/blue required",
+      "ja": "白背景禁止！明るいグレー/青必須",
+      "es": "¡Fondo blanco prohibido! Se requiere gris claro/azul"
     },
     "bgNote": {
       "ko": "흰색 배경 금지",
@@ -16794,10 +16794,10 @@
     "validityEs": "Tomada dentro de los últimos 6 meses",
     "fileSpecEs": "mínimo 600 dpi resolución, alta calidad photo papel; since May 1, 2025 digital presentación via certified photo studio (Lichtbildübermittlungsstelle) requerido para ID documents",
     "warning": {
-      "ko": "⚠️ 2025.05~ 종이사진 금지, 디지털 전용",
-      "en": "⚠️ From 2025.05 paper photos prohibited, digital only",
-      "ja": "⚠️ 2025.05〜紙写真禁止、デジタル専用",
-      "es": "⚠️ Desde 2025.05 fotos en papel prohibidas, solo digital"
+      "ko": "2025.05~ 종이사진 금지, 디지털 전용",
+      "en": "From 2025.05 paper photos prohibited, digital only",
+      "ja": "2025.05〜紙写真禁止、デジタル専用",
+      "es": "Desde 2025.05 fotos en papel prohibidas, solo digital"
     },
     "digitalOnly": true
   },
@@ -30095,10 +30095,10 @@
     "fileSpecEs": "",
     "onsite": true,
     "warning": {
-      "ko": "⚠️ 국내+영사관 현장촬영 병행",
-      "en": "⚠️ In-person photography at offices/consulates",
-      "ja": "⚠️ 国内・領事館で現場撮影",
-      "es": "⚠️ Fotografía presencial en oficinas/consulados"
+      "ko": "국내+영사관 현장촬영 병행",
+      "en": "In-person photography at offices/consulates",
+      "ja": "国内・領事館で現場撮影",
+      "es": "Fotografía presencial en oficinas/consulados"
     }
   },
   "mx-visa": {
@@ -30418,10 +30418,10 @@
     "fileSpecEs": "",
     "onsite": true,
     "warning": {
-      "ko": "⚠️ 브라질 여권은 대면 방문 시 현장에서 얼굴 사진을 촬영합니다(gov.br/pf).",
-      "en": "⚠️ Brazil passport photos are taken on-site during in-person visits (gov.br/pf).",
-      "ja": "⚠️ ブラジルのパスポートは対面訪問時に現地で顔写真を撮影します（gov.br/pf）。",
-      "es": "⚠️ Las fotos del pasaporte de Brasil se toman en persona (gov.br/pf)."
+      "ko": "브라질 여권은 대면 방문 시 현장에서 얼굴 사진을 촬영합니다(gov.br/pf).",
+      "en": "Brazil passport photos are taken on-site during in-person visits (gov.br/pf).",
+      "ja": "ブラジルのパスポートは対面訪問時に現地で顔写真を撮影します（gov.br/pf）。",
+      "es": "Las fotos del pasaporte de Brasil se toman en persona (gov.br/pf)."
     }
   },
   "br-visa": {
@@ -31627,10 +31627,10 @@
     "fileSpecEs": "",
     "onsite": true,
     "warning": {
-      "ko": "⚠️ Migraciones 현장촬영 (사진 불필요)",
-      "en": "⚠️ On-site biometric photo at Migraciones",
-      "ja": "⚠️ Migraciones現場撮影（写真不要）",
-      "es": "⚠️ Foto biométrica presencial en Migraciones"
+      "ko": "Migraciones 현장촬영 (사진 불필요)",
+      "en": "On-site biometric photo at Migraciones",
+      "ja": "Migraciones現場撮影（写真不要）",
+      "es": "Foto biométrica presencial en Migraciones"
     }
   },
   "pe-visa": {
@@ -43657,10 +43657,10 @@
     "validityEs": "2w",
     "fileSpecEs": "El tamaño del archivo de imagen debe ser menor a 2MB; la resolución de la imagen debería ser de 600×800 px.",
     "warning": {
-      "ko": "⚠️ 600DPI, 사진 유효기간 2주",
-      "en": "⚠️ 600DPI required, photo valid 2 weeks",
-      "ja": "⚠️ 600DPI必要、写真有効期限2週間",
-      "es": "⚠️ Se requiere 600DPI, foto válida por 2 semanas"
+      "ko": "600DPI, 사진 유효기간 2주",
+      "en": "600DPI required, photo valid 2 weeks",
+      "ja": "600DPI必要、写真有効期限2週間",
+      "es": "Se requiere 600DPI, foto válida por 2 semanas"
     }
   },
   "ng-visa": {

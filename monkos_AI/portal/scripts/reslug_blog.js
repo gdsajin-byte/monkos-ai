@@ -12,17 +12,10 @@ const firestore = new Firestore({ projectId: PROJECT_ID });
 const blogCollection = firestore.collection('blog_posts');
 
 const RESLUG_MAP = [
+  // 2026-07-25 CITADEL P2 — 관리자 편집 URL이 슬러그로 색인된 건 정본화
   {
-    oldSlug: '47-20x',
-    newBase: 'claude-opus-47-what-went-wrong-max-20x-user',
-  },
-  {
-    oldSlug: '14-vs',
-    newBase: 'korea-vs-japan-job-photo-hairstyle-difference',
-  },
-  {
-    oldSlug: '5-10',
-    newBase: 'interview-updo-hairstyle-5-steps-10-year-pro-tips',
+    oldSlug: 'https:monkosaiadminblog-edithtml',
+    newBase: 'womens-short-hair-job-photo-styles',
   },
 ];
 
@@ -75,7 +68,8 @@ async function reslug(oldSlug, newBase, dryRun) {
       continue;
     }
 
-    const newData = { ...data, slug: newSlug };
+    // baseSlug도 함께 갱신 — home.js:515가 baseSlug로 링크를 만들므로 미갱신 시 죽은 링크가 남는다 (2026-07-25 보정)
+    const newData = { ...data, slug: newSlug, baseSlug: newBase };
     await blogCollection.doc(newSlug).set(newData);
     console.log(`  ✅ 새 문서 생성: ${newSlug}`);
 
