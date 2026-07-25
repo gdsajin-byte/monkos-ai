@@ -1,5 +1,6 @@
 import base64
 import io
+import json
 import os
 import statistics
 import threading
@@ -104,6 +105,9 @@ OCC_SELF_COOLDOWN_SEC = float(os.environ.get("MATTE_OCCUPANCY_SELF_COOLDOWN_SEC"
 # 활성 점유 sd 15.6~19.1 / dmean 1.6~2.4. 한 자릿수 대 두 자릿수라 여유가 크다.
 OCC_ACTIVE_SD = float(os.environ.get("MATTE_FOREIGN_ACTIVE_SD", "5"))
 OCC_ACTIVE_DMEAN = float(os.environ.get("MATTE_FOREIGN_ACTIVE_DMEAN", "1.0"))
+# 포화 상한 (작가님 지적) — 정적이어도 사용률이 꽉 차 있으면 우리 몫이 남지 않는다.
+# 초기값은 보수적 추정이며 jobs.jsonl 축적 후 실측으로 조정할 대상이다.
+OCC_SATURATED_PCT = int(os.environ.get("MATTE_FOREIGN_SATURATED_PCT", "90"))
 
 _occ_lock = threading.Lock()
 _occ_samples = deque()            # (mono, util_pct, inflight_at_sample)
@@ -199,6 +203,8 @@ def _occupancy_snapshot():
         "foreign_util_sd": sd,            # 활성도 — 정적 점유는 1 내외, 활성은 두 자릿수
         "foreign_util_dmean": dmean,      # 연속차분 평균 — 흔들림 강도
         "foreign_active": active,         # True(활성 경합)/False(정적 점유)/None(판정불가)
+        "foreign_saturated": (max(foreign) >= OCC_SATURATED_PCT) if (fresh and foreign) else None,
+        "foreign_saturated_pct": OCC_SATURATED_PCT,
         "foreign_samples": len(foreign),
         "foreign_busy": busy,             # True/False/None — 점유 여부(활성 여부와 별개)
         "foreign_busy_pct": OCC_BUSY_PCT,
@@ -206,6 +212,28 @@ def _occupancy_snapshot():
         "foreign_procs": procs,
         "window_sec": OCC_WINDOW_SEC,
     }
+
+
+# --- 잡별 텔레메트리 (2026-07-25, 작가님 지시) ------------------------------
+# "활성도와 라이브 점유율에 따른 속도변화 그래프를 잡으면 패턴함수가 나온다."
+# 잡 시작 시점의 GPU 상태(예측변수) + 실제 소요(결과변수)를 1줄씩 append.
+# 임계값(OCC_BUSY_PCT·OCC_ACTIVE_SD·OCC_SATURATED_PCT)은 이 데이터로 사후 조정한다.
+# 상태는 반드시 **잡 시작 시점**에 찍는다 — 종료 시점은 우리 자신의 부하로 오염된다.
+JOBLOG_PATH = os.environ.get(
+    "MATTE_JOBLOG", os.path.join(os.path.dirname(os.path.abspath(__file__)), "logs", "jobs.jsonl"))
+_joblog_lock = threading.Lock()
+
+
+def _joblog(record):
+    """append-only JSONL. 실패해도 서비스에 영향 주지 않되 조용히 삼키지 않는다."""
+    try:
+        os.makedirs(os.path.dirname(JOBLOG_PATH), exist_ok=True)
+        line = json.dumps(record, ensure_ascii=False)
+        with _joblog_lock:
+            with open(JOBLOG_PATH, "a", encoding="utf-8") as f:
+                f.write(line + "\n")
+    except Exception as e:
+        logger.warning(f"joblog 기록 실패({type(e).__name__}: {e}) — 측정 손실")
 
 
 def load_model():
@@ -322,6 +350,7 @@ def matte(req: MatteRequest):
         )
 
     t_start = time.perf_counter()
+    occ_at_start = _occupancy_snapshot()   # 예측변수는 반드시 시작 시점 — 종료 시점은 자기 부하로 오염된다
     try:
         try:
             img_bytes = base64.b64decode(req.image)
@@ -349,6 +378,24 @@ def matte(req: MatteRequest):
         logger.info(
             f"Matte {img.size[0]}x{img.size[1]} bg={req.bgColor} in {elapsed_ms:.0f}ms (total {total_ms:.0f}ms)"
         )
+        _joblog({
+            "ts": time.strftime("%Y-%m-%dT%H:%M:%S"),
+            "w": img.size[0], "h": img.size[1],          # 크기는 소요의 교란변수 — 반드시 같이 남긴다
+            "px": img.size[0] * img.size[1],
+            "infer_ms": round(elapsed_ms, 1),
+            "total_ms": round(total_ms, 1),
+            # 예측변수 (잡 시작 시점 GPU 상태)
+            "util_now": occ_at_start.get("gpu_util_now"),
+            "f_max": occ_at_start.get("foreign_util_max"),
+            "f_sd": occ_at_start.get("foreign_util_sd"),
+            "f_dmean": occ_at_start.get("foreign_util_dmean"),
+            "f_active": occ_at_start.get("foreign_active"),
+            "f_busy": occ_at_start.get("foreign_busy"),
+            "f_sat": occ_at_start.get("foreign_saturated"),
+            "f_procs": occ_at_start.get("foreign_procs"),
+            "f_samples": occ_at_start.get("foreign_samples"),
+            "sampler": occ_at_start.get("sampler_status"),
+        })
         return {
             "success": True,
             "image": result_b64,
