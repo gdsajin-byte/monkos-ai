@@ -205,3 +205,37 @@
   - (c) osascript System Events keystroke (OS 레벨 paste)
   - (d) 성공/실패 조건 매트릭스 완성
 - **태그**: google-docs, paste, clipboard, NSPasteboard, dispatchKeyEvent
+
+---
+
+### CASE-014: addScriptToEvaluateOnNewDocument 무효 + Page.enable 시 응답 오염 (cdp_utils)
+
+- **일시**: 2026-07-25 15:20 KST
+- **에이전트**: iMac/막내2
+- **대상**: 자체 서비스 (specs 퍼널 dev 검증)
+- **증상**: ① `Page.addScriptToEvaluateOnNewDocument`로 콘솔 수집기를 주입했는데 페이지에서 `typeof window.__errs === 'undefined'` ② `Page.enable` 호출 시 `cdp.url()`·`evaluate()`가 `{}` 등 엉뚱한 값 반환
+- **조건**: `scripts/tools/cdp_utils.py`의 `CDP._send()` 사용. 이 메서드는 send 직후 `recv()` **1회**로 응답을 읽는다
+- **원인**:
+  - ① Page 도메인 미활성 상태에서는 addScriptToEvaluateOnNewDocument가 등록되어도 주입되지 않음
+  - ② Page/Runtime/Log 도메인을 켜면 이벤트 메시지가 응답 자리에 먼저 도착 → id 매칭 없이 읽으므로 결과가 뒤엉킴
+- **위험**: 수집기가 주입되지 않은 채 `window.__errs || []`를 읽으면 **항상 빈 배열** → "콘솔 에러 0건"이 거짓 합격으로 보고된다. 검증 게이트가 무력화되는 유형
+- **해결**: 이벤트/응답을 분리하는 리더 태스크 기반 클라이언트로 대체. 사본: `PF_CDP/tools/monkcdp.py` (id→future 매칭, 이벤트는 별도 큐 적재 후 `console_problems()`로 추출)
+- **재현성**: 100%
+- **태그**: cdp_utils, addScriptToEvaluateOnNewDocument, Page.enable, 응답오염, 콘솔수집, 거짓합격
+
+---
+
+### CASE-015: CDP 크롬에서 GA4 /g/collect 일괄 ERR_ABORTED — 계측 도달 검증 불가
+
+- **일시**: 2026-07-25 15:53 KST
+- **에이전트**: iMac/막내2
+- **대상**: monkos.ai (prod) + monkos-portal-dev
+- **증상**: gtag 라이브러리는 200으로 로드되나 `https://analytics.google.com/g/collect` 요청이 전부 `net::ERR_ABORTED`. GA4 실시간 리포트 카운트도 증가하지 않음
+- **조건**: `cdp_setup.sh start {포트}`로 띄운 크롬. 프로필 9224·9225 양쪽 동일. `curl`로 같은 엔드포인트 POST 시 **204 정상** → 머신 네트워크 문제 아님
+- **원인**: 미확정 (CDP 부착 크롬에서 keepalive/beacon 전송이 중단되는 것으로 추정)
+- **핵심**: **prod(무변경 코드)에서도 동일 증상** → 특정 배포·코드의 결함이 아니라 CDP 환경 요인으로 확정
+- **해결**: 미해결. 우회 = 코드 레벨 검증으로 대체
+  - `Network.requestWillBeSent`의 `postData`에서 `en`(이벤트명)·`ep.*`(파라미터) 실측 → 페이로드 정확성까지는 CDP로 증명 가능
+  - **GA4 실제 수신 확인은 사람의 실브라우저 1회 조작 필요**
+- **재현성**: 100% (프로필 2종 × dev/prod 4회)
+- **태그**: ga4, gtag, collect, ERR_ABORTED, 계측검증, 실브라우저필요

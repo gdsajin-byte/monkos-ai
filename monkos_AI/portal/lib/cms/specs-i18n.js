@@ -189,7 +189,7 @@ export const SPECS_I18N = {
       genderM: '남성', genderF: '여성',
       fitAlt: '규격 맞춤 미리보기',
       js: {
-        errFileType: 'JPG, PNG, HEIC 파일만 업로드 가능합니다.',
+        errFileType: 'JPG, PNG, WEBP, HEIC 파일만 업로드 가능합니다. BMP 파일은 지원하지 않으니 PNG나 JPG로 저장한 뒤 다시 시도해 주세요.',
         errFileSize: '10MB 이하 파일만 업로드 가능합니다.',
         checkPass: '규격 적합! 진행하기를 눌러주세요.',
         checkFail: '일부 항목이 부적합합니다. 다른 사진을 권장합니다.',
@@ -402,7 +402,7 @@ export const SPECS_I18N = {
       genderM: '男性', genderF: '女性',
       fitAlt: '規格合わせプレビュー',
       js: {
-        errFileType: 'JPG、PNG、HEICファイルのみアップロードできます。',
+        errFileType: 'JPG、PNG、WEBP、HEICファイルのみアップロードできます。BMPファイルには対応していないため、PNGまたはJPGで保存し直してからお試しください。',
         errFileSize: '10MB以下のファイルのみアップロードできます。',
         checkPass: '規格適合！「進める」を押してください。',
         checkFail: '一部の項目が不適合です。別の写真をお勧めします。',
@@ -611,7 +611,7 @@ export const SPECS_I18N = {
       genderM: 'Male', genderF: 'Female',
       fitAlt: 'Spec fitting preview',
       js: {
-        errFileType: 'Only JPG, PNG, and HEIC files are supported.',
+        errFileType: 'Only JPG, PNG, WEBP, and HEIC files are supported. BMP files are not supported — please save the photo as PNG or JPG and try again.',
         errFileSize: 'Please upload a file under 10MB.',
         checkPass: 'Spec compliant! Press Continue.',
         checkFail: 'Some checks did not pass. We recommend another photo.',
@@ -820,7 +820,7 @@ export const SPECS_I18N = {
       genderM: 'Masculino', genderF: 'Femenino',
       fitAlt: 'Vista previa de ajuste a especificación',
       js: {
-        errFileType: 'Solo se admiten archivos JPG, PNG y HEIC.',
+        errFileType: 'Solo se admiten archivos JPG, PNG, WEBP y HEIC. Los archivos BMP no son compatibles; guarde la foto como PNG o JPG e inténtelo de nuevo.',
         errFileSize: 'Suba un archivo de menos de 10MB.',
         checkPass: '¡Cumple con la especificación! Presione Continuar.',
         checkFail: 'Algunas verificaciones no pasaron. Recomendamos otra foto.',
@@ -1029,7 +1029,7 @@ export const SPECS_I18N = {
       genderM: 'Pria', genderF: 'Wanita',
       fitAlt: 'Pratinjau penyesuaian spesifikasi',
       js: {
-        errFileType: 'Hanya file JPG, PNG, dan HEIC yang didukung.',
+        errFileType: 'Hanya file JPG, PNG, WEBP, dan HEIC yang didukung. File BMP tidak didukung, silakan simpan foto sebagai PNG atau JPG lalu coba lagi.',
         errFileSize: 'Silakan unggah file di bawah 10MB.',
         checkPass: 'Sesuai spesifikasi! Tekan Lanjutkan.',
         checkFail: 'Beberapa pemeriksaan tidak lolos. Kami sarankan foto lain.',
@@ -1237,7 +1237,7 @@ export const SPECS_I18N = {
       genderM: 'Nam', genderF: 'Nữ',
       fitAlt: 'Xem trước điều chỉnh quy cách',
       js: {
-        errFileType: 'Chỉ hỗ trợ file JPG, PNG và HEIC.',
+        errFileType: 'Chỉ hỗ trợ file JPG, PNG, WEBP và HEIC. File BMP không được hỗ trợ, vui lòng lưu ảnh dưới dạng PNG hoặc JPG rồi thử lại.',
         errFileSize: 'Vui lòng tải lên file dưới 10MB.',
         checkPass: 'Đúng quy cách! Nhấn Tiếp tục.',
         checkFail: 'Một số mục kiểm tra không đạt. Chúng tôi khuyên dùng ảnh khác.',

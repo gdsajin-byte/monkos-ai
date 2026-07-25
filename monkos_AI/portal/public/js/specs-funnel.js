@@ -211,11 +211,42 @@ var SpecsFunnel = (function(){
   });
   fileInput.addEventListener('change', function(){ if(fileInput.files.length) handleFile(fileInput.files[0]); });
 
+  /* 확장자 폴백 — file.type은 파일 내용이 아니라 브라우저가 확장자로 붙인 라벨이다.
+     Chromium 내장 MIME 표에도 OS 레지스트리에도 없는 확장자는 빈 문자열이 된다.
+     Windows 실기 실측(2026-07-25 민아 REVIEW_20260725_SPECS_P0_MIME전제검증): 양쪽 모두 미보유는
+     HEIC/HEIF뿐 → file.type='' → 아이폰 기본 포맷 HEIC가 "HEIC 가능" 문구를 띄우며 거부되는
+     자기모순 상태였다. (레지스트리 미등재로 .jpg·.webp가 빈 문자열이 된다는 가설은 반증 — 내장 표가 보전)
+     MIME 미매칭 시 파일명 확장자로 재판정한다. bmp·tiff·gif는 서버 sharp 미지원이라 제외. */
+  var ALLOWED_EXT = ['jpg','jpeg','png','webp','heic','heif'];
+  function fileExt(name){
+    if(!name || typeof name !== 'string') return '';
+    var i = name.lastIndexOf('.');
+    if(i < 0 || i === name.length - 1) return '';
+    return name.slice(i + 1).toLowerCase();
+  }
+  // 거부는 photo_upload 발화 이전에 일어나 계측에 흔적이 없다 → 거부 시점을 별도 계측한다.
+  // 파일명 전체는 개인정보이므로 절대 전송하지 않고 확장자만 보낸다.
+  function trackReject(reason, mime, ext){
+    gaTrack('upload_rejected', {
+      reject_reason: reason,
+      file_mime: mime || '(empty)',
+      file_ext: ext || '(none)'
+    }, true); // 한 유저가 여러 번 시도하므로 1회 가드 해제
+  }
+
   function handleFile(file){
     hideError();
     fitResult = null; precheckData = null;
-    if(!file.type.match(/image\/(jpeg|png|heic|heif|webp)/i)) return showError(T.errFileType);
-    if(file.size > 10*1024*1024) return showError(T.errFileSize);
+    var mime = (file && file.type) || '';
+    var ext = fileExt(file && file.name);
+    if(!mime.match(/image\/(jpeg|png|heic|heif|webp)/i) && ALLOWED_EXT.indexOf(ext) < 0){
+      trackReject('type', mime, ext);
+      return showError(T.errFileType);
+    }
+    if(file.size > 10*1024*1024){
+      trackReject('size', mime, ext);
+      return showError(T.errFileSize);
+    }
     var reader = new FileReader();
     reader.onload = function(ev){
       uploadedBase64 = ev.target.result;
