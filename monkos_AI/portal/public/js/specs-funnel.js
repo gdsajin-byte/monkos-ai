@@ -217,7 +217,12 @@ var SpecsFunnel = (function(){
      HEIC/HEIF뿐 → file.type='' → 아이폰 기본 포맷 HEIC가 "HEIC 가능" 문구를 띄우며 거부되는
      자기모순 상태였다. (레지스트리 미등재로 .jpg·.webp가 빈 문자열이 된다는 가설은 반증 — 내장 표가 보전)
      MIME 미매칭 시 파일명 확장자로 재판정한다. bmp·tiff·gif는 서버 sharp 미지원이라 제외. */
-  var ALLOWED_EXT = ['jpg','jpeg','png','webp','heic','heif'];
+  // jfif = Windows·Edge가 JPEG 저장 시 붙이는 확장자. 내용은 JPEG와 동일해 서버 sharp가 그대로 읽는다.
+  var ALLOWED_EXT = ['jpg','jpeg','jfif','png','webp','heic','heif'];
+  // 브라우저가 디코드하지 못하는 포맷 — 원본 data URL을 <img>에 꽂으면 깨진 아이콘이 뜬다.
+  function isUnrenderable(mime, ext){
+    return /heic|heif/i.test(mime || '') || ext === 'heic' || ext === 'heif';
+  }
   function fileExt(name){
     if(!name || typeof name !== 'string') return '';
     var i = name.lastIndexOf('.');
@@ -247,10 +252,21 @@ var SpecsFunnel = (function(){
       trackReject('size', mime, ext);
       return showError(T.errFileSize);
     }
+    var unrenderable = isUnrenderable(mime, ext);
     var reader = new FileReader();
     reader.onload = function(ev){
       uploadedBase64 = ev.target.result;
-      document.getElementById('v2-check-img').src = uploadedBase64;
+      var checkImg = document.getElementById('v2-check-img');
+      var previewLoading = document.getElementById('v2-preview-loading');
+      // 렌더 가능한 포맷은 현행 그대로 즉시 표시 — 서버 왕복 지연을 전 유저에게 전가하지 않는다.
+      // HEIC/HEIF만 precheck가 돌려주는 변환 썸네일을 기다리며 그 자리를 스피너로 덮는다.
+      if(unrenderable){
+        if(checkImg){ checkImg.removeAttribute('src'); checkImg.style.display = 'none'; }
+        if(previewLoading) previewLoading.style.display = 'flex';
+      } else {
+        if(checkImg){ checkImg.src = uploadedBase64; checkImg.style.display = ''; }
+        if(previewLoading) previewLoading.style.display = 'none';
+      }
       showPhase(phaseCheck);
       gaTrack('photo_upload');
 
@@ -263,15 +279,27 @@ var SpecsFunnel = (function(){
       summary.className = 'v2-checklist-summary';
       checkActions.style.display = 'none';
       checkLoading.style.display = 'flex';
+      function hidePreviewLoading(){ if(previewLoading) previewLoading.style.display = 'none'; }
 
       fetch('/api/idphoto/precheck', {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ image: uploadedBase64 })
+        body: JSON.stringify({ image: uploadedBase64, wantPreview: unrenderable })
       })
       .then(function(r){ return r.json(); })
       .then(function(data){
         checkLoading.style.display = 'none';
         if(data && (typeof data.measurable !== 'undefined' || data.checks)){
+          if(unrenderable){
+            // 변환본이 없으면 깨진 썸네일을 보여주며 진행시키지 않는다 — 명시 실패 후 업로드로 복귀
+            if(!data.preview){
+              hidePreviewLoading();
+              showError(T.errCheck);
+              showPhase(phaseUpload);
+              return;
+            }
+            if(checkImg){ checkImg.src = data.preview; checkImg.style.display = ''; }
+            hidePreviewLoading();
+          }
           precheckData = data;
           // 규정 8항목은 결과 화면에서 사후 표시 (ORDER_20260707 Task 1: 사전=측정성만)
           if(data.measurable === false){
@@ -286,11 +314,12 @@ var SpecsFunnel = (function(){
           // 토스 결제창의 user activation 만료(팝업 차단)를 방지 (2026-07-05 E2E 실패 수정)
           persistImage(function(){});
         } else {
+          hidePreviewLoading();
           showError(data.code === 'RATE_LIMITED' ? T.rateLimited : (data.error || T.errCheck));
           showPhase(phaseUpload);
         }
       })
-      .catch(function(e){ console.error('[precheck-catch]', e); showError(T.errCheckNet + (e ? ' (' + (e.message||e) + ')' : '')); showPhase(phaseUpload); });
+      .catch(function(e){ hidePreviewLoading(); console.error('[precheck-catch]', e); showError(T.errCheckNet + (e ? ' (' + (e.message||e) + ')' : '')); showPhase(phaseUpload); });
     };
     reader.readAsDataURL(file);
   }
@@ -1181,8 +1210,13 @@ var SpecsFunnel = (function(){
     var savedImg = loadImage();
     if(savedImg){
       uploadedBase64 = savedImg;
-      document.getElementById('v2-check-img').src = savedImg;
-      document.getElementById('v2-preview-img').src = savedImg;
+      // 복원본이 브라우저가 못 읽는 포맷이면 깨진 아이콘 대신 자리를 비운다 (HEIC 방어)
+      ['v2-check-img','v2-preview-img'].forEach(function(id){
+        var el = document.getElementById(id);
+        if(!el) return;
+        el.onerror = function(){ el.style.display = 'none'; };
+        el.src = savedImg;
+      });
     }
     var saved = loadOrder();
     if(saved){

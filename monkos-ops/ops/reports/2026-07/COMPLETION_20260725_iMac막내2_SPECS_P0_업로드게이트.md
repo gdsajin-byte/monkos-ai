@@ -181,5 +181,103 @@ ep.spec_type = kr-passport  ep.lang = ko               ep.service = specs-v2  ep
 ## 8. 잔여 / 다음
 
 ⏳ 검증 5항(GA4 실시간 수신) — 작가님 실브라우저 1회 확인 필요
-⏳ 판단 요청 3건 (§5)
+⏳ 판단 요청 3건 (§5) → **작가님 전량 승인, §10에서 처리**
 🔀 prod 배포 — 별도 승인 대기
+
+---
+---
+
+# §10. 승인 반영 3건 + 재검증 — **prod 배포 중단**
+
+**[2026-07-25 16:45 KST]** iMac/막내2 → 작가님·iMac/쌍아
+
+> 지시서 §10(16:27 KST) 이행분. dev `monkos-portal-dev-00166-sp7`.
+
+## 10-A. 요약
+
+✅ 10-1 `.jfif` 폴백 추가 — 게이트 통과 실측
+✅ 10-3 업로드 힌트 i18n 이관 + 6언어 문구 일치 — 두 표면 동일 목록
+⚠️ 10-2 HEIC 미리보기 — **구현했으나 검증 실패**. 서버가 HEIC를 **디코드하지 못한다**
+🔴 **§10-2의 전제 "`normalizeImage()`가 이미 변환 중"이 배포 환경에서 성립하지 않음** — 지시서 근거 반증
+🛑 **10-5 prod 배포 중단** — 10-4 #3 불합격. "1~6항 전량 합격 시" 조건 미충족
+
+## 10-B. 구현
+
+| # | 파일 | 내용 |
+|---|------|------|
+| 10-1 | `specs-funnel.js` | `ALLOWED_EXT`에 `'jfif'` 1항목 추가. 로직 변경 없음 |
+| 10-2 | `server.js` precheck | `body.wantPreview`일 때만 `norm.buf` → 512px·q80 JPEG 썸네일 1장 생성 → `out.preview` (data URL). **다른 포맷의 응답 크기·지연 무변경** |
+| 10-2 | `spec-funnel-markup.js` | 미리보기 자리에 스피너 `#v2-preview-loading` 신설 (기존 `.v2-checklist-loading`·`.v2-spinner` 재사용, 신규 CSS 0) |
+| 10-2 | `specs-funnel.js` | `isUnrenderable()` 판정 → HEIC/HEIF만 원본 미표시·스피너 표시·`wantPreview:true` 전송 → 응답 썸네일로 교체. **썸네일 부재 시 명시 실패 후 업로드 복귀**(무음 진행 금지). 성공·else·catch 3경로 전부 스피너 해제 |
+| 10-2 | `specs-funnel.js` | 결제 복귀 복원 경로 `onerror` 가드 — 복원본이 렌더 불가여도 깨진 아이콘 대신 자리를 비운다 |
+| 10-3 | `specs-i18n.js` | `uploadHint` 6언어 신설(하드코딩 영문 고정 → 사전 이관). 값은 `errFileType`과 동일 목록 |
+| 10-3 | `spec-funnel-markup.js` | `JPG, PNG, HEIC / max 10MB` → `${eh(v2.uploadHint || …)}` (키 누락 대비 폴백) |
+
+## 10-C. 재검증 결과
+
+| # | 항목 | 결과 | 실측 |
+|---|------|------|------|
+| 1 | 회귀 — 콘솔 에러 | ✅ | 교체본 계측기로 전 케이스 **0건** |
+| 2 | `.jfif` 통과 | ✅ | 빈 MIME + `.jfif` → 게이트 통과, 에러 없음 (생성 미수행) |
+| 3 | **HEIC 미리보기** | ❌ **불합격** | 스피너까지는 정상, **precheck가 썸네일을 못 만들어** 명시 실패로 종료 |
+| 4 | 기존 포맷 무영향 | ✅ | JPG 드롭 0.4초 시점에 이미 렌더(`naturalWidth=989`), 스피너 미노출 = 서버 왕복 없음 |
+| 5 | 힌트·에러 문구 일치 | ✅ | 6언어 두 표면 모두 `JPG · PNG · WEBP · HEIC` |
+| 6 | `upload_rejected` 발화 | ✅ | **16:39:10~16:39:21 KST** `.bmp` 1건 (`spec_type:kr-passport, lang:ko, reject_reason:type, file_mime:(empty), file_ext:bmp`) — GA4 대조는 쌍아. 지시대로 CDP 네트워크 스크랩 미시도 |
+| 7 | 생성 완주 | ⏭️ **미수행** | #3 불합격으로 prod 배포가 막혀 실익이 없고, INCIDENT 부하 회피가 우선이라 생략 |
+
+## 10-D. 🔴 §10-2 전제 반증 — 서버는 HEIC를 디코드하지 못한다
+
+지시서 §10-2는 `normalizeImage()`가 HEIC를 libheif로 JPEG 변환 중이므로 **"서버 변환 로직 신설 금지, 기존 산출물 노출로 처리"**라 지시했다. 배포 환경 실측 결과 **그 변환은 일어나지 않는다.**
+
+**dev 서버 로그 (rev 00166-sp7, 실 Apple HEIC `ftypheic`/HEVC 업로드)**
+```
+WARNING [normalizeImage] sharp 실패 (… heif: Error while loading plugin:
+        Support for this compression format has not been built in …)
+INFO    [IDPhoto][precheck] 미리보기 썸네일 생성 실패 (동일 원인)
+INFO    [IDPhoto][precheck] 코드게이트 측정성=true faces=null …
+```
+
+**라이브러리 실측** — 로컬·컨테이너 동일 sharp 0.34.5 / libvips 8.17.3 / libheif 1.20.2
+
+```
+sharp.format.heif.input.fileSuffix = [".avif"]     ← .heic 없음
+```
+
+prebuilt sharp는 **HEVC 특허 문제로 HEVC 코딩 HEIC 디코드를 포함하지 않는다.** libheif 버전 문자열(1.20.2)은 존재하지만 HEVC 디코더 플러그인이 빌드되어 있지 않다. 로컬 Mac에서 같은 파일을 sharp로 디코드해도 **동일하게 실패**한다(`bad seek`). 즉 "libheif 1.20.2 → Apple HEVC HEIC 디코드 성공"이라는 REVIEW 근거는 **본 코드베이스의 sharp에는 해당하지 않는다.**
+
+### 파생 — 미리보기보다 큰 문제
+
+`normalizeImage()`는 실패 시 **원본 HEIC 버퍼로 조용히 폴백**한다. 그 결과 현행 prod에서 HEIC 업로드는:
+
+1. 게이트 통과(`image/heic` MIME을 주는 Safari·macOS 경로는 **개편 전에도 통과**)
+2. `normalizeImage` 실패 → 원본 HEIC 그대로
+3. crop-engine 얼굴 검출도 HEIC를 못 읽음 → **`측정성=true faces=null`로 fail-open**
+4. 유저는 깨진 썸네일을 보며 "규격 적합" 취급으로 **유료 생성까지 진행**
+
+→ **"유료 실패 = 강등 무음 출고 금지"에 정면으로 걸리는 경로**이며, 이번 게이트 개편(빈 MIME 통과)은 Windows·HEIC 유입까지 이 경로에 얹는다.
+
+현재 dev(00166-sp7)는 썸네일 부재를 명시 실패로 처리하므로 **무음 진행은 막혀 있다**(문구는 `검수 실패`로 다소 모호). prod보다 안전한 상태다.
+
+## 10-E. ⏳ 판단 요청 — HEIC 처리 방침 (택1)
+
+미실행. 어느 쪽도 지시서 §10 범위를 넘어 임의 결정하지 않는다.
+
+| 안 | 내용 | 공수 | 리스크 |
+|----|------|------|--------|
+| **A. 잠정 제외 (권고)** | `ALLOWED_EXT`·MIME 정규식·문구에서 HEIC/HEIF 제거 + "아이폰은 설정 > 카메라 > 포맷 > **호환성 우선**" 안내 | 소 | 아이폰 원본 업로드 차단. 단 **지금도 사실상 처리 불가**라 손실은 명목상 |
+| **B. 서버 디코더 도입** | 컨테이너에 HEVC 디코더 확보(libde265 포함 libvips 재빌드 또는 `heic-convert` 등 별도 디코더) | 중~대 | 이미지 빌드·라이선스 검토 필요. 성공 시 §10-2가 의도대로 완결 |
+| **C. 클라이언트 변환** | WASM 디코더로 브라우저에서 JPEG 변환 후 전송 | 중 | 신규 의존성·번들 증가. 저사양 단말 부담 |
+
+**권고: A로 즉시 정직화 → B를 별건 착수.** 근거는 ① 문구가 "HEIC 가능"이라 광고하는데 서버가 못 읽는 현 상태가 가장 나쁜 조합이고 ② A는 배열·문구 수정만이라 오늘 안에 안전하게 닫히며 ③ B는 이미지 빌드 변경이라 검증 사이클이 별도로 필요하기 때문이다.
+
+## 10-F. 배포 상태
+
+- dev **`monkos-portal-dev-00166-sp7`** (§10 구현 반영)
+- prod **미배포** — `monkos-portal-00537-q69` 무변동. 10-5 조건(1~6항 전량 합격) 미충족으로 **중단**
+- 롤백 불요 — prod 무접촉
+
+## 10-G. 잔여
+
+⏳ HEIC 처리 방침 결정 (10-E) → 결정 후 재검증·prod 배포
+⏳ 검증 5·6항 GA4 대조 (쌍아, 발화 16:39:10~21 KST)
+⏭️ 생성 완주 1회 — prod 배포 직전으로 이연

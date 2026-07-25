@@ -624,6 +624,21 @@ const httpServer = createServer(async (req, res) => {
       }
       if (measurable) warmupMatteEngine(); // 게이트 통과자만 예열 — 구경·불합격 트래픽 웜 비용 차단
       const out = { measurable, rejectionReason: reason, faceBox, faceRatio, checks: [] };
+      // 미리보기 썸네일 — HEIC/HEIF는 브라우저가 디코드하지 못해 원본 data URL이 깨진 아이콘으로 뜬다.
+      // normalizeImage()가 이미 JPEG로 변환해 두었으므로(libheif) 축소본 1장만 더 떠서 돌려준다.
+      // 클라이언트가 wantPreview로 요청할 때만 생성 — 나머지 포맷의 응답 크기·지연은 그대로 둔다.
+      if (body.wantPreview) {
+        try {
+          const { default: sharp } = await import('sharp');
+          const thumb = await sharp(norm.buf)
+            .resize(512, 512, { fit: 'inside', withoutEnlargement: true })
+            .jpeg({ quality: 80 })
+            .toBuffer();
+          out.preview = `data:image/jpeg;base64,${thumb.toString('base64')}`;
+        } catch (pe) {
+          slog(`[IDPhoto][precheck] 미리보기 썸네일 생성 실패 (${pe.message}) — 클라이언트가 실패 처리`);
+        }
+      }
       slog(`[IDPhoto][precheck] 코드게이트 측정성=${measurable}${reason ? `(${reason})` : ''} faces=${nFaces} fbH=${faceRatio !== null ? Math.round(faceRatio * norm.height) : '-'}px crown=${crownMargin} bright=${bright} shadow=${shadowDiff} roll=${rollDeg} yaw=${yawRatio} ${Date.now() - t0}ms`);
       res.writeHead(200, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify(out));
