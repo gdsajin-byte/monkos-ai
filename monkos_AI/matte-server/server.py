@@ -1,6 +1,7 @@
 import base64
 import io
 import os
+import statistics
 import threading
 import time
 import logging
@@ -99,6 +100,10 @@ OCC_BUSY_PCT = int(os.environ.get("MATTE_FOREIGN_BUSY_PCT", "20"))
 # (07-25 실측: 자체 잡 2회만 돌렸는데 foreign_util_max=100 관측. 방치하면 라우터가
 #  4060을 영구히 회피하는 무음 실패가 된다.) 완료 후 쿨다운 동안의 표본을 배제한다.
 OCC_SELF_COOLDOWN_SEC = float(os.environ.get("MATTE_OCCUPANCY_SELF_COOLDOWN_SEC", "2.0"))
+# 활성 판정 임계 — 실측 기준: 정적 점유 sd 0.8~1.5 / dmean 0.1~0.3,
+# 활성 점유 sd 15.6~19.1 / dmean 1.6~2.4. 한 자릿수 대 두 자릿수라 여유가 크다.
+OCC_ACTIVE_SD = float(os.environ.get("MATTE_FOREIGN_ACTIVE_SD", "5"))
+OCC_ACTIVE_DMEAN = float(os.environ.get("MATTE_FOREIGN_ACTIVE_DMEAN", "1.0"))
 
 _occ_lock = threading.Lock()
 _occ_samples = deque()            # (mono, util_pct, inflight_at_sample)
@@ -172,14 +177,32 @@ def _occupancy_snapshot():
         except Exception:
             procs = None
 
+    # 활성도 축 (작가님 지적, 07-25 21:50) — 점유율만으로는 부족하다.
+    # 실측: 정적 점유(트레이 대기 게임)는 55~57%를 유지하면서 표준편차 1.1·연속차분 0.2로
+    # 거의 계단 함수다. 반면 활성 게임은 같은 3초 창에서 범위 44~78로 요동친다.
+    # 그리고 정적 55% 하에서 우리 잡은 1,184~1,563ms — 기준선 1,054ms 대비 1.1~1.5배로
+    # 사실상 무해했다(활성기 144,749ms=160배와 대조). 즉 **피해야 할 것은 점유가 아니라 활성**이다.
+    sd = dmean = None
+    if len(foreign) >= 2:
+        sd = round(statistics.pstdev(foreign), 1)
+        dmean = round(statistics.mean(
+            [abs(foreign[i] - foreign[i - 1]) for i in range(1, len(foreign))]), 2)
+    active = None
+    if fresh and sd is not None:
+        active = sd >= OCC_ACTIVE_SD or dmean >= OCC_ACTIVE_DMEAN
+
     return {
         "sampler_status": status,
         "sampler_age_sec": age,           # 신선도 도장 — 소비자가 묻지 않고 낡은 광고를 버린다
         "gpu_util_now": samples[-1][1] if samples else None,
         "foreign_util_max": max(foreign) if foreign else None,
+        "foreign_util_sd": sd,            # 활성도 — 정적 점유는 1 내외, 활성은 두 자릿수
+        "foreign_util_dmean": dmean,      # 연속차분 평균 — 흔들림 강도
+        "foreign_active": active,         # True(활성 경합)/False(정적 점유)/None(판정불가)
         "foreign_samples": len(foreign),
-        "foreign_busy": busy,             # True/False/None(판정불가)
+        "foreign_busy": busy,             # True/False/None — 점유 여부(활성 여부와 별개)
         "foreign_busy_pct": OCC_BUSY_PCT,
+        "foreign_active_sd": OCC_ACTIVE_SD,
         "foreign_procs": procs,
         "window_sec": OCC_WINDOW_SEC,
     }
