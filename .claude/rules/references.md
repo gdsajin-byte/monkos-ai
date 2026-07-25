@@ -11,6 +11,7 @@
 | 증명사진 KR | idphoto-kr.monkos.ai | Cloud Run | idphoto-kr/deploy.sh |
 | 증명사진 JP | idphoto-jp.monkos.ai | Cloud Run | idphoto-jp/deploy.sh |
 | 크롭 엔진 | (내부) | Cloud Run | crop-engine/deploy.sh |
+| 매팅 엔진 | matte.monkos.ai | 4060 GPU + CF Tunnel | monkos_AI/matte-server/deploy.sh |
 | monk.kr | monk.kr | CF Pages | MONK_kr/ |
 | pt.monkos.ai | pt.monkos.ai | Cloud Run | [2조 한시적 예외] |
 
@@ -85,7 +86,8 @@
 | /4060 | 스킬 | `.claude/commands/` | PF_INFRA + PF_FACTORY |
 | gitleaks-precommit.sh | 인프라 | `scripts/tools/` + `.git/hooks/pre-commit` | PF_SECURITY |
 | matte_loadtest.py | 인프라 | `scripts/tools/` (4060에 실행 사본) | PF_INFRA + INCIDENT_20260725 |
-| matte-probe (chain/leg) | 빌드/생성 | `monkos_AI/portal/tools/matte-probe/` | PF_INFRA + INCIDENT_20260725 |
+| matte-probe (chain/leg/queue) | 빌드/생성 | `monkos_AI/portal/tools/matte-probe/` | PF_INFRA + INCIDENT_20260725 |
+| matte-server deploy.sh | CLI | `monkos_AI/matte-server/` | `monkos_AI/matte-server/README.md` |
 
 ## 모델 배치
 

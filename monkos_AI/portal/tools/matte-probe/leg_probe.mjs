@@ -19,19 +19,19 @@ async function timed(fn) {
 
 const health = await timed(async () => {
   const res = await fetch(`${BASE}/health`, { signal: AbortSignal.timeout(2500) });
-  return { status: res.status };
+  return { status: res.status, retryAfter: res.headers.get('retry-after') };
 });
 const call1 = await timed(async () => {
   const res = await fetch(`${BASE}/api/matte`, {
     method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Matte-Secret': secret }, body,
   });
-  return { status: res.status };
+  return { status: res.status, retryAfter: res.headers.get('retry-after') };
 });
 const call2 = await timed(async () => {
   const res = await fetch(`${BASE}/api/matte`, {
     method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Matte-Secret': secret }, body,
   });
-  return { status: res.status };
+  return { status: res.status, retryAfter: res.headers.get('retry-after') };
 });
 
 console.log(JSON.stringify({

@@ -31,8 +31,23 @@ const HEALTH_TIMEOUT_MS = 2500;  // 생사 프리플라이트 — 죽은 엔드�
 // 60s: 콜드스타트 실측 30s~3min 편차. 45s에서 타임아웃 abort 4건 발생(7/7~7/10).
 // Cloud Run 타임아웃 120s와 짝 — 폴백 Gemini까지 수용. (2026-07-11 작가님 승인)
 const MATTE_TIMEOUT_MS = 60000;
+// 줄 서기 예산 (2026-07-25 작가님 설계) — "헬스가 살아있으면 줄 세우기이지 폴백할 이유가 없다".
+// 포화(503)는 고장이 아니라 "곧 빈다"는 신호다. 표 회전 0.8초 실측 기준 16 동시의 마지막 대기가
+// 약 12초이므로, 20초면 오늘 INCIDENT 규모까지 4060이 자력 흡수한다.
+// RunPod 콜드스타트(30초~3분)보다 빠르다는 것이 이 예산의 근거.
+// ⚠️ MATTE_TIMEOUT_MS(개별 호출 타임아웃)와는 다른 축이다. 혼동 금지.
+const MATTE_QUEUE_WAIT_MS = Number(process.env.MATTE_QUEUE_WAIT_MS || 20000);
+const MATTE_QUEUE_KNOCK_MS = 2000; // 서버가 Retry-After를 안 줄 때의 노크 간격
 const ALERT_COOLDOWN_MS = 10 * 60 * 1000; // 장애 경보 폭주 방지
 let lastAlertAt = 0;
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+/** Retry-After(초 단위 정수) → ms. 값이 없거나 HTTP-date 형식이면 null. */
+function parseRetryAfterMs(headerValue) {
+  const sec = Number(headerValue);
+  return Number.isFinite(sec) && sec >= 0 ? sec * 1000 : null;
+}
 
 /**
  * 규격 background 텍스트 → 합성 hex. 명확한 색만 매핑, 모호("단색" 등)는 흰색 보수 폴백.
@@ -173,7 +188,11 @@ async function callMatteApi(url, imageB64, bgColor) {
       if (runpod && data.id && data.status !== 'COMPLETED') {
         fetch(`${url.replace(/\/$/, '')}/cancel/${data.id}`, { method: 'POST', headers: authHeaders(url), signal: AbortSignal.timeout(5000) }).catch(() => {});
       }
-      throw new Error(body.error || data.error || (runpod ? `runpod status=${data.status}` : `HTTP ${res.status}`));
+      const err = new Error(body.error || data.error || (runpod ? `runpod status=${data.status}` : `HTTP ${res.status}`));
+      // 호출부가 "포화(503)"와 "고장(그 외)"을 구분할 수 있게 상태를 실어 보낸다.
+      err.status = res.status;
+      err.retryAfterMs = parseRetryAfterMs(res.headers.get('retry-after'));
+      throw err;
     }
     return body;
   } finally {
@@ -188,35 +207,71 @@ function alertMatteDown(reason) {
   sendTelegramMessage(TEAM_CHAT_ID, `🚨 *matte 전 엔드포인트 장애 — Gemini L3 폴백 가동*\n사유: ${reason}\n→ 4060/RunPod 상태 확인 필요`, TELEGRAM_TEAM_API).catch(() => {});
 }
 
-/** matte 체인 공용부 — 크롭 b64 → 엔드포인트 순회 매팅 → 300dpi 스탬프. 실패 시 null(+경보). */
+/** 매팅 결과 → 300dpi 스탬프 PNG. 성공 경로 공용부. */
+async function stampMatteResult(data, url) {
+  const stamped = await sharp(Buffer.from(data.image, 'base64'))
+    .withMetadata({ density: 300 })
+    .png()
+    .toBuffer();
+  return { image: stamped.toString('base64'), matteSec: data.meta?.elapsedSec, via: isRunpod(url) ? 'runpod' : url };
+}
+
+/**
+ * matte 체인 공용부 — 크롭 b64 → 엔드포인트 순회 매팅 → 300dpi 스탬프. 실패 시 null(+경보).
+ *
+ * 상태를 셋으로 나눈다 (2026-07-25 작가님 설계):
+ *   ① health 불통  = 진짜 장애 → 대기 없이 즉시 다음 엔드포인트
+ *   ② 503 포화      = 바쁘지만 곧 빈다 → Retry-After만큼 자고 다시 노크 (≤ MATTE_QUEUE_WAIT_MS)
+ *   ③ 그 외 실패    = 고장 → 기존대로 1회 재시도 후 다음 엔드포인트
+ * ②를 ③으로 뭉개면 살아있는 4060을 두고 RunPod 콜드(30초~3분)를 타게 된다.
+ */
 export async function runMatteChain(cropB64, bgColor, slug) {
   let lastErr = 'no endpoint';
   for (const url of MATTE_API_URLS) {
-    try {
-      if (!(await isAlive(url))) {
-        log(`[Matte] ${slug}: ${url} 프리플라이트 불통 → 다음 엔드포인트`, 'WARNING');
-        continue;
-      }
-      const data = await callMatteApi(url, cropB64, bgColor);
-      const stamped = await sharp(Buffer.from(data.image, 'base64'))
-        .withMetadata({ density: 300 })
-        .png()
-        .toBuffer();
-      return { image: stamped.toString('base64'), matteSec: data.meta?.elapsedSec, via: isRunpod(url) ? 'runpod' : url };
-    } catch (err) {
-      lastErr = err.message;
-      log(`[Matte] ${slug}: ${url} 호출 실패 (${err.message}) → 1회 재시도`, 'WARNING');
+    if (!(await isAlive(url))) {
+      log(`[Matte] ${slug}: ${url} 프리플라이트 불통 → 다음 엔드포인트`, 'WARNING');
+      continue;
+    }
+
+    const queueStart = Date.now();
+    let knocks = 0;
+    let toNextEndpoint = false;
+
+    while (!toNextEndpoint) {
       try {
-        const retryData = await callMatteApi(url, cropB64, bgColor);
-        log(`[Matte] ${slug}: ${url} 재시도 1회 성공`, 'INFO');
-        const stamped = await sharp(Buffer.from(retryData.image, 'base64'))
-          .withMetadata({ density: 300 })
-          .png()
-          .toBuffer();
-        return { image: stamped.toString('base64'), matteSec: retryData.meta?.elapsedSec, via: isRunpod(url) ? 'runpod' : url };
-      } catch (retryErr) {
-        lastErr = retryErr.message;
-        log(`[Matte] ${slug}: ${url} 재시도 실패 (${retryErr.message}) → 다음 엔드포인트`, 'WARNING');
+        const data = await callMatteApi(url, cropB64, bgColor);
+        if (knocks > 0) {
+          log(`[Matte] ${slug}: ${url} 줄서기 성공 — 노크 ${knocks}회, 누적 대기 ${Date.now() - queueStart}ms`, 'INFO');
+        }
+        return await stampMatteResult(data, url);
+      } catch (err) {
+        lastErr = err.message;
+
+        // ② 포화 — 기다렸다 다시 노크. 무음 대기 금지(매 노크 기록).
+        if (err.status === 503) {
+          const waited = Date.now() - queueStart;
+          const delay = err.retryAfterMs ?? MATTE_QUEUE_KNOCK_MS;
+          if (waited + delay > MATTE_QUEUE_WAIT_MS) {
+            log(`[Matte] ${slug}: ${url} 포화 대기 상한 초과 (노크 ${knocks}회, 누적 ${waited}ms > ${MATTE_QUEUE_WAIT_MS}ms) → 다음 엔드포인트`, 'WARNING');
+            break;
+          }
+          knocks += 1;
+          log(`[Matte] ${slug}: ${url} 포화(503) — ${knocks}번째 노크, ${delay}ms 대기 (누적 ${waited}ms)`, 'INFO');
+          await sleep(delay);
+          continue;
+        }
+
+        // ③ 고장 — 기존 동작 보존(같은 URL 1회 재시도 → 실패 시 다음 엔드포인트)
+        log(`[Matte] ${slug}: ${url} 호출 실패 (${err.message}) → 1회 재시도`, 'WARNING');
+        try {
+          const retryData = await callMatteApi(url, cropB64, bgColor);
+          log(`[Matte] ${slug}: ${url} 재시도 1회 성공`, 'INFO');
+          return await stampMatteResult(retryData, url);
+        } catch (retryErr) {
+          lastErr = retryErr.message;
+          log(`[Matte] ${slug}: ${url} 재시도 실패 (${retryErr.message}) → 다음 엔드포인트`, 'WARNING');
+        }
+        toNextEndpoint = true;
       }
     }
   }
