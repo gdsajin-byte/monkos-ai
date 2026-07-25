@@ -286,9 +286,31 @@ abort: {"ms":4004,"aborted":true,"err":"AbortError"}
 - 착수 시점에 경합을 인지하고 있었고 문법 검사 후 진행했으나, 커밋 타이밍까지는 통제하지 못했다.
 - 교훈: **병렬 막내가 같은 파일을 편집하면 선커밋 쪽이 상대 변경을 흡수한다.** 착수 전 `git status`로 경합 확인 + 경합 시 커밋 조율이 필요하다.
 
+## §5-H. prod 배포 (2026-07-25 19:19 KST, 작가님 승인)
+
+`./deploy.sh prod --yes` → **`monkos-portal-00539-bmt`** 트래픽 100% (이전 `00538-lc5`).
+
+⚠️ **동반 배포 고지**: main 단일 브랜치 구조상 prod는 main 전체를 싣는다. 00538(18:08) 이후 main에 쌓인 막내1 커밋 2건(**`0506aab1` CITADEL specs**, **`3cc9b5f7` HEIC 업로드게이트**)이 함께 나갔다. 작가님께 범위를 고지하고 **「전부 배포」 선택**을 받아 진행했다.
+
+### 배포 후 검증
+
+| 항목 | 결과 |
+|---|---|
+| `monkos.ai/health` | 200 / 0.43s |
+| `/specs` 허브 · `/specs/passport/kr` | 200 / 0.64s · 0.45s |
+| **prod 실 생성 E2E** | **200 / 6.92초**, `track: birefnet`, `matteSec 0.909초`, 이미지 반환 |
+| prod 로그 | `[Matte] via=https://matte.monkos.ai 0.909s` → `생성 완료 게이트=free 트랙=birefnet` |
+| 쿼터 정상 소모 | `remainingFree: 2` — 전달 성공이므로 마감선 **미발동**(설계대로) |
+| prod severity>=ERROR | **0건** |
+| 4060 ERROR·Traceback | **0건** |
+
+> E2E는 **4060 네트워크에서 실행**했다. 사무실 IP는 오늘 무료 한도(3회/일)를 이미 소진해 429였다 — 무료 게이트가 정상 작동한다는 부수 확인이기도 하다.
+
+**롤백**: `gcloud run services update-traffic monkos-portal --region us-central1 --to-revisions monkos-portal-00538-lc5=100`
+
 ## §5-G. 잔존 · 결정 요청
 
-1. ⏳ **prod 배포 승인** — §1~§5 통합, dev `monkos-portal-dev-00172-txp` 검증 완료
+1. ✅ **prod 배포 완료** — `00539-bmt`, 위 §5-H
 2. 💡 **`GEN_DELIVERY_DEADLINE_MS` 115초는 보수적 추정치다.** Cloud Run 120초 예산에서 5초를 남긴 값이며, 이 마감선을 넘고도 응답이 닿는 경우 유저는 사진과 횟수를 모두 얻는다. 손해 방향이 유저 쪽이 아니라 우리 쪽이므로 기본값으로 적절하다고 판단했다
 3. 💡 **타임아웃 단축(25초)으로 마감선 발동 자체가 희귀해졌다** — 최악 90.1초로 115초에 닿지 않는다. 마감선은 상시 동작이 아니라 **미지의 지연에 대한 백스톱**이다
 
