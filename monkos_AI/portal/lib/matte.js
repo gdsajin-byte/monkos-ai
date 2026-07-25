@@ -28,9 +28,14 @@ const MATTE_SECRET = process.env.MATTE_SECRET || ''; // 4060 자체 서빙 인�
 const MATTE_SLUGS = (process.env.MATTE_SLUGS || '')
   .split(',').map((s) => s.trim()).filter(Boolean);
 const HEALTH_TIMEOUT_MS = 2500;  // 생사 프리플라이트 — 죽은 엔드포인트에 본 예산을 쓰지 않는다
-// 60s: 콜드스타트 실측 30s~3min 편차. 45s에서 타임아웃 abort 4건 발생(7/7~7/10).
-// Cloud Run 타임아웃 120s와 짝 — 폴백 Gemini까지 수용. (2026-07-11 작가님 승인)
-const MATTE_TIMEOUT_MS = 60000;
+// 25s (2026-07-25 작가님 확정, 구 60s에서 하향).
+// 작가님 규정: "RunPod은 4060 가동 불가 대체 영역이지 '느리면 받는다'의 영역이 아니다."
+//   → 대체재에 60초씩 두 번 인내할 이유가 없다. 실패가 확정이면 빨리 알리는 편이 낫다.
+// 근거: RunPod 콜드 실측 16.1s(07-25) → 25s면 콜드까지 흡수하고 그것도 넘으면 진짜 실패.
+//   4060 정상 0.37s · RunPod warm 0.35s 이므로 정상 요청 무영향.
+// 예산: 앞단 16.3s + 4060 큐 20s + RunPod 25×2 ≈ 86s / Cloud Run 120s.
+//   구 60s는 25×2 자리에 60×2가 들어가 158s로 예산을 넘겼다 — 07-25 504의 산식.
+const MATTE_TIMEOUT_MS = Number(process.env.MATTE_TIMEOUT_MS || 25000);
 // 줄 서기 예산 (2026-07-25 작가님 설계) — "헬스가 살아있으면 줄 세우기이지 폴백할 이유가 없다".
 // 포화(503)는 고장이 아니라 "곧 빈다"는 신호다. 표 회전 0.8초 실측 기준 16 동시의 마지막 대기가
 // 약 12초이므로, 20초면 오늘 INCIDENT 규모까지 4060이 자력 흡수한다.

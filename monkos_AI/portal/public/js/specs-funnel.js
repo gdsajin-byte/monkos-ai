@@ -212,17 +212,16 @@ var SpecsFunnel = (function(){
   fileInput.addEventListener('change', function(){ if(fileInput.files.length) handleFile(fileInput.files[0]); });
 
   /* 확장자 폴백 — file.type은 파일 내용이 아니라 브라우저가 확장자로 붙인 라벨이다.
-     Chromium 내장 MIME 표에도 OS 레지스트리에도 없는 확장자는 빈 문자열이 된다.
-     Windows 실기 실측(2026-07-25 민아 REVIEW_20260725_SPECS_P0_MIME전제검증): 양쪽 모두 미보유는
-     HEIC/HEIF뿐 → file.type='' → 아이폰 기본 포맷 HEIC가 "HEIC 가능" 문구를 띄우며 거부되는
-     자기모순 상태였다. (레지스트리 미등재로 .jpg·.webp가 빈 문자열이 된다는 가설은 반증 — 내장 표가 보전)
-     MIME 미매칭 시 파일명 확장자로 재판정한다. bmp·tiff·gif는 서버 sharp 미지원이라 제외. */
+     Chromium 내장 MIME 표에도 OS 레지스트리에도 없는 확장자는 빈 문자열이 되어, 정상 사진도
+     MIME만으로는 거부될 수 있다. 그래서 MIME 미매칭 시 파일명 확장자로 한 번 더 판정한다.
+
+     허용 목록은 "서버가 실제로 디코드할 수 있는 포맷"이다 (2026-07-25 §11).
+     - bmp·tiff·gif: sharp 미지원
+     - heic·heif: prebuilt sharp 0.34.5에 HEVC 디코더가 없다(특허). format.heif.input.fileSuffix=['.avif'].
+       클라이언트에서 열어봐야 서버가 픽셀을 못 여니 게이트에서 막고 문구로 안내한다.
+       ⚠️ 확장자 목록에서만 빼면 macOS(file.type=image/heic)가 그대로 통과한다 → 아래 MIME 정규식에서도 제외. */
   // jfif = Windows·Edge가 JPEG 저장 시 붙이는 확장자. 내용은 JPEG와 동일해 서버 sharp가 그대로 읽는다.
-  var ALLOWED_EXT = ['jpg','jpeg','jfif','png','webp','heic','heif'];
-  // 브라우저가 디코드하지 못하는 포맷 — 원본 data URL을 <img>에 꽂으면 깨진 아이콘이 뜬다.
-  function isUnrenderable(mime, ext){
-    return /heic|heif/i.test(mime || '') || ext === 'heic' || ext === 'heif';
-  }
+  var ALLOWED_EXT = ['jpg','jpeg','jfif','png','webp'];
   function fileExt(name){
     if(!name || typeof name !== 'string') return '';
     var i = name.lastIndexOf('.');
@@ -244,7 +243,7 @@ var SpecsFunnel = (function(){
     fitResult = null; precheckData = null;
     var mime = (file && file.type) || '';
     var ext = fileExt(file && file.name);
-    if(!mime.match(/image\/(jpeg|png|heic|heif|webp)/i) && ALLOWED_EXT.indexOf(ext) < 0){
+    if(!mime.match(/image\/(jpeg|png|webp)/i) && ALLOWED_EXT.indexOf(ext) < 0){
       trackReject('type', mime, ext);
       return showError(T.errFileType);
     }
@@ -252,21 +251,13 @@ var SpecsFunnel = (function(){
       trackReject('size', mime, ext);
       return showError(T.errFileSize);
     }
-    var unrenderable = isUnrenderable(mime, ext);
     var reader = new FileReader();
     reader.onload = function(ev){
       uploadedBase64 = ev.target.result;
+      // 게이트를 통과한 포맷은 브라우저가 전부 렌더할 수 있다 → 현행대로 즉시 표시.
+      // (HEIC 변환 썸네일 대기 배선은 §11-1로 철거 — 서버가 디코드하지 못해 성립하지 않았다)
       var checkImg = document.getElementById('v2-check-img');
-      var previewLoading = document.getElementById('v2-preview-loading');
-      // 렌더 가능한 포맷은 현행 그대로 즉시 표시 — 서버 왕복 지연을 전 유저에게 전가하지 않는다.
-      // HEIC/HEIF만 precheck가 돌려주는 변환 썸네일을 기다리며 그 자리를 스피너로 덮는다.
-      if(unrenderable){
-        if(checkImg){ checkImg.removeAttribute('src'); checkImg.style.display = 'none'; }
-        if(previewLoading) previewLoading.style.display = 'flex';
-      } else {
-        if(checkImg){ checkImg.src = uploadedBase64; checkImg.style.display = ''; }
-        if(previewLoading) previewLoading.style.display = 'none';
-      }
+      if(checkImg){ checkImg.src = uploadedBase64; checkImg.style.display = ''; }
       showPhase(phaseCheck);
       gaTrack('photo_upload');
 
@@ -279,27 +270,15 @@ var SpecsFunnel = (function(){
       summary.className = 'v2-checklist-summary';
       checkActions.style.display = 'none';
       checkLoading.style.display = 'flex';
-      function hidePreviewLoading(){ if(previewLoading) previewLoading.style.display = 'none'; }
 
       fetch('/api/idphoto/precheck', {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ image: uploadedBase64, wantPreview: unrenderable })
+        body: JSON.stringify({ image: uploadedBase64 })
       })
       .then(function(r){ return r.json(); })
       .then(function(data){
         checkLoading.style.display = 'none';
         if(data && (typeof data.measurable !== 'undefined' || data.checks)){
-          if(unrenderable){
-            // 변환본이 없으면 깨진 썸네일을 보여주며 진행시키지 않는다 — 명시 실패 후 업로드로 복귀
-            if(!data.preview){
-              hidePreviewLoading();
-              showError(T.errCheck);
-              showPhase(phaseUpload);
-              return;
-            }
-            if(checkImg){ checkImg.src = data.preview; checkImg.style.display = ''; }
-            hidePreviewLoading();
-          }
           precheckData = data;
           // 규정 8항목은 결과 화면에서 사후 표시 (ORDER_20260707 Task 1: 사전=측정성만)
           if(data.measurable === false){
@@ -314,12 +293,14 @@ var SpecsFunnel = (function(){
           // 토스 결제창의 user activation 만료(팝업 차단)를 방지 (2026-07-05 E2E 실패 수정)
           persistImage(function(){});
         } else {
-          hidePreviewLoading();
-          showError(data.code === 'RATE_LIMITED' ? T.rateLimited : (data.error || T.errCheck));
+          // 서버 에러 문자열은 ko 고정 — code 기반 로컬라이즈 우선 (2026-07-16 작가님 es 실측)
+          showError(data.code === 'RATE_LIMITED' ? T.rateLimited
+                  : data.code === 'DECODE_FAILED' ? T.errDecode
+                  : (data.error || T.errCheck));
           showPhase(phaseUpload);
         }
       })
-      .catch(function(e){ hidePreviewLoading(); console.error('[precheck-catch]', e); showError(T.errCheckNet + (e ? ' (' + (e.message||e) + ')' : '')); showPhase(phaseUpload); });
+      .catch(function(e){ console.error('[precheck-catch]', e); showError(T.errCheckNet + (e ? ' (' + (e.message||e) + ')' : '')); showPhase(phaseUpload); });
     };
     reader.readAsDataURL(file);
   }

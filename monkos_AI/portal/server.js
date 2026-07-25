@@ -76,12 +76,15 @@ async function normalizeImage(rawBase64) {
       .jpeg({ quality: 90 })
       .toBuffer();
     const { width, height } = await sharp(buf).metadata();
-    return { buf, b64: buf.toString('base64'), width, height, rawBase64 };
+    return { buf, b64: buf.toString('base64'), width, height, rawBase64, degraded: false };
   } catch (err) {
-    log(`[normalizeImage] sharp 실패 (${err.message}) → 원본 폴백`, 'WARNING');
-    const { width, height } = await sharp(raw).metadata().catch(() => ({ width: 0, height: 0 }));
+    // ⚠️ 폴백은 "디코드 실패"다 — 무음으로 두지 않는다 (2026-07-25 §11-2).
+    // 구 코드는 크기를 sharp(raw).metadata()로 구했다. metadata()는 헤더만 읽으므로 픽셀을 못 여는
+    // 파일(HEVC HEIC 등)도 600x800을 돌려주고, 그 때문에 호출자의 `!width || !height` 가드가 통과했다.
+    // → 헤더가 아니라 디코드 성공 여부로 판정하도록 degraded 플래그를 실어 보낸다.
+    log(`[normalizeImage] sharp 디코드 실패 (${err.message}) → degraded 반환`, 'WARNING');
     const b64 = rawBase64.includes(',') ? rawBase64.split(',')[1] : rawBase64;
-    return { buf: raw, b64, width, height, rawBase64 };
+    return { buf: raw, b64, width: 0, height: 0, rawBase64, degraded: true, decodeError: err.message };
   }
 }
 
@@ -391,6 +394,11 @@ const httpServer = createServer(async (req, res) => {
         return res.end(JSON.stringify({ error: '미지원 규격' }));
       }
       const norm = await normalizeImage(image);
+      if (norm.degraded || !norm.width || !norm.height) { // §11-2: 디코드 실패 이미지로 프레임 계산 금지
+        slog(`[Fit] ${slug}: 디코드 실패로 명시 반려`);
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        return res.end(JSON.stringify({ success: false, error: '이미지를 해석할 수 없습니다. JPG 또는 PNG로 올려주세요.', code: 'DECODE_FAILED' }));
+      }
       const buf = norm.buf;
       const { width: W, height: H } = { width: norm.width, height: norm.height };
 
@@ -537,7 +545,11 @@ const httpServer = createServer(async (req, res) => {
       // SCRFD 검출 + 픽셀 통계. 하드컷: 얼굴무/다인/과소/과대각도/암흑. 그림자 등은 관측 로그 (임계 실측 후 승격).
       const t0 = Date.now();
       const norm = await normalizeImage(body.image);
-      if (!norm.width || !norm.height) {
+      // 디코드가 선행 실패했으면 fail-open 금지 — "fit이 재검출·방어한다"는 전제는 픽셀을 못 여는
+      // 이미지에 성립하지 않는다. 검출 실패를 측정성 통과로 흘려보내면 유저는 깨진 사진을 들고
+      // 유료 생성까지 진행한다 (2026-07-25 §11-2).
+      if (norm.degraded || !norm.width || !norm.height) {
+        slog(`[IDPhoto][precheck] 디코드 실패로 명시 반려${norm.decodeError ? ` (${String(norm.decodeError).split('\n')[0]})` : ''}`);
         res.writeHead(400, { 'Content-Type': 'application/json' });
         return res.end(JSON.stringify({ error: '이미지를 해석할 수 없습니다. JPG 또는 PNG로 올려주세요.', code: 'DECODE_FAILED' }));
       }
@@ -624,21 +636,8 @@ const httpServer = createServer(async (req, res) => {
       }
       if (measurable) warmupMatteEngine(); // 게이트 통과자만 예열 — 구경·불합격 트래픽 웜 비용 차단
       const out = { measurable, rejectionReason: reason, faceBox, faceRatio, checks: [] };
-      // 미리보기 썸네일 — HEIC/HEIF는 브라우저가 디코드하지 못해 원본 data URL이 깨진 아이콘으로 뜬다.
-      // normalizeImage()가 이미 JPEG로 변환해 두었으므로(libheif) 축소본 1장만 더 떠서 돌려준다.
-      // 클라이언트가 wantPreview로 요청할 때만 생성 — 나머지 포맷의 응답 크기·지연은 그대로 둔다.
-      if (body.wantPreview) {
-        try {
-          const { default: sharp } = await import('sharp');
-          const thumb = await sharp(norm.buf)
-            .resize(512, 512, { fit: 'inside', withoutEnlargement: true })
-            .jpeg({ quality: 80 })
-            .toBuffer();
-          out.preview = `data:image/jpeg;base64,${thumb.toString('base64')}`;
-        } catch (pe) {
-          slog(`[IDPhoto][precheck] 미리보기 썸네일 생성 실패 (${pe.message}) — 클라이언트가 실패 처리`);
-        }
-      }
+      // 미리보기 썸네일 배선(§10-2)은 §11-1로 제거 — sharp가 HEIC를 디코드하지 못해 성립하지 않았다.
+      // 서버 디코더(B안)를 도입하면 이 자리에 축소본을 실어 클라이언트 미리보기를 복구한다.
       slog(`[IDPhoto][precheck] 코드게이트 측정성=${measurable}${reason ? `(${reason})` : ''} faces=${nFaces} fbH=${faceRatio !== null ? Math.round(faceRatio * norm.height) : '-'}px crown=${crownMargin} bright=${bright} shadow=${shadowDiff} roll=${rollDeg} yaw=${yawRatio} ${Date.now() - t0}ms`);
       res.writeHead(200, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify(out));
@@ -662,6 +661,20 @@ const httpServer = createServer(async (req, res) => {
     let refundGate = null;
     let t1RawForSave = null;
     const fireRefundGate = () => { const fire = refundGate; refundGate = null; if (fire) fire(); };
+    // 🔴 클라이언트 절단 감지 (2026-07-25) — 07-25 INCIDENT의 실제 누출 지점.
+    // Cloud Run 타임아웃(504)으로 요청이 끊겨도 이 프로세스는 계속 돌아 산출물을 만들고
+    // "생성 완료"를 기록한다. 그 경로는 서버 기준 성공이라 기존 반환 분기(!finalBase64)에
+    // 걸리지 않았고, 카운트 동기용 Set-Cookie도 504에 밀려 유저에게 도달하지 못했다.
+    // → 결과물 없이 생성권만 소모. 연결이 끊긴 시점에 소모분을 반환한다.
+    let clientGone = false;
+    res.on('close', () => {
+      if (res.writableFinished) return;
+      clientGone = true;
+      if (refundGate) {
+        log(`[IDPhoto] 클라이언트 연결 종료 — 산출물 미전달 → 소모분 반환(${gateMode})`, 'WARNING');
+        fireRefundGate();
+      }
+    });
     try {
       const { parseJsonBody, parseCookies: pc, verifyAuthToken } = await import('./lib/shared/config.js');
       const body = await parseJsonBody(req);
@@ -751,6 +764,14 @@ const httpServer = createServer(async (req, res) => {
       if (slug) { warmupCropEngine(); warmupMatteEngine(); }
 
       const norm = await normalizeImage(image);
+      // §11-2: 디코드 실패 이미지는 생성으로 넘기지 않는다. 게이트에서 선차감된 무료 쿼터·크레딧은
+      // 반드시 환급 게이트를 발화시킨 뒤 반려 — 과금만 되고 산출물이 없는 경로를 남기지 않는다.
+      if (norm.degraded || !norm.width || !norm.height) {
+        fireRefundGate();
+        log(`[IDPhoto] 생성 중단 — 디코드 실패${norm.decodeError ? ` (${String(norm.decodeError).split('\n')[0]})` : ''}`, 'WARNING');
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        return res.end(JSON.stringify({ error: '이미지를 해석할 수 없습니다. JPG 또는 PNG로 올려주세요.', code: 'DECODE_FAILED' }));
+      }
 
       // 신경로 (IDPASS 순서, ORDER_20260707): 원본에서 감지·크롭 → BiRefNet 매팅 → 배경색 합성.
       // 원본 픽셀 보존 + Gemini 재생성물 위 감지의 비결정성 제거.
@@ -899,6 +920,14 @@ const httpServer = createServer(async (req, res) => {
         service: 'specs',
         params: { gate: gateMode, slug: slug || null, track: genTrack || null },
       }).catch(() => {});
+
+      // 산출물은 완성했지만 유저가 받지 못하는 경우 — 쿼터를 확정하지 않는다.
+      // (res.on('close')가 이미 반환했으면 fireRefundGate는 무동작)
+      if (clientGone) {
+        log(`[IDPhoto] 산출물 완성·클라이언트 연결 종료 — 쿼터 미확정(${gateMode})`, 'WARNING');
+        fireRefundGate();
+        return;
+      }
 
       let remainingFree = null;
       if (gateMode === 'free') {

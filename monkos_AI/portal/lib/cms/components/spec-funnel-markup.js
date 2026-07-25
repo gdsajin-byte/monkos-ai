@@ -36,11 +36,6 @@ export function specFunnelMarkup(ctx) {
       <div class="v2-make-layout" id="v2-phase-check" style="display:none;">
         <div class="v2-pay-grid">
           <div class="v2-pay-preview">
-            <!-- HEIC/HEIF는 브라우저가 디코드하지 못해 원본을 그대로 꽂으면 깨진 아이콘이 뜬다.
-                 precheck가 돌려주는 변환 썸네일이 도착할 때까지 이 자리를 스피너로 덮는다. -->
-            <div class="v2-checklist-loading" id="v2-preview-loading" style="display:none; justify-content:center;">
-              <div class="v2-spinner"></div>
-            </div>
             <img id="v2-check-img" src="" alt="${eh(v2.altCheck)}">
           </div>
           <div class="v2-checklist-side">

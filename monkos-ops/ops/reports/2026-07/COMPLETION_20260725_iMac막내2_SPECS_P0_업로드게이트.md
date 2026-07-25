@@ -281,3 +281,91 @@ prebuilt sharp는 **HEVC 특허 문제로 HEVC 코딩 HEIC 디코드를 포함�
 ⏳ HEIC 처리 방침 결정 (10-E) → 결정 후 재검증·prod 배포
 ⏳ 검증 5·6항 GA4 대조 (쌍아, 발화 16:39:10~21 KST)
 ⏭️ 생성 완주 1회 — prod 배포 직전으로 이연
+
+---
+---
+
+# §11. HEIC 잠정 제외(A안) + 디코드 실패 fail-open 차단
+
+**[2026-07-25 18:52 KST]** iMac/막내2 → 작가님·iMac/쌍아
+
+> 지시서 §11(18:30 KST) 이행분. dev **`monkos-portal-dev-00169-qf4`**. 검증 7항 **전량 합격**.
+
+## 11-A. 요약
+
+✅ **HEIC 두 경로 모두 차단** — 확장자 목록 + **MIME 정규식** 양쪽에서 제외. macOS(`image/heic`)·Windows(빈 MIME) 실측 거부
+✅ **디코드 실패 무음 폴백 차단** — `normalizeImage()`가 `degraded`를 실어 보내고, precheck·fit·**generate** 세 곳에서 명시 반려
+✅ 문구 6언어 정합 + 아이폰 안내 + `errDecode` 신설(서버 ko 고정 문자열의 다국어 노출 차단)
+✅ 생성 완주 1회 — 무회귀 확인(200, 8~11초, `생성 완료`)
+🔀 **prod 미배포** — §11 마감 조항대로 별도 승인 대기
+
+## 11-B. 구현
+
+### 11-1. HEIC 제외 (A안)
+
+| # | 위치 | 조치 |
+|---|------|------|
+| 1 | `specs-funnel.js` `ALLOWED_EXT` | `heic`·`heif` 제거 → `['jpg','jpeg','jfif','png','webp']` |
+| 2 | `specs-funnel.js` MIME 정규식 | `/image\/(jpeg\|png\|webp)/i` — **`heic\|heif` 제거** (이게 빠지면 macOS가 그대로 열린다) |
+| 3 | `specs-i18n.js` `errFileType` 6언어 | 허용 목록 JPG·PNG·WEBP + **아이폰 안내** + BMP 안내 |
+| 4 | `specs-i18n.js` `uploadHint` 6언어 | 동일 목록으로 정합 |
+| 5 | `specs-funnel.js`·`server.js`·`spec-funnel-markup.js` | §10-2 HEIC 미리보기 배선(스피너·`wantPreview`·썸네일 생성) **철거**. 서버 디코더 도입 시 복구 지점을 주석으로 남김 |
+
+**아이폰 안내 문구** — 지시대로 **데스크톱 유저**(아이폰 사진을 PC로 옮겨 올리는 경로)를 대상으로 썼다.
+ko: `아이폰 사진(HEIC)·BMP는 JPG로 저장한 뒤 올려주세요. 아이폰은 설정 > 카메라 > 포맷 > "높은 호환성"으로 바꾸면 JPG로 촬영됩니다.`
+ja `「互換性優先」` · en `"Most Compatible"` · es `"Más compatible"` · id `"Paling Kompatibel"` · vi `"Tương thích nhất"` — 각 언어 iOS 실제 표기를 따랐다.
+
+### 11-2. 디코드 실패 무음 폴백 차단 (P1, 포맷 무관 구조 결함)
+
+| # | 위치 | 조치 |
+|---|------|------|
+| 1 | `server.js` `normalizeImage()` | 폴백 시 **`degraded: true` + `decodeError`** 반환. 로그도 "원본 폴백" → "디코드 실패 → degraded 반환" |
+| 2 | 동상 | **크기 판정 제거** — `catch` 안의 `sharp(raw).metadata()`(헤더만 읽어 HEIC에서도 600x800을 돌려주던 함수)를 걷어내고 `width/height: 0` 고정. 판정 기준이 헤더가 아니라 **디코드 성공 여부**가 됐다 |
+| 3 | `server.js` precheck | `norm.degraded` → **400 `DECODE_FAILED`**. fail-open 경로 소멸 |
+| 4 | `server.js` fit | 동일 가드 — 디코드 실패 이미지로 프레임 계산 금지 |
+| 5 | `server.js` generate | 동일 가드 + **`fireRefundGate()` 선발화** — 선차감된 무료 쿼터·크레딧을 환급한 뒤 반려한다. 과금만 되고 산출물이 없는 경로를 남기지 않는다 ([[feedback_paid_failure_no_degraded_delivery]]) |
+| 6 | `specs-funnel.js` | `DECODE_FAILED` → `T.errDecode` 현지화 분기. 서버의 ko 고정 문자열이 6언어 유저에게 그대로 노출되던 문제 차단 |
+
+> ⚠️ **범위 보정 자인**: 4·5(fit·generate 가드)는 §11-2가 명시한 precheck 밖이다. 「디코드 실패 선행 시 fail-open 금지」를 precheck에만 적용하면 유저가 직접 fit/generate로 진입하는 경로가 남고, 특히 generate는 유료 경로라 방치할 수 없다고 판단해 포함했다. 두 곳 모두 **가드 추가일 뿐 기존 생성 로직은 무접촉**이며, 생성 완주 1회로 무회귀를 실측했다.
+
+## 11-C. 검증 결과 (dev `00169-qf4`)
+
+| # | 항목 | 결과 | 실측 |
+|---|------|------|------|
+| 1 | **macOS `.heic`** | ✅ | `file.type=image/heic` → 거부 + 새 문구 + `upload_rejected{image/heic, heic}` |
+| 2 | **Windows `.heic`** | ✅ | 빈 MIME → 거부 + `upload_rejected{(empty), heic}` |
+| 3 | 정상 포맷 무영향 | ✅ | jpg·**jfif**·png·webp **4종 전부 통과**, 미리보기 즉시 렌더(`naturalWidth=989`), 스피너 미노출 |
+| 4 | **디코드 실패 명시화** | ✅ | 손상 JPEG(게이트 통과·픽셀 불가) → precheck **400 `DECODE_FAILED`** → `이미지를 읽을 수 없습니다…` 노출 후 업로드 복귀. **fail-open 0** |
+| 5 | 문구 6언어 | ✅ | 6/6 힌트·에러 동일 목록(`JPG · PNG · WEBP`) + 아이폰 안내 + `errDecode` |
+| 6 | `upload_rejected` | ✅ | **18:44~18:46 KST 2건** (#1 `image/heic` / #2 `(empty)`) — GA4 대조는 쌍아 |
+| 7 | 회귀 — 콘솔 | ✅ | 전 케이스 **JS 에러·예외 0건** |
+| + | 생성 완주 1회 | ✅ | `/api/idphoto/generate` 200 (8.1s·11.3s), `[IDPhoto] 생성 완료 트랙=birefnet` |
+
+**서버 로그 실증 (#4)**
+```
+WARNING [normalizeImage] sharp 디코드 실패 (Input buffer has corrupt header …) → degraded 반환
+INFO    [IDPhoto][precheck] 디코드 실패로 명시 반려 (…)
+HTTP    400 /api/idphoto/precheck
+```
+
+### 측정 관련 자기 보정 2건
+
+1. **#3 첫 판정식이 과엄격했다** — `phase == ['v2-phase-check']`만 합격으로 봤는데, precheck 통과가 빠른 케이스(jfif·webp)는 스냅샷 시점에 이미 `v2-phase-fit`로 진행해 있었다. 진행이 더 된 것을 실패로 읽은 것이라 판정식을 `check 또는 fit + naturalWidth>0`으로 고쳐 재판정했다. **4종 전부 통과가 실측 사실**이다.
+2. **#7의 유일한 콘솔 항목은 #4의 의도된 400 network 로그 1건** — JS 예외·`console.error`가 아니라 브라우저가 4xx 응답에 남기는 기록이며, 명시 실패를 HTTP 상태로 표현하는 한 불가피하다(400 반환은 개편 전부터의 규약). "신규 JS 에러 0"과 구분해 기재한다.
+
+### 부하 관련 자인
+
+생성 완주 테스트는 **1회 실행**했으나, 퍼널이 `generate`를 **2번 호출**했다. 원인은 제 검증 스크립트가 fit 응답 확정 전에 버튼을 클릭한 것으로, §10에서 이미 식별한 하네스 아티팩트다(제품 결함 아님 — 단일 클릭 추적 시 요청 1회 확인 완료). 쌍아의 매팅 줄 세우기(`3aae130f`) 덕에 두 건 모두 `포화(503) → 노크 1회 → 줄서기 성공`으로 흡수돼 504 없이 완주했다.
+
+## 11-D. 배포 상태
+
+- dev **`monkos-portal-dev-00169-qf4`**
+- prod **미배포** — `monkos-portal-00537-q69` 무변동. §11 마감 조항 "prod 배포는 검증 후 별도 승인"
+- ⚠️ **prod는 지금 macOS HEIC 경로가 열려 있다** — 검증 전량 합격이므로 승인만 주시면 즉시 배포 가능
+
+## 11-E. 잔여
+
+⏳ **prod 배포 승인** (우선순위 높음 — 현행 prod에 fail-open 경로 존재)
+⏳ 검증 #6 GA4 대조 (쌍아, 발화 18:44~18:46 KST)
+⏭️ B(서버 디코더)·C(클라 WASM) — 지시대로 미착수. HEIC 유입 규모는 `upload_rejected`의 `file_ext=heic` 계측으로 관측 후 재판단
+⚠️ **미검증 유지**: 유료 경로에서 깨진 이미지가 크레딧을 소모하는지는 여전히 미확인. 다만 §11-2로 **디코드 실패 시 환급 게이트를 선발화**시켰으므로 이 경로의 과금-무산출 조합은 구조적으로 닫혔다
