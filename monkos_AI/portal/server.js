@@ -1239,8 +1239,31 @@ const httpServer = createServer(async (req, res) => {
     }
     // specs 퍼널 정적 자산(2026-07-12 분리): ?v=K_REVISION 쿼리로 배포 단위 버스트 — URL이 바뀌므로 장기 캐시 안전
     const isVersionedSpecsAsset = /^\/(?:js|css)\/specs-[\w-]+\.(?:js|css)$/.test(filePath);
-    const cacheHeader = isVersionedSpecsAsset ? 'public, max-age=31536000, immutable'
+    let cacheHeader = isVersionedSpecsAsset ? 'public, max-age=31536000, immutable'
       : ['.css', '.js'].includes(resolvedExt) ? 'no-cache' : 'public, max-age=3600';
+
+    // 토스 클라이언트 키 주입 (2026-07-25): 정적 파일 하드코딩 제거 → 환경별 키 주입.
+    // ⚠️ credits.html의 inline JS는 Docker 빌드 1단계에서 난독화된다(obfuscate.mjs, stringArray+base64).
+    //    문자열 토큰은 배열로 인코딩되어 사라지므로 치환이 불가능 → <head>에 전역 변수를 주입하고
+    //    페이지는 window.__MONKOS_TOSS_CK__를 읽는다. 환경별로 내용이 다르므로 캐시 금지.
+    if (/^\/credits(?:\.html)?$/.test(filePath)) {
+      const tossClientKey = process.env.TOSS_CLIENT_KEY || '';
+      if (!tossClientKey) {
+        log('🚨 TOSS_CLIENT_KEY 미주입 — credits.html 결제 위젯이 뜨지 않습니다', 'ERROR');
+      }
+      let html = content.toString('utf8');
+      const headTag = html.match(/<head[^>]*>/i);
+      if (headTag) {
+        const at = headTag.index + headTag[0].length;
+        html = html.slice(0, at)
+          + `<script>window.__MONKOS_TOSS_CK__=${JSON.stringify(tossClientKey)};</script>`
+          + html.slice(at);
+        content = Buffer.from(html, 'utf8');
+      } else {
+        log('🚨 credits.html에 <head>가 없어 토스 키 주입 실패 — 결제 위젯이 뜨지 않습니다', 'ERROR');
+      }
+      cacheHeader = 'no-cache';
+    }
     res.writeHead(200, {
       'Content-Type': MIME_TYPES[resolvedExt] || 'application/octet-stream',
       'Cache-Control': cacheHeader,
@@ -1274,6 +1297,14 @@ httpServer.listen(PORT, '0.0.0.0', () => {
     }
   }
   log(`Toss Payments: ${TOSS_SECRET_KEY ? (TOSS_SECRET_KEY.startsWith('live_') ? '설정됨 (LIVE)' : '⚠️ TEST 키!') : '미설정'}`);
+  // 2026-07-25: 클라이언트 키는 서빙 시 치환 주입 — 미주입이면 위젯이 조용히 안 뜬다(무음 강등 금지)
+  const tossClientKey = process.env.TOSS_CLIENT_KEY || '';
+  if (!tossClientKey) {
+    log('🚨 TOSS_CLIENT_KEY 미주입 — 결제 위젯이 뜨지 않습니다', 'ERROR');
+  } else if (!kService.includes('-dev') && !tossClientKey.startsWith('live_')) {
+    log('🚨 prod인데 TOSS_CLIENT_KEY가 라이브 키가 아닙니다 — 결제 위젯이 테스트 모드입니다', 'ERROR');
+  }
+  log(`Toss Client Key: ${tossClientKey ? (tossClientKey.startsWith('live_') ? '설정됨 (LIVE)' : '설정됨 (TEST)') : '미설정'}`);
   log(`Telegram CS Bot: ${TELEGRAM_BOT_TOKEN ? '설정됨' : '미설정'}`);
   log(`Telegram Event Bot: ${TELEGRAM_EVENT_BOT_TOKEN ? '설정됨' : '미설정'}`);
   log(`Telegram Team Bot: ${TELEGRAM_TEAM_BOT_TOKEN ? '설정됨' : '미설정'}`);

@@ -13,6 +13,7 @@ import express from 'express';
 import cors from 'cors';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { readFileSync } from 'fs';
 import { GoogleGenAI } from '@google/genai';
 import { saveImages } from './gcs-save.js';
 
@@ -22,6 +23,8 @@ const PORT = parseInt(process.env.PORT || '8080', 10);
 // === 환경변수 ===
 const PROJECT_ID = process.env.PROJECT_ID || 'monkos';
 const LOCATION = process.env.LOCATION || 'us-central1';
+// 토스 클라이언트 키 치환 토큰 (2026-07-25) — 정적 파일에 박힌 자리표시자. 키 값이 아니다.
+const TOSS_CLIENT_KEY_TOKEN = '__TOSS_CLIENT_KEY__';
 
 /**
  * 구조화된 로깅 (Cloud Logging 호환)
@@ -653,6 +656,29 @@ app.get('/', (req, res) => res.sendFile(join(__dirname, 'public/app.html')));
 app.get('/app', (req, res) => res.sendFile(join(__dirname, 'public/app.html')));
 app.get('/profiles', (req, res) => res.sendFile(join(__dirname, 'public/profiles.html')));
 
+// === /config.js — 토스 클라이언트 키 치환 주입 (2026-07-25) ===
+// ⚠️ express.static보다 반드시 위에 등록. 순서가 뒤바뀌면 static이 플레이스홀더 원본을 먼저 내보낸다.
+app.get('/config.js', (req, res) => {
+  try {
+    let js = readFileSync(join(__dirname, 'public/config.js'), 'utf8');
+    const tossClientKey = process.env.TOSS_CLIENT_KEY || '';
+    if (js.includes(TOSS_CLIENT_KEY_TOKEN)) {
+      if (!tossClientKey) {
+        log('🚨 TOSS_CLIENT_KEY 미주입 — 결제 위젯이 뜨지 않습니다', 'ERROR');
+      }
+      js = js.split(TOSS_CLIENT_KEY_TOKEN).join(tossClientKey);
+    } else {
+      log('🚨 config.js에 TOSS 키 플레이스홀더가 없습니다 — 치환 배선 확인 필요', 'ERROR');
+    }
+    res.set('Content-Type', 'application/javascript; charset=utf-8');
+    res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.send(js);
+  } catch (err) {
+    log(`[config.js] 서빙 실패: ${err.message}`, 'ERROR');
+    res.status(500).type('application/javascript').send('// config.js 로드 실패');
+  }
+});
+
 // 정적 파일 서빙
 app.use(express.static(join(__dirname, 'public'), {
   setHeaders: (res, filePath) => {
@@ -674,6 +700,15 @@ app.listen(PORT, '0.0.0.0', () => {
   log(`Imagen: Vertex AI ADC (${LOCATION})`);
   log('인증: 없음 (내부 전용)');
   log('결제: 없음');
+  // 2026-07-25: 클라이언트 키는 /config.js 서빙 시 치환 주입 — 미주입이면 위젯이 조용히 안 뜬다(무음 강등 금지)
+  const tossClientKey = process.env.TOSS_CLIENT_KEY || '';
+  const isDevService = (process.env.K_SERVICE || '').includes('-dev');
+  if (!tossClientKey) {
+    log('🚨 TOSS_CLIENT_KEY 미주입 — 결제 위젯이 뜨지 않습니다', 'ERROR');
+  } else if (!isDevService && !tossClientKey.startsWith('live_')) {
+    log('🚨 prod인데 TOSS_CLIENT_KEY가 라이브 키가 아닙니다 — 결제 위젯이 테스트 모드입니다', 'ERROR');
+  }
+  log(`Toss Client Key: ${tossClientKey ? (tossClientKey.startsWith('live_') ? '설정됨 (LIVE)' : '설정됨 (TEST)') : '미설정'}`);
   log('='.repeat(50));
   log('엔드포인트:');
   log('  GET  /health       — 헬스체크');

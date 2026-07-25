@@ -53,6 +53,7 @@ if [ "$ENV" = "dev" ]; then
   MEMORY="512Mi"
   CPU="1"
   MAX_INSTANCES="2"
+  TOSS_CLIENT_KEY_NAME="TOSS_CLIENT_KEY_TEST"  # dev 테스트 클라이언트 키 (SM 참조)
 elif [ "$ENV" = "prod" ]; then
   SERVICE_NAME="monkos-studio"
   MEMORY="1Gi"
@@ -106,6 +107,7 @@ gcloud run deploy ${SERVICE_NAME} \
   --min-instances 0 \
   --max-instances ${MAX_INSTANCES} \
   --update-env-vars "PROJECT_ID=${PROJECT_ID},LOCATION=${REGION},GCS_BUCKET=${GCS_BUCKET},CUSTOMER_GCS_BUCKET=${CUSTOMER_GCS_BUCKET}" \
+  --set-secrets="TOSS_CLIENT_KEY=${TOSS_CLIENT_KEY_NAME:-TOSS_CLIENT_KEY}:latest" \
   --service-account ${SERVICE_ACCOUNT}
 
 # 결과 출력

@@ -63,6 +63,7 @@ if [ "$ENV" = "dev" ]; then
   CPU="1"
   MIN_INSTANCES="0"  # dev는 콜드스타트 허용 (유휴 과금 방지)
   MAX_INSTANCES="2"
+  TOSS_CLIENT_KEY_NAME="TOSS_CLIENT_KEY_TEST"  # dev 테스트 클라이언트 키 (SM 참조)
 elif [ "$ENV" = "prod" ]; then
   SERVICE_NAME="monkos-idphoto-kr"
   MEMORY="2Gi"
@@ -123,7 +124,7 @@ gcloud run deploy ${SERVICE_NAME} \
   --min-instances ${MIN_INSTANCES} \
   --max-instances ${MAX_INSTANCES} \
   --update-env-vars "PROJECT_ID=${PROJECT_ID},LOCATION=${REGION},GCS_BUCKET=${GCS_BUCKET},CUSTOMER_GCS_BUCKET=${CUSTOMER_GCS_BUCKET}" \
-  --set-secrets="AUTH_SECRET=AUTH_SECRET:latest" \
+  --set-secrets="AUTH_SECRET=AUTH_SECRET:latest,TOSS_CLIENT_KEY=${TOSS_CLIENT_KEY_NAME:-TOSS_CLIENT_KEY}:latest" \
   --service-account ${SERVICE_ACCOUNT}
 
 # 결과 출력

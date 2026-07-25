@@ -88,7 +88,7 @@ if [ "$ENV" = "dev" ]; then
   MIN_INSTANCES="0"  # dev는 콜드스타트 허용 (유휴 과금 방지)
   MAX_INSTANCES="2"
   FREE_QUOTA_BYPASS="1"  # dev 무료 횟수 제한 해제
-  TOSS_CLIENT_KEY_OVERRIDE="test_gck_XZYkKL4Mrj9kOlJpvJJkV0zJwlEW"  # dev 테스트 결제용
+  TOSS_CLIENT_KEY_NAME="TOSS_CLIENT_KEY_TEST"  # dev 테스트 클라이언트 키 (SM 참조)
   TOSS_SECRET_KEY_NAME="TOSS_SECRET_KEY_TEST"  # dev 테스트 시크릿 키
   DEPLOY_FLAGS=""
 elif [ "$ENV" = "prod" ]; then
@@ -176,20 +176,25 @@ gcloud builds submit --tag gcr.io/${PROJECT_ID}/${SERVICE_NAME}
 # 3. Cloud Run 배포
 echo -e "\n${GREEN}[3/3]${NC} Cloud Run 배포 중..."
 
-# dev: 토스 테스트 클라이언트 키를 환경변수로 직접 주입 (시크릿 참조 대신)
+# 토스 클라이언트 키: dev=TOSS_CLIENT_KEY_TEST / prod=TOSS_CLIENT_KEY — 둘 다 SM 참조 (2026-07-25 평문 하드코딩 제거)
 # TEAM_CHAT_ID: 팀 알림 텔레그램 채널(비시크릿 정본값) — 4f71cbc 빈값 덮임 사고 재발 방지 정본화 (2026-07-14 작가님 승인)
 # TELEGRAM_TEAM_BOT_TOKEN·TEAM_NOTIFY_SECRET은 시크릿 성격 — deploy.sh 비기재, 서비스 env 직주입 유지 (--update-env-vars는 미나열 키 보존)
 ENV_VARS="^::^PROJECT_ID=${PROJECT_ID}::LOCATION=${REGION}::GCS_BUCKET=${GCS_BUCKET}::CHAT_WORKERS_URL=${CHAT_WORKERS_URL}::NAVER_CLIENT_ID=${NAVER_CLIENT_ID}::CROP_ENGINE_URL=${CROP_ENGINE_URL}::MATTE_API_URLS=${MATTE_API_URLS}::MATTE_SLUGS=${MATTE_SLUGS}::PILOT_T1_RETOUCH=${PILOT_T1_RETOUCH}::FREE_QUOTA_BYPASS=${FREE_QUOTA_BYPASS:-0}::TEAM_CHAT_ID=-1003794441262"
 SECRETS="CHAT_API_KEY=CHAT_API_KEY:latest,NAVER_CLIENT_SECRET=NAVER_CLIENT_SECRET:latest,ADMIN_UIDS=ADMIN_UIDS:latest,AGENT_API_KEYS=AGENT-API-KEYS:latest,LEMONSQUEEZY_API_KEY=LEMONSQUEEZY_API_KEY:latest,LEMONSQUEEZY_WEBHOOK_SECRET=LEMONSQUEEZY_WEBHOOK_SECRET:latest,LEMONSQUEEZY_WEBHOOK_SECRET_GLOBAL=LEMONSQUEEZY_WEBHOOK_SECRET_GLOBAL:latest,LEMONSQUEEZY_VARIANT_SPECS_SINGLE=LEMONSQUEEZY_VARIANT_SPECS_SINGLE:latest,MATTE_API_KEY=RUNPOD_API_KEY:latest,MATTE_SECRET=MATTE_SECRET:latest,NAVER_SEARCHAD_API_KEY=NAVER_SEARCHAD_API_KEY:latest,NAVER_SEARCHAD_SECRET_KEY=NAVER_SEARCHAD_SECRET_KEY:latest,NAVER_SEARCHAD_CUSTOMER_ID=NAVER_SEARCHAD_CUSTOMER_ID:latest,NAVER_DATALAB_CLIENT_ID=NAVER_DATALAB_CLIENT_ID:latest,NAVER_DATALAB_CLIENT_SECRET=NAVER_DATALAB_CLIENT_SECRET:latest,BING_WMT_API_KEY=BING_WMT_API_KEY:latest"
 
-if [ -n "${TOSS_CLIENT_KEY_OVERRIDE}" ]; then
-  ENV_VARS="${ENV_VARS}::TOSS_CLIENT_KEY=${TOSS_CLIENT_KEY_OVERRIDE}"
-else
-  SECRETS="${SECRETS},TOSS_CLIENT_KEY=TOSS_CLIENT_KEY:latest"
-fi
-
-# dev/prod 토스 시크릿 키 분기
+# dev/prod 토스 키 분기 — 값은 전부 SM 정본 참조 (평문 기재 금지, 헌법 4조 1항)
+SECRETS="${SECRETS},TOSS_CLIENT_KEY=${TOSS_CLIENT_KEY_NAME:-TOSS_CLIENT_KEY}:latest"
 SECRETS="${SECRETS},TOSS_SECRET_KEY=${TOSS_SECRET_KEY_NAME:-TOSS_SECRET_KEY}:latest"
+
+# 2026-07-25 이행 정리: 과거 dev는 TOSS_CLIENT_KEY를 평문 env로 주입했다.
+# 같은 키가 평문 env와 시크릿 참조로 동시에 존재하면 Cloud Run이 배포를 거부하므로 선제 제거한다.
+if gcloud run services describe ${SERVICE_NAME} --region ${REGION} --project=${PROJECT_ID} \
+     --format=json 2>/dev/null | tr -d ' \n' \
+     | grep -q '"name":"TOSS_CLIENT_KEY","value":'; then
+  echo -e "${YELLOW}⚠ 과거 평문 TOSS_CLIENT_KEY env 감지 — 시크릿 참조 전환 위해 제거${NC}"
+  gcloud run services update ${SERVICE_NAME} --region ${REGION} --project=${PROJECT_ID} \
+    --remove-env-vars=TOSS_CLIENT_KEY
+fi
 
 gcloud run deploy ${SERVICE_NAME} \
   --image gcr.io/${PROJECT_ID}/${SERVICE_NAME} \

@@ -224,7 +224,7 @@ footer { text-align: center; padding: 40px 0 20px; border-top: 1px solid rgba(16
 </div>
 
 <script>
-var TOSS_CLIENT_KEY = 'live_gck_GePWvyJnrKaxZNXanzwR3gLzN97E';
+var TOSS_CLIENT_KEY = window.__MONKOS_TOSS_CK__ || ''; // 위젯 키 — server.js가 서빙 시 <head>에 주입
 var GOOGLE_CLIENT_ID = '933456016842-clagcrpo1juvukjif1m454jq811bd2rq.apps.googleusercontent.com';
 
 var KO_PACKAGES = [
