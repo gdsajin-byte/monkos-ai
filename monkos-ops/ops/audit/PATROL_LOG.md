@@ -25,3 +25,10 @@
 <   monk-image-engine@monkos.iam.gserviceaccount.com ← user:gdsajin@gmail.com
 >   monk-image-engine@monkos.iam.gserviceaccount.com ← serviceAccount:monk-image-engine@monkos.iam.gserviceaccount.com, user:gdsajin@gmail.com
 ```
+
+## [2026-07-26 09:30 KST] 순찰 감지
+```diff
+< ## secret map (2026-07-25 09:30)
+> ## secret map (2026-07-26 09:30)
+> TOSS_CLIENT_KEY_TEST                 2026-07-25  등재
+```
