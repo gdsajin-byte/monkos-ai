@@ -87,7 +87,8 @@
       "mcp__playwright__browser_handle_dialog",
       "mcp__claude_ai_Gmail__create_draft",
       "mcp__monk-retrieval__monk_stats",
-      "mcp__monk-retrieval__monk_search"
+      "mcp__monk-retrieval__monk_search",
+      "WebFetch(domain:developers.cloudflare.com)"
     ],
     "deny": [
       "Bash(rm -rf *)",
