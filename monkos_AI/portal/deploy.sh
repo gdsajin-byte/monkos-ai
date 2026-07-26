@@ -130,7 +130,7 @@ elif [ "$ENV" = "preview" ]; then
   SERVICE_NAME="monkos-portal"
   MEMORY="1Gi"
   CPU="1"
-  MIN_INSTANCES="1"  # prod 서비스 대상이므로 prod와 동일 유지
+  MIN_INSTANCES="0"  # --no-traffic 태그 리비전 = 트래픽 0 → 웜 불요 (2026-07-26 유휴 1대 31일 점유 실측)
   MAX_INSTANCES="5"
   DEPLOY_FLAGS="--no-traffic --tag v4-preview"
 

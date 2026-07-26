@@ -67,7 +67,7 @@ elif [ "$ENV" = "prod" ]; then
   SERVICE_NAME="monkos-idphoto-jp"
   MEMORY="2Gi"
   CPU="2"
-  MIN_INSTANCES="1"  # prod 상시 대기 = 콜드스타트 이탈 방지 (변경 금지)
+  MIN_INSTANCES="0"  # 노출 2·클릭 0·백엔드 의존 없음 실측 → 웜 불요 (2026-07-26 작가님 승인, 07-04 "변경 금지" 해제)
   MAX_INSTANCES="10"
 
   # 브랜치 안전장치
