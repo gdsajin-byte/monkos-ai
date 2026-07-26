@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MONKOS AI — Hero v12</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Pretendard Variable', -apple-system, sans-serif;
+  background: #0A0E17;
+  color: #fff;
+  overflow-x: hidden;
+}
+
+/* NAV */
+nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 24px 48px;
+}
+.nav-logo { font-size: 16px; font-weight: 800; letter-spacing: 0.5px; }
+.nav-links { display: flex; gap: 36px; font-size: 14px; color: rgba(255,255,255,0.5); }
+.nav-links a { text-decoration: none; color: inherit; }
+.nav-links a:hover { color: #fff; }
+.nav-cta {
+  background: transparent; color: #fff;
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 10px 24px; border-radius: 8px;
+  font-size: 14px; font-weight: 500; cursor: pointer; font-family: inherit;
+}
+.nav-cta:hover { border-color: rgba(255,255,255,0.5); }
+
+/* HERO */
+.hero {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 80px 48px 80px;
+  display: flex;
+  align-items: center;
+  min-height: calc(100vh - 72px);
+  gap: 60px;
+}
+
+.hero-left { flex: 1; }
+
+.hero-left h1 {
+  font-size: 71px;
+  font-weight: 300;
+  line-height: 72px;
+  letter-spacing: -3.5px;
+  margin-bottom: 36px;
+}
+
+.hero-left .sub {
+  font-size: 16px;
+  color: rgba(255,255,255,0.45);
+  line-height: 1.7;
+  margin-bottom: 36px;
+  font-weight: 300;
+}
+
+.btn-primary {
+  display: inline-block;
+  background: #4A3ABA; color: #fff; border: none;
+  padding: 14px 32px; border-radius: 10px;
+  font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit;
+}
+.btn-primary:hover { background: #5B4ACB; }
+
+/* RIGHT */
+.hero-right {
+  flex: 0 0 420px;
+  position: relative;
+  height: 821px;
+}
+
+/* Phase 1: Phone */
+.phone-img {
+  position: absolute;
+  top: 0;
+  right: 0;
+  transform: none;
+  width: 398px;
+  height: 821px;
+  filter: drop-shadow(0 20px 60px rgba(0,0,0,0.4));
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.phone-img.gone {
+  opacity: 0;
+  transform: translateY(-50%) scale(0.9);
+}
+
+/* Flash */
+.flash-overlay {
+  position: fixed; inset: 0;
+  background: #fff; z-index: 100;
+  opacity: 0; pointer-events: none;
+}
+.flash-overlay.go { animation: fullFlash 0.4s ease forwards; }
+
+/* Phase 2: Photo slideshow */
+.photo-area {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  width: 420px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s ease;
+}
+
+.photo-area.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.photo-area .frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3/4;
+}
+
+.photo-area .frame img {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  border: 10px solid #fff;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.photo-area .frame img.active {
+  opacity: 1;
+}
+
+.slide-dots {
+  display: flex; gap: 8px; justify-content: center;
+  margin-top: 16px;
+}
+
+.dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  transition: background 0.3s;
+}
+.dot.active { background: rgba(255,255,255,0.6); }
+
+@keyframes fullFlash {
+  0% { opacity: 0; }
+  20% { opacity: 0.85; }
+  100% { opacity: 0; }
+}
+
+@media (max-width: 768px) {
+  nav { padding: 16px 20px; }
+  .nav-links { display: none; }
+  .hero { flex-direction: column; padding: 40px 24px; gap: 40px; min-height: auto; }
+  .hero-left h1 { font-size: 36px; }
+  .hero-right { flex: 0 0 auto; width: 100%; height: 420px; }
+  .phone-img { height: 400px; }
+  .photo-area { width: 300px; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">MONKOS AI</div>
+  <div class="nav-links"><a href="#">규격</a><a href="#">블로그</a><a href="#">FAQ</a><a href="#">가격</a></div>
+  <button class="nav-cta">촬영 시작</button>
+</nav>
+
+<section class="hero">
+  <div class="hero-left">
+    <h1>셀카 한 장으로 완성하는<br>AI 증명사진</h1>
+    <p class="sub">사진관에 가지 않아도, 스마트폰 셀카 한 장이면<br>여권 · 증명 · 프로필 사진이 완성됩니다.</p>
+    <button class="btn-primary">촬영 시작하기</button>
+  </div>
+
+  <div class="hero-right">
+    <img class="phone-img" id="phone" src="핸드폰이미지_2.png" alt="셀카 촬영">
+    <div class="flash-overlay" id="flash"></div>
+
+    <div class="photo-area" id="photoArea">
+      <div class="frame" id="frame">
+        <img src="히어로이미지_프로필2-2.webp" alt="프로필2" class="active">
+        <img src="히어로이미지_증명1.webp" alt="증명1">
+        <img src="히어로이미지_증명2.webp" alt="증명2">
+        <img src="히어로이미지_증명3.webp" alt="증명3">
+        <img src="히어로이미지_증명4.webp" alt="증명4">
+        <img src="히어로이미지_프로필1.webp" alt="프로필1">
+        <img src="히어로이미지_프로필3.webp" alt="프로필3">
+      </div>
+      <div class="slide-dots" id="dots"></div>
+    </div>
+  </div>
+</section>
+
+<script>
+var phone = document.getElementById('phone');
+var flash = document.getElementById('flash');
+var photoArea = document.getElementById('photoArea');
+var photos = document.querySelectorAll('#frame img');
+var dotsEl = document.getElementById('dots');
+var current = 0;
+
+photos.forEach(function(_, i) {
+  var d = document.createElement('div');
+  d.className = 'dot' + (i === 0 ? ' active' : '');
+  dotsEl.appendChild(d);
+});
+var dots = document.querySelectorAll('.dot');
+
+function showPhoto(n) {
+  photos.forEach(function(p) { p.classList.remove('active'); });
+  dots.forEach(function(d) { d.classList.remove('active'); });
+  photos[n].classList.add('active');
+  dots[n].classList.add('active');
+}
+
+// 1. Flash
+setTimeout(function() { flash.classList.add('go'); }, 3000);
+
+// 2. Phone gone
+setTimeout(function() { phone.classList.add('gone'); }, 3300);
+
+// 3. Photos appear
+setTimeout(function() {
+  phone.style.display = 'none';
+  photoArea.classList.add('show');
+  setInterval(function() {
+    current = (current + 1) % photos.length;
+    showPhoto(current);
+  }, 2500);
+}, 4000);
+</script>
+</body>
+</html>
