@@ -1326,10 +1326,15 @@ const httpServer = createServer(async (req, res) => {
       }
       cacheHeader = 'no-cache';
     }
-    res.writeHead(200, {
+    // /proto/* = 미완성 프로토타입. robots.txt는 손대지 않고 응답 헤더로만 색인을 막는다
+    // (Disallow는 크롤을 막을 뿐 색인 자체를 막지 못하고, 이미 수집된 URL의 색인 해제도 안 된다)
+    const headers = {
       'Content-Type': MIME_TYPES[resolvedExt] || 'application/octet-stream',
       'Cache-Control': cacheHeader,
-    });
+    };
+    if (filePath.startsWith('/proto/')) headers['X-Robots-Tag'] = 'noindex, nofollow';
+
+    res.writeHead(200, headers);
     res.end(content);
   } catch {
     res.writeHead(404, { 'Content-Type': 'text/plain' });
