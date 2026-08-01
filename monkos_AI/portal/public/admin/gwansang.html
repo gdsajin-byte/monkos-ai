@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>관상×사주 리포트 — MONKOS Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .card-title { font-weight: 700; font-size: 1.05rem; }
+    .reading-tag { display: inline-block; font-size: 0.68rem; font-weight: 600; border-radius: 4px; padding: 1px 6px; margin-right: 6px; vertical-align: 1px; }
+  </style>
+</head>
+<body class="bg-stone-100 text-stone-800 min-h-screen">
+
+  <nav class="flex items-center justify-between px-6 py-4 bg-white border-b border-stone-200">
+    <span class="text-xl font-bold tracking-widest text-stone-900">MONKOS</span>
+    <a href="/admin/dashboard.html" class="text-sm text-stone-500 hover:text-stone-900">← 어드민</a>
+  </nav>
+
+  <div class="max-w-5xl mx-auto px-4 py-8">
+
+    <header class="text-center mb-8">
+      <span class="inline-block text-xs font-semibold bg-stone-800 text-amber-300 rounded-full px-3 py-1 mb-3">내부 검증용 · 비공개 (Phase A)</span>
+      <h1 class="text-3xl font-bold tracking-tight">관상 × 사주 리포트</h1>
+      <p class="text-stone-500 mt-2">셀카 한 장 — 478개 메시 점으로 읽는 관상 × 절기 기준 사주 명식</p>
+      <p id="disclaimer" class="text-xs text-stone-400 mt-3 max-w-2xl mx-auto leading-relaxed"></p>
+    </header>
+
+    <!-- 입력 -->
+    <section class="bg-white rounded-2xl shadow-sm border border-stone-200 p-6 mb-8">
+      <div class="flex flex-wrap items-end gap-4">
+        <div>
+          <label for="birthdate" class="block text-sm font-medium text-stone-600 mb-1">생년월일 <span class="text-stone-400 font-normal">(선택 — 사주용)</span></label>
+          <input type="date" id="birthdate" class="border border-stone-300 rounded-lg px-3 py-2 text-sm">
+        </div>
+        <div>
+          <label for="birthtime" class="block text-sm font-medium text-stone-600 mb-1">태어난 시각 <span class="text-stone-400 font-normal">(선택 — 시주용)</span></label>
+          <input type="time" id="birthtime" class="border border-stone-300 rounded-lg px-3 py-2 text-sm">
+        </div>
+        <input type="file" id="file-input" accept="image/*" class="hidden">
+        <button id="btn-analyze" disabled class="bg-stone-800 hover:bg-stone-700 disabled:opacity-40 text-white font-semibold rounded-lg px-5 py-2.5 text-sm">셀카 업로드 → 분석</button>
+        <button id="btn-demo" disabled class="bg-amber-500 hover:bg-amber-400 disabled:opacity-40 text-white font-semibold rounded-lg px-5 py-2.5 text-sm">데모 얼굴로 체험</button>
+      </div>
+      <p id="status" class="text-sm mt-3 text-stone-500">로딩 중…</p>
+      <p class="text-xs text-stone-400 mt-2">시각을 비우면 시주 없이 3주만 세웁니다. 표준시(KST) 기준으로 입력해 주세요.</p>
+    </section>
+
+    <!-- 결과 -->
+    <section id="results" class="hidden">
+      <div id="page-nav" class="flex flex-wrap gap-1.5 mb-4"></div>
+      <div id="page-head" class="mb-3"></div>
+      <div id="quality-banner"></div>
+
+      <div id="mini-map" class="hidden mb-4">
+        <div class="bg-white rounded-2xl shadow-sm border border-stone-200 p-4">
+          <p class="text-xs text-stone-400 mb-2">선택한 부위의 측정 점</p>
+          <canvas id="mini-canvas" class="w-full max-w-sm rounded-xl"></canvas>
+        </div>
+      </div>
+
+      <div id="page-body"></div>
+
+      <div class="flex items-center justify-between mt-6">
+        <button id="btn-prev" class="bg-white border border-stone-300 disabled:opacity-40 rounded-lg px-4 py-2 text-sm font-semibold">← 이전</button>
+        <button id="btn-next" class="bg-white border border-stone-300 disabled:opacity-40 rounded-lg px-4 py-2 text-sm font-semibold">다음 →</button>
+      </div>
+
+      <footer class="text-xs text-stone-400 leading-relaxed border-t border-stone-200 pt-4 mt-8">
+        <p>T0/T1 과금 게이트는 Phase C 범위입니다. 현재 어드민에서는 14페이지 전량이 열려 있습니다.</p>
+        <p class="mt-1">© MONKOS — 내부 검증용. 외부 배포 금지.</p>
+      </footer>
+    </section>
+  </div>
+
+  <script type="module" src="/admin/js/gwansang/app.js"></script>
+</body>
+</html>

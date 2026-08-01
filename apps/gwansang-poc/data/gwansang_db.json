@@ -4,6 +4,8 @@
     "version": "0.1.0",
     "created": "2026-08-01",
     "owner": "MONKOS",
+    "canonical": "monkos_AI/portal/lib/cms/gwansang-data.json",
+    "canonical_note": "2026-08-01 Phase A 이관 — 룰 DB 정본은 포털 lib/cms. 본 파일은 POC 샌드박스 사본이며 서비스 반영 대상이 아니다 (헌법 3조 4항 정본 단일).",
     "landmark_model": "MediaPipe FaceLandmarker v2 (478pt)",
     "calibration": "heuristic_v0.1 — 메시 좌표계 계통 오프셋(메시 상단≠헤어라인, 눈꼬리 +편향 등)을 기준얼굴(균형형 데모) 앵커로 1차 정렬 (2026-08-01). 실사진 표본 분포 보정은 차기 필수",
     "sources": "해석 텍스트는 마의상법·유장상법 계열 관상 통설의 현대어 요약. 원전 장별 인용 매핑은 차기 단계 (PROPOSAL_20260724 어젠다)",

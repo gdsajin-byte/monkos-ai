@@ -1,0 +1,353 @@
+{
+  "checkedAt": "2026-08-01T07:29:31.330Z",
+  "rows": [
+    {
+      "date": "1950-03-15",
+      "time": "10:30",
+      "note": "1950년대",
+      "ours": {
+        "year": "庚寅",
+        "month": "己卯",
+        "day": "己酉",
+        "hour": "己巳"
+      },
+      "pub": {
+        "secha": "庚寅",
+        "wolgeon": "戊寅",
+        "iljin": "己酉",
+        "lunar": "1950-01-27"
+      },
+      "dayOk": true,
+      "yearOk": true,
+      "monthOk": null,
+      "yearNote": "",
+      "monthNote": "KASI 월건은 음력 월(01월) 기준 — 절기 구간(경칩 이후)과 정의 분기",
+      "warnings": []
+    },
+    {
+      "date": "1955-11-08",
+      "time": "03:15",
+      "note": "1950년대 말",
+      "ours": {
+        "year": "乙未",
+        "month": "丙戌",
+        "day": "癸酉",
+        "hour": "甲寅"
+      },
+      "pub": {
+        "secha": "乙未",
+        "wolgeon": "丙戌",
+        "iljin": "癸酉",
+        "lunar": "1955-09-24"
+      },
+      "dayOk": true,
+      "yearOk": true,
+      "monthOk": true,
+      "yearNote": "",
+      "monthNote": "",
+      "warnings": []
+    },
+    {
+      "date": "1963-07-23",
+      "time": "21:40",
+      "note": "1960년대",
+      "ours": {
+        "year": "癸卯",
+        "month": "己未",
+        "day": "丁卯",
+        "hour": "辛亥"
+      },
+      "pub": {
+        "secha": "癸卯",
+        "wolgeon": "己未",
+        "iljin": "丁卯",
+        "lunar": "1963-06-03"
+      },
+      "dayOk": true,
+      "yearOk": true,
+      "monthOk": true,
+      "yearNote": "",
+      "monthNote": "",
+      "warnings": []
+    },
+    {
+      "date": "1971-05-02",
+      "time": "12:00",
+      "note": "1970년대",
+      "ours": {
+        "year": "辛亥",
+        "month": "壬辰",
+        "day": "丁亥",
+        "hour": "丙午"
+      },
+      "pub": {
+        "secha": "辛亥",
+        "wolgeon": "癸巳",
+        "iljin": "丁亥",
+        "lunar": "1971-04-08"
+      },
+      "dayOk": true,
+      "yearOk": true,
+      "monthOk": null,
+      "yearNote": "",
+      "monthNote": "KASI 월건은 음력 월(04월) 기준 — 절기 구간(청명 이후)과 정의 분기",
+      "warnings": []
+    },
+    {
+      "date": "1988-09-19",
+      "time": "07:05",
+      "note": "1980년대",
+      "ours": {
+        "year": "戊辰",
+        "month": "辛酉",
+        "day": "丁丑",
+        "hour": "甲辰"
+      },
+      "pub": {
+        "secha": "戊辰",
+        "wolgeon": "辛酉",
+        "iljin": "丁丑",
+        "lunar": "1988-08-09"
+      },
+      "dayOk": true,
+      "yearOk": true,
+      "monthOk": true,
+      "yearNote": "",
+      "monthNote": "",
+      "warnings": []
+    },
+    {
+      "date": "1996-12-25",
+      "time": "23:30",
+      "note": "1990년대 · 야자시",
+      "ours": {
+        "year": "丙子",
+        "month": "庚子",
+        "day": "丙申",
+        "hour": "戊子"
+      },
+      "pub": {
+        "secha": "丙子",
+        "wolgeon": "庚子",
+        "iljin": "丙申",
+        "lunar": "1996-11-15"
+      },
+      "dayOk": true,
+      "yearOk": true,
+      "monthOk": true,
+      "yearNote": "",
+      "monthNote": "",
+      "warnings": [
+        "야자시(23시대) 출생입니다. 본 판은 일주를 달력 날짜(00시) 기준으로 잡으므로, 일주를 다음 날로 넘기는 유파와 결과가 다를 수 있습니다."
+      ]
+    },
+    {
+      "date": "2003-04-11",
+      "time": "15:20",
+      "note": "2000년대",
+      "ours": {
+        "year": "癸未",
+        "month": "丙辰",
+        "day": "甲寅",
+        "hour": "壬申"
+      },
+      "pub": {
+        "secha": "癸未",
+        "wolgeon": "丙辰",
+        "iljin": "甲寅",
+        "lunar": "2003-03-10"
+      },
+      "dayOk": true,
+      "yearOk": true,
+      "monthOk": true,
+      "yearNote": "",
+      "monthNote": "",
+      "warnings": []
+    },
+    {
+      "date": "2010-08-30",
+      "time": "05:50",
+      "note": "2010년대",
+      "ours": {
+        "year": "庚寅",
+        "month": "甲申",
+        "day": "壬子",
+        "hour": "癸卯"
+      },
+      "pub": {
+        "secha": "庚寅",
+        "wolgeon": "甲申",
+        "iljin": "壬子",
+        "lunar": "2010-07-21"
+      },
+      "dayOk": true,
+      "yearOk": true,
+      "monthOk": true,
+      "yearNote": "",
+      "monthNote": "",
+      "warnings": []
+    },
+    {
+      "date": "2019-06-06",
+      "time": "18:10",
+      "note": "2010년대 말",
+      "ours": {
+        "year": "己亥",
+        "month": "庚午",
+        "day": "甲戌",
+        "hour": "癸酉"
+      },
+      "pub": {
+        "secha": "己亥",
+        "wolgeon": "庚午",
+        "iljin": "甲戌",
+        "lunar": "2019-05-04"
+      },
+      "dayOk": true,
+      "yearOk": true,
+      "monthOk": true,
+      "yearNote": "",
+      "monthNote": "",
+      "warnings": []
+    },
+    {
+      "date": "2024-11-11",
+      "time": "00:20",
+      "note": "2020년대",
+      "ours": {
+        "year": "甲辰",
+        "month": "乙亥",
+        "day": "己卯",
+        "hour": "甲子"
+      },
+      "pub": {
+        "secha": "甲辰",
+        "wolgeon": "乙亥",
+        "iljin": "己卯",
+        "lunar": "2024-10-11"
+      },
+      "dayOk": true,
+      "yearOk": true,
+      "monthOk": true,
+      "yearNote": "",
+      "monthNote": "",
+      "warnings": []
+    },
+    {
+      "date": "2026-02-04",
+      "time": "04:00",
+      "note": "경계: 입춘 당일 05:02 이전 → 전년(을사) 년주",
+      "ours": {
+        "year": "乙巳",
+        "month": "己丑",
+        "day": "己酉",
+        "hour": "丙寅"
+      },
+      "pub": {
+        "secha": "乙巳",
+        "wolgeon": "己丑",
+        "iljin": "己酉",
+        "lunar": "2025-12-17"
+      },
+      "dayOk": true,
+      "yearOk": null,
+      "monthOk": null,
+      "yearNote": "KASI 세차는 음력 해(2025-12-17) 기준 — 절기(입춘) 기준과 정의 분기",
+      "monthNote": "KASI 월건은 음력 월(12월) 기준 — 절기 구간(소한 이후)과 정의 분기",
+      "warnings": []
+    },
+    {
+      "date": "2026-02-04",
+      "time": "06:00",
+      "note": "경계: 입춘 당일 05:02 이후 → 당년(병오) 년주",
+      "ours": {
+        "year": "丙午",
+        "month": "庚寅",
+        "day": "己酉",
+        "hour": "丁卯"
+      },
+      "pub": {
+        "secha": "乙巳",
+        "wolgeon": "己丑",
+        "iljin": "己酉",
+        "lunar": "2025-12-17"
+      },
+      "dayOk": true,
+      "yearOk": null,
+      "monthOk": null,
+      "yearNote": "KASI 세차는 음력 해(2025-12-17) 기준 — 절기(입춘) 기준과 정의 분기",
+      "monthNote": "KASI 월건은 음력 월(12월) 기준 — 절기 구간(입춘 이후)과 정의 분기",
+      "warnings": []
+    },
+    {
+      "date": "2026-02-10",
+      "time": "12:00",
+      "note": "경계: 입춘(2/4) 후·설날(2/17) 전 — 사주 병오 vs KASI 세차 을사 분기 실증",
+      "ours": {
+        "year": "丙午",
+        "month": "庚寅",
+        "day": "乙卯",
+        "hour": "壬午"
+      },
+      "pub": {
+        "secha": "乙巳",
+        "wolgeon": "己丑",
+        "iljin": "乙卯",
+        "lunar": "2025-12-23"
+      },
+      "dayOk": true,
+      "yearOk": null,
+      "monthOk": null,
+      "yearNote": "KASI 세차는 음력 해(2025-12-23) 기준 — 절기(입춘) 기준과 정의 분기",
+      "monthNote": "KASI 월건은 음력 월(12월) 기준 — 절기 구간(입춘 이후)과 정의 분기",
+      "warnings": []
+    },
+    {
+      "date": "2026-08-07",
+      "time": "19:00",
+      "note": "경계: 입추 당일 20:43 이전 → 미월 유지",
+      "ours": {
+        "year": "丙午",
+        "month": "乙未",
+        "day": "癸丑",
+        "hour": "壬戌"
+      },
+      "pub": {
+        "secha": "丙午",
+        "wolgeon": "乙未",
+        "iljin": "癸丑",
+        "lunar": "2026-06-25"
+      },
+      "dayOk": true,
+      "yearOk": true,
+      "monthOk": true,
+      "yearNote": "",
+      "monthNote": "",
+      "warnings": []
+    },
+    {
+      "date": "2026-08-07",
+      "time": "22:00",
+      "note": "경계: 입추 당일 20:43 이후 → 신월 전환",
+      "ours": {
+        "year": "丙午",
+        "month": "丙申",
+        "day": "癸丑",
+        "hour": "癸亥"
+      },
+      "pub": {
+        "secha": "丙午",
+        "wolgeon": "乙未",
+        "iljin": "癸丑",
+        "lunar": "2026-06-25"
+      },
+      "dayOk": true,
+      "yearOk": true,
+      "monthOk": null,
+      "yearNote": "",
+      "monthNote": "KASI 월건은 음력 월(06월) 기준 — 절기 구간(입추 이후)과 정의 분기",
+      "warnings": []
+    }
+  ],
+  "fails": []
+}

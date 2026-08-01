@@ -17,7 +17,7 @@ python3 -m http.server 8807 --directory apps/gwansang-poc
 
 | 파일 | 역할 |
 |------|------|
-| `data/gwansang_db.json` | **관상 지식 DB (정본)** — 모든 판정·해석 텍스트. 코드 수정 없이 콘텐츠 증보 가능 |
+| `data/gwansang_db.json` | 관상 지식 DB **샌드박스 사본** — 2026-08-01 Phase A로 정본은 `monkos_AI/portal/lib/cms/gwansang-data.json`으로 이관. 콘텐츠 증보는 정본에서만 (헌법 3조 4항) |
 | `js/metrics.js` | 478 랜드마크 → 20개 측정치 (순수 함수, 롤 보정 포함) |
 | `js/engine.js` | 측정치 + DB → 판정(bin)·오행형·리포트 조립 |
 | `js/saju.js` | 60갑자 년주·일주 + 관상오행×일간오행 관계 |

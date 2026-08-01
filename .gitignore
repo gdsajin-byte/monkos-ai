@@ -85,6 +85,8 @@ _saga/BWYA_Academy/강의실(B.W.Y.A)/**/*.docx
 !apps/idpass-android/app/src/main/assets/**/*.png
 !apps/idpass-android/app/src/main/res/**/*.png
 !apps/**/vertex_*.png
+# 관상 리포트 어드민 데모 얼굴 — 페이지 런타임 자산이라 클린 클론에서도 있어야 한다 (PF_FACEREAD)
+!monkos_AI/portal/public/admin/img/*.jpg
 !**/favicon-32.png
 !**/favicon-192.png
 !**/apple-touch-icon.png

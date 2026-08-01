@@ -55,6 +55,7 @@ import { handleBoardPublicList, handleBoardPublicGet, handleBoardPublicCreate, h
 import { handleUpload, handleImageList, handleImageDelete } from './lib/cms/upload.js';
 import { handleIdphotoResults } from './lib/cms/idphoto-review.js';
 import { handleAiImage, handleAiThumbnail, handleAiSuggest } from './lib/cms/ai.js';
+import { handleGwansangData, handleGwansangSaju } from './lib/cms/gwansang.js';
 import { handleTranslate } from './lib/cms/translate.js';
 import { handleSearch } from './lib/cms/search.js';
 import { renderBlogList, renderBlogPost, renderFaq, renderGallery, renderBoardList, renderBoardPost, renderBoardWrite, renderGuide, renderAiPhotoGuide, renderSitemap, renderSitemapStatic, renderSitemapSpecs, renderSitemapSpecsLang, renderSitemapBlog, renderPricing, renderSpecsList, renderSpecsDetail } from './lib/cms/render.js';
@@ -1112,6 +1113,10 @@ const httpServer = createServer(async (req, res) => {
   if (urlPath?.startsWith('/api/admin/board/') && urlPath?.endsWith('/reply') && req.method === 'POST') return handleBoardAdminReply(req, res);
   if (urlPath?.startsWith('/api/admin/board/') && urlPath?.endsWith('/toggle') && req.method === 'PUT') return handleBoardAdminToggle(req, res);
   if (urlPath?.startsWith('/api/admin/board/') && req.method === 'DELETE') return handleBoardAdminDelete(req, res);
+
+  // === 관상×사주 리포트 (PF_FACEREAD Phase A) — 어드민 비공개 ===
+  if (urlPath === '/api/admin/gwansang/data' && req.method === 'GET') return handleGwansangData(req, res);
+  if (urlPath === '/api/admin/gwansang/saju' && req.method === 'GET') return handleGwansangSaju(req, res);
 
   // === VTON Studio (PF_VTON Phase4) — RunPod 프록시 ===
   if (urlPath === '/admin/api/vton/pod/start' && req.method === 'POST') return handlePodStart(req, res);
