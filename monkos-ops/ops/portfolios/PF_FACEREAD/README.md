@@ -112,3 +112,4 @@ status: active
 | 08-01 | iMac/막내1 | Phase A prod 출고 — 포털 prod `00540-jvq`에 어드민 리포트 동반 배포. 미인증 401 실측(ADMIN_UIDS+noindex, 공개 표면 무변동) | COMPLETION_20260801_iMac막내1_포털prod배포 | ✅ |
 | 08-01 | iMac/막내1 | 어드민 진입 동선 개설 — `admin/index.html` 내부 도구에 🔮 관상 리포트 카드 추가 (+ 별건 `/proto/*` noindex 헤더 동반). prod `00541-8qh` | COMPLETION_20260801_iMac막내1_어드민카드+proto_noindex | ✅ |
 | 08-01 | iMac/쌍아 | 시장 전략 수립 (작가님 지시) — 3문 구조(분리/병합 층위), 권역별 진입, 서구=사주 우선·physiognomy 직역 금지, 정면 2D 8할 커버 실측, 다각도 안 하향 이연 | 본 README 「시장 전략」 섹션 | ✅ |
+| 08-01 | iMac/쌍아 | **품질 결함 진단** (작가님 실사용 보고 "삼정 전원 균형·두루뭉실") — 절대임계 vs 상대argmax 대조 실증, 원인=데모얼굴 1개 캘리브레이션. Phase B 순서 재정의(분포보정→구간재설계→콘텐츠집필) + 삼정 상대판정 지시서 발행 | ORDER_20260801_iMac쌍아_막내2_FACEREAD_삼정상대판정 | 🔄 |

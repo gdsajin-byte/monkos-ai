@@ -88,7 +88,8 @@
       "mcp__claude_ai_Gmail__create_draft",
       "mcp__monk-retrieval__monk_stats",
       "mcp__monk-retrieval__monk_search",
-      "WebFetch(domain:developers.cloudflare.com)"
+      "WebFetch(domain:developers.cloudflare.com)",
+      "mcp__claude_ai_Gmail__search_threads"
     ],
     "deny": [
       "Bash(rm -rf *)",
