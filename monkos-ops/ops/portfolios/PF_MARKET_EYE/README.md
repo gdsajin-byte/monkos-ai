@@ -38,16 +38,21 @@ status: active
 | 2 | 네이버 SearchAd | `seo_collect.sh naver-searchad` | ✅ 5개 배치 분할, 공백 인코딩 수정 |
 | 3 | 네이버 DataLab | `seo_collect.sh naver-datalab` | ✅ 트렌드 비교 |
 | 4 | Bing WMT | `seo_collect.sh bing` | ✅ 쿼리·링크 |
-| 5 | GA4 확장 | `seo_collect.sh ga4-device` | ✅ 디바이스별 세션·이탈률 |
-| 6 | GSC URL Inspection | `seo_collect.sh gsc-inspection` | ✅ 색인 상태·크롤 시간 |
+| 5 | GA4 확장 | `seo_collect.sh ga4-device` | ✅ 디바이스별 세션·이탈률 (08-02 iMac 복구) |
+| 6 | GSC URL Inspection | `seo_collect.sh gsc-inspection` | ✅ 색인 상태·크롤 시간 (08-02 iMac 복구) |
 | 7 | GSC MCP | `gsc_mcp.sh` | ✅ 키워드·페이지 성과 |
-| 8 | GA4 MCP | `ga4_mcp.sh` | ✅ 실시간 트래픽 |
+| 8 | GA4 MCP | `ga4_mcp.sh` | ✅ 실시간 트래픽 (08-02 기동 방식 교체) |
+| 9 | PageSpeed Insights | `seo_collect.sh pagespeed` | ✅ 08-02 전용 키 전환으로 가동 (2-2에서 승격) |
+
+> ⚠️ **상태 표기 규율 (2026-08-02 신설)**: 본 표의 ✅는 **스모크 실증 기준**이다. 07-21~08-02 사이 5·6·8·9가 무음 사망 상태였음에도 표는 ✅를 유지했다(도구 3요건 ③실패 가시화 위반). 상태 변경 시 `scripts/tools/seo_collect.sh` 무인자 스모크 결과를 근거로 삼는다.
+>
+> **환경 재현성**: 파이썬 의존성 정본 = `scripts/tools/requirements.txt` (08-02 신설). 신규 디바이스는 `pip install -r` + `uv tool install analytics-mcp` 2줄로 셋업한다. 디바이스별 수동 복구 금지 — 07-21 M1 단독 복구가 iMac 미반영으로 12일간 방치된 사고의 재발 방지.
 
 ### 2-2. 미가동 / 보류
 
 | 채널 | 상태 | 비고 |
 |------|------|------|
-| PageSpeed Insights | 보류 | PSI 전용 API 키 필요. 현 단계 불필요 (CrUX 선행) |
+| ~~PageSpeed Insights~~ | ✅ 08-02 가동 | 전용 키가 SM에 이미 있었으나(07-21 등재) 래퍼가 `GEMINI_API_KEY`를 주입 중이어서 403. 전용 키로 전환하여 해소 → 2-1로 승격 |
 | CR 요청 로그 → BQ 싱크 | 미구축 | P0 — GCP 설정만으로 가능 |
 | CrUX API | 미구축 | P1 — 무료, 실사용자 CWV |
 | DataForSEO | 미구축 | P1 — SERP+백링크+AI 인용, 종량 |
@@ -119,6 +124,8 @@ status: active
 | 07/21 | 작가님 | **CR 로그 BQ 싱크 설정** — Cloud Logging → market_eye 실시간 적재 | GCP 콘솔 | ✅ |
 | 07/21 | 작가님 | **billing export BQ 설정** — 표준 사용량 비용 → market_eye 일배치 | GCP 콘솔 | ✅ |
 | 07/21 | M1/쌍아+민아 | **SEA 3국 시장 실측** — ads.sh VN 85K·PH 84K·TH 10K. 개정 서열: JP≥VN≈PH>DE>KR>ID>TH. 교차 법칙 6개국 확장(우산 성장) | 세션로그 | ✅ |
+| 08/02 | iMac/쌍아 | **수집 인프라 4종 무음 사망 적발·복구** (작가님 "직접 복구" 지시) — ①ga4-device·gsc-inspection 파이썬 의존성 미설치(07-21 M1 단독 복구가 iMac 미반영) ②GA4 MCP `uvx` 매기동 cryptography 소스빌드 → 타임아웃 ③PageSpeed가 GEMINI 키 오용으로 403 + **키 평문 로그 노출**. 스모크 **6/6 복구**. 재현성 정본 `requirements.txt` 신설 + 상태 표기 규율 명문화 | requirements.txt, ga4_mcp.sh, seo_collect.sh, 본 README | ✅ |
+| 08/02 | iMac/쌍아 | **GA4 조회수 +41% 정체 규명** — 7/30 desktop 단일일 이상치(pv/s 7.66, 타 일자 1.0~2.0) + Direct 채널 pv/s 5.16. Organic Search는 pv/s 1.06 정상. **내부/자동화 트래픽 확정, 실사용자 회유 아님** | 세션로그 2026-08-02 | ✅ |
 
 ---
 

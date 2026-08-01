@@ -1,0 +1,16 @@
+# PF_MARKET_EYE 수집기 파이썬 의존성 정본 (seo_collectors.py)
+#
+# 2026-08-02 신설 — 재현성 부재로 iMac에서 ga4-device·gsc-inspection이 무음 사망한 사고 대응.
+# 07-21 M1에서 pip install로 복구했으나 레포에 고정되지 않아 iMac 미반영 상태로 방치됐다.
+#
+# 신규 디바이스 셋업 / 수집기 ERROR 시:
+#   python3 -m pip install -r scripts/tools/requirements.txt
+#
+# GA4 MCP(analytics-mcp)는 pip가 아니라 uv 도구로 설치한다:
+#   uv tool install analytics-mcp
+#   (uvx 직접 실행 금지 — 매 기동 시 cryptography 소스 빌드로 MCP 연결 타임아웃)
+
+google-analytics-data>=0.23.0
+google-api-python-client>=2.198.0
+google-auth>=2.45.0
+requests>=2.32.5

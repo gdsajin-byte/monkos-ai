@@ -23,4 +23,13 @@ if [ ! -f "$CRED_FILE" ]; then
 fi
 
 export GOOGLE_APPLICATION_CREDENTIALS="$CRED_FILE"
-exec uvx analytics-mcp
+
+# 2026-08-02 복구: `uvx analytics-mcp`는 매 기동마다 임시 환경을 만들며
+# cryptography를 소스 빌드(Intel macOS x86_64 휠 부재) → MCP 연결 타임아웃으로 무음 사망.
+# `uv tool install analytics-mcp`로 영구 설치본을 직접 실행한다.
+export PATH="$HOME/.local/bin:$PATH"
+if ! command -v analytics-mcp >/dev/null 2>&1; then
+  echo "[ga4_mcp] ERROR: analytics-mcp 미설치. 'uv tool install analytics-mcp' 실행 필요." >&2
+  exit 1
+fi
+exec analytics-mcp

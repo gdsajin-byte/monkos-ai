@@ -46,7 +46,9 @@ export NAVER_DATALAB_CLIENT_SECRET=$(gcloud secrets versions access latest --sec
 # Bing WMT 키
 export BING_WMT_API_KEY=$(gcloud secrets versions access latest --secret=BING_WMT_API_KEY --project=monkos 2>/dev/null)
 
-# PageSpeed (GEMINI_API_KEY 겸용)
-export PAGESPEED_API_KEY=$(gcloud secrets versions access latest --secret=GEMINI_API_KEY --project=monkos 2>/dev/null)
+# PageSpeed — 전용 키(SM 2026-07-21 등재) 사용.
+# 2026-08-02 수정: 종전 GEMINI_API_KEY 겸용은 PSI에서 403을 유발했고,
+# 실패 URL이 stderr에 그대로 찍히며 Gemini 키가 평문 노출됐다.
+export PAGESPEED_API_KEY=$(gcloud secrets versions access latest --secret=PAGESPEED_API_KEY --project=monkos 2>/dev/null)
 
 python3 "$SCRIPT_DIR/seo_collectors.py" "${@:-all}"
