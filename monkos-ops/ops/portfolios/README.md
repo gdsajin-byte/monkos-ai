@@ -38,6 +38,7 @@
 | [PF_PROFILES](PF_PROFILES/README.md) | PROFILES | 전략 | STYLER | AI 프로필 사진 독립 서비스 | active | 04-28 |
 | [PF_STYLER](PF_STYLER/README.md) | STYLER | 메타(서비스) | STYLER | 서비스 진화 로드맵 — 증명사진→헤드샷→모델스→앱→커머스 중개 | active | 06-21 |
 | [PF_PARTNER](PF_PARTNER/README.md) | PARTNER | 사업/제휴 | PARTNER | B2B 코브랜딩 입점 채널 — 인크루트 Phase 1, 멀티 플랫폼 확장 | active | 06-17 |
+| [PF_FACEREAD](PF_FACEREAD/README.md) | FACEREAD | 서비스 | IDPHOTO | 사주×관상 리포트 — 셀카 실측 기반, 취업사진 양문형 교차판매 | active | 08-01 |
 | [PF_RND](PF_RND/README.md) | RND | 운영 | — | 정부 R&D·IP 지원사업 통합 추적 | active | 04-24 |
 | [PF_TEMPLATE](PF_TEMPLATE/README.md) | TEMPLATE | 메타 | — | 신규 PF 생성 템플릿 | — | — |
 
