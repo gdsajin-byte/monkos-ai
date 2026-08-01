@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>얼굴 지도 관상 리포트 — MONKOS 내부 POC</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .card-title { font-weight: 700; font-size: 1.05rem; }
+    .reading-tag { display: inline-block; font-size: 0.68rem; font-weight: 600; border-radius: 4px; padding: 1px 6px; margin-right: 6px; vertical-align: 1px; }
+  </style>
+</head>
+<body class="bg-stone-100 text-stone-800 min-h-screen">
+  <div class="max-w-5xl mx-auto px-4 py-10">
+
+    <!-- 헤더 -->
+    <header class="text-center mb-8">
+      <span class="inline-block text-xs font-semibold bg-stone-800 text-amber-300 rounded-full px-3 py-1 mb-3">MONKOS 내부 POC v0.1 — 비공개</span>
+      <h1 class="text-3xl font-bold tracking-tight">얼굴 지도 관상 리포트</h1>
+      <p class="text-stone-500 mt-2">셀카 한 장 — 478개 메시 점으로 읽는 관상 × 약식 사주</p>
+      <p id="disclaimer" class="text-xs text-stone-400 mt-3 max-w-2xl mx-auto leading-relaxed"></p>
+    </header>
+
+    <!-- 입력 -->
+    <section class="bg-white rounded-2xl shadow-sm border border-stone-200 p-6 mb-8">
+      <div class="flex flex-wrap items-end gap-4">
+        <div>
+          <label for="birthdate" class="block text-sm font-medium text-stone-600 mb-1">생년월일 <span class="text-stone-400 font-normal">(선택 — 사주 풀이용)</span></label>
+          <input type="date" id="birthdate" class="border border-stone-300 rounded-lg px-3 py-2 text-sm">
+        </div>
+        <input type="file" id="file-input" accept="image/*" class="hidden">
+        <button id="btn-analyze" disabled class="bg-stone-800 hover:bg-stone-700 disabled:opacity-40 text-white font-semibold rounded-lg px-5 py-2.5 text-sm">셀카 업로드 → 분석</button>
+        <button id="btn-demo" disabled class="bg-amber-500 hover:bg-amber-400 disabled:opacity-40 text-white font-semibold rounded-lg px-5 py-2.5 text-sm">데모 얼굴로 체험</button>
+      </div>
+      <p id="status" class="text-sm mt-3 text-stone-500">로딩 중…</p>
+    </section>
+
+    <!-- 결과 -->
+    <section id="results" class="hidden">
+      <div id="quality-banner"></div>
+
+      <div class="grid lg:grid-cols-2 gap-6 mb-6">
+        <!-- 얼굴 지도 -->
+        <div class="bg-white rounded-2xl shadow-sm border border-stone-200 p-5">
+          <h3 class="card-title mb-3">얼굴 지도 <span class="text-stone-400 font-normal text-sm">메시 점 + 삼정 경계</span></h3>
+          <canvas id="face-canvas" class="w-full rounded-xl"></canvas>
+          <p class="text-xs text-stone-400 mt-2">아래 부위 카드를 누르면 측정에 사용된 점이 붉게 표시됩니다. 사진은 브라우저 밖으로 나가지 않습니다.</p>
+        </div>
+        <!-- 종합 카드 -->
+        <div class="space-y-6">
+          <div id="card-samjeong" class="bg-white rounded-2xl shadow-sm border border-stone-200 p-5"></div>
+          <div id="card-ohaeng" class="bg-white rounded-2xl shadow-sm border border-stone-200 p-5"></div>
+        </div>
+      </div>
+
+      <div id="card-saju" class="bg-white rounded-2xl shadow-sm border border-stone-200 p-5 mb-6 hidden"></div>
+
+      <h2 class="text-xl font-bold mb-3">부위별 풀이 <span class="text-stone-400 font-normal text-sm">십이궁·오관 기준</span></h2>
+      <div id="feature-grid" class="grid md:grid-cols-2 gap-4 mb-6"></div>
+
+      <div id="card-career" class="bg-emerald-50 rounded-2xl border border-emerald-200 p-5 mb-6"></div>
+
+      <footer class="text-xs text-stone-400 leading-relaxed border-t border-stone-200 pt-4">
+        <p>측정 공식·빈 경계값: heuristic_v0.1 (기준얼굴 1차 정렬, 실사진 분포 보정 전) · 해석: 마의상법·유장상법 계열 통설의 현대어 요약 · 원전 인용 매핑은 차기 단계</p>
+        <p class="mt-1">© MONKOS — 내부 검증용 POC. 외부 배포 금지.</p>
+      </footer>
+    </section>
+  </div>
+
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>

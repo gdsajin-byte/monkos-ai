@@ -86,6 +86,13 @@
       "port": 5173
     },
     {
+      "name": "gwansang-poc",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8807"],
+      "cwd": "apps/gwansang-poc",
+      "port": 8807
+    },
+    {
       "name": "monkos-chat (Firebase)",
       "runtimeExecutable": "npx",
       "runtimeArgs": ["firebase", "emulators:start", "--only", "functions"],
