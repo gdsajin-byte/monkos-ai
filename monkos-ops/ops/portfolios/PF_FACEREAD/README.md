@@ -110,4 +110,5 @@ status: active
 | 08-01 | iMac/민아 | PF_FACEREAD 신설 + Phase A 지시서 발급 (작가님 직접 지시, 쌍아 사후 추인 대기) | 본 README + ORDER | 🔄 |
 | 08-01 | iMac/막내1 | Phase A 구현 — 룰 DB 정본 이관, 절기 테이블 취득·3단 검증(NAOJ 공표값 3192건), 사주 4주 엔진(만세력 15케이스 대조 전량 일치), /admin/gwansang 14p 탑재, dev 배포 `00174-62v` | COMPLETION_20260801_iMac막내1_FACEREAD_PhaseA | ✅ |
 | 08-01 | iMac/막내1 | Phase A prod 출고 — 포털 prod `00540-jvq`에 어드민 리포트 동반 배포. 미인증 401 실측(ADMIN_UIDS+noindex, 공개 표면 무변동) | COMPLETION_20260801_iMac막내1_포털prod배포 | ✅ |
+| 08-01 | iMac/막내1 | 어드민 진입 동선 개설 — `admin/index.html` 내부 도구에 🔮 관상 리포트 카드 추가 (+ 별건 `/proto/*` noindex 헤더 동반). prod `00541-8qh` | COMPLETION_20260801_iMac막내1_어드민카드+proto_noindex | ✅ |
 | 08-01 | iMac/쌍아 | 시장 전략 수립 (작가님 지시) — 3문 구조(분리/병합 층위), 권역별 진입, 서구=사주 우선·physiognomy 직역 금지, 정면 2D 8할 커버 실측, 다각도 안 하향 이연 | 본 README 「시장 전략」 섹션 | ✅ |
