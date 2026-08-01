@@ -1,6 +1,6 @@
 import { firestore, log, parseJsonBody } from '../shared/config.js';
 import { requireAdmin } from './admin-auth.js';
-import { escapeHtml } from './render-shell.js';
+import { escapeHtml, gtagSnippet } from './render-shell.js';
 import { SPECS_DATA, REDIRECT_MAP, locField } from './render-specs.js';
 import { specsUrl } from './specs-url.js';
 
@@ -213,8 +213,7 @@ function headHtml(d) {
   return `<!DOCTYPE html>
 <html lang="${d.htmlLang}">
 <head>
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-JPZWSJ3323"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-JPZWSJ3323');gtag('config','G-FKG0CPTC14');</script>
+${gtagSnippet()}
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <title>${esc(d.metaTitle)}</title>

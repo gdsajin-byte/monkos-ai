@@ -39,21 +39,57 @@ export function getSeoDescription(post) {
   const cleaned = stripHtml(raw);
   return cleaned.length > 160 ? cleaned.substring(0, 157) + '...' : cleaned;
 }
-export function layoutHead(title, description, extra = '', htmlLang = 'ko') {
-  return `<!DOCTYPE html>
-<html lang="${htmlLang}">
-<head>
-<!-- Google tag (gtag.js) -->
+/**
+ * GA4/Ads 계측 스니펫 — **전 SSR 표면 단일 정본** (2026-08-02 신설).
+ *
+ * 종전에는 layoutHead와 home.js가 각자 gtag 블록을 갖고 있어(이원화),
+ * 홈에는 AI referral 추적이 누락돼 있었고 자동화 표식도 홈만 빠질 뻔했다.
+ * gtag 블록을 새로 심는 SSR 표면은 반드시 이 함수를 쓴다 — 직접 작성 금지.
+ *
+ * 자동화 판정 3층 (2026-08-02 실측 기준):
+ *   ① navigator.webdriver — Playwright·Puppeteer·Selenium이 세운다. 웹민아 E2E가 여기 해당.
+ *   ② UA 패턴 — HeadlessChrome 등 자기 신고형.
+ *   ③ localStorage `mk_internal='1'` — **cdp.sh 경로 전용**. cdp.sh는 이미 떠 있는 크롬의
+ *      9222 포트에 붙는 방식이라 `--enable-automation`이 없고 webdriver가 false다(①로 안 잡힘).
+ *      디버그 크롬 프로필에서 1회 세팅하면 영구 유효:
+ *        scripts/tools/cdp.sh eval "localStorage.setItem('mk_internal','1')"
+ *
+ * ⚠️ 한계: 외부 스크래퍼가 UA·webdriver를 위장하면 잡히지 않는다. 2026-07-30 오염원
+ * (158.69/45.88/173.244 데이터센터 IP, 1분당 130+ 고유 URL)이 그 유형이며, 이들의
+ * 계량은 BQ `market_eye.run_googleapis_com_requests_*`(IP·UA 보유)로 한다.
+ *
+ * traffic_type='internal'은 GA4 공식 내부 트래픽 파라미터로, 콘솔의 데이터 필터를
+ * '사용 중'으로 켜면 리포트에서 제외된다. 필터가 꺼져 있어도 태그는 남으므로
+ * automation_hit 이벤트로 언노운 규모를 사후 계량할 수 있다.
+ */
+export function gtagSnippet() {
+  return `<!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-JPZWSJ3323"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-  gtag('config', 'G-JPZWSJ3323');
-  gtag('config', 'G-FKG0CPTC14');${process.env.GOOGLE_ADS_CONVERSION_ID ? `
-  gtag('config', 'AW-${process.env.GOOGLE_ADS_CONVERSION_ID}');` : ''}
+  var _mkAuto = false;
+  try {
+    _mkAuto = navigator.webdriver === true ||
+      /HeadlessChrome|PhantomJS|Playwright|puppeteer|Selenium|electron/i.test(navigator.userAgent) ||
+      !!window._phantom || !!window.__nightmare || !!window.callPhantom ||
+      localStorage.getItem('mk_internal') === '1';
+  } catch (e) {}
+  var _mkCfg = _mkAuto ? { traffic_type: 'internal' } : {};
+  gtag('config', 'G-JPZWSJ3323', _mkCfg);
+  gtag('config', 'G-FKG0CPTC14', _mkCfg);${process.env.GOOGLE_ADS_CONVERSION_ID ? `
+  gtag('config', 'AW-${process.env.GOOGLE_ADS_CONVERSION_ID}', _mkCfg);` : ''}
+  if (_mkAuto) { gtag('event', 'automation_hit', { 'landing_page': location.pathname }); }
   (function(){var d=['chatgpt.com','perplexity','claude.ai','gemini.google','copilot'];var r=document.referrer||'';if(d.some(function(s){return r.includes(s)})){var e=r.includes('chatgpt')?'chatgpt':r.includes('perplexity')?'perplexity':r.includes('claude.ai')?'claude':r.includes('gemini.google')?'gemini':r.includes('copilot')?'copilot':'other_ai';gtag('event','ai_referral_landing',{'ai_engine':e,'landing_page':location.pathname})}})();
-</script>
+</script>`;
+}
+
+export function layoutHead(title, description, extra = '', htmlLang = 'ko') {
+  return `<!DOCTYPE html>
+<html lang="${htmlLang}">
+<head>
+${gtagSnippet()}
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>${escapeHtml(title)}</title>
