@@ -7,7 +7,7 @@
     "canonical": true,
     "canonical_note": "관상 룰 DB 정본 (2026-08-01 Phase A 이관, 원본: apps/gwansang-poc/data/gwansang_db.json). specs-data.json과 동일 위치 원칙. 콘텐츠 증보는 이 파일에서만 한다.",
     "landmark_model": "MediaPipe FaceLandmarker v2 (478pt)",
-    "calibration": "heuristic_v0.1 — 메시 좌표계 계통 오프셋(메시 상단≠헤어라인, 눈꼬리 +편향 등)을 기준얼굴(균형형 데모) 앵커로 1차 정렬 (2026-08-01). 실사진 표본 분포 보정은 차기 필수",
+    "calibration": "heuristic_v0.1 — 메시 좌표계 계통 오프셋(메시 상단≠헤어라인, 눈꼬리 +편향 등)을 기준얼굴(균형형 데모) 앵커로 1차 정렬 (2026-08-01). 실사진 표본 분포 보정은 차기 필수 / 삼정 gap 상대판정 전환 (2026-08-02): balanced_gap=0.013 — 합성 격자 1261점 스윕에서 4키 최균등 분포 근거. 격자 합성은 실물 분포를 대신하지 못함(전원 균형 해소 목적의 1차 보정), 실사진 표본 정밀 보정은 Phase B",
     "sources": "해석 텍스트는 마의상법·유장상법 계열 관상 통설의 현대어 요약. 원전 장별 인용 매핑은 차기 단계 (PROPOSAL_20260724 어젠다)",
     "disclaimer": "본 리포트는 전통 관상학을 참고한 자기이해·엔터테인먼트 콘텐츠입니다. 과학적 사실이나 미래 예측이 아니며, 채용·평가 등 타인에 대한 의사결정에 사용해서는 안 됩니다. 사진은 브라우저 안에서만 처리되며 서버로 전송되지 않습니다."
   },
@@ -256,7 +256,10 @@
       0.36
     ],
     "baseline_note": "메시 상단(10)은 헤어라인이 아니라 상정이 계통적으로 짧게 측정됨 — 균등 1/3 대신 메시 좌표계 기준 비율과 비교",
-    "balance_threshold": 0.045,
+    "_deprecated_balance_threshold": 0.045,
+    "_deprecated_note": "절대임계 판정 폐기 (2026-08-02) — 인체 삼정 비율은 안정적이라 0.045 초과가 드물어 전원 균형 판정(변별력 0). ORDER_20260801 삼정상대판정 참조",
+    "balanced_gap": 0.013,
+    "balanced_gap_note": "baseline 편차 1·2위 격차가 이 값 미만일 때만 균형. 합성 격자 1261점(편차 ±0.05, step 0.0025) 스윕에서 4키 최균등 분포(balanced 25.5/upper 24.8/middle 24.8/lower 24.8%)로 선정",
     "bins": {
       "balanced": {
         "label": "삼정 균형",

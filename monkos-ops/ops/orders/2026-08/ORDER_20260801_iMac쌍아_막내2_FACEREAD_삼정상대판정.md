@@ -4,7 +4,7 @@ date: 2026-08-01
 from: iMac/쌍아
 to: iMac/막내2
 subject: "FACEREAD — 삼정 절대임계 폐기 → 상대 판정 전환 (변별력 회복)"
-status: 대기
+status: 완료
 portfolio: PF_FACEREAD
 ---
 
@@ -113,3 +113,7 @@ if (maxDev >= db.samjeong.balance_threshold) {
 ## 8. 커밋 메시지
 
 `[fix] FACEREAD 삼정 절대임계 폐기 → 상대 판정 전환 (변별력 회복)`
+
+---
+
+> **[집행 기록] [2026-08-02 11:53 KST]** iMac/민아 — 수신자 막내2가 지시서 수신 전 세션 종료(08-01 세션로그 실측)로 미착수 상태였음. 작가님 직접 지시("사주 PF 마무리하자")에 따라 민아가 경로 ③(②항 준용)으로 대체 실행 완료. balanced_gap=0.013, dev `00178-gk7` → prod `00543-trd`. 상세: [COMPLETION_20260802_iMac민아_FACEREAD_삼정상대판정](../../reports/2026-08/COMPLETION_20260802_iMac민아_FACEREAD_삼정상대판정.md). **쌍아 사후 추인 대상.**

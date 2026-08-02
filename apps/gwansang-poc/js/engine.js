@@ -7,16 +7,18 @@ function pickBin(bins, value) {
   return sorted.find(b => value >= b.min) ?? sorted[sorted.length - 1];
 }
 
-// 삼정 판정: 메시 좌표계 기준 비율(baseline) 대비 최대 편차가 임계 미만이면 균형
+// 삼정 판정: baseline 편차 1·2위 격차(gap) 기반 상대 판정 — 오행형 mixed_gap 패턴 준용.
+// 절대 임계로 균형을 먼저 판정하지 않는다. 항상 상대 순위를 먼저 보고,
+// 순위 격차가 balanced_gap 미만일 때만 균형으로 떨어진다 (전원 균형 변별력 0 해소).
 function classifySamjeong(sj, db) {
   const { s1, s2, s3 } = sj;
   const base = db.samjeong.baseline;
   const devs = [s1, s2, s3].map((v, i) => v - base[i]);
-  const maxDev = Math.max(...devs.map(Math.abs));
-  let key = 'balanced';
-  if (maxDev >= db.samjeong.balance_threshold) {
-    key = ['upper', 'middle', 'lower'][devs.indexOf(Math.max(...devs))];
-  }
+  const order = [0, 1, 2].sort((a, b) => devs[b] - devs[a]);
+  const gap = devs[order[0]] - devs[order[1]];
+  const key = gap < db.samjeong.balanced_gap
+    ? 'balanced'
+    : ['upper', 'middle', 'lower'][order[0]];
   return {
     key, ...db.samjeong.bins[key],
     ratios: [s1, s2, s3].map(v => Math.round(v * 100))
