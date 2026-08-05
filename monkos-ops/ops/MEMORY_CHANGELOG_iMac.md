@@ -550,3 +550,6 @@
   - `project_gpu_resource_allocation_vision.md` — 작가님 전략 관점(GPU 자원배분 메커니즘). **07-26 보정 반영**: 규모 확장은 문제를 바꾸지 않고 층을 얹는다, 코드의 몫은 규모 무관하게 「싸고·빠르고·정교한 수집」.
   - `feedback_capability_must_be_exercised.md` — **"디코드는 디코드로, 렌더는 렌더로."** 헤더·메타·설정값을 능력의 증거로 삼지 말 것. 하루 3회 동형 오류(레지스트리→file.type / metadata()→디코드 / 4060 1대→Edge 특이성)에서 도출.
 - MEMORY.md 인덱스 2행 추가(작가님 인사이트 섹션·외장 메모리 섹션).
+
+## [2026-08-06 04:46 KST] 민아
+- 신규: project_aeo_offline_conversion_signal.md — AEO 첫 오프라인 전환 실증(ChatGPT 추천→실물 고객) + 엔진 비대칭 구조. MEMORY.md 인사이트 섹션 1행 추가
