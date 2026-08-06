@@ -37,7 +37,7 @@ status: active
 | 항목 | 상태 | 비고 |
 |------|------|------|
 | 프로그래매틱 SEO 규격 확장 (20개국+) | ✅ **완료 재분류** | sitemap specs 81 URL(27개국×3언어) 이미 구현 |
-| 엔티티 SEO (Organization/Person 스키마 강화) | ❌ 미착수 | **Phase 2.2 우선순위 1위** |
+| 엔티티 SEO (Organization/Person 스키마 강화) | 🔶 부분 구현 (08-06 실측 정정) | 골조 기존재: monkos.ai Org alternateName ["Monk Studio","몽크사진관"]+sameAs[monk.kr]+knowsAbout / monk.kr Org 실주소·전화 / Person "Shin-jakka" 양 도메인. **잔여=배선 4가닥**: ①플레이스·GBP sameAs ②역방향(monk.kr→monkos.ai) sameAs 0 ③명칭·@id 통일(MONKOS/Monk Studio/MONK 3이름 분산) ④LocalBusiness 승격(openingHours·geo) |
 | 토픽 클러스터 심화 (블로그 ↔ specs 양방향) | ❌ | 블로그 타이틀 최적화와 묶음 |
 | AI 검색 인용 모니터링 체계 | ❌ | 도메인 권위 선행 필요 |
 | CWV (Core Web Vitals) 최적화 | ❌ | 트래픽 확보 후 |
