@@ -90,7 +90,7 @@ DMARC 정렬은 DKIM이 루트(`d=monkos.ai`) 서명이므로 From(`info@monkos.
 | `SECRET_INVENTORY.md` 43번 | ✅ 메타 1행 (이름·용도·서비스·날짜만. **값 미기재**) |
 | `references.md` 도구 맵 | ✅ (중간 보고 시 등재) |
 | **dev 배포** | ✅ `monkos-portal-dev-00179-wxw` |
-| **prod 배포** | ⏸️ **범위 고지 대기 — §4** |
+| **prod 배포** | ✅ `monkos-portal-00544-sh8` (작가님 17:36 승인 — §4) |
 
 ### dev 검증 실측
 
@@ -98,24 +98,45 @@ DMARC 정렬은 DKIM이 루트(`d=monkos.ai`) 서명이므로 From(`info@monkos.
 - 시크릿 주입: `RESEND_API_KEY → secretKeyRef(name=RESEND_API_KEY, key=latest)`, **평문 `value` 부재 확인**
 - 중간 보고에서 경고했던 "SM에 없는 시크릿 참조 시 배포 전체 실패" 리스크는 키 등록 완료로 해소
 
-## 4. ⏸️ prod 배포 — 작가님 판단 요청
+## 4. ✅ prod 배포 — 작가님 승인 후 실행 완료
 
-현 prod는 **`monkos-portal-00543-trd`(08-02 배포)**. 그 이후 portal에 영향을 주는 커밋이 **내 것 외 2건** 쌓여 있다.
+**[2026-08-13 17:36 KST]** 작가님 「프로드 배포 승인」 → 즉시 실행.
 
-| 커밋 | 내용 | 변경 파일 |
-|------|------|-----------|
-| `a54ae2b1` (막내1) | credits.sh delete 서브커맨드 Phase A 동반분 | `lib/gcs-save.js`, `lib/shared/config.js` |
-| `0a9a7921` | FACEREAD 삼정 절대임계 폐기 → 상대 판정 전환 | `lib/cms/gwansang-data.json`, `public/admin/js/gwansang/engine.js` |
+| 항목 | 값 |
+|------|-----|
+| 신규 리비전 | **`monkos-portal-00544-sh8`** 트래픽 100% |
+| 직전 리비전(롤백 대상) | `monkos-portal-00543-trd` (08-02 배포) |
+| 롤백 명령 | `gcloud run services update-traffic monkos-portal --region us-central1 --to-revisions monkos-portal-00543-trd=100` |
 
-main 단일 브랜치 구조상 **prod 배포 시 이 2건이 함께 라이브된다.** 내 지시서 범위는 메일 발신 기반까지이고, 위 2건은 내가 검증한 바 없다.
+### 4-1. prod 검증 실측
 
-**07-25 막내3 선례**(범위 고지 → 작가님 「전부 배포」 승인)에 따라 고지 후 대기한다. 선택지:
+| 항목 | 결과 |
+|------|------|
+| `/health` | ✅ HTTP 200 (0.51s) |
+| 홈 `/` | ✅ 200 |
+| `/specs/passport/kr` | ✅ 200 |
+| `/admin/gwansang` (FACEREAD 동반분 표면) | ✅ 200 |
+| `/app` → idphoto 리다이렉트 | ✅ 302 → `https://idphoto-kr.monkos.ai/` |
+| **배포 후 prod ERROR 로그** | ✅ **0건** |
+| `RESEND_API_KEY` 주입 | ✅ `secretKeyRef(name=RESEND_API_KEY, key=latest)`, **평문 value 부재** |
 
-1. **전부 배포** — 3건 동시 라이브. 승인 시 즉시 실행
-2. **메일만** — 내 커밋만 담은 브랜치 빌드 필요 (추가 작업)
-3. **보류** — 메일 발신은 dev에서 이미 동작. prod 반영은 다음 배포 사이클에 편승
+> ⚠️ 스모크 중 `/idphoto` 404가 나왔으나 **회귀가 아니다.** 포털에는 해당 라우트가 애초에 없다(`/api/idphoto/*`만 존재). 증명사진 진입은 `/app` 302 또는 `idphoto-kr.monkos.ai` 직행이다. 내 프로브 URL이 틀렸던 것으로, 확인 후 정정한다.
 
-> 참고: 메일 발신 기능은 **아직 어떤 코드도 호출하지 않는다**(배선은 별건 지시서). prod 미반영이 당장 기능 손실을 만들지 않는다.
+### 4-2. 동반 라이브된 범위 (고지대로 승인 실행)
+
+
+
+직전 prod가 08-02(`00543-trd`)여서, main 단일 브랜치 구조상 이번 배포는 내 커밋 외 **2건을 함께 라이브**시켰다. 배포 전 작가님께 고지하고 승인받은 범위다.
+
+| 커밋 | 내용 | 변경 파일 | 검증 |
+|------|------|-----------|------|
+| `f3f230bd`+`d2edfbad` (본 건) | 메일 발신 모듈·상수·deploy.sh | `lib/mailer.js`, `lib/shared/config.js`, `deploy.sh` | ✅ 본 보고서 |
+| `a54ae2b1` (막내1) | credits.sh delete Phase A 동반분 | `lib/gcs-save.js`, `lib/shared/config.js` | 막내1 소관 |
+| `0a9a7921` | FACEREAD 삼정 절대임계 폐기 → 상대 판정 | `lib/cms/gwansang-data.json`, `public/admin/js/gwansang/engine.js` | 표면 200 확인까지만 |
+
+> **막내2가 검증한 것은 배포 무결성(헬스·주요 표면·ERROR 0건)까지다.** 동반 2건의 기능 정합성은 각 담당 소관이며, 본 배포가 그 검증을 대체하지 않는다.
+
+> 메일 발신 기능은 **아직 어떤 코드도 호출하지 않는다**(배선은 별건 지시서). 라이브되었으나 사용자 동선에 노출된 변화는 없다.
 
 ## 5. 범위 밖 (미착수 — 지시서 §7 준수)
 
@@ -134,4 +155,4 @@ main 단일 브랜치 구조상 **prod 배포 시 이 2건이 함께 라이브�
 | `.claude/rules/references.md` | 도구 맵 (중간 보고분) |
 | 세션 로그 · PF_INFRA · 본 보고서 | 기록 |
 
-**DNS 변경 0 · 시크릿 값 노출 0 · prod 배포 0 · 루트 MX/SPF 무손상.**
+**DNS 변경 0 · 시크릿 값 노출 0 · 루트 MX/SPF 무손상 · prod `00544-sh8` 라이브(승인 후).**
