@@ -96,6 +96,7 @@ status: active
 | 07/15 | 막내1 | **T1 — 어드민 유저 상세 + 통합 프로필 API** — `/api/admin/dashboard/user/:userId` 신설(4소스 조인: Firestore users/tx/generations + BQ events). `admin/user.html` 유저 상세 페이지 신규(프로필·유입경로·퍼널·갤러리·거래·타임라인). dashboard.html 유입경로 컬럼 추가+행 클릭→user.html 이동. dev 00129 → prod 00480 | [COMPLETION](../../reports/2026-07/COMPLETION_20260715_iMac막내1_T1_어드민유저상세_통합프로필API.md) | ✅ |
 | 07/15 | 막내1 | **T1 보강 — 외부 유입 역추적 + 노이즈 필터** — BQ identity_map→events 첫 외부 referrer 역추적(Firestore 비어있을 시). page_view 정적파일 필터(.js/.css/.jpg 등). `/api/admin/dashboard/channels` 신설(도메인별 외부 유입 집계 7/30/90d). 대시보드에 외부 유입 채널 바 차트 추가. dev 00130 → prod 00481 | [COMPLETION](../../reports/2026-07/COMPLETION_20260715_iMac막내1_T1보강_외부유입역추적_노이즈필터.md) | ✅ |
 | 07/16 | 막내2 | **대시보드 전 채널 통합 P1** — seo-dashboard.js 신설(GSC·Naver·Bing·PageSpeed 4 API+memCache), channels 봇 필터, citadel.html 4섹션 UI. seo_collectors.py→Node.js 포팅. 기존 8 API 무접촉. dev 00142-smf | [COMPLETION](../../reports/2026-07/COMPLETION_20260716_iMac막내2_PORTAL_대시보드_전채널통합P1.md) | ✅ dev |
+| 08/13 | 막내1 | **회원 탈퇴 처리 도구 신설 (Phase A)** — 실 탈퇴 요청 수신 대비 집행 경로 부재 해소. `credits.sh delete` 서브커맨드(dry-run 기본 + `--confirm` 게이트, 이메일 마스킹 감사 2중 기록, 부분 실패 비중단·exit 2). 삭제 범위 실측 교정 2건: `free_quota`는 doc id가 `{date}_sha256(ip\|sid)`로 uid 무관 → 제외, `cs_conversations`는 userId 필드 부재 → telegram_links 역참조. ch2 7조 이행으로 `CUSTOMER_GCS_BUCKET` config.js 정본화(동작 동일). dry-run 실측: 대상 users 1건뿐(생성물·결제 0) | [COMPLETION](../../reports/2026-08/COMPLETION_20260813_iMac막내1_PORTAL_회원탈퇴처리도구.md) | ⏳ Phase B 승인 대기 |
 
 ---
 

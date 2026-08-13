@@ -23,7 +23,10 @@ scripts/credits.sh deduct <email> <amount> "<사유>"   # 차감 (사유 필수)
 scripts/credits.sh user <email>                      # 고객 정보 조회
 scripts/credits.sh log [N]                           # 감사 로그 열람
 scripts/credits.sh signups [일수]                     # 신규 회원가입 집계 (읽기 전용, 기본 7일)
+scripts/credits.sh delete <email> "<사유>" [--confirm] # 회원 탈퇴 처리 (기본 dry-run, --confirm 시 실삭제)
 ```
+
+**delete 주의**: dry-run이 기본값이며 `--confirm` 없이는 쓰기가 발생하지 않는다. 실삭제는 비가역 + ch4 10조 4항상 **작가님 승인 필수**. `payments`·`transactions`·`audit`은 방침 고지 예외로 보존한다.
 
 ## 감사 추적 (10조 3항)
 - charge/deduct 시 자동 이중 기록: Firestore `audit` + `monkos-ops/ops/audit/CREDIT_AUDIT_LOG.md`

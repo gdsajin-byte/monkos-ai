@@ -1,7 +1,6 @@
 import { Storage } from '@google-cloud/storage';
-import { firestore, log } from './shared/config.js';
+import { firestore, log, CUSTOMER_GCS_BUCKET } from './shared/config.js';
 
-const CUSTOMER_GCS_BUCKET = process.env.CUSTOMER_GCS_BUCKET || 'monk-customer-photos';
 const storage = new Storage();
 const bucket = storage.bucket(CUSTOMER_GCS_BUCKET);
 const gensCol = firestore.collection('generations');

@@ -86,6 +86,8 @@ export const GA4_PROPERTY_ID = process.env.GA4_PROPERTY_ID || '521406894';
 // CMS
 if (!process.env.GCS_BUCKET) throw new Error('필수 환경변수 GCS_BUCKET 미설정');
 export const GCS_BUCKET = process.env.GCS_BUCKET;
+// 고객 생성물(원본/결과 이미지) 버킷 — CMS 에셋 버킷(GCS_BUCKET)과 분리 (ch2 7조 정본)
+export const CUSTOMER_GCS_BUCKET = process.env.CUSTOMER_GCS_BUCKET || 'monk-customer-photos';
 export const ADMIN_UIDS = (process.env.ADMIN_UIDS || '').split(',').filter(Boolean);
 
 // 에이전트 API 키 (민아/코웍이 등 — Cloud Run 환경변수에서 설정)
