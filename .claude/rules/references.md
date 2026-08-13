@@ -75,6 +75,7 @@
 | gen_reference_diagrams.mjs | 빌드/생성 | `portal/tools/specs-diagrams/` | PF_SPECS |
 | generate_samples.mjs | 빌드/생성 | `portal/tools/attire-assets/` | PF_SPECS |
 | spec-diagram.js | SSR 컴포넌트 | `portal/lib/cms/components/` | — |
+| mailer.js | 서비스 모듈 | `monkos_AI/portal/lib/` | PF_INFRA (⚠️ 실발송 스모크 미완 — Resend 도메인 인증 대기) |
 | collectors/ (4종) | CLI | `scripts/collectors/` | PF_MARKET_EYE |
 | seo_collect.sh | 인프라 | `scripts/tools/` | `commands/market-eye.md` |
 | gsc_submit.sh | 인프라 | `scripts/tools/` | `rules/mcp-tools.md` |

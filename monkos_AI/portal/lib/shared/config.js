@@ -97,6 +97,16 @@ export const AGENT_API_KEYS = (process.env.AGENT_API_KEYS || '').split(',').filt
 export const TX_API_URL = process.env.TX_API_URL || '';
 export const TX_API_KEY = process.env.TX_API_KEY || '';
 
+// 메일 발신 (Resend — PF_INFRA). 키는 백엔드 환경변수에만, 폴백 금지: 헌법 4조 1항
+export const RESEND_API_KEY = process.env.RESEND_API_KEY || '';
+export const RESEND_API_URL = 'https://api.resend.com/emails';
+// 발신 주소·표시명 정본 (ch2 7조 — mailer.js·호출부 하드코딩 금지)
+// 표시명은 브랜드 정본 "MONKOS" (ch8 — 내부 호칭·엔진명 노출 금지)
+export const MAIL_FROM_ADDRESS = 'info@monkos.ai';
+export const MAIL_FROM_NAME = 'MONKOS';
+export const MAIL_FROM = `${MAIL_FROM_NAME} <${MAIL_FROM_ADDRESS}>`;
+export const MAIL_REPLY_TO = MAIL_FROM_ADDRESS;
+
 // VTON RunPod (PF_VTON Phase4 — 키는 백엔드 환경변수에만, 폴백 금지: 헌법 4조 1항)
 export const RUNPOD_API_KEY = process.env.RUNPOD_API_KEY || '';
 // pod id는 시크릿 아님 — 운영 중 교체 가능하도록 환경변수 우선, 미설정 시 문서화된 3090 pod
