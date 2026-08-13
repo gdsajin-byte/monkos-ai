@@ -1,6 +1,6 @@
 /** 담당: 막내2 (리파인) */
 
-import { usersCollection, firestore, log, logTransaction, parseJsonBody, parseRawBody, createHmac, randomBytes, sendTelegramMessage, verifyAuthToken, TELEGRAM_TEAM_API, TEAM_CHAT_ID, LEMONSQUEEZY_API_KEY, LEMONSQUEEZY_WEBHOOK_SECRET, LEMONSQUEEZY_WEBHOOK_SECRET_GLOBAL, LEMONSQUEEZY_STORE_ID, LEMONSQUEEZY_STORE_ID_JP, LEMONSQUEEZY_VARIANT_SPECS_SINGLE, LEMONSQUEEZY_VARIANT_SPECS_SINGLE_JP, SINGLE_DOWNLOAD_VARIANTS, TOSS_SECRET_KEY, TOSS_CLIENT_KEY, VARIANT_CREDITS, TOSS_AMOUNT_CREDITS, PRODUCTS, DIRECT_PRICING, DIRECT_TOKEN_TTL_MS, DIRECT_TOKEN_MAX_GENERATES, parseCookies } from './shared/config.js';
+import { usersCollection, firestore, log, logTransaction, parseJsonBody, parseRawBody, createHmac, randomBytes, sendTelegramMessage, verifyAuthToken, TELEGRAM_TEAM_API, TEAM_CHAT_ID, LEMONSQUEEZY_API_KEY, LEMONSQUEEZY_WEBHOOK_SECRET, LEMONSQUEEZY_WEBHOOK_SECRET_GLOBAL, LEMONSQUEEZY_STORE_ID, LEMONSQUEEZY_STORE_ID_JP, LEMON_JP_VARIANTS, LEMONSQUEEZY_VARIANT_SPECS_SINGLE, LEMONSQUEEZY_VARIANT_SPECS_SINGLE_JP, SINGLE_DOWNLOAD_VARIANTS, TOSS_SECRET_KEY, TOSS_CLIENT_KEY, VARIANT_CREDITS, TOSS_AMOUNT_CREDITS, PRODUCTS, DIRECT_PRICING, DIRECT_TOKEN_TTL_MS, DIRECT_TOKEN_MAX_GENERATES, parseCookies } from './shared/config.js';
 import { trackEvent } from './tracking.js';
 
 /**
@@ -27,6 +27,9 @@ export async function handleCheckout(req, res) {
       attributes.product_options = { redirect_url: redirectUrl };
     }
 
+    // store는 variant 실소속과 일치 필수 — 불일치 서명 링크는 실브라우저에서 404 (config.js LEMON_JP_VARIANTS)
+    const storeId = LEMON_JP_VARIANTS.has(String(variantId)) ? LEMONSQUEEZY_STORE_ID_JP : LEMONSQUEEZY_STORE_ID;
+
     const checkoutRes = await fetch('https://api.lemonsqueezy.com/v1/checkouts', {
       method: 'POST',
       headers: {
@@ -39,7 +42,7 @@ export async function handleCheckout(req, res) {
           type: 'checkouts',
           attributes,
           relationships: {
-            store: { data: { type: 'stores', id: LEMONSQUEEZY_STORE_ID } },
+            store: { data: { type: 'stores', id: storeId } },
             variant: { data: { type: 'variants', id: String(variantId) } },
           },
         },

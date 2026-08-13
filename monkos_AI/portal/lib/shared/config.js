@@ -145,6 +145,11 @@ export const VARIANT_CREDITS = {
   '1382436': 750,   // package_500: ¥5,990, 500c+250
 };
 
+// JP 레거시 스토어(#290457) 소속 variant 집합.
+// 체크아웃 생성 시 store는 variant의 실소속과 일치해야 한다 — 글로벌 스토어로 만든
+// JP variant 서명 링크는 실브라우저에서 404가 된다 (curl은 302→200이라 못 잡는다).
+export const LEMON_JP_VARIANTS = new Set(['1382355', '1382367', '1382348', '1382362', '1382436']);
+
 // v3 상품 정의 — 상품c와 보너스c 분리
 export const PRODUCTS = {
   single_70:   { price: 9900,  credits: 70,  bonus: 10 },
