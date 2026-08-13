@@ -3,17 +3,32 @@
 > **사본 금지**: 이 문서는 상수의 정본이거나, 정본으로 가는 포인터이다. 값을 복사하여 다른 문서에 박지 않는다.
 > 각 항목의 정본 위치를 명기한다. 값이 바뀌면 정본을 고치고, 이 문서의 포인터만 확인한다.
 
-## 서비스 도메인
+## 서비스 매핑 — 디렉터리 ↔ 서비스명 ↔ 도메인
 
-| 서비스 | 도메인 | 인프라 | 정본 |
-|--------|--------|--------|------|
-| 포털 | monkos.ai | Cloud Run | deploy.sh |
-| 증명사진 KR | idphoto-kr.monkos.ai | Cloud Run | idphoto-kr/deploy.sh |
-| 증명사진 JP | idphoto-jp.monkos.ai | Cloud Run | idphoto-jp/deploy.sh |
-| 크롭 엔진 | (내부) | Cloud Run | crop-engine/deploy.sh |
-| 매팅 엔진 | matte.monkos.ai | 4060 GPU + CF Tunnel | monkos_AI/matte-server/deploy.sh |
-| monk.kr | monk.kr | CF Pages | MONK_kr/ |
-| pt.monkos.ai | pt.monkos.ai | Cloud Run | [2조 한시적 예외] |
+> **⚠️ 디렉터리명 ≠ 서비스명.** 이름이 다른 건이 있어 "Cloud Run 목록에 없으니 미배포"라고 단정하면 틀린다(2026-08-13 실사고: `image-pro` → `monk-image-engine` 오판).
+> **판정 순서: `deploy.sh`의 `SERVICE_NAME`을 먼저 읽는다.** 그것이 정본이다. 서비스 목록·도메인은 대조용.
+> 실측 갱신: 2026-08-13. 대조 명령은 아래 §배포 참조.
+
+| 소스 디렉터리 | Cloud Run 서비스 | 도메인 | 비고 |
+|---|---|---|---|
+| `monkos_AI/portal/` | `monkos-portal` (+`-dev`) | monkos.ai, preview.monkos.ai | |
+| `monkos_AI/idphoto-kr/` | `monkos-idphoto-kr` (+`-dev`) | idphoto-kr.monkos.ai | |
+| `monkos_AI/idphoto-jp/` | `monkos-idphoto-jp` (+`-dev`) | idphoto-jp.monkos.ai | ⚠️ `apps/idphoto-jp-v079/`도 동일 서비스로 배포 |
+| `monkos_AI/studio/` | `monkos-studio` (+`-dev`) | studio.monkos.ai | |
+| **`monkos_AI/image-pro/backend/`** | **`monk-image-engine`** | **image.monkos.ai** | **IMAGE PRO. 꾸 상시 사용.** T2I=Vertex Imagen 4, I2I=Gemini 3 Pro Image. 포털 어드민 → IMAGE PRO(External) 경유. ⚠️ `apps/monk_imagen4/backend/`도 동일 서비스로 배포 |
+| `apps/jangsam/` | `jangsam-dev` | — | prod 서비스 미생성 |
+| `monkos_AI/matte-server/` | `birefnet-matte` (Cloud Run 아님) | matte.monkos.ai | 4060 GPU + CF Tunnel |
+| `MONK_kr/` | — | monk.kr | CF Pages |
+| — | (미확인) | pt.monkos.ai | 200 응답하나 us-central1 도메인 매핑·서비스 부재. 인프라 미상 — 확인 필요 [2조 한시적 예외] |
+
+**⚠️ 이중 소스 (같은 서비스로 배포하는 디렉터리 2개 — 마지막 배포가 덮어씀)**
+- `monk-image-engine` ← `monkos_AI/image-pro/backend/` **및** `apps/monk_imagen4/backend/`
+- `monkos-idphoto-jp` ← `monkos_AI/idphoto-jp/` **및** `apps/idphoto-jp-v079/`
+> 배포 전 어느 쪽이 현행 소스인지 확인할 것. 정본 일원화는 미결.
+
+**deploy.sh는 있으나 서비스 부재**
+- `monkos_AI/crop-engine/` → `monkos-crop-engine` **미생성**(2026-08-13 실측 `Cannot find service`)
+- `apps/monkos-matte/` → `monkos-matte`/`monkos-matte-gpu` 미생성
 
 ## 배포
 
@@ -21,6 +36,12 @@
 - 프로젝트: `monkos` (정본: deploy.sh:51)
 - 리전: `us-central1` (정본: deploy.sh:52). 하드코딩 금지.
 - prod rev 실측: `gcloud run services describe monkos-portal --region us-central1 --format='value(status.latestReadyRevisionName)'`
+- **서비스 매핑 재실측 3콜** (위 표 갱신 시):
+  ```bash
+  gcloud run services list --region us-central1 --format='value(metadata.name)'
+  gcloud beta run domain-mappings list --region us-central1 --format='value(metadata.name,spec.routeName)'
+  for f in $(find . -name deploy.sh -not -path "*/node_modules/*"); do echo "$f → $(grep -oE 'SERVICE(_NAME)?="[^"]+"' $f | tr '\n' ' ')"; done
+  ```
 
 ## 가격
 

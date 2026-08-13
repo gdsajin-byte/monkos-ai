@@ -61,9 +61,11 @@ scripts/credits.sh delete <email> "<사유>" --confirm    # 실제 삭제
 | `users` | doc id = uid | PII 정본 |
 | `generations` | `userId` 필드 | `lib/gcs-save.js` 참조 |
 | GCS `{service}/{uid}/` | 경로 프리픽스 | 생성 이미지 객체. 버킷은 `lib/shared/config.js` 정본 경유 |
-| `free_quota` | doc id `{date}_{uid}` | `server.js:183` 참조 |
+| ~~`free_quota`~~ | ~~doc id `{date}_{uid}`~~ | **[16:21 정정] 삭제 대상 제외** — 실측 결과 doc id는 `{date}_sha256(ip\|sid)[0:24]`(`server.js:173-183`)로 **uid 무관 익명 해시**. 대조 불가 + PII 미포함 + 일 단위 키. 막내1 실측 교정 승인 |
 | `telegram_links` | `userId` 필드 | `lib/telegram.js:165` 참조 |
-| `cs_tickets` / `cs_conversations` | `userId` 필드 | `lib/tg-cs.js:68` 참조 |
+| `cs_tickets` | `userId` 필드 | `lib/tg-cs.js:68` 참조 |
+| `cs_conversations` | ~~`userId` 필드~~ → **`telegram_links` 경유 역참조** | **[16:21 정정]** 실측상 `userId` 필드 부재, doc id = `tg_{chatId}`(`lib/chat-engine.js:11-40`). uid → chatId 역참조 후 조회. 막내1 구현 승인 |
+| `telegramGateCodes` | `userId` 필드 | **[16:21 신규 편입]** `lib/events.js:33` 생성. `userId` 보유 = 사용자 식별 가능 데이터이며 **법정 보존 근거 없음** → 방침상 "즉시 파기" 대상. 삭제 목록에 추가할 것 |
 
 **보존 대상 (삭제 금지)**
 
