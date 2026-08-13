@@ -9,6 +9,8 @@ globs:
   - "monkos-ops/ops/SECRET_INVENTORY.md"
 ---
 
+> source: governance/laws/ch4_docs_structure.md@2026-08-13
+
 # 크레딧/고객 데이터 접근 + 시크릿 운용 규칙 (ch4 10조 + 광역오더 #8)
 
 ## 직접 접근 금지 (10조 1항)

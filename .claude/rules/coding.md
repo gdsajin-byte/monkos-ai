@@ -9,6 +9,8 @@ globs:
   - "*.tsx"
 ---
 
+> source: governance/laws/ch2_coding.md@2026-07-16
+
 # 코딩 규칙 (ch2 발췌)
 
 - **기술 스택**: 순수 JS (async/await), HTML, CSS, Tailwind. 새 프레임워크 도입 시 설계 선행 필수.

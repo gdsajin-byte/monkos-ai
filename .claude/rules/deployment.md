@@ -6,6 +6,8 @@ globs:
   - "**/cloudbuild.yaml"
 ---
 
+> source: governance/laws/ch5_deployment.md@2026-07-16
+
 # Cloud Run 배포 규칙
 
 > **법률 제5장 2조 준수. 2026-04-08 개정.**

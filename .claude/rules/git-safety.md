@@ -4,6 +4,8 @@ globs:
   - "**"
 ---
 
+> source: governance/laws/ch6_git.md@2026-07-16
+
 # Git·커밋 규칙 (ch6 발췌)
 
 ## 커밋 규칙

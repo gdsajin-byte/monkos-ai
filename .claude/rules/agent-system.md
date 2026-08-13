@@ -4,6 +4,8 @@ globs:
   - "**"
 ---
 
+> source: governance/laws/ch1_agent_system.md@2026-08-13
+
 # 에이전트 체계 (ch1 발췌)
 
 ## 역할 요약

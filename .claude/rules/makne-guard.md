@@ -5,6 +5,8 @@ globs:
   - "monkos-ops/ops/completions/**"
 ---
 
+> source: governance/laws/ch7_makne_code.md@2026-07-16
+
 # 막내 행동강령 핵심 (ch7 발췌)
 
 ## 착수 전

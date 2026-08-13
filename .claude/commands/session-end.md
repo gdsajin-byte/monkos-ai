@@ -49,9 +49,12 @@ description: 세션 마감 시 로그 완료, 커밋, 푸시, CHANGELOG 갱신�
 
 ### 6단계 — push (ch3 3조)
 
-1. `scripts/mk-push.sh`를 실행한다 (main + subtree 동시 push).
+1. `scripts/mk-push.sh`를 실행한다 (main push — works 스텝은 2026-08-13 채널 폐지로 소멸).
 2. push가 완료되어야 세션 마감으로 인정한다.
 3. push 미완료 시 **세션 미마감**으로 간주한다.
+4. **푸시 게이트 (2026-08-13 신설 — PETITION_20260806 #7)**: push 직후 `git status -sb`로 `ahead`를 **실측**한다.
+   `ahead` 표기가 남아 있으면(=미푸시 커밋 존재) 마감 보고에 미푸시 커밋 수와 원인을 명기한다. 무음 마감 금지.
+   mk-push.sh가 행·중단된 경우에도 이 실측은 독립적으로 수행한다 (게이트는 스크립트 밖에 둔다).
 
 ### 7단계 — CHANGELOG 갱신
 
@@ -60,5 +63,5 @@ description: 세션 마감 시 로그 완료, 커밋, 푸시, CHANGELOG 갱신�
 
 ### 8단계 — push 최종 확인
 
-1. push 성공 여부를 확인한다.
+1. push 성공 여부를 `git status -sb`(ahead 부재)로 실측 확인한다 (6단계-4 게이트와 동일 기준).
 2. 에이전트는 보고와 push를 하나의 연속 동작으로 처리한다 (승인 대기 누락 방지).

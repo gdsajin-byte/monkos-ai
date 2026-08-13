@@ -6,6 +6,8 @@ globs:
   - "*.json"
 ---
 
+> source: governance/laws/ch8_branding.md@2026-03-25
+
 # 브랜딩 규칙 (ch8 발췌)
 
 - 유저 대면 서비스에서 Gemini/Imagen → **"MONKOS"** 또는 **"MONKOS AI"**

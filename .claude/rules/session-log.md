@@ -11,6 +11,8 @@ globs:
   - "governance/constitution/petitions/**"
 ---
 
+> source: governance/laws/ch3_session_log.md@2026-03-29
+
 # 문서 규칙 (ch3·ch4 발췌)
 
 ## 파일명 패턴 + 정본 위치

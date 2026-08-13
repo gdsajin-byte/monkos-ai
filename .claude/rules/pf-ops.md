@@ -4,6 +4,8 @@ globs:
   - "monkos-ops/ops/portfolios/**"
 ---
 
+> source: governance/laws/ch4_docs_structure.md@2026-08-13
+
 # PF 운용 규칙 (ch4 9조 발췌)
 
 ## 히스토리
