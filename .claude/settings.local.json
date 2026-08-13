@@ -13,7 +13,6 @@
       "WebFetch(domain:docs.tosspayments.com)",
       "WebFetch(domain:ai.google.dev)",
       "Bash(bash deploy.sh prod)",
-      "Read(//Users/kku/Desktop/works/**)",
       "Bash(scripts/tools/cdp_setup.sh status:*)",
       "Bash(/Users/kku/monk_project/scripts/tools/cdp_setup.sh status:*)",
       "Bash(dig studio.monkos.ai +short)",
@@ -25,8 +24,6 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(git pull:*)",
-      "Bash(git -C /Users/kku/monk_project/monkos-ops/works status)",
-      "Bash(git -C /Users/kku/monk_project/monkos-ops/works log --oneline -5)",
       "Bash(curl -sI https://idphoto-kr.monkos.ai/ -o /tmp/idphoto_kr_head.txt)",
       "Bash(curl -s https://idphoto-kr.monkos.ai/health)",
       "Bash(gcloud logging:*)",
@@ -58,24 +55,6 @@
       "Bash(curl -sI https://monkos.ai/blog)",
       "Bash(curl -s https://monkos.ai/health)",
       "Bash(curl -s https://monkos.ai/blog/vol24-20-ai-monkosai)",
-      "Bash(git -C /Users/kku/monk_project/monkos-ops/works ls-tree HEAD -- \"han/260406_셀카증명사진촬영팁/\")",
-      "Bash(git -C /Users/kku/monk_project/monkos-ops/works diff --name-only HEAD -- \"han/260406_셀카증명사진촬영팁/\")",
-      "Bash(git -C /Users/kku/monk_project/monkos-ops/works diff --stat HEAD origin/main)",
-      "Bash(git -C /Users/kku/monk_project/monkos-ops/works diff --name-status HEAD origin/main)",
-      "Bash(git -C /Users/kku/monk_project/monkos-ops/works config core.precomposeunicode)",
-      "Bash(git -C /Users/kku/monk_project/monkos-ops/works ls-tree -r --name-only HEAD)",
-      "Bash(git -C /Users/kku/monk_project/monkos-ops/works ls-tree -r --name-only origin/main)",
-      "Bash(git -C /Users/kku/monk_project/monkos-ops/works show origin/main:.gitignore)",
-      "Bash(git -C /Users/kku/monk_project/monkos-ops/works show origin/main:CLAUDE.md)",
-      "Bash(git -C /Users/kku/monk_project/monkos-ops/works show origin/main:han/CLAUDE_COWORK_M4.md)",
-      "Bash(mkdir -p /tmp/works_nfd_backup)",
-      "Bash(mv \"han/260406_셀카증명사진촬영팁/banners/banner_JP_セルフィー撮影コツ.png\" /tmp/works_nfd_backup/)",
-      "Bash(mv \"han/260406_셀카증명사진촬영팁/banners/banner_KR_셀카증명사진촬영팁.png\" /tmp/works_nfd_backup/)",
-      "Bash(mv \"han/260406_셀카증명사진촬영팁/content_20260406_셀카증명사진촬영팁.md\" /tmp/works_nfd_backup/)",
-      "Bash(mv \"han/업무절차/HAN_업무절차_SOP.md\" /tmp/works_nfd_backup/)",
-      "Bash(mv \"han/업무절차/HAN_일일브리핑_템플릿.md\" /tmp/works_nfd_backup/)",
-      "Bash(git -C /Users/kku/monk_project/monkos-ops/works pull origin main --no-edit)",
-      "Bash(git -C /Users/kku/monk_project/monkos-ops/works log --oneline -3)",
       "mcp__google-search-console__search_analytics",
       "mcp__google-search-console__index_inspect",
       "mcp__google-search-console__list_sitemaps",
@@ -99,9 +78,7 @@
       "Bash(format *)",
       "Bash(del /s /q *)"
     ],
-    "additionalDirectories": [
-      "/Users/kku/Desktop/works"
-    ]
+    "additionalDirectories": []
   },
   "model": "claude-opus-5"
 }

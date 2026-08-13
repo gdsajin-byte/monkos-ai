@@ -553,3 +553,10 @@
 
 ## [2026-08-06 04:46 KST] 민아
 - 신규: project_aeo_offline_conversion_signal.md — AEO 첫 오프라인 전환 실증(ChatGPT 추천→실물 고객) + 엔진 비대칭 구조. MEMORY.md 인사이트 섹션 1행 추가
+
+## [2026-08-13 19:33 KST] works submodule 폐지 반영 (iMac/막내1)
+- 삭제: "rsync --delete 금지 — works/ 동기화" 1행 (works 소멸로 무효)
+- 변경: 섹션 제목 "세션 로그·시작/마감·works/" → "세션 로그·시작/마감"
+- 변경: 세션 시작 절차에서 "works 확인" 제거
+- 대체: "works/ = submodule. 삭제 절대 금지" → "works submodule 폐지(08-13). 원격 아카이브 존치, 팀원 납품은 monkos-ops/ops/*/YYYY-MM/ 직접 배치"
+- 근거: ORDER_20260813_iMac쌍아_막내1_WORKS_서브모듈폐지 §4-2 (작가님 Phase D 승인)

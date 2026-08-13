@@ -1,4 +1,0 @@
-[submodule "monkos-ops/works"]
-	path = monkos-ops/works
-	url = git@github.com:gdsajin-byte/monkos-works.git
-	branch = main

@@ -11,7 +11,6 @@ description: 세션 시작 시 역할 판별, git 동기화, 보고를 수행한
 !`hostname -s`
 !`git fetch --all 2>&1`
 !`git log --oneline HEAD..origin/main 2>/dev/null | head -10`
-!`git -C monkos-ops/works status --short 2>/dev/null | head -10`
 
 ## 역할 판별 (ch1 5조)
 
@@ -32,9 +31,8 @@ description: 세션 시작 시 역할 판별, git 동기화, 보고를 수행한
 
 1. 위 동적 주입 결과에서 타임스탬프, 디바이스, 역할을 확정한다.
 2. origin/main에 신규 커밋이 있으면 머지한다.
-3. works 서브모듈에 신규 파일이 있으면 보고한다.
-4. MEMORY.md를 읽는다.
-5. 첫 인사를 출력한다:
+3. MEMORY.md를 읽는다.
+4. 첫 인사를 출력한다:
    - 쌍아: `[YYYY-MM-DD HH:MM KST] {디바이스}/쌍아입니다. 지시 대기합니다.`
    - 막내: `[YYYY-MM-DD HH:MM KST] {디바이스}/막내입니다. 지시서 수신 대기합니다.`
-6. 동기화 결과를 보고한다. 이 절차를 완료하기 전까지 신규 작업에 착수하지 않는다.
+5. 동기화 결과를 보고한다. 이 절차를 완료하기 전까지 신규 작업에 착수하지 않는다.
