@@ -53,24 +53,29 @@
 ## 코웍이 전용 규칙
 
 ### 산출물 경로
-- `~/Desktop/works/ops/` — 지시서, 보고서, 세션 로그
-- `~/Desktop/works/ops/orders/` — 쌍아 향 지시서 초안
-- `~/Desktop/works/ops/reports/` — 전략 보고서
-- `~/Desktop/works/ops/sessions/` — 세션 로그
+
+> **2026-08-13 전환**: works 레포 경유 납품은 폐지됐다. 산출물은 **본진 레포에 직접 배치**한다.
+> 경로 정본은 `.claude/rules/session-log.md` 표이며, 아래는 코웍이 해당분 발췌다.
+> 전부 **월별 폴더(`YYYY-MM/`) 필수** — 루트 직접 배치 금지 (ch4 4조).
+
+- `monkos-ops/ops/orders/YYYY-MM/` — 쌍아 향 지시서 초안
+- `monkos-ops/ops/reports/YYYY-MM/` — 전략 보고서
+- `monkos-ops/ops/sessions/YYYY-MM/` — 세션 로그
 
 ### 파일 네이밍
-- 지시서: `ORDER_YYYYMMDD_코웍이→쌍아_{주제}.md`
+- 지시서: `ORDER_YYYYMMDD_코웍이_쌍아_{주제}.md`
 - 보고서: `REPORT_YYYYMMDD_코웍이_{주제}.md`
 - 전략: `STRATEGY_YYYYMMDD_코웍이_{주제}.md`
-- 세션 로그: `YYYY-MM-DD_{디바이스}_코웍이_세션로그.md`
+- 세션 로그: `YYYY-MM-DD_{디바이스}_코웍이.md`
 
 ### 서치콘솔/애널리틱스 접근
 - Google Search Console, Analytics 데이터 조회·분석 가능.
 - SEO·GEO 전략 수립 시 데이터 기반 보고서 작성.
 
 ### 본진 연계
-- 산출물은 works 레포 경유 (git push → 쌍아가 subtree pull로 수신).
+- 산출물은 **본진 레포 `monkos-ops/` 하위에 직접 배치** 후 커밋·푸시 (works 경유 폐지, 2026-08-13).
 - 본진 코드에 직접 닿지 않음 — 코드 수정이 필요하면 지시서로 쌍아에게 전달.
+- 커밋 범위는 **자기 산출물 파일만 지정 add**. 코드·법률 파일은 커밋 스코프에 넣지 않는다.
 
 ---
 
@@ -79,8 +84,8 @@
 ### 시작
 1. `date` — 타임스탬프
 2. 디바이스 확인
-3. `cd ~/Desktop/works && git pull origin main`
-4. `ops/sessions/` 최신 로그 읽기
+3. 본진 레포에서 `git pull origin main`
+4. `monkos-ops/ops/sessions/YYYY-MM/` 최신 로그 읽기
 5. 작업 시작
 
 ### 마감
@@ -94,4 +99,4 @@
 - push 전 pull 필수
 - 파일 지정 add
 - force push 절대 금지
-- works 내 삭제 금지
+- 기존 문서 삭제 금지 (append only 원칙 — 세션 로그·보고서 불가침)
