@@ -10,6 +10,9 @@
 #   scripts/credits.sh log [N]                            — 최근 감사 로그 조회 (기본 10건)
 #   scripts/credits.sh signups [일수]                     — 신규 회원가입 집계 (기본 7일, 읽기 전용)
 #   scripts/credits.sh delete <email> "<사유>" [--confirm] — 회원 탈퇴 처리 (기본 dry-run)
+#
+# 식별자: query/charge/deduct/user는 <email> 자리에 uid(users 문서 ID, 예: kakao_123)도 허용.
+#         (2026-08-13 민아 — 카카오 계정 uid→email 역조회 필요로 신설, 작가님 직접 지시 건)
 
 set -euo pipefail
 
@@ -90,7 +93,7 @@ cmd_query() {
     let found = false;
     snap.forEach(d => {
       const data = d.data();
-      if ((data.email || '').toLowerCase() === '${email}'.toLowerCase()) {
+      if ((data.email || '').toLowerCase() === '${email}'.toLowerCase() || d.id === '${email}') {
         console.log(JSON.stringify({ uid: d.id, email: data.email, name: data.name, credits: data.credits ?? 0 }));
         found = true;
       }
@@ -122,7 +125,7 @@ cmd_charge() {
     let targetDoc = null;
     snap.forEach(d => {
       const data = d.data();
-      if ((data.email || '').toLowerCase() === '${email}'.toLowerCase()) {
+      if ((data.email || '').toLowerCase() === '${email}'.toLowerCase() || d.id === '${email}') {
         targetDoc = { id: d.id, ...data };
       }
     });
@@ -191,7 +194,7 @@ cmd_deduct() {
     let targetDoc = null;
     snap.forEach(d => {
       const data = d.data();
-      if ((data.email || '').toLowerCase() === '${email}'.toLowerCase()) {
+      if ((data.email || '').toLowerCase() === '${email}'.toLowerCase() || d.id === '${email}') {
         targetDoc = { id: d.id, ...data };
       }
     });
@@ -250,7 +253,7 @@ cmd_user() {
     let found = false;
     snap.forEach(d => {
       const data = d.data();
-      if ((data.email || '').toLowerCase() === '${email}'.toLowerCase()) {
+      if ((data.email || '').toLowerCase() === '${email}'.toLowerCase() || d.id === '${email}') {
         const safe = {
           email: data.email,
           name: data.name,
