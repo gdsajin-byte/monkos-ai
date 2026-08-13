@@ -16,9 +16,8 @@
 - 작가님의 수동 역할 선언 불필요
 
 ## 팀 인적 인프라
-- **한송이**: M4 — SNS 운영/마케팅
 - **꾸(와이프)**: 맥미니 M2
-- 조직 정본: `governance/PERSONNEL_REGISTRY.md`
+- 조직 정본: `governance/PERSONNEL_REGISTRY.md` (한송이 2026-05-27 퇴사 — 정본 참조)
 
 ## 사업 구조
 - **monk.kr**(본진 데스크톱, CF Pages) → **monkos.ai**(모바일 AI 분기, Cloud Run)
