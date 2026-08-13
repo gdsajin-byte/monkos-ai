@@ -12,6 +12,12 @@
 # 저장소: GCP Secret Manager (project=monkos) — 단일 정본
 # 인벤토리: monkos-ops/ops/SECRET_INVENTORY.md — 메타정보(이름·용도·날짜)만 기록, 값 절대 금지
 
+# ⚠️ 값 노출 회귀 방지 (2026-08-13, 헌법 4조 1항 / data-access.md "값 노출 금지")
+# zsh 기본(TYPESET_SILENT 미설정)에서는 `local VAR`를 값 할당 없이 실행할 때
+# 그 변수가 이미 존재하면 `VAR=<현재값>`을 stdout에 출력한다. cmd_env 루프에서
+# 시크릿 실값이 이 경로로 새어나갔다. 아래 1줄이 해당 출력 전체를 차단한다.
+setopt TYPESET_SILENT
+
 PROJECT="monkos"
 
 # 프로젝트 루트 자동 탐지 (어느 디바이스·경로에서든 동작)
@@ -214,17 +220,22 @@ cmd_env() {
   local UPDATED=0
   local SKIPPED=0
 
+  # ⚠️ 값 노출 방지 (2026-08-13): 선언은 반드시 루프 밖 + 초기값 할당.
+  # zsh는 TYPESET_SILENT 미설정(기본)일 때 `local VAR`를 값 할당 없이 실행하면서
+  # 해당 변수가 이미 존재하면 `VAR=<현재값>`을 stdout에 출력한다. 루프 2회차부터
+  # 직전 시크릿 실값이 그대로 새어나갔다. 초기값을 할당하면 출력되지 않는다.
+  local SM_VALUE=""
+  local CURRENT=""
+
   while IFS='=' read -r KEY VALUE; do
     # 주석/빈줄 건너뛰기
     [[ "$KEY" =~ ^#.*$ || -z "$KEY" ]] && continue
     KEY=$(echo "$KEY" | tr -d ' ')
 
     # SM에서 조회 시도
-    local SM_VALUE
     SM_VALUE=$(gcloud secrets versions access latest --secret="$KEY" --project="$PROJECT" 2>/dev/null)
     if [ $? -eq 0 ] && [ -n "$SM_VALUE" ]; then
       # .env 현재 값과 비교
-      local CURRENT
       CURRENT=$(grep "^${KEY}=" "$ENV_FILE" | head -1 | cut -d'=' -f2-)
       if [ "$CURRENT" != "$SM_VALUE" ]; then
         # macOS sed
