@@ -67,3 +67,31 @@ jobs:
           else
             echo "✅ 월별 폴더 규칙 준수 (변경 파일 기준)"
           fi
+
+      - name: C10 — 계층 동기화 스탬프 대조 (ch4 12조, PETITION_20260806 #10)
+        run: |
+          MISMATCH=""
+          for F in .claude/rules/*.md monkos-ops/ops/templates/CONSTITUTION_ESSENCE.md; do
+            [ -f "$F" ] || continue
+            LINE=$(grep -m1 '^> source: ' "$F" || true)
+            [ -z "$LINE" ] && continue
+            SRC=$(echo "$LINE" | sed 's/^> source: //; s/@.*//')
+            STAMP=$(echo "$LINE" | sed 's/.*@//' | tr -d ' ')
+            if [ ! -f "$SRC" ]; then
+              MISMATCH="${MISMATCH}
+          ${F}: 정본 경로 미존재 (${SRC})"
+              continue
+            fi
+            REAL=$(git log -1 --format=%as -- "$SRC")
+            if [ "$STAMP" != "$REAL" ]; then
+              MISMATCH="${MISMATCH}
+          ${F}: 스탬프 ${STAMP} ≠ 정본 최종 개정 ${REAL} (${SRC})"
+            fi
+          done
+
+          if [ -n "$MISMATCH" ]; then
+            echo "::warning::⚠️ 발췌본 스탬프 ↔ 정본 개정일 불일치 (ch4 12조 — 발췌본 재동기화 필요)"
+            echo "$MISMATCH"
+          else
+            echo "✅ 계층 동기화 스탬프 정상"
+          fi

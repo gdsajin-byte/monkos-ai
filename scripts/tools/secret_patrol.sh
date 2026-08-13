@@ -42,6 +42,12 @@ fi
 } >> "$LOG"
 echo "[patrol] 변화/경보 감지 → PATROL_LOG.md 어펜드"
 
+# 자가 커밋 — 순찰 산출물이 전 세션 워킹트리를 상시 더티로 만드는 것을 해소 (2026-08-13, PETITION_20260806 부기3)
+# pathspec 커밋: 스테이징 영역과 무관하게 LOG 파일만 커밋. 푸시는 세션 마감(mk-push) 소관.
+git -C "$ROOT" commit -q -m "[log] 시크릿 순찰 자동 기록 (secret_patrol)" -- "$LOG" \
+  && echo "[patrol] PATROL_LOG.md 자가 커밋 완료" \
+  || echo "[patrol] ⚠️ 자가 커밋 실패 — 수동 커밋 필요 (동작에는 지장 없음)" >&2
+
 # 텔레그램 통지 (chat_id 미설정 시 명시 경고 후 로그만)
 TG_TOKEN=$(gcloud secrets versions access latest --secret=TELEGRAM_BOT_TOKEN --project=monkos 2>/dev/null || true)
 TG_CHAT="${MONKOS_PATROL_CHAT_ID:-}"
