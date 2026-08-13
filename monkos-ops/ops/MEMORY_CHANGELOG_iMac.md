@@ -560,3 +560,10 @@
 - 변경: 세션 시작 절차에서 "works 확인" 제거
 - 대체: "works/ = submodule. 삭제 절대 금지" → "works submodule 폐지(08-13). 원격 아카이브 존치, 팀원 납품은 monkos-ops/ops/*/YYYY-MM/ 직접 배치"
 - 근거: ORDER_20260813_iMac쌍아_막내1_WORKS_서브모듈폐지 §4-2 (작가님 Phase D 승인)
+
+## [2026-08-13 19:38 KST] iMac/쌍아 — 실측 원칙 메모리 3건 등재
+
+- 추가: "4060 비가동≠장애" → `project_4060_intentional_downtime.md` (가정 사정 의도적 오프. matte 530 시 RunPod 폴백 영향 0 확인 후 조치 말 것)
+- 추가: "브리핑 주장=1차 실측 필수" → `feedback_briefing_claims_need_primary_verification.md` (승계 재서술이 "의혹"을 "확정 🔴"으로 변질. Lemon 키 18일 오경보 실증)
+- 추가: "0건·404≠부재" → `feedback_empty_output_is_not_absence.md` (대조군 1회로 조회 유효성부터 배제. 하루 3회 발생, 1건은 틀린 영향평가가 심사부로 유통)
+- 근거: 2026-08-13 세션 오류 4건 정정 — 메타(날짜·스탬프·빈 출력)를 내용의 증거로 사용한 공통 뿌리
