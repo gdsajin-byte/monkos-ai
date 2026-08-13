@@ -41,6 +41,18 @@
     <!-- 스타일시트 -->
     <link rel="stylesheet" href="app.css">
     <link rel="stylesheet" href="cr-coin.css">
+    <style>
+      /* app.css가 body 스크롤을 잠그므로(카메라 SPA 전제) 본문을 자체 스크롤 컨테이너로.
+         짧은 뷰포트에서 토스 위젯·약관·결제 버튼이 잘려 결제 불가가 되는 것을 방지.
+         overscroll-behavior: 결제 중 당겨서 새로고침 오발동 차단. */
+      #charge-content {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-y: contain;
+      }
+    </style>
 
     <!-- 토스페이먼츠 -->
     <script src="https://js.tosspayments.com/v2/standard"></script>
@@ -186,20 +198,27 @@
     // 뷰 참조
     const selectionView = document.getElementById('selection-view');
     const paymentView = document.getElementById('payment-view');
+    const chargeContent = document.getElementById('charge-content');
 
     function fmt(n) { return n.toLocaleString('ko-KR'); }
 
     // ─── 뷰 전환 ───
+    // 본문이 자체 스크롤 컨테이너라 window.scrollTo만으로는 리셋되지 않는다
+    function resetScroll() {
+      window.scrollTo(0, 0);
+      chargeContent.scrollTop = 0;
+    }
+
     function showSelectionView() {
       selectionView.style.display = '';
       paymentView.style.display = 'none';
-      window.scrollTo(0, 0);
+      resetScroll();
     }
 
     function showPaymentView() {
       selectionView.style.display = 'none';
       paymentView.style.display = '';
-      window.scrollTo(0, 0);
+      resetScroll();
     }
 
     // ─── 위젯 에러 표시 ───
