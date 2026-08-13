@@ -14,7 +14,7 @@ order: ORDER_20260813_iMac쌍아_막내1_PORTAL_회원탈퇴처리도구.md
 
 ## 1. 결과 요약
 
-Phase A(구현 + dry-run) 완료. **실제 삭제는 발생하지 않았습니다.** Phase B(`--confirm`)는 작가님 승인 대기.
+Phase A(구현 + dry-run) → Phase B(작가님 승인 후 실삭제) 모두 완료. **탈퇴 처리 이행 완료** (§9).
 
 | 항목 | 결과 |
 |------|------|
@@ -118,14 +118,102 @@ function freeQuotaKey(req) {
 | `set -euo pipefail` | 유지 | ✅ |
 | 알 수 없는 옵션 | 오타 방어 (`--confrim` 등) → exit 1 | ✅ |
 
-## 7. 다음 단계 (Phase B — 승인 대기)
+## 7. 범위 밖 (참고)
 
-```bash
-./scripts/credits.sh delete lingohosi@gmail.com "회원 탈퇴 요청 (2026-08-13 이메일 수신)" --confirm
+근본 원인인 앱 내 탈퇴 기능 부재(PROPOSAL_20260624 T3 / DESIGN_20260715 T5)는 별도 지시서 대상이다.
+
+---
+
+## 8. 쌍아 판정 반영 (2026-08-13 16:21 KST)
+
+| 건 | 쌍아 판정 | 막내1 반영 |
+|---|---|---|
+| §4-1 `free_quota` 제외 | 승인 — 지시서 §3-2 기재가 오류 | 제외 유지 |
+| §4-2 `cs_conversations` 역참조 | 승인 | 구현 유지 |
+| §4-3 `telegramGateCodes` | **삭제 대상 편입** | ✅ 보정 반영 (`cmd_delete` 수집·삭제·요약 3개소) |
+| §5 `CUSTOMER_GCS_BUCKET` 정본화 | 승인 | 유지 |
+
+보정 후 dry-run 재실행하여 `telegramGateCodes 0건`이 삭제 대상 블록에 표시됨을 확인한 뒤 Phase B에 착수했다.
+
+## 9. Phase B 실행 결과 — 탈퇴 처리 완료
+
+**[2026-08-13 16:24 KST]** 작가님 승인(Phase B 승인 + telegramGateCodes 편입 지시) 하에 실행.
+
+```
+$ ./scripts/credits.sh delete lingohosi@gmail.com "회원 탈퇴 요청 (2026-08-13 이메일 수신)" --confirm
+
+⚠️ [DELETE] 아래 대상을 삭제합니다.
+   사유: 회원 탈퇴 요청 (2026-08-13 이메일 수신)
+────────────────────────────────────────────────────────────
+대상 uid   : 107139042955968281506
+이메일     : l***i@gmail.com (마스킹)
+이름       : 링고
+잔여 크레딧: 10c
+────────────────────────────────────────────────────────────
+■ 삭제 대상
+  - users (PII 정본)                     1건
+  - generations                        0건
+  - telegram_links                     0건
+  - telegramGateCodes                  0건
+  - cs_tickets                         0건
+  - cs_conversations                   0건
+  - GCS 객체 [monk-customer-photos]      0건
+  (스캔한 서비스 프리픽스: headshot/, idphoto/, service/)
+■ 보존 대상 (방침 고지 예외 — 삭제 안 함)
+  - payments                           0건
+  - transactions                       0건
+  - audit                              append-only
+■ 제외
+  - free_quota: doc id = {date}_sha256(ip|sid)[0:24] — uid 무관 익명 해시. 대조 불가, PII 미포함
+────────────────────────────────────────────────────────────
+■ 삭제 결과
+  - gcs_objects          0건 삭제
+  - generations          0건 삭제
+  - cs_conversations     0건 삭제
+  - cs_tickets           0건 삭제
+  - telegram_links       0건 삭제
+  - telegramGateCodes    0건 삭제
+  - users                1건 삭제
+✅ 탈퇴 처리 완료: l***i@gmail.com (uid=107139042955968281506)
+   사유: 회원 탈퇴 요청 (2026-08-13 이메일 수신)
+exit=0
 ```
 
-**작가님 승인 전까지 실행하지 않습니다.** 승인 시 삭제 결과 + 감사 로그 2중 기록(로컬 MD + Firestore `audit`)을 후속 보고하겠습니다.
+**실패 항목 0건, exit 0.**
 
-## 8. 범위 밖 (참고)
+### 9-1. 사후 검증 3건
 
-근본 원인인 앱 내 탈퇴 기능 부재(PROPOSAL_20260624 T3 / DESIGN_20260715 T5)는 별도 지시서 대상이다. §4-3 `telegramGateCodes` 범위 판정도 쌍아 회신 대기.
+**① 파기 실증**
+```
+$ ./scripts/credits.sh query lingohosi@gmail.com
+{"error":"사용자 없음","email":"lingohosi@gmail.com"}
+```
+
+**② 로컬 감사 로그 (`CREDIT_AUDIT_LOG.md`)**
+```
+| 2026-08-13 16:24 KST | iMac | delete | l***i@gmail.com | 10c | - | 회원 탈퇴 요청 (2026-08-13 이메일 수신) (uid=107139042955968281506) |
+```
+이메일 마스킹·변경후 `-` 표기 모두 설계대로 기록됨.
+
+**③ Firestore `audit` 컬렉션**
+```json
+{
+  "type": "account_delete",
+  "email": "l***i@gmail.com",
+  "uid": "107139042955968281506",
+  "creditsAtDeletion": 10,
+  "deleted": { "gcs_objects": 0, "generations": 0, "cs_conversations": 0,
+               "cs_tickets": 0, "telegram_links": 0, "telegramGateCodes": 0, "users": 1 },
+  "preserved": { "payments": 0, "transactions": 0 },
+  "failures": [],
+  "reason": "회원 탈퇴 요청 (2026-08-13 이메일 수신)",
+  "device": "iMac",
+  "timestamp": "2026-08-13T07:24:41.656Z"
+}
+```
+
+### 9-2. 판정
+
+개인정보처리방침 L72 "회원 탈퇴 시 즉시 파기" **이행 완료**. 보존 예외 3종에 해당 데이터가 없어 잔존 PII 0건. 요청 수신(14:30) → 처리 완료(16:24), 소요 약 2시간.
+
+도구는 1회성이 아니라 `credits.sh` 정본에 편입되었으므로 다음 탈퇴 요청부터는 dry-run → 승인 → `--confirm` 절차를 그대로 재사용한다.

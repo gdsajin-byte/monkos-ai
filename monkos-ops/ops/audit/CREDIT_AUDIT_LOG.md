@@ -11,3 +11,4 @@
 | 2026-07-06 19:33 KST | iMac | charge | gdsajin@gmail.com | 0c | 500c | 작가님 요청 — 크레딧 충전 |
 | 2026-07-11 18:54 KST | iMac | charge | gdsajin@gmail.com | 0c | 100c | T1 파일럿 테스트용 충전 (작가님 지시) |
 | 2026-07-23 13:25 KST | iMac | charge | gdsajin@gmail.com | 0c | 200c | 작가님 테스트용 충전 (7/23 쌍아) |
+| 2026-08-13 16:24 KST | iMac | delete | l***i@gmail.com | 10c | - | 회원 탈퇴 요청 (2026-08-13 이메일 수신) (uid=107139042955968281506) |

@@ -405,18 +405,21 @@ _delete_run_node() {
     }
     const paths = Array.from(gcsPaths).sort();
 
-    // 3) 보존/미지정 현황 (읽기 전용 — 삭제하지 않음)
-    const payIds = await idsOf('payments', 'userId');
-    const txIds = await idsOf('transactions', 'userId');
+    // telegramGateCodes — userId 보유 = 사용자 식별 가능. 법정 보존 근거 없음 → 삭제 대상
+    // (2026-08-13 쌍아 판정: 지시서 미지정 → 삭제 대상 편입)
     const gateIds = await idsOf('telegramGateCodes', 'userId');
 
+    // 3) 보존 현황 (읽기 전용 — 삭제하지 않음)
+    const payIds = await idsOf('payments', 'userId');
+    const txIds = await idsOf('transactions', 'userId');
+
     out.targets = { users: 1, generations: genIds.length, telegram_links: linkIds.length,
-                    cs_tickets: ticketIds.length, cs_conversations: convIds.length, gcs_objects: paths.length };
+                    telegramGateCodes: gateIds.length, cs_tickets: ticketIds.length,
+                    cs_conversations: convIds.length, gcs_objects: paths.length };
     out.gcs_bucket = CUSTOMER_GCS_BUCKET;
     out.gcs_service_prefixes = servicePrefixes;
     out.gcs_paths = paths;
     out.preserved = { payments: payIds.length, transactions: txIds.length, audit: 'append-only' };
-    out.unspecified = { telegramGateCodes: gateIds.length };
     out.excluded = { free_quota: 'doc id = {date}_sha256(ip|sid)[0:24] — uid 무관 익명 해시. 대조 불가, PII 미포함' };
 
     if (MODE !== 'delete') {
@@ -449,6 +452,7 @@ _delete_run_node() {
       cs_conversations: await delDocs('cs_conversations', convIds),
       cs_tickets: await delDocs('cs_tickets', ticketIds),
       telegram_links: await delDocs('telegram_links', linkIds),
+      telegramGateCodes: await delDocs('telegramGateCodes', gateIds),
       users: await delDocs('users', [uid]),
     };
     out.deleted = deleted;
@@ -490,7 +494,8 @@ print(f"잔여 크레딧: {d['credits']}c")
 print("─" * 60)
 print("■ 삭제 대상")
 labels = {'users': 'users (PII 정본)', 'generations': 'generations', 'telegram_links': 'telegram_links',
-          'cs_tickets': 'cs_tickets', 'cs_conversations': 'cs_conversations',
+          'telegramGateCodes': 'telegramGateCodes', 'cs_tickets': 'cs_tickets',
+          'cs_conversations': 'cs_conversations',
           'gcs_objects': f"GCS 객체 [{d['gcs_bucket']}]"}
 for k, v in t.items():
     print(f"  - {labels.get(k, k):<34} {v}건")
@@ -503,8 +508,6 @@ print("■ 보존 대상 (방침 고지 예외 — 삭제 안 함)")
 print(f"  - payments                           {d['preserved']['payments']}건")
 print(f"  - transactions                       {d['preserved']['transactions']}건")
 print(f"  - audit                              append-only")
-print("■ 지시서 미지정 — 판단 대기 (삭제 안 함)")
-print(f"  - telegramGateCodes                  {d['unspecified']['telegramGateCodes']}건")
 print("■ 제외")
 print(f"  - free_quota: {d['excluded']['free_quota']}")
 if d['failures']:
