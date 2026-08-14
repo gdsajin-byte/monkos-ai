@@ -100,6 +100,7 @@ status: active
 | 08/01 | iMac/막내1 | **§10 "(prod 배포 중단)" 표기 해소 확인 + 포털 prod 배포** (작가님 직접 지시) — ① 표기 출처는 7/25 커밋 `f5879f0a`이며 **§11(`3cc9b5f7`)이 §10-2를 대체**해 조건 소멸. prod rev `00539-bmt` 생성(7/25 19:17) > `3cc9b5f7`(18:50)·`10a4e140`(19:08) → **두 커밋 모두 7/25에 이미 라이브**였음을 리비전 시각으로 확정, prod 번들 실측 재확인(`ALLOWED_EXT` heic 없음·MIME `jpeg|png|webp`·`DECODE_FAILED`). ⚠️ "매팅 P0~P2·SPECS 게이트가 prod 미출고 적체"라는 08-01 기록은 정정 대상 ② 매팅 계약면 정합 확인 — 포털 `lib/matte.js`는 `3cc9b5f7` 이후 무변경, 4060 5커밋은 전부 `/health` 관측 축이고 `_acquire_slot()`은 MAX_CONCURRENT 세마포어 단일 조건 → `/health`·`POST /api/matte`·503+`Retry-After:1` 전부 일치 ③ 실제 출고 포털 코드 3커밋(deploy.sh preview 1행·히어로 프로토·FACEREAD), 선탑승 0건 확인 후 배포 | prod 00540-jvq | ✅ 라이브 |
 
 ---
+| 08/14 | iMac/민아 | **passport/kr 스니펫 개선 (quick win, 작가님 직접 지시)** — 노출 656/2주·8.9위·CTR 0.3% 클릭 병목 진단: 상위 쿼리가 전부 "2026·규정·외교부" 조합인데 타이틀에 외교부·차별 훅 부재. specs-data.json kr-passport **ko 오버라이드만** 교체(타 페이지·언어 무영향): 신 타이틀 "여권사진 규격·규정 2026 (외교부 기준) — 3.5×4.5cm 무료 즉시 맞춤", 설명에 귀 노출 의무 폐지(07-17 확정) 통념 교정 훅. dev→prod 00546-r5d 라이브 검증 + sitemap-specs-ko 재제출. **측정: 08-28경 CTR 재실측(기준선 0.3%)**, 효과 시 노출 상위 페이지 횡전개 | `5f9c7827` · specs-data.json | ✅ (측정 대기) |
 
 ## 리스크
 
