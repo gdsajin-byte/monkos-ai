@@ -10,10 +10,11 @@ import {
   pendingLineStates, createHmac, randomBytes, authSecret
 } from './shared/config.js';
 import { trackEvent, linkIdentity } from './tracking.js';
+import { effectiveHost } from './shared/edge-trust.js';
 
 // === 카카오 OAuth (KR) — /auth/kakao ===
 export async function handleKakaoAuth(req, res) {
-  const parsedUrl = new URL(req.url, `http://${req.headers.host}`);
+  const parsedUrl = new URL(req.url, `http://${effectiveHost(req)}`);
   const popup = parsedUrl.searchParams.get('popup') === '1';
   const redirectApp = parsedUrl.searchParams.get('redirect_app') || '';
   const sourcePage = parsedUrl.searchParams.get('source_page') || '';
@@ -22,7 +23,7 @@ export async function handleKakaoAuth(req, res) {
 
   // state에 popup 정보 인코딩
   const state = Buffer.from(JSON.stringify({ popup, redirectApp, sourcePage, acqReferrer, acqUrl })).toString('base64url');
-  const effectiveRedirect = `https://${req.headers.host}/auth/kakao/callback`;
+  const effectiveRedirect = `https://${effectiveHost(req)}/auth/kakao/callback`;
   const authUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_REST_API_KEY}&redirect_uri=${encodeURIComponent(effectiveRedirect)}&response_type=code&scope=account_email,plusfriends&state=${state}`;
   res.writeHead(302, { Location: authUrl });
   res.end();
@@ -30,7 +31,7 @@ export async function handleKakaoAuth(req, res) {
 
 // === 카카오 OAuth Callback — /auth/kakao/callback ===
 export async function handleKakaoCallback(req, res) {
-  const url = new URL(req.url, `http://${req.headers.host}`);
+  const url = new URL(req.url, `http://${effectiveHost(req)}`);
   const code = url.searchParams.get('code');
   const error = url.searchParams.get('error');
 
@@ -41,7 +42,7 @@ export async function handleKakaoCallback(req, res) {
   }
 
   try {
-    const effectiveRedirect = `https://${req.headers.host}/auth/kakao/callback`;
+    const effectiveRedirect = `https://${effectiveHost(req)}/auth/kakao/callback`;
     const tokenBody = {
       grant_type: 'authorization_code',
       client_id: KAKAO_REST_API_KEY,
@@ -194,7 +195,7 @@ location.href = ${JSON.stringify(returnUrl)};
 
 // === LINE OAuth (JP) — /auth/line ===
 export async function handleLineAuth(req, res) {
-  const parsedUrl = new URL(req.url, `http://${req.headers.host}`);
+  const parsedUrl = new URL(req.url, `http://${effectiveHost(req)}`);
   const popup = parsedUrl.searchParams.get('popup') === '1';
   const redirectApp = parsedUrl.searchParams.get('redirect_app') || '';
   const sourcePage = parsedUrl.searchParams.get('source_page') || '';
@@ -210,7 +211,7 @@ export async function handleLineAuth(req, res) {
   for (const [k, v] of pendingLineStates) {
     if (Date.now() - v > 10 * 60 * 1000) pendingLineStates.delete(k);
   }
-  const effectiveLineRedirect = `https://${req.headers.host}/auth/line/callback`;
+  const effectiveLineRedirect = `https://${effectiveHost(req)}/auth/line/callback`;
   const authUrl = `https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=${LINE_CHANNEL_ID}&redirect_uri=${encodeURIComponent(effectiveLineRedirect)}&state=${state}&scope=profile%20openid%20email`;
   res.writeHead(302, { Location: authUrl });
   res.end();
@@ -218,7 +219,7 @@ export async function handleLineAuth(req, res) {
 
 // === LINE OAuth Callback — /auth/line/callback ===
 export async function handleLineCallback(req, res) {
-  const url = new URL(req.url, `http://${req.headers.host}`);
+  const url = new URL(req.url, `http://${effectiveHost(req)}`);
   const code = url.searchParams.get('code');
   const state = url.searchParams.get('state');
   const error = url.searchParams.get('error');
@@ -253,7 +254,7 @@ export async function handleLineCallback(req, res) {
       body: new URLSearchParams({
         grant_type: 'authorization_code',
         code,
-        redirect_uri: `https://${req.headers.host}/auth/line/callback`,
+        redirect_uri: `https://${effectiveHost(req)}/auth/line/callback`,
         client_id: LINE_CHANNEL_ID,
         client_secret: LINE_CHANNEL_SECRET,
       }),
@@ -394,7 +395,7 @@ location.href = ${JSON.stringify(returnUrl)};
 
 // === Google OAuth 리다이렉트 — /auth/google ===
 export async function handleGoogleRedirectAuth(req, res) {
-  const parsedUrl = new URL(req.url, `http://${req.headers.host}`);
+  const parsedUrl = new URL(req.url, `http://${effectiveHost(req)}`);
   const popup = parsedUrl.searchParams.get('popup') === '1';
   const redirectApp = parsedUrl.searchParams.get('redirect_app') || '';
   const sourcePage = parsedUrl.searchParams.get('source_page') || '';
@@ -405,7 +406,7 @@ export async function handleGoogleRedirectAuth(req, res) {
 
   pendingLineStates.set(csrf, Date.now());
 
-  const effectiveRedirect = `https://${req.headers.host}/auth/google/callback`;
+  const effectiveRedirect = `https://${effectiveHost(req)}/auth/google/callback`;
   const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
     `client_id=${GOOGLE_CLIENT_ID}` +
     `&redirect_uri=${encodeURIComponent(effectiveRedirect)}` +
@@ -421,7 +422,7 @@ export async function handleGoogleRedirectAuth(req, res) {
 
 // === Google OAuth Callback — /auth/google/callback ===
 export async function handleGoogleRedirectCallback(req, res) {
-  const url = new URL(req.url, `http://${req.headers.host}`);
+  const url = new URL(req.url, `http://${effectiveHost(req)}`);
   const code = url.searchParams.get('code');
   const state = url.searchParams.get('state');
   const error = url.searchParams.get('error');
@@ -447,7 +448,7 @@ export async function handleGoogleRedirectCallback(req, res) {
   pendingLineStates.delete(stateData.csrf);
 
   try {
-    const effectiveRedirect = `https://${req.headers.host}/auth/google/callback`;
+    const effectiveRedirect = `https://${effectiveHost(req)}/auth/google/callback`;
     const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -722,7 +723,7 @@ export async function handleAuthToken(req, res) {
 
 // === 크로스 도메인 인증 토큰 검증 — /api/auth/verify (GET) ===
 export async function handleAuthVerify(req, res) {
-  const urlParams = new URL(req.url, `http://${req.headers.host}`);
+  const urlParams = new URL(req.url, `http://${effectiveHost(req)}`);
   const token = urlParams.searchParams.get('token');
 
   if (!token) {

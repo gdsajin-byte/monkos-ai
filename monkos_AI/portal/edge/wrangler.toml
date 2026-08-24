@@ -1,0 +1,26 @@
+# monkos-portal-edge — monkos.ai 엣지 라우터 (specs 정적 서빙 + 오리진 폴백)
+# 배포: ./deploy.sh (직접 wrangler deploy 금지 — SSG 빌드 선행 강제)
+name = "monkos-portal-edge"
+main = "worker.mjs"
+compatibility_date = "2026-08-01"
+
+workers_dev = true
+
+# 컷오버 (2026-08-24 작가님 직접 지시): 존 라우트 방식
+# - 라우트는 apex DNS 레코드가 프록시(주황)일 때만 발화. 프록시 OFF(회색) = 즉시 롤백 (레코드 무손실).
+# - apex A/AAAA 정본: A 216.239.32.21/34.21/36.21/38.21 + AAAA 2001:4860:4802:{32,34,36,38}::15
+#   (Cloud Run 도메인 매핑 — 프록시 상태와 무관하게 유지할 것)
+routes = [
+  { pattern = "monkos.ai/*", zone_name = "monkos.ai" }
+]
+
+[assets]
+directory = "../tools/specs-ssg/dist"
+binding = "ASSETS"
+html_handling = "auto-trailing-slash"
+not_found_handling = "none"
+run_worker_first = true
+
+[vars]
+# 오리진 정본 (ch2 7조) — monkos-portal Cloud Run run.app URL
+ORIGIN_URL = "https://monkos-portal-4jeplpqpua-uc.a.run.app"

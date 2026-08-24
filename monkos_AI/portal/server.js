@@ -11,6 +11,7 @@ import { join, dirname, extname } from 'path';
 import { fileURLToPath } from 'url';
 import crypto from 'crypto';
 import geoip from 'geoip-lite';
+import { resolveEdgeClient } from './lib/shared/edge-trust.js';
 
 // === 공통 인프라 ===
 import {
@@ -105,6 +106,9 @@ function detectLang(req) {
 }
 
 function detectPaymentRegion(req) {
+  // CF 엣지 경유 시 Worker가 전달한 국가를 신뢰 (피어 CF 대역 검증 — edge-trust.js)
+  const edge = resolveEdgeClient(req);
+  if (edge.trusted && edge.country) return edge.country === 'KR' ? 'kr' : 'global';
   const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket.remoteAddress;
   const geo = geoip.lookup(ip);
   return (geo?.country === 'KR') ? 'kr' : 'global';
@@ -118,8 +122,10 @@ function detectPaymentRegion(req) {
 function checkRateLimit(req, bucket, limit, windowMs = 60000) {
   // XFF는 최우측 값 사용 — Cloud Run(GFE)이 실제 클라이언트 IP를 우측에 append.
   // 최좌측은 클라이언트 임의 주입 가능(스푸핑)이라 버킷 키로 쓰면 레이트리밋이 무력화됨 (2026-07-10 리뷰 확정).
+  // CF 엣지 경유 시 최우측 = CF 이그레스 IP → 유저 간 버킷 충돌. 신뢰 검증된 실클라이언트 IP로 대체 (2026-08-24).
+  const edge = resolveEdgeClient(req);
   const xff = req.headers['x-forwarded-for'];
-  const ip = (xff ? xff.split(',').pop().trim() : '') || req.socket.remoteAddress;
+  const ip = edge.ip || (xff ? xff.split(',').pop().trim() : '') || req.socket.remoteAddress;
   const now = Date.now();
   if (!global._rateLimits) global._rateLimits = {};
   const key = `${bucket}:${ip}`;
@@ -1028,6 +1034,9 @@ const httpServer = createServer(async (req, res) => {
       'open_credit_shop', 'start_payment', 'session_end',
       'generate_complete',
     ];
+    // 엣지 정적 서빙 페이지는 SSR trackPageView를 타지 않는다 — 신뢰 엣지(Worker)가
+    // 대신 쏘는 page_view만 허용 (임의 클라이언트의 page_view 주입은 차단 유지)
+    if (resolveEdgeClient(req).trusted) ALLOWED_EVENTS.push('page_view');
     const sessionId = req.sessionId;
     for (const evt of events) {
       if (!ALLOWED_EVENTS.includes(evt.event_name)) continue;
