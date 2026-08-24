@@ -29,6 +29,9 @@ function originRequest(request, env) {
   headers.set('X-Monkos-Client-IP', request.headers.get('CF-Connecting-IP') || '');
   headers.set('X-Monkos-Client-Country', request.cf?.country || '');
   headers.set('X-Forwarded-Host', new URL(request.url).host);
+  // 공유 시크릿 — CF 공용 대역만으로는 타 테넌트 워커 중계를 못 거름 (쌍아 P2-2, 2026-08-24).
+  // 오리진은 대역 AND 키 일치를 모두 요구한다. 클라이언트가 보낸 동명 헤더는 위에서 이미 덮임.
+  if (env.EDGE_TRUST_KEY) headers.set('X-Monkos-Edge-Key', env.EDGE_TRUST_KEY);
 
   return new Request(url.toString(), {
     method: request.method,
@@ -72,6 +75,8 @@ function firePageView(request, env, ctx, issuedSid = null) {
     'X-Monkos-Client-Country': country,
     'User-Agent': request.headers.get('User-Agent') || '',
   });
+  if (env.EDGE_TRUST_KEY) headers.set('X-Monkos-Edge-Key', env.EDGE_TRUST_KEY); // 신뢰 판정 + page_view 허용 게이트
+
   const referer = request.headers.get('Referer');
   if (referer) headers.set('Referer', referer);
   let cookie = request.headers.get('Cookie') || '';
@@ -202,10 +207,18 @@ export default {
       const ct = assetRes.headers.get('Content-Type') || '';
       if (ct.includes('text/html')) {
         const html = await assetRes.text();
-        firePageView(request, env, ctx);
+        // 정적 HTML도 오리진 미도달 → sid 무보유 신규 유입에 엣지가 발급 (쌍아 재작업 2026-08-24 —
+        // CMS 캐시 히트 분기와 동일 사유: page_view sessionId null 결손 방지)
+        const headers = new Headers(assetRes.headers);
+        let issuedSid = null;
+        if (!/(?:^|;\s*)monkos_sid=/.test(request.headers.get('Cookie') || '')) {
+          issuedSid = crypto.randomUUID();
+          headers.append('Set-Cookie', `monkos_sid=${issuedSid};Domain=.monkos.ai;Path=/;Max-Age=63072000;SameSite=Lax`);
+        }
+        firePageView(request, env, ctx, issuedSid);
         return new Response(rewriteRegion(html, request.cf?.country || ''), {
           status: assetRes.status,
-          headers: assetRes.headers,
+          headers,
         });
       }
       return assetRes;

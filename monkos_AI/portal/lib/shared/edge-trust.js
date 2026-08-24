@@ -55,17 +55,31 @@ export function isCloudflareIP(ip) {
   return V4_RANGES.some(([base, mask]) => (n & mask) === base);
 }
 
+import { timingSafeEqual } from 'crypto';
+
+/** 공유 시크릿 상수시간 대조 — 길이 불일치도 비신뢰 (타이밍 누설 방지) */
+function edgeKeyMatches(claimed) {
+  const expected = process.env.EDGE_TRUST_KEY || '';
+  if (!expected || !claimed) return false;
+  const a = Buffer.from(String(claimed));
+  const b = Buffer.from(expected);
+  if (a.length !== b.length) return false;
+  return timingSafeEqual(a, b);
+}
+
 /**
  * 요청의 신뢰 엣지 여부 + 실클라이언트 IP·국가 복원.
- * 피어(rightmost XFF — GFE가 실피어를 우측 append) ∈ CF 대역이고
- * Worker 헤더가 있을 때만 trusted. 그 외엔 종전 로직 그대로 쓰도록 null 반환 필드 유지.
+ * 신뢰 조건 = 피어(rightmost XFF — GFE가 실피어를 우측 append) ∈ CF 대역 **AND**
+ * 공유 시크릿(X-Monkos-Edge-Key) 일치 (2026-08-24 쌍아 P2-2 — CF 공용 대역은 전 테넌트
+ * 공유라 대역만으로는 타 계정 Worker 중계 위장을 못 거름. 한쪽만 충족해도 비신뢰).
+ * EDGE_TRUST_KEY 미설정 시 항상 비신뢰 (fail-secure). 그 외엔 종전 로직 폴백.
  */
 export function resolveEdgeClient(req) {
   const xff = req.headers['x-forwarded-for'];
   const peer = (xff ? xff.split(',').pop().trim() : '') || req.socket?.remoteAddress || '';
   const claimedIp = req.headers['x-monkos-client-ip'];
   const claimedCountry = req.headers['x-monkos-client-country'];
-  if (claimedIp && isCloudflareIP(peer)) {
+  if (claimedIp && isCloudflareIP(peer) && edgeKeyMatches(req.headers['x-monkos-edge-key'])) {
     return { trusted: true, ip: claimedIp, country: claimedCountry || null };
   }
   return { trusted: false, ip: null, country: null };

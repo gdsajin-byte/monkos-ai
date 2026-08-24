@@ -90,6 +90,8 @@ async function normalizeImage(rawBase64) {
   }
 }
 
+// ⚠️ 미러 동기 의무: edge/worker.mjs effectiveLang()이 이 함수를 그대로 미러한다 (엣지 캐시 키의
+// 언어 차원 — 2026-08-24 쌍아 P1 심사). 판정 순서·값을 바꾸면 워커도 동시 수정할 것.
 function detectLang(req) {
   const urlMatch = req.url.match(/^\/(ja|en)(\/|$|\?)/);
   if (urlMatch) return urlMatch[1];
