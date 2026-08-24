@@ -11,7 +11,7 @@ status: 가동
 
 > **용도**: 오리엔테이션. 특정 앱·서비스가 화제에 오르면 **코드 grep 전에 이 파일 1개를 Read**한다.
 > **소비 규칙**: 매 턴 자동 로딩 아님(컨텍스트 오염 방지) — 주제 진입 시 선택 로딩. 포인터: `.claude/rules/references.md` §폴더 위상.
-> **실측일: 2026-08-14.** 갱신 시 references.md §배포의 재실측 3콜 + 본 문서 스탬프 갱신. 이름·상태의 정본은 각 `deploy.sh`·Cloud Run 실측이다.
+> **실측일: 2026-08-25 (CF 엣지 계층 편입 + 웜 전면 해제 반영).** 갱신 시 references.md §배포의 재실측 3콜 + 본 문서 스탬프 갱신. 이름·상태의 정본은 각 `deploy.sh`·Cloud Run 실측이다.
 > 상태 범례: 🟢 가동 / 🟡 일부 가동·간헐 / ⏸️ 중단·보류 / ⬜ 미생성 / 🗑️ 폐지 / ❓ 확인 필요
 
 ## 1. 전체 트리 (Level 0)
@@ -21,8 +21,11 @@ MONK.KR / MONKOS.AI
 ├── monk.kr ────────────────── 본진 데스크톱 (CF Pages) 🟢
 │   └── 실물 사진관 연계 · 인화 스마트스토어 · AEO 오프전환 실증점
 │
-├── monkos.ai (모바일 AI 분기, Cloud Run)
-│   ├── 포털 (monkos-portal) 🟢 ─── 크레딧·인증·결제 허브 = 전 서비스의 심장
+├── monkos.ai (모바일 AI 분기, CF 엣지 + Cloud Run)
+│   ├── 엣지 (monkos-portal-edge, CF Worker) 🟢 ─ 08-24 컷오버. monkos.ai 전 트래픽 진입문
+│   │        specs 2,574p 정적 서빙 · CMS 6표면 캐시(TTL 10분+SWR) · 그 외 오리진 폴백
+│   │        신뢰 헤더(EDGE_TRUST_KEY AND CF대역) · 지역 재작성 · sid 발급 · page_view 중계
+│   ├── 포털 (monkos-portal) 🟢 ─── 크레딧·인증·결제 허브 = 전 서비스의 심장 (웜 0 — API·SSR만 기동)
 │   │   ├── [유저] 홈(/) · specs(T0 무료 증명사진, 전언어) · blog · headshot(유료)
 │   │   │        credits/pricing · tg(텔레그램 게이트) · guide
 │   │   ├── [어드민 /admin] §3 전수 인덱스 참조 (CMS 7 + 내부 도구 8)
@@ -55,7 +58,8 @@ MONK.KR / MONKOS.AI
 
 | 통칭(대화) | 소스 디렉터리 | Cloud Run 서비스 | 도메인 | 상태 | 왜 존재하는가 | PF |
 |---|---|---|---|---|---|---|
-| 포털 | `monkos_AI/portal/` | `monkos-portal`(+dev) | monkos.ai | 🟢 | 크레딧·인증·결제·specs·blog의 허브. 전 서비스가 이 API에 의존 | PF_PORTAL·PF_SPECS |
+| 포털 | `monkos_AI/portal/` | `monkos-portal`(+dev) | monkos.ai | 🟢 | 크레딧·인증·결제·specs·blog의 허브. 전 서비스가 이 API에 의존. **웜 0 (08-24 해제)** — 열람은 엣지가 흡수, 오리진은 API·SSR만 | PF_PORTAL·PF_SPECS |
+| 엣지·워커 | `monkos_AI/portal/edge/` (+`tools/specs-ssg/`) | (CF Worker) `monkos-portal-edge` | monkos.ai (존 라우트 `monkos.ai/*`) | 🟢 | 08-24 컷오버. specs 정적 2,574p + CMS 캐시 + 오리진(run.app) 폴백. 배포는 `edge/deploy.sh` (SSG 선행). ⚠️ specs 렌더러·데이터 변경 시 엣지 재배포 필수 — 누락 시 무음 구본 서빙 | PF_SPECS·PF_PORTAL |
 | 증명(KR)·촬영앱 | `monkos_AI/idphoto-kr/` | `monkos-idphoto-kr` | idphoto-kr.monkos.ai | 🟢 | 실물 사진관 연계 KR 시장용. 카메라 코칭(Gemini Live)+idgen(`gemini-3-pro-image`)+토스 충전 | PF_IDPHOTO |
 | 증명(JP) | `monkos_AI/idphoto-jp/` | `monkos-idphoto-jp` | idphoto-jp.monkos.ai | 🟡 | JP 레거시(엔화 레몬 스토어#290457). JP 본대는 monkos.ai(ja)로 재편 권고(07-21) — 결정 대기 | PF_IDPHOTO |
 | specs·무료 증명 | (포털 내장) `lib/cms/render-specs.js` | — | monkos.ai/specs/* | 🟢 | T0 무료 전언어 개방 — 트래픽·DA 확보가 목적, 캡 300/일 (매팅=BiRefNet 트랙) | PF_SPECS |

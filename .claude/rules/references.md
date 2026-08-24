@@ -28,7 +28,8 @@
 
 | 소스 디렉터리 | Cloud Run 서비스 | 도메인 | 비고 |
 |---|---|---|---|
-| `monkos_AI/portal/` | `monkos-portal` (+`-dev`) | monkos.ai, preview.monkos.ai | |
+| `monkos_AI/portal/` | `monkos-portal` (+`-dev`) | monkos.ai, preview.monkos.ai | ⚠️ 08-24부터 monkos.ai DNS는 CF 프록시 — 전 트래픽이 CF Worker `monkos-portal-edge` 경유 후 run.app 폴백. 웜 0 |
+| `monkos_AI/portal/edge/` | (CF Worker) `monkos-portal-edge` | monkos.ai 존 라우트 `monkos.ai/*` | specs 정적 2,574p + CMS 캐시(10분 SWR). 배포 `edge/deploy.sh`. specs 변경 시 재배포 필수 (누락=무음 구본) |
 | `monkos_AI/idphoto-kr/` | `monkos-idphoto-kr` (+`-dev`) | idphoto-kr.monkos.ai | |
 | `monkos_AI/idphoto-jp/` | `monkos-idphoto-jp` (+`-dev`) | idphoto-jp.monkos.ai | ⚠️ `apps/idphoto-jp-v079/`도 동일 서비스로 배포 |
 | `monkos_AI/studio/` | `monkos-studio` (+`-dev`) | studio.monkos.ai | |
@@ -51,6 +52,7 @@
 
 > 실측 스냅샷: 2026-08-13 (PETITION_20260806 #11). **정본은 코드다** — 갱신 시 §배포의 재실측 3콜 + 각 서비스 API 호출부를 재확인하고 실측일을 갱신한다. 미생성 서비스는 위 "서비스 부재" 블록이 정본.
 
+- **엣지 진입문 (08-24 컷오버)**: monkos.ai 전 요청 → CF Worker `monkos-portal-edge` → specs 정적/CMS 캐시는 엣지 종결, 그 외 run.app 오리진. 신뢰 헤더 X-Monkos-*(EDGE_TRUST_KEY AND CF대역 — `lib/shared/edge-trust.js`). 오리진의 페이지 열람 트래픽은 소멸이 정상이며 장애 아님.
 - **크레딧·인증 허브 = 포털(monkos.ai)**: idphoto-kr/jp가 `PORTAL_API_URL` 경유로 `/api/credits/use·refund`(크레딧 차감·환급)와 OAuth 세션을 소비. 크레딧 잔액은 **전 서비스 공유 단일 원장**(Firestore `users`, 웰컴 +10c는 포털 auth 소관).
 - **매팅 체인**: 포털 generate → `matte.monkos.ai`(4060 GPU, CF Tunnel) → 불통·포화 시 RunPod 폴백 (`portal/lib/matte.js` — 25s 타임아웃·줄서기).
 - **생성 엔진**: idphoto-kr idgen → Vertex `gemini-3-pro-image` / 포털 specs 무료 트랙 → BiRefNet 매팅 / IMAGE PRO(`monk-image-engine`) → Imagen 4(T2I)·Gemini 3 Pro Image(I2I).
@@ -60,6 +62,7 @@
 ## 배포
 
 - 정본: `deploy.sh` (각 서비스 디렉토리). `gcloud run deploy` 직접 실행 금지 (ch5).
+- **CF 엣지 배포 정본: `monkos_AI/portal/edge/deploy.sh`** (SSG 빌드 선행 강제). 워커 로직 단독 변경 시에만 `wrangler deploy` 허용 (자산 불변 — 롤백 단위 분리, 08-24 쌍아 절차 기록). specs-data·렌더러·i18n·components 변경 → 엣지 재배포 의무.
 - 프로젝트: `monkos` (정본: deploy.sh:51)
 - 리전: `us-central1` (정본: deploy.sh:52). 하드코딩 금지.
 - prod rev 실측: `gcloud run services describe monkos-portal --region us-central1 --format='value(status.latestReadyRevisionName)'`
@@ -137,6 +140,9 @@
 | matte_loadtest.py | 인프라 | `scripts/tools/` (4060에 실행 사본) | PF_INFRA + INCIDENT_20260725 |
 | matte-probe (chain/leg/queue) | 빌드/생성 | `monkos_AI/portal/tools/matte-probe/` | PF_INFRA + INCIDENT_20260725 |
 | matte-server deploy.sh | CLI | `monkos_AI/matte-server/` | `monkos_AI/matte-server/README.md` |
+| specs-ssg (build.mjs/sh) | 빌드/생성 | `monkos_AI/portal/tools/specs-ssg/` | PF_SPECS + COMPLETION_20260824 CF엣지정적화 (렌더러 정본 캡처 — 포크 금지) |
+| edge/deploy.sh + worker.mjs | CLI | `monkos_AI/portal/edge/` | PF_PORTAL + 본 문서 §배포 (08-24 스모크: 컷오버 검증 10항목) |
+| edge-trust.js | 서비스 모듈 | `monkos_AI/portal/lib/shared/` | SECRET_INVENTORY #44 + REVIEW_20260824 P2-2 |
 | fetch/verify_solar_terms.mjs | 빌드/생성 | `monkos_AI/portal/tools/solar-terms/` | 동 폴더 README + PF_FACEREAD |
 | verify_saju.mjs | 빌드/생성 | `monkos_AI/portal/tools/saju/` | 동 폴더 README + PF_FACEREAD |
 
