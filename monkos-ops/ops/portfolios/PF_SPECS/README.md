@@ -102,6 +102,7 @@ status: active
 ---
 | 08/14 | iMac/민아 | **passport/kr 스니펫 개선 (quick win, 작가님 직접 지시)** — 노출 656/2주·8.9위·CTR 0.3% 클릭 병목 진단: 상위 쿼리가 전부 "2026·규정·외교부" 조합인데 타이틀에 외교부·차별 훅 부재. specs-data.json kr-passport **ko 오버라이드만** 교체(타 페이지·언어 무영향): 신 타이틀 "여권사진 규격·규정 2026 (외교부 기준) — 3.5×4.5cm 무료 즉시 맞춤", 설명에 귀 노출 의무 폐지(07-17 확정) 통념 교정 훅. dev→prod 00546-r5d 라이브 검증 + sitemap-specs-ko 재제출. **측정: 08-28경 CTR 재실측(기준선 0.3%)**, 효과 시 노출 상위 페이지 횡전개 | `5f9c7827` · specs-data.json | ✅ (측정 대기) |
 | 08/24 | iMac/민아 | **specs CF 엣지 정적화 + monkos.ai 컷오버** (작가님 직접 지시 경로③) — SSG 빌드(render-specs 정본 캡처, 2,574p+리스트6+사이트맵7, 라이브 diff 0)·엣지 워커(정적 우선+오리진 폴백+지역 재작성+page_view 중계)·존 라우트+프록시 전환. 전수 검증 9항목 통과(6언어 200·구슬러그 301·OAuth·사이트맵 429·hreflang 7). KR TTFB +0.2s(SJC 콜로), 글로벌 개선 | [COMPLETION](../../reports/2026-08/COMPLETION_20260824_iMac민아_specs_CF엣지정적화_컷오버.md) | ✅ prod |
+| 08/25 | iMac/민아 | **14키 배경색 오기재 170건 교정 종결** (웹민아 🔴① 6일차, 작가님 경로③) — 7개국 passport·visa의 ko흰색/ja白/es blanco → background="회색" 정본 정합. 화면 검증(nz·at·de + 대조군 fr) 합격. 엣지 SSG 재배포 + 오리진 00550 동시 정합 | [COMPLETION](../../reports/2026-08/COMPLETION_20260825_iMac민아_specs14키교정_배포도구보정.md) | ✅ prod |
 
 ## 리스크
 
