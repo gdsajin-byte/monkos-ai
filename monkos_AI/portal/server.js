@@ -1358,6 +1358,11 @@ httpServer.listen(PORT, '0.0.0.0', () => {
   log('='.repeat(60));
   log('MONKOS Portal — monkos.ai 서버 시작');
   log('='.repeat(60));
+  // 무음 fail-secure 가시화 (2026-08-25 쌍아 관찰 1번): EDGE_TRUST_KEY가 빠진 채 배포되면
+  // 전 트래픽이 조용히 비신뢰로 떨어져 429 충돌·권역 오판·page_view 전량 거부가 경고 없이 발생한다.
+  if (!process.env.EDGE_TRUST_KEY) {
+    log('⚠️ EDGE_TRUST_KEY 미설정 — 엣지 신뢰 판정 전면 비활성 (fail-secure). CF 경유 트래픽의 레이트리밋 실IP·지역 감지·page_view 계측이 모두 무효화된 상태. deploy.sh --set-secrets 라인 확인 필요', 'ERROR');
+  }
   log(`포트: ${PORT}`);
   log(`프로젝트: ${PROJECT_ID}`);
   log(`리전: ${LOCATION}`);

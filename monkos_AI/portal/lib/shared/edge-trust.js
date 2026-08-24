@@ -13,6 +13,8 @@
  * 변경 시 이 목록 갱신. 미갱신 시 신뢰 실패로 무해하게 폴백될 뿐 보안 저하는 없다.)
  */
 
+import { timingSafeEqual } from 'crypto';
+
 const CF_IPV4 = [
   '173.245.48.0/20', '103.21.244.0/22', '103.22.200.0/22', '103.31.4.0/22',
   '141.101.64.0/18', '108.162.192.0/18', '190.93.240.0/20', '188.114.96.0/20',
@@ -55,7 +57,6 @@ export function isCloudflareIP(ip) {
   return V4_RANGES.some(([base, mask]) => (n & mask) === base);
 }
 
-import { timingSafeEqual } from 'crypto';
 
 /** 공유 시크릿 상수시간 대조 — 길이 불일치도 비신뢰 (타이밍 누설 방지) */
 function edgeKeyMatches(claimed) {
