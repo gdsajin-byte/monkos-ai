@@ -95,7 +95,7 @@ elif [ "$ENV" = "prod" ]; then
   SERVICE_NAME="monkos-portal"
   MEMORY="1Gi"
   CPU="1"
-  MIN_INSTANCES="1"  # prod 상시 대기 = 콜드스타트 이탈 방지 (변경 금지)
+  MIN_INSTANCES="0"  # 2026-08-24 작가님 승인 웜 해제 — specs 열람 트래픽은 CF 엣지가 흡수(같은 날 컷오버), 오리진 도달은 API·SSR만. 콜드스타트는 생성·결제 첫 요청에 한정. 유료 전환 본격화 시 재검토
   MAX_INSTANCES="5"
   DEPLOY_FLAGS=""
 

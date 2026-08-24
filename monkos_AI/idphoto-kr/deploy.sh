@@ -68,7 +68,7 @@ elif [ "$ENV" = "prod" ]; then
   SERVICE_NAME="monkos-idphoto-kr"
   MEMORY="2Gi"
   CPU="2"
-  MIN_INSTANCES="1"  # prod 상시 대기 = 콜드스타트 이탈 방지 (변경 금지)
+  MIN_INSTANCES="0"  # 2026-08-23 작가님 승인 웜 해제 — 실사용 하루 14건·요청 86%가 WP 취약점 스캔 봇·결제 42일 0건 (월 약 3.6만원 절감). 유료 전환 재개 시 재검토
   MAX_INSTANCES="10"
 
   # 브랜치 안전장치
