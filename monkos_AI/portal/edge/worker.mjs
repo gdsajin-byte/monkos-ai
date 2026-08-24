@@ -44,8 +44,9 @@ function rewriteRegion(html, country) {
   return html.replace(/window\.__REGION__='(kr|global)'/, `window.__REGION__='${region}'`);
 }
 
-/** SSR trackPageView 재현 — 정적 서빙 페이지의 page_view를 오리진 /api/track으로 전달 */
-function firePageView(request, env, ctx) {
+/** SSR trackPageView 재현 — 정적 서빙 페이지의 page_view를 오리진 /api/track으로 전달.
+ *  issuedSid: 엣지가 이번 응답에서 발급한 monkos_sid (있으면 Cookie에 실어 세션 연속성 유지) */
+function firePageView(request, env, ctx, issuedSid = null) {
   const url = new URL(request.url);
   const utm = {};
   for (const k of ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content']) {
@@ -73,7 +74,8 @@ function firePageView(request, env, ctx) {
   });
   const referer = request.headers.get('Referer');
   if (referer) headers.set('Referer', referer);
-  const cookie = request.headers.get('Cookie');
+  let cookie = request.headers.get('Cookie') || '';
+  if (issuedSid) cookie = cookie ? `${cookie}; monkos_sid=${issuedSid}` : `monkos_sid=${issuedSid}`;
   if (cookie) headers.set('Cookie', cookie); // 세션 식별용 (오리진 parseSession)
   ctx.waitUntil(fetch(`${env.ORIGIN_URL}/api/track`, { method: 'POST', headers, body: payload }).catch(() => {}));
 }
@@ -99,7 +101,25 @@ function cmsCacheable(path) {
   return CMS_EXACT.has(path) || CMS_PREFIX.test(path);
 }
 
-/** 캐시 키: 경로 + 화이트리스트 파라미터만 (지역·세션 무관 — 서빙 시 지역 재작성) */
+/**
+ * 유효 언어 판정 — 오리진 server.js detectLang 완전 미러 (2026-08-24 쌍아 P1 보정).
+ * 접두사 없는 ko 기본 라우트는 monkos_lang 쿠키→Accept-Language로 본문 언어가 갈리므로
+ * 이 값이 캐시 키에 반드시 들어가야 한다 (누락 시 언어 오염 — JA 방문자가 / 캐시를 채우면
+ * 전 방문자가 10분간 일본어 홈 수신).
+ */
+function effectiveLang(request, path) {
+  const m = path.match(/^\/(ja|en)(\/|$)/);
+  if (m) return m[1];
+  const cookie = request.headers.get('Cookie') || '';
+  const cm = cookie.match(/(?:^|;\s*)monkos_lang=(ko|ja|en|es)(?:;|\s|$)/);
+  if (cm) return cm[1];
+  const accept = (request.headers.get('Accept-Language') || '').toLowerCase();
+  if (accept.startsWith('ja')) return 'ja';
+  if (accept.startsWith('en')) return 'en';
+  return 'ko';
+}
+
+/** 캐시 키: 경로 + 화이트리스트 파라미터 + 유효 언어 (지역·세션 무관 — 서빙 시 지역 재작성) */
 function cmsCacheKey(request) {
   const url = new URL(request.url);
   const key = new URL(`https://monkos.ai${url.pathname}`);
@@ -107,14 +127,17 @@ function cmsCacheKey(request) {
     const v = url.searchParams.get(p);
     if (v) key.searchParams.set(p, v);
   }
+  key.searchParams.set('elang', effectiveLang(request, url.pathname));
   return new Request(key.toString(), { method: 'GET' });
 }
 
-/** 오리진 fetch → 200 HTML이면 캐시 저장용 사본 반환 (Set-Cookie 제거 — 세션 유출 방지 필수) */
+/** 오리진 fetch → 200 HTML이면 캐시 저장용 사본 반환 (저장본만 Set-Cookie 제거 — 세션 유출 방지 필수.
+ *  클라이언트행 미스 응답에는 오리진 Set-Cookie를 그대로 전달해야 sid 발급이 유지된다 — 쌍아 P2 보정) */
 async function fetchAndCacheCms(request, env, key, ctx) {
   const originRes = await fetch(originRequest(request, env));
   const ct = originRes.headers.get('Content-Type') || '';
-  if (originRes.status !== 200 || !ct.includes('text/html')) return { res: originRes, html: null };
+  if (originRes.status !== 200 || !ct.includes('text/html')) return { res: originRes, html: null, setCookies: [] };
+  const setCookies = typeof originRes.headers.getSetCookie === 'function' ? originRes.headers.getSetCookie() : [];
   const html = await originRes.text();
   const store = new Response(html, {
     headers: {
@@ -126,7 +149,7 @@ async function fetchAndCacheCms(request, env, key, ctx) {
     },
   });
   ctx.waitUntil(caches.default.put(key, store));
-  return { res: null, html };
+  return { res: null, html, setCookies };
 }
 
 async function serveCms(request, env, ctx) {
@@ -139,20 +162,25 @@ async function serveCms(request, env, ctx) {
       // stale-while-revalidate: 즉시 응답 + 백그라운드 갱신 (오리진 다운 시 스테일이 가용성 방어)
       ctx.waitUntil(fetchAndCacheCms(request, env, key, ctx).catch(() => {}));
     }
-    firePageView(request, env, ctx); // 캐시 히트 = 오리진 미도달 → 엣지가 계측 대행
+    // 히트 = 오리진 미도달 → sid 미발급 상태면 엣지가 오리진 동일 포맷으로 발급 (쌍아 P2 보정:
+    // 신규 유입 page_view가 sessionId null로 적재되던 세션 지표 결손 봉합)
+    const headers = new Headers({ 'Content-Type': cached.headers.get('Content-Type') || 'text/html; charset=utf-8', 'Cache-Control': 'no-store', 'X-Edge-Cache': 'hit' });
+    let issuedSid = null;
+    if (!/(?:^|;\s*)monkos_sid=/.test(request.headers.get('Cookie') || '')) {
+      issuedSid = crypto.randomUUID();
+      headers.append('Set-Cookie', `monkos_sid=${issuedSid};Domain=.monkos.ai;Path=/;Max-Age=63072000;SameSite=Lax`);
+    }
+    firePageView(request, env, ctx, issuedSid); // 계측 대행 — 발급 sid를 실어 세션 연속성 유지
     const html = await cached.text();
-    return new Response(rewriteRegion(html, country), {
-      status: 200,
-      headers: { 'Content-Type': cached.headers.get('Content-Type') || 'text/html; charset=utf-8', 'Cache-Control': 'no-store', 'X-Edge-Cache': 'hit' },
-    });
+    return new Response(rewriteRegion(html, country), { status: 200, headers });
   }
-  // 미스: 오리진 서빙 (오리진이 직접 page_view 계측 — 중복 발사 없음)
-  const { res, html } = await fetchAndCacheCms(request, env, key, ctx);
+  // 미스: 오리진 서빙 (오리진이 직접 page_view 계측 — 중복 발사 없음.
+  // 오리진 Set-Cookie는 클라이언트에 그대로 전달 — 저장본에서만 제거)
+  const { res, html, setCookies } = await fetchAndCacheCms(request, env, key, ctx);
   if (html === null) return res;
-  return new Response(rewriteRegion(html, country), {
-    status: 200,
-    headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', 'X-Edge-Cache': 'miss' },
-  });
+  const missHeaders = new Headers({ 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', 'X-Edge-Cache': 'miss' });
+  for (const c of setCookies) missHeaders.append('Set-Cookie', c);
+  return new Response(rewriteRegion(html, country), { status: 200, headers: missHeaders });
 }
 
 export default {
