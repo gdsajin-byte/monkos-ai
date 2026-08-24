@@ -12631,15 +12631,15 @@
       "ko": [
         {
           "q": "카자흐스탄 여권 사진 크기는?",
-          "a": "카자흐스탄 여권 사진 규격은 3.5 × 4.5cm입니다. 배경은 흰색이어야 합니다."
+          "a": "카자흐스탄 여권 사진 규격은 3.5 × 4.5cm입니다. 배경은 회색이어야 합니다."
         },
         {
           "q": "카자흐스탄 여권 사진을 집에서 찍을 수 있나요?",
-          "a": "네, 규격(3.5 × 4.5cm)과 배경(흰색) 조건만 맞으면 셀프 촬영이 가능합니다. MONKOS AI를 사용하면 배경 제거와 규격 크롭을 자동으로 처리합니다."
+          "a": "네, 규격(3.5 × 4.5cm)과 배경(회색) 조건만 맞으면 셀프 촬영이 가능합니다. MONKOS AI를 사용하면 배경 제거와 규격 크롭을 자동으로 처리합니다."
         },
         {
           "q": "카자흐스탄 여권 사진 배경색 규정은?",
-          "a": "카자흐스탄 여권 사진은 흰색 배경이 필요합니다. 그림자나 무늬가 있으면 반려될 수 있습니다."
+          "a": "카자흐스탄 여권 사진은 회색 배경이 필요합니다. 그림자나 무늬가 있으면 반려될 수 있습니다."
         }
       ],
       "en": [
@@ -12659,29 +12659,29 @@
       "ja": [
         {
           "q": "カザフスタンのパスポート写真のサイズは？",
-          "a": "カザフスタンのパスポート写真の規格は3.5 × 4.5cmです。背景は白が必要です。"
+          "a": "カザフスタンのパスポート写真の規格は3.5 × 4.5cmです。背景は灰色が必要です。"
         },
         {
           "q": "カザフスタンのパスポート写真を自宅で撮れますか？",
-          "a": "はい、サイズ（3.5 × 4.5cm）と背景（白）の条件を満たせば自宅撮影も可能です。MONKOS AIを使えば背景除去と規格クロップが自動で処理されます。"
+          "a": "はい、サイズ（3.5 × 4.5cm）と背景（灰色）の条件を満たせば自宅撮影も可能です。MONKOS AIを使えば背景除去と規格クロップが自動で処理されます。"
         },
         {
           "q": "カザフスタンのパスポート写真の背景色の規定は？",
-          "a": "カザフスタンのパスポート写真は白の背景が必要です。影や模様があると不合格になる場合があります。"
+          "a": "カザフスタンのパスポート写真は灰色の背景が必要です。影や模様があると不合格になる場合があります。"
         }
       ],
       "es": [
         {
           "q": "¿Cuál es el tamaño de la foto de Kazakhstan Passport?",
-          "a": "El tamaño de la foto de Kazakhstan Passport es 3.5 × 4.5cm. El fondo debe ser blanco."
+          "a": "El tamaño de la foto de Kazakhstan Passport es 3.5 × 4.5cm. El fondo debe ser gris."
         },
         {
           "q": "¿Puedo tomar la foto de Kazakhstan Passport en casa?",
-          "a": "Sí, siempre que cumpla con los requisitos de tamaño (3.5 × 4.5cm) y fondo (blanco). MONKOS AI elimina automáticamente el fondo y recorta según las especificaciones correctas."
+          "a": "Sí, siempre que cumpla con los requisitos de tamaño (3.5 × 4.5cm) y fondo (gris). MONKOS AI elimina automáticamente el fondo y recorta según las especificaciones correctas."
         },
         {
           "q": "¿Cuál es el color de fondo para la foto de Kazakhstan Passport?",
-          "a": "La foto de Kazakhstan Passport requiere un fondo blanco. Las sombras o patrones pueden causar rechazo."
+          "a": "La foto de Kazakhstan Passport requiere un fondo gris. Las sombras o patrones pueden causar rechazo."
         }
       ]
     },
@@ -12694,8 +12694,8 @@
     "seoDescription": {
       "ko": "카자흐스탄 여권 사진 공식 규격·2026년 규정 — 3.5 × 4.5cm, 회색 배경. 규격 검증된 사진 파일을 즉시 다운로드하세요.",
       "en": "Official Kazakhstan passport photo requirements 2026 — 3.5 × 4.5cm, gray background. Get a compliant photo online in seconds.",
-      "ja": "カザフスタンパスポート写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。",
-      "es": "Requisitos oficiales de foto de pasaporte de Kazajistán 2026 — 3.5 × 4.5cm, fondo blanco. Obtenga una foto conforme al instante."
+      "ja": "カザフスタンパスポート写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は灰色。規格対応の写真をオンラインで即ダウンロード。",
+      "es": "Requisitos oficiales de foto de pasaporte de Kazajistán 2026 — 3.5 × 4.5cm, fondo gris. Obtenga una foto conforme al instante."
     },
     "headHeightMin": 32,
     "headHeightMax": 36,
@@ -12806,15 +12806,15 @@
       "ko": [
         {
           "q": "카자흐스탄 비자 사진 크기는?",
-          "a": "카자흐스탄 비자 사진 규격은 3.5 × 4.5cm입니다. 배경은 흰색이어야 합니다."
+          "a": "카자흐스탄 비자 사진 규격은 3.5 × 4.5cm입니다. 배경은 회색이어야 합니다."
         },
         {
           "q": "카자흐스탄 비자 사진을 집에서 찍을 수 있나요?",
-          "a": "네, 규격(3.5 × 4.5cm)과 배경(흰색) 조건만 맞으면 셀프 촬영이 가능합니다. MONKOS AI를 사용하면 배경 제거와 규격 크롭을 자동으로 처리합니다."
+          "a": "네, 규격(3.5 × 4.5cm)과 배경(회색) 조건만 맞으면 셀프 촬영이 가능합니다. MONKOS AI를 사용하면 배경 제거와 규격 크롭을 자동으로 처리합니다."
         },
         {
           "q": "카자흐스탄 비자 사진 배경색 규정은?",
-          "a": "카자흐스탄 비자 사진은 흰색 배경이 필요합니다. 그림자나 무늬가 있으면 반려될 수 있습니다."
+          "a": "카자흐스탄 비자 사진은 회색 배경이 필요합니다. 그림자나 무늬가 있으면 반려될 수 있습니다."
         }
       ],
       "en": [
@@ -12834,29 +12834,29 @@
       "ja": [
         {
           "q": "カザフスタンのビザ写真のサイズは？",
-          "a": "カザフスタンのビザ写真の規格は3.5 × 4.5cmです。背景は白が必要です。"
+          "a": "カザフスタンのビザ写真の規格は3.5 × 4.5cmです。背景は灰色が必要です。"
         },
         {
           "q": "カザフスタンのビザ写真を自宅で撮れますか？",
-          "a": "はい、サイズ（3.5 × 4.5cm）と背景（白）の条件を満たせば自宅撮影も可能です。MONKOS AIを使えば背景除去と規格クロップが自動で処理されます。"
+          "a": "はい、サイズ（3.5 × 4.5cm）と背景（灰色）の条件を満たせば自宅撮影も可能です。MONKOS AIを使えば背景除去と規格クロップが自動で処理されます。"
         },
         {
           "q": "カザフスタンのビザ写真の背景色の規定は？",
-          "a": "カザフスタンのビザ写真は白の背景が必要です。影や模様があると不合格になる場合があります。"
+          "a": "カザフスタンのビザ写真は灰色の背景が必要です。影や模様があると不合格になる場合があります。"
         }
       ],
       "es": [
         {
           "q": "¿Cuál es el tamaño de la foto de Kazakhstan Visa?",
-          "a": "El tamaño de la foto de Kazakhstan Visa es 3.5 × 4.5cm. El fondo debe ser blanco."
+          "a": "El tamaño de la foto de Kazakhstan Visa es 3.5 × 4.5cm. El fondo debe ser gris."
         },
         {
           "q": "¿Puedo tomar la foto de Kazakhstan Visa en casa?",
-          "a": "Sí, siempre que cumpla con los requisitos de tamaño (3.5 × 4.5cm) y fondo (blanco). MONKOS AI elimina automáticamente el fondo y recorta según las especificaciones correctas."
+          "a": "Sí, siempre que cumpla con los requisitos de tamaño (3.5 × 4.5cm) y fondo (gris). MONKOS AI elimina automáticamente el fondo y recorta según las especificaciones correctas."
         },
         {
           "q": "¿Cuál es el color de fondo para la foto de Kazakhstan Visa?",
-          "a": "La foto de Kazakhstan Visa requiere un fondo blanco. Las sombras o patrones pueden causar rechazo."
+          "a": "La foto de Kazakhstan Visa requiere un fondo gris. Las sombras o patrones pueden causar rechazo."
         }
       ]
     },
@@ -12869,8 +12869,8 @@
     "seoDescription": {
       "ko": "카자흐스탄 비자 사진 공식 규격·2026년 규정 — 3.5 × 4.5cm, 회색 배경. 규격 검증된 사진 파일을 즉시 다운로드하세요.",
       "en": "Official Kazakhstan visa photo requirements 2026 — 3.5 × 4.5cm, gray background. Get a compliant photo online in seconds.",
-      "ja": "カザフスタンビザ写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。",
-      "es": "Requisitos oficiales de foto de visa de Kazajistán 2026 — 3.5 × 4.5cm, fondo blanco. Obtenga una foto conforme al instante."
+      "ja": "カザフスタンビザ写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は灰色。規格対応の写真をオンラインで即ダウンロード。",
+      "es": "Requisitos oficiales de foto de visa de Kazajistán 2026 — 3.5 × 4.5cm, fondo gris. Obtenga una foto conforme al instante."
     },
     "headHeightMin": 32,
     "headHeightMax": 36,
@@ -16650,9 +16650,9 @@
     "continent": "europe",
     "details": {
       "ko": "ICAO 9303 기준을 따릅니다. 회색 배경, 정면 응시, 무표정. ⚠️ 2025.05~ 종이사진 금지, 디지털 전용",
-      "ja": "ICAO 9303基準に準拠。白背景、正面、無表情。 ⚠️ 2025.05〜紙写真禁止、デジタル専用",
+      "ja": "ICAO 9303基準に準拠。灰色背景、正面、無表情。 ⚠️ 2025.05〜紙写真禁止、デジタル専用",
       "en": "Follows ICAO 9303 standard. 회색 background, frontal view, neutral expression. ⚠️ From 2025.05 paper photos prohibited, digital only",
-      "es": "Sigue el estándar ICAO 9303. Fondo blanco, vista frontal, expresión neutral. ⚠️ Desde 2025.05 las fotos en papel están prohibidas, solo digital"
+      "es": "Sigue el estándar ICAO 9303. Fondo gris, vista frontal, expresión neutral. ⚠️ Desde 2025.05 las fotos en papel están prohibidas, solo digital"
     },
     "rejectionReasons": {
       "ko": [
@@ -16692,15 +16692,15 @@
       "ko": [
         {
           "q": "독일 여권 사진 크기는?",
-          "a": "독일 여권 사진 규격은 3.5 × 4.5cm입니다. 배경은 흰색이어야 합니다."
+          "a": "독일 여권 사진 규격은 3.5 × 4.5cm입니다. 배경은 회색이어야 합니다."
         },
         {
           "q": "독일 여권 사진을 집에서 찍을 수 있나요?",
-          "a": "네, 규격(3.5 × 4.5cm)과 배경(흰색) 조건만 맞으면 셀프 촬영이 가능합니다. MONKOS AI를 사용하면 배경 제거와 규격 크롭을 자동으로 처리합니다."
+          "a": "네, 규격(3.5 × 4.5cm)과 배경(회색) 조건만 맞으면 셀프 촬영이 가능합니다. MONKOS AI를 사용하면 배경 제거와 규격 크롭을 자동으로 처리합니다."
         },
         {
           "q": "독일 여권 사진 배경색 규정은?",
-          "a": "독일 여권 사진은 흰색 배경이 필요합니다. 그림자나 무늬가 있으면 반려될 수 있습니다."
+          "a": "독일 여권 사진은 회색 배경이 필요합니다. 그림자나 무늬가 있으면 반려될 수 있습니다."
         }
       ],
       "en": [
@@ -16720,29 +16720,29 @@
       "ja": [
         {
           "q": "ドイツのパスポート写真のサイズは？",
-          "a": "ドイツのパスポート写真の規格は3.5 × 4.5cmです。背景は白が必要です。"
+          "a": "ドイツのパスポート写真の規格は3.5 × 4.5cmです。背景は灰色が必要です。"
         },
         {
           "q": "ドイツのパスポート写真を自宅で撮れますか？",
-          "a": "はい、サイズ（3.5 × 4.5cm）と背景（白）の条件を満たせば自宅撮影も可能です。MONKOS AIを使えば背景除去と規格クロップが自動で処理されます。"
+          "a": "はい、サイズ（3.5 × 4.5cm）と背景（灰色）の条件を満たせば自宅撮影も可能です。MONKOS AIを使えば背景除去と規格クロップが自動で処理されます。"
         },
         {
           "q": "ドイツのパスポート写真の背景色の規定は？",
-          "a": "ドイツのパスポート写真は白の背景が必要です。影や模様があると不合格になる場合があります。"
+          "a": "ドイツのパスポート写真は灰色の背景が必要です。影や模様があると不合格になる場合があります。"
         }
       ],
       "es": [
         {
           "q": "¿Cuál es el tamaño de la foto de Germany Passport?",
-          "a": "El tamaño de la foto de Germany Passport es 3.5 × 4.5cm. El fondo debe ser blanco."
+          "a": "El tamaño de la foto de Germany Passport es 3.5 × 4.5cm. El fondo debe ser gris."
         },
         {
           "q": "¿Puedo tomar la foto de Germany Passport en casa?",
-          "a": "Sí, siempre que cumpla con los requisitos de tamaño (3.5 × 4.5cm) y fondo (blanco). MONKOS AI elimina automáticamente el fondo y recorta según las especificaciones correctas."
+          "a": "Sí, siempre que cumpla con los requisitos de tamaño (3.5 × 4.5cm) y fondo (gris). MONKOS AI elimina automáticamente el fondo y recorta según las especificaciones correctas."
         },
         {
           "q": "¿Cuál es el color de fondo para la foto de Germany Passport?",
-          "a": "La foto de Germany Passport requiere un fondo blanco. Las sombras o patrones pueden causar rechazo."
+          "a": "La foto de Germany Passport requiere un fondo gris. Las sombras o patrones pueden causar rechazo."
         }
       ]
     },
@@ -16755,8 +16755,8 @@
     "seoDescription": {
       "ko": "독일 여권 사진 공식 규격·2026년 규정 — 3.5 × 4.5cm, 회색 배경. 규격 검증된 사진 파일을 즉시 다운로드하세요.",
       "en": "Official Germany passport photo requirements 2026 — 3.5 × 4.5cm, gray background. Get a compliant photo online in seconds.",
-      "ja": "ドイツパスポート写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。",
-      "es": "Requisitos oficiales de foto de pasaporte de Alemania 2026 — 3.5 × 4.5cm, fondo blanco. Obtenga una foto conforme al instante."
+      "ja": "ドイツパスポート写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は灰色。規格対応の写真をオンラインで即ダウンロード。",
+      "es": "Requisitos oficiales de foto de pasaporte de Alemania 2026 — 3.5 × 4.5cm, fondo gris. Obtenga una foto conforme al instante."
     },
     "headHeightMin": 32,
     "headHeightMax": 36,
@@ -16828,9 +16828,9 @@
     "continent": "europe",
     "details": {
       "ko": "EU Reg. 2252/2004 기준을 따릅니다. 회색 배경, 정면 응시, 무표정.",
-      "ja": "EU Reg. 2252/2004基準に準拠。白背景、正面、無表情。",
+      "ja": "EU Reg. 2252/2004基準に準拠。灰色背景、正面、無表情。",
       "en": "Follows EU Reg. 2252/2004 standard. 회색 background, frontal view, neutral expression.",
-      "es": "Sigue el estándar del Reg. UE 2252/2004. Fondo blanco, vista frontal, expresión neutral."
+      "es": "Sigue el estándar del Reg. UE 2252/2004. Fondo gris, vista frontal, expresión neutral."
     },
     "rejectionReasons": {
       "ko": [
@@ -16868,15 +16868,15 @@
       "ko": [
         {
           "q": "독일 쉥겐 비자 사진 크기는?",
-          "a": "독일 쉥겐 비자 사진 규격은 3.5 × 4.5cm입니다. 배경은 흰색이어야 합니다."
+          "a": "독일 쉥겐 비자 사진 규격은 3.5 × 4.5cm입니다. 배경은 회색이어야 합니다."
         },
         {
           "q": "독일 쉥겐 비자 사진을 집에서 찍을 수 있나요?",
-          "a": "네, 규격(3.5 × 4.5cm)과 배경(흰색) 조건만 맞으면 셀프 촬영이 가능합니다. MONKOS AI를 사용하면 배경 제거와 규격 크롭을 자동으로 처리합니다."
+          "a": "네, 규격(3.5 × 4.5cm)과 배경(회색) 조건만 맞으면 셀프 촬영이 가능합니다. MONKOS AI를 사용하면 배경 제거와 규격 크롭을 자동으로 처리합니다."
         },
         {
           "q": "독일 쉥겐 비자 사진 배경색 규정은?",
-          "a": "독일 쉥겐 비자 사진은 흰색 배경이 필요합니다. 그림자나 무늬가 있으면 반려될 수 있습니다."
+          "a": "독일 쉥겐 비자 사진은 회색 배경이 필요합니다. 그림자나 무늬가 있으면 반려될 수 있습니다."
         }
       ],
       "en": [
@@ -16896,29 +16896,29 @@
       "ja": [
         {
           "q": "ドイツのシェンゲンビザ写真のサイズは？",
-          "a": "ドイツのシェンゲンビザ写真の規格は3.5 × 4.5cmです。背景は白が必要です。"
+          "a": "ドイツのシェンゲンビザ写真の規格は3.5 × 4.5cmです。背景は灰色が必要です。"
         },
         {
           "q": "ドイツのシェンゲンビザ写真を自宅で撮れますか？",
-          "a": "はい、サイズ（3.5 × 4.5cm）と背景（白）の条件を満たせば自宅撮影も可能です。MONKOS AIを使えば背景除去と規格クロップが自動で処理されます。"
+          "a": "はい、サイズ（3.5 × 4.5cm）と背景（灰色）の条件を満たせば自宅撮影も可能です。MONKOS AIを使えば背景除去と規格クロップが自動で処理されます。"
         },
         {
           "q": "ドイツのシェンゲンビザ写真の背景色の規定は？",
-          "a": "ドイツのシェンゲンビザ写真は白の背景が必要です。影や模様があると不合格になる場合があります。"
+          "a": "ドイツのシェンゲンビザ写真は灰色の背景が必要です。影や模様があると不合格になる場合があります。"
         }
       ],
       "es": [
         {
           "q": "¿Cuál es el tamaño de la foto de Germany Schengen Visa?",
-          "a": "El tamaño de la foto de Germany Schengen Visa es 3.5 × 4.5cm. El fondo debe ser blanco."
+          "a": "El tamaño de la foto de Germany Schengen Visa es 3.5 × 4.5cm. El fondo debe ser gris."
         },
         {
           "q": "¿Puedo tomar la foto de Germany Schengen Visa en casa?",
-          "a": "Sí, siempre que cumpla con los requisitos de tamaño (3.5 × 4.5cm) y fondo (blanco). MONKOS AI elimina automáticamente el fondo y recorta según las especificaciones correctas."
+          "a": "Sí, siempre que cumpla con los requisitos de tamaño (3.5 × 4.5cm) y fondo (gris). MONKOS AI elimina automáticamente el fondo y recorta según las especificaciones correctas."
         },
         {
           "q": "¿Cuál es el color de fondo para la foto de Germany Schengen Visa?",
-          "a": "La foto de Germany Schengen Visa requiere un fondo blanco. Las sombras o patrones pueden causar rechazo."
+          "a": "La foto de Germany Schengen Visa requiere un fondo gris. Las sombras o patrones pueden causar rechazo."
         }
       ]
     },
@@ -16931,8 +16931,8 @@
     "seoDescription": {
       "ko": "독일 쉥겐 비자 사진 공식 규격·2026년 규정 — 3.5 × 4.5cm, 회색 배경. 규격 검증된 사진 파일을 즉시 다운로드하세요.",
       "en": "Official Germany schengen visa photo requirements 2026 — 3.5 × 4.5cm, gray background. Get a compliant photo online in seconds.",
-      "ja": "ドイツシェンゲンビザ写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。",
-      "es": "Requisitos oficiales de foto de visa schengen de Alemania 2026 — 3.5 × 4.5cm, fondo blanco. Obtenga una foto conforme al instante."
+      "ja": "ドイツシェンゲンビザ写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は灰色。規格対応の写真をオンラインで即ダウンロード。",
+      "es": "Requisitos oficiales de foto de visa schengen de Alemania 2026 — 3.5 × 4.5cm, fondo gris. Obtenga una foto conforme al instante."
     },
     "headHeightMin": 32,
     "headHeightMax": 36,
@@ -18657,9 +18657,9 @@
     "continent": "europe",
     "details": {
       "ko": "ICAO 9303 기준을 따릅니다. 회색 배경, 정면 응시, 무표정.",
-      "ja": "ICAO 9303基準に準拠。白背景、正面、無表情。",
+      "ja": "ICAO 9303基準に準拠。灰色背景、正面、無表情。",
       "en": "Follows ICAO 9303 standard. 회색 background, frontal view, neutral expression.",
-      "es": "Sigue el estándar ICAO 9303. Fondo blanco, vista frontal, expresión neutral."
+      "es": "Sigue el estándar ICAO 9303. Fondo gris, vista frontal, expresión neutral."
     },
     "rejectionReasons": {
       "ko": [
@@ -18699,15 +18699,15 @@
       "ko": [
         {
           "q": "스위스 여권 사진 크기는?",
-          "a": "스위스 여권 사진 규격은 3.5 × 4.5cm입니다. 배경은 흰색이어야 합니다."
+          "a": "스위스 여권 사진 규격은 3.5 × 4.5cm입니다. 배경은 회색이어야 합니다."
         },
         {
           "q": "스위스 여권 사진을 집에서 찍을 수 있나요?",
-          "a": "네, 규격(3.5 × 4.5cm)과 배경(흰색) 조건만 맞으면 셀프 촬영이 가능합니다. MONKOS AI를 사용하면 배경 제거와 규격 크롭을 자동으로 처리합니다."
+          "a": "네, 규격(3.5 × 4.5cm)과 배경(회색) 조건만 맞으면 셀프 촬영이 가능합니다. MONKOS AI를 사용하면 배경 제거와 규격 크롭을 자동으로 처리합니다."
         },
         {
           "q": "스위스 여권 사진 배경색 규정은?",
-          "a": "스위스 여권 사진은 흰색 배경이 필요합니다. 그림자나 무늬가 있으면 반려될 수 있습니다."
+          "a": "스위스 여권 사진은 회색 배경이 필요합니다. 그림자나 무늬가 있으면 반려될 수 있습니다."
         }
       ],
       "en": [
@@ -18727,29 +18727,29 @@
       "ja": [
         {
           "q": "スイスのパスポート写真のサイズは？",
-          "a": "スイスのパスポート写真の規格は3.5 × 4.5cmです。背景は白が必要です。"
+          "a": "スイスのパスポート写真の規格は3.5 × 4.5cmです。背景は灰色が必要です。"
         },
         {
           "q": "スイスのパスポート写真を自宅で撮れますか？",
-          "a": "はい、サイズ（3.5 × 4.5cm）と背景（白）の条件を満たせば自宅撮影も可能です。MONKOS AIを使えば背景除去と規格クロップが自動で処理されます。"
+          "a": "はい、サイズ（3.5 × 4.5cm）と背景（灰色）の条件を満たせば自宅撮影も可能です。MONKOS AIを使えば背景除去と規格クロップが自動で処理されます。"
         },
         {
           "q": "スイスのパスポート写真の背景色の規定は？",
-          "a": "スイスのパスポート写真は白の背景が必要です。影や模様があると不合格になる場合があります。"
+          "a": "スイスのパスポート写真は灰色の背景が必要です。影や模様があると不合格になる場合があります。"
         }
       ],
       "es": [
         {
           "q": "¿Cuál es el tamaño de la foto de Switzerland Passport?",
-          "a": "El tamaño de la foto de Switzerland Passport es 3.5 × 4.5cm. El fondo debe ser blanco."
+          "a": "El tamaño de la foto de Switzerland Passport es 3.5 × 4.5cm. El fondo debe ser gris."
         },
         {
           "q": "¿Puedo tomar la foto de Switzerland Passport en casa?",
-          "a": "Sí, siempre que cumpla con los requisitos de tamaño (3.5 × 4.5cm) y fondo (blanco). MONKOS AI elimina automáticamente el fondo y recorta según las especificaciones correctas."
+          "a": "Sí, siempre que cumpla con los requisitos de tamaño (3.5 × 4.5cm) y fondo (gris). MONKOS AI elimina automáticamente el fondo y recorta según las especificaciones correctas."
         },
         {
           "q": "¿Cuál es el color de fondo para la foto de Switzerland Passport?",
-          "a": "La foto de Switzerland Passport requiere un fondo blanco. Las sombras o patrones pueden causar rechazo."
+          "a": "La foto de Switzerland Passport requiere un fondo gris. Las sombras o patrones pueden causar rechazo."
         }
       ]
     },
@@ -18762,8 +18762,8 @@
     "seoDescription": {
       "ko": "스위스 여권 사진 공식 규격·2026년 규정 — 3.5 × 4.5cm, 회색 배경. 규격 검증된 사진 파일을 즉시 다운로드하세요.",
       "en": "Official Switzerland passport photo requirements 2026 — 3.5 × 4.5cm, gray background. Get a compliant photo online in seconds.",
-      "ja": "スイスパスポート写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。",
-      "es": "Requisitos oficiales de foto de pasaporte de Suiza 2026 — 3.5 × 4.5cm, fondo blanco. Obtenga una foto conforme al instante."
+      "ja": "スイスパスポート写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は灰色。規格対応の写真をオンラインで即ダウンロード。",
+      "es": "Requisitos oficiales de foto de pasaporte de Suiza 2026 — 3.5 × 4.5cm, fondo gris. Obtenga una foto conforme al instante."
     },
     "headHeightMin": 32,
     "headHeightMax": 36,
@@ -18828,9 +18828,9 @@
     "continent": "europe",
     "details": {
       "ko": "EU Reg. 2252/2004 기준을 따릅니다. 회색 배경, 정면 응시, 무표정.",
-      "ja": "EU Reg. 2252/2004基準に準拠。白背景、正面、無表情。",
+      "ja": "EU Reg. 2252/2004基準に準拠。灰色背景、正面、無表情。",
       "en": "Follows EU Reg. 2252/2004 standard. 회색 background, frontal view, neutral expression.",
-      "es": "Sigue el estándar del Reg. UE 2252/2004. Fondo blanco, vista frontal, expresión neutral."
+      "es": "Sigue el estándar del Reg. UE 2252/2004. Fondo gris, vista frontal, expresión neutral."
     },
     "rejectionReasons": {
       "ko": [
@@ -18868,15 +18868,15 @@
       "ko": [
         {
           "q": "스위스 쉥겐 비자 사진 크기는?",
-          "a": "스위스 쉥겐 비자 사진 규격은 3.5 × 4.5cm입니다. 배경은 흰색이어야 합니다."
+          "a": "스위스 쉥겐 비자 사진 규격은 3.5 × 4.5cm입니다. 배경은 회색이어야 합니다."
         },
         {
           "q": "스위스 쉥겐 비자 사진을 집에서 찍을 수 있나요?",
-          "a": "네, 규격(3.5 × 4.5cm)과 배경(흰색) 조건만 맞으면 셀프 촬영이 가능합니다. MONKOS AI를 사용하면 배경 제거와 규격 크롭을 자동으로 처리합니다."
+          "a": "네, 규격(3.5 × 4.5cm)과 배경(회색) 조건만 맞으면 셀프 촬영이 가능합니다. MONKOS AI를 사용하면 배경 제거와 규격 크롭을 자동으로 처리합니다."
         },
         {
           "q": "스위스 쉥겐 비자 사진 배경색 규정은?",
-          "a": "스위스 쉥겐 비자 사진은 흰색 배경이 필요합니다. 그림자나 무늬가 있으면 반려될 수 있습니다."
+          "a": "스위스 쉥겐 비자 사진은 회색 배경이 필요합니다. 그림자나 무늬가 있으면 반려될 수 있습니다."
         }
       ],
       "en": [
@@ -18896,29 +18896,29 @@
       "ja": [
         {
           "q": "スイスのシェンゲンビザ写真のサイズは？",
-          "a": "スイスのシェンゲンビザ写真の規格は3.5 × 4.5cmです。背景は白が必要です。"
+          "a": "スイスのシェンゲンビザ写真の規格は3.5 × 4.5cmです。背景は灰色が必要です。"
         },
         {
           "q": "スイスのシェンゲンビザ写真を自宅で撮れますか？",
-          "a": "はい、サイズ（3.5 × 4.5cm）と背景（白）の条件を満たせば自宅撮影も可能です。MONKOS AIを使えば背景除去と規格クロップが自動で処理されます。"
+          "a": "はい、サイズ（3.5 × 4.5cm）と背景（灰色）の条件を満たせば自宅撮影も可能です。MONKOS AIを使えば背景除去と規格クロップが自動で処理されます。"
         },
         {
           "q": "スイスのシェンゲンビザ写真の背景色の規定は？",
-          "a": "スイスのシェンゲンビザ写真は白の背景が必要です。影や模様があると不合格になる場合があります。"
+          "a": "スイスのシェンゲンビザ写真は灰色の背景が必要です。影や模様があると不合格になる場合があります。"
         }
       ],
       "es": [
         {
           "q": "¿Cuál es el tamaño de la foto de Switzerland Schengen Visa?",
-          "a": "El tamaño de la foto de Switzerland Schengen Visa es 3.5 × 4.5cm. El fondo debe ser blanco."
+          "a": "El tamaño de la foto de Switzerland Schengen Visa es 3.5 × 4.5cm. El fondo debe ser gris."
         },
         {
           "q": "¿Puedo tomar la foto de Switzerland Schengen Visa en casa?",
-          "a": "Sí, siempre que cumpla con los requisitos de tamaño (3.5 × 4.5cm) y fondo (blanco). MONKOS AI elimina automáticamente el fondo y recorta según las especificaciones correctas."
+          "a": "Sí, siempre que cumpla con los requisitos de tamaño (3.5 × 4.5cm) y fondo (gris). MONKOS AI elimina automáticamente el fondo y recorta según las especificaciones correctas."
         },
         {
           "q": "¿Cuál es el color de fondo para la foto de Switzerland Schengen Visa?",
-          "a": "La foto de Switzerland Schengen Visa requiere un fondo blanco. Las sombras o patrones pueden causar rechazo."
+          "a": "La foto de Switzerland Schengen Visa requiere un fondo gris. Las sombras o patrones pueden causar rechazo."
         }
       ]
     },
@@ -18931,8 +18931,8 @@
     "seoDescription": {
       "ko": "스위스 쉥겐 비자 사진 공식 규격·2026년 규정 — 3.5 × 4.5cm, 회색 배경. 규격 검증된 사진 파일을 즉시 다운로드하세요.",
       "en": "Official Switzerland schengen visa photo requirements 2026 — 3.5 × 4.5cm, gray background. Get a compliant photo online in seconds.",
-      "ja": "スイスシェンゲンビザ写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。",
-      "es": "Requisitos oficiales de foto de visa schengen de Suiza 2026 — 3.5 × 4.5cm, fondo blanco. Obtenga una foto conforme al instante."
+      "ja": "スイスシェンゲンビザ写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は灰色。規格対応の写真をオンラインで即ダウンロード。",
+      "es": "Requisitos oficiales de foto de visa schengen de Suiza 2026 — 3.5 × 4.5cm, fondo gris. Obtenga una foto conforme al instante."
     },
     "headHeightMin": 32,
     "headHeightMax": 36,
@@ -18997,9 +18997,9 @@
     "continent": "europe",
     "details": {
       "ko": "ICAO 9303 기준을 따릅니다. 회색 배경, 정면 응시, 무표정.",
-      "ja": "ICAO 9303基準に準拠。白背景、正面、無表情。",
+      "ja": "ICAO 9303基準に準拠。灰色背景、正面、無表情。",
       "en": "Follows ICAO 9303 standard. 회색 background, frontal view, neutral expression.",
-      "es": "Sigue el estándar ICAO 9303. Fondo blanco, vista frontal, expresión neutral."
+      "es": "Sigue el estándar ICAO 9303. Fondo gris, vista frontal, expresión neutral."
     },
     "rejectionReasons": {
       "ko": [
@@ -19039,15 +19039,15 @@
       "ko": [
         {
           "q": "오스트리아 여권 사진 크기는?",
-          "a": "오스트리아 여권 사진 규격은 3.5 × 4.5cm입니다. 배경은 흰색이어야 합니다."
+          "a": "오스트리아 여권 사진 규격은 3.5 × 4.5cm입니다. 배경은 회색이어야 합니다."
         },
         {
           "q": "오스트리아 여권 사진을 집에서 찍을 수 있나요?",
-          "a": "네, 규격(3.5 × 4.5cm)과 배경(흰색) 조건만 맞으면 셀프 촬영이 가능합니다. MONKOS AI를 사용하면 배경 제거와 규격 크롭을 자동으로 처리합니다."
+          "a": "네, 규격(3.5 × 4.5cm)과 배경(회색) 조건만 맞으면 셀프 촬영이 가능합니다. MONKOS AI를 사용하면 배경 제거와 규격 크롭을 자동으로 처리합니다."
         },
         {
           "q": "오스트리아 여권 사진 배경색 규정은?",
-          "a": "오스트리아 여권 사진은 흰색 배경이 필요합니다. 그림자나 무늬가 있으면 반려될 수 있습니다."
+          "a": "오스트리아 여권 사진은 회색 배경이 필요합니다. 그림자나 무늬가 있으면 반려될 수 있습니다."
         }
       ],
       "en": [
@@ -19067,29 +19067,29 @@
       "ja": [
         {
           "q": "オーストリアのパスポート写真のサイズは？",
-          "a": "オーストリアのパスポート写真の規格は3.5 × 4.5cmです。背景は白が必要です。"
+          "a": "オーストリアのパスポート写真の規格は3.5 × 4.5cmです。背景は灰色が必要です。"
         },
         {
           "q": "オーストリアのパスポート写真を自宅で撮れますか？",
-          "a": "はい、サイズ（3.5 × 4.5cm）と背景（白）の条件を満たせば自宅撮影も可能です。MONKOS AIを使えば背景除去と規格クロップが自動で処理されます。"
+          "a": "はい、サイズ（3.5 × 4.5cm）と背景（灰色）の条件を満たせば自宅撮影も可能です。MONKOS AIを使えば背景除去と規格クロップが自動で処理されます。"
         },
         {
           "q": "オーストリアのパスポート写真の背景色の規定は？",
-          "a": "オーストリアのパスポート写真は白の背景が必要です。影や模様があると不合格になる場合があります。"
+          "a": "オーストリアのパスポート写真は灰色の背景が必要です。影や模様があると不合格になる場合があります。"
         }
       ],
       "es": [
         {
           "q": "¿Cuál es el tamaño de la foto de Austria Passport?",
-          "a": "El tamaño de la foto de Austria Passport es 3.5 × 4.5cm. El fondo debe ser blanco."
+          "a": "El tamaño de la foto de Austria Passport es 3.5 × 4.5cm. El fondo debe ser gris."
         },
         {
           "q": "¿Puedo tomar la foto de Austria Passport en casa?",
-          "a": "Sí, siempre que cumpla con los requisitos de tamaño (3.5 × 4.5cm) y fondo (blanco). MONKOS AI elimina automáticamente el fondo y recorta según las especificaciones correctas."
+          "a": "Sí, siempre que cumpla con los requisitos de tamaño (3.5 × 4.5cm) y fondo (gris). MONKOS AI elimina automáticamente el fondo y recorta según las especificaciones correctas."
         },
         {
           "q": "¿Cuál es el color de fondo para la foto de Austria Passport?",
-          "a": "La foto de Austria Passport requiere un fondo blanco. Las sombras o patrones pueden causar rechazo."
+          "a": "La foto de Austria Passport requiere un fondo gris. Las sombras o patrones pueden causar rechazo."
         }
       ]
     },
@@ -19102,8 +19102,8 @@
     "seoDescription": {
       "ko": "오스트리아 여권 사진 공식 규격·2026년 규정 — 3.5 × 4.5cm, 회색 배경. 규격 검증된 사진 파일을 즉시 다운로드하세요.",
       "en": "Official Austria passport photo requirements 2026 — 3.5 × 4.5cm, gray background. Get a compliant photo online in seconds.",
-      "ja": "オーストリアパスポート写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。",
-      "es": "Requisitos oficiales de foto de pasaporte de Austria 2026 — 3.5 × 4.5cm, fondo blanco. Obtenga una foto conforme al instante."
+      "ja": "オーストリアパスポート写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は灰色。規格対応の写真をオンラインで即ダウンロード。",
+      "es": "Requisitos oficiales de foto de pasaporte de Austria 2026 — 3.5 × 4.5cm, fondo gris. Obtenga una foto conforme al instante."
     },
     "headHeightMin": 32,
     "headHeightMax": 36,
@@ -19174,9 +19174,9 @@
     "continent": "europe",
     "details": {
       "ko": "EU Reg. 2252/2004 기준을 따릅니다. 회색 배경, 정면 응시, 무표정.",
-      "ja": "EU Reg. 2252/2004基準に準拠。白背景、正面、無表情。",
+      "ja": "EU Reg. 2252/2004基準に準拠。灰色背景、正面、無表情。",
       "en": "Follows EU Reg. 2252/2004 standard. 회색 background, frontal view, neutral expression.",
-      "es": "Sigue el estándar del Reg. UE 2252/2004. Fondo blanco, vista frontal, expresión neutral."
+      "es": "Sigue el estándar del Reg. UE 2252/2004. Fondo gris, vista frontal, expresión neutral."
     },
     "rejectionReasons": {
       "ko": [
@@ -19214,15 +19214,15 @@
       "ko": [
         {
           "q": "오스트리아 쉥겐 비자 사진 크기는?",
-          "a": "오스트리아 쉥겐 비자 사진 규격은 3.5 × 4.5cm입니다. 배경은 흰색이어야 합니다."
+          "a": "오스트리아 쉥겐 비자 사진 규격은 3.5 × 4.5cm입니다. 배경은 회색이어야 합니다."
         },
         {
           "q": "오스트리아 쉥겐 비자 사진을 집에서 찍을 수 있나요?",
-          "a": "네, 규격(3.5 × 4.5cm)과 배경(흰색) 조건만 맞으면 셀프 촬영이 가능합니다. MONKOS AI를 사용하면 배경 제거와 규격 크롭을 자동으로 처리합니다."
+          "a": "네, 규격(3.5 × 4.5cm)과 배경(회색) 조건만 맞으면 셀프 촬영이 가능합니다. MONKOS AI를 사용하면 배경 제거와 규격 크롭을 자동으로 처리합니다."
         },
         {
           "q": "오스트리아 쉥겐 비자 사진 배경색 규정은?",
-          "a": "오스트리아 쉥겐 비자 사진은 흰색 배경이 필요합니다. 그림자나 무늬가 있으면 반려될 수 있습니다."
+          "a": "오스트리아 쉥겐 비자 사진은 회색 배경이 필요합니다. 그림자나 무늬가 있으면 반려될 수 있습니다."
         }
       ],
       "en": [
@@ -19242,29 +19242,29 @@
       "ja": [
         {
           "q": "オーストリアのシェンゲンビザ写真のサイズは？",
-          "a": "オーストリアのシェンゲンビザ写真の規格は3.5 × 4.5cmです。背景は白が必要です。"
+          "a": "オーストリアのシェンゲンビザ写真の規格は3.5 × 4.5cmです。背景は灰色が必要です。"
         },
         {
           "q": "オーストリアのシェンゲンビザ写真を自宅で撮れますか？",
-          "a": "はい、サイズ（3.5 × 4.5cm）と背景（白）の条件を満たせば自宅撮影も可能です。MONKOS AIを使えば背景除去と規格クロップが自動で処理されます。"
+          "a": "はい、サイズ（3.5 × 4.5cm）と背景（灰色）の条件を満たせば自宅撮影も可能です。MONKOS AIを使えば背景除去と規格クロップが自動で処理されます。"
         },
         {
           "q": "オーストリアのシェンゲンビザ写真の背景色の規定は？",
-          "a": "オーストリアのシェンゲンビザ写真は白の背景が必要です。影や模様があると不合格になる場合があります。"
+          "a": "オーストリアのシェンゲンビザ写真は灰色の背景が必要です。影や模様があると不合格になる場合があります。"
         }
       ],
       "es": [
         {
           "q": "¿Cuál es el tamaño de la foto de Austria Schengen Visa?",
-          "a": "El tamaño de la foto de Austria Schengen Visa es 3.5 × 4.5cm. El fondo debe ser blanco."
+          "a": "El tamaño de la foto de Austria Schengen Visa es 3.5 × 4.5cm. El fondo debe ser gris."
         },
         {
           "q": "¿Puedo tomar la foto de Austria Schengen Visa en casa?",
-          "a": "Sí, siempre que cumpla con los requisitos de tamaño (3.5 × 4.5cm) y fondo (blanco). MONKOS AI elimina automáticamente el fondo y recorta según las especificaciones correctas."
+          "a": "Sí, siempre que cumpla con los requisitos de tamaño (3.5 × 4.5cm) y fondo (gris). MONKOS AI elimina automáticamente el fondo y recorta según las especificaciones correctas."
         },
         {
           "q": "¿Cuál es el color de fondo para la foto de Austria Schengen Visa?",
-          "a": "La foto de Austria Schengen Visa requiere un fondo blanco. Las sombras o patrones pueden causar rechazo."
+          "a": "La foto de Austria Schengen Visa requiere un fondo gris. Las sombras o patrones pueden causar rechazo."
         }
       ]
     },
@@ -19277,8 +19277,8 @@
     "seoDescription": {
       "ko": "오스트리아 쉥겐 비자 사진 공식 규격·2026년 규정 — 3.5 × 4.5cm, 회색 배경. 규격 검증된 사진 파일을 즉시 다운로드하세요.",
       "en": "Official Austria schengen visa photo requirements 2026 — 3.5 × 4.5cm, gray background. Get a compliant photo online in seconds.",
-      "ja": "オーストリアシェンゲンビザ写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。",
-      "es": "Requisitos oficiales de foto de visa schengen de Austria 2026 — 3.5 × 4.5cm, fondo blanco. Obtenga una foto conforme al instante."
+      "ja": "オーストリアシェンゲンビザ写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は灰色。規格対応の写真をオンラインで即ダウンロード。",
+      "es": "Requisitos oficiales de foto de visa schengen de Austria 2026 — 3.5 × 4.5cm, fondo gris. Obtenga una foto conforme al instante."
     },
     "headHeightMin": 32,
     "headHeightMax": 36,
@@ -20041,9 +20041,9 @@
     "continent": "europe",
     "details": {
       "ko": "ICAO 9303 기준을 따릅니다. 회색 배경, 정면 응시, 무표정.",
-      "ja": "ICAO 9303基準に準拠。白背景、正面、無表情。",
+      "ja": "ICAO 9303基準に準拠。灰色背景、正面、無表情。",
       "en": "Follows ICAO 9303 standard. 회색 background, frontal view, neutral expression.",
-      "es": "Sigue el estándar ICAO 9303. Fondo blanco, vista frontal, expresión neutral."
+      "es": "Sigue el estándar ICAO 9303. Fondo gris, vista frontal, expresión neutral."
     },
     "rejectionReasons": {
       "ko": [
@@ -20083,15 +20083,15 @@
       "ko": [
         {
           "q": "덴마크 여권 사진 크기는?",
-          "a": "덴마크 여권 사진 규격은 3.5 × 4.5cm입니다. 배경은 흰색이어야 합니다."
+          "a": "덴마크 여권 사진 규격은 3.5 × 4.5cm입니다. 배경은 회색이어야 합니다."
         },
         {
           "q": "덴마크 여권 사진을 집에서 찍을 수 있나요?",
-          "a": "네, 규격(3.5 × 4.5cm)과 배경(흰색) 조건만 맞으면 셀프 촬영이 가능합니다. MONKOS AI를 사용하면 배경 제거와 규격 크롭을 자동으로 처리합니다."
+          "a": "네, 규격(3.5 × 4.5cm)과 배경(회색) 조건만 맞으면 셀프 촬영이 가능합니다. MONKOS AI를 사용하면 배경 제거와 규격 크롭을 자동으로 처리합니다."
         },
         {
           "q": "덴마크 여권 사진 배경색 규정은?",
-          "a": "덴마크 여권 사진은 흰색 배경이 필요합니다. 그림자나 무늬가 있으면 반려될 수 있습니다."
+          "a": "덴마크 여권 사진은 회색 배경이 필요합니다. 그림자나 무늬가 있으면 반려될 수 있습니다."
         }
       ],
       "en": [
@@ -20111,29 +20111,29 @@
       "ja": [
         {
           "q": "デンマークのパスポート写真のサイズは？",
-          "a": "デンマークのパスポート写真の規格は3.5 × 4.5cmです。背景は白が必要です。"
+          "a": "デンマークのパスポート写真の規格は3.5 × 4.5cmです。背景は灰色が必要です。"
         },
         {
           "q": "デンマークのパスポート写真を自宅で撮れますか？",
-          "a": "はい、サイズ（3.5 × 4.5cm）と背景（白）の条件を満たせば自宅撮影も可能です。MONKOS AIを使えば背景除去と規格クロップが自動で処理されます。"
+          "a": "はい、サイズ（3.5 × 4.5cm）と背景（灰色）の条件を満たせば自宅撮影も可能です。MONKOS AIを使えば背景除去と規格クロップが自動で処理されます。"
         },
         {
           "q": "デンマークのパスポート写真の背景色の規定は？",
-          "a": "デンマークのパスポート写真は白の背景が必要です。影や模様があると不合格になる場合があります。"
+          "a": "デンマークのパスポート写真は灰色の背景が必要です。影や模様があると不合格になる場合があります。"
         }
       ],
       "es": [
         {
           "q": "¿Cuál es el tamaño de la foto de Denmark Passport?",
-          "a": "El tamaño de la foto de Denmark Passport es 3.5 × 4.5cm. El fondo debe ser blanco."
+          "a": "El tamaño de la foto de Denmark Passport es 3.5 × 4.5cm. El fondo debe ser gris."
         },
         {
           "q": "¿Puedo tomar la foto de Denmark Passport en casa?",
-          "a": "Sí, siempre que cumpla con los requisitos de tamaño (3.5 × 4.5cm) y fondo (blanco). MONKOS AI elimina automáticamente el fondo y recorta según las especificaciones correctas."
+          "a": "Sí, siempre que cumpla con los requisitos de tamaño (3.5 × 4.5cm) y fondo (gris). MONKOS AI elimina automáticamente el fondo y recorta según las especificaciones correctas."
         },
         {
           "q": "¿Cuál es el color de fondo para la foto de Denmark Passport?",
-          "a": "La foto de Denmark Passport requiere un fondo blanco. Las sombras o patrones pueden causar rechazo."
+          "a": "La foto de Denmark Passport requiere un fondo gris. Las sombras o patrones pueden causar rechazo."
         }
       ]
     },
@@ -20146,8 +20146,8 @@
     "seoDescription": {
       "ko": "덴마크 여권 사진 공식 규격·2026년 규정 — 3.5 × 4.5cm, 회색 배경. 규격 검증된 사진 파일을 즉시 다운로드하세요.",
       "en": "Official Denmark passport photo requirements 2026 — 3.5 × 4.5cm, gray background. Get a compliant photo online in seconds.",
-      "ja": "デンマークパスポート写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。",
-      "es": "Requisitos oficiales de foto de pasaporte de Dinamarca 2026 — 3.5 × 4.5cm, fondo blanco. Obtenga una foto conforme al instante."
+      "ja": "デンマークパスポート写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は灰色。規格対応の写真をオンラインで即ダウンロード。",
+      "es": "Requisitos oficiales de foto de pasaporte de Dinamarca 2026 — 3.5 × 4.5cm, fondo gris. Obtenga una foto conforme al instante."
     },
     "headHeightMin": 32,
     "headHeightMax": 36,
@@ -20212,9 +20212,9 @@
     "continent": "europe",
     "details": {
       "ko": "EU Reg. 2252/2004 기준을 따릅니다. 회색 배경, 정면 응시, 무표정.",
-      "ja": "EU Reg. 2252/2004基準に準拠。白背景、正面、無表情。",
+      "ja": "EU Reg. 2252/2004基準に準拠。灰色背景、正面、無表情。",
       "en": "Follows EU Reg. 2252/2004 standard. 회색 background, frontal view, neutral expression.",
-      "es": "Sigue el estándar del Reg. UE 2252/2004. Fondo blanco, vista frontal, expresión neutral."
+      "es": "Sigue el estándar del Reg. UE 2252/2004. Fondo gris, vista frontal, expresión neutral."
     },
     "rejectionReasons": {
       "ko": [
@@ -20252,15 +20252,15 @@
       "ko": [
         {
           "q": "덴마크 쉥겐 비자 사진 크기는?",
-          "a": "덴마크 쉥겐 비자 사진 규격은 3.5 × 4.5cm입니다. 배경은 흰색이어야 합니다."
+          "a": "덴마크 쉥겐 비자 사진 규격은 3.5 × 4.5cm입니다. 배경은 회색이어야 합니다."
         },
         {
           "q": "덴마크 쉥겐 비자 사진을 집에서 찍을 수 있나요?",
-          "a": "네, 규격(3.5 × 4.5cm)과 배경(흰색) 조건만 맞으면 셀프 촬영이 가능합니다. MONKOS AI를 사용하면 배경 제거와 규격 크롭을 자동으로 처리합니다."
+          "a": "네, 규격(3.5 × 4.5cm)과 배경(회색) 조건만 맞으면 셀프 촬영이 가능합니다. MONKOS AI를 사용하면 배경 제거와 규격 크롭을 자동으로 처리합니다."
         },
         {
           "q": "덴마크 쉥겐 비자 사진 배경색 규정은?",
-          "a": "덴마크 쉥겐 비자 사진은 흰색 배경이 필요합니다. 그림자나 무늬가 있으면 반려될 수 있습니다."
+          "a": "덴마크 쉥겐 비자 사진은 회색 배경이 필요합니다. 그림자나 무늬가 있으면 반려될 수 있습니다."
         }
       ],
       "en": [
@@ -20280,29 +20280,29 @@
       "ja": [
         {
           "q": "デンマークのシェンゲンビザ写真のサイズは？",
-          "a": "デンマークのシェンゲンビザ写真の規格は3.5 × 4.5cmです。背景は白が必要です。"
+          "a": "デンマークのシェンゲンビザ写真の規格は3.5 × 4.5cmです。背景は灰色が必要です。"
         },
         {
           "q": "デンマークのシェンゲンビザ写真を自宅で撮れますか？",
-          "a": "はい、サイズ（3.5 × 4.5cm）と背景（白）の条件を満たせば自宅撮影も可能です。MONKOS AIを使えば背景除去と規格クロップが自動で処理されます。"
+          "a": "はい、サイズ（3.5 × 4.5cm）と背景（灰色）の条件を満たせば自宅撮影も可能です。MONKOS AIを使えば背景除去と規格クロップが自動で処理されます。"
         },
         {
           "q": "デンマークのシェンゲンビザ写真の背景色の規定は？",
-          "a": "デンマークのシェンゲンビザ写真は白の背景が必要です。影や模様があると不合格になる場合があります。"
+          "a": "デンマークのシェンゲンビザ写真は灰色の背景が必要です。影や模様があると不合格になる場合があります。"
         }
       ],
       "es": [
         {
           "q": "¿Cuál es el tamaño de la foto de Denmark Schengen Visa?",
-          "a": "El tamaño de la foto de Denmark Schengen Visa es 3.5 × 4.5cm. El fondo debe ser blanco."
+          "a": "El tamaño de la foto de Denmark Schengen Visa es 3.5 × 4.5cm. El fondo debe ser gris."
         },
         {
           "q": "¿Puedo tomar la foto de Denmark Schengen Visa en casa?",
-          "a": "Sí, siempre que cumpla con los requisitos de tamaño (3.5 × 4.5cm) y fondo (blanco). MONKOS AI elimina automáticamente el fondo y recorta según las especificaciones correctas."
+          "a": "Sí, siempre que cumpla con los requisitos de tamaño (3.5 × 4.5cm) y fondo (gris). MONKOS AI elimina automáticamente el fondo y recorta según las especificaciones correctas."
         },
         {
           "q": "¿Cuál es el color de fondo para la foto de Denmark Schengen Visa?",
-          "a": "La foto de Denmark Schengen Visa requiere un fondo blanco. Las sombras o patrones pueden causar rechazo."
+          "a": "La foto de Denmark Schengen Visa requiere un fondo gris. Las sombras o patrones pueden causar rechazo."
         }
       ]
     },
@@ -20315,8 +20315,8 @@
     "seoDescription": {
       "ko": "덴마크 쉥겐 비자 사진 공식 규격·2026년 규정 — 3.5 × 4.5cm, 회색 배경. 규격 검증된 사진 파일을 즉시 다운로드하세요.",
       "en": "Official Denmark schengen visa photo requirements 2026 — 3.5 × 4.5cm, gray background. Get a compliant photo online in seconds.",
-      "ja": "デンマークシェンゲンビザ写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。",
-      "es": "Requisitos oficiales de foto de visa schengen de Dinamarca 2026 — 3.5 × 4.5cm, fondo blanco. Obtenga una foto conforme al instante."
+      "ja": "デンマークシェンゲンビザ写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は灰色。規格対応の写真をオンラインで即ダウンロード。",
+      "es": "Requisitos oficiales de foto de visa schengen de Dinamarca 2026 — 3.5 × 4.5cm, fondo gris. Obtenga una foto conforme al instante."
     },
     "headHeightMin": 32,
     "headHeightMax": 36,
@@ -27432,15 +27432,15 @@
       "ko": [
         {
           "q": "그리스 여권 사진 크기는?",
-          "a": "그리스 여권 사진 규격은 4 × 6cm입니다. 배경은 흰색이어야 합니다."
+          "a": "그리스 여권 사진 규격은 4 × 6cm입니다. 배경은 회색이어야 합니다."
         },
         {
           "q": "그리스 여권 사진을 집에서 찍을 수 있나요?",
-          "a": "네, 규격(4 × 6cm)과 배경(흰색) 조건만 맞으면 셀프 촬영이 가능합니다. MONKOS AI를 사용하면 배경 제거와 규격 크롭을 자동으로 처리합니다."
+          "a": "네, 규격(4 × 6cm)과 배경(회색) 조건만 맞으면 셀프 촬영이 가능합니다. MONKOS AI를 사용하면 배경 제거와 규격 크롭을 자동으로 처리합니다."
         },
         {
           "q": "그리스 여권 사진 배경색 규정은?",
-          "a": "그리스 여권 사진은 흰색 배경이 필요합니다. 그림자나 무늬가 있으면 반려될 수 있습니다."
+          "a": "그리스 여권 사진은 회색 배경이 필요합니다. 그림자나 무늬가 있으면 반려될 수 있습니다."
         }
       ],
       "en": [
@@ -27460,29 +27460,29 @@
       "ja": [
         {
           "q": "ギリシャのパスポート写真のサイズは？",
-          "a": "ギリシャのパスポート写真の規格は4 × 6cmです。背景は白が必要です。"
+          "a": "ギリシャのパスポート写真の規格は4 × 6cmです。背景は灰色が必要です。"
         },
         {
           "q": "ギリシャのパスポート写真を自宅で撮れますか？",
-          "a": "はい、サイズ（4 × 6cm）と背景（白）の条件を満たせば自宅撮影も可能です。MONKOS AIを使えば背景除去と規格クロップが自動で処理されます。"
+          "a": "はい、サイズ（4 × 6cm）と背景（灰色）の条件を満たせば自宅撮影も可能です。MONKOS AIを使えば背景除去と規格クロップが自動で処理されます。"
         },
         {
           "q": "ギリシャのパスポート写真の背景色の規定は？",
-          "a": "ギリシャのパスポート写真は白の背景が必要です。影や模様があると不合格になる場合があります。"
+          "a": "ギリシャのパスポート写真は灰色の背景が必要です。影や模様があると不合格になる場合があります。"
         }
       ],
       "es": [
         {
           "q": "¿Cuál es el tamaño de la foto de Greece Passport?",
-          "a": "El tamaño de la foto de Greece Passport es 4 × 6cm. El fondo debe ser blanco."
+          "a": "El tamaño de la foto de Greece Passport es 4 × 6cm. El fondo debe ser gris."
         },
         {
           "q": "¿Puedo tomar la foto de Greece Passport en casa?",
-          "a": "Sí, siempre que cumpla con los requisitos de tamaño (4 × 6cm) y fondo (blanco). MONKOS AI elimina automáticamente el fondo y recorta según las especificaciones correctas."
+          "a": "Sí, siempre que cumpla con los requisitos de tamaño (4 × 6cm) y fondo (gris). MONKOS AI elimina automáticamente el fondo y recorta según las especificaciones correctas."
         },
         {
           "q": "¿Cuál es el color de fondo para la foto de Greece Passport?",
-          "a": "La foto de Greece Passport requiere un fondo blanco. Las sombras o patrones pueden causar rechazo."
+          "a": "La foto de Greece Passport requiere un fondo gris. Las sombras o patrones pueden causar rechazo."
         }
       ]
     },
@@ -27495,8 +27495,8 @@
     "seoDescription": {
       "ko": "그리스 여권 사진 공식 규격·2026년 규정 — 4 × 6cm, 회색 배경. 규격 검증된 사진 파일을 즉시 다운로드하세요.",
       "en": "Official Greece passport photo requirements 2026 — 4 × 6cm, gray background. Get a compliant photo online in seconds.",
-      "ja": "ギリシャパスポート写真の公式サイズ・2026年規定 — 4 × 6cm、背景は白。規格対応の写真をオンラインで即ダウンロード。",
-      "es": "Requisitos oficiales de foto de pasaporte de Grecia 2026 — 4 × 6cm, fondo blanco. Obtenga una foto conforme al instante."
+      "ja": "ギリシャパスポート写真の公式サイズ・2026年規定 — 4 × 6cm、背景は灰色。規格対応の写真をオンラインで即ダウンロード。",
+      "es": "Requisitos oficiales de foto de pasaporte de Grecia 2026 — 4 × 6cm, fondo gris. Obtenga una foto conforme al instante."
     },
     "headHeightMin": 36,
     "headHeightMax": 40,
@@ -27614,15 +27614,15 @@
       "ko": [
         {
           "q": "그리스 비자 사진 크기는?",
-          "a": "그리스 비자 사진 규격은 3.5 × 4.5cm입니다. 배경은 흰색이어야 합니다."
+          "a": "그리스 비자 사진 규격은 3.5 × 4.5cm입니다. 배경은 회색이어야 합니다."
         },
         {
           "q": "그리스 비자 사진을 집에서 찍을 수 있나요?",
-          "a": "네, 규격(3.5 × 4.5cm)과 배경(흰색) 조건만 맞으면 셀프 촬영이 가능합니다. MONKOS AI를 사용하면 배경 제거와 규격 크롭을 자동으로 처리합니다."
+          "a": "네, 규격(3.5 × 4.5cm)과 배경(회색) 조건만 맞으면 셀프 촬영이 가능합니다. MONKOS AI를 사용하면 배경 제거와 규격 크롭을 자동으로 처리합니다."
         },
         {
           "q": "그리스 비자 사진 배경색 규정은?",
-          "a": "그리스 비자 사진은 흰색 배경이 필요합니다. 그림자나 무늬가 있으면 반려될 수 있습니다."
+          "a": "그리스 비자 사진은 회색 배경이 필요합니다. 그림자나 무늬가 있으면 반려될 수 있습니다."
         }
       ],
       "en": [
@@ -27642,29 +27642,29 @@
       "ja": [
         {
           "q": "ギリシャのビザ写真のサイズは？",
-          "a": "ギリシャのビザ写真の規格は3.5 × 4.5cmです。背景は白が必要です。"
+          "a": "ギリシャのビザ写真の規格は3.5 × 4.5cmです。背景は灰色が必要です。"
         },
         {
           "q": "ギリシャのビザ写真を自宅で撮れますか？",
-          "a": "はい、サイズ（3.5 × 4.5cm）と背景（白）の条件を満たせば自宅撮影も可能です。MONKOS AIを使えば背景除去と規格クロップが自動で処理されます。"
+          "a": "はい、サイズ（3.5 × 4.5cm）と背景（灰色）の条件を満たせば自宅撮影も可能です。MONKOS AIを使えば背景除去と規格クロップが自動で処理されます。"
         },
         {
           "q": "ギリシャのビザ写真の背景色の規定は？",
-          "a": "ギリシャのビザ写真は白の背景が必要です。影や模様があると不合格になる場合があります。"
+          "a": "ギリシャのビザ写真は灰色の背景が必要です。影や模様があると不合格になる場合があります。"
         }
       ],
       "es": [
         {
           "q": "¿Cuál es el tamaño de la foto de Greece Visa?",
-          "a": "El tamaño de la foto de Greece Visa es 3.5 × 4.5cm. El fondo debe ser blanco."
+          "a": "El tamaño de la foto de Greece Visa es 3.5 × 4.5cm. El fondo debe ser gris."
         },
         {
           "q": "¿Puedo tomar la foto de Greece Visa en casa?",
-          "a": "Sí, siempre que cumpla con los requisitos de tamaño (3.5 × 4.5cm) y fondo (blanco). MONKOS AI elimina automáticamente el fondo y recorta según las especificaciones correctas."
+          "a": "Sí, siempre que cumpla con los requisitos de tamaño (3.5 × 4.5cm) y fondo (gris). MONKOS AI elimina automáticamente el fondo y recorta según las especificaciones correctas."
         },
         {
           "q": "¿Cuál es el color de fondo para la foto de Greece Visa?",
-          "a": "La foto de Greece Visa requiere un fondo blanco. Las sombras o patrones pueden causar rechazo."
+          "a": "La foto de Greece Visa requiere un fondo gris. Las sombras o patrones pueden causar rechazo."
         }
       ]
     },
@@ -27677,8 +27677,8 @@
     "seoDescription": {
       "ko": "그리스 비자 사진 공식 규격·2026년 규정 — 3.5 × 4.5cm, 회색 배경. 규격 검증된 사진 파일을 즉시 다운로드하세요.",
       "en": "Official Greece visa photo requirements 2026 — 3.5 × 4.5cm, gray background. Get a compliant photo online in seconds.",
-      "ja": "ギリシャビザ写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。",
-      "es": "Requisitos oficiales de foto de visa de Grecia 2026 — 3.5 × 4.5cm, fondo blanco. Obtenga una foto conforme al instante."
+      "ja": "ギリシャビザ写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は灰色。規格対応の写真をオンラインで即ダウンロード。",
+      "es": "Requisitos oficiales de foto de visa de Grecia 2026 — 3.5 × 4.5cm, fondo gris. Obtenga una foto conforme al instante."
     },
     "headHeightMin": 32,
     "headHeightMax": 36,
@@ -51418,15 +51418,15 @@
       "ko": [
         {
           "q": "뉴질랜드 여권 사진 크기는?",
-          "a": "뉴질랜드 여권 사진 규격은 3.5 × 4.5cm입니다. 배경은 흰색이어야 합니다."
+          "a": "뉴질랜드 여권 사진 규격은 3.5 × 4.5cm입니다. 배경은 회색이어야 합니다."
         },
         {
           "q": "뉴질랜드 여권 사진을 집에서 찍을 수 있나요?",
-          "a": "네, 규격(3.5 × 4.5cm)과 배경(흰색) 조건만 맞으면 셀프 촬영이 가능합니다. MONKOS AI를 사용하면 배경 제거와 규격 크롭을 자동으로 처리합니다."
+          "a": "네, 규격(3.5 × 4.5cm)과 배경(회색) 조건만 맞으면 셀프 촬영이 가능합니다. MONKOS AI를 사용하면 배경 제거와 규격 크롭을 자동으로 처리합니다."
         },
         {
           "q": "뉴질랜드 여권 사진 배경색 규정은?",
-          "a": "뉴질랜드 여권 사진은 흰색 배경이 필요합니다. 그림자나 무늬가 있으면 반려될 수 있습니다."
+          "a": "뉴질랜드 여권 사진은 회색 배경이 필요합니다. 그림자나 무늬가 있으면 반려될 수 있습니다."
         }
       ],
       "en": [
@@ -51446,29 +51446,29 @@
       "ja": [
         {
           "q": "ニュージーランドのパスポート写真のサイズは？",
-          "a": "ニュージーランドのパスポート写真の規格は3.5 × 4.5cmです。背景は白が必要です。"
+          "a": "ニュージーランドのパスポート写真の規格は3.5 × 4.5cmです。背景は灰色が必要です。"
         },
         {
           "q": "ニュージーランドのパスポート写真を自宅で撮れますか？",
-          "a": "はい、サイズ（3.5 × 4.5cm）と背景（白）の条件を満たせば自宅撮影も可能です。MONKOS AIを使えば背景除去と規格クロップが自動で処理されます。"
+          "a": "はい、サイズ（3.5 × 4.5cm）と背景（灰色）の条件を満たせば自宅撮影も可能です。MONKOS AIを使えば背景除去と規格クロップが自動で処理されます。"
         },
         {
           "q": "ニュージーランドのパスポート写真の背景色の規定は？",
-          "a": "ニュージーランドのパスポート写真は白の背景が必要です。影や模様があると不合格になる場合があります。"
+          "a": "ニュージーランドのパスポート写真は灰色の背景が必要です。影や模様があると不合格になる場合があります。"
         }
       ],
       "es": [
         {
           "q": "¿Cuál es el tamaño de la foto de New Zealand Passport?",
-          "a": "El tamaño de la foto de New Zealand Passport es 3.5 × 4.5cm. El fondo debe ser blanco."
+          "a": "El tamaño de la foto de New Zealand Passport es 3.5 × 4.5cm. El fondo debe ser gris."
         },
         {
           "q": "¿Puedo tomar la foto de New Zealand Passport en casa?",
-          "a": "Sí, siempre que cumpla con los requisitos de tamaño (3.5 × 4.5cm) y fondo (blanco). MONKOS AI elimina automáticamente el fondo y recorta según las especificaciones correctas."
+          "a": "Sí, siempre que cumpla con los requisitos de tamaño (3.5 × 4.5cm) y fondo (gris). MONKOS AI elimina automáticamente el fondo y recorta según las especificaciones correctas."
         },
         {
           "q": "¿Cuál es el color de fondo para la foto de New Zealand Passport?",
-          "a": "La foto de New Zealand Passport requiere un fondo blanco. Las sombras o patrones pueden causar rechazo."
+          "a": "La foto de New Zealand Passport requiere un fondo gris. Las sombras o patrones pueden causar rechazo."
         }
       ]
     },
@@ -51481,8 +51481,8 @@
     "seoDescription": {
       "ko": "뉴질랜드 여권 사진 공식 규격·2026년 규정 — 3.5 × 4.5cm, 회색 배경. 규격 검증된 사진 파일을 즉시 다운로드하세요.",
       "en": "Official New Zealand passport photo requirements 2026 — 3.5 × 4.5cm, gray background. Get a compliant photo online in seconds.",
-      "ja": "ニュージーランドパスポート写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。",
-      "es": "Requisitos oficiales de foto de pasaporte de Nueva Zelanda 2026 — 3.5 × 4.5cm, fondo blanco. Obtenga una foto conforme al instante."
+      "ja": "ニュージーランドパスポート写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は灰色。規格対応の写真をオンラインで即ダウンロード。",
+      "es": "Requisitos oficiales de foto de pasaporte de Nueva Zelanda 2026 — 3.5 × 4.5cm, fondo gris. Obtenga una foto conforme al instante."
     },
     "headHeightMin": 32,
     "headHeightMax": 36,
@@ -51593,15 +51593,15 @@
       "ko": [
         {
           "q": "뉴질랜드 비자 사진 크기는?",
-          "a": "뉴질랜드 비자 사진 규격은 3.5 × 4.5cm입니다. 배경은 흰색이어야 합니다."
+          "a": "뉴질랜드 비자 사진 규격은 3.5 × 4.5cm입니다. 배경은 회색이어야 합니다."
         },
         {
           "q": "뉴질랜드 비자 사진을 집에서 찍을 수 있나요?",
-          "a": "네, 규격(3.5 × 4.5cm)과 배경(흰색) 조건만 맞으면 셀프 촬영이 가능합니다. MONKOS AI를 사용하면 배경 제거와 규격 크롭을 자동으로 처리합니다."
+          "a": "네, 규격(3.5 × 4.5cm)과 배경(회색) 조건만 맞으면 셀프 촬영이 가능합니다. MONKOS AI를 사용하면 배경 제거와 규격 크롭을 자동으로 처리합니다."
         },
         {
           "q": "뉴질랜드 비자 사진 배경색 규정은?",
-          "a": "뉴질랜드 비자 사진은 흰색 배경이 필요합니다. 그림자나 무늬가 있으면 반려될 수 있습니다."
+          "a": "뉴질랜드 비자 사진은 회색 배경이 필요합니다. 그림자나 무늬가 있으면 반려될 수 있습니다."
         }
       ],
       "en": [
@@ -51621,29 +51621,29 @@
       "ja": [
         {
           "q": "ニュージーランドのビザ写真のサイズは？",
-          "a": "ニュージーランドのビザ写真の規格は3.5 × 4.5cmです。背景は白が必要です。"
+          "a": "ニュージーランドのビザ写真の規格は3.5 × 4.5cmです。背景は灰色が必要です。"
         },
         {
           "q": "ニュージーランドのビザ写真を自宅で撮れますか？",
-          "a": "はい、サイズ（3.5 × 4.5cm）と背景（白）の条件を満たせば自宅撮影も可能です。MONKOS AIを使えば背景除去と規格クロップが自動で処理されます。"
+          "a": "はい、サイズ（3.5 × 4.5cm）と背景（灰色）の条件を満たせば自宅撮影も可能です。MONKOS AIを使えば背景除去と規格クロップが自動で処理されます。"
         },
         {
           "q": "ニュージーランドのビザ写真の背景色の規定は？",
-          "a": "ニュージーランドのビザ写真は白の背景が必要です。影や模様があると不合格になる場合があります。"
+          "a": "ニュージーランドのビザ写真は灰色の背景が必要です。影や模様があると不合格になる場合があります。"
         }
       ],
       "es": [
         {
           "q": "¿Cuál es el tamaño de la foto de New Zealand Visa?",
-          "a": "El tamaño de la foto de New Zealand Visa es 3.5 × 4.5cm. El fondo debe ser blanco."
+          "a": "El tamaño de la foto de New Zealand Visa es 3.5 × 4.5cm. El fondo debe ser gris."
         },
         {
           "q": "¿Puedo tomar la foto de New Zealand Visa en casa?",
-          "a": "Sí, siempre que cumpla con los requisitos de tamaño (3.5 × 4.5cm) y fondo (blanco). MONKOS AI elimina automáticamente el fondo y recorta según las especificaciones correctas."
+          "a": "Sí, siempre que cumpla con los requisitos de tamaño (3.5 × 4.5cm) y fondo (gris). MONKOS AI elimina automáticamente el fondo y recorta según las especificaciones correctas."
         },
         {
           "q": "¿Cuál es el color de fondo para la foto de New Zealand Visa?",
-          "a": "La foto de New Zealand Visa requiere un fondo blanco. Las sombras o patrones pueden causar rechazo."
+          "a": "La foto de New Zealand Visa requiere un fondo gris. Las sombras o patrones pueden causar rechazo."
         }
       ]
     },
@@ -51656,8 +51656,8 @@
     "seoDescription": {
       "ko": "뉴질랜드 비자 사진 공식 규격·2026년 규정 — 3.5 × 4.5cm, 회색 배경. 규격 검증된 사진 파일을 즉시 다운로드하세요.",
       "en": "Official New Zealand visa photo requirements 2026 — 3.5 × 4.5cm, gray background. Get a compliant photo online in seconds.",
-      "ja": "ニュージーランドビザ写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は白。規格対応の写真をオンラインで即ダウンロード。",
-      "es": "Requisitos oficiales de foto de visa de Nueva Zelanda 2026 — 3.5 × 4.5cm, fondo blanco. Obtenga una foto conforme al instante."
+      "ja": "ニュージーランドビザ写真の公式サイズ・2026年規定 — 3.5 × 4.5cm、背景は灰色。規格対応の写真をオンラインで即ダウンロード。",
+      "es": "Requisitos oficiales de foto de visa de Nueva Zelanda 2026 — 3.5 × 4.5cm, fondo gris. Obtenga una foto conforme al instante."
     },
     "headHeightMin": 32,
     "headHeightMax": 36,
