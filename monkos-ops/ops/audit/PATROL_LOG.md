@@ -219,3 +219,9 @@
 > monkos-portal-dev  monk-image-engine@monkos.iam.gserviceaccount.com
 > monkos-studio      monk-image-engine@monkos.iam.gserviceaccount.com
 ```
+
+## [2026-08-24 09:30 KST] 순찰 감지
+```diff
+< ## secret map (2026-08-23 09:30)
+> ## secret map (2026-08-24 09:30)
+```
