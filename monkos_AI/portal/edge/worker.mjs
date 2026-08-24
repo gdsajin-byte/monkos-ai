@@ -142,7 +142,16 @@ async function fetchAndCacheCms(request, env, key, ctx) {
   const originRes = await fetch(originRequest(request, env));
   const ct = originRes.headers.get('Content-Type') || '';
   if (originRes.status !== 200 || !ct.includes('text/html')) return { res: originRes, html: null, setCookies: [] };
-  const setCookies = typeof originRes.headers.getSetCookie === 'function' ? originRes.headers.getSetCookie() : [];
+  let setCookies = [];
+  if (typeof originRes.headers.getSetCookie === 'function') {
+    setCookies = originRes.headers.getSetCookie();
+  } else {
+    // 런타임에 getSetCookie 부재 시 무음 강등 금지 (쌍아 관찰 2번) — 로그로 가시화하고
+    // 단일 헤더 폴백 (다중 Set-Cookie는 유실될 수 있으나 sid 발급은 보존됨)
+    console.warn('[edge] Headers.getSetCookie 부재 — 단일 Set-Cookie 폴백 사용. 런타임 호환성 확인 필요');
+    const single = originRes.headers.get('Set-Cookie');
+    if (single) setCookies = [single];
+  }
   const html = await originRes.text();
   const store = new Response(html, {
     headers: {
