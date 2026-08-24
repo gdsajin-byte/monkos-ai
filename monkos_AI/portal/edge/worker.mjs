@@ -78,6 +78,83 @@ function firePageView(request, env, ctx) {
   ctx.waitUntil(fetch(`${env.ORIGIN_URL}/api/track`, { method: 'POST', headers, body: payload }).catch(() => {}));
 }
 
+// ─── Phase 2: CMS 표면 엣지 캐시 (2026-08-24) ───────────────────
+// SSG 대신 캐시+백그라운드 갱신(SWR) 채택 — Firestore CMS의 "발행 훅 재빌드" 인프라 없이
+// 오리진 부하 제거. 정본은 오리진 SSR 단일 유지 (이원화 없음). 발행 반영 ≤ TTL.
+// board(고객 글쓰기)·headshot(유료 퍼널)은 실시간성 우선으로 캐시 제외.
+const CMS_TTL_MS = 600 * 1000; // 10분
+const CMS_EXACT = new Set([
+  '/', '/ja', '/en', '/ja/', '/en/',
+  '/blog', '/ja/blog', '/en/blog',
+  '/faq', '/ja/faq', '/en/faq',
+  '/pricing', '/ja/pricing', '/en/pricing',
+  '/guide', '/ja/guide', '/en/guide',
+  '/guide/ai-photo', '/ja/guide/ai-photo', '/en/guide/ai-photo',
+  '/gallery', '/ja/gallery', '/en/gallery',
+]);
+const CMS_PREFIX = /^\/(?:ja\/|en\/)?blog\//;
+const CMS_CACHE_PARAMS = ['lang', 'cat', 'page']; // blog 리스트 실사용 파라미터만 — utm 등은 키에서 제외 (캐시 파편화 방지)
+
+function cmsCacheable(path) {
+  return CMS_EXACT.has(path) || CMS_PREFIX.test(path);
+}
+
+/** 캐시 키: 경로 + 화이트리스트 파라미터만 (지역·세션 무관 — 서빙 시 지역 재작성) */
+function cmsCacheKey(request) {
+  const url = new URL(request.url);
+  const key = new URL(`https://monkos.ai${url.pathname}`);
+  for (const p of CMS_CACHE_PARAMS) {
+    const v = url.searchParams.get(p);
+    if (v) key.searchParams.set(p, v);
+  }
+  return new Request(key.toString(), { method: 'GET' });
+}
+
+/** 오리진 fetch → 200 HTML이면 캐시 저장용 사본 반환 (Set-Cookie 제거 — 세션 유출 방지 필수) */
+async function fetchAndCacheCms(request, env, key, ctx) {
+  const originRes = await fetch(originRequest(request, env));
+  const ct = originRes.headers.get('Content-Type') || '';
+  if (originRes.status !== 200 || !ct.includes('text/html')) return { res: originRes, html: null };
+  const html = await originRes.text();
+  const store = new Response(html, {
+    headers: {
+      'Content-Type': ct,
+      'X-Edge-Cached-At': String(Date.now()),
+      // 저장본 CC는 캐시 가능이어야 함 — Cache API가 no-store면 저장 자체를 거부 (2026-08-24 실측).
+      // 신선도 판정은 X-Edge-Cached-At + CMS_TTL_MS가 정본. 클라이언트 응답은 별도로 no-store.
+      'Cache-Control': 'public, max-age=86400',
+    },
+  });
+  ctx.waitUntil(caches.default.put(key, store));
+  return { res: null, html };
+}
+
+async function serveCms(request, env, ctx) {
+  const country = request.cf?.country || '';
+  const key = cmsCacheKey(request);
+  const cached = await caches.default.match(key);
+  if (cached) {
+    const cachedAt = parseInt(cached.headers.get('X-Edge-Cached-At') || '0', 10);
+    if (Date.now() - cachedAt > CMS_TTL_MS) {
+      // stale-while-revalidate: 즉시 응답 + 백그라운드 갱신 (오리진 다운 시 스테일이 가용성 방어)
+      ctx.waitUntil(fetchAndCacheCms(request, env, key, ctx).catch(() => {}));
+    }
+    firePageView(request, env, ctx); // 캐시 히트 = 오리진 미도달 → 엣지가 계측 대행
+    const html = await cached.text();
+    return new Response(rewriteRegion(html, country), {
+      status: 200,
+      headers: { 'Content-Type': cached.headers.get('Content-Type') || 'text/html; charset=utf-8', 'Cache-Control': 'no-store', 'X-Edge-Cache': 'hit' },
+    });
+  }
+  // 미스: 오리진 서빙 (오리진이 직접 page_view 계측 — 중복 발사 없음)
+  const { res, html } = await fetchAndCacheCms(request, env, key, ctx);
+  if (html === null) return res;
+  return new Response(rewriteRegion(html, country), {
+    status: 200,
+    headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', 'X-Edge-Cache': 'miss' },
+  });
+}
+
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
@@ -87,6 +164,9 @@ export default {
     const dynamicPrefix = /^\/(api|auth|admin|toss-|crop|tg)\b|^\/(llms\.txt|sitemap\.xml|sitemap-static\.xml|sitemap-blog\.xml)$/;
     if (request.method !== 'GET' && request.method !== 'HEAD') return fetch(originRequest(request, env));
     if (dynamicPrefix.test(path)) return fetch(originRequest(request, env));
+
+    // 1.5) CMS 표면 엣지 캐시 (GET 한정 — HEAD는 오리진)
+    if (request.method === 'GET' && cmsCacheable(path)) return serveCms(request, env, ctx);
 
     // 2) 정적 자산 시도 (specs SSG 산출물 + css/js/images/assets)
     const assetRes = await env.ASSETS.fetch(request);

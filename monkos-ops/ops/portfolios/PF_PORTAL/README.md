@@ -99,6 +99,7 @@ status: active
 | 08/13 | 막내1 | **회원 탈퇴 처리 도구 신설 (Phase A)** — 실 탈퇴 요청 수신 대비 집행 경로 부재 해소. `credits.sh delete` 서브커맨드(dry-run 기본 + `--confirm` 게이트, 이메일 마스킹 감사 2중 기록, 부분 실패 비중단·exit 2). 삭제 범위 실측 교정 2건: `free_quota`는 doc id가 `{date}_sha256(ip\|sid)`로 uid 무관 → 제외, `cs_conversations`는 userId 필드 부재 → telegram_links 역참조. ch2 7조 이행으로 `CUSTOMER_GCS_BUCKET` config.js 정본화(동작 동일). dry-run 실측: 대상 users 1건뿐(생성물·결제 0) | [COMPLETION](../../reports/2026-08/COMPLETION_20260813_iMac막내1_PORTAL_회원탈퇴처리도구.md) | ✅ |
 | 08/13 | 막내1 | **회원 탈퇴 Phase B 이행 완료** — 쌍아 판정 반영(`telegramGateCodes` 삭제 대상 편입 보정) 후 작가님 승인 하 `--confirm` 실행. users 1건 삭제·실패 0건·exit 0. 사후 검증 3중(query 무결과 / 로컬 감사 로그 마스킹 1행 / Firestore `audit` `account_delete` 1건). 방침 L72 "회원 탈퇴 시 즉시 파기" 이행, 잔존 PII 0건. 요청 14:30 → 완료 16:24 | 동 COMPLETION §8-9 | ✅ |
 | 08/24 | iMac/민아 | **포털 CF 프록시 이관 + 신뢰 엣지 패치 prod 00547** — monkos.ai 전 트래픽 CF Worker 경유 전환. edge-trust.js 신설(CF 대역 신뢰 프록시: 레이트리밋 실IP·지역 감지·page_view 허용)+auth.js effectiveHost 13곳(OAuth redirect_uri run.app 누출 방지). 직행 경로 무회귀. 오리진 부하 실측 후 웜 해제(Phase 3) 판단 예정 | [COMPLETION](../../reports/2026-08/COMPLETION_20260824_iMac민아_specs_CF엣지정적화_컷오버.md) | ✅ prod |
+| 08/24 | iMac/민아 | **Phase 2 — CMS 표면 엣지 캐시** (작가님 "p2 진행", 경로③) — home·blog·faq·pricing·guide·gallery를 엣지 캐시(TTL 10분+SWR)로 서빙. SSG 대신 캐시 채택(정본=오리진 SSR 단일 유지). Set-Cookie 제거 저장(세션 유출 차단)·board/headshot 제외·utm 키 통합. TTFB 1.08→0.46s 실측 | [COMPLETION](../../reports/2026-08/COMPLETION_20260824_iMac민아_CMS표면_엣지캐시_Phase2.md) | ✅ prod |
 
 ---
 
