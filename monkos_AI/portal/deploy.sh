@@ -251,4 +251,24 @@ elif [ "$ENV" = "prod" ]; then
   echo -e "    --to-revisions REVISION_NAME=100"
 fi
 
+# ─── 엣지 정적본 드리프트 검사 (2026-08-25 신설 — 쌍아 🟡 "SSG 재배포 누락 = 무음 구본" 가시화) ───
+# specs 렌더 정본이 엣지 SSG 빌드 시점(gitRev) 이후 변경됐으면 엣지 재배포 없이는 라이브가 구본이다.
+EDGE_MANIFEST="$(dirname "$0")/tools/specs-ssg/dist/build-manifest.json"
+SPECS_SOURCES="lib/cms/specs-data.json lib/cms/render-specs.js lib/cms/specs-i18n.js lib/cms/specs-url.js lib/cms/components lib/cms/render-shell.js"
+if [ -f "$EDGE_MANIFEST" ]; then
+  SSG_REV=$(grep -o '"gitRev": *"[^"]*"' "$EDGE_MANIFEST" | sed 's/.*"gitRev": *"\([^"]*\)".*/\1/')
+  if [ -n "$SSG_REV" ] && git -C "$(dirname "$0")" cat-file -e "${SSG_REV}^{commit}" 2>/dev/null; then
+    DRIFT=$(cd "$(dirname "$0")" && git diff --name-only "$SSG_REV" HEAD -- $SPECS_SOURCES 2>/dev/null)
+    if [ -n "$DRIFT" ]; then
+      echo -e "${RED}⚠️  엣지 정적본 드리프트 감지 — specs 정본이 SSG 빌드(${SSG_REV}) 이후 변경됨:${NC}"
+      echo "$DRIFT" | sed 's/^/    /'
+      echo -e "${RED}    라이브 specs는 구본 서빙 중. 반드시 실행: ./edge/deploy.sh${NC}"
+    else
+      echo -e "${GREEN}✓ 엣지 정적본 드리프트 없음 (SSG rev ${SSG_REV})${NC}"
+    fi
+  fi
+else
+  echo -e "${YELLOW}⚠️  엣지 SSG 매니페스트 없음 — 이 머신에서 엣지 빌드 이력 없음. specs 변경 배포라면 ./edge/deploy.sh 필요 여부 확인${NC}"
+fi
+
 echo -e "${BLUE}========================================${NC}"
