@@ -86,7 +86,7 @@ for (const file of files) {
       title,
       content: body,
       summary: String(fm.summary || '').substring(0, 160),
-      thumbnail: '',
+      thumbnail: fm.thumbnail || '',
       tags: Array.isArray(fm.tags) ? fm.tags : [],
       lang: fm.lang,
       published: true,
