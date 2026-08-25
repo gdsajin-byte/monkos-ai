@@ -2,7 +2,12 @@
 slug: singapore-visa-passport-photo-spec-guide
 lang: ko
 author: MONKOS
-status: draft
+status: published
+head_term: 싱가포르 비자 사진 규격
+category: 사진
+cta_link: /specs/visa/sg
+cta_title: 싱가포르 규격 사진 바로 만들기
+cta_button: 무료로 만들기
 tags: [싱가포르비자사진, 싱가포르여권사진, 비자사진규격, 여권사진규격, 증명사진, ICA]
 summary: 싱가포르 비자·여권 사진은 크기가 3.5×4.5cm로 한국과 똑같습니다. 그래서 오히려 방심하기 쉽습니다. 실제 반려는 파일 용량 60KB, 3개월 이내 촬영, 얼굴 높이 2.5~3.5cm에서 납니다. ICA 기준으로 정리했습니다.
 ---
