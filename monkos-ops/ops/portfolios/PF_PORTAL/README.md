@@ -103,6 +103,7 @@ status: active
 | 08/24 | iMac/쌍아 | **민아 08-24 CF 엣지 작업 4건 사후 추인(조건부)** — 절차·권한·기록 전항목 적법, 롤백 사유 없음. 실측 결함 3건 적출: 🔴P1 CMS 캐시 키가 언어 가변 입력(쿠키·Accept-Language) 누락 → ko 기본 8표면 언어 혼선 조건 라이브 / 🟠P2 캐시 히트 시 `monkos_sid` 미발급 → 신규 유입 page_view sessionId 결손 / 🟠P2 edge-trust 신뢰 앵커가 CF **공용** 대역 → 타 테넌트 경유로 레이트리밋 우회·권역 위조·page_view 주입 가능. P1 보정 지시서 건의 | [REVIEW](../../reports/2026-08/REVIEW_20260824_iMac쌍아_민아_CF엣지이관_사후추인.md) | ⏳ 보정 대기 |
 | 08/24 | iMac/쌍아 | **P1·P2-1 보정 재검증(부분 합격 4/5)** — 커밋 `7b6e0332`. P1 언어 오염 **종결**(ja/ko/en 버킷 독립 히트 실측, `elang` 무조건 부착으로 구엔트리 orphan화) · 미스 경로 Set-Cookie 전달 복원 확인. 🔴 잔여: **specs 정적 경로 sid 미발급**(`/specs/*` Set-Cookie 0건 — `env.ASSETS` 분기 미보정, 결손 최대 지분) + server.js 미러 주석 미기재. ⏳ P2-2는 배포 순서 ①시크릿→②워커→③오리진 준수 조건 | [REVIEW §6](../../reports/2026-08/REVIEW_20260824_iMac쌍아_민아_CF엣지이관_사후추인.md) | ⏳ 재작업 |
 | 08/24 | iMac/쌍아 | **최종 재검증 — 전 항목 합격, 사후 추인 종결** — 커밋 `cf3f4a97`. specs 정적 sid 3/3 발급 실측(직전 0/3) · `server.js:93` 미러 주석 · P2-2 AND 3항(CF대역+`timingSafeEqual` 공유키). **배포 순서 실증 Worker 18:27→Origin 18:31로 무신뢰 구간 0**, 신뢰 성립(`redirect_uri=monkos.ai`)·음성테스트(run.app 위조→비신뢰) 양방 확인. P1 회귀 없음. 후속 경미 3건 관찰 이관 | [REVIEW §7](../../reports/2026-08/REVIEW_20260824_iMac쌍아_민아_CF엣지이관_사후추인.md) | ✅ 종결 |
+| 08/25 | iMac/민아 | **블로그 선언형 발행 파이프라인 파일럿** (작가님 진단·직접 실행 지시) — 실측: 한 달+ 발행 0, Firestore 미발행 132건 적체(병목=발행 게이트). publish.mjs 신설(dry-run 기본, 검증→발행→라이브 200 확인 1콜) + 싱가포르 가이드 ko/en 발행 완주(en은 번역 아닌 헤드텀 재작성). 체계 전환은 PROPOSAL로 쌍아 협의 회부 | [PROPOSAL](../proposals/PROPOSAL_20260825_민아_블로그_선언형_발행_파이프라인.md) | ✅ 파일럿 |
 
 ---
 
