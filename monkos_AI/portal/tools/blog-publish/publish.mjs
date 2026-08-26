@@ -35,7 +35,9 @@ if (files.length === 0) {
 
 const { Firestore } = await import('@google-cloud/firestore');
 const db = new Firestore({ projectId: process.env.PROJECT_ID });
-const col = db.collection('blog_posts');
+// 기본은 정본 컬렉션. BLOG_COLLECTION은 필드 보존 계약 검증용 스크래치 컬렉션 주입구다
+// (프로덕션 blog_posts에 테스트 문서를 만들지 않기 위함 — 라이브 노출·색인 방지).
+const col = db.collection(process.env.BLOG_COLLECTION || 'blog_posts');
 
 const SUFFIX = { ko: 'kr', ja: 'ja', en: 'en' };
 
@@ -88,6 +90,40 @@ function stripTitleH1(body, title) {
   return lines.join('\n').trim();
 }
 
+/**
+ * 선택 필드 계약 — [문서 필드, frontmatter 키, 신규 문서 기본값]
+ *
+ * `set()`은 미기재 필드를 지운다. 따라서 원본이 선언하지 않은 선택 필드를 기본값으로 채워 쓰면,
+ * 어드민·후속 도구가 넣은 값이 재발행 때마다 소멸한다 (08-26 실사고: 에세이 25건 CTA가
+ * `cta_*` 미선언 탓에 전역 CTA로 원복될 뻔함. `ogImage` 보존 a6d29c73은 같은 사고의 1필드 대응이었다).
+ *
+ * 규칙: **원본이 선언하면 원본이 이기고, 미선언이면 기존 문서 값을 유지한다.**
+ * 선언 여부는 `fm`의 **키 존재**로 판정한다 — 빈 문자열 선언(`category:`)과 미선언은 다르다.
+ * 신규 문서(기존 문서 없음)는 기본값으로 종전 동작을 유지한다.
+ */
+const OPTIONAL_FIELDS = [
+  ['summary', 'summary', ''],
+  ['thumbnail', 'thumbnail', ''],
+  ['tags', 'tags', []],
+  ['category', 'category', ''],
+  ['author', 'author', 'MONKOS'],
+  ['pinned', 'pinned', false],
+  ['ctaEnabled', 'cta_enabled', true],
+  ['ctaImage', 'cta_image', ''],
+  ['ctaTitle', 'cta_title', ''],
+  ['ctaDescription', 'cta_description', ''],
+  ['ctaButtonText', 'cta_button', ''],
+  ['ctaLink', 'cta_link', ''],
+];
+
+/** frontmatter는 전부 문자열/배열로 파싱된다 — 스키마 타입에 맞춰 좁힌다 */
+function coerceField(field, v) {
+  if (field === 'summary') return String(v).substring(0, 160);
+  if (field === 'tags') return Array.isArray(v) ? v : (String(v).trim() ? [String(v).trim()] : []);
+  if (field === 'pinned' || field === 'ctaEnabled') return String(v).trim().toLowerCase() !== 'false';
+  return v;
+}
+
 function validate(fm, body, file) {
   const errs = [];
   if (!fm.slug) errs.push('slug 없음');
@@ -114,51 +150,49 @@ for (const file of files) {
     const docId = `${baseSlug}-${SUFFIX[fm.lang]}`;
     const now = new Date().toISOString();
 
+    const existing = await col.doc(docId).get();
+    if (existing.exists && !ALLOW_UPDATE) {
+      throw new Error(`${docId} 이미 존재 — 갱신하려면 --update`);
+    }
+    const prev = existing.exists ? existing.data() : null;
+
     // blog.js handleBlogCreate 스키마 미러
+    // 도구 소유 필드 — 원본이 항상 이긴다.
     const post = {
       slug: docId,
       baseSlug,
       title,
       content,
-      summary: String(fm.summary || '').substring(0, 160),
-      thumbnail: fm.thumbnail || '',
-      tags: Array.isArray(fm.tags) ? fm.tags : [],
       lang: fm.lang,
       published: true,
-      author: fm.author || 'MONKOS',
-      pinned: false,
-      category: fm.category || '',
       updatedAt: now,
-      viewCount: 0,
-      ctaEnabled: true,
-      ctaImage: '',
-      ctaTitle: fm.cta_title || '',
-      ctaDescription: '',
-      ctaButtonText: fm.cta_button || '',
-      ctaLink: fm.cta_link || '',
+      createdAt: prev?.createdAt || now,
+      viewCount: prev?.viewCount || 0,
     };
 
-    const existing = await col.doc(docId).get();
-    if (existing.exists && !ALLOW_UPDATE) {
-      throw new Error(`${docId} 이미 존재 — 갱신하려면 --update`);
+    // 선택 필드 — 원본이 선언하면 원본이 이기고, 미선언이면 기존 문서 값을 유지한다.
+    const preserved = [];
+    for (const [field, key, dflt] of OPTIONAL_FIELDS) {
+      if (key in fm) {
+        post[field] = coerceField(field, fm[key]);
+      } else if (prev && field in prev) {
+        post[field] = prev[field];
+        preserved.push(field);
+      } else {
+        post[field] = dflt;
+      }
     }
-    if (existing.exists) {
-      const prev = existing.data();
-      post.createdAt = prev.createdAt || now;
-      post.viewCount = prev.viewCount || 0;
-      // ogImage는 blog.js generateOgImage 산출물이며 본 도구가 만들지 않는다.
-      // set()은 미기재 필드를 지우므로 명시 보존하지 않으면 OG 카드가 소멸해
-      // og:image가 thumbnail 폴백으로 강등된다 (render-blog.js:387).
-      if (prev.ogImage) post.ogImage = prev.ogImage;
-    } else {
-      post.createdAt = now;
-    }
+
+    // ogImage는 blog.js generateOgImage 산출물이며 본 도구가 만들지 않는다.
+    // frontmatter 선언 경로가 없으므로 선택 필드 계약이 아니라 무조건 보존 대상이다.
+    if (prev?.ogImage) { post.ogImage = prev.ogImage; preserved.push('ogImage'); }
 
     const prefix = fm.lang === 'ko' ? '' : `/${fm.lang}`;
     const url = `https://monkos.ai${prefix}/blog/${baseSlug}`;
     if (!DO_PUBLISH) {
       const h1 = content.length !== body.length ? ' H1제거' : '';
-      console.log(`[dry-run] ${docId} ← ${basename(file)} (${content.length}자${h1}, cat=${post.category || '-'}, cta=${post.ctaLink || '-'}) → ${url}`);
+      const keep = preserved.length ? `, 보존=${preserved.join('/')}` : '';
+      console.log(`[dry-run] ${docId} ← ${basename(file)} (${content.length}자${h1}, cat=${post.category || '-'}, cta=${post.ctaLink || '-'}${keep}) → ${url}`);
       continue;
     }
     await col.doc(docId).set(post);
