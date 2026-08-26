@@ -69,6 +69,12 @@ h1 { font-size: 24px; font-weight: 700; color: var(--text-bright); margin-bottom
   font-size: 10px; padding: 1px 6px; border-radius: 3px;
   background: var(--surface2); border: 1px solid var(--border); color: var(--accent2);
 }
+.pair-body .gate-tag {
+  font-size: 10px; padding: 1px 6px; border-radius: 3px; border: 1px solid var(--border);
+  background: var(--surface2); white-space: nowrap;
+}
+.pair-body .gate-paid { color: #22c55e; border-color: #22c55e55; }
+.pair-body .gate-free { color: var(--muted); }
 
 .loading, .empty { text-align: center; padding: 64px 0; color: var(--text-dim); font-size: 14px; }
 .error-msg { color: var(--danger); font-size: 13px; padding: 12px; background: #fef2f2; border-radius: 8px; }
@@ -147,17 +153,39 @@ function imgCell(url, kind, label) {
   </figure>`;
 }
 
+// createdAt은 UTC ISO 정본 — 화면은 KST로 변환해 표기한다 (2026-08-26).
+// 종전에는 ISO를 그대로 잘라 써서 실제보다 9시간 이른 시각으로 읽혔다(운영 오판 사례 발생).
+function kst(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (isNaN(d)) return String(iso).slice(0, 16).replace('T', ' ');
+  const p = new Intl.DateTimeFormat('sv-SE', {
+    timeZone: 'Asia/Seoul', year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', hour12: false,
+  }).format(d);
+  return p.replace('T', ' ') + ' KST';
+}
+
+// 게이트 뱃지 — 유료(크레딧/토큰)와 무료 트랙을 화면에서 즉시 구분
+function gateBadge(p) {
+  if (p.gate === 'free') return '<span class="gate-tag gate-free">무료</span>';
+  if (p.gate === 'credits' || p.gate === 'token') return `<span class="gate-tag gate-paid">유료·${esc(p.gate)}</span>`;
+  return p.hasT1 ? '<span class="gate-tag gate-paid">유료(T1)</span>' : '';
+}
+
 function renderCard(p) {
   const slugDisplay = p.slug || p.style || '';
+  const uidLabel = p.authenticated ? p.userId : p.userId + ' (비로그인)';
   return `<div class="pair">
     <div class="pair-imgs">
       ${imgCell(p.originalUrl, 'original', '원본')}
       ${imgCell(p.generatedUrl, 'generated', 'AI 결과')}
     </div>
     <div class="pair-body">
-      <span class="uid" title="${esc(p.userId)}">${esc(p.userId.length > 20 ? p.userId.slice(0, 20) + '…' : p.userId)}</span>
+      <span class="uid" title="${esc(uidLabel)}">${esc(uidLabel.length > 20 ? uidLabel.slice(0, 20) + '…' : uidLabel)}</span>
       ${slugDisplay ? `<span class="slug-tag">${esc(slugDisplay)}</span>` : ''}
-      <span class="ts">${(p.created || '').slice(0, 16).replace('T', ' ')}</span>
+      ${gateBadge(p)}
+      <span class="ts">${esc(kst(p.created))}</span>
     </div>
   </div>`;
 }
