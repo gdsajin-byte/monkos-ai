@@ -11,7 +11,7 @@
  *   node publish.mjs <md파일...> --publish --update  # 기존 문서 갱신 허용
  *
  * frontmatter 계약 (기존 루틴 필드 + 확장):
- *   slug(필수) lang(필수 ko|en|ja) author status tags[] summary
+ *   slug(필수) lang(필수 ko|en|ja — KR/JP/EN 별칭 허용, 그 외 값·미표기는 에러) author status tags[] summary
  *   [확장] head_term category cta_link cta_title cta_button
  *
  * 규칙: 스키마는 lib/cms/blog.js handleBlogCreate 정본을 미러 (필드 불일치 = 렌더 파손).
@@ -39,6 +39,18 @@ const col = db.collection('blog_posts');
 
 const SUFFIX = { ko: 'kr', ja: 'ja', en: 'en' };
 
+/**
+ * lang 별칭 정규화 — 원본 루틴(contents/blog)이 KR/JP/EN 표기를 써서 ko|en|ja 검증에 튕긴다.
+ * 등록된 별칭만 흡수하고, 미등록 값은 원값 그대로 남겨 validate가 에러로 튕기게 한다 (무음 폴백 금지).
+ * lang 필드 자체가 없으면 추정하지 않는다 — 파일명 접미사(_KR 등)는 판정 근거가 아니다 (frontmatter가 정본).
+ */
+const LANG_ALIAS = { KR: 'ko', kr: 'ko', ko: 'ko', JP: 'ja', jp: 'ja', ja: 'ja', EN: 'en', en: 'en' };
+function normalizeLang(fm) {
+  if (!fm.lang) return; // 미표기 → validate에서 '(lang 없음)' 에러
+  const norm = LANG_ALIAS[fm.lang];
+  if (norm) fm.lang = norm;
+}
+
 /** frontmatter 경량 파서 — key: value / key: [a, b] 만 지원 (루틴 템플릿 계약) */
 function parseFrontmatter(raw, file) {
   const m = raw.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
@@ -60,7 +72,8 @@ function validate(fm, body, file) {
   const errs = [];
   if (!fm.slug) errs.push('slug 없음');
   if (fm.slug && (/[가-힣]/.test(fm.slug) || /https?:|\//.test(fm.slug))) errs.push(`slug 부적합: ${fm.slug}`);
-  if (!SUFFIX[fm.lang]) errs.push(`lang 부적합: ${fm.lang} (ko|en|ja)`);
+  if (!fm.lang) errs.push('lang 없음');
+  else if (!SUFFIX[fm.lang]) errs.push(`lang 부적합: ${fm.lang} (ko|en|ja)`);
   const h1 = body.match(/^#\s+(.+)$/m);
   if (!h1) errs.push('본문 H1 제목 없음');
   if (body.length < 500) errs.push(`본문 과소 (${body.length}자)`);
@@ -74,6 +87,7 @@ for (const file of files) {
   try {
     const raw = readFileSync(file, 'utf8');
     const { fm, body } = parseFrontmatter(raw, file);
+    normalizeLang(fm);
     const title = validate(fm, body, file);
     const baseSlug = fm.slug.replace(/-(kr|ja|en)$/, '');
     const docId = `${baseSlug}-${SUFFIX[fm.lang]}`;
