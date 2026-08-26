@@ -68,6 +68,26 @@ function parseFrontmatter(raw, file) {
   return { fm, body: m[2].trim() };
 }
 
+/**
+ * 제목 중복 제거 — 템플릿(render-blog.js:525)이 post.title을 이미 <h1>으로 출력하고
+ * blogRenderer(render-shell.js:9)가 본문 헤딩을 1단계 강등하므로, content 선두 H1이 <h2>로 재노출된다.
+ *
+ * 규칙(의도적 최소): 본문의 **첫 비어있지 않은 줄이 H1이고 그 텍스트가 추출된 title과 동일할 때만**
+ * 그 한 줄을 제거한다. 그 외 위치의 `#` 헤딩은 불가침 — 섹션 헤더를 `#`로 쓰는 원본이 실존한다
+ * (vol36: 첫 줄이 HTML 주석이고 `#` 8개가 전부 섹션 헤더). "선두 H1 제거"로 넓히면 그 파일이 잘려나간다.
+ * validate의 title 추출 로직은 본 변경 범위 밖이다.
+ */
+function stripTitleH1(body, title) {
+  const lines = body.split('\n');
+  let i = 0;
+  while (i < lines.length && lines[i].trim() === '') i++;
+  if (i >= lines.length) return body;
+  const m = lines[i].match(/^#\s+(.+?)\s*$/);
+  if (!m || m[1].trim() !== title) return body; // 첫 줄이 H1이 아니거나 제목과 불일치 → 불가침
+  lines.splice(i, 1);
+  return lines.join('\n').trim();
+}
+
 function validate(fm, body, file) {
   const errs = [];
   if (!fm.slug) errs.push('slug 없음');
@@ -89,6 +109,7 @@ for (const file of files) {
     const { fm, body } = parseFrontmatter(raw, file);
     normalizeLang(fm);
     const title = validate(fm, body, file);
+    const content = stripTitleH1(body, title);
     const baseSlug = fm.slug.replace(/-(kr|ja|en)$/, '');
     const docId = `${baseSlug}-${SUFFIX[fm.lang]}`;
     const now = new Date().toISOString();
@@ -98,7 +119,7 @@ for (const file of files) {
       slug: docId,
       baseSlug,
       title,
-      content: body,
+      content,
       summary: String(fm.summary || '').substring(0, 160),
       thumbnail: fm.thumbnail || '',
       tags: Array.isArray(fm.tags) ? fm.tags : [],
@@ -122,8 +143,13 @@ for (const file of files) {
       throw new Error(`${docId} 이미 존재 — 갱신하려면 --update`);
     }
     if (existing.exists) {
-      post.createdAt = existing.data().createdAt || now;
-      post.viewCount = existing.data().viewCount || 0;
+      const prev = existing.data();
+      post.createdAt = prev.createdAt || now;
+      post.viewCount = prev.viewCount || 0;
+      // ogImage는 blog.js generateOgImage 산출물이며 본 도구가 만들지 않는다.
+      // set()은 미기재 필드를 지우므로 명시 보존하지 않으면 OG 카드가 소멸해
+      // og:image가 thumbnail 폴백으로 강등된다 (render-blog.js:387).
+      if (prev.ogImage) post.ogImage = prev.ogImage;
     } else {
       post.createdAt = now;
     }
@@ -131,7 +157,8 @@ for (const file of files) {
     const prefix = fm.lang === 'ko' ? '' : `/${fm.lang}`;
     const url = `https://monkos.ai${prefix}/blog/${baseSlug}`;
     if (!DO_PUBLISH) {
-      console.log(`[dry-run] ${docId} ← ${basename(file)} (${body.length}자, cat=${post.category || '-'}, cta=${post.ctaLink || '-'}) → ${url}`);
+      const h1 = content.length !== body.length ? ' H1제거' : '';
+      console.log(`[dry-run] ${docId} ← ${basename(file)} (${content.length}자${h1}, cat=${post.category || '-'}, cta=${post.ctaLink || '-'}) → ${url}`);
       continue;
     }
     await col.doc(docId).set(post);
