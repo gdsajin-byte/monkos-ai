@@ -149,7 +149,9 @@ function imgCell(url, kind, label) {
   if (!url) return `<div class="pair-missing">${label} 없음</div>`;
   return `<figure>
     <figcaption class="cap-${kind}">${label}</figcaption>
-    <img src="${esc(url)}" alt="${label}" loading="lazy" data-full="${esc(url)}">
+    <!-- decoding=async + fetchpriority=low — 40건 × 2장 = 81장 동시 요청으로 초기 로드가 느렸다.
+         lazy만으로는 3열 그리드 특성상 대부분이 뷰포트 근처라 실효가 낮았다 (2026-08-26) -->
+    <img src="${esc(url)}" alt="${label}" loading="lazy" decoding="async" fetchpriority="low" data-full="${esc(url)}">
   </figure>`;
 }
 
