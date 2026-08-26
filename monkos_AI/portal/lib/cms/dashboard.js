@@ -687,6 +687,9 @@ export async function handleDashboardChannels(req, res) {
                     AND NOT STARTS_WITH(page_path, '/css/')
                     AND NOT STARTS_WITH(page_path, '/assets/')
                     AND (user_agent IS NULL OR NOT REGEXP_CONTAINS(user_agent, r'(?i)(bot|crawler|spider|ahref|semrush|yandex|gptbot|bingbot|googlebot)'))
+                    -- 취약점 스캐너 제외 (2026-08-26): UA·리퍼러를 위조하므로 UA 필터로는 안 걸린다.
+                    -- 실측 오염: (직접 접속) 93% + google.com 상위 착지가 /.env·/.env.bak 계열
+                    AND NOT REGEXP_CONTAINS(page_path, r'(?i)(^/\\.|wp-admin|wp-content|wp-includes|wp-login|xmlrpc|\\.php|\\.env|\\.git|/vendor/|phpmyadmin|\\.aws|\\.ssh|/cgi-bin/|\\.sql$|\\.bak$|/backup)')
                 )
                 SELECT
                   NET.HOST(referer) as source_domain,
@@ -709,7 +712,10 @@ export async function handleDashboardChannels(req, res) {
                   AND NOT REGEXP_CONTAINS(page_path, r'\\.(js|css|jpg|jpeg|png|gif|svg|webp|ico|woff|woff2)$')
                   AND NOT STARTS_WITH(page_path, '/js/')
                   AND NOT STARTS_WITH(page_path, '/css/')
-                  AND NOT STARTS_WITH(page_path, '/assets/')`,
+                  AND NOT STARTS_WITH(page_path, '/assets/')
+                  AND (user_agent IS NULL OR NOT REGEXP_CONTAINS(user_agent, r'(?i)(bot|crawler|spider|ahref|semrush|yandex|gptbot|bingbot|googlebot)'))
+                  -- 스캐너 제외 — 직접 접속 집계가 이들로 부풀어 93%를 차지했다 (2026-08-26)
+                  AND NOT REGEXP_CONTAINS(page_path, r'(?i)(^/\\.|wp-admin|wp-content|wp-includes|wp-login|xmlrpc|\\.php|\\.env|\\.git|/vendor/|phpmyadmin|\\.aws|\\.ssh|/cgi-bin/|\\.sql$|\\.bak$|/backup)')`,
         params: { days },
         location: 'asia-northeast3',
       }),
