@@ -299,7 +299,13 @@ export async function blogPostFragment(req, lang = null) {
   // viewCount 비동기 증가
   blogCollection.doc(docId).update({ viewCount: (post.viewCount || 0) + 1 }).catch(() => {});
 
-  const contentHtml = marked(post.content || '', { renderer: blogRenderer });
+  // breaks: 초기 발행분이 문단 내 단일 개행(3줄 요약·Q&A)에 의존 — <br> 미변환 시 줄이 붙어 보임
+  const contentHtml = marked(post.content || '', { renderer: blogRenderer, breaks: true });
+
+  // 이중 배너 방지 — 본문 첫 이미지가 대표이미지와 동일한 초기 발행분은 상단 썸네일 생략
+  const firstContentImg = (post.content || '').match(/!\[[^\]]*\]\(\s*([^)\s]+)/)?.[1]
+    || (post.content || '').match(/<img[^>]+src="([^"]+)"/)?.[1] || '';
+  const showThumb = post.thumbnail && firstContentImg !== post.thumbnail;
 
   // CTA 카드 빌드
   let ctaHtml = '';
@@ -355,7 +361,8 @@ export async function blogPostFragment(req, lang = null) {
 
   const faqItems = [];
   try {
-    const faqMatch = (post.content || '').match(/##\s*(?:자주\s*묻는\s*질문\s*\(?FAQ\)?|FAQ)\s*\n([\s\S]*?)(?=\n##\s|$)/i);
+    // 초기 발행분은 h1(#) + 이모지 프리픽스 헤더(예: "# ❓ 자주 묻는 질문") — #1~3개, 헤더 라인 어디든 키워드 허용
+    const faqMatch = (post.content || '').match(/#{1,3}[^\n]*(?:자주\s*묻는\s*질문|よくある質問|Frequently\s+Asked\s+Questions?|\bFAQ\b)[^\n]*\n([\s\S]*?)(?=\n#{1,3}\s|$)/i);
     if (faqMatch) {
       const lines = faqMatch[1].split('\n');
       let curQ = null, curA = null;
@@ -531,7 +538,7 @@ ${JSON.stringify({
       </div>
       ${tagsHtml ? `<div class="post-tags">${tagsHtml}</div>` : ''}
     </div>
-    ${post.thumbnail ? `<div class="post-thumb"><img src="${escapeHtml(post.thumbnail)}" alt="${escapeHtml(post.title)}"></div>` : ''}
+    ${showThumb ? `<div class="post-thumb"><img src="${escapeHtml(post.thumbnail)}" alt="${escapeHtml(post.title)}"></div>` : ''}
     <div class="post-content">${contentHtml}</div>
     ${ctaHtml}
   </article>
