@@ -12,7 +12,10 @@ function toBuffer(base64) {
 
 export async function saveImages(service, userId, style, originalImage, generatedImage, extras) {
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
-  const basePath = `${service}/${userId}`;
+  // 저장 경로도 귀속 기준으로 통일 (2026-08-26) — 종전에는 게이트값(specs-visitor)을 그대로 써서
+  // 로그인 유저의 무료 생성물이 전부 한 폴더에 섞였다. 기존 파일 경로는 그대로 유지되고 신규분부터 적용.
+  const pathOwner = (!userId || userId === 'specs-visitor') ? (extras?.authUserId || userId || 'specs-visitor') : userId;
+  const basePath = `${service}/${pathOwner}`;
   const originalPath = `${basePath}/${timestamp}_${style}_original.jpg`;
   const generatedPath = `${basePath}/${timestamp}_${style}_generated.png`;
   const meta = { userId, service, style, createdAt: new Date().toISOString() };
