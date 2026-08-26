@@ -164,6 +164,7 @@ P0 전팀 진단(500 클릭 0 결제), SEO 사각지대 발견, 광고=오가닉
 | 06/19 | 웹/민아 | **퍼널 진단 — "가격 아님" 확정** (GA4 6/17 preview_view 1→begin_checkout 0→purchase 0, begin_checkout 계측 정상 검증 → 이탈은 preview→checkout 구간=품질/정체성보존 의심, n극소 방향만). + **어드민 idphoto 리뷰 페이지** 구현(원본↔결과물 비교, PR #86 draft) | [COMPLETION](../../reports/2026-06/COMPLETION_20260619_웹민아_IDPHOTO어드민리뷰_퍼널진단.md), `0fb98c47` | ⏳ 배포대기(맥) |
 | 07/21 | M1/민아 | **JP 시장 × idphoto-jp 분석 + 방향성 (작가님 지시)** — 시장: JP=유일 성장형 92,100/월(履歴書写真 60,500 십년 +38%). T3 GSC 28d 실측: **idphoto-jp 노출 2·클릭 0·就活 랜딩 노출 0 = 점유 0%** (기술 결함 아님 — sitemap·robots·랜딩 정상, DA 0 서브도메인+콘텐츠 7장의 구조 문제). 권고: **JP SEO 본대=monkos.ai(ja)·idphoto-jp=전환 말단** 역할 재정의(IDPASS 3층 정합), 실행 4단(ja 취업 클러스터·Bing WMT·말단 최적화·9월 적재 데드라인=27년 就活 시즌 역산). 선결: 레지스트리 채널 재배정 작가님 결정 대기 | [REPORT](../../reports/2026-07/REPORT_20260721_M1민아_JP시장_idphotoJP_분석_방향성.md) | ⏳ 채널 재배정 결정 대기 |
 | 08/26 | iMac/민아 | **실고객 유료 T1 첫 결제 확인 + 계측 결함 2건 교정** (작가님 스크린샷 발단) — 08-25 09:05 토스 ₩9,900(+80c) → T1 2회 생성(무료 트랙과 교차 사용). 결제자≠작가님 = 42일 만의 실매출. 부수 교정: ①로그인 무료 생성이 익명 기록되던 문제(게이트/귀속 분리, sessionId·gate·authenticated 필드 신설) ②어드민 UTC 직출력→KST(9시간 오판 유발). prod 00551-tmx | 커밋 f8ba3d03·34c38c70 | ✅ prod |
+| 08/26 | iMac/민아 | **포토리뷰 화면 후속 보정** — 이미지 81장 동시 요청 완화(decoding=async·fetchpriority=low) + GCS 저장 경로를 귀속 기준으로 통일(무료 트랙 파일이 specs-visitor 한 폴더에 혼재하던 문제, 신규분부터). 08-25 KST 표기·유료(T1) 뱃지는 실화면 정상 확인 | [REVIEW](../../reports/2026-08/REVIEW_20260826_iMac민아_어드민_화면리뷰.md) | ✅ prod |
 
 ### Phase 5 — 독립 iOS 앱 + 결제 개편 ⏳ 진행 중 (05/18~) **← 현재**
 
