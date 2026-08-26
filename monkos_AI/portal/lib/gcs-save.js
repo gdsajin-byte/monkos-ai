@@ -30,9 +30,16 @@ export async function saveImages(service, userId, style, originalImage, generate
 
   await Promise.all(tasks);
 
-  const isAnonymous = !userId || userId === 'specs-visitor';
+  // 귀속 우선순위: 게이트 uid > 로그인 uid(무료 트랙) > 익명 세션 (2026-08-26)
+  // 무료 트랙은 gateUserId가 'specs-visitor' 고정이라 로그인 유저도 익명으로 기록돼 왔다.
+  // sessionId를 별도 필드로 남겨 비로그인 구간도 세션 단위로 이어붙일 수 있게 한다.
+  const gateAnonymous = !userId || userId === 'specs-visitor';
+  const ownerId = gateAnonymous ? (extras?.authUserId || null) : userId;
   const genDoc = {
-    userId: isAnonymous ? `anonymous_${extras?.sessionId || 'unknown'}` : userId,
+    userId: ownerId || `anonymous_${extras?.sessionId || 'unknown'}`,
+    sessionId: extras?.sessionId || null,
+    authenticated: !!ownerId,
+    gate: extras?.gate || null,
     service,
     style,
     slug: extras?.slug || null,

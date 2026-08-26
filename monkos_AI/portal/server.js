@@ -705,6 +705,16 @@ const httpServer = createServer(async (req, res) => {
         return res.end(JSON.stringify({ error: '이미지 필수' }));
       }
 
+      // 귀속 식별 — 게이트와 분리 (2026-08-26). 무료 트랙은 gateUserId가 'specs-visitor'로 고정이라
+      // 로그인 유저의 무료 생성이 anonymous_*로 기록돼 왔다(동일인 무료↔유료 세션 연결 불가 → 전환율 산출 불능).
+      // 과금·모델 경로는 gateUserId 그대로 두고, 기록·계측만 실제 로그인 uid로 귀속한다.
+      const authUserId = (() => {
+        try {
+          const c = pc(req.headers.cookie);
+          return c.monkos_session ? (verifyAuthToken(c.monkos_session)?.userId || null) : null;
+        } catch { return null; }
+      })();
+
       // 결제 게이트: ① 결제 토큰(비로그인 단건) ② 로그인 크레딧 ③ T0 무료(파일럿) — 셋 다 아니면 402
       let gateUserId = 'specs-visitor';
       let remainingGenerates = null;
@@ -926,7 +936,7 @@ const httpServer = createServer(async (req, res) => {
       }
 
       try {
-        await saveImages('idphoto', gateUserId, slug || format || 'passport', norm.rawBase64, finalBase64, { ...(t1RawForSave && { t1Raw: t1RawForSave }), sessionId: req.sessionId, slug: slug || null });
+        await saveImages('idphoto', gateUserId, slug || format || 'passport', norm.rawBase64, finalBase64, { ...(t1RawForSave && { t1Raw: t1RawForSave }), sessionId: req.sessionId, slug: slug || null, authUserId, gate: gateMode });
       } catch (e) {
         log(`[IDPhoto] GCS 저장 실패 (무시): ${e.message}`, 'WARNING');
       }
@@ -934,7 +944,7 @@ const httpServer = createServer(async (req, res) => {
       // 서버측 확정 계측 (헤드샷 api_generate 패턴 준용 — 클라 GA 유실 대비 + 무료 쿼터 남용 감시)
       trackEvent({
         eventName: 'api_generate',
-        userId: gateUserId === 'specs-visitor' ? null : gateUserId,
+        userId: gateUserId === 'specs-visitor' ? authUserId : gateUserId,
         sessionId: req.sessionId,
         service: 'specs',
         params: { gate: gateMode, slug: slug || null, track: genTrack || null },
