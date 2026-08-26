@@ -16,6 +16,15 @@
   --success: #059669; --danger: #dc2626;
 }
 body { font-family: 'Pretendard', 'Noto Sans JP', -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+.filters { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 14px; }
+.filter-group { display: flex; gap: 4px; }
+.chip { font-size: 13px; padding: 5px 12px; border-radius: 999px; border: 1px solid var(--border);
+  background: var(--surface); color: var(--text-dim); cursor: pointer; }
+.chip:hover { border-color: var(--border-hover); }
+.chip.active { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+.filters input[type="search"] { flex: 1; min-width: 160px; max-width: 280px; font-size: 13px;
+  padding: 6px 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); color: var(--text); }
+.filter-count { font-size: 12px; color: var(--text-dim); white-space: nowrap; }
 a { color: var(--accent); text-decoration: none; }
 
 .nav { display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; border-bottom: 1px solid var(--border); }
@@ -72,6 +81,24 @@ tbody tr:hover { background: var(--surface); }
     <a href="/admin/blog-edit.html" class="btn-new">+ New Post</a>
   </div>
 
+  <!-- 필터 바 (2026-08-26 신설) — 371행 전량 렌더로 "미발행만 보기"가 불가능했다.
+       발행 적체 관리의 실질 병목이라 상태·언어 필터 + 제목 검색을 둔다. -->
+  <div class="filters">
+    <div class="filter-group" id="statusFilter">
+      <button class="chip active" data-status="all">전체</button>
+      <button class="chip" data-status="draft">미발행</button>
+      <button class="chip" data-status="published">발행됨</button>
+    </div>
+    <div class="filter-group" id="langFilter">
+      <button class="chip active" data-lang="all">전 언어</button>
+      <button class="chip" data-lang="ko">KO</button>
+      <button class="chip" data-lang="en">EN</button>
+      <button class="chip" data-lang="ja">JA</button>
+    </div>
+    <input type="search" id="q" placeholder="제목 검색…" autocomplete="off">
+    <span class="filter-count" id="filterCount"></span>
+  </div>
+
   <table>
     <thead>
       <tr>
@@ -92,6 +119,34 @@ tbody tr:hover { background: var(--surface); }
 <script>
 const API = '/api/admin/blog';
 
+// 필터 상태 — 서버 재조회 없이 클라이언트에서 걸러낸다 (목록 API가 전량 반환)
+let ALL_POSTS = [];
+const FILTER = { status: 'all', lang: 'all', q: '' };
+
+function applyFilters() {
+  const q = FILTER.q.trim().toLowerCase();
+  const rows = ALL_POSTS.filter(p => {
+    if (FILTER.status === 'draft' && p.published) return false;
+    if (FILTER.status === 'published' && !p.published) return false;
+    if (FILTER.lang !== 'all' && (p.lang || 'ko') !== FILTER.lang) return false;
+    if (q && !String(p.title || '').toLowerCase().includes(q)) return false;
+    return true;
+  });
+  renderRows(rows);
+  const drafts = ALL_POSTS.filter(p => !p.published).length;
+  document.getElementById('filterCount').textContent =
+    `${rows.length}건 표시 / 전체 ${ALL_POSTS.length}건 (미발행 ${drafts})`;
+}
+
+function renderRows(posts) {
+  const tbody = document.getElementById('blogTable');
+  if (!posts.length) {
+    tbody.innerHTML = '<tr><td colspan="6" class="empty">조건에 맞는 글이 없습니다.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = posts.map(rowHtml).join('');
+}
+
 async function loadPosts() {
   try {
     const r = await fetch(API, { credentials: 'include' });
@@ -103,8 +158,15 @@ async function loadPosts() {
       tbody.innerHTML = '<tr><td colspan="6" class="empty">No posts yet. Create your first post!</td></tr>';
       return;
     }
+    ALL_POSTS = posts;
+    applyFilters();
+  } catch (err) {
+    document.getElementById('blogTable').innerHTML = `<tr><td colspan="6" class="empty">Error: ${err.message}</td></tr>`;
+  }
+}
 
-    tbody.innerHTML = posts.map(p => `
+function rowHtml(p) {
+  return `
       <tr>
         <td class="td-title"><a href="/admin/blog-edit.html?slug=${encodeURIComponent(p.slug)}">${esc(p.title)}</a></td>
         <td><span class="badge ${p.published ? 'badge-pub' : 'badge-draft'}">${p.published ? 'Published' : 'Draft'}</span></td>
@@ -116,11 +178,25 @@ async function loadPosts() {
           <button class="btn-sm danger" onclick="deletePost('${p.slug}')">Delete</button>
         </td>
       </tr>
-    `).join('');
-  } catch (err) {
-    document.getElementById('blogTable').innerHTML = `<tr><td colspan="6" class="empty">Error: ${err.message}</td></tr>`;
-  }
+    `;
 }
+
+// 필터 바인딩
+document.addEventListener('click', (e) => {
+  const chip = e.target.closest('.chip');
+  if (!chip) return;
+  const group = chip.parentElement;
+  group.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  chip.classList.add('active');
+  if (chip.dataset.status) FILTER.status = chip.dataset.status;
+  if (chip.dataset.lang) FILTER.lang = chip.dataset.lang;
+  applyFilters();
+});
+document.addEventListener('input', (e) => {
+  if (e.target.id !== 'q') return;
+  FILTER.q = e.target.value;
+  applyFilters();
+});
 
 async function togglePublish(slug, published) {
   await fetch(`${API}/${encodeURIComponent(slug)}`, {
