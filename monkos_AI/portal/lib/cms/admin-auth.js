@@ -26,6 +26,12 @@ export function getAdminUser(req) {
     if (payload && ADMIN_UIDS.length > 0 && ADMIN_UIDS.includes(payload.userId)) {
       return payload; // { userId, expires }
     }
+    // 에이전트 세션 쿠키 (POST /auth/agent 발급분) — 2026-08-26 복구.
+    // 종전에는 ADMIN_UIDS 화이트리스트만 통과시켜 **자기가 발급한 agent_* 쿠키를 자기가 401로 거부**했다
+    // (기능이 있는데 죽어 있던 상태). 이 토큰은 유효 에이전트 키 제시 시에만 서명·발급되므로 신뢰 가능.
+    if (payload && typeof payload.userId === 'string' && payload.userId.startsWith('agent_')) {
+      return { ...payload, isAdmin: true, isAgent: true };
+    }
   }
 
   // 2. Bearer 토큰 폴백 (에이전트 API 키)
