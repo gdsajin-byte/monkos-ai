@@ -5383,39 +5383,39 @@
     "standard": "IRCC",
     "continent": "americas",
     "details": {
-      "ko": "흰색 배경, 정면 응시, 무표정. ⚠️ 캐나다 여권(종이 신청)은 상업 사진관 촬영이 요구되며, 사진 뒷면에 사진관 상호·주소·촬영일 기재가 필요합니다(신규 신청은 보증인 서명 별도).",
-      "en": "White background, frontal view, neutral expression. ⚠️ Canada requires passport photos taken by a commercial photographer for paper applications; the studio's name, address and the date must appear on the back (a guarantor signs for new applications).",
-      "ja": "白背景、正面、無表情。⚠️ カナダのパスポート（紙申請）は商業写真館での撮影が求められ、写真裏面に写真館名・住所・撮影日の記載が必要です（新規申請は保証人の署名が別途必要）。",
-      "es": "Fondo blanco, vista frontal, expresión neutral. ⚠️ Canadá exige fotos tomadas en un estudio fotográfico comercial para solicitudes en papel; el reverso debe llevar el nombre del estudio, la dirección y la fecha (las solicitudes nuevas requieren además la firma de un garante)."
+      "ko": "50 × 70mm, 흰색 또는 밝은 단색 배경, 정면 응시, 무표정, 6개월 이내 촬영본. ⚠️ 캐나다 여권은 종이 신청과 온라인 갱신 **양쪽 모두** 상업 사진관·전문 사진사의 대면 촬영본만 인정합니다. 편집 소프트웨어·필터·AI 도구로 손댄 사진(배경 교체, 머리·어깨 크롭, 밝기·색상 보정 포함)은 신청이 반려됩니다. 종이 신청은 사진 뒷면에 사진관 상호·주소·촬영일 기재가 필요하고(신규 발급은 보증인 서명 별도), 온라인 갱신은 업로드 시 같은 정보를 입력합니다.",
+      "en": "50 × 70 mm, plain white or light-coloured background, facing the camera, neutral expression, taken within the last 6 months. ⚠️ Canada accepts only photos taken in person by a commercial photographer — for **both** paper applications and online renewals. Photos touched by editing software, filters or AI tools (including background replacement, cropping around the head and shoulders, and brightness or colour correction) will get the application refused. Paper applications need the studio name, address and date on the back of the photo (new applications also need a guarantor signature); online renewals ask for the same details at upload.",
+      "ja": "50 × 70mm、白または明るい無地の背景、正面、無表情、6か月以内の撮影。⚠️ カナダのパスポートは紙申請とオンライン更新の**いずれも**、商業写真館・プロカメラマンによる対面撮影の写真しか認められません。編集ソフト・フィルター・AIツールで加工した写真（背景の差し替え、頭と肩まわりのトリミング、明るさ・色の補正を含む）は申請が却下されます。紙申請は写真裏面に写真館名・住所・撮影日の記載が必要で（新規発給は保証人の署名が別途）、オンライン更新はアップロード時に同じ情報を入力します。",
+      "es": "50 × 70 mm, fondo blanco o de color claro y liso, de frente, expresión neutral, tomada dentro de los últimos 6 meses. ⚠️ Canadá solo acepta fotos tomadas presencialmente por un fotógrafo comercial, **tanto** para solicitudes en papel **como** para renovaciones en línea. Las fotos retocadas con software de edición, filtros o herramientas de IA (incluidos el cambio de fondo, el recorte alrededor de la cabeza y los hombros, y los ajustes de brillo o color) provocan el rechazo de la solicitud. En papel, el reverso debe llevar el nombre del estudio, la dirección y la fecha (las solicitudes nuevas requieren además la firma de un garante); en línea se piden esos mismos datos al subir la foto."
     },
     "rejectionReasons": {
       "ko": [
-        "배경 불균일",
-        "머리 기울어짐",
-        "사이즈 불일치",
-        "그림자 감지",
-        "표정 부적합"
-      ],
-      "ja": [
-        "背景の不均一",
-        "頭の傾き",
-        "サイズ不一致",
-        "影の検出",
-        "表情不適合"
+        "편집·필터·AI 보정 흔적 (배경 교체·크롭·색보정 포함)",
+        "사진관 대면 촬영본이 아님 (종이·온라인 갱신 공통)",
+        "흰 옷 착용으로 배경과 얼굴 경계가 불분명",
+        "50 × 70mm 미준수 또는 얼굴 높이 31~36mm 이탈",
+        "가정용 프린터·두꺼운 종이 인화, 인화본 스캔 파일 제출"
       ],
       "en": [
-        "Uneven background",
-        "Head tilt",
-        "Wrong size",
-        "Shadow detected",
-        "Improper expression"
+        "Signs of editing, filters or AI retouching (background swap, cropping, colour correction)",
+        "Not taken in person by a commercial photographer (applies to paper and online renewal alike)",
+        "White clothing blending into the background, blurring the edge of the face",
+        "Not 50 × 70 mm, or face height outside 31–36 mm",
+        "Printed at home or on heavyweight paper, or a scan of a printed photo"
+      ],
+      "ja": [
+        "編集・フィルター・AI補正の痕跡（背景差し替え・トリミング・色補正を含む）",
+        "写真館での対面撮影ではない（紙申請・オンライン更新に共通）",
+        "白い服で背景と顔の境目が不明瞭",
+        "50 × 70mm 不適合、または顔の高さが31～36mmの範囲外",
+        "家庭用プリンター・厚手の用紙での印刷、プリント写真のスキャン提出"
       ],
       "es": [
-        "Fondo desigual",
-        "Cabeza inclinada",
-        "Tamaño incorrecto",
-        "Sombras detectadas",
-        "Expresión inadecuada"
+        "Rastros de edición, filtros o retoque con IA (cambio de fondo, recorte, corrección de color)",
+        "No tomada presencialmente por un fotógrafo comercial (papel y renovación en línea por igual)",
+        "Ropa blanca que se funde con el fondo y difumina el contorno del rostro",
+        "No mide 50 × 70 mm, o la altura del rostro queda fuera de 31–36 mm",
+        "Impresa en casa o en papel grueso, o escaneo de una foto impresa"
       ]
     },
     "priority": 10,
@@ -5430,11 +5430,27 @@
         },
         {
           "q": "캐나다 여권 사진을 집에서 찍을 수 있나요?",
-          "a": "종이 신청(신규·우편·방문)은 상업 사진관 촬영과 사진 뒷면 상호·주소·촬영일 기재가 요구되어, 인화 제출은 사진관 경유가 원칙입니다. 온라인 갱신은 디지털 파일 업로드 방식이며 카메라 원본 제출 등 별도 요건이 있습니다. MONKOS는 규격·구도 확인과 디지털 준비 용도로 활용하세요."
+          "a": "아닙니다. 캐나다 여권은 종이 신청과 온라인 갱신 모두 상업 사진관·전문 사진사의 대면 촬영본을 요구합니다. 종이 신청은 사진 뒷면에 사진관 상호·주소·촬영일을 적어야 하고, 온라인 갱신도 업로드할 때 같은 정보를 입력합니다. MONKOS는 제출용 사진을 만드는 용도가 아니라, 촬영 전 규격·얼굴 비율·구도를 미리 확인하는 용도로 활용하세요."
         },
         {
           "q": "캐나다 여권 사진 배경색 규정은?",
           "a": "캐나다 여권 사진은 흰색 배경이 필요합니다. 그림자나 무늬가 있으면 반려될 수 있습니다."
+        },
+        {
+          "q": "AI 앱으로 배경을 흰색으로 바꿔도 되나요?",
+          "a": "안 됩니다. 캐나다는 편집 소프트웨어·필터·AI 도구로 손댄 사진을 모두 \"변조\"로 보고 신청을 반려합니다. 배경 교체, 머리·어깨 주변 크롭, 밝기·대비·선명도 조정, 잡티나 안경 반사 제거, 옷 색 변경이 전부 여기에 포함됩니다. 배경은 촬영 단계에서 흰색 또는 밝은 단색 벽으로 확보해야 합니다."
+        },
+        {
+          "q": "온라인 갱신용 디지털 사진의 얼굴 크기 기준은?",
+          "a": "턱에서 정수리까지가 사진 세로 길이의 45~50%여야 합니다. 인화본 기준(31~36mm)과는 별개의 기준이므로 온라인 갱신은 이 비율을 따로 확인하세요. 파일은 JPEG/JPG, 세로 방향 3:2 비율, 1,800~4,500(세로) × 1,200~3,000(가로)픽셀, 200KB~5MB이며 카메라에서 저장한 원본이어야 합니다. 인화본을 스캔한 파일은 인정되지 않습니다."
+        },
+        {
+          "q": "캐나다 여권 사진은 흑백도 되나요?",
+          "a": "됩니다. 캐나다 여권 사진은 컬러와 흑백을 모두 인정합니다. 다만 인화는 사진 전용 인화지에 전문 인화로 해야 하며, 가정용 프린터 출력이나 두꺼운 종이 인화는 받지 않습니다."
+        },
+        {
+          "q": "안경을 쓰고 찍어도 되나요?",
+          "a": "도수 안경은 눈이 또렷하게 보이고 렌즈에 빛 반사가 없으면 착용할 수 있습니다. 다만 온라인 갱신용 디지털 사진은 착색 렌즈를 일절 인정하지 않으며, 도수가 있어도 색이 들어간 렌즈면 반려됩니다. 선글라스는 어느 경로에서도 불가입니다."
         }
       ],
       "en": [
@@ -5444,11 +5460,27 @@
         },
         {
           "q": "Can I take a Canada Passport photo at home?",
-          "a": "For paper applications (new, by mail or in person) Canada requires photos taken by a commercial photographer, with the studio's name, address and date on the back — so printed submissions should go through a studio. Online renewal uses a digital upload with its own rules, such as submitting the file straight from the camera. Use MONKOS to check the spec and framing and to prepare for the digital route."
+          "a": "No. Canada requires a photo taken in person by a commercial photographer for both paper applications and online renewals. Paper applications need the studio name, address and date written on the back, and online renewals ask for the same details at upload. Use MONKOS to check the size, face ratio and framing before your session — not to produce the photo you submit."
         },
         {
           "q": "What is the background color for a Canada Passport photo?",
           "a": "A Canada Passport photo requires a White background. Shadows or patterns may cause rejection."
+        },
+        {
+          "q": "Can I use an AI app to make the background white?",
+          "a": "No. Canada treats any photo touched by editing software, filters or AI tools as altered and will refuse the application. That covers replacing the background, cropping around the head and shoulders, adjusting brightness, contrast or sharpness, removing blemishes or lens glare, and changing the colour of your clothing. The background has to be a plain white or light-coloured wall at the moment the photo is taken."
+        },
+        {
+          "q": "How large must the face be in a digital photo for online renewal?",
+          "a": "The chin-to-crown measurement must be between 45% and 50% of the photo height. That is a separate rule from the 31–36 mm used for printed photos, so check it specifically when renewing online. The file must be JPEG/JPG, 3:2 in portrait orientation, 1,800–4,500 px high by 1,200–3,000 px wide, between 200 KB and 5 MB, and saved straight from the camera. Scans of printed photos are not accepted."
+        },
+        {
+          "q": "Are black and white passport photos accepted?",
+          "a": "Yes. Canada accepts both colour and black and white passport photos. The print itself still has to be done professionally on plain, high-quality photographic paper — home printouts and heavyweight paper are rejected."
+        },
+        {
+          "q": "Can I wear glasses?",
+          "a": "Prescription glasses are fine as long as your eyes are clearly visible and there is no glare on the lenses. For digital photos used in online renewal, however, tinted lenses are not accepted at all — even prescription ones. Sunglasses are never acceptable."
         }
       ],
       "ja": [
@@ -5458,11 +5490,27 @@
         },
         {
           "q": "カナダのパスポート写真を自宅で撮れますか？",
-          "a": "紙の申請（新規・郵送・窓口）は商業写真館での撮影と、写真裏面への写真館名・住所・撮影日の記載が求められるため、プリント提出は写真館経由が原則です。オンライン更新はデジタルファイルのアップロード方式で、カメラ原本の提出など別の要件があります。MONKOSは規格・構図の確認とデジタル準備にご活用ください。"
+          "a": "いいえ。カナダのパスポートは紙申請もオンライン更新も、商業写真館・プロカメラマンによる対面撮影の写真が必要です。紙申請は写真裏面に写真館名・住所・撮影日を記載し、オンライン更新もアップロード時に同じ情報を入力します。MONKOSは提出用の写真を作るためではなく、撮影前に規格・顔の比率・構図を確認する用途でご活用ください。"
         },
         {
           "q": "カナダのパスポート写真の背景色の規定は？",
           "a": "カナダのパスポート写真は白の背景が必要です。影や模様があると不合格になる場合があります。"
+        },
+        {
+          "q": "AIアプリで背景を白にしてもいいですか？",
+          "a": "できません。カナダは編集ソフト・フィルター・AIツールで加工した写真をすべて「改変」とみなし、申請を却下します。背景の差し替え、頭と肩まわりのトリミング、明るさ・コントラスト・シャープネスの調整、肌荒れやレンズの反射の除去、服の色の変更がすべて含まれます。背景は撮影の時点で白または明るい無地の壁を用意してください。"
+        },
+        {
+          "q": "オンライン更新用のデジタル写真の顔の大きさの基準は？",
+          "a": "あごから頭頂までが写真の縦の長さの45～50%である必要があります。プリント写真の基準（31～36mm）とは別の基準なので、オンライン更新ではこの比率を個別に確認してください。ファイルはJPEG/JPG、縦向きの3:2、縦1,800～4,500×横1,200～3,000ピクセル、200KB～5MBで、カメラから保存した原本である必要があります。プリント写真をスキャンしたファイルは認められません。"
+        },
+        {
+          "q": "カナダのパスポート写真は白黒でもいいですか？",
+          "a": "問題ありません。カナダのパスポート写真はカラーと白黒の両方が認められています。ただしプリントは写真専用の高品質な印画紙に専門的に行う必要があり、家庭用プリンターの出力や厚手の用紙は受け付けられません。"
+        },
+        {
+          "q": "眼鏡をかけて撮影してもいいですか？",
+          "a": "度付き眼鏡は、目がはっきり見えてレンズに光の反射がなければ着用できます。ただしオンライン更新用のデジタル写真では着色レンズは一切認められず、度付きでも色が入っていれば却下されます。サングラスはどの経路でも不可です。"
         }
       ],
       "es": [
@@ -5472,11 +5520,27 @@
         },
         {
           "q": "¿Puedo tomar la foto de Canada Passport en casa?",
-          "a": "Para las solicitudes en papel (nueva, por correo o presencial), Canadá exige fotos tomadas en un estudio comercial, con el nombre del estudio, la dirección y la fecha al reverso — la entrega impresa debe pasar por un estudio. La renovación en línea usa un archivo digital con requisitos propios, como subir el archivo original de la cámara. Use MONKOS para verificar la especificación y el encuadre y preparar la vía digital."
+          "a": "No. Canadá exige una foto tomada presencialmente por un fotógrafo comercial, tanto para solicitudes en papel como para renovaciones en línea. En papel, el reverso debe llevar el nombre del estudio, la dirección y la fecha; en línea se piden los mismos datos al subir la foto. Use MONKOS para comprobar el tamaño, la proporción del rostro y el encuadre antes de la sesión, no para generar la foto que va a presentar."
         },
         {
           "q": "¿Cuál es el color de fondo para la foto de Canada Passport?",
           "a": "La foto de Canada Passport requiere un fondo blanco. Las sombras o patrones pueden causar rechazo."
+        },
+        {
+          "q": "¿Puedo usar una app de IA para dejar el fondo blanco?",
+          "a": "No. Canadá considera alterada cualquier foto retocada con software de edición, filtros o herramientas de IA, y rechaza la solicitud. Eso incluye sustituir el fondo, recortar alrededor de la cabeza y los hombros, ajustar brillo, contraste o nitidez, eliminar imperfecciones o reflejos en las gafas, y cambiar el color de la ropa. El fondo debe ser una pared blanca o de color claro y liso en el momento de la toma."
+        },
+        {
+          "q": "¿Qué tamaño debe tener el rostro en la foto digital para la renovación en línea?",
+          "a": "La medida del mentón a la coronilla debe ser entre el 45% y el 50% de la altura de la foto. Es una regla distinta de los 31–36 mm de las fotos impresas, así que compruébela por separado si renueva en línea. El archivo debe ser JPEG/JPG, con proporción 3:2 en vertical, de 1.800–4.500 px de alto por 1.200–3.000 px de ancho, entre 200 KB y 5 MB, y guardado directamente desde la cámara. No se aceptan escaneos de fotos impresas."
+        },
+        {
+          "q": "¿Se aceptan fotos en blanco y negro?",
+          "a": "Sí. Canadá acepta fotos de pasaporte tanto en color como en blanco y negro. La impresión sí debe hacerse de forma profesional en papel fotográfico liso y de alta calidad: no se admiten impresiones caseras ni papel grueso."
+        },
+        {
+          "q": "¿Puedo llevar gafas?",
+          "a": "Las gafas graduadas se permiten siempre que los ojos se vean con claridad y no haya reflejos en los cristales. En las fotos digitales para la renovación en línea, en cambio, no se aceptan lentes tintadas de ningún tipo, aunque sean graduadas. Las gafas de sol nunca se aceptan."
         }
       ]
     },
@@ -5737,39 +5801,43 @@
     "standard": "PPTC-203",
     "continent": "americas",
     "details": {
-      "ko": "PPTC-203 기준을 따릅니다. 흰색 배경, 정면 응시, 무표정.",
-      "ja": "PPTC-203基準に準拠。白背景、正面、無表情。",
-      "en": "Follows PPTC-203 standard. White background, frontal view, neutral expression.",
-      "es": "Sigue el estándar PPTC-203. Fondo blanco, vista frontal, expresión neutral."
+      "ko": "공식 요건은 사진 프레임 \"최소 35 × 45mm\", 턱에서 정수리까지 얼굴 높이 31~36mm입니다. 흰색 또는 밝은 단색 배경, 정면 응시, 무표정, 6개월 이내 촬영본이어야 하며, 동일한 사진 2장을 사진 전용 인화지에 인화해 제출합니다. 디지털 사진은 어떤 방식으로도 변조할 수 없습니다. 캐나다 여권과 달리 상업 사진관 촬영 의무나 사진 뒷면 기재 요건은 없습니다.",
+      "en": "The official requirement is a frame of \"at least 35 × 45 mm\" with a chin-to-crown face height of 31–36 mm. The photo needs a plain white or light-coloured background, a front view, a neutral expression and must be taken within the last 6 months. You submit two identical prints on quality photographic paper. Digital photos must not be altered in any way. Unlike the Canadian passport, there is no commercial-photographer requirement and nothing has to be written on the back.",
+      "ja": "公式の要件は写真フレームが「最低35 × 45mm」、あごから頭頂までの顔の高さが31～36mmです。白または明るい無地の背景、正面、無表情で、6か月以内に撮影したものである必要があり、同一の写真2枚を写真専用の印画紙にプリントして提出します。デジタル写真はいかなる方法でも改変できません。カナダのパスポートと違い、商業写真館での撮影義務や裏面への記載要件はありません。",
+      "es": "El requisito oficial es un encuadre de «al menos 35 × 45 mm» con una altura de rostro de 31–36 mm del mentón a la coronilla. La foto necesita fondo blanco o de color claro y liso, vista frontal, expresión neutral y debe haberse tomado dentro de los últimos 6 meses. Se presentan dos copias idénticas impresas en papel fotográfico de calidad. Las fotos digitales no pueden alterarse de ninguna manera. A diferencia del pasaporte canadiense, no se exige fotógrafo comercial ni anotación alguna al reverso."
     },
     "rejectionReasons": {
       "ko": [
-        "배경 불균일",
-        "머리 기울어짐",
-        "사이즈 불일치",
-        "그림자 감지",
-        "표정 부적합"
-      ],
-      "ja": [
-        "背景の不均一",
-        "頭の傾き",
-        "サイズ不一致",
-        "影の検出",
-        "表情不適合"
+        "사진 프레임이 최소 규격 35 × 45mm 미만",
+        "얼굴 높이(턱~정수리)가 31~36mm 범위를 벗어남",
+        "배경에 무늬·그림자, 또는 흰색·밝은 단색이 아님",
+        "디지털 사진 변조 — 보정·합성·필터 처리",
+        "2장 미제출, 또는 두 장이 서로 다른 사진",
+        "사진 전용 인화지가 아닌 출력물 제출"
       ],
       "en": [
-        "Uneven background",
-        "Head tilt",
-        "Wrong size",
-        "Shadow detected",
-        "Improper expression"
+        "Frame smaller than the 35 × 45 mm minimum",
+        "Chin-to-crown face height outside the 31–36 mm range",
+        "Patterned or shadowed background, or a background that is not plain white or light-coloured",
+        "Digital photo that has been altered — retouched, composited or filtered",
+        "Only one photo submitted, or the two photos are not identical",
+        "Printed on something other than quality photographic paper"
+      ],
+      "ja": [
+        "写真フレームが最低規格の35 × 45mm未満",
+        "顔の高さ（あご～頭頂）が31～36mmの範囲外",
+        "背景に模様・影がある、または白・明るい無地ではない",
+        "デジタル写真の改変 — 補正・合成・フィルター処理",
+        "2枚提出していない、または2枚が同一の写真でない",
+        "写真専用の印画紙以外への出力物を提出"
       ],
       "es": [
-        "Fondo desigual",
-        "Cabeza inclinada",
-        "Tamaño incorrecto",
-        "Sombras detectadas",
-        "Expresión inadecuada"
+        "Encuadre inferior al mínimo de 35 × 45 mm",
+        "Altura del rostro (mentón a coronilla) fuera del rango de 31–36 mm",
+        "Fondo con patrones o sombras, o que no sea blanco ni de color claro y liso",
+        "Foto digital alterada: retocada, compuesta o con filtros",
+        "Se entrega una sola foto, o las dos fotos no son idénticas",
+        "Impresa en un soporte que no es papel fotográfico de calidad"
       ]
     },
     "priority": 11,
@@ -5782,11 +5850,27 @@
         },
         {
           "q": "캐나다 비자 사진을 집에서 찍을 수 있나요?",
-          "a": "네, 규격(5 × 7cm)과 배경(흰색) 조건만 맞으면 셀프 촬영이 가능합니다. MONKOS AI를 사용하면 배경 제거와 규격 크롭을 자동으로 처리합니다."
+          "a": "가능합니다. 캐나다 방문비자는 여권과 달리 상업 사진관 촬영 의무가 없어 셀프 촬영본도 쓸 수 있습니다. 다만 디지털 사진의 변조는 금지되므로, 배경은 촬영 단계에서 흰색 또는 밝은 단색 벽으로 확보하고 조명으로 그림자를 없애야 합니다. MONKOS는 규격·얼굴 비율·구도를 확인하는 용도로 활용하세요."
         },
         {
           "q": "캐나다 비자 사진 배경색 규정은?",
           "a": "캐나다 비자 사진은 흰색 배경이 필요합니다. 그림자나 무늬가 있으면 반려될 수 있습니다."
+        },
+        {
+          "q": "캐나다 비자 사진은 정확히 몇 cm여야 하나요?",
+          "a": "공식 요건은 \"최소 35 × 45mm\"입니다. 정확한 한 가지 치수가 아니라 하한 규정이라, 35 × 45mm 이상이면 되고 캐나다 여권과 같은 50 × 70mm로 인화해도 요건을 충족합니다. 어느 크기로 하든 턱에서 정수리까지 얼굴 높이가 31~36mm 안에 들어와야 한다는 점이 핵심입니다."
+        },
+        {
+          "q": "캐나다 비자 사진과 여권 사진은 같은 규격인가요?",
+          "a": "다릅니다. 여권은 50 × 70mm 고정이고 상업 사진관 대면 촬영이 의무이며 편집·AI 보정이 전면 금지입니다. 비자는 최소 35 × 45mm 규정이고 사진관 의무가 없습니다. 얼굴 높이 31~36mm만 두 서류가 같습니다. 여권용 50 × 70mm 사진은 비자에도 쓸 수 있지만, 비자용 35 × 45mm 사진은 여권에 쓸 수 없습니다."
+        },
+        {
+          "q": "캐나다 비자 사진은 흑백도 되나요?",
+          "a": "됩니다. 캐나다 비자 사진은 컬러와 흑백을 모두 인정합니다. 다만 두 장이 동일한 사진이어야 하고, 사진 전용 인화지에 선명하게 인화해야 합니다."
+        },
+        {
+          "q": "사진을 몇 장 제출하나요?",
+          "a": "동일한 사진 2장을 제출합니다. 두 장은 같은 촬영본이어야 하며, 6개월 이내에 찍은 것이어야 합니다. 규격에 맞지 않으면 심사가 진행되지 않고 새 사진을 다시 제출해야 합니다."
         }
       ],
       "en": [
@@ -5796,11 +5880,27 @@
         },
         {
           "q": "Can I take a Canada Visa photo at home?",
-          "a": "Yes, as long as you meet the size (5 × 7cm) and background (White) requirements. MONKOS AI automatically removes the background and crops to the correct specs."
+          "a": "Yes. Unlike the passport, a Canadian visitor visa has no commercial-photographer requirement, so a self-taken photo is acceptable. Digital photos must not be altered, though, so get the plain white or light-coloured background and even lighting right at capture time. Use MONKOS to check the size, face ratio and framing."
         },
         {
           "q": "What is the background color for a Canada Visa photo?",
           "a": "A Canada Visa photo requires a White background. Shadows or patterns may cause rejection."
+        },
+        {
+          "q": "What exact size does a Canada visa photo need to be?",
+          "a": "The official rule is \"at least 35 × 45 mm\" — a minimum, not a single fixed size. Anything 35 × 45 mm or larger qualifies, including the 50 × 70 mm used for Canadian passports. Whichever size you print, the chin-to-crown face height must fall between 31 mm and 36 mm."
+        },
+        {
+          "q": "Are Canada visa and passport photos the same spec?",
+          "a": "No. Passports use a fixed 50 × 70 mm, require an in-person commercial photographer, and ban editing and AI retouching outright. Visas have a 35 × 45 mm minimum and no photographer requirement. Only the 31–36 mm face height is shared. A 50 × 70 mm passport-format photo can be used for a visa, but a 35 × 45 mm visa photo cannot be used for a passport."
+        },
+        {
+          "q": "Are black and white visa photos accepted?",
+          "a": "Yes. Canada accepts both colour and black and white visa photos. The two prints still have to be identical and printed clearly on quality photographic paper."
+        },
+        {
+          "q": "How many photos do I submit?",
+          "a": "Two identical photos. Both must come from the same session and have been taken within the last 6 months. If they do not meet the specifications, processing stops until you supply new photos."
         }
       ],
       "ja": [
@@ -5810,11 +5910,27 @@
         },
         {
           "q": "カナダのビザ写真を自宅で撮れますか？",
-          "a": "はい、サイズ（5 × 7cm）と背景（白）の条件を満たせば自宅撮影も可能です。MONKOS AIを使えば背景除去と規格クロップが自動で処理されます。"
+          "a": "可能です。カナダの訪問ビザはパスポートと違い商業写真館での撮影義務がないため、自分で撮影した写真も使えます。ただしデジタル写真の改変は禁止されているので、背景は撮影の時点で白または明るい無地の壁を用意し、照明で影をなくしてください。MONKOSは規格・顔の比率・構図の確認にご活用ください。"
         },
         {
           "q": "カナダのビザ写真の背景色の規定は？",
           "a": "カナダのビザ写真は白の背景が必要です。影や模様があると不合格になる場合があります。"
+        },
+        {
+          "q": "カナダのビザ写真は正確に何cmですか？",
+          "a": "公式の要件は「最低35 × 45mm」です。ひとつの決まった寸法ではなく下限の規定なので、35 × 45mm以上であればよく、カナダのパスポートと同じ50 × 70mmでプリントしても要件を満たします。どの大きさにする場合でも、あごから頭頂までの顔の高さが31～36mmに収まることが要点です。"
+        },
+        {
+          "q": "カナダのビザ写真とパスポート写真は同じ規格ですか？",
+          "a": "違います。パスポートは50 × 70mm固定で、商業写真館での対面撮影が義務、編集やAI補正は全面禁止です。ビザは最低35 × 45mmの規定で、写真館の義務はありません。共通なのは顔の高さ31～36mmだけです。パスポート用の50 × 70mmはビザにも使えますが、ビザ用の35 × 45mmはパスポートには使えません。"
+        },
+        {
+          "q": "カナダのビザ写真は白黒でもいいですか？",
+          "a": "問題ありません。カナダのビザ写真はカラーと白黒の両方が認められています。ただし2枚は同一の写真で、写真専用の印画紙に鮮明にプリントする必要があります。"
+        },
+        {
+          "q": "写真は何枚提出しますか？",
+          "a": "同一の写真を2枚提出します。2枚は同じ撮影のもので、6か月以内に撮影されている必要があります。規格に合わない場合は審査が進まず、新しい写真を提出し直すことになります。"
         }
       ],
       "es": [
@@ -5824,11 +5940,27 @@
         },
         {
           "q": "¿Puedo tomar la foto de Canada Visa en casa?",
-          "a": "Sí, siempre que cumpla con los requisitos de tamaño (5 × 7cm) y fondo (blanco). MONKOS AI elimina automáticamente el fondo y recorta según las especificaciones correctas."
+          "a": "Sí. A diferencia del pasaporte, la visa de visitante canadiense no exige fotógrafo comercial, así que vale una foto tomada por usted mismo. Eso sí, las fotos digitales no pueden alterarse: consiga el fondo blanco o claro y liso y una iluminación uniforme en el momento de la toma. Use MONKOS para comprobar el tamaño, la proporción del rostro y el encuadre."
         },
         {
           "q": "¿Cuál es el color de fondo para la foto de Canada Visa?",
           "a": "La foto de Canada Visa requiere un fondo blanco. Las sombras o patrones pueden causar rechazo."
+        },
+        {
+          "q": "¿Qué tamaño exacto debe tener la foto de visa de Canadá?",
+          "a": "La norma oficial es «al menos 35 × 45 mm»: un mínimo, no una medida única. Sirve cualquier tamaño igual o mayor, incluido el de 50 × 70 mm del pasaporte canadiense. Imprima el tamaño que imprima, la altura del rostro del mentón a la coronilla debe quedar entre 31 y 36 mm."
+        },
+        {
+          "q": "¿La foto de visa y la de pasaporte de Canadá siguen la misma norma?",
+          "a": "No. El pasaporte usa un tamaño fijo de 50 × 70 mm, exige fotógrafo comercial presencial y prohíbe por completo la edición y el retoque con IA. La visa tiene un mínimo de 35 × 45 mm y no exige fotógrafo. Lo único común es la altura del rostro de 31–36 mm. Una foto de 50 × 70 mm sirve para la visa, pero una de 35 × 45 mm no sirve para el pasaporte."
+        },
+        {
+          "q": "¿Se aceptan fotos de visa en blanco y negro?",
+          "a": "Sí. Canadá acepta fotos de visa en color y en blanco y negro. Las dos copias deben ser idénticas e impresas con nitidez en papel fotográfico de calidad."
+        },
+        {
+          "q": "¿Cuántas fotos hay que entregar?",
+          "a": "Dos fotos idénticas. Ambas deben proceder de la misma sesión y haberse tomado dentro de los últimos 6 meses. Si no cumplen las especificaciones, la tramitación se detiene hasta que entregue fotos nuevas."
         }
       ]
     },
@@ -5878,7 +6010,9 @@
     "backgroundEs": "Blanco",
     "headHeightEs": "3.1-3.6cm",
     "validityEs": "Tomada dentro de los últimos 6 meses",
-    "fileSpecEs": "JPEG/JPG formato, mínimo 420 x 540 píxeles"
+    "fileSpecEs": "JPEG/JPG formato, mínimo 420 x 540 píxeles",
+    "source": "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides/temporary-resident-visa-application-photograph-specifications.html",
+    "sourceName": "canada.ca"
   },
   "sg-passport": {
     "slug": "sg-passport",
