@@ -153,8 +153,10 @@ tr.test-row td { color: var(--text-dim); background: #fafafa; }
         <span class="chart-title" style="font-weight:400;color:var(--text-dim)" id="channelTotal"></span>
       </div>
       <div style="display:flex;gap:12px;align-items:center">
-        <div style="flex:0 0 120px"><canvas id="channelChart" height="90"></canvas></div>
-        <div style="flex:1"><canvas id="dailySignupChart" height="90"></canvas></div>
+        <!-- min-width:0 필수 — flex 아이템 기본 min-width:auto는 canvas 고유폭(300px) 아래로 못 줄어들어
+             패널 밖으로 넘치고 최신 막대가 잘린다 (2026-08-26 실측: 08-24 막대·라벨 절단) -->
+        <div style="flex:0 0 120px;min-width:0"><canvas id="channelChart" height="90"></canvas></div>
+        <div style="flex:1;min-width:0"><canvas id="dailySignupChart" height="90"></canvas></div>
       </div>
     </div>
   </div>
