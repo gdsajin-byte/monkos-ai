@@ -3,6 +3,7 @@ type: blog
 date: 2026-08-06
 slug: arrivals-analytics-cannot-see
 lang: KR
+category: 빌더 노트
 author: 신작가
 channel: 우리 블로그 (1차 생산)
 status: draft

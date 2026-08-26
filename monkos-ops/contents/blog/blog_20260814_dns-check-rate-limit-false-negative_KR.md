@@ -3,6 +3,7 @@ type: blog
 date: 2026-08-14
 slug: dns-check-rate-limit-false-negative
 lang: KR
+category: 빌더 노트
 title: "DNS 레코드가 '없다'고 나왔는데 있었다 — 확인 도구가 레이트리밋에 걸린 실측 기록"
 author: MONKOS
 status: draft
