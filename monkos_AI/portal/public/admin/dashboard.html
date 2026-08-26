@@ -40,6 +40,15 @@ a { color: var(--accent); text-decoration: none; }
 .chart-compact { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; max-height: 180px; overflow: hidden; }
 .chart-compact .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
 .chart-compact .chart-title { font-size: 12px; font-weight: 700; color: var(--text-bright); }
+.donut-legend { flex: 0 0 auto; display: flex; flex-direction: column; gap: 3px; font-size: 11px; }
+.donut-legend .dl-row { display: flex; align-items: center; gap: 5px; white-space: nowrap; }
+.donut-legend .dl-dot { width: 7px; height: 7px; border-radius: 50%; flex: 0 0 auto; }
+.donut-legend .dl-name { color: var(--text-dim); }
+.donut-legend .dl-val { color: var(--text-bright); font-weight: 600; }
+.donut-legend .dl-pct { color: var(--text-dim); font-weight: 400; }
+.btn-more { padding: 7px 18px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); color: var(--accent); font-size: 12px; font-weight: 600; cursor: pointer; }
+.btn-more:hover { border-color: var(--border-hover); }
+.more-done { font-size: 11px; color: var(--text-dim); }
 .period-tabs { display: flex; gap: 4px; }
 .period-tab { padding: 3px 10px; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); color: var(--text-dim); font-size: 11px; cursor: pointer; }
 .period-tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
@@ -144,7 +153,9 @@ tr.test-row td { color: var(--text-dim); background: #fafafa; }
           <button class="period-tab" data-days="90">90일</button>
         </div>
       </div>
-      <canvas id="trafficChart" height="90"></canvas>
+      <!-- 높이 고정 — .chart-compact(max-height:180px, overflow:hidden)에서 캔버스가 넘쳐
+           하단 범례(Sessions/New)가 잘렸다 (2026-08-26 실측) -->
+      <div style="height:112px"><canvas id="trafficChart"></canvas></div>
       <div id="trafficError"></div>
     </div>
     <div class="chart-compact">
@@ -156,6 +167,8 @@ tr.test-row td { color: var(--text-dim); background: #fafafa; }
         <!-- min-width:0 필수 — flex 아이템 기본 min-width:auto는 canvas 고유폭(300px) 아래로 못 줄어들어
              패널 밖으로 넘치고 최신 막대가 잘린다 (2026-08-26 실측: 08-24 막대·라벨 절단) -->
         <div style="flex:0 0 120px;min-width:0"><canvas id="channelChart" height="90"></canvas></div>
+        <!-- 도넛 범례 — 색만 있고 라벨·수치가 없어 무엇이 무엇인지 알 수 없었다 (2026-08-26) -->
+        <div id="channelLegend" class="donut-legend"></div>
         <div style="flex:1;min-width:0"><canvas id="dailySignupChart" height="90"></canvas></div>
       </div>
     </div>
@@ -199,6 +212,7 @@ tr.test-row td { color: var(--text-dim); background: #fafafa; }
       </tr></thead>
       <tbody id="usersBody"></tbody>
     </table>
+      <div id="userMoreWrap" style="text-align:center;margin-top:10px"></div>
   </div>
 </div>
 
@@ -278,16 +292,27 @@ async function loadTraffic(days) {
     if (d.error) throw new Error(d.error);
     const labels = d.daily.map(r => r.date.slice(5)).reverse();
     const sessions = d.daily.map(r => r.sessions).reverse();
+    // 마지막 점 = 오늘(진행 중). 완결일과 같은 실선으로 이으면 매일 아침 "폭락"으로 오독된다
+    // → 마지막 구간만 점선 + 툴팁에 (진행 중) 표기 (2026-08-26)
+    const lastIdx = labels.length - 1;
+    const todayKey = new Date().toISOString().slice(5, 10).replace('-', '-');
+    const isTodayLast = d.daily.length > 0 && d.daily[0].date.slice(5) === todayKey;
+    const dashLast = (ctx) => (isTodayLast && ctx.p1DataIndex === lastIdx ? [4, 3] : undefined);
     if (trafficChartInst) trafficChartInst.destroy();
     trafficChartInst = new Chart(document.getElementById('trafficChart'), {
       type: 'line',
       data: { labels, datasets: [
-        { label: 'Sessions', data: sessions, borderColor: COLORS.accent, backgroundColor: COLORS.accent + '18', fill: true, tension: 0.4, borderWidth: 1.5, pointRadius: 0 },
-        { label: 'New', data: d.daily.map(r => r.newUsers).reverse(), borderColor: COLORS.success, tension: 0.4, borderWidth: 1, pointRadius: 0 },
+        { label: 'Sessions', data: sessions, borderColor: COLORS.accent, backgroundColor: COLORS.accent + '18', fill: true, tension: 0.4, borderWidth: 1.5, pointRadius: 0, segment: { borderDash: dashLast } },
+        { label: 'New', data: d.daily.map(r => r.newUsers).reverse(), borderColor: COLORS.success, tension: 0.4, borderWidth: 1, pointRadius: 0, segment: { borderDash: dashLast } },
       ]},
       options: {
         responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { display: true, position: 'bottom', labels: { boxWidth: 8, font: { size: 10 } } } },
+        plugins: {
+          legend: { display: true, position: 'bottom', labels: { boxWidth: 8, font: { size: 10 } } },
+          tooltip: { callbacks: {
+            title: (items) => items[0].label + (isTodayLast && items[0].dataIndex === lastIdx ? ' (오늘 · 집계 진행 중)' : ''),
+          } },
+        },
         scales: { x: { display: false }, y: { display: false } },
       },
     });
@@ -309,6 +334,18 @@ function renderChannelCharts(byProvider, daily) {
     data: { labels: providers.map(p => PROVIDER_MAP[p] || p), datasets: [{ data: providers.map(p => byProvider[p]), backgroundColor: pColors.slice(0, providers.length) }] },
     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, cutout: '60%' },
   });
+
+  // HTML 범례 (캔버스 내 범례는 도넛을 과하게 축소시켜 별도 렌더)
+  const legendEl = document.getElementById('channelLegend');
+  if (legendEl) {
+    const sum = providers.reduce((a, p) => a + (byProvider[p] || 0), 0) || 1;
+    legendEl.innerHTML = providers.map((p, i) => {
+      const v = byProvider[p] || 0;
+      return `<div class="dl-row"><span class="dl-dot" style="background:${pColors[i]}"></span>` +
+        `<span class="dl-name">${esc(PROVIDER_MAP[p] || p)}</span>` +
+        `<span class="dl-val">${v}<span class="dl-pct"> (${Math.round(v / sum * 100)}%)</span></span></div>`;
+    }).join('');
+  }
 
   const slicedDaily = daily.slice(0, 14).reverse();
   if (dailySignupChartInst) dailySignupChartInst.destroy();
@@ -336,6 +373,9 @@ async function loadUsers360() {
   } catch (err) { console.error('users360:', err); }
 }
 
+const USER_PAGE = 50;
+let userLimit = USER_PAGE;
+
 function renderUsersTable() {
   const search = (document.getElementById('userSearch').value || '').toLowerCase();
   let filtered = allUsers;
@@ -354,7 +394,10 @@ function renderUsersTable() {
   });
 
   const tbody = document.getElementById('usersBody');
-  tbody.innerHTML = filtered.map((u, i) => {
+  // 점진 렌더 (2026-08-26) — 197행 전량 렌더로 페이지가 10,446px까지 늘어났다.
+  // 검색·정렬은 전체를 대상으로 하고, 그리기만 끊는다.
+  const shown = filtered.slice(0, userLimit);
+  tbody.innerHTML = shown.map((u, i) => {
     const provCls = `provider-${u.provider || 'unknown'}`;
     const provLabel = PROVIDER_MAP[u.provider] || u.provider || '직접';
     const funnelHtml = Array.from({ length: 5 }, (_, j) =>
@@ -377,6 +420,15 @@ function renderUsersTable() {
       <td><span class="relative-time" title="${esc(u.lastActivity)}">${relativeTime(u.lastActivityRaw)}</span></td>
     </tr>`;
   }).join('');
+
+  const more = document.getElementById('userMoreWrap');
+  if (more) {
+    if (filtered.length > shown.length) {
+      more.innerHTML = `<button class="btn-more" id="userMoreBtn">더 보기 (${shown.length}/${filtered.length})</button>`;
+    } else {
+      more.innerHTML = filtered.length > USER_PAGE ? `<span class="more-done">${filtered.length}명 전체 표시</span>` : '';
+    }
+  }
 }
 
 // --- Sorting ---
@@ -389,7 +441,10 @@ document.querySelector('thead').addEventListener('click', e => {
 });
 
 // --- Search ---
-document.getElementById('userSearch').addEventListener('input', () => renderUsersTable());
+document.getElementById('userSearch').addEventListener('input', () => { userLimit = USER_PAGE; renderUsersTable(); });
+document.addEventListener('click', (e) => {
+  if (e.target && e.target.id === 'userMoreBtn') { userLimit += USER_PAGE; renderUsersTable(); }
+});
 
 // --- Test Toggle ---
 document.getElementById('showTest').addEventListener('change', () => loadUsers360());
