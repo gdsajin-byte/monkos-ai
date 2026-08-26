@@ -866,6 +866,16 @@ export async function handleVerifyCookie(req, res) {
     return res.end(JSON.stringify({ error: 'invalid token' }));
   }
 
+  // 에이전트 세션 (POST /auth/agent 발급분) — users 컬렉션에 문서가 없으므로 조회 전에 처리 (2026-08-26).
+  // 이게 없으면 서버 가드는 통과해도 어드민 페이지의 클라이언트 게이트가 로그인 화면을 띄운다
+  // (= 에이전트 로그인 기능의 나머지 절반).
+  if (typeof result.userId === 'string' && result.userId.startsWith('agent_')) {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    return res.end(JSON.stringify({
+      user: { id: result.userId, email: '', name: result.userId, picture: '', credits: 0, provider: 'agent', isAdmin: true, isAgent: true },
+    }));
+  }
+
   try {
     const userDoc = await usersCollection.doc(result.userId).get();
     if (!userDoc.exists) {
