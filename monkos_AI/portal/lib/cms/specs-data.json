@@ -58,6 +58,10 @@
         {
           "q": "영주권(그린카드) 신청 사진도 같은 규격인가요?",
           "a": "네, 영주권(I-485 등) 신청 사진도 미국 여권 사진과 동일한 2×2인치(5.1×5.1cm) 규격입니다 — 흰 배경, 정면, 6개월 이내 촬영. 통상 2매를 제출합니다."
+        },
+        {
+          "q": "미국 여권 사진을 AI 앱으로 보정해도 되나요?",
+          "a": "안 됩니다. 미국 국무부는 소프트웨어나 인공지능 도구로 보정·변경한 사진, 필터를 적용해 원본과 달라진 사진을 인정하지 않습니다. 직접 촬영하는 것 자체는 가능하지만, 배경은 촬영 단계에서 흰색 또는 미백색 벽으로 확보하고 편집하지 않은 원본을 제출해야 합니다."
         }
       ],
       "ja": [
@@ -68,6 +72,10 @@
         {
           "q": "グリーンカード申請の写真も同じ規格ですか？",
           "a": "はい。グリーンカード（I-485など）申請の写真も米国パスポート写真と同じ2×2インチ（5.1×5.1cm）規格です — 白背景・正面・6ヶ月以内の撮影。通常2枚提出します。"
+        },
+        {
+          "q": "アメリカのパスポート写真をAIアプリで補正してもいいですか？",
+          "a": "できません。米国国務省は、ソフトウェアや人工知能ツールで補正・変更した写真や、フィルターを適用して原本と異なる写真を認めていません。自分で撮影すること自体は可能ですが、背景は撮影の時点で白またはオフホワイトの壁を用意し、編集していない原本を提出する必要があります。"
         }
       ],
       "en": [
@@ -86,6 +94,10 @@
         {
           "q": "Is the green card photo the same size as the passport photo?",
           "a": "Yes. Green card (e.g. I-485) application photos use the same spec as US passport photos — 2×2 inches (51×51 mm), white background, front-facing, taken within 6 months. Two copies are typically required."
+        },
+        {
+          "q": "Can I retouch a US passport photo with an AI app?",
+          "a": "No. The State Department does not accept photos enhanced or changed with software or artificial intelligence tools, or photos altered by filters so that they differ from the original. Taking the photo yourself is allowed, but the white or off-white background has to be there at capture time and you must submit the unedited original."
         }
       ],
       "es": [
@@ -104,6 +116,10 @@
         {
           "q": "¿La foto de la tarjeta de residencia es del mismo tamaño que la foto de pasaporte?",
           "a": "Sí. Las fotos para solicitud de tarjeta de residencia (e.g. I-485) usan las mismas especificaciones que las fotos de pasaporte de EE. UU. — 2×2 pulgadas (51×51 mm), fondo blanco, vista frontal, tomadas dentro de los últimos 6 meses. Normalmente se requieren dos copias."
+        },
+        {
+          "q": "¿Puedo retocar la foto de pasaporte de EE. UU. con una app de IA?",
+          "a": "No. El Departamento de Estado no acepta fotos mejoradas o modificadas con software o herramientas de inteligencia artificial, ni fotos alteradas con filtros de modo que difieran del original. Tomar la foto usted mismo sí está permitido, pero el fondo blanco o hueso debe conseguirse en el momento de la toma y debe presentar el original sin editar."
         }
       ]
     },
@@ -837,7 +853,7 @@
         },
         {
           "q": "여권사진 집에서 찍어도 되나요?",
-          "a": "규격(3.5×4.5cm, 흰색 배경 등) 조건을 충족하면 가능합니다. 단, 일반 종이 인쇄 불가. 인화지에 300DPI로 인화해야 합니다."
+          "a": "규격에 맞으면 본인이 직접 촬영한 사진도 사용할 수 있습니다. 다만 외교부는 사진 편집 프로그램·필터로 임의 보정한 사진(AI를 활용한 편집·가공·합성·창조 제작물 포함)을 허용하지 않으며, 편집 프로그램으로 배경을 지우거나 흰 배경에 인물을 합성한 사진도 제출할 수 없다고 명시합니다. 배경은 촬영 단계에서 균일하게 확보하셔야 합니다. 또한 일반 종이 인쇄본은 쓸 수 없고 인화지에 300DPI로 인화해야 합니다. MONKOS는 제출본을 만드는 용도가 아니라 촬영 전 규격·얼굴 비율 확인 용도로 활용하세요."
         }
       ],
       "ja": [
@@ -852,6 +868,10 @@
         {
           "q": "セルフでパスポート写真を撮れますか？",
           "a": "はい、規格を満たせばセルフ撮影も可能です。MONKOS AIで背景除去と規格クロップを自動処理できます。"
+        },
+        {
+          "q": "パスポート写真を自宅で撮ってもいいですか？",
+          "a": "規格に合っていれば自分で撮影した写真も使用できます。ただし韓国外交部は、写真編集ソフトやフィルターで任意に補正した写真（AIを用いた編集・加工・合成・生成物を含む）を認めておらず、編集ソフトで背景を消したり白背景に人物を合成した写真も提出できないと明示しています。背景は撮影の時点で均一に整えてください。また普通紙に印刷したものは使えず、印画紙に300DPIでプリントする必要があります。MONKOSは提出用の写真を作るためではなく、撮影前に規格・顔の比率を確認する用途でご活用ください。"
         }
       ],
       "en": [
@@ -866,6 +886,10 @@
         {
           "q": "Can I take a passport photo by myself?",
           "a": "Yes, as long as it meets the specifications. MONKOS AI automatically removes the background and crops to the correct size."
+        },
+        {
+          "q": "Can I take a Korean passport photo at home?",
+          "a": "A self-taken photo is acceptable as long as it meets the specification. However, the Korean Ministry of Foreign Affairs does not accept photos retouched with editing software or filters — explicitly including anything edited, processed, composited or generated with AI — and states that photos whose background was erased with editing software, or where the subject was composited onto a white background, cannot be submitted. Get an even background at capture time. Prints on ordinary paper are also rejected; the photo must be printed on photographic paper at 300 DPI. Use MONKOS to check the size and face ratio before your shoot, not to produce the photo you submit."
         }
       ],
       "es": [
@@ -880,6 +904,10 @@
         {
           "q": "¿Puedo tomar la foto de pasaporte por mi cuenta?",
           "a": "Sí, siempre que cumpla con las especificaciones. MONKOS AI elimina automáticamente el fondo y recorta al tamaño correcto."
+        },
+        {
+          "q": "¿Puedo tomar la foto de pasaporte coreano en casa?",
+          "a": "Una foto tomada por usted mismo es válida siempre que cumpla la especificación. Sin embargo, el Ministerio de Asuntos Exteriores de Corea no acepta fotos retocadas con software de edición ni filtros —incluye expresamente lo editado, procesado, compuesto o generado con IA— e indica que no se pueden presentar fotos cuyo fondo se haya borrado con software de edición ni en las que se haya compuesto a la persona sobre un fondo blanco. Consiga un fondo uniforme en el momento de la toma. Las impresiones en papel corriente tampoco se aceptan: la foto debe imprimirse en papel fotográfico a 300 DPI. Use MONKOS para comprobar el tamaño y la proporción del rostro antes de la sesión, no para generar la foto que va a presentar."
         }
       ]
     },
@@ -4877,7 +4905,7 @@
         },
         {
           "q": "중국 여권 사진을 집에서 찍을 수 있나요?",
-          "a": "네, 규격(3.3 × 4.8cm)과 배경(흰색) 조건만 맞으면 셀프 촬영이 가능합니다. MONKOS AI를 사용하면 배경 제거와 규격 크롭을 자동으로 처리합니다."
+          "a": "규격에 맞으면 직접 촬영한 사진도 쓸 수 있습니다. 다만 중국 외교부 영사 규정은 \"사진을 수정해서는 안 되며, 합성 사진을 사용해서는 안 된다\"고 명시합니다. 따라서 배경을 지우거나 인물을 다른 배경에 합성한 사진은 제출할 수 없고, 배경은 촬영 단계에서 확보해야 합니다. 접수 공관이 인화본을 요구하는 경우에는 사진관 인화 또는 전문 인화지 출력이 필요합니다. 디지털 파일은 JPEG 형식에 30~80KB 범위입니다. MONKOS는 촬영 전 규격·구도 확인 용도로 활용하세요."
         },
         {
           "q": "중국 여권 사진 배경색 규정은?",
@@ -4891,7 +4919,7 @@
         },
         {
           "q": "Can I take a China Passport photo at home?",
-          "a": "Yes, as long as you meet the size (3.3 × 4.8cm) and background (White) requirements. MONKOS AI automatically removes the background and crops to the correct specs."
+          "a": "A self-taken photo is acceptable if it meets the specification. However, China's consular rules state explicitly that the photo must not be modified and that composited photos must not be used. Photos with the background erased, or with the subject composited onto a different background, therefore cannot be submitted — the background has to be right at capture time. If the receiving mission asks for a printed photo, it must be developed at a photo studio or printed on professional photo paper. Digital files must be JPEG between 30 KB and 80 KB. Use MONKOS to check the size and framing before your shoot."
         },
         {
           "q": "What is the background color for a China Passport photo?",
@@ -4905,7 +4933,7 @@
         },
         {
           "q": "中国のパスポート写真を自宅で撮れますか？",
-          "a": "はい、サイズ（3.3 × 4.8cm）と背景（白）の条件を満たせば自宅撮影も可能です。MONKOS AIを使えば背景除去と規格クロップが自動で処理されます。"
+          "a": "規格に合っていれば自分で撮影した写真も使えます。ただし中国外交部の領事規定は「写真を修正してはならず、合成写真を使用してはならない」と明示しています。したがって背景を消したり人物を別の背景に合成した写真は提出できず、背景は撮影の時点で用意する必要があります。受付公館がプリント写真を求める場合は、写真館での現像または専用印画紙への印刷が必要です。デジタルファイルはJPEG形式で30～80KBの範囲です。MONKOSは撮影前の規格・構図の確認にご活用ください。"
         },
         {
           "q": "中国のパスポート写真の背景色の規定は？",
@@ -4919,7 +4947,7 @@
         },
         {
           "q": "¿Puedo tomar la foto de China Passport en casa?",
-          "a": "Sí, siempre que cumpla con los requisitos de tamaño (3.3 × 4.8cm) y fondo (blanco). MONKOS AI elimina automáticamente el fondo y recorta según las especificaciones correctas."
+          "a": "Una foto tomada por usted mismo es válida si cumple la especificación. No obstante, la normativa consular china indica expresamente que la foto no debe modificarse y que no deben usarse fotos compuestas. Por tanto, no se pueden presentar fotos con el fondo borrado ni con la persona compuesta sobre otro fondo: el fondo debe conseguirse en el momento de la toma. Si la misión receptora solicita una copia impresa, debe revelarse en un estudio fotográfico o imprimirse en papel fotográfico profesional. Los archivos digitales deben ser JPEG de entre 30 KB y 80 KB. Use MONKOS para comprobar el tamaño y el encuadre antes de la sesión."
         },
         {
           "q": "¿Cuál es el color de fondo para la foto de China Passport?",
@@ -8449,7 +8477,7 @@
         },
         {
           "q": "베트남 여권 사진을 집에서 찍을 수 있나요?",
-          "a": "네, 규격(4 × 6cm)과 배경(흰색) 조건만 맞으면 셀프 촬영이 가능합니다. MONKOS AI를 사용하면 배경 제거와 규격 크롭을 자동으로 처리합니다."
+          "a": "규격·배경 조건을 맞추면 직접 촬영한 사진을 쓸 수 있는 것으로 보이나, 베트남 당국 공식 안내에서 셀프 촬영 가부와 사진 편집·AI 보정에 대한 명시 규정은 확인하지 못했습니다. 국가에 따라 사진관 대면 촬영을 요구하거나 편집·합성본을 반려하는 경우가 있으므로, 제출 전 접수 기관 공식 안내를 반드시 확인하시기 바랍니다. MONKOS는 제출본을 대신 만들어 드리는 용도가 아니라 촬영 전 규격·얼굴 비율·구도를 확인하는 용도로 활용하세요."
         },
         {
           "q": "베트남 여권 사진 배경색 규정은?",
@@ -8463,7 +8491,7 @@
         },
         {
           "q": "Can I take a Vietnam Passport photo at home?",
-          "a": "Yes, as long as you meet the size (4 × 6cm) and background (White) requirements. MONKOS AI automatically removes the background and crops to the correct specs."
+          "a": "A self-taken photo appears usable as long as it meets the size and background requirements, but we could not find an explicit rule in Vietnam's official guidance on whether self-taken photos are allowed or on editing and AI retouching. Some countries require an in-person commercial photographer or reject edited and composited photos, so please confirm with the receiving authority's official guidance before you submit. Use MONKOS to check the size, face ratio and framing before your shoot — not to produce the photo you submit."
         },
         {
           "q": "What is the background color for a Vietnam Passport photo?",
@@ -8477,7 +8505,7 @@
         },
         {
           "q": "ベトナムのパスポート写真を自宅で撮れますか？",
-          "a": "はい、サイズ（4 × 6cm）と背景（白）の条件を満たせば自宅撮影も可能です。MONKOS AIを使えば背景除去と規格クロップが自動で処理されます。"
+          "a": "規格・背景の条件を満たせば自分で撮影した写真も使えると見られますが、ベトナム当局の公式案内では自宅撮影の可否や写真の編集・AI補正に関する明示的な規定を確認できませんでした。国によっては写真館での対面撮影を求めたり、編集・合成した写真を却下したりする場合がありますので、提出前に受付機関の公式案内を必ずご確認ください。MONKOSは提出用の写真を代わりに作るためではなく、撮影前に規格・顔の比率・構図を確認する用途でご活用ください。"
         },
         {
           "q": "ベトナムのパスポート写真の背景色の規定は？",
@@ -8491,7 +8519,7 @@
         },
         {
           "q": "¿Puedo tomar la foto de Vietnam Passport en casa?",
-          "a": "Sí, siempre que cumpla con los requisitos de tamaño (4 × 6cm) y fondo (blanco). MONKOS AI elimina automáticamente el fondo y recorta según las especificaciones correctas."
+          "a": "Una foto tomada por usted mismo parece válida siempre que cumpla los requisitos de tamaño y fondo, pero no hemos encontrado una norma explícita en la guía oficial de Vietnam sobre si se permiten las fotos propias ni sobre la edición o el retoque con IA. Algunos países exigen un fotógrafo comercial presencial o rechazan las fotos editadas o compuestas, así que confirme la guía oficial del organismo receptor antes de presentarla. Use MONKOS para comprobar el tamaño, la proporción del rostro y el encuadre antes de la sesión, no para generar la foto que va a presentar."
         },
         {
           "q": "¿Cuál es el color de fondo para la foto de Vietnam Passport?",
@@ -34097,7 +34125,7 @@
         },
         {
           "q": "니카라과 여권 사진을 집에서 찍을 수 있나요?",
-          "a": "네, 규격(4 × 5cm)과 배경(흰색) 조건만 맞으면 셀프 촬영이 가능합니다. MONKOS AI를 사용하면 배경 제거와 규격 크롭을 자동으로 처리합니다."
+          "a": "규격·배경 조건을 맞추면 직접 촬영한 사진을 쓸 수 있는 것으로 보이나, 니카라과 당국 공식 안내에서 셀프 촬영 가부와 사진 편집·AI 보정에 대한 명시 규정은 확인하지 못했습니다. 국가에 따라 사진관 대면 촬영을 요구하거나 편집·합성본을 반려하는 경우가 있으므로, 제출 전 접수 기관 공식 안내를 반드시 확인하시기 바랍니다. MONKOS는 제출본을 대신 만들어 드리는 용도가 아니라 촬영 전 규격·얼굴 비율·구도를 확인하는 용도로 활용하세요."
         },
         {
           "q": "니카라과 여권 사진 배경색 규정은?",
@@ -34111,7 +34139,7 @@
         },
         {
           "q": "Can I take a Nicaragua Passport photo at home?",
-          "a": "Yes, as long as you meet the size (4 × 5cm) and background (White) requirements. MONKOS AI automatically removes the background and crops to the correct specs."
+          "a": "A self-taken photo appears usable as long as it meets the size and background requirements, but we could not find an explicit rule in Nicaragua's official guidance on whether self-taken photos are allowed or on editing and AI retouching. Some countries require an in-person commercial photographer or reject edited and composited photos, so please confirm with the receiving authority's official guidance before you submit. Use MONKOS to check the size, face ratio and framing before your shoot — not to produce the photo you submit."
         },
         {
           "q": "What is the background color for a Nicaragua Passport photo?",
@@ -34125,7 +34153,7 @@
         },
         {
           "q": "ニカラグアのパスポート写真を自宅で撮れますか？",
-          "a": "はい、サイズ（4 × 5cm）と背景（白）の条件を満たせば自宅撮影も可能です。MONKOS AIを使えば背景除去と規格クロップが自動で処理されます。"
+          "a": "規格・背景の条件を満たせば自分で撮影した写真も使えると見られますが、ニカラグア当局の公式案内では自宅撮影の可否や写真の編集・AI補正に関する明示的な規定を確認できませんでした。国によっては写真館での対面撮影を求めたり、編集・合成した写真を却下したりする場合がありますので、提出前に受付機関の公式案内を必ずご確認ください。MONKOSは提出用の写真を代わりに作るためではなく、撮影前に規格・顔の比率・構図を確認する用途でご活用ください。"
         },
         {
           "q": "ニカラグアのパスポート写真の背景色の規定は？",
@@ -34139,7 +34167,7 @@
         },
         {
           "q": "¿Puedo tomar la foto de Nicaragua Passport en casa?",
-          "a": "Sí, siempre que cumpla con los requisitos de tamaño (4 × 5cm) y fondo (blanco). MONKOS AI elimina automáticamente el fondo y recorta según las especificaciones correctas."
+          "a": "Una foto tomada por usted mismo parece válida siempre que cumpla los requisitos de tamaño y fondo, pero no hemos encontrado una norma explícita en la guía oficial de Nicaragua sobre si se permiten las fotos propias ni sobre la edición o el retoque con IA. Algunos países exigen un fotógrafo comercial presencial o rechazan las fotos editadas o compuestas, así que confirme la guía oficial del organismo receptor antes de presentarla. Use MONKOS para comprobar el tamaño, la proporción del rostro y el encuadre antes de la sesión, no para generar la foto que va a presentar."
         },
         {
           "q": "¿Cuál es el color de fondo para la foto de Nicaragua Passport?",
@@ -34383,7 +34411,7 @@
         },
         {
           "q": "온두라스 여권 사진을 집에서 찍을 수 있나요?",
-          "a": "네, 규격(5 × 5cm)과 배경(흰색) 조건만 맞으면 셀프 촬영이 가능합니다. MONKOS AI를 사용하면 배경 제거와 규격 크롭을 자동으로 처리합니다."
+          "a": "규격·배경 조건을 맞추면 직접 촬영한 사진을 쓸 수 있는 것으로 보이나, 온두라스 당국 공식 안내에서 셀프 촬영 가부와 사진 편집·AI 보정에 대한 명시 규정은 확인하지 못했습니다. 국가에 따라 사진관 대면 촬영을 요구하거나 편집·합성본을 반려하는 경우가 있으므로, 제출 전 접수 기관 공식 안내를 반드시 확인하시기 바랍니다. MONKOS는 제출본을 대신 만들어 드리는 용도가 아니라 촬영 전 규격·얼굴 비율·구도를 확인하는 용도로 활용하세요."
         },
         {
           "q": "온두라스 여권 사진 배경색 규정은?",
@@ -34397,7 +34425,7 @@
         },
         {
           "q": "Can I take a Honduras Passport photo at home?",
-          "a": "Yes, as long as you meet the size (5 × 5cm) and background (White) requirements. MONKOS AI automatically removes the background and crops to the correct specs."
+          "a": "A self-taken photo appears usable as long as it meets the size and background requirements, but we could not find an explicit rule in Honduras's official guidance on whether self-taken photos are allowed or on editing and AI retouching. Some countries require an in-person commercial photographer or reject edited and composited photos, so please confirm with the receiving authority's official guidance before you submit. Use MONKOS to check the size, face ratio and framing before your shoot — not to produce the photo you submit."
         },
         {
           "q": "What is the background color for a Honduras Passport photo?",
@@ -34411,7 +34439,7 @@
         },
         {
           "q": "ホンジュラスのパスポート写真を自宅で撮れますか？",
-          "a": "はい、サイズ（5 × 5cm）と背景（白）の条件を満たせば自宅撮影も可能です。MONKOS AIを使えば背景除去と規格クロップが自動で処理されます。"
+          "a": "規格・背景の条件を満たせば自分で撮影した写真も使えると見られますが、ホンジュラス当局の公式案内では自宅撮影の可否や写真の編集・AI補正に関する明示的な規定を確認できませんでした。国によっては写真館での対面撮影を求めたり、編集・合成した写真を却下したりする場合がありますので、提出前に受付機関の公式案内を必ずご確認ください。MONKOSは提出用の写真を代わりに作るためではなく、撮影前に規格・顔の比率・構図を確認する用途でご活用ください。"
         },
         {
           "q": "ホンジュラスのパスポート写真の背景色の規定は？",
@@ -34425,7 +34453,7 @@
         },
         {
           "q": "¿Puedo tomar la foto de Honduras Passport en casa?",
-          "a": "Sí, siempre que cumpla con los requisitos de tamaño (5 × 5cm) y fondo (blanco). MONKOS AI elimina automáticamente el fondo y recorta según las especificaciones correctas."
+          "a": "Una foto tomada por usted mismo parece válida siempre que cumpla los requisitos de tamaño y fondo, pero no hemos encontrado una norma explícita en la guía oficial de Honduras sobre si se permiten las fotos propias ni sobre la edición o el retoque con IA. Algunos países exigen un fotógrafo comercial presencial o rechazan las fotos editadas o compuestas, así que confirme la guía oficial del organismo receptor antes de presentarla. Use MONKOS para comprobar el tamaño, la proporción del rostro y el encuadre antes de la sesión, no para generar la foto que va a presentar."
         },
         {
           "q": "¿Cuál es el color de fondo para la foto de Honduras Passport?",
@@ -43379,7 +43407,7 @@
         },
         {
           "q": "모로코 여권 사진을 집에서 찍을 수 있나요?",
-          "a": "네, 규격(3.5 × 4.5cm)과 배경(흰색) 조건만 맞으면 셀프 촬영이 가능합니다. MONKOS AI를 사용하면 배경 제거와 규격 크롭을 자동으로 처리합니다."
+          "a": "규격·배경 조건을 맞추면 직접 촬영한 사진을 쓸 수 있는 것으로 보이나, 모로코 당국 공식 안내에서 셀프 촬영 가부와 사진 편집·AI 보정에 대한 명시 규정은 확인하지 못했습니다. 국가에 따라 사진관 대면 촬영을 요구하거나 편집·합성본을 반려하는 경우가 있으므로, 제출 전 접수 기관 공식 안내를 반드시 확인하시기 바랍니다. MONKOS는 제출본을 대신 만들어 드리는 용도가 아니라 촬영 전 규격·얼굴 비율·구도를 확인하는 용도로 활용하세요."
         },
         {
           "q": "모로코 여권 사진 배경색 규정은?",
@@ -43393,7 +43421,7 @@
         },
         {
           "q": "Can I take a Morocco Passport photo at home?",
-          "a": "Yes, as long as you meet the size (3.5 × 4.5cm) and background (White) requirements. MONKOS AI automatically removes the background and crops to the correct specs."
+          "a": "A self-taken photo appears usable as long as it meets the size and background requirements, but we could not find an explicit rule in Morocco's official guidance on whether self-taken photos are allowed or on editing and AI retouching. Some countries require an in-person commercial photographer or reject edited and composited photos, so please confirm with the receiving authority's official guidance before you submit. Use MONKOS to check the size, face ratio and framing before your shoot — not to produce the photo you submit."
         },
         {
           "q": "What is the background color for a Morocco Passport photo?",
@@ -43407,7 +43435,7 @@
         },
         {
           "q": "モロッコのパスポート写真を自宅で撮れますか？",
-          "a": "はい、サイズ（3.5 × 4.5cm）と背景（白）の条件を満たせば自宅撮影も可能です。MONKOS AIを使えば背景除去と規格クロップが自動で処理されます。"
+          "a": "規格・背景の条件を満たせば自分で撮影した写真も使えると見られますが、モロッコ当局の公式案内では自宅撮影の可否や写真の編集・AI補正に関する明示的な規定を確認できませんでした。国によっては写真館での対面撮影を求めたり、編集・合成した写真を却下したりする場合がありますので、提出前に受付機関の公式案内を必ずご確認ください。MONKOSは提出用の写真を代わりに作るためではなく、撮影前に規格・顔の比率・構図を確認する用途でご活用ください。"
         },
         {
           "q": "モロッコのパスポート写真の背景色の規定は？",
@@ -43421,7 +43449,7 @@
         },
         {
           "q": "¿Puedo tomar la foto de Morocco Passport en casa?",
-          "a": "Sí, siempre que cumpla con los requisitos de tamaño (3.5 × 4.5cm) y fondo (blanco). MONKOS AI elimina automáticamente el fondo y recorta según las especificaciones correctas."
+          "a": "Una foto tomada por usted mismo parece válida siempre que cumpla los requisitos de tamaño y fondo, pero no hemos encontrado una norma explícita en la guía oficial de Marruecos sobre si se permiten las fotos propias ni sobre la edición o el retoque con IA. Algunos países exigen un fotógrafo comercial presencial o rechazan las fotos editadas o compuestas, así que confirme la guía oficial del organismo receptor antes de presentarla. Use MONKOS para comprobar el tamaño, la proporción del rostro y el encuadre antes de la sesión, no para generar la foto que va a presentar."
         },
         {
           "q": "¿Cuál es el color de fondo para la foto de Morocco Passport?",
@@ -56195,7 +56223,7 @@
         },
         {
           "q": "세인트루시아 여권 사진을 집에서 찍을 수 있나요?",
-          "a": "네, 규격(4 × 5cm)과 배경(흰색) 조건만 맞으면 셀프 촬영이 가능합니다. MONKOS AI를 사용하면 배경 제거와 규격 크롭을 자동으로 처리합니다."
+          "a": "규격·배경 조건을 맞추면 직접 촬영한 사진을 쓸 수 있는 것으로 보이나, 세인트루시아 당국 공식 안내에서 셀프 촬영 가부와 사진 편집·AI 보정에 대한 명시 규정은 확인하지 못했습니다. 국가에 따라 사진관 대면 촬영을 요구하거나 편집·합성본을 반려하는 경우가 있으므로, 제출 전 접수 기관 공식 안내를 반드시 확인하시기 바랍니다. MONKOS는 제출본을 대신 만들어 드리는 용도가 아니라 촬영 전 규격·얼굴 비율·구도를 확인하는 용도로 활용하세요."
         },
         {
           "q": "세인트루시아 여권 사진 배경색 규정은?",
@@ -56209,7 +56237,7 @@
         },
         {
           "q": "Can I take a Saint Lucia Passport photo at home?",
-          "a": "Yes, as long as you meet the size (4 × 5cm) and background (White) requirements. MONKOS AI automatically removes the background and crops to the correct specs."
+          "a": "A self-taken photo appears usable as long as it meets the size and background requirements, but we could not find an explicit rule in Saint Lucia's official guidance on whether self-taken photos are allowed or on editing and AI retouching. Some countries require an in-person commercial photographer or reject edited and composited photos, so please confirm with the receiving authority's official guidance before you submit. Use MONKOS to check the size, face ratio and framing before your shoot — not to produce the photo you submit."
         },
         {
           "q": "What is the background color for a Saint Lucia Passport photo?",
@@ -56223,7 +56251,7 @@
         },
         {
           "q": "セントルシアのパスポート写真を自宅で撮れますか？",
-          "a": "はい、サイズ（4 × 5cm）と背景（白）の条件を満たせば自宅撮影も可能です。MONKOS AIを使えば背景除去と規格クロップが自動で処理されます。"
+          "a": "規格・背景の条件を満たせば自分で撮影した写真も使えると見られますが、セントルシア当局の公式案内では自宅撮影の可否や写真の編集・AI補正に関する明示的な規定を確認できませんでした。国によっては写真館での対面撮影を求めたり、編集・合成した写真を却下したりする場合がありますので、提出前に受付機関の公式案内を必ずご確認ください。MONKOSは提出用の写真を代わりに作るためではなく、撮影前に規格・顔の比率・構図を確認する用途でご活用ください。"
         },
         {
           "q": "セントルシアのパスポート写真の背景色の規定は？",
@@ -56237,7 +56265,7 @@
         },
         {
           "q": "¿Puedo tomar la foto de Saint Lucia Passport en casa?",
-          "a": "Sí, siempre que cumpla con los requisitos de tamaño (4 × 5cm) y fondo (blanco). MONKOS AI elimina automáticamente el fondo y recorta según las especificaciones correctas."
+          "a": "Una foto tomada por usted mismo parece válida siempre que cumpla los requisitos de tamaño y fondo, pero no hemos encontrado una norma explícita en la guía oficial de Santa Lucía sobre si se permiten las fotos propias ni sobre la edición o el retoque con IA. Algunos países exigen un fotógrafo comercial presencial o rechazan las fotos editadas o compuestas, así que confirme la guía oficial del organismo receptor antes de presentarla. Use MONKOS para comprobar el tamaño, la proporción del rostro y el encuadre antes de la sesión, no para generar la foto que va a presentar."
         },
         {
           "q": "¿Cuál es el color de fondo para la foto de Saint Lucia Passport?",
