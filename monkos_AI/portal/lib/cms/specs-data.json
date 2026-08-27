@@ -841,7 +841,7 @@
         },
         {
           "q": "여권사진 셀프로 찍을 수 있나요?",
-          "a": "규격만 맞으면 셀프 촬영도 가능합니다. 단, 일반 종이 인쇄 사진은 불가하며 인화지(유광 또는 무광)에 인화된 300DPI 사진을 제출해야 합니다."
+          "a": "규격에 맞으면 셀프 촬영도 가능합니다. 다만 외교부는 사진 편집 프로그램·필터로 임의 보정한 사진(AI를 활용한 편집·가공·합성 포함)과, 편집 프로그램으로 배경을 지우거나 합성한 사진을 허용하지 않습니다. 배경은 촬영 단계에서 균일하게 확보하세요. 또한 일반 종이 인쇄 사진은 불가하며 인화지(유광 또는 무광)에 300DPI로 인화한 사진을 제출해야 합니다."
         },
         {
           "q": "여권사진 메이크업 주의사항이 있나요?",
@@ -867,7 +867,7 @@
         },
         {
           "q": "セルフでパスポート写真を撮れますか？",
-          "a": "はい、規格を満たせばセルフ撮影も可能です。MONKOS AIで背景除去と規格クロップを自動処理できます。"
+          "a": "規格に合っていればセルフ撮影も可能です。ただし韓国外交部は、写真編集ソフトやフィルターで任意に補正した写真（AIを用いた編集・加工・合成を含む）や、編集ソフトで背景を消したり合成したりした写真を認めていません。背景は撮影の時点で均一に整えてください。また普通紙に印刷した写真は使えず、印画紙（光沢または半光沢）に300DPIでプリントした写真を提出する必要があります。"
         },
         {
           "q": "パスポート写真を自宅で撮ってもいいですか？",
@@ -885,7 +885,7 @@
         },
         {
           "q": "Can I take a passport photo by myself?",
-          "a": "Yes, as long as it meets the specifications. MONKOS AI automatically removes the background and crops to the correct size."
+          "a": "Yes, a self-taken photo is fine as long as it meets the specification. However, the Korean Ministry of Foreign Affairs does not accept photos retouched with editing software or filters — including anything edited, processed or composited with AI — nor photos whose background was erased or composited with editing software. Get an even background at capture time. Prints on ordinary paper are also rejected: submit a 300 DPI print on photographic paper (glossy or matte)."
         },
         {
           "q": "Can I take a Korean passport photo at home?",
@@ -903,7 +903,7 @@
         },
         {
           "q": "¿Puedo tomar la foto de pasaporte por mi cuenta?",
-          "a": "Sí, siempre que cumpla con las especificaciones. MONKOS AI elimina automáticamente el fondo y recorta al tamaño correcto."
+          "a": "Sí, una foto tomada por usted mismo es válida siempre que cumpla la especificación. Sin embargo, el Ministerio de Asuntos Exteriores de Corea no acepta fotos retocadas con software de edición ni filtros —incluido lo editado, procesado o compuesto con IA— ni fotos cuyo fondo se haya borrado o compuesto con software de edición. Consiga un fondo uniforme en el momento de la toma. Las impresiones en papel corriente tampoco se aceptan: presente una copia a 300 DPI en papel fotográfico (brillante o mate)."
         },
         {
           "q": "¿Puedo tomar la foto de pasaporte coreano en casa?",
