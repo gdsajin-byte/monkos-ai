@@ -123,6 +123,15 @@ export const ai = new GoogleGenAI({
   location: LOCATION,
 });
 
+// 이미지 생성 전용 — Gemini 이미지 GA 모델은 global 로케이션에만 배치된다
+// (2026-08-27 Vertex Imagen 계열 전면 폐지 대응). 텍스트용 `ai`는 us-central1 정상 동작 중이라 무변경.
+export const aiImage = new GoogleGenAI({
+  vertexai: true,
+  project: PROJECT_ID,
+  location: 'global',
+});
+export const CMS_IMAGE_MODEL = 'gemini-3.1-flash-image';
+
 // === Telegram API URL ===
 export const TELEGRAM_CS_API = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}`;
 export const TELEGRAM_EVENT_API = `https://api.telegram.org/bot${TELEGRAM_EVENT_BOT_TOKEN}`;

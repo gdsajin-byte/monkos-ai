@@ -7,7 +7,7 @@ import { readFileSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { Storage } from '@google-cloud/storage';
-import { ai, GCS_BUCKET, log, parseJsonBody } from '../shared/config.js';
+import { ai, aiImage, CMS_IMAGE_MODEL, GCS_BUCKET, log, parseJsonBody } from '../shared/config.js';
 import { requireAdmin } from './admin-auth.js';
 import { generateSlug } from './slug.js';
 
@@ -78,16 +78,18 @@ Rules:
     }
     log(`[AI] 이미지 프롬프트: ${generatedPrompt.substring(0, 100)}...`);
 
-    // ② Imagen 4 Fast로 이미지 생성
-    const imgResponse = await ai.models.generateImages({
-      model: 'imagen-4.0-generate-001',
-      prompt: generatedPrompt,
-      config: { numberOfImages: 1, outputMimeType: 'image/jpeg' },
+    // ② Gemini 이미지 모델로 생성 (2026-08-27: Imagen 4 폐지 대응)
+    // generateImages()는 Imagen 전용 API라 Gemini 이미지 모델에는 쓸 수 없다 → generateContent
+    const imgResponse = await aiImage.models.generateContent({
+      model: CMS_IMAGE_MODEL,
+      contents: [{ role: 'user', parts: [{ text: generatedPrompt }] }],
+      config: { responseModalities: ['TEXT', 'IMAGE'] },
     });
-    const imageBytes = imgResponse.generatedImages?.[0]?.image?.imageBytes;
+    const imageBytes = imgResponse.candidates?.[0]?.content?.parts
+      ?.find((p) => p.inlineData)?.inlineData?.data;
     if (!imageBytes) {
       res.writeHead(500, { 'Content-Type': 'application/json' });
-      return res.end(JSON.stringify({ error: 'Imagen 이미지 생성 실패' }));
+      return res.end(JSON.stringify({ error: '이미지 생성 실패' }));
     }
     const imageBuffer = Buffer.from(imageBytes, 'base64');
 
@@ -100,7 +102,7 @@ Rules:
     const gcsPath = `blog/ai_${timestamp}_${slug}.jpg`;
     const url = await uploadToGcs(jpegBuffer, gcsPath, 'image/jpeg', {
       source: 'ai-generate',
-      model: 'imagen-4-fast',
+      model: CMS_IMAGE_MODEL,
       prompt: generatedPrompt.substring(0, 500),
     });
     log(`[AI] 이미지 생성 완료: ${gcsPath} (${(jpegBuffer.length / 1024).toFixed(1)}KB)`);
