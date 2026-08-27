@@ -98,6 +98,7 @@ apps/monk_imagen4/ 내 modules/, components/, services/ — v6과 분기됨
 | 2026-06-06 | 막내 | 다운로드버그 + EXPORT크래시 + localStorage오염 — v6 번들 3건 패치 + /api/upload 스텁 신설 | `064df031` | ✅ |
 | 2026-06-06 | 막내3 | 코드 구조 전수 조사 보고서 — 10개 위치 판정 + 아키텍처 매핑 | COMPLETION 보고서 | ✅ |
 | 2026-06-06 | 막내1 | **PF_IMAGE_PRO 신설** — 아키텍처 정본 + 히스토리 정착 | 본 문서 | ✅ |
+| 2026-08-27 | 막내1 | **🔴 INCIDENT 복구 — Vertex Imagen 계열 전면 폐지 대응 T2I 마이그레이션**(ORDER_20260827). `POST /generate`가 `imagen-4.0-fast-generate-001` **NOT_FOUND**로 500 전량 실패(마지막 성공 08-17, 리비전 00031은 06-19 이후 무배포 → 우리 코드 변경 없음, 구글 측 폐지). fast→**gemini-3.1-flash-image** / ultra→**gemini-3-pro-image**(둘 다 GA), 이미지 전용 `IMAGE_LOCATION='global'` 신설(`LOCATION` 무접촉), gRPC `:predict`→REST `:generateContent`+ADC. **mimeType 하드코딩 3개소 동적화**(Gemini는 PNG 반환 — GCS contentType·확장자·data URL 전부 실측 확인). 미지원 파라미터 5종은 수신 유지+요청 제외+`Ignored params` 로그로 가시화(무음 무시 없음). 실측: fast **200/12.4s**, ultra **200/84.3s**(3:4·2K), `/refine`·`/analyze` 배포 전후 **200 동일**(무접촉 실증). 배포 전 `deploy.sh`의 `GEMINI_API_KEY` 주입을 먼저 확인해 `/refine` 파괴 위험 배제. 시크릿 값 무접촉. **2차 피해 동시 처리** — 포털 `lib/cms/ai.js`도 동일 원인으로 고장 상태였다(어드민 AI 이미지 생성 500). `aiImage`(global)+`CMS_IMAGE_MODEL` 신설, `generateImages()`→`generateContent()`. 소비처 게이트 49곳 충돌 0. Phase D: `apps/monk_imagen4/` 비정본 경고 주석(로직 무변경). ⏳ 어드민 클릭 1회만 미실행(세션 키=시크릿, 헌법 4조 1항) — 통과 조건 4가지는 전부 실증 | [COMPLETION](../../reports/2026-08/COMPLETION_20260827_iMac막내1_IMAGE_PRO_T2I마이그레이션.md) · `monk-image-engine-00032-qj6` · `monkos-portal-00557-k86` | ✅ prod |
 
 ---
 
