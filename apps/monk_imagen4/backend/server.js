@@ -1,3 +1,4 @@
+// ⚠️ 비정본 — monk-image-engine 정본 소스는 monkos_AI/image-pro/backend/ 이다. 이 판본으로 배포 금지. (2026-08-27)
 /**
  * MONKOS Image Engine - Vertex AI Imagen 4 Backend API
  *

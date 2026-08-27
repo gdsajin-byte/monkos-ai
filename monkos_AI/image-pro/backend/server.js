@@ -1,8 +1,10 @@
 /**
- * MONKOS Image Engine - Vertex AI Imagen 4 Backend API
+ * MONKOS Image Engine - Vertex AI Backend API
  *
  * K-뷰티 특화 이미지 생성 백엔드 서비스
- * - Vertex AI Imagen 4 통합
+ * - T2I(/generate): Vertex AI Gemini 이미지 모델 (global 로케이션, :generateContent REST)
+ *   2026-08-27 Imagen 4 계열 전면 폐지(NOT_FOUND) 대응으로 이관
+ * - I2I(/refine)·분석(/analyze): generativelanguage + GEMINI_API_KEY (무변경)
  * - ADC (Application Default Credentials) 인증
  * - GCS 자동 저장
  * - Cloud Run 최적화
@@ -10,7 +12,7 @@
 
 const express = require('express');
 const cors = require('cors');
-const { PredictionServiceClient, helpers } = require('@google-cloud/aiplatform');
+const { GoogleAuth } = require('google-auth-library');
 const { Storage } = require('@google-cloud/storage');
 require('dotenv').config();
 
@@ -23,14 +25,23 @@ const LOCATION = process.env.LOCATION || 'us-central1';
 const GCS_BUCKET = process.env.GCS_BUCKET || 'monk-ai-images';
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
 
+// T2I 이미지 모델 (2026-08-27: Vertex Imagen 계열 전면 폐지 대응)
+// Imagen 4 → Gemini 이미지 모델. GA 모델은 global 로케이션에만 배치된다.
+// LOCATION(us-central1)은 GCS·기존 상수와 얽혀 있어 건드리지 않고, 이미지 전용 상수를 따로 둔다.
+const IMAGE_LOCATION = process.env.IMAGE_LOCATION || 'global';
+const IMAGE_MODELS = { fast: 'gemini-3.1-flash-image', ultra: 'gemini-3-pro-image' };
+const IMAGE_API_HOST = IMAGE_LOCATION === 'global'
+  ? 'https://aiplatform.googleapis.com'
+  : `https://${IMAGE_LOCATION}-aiplatform.googleapis.com`;
+// Gemini 이미지 모델에 없는 Imagen 전용 파라미터 — 수신은 하되 요청 body에 넣지 않는다(넣으면 400)
+const UNSUPPORTED_PARAMS = ['seed', 'guidanceScale', 'safetyFilterLevel', 'personGeneration', 'outputCompression'];
+
 // Middleware
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 
-// Vertex AI 클라이언트 초기화 (ADC 자동 사용)
-const predictionClient = new PredictionServiceClient({
-  apiEndpoint: `${LOCATION}-aiplatform.googleapis.com`
-});
+// Vertex AI 인증 (ADC 자동 사용) — :generateContent는 REST라 gRPC 클라이언트를 쓸 수 없다
+const googleAuth = new GoogleAuth({ scopes: 'https://www.googleapis.com/auth/cloud-platform' });
 
 // GCS 클라이언트 초기화 (ADC 자동 사용)
 const storage = new Storage();
@@ -107,74 +118,113 @@ app.post('/generate', async (req, res) => {
       });
     }
 
-    // model → Vertex AI 모델 ID 매핑
-    const modelId = model === 'ultra'
-      ? 'imagen-4.0-ultra-generate-001'
-      : 'imagen-4.0-fast-generate-001';
+    // model → Gemini 이미지 모델 ID 매핑
+    const modelId = IMAGE_MODELS[model] || IMAGE_MODELS.fast;
 
     console.log(`[Generate] Model: ${modelId} (${model})`);
     console.log(`[Generate] Prompt: ${cleanedPrompt.substring(0, 100)}...`);
     console.log(`[Generate] Aspect Ratio: ${finalAspectRatio}`);
+    console.log(`[Generate] Image Size: ${finalImageSize}`);
 
-    // Vertex AI Imagen 4 요청 구성
-    const endpoint = `projects/${PROJECT_ID}/locations/${LOCATION}/publishers/google/models/${modelId}`;
+    // Imagen 전용 파라미터는 Gemini 이미지 모델에 없다 — 무음 무시 금지, 들어온 값을 가시화한다
+    const ignored = UNSUPPORTED_PARAMS.filter(k => req.body[k] !== undefined);
+    if (ignored.length) {
+      console.log(`[Generate] Ignored params (unsupported by ${modelId}): ${ignored.join(', ')}`);
+    }
 
-    const instances = [
-      {
-        prompt: cleanedPrompt,
-        ...(negativePrompt && { negativePrompt }),
-      }
-    ];
+    // negativePrompt: Gemini 이미지 모델에는 전용 필드가 없다 → 프롬프트에 병합
+    const finalPrompt = negativePrompt
+      ? `${cleanedPrompt}\n\nAvoid: ${negativePrompt}`
+      : cleanedPrompt;
 
-    const parameters = {
-      aspectRatio: finalAspectRatio,
-      sampleCount: numberOfImages,
-      ...(seed && { seed }),
-      ...(guidanceScale && { guidanceScale }),
-      safetyFilterLevel: safetyFilterLevel,
-      personGeneration: personGeneration,
-      ...(finalImageSize === '2K' && { sampleImageSize: 2048, addOverscan: true }),
-      outputMimeType: 'image/jpeg',
-      outputCompression: 95
+    const url = `${IMAGE_API_HOST}/v1/projects/${PROJECT_ID}/locations/${IMAGE_LOCATION}`
+              + `/publishers/google/models/${modelId}:generateContent`;
+
+    const body = {
+      contents: [{ role: 'user', parts: [{ text: finalPrompt }] }],
+      generationConfig: {
+        responseModalities: ['TEXT', 'IMAGE'],
+        imageConfig: {
+          aspectRatio: finalAspectRatio,
+          imageSize: finalImageSize,   // '1K' | '2K' | '4K'
+        },
+      },
+      // /refine의 검증된 BLOCK_NONE 패턴 준수
+      safetySettings: [
+        { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
+        { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
+        { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
+        { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
+      ],
     };
 
-    console.log(`[Generate] Image Size: ${finalImageSize}${finalImageSize === '2K' ? ' (sampleImageSize: 2048, addOverscan: true)' : ''}`);
+    // 기존 gRPC 타임아웃(ultra 120s / fast 60s)을 AbortController로 재현
+    const callTimeout = model === 'ultra' ? 120000 : 60000;
+    const accessToken = await googleAuth.getAccessToken();
 
-    // Vertex AI 호출 (protobuf Value 변환 필수)
-    // gRPC 기본 deadline(30s)이 ultra 응답시간보다 짧아 DEADLINE_EXCEEDED 발생 → 모델별 타임아웃 명시 (2026-06-05)
-    const callTimeout = model === 'ultra' ? 120000 : 60000; // ultra 120s / fast 60s
-    const [response] = await predictionClient.predict({
-      endpoint,
-      instances: instances.map(i => helpers.toValue(i)),
-      parameters: helpers.toValue(parameters)
-    }, {
-      timeout: callTimeout
-    });
+    // Gemini 이미지 모델은 1콜 1이미지 — sampleCount가 없으므로 N장은 병렬 호출한다
+    const count = Math.min(Math.max(parseInt(numberOfImages, 10) || 1, 1), 4);
 
-    if (!response.predictions || response.predictions.length === 0) {
-      throw new Error('No images generated');
-    }
+    const callOnce = async () => {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), callTimeout);
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(body),
+          signal: controller.signal,
+        });
+
+        if (!response.ok) {
+          // 무음 폴백·강등 출고 금지 — 원문을 남기고 실패시킨다
+          const errorText = await response.text();
+          console.error(`[Generate] Vertex API error ${response.status}:`, errorText);
+          throw new Error(`Vertex API ${response.status}: ${errorText.substring(0, 500)}`);
+        }
+
+        const json = await response.json();
+        const parts = json.candidates?.[0]?.content?.parts || [];
+        const imagePart = parts.find(p => p.inlineData);
+        if (!imagePart) {
+          throw new Error('No image in response. The model might have declined the request.');
+        }
+        return {
+          // mimeType 하드코딩 금지 — Gemini 이미지 모델은 image/png를 반환한다
+          mimeType: imagePart.inlineData.mimeType || 'image/png',
+          imageBytes: imagePart.inlineData.data,
+          modelVersion: json.modelVersion || modelId,
+        };
+      } finally {
+        clearTimeout(timer);
+      }
+    };
+
+    const generated = await Promise.all(Array.from({ length: count }, callOnce));
 
     const results = [];
 
     // 각 생성된 이미지 처리
-    for (let i = 0; i < response.predictions.length; i++) {
-      const prediction = helpers.fromValue(response.predictions[i]);
-      const imageBytes = prediction.bytesBase64Encoded;
+    for (let i = 0; i < generated.length; i++) {
+      const { mimeType, imageBytes } = generated[i];
+      const ext = mimeType.split('/')[1] || 'png';
 
       let gcsUrl = null;
 
       // GCS 저장 (선택적)
       if (saveToGcs && imageBytes) {
         const timestamp = Date.now();
-        const filename = `generated/${timestamp}_${i}.jpg`;
+        const filename = `generated/${timestamp}_${i}.${ext}`;
         const file = bucket.file(filename);
 
         // Base64 디코딩 후 저장
         const buffer = Buffer.from(imageBytes, 'base64');
         await file.save(buffer, {
           metadata: {
-            contentType: 'image/jpeg',
+            contentType: mimeType,
             metadata: {
               prompt: cleanedPrompt.substring(0, 500),
               aspectRatio,
@@ -191,6 +241,7 @@ app.post('/generate', async (req, res) => {
 
       results.push({
         imageBase64: imageBytes,
+        mimeType,
         gcsUrl: gcsUrl,
         index: i
       });
@@ -201,12 +252,14 @@ app.post('/generate', async (req, res) => {
 
     res.json({
       success: true,
-      images: results.map(r => `data:image/jpeg;base64,${r.imageBase64}`),
+      images: results.map(r => `data:${r.mimeType};base64,${r.imageBase64}`),
       metadata: {
         prompt,
         model: modelId,
+        modelVersion: generated[0]?.modelVersion,
         aspectRatio: finalAspectRatio,
-        numberOfImages,
+        imageSize: finalImageSize,
+        numberOfImages: count,
         duration: `${duration}ms`,
         timestamp: new Date().toISOString()
       }
