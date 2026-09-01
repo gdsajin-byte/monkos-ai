@@ -140,6 +140,8 @@
 | matte_loadtest.py | 인프라 | `scripts/tools/` (4060에 실행 사본) | PF_INFRA + INCIDENT_20260725 |
 | matte-probe (chain/leg/queue) | 빌드/생성 | `monkos_AI/portal/tools/matte-probe/` | PF_INFRA + INCIDENT_20260725 |
 | matte-server deploy.sh | CLI | `monkos_AI/matte-server/` | `monkos_AI/matte-server/README.md` |
+| specs_drift.sh (G1) | 인프라 | `scripts/tools/` + `.git/hooks/pre-push`(경고 전용) | PF_INFRA + 본 문서 §배포 (09-01 스모크 5/5) |
+| 콘텐츠 어서션 스모크 (G2) | 빌드/생성 | `edge/deploy.sh` 내장 (`edge/smoke_assert.txt` 존재 시) | live-verify.md 2회 히트 규칙의 코드화 |
 | specs-ssg (build.mjs/sh) | 빌드/생성 | `monkos_AI/portal/tools/specs-ssg/` | PF_SPECS + COMPLETION_20260824 CF엣지정적화 (렌더러 정본 캡처 — 포크 금지) |
 | edge/deploy.sh + worker.mjs | CLI | `monkos_AI/portal/edge/` | PF_PORTAL + 본 문서 §배포 (08-24 스모크: 컷오버 검증 10항목) |
 | edge-trust.js | 서비스 모듈 | `monkos_AI/portal/lib/shared/` | SECRET_INVENTORY #44 + REVIEW_20260824 P2-2 |

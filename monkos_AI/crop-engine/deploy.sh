@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# ── ⚠️ 좀비 가드 (G6 2026-09-01 민아): 대상 서비스 GCP 미생성 (2026-08-13 실측)
+echo "⚠️  이 서비스는 미생성 상태입니다 (references.md §서비스 매핑). 진행하려면 --force-zombie 필요." >&2
+case " $* " in *--force-zombie*) ;; *) exit 1;; esac
 SERVICE_NAME="monkos-crop-engine"
 REGION="asia-northeast3"
 PROJECT_ID="monkos"

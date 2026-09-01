@@ -7,6 +7,18 @@
 # 사용: ./deploy.sh          (배포)
 #       ./deploy.sh --check  (배포 없이 원격 상태만 확인)
 set -euo pipefail
+# ── 미커밋 게이트 (G4 2026-09-01 민아) — 커밋 안 된 코드의 무음 탑승 방지
+_DDIR="$(cd "$(dirname "$0")" && pwd)"
+_DIRTY="$(git -C "$_DDIR" status --porcelain -- . 2>/dev/null | head -5)"
+if [ -n "$_DIRTY" ]; then
+  echo "⚠️  이 서비스 디렉토리에 미커밋 변경 존재 — 커밋 안 된 코드가 배포에 실릴 수 있습니다:" >&2
+  echo "$_DIRTY" >&2
+  case " $* " in *" --yes "*|*" -y "*) echo "   (--yes: 경고 후 진행)";; *)
+    { read -r -p "   계속하시겠습니까? [y/N] " _DGA </dev/tty; } 2>/dev/null || _DGA=n
+    case "$_DGA" in y|Y) ;; *) echo "   중단 — 커밋 후 재시도하세요." >&2; exit 1;; esac;;
+  esac
+fi
+
 
 HOST="4060"
 REMOTE_DIR="C:/Users/smuse73/matte-server"

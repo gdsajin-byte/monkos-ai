@@ -12,6 +12,25 @@
 ###############################################################################
 
 set -e  # 에러 발생 시 즉시 종료
+# ── 미커밋 게이트 (G4 2026-09-01 민아) — 커밋 안 된 코드의 무음 탑승 방지
+_DDIR="$(cd "$(dirname "$0")" && pwd)"
+_DIRTY="$(git -C "$_DDIR" status --porcelain -- . 2>/dev/null | head -5)"
+if [ -n "$_DIRTY" ]; then
+  echo "⚠️  이 서비스 디렉토리에 미커밋 변경 존재 — 커밋 안 된 코드가 배포에 실릴 수 있습니다:" >&2
+  echo "$_DIRTY" >&2
+  case " $* " in *" --yes "*|*" -y "*) echo "   (--yes: 경고 후 진행)";; *)
+    { read -r -p "   계속하시겠습니까? [y/N] " _DGA </dev/tty; } 2>/dev/null || _DGA=n
+    case "$_DGA" in y|Y) ;; *) echo "   중단 — 커밋 후 재시도하세요." >&2; exit 1;; esac;;
+  esac
+fi
+
+# ── 이중 소스 경고 (G6 2026-09-01 민아) — 같은 서비스를 배포하는 디렉토리 2곳 (references.md §서비스 매핑)
+echo "⚠️  이중 소스 서비스: monk-image-engine ← [monkos_AI/image-pro/backend] 및 [apps/monk_imagen4/backend]. 마지막 배포가 덮어씁니다." >&2
+case " $* " in *" --yes "*|*" -y "*) ;; *)
+  { read -r -p "   이 디렉토리(monkos_AI/image-pro/backend)가 현행 정본입니까? [y/N] " _DSA </dev/tty; } 2>/dev/null || _DSA=n
+  case "$_DSA" in y|Y) ;; *) echo "   중단 — 정본 확인: .claude/rules/references.md" >&2; exit 1;; esac;;
+esac
+
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 

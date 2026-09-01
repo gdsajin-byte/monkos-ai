@@ -4,7 +4,11 @@
 #   dev  — CPU (서울 northeast3, 8vCPU) : 폴백·개발 검증용 (실측 19~23s/장)
 #   gpu  — L4 (싱가포르 southeast1)     : 서빙 후보 (L4는 서울·도쿄 미지원, 무존중복 쿼터 신청 불요)
 #   prod — 서빙지 확정 후 지정
-set -e
+set -eo pipefail
+# ── ⚠️ 좀비 가드 (G6 2026-09-01 민아): 대상 서비스 GCP 미생성 (2026-08-13 실측)
+echo "⚠️  이 서비스는 미생성 상태입니다 (references.md §서비스 매핑). 진행하려면 --force-zombie 필요." >&2
+case " $* " in *--force-zombie*) ;; *) exit 1;; esac
+
 
 ENV="${1:-dev}"
 PROJECT_ID="monkos"

@@ -35,4 +35,28 @@ if [ "$FAIL" -ne 0 ]; then
   echo "❌ 스모크 실패 — 배포는 완료됐으나 실서빙 검증 미통과. 즉시 확인 필요 (무음 강등 금지)" >&2
   exit 1
 fi
+
+# ─── 콘텐츠 어서션 (G2, 2026-09-01) — edge/smoke_assert.txt 존재 시에만.
+# 행 형식: "URL<TAB>+기대문구" 또는 "URL<TAB>-부재문구". 판정은 2회 히트 규칙(live-verify.md) — 1차 버리고 2차로 판정.
+ASSERT="$EDGE/smoke_assert.txt"
+if [ -f "$ASSERT" ]; then
+  echo "── 콘텐츠 어서션 ($(grep -c . "$ASSERT")행) ──"
+  AFAIL=0
+  while IFS=$'\t' read -r AURL APAT; do
+    [ -z "$AURL" ] && continue
+    curl -s -o /dev/null --max-time 15 "$AURL"; sleep 1
+    BODY="$(curl -s --max-time 15 "$AURL")"
+    SIGN="${APAT:0:1}"; PAT="${APAT:1}"
+    HIT=$(printf '%s' "$BODY" | grep -cF "$PAT" || true)
+    if { [ "$SIGN" = "+" ] && [ "$HIT" -gt 0 ]; } || { [ "$SIGN" = "-" ] && [ "$HIT" -eq 0 ]; }; then
+      echo "  ✓ [$SIGN] $PAT"
+    else
+      echo "  ✗ 어서션 실패 [$SIGN|히트 $HIT] $AURL :: $PAT" >&2; AFAIL=1
+    fi
+  done < "$ASSERT"
+  [ "$AFAIL" -ne 0 ] && { echo "❌ 콘텐츠 어서션 미통과 — 변경 의도가 라이브에 반영되지 않음" >&2; exit 1; }
+fi
+
+# ─── 드리프트 해시 기록 (G1) — 실패해도 배포 성공은 유지 (기록만 경고)
+"$PORTAL/../../scripts/tools/specs_drift.sh" --record || echo "⚠️ 드리프트 해시 기록 실패 (배포는 정상)" >&2
 echo "✅ monkos-portal-edge 배포 + 스모크 4/4 완료"
