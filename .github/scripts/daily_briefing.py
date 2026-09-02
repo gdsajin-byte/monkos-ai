@@ -130,10 +130,14 @@ def _fetch_ga4_channels(client, prop, d):
     return rows
 
 
+# 2026-09-02 G-M1 수정안 2: 무료 트랙 편입 + hostName 표면 분리 + 분모=1단계 + 표 제목 정직화
+# spec_select는 specs 페이지 DOMContentLoaded 발화 = "규격 선택"이 아니라 "specs 열람"이다 (4-B 해석 정정)
 FUNNEL_EVENTS = [
-    "spec_select", "photo_upload", "generate_click",
-    "preview_view", "begin_checkout", "purchase",
+    "spec_select", "photo_upload",
+    "free_generate_click", "free_generate_done", "free_download",
+    "generate_click", "preview_view", "begin_checkout", "purchase",
 ]
+FUNNEL_LABELS = {"spec_select": "spec_select (specs 열람)"}
 
 
 def _fetch_ga4_funnel(client, prop, d):
@@ -142,7 +146,7 @@ def _fetch_ga4_funnel(client, prop, d):
     req = RunReportRequest(
         property=prop,
         date_ranges=[DateRange(start_date=d, end_date=d)],
-        dimensions=[Dimension(name="eventName")],
+        dimensions=[Dimension(name="eventName"), Dimension(name="hostName")],
         metrics=[Metric(name="eventCount"), Metric(name="totalUsers")],
         dimension_filter=FilterExpression(
             filter=Filter(
@@ -152,14 +156,23 @@ def _fetch_ga4_funnel(client, prop, d):
         ),
     )
     resp = client.run_report(req)
-    event_map = {}
+    # host별 분리 — 서로 다른 표면(monkos.ai specs / idphoto-kr / idphoto-jp / monk.kr)을 한 표에 합산하지 않는다
+    by_host = {}
     for row in resp.rows:
         name = row.dimension_values[0].value
-        event_map[name] = {
+        host = row.dimension_values[1].value or "(unknown)"
+        by_host.setdefault(host, {})[name] = {
             "count": int(row.metric_values[0].value),
             "users": int(row.metric_values[1].value),
         }
-    return [{"event": e, **event_map.get(e, {"count": 0, "users": 0})} for e in FUNNEL_EVENTS]
+    out = []
+    for host in sorted(by_host, key=lambda h: -sum(v["users"] for v in by_host[h].values())):
+        event_map = by_host[host]
+        out.append({
+            "host": host,
+            "rows": [{"event": e, **event_map.get(e, {"count": 0, "users": 0})} for e in FUNNEL_EVENTS],
+        })
+    return out
 
 
 def fetch_gsc(key_json, site_url, target_date, compare_date):
@@ -394,14 +407,20 @@ def generate_briefing(ga4_today, ga4_compare, gsc_today, gsc_compare,
         lines.append("")
 
     if funnel_data:
-        top_users = max((f["users"] for f in funnel_data), default=0) or 1
-        lines.append("### 퍼널 (GA4, idphoto-kr)")
-        lines.append("| 단계 | 이벤트 수 | 유저 수 | 전환율 |")
-        lines.append("|------|----------|---------|--------|")
-        for f in funnel_data:
-            cvr = f["users"] / top_users * 100
-            lines.append(f"| {f['event']} | {f['count']} | {f['users']} | {cvr:.0f}% |")
-        lines.append("")
+        # host별 표 분리. 전환율 분모 = 1단계(spec_select) 유저 — 최댓값 분모(출처 혼합) 폐기 (2026-09-02)
+        for h in funnel_data:
+            rows = h["rows"]
+            first_users = rows[0]["users"] if rows else 0
+            if not any(r["users"] for r in rows):
+                continue
+            lines.append(f"### 퍼널 (GA4, {h['host']})")
+            lines.append("| 단계 | 이벤트 수 | 유저 수 | 1단계 대비 |")
+            lines.append("|------|----------|---------|--------|")
+            for f in rows:
+                cvr = (f["users"] / first_users * 100) if first_users else 0
+                label = FUNNEL_LABELS.get(f["event"], f["event"])
+                lines.append(f"| {label} | {f['count']} | {f['users']} | {cvr:.0f}% |")
+            lines.append("")
 
     # GSC 상위 검색어
     lines.append("### GSC 상위 검색어 (Top 10)")
