@@ -95,4 +95,4 @@ status: 완료
 📁 `monkos-ops/ops/sessions/2026-09/2026-09-02_iMac_막내2.md` (어펜드)
 
 🔀 배포 rev: 해당 없음 (CI 워크플로우 — 다음 main push 시 GitHub Actions에서 첫 실행)
-⏳ 실측 검증은 로컬 재현 기준이다. 러너 실제 실행 결과는 본 커밋 푸시 후 Actions 로그에서 확인 가능하다.
+✅ **러너 실측 완료** — run `33602945218`(커밋 `daf2c657`, 한글명 세션로그 + `[예외]` 포함 = 결함 재현 조건)에서 C12 `✅ [예외] 기록 1건 — 대응 COMPLETION 전건 존재`, C11 `##[warning]⚠️ 배포 게이트 미충족 12/12본`. 두 스텝 모두 run status `success` → 비블로킹 유지 확인.
