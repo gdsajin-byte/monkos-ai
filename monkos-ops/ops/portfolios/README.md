@@ -40,6 +40,7 @@
 | [PF_PARTNER](PF_PARTNER/README.md) | PARTNER | 사업/제휴 | PARTNER | B2B 코브랜딩 입점 채널 — 인크루트 Phase 1, 멀티 플랫폼 확장 | active | 06-17 |
 | [PF_FACEREAD](PF_FACEREAD/README.md) | FACEREAD | 서비스 | IDPHOTO | 사주×관상 리포트 — 셀카 실측 기반, 취업사진 양문형 교차판매 | active | 08-01 |
 | [PF_RND](PF_RND/README.md) | RND | 운영 | — | 정부 R&D·IP 지원사업 통합 추적 | active | 04-24 |
+| [PF_ANCHOR](PF_ANCHOR/README.md) | ANCHOR | 운영 | — | 실물 사진관·가계 존속 × 꾸 국세 체납 정리 — MONKOS 전 세션 전제(앵커) 관리 | active | 09-02 |
 | [PF_TEMPLATE](PF_TEMPLATE/README.md) | TEMPLATE | 메타 | — | 신규 PF 생성 템플릿 | — | — |
 
 ## 네이밍
