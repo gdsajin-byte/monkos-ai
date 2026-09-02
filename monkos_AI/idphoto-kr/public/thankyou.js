@@ -8,7 +8,7 @@
 import {
   store, Monk,
   sharedInit, loadSessionData, navigateTo,
-  API, CREDIT_COST, KRW_PER_CREDIT
+  API
 } from './shared.js';
 import { initChatbot } from './modules/chatbot.js';
 
@@ -179,7 +179,8 @@ async function init() {
     sessionStorage.removeItem('monkos_pending_action');
   }
 
-  if (typeof gtag === 'function') gtag('event', 'purchase', { spec_type: store.format || '', auth_method: store.user?.provider || '', lang: document.documentElement.lang || 'ko', service: 'idphoto-kr', value: CREDIT_COST.download * KRW_PER_CREDIT, currency: 'KRW', transaction_id: `ty_${Date.now()}` });
+  // 2026-09-02: 'purchase'→'download_complete'. 수령은 결제가 아니다(충전 시점이 purchase). 다운로드마다 발화하던 가짜 매출 차단
+  if (typeof gtag === 'function') gtag('event', 'download_complete', { spec_type: store.format || '', auth_method: store.user?.provider || '', lang: document.documentElement.lang || 'ko', service: 'idphoto-kr' });
 
   Monk.log('수령처 v6 초기화 완료');
 }
