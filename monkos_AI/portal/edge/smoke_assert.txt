@@ -1,0 +1,14 @@
+# 콘텐츠 어서션 — edge/deploy.sh 가 배포 후 실행 (ch5 7조 · G2)
+# 서식: URL<TAB>+기대문구  또는  URL<TAB>-부재문구
+#  - 구분자는 반드시 탭 1개. 부호(+/-)·문구 누락은 실패로 계상된다.
+#  - 판정은 2회 히트 규칙 — 1차는 재검증 트리거로 버리고 2차로 판정한다.
+#  - "#" 시작 행과 빈 행은 주석. grep -F 고정 문자열 비교.
+
+# specs 대표 슬러그 — 441건 일괄 치환(64b4209d)이 엣지 정적본에 반영됐는지
+https://monkos.ai/specs/visa/kr	+원본을 변형하는 과도한 보정·합성본을 불허
+
+# CMS 표면 — 엣지 캐시 경유 렌더가 정상이고 canonical 이 정본을 가리키는지
+https://monkos.ai/blog	+<link rel="canonical" href="https://monkos.ai/blog">
+
+# 부재 어서션 — 폐기된 구문구가 재유입되지 않았는지 (07-17 적발 → 41일 잔존 재발 방지)
+https://monkos.ai/specs/visa/kr	-편집 프로그램·AI 보정본을 불허

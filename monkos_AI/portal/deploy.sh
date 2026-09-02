@@ -267,16 +267,30 @@ fi
 # specs 렌더 정본이 엣지 SSG 빌드 시점(gitRev) 이후 변경됐으면 엣지 재배포 없이는 라이브가 구본이다.
 EDGE_MANIFEST="$(dirname "$0")/tools/specs-ssg/dist/build-manifest.json"
 SPECS_SOURCES="lib/cms/specs-data.json lib/cms/render-specs.js lib/cms/specs-i18n.js lib/cms/specs-url.js lib/cms/components lib/cms/render-shell.js"
+# 2026-09-02 보정 (ch5 6조 "무음 강등 금지" / 7조 발효 선행 조건 ④):
+# 종전 구조는 gitRev 미상(필드 없음)·빈 문자열·로컬에 없는 커밋 3경로에서 아무 출력 없이 통과했다.
+# 특히 필드 자체가 없으면 grep 미히트가 pipefail에 걸려 배포 완료 후 스크립트가 메시지 없이 exit 1 했다.
+# → 3경로 전부 명시 출력. grep 실패는 `|| true` 로 흡수한다.
+# ⚠️ 본 게이트는 "로컬 빌드 산출물(dist/build-manifest.json)" 기준이라 이 머신의 빌드 이력만 반영한다.
+#    실제 배포본 기준 판정은 G1(`scripts/tools/specs_drift.sh`)이 정본이다.
 if [ -f "$EDGE_MANIFEST" ]; then
-  SSG_REV=$(grep -o '"gitRev": *"[^"]*"' "$EDGE_MANIFEST" | sed 's/.*"gitRev": *"\([^"]*\)".*/\1/')
-  if [ -n "$SSG_REV" ] && git -C "$(dirname "$0")" cat-file -e "${SSG_REV}^{commit}" 2>/dev/null; then
-    DRIFT=$(cd "$(dirname "$0")" && git diff --name-only "$SSG_REV" HEAD -- $SPECS_SOURCES 2>/dev/null)
+  SSG_REV=$(grep -o '"gitRev": *"[^"]*"' "$EDGE_MANIFEST" | sed 's/.*"gitRev": *"\([^"]*\)".*/\1/' || true)
+  if [ -z "$SSG_REV" ]; then
+    echo -e "${YELLOW}⚠️  엣지 SSG 매니페스트에 gitRev 없음 (${EDGE_MANIFEST}) — 드리프트 검사 미실시.${NC}"
+    echo -e "${YELLOW}    specs 변경 배포라면 ./edge/deploy.sh 필요 여부를 직접 확인하라.${NC}"
+  elif ! git -C "$(dirname "$0")" cat-file -e "${SSG_REV}^{commit}" 2>/dev/null; then
+    echo -e "${YELLOW}⚠️  SSG 빌드 커밋 ${SSG_REV} 이 로컬에 없음 — 드리프트 검사 미실시.${NC}"
+    echo -e "${YELLOW}    'git fetch origin' 후 재실행하거나 ./edge/deploy.sh 필요 여부를 직접 확인하라.${NC}"
+  else
+    DRIFT=$(cd "$(dirname "$0")" && git diff --name-only "$SSG_REV" HEAD -- $SPECS_SOURCES 2>/dev/null || true)
     if [ -n "$DRIFT" ]; then
-      echo -e "${RED}⚠️  엣지 정적본 드리프트 감지 — specs 정본이 SSG 빌드(${SSG_REV}) 이후 변경됨:${NC}"
+      echo -e "${RED}⚠️  엣지 정적본 드리프트 감지 — specs 정본이 로컬 SSG 빌드(${SSG_REV}) 이후 변경됨:${NC}"
       echo "$DRIFT" | sed 's/^/    /'
-      echo -e "${RED}    라이브 specs는 구본 서빙 중. 반드시 실행: ./edge/deploy.sh${NC}"
+      echo -e "${RED}    라이브 specs가 구본일 수 있음. 반드시 실행: ./edge/deploy.sh${NC}"
+      echo -e "${YELLOW}    (로컬 빌드 기준 판정이다. 이 머신에서 빌드하지 않고 타 디바이스가 배포했다면 오탐일 수 있으니${NC}"
+      echo -e "${YELLOW}     'scripts/tools/specs_drift.sh' 로 배포 원장 기준 재확인할 것)${NC}"
     else
-      echo -e "${GREEN}✓ 엣지 정적본 드리프트 없음 (SSG rev ${SSG_REV})${NC}"
+      echo -e "${GREEN}✓ 엣지 정적본 드리프트 없음 (로컬 SSG rev ${SSG_REV})${NC}"
     fi
   fi
 else
