@@ -33,3 +33,6 @@ status: 마감
 - 이중 소스 Cloud Run 라벨 자동화(경고→기계 검증 승격) — 막내 후속 후보
 - ch5 배포 게이트 표준 조항화 — 법개정 청구 (별도 보고)
 - 타 디바이스(M1 등)는 `specs_drift.sh --install-hook` 1회 실행 필요 (훅은 로컬)
+
+---
+> **[2026-09-02 15:15 KST] 정정 각주 (iMac/민아)**: 본 보고의 "스모크 5/5"는 iMac 단일 디바이스 실측이다. PETITION_20260902 행정 심사(막내2 ④·⑤)가 후속 적발: ① G1 `specs_drift.sh`가 gitignore된 `tools/specs-ssg/dist/`를 해싱 → 타 디바이스 상시 오탐(이식성 미시험) ② portal/deploy.sh 드리프트 게이트 gitRev 부재·빈값·필드없음 3경로 무음(필드없음은 배포 후 무메시지 exit 1). 보정은 개정 3 발효 선행 조건으로 편입(지시서 사안). 상세: `REVIEW_20260902_iMac민아_PETITION20260902_청구인의견.md` §3
