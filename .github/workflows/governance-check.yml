@@ -95,3 +95,112 @@ jobs:
           else
             echo "✅ 계층 동기화 스탬프 정상"
           fi
+
+      - name: C11 — 배포 게이트 정적 검사 (ch5 6조, PETITION_20260902)
+        run: |
+          # ⚠️ 한계: 본 스텝은 게이트의 **존재 여부**만 본다. 구현이 조문에 맞는지(정확성)는 판정하지 않는다.
+          #    예 — portal/deploy.sh는 드리프트 코드를 보유하나 로컬 산출물을 비교하여 조문 미충족이다
+          #    (막내2 행정심사 적발 ④). 이 스텝을 "게이트 감사 완료"로 오인하지 말 것.
+          TODAY=$(date +%F)
+          EFFECTIVE="2026-09-02"
+          D_125="2026-09-16"   # 게이트 1·2·5 유예 만료 (발효 +14일, ch5 6조 부칙)
+          D_34="2026-11-01"    # 게이트 3·4 유예 만료 (발효 +60일)
+          left() { python3 -c "import datetime,sys;print((datetime.date.fromisoformat(sys.argv[1])-datetime.date.fromisoformat(sys.argv[2])).days)" "$1" "$TODAY"; }
+          L125=$(left "$D_125"); L34=$(left "$D_34")
+          tag() { [ "$1" -gt 0 ] && echo "유예 D-$1" || echo "⛔유예 만료"; }
+
+          # 이중 소스 대상은 references.md에서 파싱 (하드코딩 금지 — 정본 변경 시 자동 추종)
+          DUAL=$(awk '/^\*\*⚠️ 이중 소스/{f=1;next} f&&/^$/{exit} f&&/^- /{print}' .claude/rules/references.md 2>/dev/null \
+            | grep -oE '`[A-Za-z0-9_./-]+/`' | tr -d '`' | sed 's|/$||' | sort -u || true)
+          # 주의: `[ ... ] && echo` 형태는 GH 러너 기본 셸(bash -e)에서 테스트 실패 시 스텝을 죽인다. if 문으로 쓸 것
+          if [ -z "$DUAL" ]; then
+            echo "⚠️ 이중 소스 목록 파싱 0건 — references.md 서식 변경 의심. 게이트5 미검사 (무음 강등 방지 고지)"
+          fi
+
+          FINDINGS=""; N=0; TOTAL=0
+          for F in $(find . -name deploy.sh -not -path "*/node_modules/*" | sed 's|^\./||' | sort); do
+            TOTAL=$((TOTAL+1)); ITEMS=""
+
+            SETLINE=$(grep -m1 -E '^[[:space:]]*set[[:space:]]+-' "$F" || true)
+            case "$SETLINE" in
+              *pipefail*)
+                case "$SETLINE" in
+                  *u*) ;;
+                  *) ITEMS="${ITEMS}
+                · 게이트1 엄격모드 — \`-u\` 없음 ($(tag $L125))";;
+                esac ;;
+              *) ITEMS="${ITEMS}
+                · 게이트1 엄격모드 — \`set -euo pipefail\` 부재 ($(tag $L125))" ;;
+            esac
+
+            grep -q 'status --porcelain' "$F" || ITEMS="${ITEMS}
+                · 게이트2 미커밋 게이트 부재 ($(tag $L125))"
+
+            if ! grep -qiE 'drift|드리프트' "$F"; then
+              grep -qE '^[[:space:]]*#.*게이트[[:space:]]*3[[:space:]]*비적용' "$F" || ITEMS="${ITEMS}
+                · 게이트3 드리프트 미구현 + 비적용 사유 주석 없음 ($(tag $L34))"
+            fi
+
+            if ! grep -qiE 'smoke|스모크|remote_health' "$F"; then
+              grep -qE '^[[:space:]]*#.*게이트[[:space:]]*4[[:space:]]*비적용' "$F" || ITEMS="${ITEMS}
+                · 게이트4 사후 스모크 미구현 + 비적용 사유 주석 없음 ($(tag $L34))"
+            fi
+
+            for D in $DUAL; do
+              [ "$F" = "$D/deploy.sh" ] || continue
+              grep -q '이중 소스' "$F" || ITEMS="${ITEMS}
+                · 게이트5 이중 소스 경고 부재 ($(tag $L125))"
+            done
+
+            if [ -n "$ITEMS" ]; then
+              FINDINGS="${FINDINGS}
+              ${F}${ITEMS}"
+              N=$((N+1))
+            fi
+          done
+
+          if [ -n "$FINDINGS" ]; then
+            echo "::warning::⚠️ 배포 게이트 미충족 ${N}/${TOTAL}본 (ch5 6조 — 발효 ${EFFECTIVE}, 유예 중이면 경고만)"
+            echo "$FINDINGS"
+            echo ""
+            echo "비적용 사유 주석 서식: '# 게이트 3 비적용: {사유}' / '# 게이트 4 비적용: {사유}'"
+          else
+            echo "✅ 배포 게이트 정적 검사 통과 (${TOTAL}본)"
+          fi
+
+      - name: C12 — [예외] 태그 ↔ COMPLETION 대조 (ch1 2조 5항, PETITION_20260902)
+        run: |
+          # ⚠️ 한계: 태그를 **기재한** 건만 검증한다. 범위 초과인데 태그 자체를 안 남긴 **누락형 위반은
+          #    기계 감지 불가**하다 (막내1 R12). 본 스텝은 완전 감사가 아니다.
+          #    또한 본문에서 '[예외]'를 단순 인용·언급만 해도 검출되므로 오탐이 발생할 수 있다.
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            FILES=$(git diff --name-only --diff-filter=ACMR ${{ github.event.pull_request.base.sha }} HEAD)
+          else
+            FILES=$(git diff --name-only --diff-filter=ACMR HEAD~1 HEAD 2>/dev/null || echo "")
+          fi
+
+          MISSING=""; CHECKED=0
+          for FILE in $FILES; do
+            case "$FILE" in monkos-ops/ops/sessions/*/*.md) ;; *) continue ;; esac
+            [ -f "$FILE" ] || continue
+            grep -qF '[예외]' "$FILE" || continue
+            BASE=$(basename "$FILE")
+            DATE=$(echo "$BASE" | grep -oE '^[0-9]{4}-[0-9]{2}-[0-9]{2}' || true)
+            if [ -z "$DATE" ]; then continue; fi
+            CHECKED=$((CHECKED+1))
+            YM=$(echo "$DATE" | cut -c1-7)
+            YMD=$(echo "$DATE" | tr -d '-')
+            if ! ls monkos-ops/ops/reports/"$YM"/COMPLETION_"$YMD"_*.md >/dev/null 2>&1; then
+              MISSING="${MISSING}
+              ${FILE} — [예외] 기록 있으나 reports/${YM}/COMPLETION_${YMD}_* 부재"
+            fi
+          done
+
+          if [ -n "$MISSING" ]; then
+            echo "::warning::⚠️ [예외] 기록 대비 COMPLETION 부재 (ch1 2조 5항 — 실행자 완료 요건 2건)"
+            echo "$MISSING"
+          elif [ "$CHECKED" -gt 0 ]; then
+            echo "✅ [예외] 기록 ${CHECKED}건 — 대응 COMPLETION 전건 존재"
+          else
+            echo "✅ 이번 변경분에 [예외] 기록 없음"
+          fi
