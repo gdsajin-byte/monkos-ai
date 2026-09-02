@@ -729,6 +729,20 @@ function handleTossResult() {
     .then(function(data) {
       showLoading(false);
       if (data.success) {
+        // GA4 purchase 결선 — 충전 확정 시점 = 매출 발생 시점 (2026-09-02 G-M1 수정안 1-A)
+        // transaction_id=orderId(주문 단위 1회), value=실결제액. paymentKey 등 토큰 미포함
+        try {
+          if (typeof gtag === 'function') {
+            gtag('event', 'purchase', {
+              transaction_id: orderId,
+              value: parseInt(amount),
+              currency: 'KRW',
+              payment_provider: 'toss',
+              service: 'portal',
+              market: 'kr',
+            });
+          }
+        } catch (e) {}
         document.getElementById('balanceCount').textContent = data.credits || 0;
         if (currentUser) currentUser.credits = data.credits;
         showToast('+' + (data.creditsAdded || '') + 'c ' + t('chargeOk'), 'success');

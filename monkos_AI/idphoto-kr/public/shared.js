@@ -216,6 +216,21 @@ export async function initFromTossResult() {
     _hideTossLoading();
     if (data.success) {
       sessionStorage.removeItem('monkos_pending_payment');
+      // GA4 purchase 결선 — 충전 확정 시점 = 매출 발생 시점 (2026-09-02 G-M1 수정안 1-A)
+      try {
+        if (typeof gtag === 'function') {
+          gtag('event', 'purchase', {
+            transaction_id: orderId,
+            value: Number(amount),
+            currency: 'KRW',
+            payment_provider: 'toss',
+            service: 'idphoto-kr',
+            market: 'kr',
+            auth_method: store.user?.provider || '',
+            lang: document.documentElement.lang || 'ko',
+          });
+        }
+      } catch (e) {}
       store.user = { ...store.user, credits: data.credits };
       Monk.log(`결제 완료: +${data.creditsAdded}c (잔액 ${data.credits}c)`);
       _showPaymentResult(true, `+${data.creditsAdded} 크레딧 충전 완료`, `현재 잔액: ${data.credits}c`);
