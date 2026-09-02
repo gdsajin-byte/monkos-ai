@@ -173,10 +173,13 @@ jobs:
           # ⚠️ 한계: 태그를 **기재한** 건만 검증한다. 범위 초과인데 태그 자체를 안 남긴 **누락형 위반은
           #    기계 감지 불가**하다 (막내1 R12). 본 스텝은 완전 감사가 아니다.
           #    또한 본문에서 '[예외]'를 단순 인용·언급만 해도 검출되므로 오탐이 발생할 수 있다.
+          # ⚠️ core.quotePath=false 필수 — 기본값(true)이면 한글 경로가 "..\354\214\215..." 로 이스케이프되어
+          #    [ -f ] 를 통과하지 못하고 **전건 무음 스킵**된다. 세션로그는 전부 한글 에이전트명이라
+          #    이 플래그가 없으면 C12는 아무것도 검사하지 않으면서 "✅ 없음"을 보고한다 (2026-09-02 러너 실측 적발).
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            FILES=$(git diff --name-only --diff-filter=ACMR ${{ github.event.pull_request.base.sha }} HEAD)
+            FILES=$(git -c core.quotePath=false diff --name-only --diff-filter=ACMR ${{ github.event.pull_request.base.sha }} HEAD)
           else
-            FILES=$(git diff --name-only --diff-filter=ACMR HEAD~1 HEAD 2>/dev/null || echo "")
+            FILES=$(git -c core.quotePath=false diff --name-only --diff-filter=ACMR HEAD~1 HEAD 2>/dev/null || echo "")
           fi
 
           MISSING=""; CHECKED=0
