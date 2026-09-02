@@ -572,3 +572,14 @@
 
 - 추가: "롤백단위=커밋단위" → `feedback_rollback_unit_commit_separation.md` (배포 분리 지시는 커밋 분리 포함. 분리 목적은 순서가 아닌 롤백 — revert 대상이 커밋이므로 배포만 나누면 반쪽)
 - 근거: 2026-08-24 CF 엣지 이관 쌍아 사후심사 절차 기록 (재작업+P2-2를 배포 3회로 나눴으나 커밋 1개로 묶음)
+
+## [2026-09-02 10:41 KST] iMac/쌍아 — 쿼터 설계 교훈 1건 등재
+
+- 추가: "배치→N콜 분해=쿼터 N배" → `feedback_batch_param_to_n_calls_quota.md`
+  (`sampleCount` 같은 1콜N산출 파라미터를 N콜 병렬로 대체하면 쿼터 소비가 N배. 설계 전 쿼터 실측 필수 —
+   `consumerQuotaMetrics`의 `limit.unit`이 정본이고 displayName에는 창(분/시)이 없다.
+   검증 체크리스트에 n=max 케이스 포함. 429는 `"check your quota"`(우리 프로젝트 RPM)와
+   `"try again later"`(모델측 용량 경합)로 종류가 갈리며 조치가 다르다)
+- 근거: 2026-08-27 IMAGE PRO Imagen4 폐지 대응. 쌍아가 지시서에 "N장 병렬 호출"로 설계했고
+  Vertex 이미지 생성 쿼터가 분당 2건이라 4장 요청이 확정 429. 복구 검수는 단발 호출만 봐서 회귀를 놓쳤다.
+  실증: fast n=1 → 200 / fast n=4 → 429 즉시
