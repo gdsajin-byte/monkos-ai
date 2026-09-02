@@ -181,11 +181,11 @@
 
 | 장 | 제목 | 파일 | 조 수 |
 |----|------|------|------|
-| 제1장 | 에이전트 체계 | [ch1_agent_system.md](governance/laws/ch1_agent_system.md) | 6조 |
+| 제1장 | 에이전트 체계 | [ch1_agent_system.md](governance/laws/ch1_agent_system.md) | 7조 |
 | 제2장 | 코딩 규칙 | [ch2_coding.md](governance/laws/ch2_coding.md) | 8조 |
 | 제3장 | 세션 로그 | [ch3_session_log.md](governance/laws/ch3_session_log.md) | 5조 |
 | 제4장 | 문서/폴더 구조 | [ch4_docs_structure.md](governance/laws/ch4_docs_structure.md) | 11조 |
-| 제5장 | 배포 규칙 | [ch5_deployment.md](governance/laws/ch5_deployment.md) | 5조 |
+| 제5장 | 배포 규칙 | [ch5_deployment.md](governance/laws/ch5_deployment.md) | 7조 |
 | 제6장 | 브랜치/커밋 | [ch6_git.md](governance/laws/ch6_git.md) | 4조 |
 | 제7장 | 막내 행동 강령 | [ch7_makne_code.md](governance/laws/ch7_makne_code.md) | 6조 |
 | 제8장 | 브랜딩/마케팅 | [ch8_branding.md](governance/laws/ch8_branding.md) | 3조 |
@@ -201,4 +201,5 @@
 > 개정: 06-12 — 꾸 역할 확장 (콘텐츠/마케팅+specs디자인, 경로④ 신설, 한송이 퇴사 반영). 삼권심사 만장일치, PETITION_20260612
 > 개정: 07-16 — 하네스 교정 일괄 개정 (법률 6장 + 헌법 5조 물리위치 보정 + 룰스/스킬 4건). 5인 만장일치 + 작가님 승인, PETITION_20260716
 > 개정: 08-13 — 전체 정리 일괄 교정 (머리말 팩트 교정 + works 채널 폐지 + 인명 잔재 실효 처리 + 계층 동기화 스탬프 신설 ch4 12조). 삼권심사 조건부 만장일치 + 작가님 승인·직접 집행 지시, PETITION_20260806
+> 법률 개정: 09-02 — 법률 5건 일괄 개정 (ch1 5항 민아 경로 범위·ch1 1조 민아 청구안 권한·ch1 7조 지시 출처 검증 신설·ch5 6조 배포 게이트 표준 신설·ch5 7조 라이브 검증 신설, ch7 서문·4조 연쇄). 막내 3인 심사 부결 0 + 청구인 의견 + 작가님 승인, PETITION_20260902
 > ⚠️ 2026-03-25 이전 문서의 "헌법 N조" 참조는 구(舊) 7조 체계 기준이다. 매핑: governance/constitution/AMENDMENT_20260325_5축재편_개헌청구안.md §4
