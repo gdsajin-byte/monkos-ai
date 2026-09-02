@@ -584,3 +584,7 @@
   Vertex 이미지 생성 쿼터가 분당 2건이라 4장 요청이 확정 429. 복구 검수는 단발 호출만 봐서 회귀를 놓쳤다.
   실증: fast n=1 → 200 / fast n=4 → 429 즉시
 - 2026-09-02 iMac/민아 — `project_studio_endgame_202705.md` 요약본 축소(정본 PF_ANCHOR 이관) / 신설 `feedback_mina_core_member_not_evaluator.md` / MEMORY.md 인덱스 2행 갱신(사진관 엔드게임 hook·민아=핵심 멤버)
+
+## 2026-09-02 20:44 KST — iMac/민아
+- `project_4060_intentional_downtime.md` 전면 갱신: 의도적 비가동 → **라인업 배제(자녀 포맷)**. 매팅 RunPod 전량·대체 GPU 방향·로컬 LLM 판정 기록
+- MEMORY.md 인덱스 1행 교체(4060 비가동≠장애 → 4060 라인업 배제)
