@@ -583,3 +583,4 @@
 - 근거: 2026-08-27 IMAGE PRO Imagen4 폐지 대응. 쌍아가 지시서에 "N장 병렬 호출"로 설계했고
   Vertex 이미지 생성 쿼터가 분당 2건이라 4장 요청이 확정 429. 복구 검수는 단발 호출만 봐서 회귀를 놓쳤다.
   실증: fast n=1 → 200 / fast n=4 → 429 즉시
+- 2026-09-02 iMac/민아 — `project_studio_endgame_202705.md` 요약본 축소(정본 PF_ANCHOR 이관) / 신설 `feedback_mina_core_member_not_evaluator.md` / MEMORY.md 인덱스 2행 갱신(사진관 엔드게임 hook·민아=핵심 멤버)
