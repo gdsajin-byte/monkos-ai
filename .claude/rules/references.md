@@ -45,7 +45,7 @@
 > 배포 전 어느 쪽이 현행 소스인지 확인할 것. 정본 일원화는 미결.
 
 **deploy.sh는 있으나 서비스 부재**
-- `monkos_AI/crop-engine/` → `monkos-crop-engine` **미생성**(2026-08-13 실측 `Cannot find service`)
+- `monkos_AI/crop-engine/` → `monkos-crop-engine` — **asia-northeast3에 실존·200**(2026-09-04 실측, portal `CROP_ENGINE_URL` 주입 중). 08-13 "미생성"은 us-central1 조회 한정 오판 — 리전 상이
 - `apps/monkos-matte/` → `monkos-matte`/`monkos-matte-gpu` 미생성
 
 ## 서비스 호출 관계 — 의존 엣지 + 크레딧 공유

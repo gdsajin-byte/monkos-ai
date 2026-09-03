@@ -169,6 +169,7 @@ P0 전팀 진단(500 클릭 0 결제), SEO 사각지대 발견, 광고=오가닉
 | 09/03 | 작가님·iMac/민아 | 🔴→✅ **GA4 측정 ID 고아 사고 수정** — G-FKG0CPTC14는 작가님 계정 어디에도 없는 ID(03-14 철창이 추정 삽입, 06-14 KR 단독화 → 81일 idphoto-kr 이벤트 소실). 작가님 승인 → idphoto-kr 12파일 JPZ 교체 + studio·portal·render-shell·payments 이중 config 제거, prod 3 + 엣지 재배포. 라이브 FKG 0, 합성 hit 실시간 수신 확인. references.md 측정 ID 정본 신설. 잔여: FKG 속성 정체(구 계정 가설) | `INCIDENT_20260903_idphoto-kr_GA4측정ID_고아.md` · `COMPLETION_20260903_iMac민아_GA4측정ID통일_FKG제거.md` | ✅ prod / ⏳ 정체 확인 |
 | 09/03 | 작가님·iMac/민아 | **FKG 정체 확정 + 81일치 회수** — Ads 온보딩 자동 생성 계정(382573166, monkosailab@)의 속성 monkos.ai 527549580이 FKG 수신처. 작가님 뷰어 부여 → 실측: 06-14~09-02 idphoto-kr generate_click 28u·begin_checkout 7u·purchase 2 → "생성 0" 오독 확정. 정본 521406894 유지, 527549580은 읽기 전용 아카이브 | INCIDENT_20260903 정정 추기 · 메모리 canon 갱신 | ✅ 종결 |
 | 09/03 | 작가님·iMac/민아 | **T2 인화 결정 문답 (결정 1·2 병합)** — 플레이스·스마트스토어 실측(CDP) → Phase 1 = 스토어 전용 상품 「MONKOS 앱 인화」(옵션 0·주문코드·1,900+3,000) + 앱 수령 화면 코드·링크·클릭 이벤트. 보장 CS 격리 4항(상한·증빙·채널·스토어 링크만). Phase 2 자체 주문은 G1 후. 상세페이지 스펙 꾸 outbox 배치. 잔여: 상품명 표기·보장 범위·기간 — 작가님 "꾸와 확인 후 진행" | PROPOSAL_20260903 추기 · kku/outbox SPEC_20260903 | ⏳ 꾸 확인 |
+| 09/04 | 작가님·iMac/민아 | 🔴 **fit 경로 헤어 잘림 결함 규명** (작가님 포토리뷰 캡처 발단) — 실사 원본은 `hairScan:false`라 헤어탑 미측정 → 프레임·판정·가드 전부 추정 정수리 기준 → `top=4mm pass`인데 헤어 잘림 출고. 07-09 Gemini 비전 퇴출 후 헤어 잘림 판정 담당 부재(구조 공백). 수정안 A(허용치+패딩+차단)·B(매팅 선행→hairScan 실측) 쌍아 설계 요청 | `PROPOSAL_20260904_iMac민아_IDPHOTO_fit헤어잘림_설계요청.md` | ⏳ 쌍아 설계 |
 
 ### Phase 5 — 독립 iOS 앱 + 결제 개편 ⏳ 진행 중 (05/18~) **← 현재**
 
