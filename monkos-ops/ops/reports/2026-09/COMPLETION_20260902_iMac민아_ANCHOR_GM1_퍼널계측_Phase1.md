@@ -8,7 +8,7 @@ order: ORDER_20260902_iMac민아_막내1_ANCHOR_GM1_퍼널계측_사전검수
 report_in: REPORT_20260902_iMac막내2_ANCHOR_GM1_퍼널계측_사전검수
 portfolio: PF_ANCHOR
 related: PF_IDPHOTO, PF_SPECS
-status: 부분 완료 — dev 반영 실측 완료 / prod 배포·테스트 결제 E2E·GA4 UI 2건은 작가님 잔여
+status: prod 반영 완료(09-03 11:41) / 테스트 결제 E2E·GA4 UI 2건은 작가님 잔여
 ---
 
 **[2026-09-02 19:42 KST]** iMac/민아 → 작가님
@@ -52,6 +52,21 @@ status: 부분 완료 — dev 반영 실측 완료 / prod 배포·테스트 결�
 3. references.md 서비스 매핑: idphoto-kr/jp·studio `-dev` 서비스 부재 반영
 4. GCR 잔재 이미지 3개 삭제 여부
 5. portal deploy.sh 드리프트 경고: `specs-data.json`이 로컬 SSG 빌드(a4fb73e0) 이후 변경 — `specs_drift.sh` 원장 판정 = **드리프트 없음**(엣지 배포본=현행 소스). deploy.sh 로컬 빌드 기준 경고는 오탐
+
+## ✅ prod 반영 (09-03 추기)
+
+**[2026-09-03 11:41 KST]** 작가님 10:57 제안에 "진행해"(새 사용자 턴) → ch1 7조 승인 게이트 충족 → 4건 `deploy.sh prod --yes`.
+
+| 서비스 | 배포 전 → 후 rev | 2회 히트 2차 판정 (대조군: 배포 전 마커 0) | health |
+|---|---|---|---|
+| monkos-portal | 00557 → **00558-hmd** | `/credits` 마커 1·`gtag('event','purchase'` 1·handleTossResult 2 | 200 |
+| monkos-idphoto-kr | 00205 → **00206-dsl** | shared.js 마커 1·service 'idphoto-kr' 1 / thankyou.js download_complete 코드 1, gtag purchase 코드 0(잔여 히트는 :182 주석) | 200 |
+| monkos-idphoto-jp | 00127 → **00128-qw4** | thankyou.js download_complete 코드 1, gtag purchase 코드 0(:228 주석) — 정본 `monkos_AI/idphoto-jp` 판정(MPA 파일 보유, 07-26 rev도 동 디렉토리) | 200 |
+| monkos-studio | 00023 → **00024-827** | shared.js 마커 1·service 'studio' 1 | 200 |
+
+- 부수: portal `MATTE_API_URLS`에서 4060(matte.monkos.ai) 제거 커밋 `1109d861` → prod env 실측 `['https://api.runpod.ai/v2/…']` 단일. 4060 재구축 시 앞에 복원
+- deploy.sh 드리프트 경고 재발 → `specs_drift.sh` 원장 판정: ✓ [specs_drift] 엣지 배포본 = 현행 소스 (드리프트 없음) (로컬 빌드 기준 경고 = 오탐, 09-02와 동일)
+- 잔여: 작가님 GA4 UI 2건(맞춤 측정기준·스트림) + 테스트 결제 1회(이제 prod에서도 가능 — 단 prod는 실카드·실결제이므로 **portal-dev + 테스트 키**로) → 다음 실고객 충전 = G-M1 계측 성립
 
 ## 📁 산출물
 - 본 파일 / 세션 로그 09-02 19:32~ / PF_ANCHOR 히스토리 1행 / 커밋 3건
