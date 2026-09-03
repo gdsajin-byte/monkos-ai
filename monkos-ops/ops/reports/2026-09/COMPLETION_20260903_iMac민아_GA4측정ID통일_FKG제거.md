@@ -35,7 +35,7 @@ G-FKG0CPTC14는 작가님 계정 어디에도 없는 ID(09-03 관리 UI 실측: 
 | studio `/index.html` | FKG 1 | **FKG 0 · JPZ 2** | `monkos-studio-00025-bcg` |
 | portal `/credits` | FKG 1 | **FKG 0 · JPZ 2** | `monkos-portal-00559-n4f` |
 | 정적 specs `/specs/passport/kr` · `/en/specs/passport/us` | FKG 1 | **FKG 0 · JPZ 2** | 엣지 해시 cc934b93, 스모크 4/4 + 어서션 3/3 |
-| **portal 홈 `/`** | FKG 1 | 엣지 캐시 구본 **FKG 1**(오리진 직행 0) | CMS SWR 10분 TTL — TTL 경과 후 자연 갱신 — 재확인 예정 |
+| **portal 홈 `/`** | FKG 1 | 엣지 캐시 구본 **FKG 1**(오리진 직행 0) | CMS SWR 10분 TTL 경과 후 자연 갱신 → **FKG 0 · JPZ 2** 확인(2026-09-03 12:42 KST) |
 
 health 3/3 200. portal deploy.sh 드리프트 없음(SSG rev e4a791a5).
 
@@ -45,7 +45,7 @@ health 3/3 200. portal deploy.sh 드리프트 없음(SSG rev e4a791a5).
 
 ## ⏳ 잔여
 1. **FKG 정체 확인**(작가님): 다른 구글 계정 로그인 속성 목록 / Google Ads → 데이터 관리자 → 연결된 GA4. 발견 시 yong-a SA 뷰어 추가 → 81일치 대조 복원
-2. portal 홈 엣지 캐시 TTL 경과 후 FKG 0 재확인(≤10분)
+2. ~~portal 홈 엣지 캐시 재확인~~ ✅ 2026-09-03 12:42 KST FKG 0
 3. 익일 브리핑 host별 퍼널 표에 `idphoto-kr.monkos.ai` 행 복귀 확인
 4. 쌍아 사후 추인: 경로③ 실행 + references.md 규정 계층 수정 개정 청구
 
