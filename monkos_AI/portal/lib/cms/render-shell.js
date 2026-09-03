@@ -77,8 +77,7 @@ export function gtagSnippet() {
       localStorage.getItem('mk_internal') === '1';
   } catch (e) {}
   var _mkCfg = _mkAuto ? { traffic_type: 'internal' } : {};
-  gtag('config', 'G-JPZWSJ3323', _mkCfg);
-  gtag('config', 'G-FKG0CPTC14', _mkCfg);${process.env.GOOGLE_ADS_CONVERSION_ID ? `
+  gtag('config', 'G-JPZWSJ3323', _mkCfg);${process.env.GOOGLE_ADS_CONVERSION_ID ? `
   gtag('config', 'AW-${process.env.GOOGLE_ADS_CONVERSION_ID}', _mkCfg);` : ''}
   if (_mkAuto) { gtag('event', 'automation_hit', { 'landing_page': location.pathname }); }
   (function(){var d=['chatgpt.com','perplexity','claude.ai','gemini.google','copilot'];var r=document.referrer||'';if(d.some(function(s){return r.includes(s)})){var e=r.includes('chatgpt')?'chatgpt':r.includes('perplexity')?'perplexity':r.includes('claude.ai')?'claude':r.includes('gemini.google')?'gemini':r.includes('copilot')?'copilot':'other_ai';gtag('event','ai_referral_landing',{'ai_engine':e,'landing_page':location.pathname})}})();
