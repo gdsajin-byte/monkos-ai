@@ -17,7 +17,7 @@ status: 설계 요청 — 쌍아
 # 1. 실측 (2026-09-04)
 
 - 09-02 3건 로그: 전부 `[Matte] fit 확정 매팅 완료 … pad=0`(검수 확정 프레임 경로). qa-passport `[Fit] face=33.3mm top=4mm judge=pass/pass vision=skip` — **판정은 pass인데 결과물은 헤어 잘림.**
-- 30일 [Fit] 판정 0건 — top<2: 0 / 2~3: 0 / 3~7: 0 / >7: 0 (crown 기준 여백이라 헤어 잘림 감지 불가) · vision={} · 상위 슬러그 []
+- 30일 [Fit] 판정 0건(0일) — top<2: 0 / 2~3: 0 / 3~7: 0 / >7: 0 (crown 기준 여백이라 헤어 잘림 감지 불가) · vision={} · 상위 슬러그 []
 - crop-engine은 asia-northeast3에 실존·200 (references.md "미생성"은 리전 오판 → 09-04 정정).
 
 # 2. 원인 사슬 (코드 판독)
