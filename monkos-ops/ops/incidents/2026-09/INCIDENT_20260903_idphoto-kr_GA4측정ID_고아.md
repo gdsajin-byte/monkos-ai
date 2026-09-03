@@ -5,7 +5,7 @@ service: idphoto-kr (+ studio·portal 이중 config)
 severity: P1 (데이터 유실 — 서비스 영향 없음)
 device: iMac
 agent: 민아
-status: 원인 확정 · 수정 승인 대기
+status: 수정 완료(prod 3 + 엣지, 09-03 12:35) · 수신 실측 정합 · FKG 정체 확인 잔여
 portfolio: PF_IDPHOTO
 related: PF_ANCHOR(G-M1)
 ---
@@ -37,3 +37,6 @@ idphoto-kr 앱 이벤트(spec_select·photo_upload·generate_click·begin_checko
 - 외부 분석(철창이=코드·계정 접근 없음)이 제시한 **식별자**는 실측 전 코드에 넣지 않는다.
 - collect 204 ≠ 수신. 수신 속성 실데이터가 유일한 증거.
 - 감사 보고서의 "확인 TODO"가 미이행인 채 수정이 실행되면 감사가 사고를 확정한다.
+
+## 조치 결과 (추기)
+**[2026-09-03 12:37 KST]** 작가님 12:28 승인 → 커밋 `e4a791a5`(31파일) → idphoto-kr 00207 · studio 00025 · portal 00559 · 엣지 cc934b93. 2회 히트 판정 전 표면 FKG 0(포털 홈은 엣지 캐시 TTL 대기). 수신 실측: 합성 page_view(idphoto-kr 호스트, JPZ) 실시간 도달 확인. 상세: `COMPLETION_20260903_iMac민아_GA4측정ID통일_FKG제거.md`. 잔여: FKG 속성 정체(작가님 타 계정·Ads 연결 확인) → 발견 시 81일치 대조 복원.

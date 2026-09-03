@@ -69,6 +69,7 @@ domain: "운영"
 | 09/02 | 민아 | **G-M1 Phase 1 직접 실행** [예외: 경로③ 작가님 19:33 구두 승인] — 수정안 2(브리핑 수집기 host 분리·무료 트랙·분모 1단계) · 6(수령 purchase→download_complete) · 1-A(충전 confirm 성공 분기 purchase 결선, portal·idphoto-kr·studio) 3커밋 `7c8cea18`·`dc65be14`·`0491e102`. portal-dev rev 00182 라이브 실측 정합(2회 히트). dev 배포 3건은 서비스 부재(portal-dev만 존재)로 신설 회피 중단. **잔여: prod 4건 승인·테스트 결제 E2E(OAuth 필요)·GA4 UI 2건(측정기준 등록·스트림 확인)** | `COMPLETION_20260902_iMac민아_ANCHOR_GM1_퍼널계측_Phase1.md` | ⏳ prod 승인 대기 |
 | 09/03 | 작가님·민아 | **오프라인 광고지원 방향 채택** — "새 가닥" 후보 ① 사진관 유입 엔진 확정(§10 #7×#16 교차). 레인 3: ⓐ 블로그·플레이스·AEO(꾸, 빌드 0, 9월) ⓑ 교육 콘텐츠(specs 재활용) ⓒ T2 발급보장+인화(쌍아 설계 경로①, 11월 출시 목표). 신규 PF 없음 | PROPOSAL_20260903 T2 설계요청 · kku/outbox PLAN_20260903 · REPORT_20260903 출근체크리스트 | ⏳ 작가님 출근 후 처리 7항 |
 | 09/03 | 작가님·민아 | **G-M1 계측 prod 반영** — 작가님 승인("진행해") → portal 00558·idphoto-kr 00206·idphoto-jp 00128·studio 00024. 4표면 2회 히트 판정 정합(마커·purchase 결선·download_complete), health 4/4 200. 4060 매팅 URL 체인 제거(RunPod 단일). 수정안 2는 09-02 자동 브리핑에 host별 표로 반영 확인. 잔여: GA4 UI 2건·dev 테스트 결제 | COMPLETION_20260902 GM1 Phase1 §prod 반영 추기 | ✅ prod / ⏳ GA4 UI |
+| 09/03 | 작가님·민아 | **G-M1 계측 축 복구 — idphoto-kr 81일 공백의 원인 제거** (측정 ID 고아 INCIDENT_20260903). 작가님 GA4 UI 작업: 맞춤 측정기준 service·market·spec_type 등록(Admin API 확인) + 태그·계정 실측으로 FKG 부재 확정. 이제 4표면 전부 JPZ 단일 → 익일 브리핑부터 idphoto-kr 행 복귀 | COMPLETION_20260903 GA4측정ID통일 | ✅ |
 
 ---
 

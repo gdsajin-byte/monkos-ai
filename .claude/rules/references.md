@@ -88,6 +88,14 @@
 - 구 슬러그(kr-passport, korea-passport) → 301 리다이렉트 → 정본
 - URL 직접 조립 금지. 빌더 함수 경유 필수 (ch2 7조, 구현 예정: specs-url.js).
 
+## GA4 측정 ID 정본 (2026-09-03 작가님 관리 UI 실측 + Admin API)
+
+- 속성: `521406894`(monkos-3c6e4, 계정 Default Account for Firebase 381723534) **단일**. 스트림 2: MONKOS AI `13382285742`(monkos.ai·idphoto-kr/jp·studio) / monk_studio `14850498513`(monk.kr)
+- 유효 태그 3: **G-JPZWSJ3323**(monkos.ai 계열 전 표면 — 정본) · **G-C2H9ZM85F7**(monk.kr) · **AW-17916950287**(Google Ads 전환, render-shell `GOOGLE_ADS_CONVERSION_ID` 경유)
+- ❌ **G-FKG0CPTC14는 고아 ID** — 계정 어디에도 없음. 03-14 외부 분석 추정으로 삽입 → 06-14 KR 단독화 → 81일 idphoto-kr 이벤트 소실(INCIDENT_20260903). 09-03 전 소스에서 제거. 발견 시 삭제 대상
+- 규칙: 측정 ID·속성 ID를 코드에 넣거나 바꾸기 전 **관리 UI 또는 Admin API 실측** 필수. 검증은 collect 204가 아니라 **수신 속성 실데이터**(run_report hostName·eventName). 커스텀 측정기준 `service`·`market`·`spec_type` 09-03 등록(소급 없음)
+- 메모리: `project_ga4_measurement_id_canon.md`
+
 ## 시크릿
 
 - 정본: GCP Secret Manager
