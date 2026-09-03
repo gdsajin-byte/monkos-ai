@@ -5,7 +5,7 @@ service: idphoto-kr (+ studio·portal 이중 config)
 severity: P1 (데이터 유실 — 서비스 영향 없음)
 device: iMac
 agent: 민아
-status: 수정 완료(prod 3 + 엣지, 09-03 12:35) · 수신 실측 정합 · FKG 정체 확인 잔여
+status: 수정 완료 · FKG 정체 확정(별도 계정 속성 527549580) · 데이터 회수 가능 — 종결
 portfolio: PF_IDPHOTO
 related: PF_ANCHOR(G-M1)
 ---
@@ -40,3 +40,6 @@ idphoto-kr 앱 이벤트(spec_select·photo_upload·generate_click·begin_checko
 
 ## 조치 결과 (추기)
 **[2026-09-03 12:37 KST]** 작가님 12:28 승인 → 커밋 `e4a791a5`(31파일) → idphoto-kr 00207 · studio 00025 · portal 00559 · 엣지 cc934b93. 2회 히트 판정 전 표면 FKG 0(포털 홈은 엣지 캐시 TTL 대기). 수신 실측: 합성 page_view(idphoto-kr 호스트, JPZ) 실시간 도달 확인. 상세: `COMPLETION_20260903_iMac민아_GA4측정ID통일_FKG제거.md`. 잔여: FKG 속성 정체(작가님 타 계정·Ads 연결 확인) → 발견 시 81일치 대조 복원.
+
+## 정정 — "소실"이 아니라 "다른 속성 수신" (추기)
+**[2026-09-03 12:50 KST]** 작가님이 비즈니스 계정(monkosailab@)으로 GA 로그인 → Ads 온보딩 자동 생성 계정 `382573166` "Google Ads Account"에 속성 monkos.ai `527549580`·monk.kr `522290592` 존재. yong-a SA 뷰어 부여 후 실측: **527549580이 FKG의 속성**(06-14 이후에도 idphoto-kr 호스트 수신 — 7월 96u·8월 52u). 06-14~09-02 idphoto-kr 회수 데이터: 세션 173 · page_view 233u · spec_select 51u · photo_upload 29u · **generate_click 28u** · preview_view 26u · begin_checkout 7u · sign_up 7 · **purchase 2**. → 3주간 "생성 0"은 오독. 본 문서 §증상의 "소실"은 "정본 속성 미수신"으로 정정. 522290592는 0행(빈 속성). 포털 8월 교차 검증: 정본 1,720u vs 527549580 1,745u(이중 config 사본, 정합).

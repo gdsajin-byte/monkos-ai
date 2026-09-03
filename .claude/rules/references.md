@@ -92,7 +92,7 @@
 
 - 속성: `521406894`(monkos-3c6e4, 계정 Default Account for Firebase 381723534) **단일**. 스트림 2: MONKOS AI `13382285742`(monkos.ai·idphoto-kr/jp·studio) / monk_studio `14850498513`(monk.kr)
 - 유효 태그 3: **G-JPZWSJ3323**(monkos.ai 계열 전 표면 — 정본) · **G-C2H9ZM85F7**(monk.kr) · **AW-17916950287**(Google Ads 전환, render-shell `GOOGLE_ADS_CONVERSION_ID` 경유)
-- ❌ **G-FKG0CPTC14는 고아 ID** — 계정 어디에도 없음. 03-14 외부 분석 추정으로 삽입 → 06-14 KR 단독화 → 81일 idphoto-kr 이벤트 소실(INCIDENT_20260903). 09-03 전 소스에서 제거. 발견 시 삭제 대상
+- ⚠️ **G-FKG0CPTC14 = 별도 계정의 속성** — Ads 온보딩 자동 생성 계정 `382573166`(Google Ads Account, monkosailab@)의 속성 monkos.ai `527549580`(스트림 13870684316). 03-14 외부 분석 추정으로 삽입 → 06-14 KR 단독화 → 81일 idphoto-kr 이벤트가 이 속성으로 감(INCIDENT_20260903, 소실 아님 — yong-a 뷰어로 읽기 가능). 09-03 전 소스에서 제거·JPZ 단일. 동 계정 monk.kr `522290592`는 빈 속성
 - 규칙: 측정 ID·속성 ID를 코드에 넣거나 바꾸기 전 **관리 UI 또는 Admin API 실측** 필수. 검증은 collect 204가 아니라 **수신 속성 실데이터**(run_report hostName·eventName). 커스텀 측정기준 `service`·`market`·`spec_type` 09-03 등록(소급 없음)
 - 메모리: `project_ga4_measurement_id_canon.md`
 

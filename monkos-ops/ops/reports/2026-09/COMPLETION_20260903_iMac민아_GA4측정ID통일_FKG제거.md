@@ -44,7 +44,7 @@ health 3/3 200. portal deploy.sh 드리프트 없음(SSG rev e4a791a5).
 - 속성 실시간: 브라우저 페인 방문분은 실시간·당일 리포트에 미도달(페인 네트워크 격리로 판정 — collect 엔트리 status 0·transfer 0, 도구 한계이지 코드 문제 아님). 대체 실측 = **합성 page_view 1건**(tid=JPZ, dl=idphoto-kr.monkos.ai, dt=GA_RECEPTION_TEST_idphoto-kr) curl 송신 204 → **실시간 리포트 `GA_RECEPTION_TEST_idphoto-kr` 1행 도달**(2026-09-03 12:37 KST, 양성 대조군 monkos.ai 타이틀 3행 병존). 즉 JPZ 태그 + idphoto-kr 호스트 조합이 속성 521406894에 수신됨. 실고객 이벤트는 익일 브리핑 host별 표로 최종 확인
 
 ## ⏳ 잔여
-1. **FKG 정체 확인**(작가님): 다른 구글 계정 로그인 속성 목록 / Google Ads → 데이터 관리자 → 연결된 GA4. 발견 시 yong-a SA 뷰어 추가 → 81일치 대조 복원
+1. ~~FKG 정체 확인~~ ✅ 2026-09-03 12:50 KST — Ads 자동 생성 계정 382573166의 속성 527549580 확정, SA 뷰어 부여, 81일치 회수 실측(generate_click 28u·purchase 2). INCIDENT 정정 추기
 2. ~~portal 홈 엣지 캐시 재확인~~ ✅ 2026-09-03 12:42 KST FKG 0
 3. 익일 브리핑 host별 퍼널 표에 `idphoto-kr.monkos.ai` 행 복귀 확인
 4. 쌍아 사후 추인: 경로③ 실행 + references.md 규정 계층 수정 개정 청구
