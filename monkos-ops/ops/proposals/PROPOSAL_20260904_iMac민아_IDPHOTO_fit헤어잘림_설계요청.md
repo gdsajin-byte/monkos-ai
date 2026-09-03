@@ -18,6 +18,7 @@ status: 설계 요청 — 쌍아
 
 - 09-02 3건 로그: 전부 `[Matte] fit 확정 매팅 완료 … pad=0`(검수 확정 프레임 경로). qa-passport `[Fit] face=33.3mm top=4mm judge=pass/pass vision=skip` — **판정은 pass인데 결과물은 헤어 잘림.**
 - 30일 [Fit] 판정 226건(29일) — top<2: 0 / 2~3: 106 / 3~7: 93 / >7: 27 (crown 기준 여백이라 헤어 잘림 감지 불가) · vision={'skip': 194, '머리': 32} · 상위 슬러그 [('kr-passport', 52), ('id-visa', 18), ('us-passport', 15), ('kr-halfcard', 15), ('sa-visa', 13)]
+- **해석**: 226건 중 106건(47%)이 crown 기준 여백 2~3mm 경계에 몰려 있고, 코드 소견 "머리 위 여백 부족"이 32건(14%) 발화했으나 차단 없이 통과. crown 위 헤어 볼륨이 통상 3~10mm임을 감안하면 **경계 106건의 상당수가 헤어 잘림 출고 후보** — 단건이 아니라 모집단 결함(08-27 교훈: 고치기 전에 모집단부터 센다). 정확한 수는 B 적용 후 hairMarginMM로만 셀 수 있다.
 - crop-engine은 asia-northeast3에 실존·200 (references.md "미생성"은 리전 오판 → 09-04 정정).
 
 # 2. 원인 사슬 (코드 판독)
