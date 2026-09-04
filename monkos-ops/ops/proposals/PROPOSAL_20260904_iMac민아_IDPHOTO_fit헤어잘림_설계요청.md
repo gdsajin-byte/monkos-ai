@@ -28,7 +28,7 @@ status: 설계 요청 — 쌍아
 | ① | `portal/server.js:475` | fit 호출 시 `hairScan: false` — 실사(비순백) 원본에서 `subjectTopRow`가 오검출(07-07 crown 22.2mm 사고) → 꺼둠 |
 | ② | `crop-engine/lib/crop.js:50-51` | `hasHairTop=false` → `hairTopY = crownY`(랜드마크 추정 정수리). **헤어 가드(②)·축소 루프의 헤어 체크가 전부 비활성** |
 | ③ | `spec-judge.js:53` | `topMm = crownY − frame.y` — **추정 정수리 기준 여백**. 헤어 볼륨(정수리 위 실제 머리카락)은 측정 자체가 안 됨 → top=4mm pass인데 헤어는 프레임 밖 |
-| ④ | `spec-judge.js:42` | `blocked`는 얼굴 크기 범위만. top fail도 note → 통과 |
+| ④ | `spec-judge.js:42` · `specs-funnel.js:786-816` | `blocked`는 얼굴 크기 범위만. **judge.top(warn/fail)은 클라이언트가 표시하지 않음**(§7-1 수치 뱃지 제거 — 기울기·눈감음 칩만). 서버 소견 "여백 부족"은 topMm<2에서만 → 30일 0회 발화(vision=머리 32건은 전부 "넉넉"). 즉 **경계 106건은 경고 없이 통과** |
 | ⑤ | `crop.js:106`, `fitSpecGeometry canClampY` | 프레임을 이미지 경계 안으로 클램프 → 헤드룸 부족 원본에서 위로 못 올림(패딩 경로 `renderFitCrop` pad>0가 있는데 fit 기하가 쓰지 않음) |
 | ⑥ | `crop.js:249` 주석 | "실사 입력의 헤어 잘림 판정은 상위(Gemini 비전 §6-2) 담당" — **07-09 Gemini 비전 퇴출 후 담당 부재.** 구조 공백 |
 
