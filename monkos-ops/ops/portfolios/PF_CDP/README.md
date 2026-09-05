@@ -458,3 +458,5 @@ Input.dispatchKeyEvent   — 키보드 입력 (Enter, 단축키)
 - ProseMirror: `innerHTML` 직접 주입 불가 → `window.editor.setHTML()` 또는 클릭+insertText
 - dpr=2 환경: 스크린샷/클릭 좌표 = CSS pixel 기준 (일치)
 | 07/19 | iMac/민아 | **품질 진단 실측 어펜드(§6)** — cdp_utils 정본 실측 1,847줄(README 인식 ~900줄의 2배, 리팩토링 트리거 1500줄 기초과 미인지)·타임아웃 2건·재시도 0·테스트 0·정본 이원화(scripts≠PF 사본 767줄)·전 자산 4/17 정지. 총평 "규율 있는 실험실 코드, 인프라 계층 부재". 개선 P0-1 신뢰성 계층~P2-7 골든패스 7건 로드맵 + 순찰 러너 설계와 묶음 지시 제안 | REPORT §6 | ⏳ 지시서화 대기 |
+| 09/05 | 작가님·iMac/민아 | **사이트 기억 자산 재가동 (Phase 3 Stagehand 캐시 모델 선집행)** — 작가님 지적 "한번 들어간 사이트 운용법·버튼 위치를 기록해 헤매지 않게 했었다" → 실측: GP 8(04-17)·CASE 15(07-25)·어댑터 2·프로파일 캐시 26개 전부 **7일 TTL로 만료**. 조치: TTL 폐기(DOM 해시 변경 감지만) + smart_click 자가 치유(셀렉터 재생 실패→재프로파일) 실측 통과 | `COMPLETION_20260905_iMac민아_CDP_사이트기억자산_재가동.md` · cdp_utils.py | ✅ |
+| 09/05 | iMac/민아 | **cdp-browser 커맨드 착수 전 선행 로딩 신설** [예외: 규정 계층, 작가님 직접 지시] — GP·CASE·어댑터·프로파일을 예외 시가 아니라 착수 전에 읽도록. 벤치마크: Aside(로그인 세션·Claude Code CLI·로컬 md 기억)·Stagehand(셀렉터 캐시 재생)·Browser Use·Skyvern 정리. Aside PoC(네이버 서식) 다운로드 승인 대기 | 세션로그 09-05 | ⏳ Aside |

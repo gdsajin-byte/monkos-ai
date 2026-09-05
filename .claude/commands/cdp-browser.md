@@ -22,6 +22,22 @@ CDP를 기본으로 두는 이유는 **멀티에이전트 동시 운용**이다.
 | 9224 | 동시 가동 3번째 |
 | 9225 | 동시 가동 4번째 |
 
+## 착수 전 — 사이트 기억 자산 선행 로딩 (2026-09-05 신설, 작가님 직접 지시)
+
+> 04월에 만든 자산이 "예외 발생 시 참조"로만 걸려 있어 첫 시도부터 헤매던 문제 교정. **예외가 아니라 착수 전에 읽는다.**
+
+```bash
+P="{플랫폼 키워드: naver|google|tistory|medium|x|monkos}"
+grep -inE "$P" monkos-ops/ops/portfolios/PF_CDP/golden_paths.md | head        # 검증된 성공 절차(GP)
+grep -inE "$P" monkos-ops/ops/portfolios/PF_CDP/case_studies.md | head        # 실패 원인·해법(CASE)
+ls monkos-ops/ops/portfolios/PF_CDP/editor_adapters/                          # 에디터 어댑터
+ls -t ~/.cache/cdp_profiles | head                                            # PageProfiler 프로파일(시간 만료 없음)
+```
+
+- GP가 있으면 **그 순서대로** 실행한다. 없으면 PageProfiler `smart_click`으로 시작하고, 성공 절차는 세션 마감 시 GP로 추가한다(append-only).
+- PageProfiler 캐시는 **시간 TTL 없음**(09-05 폐기) — DOM 해시 변경 또는 셀렉터 재생 실패 시 자가 치유로만 갱신. "오래된 캐시라 다시 프로파일링"은 하지 않는다.
+- 네이버(SmartEditor)는 GP·어댑터 **부재**. CASE-006(텍스트 선택 불가) 선행 확인.
+
 ## 사용법
 
 ### bash (cdp.sh)

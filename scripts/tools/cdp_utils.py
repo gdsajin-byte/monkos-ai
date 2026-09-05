@@ -774,7 +774,10 @@ class PageProfiler:
     """
 
     CACHE_DIR = os.path.expanduser("~/.cache/cdp_profiles")
-    CACHE_TTL = 86400 * 7  # 7일
+    # 2026-09-05: 시간 TTL 폐기 (Stagehand 캐시 모델 이식 — PF_CDP Phase 3).
+    # 무효화는 시간이 아니라 ① DOM 구조 해시 변경 감지 ② smart_click 셀렉터 재생 실패 시 자가 치유(재프로파일)로만.
+    # 04-05 만든 26개 프로파일이 7일 TTL로 전부 버려지던 문제의 원인 제거. CACHE_TTL은 age 표시용으로만 남김.
+    CACHE_TTL = None
 
     # JS: 인터랙티브 요소 수집 + DOM 구조 해시 (단일 평가로 왕복 최소화)
     _COLLECT_JS = """
@@ -1089,11 +1092,24 @@ class PageProfiler:
         name_l = name.lower()
 
         # 1차 탐색: 현재 프로파일에서 검색
+        matched = False
         for pool in ("actions", "navigation"):
             for el in profile.get(pool, []):
                 if name_l in el["name"].lower():
+                    matched = True
                     if await self._try_selectors(el):
                         return True
+
+        # 자가 치유 (2026-09-05, Stagehand 모델): 캐시 요소는 있는데 셀렉터 재생이 전부 실패 =
+        # 레이아웃 변경. 시간 TTL 대신 이 시점에 강제 재프로파일 1회 → 재탐색.
+        if matched and profile.get("_cache_hit"):
+            profile = await self.profile(force=True)
+            profile["_healed"] = True
+            for pool in ("actions", "navigation"):
+                for el in profile.get(pool, []):
+                    if name_l in el["name"].lower():
+                        if await self._try_selectors(el):
+                            return True
 
         if depth >= 2:
             # 동적 DOM 생성 대기 → 재프로파일링 → 2차 탐색
@@ -1638,12 +1654,11 @@ class PageProfiler:
         return os.path.join(self.CACHE_DIR, f"{safe_domain}_{key}.json")
 
     def _load_cache(self, path: str) -> dict:
-        """캐시 파일 로드. TTL 초과 시 None."""
+        """캐시 파일 로드. 시간 만료 없음 — 유효성은 _detect_change(DOM 해시)와 재생 실패 자가 치유가 판정."""
         try:
             with open(path) as f:
                 cached = json.load(f)
-            if time.time() - cached.get("_cached_at", 0) > self.CACHE_TTL:
-                return None
+            cached["_age_days"] = round((time.time() - cached.get("_cached_at", 0)) / 86400, 1)
             return cached
         except Exception:
             return None
