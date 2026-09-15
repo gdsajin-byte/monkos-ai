@@ -6,7 +6,7 @@
 set -euo pipefail
 
 PROJECT="monkos"
-ADS_API_VERSION="v21"
+ADS_API_VERSION="v22"
 ADS_BASE="https://googleads.googleapis.com/${ADS_API_VERSION}"
 
 # SM에서 시크릿 로드

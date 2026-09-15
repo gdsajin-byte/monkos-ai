@@ -20,7 +20,7 @@ function getMonthStart() {
 
 // --- Google Ads 키워드 플래너 ---
 
-const ADS_API_VERSION = 'v21';
+const ADS_API_VERSION = 'v22';
 const ADS_BASE = `https://googleads.googleapis.com/${ADS_API_VERSION}`;
 
 async function getAdsAccessToken() {
