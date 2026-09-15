@@ -127,6 +127,7 @@ status: active
 | 08/02 | iMac/쌍아 | **수집 인프라 4종 무음 사망 적발·복구** (작가님 "직접 복구" 지시) — ①ga4-device·gsc-inspection 파이썬 의존성 미설치(07-21 M1 단독 복구가 iMac 미반영) ②GA4 MCP `uvx` 매기동 cryptography 소스빌드 → 타임아웃 ③PageSpeed가 GEMINI 키 오용으로 403 + **키 평문 로그 노출**. 스모크 **6/6 복구**. 재현성 정본 `requirements.txt` 신설 + 상태 표기 규율 명문화 | requirements.txt, ga4_mcp.sh, seo_collect.sh, 본 README | ✅ |
 | 08/02 | iMac/쌍아 | **GA4 조회수 +41% 정체 규명** — 7/30 desktop 단일일 이상치(pv/s 7.66, 타 일자 1.0~2.0) + Direct 채널 pv/s 5.16. Organic Search는 pv/s 1.06 정상. **실사용자 회유 아님** | 세션로그 2026-08-02 | ✅ |
 | 08/02 | iMac/쌍아 | **오염원 특정 + 3층 계량 체계 확립** (작가님 "직접 처리해") — BQ 요청로그로 **외부 스크래퍼 확정**(`158.69.*` 1분 131고유URL 등, 내부 자동화 아님). `gtagSnippet()` 계측 단일 정본 신설 + 자동화 판정 3층 + `automation_hit` 이벤트, prod `00542-pqt`. **홈 gtag 이원화 적발·해소**(7/30 오염 랜딩이 `/`였음). 언노운 계량 = CR 요청로그 **분당 고유URL 지문** | [ORDER 사후기록](../../orders/2026-08/ORDER_20260802_iMac쌍아_직접실행_GA4자동화표식_언노운계량.md), render-shell.js, home.js | ✅ |
+| 09/15 | iMac/민아 | **Ads API v21 폐기 적발·복구** — 09-01 월배치 8개국 404 무음 실패(스텝 success·알림 0). 버전 정본 `scripts/ads_api_version`(v22) 신설, 수집기 0행→🔴+exit 1·`--dry-run`, DataLab 창 교정(부분주 오표시→7d vs 7d), 9월 9,102행 되메우기. 작가님 직접 지시 [예외] | `COMPLETION_20260915_iMac민아_MARKET_EYE_애즈v22_실패가시화_데이터랩창.md` | ✅ |
 
 ---
 

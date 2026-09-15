@@ -7,6 +7,8 @@
  */
 
 const crypto = require('crypto');
+const fs = require('fs');
+const path = require('path');
 const { insertRows } = require('./_loader');
 const { notify } = require('./_notify');
 const keywordSets = require('./keyword_sets.json');
@@ -20,7 +22,10 @@ function getMonthStart() {
 
 // --- Google Ads 키워드 플래너 ---
 
-const ADS_API_VERSION = 'v22';
+// 버전 정본 = scripts/ads_api_version (ads.sh와 공유). 폐기 버전은 404로 무음 실패하므로 단일 정본 유지
+const ADS_API_VERSION = (process.env.ADS_API_VERSION || fs.readFileSync(path.join(__dirname, '..', 'ads_api_version'), 'utf8')).trim();
+const DRY_RUN = process.argv.includes('--dry-run');
+const adsFailures = []; // 국가별 실패 기록 (실패 가시화)
 const ADS_BASE = `https://googleads.googleapis.com/${ADS_API_VERSION}`;
 
 async function getAdsAccessToken() {
@@ -67,6 +72,7 @@ async function fetchAdsKeywords(accessToken, keywords, langId, geoId) {
   if (!resp.ok) {
     const errText = await resp.text();
     console.error(`[collect_keywords] Ads API ${resp.status}: ${errText.slice(0, 200)}`);
+    adsFailures.push({ geoId, status: resp.status });
     return [];
   }
 
@@ -183,7 +189,7 @@ async function collectNaverSearchAd(dateStr) {
 
 async function main() {
   const dateStr = getMonthStart();
-  console.log(`[collect_keywords] 수집 기준월: ${dateStr}`);
+  console.log(`[collect_keywords] 수집 기준월: ${dateStr} (Ads API ${ADS_API_VERSION}${DRY_RUN ? ', dry-run' : ''})`);
 
   // Google Ads 키워드 플래너
   const accessToken = await getAdsAccessToken();
@@ -195,16 +201,31 @@ async function main() {
     console.warn('[collect_keywords] Google Ads 시크릿 미설정 — 플래너 생략');
   }
 
-  if (adsRows.length > 0) {
+  // 실패 가시화 — Ads 단독 0행(전 국가 실패)은 치명, 일부 국가 실패는 경고. 스텝 success로 숨기지 않는다
+  if (accessToken && adsRows.length === 0) {
+    const detail = adsFailures.map((f) => `${f.geoId}:${f.status}`).join(', ') || '응답 0건';
+    await notify(`🔴 [MARKET_EYE] collect_keywords: Google Planner 0행 (${ADS_API_VERSION}) — ${detail}`);
+    console.error(`[collect_keywords] Google Planner 0행 — 적재 중단 (exit 1)`);
+    process.exit(1);
+  }
+  if (adsFailures.length > 0) {
+    await notify(`⚠️ [MARKET_EYE] collect_keywords: Google Planner 일부 실패 ${adsFailures.length}건 — ${adsFailures.map((f) => `${f.geoId}:${f.status}`).join(', ')}`);
+  }
+
+  if (adsRows.length > 0 && !DRY_RUN) {
     await insertRows('ads_keyword_monthly', adsRows);
+  } else if (DRY_RUN) {
+    console.log(`[collect_keywords] --dry-run: ads_keyword_monthly ${adsRows.length}행 미삽입`);
   }
 
   // 네이버 SearchAd
   const naverRows = await collectNaverSearchAd(dateStr);
   console.log(`[collect_keywords] 네이버 SearchAd: ${naverRows.length}행`);
 
-  if (naverRows.length > 0) {
+  if (naverRows.length > 0 && !DRY_RUN) {
     await insertRows('naver_searchad_monthly', naverRows);
+  } else if (DRY_RUN) {
+    console.log(`[collect_keywords] --dry-run: naver_searchad_monthly ${naverRows.length}행 미삽입`);
   }
 
   if (adsRows.length === 0 && naverRows.length === 0) {

@@ -84,13 +84,15 @@ def fetch_naver_datalab(keywords):
     if not all([client_id, client_secret]):
         return None
 
-    end_date = date.today().isoformat()
-    start_date = (date.today() - timedelta(days=30)).isoformat()
+    # 창 정의: 어제까지의 완결 14일을 일 단위로 받아 최근 7일 합 vs 직전 7일 합.
+    # (구: 30일·week 단위 → 마지막 주가 부분 주라 전 키워드 ↓ 오표시. 2026-09-15 교정)
+    end_date = (date.today() - timedelta(days=1)).isoformat()
+    start_date = (date.today() - timedelta(days=14)).isoformat()
 
     body = {
         "startDate": start_date,
         "endDate": end_date,
-        "timeUnit": "week",
+        "timeUnit": "date",
         "keywordGroups": [
             {"groupName": kw, "keywords": [kw]} for kw in keywords[:5]
         ],
@@ -110,9 +112,9 @@ def fetch_naver_datalab(keywords):
         results = []
         for group in data.get("results", []):
             periods = group.get("data", [])
-            if len(periods) >= 2:
-                prev = periods[-2].get("ratio", 0)
-                curr = periods[-1].get("ratio", 0)
+            if len(periods) >= 14:
+                prev = round(sum(p.get("ratio", 0) for p in periods[-14:-7]), 2)
+                curr = round(sum(p.get("ratio", 0) for p in periods[-7:]), 2)
                 if prev > 0:
                     change = (curr - prev) / prev * 100
                     direction = "↑" if change > 5 else ("↓" if change < -5 else "→")
@@ -123,6 +125,7 @@ def fetch_naver_datalab(keywords):
                     "current": curr,
                     "previous": prev,
                     "direction": direction,
+                    "window": "7d_vs_prior_7d",
                 })
         return results
     except Exception as e:

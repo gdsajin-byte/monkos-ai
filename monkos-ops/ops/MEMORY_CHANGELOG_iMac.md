@@ -599,3 +599,6 @@
 
 ## 2026-09-03 12:51 KST — iMac/민아
 - `project_ga4_measurement_id_canon.md` 갱신: FKG "고아" → Ads 자동 생성 계정 382573166 속성 527549580 확정(표 형식으로 계정·속성·스트림·ID·위상 정리), 회수 실측 수치, 병합 불가·병행 조회 원칙. MEMORY.md 인덱스 1행 교체
+
+## 2026-09-15 12:45 KST iMac/민아
+- 신설: feedback_open_to_feasible_limit.md (무조건 닫지 마라 — 층 나누기, 닫힌 선=명시적 법 위반·타인 직접 피해만). MEMORY.md 인덱스 1행 추가.
