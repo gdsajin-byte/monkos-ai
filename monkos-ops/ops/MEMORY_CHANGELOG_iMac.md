@@ -602,3 +602,6 @@
 
 ## 2026-09-15 12:45 KST iMac/민아
 - 신설: feedback_open_to_feasible_limit.md (무조건 닫지 마라 — 층 나누기, 닫힌 선=명시적 법 위반·타인 직접 피해만). MEMORY.md 인덱스 1행 추가.
+
+## 2026-09-17 11:22 KST iMac/민아
+- 신설: project_isolated_experiment_env_intent.md (별도 실험 환경·Astra 편입 조건 3·세션 기록=능력). MEMORY.md 인덱스 1행 추가.
