@@ -15,3 +15,6 @@ https://monkos.ai/specs/visa/kr	-편집 프로그램·AI 보정본을 불허
 
 # 결제 영역 에러 슬롯 — 09-19 결제 동선 결함 수정(48b542c5)이 엣지 정적본에 반영됐는지
 https://monkos.ai/specs/passport/kr	+id="v2-pay-error"
+
+# 불편 신고 입구 — 09-19 게시판 연동(08efee18)이 엣지 정적 자산에 반영됐는지
+https://monkos.ai/js/specs-funnel.js	+/api/board/report
