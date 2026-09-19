@@ -239,3 +239,26 @@
   - **GA4 실제 수신 확인은 사람의 실브라우저 1회 조작 필요**
 - **재현성**: 100% (프로필 2종 × dev/prod 4회)
 - **태그**: ga4, gtag, collect, ERR_ABORTED, 계측검증, 실브라우저필요
+
+---
+
+### CASE-016: cdp_utils._send 가 이벤트 스트림과 응답을 구분하지 않아 모든 결과가 한 칸씩 밀림
+
+- **일시**: 2026-09-19 13:15 KST
+- **에이전트**: iMac/막내1
+- **대상**: `scripts/tools/cdp_utils.py` (CDP 클래스 전반)
+- **증상**: `Page.enable` 이후 모든 `evaluate()` 반환값이 `{}` 또는 직전 호출의 결과. `DOM.getDocument` 결과에 `root` 키가 없다는 `KeyError: 'root'` 로 터짐
+- **조건**: 이벤트를 발생시키는 도메인을 enable 한 뒤(`Page.enable`, `Network.enable` 등) 명령을 연속 전송할 때. 100% 재현
+- **원인**: `_send()` 가 `resp = json.loads(await self.ws.recv())` 로 **다음 메시지 1건을 곧 응답으로 가정**한다. CDP는 응답과 이벤트를 같은 소켓으로 섞어 보내므로, 이벤트가 하나 끼면 이후 모든 응답이 어긋난다
+- **해결**: 보낸 메시지의 `id` 와 일치하는 메시지가 올 때까지 드레인한다(이벤트는 별도 버퍼에 적재)
+  ```python
+  await ws.send(json.dumps({"id": mid, "method": m, "params": p}))
+  while True:
+      msg = json.loads(await ws.recv())
+      if msg.get("id") == mid: return msg.get("result", {})
+      if "method" in msg: events.append(msg)   # 이벤트는 버린다/모은다
+  ```
+  본 세션에서는 최소 클라이언트(`CDPX`)로 우회했다. **cdp_utils 본체 수정은 쌍아 소관(막내 범위 밖)** — 개정 청구 대상
+- **회피(수정 전까지)**: 이벤트 도메인을 enable 하지 않는다. 네트워크 계측이 필요하면 `Page.addScriptToEvaluateOnNewDocument` 로 페이지 안에서 `fetch` 를 래핑해 수집하고, GA4는 `window.dataLayer` 를 직접 읽는다(gtag는 함수 선언이라 접근자 후킹이 통하지 않는다 — CASE-015 보완)
+- **재현성**: 100% (뷰포트 4종 × 2회)
+- **태그**: cdp_utils, _send, 이벤트, 응답밀림, Page.enable, dataLayer, gtag
