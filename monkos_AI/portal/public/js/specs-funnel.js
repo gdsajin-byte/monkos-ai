@@ -1035,6 +1035,7 @@ var SpecsFunnel = (function(){
       }
       // 실패 복귀 시 주문 재사용을 위한 보존 (결함 F) — 금액·라벨은 서버 init 응답이 정본 (ch2 7조)
       lastTossInit = { provider: 'toss', orderId: d.orderId, orderName: d.orderName, amount: d.amount, currency: d.currency, clientKey: d.clientKey };
+      persistOrder(); // 호출부의 persistOrder 는 lastTossInit 설정 전에 끝난다 — 여기서 다시 저장해야 복귀 재오픈이 성립
       var _cur = (d.currency === 'USD' || CFG.market !== 'kr') ? '$' : '₩';
       var _amt = _cur === '$' ? String(d.amount) : String(d.amount).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
       btn.textContent = T.payBtnLabel.replace('{price}', _cur + _amt);
