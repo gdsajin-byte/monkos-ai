@@ -68,6 +68,30 @@ var SpecsFunnel = (function(){
     gaTrackOrder('purchase', orderId, { transaction_id: orderId, payment_provider: GA_PAY.payment_provider, currency: GA_PAY.currency, value: GA_PAY.value });
     adsConversion(CFG.adsConv && CFG.adsConv.labelPurchase, GA_PAY.value, GA_PAY.currency);
   }
+  /* ─── 결제 실패 계측 (2026-09-19 신설) ───
+     init 3명·7회 대비 승인 호출 0건 / purchase 0건인데도 실패가 어디에도 남지 않았다.
+     GA는 유실 가능 → 사유의 정본은 서버 로그(directOrders.lastFail).
+     ⚠️ 토스 키·토큰·개인정보는 파라미터에 절대 넣지 않는다 (헌법 4조 1항). */
+  function reportPayFail(stage, code, message){
+    var safeCode = String(code || 'UNKNOWN').slice(0, 60);
+    gaTrack('pay_fail', {
+      payment_provider: GA_PAY.payment_provider,
+      fail_stage: stage,
+      fail_code: safeCode,
+      in_app: isInApp()
+    }, true); // 한 고객이 여러 번 실패하므로 1회 가드 해제
+    if(!pay.orderId) return;
+    try{
+      fetch('/api/payments/direct/fail', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, keepalive: true,
+        body: JSON.stringify({
+          orderId: pay.orderId, stage: stage, code: safeCode,
+          message: String(message || '').slice(0, 200),
+          vw: window.innerWidth, vh: window.innerHeight, inApp: isInApp()
+        })
+      }).catch(function(){});
+    }catch(e){}
+  }
   function adsConversion(label, value, currency){
     if(typeof gtag !== 'function' || !CFG.adsConv || !label) return;
     var p = { send_to: 'AW-' + CFG.adsConv.id + '/' + label };
@@ -88,13 +112,93 @@ var SpecsFunnel = (function(){
   function showPhase(phase){
     [phaseUpload, phaseCheck, phaseFit, phasePay, phaseGen, phaseResult, phaseFree].forEach(function(p){ if(p) p.style.display='none'; });
     if(phase) phase.style.display='';
+    scheduleDock(); // 결제 단계를 벗어나면 하단 고정 버튼을 즉시 해제
   }
   function setGenMessage(text, sub){
     if(genTextEl) genTextEl.textContent = text;
     if(genSubEl) genSubEl.textContent = sub || '';
   }
   function showError(msg){ errorMsg.textContent = msg; errorMsg.classList.add('show'); }
-  function hideError(){ errorMsg.classList.remove('show'); }
+  function hideError(){ errorMsg.classList.remove('show'); hidePayError(); }
+  /* 결제 영역 에러 (2026-09-19 결함 A) — 전역 #v2-error 는 결제 단계 *위*의 정적 요소라
+     모바일 1열에서 결제 버튼 약 1,100px 위에 뜬다. 거절·취소 문구가 시야 밖에 있으면
+     고객에겐 "눌러도 반응 없는 버튼"이 된다. 결제 단계 에러는 버튼 바로 위 슬롯에 띄운다. */
+  var payErrorEl = document.getElementById('v2-pay-error');
+  var payErrorTopEl = document.getElementById('v2-pay-error-top');
+  function hidePayError(){
+    [payErrorEl, payErrorTopEl].forEach(function(el){ if(el){ el.classList.remove('show'); el.textContent = ''; } });
+  }
+  function isWidgetOpen(){
+    var wrap = document.getElementById('v2-toss-widget');
+    return !!(wrap && wrap.style.display !== 'none');
+  }
+  function showPayError(msg){
+    var el = (isWidgetOpen() && payErrorEl) ? payErrorEl : payErrorTopEl;
+    if(!el) return showError(msg);
+    hidePayError();
+    el.textContent = msg;
+    el.classList.add('show');
+    try{ el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }catch(e){}
+    scheduleDock();
+  }
+  // 인앱 브라우저(WKWebView 계열) 판정 — 다운로드 폴백과 결제 실패 계측이 공유
+  function isInApp(){
+    return /(GSA\/|FBAN|FBAV|Instagram|KAKAOTALK|Line\/|NAVER\(|DaumApps|; wv\))/i.test(navigator.userAgent || '');
+  }
+
+  /* ─── 결제하기 버튼 하단 고정 (2026-09-19 결함 E) ───
+     토스 위젯 영역 실측 629px(375폭) — 가용 높이가 그보다 짧은 폰은 결제하기 버튼이 화면 아래에 남는다.
+     렌더 직후 scrollIntoView 1회로는 약관 펼침·결제수단 전환 때마다 다시 밀린다. */
+  var dockRaf = null;
+  function undockConfirm(){
+    var btn = document.getElementById('v2-pay-confirm');
+    var spacer = document.getElementById('v2-pay-confirm-spacer');
+    if(btn) btn.classList.remove('is-docked');
+    if(spacer) spacer.style.height = '0px';
+  }
+  function updateDock(){
+    var wrap = document.getElementById('v2-toss-widget');
+    var btn = document.getElementById('v2-pay-confirm');
+    var spacer = document.getElementById('v2-pay-confirm-spacer');
+    if(!wrap || !btn || !spacer) return;
+    if(!isWidgetOpen() || !phasePay || phasePay.style.display === 'none') return undockConfirm();
+    var vh = window.innerHeight || document.documentElement.clientHeight || 0;
+    var wr = wrap.getBoundingClientRect();
+    var inView = wr.bottom > 0 && wr.top < vh - 40;
+    // 고정 중에는 버튼이 흐름 밖이라 스페이서가 '원래 자리'의 정본
+    var naturalBottom = btn.classList.contains('is-docked')
+      ? spacer.getBoundingClientRect().bottom
+      : btn.getBoundingClientRect().bottom;
+    if(inView && naturalBottom > vh - 8){
+      if(!btn.classList.contains('is-docked')){
+        btn.classList.add('is-docked');
+        spacer.style.height = (btn.offsetHeight + 12) + 'px';
+      }
+    } else undockConfirm();
+  }
+  function scheduleDock(){
+    if(dockRaf) return;
+    dockRaf = requestAnimationFrame(function(){ dockRaf = null; updateDock(); });
+  }
+  window.addEventListener('scroll', scheduleDock, { passive: true });
+  window.addEventListener('resize', scheduleDock);
+  if(window.ResizeObserver){
+    var dockRo = new ResizeObserver(scheduleDock);
+    ['v2-pm','v2-agree','v2-toss-widget'].forEach(function(id){
+      var e = document.getElementById(id); if(e) dockRo.observe(e);
+    });
+  }
+  function focusTossWidget(){
+    var wrap = document.getElementById('v2-toss-widget');
+    if(!wrap) return;
+    try{ wrap.scrollIntoView({ behavior: 'smooth', block: 'start' }); }catch(e){}
+    scheduleDock();
+  }
+  function setWidgetOpenUI(open){
+    var opts = document.querySelector('#v2-phase-pay .v2-pay-options');
+    if(opts) opts.classList.toggle('v2-widget-open', !!open);
+    if(!open) undockConfirm();
+  }
   /* 이미지 기기 저장 — data URL 앵커는 인앱 브라우저(구글앱·카카오 등 WKWebView)에서 무반응 (2026-07-18 작가님 실사고).
      blob 앵커 우선, 인앱·iOS에서 공유시트(파일) 폴백, 최후엔 길게 눌러 저장 안내. */
   function saveImageToDevice(dataUrl, fileName){
@@ -103,8 +207,7 @@ var SpecsFunnel = (function(){
       var bin = atob(b64), arr = new Uint8Array(bin.length);
       for(var i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
       var blob = new Blob([arr], { type: 'image/png' });
-      var ua = navigator.userAgent || '';
-      var inApp = /(GSA\/|FBAN|FBAV|Instagram|KAKAOTALK|Line\/|NAVER\(|DaumApps|; wv\))/i.test(ua);
+      var inApp = isInApp();
       if(inApp && navigator.canShare && window.File){
         try {
           var f = new File([blob], fileName.replace(/\.jpg$/, '.png'), { type: 'image/png' });
@@ -141,8 +244,11 @@ var SpecsFunnel = (function(){
   }
 
   /* ─── 리다이렉트 생존 저장소 (sessionStorage) ─── */
+  // 실패 복귀(?toss=fail) 시 주문을 새로 만들지 않고 위젯을 재오픈하기 위한 init 응답 보존 (결함 F).
+  // clientKey 는 위젯 연동용 공개 키(페이지에 이미 노출되는 값) — 시크릿 아님.
+  var lastTossInit = null;
   function persistOrder(){
-    try{ sessionStorage.setItem(ORDER_KEY, JSON.stringify({ orderId: pay.orderId, token: pay.token, remaining: pay.remaining, expiresAt: pay.expiresAt, slug: CFG.slug, ts: Date.now(), attire: attireSelection, subject: subjectSelection })); }catch(e){}
+    try{ sessionStorage.setItem(ORDER_KEY, JSON.stringify({ orderId: pay.orderId, token: pay.token, remaining: pay.remaining, expiresAt: pay.expiresAt, slug: CFG.slug, ts: Date.now(), attire: attireSelection, subject: subjectSelection, toss: lastTossInit })); }catch(e){}
   }
   function loadOrder(){
     try{
@@ -868,6 +974,13 @@ var SpecsFunnel = (function(){
     if(!uploadedBase64 || payBusy) return;
     // 결제 완료 토큰 보유 시 이중 결제 방지 — 바로 생성
     if(hasUsableToken()) return doGenerate();
+    // 위젯이 이미 열려 있으면 init 을 다시 부르지 않는다 (2026-09-19 결함 C).
+    // 재클릭마다 서버 주문이 새로 생기는데 화면은 그대로여서 "반응 없는 버튼"으로 보였다.
+    if(tossWidgetRendered && pay.orderId && isWidgetOpen()){
+      hideError();
+      focusTossWidget();
+      return;
+    }
     hideError();
     payBusy = true;
     var initBody = { slug: CFG.slug, market: CFG.market };
@@ -886,9 +999,9 @@ var SpecsFunnel = (function(){
       if(!res.ok){
         payBusy = false;
         if(lemonWin){ try{ lemonWin.close(); }catch(e){} }
-        if(res.status === 503) showError(T.payUnavailable);
-        else if(res.status === 429) showError(T.rateLimited);
-        else showError((res.d && res.d.error) || T.payInitFail);
+        if(res.status === 503) showPayError(T.payUnavailable);
+        else if(res.status === 429) showPayError(T.rateLimited);
+        else showPayError((res.d && res.d.error) || T.payInitFail);
         return;
       }
       var d = res.d;
@@ -904,7 +1017,7 @@ var SpecsFunnel = (function(){
     .catch(function(){
       payBusy = false;
       if(lemonWin){ try{ lemonWin.close(); }catch(e){} }
-      showError(T.errNet);
+      showPayError(T.errNet);
     });
   });
 
@@ -913,17 +1026,21 @@ var SpecsFunnel = (function(){
   var tossWidgets = null, tossWidgetRendered = false;
   function startToss(d, extraWin){
     if(extraWin){ try{ extraWin.close(); }catch(e){} }
-    if(!window.TossPayments){ payBusy = false; showError(T.payInitFail); return; }
+    if(!window.TossPayments){ payBusy = false; showPayError(T.payInitFail); return; }
     var wrap = document.getElementById('v2-toss-widget');
     var btn = document.getElementById('v2-pay-confirm');
     try{
       if(!tossWidgets){
         tossWidgets = window.TossPayments(d.clientKey).widgets({ customerKey: window.TossPayments.ANONYMOUS });
       }
+      // 실패 복귀 시 주문 재사용을 위한 보존 (결함 F) — 금액·라벨은 서버 init 응답이 정본 (ch2 7조)
+      lastTossInit = { provider: 'toss', orderId: d.orderId, orderName: d.orderName, amount: d.amount, currency: d.currency, clientKey: d.clientKey };
+      persistOrder(); // 호출부의 persistOrder 는 lastTossInit 설정 전에 끝난다 — 여기서 다시 저장해야 복귀 재오픈이 성립
       var _cur = (d.currency === 'USD' || CFG.market !== 'kr') ? '$' : '₩';
       var _amt = _cur === '$' ? String(d.amount) : String(d.amount).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
       btn.textContent = T.payBtnLabel.replace('{price}', _cur + _amt);
       wrap.style.display = 'block';
+      setWidgetOpenUI(true);
       tossWidgets.setAmount({ currency: d.currency || 'KRW', value: d.amount })
         .then(function(){
           if(tossWidgetRendered) return;
@@ -933,13 +1050,20 @@ var SpecsFunnel = (function(){
         })
         .then(function(){
           payBusy = false;
-          wrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          gaTrack('pay_widget_open', { payment_provider: GA_PAY.payment_provider }, true);
+          // 'nearest' 1회로는 위젯 하단(결제하기)이 화면 밖에 남는다 → 위젯 상단 정렬 + 하단 고정 배선.
+          // 단 실패 사유가 이미 떠 있으면(복귀 재오픈) 그 문구를 가리지 않는다.
+          var shownErr = payErrorEl && payErrorEl.classList.contains('show') ? payErrorEl : null;
+          try{ (shownErr || wrap).scrollIntoView({ behavior: 'smooth', block: shownErr ? 'center' : 'start' }); }catch(e){}
+          scheduleDock();
         })
         .catch(function(e){
-          payBusy = false; wrap.style.display = 'none';
-          showError((e && e.message) || T.payInitFail);
+          payBusy = false; wrap.style.display = 'none'; setWidgetOpenUI(false);
+          showPayError((e && e.message) || T.payInitFail);
         });
       btn.onclick = function(){
+        gaTrack('pay_confirm_click', { payment_provider: GA_PAY.payment_provider }, true);
+        hidePayError();
         var base = returnBase();
         tossWidgets.requestPayment({
           orderId: d.orderId,
@@ -947,15 +1071,19 @@ var SpecsFunnel = (function(){
           successUrl: base + '?toss=direct',
           failUrl: base + '?toss=fail'
         }).catch(function(err){
-          showError(err && err.code === 'USER_CANCEL' ? T.payCancelled : ((err && err.message) || T.payInitFail));
+          var cancelled = err && err.code === 'USER_CANCEL';
+          reportPayFail('request', (err && err.code) || (cancelled ? 'USER_CANCEL' : 'REQUEST_FAILED'), (err && err.message) || '');
+          showPayError(cancelled ? T.payCancelled : ((err && err.message) || T.payInitFail));
         });
       };
-    }catch(e){ payBusy = false; showError(T.payInitFail); }
+    }catch(e){ payBusy = false; showPayError(T.payInitFail); }
   }
 
   function startLemon(d, lemonWin){
     showPhase(phaseGen);
     setGenMessage(T.payWaiting, T.payWaitingHint);
+    // 레몬은 체크아웃 표면이 외부 페이지 — 그 표면이 열린 시점을 위젯 오픈과 동일 계측으로 잡는다
+    gaTrack('pay_widget_open', { payment_provider: GA_PAY.payment_provider }, true);
     if(lemonWin && !lemonWin.closed){
       try{ lemonWin.location = d.checkoutUrl; }catch(e){ lemonWin = null; }
     } else { lemonWin = null; }
@@ -976,8 +1104,9 @@ var SpecsFunnel = (function(){
       tries++;
       if(tries > 240){ // 2.5초 × 240 = 10분
         stopPolling(); payBusy = false;
-        showError(T.payTimeout);
         showPhase(uploadedBase64 ? phasePay : phaseUpload);
+        reportPayFail('poll', 'POLL_TIMEOUT', 'status polling timed out');
+        showPayError(T.payTimeout);
         return;
       }
       fetch('/api/payments/direct/status?orderId=' + encodeURIComponent(orderId))
@@ -992,8 +1121,9 @@ var SpecsFunnel = (function(){
           if(uploadedBase64) doGenerate(); else needReupload();
         } else if(d.status === 'failed' || d.status === 'amount_mismatch' || d.status === 'refunded'){
           stopPolling(); payBusy = false;
-          showError(T.payFailed);
           showPhase(uploadedBase64 ? phasePay : phaseUpload);
+          reportPayFail('poll', String(d.status).toUpperCase(), 'order status ' + d.status);
+          showPayError(T.payFailed);
         }
       })
       .catch(function(){});
@@ -1118,11 +1248,12 @@ var SpecsFunnel = (function(){
         } else if(code === 'GENERATE_LIMIT'){
           pay.remaining = 0; persistOrder();
         }
-        showError(msg);
+        // 결제 단계로 되돌아가는 에러는 결제 영역 슬롯에 — 전역 슬롯은 모바일에서 시야 밖 (결함 A)
         showPhase(uploadedBase64 ? phasePay : phaseUpload);
+        if(uploadedBase64) showPayError(msg); else showError(msg);
       }
     })
-    .catch(function(){ if(window.__genStageTimer) clearInterval(window.__genStageTimer); if(window.__genLongWaitTimer) clearTimeout(window.__genLongWaitTimer); genBusy = false; showError(T.errNet); showPhase(uploadedBase64 ? phasePay : phaseUpload); });
+    .catch(function(){ if(window.__genStageTimer) clearInterval(window.__genStageTimer); if(window.__genLongWaitTimer) clearTimeout(window.__genLongWaitTimer); genBusy = false; showPhase(uploadedBase64 ? phasePay : phaseUpload); if(uploadedBase64) showPayError(T.errNet); else showError(T.errNet); });
   }
 
   var payCreditBtn = document.getElementById('v2-pay-credit');
@@ -1207,6 +1338,7 @@ var SpecsFunnel = (function(){
       pay.expiresAt = saved.expiresAt || null;
       if(saved.attire) Object.assign(attireSelection, saved.attire);
       if(saved.subject) Object.assign(subjectSelection, saved.subject);
+      if(saved.toss) lastTossInit = saved.toss;
     }
 
     if(mode === 'direct' && pk && oid){
@@ -1225,14 +1357,30 @@ var SpecsFunnel = (function(){
           gaTrackPurchase(oid);
           if(uploadedBase64) doGenerate(); else needReupload();
         } else {
-          showError((res.d && res.d.error) || T.payConfirmFail);
           showPhase(uploadedBase64 ? phasePay : phaseUpload);
+          reportPayFail('confirm', (res.d && res.d.code) || 'CONFIRM_FAILED', (res.d && res.d.error) || '');
+          showPayError((res.d && res.d.error) || T.payConfirmFail);
         }
       })
-      .catch(function(){ showError(T.payConfirmFail); showPhase(uploadedBase64 ? phasePay : phaseUpload); });
+      .catch(function(){
+        showPhase(uploadedBase64 ? phasePay : phaseUpload);
+        reportPayFail('confirm', 'CONFIRM_NETWORK', 'confirm request failed');
+        showPayError(T.payConfirmFail);
+      });
     } else if(mode === 'fail'){
-      showError(failMsg || T.payCancelled);
+      /* 실패 복귀 (2026-09-19 결함 F) — 기존에는 리로드로 위젯이 사라져 첫 버튼부터 재시작 =
+         새 주문이 계속 쌓였다. 저장된 주문이 유효하면 위젯을 자동 재오픈하고 사유를 버튼 위에 띄운다. */
+      if(oid) pay.orderId = oid;
+      var fmsg = failMsg || T.payCancelled;
+      reportPayFail('return', qs.get('code') || 'RETURN_FAIL', fmsg);
       showPhase(uploadedBase64 ? phasePay : phaseUpload);
+      if(uploadedBase64 && !pay.token && lastTossInit && lastTossInit.provider === 'toss' && lastTossInit.clientKey){
+        if(oid){ lastTossInit.orderId = oid; persistOrder(); }
+        mountAttirePicker();
+        syncSubjectChips('pay');
+        startToss(lastTossInit);
+      }
+      showPayError(fmsg + ' ' + T.payRetryHint);
     } else if(mode === 'lemon'){
       if(pay.token){
         if(uploadedBase64) doGenerate(); else needReupload();

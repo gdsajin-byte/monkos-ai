@@ -823,6 +823,62 @@ export async function handleDirectStatus(req, res) {
 }
 
 /**
+ * POST /api/payments/direct/fail — 결제 실패 수신 (2026-09-19 신설)
+ * body: { orderId, stage, code, message, vw, vh, inApp }
+ *
+ * 실패 사유의 정본. GA는 유실 가능하고, 종전에는 결제 시도가 꺾인 지점이 서버 어디에도 남지 않아
+ * init 3명·7회 대비 승인 호출 0건이라는 사실만 있고 원인이 없었다.
+ * 서버 발급 orderId(= directOrders 문서 존재)가 아니면 기록하지 않는다 — 임의 주입 차단.
+ */
+const FAIL_STAGES = new Set(['request', 'return', 'confirm', 'poll']);
+
+export async function handleDirectFail(req, res) {
+  const json = (status, payload) => {
+    res.writeHead(status, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(payload));
+  };
+  try {
+    const body = await parseJsonBody(req);
+    const orderId = String(body.orderId || '');
+    if (!ORDER_ID_RE.test(orderId)) return json(400, { error: '유효하지 않은 orderId', code: 'INVALID_ORDER_ID' });
+
+    const stage = FAIL_STAGES.has(body.stage) ? body.stage : 'unknown';
+    const code = String(body.code || 'UNKNOWN').slice(0, 60);
+    const message = String(body.message || '').slice(0, 200);
+    const vw = Number.isFinite(body.vw) ? Math.round(body.vw) : null;
+    const vh = Number.isFinite(body.vh) ? Math.round(body.vh) : null;
+    const inApp = body.inApp === true;
+    const ua = String(req.headers['user-agent'] || '').slice(0, 300);
+
+    const ref = firestore.collection('directOrders').doc(orderId);
+    const doc = await ref.get();
+    if (!doc.exists) return json(404, { error: '주문 없음', code: 'ORDER_NOT_FOUND' });
+
+    const prev = doc.data();
+    const failCount = (prev.failCount ?? 0) + 1;
+    await ref.update({
+      failCount,
+      lastFail: { stage, code, message, vw, vh, inApp, ua, at: new Date().toISOString() },
+    });
+    log(`[Direct-Fail] ${orderId} stage=${stage} code=${code} n=${failCount} vp=${vw}x${vh} inApp=${inApp} slug=${prev.slug || '?'} msg=${message}`, 'WARNING');
+
+    // 같은 주문에서 3회 이상 꺾이면 1회만 알린다 (반복 알림 방지)
+    if (failCount >= 3 && !prev.failAlertSent && TEAM_CHAT_ID) {
+      await ref.update({ failAlertSent: true }).catch(() => {});
+      sendTelegramMessage(
+        TEAM_CHAT_ID,
+        `🚨 *specs 결제 반복 실패*\norderId: ${orderId} (${prev.slug || '?'}, ${prev.market || '?'})\n누적 ${failCount}회 / 최근 ${stage} · ${code}\n뷰포트 ${vw}x${vh}${inApp ? ' · 인앱브라우저' : ''}\n${message || ''}`,
+        TELEGRAM_TEAM_API
+      ).catch(() => {});
+    }
+    return json(200, { ok: true, failCount });
+  } catch (err) {
+    log(`[Direct-Fail] 에러: ${err.message}`, 'ERROR', { error: err.stack });
+    return json(500, { error: '처리 중 오류가 발생했습니다', code: 'INTERNAL_ERROR' });
+  }
+}
+
+/**
  * POST /api/payments/toss/direct — 비로그인 직접결제 confirm (토스)
  * 서버가 주문 기록 금액(₩2,000)을 강제 — 클라이언트 amount 불신.
  * 멱등: 동일 orderId 재confirm 시 기존 토큰 재응답 (성공 페이지 새로고침 보호).
