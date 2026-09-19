@@ -123,24 +123,32 @@ async function loadPosts() {
       return;
     }
 
-    // 미답변 우선 정렬
+    // 미답변 우선 정렬 — 접수 자동 답글만 달린 신고 글은 미답변으로 본다
+    const answered = p => (p.hasHumanReply !== undefined ? p.hasHumanReply : p.hasReply);
     posts.sort((a, b) => {
-      if (a.hasReply === b.hasReply) return 0;
-      return a.hasReply ? 1 : -1;
+      if (answered(a) === answered(b)) return 0;
+      return answered(a) ? 1 : -1;
     });
 
     tbody.innerHTML = posts.map(p => `
       <tr>
-        <td class="td-title">${esc(p.title)}</td>
+        <td class="td-title" style="cursor:pointer" onclick="toggleDetail('${p.id}')">${p.visibility === 'private' ? '🔒 ' : ''}${esc(p.title)}</td>
         <td>${esc(p.author)}</td>
         <td>${esc(p.category)}</td>
-        <td><span class="badge ${p.hasReply ? 'badge-replied' : 'badge-pending'}">${p.hasReply ? 'Replied' : 'Pending'}</span></td>
-        <td><span class="badge ${p.published ? 'badge-pub' : 'badge-hidden'}">${p.published ? 'Public' : 'Hidden'}</span></td>
+        <td><span class="badge ${answered(p) ? 'badge-replied' : 'badge-pending'}">${answered(p) ? 'Replied' : 'Pending'}</span></td>
+        <td><span class="badge ${p.published ? 'badge-pub' : 'badge-hidden'}">${p.visibility === 'private' ? 'Private' : (p.published ? 'Public' : 'Hidden')}</span></td>
         <td style="color:var(--text-dim);font-size:13px">${(p.createdAt || '').substring(0, 10)}</td>
         <td class="actions">
           <button class="btn-sm" onclick="toggleReply('${p.id}')">Reply</button>
-          <button class="btn-sm" onclick="toggleVis('${p.id}')">${p.published ? 'Hide' : 'Show'}</button>
+          ${p.visibility === 'private' ? '' : `<button class="btn-sm" onclick="toggleVis('${p.id}')">${p.published ? 'Hide' : 'Show'}</button>`}
           <button class="btn-sm danger" onclick="deletePost('${p.id}')">Del</button>
+        </td>
+      </tr>
+      <tr id="detail-${p.id}" style="display:none">
+        <td colspan="7" style="padding:14px 16px;background:rgba(127,127,127,0.06)">
+          <div style="white-space:pre-wrap;font-size:14px;line-height:1.6;margin-bottom:10px">${esc(p.content)}</div>
+          ${ctxHtml(p)}
+          ${(p.replies || []).map(r => `<div style="border-left:3px solid var(--accent);padding:6px 10px;margin-top:8px;font-size:13px;white-space:pre-wrap"><b>${esc(r.authorLabel)}</b>${r.auto ? ' <span style="opacity:.6">(자동 접수 답글)</span>' : ''} · ${(r.createdAt || '').substring(0, 16).replace('T', ' ')}\n${esc(r.text)}</div>`).join('')}
         </td>
       </tr>
       <tr class="reply-form" id="reply-${p.id}">
@@ -155,6 +163,30 @@ async function loadPosts() {
   } catch (err) {
     document.getElementById('boardTable').innerHTML = `<tr><td colspan="7" class="empty">Error: ${err.message}</td></tr>`;
   }
+}
+
+function toggleDetail(id) {
+  const row = document.getElementById('detail-' + id);
+  if (row) row.style.display = row.style.display === 'none' ? '' : 'none';
+}
+
+// 신고 글의 자동 첨부 맥락 — 기기·화면·단계·마지막 에러·주문
+function ctxHtml(p) {
+  const c = p.context;
+  if (!c && !p.email) return '';
+  const rows = [];
+  if (c) {
+    rows.push(['규격·언어', [c.slug, c.lang, c.market].filter(Boolean).join(' · ')]);
+    rows.push(['단계', c.phase + (c.lastErrorStage && c.lastErrorStage !== c.phase ? ' (에러 발생: ' + c.lastErrorStage + ')' : '')]);
+    rows.push(['마지막 에러', c.lastError || '—']);
+    rows.push(['화면', (c.vw || '?') + '×' + (c.vh || '?') + ' @' + (c.dpr || '?') + 'x' + (c.inApp ? ' · 인앱 브라우저' : '')]);
+    rows.push(['결제', [c.payProvider, c.orderId, c.widgetOpened ? '위젯 열림' : '', c.confirmClicked ? '결제하기 클릭' : ''].filter(Boolean).join(' · ') || '—']);
+    rows.push(['유입', c.referrerHost || '—']);
+    rows.push(['User-Agent', c.userAgent || '—']);
+  }
+  if (p.email) rows.push(['회신 이메일', p.email]);
+  return '<table style="width:auto;font-size:12px;margin:6px 0">' + rows.map(r =>
+    '<tr><td style="padding:2px 12px 2px 0;color:var(--text-dim);border:0;white-space:nowrap">' + esc(r[0]) + '</td><td style="padding:2px 0;border:0;word-break:break-all">' + esc(String(r[1] == null ? '' : r[1])) + '</td></tr>').join('') + '</table>';
 }
 
 function toggleReply(id) {
@@ -173,7 +205,8 @@ async function sendReply(id) {
     body: JSON.stringify({ text }),
   });
   if (r.ok) {
-    showToast('Reply sent!');
+    const d = await r.json().catch(() => ({}));
+    showToast(d.mailed ? 'Reply sent — 고객에게 알림 메일 발송됨' : 'Reply sent!');
     loadPosts();
   } else {
     const data = await r.json();
