@@ -12,3 +12,6 @@ https://monkos.ai/blog	+<link rel="canonical" href="https://monkos.ai/blog">
 
 # 부재 어서션 — 폐기된 구문구가 재유입되지 않았는지 (07-17 적발 → 41일 잔존 재발 방지)
 https://monkos.ai/specs/visa/kr	-편집 프로그램·AI 보정본을 불허
+
+# 결제 영역 에러 슬롯 — 09-19 결제 동선 결함 수정(48b542c5)이 엣지 정적본에 반영됐는지
+https://monkos.ai/specs/passport/kr	+id="v2-pay-error"
