@@ -107,23 +107,31 @@ export function specFunnelMarkup(ctx) {
             </div>
             <!-- attire-picker mount (구형 인라인 의상 UI 제거 → 공유 컴포넌트 D5) -->
             <div id="v2-attire-mount" style="display:none;"></div>
+            <!-- 결제 영역 에러 슬롯 (위젯 열기 전) — 전역 #v2-error 는 모바일 1열에서 약 1,100px 위라
+                 결제 단계 에러가 시야 밖에 떴다 (2026-09-19 결함 A) -->
+            <div class="v2-error-msg v2-pay-error" id="v2-pay-error-top"></div>
             <button class="v2-pay-btn v2-pay-instant" id="v2-pay-instant">
               <div class="v2-pay-title">${eh(fmtV2(v2.payTitle, { type: typeName }))}</div>
               <div class="v2-pay-price">${v2.payPrice}</div>
               <div class="v2-pay-desc">${eh(v2.payDesc)}</div>
             </button>
-            <div class="v2-pay-divider"><span>${eh(v2.orDivider)}</span></div>
+            <!-- 위젯은 누른 버튼 바로 아래에 열린다 — 구분선·크레딧 버튼 아래에 열려
+                 "눌러도 반응 없다"로 보이던 동선 (2026-09-19 결함 D) -->
+            <div class="v2-toss-widget" id="v2-toss-widget" style="display:none;">
+              <div id="v2-pm"></div>
+              <div id="v2-agree"></div>
+              <div class="v2-error-msg v2-pay-error" id="v2-pay-error"></div>
+              <button class="v2-action-btn v2-btn-retouch" id="v2-pay-confirm" style="width:100%;margin-top:12px;"></button>
+              <!-- 결제하기 하단 고정(is-docked) 시 흐름 공백 유지용 (2026-09-19 결함 E) -->
+              <div id="v2-pay-confirm-spacer" aria-hidden="true" style="height:0;"></div>
+            </div>
+            <div class="v2-pay-divider" id="v2-pay-divider"><span>${eh(v2.orDivider)}</span></div>
             <button class="v2-pay-btn v2-pay-credit" id="v2-pay-credit">
               <div class="v2-pay-title">${eh(v2.creditTitle)}</div>
               <div class="v2-pay-price">10c <span style="font-size:13px;color:#888;font-weight:400;">${market === 'kr' ? '(₩1,500)' : '($1)'}</span></div>
               <div class="v2-pay-desc">${eh(v2.creditDesc)}</div>
               ${market === 'kr' ? `<div class="v2-pay-desc" style="font-size:12px;margin-top:4px;">${v2.creditTopup}</div>` : `<div class="v2-pay-desc" style="font-size:12px;margin-top:4px;">${eh(v2.creditTopupGlobal)}</div>`}
             </button>
-            <div class="v2-toss-widget" id="v2-toss-widget" style="display:none;">
-              <div id="v2-pm"></div>
-              <div id="v2-agree"></div>
-              <button class="v2-action-btn v2-btn-retouch" id="v2-pay-confirm" style="width:100%;margin-top:12px;"></button>
-            </div>
           </div>
         </div>
       </div>

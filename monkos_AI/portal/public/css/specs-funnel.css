@@ -137,6 +137,27 @@ a:hover { color: #5a3de6; }
 .v2-pay-divider span { background: #f5f5f7; padding: 0 12px; position: relative; z-index: 1; }
 .v2-pay-divider::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; border-top: 1px solid #e5e5e5; }
 
+/* ── 결제 동선 결함 수정 (2026-09-19) ──
+   A: 결제 단계 에러는 전역 #v2-error(결제 영역 약 1,100px 위)가 아니라 버튼 바로 위 슬롯에 띄운다.
+   D: 위젯이 열리면 구분선·크레딧 버튼을 접어 "누른 버튼 바로 아래" 동선을 만든다.
+   E: 결제하기 버튼이 뷰포트 아래로 밀리면 하단 고정(is-docked)한다. */
+.v2-pay-error {
+  margin: 10px 0 0; text-align: left; font-size: 13.5px; line-height: 1.5;
+  background: #fbeef0; color: #a32538; border-radius: 10px; padding: 10px 12px;
+}
+/* 구분선·크레딧 버튼은 접지 않는다 — 위젯을 버튼 직하로 옮긴 것으로 D가 성립하고,
+   접으면 크레딧 경로가 막혀 되돌아갈 길이 사라진다 (지시서 D "재배치 또는 접기" 중 재배치 채택) */
+.v2-pay-options.v2-widget-open .v2-pay-instant {
+  border-color: #6c4fff; background: rgba(108,79,255,0.05);
+  box-shadow: 0 0 0 2px rgba(108,79,255,0.18);
+}
+#v2-pay-confirm.is-docked {
+  position: fixed; left: 50%; right: auto; transform: translateX(-50%);
+  width: calc(100% - 24px); max-width: 560px; margin: 0;
+  bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  z-index: 60; box-shadow: 0 10px 28px -8px rgba(23,21,31,0.45);
+}
+
 /* Phase 2.7: 의상 선택 */
 .v2-attire-title { font-size: 16px; font-weight: 700; color: #1a1a1a; margin-bottom: 4px; }
 .v2-attire-sub { font-size: 13px; color: #888; margin-bottom: 16px; }
