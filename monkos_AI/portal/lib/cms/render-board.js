@@ -3,6 +3,7 @@
  */
 import { escapeHtml, layoutHead, layoutNav, layoutFooter, layoutShell } from './render-shell.js';
 import { firestore, log } from '../shared/config.js';
+import { canViewPrivate } from './board.js';
 
 const boardCollection = firestore.collection('board_posts');
 
@@ -119,12 +120,16 @@ export async function boardPostFragment(req) {
   if (!id || id === 'write') return null;
 
   const doc = await boardCollection.doc(id).get();
-  if (!doc.exists || !doc.data().published) return null;
+  if (!doc.exists) return null;
+  // 비공개 신고 글은 접수 시 발급한 열람 링크(key)로만 열린다 — 키 불일치는 미존재와 동일하게 404
+  const viewKey = new URL(req.url, 'https://monkos.ai').searchParams.get('key');
+  const isPrivateView = !doc.data().published && canViewPrivate(doc.data(), viewKey);
+  if (!doc.data().published && !isPrivateView) return null;
 
   const post = doc.data();
   const repliesHtml = (post.replies || []).map(r => `
       <div class="reply-item">
-        <div class="reply-author">MONKOS</div>
+        <div class="reply-author">${escapeHtml(r.authorLabel || 'MONKOS')}</div>
         <div class="reply-text">${escapeHtml(r.text)}</div>
         <div class="reply-date">${(r.createdAt || '').substring(0, 10)}</div>
       </div>`).join('');
@@ -169,7 +174,7 @@ export async function boardPostFragment(req) {
     </div>
     <div class="board-post-body">${escapeHtml(post.content)}</div>
     ${repliesHtml ? `<div class="replies-section"><h3>Replies</h3>${repliesHtml}</div>` : ''}
-    <button class="btn-delete" onclick="deletePost('${escapeHtml(doc.id)}')">Delete</button>
+    ${isPrivateView ? '' : `<button class="btn-delete" onclick="deletePost('${escapeHtml(doc.id)}')">Delete</button>`}
   </div>`;
 
   const pageScript = `
@@ -188,7 +193,10 @@ async function deletePost(id) {
   } catch { alert('Error'); }
 }`;
 
-  return { title: `${post.title} | Board`, description: 'MONKOS Board', seoMeta: null, htmlLang: 'ko', pageStyle, bodyContent, pageScript };
+  // 비공개 열람: 주소창의 key를 즉시 지워 공유·스크린샷·리퍼러로 새는 것을 줄인다
+  const privateScript = isPrivateView ? `
+try{ history.replaceState(null, '', location.pathname); }catch(e){}` : '';
+  return { title: `${post.title} | Board`, description: 'MONKOS Board', seoMeta: null, htmlLang: 'ko', pageStyle, bodyContent, pageScript: pageScript + privateScript, isPrivateView };
 }
 
 // GET /board/:id — 게시글 상세 (기존 호출 호환)
@@ -201,7 +209,13 @@ export async function renderBoardPost(req, res) {
     }
     parts.paymentRegion = req.paymentRegion;
     const html = layoutShell(parts);
-    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+    const headers = { 'Content-Type': 'text/html; charset=utf-8' };
+    if (parts.isPrivateView) {
+      headers['Cache-Control'] = 'private, no-store';
+      headers['X-Robots-Tag'] = 'noindex, nofollow';
+      headers['Referrer-Policy'] = 'no-referrer';
+    }
+    res.writeHead(200, headers);
     res.end(html);
   } catch (err) {
     log(`[CMS] 게시판 상세 렌더 에러: ${err.message}`, 'ERROR');

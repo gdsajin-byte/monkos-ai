@@ -52,7 +52,7 @@ import { handleDashboardGsc, handleDashboardNaver, handleDashboardBing, handleDa
 import { handleBlogList, handleBlogGet, handleBlogCreate, handleBlogUpdate, handleBlogDelete } from './lib/cms/blog.js';
 import { handleFaqList, handleFaqCreate, handleFaqUpdate, handleFaqDelete } from './lib/cms/faq.js';
 import { handleGalleryList, handleGalleryCreate, handleGalleryUpdate, handleGalleryDelete } from './lib/cms/gallery.js';
-import { handleBoardPublicList, handleBoardPublicGet, handleBoardPublicCreate, handleBoardPublicDelete, handleBoardAdminList, handleBoardAdminReply, handleBoardAdminDelete, handleBoardAdminToggle } from './lib/cms/board.js';
+import { handleBoardPublicList, handleBoardPublicGet, handleBoardPublicCreate, handleBoardReportCreate, handleBoardPublicDelete, handleBoardAdminList, handleBoardAdminReply, handleBoardAdminDelete, handleBoardAdminToggle } from './lib/cms/board.js';
 import { handleUpload, handleImageList, handleImageDelete } from './lib/cms/upload.js';
 import { handleIdphotoResults } from './lib/cms/idphoto-review.js';
 import { handleAiImage, handleAiThumbnail, handleAiSuggest } from './lib/cms/ai.js';
@@ -1134,6 +1134,7 @@ const httpServer = createServer(async (req, res) => {
   // === CMS 게시판 공개 API ===
   if (urlPath === '/api/board' && req.method === 'GET') return handleBoardPublicList(req, res);
   if (urlPath === '/api/board' && req.method === 'POST') return handleBoardPublicCreate(req, res);
+  if (urlPath === '/api/board/report' && req.method === 'POST') return handleBoardReportCreate(req, res);
   if (urlPath?.startsWith('/api/board/') && req.method === 'GET') return handleBoardPublicGet(req, res);
   if (urlPath?.startsWith('/api/board/') && req.method === 'DELETE') return handleBoardPublicDelete(req, res);
 

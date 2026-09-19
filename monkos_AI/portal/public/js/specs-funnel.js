@@ -42,11 +42,15 @@ var SpecsFunnel = (function(){
   /* ─── GA4 퍼널 계측 (v1 idphoto-kr 파라미터 구조 준용) ───
      - typeof gtag 가드 + 페이지 로드당 1회 발화 가드(generate_click은 재생성 포함 매회)
      - paymentToken 등 인증 토큰·시크릿은 이벤트 파라미터에 절대 미포함 (transaction_id = orderId) */
+  // 불편 신고 맥락 — 고객이 적지 않아도 기기·단계·마지막 에러가 신고 글에 따라붙는다 (2026-09-19)
+  var rpt = { lastError: '', lastErrorStage: '', widgetOpened: false, confirmClicked: false };
   var gaFired = {};
   var GA_PAY = CFG.market === 'kr'
     ? { payment_provider: 'toss', currency: 'KRW', value: 2000 }
     : { payment_provider: 'lemon', currency: 'USD', value: 1.99 };
   function gaTrack(name, params, repeat){
+    if(name === 'pay_widget_open') rpt.widgetOpened = true;
+    else if(name === 'pay_confirm_click') rpt.confirmClicked = true;
     if(typeof gtag !== 'function') return;
     if(!repeat && gaFired[name]) return;
     gaFired[name] = true;
@@ -118,8 +122,8 @@ var SpecsFunnel = (function(){
     if(genTextEl) genTextEl.textContent = text;
     if(genSubEl) genSubEl.textContent = sub || '';
   }
-  function showError(msg){ errorMsg.textContent = msg; errorMsg.classList.add('show'); }
-  function hideError(){ errorMsg.classList.remove('show'); hidePayError(); }
+  function showError(msg){ errorMsg.textContent = msg; errorMsg.classList.add('show'); noteError(msg, errorMsg); }
+  function hideError(){ errorMsg.classList.remove('show'); hidePayError(); hideReportLink(); }
   /* 결제 영역 에러 (2026-09-19 결함 A) — 전역 #v2-error 는 결제 단계 *위*의 정적 요소라
      모바일 1열에서 결제 버튼 약 1,100px 위에 뜬다. 거절·취소 문구가 시야 밖에 있으면
      고객에겐 "눌러도 반응 없는 버튼"이 된다. 결제 단계 에러는 버튼 바로 위 슬롯에 띄운다. */
@@ -138,6 +142,7 @@ var SpecsFunnel = (function(){
     hidePayError();
     el.textContent = msg;
     el.classList.add('show');
+    noteError(msg, el);
     try{ el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }catch(e){}
     scheduleDock();
   }
@@ -145,6 +150,141 @@ var SpecsFunnel = (function(){
   function isInApp(){
     return /(GSA\/|FBAN|FBAV|Instagram|KAKAOTALK|Line\/|NAVER\(|DaumApps|; wv\))/i.test(navigator.userAgent || '');
   }
+
+  /* ─── 불편 신고 → 게시판 연동 (2026-09-19 작가님 지시) ───
+     입구 3곳: 에러 문구 바로 아래 / 결제 위젯 하단 / 퍼널 하단 상시. 페이지 이탈 없는 인라인 시트.
+     서버 POST /api/board/report — 비공개 글로 접수되고 기기·단계·마지막 에러가 자동 첨부된다. */
+  var RPT_DEFAULT = {
+    ko: { link: '안 되나요? 바로 알려주세요', footer: '의견·불편 신고', title: '무엇이 안 되었나요?', sub: '한 줄이면 충분합니다. 사용 중인 기기와 화면 정보는 자동으로 함께 전달됩니다.', ph: '예) 결제하기를 눌러도 넘어가지 않아요', email: '답변 받을 이메일 (선택)', submit: '보내기', cancel: '닫기', sending: '보내는 중…', done: '접수했습니다. 확인 후 답글로 안내드리겠습니다.', view: '접수 내용·답글 보기', empty: '내용을 입력해 주세요.', fail: '전송하지 못했습니다. 잠시 후 다시 시도해 주세요.', wait: '방금 접수되었습니다. 1분 뒤 다시 보내실 수 있습니다.' },
+    ja: { link: 'うまくいきませんか？すぐお知らせください', footer: 'ご意見・不具合の報告', title: '何がうまくいきませんでしたか？', sub: '一行で十分です。ご利用中の端末と画面の情報は自動で一緒に送信されます。', ph: '例）決済ボタンを押しても進みません', email: '返信用メールアドレス（任意）', submit: '送信', cancel: '閉じる', sending: '送信中…', done: '受け付けました。確認のうえ返信でご案内いたします。', view: '受付内容・返信を見る', empty: '内容を入力してください。', fail: '送信できませんでした。しばらくしてからもう一度お試しください。', wait: '先ほど受け付けました。1分後に再度送信できます。' },
+    en: { link: 'Not working? Tell us right away', footer: 'Feedback & problem report', title: 'What went wrong?', sub: 'One line is enough. Your device and screen details are sent along automatically.', ph: 'e.g. Nothing happens when I press Pay', email: 'Email for a reply (optional)', submit: 'Send', cancel: 'Close', sending: 'Sending…', done: 'Received. We will look into it and reply.', view: 'View your report and replies', empty: 'Please enter a message.', fail: 'Could not send. Please try again in a moment.', wait: 'We just received your report. You can send another in a minute.' },
+    es: { link: '¿No funciona? Avísenos ahora', footer: 'Opiniones y aviso de problemas', title: '¿Qué ha fallado?', sub: 'Con una línea basta. Los datos de su dispositivo y pantalla se envían automáticamente.', ph: 'p. ej. No pasa nada al pulsar Pagar', email: 'Correo para la respuesta (opcional)', submit: 'Enviar', cancel: 'Cerrar', sending: 'Enviando…', done: 'Recibido. Lo revisaremos y le responderemos.', view: 'Ver su aviso y las respuestas', empty: 'Escriba un mensaje.', fail: 'No se pudo enviar. Inténtelo de nuevo en un momento.', wait: 'Acabamos de recibir su aviso. Podrá enviar otro en un minuto.' }
+  };
+  var RL = (function(){
+    var lang = (document.documentElement.lang || 'ko').slice(0, 2).toLowerCase();
+    var base = RPT_DEFAULT[lang] || RPT_DEFAULT.en, o = {};
+    for(var k in base){ if(Object.prototype.hasOwnProperty.call(base, k)) o[k] = (T && T['report_' + k]) || base[k]; }
+    return o;
+  })();
+  function currentPhaseName(){
+    var map = [[phaseUpload,'upload'],[phaseCheck,'check'],[phaseFit,'fit'],[phasePay,'pay'],[phaseGen,'generating'],[phaseResult,'result'],[phaseFree,'free']];
+    for(var i = 0; i < map.length; i++){ if(map[i][0] && map[i][0].style.display !== 'none') return map[i][1]; }
+    return '';
+  }
+  var reportLinkEl = null;
+  function noteError(msg, anchorEl){
+    rpt.lastError = String(msg || '').slice(0, 200);
+    rpt.lastErrorStage = currentPhaseName();
+    try{
+      if(!reportLinkEl){
+        reportLinkEl = document.createElement('button');
+        reportLinkEl.type = 'button';
+        reportLinkEl.className = 'v2-report-link v2-report-link-err';
+        reportLinkEl.textContent = RL.link;
+        reportLinkEl.addEventListener('click', function(){ openReportSheet('error'); });
+      }
+      if(anchorEl && anchorEl.parentNode){ anchorEl.parentNode.insertBefore(reportLinkEl, anchorEl.nextSibling); }
+      reportLinkEl.style.display = '';
+    }catch(e){}
+  }
+  function hideReportLink(){ if(reportLinkEl) reportLinkEl.style.display = 'none'; }
+  function reportContext(){
+    var ref = '';
+    try{ ref = document.referrer ? new URL(document.referrer).hostname : ''; }catch(e){}
+    return {
+      slug: CFG.slug || '', lang: (document.documentElement.lang || 'ko'), market: CFG.market || '',
+      phase: currentPhaseName(), lastError: rpt.lastError, lastErrorStage: rpt.lastErrorStage,
+      orderId: pay.orderId || '', payProvider: GA_PAY.payment_provider,
+      widgetOpened: rpt.widgetOpened, confirmClicked: rpt.confirmClicked,
+      vw: window.innerWidth || 0, vh: window.innerHeight || 0, dpr: window.devicePixelRatio || 1,
+      inApp: isInApp(), referrerHost: ref
+    };
+  }
+  var reportSheet = null, reportBusy = false;
+  function openReportSheet(entry){
+    gaTrack('report_open', { report_entry: entry || '', report_phase: currentPhaseName() }, true);
+    if(!reportSheet){
+      reportSheet = document.createElement('div');
+      reportSheet.className = 'v2-report-overlay';
+      reportSheet.innerHTML =
+        '<div class="v2-report-sheet" role="dialog" aria-modal="true">' +
+          '<div class="v2-report-title"></div><div class="v2-report-sub"></div>' +
+          '<textarea class="v2-report-text" maxlength="2000" rows="4"></textarea>' +
+          '<input class="v2-report-email" type="email" inputmode="email" autocomplete="email" maxlength="254">' +
+          '<div class="v2-report-msg"></div>' +
+          '<div class="v2-report-actions"><button type="button" class="v2-report-cancel"></button><button type="button" class="v2-report-submit"></button></div>' +
+        '</div>';
+      document.body.appendChild(reportSheet);
+      reportSheet.querySelector('.v2-report-title').textContent = RL.title;
+      reportSheet.querySelector('.v2-report-sub').textContent = RL.sub;
+      reportSheet.querySelector('.v2-report-text').placeholder = RL.ph;
+      reportSheet.querySelector('.v2-report-email').placeholder = RL.email;
+      reportSheet.querySelector('.v2-report-cancel').textContent = RL.cancel;
+      reportSheet.querySelector('.v2-report-submit').textContent = RL.submit;
+      reportSheet.addEventListener('click', function(e){ if(e.target === reportSheet) closeReportSheet(); });
+      reportSheet.querySelector('.v2-report-cancel').addEventListener('click', closeReportSheet);
+      reportSheet.querySelector('.v2-report-submit').addEventListener('click', submitReport);
+    }
+    var msgEl = reportSheet.querySelector('.v2-report-msg');
+    msgEl.textContent = ''; msgEl.className = 'v2-report-msg';
+    reportSheet.querySelector('.v2-report-submit').style.display = ''; // 직전 접수 완료로 숨겨진 버튼 복원
+    reportSheet.classList.add('open');
+    undockConfirm(); // 하단 고정된 결제하기 버튼이 시트를 가리지 않게
+    try{ reportSheet.querySelector('.v2-report-text').focus(); }catch(e){}
+  }
+  function closeReportSheet(){
+    if(reportSheet) reportSheet.classList.remove('open');
+    scheduleDock();
+  }
+  function submitReport(){
+    if(reportBusy || !reportSheet) return;
+    var txt = reportSheet.querySelector('.v2-report-text');
+    var em = reportSheet.querySelector('.v2-report-email');
+    var msgEl = reportSheet.querySelector('.v2-report-msg');
+    var btn = reportSheet.querySelector('.v2-report-submit');
+    var content = (txt.value || '').trim();
+    if(!content){ msgEl.textContent = RL.empty; msgEl.className = 'v2-report-msg err'; return; }
+    reportBusy = true; btn.disabled = true; btn.textContent = RL.sending;
+    fetch('/api/board/report', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content: content, email: (em.value || '').trim(), context: reportContext() })
+    })
+    .then(function(r){ return r.json().then(function(d){ return { ok: r.ok, status: r.status, d: d }; }); })
+    .then(function(res){
+      reportBusy = false; btn.disabled = false; btn.textContent = RL.submit;
+      if(res.ok && res.d && res.d.viewUrl){
+        gaTrack('report_submit', { report_phase: currentPhaseName() }, true);
+        txt.value = '';
+        msgEl.className = 'v2-report-msg ok';
+        msgEl.textContent = RL.done + ' ';
+        var a = document.createElement('a');
+        a.href = res.d.viewUrl; a.target = '_blank'; a.rel = 'noopener'; a.textContent = RL.view;
+        msgEl.appendChild(a);
+        btn.style.display = 'none';
+      } else {
+        msgEl.className = 'v2-report-msg err';
+        msgEl.textContent = res.status === 429 ? RL.wait : RL.fail;
+      }
+    })
+    .catch(function(){
+      reportBusy = false; btn.disabled = false; btn.textContent = RL.submit;
+      msgEl.className = 'v2-report-msg err'; msgEl.textContent = RL.fail;
+    });
+  }
+  // 상시 입구 2곳 — 결제 위젯 하단 · 퍼널 하단
+  (function mountReportEntries(){
+    try{
+      var mk = function(cls, label, entry){
+        var b = document.createElement('button');
+        b.type = 'button'; b.className = 'v2-report-link ' + cls; b.textContent = label;
+        b.addEventListener('click', function(){ openReportSheet(entry); });
+        return b;
+      };
+      var wrap = document.getElementById('v2-toss-widget');
+      if(wrap) wrap.appendChild(mk('v2-report-link-pay', RL.link, 'pay'));
+      if(el) el.appendChild(mk('v2-report-link-footer', RL.footer, 'footer'));
+    }catch(e){}
+  })();
 
   /* ─── 결제하기 버튼 하단 고정 (2026-09-19 결함 E) ───
      토스 위젯 영역 실측 629px(375폭) — 가용 높이가 그보다 짧은 폰은 결제하기 버튼이 화면 아래에 남는다.
