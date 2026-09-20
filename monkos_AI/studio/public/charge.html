@@ -40,6 +40,46 @@
     <!-- 스타일시트 -->
     <link rel="stylesheet" href="app.css">
     <link rel="stylesheet" href="cr-coin.css">
+    <style>
+      /* app.css가 body 스크롤을 잠그므로(카메라 SPA 전제) 본문을 자체 스크롤 컨테이너로.
+         짧은 뷰포트에서 토스 위젯·약관·결제 버튼이 잘려 결제 불가가 되는 것을 방지.
+         overscroll-behavior: 결제 중 당겨서 새로고침 오발동 차단.
+         (idphoto-kr 08-13 수정 이식 — 2026-09-20 결제 표면 감사. body는 flex column: app.css 7~12행) */
+      #charge-content {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-y: contain;
+      }
+
+      /* ── 결제 동선 결함 수정 (2026-09-20 결제 표면 감사, 포털 credits.html 패턴 이식) ──
+         #pay-loading : 위젯 렌더 중 빈 화면 = 고장으로 읽힌다 → 로딩 문구
+         #pay-error   : alert는 닫으면 사유가 사라진다 → 결제 버튼 바로 위 상시 슬롯
+         .is-docked   : 위젯·약관이 길어 결제 버튼이 화면 아래로 밀리면 하단 고정.
+                        body가 잠겨 있어 스크롤 주체는 #charge-content — JS가 그 scroll 이벤트를 듣는다.
+                        (#pay-btn 의 width·cursor 는 인라인 스타일이라 !important 로만 덮인다) */
+      #pay-loading { padding: 18px 12px; text-align: center; font-size: 0.85rem; color: #8892a8; }
+      #pay-error {
+        margin: 0 0 10px; padding: 10px 12px; border-radius: 10px;
+        font-size: 0.85rem; line-height: 1.5; text-align: left;
+        background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.3); color: #fca5a5;
+      }
+      #pay-error.info { background: rgba(167,139,250,0.10); border-color: rgba(167,139,250,0.3); color: #e2e8f0; }
+      #pay-error-retry {
+        display: block; margin-top: 8px; padding: 8px 16px;
+        background: transparent; color: #f8fafc;
+        border: 1px solid currentColor; border-radius: 8px;
+        font-size: 0.82rem; font-weight: 600; cursor: pointer;
+      }
+      #pay-btn:disabled { opacity: 0.5; cursor: not-allowed !important; }
+      #pay-btn.is-docked {
+        position: fixed; left: 50%; right: auto; transform: translateX(-50%);
+        width: calc(100% - 32px) !important; max-width: 448px; margin: 0;
+        bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+        z-index: 60; box-shadow: 0 10px 28px -8px rgba(0,0,0,0.6);
+      }
+    </style>
 
     <!-- 토스페이먼츠 -->
     <script src="https://js.tosspayments.com/v2/standard"></script>
@@ -124,16 +164,27 @@
                 </div>
             </div>
 
+            <!-- 위젯 렌더 중 로딩 문구 (2026-09-20) -->
+            <div id="pay-loading" style="display:none;"></div>
+
             <!-- 토스 결제수단 위젯 -->
             <div id="payment-method" style="margin-bottom:12px;"></div>
 
             <!-- 토스 약관 위젯 -->
             <div id="agreement" style="margin-bottom:16px;"></div>
 
-            <!-- 결제하기 버튼 -->
-            <button id="pay-btn" type="button" style="width:100%; padding:16px; background:linear-gradient(135deg,#a78bfa,#818cf8); color:#fff; font-size:1.1rem; font-weight:700; border:none; border-radius:14px; cursor:pointer;">
+            <!-- 결제 에러 상시 슬롯 — 결제 버튼 바로 위 (2026-09-20) -->
+            <div id="pay-error" role="alert" style="display:none;">
+                <span id="pay-error-msg"></span>
+                <button type="button" id="pay-error-retry" style="display:none;"></button>
+            </div>
+
+            <!-- 결제하기 버튼 — 위젯 렌더·금액 반영이 끝날 때까지 disabled (2026-09-20) -->
+            <button id="pay-btn" type="button" disabled style="width:100%; padding:16px; background:linear-gradient(135deg,#a78bfa,#818cf8); color:#fff; font-size:1.1rem; font-weight:700; border:none; border-radius:14px; cursor:pointer;">
                 ₩9,900 결제하기
             </button>
+            <!-- 결제 버튼 하단 고정(is-docked) 시 흐름 높이 유지용 (2026-09-20) -->
+            <div id="pay-btn-spacer" style="height:0;"></div>
         </div>
 
         <!-- 크레딧 정책 링크 -->
@@ -166,7 +217,7 @@
     </div>
 
     <script type="module">
-    import { store, Monk, sharedInit, navigateTo, CHARGE_OPTIONS, KRW_PER_CREDIT, TOSS_CLIENT_KEY } from './shared.js';
+    import { store, Monk, sharedInit, navigateTo, CHARGE_OPTIONS, KRW_PER_CREDIT, TOSS_CLIENT_KEY, gaPay, reportPayFail } from './shared.js';
     import { renderChargeCards } from './modules/charge.js';
     import { initChatbot } from './modules/chatbot.js';
     import { GateModule } from './modules/gate.js';
@@ -182,46 +233,288 @@
     let paymentWidgets = null;   // v2 위젯 인스턴스
     let widgetRendered = false;  // 최초 렌더 완료 여부
 
+    // ─── 결제 동선 가드 (2026-09-20 결제 표면 감사 — 포털 credits.html 패턴 이식) ───
+    let renderInFlight = false;  // 위젯 렌더 진행 중 — 같은 셀렉터에 이중 렌더 금지
+    let widgetBroken = false;    // 위젯 단계 실패 후 — 렌더를 다시 부르지 않는다 (재시도 = 새로고침)
+    let pendingAmount = 0;       // 결제 뷰에 표시 중인(결제하려는) 금액
+    let widgetAmount = -1;       // 위젯에 실제 반영된 금액 (표시 금액 ≠ 결제 금액 방지)
+    let amountSeq = 0;           // setAmount 호출 순번 — 마지막 호출만 버튼을 연다
+    let payBusy = false;         // requestPayment 이중 호출 방지
+    let payErrSeq = 0;
+    let tossFailReturn = null;   // 토스 실패 복귀 정보 — shared.js initFromTossResult 가 넘겨준다
+    const SEL_KEY = 'monkos_charge_sel';       // 선택 상품/스테퍼 수량 (실패 복귀·재시도 새로고침 시 결제 뷰 복원)
+    const REOPEN_KEY = 'monkos_charge_reopen'; // 위젯 재시도(새로고침) 직후 결제 뷰 자동 복원 플래그
+
+    const PAY_MSG = {
+      widgetLoading: '결제창을 불러오는 중입니다…',
+      widgetFail: '결제창을 불러오지 못했습니다. 아래 버튼으로 다시 시도해 주세요.',
+      retry: '다시 시도',
+      payCancelled: '결제를 취소하셨습니다. 다시 결제하시려면 아래 결제 버튼을 눌러 주세요.',
+      payError: '결제 오류: ',
+      payFailDefault: '결제가 완료되지 않았습니다. 다시 시도해 주세요.',
+    };
+
     // 뷰 참조
     const selectionView = document.getElementById('selection-view');
     const paymentView = document.getElementById('payment-view');
+    const chargeContent = document.getElementById('charge-content');
+    const payBtn = document.getElementById('pay-btn');
+    const payBtnSpacer = document.getElementById('pay-btn-spacer');
+
+    // sessionStorage 안전 래퍼 — 사파리 비공개 모드·인앱 일부는 접근 자체가 예외
+    function ssGet(key) { try { return sessionStorage.getItem(key); } catch (e) { return null; } }
+    function ssSet(key, val) { try { sessionStorage.setItem(key, val); } catch (e) {} }
+    function ssDel(key) { try { sessionStorage.removeItem(key); } catch (e) {} }
+
+    // 실패 복귀 핸들러 — sharedInit() 안에서 호출되므로 init() 보다 먼저 등록해 둔다.
+    // 여기서는 기록만 하고, 결제 뷰 복원·사유 표기는 init() 이 패키지 렌더 뒤에 한다.
+    window.monkosOnTossFail = (info) => { tossFailReturn = info || {}; };
 
     function fmt(n) { return n.toLocaleString('ko-KR'); }
 
     // ─── 뷰 전환 ───
+    // 본문이 자체 스크롤 컨테이너라 window.scrollTo만으로는 리셋되지 않는다
+    function resetScroll() {
+      window.scrollTo(0, 0);
+      chargeContent.scrollTop = 0;
+    }
+
     function showSelectionView() {
       selectionView.style.display = '';
       paymentView.style.display = 'none';
-      window.scrollTo(0, 0);
+      resetScroll();
+      scheduleDock(); // 결제 뷰가 닫히면 하단 고정 해제
     }
 
     function showPaymentView() {
       selectionView.style.display = 'none';
       paymentView.style.display = '';
-      window.scrollTo(0, 0);
+      resetScroll();
+      scheduleDock();
     }
 
-    // ─── 위젯 에러 표시 ───
-    function showWidgetError(msg) {
-      const methodEl = document.getElementById('payment-method');
-      if (methodEl) {
-        methodEl.innerHTML = '<div style="padding:20px;text-align:center;color:#f87171;font-size:0.85rem;border:1px solid rgba(248,113,113,0.3);border-radius:12px;background:rgba(248,113,113,0.08);">' + msg + '</div>';
+    // ─── 결제 에러 상시 슬롯 (2026-09-20) ───
+    // 종전 showWidgetError 는 #payment-method 안에 문구를 넣었고(위젯 셀렉터 오염), 결제 오류는 alert 뿐이라
+    // 닫으면 "눌러도 반응 없는 버튼"만 남았다. 결제 버튼 바로 위 슬롯에 사유를 남긴다.
+    // opts: { info: 중립 안내(취소 등), onRetry + retryLabel: 재시도 버튼, noScroll }
+    function showPayError(msg, opts) {
+      opts = opts || {};
+      payErrSeq++;
+      const box = document.getElementById('pay-error');
+      const retry = document.getElementById('pay-error-retry');
+      if (!box || !retry) return;
+      document.getElementById('pay-error-msg').textContent = msg;
+      box.className = opts.info ? 'info' : '';
+      if (opts.onRetry) {
+        retry.textContent = opts.retryLabel || PAY_MSG.retry;
+        retry.onclick = opts.onRetry; // onclick 대입 — 재표시마다 리스너가 쌓이지 않게
+        retry.style.display = '';
+      } else {
+        retry.onclick = null;
+        retry.style.display = 'none';
       }
+      box.style.display = '';
+      // 스크롤 주체는 #charge-content — scrollIntoView 가 가장 가까운 스크롤 컨테이너를 움직인다
+      if (!opts.noScroll) { try { box.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) {} }
+      scheduleDock();
     }
 
-    // ─── 위젯 초기화 (1회) ───
+    function hidePayError() {
+      const box = document.getElementById('pay-error');
+      if (!box) return;
+      box.style.display = 'none';
+      document.getElementById('pay-error-msg').textContent = '';
+      document.getElementById('pay-error-retry').onclick = null;
+      scheduleDock();
+    }
+
+    function setWidgetLoading(on) {
+      const el = document.getElementById('pay-loading');
+      if (!el) return;
+      if (on) el.textContent = PAY_MSG.widgetLoading;
+      el.style.display = on ? '' : 'none';
+    }
+
+    // ─── 결제 버튼 하단 고정 (2026-09-20) ───
+    // 토스 위젯·약관 영역이 길어 결제 버튼이 화면 아래에 남는다. body 가 잠겨 있어 스크롤 주체는 #charge-content →
+    // 그 scroll 이벤트를 듣고, 버튼의 '원래 자리'가 보이는 영역 아래면 position:fixed 로 띄운다(스페이서가 흐름 높이 유지).
+    let dockRaf = null;
+    function undockPayBtn() {
+      payBtn.classList.remove('is-docked');
+      payBtnSpacer.style.height = '0px';
+    }
+    function updateDock() {
+      if (paymentView.style.display === 'none') return undockPayBtn();
+      const cr = chargeContent.getBoundingClientRect();
+      const wh = window.innerHeight || document.documentElement.clientHeight || 0;
+      const vh = wh ? Math.min(wh, cr.bottom) : cr.bottom; // 보이는 영역의 아래 끝
+      const pr = paymentView.getBoundingClientRect();
+      const inView = pr.bottom > cr.top && pr.top < vh - 40;
+      // 고정 중에는 버튼이 흐름 밖이라 스페이서가 '원래 자리'의 정본
+      const docked = payBtn.classList.contains('is-docked');
+      const naturalBottom = docked
+        ? payBtnSpacer.getBoundingClientRect().bottom
+        : payBtn.getBoundingClientRect().bottom;
+      if (inView && naturalBottom > vh - 8) {
+        if (!docked) {
+          payBtnSpacer.style.height = payBtn.offsetHeight + 'px';
+          payBtn.classList.add('is-docked');
+        }
+      } else undockPayBtn();
+    }
+    function scheduleDock() {
+      if (dockRaf) return;
+      dockRaf = requestAnimationFrame(() => { dockRaf = null; updateDock(); });
+    }
+    chargeContent.addEventListener('scroll', scheduleDock, { passive: true });
+    window.addEventListener('resize', scheduleDock);
+    if (window.ResizeObserver) {
+      // 약관 펼침·결제수단 전환으로 위젯 높이가 바뀌면 다시 판정
+      const dockRo = new ResizeObserver(scheduleDock);
+      ['payment-method', 'agreement', 'payment-view'].forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) dockRo.observe(el);
+      });
+    }
+    // bfcache 복귀(결제창에서 뒤로가기) — 가드가 잠긴 채 복원되면 결제 버튼이 영구 무반응이 된다
+    window.addEventListener('pageshow', (e) => {
+      if (!e.persisted) return;
+      payBusy = false;
+      scheduleDock();
+    });
+
+    // ─── 선택 기록 (실패 복귀·재시도 새로고침 시 결제 뷰 복원용) ───
+    function saveSelection() {
+      if (selectedIdx < 0) return;
+      ssSet(SEL_KEY, JSON.stringify({ idx: selectedIdx, qty: stepperQty, t: Date.now() }));
+    }
+
+    function restoreSelection() {
+      if (!store.user.id) return false; // 세션이 끊겼으면 결제 뷰를 열 수 없다 → 호출부가 대체 안내
+      let sel = null;
+      try { sel = JSON.parse(ssGet(SEL_KEY) || 'null'); } catch (e) { sel = null; }
+      if (!sel || !Number.isInteger(sel.idx)) return false;
+      if (Date.now() - (sel.t || 0) > 1800000) { ssDel(SEL_KEY); return false; } // 30분 넘은 기록은 버린다
+      if (sel.idx >= 0 && sel.idx <= 3 && CHARGE_OPTIONS[sel.idx]) {
+        const opt = CHARGE_OPTIONS[sel.idx];
+        selectedIdx = sel.idx;
+        openPaymentView(opt.price, opt.credits + opt.bonus, `${opt.credits}c +${opt.bonus}c`);
+        return true;
+      }
+      if (sel.idx === 4 && Number.isInteger(sel.qty) && sel.qty >= STEP_MIN && sel.qty <= STEP_MAX) {
+        stepperQty = sel.qty;
+        updateStepper();
+        selectedIdx = 4;
+        openPaymentView(stepperQty * STEP_PRICE, stepperQty * STEP_UNIT, `${stepperQty * STEP_UNIT}c`);
+        return true;
+      }
+      return false;
+    }
+
+    // ─── 위젯 단계 실패 공통 처리 (2026-09-20) ───
+    // 재시도 = 새로고침: 같은 셀렉터에 렌더를 다시 부르면 이중 렌더로 결제가 깨진다
+    // (포털 credits.html 과 같은 선택 — specs 09-20 실측 INVALID_METHOD_TRANSACTION).
+    // 선택 상품은 sessionStorage(SEL_KEY)에 있어 새로고침 뒤 결제 뷰를 그대로 복원한다.
+    function widgetFailed(code, message) {
+      widgetBroken = true;
+      payBtn.disabled = true;
+      setWidgetLoading(false);
+      showPayError(PAY_MSG.widgetFail, {
+        onRetry: () => { ssSet(REOPEN_KEY, '1'); window.location.reload(); },
+      });
+      reportPayFail('widget', code, message);
+    }
+
+    // ─── 위젯 초기화 (1회) — 실패 시 [code, message] 반환 ───
     function initWidget() {
-      if (paymentWidgets || !store.user.id || !TOSS_CLIENT_KEY) return;
+      if (paymentWidgets) return null;
+      if (!TOSS_CLIENT_KEY) return ['CLIENT_KEY_MISSING', 'toss client key missing'];
+      if (typeof window.TossPayments !== 'function') return ['SDK_MISSING', 'TossPayments global undefined'];
 
       try {
-        const tossPayments = TossPayments(TOSS_CLIENT_KEY);
+        const tossPayments = window.TossPayments(TOSS_CLIENT_KEY);
         paymentWidgets = tossPayments.widgets({
           customerKey: String(store.user.id),
         });
       } catch (e) {
         console.error('Widget init failed:', e);
-        showWidgetError('결제 위젯 초기화 실패: ' + (e.message || e));
+        return [(e && e.code) || 'INIT_EXCEPTION', (e && e.message) || ''];
       }
+      return null;
+    }
+
+    // 프라미스가 끝나지 않으면 버튼이 영구 disabled 로 남는다 → 시간 제한
+    function withTimeout(promise, ms, code) {
+      return new Promise((resolve, reject) => {
+        const timer = setTimeout(() => {
+          const err = new Error(code + ' after ' + ms + 'ms');
+          err.code = code;
+          reject(err);
+        }, ms);
+        promise.then(
+          (v) => { clearTimeout(timer); resolve(v); },
+          (e) => { clearTimeout(timer); reject(e); }
+        );
+      });
+    }
+
+    // ─── 렌더 완료 후 금액 변경 = setAmount 만 ───
+    function syncAmount() {
+      const amount = pendingAmount;
+      const seq = ++amountSeq;
+      payBtn.disabled = true; // 반영 전 결제 금지 — 버튼 라벨 금액 ≠ 위젯 금액 상태로 결제되지 않게
+      return withTimeout(paymentWidgets.setAmount({ currency: 'KRW', value: amount }), 12000, 'SET_AMOUNT_TIMEOUT')
+        .then(() => {
+          if (seq !== amountSeq || pendingAmount !== amount) return; // 그 사이 또 바꿨다면 뒤따르는(마지막) syncAmount 가 연다
+          widgetAmount = amount;
+          if (!widgetBroken) payBtn.disabled = false;
+        })
+        .catch((e) => {
+          console.error('Widget setAmount failed:', e);
+          widgetFailed((e && e.code) || 'SET_AMOUNT_FAILED', (e && e.message) || '');
+        });
+    }
+
+    // ─── 위젯 최초 렌더 (renderInFlight 가드 + 12초 감시) ───
+    function renderWidget() {
+      if (renderInFlight || widgetRendered) return;
+      const amountAtStart = pendingAmount;
+      const t0 = Date.now();
+      let settled = false, timedOut = false, timeoutErrSeq = -1;
+      renderInFlight = true;
+      setWidgetLoading(true);
+      // 렌더 멈춤 감시 — 12초 뒤 사유와 재시도를 보여준다.
+      // renderInFlight 는 풀지 않는다(늦게라도 뜨면 그대로 결제 가능, 그 사이 재렌더 금지).
+      const renderTimer = setTimeout(() => {
+        if (settled) return;
+        timedOut = true;
+        widgetFailed('RENDER_TIMEOUT', 'widget render not settled in 12s');
+        setWidgetLoading(true); // 아직 렌더 중 — 로딩 문구는 유지
+        timeoutErrSeq = payErrSeq;
+      }, 12000);
+
+      (async () => {
+        try {
+          await paymentWidgets.setAmount({ currency: 'KRW', value: amountAtStart });
+          await paymentWidgets.renderPaymentMethods({ selector: '#payment-method' });
+          await paymentWidgets.renderAgreement({ selector: '#agreement' });
+          settled = true; clearTimeout(renderTimer);
+          renderInFlight = false; widgetRendered = true; widgetAmount = amountAtStart;
+          widgetBroken = false; // 타임아웃 뒤 늦게 뜬 경우 포함 — 정상 복귀
+          setWidgetLoading(false);
+          // 늦게 떴다 — 타임아웃 문구만 거둔다 (그 사이 뜬 다른 안내는 건드리지 않는다)
+          if (timedOut && payErrSeq === timeoutErrSeq) hidePayError();
+          gaPay('pay_widget_open', { render_ms: Date.now() - t0, late: timedOut });
+          // 렌더 중 상품을 바꿨다면 최신 선택으로 금액만 다시 맞춘다
+          if (pendingAmount !== amountAtStart) syncAmount(); else payBtn.disabled = false;
+          scheduleDock();
+        } catch (e) {
+          settled = true; clearTimeout(renderTimer);
+          renderInFlight = false;
+          console.error('Widget render failed:', e);
+          widgetFailed((e && e.code) || 'RENDER_FAILED', (e && e.message) || '');
+        }
+      })();
     }
 
     // ─── 결제 뷰로 전환 + 위젯 렌더 ───
@@ -234,39 +527,39 @@
         return;
       }
 
-      initWidget();
-
-      if (!paymentWidgets) {
-        showWidgetError('결제 위젯을 불러올 수 없습니다. 페이지를 새로고침 해주세요.');
-        showPaymentView();
-        return;
-      }
-
       // 선택 요약 업데이트
+      pendingAmount = amount;
       document.getElementById('selected-label').textContent = `${credits}c`;
       document.getElementById('selected-price').textContent = `₩${fmt(amount)}`;
-      document.getElementById('pay-btn').textContent = `₩${fmt(amount)} 결제하기`;
+      payBtn.textContent = `₩${fmt(amount)} 결제하기`;
+      payBtn.disabled = true; // 렌더·금액 반영이 끝나야 연다 (2026-09-20)
+      saveSelection();
 
       // 뷰 전환 (위젯 렌더 전에 먼저 보여줘야 mount 가능)
       showPaymentView();
 
-      try {
-        await paymentWidgets.setAmount({ currency: 'KRW', value: amount });
+      // 위젯 단계 실패 후 — 슬롯의 '다시 시도(새로고침)' 안내를 그대로 둔다
+      if (widgetBroken) return;
+      hidePayError();
 
-        if (!widgetRendered) {
-          await paymentWidgets.renderPaymentMethods({ selector: '#payment-method' });
-          await paymentWidgets.renderAgreement({ selector: '#agreement' });
-          widgetRendered = true;
-        }
-      } catch (e) {
-        console.error('Widget render failed:', e);
-        showWidgetError('결제 위젯 로딩 실패: ' + (e.message || e));
+      const initErr = initWidget();
+      if (initErr || !paymentWidgets) {
+        widgetFailed(initErr ? initErr[0] : 'WIDGET_UNAVAILABLE', initErr ? initErr[1] : '');
+        return;
       }
+
+      // 렌더 진행 중 재진입 — 같은 셀렉터에 다시 렌더하지 않는다. 금액은 렌더 완료 시점에 pendingAmount 로 맞춘다
+      if (renderInFlight) return;
+      // 렌더 완료 후 재진입 = setAmount 만
+      if (widgetRendered) { syncAmount(); return; }
+      renderWidget();
     }
 
     // ─── 결제 실행 ───
+    const gaCheckoutFired = {};
     async function handlePay() {
-      if (!paymentWidgets || selectedIdx < 0) return;
+      if (payBusy) return; // 더블 탭 → requestPayment 이중 호출 방지 (2026-09-20)
+      if (!paymentWidgets || !widgetRendered || widgetBroken || selectedIdx < 0) return;
 
       let amount, credits;
       if (selectedIdx <= 3) {
@@ -277,6 +570,9 @@
         amount = stepperQty * STEP_PRICE;
         credits = stepperQty * STEP_UNIT;
       }
+
+      // 백스톱: 위젯 금액이 선택 금액과 다르면 결제하지 않고 금액부터 맞춘다
+      if (widgetAmount !== amount) { pendingAmount = amount; syncAmount(); return; }
 
       const orderId = `MONKOS_${String(store.user.id).slice(0, 8)}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
 
@@ -291,6 +587,17 @@
         ? `${failBase}&return=${encodeURIComponent(returnParam)}`
         : failBase;
 
+      payBusy = true;
+      hidePayError();
+      saveSelection(); // 실패 복귀 시 같은 선택으로 결제 뷰를 다시 연다
+      // 결제 버튼 탭 = 결제 시작. 같은 금액 재탭(에러 후 재시도)은 begin_checkout 1회로 센다
+      if (!gaCheckoutFired[amount]) {
+        gaCheckoutFired[amount] = true;
+        gaPay('begin_checkout', { value: amount, currency: 'KRW' });
+      }
+      gaPay('pay_confirm_click', { value: amount, currency: 'KRW' });
+
+      // ⚠️ 여기서 requestPayment 앞에 await 를 넣지 말 것 — user activation 이 만료되면 결제창이 팝업 차단된다
       try {
         await paymentWidgets.requestPayment({
           orderId,
@@ -301,11 +608,19 @@
           customerName: store.user.name || undefined,
         });
       } catch (err) {
-        if (err.code === 'PAY_PROCESS_CANCELED' || err.code === 'USER_CANCEL') {
+        const errCode = (err && err.code) || '';
+        const cancelled = errCode === 'PAY_PROCESS_CANCELED' || errCode === 'USER_CANCEL';
+        reportPayFail('request', errCode || 'REQUEST_FAILED', (err && err.message) || '');
+        if (cancelled) {
+          // 취소는 에러가 아니다 — 다만 아무 표시도 없으면 "눌러도 반응 없는 버튼"으로 읽힌다
           Monk.log('결제 취소');
+          showPayError(PAY_MSG.payCancelled, { info: true });
         } else {
-          alert('결제 오류: ' + (err.message || err.code));
+          // alert 대신 상시 슬롯 — 닫아도 사유가 남는다
+          showPayError(PAY_MSG.payError + ((err && (err.message || err.code)) || ''));
         }
+      } finally {
+        payBusy = false;
       }
     }
 
@@ -444,6 +759,36 @@
     }
     window.goBack = goBack;
 
+    // ─── 모달에서 고른 상품 미리 선택 (2026-09-20) ───
+    // shared.js buyCreditsKR 이 ?pkg=<결제 금액> 을 붙여 보낸다. 1탭(선택) 상태까지만 만든다 —
+    // 결제 뷰 진입은 기존과 같이 고객의 다음 탭. 금액이 정본(CHARGE_OPTIONS·스테퍼 단가)과 맞지 않으면 무시.
+    function preselectFromQuery() {
+      const raw = new URLSearchParams(location.search).get('pkg');
+      if (!raw) return;
+      const amount = parseInt(raw, 10);
+      if (!Number.isFinite(amount) || amount <= 0) return;
+
+      const idx = CHARGE_OPTIONS.findIndex(o => o.price === amount);
+      if (idx >= 0 && idx <= 3) {
+        confirmedIdx = idx;
+        highlightCard(idx);
+        const card = document.querySelector(`[data-ci="${idx}"]`);
+        if (card) { try { card.scrollIntoView({ block: 'nearest' }); } catch (e) {} }
+        return;
+      }
+      const qty = amount / STEP_PRICE;
+      if (Number.isInteger(qty) && qty >= STEP_MIN && qty <= STEP_MAX) {
+        stepperQty = qty;
+        updateStepper();
+        confirmedIdx = -1;
+        highlightCard(-1);
+        confirmedStepper = true;
+        const stepperPay = document.getElementById('stepper-pay');
+        stepperPay.style.background = 'linear-gradient(135deg,rgba(34,197,94,0.4),rgba(34,197,94,0.2))';
+        try { stepperPay.scrollIntoView({ block: 'nearest' }); } catch (e) {}
+      }
+    }
+
     // ─── 초기화 ───
     async function init() {
       initChatbot();
@@ -461,6 +806,28 @@
           highlightCard(-1);
           showSelectionView();
         });
+      }
+
+      // 2026-09-20: 토스 실패 복귀 / 위젯 재시도 새로고침 → 저장된 선택으로 결제 뷰 복원
+      const reopen = ssGet(REOPEN_KEY) === '1';
+      ssDel(REOPEN_KEY);
+      if (tossFailReturn) {
+        const failCode = tossFailReturn.code || '';
+        const cancelled = failCode === 'PAY_PROCESS_CANCELED' || failCode === 'USER_CANCEL';
+        if (restoreSelection()) {
+          // 사유를 결제 버튼 위에 남긴다 (alert 는 닫으면 사라진다).
+          // 위젯 초기화가 바로 실패했다면 슬롯의 '다시 시도' 안내를 덮지 않는다 (덮으면 재시도 길이 사라진다)
+          if (!widgetBroken) {
+            showPayError(cancelled ? PAY_MSG.payCancelled : (tossFailReturn.message || PAY_MSG.payFailDefault), { info: cancelled });
+          }
+        } else {
+          // 선택 기록이 없거나 세션이 끊겼다 — 기존 동작(alert)으로 안내
+          alert(tossFailReturn.message || '결제가 취소되었습니다');
+        }
+      } else if (reopen) {
+        if (!restoreSelection()) preselectFromQuery();
+      } else {
+        preselectFromQuery();
       }
 
       Monk.log('충전 페이지 초기화 완료 (v2 위젯 투터치)');
