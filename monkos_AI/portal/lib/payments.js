@@ -830,7 +830,7 @@ export async function handleDirectStatus(req, res) {
  * init 3명·7회 대비 승인 호출 0건이라는 사실만 있고 원인이 없었다.
  * 서버 발급 orderId(= directOrders 문서 존재)가 아니면 기록하지 않는다 — 임의 주입 차단.
  */
-const FAIL_STAGES = new Set(['request', 'return', 'confirm', 'poll']);
+const FAIL_STAGES = new Set(['widget', 'request', 'return', 'confirm', 'poll']);
 
 export async function handleDirectFail(req, res) {
   const json = (status, payload) => {

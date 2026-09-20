@@ -1166,7 +1166,8 @@ var SpecsFunnel = (function(){
   var tossWidgets = null, tossWidgetRendered = false;
   function startToss(d, extraWin){
     if(extraWin){ try{ extraWin.close(); }catch(e){} }
-    if(!window.TossPayments){ payBusy = false; showPayError(T.payInitFail); return; }
+    // 위젯 단계 실패도 기록한다 — 09-20 네이버 인앱 고객이 init 직후 무기록으로 사라진 사각지대 (SDK 부재·렌더 거절·렌더 멈춤)
+    if(!window.TossPayments){ payBusy = false; showPayError(T.payInitFail); reportPayFail('widget', 'SDK_MISSING', 'TossPayments global undefined'); return; }
     var wrap = document.getElementById('v2-toss-widget');
     var btn = document.getElementById('v2-pay-confirm');
     try{
@@ -1181,6 +1182,16 @@ var SpecsFunnel = (function(){
       btn.textContent = T.payBtnLabel.replace('{price}', _cur + _amt);
       wrap.style.display = 'block';
       setWidgetOpenUI(true);
+      // 렌더 멈춤 감시 — 프라미스가 끝나지 않으면 payBusy가 고착돼 첫 버튼이 영구 무반응이 된다.
+      // 12초 뒤 잠금을 풀고 사유를 보여준다. 위젯 영역은 닫지 않는다(늦게라도 뜨면 그대로 결제 가능).
+      var renderT0 = Date.now(), renderSettled = false, renderTimedOut = false;
+      var renderTimer = setTimeout(function(){
+        if(renderSettled) return;
+        renderTimedOut = true;
+        payBusy = false;
+        showPayError(T.payInitFail);
+        reportPayFail('widget', 'RENDER_TIMEOUT', 'widget render not settled in 12s');
+      }, 12000);
       tossWidgets.setAmount({ currency: d.currency || 'KRW', value: d.amount })
         .then(function(){
           if(tossWidgetRendered) return;
@@ -1189,8 +1200,10 @@ var SpecsFunnel = (function(){
             .then(function(){ tossWidgetRendered = true; });
         })
         .then(function(){
+          renderSettled = true; clearTimeout(renderTimer);
           payBusy = false;
-          gaTrack('pay_widget_open', { payment_provider: GA_PAY.payment_provider }, true);
+          if(renderTimedOut) hidePayError(); // 늦게 떴다 — 타임아웃 문구를 거둔다
+          gaTrack('pay_widget_open', { payment_provider: GA_PAY.payment_provider, render_ms: Date.now() - renderT0, late: renderTimedOut }, true);
           // 'nearest' 1회로는 위젯 하단(결제하기)이 화면 밖에 남는다 → 위젯 상단 정렬 + 하단 고정 배선.
           // 단 실패 사유가 이미 떠 있으면(복귀 재오픈) 그 문구를 가리지 않는다.
           var shownErr = payErrorEl && payErrorEl.classList.contains('show') ? payErrorEl : null;
@@ -1198,8 +1211,10 @@ var SpecsFunnel = (function(){
           scheduleDock();
         })
         .catch(function(e){
+          renderSettled = true; clearTimeout(renderTimer);
           payBusy = false; wrap.style.display = 'none'; setWidgetOpenUI(false);
           showPayError((e && e.message) || T.payInitFail);
+          reportPayFail('widget', (e && e.code) || 'RENDER_FAILED', (e && e.message) || '');
         });
       btn.onclick = function(){
         gaTrack('pay_confirm_click', { payment_provider: GA_PAY.payment_provider }, true);
@@ -1216,7 +1231,11 @@ var SpecsFunnel = (function(){
           showPayError(cancelled ? T.payCancelled : ((err && err.message) || T.payInitFail));
         });
       };
-    }catch(e){ payBusy = false; showPayError(T.payInitFail); }
+    }catch(e){
+      try{ clearTimeout(renderTimer); }catch(_){}
+      payBusy = false; showPayError(T.payInitFail);
+      reportPayFail('widget', 'INIT_EXCEPTION', (e && e.message) || '');
+    }
   }
 
   function startLemon(d, lemonWin){
