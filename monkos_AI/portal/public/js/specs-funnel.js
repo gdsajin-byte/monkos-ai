@@ -187,9 +187,15 @@ var SpecsFunnel = (function(){
       }
       if(anchorEl && anchorEl.parentNode){ anchorEl.parentNode.insertBefore(reportLinkEl, anchorEl.nextSibling); }
       reportLinkEl.style.display = '';
+      // 위젯 안에서 에러 링크가 뜨면 같은 문구의 상시 링크는 접는다 (한 화면 중복 방지)
+      var payLink = document.querySelector('.v2-report-link-pay');
+      if(payLink) payLink.style.display = (anchorEl && anchorEl.id === 'v2-pay-error') ? 'none' : '';
     }catch(e){}
   }
-  function hideReportLink(){ if(reportLinkEl) reportLinkEl.style.display = 'none'; }
+  function hideReportLink(){
+    if(reportLinkEl) reportLinkEl.style.display = 'none';
+    var payLink = document.querySelector('.v2-report-link-pay'); if(payLink) payLink.style.display = '';
+  }
   function reportContext(){
     var ref = '';
     try{ ref = document.referrer ? new URL(document.referrer).hostname : ''; }catch(e){}

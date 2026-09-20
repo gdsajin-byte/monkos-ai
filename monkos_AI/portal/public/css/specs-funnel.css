@@ -551,3 +551,9 @@ a:hover { color: #5a3de6; }
 .v2-pay-loading::before { content: ''; display: inline-block; width: 16px; height: 16px; margin-right: 8px; vertical-align: -3px;
   border: 2px solid rgba(108,79,255,0.25); border-top-color: #6c4fff; border-radius: 50%; animation: v2-pay-spin 0.8s linear infinite; }
 @keyframes v2-pay-spin { to { transform: rotate(360deg); } }
+
+/* 결제 위젯 폭 확장 (2026-09-20 실측) — 360폭 폰에서 토스 iframe이 240px로 눌려 '카드사 선택'이 '카드사 …'로 잘렸다.
+   #v2-steps 좌우 패딩(20px)만큼 바깥으로 빼서 264px 확보. 가로 스크롤 발생 없음(문서 폭 360 유지) 확인. */
+@media (max-width: 480px) {
+  .v2-toss-widget { margin-left: -20px; margin-right: -20px; padding-left: 8px; padding-right: 8px; }
+}
