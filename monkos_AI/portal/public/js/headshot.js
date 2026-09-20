@@ -29,9 +29,15 @@
 
   /* ─── T1 직접결제 상태 ─── */
   var paySection = document.getElementById('hsPaySection');
+  // 결제 에러 슬롯 2곳 (2026-09-20, specs 결함 A 이식) — 기존엔 결제하기 버튼 *아래* 1곳뿐이고 스크롤도 없어
+  // 거절·취소 문구가 시야 밖에 떴다 = 고객에겐 "눌러도 반응 없는 버튼".
+  // #hsPayError = 첫 결제 버튼(#hsPayGo) 바로 위(위젯 닫힘) / #hsPayErrorConfirm = 결제하기(#hsPayConfirm) 바로 위(위젯 열림).
+  // 기존 id(hsPayError)를 상단 슬롯에 남긴 이유: 캐시된 구 JS가 떠도 에러가 항상 보이는 자리에 뜨게 하기 위함.
   var payErrorEl = document.getElementById('hsPayError');
+  var payErrorConfirmEl = document.getElementById('hsPayErrorConfirm');
   var tossWidgetWrap = document.getElementById('hsTossWidget');
   var payConfirmBtn = document.getElementById('hsPayConfirm');
+  var payConfirmSpacer = document.getElementById('hsPayConfirmSpacer');
   var loadingTitleEl = loadingEl ? loadingEl.querySelector('.hs-loading-title') : null;
   var loadingDescEl = loadingEl ? loadingEl.querySelector('.hs-loading-desc') : null;
   var LOADING_TITLE_DEFAULT = loadingTitleEl ? loadingTitleEl.textContent : '';
@@ -50,14 +56,73 @@
     if (loadingTitleEl) loadingTitleEl.textContent = title;
     if (loadingDescEl) loadingDescEl.textContent = desc || '';
   }
+  function isWidgetOpen() {
+    return !!(tossWidgetWrap && tossWidgetWrap.style.display !== 'none');
+  }
+  // payErrSeq — 렌더 타임아웃 문구만 골라 거두기 위한 에러 일련번호 (startToss 참조)
+  var payErrSeq = 0;
   function showPayError(msg) {
-    if (!payErrorEl) return;
-    payErrorEl.textContent = msg;
-    payErrorEl.style.display = 'block';
+    payErrSeq++;
+    var el = (isWidgetOpen() && payErrorConfirmEl) ? payErrorConfirmEl : (payErrorEl || payErrorConfirmEl);
+    if (!el) return;
+    hidePayError();
+    el.textContent = msg;
+    el.style.display = 'block';
+    try { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) {}
+    scheduleDock();
   }
   function hidePayError() {
-    if (payErrorEl) payErrorEl.style.display = 'none';
+    [payErrorEl, payErrorConfirmEl].forEach(function(el) {
+      if (el) { el.style.display = 'none'; el.textContent = ''; }
+    });
   }
+
+  /* ─── 결제하기 버튼 하단 고정 (2026-09-20, specs 결함 E 이식) ───
+     토스 위젯 영역은 375폭에서 600px대 — 가용 높이가 짧은 폰은 결제하기 버튼이 화면 아래에 남는다.
+     렌더 직후 스크롤 1회로는 약관 펼침·결제수단 전환 때마다 다시 밀리므로 스크롤·리사이즈마다 재판정한다. */
+  var dockRaf = null;
+  function undockConfirm() {
+    if (payConfirmBtn) payConfirmBtn.classList.remove('is-docked');
+    if (payConfirmSpacer) payConfirmSpacer.style.height = '0px';
+  }
+  function updateDock() {
+    if (!tossWidgetWrap || !payConfirmBtn || !payConfirmSpacer) return;
+    // 위젯 닫힘 · 결제 화면 숨김 · 버튼 미노출(렌더 대기) → 고정 해제
+    if (!isWidgetOpen() || !paySection || paySection.style.display === 'none' || payConfirmBtn.style.display === 'none') return undockConfirm();
+    var vh = window.innerHeight || document.documentElement.clientHeight || 0;
+    var wr = tossWidgetWrap.getBoundingClientRect();
+    var inView = wr.bottom > 0 && wr.top < vh - 40;
+    // 고정 중에는 버튼이 흐름 밖이라 스페이서가 '원래 자리'의 정본
+    var naturalBottom = payConfirmBtn.classList.contains('is-docked')
+      ? payConfirmSpacer.getBoundingClientRect().bottom
+      : payConfirmBtn.getBoundingClientRect().bottom;
+    if (inView && naturalBottom > vh - 8) {
+      if (!payConfirmBtn.classList.contains('is-docked')) {
+        // 높이는 고정 전에 잰다 (고정 후엔 폭이 달라져 줄바꿈이 바뀔 수 있음)
+        payConfirmSpacer.style.height = (payConfirmBtn.offsetHeight + 12) + 'px';
+        payConfirmBtn.classList.add('is-docked');
+      }
+    } else undockConfirm();
+  }
+  function scheduleDock() {
+    if (dockRaf) return;
+    if (typeof requestAnimationFrame !== 'function') { updateDock(); return; }
+    dockRaf = requestAnimationFrame(function() { dockRaf = null; updateDock(); });
+  }
+  window.addEventListener('scroll', scheduleDock, { passive: true });
+  window.addEventListener('resize', scheduleDock);
+  if (window.ResizeObserver) {
+    var dockRo = new ResizeObserver(scheduleDock);
+    ['hs-pm', 'hs-agree', 'hsTossWidget'].forEach(function(id) {
+      var e = document.getElementById(id); if (e) dockRo.observe(e);
+    });
+  }
+  function focusTossWidget() {
+    if (!tossWidgetWrap) return;
+    try { tossWidgetWrap.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e) {}
+    scheduleDock();
+  }
+
   function showPaySection(msg) {
     if (!paySection) return;
     // 위저드 전환 (2026-07-06 작가님): 업로드·스타일·CTA 화면을 접고 결제 화면만 표시.
@@ -73,8 +138,13 @@
       selName.textContent = card ? card.textContent : '';
     }
     paySection.style.display = 'block';
-    if (msg) showPayError(msg); else hidePayError();
-    paySection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // 에러가 있으면 에러 슬롯으로 스크롤(showPayError 내부) — 섹션 상단 스크롤이 덮어쓰면 문구가 다시 시야 밖 (2026-09-20)
+    if (msg) showPayError(msg);
+    else {
+      hidePayError();
+      paySection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    scheduleDock();
   }
 
   /* ─── GA4 퍼널 (주문 단위 1회 가드 — paymentToken 절대 미포함, transaction_id=orderId) ─── */
@@ -97,10 +167,49 @@
     if (extra) { for (var k in extra) { if (Object.prototype.hasOwnProperty.call(extra, k)) p[k] = extra[k]; } }
     gtag('event', name, p);
   }
+  // 반복 발화 허용 이벤트용 (pay_fail · pay_widget_open · pay_confirm_click) — 한 고객이 여러 번 실패·재시도하므로 1회 가드 없음.
+  // 매출 파라미터(value·currency)는 purchase/begin_checkout 전용이라 여기엔 싣지 않는다.
+  function gaPayTrack(name, extra) {
+    if (typeof gtag !== 'function') return;
+    var p = {
+      service: 'headshot',
+      market: PAY ? PAY.market : '',
+      lang: document.documentElement.lang || 'ko',
+      payment_provider: GA_PAY.payment_provider,
+    };
+    if (extra) { for (var k in extra) { if (Object.prototype.hasOwnProperty.call(extra, k)) p[k] = extra[k]; } }
+    gtag('event', name, p);
+  }
+  // 인앱 브라우저(WKWebView 계열) 판정 — specs-funnel.js isInApp과 동일 패턴
+  function isInApp() {
+    return /(GSA\/|FBAN|FBAV|Instagram|KAKAOTALK|Line\/|NAVER\(|DaumApps|; wv\))/i.test(navigator.userAgent || '');
+  }
+  /* ─── 결제 실패 계측 (2026-09-20, specs 09-19 신설분 이식) ───
+     헤드샷 유료 퍼널은 실패가 어디에도 남지 않았다 (init만 찍히고 이후 무기록).
+     GA는 유실 가능 → 사유의 정본은 서버 로그(directOrders.lastFail, POST /api/payments/direct/fail).
+     ⚠️ 토스 키·결제 토큰·개인정보는 파라미터에 절대 넣지 않는다 (헌법 4조 1항). */
+  function reportPayFail(stage, code, message) {
+    var safeCode = String(code || 'UNKNOWN').slice(0, 60);
+    gaPayTrack('pay_fail', { fail_stage: stage, fail_code: safeCode, in_app: isInApp() });
+    if (!pay.orderId) return;
+    try {
+      fetch('/api/payments/direct/fail', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, keepalive: true,
+        body: JSON.stringify({
+          orderId: pay.orderId, stage: stage, code: safeCode,
+          message: String(message || '').slice(0, 200),
+          vw: window.innerWidth, vh: window.innerHeight, inApp: isInApp(),
+        }),
+      }).catch(function() {});
+    } catch (e) {}
+  }
 
   /* ─── 리다이렉트 생존 저장소 (sessionStorage) ─── */
+  // 실패 복귀(?toss=fail) 시 주문을 새로 만들지 않고 위젯을 재오픈하기 위한 init 응답 보존 (2026-09-20, specs 결함 F 이식).
+  // clientKey 는 위젯 연동용 공개 키(init 응답으로 브라우저에 이미 내려오는 값) — 시크릿 아님.
+  var lastTossInit = null;
   function persistOrder() {
-    try { sessionStorage.setItem(ORDER_KEY, JSON.stringify({ orderId: pay.orderId, token: pay.token, remaining: pay.remaining, slug: 'headshot', ts: Date.now() })); } catch (e) {}
+    try { sessionStorage.setItem(ORDER_KEY, JSON.stringify({ orderId: pay.orderId, token: pay.token, remaining: pay.remaining, slug: 'headshot', ts: Date.now(), toss: lastTossInit })); } catch (e) {}
   }
   function loadOrderStored() {
     try {
@@ -254,11 +363,13 @@
     document.getElementById('hsStyleSection').style.display = 'none';
     document.getElementById('hsGenerateSection').style.display = 'none';
     if (paySection) paySection.style.display = 'none';
+    undockConfirm(); // 결제 화면을 벗어나면 하단 고정 버튼 즉시 해제 (2026-09-20)
   }
 
   function showMainSections() {
     loadingEl.style.display = 'none';
     if (paySection) paySection.style.display = 'none';
+    undockConfirm(); // 결제 화면을 벗어나면 하단 고정 버튼 즉시 해제 (2026-09-20)
     document.getElementById('hsUploadSection').style.display = 'block';
     document.getElementById('hsStyleSection').style.display = 'block';
     document.getElementById('hsGenerateSection').style.display = 'block';
@@ -448,6 +559,17 @@
     if (!uploadedImage || !selectedStyle || payBusy) return;
     // 결제 완료 토큰 보유 시 이중 결제 방지 — 바로 생성
     if (hasUsableToken()) return runGenerate(true);
+    // 위젯이 이미 열려 있으면 init 을 다시 부르지 않는다 (2026-09-20, specs 결함 C 이식).
+    // 재클릭마다 서버 주문이 새로 생기는데 화면은 그대로여서 "반응 없는 버튼"으로 보인다.
+    // 조건: 렌더 완료 + 미결제 주문 + 열린 위젯이 바로 그 주문의 것 (결제 끝난 주문에 위젯이 묶이는 일 방지)
+    if (tossWidgetRendered && pay.orderId && !pay.token && lastTossInit && lastTossInit.orderId === pay.orderId && isWidgetOpen()) {
+      hidePayError();
+      focusTossWidget();
+      return;
+    }
+    // 위젯 렌더가 아직 진행 중이면 다시 시작하지 않는다 — 렌더 타임아웃이 잠금을 푼 뒤 재클릭하면
+    // 같은 자리에 위젯이 이중 렌더되어 결제가 깨진다 (specs 09-20 dev 실측: INVALID_METHOD_TRANSACTION)
+    if (tossRenderInFlight) { focusTossWidget(); return; }
     hidePayError();
     payBusy = true;
     var initBody = { slug: PAY.slug, market: PAY.market };
@@ -471,6 +593,7 @@
       }
       var d = res.d;
       pay.orderId = d.orderId; pay.token = null; pay.remaining = null;
+      lastTossInit = null; // 새 주문 — 이전 주문의 위젯 재오픈 정보 폐기 (startToss가 새로 채운다)
       // orderId 확보 후 주문 단위 1회 발화 (재클릭 중복 방지, purchase와 쌍 정합)
       gaPayEvent('begin_checkout', d.orderId, { transport_type: 'beacon' });
       persistOrder();
@@ -485,16 +608,62 @@
   }
 
   // 토스 결제위젯 방식 필수 — 상점 라이브 계약이 위젯(live_gck)에만 있음. 구 결제창(payment()) 금지.
-  var tossWidgets = null, tossWidgetRendered = false;
+  var tossWidgets = null, tossWidgetRendered = false, tossRenderInFlight = false;
+  // 위젯 로딩 표시 (2026-09-20, specs 이식) — 렌더가 수 초~십수 초 걸리는 동안 화면이 비어 있으면 고객은 고장으로 읽고 떠난다
+  var PAY_LOADING = { ko: '결제창을 불러오는 중입니다…', ja: '決済画面を読み込んでいます…', en: 'Loading the payment form…', es: 'Cargando el formulario de pago…' };
+  function setWidgetLoading(on) {
+    if (!tossWidgetWrap) return;
+    var el = document.getElementById('hsPayLoading');
+    if (on) {
+      if (!el) {
+        el = document.createElement('div');
+        el.id = 'hsPayLoading'; el.className = 'hs-pay-loading';
+        var lang = (document.documentElement.lang || 'ko').slice(0, 2).toLowerCase();
+        el.textContent = PT.widgetLoading || PAY_LOADING[lang] || PAY_LOADING.en;
+        tossWidgetWrap.insertBefore(el, tossWidgetWrap.firstChild);
+      }
+      el.style.display = '';
+    } else if (el) { el.style.display = 'none'; }
+  }
+  // 사진·스타일 재저장 (2026-09-20 결함 수정) — restoreDraft 가 복귀 로드에서 저장분을 1회성 소비(삭제)하므로,
+  // 실패 복귀 뒤 재시도한 결제가 성공해 돌아오면 사진이 없어 재업로드를 요구했다.
+  // 리다이렉트가 일어날 수 있는 결제 시도 직전에 다시 저장한다. 캔버스 압축 없음(문자열 setItem뿐) — 결제 클릭 체인 밖.
+  function repersistForRedirect() {
+    if (uploadedImage && selectedStyle) persistPayState();
+  }
   function startToss(d, extraWin) {
     if (extraWin) { try { extraWin.close(); } catch (e) {} }
-    if (!window.TossPayments) { payBusy = false; showPayError(PT.initFail); return; }
+    // 위젯 단계 실패도 기록한다 — init 직후 무기록 이탈 사각지대 (SDK 부재·렌더 거절·렌더 멈춤)
+    if (!window.TossPayments) { payBusy = false; showPayError(PT.initFail); reportPayFail('widget', 'SDK_MISSING', 'TossPayments global undefined'); return; }
+    var renderTimer = null;
     try {
       if (!tossWidgets) {
         tossWidgets = window.TossPayments(d.clientKey).widgets({ customerKey: window.TossPayments.ANONYMOUS });
       }
+      // 실패 복귀 시 주문 재사용을 위한 보존 — 금액·주문명은 서버 init 응답이 정본 (ch2 7조)
+      lastTossInit = { provider: 'toss', orderId: d.orderId, orderName: d.orderName, amount: d.amount, currency: d.currency, clientKey: d.clientKey };
+      persistOrder(); // 호출부의 persistOrder 는 lastTossInit 설정 전에 끝난다 — 여기서 다시 저장해야 복귀 재오픈이 성립
+      repersistForRedirect();
       payConfirmBtn.textContent = '₩' + String(d.amount).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' ' + (PT.confirmSuffix || '결제하기');
       tossWidgetWrap.style.display = 'block';
+      // 렌더 멈춤 감시 — 프라미스가 끝나지 않으면 payBusy가 고착돼 첫 버튼이 영구 무반응이 된다.
+      // 12초 뒤 잠금을 풀고 사유를 보여준다. 위젯 영역은 닫지 않는다(늦게라도 뜨면 그대로 결제 가능).
+      var renderT0 = Date.now(), renderSettled = false, renderTimedOut = false, timeoutErrSeq = -1;
+      tossRenderInFlight = !tossWidgetRendered;
+      if (tossRenderInFlight) {
+        setWidgetLoading(true);
+        // 결제수단·약관이 뜨기 전에는 결제하기 버튼을 내놓지 않는다 (빈 위젯 위 버튼 = 눌러도 실패)
+        payConfirmBtn.style.display = 'none';
+        undockConfirm();
+      }
+      renderTimer = setTimeout(function() {
+        if (renderSettled) return;
+        renderTimedOut = true;
+        payBusy = false;
+        showPayError(PT.initFail);
+        timeoutErrSeq = payErrSeq;
+        reportPayFail('widget', 'RENDER_TIMEOUT', 'widget render not settled in 12s');
+      }, 12000);
       tossWidgets.setAmount({ currency: d.currency || 'KRW', value: d.amount })
         .then(function() {
           if (tossWidgetRendered) return;
@@ -503,15 +672,30 @@
             .then(function() { tossWidgetRendered = true; });
         })
         .then(function() {
+          renderSettled = true; clearTimeout(renderTimer);
+          tossRenderInFlight = false; setWidgetLoading(false);
           payBusy = false;
-          tossWidgetWrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          payConfirmBtn.style.display = '';
+          // 늦게 떴다 — 타임아웃 문구만 거둔다 (그 사이 뜬 다른 에러는 건드리지 않는다)
+          if (renderTimedOut && payErrSeq === timeoutErrSeq) hidePayError();
+          gaPayTrack('pay_widget_open', { render_ms: Date.now() - renderT0, late: renderTimedOut });
+          // 'nearest' 1회로는 위젯 하단(결제하기)이 화면 밖에 남는다 → 위젯 상단 정렬 + 하단 고정 배선.
+          // 단 실패 사유가 이미 떠 있으면(복귀 재오픈) 그 문구를 가리지 않는다.
+          var shownErr = (payErrorConfirmEl && payErrorConfirmEl.style.display !== 'none') ? payErrorConfirmEl : null;
+          try { (shownErr || tossWidgetWrap).scrollIntoView({ behavior: 'smooth', block: shownErr ? 'center' : 'start' }); } catch (e) {}
+          scheduleDock();
         })
         .catch(function(e) {
-          payBusy = false; tossWidgetWrap.style.display = 'none';
+          renderSettled = true; clearTimeout(renderTimer);
+          tossRenderInFlight = false; setWidgetLoading(false);
+          payBusy = false; tossWidgetWrap.style.display = 'none'; undockConfirm();
           showPayError((e && e.message) || PT.initFail);
+          reportPayFail('widget', (e && e.code) || 'RENDER_FAILED', (e && e.message) || '');
         });
       // requestPayment는 반드시 버튼 클릭 제스처에서 직접 호출 (팝업 차단 방지)
       payConfirmBtn.onclick = function() {
+        gaPayTrack('pay_confirm_click');
+        hidePayError();
         var base = returnBase();
         tossWidgets.requestPayment({
           orderId: d.orderId,
@@ -519,15 +703,27 @@
           successUrl: base + '?toss=direct',
           failUrl: base + '?toss=fail',
         }).catch(function(err) {
-          showPayError(err && err.code === 'USER_CANCEL' ? PT.cancelled : ((err && err.message) || PT.initFail));
+          var cancelled = err && err.code === 'USER_CANCEL';
+          reportPayFail('request', (err && err.code) || 'REQUEST_FAILED', (err && err.message) || '');
+          showPayError(cancelled ? PT.cancelled : ((err && err.message) || PT.initFail));
         });
       };
-    } catch (e) { payBusy = false; showPayError(PT.initFail); }
+    } catch (e) {
+      if (renderTimer) clearTimeout(renderTimer);
+      tossRenderInFlight = false; setWidgetLoading(false);
+      // 한 번도 렌더되지 않은 위젯 영역은 닫는다 — 빈 상자만 남기지 않고 에러를 첫 버튼 위 슬롯에 띄운다
+      if (!tossWidgetRendered) { tossWidgetWrap.style.display = 'none'; undockConfirm(); }
+      payBusy = false; showPayError(PT.initFail);
+      reportPayFail('widget', 'INIT_EXCEPTION', (e && e.message) || '');
+    }
   }
 
   function startLemon(d, lemonWin) {
     hideAllForLoading();
     setLoadingText(PT.waiting || '', PT.waitingHint || '');
+    // 레몬은 체크아웃 표면이 외부 페이지 — 그 표면이 열린 시점을 위젯 오픈과 동일 계측으로 잡는다 (2026-09-20, specs 동일)
+    gaPayTrack('pay_widget_open');
+    repersistForRedirect(); // 같은 탭 리다이렉트 재시도 대비 (위 repersistForRedirect 주석 참조)
     if (lemonWin && !lemonWin.closed) {
       try { lemonWin.location = d.checkoutUrl; } catch (e) { lemonWin = null; }
     } else { lemonWin = null; }
@@ -549,6 +745,7 @@
       if (tries > 240) { // 2.5초 × 240 = 10분
         stopPolling(); payBusy = false;
         showMainSections();
+        reportPayFail('poll', 'POLL_TIMEOUT', 'status polling timed out');
         showPaySection(PT.timeout);
         return;
       }
@@ -565,6 +762,7 @@
         } else if (d.status === 'failed' || d.status === 'amount_mismatch' || d.status === 'refunded') {
           stopPolling(); payBusy = false;
           showMainSections();
+          reportPayFail('poll', String(d.status).toUpperCase(), 'order status ' + d.status);
           showPaySection(PT.failed);
         }
       })
@@ -634,6 +832,7 @@
       pay.orderId = saved.orderId;
       pay.token = saved.token || null;
       pay.remaining = (typeof saved.remaining === 'number') ? saved.remaining : null;
+      if (saved.toss) lastTossInit = saved.toss;
     }
 
     function proceed() {
@@ -657,13 +856,32 @@
           proceed();
         } else {
           showMainSections();
+          reportPayFail('confirm', (res.d && res.d.code) || 'CONFIRM_FAILED', (res.d && res.d.error) || '');
           showPaySection((res.d && res.d.error) || PT.failed);
         }
       })
-      .catch(function() { showMainSections(); showPaySection(PT.errNet); });
+      .catch(function() {
+        showMainSections();
+        reportPayFail('confirm', 'CONFIRM_NETWORK', 'confirm request failed');
+        showPaySection(PT.errNet);
+      });
     } else if (mode === 'fail') {
+      /* 실패 복귀 (2026-09-20, specs 결함 F 이식) — 기존에는 리로드로 위젯이 사라져 첫 버튼부터 재시작 =
+         새 주문이 계속 쌓였다. 저장된 주문이 유효하면 위젯을 자동 재오픈하고 사유를 결제하기 버튼 위에 띄운다. */
+      if (oid) pay.orderId = oid;
+      var fmsg = failMsg || PT.cancelled;
+      reportPayFail('return', qs.get('code') || 'RETURN_FAIL', fmsg);
       showMainSections();
-      showPaySection(failMsg || PT.cancelled);
+      showPaySection();
+      var canReopen = !!(uploadedImage && selectedStyle && !pay.token
+        && lastTossInit && lastTossInit.provider === 'toss' && lastTossInit.clientKey && lastTossInit.orderId
+        && (!oid || oid === lastTossInit.orderId));
+      if (canReopen) {
+        pay.orderId = lastTossInit.orderId;
+        startToss(lastTossInit); // init 재호출 없음 — 저장된 주문 그대로 (사진·스타일도 startToss 안에서 재저장)
+      }
+      // 위젯이 열렸으면 결제하기 위 슬롯, 아니면 첫 결제 버튼 위 슬롯 (showPayError 가 고른다)
+      showPayError(canReopen && PT.retryHint ? (fmsg + ' ' + PT.retryHint) : fmsg);
     } else if (mode === 'lemon') {
       if (pay.token) {
         proceed();

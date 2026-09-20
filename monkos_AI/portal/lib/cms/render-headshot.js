@@ -87,6 +87,7 @@ const I18N = {
       confirming: '결제 승인 중...',
       failed: '결제에 실패했습니다. 다시 시도해주세요.',
       cancelled: '결제가 취소되었습니다.',
+      retryHint: '아래에서 결제를 다시 진행해 주세요.', // 실패 복귀 시 위젯 자동 재오픈 안내 (2026-09-20)
       initFail: '결제를 시작할 수 없습니다. 잠시 후 다시 시도해주세요.',
       timeout: '결제 확인 시간이 초과되었습니다. 다시 시도해주세요.',
       imgLost: '결제가 확인되었습니다. 사진을 다시 올리고 스타일을 선택해주세요 (추가 결제 없음).',
@@ -181,6 +182,7 @@ const I18N = {
       confirming: 'Confirming payment...',
       failed: 'Payment failed. Please try again.',
       cancelled: 'Payment was cancelled.',
+      retryHint: 'Please try the payment again below.',
       initFail: 'Could not start payment. Please try again shortly.',
       timeout: 'Payment confirmation timed out. Please try again.',
       imgLost: 'Payment confirmed. Please re-upload your photo and pick a style (no extra charge).',
@@ -275,6 +277,7 @@ const I18N = {
       confirming: '決済を承認中...',
       failed: '決済に失敗しました。もう一度お試しください。',
       cancelled: '決済がキャンセルされました。',
+      retryHint: '下の決済ボタンからもう一度お試しください。',
       initFail: '決済を開始できません。しばらくしてからお試しください。',
       timeout: '決済確認がタイムアウトしました。もう一度お試しください。',
       imgLost: '決済を確認しました。写真を再アップロードしてスタイルを選択してください（追加料金なし）。',
@@ -425,6 +428,9 @@ export function renderHeadshot(req, res, forceLang = null) {
       <p class="hs-pay-bal">${escapeHtml(d.pay.perCut)} · ${escapeHtml(d.pay.balance)} <b id="hsPayCredBal">0c</b></p>
     </div>
   </div>
+  <!-- 결제 에러 슬롯 2곳 (2026-09-20, specs 결제 동선 수정 이식) — 기존엔 결제하기 버튼 아래 1곳이라 문구가 시야 밖에 떴다.
+       hsPayError = 첫 결제 버튼 바로 위(위젯 닫힘) / hsPayErrorConfirm = 결제하기 바로 위(위젯 열림). 표시 토글은 headshot.js -->
+  <p class="hs-pay-error" id="hsPayError" role="alert" style="display:none;"></p>
   <button class="hs-btn hs-btn-generate" id="hsPayGo" style="margin-top:16px;"
     data-label-direct="${escapeHtml(d.pay.ctaDirect.replace('{price}', priceLabel))}"
     data-label-credit-login="${escapeHtml(d.pay.ctaCreditLogin)}"
@@ -436,9 +442,11 @@ export function renderHeadshot(req, res, forceLang = null) {
   <div id="hsTossWidget" style="display:none;">
     <div id="hs-pm"></div>
     <div id="hs-agree"></div>
+    <p class="hs-pay-error" id="hsPayErrorConfirm" role="alert" style="display:none;"></p>
     <button class="hs-btn hs-btn-primary" id="hsPayConfirm" style="width:100%;margin-top:12px;"></button>
+    <!-- 결제하기 버튼 하단 고정(is-docked) 시 원래 자리를 지키는 스페이서 (2026-09-20) -->
+    <div id="hsPayConfirmSpacer" aria-hidden="true" style="height:0;"></div>
   </div>
-  <p id="hsPayError" style="display:none;color:#ef4444;margin-top:8px;font-size:0.9rem;"></p>
 </section>
 
 <div class="hs-loading" id="hsLoading" style="display:none;">
